@@ -26,3 +26,10 @@ test("stereographic: finite for a point on the unit sphere, depth positive", () 
   const r = project(Float64Array.from([0.6, 0, 0.8]), { mode: "stereographic", dist: 2 });
   assert.ok(Number.isFinite(r.x) && Number.isFinite(r.y) && r.depth > 0);
 });
+
+test("stereographic is distinct from perspective (independent-dimension scaling)", () => {
+  const v = Float64Array.from([0.5, 0.2, 0.6, 0.8]);
+  const p = project(v, { mode: "perspective", dist: 3 });
+  const s = project(v, { mode: "stereographic", dist: 3 });
+  assert.ok(Math.abs(p.x - s.x) > 1e-6, "stereographic must differ from perspective");
+});

@@ -4,6 +4,7 @@ function popcount(x) { let c = 0; while (x) { c += x & 1; x >>>= 1; } return c; 
 
 export function nCubeVertices(n) {
   if (n < 1) throw new RangeError("n must be >= 1");
+  if (n > 30) throw new RangeError("n > 30 exceeds safe bit-shift range");
   const out = [];
   for (let i = 0; i < (1 << n); i++) {
     const v = new Float64Array(n);
@@ -14,6 +15,7 @@ export function nCubeVertices(n) {
 }
 export function nCubeEdges(n) {
   if (n < 1) throw new RangeError("n must be >= 1");
+  if (n > 30) throw new RangeError("n > 30 exceeds safe bit-shift range");
   const edges = [], count = 1 << n;
   for (let i = 0; i < count; i++) for (let j = i + 1; j < count; j++) if (popcount(i ^ j) === 1) edges.push([i, j]);
   return edges;
