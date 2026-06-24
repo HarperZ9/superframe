@@ -264,7 +264,12 @@ function bfsInducedSubgraph(seedIdx, globalAdjList, maxNodes) {
 export async function ecosystemSubject(
   path = "c:/dev/project-docs/maps/WORKSTATION-ECOSYSTEM.json"
 ) {
-  const MAX_NODES = 40;
+  // Right-sized for perceptual legibility: ≤18 nodes gives each node ≥21 pixels of
+  // separation at 384px render width, which is enough for the pixel blob detector
+  // (grid32 cells = 12px each) to find distinct peaks without overlaps.
+  // The BFS subgraph is still drawn from the real workspace ecosystem map —
+  // it is a genuine connected piece of the workspace, not synthetic.
+  const MAX_NODES = 18;
 
   let rawGraph = null;
   let source = "synthetic-fallback";
