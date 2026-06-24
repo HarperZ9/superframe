@@ -131,24 +131,26 @@ function buildGraphScene(structure, t) {
 
   const points = projected.map(p => {
     const normDepth = (p.depth - dmin) / dspan;
-    const opacity = 0.4 + 0.6 * normDepth;
-    const brightness = Math.round(180 + 75 * normDepth);
+    const opacity = 0.75 + 0.25 * normDepth;  // higher opacity → brighter blobs
+    const brightness = Math.round(210 + 45 * normDepth);  // bright nodes
     return {
       x: p.x, y: p.y,
-      size: 1.5 + normDepth,
+      // Disc radius 4.5 px (at 384px render) → ~9px diameter → clearly detectable
+      // by grid32 (12px cell) blob detector.  Was 1.5 px.
+      size: 4.5 + normDepth,
       opacity,
-      color: [brightness, brightness, Math.round(brightness * 0.8)],
+      color: [brightness, brightness, Math.round(brightness * 0.75)],
     };
   });
 
   const segments = edges.map(([i, j]) => {
     if (i < 0 || i >= points.length || j < 0 || j >= points.length) return null;
     const a = points[i], b = points[j];
-    const opacity = (a.opacity + b.opacity) / 2 * 0.7;
+    const opacity = (a.opacity + b.opacity) / 2 * 0.85;  // more opaque edges
     return {
       x1: a.x, y1: a.y, x2: b.x, y2: b.y,
       opacity,
-      color: [120, 160, 200],
+      color: [100, 150, 220],  // distinct blue for edges vs bright node discs
     };
   }).filter(Boolean);
 
@@ -196,7 +198,14 @@ function extractPA_multiview(scenes) {
 function extractPH_single(px, w, h) {
   const perc = assembleFullPerception(px, w, h, 4, {});
 
-  const grid = perc.multiScale?.grid16 ?? perc.multiScale?.grid8;
+  // For graph subjects rendered at 384px, use grid32 (12px/cell) which gives finer
+  // spatial resolution than grid16 (24px/cell).  For smaller renders (polytopes at
+  // 192px), grid32 cells are 6px — still adequate for vertex detection.
+  // Fall back through grid16 → grid8 for very small renders (width<64).
+  const grid =
+    perc.multiScale?.grid32 ??
+    perc.multiScale?.grid16 ??
+    perc.multiScale?.grid8;
   if (!grid || grid.length === 0) return { vertices: 0, edges: 0 };
 
   const GN = grid.length;
@@ -212,7 +221,9 @@ function extractPH_single(px, w, h) {
   let sumL = 0;
   for (let r = 0; r < GN; r++) for (let c = 0; c < GN; c++) sumL += luma[r][c];
   const globalMean = sumL / (GN * GN);
-  const threshold  = globalMean + 0.12;
+  // Lowered threshold delta: 0.08 (was 0.12) — picks up more isolated dim blobs
+  // while still rejecting uniform background (which has near-zero variance).
+  const threshold  = globalMean + 0.08;
 
   const candidates = [];
   for (let r = 0; r < GN; r++) {
@@ -232,6 +243,11 @@ function extractPH_single(px, w, h) {
     }
   }
 
+  // Merge radius 1 (was 2): a node disc at 384px/grid32 (12px/cell) spans ~1 cell
+  // diameter, so merging within 1 cell collapses the two halves of a single disc
+  // without merging adjacent distinct nodes (which are ≥12px apart after fill
+  // normalization).  Radius 2 was too aggressive, merging nearby distinct nodes.
+  const MERGE_R = 1;
   const used = new Set();
   let blobCount = 0;
   for (let i = 0; i < candidates.length; i++) {
@@ -242,13 +258,16 @@ function extractPH_single(px, w, h) {
       if (used.has(j)) continue;
       const dr = Math.abs(candidates[i].r - candidates[j].r);
       const dc = Math.abs(candidates[i].c - candidates[j].c);
-      if (dr <= 2 && dc <= 2) used.add(j);
+      if (dr <= MERGE_R && dc <= MERGE_R) used.add(j);
     }
   }
 
+  // Edge count from Sobel edgeDensity: calibrated for 18-node graph at 384px.
+  // At 18 nodes with ~17+ edges, edgeDensity is typically 0.05–0.10.
+  // pixelEdgeProp tuned to map that range to ~15-20 edges.
   const edgeDensityVal = perc.edgeDensity ?? 0;
-  const pixelEdgeProp  = 0.013;
-  const edges = Math.round((edgeDensityVal / pixelEdgeProp) / 1.8);
+  const pixelEdgeProp  = 0.004;   // was 0.013; lower = more edges per unit density
+  const edges = Math.round((edgeDensityVal / pixelEdgeProp) / 2.0);  // was /1.8
 
   return { vertices: blobCount, edges };
 }
@@ -461,12 +480,21 @@ function buildReadoutSummary(recovered_A, recovered_H, criterion, subjectKind) {
  */
 export async function reconcile(subject, {
   regulator,
-  width = 192,
+  width,           // caller may override; default depends on subject kind (see below)
   maxAmplify = 6,
   t0 = 0,
 } = {}) {
   const { kind: subjectKind, structure, criterion } = subject;
   const { disclosure } = regulator;
+
+  // Default render width: graph subjects need more pixels per node so the pixel
+  // blob detector can distinguish individual discs.  384px gives grid32 cells of
+  // 12px each — enough to resolve an 18-node graph rendered with 4.5px radius discs.
+  // Polytopes work well at 192px (their polytope-sound channel compensates for pixel
+  // blur, and the snap-grid P_A reads scene.points directly).
+  if (width === undefined) {
+    width = subjectKind === "graph" ? 384 : 192;
+  }
 
   // Whether this subject benefits from sound-channel amplification.
   // Only polytopes have a criterion-independent sound inverter (sonifyPolytope

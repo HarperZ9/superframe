@@ -334,6 +334,47 @@ describe("reconcile — perception-grounded: blank/starved render must not certi
   });
 });
 
+// ── Test 5b: Ecosystem-sized graph (18 nodes) — blank render → UNVERIFIABLE ─────
+//
+// Directly proves perception-grounding for the right-sized ecosystem subgraph:
+// 18 nodes (the MAX_NODES cap used by ecosystemSubject) rendered at width=8 cannot
+// be recovered by either perceiver.  Without a criterion-derived recovery path
+// (no SOUND channel for graphs), both perceivers read near-blank pixels → UNVERIFIABLE.
+// This is the key anti-tautology proof for the ecosystem fixture specifically.
+describe("reconcile — ecosystem-size graph (18 nodes) at blank width → UNVERIFIABLE", () => {
+  it("18-node graph at width=8 with maxAmplify=6 → UNVERIFIABLE (perception-grounded)", async () => {
+    // Mimic the topology of a real ecosystemSubject at the new MAX_NODES=18 cap.
+    const nodes = Array.from({ length: 18 }, (_, i) => `project-${i}`);
+    // Star topology (like the lane-star edges in the real ecosystem)
+    const edges = nodes.slice(1).map((_, i) => [0, i + 1]);
+    const subject = graphSubject({ nodes, edges });
+    const regulator = groundedRegulator(subject.criterion);
+
+    const cert = await reconcile(subject, {
+      regulator,
+      width: 8,         // blank/starved render — perceiver cannot distinguish 18 nodes
+      maxAmplify: 6,    // full amplification budget available (SOUND skipped for graphs)
+      t0: 0.0,
+    });
+
+    // KEY ASSERTION: even with maxAmplify=6, a starved render is UNVERIFIABLE.
+    // Under a criterion-tautological code this would incorrectly CERTIFY.
+    assert.equal(cert.verdict, "UNVERIFIABLE",
+      `Ecosystem-size perception-grounding: 18-node graph at width=8 must be UNVERIFIABLE. ` +
+      `If CERTIFIED, the verdict is not perception-grounded (criterion round-trip). ` +
+      `Recovered: ${JSON.stringify(cert.recovered)}, ` +
+      `Criterion: ${JSON.stringify(cert.criterion)}`,
+    );
+
+    // No SOUND step for graphs
+    const soundStep = cert.amplifications.find(a => a.label === "SOUND");
+    assert.equal(soundStep, undefined, "SOUND step must never appear in graph amplification chain");
+
+    // recheck must be consistent
+    assert.equal(cert.recheck(), true, "recheck() must be consistent with UNVERIFIABLE");
+  });
+});
+
 // ── Test 5: Well-resourced graph — genuine perceptual certification ────────────
 //
 // Tests that a graph CAN certify at a well-resourced width via genuine perception.
