@@ -37,6 +37,7 @@
  *   sonifyPolytope({ kind, n })  → Uint8Array[256]
  *   polytopeCounts({ kind, n })  → { V, E, r, D, fundamentalBin, harmonicSpacing, numPartials }
  *   sonifyPartials({ partials })  → Uint8Array[256]  (generic path)
+ *   waveSonify({ kind, n }, opts?) → Float64Array[n_fft/2]  (real waveform → DFT magnitude)
  */
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -168,3 +169,73 @@ export function sonify(structure, _opts) {
 
 // Re-export internals for tests / analysis
 export { polytopeCounts };
+
+// ── waveSonify ────────────────────────────────────────────────────────────────
+
+import { magnitudeSpectrum, hannWindow } from "./dft.mjs";
+
+/**
+ * waveSonify({ kind, n }, opts?) → Float64Array[n_fft/2]
+ *
+ * Synthesises a real time-domain waveform from the SAME invariant mapping as
+ * sonifyPolytope, then computes its DFT magnitude spectrum.
+ *
+ * The mapping is identical to sonifyPolytope:
+ *   fundamentalBin, harmonicSpacing, numPartials — from polytopeCounts()
+ *   amplitude of partial p: exp(-p * 0.35)       — same decay as sonifyPolytope
+ *   freq of partial p (Hz): (fundamentalBin + p * harmonicSpacing) * hzPerBin
+ *   where hzPerBin = (sampleRate/2) / (n_fft/2)
+ *
+ * N=512 aligned regime (default, from E10):
+ *   N = 2 * (n_fft/2) = n_fft = 512 samples
+ *   SR/N = (SR/2)/(n_fft/2) = 86.13 Hz/bin
+ *   → every partial completes an integer number of cycles in N samples
+ *   → zero spectral leakage → DFT bins land exactly on the correct frequencies
+ *
+ * @param {{ kind: string, n: number }} structure
+ * @param {{ sampleRate?: number, n_fft?: number, window?: string }} opts
+ *   sampleRate  Sample rate in Hz (default 44100)
+ *   n_fft       FFT size; output is n_fft/2 bins (default 512)
+ *               MUST be even; N = n_fft for zero-leakage bin alignment
+ *   window      'hann' to apply Hann window, or falsy for none (default 'hann')
+ *               A Hann window does not hurt bin-aligned signals and helps
+ *               any residual boundary effects.
+ *
+ * @returns {Float64Array} length n_fft/2 — raw DFT magnitudes (not byte-scaled).
+ */
+export function waveSonify({ kind, n }, {
+  sampleRate = 44100,
+  n_fft      = 512,
+  window     = "hann",
+} = {}) {
+  const { fundamentalBin, harmonicSpacing, numPartials } = polytopeCounts({ kind, n });
+
+  const outputBins = n_fft / 2;   // number of positive-frequency bins
+  const nyquist    = sampleRate / 2;
+  // hzPerBin matches the render-sound scale: (SR/2) / outputBins
+  const hzPerBin   = nyquist / outputBins;
+
+  // N = n_fft ensures integer cycles: freq_p * N / SR = fundamentalBin+p*harmonicSpacing (integer)
+  const N = n_fft;
+  const signal = new Float32Array(N);
+
+  for (let p = 0; p < numPartials; p++) {
+    const binIndex = fundamentalBin + p * harmonicSpacing;
+    const freq     = binIndex * hzPerBin;
+    if (freq >= nyquist) continue; // drop partials above Nyquist
+    const amp = Math.exp(-p * 0.35);
+    for (let i = 0; i < N; i++) {
+      signal[i] += amp * Math.sin(2 * Math.PI * freq * i / sampleRate);
+    }
+  }
+
+  // Apply Hann window if requested
+  const applyWindow = window === "hann";
+  if (applyWindow) {
+    const w = hannWindow(N);
+    for (let i = 0; i < N; i++) signal[i] *= w[i];
+  }
+
+  // DFT → positive-frequency magnitude bins
+  return magnitudeSpectrum(signal, outputBins);
+}
