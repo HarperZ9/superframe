@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viable Visualization</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #070a0d;
+      color: #c8d4e0;
+      font: 13px/1.5 ui-monospace, "Cascadia Code", "Fira Code", monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 15px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #8ba8c4;
+      margin-bottom: 20px;
+    }
+
+    #viz {
+      display: block;
+      width: 480px;
+      height: 480px;
+      border: 1px solid #1c2a38;
+      border-radius: 4px;
+      background: #090d11;
+    }
+
+    #controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    label { color: #6a8aaa; font-size: 12px; }
+
+    select {
+      background: #101820;
+      color: #c8d4e0;
+      border: 1px solid #1c2a38;
+      border-radius: 3px;
+      padding: 4px 8px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button {
+      background: #162030;
+      color: #8ba8c4;
+      border: 1px solid #2a3e54;
+      border-radius: 3px;
+      padding: 5px 14px;
+      font: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover { background: #1e3048; }
+
+    #panel {
+      width: 480px;
+      margin-top: 16px;
+      border: 1px solid #1c2a38;
+      border-radius: 4px;
+      padding: 14px 16px;
+      background: #0a0f15;
+    }
+
+    .row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 6px; }
+    .label { color: #4a6a8a; font-size: 11px; width: 110px; flex-shrink: 0; }
+    .value { color: #c8d4e0; }
+
+    #verdict { font-size: 15px; font-weight: bold; letter-spacing: 0.08em; }
+
+    #disclosure {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #1c2a38;
+      color: #556a7a;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <h1>Viable Visualization</h1>
+
+  <canvas id="viz" width="480" height="480"></canvas>
+
+  <div id="controls">
+    <label for="subject-select">Subject</label>
+    <select id="subject-select">
+      <option value="cube">Polytope — 4-cube</option>
+      <option value="simplex">Polytope — 4-simplex</option>
+      <option value="ecosystem">Ecosystem graph</option>
+    </select>
+    <button id="reconcile-btn">Reconcile</button>
+  </div>
+
+  <div id="panel">
+    <div class="row">
+      <span class="label">Verdict</span>
+      <span id="verdict" class="value" style="color:#556a7a">—</span>
+    </div>
+    <div class="row">
+      <span class="label">Amplifications</span>
+      <span id="amplifications" class="value" style="color:#556a7a">—</span>
+    </div>
+    <div id="disclosure">
+      Structural, bilateral, reconciled perception with honest UNVERIFIABLE on variety
+      deficit. The live-model arm requires a connected model; this is the smallest
+      viable instance, not the complete simulator.
+    </div>
+  </div>
+
+  <script type="module">
+    import { init } from "./app.mjs";
+    document.addEventListener("DOMContentLoaded", () => init());
+    // DOMContentLoaded may already have fired by the time this module executes;
+    // guard with readyState check.
+    if (document.readyState !== "loading") init();
+  </script>
+</body>
+</html>
