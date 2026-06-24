@@ -24,7 +24,7 @@
 import { renderScene } from "../render-nd/index.mjs";
 import { rasterize } from "../render-nd/backends/raster.mjs";
 import { nudgeToGeneric } from "../render-nd/core/genericity.mjs";
-import { sonifyPolytope, sonifyGraph } from "../render-sound/index.mjs";
+import { sonifyPolytope } from "../render-sound/index.mjs";
 import { assembleFullPerception, spectrumBands } from "../sense-core/index.mjs";
 import { embedGraph } from "./embed.mjs";
 import { makeCertificate } from "./certificate.mjs";
