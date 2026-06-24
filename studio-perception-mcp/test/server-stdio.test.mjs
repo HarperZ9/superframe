@@ -13,7 +13,14 @@ test("server.mjs stdio handshake: initialize + tools/list + resources/list", asy
   proc.stdin.write(JSON.stringify({ jsonrpc: "2.0", id: 1, method: "initialize", params: {} }) + "\n");
   proc.stdin.write(JSON.stringify({ jsonrpc: "2.0", id: 2, method: "tools/list" }) + "\n");
   proc.stdin.write(JSON.stringify({ jsonrpc: "2.0", id: 3, method: "resources/list" }) + "\n");
-  await new Promise((r) => setTimeout(r, 1000));
+  await new Promise((resolve, reject) => {
+    let attempts = 0;
+    const tick = setInterval(() => {
+      const have = [1, 2, 3].every((id) => responses.find((r) => r.id === id));
+      if (have) { clearInterval(tick); resolve(); }
+      else if (++attempts > 80) { clearInterval(tick); reject(new Error("timeout waiting for server responses")); } // ~4s at 50ms
+    }, 50);
+  });
   proc.kill();
   const init = responses.find((r) => r.id === 1);
   const tools = responses.find((r) => r.id === 2);

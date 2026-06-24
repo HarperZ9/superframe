@@ -18,7 +18,7 @@ export function createDispatcher({ serverInfo, instructions, tools = [], resourc
         return ok(id, { tools: tools.map(({ name, description, inputSchema }) => ({ name, description, inputSchema })) });
       case "tools/call": {
         const t = byName.get(params?.name);
-        if (!t) return err(id, -32602, `unknown tool: ${params?.name}`);
+        if (!t) return ok(id, { isError: true, content: [{ type: "text", text: `unknown tool: ${params?.name}` }] });
         try { return ok(id, await t.handler(params.arguments || {})); }
         catch (e) { return ok(id, { isError: true, content: [{ type: "text", text: String(e && e.message || e) }] }); }
       }

@@ -17,7 +17,7 @@ export function createLive({ sense, intervalMs = 500 }) {
       const r = perceive(frame), key = keyOf(r);
       if (key !== lastKey) { lastKey = key; last = r; for (const cb of subs) cb({ uri: URI }); }
     },
-    start() { if (!timer) timer = setInterval(() => this.tickOnce(), intervalMs); if (timer.unref) timer.unref(); },
+    start() { if (!timer) { timer = setInterval(() => this.tickOnce(), intervalMs); if (timer.unref) timer.unref(); } },
     stop() { if (timer) { clearInterval(timer); timer = null; } },
   };
 }

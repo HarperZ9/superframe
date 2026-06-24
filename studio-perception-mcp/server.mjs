@@ -13,7 +13,7 @@ const live = createLive({ sense });
 const renderBundle = makeRenderTool({ render: { ...render, rasterize }, sense, intake });
 const tools = makeTools({ sense, render: renderBundle, intake, live });
 const send = (obj) => process.stdout.write(JSON.stringify(obj) + "\n");
-const resources = { list: live.list.bind(live), read: live.read.bind(live), subscribe: (uri) => live.subscribe(uri, () => send({ jsonrpc: "2.0", method: "notifications/resources/updated", params: { uri } })) };
+const resources = { list: live.list, read: live.read, subscribe: (uri) => live.subscribe(uri, () => send({ jsonrpc: "2.0", method: "notifications/resources/updated", params: { uri } })) };
 const dispatch = createDispatcher({ serverInfo: { name: "studio-perception", version: "0.1.0" }, instructions: INSTRUCTIONS, tools, resources });
 
 let buf = "";
