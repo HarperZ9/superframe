@@ -135,9 +135,11 @@ describe("reconcile — deficient start converges via amplification", () => {
 // small width is a true variety deficit: the loop exhausts all amplifications
 // and must return UNVERIFIABLE.
 describe("reconcile — genuine deficit → UNVERIFIABLE fail-closed", () => {
-  it("graph subject at width=8 (no sound channel) → UNVERIFIABLE and recheck() consistent", async () => {
-    // Graph subjects have no sound channel. At width=8 (64 pixels) there is
-    // genuinely not enough variety to recover the criterion — UNVERIFIABLE.
+  it("graph subject at width=8 with maxAmplify=3 (before SOUND step) → UNVERIFIABLE and recheck() consistent", async () => {
+    // Graph subjects now have a sound channel (sonifyGraph, Task 6a).
+    // With maxAmplify=3, the SOUND step (step 4) is not reached.
+    // Without the acoustic oracle, pixel-only recovery at width=8 cannot
+    // satisfy the 30% vertex tolerance — UNVERIFIABLE.
     const subject = graphSubject({
       nodes: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
       edges: [
@@ -150,13 +152,13 @@ describe("reconcile — genuine deficit → UNVERIFIABLE fail-closed", () => {
 
     const cert = await reconcile(subject, {
       regulator,
-      width: 8,       // pathologically starved — genuine variety deficit
-      maxAmplify: 6,
+      width: 8,         // pathologically starved render
+      maxAmplify: 3,    // caps before SOUND (step 4): purely visual path
       t0: 0.0,
     });
 
     assert.equal(cert.verdict, "UNVERIFIABLE",
-      `Expected UNVERIFIABLE for graph at width=8. ` +
+      `Expected UNVERIFIABLE for graph at width=8 without SOUND step. ` +
       `Recovered: ${JSON.stringify(cert.recovered)}, ` +
       `Criterion: ${JSON.stringify(cert.criterion)}`,
     );
@@ -200,8 +202,13 @@ describe("reconcile — genuine deficit → UNVERIFIABLE fail-closed", () => {
     );
   });
 
-  it("large graph subject at width=8 → UNVERIFIABLE, fail-closed, recheck() consistent", async () => {
-    // Large graph (30 nodes) at tiny width — far beyond pixel resolution.
+  it("large graph subject at width=8 with maxAmplify=3 (before SOUND step) → UNVERIFIABLE, fail-closed", async () => {
+    // Large graph (30 nodes) at tiny width with amplification capped before
+    // the SOUND step (step 4). Without the acoustic oracle, pixel-only recovery
+    // at width=8 cannot reach the 30% vertex tolerance — UNVERIFIABLE.
+    // (With maxAmplify=6, the SOUND step fires and graph subjects can certify
+    // because sonifyGraph gives an exact acoustic oracle. This test verifies
+    // the fail-closed behavior of the purely-visual path.)
     const nodes = Array.from({ length: 30 }, (_, i) => i);
     const edges = nodes.slice(0, -1).map((_, i) => [i, i + 1]).concat([[0, 29]]);
     const subject = graphSubject({ nodes, edges });
@@ -210,12 +217,12 @@ describe("reconcile — genuine deficit → UNVERIFIABLE fail-closed", () => {
     const cert = await reconcile(subject, {
       regulator,
       width: 8,
-      maxAmplify: 6,
+      maxAmplify: 3,  // caps before SOUND (step 4): GENERIC + VIEW2 + VIEW3 only
       t0: 0.0,
     });
 
     assert.equal(cert.verdict, "UNVERIFIABLE",
-      `Expected UNVERIFIABLE for 30-node graph at width=8. ` +
+      `Expected UNVERIFIABLE for 30-node graph at width=8 without SOUND step. ` +
       `Recovered: ${JSON.stringify(cert.recovered)}, ` +
       `Criterion: ${JSON.stringify(cert.criterion)}`,
     );
