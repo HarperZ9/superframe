@@ -57,8 +57,10 @@ function verdictToBool(v) {
 export function groundedRegulator(criterion) {
   const disclosure =
     "Grounded (criterion-supervised) regulator — no model connected. " +
-    "Coherence weights derived from the criterion's class labels via coherenceWeights(). " +
-    "Adjudication requires unanimous agreement across all channel verdicts.";
+    "adjudicate() requires unanimous agreement across all channel verdicts (fail-closed). " +
+    "weigh() computes coherence weights via coherenceWeights() but is not called by the " +
+    "reconcile loop — channel fusion uses fixed perceptual weights in the reconcile layer. " +
+    "The regulator currently ADJUDICATES (unanimity gate) but does not yet WEIGHT channels.";
 
   /**
    * weigh(channels, labels) — per-channel coherence weights.
@@ -134,9 +136,11 @@ export async function modelRegulator({
     return {
       ...base,
       disclosure:
-        `Model regulator fallback active — grounded (criterion-supervised) regulator in use. ` +
+        `Model regulator fallback active — grounded regulator in use. ` +
         `Reason: ${reason}. ` +
-        `Coherence weights derived from coherenceWeights(); adjudication requires unanimous verdicts.`,
+        `adjudicate() requires unanimous verdicts (fail-closed). ` +
+        `weigh() available via coherenceWeights() but not called by the reconcile loop — ` +
+        `the regulator currently ADJUDICATES (unanimity gate) but does not yet WEIGHT channels.`,
     };
   }
 
@@ -196,9 +200,11 @@ export async function modelRegulator({
   // ── Connected — build the model-assisted regulator ────────────────────────
   const disclosure =
     `Model-assisted regulator connected (endpoint: ${endpoint}, model: ${model}). ` +
-    `weigh() uses coherenceWeights() grounded by model channel ranking; ` +
-    `adjudicate() confirms recovered invariants against the criterion via the model. ` +
-    `Fallback: criterion-supervised grounded regulator on any model call failure.`;
+    `adjudicate() requires unanimous agreement across all channel verdicts (fail-closed). ` +
+    `weigh() uses coherenceWeights() but is not called by the reconcile loop — channel ` +
+    `fusion uses fixed perceptual weights in the reconcile layer. ` +
+    `The regulator currently ADJUDICATES (unanimity gate) but does not yet WEIGHT channels. ` +
+    `Fallback: grounded regulator on any model call failure.`;
 
   /**
    * weigh(channels, labels) — model-assisted coherence weighting.

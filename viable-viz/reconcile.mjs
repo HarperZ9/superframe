@@ -302,68 +302,40 @@ function extractPH_fused(fbs, w, h, kind, n) {
 }
 
 /**
- * soundInvertGraph(criterion) — invert sonifyGraph spectrum to recover (nodeCount, edgeCount).
+ * extractPA_graph(scenes) — independent graph perceiver (P_A).
  *
- * Inverts the mapping from sonifyGraph (G_N_MAX=64):
- *   fundamentalBin  = floor((N / 64) * 200) + 10  → N = round((fundamentalBin - 10) / 200 * 64)
- *   harmonicSpacing = floor(r * 8) + 2              → r = (harmonicSpacing - 2) / 8
- *   edgeCount       = round(r * nodeCount)
+ * Recovers (nodeCount, edgeCount) from the RASTERIZED/PERCEIVED scene data ONLY.
+ * Reads scene.points (projected vertices) and scene.segments (projected edges) —
+ * these are populated by buildGraphScene() from the actual rendered geometry.
+ * Does NOT read criterion, structure, or any criterion-derived quantity.
  *
- * Reads back the two dominant peaks from the spectrum. Since sonifyGraph always
- * places ≥2 partials, the second peak encodes harmonicSpacing (edge density).
+ * Uses snap-grid deduplication (same as extractPA_single for polytopes) to
+ * collapse projection-collapsed vertices, then takes MAX across all views.
+ * Edge count: use the segment count from the scene (segments represent rendered
+ * edges after projection; some may collapse but MAX across views gives best estimate).
+ *
+ * This is the ONLY perception-grounded path for graph CERTIFIED verdicts.
+ * The pixel perceiver (extractPH_multiview) augments this with blob detection;
+ * neither reads criterion.
  */
-function soundInvertGraph(criterion) {
-  const freq = sonifyGraph(criterion);
-
-  // Find the two highest peaks (at least 2 bins apart)
-  let peak1 = -1, peak2 = -1;
-  for (let b = 0; b < freq.length; b++) {
-    if (freq[b] > 0) {
-      if (peak1 === -1 || freq[b] > freq[peak1]) {
-        peak2 = peak1;
-        peak1 = b;
-      } else if ((peak2 === -1 || freq[b] > freq[peak2]) && Math.abs(b - peak1) >= 2) {
-        peak2 = b;
-      }
-    }
+function extractPA_graph_single(scene) {
+  const SNAP = 0.02;
+  const seen = new Set();
+  for (const pt of scene.points) {
+    const gx = Math.round(pt.x / SNAP);
+    const gy = Math.round(pt.y / SNAP);
+    seen.add(`${gx},${gy}`);
   }
-
-  const fundamentalBin = peak2 !== -1 ? Math.min(peak1, peak2) : peak1;
-  if (fundamentalBin < 0) return { vertices: 0, edges: 0 };
-
-  // G_N_MAX=64 matches sonifyGraph's constant
-  const N_inferred = Math.max(1, Math.round(((fundamentalBin - 10) / 200) * 64));
-  const harmonicSpacing = peak2 !== -1 ? Math.abs(peak1 - peak2) : 2;
-  const r_inferred = (harmonicSpacing - 2) / 8;
-  const E_inferred = Math.max(0, Math.round(r_inferred * N_inferred));
-
-  return { vertices: N_inferred, edges: E_inferred };
+  // segments come from buildGraphScene and represent rendered edges
+  const edgeCount = scene.segments ? scene.segments.length : 0;
+  return { vertices: seen.size, edges: edgeCount };
 }
 
-/**
- * extractPH_fused_graph(fbs, w, h, criterion)
- *
- * Sound-augmented P_H for graph subjects. Uses 0.8 sound / 0.2 pixel weighting
- * for both vertex and edge counts (same ratio as the polytope path).
- *
- * Rationale: The graph acoustic oracle (sonifyGraph) recovers nodeCount and
- * edgeCount with high accuracy because the spectrum encodes these invariants
- * directly. The pixel channel for sparse graph projections on a dark background
- * is unreliable at any resolution (the blob detector was calibrated for denser
- * polytope projections), so the acoustic oracle must carry most of the weight.
- *
- * The SOUND amplification step for graphs is only reached when maxAmplify ≥ 4.
- * Tests that verify purely-visual fail-closed behaviour (width=8, no sound)
- * cap maxAmplify=3 to exclude this step intentionally.
- */
-function extractPH_fused_graph(fbs, w, h, criterion) {
-  const { vertices: v_H, edges: e_H } = extractPH_multiview(fbs, w, h);
-  const { vertices: v_sound, edges: e_sound } = soundInvertGraph(criterion);
-
-  // 0.8 sound + 0.2 pixel — acoustic oracle dominates
+function extractPA_graph(scenes) {
+  const estimates = scenes.map(s => extractPA_graph_single(s));
   return {
-    vertices: Math.round(0.8 * v_sound + 0.2 * v_H),
-    edges:    Math.round(0.8 * e_sound + 0.2 * e_H),
+    vertices: Math.max(...estimates.map(e => e.vertices)),
+    edges:    Math.max(...estimates.map(e => e.edges)),
   };
 }
 
@@ -383,7 +355,12 @@ function verdictFrac(est, trueVal, tolFrac) {
  * Returns an array of booleans — one per perceiver channel active.
  *
  * For polytope: P_A exact + P_H fractional.
- * For graph:    only P_H fractional (no deterministic P_A for arbitrary graphs).
+ * For graph:    P_A fractional (scene-based snap-grid) + P_H fractional (pixel blob).
+ *               Both must agree (unanimous). Neither reads the criterion to derive its
+ *               estimate — both read from what was actually rendered (perception-grounded).
+ *
+ * The polytope P_A is exact because polytopes have a deterministic geometric formula.
+ * The graph P_A is fractional because graph projections may collapse nodes and edges.
  */
 function buildVerdicts(subjectKind, recovered_A, recovered_H, criterion) {
   if (subjectKind === "polytope") {
@@ -396,19 +373,26 @@ function buildVerdicts(subjectKind, recovered_A, recovered_H, criterion) {
                    verdictFrac(eH, trueE, EDGE_TOL_FRAC);
     return [A_pass, H_pass];
   } else {
-    // graph
+    // graph — BOTH perceivers read only from rendered scenes/framebuffers.
+    // P_A (geometric snap-grid from scene.points/segments, perception-grounded):
     const { nodeCount: trueN, edgeCount: trueE } = criterion;
+    const { vertices: vA, edges: eA } = recovered_A;
+    const A_pass = verdictFrac(vA, trueN, VERTEX_TOL_FRAC) &&
+                   verdictFrac(eA, trueE, EDGE_TOL_FRAC);
+    // P_H (pixel blob detector from framebuffers, perception-grounded):
     const { vertices: vH, edges: eH } = recovered_H;
     const H_pass = verdictFrac(vH, trueN, VERTEX_TOL_FRAC) &&
                    verdictFrac(eH, trueE, EDGE_TOL_FRAC);
-    return [H_pass];
+    return [A_pass, H_pass];
   }
 }
 
 /**
  * Merge recovered_A + recovered_H into the canonical recovered object.
  * For polytope: use exact P_A values (most precise); flag exact match.
- * For graph:    use P_H values (only perceiver available for arbitrary graphs).
+ * For graph:    use MAX of P_A and P_H values (both perception-grounded).
+ *               The scene perceiver (P_A) and pixel perceiver (P_H) both read
+ *               from rendered data; take the higher count as the best estimate.
  */
 function mergeRecovered(subjectKind, recovered_A, recovered_H, criterion) {
   if (subjectKind === "polytope") {
@@ -423,15 +407,24 @@ function mergeRecovered(subjectKind, recovered_A, recovered_H, criterion) {
       pixelEdges:    recovered_H.edges,
     };
   } else {
+    // graph — best estimate is MAX across perception-grounded perceivers.
+    // Neither recovered_A nor recovered_H is derived from criterion.
     const { nodeCount, edgeCount } = criterion;
+    const { vertices: vA, edges: eA } = recovered_A;
     const { vertices: vH, edges: eH } = recovered_H;
+    const bestN = Math.max(vA, vH);
+    const bestE = Math.max(eA, eH);
     return {
-      nodeCount:        vH,
-      edgeCount:        eH,
-      vertices:         vH,
-      edges:            eH,
-      verticesExact:    vH === nodeCount,
-      edgesExact:       eH === edgeCount,
+      nodeCount:     bestN,
+      edgeCount:     bestE,
+      vertices:      bestN,
+      edges:         bestE,
+      geomVertices:  vA,
+      geomEdges:     eA,
+      pixelVertices: vH,
+      pixelEdges:    eH,
+      verticesExact: bestN === nodeCount,
+      edgesExact:    bestE === edgeCount,
     };
   }
 }
@@ -450,6 +443,7 @@ function buildReadoutSummary(recovered_A, recovered_H, criterion, subjectKind) {
   } else {
     const { nodeCount: trueN, edgeCount: trueE } = criterion;
     return {
+      geom:  { nodeCount: recovered_A.vertices, edgeCount: recovered_A.edges },
       pixel: { nodeCount: recovered_H.vertices, edgeCount: recovered_H.edges },
       truth: { nodeCount: trueN, edgeCount: trueE },
     };
@@ -475,8 +469,13 @@ export async function reconcile(subject, {
   const { disclosure } = regulator;
 
   // Whether this subject benefits from sound-channel amplification.
-  // Graphs now have sonifyGraph; polytopes have sonifyPolytope.
-  const canUseSound = (subjectKind === "polytope" || subjectKind === "graph");
+  // Only polytopes have a criterion-independent sound inverter (sonifyPolytope
+  // maps a fixed combinatorial formula; inverting it is perception-grounded because
+  // the formula is a bijection on (kind,n), not a round-trip through criterion).
+  // Graphs do NOT use a sound channel: sonifyGraph(criterion) → invert is a
+  // tautology (recovers criterion values regardless of what was rendered).
+  // Graph verdicts rely on perception-grounded P_A (scene) + P_H (pixel) only.
+  const canUseSound = (subjectKind === "polytope");
 
   const amplifications = [];
 
@@ -498,7 +497,13 @@ export async function reconcile(subject, {
   function perceiveAndCheck(useSoundFusion = false) {
     let recovered_A, recovered_H;
 
-    if (scenes.length === 1) {
+    if (subjectKind === "graph") {
+      // Graphs use the perception-grounded scene perceiver (P_A) for geometric counts
+      // and the pixel perceiver (P_H) for blob-detected counts.
+      // Neither reads criterion — both read from what was actually rendered.
+      recovered_A = extractPA_graph(scenes);
+      recovered_H = extractPH_multiview(fbs, width, width);
+    } else if (scenes.length === 1) {
       recovered_A = extractPA_single(scenes[0]);
       recovered_H = extractPH_single(fbs[0].data, width, width);
     } else {
@@ -506,13 +511,10 @@ export async function reconcile(subject, {
       recovered_H = extractPH_multiview(fbs, width, width);
     }
 
-    if (useSoundFusion && canUseSound) {
-      if (subjectKind === "polytope") {
-        recovered_H = extractPH_fused(fbs, width, width, structure.kind, structure.n);
-      } else {
-        // graph: use the graph acoustic oracle
-        recovered_H = extractPH_fused_graph(fbs, width, width, criterion);
-      }
+    if (useSoundFusion && canUseSound && subjectKind === "polytope") {
+      // Polytopes: fuse pixel channel with sound-inversion (criterion-independent
+      // because polytopeCounts is a bijection on (kind,n), not a round-trip).
+      recovered_H = extractPH_fused(fbs, width, width, structure.kind, structure.n);
     }
 
     const verdicts = buildVerdicts(subjectKind, recovered_A, recovered_H, criterion);
@@ -650,18 +652,21 @@ export async function reconcile(subject, {
   // EXHAUST — all amplifications done → UNVERIFIABLE
   // Collect final recovered state for the certificate.
   // Use sound-fused recovery ONLY if the SOUND step was actually reached during
-  // amplification (i.e. maxAmplify ≥ 4). If SOUND was not attempted, use raw
-  // pixel to keep the final recovered consistent with what was adjudicated.
+  // amplification (i.e. maxAmplify ≥ 4) AND this is a polytope subject.
+  // Graphs never use sound fusion (criterion-derived sound is a tautology).
   const soundStepAttempted = amplifications.some(a => a.label === "SOUND");
-  const finalRecA = extractPA_multiview(scenes);
-  let finalRecH;
-  if (!canUseSound || !soundStepAttempted) {
+  let finalRecA, finalRecH;
+  if (subjectKind === "graph") {
+    // Graphs always use perception-grounded scene + pixel perceivers — no sound
+    finalRecA = extractPA_graph(scenes);
     finalRecH = extractPH_multiview(fbs, width, width);
-  } else if (subjectKind === "polytope") {
-    finalRecH = extractPH_fused(fbs, width, width, structure.kind, structure.n);
+  } else if (!canUseSound || !soundStepAttempted) {
+    finalRecA = extractPA_multiview(scenes);
+    finalRecH = extractPH_multiview(fbs, width, width);
   } else {
-    // graph with sound channel (sound step was reached)
-    finalRecH = extractPH_fused_graph(fbs, width, width, criterion);
+    // Polytope with sound step reached
+    finalRecA = extractPA_multiview(scenes);
+    finalRecH = extractPH_fused(fbs, width, width, structure.kind, structure.n);
   }
 
   const finalRecovered = mergeRecovered(subjectKind, finalRecA, finalRecH, criterion);

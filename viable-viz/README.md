@@ -18,7 +18,7 @@ node viable-viz/flagship.mjs --subject polytope:cube:4
 
 # Polytope subject — other kinds and dimensions
 node viable-viz/flagship.mjs --subject polytope:simplex:5
-node viable-viz/flagship.mjs --subject polytope:cross:4
+node viable-viz/flagship.mjs --subject polytope:orthoplex:4
 ```
 
 Options:
@@ -105,6 +105,11 @@ viable-viz/
 ```
 
 The amplification order follows E11 (proven): generic view → multi-view (2nd, 3rd
-orthogonal projections) → sound channel (polytopes only). Fail-closed: CERTIFIED is
-emitted only when the criterion-invariant is recovered and verified. UNVERIFIABLE is
-an honest outcome, not an error.
+orthogonal projections) → sound channel (polytopes only; graph sound from criterion
+is a tautology and is excluded). Fail-closed: CERTIFIED is emitted only when the
+criterion-invariant is recovered from the perceived scene and verified by both
+perceivers. UNVERIFIABLE is an honest outcome, not an error.
+
+Graph subjects are perception-grounded: both the geometric perceiver (P_A, reading
+scene.points/segments) and the pixel perceiver (P_H, blob detection on framebuffers)
+must agree within tolerance. Neither reads the criterion during adjudication.

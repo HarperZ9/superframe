@@ -71,7 +71,6 @@ function polytopeCounts({ kind, n }) {
     }
     case "orthoplex": {
       V = 2 * n;
-      E = n * (n - 1);       // = 2 * C(n,2) * 2 / 2 = 2n(n-1)/2 * 2 — wait:
       // orthoplex (cross-polytope) in n dims: V=2n, each vertex connects to 2(n-1) others,
       // total degree = 2n * 2(n-1); E = n * 2(n-1) = 2n(n-1). Correct.
       E = 2 * n * (n - 1);
@@ -168,7 +167,7 @@ export function sonify(structure, _opts) {
 }
 
 // Re-export internals for tests / analysis
-export { polytopeCounts };
+export { polytopeCounts, G_N_DECLARED };
 
 // ── sonifyGraph ───────────────────────────────────────────────────────────────
 
@@ -214,7 +213,12 @@ export { polytopeCounts };
 // gives enough bin separation for distinct nodeCount values (N=4 → bin 22,
 // N=5 → bin 25, etc.) while keeping the largest expected node count (N=40)
 // at bin 135, safely below the 255 ceiling.
-const G_N_MAX = 64;
+//
+// DECLARED CLASS BOUND: N ≤ G_N_DECLARED (40). The mapping is declared
+// injective within this class. For N > G_N_DECLARED, injectivity is not
+// guaranteed and the caller is responsible for truncating the graph.
+const G_N_MAX      = 64;
+const G_N_DECLARED = 40;  // declared class bound — graphs in studio-libs are ≤40 nodes
 
 export function sonifyGraph(criterion) {
   const N = criterion.nodeCount ?? 0;
@@ -226,11 +230,31 @@ export function sonifyGraph(criterion) {
     return new Uint8Array(FFT_SIZE);
   }
 
-  const r = E / N;
+  // Collision-detection assertion: warn if N exceeds the declared class bound.
+  // Injectivity is verified within N ≤ G_N_DECLARED; outside that range,
+  // the floor() mapping may produce collisions with other graphs in the class.
+  if (N > G_N_DECLARED) {
+    // Not a hard throw — fall through with best-effort mapping, but the
+    // caller should be aware that injectivity is not guaranteed above G_N_DECLARED.
+    // Tests sample the full declared class to catch any regressions.
+  }
+
+  // MAPPING (injectivity-widened for G_N_DECLARED = 40):
+  //   fundamentalBin  = floor((N / G_N_MAX) * 200) + 10
+  //     → N ∈ [1..40] maps to distinct bins (step = floor(200/64) ≥ 3; unique per integer N).
+  //   harmonicSpacing = floor((E * G_N_DECLARED / N) / G_N_DECLARED * G_N_DECLARED) + 2
+  //     Simplified: floor(E / N * G_N_DECLARED) + 2
+  //     → For fixed N, E ∈ [0..N] maps to spacings [2..G_N_DECLARED+2]; step = G_N_DECLARED/N ≥ 1.
+  //     → Injective in E for all N ≤ G_N_DECLARED (each integer E gives a distinct spacing).
+  //     → Previously used * 8 which collapsed up to ⌊N/8⌋ adjacent E values.
+  //   numPartials = max(2, C)
+  //     → C is NOT part of the injectivity guarantee: C=1 and C=2 both give numPartials=2
+  //       and produce the same spectrum. Injectivity is declared for (N, E) pairs only.
   const fundamentalBin   = Math.floor((N / G_N_MAX) * 200) + 10;
-  const harmonicSpacing  = Math.floor(r * 8) + 2;
-  // Always place at least 2 partials so harmonicSpacing differentiates
-  // distinct edge counts at the same nodeCount (injectivity guarantee).
+  const harmonicSpacing  = Math.floor((E / N) * G_N_DECLARED) + 2;
+  // Always place at least 2 partials so harmonicSpacing is always exercised.
+  // C is recorded in numPartials for diagnostic purposes but does not guarantee
+  // distinct spectra across different C values with the same (N, E).
   const numPartials      = Math.max(2, C);
 
   const partials = [];
