@@ -39,8 +39,8 @@ export function renderScene(scene = {}) {
 
   // Normalize xy to [-1,1] space
   const xmid = (xmin + xmax) / 2, ymid = (ymin + ymax) / 2;
-  const xrad = (xmax - xmin) / 2 || 1, yrad = (ymax - ymin) / 2 || 1;
-  const rad = Math.max(xrad, yrad) || 1;
+  const xrad = (xmax - xmin) / 2 || 1;
+  const rad = Math.max(xrad, (ymax - ymin) / 2 || 1) || 1;
 
   const points = proj.map((p) => {
     const c = cue(p.depth);

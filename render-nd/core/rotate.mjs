@@ -30,6 +30,7 @@ export function spinningPlanes(n, t, spec = "all") {
     if (n < 4) throw new RangeError("isoclinic needs n>=4");
     return [{ a: 0, b: 1, angle: t }, { a: 2, b: 3, angle: t }];
   }
+  if (spec !== "all") throw new RangeError(`unknown rotation spec: ${spec}`);
   // "all"
   return allPlanes(n).map((p, k) => ({ a: p.a, b: p.b, angle: t * (0.30 + 0.07 * k) }));
 }
