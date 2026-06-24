@@ -29,3 +29,8 @@ test("unknown method → JSON-RPC error -32601", async () => {
   const r = await d({ jsonrpc: "2.0", id: 5, method: "nope" });
   assert.equal(r.error.code, -32601);
 });
+test("tools/call unknown tool → isError result (not a protocol error)", async () => {
+  const r = await d({ jsonrpc: "2.0", id: 9, method: "tools/call", params: { name: "nope" } });
+  assert.equal(r.result.isError, true);
+  assert.ok(/unknown tool/i.test(r.result.content[0].text));
+});

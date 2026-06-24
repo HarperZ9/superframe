@@ -7,6 +7,21 @@ import { join } from "node:path";
 const u32 = (b, o) => b[o] | (b[o+1]<<8) | (b[o+2]<<16) | (b[o+3]<<24);
 const i32 = (b, o) => { const v = u32(b, o) >>> 0; return v > 0x7fffffff ? v - 0x100000000 : v; };
 
+// PowerShell single-quote escape: ' → ''
+const psq = (p) => String(p).replace(/'/g, "''");
+
+// Validate and convert to integer; throws on non-finite values (prevents injection via numerics).
+const toInt = (v, def = 0) => {
+  if (v === undefined || v === null) return def;
+  const n = Math.trunc(Number(v));
+  if (!Number.isFinite(n)) throw new Error(`invalid screen region value: ${v}`);
+  return n;
+};
+
+// Stable temp dir — created once lazily, reused across calls (no accumulation).
+let TMPDIR;
+function tmpDir() { if (!TMPDIR) TMPDIR = mkdtempSync(join(tmpdir(), "spmcp-")); return TMPDIR; }
+
 export function parseBMP(buf) {
   if (buf[0] !== 0x42 || buf[1] !== 0x4d) throw new Error("not a BMP (bad magic)");
   const pixelOffset = u32(buf, 10), dibSize = u32(buf, 14);
@@ -14,6 +29,8 @@ export function parseBMP(buf) {
   const bpp = buf[28] | (buf[29] << 8);
   const topDown = height < 0; height = Math.abs(height);
   if (bpp !== 24 && bpp !== 32) throw new Error(`unsupported bpp ${bpp}`);
+  const compression = u32(buf, 30);
+  if (compression !== 0) throw new Error(`unsupported BMP compression: ${compression}`);
   const bytesPP = bpp / 8, rowSize = Math.floor((bpp * width + 31) / 32) * 4;
   const data = new Uint8ClampedArray(width * height * 4);
   for (let y = 0; y < height; y++) {
@@ -51,18 +68,20 @@ function runPowerShell(script) {
 }
 export async function toRGBA(input) {
   if (process.platform !== "win32") throw new Error(`raster intake not implemented on ${process.platform} (Windows-first; mac/linux is a follow-up)`);
-  const dir = mkdtempSync(join(tmpdir(), "spmcp-")), out = join(dir, "frame.bmp");
+  const out = join(tmpDir(), "frame.bmp");
   if (input.base64) {
-    const src = join(dir, "in.img"); writeFileSync(src, Buffer.from(input.base64, "base64"));
-    runPowerShell(`Add-Type -A System.Drawing; $b=[System.Drawing.Image]::FromFile('${src}'); $b.Save('${out}',[System.Drawing.Imaging.ImageFormat]::Bmp)`);
+    const src = join(tmpDir(), "in.img"); writeFileSync(src, Buffer.from(input.base64, "base64"));
+    runPowerShell(`Add-Type -A System.Drawing; $b=[System.Drawing.Image]::FromFile('${psq(src)}'); $b.Save('${psq(out)}',[System.Drawing.Imaging.ImageFormat]::Bmp)`);
   } else if (input.path) {
-    runPowerShell(`Add-Type -A System.Drawing; $b=[System.Drawing.Image]::FromFile('${input.path.replace(/'/g, "''")}'); $b.Save('${out}',[System.Drawing.Imaging.ImageFormat]::Bmp)`);
+    runPowerShell(`Add-Type -A System.Drawing; $b=[System.Drawing.Image]::FromFile('${psq(input.path)}'); $b.Save('${psq(out)}',[System.Drawing.Imaging.ImageFormat]::Bmp)`);
   } else if (input.screen) {
-    const r = input.screen, region = r && r.w ? `${r.x||0},${r.y||0},${r.w},${r.h}` : null;
+    const r = input.screen;
+    const rw = toInt(r.w), rh = toInt(r.h), rx = toInt(r.x, 0), ry = toInt(r.y, 0);
+    const region = r && r.w ? `${rx},${ry},${rw},${rh}` : null;
     const grab = region
-      ? `$bmp=New-Object System.Drawing.Bitmap(${r.w},${r.h}); $g=[System.Drawing.Graphics]::FromImage($bmp); $g.CopyFromScreen(${r.x||0},${r.y||0},0,0,(New-Object System.Drawing.Size(${r.w},${r.h})))`
+      ? `$bmp=New-Object System.Drawing.Bitmap(${rw},${rh}); $g=[System.Drawing.Graphics]::FromImage($bmp); $g.CopyFromScreen(${rx},${ry},0,0,(New-Object System.Drawing.Size(${rw},${rh})))`
       : `$bnd=[System.Windows.Forms.Screen]::PrimaryScreen.Bounds; $bmp=New-Object System.Drawing.Bitmap($bnd.Width,$bnd.Height); $g=[System.Drawing.Graphics]::FromImage($bmp); $g.CopyFromScreen($bnd.X,$bnd.Y,0,0,$bnd.Size)`;
-    runPowerShell(`Add-Type -A System.Drawing; Add-Type -A System.Windows.Forms; ${grab}; $bmp.Save('${out}',[System.Drawing.Imaging.ImageFormat]::Bmp)`);
+    runPowerShell(`Add-Type -A System.Drawing; Add-Type -A System.Windows.Forms; ${grab}; $bmp.Save('${psq(out)}',[System.Drawing.Imaging.ImageFormat]::Bmp)`);
   } else throw new Error("toRGBA: input must be {path} | {base64} | {screen}");
   return parseBMP(readFileSync(out));
 }
