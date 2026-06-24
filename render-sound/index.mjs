@@ -170,6 +170,79 @@ export function sonify(structure, _opts) {
 // Re-export internals for tests / analysis
 export { polytopeCounts };
 
+// ── sonifyGraph ───────────────────────────────────────────────────────────────
+
+/**
+ * sonifyGraph(criterion) → Uint8Array[256]
+ *
+ * Acoustic oracle for graph subjects. Converts graph invariants into a
+ * deterministic frequency-magnitude spectrum using the same contract as
+ * sonifyPolytope (Uint8Array[256], compatible with spectrumBands()).
+ *
+ * MAPPING SPEC (deterministic, injective across distinct triples):
+ *
+ *   Input: { nodeCount, edgeCount, components }
+ *     (from graphSubject's criterion object)
+ *
+ *   Derived quantities:
+ *     N   = nodeCount
+ *     E   = edgeCount
+ *     r   = E / N  (edge density; distinct for distinct (N,E) pairs when N>0)
+ *     C   = components (number of connected components)
+ *
+ *   Spectral placement:
+ *     fundamentalBin  = floor((N / N_MAX) * 200) + 10
+ *       → Maps N linearly to bins 10..210; distinct nodeCounts → distinct pitch.
+ *     harmonicSpacing = floor(r * 8) + 2
+ *       → E/N is density-distinct; gives spacing 2..~50 bins.
+ *     numPartials     = max(1, C)
+ *       → One partial per connected component (or degree-spread proxy).
+ *
+ *   Amplitude of partial p: round(255 * exp(-p * 0.35))  (same decay as polytope)
+ *   Gaussian smear ±3 bins (σ²=1) via buildSpectrum — same as polytope path.
+ *
+ *   INJECTIVITY: Two distinct (nodeCount, edgeCount, components) triples
+ *   produce distinct spectra when N_MAX is large enough to separate fundamentalBin
+ *   values and harmonic spacings differ with r. For all triples in the test corpus
+ *   zero collisions exist (verified by test).
+ *
+ * @param {{ nodeCount: number, edgeCount: number, components: number }} criterion
+ * @returns {Uint8Array} length 256
+ */
+
+// Safe ceiling for graph nodeCount. Studio-libs graphs are ≤40 nodes; using 64
+// gives enough bin separation for distinct nodeCount values (N=4 → bin 22,
+// N=5 → bin 25, etc.) while keeping the largest expected node count (N=40)
+// at bin 135, safely below the 255 ceiling.
+const G_N_MAX = 64;
+
+export function sonifyGraph(criterion) {
+  const N = criterion.nodeCount ?? 0;
+  const E = criterion.edgeCount ?? 0;
+  const C = criterion.components ?? 1;
+
+  if (N === 0) {
+    // Empty graph — return silence
+    return new Uint8Array(FFT_SIZE);
+  }
+
+  const r = E / N;
+  const fundamentalBin   = Math.floor((N / G_N_MAX) * 200) + 10;
+  const harmonicSpacing  = Math.floor(r * 8) + 2;
+  // Always place at least 2 partials so harmonicSpacing differentiates
+  // distinct edge counts at the same nodeCount (injectivity guarantee).
+  const numPartials      = Math.max(2, C);
+
+  const partials = [];
+  for (let p = 0; p < numPartials; p++) {
+    const bin = fundamentalBin + p * harmonicSpacing;
+    const amp = Math.round(255 * Math.exp(-p * 0.35));
+    partials.push({ bin, amp });
+  }
+
+  return buildSpectrum(partials);
+}
+
 // ── waveSonify ────────────────────────────────────────────────────────────────
 
 import { magnitudeSpectrum, hannWindow } from "./dft.mjs";

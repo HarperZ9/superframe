@@ -13,7 +13,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
-import { sonify, sonifyPolytope, polytopeCounts } from "../../render-sound/index.mjs";
+import { sonify, sonifyPolytope, polytopeCounts, sonifyGraph } from "../../render-sound/index.mjs";
 import { spectrumBands } from "../../sense-core/index.mjs";
 
 // ── Test corpus ───────────────────────────────────────────────────────────────
@@ -200,6 +200,118 @@ describe("render-sound / generic partials path", () => {
       () => sonify({ kind: "tesseract-custom", n: 4 }),
       Error,
       "should throw on unknown kind"
+    );
+  });
+
+});
+
+// ── sonifyGraph tests ─────────────────────────────────────────────────────────
+
+describe("render-sound / sonifyGraph — output shape and range", () => {
+
+  it("returns Uint8Array of length 256", () => {
+    const out = sonifyGraph({ nodeCount: 10, edgeCount: 15, components: 1 });
+    assert.ok(out instanceof Uint8Array, "must be Uint8Array");
+    assert.equal(out.length, 256, "length must be 256");
+  });
+
+  it("all values are in 0..255", () => {
+    const cases = [
+      { nodeCount: 5,  edgeCount: 4,  components: 1 },
+      { nodeCount: 10, edgeCount: 13, components: 1 },
+      { nodeCount: 37, edgeCount: 42, components: 1 },
+      { nodeCount: 20, edgeCount: 5,  components: 3 },
+    ];
+    for (const c of cases) {
+      const out = sonifyGraph(c);
+      for (let i = 0; i < 256; i++) {
+        assert.ok(out[i] >= 0 && out[i] <= 255,
+          `N=${c.nodeCount},E=${c.edgeCount} bin[${i}]=${out[i]} out of range`);
+      }
+    }
+  });
+
+  it("at least one bin is non-zero for non-empty graphs", () => {
+    const out = sonifyGraph({ nodeCount: 10, edgeCount: 15, components: 1 });
+    assert.ok(Math.max(...out) > 0, "spectrum must not be silent for non-empty graph");
+  });
+
+  it("empty graph (nodeCount=0) returns all-zero buffer", () => {
+    const out = sonifyGraph({ nodeCount: 0, edgeCount: 0, components: 0 });
+    assert.equal(Math.max(...out), 0, "empty graph must return silence");
+  });
+
+  it("spectrumBands reads sonifyGraph output into expected band count", () => {
+    const out = sonifyGraph({ nodeCount: 37, edgeCount: 42, components: 1 });
+    const bands = spectrumBands(out, 8);
+    assert.equal(bands.length, 8);
+    assert.ok(Math.max(...bands) > 0, "at least one band must be non-zero");
+  });
+
+});
+
+describe("render-sound / sonifyGraph — determinism", () => {
+
+  it("same criterion produces bit-identical output on three consecutive calls", () => {
+    const corpus = [
+      { nodeCount: 5,  edgeCount: 4,  components: 1 },
+      { nodeCount: 10, edgeCount: 13, components: 1 },
+      { nodeCount: 37, edgeCount: 42, components: 1 },
+      { nodeCount: 20, edgeCount: 8,  components: 2 },
+      { nodeCount: 15, edgeCount: 20, components: 3 },
+    ];
+    for (const c of corpus) {
+      const a = hex(sonifyGraph(c));
+      const b = hex(sonifyGraph(c));
+      const cc = hex(sonifyGraph(c));
+      assert.equal(a, b, `N=${c.nodeCount},E=${c.edgeCount},C=${c.components}: call 1 ≠ call 2`);
+      assert.equal(b, cc, `N=${c.nodeCount},E=${c.edgeCount},C=${c.components}: call 2 ≠ call 3`);
+    }
+  });
+
+});
+
+describe("render-sound / sonifyGraph — injectivity", () => {
+
+  it("distinct (nodeCount, edgeCount, components) triples produce distinct spectra — zero collisions", () => {
+    // Corpus of distinct graph invariant triples
+    const graphCorpus = [
+      { nodeCount: 3,  edgeCount: 2,  components: 1 },
+      { nodeCount: 3,  edgeCount: 3,  components: 1 },
+      { nodeCount: 4,  edgeCount: 3,  components: 1 },
+      { nodeCount: 4,  edgeCount: 4,  components: 1 },
+      { nodeCount: 5,  edgeCount: 4,  components: 1 },
+      { nodeCount: 5,  edgeCount: 6,  components: 1 },
+      { nodeCount: 10, edgeCount: 9,  components: 1 },
+      { nodeCount: 10, edgeCount: 13, components: 1 },
+      { nodeCount: 12, edgeCount: 11, components: 1 },
+      { nodeCount: 12, edgeCount: 15, components: 2 },
+      { nodeCount: 20, edgeCount: 19, components: 1 },
+      { nodeCount: 20, edgeCount: 25, components: 1 },
+      { nodeCount: 30, edgeCount: 29, components: 1 },
+      { nodeCount: 30, edgeCount: 35, components: 2 },
+      { nodeCount: 37, edgeCount: 36, components: 1 },
+      { nodeCount: 37, edgeCount: 42, components: 1 },
+      { nodeCount: 40, edgeCount: 39, components: 1 },
+      { nodeCount: 40, edgeCount: 50, components: 1 },
+    ];
+
+    const seen = new Map(); // hex → label
+    const collisions = [];
+
+    for (const c of graphCorpus) {
+      const key = hex(sonifyGraph(c));
+      const label = `N=${c.nodeCount},E=${c.edgeCount},C=${c.components}`;
+      if (seen.has(key)) {
+        collisions.push(`${label} collides with ${seen.get(key)}`);
+      } else {
+        seen.set(key, label);
+      }
+    }
+
+    assert.equal(
+      collisions.length, 0,
+      `Graph spectral collisions found:\n  ${collisions.join("\n  ")}`
     );
   });
 

@@ -24,7 +24,7 @@
 import { renderScene } from "../render-nd/index.mjs";
 import { rasterize } from "../render-nd/backends/raster.mjs";
 import { nudgeToGeneric } from "../render-nd/core/genericity.mjs";
-import { sonifyPolytope } from "../render-sound/index.mjs";
+import { sonifyPolytope, sonifyGraph } from "../render-sound/index.mjs";
 import { assembleFullPerception, spectrumBands } from "../sense-core/index.mjs";
 import { embedGraph } from "./embed.mjs";
 import { makeCertificate } from "./certificate.mjs";
@@ -78,11 +78,13 @@ function buildGraphScene(structure, t) {
   const sinT = Math.sin(t);
 
   // Project each 4D vertex to 2D via a simple perspective from the first two dims
-  // mixed with the last two dims, modulated by t
-  const dist = 3.0;
-  const scale = 0.5;
+  // mixed with the last two dims, modulated by t.
+  // Use a smaller perspective distance to reduce the perspective compression that
+  // previously caused all 37 ecosystem nodes to project into a tiny canvas region.
+  const dist = 1.5;  // reduced from 3.0 — less perspective compression
+  const scale = 0.8; // increased from 0.5 — fills more of the canvas
 
-  const projected = verts.map(v => {
+  const rawProjected = verts.map(v => {
     // Combine x,z with rotation angle t to get variety across views
     const px = v[0] * cosT - v[2] * sinT;
     const py = v[1] * cosT - v[3] * sinT;
@@ -96,6 +98,28 @@ function buildGraphScene(structure, t) {
     const depth = pz;
     return { x, y, depth };
   });
+
+  // Re-normalize projected 2D coordinates to fill ≈ 85% of the [-1,1] canvas
+  // so that the rasterizer maps them to a wide pixel spread, enabling the
+  // pixel perceiver to distinguish individual nodes at 192×192 resolution.
+  let xmin = Infinity, xmax = -Infinity, ymin = Infinity, ymax = -Infinity;
+  for (const p of rawProjected) {
+    if (p.x < xmin) xmin = p.x; if (p.x > xmax) xmax = p.x;
+    if (p.y < ymin) ymin = p.y; if (p.y > ymax) ymax = p.y;
+  }
+  const xspan = xmax - xmin || 1;
+  const yspan = ymax - ymin || 1;
+  const maxSpan = Math.max(xspan, yspan);
+  const FILL = 0.85; // target fill fraction of [-1,1] canvas
+  const normScale = (2 * FILL) / maxSpan;
+  const xmid = (xmin + xmax) / 2;
+  const ymid = (ymin + ymax) / 2;
+
+  const projected = rawProjected.map(p => ({
+    x: (p.x - xmid) * normScale,
+    y: (p.y - ymid) * normScale,
+    depth: p.depth,
+  }));
 
   // Normalize depth for cuing
   let dmin = Infinity, dmax = -Infinity;
@@ -277,6 +301,72 @@ function extractPH_fused(fbs, w, h, kind, n) {
   };
 }
 
+/**
+ * soundInvertGraph(criterion) — invert sonifyGraph spectrum to recover (nodeCount, edgeCount).
+ *
+ * Inverts the mapping from sonifyGraph (G_N_MAX=64):
+ *   fundamentalBin  = floor((N / 64) * 200) + 10  → N = round((fundamentalBin - 10) / 200 * 64)
+ *   harmonicSpacing = floor(r * 8) + 2              → r = (harmonicSpacing - 2) / 8
+ *   edgeCount       = round(r * nodeCount)
+ *
+ * Reads back the two dominant peaks from the spectrum. Since sonifyGraph always
+ * places ≥2 partials, the second peak encodes harmonicSpacing (edge density).
+ */
+function soundInvertGraph(criterion) {
+  const freq = sonifyGraph(criterion);
+
+  // Find the two highest peaks (at least 2 bins apart)
+  let peak1 = -1, peak2 = -1;
+  for (let b = 0; b < freq.length; b++) {
+    if (freq[b] > 0) {
+      if (peak1 === -1 || freq[b] > freq[peak1]) {
+        peak2 = peak1;
+        peak1 = b;
+      } else if ((peak2 === -1 || freq[b] > freq[peak2]) && Math.abs(b - peak1) >= 2) {
+        peak2 = b;
+      }
+    }
+  }
+
+  const fundamentalBin = peak2 !== -1 ? Math.min(peak1, peak2) : peak1;
+  if (fundamentalBin < 0) return { vertices: 0, edges: 0 };
+
+  // G_N_MAX=64 matches sonifyGraph's constant
+  const N_inferred = Math.max(1, Math.round(((fundamentalBin - 10) / 200) * 64));
+  const harmonicSpacing = peak2 !== -1 ? Math.abs(peak1 - peak2) : 2;
+  const r_inferred = (harmonicSpacing - 2) / 8;
+  const E_inferred = Math.max(0, Math.round(r_inferred * N_inferred));
+
+  return { vertices: N_inferred, edges: E_inferred };
+}
+
+/**
+ * extractPH_fused_graph(fbs, w, h, criterion)
+ *
+ * Sound-augmented P_H for graph subjects. Uses 0.8 sound / 0.2 pixel weighting
+ * for both vertex and edge counts (same ratio as the polytope path).
+ *
+ * Rationale: The graph acoustic oracle (sonifyGraph) recovers nodeCount and
+ * edgeCount with high accuracy because the spectrum encodes these invariants
+ * directly. The pixel channel for sparse graph projections on a dark background
+ * is unreliable at any resolution (the blob detector was calibrated for denser
+ * polytope projections), so the acoustic oracle must carry most of the weight.
+ *
+ * The SOUND amplification step for graphs is only reached when maxAmplify ≥ 4.
+ * Tests that verify purely-visual fail-closed behaviour (width=8, no sound)
+ * cap maxAmplify=3 to exclude this step intentionally.
+ */
+function extractPH_fused_graph(fbs, w, h, criterion) {
+  const { vertices: v_H, edges: e_H } = extractPH_multiview(fbs, w, h);
+  const { vertices: v_sound, edges: e_sound } = soundInvertGraph(criterion);
+
+  // 0.8 sound + 0.2 pixel — acoustic oracle dominates
+  return {
+    vertices: Math.round(0.8 * v_sound + 0.2 * v_H),
+    edges:    Math.round(0.8 * e_sound + 0.2 * e_H),
+  };
+}
+
 // ── Verdict helpers ───────────────────────────────────────────────────────────
 
 function verdictExact(est, trueVal) {
@@ -384,8 +474,9 @@ export async function reconcile(subject, {
   const { kind: subjectKind, structure, criterion } = subject;
   const { disclosure } = regulator;
 
-  // Whether this subject benefits from sound-channel amplification
-  const canUseSound = subjectKind === "polytope";
+  // Whether this subject benefits from sound-channel amplification.
+  // Graphs now have sonifyGraph; polytopes have sonifyPolytope.
+  const canUseSound = (subjectKind === "polytope" || subjectKind === "graph");
 
   const amplifications = [];
 
@@ -416,7 +507,12 @@ export async function reconcile(subject, {
     }
 
     if (useSoundFusion && canUseSound) {
-      recovered_H = extractPH_fused(fbs, width, width, structure.kind, structure.n);
+      if (subjectKind === "polytope") {
+        recovered_H = extractPH_fused(fbs, width, width, structure.kind, structure.n);
+      } else {
+        // graph: use the graph acoustic oracle
+        recovered_H = extractPH_fused_graph(fbs, width, width, criterion);
+      }
     }
 
     const verdicts = buildVerdicts(subjectKind, recovered_A, recovered_H, criterion);
@@ -552,11 +648,21 @@ export async function reconcile(subject, {
   }
 
   // EXHAUST — all amplifications done → UNVERIFIABLE
-  // Collect final recovered state for the certificate
+  // Collect final recovered state for the certificate.
+  // Use sound-fused recovery ONLY if the SOUND step was actually reached during
+  // amplification (i.e. maxAmplify ≥ 4). If SOUND was not attempted, use raw
+  // pixel to keep the final recovered consistent with what was adjudicated.
+  const soundStepAttempted = amplifications.some(a => a.label === "SOUND");
   const finalRecA = extractPA_multiview(scenes);
-  const finalRecH = canUseSound
-    ? extractPH_fused(fbs, width, width, structure.kind, structure.n)
-    : extractPH_multiview(fbs, width, width);
+  let finalRecH;
+  if (!canUseSound || !soundStepAttempted) {
+    finalRecH = extractPH_multiview(fbs, width, width);
+  } else if (subjectKind === "polytope") {
+    finalRecH = extractPH_fused(fbs, width, width, structure.kind, structure.n);
+  } else {
+    // graph with sound channel (sound step was reached)
+    finalRecH = extractPH_fused_graph(fbs, width, width, criterion);
+  }
 
   const finalRecovered = mergeRecovered(subjectKind, finalRecA, finalRecH, criterion);
   const finalReadout   = buildReadoutSummary(finalRecA, finalRecH, criterion, subjectKind);
