@@ -1,7 +1,11 @@
 // subject.mjs — Subject constructors for Viable Visualization (Task 1).
 // Zero external dependencies; ESM.
 
-import { readFileSync } from "node:fs";
+// node:fs is loaded lazily + guarded so this module is BROWSER-SAFE (the web surface imports it via app.mjs).
+// In Node, readFileSync reads the real ecosystem map; in the browser the dynamic import rejects → readFileSync
+// stays null → ecosystemSubject's existing try/catch falls through to the synthetic connected fallback.
+let readFileSync = null;
+try { ({ readFileSync } = await import("node:fs")); } catch { /* browser: no node:fs */ }
 import { polytope } from "../render-nd/index.mjs";
 
 // ---------------------------------------------------------------------------
