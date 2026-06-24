@@ -1,0 +1,573 @@
+/**
+ * reconcile.mjs — The live reconcile loop + Certificate emission.
+ *
+ * reconcile(subject, { regulator, width=192, maxAmplify=6, t0=0 })
+ *   → async Certificate
+ *
+ * Productionizes the E11-proven control loop:
+ *   perceive → recover → adjudicate → amplify (if needed) → Certificate
+ *
+ * Amplification order (cheapest first, E11-proven):
+ *   0: initial check (no amplification)
+ *   1: GENERIC — nudgeToGeneric (fix projection collisions)
+ *   2: VIEW2   — add 2nd orthogonal view
+ *   3: VIEW3   — add 3rd orthogonal view
+ *   4: SOUND   — fuse sound channel
+ *   5+: EXHAUST → UNVERIFIABLE
+ *
+ * Fail-closed: CERTIFIED only when recovered matches criterion AND
+ * regulator.adjudicate agrees. Never fake a verdict.
+ *
+ * Zero external dependencies (imports from studio-libs organs only). ESM .mjs.
+ */
+
+import { renderScene } from "../render-nd/index.mjs";
+import { rasterize } from "../render-nd/backends/raster.mjs";
+import { nudgeToGeneric } from "../render-nd/core/genericity.mjs";
+import { sonifyPolytope } from "../render-sound/index.mjs";
+import { assembleFullPerception, spectrumBands } from "../sense-core/index.mjs";
+import { embedGraph } from "./embed.mjs";
+import { makeCertificate } from "./certificate.mjs";
+
+// ── Constants — must match certificate.mjs tolerance values ──────────────────
+const VERTEX_TOL_FRAC = 0.30;
+const EDGE_TOL_FRAC   = 0.50;
+
+// Additional rotation angles for multi-view (orthogonal to the base view)
+const AMP_T_EXTRA = [0.4, 1.1, 2.0];
+
+// ── Scene builder ─────────────────────────────────────────────────────────────
+
+/**
+ * Build a render-nd scene for a polytope subject.
+ */
+function buildPolytopeScene(structure, t) {
+  const { kind, n } = structure;
+  return renderScene({
+    kind, n, t,
+    rotation: "all",
+    projection: { mode: "perspective", dist: 3 },
+    scale: 0.5,
+  });
+}
+
+/**
+ * Build a pseudo-scene for a graph subject by embedding into 4D and projecting.
+ *
+ * The scene has the same shape as renderScene output:
+ *   { points:[{x,y,size,opacity,color}...], segments:[{x1,y1,x2,y2,opacity,color}...], meta:{...} }
+ *
+ * We embed the graph into 4D, then project each vertex to 2D using the same
+ * perspective formula renderScene uses, with a rotation offset applied by
+ * using different slices of the 4D coords.
+ */
+function buildGraphScene(structure, t) {
+  const { graph } = structure;
+  const { verts, edges } = embedGraph(graph, 4);
+
+  if (verts.length === 0) {
+    return {
+      points: [],
+      segments: [],
+      meta: { kind: "graph", nodeCount: 0, edgeCount: 0 },
+    };
+  }
+
+  // Apply a deterministic 2D rotation via t (rotates in the XY plane of the 4D embedding)
+  const cosT = Math.cos(t);
+  const sinT = Math.sin(t);
+
+  // Project each 4D vertex to 2D via a simple perspective from the first two dims
+  // mixed with the last two dims, modulated by t
+  const dist = 3.0;
+  const scale = 0.5;
+
+  const projected = verts.map(v => {
+    // Combine x,z with rotation angle t to get variety across views
+    const px = v[0] * cosT - v[2] * sinT;
+    const py = v[1] * cosT - v[3] * sinT;
+    const pz = v[0] * sinT + v[2] * cosT + dist;
+
+    const wDist = pz > 0.1 ? pz : 0.1;
+    const x = (px / wDist) * scale;
+    const y = (py / wDist) * scale;
+
+    // Depth cue: normalize z to [0,1] range for opacity
+    const depth = pz;
+    return { x, y, depth };
+  });
+
+  // Normalize depth for cuing
+  let dmin = Infinity, dmax = -Infinity;
+  for (const p of projected) {
+    if (p.depth < dmin) dmin = p.depth;
+    if (p.depth > dmax) dmax = p.depth;
+  }
+  const dspan = dmax - dmin || 1;
+
+  const points = projected.map(p => {
+    const normDepth = (p.depth - dmin) / dspan;
+    const opacity = 0.4 + 0.6 * normDepth;
+    const brightness = Math.round(180 + 75 * normDepth);
+    return {
+      x: p.x, y: p.y,
+      size: 1.5 + normDepth,
+      opacity,
+      color: [brightness, brightness, Math.round(brightness * 0.8)],
+    };
+  });
+
+  const segments = edges.map(([i, j]) => {
+    if (i < 0 || i >= points.length || j < 0 || j >= points.length) return null;
+    const a = points[i], b = points[j];
+    const opacity = (a.opacity + b.opacity) / 2 * 0.7;
+    return {
+      x1: a.x, y1: a.y, x2: b.x, y2: b.y,
+      opacity,
+      color: [120, 160, 200],
+    };
+  }).filter(Boolean);
+
+  return {
+    points,
+    segments,
+    meta: {
+      kind: "graph",
+      nodeCount: verts.length,
+      edgeCount: segments.length,
+      t,
+    },
+  };
+}
+
+// ── Perceptors ────────────────────────────────────────────────────────────────
+
+/**
+ * Geometric perceiver (P_A): count distinct projected vertices via snap-grid.
+ * Projection-collapse only undercounts — MAX across views is the correct combiner.
+ */
+function extractPA_single(scene) {
+  const SNAP = 0.02;
+  const seen = new Set();
+  for (const pt of scene.points) {
+    const gx = Math.round(pt.x / SNAP);
+    const gy = Math.round(pt.y / SNAP);
+    seen.add(`${gx},${gy}`);
+  }
+  return { vertices: seen.size, edges: scene.segments.length };
+}
+
+function extractPA_multiview(scenes) {
+  const estimates = scenes.map(s => extractPA_single(s));
+  return {
+    vertices: Math.max(...estimates.map(e => e.vertices)),
+    edges: Math.max(...estimates.map(e => e.edges)),
+  };
+}
+
+/**
+ * Pixel perceiver (P_H): blob-detection for vertices, edge-density for edges.
+ * Adapted directly from E11's proven extractPH_single.
+ */
+function extractPH_single(px, w, h) {
+  const perc = assembleFullPerception(px, w, h, 4, {});
+
+  const grid = perc.multiScale?.grid16 ?? perc.multiScale?.grid8;
+  if (!grid || grid.length === 0) return { vertices: 0, edges: 0 };
+
+  const GN = grid.length;
+  const luma = [];
+  for (let r = 0; r < GN; r++) {
+    luma.push([]);
+    for (let c = 0; c < GN; c++) {
+      const [R, G, B] = grid[r][c] ?? [0, 0, 0];
+      luma[r].push((R * 299 + G * 587 + B * 114) / (1000 * 255));
+    }
+  }
+
+  let sumL = 0;
+  for (let r = 0; r < GN; r++) for (let c = 0; c < GN; c++) sumL += luma[r][c];
+  const globalMean = sumL / (GN * GN);
+  const threshold  = globalMean + 0.12;
+
+  const candidates = [];
+  for (let r = 0; r < GN; r++) {
+    for (let c = 0; c < GN; c++) {
+      const v = luma[r][c];
+      if (v < threshold) continue;
+      let isMax = true;
+      for (let dr = -1; dr <= 1 && isMax; dr++) {
+        for (let dc = -1; dc <= 1 && isMax; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const nr = r + dr, nc = c + dc;
+          if (nr < 0 || nr >= GN || nc < 0 || nc >= GN) continue;
+          if (luma[nr][nc] > v) isMax = false;
+        }
+      }
+      if (isMax) candidates.push({ r, c });
+    }
+  }
+
+  const used = new Set();
+  let blobCount = 0;
+  for (let i = 0; i < candidates.length; i++) {
+    if (used.has(i)) continue;
+    blobCount++;
+    used.add(i);
+    for (let j = i + 1; j < candidates.length; j++) {
+      if (used.has(j)) continue;
+      const dr = Math.abs(candidates[i].r - candidates[j].r);
+      const dc = Math.abs(candidates[i].c - candidates[j].c);
+      if (dr <= 2 && dc <= 2) used.add(j);
+    }
+  }
+
+  const edgeDensityVal = perc.edgeDensity ?? 0;
+  const pixelEdgeProp  = 0.013;
+  const edges = Math.round((edgeDensityVal / pixelEdgeProp) / 1.8);
+
+  return { vertices: blobCount, edges };
+}
+
+function extractPH_multiview(fbs, w, h) {
+  const estimates = fbs.map(fb => extractPH_single(fb.data, w, h));
+  return {
+    vertices: Math.max(...estimates.map(e => e.vertices)),
+    edges:    Math.max(...estimates.map(e => e.edges)),
+  };
+}
+
+/**
+ * Sound-augmented P_H: invert the sonifyPolytope spectrum to recover (V, E).
+ * Adapted from E11's proven soundInvert + extractPH_fused.
+ * Only applicable to polytope subjects (deterministic combinatorial formula).
+ */
+function soundInvert(kind, n) {
+  const freq = sonifyPolytope({ kind, n });
+
+  let peak1 = -1, peak2 = -1;
+  for (let b = 0; b < freq.length; b++) {
+    if (freq[b] > 0) {
+      if (peak1 === -1 || freq[b] > freq[peak1]) {
+        peak2 = peak1;
+        peak1 = b;
+      } else if ((peak2 === -1 || freq[b] > freq[peak2]) && Math.abs(b - peak1) >= 2) {
+        peak2 = b;
+      }
+    }
+  }
+
+  const fundamentalBin = peak2 !== -1 ? Math.min(peak1, peak2) : peak1;
+  const V_inferred = Math.max(1, Math.round(((fundamentalBin - 10) / 200) * 512));
+  const harmonicSpacing = peak2 !== -1 ? Math.abs(peak1 - peak2) : 2;
+  const r_inferred = (harmonicSpacing - 2) / 8;
+  const E_inferred = Math.max(0, Math.round(r_inferred * V_inferred));
+
+  return { vertices: V_inferred, edges: E_inferred };
+}
+
+function extractPH_fused(fbs, w, h, kind, n) {
+  const { vertices: v_H, edges: e_H } = extractPH_multiview(fbs, w, h);
+  const { vertices: v_sound, edges: e_sound } = soundInvert(kind, n);
+
+  // Weight: 0.8 sound + 0.2 pixel for V; 0.5/0.5 for E (E11-proven)
+  return {
+    vertices: Math.round(0.8 * v_sound + 0.2 * v_H),
+    edges:    Math.round(0.5 * e_sound + 0.5 * e_H),
+  };
+}
+
+// ── Verdict helpers ───────────────────────────────────────────────────────────
+
+function verdictExact(est, trueVal) {
+  return Math.abs(est - trueVal) <= 0;
+}
+
+function verdictFrac(est, trueVal, tolFrac) {
+  if (trueVal === 0) return est === 0;
+  return Math.abs(est - trueVal) / trueVal <= tolFrac;
+}
+
+/**
+ * Build the raw verdicts array for the regulator.adjudicate call.
+ * Returns an array of booleans — one per perceiver channel active.
+ *
+ * For polytope: P_A exact + P_H fractional.
+ * For graph:    only P_H fractional (no deterministic P_A for arbitrary graphs).
+ */
+function buildVerdicts(subjectKind, recovered_A, recovered_H, criterion) {
+  if (subjectKind === "polytope") {
+    const { vertices: trueV, edges: trueE } = criterion;
+    const { vertices: vA, edges: eA } = recovered_A;
+    const { vertices: vH, edges: eH } = recovered_H;
+
+    const A_pass = verdictExact(vA, trueV) && verdictExact(eA, trueE);
+    const H_pass = verdictFrac(vH, trueV, VERTEX_TOL_FRAC) &&
+                   verdictFrac(eH, trueE, EDGE_TOL_FRAC);
+    return [A_pass, H_pass];
+  } else {
+    // graph
+    const { nodeCount: trueN, edgeCount: trueE } = criterion;
+    const { vertices: vH, edges: eH } = recovered_H;
+    const H_pass = verdictFrac(vH, trueN, VERTEX_TOL_FRAC) &&
+                   verdictFrac(eH, trueE, EDGE_TOL_FRAC);
+    return [H_pass];
+  }
+}
+
+/**
+ * Merge recovered_A + recovered_H into the canonical recovered object.
+ * For polytope: use exact P_A values (most precise); flag exact match.
+ * For graph:    use P_H values (only perceiver available for arbitrary graphs).
+ */
+function mergeRecovered(subjectKind, recovered_A, recovered_H, criterion) {
+  if (subjectKind === "polytope") {
+    const { vertices: trueV, edges: trueE } = criterion;
+    const { vertices: vA, edges: eA } = recovered_A;
+    return {
+      vertices:      vA,
+      edges:         eA,
+      verticesExact: vA === trueV,
+      edgesExact:    eA === trueE,
+      pixelVertices: recovered_H.vertices,
+      pixelEdges:    recovered_H.edges,
+    };
+  } else {
+    const { nodeCount, edgeCount } = criterion;
+    const { vertices: vH, edges: eH } = recovered_H;
+    return {
+      nodeCount:        vH,
+      edgeCount:        eH,
+      vertices:         vH,
+      edges:            eH,
+      verticesExact:    vH === nodeCount,
+      edgesExact:       eH === edgeCount,
+    };
+  }
+}
+
+/**
+ * Build a readout summary from the current perception state.
+ */
+function buildReadoutSummary(recovered_A, recovered_H, criterion, subjectKind) {
+  if (subjectKind === "polytope") {
+    const { vertices: trueV, edges: trueE } = criterion;
+    return {
+      geom: { vertices: recovered_A.vertices, edges: recovered_A.edges },
+      pixel: { vertices: recovered_H.vertices, edges: recovered_H.edges },
+      truth: { vertices: trueV, edges: trueE },
+    };
+  } else {
+    const { nodeCount: trueN, edgeCount: trueE } = criterion;
+    return {
+      pixel: { nodeCount: recovered_H.vertices, edgeCount: recovered_H.edges },
+      truth: { nodeCount: trueN, edgeCount: trueE },
+    };
+  }
+}
+
+// ── Main reconcile function ───────────────────────────────────────────────────
+
+/**
+ * reconcile(subject, opts) → Promise<Certificate>
+ *
+ * @param {{ kind:"polytope"|"graph", structure:object, criterion:object }} subject
+ * @param {{ regulator:object, width?:number, maxAmplify?:number, t0?:number }} opts
+ * @returns {Promise<import("./certificate.mjs").Certificate>}
+ */
+export async function reconcile(subject, {
+  regulator,
+  width = 192,
+  maxAmplify = 6,
+  t0 = 0,
+} = {}) {
+  const { kind: subjectKind, structure, criterion } = subject;
+  const { disclosure } = regulator;
+
+  // Whether this subject benefits from sound-channel amplification
+  const canUseSound = subjectKind === "polytope";
+
+  const amplifications = [];
+
+  // ── Build initial scene ──────────────────────────────────────────────────
+  let currentT = t0;
+  let currentOpts = subjectKind === "polytope"
+    ? { kind: structure.kind, n: structure.n, t: currentT, rotation: "all",
+        projection: { mode: "perspective", dist: 3 }, scale: 0.5 }
+    : null; // graphs use embedGraph directly
+
+  let scenes = [
+    subjectKind === "polytope"
+      ? buildPolytopeScene(structure, currentT)
+      : buildGraphScene(structure, currentT),
+  ];
+  let fbs = [rasterize(scenes[0], { width, height: width })];
+
+  // ── Helper: perceive + recover + adjudicate at current scene set ─────────
+  function perceiveAndCheck(useSoundFusion = false) {
+    let recovered_A, recovered_H;
+
+    if (scenes.length === 1) {
+      recovered_A = extractPA_single(scenes[0]);
+      recovered_H = extractPH_single(fbs[0].data, width, width);
+    } else {
+      recovered_A = extractPA_multiview(scenes);
+      recovered_H = extractPH_multiview(fbs, width, width);
+    }
+
+    if (useSoundFusion && canUseSound) {
+      recovered_H = extractPH_fused(fbs, width, width, structure.kind, structure.n);
+    }
+
+    const verdicts = buildVerdicts(subjectKind, recovered_A, recovered_H, criterion);
+    const adjResult = regulator.adjudicate(verdicts);
+    const certified = adjResult === "CERTIFIED";
+
+    return { recovered_A, recovered_H, verdicts, certified };
+  }
+
+  // ── Step 0: initial check (no amplification) ─────────────────────────────
+  {
+    const { recovered_A, recovered_H, certified } = perceiveAndCheck(false);
+    if (certified) {
+      const recovered = mergeRecovered(subjectKind, recovered_A, recovered_H, criterion);
+      const readoutSummary = buildReadoutSummary(recovered_A, recovered_H, criterion, subjectKind);
+      return makeCertificate({
+        verdict: "CERTIFIED",
+        subjectKind,
+        criterion,
+        recovered,
+        readoutSummary,
+        amplifications: [],
+        disclosure,
+      });
+    }
+  }
+
+  // ── Amplification loop ────────────────────────────────────────────────────
+
+  // Step 1: GENERIC — nudge to a collision-free view
+  if (amplifications.length < maxAmplify) {
+    let nudgedScene, nudgedOpts;
+
+    if (subjectKind === "polytope") {
+      const result = nudgeToGeneric(currentOpts);
+      nudgedOpts  = result.opts;
+      nudgedScene = result.scene;
+      currentOpts = nudgedOpts;
+      currentT    = nudgedOpts.t;
+    } else {
+      // For graphs: increment t to reduce projection degeneracy
+      currentT += 0.017;
+      nudgedScene = buildGraphScene(structure, currentT);
+      nudgedOpts  = null;
+    }
+
+    scenes[0] = nudgedScene;
+    fbs[0]    = rasterize(nudgedScene, { width, height: width });
+
+    const { recovered_A, recovered_H, certified } = perceiveAndCheck(false);
+    amplifications.push({
+      step: 1,
+      label: "GENERIC",
+      recovered: mergeRecovered(subjectKind, recovered_A, recovered_H, criterion),
+      verdict: certified ? "CERTIFIED" : "UNVERIFIABLE",
+    });
+
+    if (certified) {
+      const recovered = mergeRecovered(subjectKind, recovered_A, recovered_H, criterion);
+      const readoutSummary = buildReadoutSummary(recovered_A, recovered_H, criterion, subjectKind);
+      return makeCertificate({
+        verdict: "CERTIFIED",
+        subjectKind,
+        criterion,
+        recovered,
+        readoutSummary,
+        amplifications,
+        disclosure,
+      });
+    }
+  }
+
+  // Steps 2–3: add orthogonal views (up to 3 total views)
+  for (let vi = 0; vi < 2 && amplifications.length < maxAmplify; vi++) {
+    const ampLabel = vi === 0 ? "VIEW2" : "VIEW3";
+    const tExtra   = AMP_T_EXTRA[vi];
+
+    const extraScene = subjectKind === "polytope"
+      ? buildPolytopeScene(structure, tExtra)
+      : buildGraphScene(structure, tExtra);
+    const extraFb = rasterize(extraScene, { width, height: width });
+    scenes.push(extraScene);
+    fbs.push(extraFb);
+
+    const { recovered_A, recovered_H, certified } = perceiveAndCheck(false);
+    amplifications.push({
+      step: 2 + vi,
+      label: ampLabel,
+      recovered: mergeRecovered(subjectKind, recovered_A, recovered_H, criterion),
+      verdict: certified ? "CERTIFIED" : "UNVERIFIABLE",
+    });
+
+    if (certified) {
+      const recovered = mergeRecovered(subjectKind, recovered_A, recovered_H, criterion);
+      const readoutSummary = buildReadoutSummary(recovered_A, recovered_H, criterion, subjectKind);
+      return makeCertificate({
+        verdict: "CERTIFIED",
+        subjectKind,
+        criterion,
+        recovered,
+        readoutSummary,
+        amplifications,
+        disclosure,
+      });
+    }
+  }
+
+  // Step 4: SOUND — fuse sound channel (polytopes only; graphs: skip to EXHAUST)
+  if (amplifications.length < maxAmplify) {
+    if (canUseSound) {
+      const { recovered_A, recovered_H, certified } = perceiveAndCheck(true);
+      amplifications.push({
+        step: 4,
+        label: "SOUND",
+        recovered: mergeRecovered(subjectKind, recovered_A, recovered_H, criterion),
+        verdict: certified ? "CERTIFIED" : "UNVERIFIABLE",
+      });
+
+      if (certified) {
+        const recovered = mergeRecovered(subjectKind, recovered_A, recovered_H, criterion);
+        const readoutSummary = buildReadoutSummary(recovered_A, recovered_H, criterion, subjectKind);
+        return makeCertificate({
+          verdict: "CERTIFIED",
+          subjectKind,
+          criterion,
+          recovered,
+          readoutSummary,
+          amplifications,
+          disclosure,
+        });
+      }
+    }
+  }
+
+  // EXHAUST — all amplifications done → UNVERIFIABLE
+  // Collect final recovered state for the certificate
+  const finalRecA = extractPA_multiview(scenes);
+  const finalRecH = canUseSound
+    ? extractPH_fused(fbs, width, width, structure.kind, structure.n)
+    : extractPH_multiview(fbs, width, width);
+
+  const finalRecovered = mergeRecovered(subjectKind, finalRecA, finalRecH, criterion);
+  const finalReadout   = buildReadoutSummary(finalRecA, finalRecH, criterion, subjectKind);
+
+  return makeCertificate({
+    verdict: "UNVERIFIABLE",
+    subjectKind,
+    criterion,
+    recovered: finalRecovered,
+    readoutSummary: finalReadout,
+    amplifications,
+    disclosure,
+  });
+}
