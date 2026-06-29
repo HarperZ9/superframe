@@ -50,3 +50,11 @@ Zero-dependency perception + nD rendering libraries, and a native MCP organ that
 
 **Honest boundary:** native, lossless, persistent, near-ambient perception — NOT weights-level ambient.
 When a tool fires is the client's decision, not the server's.
+
+## For developers
+
+Keep the public README, examples, and repository metadata aligned with current behavior. Before opening a PR or publishing a release, verify the working tree and any documented commands for this repo.
+
+```bash
+git status --short
+```
