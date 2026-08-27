@@ -33,6 +33,10 @@ test("orthoplex: 2n verts (±e_i), edges = all non-antipodal pairs = 2n(n-1)", (
   }
 });
 
+test("orthoplex: the one-dimensional case is the segment between its two vertices", () => {
+  assert.deepEqual(nOrthoplexEdges(1), [[0, 1]]);
+});
+
 test("24-cell: 24 verts, 96 edges, all permutations of (±1,±1,0,0)", () => {
   assert.equal(cell24Vertices().length, 24);
   assert.equal(cell24Edges().length, 96);
