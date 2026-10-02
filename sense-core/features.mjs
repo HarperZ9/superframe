@@ -9,6 +9,8 @@
 // Pure + browser-free so node can import and test the maths directly. The browser passes real
 // canvas pixels (Uint8ClampedArray RGBA); the tests pass synthetic typed arrays.
 
+import { srgbToLinear as _srgbToLinear, linearRgbToOklab as _linearRgbToOklab } from "./colour-perceptual.mjs";
+
 // ── (1) The faithful representation: box-average to an n×n RGB grid ───────────
 // The ACTUAL frame, downsampled — the real pixels averaged into n×n cells. Not an invented
 // description: a true, lower-resolution copy. This is the representation a native model consumes.
@@ -51,16 +53,83 @@ export function representation(source, n = 32, read) {
 }
 
 // ── (2) Richer measured features (additive — eye.js's `features` is untouched) ─
-const HUE_NAMES = [
-  [15, "red"], [45, "orange"], [70, "amber"], [90, "yellow"], [160, "green"],
-  [200, "teal"], [255, "blue"], [290, "indigo"], [330, "magenta"], [360, "red"],
-];
-// Name a hue (degrees 0..360) + saturation/value, so greys read honestly as "grey", not a stray hue.
+// Colour words, rule R-hue-v1 (Track A step T1). The earlier HSV hue buckets named an eosin pink
+// "red", a hematoxylin purple "indigo" and a dark slate "blue". Words now come from OKLCh:
+//   - achromatic when chroma C < 0.035 (build-color's achromatic threshold): black below L 0.35,
+//     white at L 0.85 and above, grey between (build-color's lightness bands, collapsed);
+//   - otherwise the hue sector of the nearest prototype hue among pink, red, orange, yellow, green,
+//     blue and purple (prototypes: build-color's 11 basic colours);
+//   - brown for dark orange, dark yellow and dark brownish red; red for dark pink. Every split is the
+//     mean of two prototype values, so no constant here was tuned by hand.
+// Nearest prototype in OKLab (the earlier proposal) was rejected: it names lime "yellow", cyan
+// "white" and sky blue "pink". Every word ships with its margin, the OKLab distance to the boundary
+// that decided it, so a reader can tell a confident word from a coin toss.
+const BASIC_PROTOTYPES = Object.freeze({
+  red: [255, 0, 0], orange: [255, 165, 0], yellow: [255, 255, 0], green: [0, 128, 0],
+  blue: [0, 0, 255], purple: [128, 0, 128], pink: [255, 192, 203], brown: [139, 69, 19],
+  white: [255, 255, 255], grey: [128, 128, 128], black: [0, 0, 0],
+});
+const HUE_BEARING = ["pink", "red", "orange", "yellow", "green", "blue", "purple"];
+const C_ACHROMATIC = 0.035, L_BLACK = 0.35, L_WHITE = 0.85;
+
+function oklchOfBytes(r, g, b) {
+  const [L, a, bb] = _linearRgbToOklab(_srgbToLinear(r / 255), _srgbToLinear(g / 255), _srgbToLinear(b / 255));
+  let h = Math.atan2(bb, a) * 180 / Math.PI;
+  if (h < 0) h += 360;
+  return { L, C: Math.hypot(a, bb), h };
+}
+const PROTO_LCH = Object.freeze(Object.fromEntries(
+  Object.entries(BASIC_PROTOTYPES).map(([n, v]) => [n, oklchOfBytes(v[0], v[1], v[2])])));
+const L_BROWN_SPLIT = (PROTO_LCH.orange.L + PROTO_LCH.brown.L) / 2;
+const H_RED_BROWN = (PROTO_LCH.red.h + PROTO_LCH.brown.h) / 2;
+const L_DARK_PINK = (PROTO_LCH.red.L + PROTO_LCH.purple.L) / 2;
+const circDeg = (a, b) => { const d = Math.abs(a - b) % 360; return Math.min(d, 360 - d); };
+// OKLab distance from a colour at chroma c to a hue ray `deg` degrees away (the chord).
+const arcDist = (c, deg) => 2 * c * Math.sin(Math.min(deg, 90) * Math.PI / 360);
+
+// The word and its margin for one sRGB byte triple. Pure and deterministic.
+export function colourWord(r, g, b) {
+  const { L, C, h } = oklchOfBytes(r, g, b);
+  if (C < C_ACHROMATIC) {
+    const mC = C_ACHROMATIC - C;
+    if (L < L_BLACK) return { name: "black", margin: Math.min(mC, L_BLACK - L) };
+    if (L >= L_WHITE) return { name: "white", margin: Math.min(mC, L - L_WHITE) };
+    return { name: "grey", margin: Math.min(mC, L - L_BLACK, L_WHITE - L) };
+  }
+  const ds = HUE_BEARING.map((n) => [circDeg(h, PROTO_LCH[n].h), n])
+    .sort((x, y) => (x[0] - y[0]) || (x[1] < y[1] ? -1 : x[1] > y[1] ? 1 : 0));
+  const sector = ds[0][1];
+  let margin = Math.min(arcDist(C, (ds[1][0] - ds[0][0]) / 2), C - C_ACHROMATIC);
+  const brownish = sector === "orange" || sector === "yellow" || (sector === "red" && h >= H_RED_BROWN);
+  if (sector === "red") margin = Math.min(margin, arcDist(C, Math.abs(h - H_RED_BROWN)));
+  if (brownish) {
+    margin = Math.min(margin, Math.abs(L - L_BROWN_SPLIT));
+    if (L < L_BROWN_SPLIT) return { name: "brown", margin };
+  }
+  if (sector === "pink") {
+    margin = Math.min(margin, Math.abs(L - L_DARK_PINK));
+    if (L < L_DARK_PINK) return { name: "red", margin };
+  }
+  return { name: sector, margin };
+}
+
+// The basic colour word for sRGB bytes (0..255): one of black, white, grey, red, orange, yellow,
+// green, blue, purple, pink, brown.
+export function colourName(r, g, b) {
+  return colourWord(r, g, b).name;
+}
+
+function hsvToRgbBytes(hDeg, s, v) {
+  const h = (((hDeg % 360) + 360) % 360) / 60, i = Math.floor(h), f = h - i;
+  const p = v * (1 - s), q = v * (1 - s * f), t = v * (1 - s * (1 - f));
+  const [r, g, b] = [[v, t, p], [q, v, p], [p, v, t], [p, q, v], [t, p, v], [v, p, q]][i % 6];
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
+
+// Kept for callers that hold HSV: converts back to sRGB bytes and names the colour by R-hue-v1.
 export function hueName(hDeg, sat, val) {
-  if (val < 0.12) return "near-black";
-  if (sat < 0.12) return val > 0.8 ? "near-white" : "grey";
-  for (const [edge, name] of HUE_NAMES) if (hDeg < edge) return name;
-  return "red";
+  const [r, g, b] = hsvToRgbBytes(hDeg, sat, val);
+  return colourName(r, g, b);
 }
 
 function rgbToHsv(r, g, b) {
@@ -137,12 +206,14 @@ export function richFeatures(px, w, h, ch = 4) {
   const dom = dominantColors(px, w, h, ch, 5);
   const top = dom[0] || { r: 0, g: 0, b: 0 };
   const hsv = rgbToHsv(top.r, top.g, top.b);
+  const word = colourWord(top.r, top.g, top.b);
   const regions = regionSplit(px, w, h, ch);
   const aspect = h ? w / h : 1;
   return {
     dominantColors: dom.map(d => d.hex),
     dominantSwatches: dom,                       // full {hex,r,g,b,frac} for the swatch meters
-    hueName: hueName(hsv.h, hsv.s, hsv.v),
+    hueName: word.name,
+    hueMargin: +word.margin.toFixed(4),
     hueDeg: hsv.h,
     edgeDensity: edgeDensity(px, w, h, ch),
     lightRegions: regions.light,
