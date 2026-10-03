@@ -21,7 +21,11 @@ test("assembleFullPerception keeps shipped fields + adds distributions & extende
   assert.ok("grid4" in r.multiScale && "grid64" in r.multiScale);
   assert.ok(Array.isArray(r.distributions.luma) && Array.isArray(r.distributions.hue));
 });
-test("multiScaleGrids keeps the [8,16,32] web-parity default", () => {
+test("multiScaleGrids keeps the [8,16,32] web-parity keys; 64 and 128 are additive", () => {
   const { data, width, height } = checker();
-  assert.deepEqual(Object.keys(multiScaleGrids(data, width, height, 4)).sort(), ["grid16","grid32","grid8"]);
+  const keys = Object.keys(multiScaleGrids(data, width, height, 4)).sort();
+  // Backward-compatible core set (the shipped web-parity contract):
+  for (const k of ["grid8", "grid16", "grid32"]) assert.ok(keys.includes(k), `${k} present`);
+  // Additive high-fidelity extensions (see pyramid.mjs):
+  assert.deepEqual(keys, ["grid128", "grid16", "grid32", "grid64", "grid8"]);
 });
