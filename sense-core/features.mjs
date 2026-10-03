@@ -53,7 +53,7 @@ export function representation(source, n = 32, read) {
 }
 
 // ── (2) Richer measured features (additive — eye.js's `features` is untouched) ─
-// Colour words, rule R-hue-v1 (Track A step T1). The earlier HSV hue buckets named an eosin pink
+// Colour words, rule R-hue-v1. The earlier HSV hue buckets named an eosin pink
 // "red", a hematoxylin purple "indigo" and a dark slate "blue". Words now come from OKLCh:
 //   - achromatic when chroma C < 0.035 (build-color's achromatic threshold): black below L 0.35,
 //     white at L 0.85 and above, grey between (build-color's lightness bands, collapsed);
