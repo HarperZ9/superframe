@@ -1,9 +1,9 @@
 {
   "name": "studio-perception-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Native MCP perception+render server (stdio, zero-dep) — sense-core + render-nd as a model-native organ.",
-  "license": "AGPL-3.0-or-later",
+  "license": "FSL-1.1-MIT",
   "bin": { "studio-perception-mcp": "server.mjs" },
   "scripts": { "test": "node --test" }
 }
