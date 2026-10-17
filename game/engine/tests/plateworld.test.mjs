@@ -52,11 +52,12 @@ test("a fight from a scene starts where it stands: Lamb on the spot Lamb stood o
   const G = {
     state: { pos: [10, 0, 2] },
     world: { figures: () => [{ id: "keel", at: [12, 0, 3] }, { id: "other", at: [0, 0, 0] }] },
-    ext: { combat: { defs: { e: { area: "quay", foes: [{ rec: { kv: [{ key: "char", value: "keel" }] }, n: 1 }, { rec: { kv: [] }, n: 1 }] } } } },
+    ext: { combat: { defs: { e: { area: "quay", foes: [{ id: "f.keel", rec: { kv: [{ key: "char", value: "keel" }] }, n: 1 }, { id: "f.other", rec: { kv: [] }, n: 1 }] } } } },
   };
   const pj = { marks: { fight: { lamb: [1, 1], foes: [[3, 1], [5, 1]], anchors: { cut: [[0, 0]] } } } };
   const S = fightFromScene(G, pj, "e");
   assert.deepEqual(S.taken, ["keel"]);
+  assert.deepEqual(S.aliases, { "f.keel#0": "keel" }, "the fighter that was keel keeps keel's actor");
   assert.deepEqual(S.fight.lamb, [10, 2]);
   assert.deepEqual(S.fight.foes, [[12, 3], [12, 2]], "keel on his own spot; the other foe on the first mark, moved by Lamb's offset");
   assert.deepEqual(S.fight.anchors, { cut: [[0, 0]] }, "anchors stay on their marks");

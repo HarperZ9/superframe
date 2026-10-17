@@ -117,13 +117,13 @@ const charOf = (rec) => { const x = rec && rec.kv && rec.kv.find((e) => e.key ==
 export function fightFromScene(G, pj, id) {
   const C = G.ext.combat, enc = C && C.defs[id]; if (!enc) return null;
   const m = pj.marks || {}, mark = (m.fights || {})[enc.area] || m.fight || null, pos = G.state.pos;
-  const figs = G.world.figures(), taken = [], foes = [];
+  const figs = G.world.figures(), taken = [], foes = [], aliases = {};
   const off = mark && mark.lamb && pos ? [pos[0] - mark.lamb[0], pos[2] - mark.lamb[1]] : [0, 0];
   let k = 0;
   for (const f of enc.foes || []) for (let n = 0; n < (f.n || 1); n++) {
     const who = charOf(f.rec), fig = who && figs.find((x) => x.id === who && !taken.includes(x.id));
-    if (fig) { const at = (G.figureAt && G.figureAt[fig.id]) || fig.at; taken.push(fig.id); foes.push([at[0], at[2]]); }
+    if (fig) { const at = (G.figureAt && G.figureAt[fig.id]) || fig.at; taken.push(fig.id); aliases[`${f.id}#${n}`] = fig.id; foes.push([at[0], at[2]]); }
     else { const q = mark && mark.foes && mark.foes[k++ % mark.foes.length]; foes.push(q ? [q[0] + off[0], q[1] + off[1]] : [pos ? pos[0] + 2 + n : 2, pos ? pos[2] : 0]); }
   }
-  return { fight: { ...(mark || {}), lamb: pos ? [pos[0], pos[2]] : mark && mark.lamb, foes }, taken };
+  return { fight: { ...(mark || {}), lamb: pos ? [pos[0], pos[2]] : mark && mark.lamb, foes }, taken, aliases }; // aliases: fighter id -> the figure it was
 }

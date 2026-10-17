@@ -53,12 +53,12 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     if (A && !walkable(A, nx, nz, waterY(A))) return true;
     const y = A ? groundAt(A, nx, nz) : null;
     if (A && y != null && Math.abs(y - pos[1]) > 0.6) return true;
-    G.state.pos = [nx, y ?? pos[1], nz]; S.metres += sp; S.moving = true;
+    G.state.pos = [nx, y ?? pos[1], nz]; S.metres += sp; S.moving = true; S.vel = [dx * sp / dt, dz * sp / dt];
     const per = rule("walk-metres-per-minute", 6); if (!live() && S.metres >= per) { const m = Math.floor(S.metres / per); S.metres -= m * per; G.advance(m); if (onClock) onClock(); }
     return true;
   }
   function step(dt) {
-    const pos = lambAt(); S.moving = false;
+    const pos = lambAt(); S.moving = false; S.vel = [0, 0];
     if (pos && freeWalk(dt, pos)) return;
     if (!S.path || !pos) return;
     S.run = !!(G.input && G.input.get("run")) && performance.now() >= S.runLock;
@@ -66,7 +66,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     const [tx, tz] = S.path[0], dx = tx - pos[0], dz = tz - pos[2], d = Math.hypot(dx, dz);
     const k = d <= sp ? 1 : sp / d, nx = pos[0] + dx * k, nz = pos[2] + dz * k, y = A ? groundAt(A, nx, nz) : null;
     if (d > 1e-4) S.face.lamb = Math.atan2(dz, dx);
-    G.state.pos = [nx, y ?? pos[1], nz]; S.metres += Math.min(d, sp); S.moving = d > 1e-4;
+    G.state.pos = [nx, y ?? pos[1], nz]; S.metres += Math.min(d, sp); S.moving = d > 1e-4; S.vel = d > 1e-4 ? [(dx / d) * Math.min(d, sp) / dt, (dz / d) * Math.min(d, sp) / dt] : [0, 0];
     if (d <= sp) S.path.shift();
     if (!S.path.length) {
       S.path = null; S.moving = false;
@@ -78,7 +78,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
   function figures() {
     const out = [], a = lambAt();
     if (a) out.push({ who: "lamb", at: a, face: S.face.lamb ?? 0, walking: S.moving, running: S.moving && S.run });
-    for (const f of G.world.figures()) { const w = S.wander[f.id]; out.push({ who: f.id, at: (w && w.at) || f.at, face: S.face[f.id] ?? (+f.face < 0 ? Math.PI : 0), walking: !!(w && w.moving) }); }
+    for (const f of G.world.figures()) { const w = S.wander[f.id]; out.push({ who: f.id, at: (w && w.at) || (G.figureMoved && G.figureMoved[f.id]) || f.at, face: S.face[f.id] ?? (+f.face < 0 ? Math.PI : 0), walking: !!(w && w.moving) }); }
     return out.filter((f) => !S.hidden.has(f.who));
   }
   function gestureOf(who, dt) {
@@ -106,7 +106,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     const A = cam.arena(), spots = (G.figureAt ||= {});
     for (const f of G.world.figures()) {
       if (!f.wander) { delete S.wander[f.id]; delete spots[f.id]; continue; }
-      const w = (S.wander[f.id] ||= { at: [...f.at], to: null, wait: 1 + (f.id.length % 3), moving: false });
+      const w = (S.wander[f.id] ||= { at: [...((G.figureMoved && G.figureMoved[f.id]) || f.at)], to: null, wait: 1 + (f.id.length % 3), moving: false });
       w.moving = false;
       if (S.talking === f.id || S.hidden.has(f.id)) { spots[f.id] = w.at; continue; }
       if (!w.to) { w.wait -= dt; if (w.wait <= 0) { const a = Math.random() * Math.PI * 2, r = f.wander * Math.sqrt(Math.random()), t = [f.at[0] + Math.cos(a) * r, f.at[2] + Math.sin(a) * r]; if (!A || groundAt(A, t[0], t[1]) != null) w.to = t; else w.wait = 0.5; } }
@@ -161,6 +161,9 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     },
     get talkingWithWho() { return S.talking; },
     facing: () => S.face.lamb ?? 0,
+    velocity: () => S.vel || [0, 0],
+    // a figure stands somewhere new (where a fight left it); a wanderer walks on from there
+    moveFigure(who, at) { (G.figureMoved ||= {})[who] = at; if (S.wander[who]) { S.wander[who].at = [...at]; S.wander[who].to = null; } },
     // after a conversation: the run button does nothing for a moment (LIVE-CONVERSATION A3: 0.5 s)
     lockRun(ms = 500) { S.runLock = performance.now() + ms; },
     hide(ids) { S.hidden = new Set(ids || []); },

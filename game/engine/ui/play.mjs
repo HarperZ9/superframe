@@ -13,6 +13,7 @@ import { plateCam } from "./platecam.mjs";
 import { lineEl, renderOptions } from "./talk.mjs";
 import { openRun } from "./run.mjs";
 import { fightLayer } from "./fightlayer.mjs";
+import { setFigureAliases } from "./figures.mjs";
 import { openSneak } from "./sneak.mjs";
 import { sneakLayer } from "./sneaklayer.mjs";
 import { runLayer } from "./runlayer.mjs";
@@ -99,15 +100,21 @@ function playApi(ctx, P, els, root) {
     // A fight plays in the world: over the plate view, under the game camera, with no new screen.
     fightThen(id) {
       root.classList.add("fighting");
-      const taken = usePlateFor(G, api.cam, id), P2 = api.people;
+      const S = usePlateFor(G, api.cam, id), taken = S.taken, P2 = api.people, v0 = P2 ? P2.velocity() : [0, 0];
+      setFigureAliases(S.aliases); // the figures fight in their own bodies
       if (P2) P2.hide(["lamb", ...taken]); // the fight draws them now
       const F = fightLayer(ctx, els.plate.parentElement, id, () => {
         root.classList.remove("fighting");
         // back to walking from where the fight left Lamb, on the same ground
         const L = F.W.lamb && F.W.lamb(); if (L && F.stage && F.stage.plate) G.state.pos = F.stage.toWorld([L.x, L.z]);
+        // the figures stand where the fight left them, not back on their marks
+        if (P2 && F.stage && F.stage.plate) for (const Fi of F.W.fighters) { const who = S.aliases[Fi.id]; if (who) P2.moveFigure(who, F.stage.toWorld([Fi.x, Fi.z])); }
+        setFigureAliases(null);
         if (P2) P2.hide([]);
         api.take(P.talk.afterFight());
       }, { cam: api.cam });
+      // Lamb's momentum carries into the fight (no stop at the cut)
+      const L0 = F.W.lamb && F.W.lamb(); if (L0 && S.taken && (v0[0] || v0[1])) { L0.vx = v0[0]; L0.vz = v0[1]; }
     },
     runThen(id) {
       if (G.state.runsOff) { console.warn(`run ${id} requested with runs off; content should branch on !runs`); }
@@ -257,11 +264,11 @@ function renderIdle(G, P, els) {
 // where the scene stands (world/plateworld.mjs fightFromScene). Returns the figure ids it takes over.
 function usePlateFor(G, cam, id) {
   const C = G.ext.combat, enc = C && C.defs[id], pj = cam && cam.place && cam.place(), geo = cam && cam.geo && cam.geo();
-  if (!enc || !pj || !geo || PLATE_OF[enc.area] !== pj.place) return [];
+  if (!enc || !pj || !geo || PLATE_OF[enc.area] !== pj.place) return { taken: [], aliases: {} };
   const S = fightFromScene(G, pj, id);
   try { C.usePlate(enc.area, plateArena(pj, geo.pos, geo.ids, { datum: pj.datum || null, fight: S.fight })); }
-  catch (e) { console.warn(`fight ${id}: no plate arena on ${pj.place}: ${e.message}`); return []; }
-  return S.taken;
+  catch (e) { console.warn(`fight ${id}: no plate arena on ${pj.place}: ${e.message}`); return { taken: [], aliases: {} }; }
+  return S;
 }
 
 // The live world (author, 2026-10-17: "It should not be turn based, it should be live action").

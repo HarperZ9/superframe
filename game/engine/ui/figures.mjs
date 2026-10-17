@@ -16,7 +16,10 @@
 // fightdrawer.mjs) behind both hooks: one drawer per plate camera, one actor per figure, a
 // person driven by a walk, run, idle or talk pose and a fighter by combat's pose (combat/anim/
 // drive.mjs), so Lamb keeps the same actor from walking into a fight and out again.
-let fightFn = null, personFn = null;
+let fightFn = null, personFn = null, aliases = {};
+// A fighter who was a figure in the scene keeps that figure's actor (no new body at the cut):
+// setFigureAliases({ "f.fewell#0": "fewell" }) for the length of the fight.
+export const setFigureAliases = (m) => { aliases = m || {}; };
 export const setFigureDrawer = (fn) => { fightFn = fn; };
 export const setPersonDrawer = (fn) => { personFn = fn; };
 export const figureDrawer = () => fightFn || plainFighter;
@@ -62,7 +65,13 @@ export async function installCharacterFigures({ base = "/characters/" } = {}) {
     return drawers.get(key).fn;
   };
   const ONE = { defs: {}, moves: {} };
-  setFigureDrawer((g, F, a) => { const fn = a.cam && drawerFor(a.cam); return fn ? fn(g, F, a) : plainFighter(g, F, a); });
+  setFigureDrawer((g, F, a) => {
+    const fn = a.cam && drawerFor(a.cam); if (!fn) return plainFighter(g, F, a);
+    const as = aliases[F.id]; if (!as) return fn(g, F, a);
+    const F2 = Object.create(F); F2.id = as; // the same actor as the figure; combat's defs read under the alias
+    const W2 = Object.create(a.W); W2.defs = { ...a.W.defs, [as]: a.W.defs[F.id] };
+    return fn(g, F2, { ...a, W: W2 });
+  });
   setPersonDrawer((g, p, a) => {
     const fn = a.cam && drawerFor(a.cam); if (!fn) return plainPerson(g, p, a);
     const anim = a.gesture ? a.gesture.anim : a.walking ? (a.running ? "run" : "walk") : "idle";
