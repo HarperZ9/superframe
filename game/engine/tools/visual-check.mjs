@@ -6,6 +6,7 @@
 //   - shadow pixels (dark and translucent, at the feet) where the plate under them is not the floor
 //     the figure stands on (more than 0.2 m off);
 //   - each figure's mid-tone luminance against the plate's around it, with a pass band (0.25 to 2.0: two stops darker to one stop brighter);
+//   - figure pixels drawn over painting more than 0.5 m nearer (occlusion), over 5% of the figure;
 //   - shadow pixels where shadows stack darker than one (alpha over 1.3 x the view's median + 0.05).
 // Writes a still and metrics per view and a summary; exits 1 when any view fails, loudly.
 //   node tools/visual-check.mjs [--port 8754] [--out dir] [--only view,view] [--chrome path]

@@ -32,12 +32,16 @@ async (opts) => {
     const around = []; for (let dr = -6; dr <= 6; dr++) for (let dq = -6; dq <= 6; dq++) { const q = q0 + dq, r = r0 + dr; if (q < 0 || r < 0 || q >= w || r >= h || prop(q, r)) continue; const cc = cells[r * w + q]; if (cc && Math.hypot(dq, dr) * cs <= 1.5) around.push(cc.h); }
     const floorAround = med(around), onTop = floorAround != null && f.at[1] - floorAround > 0.3;
     const body = [], ring = [];
-    for (let sy = y - 2.0 * ppm; sy < y - 0.15 * ppm; sy += Math.max(1, ppm / 40)) for (let sx = x - 0.45 * ppm; sx < x + 0.45 * ppm; sx += Math.max(1, ppm / 40)) { const p = px(sx, sy); if (p && p.a > 0.9) body.push(p.l); }
+    // figure pixels drawn where the painting stands more than 0.5 m nearer than the figure (a counter or wall in front): occlusion failures
+    const fd = cam.depthOf ? cam.depthOf(f.at) : null; let drawnOver = 0;
+    for (let sy = y - 2.0 * ppm; sy < y - 0.15 * ppm; sy += Math.max(1, ppm / 40)) for (let sx = x - 0.45 * ppm; sx < x + 0.45 * ppm; sx += Math.max(1, ppm / 40)) { const p = px(sx, sy); if (p && p.a > 0.9) { body.push(p.l); if (fd != null && cam.depthAt && cam.depthAt(sx, sy) < fd - 0.5) drawnOver++; } }
     for (let sy = y - 2.3 * ppm; sy < y + 0.4 * ppm; sy += Math.max(1, ppm / 20)) for (let sx = x - 1.6 * ppm; sx < x + 1.6 * ppm; sx += Math.max(1, ppm / 20)) { if (Math.abs(sx - x) < 0.6 * ppm && sy > y - 2.1 * ppm) continue; const l = plateLum(sx, sy); if (l != null) ring.push(l); }
     for (let sy = y - 0.35 * ppm; sy < y + 0.35 * ppm; sy++) for (let sx = x - 0.8 * ppm; sx < x + 0.8 * ppm; sx++) { const p = px(sx, sy); if (p && p.a >= 0.12 && p.a <= 0.88 && p.l < 0.12) { const gy = geoY(sx, sy); shadows.push({ a: p.a, off: gy == null ? false : Math.abs(gy - f.at[1]) > 0.2 }); } }
     const fb = med(body), pl = med(ring), ratio = fb != null && pl != null ? fb / Math.max(0.02, pl) : null;
-    const row = { who: f.who, fighter: !!f.fighter, at: f.at.map((v) => +v.toFixed(2)), inProp, onTop, figureLum: fb && +fb.toFixed(3), plateLum: pl && +pl.toFixed(3), ratio: ratio && +ratio.toFixed(2) };
+    const overShare = body.length ? drawnOver / body.length : 0;
+    const row = { who: f.who, fighter: !!f.fighter, at: f.at.map((v) => +v.toFixed(2)), inProp, onTop, drawnOver: +overShare.toFixed(3), figureLum: fb && +fb.toFixed(3), plateLum: pl && +pl.toFixed(3), ratio: ratio && +ratio.toFixed(2) };
     out.figures.push(row);
+    if (overShare > 0.05) out.fails.push(`${f.who}: ${(overShare * 100).toFixed(0)}% of the figure is drawn over painting that stands in front of it (occlusion)`);
     if (onTop) out.fails.push(`${f.who}: stands ${(f.at[1] - floorAround).toFixed(2)} m over the floor around it (on a counter, bench or table) at ${row.at.join(", ")}`);
     if (inProp) out.fails.push(`${f.who}: footprint overlaps ${inProp} prop cell(s) at ${row.at.join(", ")}`);
     if (ratio != null && (ratio < band[0] || ratio > band[1])) out.fails.push(`${f.who}: figure mid-tone ${row.figureLum} against plate ${row.plateLum} (ratio ${row.ratio}, band ${band.join(" to ")})`);
