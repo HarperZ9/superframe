@@ -130,5 +130,3 @@ CASES += [
      ("expect", "document.querySelector('.portrait').classList.contains('noface')", "Lamb never takes the slot")]},
   {"name": "portrait-720", "size": (1280, 720), "url": P + "talk", "steps": [("eval", "window.__shell.play.els.portrait.update({ who: 'fennick', speaker: 'Deacon Fennick', light: 'paraffin' })"), ("wait", 1500), ("shot", "portrait-720")]},
 ]
-CASES += [{"name": "portrait-debug", "url": P + "talk", "steps": [("eval", "window.__shell.play.els.portrait.update({ who: 'fennick', speaker: 'Deacon Fennick', light: 'sodium' })"), ("wait", 1500),
-  ("expect", "[...document.querySelectorAll('.portrait .pimg')].map(i => i.src + ':' + i.className + ':' + i.naturalWidth).join(' | ') + ' / ' + document.querySelector('.portrait').className", "debug")]}]

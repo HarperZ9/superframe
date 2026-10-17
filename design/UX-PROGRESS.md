@@ -54,3 +54,19 @@ and kept in order; each says what was done and where it landed.
     (6e30fab). `ui/buildstats.mjs` now reads only `preview()`; lost rows and one input asked for.
 14. **Catch check hardened.** The strip keeps every exchange line in `data-history`; the test freezes the
     loop before emitting and reads the history and the screen (`catch-hard`, both pass).
+15. **Creation over the painted scene** (`ui/create.mjs`, rebuilt): Precedents as cards with their claims,
+    compartments as pips with pillar words, the first note; a side page shows the focused choice in a
+    fight from `preview()`; only the Kit's instruments can be trusted; Begin takes focus after a choice.
+    Stills `create-act1-pad.png`, `create-act1-720.png`.
+16. **The inked page and chapter pages** (`ui/inked.mjs`): a Daybook leaf when a note inks (its `done:`
+    text, its effect in words), queued for a quiet moment; a chapter-page leaf on a `chapter` event; the
+    Build page inks compartment raises once the engine pays chapter pages. Still `inked-leaf.png`.
+17. **Map and waiting** (`ui/map.mjs`, `ui/waiting.mjs`): the Map page draws districts at their `map:`
+    points, walked ways in ink and the rest in pencil, focus describes each; "Wait for low water" (or high)
+    moves the night in ten-minute steps and stops at the turn, at anything the night has to say, or at
+    three hours. Stills `map-act1-focus.png`, `wait-turn.png`.
+18. **Portraits** (coordinator, 2026-10-17): slot built (`ui/portrait.mjs`), UI-SYSTEM 7.5, the character
+    lead's format agreed with three asks. Setting "Portraits in conversation".
+19. **Regression**: 92 of 93 checks pass. The one failure is the portrait check: at 23:24 the character
+    lead's portrait folder was being re-baked with no index file in it; the same check passed against the
+    lane index before the re-bake. Engine tests 116 of 116.
