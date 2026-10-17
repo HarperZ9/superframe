@@ -144,7 +144,7 @@ function interrogTurn(G, t, build, R, act) {
   const l = G.interrog.openLie(), b = t.beat;
   if (t.interrogRefresh) t.interrogRefresh();
   const b2 = Object.assign(b, t.beat); // the act loop holds b: keep it current
-  if (l && (!l.catch || G.flag(l.catch)) && (build === "eye" || opt.attentive || hashStr(l.id, R.shuffleSeed) % 2 === 0)) {
+  if (l && G.interrog.canCatch(l) && (build === "eye" || opt.attentive || hashStr(l.id, R.shuffleSeed) % 2 === 0)) {
     const i = b2.options.findIndex((o) => o.lie); if (i >= 0) { t.choose(i); R.liesCaught = (R.liesCaught || 0) + 1; return "chose"; }
   }
   // never the lie call by chance: only with a lie open and the fact held (above)
@@ -215,7 +215,7 @@ if (opt.interrogations) {
           if (G.interrog.outcome()) { t.interrogResolve(); break; }
           t.interrogRefresh();
           const l = G.interrog.openLie(), O = t.beat.options;
-          if (l && (!l.catch || G.flag(l.catch))) { const i = O.findIndex((o) => o.lie); if (i >= 0) { row.lies++; t.choose(i); if (G.interrog.current) continue; break; } }
+          if (l && G.interrog.canCatch(l)) { const i = O.findIndex((o) => o.lie); if (i >= 0) { row.lies++; t.choose(i); if (G.interrog.current) continue; break; } }
           const presses = O.filter((o) => !o.lie && !o.locked), sc = (o) => score(G, build, o, { seed: 1, ends: ENDS, menu: presses });
           const pick = [presses.filter((o) => o.style === STYLE(build)), presses.filter((o) => o.style === "any"), presses].map((L) => L.sort((x, y) => sc(y) - sc(x))[0]).find(Boolean);
           if (!pick) { row.why = "no press left"; for (let i = 0; i < 60 * 30 && G.interrog.current && !G.interrog.outcome(); i++) G.loop.step(); if (G.interrog.outcome()) t.interrogResolve(); break; } // live play: silence

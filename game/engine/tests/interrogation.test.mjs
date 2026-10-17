@@ -12,7 +12,7 @@ const SRC = { file: "ix.lwd", text: [
   "press: tongue \"Test: ask what he lost.\" -> x.t.lost {nerve: -2, heat: -1}",
   "press: shadow \"Test: the prints.\" -> x.t.prints ? has(t.prints) {nerve: -4}",
   "press: any \"Test: wait.\" -> x.t.wait {nerve: -1, again}",
-  "lie: l.boat \"Test: never left the boat.\" {catch: t.wet, nerve: -4, node: x.t.caught, after: 5}",
+  "lie: l.boat \"Test: never left the boat.\" {catch: t.wet | t.prints.seen, nerve: -4, node: x.t.caught, after: 5}",
   "tell: 3 \"Test: he stops turning the pipe.\"", "",
   "@node x.t.start", "speaker: MER", "line: MER: Test: ask, then.", "do: interrogate(x.t)", "return:", "",
   ...["collar", "lost", "prints", "wait", "caught"].flatMap((k) => [`@node x.t.${k}`, "speaker: MER", `line: MER: Test reply ${k}.`, "return:", ""]),
@@ -97,4 +97,11 @@ test("with every press used and the lie past, the person leaves by walk: after a
   for (const l of ["collar", "lost"]) pick(t, l); // nerve 1, heat 2 (collar +3, lost -1)
   for (let i = 0; i < 20 * 60 && !G.interrog.outcome(); i++) G.loop.step(); // the lie at 5 s, its window to 9 s, then 6 s
   assert.equal(G.interrog.outcome().kind, "walk");
+});
+
+test("a lie with several catch facts is caught by any one of them", () => {
+  const G = make(), t = G.talk("x.t.start"); G.state.flags.push("t.prints.seen");
+  assert.deepEqual(G.interrog.current.lies[0].catch, ["t.wet", "t.prints.seen"]);
+  for (let i = 0; i < 6 * 60; i++) G.loop.step(); t.interrogRefresh();
+  assert.ok(texts(pick(t, "That's a lie")).includes("Test reply caught."));
 });

@@ -14,7 +14,7 @@
 //          style is fist, tongue, shadow, hands, eye or any (a tag for the verb mark); a press with
 //          a skill is a visible check (pass applies the numbers, fail heat +1 only); once each
 //          unless {again}; its node is a short reply ending return:
-//   lie: id "text" {catch: fact, nerve: -n, heat, node, after: seconds}   said after `after`
+//   lie: id "text" {catch: fact | fact ..., nerve: -n, heat, node, after: seconds} (any one fact catches it)   said after `after`
 //          seconds (default 5); "That's a lie." within LIE_OPEN seconds by a Lamb holding the
 //          fact applies the numbers and plays the node; the call is offered only while a lie is
 //          open, and made without the fact it costs nerve +2
@@ -48,7 +48,7 @@ export function loadInterrogations(book) {
       const lies = r.kv.filter((e) => e.key === "lie").map((e) => {
         const { body, attrs } = splitAttrs(e.value), m = body.trim().match(/^(\S+)\s+"(.*)"$/);
         if (!m) throw new SyntaxError(`lie: expected id "text" {catch, nerve, node}, got ${e.value}`);
-        return { id: m[1], text: m[2], catch: attrs.catch || null, nerve: +attrs.nerve || 0, heat: +attrs.heat || 0, node: attrs.node || null, after: attrs.after != null ? +attrs.after : 5, line: e.line };
+        return { id: m[1], text: m[2], catch: attrs.catch ? String(attrs.catch).split("|").map((x) => x.trim()).filter(Boolean) : null, nerve: +attrs.nerve || 0, heat: +attrs.heat || 0, node: attrs.node || null, after: attrs.after != null ? +attrs.after : 5, line: e.line };
       });
       const tells = r.kv.filter((e) => e.key === "tell").map((e) => { const m = e.value.trim().match(/^(-?\d+)\s+(.*)$/); if (!m) throw new SyntaxError(`tell: expected N "text", got ${e.value}`); return { at: +m[1], text: unq(m[2]) }; });
       const d = { id: r.id, name: one(r, "name") || r.id, who: one(r, "who") || null, place: one(r, "place") || null,
@@ -96,6 +96,8 @@ export function createInterrogations(G, defs) {
       const S = api.current; if (!S || S.out) return [];
       return S.def.presses.filter((p) => (p.again || !S.used.has(p.key)) && (!p.cond || G.scope && evalCond(G, p.cond)));
     },
+    // a lie is caught by a Lamb holding any one of its catch facts (catch: a | b | c)
+    canCatch: (l) => !l.catch || l.catch.some((f) => G.flag(f)),
     openLie() { const S = api.current; return S && S.lies.find((l) => l.saidAt != null && !l.caught && S.t - l.saidAt <= LIE_OPEN) || null; },
     // A press: { node, pass } and the numbers applied (fail: heat +1 only).
     press(p, { pass = true } = {}) {
@@ -110,7 +112,7 @@ export function createInterrogations(G, defs) {
       const S = api.current; if (!S || S.out) return null; S.busy = true;
       S.lastPress = S.t; S.quiet = 0;
       const l = api.openLie();
-      if (l && (!l.catch || G.flag(l.catch))) { l.caught = true; S.nerve += l.nerve; S.heat = Math.max(0, S.heat + l.heat); api.afterNumbers(); S.busy = false; G.emit("interrog.caught", { id: l.id }); return { node: l.node, caught: true }; }
+      if (l && api.canCatch(l)) { l.caught = true; S.nerve += l.nerve; S.heat = Math.max(0, S.heat + l.heat); api.afterNumbers(); S.busy = false; G.emit("interrog.caught", { id: l.id }); return { node: l.node, caught: true }; }
       S.nerve += 2; api.afterNumbers(); S.busy = false; return { node: null, caught: false };
     },
     afterNumbers() {
