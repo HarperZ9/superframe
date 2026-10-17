@@ -124,6 +124,7 @@ opt: "Go to the gully and cross to the drowned lamp." -> floor.gully ? tide < -0
 opt: "Go to the gully and look across." -> floor.gully.closed ? tide >= -0.35 +2
 opt: "Climb about the ribs of the old hull." -> floor.wreck +1 {verb: climb, noise: 0.1}
 opt: "Look in the pool under the Brine's drain." -> floor.pool ? tide < -0.31
+opt: "A lantern is moving in the drowned lamp's doorway. Go and ask whose." -> x1.merrow.start.floor ? clock >= 23:20 & clock < 23:50 & !has(merrow.told) & !has(merrow.cells)
 opt: "Go back up the steps to the quay." -> quay.hub +3
 
 # ---------------------------------------------------------------- the floor closed
