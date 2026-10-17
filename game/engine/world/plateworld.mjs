@@ -13,6 +13,8 @@
 //   depthOf(cam, p)                  a world point's distance along the same axis
 //   fightFromScene(G, place, encId)  { fight marks laid where the scene stands, figure ids taken }
 const KNEE = 0.45;
+// The ground grid's cell for walking and fights on a plate (metres): fine enough for a body radius.
+export const GROUND_CELL = 0.25;
 
 const cellIndex = (arena, x, z) => {
   const c = arena.cell, [ox, oz] = arena.origin, ci = Math.floor((x - ox) / c), ri = Math.floor((z - oz) / c);
@@ -31,10 +33,10 @@ export function walkable(arena, x, z, waterY = -Infinity) {
   return h != null && !(waterY - h > KNEE);
 }
 
-function open(arena, ci, ri, waterY) {
+function open(arena, ci, ri, waterY, soft = true) {
   if (ci < 0 || ri < 0 || ci >= arena.grid.w || ri >= arena.grid.h) return false;
   const c = arena.grid.cells[ri * arena.grid.w + ci];
-  return !!c && !(waterY - c.h > KNEE);
+  return !!c && !(waterY - c.h > KNEE) && (soft || !c.margin);
 }
 
 // The nearest open cell to (x, z) within `reach` metres, or null.
@@ -44,14 +46,18 @@ export function nearestOpen(arena, x, z, waterY = -Infinity, reach = 2) {
   let best = null;
   for (let dr = -R; dr <= R; dr++) for (let dc = -R; dc <= R; dc++) {
     const ci = k[0] + dc, ri = k[1] + dr; if (!open(arena, ci, ri, waterY)) continue;
-    const d = dc * dc + dr * dr; if (d <= R * R && (!best || d < best.d)) best = { ci, ri, d };
+    const d = dc * dc + dr * dr + (inBig(arena, ri * arena.grid.w + ci) ? 0 : 1e6); if (d <= R * R + (d >= 1e6 ? 1e6 : 0) && (!best || d < best.d)) best = { ci, ri, d };
   }
   return best && [best.ci, best.ri];
 }
 
 // A* over the grid, eight ways, no corner cutting; the result is cell centres with the straight
 // runs dropped, ending on the goal point itself when its cell is open.
-export function findPath(arena, from, to, { waterY = -Infinity, maxNodes = 60000 } = {}) {
+export function findPath(arena, from, to, opts = {}) {
+  // a body keeps its margin off props where it can (hardenGround soft margins), and squeezes when it must
+  return pathOn(arena, from, to, { ...opts, soft: false }) || pathOn(arena, from, to, { ...opts, soft: true });
+}
+function pathOn(arena, from, to, { waterY = -Infinity, maxNodes = 60000, soft = true } = {}) {
   const s = nearestOpen(arena, from[0], from[1], waterY, 1.5), g = nearestOpen(arena, to[0], to[1], waterY, 2);
   if (!s || !g) return null;
   const W = arena.grid.w, key = (c, r) => r * W + c, goal = key(g[0], g[1]);
@@ -65,8 +71,8 @@ export function findPath(arena, from, to, { waterY = -Infinity, maxNodes = 60000
     if (closed.has(k)) continue; closed.add(k);
     for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
       if (!dr && !dc) continue;
-      const nc = c + dc, nr = r + dr; if (!open(arena, nc, nr, waterY)) continue;
-      if (dr && dc && (!open(arena, c + dc, r, waterY) || !open(arena, c, r + dr, waterY))) continue;
+      const nc = c + dc, nr = r + dr; if (!open(arena, nc, nr, waterY, soft) && !(nc === g[0] && nr === g[1])) continue;
+      if (dr && dc && (!open(arena, c + dc, r, waterY, soft) || !open(arena, c, r + dr, waterY, soft))) continue;
       const nk = key(nc, nr), t = gScore.get(k) + (dr && dc ? Math.SQRT2 : 1);
       if (t < (gScore.get(nk) ?? Infinity)) { gScore.set(nk, t); came.set(nk, k); open_.push([t + hdist(nc, nr), nc, nr]); }
     }
@@ -127,3 +133,136 @@ export function fightFromScene(G, pj, id) {
   }
   return { fight: { ...(mark || {}), lamb: pos ? [pos[0], pos[2]] : mark && mark.lamb, foes }, taken, aliases }; // aliases: fighter id -> the figure it was
 }
+
+// ---- Collision (author, 2026-10-17: "Characters clipping through objects")
+// A plate's ground grid (combat's plateArena) knows where walkable material is seen; it does not
+// know that a bench top, a counter or a wall face stands over a cell. hardenGround() looks at
+// every geo sample again and closes:
+//   - a cell with anything standing in it: at least three samples of any material more than
+//     `propStep` (0.4 m, over a stair riser) and less than `head` (2.0 m) above the cell's floor
+//     (a bench, the bar, a wall face, a post);
+//   - a cell more than `step` above the median of its open neighbours (a low prop read as floor);
+// then keeps a body's radius (0.3 m) clear: an open cell whose centre is nearer than `radius` to a
+// closed cell (or the grid's edge) closes too, so paths, walking and fights keep a body out of the
+// props. The arena is changed in place; spawns are moved clear again. Returns
+// { closed, props, steps, margin } counts.
+//   blockedAt(arena, x, z)   true where the hardened grid has no ground
+export function groundMask(arena, place, pos, ids, { step = 0.3, propStep = 0.4, head = 2.0, minProp = 3 } = {}) {
+  const { w, h, cells } = arena.grid, c = arena.cell, [ox, oz] = arena.origin;
+  const s = place.geoScale || 1, gw = Math.round(place.width * s), gh = Math.round(place.height * s), sx = place.width / gw;
+  const tall = new Uint16Array(w * h), prop = new Uint8Array(w * h), seen = new Uint32Array(w * h), top = new Float32Array(w * h).fill(-Infinity);
+  for (let gy = 0; gy < gh; gy++) for (let gx = 0; gx < gw; gx++) {
+    const k = (gy * gw + gx) * 3, x = pos[k], y = pos[k + 1], z = pos[k + 2];
+    if (!Number.isFinite(x)) continue;
+    const ci = Math.floor((x - ox) / c), ri = Math.floor((z - oz) / c);
+    if (ci < 0 || ri < 0 || ci >= w || ri >= h) continue;
+    seen[ri * w + ci]++; if (y > top[ri * w + ci]) top[ri * w + ci] = y;
+    const cell = cells[ri * w + ci]; if (!cell) continue;
+    const up = y - cell.h; if (up > propStep && up < head) tall[ri * w + ci]++;
+    void ids; void sx;
+  }
+  // a stray sample is noise; a prop shows as several (minProp, default 3)
+  for (let i = 0; i < w * h; i++) if (tall[i] >= minProp) prop[i] = 1;
+  const raised = new Uint8Array(w * h);
+  for (let r = 0; r < h; r++) for (let q = 0; q < w; q++) {
+    const cell = cells[r * w + q]; if (!cell || prop[r * w + q]) continue;
+    const nb = []; for (let dr = -1; dr <= 1; dr++) for (let dq = -1; dq <= 1; dq++) { if (!dr && !dq) continue; const n = (q + dq >= 0 && r + dr >= 0 && q + dq < w && r + dr < h) ? cells[(r + dr) * w + q + dq] : null; if (n && !prop[(r + dr) * w + q + dq]) nb.push(n.h); }
+    if (nb.length >= 3) { nb.sort((a, b) => a - b); if (cell.h - nb[nb.length >> 1] > step) raised[r * w + q] = 1; }
+  }
+  return { prop, raised, seen, top };
+}
+
+export function hardenGround(arena, place, pos, ids, { step = 0.3, head = 2.0, radius = 0.3, marginFrom = "props", margin = "soft" } = {}) {
+  const { w, h, cells } = arena.grid, c = arena.cell;
+  const n = { filled: 0, closed: 0, props: 0, steps: 0, margin: 0 };
+  // floor the camera cannot see well (behind a barrel or a table leg) is not a wall: fillHidden first
+  { const m0 = groundMask(arena, place, pos, ids, { step, head }); fillHidden(arena, m0.top, step, n); }
+  const { prop, raised } = groundMask(arena, place, pos, ids, { step, head });
+  const shut = new Uint8Array(w * h);
+  const wall = new Uint8Array(w * h);
+  for (let i = 0; i < w * h; i++) { if (!cells[i]) shut[i] = 1; else if (prop[i]) { shut[i] = wall[i] = 1; n.props++; } else if (raised[i]) { shut[i] = wall[i] = 1; n.steps++; } }
+  const R = Math.ceil(radius / c) + 1, near = [];
+  for (let r = 0; r < h; r++) for (let q = 0; q < w; q++) {
+    if (shut[r * w + q]) continue;
+    let dist = Infinity;
+    for (let dr = -R; dr <= R && dist >= radius; dr++) for (let dq = -R; dq <= R; dq++) {
+      const qq = q + dq, rr = r + dr, out = qq < 0 || rr < 0 || qq >= w || rr >= h;
+      if (!out && !shut[rr * w + qq]) continue;
+      if (marginFrom === "props" && (out || !wall[rr * w + qq])) continue;
+      const ex = Math.max(0, Math.abs(dq) - 0.5) * c, ez = Math.max(0, Math.abs(dr) - 0.5) * c, d = Math.hypot(ex, ez);
+      if (d < dist) dist = d;
+    }
+    if (dist < radius) near.push(r * w + q);
+  }
+  for (let i = 0; i < w * h; i++) if (shut[i] && cells[i]) { cells[i] = null; n.closed++; }
+  // the body's margin: "hard" closes it (fights), "soft" marks it (walking: kept out of when there
+  // is another way, used to squeeze past a bollard when there is not)
+  for (const i of near) { if (!cells[i]) continue; n.margin++; if (margin === "hard") { cells[i] = null; n.closed++; } else cells[i] = { ...cells[i], margin: true }; }
+  arena.hardened = { step, head, radius };
+  labelRegions(arena);
+  return n;
+}
+
+// A cell with no ground seen, open floor at one height around it, and nothing in it taller than a
+// stair riser (only floor-level samples, or none: floor hidden behind a barrel or a table leg) is filled
+// as floor. A cell with something tall in it stays shut.
+function fillHidden(arena, top, step, n) {
+  const { w, h, cells } = arena.grid;
+  for (let pass = 0; pass < 3; pass++) {
+    const add = [];
+    for (let r = 0; r < h; r++) for (let q = 0; q < w; q++) {
+      const i = r * w + q; if (cells[i]) continue;
+      const nb = []; for (let dr = -1; dr <= 1; dr++) for (let dq = -1; dq <= 1; dq++) { if (!dr && !dq) continue; const qq = q + dq, rr = r + dr; const x = qq >= 0 && rr >= 0 && qq < w && rr < h ? cells[rr * w + qq] : null; if (x) nb.push(x); }
+      if (nb.length < 4) continue;
+      const hs = nb.map((x) => x.h).sort((a, b) => a - b); if (hs[hs.length - 1] - hs[0] > step) continue;
+      const est = hs[hs.length >> 1]; if (top[i] > est + 0.4) continue;
+      add.push([i, { h: est, surface: nb[0].surface, hidden: true }]);
+    }
+    for (const [i, cell] of add) { cells[i] = cell; n.filled++; }
+    if (!add.length) break;
+  }
+}
+
+// For a body at (x, z): the grid says yes, and a step from outside a margin does not go into one.
+export function bodyCan(arena, from, x, z, waterY = -Infinity) {
+  if (!walkable(arena, x, z, waterY)) return false;
+  const k = cellIndex(arena, x, z), c = arena.grid.cells[k[1] * arena.grid.w + k[0]];
+  if (!c.margin) return true;
+  const f = cellIndex(arena, from[0], from[1]), fc = f && arena.grid.cells[f[1] * arena.grid.w + f[0]];
+  return !fc || !!fc.margin;
+}
+// The nearest spot for a figure to stand: its own when clear, else the nearest cell with no prop and
+// no margin within reach (2 m), else the nearest open cell.
+export function clearSpot(arena, at, reach = 2) {
+  const k = cellIndex(arena, at[0], at[2]), c0 = k && arena.grid.cells[k[1] * arena.grid.w + k[0]];
+  if (c0 && !c0.margin && inBig(arena, k[1] * arena.grid.w + k[0])) return at;
+  const { w, h, cells } = arena.grid, R = Math.ceil(reach / arena.cell), b = k || [Math.floor((at[0] - arena.origin[0]) / arena.cell), Math.floor((at[2] - arena.origin[1]) / arena.cell)];
+  let best = null;
+  for (let dr = -R; dr <= R; dr++) for (let dq = -R; dq <= R; dq++) {
+    const q = b[0] + dq, r = b[1] + dr; if (q < 0 || r < 0 || q >= w || r >= h) continue;
+    const c = cells[r * w + q]; if (!c) continue;
+    const d = Math.hypot(dq, dr) + (c.margin ? 100 : 0) + (inBig(arena, r * w + q) ? 0 : 1000);
+    if (!best || d < best.d) best = { d, q, r, c };
+  }
+  if (!best) return at;
+  const [x, z] = centre(arena, best.q, best.r);
+  return [x, best.c.h, z];
+}
+
+// Connected regions of open ground (four-way). A pocket left between props (a cell or two behind a
+// bollard) is no place to start or end a walk: nearestOpen and clearSpot prefer cells in a region
+// of at least BIG cells (about 2.5 square metres at quarter-metre cells).
+export const BIG = 40;
+export function labelRegions(arena) {
+  const { w, h, cells } = arena.grid, lab = new Int32Array(w * h).fill(-1), size = [];
+  for (let i = 0; i < w * h; i++) {
+    if (!cells[i] || lab[i] >= 0) continue;
+    const id = size.length, st = [i]; lab[i] = id; let n = 0;
+    while (st.length) { const j = st.pop(); n++; const q = j % w, r = (j / w) | 0; for (const [dq, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const qq = q + dq, rr = r + dr; if (qq < 0 || rr < 0 || qq >= w || rr >= h) continue; const k = rr * w + qq; if (cells[k] && lab[k] < 0) { lab[k] = id; st.push(k); } } }
+    size.push(n);
+  }
+  arena.regions = { lab, size };
+}
+const inBig = (arena, i) => !arena.regions || arena.regions.size[arena.regions.lab[i]] >= BIG;
+
+export const blockedAt = (arena, x, z) => groundAt(arena, x, z) == null;

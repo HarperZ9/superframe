@@ -11,7 +11,7 @@
 //   cam.depthOf(p), cam.place(), cam.arena(), cam.geo(), cam.ready(), cam.onLoad(fn)
 import { h } from "./dom.mjs";
 import { cameraScale, frame, ease, projectPlate } from "../world/camera.mjs";
-import { camBasis, depthOf, geoAt } from "../world/plateworld.mjs";
+import { camBasis, depthOf, geoAt, hardenGround, GROUND_CELL } from "../world/plateworld.mjs";
 import { plateArena } from "../combat/sim/plate.mjs";
 
 const places = new Map(); // plate name -> place.json (or null when missing)
@@ -27,7 +27,8 @@ function plateGeo(name, pj) {
     const [p, i] = await Promise.all([`/content/${name}/geo-pos.f32`, `/content/${name}/geo-id.u8`].map(async (u) => { const r = await fetch(u); if (!r.ok) throw new Error(`${u}: ${r.status}`); return r.arrayBuffer(); }));
     const pos = new Float32Array(p), ids = new Uint8Array(i);
     let arena = null;
-    try { arena = plateArena(pj, pos, ids, { datum: pj.datum || null }); } catch (e) { console.warn(`platecam: no walking ground on ${name}: ${e.message}`); }
+    // the ground at quarter-metre cells, props closed and a body's margin kept (world/plateworld.mjs hardenGround)
+    try { arena = plateArena(pj, pos, ids, { datum: pj.datum || null, cell: GROUND_CELL }); arena.collision = hardenGround(arena, pj, pos, ids, { margin: "soft" }); } catch (e) { console.warn(`platecam: no walking ground on ${name}: ${e.message}`); }
     return { pos, ids, arena };
   })().catch((e) => { console.warn(`platecam: no geo buffers for ${name}: ${e.message}`); return null; }));
   return geos.get(name);

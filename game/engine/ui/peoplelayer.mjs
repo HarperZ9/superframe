@@ -17,7 +17,7 @@
 import { h } from "./dom.mjs";
 import { personDrawer } from "./figures.mjs";
 import { evaluate } from "../core/expr.mjs";
-import { findPath, groundAt, walkable, camBasis } from "../world/plateworld.mjs";
+import { findPath, groundAt, walkable, camBasis, bodyCan, clearSpot } from "../world/plateworld.mjs";
 
 const TALK = ["talk_a", "talk_b", "talk_c"], GESTURE_S = 2.4;
 
@@ -50,7 +50,8 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     S.run = !!G.input.get("run") && performance.now() >= S.runLock; S.path = null; S.then = null;
     const sp = (S.run ? rule("run-speed", 3.6) : rule("walk-speed", 1.5)) * dt * Math.min(1, L), nx = pos[0] + dx * sp, nz = pos[2] + dz * sp;
     S.face.lamb = Math.atan2(dz, dx);
-    if (A && !walkable(A, nx, nz, waterY(A))) return true;
+    if (A && !bodyCan(A, [pos[0], pos[2]], nx, nz, waterY(A))) return true; // props, and the body's margin off them
+    if (crowded("lamb", pos, nx, nz)) return true; // never into another body
     const y = A ? groundAt(A, nx, nz) : null;
     if (A && y != null && Math.abs(y - pos[1]) > 0.6) return true;
     G.state.pos = [nx, y ?? pos[1], nz]; S.metres += sp; S.moving = true; S.vel = [dx * sp / dt, dz * sp / dt];
@@ -66,6 +67,8 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     const [tx, tz] = S.path[0], dx = tx - pos[0], dz = tz - pos[2], d = Math.hypot(dx, dz);
     const k = d <= sp ? 1 : sp / d, nx = pos[0] + dx * k, nz = pos[2] + dz * k, y = A ? groundAt(A, nx, nz) : null;
     if (d > 1e-4) S.face.lamb = Math.atan2(dz, dx);
+    if (crowded("lamb", pos, nx, nz)) { S.blocked = (S.blocked || 0) + dt; if (S.blocked > 1.2) { S.blocked = 0; S.path = null; const then = S.then; S.then = null; if (then) then(); } return; } // someone stands in the way: wait, then stop short
+    S.blocked = 0;
     G.state.pos = [nx, y ?? pos[1], nz]; S.metres += Math.min(d, sp); S.moving = d > 1e-4; S.vel = d > 1e-4 ? [(dx / d) * Math.min(d, sp) / dt, (dz / d) * Math.min(d, sp) / dt] : [0, 0];
     if (d <= sp) S.path.shift();
     if (!S.path.length) {
@@ -75,11 +78,32 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
       const then = S.then; S.then = null; if (then) then();
     }
   }
-  function figures() {
+  // Bodies keep apart (about 0.6 m centre to centre): a step that brings `who` nearer than that to
+  // anyone else is refused; a step away is always allowed, so nobody sticks.
+  const SEP = 0.6;
+  function crowded(who, from, nx, nz) {
+    for (const o of figures(true)) {
+      if (o.who === who) continue;
+      const d1 = Math.hypot(nx - o.at[0], nz - o.at[2]); if (d1 >= SEP) continue;
+      if (d1 < Math.hypot(from[0] - o.at[0], from[2] - o.at[2])) return true;
+    }
+    return false;
+  }
+  // A figure's spot: where a fight left it, else its authored spot moved clear of props (a figure
+  // never stands in a bench; the list of moved spots is tools/visual-check.mjs --marks).
+  const homes = new Map();
+  function homeOf(f) {
+    if (G.figureMoved && G.figureMoved[f.id]) return G.figureMoved[f.id];
+    const A = cam.arena(), key = `${(cam.area() || {}).id}|${f.id}|${f.at.join(",")}`;
+    if (!A) return f.at;
+    if (!homes.has(key)) homes.set(key, clearSpot(A, f.at));
+    return homes.get(key);
+  }
+  function figures(all = false) {
     const out = [], a = lambAt();
     if (a) out.push({ who: "lamb", at: a, face: S.face.lamb ?? 0, walking: S.moving, running: S.moving && S.run });
-    for (const f of G.world.figures()) { const w = S.wander[f.id]; out.push({ who: f.id, at: (w && w.at) || (G.figureMoved && G.figureMoved[f.id]) || f.at, face: S.face[f.id] ?? (+f.face < 0 ? Math.PI : 0), walking: !!(w && w.moving) }); }
-    return out.filter((f) => !S.hidden.has(f.who));
+    for (const f of G.world.figures()) { const w = S.wander[f.id]; out.push({ who: f.id, at: (w && w.at) || homeOf(f), face: S.face[f.id] ?? (+f.face < 0 ? Math.PI : 0), walking: !!(w && w.moving) }); }
+    return all ? out : out.filter((f) => !S.hidden.has(f.who));
   }
   function gestureOf(who, dt) {
     const gs = S.gesture[who];
@@ -105,15 +129,15 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
   function wanderStep(dt) {
     const A = cam.arena(), spots = (G.figureAt ||= {});
     for (const f of G.world.figures()) {
-      if (!f.wander) { delete S.wander[f.id]; delete spots[f.id]; continue; }
-      const w = (S.wander[f.id] ||= { at: [...((G.figureMoved && G.figureMoved[f.id]) || f.at)], to: null, wait: 1 + (f.id.length % 3), moving: false });
+      if (!f.wander) { delete S.wander[f.id]; spots[f.id] = homeOf(f); continue; } // a standing figure: on its clear spot
+      const w = (S.wander[f.id] ||= { at: [...homeOf(f)], to: null, wait: 1 + (f.id.length % 3), moving: false });
       w.moving = false;
       if (S.talking === f.id || S.hidden.has(f.id)) { spots[f.id] = w.at; continue; }
-      if (!w.to) { w.wait -= dt; if (w.wait <= 0) { const a = Math.random() * Math.PI * 2, r = f.wander * Math.sqrt(Math.random()), t = [f.at[0] + Math.cos(a) * r, f.at[2] + Math.sin(a) * r]; if (!A || groundAt(A, t[0], t[1]) != null) w.to = t; else w.wait = 0.5; } }
+      if (!w.to) { w.wait -= dt; if (w.wait <= 0) { const a = Math.random() * Math.PI * 2, r = f.wander * Math.sqrt(Math.random()), t = [f.at[0] + Math.cos(a) * r, f.at[2] + Math.sin(a) * r]; const tt = A ? clearSpot(A, [t[0], 0, t[1]], 0.6) : null; if (!A) w.to = t; else if (tt && groundAt(A, tt[0], tt[2]) != null) w.to = [tt[0], tt[2]]; else w.wait = 0.5; } }
       else {
         const dx = w.to[0] - w.at[0], dz = w.to[1] - w.at[2], d = Math.hypot(dx, dz), sp = 1.1 * dt;
         if (d <= sp) { w.at = [w.to[0], A ? groundAt(A, w.to[0], w.to[1]) ?? w.at[1] : w.at[1], w.to[1]]; w.to = null; w.wait = 2 + Math.random() * 4; }
-        else { const nx = w.at[0] + (dx / d) * sp, nz = w.at[2] + (dz / d) * sp, y = A ? groundAt(A, nx, nz) : null; if (A && y == null) { w.to = null; w.wait = 1; } else { w.at = [nx, y ?? w.at[1], nz]; w.moving = true; S.face[f.id] = Math.atan2(dz, dx); } }
+        else { const nx = w.at[0] + (dx / d) * sp, nz = w.at[2] + (dz / d) * sp, y = A ? groundAt(A, nx, nz) : null; if ((A && (y == null || !bodyCan(A, [w.at[0], w.at[2]], nx, nz))) || crowded(f.id, w.at, nx, nz)) { w.to = null; w.wait = 1; } else { w.at = [nx, y ?? w.at[1], nz]; w.moving = true; S.face[f.id] = Math.atan2(dz, dx); } }
       }
       spots[f.id] = w.at;
     }

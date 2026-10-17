@@ -88,3 +88,25 @@ test("^hub with no hub visited goes to the hub of the place Lamb is in", () => {
   const talk = G.talk("t.ph.away");
   assert.ok(talk.beat.lines.some((l) => /The place's hub/.test(l.text)));
 });
+
+// Collision: a 2 m square of quarter-metre cells, a bench in the middle, a hidden hole by the edge.
+import { hardenGround, bodyCan, clearSpot } from "../world/plateworld.mjs";
+function benchPlate(margin) {
+  const n = 8, cells = Array.from({ length: n * n }, () => ({ h: 0, surface: "wood" })); cells[1 * n + 1] = null; // a hole no sample sees
+  const S = [];
+  for (let r = 0; r < n; r++) for (let q = 0; q < n; q++) if (!(q === 1 && r === 1)) S.push(q * 0.25 + 0.12, 0, r * 0.25 + 0.12);
+  for (let k = 0; k < 5; k++) S.push(4 * 0.25 + 0.05 + k * 0.03, 0.45, 4 * 0.25 + 0.1); // a bench seat in cell (4, 4)
+  const A = { cell: 0.25, origin: [0, 0], grid: { w: n, h: n, cells } }, place = { width: S.length / 3, height: 1, geoScale: 1 };
+  return { A, n: hardenGround(A, place, new Float32Array(S), null, { margin }) };
+}
+test("collision: a prop closes its cell, its neighbours keep a body's margin, hidden floor is filled", () => {
+  const { A, n } = benchPlate("soft");
+  assert.equal(n.props, 1); assert.equal(n.filled, 1, "the unseen hole by the edge is floor");
+  assert.equal(groundAt(A, 1.1, 1.1), null, "nobody stands in the bench");
+  assert.ok(A.grid.cells[4 * 8 + 3].margin, "beside the bench is margin");
+  assert.equal(bodyCan(A, [0.3, 0.3], 0.88, 1.1), false, "a step from open floor into the margin is refused");
+  assert.equal(bodyCan(A, [0.88, 1.1], 0.6, 1.1), true, "a step out of the margin is allowed");
+  assert.deepEqual(clearSpot(A, [1.1, 0, 1.1]).length, 3);
+  const c = clearSpot(A, [1.1, 0, 1.1]); assert.ok(!A.grid.cells[Math.floor(c[2] / 0.25) * 8 + Math.floor(c[0] / 0.25)].margin, "a figure on the bench moves to clear floor");
+  const H = benchPlate("hard"); assert.equal(H.A.grid.cells[4 * 8 + 3], null, "hard margins close (fights could use this)");
+});

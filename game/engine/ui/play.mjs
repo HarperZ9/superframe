@@ -24,9 +24,9 @@ import { portraitSlot, lightOf } from "./portrait.mjs";
 import { glyph, onDevice, watchDevice } from "./bindings.mjs";
 import { peopleLayer } from "./peoplelayer.mjs";
 import { weatherLayer } from "./weatherlayer.mjs";
-import { plateArena } from "../combat/sim/plate.mjs";
+import { plateArena, snapClear } from "../combat/sim/plate.mjs";
 import { PLATE_OF } from "../combat/data/plates.mjs";
-import { fightFromScene } from "../world/plateworld.mjs";
+import { fightFromScene, hardenGround, GROUND_CELL } from "../world/plateworld.mjs";
 
 const WAIT = 10; // minutes one "wait" lets pass
 
@@ -282,7 +282,12 @@ function usePlateFor(G, cam, id) {
   const C = G.ext.combat, enc = C && C.defs[id], pj = cam && cam.place && cam.place(), geo = cam && cam.geo && cam.geo();
   if (!enc || !pj || !geo || PLATE_OF[enc.area] !== pj.place) return { taken: [], aliases: {} };
   const S = fightFromScene(G, pj, id);
-  try { C.usePlate(enc.area, plateArena(pj, geo.pos, geo.ids, { datum: pj.datum || null, fight: S.fight })); }
+  try {
+    const A = plateArena(pj, geo.pos, geo.ids, { datum: pj.datum || null, fight: S.fight, cell: GROUND_CELL });
+    A.collision = hardenGround(A, pj, geo.pos, geo.ids, { margin: "soft" }); // props closed for fighters too; margins marked (cell.margin) for combat's AI
+    A.spawns = { lamb: snapClear(A, A.spawns.lamb), foes: A.spawns.foes.map((f) => snapClear(A, f)) }; // clear of what hardening closed
+    C.usePlate(enc.area, A);
+  }
   catch (e) { console.warn(`fight ${id}: no plate arena on ${pj.place}: ${e.message}`); return { taken: [], aliases: {} }; }
   return S;
 }
