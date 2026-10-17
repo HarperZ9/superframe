@@ -17,7 +17,7 @@
 import { h } from "./dom.mjs";
 import { personDrawer } from "./figures.mjs";
 import { evaluate } from "../core/expr.mjs";
-import { findPath, groundAt, walkable, camBasis, bodyCan, clearSpot, spotKind, clearAhead } from "../world/plateworld.mjs";
+import { findPath, groundAt, walkable, camBasis, bodyCan, clearSpot, spotKind, clearAhead, seatOf } from "../world/plateworld.mjs";
 
 const TALK = ["talk_a", "talk_b", "talk_c"], GESTURE_S = 2.4;
 
@@ -67,7 +67,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     const [tx, tz] = S.path[0], dx = tx - pos[0], dz = tz - pos[2], d = Math.hypot(dx, dz);
     const k = d <= sp ? 1 : sp / d, nx = pos[0] + dx * k, nz = pos[2] + dz * k, y = A ? groundAt(A, nx, nz) : null;
     if (d > 1e-4) S.face.lamb = Math.atan2(dz, dx);
-    if (crowded("lamb", pos, nx, nz)) { S.blocked = (S.blocked || 0) + dt; if (S.blocked > 1.2) { S.blocked = 0; S.path = null; const then = S.then; S.then = null; if (then) then(); } return; } // someone stands in the way: wait, then stop short
+    if (crowded("lamb", pos, nx, nz)) { S.blocked = (S.blocked || 0) + dt; if (S.blocked > 1.2) { S.blocked = 0; S.path = null; const then = S.then; S.then = null; const A2 = cam.arena(), c = A2 && clearSpot(A2, pos, 0.6, { strict: true }); if (c && Math.hypot(c[0] - pos[0], c[2] - pos[2]) > 0.05) S.path = [[c[0], c[2]]]; if (then) then(); } return; } // someone stands in the way: wait, then stop short, on clear floor (not against a prop)
     S.blocked = 0;
     G.state.pos = [nx, y ?? pos[1], nz]; S.metres += Math.min(d, sp); S.moving = d > 1e-4; S.vel = d > 1e-4 ? [(dx / d) * Math.min(d, sp) / dt, (dz / d) * Math.min(d, sp) / dt] : [0, 0];
     if (d <= sp) S.path.shift();
@@ -78,9 +78,9 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
       const then = S.then; S.then = null; if (then) then();
     }
   }
-  // Bodies keep apart (about 0.6 m centre to centre): a step that brings `who` nearer than that to
+  // Bodies keep apart (0.8 m centre to centre): a step that brings `who` nearer than that to
   // anyone else is refused; a step away is always allowed, so nobody sticks.
-  const SEP = 0.6;
+  const SEP = 0.8; // coats and shoulders: two bodies 0.6 m apart still touch on screen (visual-check silhouettes)
   // A seated body reaches its knees and feet about 0.8 m forward of the chair (character lead): its
   // keep-out is the segment from the seat to 0.8 m along its facing, not only the seat.
   const SEAT_REACH = 0.8;
@@ -101,14 +101,25 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
   // A figure's spot: where a fight left it, else its authored spot moved clear of props (a figure
   // never stands in a bench; the list of moved spots is tools/visual-check.mjs --marks).
   const homes = new Map();
+  // A seated figure sits on the seat the plate shows near its mark (world/plateworld.mjs seatOf), facing
+  // the way the chair faces; with no seat found, on its mark as written.
+  const seats = new Map();
+  function seatedAt(f) {
+    const pj = cam.place(), geo = cam.geo(); if (!pj || !geo) return f.at;
+    const k = `${pj.place}|${f.id}|${f.at.join(",")}`;
+    if (!seats.has(k)) seats.set(k, seatOf(pj, geo.pos, f.at));
+    const s = seats.get(k); if (!s) return f.at;
+    if (s.face != null) S.face[f.id] = s.face;
+    return s.at;
+  }
   function homeOf(f) {
     if (G.figureMoved && G.figureMoved[f.id]) return G.figureMoved[f.id];
     const A = cam.arena(), key = `${(cam.area() || {}).id}|${f.id}|${f.at.join(",")}`;
     if (!A) return f.at;
     if (!homes.has(key)) {
-      let at = spotKind(A, f.at) === "void" || f.pose === "seated" ? f.at : clearSpot(A, f.at); // a seated figure keeps its chair // behind a counter stays; in or on a prop moves
+      let at = spotKind(A, f.at) === "void" ? f.at : f.pose === "seated" ? seatedAt(f) : clearSpot(A, f.at); // a seated figure sits on its chair's seat // behind a counter stays; in or on a prop moves
       // and never on top of someone already placed: the nearest clear spot SEP from every other home
-      const taken = [...homes.values()], near = (p) => taken.some((o) => Math.hypot(p[0] - o[0], p[2] - o[2]) < SEP);
+      const taken = [...homes.values(), ...(lambAt() ? [lambAt()] : [])], near = (p) => taken.some((o) => Math.hypot(p[0] - o[0], p[2] - o[2]) < SEP);
       if (near(at)) for (let rad = 0.25; rad <= 1.5 && near(at); rad += 0.25) for (let k = 0; k < 12; k++) { const a = (k / 12) * Math.PI * 2, p = [at[0] + Math.cos(a) * rad, at[1], at[2] + Math.sin(a) * rad]; if (spotKind(A, p) === "clear" && !near(p)) { at = [p[0], groundAt(A, p[0], p[2]) ?? at[1], p[2]]; break; } }
       homes.set(key, at);
     }
@@ -117,7 +128,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
   function figures(all = false) {
     const out = [], a = lambAt();
     if (a) out.push({ who: "lamb", at: a, face: S.face.lamb ?? 0, walking: S.moving, running: S.moving && S.run });
-    for (const f of G.world.figures()) { const w = S.wander[f.id]; out.push({ who: f.id, at: (w && w.at) || homeOf(f), face: S.face[f.id] ?? (+f.face < 0 ? Math.PI : 0), walking: !!(w && w.moving), pose: f.pose || null }); }
+    for (const f of G.world.figures()) { const w = S.wander[f.id]; out.push({ who: f.id, at: (w && w.at) || homeOf(f), face: S.face[f.id] ?? (+f.face < 0 ? Math.PI : 0), walking: !!(w && w.moving), pose: f.pose || null, seat: f.seat || null, mark: f.at }); }
     return all ? out : out.filter((f) => !S.hidden.has(f.who));
   }
   function gestureOf(who, dt) {
@@ -125,6 +136,22 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     if (gs) { gs.t += dt; if (gs.t < GESTURE_S) return gs; delete S.gesture[who]; }
     if (S.talking && (who === "lamb" || who === S.talking) && Math.random() < dt / 4) return (S.gesture[who] = { anim: TALK[Math.floor(Math.random() * TALK.length)], t: 0 });
     return null;
+  }
+  // One figure alone into a canvas the size of the layer (tools/visual-check.mjs reads silhouettes).
+  function drawSolo(who) {
+    const cv = document.createElement("canvas"); cv.width = canvas.width; cv.height = canvas.height;
+    const f = figures(true).find((x) => x.who === who); if (!f || !cam.ready()) return cv;
+    const pj = cam.place(), variant = (cam.area() && cam.area().variant) || (pj && pj.variants && pj.variants[0]), lights = (pj && pj.lights && pj.lights[variant]) || [], s = cam.toScreen(f.at);
+    if (s) personDrawer()(cv.getContext("2d"), f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking: false, gesture: null, cam: pj && pj.camera, plate: pj && pj.place, depth: cam.depthOf(f.at), depthAt: cam.depthAt, lights, darkness: cam.darkness(), pose: f.pose || null, reach: reachOf(f), solo: true });
+    return cv;
+  }
+  // How far a held tool may reach ahead: clear of props and walls (clearAhead) and short of anyone
+  // standing in front within 0.4 m of the tool's line (0.35 m before their body)
+  function reachOf(f) {
+    let r = cam.arena() ? clearAhead(cam.arena(), f.at, f.face) : 2.2;
+    const dx = Math.cos(f.face || 0), dz = Math.sin(f.face || 0);
+    for (const o of figures(true)) { if (o.who === f.who) continue; const ox = o.at[0] - f.at[0], oz = o.at[2] - f.at[2], ahead = ox * dx + oz * dz, side = Math.abs(ox * -dz + oz * dx); if (ahead > 0 && side < 0.4) r = Math.min(r, Math.max(0.2, ahead - 0.35)); }
+    return +r.toFixed(2);
   }
   function draw(dt) {
     const r = host.getBoundingClientRect(); if (canvas.width !== Math.round(r.width) || canvas.height !== Math.round(r.height)) { canvas.width = Math.round(r.width); canvas.height = Math.round(r.height); }
@@ -135,7 +162,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     for (const { f, depth } of list) {
       const s = cam.toScreen(f.at); if (!s) continue;
       const talking = !!S.talking && (f.who === "lamb" || f.who === S.talking);
-      personDrawer()(g, f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking, gesture: f.walking ? null : gestureOf(f.who, dt), cam: pj && pj.camera, plate: pj && pj.place, depth, depthAt: cam.depthAt, lights, darkness: cam.darkness(), pose: f.pose || null, reach: cam.arena() ? clearAhead(cam.arena(), f.at, f.face) : null });
+      personDrawer()(g, f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking, gesture: f.walking ? null : gestureOf(f.who, dt), cam: pj && pj.camera, plate: pj && pj.place, depth, depthAt: cam.depthAt, lights, darkness: cam.darkness(), pose: f.pose || null, reach: reachOf(f) });
     }
   }
   // Passers-by: a figure with wander: r walks between points within r of its spot, stopping a
@@ -191,7 +218,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
   host.addEventListener("click", onClick);
   S.raf = requestAnimationFrame(frame);
   return {
-    walkTo, figures, step, draw,
+    walkTo, figures, step, draw, drawSolo,
     walking: () => !!S.path,
     // Lamb faces the speaker; the speaker faces Lamb
     talkingWith(who) {

@@ -317,4 +317,24 @@ export function clearAhead(arena, at, face, max = 2.2) {
   return max;
 }
 
+// A chair or bench near a seated figure's mark, read from the plate. The back is the samples 0.6 to
+// 1.3 m over the floor within 0.7 m of the mark; the seat is the samples 0.3 to 0.6 m up within 0.7 m
+// that do not stand under the back (5 cm columns), taken as the middle of their extent (from a high
+// camera a chair's back hides part of its seat, so an average leans toward the back). Returns
+// { at: the seat's middle on the floor, face: from the back toward the seat (radians) or null, back }
+// or null when nothing like a seat is there.
+export function seatOf(place, pos, mark, floorY = mark[1]) {
+  const R2 = 0.49, seat = [], backCols = new Set(); let bx = 0, bz = 0, nb = 0;
+  const col = (x, z) => `${Math.round(x / 0.05)},${Math.round(z / 0.05)}`;
+  for (let i = 0; i < pos.length; i += 3) {
+    const x = pos[i], y = pos[i + 1] - floorY, z = pos[i + 2]; if ((x - mark[0]) ** 2 + (z - mark[2]) ** 2 > R2) continue;
+    if (y > 0.6 && y < 1.3) { backCols.add(col(x, z)); bx += x; bz += z; nb++; } else if (y > 0.3 && y < 0.6) seat.push(x, z);
+  }
+  const flat = []; for (let k = 0; k < seat.length; k += 2) if (!backCols.has(col(seat[k], seat[k + 1]))) flat.push(seat[k], seat[k + 1]);
+  const L = flat.length >= 100 ? flat : seat; if (L.length < 100) return null;
+  let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity; for (let k = 0; k < L.length; k += 2) { x0 = Math.min(x0, L[k]); x1 = Math.max(x1, L[k]); z0 = Math.min(z0, L[k + 1]); z1 = Math.max(z1, L[k + 1]); }
+  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, back = nb >= 50;
+  return { at: [cx, floorY, cz], face: back ? Math.atan2(cz - bz / nb, cx - bx / nb) : null, back };
+}
+
 export const blockedAt = (arena, x, z) => groundAt(arena, x, z) == null;

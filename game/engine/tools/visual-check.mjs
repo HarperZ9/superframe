@@ -1,6 +1,10 @@
 // The visual defect check (coordinator, 2026-10-17, after the author's "The clipping is pretty bad").
 // Headless, GPU off, no window. Opens the game over a fixed set of views (tools/visualcheck/views.mjs)
 // and, per view, measures what the author saw (tools/visualcheck/analyse.js):
+//   - silhouettes of two figures passing through each other: pixels where both are drawn (each drawn
+//     alone, held props included) at depths within 0.25 m: over 40 px or 2% of the smaller;
+//   - a seated figure not on a seat the plate shows (sitting on air); a figure in a prop unless seated
+//     on its own seat;
 //   - figure footprints (a 0.25 m body) over prop cells: the check's own grid, samples 0.4 to 2 m
 //     over the floor; and feet more than 0.3 m over the floor around (on a counter or bench);
 //   - shadow pixels (dark and translucent, at the feet) where the plate under them is not the floor
