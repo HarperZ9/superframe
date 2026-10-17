@@ -23,7 +23,7 @@ function shadeAt(fp, p) {
   const dy = p[1] - fp.at[1];
   if (dy > 0.12 || dy < -0.2) return 0;   // a wall, a prop or a step down: not the ground under the feet
   const dx = p[0] - fp.at[0], dz = p[2] - fp.at[2], d = Math.hypot(dx, dz);
-  let a = CORE * (1 - smooth(fp.r * 0.3, fp.r, d));
+  let a = CORE * (1 - smooth(fp.r * 0.7, fp.r, d));   // a flat core with a soft rim: one figure's shadow is one even tone, so only a real overlap could read darker (and max-combining forbids that)
   if (fp.dir && fp.len > 0) {   // cast away from the ruling lamp: a soft tongue that thins and fades
     const s = dx * fp.dir[0] + dz * fp.dir[1], t = -dx * fp.dir[1] + dz * fp.dir[0];
     if (s > 0 && s < fp.len) { const w = fp.r * (0.9 - 0.4 * (s / fp.len)); a = Math.max(a, CAST * (1 - s / fp.len) * (1 - smooth(w * 0.4, w, Math.abs(t)))); }

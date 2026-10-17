@@ -5,7 +5,7 @@
 // plateCtx() returns null and the drawer falls back to its plain treatment.
 //   const P = plateCtx(args)   args: the figure hook's { x, y, ppm, at, cam, plate, lights, darkness }
 //   P.toPlate(sx, sy) -> [px, py]    P.pointAt(sx, sy) -> [x, y, z] | null
-//   P.lumaStats(boxes) -> { mid, hi, n }   linear luminance of the painting over screen boxes
+//   P.lumaStats(boxes, n, ground) -> { mid, hi, lit, n }   linear luminance of the painting over screen boxes
 const cache = new Map();   // plate -> { pj, pos, luma: { variant -> Float32Array }, dark, loading }
 const D2R = Math.PI / 180;
 const lin = (v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
@@ -66,16 +66,20 @@ export function plateCtx(args) {
   }
   // linear luminance of the painting (blended toward the dark plate as the plate goes dark) over
   // screen boxes [x0, y0, x1, y1], sampled on a grid: the median and the 90th percentile
-  function lumaStats(boxes, n = 20) {
+  // ground: { at, r } keeps only samples whose painted point is ground near the feet' height within r
+  // metres of at (the floor the figure could be lit like, never a wall or a table top); then
+  // the median, the 90th percentile and the median of the brightest third (lit)
+  function lumaStats(boxes, n = 20, ground = null) {
     if (!L) return null;
     const v = [];
     for (const [x0, y0, x1, y1] of boxes) for (let j = 0; j < n; j++) for (let k = 0; k < n; k++) {
-      const i = gidx(x0 + ((k + 0.5) / n) * (x1 - x0), y0 + ((j + 0.5) / n) * (y1 - y0)); if (i < 0) continue;
+      const sx = x0 + ((k + 0.5) / n) * (x1 - x0), sy = y0 + ((j + 0.5) / n) * (y1 - y0), i = gidx(sx, sy); if (i < 0) continue;
+      if (ground) { const p = pointAt(sx, sy); if (!p || Math.abs(p[1] - ground.at[1]) > 0.2 || Math.hypot(p[0] - ground.at[0], p[2] - ground.at[2]) > ground.r) continue; }
       v.push(Ld && darkness > 0 ? L[i] * (1 - darkness) + Ld[i] * darkness : L[i]);
     }
     if (v.length < 8) return null;
     v.sort((a, b) => a - b);
-    return { mid: v[Math.floor(v.length * 0.5)], hi: v[Math.floor(v.length * 0.9)], n: v.length };
+    return { mid: v[Math.floor(v.length * 0.5)], hi: v[Math.floor(v.length * 0.9)], lit: v[Math.floor(v.length * 0.833)], n: v.length };
   }
   return { toPlate, pointAt, lumaStats, zoom };
 }

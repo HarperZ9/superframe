@@ -35,6 +35,7 @@ try:
             pg = b.new_page(viewport={'width': 1920, 'height': 1080})
             pg.on('console', lambda m: log.append(f'{name} console.{m.type}: {m.text}') if m.type in ('error', 'warning') else None)
             pg.on('pageerror', lambda e: log.append(f'{name} PAGEERROR {e}'))
+            if os.environ.get('EXPOSE_MODE'): pg.add_init_script(f"globalThis.__lwExposeMode = {repr(os.environ['EXPOSE_MODE'])};")
             if os.environ.get('SHADOW_DEBUG'): pg.add_init_script("globalThis.__lwShadowDebug = true;")
             pg.goto(f'http://127.0.0.1:{port}/engine/play.html?capture=1')
             pg.wait_for_function("document.documentElement.dataset.ready === '1' && window.__lw", timeout=120000)
