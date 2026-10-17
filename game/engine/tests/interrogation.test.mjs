@@ -26,7 +26,7 @@ const pick = (t, text) => t.choose(t.beat.options.findIndex((o) => o.label.inclu
 test("interrogate() opens a live exchange: the presses are the options, gated by their conditions, plus the lie call", () => {
   const G = make(), t = G.talk("x.t.start"), b = t.beat;
   assert.ok(b.interrogation); assert.equal(b.interrogation.nerve, 6); assert.equal(b.interrogation.face, "wary");
-  assert.deepEqual(labels(b), ["Test: collar him.", "Test: ask what he lost.", "Test: wait.", "That's a lie."]);
+  assert.deepEqual(labels(b), ["Test: collar him.", "Test: ask what he lost.", "Test: wait."], "no lie said yet: no lie call");
   G.state.flags.push("t.prints");
   assert.ok(labels(pick(t, "wait")).includes("Test: the prints."), "a press appears when its condition holds");
 });
@@ -63,16 +63,18 @@ test("heat at bolt sends him out; a jump past swing starts the fight, with the f
   assert.equal(f.fight, "e.t.guard"); assert.deepEqual(texts(f), ["Test: now then."]);
 });
 
-test("lies are said on his own clock; a caught lie by a Lamb holding the fact breaks pressure, a wrong call costs nerve", () => {
+test("the lie call is offered only while a lie is open; a call without the fact costs nerve; caught or closed, it goes", () => {
   const G = make(), t = G.talk("x.t.start");
-  assert.equal(G.interrog.openLie(), null);
-  let b = pick(t, "That's a lie"); assert.equal(b.interrogation.nerve, 8, "no lie open: nerve +2");
-  for (let i = 0; i < 6 * 60; i++) G.loop.step(); // six real seconds
-  assert.ok(G.interrog.openLie(), "the lie is open");
-  b = pick(t, "That's a lie"); assert.equal(b.interrogation.nerve, 10, "without the fact: nerve +2 again");
+  assert.equal(G.interrog.openLie(), null); assert.ok(!t.beat.options.some((o) => o.lie));
+  for (let i = 0; i < 6 * 60; i++) G.loop.step(); // six real seconds: the lie is said
+  assert.ok(G.interrog.openLie()); assert.ok(t.interrogRefresh().options.some((o) => o.lie), "offered while open");
+  let b = pick(t, "That's a lie"); assert.equal(b.interrogation.nerve, 8, "without the fact: nerve +2");
+  for (let i = 0; i < 5 * 60; i++) G.loop.step(); // the window passes
+  assert.equal(G.interrog.openLie(), null); assert.ok(!t.interrogRefresh().options.some((o) => o.lie), "gone when the window closes");
   const H = make(), u = H.talk("x.t.start"); H.state.flags.push("t.wet");
-  for (let i = 0; i < 6 * 60; i++) H.loop.step();
+  for (let i = 0; i < 6 * 60; i++) H.loop.step(); u.interrogRefresh();
   const c = pick(u, "That's a lie"); assert.ok(texts(c).includes("Test reply caught.")); assert.equal(c.interrogation.nerve, 2);
+  assert.ok(!c.options.some((o) => o.lie), "gone once caught");
 });
 
 test("silence: heat cools every cool-every seconds, and hold runs out through walk:", () => {

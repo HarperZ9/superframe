@@ -235,7 +235,8 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
   function interrogBeat(lines) {
     const S = G.interrog.current, D = S.def;
     const options = G.interrog.presses().map((p) => { const o = option(p); if (o) { o.style = p.style; o.press = true; } return o; }).filter(Boolean);
-    options.push({ label: "That's a lie.", kind: "opt", key: `${D.id}.lie`, s: { kind: "lie", attrs: {} }, lie: true, open: !!G.interrog.openLie(), speaker: talk.speaker, node: talk.node });
+    // "That's a lie." is offered only while a lie is open (said, not caught, inside its window)
+    if (G.interrog.openLie()) options.push({ label: "That's a lie.", kind: "opt", key: `${D.id}.lie`, s: { kind: "lie", attrs: {} }, lie: true, open: true, speaker: talk.speaker, node: talk.node });
     return { lines, options, interrogation: { id: D.id, name: D.name, who: D.who, nerve: S.nerve, heat: S.heat, face: G.interrog.face() } };
   }
   function afterInterrog(lines) {
@@ -264,6 +265,8 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
     if (r && r.node) { talk.stack.push({ id: "^interrog", at: 0 }); return play(r.node, 0, lines); }
     return afterInterrog(lines);
   }
+  // the exchange's menu again, as it stands now (a lie opened or its window closed)
+  talk.interrogRefresh = () => { if (!talk.beat || !talk.beat.interrogation || !G.interrog.current || G.interrog.outcome()) return null; const b = interrogBeat([]); talk.beat = { ...talk.beat, interrogation: b.interrogation, options: b.options.map((o, index) => ({ ...o, index })) }; return talk.beat; };
   talk.interrogResolve = () => (G.interrog && G.interrog.current && G.interrog.outcome() ? afterInterrog([]) : null);
   // the speaker's char id beside talk.speaker (the display name), for portraits and the people layer
   Object.defineProperty(talk, "speakerId", { get: () => charIdOf(G, talk.speaker), enumerable: true });

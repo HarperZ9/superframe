@@ -16,8 +16,8 @@
 //          unless {again}; its node is a short reply ending return:
 //   lie: id "text" {catch: fact, nerve: -n, heat, node, after: seconds}   said after `after`
 //          seconds (default 5); "That's a lie." within LIE_OPEN seconds by a Lamb holding the
-//          fact applies the numbers and plays the node; called with no lie open or without the
-//          fact, it costs nerve +2
+//          fact applies the numbers and plays the node; the call is offered only while a lie is
+//          open, and made without the fact it costs nerve +2
 //   tell: N "text"         said once, when nerve first falls to N or below
 //   content: do: interrogate(id)   (an effect, as fight(id))
 // G.interrog: request(id), take(), start(id), current, step(dt) (the loop calls it), presses(),
@@ -82,7 +82,10 @@ export function createInterrogations(G, defs) {
       const S = api.current; if (!S || S.out) return;
       S.t += dt; S.quiet += dt;
       if (S.def.cool && S.quiet >= S.def.coolEvery) { S.quiet -= S.def.coolEvery; if (S.heat > 0) { S.heat = Math.max(0, S.heat - S.def.cool); G.emit("interrog.cool", { heat: S.heat }); } }
-      for (const l of S.lies) if (l.saidAt == null && S.t >= l.after) { l.saidAt = S.t; say(S, l.text); G.emit("interrog.lie", { id: l.id }); }
+      for (const l of S.lies) {
+        if (l.saidAt == null && S.t >= l.after) { l.saidAt = S.t; say(S, l.text); G.emit("interrog.lie", { id: l.id }); }
+        else if (l.saidAt != null && !l.caught && !l.closed && S.t - l.saidAt > LIE_OPEN) { l.closed = true; G.emit("interrog.lieclosed", { id: l.id }); }
+      }
       if (S.def.hold != null && S.t - (S.lastPress ?? 0) >= S.def.hold && S.def.walk) { S.out = { kind: "walk", node: S.def.walk }; G.emit("interrog.end", S.out); }
     },
     // The presses on offer now (step objects the dialogue runner turns into options).

@@ -142,11 +142,13 @@ function interrogTurn(G, t, build, R, act) {
   for (let i = 0; i < 180 && G.interrog.current && !G.interrog.outcome(); i++) G.loop.step();
   if (G.interrog.current && G.interrog.outcome()) { t.interrogResolve(); return "chose"; }
   const l = G.interrog.openLie(), b = t.beat;
+  if (t.interrogRefresh) t.interrogRefresh();
+  const b2 = Object.assign(b, t.beat); // the act loop holds b: keep it current
   if (l && (!l.catch || G.flag(l.catch)) && (build === "eye" || opt.attentive || hashStr(l.id, R.shuffleSeed) % 2 === 0)) {
-    const i = b.options.findIndex((o) => o.lie); if (i >= 0) { t.choose(i); R.liesCaught = (R.liesCaught || 0) + 1; return "chose"; }
+    const i = b2.options.findIndex((o) => o.lie); if (i >= 0) { t.choose(i); R.liesCaught = (R.liesCaught || 0) + 1; return "chose"; }
   }
   // never the lie call by chance: only with a lie open and the fact held (above)
-  b.options = b.options.filter((o) => !o.lie);
+  b2.options = b2.options.filter((o) => !o.lie);
   return null;
 }
 

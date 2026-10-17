@@ -18,6 +18,7 @@ import { openSneak } from "./sneak.mjs";
 import { sneakLayer } from "./sneaklayer.mjs";
 import { runLayer } from "./runlayer.mjs";
 import { inkedPages } from "./inked.mjs";
+import { liveTalkAids } from "./livetalk.mjs";
 import { waitRow } from "./waiting.mjs";
 import { portraitSlot, lightOf } from "./portrait.mjs";
 import { glyph, onDevice, watchDevice } from "./bindings.mjs";
@@ -52,6 +53,7 @@ export function playScreen(ctx, { startNode = null } = {}) {
   api.people = peopleLayer(ctx, els.plate, api.cam, { onPick: (p) => api.pick(p), idle: () => !P.talk && !P.ended && !root.classList.contains("fighting") && ctx.F.top() && ctx.F.top().root === root, onClock: () => api.worldStep(), onFrame: (dt) => api.liveFrame(dt) });
   const offLive = liveWorld(ctx, P, api, root);
   api.inked = inkedPages(ctx); // ux: the inked Margin page and the chapter page (ui/inked.mjs)
+  api.live = liveTalkAids(ctx, api, root, P); // ux: talking in a live world (ui/livetalk.mjs, UI-SYSTEM 7.6)
   // ux: who owns the direction keys (ui/input.mjs): walking on the plate, a real-time scene, or a panel
   ctx.input.setMode(() => {
     const t = ctx.F.top(); if (!t) return "menu";
@@ -62,7 +64,7 @@ export function playScreen(ctx, { startNode = null } = {}) {
 
   const onKey = (e) => { if (e.code === "F5" && ctx.F.top() && ctx.F.top().root === root) { e.preventDefault(); ctx.savesPanel("save"); } };
   window.addEventListener("keydown", onKey);
-  ctx.F.push({ name: "play", root, onAction: (a) => onAction(ctx, P, api, a), onBack: () => ctx.savesPanel("menu"), onClose: () => { window.removeEventListener("keydown", onKey); api.cam.stop(); api.weather.stop(); api.people.stop(); api.inked.stop(); ctx.input.setMode(null); offLive(); offDev(); } });
+  ctx.F.push({ name: "play", root, onAction: (a) => onAction(ctx, P, api, a), onBack: () => ctx.savesPanel("menu"), onClose: () => { window.removeEventListener("keydown", onKey); api.cam.stop(); api.weather.stop(); api.people.stop(); api.inked.stop(); api.live.stop(); ctx.input.setMode(null); offLive(); offDev(); } });
   if (startNode) api.startTalk(startNode); else api.worldStep();
   return api;
 }
@@ -151,9 +153,11 @@ function playApi(ctx, P, els, root) {
     afterTalk() { P.coolUntil = performance.now() + 500; if (api.people) api.people.lockRun(500); },
     // Walk-up talk (A2): F speaks to (or uses) the hotspot Lamb faces, within its reach (at least
     // 2 m) and a 50 degree cone; a hotspot that names a figure is reached at that figure's live spot.
-    interact() {
-      if (P.talk || P.ended || root.classList.contains("fighting") || performance.now() < (P.coolUntil || 0) || !api.people) return false;
-      const pos = G.state.pos; if (!pos) return false;
+    // The hotspot Lamb faces, within its reach (at least 2 m) and a 50 degree cone, or null. ux: split
+    // out of interact() so the prompts tab can show "Talk" with its key when there is someone to talk to.
+    facing() {
+      if (P.talk || P.ended || root.classList.contains("fighting") || !api.people) return null;
+      const pos = G.state.pos; if (!pos) return null;
       const face = api.people.facing(), spots = G.figureAt || {};
       let best = null;
       for (const hs of G.world.hotspots()) {
@@ -163,8 +167,12 @@ function playApi(ctx, P, els, root) {
         if (d > 0.4 && da > (25 * Math.PI) / 180) continue;
         if (!best || d < best.d) best = { hs, d };
       }
-      if (!best) return false;
-      const hs = best.hs, who = hs.attrs && hs.attrs.who ? String(hs.attrs.who) : null;
+      return best ? best.hs : null;
+    },
+    interact() {
+      if (performance.now() < (P.coolUntil || 0)) return false;
+      const hs = api.facing(); if (!hs) return false;
+      const who = hs.attrs && hs.attrs.who ? String(hs.attrs.who) : null;
       if (api.cam) api.cam.focus(hs.at); api.people.talkingWith(who); api.startTalk(hs.target);
       return true;
     },
@@ -203,6 +211,14 @@ function playApi(ctx, P, els, root) {
 
 function onAction(ctx, P, api, a) {
   if (a === "interact") return api.interact();
+  // ux (UI-SYSTEM 8): in walk mode, A, Enter and Space act on what has focus: a row the arrows or the
+  // d-pad moved to since Lamb last walked, or else whoever Lamb faces (as F does). Walking gives the
+  // focus back to the world (ui/livetalk.mjs clears P.listFocus).
+  const m = ctx.input.mode ? ctx.input.mode() : "menu";
+  if (m === "walk" && ["up", "down", "left", "right"].includes(a)) { P.listFocus = true; return false; }
+  if (m === "walk" && a === "confirm" && !P.listFocus) { api.interact(); return true; }
+  // in a live interrogation the alt key (pad Y, N) calls the lie that is open, without hunting for it
+  if (m === "talk" && a === "alt" && P.beat && P.beat.options) { const o = P.beat.options.find((x) => x.lie); if (o) { api.choose(P.beat.options.indexOf(o), 0); return true; } }
   if (a === "daybook") { ctx.daybook(); return true; }
   if (a === "terms:on" || a === "terms:off") { P.termsAll = a === "terms:on"; renderTalk(ctx, P, api.els, api, { keepFocus: true }); return true; }
   if (a.startsWith("opt:") && P.beat && P.beat.options) {
@@ -291,8 +307,9 @@ function liveWorld(ctx, P, api, root) {
   // panel as it is said; an outcome the clock reaches (silence ran out) plays without a press.
   const offBark = G.on("voice.bark", (e) => toast(e.name.toUpperCase(), e.text, 4200)); // a passive voice in the open
   const offSay = G.on("interrog.say", (L) => { if (!P.talk) return; P.log.push(L); api.render(); });
-  const offLie = G.on("interrog.lie", () => { if (P.talk && P.beat && P.beat.interrogation) api.render(); });
+  const relie = () => { if (P.talk && P.beat && P.beat.interrogation && P.talk.interrogRefresh()) { P.beat = P.talk.beat; api.render(); } };
+  const offLie = G.on("interrog.lie", relie), offLieClosed = G.on("interrog.lieclosed", relie);
   const offStart = G.on("interrog.start", (e) => { if (api.people && e.who) api.people.talkingWith(e.who); });
   const offEnd = G.on("interrog.end", () => queueMicrotask(() => { if (P.talk && P.beat && P.beat.interrogation && G.interrog.current && G.interrog.outcome()) { const b = P.talk.interrogResolve(); if (b) api.take(b); } }));
-  return () => { off(); offTime(); offBark(); offSay(); offLie(); offStart(); offEnd(); G.loop.clockRate = 0; };
+  return () => { off(); offTime(); offBark(); offSay(); offLie(); offLieClosed(); offStart(); offEnd(); G.loop.clockRate = 0; };
 }
