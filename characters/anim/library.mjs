@@ -2,7 +2,7 @@
 //   const L = await library();   L.clip("light_1"), L.timing("lamb", "light_1"), L.pose("lamb", "light_1", frame)
 import { sample, events, layout } from "./pose.mjs";
 import { solve, INDEX } from "../rig/skeleton.mjs";
-import { applyGait, gaitSpeed, GAITS } from "./gait.mjs";
+import { applyGait, gaitSpeed, GAITS, blendGait } from "./gait.mjs";
 import * as loco from "./locomotion.mjs";
 import { COMBAT } from "./combat.mjs";
 import { FRAY, GUARDS, STYLE_OF } from "./fray.mjs";
@@ -76,6 +76,15 @@ export function makeLibrary(timing, styles = {}, combat = null, bodies = {}) {
       const r = p.root;
       r.z = (r.z || 0) + (r.zf || 0) * mv; r.x = (r.x || 0) + (r.xf || 0) * mv; delete r.zf; delete r.xf;
       const st = styles[who]; return st ? st(p, c) : p;
+    },
+    // locomotion at speed v (m/s), cycle phase u (0..1): the walk and run clips' upper bodies blended
+    // by speed, the legs solved from the blended gait. Returns { pose, cycle } (cycle: metres per cycle).
+    loco(who, v, u) {
+      const P = bodies[who], { g, w, cycle } = blendGait(P, v), cw = CLIPS.walk, cr = CLIPS.run;
+      const pw = sample(cw, T(who, "walk"), u * cw.frames), pr = sample(cr, T(who, "run"), u * cr.frames), p = {};
+      for (const j of new Set([...Object.keys(pw), ...Object.keys(pr)])) { p[j] = {}; for (const k of new Set([...Object.keys(pw[j] || {}), ...Object.keys(pr[j] || {})])) p[j][k] = (pw[j]?.[k] ?? 0) * (1 - w) + (pr[j]?.[k] ?? 0) * w; }
+      applyGait(p, g, P, u * 24, 24); p.root.x = 0; p.root.z = 0;
+      const st = styles[who]; return { pose: st ? st(p, cw) : p, cycle, w };
     },
     events: (who, name, f) => events(CLIPS[name], T(who, name), f),
   };

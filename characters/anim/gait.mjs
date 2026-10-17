@@ -41,7 +41,17 @@ export function applyGait(p, g, P, f, frames, fps = 30) {
   return p;
 }
 export const GAITS = {
-  walk: { stance: 0.6, lift: 0.1, bob: 0.0, drop: 0.07 },
+  walk: { stance: 0.56, lift: 0.09, bob: 0.0, drop: 0.1, reach: 1.0 },
   run: { stance: 0.38, lift: 0.28, bob: 0.0, drop: 0.14, lean: 6 },
   wade: { stance: 0.66, lift: 0.24, bob: 0.0, drop: 0.08 },
 };
+
+// Locomotion by speed: walk below WALK_MAX, run above RUN_MIN, the gait parameters blended between.
+// Returns the blended gait and its distance per cycle (metres), so a caller advances the cycle phase
+// by distance covered and the planted foot never slides at any speed.
+export const WALK_MAX = 1.9, RUN_MIN = 3.0;
+export function blendGait(P, v) {
+  const t = Math.min(1, Math.max(0, (v - WALK_MAX) / (RUN_MIN - WALK_MAX))), w = t * t * (3 - 2 * t), a = GAITS.walk, b = GAITS.run, g = {};
+  for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) g[k] = (a[k] ?? (k === "reach" ? 0.92 : 0)) * (1 - w) + (b[k] ?? (k === "reach" ? 0.92 : 0)) * w;
+  return { g, w, cycle: (2 * stanceHalf(P, g)) / g.stance };
+}

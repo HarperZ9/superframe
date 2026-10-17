@@ -110,6 +110,7 @@ export function createCast({ timing, combat = null, members }) {
       return name;
     };
     const ev = () => L.events(who, st.clip, st.frame);
+    const advanceU = (u, dist, v) => ((((u ?? 0) + dist / L.loco(who, v, 0).cycle) % 1) + 1) % 1;
     const fromWorld = (w) => { const r = st.facing * D2R, c = Math.cos(r), s = Math.sin(r), dx = w[0] - st.pos[0], dz = w[2] - st.pos[2]; return [c * dx - s * dz, w[1] - st.pos[1], s * dx + c * dz]; };
     const self = {
       who, info, state: st, library: L,
@@ -127,6 +128,7 @@ export function createCast({ timing, combat = null, members }) {
         st.clip = name; st.external = true; st.rate = pose.rate ?? 1;   // combat times the clip (t from its frames, warped per phase); rate is kept for secondary motion
         // a loop plays by the ground actually covered, so the planted foot stays planted at any speed
         const sp = L.timing(who, name).speed, moved = Math.hypot(st.pos[0] - ox, st.pos[2] - oz);
+        if (name === "walk" || name === "run") { const v = moved / Math.max(1e-3, dt); st.v = st.v == null ? v : st.v + (v - st.v) * Math.min(1, dt * 8); st.u = advanceU(st.u, moved, Math.max(0.3, st.v)); }
         st.frame = pose.loop ? (st.frame + (sp ? (moved / sp) * FPS : dt * FPS)) % len : pose.t != null ? Math.min(len - 1e-3, pose.t * FPS) : (pose.u || 0) * len;
         { const bp = self.basePose(); st.sec.step(dt, st.pos, st.facing, bp); self.updateLocks(bp); }
         if (st.prev) { st.fade = Math.max(0, st.fade - 1); if (!st.fade) st.prev = null; }
@@ -153,7 +155,7 @@ export function createCast({ timing, combat = null, members }) {
         st.frame += dt * FPS;
         if (st.prev) { st.prevFrame += dt * FPS; st.fade = Math.max(0, st.fade - dt * FPS); if (!st.fade) st.prev = null; }
         let dz = 0, dx = 0;
-        if (LOOPS.has(st.clip)) { dz = (Tm.speed || 0) * dt; if (st.frame >= len) st.frame -= len; }
+        if (LOOPS.has(st.clip)) { dz = (Tm.speed || 0) * dt; if (st.frame >= len) st.frame -= len; if (st.clip === "walk" || st.clip === "run") { st.v = st.vWant ?? (st.clip === "run" ? 3.6 : 1.5); st.u = advanceU(st.u, st.v * dt, st.v); } }
         else {
           const r = L.pose(who, st.clip, Math.min(st.frame, len)).root || {};
           dz = (r.z || 0) - st.rootZ; dx = (r.x || 0) - st.rootX; st.rootZ = r.z || 0; st.rootX = r.x || 0;
@@ -168,7 +170,11 @@ export function createCast({ timing, combat = null, members }) {
         return { ...shown, move };
       },
       basePose() {
-        let p = L.pose(who, st.clip, Math.min(st.frame, L.length(who, st.clip) - 1e-3));
+        let p;
+        if ((st.clip === "walk" || st.clip === "run") && st.v != null && L.loco) {
+          // speed-blended walk to run; the phase advances by distance, so feet stay planted
+          p = L.loco(who, Math.max(0.3, st.v), st.u ?? 0).pose;
+        } else p = L.pose(who, st.clip, Math.min(st.frame, L.length(who, st.clip) - 1e-3));
         if (st.prev && L.clips[st.prev]) { const q = L.pose(who, st.prev, Math.min(st.prevFrame, L.length(who, st.prev) - 1e-3)); p = blend(p, q, st.fade / st.fadeLen); }
         p.root = { ...(p.root || {}), x: 0, z: 0 };   // travel is in st.pos (ours, or combat's)
         return p;
