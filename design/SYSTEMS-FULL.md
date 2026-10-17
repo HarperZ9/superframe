@@ -1151,3 +1151,12 @@ The LWD/1 shape is being agreed with the systems engineer (NOTES-FOR-ENGINEER).
 
 These six replace nothing. Each sits beside the scene's existing routes, so every gate keeps its four
 ways through.
+
+### 20.2 Reachability and Shadow's pace (2026-10-17)
+- **Any style can work both scenes.** Merrow and Marrow now offer a press for every style that needs no fact, each a check on that style's own voice:
+  - **Merrow:** CARBON at the bench (Hands), UNDERTOW's silence (Shadow), SUM against the Brine's clock (Eye). Fist and Tongue already had theirs.
+  - **Marrow:** FORM LETTER (Tongue), CARBON at the long table (Hands), SMELL at his cuffs (Shadow), PRECEDENT (Eye).
+  - The fact-gated presses stay, as the stronger option.
+  - Merrow's scene opens once Lamb has asked him where he was tonight. Marrow's opens in the Guild hall.
+- **Shadow's pace.** The Night Clerk now starts at NOSE 5 and HAT 2 (it was NOSE 4 and HAT 3). Shadow routes skip gates the other styles resolve, and it reached 8 only early in Act 3. With the new spread it reaches NOSE 8 a fifth of the way into Act 2 and 10 early in Act 3 (harness, one shuffle). It also has two new understanding pages on its route: the oven soot, and inside the Gannet house. The global pace is unchanged.
+

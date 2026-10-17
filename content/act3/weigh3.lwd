@@ -337,7 +337,7 @@ nar: The town has come in out of the gale with its bedding and its cats in baske
 line: MARROW: Shelf. There's sacking by the cask. {when: var.gut2_steward != "spratt" & var.seenas_guild != "informer"}
 line: SPRATT: The Shelf can sit by the leak. It's used to water. {when: var.gut2_steward == "spratt"}
 line: TEAGUE: If the boat sails in the morning I'll be on it. I've said that for nine years. Tonight I mean it, a bit.
-line: COCKLE: Five low Low Nights I've seen, and three gales like this. Two of them the Old Light was lit by somebody. Nobody's ever said who.
+line: COCKLE: Seven low ones in my life, three of them in a row, and three gales like this. Two of them the Old Light was lit by somebody. Nobody's ever said who.
 nar: Sister Gauze sits under her bell jar by the stove, where the rain is very quiet.
 line: GAUZE: In here it sounds like somebody else's weather. I recommend it.
 go: weigh3.room.menu
@@ -346,7 +346,7 @@ go: weigh3.room.menu
 place: weigh_in
 cost: 1
 nar: The town in its bedding. A child asleep in a voting pan.
-line: COCKLE: Five low Low Nights, and that's the first child I've seen sleep in a pan. It'll want weighing in the morning.
+line: COCKLE: Seven low ones, and that's the first child I've seen sleep in a pan. It'll want weighing in the morning.
 go: weigh3.room.menu
 
 @node weigh3.room.menu
