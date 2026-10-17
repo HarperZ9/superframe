@@ -32,7 +32,11 @@ export function stepProjectiles(W) {
     P.vx += (ax + wx) * DT; P.vz += (az + wz) * DT; P.vy -= G * DT;
     P.x += P.vx * DT; P.z += P.vz * DT; P.y += P.vy * DT;
     if (hitBody(W, P)) { P.done = true; settleLight(W, P); continue; }
-    if (W.field.solid(P.x, P.z) && P.y < 2.5) { P.done = true; W.emit({ type: "land", n: P.n, use: P.use, x: P.x, z: P.z, wall: true }); continue; }
+    // a thrown thing stops at a wall, and flies over a bench or a crate lower than it (sim/plate.mjs tops):
+    // P.gh is the ground it last flew over, so P.gh + P.y is its height in the plate's world
+    const solid = W.field.solid(P.x, P.z);
+    if (!solid) P.gh = W.field.cellAt(P.x, P.z).h;
+    if (solid && P.y < 2.5 && !((P.gh ?? 0) + P.y > W.field.topAt(P.x, P.z))) { P.done = true; W.emit({ type: "land", n: P.n, use: P.use, x: P.x, z: P.z, wall: true }); continue; }
     if (P.y <= 0) { P.done = true; W.emit({ type: "land", n: P.n, use: P.use, x: P.x, z: P.z, wet: W.field.depthAt(P.x, P.z) > 0 }); settleLight(W, P); }
   }
   W.projectiles = W.projectiles.filter((P) => !P.done);

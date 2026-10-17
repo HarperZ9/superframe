@@ -21,7 +21,7 @@
 import { rand01 } from "../../core/rng.mjs";
 import { dist, angleTo } from "../sim/fighter.mjs";
 import { ledgeClear } from "../sim/terrain.mjs";
-import { go } from "../sim/paths.mjs";
+import { go, wayToward } from "../sim/paths.mjs";
 import { WORLD, OFF } from "../data/world.mjs";
 
 const K = WORLD.kite, P = WORLD.punish;
@@ -51,11 +51,12 @@ export function kitingNow(W, F, T) {
   return away > K.away || d > reach + K.far;
 }
 
-// Can this opponent walk straight to Lamb? Walls, ledges and deep water in between say no.
+// Can this opponent reach Lamb on foot, straight or round (sim/paths.mjs)? Lamb up a ledge it cannot
+// climb, out past waist-deep water, or walled off says no.
+const straight = (W, F, T) => W.field.lineClear(F.x, F.z, T.x, T.z) && ledgeClear(W.field.arena, F.x, F.z, T.x, T.z);
 export function reachable(W, F, T) {
-  const f = W.field;
-  if (!f.lineClear(F.x, F.z, T.x, T.z) || !ledgeClear(f.arena, F.x, F.z, T.x, T.z)) return false;
-  return f.depthAt(T.x, T.z) < 0.85;
+  if (W.field.depthAt(T.x, T.z) >= 0.85) return false;
+  return straight(W, F, T) || !W.field.arena.grid || !!wayToward(W, F, T.x, T.z);
 }
 
 // Called every frame the brain sees its target: runs the clock and returns an answer or null.
@@ -75,13 +76,13 @@ export function pursue(W, F, T, M) {
   }
   if (!due) return null;
   const has = (id) => W.moves[id] && W.defs[F.id].moves.includes(id);
-  if (has("world.lunge") && P0.cut === 0 && d >= P.lungeMin && d <= P.lungeMax && W.tick >= P0.lunged) {
+  if (has("world.lunge") && P0.cut === 0 && straight(W, F, T) && d >= P.lungeMin && d <= P.lungeMax && W.tick >= P0.lunged) {
     P0.lunged = W.tick + P.lungeCool[0] + Math.floor(r01(W, F, "lc") * (P.lungeCool[1] - P.lungeCool[0]));
     F.face = angleTo(F, T);
     W.emit({ type: "punish", id: F.id, how: "lunge", clock: P0.clock });
     return { press: ["world.lunge"], mx: 0, mz: 0 };
   }
-  if (has("world.throw") && (F.items.stone || 0) > 0 && d >= P.throwMin && d <= P.throwMax && W.tick >= P0.thrown && W.field.lineClear(F.x, F.z, T.x, T.z)) {
+  if (has("world.throw") && (F.items.stone || 0) > 0 && d >= P.throwMin && d <= P.throwMax && W.tick >= P0.thrown && W.field.sightClear(F.x, F.z, T.x, T.z)) {
     P0.thrown = W.tick + P.throwCool[0] + Math.floor(r01(W, F, "tc") * (P.throwCool[1] - P.throwCool[0]));
     F.face = angleTo(F, T); F.lock = T.id;
     W.emit({ type: "punish", id: F.id, how: "throw", clock: P0.clock });

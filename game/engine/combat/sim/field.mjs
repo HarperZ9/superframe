@@ -72,6 +72,12 @@ export function createField({ G, arena }) {
       for (let i = 1; i < n; i++) { const t = i / n; if (F.solid(ax + (bx - ax) * t, az + (bz - az) * t)) return false; }
       return true;
     },
+    // how tall the solid stuff in a solid cell stands (NaN: unknown, or not solid)
+    topAt(x, z) {
+      const tops = A.grid && A.grid.tops; if (!tops || !F.solid(x, z)) return NaN;
+      const c = Math.floor((x - A.origin[0]) / A.cell), r = Math.floor((z - A.origin[1]) / A.cell);
+      return c >= 0 && r >= 0 && c < A.grid.w && r < A.grid.h ? tops[r * A.grid.w + c] : NaN;
+    },
     // sight between two bodies: solid ground blocks it only where it stands taller than SIGHT.over above
     // the lower of the two (a bench, a crate, a bollard, a low wall do not hide a standing body; a house
     // does). Row arenas and solid cells with no height known block as before.
