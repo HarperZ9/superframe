@@ -13,10 +13,16 @@ import * as fennick from "../cast/fennick.mjs";
 import * as marrow from "../cast/marrow.mjs";
 import * as warden from "../cast/warden.mjs";
 import * as salvor from "../cast/salvor.mjs";
+import * as keel from "../cast/keel.mjs";
+import * as sabine from "../cast/sabine.mjs";
+import * as wenna from "../cast/wenna.mjs";
+import * as merrow from "../cast/merrow.mjs";
+import { GORM, HOBB, FEWELL, STRAND, BRIGHT, COE } from "../cast/lamplighter.mjs";
+const CAST = { lamb, fennick, marrow, warden, salvor, keel, sabine, wenna, merrow, gorm: GORM, hobb: HOBB, fewell: FEWELL, strand: STRAND, bright: BRIGHT, coe: COE };
 
-const MEMBERS = { lamb, fennick, marrow, warden, salvor };
+const MEMBERS = CAST;
 // combat's actor ids (lamb, an @foe char, else an archetype) to the art's bodies
-const BODY = { lamb: "lamb", holder: "warden", skirmisher: "salvor", fennick: "fennick", marrow: "marrow" };
+const BODY = { lamb: "lamb", holder: "warden", skirmisher: "salvor", fennick: "fennick", marrow: "marrow", keel: "keel", merrow: "merrow", lamplighter: "fewell", gorm: "gorm", hobb: "hobb", fewell: "fewell", strand: "strand", bright: "bright", coe: "coe" };
 
 // Until the drawer is told each fighter's world point (asked in NOTES, A4), the lamps cannot be
 // placed, so fights use an even sodium light from above with a lamp rim: every fighter reads.

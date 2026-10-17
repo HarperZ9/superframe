@@ -17,7 +17,7 @@ import { skin, groundShift } from "../rig/body.mjs";
 import { solveFigure, hiddenOf } from "../rig/solvefig.mjs";
 import { gripAt, toolOf } from "../cast/tools.mjs";
 import { PROP_IDS, lying, lodFor } from "../render/figure.mjs";
-import { spriteView, rasterize, makeG, placeFn, castShadow } from "../render/raster.mjs";
+import { spriteView, rasterize, makeG, placeFn, castShadow, toScreen } from "../render/raster.mjs";
 import { albedo, light, ink, compose, shadowDir } from "../render/shade.mjs";
 import { down } from "../render/image.mjs";
 import { layout } from "../anim/pose.mjs";
@@ -77,6 +77,22 @@ export function makeSecondary({ k = 70, zeta = 0.32 } = {}) {
 // coat { kg, stiff 0..1 }: a light oilskin cape about 1.5 kg, Lamb's wool greatcoat 3, a waxed
 // riding coat with plates sewn in 6 (builds will change this; see characters/GEAR.md).
 export const coatSpring = (coat = { kg: 3, stiff: 0.3 }) => ({ k: 90 / Math.sqrt(Math.max(0.5, coat.kg)) * (1 + coat.stiff), zeta: 0.25 + 0.25 * coat.stiff + 0.03 * coat.kg });
+
+// Water dripping from a figure (Keel): drops fall from the given joints (a hand's fingertips, the
+// cap's brim) under gravity, each a short pale streak lit like wet light, cycling forever.
+function drip(out, G, V, pl, S, joints, t) {
+  const ppm = V.ppm, g = 9.8;
+  joints.forEach((j, ji) => {
+    const at = S[INDEX[j]]; if (!at) return;
+    const o = j === "head" ? [0, 0.3, 0.14] : [0, -0.11, 0.02], base = pl.p(apply(at.R, o).map((v, k) => v + at.p[k]));
+    for (let d = 0; d < 3; d++) {
+      const per = 0.55 + 0.17 * ((ji * 3 + d) % 4), ph = (t + (ji * 0.37 + d * 0.41)) % per, fall = 0.5 * g * ph * ph;
+      if (fall > base[1]) continue;
+      const q = toScreen(V, [base[0] + (j === "head" ? (d - 1) * 0.06 : 0), base[1] - fall, base[2]]), len = Math.max(2, Math.min(10, g * ph * ppm * 0.012));
+      for (let k = 0; k < len; k++) { const x = Math.round(q[0]), y = Math.round(q[1]) - k; if (x < 0 || y < 0 || x >= G.w || y >= G.h) continue; const i = (y * G.w + x) * 4, a = 0.75 * (1 - k / len); out[i] = out[i] * (1 - a) + 0.85 * a; out[i + 1] = out[i + 1] * (1 - a) + 0.82 * a; out[i + 2] = out[i + 2] * (1 - a) + 0.75 * a; out[i + 3] = Math.max(out[i + 3], a); }
+    }
+  });
+}
 
 export function createCast({ timing, combat = null, members }) {
   const styles = Object.fromEntries(Object.entries(members).filter(([, m]) => m.style).map(([k, m]) => [k, m.style]));
@@ -235,6 +251,7 @@ export function createCast({ timing, combat = null, members }) {
         st.smear = { mesh: m, pos: S.pos.slice(), facing: st.facing, at: [st.pos[0], st.pos[1] + dy, st.pos[2]] }; if (shadows) castShadow(G, m.M, S, pl, shadowDir(rig, st.pos), { hidden: hid });
         const out = compose(G, albedo(G, C.palette), light(G, rig, C.palette), ink(G, { scale: ss }), { bands });
         if (tone) for (let i = 0; i < G.w * G.h; i++) if (G.id[i]) out.set(tone([out[i * 4], out[i * 4 + 1], out[i * 4 + 2]]), i * 4);
+        if (info.drip) drip(out, G, V, pl, self.skeleton(pose), info.drip, (st.dripT = (st.dripT || 0) + 1 / 60));
         return { ...down(out, G.w, G.h, ss), G, full: out };
       },
     };

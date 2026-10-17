@@ -178,3 +178,21 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     per class (anim/arts.mjs), 290 clips in all; the ten new tools as props (cast/tools.mjs).
 35. NOTE content-v1/ holds v1 bakes of all four places so game/main.mjs runs while the environment
     lead's v2 plates replace content/ (NOTES A3). The shell's v2 path is the next shell step.
+36. DONE Coordinator (2026-10-17): target the engine's one shell (play.html); game/main.mjs and
+    content-v1/ retire when it matches. The drawer gets world position, camera and depth through A4.
+37. DONE Walk: walk and run are now one locomotion blended by speed (anim/gait.mjs blendGait,
+    library.loco): walk below 1.9 m/s, run above 3.0, the gait parameters and upper bodies blended
+    between, the cycle phase advanced by distance so feet stay planted at every speed (a steady walk's
+    stance foot moves under 1 cm now; it moved 11 cm sideways before the pelvis was squared).
+    At 2.6 m/s the body is about 70 % run: 2.6 m/s is a jog. A shell walk speed near 1.5 m/s gives a
+    true walk (NOTES). proto/gait_sheet.mjs, out/gait-lamb.png.
+38. DONE Pops: smear frames for fast swings (the tool drawn again at points between the last frame
+    and this one, an inkless half-seen material filling only empty pixels, so the real tool and body
+    stay on top); eased foot-lock release. proto/smear_sheet.mjs, out/smear.png. Measured skeleton
+    pops are unchanged (the smear is visual); slides about 49 on the sequence.
+39. DONE Cast in story order: cast/keel.mjs (drip from cuffs and brim, drawn each frame),
+    cast/sabine.mjs, cast/wenna.mjs, cast/merrow.mjs (Tub Merrow), cast/lamplighter.mjs (Gorm, Hobb,
+    Fewell, Strand, Bright, Coe on one costume), from design/CAST-SHEETS.md. stills/10-cast.png.
+    Added to the prototype and the fight drawer (Keel and the Lamplighters as fighters).
+40. DONE Faces toward paint: skin in fewer, broader planes with wandering edges and a warm
+    terminator; broader skin brushwork (out/closeups.png). Still reads part CG up close.

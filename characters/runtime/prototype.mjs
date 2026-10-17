@@ -14,6 +14,12 @@ import * as fennick from "../cast/fennick.mjs";
 import * as marrow from "../cast/marrow.mjs";
 import * as warden from "../cast/warden.mjs";
 import * as salvor from "../cast/salvor.mjs";
+import * as keel from "../cast/keel.mjs";
+import * as sabine from "../cast/sabine.mjs";
+import * as wenna from "../cast/wenna.mjs";
+import * as merrow from "../cast/merrow.mjs";
+import { GORM, HOBB, FEWELL, STRAND, BRIGHT, COE } from "../cast/lamplighter.mjs";
+const CAST = { lamb, fennick, marrow, warden, salvor, keel, sabine, wenna, merrow, gorm: GORM, hobb: HOBB, fewell: FEWELL, strand: STRAND, bright: BRIGHT, coe: COE };
 
 const D2R = 180 / Math.PI, TALK = ["talk_a", "talk_b", "talk_c"];
 // rigs by room; the lamp room is lit by the arc (white) or by paraffin when it is dark
@@ -23,8 +29,8 @@ const LAMP_ROOM = { amb: [0.12, 0.12, 0.11], ground: [0.04, 0.05, 0.04], key: { 
 export async function createPeople({ base = "/characters/", combatUrl = "/engine/combat/out/timing.combat.json" } = {}) {
   const timing = await (await fetch(base + "anim/timing.json")).json();
   let combat = null; try { const r = await fetch(combatUrl); if (r.ok) combat = await r.json(); else console.warn("people: no combat timing at", combatUrl, r.status); } catch (e) { console.warn("people: combat timing not loaded:", e.message); }
-  const cast = createCast({ timing, combat, members: { lamb, fennick, marrow, warden, salvor } }), actors = {}, last = {}, gesture = {}, st = {};
-  const actorOf = (who) => (cast.library && { lamb, fennick, marrow, warden, salvor }[who] ? (actors[who] ||= cast.actor(who)) : null);
+  const cast = createCast({ timing, combat, members: CAST }), actors = {}, last = {}, gesture = {}, st = {};
+  const actorOf = (who) => (cast.library && CAST[who] ? (actors[who] ||= cast.actor(who)) : null);
 
   function step(dt, figs, { talking = false, speaker = null } = {}) {
     for (const f of figs) {

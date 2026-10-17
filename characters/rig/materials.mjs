@@ -6,7 +6,7 @@ export const MATS = {
   coat:     { id: 1,  c: [0.20, 0.21, 0.24], v: 0.20, stroke: { scale: 0.06, stretch: 3.5, amount: 0.22 } },
   coatIn:   { id: 2,  c: [0.36, 0.20, 0.16], v: 0.26, stroke: { scale: 0.05, stretch: 2, amount: 0.15 } },
   collar:   { id: 3,  c: [0.88, 0.85, 0.77], v: 0.86, stroke: { scale: 0.03, stretch: 2, amount: 0.12 } },
-  skin:     { id: 4,  c: [0.84, 0.64, 0.52], v: 0.60, stroke: { scale: 0.025, stretch: 1.2, amount: 0.10 }, sss: 0.35 },
+  skin:     { id: 4,  c: [0.84, 0.64, 0.52], v: 0.60, stroke: { scale: 0.04, stretch: 1.4, amount: 0.16 }, sss: 0.35 },
   hair:     { id: 5,  c: [0.22, 0.17, 0.14], v: 0.18, stroke: { scale: 0.015, stretch: 5, amount: 0.3 } },
   hat:      { id: 6,  c: [0.09, 0.08, 0.09], v: 0.08, stroke: { scale: 0.05, stretch: 2, amount: 0.25 }, sheen: 0.25 },
   boot:     { id: 7,  c: [0.12, 0.09, 0.08], v: 0.10, stroke: { scale: 0.03, stretch: 2, amount: 0.2 }, sheen: 0.4 },
@@ -38,6 +38,15 @@ export const MATS = {
   rope:     { id: 34, c: [0.55, 0.46, 0.3], v: 0.48, stroke: { scale: 0.008, stretch: 6, amount: 0.3 } },
   knit:     { id: 35, c: [0.42, 0.13, 0.11], v: 0.2, stroke: { scale: 0.012, stretch: 1, amount: 0.3 } },
   smear:    { id: 40, c: [0.42, 0.33, 0.26], v: 0.4, alpha: 0.55 },   // a swing's blur: no ink, half seen
+  navy:     { id: 41, c: [0.1, 0.12, 0.2], v: 0.15, stroke: { scale: 0.06, stretch: 3.5, amount: 0.2 }, sheen: 0.55 },
+  oxblood:  { id: 42, c: [0.4, 0.11, 0.1], v: 0.25, stroke: { scale: 0.06, stretch: 3, amount: 0.22 } },
+  gansey:   { id: 43, c: [0.42, 0.42, 0.42], v: 0.4, stroke: { scale: 0.012, stretch: 1, amount: 0.3 } },
+  stripe:   { id: 44, c: [0.85, 0.82, 0.74], v: 0.75, stroke: { scale: 0.05, stretch: 3, amount: 0.15 } },
+  skirtd:   { id: 45, c: [0.18, 0.12, 0.14], v: 0.2, stroke: { scale: 0.06, stretch: 4, amount: 0.2 } },
+  yellow:   { id: 46, c: [0.86, 0.72, 0.22], v: 0.6, stroke: { scale: 0.07, stretch: 3, amount: 0.2 }, sheen: 0.6 },
+  muni:     { id: 47, c: [0.13, 0.13, 0.16], v: 0.15, stroke: { scale: 0.06, stretch: 3.5, amount: 0.2 } },
+  braid:    { id: 48, c: [0.9, 0.85, 0.7], v: 0.85 },
+  paper:    { id: 49, c: [0.92, 0.9, 0.82], v: 0.9 },
   nail:     { id: 27, c: [0.24, 0.24, 0.27], v: 0.2, stroke: { scale: 0.03, stretch: 2, amount: 0.15 } },
 };
 export const BY_ID = [];

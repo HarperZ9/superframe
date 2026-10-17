@@ -78,7 +78,7 @@ export function light(G, rig, palette = {}) {
 }
 
 // Ink weight: 1 on the silhouette, 0.75 on part edges and depth steps, 0.4 on folds.
-const SMEAR_ID = MATS_BY_NAME.smear.id, SOFT = []; for (const n of ["skin", "cheek", "scales", "lip"]) SOFT[MATS_BY_NAME[n].id] = 1;
+const SMEAR_ID = MATS_BY_NAME.smear.id, SOFT = [], FACE = []; for (const n of ["skin", "cheek", "lip"]) FACE[MATS_BY_NAME[n].id] = 1; for (const n of ["skin", "cheek", "scales", "lip"]) SOFT[MATS_BY_NAME[n].id] = 1;
 export function ink(G, { scale = 1 } = {}) {
   const { w, h } = G, out = new Float32Array(w * h), r = Math.max(1, Math.round(scale));
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -111,10 +111,17 @@ export function compose(G, A, E, I, { bands = 0, inkC = INK, violet = 0.55, jitt
     let a = A.alpha[i]; const k = I ? I[i] : 0;
     if (!G.id[i]) { if (k > 0) { rgba[i * 4] = inkC[0]; rgba[i * 4 + 1] = inkC[1]; rgba[i * 4 + 2] = inkC[2]; rgba[i * 4 + 3] = k * 0.9; } continue; }
     // bands quantise the light's brightness only, so the hue of the light is kept (no colour fringes)
-    let kq = 1;
-    if (bands) { const l = Math.max(1e-4, 0.3 * E[i * 3] + 0.59 * E[i * 3 + 1] + 0.11 * E[i * 3 + 2]), t = Math.max(0, Math.pow(l, 0.7) * bands + jitter * (A.jit ? A.jit[i] : 0)), f = t - Math.floor(t), q = (Math.floor(t) + (f > 0.5 ? Math.min(1, (f - 0.5) * 6 + 0.5) : Math.max(0, (f - 0.5) * 6 + 0.5))) / bands; kq = Math.pow(Math.max(q, 0.02), 1 / 0.7) / l; }
+    let kq = 1, warm = 0;
+    if (bands) {
+      // skin is painted in fewer, broader planes with wandering edges, and the edge between light and
+      // shadow runs warm (blood under skin at the terminator, as a painter mixes it)
+      const face = FACE[G.id[i]], nb = face ? Math.max(2, bands - 1) : bands, jt = face ? jitter * 1.7 : jitter;
+      const l = Math.max(1e-4, 0.3 * E[i * 3] + 0.59 * E[i * 3 + 1] + 0.11 * E[i * 3 + 2]), t = Math.max(0, Math.pow(l, 0.7) * nb + jt * (A.jit ? A.jit[i] : 0)), f = t - Math.floor(t);
+      const q = (Math.floor(t) + (f > 0.5 ? Math.min(1, (f - 0.5) * 6 + 0.5) : Math.max(0, (f - 0.5) * 6 + 0.5))) / nb; kq = Math.pow(Math.max(q, 0.02), 1 / 0.7) / l;
+      if (face) warm = Math.max(0, 1 - Math.abs(f - 0.5) * 5) * 0.5;
+    }
     for (let c = 0; c < 3; c++) {
-      const e = E[i * 3 + c] * kq;
+      const e = E[i * 3 + c] * kq * (1 + warm * [0.35, -0.05, -0.25][c]);
       const lum = 0.3 * E[i * 3] + 0.59 * E[i * 3 + 1] + 0.11 * E[i * 3 + 2], sh = violet * (1 - Math.min(1, Math.max(0, (lum - 0.12) / 0.4)));
       const v = A.rgb[i * 3 + c] * e * (1 - sh + sh * VIOLET[c]) + sh * 0.025 * VIOLET[c];
       rgba[i * 4 + c] = v * (1 - k * 0.85) + inkC[c] * k * 0.85;
