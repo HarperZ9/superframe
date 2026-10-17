@@ -25,6 +25,7 @@ import { INDEX, JOINTS } from "../rig/skeleton.mjs";
 import { MATS } from "../rig/materials.mjs";
 import { field, smin, smax, disp, noise, fbm } from "./sdf.mjs";
 import { unpackMesh } from "./meshio.mjs";
+import { headShapes } from "./anatomy.mjs";
 
 const CORN = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]];
 const TETS = [[0, 5, 1, 6], [0, 1, 2, 6], [0, 2, 3, 6], [0, 3, 7, 6], [0, 7, 4, 6], [0, 4, 5, 6]];
@@ -51,7 +52,7 @@ function bounds(R, offset) {
   const lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9], pad = 0.03 + Math.max(0, ...(R.disp || []).map((d) => d.amp || 0)) * 2;
   for (const s of R.shapes) {
     if (s.op === "sub") continue;
-    const pts = s.t === "cap" ? [s.a, s.b] : [s.c], r = s.t === "cap" ? Math.max(...[].concat(s.r)) : s.t === "tor" ? s.R + s.r : Math.max(...s.r);
+    const pts = s.t === "cap" ? [s.a, s.b] : [s.c], r = s.t === "cap" ? Math.max(...[].concat(s.r)) : s.t === "tor" ? s.R + s.r : s.t === "lid" || s.t === "scap" ? s.R : s.t === "slit" ? s.w : Math.max(...s.r);
     for (const q of pts) for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], q[k] + offset[k] - r - pad); hi[k] = Math.max(hi[k], q[k] + offset[k] + r + pad); }
   }
   return { lo, hi };
@@ -77,6 +78,7 @@ function painter(layers, D, offset) {
       if (L.t === "grad") { const u = x * L.axis[0] + y * L.axis[1] + z * L.axis[2]; mix(L.color, (u - L.from) / (L.to - L.from)); }
       if (L.t === "stripes") { const u = x * L.axis[0] + y * L.axis[1] + z * L.axis[2]; if (((u / L.period) % 1 + 1) % 1 < (L.width || 0.5)) mix(L.color, 1); }
       if (L.t === "spots") { const n = noise(x / L.scale + 7, y / L.scale, z / L.scale); if (n > 1 - (L.density || 0.2)) mix(L.color, (n - (1 - (L.density || 0.2))) / (L.density || 0.2) * 2); }
+      if (L.t === "near") for (const q of L.at) { const d = Math.hypot(x - q[0], y - q[1], z - q[2]); if (d < L.r) mix(L.color, (1 - d / L.r) * (L.amount ?? 1)); }
       if (L.t === "dirt" && D) { const d = D(x, y, z); if (d < 0) mix(L.color || [0.5, 0.45, 0.4], -d * (L.amount || 200)); }
     }
     return c;
@@ -85,7 +87,14 @@ function painter(layers, D, offset) {
 
 // Polygonise one region into the mesh, skinned and painted.
 function sculpt(M, B, R) {
-  const bones = R.bones || ["chest"], offset = R.frame === "bind" ? [0, 0, 0] : B[INDEX[bones[0]]].p;
+  // an anatomy head: the director's parameters (forge/anatomy.mjs), the neck run down to the rig's neck
+  // joint and on into the collar, the top of the neck placed on the head joint
+  let shift = [0, 0, 0];
+  if (R.anatomy) {
+    const hj = B[INDEX.head].p, nj = B[INDEX.neck].p, { shapes, origin } = headShapes(R.anatomy, { neckTo: hj[1] - nj[1] + (R.neckInto ?? 0.06), mats: R.mats });
+    R = { ...R, bones: R.bones || ["head", "neck"], shapes: [...shapes, ...(R.shapes || [])], k: R.k ?? 0.012 }; shift = origin;
+  }
+  const bones = R.bones || ["chest"], base0 = R.frame === "bind" ? [0, 0, 0] : B[INDEX[bones[0]]].p, offset = [base0[0] - shift[0], base0[1] - shift[1], base0[2] - shift[2]];
   const { f, mat, D } = regionField(R, offset), { lo, hi } = bounds(R, offset), cell = R.cell || 0.012;
   const nx = Math.ceil((hi[0] - lo[0]) / cell), ny = Math.ceil((hi[1] - lo[1]) / cell), nz = Math.ceil((hi[2] - lo[2]) / cell);
   if (nx * ny * nz > 6e6) throw new Error(`forge: region ${R.name} is too fine (${nx}x${ny}x${nz} cells); raise its cell`);

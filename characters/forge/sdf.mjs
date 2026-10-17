@@ -22,6 +22,13 @@ export function field(s) {
   if (s.t === "cap") { const [r0, r1] = Array.isArray(s.r) ? s.r : [s.r, s.r], [ax, ay, az] = s.a, bx = s.b[0] - ax, by = s.b[1] - ay, bz = s.b[2] - az, bb = bx * bx + by * by + bz * bz; return (x, y, z) => { const px = x - ax, py = y - ay, pz = z - az, h = Math.min(1, Math.max(0, (px * bx + py * by + pz * bz) / bb)); return len(px - bx * h, py - by * h, pz - bz * h) - (r0 + (r1 - r0) * h); }; }
   if (s.t === "box") { const [cx, cy, cz] = s.c, [hx, hy, hz] = s.r, rd = s.round || 0; return (x, y, z) => { let p = [x - cx, y - cy, z - cz]; if (R) p = R(...p); const qx = Math.abs(p[0]) - hx + rd, qy = Math.abs(p[1]) - hy + rd, qz = Math.abs(p[2]) - hz + rd; return len(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0) - rd; }; }
   if (s.t === "tor") { const [cx, cy, cz] = s.c; return (x, y, z) => { let p = [x - cx, y - cy, z - cz]; if (R) p = R(...p); const q = Math.hypot(p[0], p[2]) - s.R; return Math.hypot(q, p[1]) - s.r; }; }
+  // an eyelid: a thin shell over the eyeball cut by a tilted lid line (the director's anatomy.py lids)
+  if (s.t === "lid") { const [cx, cy, cz] = s.c; return (x, y, z) => { const qx = x - cx, qy = y - cy, qz = z - cz, l = len(qx, qy, qz), shell = Math.abs(l - s.R) - s.th;
+    if (s.up) return Math.max(shell, s.h - (qy - s.tilt * qx * s.sx)); return Math.max(shell, qy - s.h); }; }
+  // a spherical cap facing n: an iris or a pupil on the eyeball's front
+  if (s.t === "scap") { const [cx, cy, cz] = s.c, n = s.n, l0 = len(...n), nx = n[0] / l0, ny = n[1] / l0, nz = n[2] / l0; return (x, y, z) => { const qx = x - cx, qy = y - cy, qz = z - cz; return Math.max(len(qx, qy, qz) - s.R, s.h - (qx * nx + qy * ny + qz * nz)); }; }
+  // the mouth's slit, its corners bent by smile
+  if (s.t === "slit") { const [cx, cy, cz] = s.c; return (x, y, z) => { const qx = x - cx, qy = y - cy - s.smile * (qx / s.w) ** 2 * 0.012, qz = z - cz; const ax = Math.abs(qx) - s.w * 0.98, ay = Math.abs(qy) - 0.0012, az = Math.abs(qz) - 0.022; return len(Math.max(ax, 0), Math.max(ay, 0), Math.max(az, 0)) + Math.min(Math.max(ax, ay, az), 0); }; }
   throw new Error(`forge: unknown shape ${s.t}`);
 }
 

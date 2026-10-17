@@ -269,3 +269,17 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
 52. DONE Portraits: all 36 speaking parts (the two generic opponents have none) x 4 expressions x 2 lights baked; portraits/index.json written
     atomically from what is on disk (proto/portraits_index.mjs, temp file then rename), rebuilt after
     each person in future bakes. Current style; to be re-baked in the chosen direction.
+53. DONE The art director's head parameters adopted (forge/anatomy.mjs): a port of
+    design/art/tools/anatomy.py HEAD_DEFAULT and head() with the same names (cran, cran_c, face, jaw_w,
+    jaw_len, chin_z, cheek, brow, eye_x, eye_r, iris, lid_up, lid_lo, lid_tilt, nose_bridge, nose_tip,
+    hook, mouth_y, mouth_w, smile, lip_full, ear, jowl, neck_len, neck_r, gaze), plus `s` scaling to the
+    game's grotesque heads. New shape types for it (eyelid shells cut by a tilted lid line, spherical
+    caps for irises and pupils, the mouth slit bent by smile). A sheet region with `anatomy: {...}` uses
+    it; Keel's sheet takes the director's keel_head numbers unchanged except a larger eye and iris.
+54. DONE Head, neck and collar join (coordinator's note on out/forge-keel.png): the anatomy neck runs
+    from under the skull to the rig's neck joint and 8 cm on into a forged, turned-up greatcoat collar,
+    so the head no longer stands on a stalk; the cap is re-forged to the new cranium (the costume
+    script's cap dropped); eye sockets painted darker around the eyes so they read at a distance.
+    out/forge-keel.png. Per-person proportions still come from the costume scripts' P records; a sheet
+    cannot yet override the rig's proportions (the next forge step, with the bodies, after the art
+    direction).
