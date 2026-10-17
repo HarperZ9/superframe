@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { game, testContent } from "./helpers.mjs";
 // A stand-in for the combat layer: the hand-off is the engine's, the fight is combat's.
 const withCombat = () => { const G = game(); G.register("combat", { request(id) { G.state.pendingFight = id; }, take() { const id = G.state.pendingFight; delete G.state.pendingFight; return id; } }); return G; };
-import { footstep, masking, stateOf } from "../world/stealth.mjs";
+import { footstep, masking, stateOf, visibility } from "../world/stealth.mjs";
 
 const states = (G) => { const out = []; G.on("stealth.state", (e) => out.push(`${e.watcher}:${e.to}${e.say ? ` "${e.say}"` : ""}`)); return out; };
 const darkYard = (G) => { const s = G.sneaks.start("s.yard", { mode: "stepped" }); G.command(["setPower", "quay", "off"]); return s; };
@@ -121,4 +121,17 @@ test("sodium makes Lamb a shop window; a carried lantern is always seen in the c
 test("carrying a load: slower and louder in a sneak", () => {
   const dist = (carry) => { const G = game(); if (carry) G.verbs.carry("timber"); const s = G.sneaks.start("s.yard"); G.command(["setPower", "quay", "off"]); s.step(1, { x: 1, z: 0 }); return s.state.x; };
   assert.ok(dist(true) < dist(false) * 0.7);
+});
+
+test("the shared sight rule: light, fog over distance, cover, crouch, crowd and sodium", () => {
+  const base = { light: 1, fog: 0.05, d: 10 };
+  assert.ok(Math.abs(visibility(base) - Math.exp(-0.5)) < 1e-9);
+  assert.equal(visibility({ ...base, light: 0 }), 0);
+  assert.ok(visibility({ ...base, d: 20 }) < visibility(base));
+  assert.ok(Math.abs(visibility({ ...base, crouch: true }) - 0.55 * visibility(base)) < 1e-9);
+  assert.ok(Math.abs(visibility({ ...base, cover: 0.8 }) - 0.2 * visibility(base)) < 1e-9);
+  assert.ok(Math.abs(visibility({ ...base, crowd: 1 }) - 0.3 * visibility(base)) < 1e-9);
+  assert.ok(Math.abs(visibility({ ...base, sodium: 1 }) - 1.5 * visibility(base)) < 1e-9);
+  assert.equal(visibility({ ...base, cover: 2 }), 0); // clamped
+  assert.ok(visibility() === 0);
 });

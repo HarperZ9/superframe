@@ -13,7 +13,7 @@
 // Outcomes: win (at the goal), seen (a watcher saw Lamb: its fight starts if it names one,
 // else its alert node, else the scene's), ambush, time. On seen: seen.<watcher> is set,
 // book.<sneak> when the watcher's role is lamplighter, rep(<faction>, rep) when it names one.
-import { active, crowdCover, footstep, masking, stateOf, downwind, cue } from "./stealth.mjs";
+import { active, crowdCover, visibility, footstep, masking, stateOf, downwind, cue } from "./stealth.mjs";
 import { registerCalls } from "../core/scope.mjs";
 
 registerCalls({ sneak: (G, [id]) => G.sneaks.request(id) }, { sneak: "sneak" });
@@ -70,7 +70,7 @@ export function startSneak(G, def, { mode = "full" } = {}) {
     if (!active(G, o.w)) return;
     const dx = R.x - o.x, dz = R.z - o.z, d = Math.hypot(dx, dz), [range, deg] = o.w.cone;
     const inCone = d <= range && (d < 0.01 || (dx * Math.sin(o.face) + dz * Math.cos(o.face)) / d >= Math.cos(T(deg)));
-    let vis = lightAt(e) * Math.exp(-e.fog * d) * (1 - coverAt()) * (R.crouch ? 0.55 : 1) * (1 - 0.7 * crowdCover(G, { area: def.area, place: G.state.place })) * (1 + RU["stealth-sodium"] * (e.sodium || 0));
+    let vis = visibility({ light: lightAt(e), fog: e.fog, sodium: e.sodium || 0, d, cover: coverAt(), crouch: R.crouch, crowd: crowdCover(G, { area: def.area, place: G.state.place }), sodiumGain: RU["stealth-sodium"] });
     if (inCone && carried().length) vis = Math.max(vis, 1); // a lit lantern is a shop window
     else if (!inCone && carried().length && d <= range * 1.3) speak("lantern");
     let gain = 0; o.seeing = false;

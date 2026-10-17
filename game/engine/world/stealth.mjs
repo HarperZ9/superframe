@@ -71,6 +71,14 @@ export function crowdCover(G, where) {
   }
   return d;
 }
+// The one sight rule, shared by the sneak scenes and combat (combat/sim): how visible Lamb is to a
+// watcher d metres away. light at Lamb (0..1+), fog density per metre, sodium share of the light
+// (0..1), cover of the spot (0..1), crouching, crowd density hiding Lamb (0..1). sodiumGain is the
+// ruleset's stealth-sodium (0.5). A lit lantern Lamb carries is handled by the caller (always seen
+// in the cone).
+export function visibility({ light = 0, fog = 0, sodium = 0, d = 0, cover = 0, crouch = false, crowd = 0, sodiumGain = 0.5 } = {}) {
+  return Math.max(0, light) * Math.exp(-Math.max(0, fog) * Math.max(0, d)) * (1 - Math.min(1, Math.max(0, cover))) * (crouch ? 0.55 : 1) * (1 - 0.7 * Math.min(1, Math.max(0, crowd))) * (1 + sodiumGain * Math.min(1, Math.max(0, sodium)));
+}
 export const footstep = (footing, mode) => (mode === "run" ? 1 : mode === "crouch" ? 0.12 : 0.35) * (FOOT[String(footing).replace(/^wet /, "")] ?? 1) * (String(footing).startsWith("wet ") ? 1.1 : 1);
 export const masking = (env) => 1 / (1 + (env.wind ? env.wind.speed : 0) / 8 + (env.rain || 0) / 3);
 // How much the wind carries a sound from (sx, sz) to (tx, tz): 1 across or upwind, more downwind.
