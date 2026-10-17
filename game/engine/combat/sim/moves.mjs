@@ -38,6 +38,9 @@ const DEFAULTS = {
   iframes: null, armor: null, cancel: {}, next: {}, track: 0, trackUntil: null, hitstop: 0, knock: 0,
   shake: 0, dir: "facing", parry: null, parryable: true, tell: null, charge: null, item: null, then: null, knockdown: false, anim: null,
   shove: false, grapple: false, blockable: true, guardBreak: false, toward: null, takedown: false, tap: null, composure: 0, pierce: false, through: false, snare: false, resetRead: false, behind: false, wide: 0, baseTotal: null,
+  // sweep: [from, to) inside startup where the swing's long travel plays (the art's `sweep` phase),
+  // so the active frames carry only contact. Timing only for the animation: no hits, no windows.
+  sweep: null,
 };
 
 const isPair = (w) => Array.isArray(w) && w.length >= 2 && w.every((x) => typeof x === "number");
@@ -51,6 +54,7 @@ function check(m) {
   for (const r of m.root) if (!(Array.isArray(r) && r.length === 3)) bad("root entries are [from, to, speed]");
   for (const h of m.hits) if (!isPair(h.arc) || !isPair(h.r)) bad("hits need arc and r");
   if (m.charge && !(m.charge.at < m.startup && m.charge.into)) bad("charge.at must fall in startup and name into");
+  if (m.sweep && !(isPair(m.sweep) && m.sweep[0] >= 0 && m.sweep[1] === m.startup && m.sweep[0] < m.sweep[1])) bad("sweep must be [from, startup)");
 }
 
 // Fill defaults and derived fields. Hits default to the active window and the full body height.

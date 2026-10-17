@@ -35,6 +35,13 @@ export function warp(m, f, clip) {
   if (!ph.windup || !ph.active) return (len * Math.min(f, m.total)) / m.total;
   const a1 = m.startup, a2 = m.startup + m.active, c1 = ph.windup.to, c2 = ph.active.to;
   // a telegraph reads as a held pose then a sharp strike: slow first, fast last (COMBAT-FEEL v2 6)
+  // a clip with a sweep phase (the swing's travel) plays it over the move's sweep frames, the end of
+  // the wind-up, so the active frames show only contact; the wind-up before it holds the tell
+  if (ph.sweep && m.sweep && f <= a1) {
+    const s1 = m.sweep[0], b1 = ph.sweep.from;
+    if (f <= s1) return b1 * (m.tell ? Math.pow(f / Math.max(1, s1), 1.8) : f / Math.max(1, s1));
+    return b1 + ((c1 - b1) * (f - s1)) / Math.max(1, a1 - s1);
+  }
   if (f <= a1) return c1 * (m.tell ? Math.pow(f / Math.max(1, a1), 1.8) : f / Math.max(1, a1));
   if (f <= a2) return c1 + ((c2 - c1) * (f - a1)) / Math.max(1, a2 - a1);
   return c2 + ((len - c2) * (f - a2)) / Math.max(1, m.total - a2);

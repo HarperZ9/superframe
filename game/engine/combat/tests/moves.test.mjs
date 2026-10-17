@@ -54,3 +54,24 @@ test("the three roll forms keep the reference's proportions (COMBAT-FEEL v2 1.2)
   assert.ok(M.roll_hop.total > 1.6 * M.roll.total, "the heavy form almost doubles the commitment");
   assert.ok(rootSpeed(M.roll, 35) > 0 && M.roll.iframes[1] < 35, "the roll slides out after its window, open to a hit");
 });
+
+test("a swing's travel sits in the end of the wind-up: heavies and last links carry a sweep ending on startup, at every tempo", async () => {
+  const { warp } = await import("../anim/drive.mjs");
+  const { scaleMove, tempoOf, tempoMoves } = await import("../sim/tempo.mjs");
+  for (const cls of Object.keys(TOOL_CLASSES)) {
+    const P = profileOf("t.test", { cls }), M = defineMoves(buildToolMoves(P));
+    const last = M[`light_${P.chain}`], heavy = M.heavy;
+    for (const m of [last, heavy, M.heavy_charged]) assert.ok(m.sweep && m.sweep[1] === m.startup && m.sweep[0] < m.startup, `${cls} ${m.anim} has a sweep`);
+    assert.ok(heavy.sweep[1] - heavy.sweep[0] >= 10 * Math.min(1, P.speed) - 1, `${cls} heavy travels over ~10 frames`);
+    assert.ok(heavy.sweep[0] > heavy.charge.at, `${cls} heavy sweeps after the charge point`);
+    for (const k of [0.82, 1.1]) { const raw = buildToolMoves(P), s = defineMoves({ ...raw, heavy: scaleMove(raw.heavy, k) }).heavy; assert.equal(s.sweep[1], s.startup); }
+    // a clip with a sweep phase: the travel plays over the sweep frames, the active span shows contact
+    const clip = { length: 2, phases: [{ name: "windup", from: 0, to: 0.8 }, { name: "sweep", from: 0.5, to: 0.8 }, { name: "active", from: 0.8, to: 0.9 }, { name: "recovery", from: 0.9, to: 2 }] };
+    assert.ok(Math.abs(warp(heavy, heavy.sweep[0], clip) - 0.5) < 1e-9);
+    assert.ok(Math.abs(warp(heavy, heavy.startup, clip) - 0.8) < 1e-9);
+    assert.ok(warp(heavy, heavy.startup + heavy.active, clip) - 0.8 <= 0.1 + 1e-9);
+  }
+  // Lamb's tempo keeps the sweep on the wind-up's end
+  const t = tempoOf({ nose: 10, coat: 10 }), L = tempoMoves(buildToolMoves(profileOf("w.case"), { prefix: "lamb:" }), "lamb:", t);
+  for (const m of Object.values(defineMoves(L))) if (m.sweep) assert.equal(m.sweep[1], m.startup);
+});

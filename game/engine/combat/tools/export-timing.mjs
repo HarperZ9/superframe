@@ -23,6 +23,7 @@ function entry(m) {
   if (move) e.move = +move.toFixed(2);
   if (m.hits.length) e.hit = { reach: m.hits[0].r[1], arc: m.hits[0].arc[1] - m.hits[0].arc[0] };
   if (m.tell) e.tell = [fr(m.tell.at[0]), fr(m.tell.at[1])];
+  if (m.sweep) e.sweep = [fr(m.sweep[0]), fr(m.sweep[1])]; // the swing's travel, the last frames of startup
   if (m.charge) e.charge = { at: fr(m.charge.at), min: fr(m.charge.min), max: fr(m.charge.max) };
   return e;
 }

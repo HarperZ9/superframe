@@ -316,6 +316,27 @@ curves and limits are mine. Soft-capped points above 3 count.
 Active frames never scale. Clip playback follows: anim/drive.mjs poseOf gives `rate` (clip length
 over the move's frames at this body's tempo) and `t` from the frames, so they cannot drift.
 
+### Swing travel (the sweep, 2026-10-17, with the character lead)
+
+The heavy and the last light link cover a long arc, and their 6 active frames (3 at the art's 30 fps)
+popped when the clip's active phase held the whole arc. Each strike now names a `sweep`: the last
+frames of its wind-up where the weapon travels. The clip's `sweep` phase plays over those frames and
+its active phase carries only contact. No frame count changed: startup, active, recovery, hits,
+windows, the min-max results and the i-frame rule are as before (the min-max run gives the same
+numbers).
+
+| Strike | Sweep (60 fps, times the class speed) |
+|---|---|
+| light link | last 4 frames of startup |
+| last link of a string | last 7 |
+| heavy | last 10, after the charge point |
+| charged heavy | frames 2 to 8 |
+| learned feint | frames 4 to 8 |
+
+anim/drive.mjs warps a clip with a sweep phase in three spans: wind-up (the tell's slow-then-fast
+ease) to the sweep's start, the sweep linear to the last startup frame, then active and recovery as
+before. A clip without a sweep phase plays as before. tools/export-timing.mjs writes `sweep`.
+
 ### Feel
 
 | Change | Number |

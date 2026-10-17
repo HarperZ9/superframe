@@ -136,7 +136,7 @@ function learnedVariants(moves, p, def) {
 // The feint: the heavy's wind-up, cut short by an early release into a quick strike.
 function addFeint(moves, p, P) {
   const h = moves[`${p}heavy`], l = moves[`${p}light_1`];
-  moves[`${p}feint`] = { ...l, startup: 8, recovery: l.recovery + 4, dmg: l.dmg * 0.8, poise: l.poise * 1.2, next: {}, cancel: { step: l.cancel.step, roll: l.cancel.roll }, composure: LEARNED.feint.cost, anim: `${P.cls}.feint` };
+  moves[`${p}feint`] = { ...l, startup: 8, recovery: l.recovery + 4, dmg: l.dmg * 0.8, poise: l.poise * 1.2, next: {}, cancel: { step: l.cancel.step, roll: l.cancel.roll }, composure: LEARNED.feint.cost, sweep: [4, 8], anim: `${P.cls}.feint` };
   moves[`${p}heavy`] = { ...h, tap: { before: 8, into: `${p}feint` } };
 }
 

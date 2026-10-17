@@ -51,6 +51,8 @@ function lightLink(P, i, n, s, prefix, w) {
     cancel: { step: [commit, end], roll: [commit, end] }, track: 6, hitstop: last ? 3 : 2, knock: last ? 2.2 : 1.0, shake: last ? 0.2 : 0.08, anim: `${P.cls}.light_${i}`,
   };
   if (w > 1) { m.tell = { at: [3, su - 1], kind: "swing" }; m.track = 9; m.trackUntil = su - 3; }
+  // the swing's travel sits in the end of the wind-up: 4 frames, 7 on the string's last and widest link
+  m.sweep = [su - Math.min(su - 1, F(last && n > 1 ? 7 : 4, s)), su];
   if (!last) { m.next = { light: `${prefix}light_${i + 1}` }; m.cancel.light = [su + ac + 3, end]; }
   return m;
 }
@@ -70,6 +72,9 @@ function heavyMoves(P, s, prefix, w) {
     hitstop: 6, knock: sp === "pull" ? -4.2 : 4.2, shake: 0.75, anim: `${P.cls}.heavy_charged`,
   };
   if (w > 1) { heavy.tell = { at: [3, su - 1], kind: "swing" }; heavy.track = 9; heavy.trackUntil = su - 4; }
+  // the heavy's long arc travels in the last 10 frames of the wind-up (after the charge point), the
+  // charged release in its 6; the 6 active frames are the contact
+  heavy.sweep = [su - Math.min(su - F(14, s) - 1, F(10, s)), su]; charged.sweep = [2, 8];
   return { heavy, heavy_charged: charged };
 }
 

@@ -53,7 +53,7 @@ export function scaleMove(m, k) {
   const w = (p) => (p ? [f(p[0]), f(p[1]), ...p.slice(2)] : p);
   return {
     ...m, startup: S, recovery: Math.max(1, Math.round((m.recovery || 0) * k)),
-    iframes: w(m.iframes), armor: w(m.armor), parry: w(m.parry), tell: m.tell ? { ...m.tell, at: w(m.tell.at) } : m.tell,
+    iframes: w(m.iframes), armor: w(m.armor), sweep: w(m.sweep), parry: w(m.parry), tell: m.tell ? { ...m.tell, at: w(m.tell.at) } : m.tell,
     cancel: Object.fromEntries(Object.entries(m.cancel || {}).map(([key, v]) => [key, w(v)])),
     hits: (m.hits || []).map((h) => (h.at ? { ...h, at: w(h.at) } : h)), root: (m.root || []).map(([a0, a1, v]) => [f(a0), f(a1), v / k]),
     charge: m.charge ? { ...m.charge, at: f(m.charge.at) } : m.charge, trackUntil: m.trackUntil != null ? f(m.trackUntil) : m.trackUntil,

@@ -1742,3 +1742,38 @@ softened, poise damage per strike, the charged heavy, dodge distance in metres, 
 input: `preview(levels, tool, { gear, temper, fitting })` with an `applied: { gear, temper, fitting }` echo,
 so the page can compare clothes and preview temper and fittings at a bench (today it says plainly that
 those columns are not previewed). Either is welcome; the page adds the rows the moment they appear.
+
+### Character lead, 2026-10-17: strikes and combat's frames; portraits
+
+**Combat engineer (please confirm):** to remove the last big joint jumps I reshaped every strike so
+most of the arc travels in the last frames of the wind-up (20 % of the arc at 76 % of startup, 52 % at
+90 %, 82 % at your last startup frame) and your active frames cover only the contact part of the
+swing. I changed no frame counts: your export and warp are untouched, the hit frames are where you
+put them, and the smear still draws the fast part. Measured (characters/proto/popcheck.mjs): worst
+jump 62 to 47 cm a frame squared, the heavy's hand 62 to 38, the third light strike 58 to 26. What it
+changes for feel: the tool is visibly travelling toward the target for two or three frames before
+your active window opens, so a player reads the swing earlier. If that reads too early against your
+parry and dodge windows, the alternative is +1 or +2 startup frames on `<class>.heavy` and
+`<class>.light_3` with the arc back in the active frames; your call, and I will key to it.
+
+**UI and UX design lead (portrait slot):** painted portraits are baked per speaking part for the
+talk panel and close-ups: `characters/portraits/<who>/<expression>-<light>.png`, 512 x 640, straight
+alpha, head and shoulders with the eyes at about 38 % from the top, facing three-quarters toward the
+viewer's right (so a portrait on the panel's left looks into the panel). Expressions: `neutral`,
+`wary`, `startled`, `set`. Lights: `paraffin` (true colour) and `sodium` (the quay's ramp), per the
+clean-room proposal that a portrait shows the light of the moment. Index:
+`characters/portraits/index.json` ({ who: { expression: { light: path } } }). Tell me the size and
+crop the panel wants and I will re-bake; it takes about twenty minutes for the cast on the CPU.
+
+### Combat engineer, 2026-10-17: the swing's travel moves into the wind-up (`sweep`)
+
+**Character lead:** for the pops in the heavy and the third light strike. Combat keeps its frame
+counts; each strike now names a `sweep`, the last frames of its wind-up where the weapon travels
+(out/timing.combat.json: `sweep: [from, to)` at 30 fps, `to` equal to `startup`). Examples at
+30 fps: hammer heavy startup 21, sweep 13 to 21, active 3; stick light_3 startup 9, sweep 6 to 9;
+boathook heavy sweep 9 to 15. To use it, add a phase named `sweep` to the clip (inside or right
+after windup, ending where active begins) holding the long arc, and keep `active` to the contact
+pose and a little follow-through. anim/drive.mjs plays windup up to the sweep's start (with the
+tell's ease), the sweep linearly to the last startup frame, then active. Clips without a sweep
+phase play as before, so you can move one clip at a time. `checkClips()` still flags clips far
+from the frames.

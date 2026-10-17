@@ -108,7 +108,8 @@ export const BRAWL = { count: 5, seconds: 60, standing: 6, breath: 6, poise: 3 }
 function brawlWorld(G, enc, A, fighters, spawns, barkText) {
   for (let k = 0; k < BRAWL.count; k++) {
     const at = spawns[k % spawns.length], def = foeDef({ standing: BRAWL.standing, breath: BRAWL.breath, poise: BRAWL.poise, faction: "brine", name: "A drinker" }, "skirmisher");
-    fighters.push(fighterSpec(`brawler#${k}`, `brawl${k}`, { ...def, items: {} }, [at[0] + (k >= spawns.length ? 1.2 : 0), at[1] + (k % 2) * 0.8], { face: k, brain: true }));
+    const off = [at[0] + (k >= spawns.length ? 1.2 : 0), at[1] + (k % 2) * 0.8]; // spread, but never into a wall
+    fighters.push(fighterSpec(`brawler#${k}`, `brawl${k}`, { ...def, items: {} }, onGround(A, off) ? off : at, { face: k, brain: true }));
   }
   const W = createWorld({ G, arena: A, fighters, seed: G.state.seed ^ (G.env.clock() * 131), barkText, limitFrames: BRAWL.seconds * 60 });
   W.brawl = true;

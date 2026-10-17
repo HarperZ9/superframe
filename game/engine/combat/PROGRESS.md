@@ -174,3 +174,8 @@ tests (node --test), not proof.
    23 at NOSE 3, 5, 8, 10 while the roll runs 60, 56, 52, 50 frames). preview() returns `frames`:
    startup, active, recovery, total, base, i-frame and parry windows for light, heavy, catch, step,
    the roll form the load picks, art and art2. tests/tempo.test.mjs, tests/build.test.mjs; 205 of 205.
+26. DONE Coordinator, 2026-10-17 (character lead's pops in the heavy and the third light strike):
+   every strike names a `sweep`, the last frames of startup where the swing travels (heavy 10,
+   last link 7, other links 4, charged 2 to 8); anim/drive.mjs plays a clip's sweep phase there so
+   the active frames carry only contact; export-timing writes it. No frame count changed (min-max
+   identical). Also: brawl spawn offsets never land in a wall (the Brine marks moved). 206 of 206.
