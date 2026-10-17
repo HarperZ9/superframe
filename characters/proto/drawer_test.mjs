@@ -24,4 +24,13 @@ expect(!threw, `an unknown figure id does not throw${threw ? ` (${threw.message}
 expect(r === "placeholder" && calls.includes("ellipse") && calls.includes("arc"), "an unknown figure id draws the neutral placeholder (body, head and contact shadow)");
 expect(warns.filter((w) => w.includes('"sabien"')).length === 1, `the unknown id is logged once (${warns.length} warning(s))`);
 console.warn = warn0;
+// a held pole kept inside the clear reach ahead: Gorm's staff against a wall 0.3 m ahead
+{ const { createCast } = await import("../runtime/actor.mjs"), { GORM } = await import("../cast/lamplighter.mjs");
+  const timing = JSON.parse(await readFile(new URL("characters/anim/timing.json", root), "utf8")), cast = createCast({ timing, combat: null, members: { gorm: GORM } });
+  const a = cast.actor("gorm"); a.play("idle"); a.update(1 / 30);
+  const f = (a.facing * Math.PI) / 180, ahead = () => { const w = a.weapon(); return (w.tip[0] - a.pos[0]) * Math.sin(f) + (w.tip[2] - a.pos[2]) * Math.cos(f); };
+  const free = ahead(); let k = 0; for (let i = 0; i < 40; i++) k = draw.keepToolClear(a, 0.3);
+  expect(free > 0.3 && ahead() <= 0.32, `Gorm's pole pulled inside a 0.3 m reach (tip ahead ${free.toFixed(2)} m free, ${ahead().toFixed(2)} m clamped, wrist ${k.toFixed(0)} degrees)`);
+  for (let i = 0; i < 40; i++) k = draw.keepToolClear(a, 2.2);
+  expect(Math.abs(k) < 1 && Math.abs(ahead() - free) < 0.02, "with room again the wrist eases back to the clip's own pose"); }
 process.exit(fails ? 1 : 0);

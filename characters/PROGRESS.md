@@ -333,3 +333,34 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     lamp; Merrow's head is hidden by the stove pipe in front in both before and after (correct depth,
     poor staging); the plate's buffers load a few seconds after the plate, and until then a figure is
     drawn with gain 1 and a small ellipse shadow.
+58. DONE Exposure retuned, the cast mapping, reach, seated, against the systems engineer's visual check
+    (game/engine/tools/visual-check.mjs; coordinator: the quay had swung to black cut-outs; Merrow at
+    2.3 to 2.5x his surroundings).
+    - Exposure: the target is now the brighter of the lit third of the painted ground within 1.5 m
+      (ground only, read through the plate's geo) and a floor that rises inside a lamp's reach
+      (0.03 + 0.1 f^2, f = 1 - d / reach); the lit third counts up to 3x the ground's median and 2.5x
+      the painting all round the figure. Tested by stills: "lit" alone left the quay dark (its ground
+      is dark even near lamps), "floor" alone pushed the Brine up, the uncapped mix put Merrow at 2.2x;
+      a cap on the lamp floor by the surround dragged the quay back down. Half the ambient now takes the
+      ruling lamp's colour (a figure lifted in shadow read flat blue-grey).
+    - Bug found and fixed: bodyOf sent every cast id outside combat's archetype table (Sabine, Wenna, the
+      folk) to the warden body. Cast ids now draw their own bodies; an id with no cast data draws a
+      neutral placeholder and is logged once (proto/drawer_test.mjs, 9 checks). CAST_IDS exported for
+      the validator. The shade.mjs:64 crash the coordinator saw was mine, mid-test: a comment swallowed
+      the rig's fields; fixed before commit 7f5538c.
+    - Shadows: a flat core (to 0.7 r) with a soft rim, so one figure's shadow is one tone.
+    - Held tools: keepToolClear turns the wrist by the smallest 10-degree step (to 80) that brings a
+      tool longer than 0.8 m inside args.reach without the tip going under the floor, eased at 0.25 a
+      frame (drawer_test: Gorm's pole 0.52 m free, 0.23 m inside a 0.3 m reach, back to the clip with room).
+    - Seated: a sit loop (anim/locomotion.mjs, timing 120 frames): thighs level, shins down, hands at the
+      knees, the coat skirts eased forward 38 degrees (72 opened Keel's coat tube into a disc); the body's
+      ground shift sets the feet. out/seated.png (proto/seated_sheet.mjs). The drawer sits a person when
+      args.pose is "seated"; the people layer does not pass it yet (asked in NOTES). Keel's coat still
+      flares like a bell round the knees; a split coat would drape better.
+    - Visual check, final run (7 Oct 17 state): exposure passes in every view (Merrow 1.99, Keel 0.6);
+      three views still fail on two measures I checked against marked frames
+      (stills/proof/check-marks/, proto/markup.mjs): Sabine's occlusion compares each body pixel to her
+      feet's depth, but under the 34-degree camera her chest is 0.5 to 0.7 m nearer than her feet; by
+      each pixel's own depth 0 of 4092 drawn pixels are behind the painting by more than 0.5 m (worst
+      0.14 m, the drawer's slack). The crowd's 89 "stacked" pixels sit on figure edges (the one-pixel
+      feather on dark coats and a staff), not where two shadows overlap.

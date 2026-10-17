@@ -100,6 +100,13 @@ function drip(out, G, V, pl, S, joints, t) {
   });
 }
 
+// p + off, channel by channel (degrees add)
+function addPose(p, off) {
+  const out = { ...p };
+  for (const [k, v] of Object.entries(off)) { const b = out[k] || {}; const c = { ...b }; for (const [f, d] of Object.entries(v)) c[f] = (b[f] || 0) + d; out[k] = c; }
+  return out;
+}
+
 export function createCast({ timing, combat = null, members }) {
   const styles = Object.fromEntries(Object.entries(members).filter(([, m]) => m.style).map(([k, m]) => [k, m.style]));
   const L = makeLibrary(timing, styles, combat, Object.fromEntries(Object.entries(members).map(([k, m]) => [k, m.P]))), meshes = {};
@@ -210,7 +217,10 @@ export function createCast({ timing, combat = null, members }) {
         p.root = { ...(p.root || {}), x: 0, z: 0 };   // travel is in st.pos (ours, or combat's)
         return p;
       },
-      pose() { return st.sec.apply(self.basePose()); },
+      pose() { const p = st.sec.apply(self.basePose()); return st.adjust ? addPose(p, st.adjust) : p; },
+      // an additive offset on top of whatever plays ({ handR: { bend: -20 } }), e.g. a held pole angled up
+      // to stay clear of a counter; null clears it
+      adjust(off) { st.adjust = off || null; },
       skeleton(pose = self.pose()) { return solveFigure(C, built(who, "far", st.tool), pose, self.locksLocal()); },
       // Foot locking: a foot that comes down is pinned where it landed (world space) and the leg
       // reaches for it by IK until the clip lifts it, so feet never skate under turns, blends,

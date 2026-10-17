@@ -96,6 +96,29 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
   const LIFT_IDS = new Set(["skin", "cheek", "jawcool", "lip"].map((n) => MATS[n].id));
   const LOOK_DEFAULT = "lift,outline";   // the test: outline read best on dark ground, lift added faces and hands; shadow and pool vanished on dark ground
   const LIFT = 1.6, OCC_BIAS = 0.14, EXPOSE_MODE = "both", LIT_X = 3, SURROUND_X = 2.5;   // the lit third counts up to 3x the ground's median (Merrow beside the fire pool read 2.2x his surroundings)   // face lift in linear light; occlusion slack in metres
+  // A held staff or pole kept inside args.reach (the clear metres ahead before a prop or wall, from the
+  // engine's clearAhead): when the tip would pass it, the wrist turns the tool up or back by the
+  // smallest angle (10 degree steps to 80) that brings the tip inside the reach without going under
+  // the floor, eased over a few frames so the tool never snaps.
+  const TOOL_EASE = 0.25;
+  function keepToolClear(a, reach) {
+    const st = (a.clear ||= { k: 0 }); let want = 0;
+    a.adjust(null);
+    const w = a.weapon && a.weapon();
+    if (w && reach != null && Math.hypot(w.tip[0] - w.grip[0], w.tip[1] - w.grip[1], w.tip[2] - w.grip[2]) > 0.8) {
+      const f = (a.facing * Math.PI) / 180, ahead = (q) => (q.tip[0] - a.pos[0]) * Math.sin(f) + (q.tip[2] - a.pos[2]) * Math.cos(f);
+      if (ahead(w) > reach) {
+        let best = null;
+        for (let m = 10; m <= 80 && !best; m += 10) for (const k of [m, -m]) { a.adjust({ handR: { bend: k } }); const q = a.weapon(); if (ahead(q) <= reach && q.tip[1] >= 0.05) { best = k; break; } }
+        want = best ?? 0;
+      }
+    }
+    st.k += (want - st.k) * TOOL_EASE;
+    a.adjust(Math.abs(st.k) > 0.5 ? { handR: { bend: st.k } } : null);
+    (globalThis.__lwFigureStats ||= {});
+    return st.k;
+  }
+  drawFighter.keepToolClear = keepToolClear;   // for proto/drawer_test.mjs
   // the neutral placeholder: a plain ink body with a pale edge and a small contact shadow
   function placeholder(g, { x, y, ppm }, cam) {
     const hgt = 1.75 * ppm, wid = 0.5 * ppm, sE = Math.sin(cam.elevDeg * D2R);
@@ -114,8 +137,11 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     if (!who) return placeholder(g, args, cam);
     let a = actors.get(F.id);
     if (!a) { a = cast.actor(who, { tool: toolOfDef(W, F, who) }); actors.set(F.id, a); }
-    const pose = poseOf(W, F, clipsFor(who));
+    // a scene person marked `pose: seated` (args.pose, or the figure's own pose field) sits
+    const seated = F.person && (args.pose === "seated" || F.seated || (F.def && F.def.pose === "seated"));
+    const pose = seated ? { anim: "sit", loop: true } : poseOf(W, F, clipsFor(who));
     a.drive({ x: F.x, z: F.z, face: face ?? F.face, pose: { ...pose, anim: down && !pose.anim ? "knockdown" : pose.anim }, dt: 1 / 60 });
+    keepToolClear(a, args.reach);
     // render in the actor's own frame at the plate camera's orientation and scale, feet on (x, y)
     const cosE2 = Math.cos(cam.elevDeg * D2R), truePpm = ppm / cosE2, hM = 2.9, h = Math.ceil(hM * truePpm), w = Math.ceil(h * 0.95), P = a.pos;
     const R = rigAt(at, lights, darkness || 0);

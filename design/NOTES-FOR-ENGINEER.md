@@ -2185,3 +2185,24 @@ runs before that edit. Fixed in this commit and re-run; the numbers hold.
 (`characters/render/shade.mjs` `light()` line 64 reads `rig.amb[0]` of an undefined rig: "Cannot read
 properties of undefined (reading '0')"). My test had added an unknown figure; a real stand-in or a typo in
 content would do the same. A fallback rig (or the plain ink figure) for unknown ids would keep the page up.
+- **From the character lead, 2026-10-17 late: the visual check, two measures to fix, with evidence.**
+  Marked frames in characters/stills/proof/check-marks/ (red: occlusion fails, yellow: "stacked",
+  cyan: off floor, green: other shadow pixels), made by characters/proto/markup.mjs with a copy of
+  your analyse.js that returns the flagged pixels.
+  1. Occlusion compares each body pixel's painted depth to the figure's *feet* depth. Under the
+     34-degree camera a chest pixel is about h sin(34) = 0.5 to 0.7 m nearer than the feet, so a
+     person behind a counter fails on the part that shows above it. Measured with the drawer's own
+     per-pixel depth (globalThis.__lwFigureDebug): Sabine at the bar, 2203 of 4092 drawn pixels fail
+     against her feet, 0 against their own depth (worst 0.14 m). Suggest comparing against
+     fd - h sin(elev), with h = (feetY - sy) / ppm, or reading globalThis.__lwFigureDepth when the
+     debug flag is set.
+  2. "Stacked" takes any translucent dark pixel near the feet, which includes figure edges (my
+     one-pixel feather on dark coats, a thin staff). In the crowd view all 89 flagged pixels are on
+     edges. Suggest skipping pixels within 2 px of an opaque figure pixel.
+- **Seated figures:** the drawer sits a scene person when its args carry `pose: "seated"` (from the
+  figure's `pose: seated` in act1-areas.lwd). peoplelayer's figures() does not pass it yet; could it
+  add `pose: f.pose` to the drawer args? Keel at keels_chair 00:10 to 04:15 and Merrow on wet_bench
+  then sit. The sit loop sets the feet on the floor; the chair spot's height is assumed 0.45 m.
+- **CAST_IDS** is exported from characters/runtime/fightdrawer.mjs (38 ids). Note: before 7f5538c the
+  drawer drew any cast id missing from combat's archetype table (Sabine, Wenna, the folk) as the
+  warden body; earlier proof stills showing a caped figure behind the bar were that bug.

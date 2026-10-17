@@ -44,6 +44,23 @@ export const idle = { name: "idle", loop: true, frames: 96, tags: ["calm"], keys
   { at: 0.75, pose: merge(STAND, { root: { x: -0.01 }, pelvis: { side: 1.5 }, chest: { bend: -1.5, side: -0.8 }, head: { turn: -8, bend: 7 }, hangL: { swing: 1.5 } }) },
 ] };
 
+// Seated on a chair or bench (the scene's `pose: seated`): thighs level, shins down, hands on the
+// thighs, a slow breath and a look about. The root drops by the thigh's length; the body's ground
+// shift then sets the feet on the floor, so the seat height follows each body's own legs.
+const SEAT = merge(STAND, {
+  root: { y: -0.46 }, pelvis: { bend: 0 }, spine: { bend: 8 }, chest: { bend: 4 }, head: { bend: 10 },
+  thighL: { fwd: 88, out: 8 }, shinL: { bend: 86 }, footL: { bend: -4 }, thighR: { fwd: 86, out: 10 }, shinR: { bend: 90 }, footR: { bend: 0 },
+  armL: { fwd: 10, out: 14 }, foreL: { bend: 74 }, handL: { bend: -12 }, armR: { fwd: 8, out: 14 }, foreR: { bend: 78 }, handR: { bend: -10 },
+  skirtL: { swing: 38, sway: 4 }, skirtR: { swing: 38, sway: 4 },   // the coat's skirts eased forward over the thighs (a full 72 opened the tube into a disc)
+  hangL: { swing: 0 }, hangR: { swing: 0 },
+});
+export const sit = { name: "sit", loop: true, frames: 120, tags: ["calm"], keys: [
+  { at: 0, pose: SEAT },
+  { at: 0.3, pose: merge(SEAT, { spine: { bend: 7 }, chest: { bend: 2.5 }, head: { turn: 12, bend: 8 } }) },
+  { at: 0.55, pose: merge(SEAT, { chest: { bend: 5 }, head: { turn: 4, bend: 14 } }) },
+  { at: 0.8, pose: merge(SEAT, { spine: { bend: 9 }, chest: { bend: 3 }, head: { turn: -10, bend: 9 } }) },
+] };
+
 // A 180 degree turn in place, in two steps (yaw is relative: the game adds 180 when it ends).
 export const turn = { name: "turn", frames: 22, tags: ["calm"], keys: [
   { at: 0, pose: STAND },
