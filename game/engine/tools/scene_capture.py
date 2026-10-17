@@ -24,7 +24,7 @@ def main():
     ap.add_argument("--port", type=int, default=8754)
     ap.add_argument("--out", required=True)
     ap.add_argument("--figures", default="", help="plain for the ink figures")
-    ap.add_argument("--scene", default="fight", help="fight (walk, talk, fight, walk) or live (talk while the world runs, then walk off)")
+    ap.add_argument("--scene", default="fight", help="fight (walk, talk, fight, walk), live (talk while the world runs, then walk off) or interrog (walk up to the bar with F, then an interrogation in the Brine)")
     a = ap.parse_args()
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     from playwright.sync_api import sync_playwright
@@ -41,8 +41,9 @@ def main():
         q = "capture=1" + (f"&figures={a.figures}" if a.figures else "")
         pg.goto(f"http://127.0.0.1:{a.port}/engine/play.html?{q}")
         pg.wait_for_function("document.documentElement.dataset.ready === '1' && window.__lw", timeout=120000)
+        if a.scene == "interrog": pg.evaluate("window.__place = 'brine'")
         pg.evaluate("""() => { const c = window.__lw; c.newGame(11); c.G.create({ archetype: 'p.wader', enter: false });
-          c.G.setPlace('quay'); c.G.state.pos = [-6.2, 0, -2.3]; c.play(); if (c.play.P.talk) { c.play.P.talk = null; c.play.P.beat = null; c.play.render(); } }""")
+          c.G.setPlace(window.__place || 'quay'); if (!window.__place) c.G.state.pos = [-6.2, 0, -2.3]; c.play(); if (c.play.P.talk) { c.play.P.talk = null; c.play.P.beat = null; c.play.render(); } }""")
         pg.wait_for_function("(() => { const p = window.__lw.play; return p && p.cam.ready() && !!p.cam.arena(); })()", timeout=180000)
         st = lambda: pg.evaluate(JS_STATE)
         def still(name): pg.screenshot(path=str(out / f"{name}.png")); note("still", name, json.dumps(st()))
@@ -53,6 +54,25 @@ def main():
                 time.sleep(0.2)
             return False
         time.sleep(1.5); still("01-quay")
+        if a.scene == "interrog":
+            js = lambda x: pg.evaluate(x)
+            js("window.__lw.play.people.walkTo([1.4, 0, -1.6], () => window.__lw.play.people.walkTo([-0.1, 0, -1.7], () => {}))")
+            time.sleep(1.2); still("02-walking-to-the-bar"); wait("!p.people.walking()", 30)
+            note("F at the bar:", js("window.__lw.play.interact()")); time.sleep(1.5); still("03-walk-up-talk")
+            js("(() => { const p = window.__lw.play; p.P.talk = null; p.P.beat = null; p.afterTalk(); p.render(); })()")
+            js("window.__lw.play.people.walkTo([-2.4, 0, -0.5], () => {})"); wait("!p.people.walking()", 30)
+            js("(() => { const p = window.__lw.play, G = window.__lw.G; G.state.flags.push('merrow.wet_thigh'); p.people.talkingWith('merrow'); p.cam.focus([-3.2, 0, -0.3]); p.startTalk('x1.merrow.start'); })()")
+            time.sleep(1.5); still("04-interrogation-opens"); note("options:", js("window.__lw.play.P.beat.options.map(o => o.label)"))
+            js("(() => { const p = window.__lw.play; p.choose(p.P.beat.options.findIndex(o => /what the Low Company lost/.test(o.label))); })()")
+            time.sleep(1.0); still("05-a-press"); note("after the press:", json.dumps(js("window.__lw.play.P.beat && window.__lw.play.P.beat.interrogation")))
+            wait("!!window.__lw.G.interrog.openLie()", 12); time.sleep(0.6); still("06-the-lie")
+            js("(() => { const p = window.__lw.play; p.choose(p.P.beat.options.findIndex(o => o.lie)); })()")
+            time.sleep(1.2); still("07-lie-caught"); note("after the catch:", json.dumps(js("window.__lw.play.P.beat && (window.__lw.play.P.beat.interrogation || window.__lw.play.P.beat.lines.map(l => l.text))")))
+            for _ in range(3):
+                if not js("!!(window.__lw.play.P.beat && window.__lw.play.P.beat.interrogation)"): break
+                js("(() => { const p = window.__lw.play; p.choose(p.P.beat.options.findIndex(o => /Say nothing/.test(o.label))); })()"); time.sleep(0.8)
+            time.sleep(1.0); still("08-outcome"); note("outcome lines:", json.dumps(js("window.__lw.play.P.log.slice(-4).map(l => l.text)")))
+            ctx.close(); b.close(); (out / "capture.log").write_text(chr(10).join(log), encoding="utf-8"); return
         if a.scene == "live":
             # capture only: Strand walks about within 2 m (wander), so the world visibly moves around the talk
             pg.evaluate("(() => { const f = window.__lw.G.world.area().figures.find(x => x.id === 'strand'); if (f) f.wander = 2; })()")

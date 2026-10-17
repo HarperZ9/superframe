@@ -7,7 +7,7 @@
 // chosen from the list is walked to first, and a fight started from a conversation plays on the
 // same plate and ground (the plate's arena with the art lead's fight marks, combat/sim/plate.mjs),
 // after which Lamb stands where the fight ended and walks on.
-import { h, btn, clear } from "./dom.mjs";
+import { h, btn, clear, toast } from "./dom.mjs";
 import { hudEl, meterMarks } from "./scene.mjs";
 import { plateCam } from "./platecam.mjs";
 import { lineEl, renderOptions } from "./talk.mjs";
@@ -121,7 +121,7 @@ function playApi(ctx, P, els, root) {
     },
     // The conversation is over: the end of the story, or back to the world.
     close() {
-      const ended = P.ended; P.talk = null; P.beat = null;
+      const ended = P.ended; P.talk = null; P.beat = null; api.afterTalk();
       if (ended) return api.render();
       api.worldStep();
     },
@@ -138,7 +138,28 @@ function playApi(ctx, P, els, root) {
       const v = (G.input && G.input.get("move")) || { x: 0, z: 0 }, L = Math.hypot(v.x || 0, v.z || 0);
       const can = P.talk && P.beat && !P.ended && !P.beat.fight && !P.beat.run && !P.beat.sneak && !root.classList.contains("fighting") && ctx.input.mode && ctx.input.mode() === "talk";
       P.leaving = can && L >= (+G.rs.rules["walk-off"] || 0.6) ? (P.leaving || 0) + dt : 0;
-      if (P.leaving >= 0.25) { P.leaving = 0; const b = P.talk.walkAway(); if (b) { P.log.push(...b.lines); if (b.done) { P.talk = null; P.beat = null; api.render(); } else api.take(b); } }
+      if (P.leaving >= 0.25) { P.leaving = 0; const b = P.talk.walkAway(); if (b) { P.log.push(...b.lines); if (b.done) { P.talk = null; P.beat = null; api.afterTalk(); api.render(); } else api.take(b); } }
+    },
+    // After a conversation (LIVE-CONVERSATION A3): 0.5 s before F starts another, 0.5 s of no run.
+    afterTalk() { P.coolUntil = performance.now() + 500; if (api.people) api.people.lockRun(500); },
+    // Walk-up talk (A2): F speaks to (or uses) the hotspot Lamb faces, within its reach (at least
+    // 2 m) and a 50 degree cone; a hotspot that names a figure is reached at that figure's live spot.
+    interact() {
+      if (P.talk || P.ended || root.classList.contains("fighting") || performance.now() < (P.coolUntil || 0) || !api.people) return false;
+      const pos = G.state.pos; if (!pos) return false;
+      const face = api.people.facing(), spots = G.figureAt || {};
+      let best = null;
+      for (const hs of G.world.hotspots()) {
+        const who = hs.attrs && hs.attrs.who ? String(hs.attrs.who) : null, at = (who && spots[who]) || hs.at, dx = at[0] - pos[0], dz = at[2] - pos[2], d = Math.hypot(dx, dz);
+        if (d > Math.max(2, (+hs.attrs.r || 1.2) + 0.6)) continue;
+        let da = Math.abs(Math.atan2(dz, dx) - face); if (da > Math.PI) da = 2 * Math.PI - da;
+        if (d > 0.4 && da > (25 * Math.PI) / 180) continue;
+        if (!best || d < best.d) best = { hs, d };
+      }
+      if (!best) return false;
+      const hs = best.hs, who = hs.attrs && hs.attrs.who ? String(hs.attrs.who) : null;
+      if (api.cam) api.cam.focus(hs.at); api.people.talkingWith(who); api.startTalk(hs.target);
+      return true;
     },
     // A hotspot: Lamb walks to it on the plate, then it opens (at once where there is no ground).
     hotspot(hs) {
@@ -174,6 +195,7 @@ function playApi(ctx, P, els, root) {
 }
 
 function onAction(ctx, P, api, a) {
+  if (a === "interact") return api.interact();
   if (a === "daybook") { ctx.daybook(); return true; }
   if (a === "terms:on" || a === "terms:off") { P.termsAll = a === "terms:on"; renderTalk(ctx, P, api.els, api, { keepFocus: true }); return true; }
   if (a.startsWith("opt:") && P.beat && P.beat.options) {
@@ -260,9 +282,10 @@ function liveWorld(ctx, P, api, root) {
   });
   // An interrogation is live: what the person says on their own clock (lies, tells) goes into the
   // panel as it is said; an outcome the clock reaches (silence ran out) plays without a press.
+  const offBark = G.on("voice.bark", (e) => toast(e.name.toUpperCase(), e.text, 4200)); // a passive voice in the open
   const offSay = G.on("interrog.say", (L) => { if (!P.talk) return; P.log.push(L); api.render(); });
   const offLie = G.on("interrog.lie", () => { if (P.talk && P.beat && P.beat.interrogation) api.render(); });
   const offStart = G.on("interrog.start", (e) => { if (api.people && e.who) api.people.talkingWith(e.who); });
   const offEnd = G.on("interrog.end", () => queueMicrotask(() => { if (P.talk && P.beat && P.beat.interrogation && G.interrog.current && G.interrog.outcome()) { const b = P.talk.interrogResolve(); if (b) api.take(b); } }));
-  return () => { off(); offTime(); offSay(); offLie(); offStart(); offEnd(); G.loop.clockRate = 0; };
+  return () => { off(); offTime(); offBark(); offSay(); offLie(); offStart(); offEnd(); G.loop.clockRate = 0; };
 }

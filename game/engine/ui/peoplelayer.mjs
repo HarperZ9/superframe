@@ -16,6 +16,7 @@
 //   P.figures() -> [{ who, at, face, walking }]   P.walking()
 import { h } from "./dom.mjs";
 import { personDrawer } from "./figures.mjs";
+import { evaluate } from "../core/expr.mjs";
 import { findPath, groundAt, walkable, camBasis } from "../world/plateworld.mjs";
 
 const TALK = ["talk_a", "talk_b", "talk_c"], GESTURE_S = 2.4;
@@ -25,7 +26,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
   canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none";
   host.append(canvas);
   const live = () => G.loop && G.loop.clockRate > 0; // the world clock runs: walking costs no extra minutes
-  const S = { wander: {}, path: null, then: null, run: false, metres: 0, face: {}, talking: null, gesture: {}, hidden: new Set(), raf: 0, last: performance.now(), stopped: false, moving: false };
+  const S = { runLock: 0, barkAt: -1e9, barkRun: 0, wander: {}, path: null, then: null, run: false, metres: 0, face: {}, talking: null, gesture: {}, hidden: new Set(), raf: 0, last: performance.now(), stopped: false, moving: false };
   const rule = (k, d) => (R[k] != null ? +R[k] : d);
   const waterY = (A) => (A && A.water ? A.water.a + A.water.b * (+G.env.term("tide") || 0) : -Infinity);
   const lambAt = () => G.state.pos || (G.world.area() && G.world.area().spawn) || null;
@@ -46,7 +47,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     const pj = cam.place(), A = cam.arena(); if (!pj || !pj.camera) return false;
     const B = camBasis(pj.camera), fl = Math.hypot(B.f[0], B.f[2]) || 1;
     let dx = B.right[0] * v.x - (B.f[0] / fl) * v.z, dz = B.right[2] * v.x - (B.f[2] / fl) * v.z; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;
-    S.run = !!G.input.get("run"); S.path = null; S.then = null;
+    S.run = !!G.input.get("run") && performance.now() >= S.runLock; S.path = null; S.then = null;
     const sp = (S.run ? rule("run-speed", 3.6) : rule("walk-speed", 1.5)) * dt * Math.min(1, L), nx = pos[0] + dx * sp, nz = pos[2] + dz * sp;
     S.face.lamb = Math.atan2(dz, dx);
     if (A && !walkable(A, nx, nz, waterY(A))) return true;
@@ -60,7 +61,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     const pos = lambAt(); S.moving = false;
     if (pos && freeWalk(dt, pos)) return;
     if (!S.path || !pos) return;
-    S.run = !!(G.input && G.input.get("run"));
+    S.run = !!(G.input && G.input.get("run")) && performance.now() >= S.runLock;
     const A = cam.arena(), sp = (S.run ? rule("run-speed", 3.6) : rule("walk-speed", 1.5)) * dt;
     const [tx, tz] = S.path[0], dx = tx - pos[0], dz = tz - pos[2], d = Math.hypot(dx, dz);
     const k = d <= sp ? 1 : sp / d, nx = pos[0] + dx * k, nz = pos[2] + dz * k, y = A ? groundAt(A, nx, nz) : null;
@@ -117,10 +118,28 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
       spots[f.id] = w.at;
     }
   }
+  // Passive voices in the open (LIVE-CONVERSATION B3, B4.3): an area's voice: line is said as a bark
+  // when Lamb walks within its r and the skill meets its dc, one at a time, at most two in a row,
+  // never while a conversation or fight holds the screen.
+  function voices() {
+    const a = G.world.area(), pos = lambAt(); if (!a || !pos || !a.voices || !a.voices.length || !idle()) return;
+    const now = performance.now(); if (now - S.barkAt < 4000) return;
+    if (now - S.barkAt > 12000) S.barkRun = 0; if (S.barkRun >= 2) return;
+    const heard = (G.state.barks ||= []);
+    for (const v of a.voices) {
+      if (v.once && heard.includes(v.key)) continue;
+      if (v.at && Math.hypot(pos[0] - v.at[0], pos[2] - v.at[2]) > v.r) continue;
+      if (v.cond && !evaluate(v.cond, G.scope)) continue;
+      if (G.sheet.skill(v.skill) < v.dc) continue;
+      heard.push(v.key); S.barkAt = now; S.barkRun++;
+      const sk = G.rs.skills[v.skill]; G.emit("voice.bark", { skill: v.skill, name: sk ? sk.name : v.skill, text: v.text });
+      return;
+    }
+  }
   function frame(now) {
     if (S.stopped) return;
     const dt = Math.min(0.1, (now - S.last) / 1000); S.last = now;
-    if (!G.loop || !G.loop.paused) { step(dt); wanderStep(dt); if (onFrame) onFrame(dt); }
+    if (!G.loop || !G.loop.paused) { step(dt); wanderStep(dt); voices(); if (onFrame) onFrame(dt); }
     draw(dt);
     S.raf = requestAnimationFrame(frame);
   }
@@ -141,6 +160,9 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
       if (fa && a) { S.face.lamb = Math.atan2(fa[2] - a[2], fa[0] - a[0]); S.face[who] = Math.atan2(a[2] - fa[2], a[0] - fa[0]); }
     },
     get talkingWithWho() { return S.talking; },
+    facing: () => S.face.lamb ?? 0,
+    // after a conversation: the run button does nothing for a moment (LIVE-CONVERSATION A3: 0.5 s)
+    lockRun(ms = 500) { S.runLock = performance.now() + ms; },
     hide(ids) { S.hidden = new Set(ids || []); },
     stop() { S.stopped = true; cancelAnimationFrame(S.raf); host.removeEventListener("click", onClick); canvas.remove(); },
     canvas,

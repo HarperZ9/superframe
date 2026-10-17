@@ -7,7 +7,7 @@
 //             in a run, hurry), Start back.
 const KEYS = {
   ArrowUp: "up", KeyW: "up", ArrowDown: "down", KeyS: "down", ArrowLeft: "left", KeyA: "left", ArrowRight: "right", KeyD: "right",
-  Enter: "confirm", NumpadEnter: "confirm", Space: "confirm", Escape: "back", Backspace: "back", Tab: "daybook", KeyQ: "tabPrev", KeyE: "tabNext", KeyN: "alt",
+  Enter: "confirm", NumpadEnter: "confirm", Space: "confirm", Escape: "back", Backspace: "back", Tab: "daybook", KeyQ: "tabPrev", KeyE: "tabNext", KeyN: "alt", KeyF: "interact", // F: talk to or use what Lamb faces (LIVE-CONVERSATION A2)
 };
 const PAD = { 0: "confirm", 1: "back", 3: "alt", 8: "daybook", 4: "tabPrev", 5: "tabNext", 9: "back", 12: "up", 13: "down", 14: "left", 15: "right" }; // ux: View opens the Daybook; Y is the page's alt key (Build: density)
 const DEAD = 0.35, FIRST = 0.34, REPEAT = 0.13;

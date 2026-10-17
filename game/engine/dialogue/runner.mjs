@@ -260,6 +260,7 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
       }
       r = G.interrog.press(s, { pass });
     }
+    lines.push(...G.interrog.drain()); // a tell the press brought on, after Lamb's words
     if (r && r.node) { talk.stack.push({ id: "^interrog", at: 0 }); return play(r.node, 0, lines); }
     return afterInterrog(lines);
   }

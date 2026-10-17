@@ -50,3 +50,11 @@ test("the world clock runs in real time at clockRate seconds a game minute", () 
   L.clockRate = 0; for (let i = 0; i < 600; i++) L.step();
   assert.equal(G.clock() - c0, 3, "stepped mode: the world stands");
 });
+
+test("an area's passive voice lines load with their skill, dc, spot and reach", () => {
+  const extra = { file: "voice.lwd", text: ["@area t.vo", "name: Test voice area", "place: t.vo", "spawn: 0 0 0", "voice: ledger 3 \"Test: the numbers on the slate are wrong.\" {at: 1 0 2, r: 3}", ""].join("\n") };
+  const C = loadContent([...testSources(), extra]); assert.ok(C.ok, JSON.stringify(C.errors.slice(0, 3)));
+  const v = C.map.areas["t.vo"].voices[0];
+  assert.deepEqual({ skill: v.skill, dc: v.dc, at: v.at, r: v.r, once: v.once }, { skill: "ledger", dc: 3, at: [1, 0, 2], r: 3, once: true });
+  assert.equal(v.text, "Test: the numbers on the slate are wrong.");
+});

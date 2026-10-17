@@ -11,6 +11,8 @@
 //                  exit:    "label" -> area [? cond] {at: x y z, r: n, spawn: x y z, cost: min}
 //                  figure:  id {at: x y z, face: 1|-1, when: cond, wander: r (walks about within r m)}
 //                  places:  more LWD place ids shown on this plate (space list)
+//                  voice:   skill dc "text" {at: x y z, r: n, when: cond, once}   a passive voice line
+//                           said as a bark when Lamb walks within r and the skill meets dc
 // When the script moves Lamb to a place (a node's place:) and an area shows that place, the world
 // follows: that area becomes current with Lamb at its spawn, and no enter node plays (the script
 // is already telling the scene). An area that shows the current place stays as it is.
@@ -52,6 +54,7 @@ function loadArea(r) {
     walk: g("walk") ? g("walk").split(/[\s,]+/).map(Number) : null,
     hotspots: r.kv.filter((e) => e.key === "hotspot").map((e) => spot(parseChoice("hotspot", e.value, at(e)))),
     exits: r.kv.filter((e) => e.key === "exit").map((e) => { const s = spot(parseChoice("exit", e.value, at(e))); s.spawnAt = vec(s.attrs.spawn); return s; }),
+    voices: r.kv.filter((e) => e.key === "voice").map((e) => { const { body, attrs } = splitAttrs(e.value), m = body.trim().match(/^(\S+)\s+(\d+)\s+"(.*)"$/); if (!m) throw new SyntaxError(`voice: expected skill dc "text" {at, r}, got ${e.value}`); return { key: `${r.id}.voice.${e.line}`, skill: m[1], dc: +m[2], text: m[3], at: vec(attrs.at) || null, r: +attrs.r || 2, cond: compile(attrs.when), once: attrs.once !== false, line: e.line }; }),
     figures: r.kv.filter((e) => e.key === "figure").map((e) => { const { body, attrs } = splitAttrs(e.value); return { id: body.trim(), at: vec(attrs.at) || [0, 0, 0], face: attrs.face ?? 1, wander: +attrs.wander || 0, cond: compile(attrs.when), line: e.line }; }),
     file: r.file, line: r.line,
   };

@@ -63,7 +63,9 @@ export function loadInterrogations(book) {
 }
 
 export function createInterrogations(G, defs) {
-  const say = (S, text, kind = "line") => { const L = { kind, who: S.speaker, whoId: S.def.who, text, face: api.face() }; S.said.push(L); G.emit("interrog.say", L); return L; };
+  // a line said on the person's own clock goes out at once; one said because of a press (a tell)
+  // waits for the press's own lines (drain()), so it reads after Lamb's words
+  const say = (S, text, kind = "line") => { const L = { kind, who: kind === "nar" ? "" : S.speaker, whoId: S.def.who, text, face: api.face() }; S.said.push(L); if (S.busy) S.queue.push(L); else G.emit("interrog.say", L); return L; };
   const api = {
     defs, current: null,
     request(id) { if (!defs[id]) throw new Error(`no interrogation ${id}`); G.state.pendingInterrog = id; G.emit("interrog.request", { id }); },
@@ -71,7 +73,7 @@ export function createInterrogations(G, defs) {
     start(id) {
       const def = defs[id]; if (!def) throw new Error(`no interrogation ${id}`);
       const c = (G.rs.chars || {})[def.who];
-      api.current = { def, nerve: def.nerve, heat: Math.max(0, def.heat), t: 0, quiet: 0, used: new Set(), lies: def.lies.map((l) => ({ ...l, saidAt: null })), told: new Set(), said: [], out: null, speaker: c ? c.speaker : String(def.who || "").toUpperCase() };
+      api.current = { def, nerve: def.nerve, heat: Math.max(0, def.heat), t: 0, quiet: 0, used: new Set(), lies: def.lies.map((l) => ({ ...l, saidAt: null })), told: new Set(), said: [], queue: [], busy: false, out: null, speaker: c ? c.speaker : String(def.who || "").toUpperCase() };
       G.emit("interrog.start", { id, who: def.who });
       return api.current;
     },
@@ -91,19 +93,19 @@ export function createInterrogations(G, defs) {
     openLie() { const S = api.current; return S && S.lies.find((l) => l.saidAt != null && !l.caught && S.t - l.saidAt <= LIE_OPEN) || null; },
     // A press: { node, pass } and the numbers applied (fail: heat +1 only).
     press(p, { pass = true } = {}) {
-      const S = api.current; if (!S || S.out) return null;
+      const S = api.current; if (!S || S.out) return null; S.busy = true;
       S.used.add(p.key); S.lastPress = S.t; S.quiet = 0;
       if (pass) { S.nerve += p.nerve; S.heat = Math.max(0, S.heat + p.heat); } else S.heat += 1;
-      api.afterNumbers();
+      api.afterNumbers(); S.busy = false;
       return { node: p.target, pass };
     },
     // "That's a lie."
     callLie() {
-      const S = api.current; if (!S || S.out) return null;
+      const S = api.current; if (!S || S.out) return null; S.busy = true;
       S.lastPress = S.t; S.quiet = 0;
       const l = api.openLie();
-      if (l && (!l.catch || G.flag(l.catch))) { l.caught = true; S.nerve += l.nerve; S.heat = Math.max(0, S.heat + l.heat); api.afterNumbers(); G.emit("interrog.caught", { id: l.id }); return { node: l.node, caught: true }; }
-      S.nerve += 2; api.afterNumbers(); return { node: null, caught: false };
+      if (l && (!l.catch || G.flag(l.catch))) { l.caught = true; S.nerve += l.nerve; S.heat = Math.max(0, S.heat + l.heat); api.afterNumbers(); S.busy = false; G.emit("interrog.caught", { id: l.id }); return { node: l.node, caught: true }; }
+      S.nerve += 2; api.afterNumbers(); S.busy = false; return { node: null, caught: false };
     },
     afterNumbers() {
       const S = api.current, D = S.def;
@@ -113,6 +115,7 @@ export function createInterrogations(G, defs) {
       else if (D.bolt && S.heat >= D.bolt.at) S.out = { kind: "bolt", node: D.bolt.to };
       if (S.out) G.emit("interrog.end", S.out);
     },
+    drain() { const S = api.current; if (!S) return []; const q = S.queue; S.queue = []; return q; },
     outcome: () => (api.current && api.current.out) || null,
     walkAway() { const S = api.current; if (!S) return null; S.out = { kind: "walk", node: S.def.walk }; G.emit("interrog.end", S.out); return S.out; },
     finish() { const S = api.current; api.current = null; if (S) G.emit("interrog.finish", { id: S.def.id, out: S.out, nerve: S.nerve, heat: S.heat }); return S && S.out; },

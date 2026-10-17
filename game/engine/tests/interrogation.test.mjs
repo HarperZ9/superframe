@@ -42,8 +42,9 @@ test("a press plays its reply and comes back; once each unless again; heat never
 
 test("nerve at 0 breaks him; the tell is said once on the way down", () => {
   const G = make(), t = G.talk("x.t.start"), said = []; G.on("interrog.say", (l) => said.push(l.text));
-  pick(t, "collar"); // nerve 3, heat 3
-  assert.deepEqual(said, ["Test: he stops turning the pipe."]);
+  const c = texts(pick(t, "collar")); // nerve 3, heat 3
+  assert.deepEqual(c.slice(0, 2), ["Test: collar him.", "Test: he stops turning the pipe."], "the tell follows Lamb's words, in the press's own lines");
+  assert.deepEqual(said, [], "not said a second time on the live channel");
   pick(t, "lost"); // nerve 1
   const b = pick(t, "wait"); // nerve 0
   assert.ok(texts(b).includes("Test outcome tells.")); assert.ok(b.done); assert.equal(G.interrog.current, null);
