@@ -41,6 +41,7 @@ import { loadStealth, createStealthWorld } from "./world/stealth.mjs";
 import { loadSneaks, createSneaks } from "./world/sneak.mjs";
 import { loadObjects, createVerbs } from "./world/verbs.mjs";
 import { loadGates, createGates } from "./world/gates.mjs";
+import { loadInterrogations, createInterrogations } from "./world/interrogation.mjs";
 import { createScope } from "./core/scope.mjs";
 import { evaluate, compileEffects, runEffects, toMin } from "./core/expr.mjs";
 
@@ -49,14 +50,14 @@ export function loadContent(sources) {
   const book = loadBook(sources), rs = loadRuleset(book);
   const map = loadDistricts(book), meters = loadMeters(book), hz = loadHazards(book), pj = loadProjects(book), ins = loadInstruments(book);
   const runs = loadRuns(book), nights = loadNights(book), people = loadSchedules(book), anims = loadAnims(book);
-  const stealth = loadStealth(book), sneaks = loadSneaks(book), objects = loadObjects(book), gates = loadGates(book);
+  const stealth = loadStealth(book), sneaks = loadSneaks(book), objects = loadObjects(book), gates = loadGates(book), interrogs = loadInterrogations(book);
   // LWD/0 @meta end-clock and at-end: when the clock reaches the end, the act goes to at-end.
   // It is an event like any other, so it plays at the next node boundary or from nextScene().
   if (book.meta["end-clock"] && book.meta["at-end"] && !book.events.some((e) => e.id === "meta.at-end"))
     book.events.push({ id: "meta.at-end", at: toMin(book.meta["end-clock"].trim()), when: null, steps: [{ kind: "go", value: book.meta["at-end"].trim() }], file: book.files[0], line: 0 });
   for (const e of book.events) book.nodes[`@event.${e.id}`] = { id: `@event.${e.id}`, steps: e.steps, hub: false, speaker: "", file: e.file, line: e.line, event: true };
-  const errors = [...book.errors, ...rs.errors, ...map.errors, ...hz.errors, ...pj.errors, ...ins.errors, ...runs.errors, ...nights.errors, ...people.errors, ...anims.errors, ...stealth.errors, ...sneaks.errors, ...objects.errors, ...gates.errors];
-  return { book, rs, map, meters, hazards: hz.hazards, projects: pj.projects, instruments: ins.instruments, runs: runs.runs, nights: nights.nights, schedules: people.schedules, anims: anims.anims, stealth, sneaks: sneaks.sneaks, objects: objects.objects, gates, errors, ok: !errors.some((e) => e.level !== "warn") };
+  const errors = [...book.errors, ...rs.errors, ...map.errors, ...hz.errors, ...pj.errors, ...ins.errors, ...runs.errors, ...nights.errors, ...people.errors, ...anims.errors, ...stealth.errors, ...sneaks.errors, ...objects.errors, ...gates.errors, ...interrogs.errors];
+  return { interrogations: interrogs.interrogations, book, rs, map, meters, hazards: hz.hazards, projects: pj.projects, instruments: ins.instruments, runs: runs.runs, nights: nights.nights, schedules: people.schedules, anims: anims.anims, stealth, sneaks: sneaks.sneaks, objects: objects.objects, gates, errors, ok: !errors.some((e) => e.level !== "warn") };
 }
 
 export function newState(content, seed) {
@@ -99,6 +100,7 @@ export function createGame({ sources = null, content = null, env = null, seed = 
   G.stealth = createStealthWorld(G);
   G.sneaks = createSneaks(G, C.sneaks);
   G.verbs = createVerbs(G, C.objects);
+  G.interrog = createInterrogations(G, C.interrogations || {}); // live interrogations (SYSTEMS-FULL 20)
   G.gates = createGates(G, C.gates); // pays a page on each gate's first resolution (SYSTEMS-FULL 19.4)
   G.modSources = () => [...G.inv.mods(), ...G.cabinet.mods(), ...trustedMods(G)];
   G.fill = (text) => fill(text, G.scope);
@@ -109,6 +111,7 @@ export function createGame({ sources = null, content = null, env = null, seed = 
   };
   installActions(G);
   installHooks(G);
+  G.loop.add("interrogation", (dt) => G.interrog.step(dt), { order: 15 });
   G.on("place", () => G.stealth.unhide()); // moving on leaves a hiding spot
   G.loop.add("animation", (dt) => G.anims.update(dt), { order: 30 });
   return G;

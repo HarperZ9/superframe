@@ -52,7 +52,7 @@ export const parseCount = (v) => { const [id, n] = String(v).trim().split(/\s+/)
 const list = (v) => (v ? String(v).split(",").map((s) => s.trim()).filter(Boolean) : []);
 
 const DEFAULT_RULES = {
-  "check-mode": "dice", dice: "2d6", "xp-per-level": 100, "points-per-level": 1, "chapter-every": 3, "chapter-attr-max": 10, "travel-minutes": 10, "skill-cap": 4,
+  "check-mode": "dice", dice: "2d6", "xp-per-level": 100, "points-per-level": 1, "chapter-every": 4, "chapter-attr-max": 10, "travel-minutes": 10, "skill-cap": 4,
   "creation-points": 12, "attr-min": 1, "attr-max": 6, "cabinet-slots": 3, "autosave-minutes": 10,
   "rep-min": -100, "rep-max": 100, "start-node": "", "start-area": "",
   "cabinet-slots-max": 6, "forget-cost": 0, "guise-default": "shelf", "wet-rate": 0.004, "dry-tau": 140, "stove-tau": 50,

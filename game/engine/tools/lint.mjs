@@ -40,7 +40,10 @@ function gather(X) {
     for (const [name, calls] of eff.calls) for (const args of calls) {
       if (name === "set" && args[0]) sets.add(String(args[0]));
       if (name === "after" && typeof args[1] === "string") { try { effectsOf(compileEffects(args[1]), at, node); } catch (e) { add("error", at, `after(): ${e.message}`, node); } }
-      if ((name === "run" || name === "fight" || name === "sneak") && node && graph.nodes[node]) graph.nodes[node].terminates = true;
+      if ((name === "run" || name === "fight" || name === "sneak" || name === "interrogate") && node && graph.nodes[node]) graph.nodes[node].terminates = true;
+      // an interrogation leads to its press, lie, break, bolt and walk nodes, and swing's fight
+      const ig = name === "interrogate" && args[0] && (C.interrogations || {})[args[0]];
+      if (ig) for (const to of [...ig.presses.map((p) => p.target), ...ig.lies.map((l) => l.node), ig.break, ig.walk, ig.bolt && ig.bolt.to].filter(Boolean)) { links.push({ from: node, to, kind: "interrogation", at }); if (graph.nodes[node]) graph.nodes[node].edges.push({ to, kind: "interrogation" }); }
       const sn = name === "sneak" && args[0] && C.sneaks[args[0]];
       if (sn) for (const to of [sn.win, sn.alert, sn.lose, ...sn.watchers.map((w) => (C.stealth.watchers[w] || {}).alert)].filter(Boolean)) { links.push({ from: node, to, kind: "sneak", at }); if (graph.nodes[node]) graph.nodes[node].edges.push({ to, kind: "sneak" }); }
       const enc = name === "fight" && args[0] && ((C.book.records || {}).encounter || {})[args[0]];
@@ -117,6 +120,12 @@ function gatherWorld(X) {
     if (v.attrs.who && !rs.chars[v.attrs.who]) add("warn", at, `object ${o.id}: eavesdrop on no @char ${v.attrs.who}`);
   }
   for (const w of Object.values((C.stealth || {}).watchers || {})) { if (w.when) exprs.push({ c: w.when, at: w }); for (const to of [w.alert].filter(Boolean)) if (!N[to]) add("error", w, `watcher ${w.id}: no node ${to}`); if (w.char && !rs.chars[w.char]) add("warn", w, `watcher ${w.id}: no @char ${w.char}`); for (const e of [w.fight, w.ambush].filter(Boolean)) if (!((book.records || {}).encounter || {})[e]) add("error", w, `watcher ${w.id}: no @encounter ${e}`); }
+  for (const ig of Object.values(C.interrogations || {})) {
+    for (const to of [...ig.presses.map((p) => p.target), ...ig.lies.map((l) => l.node), ig.break, ig.walk, ig.bolt && ig.bolt.to].filter(Boolean)) if (!N[to]) add("error", ig, `interrogation ${ig.id}: no node ${to}`);
+    if (ig.swing && !((book.records || {}).encounter || {})[ig.swing.to]) add("error", ig, `interrogation ${ig.id}: swing names no @encounter ${ig.swing.to}`);
+    if (ig.who && !rs.chars[ig.who]) add("warn", ig, `interrogation ${ig.id}: who names no @char ${ig.who}`);
+    for (const p of ig.presses) { if (p.cond) exprs.push({ c: p.cond, at: p }); if (p.attrs.skill && !rs.skills[p.attrs.skill]) add("error", p, `interrogation ${ig.id}: press on unknown skill ${p.attrs.skill}`); }
+  }
   for (const s of Object.values(C.sneaks || {})) { for (const id of s.watchers) if (!C.stealth.watchers[id]) add("error", s, `sneak ${s.id}: no @watcher ${id}`); for (const id of s.hides) if (!C.stealth.hides[id]) add("error", s, `sneak ${s.id}: no @hide ${id}`); for (const to of [s.win, s.alert, s.lose]) if (to && !N[to]) add("error", s, `sneak ${s.id}: no node ${to}`); }
   return X;
 }
@@ -164,7 +173,7 @@ function namesAndFlags(X) {
   const nightTerms = new Set([...Object.values(C.nights).flatMap((n) => n.keys.map((k) => k.term))]);
   const has = { flag: (id) => true, place: (id) => !!book.places[id] || Object.values(C.map.areas).some((a) => a.place === id), node: (id) => !!N[id] || !!(X.carry && X.carry.nodes && X.carry.nodes.includes(id)), area: (id) => !!C.map.areas[id], district: (id) => !!C.map.districts[id] || Object.values(book.places).some((p) => p.district === id),
     item: (id) => !!rs.items[id], trait: (id) => !!rs.traits[id], quest: (id) => !!rs.quests[id], faction: (id) => !!rs.factions[id], meter: (id) => !!C.meters[id], project: (id) => !!C.projects[id],
-    sneak: (id) => !!C.sneaks[id], object: (id) => !!C.objects[id], encounter: (id) => !!((book.records || {}).encounter || {})[id], skill: (id) => !!rs.skills[id], attr: (id) => !!rs.attrs[id], resource: (id) => !!rs.resources[id], char: (id) => !!rs.chars[id], run: (id) => !!C.runs[id] };
+    interrogation: (id) => !!(C.interrogations || {})[id], sneak: (id) => !!C.sneaks[id], object: (id) => !!C.objects[id], encounter: (id) => !!((book.records || {}).encounter || {})[id], skill: (id) => !!rs.skills[id], attr: (id) => !!rs.attrs[id], resource: (id) => !!rs.resources[id], char: (id) => !!rs.chars[id], run: (id) => !!C.runs[id] };
   const reads = new Map();
   for (const { c, at, node } of exprs) {
     for (const id of c.ids) {

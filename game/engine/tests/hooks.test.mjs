@@ -9,7 +9,7 @@ test("the fixed-step loop runs systems in order and moves the clock at clockRate
   const G = game(), seen = [];
   G.loop.add("b", () => seen.push("b"), { order: 60 });
   G.loop.add("a", () => seen.push("a"), { order: 20 });
-  assert.deepEqual(G.loop.systems(), ["hazards", "a", "animation", "b"]);
+  assert.deepEqual(G.loop.systems(), ["hazards", "interrogation", "a", "animation", "b"]);
   assert.equal(G.loop.frame(1 / 60 + 1e-6), 1);
   assert.deepEqual(seen, ["a", "b"]);
   assert.equal(G.loop.frame(10), 8, "at most 8 steps per frame");

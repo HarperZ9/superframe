@@ -258,5 +258,11 @@ function liveWorld(ctx, P, api, root) {
     else if (!P.talk && !P.ended) { const s = G.nextScene(); if (s) return api.startTalk(s.node); }
     api.els.hud.replaceChildren(hudEl(G)); api.els.edge.replaceChildren(...meterMarks(G));
   });
-  return () => { off(); offTime(); G.loop.clockRate = 0; };
+  // An interrogation is live: what the person says on their own clock (lies, tells) goes into the
+  // panel as it is said; an outcome the clock reaches (silence ran out) plays without a press.
+  const offSay = G.on("interrog.say", (L) => { if (!P.talk) return; P.log.push(L); api.render(); });
+  const offLie = G.on("interrog.lie", () => { if (P.talk && P.beat && P.beat.interrogation) api.render(); });
+  const offStart = G.on("interrog.start", (e) => { if (api.people && e.who) api.people.talkingWith(e.who); });
+  const offEnd = G.on("interrog.end", () => queueMicrotask(() => { if (P.talk && P.beat && P.beat.interrogation && G.interrog.current && G.interrog.outcome()) { const b = P.talk.interrogResolve(); if (b) api.take(b); } }));
+  return () => { off(); offTime(); offSay(); offLie(); offStart(); offEnd(); G.loop.clockRate = 0; };
 }

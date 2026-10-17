@@ -48,6 +48,7 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
       if (G.state.pendingRun) return { beat: { lines, options: null, run: G.runs.take() } };
       if (G.state.pendingFight) return { beat: { lines, options: null, fight: G.ext.combat.take() } };
       if (G.state.pendingSneak) return { beat: { lines, options: null, sneak: G.sneaks.take() } };
+      if (G.state.pendingInterrog) { G.interrog.start(G.interrog.take()); return { beat: interrogBeat(lines) }; }
     }
     if (options.length) return { beat: { lines, options } };
     if (talk.stack.length) { const f = talk.stack.pop(); return { next: f.id, at: f.at }; }
@@ -138,7 +139,9 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
   function play(id, at = 0, lines = []) {
     for (let hop = 0; hop < MAX_HOPS; hop++) {
       if (id === "^hub") { const hb = talk.hub || placeHub(G); if (!hb) throw new Error("dialogue: ^hub with no hub visited"); id = hb; at = 0; }
+      if (id === "^interrog") return afterInterrog(lines);
       if (id === "^return") { const f = talk.stack.pop(); if (!f) return finish({ lines, options: null, exit: "^return", done: true }); id = f.id; at = f.at; }
+      if (id === "^interrog") return afterInterrog(lines); // a press reply came back to the exchange
       if (id.startsWith("^exit:") || exits.has(id)) return finish({ lines, options: null, exit: id.replace(/^\^exit:/, ""), done: true });
       if (at === 0) id = boundary(id);
       const r = runNode(id, at, lines);
@@ -158,6 +161,7 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
     const o = talk.beat.options && talk.beat.options[i];
     if (!o) throw new Error(`dialogue: no option ${i}`);
     if (o.locked) return talk.beat;
+    if (talk.beat.interrogation) return pressChoose(o, strain);
     let st = null;
     if (strain && o.kind === "check") { st = o.strain(strain); if (!st.ok) return talk.beat; }
     const s = o.s, lines = [line("you", "LAMB", o.label.replace(/^"|"$/g, ""), { key: o.key })];
@@ -209,19 +213,57 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
     if (!f && !e) return null;
     const n = G.book.nodes[talk.node], at = Math.max(0, n.steps.findIndex((s) => s.label != null)), lines = [];
     const cut = liveLine("interrupted"); if (cut) lines.push(cut);
-    talk.stack.push({ id: talk.node, at, interrupt: true });
+    talk.stack.push(talk.beat.interrogation ? { id: "^interrog", at: 0, interrupt: true } : { id: talk.node, at, interrupt: true });
     if (f) { G.pressure.afterFull(f.id); G.emit("meter.scene", f); return play(f.node, 0, lines); }
     G.state.fired.push(e.id); G.emit("event", { id: e.id });
     return play(`@event.${e.id}`, 0, lines);
   };
   talk.walkAway = () => {
     if (talk.done) return null;
+    if (G.interrog && G.interrog.current) { G.interrog.walkAway(); return afterInterrog([]); }
     const n = G.book.nodes[talk.node], w = n && n.steps.find((s) => s.kind === "walk");
     G.emit("talk.walkaway", { node: talk.node, speaker: talk.speaker });
     if (w) return play(w.value, 0, []);
     const said = liveLine("walkaway");
     return finish({ lines: said ? [said] : [], options: null, exit: "walk", done: true, walked: true });
   };
+  // Interrogation (world/interrogation.mjs): the presses are this beat's options, built like any
+  // option (a press with a skill is a visible check, with odds and strain), plus "That's a lie.".
+  // A press plays its reply node, which returns here ("^interrog"); then the outcome, if any, plays:
+  // break, bolt or walk nodes, or swing's fight. talk.interrogResolve() plays an outcome the clock
+  // reached (silence ran out) with no press.
+  function interrogBeat(lines) {
+    const S = G.interrog.current, D = S.def;
+    const options = G.interrog.presses().map((p) => { const o = option(p); if (o) { o.style = p.style; o.press = true; } return o; }).filter(Boolean);
+    options.push({ label: "That's a lie.", kind: "opt", key: `${D.id}.lie`, s: { kind: "lie", attrs: {} }, lie: true, open: !!G.interrog.openLie(), speaker: talk.speaker, node: talk.node });
+    return { lines, options, interrogation: { id: D.id, name: D.name, who: D.who, nerve: S.nerve, heat: S.heat, face: G.interrog.face() } };
+  }
+  function afterInterrog(lines) {
+    const out = G.interrog.outcome();
+    if (!out) return finish(interrogBeat(lines));
+    G.interrog.finish();
+    if (out.fight) { const fs = liveLine("fightstart"); if (fs) lines.push(fs); G.ext.combat.request(out.fight); return finish({ lines, options: null, fight: G.ext.combat.take() }); }
+    if (out.node) return play(out.node, 0, lines);
+    return finish({ lines, options: null, exit: "walk", done: true });
+  }
+  function pressChoose(o, strain) {
+    const s = o.s, lines = [line("you", "LAMB", o.label.replace(/^"|"$/g, ""), { key: o.key })];
+    G.memory.say(o.key, o.label);
+    let r;
+    if (s.kind === "lie") r = G.interrog.callLie();
+    else {
+      let pass = true;
+      if (s.kind === "check") {
+        let st = null; if (strain) { st = o.strain(strain); if (!st.ok) return talk.beat; G.checks.payStrain(st); }
+        const c = G.checks.resolve(s.key, s.attrs.skill, +s.attrs.dc, { strain: st ? st.n : 0 }); pass = c.pass;
+        lines.push(line("check", o.check.skillName, `${c.label}: ${c.pass ? "Success" : "Failure"}`, { skill: s.attrs.skill, check: { dc: c.dc, pass: c.pass, roll: c.roll, total: c.total, label: c.label } }));
+      }
+      r = G.interrog.press(s, { pass });
+    }
+    if (r && r.node) { talk.stack.push({ id: "^interrog", at: 0 }); return play(r.node, 0, lines); }
+    return afterInterrog(lines);
+  }
+  talk.interrogResolve = () => (G.interrog && G.interrog.current && G.interrog.outcome() ? afterInterrog([]) : null);
   // the speaker's char id beside talk.speaker (the display name), for portraits and the people layer
   Object.defineProperty(talk, "speakerId", { get: () => charIdOf(G, talk.speaker), enumerable: true });
   talk.start = () => { G.activeTalk = talk; G.emit("talk.start", { node: startId, title }); return play(startId); };

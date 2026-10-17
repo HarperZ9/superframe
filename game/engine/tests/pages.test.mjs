@@ -8,25 +8,25 @@ import { ROOT, game, testSources } from "./helpers.mjs";
 // Pages on the test content: 100 xp a page (test-content rules), one point a page.
 const pages = (G, n) => G.sheet.addXp(n * +G.rs.rules["xp-per-level"]);
 
-test("every third page is a chapter page: one compartment raise owed, spent on the player's choice", () => {
+test("every fourth page is a chapter page: one compartment raise owed, spent on the player's choice", () => {
   const G = game(); G.create({ archetype: "a.clerk", enter: false });
   const ev = []; G.on("chapter", (e) => ev.push(e.owed));
   const attr = Object.keys(G.rs.attrs)[0], before = G.sheet.attrBase(attr);
-  pages(G, 2); assert.equal(G.sheet.chapters(), 0);
+  pages(G, 3); assert.equal(G.sheet.chapters(), 0);
   pages(G, 1); assert.equal(G.sheet.chapters(), 1); assert.deepEqual(ev, [1]);
-  assert.equal(G.state.sheet.points, 3, "the chapter page still buys its rank");
+  assert.equal(G.state.sheet.points, 4, "the chapter page still buys its rank");
   assert.ok(G.sheet.raiseAttr(attr));
   assert.equal(G.sheet.attrBase(attr), before + 1);
   assert.equal(G.sheet.chapters(), 0);
   assert.equal(G.sheet.raiseAttr(attr), false, "no chapter owed");
-  pages(G, 6); assert.equal(G.sheet.chapters(), 2);
+  pages(G, 8); assert.equal(G.sheet.chapters(), 2);
   assert.equal(G.sheet.raiseAttr("no.such.attr"), false);
 });
 
 test("compartments stop at chapter-attr-max (10)", () => {
   const G = game(); G.create({ archetype: "a.clerk", enter: false });
   const attr = Object.keys(G.rs.attrs)[0];
-  G.state.sheet.attrs[attr] = 9; pages(G, 6);
+  G.state.sheet.attrs[attr] = 9; pages(G, 8);
   assert.ok(G.sheet.raiseAttr(attr)); assert.equal(G.sheet.attrBase(attr), 10);
   assert.equal(G.sheet.canRaiseAttr(attr), false); assert.equal(G.sheet.chapters(), 1, "the other chapter stays owed");
 });
@@ -34,7 +34,7 @@ test("compartments stop at chapter-attr-max (10)", () => {
 test("re-filing the case takes back bought ranks and chapter raises, only at a daylight page", () => {
   const G = game(); G.create({ archetype: "a.clerk", enter: false });
   const attr = Object.keys(G.rs.attrs)[0], base = G.sheet.attrBase(attr), ranks0 = { ...G.state.sheet.ranks };
-  pages(G, 3);
+  pages(G, 4);
   const sk = Object.values(G.rs.skills).find((s) => G.sheet.canRaise(s.id));
   assert.ok(sk, "a voice can take a rank"); assert.ok(G.sheet.raise(sk.id)); assert.ok(G.sheet.raiseAttr(attr));
   assert.equal(G.sheet.canRefile(), false, "night: no daylight page");
@@ -42,7 +42,7 @@ test("re-filing the case takes back bought ranks and chapter raises, only at a d
   assert.ok(G.sheet.refile({ force: true }));
   assert.deepEqual(G.state.sheet.ranks, ranks0, "archetype ranks stay, bought ones come back");
   assert.equal(G.sheet.attrBase(attr), base);
-  assert.equal(G.state.sheet.points, 3); assert.equal(G.sheet.chapters(), 1);
+  assert.equal(G.state.sheet.points, 4); assert.equal(G.sheet.chapters(), 1);
   const D = createGame({ content: loadContent([{ file: "day.lwd", text: readFileSync(join(ROOT, "test-content", "day.lwd"), "utf8") }]) });
   assert.equal(D.sheet.canRefile(), true, "in daylight the case can be re-filed");
   loadContent(testSources()); // the night clock back for the other tests
