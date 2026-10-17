@@ -89,6 +89,7 @@ function watch(G, R) {
   const call = G.scope.call.bind(G.scope);
   G.scope.call = (name, args, S) => { if (name === "has" && args[0] && args[0].k === "id") R.reads.add(args[0].name); return call(name, args, S); };
   // the first compartment at 8 and at 10 (SYSTEMS-FULL 19.4 pace): act, clock, and how far into the act
+  G.on("interrog.finish", (e) => (R.interrogs ||= []).push({ act: R.acts.length, id: e.id, out: e.out ? e.out.kind : "?" }));
   G.on("attr.raised", (e) => { for (const k of [8, 10]) if (e.value >= k && !(R.reach || {})[k]) (R.reach ||= {})[k] = { attr: e.id, act: R.acts.length, clock: clock(G), step: R.steps }; });
 }
 const clock = (G) => { const c = G.clock(); return `${String(Math.floor(c / 60) % 24).padStart(2, "0")}:${String(Math.floor(c % 60)).padStart(2, "0")}`; };
@@ -103,6 +104,10 @@ function playAct(G, C, R, act, { build, seed, shuffleSeed }) {
     if (b.run) { R.runs.push(walkRun(G, b.run)); t.afterRun(); continue; }
     if (b.sneak) { R.sneaks.push(walkSneak(G, b.sneak)); t.afterSneak(); continue; }
     if (b.fight) { R.fights.push(fight(G, b.fight, build)); t.afterFight(); continue; }
+    if (b.interrogation) { // a live exchange: a few real seconds pass between presses (lies are said, heat cools)
+      const nb = interrogTurn(G, t, build, R, act); if (nb === "chose") continue;
+      if (nb) continue;
+    }
     if (b.options && b.options.length) {
       if (build) upkeep(G, build, { attend: !!opt.attentive });
       else if (opt.attentive) for (const p of G.settlement.list()) if (p.next && !p.why) G.settlement.contribute(p.id);
@@ -127,6 +132,21 @@ function playAct(G, C, R, act, { build, seed, shuffleSeed }) {
     else { still = 0; lastClock = G.clock(); }
   }
   R.stall = { act: act.act, node: t.node, clock: clock(G), why: `no end after ${MAX} steps` };
+  return null;
+}
+
+// One turn of an interrogation for the harness: three real seconds of the loop (G.loop.step at 60
+// Hz), an outcome the clock reached plays, and an open lie is called when Lamb holds its fact (the
+// attentive player and the Eye always listen; others call it half the time, by seeded hash).
+function interrogTurn(G, t, build, R, act) {
+  for (let i = 0; i < 180 && G.interrog.current && !G.interrog.outcome(); i++) G.loop.step();
+  if (G.interrog.current && G.interrog.outcome()) { t.interrogResolve(); return "chose"; }
+  const l = G.interrog.openLie(), b = t.beat;
+  if (l && (!l.catch || G.flag(l.catch)) && (build === "eye" || opt.attentive || hashStr(l.id, R.shuffleSeed) % 2 === 0)) {
+    const i = b.options.findIndex((o) => o.lie); if (i >= 0) { t.choose(i); R.liesCaught = (R.liesCaught || 0) + 1; return "chose"; }
+  }
+  // never the lie call by chance: only with a lie open and the fact held (above)
+  b.options = b.options.filter((o) => !o.lie);
   return null;
 }
 
@@ -176,6 +196,7 @@ for (const r of runs) {
   console.log(`\n== ${r.build} (menu shuffle ${r.shuffleSeed}): ${r.finished ? "FINISHED" : "did not finish"} (${r.steps} steps); fights won ${won} of ${r.fights.length}`);
   console.log(`   pages by the end of each act (gates paid): ${r.acts.map((a) => `act ${a.act} ${a.pages} (${a.gatePages})`).join(", ")}`);
   const into = (x) => { if (!x) return "not reached"; const A = r.acts[x.act - 1], s0 = x.act > 1 ? r.acts[x.act - 2].steps : 0; return `${x.attr} in act ${x.act} at ${x.clock} (${Math.round((100 * (x.step - s0)) / Math.max(1, (A.steps ?? x.step) - s0))}% of its steps)`; };
+  console.log(`   interrogations: ${(r.interrogs || []).map((x) => `${x.id} ${x.out}`).join(", ") || "none"}${r.liesCaught ? `; lies caught ${r.liesCaught}` : ""}`);
   console.log(`   highest compartment by the end of each act: ${r.acts.map((a) => `act ${a.act} ${a.top}`).join(", ")}; first at 8: ${into((r.reach || {})[8])}; first at 10: ${into((r.reach || {})[10])}`);
   for (const a of r.acts) console.log(`   act ${a.act}: ${a.end ? `ended ${a.end}` : "no end"} at ${a.clock}, ${a.choices} choices; events never fired: ${a.unfired.length ? a.unfired.join(", ") : "none"}`);
   if (r.collier) console.log(`   collier: ${r.collier}; gale lamps kept: ${Object.entries(r.lamps).filter(([, v]) => v).map(([k]) => k.slice(6)).join(", ") || "none"}; rule inputs: ${JSON.stringify(r.collierWhy)}`);

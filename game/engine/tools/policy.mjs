@@ -57,6 +57,7 @@ export function endingFlags(C) {
 export function intentOf(G, o) {
   const I = new Set(), verb = o.s.attrs && o.s.attrs.verb;
   if (verb && VERB_STYLE[verb]) I.add(`verb:${VERB_STYLE[verb]}`);
+  if (o.press && o.style && o.style !== "any") I.add(`verb:${o.style}`); // an interrogation press carries its style
   if (o.kind === "claim") I.add("claim");
   const effects = (eff) => {
     if (!eff) return;
@@ -200,7 +201,7 @@ export function score(G, build, o, { seed = 0, random = false, ends = {}, attend
   let sc = tie * 0.5;
   for (const k of I) {
     if (k in W) sc += W[k];
-    if (k === `verb:${build}`) sc += 3; else if (k.startsWith("verb:")) sc -= 0.5;
+    if (k === `verb:${build}` || (build === "fistmax" && k === "verb:fist")) sc += 3; else if (k.startsWith("verb:")) sc -= 0.5;
   }
   const far = farMap(G);
   for (const k of FAR) if (!I.has(k) && W[k] > 0) { const d = Math.min(...[o.s.target, o.s.fail].filter(Boolean).map((id) => far[k][id] ?? 99)); if (d < 99) sc += W[k] * Math.pow(0.6, d + 1); }
