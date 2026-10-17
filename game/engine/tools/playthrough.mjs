@@ -37,6 +37,7 @@ for (const [i, root] of ACTS.entries()) {
   if (opt.gates && !sources.some((x) => x.file.endsWith(`gates${i + 1}.lwd`))) { try { sources.push({ file: g, text: await readFile(g, "utf8") }); } catch (e) { console.error(`--gates: no ${g}: ${e.message}`); } }
   contents.push(loadContent(sources));
 }
+let MENU_HOOK = null; // --liegrid snapshots a route's state at each scene's menu
 const ENDS = Object.assign({}, ...contents.map(endingFlags)); // the flags each ending value needs
 // A seeded permutation of a menu, so menu order can play no part in a choice.
 const shuffle = (list, seed, step) => list.map((o) => ({ o, k: hashStr(`${o.key}|${step}`, seed ^ 0x2545f491) })).sort((a, b) => a.k - b.k).map((x) => x.o);
@@ -109,6 +110,7 @@ function playAct(G, C, R, act, { build, seed, shuffleSeed }) {
       if (nb) continue;
     }
     if (b.options && b.options.length) {
+      if (MENU_HOOK) MENU_HOOK(G, t, act, R);
       if (build) upkeep(G, build, { attend: !!opt.attentive });
       else if (opt.attentive) for (const p of G.settlement.list()) if (p.next && !p.why) G.settlement.contribute(p.id);
       const menu = shuffle(b.options, shuffleSeed, step);
@@ -188,51 +190,13 @@ function habits(W, input, build) {
   return inp;
 }
 
-// ---- --interrogations: every build into every interrogation, pressing in its own style
-// Each scene is opened at the node that calls interrogate() (as the scene's menu option would), on
-// a fresh game of its act with the build's archetype and the pages a build has filed by then in a
-// whole playthrough (act 1: none; act 2: 10; act 3: 17), spent by the build's upkeep. Each turn
-// three real seconds pass; the build presses its own style first (the highest-scoring of those),
-// then `any`, then anything; it calls an open lie when it holds the fact. Reported per build and
-// scene: the outcome (break, bolt, swing, walk), presses taken, and checks passed.
-if (opt.interrogations) {
-  const PAGES = [0, 10, 17], STYLE = (b) => (b === "fistmax" ? "fist" : b), out = [];
-  const startOf = (C, id) => Object.values(C.book.nodes).find((n) => n.steps.some((st) => st.effects && st.effects.calls && (st.effects.calls.get("interrogate") || []).some((a) => a[0] === id)));
-  for (const [ai, C] of contents.entries()) for (const id of Object.keys(C.interrogations || {})) {
-    const def = C.interrogations[id], start = startOf(C, id);
-    for (const build of ["fist", "tongue", "shadow", "hands", "eye"]) {
-      const G = createFullGame({ content: C, seed: 1 });
-      G.create({ archetype: BUILDS[build].precedent, enter: false }); applyMax(G, build);
-      if (PAGES[ai]) G.sheet.addXp(PAGES[ai] * (+G.rs.rules["xp-per-level"] || 1));
-      upkeep(G, build);
-      if (def.place) G.setPlace(def.place);
-      const row = { act: ai + 1, id, build, out: null, presses: [], passed: 0, checks: 0, lies: 0, why: null };
-      G.on("interrog.finish", (e) => { if (e.id === id) row.out = e.out ? e.out.kind : "ended"; });
-      try {
-        let t = G.talk(start ? start.id : null);
-        for (let turn = 0; turn < 40 && t.beat && t.beat.interrogation; turn++) {
-          for (let i = 0; i < 180 && G.interrog.current && !G.interrog.outcome(); i++) G.loop.step();
-          if (G.interrog.outcome()) { t.interrogResolve(); break; }
-          t.interrogRefresh();
-          const l = G.interrog.openLie(), O = t.beat.options;
-          if (l && G.interrog.canCatch(l)) { const i = O.findIndex((o) => o.lie); if (i >= 0) { row.lies++; t.choose(i); if (G.interrog.current) continue; break; } }
-          const presses = O.filter((o) => !o.lie && !o.locked), sc = (o) => score(G, build, o, { seed: 1, ends: ENDS, menu: presses });
-          const pick = [presses.filter((o) => o.style === STYLE(build)), presses.filter((o) => o.style === "any"), presses].map((L) => L.sort((x, y) => sc(y) - sc(x))[0]).find(Boolean);
-          if (!pick) { row.why = "no press left"; for (let i = 0; i < 60 * 30 && G.interrog.current && !G.interrog.outcome(); i++) G.loop.step(); if (G.interrog.outcome()) t.interrogResolve(); break; } // live play: silence
-          row.presses.push(`${pick.style}${pick.check ? `:${pick.check.skill || ""}` : ""}`);
-          const b = t.choose(pick.index, { strain: strainFor(G, build, pick) });
-          if (pick.check) { row.checks++; const L = (b.lines || []).find((x) => x.kind === "check"); if (L && L.check && L.check.pass) row.passed++; }
-          if (!G.interrog.current) break;
-        }
-        if (!row.out) row.out = t.beat && t.beat.interrogation ? "unfinished" : "never opened";
-      } catch (e) { row.out = "error"; row.why = e.message; }
-      out.push(row);
-    }
-  }
-  // the outcome as the engine recorded it
-  console.log("act  interrogation  build   outcome      presses (style:skill)                          checks passed  lies caught");
-  for (const r of out) console.log(`${r.act}    ${r.id.padEnd(13)} ${r.build.padEnd(7)} ${String(r.out).padEnd(12)} ${r.presses.join(" ").padEnd(46)} ${`${r.passed}/${r.checks}`.padEnd(14)} ${r.lies}${r.why ? `  (${r.why})` : ""}`);
-  if (opt.json) await writeFile(opt.json, JSON.stringify(out, null, 1));
+// ---- --interrogations (every build into every scene) and --liegrid (each build's own route state
+// into each scene, calling every lie): tools/interrog-grid.mjs
+if (opt.interrogations || opt.liegrid) {
+  const { runMatrix, runLieGrid } = await import("./interrog-grid.mjs");
+  const X = { contents, opt, ENDS, createFullGame, BUILDS, applyMax, upkeep, score, strainFor, playGame, setMenuHook: (fn) => { MENU_HOOK = fn; } };
+  const rows = opt.liegrid ? await runLieGrid(X) : runMatrix(X);
+  if (opt.json) await writeFile(opt.json, JSON.stringify(rows, null, 1));
   process.exit(0);
 }
 
