@@ -81,7 +81,7 @@
     "smile": -0.6,
     "ear": [
      0.024,
-     0.0
+     -0.008
     ],
     "neck_r": 0.048,
     "gaze": [
@@ -423,36 +423,47 @@
    ],
    "cell": 0.007,
    "k": 0.006,
-   "_about": "The harbourmaster's peaked cap, fitted to the tall cranium of the anatomy head; the badge pale, the peak dark and wet.",
+   "_about": "The harbourmaster's peaked cap, fitted to the anatomy head's tall cranium: an elliptical drum centred on the cranium, wide and deep enough at the band to cover the back of the skull, flat-topped; the badge pale, the peak dark.",
    "shapes": [
     {
-     "t": "cap",
-     "a": [
+     "t": "ell",
+     "c": [
       0,
-      0.285,
-      0.02
-     ],
-     "b": [
-      0,
-      0.355,
-      0.012
+      0.31,
+      0.015
      ],
      "r": [
-      0.124,
-      0.14
+      0.135,
+      0.16,
+      0.162
      ]
     },
     {
      "t": "box",
      "c": [
       0,
-      0.375,
-      0.01
+      0.52,
+      0
      ],
      "r": [
-      0.2,
-      0.012,
-      0.2
+      0.3,
+      0.15,
+      0.3
+     ],
+     "op": "sub",
+     "k": 0.0
+    },
+    {
+     "t": "box",
+     "c": [
+      0,
+      0.1,
+      0
+     ],
+     "r": [
+      0.3,
+      0.15,
+      0.3
      ],
      "op": "sub",
      "k": 0.0
@@ -461,13 +472,13 @@
      "t": "ell",
      "c": [
       0,
-      0.268,
-      0.14
+      0.256,
+      0.16
      ],
      "r": [
       0.11,
       0.011,
-      0.075
+      0.08
      ],
      "mat": "boot"
     },
@@ -475,8 +486,8 @@
      "t": "ell",
      "c": [
       0,
-      0.322,
-      0.15
+      0.31,
+      0.172
      ],
      "r": [
       0.026,
