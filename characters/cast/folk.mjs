@@ -1,6 +1,7 @@
 // The wider cast from design/CAST-SHEETS.md, built from one data-driven costume script: a record per
 // person (proportions, coat or dress, legs, sleeves, face, hair, headgear, neckwear, props, style).
-// Members: PIP, CRAKE, FISK, PELLOW, ROOK, ASH, SALLIS, PARDEW, DACE, ORME.
+// Members: PIP, CRAKE, FISK, PELLOW, ROOK, ASH, SALLIS, PARDEW, DACE, ORME, LUGG, COCKLE, PENHALLOW,
+// TEAGUE, MAB, NOLL, SPRATT, SHADWELL, GAUZE, TOBIT, DILLY, GILL, DUNLIN.
 import { Mesh, bind, tube } from "../rig/body.mjs";
 import { torso, skirt, legs, arms, head, prop, propBlob, J, add, mid } from "./parts.mjs";
 import { toolOf } from "./tools.mjs";
@@ -88,9 +89,65 @@ export const SALLIS = make({ name: "Sallis", P: { h: 1.88, leg: 0.5, head: 0.25,
 export const PARDEW = make({ name: "Pardew", P: { h: 1.82, leg: 0.51, head: 0.25, neck: 0.14, shoulder: 0.19, hip: 0.12, arm: 0.79, stoop: 0 }, tool: "crowbar",
   top: "pea", coat: { hem: 0.72, flare: 0.08, mat: "pea" }, neck: "collar", hat: "knit", hatMat: "pea", specs: "glass",
   face: { nose: [0.055, 0.024, 0.2, 0], jaw: 1.05, lids: 0.4, mouth: 0.85 } });
-export const DACE = make({ name: "Dace", P: { h: 1.76, leg: 0.49, head: 0.26, neck: 0.12, shoulder: 0.19, hip: 0.13, arm: 0.78, stoop: 2 },
-  top: "pea", coat: { hem: 0.7, flare: 0.1, mat: "pea" }, hat: "peaked", hatMat: "pea", neck: "paper",
-  face: { nose: [0.05, 0.03, 0.3, 0], jaw: 1.1, lids: 0.7, stubble: true } });
-export const ORME = make({ name: "Orme", P: { h: 1.7, leg: 0.49, head: 0.26, neck: 0.12, shoulder: 0.19, hip: 0.13, arm: 0.78, stoop: 6 },
+// Dace and Orme read apart: Dace tall and square in a peaked cap with a broad pale muffler; Orme
+// shorter and stooped in a knitted cap, no muffler, a lighter worn reefer, a pipe.
+export const DACE = make({ name: "Dace", P: { h: 1.8, leg: 0.5, head: 0.26, neck: 0.12, shoulder: 0.21, hip: 0.13, arm: 0.78, stoop: 0 },
   top: "pea", coat: { hem: 0.7, flare: 0.1, mat: "pea" }, hat: "peaked", hatMat: "pea",
-  face: { nose: [0.06, 0.026, 0.4, 0.3], jaw: 0.95, lids: 0.5, mouth: 0.9 } });
+  face: { nose: [0.05, 0.03, 0.3, 0], jaw: 1.15, lids: 0.7, stubble: true },
+  props: (M, B) => { propBlob(M, B, "neck", [0, -0.01, 0.01], [0.12, 0.08, 0.12], "paper", { rings: 6, seg: 14 }); prop(M, B, "chest", [[0.05, 0.12, 0.14, 0.05, 0.015], [0.08, -0.15, 0.16, 0.055, 0.015]], "paper", { seg: 6 }); } });
+export const ORME = make({ name: "Orme", P: { h: 1.66, leg: 0.48, head: 0.27, neck: 0.1, shoulder: 0.18, hip: 0.13, arm: 0.8, stoop: 16 },
+  top: "tweed", coat: { hem: 0.68, flare: 0.12, mat: "tweed" }, hat: "knit", hatMat: "shawl",
+  face: { nose: [0.065, 0.026, 0.45, 0.4], jaw: 0.9, lids: 0.5, mouth: 0.9 },
+  props: (M, B, R) => { prop(M, B, "head", [[0.03, R * 0.42, R * 1.0, 0.006], [0.06, R * 0.3, R * 1.6, 0.006]], "wood", { seg: 6 }); propBlob(M, B, "head", [0.065, R * 0.4, R * 1.65], [0.015, 0.022, 0.015], "wood", { rings: 4, seg: 8 }); } });
+
+const stick = (M, B, len = 0.9) => prop(M, B, "handR", [[0, -0.05, 0.02, 0.012], [0, -0.05 - len, 0.12, 0.01]], "wood", { seg: 6 });
+const lanternIn = (M, B, j) => { prop(M, B, j, [[0, -0.08, 0, 0.004], [0, -0.14, 0, 0.004]], "brass", { seg: 4 }); prop(M, B, j, [[0, -0.14, 0, 0.04], [0, -0.26, 0, 0.04]], "glass", { seg: 10 }); propBlob(M, B, j, [0, -0.2, 0], [0.014, 0.025, 0.014], "flame", { rings: 4, seg: 8 }); };
+export const LUGG = make({ name: "Lugg", P: { h: 2.14, leg: 0.55, head: 0.24, neck: 0.19, shoulder: 0.21, hip: 0.13, arm: 0.92, stoop: 22 }, tool: "crowbar",
+  top: "oilskin", coat: { hem: 0.5, mat: "oilskin" }, legs: "wader", boot: "wader", bootTop: 0.8, hat: "knit", hatMat: "black",
+  face: { nose: [0.07, 0.022, 0.4, 0], jaw: 1.1, chin: 1.2, lids: 0.6, mouth: 0.7 },
+  props: (M, B) => { propBlob(M, B, "chest", [0.12, -0.05, -0.22], [0.17, 0.24, 0.13], "canvas", { rings: 8, seg: 14 }); prop(M, B, "chest", [[-0.18, 0.2, 0.08, 0.02], [0.2, -0.25, -0.18, 0.02]], "rope", { seg: 6 }); },
+  style: (p) => setA(p, "head", "bend", (p.head?.bend || 0) - 14) });   // bends to speak, the long arms hanging
+export const COCKLE = make({ name: "Nan Cockle", P: { h: 1.48, leg: 0.45, head: 0.27, neck: 0.08, shoulder: 0.15, hip: 0.13, arm: 0.7, stoop: 30 },
+  top: "pea", coat: { hem: 0.45, mat: "pea" }, dress: { hem: 0.32, mat: "shawl", flare: 0.3 }, legs: "skin", boot: "wader", bootTop: 0.9, hat: "maidcap",
+  face: { nose: [0.04, 0.026, 0.5, 0.5], jaw: 0.75, chin: 1.4, lids: 0.8, mouth: 1.0 },
+  props: (M, B) => { stick(M, B, 0.95); prop(M, B, "handL", [[0, -0.08, 0, 0.003], [0, -0.16, 0, 0.003]], "iron", { seg: 4 }); prop(M, B, "handL", [[0, -0.16, 0, 0.1], [0, -0.34, 0, 0.12]], "iron", { seg: 12, capA: false }); },
+  gripL: true, gripR: true, hands: { L: "fist", R: "fist" } });
+export const PENHALLOW = make({ name: "Penhallow", P: { h: 1.78, leg: 0.51, head: 0.26, neck: 0.13, shoulder: 0.21, hip: 0.13, arm: 0.78, stoop: 0 },
+  top: "pea", coat: { hem: 0.66, flare: 0.08, mat: "pea" }, hat: "peaked", hatMat: "black", neck: "paper", hair: "cap", hairMat: "grey",
+  face: { nose: [0.05, 0.024, 0.2, 0.2], jaw: 1.1, lids: 0.6, mouth: 0.8, chin: 1.1 },
+  props: (M, B) => { prop(M, B, "handL", [[0, -0.06, -0.02, 0.02, 0.1], [0, -0.06, 0.16, 0.02, 0.1]], "case", { square: 6, seg: 8 }); }, gripL: true, hands: { L: "fist", R: "open" } });
+export const TEAGUE = make({ name: "Teague", P: { h: 1.7, leg: 0.49, head: 0.27, neck: 0.13, shoulder: 0.16, hip: 0.12, arm: 0.76, stoop: 10 },
+  top: "tweed", coat: { hem: 0.3, mat: "tweed" }, neck: "collar", hat: "bowler", hatMat: "tweed",
+  face: { nose: [0.055, 0.022, 0.4, 0.1], jaw: 0.9, lids: 0.75, mouth: 0.75 },
+  props: (M, B) => { prop(M, B, "handR", [[0, -0.07, 0.0, 0.006], [0, -0.03, 0.0, 0.006]], "strap", { seg: 4 }); prop(M, B, "handR", [[0, -0.1, -0.2, 0.08, 0.13], [0, -0.1, 0.2, 0.08, 0.13]], "case", { square: 5, seg: 10 }); }, gripR: true, hands: { L: "open", R: "fist" } });   // the valise
+const gutter = (name, apronV, P) => make({ name, P, top: "smock", apron: { hem: 0.35, mat: apronV > 0.6 ? "apron" : "canvas" }, legs: "trouser", boot: "wader", bootTop: 0.7, sleeve: "smock", rolled: "wader", hat: "knit", hatMat: "smock",
+  face: { nose: [0.05, 0.03, 0.3, 0], jaw: 1.0, lids: 0.5, mouth: 1.1 }, tool: "knife", style: (p) => setA(p, "head", "side", name === "Mab" ? -12 : 12) });   // leaning toward each other
+export const MAB = gutter("Mab", 0.75, { h: 1.72, leg: 0.47, head: 0.29, neck: 0.08, shoulder: 0.2, hip: 0.14, arm: 0.82, stoop: 8 });
+export const NOLL = gutter("Noll", 0.4, { h: 1.72, leg: 0.47, head: 0.29, neck: 0.08, shoulder: 0.2, hip: 0.14, arm: 0.82, stoop: 8 });
+export const SPRATT = make({ name: "Spratt", P: { h: 1.58, leg: 0.46, head: 0.28, neck: 0.09, shoulder: 0.16, hip: 0.16, arm: 0.74, stoop: 12 }, tool: "knife",
+  top: "skirtd", dress: { hem: 0.2, mat: "skirtd" }, apron: { hem: 0.3 }, sleeve: "skirtd", rolled: "paper", hat: "knit", hatMat: "shawl",
+  face: { nose: [0.05, 0.024, 0.3, 0.3], jaw: 1.0, chin: 1.6, lids: 0.5, mouth: 0.8 },
+  props: (M, B) => { for (let k = 0; k < 4; k++) prop(M, B, "chest", [[-0.18 + k * 0.03, 0.2, -0.06, 0.012], [-0.2 + k * 0.03, -0.25, 0.1, 0.012]], "scales", { seg: 6 }); } });   // the string of eels
+export const SHADWELL = make({ name: "Shadwell", P: { h: 1.76, leg: 0.49, head: 0.26, neck: 0.14, shoulder: 0.18, hip: 0.12, arm: 0.8, stoop: 15 },
+  top: "grey", apron: { hem: 0.3, mat: "black" }, sleeve: "grey", palette: { skin: { c: [0.18, 0.15, 0.14], v: 0.15 } },
+  face: { nose: [0.06, 0.026, 0.4, 0], jaw: 1.0, lids: 0.3, mouth: 0.8 },
+  props: (M, B, R) => { for (const x of [-1, 1]) propBlob(M, B, "head", [x * R * 0.33, R * 1.03, R * 0.83], [R * 0.2, R * 0.16, R * 0.06], "paper", { rings: 4, seg: 10 }); prop(M, B, "head", [[0.03, R * 0.42, R * 1.0, 0.006], [0.07, R * 0.3, R * 1.6, 0.006]], "black", { seg: 6 }); },   // pale eye-rings in the soot, the pipe
+  style: (p) => setA(p, "head", "bend", (p.head?.bend || 0) - 22) });   // looks up at the beams
+export const GAUZE = make({ name: "Sister Gauze", P: { h: 1.55, leg: 0.46, head: 0.25, neck: 0.12, shoulder: 0.15, hip: 0.14, arm: 0.72, stoop: 18 },
+  top: "grey", dress: { hem: 0.03, mat: "grey", flare: 0.2 }, hat: "maidcap",
+  face: { nose: [0.045, 0.02, 0.3, 0], jaw: 0.85, lids: 0.7, mouth: 0.7 },
+  props: (M, B, R) => { propBlob(M, B, "head", [0, R * 0.9, 0], [R * 1.25, R * 1.25, R * 1.25], "paper", { rings: 6, seg: 14 }); const hd = J(B, "head"); tube(M, [[-0.4, 1.7], [1.4, 1.65], [2.3, 1.2], [2.7, 0.2]].map(([y, r]) => ({ c: add(hd, [0, R * y, 0]), rx: R * r, rz: R * r, w: { head: 1 } })), { mat: mid("glass"), seg: 18, arc: [Math.PI / 2 + 0.75, Math.PI / 2 - 0.75 + 2 * Math.PI] }); } });   // the jar drawn with its near face open, so the face shows and the rim and sides catch the light   // the wimple seen through the bell jar
+export const TOBIT = make({ name: "Tobit", P: { h: 1.3, leg: 0.46, head: 0.25, neck: 0.1, shoulder: 0.12, hip: 0.1, arm: 0.56, stoop: 0 },
+  top: "surplice", dress: { hem: 0.25, mat: "surplice", flare: 0.4 }, sleeve: "surplice", legs: "gansey", hair: "crop", hairMat: "hair",
+  face: { nose: [0.03, 0.018, 0.2, 0], jaw: 0.8, lids: 0.1, mouth: 1.1, chin: 0.8 },
+  props: (M, B) => { prop(M, B, "handR", [[0, -0.05, 0.0, 0.012], [0, 0.08, 0.0, 0.012]], "paper", { seg: 6 }); propBlob(M, B, "handR", [0, 0.11, 0], [0.008, 0.02, 0.008], "flame", { rings: 4, seg: 6 }); }, gripR: true, hands: { L: "open", R: "fist" } });   // the candle
+export const DILLY = make({ name: "Dilly Rudd", P: { h: 1.22, leg: 0.45, head: 0.26, neck: 0.09, shoulder: 0.12, hip: 0.1, arm: 0.52, stoop: 0 },
+  top: "gansey", dress: { hem: 0.45, mat: "skirtd" }, legs: "skin", boot: "wader", bootTop: 0.9, legR: 0.05, hair: "crop", hairMat: "hair",
+  face: { nose: [0.03, 0.02, 0.2, 0], jaw: 0.8, lids: 0.0, mouth: 1.0 },
+  props: (M, B) => { prop(M, B, "chest", [[0, -0.12, 0.14, 0.008, 0.09], [0, -0.26, 0.14, 0.008, 0.09]], "black", { square: 6, seg: 8 }); lanternIn(M, B, "handL"); }, gripL: true, hands: { L: "fist", R: "open" } });   // the slate and the lantern
+export const GILL = make({ name: "Gill", P: { h: 1.38, leg: 0.5, head: 0.24, neck: 0.1, shoulder: 0.12, hip: 0.1, arm: 0.6, stoop: 4 },
+  top: "gansey", apron: { hem: 0.06, mat: "canvas" }, hat: "knit", hatMat: "pea", face: { nose: [0.035, 0.02, 0.3, 0], jaw: 0.8, lids: 0.1, mouth: 1.0 } });
+export const DUNLIN = make({ name: "Captain Dunlin", P: { h: 2.06, leg: 0.45, head: 0.29, neck: 0.07, shoulder: 0.26, hip: 0.16, arm: 0.84, stoop: 6 },
+  top: "navy", coat: { hem: 0.55, mat: "navy" }, belly: 0.08, neck: "band", hat: "peaked", hatMat: "navy", hair: "crop", hairMat: "grey",
+  face: { nose: [0.06, 0.03, 0.3, 0], jaw: 1.25, jowls: 1.0, lids: 0.7, browW: 1.2, stubble: true },
+  props: (M, B, R) => { for (let k = 0; k < 4; k++) propBlob(M, B, "chest", [0.06, 0.1 - k * 0.1, 0.24], [0.014, 0.014, 0.008], "scales", { rings: 4, seg: 8 }); prop(M, B, "head", [[0.03, R * 0.42, R * 1.0, 0.007], [0.07, R * 0.3, R * 1.6, 0.007]], "wood", { seg: 6 }); } });

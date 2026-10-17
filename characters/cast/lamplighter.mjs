@@ -69,7 +69,7 @@ function make(name) {
       const calm = !clip.tags?.includes("combat"), add = (j, k, d) => { p[j] = { ...(p[j] || {}), [k]: (p[j]?.[k] || 0) + d }; }, set = (j, k, d) => { p[j] = { ...(p[j] || {}), [k]: d }; };
       if (!calm) { p.hide = [...(p.hide || []), "carry", "book", "slate", "lanterns"]; return p; }
       if (v.carry !== "hand" && v.carry !== "staff") p.hide = [...(p.hide || []), "tool"];
-      if (name === "gorm") { set("armL", "fwd", 52); set("armL", "out", 10); set("foreL", "bend", 104); set("armR", "fwd", 18); set("armR", "out", 12); set("foreR", "bend", 64); set("handR", "bend", -62); add("head", "side", 10); }
+      if (name === "gorm") { set("armL", "fwd", 52); set("armL", "out", 10); set("foreL", "bend", 104); set("armR", "fwd", 30); set("armR", "out", 12); set("foreR", "bend", 60); set("handR", "bend", 60); add("head", "side", 10); }
       if (hobb) for (const s of ["L", "R"]) { set("arm" + s, "fwd", Math.max(p["arm" + s]?.fwd || 0, 36)); add("arm" + s, "out", 10); set("fore" + s, "bend", Math.max(p["fore" + s]?.bend || 0, 42)); }
       if (name === "fewell") { set("armR", "fwd", 40); set("armR", "out", 30); set("foreR", "bend", 120); }
       if (name === "bright") { set("armL", "fwd", 4); set("armL", "out", 22); set("foreL", "bend", 70); add("head", "bend", -6); }
