@@ -403,25 +403,23 @@ line: I'm not to say. I've said I'm not to say. That's nearly saying.
 return:
 
 @node x1.hobb.tells
-place: weigh_out
 speaker: HOBB
 cost: 4
 do: set(weigh.hobb_saw)
 line: Mr Dunlin. He put his hand on the switch like it was a dog's head, and pulled it, and the quay went out.
 line: I wrote it down. I don't know what to write it down as.
-go: weigh.hub
+go: ^hub
 
 @node x1.hobb.bolts
-place: weigh_out
 speaker: HOBB
 cost: 2
 line: I've to take this to the sergeant. I'm sorry, assessor. I'll walk slowly.
-go: weigh.hub
+go: ^hub
 
 @node x1.hobb.walk
 speaker: HOBB
 line: Right. I'll put you down as going.
-go: weigh.hub
+go: ^hub
 
 # ---------------------------------------------------------------- word comes to Lamb
 @node word.merrow
@@ -439,3 +437,19 @@ nar: One of the gutting twins, red to the elbow, falls into step beside the asse
 line: Marrow says if the Shelf wants to know about the switch, the Shelf can ask him to his face. In the hall. He says now, while he's in the mood to be asked.
 opt: "Go up to the Guild hall." -> gut.hall +2
 opt: "Not now." -> ^hub
+
+@node word.hobb
+speaker: HOBB
+cost: 1
+nar: The young Lamplighter with two lanterns comes along the quay at a walk that wants to be a run, and stops, and starts again.
+line: Assessor. I'm not to say anything about the quay board. I've come to say I'm not to.
+opt: "Ask him who went near the quay board." -> x1.hobb.start.word
+opt: "Let him go back to his door." -> ^hub
+
+@node x1.hobb.start.word
+speaker: HOBB
+cost: 1
+line: I've to write you down after. It isn't personal.
+do: interrogate(x1.hobb)
+return:
+

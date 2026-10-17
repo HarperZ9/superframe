@@ -828,7 +828,7 @@ opt: "Keel says wreckers." -> brine.merrow.rope ? !seen(brine.merrow.rope)
 opt: "The sack under the settle." -> brine.sack ? copper == none & !has(floor.copper_taken) & !has(floor.copper_sunk)
 opt: "The sack on my shoulder." -> brine.sack.carried ? copper == none & has(floor.copper_taken) & count(i.copper_sack) >= 1
 opt: "Ask him for a hair, for the Damp." -> brine.hair.merrow ? has(brine.hair_asked) & damp_hair == pollard
-opt: "Lean on him about the drowned lamp, and the lantern." -> x1.merrow.start ? !has(merrow.told) & seen(brine.merrow.where)
+opt: "Lean on him about the drowned lamp, and the lantern." -> x1.merrow.start ? !has(merrow.told)
 opt: "Leave him to steam." -> brine.hub
 
 @node brine.merrow.damp

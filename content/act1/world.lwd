@@ -217,3 +217,8 @@ go: word.merrow
 at: 00:50
 when: !has(marrow.switch) & !has(afterdark.told)
 go: word.marrow
+
+@event ev.word_hobb
+at: 01:20
+when: !has(weigh.hobb_saw) & !seen(x1.hobb.start) & !has(book.violence)
+go: word.hobb
