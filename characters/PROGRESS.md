@@ -196,3 +196,15 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     Added to the prototype and the fight drawer (Keel and the Lamplighters as fighters).
 40. DONE Faces toward paint: skin in fewer, broader planes with wandering edges and a warm
     terminator; broader skin brushwork (out/closeups.png). Still reads part CG up close.
+41. DONE Coordinator's notes on stills/10-cast.png: the named Lamplighters now read apart at quay
+    distance (Gorm: short and square, a braided cape, a pale cap band, the open book up, the pole as a
+    staff, head tilted; Hobb: tall, bare-headed, coat too big, two lanterns out, pole on his back;
+    Fewell: broad, pole on the shoulder, a pale bandaged hand; Strand: a long pale scarf, a slouch;
+    Bright: tall cap, spectacles, a pale slate under the arm; Coe the unnamed variant). In a fight
+    each takes the pole in hand. Sabine slimmed: narrower hips and apron, a straight skirt.
+42. DONE Pip, Crake and the Act 2 cast from one data-driven costume script (cast/folk.mjs): Pip,
+    Crake (single mid grey, amber spectacles, hands folded), Fisk (bowler, mud to the knee, satchel
+    to the chest), Pellow (black dress, white apron and cap, basket), Rook (sleeve protectors, the
+    neck bent, pencil in the hair), Ash (cassock, collar, ledger), Sallis (warden, Board armband),
+    Pardew (pea jacket, spectacles), Dace and Orme (reefers; Dace's pale muffler). All in the
+    prototype and the fight drawer. stills/10-cast.png has the whole cast (25 people).

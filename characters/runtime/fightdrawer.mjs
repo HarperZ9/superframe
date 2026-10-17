@@ -18,7 +18,8 @@ import * as sabine from "../cast/sabine.mjs";
 import * as wenna from "../cast/wenna.mjs";
 import * as merrow from "../cast/merrow.mjs";
 import { GORM, HOBB, FEWELL, STRAND, BRIGHT, COE } from "../cast/lamplighter.mjs";
-const CAST = { lamb, fennick, marrow, warden, salvor, keel, sabine, wenna, merrow, gorm: GORM, hobb: HOBB, fewell: FEWELL, strand: STRAND, bright: BRIGHT, coe: COE };
+import * as FOLK from "../cast/folk.mjs";
+const CAST = { lamb, fennick, marrow, warden, salvor, keel, sabine, wenna, merrow, gorm: GORM, hobb: HOBB, fewell: FEWELL, strand: STRAND, bright: BRIGHT, coe: COE, ...Object.fromEntries(Object.entries(FOLK).map(([k, m]) => [k.toLowerCase(), m])) };
 
 const MEMBERS = CAST;
 // combat's actor ids (lamb, an @foe char, else an archetype) to the art's bodies
