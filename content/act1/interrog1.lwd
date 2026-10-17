@@ -422,3 +422,20 @@ go: weigh.hub
 speaker: HOBB
 line: Right. I'll put you down as going.
 go: weigh.hub
+
+# ---------------------------------------------------------------- word comes to Lamb
+@node word.merrow
+speaker: TOBIT
+cost: 1
+nar: A boy in a man's jersey arrives at a run and stops a yard short, the way children stop at dogs.
+line: Mrs Sabine says Mr Merrow's at her stove, wet to his middle, and he's not saying where from. She says you'd want to know. She says don't say she said.
+opt: "Go to the Brine." -> brine.hub +2
+opt: "Not now." -> ^hub
+
+@node word.marrow
+speaker: NOLL
+cost: 1
+nar: One of the gutting twins, red to the elbow, falls into step beside the assessor without being asked.
+line: Marrow says if the Shelf wants to know about the switch, the Shelf can ask him to his face. In the hall. He says now, while he's in the mood to be asked.
+opt: "Go up to the Guild hall." -> gut.hall +2
+opt: "Not now." -> ^hub

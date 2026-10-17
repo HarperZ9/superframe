@@ -206,3 +206,14 @@ at: 04:40
 when: has(lamp.steps_post.lit) + has(lamp.porthole.lit) + has(lamp.gut.lit) + has(lamp.balance.lit) + has(lamp.drowned.lit) + has(mother.restruck) >= 3
 do: quest(a1.lamps, three)
 nar: Item: three lights in Gullet tonight that were dark when the assessor came off the ferry. The assessor did not come to light anything. The assessor came to say why it was dark.
+
+# ---------------------------------------------------------------- word comes to Lamb (signposts for the interrogations, 2026-10-17)
+@event ev.word_merrow
+at: 00:05
+when: !has(merrow.cells) & !has(merrow.told) & !seen(brine.merrow.arrive) & !seen(brine.merrow.arrive.robbed) & !seen(brine.merrow.arrive.sunk)
+go: word.merrow
+
+@event ev.word_marrow
+at: 00:50
+when: !has(marrow.switch) & !has(afterdark.told)
+go: word.marrow

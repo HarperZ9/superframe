@@ -64,3 +64,9 @@ do: set(ev2.sea_smoke)
 @event ev2.dawn
 at: 06:02
 go: dawn2.start
+
+# ---------------------------------------------------------------- word comes to Lamb (signpost for the muster and Sallis, 2026-10-17)
+@event ev2.word_boat
+at: 23:05
+when: !seen(quay2.muster) & !has(a2.afloat)
+go: word.boat

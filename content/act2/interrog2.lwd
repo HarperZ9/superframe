@@ -181,3 +181,12 @@ go: quay2.boats
 speaker: SALLIS
 line: Mind the step. It's slippy for clerks.
 go: quay2.boats
+
+# ---------------------------------------------------------------- word comes to Lamb
+@node word.boat
+speaker: PIP
+cost: 1
+nar: Pip comes at a run with the tube's canister still under her arm.
+line: Shelf. They're loading the Board's boat at the mole steps. Crowbars. Sallis is reading them something out of the Courier, and old Penrose has his boy with him.
+opt: "Go to the mole steps." -> quay2.boats +2
+opt: "Not now." -> ^hub
