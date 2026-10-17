@@ -90,3 +90,11 @@ test("walking off mid-interrogation plays its walk node", () => {
   const G = make(), t = G.talk("x.t.start"), b = t.walkAway();
   assert.ok(texts(b).includes("Test outcome walk.")); assert.equal(G.interrog.current, null);
 });
+
+test("with every press used and the lie past, the person leaves by walk: after a few seconds", () => {
+  const G = make(), t = G.talk("x.t.start");
+  G.interrog.current.def = { ...G.interrog.current.def, presses: G.interrog.current.def.presses.filter((p) => !p.again) };
+  for (const l of ["collar", "lost"]) pick(t, l); // nerve 1, heat 2 (collar +3, lost -1)
+  for (let i = 0; i < 20 * 60 && !G.interrog.outcome(); i++) G.loop.step(); // the lie at 5 s, its window to 9 s, then 6 s
+  assert.equal(G.interrog.outcome().kind, "walk");
+});

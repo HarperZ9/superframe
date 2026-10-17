@@ -19,6 +19,7 @@
 //          fact applies the numbers and plays the node; the call is offered only while a lie is
 //          open, and made without the fact it costs nerve +2
 //   tell: N "text"         said once, when nerve first falls to N or below
+// With no press left on offer and no lie to come, the person leaves by walk: after EXHAUSTED seconds.
 //   content: do: interrogate(id)   (an effect, as fight(id))
 // G.interrog: request(id), take(), start(id), current, step(dt) (the loop calls it), presses(),
 // press(step, { strain }), callLie(), outcome(), walkAway(), finish(), face().
@@ -27,7 +28,7 @@ import { parseChoice, splitAttrs } from "../dialogue/parse.mjs";
 
 registerCalls({ interrogate: (G, [id]) => G.interrog.request(id) }, { interrogate: "interrogation" });
 
-export const LIE_OPEN = 4, STYLES = ["fist", "tongue", "shadow", "hands", "eye", "any"];
+export const LIE_OPEN = 4, EXHAUSTED = 6, STYLES = ["fist", "tongue", "shadow", "hands", "eye", "any"];
 const one = (r, k) => { const x = r.kv.find((e) => e.key === k); return x ? x.value.trim() : undefined; };
 const arrow = (v) => { const m = String(v || "").match(/^\s*(-?\d+(?:\.\d+)?)\s*->\s*(\S+)\s*$/); return m ? { at: +m[1], to: m[2] } : null; };
 const unq = (v) => String(v).trim().replace(/^"(.*)"$/, "$1");
@@ -86,7 +87,9 @@ export function createInterrogations(G, defs) {
         if (l.saidAt == null && S.t >= l.after) { l.saidAt = S.t; say(S, l.text); G.emit("interrog.lie", { id: l.id }); }
         else if (l.saidAt != null && !l.caught && !l.closed && S.t - l.saidAt > LIE_OPEN) { l.closed = true; G.emit("interrog.lieclosed", { id: l.id }); }
       }
-      if (S.def.hold != null && S.t - (S.lastPress ?? 0) >= S.def.hold && S.def.walk) { S.out = { kind: "walk", node: S.def.walk }; G.emit("interrog.end", S.out); }
+      if (S.def.hold != null && S.t - (S.lastPress ?? 0) >= S.def.hold && S.def.walk) { S.out = { kind: "walk", node: S.def.walk }; G.emit("interrog.end", S.out); return; }
+      // nothing left to press and no lie still to come or open: after EXHAUSTED seconds they leave by walk:
+      if (!api.presses().length && S.lies.every((l) => l.saidAt != null && (l.caught || S.t - l.saidAt > LIE_OPEN))) { S.spent = (S.spent || 0) + dt; if (S.spent >= EXHAUSTED) { S.out = { kind: "walk", node: S.def.walk }; G.emit("interrog.end", S.out); } } else S.spent = 0;
     },
     // The presses on offer now (step objects the dialogue runner turns into options).
     presses() {
