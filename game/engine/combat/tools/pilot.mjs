@@ -15,8 +15,8 @@ const r01 = (W, k) => rand01(W.seed ^ 0x5151, `${k}:${W.tick}`);
 // Openings: with unaware opponents it creeps (half stick, lantern shut) to a point behind the
 // nearest and takes it down; with a sluice it waits by the lever until an opponent stands in the
 // zone, then works it.
-export function createPilot({ catchShare = null, style = null } = {}) {
-  const S = { hold: 0, cool: 0, last: "" };
+export function createPilot({ catchShare = null, style = null, kite: kiteOpts = null } = {}) {
+  const S = { hold: 0, cool: 0, last: "", K: { ...KITE, ...(kiteOpts || {}) } };
   return (W) => {
     const L = W.lamb();
     if (!L || L.fallen) return {};
@@ -36,6 +36,7 @@ export function createPilot({ catchShare = null, style = null } = {}) {
     if (L.act && L.act.id === "getup" && L.act.f >= 30 && L.st >= 2) { const a = angleTo(foes[0], L); return { mx: Math.cos(a), mz: Math.sin(a), press: ["roll"] }; }
     if (L.lock == null || !live(W.byId(L.lock))) out.press.push("lock");
     if (S.hold > 0) { S.hold--; out.hold.heavy = true; return out; }
+    if (style === "kite") return kite(W, L, foes, out, S);
     const busy = L.act && !["dodge"].includes(W.moves[L.act.id].kind);
     const cut = busy ? null : interrupt(W, L, foes);
     if (cut) { const a = angleTo(L, cut); out.mx = Math.cos(a); out.mz = Math.sin(a); out.press.push("light"); return out; }
@@ -103,6 +104,53 @@ function defend(W, L, th, out, catchShare, S) {
   if (th.left === rollAt && L.st >= 2) { out.mx = Math.cos(side); out.mz = Math.sin(side); out.press.push("roll"); return out; }
   if (th.left < rollAt) out.hold.block = true;
   return out;
+}
+
+// Retreat-and-poke (the kiting policy, for measuring world rules: design/COMBAT-WORLD.md). It keeps
+// a ring just outside the nearest opponent's reach, runs from anyone who closes, rolls away from a
+// swing, sidesteps throws, and steps in for one light strike only when an opponent has whiffed
+// and stands in its recovery; then it backs off again. It never trades, catches or blocks.
+// Options (createPilot({ style: "kite", kite })): ring, the distance kept; poke, how near a whiffed
+// opponent must be; after, frames between pokes; approach, also strike an opponent that walks into
+// reach free (meeting the approach, the kiter's other habit).
+export const KITE = { ring: 3.4, poke: 2.6, after: 45, approach: false };
+function kite(W, L, foes, out, S) {
+  const KITE = S.K;
+  const T = foes[0], d = dist(L, T), lm = W.moves[`lamb:${L.tool ? "" : "hands:"}light_1`];
+  for (const P of W.projectiles) {
+    if (P.team === "lamb") continue;
+    const pd = Math.hypot(P.x - L.x, P.z - L.z), closing = (L.x - P.x) * P.vx + (L.z - P.z) * P.vz > 0;
+    if (closing && pd < 3.2 && !L.act && L.st >= 1) { const s = Math.atan2(P.vz, P.vx) + Math.PI / 2; return { ...out, mx: Math.cos(s), mz: Math.sin(s), press: [...out.press, "step"] }; }
+  }
+  for (const F of foes) {
+    const m = F.act && W.moves[F.act.id]; if (!m || !m.hits.length) continue;
+    const left = m.startup - F.act.f, reach = Math.max(...m.hits.map((h) => h.r[1]));
+    if (left >= 0 && left <= 8 && dist(L, F) <= reach + 0.8 && L.st >= 2 && !L.act) { const a = clearWay(W, L, foes); return { ...out, mx: Math.cos(a), mz: Math.sin(a), press: [...out.press, "roll"] }; }
+  }
+  const tm = T.act && W.moves[T.act.id], whiffed = tm && (tm.kind === "attack" || tm.kind === "item") && T.act.f > tm.startup + tm.active;
+  if (whiffed && d < KITE.poke + 0.8 && L.st >= 1 && W.tick >= (S.poked || 0)) {
+    const a = angleTo(L, T); S.poked = W.tick + KITE.after; S.back = W.tick + 30;
+    if (d <= lm.hits[0].r[1] + 0.3) return { ...out, mx: Math.cos(a), mz: Math.sin(a), press: [...out.press, "light"] };
+    return { ...out, mx: Math.cos(a), mz: Math.sin(a), hold: { run: true } };
+  }
+  const reach = lm.hits[0].r[1] + 0.2;
+  if (KITE.approach && !T.act && d <= reach && L.st >= 1 && W.tick >= (S.poked || 0)) { const a = angleTo(L, T); S.poked = W.tick + KITE.after; S.back = W.tick + 30; return { ...out, mx: Math.cos(a), mz: Math.sin(a), press: [...out.press, "light"] }; }
+  if (d < KITE.ring || W.tick < (S.back || 0)) { const a = clearWay(W, L, foes); return { ...out, mx: Math.cos(a), mz: Math.sin(a), hold: { run: L.st > 1.5 } }; }
+  if (d > KITE.ring + 2.5) { const a = angleTo(L, T); return { ...out, mx: Math.cos(a) * 0.5, mz: Math.sin(a) * 0.5 }; }
+  const s = angleTo(L, T) + Math.PI / 2; return { ...out, mx: Math.cos(s) * 0.4, mz: Math.sin(s) * 0.4 };
+}
+
+// The way out with the most room: of 16 bearings, the one whose point 2 m out is open ground, out of
+// deep water, not an exit (kiting is measured as a way to win; leaving is its own outcome), and farthest from every opponent (nearest weighted most).
+function clearWay(W, L, foes) {
+  let best = 0, score = -Infinity;
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2, x = L.x + Math.cos(a) * 2, z = L.z + Math.sin(a) * 2;
+    if (W.field.solid(x, z) || W.field.solid(L.x + Math.cos(a), L.z + Math.sin(a)) || W.field.depthAt(x, z) >= 0.4 || W.field.inExit(x, z) || W.field.inExit(L.x + Math.cos(a), L.z + Math.sin(a))) continue;
+    const s = Math.min(...foes.map((F) => Math.hypot(F.x - x, F.z - z))) + 0.2 * foes.reduce((t, F) => t + Math.hypot(F.x - x, F.z - z), 0) / foes.length;
+    if (s > score) { score = s; best = a; }
+  }
+  return score === -Infinity ? angleTo(foes[0], L) : best;
 }
 
 function offend(W, L, T, out, S, style) {
