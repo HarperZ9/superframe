@@ -217,10 +217,10 @@ export function createCast({ timing, combat = null, members }) {
         p.root = { ...(p.root || {}), x: 0, z: 0 };   // travel is in st.pos (ours, or combat's)
         return p;
       },
-      pose() { const p = st.sec.apply(self.basePose()); return st.adjust ? addPose(p, st.adjust) : p; },
-      // an additive offset on top of whatever plays ({ handR: { bend: -20 } }), e.g. a held pole angled up
-      // to stay clear of a counter; null clears it
-      adjust(off) { st.adjust = off || null; },
+      pose() { let p = st.sec.apply(self.basePose()); if (st.adjust) for (const off of Object.values(st.adjust)) p = addPose(p, off); return p; },
+      // additive offsets on top of whatever plays, by layer ({ handR: { bend: -20 } } on "tool": a held
+      // pole angled clear of a counter; "seat": the hips fitted to a seat); null clears that layer
+      adjust(off, layer = "main") { st.adjust = { ...(st.adjust || {}) }; if (off) st.adjust[layer] = off; else delete st.adjust[layer]; if (!Object.keys(st.adjust).length) st.adjust = null; },
       skeleton(pose = self.pose()) { return solveFigure(C, built(who, "far", st.tool), pose, self.locksLocal()); },
       // Foot locking: a foot that comes down is pinned where it landed (world space) and the leg
       // reaches for it by IK until the clip lifts it, so feet never skate under turns, blends,
@@ -231,7 +231,7 @@ export function createCast({ timing, combat = null, members }) {
         return any ? out : null;
       },
       updateLocks(pose) {
-        if (lying(pose) || (pose.root?.y || 0) > 0.05) { st.locks.L = st.locks.R = null; return; }
+        if (lying(pose) || (pose.root?.y || 0) > 0.05 || st.clip === "sit") { st.locks.L = st.locks.R = null; return; }   // seated: the seat fit places the feet
         // gaits plant their own feet (anim/gait.mjs): let any lock go over a few frames
         // entering a gait, the locks hand over across the blend (their weight follows the blend), so
         // nothing is let go at once when the blend ends
@@ -259,7 +259,8 @@ export function createCast({ timing, combat = null, members }) {
       weapon() {
         const S = self.skeleton(), h = S[INDEX.handR], [a, b] = T().blade || [0.1, 0.8];
         const at = (s) => { const v = apply(h.R, gripAt(s)); return self.toWorld([h.p[0] + v[0], h.p[1] + v[1], h.p[2] + v[2]]); };
-        return { grip: at(a), tip: at(b), radius: info.bladeR || 0.05, tool: T().id, cls: cls() };
+        const butt = cls() === "long" ? -0.4 : cls() === "heavy" ? -0.3 : -0.06;   // the shaft's end behind the hand
+        return { grip: at(a), tip: at(b), butt: at(butt), radius: info.bladeR || 0.05, tool: T().id, cls: cls() };
       },
       body() { const S = self.skeleton(); return { a: self.toWorld(S[INDEX.pelvis].p), b: self.toWorld(S[INDEX.neck].p), radius: info.radius || 0.3 }; },
       render(view, w, h, rig, { ss = 1, bands = 4, tone = null, shadows = true, smear = true } = {}) {

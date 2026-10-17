@@ -23,6 +23,8 @@ import * as FOLK from "../cast/folk.mjs";
 import { plateCtx } from "./platectx.mjs";
 import { exposure } from "./expose.mjs";
 import { queueShadow } from "./groundshadow.mjs";
+import { STAND } from "../anim/stances.mjs";
+import { INDEX } from "../rig/skeleton.mjs";
 const CAST = { lamb, fennick, marrow, warden, salvor, keel, sabine, wenna, merrow, gorm: GORM, hobb: HOBB, fewell: FEWELL, strand: STRAND, bright: BRIGHT, coe: COE, ...Object.fromEntries(Object.entries(FOLK).map(([k, m]) => [k.toLowerCase(), m])) };
 
 const MEMBERS = CAST;
@@ -96,29 +98,109 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
   const LIFT_IDS = new Set(["skin", "cheek", "jawcool", "lip"].map((n) => MATS[n].id));
   const LOOK_DEFAULT = "lift,outline";   // the test: outline read best on dark ground, lift added faces and hands; shadow and pool vanished on dark ground
   const LIFT = 1.6, OCC_BIAS = 0.14, EXPOSE_MODE = "both", LIT_X = 3, SURROUND_X = 2.5;   // the lit third counts up to 3x the ground's median (Merrow beside the fire pool read 2.2x his surroundings)   // face lift in linear light; occlusion slack in metres
-  // A held staff or pole kept inside args.reach (the clear metres ahead before a prop or wall, from the
-  // engine's clearAhead): when the tip would pass it, the wrist turns the tool up or back by the
-  // smallest angle (10 degree steps to 80) that brings the tip inside the reach without going under
-  // the floor, eased over a few frames so the tool never snaps.
-  const TOOL_EASE = 0.25;
-  function keepToolClear(a, reach) {
-    const st = (a.clear ||= { k: 0 }); let want = 0;
-    a.adjust(null);
-    const w = a.weapon && a.weapon();
-    if (w && reach != null && Math.hypot(w.tip[0] - w.grip[0], w.tip[1] - w.grip[1], w.tip[2] - w.grip[2]) > 0.8) {
-      const f = (a.facing * Math.PI) / 180, ahead = (q) => (q.tip[0] - a.pos[0]) * Math.sin(f) + (q.tip[2] - a.pos[2]) * Math.cos(f);
-      if (ahead(w) > reach) {
-        let best = null;
-        for (let m = 10; m <= 80 && !best; m += 10) for (const k of [m, -m]) { a.adjust({ handR: { bend: k } }); const q = a.weapon(); if (ahead(q) <= reach && q.tip[1] >= 0.05) { best = k; break; } }
-        want = best ?? 0;
+  // A held staff or pole kept inside the room around the figure (args.room: metres to the nearest prop
+  // or person ahead, left and right, from the engine; args.reach alone means ahead only). Both ends of
+  // the shaft are tested, and neither may go under the floor; the whole shaft keeps BODY_R off every
+  // other body this drawer drew in the last frames (the room is measured at the feet, a pole is not). When one breaks a limit, the wrist turns
+  // (bend and side, 10 degree steps, the smallest total first, up to 60 + 60) to the nearest pose that
+  // fits; the angle eases over a few frames so the tool never snaps, and a pose that still fits is kept.
+  const BODY_R = 0.36, TOOL_EASE = 0.25, TOOL_TRY = (() => { const o = []; for (let b = -60; b <= 60; b += 10) for (let sd = -60; sd <= 60; sd += 10) o.push([b, sd]); return o.sort((p, q) => Math.abs(p[0]) + Math.abs(p[1]) - Math.abs(q[0]) - Math.abs(q[1])); })();
+  function keepToolClear(a, room, face = null) {
+    const st = (a.clear ||= { b: 0, s: 0, tb: 0, ts: 0 });
+    const R = room == null ? null : typeof room === "number" ? { ahead: room, left: 9, right: 9 } : room;
+    const fa = face ?? ((90 - a.facing) * Math.PI) / 180, fx = Math.cos(fa), fz = Math.sin(fa);
+    const now = performance.now(), near = [...actors.values()].filter((o) => o !== a && now - (o.seen || -1e9) < 120 && Math.hypot(o.pos[0] - a.pos[0], o.pos[2] - a.pos[2]) < 2.6);
+    const excess = () => {   // metres by which the shaft's ends break the limits (0: it fits)
+      const w = a.weapon && a.weapon(); if (!w) return 0; let x = 0;
+      for (const e of [w.tip, w.butt]) {
+        if (!e) continue;
+        const dx = e[0] - a.pos[0], dz = e[2] - a.pos[2], ahead = dx * fx + dz * fz, left = -dx * fz + dz * fx;
+        x += Math.max(0, 0.05 - (e[1] - a.pos[1]));
+        if (R) x += Math.max(0, ahead - R.ahead) + Math.max(0, left - R.left) + Math.max(0, -left - R.right);
+      }
+      // and the whole shaft clear of every other body drawn this frame (a standing capsule, 0.3 m round, to 1.8 m up)
+      if (near.length) {   // the hands and forearms that hold it, too (a two-handed grip reaches across)
+        const S = a.skeleton();
+        for (const j of ["handL", "handR", "foreL", "foreR"]) { const q = a.toWorld(S[INDEX[j]].p); for (const o of near) { const qy = q[1] - o.pos[1]; if (qy >= 0 && qy <= 1.8) x += Math.max(0, BODY_R - Math.hypot(q[0] - o.pos[0], q[2] - o.pos[2])); } }
+      }
+      if (w.butt) for (const o of near) for (let i = 0; i <= 8; i++) {
+        const t = i / 8, px = w.butt[0] + (w.tip[0] - w.butt[0]) * t, py = w.butt[1] + (w.tip[1] - w.butt[1]) * t - o.pos[1], pz = w.butt[2] + (w.tip[2] - w.butt[2]) * t;
+        if (py < 0 || py > 1.8) continue; x += Math.max(0, BODY_R - Math.hypot(px - o.pos[0], pz - o.pos[2])) / 8;
+      }
+      return x;
+    }, fits = () => excess() < 1e-3;
+    a.adjust(null, "tool");
+    const w = a.weapon && a.weapon(), long = w && Math.hypot(w.tip[0] - w.grip[0], w.tip[1] - w.grip[1], w.tip[2] - w.grip[2]) > 0.8;
+    if (!long || fits()) { st.tb = 0; st.ts = 0; }
+    else {
+      const set = (b, sd) => a.adjust({ handR: { bend: b, side: sd } }, "tool");
+      set(st.tb, st.ts);
+      if (!(st.tb || st.ts) || !fits()) {
+        set(0, 0); let best = [0, 0], low = excess();   // the first pose that fits, else the one that breaks the limits least
+        for (const [b, sd] of TOOL_TRY) { if (!b && !sd) continue; set(b, sd); const x = excess(); if (x < low - 0.02) { low = x; best = [b, sd]; } if (x < 1e-3) break; }
+        [st.tb, st.ts] = best;
       }
     }
-    st.k += (want - st.k) * TOOL_EASE;
-    a.adjust(Math.abs(st.k) > 0.5 ? { handR: { bend: st.k } } : null);
-    (globalThis.__lwFigureStats ||= {});
-    return st.k;
+    st.b += (st.tb - st.b) * TOOL_EASE; st.s += (st.ts - st.s) * TOOL_EASE;
+    a.adjust(Math.abs(st.b) + Math.abs(st.s) > 0.5 ? { handR: { bend: st.b, side: st.s } } : null, "tool");
+    return Math.hypot(st.b, st.s);
   }
-  drawFighter.keepToolClear = keepToolClear;   // for proto/drawer_test.mjs
+  drawFighter.keepToolClear = keepToolClear;
+  // Hips fitted to a seat (args.seatY, the seat's top above the floor, from the plate): the root is
+  // raised or lowered so the pelvis sits SEAT_PELVIS above the seat, and the thighs tilt (the shins
+  // with them, so they stay upright) until the ankles stand at their standing height, soles on the floor.
+  const SEAT_PELVIS = 0.09;
+  function fitSeat(a, seatY) {
+    if (seatY == null) { a.adjust(null, "seat"); a.seatFit = null; return null; }
+    const settled = a.state && a.state.clip === "sit" && !(a.state.fade > 0);
+    if (a.seatFit && a.seatFit.y === seatY && a.seatFit.settled) return a.seatFit;
+    a.adjust(null, "seat");
+    const S0 = a.skeleton(), st = a.skeleton(STAND), h0 = (st[INDEX.footL].p[1] + st[INDEX.footR].p[1]) / 2;
+    const dy = seatY + SEAT_PELVIS - S0[INDEX.pelvis].p[1];
+    const ankle = (da) => { a.adjust({ root: { y: dy }, thighL: { fwd: -da }, thighR: { fwd: -da }, shinL: { bend: -da }, shinR: { bend: -da } }, "seat"); const S = a.skeleton(); return (S[INDEX.footL].p[1] + S[INDEX.footR].p[1]) / 2; };
+    let da = 0;
+    for (let i = 0; i < 6; i++) { const f0 = ankle(da) - h0, f1 = ankle(da + 1) - h0, d = f1 - f0; if (Math.abs(f0) < 0.003 || Math.abs(d) < 1e-5) break; da = Math.max(-35, Math.min(45, da - f0 / d)); }
+    const err = ankle(da) - h0;
+    return (a.seatFit = { y: seatY, dy, da, err, settled });
+  }
+  drawFighter.fitSeat = fitSeat;   // for proto/drawer_test.mjs
+  // Tell shapes, all in one pale ink (alpha rising with k, 0..1 through the tell), drawn on the ground:
+  //   swing   a ring that tightens;
+  //   grab    four chevrons on the ring closing inward (hands reaching);
+  //   throw   a short arc ahead and an aim line toward the facing;
+  //   answer "lunge"   a wedge along the facing that runs out to the lunge's reach as k grows;
+  //   answer "throw"   a dashed aim line ending in a cross;
+  //   unstoppable      a doubled ring with outward teeth (the drag and the rope cannot be caught).
+  function drawTell(g, t, x, y, ppm, cam, face) {
+    const k = Math.max(0, Math.min(1, t.k || 0)), yaw = cam.yawDeg * D2R, el = cam.elevDeg * D2R, sE = Math.sin(el);
+    const rx = Math.cos(yaw), rz = -Math.sin(yaw), hx = -Math.sin(yaw), hz = -Math.cos(yaw);   // camera right and its horizontal forward
+    const scr = (dx, dz, m) => [x + (dx * rx + dz * rz) * m * ppm, y + (dx * hx + dz * hz) * m * ppm * sE];   // a ground offset (metres) to screen
+    const fx = Math.cos(face), fz = Math.sin(face), lx = -fz, lz = fx;
+    const ink = (a) => `rgba(240,232,214,${a})`, R = 0.6 * (1.3 - 0.3 * k), lw = Math.max(1.5, ppm * 0.03), al = 0.35 + 0.5 * k;
+    g.save(); g.lineWidth = lw; g.strokeStyle = ink(al); g.fillStyle = ink(al);
+    const ring = (r) => { g.beginPath(); for (let i = 0; i <= 48; i++) { const a = (i / 48) * Math.PI * 2, [px, py] = scr(Math.cos(a) * r, Math.sin(a) * r, 1); i ? g.lineTo(px, py) : g.moveTo(px, py); } g.stroke(); };
+    const line = (pts) => { g.beginPath(); pts.forEach(([dx, dz], i) => { const [px, py] = scr(dx, dz, 1); i ? g.lineTo(px, py) : g.moveTo(px, py); }); g.stroke(); };
+    if (t.unstoppable) {
+      ring(R); ring(R + 0.12);
+      for (let i = 0; i < 16; i++) { const a = (i / 16) * Math.PI * 2, b = a + Math.PI / 16; line([[Math.cos(a) * (R + 0.12), Math.sin(a) * (R + 0.12)], [Math.cos(a + Math.PI / 32) * (R + 0.26), Math.sin(a + Math.PI / 32) * (R + 0.26)], [Math.cos(b) * (R + 0.12), Math.sin(b) * (R + 0.12)]]); }
+    } else if (t.kind === "grab") {
+      ring(R);
+      for (let i = 0; i < 4; i++) { const a = face + Math.PI / 4 + (i * Math.PI) / 2, cx = Math.cos(a), cz = Math.sin(a), px = -cz, pz = cx, o = R + 0.25 * (1 - k), w = 0.12;
+        line([[cx * (o + 0.14) + px * w, cz * (o + 0.14) + pz * w], [cx * o, cz * o], [cx * (o + 0.14) - px * w, cz * (o + 0.14) - pz * w]]); }
+    } else if (t.kind === "throw") {
+      g.beginPath(); for (let i = 0; i <= 16; i++) { const a = face - 0.6 + (i / 16) * 1.2, [px, py] = scr(Math.cos(a) * R, Math.sin(a) * R, 1); i ? g.lineTo(px, py) : g.moveTo(px, py); } g.stroke();
+      line([[fx * R, fz * R], [fx * (R + 1.2), fz * (R + 1.2)]]);
+    } else ring(R);
+    if (t.answer === "lunge") {   // a wedge that runs out along the facing
+      const L = R + 0.4 + 1.4 * k, w = 0.22;
+      g.globalAlpha = 0.8; g.beginPath(); for (const [dx, dz] of [[fx * R + lx * w, fz * R + lz * w], [fx * L, fz * L], [fx * R - lx * w, fz * R - lz * w]]) { const [px, py] = scr(dx, dz, 1); g.lineTo(px, py); } g.closePath(); g.fill(); g.globalAlpha = 1;
+    } else if (t.answer === "throw") {   // a dashed aim line ending in a cross
+      g.setLineDash([lw * 3, lw * 3]); line([[fx * R, fz * R], [fx * (R + 2.4), fz * (R + 2.4)]]); g.setLineDash([]);
+      const ex = fx * (R + 2.4), ez = fz * (R + 2.4), c = 0.14; line([[ex - c, ez - c], [ex + c, ez + c]]); line([[ex - c, ez + c], [ex + c, ez - c]]);
+    }
+    g.restore();
+  }
+  drawFighter.drawTell = drawTell;   // for proto/tell_sheet.mjs
   // the neutral placeholder: a plain ink body with a pale edge and a small contact shadow
   function placeholder(g, { x, y, ppm }, cam) {
     const hgt = 1.75 * ppm, wid = 0.5 * ppm, sE = Math.sin(cam.elevDeg * D2R);
@@ -141,7 +223,10 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     const seated = F.person && (args.pose === "seated" || F.seated || (F.def && F.def.pose === "seated"));
     const pose = seated ? { anim: "sit", loop: true } : poseOf(W, F, clipsFor(who));
     a.drive({ x: F.x, z: F.z, face: face ?? F.face, pose: { ...pose, anim: down && !pose.anim ? "knockdown" : pose.anim }, dt: 1 / 60 });
-    keepToolClear(a, args.reach);
+    if (seated) { if (args.seatY != null) fitSeat(a, args.seatY); } else if (a.seatFit) fitSeat(a, null);
+    a.seen = performance.now();
+    const toolK = keepToolClear(a, args.room || args.reach, args.face ?? face ?? null);
+    (globalThis.__lwToolStats ||= {})[F.id] = { room: args.room || args.reach, wrist: [+(a.clear?.b || 0).toFixed(1), +(a.clear?.s || 0).toFixed(1)], target: [a.clear?.tb, a.clear?.ts], k: +toolK.toFixed(1) };   // read by proto/markup.mjs
     // render in the actor's own frame at the plate camera's orientation and scale, feet on (x, y)
     const cosE2 = Math.cos(cam.elevDeg * D2R), truePpm = ppm / cosE2, hM = 2.9, h = Math.ceil(hM * truePpm), w = Math.ceil(h * 0.95), P = a.pos;
     const R = rigAt(at, lights, darkness || 0);
@@ -205,15 +290,14 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     (globalThis.__lwFigureStats[F.id] || {}).away = away;
     if (PC && at) queueShadow(g, PC, { x, y, at, ppm: truePpm, r: down ? 0.8 : 0.5, dir: away, len: away ? 1.2 : 0 });
     else { g.fillStyle = "rgba(8,4,10,0.35)"; g.beginPath(); g.ellipse(x, y, 0.32 * truePpm, 0.32 * truePpm * Math.sin(cam.elevDeg * D2R), 0, 0, Math.PI * 2); g.fill(); }
-    // telegraph: an opponent's wind-up on a move combat marks with a tell gets a pale ring at the feet
-    const m = F.act && W.moves ? W.moves[F.act.id] : null;
-    if (F.team !== "lamb" && m && m.tell && F.act.f >= m.tell.at[0] && F.act.f < m.tell.at[1]) {
-      const k = (F.act.f - m.tell.at[0]) / Math.max(1, m.tell.at[1] - m.tell.at[0]);
-      g.strokeStyle = `rgba(240,232,214,${0.35 + 0.5 * k})`; g.lineWidth = Math.max(1.5, truePpm * 0.03); g.beginPath(); g.ellipse(x, y, 0.6 * truePpm * (1.3 - 0.3 * k), 0.6 * truePpm * (1.3 - 0.3 * k) * 0.5, 0, 0, Math.PI * 2); g.stroke();
-    }
+    // telegraph: an opponent's wind-up, from combat's fxOf tell (args.tell: kind, answer, k, unstoppable)
+    // or, without it, the move's tell window. One pale ink, told apart by shape (drawTell)
+    let tell = args.tell || null;
+    if (!tell) { const m = F.act && W.moves ? W.moves[F.act.id] : null; if (F.team !== "lamb" && m && m.tell && F.act.f >= m.tell.at[0] && F.act.f < m.tell.at[1]) tell = { kind: m.tell.kind || "swing", answer: null, k: (F.act.f - m.tell.at[0]) / Math.max(1, m.tell.at[1] - m.tell.at[0]), unstoppable: m.parryable === false && m.blockable === false }; }
+    if (tell && F.team !== "lamb") drawTell(g, tell, x, y, truePpm, cam, face ?? F.face ?? 0);
     g.drawImage(c, ox, oy); g.restore();
     // solo (the visual check draws each figure alone): the per-pixel depth of what was drawn, NaN where
     // nothing was or where the painting hid it, in the image's own pixels placed at (ox, oy) on screen
-    if (args.solo && dbg) { for (let i = 0; i < n; i++) if (!vis[i] || d[i * 4 + 3] === 0) dbg[i] = NaN; return { depth: dbg, w: r.w, h: r.h, ox, oy }; }
+    if (args.solo && dbg) { for (let i = 0; i < n; i++) if (!vis[i] || d[i * 4 + 3] === 0) dbg[i] = NaN; const res = { depth: dbg, w: r.w, h: r.h, ox, oy }; if (globalThis.__lwFigureDebug) (globalThis.__lwSolo ||= {})[F.id] = res; return res; }
   };
 }

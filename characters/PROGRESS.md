@@ -382,3 +382,24 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     harbour-office's 52 "stacked" pixels are inside Lamb's lantern glass (a translucent pane, under
     one ellipse or none: underTwo 0), not a shadow; brine-stove-chair fails on Lamb's footprint in
     3 prop cells (collision, varies by run).
+61. DONE For the systems engineer's 195c099: seat height, side room, tells.
+    - Seats: hips fitted to args.seatY. The root moves so the pelvis sits 0.09 m above the seat, and
+      the thighs tilt, with the shins kept upright, until the ankles stand at their standing height.
+      Foot locks are released while seated. drawer_test: Keel on 0.487 m, pelvis 0.577, ankles 0.029
+      against 0.028 standing; Merrow on 0.458 m, pelvis 0.548, ankles at standing height, thighs
+      tilted 29 degrees (his short legs perch). out/seated.png.
+    - Held tools: both shaft ends are kept inside args.room (ahead, left, right) and above the floor,
+      and the shaft, both hands and both forearms keep 0.36 m off every other body drawn in the last
+      frames. The wrist turns bend and side together (10-degree steps to 60 each, the smallest total
+      first; when nothing fits, the pose that breaks the limits least), eased at 0.25 a frame.
+      drawer_test 15 of 15, which includes Fewell's pole across the body kept inside 0.45 m a side and
+      Strand's idle pole tip lifted out of the floor (it was 0.72 m under it).
+    - Tells (args.tell from combat's fxOf): one pale ink, a shape per kind. Swing is a ring that
+      tightens, grab adds four chevrons closing in, throw is an arc ahead plus an aim line, the
+      lunge answer is a wedge running out along the facing, the throw answer is a dashed aim line
+      ending in a cross, and unstoppable is a doubled ring with outward teeth. out/tells.png
+      (proto/tell_sheet.html).
+    - Visual check: 5 of 6 pass. crowd-of-four fails on Lamb and Fewell (79 px). Marked with the
+      drawer's solo depths, the pixels run along Fewell's left side against Lamb's coat front: two
+      flared coats about 0.12 m apart at 0.82 m spacing, inside the 0.15 m threshold. That is near
+      contact from spacing, not the pole (Fewell's pole is clear of Lamb by the capsule test).

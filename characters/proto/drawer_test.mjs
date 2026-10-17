@@ -33,6 +33,27 @@ console.warn = warn0;
   expect(free > 0.3 && ahead() <= 0.32, `Gorm's pole pulled inside a 0.3 m reach (tip ahead ${free.toFixed(2)} m free, ${ahead().toFixed(2)} m clamped, wrist ${k.toFixed(0)} degrees)`);
   for (let i = 0; i < 40; i++) k = draw.keepToolClear(a, 2.2);
   expect(Math.abs(k) < 1 && Math.abs(ahead() - free) < 0.02, "with room again the wrist eases back to the clip's own pose"); }
+// a pole held across the body kept inside the room to each side (args.room), and no pole tip under the floor
+{ const { createCast } = await import("../runtime/actor.mjs"), L = await import("../cast/lamplighter.mjs");
+  const timing = JSON.parse(await readFile(new URL("characters/anim/timing.json", root), "utf8")), cast = createCast({ timing, combat: null, members: { fewell: L.FEWELL, strand: L.STRAND } });
+  const side = (a) => { const w = a.weapon(), fa = ((90 - a.facing) * Math.PI) / 180, fx = Math.cos(fa), fz = Math.sin(fa); return [w.tip, w.butt].map((e) => -(e[0] - a.pos[0]) * fz + (e[2] - a.pos[2]) * fx); };
+  const f = cast.actor("fewell"); f.play("idle"); f.update(1 / 30);
+  const free = side(f); for (let i = 0; i < 40; i++) draw.keepToolClear(f, { ahead: 2.2, left: 0.45, right: 0.45 });
+  const kept = side(f);
+  expect(Math.max(...free.map(Math.abs)) > 0.3 && Math.max(...kept.map(Math.abs)) <= 0.47, `Fewell's pole across the body kept inside 0.45 m each side (ends at ${free.map((v) => v.toFixed(2)).join(", ")} free, ${kept.map((v) => v.toFixed(2)).join(", ")} kept)`);
+  const s2 = cast.actor("strand"); s2.play("idle"); s2.update(1 / 30); const y0 = s2.weapon().tip[1];
+  for (let i = 0; i < 40; i++) draw.keepToolClear(s2, 2.2);
+  expect(y0 < 0 && s2.weapon().tip[1] >= 0.04, `Strand's pole tip lifted out of the floor (${y0.toFixed(2)} m before, ${s2.weapon().tip[1].toFixed(2)} m after)`); }
+// seated: hips fitted to the plate's seat height (args.seatY), soles on the floor
+{ const { createCast } = await import("../runtime/actor.mjs"), { INDEX } = await import("../rig/skeleton.mjs"), { STAND } = await import("../anim/stances.mjs");
+  const keel = await import("../cast/keel.mjs"), merrow = await import("../cast/merrow.mjs");
+  const timing = JSON.parse(await readFile(new URL("characters/anim/timing.json", root), "utf8")), cast = createCast({ timing, combat: null, members: { keel: { ...keel }, merrow: { ...merrow } } });
+  for (const [who, seatY] of [["keel", 0.487], ["merrow", 0.458]]) {
+    const a = cast.actor(who); for (let i = 0; i < 30; i++) a.drive({ x: 0, z: 0, face: 0, pose: { anim: "sit", loop: true }, dt: 1 / 30 });
+    const fit = draw.fitSeat(a, seatY), S = a.skeleton(), h0 = a.skeleton(STAND)[INDEX.footL].p[1];
+    const hip = S[INDEX.pelvis].p[1], ank = (S[INDEX.footL].p[1] + S[INDEX.footR].p[1]) / 2;
+    expect(Math.abs(hip - (seatY + 0.09)) < 0.01 && Math.abs(ank - h0) < 0.02, `${who} seated on a ${seatY} m seat: pelvis ${hip.toFixed(3)} m (seat + 0.09), ankles ${ank.toFixed(3)} m against ${h0.toFixed(3)} standing (thighs tilted ${fit.da.toFixed(0)} degrees)`);
+  } }
 // solo: the visual check draws a figure alone and reads back its per-pixel depth
 { const ctx = new Proxy({}, { get: (t, k) => (k in t ? t[k] : () => {}), set: (t, k, v) => { t[k] = v; return true; } });
   globalThis.ImageData ||= class { constructor(w, h) { this.width = w; this.height = h; this.data = new Uint8ClampedArray(w * h * 4); } };

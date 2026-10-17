@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8"><title>Tell shapes</title>
+<style>body{margin:0;background:#1b1420;color:#e9e3d4;font:14px "Hanken Grotesk",sans-serif}canvas{display:block}</style>
+<canvas id="c" width="1500" height="560"></canvas>
+<script type="module">
+// The tell shapes the figure drawer draws for combat's fxOf tells, at k 0.2 and 0.9, on a dark ground.
+// Served by game/serve.mjs at /characters/proto/tell_sheet.html; proto/tell_sheet.py screenshots it.
+import { makeFightDrawer } from "../runtime/fightdrawer.mjs";
+const d = await makeFightDrawer({ poseOf: () => ({ anim: "idle", loop: true }) }), g = document.getElementById("c").getContext("2d");
+const cam = { yawDeg: 34, elevDeg: 34 }, rows = [0.2, 0.9];
+const cases = [["swing", { kind: "swing" }], ["grab", { kind: "grab" }], ["throw (kind)", { kind: "throw" }], ["answer: lunge", { kind: "swing", answer: "lunge" }], ["answer: throw", { kind: "throw", answer: "throw" }], ["unstoppable drag", { kind: "grab", unstoppable: true }]];
+g.fillStyle = "#e9e3d4"; g.font = "14px sans-serif";
+cases.forEach(([name, t], i) => rows.forEach((k, j) => { const x = 130 + i * 245, y = 170 + j * 250; d.drawTell(g, { ...t, k }, x, y, 110, cam, -Math.PI / 4); g.fillText(`${name}, k ${k}`, x - 70, y + 105); }));
+document.title = "ready";
+</script>
