@@ -8,15 +8,7 @@ import { toolOf } from "./tools.mjs";
 import { MATS, BY_ID } from "../rig/materials.mjs";
 
 // a few more materials for this cast
-for (const [k, m] of Object.entries({
-  grey:     { id: 50, c: [0.5, 0.5, 0.5], v: 0.5, stroke: { scale: 0.06, stretch: 3, amount: 0.12 } },
-  black:    { id: 51, c: [0.06, 0.055, 0.065], v: 0.06, stroke: { scale: 0.06, stretch: 3, amount: 0.18 } },
-  amber:    { id: 52, c: [0.95, 0.75, 0.2], v: 0.72, sheen: 1 },
-  tweed:    { id: 53, c: [0.36, 0.3, 0.24], v: 0.3, stroke: { scale: 0.015, stretch: 1, amount: 0.3 } },
-  mud:      { id: 54, c: [0.28, 0.22, 0.16], v: 0.22, stroke: { scale: 0.03, stretch: 1, amount: 0.35 } },
-  pea:      { id: 55, c: [0.12, 0.14, 0.18], v: 0.13, stroke: { scale: 0.05, stretch: 2.5, amount: 0.2 } },
-  shawl:    { id: 56, c: [0.45, 0.32, 0.3], v: 0.34, stroke: { scale: 0.012, stretch: 1, amount: 0.3 } },
-})) if (!MATS[k]) { MATS[k] = { ...m, name: k }; BY_ID[m.id] = MATS[k]; }
+// (the extra materials this cast uses live in rig/materials.mjs)
 
 const hatOn = (M, B, R, kind, mat = "black") => {
   const hd = J(B, "head"), W = { head: 1 };

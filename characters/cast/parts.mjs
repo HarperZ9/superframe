@@ -29,6 +29,9 @@ export function torso(M, B, P, o) {
 // Coat skirt in two panels (left and right) so the front opens when the legs stride.
 // o: { top (m above ground), hem (m above ground), flare, mat, inner }
 export function skirt(M, B, P, o) {
+  const prevPart = M.cur; M.begin(o.part || "skirt"); try { skirtBody(M, B, P, o); } finally { M.cur = prevPart; }
+}
+function skirtBody(M, B, P, o) {
   const hipY = J(B, "pelvis")[1], top = o.top ?? hipY + 0.05, hem = o.hem, N = 7, gap = o.gap ?? 0.04;
   const panel = (side) => {
     const rings = [];
@@ -104,14 +107,14 @@ function hand(M, B, s, r, mat, kind) {
 // it (brows up or down and pinched, lids, the mouth open or pressed), then setExpression(null).
 export const EXPRESSIONS = {
   neutral: {},
-  wary: { browY: -0.05, browIn: -0.05, lidsAdd: 0.35, mouthW: 0.9 },
-  startled: { browY: 0.09, browIn: 0.03, lidsAdd: -0.4, open: 0.08, mouthW: 0.85 },
-  set: { browY: -0.03, browIn: -0.08, lidsAdd: 0.15, mouthW: 1.1, press: true },
+  wary: { browY: -0.08, browIn: -0.09, lidsAdd: 0.5, mouthW: 0.85 },
+  startled: { browY: 0.16, browIn: 0.05, lidsAdd: -0.6, open: 0.13, mouthW: 0.8 },
+  set: { browY: -0.05, browIn: -0.13, lidsAdd: 0.25, mouthW: 1.15, press: true },
 };
 let EXPR = null;
 export const setExpression = (name) => { EXPR = name ? EXPRESSIONS[name] : null; };
 export function head(M, B, P, o) {
-  const X = EXPR || {};
+  const X = EXPR || {}, prevPart = M.cur; M.begin("head");   // the head and neck are a named part (a forged sheet can replace it)
   const h = J(B, "head"), R = o.r, W = { head: 1 }, sk = mid(o.skin || "skin");
   limb(M, B, "neck", "head", o.neck || 0.055, (o.neck || 0.055) * 0.92, sk, { rings: 4, seg: 12, over: 0.15 });
   const c = add(h, [0, R * 0.9, R * 0.05]), at = (v) => add(c, v.map((x) => x * R)), E = (cc, r, mat = sk, k = 0.03, op, bias) => ({ t: "ell", c: at(cc), r: r.map((x) => x * R), mat, k: k * R / 0.15, op, bias });
@@ -143,6 +146,7 @@ export function head(M, B, P, o) {
   sdfPart(M, prims, { weights: W, cell: R * (o.cell || 0.1) });
   if (o.hair === "cap" || o.hair === "crop") blob(M, add(c, [0, R * 0.16, -R * 0.12]), [R * 0.91, R * 0.9, R * 0.9], W, mid(o.hairMat || "hair"), { rings: 10, seg: 18, rmod: (th) => (Math.sin(th) > 0.55 ? 0.9 : 1) });
   if (o.stubble) blob(M, add(c, [0, -R * 0.62, R * 0.36]), [R * 0.66 * j, R * 0.4, R * 0.62], W, mid("hair"), { rings: 8, seg: 16 });
+  M.cur = prevPart;
   return c;
 }
 

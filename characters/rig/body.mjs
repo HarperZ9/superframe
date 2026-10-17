@@ -13,14 +13,15 @@ export const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) /
 
 // A mesh under construction: flat arrays, up to 4 weights per vertex.
 export class Mesh {
-  constructor() { this.pos = []; this.nrm = []; this.mat = []; this.wj = []; this.ww = []; this.tri = []; this.loc = []; this.part = []; this.parts = ["body"]; this.cur = 0; }
+  constructor() { this.pos = []; this.nrm = []; this.mat = []; this.wj = []; this.ww = []; this.tri = []; this.loc = []; this.part = []; this.col = []; this.parts = ["body"]; this.cur = 0; this.paint = null; }
+  // paint(pBind) -> [r, g, b] multiplier: set while building a forged region, so its vertices carry painted colour
   // Name the part the next vertices belong to (a prop the game can hide: a thrown lantern, a dropped tool).
   begin(name) { let i = this.parts.indexOf(name); if (i < 0) { i = this.parts.length; this.parts.push(name); } this.cur = i; return this; }
   end() { this.cur = 0; return this; }
   vert(p, n, mat, weights, loc) {
     const e = Object.entries(weights).filter(([, w]) => w > 1e-4).sort((a, b) => b[1] - a[1]).slice(0, 4), s = e.reduce((a, [, w]) => a + w, 0) || 1;
     const j = [0, 0, 0, 0], w = [0, 0, 0, 0]; e.forEach(([k, v], i) => { j[i] = INDEX[k]; w[i] = v / s; });
-    this.pos.push(...p); this.nrm.push(...n); this.mat.push(mat); this.wj.push(...j); this.ww.push(...w); this.loc.push(...(loc || p)); this.part.push(this.cur);
+    this.pos.push(...p); this.nrm.push(...n); this.mat.push(mat); this.wj.push(...j); this.ww.push(...w); this.loc.push(...(loc || p)); this.part.push(this.cur); this.col.push(...(this.paint ? this.paint(p) : [1, 1, 1]));
     return this.pos.length / 3 - 1;
   }
 }

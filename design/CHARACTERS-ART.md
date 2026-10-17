@@ -79,3 +79,38 @@ for portraits move them toward the plates. Coats swing on springs (not cloth sim
 hold through ground speed measured from the planted foot (no IK foot lock on slopes or steps);
 two hand shapes, open and fist, no finger animation; whole-body cross-fades only.
 PIPELINE.md section 7 lists them with what would fix each.
+
+## 6. The character forge (our own tooling, 2026-10-17)
+
+Author, 2026-10-17 (verbatim): "We do not need blender, we will make and use our own assets and
+tooling." The costume script (cast/parts.mjs) is good for a crowd; it is not enough for the detail
+and distinctness the author asked for. The forge is the tool for individual characters, built in
+our own code, whose output the runtime figures, the fight drawer and the portrait bake already read.
+
+- **A character sheet** (`characters/sheets/<who>.json`): proportions, an optional costume-script
+  body to start from (`base`), parts of it to drop (`drop`), and **regions**. A region is one
+  sculpted surface bound to bones: signed-distance shapes (ellipsoid, capsule and round cone, rounded
+  box, torus) combined by smooth union, carve and intersect; displacements on top (draping `folds`
+  with a direction and a fade, `wrinkles` gathered at a point, `noise`, `pocks`); a material per
+  shape; and **paint layers** stored per vertex (mottling `noise`, a `grad` wash such as wet to the
+  thigh, `stripes`, `spots`, and `dirt` that settles where the folds go in).
+- **The compiler** (`characters/forge/compile.mjs`): polygonises each region at its own cell size
+  (faces and hands fine, coats coarse; three levels of detail), skins it automatically from the
+  distance to its bones, and paints it. `forged(sheet, base)` returns a cast member like any other.
+- **Mesh files** (`characters/forge/bake.mjs`, `meshio.mjs`): `.lwmesh` per level of detail, loaded
+  by the browser and the portrait bake without re-sculpting. Keel's test sheet: 31k triangles far,
+  87k mid, 219k near; 0.2 s to 1.6 s to sculpt on the CPU.
+- **Review** (`characters/forge/review.mjs <who>`): the costume-script figure and the forged one side
+  by side, turnaround and close-up (out/forge-<who>.png).
+- **Runtime**: per-vertex paint flows through the rasteriser into the shading (it multiplies the
+  material colour, under the brushwork and the light bands), so painted detail survives every light.
+
+Test only: `sheets/keel.json` replaces Keel's head (a tall egg, sunken cheeks, grey sideburns,
+heavy lids, broken veins) and his greatcoat skirt (draped folds, wet darkening at the hem, a split
+front). It is a format test, not a style decision; the art direction is open, and new bodies wait
+for it.
+
+Still to build: a hand region kit (knuckles, nails, fingers posed per hand shape), cloth that
+follows the coat springs (a forged skirt is skinned to the skirt joints, which works but was not
+tuned), paint stamped from 2D images in bind space (a pattern, a badge), and a browser editor that
+shows a sheet updating as it is edited.

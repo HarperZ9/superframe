@@ -230,3 +230,30 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
 45. DONE Faces: painter's colour zones (warm cheeks, nose and ears; cooler jaw and chin), no ink
     line between them, following each character's own skin. Visible up close in out/closeups.png;
     still partly CG.
+46. DONE Strikes with combat's `sweep` (combat commit 35f91b5, no frame counts changed): every shaped
+    strike has a sweep phase (startup to the held top, sweep carries 20/52/82 % of the arc, active is
+    contact); layout splits combat's startup at `sweep[0]`, or at 62 % without one; drive.mjs plays it.
+    Found while measuring: blending out of a roll cut short could jump a whole turn (a foot 134 cm);
+    blends now finish a cut turn forward in the direction it was going. No new foot locks in or out of
+    a dodge, and locks fade when root motion carries the body away.
+    popcheck, Lamb's sequence (two rounds ago -> last round -> now): worst 106 -> 62 -> 29 cm/frame^2;
+    frames over 20 cm 36 -> 32 -> 11; summed excess 1981 -> 1478 -> 918 cm (-54 % overall). Frames
+    over the 3.5 cm threshold 148 -> 139 -> 158: the sweep packs the arc into fewer frames, so more
+    small jumps, far fewer large ones.
+47. DONE Combat's five new moves keyed: flinch, snared, takedown, use_rope, use_salt.
+48. IN PROGRESS Painted portraits for the talk panel and close-ups (coordinator: faces close up go
+    through the painter, play stays real-time): expression controls on the head (brows up, down and
+    pinched; lids; mouth open or pressed): neutral, wary, startled, set; proto/portraits.mjs bakes
+    every speaking part in paraffin and sodium light, 512 x 640, framed on the head. Slot posted to
+    the UI lead in NOTES (path, size, crop, index.json).
+49. DONE Coordinator, 2026-10-17: the author's verdict (more detail, more distinct, the style lacking);
+    an art director is setting three directions. New bodies and costume variants paused. Portrait
+    bake of the current cast finishing in the background (a reference for the director; will be
+    re-baked in the chosen style).
+50. DONE The character forge (author: our own assets and tooling, no Blender): character sheets
+    (sheets/<who>.json), compiler (forge/compile.mjs, forge/sdf.mjs: SDF regions, folds, wrinkles,
+    noise, pocks, paint layers, automatic skinning, three levels of detail), mesh files
+    (forge/meshio.mjs, forge/bake.mjs: .lwmesh), review (forge/review.mjs), per-vertex paint through
+    the rasteriser and shading. Test sheet: Keel's head and greatcoat skirt (out/forge-keel.png).
+    Spec in design/CHARACTERS-ART.md section 6; rig, drawer and forge notes for the art director in
+    NOTES.

@@ -27,7 +27,7 @@ export function placeFn(facing = 0, at = [0, 0, 0], scale = 1) {
 
 export function makeG(w, h) {
   const n = w * h;
-  return { w, h, id: new Uint8Array(n), N: new Float32Array(n * 3), loc: new Float32Array(n * 3), depth: new Float32Array(n).fill(1e9), back: new Uint8Array(n), wp: new Float32Array(n * 3) };
+  return { w, h, id: new Uint8Array(n), N: new Float32Array(n * 3), loc: new Float32Array(n * 3), depth: new Float32Array(n).fill(1e9), back: new Uint8Array(n), wp: new Float32Array(n * 3), col: new Float32Array(n * 3).fill(1) };
 }
 
 // Rasterize one skinned figure into G (which may already hold others: depth-tested).
@@ -65,7 +65,7 @@ export function rasterize(V, M, S, G, place = placeFn(), hidden = null, only = n
         G.back[i] = facingAway ? 1 : 0;
         if (facingAway) { nx = -nx; ny = -ny; nz = -nz; }
         G.N[i * 3] = nx; G.N[i * 3 + 1] = ny; G.N[i * 3 + 2] = nz;
-        for (let k = 0; k < 3; k++) { G.loc[i * 3 + k] = w0 * M.loc[a * 3 + k] + w1 * M.loc[b * 3 + k] + w2 * M.loc[c * 3 + k]; G.wp[i * 3 + k] = w0 * wp[a * 3 + k] + w1 * wp[b * 3 + k] + w2 * wp[c * 3 + k]; }
+        for (let k = 0; k < 3; k++) { if (M.col && M.col.length) G.col[i * 3 + k] = w0 * M.col[a * 3 + k] + w1 * M.col[b * 3 + k] + w2 * M.col[c * 3 + k]; G.loc[i * 3 + k] = w0 * M.loc[a * 3 + k] + w1 * M.loc[b * 3 + k] + w2 * M.loc[c * 3 + k]; G.wp[i * 3 + k] = w0 * wp[a * 3 + k] + w1 * wp[b * 3 + k] + w2 * wp[c * 3 + k]; }
       }
     }
   }

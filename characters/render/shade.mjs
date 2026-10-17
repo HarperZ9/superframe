@@ -47,7 +47,7 @@ export function albedo(G, palette = {}, { brush = 1.6 } = {}) {
       jit[i] = vnoise3(L[0] / (sc * 2.2) + 31, L[1] / (sc * 2.2 * Math.min(st, 2.5)), L[2] / (sc * 2.2)) - 0.5;
     }
     if (m.stain) { const st = vnoise3(L[0] * 7, L[1] * 5, L[2] * 7); if (st > 0.62) k *= 1 - m.stain * sat((st - 0.62) * 6); }
-    for (let c = 0; c < 3; c++) out[i * 3 + c] = sat(m.c[c] * k);
+    for (let c = 0; c < 3; c++) out[i * 3 + c] = sat(m.c[c] * k * (G.col ? G.col[i * 3 + c] : 1));   // painted surface detail from forged meshes
   }
   return { rgb: out, alpha, jit };
 }
