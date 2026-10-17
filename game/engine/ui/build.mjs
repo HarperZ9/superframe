@@ -9,12 +9,14 @@
 import { h, btn } from "./dom.mjs";
 import { buildOf, statRows, compareRows, verdict, fmtNum, ms, COMPARTMENTS, PILLAR, PILLAR_WORDS } from "./buildstats.mjs";
 import { TOOLS21, CLOTHING } from "../combat/data/build.mjs";
+import { TOOLS } from "../combat/data/tools.mjs";
 import { store } from "./dom.mjs";
+import { sheetTab } from "./tabs-a.mjs";
 
-const UI = { plan: {}, dens: store.get("lowwater.build.density", "plain"), preview: null };
+const UI = { plan: {}, preview: null, get dens() { return store.get("lowwater.build.density", "plain"); }, set dens(v) { store.set("lowwater.build.density", v); } };
 export const resetPlan = () => { UI.plan = {}; UI.preview = null; };
 
-const nameOf = (G, id) => (G.rs.items[id] && G.rs.items[id].name) || (G.rs.skills[id] && G.rs.skills[id].name) || (G.rs.attrs[id] && G.rs.attrs[id].name) || id;
+const nameOf = (G, id) => (G.rs.items[id] && G.rs.items[id].name) || (TOOLS[id] && TOOLS[id].name) || (G.rs.skills[id] && G.rs.skills[id].name) || (G.rs.attrs[id] && G.rs.attrs[id].name) || id;
 const voicesOf = (G, k) => Object.values(G.rs.skills).filter((s) => s.attr === k);
 const planned = () => Object.values(UI.plan).reduce((a, n) => a + n, 0);
 
@@ -89,13 +91,14 @@ function plainPage(G, rows) {
     line("scales", "Scales with", scale));
 }
 function numbersTable(rows, { compare = null } = {}) {
-  const head = compare ? h("tr", h("th", ""), h("th.c", "now"), h("th.c", compare), h("th.c", "")) : null;
+  const head = compare ? h("tr", h("th", h("span.small.quiet", "▲ better for you, ▽ worse")), h("th.c", "now"), h("th.c", "with it"), h("th.c", "")) : null;
   const body = [];
   let grp = "";
   for (const r of rows) {
     if (r.group !== grp) { grp = r.group; body.push(h("tr.grp", h("th", { colSpan: 4 }, grp))); }
     const other = compare ? r.other : r.to, v = verdict(r, r.now, other);
-    const diff = typeof r.now === "number" && typeof other === "number" && other !== r.now ? `${other > r.now ? "+" : "−"}${fmtNum(Math.abs(other - r.now), r.digits)}${v > 0 ? " better" : v < 0 ? " worse" : ""}` : "";
+    // better and worse by shape and word, never by colour: a filled triangle up is better for Lamb
+    const diff = typeof r.now === "number" && typeof other === "number" && other !== r.now ? `${other > r.now ? "+" : "−"}${fmtNum(Math.abs(other - r.now), r.digits)}${v > 0 ? " ▲" : v < 0 ? " ▽" : ""}` : "";
     body.push(h(`tr${other != null && other !== r.now ? ".chg" : ""}`, h("th", r.label),
       h("td.now", valueText(r, r.now)),
       compare ? h("td", other == null ? "" : valueText(r, other)) : other != null ? h("td.to", valueText(r, other)) : h("td", r.frames && typeof r.now === "number" ? h("span.ms", ms(r.now)) : ""),
@@ -111,15 +114,15 @@ function gearList(G, onPreview, onUse) {
   const clothes = items.filter((id) => CLOTHING[id]);
   const row = (id, kind) => {
     const worn = kind === "tool" ? B.tool === id : B.gear.includes(id);
-    const b = btn([h("span.gn", nameOf(G, id)), h("span.gk", kind === "tool" ? (TOOLS21[id].cls || "") : `weight ${CLOTHING[id].weight}, soaked ${CLOTHING[id].soaked}`)], () => onUse(id, kind), { cls: `gearrow${worn ? " worn" : ""}` });
+    const b = btn([h("span.gn", nameOf(G, id), worn ? h("span.gk", kind === "tool" ? "  in hand" : "  worn") : null), h("span.gk", kind === "tool" ? (TOOLS21[id].cls || "") : `weight ${CLOTHING[id].weight}, soaked ${CLOTHING[id].soaked}`)], () => onUse(id, kind), { cls: `gearrow${worn ? " worn" : ""}` });
     b.addEventListener("focus", () => onPreview(worn ? null : kind === "tool" ? { tool: id, label: nameOf(G, id) } : { gear: [...B.gear.filter((g) => (G.rs.items[g] || {}).slot !== (G.rs.items[id] || {}).slot), id], label: nameOf(G, id) }));
     b.addEventListener("blur", () => onPreview(null));
     return b;
   };
-  return h("div.gearlist", h("h3", "Tools"), ...tools.map((id) => row(id, "tool")), clothes.length ? h("h3", "Clothes") : null, ...clothes.map((id) => row(id, "gear")));
+  return h("div.gearlist", h("h3", "Tools and clothes: focus one to compare, choose it to take it up"), h("div.chips", ...tools.map((id) => row(id, "tool"))), clothes.length ? h("div.chips", ...clothes.map((id) => row(id, "gear"))) : null);
 }
 function benchSection(G, onPreview, rerender) {
-  const C = G.ext.combat, B = buildOf(G), at = (() => { try { return !!G.body.bench(); } catch (e) { return false; } })();
+  const C = G.ext.combat, B = buildOf(G), at = (() => { try { return !!G.body.bench(); } catch (e) { console.warn(`build: no bench reading: ${e.message}`); return false; } })();
   if (!C || !C.upgradeCost) return null;
   const cost = C.upgradeCost(B.tool), T = TOOLS21[B.tool] || {};
   const need = cost ? Object.entries(cost.needs).map(([id, n]) => `${nameOf(G, id)} ${Math.min(G.inv.count(id), n)} of ${n}`).join(", ") : "";
@@ -139,18 +142,19 @@ function benchSection(G, onPreview, rerender) {
 
 export function buildTab(ctx, rerender) {
   const G = ctx.G, s = G.state.sheet;
-  if (!G.ext || !G.ext.combat) return h("p.empty", "This content has no fights, so there is no build to show.");
+  // content without the four compartments (the engine's test content) keeps the plain sheet
+  if (!G.ext || !G.ext.combat || !COMPARTMENTS.some((k) => G.rs.attrs[k])) return sheetTab(ctx, rerender);
   const onPlan = (id, dir) => { const why = stepPlan(G, id, dir); if (why) note.textContent = why; else rerender(); };
   const onPreview = (p) => { UI.preview = p; drawRight(); };
   const onUse = (id, kind) => { const why = G.inv.equip(id); if (why) note.textContent = why; else { UI.preview = null; rerender(); } };
   const note = h("span.why.small");
-  const right = h("div.rightcol");
+  const statsBox = h("div.statsbox"), right = h("div.rightcol", statsBox);
   const pts = s.points || 0, plan = planned();
   const inkB = btn("Ink the plan", () => { const why = inkPlan(G); if (why) note.textContent = why; else rerender(); }, { cls: "mini", disabled: !Object.keys(UI.plan).length });
   const rubB = btn("Rub out", () => { resetPlan(); rerender(); }, { cls: "mini", disabled: !Object.keys(UI.plan).length });
   const densB = btn(UI.dens === "plain" ? "Show every number" : "Show it plainly", () => toggleDens(), { cls: "mini dens" });
-  function toggleDens() { UI.dens = UI.dens === "plain" ? "numbers" : "plain"; store.set("lowwater.build.density", UI.dens); rerender(); }
-  const bar = h("div.bar", h("span.pages", `${pts} page${pts === 1 ? "" : "s"} to spend`), h("span.quiet.small", `${s.level ? s.level - 1 + (s.spent || 0) : 0} filed`),
+  function toggleDens() { UI.dens = UI.dens === "plain" ? "numbers" : "plain"; rerender(); }
+  const bar = h("div.bar", h("span.pages", `${pts} page${pts === 1 ? "" : "s"} to spend`), h("span.quiet.small", `${Object.values(s.ranks || {}).reduce((a, n) => a + n, 0)} filed`),
     plan || Object.keys(UI.plan).length ? h("span.plan.small", `pencilled: ${Object.entries(UI.plan).map(([k, n]) => `${nameOf(G, k)} ${n > 0 ? "+" : "−"}${Math.abs(n)}`).join(", ")}`) : h("span.plan.small", "Left and right on a voice pencil in a rank"),
     inkB, rubB, note, h("span.sp", densB));
   function drawRight() {
@@ -163,10 +167,14 @@ export function buildTab(ctx, rerender) {
       const rows = statRows(now, planB);
       body = UI.dens === "plain" ? [h("h3", "In a fight"), plainPage(G, rows)] : [h("h3", "In a fight, every number"), numbersTable(rows)];
     }
-    right.replaceChildren(...body, gearList(G, onPreview, onUse), benchSection(G, onPreview, rerender) || "");
+    statsBox.replaceChildren(...body); // only the numbers redraw on a preview; the focused control stays put
   }
   drawRight();
-  const el = h("div.build", bar, caseColumn(G, onPlan), right);
+  const left = caseColumn(G, onPlan);
+  right.prepend(gearList(G, onPreview, onUse)); // the gear sits above the numbers, so a comparison is read where it is chosen
+  right.append(benchSection(G, onPreview, rerender) || "");
+  const first = left.querySelector(".chead"); if (first) first.dataset.first = "";
+  const el = h("div.build", bar, left, right);
   el._onAction = (a) => {
     const f = document.activeElement, id = f && f.dataset ? f.dataset.plan : null;
     if ((a === "left" || a === "right") && id) { onPlan(id, a === "right" ? 1 : -1); return true; }

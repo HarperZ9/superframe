@@ -1,6 +1,7 @@
 // The title screen: new game, continue (the most recent save), load, settings.
 import { h, btn, clockText } from "./dom.mjs";
 import { plateUrl } from "./scene.mjs";
+import { glyph, onDevice, watchDevice } from "./bindings.mjs";
 
 // The most recent save in any slot, or null.
 export function latestSave(ctx) {
@@ -11,6 +12,9 @@ export function latestSave(ctx) {
 }
 
 export function titleScreen(ctx) {
+  watchDevice();
+  const hint = h("div.hint.prompts"), drawHint = () => hint.replaceChildren(glyph("confirm"), " choose   ", glyph("back"), " back");
+  drawHint(); const offDev = onDevice(drawHint);
   const last = latestSave(ctx);
   const art = h("div.title-art");
   const firstArea = ctx.content.map.areas[ctx.content.rs.rules["start-area"]];
@@ -21,21 +25,21 @@ export function titleScreen(ctx) {
   }
   const cont = last
     ? btn(h("span", "Continue", h("span.small.quiet.mono", `  ${last.save.summary.time || clockText(last.save.summary.clock || 0)}  ${last.save.summary.area || ""}`)), () => ctx.loadSlot(last.slot), { key: "C" })
-    : btn("Continue", () => {}, { key: "C", disabled: true, title: "No saved night yet" });
+    : btn(h("span", "Continue", h("span.small.quiet", "  no saved night yet")), () => {}, { key: "C", disabled: true, title: "No saved night yet" }); // ux: the reason is visible to a pad player
   if (last) cont.dataset.first = "";
   const neu = btn("New game", () => ctx.create(), { key: "N" });
   if (!last) neu.dataset.first = "";
   const root = h("div.screen.title", art,
     h("div.menu.sheet.fade-in",
       h("h1", "Low Water"),
-      h("p.sub", "A night on the tide, kept in a Daybook.", h("br"), h("span.small.mono", `Content: ${ctx.content.book.meta.title || "untitled"}`)),
+      h("p.sub", "A night on the tide, kept in a Daybook.", ctx.q && ctx.q.has("dev") ? [h("br"), h("span.small", `Content: ${ctx.content.book.meta.title || "untitled"}`)] : null), // ux: the content line is for developers (?dev)
       cont, neu,
       btn("Load", () => ctx.savesPanel("load"), { key: "L" }),
       btn("Settings", () => ctx.settings(), { key: "O" })),
-    h("div.hint", "Arrows or stick to move   Enter or A to choose   Esc or B to go back"));
+    hint);
   ctx.stage.append(root);
   const keys = { C: () => last && ctx.loadSlot(last.slot), N: () => ctx.create(), L: () => ctx.savesPanel("load"), O: () => ctx.settings() };
   const onKey = (e) => { if (ctx.F.top() && ctx.F.top().root === root && keys[e.key.toUpperCase()] && !e.repeat) keys[e.key.toUpperCase()](); };
   window.addEventListener("keydown", onKey);
-  return ctx.F.push({ name: "title", root, onBack: () => {}, onClose: () => window.removeEventListener("keydown", onKey) });
+  return ctx.F.push({ name: "title", root, onBack: () => {}, onClose: () => { window.removeEventListener("keydown", onKey); offDev(); } });
 }

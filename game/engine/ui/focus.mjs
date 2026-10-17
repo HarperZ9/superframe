@@ -7,7 +7,7 @@
 export function createFocus() {
   const layers = [];
   const top = () => layers[layers.length - 1] || null;
-  const visible = (el) => el.offsetParent !== null && !el.closest("[hidden]");
+  const visible = (el) => el.offsetParent !== null && !el.closest("[hidden]") && !el.closest("[inert]") && getComputedStyle(el).visibility !== "hidden"; // ux: panels slid away are hidden by visibility
   const items = () => (top() ? [...top().root.querySelectorAll(".f")].filter(visible) : []);
   const current = () => { const a = document.activeElement; return a && a.classList && a.classList.contains("f") && top() && top().root.contains(a) ? a : null; };
 
@@ -73,7 +73,10 @@ function nearest(list, from, dir) {
 
 // The mouse moves the focus over controls of the top layer; the ring follows the focus.
 function installHover(api) {
-  document.addEventListener("mouseover", (e) => {
+  // ux: only a mouse that really moved takes the focus; a resting pointer under a redrawn panel used to steal it from the pad
+  let mx = -1, my = -1;
+  document.addEventListener("mousemove", (e) => {
+    if (Math.abs(e.clientX - mx) + Math.abs(e.clientY - my) < 2) return; mx = e.clientX; my = e.clientY;
     const el = e.target.closest && e.target.closest(".f"), t = api.top();
     if (el && el !== document.activeElement && t && t.root.contains(el)) el.focus({ preventScroll: true });
   });

@@ -17,7 +17,7 @@ export const PILLAR_WORDS = {
   pen: "Read the blow before it comes, find the weak point, spend less Breath",
   hat: "People give in sooner; Composure for learned moves and talk exits",
 };
-const safe = (fn, d) => { try { const v = fn(); return Number.isFinite(v) ? v : d; } catch (e) { return d; } };
+const safe = (fn, d) => { try { const v = fn(); return Number.isFinite(v) ? v : d; } catch (e) { console.warn(`buildstats: ${e.message}; using ${d}`); return d; } };
 
 // The sheet as the fight reads it, plus deltas from a plan.
 export function levelsOf(G, delta = {}) {
@@ -64,12 +64,12 @@ function rowsOf(B) {
   const add = (group, key, label, v, o = {}) => r.push({ group, key, label, v, unit: o.unit || "", better: o.better ?? 1, plain: !!o.plain, frames: !!o.frames, digits: o.digits ?? (Number.isInteger(v) ? 0 : 1) });
   add("Body", "standing", "Standing", d.hp, { plain: true });
   add("Body", "breath", "Breath", d.stamina, { plain: true });
-  add("Body", "regen", "Breath back a second", d.staminaRegen, { digits: 2 });
-  add("Body", "poise", "Poise (blows before a stagger)", d.poise);
+  add("Body", "regen", "Breath back /s", d.staminaRegen, { digits: 2 });
+  add("Body", "poise", "Poise", d.poise);
   add("Body", "composure", "Composure", d.composureMax, { plain: true });
   add("Body", "protection", "Protection", d.protection);
-  add("Body", "soften", "Each blow softened", Math.round((1 - (d.soften ?? 1)) * 100), { unit: "%" });
-  if (t.stun) add("Body", "stun", "Time staggered", Math.round(t.stun * 100), { unit: "%", better: -1 });
+  add("Body", "soften", "Blow softened", Math.round((1 - (d.soften ?? 1)) * 100), { unit: "%" });
+  if (t.stun) add("Body", "stun", "Staggered for", Math.round(t.stun * 100), { unit: "%", better: -1 });
   if (d.loadInfo) add("Load", "load", "Weight carried", +d.loadInfo.weight.toFixed(1), { unit: ` of ${+d.loadInfo.limit.toFixed(1)}`, better: -1, digits: 1 });
   add("Load", "band", "Load", band, { better: 0, plain: true });
   add("Load", "form", "Your dodge", FORM[band] || band, { better: 0, plain: true });
@@ -102,13 +102,13 @@ function rowsOf(B) {
   if (charged) add("Tool", "charged.dmg", "Charged heavy: damage", +(charged.dmg || 0).toFixed(2), { digits: 2 });
   if (cat && cat.parry) {
     add("Tool", "catch.w", "Catch window", span(cat.parry), { unit: " f", frames: true, plain: false });
-    add("Tool", "catch.su", "Catch: frames to open", cat.parry[0], { unit: " f", frames: true, better: -1 });
+    add("Tool", "catch.su", "Catch opens at", cat.parry[0], { unit: " f", frames: true, better: -1 });
   }
   if (t.swing) add("Tool", "tempo.s", "Swing tempo", Math.round(100 / t.swing), { unit: "%" });
   if (art && art.composure) add("Tool", "art", "Tool art: Composure", art.composure, { better: -1 });
-  add("Read and end", "read", "Blows read earlier", +(b.read || 0).toFixed(1), { unit: " f", frames: true });
+  add("Read and end", "read", "Read earlier", +(b.read || 0).toFixed(1), { unit: " f", frames: true });
   add("Read and end", "weak", "Weak point", Math.round((b.weak || 0) * 100), { unit: "%" });
-  add("Read and end", "end", "They give in sooner by", +(b.end || 0).toFixed(2), { unit: " Standing", digits: 2 });
+  add("Read and end", "end", "Yield raised by", +(b.end || 0).toFixed(2), { unit: " Standing", digits: 2 });
   return r;
 }
 

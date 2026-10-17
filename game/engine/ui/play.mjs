@@ -9,21 +9,22 @@ import { lineEl, renderOptions } from "./talk.mjs";
 import { openRun } from "./run.mjs";
 import { fightLayer } from "./fightlayer.mjs";
 import { openSneak } from "./sneak.mjs";
+import { glyph, onDevice, watchDevice } from "./bindings.mjs";
 
 const WAIT = 10; // minutes one "wait" lets pass
 
 export function playScreen(ctx, { startNode = null } = {}) {
   const G = ctx.G;
+  watchDevice();
   const P = { talk: null, beat: null, log: [], sel: {}, termsAll: false, ended: null };
   const els = {
     plate: h("div.platebox"), hud: h("div.hudbox"), edge: h("div.edge"), here: h("div.here.sheet"),
     title: h("div.ttitle.caps"), log: h("div.log"), opts: h("div.opts"), foot: h("div.tfoot"),
   };
-  const bar = h("div.topbar",
-    btn(["Daybook", h("span.k", "Tab")], () => ctx.daybook(), { cls: "chip" }),
-    btn(["Save", h("span.k", "F5")], () => ctx.savesPanel("save"), { cls: "chip" }),
-    btn("Settings", () => ctx.settings(), { cls: "chip" }),
-    btn("Title", () => ctx.title(), { cls: "chip" }));
+  // ux: two chips with the active device's glyph; Save, Load, Settings and the title live on the pause page
+  const bar = h("div.topbar");
+  const drawBar = () => bar.replaceChildren(btn(["Daybook", glyph("daybook")], () => ctx.daybook(), { cls: "chip" }), btn(["Pause", glyph("pause")], () => ctx.savesPanel("menu"), { cls: "chip" }));
+  drawBar(); const offDev = onDevice(drawBar);
   const panel = h("aside.talk", els.title, els.log, els.opts, els.foot);
   const root = h("div.screen.play", h("div.scene", els.plate, els.hud, els.edge, bar, els.here), panel);
   ctx.stage.append(root);
@@ -33,7 +34,7 @@ export function playScreen(ctx, { startNode = null } = {}) {
 
   const onKey = (e) => { if (e.code === "F5" && ctx.F.top() && ctx.F.top().root === root) { e.preventDefault(); ctx.savesPanel("save"); } };
   window.addEventListener("keydown", onKey);
-  ctx.F.push({ name: "play", root, onAction: (a) => onAction(ctx, P, api, a), onBack: () => ctx.savesPanel("menu"), onClose: () => { window.removeEventListener("keydown", onKey); api.cam.stop(); } });
+  ctx.F.push({ name: "play", root, onAction: (a) => onAction(ctx, P, api, a), onBack: () => ctx.savesPanel("menu"), onClose: () => { window.removeEventListener("keydown", onKey); api.cam.stop(); offDev(); } });
   if (startNode) api.startTalk(startNode); else api.worldStep();
   return api;
 }
@@ -45,10 +46,12 @@ function playApi(ctx, P, els, root) {
     P, root, els,
     render() {
       const talking = !!P.talk || !!P.ended;
-      root.classList.toggle("talking", talking); if (api.cam) { api.cam.talking(talking); if (!talking) api.cam.focus(null); }
+      root.classList.toggle("talking", talking);
+      root.querySelector("aside.talk").inert = !talking || root.classList.contains("fighting"); els.here.inert = talking; // ux: paper slid away takes no focus
+      if (api.cam) { api.cam.talking(talking); if (!talking) api.cam.focus(null); }
       renderWorld(ctx, P, els, api); renderTalk(ctx, P, els, api);
     },
-    startTalk(node) { P.log = []; P.sel = {}; P.talk = G.talk(node); api.take(P.talk.beat); },
+    startTalk(node) { P.log = []; P.seen = 0; P.sel = {}; P.talk = G.talk(node); api.take(P.talk.beat); },
     // A new beat: add its lines, then open a run, show options, or offer to go on.
     take(beat) {
       P.beat = beat; P.log.push(...beat.lines);
@@ -130,8 +133,9 @@ function renderWorld(ctx, P, els, api) {
   const list = h("div.acts");
   for (const hs of G.world.hotspots()) list.append(btn([h("span.caps.kind", "Here"), hs.label.replace(/^"|"$/g, "")], () => api.hotspot(hs), { cls: "act", disabled: busy }));
   for (const v of G.verbs.list()) list.append(btn([h("span.caps.kind", v.verb.kind), v.label, v.why ? h("span.why.quiet.small", v.why) : null], () => api.verb(v), { cls: "act", disabled: busy || !!v.why }));
-  for (const x of G.world.exits()) list.append(btn([h("span.caps.kind", "Go"), x.label.replace(/^"|"$/g, "")], () => api.exit(x), { cls: "act", disabled: busy }));
-  list.append(btn([h("span.caps.kind", "Wait"), `Let ${WAIT} minutes pass`], () => api.wait(), { cls: "act", disabled: busy }));
+  // ux: every move that spends the night says how much (UX-AUDIT T6)
+  for (const x of G.world.exits()) list.append(btn([h("span.caps.kind", "Go"), x.label.replace(/^"|"$/g, ""), x.attrs && +x.attrs.cost ? h("span.cost", `${+x.attrs.cost} min`) : null], () => api.exit(x), { cls: "act", disabled: busy }));
+  list.append(btn([h("span.caps.kind", "Wait"), "Let the night move on", h("span.cost", `${WAIT} min`)], () => api.wait(), { cls: "act", disabled: busy }));
   if (!busy && list.firstChild) list.firstChild.dataset.first = "";
   els.here.replaceChildren(h("div.caps.quiet", busy ? "In conversation" : "What is here"), list);
 }
@@ -142,7 +146,9 @@ function renderTalk(ctx, P, els, api, { keepFocus = false } = {}) {
   const area = G.world.area();
   els.title.textContent = P.talk ? `${area ? area.name : ""}${P.talk.speaker ? `  /  ${P.talk.speaker}` : ""}` : area ? area.name : "";
   if (!P.talk && !P.ended) return renderIdle(G, P, els);
-  els.log.replaceChildren(...P.log.map(lineEl));
+  const seen = P.seen || 0; // ux: lines new since the last draw write themselves in
+  els.log.replaceChildren(...P.log.map((l, i) => { const e = lineEl(l); if (i >= seen) e.classList.add("fresh"); return e; }));
+  P.seen = P.log.length;
   clear(els.foot);
   if (b && b.options) renderOptions(els.opts, G, b, { sel: P.sel, termsAll: P.termsAll, onChoose: (i, s) => api.choose(i, s), rerender: () => renderTalk(ctx, P, els, api, { keepFocus: true }) });
   else els.opts.replaceChildren();

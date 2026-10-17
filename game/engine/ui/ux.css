@@ -67,13 +67,13 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 /* ---- the strip: one place, bottom left, for whatever is live ---- */
 .dock { position: absolute; left: var(--safe); bottom: var(--safe); display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; pointer-events: none; z-index: 5; }
 .dock .strip { pointer-events: auto; }
-.strip { position: relative; min-width: 17rem; max-width: 24rem; padding: 0.55rem 0.8rem 0.6rem; background: var(--paper); box-shadow: var(--shadow);
+.strip { position: relative; min-width: 21rem; max-width: 28rem; padding: 0.55rem 0.8rem 0.6rem; background: var(--paper); box-shadow: var(--shadow);
   animation: stripin var(--t-morph) var(--ease-out) 60ms both; }
 .strip.leaving { animation: stripout var(--t-out) var(--ease-in) both; }
 @keyframes stripin { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: none; } }
 @keyframes stripout { to { opacity: 0; transform: translateY(0.6rem); } }
 .strip .shead { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.25rem; }
-.strip .srow { display: grid; grid-template-columns: 6.2rem 1fr auto; align-items: center; gap: 0.6rem; min-height: 1.6rem; }
+.strip .srow { display: grid; grid-template-columns: 6.6rem minmax(0, 1fr) 2.4rem; align-items: center; gap: 0.6rem; min-height: 1.6rem; }
 .strip .srow .lab { font-family: var(--name); font-size: var(--fs-xs); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-2); }
 .strip .srow .v { font-size: var(--fs-xs); color: var(--ink-2); font-variant-numeric: tabular-nums; min-width: 2.6rem; text-align: right; }
 .strip .foe .lab { font-family: var(--body); text-transform: none; letter-spacing: 0; font-size: var(--fs-s); color: var(--ink); }
@@ -89,7 +89,8 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 :root.noshake .strip.jolt, :root.noshake .strip.lift, :root.calm .strip.jolt, :root.calm .strip.lift { animation: none; }
 
 /* notches: ink for what is left, graphite outline for what is spent; a partial notch fills from the bottom */
-.tick { display: inline-flex; gap: 3px; align-items: flex-end; flex-wrap: wrap; }
+.tick { display: inline-flex; gap: 3px; align-items: flex-end; flex-wrap: nowrap; min-width: 0; }
+.tick i { flex: 0 1 0.5rem; min-width: 3px; }
 .tick i { position: relative; display: inline-block; width: 0.5rem; height: 0.95rem; border: 1px solid var(--graphite); background: transparent; }
 .tick i::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--f, 0) * 100%); background: var(--ink); }
 .tick i.crack { animation: crack 220ms steps(2) both; }
@@ -131,7 +132,7 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 /* ---- the Daybook as a page sliding over the right two thirds; the world stays visible ---- */
 .daybook { background: var(--scrim); animation: scrimin var(--t-in) linear both; }
 @keyframes scrimin { from { background: transparent; } }
-.dbook { inset: 3vh var(--safe) 3vh auto; width: min(66vw, 82rem); min-width: min(48rem, 96vw); box-shadow: var(--shadow); animation: pagein var(--t-in) var(--ease-out) both; }
+.dbook { inset: 3vh var(--safe) 3vh auto; width: min(78vw, 96rem); min-width: min(48rem, 96vw); box-shadow: var(--shadow); animation: pagein var(--t-in) var(--ease-out) both; }
 @keyframes pagein { from { opacity: 0; transform: translateX(2.5rem); } to { opacity: 1; transform: none; } }
 .dhead .mono { font-size: var(--fs-s); }
 .tab { min-height: var(--hit); }
@@ -180,10 +181,46 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 .gearlist { display: grid; gap: 0.1rem; }
 .gearrow { display: grid; grid-template-columns: 1fr auto; gap: 0.6rem; align-items: center; min-height: var(--hit); padding: 0 0.4rem; text-align: left; width: 100%; }
 .gearrow .gk { font-size: var(--fs-xs); color: var(--ink-2); }
-.gearrow.worn .gn::after { content: "  in hand"; font-size: var(--fs-xs); color: var(--ink-2); font-weight: 400; }
 .gearrow .gn { font-weight: 600; }
 .met { font-weight: 600; }
 .met.no { color: var(--ink); text-decoration: underline wavy var(--ink) 1px; text-underline-offset: 3px; }
 .cmp th.c, .cmp td.c { text-align: right; }
 .bench .need { font-variant-numeric: tabular-nums; }
 .dens { font-size: var(--fs-xs); }
+.hint.prompts { white-space: normal; display: flex; align-items: center; gap: 0.35rem; right: var(--safe); bottom: var(--safe); padding: 0.35rem 0.7rem; background: var(--paper); color: var(--ink-2); text-shadow: none; font-family: var(--body); font-size: var(--fs-s); box-shadow: var(--shadow); }
+
+/* toasts are margin notes: under the HUD tab, top left, never over the chips or the talk panel */
+#toasts { left: var(--safe); top: calc(var(--safe) + 6.2rem); transform: none; justify-items: start; gap: 0.3rem; z-index: 40; }
+.toast { padding: 0.3rem 0.7rem; font-size: var(--fs-s); max-width: 26rem; box-shadow: var(--shadow); animation: toastin var(--t-in) var(--ease-out) both; }
+.toast .caps { font-size: var(--fs-xs); }
+@keyframes toastin { from { opacity: 0; transform: translateX(-0.8rem); } to { opacity: 1; transform: none; } }
+
+/* in a fight only Pause is on offer (Tab locks on), at the right */
+.screen.play.fighting .topbar { right: var(--safe); }
+.screen.play.fighting .topbar .chip:first-child { display: none; }
+.sbtn { font-size: var(--fs-xs); min-height: 1.9rem; min-width: 2.4rem; }
+.dfoot { display: flex; gap: 2rem; flex-wrap: wrap; }
+.dhead .mono { white-space: pre; }
+
+/* the Build page: each page scrolls on its own, so a comparison stays in view while the gear list moves */
+.page:has(> .build) { overflow: hidden; padding-bottom: 0; }
+.build { height: 100%; grid-template-rows: auto minmax(0, 1fr); }
+.build .casecol, .build .rightcol { overflow-y: auto; min-height: 0; padding: 0 0.5rem 1rem 0; scrollbar-width: thin; }
+.stats th { white-space: nowrap; }
+.stats td.ms, .stats td .ms { white-space: nowrap; }
+.gearlist .chips { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.3rem; }
+.gearlist .gearrow { width: auto; display: inline-flex; gap: 0.5rem; border: 1px dashed var(--graphite); padding: 0 0.6rem; min-height: 2.1rem; }
+.gearlist .gearrow.worn { border: 2px solid var(--ink); }
+.gearlist h3 { text-transform: none; letter-spacing: 0; font-family: var(--body); font-size: var(--fs-xs); }
+.stats { table-layout: auto; }
+.stats td.d { white-space: nowrap; }
+.vrow .note { white-space: nowrap; }
+.comp .chead, .vrow { grid-template-columns: minmax(6rem, 1fr) 2rem 2.6rem auto; }
+.dbody { grid-template-columns: minmax(0, 1fr) 10.5rem; }
+/* narrow screens (720p, the Deck): the book takes the width; the meters move under the tabs */
+@media (max-width: 1500px) {
+  .dbook { left: var(--safe); right: var(--safe); width: auto; min-width: 0; }
+  .dbody { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+  .dedge { order: -1; flex-direction: row; flex-wrap: wrap; gap: 0.3rem 1.4rem; border-left: 0; border-bottom: 1px solid var(--rule); padding: 0.3rem 1.6rem; }
+  .dedge .meter { display: flex; gap: 0.5rem; align-items: center; }
+}

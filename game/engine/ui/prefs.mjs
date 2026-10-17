@@ -6,8 +6,10 @@
 import { store } from "./dom.mjs";
 
 const PREFS_KEY = "lowwater.prefs", LENS_KEY = "lowwater.lens";
-export const PREF_DEFAULT = { textSize: "medium", contrast: false, calm: false, runMode: "full", runsOff: false };
-export const TEXT_SIZES = { small: 0.88, medium: 1, large: 1.15, larger: 1.3 };
+export const PREF_DEFAULT = { textSize: "medium", contrast: false, calm: false, runMode: "full", runsOff: false, uiScale: 1, shake: "on", rumble: true, pauseOnBlur: true }; // ux: scale, shake, rumble, pause on blur
+export const TEXT_SIZES = { small: 0.88, medium: 1, large: 1.15, larger: 1.3, largest: 1.5 };
+export const UI_SCALES = [0.85, 1, 1.15, 1.3];
+export const SHAKES = ["on", "light", "off"];
 export const RUN_MODES = ["full", "half", "stepped"];
 
 // Same ranges as LENS_SETTINGS_SCHEMA in raw-native (kept here so the shell loads without it).
@@ -24,6 +26,8 @@ export function loadPrefs() {
   const p = { ...PREF_DEFAULT, ...(store.get(PREFS_KEY, {}) || {}) };
   if (!(p.textSize in TEXT_SIZES)) p.textSize = "medium";
   if (!RUN_MODES.includes(p.runMode)) p.runMode = "full";
+  if (!UI_SCALES.includes(p.uiScale)) p.uiScale = 1;
+  if (!SHAKES.includes(p.shake)) p.shake = "on";
   p.lens = cleanLens(store.get(LENS_KEY, {}) || {});
   return p;
 }
@@ -51,4 +55,6 @@ export function applyPrefs(p) {
   root.style.setProperty("--ts", String(TEXT_SIZES[p.textSize] || 1));
   root.classList.toggle("contrast", !!p.contrast);
   root.classList.toggle("calm", !!p.calm);
+  root.style.setProperty("--ui", String(p.uiScale || 1));
+  root.classList.toggle("noshake", p.shake === "off"); root.classList.toggle("lightshake", p.shake === "light");
 }

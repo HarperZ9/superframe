@@ -91,8 +91,9 @@ export async function runShot(ctx, name) {
   const fn = SHOTS[name];
   if (!fn) { console.error(`shot: no state ${name}; known: ${Object.keys(SHOTS).join(", ")}`); ctx.title(); return; }
   Math.random = mulberry(SEED);
-  document.documentElement.classList.add("calm"); // no fades caught half way in a capture
+  if (!new URLSearchParams(location.search).has("motion")) document.documentElement.classList.add("calm"); // no fades caught half way in a capture (ux: ?motion keeps them, for motion captures)
   fn(ctx);
+  window.__shell = ctx; // ux: the UI lead's input tests drive the shell from here (design/ux/uxshots.py)
   await frame();
   document.documentElement.dataset.shot = name;
 }

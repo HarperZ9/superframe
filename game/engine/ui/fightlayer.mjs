@@ -59,7 +59,38 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
     G.on("fight.talk.withdrawn", () => { offer.hidden = true; }),
     G.on("fight.bark", (e) => dock.say(skillName(G, e.voice), e.text || "")),
     ...RESPONDS.map((t) => G.on(`fight.${t}`, (e) => strip.event(t, e))),
+    G.on("fight.shake", (e) => shakeStart(e)),
+    G.on("fight.rumble", (e) => rumble(e)),
   ];
+  const prefs = ctx.prefs || {};
+  const onBlur = () => { if (prefs.pauseOnBlur !== false) pause(); };
+  addEventListener("blur", onBlur);
+
+  // Screen shake (LOOK-UNIFIED R5: at most 2 plate pixels, snapped; no zoom punch): the plate and
+  // the figures move together on a damped spring, the paper stays still. Off, light or on.
+  let shake = null;
+  function shakeStart(e) {
+    if (prefs.shake === "off" || document.documentElement.classList.contains("calm")) return;
+    const amp = Math.min(1, e.amp || 0.2) * (prefs.shake === "light" ? 0.5 : 1);
+    shake = { amp, t: 0, frames: e.frames || 8, dir: e.dir || [1, 0], k: (e.spring && e.spring.k) || 200, damp: (e.spring && e.spring.damp) || 16 };
+  }
+  function shakeStep() {
+    const els = [cam && cam.element, canvas].filter(Boolean);
+    if (!shake) return;
+    shake.t += 1;
+    const w = Math.sqrt(shake.k), env = Math.exp(-shake.damp * shake.t / 120), v = shake.amp * env * Math.cos(w * shake.t / 60);
+    const zoom = cam && cam.frameNow && cam.frameNow() ? cam.frameNow().zoom : 1, px = Math.round(v * 2 * zoom); // whole plate pixels, at most 2
+    const [dx, dy] = Array.isArray(shake.dir) ? shake.dir : [1, 0], L = Math.hypot(dx, dy) || 1;
+    for (const el of els) el.style.translate = `${Math.round((px * dx) / L)}px ${Math.round((px * dy) / L)}px`;
+    if (shake.t > shake.frames * 3 || env < 0.05) { shake = null; for (const el of els) el.style.translate = ""; }
+  }
+  // Controller rumble for blows that touch Lamb (combat emits low and high motor strengths).
+  function rumble(e) {
+    if (prefs.rumble === false) return;
+    const L = W.lamb(); if (!L || (e.id !== L.id && e.by !== L.id)) return;
+    const p = navigator.getGamepads ? [...navigator.getGamepads()].filter(Boolean)[0] : null, act = p && p.vibrationActuator;
+    if (act && act.playEffect) act.playEffect("dual-rumble", { duration: Math.round(((e.frames || 6) * 1000) / 60), strongMagnitude: Math.min(1, e.low || 0), weakMagnitude: Math.min(1, e.high || 0) }).catch((err) => console.warn(`fight: rumble failed: ${err && err.message}`));
+  }
 
   function showOffer(e) {
     offer.hidden = false;
@@ -93,10 +124,10 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
     for (const F of order) { const s = screenOf(F); if (!s) continue; const args = { ...s, face: F.face, down: F.fallen || F.out || F.yielded, W }; (figureDrawer || plainFigure)(g, F, args); }
     strip.update();
   }
-  function frame() { if (closed) return; draw(); raf = requestAnimationFrame(frame); }
+  function frame() { if (closed) return; if (!G.loop.paused) shakeStep(); draw(); raf = requestAnimationFrame(frame); }
   function finish() {
     if (closed || !ended) return; closed = true; clearTimeout(settle); cancelAnimationFrame(raf);
-    for (const off of offs) off(); unbind(); if (cam) cam.frameOn(null);
+    for (const off of offs) off(); unbind(); removeEventListener("blur", onBlur); shake = null; if (cam) { cam.frameOn(null); cam.element.style.translate = ""; }
     G.loop.clockRate = 0; G.loop.paused = false;
     if (ctx.F && layer) ctx.F.pop(layer);
     strip.leave().then(() => root.remove());
