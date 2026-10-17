@@ -148,18 +148,18 @@ export function createCast({ timing, combat = null, members }) {
         let name = artName(pose.anim || pose.clip);
         if (!L.clips[name]) { (st.missing ||= new Set()).has(name) || (st.missing.add(name), console.warn(`actor ${who}: no clip for combat's "${pose.anim || pose.clip}"; showing the guard`)); name = artName("guard"); }
         const len = L.length(who, name) || 1;
-        if (name !== st.clip) { st.prev = st.clip; st.prevFrame = st.frame; st.fade = st.fadeLen = pose.loop ? 4 : 2; }
+        if (name !== st.clip) { st.prev = st.clip; st.prevFrame = st.frame; st.fade = st.fadeLen = pose.loop ? 9 : 5; }   // 5 to 9 frames at 30 fps: 0.17 to 0.3 s (NOTES)
         st.clip = name; st.external = true; st.rate = pose.rate ?? 1;   // combat times the clip (t from its frames, warped per phase); rate is kept for secondary motion
         // a loop plays by the ground actually covered, so the planted foot stays planted at any speed
         const sp = L.timing(who, name).speed, moved = Math.hypot(st.pos[0] - ox, st.pos[2] - oz);
         if (name === "walk" || name === "run") { const v = moved / Math.max(1e-3, dt); st.v = st.v == null ? v : st.v + (v - st.v) * Math.min(1, dt * 8); st.u = advanceU(st.u, moved, Math.max(0.3, st.v)); }
         st.frame = pose.loop ? (st.frame + (sp ? (moved / sp) * FPS : dt * FPS)) % len : pose.t != null ? Math.min(len - 1e-3, pose.t * FPS) : (pose.u || 0) * len;
         { const bp = self.basePose(); st.sec.step(dt, st.pos, st.facing, bp); self.updateLocks(bp); }
-        if (st.prev) { st.fade = Math.max(0, st.fade - 1); if (!st.fade) st.prev = null; }
+        if (st.prev) { st.prevFrame += dt * FPS; st.fade = Math.max(0, st.fade - dt * FPS); if (!st.fade) st.prev = null; }   // fades count 30 fps frames whatever the caller's rate
       },
       // the game drives: start a clip (locomotion loops interrupt each other; anything else waits
       // for its cancel window unless forced)
-      play(name, { force = false, fade = 4 } = {}) {
+      play(name, { force = false, fade = 6 } = {}) {
         name = artName(name); if (!L.clips[name]) throw new Error(`no clip ${name}`);
         if (name === st.clip && LOOPS.has(name)) return true;
         if ((name === "walk" || name === "run") && (st.clip === "walk" || st.clip === "run")) { st.clip = name; return true; }   // one locomotion: the speed blends, the phase carries on
@@ -189,7 +189,7 @@ export function createCast({ timing, combat = null, members }) {
         }
         if (ev().done && !LOOPS.has(st.clip)) {
           if (st.clip === "turn" || st.clip === "turn_run") st.facing += 180;
-          self.play(st.clip === "fall" || st.clip === "knockdown" ? "getup" : L.clips[st.clip].tags?.includes("combat") ? "guard" : "idle", { force: true, fade: 6 });
+          self.play(st.clip === "fall" || st.clip === "knockdown" ? "getup" : L.clips[st.clip].tags?.includes("combat") ? "guard" : "idle", { force: true, fade: 8 });
         }
         const c = Math.cos(st.facing * D2R), s = Math.sin(st.facing * D2R), move = [c * dx + s * dz, -s * dx + c * dz];
         st.pos[0] += move[0]; st.pos[2] += move[1];
