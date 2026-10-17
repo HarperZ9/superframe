@@ -53,12 +53,18 @@ try {
   }
 } finally { await B.close(); }
 await writeFile(join(out, "report.json"), JSON.stringify(report, null, 1));
-let bad = 0;
+let bad = 0, judged = 0;
 for (const r of report) {
+  const v = VIEWS.find((x) => x.id === r.view) || {};
+  // a control plants a defect: it must fail on that defect, or the check has gone blind and the run fails
+  if (v.expectFail) { const ok = r.fails.some((f) => v.expectFail.test(f)); console.log(`${ok ? "ctrl" : "FAIL"}  ${r.view.padEnd(22)} ${ok ? "failed as it must: the check sees what the control plants" : "PASSED: the check is blind to what this control plants"}`); if (!ok) bad++; continue; }
+  judged++;
   const s = r.shadow || {};
   console.log(`${r.fails.length ? "FAIL" : "pass"}  ${r.view.padEnd(22)} figures ${(r.figures || []).length}, in props ${(r.figures || []).filter((f) => f.inProp).length}, luminance ratios ${(r.figures || []).map((f) => f.ratio).join(" ")}; shadow px ${s.pixels ?? "-"}, off floor ${s.offFloor ?? "-"}, stacked ${s.stacked ?? "-"}`);
   for (const f of r.fails) console.log(`        ${f}`);
   if (r.fails.length) bad++;
 }
-console.log(bad ? `\nVISUAL CHECK FAILED: ${bad} of ${report.length} views. Stills and report in ${out}` : `\nvisual check passed: ${report.length} views. Stills and report in ${out}`);
+console.log(bad ? `
+VISUAL CHECK FAILED: ${bad} of ${report.length} views (controls included). Stills and report in ${out}` : `
+visual check passed: ${judged} views, and every control failed as it must. Stills and report in ${out}`);
 process.exit(bad ? 1 : 0);

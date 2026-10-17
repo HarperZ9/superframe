@@ -88,12 +88,13 @@ async (opts) => {
       // where both are drawn, each pixel's depth is its figure's feet depth less its height up the figure x sin(elevation);
       // two pixels within 0.25 m of depth are one body passing through the other (a figure in front is clearly nearer)
       const sinE2 = Math.sin(((place.camera.elevDeg || 30) * Math.PI) / 180), sa = cam.toScreen(A2.at), sb = cam.toScreen(B2.at), pa = cam.scaleAt(A2.at), pb = cam.scaleAt(B2.at), da = cam.depthOf(A2.at), db = cam.depthOf(B2.at);
-      const a = alphaOf(A2), b = alphaOf(B2); let both = 0, na = 0, nb = 0, aBehind = 0, bBehind = 0;
-      for (let k = 0; k < a.length; k++) { na += a[k]; nb += b[k]; if (a[k] && b[k]) { if (a.depth && b.depth) { const za = a.depth(k), zb = b.depth(k); if (Number.isFinite(za) && Number.isFinite(zb)) { const dd = za - zb; if (Math.abs(dd) < 0.04) both++; else if (dd > 0) aBehind++; else bBehind++; } } else { const sy = (k / Wc) | 0, za = da - ((sa[1] - sy) / pa) * sinE2, zb = db - ((sb[1] - sy) / pb) * sinE2; if (Math.abs(za - zb) < 0.25) both++; } } } // true depths within 0.15 m when the drawer gives them, else the estimate
+      const a = alphaOf(A2), b = alphaOf(B2); let both = 0, na = 0, nb = 0, aBehind = 0, bBehind = 0, edgeHits = 0;
+      const edgeOf = (m, k) => { const x = k % Wc, y = (k / Wc) | 0; for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= Wc || yy >= Hc || !m[yy * Wc + xx]) return true; } return false; };
+      for (let k = 0; k < a.length; k++) { na += a[k]; nb += b[k]; if (a[k] && b[k]) { if (a.depth && b.depth) { const za = a.depth(k), zb = b.depth(k); if (Number.isFinite(za) && Number.isFinite(zb)) { const dd = za - zb, edge = edgeOf(a, k) || edgeOf(b, k); if (edge) edgeHits++; else if (Math.abs(dd) < 0.04) both++; else if (dd > 0) aBehind++; else bBehind++; /* a pixel within 2 px of either silhouette's edge has a grazing depth sample: counted apart */ } } else { const sy = (k / Wc) | 0, za = da - ((sa[1] - sy) / pa) * sinE2, zb = db - ((sb[1] - sy) / pb) * sinE2; if (Math.abs(za - zb) < 0.25) both++; } } } // true depths within 0.15 m when the drawer gives them, else the estimate
       // bodies pass through each other where their surfaces meet (within 4 cm) or cross (each in front of the other
       // over 20 px or more); two bodies with a clear gap along the view ray only stand close
       if (a.depth && b.depth && Math.min(aBehind, bBehind) >= 20) both += Math.min(aBehind, bBehind);
-      (out.interpenetration ||= []).push({ a: A2.who, b: B2.who, depthApart: +dz.toFixed(2), overlap: both, aBehind, bBehind });
+      (out.interpenetration ||= []).push({ a: A2.who, b: B2.who, depthApart: +dz.toFixed(2), overlap: both, aBehind, bBehind, edgePixels: edgeHits });
       if (both > Math.max(40, 0.02 * Math.min(na, nb))) out.fails.push(`${A2.who} and ${B2.who}: silhouettes pass through each other (${both} px at ${dz.toFixed(2)} m apart in depth)`);
     }
     // a pixel that any figure's own solo drawing covers (a coat's feather, a lantern's glass) is not a shadow
