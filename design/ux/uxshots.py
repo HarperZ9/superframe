@@ -39,7 +39,10 @@ def run(cases, only):
                 pg.on("pageerror", lambda e: logs.append("PAGEERROR " + str(e)))
                 pg.add_init_script(PAD_JS)
                 pg.goto(f"http://127.0.0.1:{PORT}{c['url']}")
-                pg.wait_for_function("document.documentElement.dataset.ready === '1'", timeout=120000)
+                try:
+                    pg.wait_for_function("document.documentElement.dataset.ready === '1'", timeout=60000)
+                except Exception as e:
+                    results.append(f"FAIL  {c['name']}: page never ready ({type(e).__name__})  " + " | ".join(logs)[:600]); pg.close(); continue
                 pg.wait_for_timeout(400)
                 for s in c.get("steps", []):
                     k = s[0]

@@ -70,3 +70,26 @@ CASES += [
   {"name": "slide-slowmo", "url": P + "world&motion", "steps": [("eval", "document.documentElement.style.setProperty('--t-in', '2400ms'); document.documentElement.style.setProperty('--t-out', '1600ms')"), ("key", "Enter")] + [("shot", f"slow-slide-{i:02d}") for i in range(6)]},
   {"name": "daybook-slowmo", "url": P + "world&motion", "steps": [("eval", "document.documentElement.style.setProperty('--t-in', '2400ms')"), ("key", "Tab")] + [("shot", f"slow-book-{i:02d}") for i in range(5)]},
 ]
+PICK = "(t) => { const c = window.__shell, b = c.play.P.beat, o = b.options.find((x) => x.label.includes(t)); c.play.choose(o.index, 0); }"
+CASES += [
+  {"name": "sneak-world", "url": P + "world&motion", "steps": [
+     ("eval", f"window.__shell.G.state.runMode = 'full'; window.__shell.play.startTalk('t.r.hub'); ({PICK})('Test sneak.')"), ("wait", 600), ("shot", "sneak-world-1"),
+     ("expect", "!!document.querySelector('.sneaklayer .sneakstrip') && !document.querySelector('.runview')", "the sneak plays on the plate, no chart screen"),
+     ("down", "KeyC"), ("down", "ArrowRight"), ("wait", 900), ("up", "ArrowRight"), ("shot", "sneak-world-2"),
+     ("expect", "document.querySelector('.sneakstrip').textContent", "the strip reads pace, cover, time and watchers"),
+     ("up", "KeyC"), ("key", "Escape"), ("expect", G + ".loop.paused === true", "Esc pauses the sneak"), ("shot", "sneak-world-pause"), ("key", "Escape"),
+     ("pad", 9), ("expect", G + ".loop.paused === true", "pad Start pauses the sneak"), ("pad", 9),
+     ("pad", 1, 400), ("expect", G + ".loop.paused === false", "pad B crouches, never pauses")]},
+  {"name": "run-world", "url": P + "world&motion", "steps": [
+     ("eval", f"window.__shell.G.state.runMode = 'full'; window.__shell.play.startTalk('t.r.hub'); ({PICK})('Test run.')"), ("wait", 600), ("shot", "run-world-1"),
+     ("expect", "!!document.querySelector('.runlayer .runstrip') && !document.querySelector('.runview')", "the Tide Run plays on the plate"),
+     ("down", "ArrowRight"), ("wait", 1500), ("up", "ArrowRight"), ("shot", "run-world-2"),
+     ("expect", "document.querySelector('.runstrip').textContent", "the strip reads the water in words")]},
+  {"name": "sneak-stepped", "url": P + "sneak", "steps": [("expect", "!!document.querySelector('.runview')", "stepped mode keeps the chart view")]},
+  {"name": "fight-frame", "url": P + "fight&motion", "steps": [("wait", 1500), ("shot", "fight-frame"),
+     ("expect", "(() => { const d = document.querySelector('.dock').getBoundingClientRect(), c = window.__shell.G.ext.combat.current; if (!c) return 'no fight'; return 'strip ' + Math.round(d.right) + 'x' + Math.round(d.top); })()", "strip extent (fighters should sit right of or above it; see the still)")]},
+  {"name": "catch-hard", "url": P + "fight&motion", "steps": [("wait", 300),
+     ("eval", G + ".loop.paused = true"), ("eval", G + ".emit('fight.parry', { id: 'lamb', by: 'guard#0' })"),
+     ("expect", "document.querySelector('.strip').dataset.history.split(' | ').includes('Caught: strike now')", "a catch answers in the strip (loop frozen, read from the strip's own history)"),
+     ("expect", "document.querySelector('.strip .xline').textContent === 'Caught: strike now'", "and it is the line on screen")]},
+]

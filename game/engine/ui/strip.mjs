@@ -83,7 +83,9 @@ export function fightStrip(dock, { G, W, title = "" }) {
       r.row.classList.toggle("locked", !!(L && L.lock === F.id));
     }
   }
+  const history = []; // every exchange line, newest last (tests read it; the screen shows only the newest)
   function x(text) {
+    history.push(text); if (history.length > 24) history.shift(); el.dataset.history = history.join(" | ");
     xline.textContent = text; xline.classList.remove("fresh"); void xline.offsetWidth; xline.classList.add("fresh");
     clearTimeout(xTimer); xTimer = setTimeout(() => { xline.textContent = ""; }, 2200);
   }
@@ -110,5 +112,5 @@ export function fightStrip(dock, { G, W, title = "" }) {
   }
   function leave() { el.classList.add("leaving"); return new Promise((r) => setTimeout(() => { el.remove(); r(); }, 160)); }
   update();
-  return { el, update, event, leave };
+  return { el, update, event, leave, history };
 }

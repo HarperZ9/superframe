@@ -1,13 +1,12 @@
-// Every build number the Build page shows (design/UI-SYSTEM.md 7.2a), read from the combat
-// engineer's own functions so the page can never disagree with the fight: lambDef (the derived
-// numbers, the load, the build bonus, the tempo) and fighterSpec (Lamb's final move table, after
-// the build, learned moves and tempo are applied). Owned by the UI and UX lead; pure, no state.
+// Every build number the Build page shows (design/UI-SYSTEM.md 7.2a), read from the combat layer's
+// own preview, G.ext.combat.preview(levels, tool, opts), so the page can never disagree with the
+// fight and never reads combat's internals. Owned by the UI and UX lead; pure, no state.
 //   const now = buildOf(G), plan = buildOf(G, { levels: { grip: +1 } })   levels are deltas
 //   const rows = statRows(now, plan)   [{ key, group, label, now, to, unit, better, plain, frames }]
-import { lambDef, fighterSpec, learnedFromFlags } from "../combat/roster.mjs";
-import { TOOLS21, CLOTHING, LOAD } from "../combat/data/build.mjs";
+// opts (gear, temper, fitting) are passed through; until preview applies them (it says so in
+// `applied`), a comparison of clothes, temper or a fitting is marked as not previewed.
 
-// The sheet's keys that the fight reads (combat/roster.mjs lambDef).
+// The sheet's keys the fight reads (SYSTEMS-FULL 19.2): the four compartments and the voices.
 export const COMPARTMENTS = ["coat", "nose", "pen", "hat"];
 export const FIGHT_VOICES = ["grip", "ballast", "knees", "pride", "sum", "dark", "salt", "carbon", "precedent", "undertow", "condolence", "formletter", "hearsay", "smell"];
 export const PILLAR = { coat: "Endure", nose: "Evade", pen: "Read", hat: "End" };
@@ -19,96 +18,60 @@ export const PILLAR_WORDS = {
 };
 const safe = (fn, d) => { try { const v = fn(); return Number.isFinite(v) ? v : d; } catch (e) { console.warn(`buildstats: ${e.message}; using ${d}`); return d; } };
 
-// The sheet as the fight reads it, plus deltas from a plan.
+// The sheet as the fight reads it (absolute levels), plus deltas from a plan.
 export function levelsOf(G, delta = {}) {
-  const rs = G.rs, S = G.sheet, P = G.pressure, L = {};
+  const rs = G.rs, S = G.sheet, L = {};
   for (const k of COMPARTMENTS) if (rs.attrs[k]) L[k] = safe(() => S.attr(k), 3);
   for (const k of FIGHT_VOICES) if (rs.skills[k]) L[k] = safe(() => S.skill(k), 3);
-  for (const k of ["wear", "cold", "dread"]) L[k] = safe(() => P.meter(k), 0);
-  L.wet = safe(() => G.body.wet(), 0);
   for (const [k, d] of Object.entries(delta)) L[k] = (L[k] ?? 3) + d;
   return L;
 }
 
-export function equipped(G) {
-  const eq = (G.state.inv || {}).equipped || {};
-  const hand = eq.hand && TOOLS21[eq.hand] ? eq.hand : "w.case";
-  const gear = Object.entries(eq).filter(([slot, id]) => slot !== "hand" && id && CLOTHING[id]).map(([, id]) => id);
-  return { tool: hand, gear };
+export function buildOf(G, { levels = {}, tool = null, gear = null, temper = null, fitting = null, plan = false } = {}) {
+  const C = G.ext && G.ext.combat; if (!C || !C.preview) return null;
+  const opts = {}; if (gear) opts.gear = gear; if (temper != null) opts.temper = temper; if (fitting) opts.fitting = fitting;
+  const asked = Object.keys(opts);
+  const p = C.preview(plan || Object.keys(levels).length ? levelsOf(G, levels) : null, tool, asked.length ? opts : undefined);
+  const applied = p && p.applied ? asked.every((k) => k in p.applied) : asked.length === 0;
+  return { p, tool: tool || (p && p.tool) || null, applied };
 }
+const STARTING = { "w.case": "The claims case", "w.hands": "Bare hands" }; // what Lamb holds before content gives a tool
+export const toolName = (G, id) => (G.rs.items[id] && G.rs.items[id].name) || STARTING[id] || id;
 
-export function buildOf(G, { levels = {}, tool = null, gear = null, temper = null, fitting = null } = {}) {
-  const L = levelsOf(G, levels), eq = equipped(G), t = tool || eq.tool, gr = gear || eq.gear;
-  const tools = ((G.state.ext || {}).combat || {}).tools || {};
-  const ts = tools[t], tp = temper ?? (typeof ts === "number" ? ts : (ts && ts.temper) || 0);
-  const ft = fitting ?? (ts && typeof ts === "object" ? ts.fitting || null : null);
-  const learned = learnedFromFlags(G.state.flags || []);
-  const def = lambDef(L, t, {}, learned, { gear: gr.length ? gr : undefined, temper: tp, fitting: ft });
-  const spec = fighterSpec("lamb", "lamb", def, [0, 0]);
-  return { L, tool: t, gear: gr, temper: tp, fitting: ft, def, moves: spec.moves, set: spec.def.moveset };
-}
-
-const total = (m) => (m ? (m.startup || 0) + (m.active || 0) + (m.recovery || 0) : 0);
-const span = (w) => (w ? w[1] - w[0] + 1 : 0);
-const dist = (m) => (m && m.root ? m.root.reduce((s, [a, b, v]) => s + ((b - a) * v) / 60, 0) : 0);
-const FORM = { light: "dash", medium: "roll", heavy: "hop", over: "hop" };
+const FORM = { roll_dash: "dash", roll: "roll", roll_hop: "hop", lurch: "lurch" };
 
 // The rows, in groups. better: 1 when higher is better, -1 when lower is better, 0 for words.
-// plain: shown in the Plain density. frames: also shown in milliseconds.
 function rowsOf(B) {
-  const d = B.def, b = d.bonus || {}, m = B.moves, s = B.set, t = d.tempo || {};
-  const band = d.loadInfo ? d.loadInfo.band : d.load;
-  const light = m[s.light], heavy = m[s.heavy], charged = m["lamb:heavy_charged"], cat = m[s.catch];
-  const dodge = m[(s.roll || {})[band === "over" ? "heavy" : band]], step = m[s.step], art = s.art ? m[s.art] : null;
-  const r = [];
-  const add = (group, key, label, v, o = {}) => r.push({ group, key, label, v, unit: o.unit || "", better: o.better ?? 1, plain: !!o.plain, frames: !!o.frames, digits: o.digits ?? (Number.isInteger(v) ? 0 : 1) });
-  add("Body", "standing", "Standing", d.hp, { plain: true });
-  add("Body", "breath", "Breath", d.stamina, { plain: true });
-  add("Body", "regen", "Breath back /s", d.staminaRegen, { digits: 2 });
-  add("Body", "poise", "Poise", d.poise);
-  add("Body", "composure", "Composure", d.composureMax, { plain: true });
-  add("Body", "protection", "Protection", d.protection);
-  add("Body", "soften", "Blow softened", Math.round((1 - (d.soften ?? 1)) * 100), { unit: "%" });
-  if (t.stun) add("Body", "stun", "Staggered for", Math.round(t.stun * 100), { unit: "%", better: -1 });
-  if (d.loadInfo) add("Load", "load", "Weight carried", +d.loadInfo.weight.toFixed(1), { unit: ` of ${+d.loadInfo.limit.toFixed(1)}`, better: -1, digits: 1 });
+  const p = B.p, f = p.frames || {}, r = [];
+  const add = (group, key, label, v, o = {}) => { if (v == null || (typeof v === "number" && !Number.isFinite(v))) return; r.push({ group, key, label, v, unit: o.unit || "", better: o.better ?? 1, plain: !!o.plain, frames: !!o.frames, digits: o.digits ?? (Number.isInteger(v) ? 0 : 1) }); };
+  const band = p.load && p.load.band, form = FORM[f.rollForm] || f.rollForm || "dodge";
+  add("Body", "standing", "Standing", p.standing, { plain: true });
+  add("Body", "breath", "Breath", p.breath, { plain: true });
+  add("Body", "poise", "Poise", p.poise);
+  add("Body", "composure", "Composure", p.composure, { plain: true });
+  if (p.load) add("Load", "load", "Weight carried", +p.load.weight.toFixed(1), { unit: ` of ${+p.load.limit.toFixed(1)}`, better: -1, digits: 1 });
   add("Load", "band", "Load", band, { better: 0, plain: true });
-  add("Load", "form", "Your dodge", FORM[band] || band, { better: 0, plain: true });
-  add("Load", "recovery", "Breath recovery", Math.round(((LOAD.regen || {})[band] || 1) * 100), { unit: "%" });
-  if (dodge) {
-    add("Footwork", "dodge.i", `${FORM[band] || "Dodge"}: untouchable`, span(dodge.iframes), { unit: " f", frames: true });
-    add("Footwork", "dodge.t", `${FORM[band] || "Dodge"}: whole move`, total(dodge), { unit: " f", frames: true, better: -1 });
-    add("Footwork", "dodge.d", `${FORM[band] || "Dodge"}: distance`, +dist(dodge).toFixed(2), { unit: " m", digits: 2 });
-    add("Footwork", "dodge.b", `${FORM[band] || "Dodge"}: Breath`, dodge.stamina, { better: -1 });
-  }
-  if (step) {
-    add("Footwork", "step.i", "Sidestep: untouchable", span(step.iframes), { unit: " f", frames: true });
-    add("Footwork", "step.t", "Sidestep: whole move", total(step), { unit: " f", frames: true, better: -1 });
-  }
-  if (t.dodge) add("Footwork", "tempo.d", "Footwork tempo", Math.round(100 / t.dodge), { unit: "%" });
-  add("Tool", "met", "Requirements", b.met === false ? "not met" : "met", { better: 0, plain: true });
-  if (light) {
-    add("Tool", "light.su", "Light: frames to land", light.startup, { unit: " f", frames: true, better: -1 });
-    add("Tool", "light.t", "Light: whole move", total(light), { unit: " f", frames: true, better: -1 });
-    add("Tool", "light.dmg", "Light: damage", +(light.dmg || 0).toFixed(2), { digits: 2 });
-    add("Tool", "light.p", "Light: poise damage", +(light.poise || 0).toFixed(2), { digits: 2 });
-    add("Tool", "light.b", "Breath a swing", +(light.stamina || 0).toFixed(2), { better: -1, digits: 2 });
-  }
-  if (heavy) {
-    add("Tool", "heavy.su", "Heavy: frames to land", heavy.startup, { unit: " f", frames: true, better: -1 });
-    add("Tool", "heavy.t", "Heavy: whole move", total(heavy), { unit: " f", frames: true, better: -1 });
-    add("Tool", "heavy.dmg", "Heavy: damage", +(heavy.dmg || 0).toFixed(2), { digits: 2 });
-    add("Tool", "heavy.p", "Heavy: poise damage", +(heavy.poise || 0).toFixed(2), { digits: 2 });
-  }
-  if (charged) add("Tool", "charged.dmg", "Charged heavy: damage", +(charged.dmg || 0).toFixed(2), { digits: 2 });
-  if (cat && cat.parry) {
-    add("Tool", "catch.w", "Catch window", span(cat.parry), { unit: " f", frames: true, plain: false });
-    add("Tool", "catch.su", "Catch opens at", cat.parry[0], { unit: " f", frames: true, better: -1 });
-  }
-  if (t.swing) add("Tool", "tempo.s", "Swing tempo", Math.round(100 / t.swing), { unit: "%" });
-  if (art && art.composure) add("Tool", "art", "Tool art: Composure", art.composure, { better: -1 });
-  add("Read and end", "read", "Read earlier", +(b.read || 0).toFixed(1), { unit: " f", frames: true });
-  add("Read and end", "weak", "Weak point", Math.round((b.weak || 0) * 100), { unit: "%" });
-  add("Read and end", "end", "Yield raised by", +(b.end || 0).toFixed(2), { unit: " Standing", digits: 2 });
+  add("Load", "form", "Your dodge", form, { better: 0, plain: true });
+  const mv = (key, label, m, { strike = false, dodge = false } = {}) => {
+    if (!m) return;
+    if (dodge && m.iframes) add("Footwork", `${key}.i`, `${label}: untouchable`, m.iframes.frames, { unit: " f", frames: true });
+    if (strike) add("Tool", `${key}.su`, `${label}: frames to land`, m.startup, { unit: " f", frames: true, better: -1 });
+    add(dodge ? "Footwork" : "Tool", `${key}.t`, `${label}: whole move`, m.total, { unit: " f", frames: true, better: -1 });
+    if (m.base && m.total) add(dodge ? "Footwork" : "Tool", `${key}.k`, `${label}: tempo`, Math.round((100 * m.base) / m.total), { unit: "%" });
+  };
+  mv("roll", form[0].toUpperCase() + form.slice(1), f.roll, { dodge: true });
+  mv("step", "Sidestep", f.step, { dodge: true });
+  add("Tool", "met", "Requirements", p.meets === false ? "not met" : "met", { better: 0, plain: true });
+  mv("light", "Light", f.light, { strike: true });
+  add("Tool", "light.dmg", "Light: damage", p.light, { digits: 2 });
+  mv("heavy", "Heavy", f.heavy, { strike: true });
+  add("Tool", "heavy.dmg", "Heavy: damage", p.heavy, { digits: 2 });
+  if (typeof p.swingCost === "number") add("Tool", "swing", "Breath a swing", Math.round(p.swingCost * 100), { unit: "%", better: -1 });
+  if (f.catch && f.catch.parry) { add("Tool", "catch.w", "Catch window", f.catch.parry.frames, { unit: " f", frames: true }); add("Tool", "catch.su", "Catch opens at", f.catch.parry.from, { unit: " f", frames: true, better: -1 }); }
+  if (f.art) add("Tool", "art.t", "Tool art: whole move", f.art.total, { unit: " f", frames: true, better: -1 });
+  add("Read and end", "read", "Read earlier", typeof p.read === "number" ? +p.read.toFixed(1) : null, { unit: " f", frames: true });
+  add("Read and end", "weak", "Weak point", typeof p.weak === "number" ? Math.round(p.weak * 100) : null, { unit: "%" });
+  add("Read and end", "end", "Yield raised by", typeof p.yieldsSooner === "number" ? +p.yieldsSooner.toFixed(2) : null, { unit: " Standing", digits: 2 });
   return r;
 }
 
@@ -118,14 +81,11 @@ export function statRows(now, plan = null) {
   const byKey = b ? Object.fromEntries(b.map((x) => [x.key, x])) : {};
   return a.map((x) => { const y = byKey[x.key]; return { ...x, now: x.v, to: y && y.v !== x.v ? y.v : null }; });
 }
-
 // A comparison of two builds over the same rows (gear side by side).
 export function compareRows(a, b) {
-  const A = rowsOf(a), Bk = Object.fromEntries(rowsOf(b).map((x) => [x.key, x]));
-  return A.map((x) => ({ ...x, now: x.v, other: Bk[x.key] ? Bk[x.key].v : null }));
+  const Bk = Object.fromEntries(rowsOf(b).map((x) => [x.key, x]));
+  return rowsOf(a).map((x) => ({ ...x, now: x.v, other: Bk[x.key] ? Bk[x.key].v : null }));
 }
-
-// Whether a change is better for Lamb (1), worse (-1) or neither (0).
 export function verdict(row, from, to) {
   if (typeof from !== "number" || typeof to !== "number" || !row.better) return 0;
   return Math.sign((to - from) * row.better);

@@ -224,3 +224,4 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
   .dedge { order: -1; flex-direction: row; flex-wrap: wrap; gap: 0.3rem 1.4rem; border-left: 0; border-bottom: 1px solid var(--rule); padding: 0.3rem 1.6rem; }
   .dedge .meter { display: flex; gap: 0.5rem; align-items: center; }
 }
+.runstrip .srow { grid-template-columns: 6.6rem minmax(0, 1fr) 3.4rem; }

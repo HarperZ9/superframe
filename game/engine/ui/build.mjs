@@ -7,17 +7,17 @@
 // cost, and focusing one previews it. Numbers come from ui/buildstats.mjs (the fight's own maths).
 //   buildTab(ctx, rerender) -> element (el._onAction handles left, right and the density key)
 import { h, btn } from "./dom.mjs";
-import { buildOf, statRows, compareRows, verdict, fmtNum, ms, COMPARTMENTS, PILLAR, PILLAR_WORDS } from "./buildstats.mjs";
-import { TOOLS21, CLOTHING } from "../combat/data/build.mjs";
-import { TOOLS } from "../combat/data/tools.mjs";
+import { buildOf, statRows, compareRows, verdict, fmtNum, ms, toolName, COMPARTMENTS, PILLAR, PILLAR_WORDS } from "./buildstats.mjs";
 import { store } from "./dom.mjs";
 import { sheetTab } from "./tabs-a.mjs";
 
 const UI = { plan: {}, preview: null, get dens() { return store.get("lowwater.build.density", "plain"); }, set dens(v) { store.set("lowwater.build.density", v); } };
 export const resetPlan = () => { UI.plan = {}; UI.preview = null; };
 
-const nameOf = (G, id) => (G.rs.items[id] && G.rs.items[id].name) || (TOOLS[id] && TOOLS[id].name) || (G.rs.skills[id] && G.rs.skills[id].name) || (G.rs.attrs[id] && G.rs.attrs[id].name) || id;
+const nameOf = (G, id) => (G.rs.items[id] && G.rs.items[id].name) || (/^w\./.test(id) && toolName(G, id)) || (G.rs.skills[id] && G.rs.skills[id].name) || (G.rs.attrs[id] && G.rs.attrs[id].name) || id;
 const voicesOf = (G, k) => Object.values(G.rs.skills).filter((s) => s.attr === k);
+// the tool in hand, as the inventory has it (the case when nothing is held)
+const inHand = (G) => ((G.state.inv || {}).equipped || {}).hand || "w.case";
 const planned = () => Object.values(UI.plan).reduce((a, n) => a + n, 0);
 
 // The plan as level deltas: a compartment raises itself and every voice under it.
@@ -77,7 +77,7 @@ function plainPage(G, rows) {
   const by = Object.fromEntries(rows.map((r) => [r.key, r]));
   const line = (k, label, text) => h("div.plainline", h("span.k", label), h("span", text));
   const chg = (r) => (r && r.to != null ? h("span.chg", `  → ${valueText(r, r.to)}`) : null);
-  const B = buildOf(G), T = TOOLS21[B.tool] || {};
+  const B = buildOf(G).p, tool = inHand(G), T = { needs: B.needs || {}, scale: B.scale || {} };
   const needs = Object.entries(T.needs || {}).map(([k, n]) => `${String(nameOf(G, k)).toUpperCase()} ${n}`).join(", ") || "nothing";
   const scale = Object.entries(T.scale || {}).map(([k, g]) => `${String(nameOf(G, k)).toUpperCase()} ${g}`).join(", ") || "nothing";
   const met = by.met && by.met.now === "met";
@@ -86,7 +86,7 @@ function plainPage(G, rows) {
     line("breath", "Breath", [valueText(by.breath, by.breath.now), chg(by.breath)]),
     line("composure", "Composure", [valueText(by.composure, by.composure.now), chg(by.composure)]),
     line("load", "Load", [`${by.band.now}: you ${by.form.now}`, by.band.to != null ? h("span.chg", `  → ${by.band.to}: you ${by.form.to ?? by.form.now}`) : null]),
-    line("tool", "In hand", h("span", h("strong", nameOf(G, B.tool)), `  temper ${B.temper} of 5${B.fitting ? `, ${B.fitting.replace(/_/g, " ")}` : ""}`)),
+    line("tool", "In hand", h("span", h("strong", nameOf(G, tool)), `  temper ${B.temper || 0} of 5${B.fitting ? `, ${B.fitting.replace(/_/g, " ")}` : ""}`)),
     line("needs", "Needs", h(`span.met${met ? "" : ".no"}`, met ? `${needs}: met` : `${needs}: not met, so it swings slow and costs double Breath`)),
     line("scales", "Scales with", scale));
 }
@@ -109,22 +109,24 @@ function numbersTable(rows, { compare = null } = {}) {
 
 // ---- gear and the bench ----
 function gearList(G, onPreview, onUse) {
-  const items = G.inv.list().map((x) => x.id), B = buildOf(G);
-  const tools = ["w.case", ...items.filter((id) => TOOLS21[id] && id !== "w.case")];
-  const clothes = items.filter((id) => CLOTHING[id]);
+  const items = G.inv.list().map((x) => x.id), hand = inHand(G), worn = Object.values(G.inv.worn());
+  const slotOf = (id) => (G.rs.items[id] || {}).slot;
+  const tools = ["w.case", ...items.filter((id) => /^w\./.test(id) && id !== "w.case" && (slotOf(id) === "hand" || !slotOf(id)))];
+  const clothes = items.filter((id) => slotOf(id) && slotOf(id) !== "hand");
+  const B = { tool: hand, gear: worn.filter((id) => slotOf(id) !== "hand") };
   const row = (id, kind) => {
-    const worn = kind === "tool" ? B.tool === id : B.gear.includes(id);
-    const b = btn([h("span.gn", nameOf(G, id), worn ? h("span.gk", kind === "tool" ? "  in hand" : "  worn") : null), h("span.gk", kind === "tool" ? (TOOLS21[id].cls || "") : `weight ${CLOTHING[id].weight}, soaked ${CLOTHING[id].soaked}`)], () => onUse(id, kind), { cls: `gearrow${worn ? " worn" : ""}` });
-    b.addEventListener("focus", () => onPreview(worn ? null : kind === "tool" ? { tool: id, label: nameOf(G, id) } : { gear: [...B.gear.filter((g) => (G.rs.items[g] || {}).slot !== (G.rs.items[id] || {}).slot), id], label: nameOf(G, id) }));
+    const isOn = kind === "tool" ? B.tool === id : B.gear.includes(id);
+    const b = btn([h("span.gn", nameOf(G, id), isOn ? h("span.gk", kind === "tool" ? "  in hand" : "  worn") : null), h("span.gk", kind === "tool" ? "" : slotOf(id))], () => onUse(id, kind), { cls: `gearrow${isOn ? " worn" : ""}` });
+    b.addEventListener("focus", () => onPreview(isOn ? null : kind === "tool" ? { tool: id, label: nameOf(G, id) } : { gear: [...B.gear.filter((g) => (G.rs.items[g] || {}).slot !== (G.rs.items[id] || {}).slot), id], label: nameOf(G, id) }));
     b.addEventListener("blur", () => onPreview(null));
     return b;
   };
   return h("div.gearlist", h("h3", "Tools and clothes: focus one to compare, choose it to take it up"), h("div.chips", ...tools.map((id) => row(id, "tool"))), clothes.length ? h("div.chips", ...clothes.map((id) => row(id, "gear"))) : null);
 }
 function benchSection(G, onPreview, rerender) {
-  const C = G.ext.combat, B = buildOf(G), at = (() => { try { return !!G.body.bench(); } catch (e) { console.warn(`build: no bench reading: ${e.message}`); return false; } })();
+  const C = G.ext.combat, B = { ...buildOf(G).p, tool: inHand(G) }, at = (() => { try { return !!G.body.bench(); } catch (e) { console.warn(`build: no bench reading: ${e.message}`); return false; } })();
   if (!C || !C.upgradeCost) return null;
-  const cost = C.upgradeCost(B.tool), T = TOOLS21[B.tool] || {};
+  const cost = C.upgradeCost(B.tool), T = { fittings: B.fittings || [] };
   const need = cost ? Object.entries(cost.needs).map(([id, n]) => `${nameOf(G, id)} ${Math.min(G.inv.count(id), n)} of ${n}`).join(", ") : "";
   const why = !at ? "Only at a bench" : !cost ? "Fully tempered" : !cost.affordable ? "Not enough salvage" : "";
   const temper = btn([`Temper to ${cost ? cost.next : 5}:`, h("span.quiet.small", cost ? `  ${need}, ${cost.minutes} min` : "")], () => { if (C.upgrade(B.tool)) rerender(); }, { cls: "mini", disabled: !!why, title: why });
@@ -158,11 +160,11 @@ export function buildTab(ctx, rerender) {
     plan || Object.keys(UI.plan).length ? h("span.plan.small", `pencilled: ${Object.entries(UI.plan).map(([k, n]) => `${nameOf(G, k)} ${n > 0 ? "+" : "−"}${Math.abs(n)}`).join(", ")}`) : h("span.plan.small", "Left and right on a voice pencil in a rank"),
     inkB, rubB, note, h("span.sp", densB));
   function drawRight() {
-    const now = buildOf(G), planB = Object.keys(UI.plan).length ? buildOf(G, { levels: deltas(G) }) : null;
+    const now = buildOf(G), planB = Object.keys(UI.plan).length ? buildOf(G, { levels: deltas(G), plan: true }) : null;
     let body;
     if (UI.preview) {
       const other = buildOf(G, { ...UI.preview, levels: deltas(G) });
-      body = [h("h3", `Now against ${UI.preview.label}`), numbersTable(compareRows(planB || now, other), { compare: UI.preview.label })];
+      body = [h("h3", `Now against ${UI.preview.label}`), other.applied ? null : h("p.why.small", "The fight's preview does not take clothes, temper or fittings yet, so these columns match; asked of the combat engineer."), numbersTable(compareRows(planB || now, other), { compare: UI.preview.label })];
     } else {
       const rows = statRows(now, planB);
       body = UI.dens === "plain" ? [h("h3", "In a fight"), plainPage(G, rows)] : [h("h3", "In a fight, every number"), numbersTable(rows)];
