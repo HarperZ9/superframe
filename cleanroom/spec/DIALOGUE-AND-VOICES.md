@@ -197,6 +197,24 @@ leave quarantine; only counts and structure.
 - Time per line: the reference spends 23 seconds a line. Low Water's tide clock could spend about 30 to 45
   seconds a line so that a long conversation visibly moves the water.
 
+## 11. v3 additions (2026-10-17): voice chains and stat-gated options
+
+New in this version, from the same decoded dialogue graph [decompiled, high]:
+
+- **How many voices a line carries.** Walking forward from each inner-voice line: the median run of
+  consecutive voice lines is 1, the 90th percentile 2, the longest 9. Distinct voices in a run: one in
+  12,406 cases, two in 2,080, three in 363, four in 97, five in 29, six to nine in 10. Voices mostly speak
+  alone; pairs are common; choruses of four or more are rare set pieces.
+- **How stats change the options that exist.** Of 24,714 player response nodes, 6,668 (27%) carry a
+  display condition, and 454 of those test a skill or check function directly. Most option gating is
+  by world flags (what Lamb has done or knows), and only a small share is a raw stat test; stats mostly act
+  through voices and checks instead of hiding options.
+- **Failure that opens content.** Besides the 213 weak-voice lines (section 10.2), every active check
+  routes to its own success and failure branches; one-shot check nodes have a median of 1 outgoing link
+  each because the branch is taken by condition on the following nodes [inferred, moderate].
+
+For a live world, see `LIVE-CONVERSATION.md` part B.
+
 ## 9. Sources
 
 - Disco Elysium wiki, "Skills" and "Thoughts", read 2026-10-16: https://discoelysium.wiki.gg/wiki/Skills ; https://discoelysium.wiki.gg/wiki/Thoughts

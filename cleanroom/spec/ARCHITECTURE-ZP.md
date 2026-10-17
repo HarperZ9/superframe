@@ -15,7 +15,7 @@ the narrative runtime knows nothing about game rules, and every rule system plug
   pins. Card kinds include dialogue fragments, forks, hubs, jumps, start and end, passive checks,
   weak-voice passives, retryable checks, one-shot checks, orbs (world interactions), barks (ambient
   lines), money options, instruction cards, belief reinforce and punish cards, counters with min and max,
-  two-outcome cards, sleep, slot unlock, and tactical hubs and routes for the set pieces [D].
+  conditional alternative-text cards, sleep, slot unlock, and tactical hubs and routes for the set pieces [D].
 - Each pin and card can call **gates** (named conditions returning true or false) and **instructions**
   (named effects) with typed arguments; conditions can be structured trees of AND, OR and NOT over gate
   calls and property tests [S][D].

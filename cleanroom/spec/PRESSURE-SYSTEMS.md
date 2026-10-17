@@ -121,7 +121,7 @@ numbers and structure leave quarantine; no names, lines or text.
   19,842 flags, 5,572 counters, 32 lists [D]. Flows load on demand in 321 chunks [D].
 - Card counts across all flows [D]: 53,615 dialogue fragments; 9,732 passive checks; 441 weak-voice
   (fires-on-failure) passives; 998 orb cards; 451 bark cards; 154 one-shot checks; 100 retryable checks;
-  802 two-outcome cards; 103 money options; 74 belief-punish and 39 belief-reinforce cards; 19 tactical
+  802 conditional alternative-text cards (one card, several lines, each with its own condition); 103 money options; 74 belief-punish and 39 belief-reinforce cards; 19 tactical
   hubs and 48 tactical routes (the set pieces).
 - Gate and instruction use across flows [D]: flag tests 12,980; passive-result reports 10,173; set-flag
   6,706; counter increments 2,454; pressure increases 1,219 and decreases 498; item tests 909; item
@@ -227,6 +227,25 @@ moves inside the set piece (up to 26 increases in one) [D]. There is no timer [R
   game when scaled to tide turns (about 6 hours each).
 - Hidden personality counters that grant a belief when they cross a threshold: Low Water can use the same
   mechanism for Margin notes offered by the player's habits.
+
+## 13. v3 additions (2026-10-17): what is distinct about the spy systems
+
+New in this version [decompiled, high unless marked]:
+
+- **Conditional alternative-text cards** (802): one card holds several versions of a line, each with its
+  own condition, so a line changes with persona, clothing or state without new branches. Earlier versions
+  of this file called them two-outcome cards; that was wrong.
+- **Personas as credibility counters** (10 personas, 99 persona switches in content): cover is tracked per
+  persona, so the same scene can read a disguise as convincing for one identity and thin for another
+  [decompiled, high; reading inferred, moderate].
+- **Hidden personality counters grant beliefs** when they cross 4, 6, 8 or 14, so the player's habits,
+  not a menu, offer new beliefs.
+- **Clothing gates** (708 item-equipped tests in content) and **weather gates** (116) let the city react
+  to how the spy looks and to the conditions, without dialogue branches of their own.
+- **Rituals with cooldowns** (12 to 24 hours) and **status effects with listeners** (on a check, a counter
+  or an item) are the systemic glue: state changes in one place trigger content elsewhere.
+
+How these sit on a live world is in `LIVE-CONVERSATION.md` part B.
 
 ## 11. Sources
 
