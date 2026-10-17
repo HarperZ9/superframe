@@ -1,5 +1,6 @@
 // Character building on one sheet (SYSTEMS-FULL section 19): pillars, soft caps, the 21 tools,
 // clothing and load, temper and fittings, Composure.
+import { FLOOR } from "../data/arenas.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { lambDef, buildBonus, loadOf, lambTool } from "../roster.mjs";
@@ -69,10 +70,14 @@ test("Composure: blows and catches fill it, a special spends it", () => {
   assert.equal(L.composure, 2);
 });
 
-test("running is faster, costs Breath, and a light press while running is the running strike", () => {
+test("running is faster, costs Breath only while engaged, and a light press while running is the running strike", () => {
   const W = makeWorld({ brains: false, foes: [] }), L = W.lamb(), st = L.st, walk = makeWorld({ brains: false, foes: [] });
   run(W, 40, { lamb: { mx: 1, mz: 0, hold: { run: true } } }); run(walk, 40, { lamb: { mx: 1, mz: 0 } });
-  assert.ok(L.x - walk.lamb().x > 1 && L.st < st);
+  assert.ok(L.x - walk.lamb().x > 1, "running is faster");
+  assert.equal(L.st, st, "nobody near: running is free (data/world.mjs run.free)");
+  const sp = FLOOR.spawns.lamb, E = makeWorld({ brains: false, foes: [["holder", [sp[0] + 4, sp[1]]]] }), EL = E.lamb(), est = EL.st;
+  run(E, 40, { lamb: { mx: 1, mz: 0, hold: { run: true } } });
+  assert.ok(EL.st < est, "an opponent within 10 m: running costs Breath");
   assert.ok(run(W, 1, { lamb: { mx: 1, mz: 0, press: ["light"], hold: { run: true } } }).some((e) => e.move === "lamb:run"));
 });
 

@@ -18,6 +18,9 @@ import { rand01 } from "../../core/rng.mjs";
 import { dist, angleTo, wrapAngle } from "../sim/fighter.mjs";
 import { phaseOf } from "../sim/moves.mjs";
 import { tokensAllowed, coolScale, passive } from "./pressure.mjs";
+import { pursue, chasing, cutOffPoint, leash } from "./pursuit.mjs";
+import { ledgeClear } from "../sim/terrain.mjs";
+import { go } from "../sim/paths.mjs";
 
 const alive = (F) => F && !F.out && !F.fallen && F.hp > 0;
 const r01 = (W, F, k) => rand01(W.seed, `${F.id}:${k}:${W.tick}`);
@@ -35,7 +38,7 @@ function think(W, F, cfg) {
   if (!T) return { mx: 0, mz: 0 };
   if (F.aware === false) return idleWatch(W, F, M);
   const see = W.visible(F, T);
-  if (see) { M.seen = { x: T.x, z: T.z, t: W.tick }; F.lock = T.id; } else if (F.lock === T.id && !see) F.lock = null;
+  if (see) { M.seen = { x: T.x, z: T.z, t: W.tick }; F.lock = T.id; M.lost = 0; M.called = false; } else if (F.lock === T.id && !see) F.lock = null;
   const cur = F.act && W.moves[F.act.id];
   if (cur && (cur.kind === "stagger" || cur.kind === "down")) { M.stag = true; return {}; }
   if (M.stag && !F.act) { M.stag = false; return reel(W, F, cfg, T, M); }
@@ -71,8 +74,10 @@ function commit(W, F, cfg, M, cur) {
 }
 
 function seek(W, F, M) {
+  const held = leash(W, F, M); // seven seconds without sight: call the others, hold the way out
+  if (held) return avoidDeep(W, F, held);
   const d = Math.hypot(M.seen.x - F.x, M.seen.z - F.z);
-  if (d > 0.8) return avoidDeep(W, F, toward(F, M.seen.x, M.seen.z, 0.7));
+  if (d > 0.8) return avoidDeep(W, F, go(W, F, M.seen.x, M.seen.z, 0.7));
   // a fight is loud: after three seconds of finding nothing they go toward where Lamb is now
   if (++M.searched > 180) { const L = W.lamb(); M.seen = { x: L.x, z: L.z, t: W.tick }; M.searched = 0; }
   return { mx: 0, mz: 0 };
@@ -93,6 +98,8 @@ function engage(W, F, cfg, T, M) {
   const d = dist(F, T), def = W.defs[F.id];
   const dodge = react(W, F, cfg, T, d);
   if (dodge) return dodge;
+  const answer = pursue(W, F, T, M); // a Lamb who keeps away meets a lunge or a throw (ai/pursuit.mjs)
+  if (answer) return answer;
   if (!M.retreated && F.hp < F.hpMax * cfg.retreatHp) { M.retreated = true; M.retreat = W.tick + 120; }
   if (W.tick < M.retreat || F.st < cfg.lowStamina) return retreat(W, F, cfg, T, M, d);
   const open = T.act && (phaseOf(W.moves[T.act.id], T.act.f) === "recovery" || W.moves[T.act.id].kind === "item");
@@ -103,7 +110,7 @@ function engage(W, F, cfg, T, M) {
     if (a && takeToken(W, F, T, W.moves[a.id].total + (a.ranged ? 6 : 24))) return fire(W, F, cfg, T, M, a);
     M.move = space(W, F, cfg, T, M, d);
   }
-  return { ...M.move };
+  return chasing(W, F, M) ? { ...M.move, hold: { run: true } } : { ...M.move };
 }
 
 // Dodge a swing that is about to land, if this kind dodges at all (a seeded chance).
@@ -159,11 +166,13 @@ function fire(W, F, cfg, T, M, a) {
 // Hold the ring: the flank slot's point around the target at the preferred range.
 function space(W, F, cfg, T, M, d) {
   const holder = (T.tokens || []).some((t) => t.until > W.tick && t.id === F.id);
+  const cut = !holder && cutOffPoint(W, F, T, M); // Lamb is running: take the ground ahead of it
+  if (cut) return avoidDeep(W, F, go(W, F, cut.x, cut.z, 1));
   const [r0, r1] = cfg.range, r = holder || passive(W, T) ? Math.max(1.2, Math.min(r0, 2.2) - 0.6) : (r0 + r1) / 2;
   const slot = cfg.flankSlot === 0 ? 0 : (M.side ||= r01(W, F, "side") < 0.5 ? -1 : 1) * 1.9;
   const a = T.face + slot, px = T.x + Math.cos(a) * r, pz = T.z + Math.sin(a) * r;
   const gap = Math.hypot(px - F.x, pz - F.z);
-  if (gap > 0.6) return avoidDeep(W, F, toward(F, px, pz, d > r1 + 1 ? 1 : 0.6));
+  if (gap > 0.6) return avoidDeep(W, F, go(W, F, px, pz, d > r1 + 1 ? 1 : 0.6));
   return strafe(W, F, T, M, 0.35);
 }
 
@@ -172,12 +181,12 @@ function strafe(W, F, T, M, s) {
   return avoidDeep(W, F, { mx: Math.cos(a) * s, mz: Math.sin(a) * s });
 }
 
-// Do not walk into waist-deep water or a wall: try the step turned by 45, 90 and 135 degrees
+// Do not walk into waist-deep water, a wall or off a ledge: try the step turned by 45, 90 and 135 degrees
 // either way (the side of the fighter's strafe first), and take the first that is clear.
 function avoidDeep(W, F, mv) {
   const s = Math.hypot(mv.mx, mv.mz); if (s < 1e-3) return mv;
   const base = Math.atan2(mv.mz, mv.mx), side = (F.mem && F.mem.side) || 1;
-  const clear = (a) => { const x = F.x + Math.cos(a) * 1.0, z = F.z + Math.sin(a) * 1.0; return !W.field.solid(x, z) && W.field.depthAt(x, z) < 0.85; };
+  const clear = (a) => { const x = F.x + Math.cos(a) * 1.0, z = F.z + Math.sin(a) * 1.0; return !W.field.solid(x, z) && W.field.depthAt(x, z) < 0.85 && ledgeClear(W.field.arena, F.x, F.z, x, z); };
   for (const d of [0, 1, -1, 2, -2, 3, -3]) { const a = wrapAngle(base + side * d * Math.PI / 4); if (clear(a)) return d ? { mx: Math.cos(a) * s, mz: Math.sin(a) * s } : mv; }
   return mv;
 }

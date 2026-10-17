@@ -28,5 +28,27 @@ Outputs are kept in world-runs/ (out/ is ignored by git) (`*-before.txt` predate
    - holes found: the 120 s cap hands a kiter a yield (7 of fist's 28 wins); the kiter leaves by exits.
    - min-max before: focused 55 of 56, 11.9 s, 81% Standing left; spread 55 of 56, 15.4 s, 69%;
      early 19 of 56.
-4. NEXT World rules: terrain (sim/terrain.mjs), engaged running, kiting clock with throw and lunge,
-   pursuit, cut-off flanks, sight leash with chokes, the beam, the break-off rule.
+4. DONE World rules (data/world.mjs holds every value; COMBAT_WORLD_OFF switches rules off for ablations):
+   - sim/terrain.mjs: slope, ledges (a step of 1 m or more between cells), hazards from place.terrain;
+     terrainAt() for the shell. sim/ground.mjs: walking stops at a ledge, a knockback or roll carries
+     over and the body falls (into water: under, Breath -2; onto ground: down, hurt past 1.6 m, foes 1.5x);
+     nets and ropes trip a runner or roller. sim/paths.mjs: a flow field so bodies walk round ledges.
+   - running costs Breath only while engaged (1.6 a second; free otherwise).
+   - ai/pursuit.mjs: the per-foe kiting clock (3.5 s), a lunge from 4 m out and a slow throw (6 to 10 s
+     cooldown), chase bursts that keep a Breath reserve, cut-off points ahead of a running Lamb, the
+     sight leash (7 s: call the others, hold the nearest way out). Foes carry stones; specials
+     world.throw and world.lunge in data/foes.mjs.
+   - the beam sweeps at the shell's BEAM_RATE while Mother burns (sim/field.mjs beamAt); weak points need
+     the tell in sight.
+   - the time cap gives a yield only to a Lamb who stood in the fight: opened the gap under 15% and stood
+     out of reach under 60% of it (tools/kiteshare.mjs measured fair play at 0.10 and 0.53 at most).
+   - pilot: walks along the ground when a ledge cuts its line or it is stuck (tools/pilot.mjs steer).
+   - tests/world.test.mjs (9 tests). Combat 106 of 106; engine and combat together 241 of 241.
+   After (world-runs/kite-after.txt, minmax-after.txt): fair wins fist 55, tongue 42, shadow 52, hands
+   54, eye 51 of 57; default kiter 13, 1, 4, 12, 4. Min-max focused 55 of 56, 11.6 s, 81%; spread 52,
+   13.8 s, 74%; early 18.
+   Known cost: brains that path round walls make fair Tongue lose more (99 of 114 with every rule off,
+   92 with all on, six seeds); e.strippers has no fair win for four styles before and after (it has a
+   talk exit the pilot never takes).
+5. NEXT Strongest-kiter search after the rules; design/COMBAT-WORLD.md; ablation table; reply to the
+   systems engineer (terrainAt, BEAM_RATE read, spawns off ledge lips).

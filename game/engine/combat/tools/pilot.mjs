@@ -8,6 +8,8 @@
 // body standing by water or on frost; anyone else plays carefully.
 import { rand01 } from "../../core/rng.mjs";
 import { dist, angleTo } from "../sim/fighter.mjs";
+import { ledgeClear } from "../sim/terrain.mjs";
+import { go } from "../sim/paths.mjs";
 
 const live = (F) => !F.out && !F.fallen && !F.yielded && F.hp > 0;
 const r01 = (W, k) => rand01(W.seed ^ 0x5151, `${k}:${W.tick}`);
@@ -17,7 +19,7 @@ const r01 = (W, k) => rand01(W.seed ^ 0x5151, `${k}:${W.tick}`);
 // zone, then works it.
 export function createPilot({ catchShare = null, style = null, kite: kiteOpts = null } = {}) {
   const S = { hold: 0, cool: 0, last: "", K: { ...KITE, ...(kiteOpts || {}) } };
-  return (W) => {
+  const decide = (W) => {
     const L = W.lamb();
     if (!L || L.fallen) return {};
     if (S.style == null) {
@@ -46,6 +48,28 @@ export function createPilot({ catchShare = null, style = null, kite: kiteOpts = 
     if (L.act && W.moves[L.act.id].next.light && L.act.f > W.moves[L.act.id].startup && r01(W, "chain") < 0.08) { out.press.push("light"); return out; }
     return offend(W, L, T, out, S, style);
   };
+  return (W) => {
+    S.goal = null;
+    const out = decide(W), L = W.lamb();
+    // stuck: wanting to walk but not getting anywhere for half a second (a wall the sidle cannot pass)
+    if (L && S.goal && W.tick % 30 === 0) { S.stuck = S.at && Math.hypot(L.x - S.at[0], L.z - S.at[1]) < 0.3 ? (S.stuck || 0) + 1 : 0; S.at = [L.x, L.z]; }
+    return steer(W, out, S.goal, (S.stuck || 0) > 0);
+  };
+}
+
+// A player walks round a wall, a ledge or deep water rather than into it: the stick turns by 45, 90
+// or 135 degrees until the ground a metre ahead is clear (the brains do the same, ai/brain.mjs).
+function steer(W, out, goal = null, stuck = false) {
+  const L = W.lamb(), s = Math.hypot(out.mx || 0, out.mz || 0);
+  if (!L || s < 0.2) return out;
+  // walking to an opponent: along the ground when a ledge cuts the straight line, or the pilot is stuck
+  // (sim/paths.mjs); round walls it otherwise keeps its old habit of sidling (so its fair-play numbers
+  // stay comparable with the runs before the world rules)
+  if (goal && !L.act && (stuck || !ledgeClear(W.field.arena, L.x, L.z, goal[0], goal[1]))) { const g = go(W, L, goal[0], goal[1], s); out = { ...out, mx: g.mx, mz: g.mz }; }
+  const base = Math.atan2(out.mz, out.mx), f = W.field;
+  const clear = (a) => { const x = L.x + Math.cos(a), z = L.z + Math.sin(a); return !f.solid(x, z) && f.depthAt(x, z) < 0.85 && ledgeClear(f.arena, L.x, L.z, x, z); };
+  for (const k of [0, 1, -1, 2, -2, 3, -3]) { const a = base + (k * Math.PI) / 4; if (clear(a)) return k ? { ...out, mx: Math.cos(a) * s, mz: Math.sin(a) * s } : out; }
+  return out;
 }
 
 function opening(W, L) {
@@ -157,7 +181,7 @@ function offend(W, L, T, out, S, style) {
   const d = dist(L, T), a = angleTo(L, T), tAct = T.act && W.moves[T.act.id];
   const open = tAct && (tAct.kind === "stagger" || tAct.kind === "down" || T.act.f > tAct.startup + tAct.active);
   if (L.st < 2) { out.mx = -Math.cos(a) * 0.8; out.mz = -Math.sin(a) * 0.8; out.hold.block = d < 3; return out; }
-  if (d > 1.7) { out.mx = Math.cos(a); out.mz = Math.sin(a); return out; }
+  if (d > 1.7) { out.mx = Math.cos(a); out.mz = Math.sin(a); S.goal = [T.x, T.z]; return out; }
   if (W.tick < S.cool && !open) { const s = a + Math.PI / 2; out.mx = Math.cos(s) * 0.5; out.mz = Math.sin(s) * 0.5; return out; }
   const pick = r01(W, "atk"), fighter = style === "fighter";
   S.cool = W.tick + (fighter ? 18 : 40) + Math.floor(r01(W, "cool") * (fighter ? 18 : 30));

@@ -23,6 +23,13 @@ export const SPECIALS = {
   "skirmisher.rope": { kind: "item", startup: 26, active: 1, recovery: 24, stamina: 2, tell: { at: [6, 25], kind: "grab" }, track: 10,
     item: { use: "rope", proj: { speed: 10, mass: 1.5, dmg: 0.5, poise: 2, r: 0.45, knockdown: true, parryable: false, blockable: false } } },
   "skirmisher.scuttle": { kind: "dodge", recovery: 22, stamina: 1, iframes: [2, 12], root: [[0, 14, -6.0]] },
+  // The world's answers to a kiter (ai/pursuit.mjs, design/COMBAT-WORLD.md), every opponent's: a slow,
+  // readable throw of whatever is to hand (a stone, a bottle), which can be caught, blocked or stepped;
+  // and a lunge that only fires from range and closes about 4 m in its wind-up.
+  "world.throw": { kind: "item", startup: 48, active: 1, recovery: 36, stamina: 1, tell: { at: [6, 47], kind: "throw" }, track: 8,
+    item: { use: "stone", proj: { speed: 13, mass: 1, dmg: 0.6, poise: 1.5, r: 0.35, knock: 2.0, hitstop: 5, shake: 0.2 } } },
+  "world.lunge": { startup: 28, active: 6, recovery: 44, stamina: 2, dmg: 1, poise: 2, hits: [{ arc: [-35, 35], r: [0.3, 1.7] }],
+    root: [[12, 28, 15.0], [28, 34, 4.0]], tell: { at: [4, 27], kind: "swing" }, track: 8, trackUntil: 22, hitstop: 6, knock: 3.0, shake: 0.35 },
 };
 
 // Brain numbers (ai/brain.mjs). Attack entries name a move key: a tool strike (light_1, heavy)
@@ -30,7 +37,7 @@ export const SPECIALS = {
 export const ARCHETYPES = {
   holder: {
     defaults: { tool: "w.boathook", standing: 12, breath: 5, poise: 5, speed: 2.5, accel: 16, turn: 6, radius: 0.48, height: 2.3, grip: 5 },
-    items: {}, specials: ["holder.drag", "holder.chain", "holder.braced"],
+    items: { stone: 12 }, specials: ["holder.drag", "holder.chain", "holder.braced", "world.throw", "world.lunge"],
     brain: {
       think: 12, range: [1.8, 2.8], flankSlot: 0, retreatHp: 0.2, lowStamina: 1, cooldown: [40, 80],
       attacks: [{ move: "light_1", min: 0.8, max: 3.0, w: 3, chain: 1 }, { move: "holder.chain", min: 0.4, max: 2.5, w: 3 }, { move: "holder.drag", min: 1.6, max: 3.3, w: 2 }],
@@ -39,7 +46,7 @@ export const ARCHETYPES = {
   },
   skirmisher: {
     defaults: { tool: "w.crowbar", standing: 9, breath: 7, poise: 3, speed: 3.8, accel: 32, turn: 16, radius: 0.36, height: 1.75, grip: 3 },
-    items: { mud: 6, rope: 2 }, specials: ["skirmisher.mud", "skirmisher.rope", "skirmisher.scuttle"],
+    items: { mud: 6, rope: 2, stone: 12 }, specials: ["skirmisher.mud", "skirmisher.rope", "skirmisher.scuttle", "world.throw", "world.lunge"],
     brain: {
       think: 8, range: [3.5, 6.0], flankSlot: 1, retreatHp: 0.5, lowStamina: 1, cooldown: [60, 120],
       attacks: [{ move: "light_1", min: 0, max: 1.8, w: 3, chain: 1 }, { move: "heavy", min: 0.5, max: 2.0, w: 1 },

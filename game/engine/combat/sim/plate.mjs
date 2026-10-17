@@ -16,6 +16,8 @@
 // Cells are `cell` metres square on the ground plane (x east, z toward the camera); a cell is
 // walkable when most of its samples carry a walk id; its surface is the commonest footing among
 // them and its height their mean. Other cells are solid: walls, furniture, the sea's edge.
+import { terrainAt } from "./terrain.mjs";
+
 export const PLATE_DATUM = { a: -3.37 + 0.55 * 0.62, b: 0.62 };
 
 export function plateArena(place, pos, ids, { cell = 0.5, datum = PLATE_DATUM, fight = null } = {}) {
@@ -46,8 +48,12 @@ export function plateArena(place, pos, ids, { cell = 0.5, datum = PLATE_DATUM, f
   const arena = {
     name: place.place, place: place.place, cell, origin: [x0, z0], grid: { w: W, h: H, cells }, plate: place.place, camera: place.camera,
     water: datum ? { a: datum.a, b: datum.b, vscale: datum.b } : null, tideEnds: !!datum,
-    lights: (marks.lamps || []).filter((l) => l.kind !== "landmark").map((l) => ({ x: l.at[0], z: l.at[2], r: l.r || (l.kind === "sodium" ? 8 : 5), k: l.k || (l.kind === "sodium" ? 0.55 : 0.45), sodium: l.kind === "sodium" })),
+    // the lighthouse beam sweeps (sim/field.mjs) and lights only while Mother burns
+    beams: (marks.lamps || []).filter((l) => l.kind === "beam").map((l) => ({ x: l.at[0], z: l.at[2], r: 40, k: 0.75, spread: 0.12 })),
+    lights: (marks.lamps || []).filter((l) => l.kind !== "landmark" && l.kind !== "beam").map((l) => ({ x: l.at[0], z: l.at[2], r: l.r || (l.kind === "sodium" ? 8 : 5), k: l.k || (l.kind === "sodium" ? 0.55 : 0.45), sodium: l.kind === "sodium" })),
     exits: (marks.exits || []).map((e) => [e.at[0] - 1, e.at[2] - 1, e.at[0] + 1, e.at[2] + 1]),
+    // the place's terrain record (sim/terrain.mjs): hazards, authored ledges, stairs that are not ledges
+    terrain: place.terrain || null,
   };
   arena.anchors = anchorsFrom(marks, arena);
   // the art lead's marks are placed on the painted room; a mark that lands on a cell this grid
@@ -81,10 +87,13 @@ function anchorsFrom(marks, arena) {
 }
 
 // The centre of the nearest cell whose 3 by 3 patch is walkable (else the nearest walkable cell),
-// within 2 m of p; p itself when its cell is already walkable, or nothing clear is near.
+// within 2 m of p; p itself when its cell is already walkable, or nothing clear is near. A cell on
+// the lip of a ledge (sim/terrain.mjs) does not count as walkable here: nobody starts a fight with
+// their heels over the quay edge (systems engineer, 2026-10-17).
 export function snapClear(arena, p) {
   const { w, h, cells } = arena.grid, c = arena.cell, [ox, oz] = arena.origin;
-  const at = (x, z) => x >= 0 && z >= 0 && x < w && z < h && cells[z * w + x];
+  const lip = (x, z) => terrainAt(arena, ox + (x + 0.5) * c, oz + (z + 0.5) * c).ledge;
+  const at = (x, z) => x >= 0 && z >= 0 && x < w && z < h && cells[z * w + x] && !lip(x, z);
   const ci = Math.floor((p[0] - ox) / c), ri = Math.floor((p[1] - oz) / c);
   if (at(ci, ri)) return p;
   const clear = (x, z) => { for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) if (!at(x + dx, z + dz)) return false; return true; };

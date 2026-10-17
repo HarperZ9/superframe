@@ -28,6 +28,9 @@ import { COMPOSURE } from "../data/build.mjs";
 import { stepAwareness, takedownTarget, applyOpening } from "./stealth.mjs";
 import { installProps, interact, stepProps, parseProp, anchorProps } from "./props.mjs";
 import { hashStr } from "../../core/rng.mjs";
+import { engaged } from "./ground.mjs";
+import { retreatingFrom, apart } from "../ai/pursuit.mjs";
+import { WORLD, OFF } from "../data/world.mjs";
 
 export function createWorld({ G, arena, fighters, seed = 1, minutesPerFrame = 0, envEvery = 30, record = false, barks = true, barkText = null, opening = "open", lastSeen = null, props = [], limitFrames = 0, endEmpty = false }) {
   const table = { ...COMMON };
@@ -189,10 +192,15 @@ function judge(W) {
 }
 
 // A fight that reaches its time cap breaks off: if Lamb has hurt them more than they have hurt
-// Lamb, they give it up (yield); otherwise Lamb gets clear (fled). A brawl breaks up the same way.
+// Lamb, and stood in the fight (spent less than WORLD.breakOff.kitedShare of it opening the gap on
+// the nearest opponent while in nobody's reach, and less than apartShare in nobody's reach), they give it up
+// (yield); otherwise Lamb gets clear (fled). A brawl breaks up the same way. Running out the clock
+// after one blow is not a win (design/COMBAT-WORLD.md).
 function breakOff(W, L, foes) {
   const theirs = foes.reduce((s, F) => s + (F.hpMax - F.hp) / F.hpMax, 0) / Math.max(1, foes.length), mine = (L.hpMax - L.hp) / L.hpMax;
-  return W.brawl || (theirs > mine && W.struck.length) ? "yield" : "fled";
+  const n = Math.max(1, W.tick), B = WORLD.breakOff;
+  const stood = OFF.has("breakoff") || ((W.kited || 0) / n < B.kitedShare && (W.apart || 0) / n < B.apartShare);
+  return W.brawl || (theirs > mine && W.struck.length && stood) ? "yield" : "fled";
 }
 
 function step(W, inputs) {
@@ -201,9 +209,15 @@ function step(W, inputs) {
   W.tick++;
   if (W.minutesPerFrame) W.G.env.advance(W.minutesPerFrame);
   if (W.tick % W.envEvery === 1) W.field.refresh();
+  W.field.seconds = W.tick / 60;
   W.lampsNow = lamps(W);
+  for (const F of W.fighters) F.engaged = engaged(W, F);
   gather(W, inputs);
   for (const F of W.fighters) stepFighter(W, F);
+  const L0 = W.lamb();
+  const near = L0 && !L0.fallen && W.fighters.filter((F) => F.team !== L0.team && !F.out && !F.fallen && F.aware !== false).sort((a, b) => Math.hypot(a.x - L0.x, a.z - L0.z) - Math.hypot(b.x - L0.x, b.z - L0.z))[0];
+  if (near && retreatingFrom(W, near, L0)) W.kited = (W.kited || 0) + 1; // Lamb opening the gap on the nearest opponent
+  if (near && apart(W, L0)) W.apart = (W.apart || 0) + 1; // Lamb in nobody's reach
   separate(W);
   for (const [A, T, m] of findContacts(W)) applyHit(W, A, T, m);
   stepProjectiles(W);

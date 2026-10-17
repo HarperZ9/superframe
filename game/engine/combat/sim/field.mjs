@@ -22,6 +22,8 @@
 //             lights its bearer and everyone near: it helps you see and be seen
 //   wind      thrown things drift downwind, more for light ones
 import { FOOTING_GRIP } from "../../world/envhub.mjs";
+import { OFF } from "../data/world.mjs";
+import { BEAM_RATE } from "../../ui/weatherlayer.mjs"; // the systems engineer's sweep rate, shared so the drawn beam and the fight agree
 
 export const STICKY = { mud: { speed: 0.72, root: 0.72, recovery: 6 } };
 export const WATER_BANDS = [
@@ -51,6 +53,7 @@ export function createField({ G, arena }) {
       Object.assign(terms, { tide: num(e.tide), fog: num(e.fog), rain: num(e.rain), frost: num(e.frost), light: num(e.light), sodium: num(e.sodium), temp: num(e.temp),
         windSpeed: num(e.wind.speed), windX: num(e.wind.x), windZ: -num(e.wind.z), outdoors: !(G.book.places[A.place] || {}).shelter, clock: G.env.clock() });
       terms.dark = num((G.book.places[A.place] || {}).dark, 0.05);
+      try { terms.mother = G.env.term("mother", A.place); } catch { terms.mother = null; }
       if (A.blackout) { terms.light = 0.02; terms.sodium = 0; terms.dark = 0.02; }
       if (!terms.outdoors) { terms.windSpeed = 0; terms.windX = 0; terms.windZ = 0; }
       return terms;
@@ -74,6 +77,8 @@ export function createField({ G, arena }) {
     band(d) { let b = WATER_BANDS[0]; for (const w of WATER_BANDS) if (d >= w.from) b = w; return b; },
     footing: (x, z) => footingAt(F, x, z),
     lightAt: (x, z, lamps = []) => lightAt(F, x, z, lamps),
+    // seconds of fight time, for the beam's sweep (the world sets it every frame, so replays agree)
+    seconds: 0,
     sodiumAt: (x, z) => terms.sodium * litShare(A) > 0.3 || (A.lights || []).some((s) => s.sodium && !s.off && Math.hypot(x - s.x, z - s.z) < s.r * 0.8),
     // how far away a body standing in this much light can be seen, given the fog
     seenRange: (light) => clamp((SIGHT.base + SIGHT.perLight * light) / (1 + terms.fog * SIGHT.fogK), SIGHT.min, SIGHT.max),
@@ -114,6 +119,19 @@ function lightAt(F, x, z, lamps) {
   for (const s of [...(F.arena.lights || []).filter((l) => !l.off), ...lamps]) {
     const d = Math.hypot(x - s.x, z - s.z);
     if (d < s.r) L = Math.max(L, s.k * (1 - d / s.r));
+  }
+  return Math.max(L, beamAt(F, x, z));
+}
+
+// Mother's beam: two arms opposite each other, turning at BEAM_RATE; a body in an arm stands lit
+// (seen far off, and sees the tells of those near it). Only while Mother burns.
+export function beamAt(F, x, z) {
+  const B = F.arena.beams; if (OFF.has("beam") || !B || !B.length || F.terms.mother !== "burning") return 0;
+  let L = 0;
+  for (const b of B) {
+    const d = Math.hypot(x - b.x, z - b.z); if (d > b.r || d < 0.5) continue;
+    const a = F.seconds * BEAM_RATE, off = Math.abs(((Math.atan2(z - b.z, x - b.x) - a) % Math.PI + Math.PI * 1.5) % Math.PI - Math.PI / 2);
+    if (off < b.spread) L = Math.max(L, b.k * (1 - (0.4 * d) / b.r));
   }
   return L;
 }

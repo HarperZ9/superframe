@@ -65,6 +65,7 @@ function weakPoint(W, A, T, tm, f) {
   const d = W.defs[A.id], b = d.bonus; if (!b || A.team !== "lamb") return 1;
   if (A.carriage) { A.carriage = false; return 1 + b.weak; }
   if (!tm || (tm.kind !== "attack" && tm.kind !== "item")) return 1;
+  if (!W.visible(A, T)) return 1; // a tell read in the dark is no tell: the weak point needs light on it (design/COMBAT-WORLD.md)
   const counted = (d.learned || []).includes("countedge") && (W.telegraphsSeen || 0) <= 3;
   const win = (d.breaks || {}).pen8 ? tm.startup : 8 + b.read * (counted ? 2 : 1); // PEN 8: the whole wind-up shows its weak point
   return f >= tm.startup - win && f < tm.startup ? (W.emit({ type: "weakpoint", id: T.id, by: A.id }), 1 + b.weak) : 1;

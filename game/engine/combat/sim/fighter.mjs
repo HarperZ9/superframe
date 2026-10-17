@@ -4,6 +4,9 @@
 import { DT, canCancel, rootSpeed, phaseOf } from "./moves.mjs";
 import { RULES } from "../data/common.mjs";
 import { RUN } from "../data/build.mjs";
+import { WORLD, OFF } from "../data/world.mjs";
+import { terrainAt } from "./terrain.mjs";
+import { mayStep, land, trip } from "./ground.mjs";
 
 const TAU = Math.PI * 2;
 export const wrapAngle = (a) => ((((a + Math.PI) % TAU) + TAU) % TAU) - Math.PI;
@@ -141,7 +144,7 @@ export function stepAction(W, F, inp) {
   }
   if (m.dir !== "input") A.dir = F.face;
   const sure = m.kind === "dodge" && (W.defs[F.id].learned || []).includes("mudstep");
-  const v = rootSpeed(m, A.f) * (sure ? Math.max(1, foot.root) : foot.root), [dx, dz] = dirOf(A.dir ?? F.face);
+  const v = rootSpeed(m, A.f) * (sure ? Math.max(1, foot.root) : foot.root) * (m.kind === "dodge" ? terrainAt(W.field.arena, F.x, F.z).root : 1), [dx, dz] = dirOf(A.dir ?? F.face);
   F.vx = dx * v; F.vz = dz * v;
   if (A.carry && A.f < 12) { const k = 1 - A.f / 12; F.vx += A.carry[0] * k; F.vz += A.carry[1] * k; }
   if (m.item && A.f === m.startup && has(F, m.item.use)) W.useItem(F, m);
@@ -156,13 +159,15 @@ export function stepFree(W, F, inp) {
   F.guardT = inp.hold && inp.hold.block && F.tool ? F.guardT + 1 : 0;
   // raising a guard puts the lantern away, unless Hobb taught Lamb to hold both
   if (F.guardT === 1 && F.lantern > 0 && !(def.learned || []).includes("lampguard") && def.kind === "lamb") { F.lantern = 0; W.emit({ type: "lantern", id: F.id, lit: false, why: "guard" }); }
-  // running: faster, paid in Breath every frame it lasts; never while guarding or out of breath
-  F.running = !!(inp.hold && inp.hold.run) && F.guardT === 0 && F.st > 0.2 && stick !== null;
-  if (F.running) { F.st = Math.max(0, F.st - RUN.breath * DT); F.stWait = Math.max(F.stWait, 10); }
+  // running: faster; paid in Breath every frame only while engaged (data/world.mjs run); never while
+  // guarding, out of breath, or up a steep slope
+  const ter = terrainAt(W.field.arena, F.x, F.z), runCost = OFF.has("run") ? RUN.breath : F.engaged ? WORLD.run.engaged : WORLD.run.free;
+  F.running = !!(inp.hold && inp.hold.run) && F.guardT === 0 && (F.st > 0.2 || runCost === 0) && stick !== null && !ter.noRun;
+  if (F.running && runCost > 0) { F.st = Math.max(0, F.st - runCost * DT); F.stWait = Math.max(F.stWait, 10); }
   const guard = F.guardT > 0 ? RULES.guardSpeed : F.running ? RUN.speed : 1;
   const mag = stick === null ? 0 : Math.min(1, Math.hypot(inp.mx, inp.mz));
-  const sp = def.speed * foot.speed * mag * guard, tx = stick === null ? 0 : Math.cos(stick) * sp, tz = stick === null ? 0 : Math.sin(stick) * sp;
-  const k = Math.min(1, (def.accel * Math.max(0.15, foot.accel) * DT) / Math.max(0.5, def.speed));
+  const sp = def.speed * foot.speed * ter.slow * mag * guard, tx = stick === null ? 0 : Math.cos(stick) * sp, tz = stick === null ? 0 : Math.sin(stick) * sp;
+  const k = Math.min(1, (def.accel * Math.max(0.15, foot.accel * ter.slick) * DT) / Math.max(0.5, def.speed));
   F.vx += (tx - F.vx) * k; F.vz += (tz - F.vz) * k;
   const lock = F.lock != null && W.byId(F.lock), want = lock ? angleTo(F, lock) : stick;
   if (want !== null && want !== false) {
@@ -191,13 +196,16 @@ export function integrate(W, F) {
   const foot = W.field.footing(F.x, F.z), b = W.field.bounds, r = W.defs[F.id].radius;
   // solid ground (a plate's walls and furniture) stops a body on that axis
   const nx = F.x + (F.vx + F.kx) * DT, nz = F.z + (F.vz + F.kz) * DT, f = W.field;
-  if (!f.solid(nx, F.z)) F.x = nx; else { F.kx = 0; F.vx = 0; }
-  if (!f.solid(F.x, nz)) F.z = nz; else { F.kz = 0; F.vz = 0; }
+  // a ledge stops a walk like a wall; a knockback or a roll carries over it (sim/ground.mjs)
+  if (!f.solid(nx, F.z) && mayStep(W, F, nx, F.z)) F.x = nx; else { F.kx = 0; F.vx = 0; }
+  if (!f.solid(F.x, nz) && mayStep(W, F, F.x, nz)) F.z = nz; else { F.kz = 0; F.vz = 0; }
   const decay = Math.exp(-foot.friction * DT);
   F.kx *= decay; F.kz *= decay;
   if (Math.abs(F.kx) < 1e-3) F.kx = 0;
   if (Math.abs(F.kz) < 1e-3) F.kz = 0;
   F.x = Math.max(b.x0 + r, Math.min(b.x1 - r, F.x)); F.z = Math.max(b.z0 + r, Math.min(b.z1 - r, F.z));
+  if (F.dropped) land(W, F);
+  trip(W, F);
 }
 
 export const phase = (W, F) => (F.act ? phaseOf(W.moves[F.act.id], F.act.f) : "free");
