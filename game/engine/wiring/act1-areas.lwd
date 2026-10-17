@@ -24,8 +24,8 @@ hotspot: "The harbour office" -> quay.harbour {at: 12.5 0 -2.3, r: 1.0}
 hotspot: "The mole steps" -> quay.molesteps {at: 26.5 0.35 -3, r: 1.4}
 hotspot: "Along the mole" -> mole.hub {at: 33.0 0.35 -1.6, r: 1.6}
 hotspot: "Down the steps to the floor" -> floor.hub ? tide < 0 {at: -2.6 -3.2 6.0, r: 1.6}
-figure: fewell {at: -0.9 0 -0.9, face: -1, when: clock < 03:00 & !has(book.violence)}
-figure: strand {at: 1.2 0 -2.0, face: -1, when: clock < 03:00 & !has(struck.strand)}
+figure: fewell {at: -0.9 0 -0.9, face: -1, wander: 2.5, when: clock < 03:00 & !has(book.violence)}
+figure: strand {at: 1.2 0 -2.0, face: -1, wander: 2, when: clock < 03:00 & !has(struck.strand)}
 figure: hobb {at: 3.9 0 -2.2, face: 1, when: clock >= 00:30 & clock < 04:15}
 
 # ---------------------------------------------------------------- the harbour office and its cells
@@ -55,7 +55,7 @@ hotspot: "The stove" -> brine.stove {at: -3.6 0 -0.5, r: 0.9}
 hotspot: "The oven, behind the bar" -> brine.oven ? !(clock >= 03:40 & clock < 03:50) {at: 3.7 0 -1.6, r: 0.8}
 hotspot: "Up to the room" -> brine.room {at: 5.6 0 -1.4, r: 0.7}
 hotspot: "Out to the quay" -> quay.hub {at: 5.3 0 1.4, r: 0.8}
-figure: sabine {at: -1.0 0 -1.9, face: 1}
+figure: sabine {at: -1.0 0 -1.9, face: 1, wander: 1.2}
 figure: merrow {at: -3.2 0 -0.3, face: -1, when: clock < 23:30 & !has(merrow.cells)}
 
 # ---------------------------------------------------------------- the room above the Brine
@@ -81,7 +81,7 @@ hotspot: "The Board's store" -> weigh.store ? (has(key.office) | count(i.key_off
 hotspot: "The tube" -> weigh.tube.visit {at: -4.9 0 -3.4, r: 0.8, who: pip}
 hotspot: "Back out to the quay" -> weigh.hub {at: 3.4 0 -4.2, r: 0.8}
 figure: pip {at: -4.6 0 -3.1, face: 1}
-figure: marrow {at: 0.6 0 1.6, face: -1, when: clock >= 00:00 & clock < 01:10}
+figure: marrow {at: 0.6 0 1.6, face: -1, wander: 1.5, when: clock >= 00:00 & clock < 01:10}
 figure: hobb {at: 2.3 0 -4.0, face: -1, when: clock >= 04:15 & clock < 06:00}
 
 # ---------------------------------------------------------------- the harbour floor
@@ -97,7 +97,7 @@ hotspot: "The gully" -> floor.gully ? tide < -0.35 {at: 4.6 -3.2 8.1, r: 1.4}
 hotspot: "The drowned lamp" -> floor.drowned {at: -13.0 -3.24 12.6, r: 1.4}
 hotspot: "Up the steps to the quay" -> quay.hub {at: -1.6 0 -0.45, r: 1.0}
 figure: merrow {at: -12.0 -3.24 11.8, face: -1, when: clock >= 23:20 & clock < 00:30 & !has(merrow.cells)}
-figure: lugg {at: 4.2 -3.2 7.6, face: 1, when: clock >= 23:30 & clock < 01:00}
+figure: lugg {at: 4.2 -3.2 7.6, face: 1, wander: 1.5, when: clock >= 23:30 & clock < 01:00}
 
 # ---------------------------------------------------------------- the mole
 @area a1.mole
