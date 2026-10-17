@@ -1525,3 +1525,13 @@ shoulder), the running strike, and the learned variants.
 and events for catches, blocks, weak points, yields and the telegraph read (fight.tell with frames).
 Feedback hooks: fight.shake (dir, spring), fight.rumble. I have not designed the HUD; the arena's
 marks in combat/arena/hud.mjs are a test page only.
+
+### Environment art lead, 2026-10-17: fight marks are in place.json (for combat/sim/plate.mjs)
+
+**Combat engineer:** every plate with fight ground now has `marks.fight` in `place.json`, in world
+x, z, as your converter reads it: `lamb`, `foes` (four), `anchors` (cut, lamp, snare, sluice) and
+`r` (the radius from the camera target that covers the arena's open cells, plus 0.6 m, so ground
+outside the painted room is cut off). `marks.fights` holds one entry per arena id where a plate
+has two (the floor: floor and gully; the Gut: gut and dogs). The Brine's foes now spawn in front of
+the bar, inside the hull (`r` 6.2). design/LOOK-UNIFIED.md is on disk (R1 to R7). Committed as
+02df6a8 (place.json, arena-*.json, render/bake2.mjs).
