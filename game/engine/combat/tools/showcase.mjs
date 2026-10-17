@@ -1,9 +1,9 @@
 // A scripted Lamb for feel captures (tools/feel_capture.py): it plays the fight in phases so each
 // move the author named shows on screen at least once, and the world's answers to kiting show too.
-//   guard   0 to 6 s: defence only, no blow landed, so a talk exit that wants "fight_struck == 0"
-//           is offered (the capture checks it is visible). Each swing that comes is answered in turn
-//           by a catch (parry), a sidestep (dodge), then a roll (or the load's dash or hop).
-//   kite    6 to 14 s: flight with no pokes (the kiting policy at a 5.5 m ring), to draw the lunge and the stone.
+//   kite    0 to 8 s: flight with no pokes (the kiting policy at a 5.5 m ring), to draw the lunge and
+//           the thrown stone; no blow is landed, so a talk exit that wants it is offered meanwhile.
+//   guard   8 to 14 s: defence only; each swing that comes is answered in turn by a catch (parry), a
+//           sidestep (dodge), then a roll (or the load's dash or hop).
 //   strike  14 to 23 s: strings of light strikes into a heavy, a charged heavy, the running strike.
 //   finish  the pilot playing like the build.
 // Every press it makes is logged in S.log as [tick, phase, what] for the capture's notes.
@@ -11,7 +11,7 @@ import { createPilot } from "./pilot.mjs";
 import { dist, angleTo } from "../sim/fighter.mjs";
 
 const live = (F) => !F.out && !F.fallen && !F.yielded && F.hp > 0;
-export const PHASES = { guard: 6 * 60, kite: 14 * 60, strike: 23 * 60 };
+export const PHASES = { kite: 8 * 60, guard: 14 * 60, strike: 23 * 60 };
 
 export function createShowcase() {
   const fair = createPilot({ style: "fighter", catchShare: 1 }), kite = createPilot({ style: "kite", kite: { ring: 5.5, poke: -1, approach: false } });
@@ -23,8 +23,8 @@ export function createShowcase() {
     if (!foes.length) return {};
     const T = foes[0], d = dist(L, T), a = angleTo(L, T), out = { mx: 0, mz: 0, press: [], hold: {} };
     if (L.lock == null || !live(W.byId(L.lock))) out.press.push("lock");
-    if (W.tick < PHASES.guard) return guard(W, L, foes, out, S, note);
-    if (W.tick < PHASES.kite) { if (!S.kiting) { S.kiting = true; note(W, "kite", "kiting starts"); } return kite(W); }
+    if (W.tick < PHASES.kite) { if (!S.kiting) { S.kiting = true; note(W, "kite", "flight starts"); } return kite(W); }
+    if (W.tick < PHASES.guard) { if (!S.guarding) { S.guarding = true; note(W, "guard", "defence starts"); } return guard(W, L, foes, out, S, note); }
     if (W.tick < PHASES.strike) {
       if (S.hold > 0) { S.hold--; out.hold.heavy = true; return out; }
       const th = threat(W, L, foes);
