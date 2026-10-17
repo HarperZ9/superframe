@@ -127,7 +127,8 @@ cost: 4
 nar: Twenty minutes later the tube thumps. Pip brings it to the Brine through water to her knees, and reads it out, because there is no point now in not reading it.
 nar: SHELF: RECEIVED. CLAIM 4471/G CLOSED. THE SHELF THANKS THE ASSESSOR FOR ELEVEN YEARS. {when: has(ropewalk3.wages)}
 nar: SHELF: RECEIVED. CLAIM 4471/G CLOSED. {when: !has(ropewalk3.wages)}
-line: PIP: The e's not sticking. She's used Grandad's machine.
+line: PIP: The e's not sticking. She's used Grandad's machine. {when: has(ropewalk3.carriage_mended)}
+line: PIP: The e's sticking. It's the Trust's machine. It's always the Trust's machine. {when: !has(ropewalk3.carriage_mended)}
 nar: The town takes both lines, as voted, and goes home along the wet quay to say so. {when: var.brine3.accept == whole}
 nar: The town takes the first line and leaves the second on the form, as voted. Nobody in Gullet will say aloud what happened in the gale. {when: var.brine3.accept == first}
 nar: The town voted to take none of it. The form goes down the tube anyway; that is what forms are for. {when: var.brine3.accept == none}
@@ -210,7 +211,8 @@ go: dawn3.epilogue
 place: gannet_house
 cost: 5
 do: fate_lamb = typist
-nar: The back room on the Ropewalk. Two machines on the table now: the Trust's, with its bent e, pushed to one side, and an older one with every letter straight.
+nar: The back room on the Ropewalk. Two machines on the table now: the Trust's, with its bent e, pushed to one side, and an older one with every letter straight. {when: has(ropewalk3.carriage_mended)}
+nar: The back room on the Ropewalk. The Trust's machine, with its bent e, and under a cloth on the dresser an older one in two pieces, waiting. {when: !has(ropewalk3.carriage_mended)}
 line: HESTER: You'll want to know the usual rate. There isn't one. You make it up, and then you keep it.
 nar: The first thing the assessor types on the straight machine is a line in the ledger: NIGHT ASSESSOR, HESK. The figure after it is left blank. {when: has(ropewalk3.wages)}
 go: dawn3.epilogue
@@ -222,7 +224,6 @@ do: fate_lamb = brine
 line: SABINE: Three nights, a room, the stove, the oven, an egg I gave you for nothing and you know which. Call it a column. {when: var.seenas_brine == regular | rep(brine) >= 2}
 line: SABINE: No column yet. A stool, then. Every column on that slate started as a stool. {when: var.seenas_brine != regular & rep(brine) < 2}
 nar: She draws a little bowler hat at the head of a new column on the slate, and under it, nothing yet.
-nar: It is the first wage the assessor has ever seen the source of: Sabine's chalk, Sabine's slate, Sabine's arm. {when: has(ropewalk3.wages)}
 go: dawn3.epilogue
 
 # ---------------------------------------------------------------- the next night, from the hill

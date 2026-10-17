@@ -157,9 +157,18 @@ line: The Shelf. Stood right there, in the hat.
 line: The Shelf said wreckers herself, on the quay. You all heard. {when: has(said.wreckers) | has(cause.wreckers)}
 nar: Young Penrose looks at the assessor for a long moment, and then he picks up a crowbar, because his father has.
 voice: undertow: Say nothing, and they go out on your word. Say something, and they go out anyway, on the Board's. {dc: 5}
-voice: pride: Nobody in that boat has ever stolen a thing. Watch them learn how. {dc: 4}
-check: "[FORM LETTER] Tell them the claim names no persons, and the Shelf pays no finder." -> quay2.muster.word / quay2.muster.word {skill: formletter, dc: 6, do: set(said.muster_word)}
+check: "[FORM LETTER] Tell them the claim names no persons, and the Shelf pays no finder." -> quay2.muster.word.ok / quay2.muster.word {skill: formletter, dc: 6, do: set(said.muster_word)}
 opt: "Say nothing, and watch them load." -> quay2.boats
+
+@node quay2.muster.word.ok
+place: mole_steps
+speaker: SALLIS
+cost: 2
+do: set(quay2.penrose_stayed)
+line: Then the Board pays. Somebody's always paying, Shelf.
+nar: Old Penrose looks at the hat, and then at his son, and takes the crowbar out of the boy's hands and puts it in his own.
+nar: The boat goes out with five. Young Penrose stays on the bottom step with his father's hand still on his shoulder, and then without it, and watches it go.
+go: quay2.boats
 
 @node quay2.muster.word
 place: mole_steps

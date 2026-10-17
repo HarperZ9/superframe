@@ -96,7 +96,7 @@ opt: "Climb the hundred and twelve stairs." -> mole3.stairs
 check: "[KNEES] Carry the Old Bulb up from Mother's step." -> mole3.bulb.carry.ok / mole3.bulb.carry.fail ? has(gasholder3.bulb_up) & var.gasholder3_bearer == lamb & !seen(mole3.bulb.top) {skill: knees, dc: 6, verb: carry, noise: 0.3}
 opt: "Walk up behind the bearers with the Old Bulb." -> mole3.bulb.top ? has(gasholder3.bulb_up) & var.gasholder3_bearer != lamb & !seen(mole3.bulb.top)
 opt: "Bring the crown of prisms up from the foot of the tower." -> mole3.crown.foot ? (has(gasholder3.crown_up) | count(i.crown) > 0) & !has(mole3.crown_room) & var.lens != broken
-opt: "Ask Bright how he stays on the gallery in this." -> mole3.bright.hold ? !has(mole3.move_hold) & clock < 03:20
+opt: "Ask Bright how he stays on the gallery in this." -> mole3.bright.hold ? !has(mole3.move_hold) & clock >= 00:30 & clock < 03:20
 opt: "Walk back to the quay, holding the lee rail." -> quay3.hub +3
 
 @node mole3.stairs
@@ -128,9 +128,15 @@ cost: 1
 nar: The gust takes the word out of the assessor's mouth and puts it in the sea.
 line: Thank you. The Board will think about that.
 nar: He walks back toward the quay, and the wind does not seem to touch him.
-go: mole3.desc
+go: mole3.keelq.wind
 
 # ---- B1: the board trips with the band, and somebody must climb (light_mother)
+@node mole3.keelq.wind
+place: mole
+cost: 2
+nar: The wind comes back along the mole.
+go: mole3.menu
+
 @node mole3.trip
 place: mole
 speaker: BRIGHT
@@ -225,7 +231,7 @@ opt: "Take the crown of prisms out of the cupboard where Wenna put it." -> mole3
 check: "[SUM] Count each prism to its ring before fitting any." -> mole3.count.ok / mole3.count.fail ? has(mole3.crown_room) & !has(mole3.counted) & !has(mole3.crown_fitted) {skill: sum, dc: 6, verb: read}
 check: "[GRIP] Fit the prisms to their numbered seats." -> mole3.fit.ok / mole3.fit.fail ? has(mole3.crown_room) & !has(mole3.crown_fitted) {skill: grip, dc: 5, verb: rig}
 opt: "Sit by the panel and listen to the gale go round the glass." -> mole3.sit ? clock < 04:10 {verb: wait, noise: 0}
-opt: "Prise off the old brass collar from the lamp's first fitting, before the Trust's." -> mole3.collar ? !has(mole3.collar_taken) {verb: salvage, noise: 0.3}
+opt: "Ask Wenna about the old collar under the Trust's bracket." -> mole3.collar ? !has(mole3.collar_taken) & var.light_mother == 1 & !has(said.day2_mother) & seen(mole3.restrike)
 opt: "Go out onto the gallery." -> mole3.gallery
 opt: "Go down." -> mole3.down
 
@@ -482,10 +488,13 @@ go: mole3.lamp
 
 @node mole3.collar
 place: lamproom
+speaker: WENNA
 cost: 4
 do: set(mole3.collar_taken); give(s.bronze)
-nar: Under the Trust's sodium bracket, the old collar from Mother's first lamp, bronze, green, with the founder's name on it. It comes off with four screws and a long breath.
-voice: pride: Wenna would know it was gone by the light. {dc: 5}
+nar: Under the Trust's sodium bracket, the old collar from Mother's first lamp, bronze, green, with the founder's name on it.
+line: WENNA: That was hers before any of them. Paraffin and a wick and that, for forty years.
+nar: She takes the four screws out herself, slowly, and holds the collar a moment in both hands before she gives it over.
+line: WENNA: Take it. It never fitted the arc anyway.
 go: mole3.lamp
 
 @node mole3.gallery

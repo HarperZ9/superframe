@@ -40,7 +40,18 @@ nar: A cooper's beetle stands against the yard door where the cooper left it in 
 voice: grip: Too heavy. Lift it anyway. {dc: 5}
 go: ropewalk3.hub
 
+@node ropewalk3.door.count
+place: rope_lane
+speaker: HESTER
+cost: 1
+do: set(ropewalk3.move_return)
+nar: At the passage door, holding it against the wind, Hester says one more thing, to the street and not to the assessor.
+line: If anybody comes at you on the way down, count, the way I count a line. On four you're already there.
+nar: The door shuts.
+go: ropewalk3.hub
+
 @node ropewalk3.hub
+alt: ropewalk3.door.count ? has(ropewalk3.offered) & !seen(ropewalk3.door.count) & seen(ropewalk3.gift)
 hub: yes
 place: rope_lane
 cost: 0
@@ -331,6 +342,34 @@ opt: "Read the letters on her desk." -> ropewalk3.fist.letters ? !has(crake.draf
 opt: "Go." -> ropewalk3.hub
 
 # ---- every other way in: she talks
+@node ropewalk3.carriage
+place: gannet_house
+speaker: HESTER
+cost: 2
+nar: Under a cloth on the dresser, Will's machine: every letter straight, and the carriage lying beside it in two pieces, the way you would lay out a bird.
+line: HESTER: Will had it open on the kitchen table the week before. He said he'd finish it on the Sunday.
+check: "[GRIP] Find what sheared, and make it hold." -> ropewalk3.carriage.ok / ropewalk3.carriage.fail {skill: grip, dc: 6, verb: rig, noise: 0.1}
+opt: "Fit a brass pin where the old one sheared." -> ropewalk3.carriage.ok ? count(s.brass) > 0 {verb: rig, noise: 0.1, do: take(s.brass)}
+check: "[CARBON] Lay the pieces out the way they came apart, and see the order." -> ropewalk3.carriage.ok / ropewalk3.carriage.fail {skill: carbon, dc: 6, verb: read}
+check: "[CONDOLENCE] Ask her to show you how he had it, with your hands." -> ropewalk3.carriage.ok / ropewalk3.carriage.fail {skill: condolence, dc: 5}
+opt: "Put the cloth back over it." -> ropewalk3.hester
+
+@node ropewalk3.carriage.ok
+place: gannet_house
+speaker: HESTER
+cost: 20
+do: set(ropewalk3.carriage_mended)
+nar: Twenty minutes, and a spring that goes back where it went. The carriage runs the length of the bar and stops with a small bell.
+nar: Hester does not say anything. She puts a sheet in, and types one line, and reads it, and takes it out, and folds it into her apron pocket without showing anyone.
+go: ropewalk3.hester
+
+@node ropewalk3.carriage.fail
+place: gannet_house
+speaker: HESTER
+cost: 10
+line: Leave it. It's been in two pieces since March. It can be in two pieces a while longer.
+go: ropewalk3.hester
+
 @node ropewalk3.hester
 place: gannet_house
 speaker: HESTER
@@ -344,6 +383,7 @@ opt: "Ask who she types for." -> ropewalk3.who ? !has(hester.told)
 opt: "Ask about the ledger, and the name in it." -> ropewalk3.ledger ? !has(ropewalk3.wages)
 opt: "Ask why the Shelf kept the claim open." -> ropewalk3.why ? !seen(ropewalk3.why)
 opt: "Ask to read the Alderman's letters." -> ropewalk3.letters ? !has(crake.drafts)
+opt: "Ask about the old machine, the one that lost its carriage." -> ropewalk3.carriage ? !has(ropewalk3.carriage_mended) & !seen(ropewalk3.carriage)
 opt: "Leave her to the machine." -> ropewalk3.hub
 
 @node ropewalk3.who
@@ -408,19 +448,25 @@ do: set(ropewalk3.offered)
 line: HESTER: Whatever you write at dawn comes down that pipe to this room, and somebody types what the Shelf says back.
 line: HESTER: My eyes are going. Pip won't, and she shouldn't. You know the forms.
 nar: She turns the machine on the desk a quarter turn, toward the empty chair.
-do: give(w.fid); give(c.guernsey); set(ropewalk3.move_return)
-line: HESTER: Take Will's fid. And his jersey; it's warm wet, which is the only kind of warm there is in this town.
-line: HESTER: And if anybody comes at you on the way down, count, the way I count a line. On four you're already there.
 opt: "Say yes." -> ropewalk3.offer.yes {do: set(said.typewriter_yes); set(heard.hester.typewriter_yes); set(heard.pip.typewriter_yes)}
 opt: "Say no." -> ropewalk3.offer.no {do: set(said.typewriter_no); set(heard.hester.typewriter_no)}
 opt: "Say you'll answer at dawn." -> ropewalk3.offer.later {do: set(said.typewriter_later); set(heard.hester.typewriter_later)}
+
+@node ropewalk3.gift
+place: gannet_house
+speaker: HESTER
+cost: 2
+do: give(w.fid); give(c.guernsey)
+nar: She reaches under the table without looking and puts two things on it: a splicing fid worn smooth by one hand, and a grey jersey folded as small as it will go.
+line: HESTER: Will's. Take them. The jersey's warm wet, which is the only kind of warm there is in this town.
+go: ropewalk3.hester
 
 @node ropewalk3.offer.yes
 place: gannet_house
 speaker: HESTER
 cost: 2
 line: HESTER: Then you'll want to practise the e. It wants a heavier finger than you'd think.
-go: ropewalk3.hester
+go: ropewalk3.gift
 
 @node ropewalk3.offer.no
 place: gannet_house
@@ -428,14 +474,14 @@ speaker: HESTER
 cost: 2
 line: HESTER: No is an answer. The Shelf's had worse.
 nar: She turns the machine back a quarter turn, square to herself.
-go: ropewalk3.hester
+go: ropewalk3.gift
 
 @node ropewalk3.offer.later
 place: gannet_house
 speaker: HESTER
 cost: 1
 line: HESTER: Dawn, then. I'll be here. I'm always here.
-go: ropewalk3.hester
+go: ropewalk3.gift
 
 # ---- coming back after the door
 @node ropewalk3.after

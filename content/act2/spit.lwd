@@ -179,8 +179,10 @@ line: LAMB: Anticipated. The Board wrote you in before you set out. Whoever stan
 line: SALLIS: Collecting. For the insurer. The Board said. {when: spit_lead == sallis}
 line: LUGG: Wrote us once. Not twice. {when: spit_lead == lugg}
 nar: Halfway down the line a man sets his cask on the shingle, gently, as if it might wake.
-line: SALLIS: Pruett says write him as putting it back. Boddy too. Hask. The Penroses. And Sallis, told by the Board. Put that in. {when: spit_lead == sallis}
-line: LUGG: Write us putting it back. Boddy. Hask. Penroses. Me. {when: spit_lead == lugg}
+line: SALLIS: Pruett says write him as putting it back. Boddy too. Hask. The Penroses. And Sallis, told by the Board. Put that in. {when: spit_lead == sallis & !has(quay2.penrose_stayed)}
+line: SALLIS: Pruett says write him as putting it back. Boddy too. Hask. Old Penrose. And Sallis, told by the Board. Put that in. {when: spit_lead == sallis & has(quay2.penrose_stayed)}
+line: LUGG: Write us putting it back. Boddy. Hask. Penroses. Me. {when: spit_lead == lugg & !has(quay2.penrose_stayed)}
+line: LUGG: Write us putting it back. Boddy. Hask. Penrose. Me. {when: spit_lead == lugg & has(quay2.penrose_stayed)}
 nar: The casks go back up the slope, and nobody counts them.
 go: spit.hub
 
@@ -211,8 +213,10 @@ place: patience
 cost: 3
 do: set(strippers.named); set(struck.spit); set(spit.fought); set(spit.done); rep(trust, -1); spit_cargo = saved; spit_way = fist
 nar: The flood ends it, over the low rail without a sound. A bar slides down the deck into the water with a long iron complaint.
-line: SALLIS: Sallis, Board warden. Pruett. Boddy, Hask, the Penroses. Write I was collecting. {when: spit_lead == sallis}
-line: LUGG: Lugg. You know the rest. Boddy. Hask. Penroses. {when: spit_lead == lugg}
+line: SALLIS: Sallis, Board warden. Pruett. Boddy, Hask, the Penroses. Write I was collecting. {when: spit_lead == sallis & !has(quay2.penrose_stayed)}
+line: SALLIS: Sallis, Board warden. Pruett. Boddy, Hask, old Penrose. Write I was collecting. {when: spit_lead == sallis & has(quay2.penrose_stayed)}
+line: LUGG: Lugg. You know the rest. Boddy. Hask. Penroses. {when: spit_lead == lugg & !has(quay2.penrose_stayed)}
+line: LUGG: Lugg. You know the rest. Boddy. Hask. Penrose. {when: spit_lead == lugg & has(quay2.penrose_stayed)}
 nar: They push off empty, one man bailing with his hat. A second bar lies across the Patience's hatch where its owner left it.
 do: give(w.crowbar)
 go: spit.hub
@@ -223,11 +227,14 @@ place: patience
 cost: 2
 do: set(strippers.named); set(struck.spit); set(spit.fought); set(spit.done); rep(trust, -1); spit_cargo = saved; spit_way = fist
 nar: The leader sets his bar down. It slides off the slope into the water, and he lets it.
-line: SALLIS: All right. Docket's shut. Sallis, Pruett, Boddy, Hask, Penroses. Tell the Board yourself. {when: spit_lead == sallis}
-line: LUGG: Done. Boddy. Hask. Penroses. Lugg. Back in the hold with it. {when: spit_lead == lugg}
+line: SALLIS: All right. Docket's shut. Sallis, Pruett, Boddy, Hask, Penroses. Tell the Board yourself. {when: spit_lead == sallis & !has(quay2.penrose_stayed)}
+line: SALLIS: All right. Docket's shut. Sallis, Pruett, Boddy, Hask, Penrose. Tell the Board yourself. {when: spit_lead == sallis & has(quay2.penrose_stayed)}
+line: LUGG: Done. Boddy. Hask. Penroses. Lugg. Back in the hold with it. {when: spit_lead == lugg & !has(quay2.penrose_stayed)}
+line: LUGG: Done. Boddy. Hask. Penrose. Lugg. Back in the hold with it. {when: spit_lead == lugg & has(quay2.penrose_stayed)}
 line: LUGG: You shove like a clerk. Low. From the hip. Put them where the water is. {when: spit_lead == lugg & !has(spit.move_shove)}
 if: spit_lead == lugg => set(spit.move_shove)
-nar: Young Penrose unties his leather apron and drops it on the deck at the assessor's feet, and does not look up. {when: spit_lead == sallis}
+nar: Young Penrose unties his leather apron and drops it on the deck at the assessor's feet, and does not look up. {when: !has(quay2.penrose_stayed)}
+nar: Old Penrose unties his leather apron and drops it on the deck at the assessor's feet. He looks at the assessor as if to say the boy is home. {when: has(quay2.penrose_stayed)} {when: spit_lead == sallis}
 if: spit_lead == sallis => give(c.apron)
 go: spit.hub
 
@@ -272,8 +279,10 @@ cost: 18
 do: set(strippers.named); meter(cold, 2); meter(dread, 1)
 if: var.spit_way == none => spit_way = shadow
 nar: Lantern out, under the Ann Tull's bilge, near enough to hear a man breathe out when he takes a cask's weight.
-line: SALLIS: Pruett, count. Boddy, Hask, take it from the Penroses before they drop it. {when: spit_lead == sallis}
-line: SALLIS: Lugg says Boddy. Lugg says Hask. Penroses, he says you. {when: spit_lead == lugg}
+line: SALLIS: Pruett, count. Boddy, Hask, take it from the Penroses before they drop it. {when: spit_lead == sallis & !has(quay2.penrose_stayed)}
+line: SALLIS: Pruett, count. Boddy, Hask, take it from old Penrose before they drop it. {when: spit_lead == sallis & has(quay2.penrose_stayed)}
+line: SALLIS: Lugg says Boddy. Lugg says Hask. Penroses, he says you. {when: spit_lead == lugg & !has(quay2.penrose_stayed)}
+line: SALLIS: Lugg says Boddy. Lugg says Hask. Penrose, he says you. {when: spit_lead == lugg & has(quay2.penrose_stayed)}
 nar: Nobody looks under the bilge.
 voice: salt: The mud has the knees. It has had them twenty minutes and means to keep them. {dc: 4}
 voice: dark: Stay. They will go, and you will have been nobody, here, all night. {dc: 5}
@@ -299,7 +308,8 @@ cost: 15
 do: set(strippers.named); set(spit.carried); wet(0.3); meter(cold, 2)
 if: var.spit_way == none => spit_way = shadow
 nar: Oilskin, mud to the knee, a bar off the shingle. Nobody looks at a face over a cask.
-line: SALLIS: Pruett, Boddy, Hask, keep it moving. Penroses, the new one's slow.
+line: SALLIS: Pruett, Boddy, Hask, keep it moving. Penroses, the new one's slow. {when: !has(quay2.penrose_stayed)}
+line: SALLIS: Pruett, Boddy, Hask, keep it moving. Penrose, the new one's slow. {when: has(quay2.penrose_stayed)}
 nar: Eleven of the Patience's casks go into their boat through the assessor's hands.
 opt: "Take the next cask down into their boat, and stay there." -> spit.boat.inside {verb: carry, noise: 0.1}
 opt: "Put the bar down and step out of the line." -> spit.hub {verb: hide, noise: 0.1}
@@ -317,7 +327,8 @@ opt: "Climb down." -> spit.hub
 place: patience
 cost: 4
 do: set(strippers.named); set(spit.coat_used); set(spit.done); set(book.spit_coat); spit_cargo = saved; spit_way = coat
-line: SALLIS: Sallis. Pruett. Boddy, Hask, the Penroses. I'll take it up with the Board. {when: spit_lead == sallis}
+line: SALLIS: Sallis. Pruett. Boddy, Hask, the Penroses. I'll take it up with the Board. {when: spit_lead == sallis & !has(quay2.penrose_stayed)}
+line: SALLIS: Sallis. Pruett. Boddy, Hask, old Penrose. I'll take it up with the Board. {when: spit_lead == sallis & has(quay2.penrose_stayed)}
 line: LUGG: Write us in a Lamplighter's book, in a Lamplighter's coat. Same as the Board. Go on, then. {when: spit_lead == lugg}
 nar: They put the casks back and go. Somebody in Gullet will hear a dark coat was on the Spit tonight, and ask whose.
 go: spit.hub
@@ -484,7 +495,8 @@ place: ann_tull
 cost: 15
 do: set(strippers.named); meter(cold, 2)
 if: var.spit_way == none => spit_way = shadow
-line: SALLIS: Pruett, stow it square. Boddy, Hask, Penroses, more.
+line: SALLIS: Pruett, stow it square. Boddy, Hask, Penroses, more. {when: !has(quay2.penrose_stayed)}
+line: SALLIS: Pruett, stow it square. Boddy, Hask, Penrose, more. {when: has(quay2.penrose_stayed)}
 nar: Fifteen minutes of casks landing on the tarpaulin. Nobody lifts the corner.
 opt: "Stay, by the painter, for the turn." -> spit.boat.inside {verb: wait}
 opt: "Slide out onto the shingle." -> spit.hub {verb: hide, noise: 0.1}

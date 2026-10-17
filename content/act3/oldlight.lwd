@@ -305,7 +305,7 @@ line: LUGG: Tub never came down here. {when: var.quay3.boat == lugg}
 nar: On the wall an iron bracket, and above it soot, black and soft, that comes off on the glove. No lantern, no wick, no oil anywhere in the room.
 inst: THE DAMP: Dry. {when: var.damp_hair == keel}
 inst: THE DAMP: Wet. It is the bottom of the sea. {when: var.damp_hair != keel & var.damp_wet != 1}
-voice: dark: Put the glove flat on the soot. It is cold. You wanted it warm, and it is cold, and you are alone down here with what wanted it. {dc: 5}
+voice: dark: Put the glove flat on the soot. It is cold. {dc: 5}
 opt: "Back up." -> oldlight.hub
 
 @node oldlight.low.flooded

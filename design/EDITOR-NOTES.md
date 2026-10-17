@@ -1561,7 +1561,7 @@ Ask: give the fid and jersey after any answer, and give them most of all after "
 Shelf's had worse." A gift after a refusal is the moving version. Move the counting lesson out of
 this node: to the passage door as Lamb leaves, or to Pip.
 
-Director:
+Director: FIXED. `ropewalk3.offer` now ends on the choice, with nothing in front of it. Every answer (yes, no, later) goes to a new `ropewalk3.gift`, so the fid and jersey come after the answer, and after "No is an answer. The Shelf's had worse." as much as after yes. Hester puts them on the table without looking: "Will's. Take them. The jersey's warm wet, which is the only kind of warm there is in this town." The count moved to the passage door as Lamb leaves (`ropewalk3.door.count`), spoken "to the street and not to the assessor". Then the door shuts.
 
 **E2. Will's machine is broken, and then it types the last word of the game.** Hester, earlier in the
 same act: "That machine came up the hill in a handcart seven months ago with Mrs Pellow pushing. Mine
@@ -1575,7 +1575,7 @@ Fisk, or Hands at Hester's table while she watches, with one line from her about
 had it open. Then Pip's "She's used Grandad's machine" at dawn is the payoff of something the player
 did. The move named "the carriage return" in 19.13 should not be the only carriage in the act.
 
-Director:
+Director: FIXED. New `ropewalk3.carriage`. Under a cloth on the dresser, Will's machine sits with its carriage beside it "in two pieces, the way you would lay out a bird". Hester: "Will had it open on the kitchen table the week before. He said he'd finish it on the Sunday." Four routes: GRIP, a brass pin, CARBON, or CONDOLENCE (she shows you with your hands). On success the carriage runs and stops with a small bell; she types one line and folds it into her apron pocket without showing anyone. On failure: "It can be in two pieces a while longer." Dawn's "She's used Grandad's machine" and the typist fate's straight machine now need `ropewalk3.carriage_mended`. Otherwise Pip says "The e's sticking. It's the Trust's machine. It's always the Trust's machine." and the old machine waits in two pieces.
 
 **E3. The low room's protected moment has gained a third line that names a presence.** `oldlight.low`
 now ends: THE DAMP "Dry." then THE DARK "Put the glove flat on the soot. It is cold. You wanted it
@@ -1585,7 +1585,7 @@ the soot into something with a will. Pass 4 asked for THE DARK to speak in the l
 the line. Cut it, or reduce it to the glove and the cold: "Put the glove flat on the soot. It is
 cold."
 
-Director:
+Director: FIXED. THE DARK now says only "Put the glove flat on the soot. It is cold."
 
 **E4. Keel's quiet is being talked over.** Two places:
 - `quay3.keel` (Keel unremarkable at high water): UNDERTOW "Ask him now. Tonight he would tell you."
@@ -1597,7 +1597,7 @@ Director:
   after the gust. Route the gust to a node with the wind and nothing else; offer Bright on the next
   visit.
 
-Director:
+Director: FIXED. Both voices at `quay3.keel` are cut. After the gust, `mole3.keelq.wind` plays alone ("The wind comes back along the mole.") and goes straight to the menu, skipping the Vane's shout. Bright's lesson is only offered from 00:30, after the eye, so it never follows the question.
 
 **E5. Mother's first collar is unscrewed for salvage in front of her keeper, and nobody notices.**
 `mole3.collar` sits in the lamp-room menu, beside "Sit by the panel and listen to the gale" and a
@@ -1610,7 +1610,7 @@ Ask: either Wenna gives it (as keeper, at dawn, or after the vote pays her: "Tak
 the arc anyway"), or taking it costs something visible (Wenna sees and says one line; the epilogue's
 Mother has the gap). Or move the old bronze somewhere that is not Mother.
 
-Director:
+Director: FIXED. Wenna gives it now. The option is "Ask Wenna about the old collar under the Trust's bracket", shown only when she is in the lamp room (Mother lit, no day-two promise) and after the restrike scene. She takes the four screws out herself: "That was hers before any of them. Paraffin and a wick and that, for forty years." She holds it a moment, then: "Take it. It never fitted the arc anyway." Lamb no longer takes it without her.
 
 **E6. The muster's check changes nothing.** `quay2.muster` is the best new scene of the build pass:
 Sallis reading the claim "the way a man reads the banns"; "Nobody's a wrecker that hands it in";
@@ -1623,7 +1623,7 @@ Lamb saved one boy, and Act 3 can find the Penrose name on the strippers' list w
 missing. Also cut PRIDE's "Nobody in that boat has ever stolen a thing. Watch them learn how." The
 crowbar in a boy's hand already says it.
 
-Director:
+Director: FIXED. Pass goes to a new `quay2.muster.word.ok`: old Penrose takes the crowbar out of his son's hands and puts it in his own. The boat goes out with five, and young Penrose stays on the bottom step with his father's hand still on his shoulder, then without it. Fail keeps the old node. Every strippers' list on the Spit now has one Penrose when the boy stayed, and the apron is handed over by old Penrose ("as if to say the boy is home"). PRIDE's line is cut.
 
 ### The five threads
 
@@ -1669,3 +1669,11 @@ broken machine (E2), the low room's third line (E3), the voices at Keel's high w
 taken from Mother (E5), and the muster's empty check (E6). Each is a few lines. None needs new scope
 except E2, which needs one short scene, and that scene would be the Hester and Will thread's earned
 moment.
+
+### Director, pass 5 small things (2026-10-17)
+- `dawn3.brine`: the explaining sentence is cut; the fate ends on the hat and the empty column.
+- Tobit: his first sentence is gone; the lesson starts "The wind goes one, two, three, and then the big one."
+- Keel's dawn2 line is in Board-speak: "The Board would remind the room that a ship takes the dog-leg on Mother ... The Board would add that any other lamp by itself is only somewhere to steer at."
+- Hobb: "Two years. Nobody's had either of my lamps."
+- Against the protected moments, with your table: the gift is off the question (E1), the collar is Wenna's to give (E5), and Bright is off the step after Keel (E4). Tobit no longer quotes the eye. The rest of 19.13 lands nowhere protected. Validator 0/0.
+
