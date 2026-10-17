@@ -10,6 +10,7 @@ import { createInput } from "./input.mjs";
 import { loadPrefs, applyPrefs } from "./prefs.mjs";
 import { openDaybook } from "./daybook.mjs";
 import { openSettings } from "./settings.mjs";
+import { createScreen } from "./create.mjs";
 import { store } from "./dom.mjs";
 
 export async function lab() {
@@ -17,8 +18,8 @@ export async function lab() {
   await loadStyles();
   const { sources, errors } = await loadAct("/content/act1/act1.lwd", async (p) => { const r = await fetch(p); if (!r.ok) throw new Error(`${p}: ${r.status}`); return r.text(); });
   if (errors.length) console.error("act errors", errors);
-  const G = createFullGame({ content: loadContent(sources), seed: 7 });
-  const why = G.create({ archetype: q.get("archetype") || "p.ledger", enter: false });
+  const content = loadContent(sources), G = createFullGame({ content, seed: 7 });
+  const why = q.get("screen") === "create" ? [] : G.create({ archetype: q.get("archetype") || "p.ledger", enter: false });
   if (why && why.length) console.error("create:", why);
   const F = createFocus(), prefs = loadPrefs(); applyPrefs(prefs);
   if (q.get("calm") !== "0") document.documentElement.classList.add("calm");
@@ -40,6 +41,7 @@ export async function lab() {
   store.set("lowwater.build.density", q.get("numbers") ? "numbers" : "plain");
   const screen = q.get("screen") || "build";
   if (screen === "settings") ctx.settings();
+  else if (screen === "create") { ctx.content = content; ctx.title = () => {}; ctx.play = () => {}; createScreen(ctx); }
   else {
     const D = ctx.daybook(screen === "build" ? "build" : screen);
     const build = await import("./build.mjs"); build.resetPlan();

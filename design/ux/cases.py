@@ -93,3 +93,12 @@ CASES += [
      ("expect", "document.querySelector('.strip').dataset.history.split(' | ').includes('Caught: strike now')", "a catch answers in the strip (loop frozen, read from the strip's own history)"),
      ("expect", "document.querySelector('.strip .xline').textContent === 'Caught: strike now'", "and it is the line on screen")]},
 ]
+CASES += [
+  {"name": "create", "url": P + "create", "steps": [("shot", "create-1080"), ("key", "ArrowDown"), ("shot", "create-focus2"),
+     ("expect", "document.querySelector('.cfight').textContent", "focusing a card shows it in a fight"),
+     ("key", "Enter"), ("expect", "document.activeElement.dataset.begin !== undefined", "choosing a Precedent moves focus to Begin"),
+     ("expect", "getComputedStyle(document.querySelector('.create-art')).backgroundImage !== 'none'", "the painted scene sits behind")]},
+  {"name": "create-custom", "url": P + "create-custom", "steps": [("shot", "create-custom-1080"), ("expect", "!!document.querySelector('.errs p')", "a short spread shows G.create's errors")]},
+  {"name": "create-act1", "url": LAB + "screen=create", "steps": [("shot", "create-act1-1080"), ("pad", 13), ("shot", "create-act1-pad")]},
+  {"name": "create-act1-720", "size": (1280, 720), "url": LAB + "screen=create", "steps": [("shot", "create-act1-720")]},
+]
