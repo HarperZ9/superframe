@@ -305,6 +305,31 @@ Same pattern: the run plays on the plate, the camera frames the course and the w
 the strip shows water in words ("below the knee"), the time left as a tally, and the run's goal as a
 ground mark. Stepped mode keeps the chart.
 
+### 7.5 Portraits in the talk panel
+
+The character lead bakes a painted portrait per speaking part, a few expressions each, because the
+painted path is too slow for faces in real time. The slot is built (`ui/portrait.mjs`).
+
+| Property | Decision |
+|---|---|
+| Place | Top of the talk panel, left, under the panel's title; the speaker's name in Conso small capitals to its right, on the baseline of the portrait |
+| Size | Height `clamp(9rem, 28vh, 20rem)`, ratio 4:5: 202 px tall at 720p, 302 px at 1080p, 605 px at 4K. A 512 x 640 bake is about one to one at 4K and is never magnified |
+| Ground | The bake is cut out (straight alpha). The slot washes the ground in the light of the moment: warm umber under paraffin, violet-brown under sodium, with an ink rule round it. No baked background, so the same face sits in any light |
+| Who takes it | The person Lamb is talking to: the last line with a speaker. Lamb never takes the slot, since the player is Lamb. Inner voices never take it: they are in Lamb's head, and the person in the room keeps looking at Lamb while a voice speaks. A voice is told apart in the log by its indented italic line and its name, as now |
+| Two people | The slot follows the last speaker, cross-fading in 120 ms |
+| Expressions | A line may name one: `face: wary` (also `neutral`, `startled`, `set`, and any a character adds). The face holds until another line names one or the speaker changes; a new speaker starts at `neutral`. Change is a 120 ms cross-fade, never a slide or a zoom |
+| Light | Chosen from the place: `sodium` where sodium dominates and the light is above 0.1, else `paraffin`. Later lights (`white` for the hill's arcs, `day`, `dark` for a blackout's dither) fall back to `paraffin` until baked |
+| No portrait | The slot collapses to the name line; nothing stands in for a face |
+| Setting | Reading, "Portraits in conversation", on by default |
+| Facing | Three-quarters toward the viewer's right, so a face on the panel's left looks into the text |
+
+File format, agreed with the character lead's proposal (NOTES-FOR-ENGINEER, "strikes and combat's frames;
+portraits"): `characters/portraits/<who>/<expression>-<light>.png`, 512 x 640, straight alpha, eyes at
+about 38 percent from the top, head and shoulders; index `characters/portraits/index.json` as
+`{ who: { name?, expression: { light: path } } }`. The optional `name` lets the shell match the script's
+speaker ("Deacon Fennick") to the id (`fennick`); without it the shell tries the full name, then the
+last word, then the first.
+
 ## 8. Controls
 
 Defaults below; every action is remappable in Settings, Controls (keyboard and pad separately). Hold or

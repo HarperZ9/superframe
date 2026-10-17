@@ -6,7 +6,7 @@
 import { store } from "./dom.mjs";
 
 const PREFS_KEY = "lowwater.prefs", LENS_KEY = "lowwater.lens";
-export const PREF_DEFAULT = { textSize: "medium", contrast: false, calm: false, runMode: "full", runsOff: false, uiScale: 1, shake: "on", rumble: true, pauseOnBlur: true }; // ux: scale, shake, rumble, pause on blur
+export const PREF_DEFAULT = { textSize: "medium", contrast: false, calm: false, runMode: "full", runsOff: false, uiScale: 1, shake: "on", rumble: true, pauseOnBlur: true, portraits: true }; // ux: scale, shake, rumble, pause on blur
 export const TEXT_SIZES = { small: 0.88, medium: 1, large: 1.15, larger: 1.3, largest: 1.5 };
 export const UI_SCALES = [0.85, 1, 1.15, 1.3];
 export const SHAKES = ["on", "light", "off"];
@@ -55,6 +55,6 @@ export function applyPrefs(p) {
   root.style.setProperty("--ts", String(TEXT_SIZES[p.textSize] || 1));
   root.classList.toggle("contrast", !!p.contrast);
   root.classList.toggle("calm", !!p.calm);
-  root.style.setProperty("--ui", String(p.uiScale || 1));
+  root.style.setProperty("--ui", String(p.uiScale || 1)); root.classList.toggle("noportraits", p.portraits === false);
   root.classList.toggle("noshake", p.shake === "off"); root.classList.toggle("lightshake", p.shake === "light");
 }

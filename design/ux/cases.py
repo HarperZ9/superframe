@@ -121,3 +121,14 @@ CASES += [
      ("eval", "[...document.querySelectorAll('.act')].find(e => /Wait for/.test(e.textContent)).click()"), ("wait", 300), ("shot", "wait-turn"),
      ("expect", "window.__shell.G.clock() - window.__t0", "minutes the wait took (stops at a turn, a scene, or 180)")]},
 ]
+CASES += [
+  {"name": "portrait", "url": P + "talk", "steps": [("shot", "portrait-noface"),
+     ("expect", "document.querySelector('.portrait').classList.contains('noface')", "a speaker with no portrait collapses to the name"),
+     ("eval", "window.__shell.play.els.portrait.update({ who: 'fennick', speaker: 'Deacon Fennick', light: 'sodium' })"), ("wait", 1500), ("shot", "portrait-fennick"),
+     ("expect", "!!document.querySelector('.portrait .pimg.on') && !document.querySelector('.portrait').classList.contains('noface')", "a baked portrait shows"),
+     ("eval", "window.__shell.play.els.portrait.update({ who: 'lamb', speaker: 'Lamb' })"), ("wait", 300),
+     ("expect", "document.querySelector('.portrait').classList.contains('noface')", "Lamb never takes the slot")]},
+  {"name": "portrait-720", "size": (1280, 720), "url": P + "talk", "steps": [("eval", "window.__shell.play.els.portrait.update({ who: 'fennick', speaker: 'Deacon Fennick', light: 'paraffin' })"), ("wait", 1500), ("shot", "portrait-720")]},
+]
+CASES += [{"name": "portrait-debug", "url": P + "talk", "steps": [("eval", "window.__shell.play.els.portrait.update({ who: 'fennick', speaker: 'Deacon Fennick', light: 'sodium' })"), ("wait", 1500),
+  ("expect", "[...document.querySelectorAll('.portrait .pimg')].map(i => i.src + ':' + i.className + ':' + i.naturalWidth).join(' | ') + ' / ' + document.querySelector('.portrait').className", "debug")]}]

@@ -21,6 +21,7 @@ function rows(ctx) {
     { sect: "Reading", label: "Reduced motion", help: "No fades or slides", value: () => onoff(p.calm), step: () => { p.calm = !p.calm; } },
     // ux: interface scale, shake, rumble, pause on focus loss (UI-SYSTEM section 9)
     { sect: "Reading", label: "Interface scale", help: "Size of every panel, apart from the text size", value: () => `${Math.round((p.uiScale || 1) * 100)} percent`, step: (d) => { p.uiScale = cycle(UI_SCALES, p.uiScale || 1, d); } },
+    { sect: "Reading", label: "Portraits in conversation", help: "The painted face of whoever is speaking, at the top of the talk panel", value: () => onoff(p.portraits !== false), step: () => { p.portraits = p.portraits === false; } },
     { sect: "Feel", label: "Screen shake", help: "How much the view and the strip move when a blow lands", value: () => p.shake, step: (d) => { p.shake = cycle(SHAKES, p.shake, d); } },
     { sect: "Feel", label: "Controller rumble", help: "The pad answers blows, blocks and catches", value: () => onoff(p.rumble), step: () => { p.rumble = !p.rumble; } },
     { sect: "Feel", label: "Pause when the window loses focus", help: "Fights and runs stop while you are away", value: () => onoff(p.pauseOnBlur), step: () => { p.pauseOnBlur = !p.pauseOnBlur; } },
