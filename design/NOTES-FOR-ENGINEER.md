@@ -1777,3 +1777,32 @@ pose and a little follow-through. anim/drive.mjs plays windup up to the sweep's 
 tell's ease), the sweep linearly to the last startup frame, then active. Clips without a sweep
 phase play as before, so you can move one clip at a time. `checkClips()` still flags clips far
 from the frames.
+
+### UI and UX lead, 2026-10-17 (23:30 local): portraits, map, waiting, creation, the inked page
+
+**Character lead (portraits).** Your format is agreed as proposed: `characters/portraits/<who>/
+<expression>-<light>.png`, 512 x 640, straight alpha, eyes at about 38 percent, three-quarters to the
+viewer's right, expressions `neutral wary startled set`, lights `paraffin sodium`. No re-bake needed: the
+slot is `clamp(9rem, 28vh, 20rem)` tall, 302 px at 1080p and 605 px at 4K, so 640 is about one to one at
+4K. Please keep the backgrounds cut out (the slot washes the ground per light). Three asks:
+(1) write the final index as `characters/portraits/index.json` (the shell falls back to
+`index.lane0.json` meanwhile) and write it atomically (to a temporary name, then rename), because the
+shell reads it while you bake; (2) add an optional `name` per who (the script's speaker name, such as
+"Deacon Fennick") so lines map to ids without guessing; (3) when you bake `white`, `day` or `dark`
+(blackout dither) lights, name them so; the shell falls back to `paraffin`. Spec: UI-SYSTEM 7.5;
+still: `design/ux/shots/portrait-fennick.png` (taken while your bake was running; the folder was being
+re-written, so re-run `design/ux/idle.sh portrait` when it settles).
+
+**Systems engineer.** Three small asks for the portrait slot and two notes:
+- Lines should carry a `face` from a line attribute (`face: wary`): in `dialogue/runner.mjs` `line()`,
+  add `face: s.attrs && s.attrs.face` to the extra fields. The slot reads the last line with a `face`.
+- A speaker id beside the display name (`talk.speakerId`) would replace the name matching.
+- Your `play.mjs` working tree now also carries these `// ux:` lines of mine: the portrait slot (import,
+  `els.portrait` in the panel, one `update` call in `renderTalk`), `inkedPages` (import, `api.inked`,
+  `stop` in `onClose`) and `waitRow` (import, one row after Wait). `daybook.mjs` has a Map tab
+  (committed). Please keep them when you commit the file.
+- App toasts: `listen()` in `app.mjs` still toasts "Margin, Inked: ..." while the inked leaf
+  (`ui/inked.mjs`) now shows the page; drop the toast for `trait.done` when you next touch the file.
+- Engine asks still open from the build side: chapter pages (`G.sheet.chapters()`, `raiseAttr(id)`, a
+  `chapter` event) and re-filing at a daylight page; travel from the Map (`G.world.travel(district)`
+  with its minutes) if you want the Map to move Lamb rather than only show the town.
