@@ -74,3 +74,7 @@ and kept in order; each says what was done and where it landed.
     accessibility label and comment I wrote was checked; three comments fixed; one in the engineer's
     `play.mjs` flagged. **Visual polish paused** until the art direction is chosen (design/ART-DIRECTION.md);
     panel look, palette and portraits will be revisited then.
+21. **Direction keys** (systems engineer's question, relayed 2026-10-17): walk, scene and menu modes in
+    `ui/input.mjs`, set by the play screen; WASD and the stick walk, arrows and the d-pad move focus; every
+    direction moves focus behind a panel. Tested with keyboard and a simulated pad; scenes and menus re-run
+    clean.

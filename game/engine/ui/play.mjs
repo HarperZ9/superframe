@@ -50,10 +50,16 @@ export function playScreen(ctx, { startNode = null } = {}) {
   api.weather = weatherLayer(ctx, els.plate, api.cam);
   api.people = peopleLayer(ctx, els.plate, api.cam, { onPick: (p) => api.pick(p), idle: () => !P.talk && !P.ended && !root.classList.contains("fighting") && ctx.F.top() && ctx.F.top().root === root, onClock: () => api.worldStep() });
   api.inked = inkedPages(ctx); // ux: the inked Margin page and the chapter page (ui/inked.mjs)
+  // ux: who owns the direction keys (ui/input.mjs): walking on the plate, a real-time scene, or a panel
+  ctx.input.setMode(() => {
+    const t = ctx.F.top(); if (!t) return "menu";
+    if (t.name === "fight" || t.name === "sneak" || t.name === "run") return (G.state.runMode === "stepped" && !t.root.classList.contains("fightlayer")) ? "menu" : "scene";
+    return t.name === "play" && !root.classList.contains("talking") && !root.classList.contains("fighting") ? "walk" : "menu";
+  });
 
   const onKey = (e) => { if (e.code === "F5" && ctx.F.top() && ctx.F.top().root === root) { e.preventDefault(); ctx.savesPanel("save"); } };
   window.addEventListener("keydown", onKey);
-  ctx.F.push({ name: "play", root, onAction: (a) => onAction(ctx, P, api, a), onBack: () => ctx.savesPanel("menu"), onClose: () => { window.removeEventListener("keydown", onKey); api.cam.stop(); api.weather.stop(); api.people.stop(); api.inked.stop(); offDev(); } });
+  ctx.F.push({ name: "play", root, onAction: (a) => onAction(ctx, P, api, a), onBack: () => ctx.savesPanel("menu"), onClose: () => { window.removeEventListener("keydown", onKey); api.cam.stop(); api.weather.stop(); api.people.stop(); api.inked.stop(); ctx.input.setMode(null); offDev(); } });
   if (startNode) api.startTalk(startNode); else api.worldStep();
   return api;
 }

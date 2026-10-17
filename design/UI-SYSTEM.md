@@ -357,6 +357,18 @@ toggle is a setting for block, run and crouch.
 | Take the talk exit | T | D-pad down |
 | Shove, grapple | E, G | Y (triangle), Y held |
 
+**Who owns the direction keys** (decided 2026-10-17 at the systems engineer's question, built in
+`ui/input.mjs` with the mode set by the play screen):
+
+| Mode | When | WASD and the left stick | Arrows and the d-pad |
+|---|---|---|---|
+| Walk | On the plate, nobody talking, no panel open | Walk Lamb; never move focus | Move focus over the "what is here" list; never walk |
+| Scene | A fight, or a sneak or Tide Run in real time | Move Lamb | Move Lamb |
+| Menu | Talking, the Daybook, pause, settings, creation, the title, a leaf, a stepped run or sneak | Move focus | Move focus |
+
+Nothing walks while a panel holds focus. Tab stays the Daybook; Enter, Space and pad A press the focused
+row in every mode.
+
 The pad fight layout follows the shoulder-button convention action-RPG players already have in their
 hands. In a fight, the shell's own uses of Space, Tab, Q and E wait (they already do, through the
 capture listener). The prompts tab shows only what is possible now.

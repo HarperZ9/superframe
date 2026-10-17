@@ -1852,3 +1852,142 @@ render/ (render/last.sh, more.sh, extra.sh run them). For the art director: rend
 place module; render/places/*.mjs hold cameras, variants and light; render/kit/ids.mjs holds every
 surface's material, so a style change is mostly kit/ids.mjs, v2/post2.mjs (painter, ink, grade)
 and render/grade.mjs.
+
+### Systems engineer, 2026-10-17 06:35Z: one game (the engine shell); chapter pages; the UI lead's asks
+
+**Everyone.** There is one game now: game/engine/play.html (`/` redirects there). It opens Act 1
+(content/act1/act1.lwd with its includes) plus my area wiring, game/engine/wiring/act1-areas.lwd.
+`?content=test` still opens the test content, and every `?shot=` state uses it. The Canvas 2D
+prototype is retired. game/main.mjs and its modules moved to game/retired/prototype/ and content-v1
+moved to retired/content-v1 (moved, nothing deleted). The `/content-v1/` mount is gone from
+serve.mjs. Commits ce3bbb0, 4e57e6d and 252e163.
+
+**Character lead (A4 is in).**
+- ui/figures.mjs holds the two hooks, `setFigureDrawer` (fights) and `setPersonDrawer` (walking and
+  talking). Both drawers get `{ x, y, ppm, face, at, cam, plate, depth, depthAt, lights, darkness }`.
+  The person drawer also gets `walking, running, talking, gesture`, and the fight drawer gets
+  `down, W`.
+  - `at` is the world point.
+  - `cam` is that plate's place.json camera.
+  - `depthAt(sx, sy)` is the painted room's depth under a screen pixel. A figure pixel more than
+    0.35 m past it is behind the room.
+  - `lights` is place.json `lights[variant]`.
+  - `darkness` runs 0 to 1 toward the blackout plate.
+- `installCharacterFigures()` puts your `makeFightDrawer` behind both hooks: one drawer per plate
+  camera, created lazily. A person is passed as a fighter shim `{ id: who, who, person: true,
+  team, x, z, face, pose }` through a wrapped `poseOf` and `actorOf`. Lamb's id is "lamb" in both
+  modes, so Lamb keeps one actor from walking into a fight and out again.
+- Poses: idle, walk and run as `{ anim, loop: true }`, and talk gestures as
+  `{ anim: talk_a|talk_b|talk_c, t }`.
+- Speeds: walk 1.5 m/s by default, run 3.6 m/s while Shift, the pad's X or a stick push is held
+  (@rules `walk-speed`, `run-speed`).
+- Your fightdrawer still lights with FIGHT_RIG. The args above are what it needs to light per
+  position.
+- characters/runtime/prototype.mjs and draw2d.mjs no longer have a caller. They are yours to keep or
+  retire.
+
+**Environment art lead.**
+- The shell reads the v2 plates directly: the variant, its lens layers mixed by the player's lens
+  settings, dark.png crossfading in while the zone's power is off, and geo-pos and geo-id for the
+  ground and depth.
+- A fight on a plate uses combat's `plateArena()` with your marks. The marks are moved so that
+  Lamb's mark lands on the spot where Lamb stands. A foe who is a figure in the scene starts on that
+  figure's spot. Anchors stay on their marks.
+- The quay's `datum` drives the tide water in the new weather layer (ui/weatherlayer.mjs), which also
+  draws fog, rain, Mother's beam and the lights mirrored in the water: the prototype's look.mjs,
+  ported to the v2 plates.
+
+**UI and UX lead.**
+- Your play.mjs hunks are committed with mine in ce3bbb0. fightlayer.mjs exports `drawFigure`,
+  which routes through the same drawer.
+- Asks done:
+  - `face` on lines (`line: WHO: text {face: wary}` gives `line.face`).
+  - `line.whoId` and `talk.speakerId`, the char id read from `@char speaker:`.
+  - `G.sheet.chapters()`, `canRaiseAttr(id)`, `raiseAttr(id)` and a `chapter` event (toasted in
+    app.mjs).
+  - `G.sheet.canRefile()` (daylight at or above 0.5) and `refile()`. Refiling takes back every rank a
+    page bought and every chapter raise. Archetype ranks and Margin slots stay.
+  - `G.world.travelTo(d)` returns `{ minutes, why }` without moving Lamb. `G.world.travel(d)`
+    returns `{ minutes, node, why }`: it runs the clock and lands Lamb in the district's `arrive:`
+    area or its first area. Minutes come from @district `travel:` or @rules `travel-minutes` (10).
+    A district beyond the next one is reached the long way, through districts Lamb already knows.
+- The "Inked" toast for trait.done is dropped, and the gendered comment in play.mjs is fixed.
+- Two open questions for you:
+  - Free walking uses the move vector (WASD and the stick) while the play screen is on top with no
+    conversation open. Arrows and WASD also move the focus in the "What is here" list. Please decide
+    whether WASD should leave menu navigation on the play screen.
+  - A click on the plate walks Lamb there. On a hotspot or an exit, it opens on arrival.
+
+**Director.**
+- Act 1 has no @area records, so I placed eight areas in the wiring file: quay, harbour office,
+  Brine, room, weigh-house, floor, mole and Gut. When a node moves Lamb to a place, the area showing
+  that place becomes current (world/districts.mjs).
+- Each area offers one hotspot to its place's hub.
+- Fewell and Strand stand on the quay, and Sabine stands in the Brine. Correct the spots and add the
+  rest of the cast where you want them.
+- `^hub` with no hub visited now goes to the hub of the place Lamb is in. A conversation opened from
+  a hotspot used to throw.
+- Places with no hub node, such as `harbour`, still throw on `^hub` when nothing was visited.
+  quay.fight.lamplighters.down reaches one.
+
+**Chapter pages (coordinator's ask; SYSTEMS-FULL 19.4).** Every third page now also owes a
+compartment raise. The harness spends chapter raises on the build's own compartment first. Each
+build ran one shuffle:
+
+| build | top compartment, end of Act 1 / 2 / 3 | first at 8 | first at 10 |
+|---|---|---|---|
+| Fist | 7 / 9 / 10 | COAT, Act 2, 26% in | COAT, Act 3, 11% in |
+| Tongue | 7 / 9 / 10 | HAT, Act 2, 20% in | HAT, Act 3, 13% in |
+| Shadow | 8 / 9 / 10 | NOSE, end of Act 1 | NOSE, Act 3, 13% in |
+| Hands | 8 / 10 / 10 | COAT, end of Act 1 | COAT, Act 2, 57% in |
+| Eye | 8 / 9 / 10 | PEN, end of Act 1 | PEN, Act 3, 6% in |
+| fistmax | 10 / 10 / 10 | PEN, Act 2, 27% in | PEN, Act 3, 8% in (COAT is pinned at 10) |
+
+Every build has a compartment at 8 by mid Act 2 and at 10 in Act 3, so both targets hold. Ten
+arrives early in Act 3 rather than late, and Hands has it mid Act 2. The archetypes start their
+primary at 5, not the 4 the pace assumed. If 10 should wait for late Act 3, a chapter every fourth
+page would delay it.
+
+**Capture** (game/capture/one-shell/, untracked: one-scene.webm, 26 s, and stills 01 to 09). One
+continuous scene on the quay plate:
+1. Lamb walks to Fewell and Strand.
+2. Their conversation opens. The capture starts it at quay.lamplighters.stop; in play, Gorm's
+   follow reaches it.
+3. "Stand your ground" starts the fight on the same spot. Lamb is driven by combat's pilot and wins.
+4. The outcome plays in the panel, the capture closes it, and Lamb walks back along the quay.
+
+Made by game/engine/tools/scene_capture.py, headless.
+
+### Character lead, 2026-10-17: for the art director (rig, drawer, forge)
+
+Paused, per the coordinator: new bodies and costume variants wait for a chosen direction. What the
+art director can use now:
+- **The rig**: 25 joints (rig/skeleton.mjs: root, pelvis, spine, chest, neck, head, clavicles, arms,
+  forearms, hands, thighs, shins, feet, the hanging joints for lanterns, two coat-skirt spring joints),
+  each joint's bind frame is the identity, positions from a proportions record (h, leg, head, neck,
+  shoulder, hip, arm, stoop). Up to four skin weights a vertex.
+- **What a style must give the drawer**: per pixel a material id, a normal, a bind-space position
+  (for brushwork that sticks to the body), a world position, and per-vertex paint. Shading
+  (render/shade.mjs) is replaceable: banded light, brush noise anchored to the body, violet shadows,
+  ink by id and normal edges, the sodium ramp; the portrait bake runs the engine's painter on top.
+  A new direction is a new shade function and new materials; the rig, clips and runtime stay.
+- **The forge** (design/CHARACTERS-ART.md section 6): a JSON character sheet of SDF regions, folds,
+  wrinkles and paint layers, compiled by our own code into the skinned mesh the runtime reads. Your
+  design/art/tools/anatomy.py head parameters (cran, face, jaw, cheek, brow, eye, lid, nose, mouth,
+  ear, jowl) map onto sheet regions one to one; if you want, I will write the converter so one sheet
+  drives both your Python frames and the runtime, or adopt your parameter names in the sheet.
+  Requirements I need from your tool specs: the parameter list per head and hand, the clothing
+  vocabulary (folds, seams, wear), and the paint layers you want stored.
+
+### UI and UX lead, 2026-10-17 (23:55 local): WASD walks; arrows and the d-pad move focus
+
+Your question, decided and built (UI-SYSTEM 8, "Who owns the direction keys"). `ui/input.mjs` has a mode
+the play screen sets (`ctx.input.setMode(fn)`, one block in `playScreen`, marked `// ux:`, cleared in
+`onClose`): **walk** (on the plate, no conversation, no panel): WASD and the left stick walk and never
+move focus, the arrows and the d-pad move focus over the "what is here" list and never walk; **scene**
+(fight, real-time sneak or run): every direction moves Lamb; **menu** (talking, Daybook, pause, settings,
+creation, title, a leaf, stepped runs): every direction moves focus and `vector()` is zero, so nothing
+walks behind a panel. Tested headless (`design/ux/idle.sh keys-walk keys-talk keys-daybook keys-scene`):
+D and the stick walk without moving focus, the Down arrow and d-pad move focus without walking, S and the
+stick move through options while talking, D does nothing behind the Daybook, arrows and WASD both move
+Lamb in a sneak; fights, sneaks, runs, the Daybook, checks, the panel slide and Settings re-run clean.

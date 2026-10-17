@@ -130,3 +130,36 @@ CASES += [
      ("expect", "document.querySelector('.portrait').classList.contains('noface')", "Lamb never takes the slot")]},
   {"name": "portrait-720", "size": (1280, 720), "url": P + "talk", "steps": [("eval", "window.__shell.play.els.portrait.update({ who: 'fennick', speaker: 'Deacon Fennick', light: 'paraffin' })"), ("wait", 1500), ("shot", "portrait-720")]},
 ]
+POS = "JSON.stringify((window.__shell.G.state.pos || []).map((v) => +v.toFixed(2)))"
+FOC = "(document.activeElement && document.activeElement.textContent || '').slice(0, 40)"
+CASES += [
+  {"name": "keys-walk", "url": P + "world", "steps": [
+     ("eval", f"window.__p0 = {POS}; window.__f0 = {FOC}"),
+     ("expect", "window.__shell.input.mode()", "the play screen is in walk mode"),
+     ("down", "KeyD"), ("wait", 700), ("up", "KeyD"),
+     ("expect", f"{POS} !== window.__p0", "D walks Lamb"), ("expect", f"{FOC} === window.__f0", "D leaves the menu focus alone"),
+     ("eval", f"window.__p1 = {POS}"), ("key", "ArrowDown"), ("wait", 300),
+     ("expect", f"{FOC} !== window.__f0", "Down arrow moves the focus"), ("expect", f"{POS} === window.__p1", "Down arrow does not walk"),
+     ("eval", f"window.__f1 = {FOC}; window.__p2 = {POS}"), ("stick", 1, 0, 700),
+     ("expect", f"{POS} !== window.__p2", "the left stick walks"), ("expect", f"{FOC} === window.__f1", "the left stick leaves the focus alone"),
+     ("eval", f"window.__p3 = {POS}"), ("pad", 12), ("wait", 300),
+     ("expect", f"{FOC} !== window.__f1", "the d-pad moves the focus"), ("expect", f"{POS} === window.__p3", "the d-pad does not walk")]},
+  {"name": "keys-talk", "url": P + "talk", "steps": [
+     ("eval", f"window.__p0 = {POS}; window.__f0 = {FOC}"),
+     ("expect", "window.__shell.input.mode()", "talking is menu mode"),
+     ("down", "KeyS"), ("wait", 250), ("up", "KeyS"), ("wait", 200),
+     ("expect", f"{FOC} !== window.__f0", "S moves the focus through the options"), ("expect", f"{POS} === window.__p0", "S does not walk while talking"),
+     ("eval", f"window.__f1 = {FOC}"), ("stick", 0, 1, 250),
+     ("expect", f"{FOC} !== window.__f1", "the stick moves the focus while talking")]},
+  {"name": "keys-daybook", "url": P + "world", "steps": [
+     ("key", "Tab"), ("wait", 300), ("eval", f"window.__p0 = {POS}"),
+     ("expect", "window.__shell.input.mode()", "the Daybook is menu mode"),
+     ("key", "KeyD"), ("wait", 300), ("expect", f"{POS} === window.__p0", "D does not walk behind the Daybook")]},
+]
+CASES += [{"name": "keys-scene", "url": P + "world&motion", "steps": [
+  ("eval", f"window.__shell.G.state.runMode = 'full'; window.__shell.play.startTalk('t.r.hub'); ({PICK})('Test sneak.')"), ("wait", 500),
+  ("expect", "window.__shell.input.mode()", "a real-time sneak is scene mode"),
+  ("eval", "window.__x0 = window.__shell.G.sneaks.current.state.x"), ("down", "ArrowRight"), ("wait", 800), ("up", "ArrowRight"),
+  ("expect", "window.__shell.G.sneaks.current.state.x !== window.__x0", "arrows move Lamb in a scene"),
+  ("eval", "window.__x1 = window.__shell.G.sneaks.current.state.x"), ("down", "KeyD"), ("wait", 800), ("up", "KeyD"),
+  ("expect", "window.__shell.G.sneaks.current.state.x !== window.__x1", "WASD moves Lamb in a scene")]}]
