@@ -24,6 +24,7 @@ def main():
     ap.add_argument("--port", type=int, default=8754)
     ap.add_argument("--out", required=True)
     ap.add_argument("--figures", default="", help="plain for the ink figures")
+    ap.add_argument("--scene", default="fight", help="fight (walk, talk, fight, walk) or live (talk while the world runs, then walk off)")
     a = ap.parse_args()
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     from playwright.sync_api import sync_playwright
@@ -52,12 +53,24 @@ def main():
                 time.sleep(0.2)
             return False
         time.sleep(1.5); still("01-quay")
+        if a.scene == "live":
+            # capture only: Strand walks about within 2 m (wander), so the world visibly moves around the talk
+            pg.evaluate("(() => { const f = window.__lw.G.world.area().figures.find(x => x.id === 'strand'); if (f) f.wander = 2; })()")
+            pg.evaluate("window.__lw.play.people.walkTo([-0.4, 0, -2.4], () => {})"); wait("!p.people.walking()", 30)
+            pg.evaluate("() => { const p = window.__lw.play; p.people.talkingWith('fewell'); p.cam.focus([-0.9, 0, -0.9]); p.startTalk('quay.lamplighters.stop'); }")
+            c0 = pg.evaluate("window.__lw.G.clock()")
+            time.sleep(1.0); still("02-talk-opens")
+            time.sleep(9.0); still("03-talk-world-runs"); note("clock ran during the talk:", pg.evaluate("window.__lw.G.clock()") - c0, "min")
+            pg.mouse.click(5, 5)  # the page, not an option, has the keyboard
+            pg.keyboard.down("KeyA"); time.sleep(0.6); still("04-walking-off"); time.sleep(1.4); pg.keyboard.up("KeyA")
+            time.sleep(0.5); still("05-walked-off")
+            ctx.close(); b.close(); (out / "capture.log").write_text(chr(10).join(log), encoding="utf-8"); return
         # 1. walk to the lamplighters
-        ok = pg.evaluate("window.__lw.play.people.walkTo([-0.2, 0, -1.7], () => {})"); note("walk to the lamplighters:", ok)
+        ok = pg.evaluate("window.__lw.play.people.walkTo([-0.4, 0, -2.4], () => {})"); note("walk to the lamplighters:", ok)
         time.sleep(1.2); still("02-walking")
         wait("!p.people.walking()", 30); still("03-arrived")
         # 2. their conversation
-        pg.evaluate("() => { const p = window.__lw.play; p.people.talkingWith('fewell'); p.cam.focus([0.6, 0, -1.4]); p.startTalk('quay.lamplighters.stop'); }")
+        pg.evaluate("() => { const p = window.__lw.play; p.people.talkingWith('fewell'); p.cam.focus([-0.9, 0, -0.9]); p.startTalk('quay.lamplighters.stop'); }")
         time.sleep(2.0); still("04-talk")
         # 3. stand your ground: the fight starts from the conversation, on the same plate
         i = pg.evaluate("window.__lw.play.P.beat.options.findIndex(o => /Stand your ground/.test(o.label))"); note("fight option", i)

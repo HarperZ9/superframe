@@ -26,6 +26,9 @@
 import { compile, compileEffects } from "../core/expr.mjs";
 
 const num = (v, d = 0) => (v == null || v === "" || isNaN(+v) ? d : +v);
+// a quoted live line (@char walkaway: "Suit yourself.") without its quotes
+const unq = (v) => String(v).trim().replace(/^"(.*)"$/, "$1");
+
 export function parseMod(v, source) {
   const m = String(v).trim().match(/^([\w.*]+)\s*([+-]\s*\d+(?:\.\d+)?)(?:\s*\?\s*(.*))?$/);
   if (!m) throw new SyntaxError(`mod: expected "target +n [? cond]", got ${v}`);
@@ -55,7 +58,7 @@ const DEFAULT_RULES = {
   "cabinet-slots-max": 6, "forget-cost": 0, "guise-default": "shelf", "wet-rate": 0.004, "dry-tau": 140, "stove-tau": 50,
   "strain-max": 3,
   // stealth and verbs tuning (world/stealth.mjs, world/sneak.mjs): named so content can retune
-  "stealth-seen": 0.22, "stealth-decay": 0.12, "stealth-hear": 0.25, "stealth-sodium": 0.5, "sneak-walk": 1.4, "walk-speed": 1.5, "run-speed": 3.6, "walk-metres-per-minute": 6, "carry-speed": 0.65, "carry-noise": 1.5,
+  "stealth-seen": 0.22, "stealth-decay": 0.12, "stealth-hear": 0.25, "stealth-sodium": 0.5, "sneak-walk": 1.4, "world-clock-rate": 8, "walk-off": 0.6, "walk-speed": 1.5, "run-speed": 3.6, "walk-metres-per-minute": 6, "carry-speed": 0.65, "carry-noise": 1.5,
   // day phases for the term phase (clean-room PRESSURE-SYSTEMS 12.5 uses the same four)
   "phase-dawn": "04:00", "phase-day": "09:30", "phase-dusk": "15:30", "phase-dark": "21:00",
   // seconds of game time each displayed line costs (0: content prices beats with cost:)
@@ -93,7 +96,7 @@ export function loadRuleset(book) {
   each("modifier", (r, g) => { rs.modifiers.push({ id: r.id, skills: list(g.one("skill") || "*"), amount: num(g.one("mod")), cond: compile(g.one("when")), why: g.one("why") || r.id }); });
   each("archetype", (r, g) => { rs.archetypes[r.id] = { id: r.id, name: g.one("name") || r.id, about: g.one("about") || "", attrs: Object.fromEntries(g.all("attr").map(parseCount).map((c) => [c.id, c.n])), skills: Object.fromEntries(g.all("skill").map(parseCount).map((c) => [c.id, c.n])), items: g.all("item").map(parseCount), traits: g.all("trait").map((s) => s.trim()) }; });
   each("quest", (r, g) => { rs.quests[r.id] = { id: r.id, name: g.one("name") || r.id, about: g.one("about") || "", stages: g.all("stage").map((v) => { const k = v.indexOf(":"); return k < 0 ? { id: v.trim(), text: "" } : { id: v.slice(0, k).trim(), text: v.slice(k + 1).trim() }; }), done: list(g.one("done")) }; });
-  each("char", (r, g) => { rs.chars[r.id] = { id: r.id, name: g.one("name") || r.id, speaker: (g.one("speaker") || r.id).toUpperCase(), faction: g.one("faction") || null, role: g.one("role") || "", about: g.one("about") || "", file: r.file, line: r.line }; });
+  each("char", (r, g) => { rs.chars[r.id] = { id: r.id, name: g.one("name") || r.id, speaker: (g.one("speaker") || r.id).toUpperCase(), faction: g.one("faction") || null, role: g.one("role") || "", about: g.one("about") || "", live: { walkaway: g.all("walkaway").map(unq), interrupted: g.all("interrupted").map(unq), fightstart: g.all("fightstart").map(unq) }, file: r.file, line: r.line }; });
   checkRefs(rs);
   return rs;
 }

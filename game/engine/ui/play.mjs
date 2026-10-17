@@ -48,18 +48,20 @@ export function playScreen(ctx, { startNode = null } = {}) {
   const api = playApi(ctx, P, els, root);
   api.cam = plateCam(els.plate, ctx);
   api.weather = weatherLayer(ctx, els.plate, api.cam);
-  api.people = peopleLayer(ctx, els.plate, api.cam, { onPick: (p) => api.pick(p), idle: () => !P.talk && !P.ended && !root.classList.contains("fighting") && ctx.F.top() && ctx.F.top().root === root, onClock: () => api.worldStep() });
+  api.people = peopleLayer(ctx, els.plate, api.cam, { onPick: (p) => api.pick(p), idle: () => !P.talk && !P.ended && !root.classList.contains("fighting") && ctx.F.top() && ctx.F.top().root === root, onClock: () => api.worldStep(), onFrame: (dt) => api.liveFrame(dt) });
+  const offLive = liveWorld(ctx, P, api, root);
   api.inked = inkedPages(ctx); // ux: the inked Margin page and the chapter page (ui/inked.mjs)
   // ux: who owns the direction keys (ui/input.mjs): walking on the plate, a real-time scene, or a panel
   ctx.input.setMode(() => {
     const t = ctx.F.top(); if (!t) return "menu";
     if (t.name === "fight" || t.name === "sneak" || t.name === "run") return (G.state.runMode === "stepped" && !t.root.classList.contains("fightlayer")) ? "menu" : "scene";
+    if (t.name === "play" && root.classList.contains("talking") && !root.classList.contains("fighting") && P.talk && !P.ended) return "talk"; // the live conversation: WASD and the stick can walk off
     return t.name === "play" && !root.classList.contains("talking") && !root.classList.contains("fighting") ? "walk" : "menu";
   });
 
   const onKey = (e) => { if (e.code === "F5" && ctx.F.top() && ctx.F.top().root === root) { e.preventDefault(); ctx.savesPanel("save"); } };
   window.addEventListener("keydown", onKey);
-  ctx.F.push({ name: "play", root, onAction: (a) => onAction(ctx, P, api, a), onBack: () => ctx.savesPanel("menu"), onClose: () => { window.removeEventListener("keydown", onKey); api.cam.stop(); api.weather.stop(); api.people.stop(); api.inked.stop(); ctx.input.setMode(null); offDev(); } });
+  ctx.F.push({ name: "play", root, onAction: (a) => onAction(ctx, P, api, a), onBack: () => ctx.savesPanel("menu"), onClose: () => { window.removeEventListener("keydown", onKey); api.cam.stop(); api.weather.stop(); api.people.stop(); api.inked.stop(); ctx.input.setMode(null); offLive(); offDev(); } });
   if (startNode) api.startTalk(startNode); else api.worldStep();
   return api;
 }
@@ -128,6 +130,15 @@ function playApi(ctx, P, els, root) {
       if (s) return api.startTalk(s.node);
       api.render();
       ctx.F.focus(els.here.querySelector(".f"), { scroll: false });
+    },
+    // Walking off mid-conversation (2026-10-17): the stick or WASD held past the threshold for a
+    // moment ends the talk; the node's walk: node or the speaker's walkaway line plays, the panel
+    // closes, and Lamb is already walking.
+    liveFrame(dt) {
+      const v = (G.input && G.input.get("move")) || { x: 0, z: 0 }, L = Math.hypot(v.x || 0, v.z || 0);
+      const can = P.talk && P.beat && !P.ended && !P.beat.fight && !P.beat.run && !P.beat.sneak && !root.classList.contains("fighting") && ctx.input.mode && ctx.input.mode() === "talk";
+      P.leaving = can && L >= (+G.rs.rules["walk-off"] || 0.6) ? (P.leaving || 0) + dt : 0;
+      if (P.leaving >= 0.25) { P.leaving = 0; const b = P.talk.walkAway(); if (b) { P.log.push(...b.lines); if (b.done) { P.talk = null; P.beat = null; api.render(); } else api.take(b); } }
     },
     // A hotspot: Lamb walks to it on the plate, then it opens (at once where there is no ground).
     hotspot(hs) {
@@ -229,4 +240,23 @@ function usePlateFor(G, cam, id) {
   try { C.usePlate(enc.area, plateArena(pj, geo.pos, geo.ids, { datum: pj.datum || null, fight: S.fight })); }
   catch (e) { console.warn(`fight ${id}: no plate arena on ${pj.place}: ${e.message}`); return []; }
   return S.taken;
+}
+
+// The live world (author, 2026-10-17: "It should not be turn based, it should be live action").
+// The night's clock runs in real time on the play screen (@rules world-clock-rate, real seconds a
+// game minute, default 8 as in fights); a fight, sneak or run sets its own rate while it plays, and
+// stepped mode (an accessibility setting) keeps the old standing world. As each minute passes: in a
+// conversation at its menu, a due event or a filled meter cuts in at once (talk.interrupt); with no
+// conversation, it plays; otherwise the HUD's clock and meters are redrawn.
+function liveWorld(ctx, P, api, root) {
+  const G = ctx.G, rate = () => ((G.state.runMode || "full") === "stepped" ? 0 : +G.rs.rules["world-clock-rate"] || 8);
+  const busy = () => root.classList.contains("fighting") || (G.runs && G.runs.current) || (G.sneaks && G.sneaks.current);
+  const off = G.loop.add("worldclock", () => { if (!busy()) G.loop.clockRate = rate(); }, { order: 85 });
+  const offTime = G.on("time", () => {
+    if (busy()) return;
+    if (P.talk && P.beat && P.beat.options && !P.ended) { const b = P.talk.interrupt(); if (b) return api.take(b); }
+    else if (!P.talk && !P.ended) { const s = G.nextScene(); if (s) return api.startTalk(s.node); }
+    api.els.hud.replaceChildren(hudEl(G)); api.els.edge.replaceChildren(...meterMarks(G));
+  });
+  return () => { off(); offTime(); G.loop.clockRate = 0; };
 }

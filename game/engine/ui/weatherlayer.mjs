@@ -10,6 +10,8 @@ import { h } from "./dom.mjs";
 import { camBasis } from "../world/plateworld.mjs";
 import { projectPlate } from "../world/camera.mjs";
 
+// Mother's beam turns at this rate (radians a second of the layer's clock); combat reads it.
+export const BEAM_RATE = 0.35;
 const clamp = (x, a = 0, b = 1) => (x < a ? a : x > b ? b : x);
 const FOG_LIT = [0.62, 0.4, 0.17], FOG_COLD = [0.24, 0.22, 0.3], FOG_PAPER = [0.86, 0.83, 0.77];
 
@@ -82,7 +84,7 @@ export function weatherLayer(ctx, host, cam) {
   function beam(g, pj, fog) {
     const L = ((pj.marks || {}).lamps || []).find((l) => l.kind === "beam"); if (!L) return;
     const s = cam.toScreen(L.at); if (!s) return;
-    const [hx, hy] = s, a = S.t * 0.35, len = 1400;
+    const [hx, hy] = s, a = S.t * BEAM_RATE, len = 1400;
     g.save(); g.globalCompositeOperation = "lighter";
     for (const sg of [-1, 1]) {
       const ang = a + (sg > 0 ? 0 : Math.PI), spread = 0.1, k = 0.55 + 3 * fog, grd = g.createRadialGradient(hx, hy, 10, hx, hy, len);

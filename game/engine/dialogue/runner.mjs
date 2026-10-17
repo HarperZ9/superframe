@@ -165,7 +165,7 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
     if (s.cost && !exits.has(s.target)) G.advance(s.cost);
     if (s.effects) runEffects(s.effects, G.scope);
     if (G.state.pendingRun) return finish({ lines, options: null, run: G.runs.take() });
-    if (G.state.pendingFight) return finish({ lines, options: null, fight: G.ext.combat.take() });
+    if (G.state.pendingFight) { const fs = liveLine("fightstart"); if (fs) lines.push(fs); return finish({ lines, options: null, fight: G.ext.combat.take() }); }
     if (G.state.pendingSneak) return finish({ lines, options: null, sneak: G.sneaks.take() });
     let target = s.target;
     if (s.kind === "claim") target = evaluate(s.cond, G.scope) ? s.target : s.fail;
@@ -194,6 +194,34 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
   // Do an interaction verb inside a conversation: its lines, then its node if it names one.
   talk.verb = (obj, kind) => { const r = G.verbs.act(obj, kind); if (r.why) return { ...talk.beat, why: r.why }; return r.node ? play(r.node, 0, r.lines) : finish({ ...talk.beat, lines: r.lines }); };
   talk.jump = (id) => play(id);
+  // A live conversation (author, 2026-10-17: the world never waits). The shell calls these while a
+  // menu is open and the world runs on:
+  //   talk.interrupt()  a due event or filled meter cuts in now; when it ends, play comes back to
+  //                     this menu. The speaker's @char interrupted: line (if any) comes first.
+  //   talk.walkAway()   Lamb walked off: the node's walk: node plays (a reaction that should end
+  //                     the talk), else the speaker's @char walkaway: line closes it.
+  const liveLine = (key) => { const c = G.rs.chars[charIdOf(G, talk.speaker) || ""]; const L = c && c.live && c.live[key]; return L && L.length ? line("line", talk.speaker, L[Math.floor(G.clock()) % L.length]) : null; };
+  const atMenu = () => !!(talk.beat && talk.beat.options && talk.beat.options.length && !talk.done);
+  talk.liveLine = liveLine;
+  talk.interrupt = () => {
+    if (!atMenu()) return null;
+    const f = G.pressure.takeFull(), e = f ? null : G.dueEvent();
+    if (!f && !e) return null;
+    const n = G.book.nodes[talk.node], at = Math.max(0, n.steps.findIndex((s) => s.label != null)), lines = [];
+    const cut = liveLine("interrupted"); if (cut) lines.push(cut);
+    talk.stack.push({ id: talk.node, at, interrupt: true });
+    if (f) { G.pressure.afterFull(f.id); G.emit("meter.scene", f); return play(f.node, 0, lines); }
+    G.state.fired.push(e.id); G.emit("event", { id: e.id });
+    return play(`@event.${e.id}`, 0, lines);
+  };
+  talk.walkAway = () => {
+    if (talk.done) return null;
+    const n = G.book.nodes[talk.node], w = n && n.steps.find((s) => s.kind === "walk");
+    G.emit("talk.walkaway", { node: talk.node, speaker: talk.speaker });
+    if (w) return play(w.value, 0, []);
+    const said = liveLine("walkaway");
+    return finish({ lines: said ? [said] : [], options: null, exit: "walk", done: true, walked: true });
+  };
   // the speaker's char id beside talk.speaker (the display name), for portraits and the people layer
   Object.defineProperty(talk, "speakerId", { get: () => charIdOf(G, talk.speaker), enumerable: true });
   talk.start = () => { G.activeTalk = talk; G.emit("talk.start", { node: startId, title }); return play(startId); };

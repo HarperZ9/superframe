@@ -15,6 +15,8 @@ const DEAD = 0.35, FIRST = 0.34, REPEAT = 0.13;
 //   "walk"   walking, no panel holds focus: WASD and the left stick walk and never move focus; the
 //            arrows and the d-pad move focus over the "what is here" list.
 //   "scene"  a real-time scene (fight, sneak, Tide Run): every direction moves Lamb; focus does not move.
+//   "talk"   a conversation in the live world (2026-10-17): the arrows and the d-pad move focus over
+//            the options; WASD and the left stick walk, and walking off ends the conversation.
 //   "menu"   a panel has focus (talking, the Daybook, pause, settings, creation, the title): every
 //            direction moves focus, including WASD and the stick, and nothing walks.
 const WASD = new Set(["KeyW", "KeyA", "KeyS", "KeyD"]);
@@ -59,7 +61,7 @@ export function createInput(handle) {
   return {
     held,
     // A movement direction from keys and the stick: x right, z down the screen, length <= 1.
-    vector: () => { const m = mode(); return m === "menu" ? { x: 0, z: 0 } : vectorOf(held, pad, m === "walk"); },
+    vector: () => { const m = mode(); return m === "menu" ? { x: 0, z: 0 } : vectorOf(held, pad, m === "walk" || m === "talk"); },
     // the play screen tells the input who owns the direction keys: () => "walk" | "scene" | "menu"
     setMode(fn) { mode = typeof fn === "function" ? fn : () => "menu"; },
     mode: () => mode(),

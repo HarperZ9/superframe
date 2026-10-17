@@ -98,7 +98,7 @@ export function parseStep(key, value, at) {
     case "cmd": return { kind: "cmd", args: v.split(/\s+/), ...at };
     case "return": return { kind: "return", ...at };
     case "go": case "call": case "end": case "exit": case "place": case "read": case "else":
-    case "speaker": case "hub": case "title": case "note": case "camera":
+    case "speaker": case "hub": case "title": case "note": case "camera": case "walk":
       return { kind: key, value: v, ...at };
     default: return { kind: "unknown", key, value: v, ...at };
   }

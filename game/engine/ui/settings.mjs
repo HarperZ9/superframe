@@ -26,7 +26,7 @@ function rows(ctx) {
     { sect: "Feel", label: "Controller rumble", help: "The pad answers blows, blocks and catches", value: () => onoff(p.rumble), step: () => { p.rumble = !p.rumble; } },
     { sect: "Feel", label: "Pause when the window loses focus", help: "Fights and runs stop while you are away", value: () => onoff(p.pauseOnBlur), step: () => { p.pauseOnBlur = !p.pauseOnBlur; } },
     { sect: "Tide Runs", label: "Tide Runs", help: "Off: the story takes another way round each run", value: () => onoff(!p.runsOff), step: () => { p.runsOff = !p.runsOff; } },
-    { sect: "Tide Runs", label: "Run mode", help: "Full speed, half speed, or one step per press", value: () => p.runMode, step: (d) => { p.runMode = cycle(RUN_MODES, p.runMode, d); } },
+    { sect: "Accessibility", label: "Pace of scenes", help: "Full speed (the default), half speed, or stepped: one step per press, and the world waits between steps", value: () => p.runMode, step: (d) => { p.runMode = cycle(RUN_MODES, p.runMode, d); } },
     ...lens,
     ...controlRows(),
   ];

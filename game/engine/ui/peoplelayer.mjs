@@ -9,7 +9,8 @@
 // for Lamb and the speaker while a conversation is open.
 // Keys and the stick walk Lamb directly too (WASD or the left stick, screen directions turned
 // into the plate's ground by its camera), while nothing else is open: the prototype's free walk.
-//   const P = peopleLayer(ctx, host, cam, { onPick, idle, onClock })   idle(): whether the world is
+//   const P = peopleLayer(ctx, host, cam, { onPick, idle, onClock, onFrame })   onFrame(dt): each running
+//   frame; idle(): whether the world is
 //   free to walk; onClock(): the free walk moved the clock (the play screen looks for a due scene)   onPick(worldPoint): a click on the plate
 //   P.walkTo([x, y, z], then) -> bool    P.talkingWith(who | null)    P.hide(ids)    P.stop()
 //   P.figures() -> [{ who, at, face, walking }]   P.walking()
@@ -19,11 +20,12 @@ import { findPath, groundAt, walkable, camBasis } from "../world/plateworld.mjs"
 
 const TALK = ["talk_a", "talk_b", "talk_c"], GESTURE_S = 2.4;
 
-export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, onClock = null } = {}) {
+export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, onClock = null, onFrame = null } = {}) {
   const G = ctx.G, R = G.rs.rules, canvas = h("canvas.peoplecanvas");
   canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none";
   host.append(canvas);
-  const S = { path: null, then: null, run: false, metres: 0, face: {}, talking: null, gesture: {}, hidden: new Set(), raf: 0, last: performance.now(), stopped: false, moving: false };
+  const live = () => G.loop && G.loop.clockRate > 0; // the world clock runs: walking costs no extra minutes
+  const S = { wander: {}, path: null, then: null, run: false, metres: 0, face: {}, talking: null, gesture: {}, hidden: new Set(), raf: 0, last: performance.now(), stopped: false, moving: false };
   const rule = (k, d) => (R[k] != null ? +R[k] : d);
   const waterY = (A) => (A && A.water ? A.water.a + A.water.b * (+G.env.term("tide") || 0) : -Infinity);
   const lambAt = () => G.state.pos || (G.world.area() && G.world.area().spawn) || null;
@@ -51,7 +53,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     const y = A ? groundAt(A, nx, nz) : null;
     if (A && y != null && Math.abs(y - pos[1]) > 0.6) return true;
     G.state.pos = [nx, y ?? pos[1], nz]; S.metres += sp; S.moving = true;
-    const per = rule("walk-metres-per-minute", 6); if (S.metres >= per) { const m = Math.floor(S.metres / per); S.metres -= m * per; G.advance(m); if (onClock) onClock(); }
+    const per = rule("walk-metres-per-minute", 6); if (!live() && S.metres >= per) { const m = Math.floor(S.metres / per); S.metres -= m * per; G.advance(m); if (onClock) onClock(); }
     return true;
   }
   function step(dt) {
@@ -68,14 +70,14 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     if (!S.path.length) {
       S.path = null; S.moving = false;
       const per = rule("walk-metres-per-minute", 6), m = Math.floor(S.metres / per);
-      if (m > 0) { S.metres -= m * per; G.advance(m); }
+      if (m > 0 && !live()) { S.metres -= m * per; G.advance(m); } else if (live()) S.metres = 0;
       const then = S.then; S.then = null; if (then) then();
     }
   }
   function figures() {
     const out = [], a = lambAt();
     if (a) out.push({ who: "lamb", at: a, face: S.face.lamb ?? 0, walking: S.moving, running: S.moving && S.run });
-    for (const f of G.world.figures()) out.push({ who: f.id, at: f.at, face: S.face[f.id] ?? (+f.face < 0 ? Math.PI : 0), walking: false });
+    for (const f of G.world.figures()) { const w = S.wander[f.id]; out.push({ who: f.id, at: (w && w.at) || f.at, face: S.face[f.id] ?? (+f.face < 0 ? Math.PI : 0), walking: !!(w && w.moving) }); }
     return out.filter((f) => !S.hidden.has(f.who));
   }
   function gestureOf(who, dt) {
@@ -96,10 +98,29 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
       personDrawer()(g, f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking, gesture: f.walking ? null : gestureOf(f.who, dt), cam: pj && pj.camera, plate: pj && pj.place, depth, depthAt: cam.depthAt, lights, darkness: cam.darkness() });
     }
   }
+  // Passers-by: a figure with wander: r walks between points within r of its spot, stopping a
+  // while at each, and stands still while it is the one Lamb is talking to. Live spots go to
+  // G.figureAt for the fight's placement and for facing.
+  function wanderStep(dt) {
+    const A = cam.arena(), spots = (G.figureAt ||= {});
+    for (const f of G.world.figures()) {
+      if (!f.wander) { delete S.wander[f.id]; delete spots[f.id]; continue; }
+      const w = (S.wander[f.id] ||= { at: [...f.at], to: null, wait: 1 + (f.id.length % 3), moving: false });
+      w.moving = false;
+      if (S.talking === f.id || S.hidden.has(f.id)) { spots[f.id] = w.at; continue; }
+      if (!w.to) { w.wait -= dt; if (w.wait <= 0) { const a = Math.random() * Math.PI * 2, r = f.wander * Math.sqrt(Math.random()), t = [f.at[0] + Math.cos(a) * r, f.at[2] + Math.sin(a) * r]; if (!A || groundAt(A, t[0], t[1]) != null) w.to = t; else w.wait = 0.5; } }
+      else {
+        const dx = w.to[0] - w.at[0], dz = w.to[1] - w.at[2], d = Math.hypot(dx, dz), sp = 1.1 * dt;
+        if (d <= sp) { w.at = [w.to[0], A ? groundAt(A, w.to[0], w.to[1]) ?? w.at[1] : w.at[1], w.to[1]]; w.to = null; w.wait = 2 + Math.random() * 4; }
+        else { const nx = w.at[0] + (dx / d) * sp, nz = w.at[2] + (dz / d) * sp, y = A ? groundAt(A, nx, nz) : null; if (A && y == null) { w.to = null; w.wait = 1; } else { w.at = [nx, y ?? w.at[1], nz]; w.moving = true; S.face[f.id] = Math.atan2(dz, dx); } }
+      }
+      spots[f.id] = w.at;
+    }
+  }
   function frame(now) {
     if (S.stopped) return;
     const dt = Math.min(0.1, (now - S.last) / 1000); S.last = now;
-    if (!G.loop || !G.loop.paused) step(dt);
+    if (!G.loop || !G.loop.paused) { step(dt); wanderStep(dt); if (onFrame) onFrame(dt); }
     draw(dt);
     S.raf = requestAnimationFrame(frame);
   }
@@ -116,8 +137,8 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     // Lamb faces the speaker; the speaker faces Lamb
     talkingWith(who) {
       S.talking = who || null; S.gesture = {};
-      const f = who && G.world.figures().find((x) => x.id === who), a = lambAt();
-      if (f && a) { S.face.lamb = Math.atan2(f.at[2] - a[2], f.at[0] - a[0]); S.face[who] = Math.atan2(a[2] - f.at[2], a[0] - f.at[0]); }
+      const f = who && G.world.figures().find((x) => x.id === who), a = lambAt(), fa = f && ((G.figureAt && G.figureAt[f.id]) || f.at);
+      if (fa && a) { S.face.lamb = Math.atan2(fa[2] - a[2], fa[0] - a[0]); S.face[who] = Math.atan2(a[2] - fa[2], a[0] - fa[0]); }
     },
     get talkingWithWho() { return S.talking; },
     hide(ids) { S.hidden = new Set(ids || []); },

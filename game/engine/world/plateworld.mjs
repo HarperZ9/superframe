@@ -122,7 +122,7 @@ export function fightFromScene(G, pj, id) {
   let k = 0;
   for (const f of enc.foes || []) for (let n = 0; n < (f.n || 1); n++) {
     const who = charOf(f.rec), fig = who && figs.find((x) => x.id === who && !taken.includes(x.id));
-    if (fig) { taken.push(fig.id); foes.push([fig.at[0], fig.at[2]]); }
+    if (fig) { const at = (G.figureAt && G.figureAt[fig.id]) || fig.at; taken.push(fig.id); foes.push([at[0], at[2]]); }
     else { const q = mark && mark.foes && mark.foes[k++ % mark.foes.length]; foes.push(q ? [q[0] + off[0], q[1] + off[1]] : [pos ? pos[0] + 2 + n : 2, pos ? pos[2] : 0]); }
   }
   return { fight: { ...(mark || {}), lamb: pos ? [pos[0], pos[2]] : mark && mark.lamb, foes }, taken };
