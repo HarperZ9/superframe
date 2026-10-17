@@ -121,10 +121,12 @@ press: fist "Lean on the pans till the beam tips." -> x1.marrow.pans {nerve: -2,
 press: tongue "Ask about his father, and the switch that was never for the sea." -> x1.marrow.father ? has(heard.marrow.father) {nerve: -3, heat: -1, skill: condolence, dc: 6}
 press: hands "Lay the scales from the switch handle on the long table." -> x1.marrow.scales ? has(scales.kept) {nerve: -4}
 press: shadow "Repeat what he told Shadwell at the fire-door." -> x1.marrow.door ? has(afterdark.told) {nerve: -4}
-press: tongue "[FORM LETTER] Tell the hall the Shelf will name the switch either way." -> x1.marrow.name {nerve: -2, heat: +1, skill: formletter, dc: 6}
+press: tongue "[FORM LETTER] Tell the hall the Shelf will name the switch either way." -> x1.marrow.name {nerve: -2, skill: formletter, dc: 6}
+press: tongue "[CONDOLENCE] Ask what the vote in the dark is for, if it was never for the sea." -> x1.marrow.vote {nerve: -2, heat: -1, skill: condolence, dc: 6}
 press: hands "[CARBON] Lay out on the long table how the quay went dark at twenty to ten." -> x1.marrow.table {nerve: -3, skill: carbon, dc: 6}
 press: shadow "[SMELL] Lean close enough to smell the switch box on his cuffs." -> x1.marrow.cuffs {nerve: -3, heat: +1, skill: smell, dc: 6}
 press: eye "[PRECEDENT] Name the last vote in Gullet that went dark, and who pulled the switch for it." -> x1.marrow.precedent {nerve: -3, skill: precedent, dc: 6}
+press: any "Stand there, and let the hall watch him not answer." -> x1.marrow.watched {nerve: -1, again}
 press: any "Let the hall hear the question." -> x1.marrow.hall {nerve: -1, heat: +1}
 lie: l.switch "Nobody in this hall touched the Municipal's switch." {catch: scales.switch, nerve: -4, node: x1.marrow.caught, after: 6}
 tell: 3 "The big hands go flat on the table."
@@ -180,6 +182,15 @@ speaker: MARROW
 line: My father. Every Low Night for twenty years. You know that already, or you'd not ask.
 return:
 
+@node x1.marrow.vote
+speaker: MARROW
+line: For the nose. So a man knows his own vote by the smell of his own hand, and nobody sees it cast.
+return:
+
+@node x1.marrow.watched
+nar: Nobody in the hall looks at the assessor. Everybody looks at Marrow.
+return:
+
 @node x1.marrow.hall
 nar: Somebody at the back says the Captain's name, low. Somebody else tells him to shut it.
 return:
@@ -221,6 +232,10 @@ press: tongue "Talk about the stairs, and the knees, and twenty-eight years." ->
 press: hands "Open the log at tonight's page and lay it on her knee." -> x1.wenna.log ? has(log.ahead) {nerve: -4}
 press: shadow "Ask what she heard at twenty to ten that made her lift her head." -> x1.wenna.motor ? has(wenna.heard_motor) {nerve: -4}
 press: eye "Look at her coat, which is dry." -> x1.wenna.coat ? has(coat.wenna_dry) {nerve: -2}
+press: shadow "[THE DARK] Say what the stairs sound like at twenty to ten, with nobody on them." -> x1.wenna.stairs {nerve: -3, skill: dark, dc: 6}
+press: hands "[CARBON] Lay the night out on the table: the panel, the stairs, the chair at fifty-six." -> x1.wenna.night {nerve: -3, skill: carbon, dc: 6}
+press: eye "[SUM] Count the minutes from the Brine to the panel, against her knees." -> x1.wenna.minutes {nerve: -3, skill: sum, dc: 6}
+press: any "Sit with her a while, and say nothing." -> x1.wenna.sit {nerve: -1, heat: -1, again}
 lie: l.panel "I was at the panel. Where else would I be." {catch: log.ahead, nerve: -4, node: x1.wenna.caught, after: 6}
 tell: 4 "She holds her cup in both hands and does not drink."
 
@@ -256,6 +271,24 @@ return:
 @node x1.wenna.coat
 speaker: WENNA
 line: It's a good coat. It keeps the rain off. That's what coats are for.
+return:
+
+@node x1.wenna.stairs
+speaker: WENNA
+line: Like a church with the people gone. You'd not know. You've never sat on them.
+return:
+
+@node x1.wenna.night
+nar: Salt for the panel, a spoon for the stairs, her own cup for the chair. She watches the cup.
+return:
+
+@node x1.wenna.minutes
+speaker: WENNA
+line: Eleven minutes, on good knees. I've not had good knees in ten years.
+return:
+
+@node x1.wenna.sit
+nar: The fire does the talking for a while. Wenna lets it.
 return:
 
 @node x1.wenna.caught
@@ -300,6 +333,8 @@ press: fist "Step close, and take the pencil out of his hand." -> x1.hobb.pencil
 press: tongue "Tell him, in the Board's own words, that he will not be blamed." -> x1.hobb.blamed {nerve: -2, skill: formletter, dc: 5}
 press: hands "Open Gorm's book at tonight's round, under his nose." -> x1.hobb.book ? has(quay.round.known) {nerve: -3}
 press: shadow "Tell him where he was standing at twenty to ten." -> x1.hobb.standing {nerve: -2}
+press: hands "[CARBON] Walk him through his own page, line by line." -> x1.hobb.page {nerve: -2, skill: carbon, dc: 5}
+press: eye "[SMALL PRINT] Read his page upside down: a line rubbed out at twenty to ten." -> x1.hobb.rubbed {nerve: -2, skill: smallprint, dc: 5}
 lie: l.nobody "Nobody past, assessor. Nobody went near the board." {catch: scales.switch, nerve: -3, node: x1.hobb.caught, after: 4}
 tell: 2 "He writes the time down, and then the time again."
 
@@ -329,6 +364,16 @@ return:
 @node x1.hobb.standing
 speaker: HOBB
 line: By the board. I'm always by the board. That's my standing place.
+return:
+
+@node x1.hobb.page
+speaker: HOBB
+line: Twenty past nine, nothing. Half past, nothing. Twenty to, that's where I've rubbed it. You've seen I've rubbed it.
+return:
+
+@node x1.hobb.rubbed
+speaker: HOBB
+line: It's a mistake. I make them. I'm not to make them, but I do.
 return:
 
 @node x1.hobb.caught

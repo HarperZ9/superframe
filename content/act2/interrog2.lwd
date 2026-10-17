@@ -19,6 +19,9 @@ press: tongue "Say she's the only one in Gullet who still reads the line." -> x2
 press: hands "Take the half past six off the spike and lay it face up." -> x2.rook.spike ? count(i.draft) > 0 | has(ropewalk.draft_taken) {nerve: -4}
 press: shadow "Tell her what she reads aloud to herself at night, with the shutter down." -> x2.rook.night ? has(typist.heard) | has(ropewalk.coe_watch) {nerve: -3}
 press: any "Wait while the sounder ticks." -> x2.rook.tick {nerve: -1, again}
+press: shadow "[UNDERTOW] Say nothing, and let her hear the oilcloth book in it." -> x2.rook.silence {nerve: -3, skill: undertow, dc: 6}
+press: hands "[CARBON] Lay the spike's drafts out in order on the counter, and find the gap." -> x2.rook.gap {nerve: -3, skill: carbon, dc: 6}
+press: eye "[SMALL PRINT] Read the blotter backwards: 9.40, in yellow." -> x2.rook.blotter {nerve: -3, skill: smallprint, dc: 6}
 lie: l.recall "I don't recall it. I don't recall any of it." {catch: ropewalk.envelope_read, nerve: -4, node: x2.rook.caught, after: 5}
 tell: 3 "She puts her hand flat on the oilcloth book, as if it might get up."
 
@@ -52,6 +55,20 @@ return:
 
 @node x2.rook.tick
 nar: The sounder ticks once, by itself, and stops.
+return:
+
+@node x2.rook.silence
+nar: Her hand finds the oilcloth book without her looking for it.
+return:
+
+@node x2.rook.gap
+speaker: ROOK
+line: Half past six is missing. It's always the half past six somebody wants.
+return:
+
+@node x2.rook.blotter
+speaker: ROOK
+line: A blotter's a liar. It says everything backwards.
 return:
 
 @node x2.rook.caught
@@ -96,6 +113,8 @@ press: fist "Take the crowbar out of his hand." -> x2.sallis.bar {nerve: -2, hea
 press: tongue "Say he has never stolen a thing in his life." -> x2.sallis.never {nerve: -3, heat: -1, skill: condolence, dc: 6}
 press: hands "Lay the claim form on the step and point to where it says persons." -> x2.sallis.form {nerve: -2}
 press: shadow "Repeat what he read to the men, word for word." -> x2.sallis.words ? has(quay2.muster_seen) {nerve: -3}
+press: eye "[PRECEDENT] Name the law: no finder is paid on an insured wreck." -> x2.sallis.law {nerve: -3, skill: precedent, dc: 6}
+press: any "Wait on the step while the men watch him." -> x2.sallis.wait {nerve: -1, again}
 lie: l.orders "Board's orders, Shelf. I don't make them." {catch: quay2.muster_seen, nerve: -4, node: x2.sallis.caught, after: 5}
 tell: 3 "He shifts the crowbar to his other hand, and then back."
 
@@ -125,6 +144,16 @@ return:
 @node x2.sallis.words
 speaker: SALLIS
 nar: Behind him the men have stopped loading, to listen to their own reason said back to them.
+return:
+
+@node x2.sallis.law
+speaker: SALLIS
+line: That's Hesk law. This is Gullet.
+nar: Behind him, old Penrose has stopped loading.
+return:
+
+@node x2.sallis.wait
+nar: The men stand in the boat with their crowbars and look at Sallis, waiting for him to say the next thing.
 return:
 
 @node x2.sallis.caught
