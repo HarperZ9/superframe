@@ -20,6 +20,9 @@ import * as wenna from "../cast/wenna.mjs";
 import * as merrow from "../cast/merrow.mjs";
 import { GORM, HOBB, FEWELL, STRAND, BRIGHT, COE } from "../cast/lamplighter.mjs";
 import * as FOLK from "../cast/folk.mjs";
+import { plateCtx } from "./platectx.mjs";
+import { exposure } from "./expose.mjs";
+import { queueShadow } from "./groundshadow.mjs";
 const CAST = { lamb, fennick, marrow, warden, salvor, keel, sabine, wenna, merrow, gorm: GORM, hobb: HOBB, fewell: FEWELL, strand: STRAND, bright: BRIGHT, coe: COE, ...Object.fromEntries(Object.entries(FOLK).map(([k, m]) => [k.toLowerCase(), m])) };
 
 const MEMBERS = CAST;
@@ -52,10 +55,19 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     if (!at || !lights || !lights.length) return { rig, tone };
     const near = lights.map((L) => ({ L, d: Math.hypot(L.at[0] - at[0], L.at[2] - at[2]) })).filter((q) => q.d < (q.L.reach || 6) * 1.6).sort((a, b) => a.d - b.d).slice(0, 4);
     const lit = 1 - darkness, lamps = near.map(({ L }) => ({ pos: L.at, c: KIND[L.kind] || KIND.paraffin, power: 0, d: Math.hypot(L.at[0] - at[0], L.at[1] - 1 - at[1], L.at[2] - at[2]), I: L.I || 1, kind: L.kind }));
-    // which light rules here, weighted by what reaches the figure: sodium's ramp only where sodium wins
-    // the plate's own falloff, I (1 - d / reach)^2, matched at the figure's chest (the rasteriser's
-    // inverse square then shapes it across the body)
-    for (const q of lamps) { const reach = near.find((n) => n.L.at === q.pos).L.reach || 6, f = Math.max(0, 1 - q.d / reach); q.power = q.I * f * f * (q.d * q.d + 0.3) * 0.75 * lit; }
+    // Each lamp's share of the light at the chest, I (1 - d / reach)^2 (the plate's own falloff), scaled so
+    // the sum reaches the chest at a moderate 0.7: the renderer then never saturates, and the drawer
+    // sets the figure's absolute exposure from the painting around it (exposeToPlate below). A lamp
+    // closer than 1.4 m is moved back along its own direction, so the body's near side does not take
+    // an inverse-square spike the painting never shows.
+    let Etot = 0;
+    for (const q of lamps) { const reach = near.find((n) => n.L.at === q.pos).L.reach || 6, f = Math.max(0, 1 - q.d / reach); q.e = q.I * f * f; Etot += q.e; }
+    const norm = Etot > 0 ? 0.7 / Etot : 0;
+    for (const q of lamps) {
+      const dx = q.pos[0] - at[0], dy = q.pos[1] - (at[1] + 1), dz = q.pos[2] - at[2], dl = Math.hypot(dx, dy, dz) || 1, D = Math.max(1.4, dl);
+      q.pos = [at[0] + (dx / dl) * D, at[1] + 1 + (dy / dl) * D, at[2] + (dz / dl) * D];
+      q.power = q.e * norm * (D * D + 0.3) * lit;
+    }
     const share = lamps.reduce((acc, q) => { const e = q.I / (q.d * q.d + 1); acc[q.kind === "sodium" ? 0 : 1] += e; return acc; }, [0, 0]);
     const sod = share[0] > share[1] && lit > 0.3;
     return {
@@ -69,6 +81,7 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
   // globalThis.__lwFigureLook overrides it for tests: any of lift, outline, shadow, pool, comma-separated.
   const LIFT_IDS = new Set(["skin", "cheek", "jawcool", "lip"].map((n) => MATS[n].id));
   const LOOK_DEFAULT = "lift,outline";   // the test: outline read best on dark ground, lift added faces and hands; shadow and pool vanished on dark ground
+  const LIFT = 1.6, OCC_BIAS = 0.14;   // face lift in linear light; occlusion slack in metres
   return function drawFighter(g, F, args) {
     const look = new Set(String(globalThis.__lwFigureLook ?? LOOK_DEFAULT).split(",").map((x) => x.trim()).filter(Boolean));
     const { x, y, ppm, face, down, W, at, depth, depthAt, lights, darkness } = args;
@@ -82,29 +95,45 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     const R = rigAt(at, lights, darkness || 0);
     const r = a.render({ yawDeg: cam.yawDeg, elevDeg: cam.elevDeg, height: hM, centre: [P[0], P[1] + 1.05, P[2]] }, w, h, R.rig, { ss, tone: R.tone });
     const feetDown = 1.05 * cosE2 * truePpm, ox = Math.round(x - r.w / 2), oy = Math.round(y - feetDown - r.h / 2);
-    const img = new ImageData(r.w, r.h), d = img.data, G = r.G, fw = fwdOf(cam);
-    for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) {
-      const i = py * r.w + px, al = r.rgba[i * 4 + 3]; if (al <= 0) continue;
-      // hidden where the painted room stands in front: the pixel's own depth from the figure's
-      if (depthAt && depth != null) {
-        const gi = py * ss * G.w + px * ss, dz = G.id[gi] && at ? depth + (G.wp[gi * 3] - at[0]) * fw[0] + (G.wp[gi * 3 + 1] - at[1]) * fw[1] + (G.wp[gi * 3 + 2] - at[2]) * fw[2] : depth;
-        if (depthAt(ox + px, oy + py) < dz - 0.35) continue;
-      }
-      let lift = 1;
-      if (look.has("lift")) { const gi = py * ss * G.w + px * ss; if (LIFT_IDS.has(G.id[gi])) lift = 1.75; }   // faces and hands catch the light
-      for (let k = 0; k < 3; k++) d[i * 4 + k] = Math.round(Math.max(0, Math.min(1, r.rgba[i * 4 + k] * lift + (lift > 1 ? 0.05 : 0))) * 255); d[i * 4 + 3] = Math.round(al * 255);
+    const img = new ImageData(r.w, r.h), d = img.data, G = r.G, fw = fwdOf(cam), n = r.w * r.h;
+    // exposure from the painting around the figure's feet: the light that reaches the spot it stands on
+    const PC = plateCtx(args);
+    const stats = PC && PC.lumaStats([[x - 0.9 * truePpm, y - 0.45 * truePpm * cosE2, x + 0.9 * truePpm, y + 0.45 * truePpm * cosE2]]);   // the ground the figure stands on (the wall behind it is not its light)
+    const X = exposure(r.rgba, n, stats, r.albedo, (i) => ((i / r.w) | 0) * ss * G.w + (i % r.w) * ss);
+    (globalThis.__lwFigureStats ||= {})[F.id] = { gain: +X.gain.toFixed(3), ceil: +X.ceil.toFixed(4), mid: stats && +stats.mid.toFixed(4), hi: stats && +stats.hi.toFixed(4), plate: !!PC };   // read by characters/proto/plate_proof.py
+    // hidden where the painted room stands in front: each pixel's own depth against the painting's
+    // (OCC_BIAS of slack for the geo buffer's half resolution), a hard mask first, then a one-pixel
+    // feather at its edge, so a figure behind a post or a counter is cut cleanly and never ghosted;
+    // props in the hands go through the same test
+    const vis = new Uint8Array(n).fill(1);
+    if (depthAt && depth != null) for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) {
+      const i = py * r.w + px; if (r.rgba[i * 4 + 3] <= 0) continue;
+      const gi = py * ss * G.w + px * ss, dz = G.id[gi] && at ? depth + (G.wp[gi * 3] - at[0]) * fw[0] + (G.wp[gi * 3 + 1] - at[1]) * fw[1] + (G.wp[gi * 3 + 2] - at[2]) * fw[2] : depth;
+      if (dz - depthAt(ox + px, oy + py) > OCC_BIAS) vis[i] = 0;
     }
-    if (look.has("outline")) {   // a thin line of the ruling light just outside the silhouette
-      const rc = R.rig.fresnel ? R.rig.fresnel.c.map((v) => Math.min(1, v * 2.4)) : [0.9, 0.8, 0.6], src = new Uint8ClampedArray(d), wpx = Math.max(1, Math.round(truePpm / 70));
-      for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) { const i = py * r.w + px; if (src[i * 4 + 3] > 40) continue; let hit = false;
-        for (let dy = -wpx; dy <= wpx && !hit; dy++) for (let dx = -wpx; dx <= wpx; dx++) { const X = px + dx, Y = py + dy; if (X < 0 || Y < 0 || X >= r.w || Y >= r.h) continue; if (src[(Y * r.w + X) * 4 + 3] > 200) { hit = true; break; } }
-        if (hit) { d[i * 4] = rc[0] * 255; d[i * 4 + 1] = rc[1] * 255; d[i * 4 + 2] = rc[2] * 255; d[i * 4 + 3] = 170; } }
+    for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) {
+      const i = py * r.w + px; let al = r.rgba[i * 4 + 3]; if (al <= 0 || !vis[i]) continue;
+      let s9 = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const X2 = px + dx, Y2 = py + dy; s9 += X2 < 0 || Y2 < 0 || X2 >= r.w || Y2 >= r.h ? 1 : vis[Y2 * r.w + X2]; }
+      al *= Math.min(1, s9 / 7);
+      const lift = look.has("lift") && LIFT_IDS.has(G.id[py * ss * G.w + px * ss]) ? LIFT : 1;   // faces and hands catch the light, under the ceiling
+      const c = X.apply(i, lift); d[i * 4] = c[0]; d[i * 4 + 1] = c[1]; d[i * 4 + 2] = c[2]; d[i * 4 + 3] = Math.round(al * 255);
+    }
+    if (look.has("outline")) {   // a thin line of the ruling light just outside the silhouette, no brighter than the room's highlights
+      const rc = X.cap(R.rig.fresnel ? R.rig.fresnel.c.map((v) => Math.min(1, v * 2.4)) : [0.9, 0.8, 0.6]), src = new Uint8ClampedArray(d), wpx = Math.max(1, Math.round(truePpm / 70));
+      for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) { const i = py * r.w + px; if (src[i * 4 + 3] > 40) continue; let hit = 0;
+        for (let dy = -wpx; dy <= wpx && !hit; dy++) for (let dx = -wpx; dx <= wpx; dx++) { const X2 = px + dx, Y2 = py + dy; if (X2 < 0 || Y2 < 0 || X2 >= r.w || Y2 >= r.h) continue; if (src[(Y2 * r.w + X2) * 4 + 3] > 200) { hit = src[(Y2 * r.w + X2) * 4 + 3]; break; } }
+        if (hit) { d[i * 4] = rc[0]; d[i * 4 + 1] = rc[1]; d[i * 4 + 2] = rc[2]; d[i * 4 + 3] = Math.round(170 * hit / 255); } }
     }
     const c = (drawFighter.scratch ||= new OffscreenCanvas(8, 8)); c.width = r.w; c.height = r.h; c.getContext("2d").putImageData(img, 0, 0);
     g.save();
-    const sr = look.has("shadow") ? 0.62 : 0.42, sa = look.has("shadow") ? 0.72 : 0.45;
     if (look.has("pool")) { const gr = g.createRadialGradient(x, y, 0, x, y, 0.9 * truePpm); gr.addColorStop(0, "rgba(255,220,170,0.28)"); gr.addColorStop(1, "rgba(255,220,170,0)"); g.save(); g.scale(1, Math.sin(cam.elevDeg * D2R)); g.fillStyle = gr; g.beginPath(); g.arc(x, y / Math.sin(cam.elevDeg * D2R), 0.9 * truePpm, 0, Math.PI * 2); g.fill(); g.restore(); }
-    g.fillStyle = `rgba(8,4,10,${sa})`; g.beginPath(); g.ellipse(x, y, sr * truePpm, sr * truePpm * Math.sin(cam.elevDeg * D2R), 0, 0, Math.PI * 2); g.fill();   // contact shadow
+    // contact shadow: queued into the canvas's shared mask (runtime/groundshadow.mjs), laid on the
+    // plate's ground only; without the plate's geo yet, a small soft ellipse
+    const rule = (R.rig.lamps || []).reduce((b, q) => { const w = q.power / ((q.pos[0] - at[0]) ** 2 + (q.pos[2] - at[2]) ** 2 + 1); return w > b.w ? { w, q } : b; }, { w: 0, q: null }).q;
+    const away = rule && at ? (() => { const dx = at[0] - rule.pos[0], dz = at[2] - rule.pos[2], l = Math.hypot(dx, dz); return l > 0.05 ? [dx / l, dz / l] : null; })() : null;
+    (globalThis.__lwFigureStats[F.id] || {}).away = away;
+    if (PC && at) queueShadow(g, PC, { x, y, at, ppm: truePpm, r: down ? 0.8 : 0.5, dir: away, len: away ? 1.2 : 0 });
+    else { g.fillStyle = "rgba(8,4,10,0.35)"; g.beginPath(); g.ellipse(x, y, 0.32 * truePpm, 0.32 * truePpm * Math.sin(cam.elevDeg * D2R), 0, 0, Math.PI * 2); g.fill(); }
     // telegraph: an opponent's wind-up on a move combat marks with a tell gets a pale ring at the feet
     const m = F.act && W.moves ? W.moves[F.act.id] : null;
     if (F.team !== "lamb" && m && m.tell && F.act.f >= m.tell.at[0] && F.act.f < m.tell.at[1]) {
