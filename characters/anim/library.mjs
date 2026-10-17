@@ -25,9 +25,12 @@ function shapeStrike(c) {
   // the swing ramps up over the last third of the windup (16 % of the arc by 0.86, 48 % by its end),
   // so the hand accelerates over several frames instead of leaving a hold at full speed
   const hasMid = keys.some((k) => at(k) && at(k)[0] === "s" && at(k)[1] > 0.55 && at(k)[1] < 1);
-  keys[iTop] = { at: ["s", 1], pose: mixPose(top, hit, 0.48) };
-  if (!hasMid) keys.push({ at: ["s", 0.62], pose: top });
-  keys.push({ at: ["s", 0.86], pose: mixPose(top, hit, 0.16) });
+  // Most of the arc travels in the last frames of the wind-up (20 % by 0.76, 52 % by 0.9, 82 % at its
+  // end), so the 2 to 3 active frames cover only the contact part of the swing. Combat's frame counts
+  // are unchanged; its warp still lands the windup's end on its last startup frame.
+  keys[iTop] = { at: ["s", 1], pose: mixPose(top, hit, 0.82) };
+  if (!hasMid) keys.push({ at: ["s", 0.6], pose: top });
+  keys.push({ at: ["s", 0.76], pose: mixPose(top, hit, 0.2) }, { at: ["s", 0.9], pose: mixPose(top, hit, 0.52) });
   // follow-through: the swing carries on past contact and slows over several frames, rather than
   // stopping dead on the last active frame
   if (!keys.some((k) => at(k) && at(k)[0] === "r" && at(k)[1] < 0.3)) keys.push({ at: ["r", 0.14], pose: mixPose(last, top, -0.12) });

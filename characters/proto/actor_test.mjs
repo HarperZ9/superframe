@@ -22,10 +22,10 @@ expect(log.filter((p) => p.endsWith("*")).length === Tl.active, `hit frames = ac
 // combat's clock: drive with t, the art follows; facing converts from combat's radians
 const b = cast.actor("lamb", { tool: "boathook" }), table = cast.clips("lamb"), clip = table["lamb.long.heavy"];
 expect(!!clip && clip.phases.some((p) => p.name === "windup"), "the clip table names phases windup, active, recovery for drive.mjs");
-b.drive({ x: 2, z: 3, face: 0, pose: { clip: "lamb.heavy", anim: "heavy", t: clip.phases[0].to } });
-expect(b.state.clip === "long.heavy" && Math.abs(b.state.frame - clip.phases[0].to * 30) < 1e-6, "drive shows long.heavy at the end of its windup");
+b.drive({ x: 2, z: 3, face: 0, pose: { clip: "lamb.heavy", anim: "heavy", t: clip.phases[0].to * 0.6 } });
+expect(b.state.clip === "long.heavy" && Math.abs(b.state.frame - clip.phases[0].to * 18) < 1e-6, "drive shows long.heavy at the held top of its windup (60 %; the swing travels in the last third)");
 expect(Math.abs(b.facing - 90) < 1e-9 && b.pos[0] === 2 && b.pos[2] === 3, "combat face 0 (toward +x) is art facing 90; position taken from combat");
-const w = b.weapon(); expect(w.cls === "long" && w.tip[1] > 1.8, `at the top of the windup the boathook's tip is overhead (y ${w.tip[1].toFixed(2)} m)`);
+const w = b.weapon(); expect(w.cls === "long" && w.tip[1] > 1.8, `at the held top the boathook's tip is overhead (y ${w.tip[1].toFixed(2)} m)`);
 // two-handed grip: the left wrist ends on the shaft
 const S = b.skeleton(), hl = S[17 - 4], dL = Math.hypot(...[0, 1, 2].map((k) => S[9].p[k] - (S[13].p[k])));
 expect(dL < 0.9, `left and right wrists within the grip span on the boathook (${dL.toFixed(2)} m)`);
