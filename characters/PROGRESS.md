@@ -357,7 +357,7 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
       ground shift sets the feet. out/seated.png (proto/seated_sheet.mjs). The drawer sits a person when
       args.pose is "seated"; the people layer does not pass it yet (asked in NOTES). Keel's coat still
       flares like a bell round the knees; a split coat would drape better.
-    - Visual check, final run (7 Oct 17 state): exposure passes in every view (Merrow 1.99, Keel 0.6);
+    - Visual check, final run at 20a9c70: exposure passes in every view (Merrow 1.99, Keel 0.6);
       three views still fail on two measures I checked against marked frames
       (stills/proof/check-marks/, proto/markup.mjs): Sabine's occlusion compares each body pixel to her
       feet's depth, but under the 34-degree camera her chest is 0.5 to 0.7 m nearer than her feet; by
