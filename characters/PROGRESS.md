@@ -153,3 +153,28 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     class, swappable coats and armour with weight bands, a load-band style layer, charge holds,
     running attacks and weapon specials as combat names them. design/LOOK-UNIFIED.md did not exist
     when checked; the shading fits it when it lands.
+31. DONE In-world fights (systems engineer's setFigureDrawer): runtime/fightdrawer.mjs, one actor per
+    fighter driven by combat's poseOf; harness characters/proto/fight_shot.html (no edit to
+    game/engine); stills/09-fight-inworld.png and -1080.png with Lamb and a salvor on the re-baked
+    quay. Unknown combat clips fall back to the guard with a console warning. Asked the systems
+    engineer (A4) for each fighter's world point, the plate camera and depth, and an explore and talk
+    hook so the play page draws everyone through the same figures.
+32. DONE Animation quality pass (author: fluid animation paramount): proto/popcheck.mjs measures pops
+    and planted-foot slides at 60 Hz over a walk-run-roll-combo-hit-turn-talk sequence. Built: walk,
+    run and wade solved from the foot path (anim/gait.mjs: stance foot moves back at exactly body
+    speed, so it cannot slide); runtime foot locking with leg IK for every other clip; loops start
+    at the phase nearest the pose they leave; whole-body angles blend the short way; strikes shaped
+    with launch and follow-through keys. Measured on Lamb's sequence: slides 205 -> 33 to 68
+    (moves with the threshold), pops 95 -> about 120 (the lock's own corrections add some). Honest
+    state: the slide count fell; the pop count did not, and the biggest pops are the hand in fast
+    strikes, where a 2-frame active window covers a long arc at combat's numbers. Next: motion blur
+    or smear frames for those swings, and an IK settle instead of hard lock release.
+33. DONE Attribute range: reel/low-water-attribute-range-60fps.mp4, every defensive and combo move
+    at a fast build (startup x0.7, recovery x0.6) beside a heavy one (startup x1.45, recovery x1.5),
+    phase-warped, never sped as a whole. Looked at: the heavy build holds anticipation longer and
+    settles longer; the fast one reads sharp. Combat now reports a playback rate and times clips from
+    its frames; drive() plays combat's t (already phase-warped) and keeps the rate.
+34. DONE Combat's new moves: tool specials (14 arts, art and art2 per class) and the running strike
+    per class (anim/arts.mjs), 290 clips in all; the ten new tools as props (cast/tools.mjs).
+35. NOTE content-v1/ holds v1 bakes of all four places so game/main.mjs runs while the environment
+    lead's v2 plates replace content/ (NOTES A3). The shell's v2 path is the next shell step.
