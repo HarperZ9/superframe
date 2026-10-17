@@ -32,7 +32,7 @@ export const WATER_BANDS = [
   { band: "knee", from: 0.4, speed: 0.6, regen: 0.6, accel: 0.7, root: 0.7 },
   { band: "waist", from: 0.85, speed: 0.36, regen: 0.35, accel: 0.5, root: 0.45 },
 ];
-export const SIGHT = { base: 2.2, perLight: 22, fogK: 32, min: 1.6, max: 24 };
+export const SIGHT = { base: 2.2, perLight: 22, fogK: 32, min: 1.6, max: 24, over: 1.2 };
 export const WIND_K = 0.35;
 // what cellAt returns for solid ground: no footing, far above any water
 export const WALL = Object.freeze({ surface: "stone", h: 99, solid: true });
@@ -70,6 +70,19 @@ export function createField({ G, arena }) {
     lineClear(ax, az, bx, bz) {
       const d = Math.hypot(bx - ax, bz - az), n = Math.ceil(d / (A.cell * 0.5));
       for (let i = 1; i < n; i++) { const t = i / n; if (F.solid(ax + (bx - ax) * t, az + (bz - az) * t)) return false; }
+      return true;
+    },
+    // sight between two bodies: solid ground blocks it only where it stands taller than SIGHT.over above
+    // the lower of the two (a bench, a crate, a bollard, a low wall do not hide a standing body; a house
+    // does). Row arenas and solid cells with no height known block as before.
+    sightClear(ax, az, bx, bz) {
+      const tops = A.grid && A.grid.tops; if (!tops) return F.lineClear(ax, az, bx, bz);
+      const eye = Math.min(F.cellAt(ax, az).h, F.cellAt(bx, bz).h) + SIGHT.over, d = Math.hypot(bx - ax, bz - az), n = Math.ceil(d / (A.cell * 0.5));
+      for (let i = 1; i < n; i++) {
+        const t = i / n, x = ax + (bx - ax) * t, z = az + (bz - az) * t; if (!F.solid(x, z)) continue;
+        const c = Math.floor((x - A.origin[0]) / A.cell), r = Math.floor((z - A.origin[1]) / A.cell), top = c >= 0 && r >= 0 && c < A.grid.w && r < A.grid.h ? tops[r * A.grid.w + c] : NaN;
+        if (!(top < eye)) return false;
+      }
       return true;
     },
     waterY: () => (A.water ? A.water.a + A.water.b * terms.tide : -9),

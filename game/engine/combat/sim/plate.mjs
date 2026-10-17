@@ -44,9 +44,19 @@ export function plateArena(place, pos, ids, { cell = 0.5, datum = PLATE_DATUM, f
   }
   const cells = new Array(W * H).fill(null);
   for (const [key, a] of acc) if (a.n >= 2) cells[key] = { surface: Object.entries(a.kinds).sort((p, q) => q[1] - p[1])[0][0], h: a.y / a.n };
+  // how tall the solid stuff in each solid cell stands (the highest painted surface over it): sight passes
+  // over a bench or a crate, not over a wall (sim/field.mjs sightClear)
+  const tops = new Float32Array(W * H).fill(NaN);
+  for (let gy = 0; gy < gh; gy++) for (let gx = 0; gx < gw; gx++) {
+    const k = (gy * gw + gx) * 3, x = pos[k], y = pos[k + 1], z = pos[k + 2];
+    if (!isFinite(x) || !isFinite(y) || !isFinite(z)) continue;
+    const c = Math.floor((x - x0) / cell), r = Math.floor((z - z0) / cell);
+    if (c < 0 || r < 0 || c >= W || r >= H || cells[r * W + c]) continue;
+    const key = r * W + c; if (!(tops[key] >= y)) tops[key] = y;
+  }
   const marks = place.marks || {};
   const arena = {
-    name: place.place, place: place.place, cell, origin: [x0, z0], grid: { w: W, h: H, cells }, plate: place.place, camera: place.camera,
+    name: place.place, place: place.place, cell, origin: [x0, z0], grid: { w: W, h: H, cells, tops }, plate: place.place, camera: place.camera,
     water: datum ? { a: datum.a, b: datum.b, vscale: datum.b } : null, tideEnds: !!datum,
     // the lighthouse beam sweeps (sim/field.mjs) and lights only while Mother burns
     beams: (marks.lamps || []).filter((l) => l.kind === "beam").map((l) => ({ x: l.at[0], z: l.at[2], r: 40, k: 0.75, spread: 0.12 })),
