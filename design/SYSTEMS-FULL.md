@@ -787,8 +787,9 @@ Lamb does not level by killing. A night's investigation has two kinds of progres
 Spending:
 - One page buys one trained rank in a voice (cap: the compartment's value, plus 1 per inked Margin
   note that raises it).
-- Every **third** page is also a **chapter page**, which raises one compartment by 1 (to 10, soft cap
-  above 6), on top of the page's rank. Builds stay distinct because compartments rise slowly.
+- Every **fourth** page is also a **chapter page**, which raises one compartment by 1 (to 10, soft cap
+  above 6), on top of the page's rank. (Set to every third on 2026-10-17, back to every fourth the same
+  day once chapter raises ran in the engine; see the decision below.) Builds stay distinct because compartments rise slowly.
 - One page buys a Margin slot or rubs out a note (section 6).
 
 Pace, set 2026-10-17 by what the builds need, not by a page total. A committed build should
@@ -806,6 +807,18 @@ with the corrected gates (harness, one shuffle per build):
 | Random, 10 seeds | 6 to 11 | 7 to 16 | 9 to 21 |
 
 Every build passes 12 pages early in Act 2 and 18 early in Act 3, so the targets hold for all five.
+
+**Decision, 2026-10-17 (chapter raises running in the engine): every fourth page.** The archetypes
+start their main compartment at 5, not 4, so every third page brought 10 by the end of Act 2 for all
+five builds (Hands by the end of Act 1). Against the measured page counts:
+
+| Interval | Main compartment at mid Act 2 | At the end of Act 2 | Pages to reach 10 |
+|---|---|---|---|
+| Every third page | 9 or 10 | 10 for all five | 15 |
+| Every fourth page | 8 for four builds, 9 for Hands | 9 (Hands 10) | 20 |
+
+Every fourth meets the targets: 8 by mid Act 2, and 10 arriving in Act 3 rather than before it. The
+second breakpoint (19.11a) stays something earned in the gale.
 Act 2 is even (17 to 22). Act 3 spreads (23 to 34), because Hands and Tongue resolve more of its
 gates. Eye still reaches 10 by late Act 3, and the extra pages only buy ranks and Margin slots.
 

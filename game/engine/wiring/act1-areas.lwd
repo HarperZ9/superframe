@@ -1,10 +1,14 @@
-# Low Water, Act 1: the walkable plates wired to the script's places (the director's world.lwd:
-# "Areas (walkable plates) are wired by the engineer once the plates' coordinates are known").
-# Engineer's file, loaded by the shell after the act (ui/app.mjs content=act1). Coordinates are
-# the v2 plates' own world (content/<plate>/place.json marks). When a node moves Lamb to a place,
-# the area showing it becomes current (world/districts.mjs). Hotspots open the place's hub; the
-# figures' spots are the engineer's placement for the director and the art lead to correct.
+# Low Water, Act 1: the walkable plates wired to the script's places (world.lwd: "Areas (walkable
+# plates) are wired by the engineer once the plates' coordinates are known"). Loaded by the shell
+# after the act (ui/app.mjs content=act1). Coordinates are the v2 plates' own world, taken from each
+# content/<plate>/place.json marks (spots, exits). When a node moves Lamb to a place, the area
+# showing it becomes current (world/districts.mjs).
+# Engineer's first placement; corrected by the director, 2026-10-17: figures moved onto the marks
+# where the script puts those people, with presence conditions; one hotspot per thing a place's
+# scenes really use, each gated the way the script's own menu gates it; the lamp room and the 112
+# stairs added; the harbour office wired to its own room (quay.harbour.room is now a hub).
 
+# ---------------------------------------------------------------- the quay
 @area a1.quay
 name: Lamp Quay
 plate: quay
@@ -12,59 +16,133 @@ variant: night
 place: quay
 places: steps mole_steps weigh_out yard
 spawn: -1.2 0 -2.6
-hotspot: "Look along the quay" -> quay.hub {at: -1.6 0 -0.45, r: 1.4}
-figure: fewell {at: 0.6 0 -1.4, face: -1}
-figure: strand {at: 1.4 0 -0.9, face: -1}
+hotspot: "Look along the quay" -> quay.hub {at: 0.2 0 -1.4, r: 1.2}
+hotspot: "The post at the top of the steps" -> quay.post {at: -1.6 0 -0.45, r: 0.9}
+hotspot: "The Brine" -> brine.hub {at: -6.6 0 -1.8, r: 1.1}
+hotspot: "The weigh-house" -> weigh.hub {at: 3.3 0 -2.5, r: 1.0}
+hotspot: "The harbour office" -> quay.harbour {at: 12.5 0 -2.3, r: 1.0}
+hotspot: "The mole steps" -> quay.molesteps {at: 26.5 0.35 -3, r: 1.4}
+hotspot: "Along the mole" -> mole.hub {at: 33.0 0.35 -1.6, r: 1.6}
+hotspot: "Down the steps to the floor" -> floor.hub ? tide < 0 {at: -2.6 -3.2 6.0, r: 1.6}
+figure: fewell {at: -0.9 0 -0.9, face: -1, when: clock < 03:00 & !has(book.violence)}
+figure: strand {at: 1.2 0 -2.0, face: -1, when: clock < 03:00 & !has(struck.strand)}
+figure: hobb {at: 3.9 0 -2.2, face: 1, when: clock >= 00:30 & clock < 04:15}
 
+# ---------------------------------------------------------------- the harbour office and its cells
 @area a1.office
 name: The harbour office
 plate: office
 place: harbour
-spawn: 1.6 0 -1.2
-hotspot: "Back out to the quay" -> quay.hub {at: 2.2 0 -1.4, r: 1.2}
+spawn: 2.0 0 -1.3
+hotspot: "The harbour office" -> quay.harbour.room {at: 0.0 0 -0.8, r: 1.4}
+hotspot: "The bay chart under glass" -> quay.chart ? !has(quay.bearing) {at: 0.2 0 -1.6, r: 0.7}
+hotspot: "The telephone" -> quay.phone.silent {at: 1.7 0 -1.6, r: 0.6}
+hotspot: "Keel, in his chair" -> quay.keel.office ? clock >= 00:10 & clock < 04:15 {at: 0.2 0 -0.1, r: 0.8, who: keel}
+hotspot: "Back out to the quay" -> quay.hub {at: 2.2 0 -1.35, r: 0.8}
+figure: keel {at: 0.2 0 -0.1, face: 1, when: clock >= 00:10 & clock < 04:15}
+figure: merrow {at: -1.6 -2.6 -1.3, face: 1, when: has(merrow.cells) & !has(appt.joined)}
 
+# ---------------------------------------------------------------- the Brine
 @area a1.brine
 name: The Brine
 plate: brine
 place: brine
 places: oven
-spawn: 4.6 0 1.2
-hotspot: "The bar" -> brine.hub {at: -1.6 0 -2.2, r: 1.6}
-figure: sabine {at: -1.0 0 -1.5, face: 1}
+spawn: 4.9 0 1.2
+hotspot: "The bar" -> brine.hub {at: -1.0 0 -1.8, r: 1.4, who: sabine}
+hotspot: "The ship's clock" -> brine.clock {at: 2.6 0 -2.2, r: 0.7}
+hotspot: "The stove" -> brine.stove {at: -3.6 0 -0.5, r: 0.9}
+hotspot: "The oven, behind the bar" -> brine.oven ? !(clock >= 03:40 & clock < 03:50) {at: 3.7 0 -1.6, r: 0.8}
+hotspot: "Up to the room" -> brine.room {at: 5.6 0 -1.4, r: 0.7}
+hotspot: "Out to the quay" -> quay.hub {at: 5.3 0 1.4, r: 0.8}
+figure: sabine {at: -1.0 0 -1.9, face: 1}
+figure: merrow {at: -3.2 0 -0.3, face: -1, when: clock < 23:30 & !has(merrow.cells)}
 
+# ---------------------------------------------------------------- the room above the Brine
 @area a1.room
 name: The room above the Brine
 plate: room
 place: room
-spawn: -0.4 0 0.9
-hotspot: "Down to the bar" -> brine.hub {at: -0.4 0 1.1, r: 1.0}
+spawn: -0.4 0 0.8
+hotspot: "The round window" -> brine.room.window {at: 2.8 0 0, r: 0.7}
+hotspot: "The bench" -> bench {at: 1.3 0 1.3, r: 0.7}
+hotspot: "The plank wall" -> wall {at: -1.0 0 -1.3, r: 0.7}
+hotspot: "Down the ladder to the bar" -> brine.hub {at: -0.4 0 1.1, r: 0.6}
 
+# ---------------------------------------------------------------- the weigh-house
 @area a1.weigh
 name: The weigh-house
 plate: weigh
 place: weigh_in
-
+places: tube
 spawn: 3.0 0 -3.6
-hotspot: "Back out to the quay" -> weigh.hub {at: 3.4 0 -4.2, r: 1.2}
+hotspot: "The voting pans" -> weigh.in {at: 0 0 1.2, r: 1.2}
+hotspot: "The Board's store" -> weigh.store ? (has(key.office) | count(i.key_office) > 0) & clock < 04:15 {at: -3.6 0 -4.1, r: 0.8}
+hotspot: "The tube" -> weigh.tube.visit {at: -4.9 0 -3.4, r: 0.8, who: pip}
+hotspot: "Back out to the quay" -> weigh.hub {at: 3.4 0 -4.2, r: 0.8}
+figure: pip {at: -4.6 0 -3.1, face: 1}
+figure: marrow {at: 0.6 0 1.6, face: -1, when: clock >= 00:00 & clock < 01:10}
+figure: hobb {at: 2.3 0 -4.0, face: -1, when: clock >= 04:15 & clock < 06:00}
 
+# ---------------------------------------------------------------- the harbour floor
 @area a1.floor
 name: The harbour floor
 plate: floor
 place: floor
 places: gully drowned fish
 spawn: -2.6 -3.2 6.0
-hotspot: "Look across the floor" -> floor.hub {at: -2.7 -3.2 6.2, r: 1.6}
+hotspot: "Look across the floor" -> floor.hub {at: -2.7 -3.2 6.2, r: 1.4}
+hotspot: "The wreck's ribs" -> floor.wreck {at: -15.2 -3.2 7.8, r: 1.2}
+hotspot: "The gully" -> floor.gully ? tide < -0.35 {at: 4.6 -3.2 8.1, r: 1.4}
+hotspot: "The drowned lamp" -> floor.drowned {at: -13.0 -3.24 12.6, r: 1.4}
+hotspot: "Up the steps to the quay" -> quay.hub {at: -1.6 0 -0.45, r: 1.0}
+figure: merrow {at: -12.0 -3.24 11.8, face: -1, when: clock >= 23:20 & clock < 00:30 & !has(merrow.cells)}
+figure: lugg {at: 4.2 -3.2 7.6, face: 1, when: clock >= 23:30 & clock < 01:00}
 
+# ---------------------------------------------------------------- the mole
 @area a1.mole
 name: The mole
 plate: mole
 place: mole
-spawn: 6 0 -1
-hotspot: "Along the mole" -> mole.hub {at: 6 0 -1, r: 1.6}
+spawn: 28.0 0.35 -2.6
+hotspot: "Along the mole" -> mole.hub {at: 30.0 0.35 -2.0, r: 1.6}
+hotspot: "The KEEPER door, and the stairs" -> mole.stairs {at: 34.1 0.35 -1.1, r: 0.9}
+hotspot: "Back to the quay" -> quay.hub {at: 26.5 0.35 -3, r: 1.2}
 
+# ---------------------------------------------------------------- the 112 stairs
+@area a1.stairs
+name: The hundred and twelve stairs
+plate: stairs
+place: stairs
+spawn: 1.2 0 0.6
+hotspot: "The landing at fifty-six" -> mole.stairs.landing {at: -0.6 8.68 -0.6, r: 0.8}
+hotspot: "Up into the lamp room" -> mole.lamp {at: 0.8 17.36 0, r: 0.8}
+hotspot: "Down to the door" -> mole.hub {at: 1.2 0 0.6, r: 0.8}
+
+# ---------------------------------------------------------------- the lamp room
+@area a1.lamp
+name: The lamp room
+plate: lamp
+variant: lit
+place: lamproom
+places: gallery
+spawn: 2.4 0 1.8
+hotspot: "The lamp room" -> mole.lamp {at: 0 0 0.8, r: 1.4}
+hotspot: "Down the stairs" -> mole.stairs {at: 2.6 0 2, r: 0.8}
+figure: wenna {at: -2.4 0 1.3, face: 1, when: seen(mole.lamp.wenna) & !has(mole.wenna_home)}
+
+# ---------------------------------------------------------------- the Gut
 @area a1.gut
 name: The Gut
 plate: gut
 place: gut
-spawn: 12 0 0
-hotspot: "The Gut" -> gut.hub {at: 12 0 0, r: 1.6}
+spawn: 13.0 0 0
+hotspot: "The Gut" -> gut.hub {at: 9.5 0 0, r: 1.6}
+hotspot: "Spratt's stall" -> gut.spratt ? clock >= 00:40 & clock < 06:10 {at: -0.3 0 -0.6, r: 0.9, who: spratt}
+hotspot: "The wire lamps" -> gut.wires {at: 1.0 0 0, r: 0.9}
+hotspot: "Shadwell's smokehouse" -> gut.smoke {at: -4.0 0 -1.2, r: 0.9}
+hotspot: "The net loft" -> gut.loft {at: 6.3 0 -1.2, r: 0.8}
+hotspot: "The middens" -> gut.dogs {at: 3.9 0 2.4, r: 0.9}
+hotspot: "The culvert grating" -> gut.culvert ? tide < -0.2 {at: -14 0 0, r: 1.0}
+hotspot: "Back to the quay" -> quay.hub {at: 14 0 0, r: 1.0}
+figure: spratt {at: -0.3 0 -0.9, face: 1, when: clock >= 00:40 & clock < 06:10}

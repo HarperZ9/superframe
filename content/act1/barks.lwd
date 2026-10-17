@@ -1,0 +1,82 @@
+# Low Water: the voices in a fight and in a sneak (SYSTEMS-FULL 18.9, 17.1). Director, 2026-10-17.
+# @bark: one line per situation key (combat/sim/barks.mjs BARK_KEYS); the voice is the rule's.
+# @cue: an inner voice during a sneak (world/stealth.mjs); the first cue whose level holds speaks,
+# so each situation has a high-level line first and a plainer one after it.
+# Barks are one breath long and never explain the system; they say what the body or the nose knows.
+
+@bark b.footing_frost
+key: footing.frost
+text: Frost under the left boot.
+
+@bark b.footing_wet
+key: footing.wet
+text: Wet stone. The whole foot down, not the toe.
+
+@bark b.breath_low
+key: breath.low
+text: Nothing left in the bellows. Step back and let them fill.
+
+@bark b.tide_near
+key: tide.near
+text: Water at the ankle in twenty seconds.
+
+@bark b.smell_behind
+key: smell.behind
+text: Eel-oil and fear. Behind you.
+
+@bark b.tell_grab
+key: tell.grab
+text: He wants you to block.
+
+@bark b.dark_near
+key: dark.near
+text: Breathing, close, where the light isn't.
+
+@bark b.pride_losing
+key: pride.losing
+text: Wet to the knee and losing, and the whole quay can see the hat.
+
+# ---------------------------------------------------------------- sneak voices
+@cue c.turning.dark
+on: turning
+skill: dark
+dc: 5
+text: He's turning. Be a post. Posts don't breathe.
+
+@cue c.turning
+on: turning
+skill: undertow
+text: Don't move. Moving is what eyes are for.
+
+@cue c.lantern.candlemas
+on: lantern
+skill: candlemas
+dc: 3
+text: You are holding the only yellow on this quay, darling. Everyone can read it.
+
+@cue c.lantern
+on: lantern
+skill: dark
+text: The lantern. Every eye out there just found you.
+
+@cue c.close.smell
+on: close
+skill: smell
+dc: 4
+text: Tar and pipe smoke, an arm's length off. He hasn't seen you. He will if you swallow.
+
+@cue c.close
+on: close
+skill: dark
+text: Close enough to touch. Don't.
+
+@cue c.wind.salt
+on: wind
+skill: salt
+dc: 4
+text: Wind's come round on the cheek. Your smell is going to him now.
+
+@cue c.wind
+on: wind
+skill: smell
+text: The wind has changed sides, and so has your smell.

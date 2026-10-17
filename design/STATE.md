@@ -291,7 +291,7 @@ Done in content: `act2_strippers` is fixed to `town`. 58 Hesk-only lines were re
 Section 19 of SYSTEMS-FULL is approved and placed: one sheet with four combat pillars, 21 tools each with its own moveset, special and fittings, four benches, 14 teachers across the acts, min-maxing support, and a placement table in 19.13. Engine work is with the combat and systems engineers (NOTES-FOR-ENGINEER). Gate pages are waiting on the systems engineer: either the engine pays them, or content adds page(1) at each gate.
 
 ## Decision: the page economy (2026-10-17)
-The pace is set by what builds need. A committed build reaches a compartment at 8 by mid Act 2 and at 10 by late Act 3, which with a chapter raise every third page means 12 and 18 pages. Measured with the corrected gates, the five builds end the acts at 10 to 15, 17 to 22 and 23 to 34 pages, so every build meets both targets. Why this mechanism and not two-page wins, a cheaper rank or a 44-page target: SYSTEMS-FULL 19.4.
+The pace is set by what builds need. A committed build reaches a compartment at 8 by mid Act 2 and at 10 by late Act 3, which with a chapter raise every fourth page (archetypes start the main compartment at 5) means 12 and 20 pages; every third brought 10 by the end of Act 2, too early. Measured with the corrected gates, the five builds end the acts at 10 to 15, 17 to 22 and 23 to 34 pages, so every build meets both targets. Why this mechanism and not two-page wins, a cheaper rank or a 44-page target: SYSTEMS-FULL 19.4.
 
 ## Next
 

@@ -1020,6 +1020,7 @@ alt: quay.harbour.keel ? clock >= 00:10 & clock < 04:15 & !has(quay.keel.office_
 go: quay.harbour.room
 
 @node quay.harbour.room
+hub: yes
 place: harbour
 cost: 0
 nar: The harbour office: a stove, a chart under glass, a chair with a hole in its seat. A paraffin lamp, so that in here things are the colour they are.
@@ -1031,7 +1032,7 @@ opt: "Ask the Lamplighter at the cellar door to let you down to the cells." -> q
 opt: "Nod to the Lamplighter at the cellar door, in Hobb's coat, and go down." -> quay.cells.coat ? has(merrow.cells) & !has(quay.merrow.cells_seen) & guise == lamplighter {verb: hide, noise: 0.1}
 opt: "Read the book the sergeant left on the stove." -> quay.harbour.gormbook ? clock >= 01:30 & clock < 02:40 & guise == lamplighter & !has(quay.round.known) {verb: read, noise: 0.1}
 opt: "Look at the telephone." -> quay.phone.silent
-opt: "Go back out onto the quay." -> ^hub
+opt: "Go back out onto the quay." -> quay.hub
 
 @node quay.harbour.who
 cost: 0

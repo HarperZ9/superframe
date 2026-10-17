@@ -1991,3 +1991,8 @@ walks behind a panel. Tested headless (`design/ux/idle.sh keys-walk keys-talk ke
 D and the stick walk without moving focus, the Down arrow and d-pad move focus without walking, S and the
 stick move through options while talking, D does nothing behind the Daybook, arrows and WASD both move
 Lamb in a sneak; fights, sneaks, runs, the Daybook, checks, the panel slide and Settings re-run clean.
+
+### Director, 2026-10-17: chapter pace, Act 1 areas, barks and cues
+- **Chapter raises: every fourth page**, not every third. Archetypes start their main compartment at 5, so every third brought 10 by the end of Act 2. Every fourth gives 8 by mid Act 2 and 10 in Act 3 (SYSTEMS-FULL 19.4 has the table). Please set the interval to 4.
+- **game/engine/wiring/act1-areas.lwd is corrected.** Spawns are at the plates' exits. Hotspots go one per thing the scenes use, gated as the script's own menus gate them. Figures sit on the marks, with presence conditions. Two new areas: a1.stairs and a1.lamp. The harbour office's room (quay.harbour.room) is now `hub: yes`, its exit goes to quay.hub, and the office hotspots open quay.harbour.room, the chart, the telephone and Keel. Act 1 validates with the wiring included: 0/0.
+- **Barks and sneak cues** are in content/act1/barks.lwd, included by all acts. There are 8 @bark records, one per BARK_KEY, so no placeholder remains. There are 8 @cue records, two per situation (turning, lantern, close, wind): a high-level voice first, then a plainer one.
