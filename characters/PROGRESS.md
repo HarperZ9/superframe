@@ -208,3 +208,25 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     neck bent, pencil in the hair), Ash (cassock, collar, ledger), Sallis (warden, Board armband),
     Pardew (pea jacket, spectacles), Dace and Orme (reefers; Dace's pale muffler). All in the
     prototype and the fight drawer. stills/10-cast.png has the whole cast (25 people).
+43. DONE The rest of the cast (cast/folk.mjs): Lugg, Nan Cockle, Penhallow, Teague, Mab and Noll
+    Whelk (one costume, apron values 0.75 and 0.4), Spratt, Shadwell (soot face, pale eye-rings),
+    Sister Gauze (the bell jar open at its near face so her face shows), Tobit, Dilly Rudd, Gill,
+    Captain Dunlin. Dace and Orme apart (Dace tall, peaked cap, broad pale muffler; Orme short and
+    stooped, knitted cap, worn tweed reefer, a pipe). Gorm's pole stands upright. 38 people in
+    stills/10-cast.png. Gauze's jar reads as a hood more than glass (glass is only half-seen over the
+    background, not over her).
+44. DONE Real joint jumps (proto/popcheck.mjs now also reports severity). Same check on the last
+    round's commit 87abab2 and now: worst 106 -> 62 cm/frame^2, frames over 20 cm 36 -> 32, summed
+    excess 1981 -> 1478 cm (-25 %), count over 3.5 cm 148 -> 139. Fixes: strike and body-move curves
+    carry momentum through keys (Catmull-Rom tangents, guarded); the swing ramps over the last third
+    of the windup; the roll's turn eases in and out; a walk cycle wrap bug (sampled at the clip's 32
+    frames against timing's 24) fixed; speed eases at about 7 m/s per second and walk and run share
+    one phase; locks hand over across a gait's blend; blends leave the pose that was on screen (the
+    speed-blended locomotion, not the raw run clip); whole-body angles blend without wrapping
+    mid-roll. Tried and reverted: a longer follow-through (worse: the return made new jumps).
+    Remaining worst: the heavy and the third light strike, whose 2- to 3-frame active windows at
+    combat's numbers cover very long arcs; smears carry those visually. Walk entry now slides a little
+    during its blend (38 frames flagged) instead of popping.
+45. DONE Faces: painter's colour zones (warm cheeks, nose and ears; cooler jaw and chin), no ink
+    line between them, following each character's own skin. Visible up close in out/closeups.png;
+    still partly CG.

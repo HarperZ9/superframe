@@ -22,7 +22,12 @@ export function vnoise3(x, y, z) {
 }
 export const INK = [0.1, 0.055, 0.075];   // dark violet-brown, never black (look bible 7)
 
-export function matOf(id, palette = {}) { const m = BY_ID[id]; if (!m) return null; const o = palette[m.name]; return o ? { ...m, ...o } : m; }
+export function matOf(id, palette = {}) {
+  const m = BY_ID[id]; if (!m) return null; const o = palette[m.name]; if (o) return { ...m, ...o };
+  // the face's warm and cool zones follow a character's own skin (Keel's grey, Shadwell's soot)
+  if ((m.name === "cheek" || m.name === "jawcool") && palette.skin) { const base = MATS_BY_NAME.skin.c, sk = palette.skin.c || base; return { ...m, c: m.c.map((v, k) => Math.min(1, sk[k] * (v / base[k]))), v: palette.skin.v ?? m.v }; }
+  return m;
+}
 
 // brush: how strongly the object-anchored strokes vary the value (1 the materials' own amounts;
 // the play-size look uses about 1.6 so strokes read at 100 px a figure).
@@ -78,7 +83,7 @@ export function light(G, rig, palette = {}) {
 }
 
 // Ink weight: 1 on the silhouette, 0.75 on part edges and depth steps, 0.4 on folds.
-const SMEAR_ID = MATS_BY_NAME.smear.id, SOFT = [], FACE = []; for (const n of ["skin", "cheek", "lip"]) FACE[MATS_BY_NAME[n].id] = 1; for (const n of ["skin", "cheek", "scales", "lip"]) SOFT[MATS_BY_NAME[n].id] = 1;
+const SMEAR_ID = MATS_BY_NAME.smear.id, SOFT = [], FACE = []; for (const n of ["skin", "cheek", "lip", "jawcool"]) FACE[MATS_BY_NAME[n].id] = 1; for (const n of ["skin", "cheek", "scales", "lip", "jawcool"]) SOFT[MATS_BY_NAME[n].id] = 1;
 export function ink(G, { scale = 1 } = {}) {
   const { w, h } = G, out = new Float32Array(w * h), r = Math.max(1, Math.round(scale));
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -90,7 +95,7 @@ export function ink(G, { scale = 1 } = {}) {
       if (G.id[j] === SMEAR_ID) continue;
       if (!G.id[i]) { if (G.id[j]) k = Math.max(k, Math.abs(dx) + Math.abs(dy) <= r ? 1 : 0); continue; }
       if (!G.id[j]) { k = Math.max(k, 1); continue; }
-      if (G.id[j] !== G.id[i] && G.depth[j] < G.depth[i]) k = Math.max(k, 0.8);
+      if (G.id[j] !== G.id[i] && G.depth[j] < G.depth[i] && !(SOFT[G.id[i]] && SOFT[G.id[j]])) k = Math.max(k, 0.8);   // no line between the face's colour zones
       if (G.depth[i] - G.depth[j] > (SOFT[G.id[i]] && SOFT[G.id[j]] ? 0.1 : 0.06)) k = Math.max(k, 0.85);
       if (Math.abs(dx) + Math.abs(dy) === 1) { const d = G.N[i * 3] * G.N[j * 3] + G.N[i * 3 + 1] * G.N[j * 3 + 1] + G.N[i * 3 + 2] * G.N[j * 3 + 2], soft = SOFT[G.id[i]]; if (d < (soft ? 0.25 : 0.6)) k = Math.max(k, soft ? 0.22 : 0.4); }
     }
