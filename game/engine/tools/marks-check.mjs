@@ -32,11 +32,12 @@ for (const act of acts) {
   for (const a of Object.values(C.map.areas)) {
     if (!a.plate) continue;
     let A; try { A = await ground(a.plate); } catch (e) { console.log(`${a.id}: plate ${a.plate} not readable (${e.message})`); continue; }
-    const spots = [["spawn", a.spawn, a.line], ...a.exits.filter((x) => x.spawnAt).map((x) => [`exit spawn "${x.label}"`, x.spawnAt, x.line]), ...a.figures.map((f) => [`figure ${f.id}`, f.at, f.line])];
-    for (const [what, at, line] of spots) {
+    const spots = [["spawn", a.spawn, a.line], ...a.exits.filter((x) => x.spawnAt).map((x) => [`exit spawn "${x.label}"`, x.spawnAt, x.line]), ...a.figures.map((f) => [`figure ${f.id}`, f.at, f.line, f.pose])];
+    for (const [what, at, line, pose] of spots) {
       total++;
       const k = spotKind(A, at);
       if (k === "clear") continue;
+      if (pose === "seated") { console.log(`${a.file}:${line}  ${a.id} ${what} at ${f2(at)}: seated on its chair or bench; stays`); continue; }
       if (k === "void") { console.log(`${a.file}:${line}  ${a.id} ${what} at ${f2(at)}: no ground seen there (behind a prop or off the plate); stays`); continue; }
       const to = clearSpot(A, at, 2, { strict: true }) || clearSpot(A, at);
       moved++; console.log(`${a.file}:${line}  ${a.id} ${what} at ${f2(at)}: ${k === "margin" ? "against a prop" : `in a ${k}`}; the game stands it at ${f2(to)} (${Math.hypot(to[0] - at[0], to[2] - at[2]).toFixed(2)} m)`);

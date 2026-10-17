@@ -110,3 +110,10 @@ test("collision: a prop closes its cell, its neighbours keep a body's margin, hi
   const c = clearSpot(A, [1.1, 0, 1.1]); assert.ok(!A.grid.cells[Math.floor(c[2] / 0.25) * 8 + Math.floor(c[0] / 0.25)].margin, "a figure on the bench moves to clear floor");
   const H = benchPlate("hard"); assert.equal(H.A.grid.cells[4 * 8 + 3], null, "hard margins close (fights could use this)");
 });
+
+test("a figure line's pose: seated is read for the drawer", async () => {
+  const { loadContent } = await import("../game.mjs");
+  const extra = { file: "seat.lwd", text: ["@area t.seat", "name: Test seat", "place: t.seat", "spawn: 0 0 0", "figure: keel {at: 1 0 1, pose: seated}", ""].join("\n") };
+  const C = loadContent([...testSources(), extra]);
+  assert.equal(C.map.areas["t.seat"].figures[0].pose, "seated");
+});

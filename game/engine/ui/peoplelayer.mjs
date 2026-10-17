@@ -97,7 +97,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     const A = cam.arena(), key = `${(cam.area() || {}).id}|${f.id}|${f.at.join(",")}`;
     if (!A) return f.at;
     if (!homes.has(key)) {
-      let at = spotKind(A, f.at) === "void" ? f.at : clearSpot(A, f.at); // behind a counter stays; in or on a prop moves
+      let at = spotKind(A, f.at) === "void" || f.pose === "seated" ? f.at : clearSpot(A, f.at); // a seated figure keeps its chair // behind a counter stays; in or on a prop moves
       // and never on top of someone already placed: the nearest clear spot SEP from every other home
       const taken = [...homes.values()], near = (p) => taken.some((o) => Math.hypot(p[0] - o[0], p[2] - o[2]) < SEP);
       if (near(at)) for (let rad = 0.25; rad <= 1.5 && near(at); rad += 0.25) for (let k = 0; k < 12; k++) { const a = (k / 12) * Math.PI * 2, p = [at[0] + Math.cos(a) * rad, at[1], at[2] + Math.sin(a) * rad]; if (spotKind(A, p) === "clear" && !near(p)) { at = [p[0], groundAt(A, p[0], p[2]) ?? at[1], p[2]]; break; } }
@@ -108,7 +108,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
   function figures(all = false) {
     const out = [], a = lambAt();
     if (a) out.push({ who: "lamb", at: a, face: S.face.lamb ?? 0, walking: S.moving, running: S.moving && S.run });
-    for (const f of G.world.figures()) { const w = S.wander[f.id]; out.push({ who: f.id, at: (w && w.at) || homeOf(f), face: S.face[f.id] ?? (+f.face < 0 ? Math.PI : 0), walking: !!(w && w.moving) }); }
+    for (const f of G.world.figures()) { const w = S.wander[f.id]; out.push({ who: f.id, at: (w && w.at) || homeOf(f), face: S.face[f.id] ?? (+f.face < 0 ? Math.PI : 0), walking: !!(w && w.moving), pose: f.pose || null }); }
     return all ? out : out.filter((f) => !S.hidden.has(f.who));
   }
   function gestureOf(who, dt) {
@@ -126,7 +126,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     for (const { f, depth } of list) {
       const s = cam.toScreen(f.at); if (!s) continue;
       const talking = !!S.talking && (f.who === "lamb" || f.who === S.talking);
-      personDrawer()(g, f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking, gesture: f.walking ? null : gestureOf(f.who, dt), cam: pj && pj.camera, plate: pj && pj.place, depth, depthAt: cam.depthAt, lights, darkness: cam.darkness(), reach: cam.arena() ? clearAhead(cam.arena(), f.at, f.face) : null });
+      personDrawer()(g, f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking, gesture: f.walking ? null : gestureOf(f.who, dt), cam: pj && pj.camera, plate: pj && pj.place, depth, depthAt: cam.depthAt, lights, darkness: cam.darkness(), pose: f.pose || null, reach: cam.arena() ? clearAhead(cam.arena(), f.at, f.face) : null });
     }
   }
   // Passers-by: a figure with wander: r walks between points within r of its spot, stopping a

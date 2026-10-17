@@ -9,7 +9,8 @@
 //                  arena: <arena id> x y z yaw (where a fight's arena lies on this plate: world/stage.mjs)
 //                  hotspot: "label" -> node [? cond] {at: x y z, r: n, once: flag, who: figure}
 //                  exit:    "label" -> area [? cond] {at: x y z, r: n, spawn: x y z, cost: min}
-//                  figure:  id {at: x y z, face: 1|-1, when: cond, wander: r (walks about within r m)}
+//                  figure:  id {at: x y z, face: 1|-1, when: cond, wander: r (walks about within r m),
+//                           pose: seated (sits on the chair or bench at its spot; the drawer sits it)}
 //                  places:  more LWD place ids shown on this plate (space list)
 //                  voice:   skill dc "text" {at: x y z, r: n, when: cond, once}   a passive voice line
 //                           said as a bark when Lamb walks within r and the skill meets dc
@@ -55,7 +56,7 @@ function loadArea(r) {
     hotspots: r.kv.filter((e) => e.key === "hotspot").map((e) => spot(parseChoice("hotspot", e.value, at(e)))),
     exits: r.kv.filter((e) => e.key === "exit").map((e) => { const s = spot(parseChoice("exit", e.value, at(e))); s.spawnAt = vec(s.attrs.spawn); return s; }),
     voices: r.kv.filter((e) => e.key === "voice").map((e) => { const { body, attrs } = splitAttrs(e.value), m = body.trim().match(/^(\S+)\s+(\d+)\s+"(.*)"$/); if (!m) throw new SyntaxError(`voice: expected skill dc "text" {at, r}, got ${e.value}`); return { key: `${r.id}.voice.${e.line}`, skill: m[1], dc: +m[2], text: m[3], at: vec(attrs.at) || null, r: +attrs.r || 2, cond: compile(attrs.when), once: attrs.once !== false, line: e.line }; }),
-    figures: r.kv.filter((e) => e.key === "figure").map((e) => { const { body, attrs } = splitAttrs(e.value); return { id: body.trim(), at: vec(attrs.at) || [0, 0, 0], face: attrs.face ?? 1, wander: +attrs.wander || 0, cond: compile(attrs.when), line: e.line }; }),
+    figures: r.kv.filter((e) => e.key === "figure").map((e) => { const { body, attrs } = splitAttrs(e.value); return { id: body.trim(), at: vec(attrs.at) || [0, 0, 0], face: attrs.face ?? 1, wander: +attrs.wander || 0, pose: attrs.pose || null, cond: compile(attrs.when), line: e.line }; }),
     file: r.file, line: r.line,
   };
 }
