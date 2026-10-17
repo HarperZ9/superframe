@@ -22,8 +22,8 @@ expect(log.filter((p) => p.endsWith("*")).length === Tl.active, `hit frames = ac
 // combat's clock: drive with t, the art follows; facing converts from combat's radians
 const b = cast.actor("lamb", { tool: "boathook" }), table = cast.clips("lamb"), clip = table["lamb.long.heavy"];
 expect(!!clip && clip.phases.some((p) => p.name === "windup"), "the clip table names phases windup, active, recovery for drive.mjs");
-for (let i = 0; i < 20; i++) b.drive({ x: 2, z: 3, face: 0, pose: { clip: "lamb.heavy", anim: "heavy", t: clip.phases[0].to * 0.6 } });   // past the 5-frame fade in
-expect(b.state.clip === "long.heavy" && Math.abs(b.state.frame - clip.phases[0].to * 18) < 1e-6, "drive shows long.heavy at the held top of its windup (60 %; the swing travels in the last third)");
+for (let i = 0; i < 20; i++) b.drive({ x: 2, z: 3, face: 0, pose: { clip: "lamb.heavy", anim: "heavy", t: clip.phases[0].to } });   // past the 5-frame fade in; the windup phase ends on the held top (the sweep follows)
+expect(b.state.clip === "long.heavy" && Math.abs(b.state.frame - clip.phases[0].to * 30) < 1e-6, "drive shows long.heavy at the held top, the end of its windup phase (the sweep carries the arc after it)");
 expect(Math.abs(b.facing - 90) < 1e-9 && b.pos[0] === 2 && b.pos[2] === 3, "combat face 0 (toward +x) is art facing 90; position taken from combat");
 const w = b.weapon(); expect(w.cls === "long" && w.tip[1] > 1.8, `at the held top the boathook's tip is overhead (y ${w.tip[1].toFixed(2)} m)`);
 // two-handed grip: the left wrist ends on the shaft
