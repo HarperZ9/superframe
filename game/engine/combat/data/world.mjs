@@ -32,3 +32,7 @@ export const WORLD = {
   // out of reach 0 to 0.53; the kiter 0 to 0.49 (median 0.12) and 0.06 to 1 (median 0.43)
   breakOff: { kitedShare: 0.15, apartShare: 0.6 },
 };
+
+// Tuning runs only (never in play): COMBAT_WORLD_SET='{"kite":{"punishAt":150}}' merges into WORLD.
+const setJson = (typeof process !== "undefined" && process.env && process.env.COMBAT_WORLD_SET) || "";
+if (setJson) for (const [k, v] of Object.entries(JSON.parse(setJson))) Object.assign(WORLD[k], v);

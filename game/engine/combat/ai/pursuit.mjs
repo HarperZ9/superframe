@@ -37,14 +37,16 @@ export const apart = (W, T) => !W.fighters.some((O) => O.team !== T.team && !O.o
 // break-off reads: an opponent that walks away from Lamb does not make Lamb a kiter)
 export function retreatingFrom(W, F, T) {
   const d = dist(F, T);
-  return d > reachOf(W, F) + K.margin && apart(W, T) && awayFrom(F, T) > K.away;
+  return d > reachOf(W, F) + K.margin && apart(W, T) && awayFrom(F, T) > K.away && !(T.guardT > 0);
 }
 
 // Is Lamb kiting this opponent this frame? Out of everyone's reach and opening the gap on this one,
 // or far out of its reach.
+// A guarded retreat (the guard up, walking back at guard speed) is defence, not kiting: it is slow
+// enough that any opponent closes it, and the fair player backs off this way to get Breath back.
 export function kitingNow(W, F, T) {
   const d = dist(F, T), reach = reachOf(W, F) + K.margin;
-  if (d <= reach || !apart(W, T)) return false;
+  if (d <= reach || !apart(W, T) || T.guardT > 0) return false;
   const ux = (T.x - F.x) / d, uz = (T.z - F.z) / d, away = T.vx * ux + T.vz * uz;
   return away > K.away || d > reach + K.far;
 }
@@ -65,7 +67,13 @@ export function pursue(W, F, T, M) {
   T.kitedBy = Math.max(T.kitedBy || 0, P0.clock);
   if (OFF.has("pursuit")) return null;
   const due = P0.clock >= K.punishAt || P0.cut >= K.unreachableAt, d = dist(F, T);
-  if (!due || F.act || F.st < 1) return null;
+  if (F.act || F.st < 1) return null;
+  // a chase arrives with a blow, not a stroll into Lamb's reach (so meeting the approach does not pay)
+  if (P0.chase > 0 && d <= reachOf(W, F) + 0.3) {
+    const id = `${F.id}:${F.tool ? "" : "hands:"}light_1`;
+    if (W.moves[id]) { P0.chase = 0; P0.rest = W.tick + WORLD.chase.cool; F.face = angleTo(F, T); W.emit({ type: "punish", id: F.id, how: "chase", clock: P0.clock }); return { press: [id], mx: 0, mz: 0 }; }
+  }
+  if (!due) return null;
   const has = (id) => W.moves[id] && W.defs[F.id].moves.includes(id);
   if (has("world.lunge") && P0.cut === 0 && d >= P.lungeMin && d <= P.lungeMax && W.tick >= P0.lunged) {
     P0.lunged = W.tick + P.lungeCool[0] + Math.floor(r01(W, F, "lc") * (P.lungeCool[1] - P.lungeCool[0]));

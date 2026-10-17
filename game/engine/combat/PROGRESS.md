@@ -185,3 +185,8 @@ tests (node --test), not proof.
    time staggered, breakpoints, tempo factors, and an `applied` echo; clothes, temper and fittings
    preview without being paid for. Confirmed the character lead's reshaped strikes (no frame change).
    tests/build.test.mjs; 213 of 213.
+28. DONE Author, 2026-10-17 ("limiting kiting"): the world shapes the fight. Ledges and falls, slope and
+   hazards, engaged running, a per-foe kiting clock with a lunge and a throw, pursuit and cut-offs, the
+   sight leash, the beam, and a time-cap break-off that does not pay kiting. Design and numbers in
+   design/COMBAT-WORLD.md; log in PROGRESS-WORLD.md. 242 of 242 with the engine's.
+

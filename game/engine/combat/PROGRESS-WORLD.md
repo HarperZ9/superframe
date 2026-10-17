@@ -50,5 +50,21 @@ Outputs are kept in world-runs/ (out/ is ignored by git) (`*-before.txt` predate
    Known cost: brains that path round walls make fair Tongue lose more (99 of 114 with every rule off,
    92 with all on, six seeds); e.strippers has no fair win for four styles before and after (it has a
    talk exit the pilot never takes).
-5. NEXT Strongest-kiter search after the rules; design/COMBAT-WORLD.md; ablation table; reply to the
-   systems engineer (terrainAt, BEAM_RATE read, spawns off ledge lips).
+5. DONE Measured and tuned after the rules (world-runs/*-after.txt, ablation.txt, punishes.txt):
+   - found and fixed: pursuit helped the kiter (a chaser walked into its poke): a chase now arrives with
+     a blow and the lunge is armoured and recovers in 26 frames; the break-off needed an out-of-reach
+     share as well (apartShare 0.6); a guarded retreat no longer fills the clock; the pilot paths only
+     across ledges or when stuck (keeps its fair numbers comparable).
+   - four tuning variants of the clock and answers (punishAt 150, 300, faster throws, longer chases) all
+     landed at 81 to 85 kiting wins against 76 for the chosen values: inside the noise, values kept.
+   - tools: ablate.mjs, ablate-style.mjs, punishes.mjs, kiteshare.mjs; COMBAT_WORLD_SET for tuning runs.
+   - systems engineer told (terrainAt, stepDrop, ledgeClear, beams, spawn lips, BEAM_RATE import).
+   - design/COMBAT-WORLD.md written: rules, reasons, results, ablation, limits.
+   Tests: combat 106 of 106; engine and combat 242 of 242.
+6. OPEN
+   - No plate has authored hazards yet (place.json "terrain" agreed, empty); nets and ropes are tested on
+     a synthetic arena only. The art lead or plate owner would add them.
+   - The clock and its answers raise a kiter's Standing loss but do not lower its wins at 2 to 3 seeds.
+   - Brains that path round walls cost fair Tongue about 7 of 114 wins and spread 5 of 140.
+   - e.strippers: no fair win for Tongue, Shadow, Eye (before and after); the talk exit gets every style out.
+   - The beam is untested by measurement (no measured fight under a burning Mother).
