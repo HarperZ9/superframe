@@ -194,6 +194,16 @@ R1 to R13 from that file.
     sneaks; tide datum in the tidal plates' place.json; harness build fistmax pinned to combat's
     focused Fist (8 of 8 fights won). 110 tests pass.
 
+31. DONE One game (coordinator 2026-10-17): the engine shell plays Act 1 on the v2 plates
+    (ui/platecam.mjs lens mix, dark plate, geo ground and depth; world/plateworld.mjs paths and
+    depth; ui/peoplelayer.mjs walking, click and key walk, talk gestures; ui/weatherlayer.mjs tide,
+    fog, rain, beam, mirrors; ui/figures.mjs the A4 hooks and the character drawer for everyone;
+    fights from talk on the same ground, laid where the scene stands). wiring/act1-areas.lwd places
+    Act 1's areas; the world follows a node's place. Prototype retired to game/retired/prototype/
+    and retired/content-v1. Capture game/capture/one-shell/ (tools/scene_capture.py).
+32. DONE Chapter pages and re-filing (19.4), line faces and speaker ids, travel from the Map;
+    the harness spends chapters: every build reaches 8 by mid Act 2 and 10 early in Act 3. 121 tests.
+
 ## Log
 - 2026-10-16 23:00Z: resumed after the previous session stopped at a usage limit. Inventory: 25
   files, 1950 lines, no tests/ folder. Smoke run: test content loads with 0 errors, the slice
@@ -221,3 +231,4 @@ R1 to R13 from that file.
 - 2026-10-17 05:01Z: fights in the world; build layer; save v4.
 - 2026-10-17 05:21Z: gate pages in the engine; awaiting @gate records.
 - 2026-10-17 05:40Z: gate drafts in, five builds re-run; combat's three asks done; NOTES entry.
+- 2026-10-17 06:35Z: one game in the engine shell, prototype retired; chapter pages; the UI lead's asks; NOTES entry.
