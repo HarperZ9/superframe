@@ -1,0 +1,70 @@
+# Low Water, Act 1: the walkable plates wired to the script's places (the director's world.lwd:
+# "Areas (walkable plates) are wired by the engineer once the plates' coordinates are known").
+# Engineer's file, loaded by the shell after the act (ui/app.mjs content=act1). Coordinates are
+# the v2 plates' own world (content/<plate>/place.json marks). When a node moves Lamb to a place,
+# the area showing it becomes current (world/districts.mjs). Hotspots open the place's hub; the
+# figures' spots are the engineer's placement for the director and the art lead to correct.
+
+@area a1.quay
+name: Lamp Quay
+plate: quay
+variant: night
+place: quay
+places: steps mole_steps weigh_out yard
+spawn: -1.2 0 -2.6
+hotspot: "Look along the quay" -> quay.hub {at: -1.6 0 -0.45, r: 1.4}
+figure: fewell {at: 0.6 0 -1.4, face: -1}
+figure: strand {at: 1.4 0 -0.9, face: -1}
+
+@area a1.office
+name: The harbour office
+plate: office
+place: harbour
+spawn: 1.6 0 -1.2
+hotspot: "Back out to the quay" -> quay.hub {at: 2.2 0 -1.4, r: 1.2}
+
+@area a1.brine
+name: The Brine
+plate: brine
+place: brine
+places: oven
+spawn: 4.6 0 1.2
+hotspot: "The bar" -> brine.hub {at: -1.6 0 -2.2, r: 1.6}
+figure: sabine {at: -1.0 0 -1.5, face: 1}
+
+@area a1.room
+name: The room above the Brine
+plate: room
+place: room
+spawn: -0.4 0 0.9
+hotspot: "Down to the bar" -> brine.hub {at: -0.4 0 1.1, r: 1.0}
+
+@area a1.weigh
+name: The weigh-house
+plate: weigh
+place: weigh_in
+
+spawn: 3.0 0 -3.6
+hotspot: "Back out to the quay" -> weigh.hub {at: 3.4 0 -4.2, r: 1.2}
+
+@area a1.floor
+name: The harbour floor
+plate: floor
+place: floor
+places: gully drowned fish
+spawn: -2.6 -3.2 6.0
+hotspot: "Look across the floor" -> floor.hub {at: -2.7 -3.2 6.2, r: 1.6}
+
+@area a1.mole
+name: The mole
+plate: mole
+place: mole
+spawn: 6 0 -1
+hotspot: "Along the mole" -> mole.hub {at: 6 0 -1, r: 1.6}
+
+@area a1.gut
+name: The Gut
+plate: gut
+place: gut
+spawn: 12 0 0
+hotspot: "The Gut" -> gut.hub {at: 12 0 0, r: 1.6}

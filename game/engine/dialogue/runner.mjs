@@ -10,7 +10,8 @@
 // odds), its lock reason once failed, and what strain would cost (option.strain(n)).
 // Flow keys: go, alt, call (push a return point), return (pop it), passive (a passive check
 // that diverts into a node and comes back), end (the story's end), exit (back to the world).
-// Special targets: ^hub returns to the most recent hub node (a node with hub: yes), ^return
+// Special targets: ^hub returns to the most recent hub node (a node with hub: yes; when none was
+// visited, the hub of the place Lamb is in), ^return
 // pops the call stack. A node that runs out with no way on returns to the caller if there is
 // one, and otherwise ends the conversation (the validator reports those as dead ends).
 // Node boundaries: before entering a node the runner plays, as calls that come back, any meter
@@ -133,7 +134,7 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
 
   function play(id, at = 0, lines = []) {
     for (let hop = 0; hop < MAX_HOPS; hop++) {
-      if (id === "^hub") { if (!talk.hub) throw new Error("dialogue: ^hub with no hub visited"); id = talk.hub; at = 0; }
+      if (id === "^hub") { const hb = talk.hub || placeHub(G); if (!hb) throw new Error("dialogue: ^hub with no hub visited"); id = hb; at = 0; }
       if (id === "^return") { const f = talk.stack.pop(); if (!f) return finish({ lines, options: null, exit: "^return", done: true }); id = f.id; at = f.at; }
       if (id.startsWith("^exit:") || exits.has(id)) return finish({ lines, options: null, exit: id.replace(/^\^exit:/, ""), done: true });
       if (at === 0) id = boundary(id);
@@ -192,4 +193,12 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
   talk.jump = (id) => play(id);
   talk.start = () => { G.activeTalk = talk; G.emit("talk.start", { node: startId, title }); return play(startId); };
   return talk;
+}
+
+// A conversation opened away from its hub (a hotspot or a fight's way back straight into a scene)
+// that says ^hub goes to the current place's hub: the hub node whose place: is where Lamb is.
+function placeHub(G) {
+  const here = G.state.place;
+  for (const n of Object.values(G.book.nodes)) if (n.hub && n.steps.some((s) => s.kind === "place" && s.value === here)) return n.id;
+  return null;
 }

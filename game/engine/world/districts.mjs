@@ -7,6 +7,10 @@
 //                  hotspot: "label" -> node [? cond] {at: x y z, r: n, once: flag, who: figure}
 //                  exit:    "label" -> area [? cond] {at: x y z, r: n, spawn: x y z, cost: min}
 //                  figure:  id {at: x y z, face: 1|-1, when: cond}
+//                  places:  more LWD place ids shown on this plate (space list)
+// When the script moves Lamb to a place (a node's place:) and an area shows that place, the world
+// follows: that area becomes current with Lamb at its spawn, and no enter node plays (the script
+// is already telling the scene). An area that shows the current place stays as it is.
 // Several hotspot lines at one spot form a priority list: the first whose condition holds
 // is the one offered. state.area is the current area; state.seen.areas the visited ones.
 import { parseChoice, splitAttrs } from "../dialogue/parse.mjs";
@@ -38,7 +42,7 @@ function loadArea(r) {
   const spot = (s) => ({ ...s, at: vec(s.attrs.at) || [0, 0, 0], r: s.attrs.r ?? 1.2 });
   const grid = vec(g("grid"));
   return {
-    id: r.id, name: g("name") || r.id, district: g("district") || null, plate: g("plate") || null, variant: g("variant") || "night", place: g("place") || r.id,
+    id: r.id, name: g("name") || r.id, district: g("district") || null, plate: g("plate") || null, variant: g("variant") || "night", place: g("place") || r.id, places: (g("places") || "").split(/[\s,]+/).filter(Boolean),
     spawn: vec(g("spawn")) || [0, 0, 0], enter: g("enter") || null, enterEvery: /^(yes|true)$/i.test(g("enter-every") || ""), camera: g("camera") != null ? +g("camera") : null,
     arenas: parseArenaLines(r.kv.filter((e) => e.key === "arena").map((e) => e.value)), about: g("about") || "",
     grid: grid ? { x0: grid[0], z0: grid[1], cell: grid[2], nx: grid[3], nz: grid[4] } : null,
@@ -52,6 +56,14 @@ function loadArea(r) {
 
 export function createWorldMap(G, data) {
   const st = () => G.state;
+  const shows = (a, p) => !!a && (a.place === p || (a.places || []).includes(p));
+  G.on("place", ({ id }) => {
+    if (shows(data.areas[st().area], id)) return;
+    const a = Object.values(data.areas).find((x) => x.place === id) || Object.values(data.areas).find((x) => shows(x, id));
+    if (!a) return;
+    const from = st().area; st().area = a.id; st().pos = [...a.spawn];
+    G.emit("area", { id: a.id, from, first: false, follow: true });
+  });
   const api = {
     ...data,
     area: () => data.areas[st().area] || null,

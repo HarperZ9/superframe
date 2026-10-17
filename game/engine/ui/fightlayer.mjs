@@ -8,33 +8,28 @@
 // panel (no result card), behind a 450 ms guard so a held catch cannot choose an option.
 //   fightLayer(ctx, host, id, onDone, { cam })   cam: the play screen's plate camera
 //   (ui/platecam.mjs); without one (a test harness) the arena is drawn as plain ground.
-// Figures: setFigureDrawer(fn) lets the character pipeline draw each fighter
-//   fn(g, F, { x, y, ppm, face, pose, W }) where (x, y) are the feet on screen and ppm pixels
-//   per metre; the default draws a plain ink figure with a facing mark.
+// Figures: setFigureDrawer(fn) (ui/figures.mjs, re-exported here) lets the character pipeline draw
+//   each fighter: fn(g, F, { x, y, ppm, face, down, W, at, cam, plate, depth, depthAt, lights })
+//   where (x, y) are the feet on screen, ppm pixels per metre, at the world point, cam the plate's
+//   bake camera and depthAt the painted room's depth under a screen pixel (ui/figures.mjs says
+//   more); the default draws a plain ink figure with a facing mark.
+// On a painted plate the fight plays on the plate's own ground: the play screen hands combat the
+//   plate's arena (combat/sim/plate.mjs through usePlate), so fighters stand in world x, z and the
+//   art lead's fight marks place them; otherwise the stage lays combat's arena on the plate.
 // Keys and pad: ui/fightkeys.mjs, from ui/bindings.mjs.
 import { h, btn } from "./dom.mjs";
 import { stageFor, fightBounds } from "../world/stage.mjs";
 import { bindFightKeys, keyList } from "./fightkeys.mjs";
 import { createDock, fightStrip } from "./strip.mjs";
 import { glyph } from "./bindings.mjs";
+import { figureDrawer } from "./figures.mjs";
+import { groundAt } from "../world/plateworld.mjs";
+export { setFigureDrawer } from "./figures.mjs";
+// one drawer for fights, sneaks and runs (ui/runlayer.mjs and ui/sneaklayer.mjs draw through this)
+export const drawFigure = (g, F, args) => figureDrawer()(g, F, args);
+import { clearOfPaper } from "./worldlayer.mjs";
 
 const SETTLE_MS = 700, GUARD_MS = 450;
-let figureDrawer = null;
-export const setFigureDrawer = (fn) => { figureDrawer = fn; };
-
-// The placeholder figure: ink, no outline or tint on Lamb (LOOK-UNIFIED R4); Lamb is told apart by
-// a slightly fuller ink and the facing mark.
-function plainFigure(g, F, { x, y, ppm, face, down }) {
-  const hgt = (down ? 0.45 : 1.75) * ppm, wid = 0.5 * ppm;
-  g.save(); g.fillStyle = F.team === "lamb" ? "rgba(29,20,24,0.96)" : "rgba(29,20,24,0.82)"; g.strokeStyle = "rgba(233,227,212,0.85)"; g.lineWidth = Math.max(1, ppm * 0.03);
-  g.beginPath(); g.ellipse(x, y, wid * 0.7, wid * 0.22, 0, 0, Math.PI * 2); g.fillStyle = "rgba(10,6,12,0.35)"; g.fill();
-  g.fillStyle = F.team === "lamb" ? "rgba(29,20,24,0.96)" : "rgba(29,20,24,0.82)";
-  g.beginPath(); g.ellipse(x, y - hgt / 2, wid / 2, hgt / 2, 0, 0, Math.PI * 2); g.fill(); g.stroke();
-  g.beginPath(); g.arc(x, y - hgt - wid * 0.35, wid * 0.32, 0, Math.PI * 2); g.fill(); g.stroke();
-  g.beginPath(); g.moveTo(x, y - hgt * 0.6); g.lineTo(x + Math.cos(face) * wid, y - hgt * 0.6 - Math.sin(face) * wid * 0.5); g.stroke();
-  g.restore();
-}
-
 const skillName = (G, id) => String(((G.rs.skills || {})[id] || {}).name || id).toUpperCase();
 
 export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
@@ -46,9 +41,10 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
   host.append(root);
   const dock = createDock(root), strip = fightStrip(dock, { G, W, title: def.name || id });
   const bounds = W.field.bounds, size = [bounds.x1 - bounds.x0, bounds.z1 - bounds.z0];
-  const stage = stageFor(G, W.field.arena.name, size);
+  const A = W.field.arena, onPlate = !!(A && A.plate && A.grid && A.origin);
+  const stage = onPlate ? { placed: true, plate: true, toWorld: ([x, z], hh = 0) => [x, (groundAt(A, x, z) ?? 0) + hh, z] } : stageFor(G, A.name, size);
   const live = () => W.fighters.filter((F) => !F.out);
-  if (cam) cam.frameOn((project) => fightBounds(project, stage, live()));
+  if (cam) cam.frameOn((project) => clearOfPaper(fightBounds(project, stage, live()), cam, [dock.el, document.querySelector(".hud")])); // fighters stay clear of the strip and the HUD tab
   let closed = false, ended = null, layer = null, raf = 0, pauseEl = null, settle = 0;
   G.loop.clockRate = C.clockRate || 8;
   const unbind = bindFightKeys(G, { onPause: () => (pauseEl ? resume() : pause()) });
@@ -112,7 +108,11 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
 
   function screenOf(F) {
     const p = stage.toWorld([F.x, F.z]);
-    if (cam && cam.ready()) { const s = cam.toScreen(p); return s && { x: s[0], y: s[1], ppm: cam.scaleAt(p) }; }
+    if (cam && cam.ready()) {
+      const s = cam.toScreen(p); if (!s) return null;
+      const pj = cam.place && cam.place(), a = cam.area && cam.area(), variant = (a && a.variant) || (pj && pj.variants && pj.variants[0]);
+      return { x: s[0], y: s[1], ppm: cam.scaleAt(p), at: p, cam: pj && pj.camera, plate: pj && pj.place, depth: cam.depthOf ? cam.depthOf(p) : 0, depthAt: cam.depthAt, lights: (pj && pj.lights && pj.lights[variant]) || [], darkness: cam.darkness ? cam.darkness() : 0 };
+    }
     const sc = Math.min(canvas.width / (size[0] + 2), canvas.height / (size[1] + 2)); // no plate: the arena as plain ground
     return { x: (F.x - bounds.x0 + 1) * sc, y: (F.z - bounds.z0 + 1) * sc, ppm: sc };
   }
@@ -120,8 +120,8 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
     const r = root.getBoundingClientRect(); if (canvas.width !== Math.round(r.width) || canvas.height !== Math.round(r.height)) { canvas.width = Math.round(r.width); canvas.height = Math.round(r.height); }
     const g = canvas.getContext("2d"); g.clearRect(0, 0, canvas.width, canvas.height);
     if (!cam) { g.fillStyle = "#1a1416"; g.fillRect(0, 0, canvas.width, canvas.height); }
-    const order = [...W.fighters].sort((a, b) => a.z - b.z);
-    for (const F of order) { const s = screenOf(F); if (!s) continue; const args = { ...s, face: F.face, down: F.fallen || F.out || F.yielded, W }; (figureDrawer || plainFigure)(g, F, args); }
+    const far = (F) => (cam && cam.depthOf ? -cam.depthOf(stage.toWorld([F.x, F.z])) : F.z), order = [...W.fighters].sort((a, b) => far(a) - far(b)); // far ones first
+    for (const F of order) { const s = screenOf(F); if (!s) continue; const args = { ...s, face: F.face, down: F.fallen || F.out || F.yielded, W }; figureDrawer()(g, F, args); }
     strip.update();
   }
   function frame() { if (closed) return; if (!G.loop.paused) shakeStep(); draw(); raf = requestAnimationFrame(frame); }

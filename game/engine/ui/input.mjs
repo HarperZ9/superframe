@@ -51,7 +51,7 @@ export function createInput(handle) {
     held,
     // A movement direction from keys and the stick: x right, z down the screen, length <= 1.
     vector: () => vectorOf(held, pad),
-    run: () => held.has("ShiftLeft") || held.has("ShiftRight") || !!(pad && pad.buttons[2] && pad.buttons[2].pressed),
+    run: () => held.has("ShiftLeft") || held.has("ShiftRight") || !!(pad && ((pad.buttons[2] && pad.buttons[2].pressed) || (pad.buttons[10] && pad.buttons[10].pressed))), // X held or the left stick pushed
     terms: () => termsOn,
   };
 }

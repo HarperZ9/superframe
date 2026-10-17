@@ -1,5 +1,8 @@
 // The game shell: loads content, makes the game, and moves between screens.
-//   play.html?content=test        the placeholder content (the default until Act 1 is wired)
+//   play.html                     Act 1 (content/act1/act1.lwd and its includes) with the engineer's
+//                                 area wiring (wiring/act1-areas.lwd); the one game (2026-10-17)
+//   play.html?content=test        the placeholder content (the default for ?shot= states)
+//   play.html?figures=plain       the plain ink figures instead of the character pipeline's
 //   play.html?shot=<state>        jump to a state for screenshots (ui/shots.mjs)
 // Screens are layers on one focus model (ui/focus.mjs); input (ui/input.mjs) goes to the top
 // layer first, then to the shared defaults (move focus, press, back).
@@ -18,10 +21,21 @@ import { openSaves, openPause } from "./saves.mjs";
 import { openSettings } from "./settings.mjs";
 import { runShot } from "./shots.mjs";
 import { loadStyles } from "./styles.mjs";
+import { loadAct } from "../dialogue/book.mjs";
+import { installCharacterFigures } from "./figures.mjs";
 
 const CONTENT = { test: ["rules.lwd", "demo.lwd", "systems.lwd", "yard.lwd"].map((f) => `test-content/${f}`) };
 
+const fetchText = async (url) => { const r = await fetch(url); if (!r.ok) throw new Error(`could not load ${url}: ${r.status}`); return r.text(); };
+// An act: its root and includes from /content/actN/, then the engineer's wiring for it.
+const ACTS = { act1: { root: "/content/act1/act1.lwd", wiring: ["wiring/act1-areas.lwd"] } };
 async function fetchSources(name) {
+  if (ACTS[name]) {
+    const A = ACTS[name], { sources, errors } = await loadAct(A.root, fetchText);
+    for (const e of errors) console.error(`content ${name}: ${e.file}:${e.line} ${e.msg}`);
+    for (const w of A.wiring) sources.push({ file: w.split("/").pop(), text: await fetchText(new URL(`../${w}`, import.meta.url)) });
+    return sources;
+  }
   const files = CONTENT[name]; if (!files) throw new Error(`no content set ${name}`);
   return Promise.all(files.map(async (f) => {
     const r = await fetch(new URL(`../${f}`, import.meta.url)); if (!r.ok) throw new Error(`could not load ${f}: ${r.status}`);
@@ -32,13 +46,15 @@ async function fetchSources(name) {
 export async function boot() {
   const q = new URLSearchParams(location.search), stage = document.getElementById("stage");
   await loadStyles();
-  const content = loadContent(await fetchSources(q.get("content") || "test"));
+  const content = loadContent(await fetchSources(q.get("content") || (q.get("shot") ? "test" : "act1")));
+  if (q.get("figures") !== "plain") installCharacterFigures().catch((e) => console.warn(`figures: ${e.message}`));
   if (!content.ok) console.error("content errors:", content.errors);
   const F = createFocus(), prefs = loadPrefs();
   applyPrefs(prefs);
   const ctx = { content, F, prefs, stage, G: null, saves: null, play: null, q };
   ctx.input = createInput((a, e) => dispatch(ctx, a, e));
   Object.assign(ctx, actions(ctx));
+  if (q.has("capture")) window.__lw = ctx; // tools/scene_capture.py drives the shell headless
   tick(ctx);
   await document.fonts.ready;
   if (q.get("shot")) await runShot(ctx, q.get("shot"));
