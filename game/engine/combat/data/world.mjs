@@ -13,7 +13,7 @@ export const WORLD = {
   fall: { knockdown: 1.0, hurtFrom: 1.6, perMetre: 0.7, foeScale: 1.5, waterBreath: 2 },
   slope: { from: 0.2, k: 0.9, noRun: 0.45 },  // speed / (1 + k * (grade - from)); no run above noRun
   hazards: { net: { speed: 0.7, trip: true }, rope: { speed: 0.75, trip: true }, slick: { grip: 0.6 }, loose: { root: 0.8 } },
-  trip: { guard: 120 },       // frames before the same body can trip again
+  trip: { guard: 120, speed: 2.0, blind: 110 }, // frames before the same body trips again; fast and blind (sim/ground.mjs)
   // breath: running costs it only while engaged (spec 6: free out of combat, about 5 s of running)
   run: { engaged: 1.6, free: 0, engageRange: 10 },
   // the kiting clock (spec 4): out of a foe's reach and moving away, or out of reach and far

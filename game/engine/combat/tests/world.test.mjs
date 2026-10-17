@@ -56,12 +56,15 @@ test("a fall into water costs Breath and puts the body under, without harm", () 
   assert.ok(L.st <= st - WORLD.fall.waterBreath + 0.01);
 });
 
-test("a net trips a body that runs across it, not one that walks", () => {
+test("a net trips a body that backs fast across it, eyes behind; not one that walks or runs facing its way", () => {
   const net = [{ id: "n", kind: "net", rect: [4, 0, 6, 8] }];
   const walk = makeWorld({ G: makeG(), arena: twoLevels({ hazards: net }), lambAt: [3, 4], brains: false, foes: [] });
   assert.ok(!run(walk, 70, { lamb: { mx: 1, mz: 0 } }).some((e) => e.type === "trip"), "walking over a net slows, does not trip");
   const runW = makeWorld({ G: makeG(), arena: twoLevels({ hazards: net }), lambAt: [3, 4], brains: false, foes: [] });
-  assert.ok(run(runW, 70, { lamb: { mx: 1, mz: 0, hold: { run: true } } }).some((e) => e.type === "trip" && e.hazard === "net"));
+  assert.ok(!run(runW, 70, { lamb: { mx: 1, mz: 0, hold: { run: true } } }).some((e) => e.type === "trip"), "running facing its way: steps over");
+  const back = makeWorld({ G: makeG(), arena: twoLevels({ hazards: net }), lambAt: [7, 4], brains: false, foes: [] }), BL = back.lamb();
+  const ev = run(back, 70, () => { BL.face = 0; return { lamb: { mx: -1, mz: 0, press: back.tick === 1 ? ["roll"] : [] } }; });
+  assert.ok(ev.some((e) => e.type === "trip" && e.hazard === "net"), "a roll backward over the net trips");
   assert.ok(terrainAt(twoLevels({ hazards: net }), 5, 4).slow < 1);
 });
 

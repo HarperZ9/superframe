@@ -40,13 +40,17 @@ export function land(W, F) {
   if (drop >= R.knockdown) { F.buf = []; startMove(W, F, "knockdown"); }
 }
 
-// A net or a rope underfoot trips a body that runs or rolls across it (once in a while).
+// A net or a rope underfoot trips a body that crosses it fast and blind: running, rolling or backing
+// at more than WORLD.trip.speed with its motion turned more than WORLD.trip.blind degrees from where it
+// looks (backing off with the eyes on an opponent). Facing the way it goes, a body steps over. So a
+// chaser running at Lamb clears the net that a Lamb backing away from it trips on.
 export function trip(W, F) {
   if (F.out || F.fallen) return;
   const t = terrainAt(W.field.arena, F.x, F.z);
   if (!t.hazard || !(WORLD.hazards[t.hazard] || {}).trip) return;
-  const rolling = F.act && W.moves[F.act.id].kind === "dodge";
-  if (!(F.running || rolling) || W.tick - (F.tripAt ?? -1e9) < WORLD.trip.guard) return;
+  const v = Math.hypot(F.vx, F.vz); if (v < WORLD.trip.speed) return;
+  const off = Math.acos(Math.max(-1, Math.min(1, (F.vx * Math.cos(F.face) + F.vz * Math.sin(F.face)) / v))) * 180 / Math.PI;
+  if (off < WORLD.trip.blind || W.tick - (F.tripAt ?? -1e9) < WORLD.trip.guard) return;
   F.tripAt = W.tick; F.buf = [];
   startMove(W, F, "stagger");
   W.emit({ type: "trip", id: F.id, hazard: t.hazard });

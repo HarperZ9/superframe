@@ -51,7 +51,7 @@ cooldowns). The holes were specific:
 | Rule | What it does | Source | Kept because |
 |---|---|---|---|
 | Ledges and falls | A height step of 1 m or more between plate cells is a ledge. A walk stops at it; a knockback or a roll carries over it and the body falls. Into water: under, Breath -2. Onto ground: down from 1 m, hurt past 1.6 m (0.7 Standing a metre), opponents take 1.5 times as much | spec 7 (falls hurt from 7.5 m, kill at 10 m; foes die from shorter falls), scaled to a 2.5 to 3.4 m quay | Kiting near an edge is a gamble for both sides; a shove off the quay is real. Without it the ground is a picture |
-| Slope and hazards | Speed falls with grade above 0.2; no running above 0.45. Nets and ropes slow (0.7 and 0.75) and trip a body that runs or rolls across them; slick lowers grip; loose ground shortens a roll | spec 7 (hazards tick over 2 to 3 m) | Running away over rigging costs a fall; walking over it costs time only |
+| Slope and hazards | Speed falls with grade above 0.2; no running above 0.45. Nets and ropes slow (0.7 and 0.75) and trip a body crossing them fast (over 2 m/s) with its motion more than 110 degrees from where it looks; slick lowers grip; loose ground shortens a roll | spec 7 (hazards tick over 2 to 3 m) | Backing away blind over rigging costs a stumble; a chaser facing its way steps over. Proposed placements and their measurement: design/HAZARDS-PROPOSAL.md |
 | Running costs Breath only while engaged | 1.6 Breath a second while an aware opponent is within 10 m; free otherwise | spec 6 (running costs only in combat, about 5 s of running on a starting bar) | A mid-game Lamb gets 5 to 7 s of running in a fight, which is about when the kiting clock answers |
 | The kiting clock | Each opponent counts how long Lamb has been out of everyone's reach and opening the gap on it (or far out of its reach). Being in reach drains it twice as fast. A guarded retreat does not count | spec 4 (a "time kited" count, 3 to 5 s) | It separates spacing from running: fair play never fills it (punish counts below) |
 | The answers | At 3.5 s on the clock, or 1 s of Lamb being unreachable: a lunge if Lamb is 4 to 8.5 m off (closes about 4 m, armoured against a poke, quick to recover), else a slow thrown stone (48-frame wind-up, catchable, blockable, steppable; 6 to 10 s cooldown). These do not wait for an attack token | spec 4 and 5 (a slow-telegraphed ranged punish with a 6 to 10 s cooldown; gap-closers from 5 m) | Readable answers that a player who stands in the fight never sees |
@@ -179,5 +179,5 @@ styles, 4 seeds, 100 fights per row (tools/beam.mjs; world-runs/beam.txt, beam-r
   in the move data, so a person kiting would likely do worse than these numbers.
 - Two to three seeds per encounter. Differences of 5 wins in 190 are inside the run-to-run spread
   (four tuning variants of the clock and the answers all landed within 76 to 85 kiting wins).
-- No plate carries authored hazards yet (place.json "terrain" is agreed and empty), so nets and ropes
-  are tested on a synthetic arena only.
+- No plate carries authored hazards yet. Proposed placements for the quay, the Spit and the Ropewalk
+  were measured injected into the plates (design/HAZARDS-PROPOSAL.md); the director authors them.
