@@ -41,6 +41,7 @@ for (let f = 2; f < N - 3; f++) {
 }
 const by = (arr, k) => Object.entries(arr.reduce((o, x) => ((o[x.clip] = (o[x.clip] || 0) + 1), o), {})).map(([c, n]) => `${c} ${n}`).join(", ");
 console.log(`${who}: ${N} frames at 60 Hz`);
+console.log(`severity: worst ${(Math.max(...pops.map((p) => p.acc)) * 100).toFixed(0)} cm, frames over 20 cm ${pops.filter((p) => p.acc > 0.2).length}, summed excess ${(pops.reduce((a, p) => a + p.acc - 0.035, 0) * 100).toFixed(0)} cm`);
 console.log(`pops (joint acceleration > 3.5 cm/frame^2): ${pops.length}${pops.length ? "  by clip: " + by(pops) : ""}`);
 for (const p of pops.filter((p) => !process.env.CLIP || p.clip === process.env.CLIP).sort((a, b) => b.acc - a.acc).slice(0, 8)) console.log(`  frame ${p.f} ${p.clip} ${p.joint} ${(p.acc * 100).toFixed(1)} cm`);
 console.log(`slides (planted foot moving > 1.2 cm/frame): ${slides.length}${slides.length ? "  by clip: " + by(slides) : ""}`);

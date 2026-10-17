@@ -26,11 +26,15 @@ export function layout(clip, T = {}) {
 const keyFrame = (k, L) => { if (Array.isArray(k.at)) { const [ph, u] = k.at, s = L.starts[{ s: "startup", a: "active", r: "recovery" }[ph] || ph]; return s[0] + u * s[1]; } return k.at * L.length; };
 
 // Monotone cubic (Fritsch-Carlson) through (t_i, v_i), evaluated at t.
-function mcubic(ts, vs, t) {
+function mcubic(ts, vs, t, smooth = false) {
   const n = ts.length; if (n === 1 || t <= ts[0]) return vs[0]; if (t >= ts[n - 1]) return vs[n - 1];
   let i = 0; while (t > ts[i + 1]) i++;
   const d = (k) => (vs[k + 1] - vs[k]) / Math.max(1e-6, ts[k + 1] - ts[k]);
-  const tan = (k) => { if (k === 0) return d(0); if (k === n - 1) return d(n - 2); const a = d(k - 1), b = d(k); return a * b <= 0 ? 0 : (2 * a * b) / (a + b); };
+  // monotone (Fritsch-Carlson) by default: holds stay held. smooth: non-uniform Catmull-Rom, velocity
+  // carried through each key (a strike's momentum through contact; it may overshoot a key slightly)
+  const tan = (k) => { if (k === 0) return d(0); if (k === n - 1) return d(n - 2); const a = d(k - 1), b = d(k);
+    if (smooth) { const h0 = ts[k] - ts[k - 1], h1 = ts[k + 1] - ts[k]; if (h0 > 0.25 && h1 > 0.25) { const m = (h1 * a + h0 * b) / (h0 + h1), lim = 1.5 * Math.max(Math.abs(a), Math.abs(b)); return Math.max(-lim, Math.min(lim, m)); } }
+    return a * b <= 0 ? 0 : (2 * a * b) / (a + b); };
   const h = ts[i + 1] - ts[i], s = (t - ts[i]) / h, m0 = tan(i) * h, m1 = tan(i + 1) * h;
   const s2 = s * s, s3 = s2 * s;
   return (2 * s3 - 3 * s2 + 1) * vs[i] + (s3 - 2 * s2 + s) * m0 + (-2 * s3 + 3 * s2) * vs[i + 1] + (s3 - s2) * m1;
@@ -44,7 +48,7 @@ export function sample(clip, T, f, base = {}) {
   const ts = keys.map((k) => k.t), out = {};
   for (const jc of chans) {
     const [j, ch] = jc.split("."), vs = keys.map((k) => k.pose[j]?.[ch] ?? base[j]?.[ch] ?? 0);
-    (out[j] = out[j] || {})[ch] = mcubic(ts, vs, f);
+    (out[j] = out[j] || {})[ch] = mcubic(ts, vs, f, !!clip.smooth);
   }
   let shown = keys[0]; for (const k of keys) if (k.t <= f + 1e-6) shown = k;
   for (const k of ["hide", "hands"]) if (shown.pose[k]) out[k] = shown.pose[k];   // stepped, not interpolated

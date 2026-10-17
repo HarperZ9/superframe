@@ -30,8 +30,10 @@ export function blend(a, b, t) {
   for (const j of new Set([...Object.keys(a), ...Object.keys(b)])) {
     if (Array.isArray(a[j]) || Array.isArray(b[j])) { o[j] = t < 0.5 ? a[j] : b[j]; continue; }
     o[j] = {}; const A = a[j] || {}, B = b[j] || {};
-    // whole-body angles blend the short way round (a roll ends at pitch 360, the guard starts at 0)
-    for (const k of new Set([...Object.keys(A), ...Object.keys(B)])) { const a = A[k] || 0, b = B[k] || 0; o[j][k] = j === "root" && (k === "pitch" || k === "yaw" || k === "roll") ? a + ((((b - a) % 360) + 540) % 360 - 180) * t : a * (1 - t) + b * t; }
+    // whole-body angles: a finished turn (a roll's 360, a heavy's -360) counts as 0, mid-turn angles stay
+    // as they are, so a blend never takes the short way round across the middle of a roll
+    const n = (x) => { const r = ((x % 360) + 360) % 360; return r > 330 ? r - 360 : r; };
+    for (const k of new Set([...Object.keys(A), ...Object.keys(B)])) { const a = A[k] || 0, b = B[k] || 0, ang = j === "root" && (k === "pitch" || k === "yaw" || k === "roll"); o[j][k] = ang ? n(a) * (1 - t) + n(b) * t : a * (1 - t) + b * t; }
   }
   return o;
 }
@@ -156,6 +158,7 @@ export function createCast({ timing, combat = null, members }) {
       play(name, { force = false, fade = 4 } = {}) {
         name = artName(name); if (!L.clips[name]) throw new Error(`no clip ${name}`);
         if (name === st.clip && LOOPS.has(name)) return true;
+        if ((name === "walk" || name === "run") && (st.clip === "walk" || st.clip === "run")) { st.clip = name; return true; }   // one locomotion: the speed blends, the phase carries on
         const e = ev();
         if (!force && !LOOPS.has(st.clip) && !e.done && !e.cancel) return false;
         // a loop starts at the phase whose legs are nearest the pose it leaves, so the blend has little to cover
@@ -164,6 +167,8 @@ export function createCast({ timing, combat = null, members }) {
           const from = self.basePose(), n = L.length(who, name); let best = 1e9;
           for (let k = 0; k < 12; k++) { const q = L.pose(who, name, (k / 12) * n), dlt = ["thighL", "thighR", "shinL", "shinR"].reduce((acc, j) => acc + Math.abs((q[j]?.fwd ?? q[j]?.bend ?? 0) - (from[j]?.fwd ?? from[j]?.bend ?? 0)), 0); if (dlt < best) { best = dlt; start = (k / 12) * n; } }
         }
+        if ((st.clip === "walk" || st.clip === "run") && st.v != null) st.prevLoco = { v: Math.max(0.3, st.v), u: st.u ?? 0 };
+        if (name !== "walk" && name !== "run") st.v = null;
         st.prev = st.clip; st.prevFrame = st.frame; st.clip = name; st.frame = start; st.fade = fade; st.fadeLen = fade; st.external = false;
         const p0 = L.pose(who, name, 0).root || {}; st.rootZ = p0.z || 0; st.rootX = p0.x || 0;
         return true;
@@ -173,7 +178,7 @@ export function createCast({ timing, combat = null, members }) {
         st.frame += dt * FPS;
         if (st.prev) { st.prevFrame += dt * FPS; st.fade = Math.max(0, st.fade - dt * FPS); if (!st.fade) st.prev = null; }
         let dz = 0, dx = 0;
-        if (LOOPS.has(st.clip)) { dz = (Tm.speed || 0) * dt; if (st.frame >= len) st.frame -= len; if (st.clip === "walk" || st.clip === "run") { st.v = st.vWant ?? (st.clip === "run" ? 3.6 : 1.5); dz = st.v * dt; st.u = advanceU(st.u, dz, st.v); } }
+        if (LOOPS.has(st.clip)) { dz = (Tm.speed || 0) * dt; if (st.frame >= len) st.frame -= len; if (st.clip === "walk" || st.clip === "run") { const want = st.vWant ?? (st.clip === "run" ? 3.6 : 1.5), acc = 7 * dt; st.v = st.v == null ? Math.min(want, 0.6) : st.v + Math.max(-acc, Math.min(acc, want - st.v)); dz = st.v * dt; st.u = advanceU(st.u, dz, st.v); } }   // speed eases (about 7 m/s per second), so the stride grows, it does not jump
         else {
           const r = L.pose(who, st.clip, Math.min(st.frame, len)).root || {};
           dz = (r.z || 0) - st.rootZ; dx = (r.x || 0) - st.rootX; st.rootZ = r.z || 0; st.rootX = r.x || 0;
@@ -193,7 +198,11 @@ export function createCast({ timing, combat = null, members }) {
           // speed-blended walk to run; the phase advances by distance, so feet stay planted
           p = L.loco(who, Math.max(0.3, st.v), st.u ?? 0).pose;
         } else p = L.pose(who, st.clip, Math.min(st.frame, L.length(who, st.clip) - 1e-3));
-        if (st.prev && L.clips[st.prev]) { const q = L.pose(who, st.prev, Math.min(st.prevFrame, L.length(who, st.prev) - 1e-3)); p = blend(p, q, st.fade / st.fadeLen); }
+        if (st.prev && L.clips[st.prev]) {
+          // the pose being left is what was on screen: the speed-blended locomotion when it was walking or running
+          const q = (st.prev === "walk" || st.prev === "run") && st.prevLoco ? L.loco(who, st.prevLoco.v, st.prevLoco.u).pose : L.pose(who, st.prev, Math.min(st.prevFrame, L.length(who, st.prev) - 1e-3));
+          p = blend(p, q, st.fade / st.fadeLen);
+        }
         p.root = { ...(p.root || {}), x: 0, z: 0 };   // travel is in st.pos (ours, or combat's)
         return p;
       },
@@ -210,6 +219,9 @@ export function createCast({ timing, combat = null, members }) {
       updateLocks(pose) {
         if (lying(pose) || (pose.root?.y || 0) > 0.05) { st.locks.L = st.locks.R = null; return; }
         // gaits plant their own feet (anim/gait.mjs): let any lock go over a few frames
+        // entering a gait, the locks hand over across the blend (their weight follows the blend), so
+        // nothing is let go at once when the blend ends
+        if (["walk", "run", "wade"].includes(st.clip) && st.prev) { const f = st.fade / Math.max(1e-6, st.fadeLen); for (const s of ["L", "R"]) { const k = st.locks[s]; if (k) { k.w = Math.min(k.w, f); if (k.w <= 0.01) st.locks[s] = null; } } return; }
         if (["walk", "run", "wade"].includes(st.clip) && !st.prev) { for (const s of ["L", "R"]) { const k = st.locks[s]; if (k) { k.w -= 0.2; if (k.w <= 0) st.locks[s] = null; } } return; }
         const S = solveFigure(C, built(who, "far", st.tool), pose), prev = st.prevFoot || (st.prevFoot = {});
         for (const s of ["L", "R"]) {

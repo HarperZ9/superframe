@@ -11,7 +11,7 @@ import * as C from "./combat.mjs";
 
 const P3 = ["startup", "active", "recovery"], G = (b, p) => merge(b, p);
 const ph = (name, keys, tags = ["combat", "attack"]) => ({ name, phases: P3, keys, tags });
-const fr = (name, keys, tags = ["combat", "move"]) => ({ name, keys, tags });
+const fr = (name, keys, tags = ["combat", "move"]) => ({ name, keys, tags, smooth: true });   // body moves carry momentum through their keys
 
 // Guards by how the tool is held.
 export const GUARDS = {
@@ -137,7 +137,8 @@ const roll = directional("roll", (d, x, z) => {
   return [
     { at: 0, pose: GUARD },
     { at: 0.12, pose: G(GUARD, { root: { y: -0.3, yaw, ...travel(x, z, 0.06), pitch: 10 }, spine: { bend: 30 }, chest: { bend: 20 }, thighL: { fwd: 60 }, shinL: { bend: 70 } }) },
-    ...[0.25, 0.4, 0.55].map((u, i) => ({ at: u, pose: G(GUARD, { ...tuck, root: { y: [-0.55, -0.62, -0.5][i], yaw, ...travel(x, z, 0.1 + u), pitch: 10 + 350 * ((u - 0.12) / 0.48) } }) })),
+    // the turn of the roll eases in and out (slow over the shoulder, fast across the back, slowing to land)
+    ...[[0.2, 45, -0.45], [0.3, 120, -0.58], [0.4, 210, -0.62], [0.5, 290, -0.55]].map(([u, pitch, y]) => ({ at: u, pose: G(GUARD, { ...tuck, root: { y, yaw, ...travel(x, z, 0.1 + u), pitch } }) })),
     { at: 0.6, pose: G(GUARD, { root: { y: -0.34, yaw, ...travel(x, z, 0.72), pitch: 360 }, spine: { bend: 30 }, thighL: { fwd: 70 }, shinL: { bend: 100 }, thighR: { fwd: 10 }, shinR: { bend: 80 } }) },
     { at: 0.85, pose: G(GUARD, { root: { y: -0.16, yaw: yaw * 0.3, ...travel(x, z, 0.95), pitch: 360 }, spine: { bend: 16 } }) },   // the hittable slide out of the roll
     { at: 1, pose: G(GUARD, { root: { yaw: 0, ...travel(x, z, 1), pitch: 360 } }) },

@@ -22,11 +22,16 @@ function shapeStrike(c) {
   const iTop = keys.findIndex((k) => at(k) && at(k)[0] === "s" && at(k)[1] === 1), act = keys.filter((k) => at(k) && at(k)[0] === "a");
   if (iTop < 0 || !act.length) return c;
   const top = keys[iTop].pose, hit = act[0].pose, last = act[act.length - 1].pose;
-  const hasMid = keys.some((k) => at(k) && at(k)[0] === "s" && at(k)[1] > 0.6 && at(k)[1] < 1);
-  keys[iTop] = { at: ["s", 1], pose: mixPose(top, hit, 0.35) };
-  if (!hasMid) keys.push({ at: ["s", 0.72], pose: top });
+  // the swing ramps up over the last third of the windup (16 % of the arc by 0.86, 48 % by its end),
+  // so the hand accelerates over several frames instead of leaving a hold at full speed
+  const hasMid = keys.some((k) => at(k) && at(k)[0] === "s" && at(k)[1] > 0.55 && at(k)[1] < 1);
+  keys[iTop] = { at: ["s", 1], pose: mixPose(top, hit, 0.48) };
+  if (!hasMid) keys.push({ at: ["s", 0.62], pose: top });
+  keys.push({ at: ["s", 0.86], pose: mixPose(top, hit, 0.16) });
+  // follow-through: the swing carries on past contact and slows over several frames, rather than
+  // stopping dead on the last active frame
   if (!keys.some((k) => at(k) && at(k)[0] === "r" && at(k)[1] < 0.3)) keys.push({ at: ["r", 0.14], pose: mixPose(last, top, -0.12) });
-  return { ...c, keys, shaped: true };
+  return { ...c, keys, shaped: true, smooth: true };
 }
 for (const [k, c] of Object.entries(CLIPS)) CLIPS[k] = shapeStrike(c);
 // The opponent archetypes' own moves (anim/specials.mjs).
@@ -81,7 +86,7 @@ export function makeLibrary(timing, styles = {}, combat = null, bodies = {}) {
     // by speed, the legs solved from the blended gait. Returns { pose, cycle } (cycle: metres per cycle).
     loco(who, v, u) {
       const P = bodies[who], { g, w, cycle } = blendGait(P, v), cw = CLIPS.walk, cr = CLIPS.run;
-      const pw = sample(cw, T(who, "walk"), u * cw.frames), pr = sample(cr, T(who, "run"), u * cr.frames), p = {};
+      const tw = T(who, "walk"), tr = T(who, "run"), pw = sample(cw, tw, u * layout(cw, tw).length), pr = sample(cr, tr, u * layout(cr, tr).length), p = {};
       for (const j of new Set([...Object.keys(pw), ...Object.keys(pr)])) { p[j] = {}; for (const k of new Set([...Object.keys(pw[j] || {}), ...Object.keys(pr[j] || {})])) p[j][k] = (pw[j]?.[k] ?? 0) * (1 - w) + (pr[j]?.[k] ?? 0) * w; }
       // the gait solves the legs in the hip's plane; a turning pelvis would swing a planted foot sideways,
       // so the twist moves up to the chest (counter-rotation stays visible) and the pelvis stays square
