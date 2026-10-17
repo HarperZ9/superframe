@@ -364,3 +364,12 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
       each pixel's own depth 0 of 4092 drawn pixels are behind the painting by more than 0.5 m (worst
       0.14 m, the drawer's slack). The crowd's 89 "stacked" pixels sit on figure edges (the one-pixel
       feather on dark coats and a staff), not where two shadows overlap.
+59. DONE Visual check passes 6 of 6 on the current build (rerun here after the systems engineer's
+    8dbfcb1): Merrow 1.98 (limit 2.0), Keel 0.54, crowd stacked 16 (limit 40), occlusion 0.
+    Correction to step 58: my occlusion claim held (the check now uses each pixel's own depth), but my
+    stacked-shadow claim was only partly right. After edges were excluded, 184 to 201 flagged pixels
+    remained as blobs at the feet, and they were single shadow cores: my flat 0.55 core sat above the
+    old threshold, 1.3 x the view's median (0.33) + 0.05. I had marked edges only and read the crowd
+    from that. The check now measures one shadow's own alpha. Keel sits in his chair through the shell
+    (harbour-office still); he reads as sitting, but Lamb's walk-up spot (0.4, -0.6) stands inside his
+    knees, since a seated body reaches about 0.6 m further forward than a standing one.
