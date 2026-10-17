@@ -30,7 +30,10 @@ MEASURE = """(variant) => { const c = window.__lw, p = c.play, G = c.G, cam = p.
   const charW = probe.getBoundingClientRect().width / probe.textContent.length; probe.remove();
   const opts = p.root.querySelector('.opts');
   return { variant, w: innerWidth, h: innerHeight, free: +free.toFixed(3), lookM: look == null ? null : +look.toFixed(1), walkS: look == null ? null : +(look / 1.5).toFixed(1), runS: look == null ? null : +(look / 3.6).toFixed(1),
-    people: figs.length, hidden, marked, chars: Math.round((log.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)) / charW), optsFit: opts.scrollHeight <= opts.clientHeight + 1, talkX: G.rs.rules['camera-talk-x'] }; }"""
+    people: figs.length, hidden, marked, chars: Math.round((log.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)) / charW), optsFit: opts.scrollHeight <= opts.clientHeight + 1, ruleTalkX: G.rs.rules['camera-talk-x'],
+    lambX: s ? +(s[0] / (panel.left - scene.left)).toFixed(3) : null,
+    subjectX: (() => { const who = p.people.talkingWithWho, f = who && p.people.figures().find(x => x.who === who), a = f && cam.toScreen(f.at); return s && a ? +(((s[0] + a[0]) / 2) / (panel.left - scene.left)).toFixed(3) : null; })(),
+    camLeft: cam.frameNow() ? cam.frameNow().left : null }; }"""
 
 def run():
     OUT.mkdir(parents=True, exist_ok=True)
@@ -41,15 +44,15 @@ def run():
     try:
         with sync_playwright() as pw:
             b = pw.chromium.launch(headless=True, args=["--disable-gpu", "--disable-gpu-compositing", "--disable-gpu-rasterization"])
-            for (w, h) in [(1280, 720), (1280, 800), (1920, 1080)]:
+            for (w, h) in ([(1280, 720)] if "--quick" in sys.argv else [(1280, 720), (1280, 800), (1920, 1080)]):
                 for variant in ["wide", "slim"]:
                     for scene in ["quay", "brine"]:
                         pg = b.new_page(viewport={"width": w, "height": h})
                         errs = []
-                        pg.on("pageerror", lambda e: errs.append(str(e)))
+                        pg.on("pageerror", lambda e: errs.append(str(e) + " @ " + (e.stack or "").split(chr(10))[1].strip() if e.stack and len(e.stack.split(chr(10))) > 1 else str(e)))
                         pg.goto(f"http://127.0.0.1:{PORT}/engine/play.html?capture=1", timeout=120000)
                         pg.wait_for_function("document.documentElement.dataset.ready === '1' && window.__lw", timeout=180000)
-                        pg.evaluate(f"document.documentElement.dataset.panel = "{variant}"")
+                        pg.evaluate(f"document.documentElement.dataset.panel = '{variant}'")
                         pg.evaluate("""(pl) => { const c = window.__lw; c.newGame(11); c.G.create({ archetype: 'p.wader', enter: false });
                           c.G.setPlace(pl); if (pl === 'quay') c.G.state.pos = [-0.4, 0, -2.4]; c.play(); if (c.play.P.talk) { c.play.P.talk = null; c.play.P.beat = null; c.play.render(); } }""", "quay" if scene == "quay" else "brine")
                         pg.wait_for_function("(() => { const p = window.__lw.play; return p && p.cam.ready() && !!p.cam.arena(); })()", timeout=180000)
@@ -63,9 +66,9 @@ def run():
                         time.sleep(3.0)
                         m = pg.evaluate(MEASURE, variant); m["scene"] = scene
                         # a threat behind the panel: move the second person far to the right of the subject (as if arriving)
-                        m["threat"] = pg.evaluate("""() => { const c = window.__lw, p = c.play, cam = p.cam, A = c.G.world.area();
+                        m["threat"] = None if "--nothreat" in sys.argv else pg.evaluate("""() => { const c = window.__lw, p = c.play, cam = p.cam, A = c.G.world.area();
                           const L = c.G.state.pos, sc = p.root.querySelector('.scene').getBoundingClientRect(), pl = p.root.querySelector('aside.talk').getBoundingClientRect().left - sc.left;
-                          for (let dx = 1; dx < 40; dx += 0.5) { const at = [L[0] + dx, L[1], L[2]], s = cam.toScreen(at); if (s && s[0] > pl + 30 && s[0] < sc.width - 30) { (A.figures ||= []).push({ id: 'stranger', at, face: -1 }); return { who: 'stranger', at, dx }; } }
+                          for (let dx = 1; dx < 40; dx += 0.5) { const at = [L[0] + dx, L[1], L[2]], s = cam.toScreen(at); if (s && s[0] > pl + 30 && s[0] < sc.width - 30) { (A.figures ||= []).push({ id: 'keel', at, face: -1 }); return { who: 'keel', at, dx }; } }
                           return null; }""")
                         time.sleep(0.6)
                         m["threatMarked"] = pg.evaluate("[...document.querySelectorAll('.edgemark:not([hidden]) .ename')].map(e => e.textContent)")

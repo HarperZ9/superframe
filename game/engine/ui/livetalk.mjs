@@ -2,7 +2,7 @@
 // while Lamb talks, people move, threats arrive and suspects bolt, so the talk panel must not hide
 // what matters. Four aids, one frame loop:
 //   1. The talk framing follows the panel: the subject sits in the middle of the plate the panel
-//      leaves free (camera-talk-x from the panel's live width), so the free side is all lookahead.
+//      leaves free. The camera reads the panel's free width itself (ui/platecam.mjs freeTalkX).
 //   2. Edge marks: anyone on the plate who is behind the panel or off the screen gets a paper tab at
 //      that edge, level with them, with their name and "moving" while they walk, so an approach or a
 //      bolt is seen before it arrives or after it leaves the view.
@@ -31,8 +31,6 @@ export function liveTalkAids(ctx, api, root, P) {
     const talking = root.classList.contains("talking") && !root.classList.contains("fighting");
     const panel = root.querySelector("aside.talk"), view = scene.getBoundingClientRect();
     const panelLeft = talking && panel ? panel.getBoundingClientRect().left - view.left : view.width;
-    // 1. framing: the subject in the middle-left of the free plate
-    if (talking && view.width) G.rs.rules["camera-talk-x"] = Math.max(0.2, Math.min(0.5, (panelLeft / view.width) * 0.45));
     // walking gives the focus back to the world
     const v = (G.input && G.input.get("move")) || { x: 0, z: 0 };
     if (Math.hypot(v.x || 0, v.z || 0) > 0.2) P.listFocus = false;

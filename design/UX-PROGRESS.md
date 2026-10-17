@@ -84,3 +84,7 @@ and kept in order; each says what was done and where it landed.
     anyone behind the panel or off screen (12 of 12), a draining lie tab (6 of 6). Decision and numbers in
     UI-SYSTEM 7.6. Tests: `pad-talk`, `keys-talk` (updated for walk-off in talk), `slide` (updated: Enter
     talks unless a row was chosen).
+23. **Camera reads the free width itself** (systems engineer, 0d8812e): the per-frame `camera-talk-x` write in
+    `ui/livetalk.mjs` is deleted. Framing re-checked at three resolutions and both widths: subject at 0.45 to
+    0.46 of the free width (12 of 12), rule untouched, no page errors. Fixed a quoting error I had committed
+    in `livetalk_eval.py` (af7ddb6). Reported a character-drawer crash on unknown figure ids.

@@ -2102,3 +2102,86 @@ Asked by the coordinator (2026-10-17): a pad button for talk, and a review of th
 - **Optional for the figure hooks:** the drawer now reads `/content/<plate>/` itself (place.json,
   geo-pos.f32, the variant png, dark.png) to expose figures and lay shadows. It finds the variant by
   matching the `lights` array you pass. Passing `variant` in the hook args would make that exact.
+
+### Systems engineer, 2026-10-17 21:47Z: collision, the visual check, authored spots, held tools
+
+**Coordinator.** The engine's collision work is in (commits d29ecd5, 505b3f2, 0d8812e and bb198b3 on
+dev; 136 tests pass).
+- **The ground.** Walking and fights now use quarter-metre cells built from the plate itself.
+  - A cell closes when three or more samples stand 0.4 to 2 m over its floor: a bench, the counter, a
+    wall face, a chair.
+  - A cell more than 0.3 m over its neighbours closes too.
+  - So does a small raised area that no step leads up to (a counter or bench top).
+  - Floor the camera cannot see (behind a barrel) is filled in.
+  - A 0.3 m body margin is kept off props. Walking keeps it where it can and squeezes past a bollard
+    where it must. Fights keep it strictly.
+  - Bodies keep 0.6 m apart.
+  - A figure whose authored spot is in or on a prop stands at the nearest clear floor.
+  - A spot behind the counter (no ground seen there) stays, for Sabine.
+- **tools/visual-check.mjs** runs headless with no install: Node drives the headless Chromium over the
+  DevTools protocol. It covers seven views and fails loudly. Per figure it measures footprint in
+  props, standing on a top, bodies overlapping, occlusion, and luminance against the plate. Per view
+  it measures shadows off the floor and stacked shadows.
+- **The check fails on the committed build from before this work** (0a81174, served from a worktree):
+  - 10 figures in props and 1 on a top over six views;
+  - Keel 1.47 m up on the office furniture;
+  - Sabine on the counter, and Merrow in the red chair.
+- **After the change** (`game/capture/visual-check/after/`): 0 figures in props, 0 on tops, and 0
+  overlapping bodies, in every view.
+- The views still fail, on things the character lead owns:
+  - Sabine behind the counter is drawn over it: 23% to 79% of her figure fails the occlusion test.
+  - Merrow is lit at 2.3 to 2.5 times the plate around him, over the band's top of 2.0.
+  - Keel is at 0.2, under the band.
+  - Stacked shadows exceed the limit in every view.
+- Limit on the shadow numbers: "stacked" counts dark, translucent pixels at the feet that are darker
+  than 1.3 times the view's median. Figure edges can count. I have not checked it against marked-up
+  ground truth, so the defect is real but its size is approximate.
+- The committed tree at 0a81174 did not boot from a clean checkout: play.mjs imported ui/livetalk.mjs
+  before that file was committed. The file is tracked now.
+
+**Director: authored spots that move** (`node tools/marks-check.mjs`, full list in
+game/capture/visual-check/marks.txt).
+- 11 of 24 spots move clear of props:
+  - Strand on the quay: 1.1 m, from inside the bench.
+  - Keel in the office: 0.9 m, from the chair. If Keel is meant to sit, that needs a seated pose, not
+    a standing spot on the chair; tell me if so.
+  - Merrow in the cells: 1.9 m.
+  - Lugg on the floor: 0.6 m.
+  - Spratt in the Gut, plus the room, office, floor and stairs spawns: 0.2 to 0.4 m each.
+- Three spots are in voids and stay: Sabine behind the counter, the lamp-room and Gut spawns, and
+  Merrow on the floor at -12 11.8.
+- Edit the wiring if you want them exact; the game moves them in the meantime.
+
+**Character lead.**
+- Every figure's drawer args now carry `reach`: the metres a held tool has ahead before a prop or wall
+  (world/plateworld.mjs clearAhead, up to 2.2 m). Clamp a staff or pole to it, or angle it up, so it
+  does not pass through the counter.
+- The visual check gives you numbers to work against:
+  - occlusion: Sabine behind the counter;
+  - exposure: Merrow in the Brine at 2.3 to 2.5;
+  - stacked shadows: every view.
+- Run `node tools/visual-check.mjs` from game/engine with a server on 8754.
+
+**UI and UX lead.** The camera now reads the talk panel's free width itself (platecam freeTalkX, your
+rule: 0.45 of the free width, between 0.2 and 0.5 of the view). Please remove the line in livetalk.mjs
+that writes G.rs.rules["camera-talk-x"] every frame; that writes to the shared ruleset.
+
+**Combat engineer.** BEAM_RATE now lives in world/beam.mjs, a pure module. ui/weatherlayer.mjs
+re-exports it. Please import it from world/beam.mjs.
+
+### UI and UX lead, 2026-10-17: the rules write is gone; framing checked
+
+**Systems engineer.** Thank you for `freeTalkX()` (0d8812e). I deleted the line in `ui/livetalk.mjs` that
+wrote `camera-talk-x` every frame. Checked headless at 1280 x 720, 1280 x 800 and 1920 x 1080, both panel
+widths, the quay talk and the Brine interrogation: the subject (the midpoint of Lamb and the speaker)
+sits at 0.45 to 0.46 of the free width in all 12 runs; `@rules camera-talk-x` stays 0.3333; edge marks and
+the lie tab still show; no page errors (`design/ux/livetalk_eval.py`, `design/ux/shots/livetalk.json`).
+
+**Correction (mine).** My previous commit (af7ddb6) carried `design/ux/livetalk_eval.py` with a quoting
+error from a late edit, so the committed script did not run; the numbers in UI-SYSTEM 7.6 came from the
+runs before that edit. Fixed in this commit and re-run; the numbers hold.
+
+**Character lead.** Found while testing: a figure whose id has no cast data crashes the character drawer
+(`characters/render/shade.mjs` `light()` line 64 reads `rig.amb[0]` of an undefined rig: "Cannot read
+properties of undefined (reading '0')"). My test had added an unknown figure; a real stand-in or a typo in
+content would do the same. A fallback rig (or the plain ink figure) for unknown ids would keep the page up.
