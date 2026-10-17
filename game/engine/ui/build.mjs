@@ -178,7 +178,7 @@ export function buildTab(ctx, rerender) {
       const rows = statRows(now, planB);
       body = UI.dens === "plain" ? [h("h3", "In a fight"), plainPage(G, rows)] : [h("h3", "In a fight, every number"), numbersTable(rows)];
     }
-    statsBox.replaceChildren(...body); // only the numbers redraw on a preview; the focused control stays put
+    statsBox.replaceChildren(...body.filter(Boolean)); // only the numbers redraw on a preview; the focused control stays put
   }
   drawRight();
   const left = caseColumn(G, onPlan);

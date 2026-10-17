@@ -5,10 +5,11 @@ import { meterMarks } from "./scene.mjs";
 import { notesTab, claimsTab, marginTab, sheetTab } from "./tabs-a.mjs";
 import { packTab, lampsTab, townTab, historyTab } from "./tabs-b.mjs";
 import { buildTab } from "./build.mjs"; // ux: the Build page replaces the Sheet tab (UI-SYSTEM 7.2)
+import { mapTab } from "./map.mjs"; // ux: the Map page
 
 export const TABS = [
   ["notes", "Notes", notesTab], ["claims", "Claims", claimsTab], ["margin", "Margin", marginTab], ["build", "Build", buildTab],
-  ["pack", "Pack", packTab], ["lamps", "Lamps", lampsTab], ["town", "Town", townTab], ["history", "History", historyTab],
+  ["pack", "Pack", packTab], ["map", "Map", mapTab], ["lamps", "Lamps", lampsTab], ["town", "Town", townTab], ["history", "History", historyTab],
 ];
 
 export function openDaybook(ctx, tab = ctx.lastTab || "notes") {

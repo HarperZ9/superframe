@@ -110,3 +110,14 @@ CASES += [
      ("eval", G + ".emit('chapter', { name: 'A chapter page' })"), ("wait", 700), ("shot", "chapter-leaf"), ("pad", 1), ("wait", 400),
      ("expect", "!document.querySelector('.leaf')", "pad B closes the chapter leaf")]},
 ]
+CASES += [
+  {"name": "map", "url": P + "world", "steps": [("key", "Tab"), ("eval", "window.__shell.daybook('map')"), ("wait", 300), ("shot", "map-test"),
+     ("expect", "document.querySelectorAll('.mapspot').length", "districts drawn as buttons")]},
+  {"name": "map-act1", "url": LAB + "screen=map", "steps": [("shot", "map-act1-1080"), ("key", "ArrowRight"), ("shot", "map-act1-focus"),
+     ("expect", "document.querySelector('.mapinfo h3')?.textContent", "focus describes a district")]},
+  {"name": "wait-turn", "url": P + "world", "steps": [
+     ("eval", "window.__t0 = window.__shell.G.clock()"),
+     ("expect", "[...document.querySelectorAll('.act')].map(e => e.textContent).find(t => /Wait for/.test(t))", "the tide wait row is offered"),
+     ("eval", "[...document.querySelectorAll('.act')].find(e => /Wait for/.test(e.textContent)).click()"), ("wait", 300), ("shot", "wait-turn"),
+     ("expect", "window.__shell.G.clock() - window.__t0", "minutes the wait took (stops at a turn, a scene, or 180)")]},
+]

@@ -38,7 +38,10 @@ def run(cases, only):
                 pg.on("console", lambda m: logs.append(f"{m.type}: {m.text}") if m.type in ("error", "warning") else None)
                 pg.on("pageerror", lambda e: logs.append("PAGEERROR " + str(e)))
                 pg.add_init_script(PAD_JS)
-                pg.goto(f"http://127.0.0.1:{PORT}{c['url']}")
+                try:
+                    pg.goto(f"http://127.0.0.1:{PORT}{c['url']}", timeout=90000)
+                except Exception as e:
+                    results.append(f"FAIL  {c['name']}: page did not load ({type(e).__name__})"); pg.close(); continue
                 try:
                     pg.wait_for_function("document.documentElement.dataset.ready === '1'", timeout=60000)
                 except Exception as e:

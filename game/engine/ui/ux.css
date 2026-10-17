@@ -262,3 +262,20 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 .leaf .ltext { font-style: italic; line-height: var(--line); margin: 0.3rem 0; text-wrap: pretty; }
 .leaf .llines { margin: 0.4rem 0; padding-left: 1.1rem; font-size: var(--fs-s); color: var(--ink-2); }
 .leaf.chapter .ltitle { border-bottom-style: double; border-bottom-width: 4px; }
+
+/* the Map page: Lamb's chart in pencil and ink */
+.map { display: grid; grid-template-columns: minmax(0, 2.2fr) minmax(14rem, 1fr); gap: 1.4rem; align-items: start; }
+.mapwrap { position: relative; }
+.mapchart { width: 100%; height: auto; display: block; }
+.mapsea { fill: none; stroke: var(--rule); }
+.way { stroke-width: 2; }
+.way.ink { stroke: var(--ink); }
+.way.pencil { stroke: var(--graphite); stroke-dasharray: 6 5; stroke-width: 1.4; }
+.spot.ink { fill: var(--paper-solid); stroke: var(--ink); stroke-width: 2.5; }
+.spot.pencil { fill: var(--paper-solid); stroke: var(--graphite); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.spot.here { fill: var(--ink); stroke: var(--ink); }
+.mapmarks { position: absolute; inset: 0; }
+.mapspot { position: absolute; transform: translate(-50%, 0.9rem); display: grid; justify-items: center; padding: 0.15rem 0.45rem; background: var(--paper-solid); font-weight: 600; font-size: var(--fs-s); white-space: nowrap; }
+.mapspot.unknown { color: var(--graphite); font-weight: 400; }
+.mapspot .mh { font-family: var(--name); font-size: var(--fs-xs); letter-spacing: 0.07em; text-transform: uppercase; font-weight: 400; }
+.mapinfo h3 { margin: 0.3rem 0; font-size: var(--fs-l); }
