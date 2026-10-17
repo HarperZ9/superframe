@@ -88,3 +88,6 @@ and kept in order; each says what was done and where it landed.
     `ui/livetalk.mjs` is deleted. Framing re-checked at three resolutions and both widths: subject at 0.45 to
     0.46 of the free width (12 of 12), rule untouched, no page errors. Fixed a quoting error I had committed
     in `livetalk_eval.py` (af7ddb6). Reported a character-drawer crash on unknown figure ids.
+24. **Line of sight in sneaks** (systems engineer, 55e76ee): `ui/sneaklayer.mjs` sets `G.stealth.sight` through
+    the scene's stage and `sightClear` while a sneak plays on a plate, and clears it when the sneak ends.
+    Tested: set during, null after, no page errors; sneak, scene-key and stepped-sneak cases re-run clean.

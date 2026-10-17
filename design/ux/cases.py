@@ -172,3 +172,8 @@ CASES += [
      ("expect", "(() => { const c = document.querySelector('.talkchip'); return c && !c.hidden ? c.textContent : null; })()", "the prompts tab offers Talk with its key"),
      ("pad", 0), ("wait", 600), ("expect", "!!window.__lw.play.P.talk", "pad A talks to whoever Lamb faces"), ("shot", "pad-talk-open")]},
 ]
+CASES += [{"name": "sneak-sight", "url": P + "world&motion", "steps": [
+  ("eval", f"window.__shell.G.state.runMode = 'full'; window.__shell.play.startTalk('t.r.hub'); ({PICK})('Test sneak.')"), ("wait", 500),
+  ("expect", "typeof window.__shell.G.stealth.sight", "line of sight is set while the sneak plays on the plate"),
+  ("eval", "window.__shell.G.sneaks.current && window.__shell.G.sneaks.current.state && Object.assign(window.__shell.G.sneaks.current.state, { done: true, outcome: 'win', reason: 'goal' })"), ("wait", 1500),
+  ("expect", "window.__shell.G.stealth.sight === null", "and cleared when it ends")]}]

@@ -16,6 +16,7 @@ import { createDock } from "./strip.mjs";
 import { worldCanvas, clearOfPaper, groundPoly, circlePts, wedgePts, hatch, outline, ring, INK } from "./worldlayer.mjs";
 import { drawPerson, placeLamb } from "./worldlayer.mjs";
 import { glyph } from "./bindings.mjs";
+import { sightClear } from "../world/plateworld.mjs";
 
 const OUT = { win: "Across, unseen.", seen: "Seen.", ambush: "You strike first.", time: "Out of time." };
 const MARK = { unaware: "", suspicious: "?", searching: "??", seen: "!" };
@@ -35,6 +36,9 @@ export function sneakLayer(ctx, host, id, onDone, { cam = null } = {}) {
   host.append(root);
   const L = worldCanvas(root, { G, cam, id, size: [b.x1 - b.x0, b.z1 - b.z0], origin: [b.x0, b.z0] });
   const dock = createDock(root), strip = sneakStrip(dock, sn.state.def.name);
+  // line of sight on the plate (world/stealth.mjs sight, combat's rule: only something more than 1.2 m over
+  // the lower body hides a person, so a wall does and a bench does not); null again when the sneak ends
+  if (G.stealth && cam && cam.arena) G.stealth.sight = (ax, az, bx, bz) => { const A = cam.arena(); if (!A) return true; const p = L.stage.toWorld([ax, az]), q = L.stage.toWorld([bx, bz]); return sightClear(A, p[0], p[2], q[0], q[2]); };
   if (cam) cam.frameOn((project) => {
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity; const v = sn.view();
     for (const [x, z] of [[v.x, v.z], [v.goal.x, v.goal.z], ...v.watchers.map((w) => [w.x, w.z])]) for (const [dx, dz] of [[-1.5, -1.5], [1.5, 1.5]]) {
@@ -90,7 +94,7 @@ export function sneakLayer(ctx, host, id, onDone, { cam = null } = {}) {
   function finish() {
     if (closed) return; closed = true; clearTimeout(settle); cancelAnimationFrame(raf); unloop(); offSay(); offVoice();
     removeEventListener("keydown", down, true); removeEventListener("keyup", up, true); removeEventListener("blur", onBlur);
-    if (cam) cam.frameOn(null); G.loop.paused = false;
+    if (cam) cam.frameOn(null); G.loop.paused = false; if (G.stealth) G.stealth.sight = null;
     if (ctx.F && layer) ctx.F.pop(layer);
     const outcome = sn.view().outcome;
     dock.say("", OUT[outcome] || outcome || "", { ms: 1600 });
