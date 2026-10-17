@@ -46,7 +46,8 @@ export function nearestOpen(arena, x, z, waterY = -Infinity, reach = 2) {
   let best = null;
   for (let dr = -R; dr <= R; dr++) for (let dc = -R; dc <= R; dc++) {
     const ci = k[0] + dc, ri = k[1] + dr; if (!open(arena, ci, ri, waterY)) continue;
-    const d = dc * dc + dr * dr + (inBig(arena, ri * arena.grid.w + ci) ? 0 : 1e6); if (d <= R * R + (d >= 1e6 ? 1e6 : 0) && (!best || d < best.d)) best = { ci, ri, d };
+    const cc = arena.grid.cells[ri * arena.grid.w + ci], d = dc * dc + dr * dr + (inBig(arena, ri * arena.grid.w + ci) ? 0 : 1e6) + (cc && cc.margin ? 1e4 : 0); // clear floor anywhere in reach first, a margin only when nothing clear is near
+    if (dc * dc + dr * dr <= R * R && (!best || d < best.d)) best = { ci, ri, d };
   }
   return best && [best.ci, best.ri];
 }
@@ -85,8 +86,8 @@ function pathOn(arena, from, to, { waterY = -Infinity, maxNodes = 60000, soft = 
     const last = i === cells.length - 1, d0 = i > 0 ? [cells[i][0] - cells[i - 1][0], cells[i][1] - cells[i - 1][1]] : null, n1 = !last ? [cells[i + 1][0] - cells[i][0], cells[i + 1][1] - cells[i][1]] : null;
     if (last || d0[0] !== n1[0] || d0[1] !== n1[1]) pts.push(centre(arena, cells[i][0], cells[i][1]));
   }
-  const gc = cellIndex(arena, to[0], to[1]);
-  if (gc && gc[0] === g[0] && gc[1] === g[1]) { if (pts.length) pts[pts.length - 1] = [to[0], to[1]]; else pts.push([to[0], to[1]]); }
+  const gc = cellIndex(arena, to[0], to[1]), gcell = gc && arena.grid.cells[gc[1] * arena.grid.w + gc[0]];
+  if (gc && gc[0] === g[0] && gc[1] === g[1] && !(gcell && gcell.margin)) { if (pts.length) pts[pts.length - 1] = [to[0], to[1]]; else pts.push([to[0], to[1]]); }
   return pts;
 }
 
@@ -181,6 +182,7 @@ export function hardenGround(arena, place, pos, ids, { step = 0.3, head = 2.0, r
   const shut = new Uint8Array(w * h);
   const wall = new Uint8Array(w * h);
   for (let i = 0; i < w * h; i++) { if (!cells[i]) shut[i] = 1; else if (prop[i]) { shut[i] = wall[i] = 1; n.props++; } else if (raised[i]) { shut[i] = wall[i] = 1; n.steps++; } }
+  n.tops = closeTops(arena, shut, wall, step); // a counter or bench top read as floor
   const R = Math.ceil(radius / c) + 1, near = [];
   for (let r = 0; r < h; r++) for (let q = 0; q < w; q++) {
     if (shut[r * w + q]) continue;
@@ -194,6 +196,10 @@ export function hardenGround(arena, place, pos, ids, { step = 0.3, head = 2.0, r
     }
     if (dist < radius) near.push(r * w + q);
   }
+  // why each cell has no ground now: 0 never seen as ground (a void: behind a counter, off the plate),
+  // 1 a prop, 2 a raised cell or a top (used by spotKind)
+  const why = new Uint8Array(w * h); for (let i = 0; i < w * h; i++) if (cells[i] && shut[i]) why[i] = prop[i] ? 1 : 2;
+  arena.closedWhy = why;
   for (let i = 0; i < w * h; i++) if (shut[i] && cells[i]) { cells[i] = null; n.closed++; }
   // the body's margin: "hard" closes it (fights), "soft" marks it (walking: kept out of when there
   // is another way, used to squeeze past a bollard when there is not)
@@ -233,7 +239,7 @@ export function bodyCan(arena, from, x, z, waterY = -Infinity) {
 }
 // The nearest spot for a figure to stand: its own when clear, else the nearest cell with no prop and
 // no margin within reach (2 m), else the nearest open cell.
-export function clearSpot(arena, at, reach = 2) {
+export function clearSpot(arena, at, reach = 2, { strict = false } = {}) {
   const k = cellIndex(arena, at[0], at[2]), c0 = k && arena.grid.cells[k[1] * arena.grid.w + k[0]];
   if (c0 && !c0.margin && inBig(arena, k[1] * arena.grid.w + k[0])) return at;
   const { w, h, cells } = arena.grid, R = Math.ceil(reach / arena.cell), b = k || [Math.floor((at[0] - arena.origin[0]) / arena.cell), Math.floor((at[2] - arena.origin[1]) / arena.cell)];
@@ -244,9 +250,35 @@ export function clearSpot(arena, at, reach = 2) {
     const d = Math.hypot(dq, dr) + (c.margin ? 100 : 0) + (inBig(arena, r * w + q) ? 0 : 1000);
     if (!best || d < best.d) best = { d, q, r, c };
   }
-  if (!best) return at;
+  if (!best || (strict && best.d >= 100)) return strict ? null : at; // strict: only clear floor will do
   const [x, z] = centre(arena, best.q, best.r);
   return [x, best.c.h, z];
+}
+
+// Tops: ground reached from its surroundings only by a climb (no step of `step` or less leads up to
+// it) and small (under TOP_MAX cells, about 12 square metres): a bar counter, a bench seat, a table.
+// The quay itself stands over the floor too, but it is large and its stairs come up to it.
+export const TOP_MAX = 200;
+function closeTops(arena, shut, wall, step) {
+  const { w, h, cells } = arena.grid, lab = new Int32Array(w * h).fill(-1), reg = [];
+  for (let i = 0; i < w * h; i++) {
+    if (shut[i] || lab[i] >= 0) continue;
+    const id = reg.length, st = [i], R = { cells: [], up: 0, down: 0 }; lab[i] = id;
+    while (st.length) {
+      const j = st.pop(); R.cells.push(j); const q = j % w, r = (j / w) | 0, hj = cells[j].h;
+      for (const [dq, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const qq = q + dq, rr = r + dr; if (qq < 0 || rr < 0 || qq >= w || rr >= h) continue;
+        const k = rr * w + qq; if (shut[k] && !wall[k]) continue; // past the grid's ground: nothing to compare
+        const hk = wall[k] ? null : cells[k].h;
+        if (hk != null && Math.abs(hk - hj) <= step) { if (lab[k] < 0) { lab[k] = id; st.push(k); } }
+        else if (hk != null) { if (hk < hj) R.down++; else R.up++; }
+      }
+    }
+    reg.push(R);
+  }
+  let n = 0;
+  for (const R of reg) if (R.cells.length < TOP_MAX && R.down > 0 && R.up === 0) for (const j of R.cells) { shut[j] = wall[j] = 1; n++; }
+  return n;
 }
 
 // Connected regions of open ground (four-way). A pocket left between props (a cell or two behind a
@@ -264,5 +296,16 @@ export function labelRegions(arena) {
   arena.regions = { lab, size };
 }
 const inBig = (arena, i) => !arena.regions || arena.regions.size[arena.regions.lab[i]] >= BIG;
+
+// Where an authored figure spot stands: "clear" floor, "margin" (beside a prop), "prop" or "top" (in
+// or on one: move it), or "void" (no ground seen there, such as behind the bar counter: a figure
+// may stand there out of reach, and the drawer hides what the painting stands in front of).
+export function spotKind(arena, at) {
+  const k = cellIndex(arena, at[0], at[2]); if (!k) return "void";
+  const i = k[1] * arena.grid.w + k[0], c = arena.grid.cells[i];
+  if (c) return c.margin ? "margin" : "clear";
+  const why = arena.closedWhy ? arena.closedWhy[i] : 0;
+  return why === 1 ? "prop" : why === 2 ? "top" : "void";
+}
 
 export const blockedAt = (arena, x, z) => groundAt(arena, x, z) == null;

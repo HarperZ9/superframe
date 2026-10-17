@@ -10,8 +10,9 @@ import { h } from "./dom.mjs";
 import { camBasis } from "../world/plateworld.mjs";
 import { projectPlate } from "../world/camera.mjs";
 
-// Mother's beam turns at this rate (radians a second of the layer's clock); combat reads it.
-export const BEAM_RATE = 0.35;
+// Mother's beam turns at BEAM_RATE (world/beam.mjs, shared with combat).
+import { BEAM_RATE } from "../world/beam.mjs";
+export { BEAM_RATE };
 const clamp = (x, a = 0, b = 1) => (x < a ? a : x > b ? b : x);
 const FOG_LIT = [0.62, 0.4, 0.17], FOG_COLD = [0.24, 0.22, 0.3], FOG_PAPER = [0.86, 0.83, 0.77];
 

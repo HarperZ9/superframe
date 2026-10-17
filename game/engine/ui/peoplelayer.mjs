@@ -17,7 +17,7 @@
 import { h } from "./dom.mjs";
 import { personDrawer } from "./figures.mjs";
 import { evaluate } from "../core/expr.mjs";
-import { findPath, groundAt, walkable, camBasis, bodyCan, clearSpot } from "../world/plateworld.mjs";
+import { findPath, groundAt, walkable, camBasis, bodyCan, clearSpot, spotKind } from "../world/plateworld.mjs";
 
 const TALK = ["talk_a", "talk_b", "talk_c"], GESTURE_S = 2.4;
 
@@ -96,7 +96,13 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     if (G.figureMoved && G.figureMoved[f.id]) return G.figureMoved[f.id];
     const A = cam.arena(), key = `${(cam.area() || {}).id}|${f.id}|${f.at.join(",")}`;
     if (!A) return f.at;
-    if (!homes.has(key)) homes.set(key, clearSpot(A, f.at));
+    if (!homes.has(key)) {
+      let at = spotKind(A, f.at) === "void" ? f.at : clearSpot(A, f.at); // behind a counter stays; in or on a prop moves
+      // and never on top of someone already placed: the nearest clear spot SEP from every other home
+      const taken = [...homes.values()], near = (p) => taken.some((o) => Math.hypot(p[0] - o[0], p[2] - o[2]) < SEP);
+      if (near(at)) for (let rad = 0.25; rad <= 1.5 && near(at); rad += 0.25) for (let k = 0; k < 12; k++) { const a = (k / 12) * Math.PI * 2, p = [at[0] + Math.cos(a) * rad, at[1], at[2] + Math.sin(a) * rad]; if (spotKind(A, p) === "clear" && !near(p)) { at = [p[0], groundAt(A, p[0], p[2]) ?? at[1], p[2]]; break; } }
+      homes.set(key, at);
+    }
     return homes.get(key);
   }
   function figures(all = false) {
@@ -133,7 +139,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
       const w = (S.wander[f.id] ||= { at: [...homeOf(f)], to: null, wait: 1 + (f.id.length % 3), moving: false });
       w.moving = false;
       if (S.talking === f.id || S.hidden.has(f.id)) { spots[f.id] = w.at; continue; }
-      if (!w.to) { w.wait -= dt; if (w.wait <= 0) { const a = Math.random() * Math.PI * 2, r = f.wander * Math.sqrt(Math.random()), t = [f.at[0] + Math.cos(a) * r, f.at[2] + Math.sin(a) * r]; const tt = A ? clearSpot(A, [t[0], 0, t[1]], 0.6) : null; if (!A) w.to = t; else if (tt && groundAt(A, tt[0], tt[2]) != null) w.to = [tt[0], tt[2]]; else w.wait = 0.5; } }
+      if (!w.to) { w.wait -= dt; if (w.wait <= 0) { const a = Math.random() * Math.PI * 2, r = f.wander * Math.sqrt(Math.random()), t = [f.at[0] + Math.cos(a) * r, f.at[2] + Math.sin(a) * r]; const tt = A ? clearSpot(A, [t[0], 0, t[1]], 0.6, { strict: true }) : null; if (!A) w.to = t; else if (tt) w.to = [tt[0], tt[2]]; else w.wait = 0.5; } } // wanderers only head for clear floor
       else {
         const dx = w.to[0] - w.at[0], dz = w.to[1] - w.at[2], d = Math.hypot(dx, dz), sp = 1.1 * dt;
         if (d <= sp) { w.at = [w.to[0], A ? groundAt(A, w.to[0], w.to[1]) ?? w.at[1] : w.at[1], w.to[1]]; w.to = null; w.wait = 2 + Math.random() * 4; }
