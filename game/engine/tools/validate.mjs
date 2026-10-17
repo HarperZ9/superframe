@@ -10,6 +10,7 @@ import { readFile } from "node:fs/promises";
 import { loadAct } from "../dialogue/book.mjs";
 import { loadContent } from "../game.mjs";
 import { lint } from "./lint.mjs";
+import { castIds } from "./cast.mjs";
 
 const args = process.argv.slice(2), carryRoots = [], files = [];
 for (let i = 0; i < args.length; i++) { if (args[i] === "--carry") carryRoots.push(args[++i]); else if (!args[i].startsWith("--")) files.push(args[i]); }
@@ -34,7 +35,9 @@ for (const root of carryRoots) {
 const { sources, errors: loadErrors } = await loadAll(files);
 const C = loadContent(sources);
 C.errors.unshift(...loadErrors);
-const r = lint(C, { carry });
+// figure ids against the character pipeline's cast (off with --no-cast, or when characters/ is absent)
+let cast = null; if (!flag("--no-cast")) { try { cast = await castIds(new URL("../../../characters", import.meta.url).pathname.replace(/^\/(\w:)/, "$1")); } catch (e) { console.warn(`validate: no cast check (${e.message})`); } }
+const r = lint(C, { carry, cast });
 if (flag("--json")) { console.log(JSON.stringify({ ...r, graph: undefined }, null, 1)); }
 else {
   if (!flag("--quiet")) for (const i of r.issues) console.log(`${i.file || "?"}:${i.line || 0}: ${i.level}: ${i.msg}${i.node ? `  [${i.node}]` : ""}`);

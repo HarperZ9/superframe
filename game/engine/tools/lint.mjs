@@ -18,12 +18,18 @@ const PREFIXES = ["attr", "skill", "rep", "res", "trait", "quest", "project", "m
 const COMMANDS = new Set(["setPower", "restrike", "setTerm", "clearTerm", "setLight", "gust", "wet", "addRumour", "give"]);
 const CONVENTION = [/^chilled(\.|$)/, /^small(\.|$)/, /^nod\./, /^bench$/, /^wall$/];
 
-export function lint(C, { carry = null } = {}) {
+export function lint(C, { carry = null, cast = null } = {}) {
   const { book, rs } = C, issues = [], N = book.nodes;
   const add = (level, at, msg, node = "") => issues.push({ level, file: at && at.file, line: at && at.line, msg, node });
   for (const e of C.errors) add(e.level === "warn" ? "warn" : "error", e, e.msg);
   const X = { carry, C, book, rs, N, issues, add, exprs: [], links: [], sets: new Set(carry ? carry.sets : []), assigned: new Set(carry ? carry.declared : []), graph: { nodes: {}, roots: [] } };
   for (const f of [gather, gatherWorld, missing, reach, deadEnds, namesAndFlags, speakers]) f(X);
+  // figure ids the character pipeline cannot draw (a typo, or a part not built yet): cast is the set
+  // of drawable ids (tools/cast.mjs); hotspots that name a figure are checked too
+  if (cast) for (const a of Object.values(C.map.areas || {})) {
+    for (const f of a.figures) if (!cast.has(f.id)) add("error", { file: a.file, line: f.line }, `area ${a.id}: figure ${f.id} has no cast data in characters/`);
+    for (const h of a.hotspots) if (h.attrs && h.attrs.who && !cast.has(String(h.attrs.who))) add("error", { file: a.file, line: h.line }, `area ${a.id}: hotspot names figure ${h.attrs.who}, which has no cast data in characters/`);
+  }
   const { graph, seen } = X;
   issues.sort((a, b) => (a.level === b.level ? 0 : a.level === "error" ? -1 : 1) || String(a.file).localeCompare(String(b.file)) || (a.line || 0) - (b.line || 0));
   const declared = [...Object.keys(rs.vars), ...X.assigned];

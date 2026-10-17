@@ -111,3 +111,11 @@ test("carry through two earlier acts: Act 3 reads Act 1's and Act 2's flags and 
   assert.ok(L(act3, merge(null, a1)).issues.length >= 2, "with Act 1 alone, Act 2's flag and scene are unknown");
   assert.deepEqual(L(act3, carry).issues, []);
 });
+
+test("a figure id with no cast data is an error when the cast is known", async () => {
+  const { lint } = await import("../tools/lint.mjs");
+  const { testContent } = await import("./helpers.mjs");
+  const ok = lint(testContent(), { cast: new Set(["keel"]) }), bad = lint(testContent(), { cast: new Set(["lamb"]) });
+  assert.ok(!ok.issues.some((i) => /no cast data/.test(i.msg)));
+  assert.ok(bad.issues.some((i) => i.level === "error" && /figure keel has no cast data/.test(i.msg)));
+});
