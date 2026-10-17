@@ -50,7 +50,8 @@
   2,
   3,
   83,
-  66
+  66,
+  10
  ],
  "footing": {
   "1": "stone",
@@ -259,36 +260,55 @@
   "fights": {
    "dogs": {
     "lamb": [
-     3.3,
-     3.9
+     3,
+     4
     ],
     "foes": [
      [
-      3.3,
-      2.9
+      2,
+      5
      ],
      [
-      3.3,
-      2.9
+      5,
+      4
      ],
      [
-      3.3,
-      2.9
+      4,
+      0
      ],
      [
-      2.3,
-      3.9
+      2,
+      0
      ]
     ],
     "anchors": {
-     "cut": [],
-     "lamp": [],
-     "snare": [],
+     "cut": [
+      [
+       5,
+       0
+      ],
+      [
+       6.2,
+       1.5
+      ]
+     ],
+     "lamp": [
+      [
+       5,
+       0
+      ]
+     ],
+     "snare": [
+      [
+       1,
+       0
+      ]
+     ],
      "sluice": []
     },
-    "r": 6.64,
+    "r": 9.72,
     "arena": "arena-dogs.json",
-    "stage": "arena: dogs 1.8 0 2.4 0"
+    "stage": "arena: dogs 0.5 -6.2 -1.5 0"
    },
    "gut": {
     "lamb": [
@@ -662,11 +682,11 @@
   {
    "id": "dogs",
    "file": "arena-dogs.json",
-   "stage": "arena: dogs 1.8 0 2.4 0",
+   "stage": "arena: dogs 0.5 -6.2 -1.5 0",
    "heightToWorld": "y = h - 6.2",
    "size": [
-    4,
-    4
+    7,
+    7
    ]
   },
   {

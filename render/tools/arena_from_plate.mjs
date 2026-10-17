@@ -17,7 +17,7 @@ import { makeTracer } from "../sdf.mjs";
 
 const a = process.argv.slice(2), opt = (k, d) => { const i = a.indexOf(k); return i >= 0 ? a[i + 1] : d; };
 const [name, id, X0, Z0, C, R] = a, x0 = +X0, z0 = +Z0, cols = +C, rows = +R, P = (await import(`../places/${name}.mjs`)).default;
-const datumA = opt("--datum", "0"), toH = datumA === "harbour" ? (y) => -0.3 + 1.72 * (y + 3.2) : (y) => y + +datumA;
+const datumA = opt("--datum", "0"), toH = datumA === "harbour" ? (y) => (y + 3.029) / 0.62 : (y) => y + +datumA; // harbour: the shells' plate datum (water y = -3.029 + 0.62 tide)
 const footOf = Object.fromEntries(Object.entries(FOOT).flatMap(([f, ks]) => ks.map((k) => [k, f])));
 const walk = new Set((P.walk || []).map((i) => BY_ID[i]?.name));
 // ground under a point: march down from above; the first surface met
@@ -51,8 +51,10 @@ const spots = (P.marks?.spots || []).filter((s) => inside(s.at)), rig = spots.fi
 const anchors = { cut: strong.map((l) => [l.x, l.z]), lamp: strong.slice(0, 1).map((l) => [l.x, l.z]), snare: spots.filter((s) => s.verb === "rig").map((s) => toA(s.at)), sluice: spots.filter((s) => /sluice/.test(s.id)).map((s) => toA(s.at)) };
 // spawns: open cells, Lamb near the middle of the bottom half, foes spread over the top half
 const open = []; grid.forEach((line, r) => [...line].forEach((ch, c) => { if (!legend[ch].solid) open.push([c + 0.5, r + 0.5]); }));
-const pick = (tx, tz) => open.reduce((b, p) => (Math.hypot(p[0] - tx, p[1] - tz) < Math.hypot(b[0] - tx, b[1] - tz) ? p : b), open[0]);
-const spawns = { lamb: pick(cols / 2, rows * 0.72), foes: [pick(cols * 0.3, rows * 0.25), pick(cols * 0.7, rows * 0.25), pick(cols / 2, rows * 0.15), pick(cols * 0.15, rows * 0.5)] };
+// distinct open cells, at least 1.2 m apart; hand-placed spawns (world x,z;x,z;... Lamb first) snap to the nearest open cell
+const taken = [], pick = (tx, tz) => { const c = open.filter((p) => taken.every((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) >= 1.2)); const b = (c.length ? c : open).reduce((b, p) => (Math.hypot(p[0] - tx, p[1] - tz) < Math.hypot(b[0] - tx, b[1] - tz) ? p : b)); taken.push(b); return b; };
+const hand = opt("--spawns", null), targets = hand ? hand.split(";").map((q) => q.split(",").map(Number)).map(([x, z]) => [x - x0, z - z0]) : [[cols / 2, rows * 0.72], [cols * 0.3, rows * 0.25], [cols * 0.7, rows * 0.25], [cols / 2, rows * 0.15], [cols * 0.15, rows * 0.5]];
+const picked = targets.map(([tx, tz]) => pick(tx, tz)), spawns = { lamb: picked[0], foes: picked.slice(1) };
 const exits = []; for (const [side, cells] of [["w", grid.map((l) => l[0])], ["e", grid.map((l) => l[cols - 1])]]) { const o = cells.map((ch, r) => [ch, r]).filter(([ch]) => !legend[ch].solid); if (o.length) exits.push(side === "w" ? [0, o[0][1], 0.8, o[o.length - 1][1] + 1] : [cols - 0.8, o[0][1], cols, o[o.length - 1][1] + 1]); }
 // the light each cell stands in, per variant: the place's own lights (the ones that lit the paint),
 // with their shadows, as 0..1 (1 - exp(-E)); stealth sight and the fight's sight rule can read it
@@ -65,7 +67,7 @@ if (P.lights) for (const [vn, VV] of Object.entries(P.variants)) {
   lightGrid[vn] = out;
 }
 const arena = { name: id, place: name, cell: 1, origin: [0, 0], rows: grid, legend, water: datumA === "harbour" ? { a: 0, b: 1 } : null, lights, exits, tideEnds: datumA === "harbour" && floorY < -2, anchors, spawns, light: lightGrid,
-  stage: { line: `arena: ${id} ${x0} ${datumA === "harbour" ? 0 : -(+datumA)} ${z0} 0`, note: "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)", heightToWorld: datumA === "harbour" ? "y = -3.2 + (h + 0.3) / 1.72" : `y = h - ${+datumA}` },
+  stage: { line: `arena: ${id} ${x0} ${datumA === "harbour" ? 0 : -(+datumA)} ${z0} 0`, note: "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)", heightToWorld: datumA === "harbour" ? "y = -3.029 + 0.62 h (the plate datum in place.json)" : `y = h - ${+datumA}` },
   source: { plate: `content/${name}`, rect: [x0, z0, cols, rows], made: "render/tools/arena_from_plate.mjs" } };
 mkdirSync(new URL(`../../content/${name}/`, import.meta.url), { recursive: true });
 writeFileSync(new URL(`../../content/${name}/arena-${id}.json`, import.meta.url), JSON.stringify(arena, null, 1));

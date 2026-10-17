@@ -75,6 +75,7 @@ for (const a of arenas) {
 const fightMain = fights[name] || fights[{ station: "hill" }[name]] || Object.values(fights)[0];
 const lightsOut = P.lights ? Object.fromEntries(variants.map((v) => [v, P.lights(P.variants[v].V || {}).filter((l) => !/^(moon|sun|skyfill|fill|cellfill)$/.test(l.key || "")).map((l) => ({ at: l.pos.map((q) => +q.toFixed(2)), kind: ["sodium", "paraffin", "white", "sky"][typeof l.type === "number" ? l.type : { sodium: 0, window: 1, led: 2, sky: 3 }[l.type]] || "paraffin", I: +l.I.toFixed(2), reach: l.reach || 30, group: l.group || "" }))])) : Object.fromEntries(variants.map((v) => [v, (P.variants[v].glows || []).map((g) => ({ at: g.pos, kind: "paraffin", I: g.intensity, reach: g.radius, group: "lamp" }))]));
 writeFileSync(`${out}/place.json`, JSON.stringify({
+  ...prev, // keys others add (the tide datum, shell hints) survive a re-bake
   place: name, version: 2, width: W, height: H, camera: { yawDeg: cam.yawDeg, elevDeg: cam.elevDeg, target: cam.target, dist: cam.dist, ortho: true, scale: cam.scale },
   pxPerMetre: P.camera.ppm * pv, near: +(W / 1920).toFixed(4), geoScale: 0.5, layers: P.kind === "palette" ? [] : ["flare", "streak", "halo", "ca"], style: P.kind || "painted",
   variants, variantInfo: Object.fromEntries(variants.map((v) => [v, { hour: P.variants[v].hour, weather: P.variants[v].note || "" }])),

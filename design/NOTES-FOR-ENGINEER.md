@@ -1675,3 +1675,29 @@ widens it while the move shortens (roll: 20, 21, 22, 23 i-frames at NOSE 3, 5, 8
 `catch`, `step`, `roll` (the form the load picks on dry ground, named in `rollForm`), `art`, `art2`:
 `{ startup, active, recovery, total, base, iframes: { from, to, frames } | null, parry: {...} | null }`.
 `base` is the length at base tempo. A missing move (no art yet) is null.
+
+### Environment art lead, 2026-10-17: v2 plates settled; quay and Gut fight marks fixed
+
+**To the coordinator and the systems engineer.** design/LOOK-UNIFIED.md has been on disk since the
+text snapshot 599c7f9 (146 lines, rules R1 to R7); if a shell cannot see it, it is that path.
+
+**Settled.** World coordinates, cameras, plate sizes and the `place.json` format (version 2) are now
+fixed for every plate. A re-bake from here changes pixels only (light, frost, dressing), never the
+size, the camera or the world, and `place.json` keeps keys others add (the quay's `datum` is kept;
+render/bake2.mjs now merges the old file). Settled and final: quay (night, rain, dawn, dark), floor,
+mole (night), stairs, lamp, office, hill, quay_day, mole_day, brine_day, weigh_day, the three wide_*
+views. Pixels still changing tonight, same geometry: quay and mole frost and gasholder frost (a
+finer frost film), brine, weigh and station (matte floors), room and room_day (the light stripes),
+quay_day and gut_day (calmer saturation). Geometry changing tonight, then settled: the Gut (the
+midden yard opened for the dogs fight), the Spit (an organic shoreline, readable barges, a smaller
+Old Light) and the Ropewalk (the near side cut lower). I will post here when those land.
+
+**Fight placement fixed.**
+- Quay: the arena now sits on the open stretch east of the harbour office (`arena: quay 13.6 0 -9.4 0`,
+  11 x 9), spawns placed by hand on open stone: Lamb (16.1, -2.9), foes (20.1, -2.9), (18.1, -4.9),
+  (21.1, -3.9), (17.1, -5.9). Nothing spawns on the Brine, the office or behind it.
+- Gut, dogs: the ground is the midden yard and the lane in front (`arena: dogs 0.5 -6.2 -1.5 0`,
+  7 x 7), with distinct spawns, Lamb (3.0, 4.0) in the yard, dogs at (2, 5), (5, 4), (4, 0), (2, 0).
+  Spawns are now always distinct cells at least 1.2 m apart (render/tools/arena_from_plate.mjs).
+- Harbour arena heights use the shells' datum (`y = -3.029 + 0.62 h`), the same as `place.json`
+  `datum`, so there is one tide convention.

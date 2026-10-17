@@ -16,6 +16,6 @@ export default {
     frozen: { hour: 2.0, note: "Night 2 from 02:00: the gutter frozen black and glassy under every lamp", moonDir, glows: [...G.lamps.map(glow), ...doorGlows], over: { gain: 1.6, ambient: 0.12, moon: 0.5 }, time: 1.1, V: { frozen: true } },
     dark: { hour: 2.9, note: "the blackout, 02:50 to 03:20: only the gutter glows", moonDir, glows: [], over: { gain: 1.4, ambient: 0.06, moon: 0.3 }, time: 0.9, V: { lampsOff: true, doorsDark: true } },
   },
-  walk: walkIds("cobble", "slab", "gutter", "ice"), footing: footing(), marks: G.marks,
+  walk: walkIds("cobble", "slab", "gutter", "ice", "weed"), footing: footing(), marks: G.marks,
   notes: "The Gut lane. Palette-locked; the void ramp cycles at run time if the game re-runs the palette pass (cycleRate in the engine's palettelight).",
 };

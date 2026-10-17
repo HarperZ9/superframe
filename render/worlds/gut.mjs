@@ -33,7 +33,7 @@ export function gut({ frozen = false, day = false } = {}) {
   const doors = [];
   for (const side of [-1, 1]) for (let k = 0; k < 7; k++) {
     const cx = -13 + k * 4.4 + (side > 0 ? 1.2 : 0), w = 2.0 + 0.2 * rnd(k, side), h = side > 0 ? 1.0 : 3.8 + 1.6 * rnd(k, side, 2), cz = side * (1.75 + 1.8), kk = -side * (0.05 + 0.03 * rnd(k, side, 3)), seed = k * 7 + (side > 0 ? 3 : 0);
-    if (side > 0 && k === 3) continue; // the midden yard opens here
+    if (side > 0 && (k === 3 || k === 4)) continue; // the midden yard opens here
     const doorKind = side < 0 && k === 2 ? ID.red : side < 0 && k === 4 ? ID.oxblood : side > 0 && k === 5 ? ID.green : ID.tar;
     doors.push([cx, cz - side * 1.8, side, doorKind]);
     add(K.shape([cx - w - 1.2, 0, cz - 2.6, cx + w + 1.2, h + 4.5, cz + 2.6], (x, y, z, T) => {
