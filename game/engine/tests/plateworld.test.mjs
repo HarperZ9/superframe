@@ -117,3 +117,13 @@ test("a figure line's pose: seated is read for the drawer", async () => {
   const C = loadContent([...testSources(), extra]);
   assert.equal(C.map.areas["t.seat"].figures[0].pose, "seated");
 });
+
+test("sight over the ground: a wall blocks, a bench does not", async () => {
+  const { sightClear } = await import("../world/plateworld.mjs");
+  const n = 12, cells = Array.from({ length: n }, () => ({ h: 0 })), tops = new Float32Array(n).fill(-Infinity);
+  cells[4] = null; tops[4] = 0.5; // a bench seat
+  cells[8] = null; tops[8] = 3.0; // a wall
+  const A = { cell: 0.5, origin: [0, 0], grid: { w: n, h: 1, cells }, tops };
+  assert.equal(sightClear(A, 0.25, 0.25, 3.75, 0.25), true, "over the bench");
+  assert.equal(sightClear(A, 0.25, 0.25, 5.75, 0.25), false, "the wall hides");
+});

@@ -135,3 +135,11 @@ test("the shared sight rule: light, fog over distance, cover, crouch, crowd and 
   assert.equal(visibility({ ...base, cover: 2 }), 0); // clamped
   assert.ok(visibility() === 0);
 });
+
+test("on a plate a wall between the watcher and Lamb hides Lamb (G.stealth.sight); with no wall Lamb is seen", () => {
+  const walk = (G) => { const s = G.sneaks.start("s.yard", { mode: "stepped" }); for (let i = 0; i < 200 && !s.state.done; i++) s.stepMove(3 - s.state.x, 5.5 - s.state.z); return s.state.outcome; };
+  const G = game(); G.stealth.sight = () => false; // a wall everywhere between them
+  assert.notEqual(walk(G), "seen", "walled off, the lit walk is not seen");
+  const H = game(); H.stealth.sight = () => true;
+  assert.equal(walk(H), "seen");
+});

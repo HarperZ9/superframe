@@ -178,7 +178,7 @@ export function hardenGround(arena, place, pos, ids, { step = 0.3, head = 2.0, r
   const n = { filled: 0, closed: 0, props: 0, steps: 0, margin: 0 };
   // floor the camera cannot see well (behind a barrel or a table leg) is not a wall: fillHidden first
   { const m0 = groundMask(arena, place, pos, ids, { step, head }); fillHidden(arena, m0.top, step, n); }
-  const { prop, raised } = groundMask(arena, place, pos, ids, { step, head });
+  const { prop, raised, top } = groundMask(arena, place, pos, ids, { step, head });
   const shut = new Uint8Array(w * h);
   const wall = new Uint8Array(w * h);
   for (let i = 0; i < w * h; i++) { if (!cells[i]) shut[i] = 1; else if (prop[i]) { shut[i] = wall[i] = 1; n.props++; } else if (raised[i]) { shut[i] = wall[i] = 1; n.steps++; } }
@@ -200,6 +200,7 @@ export function hardenGround(arena, place, pos, ids, { step = 0.3, head = 2.0, r
   // 1 a prop, 2 a raised cell or a top (used by spotKind)
   const why = new Uint8Array(w * h); for (let i = 0; i < w * h; i++) if (cells[i] && shut[i]) why[i] = prop[i] ? 1 : 2;
   arena.closedWhy = why;
+  arena.tops = top; // the highest sample over each cell (sight: what stands over a closed cell)
   for (let i = 0; i < w * h; i++) if (shut[i] && cells[i]) { cells[i] = null; n.closed++; }
   // the body's margin: "hard" closes it (fights), "soft" marks it (walking: kept out of when there
   // is another way, used to squeeze past a bollard when there is not)
@@ -351,6 +352,20 @@ export function propDistance(arena, x, z) {
     best = Math.min(best, Math.hypot(ex, ez));
   }
   return best;
+}
+
+// Whether one body at (ax, az) can see another at (bx, bz) over the plate's ground: blocked only where
+// a cell with no ground has something standing more than `over` (1.2 m) above the lower of the two
+// bodies' floors (a wall, a stack); a bench or a barrel does not hide anyone (combat's sightClear rule).
+export function sightClear(arena, ax, az, bx, bz, over = 1.2) {
+  const L = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.ceil(L / (arena.cell / 2)));
+  const ha = groundAt(arena, ax, az), hb = groundAt(arena, bx, bz), low = Math.min(ha ?? hb ?? 0, hb ?? ha ?? 0);
+  for (let i = 1; i < n; i++) {
+    const x = ax + ((bx - ax) * i) / n, z = az + ((bz - az) * i) / n, k = cellIndex(arena, x, z); if (!k) continue;
+    const j = k[1] * arena.grid.w + k[0]; if (arena.grid.cells[j]) continue;
+    const t = arena.tops ? arena.tops[j] : Infinity; if (Number.isFinite(t) && t - low > over) return false;
+  }
+  return true;
 }
 
 export const blockedAt = (arena, x, z) => groundAt(arena, x, z) == null;

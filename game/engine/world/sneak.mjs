@@ -70,8 +70,11 @@ export function startSneak(G, def, { mode = "full" } = {}) {
     if (!active(G, o.w)) return;
     const dx = R.x - o.x, dz = R.z - o.z, d = Math.hypot(dx, dz), [range, deg] = o.w.cone;
     const inCone = d <= range && (d < 0.01 || (dx * Math.sin(o.face) + dz * Math.cos(o.face)) / d >= Math.cos(T(deg)));
-    let vis = visibility({ light: lightAt(e), fog: e.fog, sodium: e.sodium || 0, d, cover: coverAt(), crouch: R.crouch, crowd: crowdCover(G, { area: def.area, place: G.state.place }), sodiumGain: RU["stealth-sodium"] });
-    if (inCone && carried().length) vis = Math.max(vis, 1); // a lit lantern is a shop window
+    // a wall between them hides Lamb; a bench does not (the same rule as combat's sightClear: only what
+    // stands more than 1.2 m over the lower body blocks), when the scene plays on a plate (G.stealth.sight)
+    const hidden = G.stealth.sight ? !G.stealth.sight(o.x, o.z, R.x, R.z) : false;
+    let vis = hidden ? 0 : visibility({ light: lightAt(e), fog: e.fog, sodium: e.sodium || 0, d, cover: coverAt(), crouch: R.crouch, crowd: crowdCover(G, { area: def.area, place: G.state.place }), sodiumGain: RU["stealth-sodium"] });
+    if (inCone && carried().length && !hidden) vis = Math.max(vis, 1); // a lit lantern is a shop window
     else if (!inCone && carried().length && d <= range * 1.3) speak("lantern");
     let gain = 0; o.seeing = false;
     if ((inCone || d <= 2) && vis > 0.05) { gain += vis * (inCone ? 1.2 - d / range : 0.8) * 1.5; o.seeing = gain > 0.05; if (o.seeing) o.lastKnown = [R.x, R.z]; }

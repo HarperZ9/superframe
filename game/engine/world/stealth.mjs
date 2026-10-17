@@ -98,6 +98,9 @@ export const stateOf = (a, seeing) => (a >= 1 && seeing ? "seen" : a >= 0.7 ? "s
 export function createStealthWorld(G) {
   const S = () => (G.state.stealth ||= { latch: false, hideAt: null, distractUntil: -Infinity });
   const api = {
+    // sight(ax, az, bx, bz) -> bool: set by the shell while a sneak plays on a plate (world/plateworld.mjs
+    // sightClear through the scene's stage), so a wall hides Lamb and a bench does not; null sees everywhere
+    sight: null,
     hideAt(id) { S().hideAt = id; G.emit("stealth.hide", { id }); },
     unhide() { S().hideAt = null; },
     hidden: () => !!S().hideAt,
