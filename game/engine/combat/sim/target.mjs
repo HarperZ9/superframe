@@ -3,6 +3,8 @@
 // and neither can the enemy.
 import { RULES } from "../data/common.mjs";
 import { wrapAngle, angleTo, dist } from "./fighter.mjs";
+import { beamAt } from "./field.mjs";
+import { WORLD } from "../data/world.mjs";
 
 const DEG = 180 / Math.PI;
 const alive = (F) => !F.out && !F.fallen && !F.yielded && F.hp > 0;
@@ -21,6 +23,8 @@ export function visible(W, A, B) {
   const def = W.defs[A.id], d = Math.hypot(B.x - A.x, B.z - A.z), f = W.field;
   if (!f.lineClear(A.x, A.z, B.x, B.z)) return d <= 1.2 && def.sight === "smell";
   if (def.sight === "smell") return d <= (f.terms.windSpeed < 1 ? 5 : 2.5) || downwind(f, A, B, d);
+  // a body in Mother's beam stands out against the lit fog, whatever the fog (data/world.mjs beam)
+  if (WORLD.beam.reveal && d <= WORLD.beam.reveal && beamAt(f, B.x, B.z) > 0) return true;
   let range = f.seenRange(f.lightAt(B.x, B.z, W.lampsNow || lamps(W))) * (def.view || 1);
   if (def.sight === "sodium") range *= f.sodiumAt(B.x, B.z) ? 1.4 : 0.6;
   if (A.blind > 0) range *= 0.35;

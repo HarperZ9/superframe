@@ -100,3 +100,15 @@ test("a spawn on a ledge lip moves to flat ground", () => {
   const A = twoLevels(), p = snapClear(A, [9.8, 4]);
   assert.ok(!terrainAt(A, p[0], p[1]).ledge, `moved to ${p}`);
 });
+
+test("in fog, a body in Mother's beam is seen within 12 m; out of the arm it is not", () => {
+  const G = makeG({ terms: { fog: 0.4 } }), A = { ...twoLevels(), beams: [{ x: 0, z: 4, r: 40, k: 0.75, spread: 0.12 }] };
+  const W = makeWorld({ G, arena: A, lambAt: [15, 4], foes: [["holder", [7, 4]]], brains: false }), L = W.lamb(), F = W.fighters[1];
+  W.field.refresh(); W.field.seconds = 0;
+  W.field.terms.mother = "dark";
+  assert.equal(W.visible(F, L), false, "fog hides Lamb at 8 m");
+  W.field.terms.mother = "burning";
+  assert.equal(W.visible(F, L), true, "the beam's arm shows Lamb");
+  W.field.seconds = (Math.PI / 2) / 0.35;
+  assert.equal(W.visible(F, L), false, "the arm has moved on");
+});

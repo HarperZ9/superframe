@@ -26,6 +26,9 @@ export const WORLD = {
   // sight leash (spec 2): no home leash; after this long without sight a foe calls the others and
   // holds the way out nearest Lamb's last seen spot
   leash: { lost: 420 },
+  // Mother's beam (sim/field.mjs beamAt): a body in an arm is seen within this many metres, fog or not
+  // (tools/beam.mjs: without it the beam changed no outcome; design/COMBAT-WORLD.md)
+  beam: { reveal: 12 },
   // the time cap's break-off only counts as their yield when Lamb stood in the fight: Lamb spent less than
   // this share of it opening the gap on the nearest opponent while in nobody's reach
   // measured (tools/kiteshare.mjs, 57 fights each): fair play opens the gap 0 to 0.10 of a fight and stands

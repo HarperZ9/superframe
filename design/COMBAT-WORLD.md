@@ -58,7 +58,7 @@ cooldowns). The holes were specific:
 | Pursuit | While Lamb runs from it, an opponent runs too (paying Breath), up to 4 s, keeping 2 Breath back, then rests 5 s. A chase arrives with a blow | spec 3 (bursts of about 5 s, cooldown about 5 s) | Without the arriving blow, a chaser walked into the kiter's poke and pursuit helped the kiter (see the ablation) |
 | Cutting off | An opponent without the token goes for the ground 3 m ahead of a running Lamb | ours | A pack closes lines instead of queueing behind one another |
 | Sight leash with no reset | No home leash and no healing. After 7 s without sight an opponent calls the others to Lamb's last seen spot and holds the way out nearest it | spec 2 (no spawn leash; give up after 7 s without sight) | Fog, the dark and alleys stay an honest way out, but the exit is watched |
-| The beam | Mother's beam sweeps at the shell's own BEAM_RATE while she burns; a body in an arm is lit (seen from far off) | ours, the shell's rate | Light matters both ways; it changes no measured fight (no Act 1 or 2 fight runs under a burning Mother) |
+| The beam | Mother's beam sweeps at the shell's own BEAM_RATE while she burns; a body in an arm is lit, and within 12 m it is seen whatever the fog (both ways: Lamb sees opponents in it too) | ours, the shell's rate | Measured below: lit only, it changed no outcome; with the fog rule it ends hiding in foggy fights under her light |
 | Reads need light | A weak point (the PEN pillar) needs the attacker in Lamb's sight | ours | Darkness changes reads for Lamb as it already did for them |
 | Break-off that does not pay kiting | At the time cap, their yield needs Lamb to have stood in the fight: opening the gap under 15% of it and out of everyone's reach under 60% | ours, set from measurement | Fair play measured at most 0.10 and 0.53 across 57 fights (tools/kiteshare.mjs); the kiter up to 0.49 and 1.0 |
 | Walking round the ground | A flow field over the plate's cells (walls, ledges, waist-deep water) for brains and, when a ledge blocks or it is stuck, the pilot | needed by the ledge rule | Without it a ledge strands a body at the lip and fights stall to the cap |
@@ -156,13 +156,28 @@ in talk for Fist, Shadow, Hands and Eye, 3 of 6 for Tongue; the rest go down. Ev
 (Tongue on quay2.wardens: 1 of 6).
 
 
+## Under a burning Mother
+
+The quay and floor plates carry her lens. quay2.wardens is the Act 2 fight on the quay; I added the
+Act 1 quay and floor fights for numbers (e.wardens, e.lamplighters, e.salvors, e.eels): 5 fights, 5
+styles, 4 seeds, 100 fights per row (tools/beam.mjs; world-runs/beam.txt, beam-reveal.txt).
+
+- **Lit only** (the first version): Lamb stood in an arm 2 to 7% of the fight, and nothing changed. Fair
+  91 of 100 dark and burning, kiting 30 and 30, the same seconds and Standing. Under sodium the quay is
+  already lit, and in fog the sight rule divides any light by the fog, so a beam could not cut through it.
+- **With the fog rule** (a body in an arm is seen within 12 m, fog or not): clear air is unchanged (fair
+  91, kite 31). In fog 0.35, a kiter who hid in the fog was nearly untouchable with Mother dark (12 wins,
+  107 s, 0.05 Standing lost: it waits out the cap and gets clear); with her burning it is found and
+  fought (27 wins, 98 s, 0.20 lost). Fair play pays too: 98 against 99 won, 13.8 s against 9.2 s, 0.26
+  against 0.18 lost, because opponents see Lamb coming. The light cuts both ways, which is the point.
+- Fog makes fair play easier in these fights (99 of 100 against 91 in clear air): opponents lose Lamb at
+  1.6 m. That predates this work and is worth a look by whoever owns the sight rule.
+
 ## What this does not prove
 
 - A scripted kiter with perfect reactions is not a person. It dodges thrown stones it can see coming
   in the move data, so a person kiting would likely do worse than these numbers.
 - Two to three seeds per encounter. Differences of 5 wins in 190 are inside the run-to-run spread
   (four tuning variants of the clock and the answers all landed within 76 to 85 kiting wins).
-- No Act 1 or Act 2 fight is played under a burning Mother, so the beam rule is untested by the
-  measurement; tests/world.test.mjs checks the sweep alone.
 - No plate carries authored hazards yet (place.json "terrain" is agreed and empty), so nets and ropes
   are tested on a synthetic arena only.
