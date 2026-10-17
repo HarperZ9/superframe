@@ -215,6 +215,13 @@ R1 to R13 from that file.
 35. DONE No snaps into or out of fights: figures fight in their own actors, momentum carries in,
     positions kept after. Raise every fourth page (default 4). 133 tests.
 
+36. DONE Collision (author: "Characters clipping through objects"): quarter-metre ground with props,
+    raised cells and tops closed, hidden floor filled, a body's margin (soft walking, hard fights),
+    bodies 0.6 m apart, authored spots moved clear (voids stay); tools/marks-check.mjs lists moves.
+    tools/visual-check.mjs: headless over seven views, fails loudly; failed the pre-collision build
+    (10 figures in props, 1 on a top), passes collision after (0); occlusion, exposure and shadow
+    failures remain for the character lead. Held tools get `reach`. Camera reads the panel width.
+
 ## Log
 - 2026-10-16 23:00Z: resumed after the previous session stopped at a usage limit. Inventory: 25
   files, 1950 lines, no tests/ folder. Smoke run: test content loads with 0 errors, the slice
@@ -244,3 +251,4 @@ R1 to R13 from that file.
 - 2026-10-17 05:40Z: gate drafts in, five builds re-run; combat's three asks done; NOTES entry.
 - 2026-10-17 06:35Z: one game in the engine shell, prototype retired; chapter pages; the UI lead's asks; NOTES entry.
 - 2026-10-17 20:40Z: live world, interrogations, fluid fight cuts; NOTES entry.
+- 2026-10-17 21:47Z: collision, visual check, marks check; NOTES entry.
