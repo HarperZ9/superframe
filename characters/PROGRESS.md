@@ -420,3 +420,12 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     - The crowd's 24 off-floor shadow pixels sit at the bench's legs and underside
       (crowd-off-floor.png). My contact shadow rejects anything more than 0.12 m above the feet, so I
       think they are feathered figure pixels seen under the bench seat. Not confirmed.
+63. DONE Visual check passes 6 of 6, and its control (two bodies in one spot) fails as it must. Off-floor
+    shadow pixels are 0 in every view.
+    - Silhouettes: the systems engineer confirmed the 69 px crowd crossing was grazing depth at
+      silhouette edges (0 interior crossings once a 2 px edge band is excluded, 45bcd58). It is still
+      unknown how much of the original count came from the arm before 35775c0.
+    - The off-floor pixels at the bench legs were my contact shadow, not feather. They sat on floor
+      pixels one pixel from a leg, and the check's own geo mapping lands that pixel on the leg. The
+      mask is now eroded by 2 px: a pixel keeps shadow only if the floor test also holds 2 px to each side.
+    - Still open: Strand's idle pole dips under the floor in the crowd (0.59 m of room ahead).

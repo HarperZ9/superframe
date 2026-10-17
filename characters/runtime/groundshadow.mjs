@@ -9,7 +9,7 @@
 //   queueShadow(g, P, { x, y, at, ppm, r, dir, len })   P from plateCtx; dir [dx, dz] away from the lamp
 const queues = new Map();   // canvas context -> [footprint]
 let pending = false;
-const INK = [8, 4, 10], CORE = 0.55, CAST = 0.3;
+const EDGE = 2, EDGE_TAPS = [[EDGE, 0], [-EDGE, 0], [0, EDGE], [0, -EDGE]], INK = [8, 4, 10], CORE = 0.55, CAST = 0.3;
 
 export function queueShadow(g, P, fp) {
   if (!queues.has(g)) queues.set(g, []);
@@ -50,7 +50,11 @@ function flush() {
       const [bx0, by0, bx1, by1] = fp.box; let cnt = 0, nul = 0, rej = 0;
       for (let sy = by0; sy < by1; sy++) for (let sx = bx0; sx < bx1; sx++) {
         const p = fp.P.pointAt(sx + 0.5, sy + 0.5); if (!p) { nul++; continue; }
-        const a = shadeAt(fp, p), k = (sy - y0) * w + (sx - x0); if (a > 0.01) cnt++; else rej++; if (a > mask[k]) mask[k] = a;
+        let a = shadeAt(fp, p);
+        // eroded by EDGE px: a pixel beside a leg, a wall foot or a step edge stays clear, so a one-pixel
+        // difference between this mapping and another reader's never puts shadow on the prop
+        if (a > 0.01) for (const [ex, ey] of EDGE_TAPS) { const q = fp.P.pointAt(sx + 0.5 + ex, sy + 0.5 + ey); if (!q || Math.abs(q[1] - fp.at[1]) > 0.12) { a = 0; break; } }
+        const k = (sy - y0) * w + (sx - x0); if (a > 0.01) cnt++; else rej++; if (a > mask[k]) mask[k] = a;
       }
       per.push({ at: fp.at.map((v) => +v.toFixed(2)), box: fp.box, cnt, nul, rej });
     }
