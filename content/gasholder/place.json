@@ -219,7 +219,7 @@
    },
    "r": 11.34,
    "arena": "arena-gasholder.json",
-   "stage": "arena: gasholder 0 0 0 0"
+   "stage": "arena: gasholder 0 -8 0 0"
   },
   "fights": {
    "gasholder": {
@@ -275,7 +275,7 @@
     },
     "r": 11.34,
     "arena": "arena-gasholder.json",
-    "stage": "arena: gasholder 0 0 0 0"
+    "stage": "arena: gasholder 0 -8 0 0"
    }
   }
  },
@@ -2042,7 +2042,7 @@
   {
    "id": "gasholder",
    "file": "arena-gasholder.json",
-   "stage": "arena: gasholder 0 0 0 0",
+   "stage": "arena: gasholder 0 -8 0 0",
    "heightToWorld": "y = h - 8",
    "size": [
     20,

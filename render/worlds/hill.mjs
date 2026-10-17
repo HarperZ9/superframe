@@ -29,6 +29,9 @@ export function hill() {
     if (side < 0 && Math.abs(cx - 2) < 3) continue; // the station stands here
     if (side > 0 && Math.abs(cx + 10) < 3) continue; // the substation
     if (side < 0 && cx < -15) continue; // Crake's house
+    if (side > 0) { // the near side is cut to a garden wall so the path stays in view
+      const wz = 2.35; add(K.shape([cx - w - 0.1, base - 0.6, wz - 0.2, cx + w + 0.1, base + 1.0, wz + 0.4], (x, y, z, T) => { T(box(x, y, z, cx, base + 0.15, wz + 0.1, w, 0.6, 0.18), ID.wall); T(box(x, y, z, cx, base + 0.8, wz + 0.1, w + 0.05, 0.05, 0.22), ID.slab); })); continue;
+    }
     add(K.house(cx, side * 4.6, w, 2.3, h, { y: base, k: (rnd(k, side, 3) - 0.5) * 0.06, id: PAINTS[(k + (side > 0 ? 3 : 0)) % PAINTS.length], seed: 60 + k * 2 + side, lit: 0.18, face: -side, door: true }));
   }
   // white arcs both sides, staggered, a church candle at each foot

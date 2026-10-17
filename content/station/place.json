@@ -219,7 +219,7 @@
    },
    "r": 9.06,
    "arena": "arena-hill.json",
-   "stage": "arena: hill 0 0 0 0"
+   "stage": "arena: hill 0 -40 0 0"
   },
   "fights": {
    "hill": {
@@ -271,7 +271,7 @@
     },
     "r": 9.06,
     "arena": "arena-hill.json",
-    "stage": "arena: hill 0 0 0 0"
+    "stage": "arena: hill 0 -40 0 0"
    }
   }
  },
@@ -340,7 +340,7 @@
   {
    "id": "hill",
    "file": "arena-hill.json",
-   "stage": "arena: hill 0 0 0 0",
+   "stage": "arena: hill 0 -40 0 0",
    "heightToWorld": "y = h - 40",
    "size": [
     14,

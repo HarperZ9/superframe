@@ -175,12 +175,12 @@
      -0.7
     ],
     [
-     1.5,
-     -0.7
+     -0.5,
+     0.3
     ],
     [
-     -2.5,
-     0.3
+     -1.5,
+     3.3
     ]
    ],
    "anchors": {
@@ -213,7 +213,7 @@
    },
    "r": 6.23,
    "arena": "arena-brine.json",
-   "stage": "arena: brine -6 0 -3.2 0"
+   "stage": "arena: brine -6 -6.5 -3.2 0"
   },
   "fights": {
    "brine": {
@@ -231,12 +231,12 @@
       -0.7
      ],
      [
-      1.5,
-      -0.7
+      -0.5,
+      0.3
      ],
      [
-      -2.5,
-      0.3
+      -1.5,
+      3.3
      ]
     ],
     "anchors": {
@@ -269,7 +269,7 @@
     },
     "r": 6.23,
     "arena": "arena-brine.json",
-    "stage": "arena: brine -6 0 -3.2 0"
+    "stage": "arena: brine -6 -6.5 -3.2 0"
    }
   }
  },
@@ -481,7 +481,7 @@
   {
    "id": "brine",
    "file": "arena-brine.json",
-   "stage": "arena: brine -6 0 -3.2 0",
+   "stage": "arena: brine -6 -6.5 -3.2 0",
    "heightToWorld": "y = h - 6.5",
    "size": [
     12,

@@ -8,6 +8,6 @@ export default {
   name: "wide_arrival", world: H.world, lights: H.lights, surf, sky, ripple, paintId,
   camera: { yawDeg: 62, elevDeg: 24, target: [4, 4, -6], ppm: 26, W: 1920, H: 1080, dist: 120 },
   paint: { seed: 51, radii: [9, 5, 3, 1.8], relief: 0.22 }, ink: { w: 1.4 },
-  variants: { night: { hour: 22.7, note: "22:41: the arrival", V: { moon: { pos: [-70, 60, -140], I: 5000 }, stars: 1.6 }, plan: { ambient: 0.018, mist: 0.004, extinct: 0.0015 }, gain: 1.5 } },
+  variants: { night: { hour: 22.7, note: "22:41: the arrival", V: { moon: { pos: [160, 90, 60], I: 30000 }, stars: 1.6 }, plan: { ambient: 0.04, mist: 0.004, extinct: 0.0015 }, gain: 1.8 } },
   walk: [], marks: {}, notes: "Wide pull-back for the arrival (22:41).",
 };

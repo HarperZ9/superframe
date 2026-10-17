@@ -12,9 +12,9 @@
   "IJIIIKKLLMNOOOPI",
   "QQQJJJJRRROPOPPP",
   "QJJSSSSRRSRRROOO",
-  "KJJJSSTRRRUONMPV",
-  "WWWWWWWRRRXOWXWW",
-  "WWWWWWWRRRNOWWWW"
+  "KJJJSSTRRRUOOMPV",
+  "WWWWWWWRRRXOOXPP",
+  "WWWWWWWRRRNOOOPP"
  ],
  "legend": {
   "A": {
@@ -173,7 +173,7 @@
    15.2,
    3,
    16,
-   5
+   8
   ]
  ],
  "tideEnds": false,
@@ -234,8 +234,9 @@
    ]
   ]
  },
+ "light": {},
  "stage": {
-  "line": "arena: gut -8 0 -4 0",
+  "line": "arena: gut -8 -6.2 -4 0",
   "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
   "heightToWorld": "y = h - 6.2"
  },

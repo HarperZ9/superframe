@@ -12,9 +12,9 @@ export default {
   camera: { yawDeg: 45, elevDeg: 24, target: [0, H / 2, 0], ppm: 190, W: 1920, H: 3600, dist: 30 },
   paint: { seed: 59, radii: [15, 8.5, 5, 2.8], relief: 0.3 },
   variants: {
-    dark: { hour: 1.0, note: "the stairs in the dark: moonlight through the slits", V: { slit: 2.5 }, plan: { ambient: 0.004, mist: 0.002, extinct: 0.001 }, gain: 2.2 },
-    lit: { hour: 4.2, note: "the lamp room relit: its light down the well", V: { slit: 2.5, above: 40 }, plan: { ambient: 0.005, mist: 0.004, extinct: 0.001 }, gain: 1.8 },
-    frost: { hour: 4.5, note: "04:10 on: Keel's drips frozen on the treads", V: { slit: 4, above: 40, frost: 1 }, plan: { ambient: 0.005, mist: 0.003, extinct: 0.001 }, gain: 1.8 },
+    dark: { hour: 1.0, note: "the stairs in the dark: moonlight through the slits", V: { slit: 9 }, plan: { ambient: 0.02, mist: 0.002, extinct: 0.001 }, gain: 2.2 },
+    lit: { hour: 4.2, note: "the lamp room relit: its light down the well", V: { slit: 9, above: 160 }, plan: { ambient: 0.02, mist: 0.004, extinct: 0.001 }, gain: 1.8 },
+    frost: { hour: 4.5, note: "04:10 on: Keel's drips frozen on the treads", V: { slit: 12, above: 160, frost: 1 }, plan: { ambient: 0.02, mist: 0.003, extinct: 0.001 }, gain: 1.8 },
   },
   walk: walkIds("steps", "mole"), footing: footing(), marks: S.marks,
   notes: "The 112 stairs, spiral round an iron post; the landing at 56. Scrolls vertically.",

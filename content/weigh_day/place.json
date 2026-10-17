@@ -147,5 +147,32 @@
   ],
   "lamps": []
  },
- "notes": "Daylight weigh-house for the interlude (day_tube)."
+ "notes": "Daylight weigh-house for the interlude (day_tube).",
+ "lights": {
+  "day": [
+   {
+    "at": [
+     -8,
+     4,
+     0.6
+    ],
+    "kind": "sky",
+    "I": 900,
+    "reach": 30,
+    "group": ""
+   },
+   {
+    "at": [
+     3.4,
+     1.5,
+     -6.5
+    ],
+    "kind": "sky",
+    "I": 300,
+    "reach": 16,
+    "group": ""
+   }
+  ]
+ },
+ "arenas": []
 }

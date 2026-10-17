@@ -66,3 +66,16 @@ magnifies paint. Every plate is at least 1920 x 1080.
 Own slip, recorded: two short jobs (a 40 s room re-bake and the first mode stills) ran while both
 bake lanes were busy, three heavy jobs for under a minute. The chained scripts (render/after.sh,
 finish.sh, final.sh, extra.sh) keep to two from here.
+18. DONE Fight placement fixes (coordinator): the quay arena moved to open stone east of the office
+    with hand-placed spawns; the Gut's dogs ground widened to the midden yard and the lane, with
+    distinct spawns; harbour arena heights on the shells' datum; place.json keeps others' keys (the
+    quay's `datum`). Plates declared settled in NOTES-FOR-ENGINEER.
+19. DONE Final pass baked: the Spit (organic shoreline, readable barges) and the Ropewalk (near
+    side cut low), the finer frost film on the quay, gasholder and mole frost, calmer daylight on
+    quay_day and gut_day; stills for all plates (render/stills/, 76 files) and the mode stills.
+20. HELD (author, 2026-10-17: "the art style is somewhat lacking"; an art director is choosing a
+    direction): re-bakes written but not run: Chancel Hill with its near side cut to garden walls
+    (the baked plate still hides the path behind house backs), the Gut's near side opened, the
+    stairs and the arrival pull-back brighter, the rooms' matte floors (brine, weigh, station still
+    show lamp reflections on the floor), the room's light stripes. Run render/last.sh and
+    render/more.sh (and extra.sh) when a direction is chosen.

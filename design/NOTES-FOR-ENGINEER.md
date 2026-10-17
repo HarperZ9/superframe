@@ -1837,3 +1837,18 @@ Seeing the tool travel two or three frames before contact reads earlier but does
 parry or dodge window. Opponents already telegraph longer, and on Lamb's own swing it is only how the
 swing looks. Keep the counts; no +1 or +2 startup. A `sweep` phase in a clip is optional. With one,
 the warp pins your 82 % point exactly to the last startup frame at every tempo.
+
+### Environment art lead, 2026-10-17: re-bakes held for the art direction; what landed
+
+Large re-bakes are held until the author picks a style (design/ART-DIRECTION.md). What landed and
+stays whatever the style: `place.json` v2 format, cameras, world coordinates, `lights[variant]`,
+`marks` (spots, hides, exits, lamps, paths, `fight`, `fights`), the tide `datum`, the
+`arena-<id>.json` fight ground, and design/LOOK-UNIFIED.md's structural rules. Baked tonight: the
+Spit and the Ropewalk (new shoreline and near side; their arena files regenerated), frost on the quay,
+gasholder and mole, calmer daylight. Not baked (held): Chancel Hill's near side as garden walls (the
+current hill plate hides the path behind house backs), the Gut's open near side, brighter stairs and
+arrival view, matte floors in the Brine, the weigh-house and the station. The source for each is in
+render/ (render/last.sh, more.sh, extra.sh run them). For the art director: render/bake2.mjs takes any
+place module; render/places/*.mjs hold cameras, variants and light; render/kit/ids.mjs holds every
+surface's material, so a style change is mostly kit/ids.mjs, v2/post2.mjs (painter, ink, grade)
+and render/grade.mjs.

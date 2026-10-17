@@ -156,5 +156,76 @@
   ],
   "lamps": []
  },
- "notes": "Daylight bar for the interlude."
+ "notes": "Daylight bar for the interlude.",
+ "lights": {
+  "day": [
+   {
+    "at": [
+     -3.85,
+     0.5,
+     -0.7
+    ],
+    "kind": "paraffin",
+    "I": 12,
+    "reach": 8,
+    "group": "fire"
+   },
+   {
+    "at": [
+     -4.6,
+     1.9,
+     -2.75
+    ],
+    "kind": "sky",
+    "I": 9,
+    "reach": 9,
+    "group": ""
+   },
+   {
+    "at": [
+     -1.8,
+     1.9,
+     -2.75
+    ],
+    "kind": "sky",
+    "I": 9,
+    "reach": 9,
+    "group": ""
+   },
+   {
+    "at": [
+     1.2,
+     1.9,
+     -2.75
+    ],
+    "kind": "sky",
+    "I": 9,
+    "reach": 9,
+    "group": ""
+   },
+   {
+    "at": [
+     4,
+     1.9,
+     -2.75
+    ],
+    "kind": "sky",
+    "I": 9,
+    "reach": 9,
+    "group": ""
+   },
+   {
+    "at": [
+     5.2,
+     1.3,
+     1.4
+    ],
+    "kind": "sky",
+    "I": 27,
+    "reach": 10,
+    "group": ""
+   }
+  ]
+ },
+ "arenas": []
 }

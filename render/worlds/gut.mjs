@@ -23,7 +23,7 @@ export function gut({ frozen = false, day = false } = {}) {
   });
   // the town beyond, roofs only, so the lane sits in a packed district
   W.ground((x, y, z, T) => {
-    if (Math.abs(z) < 5.5) return;
+    if (Math.abs(z) < 5.5 || z > 0) return; // roofs beyond the far side only; the near side stays open ground
     const cx = Math.floor((x + 40) / 3.4), cz = Math.floor((Math.abs(z) - 5.5) / 3.6), cxc = -40 + 3.4 * (cx + 0.5), czc = Math.sign(z) * (5.5 + 3.6 * (cz + 0.5)), hh = (z < 0 ? 2.6 : 0.6) + 1.2 * rnd(cx, cz);
     if (cz < 4) { T(box(x, y, z, cxc, hh / 2, czc, 1.6, hh / 2, 1.7) * 0.8, ID.brickdark); if (z < 0) { T(gable(x, y, z, cxc, hh, czc, 1.7, 1.8, 1.1) * 0.8, ID.roof); if (rnd(cx, cz, 4) < 0.3) T(box(x, y, z, cxc + 0.5, hh * 0.55, czc + 1.72, 0.25, 0.3, 0.03), ID.window); } }
     const bx = Math.min(x - (-40 + 3.4 * cx), -40 + 3.4 * (cx + 1) - x), bz = Math.min((Math.abs(z) - 5.5) - 3.6 * cz, 3.6 * (cz + 1) - (Math.abs(z) - 5.5));

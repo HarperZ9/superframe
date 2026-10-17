@@ -203,7 +203,7 @@
    },
    "r": 8.32,
    "arena": "arena-weigh.json",
-   "stage": "arena: weigh -6 0 -5 0"
+   "stage": "arena: weigh -6 -6.5 -5 0"
   },
   "fights": {
    "weigh": {
@@ -263,7 +263,7 @@
     },
     "r": 8.32,
     "arena": "arena-weigh.json",
-    "stage": "arena: weigh -6 0 -5 0"
+    "stage": "arena: weigh -6 -6.5 -5 0"
    }
   }
  },
@@ -341,7 +341,7 @@
   {
    "id": "weigh",
    "file": "arena-weigh.json",
-   "stage": "arena: weigh -6 0 -5 0",
+   "stage": "arena: weigh -6 -6.5 -5 0",
    "heightToWorld": "y = h - 6.5",
    "size": [
     12,

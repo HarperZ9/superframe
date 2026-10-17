@@ -160,7 +160,7 @@
     ],
     [
      -0.5,
-     -2.5
+     -3.5
     ],
     [
      -2.5,
@@ -197,7 +197,7 @@
    },
    "r": 5.55,
    "arena": "arena-lamp.json",
-   "stage": "arena: lamp -4 0 -4 0"
+   "stage": "arena: lamp -4 -30 -4 0"
   },
   "fights": {
    "lamp": {
@@ -216,7 +216,7 @@
      ],
      [
       -0.5,
-      -2.5
+      -3.5
      ],
      [
       -2.5,
@@ -253,7 +253,7 @@
     },
     "r": 5.55,
     "arena": "arena-lamp.json",
-    "stage": "arena: lamp -4 0 -4 0"
+    "stage": "arena: lamp -4 -30 -4 0"
    }
   }
  },
@@ -412,7 +412,7 @@
   {
    "id": "lamp",
    "file": "arena-lamp.json",
-   "stage": "arena: lamp -4 0 -4 0",
+   "stage": "arena: lamp -4 -30 -4 0",
    "heightToWorld": "y = h - 30",
    "size": [
     8,

@@ -20,7 +20,7 @@
  "legend": {
   "A": {
    "surface": "stone",
-   "h": 5.2
+   "h": 4.9
   },
   "B": {
    "surface": "mud",
@@ -28,46 +28,46 @@
   },
   "C": {
    "surface": "stone",
-   "h": 6.3,
+   "h": 5.9,
    "solid": true
   },
   "D": {
    "surface": "stone",
-   "h": 11.9,
+   "h": 11.1,
    "solid": true
   },
   "E": {
    "surface": "stone",
-   "h": 12.7,
+   "h": 11.9,
    "solid": true
   },
   "F": {
    "surface": "stone",
-   "h": 12.4,
+   "h": 11.6,
    "solid": true
   },
   "G": {
    "surface": "stone",
-   "h": 11.6,
+   "h": 10.8,
    "solid": true
   },
   "H": {
    "surface": "stone",
-   "h": 5.8
+   "h": 5.5
   },
   "I": {
    "surface": "stone",
-   "h": 5.9,
+   "h": 5.5,
    "solid": true
   },
   "J": {
    "surface": "stone",
-   "h": 5.4,
+   "h": 5.1,
    "solid": true
   },
   "K": {
    "surface": "stone",
-   "h": 5.3,
+   "h": 5,
    "solid": true
   }
  },
@@ -642,7 +642,7 @@
  "stage": {
   "line": "arena: quay 13.6 0 -9.4 0",
   "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
-  "heightToWorld": "y = -3.2 + (h + 0.3) / 1.72"
+  "heightToWorld": "y = -3.029 + 0.62 h (the plate datum in place.json)"
  },
  "source": {
   "plate": "content/quay",
