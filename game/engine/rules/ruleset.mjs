@@ -55,7 +55,7 @@ const DEFAULT_RULES = {
   "cabinet-slots-max": 6, "forget-cost": 0, "guise-default": "shelf", "wet-rate": 0.004, "dry-tau": 140, "stove-tau": 50,
   "strain-max": 3,
   // stealth and verbs tuning (world/stealth.mjs, world/sneak.mjs): named so content can retune
-  "stealth-seen": 0.22, "stealth-decay": 0.12, "stealth-hear": 0.25, "stealth-sodium": 0.5, "sneak-walk": 1.4, "walk-speed": 1.5, "run-speed": 3.2, "walk-metres-per-minute": 6, "carry-speed": 0.65, "carry-noise": 1.5,
+  "stealth-seen": 0.22, "stealth-decay": 0.12, "stealth-hear": 0.25, "stealth-sodium": 0.5, "sneak-walk": 1.4, "walk-speed": 1.5, "run-speed": 3.6, "walk-metres-per-minute": 6, "carry-speed": 0.65, "carry-noise": 1.5,
   // day phases for the term phase (clean-room PRESSURE-SYSTEMS 12.5 uses the same four)
   "phase-dawn": "04:00", "phase-day": "09:30", "phase-dusk": "15:30", "phase-dark": "21:00",
   // seconds of game time each displayed line costs (0: content prices beats with cost:)

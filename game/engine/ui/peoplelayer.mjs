@@ -3,7 +3,7 @@
 // on the plate's ground (world/plateworld.mjs over the plate camera's arena grid): a click on the
 // plate walks there, and the play screen walks Lamb to a hotspot or an exit before it opens
 // (as the prototype did). Speeds in @rules: walk-speed (1.5 m/s, a true walk: the figures blend
-// walk under 1.9 m/s and run above 3.0), run-speed (3.2 m/s) while the run button is held (Shift,
+// walk under 1.9 m/s and run above 3.0), run-speed (3.6 m/s, the character lead's 3.5 to 4) while the run button is held (Shift,
 // the pad's X or a stick push: G.input "run"), walk-metres-per-minute (the clock moves when Lamb
 // does; paid on arrival). Idle, walk, run and a talk gesture now and then
 // for Lamb and the speaker while a conversation is open.
@@ -45,7 +45,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     const B = camBasis(pj.camera), fl = Math.hypot(B.f[0], B.f[2]) || 1;
     let dx = B.right[0] * v.x - (B.f[0] / fl) * v.z, dz = B.right[2] * v.x - (B.f[2] / fl) * v.z; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl;
     S.run = !!G.input.get("run"); S.path = null; S.then = null;
-    const sp = (S.run ? rule("run-speed", 3.2) : rule("walk-speed", 1.5)) * dt * Math.min(1, L), nx = pos[0] + dx * sp, nz = pos[2] + dz * sp;
+    const sp = (S.run ? rule("run-speed", 3.6) : rule("walk-speed", 1.5)) * dt * Math.min(1, L), nx = pos[0] + dx * sp, nz = pos[2] + dz * sp;
     S.face.lamb = Math.atan2(dz, dx);
     if (A && !walkable(A, nx, nz, waterY(A))) return true;
     const y = A ? groundAt(A, nx, nz) : null;
@@ -59,7 +59,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     if (pos && freeWalk(dt, pos)) return;
     if (!S.path || !pos) return;
     S.run = !!(G.input && G.input.get("run"));
-    const A = cam.arena(), sp = (S.run ? rule("run-speed", 3.2) : rule("walk-speed", 1.5)) * dt;
+    const A = cam.arena(), sp = (S.run ? rule("run-speed", 3.6) : rule("walk-speed", 1.5)) * dt;
     const [tx, tz] = S.path[0], dx = tx - pos[0], dz = tz - pos[2], d = Math.hypot(dx, dz);
     const k = d <= sp ? 1 : sp / d, nx = pos[0] + dx * k, nz = pos[2] + dz * k, y = A ? groundAt(A, nx, nz) : null;
     if (d > 1e-4) S.face.lamb = Math.atan2(dz, dx);
