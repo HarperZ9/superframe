@@ -272,10 +272,10 @@ export function createCast({ timing, combat = null, members }) {
           }
         }
         st.smear = { mesh: m, pos: S.pos.slice(), facing: st.facing, at: [st.pos[0], st.pos[1] + dy, st.pos[2]] }; if (shadows) castShadow(G, m.M, S, pl, shadowDir(rig, st.pos), { hidden: hid });
-        const out = compose(G, albedo(G, C.palette), light(G, rig, C.palette), ink(G, { scale: ss }), { bands });
+        const A = albedo(G, C.palette), out = compose(G, A, light(G, rig, C.palette), ink(G, { scale: ss }), { bands });
         if (tone) for (let i = 0; i < G.w * G.h; i++) if (G.id[i]) out.set(tone([out[i * 4], out[i * 4 + 1], out[i * 4 + 2]]), i * 4);
         if (info.drip) drip(out, G, V, pl, self.skeleton(pose), info.drip, (st.dripT = (st.dripT || 0) + 1 / 60));
-        return { ...down(out, G.w, G.h, ss), G, full: out };
+        return { ...down(out, G.w, G.h, ss), G, full: out, albedo: A.rgb };   // albedo (full resolution) lets a drawer read the light apart from the clothes
       },
     };
     return self;
