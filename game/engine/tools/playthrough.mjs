@@ -52,7 +52,7 @@ function playGame({ build = null, seed = 1, shuffleSeed = seed }) {
     const act = { act: a + 1, start: C.book.meta.start, end: null, clock: null, unfired: [], choices: 0 };
     R.acts.push(act);
     try { act.end = playAct(G, C, R, act, { build, seed, shuffleSeed }); }
-    catch (e) { R.errors.push(`act ${a + 1}: ${e.message}`); R.stall = R.stall || { act: a + 1, node: G.activeTalk && G.activeTalk.node, why: e.message }; }
+    catch (e) { R.errors.push(`act ${a + 1}: ${e.message} @ ${(e.stack || "").split("\n").slice(1, 3).map((x) => x.trim()).join(" < ")}`); R.stall = R.stall || { act: a + 1, node: G.activeTalk && G.activeTalk.node, why: e.message }; }
     act.pages = G.state.sheet.xp; act.gatePages = Object.keys(G.state.gates || {}).length; // cumulative at the act's end
     act.clock = clock(G); act.unfired = C.book.events.filter((e) => !G.state.fired.includes(e.id)).map((e) => e.id);
     R.learned = G.state.flags.filter((f) => /\.move_\w+$/.test(f)); R.weapon = (G.inv.worn() || {}).hand || "w.case";
