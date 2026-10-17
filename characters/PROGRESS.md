@@ -266,6 +266,6 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     folds). stills/11-oneshell-fight.png and -1080.png (engine play.html?shot=fight, my harness only
     changes the URL). Honest note: figures standing in the hull's shadow stay dark, as the plate is
     there; they read by the rim and the contact shadow.
-52. DONE Portraits: 38 people x 4 expressions x 2 lights baked; portraits/index.json written
+52. DONE Portraits: all 36 speaking parts (the two generic opponents have none) x 4 expressions x 2 lights baked; portraits/index.json written
     atomically from what is on disk (proto/portraits_index.mjs, temp file then rename), rebuilt after
     each person in future bakes. Current style; to be re-baked in the chosen direction.
