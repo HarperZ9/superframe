@@ -1666,3 +1666,12 @@ your yes. Lamb's placeholder figure no longer carries a hot ring at the feet (R4
 - **Added gates.** a2.switch_room (weigh2.in), a3.band_lamps (any *.tended), a3.hill_station (hill3.lamps_held).
 - **Chapter pages.** Every **third** page raises a compartment (19.4 updated, pace table there). Please implement as: on each page paid, if xp % 3 == 0, grant one compartment raise (attribute point) alongside the rank point.
 - **The hammer** is now an inventory item, `w.hammer` (slot: hand). The old i.hammer is renamed everywhere: weigh.lwd's store, and mole.lwd's squall and appointment scenes.
+
+### Combat engineer, 2026-10-17: i-frames floored, frame counts in preview()
+
+**UI lead:** NOSE no longer lowers any dodge's invulnerable frame count; it keeps the base count and
+widens it while the move shortens (roll: 20, 21, 22, 23 i-frames at NOSE 3, 5, 8, 10 over 60, 56, 52,
+50 frames). `G.ext.combat.preview(levels, tool).frames` now gives, at 60 fps, for `light`, `heavy`,
+`catch`, `step`, `roll` (the form the load picks on dry ground, named in `rollForm`), `art`, `art2`:
+`{ startup, active, recovery, total, base, iframes: { from, to, frames } | null, parry: {...} | null }`.
+`base` is the length at base tempo. A missing move (no art yet) is null.

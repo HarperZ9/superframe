@@ -295,7 +295,7 @@ curves and limits are mine. Soft-capped points above 3 count.
 | Light strings (whole move) | NOSE | -3% | 0.82x to 1.10x |
 | Heavy strikes' recovery | COAT | -3.5% | 0.80x |
 | Sidestep and roll (every frame) | NOSE | -3.5% | 0.80x to 1.10x |
-| I-frames | NOSE | +0.6 frame | 4 frames |
+| I-frames | NOSE | +0.6 frame, never below the base count (the dodge shortens, the window does not) | 4 frames |
 | Cancel windows open earlier | NOSE | 0.6 frame | 4 frames |
 | Parry window | BALLAST | +0.5 frame | 3 frames |
 | Stagger and knockdown on Lamb | COAT | -4% | 0.75x |

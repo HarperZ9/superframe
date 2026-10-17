@@ -221,7 +221,22 @@ function previewOf(G, levels, tool) {
   const T = TOOLS21[t] || TOOLS21["w.hands"];
   return { standing: d.hp, breath: d.stamina, poise: d.poise, composure: d.composureMax, load: d.loadInfo, meets: d.bonus.met, needs: T.needs, scale: T.scale,
     light: +(d.tool.light[0] * d.bonus.dmg).toFixed(2), heavy: +(d.tool.heavy[0] * d.bonus.dmg).toFixed(2), read: d.bonus.read, weak: d.bonus.weak, evade: d.bonus.evade,
-    yieldsSooner: d.bonus.end, swingCost: d.bonus.breath, art: d.art, temper: d.temper, fitting: d.fitting, fittings: T.fittings };
+    yieldsSooner: d.bonus.end, swingCost: d.bonus.breath, art: d.art, temper: d.temper, fitting: d.fitting, fittings: T.fittings,
+    frames: framesOf(d) };
+}
+
+// Frame counts at this body's tempo, for the Build page (60 frames a second): each move's
+// startup, active, recovery and total; windows as [first, last) frame and a count.
+function framesOf(d) {
+  const S = fighterSpec("lamb", "lamb", d, [0, 0]), set = S.def.moveset, M = S.moves;
+  const win = (w) => (w ? { from: w[0], to: w[1], frames: w[1] - w[0] } : null);
+  const one = (id) => {
+    const m = id && M[id]; if (!m) return null;
+    const total = (m.startup || 0) + (m.active || 0) + (m.recovery || 0);
+    return { startup: m.startup || 0, active: m.active || 0, recovery: m.recovery || 0, total, base: m.baseTotal || total, iframes: win(m.iframes), parry: win(m.parry) };
+  };
+  const roll = set.roll[d.load] || set.roll.medium; // the form chooseRoll picks on dry ground
+  return { light: one(set.light), heavy: one(set.heavy), catch: one(set.catch), step: one(set.step), roll: one(roll), rollForm: roll.replace(/^lamb:/, ""), art: one(set.art), art2: one(set.art2), fps: 60 };
 }
 
 function upgradeCost(G, tool) {

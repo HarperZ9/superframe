@@ -7,6 +7,8 @@ import { defineMoves } from "../sim/moves.mjs";
 import { poseOf } from "../anim/drive.mjs";
 import { makeWorld, run, press } from "./helpers.mjs";
 import { BUILDS, runBuild } from "../tools/minmax.mjs";
+import { fighterSpec, lambDef } from "../roster.mjs";
+import { BODY } from "../data/body.mjs";
 
 test("the curves (19.11a): NOSE quickens light strings and dodges, COAT heavy recovery and stun, BALLAST the parry", () => {
   const base = tempoOf({}), up = tempoOf({ grip: 8, nose: 8, ballast: 8, coat: 8 });
@@ -46,4 +48,23 @@ test("min-maxing pays: a committed build ends fights noticeably sooner and with 
   assert.ok(f.meanWonSeconds < s.meanWonSeconds * 0.88, `focused ${f.meanWonSeconds} s spread ${s.meanWonSeconds} s`);
   assert.ok(f.standingLeft > s.standingLeft, `Standing left: focused ${f.standingLeft} spread ${s.standingLeft}`);
   assert.ok(f.rate >= s.rate - 0.05 && s.rate >= 0.6, `wins: focused ${f.rate} spread ${s.rate}`);
+});
+
+test("NOSE never lowers a dodge's invulnerable frame count; it only widens it while the move shortens", () => {
+  let prev = null;
+  for (const nose of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+    const S = fighterSpec("lamb", "lamb", lambDef({ nose }, "w.case"), [0, 0]);
+    for (const form of ["step", "roll_dash", "roll", "roll_hop"]) {
+      assert.ok(S.moves[`lamb:${form}`], `Lamb has her own ${form}`);
+      const m = S.moves[`lamb:${form}`], base = BODY[form], len = (x) => (x.startup || 0) + (x.active || 0) + (x.recovery || 0);
+      if (!m || !m.iframes || !base || !base.iframes) continue;
+      const n = m.iframes[1] - m.iframes[0], b = base.iframes[1] - base.iframes[0];
+      assert.ok(n >= b, `${form} at NOSE ${nose}: ${n} i-frames, base ${b}`);
+      if (prev && prev[form]) {
+        assert.ok(n >= prev[form].n, `${form}: NOSE ${nose} has fewer i-frames than NOSE ${nose - 1}`);
+        assert.ok(len(m) <= prev[form].total, `${form}: NOSE ${nose} is not shorter`);
+      }
+      (prev ||= {})[form] = { n, total: len(m) };
+    }
+  }
 });

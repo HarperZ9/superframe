@@ -169,3 +169,8 @@ tests (node --test), not proof.
    - plates: the art lead's marks.fight are read; a mark on a cell the grid leaves solid moves to
      the nearest clear cell within 2 m (sim/plate.mjs snapClear; the quay's first foe moved 1.8 m).
    node --test from game/engine: 201 of 201 pass; harness Fist 7 of 9.
+25. DONE UI lead via coordinator, 2026-10-17: a dodge's invulnerable frames never fall below the base
+   count as NOSE shortens the move (the roll went 20 to 19 from NOSE 3 to 5 before; now 20, 21, 22,
+   23 at NOSE 3, 5, 8, 10 while the roll runs 60, 56, 52, 50 frames). preview() returns `frames`:
+   startup, active, recovery, total, base, i-frame and parry windows for light, heavy, catch, step,
+   the roll form the load picks, art and art2. tests/tempo.test.mjs, tests/build.test.mjs; 205 of 205.

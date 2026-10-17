@@ -81,3 +81,14 @@ test("preview shows what a rank changes, for a level-up screen", () => {
   const now = C.preview(), more = C.preview({ pride: 7 });
   assert.ok(more.light > now.light && now.needs && now.scale.pride);
 });
+
+test("preview gives frame counts at the body's tempo: NOSE shortens the roll and never cuts its i-frames", () => {
+  const G = createGame({ sources: [{ file: "arena.lwd", text: ARENA_LWD }], seed: 3 }), C = installCombat(G);
+  const a = C.preview({ nose: 3 }).frames, b = C.preview({ nose: 8 }).frames;
+  for (const k of ["light", "heavy", "step", "roll"]) assert.ok(a[k] && a[k].total > 0, `${k} has frames`);
+  assert.equal(a.fps, 60);
+  assert.ok(b.roll.total < a.roll.total, "the roll is shorter at NOSE 8");
+  assert.ok(b.roll.iframes.frames >= a.roll.iframes.frames, "and keeps at least as many invulnerable frames");
+  assert.ok(b.light.total < a.light.total, "light strings are quicker at NOSE 8");
+  assert.equal(a.roll.total, a.roll.startup + a.roll.active + a.roll.recovery);
+});

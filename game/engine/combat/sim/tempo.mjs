@@ -69,9 +69,15 @@ export function tempoMoves(moves, p, t) {
     let m = m0;
     const kind = m.kind || "attack"; // raw tables leave kind unset until defineMoves
     if (kind === "dodge") {
+      // the move shortens with NOSE, but its invulnerable frames never fall below the base count
+      // (UI lead, 2026-10-17: a min-maxer reads absolute frames); NOSE only widens them
       m = scaleMove(m, t.dodge);
       const total = (m.startup || 0) + (m.active || 0) + (m.recovery || 0);
-      if (m.iframes) m = { ...m, iframes: [m.iframes[0], Math.min(m.iframes[1] + t.iframe, total - 2)] };
+      if (m.iframes && m0.iframes) {
+        const base = m0.iframes[1] - m0.iframes[0], scaled = m.iframes[1] - m.iframes[0];
+        const len = Math.max(base, Math.min(Math.max(base, scaled) + t.iframe, total - 2 - m.iframes[0]));
+        m = { ...m, iframes: [m.iframes[0], m.iframes[0] + len, ...m.iframes.slice(2)] };
+      }
     } else if (kind === "parry") {
       if (m.parry && t.parry) m = { ...m, active: m.active + t.parry, parry: [m.parry[0], m.parry[1] + t.parry] };
     } else if (kind === "attack" || kind === "riposte" || kind === "item") {
