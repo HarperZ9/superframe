@@ -186,7 +186,6 @@ line: SABINE: Twenty to ten, the quay went out. Every lamp. My portholes went bl
 line: SABINE: Then a bit before ten they came back pink. Pink as a gum, all three, the whole quay looking slapped. Then orange.
 voice: candlemas: Red, then pink, then orange. Ten minutes, and it cannot be hurried. {when: !has(lamps.pink)}
 voice: carbon: Twenty to ten. The quay goes out. Sabine does not look at the stove. Why not? {dc: 7}
-if: !has(lamps.pink) => xp(1)
 do: set(lamps.pink)
 go: brine.sabine
 
@@ -864,7 +863,7 @@ line: MERROW: I'm not saying I saved anybody. I'm saying I was there with a ligh
 nar: The assessor writes both times down and draws no line between them.
 voice: sum: Twenty-four by the ship's clock, less four. Eighteen to twenty-five, the lantern. {dc: 6, when: has(ship.clock)}
 voice: sum: Twenty-four by the ship's clock. Twenty-five, the lantern. Near enough. {below: 6, when: !has(ship.clock)}
-do: set(merrow.light); quest(a1.lowlight, merrow); rep(lowco, 1); seenas_lowco = witness
+do: set(merrow.light); set(merrow.told); quest(a1.lowlight, merrow); rep(lowco, 1); seenas_lowco = witness
 go: brine.merrow
 
 @node brine.merrow.rope
@@ -988,7 +987,6 @@ line: COCKLE: He went out on the floor for the bell off the Pennock wreck. Told 
 line: COCKLE: The gully had shut eleven minutes before. I was on the steps with a lantern, shouting. You can't shout eleven minutes.
 nar: Behind the bar Sabine dries the same glass. She lets Cockle tell it every year so that she will not have to.
 line: COCKLE: I got the bell off the mud in the spring and gave it her. She never hung it. She adds the eleven minutes for everyone else. For herself it's still the time he thought it was.
-if: !has(brine.jory) => xp(1)
 do: set(brine.jory); quest(a1.minutes, jory)
 go: brine.cockle
 
@@ -1069,7 +1067,6 @@ nar: He stands on the bench to do it properly.
 line: TOBIT: Out went the quay and out went the light, up came the pink like a cut in the night. Pink for a minute, and orange for good. The Lord put it back as we knew that He would.
 nar: The Brine applauds. It has heard it eleven times since ten o'clock.
 line: TOBIT: That's a penny. You owe me. I'll write it down.
-if: !has(lamps.pink) => xp(1)
 do: set(lamps.pink); offer(m.pink); rep(congregation, 1)
 go: brine.hub
 

@@ -1,0 +1,31 @@
+# Low Water, Act 1: understanding pages as @gate records (SYSTEMS-FULL 19.4). Director, 2026-10-17.
+# Each pays one page the first time Lamb understands the thing, by whichever route sets the fact.
+# Chosen so the routes that resolve fewest gates (Eye, Tongue) level with the rest.
+
+@gate i1.claim_time
+name: A claim filed three hours before the dark
+resolved: claim.time
+
+@gate i1.low_light
+name: The low light seen from the ferry
+resolved: memory.low_light
+
+@gate i1.pink
+name: The lamps came back pink
+resolved: lamps.pink
+
+@gate i1.clock
+name: Every clock in Gullet is lying
+resolved: brine.clock
+
+@gate i1.wenna
+name: Wenna's confession
+resolved: brine.wenna_confessed
+
+@gate i1.jory
+name: Jory, eleven minutes late
+resolved: brine.jory
+
+@gate i1.keel
+name: Why Keel wanted the lens broken
+resolved: lens.keel_motive

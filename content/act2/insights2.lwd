@@ -18,10 +18,15 @@ resolved: strippers.named
 name: Whose casks the Patience carried
 resolved: spit.cargo
 
-@gate i2.button
-name: Fisk's button: the restrike by hand
-resolved: fisk.button
-
 @gate i2.notice
 name: The Ropewalk machine typed the Shelf's notices
 resolved: ropewalk.notice_matched
+
+@gate i2.line
+name: The telegraph line is dead
+resolved: ropewalk.line_dead
+
+@gate i2.card
+name: The card over the board, in yellow ink
+resolved: weigh2.board_card
+

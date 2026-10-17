@@ -235,7 +235,7 @@ nar: The assessor writes his words down and rules no column beside them. He lift
 nar: The count goes through with one straight line, the numbers legible under it. {when: has(gasholder.struck_count)}
 line: HOBB: Uncounted. Is that one word or two? {when: has(cause.keeper)}
 line: FENNICK: There. Now it is in a book that does not balance.
-do: set(fennick.bought); set(gasholder.fennick_knew); set(gasholder.eye_sealed); quest(a1.splinters, bought); xp(1)
+do: set(fennick.bought); set(gasholder.fennick_knew); set(gasholder.eye_sealed); quest(a1.splinters, bought)
 if: has(gasholder.bulb_lit) => gasholder_carries = lit_eye
 if: !has(gasholder.bulb_lit) => gasholder_carries = bulb_eye
 if: has(cause.keeper) => rep(trust, -1); set(book.gasholder_word)
@@ -264,7 +264,7 @@ cost: 20
 nar: Three rings read upside down, a number on every spine, set down in a column. Every one is a seat in Mother. {when: has(lens.green) | has(pollard.file) | has(gasholder.notice_read)}
 nar: Three rings read upside down, a number on every spine. Every one is from the same hundred and sixty-eight as one hundred and thirteen. {when: !has(lens.green) & !has(pollard.file) & !has(gasholder.notice_read)}
 voice: sum: Fifty-six. Six years is seventy-two months. Sixteen months in six years the keeper did not need a shilling. {dc: 5}
-do: set(relics.counted); quest(a2.relics, counted); clear(gasholder.count_pencil); xp(1); meter(wear, 1)
+do: set(relics.counted); quest(a2.relics, counted); clear(gasholder.count_pencil); meter(wear, 1)
 go: ^hub
 
 @node gasholder.count.fail
@@ -593,7 +593,7 @@ line: GAUZE: I don't go down.
 line: FENNICK: Here is the true thing, pilgrim. I bought them. Fifty-six, from her, at the back door. I held hers and the oven's to one candle and saw the difference, and I bought the next.
 line: FENNICK: Tonight they go home to her. Carry them down for me. Nobody counts them on the way.
 nar: A bundle is put into the assessor's arms, the weight of a full kettle, its edges sharp through the cloth.
-do: set(fennick.bought); set(gasholder.fennick_knew); set(gasholder.eye_sealed); set(gasholder.carrying); quest(a1.splinters, bought); xp(1); meter(dread, 1)
+do: set(fennick.bought); set(gasholder.fennick_knew); set(gasholder.eye_sealed); set(gasholder.carrying); quest(a1.splinters, bought); meter(dread, 1)
 if: has(gasholder.bulb_lit) => gasholder_carries = lit_eye
 if: !has(gasholder.bulb_lit) => gasholder_carries = bulb_eye
 go: gasholder.procession

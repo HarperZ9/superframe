@@ -976,7 +976,6 @@ go: ropewalk.e
 # ---- the protected moment (REWORK-PLAN 1.4, item 10; ACT2-PLAN 9.5): two lines, no voice
 @node ropewalk.e
 cost: 3
-if: !has(typist.heard) => xp(1)
 do: set(typist.heard); quest(a2.typist, heard); clear(ropewalk.pencil_office); clear(ropewalk.pencil_machine)
 nar: In the back room of the Gannet house, someone is typing.
 nar: Every e comes down late.

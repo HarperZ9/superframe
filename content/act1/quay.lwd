@@ -799,7 +799,6 @@ go: quay.fennick.menu
 @node quay.fennick.relic.dark
 speaker: FENNICK
 cost: 5
-if: !has(prism.numbered) => xp(1)
 do: set(prism.numbered); quest(a1.splinters, numbered)
 nar: In the dark he opens the bell jar's base. Inside, on velvet, is a wedge of glass the length of a finger, sharp along every edge, with a number cut into its spine.
 line: FENNICK: One hundred and thirteen. Every splinter of the Eye is numbered. The Lord is an engineer, assessor. He leaves a schedule.
@@ -981,7 +980,6 @@ go: quay.fennick.dark.true
 place: steps
 speaker: FENNICK
 cost: 3
-if: !has(prism.numbered) => xp(1)
 do: set(prism.numbered); quest(a1.splinters, numbered)
 nar: Something is put into the assessor's hand: cold, sharp along every edge, a number on its spine the thumb can read.
 line: FENNICK: One hundred and thirteen. Feel the edge. The sea has never made anything that sharp.
@@ -2053,7 +2051,6 @@ go: quay.fennick.menu
 @node quay.relic.eye
 place: steps
 cost: 2
-if: !has(prism.numbered) => xp(1)
 do: set(prism.numbered); quest(a1.splinters, numbered)
 inst: CANDLEMAS: Through his jar and through my eye: one hundred and thirteen, cut on the spine. The edges are sharp. The sea has never kept an edge.
 nar: The deacon goes on praying. He has not noticed being read.
@@ -2095,7 +2092,6 @@ go: quay.steps
 place: steps
 speaker: FENNICK
 cost: 3
-if: !has(prism.numbered) => xp(1)
 do: set(prism.numbered); quest(a1.splinters, numbered)
 nar: The assessor lifts the jar's rim and pinches the wick. Something cold and sharp is put into the assessor's hand, with a number on its spine the thumb can read.
 line: FENNICK: You have learned the liturgy. One hundred and thirteen. Feel the edge.
@@ -2377,7 +2373,6 @@ return:
 place: steps
 speaker: FENNICK
 cost: 4
-if: !has(prism.numbered) => xp(1)
 do: set(prism.numbered); quest(a1.splinters, numbered)
 nar: Under the borrowed jar the world goes round and quiet. At the assessor's knee, by candlelight, lies a wedge of glass on velvet with 113 cut on its spine.
 line: FENNICK: Look, sister. By grace. One of hers.

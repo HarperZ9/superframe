@@ -291,7 +291,6 @@ go: ropewalk3.door
 @node ropewalk3.door
 place: gannet_house
 cost: 2
-if: !has(hester.seen_typing) => xp(1)
 do: set(hester.seen_typing); set(met.hester); quest(a3.shelf, hester)
 nar: Hester Gannet sits at the Trust's old typewriter in a shawl and a hairnet, typing, every e coming down late.
 nar: Open at her elbow is the agency ledger, and halfway down the page, under NIGHT ASSESSOR, HESK, AT THE USUAL RATE: H. LAMB.

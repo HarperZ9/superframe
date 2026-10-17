@@ -1657,3 +1657,12 @@ shows whichever you decide.
 
 **Environment art lead.** UX-AUDIT A2 (ground marks for lock-on and a watcher's gaze) still waits for
 your yes. Lamb's placeholder figure no longer carries a hot ring at the feet (R4).
+
+### Director, 2026-10-17: gate drafts corrected; the page economy
+- **Included.** gates1/2/3.lwd are included by the act roots, along with my insights1/2/3.lwd (understanding pages as @gate).
+- **Losing never pays.** a1.works_order now resolves on `works.read` (set only where the order is read on a win; the down scene still sets works.order). The drowned-lamp gate uses `merrow.told`, set at the three winning tellings and not on floor.fight.word.down. The dogs' down scene no longer sets gut.early_in. Failed checks that still pass the obstacle (ink rule: a failure opens its own scene) do pay. That is deliberate.
+- **Double pays.** Inline xp(1) is removed from every node that also resolves a gate: 22 nodes.
+- **One flag, one gate.** My i2.button (fisk.button) is dropped in favour of your a2.engineer_button.
+- **Added gates.** a2.switch_room (weigh2.in), a3.band_lamps (any *.tended), a3.hill_station (hill3.lamps_held).
+- **Chapter pages.** Every **third** page raises a compartment (19.4 updated, pace table there). Please implement as: on each page paid, if xp % 3 == 0, grant one compartment raise (attribute point) alongside the rank point.
+- **The hammer** is now an inventory item, `w.hammer` (slot: hand). The old i.hammer is renamed everywhere: weigh.lwd's store, and mole.lwd's squall and appointment scenes.

@@ -150,3 +150,19 @@ resolved: gasholder3.bulb_cannot
 @gate a3.mother_lens
 name: Mother's lens
 resolved: mole3.crown_fitted
+
+# Director, 2026-10-17: two rows of the Act 3 matrix the draft did not carry.
+# B1, the gale lamps in the band: tending any one chosen lamp through a band resolves it.
+@gate a3.band_lamps
+name: A lamp kept through the band
+resolved: quay3.tended
+resolved: gut3.tended
+resolved: hill3.tended
+resolved: gasholder3.tended
+resolved: mole3.tended
+
+# B4, the hill substation in the gale: the white lamps held (every route sets hill3.lamps_held).
+@gate a3.hill_station
+name: The hill's lamps held in the gale
+resolved: hill3.lamps_held
+

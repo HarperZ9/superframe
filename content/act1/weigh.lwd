@@ -1147,8 +1147,7 @@ opt: "Close the drawer." -> weigh.office.menu
 @node weigh.office.order
 place: office
 cost: 4
-if: !has(works.order) => xp(1)
-do: set(works.order); quest(a1.claim, wiring)
+do: set(works.order); set(works.read); quest(a1.claim, wiring)
 nar: A works order, seven months old. GULLET HEAD LIGHT. Supply to be transferred from the Light's own feeder to the Lamp Quay board, weigh-house, for economy and automatic operation at dusk. Feeder rent saved: eleven pounds a quarter.
 nar: Approved: O. Crake, for the Trust. Signed: A. Keel, for the Board, in a hand so dry it looks pressed. The only dry thing of his the assessor has seen.
 voice: smallprint: "Automatic operation at dusk." She comes on with the quay lamps, and goes off with them. {dc: 5}
@@ -1196,8 +1195,7 @@ go: weigh.office.drawer
 @node weigh.office.carry
 place: tube
 cost: 4
-if: !has(works.order) => xp(1)
-do: set(works.order); set(clause.struck); set(pollard.file); quest(a1.claim, wiring); quest(a1.claim, restrike)
+do: set(works.order); set(works.read); set(clause.struck); set(pollard.file); quest(a1.claim, wiring); quest(a1.claim, restrike)
 if: clock >= 23:58 & clock < 00:10 => set(weigh.keel_papers); rep(board, -1); seenas_board = "nuisance"
 nar: Under Pip's paraffin lamp the three papers make sense: the works order, the yellow stroke through clause fourteen, and Pollard's whole lens.
 inst: CANDLEMAS: Yellow ink. In honest light it is as loud as a bell.
@@ -2000,7 +1998,7 @@ go: weigh.in.menu
 @node weigh.infer.ok
 place: weigh_out
 cost: 4
-do: set(works.inferred); quest(a1.claim, wiring); xp(1)
+do: set(works.inferred); quest(a1.claim, wiring)
 nar: Seven months on the cable's tag, or in the weighbridge book. Seven months on the enamel plate over the keeper's keyhole, in the ferry master's receipts, in the Alderman's mouth. Every clock in Gullet lies. These agree.
 go: weigh.hub
 
@@ -2134,7 +2132,7 @@ opt: "Shut the store and leave it as it was." -> weigh.empty
 @node weigh.store.hammer
 place: weigh_in
 cost: 1
-do: give(i.hammer); set(weigh.hammer_taken)
+do: give(w.hammer); set(weigh.hammer_taken)
 nar: The hammer leaves a pale shape on the brick, the exact size of a lump hammer.
 go: weigh.store
 

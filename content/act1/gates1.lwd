@@ -22,7 +22,7 @@
 # through the bars; the plan says "win or go down, both end with the order read"). Going down pays.
 @gate a1.works_order
 name: The works order
-resolved: works.order
+resolved: works.read
 resolved: works.inferred
 
 # Row 2: scales on the switch handle. Tongue: scales.switch (weigh.switch.hobb, Hobb holds the
@@ -100,7 +100,7 @@ resolved: prism.numbered
 # floor.merrow.returns.damp), which are wins but not this obstacle.
 @gate a1.drowned_lamp
 name: The drowned lamp
-resolved: merrow.light
+resolved: merrow.told
 resolved: floor.cockle_guided
 resolved: merrow.wet_thigh
 resolved: floor.handline

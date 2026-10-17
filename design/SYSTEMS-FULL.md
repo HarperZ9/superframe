@@ -787,12 +787,39 @@ Lamb does not level by killing. A night's investigation has two kinds of progres
 Spending:
 - One page buys one trained rank in a voice (cap: the compartment's value, plus 1 per inked Margin
   note that raises it).
-- Every fourth page is a **chapter page**, which raises one compartment by 1 (to 10, soft cap above
-  6). Builds stay distinct because compartments rise slowly.
+- Every **third** page is also a **chapter page**, which raises one compartment by 1 (to 10, soft cap
+  above 6), on top of the page's rank. Builds stay distinct because compartments rise slowly.
 - One page buys a Margin slot or rubs out a note (section 6).
 
-Pace: about 16 pages in Act 1, 14 in Act 2 and 14 in Act 3. That is 44 pages, 11 chapter raises, and
-a compartment sum of about 22 by the last dawn.
+Pace, set 2026-10-17 by what the builds need, not by a page total. A committed build should
+reach a compartment at 8 by mid Act 2 and at 10 by late Act 3. From a primary of 4 that is 4 chapter
+raises by mid Act 2 and 6 by late Act 3, so 12 and 18 pages at one chapter per three pages. Measured
+with the corrected gates (harness, one shuffle per build):
+
+| Build | End of Act 1 | End of Act 2 | End of Act 3 |
+|---|---|---|---|
+| Fist | 10 | 17 | 25 |
+| Tongue | 10 | 17 | 30 |
+| Shadow | 13 | 17 | 28 |
+| Hands | 15 | 22 | 34 |
+| Eye | 12 | 17 | 23 |
+| Random, 10 seeds | 6 to 11 | 7 to 16 | 9 to 21 |
+
+Every build passes 12 pages early in Act 2 and 18 early in Act 3, so the targets hold for all five.
+Act 2 is even (17 to 22). Act 3 spreads (23 to 34), because Hands and Tongue resolve more of its
+gates. Eye still reaches 10 by late Act 3, and the extra pages only buy ranks and Margin slots.
+
+Why this mechanism and not the others:
+- **Not a 44-page target.** One path resolves only part of an act's gates, so 44 would mean pages for
+  activity, not progress.
+- **Not two-page big wins.** They widened the gap, since the builds that win set pieces already lead.
+- **Not a cheaper rank cost.** Ranks still need to be scarce choices.
+- **What was used:**
+  - a chapter page every third page;
+  - understanding gates on the facts the low-gate routes reach: Act 1 the early claim, the low light,
+    the pink lamps, the lying clocks, Wenna's confession, Jory and Keel's motive; Act 2 the dead line
+    and the yellow card; Act 3 the band's breath, Nan's door and the pedestal;
+  - the two Act 3 rows the draft missed (the band lamps and the hill station).
 
 **Re-filing the case.** At each daylight page Lamb may take back every page and spend them again:
 the day's sleep re-files the case. It costs nothing but the choice. It keeps experimentation free,

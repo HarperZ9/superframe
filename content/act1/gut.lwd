@@ -836,7 +836,7 @@ place: smokehouse
 speaker: SHADWELL
 cost: 4
 do: quest(a1.vote, soot)
-if: !has(gut.page_soot) => xp(1); set(gut.page_soot)
+if: !has(gut.page_soot) => set(gut.page_soot)
 nar: Shadwell holds the flake to the fire-door and turns it to the belly side, where the smoke goes in last.
 line: SHADWELL: Oak on top, this morning's, grey as a sermon. Under it, red. That's alder in the bone.
 line: SHADWELL: Alder I burned yesterday, dawn to noon, and not since; I let the pit go cold for the oak. So that fish was smoked yesterday and put in my oak this morning to dress it up. And the only fish in my oak this morning were the two for the pans and a dozen for the Guild's breakfast.
@@ -1201,7 +1201,7 @@ go: ^hub
 place: gutter
 speaker: MAB
 cost: 30
-do: set(gut.dogs_done); set(down.gut); set(gut.early_in); wet(0.3); meter(cold, 2)
+do: set(gut.dogs_done); set(down.gut); wet(0.3); meter(cold, 2)
 nar: The assessor wakes with a cheek on cold moving stone: the gutter, its violet bands going past an inch from the eye. Above, two red-armed faces, one with a moustache.
 line: NOLL: Went down in the middens. The dogs had it on the ground and then walked off, because the black one
 line: MAB: got bored. It wasn't worth eating.

@@ -920,8 +920,8 @@ go: mole.squall.start
 @node mole.squall.setup
 do: set(frost.met); set(met.keel); quest(a1.frost, met); mole.ice = 0; mole.keel_low = 0; mole.resolve = 3; mole.keel_weak = 0; silent_scene = 0; mole.keel_tool = hammer
 if: has(mole.appt_talked) => mole.resolve = 2
-if: count(i.hammer) > 0 | has(weigh.hammer_taken) => mole.keel_tool = hook
-if: (count(i.hammer) > 0 | has(weigh.hammer_taken)) & (count(w.boathook) > 0 | has(weigh.boathook_taken)) => mole.keel_tool = none
+if: count(w.hammer) > 0 | has(weigh.hammer_taken) => mole.keel_tool = hook
+if: (count(w.hammer) > 0 | has(weigh.hammer_taken)) & (count(w.boathook) > 0 | has(weigh.boathook_taken)) => mole.keel_tool = none
 return:
 
 @node mole.squall.start
@@ -1221,7 +1221,7 @@ place: lamproom
 speaker: KEEL
 cost: 4
 do: lens = green_broken; quest(a1.frost, green); set(lens.keel_motive); seenas_board = ally; rep(board, 1)
-if: !has(mole.page10) => xp(1); set(mole.page10)
+if: !has(mole.page10) => set(mole.page10)
 alt: mole.sq.green.wenna ? has(wenna.climbs) & !has(mole.wenna_home)
 nar: He looks at the assessor for a long time.
 line: The Board had not considered, assessor, a partial loss.
@@ -1252,9 +1252,9 @@ place: lamproom
 speaker: KEEL
 cost: 3
 do: set(lens.saved); lens = saved; quest(a1.frost, saved); set(mole.hat_dropped); seenas_board = threat; rep(board, -1)
-if: var.mole.keel_tool == hammer & count(i.hammer) == 0 => give(i.hammer)
+if: var.mole.keel_tool == hammer & count(w.hammer) == 0 => give(w.hammer)
 if: var.mole.keel_tool == hook & count(w.boathook) == 0 => give(w.boathook)
-if: !has(mole.page10) => xp(1); set(mole.page10)
+if: !has(mole.page10) => set(mole.page10)
 nar: He stands with nothing in his hands, and seems not to know what to do with them.
 nar: He sits down on the frozen floor against the desk, and his water freezes him to it by the coat-tails. His hat falls off.
 line: The Board would like it entered, assessor, that it is very tired.
@@ -1279,7 +1279,7 @@ go: mole.sq.after.menu
 @node mole.sq.after.menu
 place: lamproom
 opt: "Pick up the harbourmaster's hat." -> mole.sq.hat ? has(mole.hat_dropped) & !seen(mole.sq.hat)
-opt: "Pick the hammer out of the glass." -> mole.sq.hammer ? var.lens == broken & count(i.hammer) == 0
+opt: "Pick the hammer out of the glass." -> mole.sq.hammer ? var.lens == broken & count(w.hammer) == 0
 opt: "Leave the lamp room as it is." -> mole.lamp.menu
 
 @node mole.sq.hat
@@ -1293,7 +1293,7 @@ go: mole.sq.after.menu
 @node mole.sq.hammer
 place: lamproom
 cost: 1
-do: give(i.hammer)
+do: give(w.hammer)
 nar: The store hammer lies in the glass where he set it down. The handle is wet. It will stay wet for some time; it was in his hand.
 go: mole.sq.after.menu
 
@@ -1450,14 +1450,14 @@ go: mole.run.frost.lose.menu
 place: lamproom
 speaker: KEEL
 cost: 1
-do: give(i.hammer)
+do: give(w.hammer)
 nar: He looks at the hammer as if he had forgotten it, and holds it out handle first, as he would hand over a pen.
 line: Signed for, assessor. In the Board's hand. Which is wet.
 go: mole.run.frost.lose.menu
 
 @node mole.run.frost.lose.menu
 place: lamproom
-opt: "Give me the hammer." -> mole.lose.hammer ? count(i.hammer) == 0
+opt: "Give me the hammer." -> mole.lose.hammer ? count(w.hammer) == 0
 opt: "Let him go down." -> mole.lose.go
 
 @node mole.lose.go
@@ -1545,7 +1545,7 @@ nar: The quay goes out. A tall shape walks out along the mole, early, something 
 voice: carbon: Rain, and no frost till four. Whatever he leaves on the stairs tonight will not keep. {dc: 6}
 line: Assessor. The Board did not expect company in the dark. The Board has an inspection to make. The Board would prefer to make it unwitnessed.
 check: "[CONDOLENCE] Catch him up and talk to him in the dark." -> mole.appt.talk.ok / mole.appt.talk.fail {skill: condolence, dc: 6}
-check: "[GRIP] Take the hammer out of his hand in the dark." -> mole.appt.grab.ok / mole.appt.grab.fail ? count(i.hammer) == 0 {skill: grip, dc: 6, verb: pry, noise: 0.5}
+check: "[GRIP] Take the hammer out of his hand in the dark." -> mole.appt.grab.ok / mole.appt.grab.fail ? count(w.hammer) == 0 {skill: grip, dc: 6, verb: pry, noise: 0.5}
 opt: "Run ahead and bar Mother's door with the rope." -> mole.appt.bar ? count(i.rope) > 0 {verb: rig, noise: 0.3}
 opt: "Go up with him, and hold the lantern." -> mole.appt.join {verb: light, noise: 0.2}
 check: "[THE DARK] Let him go ahead. Follow him up, unseen." -> mole.appt.watch / mole.appt.watch.fail {skill: dark, dc: 5, verb: hide, noise: 0.1}
@@ -1572,7 +1572,7 @@ opt: "Let him go." -> mole.desc
 @node mole.appt.grab.ok
 place: mole
 cost: 2
-do: give(i.hammer); set(appt.stopped); wet(0.2)
+do: give(w.hammer); set(appt.stopped); wet(0.2)
 nar: The assessor finds the haft by its wire in the dark and pulls. He lets go sooner than either of them expected.
 line: KEEL: The Board will be obliged if that is returned to the store. The Board signed for it.
 voice: undertow: He will be back. Without this. Think about what else is lying about on a quay. {dc: 6}
@@ -1908,7 +1908,7 @@ opt: "Stay where you are. Let him go down." -> mole.hide.empty.leave
 place: lamproom
 cost: 4
 do: set(lens.saved); lens = saved; quest(a1.frost, saved)
-if: !has(mole.page10) => xp(1); set(mole.page10)
+if: !has(mole.page10) => set(mole.page10)
 nar: He stands a long time, then goes down, and never knows the Shelf was outside the window.
 go: mole.lamp.menu
 
@@ -1982,8 +1982,8 @@ place: lamproom
 speaker: KEEL
 cost: 3
 do: set(lens.saved); lens = saved; quest(a1.frost, saved); seenas_board = threat; rep(board, -1)
-if: !has(mole.page10) => xp(1); set(mole.page10)
-if: var.mole.keel_tool == hammer & count(i.hammer) == 0 => give(i.hammer)
+if: !has(mole.page10) => set(mole.page10)
+if: var.mole.keel_tool == hammer & count(w.hammer) == 0 => give(w.hammer)
 nar: Through the door, the sound of a tall wet man sitting down on the top step.
 line: The Board has come up a great many stairs, assessor, to talk to a door. The Board will sit here a while. Then the Board will go home.
 nar: When the assessor unbars the door he has gone, leaving on the top step the thing he brought and a puddle frozen in the shape of a man sitting down.
@@ -2064,7 +2064,7 @@ place: lamproom
 speaker: KEEL
 cost: 3
 do: set(lens.saved); lens = saved; quest(a1.frost, saved); set(lens.keel_motive); seenas_board = threat; rep(board, -1)
-if: !has(mole.page10) => xp(1); set(mole.page10)
+if: !has(mole.page10) => set(mole.page10)
 nar: He sits down against the desk, and his water freezes him to the floor.
 line: The Board would like it entered, assessor, that it is very tired. A whole lens, from Hesk, and nobody counting. That was all.
 go: mole.sq.saved.down

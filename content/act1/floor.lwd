@@ -660,7 +660,7 @@ go: floor.merrow.menu
 @node floor.merrow.where.true
 place: drowned
 cost: 4
-do: set(merrow.light); quest(a1.lowlight, merrow)
+do: set(merrow.light); set(merrow.told); quest(a1.lowlight, merrow)
 line: MERROW: All right. On the floor from just after ten. Waited at the gully for it to open. Over at sixteen past, shin-deep. Ferris on the rope.
 line: MERROW: Climbing in, I knocked the lantern on the lip. There. Out. Eighteen past. Sat in the dark in there with a wet box of matches. Seven matches. Lit it again at twenty-five past and hung it on that nail so I could see what I was stealing.
 line: MERROW: That's the truth and it hangs me either way. Copper off Trust property, or a false light on the rock.
@@ -1530,7 +1530,7 @@ do: set(floor.fight_word); fight(e.salvors)
 @node floor.fight.word.win
 place: drowned
 cost: 3
-do: clear(floor.fight_word); set(struck.lugg); set(merrow.light); quest(a1.lowlight, merrow); seenas_lowco = witness
+do: clear(floor.fight_word); set(struck.lugg); set(merrow.light); set(merrow.told); quest(a1.lowlight, merrow); seenas_lowco = witness
 nar: It ends with a salvor sitting in the gully and Lugg on one knee on the rubble, nodding.
 line: MERROW: Climbing in, I knocked the lantern on the lip. Eighteen past. Seven wet matches in the dark. Lit again at twenty-five past.
 line: MERROW: There. Written by somebody who earned it.
