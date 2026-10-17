@@ -102,9 +102,10 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
   // or person ahead, left and right, from the engine; args.reach alone means ahead only). Both ends of
   // the shaft are tested, and neither may go under the floor; the whole shaft keeps BODY_R off every
   // other body this drawer drew in the last frames (the room is measured at the feet, a pole is not). When one breaks a limit, the wrist turns
-  // (bend and side, 10 degree steps, the smallest total first, up to 60 + 60) to the nearest pose that
+  // (bend in 10 and side in 15 degree steps to 60, both arms drawn in by 0, 15 or 30 when the wrist alone cannot; the smallest change first) to the nearest pose that
   // fits; the angle eases over a few frames so the tool never snaps, and a pose that still fits is kept.
-  const BODY_R = 0.36, TOOL_EASE = 0.25, TOOL_TRY = (() => { const o = []; for (let b = -60; b <= 60; b += 10) for (let sd = -60; sd <= 60; sd += 10) o.push([b, sd]); return o.sort((p, q) => Math.abs(p[0]) + Math.abs(p[1]) - Math.abs(q[0]) - Math.abs(q[1])); })();
+  const BODY_R = 0.5, BODY_TOP = 2.1,   // a standing body with its arms, coat and hat brim (0.36 and 0.45 let a pole and an arm graze a hat and a coat: PROGRESS 62)
+    TOOL_EASE = 0.25, TOOL_STEP = 64, TOOL_TRY = (() => { const o = []; for (const arm of [0, -15, -30]) for (let b = -60; b <= 60; b += 10) for (let sd = -60; sd <= 60; sd += 15) o.push([b, sd, arm]); return o.sort((p, q) => Math.abs(p[0]) + Math.abs(p[1]) + 1.5 * Math.abs(p[2]) - Math.abs(q[0]) - Math.abs(q[1]) - 1.5 * Math.abs(q[2])); })();
   function keepToolClear(a, room, face = null) {
     const st = (a.clear ||= { b: 0, s: 0, tb: 0, ts: 0 });
     const R = room == null ? null : typeof room === "number" ? { ahead: room, left: 9, right: 9 } : room;
@@ -118,31 +119,40 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
         x += Math.max(0, 0.05 - (e[1] - a.pos[1]));
         if (R) x += Math.max(0, ahead - R.ahead) + Math.max(0, left - R.left) + Math.max(0, -left - R.right);
       }
-      // and the whole shaft clear of every other body drawn this frame (a standing capsule, 0.3 m round, to 1.8 m up)
+      // and the whole shaft clear of every other body drawn this frame (a standing capsule BODY_R round, to BODY_TOP with the hat)
       if (near.length) {   // the hands and forearms that hold it, too (a two-handed grip reaches across)
         const S = a.skeleton();
-        for (const j of ["handL", "handR", "foreL", "foreR"]) { const q = a.toWorld(S[INDEX[j]].p); for (const o of near) { const qy = q[1] - o.pos[1]; if (qy >= 0 && qy <= 1.8) x += Math.max(0, BODY_R - Math.hypot(q[0] - o.pos[0], q[2] - o.pos[2])); } }
+        for (const sd of ["L", "R"]) {   // each forearm, elbow to hand, sampled
+          const e = a.toWorld(S[INDEX["fore" + sd]].p), h = a.toWorld(S[INDEX["hand" + sd]].p);
+          for (let i = 0; i <= 4; i++) { const t = i / 4, q = [e[0] + (h[0] - e[0]) * t, e[1] + (h[1] - e[1]) * t, e[2] + (h[2] - e[2]) * t];
+            for (const o of near) { const qy = q[1] - o.pos[1]; if (qy >= 0 && qy <= BODY_TOP) x += Math.max(0, BODY_R - Math.hypot(q[0] - o.pos[0], q[2] - o.pos[2])) / 5; } }
+        }
       }
       if (w.butt) for (const o of near) for (let i = 0; i <= 8; i++) {
         const t = i / 8, px = w.butt[0] + (w.tip[0] - w.butt[0]) * t, py = w.butt[1] + (w.tip[1] - w.butt[1]) * t - o.pos[1], pz = w.butt[2] + (w.tip[2] - w.butt[2]) * t;
-        if (py < 0 || py > 1.8) continue; x += Math.max(0, BODY_R - Math.hypot(px - o.pos[0], pz - o.pos[2])) / 8;
+        if (py < 0 || py > BODY_TOP) continue; x += Math.max(0, BODY_R - Math.hypot(px - o.pos[0], pz - o.pos[2])) / 8;
       }
       return x;
     }, fits = () => excess() < 1e-3;
     a.adjust(null, "tool");
     const w = a.weapon && a.weapon(), long = w && Math.hypot(w.tip[0] - w.grip[0], w.tip[1] - w.grip[1], w.tip[2] - w.grip[2]) > 0.8;
-    if (!long || fits()) { st.tb = 0; st.ts = 0; }
+    const set = (b, sd, o) => a.adjust({ handR: { bend: b, side: sd }, armR: { out: o }, armL: { out: o } }, "tool");
+    if (!long || fits()) { st.tb = 0; st.ts = 0; st.to = 0; st.search = null; }
     else {
-      const set = (b, sd) => a.adjust({ handR: { bend: b, side: sd } }, "tool");
-      set(st.tb, st.ts);
-      if (!(st.tb || st.ts) || !fits()) {
-        set(0, 0); let best = [0, 0], low = excess();   // the first pose that fits, else the one that breaks the limits least
-        for (const [b, sd] of TOOL_TRY) { if (!b && !sd) continue; set(b, sd); const x = excess(); if (x < low - 0.02) { low = x; best = [b, sd]; } if (x < 1e-3) break; }
-        [st.tb, st.ts] = best;
-      }
+      set(st.tb, st.ts, st.to || 0);
+      if (!(st.tb || st.ts || st.to) || !fits()) {
+        // the first pose that fits, else the one that breaks the limits least; searched TOOL_STEP candidates a
+        // frame (each costs a skeleton solve), so a limit tripping never stalls a frame
+        const q = (st.search ||= { i: 0, best: [0, 0, 0], low: (set(0, 0, 0), excess()) });
+        for (let n = 0; n < TOOL_STEP && q.i < TOOL_TRY.length; n++, q.i++) {
+          const [b, sd, o] = TOOL_TRY[q.i]; if (!b && !sd && !o) continue; set(b, sd, o); const x = excess();
+          if (x < q.low - 0.02) { q.low = x; q.best = [b, sd, o]; } if (x < 1e-3) { q.i = TOOL_TRY.length; break; }
+        }
+        if (q.i >= TOOL_TRY.length) { [st.tb, st.ts, st.to] = q.best; st.search = null; }
+      } else st.search = null;
     }
-    st.b += (st.tb - st.b) * TOOL_EASE; st.s += (st.ts - st.s) * TOOL_EASE;
-    a.adjust(Math.abs(st.b) + Math.abs(st.s) > 0.5 ? { handR: { bend: st.b, side: st.s } } : null, "tool");
+    st.b += (st.tb - st.b) * TOOL_EASE; st.s += (st.ts - st.s) * TOOL_EASE; st.o = (st.o || 0) + ((st.to || 0) - (st.o || 0)) * TOOL_EASE;
+    a.adjust(Math.abs(st.b) + Math.abs(st.s) + Math.abs(st.o) > 0.5 ? { handR: { bend: st.b, side: st.s }, armR: { out: st.o }, armL: { out: st.o } } : null, "tool");
     return Math.hypot(st.b, st.s);
   }
   drawFighter.keepToolClear = keepToolClear;
@@ -226,7 +236,7 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     if (seated) { if (args.seatY != null) fitSeat(a, args.seatY); } else if (a.seatFit) fitSeat(a, null);
     a.seen = performance.now();
     const toolK = keepToolClear(a, args.room || args.reach, args.face ?? face ?? null);
-    (globalThis.__lwToolStats ||= {})[F.id] = { room: args.room || args.reach, wrist: [+(a.clear?.b || 0).toFixed(1), +(a.clear?.s || 0).toFixed(1)], target: [a.clear?.tb, a.clear?.ts], k: +toolK.toFixed(1) };   // read by proto/markup.mjs
+    (globalThis.__lwToolStats ||= {})[F.id] = { room: args.room || args.reach, wrist: [+(a.clear?.b || 0).toFixed(1), +(a.clear?.s || 0).toFixed(1)], target: [a.clear?.tb, a.clear?.ts], k: +toolK.toFixed(1), pos: a.pos.map((v) => +v.toFixed(2)), ...(globalThis.__lwFigureDebug ? (() => { const w = a.weapon && a.weapon(), S = a.skeleton(), r3 = (v) => v.map((q) => +q.toFixed(2)); return { tip: w && r3(w.tip), butt: w && w.butt && r3(w.butt), handL: r3(a.toWorld(S[INDEX.handL].p)), handR: r3(a.toWorld(S[INDEX.handR].p)), head: r3(a.toWorld(S[INDEX.head].p)) }; })() : {}) };   // read by proto/markup.mjs
     // render in the actor's own frame at the plate camera's orientation and scale, feet on (x, y)
     const cosE2 = Math.cos(cam.elevDeg * D2R), truePpm = ppm / cosE2, hM = 2.9, h = Math.ceil(hM * truePpm), w = Math.ceil(h * 0.95), P = a.pos;
     const R = rigAt(at, lights, darkness || 0);

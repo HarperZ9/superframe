@@ -403,3 +403,20 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
       drawer's solo depths, the pixels run along Fewell's left side against Lamb's coat front: two
       flared coats about 0.12 m apart at 0.82 m spacing, inside the 0.15 m threshold. That is near
       contact from spacing, not the pole (Fewell's pole is clear of Lamb by the capsule test).
+62. PARTIAL The crowd's crossing (systems engineer's 8ed8c08: surfaces that meet within 4 cm or cross).
+    - Marked with the solo depths (proto/markup_solo.mjs; stills/proof/check-marks/crowd-lamb-fewell-
+      crossing.png): the pixels run along the edge of Fewell's raised arm and the vertical pole, where
+      it meets Lamb's hat and coat.
+    - Changes: body clearance 0.5 m (it was 0.36), up to 2.1 m (hat brims), with each forearm sampled
+      from elbow to hand. When the wrist alone cannot clear a body, both arms draw in by 15 or 30
+      degrees. The search runs 64 poses a frame, so a limit tripping never stalls a frame.
+    - Result: Fewell's hands now sit 0.51 m and more from Lamb's axis, and the pole has moved off him.
+      The check still counts 69 px. Why is unknown: my 3D estimate puts the raised arm 0.2 to 0.25 m
+      clear of a 0.3 m hat brim, and the edge pixels say the two surfaces come within a few cm along
+      the view ray. Untested causes: the brim is wider than I assume, or the depth at a silhouette edge
+      is a grazing sample.
+    - Strand's pole in the crowd still dips 0.23 m under the floor. The least-breaking pose there
+      trades the floor against the room ahead (0.59 m).
+    - The crowd's 24 off-floor shadow pixels sit at the bench's legs and underside
+      (crowd-off-floor.png). My contact shadow rejects anything more than 0.12 m above the feet, so I
+      think they are feathered figure pixels seen under the bench seat. Not confirmed.
