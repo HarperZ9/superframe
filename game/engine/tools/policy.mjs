@@ -13,16 +13,21 @@ import { hashStr } from "../core/rng.mjs";
 // Style of each verb (design/REWORK-PLAN.md section 4).
 const VERB_STYLE = { hide: "shadow", wait: "shadow", eavesdrop: "shadow", douse: "shadow", throw: "shadow", read: "eye", rig: "hands", pry: "hands", cutpower: "hands", light: "hands", salvage: "hands", weigh: "hands", mark: "hands", wade: "hands", climb: "fist", carry: "fist" };
 
+import { BUILDS as COMBAT_BUILDS } from "../combat/tools/minmax.mjs";
 export const BUILDS = {
   fist:   { precedent: "p.wader",      comps: ["coat"],        voices: ["grip", "ballast", "knees", "pride"], weapons: ["w.hammer", "w.pole", "w.boathook", "w.stick"], ending: { fate_lamb: ["keeper", "road"], fate_mother: ["keeper", "crown"] } },
   tongue: { precedent: "p.condoler",   comps: ["hat"],         voices: ["condolence", "formletter", "chit", "hearsay"], ending: { fate_lamb: ["brine", "typist"], fate_mother: ["automated", "keeper"] } },
   shadow: { precedent: "p.nightclerk", comps: ["nose"],        voices: ["dark", "undertow", "smell", "ballast"], ending: { fate_lamb: ["road", "boat"], fate_mother: ["dark", "keeper"] } },
   hands:  { precedent: "p.fitter",     comps: ["coat", "pen"], voices: ["grip", "sum", "carbon"], weapons: ["w.boathook", "w.hammer"], ending: { fate_lamb: ["post", "keeper"], fate_mother: ["bulb", "crown"] } },
   eye:    { precedent: "p.ledger",     comps: ["pen"],         voices: ["sum", "precedent", "smallprint", "carbon"], ending: { fate_lamb: ["typist", "post"], fate_mother: ["crown", "automated"] } },
+  // A min-maxed Fist (combat's ask): the fist policy on a sheet pinned at once to combat's focused
+  // build (combat/tools/minmax.mjs BUILDS.focused), its tool tempered and fitted. Not an earned sheet.
+  fistmax: { precedent: "p.wader",     comps: ["coat"],        voices: ["grip", "ballast", "knees", "pride"], weapons: ["w.hammer", "w.pole", "w.boathook", "w.stick"], ending: { fate_lamb: ["keeper", "road"], fate_mother: ["keeper", "crown"] }, max: COMBAT_BUILDS.focused },
 };
 // What each build gains from each kind of intent.
 const WANT = {
   fist:   { fight: 4, lesson: 5, run: 2, claim: 0, sneak: -1, talk: 0, project: 0, salvage: 0, props: 1, sneakfight: 1 },
+  fistmax:{ fight: 4, lesson: 5, run: 2, claim: 0, sneak: -1, talk: 0, project: 0, salvage: 0, props: 1, sneakfight: 1 },
   tongue: { fight: -4, lesson: 0, run: 0, claim: 3, sneak: -1, talk: 3, project: 0, salvage: 0, props: 0, sneakfight: -2 },
   shadow: { fight: -3, lesson: 0, run: 0, claim: 0, sneak: 4, talk: 0, project: 0, salvage: 0, props: 0, sneakfight: 5 },
   hands:  { fight: -1, lesson: 0, run: 3, claim: 0, sneak: 0, talk: 0, project: 5, salvage: 3, props: 4, sneakfight: 0 },
@@ -225,6 +230,22 @@ export function strainFor(G, build, o) {
 
 // Between beats: pages into the build's voices, then a Margin slot; research found notes; the
 // best weapon the build can carry in hand; and for Hands, every lamp-project stage it can pay for.
+export function applyMax(G, build) {
+  const M = BUILDS[build] && BUILDS[build].max; if (!M) return null;
+  const sh = G.state.sheet, set = [];
+  for (const [id, v] of Object.entries(M.levels)) if (G.rs.attrs[id]) { sh.attrs[id] = Math.max(sh.attrs[id] || 0, v); set.push(id); }
+  for (const [id, v] of Object.entries(M.levels)) if (G.rs.skills[id] && !G.rs.attrs[id]) {
+    const short = v - G.sheet.skill(id); if (short > 0) { sh.ranks[id] = (sh.ranks[id] || 0) + short; set.push(id); }
+  }
+  // The tool in hand. w.hammer is a combat @weapon with no @item, so no inventory can hold it; the
+  // harness puts it in the hand slot directly (what combat reads) and upkeep leaves it there.
+  if (M.tool && G.rs.items[M.tool]) { if (!G.inv.count(M.tool)) G.inv.give(M.tool); G.inv.equip(M.tool); }
+  else if (M.tool) { const inv = (G.state.inv = G.state.inv || {}); (inv.equipped = inv.equipped || {}).hand = M.tool; }
+  const ext = (G.state.ext = G.state.ext || {}), cb = (ext.combat = ext.combat || {}), tools = (cb.tools = cb.tools || {});
+  if (M.tool) tools[M.tool] = { temper: M.temper || 0, fitting: M.fitting || null };
+  return set;
+}
+
 export function upkeep(G, build, { attend = false } = {}) {
   for (let guard = 0; G.state.sheet.points > 0 && guard < 20; guard++) {
     const v = BUILDS[build].voices.find((id) => G.rs.skills[id] && G.sheet.canRaise(id));
@@ -233,6 +254,6 @@ export function upkeep(G, build, { attend = false } = {}) {
   }
   for (const t of G.cabinet.list()) if (t.status === "found" && !t.why) G.cabinet.research(t.id);
   const W = BUILDS[build].weapons || [];
-  const best = W.find((id) => G.inv.count(id) > 0); if (best && !G.inv.isWorn(best)) G.inv.equip(best);
+  const best = !BUILDS[build].max && W.find((id) => G.inv.count(id) > 0); if (best && !G.inv.isWorn(best)) G.inv.equip(best);
   if (build === "hands" || attend) for (const p of G.settlement.list()) if (p.next && !p.why) G.settlement.contribute(p.id);
 }

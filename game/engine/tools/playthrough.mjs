@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Plays the whole game end to end, unattended: Act 1, then Act 2 (its daylight page, then Night
 // 2), then Act 3 (the second daylight page, then the gale), carrying the state between acts.
-//   node tools/playthrough.mjs [--build fist|tongue|shadow|hands|eye|all] [--random N] [--seed S]
+//   node tools/playthrough.mjs [--build fist|fistmax|tongue|shadow|hands|eye|all] [--random N] [--seed S]
 //        [--shuffle K] [--attentive] [--gates] [--acts a1.lwd,a2.lwd,a3.lwd] [--max 8000] [--json out.json] [--trace]
 // --attentive layers the attentive player (tools/policy.mjs attentive()) on builds and random runs.
 // A build chooses by intent at every gate (tools/policy.mjs: verb tags, check voices, what the
@@ -19,7 +19,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { loadAct } from "../dialogue/book.mjs";
 import { loadContent, createFullGame } from "../full.mjs";
 import { createPilot } from "../combat/tools/pilot.mjs";
-import { BUILDS, score, strainFor, upkeep, endingFlags, intentOf } from "./policy.mjs";
+import { BUILDS, applyMax, score, strainFor, upkeep, endingFlags, intentOf } from "./policy.mjs";
 import { hashStr } from "../core/rng.mjs";
 
 const argv = process.argv.slice(2), opt = {};
@@ -48,6 +48,7 @@ function playGame({ build = null, seed = 1, shuffleSeed = seed }) {
   for (let a = 0; a < contents.length; a++) {
     const C = contents[a], G = createFullGame({ content: C, seed, state });
     if (!state) G.create({ archetype: build ? BUILDS[build].precedent : ["p.ledger", "p.wader", "p.condoler", "p.nightclerk", "p.fitter"][seed % 5], enter: false });
+    if (build) applyMax(G, build);
     watch(G, R);
     const act = { act: a + 1, start: C.book.meta.start, end: null, clock: null, unfired: [], choices: 0 };
     R.acts.push(act);
