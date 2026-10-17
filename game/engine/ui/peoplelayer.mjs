@@ -63,28 +63,28 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     if (pos && freeWalk(dt, pos)) return;
     // standing still in a body's margin (a walk ended against a prop, a spawn beside one): step out to
     // the nearest clear floor within 0.6 m, so where Lamb ends never depends on how the walk went
-    if (!S.path && pos && idle() && !S.settled) { const A = cam.arena(), k = A && spotKind(A, pos); if (k === "margin" || k === "prop" || k === "top" || (A && propDistance(A, pos[0], pos[2]) < 0.3)) { const c = settleSpot(A, pos); if (c) S.path = [[c[0], c[2]]]; } S.settled = true; }
-    if (S.path) S.settled = false;
+    if (!S.path && pos && idle() && !S.settled) { const A = cam.arena(), k = A && spotKind(A, pos); if (k === "margin" || k === "prop" || k === "top" || (A && propDistance(A, pos[0], pos[2]) < 0.3)) { const c = settleSpot(A, pos); if (c) { S.path = [[c[0], c[2]]]; S.settling = true; } } S.settled = true; }
+    if (S.path && !S.settling) S.settled = false;
     if (!S.path || !pos) return;
     S.run = !!(G.input && G.input.get("run")) && performance.now() >= S.runLock;
     const A = cam.arena(), sp = (S.run ? rule("run-speed", 3.6) : rule("walk-speed", 1.5)) * dt;
     const [tx, tz] = S.path[0], dx = tx - pos[0], dz = tz - pos[2], d = Math.hypot(dx, dz);
     const k = d <= sp ? 1 : sp / d, nx = pos[0] + dx * k, nz = pos[2] + dz * k, y = A ? groundAt(A, nx, nz) : null;
     if (d > 1e-4) S.face.lamb = Math.atan2(dz, dx);
-    if (crowded("lamb", pos, nx, nz)) { S.blocked = (S.blocked || 0) + dt; if (S.blocked > 1.2) { S.blocked = 0; S.path = null; const then = S.then; S.then = null; const A2 = cam.arena(), c = A2 && clearSpot(A2, pos, 0.6, { strict: true }); if (c && Math.hypot(c[0] - pos[0], c[2] - pos[2]) > 0.05) S.path = [[c[0], c[2]]]; if (then) then(); } return; } // someone stands in the way: wait, then stop short, on clear floor (not against a prop)
+    if (crowded("lamb", pos, nx, nz, S.settling ? 0.6 : SEP)) { S.blocked = (S.blocked || 0) + dt; /* stepping off a prop may pass closer (0.6 m) than walking does */ if (S.blocked > 1.2) { const wasSettle = S.settling; S.blocked = 0; S.path = null; S.settling = false; if (wasSettle) { S.settled = true; return; } S.settled = false; const then = S.then; S.then = null; if (then) then(); } return; } // someone stands in the way: wait, then stop short (the settle rule then steps off any prop)
     S.blocked = 0;
     G.state.pos = [nx, y ?? pos[1], nz]; S.metres += Math.min(d, sp); S.moving = d > 1e-4; S.vel = d > 1e-4 ? [(dx / d) * Math.min(d, sp) / dt, (dz / d) * Math.min(d, sp) / dt] : [0, 0];
     if (d <= sp) S.path.shift();
     if (!S.path.length) {
-      S.path = null; S.moving = false;
+      S.path = null; S.moving = false; S.settling = false;
       const per = rule("walk-metres-per-minute", 6), m = Math.floor(S.metres / per);
       if (m > 0 && !live()) { S.metres -= m * per; G.advance(m); } else if (live()) S.metres = 0;
       const then = S.then; S.then = null; if (then) then();
     }
   }
-  // Bodies keep apart (0.8 m centre to centre): a step that brings `who` nearer than that to
+  // Bodies keep apart (0.95 m centre to centre): a step that brings `who` nearer than that to
   // anyone else is refused; a step away is always allowed, so nobody sticks.
-  const SEP = 0.8; // coats and shoulders: two bodies 0.6 m apart still touch on screen (visual-check silhouettes)
+  const SEP = 0.95; // flared coats: at 0.8 m two coats come within 0.12 m along the view ray (visual-check silhouettes, character lead's solo depths)
   // A seated body reaches its knees and feet about 0.8 m forward of the chair (character lead): its
   // keep-out is the segment from the seat to 0.8 m along its facing, not only the seat.
   const SEAT_REACH = 0.8;
@@ -94,10 +94,10 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     const t = Math.max(0, Math.min(1, ((x - o.at[0]) * dx + (z - o.at[2]) * dz) / (SEAT_REACH * SEAT_REACH)));
     return Math.hypot(x - (o.at[0] + dx * t), z - (o.at[2] + dz * t));
   }
-  function crowded(who, from, nx, nz) {
+  function crowded(who, from, nx, nz, sep = SEP) {
     for (const o of figures(true)) {
       if (o.who === who) continue;
-      const d1 = bodyDist(o, nx, nz); if (d1 >= SEP) continue;
+      const d1 = bodyDist(o, nx, nz); if (d1 >= sep) continue;
       if (d1 < bodyDist(o, from[0], from[2])) return true;
     }
     return false;
@@ -130,10 +130,10 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     }
     return homes.get(key);
   }
-  // the nearest clear floor within 0.9 m that no one else stands too near (for stepping out of a margin)
+  // the nearest clear floor within 1.5 m that no one else stands too near (for stepping out of a margin)
   function settleSpot(A, pos) {
-    const c = A.cell, q0 = Math.floor((pos[0] - A.origin[0]) / c), r0 = Math.floor((pos[2] - A.origin[1]) / c), R = Math.ceil(0.9 / c), cand = [];
-    for (let dr = -R; dr <= R; dr++) for (let dq = -R; dq <= R; dq++) { const x = A.origin[0] + (q0 + dq + 0.5) * c, z = A.origin[1] + (r0 + dr + 0.5) * c, d = Math.hypot(x - pos[0], z - pos[2]); if (d <= 0.9 && spotKind(A, [x, 0, z]) === "clear" && propDistance(A, x, z) >= 0.3) cand.push([d, x, z]); }
+    const c = A.cell, q0 = Math.floor((pos[0] - A.origin[0]) / c), r0 = Math.floor((pos[2] - A.origin[1]) / c), R = Math.ceil(1.5 / c), cand = [];
+    for (let dr = -R; dr <= R; dr++) for (let dq = -R; dq <= R; dq++) { const x = A.origin[0] + (q0 + dq + 0.5) * c, z = A.origin[1] + (r0 + dr + 0.5) * c, d = Math.hypot(x - pos[0], z - pos[2]); if (d <= 1.5 && spotKind(A, [x, 0, z]) === "clear" && propDistance(A, x, z) >= 0.3) cand.push([d, x, z]); }
     cand.sort((a, b) => a[0] - b[0]);
     for (const [, x, z] of cand) if (!crowded("lamb", pos, x, z)) return [x, groundAt(A, x, z) ?? pos[1], z];
     return null;
