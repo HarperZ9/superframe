@@ -102,3 +102,11 @@ CASES += [
   {"name": "create-act1", "url": LAB + "screen=create", "steps": [("shot", "create-act1-1080"), ("pad", 13), ("shot", "create-act1-pad")]},
   {"name": "create-act1-720", "size": (1280, 720), "url": LAB + "screen=create", "steps": [("shot", "create-act1-720")]},
 ]
+CASES += [
+  {"name": "inked", "url": P + "world&motion", "steps": [
+     ("eval", G + ".emit('trait.done', { id: 't.tide_reader', name: 'Test trait' })"), ("wait", 700), ("shot", "inked-leaf"),
+     ("expect", "document.querySelector('.leaf .ltitle')?.textContent", "an inked note opens a leaf"),
+     ("key", "Enter"), ("wait", 400), ("expect", "!document.querySelector('.leaf')", "Enter puts it in the book"),
+     ("eval", G + ".emit('chapter', { name: 'A chapter page' })"), ("wait", 700), ("shot", "chapter-leaf"), ("pad", 1), ("wait", 400),
+     ("expect", "!document.querySelector('.leaf')", "pad B closes the chapter leaf")]},
+]

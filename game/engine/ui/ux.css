@@ -253,3 +253,12 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 .screen.create .detail .btn.go { margin-top: 0.6rem; }
 @media (max-width: 1100px) { .screen.create .createbox { width: auto; right: var(--safe); bottom: 44vh; } .screen.create .createside { left: var(--safe); width: auto; max-height: 40vh; } }
 .create-art { background-position: 65% 75%; }
+
+/* the inked page: a Daybook leaf, top right, clear of the talk panel's options */
+.leaf { position: absolute; right: var(--safe); top: calc(var(--safe) + var(--hit) + 0.6rem); width: min(28rem, 40vw); padding: 1rem 1.2rem 0.8rem; z-index: 30; box-shadow: var(--shadow); animation: pagein var(--t-in) var(--ease-out) both; }
+.screen.play.talking ~ .leaf, body:has(.screen.play.talking) .leaf { right: calc(clamp(24rem, 33.4vw, 40rem) + var(--safe)); }
+.leaf.going { animation: stripout var(--t-out) var(--ease-in) both; }
+.leaf .ltitle { margin: 0.2rem 0 0.4rem; font-size: var(--fs-l); font-weight: 700; border-bottom: 2px solid var(--ink); padding-bottom: 0.25rem; }
+.leaf .ltext { font-style: italic; line-height: var(--line); margin: 0.3rem 0; text-wrap: pretty; }
+.leaf .llines { margin: 0.4rem 0; padding-left: 1.1rem; font-size: var(--fs-s); color: var(--ink-2); }
+.leaf.chapter .ltitle { border-bottom-style: double; border-bottom-width: 4px; }

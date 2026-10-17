@@ -18,6 +18,7 @@ const nameOf = (G, id) => (G.rs.items[id] && G.rs.items[id].name) || (/^w\./.tes
 const voicesOf = (G, k) => Object.values(G.rs.skills).filter((s) => s.attr === k);
 // the tool in hand, as the inventory has it (the case when nothing is held)
 const inHand = (G) => ((G.state.inv || {}).equipped || {}).hand || "w.case";
+const compPlanned = () => Object.entries(UI.plan).filter(([k]) => COMPARTMENTS.includes(k)).reduce((a, [, n]) => a + n, 0);
 const planned = () => Object.values(UI.plan).reduce((a, n) => a + n, 0);
 
 // The plan as level deltas: a compartment raises itself and every voice under it.
@@ -36,7 +37,7 @@ function stepPlan(G, id, dir) {
   const pts = G.state.sheet.points || 0;
   if (dir > 0) {
     if (!isComp && S.skillBase(id) + S.ranks(id) + next > S.cap(id)) return "At the cap for this voice";
-    if (next > 0 && planned() + 1 > pts) return "No more pages to spend; this is a preview";
+    if (!isComp && next > 0 && planned() - compPlanned() + 1 > pts) return "No more pages to spend; this is a preview";
   } else if (!isComp && next < -S.ranks(id)) return "No ranks left to take back";
   else if (isComp && next < 0) return "Compartments are only raised";
   UI.plan[id] = next; if (!next) delete UI.plan[id];
@@ -46,8 +47,15 @@ function stepPlan(G, id, dir) {
 function inkPlan(G) {
   const neg = Object.values(UI.plan).some((n) => n < 0), comp = Object.keys(UI.plan).some((k) => COMPARTMENTS.includes(k));
   if (neg) return "Taking ranks back is a preview: the case is re-filed at a daylight page";
-  if (comp) return "A compartment rises on a chapter page; the engine does not pay chapter pages yet";
-  for (const [id, n] of Object.entries(UI.plan)) for (let i = 0; i < n; i++) if (!G.sheet.raise(id)) return `Could not raise ${nameOf(G, id)}`;
+  // chapter pages raise compartments (SYSTEMS-FULL 19.4) once the engine pays them: G.sheet.chapters() and raiseAttr(id)
+  const S = G.sheet, chap = typeof S.chapters === "function" ? S.chapters() : 0;
+  const compN = Object.entries(UI.plan).filter(([k]) => COMPARTMENTS.includes(k)).reduce((a, [, n]) => a + n, 0);
+  if (comp && typeof S.raiseAttr !== "function") return "A compartment rises on a chapter page; the engine does not pay chapter pages yet";
+  if (compN > chap) return `Raising a compartment takes a chapter page; you have ${chap}`;
+  for (const [id, n] of Object.entries(UI.plan)) for (let i = 0; i < n; i++) {
+    const ok = COMPARTMENTS.includes(id) ? S.raiseAttr(id) : S.raise(id);
+    if (!ok) return `Could not raise ${nameOf(G, id)}`;
+  }
   resetPlan(); return null;
 }
 
@@ -157,6 +165,7 @@ export function buildTab(ctx, rerender) {
   const densB = btn(UI.dens === "plain" ? "Show every number" : "Show it plainly", () => toggleDens(), { cls: "mini dens" });
   function toggleDens() { UI.dens = UI.dens === "plain" ? "numbers" : "plain"; rerender(); }
   const bar = h("div.bar", h("span.pages", `${pts} page${pts === 1 ? "" : "s"} to spend`), h("span.quiet.small", `${Object.values(s.ranks || {}).reduce((a, n) => a + n, 0)} filed`),
+    typeof G.sheet.chapters === "function" ? h("span.pages.small", `${G.sheet.chapters()} chapter page${G.sheet.chapters() === 1 ? "" : "s"}`) : null,
     plan || Object.keys(UI.plan).length ? h("span.plan.small", `pencilled: ${Object.entries(UI.plan).map(([k, n]) => `${nameOf(G, k)} ${n > 0 ? "+" : "−"}${Math.abs(n)}`).join(", ")}`) : h("span.plan.small", "Left and right on a voice pencil in a rank"),
     inkB, rubB, note, h("span.sp", densB));
   function drawRight() {
