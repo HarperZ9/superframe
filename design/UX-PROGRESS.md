@@ -44,3 +44,13 @@ and kept in order; each says what was done and where it landed.
     density not read at load, a redraw that removed the focused bench button.
 11. **Findings sent:** NOTES 22:45 (fight framing under the strip, shake ownership, sneaks and runs on the
     plate, chapter pages; the NOSE i-frame drop to the combat engineer; A2 to the art lead).
+12. **Round 2** (coordinator, 2026-10-17: the engine shell ships; order: sneaks and runs on the plate
+    with fight framing, creation over a plate, the inked Margin page and chapter pages, a map and wait
+    until low water; harden the catch check). Sneaks and Tide Runs now play on the plate
+    (`ui/sneaklayer.mjs`, `ui/runlayer.mjs`, `ui/worldlayer.mjs`); fight, sneak and run framing keeps
+    figures clear of the strip and the HUD tab (`clearOfPaper`). Stills: `sneak-world-2.png`,
+    `run-world-2.png`, `fight-frame.png`.
+13. **Build page on preview().** Combat shipped frames in `preview()` and floored NOSE i-frames
+    (6e30fab). `ui/buildstats.mjs` now reads only `preview()`; lost rows and one input asked for.
+14. **Catch check hardened.** The strip keeps every exchange line in `data-history`; the test freezes the
+    loop before emitting and reads the history and the screen (`catch-hard`, both pass).
