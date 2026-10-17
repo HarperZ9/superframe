@@ -188,3 +188,20 @@ units (proportional), features `aalt ccmp dnom frac locl numr salt ss01 ss02 ss0
 Does not prove: the scores are one reviewer's reading of code and stills. No player has used the shell
 for this audit; the first seat test should time how long a new player takes to find the Daybook, read a
 check's sum and leave a fight by talk.
+
+## 6. Status after the first build (2026-10-17, UI and UX lead)
+
+| # | Status | What changed | Evidence |
+|---|---|---|---|
+| T1 | Spec handed over | Sneaks and Tide Runs on the plate: UI-SYSTEM 7.3, 7.4; the strip is ready to take a sneak's watchers | NOTES-FOR-ENGINEER |
+| T2 | Built | The Build page: the case, Plain and Numbers densities, pencil planning, respec preview, side-by-side gear, the bench | `ui/build.mjs`, `ui/buildstats.mjs`; stills `design/ux/shots/build-*.png` |
+| T3 | Built | Root size `clamp(15px, 1.9vmin, 48px)`; 41 px at 4K (was 22), 16.2 px on the Deck | `check-4k.png`, `check-deck.png`; results.txt |
+| T4 | Built | Talk panel, here-list, Daybook and strip slide in and out on the motion tokens | `slow-slide-sheet.png`, `slow-book-sheet.png` (slowed 10 times to see the frames) |
+| T5 | Built | Remappable fight controls (keyboard, mouse, pad); shoulder-button pad default; device-aware prompts | `ui/bindings.mjs`, Settings, Controls; results.txt (rebinding and pad input checks) |
+| T6 | Built | Go and Wait rows show minutes | `world-1080.png` |
+| T7 | Built | Barks speak in the voice line above the strip | `fight-parry.png`, `fightview-pilot.png` |
+| T8 | Built | Pencil (dashed) and ink (solid) tags; "you 6", "short by 1"; the sum under the focused check; odds only in dice content | `check-1080.png`, `check-720.png` |
+| T9 | Built | Numbers in Hanken (tabular); Conso for names | all stills |
+| T10 | Built | Esc or Start pauses a fight; pause on focus loss | results.txt |
+| Also | Built | HUD on paper with the tide's direction in words; toasts moved under the HUD; meters as tallies; disabled text by colour; hover takes focus only on real mouse movement; screen shake (snapped, at most 2 plate pixels, off or light in Settings) and pad rumble from combat's events; the result card replaced by the outcome flowing into the talk panel behind a 450 ms guard | `ui/hudtab.mjs`, `ui/strip.mjs`, `ui/fightlayer.mjs` |
+| Open | Not built | A map; wait-until; the walking figure in the engine shell (A1); ground marks (A2); hidden checks in History (A3); creation over a plate with pillar words; Margin's inked page | |

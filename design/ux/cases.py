@@ -60,3 +60,13 @@ CASES = [
   {"name": "build-deck", "size": (1280, 800), "url": LAB + "screen=build", "steps": [("shot", "build-deck")]},
   {"name": "build-bench", "url": LAB + "screen=build&numbers=1&bench=1", "steps": [("eval", "[...document.querySelectorAll('.bench .mini')][0]?.focus()"), ("shot", "build-bench")]},
 ]
+CASES += [
+  {"name": "fightview", "url": "/engine/combat/tools/fightview.html?node=floor.salvors.fight&archetype=p.ledger&pilot=1", "steps": [("wait", 4000), ("shot", "fightview-pilot"),
+     ("expect", "!!document.querySelector('.strip')", "combat's harness mounts the new strip"),
+     ("expect", "window.__fv.log.map(e => e.name).filter((v, i, a) => a.indexOf(v) === i).join(',')", "fight events seen by the harness")]},
+  {"name": "slide-capture", "url": P + "world&motion", "steps": [("key", "Enter")] + [("shot", f"cap-slide-{i:02d}") for i in range(10)]},
+]
+CASES += [
+  {"name": "slide-slowmo", "url": P + "world&motion", "steps": [("eval", "document.documentElement.style.setProperty('--t-in', '2400ms'); document.documentElement.style.setProperty('--t-out', '1600ms')"), ("key", "Enter")] + [("shot", f"slow-slide-{i:02d}") for i in range(6)]},
+  {"name": "daybook-slowmo", "url": P + "world&motion", "steps": [("eval", "document.documentElement.style.setProperty('--t-in', '2400ms')"), ("key", "Tab")] + [("shot", f"slow-book-{i:02d}") for i in range(5)]},
+]

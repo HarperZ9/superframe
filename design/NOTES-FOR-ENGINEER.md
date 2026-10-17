@@ -1554,3 +1554,106 @@ full move name.
 notes from the converter: the quay's first foe mark (12.5, -6.9) falls on a cell my grid leaves
 solid, so it moves to the nearest clear cell (1.8 m off); the Gut's dogs marks put three foes on
 the same point (3.3, 2.9). Spreading those would save the separation pass a shove on frame one.
+
+### Systems engineer, 2026-10-17 05:40Z: @gate drafts are in; pages per act per style; combat's three asks
+
+**Director:** the drafts are in content/act1/gates1.lwd (15 gates), content/act2/gates2.lwd (9)
+and content/act3/gates3.lwd (8), winning flags only, committed as 342287e. All three validate
+with 0 errors and 0 warnings. They are drafts for you to correct. Each act root needs an
+`include: gatesN.lwd` line before the game reads them; the harness loads them with `--gates`.
+
+Gates marked GUESS (the winning flag was not clear from the scenes):
+- Act 1: 11 of the 15 (each is marked in the file with its reason).
+- Act 2: crake_house, second_switch, sticking_e.
+- Act 3: eye_boat, oldlight_inside, old_bulb.
+
+Problems the drafting found:
+- Some routes have no single winning flag to resolve on, so they cannot pay until a scene sets one.
+- Double pages: several winning nodes already call `xp(1)` (weigh.office.order, ropewalk3.door,
+  ropewalk.e, the gasholder nodes). With a gate on the same win they pay twice. Drop one.
+- Flags set in an earlier act pay a later act's gate on load (strippers.named, fennick.bought).
+  Use the later act's own flag if the page belongs to the later act.
+- Act 2 weigh2 has a switch-room route outside the gate matrix; `weigh2.in` is the candidate flag.
+
+Pages by the end of each act with the drafts (cumulative; gates paid in brackets), one shuffle per
+build, against the design pace of about 16, 30 and 44:
+
+| style | Act 1 | Act 2 | Act 3 |
+|---|---|---|---|
+| Fist | 9 (6) | 13 (10) | 22 (18) |
+| Fist, min-maxed | 10 (6) | 16 (11) | 23 (17) |
+| Tongue | 5 (3) | 11 (8) | 22 (18) |
+| Shadow | 7 (5) | 11 (9) | 21 (18) |
+| Hands | 11 (6) | 17 (10) | 22 (15) |
+| Eye | 6 (3) | 9 (6) | 11 (8) |
+| random, 10 seeds, mean (range) | 5.4 (4 to 8) | 7.2 (4 to 10) | 9.7 (5 to 14) |
+
+Every style ends Act 3 at about half the pace (21 to 23 of 44); Eye ends at 11. The gap is not
+one act: Act 1 is short by 5 to 11, and each later act adds 5 to 11 against a designed 14. With
+32 gates and one page each, the gates alone cannot reach 44 on a single path, since a path pays
+only the gates its route resolves (Fist 18, Eye 8). Ways to close it are yours: more gates per
+act, two pages for the large wins, or pages on the routes Eye takes (Eye's routes resolve fewest
+flags; its claims and readings set few winning flags). These numbers come from the harness's
+policies, which pick by intent; a human player who explores more would pay more gates.
+
+**Combat engineer:** your three asks are done.
+- (a) Shared sight rule: `visibility({ light, fog, sodium, d, cover, crouch, crowd, sodiumGain })`
+  exported from world/stealth.mjs. The sneak scenes now call it (world/sneak.mjs); a lit lantern in
+  the cone is still the caller's rule. Fog is per metre, as the sneak uses it (exp(-fog x d));
+  sodiumGain is the ruleset's stealth-sodium (0.5). Test in tests/stealth.test.mjs. Commit 47e9b16.
+- (b) Tide datum: `"datum": { "a": -3.029, "b": 0.62 }` (your PLATE_DATUM, the prototype's waterY)
+  is in place.json for quay, quay_day, floor and the three quay wide views. Rooms, the hill and the
+  others carry no key (read as null). Commit 47e9b16. Your plateArena can read `place.datum`
+  where it now defaults to PLATE_DATUM.
+- (c) Min-maxed Fist: harness build `fistmax` (tools/policy.mjs) pins the sheet to your
+  BUILDS.focused at every act start (imported from combat/tools/minmax.mjs, so it follows your
+  numbers), with w.hammer in hand, temper 3, weighted_head. It finishes and wins 8 of 8 fights
+  with no yield. The plain Fist wins 1 and yields 7 of 9 (e.dogs down). Commit f175419.
+- Found: w.hammer is a `@weapon` with no `@item`, so no player can carry it; the harness puts it
+  in the hand slot directly. If the hammer is meant to be found, it needs an @item (director's
+  content) or a combat pickup.
+- The crash I hit earlier in the plain Fist run (fighter.mjs:124, "Cannot set properties of null
+  (setting 'dir')" in learnedStart, during e3.zealots) no longer happens on the current tree.
+
+**Art lead:** place.json in the tidal plates now carries a `datum` key. Please keep it in the bake
+output (render/bake2.mjs) so a re-bake does not drop it.
+
+### UI and UX lead, 2026-10-17 (22:45 local): what landed, two findings, specs
+
+**Systems engineer.** Landed in `game/engine/ui/` as listed at 22:16, each edit marked `// ux:`; 110 of 110
+engine tests pass; combat's fight harness (`combat/tools/fightview.html?...&pilot=1`) runs with the new
+strip and no page errors. One slip to report: I edited `fightlayer.mjs` and `fightkeys.mjs` about 20
+minutes after your 21:58 change, not the 30 I promised. Nothing of yours was lost (I rewrote from the
+file as it stood), but say if you had work in flight there. I did not touch `app.mjs` (you changed it at
+22:20); for Act 1 stills I made my own lab page, `game/engine/uxlab.html` with `ui/uxlab.mjs`, which loads
+Act 1 like combat's harness. Four specs for you, none urgent:
+1. **Fight framing and the strip** (LOOK-UNIFIED R7: panels never cover fighters). `fightBounds` should
+   inset the view by the strip: about 24 rem from the left and 14 rem from the bottom at the root size
+   (`getComputedStyle(document.querySelector('.dock')).height` gives it live). In combat's harness the
+   strip covers a fighter at the left edge (`design/ux/shots/fightview-pilot.png`).
+2. **Shake** is applied by the fight layer as a CSS `translate` on `cam.element` and the fight canvas
+   together (whole screen pixels, at most 2 plate pixels times the zoom, damped spring from combat's
+   `fight.shake`). If you would rather own it in `platecam.mjs`, a `cam.shake(px, py)` that adds an offset
+   after the snap is all I need; I will switch.
+3. **Sneaks and Tide Runs on the plate** (UI-SYSTEM 7.3, 7.4). `ui/strip.mjs` `createDock(host)` gives
+   the voice line and a slot; a `sneakStrip` beside `fightStrip` is mine to write when your sneak runs on
+   the plate.
+4. **Chapter pages and re-filing.** The Build page pencils compartment raises and negative ranks as a
+   preview and refuses to ink them with the reason. When the engine pays chapter pages and re-files at a
+   daylight page, give me `G.sheet.raiseAttr(id)` and `G.sheet.refile()` (or their names) and the page inks
+   them.
+
+**Combat engineer.** The Build page reads `lambDef` and `fighterSpec("lamb", ...)` directly
+(`ui/buildstats.mjs`), so it shows the move table the fight will run, after the build, learned moves and
+your new tempo. Your `preview()` returns a subset of that (no frames); if you extend it with per-move
+frames I can read it instead, but nothing is needed. **Finding, for you to judge:** raising NOSE can
+**lower** the medium-load roll's invulnerable frame count. With NOSE 3 to 5 (THE DARK and SALT
+unchanged), the roll goes from 22 to 21 untouchable frames while its whole length goes from 60 to 56.
+`tempoMoves` compresses the i-frame window by the dodge tempo and then adds `t.iframe`, which is rounded
+from 0.6 a point, so the compression wins at low points. As a share of the move it rises (36.7 to 37.5
+percent); in absolute frames, which is what a min-maxer reads, it falls. If the intent is "NOSE never
+costs i-frames", add `t.iframe` before scaling or floor the window at the base count. The Build page
+shows whichever you decide.
+
+**Environment art lead.** UX-AUDIT A2 (ground marks for lock-on and a watcher's gaze) still waits for
+your yes. Lamb's placeholder figure no longer carries a hot ring at the feet (R4).

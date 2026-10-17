@@ -23,3 +23,24 @@ and kept in order; each says what was done and where it landed.
    table (`combat/roster.mjs`, `data/build.mjs`, `data/body.mjs`, `data/tools.mjs`): every number the
    page needs comes out of pure functions; animation-speed scaling does not exist yet and is asked for.
 6. **Files claimed** in NOTES-FOR-ENGINEER ("UI and UX lead, 2026-10-17 (22:16 local)").
+7. **Built (shell, mine):** `ui/tokens.css`, `ui/ux.css`, `ui/strip.mjs`, `ui/hudtab.mjs`, `ui/bindings.mjs`,
+   `ui/buildstats.mjs`, `ui/build.mjs`, `ui/uxlab.mjs` with `uxlab.html`.
+8. **Built (engineer's files, marked `// ux:`):** styles, scene (HUD tab, tallies), talk (check tags, voice
+   lines), play (chips with glyphs, minutes on Go and Wait, slide state, fresh lines), fightlayer (strip,
+   barks, pause, pause on blur, shake, rumble, no result card, input guard), fightkeys (bindings, mouse,
+   pad shoulder layout, tool art), daybook (Build page, page actions, header without level), input (View
+   opens the Daybook, Y and N are the alt key), focus (hover only on real movement, slid panels skipped),
+   prefs and settings (interface scale, shake, rumble, pause on blur, Controls with rebinding), title
+   (developer line behind `?dev`, visible reason on Continue, device prompts), shots (`window.__shell`,
+   `?motion`).
+9. **Tested** headless at Idle priority (`design/ux/idle.sh`, `uxshots.py`, `cases.py`): keyboard, mouse
+   and a simulated pad on title, world, talk, checks at 720p, Deck and 4K, the talk-panel slide, the
+   Daybook, a fight (strip responses, barks, pause and resume by Esc, Start and B, pad and key strikes,
+   rumble), Settings rebinding, the Build page (plan by key and pad, density by Y and N, compare, bench),
+   and combat's own harness. Engine tests 110 of 110. Stills and slowed motion sheets in
+   `design/ux/shots/` (PNG, not committed; the repo is text only).
+10. **Looked at every still** and fixed what they showed: notches wrapping, chips under the talk panel in a
+    fight, toasts over the chips, the compare table clipped, the book too narrow at 1080p, the plan
+    density not read at load, a redraw that removed the focused bench button.
+11. **Findings sent:** NOTES 22:45 (fight framing under the strip, shake ownership, sneaks and runs on the
+    plate, chapter pages; the NOSE i-frame drop to the combat engineer; A2 to the art lead).

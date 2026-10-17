@@ -127,7 +127,7 @@ function benchSection(G, onPreview, rerender) {
   const cost = C.upgradeCost(B.tool), T = TOOLS21[B.tool] || {};
   const need = cost ? Object.entries(cost.needs).map(([id, n]) => `${nameOf(G, id)} ${Math.min(G.inv.count(id), n)} of ${n}`).join(", ") : "";
   const why = !at ? "Only at a bench" : !cost ? "Fully tempered" : !cost.affordable ? "Not enough salvage" : "";
-  const temper = btn([`Temper to ${cost ? cost.next : 5}`, h("span.quiet.small", cost ? `  ${need}, ${cost.minutes} min` : "")], () => { if (C.upgrade(B.tool)) rerender(); }, { cls: "mini", disabled: !!why, title: why });
+  const temper = btn([`Temper to ${cost ? cost.next : 5}:`, h("span.quiet.small", cost ? `  ${need}, ${cost.minutes} min` : "")], () => { if (C.upgrade(B.tool)) rerender(); }, { cls: "mini", disabled: !!why, title: why });
   temper.addEventListener("focus", () => cost && onPreview({ temper: cost.next, label: `temper ${cost.next}` }));
   temper.addEventListener("blur", () => onPreview(null));
   const fits = (T.fittings || []).map((f) => {
