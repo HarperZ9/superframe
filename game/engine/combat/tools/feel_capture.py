@@ -23,7 +23,7 @@ FRAME_MS = 1000 / 60
 
 SETUP = """async ([style, seed]) => {
   const c = window.__lw; c.newGame(11); c.G.create({ archetype: 'p.wader', enter: false });
-  c.G.setPlace('quay'); c.G.state.pos = [-0.4, 0, -2.4]; c.G.state.flags.push('met.crake'); c.play();
+  c.G.setPlace('quay'); c.G.state.pos = [16.1, 0, -2.9]; c.G.state.flags.push('met.crake'); c.play();
   if (c.play.P.talk) { c.play.P.talk = null; c.play.P.beat = null; c.play.render(); }
   const { STYLES } = await import('/engine/combat/data/styles.mjs');
   const { createShowcase } = await import('/engine/combat/tools/showcase.mjs');

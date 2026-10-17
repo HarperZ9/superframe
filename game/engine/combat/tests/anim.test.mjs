@@ -25,3 +25,19 @@ test("a pose follows the move, and the clip check lists what the art still has t
   const missing = checkClips(W, {});
   assert.ok(missing.length > 10 && missing.every((x) => x.problem === "missing"));
 });
+
+test("fxOf lists thrown things, tells with the world's answers, contacts and frozen bodies", async () => {
+  const { fxOf } = await import("../anim/fx.mjs");
+  const W = makeWorld({ brains: false, foes: [["holder", [8, 8]]], lambAt: [4, 8] }), F = W.fighters[1];
+  F.face = Math.PI; F.lock = "lamb";
+  W.step({ foe0: { press: ["world.throw"] } });
+  for (let i = 0; i < 8; i++) W.step({});
+  let fx = fxOf(W);
+  assert.ok(fx.tells.some((t) => t.id === "foe0" && t.kind === "throw" && t.answer === "throw"), JSON.stringify(fx.tells));
+  for (let i = 0; i < 50 && !W.projectiles.length; i++) W.step({});
+  assert.ok(fxOf(W).thrown.some((p) => p.use === "stone"), "the stone is in the air");
+  let hit = null;
+  for (let i = 0; i < 60 && !hit; i++) { W.step({}); fx = fxOf(W); hit = fx.contacts.find((c) => c.id === "lamb"); }
+  assert.ok(hit && hit.kind === "hit" && hit.power > 0, "the stone's contact is listed");
+  assert.ok(fx.frozen.includes("lamb"), "the struck body holds in hit-stop");
+});

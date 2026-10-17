@@ -3,18 +3,18 @@
 //   guard   0 to 6 s: defence only, no blow landed, so a talk exit that wants "fight_struck == 0"
 //           is offered (the capture checks it is visible). Each swing that comes is answered in turn
 //           by a catch (parry), a sidestep (dodge), then a roll (or the load's dash or hop).
-//   kite    6 to 13 s: the pilot's kiting policy, to draw the lunge and the thrown stone.
-//   strike  13 to 22 s: strings of light strikes into a heavy, a charged heavy, the running strike.
+//   kite    6 to 14 s: flight with no pokes (the kiting policy at a 5.5 m ring), to draw the lunge and the stone.
+//   strike  14 to 23 s: strings of light strikes into a heavy, a charged heavy, the running strike.
 //   finish  the pilot playing like the build.
 // Every press it makes is logged in S.log as [tick, phase, what] for the capture's notes.
 import { createPilot } from "./pilot.mjs";
 import { dist, angleTo } from "../sim/fighter.mjs";
 
 const live = (F) => !F.out && !F.fallen && !F.yielded && F.hp > 0;
-export const PHASES = { guard: 6 * 60, kite: 13 * 60, strike: 22 * 60 };
+export const PHASES = { guard: 6 * 60, kite: 14 * 60, strike: 23 * 60 };
 
 export function createShowcase() {
-  const fair = createPilot({ style: "fighter", catchShare: 1 }), kite = createPilot({ style: "kite", kite: { ring: 5.5, approach: false, after: 90 } });
+  const fair = createPilot({ style: "fighter", catchShare: 1 }), kite = createPilot({ style: "kite", kite: { ring: 5.5, poke: -1, approach: false } });
   const S = { answer: 0, string: 0, hold: 0, log: [], seen: new Set() };
   const note = (W, phase, what) => S.log.push([W.tick, phase, what]);
   return (W) => {
