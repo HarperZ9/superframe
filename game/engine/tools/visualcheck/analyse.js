@@ -76,8 +76,10 @@ async (opts) => {
       if (solo.has(f.who)) return solo.get(f.who);
       const cv = document.createElement("canvas"); cv.width = Wc; cv.height = Hc;
       const sp = cam.toScreen(f.at), full = pf.find((x) => x.who === f.who) || f;
-      if (sp) personDrawer()(cv.getContext("2d"), full, { x: sp[0], y: sp[1], ppm: cam.scaleAt(f.at), at: f.at, face: full.face || 0, walking: false, running: false, talking: false, gesture: null, cam: place.camera, plate: place.place, depth: cam.depthOf(f.at), depthAt: cam.depthAt, lights, darkness: cam.darkness ? cam.darkness() : 0, pose: full.pose || null, reach: null, solo: true });
+      const r = sp ? personDrawer()(cv.getContext("2d"), full, { x: sp[0], y: sp[1], ppm: cam.scaleAt(f.at), at: f.at, face: full.face || 0, walking: false, running: false, talking: false, gesture: null, cam: place.camera, plate: place.place, depth: cam.depthOf(f.at), depthAt: cam.depthAt, lights, darkness: cam.darkness ? cam.darkness() : 0, pose: full.pose || null, reach: null, solo: true }) : null;
       const d = cv.getContext("2d").getImageData(0, 0, Wc, Hc).data, a = new Uint8Array(Wc * Hc); for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3] > 128 ? 1 : 0;
+      // the drawer's own depth per drawn pixel when it gives one ({ depth, w, h, ox, oy }, NaN where nothing shows)
+      a.depth = r && r.depth ? (k) => { const x = (k % Wc) - r.ox, y = ((k / Wc) | 0) - r.oy; return x >= 0 && y >= 0 && x < r.w && y < r.h ? r.depth[y * r.w + x] : NaN; } : null;
       solo.set(f.who, a); return a;
     };
     const persons = figs.filter((f) => !f.fighter);
@@ -87,10 +89,14 @@ async (opts) => {
       // two pixels within 0.25 m of depth are one body passing through the other (a figure in front is clearly nearer)
       const sinE2 = Math.sin(((place.camera.elevDeg || 30) * Math.PI) / 180), sa = cam.toScreen(A2.at), sb = cam.toScreen(B2.at), pa = cam.scaleAt(A2.at), pb = cam.scaleAt(B2.at), da = cam.depthOf(A2.at), db = cam.depthOf(B2.at);
       const a = alphaOf(A2), b = alphaOf(B2); let both = 0, na = 0, nb = 0;
-      for (let k = 0; k < a.length; k++) { na += a[k]; nb += b[k]; if (a[k] && b[k]) { const sy = (k / Wc) | 0, za = da - ((sa[1] - sy) / pa) * sinE2, zb = db - ((sb[1] - sy) / pb) * sinE2; if (Math.abs(za - zb) < 0.25) both++; } }
+      for (let k = 0; k < a.length; k++) { na += a[k]; nb += b[k]; if (a[k] && b[k]) { if (a.depth && b.depth) { const za = a.depth(k), zb = b.depth(k); if (Number.isFinite(za) && Number.isFinite(zb) && Math.abs(za - zb) < 0.15) both++; } else { const sy = (k / Wc) | 0, za = da - ((sa[1] - sy) / pa) * sinE2, zb = db - ((sb[1] - sy) / pb) * sinE2; if (Math.abs(za - zb) < 0.25) both++; } } } // true depths within 0.15 m when the drawer gives them, else the estimate
       (out.interpenetration ||= []).push({ a: A2.who, b: B2.who, depthApart: +dz.toFixed(2), overlap: both });
       if (both > Math.max(40, 0.02 * Math.min(na, nb))) out.fails.push(`${A2.who} and ${B2.who}: silhouettes pass through each other (${both} px at ${dz.toFixed(2)} m apart in depth)`);
     }
+    // a pixel that any figure's own solo drawing covers (a coat's feather, a lantern's glass) is not a shadow
+    const covered = (q) => persons.some((f) => { const a = alphaOf(f), k = Math.round(q.sy) * Wc + Math.round(q.sx); return a.depth ? Number.isFinite(a.depth(k)) : !!a[k]; });
+    const before = shadows.length; for (let i = shadows.length - 1; i >= 0; i--) if (covered(shadows[i])) shadows.splice(i, 1);
+    out.shadowCoveredByBodies = before - shadows.length;
   }
   const ma = med(shadows.map((x) => x.a));
   // stacked: darker than one shadow (edges and repeats already left out); how many of those lie inside two
@@ -105,5 +111,6 @@ async (opts) => {
   out.shadow = { pixels: shadows.length, offFloor: shadows.filter((x) => x.off).length, single: single && +single.toFixed(2), stacked: dark.length, underTwo: dark.filter((q) => under(q) >= 2).length, darkAt: dark.slice(0, 600).map((q) => [Math.round(q.sx), Math.round(q.sy), +q.a.toFixed(2)]), alphaMax: shadows.length ? +Math.max(...shadows.map((x) => x.a)).toFixed(2) : null, offAt: shadows.filter((x) => x.off).slice(0, 600).map((q) => [Math.round(q.sx), Math.round(q.sy)]), medianAlpha: ma && +ma.toFixed(3) };
   if (shadows.length && out.shadow.offFloor / shadows.length > offFloorMax) out.fails.push(`shadow: ${out.shadow.offFloor} of ${shadows.length} shadow pixels land off the floor (more than ${offFloorMax * 100}%)`);
   if (out.shadow.stacked > stackMax) out.fails.push(`shadow: ${out.shadow.stacked} pixels where shadows stack darker (more than ${stackMax})`);
+  out.state = { talking: !!play.P.talk, node: play.P.talk ? play.P.talk.node : null, walking: play.people.walking ? play.people.walking() : null, clock: G.clock(), pos: G.state.pos };
   return out;
 }

@@ -19,7 +19,7 @@ export async function launch({ exe, port = 9333, args = [] }) {
       let id = 0; const wait = new Map(), logs = [];
       ws.onmessage = (m) => { const d = JSON.parse(m.data); if (d.id && wait.has(d.id)) { wait.get(d.id)(d); wait.delete(d.id); } else if (d.method === "Runtime.exceptionThrown") logs.push(`exception: ${d.params.exceptionDetails.exception?.description || d.params.exceptionDetails.text}`); else if (d.method === "Runtime.consoleAPICalled" && (d.params.type === "error" || d.params.type === "warning")) logs.push(`${d.params.type}: ${d.params.args.map((a) => a.value ?? a.description ?? "").join(" ")}`); };
       const send = (method, params = {}) => new Promise((ok) => { const k = ++id; wait.set(k, ok); ws.send(JSON.stringify({ id: k, method, params })); });
-      await send("Runtime.enable"); await send("Page.enable");
+      await send("Runtime.enable"); await send("Page.enable"); await send("Page.bringToFront"); // a view runs in the front tab: a background tab's frames are throttled
       await send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: false });
       const P = {
         logs,
@@ -31,7 +31,8 @@ export async function launch({ exe, port = 9333, args = [] }) {
         },
         async until(expr, ms = 120000) { const t0 = Date.now(); while (Date.now() - t0 < ms) { try { if (await P.eval(expr)) return true; } catch { /* the page is loading */ } await sleep(250); } throw new Error(`timed out waiting for ${expr}`); },
         async shot(path) { const r = await send("Page.captureScreenshot", { format: "png" }); await writeFile(path, Buffer.from(r.result.data, "base64")); },
-        close() { ws.close(); },
+        // close the tab itself, so an earlier view never keeps running beside the next one
+        async close() { ws.close(); try { await fetch(`http://127.0.0.1:${port}/json/close/${t.id}`); } catch { /* already gone */ } },
       };
       return P;
     },

@@ -17,7 +17,7 @@
 import { h } from "./dom.mjs";
 import { personDrawer } from "./figures.mjs";
 import { evaluate } from "../core/expr.mjs";
-import { findPath, groundAt, walkable, camBasis, bodyCan, clearSpot, spotKind, clearAhead, seatOf } from "../world/plateworld.mjs";
+import { findPath, groundAt, walkable, camBasis, bodyCan, clearSpot, spotKind, clearAhead, seatOf, propDistance } from "../world/plateworld.mjs";
 
 const TALK = ["talk_a", "talk_b", "talk_c"], GESTURE_S = 2.4;
 
@@ -26,7 +26,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
   canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none";
   host.append(canvas);
   const live = () => G.loop && G.loop.clockRate > 0; // the world clock runs: walking costs no extra minutes
-  const S = { runLock: 0, barkAt: -1e9, barkRun: 0, wander: {}, path: null, then: null, run: false, metres: 0, face: {}, talking: null, gesture: {}, hidden: new Set(), raf: 0, last: performance.now(), stopped: false, moving: false };
+  const S = { seatY: {}, runLock: 0, barkAt: -1e9, barkRun: 0, wander: {}, path: null, then: null, run: false, metres: 0, face: {}, talking: null, gesture: {}, hidden: new Set(), raf: 0, last: performance.now(), stopped: false, moving: false };
   const rule = (k, d) => (R[k] != null ? +R[k] : d);
   const waterY = (A) => (A && A.water ? A.water.a + A.water.b * (+G.env.term("tide") || 0) : -Infinity);
   const lambAt = () => G.state.pos || (G.world.area() && G.world.area().spawn) || null;
@@ -61,6 +61,10 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
   function step(dt) {
     const pos = lambAt(); S.moving = false; S.vel = [0, 0];
     if (pos && freeWalk(dt, pos)) return;
+    // standing still in a body's margin (a walk ended against a prop, a spawn beside one): step out to
+    // the nearest clear floor within 0.6 m, so where Lamb ends never depends on how the walk went
+    if (!S.path && pos && idle() && !S.settled) { const A = cam.arena(), k = A && spotKind(A, pos); if (k === "margin" || k === "prop" || k === "top" || (A && propDistance(A, pos[0], pos[2]) < 0.3)) { const c = settleSpot(A, pos); if (c) S.path = [[c[0], c[2]]]; } S.settled = true; }
+    if (S.path) S.settled = false;
     if (!S.path || !pos) return;
     S.run = !!(G.input && G.input.get("run")) && performance.now() >= S.runLock;
     const A = cam.arena(), sp = (S.run ? rule("run-speed", 3.6) : rule("walk-speed", 1.5)) * dt;
@@ -110,6 +114,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     if (!seats.has(k)) seats.set(k, seatOf(pj, geo.pos, f.at));
     const s = seats.get(k); if (!s) return f.at;
     if (s.face != null) S.face[f.id] = s.face;
+    S.seatY[f.id] = s.seatY;
     return s.at;
   }
   function homeOf(f) {
@@ -124,6 +129,14 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
       homes.set(key, at);
     }
     return homes.get(key);
+  }
+  // the nearest clear floor within 0.9 m that no one else stands too near (for stepping out of a margin)
+  function settleSpot(A, pos) {
+    const c = A.cell, q0 = Math.floor((pos[0] - A.origin[0]) / c), r0 = Math.floor((pos[2] - A.origin[1]) / c), R = Math.ceil(0.9 / c), cand = [];
+    for (let dr = -R; dr <= R; dr++) for (let dq = -R; dq <= R; dq++) { const x = A.origin[0] + (q0 + dq + 0.5) * c, z = A.origin[1] + (r0 + dr + 0.5) * c, d = Math.hypot(x - pos[0], z - pos[2]); if (d <= 0.9 && spotKind(A, [x, 0, z]) === "clear" && propDistance(A, x, z) >= 0.3) cand.push([d, x, z]); }
+    cand.sort((a, b) => a[0] - b[0]);
+    for (const [, x, z] of cand) if (!crowded("lamb", pos, x, z)) return [x, groundAt(A, x, z) ?? pos[1], z];
+    return null;
   }
   function figures(all = false) {
     const out = [], a = lambAt();
@@ -142,11 +155,16 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     const cv = document.createElement("canvas"); cv.width = canvas.width; cv.height = canvas.height;
     const f = figures(true).find((x) => x.who === who); if (!f || !cam.ready()) return cv;
     const pj = cam.place(), variant = (cam.area() && cam.area().variant) || (pj && pj.variants && pj.variants[0]), lights = (pj && pj.lights && pj.lights[variant]) || [], s = cam.toScreen(f.at);
-    if (s) personDrawer()(cv.getContext("2d"), f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking: false, gesture: null, cam: pj && pj.camera, plate: pj && pj.place, depth: cam.depthOf(f.at), depthAt: cam.depthAt, lights, darkness: cam.darkness(), pose: f.pose || null, reach: reachOf(f), solo: true });
+    if (s) personDrawer()(cv.getContext("2d"), f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking: false, gesture: null, cam: pj && pj.camera, plate: pj && pj.place, depth: cam.depthOf(f.at), depthAt: cam.depthAt, lights, darkness: cam.darkness(), pose: f.pose || null, seatY: f.pose === "seated" ? S.seatY[f.who] ?? null : null, reach: reachOf(f), room: roomOf(f), solo: true });
     return cv;
   }
   // How far a held tool may reach ahead: clear of props and walls (clearAhead) and short of anyone
   // standing in front within 0.4 m of the tool's line (0.35 m before their body)
+  // the room either side as well (a pole held across the body): metres to the nearest prop or person on the left and right
+  function roomOf(f) {
+    const A = cam.arena(), face = f.face || 0, side = (a) => { let r = A ? clearAhead(A, f.at, a) : 2.2; const dx = Math.cos(a), dz = Math.sin(a); for (const o of figures(true)) { if (o.who === f.who) continue; const ox = o.at[0] - f.at[0], oz = o.at[2] - f.at[2], ahead = ox * dx + oz * dz, lat = Math.abs(ox * -dz + oz * dx); if (ahead > 0 && lat < 0.4) r = Math.min(r, Math.max(0.1, ahead - 0.35)); } return +r.toFixed(2); };
+    return { ahead: reachOf(f), left: side(face + Math.PI / 2), right: side(face - Math.PI / 2) };
+  }
   function reachOf(f) {
     let r = cam.arena() ? clearAhead(cam.arena(), f.at, f.face) : 2.2;
     const dx = Math.cos(f.face || 0), dz = Math.sin(f.face || 0);
@@ -162,7 +180,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     for (const { f, depth } of list) {
       const s = cam.toScreen(f.at); if (!s) continue;
       const talking = !!S.talking && (f.who === "lamb" || f.who === S.talking);
-      personDrawer()(g, f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking, gesture: f.walking ? null : gestureOf(f.who, dt), cam: pj && pj.camera, plate: pj && pj.place, depth, depthAt: cam.depthAt, lights, darkness: cam.darkness(), pose: f.pose || null, reach: reachOf(f) });
+      personDrawer()(g, f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking, gesture: f.walking ? null : gestureOf(f.who, dt), cam: pj && pj.camera, plate: pj && pj.place, depth, depthAt: cam.depthAt, lights, darkness: cam.darkness(), pose: f.pose || null, seatY: f.pose === "seated" ? S.seatY[f.who] ?? null : null, reach: reachOf(f), room: roomOf(f) });
     }
   }
   // Passers-by: a figure with wander: r walks between points within r of its spot, stopping a

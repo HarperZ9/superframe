@@ -47,7 +47,7 @@ try {
       Object.assign(r, m);
       await P.shot(join(out, `${v.id}.png`));
     } catch (e) { r.error = e.message; r.fails.push(`could not judge this view: ${e.message}`); }
-    r.logs = P.logs.slice(0, 20); P.close();
+    r.logs = P.logs.slice(0, 20); await P.close();
     report.push(r);
   }
 } finally { await B.close(); }

@@ -23,6 +23,7 @@ import { bindFightKeys, keyList } from "./fightkeys.mjs";
 import { createDock, fightStrip } from "./strip.mjs";
 import { glyph } from "./bindings.mjs";
 import { figureDrawer } from "./figures.mjs";
+import { fightFx } from "./fightfx.mjs";
 import { groundAt, clearAhead } from "../world/plateworld.mjs";
 export { setFigureDrawer } from "./figures.mjs";
 // one drawer for fights, sneaks and runs (ui/runlayer.mjs and ui/sneaklayer.mjs draw through this)
@@ -34,10 +35,10 @@ const skillName = (G, id) => String(((G.rs.skills || {})[id] || {}).name || id).
 
 export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
   const G = ctx.G, C = G.ext.combat, W = C.start(id), def = C.defs[id] || {};
-  const canvas = h("canvas.fightcanvas"), offer = h("div.talkoffer.sheet");
+  const canvas = h("canvas.fightcanvas"), fxCanvas = h("canvas.fightcanvas.fightfx"), offer = h("div.talkoffer.sheet"); // effects on their own canvas, above the bodies
   offer.hidden = true;
   const keys = h("details.fightkeys.sheet", h("summary.caps.quiet", "Keys"), ...keyList().map(([k, what, pad]) => h("div", h("span.k", k), " ", what, pad ? h("span.quiet.small", `  ${pad}`) : null)));
-  const root = h("div.fightlayer", canvas, offer, keys);
+  const root = h("div.fightlayer", canvas, fxCanvas, offer, keys);
   host.append(root);
   const dock = createDock(root), strip = fightStrip(dock, { G, W, title: def.name || id });
   const bounds = W.field.bounds, size = [bounds.x1 - bounds.x0, bounds.z1 - bounds.z0];
@@ -116,12 +117,20 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
     const sc = Math.min(canvas.width / (size[0] + 2), canvas.height / (size[1] + 2)); // no plate: the arena as plain ground
     return { x: (F.x - bounds.x0 + 1) * sc, y: (F.z - bounds.z0 + 1) * sc, ppm: sc };
   }
+  const fx = fightFx(); let lastT = performance.now();
+  // a world point (x, y up, z) to the screen for the fx: the stage lays the arena on the plate
+  const fxScreen = ([x, y, z]) => { const p = stage.toWorld([x, z], y); if (cam && cam.ready()) { const s = cam.toScreen(p); return s && { x: s[0], y: s[1], ppm: cam.scaleAt(p) }; } const sc = Math.min(canvas.width / (size[0] + 2), canvas.height / (size[1] + 2)); return { x: (x - bounds.x0 + 1) * sc, y: (z - bounds.z0 + 1) * sc - y * sc, ppm: sc }; };
   function draw() {
     const r = root.getBoundingClientRect(); if (canvas.width !== Math.round(r.width) || canvas.height !== Math.round(r.height)) { canvas.width = Math.round(r.width); canvas.height = Math.round(r.height); }
     const g = canvas.getContext("2d"); g.clearRect(0, 0, canvas.width, canvas.height);
     if (!cam) { g.fillStyle = "#1a1416"; g.fillRect(0, 0, canvas.width, canvas.height); }
     const far = (F) => (cam && cam.depthOf ? -cam.depthOf(stage.toWorld([F.x, F.z])) : F.z), order = [...W.fighters].sort((a, b) => far(a) - far(b)); // far ones first
-    for (const F of order) { const s = screenOf(F); if (!s) continue; const args = { ...s, face: F.face, down: F.fallen || F.out || F.yielded, W, reach: onPlate && s.at ? clearAhead(A, s.at, F.face) : null }; figureDrawer()(g, F, args); }
+    const now = performance.now(), dt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
+    fx.read(W); // this frame's tells, contacts and things in the air (combat/anim/fx.mjs)
+    for (const F of order) { const s = screenOf(F); if (!s) continue; const args = { ...s, face: F.face, down: F.fallen || F.out || F.yielded, W, reach: onPlate && s.at ? clearAhead(A, s.at, F.face) : null, tell: fx.tellOf(F.id) }; figureDrawer()(g, F, args); }
+    if (fxCanvas.width !== canvas.width || fxCanvas.height !== canvas.height) { fxCanvas.width = canvas.width; fxCanvas.height = canvas.height; }
+    const gf = fxCanvas.getContext("2d"); gf.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+    fx.draw(gf, fxScreen, dt); // stones, mud, rope and lanterns in the air, and each contact's mark, over the bodies
     strip.update();
   }
   function frame() { if (closed) return; if (!G.loop.paused) shakeStep(); draw(); raf = requestAnimationFrame(frame); }

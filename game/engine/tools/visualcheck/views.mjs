@@ -13,5 +13,6 @@ export const VIEWS = [
   { id: "quay-stairs-bench", why: "the quay steps and the benches by the weigh-house", steps: [BOOT("quay"), WALK(2.7, -1.9)] },
   { id: "crowd-of-four", why: "four people within a couple of metres: overlapping bodies and shadows", steps: [BOOT("quay"), FIG([["fewell", 0.2, -1.6], ["strand", 0.9, -1.9], ["hobb", 0.4, -2.5]]), WALK(-0.4, -2.0)] },
   { id: "fight-against-a-wall", why: "a fight started by the weigh-house wall", steps: [BOOT("quay"), WALK(3.3, -2.3), FIG([["fewell", 4.0, -2.4], ["strand", 2.7, -2.7]]),
-    `(async () => { const p = window.__lw.play; p.people.talkingWith('fewell'); p.startTalk('quay.lamplighters.stop'); await new Promise((r) => setTimeout(r, 600)); const i = p.P.beat.options.findIndex((o) => /Stand your ground/.test(o.label)); p.choose(i); await new Promise((r) => setTimeout(r, 1800)); return !!document.querySelector('canvas.fightcanvas'); })()`] },
+    // deterministic: the world's loop is held, the fight starts and is stepped exactly 120 fixed frames (2 s), then held for the shot
+    `(async () => { const c = window.__lw, p = c.play; c.G.loop.paused = true; p.people.talkingWith('fewell'); p.startTalk('quay.lamplighters.stop'); const i = p.P.beat.options.findIndex((o) => /Stand your ground/.test(o.label)); p.choose(i); for (let k = 0; k < 120; k++) c.G.loop.step(); await new Promise((r) => setTimeout(r, 900)); return !!document.querySelector('canvas.fightcanvas'); })()`] },
 ];
