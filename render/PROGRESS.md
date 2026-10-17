@@ -49,3 +49,20 @@ magnifies paint. Every plate is at least 1920 x 1080.
     floor a mirror (indoor floors made matte), white arcs too green (now the 4100 K type).
 13. TODO Before and after stills (render/stills_all.sh), figures in the quay, Brine and weigh-house
     stills (render/v2/figs.mjs with the character lead's cast), and the honest read.
+14. DONE One look (author, 2026-10-17): design/LOOK-UNIFIED.md, rules R1 to R7 (one frame and
+    camera, one lighting model read from the plate's own light list, figures and effects in the
+    plate's style, values, painted effects, what a fight changes and what it must not, paper UI).
+15. DONE Fight ground from the plates: render/tools/arena_from_plate.mjs samples each place's world
+    on a 1 m grid into the combat arena format (solid cells under painted walls and furniture,
+    lights and anchors from the place's lamps and rig spots, spawns, exits, the light each cell
+    stands in per variant, the stage line). content/<plate>/arena-<id>.json for quay, floor,
+    gully, mole, brine, weigh, lamp, gut, dogs, hill (station), gasholder, ropewalk, spit.
+16. DONE `place.json` now carries `lights[variant]`, `arenas`, and `marks.fight` / `marks.fights`
+    (world spawns, anchors, the ground radius) for the combat converter (combat/sim/plate.mjs).
+    Committed 02df6a8 and 6a5c93c.
+17. DONE (mock-ups) Mode stills: render/modes.mjs renders one place walking, talking and fighting
+    by the rules (render/stills/modes/), with the old modes copied beside them as before-*.png.
+    The talk panel and the fight strip are mock-ups of the paper style (bars for text).
+Own slip, recorded: two short jobs (a 40 s room re-bake and the first mode stills) ran while both
+bake lanes were busy, three heavy jobs for under a minute. The chained scripts (render/after.sh,
+finish.sh, final.sh, extra.sh) keep to two from here.
