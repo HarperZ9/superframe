@@ -81,11 +81,20 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
   // Bodies keep apart (about 0.6 m centre to centre): a step that brings `who` nearer than that to
   // anyone else is refused; a step away is always allowed, so nobody sticks.
   const SEP = 0.6;
+  // A seated body reaches its knees and feet about 0.8 m forward of the chair (character lead): its
+  // keep-out is the segment from the seat to 0.8 m along its facing, not only the seat.
+  const SEAT_REACH = 0.8;
+  function bodyDist(o, x, z) {
+    if (o.pose !== "seated") return Math.hypot(x - o.at[0], z - o.at[2]);
+    const dx = Math.cos(o.face || 0) * SEAT_REACH, dz = Math.sin(o.face || 0) * SEAT_REACH;
+    const t = Math.max(0, Math.min(1, ((x - o.at[0]) * dx + (z - o.at[2]) * dz) / (SEAT_REACH * SEAT_REACH)));
+    return Math.hypot(x - (o.at[0] + dx * t), z - (o.at[2] + dz * t));
+  }
   function crowded(who, from, nx, nz) {
     for (const o of figures(true)) {
       if (o.who === who) continue;
-      const d1 = Math.hypot(nx - o.at[0], nz - o.at[2]); if (d1 >= SEP) continue;
-      if (d1 < Math.hypot(from[0] - o.at[0], from[2] - o.at[2])) return true;
+      const d1 = bodyDist(o, nx, nz); if (d1 >= SEP) continue;
+      if (d1 < bodyDist(o, from[0], from[2])) return true;
     }
     return false;
   }

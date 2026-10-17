@@ -51,7 +51,10 @@ async (opts) => {
     if (ratio != null && (ratio < band[0] || ratio > band[1])) out.fails.push(`${f.who}: figure mid-tone ${row.figureLum} against plate ${row.plateLum} (ratio ${row.ratio}, band ${band.join(" to ")})`);
   }
   // bodies inside bodies: two figures' feet nearer than 0.5 m
-  for (let i = 0; i < figs.length; i++) for (let j = i + 1; j < figs.length; j++) { const d = Math.hypot(figs[i].at[0] - figs[j].at[0], figs[i].at[2] - figs[j].at[2]); if (d < 0.5) out.fails.push(`${figs[i].who} and ${figs[j].who}: ${d.toFixed(2)} m apart (bodies overlap)`); }
+  // a seated figure's knees and feet reach 0.8 m along its facing: measured to that segment
+  const faceOf = (f) => { const pf = (play.people.figures ? play.people.figures() : []).find((x) => x.who === f.who); return pf ? pf.face || 0 : 0; };
+  const bd = (a, b) => { const s = a.pose === "seated" ? a : b.pose === "seated" ? b : null, o = s === a ? b : a; if (!s) return Math.hypot(a.at[0] - b.at[0], a.at[2] - b.at[2]); const fc = faceOf(s), dx = Math.cos(fc) * 0.8, dz = Math.sin(fc) * 0.8, t = Math.max(0, Math.min(1, ((o.at[0] - s.at[0]) * dx + (o.at[2] - s.at[2]) * dz) / 0.64)); return Math.hypot(o.at[0] - (s.at[0] + dx * t), o.at[2] - (s.at[2] + dz * t)); };
+  for (let i = 0; i < figs.length; i++) for (let j = i + 1; j < figs.length; j++) { const d = bd(figs[i], figs[j]); if (d < 0.5) out.fails.push(`${figs[i].who} and ${figs[j].who}: ${d.toFixed(2)} m apart (bodies overlap${figs[i].pose === "seated" || figs[j].pose === "seated" ? ", a seated figure's knees included" : ""})`); }
   const ma = med(shadows.map((x) => x.a));
   // stacked: darker than one shadow (edges and repeats already left out); how many of those lie inside two
   // figures' contact ellipses is reported beside it (underTwo), as a reading aid only: it does not change the count
