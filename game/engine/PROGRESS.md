@@ -188,6 +188,12 @@ R1 to R13 from that file.
     load; validator warns on gates that can never pay; harness reports pages per act. Content has
     no @gate records yet: baseline pages by Act 3's end 3 to 7 per build. 109 tests pass.
 
+30. DONE @gate drafts and combat's asks: content/act{1,2,3}/gates{1,2,3}.lwd (15, 9 and 8
+    gates, guesses marked) validate clean; pages by Act 3's end 21 to 23 per style, Eye 11, against
+    a pace of 44 (table in NOTES). Shared sight rule visibility() in world/stealth.mjs, used by the
+    sneaks; tide datum in the tidal plates' place.json; harness build fistmax pinned to combat's
+    focused Fist (8 of 8 fights won). 110 tests pass.
+
 ## Log
 - 2026-10-16 23:00Z: resumed after the previous session stopped at a usage limit. Inventory: 25
   files, 1950 lines, no tests/ folder. Smoke run: test content loads with 0 errors, the slice
@@ -214,3 +220,4 @@ R1 to R13 from that file.
 - 2026-10-17 04:54Z: collier measured with the fixed attentive policy.
 - 2026-10-17 05:01Z: fights in the world; build layer; save v4.
 - 2026-10-17 05:21Z: gate pages in the engine; awaiting @gate records.
+- 2026-10-17 05:40Z: gate drafts in, five builds re-run; combat's three asks done; NOTES entry.
