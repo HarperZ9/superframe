@@ -33,4 +33,14 @@ console.warn = warn0;
   expect(free > 0.3 && ahead() <= 0.32, `Gorm's pole pulled inside a 0.3 m reach (tip ahead ${free.toFixed(2)} m free, ${ahead().toFixed(2)} m clamped, wrist ${k.toFixed(0)} degrees)`);
   for (let i = 0; i < 40; i++) k = draw.keepToolClear(a, 2.2);
   expect(Math.abs(k) < 1 && Math.abs(ahead() - free) < 0.02, "with room again the wrist eases back to the clip's own pose"); }
+// solo: the visual check draws a figure alone and reads back its per-pixel depth
+{ const ctx = new Proxy({}, { get: (t, k) => (k in t ? t[k] : () => {}), set: (t, k, v) => { t[k] = v; return true; } });
+  globalThis.ImageData ||= class { constructor(w, h) { this.width = w; this.height = h; this.data = new Uint8ClampedArray(w * h * 4); } };
+  globalThis.OffscreenCanvas ||= class { constructor(w, h) { this.width = w; this.height = h; } getContext() { return { putImageData() {} }; } };
+  const P = { id: "keel", who: "keel", person: true, team: "town", x: 0, z: 0, face: 0, pose: { anim: "idle", loop: true } };
+  const res = draw(ctx, P, { x: 400, y: 500, ppm: 120, at: [0, 0, 0], depth: 30, cam: { yawDeg: 34, elevDeg: 34 }, W, lights: [], solo: true });
+  const vals = res && res.depth ? [...res.depth].filter((v) => v === v) : [];
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  expect(!!res && res.depth.length === res.w * res.h && vals.length > 500, `solo returns a per-pixel depth image (${res ? res.w + "x" + res.h : "none"}, ${vals.length} drawn pixels)`);
+  expect(vals.length && lo > 28.5 && hi < 31, `drawn depths sit round the figure's own (30): ${lo.toFixed(2)} to ${hi.toFixed(2)} (the head nearer than the feet)`); }
 process.exit(fails ? 1 : 0);

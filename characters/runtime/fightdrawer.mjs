@@ -170,7 +170,11 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     // (OCC_BIAS of slack for the geo buffer's half resolution), a hard mask first, then a one-pixel
     // feather at its edge, so a figure behind a post or a counter is cut cleanly and never ghosted;
     // props in the hands go through the same test
-    const vis = new Uint8Array(n).fill(1), dbg = globalThis.__lwFigureDebug ? new Float32Array(n).fill(NaN) : null;
+    const vis = new Uint8Array(n).fill(1), dbg = globalThis.__lwFigureDebug || args.solo ? new Float32Array(n).fill(NaN) : null;
+    // each figure pixel's depth along the camera's forward axis (metres, the plate's depthOf scale):
+    // kept for args.solo (the visual check compares true depths) and the debug flag
+    const dzAt = (px, py) => { const gi = py * ss * G.w + px * ss; return G.id[gi] && at ? (depth ?? 0) + (G.wp[gi * 3] - at[0]) * fw[0] + (G.wp[gi * 3 + 1] - at[1]) * fw[1] + (G.wp[gi * 3 + 2] - at[2]) * fw[2] : NaN; };
+    if (dbg && !(depthAt && depth != null)) for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) { const i = py * r.w + px; if (r.rgba[i * 4 + 3] > 0) dbg[i] = dzAt(px, py); }
     if (depthAt && depth != null) for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) {
       const i = py * r.w + px; if (r.rgba[i * 4 + 3] <= 0) continue;
       const gi = py * ss * G.w + px * ss, dz = G.id[gi] && at ? depth + (G.wp[gi * 3] - at[0]) * fw[0] + (G.wp[gi * 3 + 1] - at[1]) * fw[1] + (G.wp[gi * 3 + 2] - at[2]) * fw[2] : depth;
@@ -208,5 +212,8 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
       g.strokeStyle = `rgba(240,232,214,${0.35 + 0.5 * k})`; g.lineWidth = Math.max(1.5, truePpm * 0.03); g.beginPath(); g.ellipse(x, y, 0.6 * truePpm * (1.3 - 0.3 * k), 0.6 * truePpm * (1.3 - 0.3 * k) * 0.5, 0, 0, Math.PI * 2); g.stroke();
     }
     g.drawImage(c, ox, oy); g.restore();
+    // solo (the visual check draws each figure alone): the per-pixel depth of what was drawn, NaN where
+    // nothing was or where the painting hid it, in the image's own pixels placed at (ox, oy) on screen
+    if (args.solo && dbg) { for (let i = 0; i < n; i++) if (!vis[i] || d[i * 4 + 3] === 0) dbg[i] = NaN; return { depth: dbg, w: r.w, h: r.h, ox, oy }; }
   };
 }

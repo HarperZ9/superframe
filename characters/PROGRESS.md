@@ -373,3 +373,12 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     from that. The check now measures one shadow's own alpha. Keel sits in his chair through the shell
     (harbour-office still); he reads as sitting, but Lamb's walk-up spot (0.4, -0.6) stands inside his
     knees, since a seated body reaches about 0.6 m further forward than a standing one.
+60. DONE For the systems engineer's 74d9cdf: args.solo returns the drawn figure's per-pixel depth
+    ({ depth, w, h, ox, oy }, NaN where nothing is drawn or the painting hides it; drawer_test 11 of 11).
+    Seated convention checked: hips over args.at in x and z (Keel at (0.24, -0.53), facing -z from face
+    -pi/2). The seat height follows each body's legs (the root drops 0.46 m, the ground shift sets
+    the feet): Keel's hip lands near 0.55 m, Merrow's lower (short shins), so Merrow sits lower than a
+    0.45 m bench; a seat height in the args would fix that. Visual check at this state: 4 of 6 pass.
+    harbour-office's 52 "stacked" pixels are inside Lamb's lantern glass (a translucent pane, under
+    one ellipse or none: underTwo 0), not a shadow; brine-stove-chair fails on Lamb's footprint in
+    3 prop cells (collision, varies by run).
