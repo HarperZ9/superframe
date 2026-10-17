@@ -1,5 +1,8 @@
 // Districts and areas as data.
-//   @district id   name, about, zone, next (comma list), map (x y on the town map, 0..1)
+//   @district id   name, about, zone, next (comma list), map (x y on the town map, 0..1),
+//                  travel (minutes to walk there from a neighbouring district; @rules
+//                  travel-minutes, default 10), arrive (the area travel lands in; else the
+//                  district's first area)
 //   @area id       name, district, plate (content folder), variant, place (LWD place id),
 //                  spawn (x y z), grid (x0 z0 cell nx nz), walk (surface ids), enter (node, played
 //                  on the first visit; enter-every: yes plays it on every visit), footing,
@@ -23,7 +26,7 @@ export function loadDistricts(book) {
   const R = book.records || {}, errors = [], districts = {}, areas = {};
   for (const r of Object.values(R.district || {})) {
     const g = (k) => { const x = r.kv.find((e) => e.key === k); return x ? x.value.trim() : undefined; };
-    districts[r.id] = { id: r.id, name: g("name") || r.id, about: g("about") || "", zone: g("zone") || r.id, next: (g("next") || "").split(",").map((s) => s.trim()).filter(Boolean), map: vec(g("map")) || [0.5, 0.5], file: r.file, line: r.line };
+    districts[r.id] = { id: r.id, travel: g("travel") != null ? +g("travel") : null, arrive: g("arrive") || null, name: g("name") || r.id, about: g("about") || "", zone: g("zone") || r.id, next: (g("next") || "").split(",").map((s) => s.trim()).filter(Boolean), map: vec(g("map")) || [0.5, 0.5], file: r.file, line: r.line };
   }
   for (const r of Object.values(R.area || {})) {
     try { areas[r.id] = loadArea(r); } catch (e) { errors.push({ file: r.file, line: r.line, msg: `area ${r.id}: ${e.message}` }); }
@@ -98,6 +101,33 @@ export function createWorldMap(G, data) {
       return a.enter && (first || a.enterEvery) ? a.enter : null;
     },
     known: (d) => ((st().seen || {}).districts || []).includes(d),
+    // Travel from the Map: to a district next to this one (or any known one, the long way: the
+    // walk's minutes once per district between). travelTo(d) -> { minutes, why } without moving;
+    // travel(d) -> { minutes, node, why } moves Lamb: the clock runs, and Lamb arrives in the
+    // district's arrive area (or its first area) at its spawn; node is that area's enter node.
+    travelTo(d) {
+      const to = data.districts[d], here = api.district();
+      if (!to) return { minutes: 0, why: `There is no ${d} on the chart` };
+      if (here && here.id === d) return { minutes: 0, why: "Lamb is here already" };
+      const per = (x) => (x.travel != null ? x.travel : +G.rs.rules["travel-minutes"] || 10);
+      if (!here || here.next.includes(d)) return { minutes: per(to), why: null };
+      // the long way round: fewest districts between, through ones Lamb knows
+      const prev = new Map([[here.id, null]]), q = [here.id];
+      while (q.length) { const c = q.shift(); for (const n of (data.districts[c] || { next: [] }).next) if (!prev.has(n) && data.districts[n] && (n === d || api.known(n))) { prev.set(n, c); q.push(n); } }
+      if (!prev.has(d)) return { minutes: 0, why: "Lamb does not know the way there yet" };
+      let m = 0; for (let c = d; c && c !== here.id; c = prev.get(c)) m += per(data.districts[c]);
+      return { minutes: m, why: null };
+    },
+    travel(d) {
+      const t = api.travelTo(d); if (t.why) return { ...t, node: null };
+      const to = data.districts[d], a = (to.arrive && data.areas[to.arrive]) || Object.values(data.areas).find((x) => x.district === d);
+      G.advance(t.minutes);
+      const node = a ? api.enter(a.id) : null;
+      if (!a) { const p = Object.values(G.book.places).find((x) => x.district === d); if (p) G.setPlace(p.id); }
+      const seen = (st().seen ||= { areas: [], districts: [] }); if (!seen.districts.includes(d)) seen.districts.push(d);
+      G.emit("travel", { to: d, minutes: t.minutes });
+      return { minutes: t.minutes, node, why: null };
+    },
   };
   return api;
 }

@@ -26,8 +26,11 @@ const MAX_HOPS = 200;
 export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
   const talk = { beat: null, done: false, hub: null, stack: [], title, startId, node: null };
 
+  // A line carries the speaker's char id (whoId, from @char speaker:) beside the display name, and
+  // a face from its attributes ({face: wary}) for the portrait slot.
   function line(kind, who, text, extra = {}) {
     const l = { kind, who, text: text.includes("{{") ? G.fill(text) : text, ...extra };
+    const id = charIdOf(G, who); if (id) l.whoId = id;
     G.memory.log({ node: talk.node, ...l });
     return l;
   }
@@ -62,8 +65,8 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
       case "set": case "clear": case "do": runEffects(s.effects, S); return null;
       case "if": if (evaluate(s.cond, S)) runEffects(s.effects, S); return null;
       case "cmd": G.command(s.args, n.id); return null;
-      case "nar": if (shows(s)) lines.push(line("nar", "", s.value)); return null;
-      case "line": case "inst": { if (!shows(s)) return null; const who = s.who || n.speaker; if (s.kind === "line" && s.who) talk.speaker = s.who; lines.push(line(s.kind, who, s.text)); return null; }
+      case "nar": if (shows(s)) lines.push(line("nar", "", s.value, s.attrs && s.attrs.face ? { face: String(s.attrs.face) } : {})); return null;
+      case "line": case "inst": { if (!shows(s)) return null; const who = s.who || n.speaker; if (s.kind === "line" && s.who) talk.speaker = s.who; lines.push(line(s.kind, who, s.text, s.attrs && s.attrs.face ? { face: String(s.attrs.face) } : {})); return null; }
       case "read": { const out = G.read(s.value.split(/\s+/)); if (out) lines.push(line("inst", out.who, out.text)); return null; }
       case "voice": voice(s, lines); return null;
       case "passive": {
@@ -191,6 +194,8 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
   // Do an interaction verb inside a conversation: its lines, then its node if it names one.
   talk.verb = (obj, kind) => { const r = G.verbs.act(obj, kind); if (r.why) return { ...talk.beat, why: r.why }; return r.node ? play(r.node, 0, r.lines) : finish({ ...talk.beat, lines: r.lines }); };
   talk.jump = (id) => play(id);
+  // the speaker's char id beside talk.speaker (the display name), for portraits and the people layer
+  Object.defineProperty(talk, "speakerId", { get: () => charIdOf(G, talk.speaker), enumerable: true });
   talk.start = () => { G.activeTalk = talk; G.emit("talk.start", { node: startId, title }); return play(startId); };
   return talk;
 }
@@ -201,4 +206,12 @@ function placeHub(G) {
   const here = G.state.place;
   for (const n of Object.values(G.book.nodes)) if (n.hub && n.steps.some((s) => s.kind === "place" && s.value === here)) return n.id;
   return null;
+}
+
+// The char id behind a display name: the @char whose speaker: (or id) matches, case aside.
+const speakerIds = new WeakMap();
+export function charIdOf(G, who) {
+  if (!who) return null;
+  let m = speakerIds.get(G.rs); if (!m) { m = new Map(); for (const c of Object.values(G.rs.chars || {})) { m.set(String(c.speaker).toUpperCase(), c.id); m.set(String(c.id).toUpperCase(), c.id); } speakerIds.set(G.rs, m); }
+  return m.get(String(who).toUpperCase()) || null;
 }

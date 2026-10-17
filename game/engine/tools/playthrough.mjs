@@ -54,7 +54,7 @@ function playGame({ build = null, seed = 1, shuffleSeed = seed }) {
     R.acts.push(act);
     try { act.end = playAct(G, C, R, act, { build, seed, shuffleSeed }); }
     catch (e) { R.errors.push(`act ${a + 1}: ${e.message} @ ${(e.stack || "").split("\n").slice(1, 3).map((x) => x.trim()).join(" < ")}`); R.stall = R.stall || { act: a + 1, node: G.activeTalk && G.activeTalk.node, why: e.message }; }
-    act.pages = G.state.sheet.xp; act.gatePages = Object.keys(G.state.gates || {}).length; // cumulative at the act's end
+    act.pages = G.state.sheet.xp; act.top = Math.max(...Object.keys(G.rs.attrs).map((k) => G.sheet.attrBase(k))); act.steps = R.steps; act.gatePages = Object.keys(G.state.gates || {}).length; // cumulative at the act's end
     act.clock = clock(G); act.unfired = C.book.events.filter((e) => !G.state.fired.includes(e.id)).map((e) => e.id);
     R.learned = G.state.flags.filter((f) => /\.move_\w+$/.test(f)); R.weapon = (G.inv.worn() || {}).hand || "w.case";
     if (!act.end) break;
@@ -88,6 +88,8 @@ function watch(G, R) {
   G.on("flag", (e) => { if (e.on) R.sets.add(e.id); if (e.on && (e.id === "collier.through" || e.id === "collier.spit")) R.collierAt = collierInputs(G); });
   const call = G.scope.call.bind(G.scope);
   G.scope.call = (name, args, S) => { if (name === "has" && args[0] && args[0].k === "id") R.reads.add(args[0].name); return call(name, args, S); };
+  // the first compartment at 8 and at 10 (SYSTEMS-FULL 19.4 pace): act, clock, and how far into the act
+  G.on("attr.raised", (e) => { for (const k of [8, 10]) if (e.value >= k && !(R.reach || {})[k]) (R.reach ||= {})[k] = { attr: e.id, act: R.acts.length, clock: clock(G), step: R.steps }; });
 }
 const clock = (G) => { const c = G.clock(); return `${String(Math.floor(c / 60) % 24).padStart(2, "0")}:${String(Math.floor(c % 60)).padStart(2, "0")}`; };
 
@@ -173,6 +175,8 @@ for (const r of runs) {
   const won = r.fights.filter((f) => f.outcome === "win" || f.outcome === "yield" || f.outcome === "talk").length;
   console.log(`\n== ${r.build} (menu shuffle ${r.shuffleSeed}): ${r.finished ? "FINISHED" : "did not finish"} (${r.steps} steps); fights won ${won} of ${r.fights.length}`);
   console.log(`   pages by the end of each act (gates paid): ${r.acts.map((a) => `act ${a.act} ${a.pages} (${a.gatePages})`).join(", ")}`);
+  const into = (x) => { if (!x) return "not reached"; const A = r.acts[x.act - 1], s0 = x.act > 1 ? r.acts[x.act - 2].steps : 0; return `${x.attr} in act ${x.act} at ${x.clock} (${Math.round((100 * (x.step - s0)) / Math.max(1, (A.steps ?? x.step) - s0))}% of its steps)`; };
+  console.log(`   highest compartment by the end of each act: ${r.acts.map((a) => `act ${a.act} ${a.top}`).join(", ")}; first at 8: ${into((r.reach || {})[8])}; first at 10: ${into((r.reach || {})[10])}`);
   for (const a of r.acts) console.log(`   act ${a.act}: ${a.end ? `ended ${a.end}` : "no end"} at ${a.clock}, ${a.choices} choices; events never fired: ${a.unfired.length ? a.unfired.join(", ") : "none"}`);
   if (r.collier) console.log(`   collier: ${r.collier}; gale lamps kept: ${Object.entries(r.lamps).filter(([, v]) => v).map(([k]) => k.slice(6)).join(", ") || "none"}; rule inputs: ${JSON.stringify(r.collierWhy)}`);
   if (r.endings) console.log(`   endings: ${r.endings.end}; verdict ${r.endings.verdict || "none"}; Mother ${r.endings.mother}; Lamb ${r.endings.lamb}; causes ${r.endings.causes.join(", ") || "none"}`);

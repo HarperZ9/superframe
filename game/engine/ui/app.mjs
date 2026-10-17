@@ -129,7 +129,8 @@ function actions(ctx) {
 function listen(G) {
   G.on("trait.found", (d) => toast("Margin", `Found: ${d.name}`));
   G.on("gate", (d) => toast("A page", `${d.name}: ${d.pages === 1 ? "a page" : `${d.pages} pages`} to spend`)); // SYSTEMS-FULL 19.4
-  G.on("trait.done", (d) => { if (!d.granted) toast("Margin", `Inked: ${d.name}`); });
+  // trait.done shows as the inked leaf (ui/inked.mjs), not a toast
+  G.on("chapter", (d) => toast("A chapter", `A compartment can rise (${d.owed} to place on the Build page)`)); // SYSTEMS-FULL 19.4
   G.on("item.gain", (d) => toast("Pack", `${d.name} ${d.n > 1 ? `x${d.n}` : ""}`));
   G.on("quest", (d) => toast("Claims", `${d.name}: ${d.text}`));
   G.on("level", (d) => toast("Sheet", `A new page to spend (${d.points})`));

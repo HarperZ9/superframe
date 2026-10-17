@@ -247,6 +247,10 @@ export function applyMax(G, build) {
 }
 
 export function upkeep(G, build, { attend = false } = {}) {
+  // chapter pages (19.4) into the build's own compartment first, then its next one, then any
+  if (G.sheet.chapters) for (let guard = 0; G.sheet.chapters() > 0 && guard < 20; guard++) {
+    const c = [...BUILDS[build].comps, ...Object.keys(G.rs.attrs)].find((id) => G.sheet.canRaiseAttr(id)); if (!c) break; G.sheet.raiseAttr(c);
+  }
   for (let guard = 0; G.state.sheet.points > 0 && guard < 20; guard++) {
     const v = BUILDS[build].voices.find((id) => G.rs.skills[id] && G.sheet.canRaise(id));
     if (v) { G.sheet.raise(v); continue; }

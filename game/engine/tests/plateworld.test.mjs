@@ -48,7 +48,7 @@ test("plate depth and the world point under a plate pixel follow the bake camera
   assert.ok(qy < py && Math.abs(qx - px) < 1e-6, "up is up the screen");
 });
 
-test("a fight from a scene starts where it stands: Lamb on her spot, figures on theirs, marks moved", () => {
+test("a fight from a scene starts where it stands: Lamb on the spot Lamb stood on, figures on theirs, marks moved", () => {
   const G = {
     state: { pos: [10, 0, 2] },
     world: { figures: () => [{ id: "keel", at: [12, 0, 3] }, { id: "other", at: [0, 0, 0] }] },

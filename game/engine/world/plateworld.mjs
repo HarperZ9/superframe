@@ -110,7 +110,7 @@ export function depthAt(place, pos, px, py, B = camBasis(place.camera)) {
 
 // A fight on a painted plate (the play screen hands combat the plate's arena) takes the art lead's
 // fight marks for the encounter's arena id laid where the scene stands, so a fight from a
-// conversation starts where it was: Lamb on her own spot, each foe who is a figure in the scene on
+// conversation starts where it was: Lamb on Lamb's own spot, each foe who is a figure in the scene on
 // that figure's spot, the other foes on the marks moved by the same offset as Lamb's mark (props
 // and anchors stay on their marks). Returns the figure ids the fight takes over.
 const charOf = (rec) => { const x = rec && rec.kv && rec.kv.find((e) => e.key === "char"); return x ? x.value.trim() : null; };

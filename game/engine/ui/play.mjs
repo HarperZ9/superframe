@@ -6,7 +6,7 @@
 // plate walks Lamb there (onto a hotspot or exit, it opens it on arrival), a hotspot or exit
 // chosen from the list is walked to first, and a fight started from a conversation plays on the
 // same plate and ground (the plate's arena with the art lead's fight marks, combat/sim/plate.mjs),
-// after which Lamb stands where the fight left her and walks on.
+// after which Lamb stands where the fight ended and walks on.
 import { h, btn, clear } from "./dom.mjs";
 import { hudEl, meterMarks } from "./scene.mjs";
 import { plateCam } from "./platecam.mjs";

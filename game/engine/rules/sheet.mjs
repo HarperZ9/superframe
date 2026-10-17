@@ -28,11 +28,33 @@ export function createSheetApi(G) {
     cap: (id) => { const sk = rs.skills[id]; return (sk && sk.attr ? api.attrBase(sk.attr) : 0) + rs.rules["skill-cap"]; },
     // Pages (points) buy ranks up to the cap. Skills with train: no never take ranks (R2).
     canRaise: (id) => S().points > 0 && !!rs.skills[id] && rs.skills[id].train !== false && api.skillBase(id) + api.ranks(id) < api.cap(id),
-    raise(id) { if (!api.canRaise(id)) return false; S().ranks[id] = api.ranks(id) + 1; S().points--; G.emit("skill.raised", { id, value: api.skill(id) }); return true; },
+    raise(id) { if (!api.canRaise(id)) return false; const s = S(); s.ranks[id] = api.ranks(id) + 1; s.points--; (s.bought ||= {})[id] = (s.bought[id] || 0) + 1; G.emit("skill.raised", { id, value: api.skill(id) }); return true; },
+    // Chapter pages (SYSTEMS-FULL 19.4): every chapter-every'th page filed (default 3) also raises
+    // one compartment by 1, the player's choice, up to chapter-attr-max (10). chapters() is how
+    // many are owed now; raiseAttr(id) spends one.
+    pagesFiled: () => (S().level - 1) * (+rs.rules["points-per-level"] || 1),
+    chapters() { const every = +rs.rules["chapter-every"] || 3, s = S(), spent = Object.values(s.chapter || {}).reduce((a, n) => a + n, 0); return Math.max(0, Math.floor(api.pagesFiled() / every) - spent); },
+    canRaiseAttr: (id) => !!rs.attrs[id] && api.chapters() > 0 && api.attrBase(id) < (+rs.rules["chapter-attr-max"] || 10),
+    raiseAttr(id) { if (!api.canRaiseAttr(id)) return false; const s = S(); s.attrs[id] = api.attrBase(id) + 1; (s.chapter ||= {})[id] = (s.chapter[id] || 0) + 1; G.emit("attr.raised", { id, value: api.attr(id) }); return true; },
+    // Re-filing the case (19.4): at a daylight page every rank a page bought and every chapter raise
+    // is taken back, to be spent again. Archetype ranks and Margin slots stay.
+    canRefile: () => { try { return +G.env.term("daylight") >= 0.5; } catch (e) { return false; } },
+    refile({ force = false } = {}) {
+      if (!force && !api.canRefile()) return false;
+      const s = S(); let back = 0;
+      for (const [id, n] of Object.entries(s.bought || {})) { s.ranks[id] = Math.max(0, (s.ranks[id] || 0) - n); if (!s.ranks[id]) delete s.ranks[id]; back += n; }
+      for (const [id, n] of Object.entries(s.chapter || {})) s.attrs[id] = api.attrBase(id) - n;
+      s.points += back; s.bought = {}; s.chapter = {};
+      G.emit("sheet.refiled", { pages: back, chapters: api.chapters() });
+      return true;
+    },
     xpForLevel: (level) => (level - 1) * rs.rules["xp-per-level"],
     addXp(n) {
       const s = S(); s.xp += n; G.emit("xp", { amount: n, total: s.xp });
-      while (s.xp >= api.xpForLevel(s.level + 1)) { s.level++; s.points += rs.rules["points-per-level"]; G.emit("level", { level: s.level, points: s.points }); }
+      while (s.xp >= api.xpForLevel(s.level + 1)) {
+        s.level++; s.points += rs.rules["points-per-level"]; G.emit("level", { level: s.level, points: s.points });
+        if (api.pagesFiled() % (+rs.rules["chapter-every"] || 3) === 0) G.emit("chapter", { owed: api.chapters() });
+      }
     },
     resMax: (id) => { const r = rs.resources[id]; return r ? (+evaluate(r.max, G.scope) || 0) + sum(active(`res.${id}.max`)) : 0; },
     res: (id) => { const s = S(); if (s.res[id] == null) s.res[id] = api.resStart(id); return s.res[id]; },
