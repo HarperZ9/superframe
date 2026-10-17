@@ -130,7 +130,11 @@ function attData(G) {
   // how many choices each scene is from one that hangs the lantern in the Old Light
   const toLantern = {}, lq = Object.values(N).filter((n) => n.steps.some((s) => s.effects && [...s.effects.calls].some(([nm, cs]) => nm === "set" && cs.some((a) => a[0] === "oldlight.lanterns")))).map((n) => [n.id, 0]);
   while (lq.length) { const [id, dd] = lq.shift(); if (id in toLantern) continue; toLantern[id] = dd; if (dd < 8) for (const f of into[id] || []) lq.push([f, dd + 1]); }
-  const d = { loss, defend, wants, placeOf, toDefend, toLantern };
+  // interrogations (SYSTEMS-FULL 20): their opening nodes, and how many choices each scene is from one
+  const starts = new Set(Object.values(N).filter((n) => n.steps.some((s) => s.effects && [...s.effects.calls].some(([nm]) => nm === "interrogate"))).map((n) => n.id));
+  const toScene = {}, sq = [...starts].map((id) => [id, 0]);
+  while (sq.length) { const [id, dd] = sq.shift(); if (id in toScene) continue; toScene[id] = dd; if (dd < 4) for (const f of into[id] || []) sq.push([f, dd + 1]); }
+  const d = { loss, defend, wants, placeOf, toDefend, toLantern, starts, toScene };
   attCache.set(G.book, d); return d;
 }
 
@@ -173,6 +177,14 @@ export function attentive(G, I, menu, o = null) {
     const c = ((G.clock() % 1440) + 1440) % 1440;
     // from 02:30 to 04:00, head for the wreckers' place by the fewest choices (it takes walking)
     if (c >= 150 && c < 240 && A.defend.size) { const dd = A.toDefend[o.s.target]; if (dd != null) sc += 30 * Math.pow(0.7, dd); } // urgent: beats the revisit penalty
+  }
+  // leads (director, 2026-10-17): an interrogation's opening option once offered, and word brought by
+  // an event ("Go to the Brine.") toward one, are followed; a scene already played is not sought again
+  if (o) {
+    const t = o.s.target;
+    if (A.starts.has(t) && !G.memory.visits(t)) sc += 12;
+    else if (String(o.node || "").startsWith("@event.") && A.toScene[t] != null) sc += 8 * Math.pow(0.7, A.toScene[t]);
+    else if (A.toScene[t] != null && A.toScene[t] <= 2) { const seen = [...A.starts].some((x) => G.memory.visits(x) && (A.toScene[t] === 0)); if (!seen) sc += 4 * Math.pow(0.7, A.toScene[t]); } // a scene two choices away is a lead too
   }
   // a promise to tend Mother that the night may not let Lamb keep is not made (keep it or not make it)
   if (I.has("sets:said.day2_mother")) sc -= 6;

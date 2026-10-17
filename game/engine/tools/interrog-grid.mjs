@@ -82,7 +82,7 @@ export async function runLieGrid(X) {
     const C = X.contents[sc.ai], G = X.createFullGame({ content: C, seed: 1, state: structuredClone(snap.state) });
     row.factHeld = sc.def.lies.map((l) => !l.catch || l.catch.some((f) => G.flag(f)));
     row.facts = sc.def.lies.map((l) => (l.catch || []).filter((f) => G.flag(f)));
-    out.push({ ...row, ...playScene(X, G, C, sc.id, build, { lie: "always" }) });
+    out.push({ ...row, ...playScene(X, G, C, sc.id, build, { lie: X.opt.attentive ? "held" : "always" }) }); // the attentive player calls a lie only holding the fact
   }
   console.log("act  interrogation  build   reached (menu, option open)            lie said  catch fact held          caught  outcome");
   for (const r of out) {
