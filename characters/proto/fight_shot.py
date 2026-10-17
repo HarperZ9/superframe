@@ -9,6 +9,7 @@ try:
         b = p.chromium.launch(headless=True, args=["--disable-gpu", "--disable-gpu-compositing", "--disable-accelerated-2d-canvas"])
         for (w, h, name) in [(1280, 720, os.environ.get('SHOT_NAME', '09-fight-inworld') + '.png'), (1920, 1080, os.environ.get('SHOT_NAME', '09-fight-inworld') + '-1080.png')]:
             pg = b.new_page(viewport={'width': w, 'height': h}); logs = []
+            if os.environ.get('FIG_LOOK') is not None: pg.add_init_script(f"globalThis.__lwFigureLook = {repr(os.environ['FIG_LOOK'])};")
             pg.on('console', lambda m: logs.append(m.type + ': ' + m.text)); pg.on('pageerror', lambda e: logs.append('PAGEERROR ' + str(e)))
             pg.goto(f'http://127.0.0.1:{port}' + (os.environ.get('SHOT_URL') or '/characters/proto/fight_shot.html?shot=fight')); pg.wait_for_timeout(int(sys.argv[2]) if len(sys.argv) > 2 else 5000)
             pg.screenshot(path=os.path.join(root, 'characters', 'stills', name)); print(name); print('\n'.join(l for l in logs if 'error' in l.lower())[:2000]); pg.close()

@@ -283,3 +283,13 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     out/forge-keel.png. Per-person proportions still come from the costume scripts' P records; a sheet
     cannot yet override the rig's proportions (the next forge step, with the bodies, after the art
     direction).
+55. DONE Silhouette test at 1080p gameplay zoom (coordinator: only the white surplice read; pick by
+    testing). Four treatments in the drawer, switchable for tests (globalThis.__lwFigureLook): lift
+    (faces and hands 1.75x brighter), outline (a thin line in the ruling light's colour just outside
+    the silhouette), shadow (a larger, darker contact shadow), pool (a faint lamp pool under the feet);
+    shot through the engine's play.html?shot=fight and compared at native 1080p pixels
+    (stills/12-silhouette-test-1080.png). Result, by eye: on the dark quay the shadow and the pool
+    vanish (dark on dark); lift alone shows faces and hands but not the body; the outline makes every
+    figure read as a shape against dark ground; lift with outline reads best (shape and face).
+    Chosen: lift + outline (drawer default). Cost: the outline reads a little like a cut-out against
+    bright ground; keep an eye on it in the lit pools. stills/11-oneshell-fight-1080.png retaken.

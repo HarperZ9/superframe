@@ -8,6 +8,7 @@
 // vertical metre there (the plate camera's scaleAt), F combat's fighter, W combat's world.
 import { createCast } from "./actor.mjs";
 import { RIGS } from "../render/rigs.mjs";
+import { MATS } from "../rig/materials.mjs";
 import * as lamb from "../cast/lamb.mjs";
 import * as fennick from "../cast/fennick.mjs";
 import * as marrow from "../cast/marrow.mjs";
@@ -64,7 +65,12 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     };
   }
   const D2R = Math.PI / 180, fwdOf = (cam) => { const y = cam.yawDeg * D2R, e = cam.elevDeg * D2R; return [-Math.sin(y) * Math.cos(e), -Math.sin(e), -Math.cos(y) * Math.cos(e)]; };
+  // Silhouette treatment, chosen by testing at 1080p gameplay zoom (characters/PROGRESS.md step 55);
+  // globalThis.__lwFigureLook overrides it for tests: any of lift, outline, shadow, pool, comma-separated.
+  const LIFT_IDS = new Set(["skin", "cheek", "jawcool", "lip"].map((n) => MATS[n].id));
+  const LOOK_DEFAULT = "lift,outline";   // the test: outline read best on dark ground, lift added faces and hands; shadow and pool vanished on dark ground
   return function drawFighter(g, F, args) {
+    const look = new Set(String(globalThis.__lwFigureLook ?? LOOK_DEFAULT).split(",").map((x) => x.trim()).filter(Boolean));
     const { x, y, ppm, face, down, W, at, depth, depthAt, lights, darkness } = args;
     const cam = args.cam || camera, who = bodyOf(W, F);
     let a = actors.get(F.id);
@@ -84,11 +90,21 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
         const gi = py * ss * G.w + px * ss, dz = G.id[gi] && at ? depth + (G.wp[gi * 3] - at[0]) * fw[0] + (G.wp[gi * 3 + 1] - at[1]) * fw[1] + (G.wp[gi * 3 + 2] - at[2]) * fw[2] : depth;
         if (depthAt(ox + px, oy + py) < dz - 0.35) continue;
       }
-      for (let k = 0; k < 3; k++) d[i * 4 + k] = Math.round(Math.max(0, Math.min(1, r.rgba[i * 4 + k])) * 255); d[i * 4 + 3] = Math.round(al * 255);
+      let lift = 1;
+      if (look.has("lift")) { const gi = py * ss * G.w + px * ss; if (LIFT_IDS.has(G.id[gi])) lift = 1.75; }   // faces and hands catch the light
+      for (let k = 0; k < 3; k++) d[i * 4 + k] = Math.round(Math.max(0, Math.min(1, r.rgba[i * 4 + k] * lift + (lift > 1 ? 0.05 : 0))) * 255); d[i * 4 + 3] = Math.round(al * 255);
+    }
+    if (look.has("outline")) {   // a thin line of the ruling light just outside the silhouette
+      const rc = R.rig.fresnel ? R.rig.fresnel.c.map((v) => Math.min(1, v * 2.4)) : [0.9, 0.8, 0.6], src = new Uint8ClampedArray(d), wpx = Math.max(1, Math.round(truePpm / 70));
+      for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) { const i = py * r.w + px; if (src[i * 4 + 3] > 40) continue; let hit = false;
+        for (let dy = -wpx; dy <= wpx && !hit; dy++) for (let dx = -wpx; dx <= wpx; dx++) { const X = px + dx, Y = py + dy; if (X < 0 || Y < 0 || X >= r.w || Y >= r.h) continue; if (src[(Y * r.w + X) * 4 + 3] > 200) { hit = true; break; } }
+        if (hit) { d[i * 4] = rc[0] * 255; d[i * 4 + 1] = rc[1] * 255; d[i * 4 + 2] = rc[2] * 255; d[i * 4 + 3] = 170; } }
     }
     const c = (drawFighter.scratch ||= new OffscreenCanvas(8, 8)); c.width = r.w; c.height = r.h; c.getContext("2d").putImageData(img, 0, 0);
     g.save();
-    g.fillStyle = "rgba(8,4,10,0.45)"; g.beginPath(); g.ellipse(x, y, 0.42 * truePpm, 0.42 * truePpm * Math.sin(cam.elevDeg * D2R), 0, 0, Math.PI * 2); g.fill();   // contact shadow
+    const sr = look.has("shadow") ? 0.62 : 0.42, sa = look.has("shadow") ? 0.72 : 0.45;
+    if (look.has("pool")) { const gr = g.createRadialGradient(x, y, 0, x, y, 0.9 * truePpm); gr.addColorStop(0, "rgba(255,220,170,0.28)"); gr.addColorStop(1, "rgba(255,220,170,0)"); g.save(); g.scale(1, Math.sin(cam.elevDeg * D2R)); g.fillStyle = gr; g.beginPath(); g.arc(x, y / Math.sin(cam.elevDeg * D2R), 0.9 * truePpm, 0, Math.PI * 2); g.fill(); g.restore(); }
+    g.fillStyle = `rgba(8,4,10,${sa})`; g.beginPath(); g.ellipse(x, y, sr * truePpm, sr * truePpm * Math.sin(cam.elevDeg * D2R), 0, 0, Math.PI * 2); g.fill();   // contact shadow
     // telegraph: an opponent's wind-up on a move combat marks with a tell gets a pale ring at the feet
     const m = F.act && W.moves ? W.moves[F.act.id] : null;
     if (F.team !== "lamb" && m && m.tell && F.act.f >= m.tell.at[0] && F.act.f < m.tell.at[1]) {
