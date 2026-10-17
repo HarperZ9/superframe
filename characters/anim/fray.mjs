@@ -46,7 +46,7 @@ function oneHanded(cls) {
 
 function twoHanded(cls) {
   const g = GUARDS.two;
-  const rise = { root: { y: 0.02 }, spine: { bend: -14 }, chest: { turn: -6, bend: -20 }, clavR: { lift: 18 }, armR: { fwd: 160, out: 18 }, foreR: { bend: 70 }, handR: { bend: 30 }, thighL: { fwd: 28 } };
+  const rise = { root: { y: 0.02 }, spine: { bend: -14 }, chest: { turn: -6, bend: -20 }, clavR: { lift: 18 }, armR: { fwd: 160, out: 18 }, foreR: { bend: cls === "long" ? 36 : 70 }, handR: { bend: cls === "long" ? 6 : 30 }, thighL: { fwd: 28 } };   // a long pole stays raised behind the head; a maul drops down the back
   const slam = { root: { y: -0.24, zf: 0.9 }, spine: { bend: 34 }, chest: { bend: 24, turn: -4 }, armR: { fwd: 52, out: 14 }, foreR: { bend: 10 }, handR: { bend: 40 }, thighL: { fwd: 56 }, shinL: { bend: 60 }, thighR: { fwd: -32 }, shinR: { bend: 36 } };
   const heavy = (name, hold) => ph(`${cls}.${name}`, [
     { at: ["s", 0], pose: g }, { at: ["s", hold], pose: G(g, rise) }, { at: ["s", 1], pose: G(g, { ...rise, root: { y: 0.03, zf: 0.08 }, armR: { fwd: 172, out: 16 } }) },
