@@ -17,7 +17,7 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 
 /* ---- play: one scene, paper slides over its edges ---- */
 .screen.play > .talk {
-  display: grid; width: clamp(24rem, 33.4vw, 40rem);
+  display: grid; width: var(--talk-w);
   transform: translateX(2rem); opacity: 0; visibility: hidden; pointer-events: none;
   transition: transform var(--t-out) var(--ease-in), opacity var(--t-out) var(--ease-in), visibility 0s linear var(--t-out);
 }
@@ -58,7 +58,7 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 
 /* ---- prompts tab, top right: only what can be done now, for the device in use ---- */
 .topbar { right: var(--safe); top: var(--safe); gap: 0.3rem; }
-.play.talking .topbar { right: calc(clamp(24rem, 33.4vw, 40rem) + var(--safe)); transition: right var(--t-in) var(--ease-out); }
+.play.talking .topbar { right: calc(var(--talk-w) + var(--safe)); transition: right var(--t-in) var(--ease-out); }
 .chip { min-height: var(--hit); display: inline-flex; align-items: center; gap: 0.45rem; }
 .key { display: inline-flex; align-items: center; justify-content: center; min-width: 1.5em; height: 1.5em; padding: 0 0.35em; font-family: var(--body); font-size: var(--fs-xs); font-weight: 600; color: var(--ink); border: 1px solid var(--rule-ink); border-bottom-width: 2px; border-radius: 3px; background: rgba(255, 255, 255, 0.35); line-height: 1; font-variant-numeric: tabular-nums; }
 .key.pad { border-radius: 999px; min-width: 1.6em; border-bottom-width: 1px; }
@@ -256,7 +256,7 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 
 /* the inked page: a Daybook leaf, top right, clear of the talk panel's options */
 .leaf { position: absolute; right: var(--safe); top: calc(var(--safe) + var(--hit) + 0.6rem); width: min(28rem, 40vw); padding: 1rem 1.2rem 0.8rem; z-index: 30; box-shadow: var(--shadow); animation: pagein var(--t-in) var(--ease-out) both; }
-.screen.play.talking ~ .leaf, body:has(.screen.play.talking) .leaf { right: calc(clamp(24rem, 33.4vw, 40rem) + var(--safe)); }
+.screen.play.talking ~ .leaf, body:has(.screen.play.talking) .leaf { right: calc(var(--talk-w) + var(--safe)); }
 .leaf.going { animation: stripout var(--t-out) var(--ease-in) both; }
 .leaf .ltitle { margin: 0.2rem 0 0.4rem; font-size: var(--fs-l); font-weight: 700; border-bottom: 2px solid var(--ink); padding-bottom: 0.25rem; }
 .leaf .ltext { font-style: italic; line-height: var(--line); margin: 0.3rem 0; text-wrap: pretty; }
@@ -290,3 +290,22 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 .portrait.noface { grid-template-columns: 1fr; padding-top: 0.4rem; }
 .portrait.noface .pframe { display: none; }
 :root.noportraits .portrait .pframe { display: none; }
+
+/* ---- talking in a live world (UI-SYSTEM 7.6) ---- */
+/* the slim panel is the default (UI-SYSTEM 7.6: measured against the wide one in a live world); data-panel="wide" keeps the old width */
+:root { --talk-w: clamp(21rem, 27vw, 34rem); }
+:root[data-panel="wide"] { --talk-w: clamp(24rem, 33.4vw, 40rem); }
+.edgemarks { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
+.edgemark { position: absolute; transform: translateY(-50%); display: flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.55rem; background: var(--paper); box-shadow: var(--shadow); font-size: var(--fs-s); font-weight: 600; animation: lnin var(--t-in) var(--ease-out) both; }
+.edgemark .arrow { font-size: var(--fs-xs); }
+.edgemark .emove { font-weight: 400; font-style: italic; color: var(--ink-2); }
+.edgemark.moving { border: 1.5px solid var(--ink); }
+.lietab { position: absolute; top: 42%; width: 12rem; padding: 0.5rem 0.7rem; z-index: 5; box-shadow: var(--shadow); animation: offerin var(--t-in) var(--ease-out) both; }
+.lietab .drain { height: 0.4rem; margin: 0.35rem 0; background: linear-gradient(to right, var(--ink) calc(var(--left, 1) * 100%), transparent 0); border: 1px solid var(--ink); }
+.lietab .lrow { display: flex; justify-content: space-between; align-items: center; font-variant-numeric: tabular-nums; font-weight: 600; }
+.lietab .lkeys { display: inline-flex; gap: 0.3rem; }
+.opt.lie { position: relative; }
+.opt.lie .liedrain { position: absolute; left: 0.5rem; right: 0.5rem; bottom: 0.1rem; height: 2px; transform-origin: left; transform: scaleX(0); background: var(--ink); }
+.play.lie-open .opt.lie .liedrain { transform: scaleX(var(--left, 0)); }
+.play.lie-open .opt.lie .lab { text-decoration: underline 2px; text-underline-offset: 3px; }
+.talkchip { font-weight: 700; }

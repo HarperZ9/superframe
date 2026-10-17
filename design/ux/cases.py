@@ -20,7 +20,7 @@ CASES = [
      ("key", "ArrowDown"), ("key", "ArrowDown"), ("shot", "check-focus2")]},
   {"name": "slide", "url": P + "world&motion", "steps": [
      ("expect", "getComputedStyle(document.querySelector('aside.talk')).visibility", "talk panel hidden in the world"),
-     ("key", "Enter"), ("wait", 60), ("shot", "slide-mid"), ("wait", 400), ("shot", "slide-end"),
+     ("key", "ArrowDown"), ("key", "ArrowUp"), ("key", "Enter"), ("wait", 60), ("shot", "slide-mid"), ("wait", 400), ("shot", "slide-end"),
      ("expect", "getComputedStyle(document.querySelector('aside.talk')).visibility === 'visible'", "Enter on a Here row opens the talk panel by sliding")]},
   {"name": "daybook", "url": P + "daybook-notes", "steps": [("shot", "daybook-1080"), ("key", "KeyE"), ("key", "KeyE"),
      ("expect", "document.querySelector('.tab.on').textContent", "E turns two pages"), ("pad", 4), ("expect", "document.querySelector('.tab.on').textContent", "pad LB turns back one"),
@@ -146,11 +146,11 @@ CASES += [
      ("expect", f"{FOC} !== window.__f1", "the d-pad moves the focus"), ("expect", f"{POS} === window.__p3", "the d-pad does not walk")]},
   {"name": "keys-talk", "url": P + "talk", "steps": [
      ("eval", f"window.__p0 = {POS}; window.__f0 = {FOC}"),
-     ("expect", "window.__shell.input.mode()", "talking is menu mode"),
-     ("down", "KeyS"), ("wait", 250), ("up", "KeyS"), ("wait", 200),
-     ("expect", f"{FOC} !== window.__f0", "S moves the focus through the options"), ("expect", f"{POS} === window.__p0", "S does not walk while talking"),
-     ("eval", f"window.__f1 = {FOC}"), ("stick", 0, 1, 250),
-     ("expect", f"{FOC} !== window.__f1", "the stick moves the focus while talking")]},
+     ("expect", "window.__shell.input.mode()", "talking is talk mode (live conversation)"),
+     ("key", "ArrowDown"), ("wait", 200),
+     ("expect", f"{FOC} !== window.__f0", "the Down arrow moves the focus through the options"), ("expect", f"{POS} === window.__p0", "the arrow does not walk while talking"),
+     ("eval", f"window.__f1 = {FOC}"), ("pad", 13), ("wait", 200),
+     ("expect", f"{FOC} !== window.__f1", "the d-pad moves the focus while talking (WASD and the stick walk off: the engineer's live talk)")]},
   {"name": "keys-daybook", "url": P + "world", "steps": [
      ("key", "Tab"), ("wait", 300), ("eval", f"window.__p0 = {POS}"),
      ("expect", "window.__shell.input.mode()", "the Daybook is menu mode"),
@@ -163,3 +163,12 @@ CASES += [{"name": "keys-scene", "url": P + "world&motion", "steps": [
   ("expect", "window.__shell.G.sneaks.current.state.x !== window.__x0", "arrows move Lamb in a scene"),
   ("eval", "window.__x1 = window.__shell.G.sneaks.current.state.x"), ("down", "KeyD"), ("wait", 800), ("up", "KeyD"),
   ("expect", "window.__shell.G.sneaks.current.state.x !== window.__x1", "WASD moves Lamb in a scene")]}]
+LW = "/engine/play.html?capture=1"
+SETUP_BRINE = "(() => { const c = window.__lw; c.newGame(11); c.G.create({ archetype: 'p.wader', enter: false }); c.G.setPlace('brine'); c.play(); if (c.play.P.talk) { c.play.P.talk = null; c.play.P.beat = null; c.play.render(); } })()"
+CASES += [
+  {"name": "pad-talk", "url": LW, "steps": [("eval", SETUP_BRINE), ("wait", 6000),
+     ("eval", "(() => { const p = window.__lw.play, G = window.__lw.G, hs = G.world.hotspots().filter(h => !(h.attrs && h.attrs.who) && h.at)[0]; window.__hs = hs.label; G.state.pos = [hs.at[0] + 1.6, hs.at[1], hs.at[2]]; p.people.walkTo([hs.at[0] + 1.0, hs.at[1], hs.at[2]], () => {}); })()"), ("wait", 7000),
+     ("shot", "pad-talk-prompt"),
+     ("expect", "(() => { const c = document.querySelector('.talkchip'); return c && !c.hidden ? c.textContent : null; })()", "the prompts tab offers Talk with its key"),
+     ("pad", 0), ("wait", 600), ("expect", "!!window.__lw.play.P.talk", "pad A talks to whoever Lamb faces"), ("shot", "pad-talk-open")]},
+]

@@ -77,6 +77,7 @@ function optionEl(G, o, i, { sel, termsAll, onChoose, rerender }) {
   const b = btn([head, h("span.body", tags.filter(Boolean).length ? h("span.tags", tags) : null, label, o.said ? h("span.said.caps", " said") : null)], () => onChoose(i, strain), { cls: `opt k-${o.kind}`, disabled: !!o.locked });
   if (c) b.setAttribute("aria-description", `${c.skillName} ${c.dc}, ${c.red ? "ink, once" : "pencil"}; you ${c.total + strain}, ${gapText({ ...c, total: c.total + strain })}`);
   b.dataset.opt = String(i);
+  if (o.lie) { b.classList.add("lie"); b.append(h("span.liedrain", { "aria-hidden": "true" })); } // ux: the lie window drains here (ui/livetalk.mjs)
   if (i === 0) b.dataset.first = "";
   const wrap = h("div.optwrap", b);
   if (c) wrap.append(checkLine({ ...c, total: c.total + strain }));

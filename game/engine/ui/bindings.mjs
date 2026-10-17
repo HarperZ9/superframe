@@ -74,7 +74,7 @@ export function watchDevice() {
 }
 
 // The glyph for a fight action (or a shell action given as { key, pad }) on the device in use.
-const SHELL = { confirm: { key: "Enter", pad: 0 }, back: { key: "Escape", pad: 1 }, daybook: { key: "Tab", pad: 8 }, pause: { key: "Escape", pad: 9 }, tabs: { key: "Q E", pad: "LB RB" }, sums: { key: "Shift", pad: 2 }, density: { key: "KeyN", pad: 3 }, plan: { key: "Left Right", pad: "Left Right" } };
+const SHELL = { confirm: { key: "Enter", pad: 0 }, back: { key: "Escape", pad: 1 }, daybook: { key: "Tab", pad: 8 }, pause: { key: "Escape", pad: 9 }, tabs: { key: "Q E", pad: "LB RB" }, sums: { key: "Shift", pad: 2 }, density: { key: "KeyN", pad: 3 }, speak: { key: "KeyF", pad: 0 }, lie: { key: "KeyN", pad: 3 }, plan: { key: "Left Right", pad: "Left Right" } };
 export function glyph(action, B = loadBindings(), d = dev) {
   const s = SHELL[action];
   if (d === "pad") {

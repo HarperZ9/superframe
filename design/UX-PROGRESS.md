@@ -78,3 +78,9 @@ and kept in order; each says what was done and where it landed.
     `ui/input.mjs`, set by the play screen; WASD and the stick walk, arrows and the d-pad move focus; every
     direction moves focus behind a panel. Tested with keyboard and a simulated pad; scenes and menus re-run
     clean.
+22. **Live talk** (coordinator, 2026-10-17): pad A talks in walk mode (F on the keyboard), N or Y calls a
+    lie; a Talk chip with its key when someone is faced. The panel measured in a live world
+    (`design/ux/livetalk_eval.py`): slim panel by default, framing on the free plate, edge marks for
+    anyone behind the panel or off screen (12 of 12), a draining lie tab (6 of 6). Decision and numbers in
+    UI-SYSTEM 7.6. Tests: `pad-talk`, `keys-talk` (updated for walk-off in talk), `slide` (updated: Enter
+    talks unless a row was chosen).

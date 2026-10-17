@@ -330,6 +330,52 @@ about 38 percent from the top, head and shoulders; index `characters/portraits/i
 speaker ("Deacon Fennick") to the id (`fennick`); without it the shell tries the full name, then the
 last word, then the first.
 
+### 7.6 Talking in a live world
+
+Since 2026-10-17 the clock runs during conversations, people keep moving, Lamb can walk off, and
+interrogations happen on the plate with a 4 second window to call a lie. The panel covered the right
+third of a world that no longer waits. I measured two panel widths headless in the live quay
+conversation and the Brine interrogation (`design/ux/livetalk_eval.py`, results in
+`design/ux/shots/livetalk.json`, stills `live-*.png`):
+
+| Screen | Panel | Plate free | Lookahead right of the subject (quay / Brine) | Warning at a walk, 1.5 m/s (quay / Brine) | Characters a line |
+|---|---|---|---|---|---|
+| 1280 x 720 | wide, 33.4 vw | 67 % | 10.1 m / 3.6 m | 6.7 s / 2.4 s | 60 |
+| 1280 x 720 | slim, 27 vw | 73 % | 11.1 m / 4.0 m | 7.4 s / 2.6 s | 47 |
+| 1280 x 800 | wide | 67 % | 9.0 m / 3.2 m | 6.0 s / 2.1 s | 54 |
+| 1280 x 800 | slim | 73 % | 9.9 m / 3.5 m | 6.6 s / 2.4 s | 43 |
+| 1920 x 1080 | wide | 67 % | 10.1 m / 3.6 m | 6.7 s / 2.4 s | 66 |
+| 1920 x 1080 | slim | 73 % | 11.1 m / 4.0 m | 7.4 s / 2.6 s | 52 |
+
+A running figure (3.6 m/s) gets 2.5 to 3.1 s on the quay and about 1 s in the Brine with either width.
+The options overflowed in the Brine interrogation with either width. The panel's width can't fix
+interiors: a room at the close camera is too small.
+
+**Decision: the slim panel, the camera framing that follows it, and cues on the plate.**
+- **Slim panel** `clamp(21rem, 27vw, 34rem)`: about a tenth more lookahead, and the column lands at
+  43 to 52 characters, nearer the 38 to 48 target than the wide panel's 54 to 66. The wide width stays
+  as `data-panel="wide"`.
+- **Framing follows the panel.** The subject sits at 45 percent of the free plate, so everything to the
+  right of the subject that is still on screen is lookahead.
+- **Edge marks.** Anyone on the plate who is behind the panel or off screen gets a paper tab at that
+  edge, level with them, with a name and "coming" or "moving" when they walk. In the test, a stranger
+  placed behind the panel was marked in 12 of 12 runs at both widths and every screen. This is what
+  answers interiors and running figures: the warning no longer depends on the panel's width.
+- **The lie window.** While a lie is open, a tab at the panel's edge on the plate drains the seconds,
+  with the keys that call it (the option's number, N or pad Y). The "That's a lie." option underlines
+  and carries the same drain. The tab showed in 6 of 6 interrogation runs, at 3.3 to 4.0 seconds left.
+- **Rejected:** a bottom band (it covers the ground where figures stand and the strip's corner), and
+  shrinking the panel further (below 21rem the Deck column drops under 40 characters).
+
+Does not prove: these are positions sampled from two scenes with scripted placements. No player has
+tried to catch a lie or spot a threat with the panel open. The first seat test should time a lie call
+from the moment it is said, and see whether players notice an edge mark.
+
+**Talk on the pad.** F talks on the keyboard. On the pad, **A** talks to whoever Lamb faces in walk mode.
+A presses a row in the "what is here" list only when the arrows or the d-pad moved there since Lamb
+last walked; walking gives the focus back to the world. The prompts tab shows "Talk" with its key
+whenever someone is in reach and faced.
+
 ## 8. Controls
 
 Defaults below; every action is remappable in Settings, Controls (keyboard and pad separately). Hold or
@@ -338,6 +384,8 @@ toggle is a setting for block, run and crouch.
 | Action | Keyboard | Pad (Xbox names; PlayStation shapes in brackets) |
 |---|---|---|
 | Move | WASD | Left stick |
+| Talk to whoever Lamb faces | F | A (cross), in walk mode with no row chosen |
+| Call a lie (interrogation) | N, or the option's number | Y (triangle) |
 | Choose, confirm | Enter, Space (outside a fight), 1 to 9 for options | A (cross) |
 | Back | Esc | B (circle) |
 | Pause | Esc in play | Start |

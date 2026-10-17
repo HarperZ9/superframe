@@ -1996,3 +1996,98 @@ Lamb in a sneak; fights, sneaks, runs, the Daybook, checks, the panel slide and 
 - **Chapter raises: every fourth page**, not every third. Archetypes start their main compartment at 5, so every third brought 10 by the end of Act 2. Every fourth gives 8 by mid Act 2 and 10 in Act 3 (SYSTEMS-FULL 19.4 has the table). Please set the interval to 4.
 - **game/engine/wiring/act1-areas.lwd is corrected.** Spawns are at the plates' exits. Hotspots go one per thing the scenes use, gated as the script's own menus gate them. Figures sit on the marks, with presence conditions. Two new areas: a1.stairs and a1.lamp. The harbour office's room (quay.harbour.room) is now `hub: yes`, its exit goes to quay.hub, and the office hotspots open quay.harbour.room, the chart, the telephone and Keel. Act 1 validates with the wiring included: 0/0.
 - **Barks and sneak cues** are in content/act1/barks.lwd, included by all acts. There are 8 @bark records, one per BARK_KEY, so no placeholder remains. There are 8 @cue records, two per situation (turning, lantern, close, wind): a high-level voice first, then a plainer one.
+
+**Systems engineer (2026-10-17):** the drawer now uses everything ui/figures.mjs passes: lights by
+position from the plate's lights (their own falloff), darkness, per-pixel occlusion against the room's
+depth, and a rim. `characters/portraits/index.json` now exists and is written atomically (temp then
+rename) from the files on disk; it lists the 36 speaking parts. Note: game/engine/tools/scene_capture.py had a
+syntax error at line 67 when I tried it (an unterminated string), so I shot through play.html?shot=fight
+instead; I did not touch it.
+
+### Systems engineer, 2026-10-17 20:40Z: the live world (author's direction); interrogations run
+
+**Everyone.** The shell no longer waits. Commits bfc4ccc, da91dad, 93b3f45, a0de587 and 8c59e7f.
+- The night's clock runs in real time on the play screen: @rules `world-clock-rate`, real seconds per
+  game minute, default 8, the same as fights. Time keeps running during conversations, and nothing
+  slows it, following the coordinator's ruling on LIVE-CONVERSATION B4.
+- Stepped play is now only an accessibility setting (Settings, Accessibility, "Pace of scenes"). It
+  is off by default.
+- A due event or full meter cuts into an open menu at once. When it ends, play returns to the same
+  menu without repeating the node's lines.
+- The speaker's @char `interrupted:` line comes first. `fightstart:` plays when a choice starts a
+  fight.
+- Lamb can walk off mid-conversation by holding WASD or the stick past 0.6 for 0.25 s. The node's
+  `walk:` node plays if it has one; otherwise the speaker's `walkaway:` line plays and the panel
+  closes. Lamb is already walking either way.
+- Walk-up talk (LIVE-CONVERSATION A2): F speaks to whatever hotspot Lamb faces, within its reach (at
+  least 2 m) and a 50 degree cone. A hotspot that names a figure is found at that figure's live spot.
+  After a conversation, F waits 0.5 s before it works again, and run is locked for 0.5 s (A3).
+- Passive voices in the open: an @area `voice: skill dc "text" {at: x y z, r: n, when: cond}` line
+  is said as a toast when Lamb walks within r and the skill meets dc. Only one is said at a time,
+  at most two in a row (B3).
+- Figures with `{wander: r}` walk about and stand still while Lamb talks to them.
+- Fights from conversation have no cut:
+  - A foe who was a figure in the scene fights in that figure's own body, through an actor alias.
+  - Lamb's walking speed carries into the fight.
+  - After the fight, everyone stays where it left them.
+- Belief and research timers already count game minutes, so they run with the live clock.
+
+Captures (game/capture/, untracked):
+- `live-talk/` is a conversation while the clock runs (+1 min in 9 s), then a walk-off with A.
+- `interrog/` is a walk-up talk at the Brine bar with F, then x1.merrow:
+  - a press with a visible CONDOLENCE check that fails (heat +1);
+  - the lie said on Merrow's own clock;
+  - "That's a lie." caught with merrow.wet_thigh held (nerve 6 to 2);
+  - "Say nothing" until he breaks and tells.
+- `one-shell-2/` is a fight from conversation in the lamplighters' own bodies.
+
+**Director.** The interrogation engine follows your shape exactly (SYSTEMS-FULL 20). All three acts
+validate with 0 errors.
+- The harness now plays interrogations. Over the six builds it reached x1.wenna, x1.hobb and
+  x2.rook, ending in break and bolt. Ten random runs also reached x2.sallis.
+- No build reached x1.merrow or x1.marrow. Their options need facts those paths do not hold.
+- With raises every fourth page:
+  - Fist, Tongue, Hands and Eye reach 8 between 29% and 61% of the way into Act 2.
+  - All builds reach 10 in Act 3.
+  - Shadow misses: 8 comes 16% into Act 3, and 10 at 80%.
+  - fistmax's COAT is pinned at 10, so it has no 8 or 10 to reach.
+- Two keys are new for you: `walk:` on any @node, and `voice:` on @area.
+
+**Character lead.**
+- In the Brine stills (game/capture/interrog/), the figures render near white, washed out, since
+  your per-position lighting landed (4674014). On the quay they read correctly.
+- For the 0.15 to 0.3 s blend the author asked for between walking, talking and fighting, the
+  actor's clip fade on a mode change should be 5 to 9 frames at 30 fps; it is 2 to 4 now.
+- Lamb's id stays "lamb" in both modes, and an aliased foe now uses its figure's id. Each actor
+  changes clip in place, so a longer fade there covers every cut.
+
+**UI and UX lead.**
+- `beat.interrogation` carries `{ id, name, who, nerve, heat, face }` for your display. The presses
+  are ordinary options (a press with a skill renders as a check). Each press has `o.style` (fist,
+  tongue, shadow, hands, eye or any); the lie call is `o.lie` with `o.open` while a lie is
+  catchable.
+- The play screen has a new input mode, "talk". It works like "walk" for WASD and the stick, so
+  walking off works, while the arrows stay on the options.
+- F is bound to `interact` in walk mode. The pad has no binding for it yet; it is your call which
+  button.
+- Passive voices raise `voice.bark` with `{ skill, name, text }`, shown as a toast for now.
+
+**Combat engineer.** The terrain shape is agreed in my reply to you. A rule for your side: with the
+world no longer slowed, a hostile in a running world does not start an attack on a talking pair
+unless the scene starts it (fight()) or a nearby threat is scripted to.
+
+### UI and UX lead, 2026-10-17: talk on the pad; the talk panel in a live world
+
+Asked by the coordinator (2026-10-17): a pad button for talk, and a review of the panel for a live world.
+- **Talk on the pad is A** in walk mode. A presses a "what is here" row only after the arrows or the
+  d-pad moved there since Lamb last walked; otherwise it talks to whoever Lamb faces, as F does. N or
+  pad Y calls an open lie. Glyphs: `speak` (F / A) and `lie` (N / Y) in `ui/bindings.mjs`. Your
+  committed `play.mjs` already carries my part (`facing()` split out of `interact()`, the `onAction` rule,
+  `liveTalkAids`); `ui/livetalk.mjs` is now committed too, so HEAD imports resolve. Your working tree
+  is mid-refactor (`playlive.mjs`); I did not touch it.
+- **Panel decision (UI-SYSTEM 7.6, measured):** a slim panel `clamp(21rem, 27vw, 34rem)` by default, the
+  talk framing at 45 percent of the free plate (`livetalk.mjs` writes `camera-talk-x` from the panel's
+  live width each frame; if you'd rather `platecam` read the free width itself, say so and I will drop
+  the write), edge marks for anyone behind the panel or off screen, and a lie tab that drains the 4 s
+  window with its keys. Interiors at the close camera leave only 3 to 4 m of lookahead with either
+  width, so the marks carry the warning there.
