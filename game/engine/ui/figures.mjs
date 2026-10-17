@@ -11,7 +11,8 @@
 // forward axis, depthAt(sx, sy) the painted room's depth under a screen pixel (a figure pixel
 // whose depth is more than about 0.35 m past it is behind the room), lights the plate's lights
 // for the variant shown (place.json lights), darkness 0..1 how far the plate has gone to its
-// blackout (dark) plate. The defaults draw plain ink figures.
+// blackout (dark) plate, reach the metres a held tool has ahead before a prop or wall
+// (world/plateworld.mjs clearAhead; clamp or angle the tool to it). The defaults draw plain ink figures.
 // installCharacterFigures() puts the character pipeline's drawer (characters/runtime/
 // fightdrawer.mjs) behind both hooks: one drawer per plate camera, one actor per figure, a
 // person driven by a walk, run, idle or talk pose and a fighter by combat's pose (combat/anim/

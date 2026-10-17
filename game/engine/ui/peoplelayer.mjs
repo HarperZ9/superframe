@@ -17,7 +17,7 @@
 import { h } from "./dom.mjs";
 import { personDrawer } from "./figures.mjs";
 import { evaluate } from "../core/expr.mjs";
-import { findPath, groundAt, walkable, camBasis, bodyCan, clearSpot, spotKind } from "../world/plateworld.mjs";
+import { findPath, groundAt, walkable, camBasis, bodyCan, clearSpot, spotKind, clearAhead } from "../world/plateworld.mjs";
 
 const TALK = ["talk_a", "talk_b", "talk_c"], GESTURE_S = 2.4;
 
@@ -126,7 +126,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
     for (const { f, depth } of list) {
       const s = cam.toScreen(f.at); if (!s) continue;
       const talking = !!S.talking && (f.who === "lamb" || f.who === S.talking);
-      personDrawer()(g, f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking, gesture: f.walking ? null : gestureOf(f.who, dt), cam: pj && pj.camera, plate: pj && pj.place, depth, depthAt: cam.depthAt, lights, darkness: cam.darkness() });
+      personDrawer()(g, f, { x: s[0], y: s[1], ppm: cam.scaleAt(f.at), at: f.at, face: f.face, walking: f.walking, running: !!f.running, talking, gesture: f.walking ? null : gestureOf(f.who, dt), cam: pj && pj.camera, plate: pj && pj.place, depth, depthAt: cam.depthAt, lights, darkness: cam.darkness(), reach: cam.arena() ? clearAhead(cam.arena(), f.at, f.face) : null });
     }
   }
   // Passers-by: a figure with wander: r walks between points within r of its spot, stopping a
@@ -134,6 +134,7 @@ export function peopleLayer(ctx, host, cam, { onPick = null, idle = () => true, 
   // G.figureAt for the fight's placement and for facing.
   function wanderStep(dt) {
     const A = cam.arena(), spots = (G.figureAt ||= {});
+    if (!A) return; // the ground is not loaded yet: nobody starts walking from an authored spot inside a prop
     for (const f of G.world.figures()) {
       if (!f.wander) { delete S.wander[f.id]; spots[f.id] = homeOf(f); continue; } // a standing figure: on its clear spot
       const w = (S.wander[f.id] ||= { at: [...homeOf(f)], to: null, wait: 1 + (f.id.length % 3), moving: false });

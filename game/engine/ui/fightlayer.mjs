@@ -23,7 +23,7 @@ import { bindFightKeys, keyList } from "./fightkeys.mjs";
 import { createDock, fightStrip } from "./strip.mjs";
 import { glyph } from "./bindings.mjs";
 import { figureDrawer } from "./figures.mjs";
-import { groundAt } from "../world/plateworld.mjs";
+import { groundAt, clearAhead } from "../world/plateworld.mjs";
 export { setFigureDrawer } from "./figures.mjs";
 // one drawer for fights, sneaks and runs (ui/runlayer.mjs and ui/sneaklayer.mjs draw through this)
 export const drawFigure = (g, F, args) => figureDrawer()(g, F, args);
@@ -121,7 +121,7 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
     const g = canvas.getContext("2d"); g.clearRect(0, 0, canvas.width, canvas.height);
     if (!cam) { g.fillStyle = "#1a1416"; g.fillRect(0, 0, canvas.width, canvas.height); }
     const far = (F) => (cam && cam.depthOf ? -cam.depthOf(stage.toWorld([F.x, F.z])) : F.z), order = [...W.fighters].sort((a, b) => far(a) - far(b)); // far ones first
-    for (const F of order) { const s = screenOf(F); if (!s) continue; const args = { ...s, face: F.face, down: F.fallen || F.out || F.yielded, W }; figureDrawer()(g, F, args); }
+    for (const F of order) { const s = screenOf(F); if (!s) continue; const args = { ...s, face: F.face, down: F.fallen || F.out || F.yielded, W, reach: onPlate && s.at ? clearAhead(A, s.at, F.face) : null }; figureDrawer()(g, F, args); }
     strip.update();
   }
   function frame() { if (closed) return; if (!G.loop.paused) shakeStep(); draw(); raf = requestAnimationFrame(frame); }

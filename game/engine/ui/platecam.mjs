@@ -91,6 +91,15 @@ export function plateCam(box, ctx) {
     for (const fn of loaders) fn(api);
   }
   const plateW = () => (pj ? pj.width : img.width), plateH = () => (pj ? pj.height : img.height);
+  // While a conversation is open the subject sits in the middle-left of the plate the talk panel
+  // leaves free, read from the panel's live width (the UI lead's rule: 0.45 of the free width, between
+  // 0.2 and 0.5 of the view); with no panel on screen, @rules camera-talk-x.
+  function freeTalkX() {
+    const root = box.closest(".screen") || document, panel = root.querySelector("aside.talk"), view = wrap.getBoundingClientRect();
+    if (!panel || !view.width) return +G.rs.rules["camera-talk-x"];
+    const left = panel.getBoundingClientRect().left - view.left;
+    return left > 0 && left < view.width ? Math.max(0.2, Math.min(0.5, (left / view.width) * 0.45)) : +G.rs.rules["camera-talk-x"];
+  }
   function target() {
     const W = wrap.clientWidth, H = wrap.clientHeight, pw = plateW(), ph = plateH();
     const lamb = G.state.pos || (area && area.spawn) || null;
@@ -98,7 +107,7 @@ export function plateCam(box, ctx) {
     const focus = world && pj && pj.camera ? projectPlate(pj.camera, pw, ph, world) : null;
     // a fight frames its fighters (world/stage.mjs fightBounds): the game's closeness, pulled back only as needed
     const bounds = boundsFn && pj && pj.camera ? boundsFn((p) => projectPlate(pj.camera, pw, ph, p)) : null;
-    return frame({ plateW: pw, plateH: ph, viewW: W, viewH: H, scale: cameraScale(G, area), focus, talking: talking && !bounds, talkX: +G.rs.rules["camera-talk-x"], bounds });
+    return frame({ plateW: pw, plateH: ph, viewW: W, viewH: H, scale: cameraScale(G, area), focus, talking: talking && !bounds, talkX: talking ? freeTalkX() : +G.rs.rules["camera-talk-x"], bounds });
   }
   function powerOff() { const p = G.book.places[(area && area.place) || G.state.place] || {}, zone = p.zone || (area && area.place); return zone && G.env && G.env.term(`power.${zone}`) === "off"; }
   function tick(now) {

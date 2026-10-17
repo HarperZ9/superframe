@@ -308,4 +308,13 @@ export function spotKind(arena, at) {
   return why === 1 ? "prop" : why === 2 ? "top" : "void";
 }
 
+// How far a held tool can reach ahead before a prop, a wall or unknown ground (metres, up to max),
+// from a figure at `at` facing `face` (radians, atan2 of z and x): the drawer clamps a staff or a
+// pole to it, or angles it up, so a tool does not pass through the bar counter.
+export function clearAhead(arena, at, face, max = 2.2) {
+  const dx = Math.cos(face), dz = Math.sin(face);
+  for (let d = 0.2; d <= max; d += 0.05) if (groundAt(arena, at[0] + dx * d, at[2] + dz * d) == null) return +(d - 0.05).toFixed(2);
+  return max;
+}
+
 export const blockedAt = (arena, x, z) => groundAt(arena, x, z) == null;
