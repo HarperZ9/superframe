@@ -1103,3 +1103,51 @@ Records: content/act1/combat.lwd (the six Act 1 tools with build fields) and con
 | 3 | mole3.bright.hold / mole3.collar | Bright's gallery hold; Mother's old collar as old bronze |
 Keel teaches nothing: his question on the mole keeps its quiet. Gate pages wait on the systems engineer's answer (19.4).
 
+
+## 20. Live conversation and interrogation
+
+The author, 2026-10-17 (verbatim): "It should not be turn based, it should be live action with
+dialogue menus leading into either fighting, dialogue, or interrogation/communication ~ movement
+should be fluid, and live action based".
+
+A dialogue menu can lead to one of three things: more talk, a fight (`fight(e.id)`), or an
+**interrogation** (`interrogate(x.id)`). An interrogation happens live, on the plate. The person
+stays where they are and Lamb can move. The person says their own lies on their own clock. Two
+gauges drive it, never shown as bars:
+- **nerve**: how much true pressure the person can take before they tell.
+- **heat**: how threatened they feel. At their bolt level they leave; at their swing level they fight.
+
+Each play style presses differently:
+- **Fist** threatens: big nerve loss, big heat.
+- **Tongue** reads what they lost and says it back: steady nerve loss, little heat.
+- **Eye** catches a lie as it is said, by holding the fact that breaks it: a large drop. A wrong catch steadies them.
+- **Hands** puts the evidence on the table: the thing itself.
+- **Shadow** already knows: it says where they were, or what they said when they thought they were alone.
+
+Every interrogation has three endings, and each changes the night:
+- **They tell**: the fact is set, and the person remembers how they were made to.
+- **They bolt**: they leave the plate, and the fact has to be found another way.
+- **They swing**: a fight begins, with its usual four ways out.
+
+Walking away mid-scene is always allowed, and the person says so.
+
+**Lines that survive a live world.** The main speakers each carry three short lines:
+- **walk-away**: when Lamb leaves mid-line;
+- **interrupted**: when an event cuts them off;
+- **fight-start**: when a conversation turns into a fight.
+
+The LWD/1 shape is being agreed with the systems engineer (NOTES-FOR-ENGINEER).
+
+### 20.1 Where interrogation pays (Acts 1 and 2)
+
+| Id | Act, place | Who | What they won't say | Fist | Tongue | Eye catches | Hands shows | Shadow knows | Bolt or swing |
+|---|---|---|---|---|---|---|---|---|---|
+| x1.merrow | 1, the Brine stove | Merrow | He was in the drowned lamp at twenty past ten, and he lit the low light | Collar him by the stove | What the Low Company lost when the copper went | "Never left the boat." against his wet thigh | The wet wick from the drowned lamp | His prints to the drowned lamp | Bolts into the yard; swings only if struck |
+| x1.marrow | 1, the Guild hall after the vote | Marrow Dunlin | He pulled the quay switch for the vote | Lean on the pans | His father, and the switch that was never for the sea | "The switch was never touched." against the scales on the handle | The scales from the handle | What he said at Shadwell's fire-door | Swings (the hall is his) |
+| x1.wenna | 1, the lamp room or the Brine | Wenna | She was not at the panel at twenty to ten | Never: a Fist press on Wenna makes her shut the door on Lamb (a bolt) | Twenty-eight years, the stairs, the knees | "I was at the panel." against the dry coat, or the log written ahead | The log, written before the hour it records | The motor she lifted her head to | Bolts, out of the lamp room; never swings |
+| x1.hobb | 1, the weigh-house door | Constant Hobb | Who he saw at the quay board, and that he is not to say | Loom over him | That he will not be blamed, in the Board's own words | "Nobody past." against the scales on the switch | The duty roster in Gorm's book | Where he was standing | Bolts to Gorm; never swings |
+| x2.rook | 2, the telegraph office | Rook | The 18:30 telegram's draft, and whose hand wrote 9.40 | Lean on the counter | That she is the only one who still reads the line | "I don't recall it." against the yellow 9.40 | The draft off the spike | That she reads the drafts aloud to herself at night | Bolts upstairs; never swings |
+| x2.sallis | 2, the mole steps after the muster | Sallis | Who told him the Board pays for salvage | Take the crowbar out of his hand | That he has never stolen anything | "Board's orders." against the docket in his own hand | The Courier with the claim printed on it | What he read aloud to the men | Swings (the wardens with him) |
+
+These six replace nothing. Each sits beside the scene's existing routes, so every gate keeps its four
+ways through.
