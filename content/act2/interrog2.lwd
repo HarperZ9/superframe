@@ -22,7 +22,7 @@ press: any "Wait while the sounder ticks." -> x2.rook.tick {nerve: -1, again}
 press: shadow "[UNDERTOW] Say nothing, and let her hear the oilcloth book in it." -> x2.rook.silence {nerve: -3, skill: undertow, dc: 6}
 press: hands "[CARBON] Lay the spike's drafts out in order on the counter, and find the gap." -> x2.rook.gap {nerve: -3, skill: carbon, dc: 6}
 press: eye "[SMALL PRINT] Read the blotter backwards: 9.40, in yellow." -> x2.rook.blotter {nerve: -3, skill: smallprint, dc: 6}
-lie: l.recall "I don't recall it. I don't recall any of it." {catch: ropewalk.envelope_read, nerve: -4, node: x2.rook.caught, after: 5}
+lie: l.recall "I don't recall it. I don't recall any of it." {catch: ropewalk.envelope_read | ropewalk.letter_opened | ropewalk.yellow_time | typist.heard, nerve: -4, node: x2.rook.caught, after: 5}
 tell: 3 "She puts her hand flat on the oilcloth book, as if it might get up."
 
 @node x2.rook.start
@@ -115,7 +115,7 @@ press: hands "Lay the claim form on the step and point to where it says persons.
 press: shadow "Repeat what he read to the men, word for word." -> x2.sallis.words ? has(quay2.muster_seen) {nerve: -3}
 press: eye "[PRECEDENT] Name the law: no finder is paid on an insured wreck." -> x2.sallis.law {nerve: -3, skill: precedent, dc: 6}
 press: any "Wait on the step while the men watch him." -> x2.sallis.wait {nerve: -1, again}
-lie: l.orders "Board's orders, Shelf. I don't make them." {catch: quay2.muster_seen, nerve: -4, node: x2.sallis.caught, after: 5}
+lie: l.orders "Board's orders, Shelf. I don't make them." {catch: quay2.muster_seen | said.muster_word, nerve: -4, node: x2.sallis.caught, after: 5}
 tell: 3 "He shifts the crowbar to his other hand, and then back."
 
 @node x2.sallis.start
