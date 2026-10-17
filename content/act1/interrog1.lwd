@@ -35,6 +35,15 @@ line: Ask, then. I'm warm, for now.
 do: interrogate(x1.merrow)
 return:
 
+@node x1.merrow.start.floor
+place: drowned
+speaker: MERROW
+cost: 1
+nar: Merrow stands in the drowned lamp's doorway with the water at his boots, and does not move out of it.
+line: Ask, then. The tide won't.
+do: interrogate(x1.merrow)
+return:
+
 @node x1.merrow.collar
 speaker: MERROW
 line: Get your hand off. That's my good coat. My only one.
@@ -83,27 +92,25 @@ line: All right. All right, then.
 return:
 
 @node x1.merrow.tells
-place: brine
 speaker: MERROW
 cost: 6
 do: set(merrow.light); set(merrow.told); quest(a1.lowlight, merrow)
 line: I was in the hole with a lantern, for the copper. Knocked it out climbing in, at eighteen past. Lit it again at twenty-five past.
 line: In between, it was dark in there. I'd know. I was in it.
-nar: He knocks the cold pipe out on the stove, though there is nothing in it.
-go: brine.hub
+nar: He knocks the cold pipe out against his hand, though there is nothing in it.
+go: ^hub
 
 @node x1.merrow.bolts
-place: brine
 speaker: MERROW
 cost: 2
-line: I'm going out to my boat. Come and ask the boat.
-nar: The yard door bangs. The steam stays where he was standing.
-go: brine.hub
+line: I'm going to my boat. Come and ask the boat.
+nar: He goes, and does not look back to see if he is followed.
+go: ^hub
 
 @node x1.merrow.walk
 speaker: MERROW
 line: That's right. Go on.
-go: brine.hub
+go: ^hub
 
 # ================================================================ Marrow, in the Guild hall
 @interrogation x1.marrow
@@ -243,7 +250,8 @@ press: shadow "[THE DARK] Say what the stairs sound like at twenty to ten, with 
 press: hands "[CARBON] Lay the night out on the table: the panel, the stairs, the chair at fifty-six." -> x1.wenna.night {nerve: -3, skill: carbon, dc: 6}
 press: eye "[SUM] Count the minutes from the Brine to the panel, against her knees." -> x1.wenna.minutes {nerve: -3, skill: sum, dc: 6}
 press: any "Sit with her a while, and say nothing." -> x1.wenna.sit {nerve: -1, heat: -1, again}
-lie: l.panel "I was at the panel. Where else would I be." {catch: log.ahead | coat.wenna_dry | wenna.heard_motor | overheard.last_three, nerve: -4, node: x1.wenna.caught, after: 6}
+lie: l.panel "I was at the panel. Where else would I be." {catch: log.ahead | coat.wenna_dry | wenna.heard_motor | overheard.last_three | mole.dust | mole.wenna_sat, nerve: -4, node: x1.wenna.caught, after: 6}
+lie: l.quay "She went out on her own, Mother. The quay never came into it." {catch: lamps.pink | scales.switch | marrow.switch, nerve: -3, node: x1.wenna.caught.quay, after: 14}
 tell: 4 "She holds her cup in both hands and does not drink."
 
 @node x1.wenna.start
@@ -298,6 +306,12 @@ return:
 nar: The fire does the talking for a while. Wenna lets it.
 return:
 
+@node x1.wenna.caught.quay
+speaker: WENNA
+nar: The quay lamps came back pink at ten to ten. Everybody on the quay saw them come back. Wenna saw them from the landing.
+line: The quay came into it. I know it did.
+return:
+
 @node x1.wenna.caught
 speaker: WENNA
 line: No. I wasn't.
@@ -342,7 +356,7 @@ press: hands "Open Gorm's book at tonight's round, under his nose." -> x1.hobb.b
 press: shadow "Tell him where he was standing at twenty to ten." -> x1.hobb.standing {nerve: -2}
 press: hands "[CARBON] Walk him through his own page, line by line." -> x1.hobb.page {nerve: -2, skill: carbon, dc: 5}
 press: eye "[SMALL PRINT] Read his page upside down: a line rubbed out at twenty to ten." -> x1.hobb.rubbed {nerve: -2, skill: smallprint, dc: 5}
-lie: l.nobody "Nobody past, assessor. Nobody went near the board." {catch: scales.switch | scales.kept | lamps.pink | switch.recreated, nerve: -3, node: x1.hobb.caught, after: 4}
+lie: l.nobody "Nobody past, assessor. Nobody went near the board." {catch: scales.switch | scales.kept | lamps.pink | switch.recreated | marrow.switch | afterdark.told | weigh.handle_covered, nerve: -3, node: x1.hobb.caught, after: 4}
 tell: 2 "He writes the time down, and then the time again."
 
 @node x1.hobb.start

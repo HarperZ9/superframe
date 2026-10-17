@@ -113,6 +113,7 @@ opt: "Walk out along the mole." -> mole2.hub +1
 opt: "Go up the lane into the Gut." -> gut2.hub +2
 opt: "Take the path up Chancel Hill." -> hill.hub +4
 opt: "Go along to the Ropewalk." -> ropewalk.hub +3
+opt: "Go along to the mole steps, where the Board's boat is loading." -> quay2.boats ? clock >= 22:30 & clock < 23:40 & !seen(quay2.muster)
 opt: "Go down the steps onto the harbour floor." -> floor2.hub ? clock >= 23:22 & clock < 00:10 +3
 
 @node quay2.hub.lamps

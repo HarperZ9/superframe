@@ -22,7 +22,8 @@ press: any "Wait while the sounder ticks." -> x2.rook.tick {nerve: -1, again}
 press: shadow "[UNDERTOW] Say nothing, and let her hear the oilcloth book in it." -> x2.rook.silence {nerve: -3, skill: undertow, dc: 6}
 press: hands "[CARBON] Lay the spike's drafts out in order on the counter, and find the gap." -> x2.rook.gap {nerve: -3, skill: carbon, dc: 6}
 press: eye "[SMALL PRINT] Read the blotter backwards: 9.40, in yellow." -> x2.rook.blotter {nerve: -3, skill: smallprint, dc: 6}
-lie: l.recall "I don't recall it. I don't recall any of it." {catch: ropewalk.envelope_read | ropewalk.letter_opened | ropewalk.yellow_time | typist.heard, nerve: -4, node: x2.rook.caught, after: 5}
+lie: l.recall "I don't recall it. I don't recall any of it." {catch: ropewalk.envelope_read | ropewalk.letter_opened | ropewalk.yellow_time | typist.heard | telegram.draft | ropewalk.draft_taken, nerve: -4, node: x2.rook.caught, after: 5}
+lie: l.hill "Nothing from the hill comes down this street. Not to me." {catch: hill.letter_taken | ropewalk.letter_delivered | ink.crake | quay.line.clicked, nerve: -3, node: x2.rook.caught.hill, after: 13}
 tell: 3 "She puts her hand flat on the oilcloth book, as if it might get up."
 
 @node x2.rook.start
@@ -69,6 +70,12 @@ return:
 @node x2.rook.blotter
 speaker: ROOK
 line: A blotter's a liar. It says everything backwards.
+return:
+
+@node x2.rook.caught.hill
+speaker: ROOK
+nar: Mrs Pellow's errand, Mrs H. Gannet, the Ropewalk, knock twice: on this same street.
+line: Not to me, I said. I didn't say not to the street.
 return:
 
 @node x2.rook.caught

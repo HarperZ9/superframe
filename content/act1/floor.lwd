@@ -629,6 +629,7 @@ opt: "Keel talks about hanging." -> floor.merrow.rope ? seen(floor.merrow.wreck)
 opt: "Hang my lantern in the hole beside yours." -> floor.lantern.two ? count(i.lantern) > 0 & !has(lamp.drowned.lit) {verb: light, noise: 0.1}
 opt: "Look about the base of the tower." -> floor.drowned.look
 opt: "Climb up into the hole and look out." -> floor.hole {verb: climb, noise: 0.1}
+opt: "Ask him straight out what he was doing in the hole with a lantern." -> x1.merrow.start.floor ? !has(merrow.told)
 opt: "Go back across the gully." -> floor.gully.back
 
 @node floor.merrow.wreck
