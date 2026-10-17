@@ -257,3 +257,15 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     the rasteriser and shading. Test sheet: Keel's head and greatcoat skirt (out/forge-keel.png).
     Spec in design/CHARACTERS-ART.md section 6; rig, drawer and forge notes for the art director in
     NOTES.
+51. DONE The one shell (ui/figures.mjs) now hands the drawer the world point, plate camera, figure
+    depth, the room's depth per pixel, the plate's lights and its darkness. runtime/fightdrawer.mjs
+    lights each figure from the nearest plate lights with the plate's own falloff I (1 - d/reach)^2,
+    takes the sodium ramp only where sodium wins, dims toward a cool ambient with the blackout, adds a
+    rim in the ruling light's colour (a cool sky rim in the dark), hides figure pixels behind the
+    painted room by their own depth, and highlights roll off softly (a surplice by a lamp keeps its
+    folds). stills/11-oneshell-fight.png and -1080.png (engine play.html?shot=fight, my harness only
+    changes the URL). Honest note: figures standing in the hull's shadow stay dark, as the plate is
+    there; they read by the rim and the contact shadow.
+52. DONE Portraits: 38 people x 4 expressions x 2 lights baked; portraits/index.json written
+    atomically from what is on disk (proto/portraits_index.mjs, temp file then rename), rebuilt after
+    each person in future bakes. Current style; to be re-baked in the chosen direction.

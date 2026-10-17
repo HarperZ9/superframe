@@ -44,22 +44,51 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     return t ? String(t).replace(/^w\./, "") : MEMBERS[who].info.tool;
   }
 
-  return function drawFighter(g, F, { x, y, ppm, face, down, W }) {
-    const who = bodyOf(W, F);
+  // The plate's own lights at the figure's position (place.json lights: at, kind, I, reach), dimmed as
+  // the plate goes to its blackout; a cool sky rim always, so a figure reads against dark ground.
+  const KIND = { sodium: [1.0, 0.62, 0.26], paraffin: [1.0, 0.76, 0.46], window: [1.0, 0.76, 0.46], white: [0.9, 0.95, 1.0], arc: [0.9, 0.95, 1.0], beam: [0.95, 0.97, 1.0], lantern: [1.0, 0.8, 0.5] };
+  function rigAt(at, lights, darkness = 0) {
+    if (!at || !lights || !lights.length) return { rig, tone };
+    const near = lights.map((L) => ({ L, d: Math.hypot(L.at[0] - at[0], L.at[2] - at[2]) })).filter((q) => q.d < (q.L.reach || 6) * 1.6).sort((a, b) => a.d - b.d).slice(0, 4);
+    const lit = 1 - darkness, lamps = near.map(({ L }) => ({ pos: L.at, c: KIND[L.kind] || KIND.paraffin, power: 0, d: Math.hypot(L.at[0] - at[0], L.at[1] - 1 - at[1], L.at[2] - at[2]), I: L.I || 1, kind: L.kind }));
+    // which light rules here, weighted by what reaches the figure: sodium's ramp only where sodium wins
+    // the plate's own falloff, I (1 - d / reach)^2, matched at the figure's chest (the rasteriser's
+    // inverse square then shapes it across the body)
+    for (const q of lamps) { const reach = near.find((n) => n.L.at === q.pos).L.reach || 6, f = Math.max(0, 1 - q.d / reach); q.power = q.I * f * f * (q.d * q.d + 0.3) * 0.75 * lit; }
+    const share = lamps.reduce((acc, q) => { const e = q.I / (q.d * q.d + 1); acc[q.kind === "sodium" ? 0 : 1] += e; return acc; }, [0, 0]);
+    const sod = share[0] > share[1] && lit > 0.3;
+    return {
+      tone: sod ? tone : null,
+      rig: { amb: [0.09 + 0.04 * darkness, 0.08 + 0.04 * darkness, 0.13 + 0.06 * darkness], ground: [0.025, 0.02, 0.035], key: { dir: [-0.3, 0.8, 0.5], c: [0.05, 0.05, 0.08], wrap: 0.3 }, lamps,
+        fresnel: { c: near.length && lit > 0.3 ? (KIND[near[0].L.kind] || KIND.paraffin).map((v) => v * 0.5) : [0.2, 0.24, 0.34], pow: 2.2 } },
+    };
+  }
+  const D2R = Math.PI / 180, fwdOf = (cam) => { const y = cam.yawDeg * D2R, e = cam.elevDeg * D2R; return [-Math.sin(y) * Math.cos(e), -Math.sin(e), -Math.cos(y) * Math.cos(e)]; };
+  return function drawFighter(g, F, args) {
+    const { x, y, ppm, face, down, W, at, depth, depthAt, lights, darkness } = args;
+    const cam = args.cam || camera, who = bodyOf(W, F);
     let a = actors.get(F.id);
     if (!a) { a = cast.actor(who, { tool: toolOfDef(W, F, who) }); actors.set(F.id, a); }
-    const pose = poseOf(W, F, clipsFor(who)), at = arguments[2].at;   // at: the fighter's world point, when the layer passes it
+    const pose = poseOf(W, F, clipsFor(who));
     a.drive({ x: F.x, z: F.z, face: face ?? F.face, pose: { ...pose, anim: down && !pose.anim ? "knockdown" : pose.anim }, dt: 1 / 60 });
     // render in the actor's own frame at the plate camera's orientation and scale, feet on (x, y)
-    const truePpm = ppm / cosE, hM = 2.9, h = Math.ceil(hM * truePpm), w = Math.ceil(h * 0.95), P = a.pos;
-    const r = a.render({ yawDeg: camera.yawDeg, elevDeg: camera.elevDeg, height: hM, centre: [P[0], P[1] + 1.05, P[2]] }, w, h, rig, { ss, tone });
-    const feetDown = 1.05 * cosE * truePpm, ox = Math.round(x - r.w / 2), oy = Math.round(y - feetDown - r.h / 2);
-    const img = new ImageData(r.w, r.h), d = img.data;
-    for (let i = 0; i < r.w * r.h; i++) { for (let k = 0; k < 3; k++) d[i * 4 + k] = Math.round(Math.max(0, Math.min(1, r.rgba[i * 4 + k])) * 255); d[i * 4 + 3] = Math.round(r.rgba[i * 4 + 3] * 255); }
+    const cosE2 = Math.cos(cam.elevDeg * D2R), truePpm = ppm / cosE2, hM = 2.9, h = Math.ceil(hM * truePpm), w = Math.ceil(h * 0.95), P = a.pos;
+    const R = rigAt(at, lights, darkness || 0);
+    const r = a.render({ yawDeg: cam.yawDeg, elevDeg: cam.elevDeg, height: hM, centre: [P[0], P[1] + 1.05, P[2]] }, w, h, R.rig, { ss, tone: R.tone });
+    const feetDown = 1.05 * cosE2 * truePpm, ox = Math.round(x - r.w / 2), oy = Math.round(y - feetDown - r.h / 2);
+    const img = new ImageData(r.w, r.h), d = img.data, G = r.G, fw = fwdOf(cam);
+    for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) {
+      const i = py * r.w + px, al = r.rgba[i * 4 + 3]; if (al <= 0) continue;
+      // hidden where the painted room stands in front: the pixel's own depth from the figure's
+      if (depthAt && depth != null) {
+        const gi = py * ss * G.w + px * ss, dz = G.id[gi] && at ? depth + (G.wp[gi * 3] - at[0]) * fw[0] + (G.wp[gi * 3 + 1] - at[1]) * fw[1] + (G.wp[gi * 3 + 2] - at[2]) * fw[2] : depth;
+        if (depthAt(ox + px, oy + py) < dz - 0.35) continue;
+      }
+      for (let k = 0; k < 3; k++) d[i * 4 + k] = Math.round(Math.max(0, Math.min(1, r.rgba[i * 4 + k])) * 255); d[i * 4 + 3] = Math.round(al * 255);
+    }
     const c = (drawFighter.scratch ||= new OffscreenCanvas(8, 8)); c.width = r.w; c.height = r.h; c.getContext("2d").putImageData(img, 0, 0);
     g.save();
-    // contact shadow
-    g.fillStyle = "rgba(8,4,10,0.45)"; g.beginPath(); g.ellipse(x, y, 0.42 * truePpm, 0.42 * truePpm * Math.sin((camera.elevDeg * Math.PI) / 180), 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = "rgba(8,4,10,0.45)"; g.beginPath(); g.ellipse(x, y, 0.42 * truePpm, 0.42 * truePpm * Math.sin(cam.elevDeg * D2R), 0, 0, Math.PI * 2); g.fill();   // contact shadow
     // telegraph: an opponent's wind-up on a move combat marks with a tell gets a pale ring at the feet
     const m = F.act && W.moves ? W.moves[F.act.id] : null;
     if (F.team !== "lamb" && m && m.tell && F.act.f >= m.tell.at[0] && F.act.f < m.tell.at[1]) {

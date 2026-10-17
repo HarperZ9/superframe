@@ -128,7 +128,8 @@ export function compose(G, A, E, I, { bands = 0, inkC = INK, violet = 0.55, jitt
     for (let c = 0; c < 3; c++) {
       const e = E[i * 3 + c] * kq * (1 + warm * [0.35, -0.05, -0.25][c]);
       const lum = 0.3 * E[i * 3] + 0.59 * E[i * 3 + 1] + 0.11 * E[i * 3 + 2], sh = violet * (1 - Math.min(1, Math.max(0, (lum - 0.12) / 0.4)));
-      const v = A.rgb[i * 3 + c] * e * (1 - sh + sh * VIOLET[c]) + sh * 0.025 * VIOLET[c];
+      let v = A.rgb[i * 3 + c] * e * (1 - sh + sh * VIOLET[c]) + sh * 0.025 * VIOLET[c];
+      if (v > 0.8) v = 0.8 + 0.2 * (1 - Math.exp(-(v - 0.8) / 0.2));   // a soft shoulder: a pale surplice by a lamp keeps its folds
       rgba[i * 4 + c] = v * (1 - k * 0.85) + inkC[c] * k * 0.85;
     }
     rgba[i * 4 + 3] = Math.max(a, k * 0.9);

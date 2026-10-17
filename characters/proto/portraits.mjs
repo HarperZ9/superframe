@@ -11,6 +11,7 @@ import { paintFigure, relight, sodiumTone } from "../render/painted.mjs";
 import { down } from "../render/image.mjs";
 import { writePng, toRgba8 } from "../render/io.mjs";
 import { setExpression, EXPRESSIONS } from "../cast/parts.mjs";
+import { INDEX } from "../rig/skeleton.mjs";
 import * as LL from "../cast/lamplighter.mjs";
 import * as FOLK from "../cast/folk.mjs";
 
@@ -23,8 +24,8 @@ const who = only ? only.split(",") : Object.keys(members).filter((k, i) => i % l
 const timing = JSON.parse(readFileSync(new URL("../anim/timing.json", import.meta.url), "utf8"));
 const cast = createCast({ timing, members });
 const W = 512, H = 640, LIGHTS = {
-  paraffin: { tone: null, rig: { amb: [0.13, 0.09, 0.08], ground: [0.05, 0.03, 0.03], key: { dir: [-0.55, 0.55, 0.62], c: [1.0, 0.74, 0.46], wrap: 0.25 }, fill: { dir: [0.7, 0.1, 0.3], c: [0.12, 0.1, 0.16], wrap: 0.5 }, fresnel: { c: [0.18, 0.12, 0.08], pow: 3 } } },
-  sodium: { tone: sodiumTone, rig: { amb: [0.07, 0.06, 0.11], ground: [0.03, 0.025, 0.04], key: { dir: [-0.3, 0.9, 0.3], c: [1.0, 0.62, 0.26], wrap: 0.3 }, fresnel: { c: [0.3, 0.18, 0.08], pow: 3 } } },
+  paraffin: { tone: null, rig: { amb: [0.13, 0.09, 0.08], ground: [0.05, 0.03, 0.03], key: { dir: [-0.6, 0.25, 0.76], c: [1.1, 0.8, 0.5], wrap: 0.3 }, fill: { dir: [0.7, 0.1, 0.3], c: [0.12, 0.1, 0.16], wrap: 0.5 }, fresnel: { c: [0.18, 0.12, 0.08], pow: 3 } } },
+  sodium: { tone: sodiumTone, rig: { amb: [0.12, 0.1, 0.16], ground: [0.05, 0.04, 0.06], key: { dir: [-0.45, 0.35, 0.8], c: [1.4, 0.9, 0.4], wrap: 0.3 }, fresnel: { c: [0.3, 0.18, 0.08], pow: 3 } } },
 };
 const index = {};
 for (const w of who) {
@@ -33,7 +34,7 @@ for (const w of who) {
     setExpression(expr);
     const Cx = { ...C };   // a fresh member object so its cached meshes are this expression's
     const a = createCast({ timing, members: { [w]: Cx } }).actor(w, { facing: 34 - 32 }); a.play("idle", { force: true, fade: 1 }); a.update(1 / 60);
-    const pose = a.pose(), view = { yawDeg: 34, elevDeg: 8, height: 0.95, centre: [0, P.h - 0.36, 0] };
+    const pose = a.pose(), hy = a.toWorld(a.skeleton(pose)[INDEX.head].p)[1], view = { yawDeg: 34, elevDeg: 6, height: 0.8, centre: [0, hy - 0.02, 0] };   // framed on the head, eyes about 38 % down
     const { G } = gbuffer([{ C: Cx, pose, facing: 34 - 32, tool: "hands" }], view, W, H, 2, LIGHTS.paraffin.rig);
     index[w][expr] = {};
     for (const [lname, L] of Object.entries(LIGHTS)) {
@@ -43,6 +44,6 @@ for (const w of who) {
     }
     setExpression(null);
   }
-  console.log("portraits", w);
+  console.log("portraits", w); await import(`./portraits_index.mjs?${w}`);
 }
-writeFileSync(new URL(`../portraits/index.lane${lane}.json`, import.meta.url), JSON.stringify(index, null, 1));
+// the index is rebuilt from disk after each person, atomically (proto/portraits_index.mjs)
