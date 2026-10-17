@@ -343,6 +343,7 @@ opt: "Come with me to Mother." -> brine.wenna.climb ? has(brine.wenna_confessed)
 opt: "She's out again. Come up with me." -> brine.wenna.again ? has(mother.out_again) & !has(brine.wenna_climbs_again)
 opt: "Ask her for a hair, for the Damp." -> brine.hair.wenna ? has(brine.hair_asked) & damp_hair == pollard
 opt: "The coat under your oilskin." -> brine.wenna.coat.give ? has(brine.wenna_trusts) & count(c.keeper_coat) == 0
+opt: "Ask where she was at twenty to ten." -> x1.wenna.start ? !has(wenna.told_landing)
 opt: "Leave her to the fire." -> brine.hub
 
 @node brine.wenna.chair
@@ -827,6 +828,7 @@ opt: "Keel says wreckers." -> brine.merrow.rope ? !seen(brine.merrow.rope)
 opt: "The sack under the settle." -> brine.sack ? copper == none & !has(floor.copper_taken) & !has(floor.copper_sunk)
 opt: "The sack on my shoulder." -> brine.sack.carried ? copper == none & has(floor.copper_taken) & count(i.copper_sack) >= 1
 opt: "Ask him for a hair, for the Damp." -> brine.hair.merrow ? has(brine.hair_asked) & damp_hair == pollard
+opt: "Lean on him about the drowned lamp, and the lantern." -> x1.merrow.start ? !has(merrow.told) & (has(memory.low_light) | has(merrow.wet_thigh) | has(prints.read))
 opt: "Leave him to steam." -> brine.hub
 
 @node brine.merrow.damp

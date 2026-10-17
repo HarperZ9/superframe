@@ -234,6 +234,7 @@ opt: "Ask about the half past six telegram." -> ropewalk.rook.1830 ? !seen(ropew
 check: "[CONDOLENCE] Ask what she would say, if she did remember." -> ropewalk.rook.own / ropewalk.rook.own.fail ? seen(ropewalk.rook.1830) & !has(telegram.draft) & !has(ropewalk.rook_barred) & !has(ropewalk.line_dead) {skill: condolence, dc: 6}
 check: "[FORM LETTER] Require sight of the claim's original, in the Shelf's name." -> ropewalk.rook.form.ok / ropewalk.rook.form.fail ? seen(ropewalk.rook.1830) & !has(telegram.draft) & !has(ropewalk.rook_barred) {skill: formletter, dc: 8}
 opt: "Ask for a telegraph form." -> ropewalk.pad ? !has(telegram.draft)
+opt: "Ask who wrote 9.40 on the draft, and in what ink." -> x2.rook.start ? seen(ropewalk.rook.1830) & !has(ropewalk.yellow_time)
 opt: "Leave her to the sounder." -> ropewalk.hub
 
 @node ropewalk.rook.1830

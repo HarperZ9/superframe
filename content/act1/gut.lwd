@@ -586,6 +586,7 @@ opt: "One of the two fish is a day older than the other." -> gut.hall.older ? ha
 opt: "The lamps on the wires are half out. Will you give your word for them?" -> gut.hall.word ? !has(lamp.gut.leave)
 opt: "A word in private, about Agnes Spratt." -> gut.hall.tell ? has(gut.spratt_swap) & gut_spratt == none
 opt: "Stand up on the bench and tell the hall about Agnes Spratt." -> gut.hall.expose ? has(gut.spratt_swap) & gut_spratt == none & var.prov != guild & clock < 02:30
+opt: "Ask Marrow, in front of the hall, who pulled the quay switch." -> x1.marrow.start ? !has(marrow.switch) & !has(afterdark.told)
 opt: "Go back out to the lane." -> gut.hall.out
 
 @node gut.hall.out

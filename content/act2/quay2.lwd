@@ -139,6 +139,7 @@ opt: "Offer the sunk copper for a boat." -> quay2.copper ? has(floor.copper_sunk
 opt: "Look at Nan Cockle's boat, upside down on the steps with a hole in it." -> quay2.cockle ? !has(quay2.cockle.mended)
 opt: "Look at the punt nobody takes out." -> quay2.coffin ? !has(quay2.coffin.failed)
 opt: "Take a spare oar off the steps." -> quay2.oar ? count(w.oar) == 0 {verb: carry, noise: 0.1}
+opt: "Stop Sallis on the steps and ask who pays." -> x2.sallis.start ? seen(quay2.muster) & !has(quay2.sallis_told) & clock < 23:40
 opt: "Go back along to the quay." -> ^hub +2
 
 # ---- the muster: the claim's word makes wreckers of neighbours (decided 2026-10-17: the strippers are the town's)

@@ -1,0 +1,147 @@
+# Low Water, Act 2: interrogations (SYSTEMS-FULL section 20). Director, 2026-10-17.
+
+@fact quay2.sallis_told
+
+# ================================================================ Rook, at the telegraph counter
+@interrogation x2.rook
+name: Rook, about the 18:30 draft
+who: rook
+place: telegraph
+nerve: 6
+heat: 0
+cool: 1
+hold: 25
+bolt: 4 -> x2.rook.bolts
+break: x2.rook.tells
+walk: x2.rook.walk
+press: fist "Lean both hands on her counter." -> x2.rook.lean {nerve: -1, heat: +3}
+press: tongue "Say she's the only one in Gullet who still reads the line." -> x2.rook.line {nerve: -2, heat: -1, skill: condolence, dc: 5}
+press: hands "Take the half past six off the spike and lay it face up." -> x2.rook.spike ? count(i.draft) > 0 | has(ropewalk.draft_taken) {nerve: -4}
+press: shadow "Tell her what she reads aloud to herself at night, with the shutter down." -> x2.rook.night ? has(typist.heard) | has(ropewalk.coe_watch) {nerve: -3}
+press: any "Wait while the sounder ticks." -> x2.rook.tick {nerve: -1, again}
+lie: l.recall "I don't recall it. I don't recall any of it." {catch: ropewalk.envelope_read, nerve: -4, node: x2.rook.caught, after: 5}
+tell: 3 "She puts her hand flat on the oilcloth book, as if it might get up."
+
+@node x2.rook.start
+place: telegraph
+speaker: ROOK
+cost: 1
+line: Ask what you like. The line's dead. I've time.
+do: interrogate(x2.rook)
+return:
+
+@node x2.rook.lean
+speaker: ROOK
+line: The counter's older than you. It's been leaned on by better.
+return:
+
+@node x2.rook.line
+speaker: ROOK
+line: Somebody has to. If nobody reads it, it might as well not come.
+return:
+
+@node x2.rook.spike
+speaker: ROOK
+nar: She looks at the draft the way a woman looks at her own handwriting in a stranger's pocket.
+return:
+
+@node x2.rook.night
+speaker: ROOK
+line: A woman can read aloud in her own office.
+return:
+
+@node x2.rook.tick
+nar: The sounder ticks once, by itself, and stops.
+return:
+
+@node x2.rook.caught
+speaker: ROOK
+line: I recall the envelope. Everyone recalls an envelope.
+return:
+
+@node x2.rook.tells
+place: telegraph
+speaker: ROOK
+cost: 4
+do: set(telegram.draft); set(ropewalk.yellow_time)
+line: The 9.40 was on it when he handed it over. In yellow. Not his ink; he writes in pencil.
+line: He struck it out at my counter, hard enough to cut the paper, and wrote SEE BELOW. There was nothing below.
+go: ropewalk.rook.menu
+
+@node x2.rook.bolts
+place: telegraph
+speaker: ROOK
+cost: 2
+line: I'm going upstairs. The office is shut. It's been shut since you came in.
+go: ropewalk.hub
+
+@node x2.rook.walk
+speaker: ROOK
+line: I don't recall you came in.
+go: ropewalk.hub
+
+# ================================================================ Sallis, at the mole steps, after the muster
+@interrogation x2.sallis
+name: Sallis, about who pays
+who: sallis
+place: mole_steps
+nerve: 6
+heat: 1
+cool: 1
+bolt: 9 -> x2.sallis.walk
+swing: 6 -> quay2.wardens
+break: x2.sallis.tells
+walk: x2.sallis.walk
+press: fist "Take the crowbar out of his hand." -> x2.sallis.bar {nerve: -2, heat: +3, skill: grip, dc: 6}
+press: tongue "Say he has never stolen a thing in his life." -> x2.sallis.never {nerve: -3, heat: -1, skill: condolence, dc: 6}
+press: hands "Lay the claim form on the step and point to where it says persons." -> x2.sallis.form {nerve: -2}
+press: shadow "Repeat what he read to the men, word for word." -> x2.sallis.words ? has(quay2.muster_seen) {nerve: -3}
+lie: l.orders "Board's orders, Shelf. I don't make them." {catch: quay2.muster_seen, nerve: -4, node: x2.sallis.caught, after: 5}
+tell: 3 "He shifts the crowbar to his other hand, and then back."
+
+@node x2.sallis.start
+place: mole_steps
+speaker: SALLIS
+cost: 1
+line: Quick, Shelf. The ebb doesn't wait for the insurer.
+do: interrogate(x2.sallis)
+return:
+
+@node x2.sallis.bar
+speaker: SALLIS
+line: That's Board iron. You'll want a docket for that.
+return:
+
+@node x2.sallis.never
+speaker: SALLIS
+line: Never. Not a nail. Ask anybody on this quay.
+return:
+
+@node x2.sallis.form
+speaker: SALLIS
+line: Persons. It's a word, Shelf. Words don't row out to the Spit.
+return:
+
+@node x2.sallis.words
+speaker: SALLIS
+nar: Behind him the men have stopped loading, to listen to their own reason said back to them.
+return:
+
+@node x2.sallis.caught
+speaker: SALLIS
+line: Not orders, then. The paper. It's the same thing.
+return:
+
+@node x2.sallis.tells
+place: mole_steps
+speaker: SALLIS
+cost: 4
+do: set(quay2.sallis_told)
+line: Nobody ordered it. Keel said at the office the Board pays carriage on salvage, by the ton, and the Shelf pays the Board.
+line: The rest I read in the Courier, same as everyone. I put two and two together. It came to a boat.
+go: quay2.boats
+
+@node x2.sallis.walk
+speaker: SALLIS
+line: Mind the step. It's slippy for clerks.
+go: quay2.boats

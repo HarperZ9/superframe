@@ -308,6 +308,7 @@ opt: "Where were you at twenty to ten, when the lamps went?" -> weigh.hobb.pink 
 check: "[CONDOLENCE] Ask what he saw when they came back." -> weigh.hobb.saw.ok / weigh.hobb.saw.fail ? seen(weigh.hobb.pink) & !has(weigh.hobb_saw) {skill: condolence, dc: 6}
 opt: "Fill his second lantern from your paraffin." -> weigh.hobb.lantern ? count(i.paraffin) > 0 & var.tab_hobb == 0 & seen(weigh.hobb.lanterns)
 opt: "What did you see at a quarter past four?" -> weigh.hobb.hammer ? clock >= 04:25 & !has(hammer.keel) & !has(weigh.keel_came)
+opt: "Ask Hobb who went near the quay board." -> x1.hobb.start ? !has(weigh.hobb_saw)
 opt: "Leave him to his page." -> weigh.hub
 
 @node weigh.hobb.name
