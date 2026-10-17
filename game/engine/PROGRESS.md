@@ -204,6 +204,17 @@ R1 to R13 from that file.
 32. DONE Chapter pages and re-filing (19.4), line faces and speaker ids, travel from the Map;
     the harness spends chapters: every build reaches 8 by mid Act 2 and 10 early in Act 3. 121 tests.
 
+33. DONE The live world (author 2026-10-17): the clock runs in real time (world-clock-rate 8),
+    nothing slows it; events cut into open menus; walking off ends a talk (walk: node or walkaway
+    line); walk-up talk with F in a 50 degree cone, 0.5 s cooldown and run lock; passive voice barks
+    (@area voice:); wanderers; stepped play only as an accessibility setting. Captures
+    game/capture/live-talk/.
+34. DONE Interrogations (SYSTEMS-FULL 20, the director's shape): world/interrogation.mjs, presses as
+    options with full check depth, lies on the person's clock, tells, cool and hold, break, bolt,
+    swing, walk; validator edges; harness plays them. Capture game/capture/interrog/.
+35. DONE No snaps into or out of fights: figures fight in their own actors, momentum carries in,
+    positions kept after. Raise every fourth page (default 4). 133 tests.
+
 ## Log
 - 2026-10-16 23:00Z: resumed after the previous session stopped at a usage limit. Inventory: 25
   files, 1950 lines, no tests/ folder. Smoke run: test content loads with 0 errors, the slice
@@ -232,3 +243,4 @@ R1 to R13 from that file.
 - 2026-10-17 05:21Z: gate pages in the engine; awaiting @gate records.
 - 2026-10-17 05:40Z: gate drafts in, five builds re-run; combat's three asks done; NOTES entry.
 - 2026-10-17 06:35Z: one game in the engine shell, prototype retired; chapter pages; the UI lead's asks; NOTES entry.
+- 2026-10-17 20:40Z: live world, interrogations, fluid fight cuts; NOTES entry.
