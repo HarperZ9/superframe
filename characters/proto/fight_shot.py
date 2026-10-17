@@ -6,7 +6,7 @@ root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')); por
 srv = subprocess.Popen(['node', os.path.join(root, 'game', 'serve.mjs'), '--port', str(port)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(1.5)
 try:
     with sync_playwright() as p:
-        b = p.chromium.launch(headless=True, args=["--disable-gpu", "--disable-gpu-compositing", "--disable-accelerated-2d-canvas"])
+        b = p.chromium.launch(headless=True, executable_path=os.environ.get('CHROME_EXE') or None, args=["--disable-gpu", "--disable-gpu-compositing", "--disable-accelerated-2d-canvas"])
         for (w, h, name) in [(1280, 720, os.environ.get('SHOT_NAME', '09-fight-inworld') + '.png'), (1920, 1080, os.environ.get('SHOT_NAME', '09-fight-inworld') + '-1080.png')]:
             pg = b.new_page(viewport={'width': w, 'height': h}); logs = []
             if os.environ.get('FIG_LOOK') is not None: pg.add_init_script(f"globalThis.__lwFigureLook = {repr(os.environ['FIG_LOOK'])};")

@@ -293,3 +293,43 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     figure read as a shape against dark ground; lift with outline reads best (shape and face).
     Chosen: lift + outline (drawer default). Cost: the outline reads a little like a cut-out against
     bright ground; keep an eye on it in the lit pools. stills/11-oneshell-fight-1080.png retaken.
+56. DONE Clip fades 5 to 9 frames at 30 fps (0.17 to 0.3 s), counted the same in drive and update
+    (a8727af). The long pole's held top: the two-handed rise hung the boathook down the back, tip at
+    0.39 m at the top of the windup; a long pole now stays raised behind the head (tip 1.94 m), a maul
+    still drops down the back (ca40a48). proto/actor_test.mjs passes 15 of 15. Pop severity unchanged
+    (worst 29 cm, 11 frames over 20 cm, summed excess 929 cm).
+57. DONE Figures on the plates: exposure, contact shadows, occlusion (author, 2026-10-17: "Overblown
+    exposure on character lighting", clipping, shadows overlapping). Proof: proto/plate_proof.py on the
+    real v2 plates through the shell, 1920x1080, before and after side by side in
+    stills/proof/*-before-after-1080.png (Brine bar, Brine by a wall and tables, Lamp Quay by the stairs
+    and bench, Lamp Quay among the lamplighters, the lamplighters' fight, four extra people packed round
+    Lamb on the Brine floor and on the quay).
+    - Exposure (runtime/expose.mjs, runtime/platectx.mjs). Cause: rigAt mapped chest light through
+      1.1 (1 - exp(-E/8)), so every figure ended near full light whatever the painting did; the
+      Brine's close lanterns (I 12 to 26) then saturated the renderer, and the sodium ramp turned the
+      saturated figure into one flat cream or yellow shape. Now the lamps only share out a moderate
+      0.7 at the chest, and the drawer reads the painting's own linear luminance on the ground round
+      the figure's feet (the plate's variant png, blended toward dark.png with the blackout), reads the
+      figure's own light apart from its clothes (rendered over albedo, from the renderer's albedo), and
+      sets one gain so a 0.18-albedo surface lands on the plate's local median (READ_FLOOR 0.03 on the
+      darkest quay stretches). Highlights roll off toward 1.45x the plate's local 90th percentile; the
+      face lift is 1.6x in linear light under that ceiling; the outline is capped there too (floor 0.22
+      so it still separates on dark ground). Tested on the ground ring against a body-plus-ground box
+      (the wall behind a figure is not its light) and plate albedo 0.3 against 0.18 (0.3 left quay
+      figures as black cut-outs).
+    - Contact shadows (runtime/groundshadow.mjs). Every figure queues its footprint; once a frame the
+      canvas's shared mask is built (overlaps by max, so a crowd's shadows never stack darker) and laid
+      under all figures (destination-over). A mask pixel counts only where the plate's geo buffer says
+      the painted point is ground at the feet' height (a wall, a bar front, a table top or a step
+      rejects it). Footprint 0.5 m with a soft edge from 0.15 m, plus a soft tongue 1.2 m long away from
+      the lamp that rules the spot. Checked with a debug colour (globalThis.__lwShadowDebug).
+    - Occlusion. The 0.35 m bias is now 0.14 m, tested as a hard mask with a one-pixel feather. A soft
+      band in depth (first try, 0.14 m wide) ghosted whole bodies that stood against a wall or a stove
+      at a shallow angle, so the softening moved to screen space. Props in the hands take the same test.
+    Remaining, seen in the stills: figures stand inside the bar, a bench and the stove (collision:
+    the walking grid lets Lamb and the people stand there; the systems engineer's, see NOTES); on the
+    darkest quay stretches figures still read mostly by outline and faces; the plate's lens layers (a
+    lamp's bokeh disc) show where a figure is cut by the lamp in front, a hole a little larger than the
+    lamp; Merrow's head is hidden by the stove pipe in front in both before and after (correct depth,
+    poor staging); the plate's buffers load a few seconds after the plate, and until then a figure is
+    drawn with gain 1 and a small ellipse shadow.

@@ -2091,3 +2091,14 @@ Asked by the coordinator (2026-10-17): a pad button for talk, and a review of th
   the write), edge marks for anyone behind the panel or off screen, and a lie tab that drains the 4 s
   window with its keys. Interiors at the close camera leave only 3 to 4 m of lookahead with either
   width, so the marks carry the warning there.
+- **From the character lead, 2026-10-17: figures standing inside furniture.** The plate proof
+  (characters/stills/proof/*-before-after-1080.png) shows Lamb and the people standing inside the
+  Brine's bar counter, the quay bench (Fewell) and the stove (Merrow). The drawer now hides the parts
+  behind the furniture cleanly, which makes the overlap obvious. The walking grid (plateArena from
+  geo-pos) lets these points be walkable, and the people's set spots put them there. Could the grid
+  mark furniture cells solid (geo-id or height above the floor within a body radius), and the people's
+  spots be checked against it? Lamb at [-0.1, 0, -1.7] in the Brine is behind the counter after
+  walkTo, the capture's own bar route.
+- **Optional for the figure hooks:** the drawer now reads `/content/<plate>/` itself (place.json,
+  geo-pos.f32, the variant png, dark.png) to expose figures and lay shadows. It finds the variant by
+  matching the `lights` array you pass. Passing `variant` in the hook args would make that exact.
