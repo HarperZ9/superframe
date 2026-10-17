@@ -145,7 +145,209 @@
     "note": "the door to the quay"
    }
   ],
-  "lamps": []
+  "lamps": [],
+  "fight": {
+   "lamb": [
+    -0.5,
+    2.5
+   ],
+   "foes": [
+    [
+     -1.5,
+     -2.5
+    ],
+    [
+     1.5,
+     -2.5
+    ],
+    [
+     -0.5,
+     -3.5
+    ],
+    [
+     -4.5,
+     -0.5
+    ]
+   ],
+   "anchors": {
+    "cut": [
+     [
+      -2.6,
+      -1.2
+     ],
+     [
+      2.6,
+      -1.6
+     ],
+     [
+      -3.2,
+      2.6
+     ],
+     [
+      3,
+      2.8
+     ],
+     [
+      -4.8,
+      -3.9
+     ]
+    ],
+    "lamp": [
+     [
+      -2.6,
+      -1.2
+     ]
+    ],
+    "snare": [],
+    "sluice": []
+   },
+   "r": 8.32,
+   "arena": "arena-weigh.json",
+   "stage": "arena: weigh -6 0 -5 0"
+  },
+  "fights": {
+   "weigh": {
+    "lamb": [
+     -0.5,
+     2.5
+    ],
+    "foes": [
+     [
+      -1.5,
+      -2.5
+     ],
+     [
+      1.5,
+      -2.5
+     ],
+     [
+      -0.5,
+      -3.5
+     ],
+     [
+      -4.5,
+      -0.5
+     ]
+    ],
+    "anchors": {
+     "cut": [
+      [
+       -2.6,
+       -1.2
+      ],
+      [
+       2.6,
+       -1.6
+      ],
+      [
+       -3.2,
+       2.6
+      ],
+      [
+       3,
+       2.8
+      ],
+      [
+       -4.8,
+       -3.9
+      ]
+     ],
+     "lamp": [
+      [
+       -2.6,
+       -1.2
+      ]
+     ],
+     "snare": [],
+     "sluice": []
+    },
+    "r": 8.32,
+    "arena": "arena-weigh.json",
+    "stage": "arena: weigh -6 0 -5 0"
+   }
+  }
  },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -2.6,
+     2.95,
+     -1.2
+    ],
+    "kind": "paraffin",
+    "I": 16,
+    "reach": 12,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     2.6,
+     2.95,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 16,
+    "reach": 12,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -3.2,
+     2.95,
+     2.6
+    ],
+    "kind": "paraffin",
+    "I": 16,
+    "reach": 12,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     3,
+     2.95,
+     2.8
+    ],
+    "kind": "paraffin",
+    "I": 16,
+    "reach": 12,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -4.8,
+     1.85,
+     -3.9
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 12,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -12,
+     4.5,
+     0.6
+    ],
+    "kind": "sodium",
+    "I": 260,
+    "reach": 30,
+    "group": ""
+   }
+  ]
+ },
+ "arenas": [
+  {
+   "id": "weigh",
+   "file": "arena-weigh.json",
+   "stage": "arena: weigh -6 0 -5 0",
+   "heightToWorld": "y = h - 6.5",
+   "size": [
+    12,
+    10
+   ]
+  }
+ ],
  "notes": "The after-vote. The Guild are drawn by the game (no baked crowd). The blackout keeps Pip's lamp at the tube, the louvre and the door crack."
 }

@@ -5,11 +5,11 @@
  "height": 2400,
  "camera": {
   "yawDeg": 26,
-  "elevDeg": 38,
+  "elevDeg": 40,
   "target": [
-   -3.5,
+   -2.5,
    -3,
-   8.5
+   6
   ],
   "dist": 70,
   "ortho": true,
@@ -519,7 +519,1046 @@
     ],
     "note": "the gully, ankle-deep at low water, knee by 23:50"
    }
+  ],
+  "fight": {
+   "lamb": [
+    -12.5,
+    13.5
+   ],
+   "foes": [
+    [
+     -15.5,
+     7.5
+    ],
+    [
+     -9.5,
+     7.5
+    ],
+    [
+     -12.5,
+     5.5
+    ],
+    [
+     -17.5,
+     10.5
+    ]
+   ],
+   "anchors": {
+    "cut": [
+     [
+      -5.5,
+      5
+     ],
+     [
+      -10.2,
+      4.8
+     ]
+    ],
+    "lamp": [
+     [
+      -5.5,
+      5
+     ]
+    ],
+    "snare": [
+     [
+      -16,
+      6.5
+     ]
+    ],
+    "sluice": []
+   },
+   "r": 20.58,
+   "arena": "arena-floor.json",
+   "stage": "arena: floor -20 0 4 0"
+  },
+  "fights": {
+   "floor": {
+    "lamb": [
+     -12.5,
+     13.5
+    ],
+    "foes": [
+     [
+      -15.5,
+      7.5
+     ],
+     [
+      -9.5,
+      7.5
+     ],
+     [
+      -12.5,
+      5.5
+     ],
+     [
+      -17.5,
+      10.5
+     ]
+    ],
+    "anchors": {
+     "cut": [
+      [
+       -5.5,
+       5
+      ],
+      [
+       -10.2,
+       4.8
+      ]
+     ],
+     "lamp": [
+      [
+       -5.5,
+       5
+      ]
+     ],
+     "snare": [
+      [
+       -16,
+       6.5
+      ]
+     ],
+     "sluice": []
+    },
+    "r": 20.58,
+    "arena": "arena-floor.json",
+    "stage": "arena: floor -20 0 4 0"
+   },
+   "gully": {
+    "lamb": [
+     5.5,
+     11.5
+    ],
+    "foes": [
+     [
+      2.5,
+      5.5
+     ],
+     [
+      9.5,
+      5.5
+     ],
+     [
+      5.5,
+      4.5
+     ],
+     [
+      0.5,
+      8.5
+     ]
+    ],
+    "anchors": {
+     "cut": [
+      [
+       2.4,
+       4.6
+      ],
+      [
+       12.4,
+       9.6
+      ]
+     ],
+     "lamp": [
+      [
+       2.4,
+       4.6
+      ]
+     ],
+     "snare": [],
+     "sluice": []
+    },
+    "r": 18.72,
+    "arena": "arena-gully.json",
+    "stage": "arena: gully -2 0 3 0"
+   }
+  }
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -14.11,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -14.11,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -12.02,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -7.99,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -12.02,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -1.85,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     16.19,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     20.25,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -20.5,
+     3.2,
+     -14
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 7,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -20.5,
+     3.2,
+     -19
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 7,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -3.6,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -2.65,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -1.8,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -3.57,
+     -0.22,
+     0.63
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -2.7,
+     -0.22,
+     0.63
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -1.77,
+     -0.45,
+     1.05
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -3.5,
+     -0.45,
+     1.05
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -6.6,
+     1.4,
+     -1.8
+    ],
+    "kind": "paraffin",
+    "I": 26,
+    "reach": 12,
+    "group": "window"
+   },
+   {
+    "at": [
+     -10.2,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -8.8,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -5.1,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -3.7,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     14.4,
+     1.6,
+     -4.6
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 9,
+    "group": "window"
+   },
+   {
+    "at": [
+     11,
+     1.7,
+     -2.3
+    ],
+    "kind": "paraffin",
+    "I": 2.4,
+    "reach": 7,
+    "group": "window"
+   },
+   {
+    "at": [
+     -24,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -17,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -10,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     3.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     10.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     17.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     27.6,
+     3.3,
+     -3.35
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 14,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     31.5,
+     2,
+     -5.6
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 8,
+    "group": "window"
+   },
+   {
+    "at": [
+     -11.7,
+     -2.97,
+     6.4
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -5.5,
+     -2.88,
+     5
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -2.6,
+     -2.91,
+     10.2
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     2.4,
+     -3.02,
+     4.6
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -10.2,
+     -2.88,
+     4.8
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     12.4,
+     -2.88,
+     9.6
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -20.5,
+     -2.87,
+     11.5
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   }
+  ],
+  "rain": [
+   {
+    "at": [
+     -14.11,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -14.11,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -12.02,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -7.99,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -12.02,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -1.85,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     16.19,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     20.25,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -20.5,
+     3.2,
+     -14
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 7,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -20.5,
+     3.2,
+     -19
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 7,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -3.6,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -2.65,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -1.8,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -3.57,
+     -0.22,
+     0.63
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -2.7,
+     -0.22,
+     0.63
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -1.77,
+     -0.45,
+     1.05
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -3.5,
+     -0.45,
+     1.05
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -6.6,
+     1.4,
+     -1.8
+    ],
+    "kind": "paraffin",
+    "I": 26,
+    "reach": 12,
+    "group": "window"
+   },
+   {
+    "at": [
+     -10.2,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -8.8,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -5.1,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -3.7,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     14.4,
+     1.6,
+     -4.6
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 9,
+    "group": "window"
+   },
+   {
+    "at": [
+     11,
+     1.7,
+     -2.3
+    ],
+    "kind": "paraffin",
+    "I": 2.4,
+    "reach": 7,
+    "group": "window"
+   },
+   {
+    "at": [
+     -24,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -17,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -10,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     3.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     10.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     17.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     27.6,
+     3.3,
+     -3.35
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 14,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     31.5,
+     2,
+     -5.6
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 8,
+    "group": "window"
+   },
+   {
+    "at": [
+     -11.7,
+     -2.97,
+     6.4
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -5.5,
+     -2.88,
+     5
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -2.6,
+     -2.91,
+     10.2
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     2.4,
+     -3.02,
+     4.6
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -10.2,
+     -2.88,
+     4.8
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     12.4,
+     -2.88,
+     9.6
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -20.5,
+     -2.87,
+     11.5
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   }
   ]
  },
+ "arenas": [
+  {
+   "id": "floor",
+   "file": "arena-floor.json",
+   "stage": "arena: floor -20 0 4 0",
+   "heightToWorld": "y = -3.2 + (h + 0.3) / 1.72",
+   "size": [
+    15,
+    13
+   ]
+  },
+  {
+   "id": "gully",
+   "file": "arena-gully.json",
+   "stage": "arena: gully -2 0 3 0",
+   "heightToWorld": "y = -3.2 + (h + 0.3) / 1.72",
+   "size": [
+    16,
+    12
+   ]
+  }
+ ],
  "notes": "The Floor. The game draws the tide (water at the tide's height), rain streaks and people. Fog dither: the Flats look (look bible frame 4)."
 }

@@ -169,8 +169,185 @@
      1
     ]
    }
+  ],
+  "fight": {
+   "lamb": [
+    6.5,
+    7.5
+   ],
+   "foes": [
+    [
+     4.5,
+     2.5
+    ],
+    [
+     9.5,
+     2.5
+    ],
+    [
+     6.5,
+     1.5
+    ],
+    [
+     2.5,
+     4.5
+    ]
+   ],
+   "anchors": {
+    "cut": [
+     [
+      3,
+      1
+     ],
+     [
+      7,
+      1
+     ],
+     [
+      11,
+      1
+     ]
+    ],
+    "lamp": [
+     [
+      3,
+      1
+     ]
+    ],
+    "snare": [],
+    "sluice": []
+   },
+   "r": 9.06,
+   "arena": "arena-hill.json",
+   "stage": "arena: hill 0 0 0 0"
+  },
+  "fights": {
+   "hill": {
+    "lamb": [
+     6.5,
+     7.5
+    ],
+    "foes": [
+     [
+      4.5,
+      2.5
+     ],
+     [
+      9.5,
+      2.5
+     ],
+     [
+      6.5,
+      1.5
+     ],
+     [
+      2.5,
+      4.5
+     ]
+    ],
+    "anchors": {
+     "cut": [
+      [
+       3,
+       1
+      ],
+      [
+       7,
+       1
+      ],
+      [
+       11,
+       1
+      ]
+     ],
+     "lamp": [
+      [
+       3,
+       1
+      ]
+     ],
+     "snare": [],
+     "sluice": []
+    },
+    "r": 9.06,
+    "arena": "arena-hill.json",
+    "stage": "arena: hill 0 0 0 0"
+   }
+  }
+ },
+ "lights": {
+  "lit": [
+   {
+    "at": [
+     3,
+     3,
+     1
+    ],
+    "kind": "sky",
+    "I": 70,
+    "reach": 22,
+    "group": "white"
+   },
+   {
+    "at": [
+     7,
+     3,
+     1
+    ],
+    "kind": "sky",
+    "I": 70,
+    "reach": 22,
+    "group": "white"
+   },
+   {
+    "at": [
+     11,
+     3,
+     1
+    ],
+    "kind": "sky",
+    "I": 70,
+    "reach": 22,
+    "group": "white"
+   },
+   {
+    "at": [
+     1.6,
+     0.42,
+     8
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 4,
+    "group": "fire"
+   }
+  ],
+  "dark": [
+   {
+    "at": [
+     1.6,
+     0.42,
+     8
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 4,
+    "group": "fire"
+   }
   ]
  },
+ "arenas": [
+  {
+   "id": "hill",
+   "file": "arena-hill.json",
+   "stage": "arena: hill 0 0 0 0",
+   "heightToWorld": "y = h - 40",
+   "size": [
+    14,
+    10
+   ]
+  }
+ ],
  "arena": {
   "name": "hill",
   "worldOfArena": "x = arena x, z = arena z, y = 0 (arena h 40)",

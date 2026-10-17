@@ -126,9 +126,9 @@
    {
     "id": "stairs",
     "at": [
-     0.9,
+     2.6,
      0,
-     1
+     2
     ],
     "note": "the stair hatch in the floor"
    }
@@ -143,7 +143,282 @@
      0
     ]
    }
+  ],
+  "fight": {
+   "lamb": [
+    -0.5,
+    2.5
+   ],
+   "foes": [
+    [
+     -1.5,
+     -2.5
+    ],
+    [
+     1.5,
+     -2.5
+    ],
+    [
+     -0.5,
+     -2.5
+    ],
+    [
+     -2.5,
+     -0.5
+    ]
+   ],
+   "anchors": {
+    "cut": [
+     [
+      0,
+      0
+     ],
+     [
+      1.9,
+      2.6
+     ],
+     [
+      2.9,
+      -0.4
+     ],
+     [
+      -0.6,
+      3.1
+     ]
+    ],
+    "lamp": [
+     [
+      0,
+      0
+     ]
+    ],
+    "snare": [],
+    "sluice": []
+   },
+   "r": 5.55,
+   "arena": "arena-lamp.json",
+   "stage": "arena: lamp -4 0 -4 0"
+  },
+  "fights": {
+   "lamp": {
+    "lamb": [
+     -0.5,
+     2.5
+    ],
+    "foes": [
+     [
+      -1.5,
+      -2.5
+     ],
+     [
+      1.5,
+      -2.5
+     ],
+     [
+      -0.5,
+      -2.5
+     ],
+     [
+      -2.5,
+      -0.5
+     ]
+    ],
+    "anchors": {
+     "cut": [
+      [
+       0,
+       0
+      ],
+      [
+       1.9,
+       2.6
+      ],
+      [
+       2.9,
+       -0.4
+      ],
+      [
+       -0.6,
+       3.1
+      ]
+     ],
+     "lamp": [
+      [
+       0,
+       0
+      ]
+     ],
+     "snare": [],
+     "sluice": []
+    },
+    "r": 5.55,
+    "arena": "arena-lamp.json",
+    "stage": "arena: lamp -4 0 -4 0"
+   }
+  }
+ },
+ "lights": {
+  "lit": [
+   {
+    "at": [
+     0,
+     2.6,
+     0
+    ],
+    "kind": "white",
+    "I": 30,
+    "reach": 12,
+    "group": ""
+   },
+   {
+    "at": [
+     1.9,
+     2.6,
+     2.6
+    ],
+    "kind": "white",
+    "I": 9,
+    "reach": 6,
+    "group": ""
+   },
+   {
+    "at": [
+     2.9,
+     2.4,
+     -0.4
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 6,
+    "group": ""
+   },
+   {
+    "at": [
+     -0.6,
+     2.7,
+     3.1
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 6,
+    "group": ""
+   },
+   {
+    "at": [
+     -30,
+     18,
+     -40
+    ],
+    "kind": "sky",
+    "I": 600,
+    "reach": 90,
+    "group": ""
+   }
+  ],
+  "dark": [
+   {
+    "at": [
+     30,
+     -25,
+     30
+    ],
+    "kind": "sodium",
+    "I": 2500,
+    "reach": 90,
+    "group": ""
+   },
+   {
+    "at": [
+     -30,
+     18,
+     -40
+    ],
+    "kind": "sky",
+    "I": 900,
+    "reach": 90,
+    "group": ""
+   },
+   {
+    "at": [
+     -2.4,
+     1.3,
+     2
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 8,
+    "group": ""
+   }
+  ],
+  "frost": [
+   {
+    "at": [
+     0,
+     2.6,
+     0
+    ],
+    "kind": "white",
+    "I": 30,
+    "reach": 12,
+    "group": ""
+   },
+   {
+    "at": [
+     1.9,
+     2.6,
+     2.6
+    ],
+    "kind": "white",
+    "I": 9,
+    "reach": 6,
+    "group": ""
+   },
+   {
+    "at": [
+     2.9,
+     2.4,
+     -0.4
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 6,
+    "group": ""
+   },
+   {
+    "at": [
+     -0.6,
+     2.7,
+     3.1
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 6,
+    "group": ""
+   },
+   {
+    "at": [
+     -30,
+     18,
+     -40
+    ],
+    "kind": "sky",
+    "I": 600,
+    "reach": 90,
+    "group": ""
+   }
   ]
  },
+ "arenas": [
+  {
+   "id": "lamp",
+   "file": "arena-lamp.json",
+   "stage": "arena: lamp -4 0 -4 0",
+   "heightToWorld": "y = h - 30",
+   "size": [
+    8,
+    8
+   ]
+  }
+ ],
  "notes": "The lamp room. Mother's beam outside is the game's (look.mjs)."
 }

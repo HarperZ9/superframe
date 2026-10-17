@@ -64,12 +64,21 @@ const prev = existsSync(`${out}/place.json`) ? JSON.parse(readFileSync(`${out}/p
 const variants = [...new Set([...(prev.variants || []), ...vnames])].filter((v) => P.variants[v] && existsSync(`${out}/${v}.png`));
 const { readdirSync } = await import("node:fs");
 const arenas = existsSync(out) ? readdirSync(out).filter((f) => /^arena-.*\.json$/.test(f)).map((f) => { const A = JSON.parse(readFileSync(`${out}/${f}`, "utf8")); return { id: A.name, file: f, stage: A.stage.line, heightToWorld: A.stage.heightToWorld, size: [A.rows[0].length, A.rows.length] }; }) : [];
+// fight marks for the combat converter (game/engine/combat/sim/plate.mjs reads marks.fight): spawns,
+// anchors and the radius of the painted fight ground, in world x, z, from the plate's arena files
+const fights = {};
+for (const a of arenas) {
+  const A = JSON.parse(readFileSync(`${out}/${a.file}`, "utf8")), [ax0, az0] = A.source.rect, w = (p) => [+(ax0 + p[0]).toFixed(2), +(az0 + p[1]).toFixed(2)], t = P.camera.target;
+  let r = 0; A.rows.forEach((line, ri) => [...line].forEach((ch, ci) => { if (!A.legend[ch].solid) r = Math.max(r, Math.hypot(ax0 + ci + 0.5 - t[0], az0 + ri + 0.5 - t[2])); }));
+  fights[a.id] = { lamb: w(A.spawns.lamb), foes: A.spawns.foes.map(w), anchors: Object.fromEntries(Object.entries(A.anchors).map(([k, v]) => [k, v.map(w)])), r: +(r + 0.6).toFixed(2), arena: a.file, stage: a.stage };
+}
+const fightMain = fights[name] || fights[{ station: "hill" }[name]] || Object.values(fights)[0];
 const lightsOut = P.lights ? Object.fromEntries(variants.map((v) => [v, P.lights(P.variants[v].V || {}).filter((l) => !/^(moon|sun|skyfill|fill|cellfill)$/.test(l.key || "")).map((l) => ({ at: l.pos.map((q) => +q.toFixed(2)), kind: ["sodium", "paraffin", "white", "sky"][typeof l.type === "number" ? l.type : { sodium: 0, window: 1, led: 2, sky: 3 }[l.type]] || "paraffin", I: +l.I.toFixed(2), reach: l.reach || 30, group: l.group || "" }))])) : Object.fromEntries(variants.map((v) => [v, (P.variants[v].glows || []).map((g) => ({ at: g.pos, kind: "paraffin", I: g.intensity, reach: g.radius, group: "lamp" }))]));
 writeFileSync(`${out}/place.json`, JSON.stringify({
   place: name, version: 2, width: W, height: H, camera: { yawDeg: cam.yawDeg, elevDeg: cam.elevDeg, target: cam.target, dist: cam.dist, ortho: true, scale: cam.scale },
   pxPerMetre: P.camera.ppm * pv, near: +(W / 1920).toFixed(4), geoScale: 0.5, layers: P.kind === "palette" ? [] : ["flare", "streak", "halo", "ca"], style: P.kind || "painted",
   variants, variantInfo: Object.fromEntries(variants.map((v) => [v, { hour: P.variants[v].hour, weather: P.variants[v].note || "" }])),
-  dark: !!P.dark, dithers: P.dithers ? Object.keys(P.dithers) : [], walk: P.walk || [], ids: P.ids || undefined, footing: P.footing || undefined, marks: P.marks || {}, lights: lightsOut, arenas, arena: P.arena || undefined, notes: P.notes || undefined,
+  dark: !!P.dark, dithers: P.dithers ? Object.keys(P.dithers) : [], walk: P.walk || [], ids: P.ids || undefined, footing: P.footing || undefined, marks: { ...(P.marks || {}), ...(fightMain ? { fight: fightMain, fights } : {}) }, lights: lightsOut, arenas, arena: P.arena || undefined, notes: P.notes || undefined,
 }, null, 1));
 if (only.includes("clean")) rmSync(tmp, { recursive: true, force: true });
 log("done");
