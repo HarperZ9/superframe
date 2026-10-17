@@ -179,3 +179,9 @@ tests (node --test), not proof.
    last link 7, other links 4, charged 2 to 8); anim/drive.mjs plays a clip's sweep phase there so
    the active frames carry only contact; export-timing writes it. No frame count changed (min-max
    identical). Also: brawl spawn offsets never land in a wall (the Brine marks moved). 206 of 206.
+27. DONE Coordinator, 2026-10-17 (the Build page reads only preview()): preview(levels, tool,
+   { gear, temper, fitting }) adds Breath per second and delay, protection and the share softened,
+   damage, poise and Breath per strike (light, heavy, charged, specials), dodge distance in metres,
+   time staggered, breakpoints, tempo factors, and an `applied` echo; clothes, temper and fittings
+   preview without being paid for. Confirmed the character lead's reshaped strikes (no frame change).
+   tests/build.test.mjs; 213 of 213.

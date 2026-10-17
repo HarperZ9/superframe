@@ -40,6 +40,7 @@ import { lambDef, foeDef, fighterSpec, learnedFromFlags } from "./roster.mjs";
 import { createWorld } from "./sim/world.mjs";
 import { parseProp } from "./sim/props.mjs";
 import { startMove } from "./sim/fighter.mjs";
+import { rootSpeed } from "./sim/moves.mjs";
 import { compile, evaluate } from "../core/expr.mjs";
 import { BARK_TEXT, BARK_KEYS } from "./sim/barks.mjs";
 
@@ -160,7 +161,7 @@ export function installCombat(G, { arenas = ARENAS } = {}) {
   const api = {
     defs: encounters, errors, current: null, clockRate: FIGHT_CLOCK_RATE, plates: {},
     // what a level-up screen or the bench can show: Lamb's fighting numbers for given levels
-    preview: (levels = null, tool = null) => previewOf(G, levels, tool),
+    preview: (levels = null, tool = null, opts = null) => previewOf(G, levels, tool, opts),
     // the bench (19.7): temper 0 to 5 paid in salvage and minutes, and one fitting per tool
     upgradeCost: (tool) => upgradeCost(G, tool),
     upgrade: (tool) => upgrade(G, tool),
@@ -216,28 +217,46 @@ function ambushOpening(G, W, amb) {
   W.emit({ type: "ambush", id: T.id, watcher: amb.watcher, advantage: amb.advantage || "sneak" });
 }
 
-function previewOf(G, levels, tool) {
-  const now = lambFromGame(G), L = { ...now.levels, ...(levels || {}) }, t = tool || now.tool, ts = toolState(G, t);
-  const d = lambDef(L, t, {}, now.learned, { gear: now.gear.length ? now.gear : undefined, temper: ts.temper || 0, fitting: ts.fitting || null });
+// Every number the Build page shows, for the current Lamb or a change not yet made: levels (a
+// level-up), tool, and opts { gear, temper, fitting } (clothes to compare, a temper step or fitting
+// at the bench). `applied` echoes what was used. Single source for ui/buildstats.mjs.
+function previewOf(G, levels, tool, opts = null) {
+  const now = lambFromGame(G), L = { ...now.levels, ...(levels || {}) }, t = tool || now.tool, ts = toolState(G, t), o = opts || {};
   const T = TOOLS21[t] || TOOLS21["w.hands"];
+  const gear = o.gear ? o.gear.filter((g) => CLOTHING[g]) : now.gear.length ? now.gear : undefined;
+  const temper = o.temper != null ? Math.max(0, Math.min(TEMPER.length, Math.round(o.temper))) : ts.temper || 0;
+  const fitting = o.fitting !== undefined ? (o.fitting && (T.fittings || []).includes(o.fitting) ? o.fitting : null) : ts.fitting || null;
+  const d = lambDef(L, t, {}, now.learned, { gear, temper, fitting });
+  const S = fighterSpec("lamb", "lamb", d, [0, 0]), set = S.def.moveset, M = S.moves, sec = (n) => +(n / 60).toFixed(2);
+  const strike = (id) => { const m = id && M[id]; return m ? { dmg: +(m.dmg || 0).toFixed(2), poise: +(m.poise || 0).toFixed(2), breath: +(m.stamina || 0).toFixed(2) } : null; };
+  const dist = (id) => { const m = id && M[id]; if (!m) return null; let x = 0; const n = (m.startup || 0) + (m.active || 0) + (m.recovery || 0); for (let f = 0; f < n; f++) x += rootSpeed({ root: m.root || [] }, f) / 60; return +x.toFixed(2); };
+  const stun = d.tempo.stun, roll = set.roll[d.load] || set.roll.medium;
   return { standing: d.hp, breath: d.stamina, poise: d.poise, composure: d.composureMax, load: d.loadInfo, meets: d.bonus.met, needs: T.needs, scale: T.scale,
     light: +(d.tool.light[0] * d.bonus.dmg).toFixed(2), heavy: +(d.tool.heavy[0] * d.bonus.dmg).toFixed(2), read: d.bonus.read, weak: d.bonus.weak, evade: d.bonus.evade,
     yieldsSooner: d.bonus.end, swingCost: d.bonus.breath, art: d.art, temper: d.temper, fitting: d.fitting, fittings: T.fittings,
-    frames: framesOf(d) };
+    // the rows the Build page asked for (UI lead, 2026-10-17)
+    breathPerSecond: +d.staminaRegen.toFixed(2), breathDelay: sec(d.staminaDelay),
+    protection: d.protection, softened: +(1 - d.soften).toFixed(3),
+    strikes: { light: strike(set.light), heavy: strike(set.heavy), charged: strike(`lamb:heavy_charged`), art: strike(set.art), art2: strike(set.art2) },
+    dodge: { step: dist(set.step), roll: dist(roll), rollForm: roll.replace(/^lamb:/, "") },
+    staggered: { stagger: sec(Math.round(60 * stun)), knockdown: sec(Math.round(48 * stun) + Math.round(50 * stun)) },
+    breaks: d.breaks, tempo: d.tempo,
+    frames: framesOf(S, d),
+    applied: { levels: L, tool: t, gear: d.gear, temper: d.temper, fitting: d.fitting } };
 }
 
 // Frame counts at this body's tempo, for the Build page (60 frames a second): each move's
 // startup, active, recovery and total; windows as [first, last) frame and a count.
-function framesOf(d) {
-  const S = fighterSpec("lamb", "lamb", d, [0, 0]), set = S.def.moveset, M = S.moves;
+function framesOf(S, d) {
+  const set = S.def.moveset, M = S.moves;
   const win = (w) => (w ? { from: w[0], to: w[1], frames: w[1] - w[0] } : null);
   const one = (id) => {
     const m = id && M[id]; if (!m) return null;
     const total = (m.startup || 0) + (m.active || 0) + (m.recovery || 0);
-    return { startup: m.startup || 0, active: m.active || 0, recovery: m.recovery || 0, total, base: m.baseTotal || total, iframes: win(m.iframes), parry: win(m.parry) };
+    return { startup: m.startup || 0, active: m.active || 0, recovery: m.recovery || 0, total, base: m.baseTotal || total, iframes: win(m.iframes), parry: win(m.parry), sweep: win(m.sweep) };
   };
   const roll = set.roll[d.load] || set.roll.medium; // the form chooseRoll picks on dry ground
-  return { light: one(set.light), heavy: one(set.heavy), catch: one(set.catch), step: one(set.step), roll: one(roll), rollForm: roll.replace(/^lamb:/, ""), art: one(set.art), art2: one(set.art2), fps: 60 };
+  return { light: one(set.light), heavy: one(set.heavy), charged: one("lamb:heavy_charged"), catch: one(set.catch), step: one(set.step), roll: one(roll), rollForm: roll.replace(/^lamb:/, ""), art: one(set.art), art2: one(set.art2), fps: 60 };
 }
 
 function upgradeCost(G, tool) {

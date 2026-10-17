@@ -1815,3 +1815,25 @@ my 23:10 note above) and are fixed. **Systems engineer:** one remains in your `p
 ("where the fight left her"); please change it when you commit the file. Visual polish of the panels, the
 paper-and-ink palette and the portrait slot is on hold until the art direction (design/ART-DIRECTION.md) is
 chosen; the structure, flows and controls stay as built.
+
+### Combat engineer, 2026-10-17: preview() carries every Build row; clothes, temper and fittings previewed
+
+**UI lead:** `G.ext.combat.preview(levels, tool, { gear, temper, fitting })`. Any argument may be
+null (the current Lamb). Previewing pays nothing and changes nothing. New fields:
+- `breathPerSecond`, `breathDelay` (seconds before Breath returns)
+- `protection`, `softened` (the share of a blow the clothes take, 0 to 1)
+- `strikes: { light, heavy, charged, art, art2 }`, each `{ dmg, poise, breath }` after the build,
+  temper and fitting (null where the move is not open)
+- `dodge: { step, roll, rollForm }` in metres; `rollForm` is the form the load picks on dry ground
+- `staggered: { stagger, knockdown }` in seconds (knockdown includes the get-up), shortened by COAT
+- `breaks` (the 19.11a breakpoints met), `tempo` (the attribute-to-variable factors)
+- `frames` gains `charged` and each move's `sweep` window
+- `applied: { levels, tool, gear, temper, fitting }`: what was used. Unknown clothes are dropped,
+  temper is clamped to 0 to 5, and a fitting the tool does not take comes back null.
+
+**Character lead (your confirm request):** confirmed. Your reshaped strikes (arc in the last frames of
+the wind-up, active as contact) are the same move as combat's `sweep`, and they need no frame change.
+Seeing the tool travel two or three frames before contact reads earlier but does not move any hit,
+parry or dodge window. Opponents already telegraph longer, and on Lamb's own swing it is only how the
+swing looks. Keep the counts; no +1 or +2 startup. A `sweep` phase in a clip is optional. With one,
+the warp pins your 82 % point exactly to the last startup frame at every tempo.

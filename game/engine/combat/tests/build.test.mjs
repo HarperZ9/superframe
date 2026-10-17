@@ -92,3 +92,25 @@ test("preview gives frame counts at the body's tempo: NOSE shortens the roll and
   assert.ok(b.light.total < a.light.total, "light strings are quicker at NOSE 8");
   assert.equal(a.roll.total, a.roll.startup + a.roll.active + a.roll.recovery);
 });
+
+test("preview carries every Build page row and previews clothes, temper and fittings before they are made", () => {
+  const G = createGame({ sources: [{ file: "arena.lwd", text: ARENA_LWD }], seed: 3 }), C = installCombat(G);
+  const p = C.preview();
+  for (const k of ["breathPerSecond", "protection", "softened"]) assert.ok(typeof p[k] === "number" && p[k] >= 0, k);
+  for (const k of ["light", "heavy", "charged"]) assert.ok(p.strikes[k].poise > 0 && p.strikes[k].dmg > 0, `${k} strike`);
+  assert.ok(p.strikes.charged.dmg > p.strikes.heavy.dmg, "the charged heavy hits harder");
+  assert.ok(p.dodge.roll > 0 && p.dodge.step > 0, "dodge distance in metres");
+  assert.ok(p.staggered.stagger > 0 && p.staggered.knockdown > p.staggered.stagger, "time staggered");
+  assert.ok(C.preview({ coat: 9 }).staggered.stagger < p.staggered.stagger, "COAT shortens the stagger");
+  // clothes: a heavier protective coat softens more of a blow; nothing is changed by previewing
+  const apron = C.preview(null, null, { gear: ["c.apron", "c.seaboots"] });
+  assert.ok(apron.protection > p.protection && apron.softened > p.softened);
+  assert.deepEqual(apron.applied.gear, ["c.apron", "c.seaboots"]);
+  // temper and fitting at the bench, without paying
+  const t3 = C.preview(null, null, { temper: 3 }), fit = C.preview(null, null, { fitting: "copper_wrap" });
+  assert.ok(t3.strikes.light.dmg > p.strikes.light.dmg && t3.applied.temper === 3);
+  assert.equal(fit.applied.fitting, "copper_wrap");
+  assert.equal(C.preview(null, null, { fitting: "not_a_fitting" }).applied.fitting, null);
+  assert.equal(C.preview().temper, p.temper, "previewing changed nothing");
+  assert.deepEqual(C.preview().applied.gear, p.applied.gear);
+});
