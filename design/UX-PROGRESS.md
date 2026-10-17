@@ -70,3 +70,7 @@ and kept in order; each says what was done and where it landed.
 19. **Regression**: 92 of 93 checks pass. The one failure is the portrait check: at 23:24 the character
     lead's portrait folder was being re-baked with no index file in it; the same check passed against the
     lane index before the re-bake. Engine tests 116 of 116.
+20. **No gender for Lamb** (standing writing rule, relayed 2026-10-17): every UI string, prompt,
+    accessibility label and comment I wrote was checked; three comments fixed; one in the engineer's
+    `play.mjs` flagged. **Visual polish paused** until the art direction is chosen (design/ART-DIRECTION.md);
+    panel look, palette and portraits will be revisited then.

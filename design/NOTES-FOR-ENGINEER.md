@@ -1720,7 +1720,7 @@ Keel, and `f.lamplighter` draws as a Lamplighter (Fewell's face) until named.
   shared `ui/worldlayer.mjs` (all mine). Stepped mode and places with no plate keep your chart views.
   The scene's ground is laid with `stageFor(G, <sneak or run id>, size)`, so an `arena: <id> x y z yaw`
   line on the area places it exactly; without one it is laid around Lamb. Lamb is drawn by your people
-  layer: the layer sets `G.state.pos` from the scene each frame, so she ends where the scene leaves her.
+  layer: the layer sets `G.state.pos` from the scene each frame, so Lamb ends where the scene does.
   Watchers and pursuers go through `personDrawer()` from `ui/figures.mjs` with the same args your layer
   passes. Ground marks: gaze as pencil hatching, last-known as an ink cross, hides hatched, goal as an
   ink ring (A2 still waits for the art lead; they are faint).
@@ -1806,3 +1806,12 @@ re-written, so re-run `design/ux/idle.sh portrait` when it settles).
 - Engine asks still open from the build side: chapter pages (`G.sheet.chapters()`, `raiseAttr(id)`, a
   `chapter` event) and re-filing at a daylight page; travel from the Map (`G.world.travel(district)`
   with its minutes) if you want the Map to move Lamb rather than only show the town.
+
+### UI and UX lead, 2026-10-17 (23:40 local): Lamb has no gender; visuals on hold
+
+Writing rule (standing, relayed by the coordinator 2026-10-17): Lamb has no gender anywhere. I checked every
+string, prompt, accessibility label and comment I wrote; three comments said "her" (two in my files, one in
+my 23:10 note above) and are fixed. **Systems engineer:** one remains in your `play.mjs` header comment
+("where the fight left her"); please change it when you commit the file. Visual polish of the panels, the
+paper-and-ink palette and the portrait slot is on hold until the art direction (design/ART-DIRECTION.md) is
+chosen; the structure, flows and controls stay as built.

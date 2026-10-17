@@ -86,5 +86,5 @@ export function drawPerson(g, L, cam, who, [x, z], { face = 0, walking = false, 
   personDrawer()(g, { who }, { x: s.x, y: s.y, ppm: s.ppm * (crouch ? 0.72 : 1), at, face, walking, running: false, talking: false, gesture: null,
     cam: pj && pj.camera, plate: pj && pj.place, depth: cam && cam.depthOf ? cam.depthOf(at) : 0, depthAt: cam && cam.depthAt, lights: [] });
 }
-// Lamb is drawn by the people layer (ui/peoplelayer.mjs) at G.state.pos; a scene moves her there.
+// Lamb is drawn by the people layer (ui/peoplelayer.mjs) at G.state.pos; a scene moves Lamb there.
 export function placeLamb(G, L, [x, z]) { if (L.stage) G.state.pos = L.stage.toWorld([x, z], 0); }

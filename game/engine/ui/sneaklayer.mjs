@@ -73,7 +73,7 @@ export function sneakLayer(ctx, host, id, onDone, { cam = null } = {}) {
       hatch(g, sp, s * Math.max(0.4, w.a), w.state === "seen" ? 4 : 7, w.state === "seen"); outline(g, sp, { dash: w.state === "unaware" ? [5, 4] : null, width: w.state === "unaware" ? 1 : 1.6, alpha: 0.55 + s * 0.4 });
       if (w.lastKnown && w.state !== "unaware") { const c = L.screen(w.lastKnown); if (c) { g.strokeStyle = `${INK}0.9)`; g.lineWidth = 2; g.beginPath(); g.moveTo(c.x - 6, c.y - 4); g.lineTo(c.x + 6, c.y + 4); g.moveTo(c.x + 6, c.y - 4); g.lineTo(c.x - 6, c.y + 4); g.stroke(); } }
     }
-    // the watchers through the person drawer; Lamb by the people layer, moved to where the sneak has her
+    // the watchers through the person drawer; Lamb by the people layer, moved to where the sneak puts Lamb
     for (const w of [...v.watchers].sort((a, c) => a.z - c.z)) drawPerson(g, L, cam, w.id, [w.x, w.z], { face: Math.atan2(Math.cos(w.face), Math.sin(w.face)), walking: w.state === "searching" });
     if (cam) placeLamb(G, L, [v.x, v.z]); else drawPerson(g, L, cam, "lamb", [v.x, v.z], { crouch: v.crouch || crouch });
     strip.update(v, crouch);
