@@ -83,6 +83,9 @@ export function makeLibrary(timing, styles = {}, combat = null, bodies = {}) {
       const P = bodies[who], { g, w, cycle } = blendGait(P, v), cw = CLIPS.walk, cr = CLIPS.run;
       const pw = sample(cw, T(who, "walk"), u * cw.frames), pr = sample(cr, T(who, "run"), u * cr.frames), p = {};
       for (const j of new Set([...Object.keys(pw), ...Object.keys(pr)])) { p[j] = {}; for (const k of new Set([...Object.keys(pw[j] || {}), ...Object.keys(pr[j] || {})])) p[j][k] = (pw[j]?.[k] ?? 0) * (1 - w) + (pr[j]?.[k] ?? 0) * w; }
+      // the gait solves the legs in the hip's plane; a turning pelvis would swing a planted foot sideways,
+      // so the twist moves up to the chest (counter-rotation stays visible) and the pelvis stays square
+      if (p.pelvis) { p.chest = { ...(p.chest || {}), turn: (p.chest?.turn || 0) + (p.pelvis.turn || 0) * 0.6 }; p.pelvis = { ...p.pelvis, turn: 0, side: 0 }; }
       applyGait(p, g, P, u * 24, 24); p.root.x = 0; p.root.z = 0;
       const st = styles[who]; return { pose: st ? st(p, cw) : p, cycle, w };
     },

@@ -22,6 +22,7 @@ import { albedo, light, ink, compose, shadowDir } from "../render/shade.mjs";
 import { down } from "../render/image.mjs";
 import { layout } from "../anim/pose.mjs";
 
+const SMEAR = 40;   // materials.mjs smear
 const LOOPS = new Set(["idle", "walk", "run", "wade", "guard"]);
 const D2R = Math.PI / 180, FPS = 30;
 export function blend(a, b, t) {
@@ -102,6 +103,7 @@ export function createCast({ timing, combat = null, members }) {
     // lookup order: this weapon's own clip (a weapon special, a weapon-specific moveset), its class's,
     // then the generic one. Weapon ids drop combat's "w." (w.boathook -> boathook.heavy).
     const artName = (name) => {
+      if (LOOPS.has(name) && name !== "guard") return name;   // locomotion is never a weapon clip (light.run is the running strike)
       const wid = (T().id || "").replace(/^w\./, "");
       for (const n of [name, name.slice(name.indexOf(".") + 1)]) {
         if (wid && L.clips[`${wid}.${n}`]) return `${wid}.${n}`;
@@ -155,7 +157,7 @@ export function createCast({ timing, combat = null, members }) {
         st.frame += dt * FPS;
         if (st.prev) { st.prevFrame += dt * FPS; st.fade = Math.max(0, st.fade - dt * FPS); if (!st.fade) st.prev = null; }
         let dz = 0, dx = 0;
-        if (LOOPS.has(st.clip)) { dz = (Tm.speed || 0) * dt; if (st.frame >= len) st.frame -= len; if (st.clip === "walk" || st.clip === "run") { st.v = st.vWant ?? (st.clip === "run" ? 3.6 : 1.5); st.u = advanceU(st.u, st.v * dt, st.v); } }
+        if (LOOPS.has(st.clip)) { dz = (Tm.speed || 0) * dt; if (st.frame >= len) st.frame -= len; if (st.clip === "walk" || st.clip === "run") { st.v = st.vWant ?? (st.clip === "run" ? 3.6 : 1.5); dz = st.v * dt; st.u = advanceU(st.u, dz, st.v); } }
         else {
           const r = L.pose(who, st.clip, Math.min(st.frame, len)).root || {};
           dz = (r.z || 0) - st.rootZ; dx = (r.x || 0) - st.rootX; st.rootZ = r.z || 0; st.rootX = r.x || 0;
@@ -186,20 +188,20 @@ export function createCast({ timing, combat = null, members }) {
       // root motion or a shell that moves the body at its own speed.
       locksLocal() {
         const out = {}; let any = false;
-        for (const s of ["L", "R"]) { const k = st.locks[s]; if (!k) continue; const q = fromWorld(k.p); out[s] = { p: [q[0], k.y, q[2]], w: k.w }; any = true; }
+        for (const s of ["L", "R"]) { const k = st.locks[s]; if (!k) continue; const q = fromWorld(k.p), e = Math.max(0, Math.min(1, k.w)); out[s] = { p: [q[0], k.y, q[2]], w: e * e * (3 - 2 * e) }; any = true; }
         return any ? out : null;
       },
       updateLocks(pose) {
         if (lying(pose) || (pose.root?.y || 0) > 0.05) { st.locks.L = st.locks.R = null; return; }
         // gaits plant their own feet (anim/gait.mjs): let any lock go over a few frames
-        if (["walk", "run", "wade"].includes(st.clip) && !st.prev) { for (const s of ["L", "R"]) { const k = st.locks[s]; if (k) { k.w -= 0.07; if (k.w <= 0) st.locks[s] = null; } } return; }
+        if (["walk", "run", "wade"].includes(st.clip) && !st.prev) { for (const s of ["L", "R"]) { const k = st.locks[s]; if (k) { k.w -= 0.2; if (k.w <= 0) st.locks[s] = null; } } return; }
         const S = solveFigure(C, built(who, "far", st.tool), pose), prev = st.prevFoot || (st.prevFoot = {});
         for (const s of ["L", "R"]) {
           const f = S[INDEX["foot" + s]].p, k = st.locks[s], back = prev[s] ? f[2] - prev[s][2] <= 0.004 : false;
           prev[s] = [...f];
           // planted: low, and no longer travelling forward under the body (the heel has struck)
           const down = f[1] < (k ? 0.13 : 0.1) && (k || back);
-          if (!down) { if (k) { k.w -= 0.12; if (k.w <= 0) st.locks[s] = null; } continue; }
+          if (!down) { if (k) { k.w -= 0.06; if (k.w <= 0) st.locks[s] = null; } continue; }
           if (!k) { const wp = self.toWorld(f); st.locks[s] = { p: [wp[0], 0, wp[2]], y: Math.min(f[1], 0.05), w: 0.15 }; }
           else k.w = Math.min(1, k.w + 0.2);   // held until the clip lifts the foot; the leg's reach limits it
         }
@@ -211,10 +213,26 @@ export function createCast({ timing, combat = null, members }) {
         return { grip: at(a), tip: at(b), radius: info.bladeR || 0.05, tool: T().id, cls: cls() };
       },
       body() { const S = self.skeleton(); return { a: self.toWorld(S[INDEX.pelvis].p), b: self.toWorld(S[INDEX.neck].p), radius: info.radius || 0.3 }; },
-      render(view, w, h, rig, { ss = 1, bands = 4, tone = null, shadows = true } = {}) {
+      render(view, w, h, rig, { ss = 1, bands = 4, tone = null, shadows = true, smear = true } = {}) {
         const V = spriteView(view, { w: w * ss, h: h * ss, height: view.height, centre: view.centre }), G = makeG(w * ss, h * ss), m = built(who, lodFor((h * ss) / view.height), st.tool);
         const pose = self.pose(), S = skin(m.M, m.B, solveFigure(C, m, pose, self.locksLocal())), dy = groundShift(m.M, S, PROP_IDS, lying(pose)), pl = placeFn(st.facing, [st.pos[0], st.pos[1] + dy, st.pos[2]]);
-        const hid = hiddenOf(pose, m); rasterize(V, m.M, S, G, pl, hid); if (shadows) castShadow(G, m.M, S, pl, shadowDir(rig, st.pos), { hidden: hid });
+        const hid = hiddenOf(pose, m); rasterize(V, m.M, S, G, pl, hid);
+        // smear: when the tool sweeps far in one frame (a fast strike's two-frame hit window), draw it
+        // again at points between last frame and this one, so the swing reads as an arc, not a jump
+        const prev = st.smear && st.smear.mesh === m ? st.smear : null;
+        if (prev && smear) {
+          const ti = m.M.parts.indexOf("tool"); let far = 0;
+          if (ti >= 0) for (let v = 0; v < m.M.part.length; v += 7) if (m.M.part[v] === ti) far = Math.max(far, Math.hypot(S.pos[v * 3] - prev.pos[v * 3], S.pos[v * 3 + 1] - prev.pos[v * 3 + 1], S.pos[v * 3 + 2] - prev.pos[v * 3 + 2]));
+          if (far > 0.18) {
+            const n = Math.min(20, Math.ceil(far / 0.03)), pplPrev = placeFn(prev.facing, prev.at), tmp = { pos: new Float32Array(S.pos.length), nrm: S.nrm };
+            for (let k = 1; k < n; k++) {
+              const t = k / n;   // positions blended in world space between the two frames
+              for (let v = 0; v < S.pos.length / 3; v++) { const a = pplPrev.p([prev.pos[v * 3], prev.pos[v * 3 + 1], prev.pos[v * 3 + 2]]), b = pl.p([S.pos[v * 3], S.pos[v * 3 + 1], S.pos[v * 3 + 2]]); const q = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t], r = (st.facing * Math.PI) / 180, c = Math.cos(r), sn = Math.sin(r), dx = q[0] - st.pos[0], dz = q[2] - st.pos[2]; tmp.pos[v * 3] = c * dx - sn * dz; tmp.pos[v * 3 + 1] = q[1] - (st.pos[1] + dy); tmp.pos[v * 3 + 2] = sn * dx + c * dz; }
+              rasterize(V, m.M, tmp, G, pl, hid, ["tool"], SMEAR);
+            }
+          }
+        }
+        st.smear = { mesh: m, pos: S.pos.slice(), facing: st.facing, at: [st.pos[0], st.pos[1] + dy, st.pos[2]] }; if (shadows) castShadow(G, m.M, S, pl, shadowDir(rig, st.pos), { hidden: hid });
         const out = compose(G, albedo(G, C.palette), light(G, rig, C.palette), ink(G, { scale: ss }), { bands });
         if (tone) for (let i = 0; i < G.w * G.h; i++) if (G.id[i]) out.set(tone([out[i * 4], out[i * 4 + 1], out[i * 4 + 2]]), i * 4);
         return { ...down(out, G.w, G.h, ss), G, full: out };

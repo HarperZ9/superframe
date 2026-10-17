@@ -78,14 +78,16 @@ export function light(G, rig, palette = {}) {
 }
 
 // Ink weight: 1 on the silhouette, 0.75 on part edges and depth steps, 0.4 on folds.
-const SOFT = []; for (const n of ["skin", "cheek", "scales", "lip"]) SOFT[MATS_BY_NAME[n].id] = 1;
+const SMEAR_ID = MATS_BY_NAME.smear.id, SOFT = []; for (const n of ["skin", "cheek", "scales", "lip"]) SOFT[MATS_BY_NAME[n].id] = 1;
 export function ink(G, { scale = 1 } = {}) {
   const { w, h } = G, out = new Float32Array(w * h), r = Math.max(1, Math.round(scale));
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const i = y * w + x; let k = 0;
+    if (G.id[i] === SMEAR_ID) { out[i] = 0; continue; }
     for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
       if (!dx && !dy) continue; const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= w || Y >= h) continue;
       const j = Y * w + X;
+      if (G.id[j] === SMEAR_ID) continue;
       if (!G.id[i]) { if (G.id[j]) k = Math.max(k, Math.abs(dx) + Math.abs(dy) <= r ? 1 : 0); continue; }
       if (!G.id[j]) { k = Math.max(k, 1); continue; }
       if (G.id[j] !== G.id[i] && G.depth[j] < G.depth[i]) k = Math.max(k, 0.8);

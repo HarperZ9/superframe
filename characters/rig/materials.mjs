@@ -37,6 +37,7 @@ export const MATS = {
   iron:     { id: 33, c: [0.3, 0.29, 0.3], v: 0.28, stroke: { scale: 0.01, stretch: 2, amount: 0.2 }, sheen: 0.7 },
   rope:     { id: 34, c: [0.55, 0.46, 0.3], v: 0.48, stroke: { scale: 0.008, stretch: 6, amount: 0.3 } },
   knit:     { id: 35, c: [0.42, 0.13, 0.11], v: 0.2, stroke: { scale: 0.012, stretch: 1, amount: 0.3 } },
+  smear:    { id: 40, c: [0.42, 0.33, 0.26], v: 0.4, alpha: 0.55 },   // a swing's blur: no ink, half seen
   nail:     { id: 27, c: [0.24, 0.24, 0.27], v: 0.2, stroke: { scale: 0.03, stretch: 2, amount: 0.15 } },
 };
 export const BY_ID = [];

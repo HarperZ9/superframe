@@ -31,8 +31,9 @@ export function makeG(w, h) {
 }
 
 // Rasterize one skinned figure into G (which may already hold others: depth-tested).
-export function rasterize(V, M, S, G, place = placeFn(), hidden = null) {
+export function rasterize(V, M, S, G, place = placeFn(), hidden = null, only = null, matOverride = 0) {
   const hid = hidden && hidden.size ? new Set([...hidden].map((n) => M.parts.indexOf(n)).filter((i) => i >= 0)) : null;
+  const onl = only ? new Set(only.map((n) => M.parts.indexOf(n)).filter((i) => i >= 0)) : null;
   const nv = M.pos.length / 3, sx = new Float32Array(nv), sy = new Float32Array(nv), sz = new Float32Array(nv), wn = new Float32Array(nv * 3), wp = new Float32Array(nv * 3);
   for (let v = 0; v < nv; v++) {
     const p = place.p([S.pos[v * 3], S.pos[v * 3 + 1], S.pos[v * 3 + 2]]), q = toScreen(V, p), n = place.n([S.nrm[v * 3], S.nrm[v * 3 + 1], S.nrm[v * 3 + 2]]);
@@ -47,7 +48,8 @@ export function rasterize(V, M, S, G, place = placeFn(), hidden = null) {
     const minY = Math.max(0, Math.floor(Math.min(y0, y1, y2))), maxY = Math.min(h - 1, Math.ceil(Math.max(y0, y1, y2)));
     if (minX > maxX || minY > maxY) continue;
     if (hid && hid.has(M.part[a])) continue;
-    const mat = M.mat[a], inv = 1 / area;
+    if (onl && !onl.has(M.part[a])) continue;
+    const mat = matOverride || M.mat[a], inv = 1 / area;
     for (let y = minY; y <= maxY; y++) {
       const py = y + 0.5;
       for (let x = minX; x <= maxX; x++) {
@@ -55,7 +57,7 @@ export function rasterize(V, M, S, G, place = placeFn(), hidden = null) {
         const w0 = ((x1 - px) * (y2 - py) - (x2 - px) * (y1 - py)) * inv, w1 = ((x2 - px) * (y0 - py) - (x0 - px) * (y2 - py)) * inv, w2 = 1 - w0 - w1;
         if (w0 < 0 || w1 < 0 || w2 < 0) continue;
         const z = w0 * sz[a] + w1 * sz[b] + w2 * sz[c], i = y * w + x;
-        if (z >= G.depth[i]) continue;
+        if (matOverride ? G.id[i] !== 0 : z >= G.depth[i]) continue;   // an override (a smear) only fills empty pixels
         G.depth[i] = z; G.id[i] = mat;
         let nx = w0 * wn[a * 3] + w1 * wn[b * 3] + w2 * wn[c * 3], ny = w0 * wn[a * 3 + 1] + w1 * wn[b * 3 + 1] + w2 * wn[c * 3 + 1], nz = w0 * wn[a * 3 + 2] + w1 * wn[b * 3 + 2] + w2 * wn[c * 3 + 2];
         const l = Math.hypot(nx, ny, nz) || 1; nx /= l; ny /= l; nz /= l;
