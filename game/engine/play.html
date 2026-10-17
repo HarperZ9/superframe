@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Low Water</title>
+<link rel="icon" href="data:,">
+<style>html, body { margin: 0; height: 100%; background: #070509; }</style>
+</head>
+<body>
+<!-- The game shell. Screens are built by ui/app.mjs; ?shot=<state> jumps to a state (ui/shots.mjs). -->
+<main id="stage" aria-live="polite"></main>
+<div id="toasts" aria-live="polite"></div>
+<noscript>Low Water needs JavaScript.</noscript>
+<script type="module">
+  import { boot } from "./ui/app.mjs";
+  boot().catch((e) => {
+    console.error("boot failed:", e);
+    const p = document.createElement("pre");
+    p.style.cssText = "color:#e9e3d4;padding:2rem;font:14px Consolas,monospace;white-space:pre-wrap";
+    p.textContent = `Low Water could not start.\n\n${e && e.stack || e}`;
+    document.getElementById("stage").append(p);
+  });
+</script>
+</body>
+</html>

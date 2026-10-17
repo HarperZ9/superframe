@@ -1,0 +1,151 @@
+{
+ "name": "hill",
+ "place": "station",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "AAAABBBAAAAAAA",
+  "AAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAA",
+  "AAAAAAAAAACCAA",
+  "AAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAA",
+  "ADAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAA"
+ ],
+ "legend": {
+  "A": {
+   "surface": "stone",
+   "h": 40
+  },
+  "B": {
+   "surface": "stone",
+   "h": 40.5,
+   "solid": true
+  },
+  "C": {
+   "surface": "stone",
+   "h": 40.8,
+   "solid": true
+  },
+  "D": {
+   "surface": "stone",
+   "h": 41,
+   "solid": true
+  }
+ },
+ "water": null,
+ "lights": [
+  {
+   "x": 3,
+   "z": 1,
+   "r": 9.2,
+   "k": 0.88,
+   "group": "white"
+  },
+  {
+   "x": 7,
+   "z": 1,
+   "r": 9.2,
+   "k": 0.88,
+   "group": "white"
+  },
+  {
+   "x": 11,
+   "z": 1,
+   "r": 9.2,
+   "k": 0.88,
+   "group": "white"
+  },
+  {
+   "x": 1.6,
+   "z": 8,
+   "r": 1.4,
+   "k": 0.31,
+   "group": "fire"
+  }
+ ],
+ "exits": [
+  [
+   0,
+   0,
+   0.8,
+   10
+  ],
+  [
+   13.2,
+   0,
+   14,
+   10
+  ]
+ ],
+ "tideEnds": false,
+ "anchors": {
+  "cut": [
+   [
+    3,
+    1
+   ],
+   [
+    7,
+    1
+   ],
+   [
+    11,
+    1
+   ]
+  ],
+  "lamp": [
+   [
+    3,
+    1
+   ]
+  ],
+  "snare": [],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   6.5,
+   7.5
+  ],
+  "foes": [
+   [
+    4.5,
+    2.5
+   ],
+   [
+    9.5,
+    2.5
+   ],
+   [
+    6.5,
+    1.5
+   ],
+   [
+    2.5,
+    4.5
+   ]
+  ]
+ },
+ "stage": {
+  "line": "arena: hill 0 0 0 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = h - 40"
+ },
+ "source": {
+  "plate": "content/station",
+  "rect": [
+   0,
+   0,
+   14,
+   10
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

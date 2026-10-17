@@ -1,0 +1,1148 @@
+# Low Water, Act 2: Chancel Hill under the white trial lamps. District file, prefix hill.
+# Places (world2.lwd): hill_lane, crake_hall, crake_study, station, substation. Writer's file. Private.
+# Beats (design/ACT2-PLAN.md section 5): 4 Crake's house (gate A2), 5 the Lamplighters' station
+# (e.station or its talk; tea; Gorm's books, a2.station; the pole sweep), 14 the substation at 03:00
+# (gate A7, e.substation). Also: the Trust's ledger (a2.ledger), Mrs Pellow's errand (a2.errand,
+# open), Crake's yellow ink (a2.ink), her side of the button (a2.button), Fisk with Crake 20:30 to
+# 22:00 (A3's Shadow route). Protected moment: hill.confess.
+# The hill's mechanism, for other writers: the street arcs hang on the substation's second switch.
+# They are Mother's pattern, with Mother's lockout. A thrown switch puts the hill dark until a duty
+# Lamplighter restrikes them by hand, inside six minutes, by the Alderman's standing order.
+
+# ---- new ids
+@fact hill.books_keeper
+about: The Lamplighters' old books: the keeper at the station door asking after her wages six years ago, and not seen on the mole after dark three years ago, each reported to the Alderman. ALDERMAN: NOTE ONLY.
+against: trust 15
+by: reading
+
+@fact hill.order_restrike
+about: The hill's own street arcs hang on the substation's second switch, under a brass plate: ARCS TO BE RESTRUCK BY HAND, DUTY LAMPLIGHTER, WITHIN SIX MINUTES. STANDING ORDER, O.C. The hill keeps a hand at the panel.
+against: trust 20
+by: Candlemas, through the louvres
+
+@fact hill.crake_offer
+about: In the dark of the test the Alderman offered the engineer a salaried post, on condition that nobody need test anything again.
+against: trust 10
+by: overhearing, from under the floor
+
+@fact hill.yellow_lamp
+about: The Alderman works at night by a desk lamp with a yellow shade, through yellow spectacles.
+by: Candlemas, from the lane
+
+@fact hill.wages_misread
+about: In pencil: the keeper's wages did not stop. The Trust's ledger pays them on to a second name.
+by: a page read backwards through a blind
+
+@fact hill.hill_auto
+about: In pencil: the hill's arcs came back by themselves, six minutes after the test. No hand was needed.
+by: watching, with Candlemas looking at a star
+
+@fact hill.key_side
+@fact hill.rigged
+@fact hill.knows_test
+@fact hill.letter_taken
+@fact hill.pellow_reviewed
+@fact hill.move_sweep
+@fact hill.test_done
+@fact hill.on_rota
+@fact hill.ledger_skipped
+@fact hill.lamb_pressed
+@fact hill.crake_pressed
+
+@var hill_in
+default: none
+values: none, guest, cold, pellow, intruder, dark
+about: How Lamb came into the Alderman's study, which decides how she meets Lamb.
+
+@char hill.guard
+name: A Trust guard
+speaker: GUARD
+faction: trust
+about: Municipal buttons, a greatcoat, the Alderman's orders.
+
+@encounter hill.station_four
+name: The Lamplighters' station, in fours
+area: hill
+foe: f.lamplighter 4
+param: white-light (no dark anywhere in the room)
+prop: cut 0 0 ? has(hill.dark)
+talk: fx2.station.tea | Put the pole down and ask for tea ? fight_struck == 0 & fight_seconds >= 5
+win: hill.fight.station.win
+yield: hill.fight.station.yield
+fled: hill.fight.station.fled
+down: hill.fight.station.down
+
+# ---------------------------------------------------------------- the hub
+@node hill.hub
+hub: yes
+place: hill_lane
+alt: hill.arrive ? !seen(hill.arrive)
+nar: Chancel Hill: a white lamp every twenty paces on both sides of the path, so that nothing on it casts a shadow. A church candle burns at the foot of each.
+nar: The lamps have the look of lamps that were recently out and would rather not discuss it. {when: has(hill.dark)}
+line: STRAND: Forty-one. Forty-two. Forty-three. {when: seenas_trust == enemy}
+voice: dark: There is no dark here. I have looked in every doorway. {once}
+opt: "Knock at the Alderman's door." -> hill.door +1
+opt: "Let yourself in at the Alderman's side door with the station's key." -> hill.side ? has(hill.key_side) & !seen(hill.side) +1
+opt: "Stand under the study window and read the house." -> hill.window +1 {verb: read, noise: 0}
+opt: "Stand under the study window in the Lamplighter's coat, pole grounded, and listen." -> hill.overhear ? guise == lamplighter & clock >= 20:30 & clock < 22:00 & !seen(hill.overhear) & !seen(hill.overhear.known) {verb: eavesdrop, noise: 0.1}
+check: "[THE DARK] Fold yourself into the one strip of shadow on the hill, under the study sill, and listen." -> hill.overhear / hill.sill.fail ? clock >= 20:30 & clock < 22:00 & !seen(hill.overhear) & !seen(hill.overhear.known) & !seen(hill.sill.fail) {skill: dark, dc: 7, verb: eavesdrop, noise: 0.2}
+opt: "Wait at the Alderman's side door for the candle to reach the string." -> hill.rig.wait ? has(hill.rigged) {verb: wait, noise: 0}
+opt: "Go into the Lamplighters' station." -> hill.station +1
+opt: "Walk down to the substation." -> hill.sub +2
+opt: "Look at the candles." -> hill.candles ? count(i.candle) == 0 & !seen(hill.candles)
+opt: "Take out the Kit." -> hill.kit
+opt: "Down the hill to the quay." -> quay2.hub +4
+opt: "Up to the Gasholder." -> gasholder.hub +3
+opt: "Along the terrace to the Ropewalk." -> ropewalk.hub +4
+
+@node hill.arrive
+place: hill_lane
+cost: 2
+do: quest(a2.station, open); quest(a2.substation, open)
+if: has(clause.struck) => quest(a2.ink, seen)
+nar: The path climbs out of the sodium into white. The assessor's shadow goes thin, then double, then away.
+inst: CANDLEMAS: White. Cold, blue at the edge, every colour present and correct. I could weep. I will not, in front of the Municipal.
+nar: Half way up, the Lamplighters' station. At the top, the Alderman's house, blinds down.
+go: hill.hub
+
+@node hill.kit
+place: hill_lane
+cost: 1
+read: candlemas
+read: glass
+inst: THE VANE: Still. Nothing moves on this hill but pencils.
+go: ^hub
+
+@node hill.candles
+place: hill_lane
+speaker: GAUZE
+cost: 2
+nar: Sister Gauze comes up the lane in her bell jar, relighting candles.
+line: GAUZE: The deacon says the candles honour the lamps. I say they keep them company till they go out. Ask me again at the next lamp.
+opt: "Ask her for one." -> hill.candle.ask ? seenas_congregation != thief
+opt: "Take one from the foot of the nearest lamp." -> hill.candle.take {verb: salvage, noise: 0.2}
+opt: "Leave them burning." -> ^hub
+
+@node hill.candle.ask
+place: hill_lane
+speaker: GAUZE
+cost: 2
+do: give(i.candle)
+line: GAUZE: What for?
+line: LAMB: To make a dark.
+line: GAUZE: Then it's for the Bulb. Take the string as well. The deacon ties his bundles with it and never counts.
+go: ^hub
+
+@node hill.candle.take
+place: hill_lane
+cost: 1
+do: give(i.candle); rep(congregation, -1)
+nar: Under the lamp, Coe writes. Two lamps up, Sister Gauze has seen it, and says nothing.
+go: ^hub
+
+# ---------------------------------------------------------------- A2, Eye: the house from outside
+@node hill.window
+place: hill_lane
+cost: 3
+nar: The study blind is lit from inside by a lamp that is not the colour of the street.
+inst: CANDLEMAS: A desk lamp with a yellow shade. Behind it, yellow lenses. Yellow on yellow. I would not care to read anything in there.
+do: set(hill.yellow_lamp)
+nar: Two shadows on the blind, one upright, one apologising. {when: clock >= 20:30 & clock < 22:00}
+check: "[SMALL PRINT] Wait for her to do the books, and read the page she lifts to the lamp, backwards, on the blind." -> hill.window.ok / hill.window.fail ? clock >= 22:00 & clock < 00:30 & !has(wages.stopped) {skill: smallprint, dc: 7, verb: read, noise: 0}
+opt: "Come back when she does the books." -> ^hub ? clock < 22:00
+opt: "Leave the house to itself." -> ^hub
+
+@node hill.window.ok
+place: hill_lane
+cost: 25
+do: set(wages.stopped); quest(a2.ledger, wages); clear(hill.wages_misread); meter(cold, 1); meter(wear, 1)
+nar: Twenty-five minutes in the frost. Then her shadow lifts a page to the lamp, and the page comes through the linen backwards, enormous.
+nar: KEEPER, reversed. A column that stops six years down, ruled through to the foot. She holds the margin closer to the lamp, and closer, to a mark that does not come through.
+go: ^hub
+
+@node hill.window.fail
+place: hill_lane
+cost: 25
+do: set(hill.wages_misread); meter(cold, 1); meter(wear, 1)
+nar: In the Daybook, in pencil: KEEPER, a column, and a second name beside it. The wages went somewhere.
+go: ^hub
+
+# ---------------------------------------------------------------- the door and Mrs Pellow
+@node hill.door
+place: crake_hall
+alt: hill.door.crake ? clock >= 23:00 & clock < 23:30 & !has(hill.letter_taken)
+alt: hill.door.reviewed ? has(hill.pellow_reviewed) & !seen(hill.door.reviewed)
+alt: hill.door.again ? has(met.pellow)
+go: hill.door.first
+
+@node hill.door.first
+place: crake_hall
+speaker: PELLOW
+cost: 3
+do: set(met.pellow); quest(a2.errand, open)
+if: !has(wages.stopped) => quest(a2.ledger, open)
+nar: Mrs Pellow opens the door the width of a face. On the hall table, an envelope under a glove, as if the glove were guarding it.
+line: PELLOW: Seven she has her soup. Half eight the engineer. Ten the books. Eleven I take that down the Ropewalk, in this frost, on these knees. Which are you?
+go: hill.door.menu
+
+@node hill.door.again
+place: crake_hall
+speaker: PELLOW
+cost: 1
+line: PELLOW: Still the same house.
+go: hill.door.menu
+
+@node hill.door.menu
+speaker: PELLOW
+cost: 0
+opt: "The Shelf, to see the Alderman." -> hill.door.see
+opt: "I am going down the Ropewalk. Let me carry your letter." -> hill.pellow.letter ? !has(hill.letter_taken) & clock < 23:00 {id: hill.pellow.letter, do: set(said.carry_letter); set(heard.pellow.carry_letter)}
+opt: "What is she like, the Alderman?" -> hill.pellow.eyes ? !seen(hill.pellow.eyes)
+opt: "Goodnight, Mrs Pellow." -> ^hub
+
+@node hill.pellow.eyes
+speaker: PELLOW
+cost: 2
+line: PELLOW: Eleven years I've done for her and I've never seen her eyes. The yellow ones go on before the lamps come up and come off after I've gone to bed. I've seen the case. It's very nice.
+go: hill.door.menu
+
+@node hill.door.see
+cost: 0
+alt: hill.door.fisk ? clock >= 20:30 & clock < 22:00
+go: hill.door.shown
+
+@node hill.door.shown
+place: crake_hall
+cost: 1
+if: has(cause.trust) => hill_in = cold
+if: !has(cause.trust) => hill_in = guest
+nar: Mrs Pellow goes up, and comes down, and stands aside.
+go: hill.crake
+
+@node hill.door.fisk
+place: crake_hall
+speaker: PELLOW
+cost: 1
+line: PELLOW: She has the engineer till ten. You can wait in the hall. You'll hear nothing. It's a good door.
+opt: "Wait in the hall." -> hill.hall.wait
+opt: "Come back after ten." -> ^hub
+
+@node hill.hall.wait
+place: crake_hall
+cost: 2
+nar: A bare white hall, one chair, and through the study door two voices, one apologising.
+opt: "Put an ear to the study door." -> hill.overhear ? !seen(hill.overhear) & !seen(hill.overhear.known) {verb: eavesdrop, noise: 0.2}
+opt: "Sit on the hall chair until ten." -> hill.hall.ten {verb: wait, noise: 0}
+
+@node hill.hall.ten
+place: crake_hall
+cost: 30
+nar: At ten exactly a neat man in a muddy coat comes out of the study backwards, bowing to the door.
+go: hill.door.shown
+
+@node hill.door.crake
+place: crake_hall
+speaker: CRAKE
+cost: 1
+if: has(cause.trust) => hill_in = cold
+if: !has(cause.trust) => hill_in = guest
+nar: The Alderman opens her own door, carefully, as if it were a new appliance.
+line: CRAKE: Mrs Pellow is out on an errand. Come in. I can manage a door.
+go: hill.crake
+
+@node hill.door.reviewed
+place: crake_hall
+speaker: PELLOW
+cost: 1
+line: PELLOW: I'm to be reviewed. Nine o'clock tomorrow. I've never been reviewed.
+nar: She shuts the door before the assessor can say anything to it.
+go: ^hub
+
+# ---------------------------------------------------------------- A2, Tongue: Mrs Pellow's errand
+@node hill.pellow.letter
+place: crake_hall
+speaker: PELLOW
+cost: 3
+do: set(hill.letter_taken); give(i.letter_pellow); quest(a2.errand, known); hill_in = pellow
+nar: She looks at the assessor for some time, then down at her knees, and the knees decide.
+line: PELLOW: Mrs H. Gannet, the Ropewalk. You knock twice and you don't wait. I'm not to know who it's from, and I don't.
+nar: The hand on the envelope is upright and careful, and it is not Mrs Pellow's.
+line: PELLOW: Wait in the study. She'll be down when she's down. Don't touch the books. Nobody touches the books.
+go: hill.pellow.in
+
+@node hill.pellow.in
+cost: 0
+alt: hill.hall.wait ? clock >= 20:30 & clock < 22:00
+go: hill.study.wait
+
+@node hill.study.wait
+place: crake_study
+cost: 2
+nar: The study: a stove, a desk, a ledger under a yellow-shaded lamp, and the lane's white lamp close at the window.
+nar: The telephone on the desk is off its hook, lying on its side. {when: has(cause.trust)}
+opt: "Open the ledger at K." -> hill.ledger.alone ? !has(wages.stopped) {verb: read, noise: 0.1}
+opt: "Hold Candlemas to the desk lamp." -> hill.study.lamp ? !has(hill.yellow_lamp) {verb: read, noise: 0}
+opt: "Sit by the stove and wait." -> hill.crake {verb: wait, noise: 0}
+
+@node hill.study.lamp
+place: crake_study
+cost: 1
+do: set(hill.yellow_lamp)
+inst: CANDLEMAS: The shade is yellow and so, I am told, are her spectacles. Hold a yellow pencil under it. Go on. Where did it go?
+go: hill.study.wait
+
+@node hill.ledger.alone
+place: crake_study
+cost: 4
+do: set(wages.stopped); quest(a2.ledger, wages); clear(hill.wages_misread); set(hill.pellow_reviewed)
+if: !has(ink.crake) => quest(a2.ink, hers)
+nar: The Trust's ledger has a thumb index, and the K is worn pale by one thumb.
+nar: KEEPER: WAGES SUSPENDED PENDING REVIEW, six years ago, ruled through to the foot. In the margin, O.C., in yellow, plain in the white light.
+opt: "Tear the page out along the fold." -> hill.ledger.tear {verb: pry, noise: 0.2}
+opt: "Close it, and sit by the stove." -> hill.crake
+
+@node hill.ledger.tear
+place: crake_study
+cost: 1
+do: give(i.ledger_page)
+nar: It comes away cleanly. The binding was made for it.
+go: hill.crake
+
+# ---------------------------------------------------------------- A2, Fist: in by the side door
+@node hill.side
+place: crake_study
+cost: 3
+do: hill_in = intruder
+nar: The station's key turns in the side door as if it had been waiting to.
+nar: By the stove a neat man in a muddy coat stands up, sits down, stands up. {when: clock >= 20:30 & clock < 22:00}
+go: hill.crake
+
+# ---------------------------------------------------------------- the Alderman
+@node hill.crake
+place: crake_study
+speaker: CRAKE
+alt: hill.crake.cold ? has(cause.trust) & !has(met.crake2)
+alt: hill.crake.first ? !has(met.crake2)
+go: hill.crake.again
+
+@node hill.crake.first
+place: crake_study
+speaker: CRAKE
+cost: 4
+do: set(met.crake2)
+nar: The Alderman comes down with a pen in her hand, in a grey that stays the same grey under the white lamp, the stove and the yellow shade. The assessor suspects it was tested.
+nar: Her spectacles are round and yellow, and on.
+line: CRAKE: The Shelf, in person. I know your voice from a telephone, and here is a face after all. Sit by the stove. The chair is warm. Mrs Pellow sits in it for me first and thinks I don't know.
+voice: undertow: Sit. The chair is warm, and she is the first person in Gullet who has been glad to see you. {dc: 5}
+voice: smell: Ink, coal, and the yellow soap the Trust buys by the gross. {dc: 6}
+line: CRAKE: By the side door, with the station's key. I assume the station is lying down. {when: hill_in == intruder}
+line: CRAKE: Six minutes, and you spent them in my study. I hope it was worth a feeder. {when: hill_in == dark}
+line: CRAKE: You've read my books. The ribbon is not where I keep it. {when: has(hill.pellow_reviewed) & hill_in == pellow}
+line: CRAKE: You told me on the telephone that she stays lit. She stayed. I watched her from that window all night, green. {when: has(heard.crake.mother_stays)}
+line: CRAKE: And you said yes to me at half past five. Thank you. Mrs Tallow's back pay went into the ledger at nine this morning. {when: has(said.crake_deal_yes)}
+go: hill.crake.menu
+
+@node hill.crake.cold
+place: crake_study
+speaker: CRAKE
+cost: 4
+do: set(met.crake2)
+nar: The Alderman does not get up. Beside her the telephone lies off its hook. It has been off all night.
+nar: The same grey under every light, round yellow spectacles. She does not offer the chair.
+line: CRAKE: Stand there, under the lamp, where I can see you. The Shelf has written the Trust into its book. I have nothing left to be warm with.
+line: CRAKE: By the side door, with the station's key. Of course. {when: hill_in == intruder}
+line: CRAKE: Six minutes of my hill, and you spent them in my study. {when: hill_in == dark}
+line: CRAKE: You said yes to me at half past five, and then you wrote us anyway. I keep minutes, assessor. {when: has(said.crake_deal_yes)}
+go: hill.crake.menu
+
+@node hill.crake.again
+place: crake_study
+speaker: CRAKE
+cost: 1
+line: CRAKE: Again. Sit, if you are staying. {when: !has(cause.trust)}
+line: CRAKE: You are still standing there. {when: has(cause.trust)}
+go: hill.crake.menu
+
+@node hill.crake.menu
+speaker: CRAKE
+cost: 0
+check: "[FORM LETTER] Ask to inspect the Trust's books, as the Trust's insurer." -> hill.ledger.given / hill.ledger.skip ? !has(cause.trust) & !has(wages.stopped) & !has(hill.ledger_skipped) {skill: formletter, dc: 6}
+opt: "Take the ledger off the desk and open it at K." -> hill.ledger.taken ? (hill_in == intruder | has(cause.trust) | has(hill.ledger_skipped)) & !has(wages.stopped) {verb: pry, noise: 0.3}
+opt: "Ask about the engineer." -> hill.crake.fisk ? !seen(hill.crake.fisk)
+opt: "The Board's 18:30 telegram. Somebody added the time of loss to the draft, 9.40, in yellow." -> hill.crake.draft ? (has(ropewalk.yellow_time) | has(telegram.draft)) & !seen(hill.crake.draft) {id: hill.crake.draft, do: set(said.yellow_time); set(heard.crake.yellow_time)}
+opt: "This morning you wrote a card for the quay board: Mother stays on it." -> hill.crake.card ? has(weigh2.board_card) & !seen(hill.crake.card) {id: hill.crake.card, do: set(said.board_card); set(heard.crake.board_card)}
+opt: "On Low Night at 02:51 you telephoned the board. No hurry." -> hill.crake.nohurry ? has(weigh2.log_delay) & !seen(hill.crake.nohurry) {id: hill.crake.nohurry, do: set(said.no_hurry); set(heard.crake.no_hurry)}
+opt: "The hill's arcs have a hand at the panel. By your standing order." -> hill.crake.order ? has(hill.order_restrike) & !seen(hill.crake.order) {id: hill.crake.order, do: set(said.hill_order); set(heard.crake.hill_order)}
+claim: "Clause fourteen, on your own copy. Take off the spectacles and read it." -> hill.confess.study / hill.crake.hold ? (has(clause.struck) | count(i.fisk_spec) > 0 | has(fisk.button) | has(ropewalk.yellow_time)) & (has(button.tested) | has(quay.crake.said_restrikes) | has(wages.stopped) | has(hill.order_restrike) | has(hill.books_keeper) | has(weigh2.board_card) | has(weigh2.log_delay) | has(ropewalk.yellow_time) | has(telegram.draft)) {show: !has(ink.crake) & (has(clause.struck) | count(i.fisk_spec) > 0 | has(fisk.button) | has(hill.yellow_lamp) | has(ropewalk.yellow_time))}
+opt: "Goodnight, Alderman." -> hill.crake.bye
+
+@node hill.ledger.given
+speaker: CRAKE
+cost: 4
+do: set(wages.stopped); quest(a2.ledger, wages); clear(hill.wages_misread); give(i.ledger_page)
+if: !has(ink.crake) => quest(a2.ink, hers)
+line: CRAKE: The Trust's books are open to its insurer. They are open to anyone who asks nicely, and nobody does.
+nar: She turns to K herself: WAGES SUSPENDED PENDING REVIEW, six years ago. O.C. in the margin, in yellow.
+line: CRAKE: Pending is a word, assessor. I have never once seen it do anything. Take the page if you like. I can recite it.
+nar: She tears it out along the fold, as one gives a receipt.
+go: hill.crake.menu
+
+@node hill.ledger.skip
+speaker: CRAKE
+cost: 4
+do: set(hill.ledger_skipped)
+line: CRAKE: By all means.
+nar: She turns the pages herself, at the assessor's shoulder, from J to L, as if the alphabet had always been that length.
+line: CRAKE: Coke, lamps, lamplighters, the Municipal's horse. Everything in order. Shall I go back to the beginning?
+go: hill.crake.menu
+
+@node hill.ledger.taken
+speaker: CRAKE
+cost: 3
+do: set(wages.stopped); quest(a2.ledger, wages); clear(hill.wages_misread); give(i.ledger_page); rep(trust, -1)
+if: !has(ink.crake) => quest(a2.ink, hers)
+nar: She does not ring. KEEPER: WAGES SUSPENDED PENDING REVIEW, ruled through. O.C., in yellow.
+line: CRAKE: Tear along the fold. It comes away cleanly. I had the binding made for it.
+go: hill.crake.menu
+
+@node hill.crake.fisk
+speaker: CRAKE
+cost: 2
+if: !has(fisk.button) & !has(button.tested) => quest(a2.button, met)
+line: CRAKE: Mr Fisk writes to me every quarter about his button. He is very proud of it. Most men are proudest of the one thing nobody needs.
+go: hill.crake.menu
+
+@node hill.crake.order
+speaker: CRAKE
+cost: 2
+line: CRAKE: The hill is a trial. One supervises a trial.
+line: CRAKE: Mother was not a trial, assessor. Mother was finished.
+go: hill.crake.menu
+
+@node hill.crake.card
+speaker: CRAKE
+cost: 2
+line: CRAKE: A lamp that has been moved once should not be moved twice in a week. That is not a confession, assessor. That is maintenance.
+go: hill.crake.menu
+
+@node hill.crake.nohurry
+speaker: CRAKE
+cost: 2
+line: CRAKE: It was raining. The boy is frightened of the dark. I told him to take his time. You will find that is the only kind thing in that log.
+go: hill.crake.menu
+
+@node hill.crake.draft
+speaker: CRAKE
+cost: 2
+line: CRAKE: Absalom brought me his draft to look over. He asks me to look over everything; his spelling is municipal. I may have made a note. He struck it.
+nar: The pen in her hand has stopped moving, and she has not noticed.
+go: hill.crake.menu
+
+@node hill.crake.hold
+speaker: CRAKE
+cost: 2
+line: CRAKE: Clause fourteen. You have read a copy by lamplight and heard a man from Hesk complain. On Low Night a fishmonger pulled a switch and a keeper sat in a public house. Which of those did I write?
+nar: She smiles. It was good in the mirror too.
+go: hill.crake.menu
+
+@node hill.crake.bye
+speaker: CRAKE
+cost: 1
+line: CRAKE: Goodnight. Do look at the hill on your way down. Nothing on it is hidden. {when: !has(cause.trust)}
+line: CRAKE: Mrs Pellow will see you out. She sees everyone out, now. {when: has(cause.trust)}
+go: ^hub
+
+# ---------------------------------------------------------------- the protected moment
+@node hill.confess.study
+place: crake_study
+speaker: CRAKE
+cost: 2
+nar: She takes her copy of the specification out of the drawer and carries it to the window, under the white lamp she put up.
+go: hill.confess
+
+@node hill.confess
+speaker: CRAKE
+cost: 2
+do: set(ink.crake); quest(a2.ink, said); xp(1); rep(trust, -1)
+nar: The Alderman takes off the yellow spectacles. Under her own white lamp the line through clause fourteen is yellow, and she reads it.
+line: CRAKE: I struck a sentence. I did not strike a lamp.
+go: hill.confess.after
+
+@node hill.confess.after
+speaker: CRAKE
+cost: 2
+nar: In the doorway Mrs Pellow, with the milk, sees her employer's eyes, and looks at the floor. {when: !at(substation) & (clock < 23:00 | clock >= 23:30) & !has(hill.letter_taken)}
+nar: Fisk looks at his boots, as engineers do when a test goes exactly as specified. {when: at(substation)}
+nar: She puts the spectacles back on, and the line goes out.
+line: CRAKE: Write that I meant every word about safety. I did. I still do. Nobody will believe that part.
+opt: "I will write it." -> hill.confess.end {id: hill.crake.safety, do: set(said.crake_safety); set(heard.crake.safety)}
+opt: "I will write what you struck." -> hill.confess.end {id: hill.crake.struck, do: set(said.crake_struck); set(heard.crake.struck)}
+
+@node hill.confess.end
+speaker: CRAKE
+cost: 1
+line: CRAKE: Then goodnight.
+nar: She turns back to the window.
+go: ^hub
+
+# ---------------------------------------------------------------- A3's Shadow route: Fisk and Crake, 20:30 to 22:00
+@node hill.overhear
+cost: 0
+alt: hill.overhear.known ? has(fisk.button)
+go: hill.overhear.first
+
+@node hill.overhear.first
+speaker: FISK
+cost: 6
+do: set(fisk.button); set(hill.knows_test)
+if: !has(button.tested) => quest(a2.button, why)
+line: FISK: Clause fourteen, Alderman. After any interruption of supply the arc to be restruck by the keeper on duty, by hand, at the panel. I wrote it so that nobody could ever say no one was at the panel.
+line: CRAKE: You engineers write as if every sentence were load-bearing.
+line: FISK: They are. Forgive me. That is what a specification is.
+go: hill.overhear.test
+
+@node hill.overhear.known
+speaker: FISK
+cost: 5
+do: set(hill.knows_test)
+line: FISK: You sent clause fourteen back to the firm with a line through it, Alderman. I have brought it with me. I thought you might like to see it in a good light.
+line: CRAKE: I have very good light, Mr Fisk. I put it up myself.
+go: hill.overhear.test
+
+@node hill.overhear.test
+speaker: FISK
+cost: 2
+line: FISK: I should like to test the button. Three o'clock, at the hill substation, on your own arcs. They are the same pattern. I'll need nobody. Strike that. I'll need a hand.
+line: CRAKE: I'll send the Trust's guards to keep you company. It is a cold hill.
+nar: Mrs Pellow is at the end of the hall with a cup of tea, looking at nothing. {when: seen(hill.hall.wait)}
+go: ^hub
+
+@node hill.sill.fail
+place: hill_lane
+speaker: COE
+cost: 2
+do: set(book.hill_sill); rep(trust, -1)
+nar: The strip of shadow under the sill is a foot wide. The assessor is not.
+line: COE: The Alderman says a person in a shadow on this hill is a person who brought it with them.
+nar: Coe writes it down, and stays under the window all evening.
+go: ^hub
+
+# ---------------------------------------------------------------- the station (beat 5)
+@node hill.station
+place: station
+alt: hill.station.ready ? has(book.violence) & !seen(hill.station.ready) & !seen(hill.fight.station.win)
+alt: hill.station.tea ? var.fights == 0 & !has(book.violence) & !seen(hill.station.tea)
+alt: hill.station.first ? !seen(hill.station.first) & !seen(hill.station.tea) & !seen(hill.station.ready)
+go: hill.station.menu
+
+@node hill.station.first
+place: station
+speaker: GORM
+cost: 3
+do: set(met.gorm)
+nar: One whitewashed room, lit so hard the whitewash hums: a rack of poles, a board of keys, a shelf of black books, years of them. Hobb in the corner, both lanterns lit.
+line: GORM: Back again, is it? On our hill, this time? Would you like to sit, or shall we write you standing?
+line: GORM: Shall I read you what I wrote last night? "Bowler says WRECKERS, out loud." Would you like to change it? {when: has(book.wreckers)}
+line: FEWELL: Nine foot four, now. It never straightened. {when: has(struck.fewell)}
+go: hill.station.menu
+
+@node hill.station.tea
+place: station
+speaker: GORM
+cost: 5
+do: set(met.gorm); give(i.tea)
+nar: One whitewashed room, lit so hard it hums: poles, keys, a shelf of black books. Hobb in the corner, both lanterns lit.
+line: GORM: Two nights, and you haven't hit anybody? None of us? No salvor? No dog? Would you take tea, then?
+line: BRIGHT: Lovely! I'll do it. We've only got milk.
+nar: The tea would stand a pole up. The room writes down how the assessor drinks it.
+go: hill.station.menu
+
+@node hill.station.ready
+place: station
+speaker: GORM
+cost: 2
+nar: The poles are off the rack before the door shuts. Gorm stays seated and opens the book.
+line: GORM: Did you think we wouldn't be expecting you? How many of us would you like, this time? Would four do?
+check: "[FORM LETTER] Tell them the Shelf has come to read, and will say so in writing." -> hill.station.calm / hill.station.fight4 {skill: formletter, dc: 7, red}
+opt: "Back out of the door." -> ^hub
+opt: "Stand your ground." -> hill.station.fight4
+
+@node hill.station.calm
+place: station
+speaker: GORM
+cost: 2
+do: set(book.station_calm)
+line: GORM: In writing? Signed? Shall I hold you to that?
+nar: The poles go back one at a time, slowly, to be counted.
+go: hill.station.menu
+
+@node hill.station.menu
+speaker: GORM
+cost: 0
+opt: "Ask to read the old books on the shelf." -> hill.gorm.price ? !has(hill.books_keeper)
+opt: "Ask Hobb to show you the shelf." -> hill.hobb.books ? tab_hobb == 1 & !has(hill.books_keeper)
+opt: "Walk to the shelf as if you were on the rota." -> hill.station.coat ? guise == lamplighter & !has(hill.books_keeper) {verb: hide, noise: 0.2}
+opt: "Ask Gorm how a Lamplighter puts someone down without marking them." -> hill.gorm.sweep ? (seenas_trust == useful | rep(trust) >= 2) & !has(hill.move_sweep)
+opt: "Take the Alderman's key off the board." -> hill.station.take ? !has(hill.key_side)
+opt: "Leave them to their books." -> ^hub
+
+@node hill.gorm.price
+speaker: GORM
+cost: 2
+line: GORM: Would you answer a question for each book I open? What did you put in the canister at dawn, and why? Who told you about the wiring? And where will you be at three o'clock?
+opt: "Answer all three, truthfully." -> hill.gorm.truth {id: hill.gorm.truth, do: set(book.station); set(book.three); set(said.gorm_truth); set(heard.gorm.truth)}
+opt: "Answer two, and lie about three o'clock." -> hill.gorm.lie {id: hill.gorm.lie, do: set(book.station); set(book.three); set(lied.three); set(heard.gorm.three)}
+opt: "Not tonight, sergeant." -> hill.station.menu
+
+@node hill.gorm.truth
+speaker: GORM
+cost: 4
+do: rep(trust, 1)
+if: seenas_trust == auditor => seenas_trust = useful
+nar: Gorm writes every word, then the time, then something in the margin.
+line: GORM: Was that so hard? Shall I fetch them down?
+go: hill.books
+
+@node hill.gorm.lie
+speaker: GORM
+cost: 3
+line: GORM: Is that where you'll be? Then shall I write it down beside where you will be?
+nar: She writes two things, one under the other.
+go: hill.books
+
+@node hill.hobb.books
+speaker: HOBB
+cost: 2
+line: HOBB: You filled my lantern. The shelf's mine to dust anyway. Don't tell the sergeant. She knows. Don't tell her anyway.
+go: hill.books
+
+@node hill.station.coat
+speaker: GORM
+cost: 2
+do: set(hill.on_rota)
+line: GORM: Are you on the rota tonight? Shall I put you on it?
+nar: She writes a name on the rota that is nobody's.
+line: FEWELL: Polished cuffs.
+go: hill.books
+
+@node hill.books
+place: station
+speaker: GORM
+cost: 6
+do: set(hill.books_keeper); quest(a2.station, books)
+nar: Oldest first, in hands that are not Gorm's.
+nar: Six years ago, nine at night: KEEPER TALLOW AT THE STATION DOOR, ASKING AFTER HER WAGES. TOLD: PENDING REVIEW. ALDERMAN INFORMED.
+nar: Three years ago, and every night after for a month: KEEPER NOT SEEN ON THE MOLE AFTER DARK. IN THE BRINE. ALDERMAN INFORMED. ALDERMAN: NOTE ONLY.
+nar: Seven months ago, in Gorm's square hand: WORKS AT WEIGH-HOUSE. HEAD LIGHT ON QUAY BOARD. KEEPER NOT TOLD. GUILD NOT TOLD. WHY NOT?
+line: GORM: Do you know how often the Alderman has asked to read these? Would you like to guess?
+nar: She puts them back in order.
+go: hill.station.menu
+
+@node hill.gorm.sweep
+place: station
+speaker: GORM
+cost: 6
+do: set(hill.move_sweep)
+nar: Gorm stands, which nobody has seen her do, and takes a pole.
+line: GORM: Do you see where my hands are? Both at the brass end? Then where's the other end? And where are your ankles?
+nar: The pole comes round at shin height, unhurried, and the assessor is sitting on the floor, unhit.
+line: GORM: Would you like to try? Slower? Again?
+go: hill.station.menu
+
+# ---------------------------------------------------------------- A2, Fist: the station fight
+@node hill.station.take
+place: station
+speaker: GORM
+cost: 1
+nar: A hook for every house on the hill, for the lamps' sake. Under one: CRAKE, SIDE.
+line: GORM: Would you put that back? Would you like to think about who writes this down?
+nar: Three poles come off the rack. There is no dark in the room, and every one of them is already writing.
+opt: "Put it back." -> hill.station.menu {do: set(book.key_try)}
+check: "[FORM LETTER] The Shelf requires access to insured premises. The key is a receipt." -> hill.station.key.ok / hill.station.fight ? !has(down.hill) {skill: formletter, dc: 8, red}
+opt: "Keep it." -> hill.station.fight ? !has(down.hill)
+
+@node hill.station.key.ok
+place: station
+speaker: GORM
+cost: 2
+do: set(hill.key_side); set(book.key_receipt)
+line: GORM: A receipt? Will you sign for it?
+nar: The assessor signs Gorm's book in full. The key goes into the case; the signature stays on the hill.
+go: hill.station.menu
+
+@node hill.station.fight
+place: station
+cost: 0
+alt: hill.station.fight4 ? has(book.violence)
+do: fight(e.station)
+nar: The assessor sets the claims case in front like a door, and the poles come in.
+
+@node hill.station.fight4
+place: station
+cost: 0
+do: fight(hill.station_four)
+nar: Four poles, and a room with nothing in it to hide behind but the stove.
+
+@node hill.fight.station.win
+place: station
+speaker: GORM
+cost: 3
+do: set(struck.station); set(book.violence); rep(trust, -2); seenas_trust = enemy; set(hill.key_side); set(hill.books_keeper); quest(a2.station, books)
+if: trait(m.poles) == none => offer(m.poles)
+if: trait(m.body) == none => offer(m.body)
+nar: Fewell sits against the rack, his pole in two pieces. Coe quotes the Alderman to the ceiling.
+nar: The shelf is down, the books open on the floor. The nearest: KEEPER NOT SEEN ON THE MOLE AFTER DARK. ALDERMAN: NOTE ONLY.
+nar: Gorm has not left the desk. She holds out the key.
+line: GORM: Is this the one you wanted? Shall I write that you took it, or that I gave it?
+go: ^hub
+
+@node hill.fight.station.yield
+place: station
+speaker: GORM
+cost: 2
+do: set(hill.key_side)
+if: !seen(fx2.station.tea) => set(book.violence); rep(trust, -1)
+line: STRAND: Nought more. That's plenty. {when: !seen(fx2.station.tea)}
+line: BRIGHT: Tea! Lovely! Nobody's hurt! {when: seen(fx2.station.tea)}
+nar: Gorm lifts the key off its hook and holds it out on one finger.
+line: GORM: Was that what you came for? Was it worth the ink? {when: !seen(fx2.station.tea)}
+line: GORM: Is it the key you wanted, with the tea? Shall I write that you asked nicely, in the end? {when: seen(fx2.station.tea)}
+go: ^hub
+
+@node hill.fight.station.fled
+place: hill_lane
+cost: 2
+do: set(book.fled); rep(trust, -1); meter(dread, 1)
+nar: Out into a lane with no dark in it. The assessor runs down the middle, lit from both sides, like an exhibit. Nobody hurries after.
+go: ^hub
+
+@node hill.fight.station.down
+place: station
+speaker: GORM
+cost: 40
+do: set(down.hill); rep(trust, -1); meter(cold, 1); set(hill.books_keeper); quest(a2.station, books)
+nar: Forty minutes on the bench under the shelf, Gorm on a stool opposite.
+line: GORM: Who sent you up the hill? What did you want with her door? Would you like something to read while you wait?
+nar: She lays a book open by the assessor's hand: KEEPER NOT SEEN ON THE MOLE AFTER DARK. ALDERMAN: NOTE ONLY.
+line: GORM: Does the Alderman ever read these, do you think?
+go: ^hub
+
+# ---------------------------------------------------------------- the substation before the test
+@node hill.sub
+place: substation
+alt: hill.sub.guarded ? clock >= 02:30 & clock < 03:30 & !has(hill.test_done)
+alt: hill.sub.after ? has(hill.test_done) | (clock >= 03:30 & clock < 06:20)
+cost: 1
+do: quest(a2.substation, open); set(hill.knows_test)
+nar: A brick box, a louvred window, a padlock, a hum.
+nar: On the door, in a clerk's hand: EQUIPMENT TEST 03:00. TRUST PERSONNEL ONLY.
+go: hill.sub.menu
+
+@node hill.sub.menu
+place: substation
+cost: 0
+check: "[CANDLEMAS] Read the board through the louvres: which lamps hang on which switch." -> hill.sub.board / hill.sub.board.fail ? !has(hill.order_restrike) {skill: candlemas, dc: 5, verb: read, noise: 0}
+opt: "Hook the second switch down through the louvres with the Vane's stick, and run for the Alderman's house in the dark." -> hill.run ? !has(hill.dark) & !has(hill.rigged) {verb: cutpower, noise: 0.4}
+check: "[SUM] Candle under the string, string to the second switch: measure the minutes by the inch." -> hill.rig.ok / hill.rig.fail ? count(i.candle) > 0 & !has(hill.dark) & !has(hill.rigged) {skill: sum, dc: 6, verb: rig, noise: 0.1}
+opt: "Back up the lane." -> ^hub
+
+@node hill.sub.board
+place: substation
+cost: 4
+do: set(hill.order_restrike)
+nar: HILL, HOUSES. HILL, STREET ARCS, screwed over an older plate: HEAD LIGHT.
+nar: Under both, in brass: ARCS TO BE RESTRUCK BY HAND, DUTY LAMPLIGHTER, WITHIN SIX MINUTES. STANDING ORDER, O.C.
+inst: CANDLEMAS: The street arcs are Mother's pattern. Same maker's stamp on the ballast. Same temper when they are hot.
+go: hill.sub.menu
+
+@node hill.sub.board.fail
+place: substation
+cost: 2
+inst: CANDLEMAS: Louvres. I am reading slats. Every word on that board has been cut in half by the Municipal.
+go: hill.sub.menu
+
+# ---------------------------------------------------------------- A2, Shadow: the dark you make
+@node hill.run
+place: hill_lane
+cost: 1
+do: set(hill.dark)
+cmd: setLight hill_lane 0.03 0
+cmd: setLight crake_study 0.05 0
+nar: The stick's hook finds the handle on the second try. Down.
+nar: The hill goes out: the lane, the station, the lamp over the Alderman's door. The stars come down to the roofs.
+voice: dark: Six minutes. Mine. Run. {dc: 3}
+check: "[THE DARK] Up the lane in the dark, past the station door, to the Alderman's." -> hill.dark.house / hill.run.fail {skill: dark, dc: 6, verb: hide, noise: 0.3}
+
+@node hill.run.fail
+place: hill_lane
+speaker: HOBB
+cost: 6
+cmd: setLight hill_lane 0.7 0
+cmd: setLight crake_study 0.8 0
+do: meter(dread, 1)
+if: tab_hobb == 0 => set(book.hill_switch)
+nar: Two small lights come bobbing down the lane at a run.
+line: HOBB: Who's that? Was it you did it? Oh, please get out of the way, it's six minutes, it's in the order.
+nar: The assessor stands aside. The arcs strike short of the Alderman's gate, and the assessor is standing in the middle of a lit room.
+voice: undertow: Hobb owes you a fill of paraffin. He will not write this. {when: tab_hobb == 1}
+go: ^hub
+
+# ---------------------------------------------------------------- A2, Hands: the candle timer
+@node hill.rig.ok
+place: substation
+cost: 6
+do: set(hill.rigged); take(i.candle)
+nar: A church candle burns a thumb's width in forty minutes. String a quarter-inch above the flame, tied to the handle, the lantern hook for weight. Ten minutes.
+go: ^hub
+
+@node hill.rig.fail
+place: hill_lane
+cost: 3
+do: set(hill.dark); take(i.candle)
+cmd: setLight hill_lane 0.03 0
+cmd: setLight crake_study 0.05 0
+nar: The louvres make a draught. Forty paces up the lane the string parts, nine minutes early, and the hill goes out.
+check: "[THE DARK] Run the rest of the lane in the dark." -> hill.dark.house / hill.run.fail {skill: dark, dc: 5, verb: hide, noise: 0.3}
+
+@node hill.rig.wait
+place: hill_lane
+cost: 10
+do: set(hill.dark); clear(hill.rigged)
+cmd: setLight hill_lane 0.03 0
+cmd: setLight crake_study 0.05 0
+nar: Ten minutes at the side door. At the tenth the hill goes out.
+go: hill.dark.house
+
+# ---------------------------------------------------------------- the dark house (Shadow and Hands arrive here)
+@node hill.dark.house
+place: crake_study
+cost: 2
+nar: The scullery door is on the latch. The house has never needed to lock out a dark.
+nar: In the study the stove is a red line. The Alderman stands at the window, spectacles on, looking at a hill she cannot see.
+line: FISK: Ninety seconds of lockout, Alderman, and after that they wait for a hand. I did write it down for you. {when: clock >= 20:30 & clock < 22:00}
+check: "[THE DARK] Find the ledger by the stove's red line and the K by the thumb index, tear the page, and be gone before the lamps." -> hill.dark.out / hill.dark.caught {skill: dark, dc: 6, red, verb: hide, noise: 0.2}
+opt: "Take the page, and stand by the desk for the lamps to find you." -> hill.dark.wait {verb: wait, noise: 0.1}
+
+@node hill.dark.out
+place: hill_lane
+cost: 3
+cmd: setLight hill_lane 0.7 0
+cmd: setLight crake_study 0.8 0
+do: give(i.ledger_page); set(wages.stopped); quest(a2.ledger, wages); clear(hill.wages_misread); meter(dread, 1)
+if: !has(ink.crake) => quest(a2.ink, hers)
+nar: Out by the scullery. The arcs strike behind, and the assessor is a careful person walking down a lit lane.
+nar: Under the first lamp: KEEPER: WAGES SUSPENDED PENDING REVIEW, six years ago. O.C., in yellow.
+go: ^hub
+
+@node hill.dark.caught
+place: crake_study
+cost: 1
+cmd: setLight hill_lane 0.7 0
+cmd: setLight crake_study 0.8 0
+do: give(i.ledger_page); set(wages.stopped); quest(a2.ledger, wages); clear(hill.wages_misread); hill_in = dark; rep(trust, -1)
+if: !has(ink.crake) => quest(a2.ink, hers)
+nar: The arcs strike with the page still in the assessor's hand. The Alderman turns from the window.
+go: hill.crake
+
+@node hill.dark.wait
+place: crake_study
+cost: 6
+cmd: setLight hill_lane 0.7 0
+cmd: setLight crake_study 0.8 0
+do: give(i.ledger_page); set(wages.stopped); quest(a2.ledger, wages); clear(hill.wages_misread); hill_in = dark
+if: !has(ink.crake) => quest(a2.ink, hers)
+nar: The page comes away by feel. When the arcs strike, the Alderman turns into a room with the Shelf in it.
+go: hill.crake
+
+# ---------------------------------------------------------------- A7: the substation at three
+@node hill.sub.guarded
+place: substation
+speaker: GUARD
+cost: 2
+nar: Two Trust guards at the door, stamping in the frost. Through the louvres, a neat man laying out tools by size.
+line: GUARD: Trust personnel only. Alderman's orders. Nobody watches the test.
+go: hill.sub.gmenu
+
+@node hill.sub.gmenu
+place: substation
+cost: 0
+opt: "Call through the louvres to the engineer." -> hill.sub.fisk ? has(met.fisk) | has(fisk.button)
+check: "[FORM LETTER] The Shelf insures this substation, and attends the testing of insured equipment." -> hill.sub.form.ok / hill.sub.form.fail {skill: formletter, dc: 7}
+opt: "Walk up to the door in the Lamplighter's coat, as the duty hand." -> hill.sub.coat ? guise == lamplighter {verb: hide, noise: 0.1}
+opt: "Go through them." -> hill.sub.fight
+check: "[BALLAST] Down into the cable duct behind the substation, and crawl in under the floor." -> hill.duct.ok / hill.duct.fail ? !has(book.three) {skill: ballast, dc: 6, verb: hide, noise: 0.2}
+check: "[BALLAST] Into the cable duct, past the guard who has been told to stand on its grating." -> hill.duct.ok / hill.duct.fail ? has(book.three) {skill: ballast, dc: 8, verb: hide, noise: 0.3}
+check: "[GRIP] Pull the outside fuse on the cable pole with the stick's hook." -> hill.fuse.ok / hill.fuse.fail {skill: grip, dc: 6, red, verb: cutpower, noise: 0.5}
+check: "[SUM] Rig the candle to burn through a string on the outside fuse at three, and be at the door when it drops." -> hill.fuse.rig / hill.fuse.rig.fail ? count(i.candle) > 0 {skill: sum, dc: 6, verb: rig, noise: 0.1}
+opt: "Stand back on the lane and watch what three o'clock does to the hill." -> hill.sub.watch {verb: wait, noise: 0}
+opt: "Leave." -> ^hub
+
+@node hill.sub.fisk
+place: substation
+speaker: FISK
+cost: 2
+line: FISK: The Shelf? The insurer? Oh, good. The specification calls for a witness from the insurer. Forgive me, I wrote that too. That one wasn't struck. {when: !has(brine2.spec_torn) | has(said.fisk_unnamed)}
+line: FISK: You tore clause fourteen at the Brine. The specification calls for a witness from the insurer. It does not say a careful one. {when: has(brine2.spec_torn) & !has(said.fisk_unnamed)}
+line: FISK: And my name is still out of your book? Then come in. {when: has(said.fisk_unnamed)}
+nar: The guards consider the engineer's authority, which is a sheet of paper, and stand aside.
+go: hill.test
+
+@node hill.sub.form.ok
+place: substation
+speaker: GUARD
+cost: 2
+line: GUARD: Alderman said nobody watches. She never said nobody insures.
+go: hill.test
+
+@node hill.sub.form.fail
+place: substation
+speaker: GUARD
+cost: 2
+line: GUARD: The Alderman said you'd say that. Near enough word for word.
+nar: The door shuts on the lantern.
+go: hill.sub.watch
+
+@node hill.sub.coat
+place: substation
+speaker: FISK
+cost: 2
+line: GUARD: Duty hand? You're early. Go on.
+line: FISK: You're the hand? Good. Stand there, and press nothing until I say.
+go: hill.test
+
+@node hill.sub.fight
+place: substation
+cost: 0
+do: fight(e.substation)
+nar: Two guards, two poles, and an engineer at the louvres who will see all of it.
+
+@node hill.fight.substation.win
+place: substation
+speaker: FISK
+cost: 3
+do: set(struck.subguards); set(book.violence); rep(trust, -2); seenas_trust = enemy
+if: trait(m.body) == none => offer(m.body)
+nar: One guard sits in the frost holding his knee. The other has gone up the lane at a run to fetch somebody with more buttons.
+line: FISK: Was that necessary? Forgive me. Was it? Come in, then. You have a witness's face now, if nothing else.
+go: hill.test
+
+@node hill.fight.substation.yield
+place: substation
+speaker: GUARD
+cost: 2
+if: !seen(fx2.substation.fisk) => set(book.violence); rep(trust, -1)
+line: GUARD: All right. All right. It's her hill, not mine.
+nar: They stand aside.
+go: hill.test
+
+@node hill.fight.substation.fled
+place: hill_lane
+cost: 2
+do: set(book.fled); meter(dread, 1)
+nar: Back up the lit lane. The guards do not follow; the assessor is easy to see from the door.
+go: hill.sub.watch
+
+@node hill.fight.substation.down
+place: substation
+cost: 15
+do: set(down.hill_sub); meter(cold, 3); rep(trust, -1); set(button.tested); set(hill.test_done); quest(a2.substation, tested)
+call: hill.test.proof
+nar: Face down in the frost, a guard's knee in the back. The assessor hears the test entire.
+nar: The hum stops. A minute; it comes back. Five minutes of nothing, a click, and the frost under the cheek goes from black to white.
+nar: A pair of grey shoes stops beside the assessor's face.
+go: hill.test.crake
+
+@node hill.duct.ok
+place: substation
+cost: 12
+do: set(hill.crake_offer); set(button.tested); set(hill.test_done); quest(a2.substation, tested); meter(cold, 1)
+call: hill.test.proof
+nar: A brick trench the width of a shoulder, cables furred with frost, ending at a grating under the floor: Fisk's boots, his tools, the board.
+nar: At three the light leaves the window. A careful step comes in out of the dark.
+line: CRAKE: Mr Fisk.
+line: FISK: Alderman. Supply off. I'll restore it in a minute, and the arcs will stay out. Ninety seconds of lockout, and then they wait. As long as you like.
+line: CRAKE: The Municipal will want a chief engineer in the spring. Salaried. Dry. Nobody would need to test anything ever again.
+line: FISK: They are waiting now, Alderman. Listen to them wait.
+nar: Then his thumb. The arcs strike, blue, then white.
+opt: "Push up the trap and stand up between them." -> hill.test.crake
+opt: "Crawl back the way you came." -> ^hub {verb: hide, noise: 0.1}
+
+@node hill.duct.fail
+place: substation
+speaker: GUARD
+cost: 12
+do: set(book.duct); rep(trust, -1); meter(cold, 1); set(button.tested); set(hill.test_done); quest(a2.substation, tested)
+call: hill.test.proof
+nar: The duct bends. The assessor is wedged at the bend when the hill goes out overhead.
+nar: A lantern, hands on the assessor's boots, and the assessor comes out of the floor backwards.
+line: CRAKE: Who is it?
+line: GUARD: The Shelf, Alderman. In the duct.
+line: CRAKE: Of course it is. Stand it where Mr Fisk can see it.
+nar: Held by the elbows, the assessor watches the rest: supply back, the arcs waiting, Fisk's thumb, white.
+go: hill.test.crake
+
+@node hill.fuse.ok
+place: substation
+speaker: FISK
+cost: 2
+do: set(hill.dark)
+nar: The fuse comes out with a crack and a blue spit. The hill goes out. Both guards run for the pole.
+nar: Inside, by lantern, Fisk looks up at the assessor in the doorway.
+line: FISK: That will do for a loss of supply. Thank you. I would have preferred my switch. Forgive me, it's a preference.
+go: hill.test.dark
+
+@node hill.fuse.fail
+place: substation
+cost: 10
+do: meter(cold, 2); meter(wear, 1); set(book.fuse); rep(trust, -1); set(hill.dark); set(hill.test_done)
+nar: The fuse comes out with a blue spit that runs up the stick into the assessor's glove. Then the assessor is sitting in the frost, holding a hand that has stopped reporting.
+nar: The guards stand over the assessor while the test goes on without a witness. When the lamps come back, the Alderman is in the doorway.
+go: hill.test.crake
+
+@node hill.fuse.rig
+place: substation
+speaker: FISK
+cost: 8
+do: set(hill.dark); take(i.candle)
+nar: At three the string parts and the fuse drops out like a pulled tooth. The guards go to look at the pole and blame the frost.
+line: FISK: Oh. A loss of supply. Thank you, frost. Or whoever.
+go: hill.test.dark
+
+@node hill.fuse.rig.fail
+place: substation
+speaker: GUARD
+cost: 4
+do: take(i.candle)
+nar: The candle hisses out in the wet frost. The string holds, and the assessor stands at the door at three like a caller nobody expected.
+line: GUARD: Waiting for someone?
+go: hill.sub.watch
+
+# ---------------------------------------------------------------- A7, Eye: the hill from the lane
+@node hill.sub.watch
+place: hill_lane
+cost: 4
+nar: The last lamp before the substation. The Almanac open at its watch, Candlemas out.
+check: "[CANDLEMAS] Hold Candlemas toward the hill and read the lamps at three." -> hill.watch.ok / hill.watch.fail ? !has(hill.test_done) {skill: candlemas, dc: 5, verb: read, noise: 0}
+opt: "Leave it to the hill." -> ^hub
+
+@node hill.watch.ok
+place: hill_lane
+cost: 8
+do: set(hill.test_done); meter(cold, 1)
+nar: Three. The hill goes out.
+nar: At a minute past, house windows come back down the terraces. The arcs do not.
+inst: CANDLEMAS: Filament in the windows at one minute past. Arcs dark. Dark. Still dark.
+nar: At six past, the arcs strike together.
+opt: "Write it: the supply came back at one minute past. The arcs waited for a hand." -> hill.watch.write
+opt: "Write it: the hill came back by itself, after six minutes." -> hill.watch.wrong
+
+@node hill.watch.fail
+place: hill_lane
+cost: 8
+do: set(hill.test_done); meter(cold, 1)
+nar: Three. The hill goes out. At six minutes past it is lit again, all of it.
+inst: CANDLEMAS: Dark, then light. Do not ask me for the middle. I was looking at a star.
+opt: "Write it: the hill came back by itself, after six minutes." -> hill.watch.wrong
+opt: "Write nothing." -> hill.watch.after
+
+@node hill.watch.write
+place: hill_lane
+cost: 1
+do: set(button.tested); quest(a2.substation, tested); xp(1)
+call: hill.test.proof
+go: hill.watch.after
+
+@node hill.watch.wrong
+place: hill_lane
+cost: 1
+do: set(hill.hill_auto)
+go: hill.watch.after
+
+@node hill.watch.after
+place: hill_lane
+cost: 0
+opt: "Go down to the substation door, now the lamps are back." -> hill.test.crake
+opt: "Leave the hill to its lamps." -> ^hub
+
+# ---------------------------------------------------------------- the test, inside
+@node hill.test
+place: substation
+speaker: FISK
+cost: 3
+nar: Inside: the board, a lantern, and Dorran Fisk, neat as a drawing, coast-road mud to the knee.
+line: FISK: Supply off at three. The arcs lock out hot for ninety seconds. After that they wait for a hand at the panel, as long as anyone likes. On Low Night they waited all night. That is the whole of clause fourteen. It is, forgive me, beautiful. Strike "beautiful".
+nar: He throws the second switch. The hill leaves the window like a held breath.
+go: hill.test.dark
+
+@node hill.test.dark
+place: substation
+speaker: CRAKE
+cost: 2
+do: set(hill.dark)
+nar: At a minute past, the supply comes back. Windows come up down the hill. The arcs stay dark.
+nar: A careful step on the frost, and a voice that has never had to find a door in the dark.
+line: CRAKE: Mr Fisk. I can't see anything.
+line: FISK: No, Alderman. The supply is back. The lockout is over. They are waiting for a hand, and I am going to let them wait a little, so that you can hear it.
+nar: Fisk opens the panel. A brass button the size of a thumbnail.
+opt: "Press it." -> hill.test.press {do: set(hill.lamb_pressed), verb: light, noise: 0.1}
+opt: "Hold the panel open for the Alderman." -> hill.test.press {do: set(hill.crake_pressed)}
+opt: "Leave it to the engineer." -> hill.test.press {verb: wait, noise: 0}
+
+@node hill.test.press
+place: substation
+speaker: FISK
+cost: 5
+do: set(button.tested); set(hill.test_done); quest(a2.substation, tested)
+call: hill.test.proof
+nar: At six minutes past three the assessor's thumb goes in. {when: has(hill.lamb_pressed)}
+nar: Fisk puts the Alderman's gloved thumb on the button, and at six past it goes in. {when: has(hill.crake_pressed)}
+nar: At six minutes past Fisk's thumb goes in, without ceremony. {when: !has(hill.lamb_pressed) & !has(hill.crake_pressed)}
+nar: The arcs strike, and the white comes through the louvres and lies across the Alderman in stripes.
+line: FISK: Nominal.
+go: hill.test.crake
+
+@node hill.test.proof
+cost: 0
+if: has(ink.crake) | has(clause.struck) => quest(a2.button, proved)
+return:
+
+@node hill.test.crake
+place: substation
+speaker: CRAKE
+cost: 2
+do: set(met.crake2)
+nar: The Alderman, in the restruck light: the same grey as in the dark, round yellow spectacles. {when: !seen(hill.crake.first) & !seen(hill.crake.cold)}
+line: CRAKE: It wanted a hand. Any hand. {when: has(hill.crake_pressed)}
+line: FISK: I brought the Trust's copy of the specification, the one you sent back to the firm. In case anyone should want to read it in a good light.
+line: FISK: And mine, for the insurer. {when: count(i.fisk_spec) == 0 & !has(brine2.spec_torn)}
+if: count(i.fisk_spec) == 0 & !has(brine2.spec_torn) => give(i.fisk_spec)
+claim: "Clause fourteen, Alderman. Take off the spectacles and read it." -> hill.confess.sub / hill.crake.hold.sub ? (has(clause.struck) | count(i.fisk_spec) > 0 | has(fisk.button) | has(ropewalk.yellow_time)) & (has(button.tested) | has(quay.crake.said_restrikes) | has(wages.stopped) | has(hill.order_restrike) | has(hill.books_keeper) | has(weigh2.board_card) | has(weigh2.log_delay) | has(ropewalk.yellow_time) | has(telegram.draft)) {show: !has(ink.crake)}
+opt: "Goodnight, Alderman." -> hill.test.end
+
+@node hill.confess.sub
+place: substation
+speaker: CRAKE
+cost: 1
+nar: Fisk holds the Trust's copy out to her, under the arc.
+go: hill.confess
+
+@node hill.crake.hold.sub
+place: substation
+speaker: CRAKE
+cost: 2
+line: CRAKE: An engineer turned off a hill to prove a point, and a hill came back on. I shall put that in the minutes, exactly so.
+go: ^hub
+
+@node hill.test.end
+place: substation
+speaker: CRAKE
+cost: 1
+line: CRAKE: Mr Fisk, the coast road is very beautiful at dawn. Strike "beautiful".
+nar: She goes back up the lane between her lamps, and looks at none of them.
+go: ^hub
+
+@node hill.sub.after
+place: substation
+cost: 1
+nar: The substation hums. On the door, under the notice, someone has written in pencil: 03:06. NOMINAL.
+go: ^hub

@@ -1,0 +1,133 @@
+{
+ "name": "ropewalk",
+ "place": "ropewalk",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "AAAAAAABAAAAAAAABAAAAAAAAC",
+  "AAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAADAAAAAAAAAAA"
+ ],
+ "legend": {
+  "A": {
+   "surface": "stone",
+   "h": 9
+  },
+  "B": {
+   "surface": "stone",
+   "h": 9.8,
+   "solid": true
+  },
+  "C": {
+   "surface": "stone",
+   "h": 12.2
+  },
+  "D": {
+   "surface": "stone",
+   "h": 9.2,
+   "solid": true
+  }
+ },
+ "water": null,
+ "lights": [
+  {
+   "x": 6,
+   "z": 1,
+   "r": 5.2,
+   "k": 0.48,
+   "group": "lantern"
+  },
+  {
+   "x": 19,
+   "z": 1,
+   "r": 5.2,
+   "k": 0.48,
+   "group": "lantern"
+  }
+ ],
+ "exits": [
+  [
+   0,
+   0,
+   0.8,
+   6
+  ],
+  [
+   25.2,
+   0,
+   26,
+   6
+  ]
+ ],
+ "tideEnds": false,
+ "anchors": {
+  "cut": [
+   [
+    6,
+    1
+   ],
+   [
+    19,
+    1
+   ]
+  ],
+  "lamp": [
+   [
+    6,
+    1
+   ]
+  ],
+  "snare": [
+   [
+    10.4,
+    0.6
+   ]
+  ],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   12.5,
+   4.5
+  ],
+  "foes": [
+   [
+    7.5,
+    1.5
+   ],
+   [
+    18.5,
+    1.5
+   ],
+   [
+    12.5,
+    0.5
+   ],
+   [
+    3.5,
+    2.5
+   ]
+  ]
+ },
+ "stage": {
+  "line": "arena: ropewalk 0 0 0 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = h - 9"
+ },
+ "source": {
+  "plate": "content/ropewalk",
+  "rect": [
+   0,
+   0,
+   26,
+   6
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

@@ -1,0 +1,2122 @@
+# Low Water, Act 1: The Mole and Mother. District file (prefix mole.). Private, 2026-10-16.
+# Places: mole, stairs, lamproom, gallery. Beats 16, 27 (its effect on Mother), 32, 33, 34; the
+# set fight e.hammer (SYSTEMS-FULL 18.11). Shared entry nodes defined here: mole.hub,
+# mole.run.frost.win, mole.run.frost.lose. Cut to length 2026-10-16 (design/EDIT-BRIEF.md);
+# reworked 2026-10-17 (design/REWORK-PLAN.md rows 5, 8, 14, 15; protected moments 3 and 7).
+#
+# Conventions used in this file:
+#   Mother is lit now when: mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2))
+#   Wenna is with Lamb when: has(wenna.climbs) & !has(mole.wenna_home)
+#   (brine.lwd sets wenna.climbs; this file sets mole.wenna_home when she goes back down.)
+#   The weather is gated on the night's clock (bible 10.2) so it reads true before R11 lands.
+
+# ---- new ids
+@fact mole.wenna_home
+@fact mole.restruck2
+@fact mole.page10
+@fact mole.salv.crown
+@fact mole.salv.wick
+@fact mole.salv.paraffin
+@fact mole.wenna_sat
+@fact mole.hat_dropped
+@fact down.mole
+
+@fact mole.dust
+about: The hollows worn in the hundred and twelve stairs hold three years of undisturbed dust. Nobody has climbed them at night in a long while.
+against: wenna 5
+by: CARBON, by lantern
+
+@fact mole.bearing
+about: From Mother's gallery the Old Light lies well south of the leading line. A light shown there turns a ship off the Spit, not onto it.
+by: SUM, from the gallery
+
+@var mole.ice
+default: 0
+about: How much of Keel's water has frozen on the lamp-room floor during the squall (0 to 3).
+
+@var mole.keel_low
+default: 0
+about: 1 when Keel has lowered the hammer during the squall.
+
+@var mole.resolve
+default: 3
+about: How much fight is left in Keel at the squall (3 down to 0). Talk lowers it; at 0 the fight ends at once.
+
+@var mole.keel_weak
+default: 0
+about: 1 when Wenna has hold of Keel's arm during the fight (e.hammer).
+
+@var mole.keel_tool
+default: hammer
+values: hammer, hook, none
+about: What Keel carries up at 04:50: the store hammer, a boathook if Lamb took the hammer first, or nothing if Lamb took the boathook too.
+
+@fact mole.guard_passed
+@fact mole.salted
+@fact mole.door_barred
+@fact mole.hid
+@fact mole.hot_tried
+@fact mole.appt_talked
+@fact mole.fall_told
+
+# ================================================================ the mole
+@node mole.hub
+hub: yes
+place: mole
+cost: 1
+alt: mole.frost.late ? clock >= 04:50 & clock < 05:05 & !has(frost.met)
+alt: mole.frost.see ? clock >= 04:25 & clock < 04:50 & !has(frost.met)
+alt: mole.appt.keel ? var.appt == keel & clock >= 02:50 & clock < 03:20 & !seen(mole.appt.keel)
+alt: mole.wenna.walk ? has(wenna.climbs) & !has(mole.wenna_home) & !seen(mole.wenna.walk)
+alt: mole.arrive ? !seen(mole.arrive) & !seen(mole.wenna.walk)
+alt: mole.out_again ? has(mother.out_again) & !has(mole.restruck2) & !seen(mole.out_again)
+alt: mole.guard ? var.prov == trust & clock >= 00:30 & clock < 04:10 & !has(mole.guard_passed) & !seen(mole.guard)
+alt: mole.appt.hint ? has(appt.known) & clock < 02:50 & !seen(mole.appt.hint)
+nar: At the mole steps the Low Company's boats cast off without lights, like guests leaving a room in which their name has been said. {when: var.prov == wreckers & has(ev.prov_travels), once}
+nar: Somebody has laid a whiting on the first bollard, both eyes up. {when: var.prov == guild & has(ev.prov_travels), once}
+nar: In one of the Brine's portholes a small round head is turned toward Mother, and does not move. {when: var.prov == keeper & has(ev.prov_travels), once}
+nar: The sea on both sides of the mole goes on doing what it was blamed for. It does not look round. {when: var.prov == sea & has(ev.prov_travels), once}
+nar: The gulls on the lee rail have moved up one post, as if the assessor's credit had fallen by exactly a post. {when: var.prov == refused & has(ev.prov_travels), once}
+go: mole.desc
+
+@node mole.arrive
+place: mole
+cost: 1
+nar: The mole is a stone arm the town pushed into the sea ninety years ago and has been sorry about since.
+nar: Item: one lighthouse, called Mother by everyone who has not had to write to her.
+go: mole.desc
+
+@node mole.wenna.walk
+place: mole
+speaker: WENNA
+cost: 4
+do: wet(0.2); set(spray.mole)
+nar: They walk the mole together, Wenna on the windward side, where there is no rail.
+nar: By the halfway bollard her oilskin is a coat that has walked the mole.
+line: There. Now I've been.
+line: Don't talk to me on the mole. You talk on the mole, the sea answers, and it's always got more to say.
+go: mole.desc
+
+@node mole.out_again
+place: mole
+do: quest(a1.stairs, dark)
+alt: mole.out_again.dark ? power.quay == off
+cost: 2
+nar: Mother's head is dark again. The second blackout took her at ten to three, the same as the first, except that this time somebody had lit her first.
+go: mole.desc
+
+@node mole.out_again.dark
+place: mole
+cost: 2
+nar: Mother went out between one sweep and the next, and the quay with her. The whole town has gone the colour of the inside of a coat.
+inst: CANDLEMAS: Nothing. Her, the sodium, every match on the quay: out. A clean dark. I could almost admire it.
+go: mole.desc
+
+# ---- the mole in each weather
+@node mole.desc
+place: mole
+alt: mole.desc.dark ? power.quay == off
+alt: mole.desc.high ? clock >= 05:10 & clock < 06:00
+alt: mole.desc.frost ? clock >= 04:10
+alt: mole.desc.thick ? clock >= 03:20 & clock < 04:10
+alt: mole.desc.heavy ? clock >= 01:30 & clock < 02:50
+alt: mole.desc.rain ? clock >= 23:35
+alt: mole.desc.fog ? clock >= 23:20
+go: mole.desc.clear
+
+@node mole.desc.clear
+place: mole
+cost: 1
+do: wet(0.2); set(spray.mole)
+nar: The westerly throws spray over the windward edge in sheets.
+nar: Below the lee rail the floor is open, and Low Night's lanterns wander about on it, stopping to bend over things.
+go: mole.menu
+
+@node mole.desc.fog
+place: mole
+cost: 1
+do: wet(0.2); set(spray.mole)
+alt: mole.desc.fog.lit ? mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2))
+nar: In the fog the mole has no end, and Mother is a swollen head on a stalk above it.
+go: mole.menu
+
+@node mole.desc.fog.lit
+place: mole
+nar: In the fog the beam goes solid in a long blade, and for a breath the floor below is laid out like a document.
+voice: carbon: Each sweep is a page. Read fast. The next page will be different. {dc: 5}
+go: mole.menu
+
+@node mole.desc.rain
+place: mole
+cost: 1
+do: wet(0.3); set(spray.mole)
+if: var.damp_wet != 1 => damp_wet = 1
+nar: The wind has gone south-west and brought rain. Spray from the left, rain from the right.
+inst: THE DAMP: Saturated. I can't tell you a wet thing from a dry one until a fire's had me. I am not complaining. I am reporting.
+go: mole.menu
+
+@node mole.desc.heavy
+place: mole
+cost: 1
+do: wet(0.4)
+if: var.damp_wet != 1 => damp_wet = 1
+nar: The heavy rain does not fall on the mole so much as stand on it. The assessor walks out along a quarter of a mile of something between a pier and a river.
+go: mole.menu
+
+@node mole.desc.thick
+place: mole
+cost: 1
+do: wet(0.1); meter(dread, 1)
+nar: The fog is at its thickest. The mole arrives under the boots one stone at a time, and the sea on both sides is a noise of somebody moving furniture in another room.
+go: mole.menu
+
+@node mole.desc.dark
+place: mole
+cost: 1
+do: meter(dread, 2)
+nar: The quay, the town and Mother are gone. The assessor stands on a stone arm in the sea with no way of knowing which way it points, except by the water, which is on both sides and equally unhelpful.
+voice: dark: Listen. The lee side slaps. The windward side breathes. Walk between a slap and a breath. {dc: 5}
+go: mole.menu
+
+@node mole.desc.frost
+place: mole
+cost: 1
+do: meter(cold, 1)
+nar: The cloud has gone. Every stone wears a white fur that takes a footprint and keeps it.
+inst: THE VANE: Nothing! North-west and faint! Every word said on this mole goes straight up and freezes!
+go: mole.menu
+
+@node mole.desc.high
+place: mole
+cost: 1
+do: meter(cold, 1); wet(0.1)
+nar: High water. The sea lies within a hand of the mole's top and freezes in plates at the low places.
+go: mole.menu
+
+# ---- the menu on the mole
+@node mole.menu
+place: mole
+opt: "Climb the hundred and twelve stairs to Mother." -> mole.stairs ? !(clock >= 04:25 & clock < 05:05 & !has(frost.met)) & !(var.prov == trust & clock >= 00:30 & clock < 04:10 & !has(mole.guard_passed)) & !(has(mother.out_again) & !has(mole.restruck2) & power.quay == on & clock >= 03:20 & clock < 03:40)
+opt: "Take the stairs at a run, while the board is still surging." -> mole.stairs.fast ? has(mother.out_again) & !has(mole.restruck2) & power.quay == on & clock >= 03:20 & clock < 03:40 & !(var.prov == trust & clock >= 00:30 & clock < 04:10 & !has(mole.guard_passed)) {verb: climb, noise: 0.4}
+check: "[THE DARK] Go along the lee side, under the rail, below their lantern." -> mole.guard.slip.ok / mole.guard.slip.fail ? var.prov == trust & clock >= 00:30 & clock < 04:10 & !has(mole.guard_passed) & (power.quay == off | clock >= 03:00) {skill: dark, dc: 5, verb: hide, noise: 0.1}
+check: "[THE DARK] Go along the lee side, under the rail, below their lantern." -> mole.guard.slip.ok / mole.guard.slip.fail ? var.prov == trust & clock >= 00:30 & clock < 04:10 & !has(mole.guard_passed) & power.quay == on & clock < 03:00 {skill: dark, dc: 8, verb: hide, noise: 0.1}
+opt: "Walk past them in the keeper's coat." -> mole.guard.coat ? var.prov == trust & clock >= 00:30 & clock < 04:10 & !has(mole.guard_passed) & guise == keeper {verb: hide, noise: 0.1}
+check: "[FORM LETTER] Show the Lamplighters the Shelf's warrant." -> mole.guard.talk.ok / mole.guard.talk.fail ? var.prov == trust & clock >= 00:30 & clock < 04:10 & !has(mole.guard_passed) {skill: formletter, dc: 7}
+check: "[THE DARK] Pass him on the lee side, under the rail, and be in at the door first." -> mole.frost.slip.ok / mole.frost.slip.fail ? clock >= 04:25 & clock < 04:35 & !has(frost.met) {skill: dark, dc: 6, verb: hide, noise: 0.2}
+opt: "Salt the frost ahead of you, and go up behind your own salt." -> mole.frost.salt ? count(i.salt) > 0 & clock >= 04:25 & clock < 04:50 & !has(frost.met) {verb: rig, noise: 0.3}
+check: "[FORM LETTER] Shout up the stairwell after him, in the Shelf's voice." -> mole.frost.shout.ok / mole.frost.shout.fail ? clock >= 04:35 & clock < 04:50 & !has(frost.met) & !seen(mole.frost.shout.fail) {skill: formletter, dc: 6, noise: 0.8}
+check: "[CARBON] Read his drips on the frost." -> mole.frost.read.ok / mole.frost.read.fail ? clock >= 04:25 & clock < 05:05 & !has(frost.keel) {skill: carbon, dc: 6, verb: read}
+opt: "Take the boathook from the brackets by the keeper's door." -> mole.hook.take ? count(w.boathook) == 0 & !seen(mole.hook.take) {verb: salvage}
+opt: "Run. Get up the stairs before the hammer does." -> mole.frost.run ? clock >= 04:25 & clock < 04:50 & !has(frost.met)
+opt: "Look up at Mother from the foot of the tower." -> mole.look
+opt: "Hold up the Vane." -> mole.vane
+opt: "Walk back along the mole to the quay." -> mole.leave.wenna ? has(wenna.climbs) & !has(mole.wenna_home)
+opt: "Walk back along the mole to the quay." -> quay.hub ? !(has(wenna.climbs) & !has(mole.wenna_home)) +2
+
+@node mole.leave.wenna
+place: mole
+speaker: WENNA
+do: set(mole.wenna_home)
+alt: mole.leave.wenna.lit ? mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2))
+cost: 3
+line: Back, then. She'll keep. She's kept this long.
+nar: Wenna walks back ahead and does not look round at the tower once.
+go: quay.hub
+
+@node mole.leave.wenna.lit
+place: mole
+speaker: WENNA
+cost: 3
+nar: Wenna walks back ahead. Every time the beam comes round she stops and lets it pass over her.
+line: Don't tell me she's green. I know she's green. Let me walk.
+go: quay.hub
+
+@node mole.look
+place: mole
+cost: 2
+alt: mole.look.again ? seen(mole.look)
+nar: At the foot of the tower, a scab-coloured door with a brass plate, KEEPER, and over the keyhole a newer enamel one: GULLET LAMP TRUST. AUTOMATIC. NO ADMITTANCE.
+nar: The door is not locked. Automatic things are not expected to have visitors.
+voice: smallprint: The enamel plate is dated in the corner. Seven months. The week they took the keeper off the wire, somebody screwed a word over her keyhole. {dc: 5}
+go: mole.menu
+
+@node mole.look.again
+place: mole
+cost: 1
+alt: mole.look.lit ? mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2))
+nar: From the foot of the tower Mother looks like a person who has shut her eyes on purpose and is waiting for the assessor to go away.
+go: mole.menu
+
+@node mole.look.lit
+place: mole
+nar: At the edges of the beam, over the water, there is a colour that is not white.
+voice: candlemas: Green at the margins. Bottle green. I'd stake my eyepiece on it, if I had a better one. {dc: 4}
+go: mole.menu
+
+@node mole.vane
+place: mole
+cost: 1
+alt: mole.vane.frost ? clock >= 04:10
+alt: mole.vane.sw ? clock >= 23:35
+do: set(spray.mole)
+inst: THE VANE: West! West, six! Straight over the windward edge and into your ear! This mole has been spitting since nine o'clock, and it will spit until the wind goes round!
+go: mole.menu
+
+@node mole.vane.sw
+place: mole
+cost: 1
+do: set(spray.mole)
+inst: THE VANE: South-west! Nine, and wet! Spray from one side, rain from the other! It has not let up since nine!
+go: mole.menu
+
+@node mole.vane.frost
+place: mole
+cost: 1
+inst: THE VANE: Nothing! A breath of north-west! I have nothing to point at and I am pointing at it anyway! You can hear the whole town from here, and the whole town can hear you!
+go: mole.menu
+
+# ================================================================ the hundred and twelve stairs
+@node mole.stairs
+place: stairs
+alt: mole.stairs.prints ? clock >= 05:00 & has(ev.keel_climbs) & !has(frost.keel)
+alt: mole.stairs.wenna ? has(wenna.climbs) & !has(mole.wenna_home) & !seen(mole.stairs.wenna)
+alt: mole.stairs.first ? !seen(mole.stairs.first)
+go: mole.stairs.again
+
+@node mole.stairs.first
+place: stairs
+cost: 3
+do: offer(m.stairs); meter(cold, 1)
+nar: The stairs go up in a tight spiral round an iron post, each step worn hollow in the middle, like a spoon.
+nar: The almanacs say a hundred and twelve. The assessor counts anyway.
+voice: knees: These are not stairs. These are a long argument about stairs, and we are losing it. {below: 5}
+go: mole.stairs.landing
+
+@node mole.stairs.landing
+place: stairs
+cost: 2
+nar: At the fifty-sixth step there is a landing and a kitchen chair, its cushion under a skin of grey dust as even as felt.
+voice: carbon: She sits here. Halfway. Every night, for years. She sits, gets her breath, looks at the slit, and goes on. Then one night she does not. {dc: 6}
+check: "[CARBON] Hold the lantern low and read the hollows in the steps." -> mole.dust.ok / mole.dust.fail ? item.i.lantern > 0 & !has(mole.dust) {skill: carbon, dc: 6}
+check: "[THE DARK] Put a hand flat in the hollow of the step." -> mole.dust.ok / mole.dust.fail ? item.i.lantern == 0 & !has(mole.dust) {skill: dark, dc: 6}
+opt: "Keep counting. Keep climbing." -> mole.stairs.top
+
+@node mole.dust.ok
+place: stairs
+cost: 2
+do: set(mole.dust)
+nar: Each hollow is the shape of twenty-eight years of the same feet, and in each lies the fine dust that settles only where nothing has passed for a long time.
+voice: sum: Three years of dust, give or take a winter, in a hundred and twelve hollows. The tower has been keeping a log too, and its log is honest. {dc: 6}
+go: mole.stairs.landing
+
+@node mole.dust.fail
+place: stairs
+cost: 1
+nar: The hollows are hollows. They are worn, which is what stairs are for, and dirty, which is what stairs are like, and the assessor's nose is now very close to granite for no reason anyone could defend.
+go: mole.stairs.landing
+
+@node mole.stairs.top
+place: stairs
+cost: 3
+do: meter(wear, 1); var.stairs_at = clock
+nar: The spiral tightens. The air smells of brass polish and a burnt arc.
+voice: sum: A hundred and twelve. The top step is a sharper, newer granite, put in when they brought the wires up. The old one is somewhere in the town, being a doorstep. {dc: 6}
+voice: sum: Ninety-something. A hundred and something. There is a door. Doors are where stairs end; take the door's word for it. {below: 6}
+go: mole.lamp
+
+@node mole.stairs.again
+place: stairs
+cost: 5
+do: meter(wear, 1); var.stairs_at = clock
+nar: The hundred and twelve again. The tower does not get shorter with acquaintance.
+voice: knees: Again? Within the hour? The knees would like to see the regulations. {when: var.stairs_at > 0 & clock < var.stairs_at + 60}
+voice: ballast: No lantern. Hand on the rope rail, greasy with thirty years of one hand. Feel for each step before you trust it. {when: item.i.lantern == 0}
+go: mole.lamp
+
+@node mole.wenna.climb
+place: stairs
+speaker: WENNA
+cost: 10
+do: offer(m.stairs); meter(wear, 1); meter(cold, 1); var.stairs_at = clock
+line: You go in front. If I fall I'll fall on you, and you're softer than the stone.
+nar: She climbs one step, then brings the other foot up to it. She counts under her breath, backward.
+line: A hundred and twelve. A hundred and eleven. I counted them going up for twenty-eight years. I count them now from the bottom, looking.
+go: mole.stairs.wenna.chair
+
+@node mole.stairs.wenna.chair
+place: stairs
+speaker: WENNA
+cost: 3
+do: set(mole.wenna_sat)
+nar: At the landing she stops at the chair.
+line: That's my chair. That's three years, that dust. Every grain of it is a night I sat by the Brine's stove with a pie.
+nar: Then she sits in it, in her own dust, as if settling a debt.
+check: "[CONDOLENCE] Wait. Let her speak first." -> mole.wenna.chair.ok / mole.wenna.chair.fail {skill: condolence, dc: 7}
+opt: "We should keep going." -> mole.wenna.chair.up
+
+@node mole.wenna.chair.ok
+place: stairs
+speaker: WENNA
+cost: 3
+do: set(heard.wenna.chair)
+nar: The assessor waits. Wenna puts her burned hands flat on her knees.
+line: First night I didn't come up, I meant to. I got my coat on. I stood at the Brine door and looked at her over the mole, and she was lit. She'd lit herself, with the quay. She didn't need me.
+line: So I had a pie. And the next night she lit herself again. You don't go up a hundred and twelve stairs to be not needed.
+go: mole.wenna.chair.up
+
+@node mole.wenna.chair.fail
+place: stairs
+speaker: WENNA
+cost: 1
+nar: The assessor waits in the manner of someone waiting, which is to say loudly. Wenna looks up.
+line: You're doing a face. Don't do a face at me in my own tower. Help me up.
+go: mole.wenna.chair.up
+
+@node mole.wenna.chair.up
+place: stairs
+speaker: WENNA
+cost: 4
+nar: The rest of the stairs go slower. Near the top the assessor arrives at a hundred and twelve, and does not say so.
+line: There. Don't tell anybody it took us that long.
+go: mole.lamp
+
+# ---- beat 34: the frost keeps the drips
+@node mole.stairs.prints
+place: stairs
+cost: 3
+do: set(frost.keel); quest(a1.frost, prints)
+nar: Someone wet has been up the stairs since the frost came, and down again: a frozen drip in every hollow, and beside it another, on the edge where a man coming down would step.
+nar: A hundred and twelve stairs of frozen drips, as neat as a column of figures.
+check: "[SUM] Count them. All of them." -> mole.prints.ok / mole.prints.fail {skill: sum, dc: 5}
+opt: "Leave them. Climb on." -> mole.lamp
+
+@node mole.prints.ok
+place: stairs
+cost: 4
+if: !has(mole.page10) => xp(1); set(mole.page10)
+nar: A hundred and twelve going up, a hundred and twelve coming down, and on the keeper's chair a frozen puddle the shape of a man sitting down.
+voice: sum: Two hundred and twenty-four drips and one sit-down. He rested in her chair on the way up. Not on the way down. On the way down he was in a hurry. {dc: 5}
+voice: carbon: He sits in the keeper's chair with a hammer across his knees and thinks about it, long enough to leave a puddle. Then he goes up. The ice does not say what he did there. Only the lens can say. {dc: 7}
+go: mole.lamp
+
+@node mole.prints.fail
+place: stairs
+cost: 3
+nar: Somewhere past seventy the up-drips and the down-drips get into a quarrel about which is which, and SUM, who distrusts every clock, turns out to distrust every staircase too.
+go: mole.lamp
+
+@node mole.down
+place: mole
+cost: 4
+alt: mole.down.wenna ? has(wenna.climbs) & !has(mole.wenna_home)
+nar: A hundred and twelve stairs, counted the other way. The mole at the bottom is where the assessor left it, slightly wetter or slightly colder, according to the hour.
+go: mole.desc
+
+@node mole.down.wenna
+place: mole
+speaker: WENNA
+nar: Wenna goes down in front, sideways, swearing on every seventh step.
+line: Going down's worse. Everybody thinks up's the hard part. Up's just stairs. Down's stairs and the whole drop of you behind you, pushing.
+go: mole.desc
+
+# ================================================================ the lamp room
+@node mole.lamp
+place: lamproom
+alt: mole.door.start ? clock >= 04:48 & clock < 04:55 & !has(frost.met) & has(mole.door_barred)
+alt: mole.hide.start ? clock >= 04:48 & clock < 04:55 & !has(frost.met) & has(mole.hid)
+alt: mole.squall.start ? clock >= 04:48 & clock < 04:55 & !has(frost.met)
+alt: mole.hide.wait ? has(mole.hid) & clock < 04:48 & !has(frost.met)
+alt: mole.run.frost.lose ? clock >= 04:55 & clock < 05:05 & !has(frost.met)
+alt: mole.lamp.wreck ? has(lens.broken) & !has(frost.met) & !seen(mole.lamp.wreck)
+alt: mole.lamp.wenna ? has(wenna.climbs) & !has(mole.wenna_home) & !seen(mole.lamp.wenna)
+alt: mole.lamp.first ? !seen(mole.lamp.first)
+go: mole.lamp.again
+
+@node mole.lamp.first
+place: lamproom
+cost: 2
+do: meter(cold, 1)
+nar: The lamp room is a glass drum with the night all round it, and in the middle the lens, a beehive of glass rings with the arc dead in its heart.
+nar: Nothing here has been polished lately.
+inst: CANDLEMAS: Five parts in a hundred, all of it the night's. No sodium up here, thank the glassworks. Give me a light inside that hive and I will tell you what it is made of.
+go: mole.lamp.menu
+
+@node mole.lamp.wenna
+place: lamproom
+speaker: WENNA
+cost: 2
+alt: mole.lamp.wenna.lit ? mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2))
+line: There she is. Don't touch her. I'll touch her.
+nar: Wenna crosses the room and puts her hand flat on the bottom ring of the lens, the way a person puts a hand on a horse.
+line: Cold. Twelve years on the wire and she was never once cold when I came up.
+go: mole.lamp.menu
+
+@node mole.lamp.wenna.lit
+place: lamproom
+speaker: WENNA
+nar: Wenna stops in the stair door. The light through the lower rings is the colour of a bottle in a hedge.
+line: There she is. Look at her. She's green. You can see it, from in here. Every ship from here to Hesk can see it.
+nar: She puts her hand on the bottom ring anyway.
+go: mole.lamp.menu
+
+@node mole.lamp.again
+place: lamproom
+cost: 1
+alt: mole.lamp.again.broken ? var.lens == broken
+alt: mole.lamp.again.greenb ? var.lens == green_broken
+alt: mole.lamp.again.lit ? mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2))
+alt: mole.lamp.again.hot ? has(mother.out_again) & !has(mole.restruck2) & power.quay == on & clock >= 03:20 & clock < 03:40
+alt: mole.lamp.again.out ? has(mother.out_again) & !has(mole.restruck2)
+nar: The lamp room, cold and patient. The lens stands in the middle of it like a guest who has not been offered a chair.
+go: mole.lamp.menu
+
+@node mole.lamp.again.lit
+place: lamproom
+nar: The lamp room is too bright to look at anything directly.
+go: mole.lamp.menu
+
+@node mole.lamp.again.out
+place: lamproom
+nar: Mother is dark again. The lens has the look of a face after weeping.
+inst: CANDLEMAS: Cold. The supply came back in surges and the lockout tripped on the first of them. It will want a hand at the button again. It always wants a hand. That is the whole of the engineer's philosophy.
+go: mole.lamp.menu
+
+@node mole.lamp.again.broken
+place: lamproom
+nar: The lens is broken: a third of it on the floor among the frozen drips, the rest with a hole the shape of a swing.
+go: mole.lamp.menu
+
+@node mole.lamp.again.greenb
+place: lamproom
+nar: The lens stands with its green rings gone, gaps between the crown glass like missing teeth. A smaller lamp, and an honest one.
+go: mole.lamp.menu
+
+# ---- the menu in the lamp room
+@node mole.lamp.menu
+place: lamproom
+opt: "Read the card on the panel." -> mole.lamp.panel ? !has(panel.restrike)
+check: "[SMALL PRINT] Read the specification pinned beside the panel." -> mole.lamp.clause.ok / mole.lamp.clause.fail ? has(panel.restrike) & !has(clause.struck) & (item.i.lantern > 0 | (mother == burning & power.quay == on)) {skill: smallprint, dc: 6}
+opt: "Read the specification pinned beside the panel." -> mole.lamp.clause.dark ? has(panel.restrike) & !has(clause.struck) & item.i.lantern == 0 & !(mother == burning & power.quay == on) & !seen(mole.lamp.clause.dark)
+opt: "Read the log on the desk." -> mole.lamp.log ? !has(log.ahead)
+opt: "Look into the lens." -> mole.lamp.lens ? !has(lens.green) & var.lens != broken & var.lens != green_broken
+opt: "Pick through the shards by lantern." -> mole.lamp.shards ? var.lens == broken & !has(lens.green)
+opt: "Press the red button, and hold it." -> mole.lamp.restrike ? has(panel.restrike) & !(has(wenna.climbs) & !has(mole.wenna_home)) & power.quay == on & (mother != burning | (has(mother.out_again) & !has(mole.restruck2))) & !(has(mother.out_again) & !has(mole.restruck2) & power.quay == on & clock >= 03:20 & clock < 03:40) {verb: light}
+opt: "Press the red button now." -> mole.lamp.hot.press ? has(mother.out_again) & !has(mole.restruck2) & power.quay == on & clock >= 03:20 & clock < 03:40 & has(panel.restrike) & !has(mole.hot_tried) {verb: light}
+check: "[GRIP] Hold the button down through the surges until she catches." -> mole.lamp.hold.ok / mole.lamp.hold.fail ? has(mother.out_again) & !has(mole.restruck2) & power.quay == on & clock >= 03:20 & clock < 03:40 & has(panel.restrike) {skill: grip, dc: 6, verb: light, noise: 0.1}
+check: "[SUM] Read the card against Candlemas, and time one press." -> mole.lamp.time.ok / mole.lamp.time.fail ? has(mother.out_again) & !has(mole.restruck2) & power.quay == on & clock >= 03:20 & clock < 03:40 & has(panel.restrike) {skill: sum, dc: 6, verb: read}
+opt: "Wait for the arc to cool." -> mole.lamp.cool ? has(mother.out_again) & !has(mole.restruck2) & power.quay == on & clock >= 03:20 & clock < 03:40 {verb: wait}
+opt: "Stand back from the panel. Let her do it." -> mole.lamp.restrike.wenna ? has(wenna.climbs) & !has(mole.wenna_home) & power.quay == on & (mother != burning | (has(mother.out_again) & !has(mole.restruck2))) & !(has(mother.out_again) & !has(mole.restruck2) & power.quay == on & clock >= 03:20 & clock < 03:40)
+opt: "Look at the panel's pilot light." -> mole.lamp.nopower ? power.quay == off
+opt: "Open the stores cupboard." -> mole.lamp.stores ? !seen(mole.lamp.stores)
+opt: "Ask Wenna about the log." -> mole.wenna.log ? has(wenna.climbs) & !has(mole.wenna_home) & has(log.ahead) & !seen(mole.wenna.log)
+opt: "Ask Wenna about the card on the panel." -> mole.wenna.card ? has(wenna.climbs) & !has(mole.wenna_home) & has(panel.restrike) & !seen(mole.wenna.card)
+opt: "Ask Wenna about the green." -> mole.wenna.green ? has(wenna.climbs) & !has(mole.wenna_home) & has(lens.green) & !seen(mole.wenna.green)
+opt: "Wait in the cold for whoever is on the stairs." -> mole.lamp.wait ? clock >= 04:15 & clock < 04:48 & !has(frost.met) {verb: wait}
+opt: "Bar the stair door with the rope." -> mole.lamp.bar ? count(i.rope) > 0 & !has(mole.door_barred) & clock >= 04:15 & clock < 04:48 & !has(frost.met) {verb: rig, noise: 0.3}
+opt: "Salt the floor round the lens." -> mole.lamp.salt ? count(i.salt) > 0 & !has(mole.salted) & clock >= 04:15 & clock < 04:48 & !has(frost.met) {verb: rig, noise: 0.1}
+opt: "Hide on the gallery and wait for him there." -> mole.lamp.hide ? !has(mole.door_barred) & !has(mole.hid) & clock >= 04:15 & clock < 04:48 & !has(frost.met) {verb: hide, noise: 0}
+opt: "Go out on the gallery." -> mole.gallery
+opt: "Go back down the hundred and twelve." -> mole.down
+
+# ---- beat 16: the panel card (C4), page 4
+@node mole.lamp.panel
+place: lamproom
+cost: 3
+if: !has(panel.restrike) => xp(1)
+do: set(panel.restrike); quest(a1.claim, restrike)
+nar: The panel has a red button and a card under glass, typed by an engineer who believed in buttons.
+nar: RESTRIKE REQUIRED. If the arc is hot when supply returns, the lamp will not relight of itself. Press and hold for five seconds. KEEPER TO ATTEND AFTER ANY LOSS OF SUPPLY.
+alt: mole.lamp.panel.out ? has(mother.out_again) & !has(mole.restruck2)
+inst: CANDLEMAS: Cold since about ten. The pilot light: lit.
+check: "[SUM] Work out why she did not light again at eight minutes to ten." -> mole.lamp.why.ok / mole.lamp.why.fail {skill: sum, dc: 5, verb: read}
+opt: "Leave the card." -> mole.lamp.menu
+
+@node mole.lamp.panel.out
+place: lamproom
+inst: CANDLEMAS: She burned, and then the blackout had her, and the surge tripped the lockout again. The card is right twice in one night. Engineers live for that.
+go: mole.lamp.menu
+
+@node mole.lamp.clause.ok
+place: lamproom
+cost: 3
+do: set(clause.struck)
+nar: Pinned beside the panel, a carbon of the specification, clause fourteen: "After any interruption of supply the arc shall be restruck by the keeper on duty at the lamp-room panel."
+nar: Through it runs a line of yellow ink, laid on by hand. In the margin, in the same yellow: "No keeper. Saving." Initialled O.C.
+voice: smallprint: Yellow. Under the quay's sodium it would be the same orange as the paper and the hand and the face holding it. Up here it is very yellow. And she struck every copy herself, even the one meant to hang where the keeper would read it. Thoroughness is a kind of signature. {dc: 5}
+go: mole.lamp.menu
+
+@node mole.lamp.clause.fail
+place: lamproom
+cost: 2
+nar: A carbon of the specification. Clause fourteen says a keeper on duty shall restrike the arc after any interruption. A smudge crosses it, the colour of lantern light on cream paper.
+voice: smallprint: A clause about a keeper. A duty. A sunny little smudge. Probably tea. Read it again with more light and less hurry. {below: 7}
+go: mole.lamp.menu
+
+@node mole.lamp.clause.dark
+place: lamproom
+cost: 1
+nar: In the dark the specification is a pale rectangle with opinions. Near the middle, a place gone over with a heavier pen.
+voice: dark: Somebody pressed hard there. People press hard when they cross something out and want it to stay crossed. {dc: 6}
+go: mole.lamp.menu
+
+# ---- beat 16: the log (C5)
+@node mole.lamp.log
+place: lamproom
+alt: mole.lamp.log.dark ? item.i.lantern == 0 & !(mother == burning & power.quay == on)
+cost: 4
+do: set(log.ahead)
+nar: The log lies open: a line for every night in a round hand. Tonight's is there, "Lit 19.12. All well.", and so is every night to the end of the month.
+alt: mole.lamp.log.saturated ? var.damp_wet == 1
+inst: THE DAMP: Same ink, same day. Next week's pages dried at the same speed as last week's. Somebody sat down once and wrote a month of nights. I have seen widows keep diaries like that.
+go: mole.lamp.menu
+
+@node mole.lamp.log.saturated
+place: lamproom
+inst: THE DAMP: I can't. I am wet through. Dry me at a stove and ask me again how old this ink is.
+voice: smallprint: Never mind the hair. Look at the nib. It catches on the downstroke of every seven, tonight's and the twenty-seventh's. Same pen, same sitting. {dc: 6}
+go: mole.lamp.menu
+
+@node mole.lamp.log.dark
+place: lamproom
+cost: 2
+nar: The log is a pale oblong in the dark.
+check: "[THE DARK] Run a thumb down the pages, feeling for the writing." -> mole.lamp.log.feel / mole.lamp.log.nofeel {skill: dark, dc: 6}
+opt: "Leave it for a light." -> mole.lamp.menu
+
+@node mole.lamp.log.feel
+place: lamproom
+cost: 3
+do: set(log.ahead)
+nar: Under the thumb the pages are ridged where a pen has pressed, every page to the end of the month.
+voice: dark: A week that has not happened yet should be smooth. This one has been written on. {dc: 5}
+go: mole.lamp.menu
+
+@node mole.lamp.log.nofeel
+place: lamproom
+cost: 1
+nar: The pages feel like pages. Somewhere a ridge, somewhere not. The assessor's thumb is cold and has no opinion.
+go: mole.lamp.menu
+
+# ---- beat 16: the lens (C9), page 5
+@node mole.lamp.lens
+place: lamproom
+alt: mole.lamp.lens.lit ? mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2))
+alt: mole.lamp.lens.lantern ? item.i.lantern > 0
+cost: 2
+nar: In the dark the lens is a hive of grey glass, ring above ring.
+inst: CANDLEMAS: Give me light inside it and I will tell you what it is made of. Glass keeps its secrets in the dark like everyone else in this town.
+go: mole.lamp.menu
+
+@node mole.lamp.lens.lantern
+place: lamproom
+cost: 1
+nar: The assessor sets the lantern inside the lens. A lantern is a small thing to put inside a thing built to throw a light twenty miles. It is enough.
+go: mole.lamp.lens.lit
+
+@node mole.lamp.lens.lit
+place: lamproom
+cost: 3
+if: !has(lens.green) => xp(1)
+do: set(lens.green); quest(a1.claim, glass)
+nar: Lit from inside, the lens is a beehive of light, and a third of the rings are green: the green of a bottle in a hedge.
+inst: CANDLEMAS: Crown glass, crown glass, bottle, crown, bottle, bottle, crown. The bottle ones have no numbers on their edges. I could weep. I won't. Someone has to keep counting.
+voice: sum: Fifty-six green in a hundred and sixty-eight. A third, to the prism. {dc: 6}
+voice: precedent: The Shelf passed this lens as whole twelve years ago. Assessor Pollard signed it. Things are whole until somebody needs the money. {when: has(pollard.file)}
+go: mole.lamp.menu
+
+@node mole.lamp.shards
+place: lamproom
+alt: mole.lamp.shards.dark ? item.i.lantern == 0 & !(mother == burning & power.quay == on)
+cost: 4
+do: set(lens.green); quest(a1.claim, glass)
+nar: The assessor turns the pieces over by lantern.
+nar: Crown glass, each piece with part of a number on its broken edge. And bottle glass, no numbers on any of it, rough on the back where it was poured into a mould not quite the right shape. About a third.
+inst: CANDLEMAS: Crown, numbered. Bottle, no number. Bottle. Bottle. Crown. I am counting, since somebody has to.
+go: mole.lamp.menu
+
+@node mole.lamp.shards.dark
+place: lamproom
+cost: 1
+nar: There is glass on the floor and no lantern, and the edges are very present in the hands.
+voice: grip: Do not. Not without a light. Glass in the dark is just knives being patient. {dc: 3}
+go: mole.lamp.menu
+
+# ---- beat 16: the restrike
+@node mole.lamp.restrike
+place: lamproom
+alt: mole.lamp.restrike.again ? has(mother.out_again)
+cost: 3
+cmd: restrike mother
+do: set(mother.restruck); quest(a1.stairs, alone); rumour(mother.restruck, quay, 0.6); rep(board, -1)
+if: !quest.a1.lamps => quest(a1.lamps, first)
+nar: The assessor presses the red button and counts five, in the voice kept for counting money.
+nar: Something in the pedestal ticks. The arc catches with a sound like a breath taken in through teeth, and the beam goes out over the bay.
+alt: mole.lamp.restrike.ferry ? clock < 23:30
+alt: mole.lamp.restrike.cheer ? clock < 00:40
+go: mole.lamp.restrike.after
+
+@node mole.lamp.restrike.ferry
+place: lamproom
+nar: At the mole steps the Saint Cuthwin sounds her horn once, long. Somebody on that deck had been waiting to have words with the light, and has had them.
+go: mole.lamp.restrike.after
+
+@node mole.lamp.restrike.cheer
+place: lamproom
+nar: On the quay, faces turn up. From the weigh-house, faint, a cheer with a fish in it.
+go: mole.lamp.restrike.after
+
+@node mole.lamp.restrike.after
+place: lamproom
+voice: candlemas: Now. Look into the hive, while she burns, before anybody thinks better of it. {when: !has(lens.green)}
+go: mole.lamp.menu
+
+@node mole.lamp.restrike.again
+place: lamproom
+cost: 3
+cmd: restrike mother
+do: set(mole.restruck2); quest(a1.stairs, alone); rumour(mother.restruck, quay, 0.4)
+nar: The second time is easier and worse. The beam goes out again over a town that has stopped expecting anything of anybody.
+go: mole.lamp.menu
+
+@node mole.lamp.restrike.wenna
+place: lamproom
+speaker: WENNA
+cost: 4
+cmd: restrike mother
+do: set(mother.restruck); quest(a1.stairs, burning); rumour(mother.restruck, quay, 0.6); rep(brine, 1); set(heard.wenna.restrike)
+if: !quest.a1.lamps => quest(a1.lamps, first)
+if: has(mother.out_again) => set(mole.restruck2)
+nar: Wenna goes to the panel without being asked, and stands there.
+line: Five seconds. I used to say the Lord's Prayer for it. It doesn't fit. You get as far as trespasses.
+nar: She presses with a thumb scarred by old paraffin, and holds it. The room goes white, and Wenna does not shut her eyes.
+line: There she is. She's green. Look at her. I did that. Nine a year, with a pair of tongs, on a Tuesday. She's green and she's lit and every ship from here to Hesk can see her.
+line: I kept her lit. Nobody said I had to keep her honest.
+go: mole.lamp.menu
+
+@node mole.lamp.nopower
+place: lamproom
+cost: 1
+nar: The pilot light is out. The quay is off, and Mother is on the quay; the assessor knows it now in the hands as well as on paper.
+go: mole.lamp.menu
+
+# ---- the stores cupboard: salvage
+@node mole.lamp.stores
+place: lamproom
+cost: 3
+do: give(s.crown_glass, 1); give(s.wick, 1); give(i.paraffin, 1); set(mole.salv.crown); set(mole.salv.wick); set(mole.salv.paraffin)
+if: has(margin.copper) => give(s.brass, 1)
+nar: The cupboard holds a standby paraffin lamp with wick and a full can, and a tray with twelve hollows for spare prisms.
+nar: One hollow holds a cracked prism, numbered 151. The other eleven hold dust. The stores book, in the same round hand as the log, says: Spare prisms, twelve.
+go: mole.lamp.menu
+
+# ---- Wenna in the lamp room
+@node mole.wenna.log
+place: lamproom
+speaker: WENNA
+cost: 2
+do: set(heard.wenna.log)
+line: I wrote March in February. Sat here one Sunday with a pot of tea and did the lot. I'm not ashamed of my hand. It's a good hand. Ask anybody who's had a letter from me, which is nobody.
+go: mole.lamp.menu
+
+@node mole.wenna.card
+place: lamproom
+speaker: WENNA
+cost: 2
+do: set(heard.wenna.card)
+line: Keeper to attend. They put that up seven months ago, the same week they took the keeper out of the paper, and the money stopped six years before that. So I took myself out of the stairs. Fair's fair.
+line: She comes on with the quay, they told me. They never said what happens when the quay goes off.
+go: mole.lamp.menu
+
+@node mole.wenna.green
+place: lamproom
+speaker: WENNA
+cost: 3
+do: set(heard.wenna.green)
+line: Glass is glass. She doesn't know the difference. Ships might. Ships are fussy.
+line: He's got her eye in a box on the hill, a bit at a time, and forty people in jars saying their prayers to it. She'd laugh, if she knew. She doesn't know. That's the whole mercy of a lamp.
+go: mole.lamp.menu
+
+# ---- waiting for the man on the stairs (04:15 to 04:48)
+@node mole.lamp.wait
+place: lamproom
+cost: 4
+do: meter(cold, 1)
+alt: mole.lamp.wait.near ? clock >= 04:30
+nar: The assessor waits with the lantern turned down. Frost grows on the inside of the glass in grey ferns.
+voice: dark: There. On the mole. A boot on frost makes a small sound, like someone biting an apple. One boot, the other, a pause, and the drip. {dc: 5}
+go: mole.lamp
+
+@node mole.lamp.wait.near
+place: lamproom
+nar: Far down the stairs, a boot. A drip. A boot. Whoever is climbing rests at every turn of the spiral and drips at every step.
+go: mole.lamp
+
+# ================================================================ the gallery
+@node mole.gallery
+place: gallery
+cost: 1
+do: meter(cold, 1)
+alt: mole.gallery.dark ? power.quay == off
+alt: mole.gallery.frost ? clock >= 04:10
+alt: mole.gallery.fog ? clock >= 23:20
+go: mole.gallery.clear
+
+@node mole.gallery.clear
+place: gallery
+do: wet(0.1)
+nar: Item: Low Night's lanterns on the floor below. Item: at the bay's mouth, the Old Light, and low in its side a small steady light. Item: the Brine's oven smoke going east.
+inst: THE VANE: West! Nine up here, I am a bird on a steeple! Everything on that quay goes east, the smoke, the talk, the smell of bread!
+voice: carbon: You have seen that low light before. From the deck, through the dark where this lamp should have been. Same height on the water, and burning now. {dc: 5}
+go: mole.gallery.menu
+
+@node mole.gallery.fog
+place: gallery
+nar: White wool has swallowed the bay and the town. Only the hill comes through: the gasholder, with its candles going inside like a match held in two hands.
+go: mole.gallery.menu
+
+@node mole.gallery.frost
+place: gallery
+do: meter(cold, 1)
+nar: The sky has cleared. Every roof below is white, and the mole is a white road laid on black water.
+inst: THE GLASS: High and rising, darling. Clear, still and cold. Dawn is coming, and it is going to be pitiless about everything.
+go: mole.gallery.menu
+
+@node mole.gallery.dark
+place: gallery
+cost: 1
+do: meter(dread, 2)
+nar: Nothing: no quay, no lamp, no sea, only the rail under the hand. Across the water the town is talking, the way people talk when nobody can see their faces.
+voice: dark: A woman on the quay is telling someone she is sorry. Somebody is counting, slowly, in a voice you know from the weigh-house. {dc: 5}
+go: mole.gallery.menu
+
+@node mole.gallery.menu
+place: gallery
+check: "[SUM] Take the bearing from here to the low light in the Old Light." -> mole.bearing.ok / mole.bearing.fail ? clock < 23:20 & !has(mole.bearing) {skill: sum, dc: 6}
+opt: "Watch the beam go round, and see what each sweep shows." -> mole.beam ? clock >= 23:20 & clock < 04:10 & mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2))
+opt: "Look down at the mole." -> mole.gallery.keel ? clock >= 04:25 & clock < 04:50 & !has(frost.met)
+opt: "Show Wenna the town." -> mole.wenna.gallery ? has(wenna.climbs) & !has(mole.wenna_home) & !seen(mole.wenna.gallery)
+opt: "Go back in out of the air." -> mole.lamp.menu
+
+@node mole.bearing.ok
+place: gallery
+cost: 3
+do: set(mole.bearing)
+nar: The assessor sights along the Almanac's dial to the Spit, then to the low light. They are not the same line, or near it.
+voice: sum: Two points south, near enough. A ship that took that light for Mother would put her helm the right way by the wrong reasoning. Luck, with a bearing. {dc: 6}
+go: mole.gallery.menu
+
+@node mole.bearing.fail
+place: gallery
+cost: 2
+nar: The westerly takes the dial and very nearly the fingers. The low light swims. Whatever line runs between it and the Spit, the wind is not interested in it tonight.
+go: mole.gallery.menu
+
+# ---- Mother's beam in fog: it reveals in sweeps
+@node mole.beam
+place: gallery
+cost: 3
+alt: mole.beam.thick ? clock >= 23:52
+alt: mole.beam.wader ? clock >= 23:40
+nar: The beam comes round. The Old Light stands in water to its middle.
+nar: The beam comes round. In the hole in the Old Light's side a small light burns, steady as a pipe.
+voice: undertow: Somebody is in there. Be at the steps when they come out, and see what they are carrying. {dc: 5}
+go: mole.gallery.menu
+
+@node mole.beam.wader
+place: gallery
+alt: mole.beam.empty ? clock >= 23:46
+nar: The beam comes round. In the gully, waist-deep, a short wide man with a sack wades for the steps. He does not look up.
+voice: carbon: In when the gully is shin-deep, out when it is at his thighs. The water writes it on his trousers. Find him by a fire before the fire reads it first. {dc: 6}
+go: mole.gallery.menu
+
+@node mole.beam.empty
+place: gallery
+nar: The beam comes round. The Old Light is a stump with water round its neck, and nothing burns in it.
+go: mole.gallery.menu
+
+@node mole.beam.thick
+place: gallery
+nar: The beam goes two hundred yards into the fog and turns back, and the lamp room stands in a white bowl of its own light.
+voice: dark: She is lighting the fog for nobody. That is what keeping is, mostly. {dc: 6}
+go: mole.gallery.menu
+
+# ---- from the gallery: the man on the mole (04:15 to 04:50)
+@node mole.gallery.keel
+place: gallery
+cost: 2
+nar: A dark upright stroke is coming along the white mole, very slow, something short and heavy in one hand.
+go: mole.gallery.menu
+
+@node mole.wenna.gallery
+place: gallery
+speaker: WENNA
+cost: 3
+do: set(heard.wenna.gallery)
+nar: Wenna comes out with a hand on the rail and stands with her back to the lamp.
+line: From up here the sodium's three dots. The rest of the town's its own colour, by its own lamps. Paraffin in the windows. You can tell the Brine from the Gut from the hill.
+line: That was my wage, after the money stopped. Seeing it the right colour. They all think the town's orange.
+go: mole.gallery.menu
+
+# ================================================================ Movement III: frost on the mole (beat 32)
+@node mole.frost.see
+place: mole
+cost: 1
+do: meter(cold, 1)
+alt: mole.frost.see.inside ? clock >= 04:35
+nar: A line of dark dots goes along the white mole toward a tall man walking very straight, as if carrying himself on a tray, something heavy in his right hand.
+go: mole.frost.call
+
+@node mole.frost.call
+place: mole
+speaker: KEEL
+cost: 1
+nar: The assessor calls after him. He answers over his shoulder without stopping.
+line: The Board is inspecting the light, assessor. The Board does not require company, at this hour, on this mole, in this frost, which the Board would ask you to observe is very slippery, and is the Board's, and is not insured.
+go: mole.menu
+
+@node mole.frost.see.inside
+place: mole
+nar: Dark dots go along the white mole and in at Mother's open door. High inside, a boot. A drip.
+go: mole.menu
+
+@node mole.frost.run
+place: mole
+alt: mole.frost.fallback ? var.runs == 0 | !runs
+passive: condolence -> mole.frost.run.wenna {when: has(wenna.climbs) & !has(mole.wenna_home)}
+nar: The assessor runs. On frost there is no such thing as running, only a long series of decisions not to fall down, taken very fast.
+do: run(r.frost)
+
+@node mole.frost.run.wenna
+place: mole
+speaker: WENNA
+line: Go on. I know where I'm going. I'll be there when you've done shouting.
+return:
+
+@node mole.frost.fallback
+place: mole
+cost: 1
+passive: condolence -> mole.frost.run.wenna {when: has(wenna.climbs) & !has(mole.wenna_home)}
+nar: Ahead lie a quarter of a mile of frost and a hundred and twelve stairs, and a man with a hammer on both.
+check: "[FORM LETTER] Shout up the stairwell, so he stops on a landing to answer." -> mole.frost.shout.ok / mole.frost.shout.fail ? !seen(mole.frost.shout.fail) {skill: formletter, dc: 6, noise: 0.8}
+check: "[BALLAST] Run the frost to the tower, and take the stairs two at a time." -> mole.run.frost.win / mole.run.frost.lose {skill: ballast, dc: 5, red}
+opt: "Walk. Carefully. Arrive when you arrive." -> mole.frost.walk
+
+@node mole.frost.walk
+place: mole
+cost: 12
+do: meter(cold, 1); meter(wear, 1); var.stairs_at = clock
+nar: The assessor walks the frost and climbs. Near the top the stairwell fills with a sound like a shelf of jars going over.
+go: mole.run.frost.lose
+
+@node mole.run.frost.win
+place: lamproom
+cost: 1
+do: var.stairs_at = clock; meter(cold, 1); meter(wear, 1)
+nar: The assessor comes up the last turn with hands raw from the rope, into a lamp room with nobody in it but the lens.
+nar: Below, a long way down and not long enough, a boot on stone. A drip. A boot.
+go: mole.squall.start
+
+# ================================================================ the squall: Keel and the hammer (beat 33)
+@node mole.squall.setup
+do: set(frost.met); set(met.keel); quest(a1.frost, met); mole.ice = 0; mole.keel_low = 0; mole.resolve = 3; mole.keel_weak = 0; silent_scene = 0; mole.keel_tool = hammer
+if: has(mole.appt_talked) => mole.resolve = 2
+if: count(i.hammer) > 0 | has(weigh.hammer_taken) => mole.keel_tool = hook
+if: (count(i.hammer) > 0 | has(weigh.hammer_taken)) & (count(w.boathook) > 0 | has(weigh.boathook_taken)) => mole.keel_tool = none
+return:
+
+@node mole.squall.start
+place: lamproom
+cost: 2
+call: mole.squall.setup
+nar: Frost has grown on the inside of the glass in ferns. The lens stands in the middle of the room, cold, enormous, unconsulted.
+alt: mole.squall.start.lit ? mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2))
+go: mole.squall.keel
+
+@node mole.squall.start.lit
+place: lamproom
+nar: Mother is burning. Her heat melts the frost at the lens's height, and the water freezes again on the floor in little white dams.
+go: mole.squall.keel
+
+@node mole.squall.keel
+place: lamproom
+speaker: KEEL
+alt: mole.squall.keel.hook ? var.mole.keel_tool == hook
+alt: mole.sq.empty ? var.mole.keel_tool == none
+cost: 2
+nar: He comes up into the stair door and fills it: the harbourmaster, the store hammer in his right hand.
+nar: Water runs from his cuffs onto the floor, and where it lands it goes white, like a coin being struck.
+line: Assessor. The Board had not anticipated the Shelf at this altitude, at this hour, on these stairs, which the Board has not climbed in eleven years, and has climbed tonight, and does not intend to climb again.
+line: Stand aside, if you would be so good. The Board has an inspection to make, of the lens, which has been damaged, by wreckers, as the Board's claim foresaw.
+voice: condolence: His hand is shaking. Not with cold. He has been cold for eleven years and his hands have never shaken. {dc: 7}
+alt: mole.squall.keel.wenna ? has(wenna.climbs) & !has(mole.wenna_home)
+go: mole.squall.one
+
+@node mole.squall.keel.wenna
+place: lamproom
+speaker: WENNA
+nar: Behind him, a slower step, counting backward: Wenna, who goes to the lens and puts her hand on it.
+line: Absalom.
+line: KEEL: Mrs Tallow. The Board did not expect you, either. The Board is, tonight, somewhat outnumbered by the unexpected.
+go: mole.squall.one
+
+@node mole.squall.one
+place: lamproom
+speaker: KEEL
+opt: "What is the hammer for, harbourmaster?" -> mole.sq.why {do: mole.ice += 1}
+claim: "You want the Shelf to pay for a whole new lens, so that nobody ever counts the green rings." -> mole.sq.motive.ok / mole.sq.motive.fail ? has(lens.green) & (has(claim.time) | has(works.order)) {show: has(lens.green) | has(prism.green_oven), do: mole.ice += 1; set(said.keel_green); set(heard.keel.keel_green)}
+check: "[CONDOLENCE] Look at his face, not at the hammer." -> mole.sq.face.ok / mole.sq.face.fail {skill: condolence, dc: 6, do: mole.ice += 1}
+opt: "Step between him and the lens." -> mole.sq.between {do: mole.ice += 1}
+opt: "Throw the lens clutch. Stop her turning, with her eye on the quay." -> mole.sq.stop ? mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2)) {do: mole.ice += 1}
+opt: "Look at Wenna. Let her speak to him." -> mole.sq.wenna ? has(wenna.climbs) & !has(mole.wenna_home) {do: mole.ice += 1}
+opt: "Say nothing. Hold still. Watch the water." -> mole.sq.silent {do: mole.ice += 1; silent_scene = 1}
+claim: "You climbed in a frost that keeps every drip, with a claim you sent three hours early. Put it down." -> mole.sq.proved / mole.sq.proved.fail ? has(claim.time) & (has(lens.keel_motive) | has(lens.green)) & (has(frost.keel) | has(hammer.keel)) {show: has(frost.keel) | has(hammer.keel), do: set(said.keel_proved); set(heard.keel.keel_proved)}
+
+@node mole.sq.why
+place: lamproom
+speaker: KEEL
+cost: 2
+line: The hammer is the Board's hammer, from the Board's store, signed for, in the Board's own hand, which you will find, if you look, is wet.
+line: The lens is damaged. The Board will make the damage legible, assessor, to the Shelf's adjusters, who are particular, and who will see, in the morning, a lens broken by wreckers, as foreseen, as claimed, as paid.
+voice: formletter: It is the Board's position that the loss has occurred. It is the Board's further position that the loss will now occur. The tenses are under some strain. {dc: 5}
+alt: mole.sq.why.said ? has(said.wreckers)
+go: mole.squall.two
+
+@node mole.sq.why.said
+place: lamproom
+speaker: KEEL
+line: You said it yourself, assessor, on the quay, in the Board's hearing. Wreckers. The Board was grateful. The Board wrote it down.
+go: mole.squall.two
+
+@node mole.sq.motive.ok
+place: lamproom
+speaker: KEEL
+cost: 3
+do: set(lens.keel_motive)
+nar: He does not move, except to drip. The water off his hat freezes on the floor in a small white stalk.
+line: A lens is insured whole, assessor. Let the Shelf pay for whole, and let a whole lens come up from Hesk on the morning boat, in straw, and let nobody in this town, nobody, count the rings of the old one.
+line: Because if anybody counts them, there is no claim, and no lens, and no light, and there is a woman of sixty-four in the dock at Hesk for six years of bottle glass, and a Board whose signature is read aloud in a court. The Board will not have it. It will not.
+line: The Board is protecting the town. The Board has always protected the town. It is wet work.
+go: mole.squall.two
+
+@node mole.sq.motive.fail
+place: lamproom
+speaker: KEEL
+cost: 2
+line: The Board does not count rings, assessor. The Board counts claims. You will find the Board's claim in order.
+nar: At the word green his eyes went to the lower rings and came back, quick as a man touching a pocket for his wallet.
+go: mole.squall.two
+
+@node mole.sq.face.ok
+place: lamproom
+cost: 2
+do: mole.resolve -= 1
+nar: The assessor reads his face, the grey of a thumb kept in a bath.
+nar: He is terrified. The hammer is the only thing in his hand that is not shaking, because he is holding it so hard. The man is weeping, and it is coming out of his sleeves.
+go: mole.squall.two
+
+@node mole.sq.face.fail
+place: lamproom
+cost: 1
+do: mole.ice += 1
+nar: The assessor finds rage in his face and steps back, and the heel goes six inches sideways on his ice.
+go: mole.squall.two
+
+@node mole.sq.between
+place: lamproom
+speaker: KEEL
+cost: 2
+nar: The assessor stands between the lens and the harbourmaster, close enough to feel the cold off his coat.
+line: You are standing where the Board means to strike, assessor. The Board would ask you to stand elsewhere.
+alt: mole.fall.told ? !has(mole.fall_told)
+go: mole.squall.two
+
+@node mole.sq.stop
+place: lamproom
+speaker: KEEL
+cost: 2
+nar: The assessor throws the clutch. The hive stops, and the beam lies fixed over the quay like a plank laid from the tower to the town.
+nar: Along the quay doors open, and faces look up at the two people in the lamp room, one with a hammer.
+line: They can see us. The whole quay, assessor. The whole quay is looking at the Board with a hammer in its hand.
+go: mole.squall.two
+
+@node mole.sq.silent
+place: lamproom
+cost: 2
+nar: The assessor says nothing, watches the water come off the harbourmaster and freeze drop by drop, and lets the silence go on until it is his.
+alt: mole.sq.silent.read ? skill.undertow >= 8
+go: mole.squall.two
+
+@node mole.sq.silent.read
+place: lamproom
+speaker: KEEL
+do: set(lens.keel_motive); mole.resolve -= 1
+line: The Board would have preferred the Shelf to send a talker.
+line: A new lens, assessor, whole, from Hesk, in straw, and nobody counting the old one, and nobody in the dock. Is that so very much to ask, of an insurer, at five in the morning?
+go: mole.squall.two
+
+@node mole.sq.wenna
+place: lamproom
+speaker: WENNA
+cost: 3
+do: set(lens.keel_motive); set(heard.wenna.keel_motive)
+line: Absalom Keel. You put that down. You think you're doing it for me.
+line: KEEL: The Board is doing it for the town, Mrs Tallow, of which you are, the Board would remind you, a part. A part that will be in the dock at Hesk by Lady Day, for six years of bottle glass, if this lens is counted.
+line: Then let them count it. I did it. Nine a year, with a pair of tongs. Sabine's oven and Fennick's money and my hands. You don't break my lamp to save my neck. My neck's had sixty-four years. She's had ninety.
+go: mole.squall.two
+
+# ---- round two: the hammer comes up, and the floor goes
+@node mole.squall.two
+place: lamproom
+speaker: KEEL
+cost: 1
+if: mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2)) => mole.ice += 1
+if: has(mole.salted) => mole.ice = 0
+nar: He takes a step toward the lens. The hammer comes up to the height of his chest, the way a man holds a thing he has not quite decided to use.
+alt: mole.squall.two.glass ? var.mole.ice >= 2
+go: mole.squall.two.menu
+
+@node mole.squall.two.glass
+place: lamproom
+nar: The floor between them is glass now. Nobody in this room can move quickly and stay upright, and everybody in it knows.
+go: mole.squall.two.menu
+
+@node mole.squall.two.menu
+place: lamproom
+speaker: KEEL
+check: "[FORM LETTER] Tell him the Shelf pays nothing for glass broken by the insured's own hand." -> mole.sq.form.ok / mole.sq.form.fail {skill: formletter, dc: 6}
+opt: "They are all watching you, harbourmaster. Put it down." -> mole.sq.watched ? seen(mole.sq.stop)
+opt: "Tell him what you saw in his face." -> mole.sq.told ? seen(mole.sq.face.ok)
+opt: "Then break only the green. Leave her the glass that is hers." -> mole.sq.green ? has(lens.green) | seen(mole.sq.wenna) {do: set(said.green_rings); set(heard.keel.green_rings)}
+opt: "Stand aside. Let Wenna stand in front of her." -> mole.sq.wenna.stand ? has(wenna.climbs) & !has(mole.wenna_home)
+opt: "Nod to Wenna. Let her take his arm." -> mole.sq.wenna.arm ? has(wenna.climbs) & !has(mole.wenna_home) & !seen(mole.sq.wenna.arm)
+opt: "Go for the hammer." -> mole.fight.hammer {do: mole.ice += 1}
+opt: "Step away from the lens. Let him." -> mole.sq.let
+
+@node mole.sq.form.ok
+place: lamproom
+speaker: KEEL
+cost: 2
+do: mole.keel_low = 1; mole.resolve -= 1
+nar: The assessor uses the voice of a letter, the passive one, the one that has never been in a room with anybody.
+line: LAMB: It will be noted by the Shelf's adjusters that the lens was broken from the inside, by a lump hammer, after the claim was filed. It will be noted whose hammer. The policy excludes loss caused by the insured. The Shelf will pay nothing, harbourmaster, and the lens will still have been counted, in pieces, by me.
+nar: The hammer comes down an inch, and another, and stops at his hip.
+line: The Board had not considered, assessor, that you would count the pieces.
+go: mole.squall.three
+
+@node mole.sq.form.fail
+place: lamproom
+speaker: KEEL
+cost: 1
+do: mole.ice += 1
+nar: The assessor tries the passive voice. It comes out wet.
+line: The Board has read the policy, assessor. The Board has read it in the bath. Between what the Shelf excludes and what the Shelf can prove there is a great deal of room for a hammer.
+nar: He takes another step. The water off his coat splashes and freezes in a fan.
+go: mole.squall.three
+
+@node mole.sq.watched
+place: lamproom
+speaker: KEEL
+cost: 2
+do: mole.keel_low = 1; mole.resolve -= 1
+nar: He looks past the assessor, out along the fixed beam, to the faces on the quay.
+alt: mole.fall.watched ? !has(mole.fall_told)
+line: The Board has stood in front of that quay before, assessor, wet. Once was sufficient.
+nar: He lowers the hammer.
+go: mole.squall.three
+
+@node mole.sq.told
+place: lamproom
+speaker: KEEL
+cost: 2
+do: mole.keel_low = 1; mole.resolve -= 1
+line: LAMB: You are not angry. You are frightened, of a signature and a woman in a dock and a town without a light, and you have climbed all this way in a frost to stop being frightened, and it has not worked.
+nar: The drips from his cuffs slow, and stop, for the space of a breath. Then they start again.
+line: No. It has not worked. The Board is no less afraid at the top than it was at the bottom. It is merely higher.
+go: mole.squall.three
+
+# ---- round three: last chances
+@node mole.squall.three
+place: lamproom
+speaker: KEEL
+cost: 1
+if: has(mole.salted) => mole.ice = 0
+alt: mole.squall.three.low ? var.mole.keel_low == 1
+nar: The hammer is up, within arm's length of the lens, and the floor shines under them.
+go: mole.squall.three.menu
+
+@node mole.squall.three.low
+place: lamproom
+nar: The hammer hangs at his side. He stands within arm's length of the lens and does not look at it.
+go: mole.squall.three.menu
+
+@node mole.squall.three.menu
+place: lamproom
+speaker: KEEL
+opt: "Hold out a hand for the hammer." -> mole.sq.handed ? var.mole.keel_low == 1
+opt: "Then break only the green. Leave her the glass that is hers." -> mole.sq.green ? has(lens.green) | seen(mole.sq.wenna) {do: set(said.green_rings); set(heard.keel.green_rings)}
+opt: "Stand aside. Let Wenna stand in front of her." -> mole.sq.wenna.stand ? has(wenna.climbs) & !has(mole.wenna_home) & !seen(mole.sq.wenna.stand)
+opt: "Nod to Wenna. Let her take his arm." -> mole.sq.wenna.arm ? has(wenna.climbs) & !has(mole.wenna_home) & !seen(mole.sq.wenna.arm)
+opt: "Go for the hammer." -> mole.fight.hammer ? var.mole.keel_low == 0
+opt: "Step away from the lens. Let him." -> mole.sq.let
+
+# ---- the ways out without a fight
+@node mole.sq.handed
+place: lamproom
+speaker: KEEL
+cost: 2
+nar: The assessor holds out a hand, palm up, the way a person asks for a ticket. The harbourmaster looks at it for a long moment.
+line: The Board has never been asked for it. The Board has been told, and shouted at, and written to. Nobody has ever held out a hand.
+nar: He gives the hammer over, handle first.
+go: mole.sq.saved
+
+@node mole.sq.wenna.stand
+place: lamproom
+speaker: WENNA
+cost: 2
+do: mole.keel_low = 1; mole.resolve -= 1; rep(brine, 1); set(heard.wenna.stood)
+nar: Wenna steps between him and the lens and spreads her arms against the bottom ring.
+line: Go on, then. Through me. You've known me thirty years, Absalom Keel. You carried my coal up these stairs the winter my knee went. Go on.
+line: KEEL: The Board cannot, Mrs Tallow. The Board, as you know very well, cannot.
+nar: His arm goes slack.
+go: mole.squall.three
+
+@node mole.sq.let
+place: lamproom
+speaker: KEEL
+cost: 1
+do: seenas_board = ally; rep(board, 1)
+nar: The assessor steps away from the lens.
+line: The Board is obliged to you, assessor. The Board will remember that the Shelf stood aside.
+nar: He lifts the hammer properly now, with both hands.
+go: mole.sq.break
+
+@node mole.sq.break
+place: lamproom
+cost: 2
+do: set(lens.broken); lens = broken; quest(a1.frost, broken)
+if: !has(mole.page10) => xp(1); set(mole.page10)
+alt: mole.sq.break.lit ? mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2))
+nar: The sound is not one sound. It is a hundred, coming down, prism after prism, until the floor is glass on top of ice.
+go: mole.sq.break.after
+
+@node mole.sq.break.lit
+place: lamproom
+nar: The beam does not go out. It comes apart into a hundred small blades, and the whole town sees it.
+go: mole.sq.break.after
+
+@node mole.sq.break.after
+place: lamproom
+speaker: KEEL
+cost: 3
+do: set(mole.hat_dropped)
+nar: Drips fall from his cuffs onto the shards and freeze there, a small white bead on every piece, like a price ticket.
+nar: He takes off his hat, and the water in its funnel goes down the back of his neck. He sets the hat on the desk.
+line: There. Now it is broken. Broken lenses are replaced, and nobody, assessor, will count anything.
+voice: sum: You can count it. A third of the pieces on this floor are green and have no numbers. Pieces are easier to count than rings. {dc: 5}
+nar: He goes down without his hat, one drip per step.
+go: mole.sq.after.menu
+
+@node mole.sq.green
+place: lamproom
+speaker: KEEL
+cost: 4
+do: lens = green_broken; quest(a1.frost, green); set(lens.keel_motive); seenas_board = ally; rep(board, 1)
+if: !has(mole.page10) => xp(1); set(mole.page10)
+alt: mole.sq.green.wenna ? has(wenna.climbs) & !has(mole.wenna_home)
+nar: He looks at the assessor for a long time.
+line: The Board had not considered, assessor, a partial loss.
+line: A lens with its green taken out has nothing to count. A smaller lens, and a smaller light, and a light that is, the Board supposes, honest. The Shelf would pay for the green, as damage. The Shelf would never know there had been any.
+nar: He does not swing. He taps one green prism at a time, the way a man taps a boiled egg, and the crown glass round it stands.
+nar: It takes fifty-six taps. He empties the green glass from his hat over the gallery rail.
+go: mole.sq.green.after
+
+@node mole.sq.green.wenna
+place: lamproom
+speaker: WENNA
+do: rep(brine, 1); set(heard.wenna.green_rings)
+nar: Before the harbourmaster can move, Wenna holds out her hand for the hammer.
+line: Not you. They're mine. I put them in. I'll take them out.
+nar: She goes round the lens with the hammer held short and taps out the green prisms one at a time, saying each one's place under her breath.
+line: There. Now she's what she is. Less of her. All of it hers.
+nar: The harbourmaster empties the green glass over the gallery rail. Wenna does not watch it go.
+go: mole.sq.green.after
+
+@node mole.sq.green.after
+place: lamproom
+cost: 2
+voice: sum: Fifty-six prisms in the sea and a hundred and twelve in the lens. A smaller light by a third, an honest one by all of it, and six years of evidence a hundred feet down, being looked at by fish. {dc: 4}
+go: mole.sq.after.menu
+
+@node mole.sq.saved
+place: lamproom
+speaker: KEEL
+cost: 3
+do: set(lens.saved); lens = saved; quest(a1.frost, saved); set(mole.hat_dropped); seenas_board = threat; rep(board, -1)
+if: var.mole.keel_tool == hammer & count(i.hammer) == 0 => give(i.hammer)
+if: var.mole.keel_tool == hook & count(w.boathook) == 0 => give(w.boathook)
+if: !has(mole.page10) => xp(1); set(mole.page10)
+nar: He stands with nothing in his hands, and seems not to know what to do with them.
+nar: He sits down on the frozen floor against the desk, and his water freezes him to it by the coat-tails. His hat falls off.
+line: The Board would like it entered, assessor, that it is very tired.
+if: !has(mole.fall_told) => set(mole.fall_told)
+line: Everything since the mole has been a matter of not being looked at. A lens, a claim, a signature. You are a dry person. You have never needed anybody not to look.
+alt: mole.sq.saved.motive ? !has(lens.keel_motive)
+go: mole.sq.saved.down
+
+@node mole.sq.saved.motive
+place: lamproom
+speaker: KEEL
+do: set(lens.keel_motive)
+line: The Board meant to break it, assessor, so the Shelf would pay for a whole one and nobody would count the green. The Board would rather you heard it than guessed it. Guessing is how they hang people in this town.
+go: mole.sq.saved.down
+
+@node mole.sq.saved.down
+place: lamproom
+cost: 3
+nar: After a while he tears his coat-tails out of the ice and goes down without his hat, one drip per step.
+go: mole.sq.after.menu
+
+@node mole.sq.after.menu
+place: lamproom
+opt: "Pick up the harbourmaster's hat." -> mole.sq.hat ? has(mole.hat_dropped) & !seen(mole.sq.hat)
+opt: "Pick the hammer out of the glass." -> mole.sq.hammer ? var.lens == broken & count(i.hammer) == 0
+opt: "Leave the lamp room as it is." -> mole.lamp.menu
+
+@node mole.sq.hat
+place: lamproom
+cost: 1
+do: give(c.keel_hat)
+nar: The hat is a navy felt funnel with a pint of water frozen solid in its crown. It is the only thing he wore that was meant to keep him dry, and it never once has.
+voice: pride: Do not put it on. Do not put it on. You are going to put it on. {dc: 4}
+go: mole.sq.after.menu
+
+@node mole.sq.hammer
+place: lamproom
+cost: 1
+do: give(i.hammer)
+nar: The store hammer lies in the glass where he set it down. The handle is wet. It will stay wet for some time; it was in his hand.
+go: mole.sq.after.menu
+
+# ================================================================ the Fray: e.hammer (SYSTEMS-FULL 18.11)
+# A struggle, not a duel. The talk above sets its shape: var mole.resolve (3 down to 0) is how
+# much fight is left in him; var mole.keel_weak is 1 when Wenna has his arm; var mole.ice is the
+# floor. A missed heavy can strike the lens (encounter param lens-behind).
+
+@node mole.sq.wenna.arm
+place: lamproom
+speaker: WENNA
+cost: 1
+do: mole.keel_weak = 1; mole.resolve -= 1; set(heard.wenna.arm)
+nar: Wenna crosses the ice and takes his left arm in both her burned hands and hangs on it.
+line: You'll have to swing me too, Absalom. Go on. I'm light.
+nar: He does not shake her off. The water from his cuff freezes on her knuckles.
+alt: mole.squall.three ? var.mole.resolve <= 0
+go: mole.fight.hammer
+
+@node mole.fight.hammer
+place: lamproom
+speaker: KEEL
+cost: 1
+alt: mole.fight.hammer.none ? var.mole.resolve <= 0
+nar: The assessor goes for the hammer. He steps back from it, toward the lens, the one direction he must not go.
+if: has(mole.hid) => fight(e.hammer.sneak)
+if: !has(mole.hid) => fight(e.hammer)
+
+@node mole.fight.hammer.none
+place: lamproom
+speaker: KEEL
+nar: His hand opens before the assessor reaches it. The fight left him somewhere on the stairs, or in the keeper's chair, or a moment ago.
+go: mole.fight.hammer.yield
+
+@node mole.fight.hammer.win
+if: trait(m.body) == none => offer(m.body)
+place: lamproom
+speaker: KEEL
+cost: 2
+if: has(struck.keel) => rep(board, -1)
+nar: Two cold people on an ice floor hang on to one hammer, the lens a foot behind them. Then he lets go, the way a tired man lets go of a rope.
+alt: mole.fight.hammer.win.struck ? has(struck.keel)
+go: mole.sq.saved
+
+@node mole.fight.hammer.win.struck
+place: lamproom
+nar: There is a mark on the harbourmaster's cheekbone, already going the grey-blue of the rest of him. He touches it with two wet fingers and looks at them.
+voice: condolence: You hit him. He let you. Both of those will be true in the morning. {dc: 4}
+go: mole.sq.saved
+
+@node mole.fight.hammer.yield
+if: trait(m.body) == none => offer(m.body)
+place: lamproom
+speaker: KEEL
+cost: 2
+if: has(struck.keel) => rep(board, -2)
+do: wet(0.3); meter(cold, 1)
+nar: The assessor's boot finds his worst ice, and the floor goes.
+nar: A long wet arm catches the assessor's collar. The hammer slides under the desk. He has let it go to catch the Shelf.
+line: Up. Up you come. The Board does not let people fall. The Board has done the falling for this town, once, and that will do.
+voice: carbon: Between the lens and you, with the hammer in his hand and the floor going, he chooses you. Put that in the Daybook in the same ink as the claim. {dc: 6}
+go: mole.sq.saved
+
+@node mole.fight.hammer.fled
+if: trait(m.body) == none => offer(m.body)
+place: stairs
+speaker: KEEL
+cost: 3
+do: set(lens.broken); lens = broken; quest(a1.frost, broken); set(mole.hat_dropped); meter(dread, 2); var.stairs_at = clock
+nar: The assessor is on the stairs, going down, without having quite decided to be. The hammer missed by the width of a coat, and the body did the rest.
+nar: Behind and above, a sound like a tray of glasses dropped down a well.
+go: mole.fight.hammer.fled.after
+
+@node mole.fight.hammer.fled.after
+place: stairs
+cost: 4
+nar: At the landing the assessor waits. The harbourmaster passes without looking, without his hat and without the hammer, and goes on down into the dark.
+line: KEEL: The Board will not mention it, assessor. The Board would ask the same courtesy.
+go: mole.lamp
+
+@node mole.fight.hammer.down
+if: trait(m.body) == none => offer(m.body)
+place: stairs
+cost: 30
+do: set(lens.broken); lens = broken; quest(a1.frost, broken); set(down.mole); set(mole.hat_dropped); meter(cold, 3); meter(dread, 1); wet(0.3); var.stairs_at = clock
+nar: The assessor wakes on the stairs with an arm round the iron post and frost in the coat.
+nar: The slit window at the landing has a grey in it that was not there before.
+voice: carbon: The ice, the haft, your boot going, his arm swinging the wrong way to catch you, the edge of the stair door coming up fast. Nobody falls neatly onto a stair. Somebody laid you here. {dc: 6}
+go: mole.fight.hammer.down.up
+
+@node mole.fight.hammer.down.up
+place: lamproom
+cost: 3
+nar: On the desk beside the log his hat has been set down carefully, the way a man leaves his hat in a house he means to come back to and will not.
+nar: His drips lead down the stairs. Near where the assessor lay they stop a while in a small frozen pool.
+go: mole.sq.after.menu
+
+# ================================================================ the frost lost: Keel in the glass
+@node mole.run.frost.lose
+place: lamproom
+speaker: KEEL
+cost: 2
+do: set(lens.broken); lens = broken; set(frost.met); set(met.keel); quest(a1.frost, met); quest(a1.frost, broken); set(mole.hat_dropped)
+nar: The assessor comes up too late. The stairwell is full of a sound like ice settling in a glass.
+nar: The lens is broken: a third of it on the floor among his frozen drips, the rest with a hole the shape of a swing.
+alt: mole.run.frost.lose.lit ? mother == burning & power.quay == on & (!has(mother.out_again) | has(mole.restruck2))
+go: mole.run.frost.lose.keel
+
+@node mole.run.frost.lose.lit
+place: lamproom
+nar: Mother is still burning through what is left of her, and the lamp room is full of loose light.
+go: mole.run.frost.lose.keel
+
+@node mole.run.frost.lose.keel
+place: lamproom
+speaker: KEEL
+cost: 2
+nar: In the middle of it stands the harbourmaster, the hammer in one hand and his hat in the other.
+line: You are late, assessor. The Board was not. The Board was, for once in its life, punctual.
+line: Broken lenses are replaced. It is in the policy. The Board has read the policy, in the bath.
+opt: "Why, harbourmaster?" -> mole.lose.why ? !has(lens.keel_motive)
+check: "[CONDOLENCE] Wait until he can say it." -> mole.lose.wait.ok / mole.lose.wait.fail ? !has(lens.keel_motive) {skill: condolence, dc: 6}
+opt: "Give me the hammer." -> mole.lose.hammer
+opt: "Let him go down." -> mole.lose.go
+
+@node mole.lose.why
+place: lamproom
+speaker: KEEL
+cost: 2
+do: set(lens.keel_motive)
+line: Why. The Shelf has a form for why, the Board supposes, with a box at the bottom for the answer, and the box is not large.
+line: KEEL: The Board would put in the box: a lens insured whole, and a whole lens paid for, and nobody counting the old one. The Board will not say more without its solicitor, and the Board does not have a solicitor, because the Board is a man in a coat.
+go: mole.run.frost.lose.menu
+
+@node mole.lose.wait.ok
+place: lamproom
+speaker: KEEL
+cost: 3
+do: set(lens.keel_motive)
+nar: The assessor waits. The harbourmaster drips. After a while he talks to the lens.
+line: There were always going to be questions, from the day it went green. The Board saw it go green from the harbour office, a little more every year, and said nothing, because it was Wenna Tallow's lamp, and she had not been paid, and the Board had signed the paper that put Mother on the quay.
+line: So. A whole lens, from Hesk, on the Shelf. And nobody counting. And nobody in the dock. The Board protects the town, assessor. It is wet work.
+go: mole.run.frost.lose.menu
+
+@node mole.lose.wait.fail
+place: lamproom
+speaker: KEEL
+cost: 1
+nar: The assessor waits. The harbourmaster waits longer, having had eleven years' practice at being stood about in.
+line: The Board can outlast the Shelf, assessor, at standing still. The Board has nothing else to do and is in no danger of drying.
+go: mole.run.frost.lose.menu
+
+@node mole.lose.hammer
+place: lamproom
+speaker: KEEL
+cost: 1
+do: give(i.hammer)
+nar: He looks at the hammer as if he had forgotten it, and holds it out handle first, as he would hand over a pen.
+line: Signed for, assessor. In the Board's hand. Which is wet.
+go: mole.run.frost.lose.menu
+
+@node mole.run.frost.lose.menu
+place: lamproom
+opt: "Give me the hammer." -> mole.lose.hammer ? count(i.hammer) == 0
+opt: "Let him go down." -> mole.lose.go
+
+@node mole.lose.go
+place: lamproom
+cost: 2
+nar: He sets his hat on the desk, as though it belonged there, and goes down.
+go: mole.sq.after.menu
+
+# ---- Lamb arrives after the lens is broken and Keel has gone (05:05 and after)
+@node mole.lamp.wreck
+place: lamproom
+cost: 2
+do: set(mole.hat_dropped)
+nar: The lamp room is full of broken glass and nobody. Frozen drips cross the floor to the stair door and away.
+nar: On the desk lies a navy felt hat; in the glass, the store hammer.
+go: mole.sq.after.menu
+
+# ---- 04:50 to 05:05, from the mole: too late to run
+@node mole.frost.late
+place: mole
+cost: 1
+do: meter(cold, 1)
+nar: Frozen drips go the length of the mole and in at Mother's door. High up, a tall shape stands against the glass with its arm half raised.
+opt: "Climb anyway." -> mole.frost.late.climb
+opt: "Wait at the foot of the tower for him to come down." -> mole.frost.foot
+opt: "Walk back along the mole to the quay." -> quay.hub +2
+
+@node mole.frost.late.climb
+place: stairs
+cost: 6
+do: meter(wear, 1); var.stairs_at = clock
+nar: The assessor climbs. Somewhere about the seventieth stair the whole tower rings once, high and thin, and then rains glass for a long time.
+go: mole.run.frost.lose
+
+@node mole.frost.foot
+place: mole
+speaker: KEEL
+cost: 14
+do: meter(cold, 2); set(lens.broken); lens = broken; set(frost.met); set(met.keel); quest(a1.frost, met); quest(a1.frost, broken)
+nar: The assessor waits by the door and hears it, high up: glass, a silence, then a boot on the stairs.
+nar: The harbourmaster comes out with the hammer, sees the assessor, and stops.
+line: Assessor. You will find the lens has been broken. By wreckers. As foreseen.
+line: The Board would be grateful if you did not go up. There is nothing up there now but glass. The Board would be grateful, generally. The Board has been grateful to nobody in a long time and would like to begin.
+nar: He goes past toward the quay, leaving one dot to a pace.
+go: mole.menu
+
+# ================================================================ rework 2026-10-17: new routes
+# ---- the town's appointment (REWORK-PLAN 1.3 item 1; row 14)
+@node mole.appt.hint
+place: mole
+cost: 1
+alt: mole.appt.hint.cells ? var.appt == cells
+alt: mole.appt.hint.vote ? var.appt == vote
+alt: mole.appt.hint.search ? var.appt == search
+alt: mole.appt.hint.oven ? var.appt == oven
+nar: Someone has oiled the hinges of Mother's door. It swings without a sound. It has squeaked for ninety years.
+go: mole.desc
+
+@node mole.appt.hint.cells
+place: mole
+nar: At the mole steps the Low Company's boats lie with their oars muffled in sacking, as for a job that wants no noise and no light.
+go: mole.desc
+
+@node mole.appt.hint.vote
+place: mole
+nar: On the first bollard someone has laid two fish side by side, one of them not fresh.
+go: mole.desc
+
+@node mole.appt.hint.search
+place: mole
+nar: Two Lamplighters' poles lean at the root of the mole beside two shuttered lanterns, for a dark that has not come yet.
+go: mole.desc
+
+@node mole.appt.hint.oven
+place: mole
+nar: The Brine's chimney is drawing hard, though nobody bakes at this hour. Somebody is warming an oven for later.
+go: mole.desc
+
+@node mole.appt.keel
+place: mole
+speaker: KEEL
+cost: 2
+do: meter(dread, 1)
+nar: The quay goes out. A tall shape walks out along the mole, early, something heavy in one hand. The rain takes every drip.
+voice: carbon: Rain, and no frost till four. Whatever he leaves on the stairs tonight will not keep. {dc: 6}
+line: Assessor. The Board did not expect company in the dark. The Board has an inspection to make. The Board would prefer to make it unwitnessed.
+check: "[CONDOLENCE] Catch him up and talk to him in the dark." -> mole.appt.talk.ok / mole.appt.talk.fail {skill: condolence, dc: 6}
+check: "[GRIP] Take the hammer out of his hand in the dark." -> mole.appt.grab.ok / mole.appt.grab.fail ? count(i.hammer) == 0 {skill: grip, dc: 6, verb: pry, noise: 0.5}
+opt: "Run ahead and bar Mother's door with the rope." -> mole.appt.bar ? count(i.rope) > 0 {verb: rig, noise: 0.3}
+opt: "Go up with him, and hold the lantern." -> mole.appt.join {verb: light, noise: 0.2}
+check: "[THE DARK] Let him go ahead. Follow him up, unseen." -> mole.appt.watch / mole.appt.watch.fail {skill: dark, dc: 5, verb: hide, noise: 0.1}
+opt: "Let him go." -> mole.desc
+
+@node mole.appt.talk.ok
+place: mole
+speaker: KEEL
+cost: 4
+do: set(appt.stopped); set(mole.appt_talked); set(heard.keel.appt_talk)
+nar: The assessor walks beside him in the dark and does not mention the hammer. Halfway along, he stops.
+line: The Board will go home. The Board will go home and sit, and think, and drip. You may tell the Shelf the Board went home.
+go: mole.desc
+
+@node mole.appt.talk.fail
+place: mole
+speaker: KEEL
+cost: 2
+line: The Board does not converse on the mole, assessor, in the rain, in the dark. The Board converses in its office, in writing, with a stamp.
+nar: He walks on into the dark.
+check: "[THE DARK] Follow him up, unseen." -> mole.appt.watch / mole.appt.watch.fail {skill: dark, dc: 5, verb: hide, noise: 0.1}
+opt: "Let him go." -> mole.desc
+
+@node mole.appt.grab.ok
+place: mole
+cost: 2
+do: give(i.hammer); set(appt.stopped); wet(0.2)
+nar: The assessor finds the haft by its wire in the dark and pulls. He lets go sooner than either of them expected.
+line: KEEL: The Board will be obliged if that is returned to the store. The Board signed for it.
+voice: undertow: He will be back. Without this. Think about what else is lying about on a quay. {dc: 6}
+go: mole.desc
+
+@node mole.appt.grab.fail
+place: mole
+cost: 2
+do: wet(0.4); meter(cold, 1)
+nar: The assessor's hand closes on wet cloth, and the assessor sits down hard on the mole with a harbourmaster's sleeve emptied down the collar.
+line: KEEL: The Board apologises. The Board did not intend that. The Board intends very little of what happens to it.
+nar: He walks on into the dark.
+go: mole.desc
+
+@node mole.appt.bar
+place: mole
+cost: 4
+do: set(appt.stopped)
+nar: The rope goes through Mother's door handle and round the bracket. A minute later a hand tries the door, and tries it again.
+line: KEEL: Barred. Barred, in the Board's own harbour. The Board will remember this, assessor. The Board will remember it at length.
+nar: The drips go away along the mole.
+go: mole.desc
+
+@node mole.appt.join
+place: lamproom
+speaker: KEEL
+cost: 14
+do: set(appt.joined); set(lens.keel_motive); set(said.appt_joined); var.stairs_at = clock
+nar: They climb together, the assessor holding the lantern. At the top he stands at the lens with the hammer and does nothing.
+line: The Board cannot do it with somebody holding a lamp. You will have known that. A whole lens, assessor, from Hesk, and nobody counting this one. That was all. The Board will go down now.
+go: mole.lamp.menu
+
+@node mole.appt.watch
+place: stairs
+cost: 10
+do: set(appt.watched); set(lens.keel_motive); var.stairs_at = clock
+nar: The assessor follows a turn below. At the landing he sits in the keeper's chair with the hammer across his knees and talks to nobody.
+line: KEEL: A whole one, from Hesk, in straw. Nobody counts the old one. Nobody stands in a dock. That is all the Board wants. That is all.
+nar: Then he comes down and passes close enough to drip on the Shelf.
+go: mole.desc
+
+# ---- the Lamplighters on the mole after a Trust cause (row 8, Shadow)
+@node mole.guard
+place: mole
+cost: 1
+nar: Two Lamplighters stand at the root of the mole with their poles crossed under a lantern. Mother is Trust property, and the Shelf has said in writing what it thinks of the Trust.
+line: FEWELL: Sergeant's orders. Nobody up the light.
+line: BRIGHT: Not even the Shelf. Especially the Shelf.
+go: mole.desc
+
+@node mole.guard.slip.ok
+place: mole
+cost: 4
+do: set(mole.guard_passed); wet(0.2)
+nar: The assessor goes along the weed ledge below the lee rail, close enough to hear Bright complaining about his feet.
+go: mole.stairs
+
+@node mole.guard.slip.fail
+place: mole
+cost: 2
+do: set(book.mole_climb); meter(dread, 1); rep(trust, -1); wet(0.3)
+nar: A boot goes into the water. The lantern swings round over the rail.
+line: BRIGHT: Evening, Shelf. Sergeant will want to hear about the swimming.
+go: mole.menu
+
+@node mole.guard.talk.ok
+place: mole
+cost: 2
+do: set(mole.guard_passed); set(book.mole_warrant)
+nar: The assessor reads the Shelf's warrant aloud to their lantern, slowly, in the voice that has never been in a room with anybody.
+line: FEWELL: Nobody said about warrants. Go on, then. I'm writing it down.
+go: mole.stairs
+
+@node mole.guard.talk.fail
+place: mole
+cost: 1
+line: FEWELL: Very nice paper. Sergeant's orders are on better.
+go: mole.menu
+
+# ---- Wenna at the foot of the stairs (row 5; protected moment 3)
+@node mole.stairs.wenna
+place: stairs
+speaker: WENNA
+cost: 2
+nar: Wenna stands at the foot of the stairs with one hand on the iron post and looks up the spiral into the dark.
+line: She's up there and I'm down here. That's the whole of it, and has been for three years.
+go: mole.wenna.foot.menu
+
+@node mole.wenna.foot.menu
+place: stairs
+speaker: WENNA
+check: "[KNEES] Pick her up and carry her." -> mole.wenna.carry.ok / mole.wenna.carry.fail {skill: knees, dc: 6, verb: carry, noise: 0.3}
+check: "[CONDOLENCE] Wait at the foot with her until she is ready." -> mole.wenna.climb / mole.wenna.foot.fail {skill: condolence, dc: 5, verb: wait}
+opt: "Go up alone. Leave her at the foot." -> mole.wenna.left
+
+@node mole.wenna.foot.fail
+place: stairs
+speaker: WENNA
+cost: 2
+nar: They wait. She does not get readier.
+line: Don't stand there being kind at me. Either go up or carry me, and you're not built for carrying.
+go: mole.wenna.foot.menu
+
+@node mole.wenna.carry.ok
+place: stairs
+speaker: WENNA
+cost: 8
+do: meter(cold, 2); meter(wear, 2); offer(m.stairs); var.stairs_at = clock
+nar: She weighs less than the claims case and complains more. The assessor takes her up the spiral in both arms, her boots knocking the post at every turn.
+line: Put me down at the chair. I'll not be carried in to her like a parcel.
+go: mole.wenna.landing
+
+@node mole.wenna.carry.fail
+place: stairs
+speaker: WENNA
+cost: 10
+do: meter(cold, 3); meter(wear, 3); offer(m.stairs); var.stairs_at = clock
+nar: At the thirtieth step the assessor's knees give notice, and the last twenty are done on them.
+line: You're no keeper. You'd not last a winter.
+go: mole.wenna.landing
+
+@node mole.wenna.landing
+place: stairs
+speaker: WENNA
+cost: 3
+do: set(wenna.told_landing); set(mole.wenna_sat); set(heard.wenna.landing)
+nar: She sits in her own chair and gets her breath.
+line: Three years I've not been up at night. Tonight I heard her stop, twenty to ten. The motor makes a noise when it stops, like a cat jumping down. I heard it through the Brine's wall, and I finished my pie.
+alt: mole.wenna.landing.self ? seen(mole.wenna.carry.fail)
+line: Go on, then. Carry me the rest. I've said it now.
+go: mole.wenna.chair.up
+
+@node mole.wenna.landing.self
+place: stairs
+speaker: WENNA
+line: Get off. I'll do the rest myself. I'm not being dragged in to her by a man who can't count past thirty.
+go: mole.wenna.chair.up
+
+@node mole.wenna.left
+place: stairs
+speaker: WENNA
+cost: 1
+do: set(mole.wenna_home)
+nar: She sits down on the bottom step with her back to the stairs.
+line: I'll keep the door. Somebody should.
+alt: mole.stairs.first ? !seen(mole.stairs.first)
+go: mole.stairs.again
+
+# ---- the climb at a run while the board surges (row 8, Fist)
+@node mole.stairs.fast
+place: stairs
+cost: 3
+do: meter(cold, 1); meter(wear, 2); var.stairs_at = clock
+nar: The assessor takes the hundred and twelve two at a time, with the quay board surging below.
+voice: knees: Entered under protest. Heavy protest. {dc: 3}
+go: mole.lamp
+
+# ---- the hot arc after the second blackout (03:20 to 03:40)
+@node mole.lamp.again.hot
+place: lamproom
+nar: Mother is dark. Every few seconds the board surges and the arc coughs once, orange, and goes out.
+inst: CANDLEMAS: The arc: hot, and kept hot. Each surge warms it again. The pilot light: lit, unlit, lit.
+go: mole.lamp.menu
+
+@node mole.lamp.hot.press
+place: lamproom
+cost: 1
+do: set(mole.hot_tried)
+nar: The assessor presses for five. The pedestal clicks, and does nothing else.
+inst: CANDLEMAS: Hotter than it was. You have warmed it with your opinion.
+go: mole.lamp.menu
+
+@node mole.lamp.hold.ok
+place: lamproom
+cost: 8
+cmd: restrike mother
+do: set(mole.restruck2); set(mother.restruck); quest(a1.stairs, alone); rumour(mother.restruck, quay, 0.4); meter(cold, 2)
+nar: The assessor holds the button down. Each surge kicks it against the thumb. At the eighth minute the arc catches and stays.
+voice: grip: Thumb gone. Hand going. Worth it. {dc: 3}
+go: mole.lamp.menu
+
+@node mole.lamp.hold.fail
+place: lamproom
+cost: 4
+do: set(mole.hot_tried); meter(cold, 1)
+nar: The thumb goes white, then the hand. At the fourth surge it opens by itself, and the pedestal ticks on, unimpressed.
+go: mole.lamp.menu
+
+@node mole.lamp.time.ok
+place: lamproom
+cost: 6
+cmd: restrike mother
+do: set(mole.restruck2); set(mother.restruck); quest(a1.stairs, alone); rumour(mother.restruck, quay, 0.4)
+nar: The card says hot. Candlemas gives the arc's glow, falling. The assessor counts it down, presses once at the minute, and she catches.
+go: mole.lamp.menu
+
+@node mole.lamp.time.fail
+place: lamproom
+cost: 3
+do: set(mole.hot_tried)
+nar: The assessor presses at the minute the sum gives. The pedestal clicks and does nothing. The sum was right about something else.
+inst: CANDLEMAS: Not yet. Ask me again in ten minutes. Ask me nicely.
+go: mole.lamp.menu
+
+@node mole.lamp.cool
+place: lamproom
+speaker: WENNA
+cost: 20
+do: meter(cold, 2)
+alt: mole.lamp.cool.alone ? !(has(wenna.climbs) & !has(mole.wenna_home))
+line: Leave her. Let her cool. You don't hurry a hot lamp, any more than a hot pie.
+nar: They wait. The board steadies on the quay. The ticking in the pedestal slows and stops.
+go: mole.lamp.menu
+
+@node mole.lamp.cool.alone
+place: lamproom
+nar: The assessor waits. The ticking in the pedestal slows, and slows, and stops.
+go: mole.lamp.menu
+
+# ---- the panel: the conclusion is Lamb's
+@node mole.lamp.why.ok
+place: lamproom
+cost: 2
+nar: The assessor works it on the back of the claim, against the card.
+voice: sum: Off at twenty to ten. Supply back at eight minutes to. Twelve minutes is not long enough for an arc to cool. So: hot, so: locked out, so: dark. The whole night in three subtractions.
+go: mole.lamp.menu
+
+@node mole.lamp.why.fail
+place: lamproom
+cost: 2
+do: journal("In pencil: the arc failed of age. Wenna said she was old.")
+nar: The card says what the assessor already thought. She is old. The Daybook takes it down in pencil.
+go: mole.lamp.menu
+
+# ---- Keel's routes (row 15)
+@node mole.hook.take
+place: mole
+cost: 1
+do: give(w.boathook)
+nar: A boathook hangs by the oxblood door, for a boat that has not called at the tower in twelve years. It comes away with a shriek of rust.
+go: mole.menu
+
+@node mole.frost.read.ok
+place: mole
+cost: 2
+do: set(frost.keel)
+nar: One drip to a pace, the left foot deeper, as a man walks with weight in his right hand, all the way to Mother's door.
+go: mole.menu
+
+@node mole.frost.read.fail
+place: mole
+cost: 1
+nar: The drips are frozen, a great many of them, and the assessor loses count at the bollard.
+go: mole.menu
+
+@node mole.frost.slip.ok
+place: lamproom
+cost: 6
+do: wet(0.2); meter(cold, 1); var.stairs_at = clock
+nar: The assessor passes him on the weed ledge a yard below his boots, and is up the stairs before he reaches the door.
+go: mole.lamp
+
+@node mole.frost.slip.fail
+place: mole
+speaker: KEEL
+cost: 1
+do: wet(0.3)
+nar: A boot on the ledge goes into the sea to the knee. Above, the harbourmaster stops and looks down over the rail.
+line: The Board can hear you, assessor. The Board has been wet for eleven years and has an excellent ear for feet.
+nar: He walks on, faster.
+go: mole.menu
+
+@node mole.frost.salt
+place: lamproom
+cost: 6
+do: take(i.salt); set(mole.salted); var.stairs_at = clock; meter(wear, 1)
+nar: The assessor salts the frost ahead and up the stairs, and empties the sack round the lens.
+voice: ballast: Grit underfoot. Lovely, honest grit. {dc: 3}
+go: mole.run.frost.win
+
+@node mole.lamp.bar
+place: lamproom
+cost: 2
+do: set(mole.door_barred)
+nar: The rope goes through the door handle and round the rail post, tight enough to sing.
+go: mole.lamp.menu
+
+@node mole.lamp.salt
+place: lamproom
+cost: 2
+do: take(i.salt); set(mole.salted)
+nar: The assessor salts the floor round the lens in a wide grey ring. Whatever he drips on that will not hold.
+go: mole.lamp.menu
+
+@node mole.lamp.hide
+place: gallery
+cost: 1
+do: set(mole.hid)
+nar: The assessor crouches on the gallery by the frosted glass, where the lens is a grey shape and the stair door can be seen through the ferns.
+go: mole.hide.wait
+
+@node mole.hide.wait
+place: gallery
+cost: 4
+do: meter(cold, 1)
+nar: The cold on the gallery is the cold of being outside a window. Far down, a boot. A drip.
+go: mole.lamp
+
+# ---- hidden on the gallery when he comes (Shadow)
+@node mole.hide.start
+place: gallery
+speaker: KEEL
+cost: 2
+call: mole.squall.setup
+alt: mole.hide.empty ? var.mole.keel_tool == none
+nar: Through the frosted glass he sets his lantern on the desk and puts a hand flat on the bottom ring, the way Wenna does.
+line: A whole one, from Hesk, in straw. Nobody counts you. Nobody puts her in the dock. Nobody reads the Board's name in a court. That is all. That is all I want.
+do: set(lens.keel_motive)
+opt: "Step in through the gallery door." -> mole.hide.step
+check: "[BALLAST] Come in behind him and take it from his hand while he talks." -> mole.hide.take.ok / mole.hide.take.fail {skill: ballast, dc: 6, verb: hide, noise: 0.3}
+opt: "Stay where you are. Watch what he does." -> mole.hide.watch
+
+@node mole.hide.empty
+place: gallery
+speaker: KEEL
+nar: Through the glass: he comes in empty-handed and puts a palm on the bottom ring.
+line: The Board came up without anything to do it with. The Board noticed on the landing. A whole one, from Hesk. Nobody counting you. That was all I wanted.
+do: set(lens.keel_motive)
+opt: "Step in through the gallery door." -> mole.sq.empty
+opt: "Stay where you are. Let him go down." -> mole.hide.empty.leave
+
+@node mole.hide.empty.leave
+place: lamproom
+cost: 4
+do: set(lens.saved); lens = saved; quest(a1.frost, saved)
+if: !has(mole.page10) => xp(1); set(mole.page10)
+nar: He stands a long time, then goes down, and never knows the Shelf was outside the window.
+go: mole.lamp.menu
+
+@node mole.hide.step
+place: lamproom
+speaker: KEEL
+cost: 1
+do: mole.resolve -= 1
+nar: The gallery door opens. He turns, with his own words still in the room.
+line: The Board was speaking privately. The Board would like that minuted.
+alt: mole.squall.keel.wenna ? has(wenna.climbs) & !has(mole.wenna_home)
+go: mole.squall.one
+
+@node mole.hide.take.ok
+place: lamproom
+cost: 2
+nar: The assessor comes in low and closes both hands on the haft beside his. He lets go at once, as a man lets go of something hot, and sees who it is.
+go: mole.sq.saved
+
+@node mole.hide.take.fail
+place: lamproom
+cost: 1
+do: mole.ice += 1
+nar: The gallery door shrieks on its frozen hinge. He turns with it in his hand.
+go: mole.fight.hammer
+
+@node mole.hide.watch
+place: gallery
+cost: 1
+nar: He takes his hand off the lens and lifts what he brought in both hands.
+go: mole.sq.break
+
+# ---- the barred door (Hands; Eye proves it through the door)
+@node mole.door.start
+place: lamproom
+speaker: KEEL
+cost: 2
+call: mole.squall.setup
+nar: A boot on the top step. A drip. The handle of the stair door turns, and the rope takes the strain, and sings.
+line: Assessor. The Board perceives that its door has been barred. The Board would be glad to know by whom, though the Board has a theory, and the theory is wet.
+claim: "You climbed in a frost that keeps every drip, with a claim you sent three hours early. Go home, harbourmaster." -> mole.door.yield / mole.door.proof.fail ? has(claim.time) & (has(lens.keel_motive) | has(lens.green)) & (has(frost.keel) | has(hammer.keel)) {show: has(frost.keel) | has(hammer.keel), do: set(said.keel_proved); set(heard.keel.keel_proved)}
+check: "[CONDOLENCE] Talk to him through the door." -> mole.door.yield / mole.door.talk.fail {skill: condolence, dc: 6}
+opt: "Hold the door. Wait him out." -> mole.door.wait {verb: wait, noise: 0.6}
+opt: "Unbar the door and let him in." -> mole.squall.keel
+
+@node mole.door.proof.fail
+place: lamproom
+speaker: KEEL
+cost: 1
+line: The Board does not discuss arithmetic through a door, assessor.
+go: mole.door.talk.fail
+
+@node mole.door.talk.fail
+place: lamproom
+speaker: KEEL
+cost: 2
+do: mole.ice += 1
+nar: On the third blow the rope parts with a crack like a shot, and the door comes in, and so does he.
+go: mole.squall.keel
+
+@node mole.door.wait
+place: lamproom
+speaker: KEEL
+cost: 15
+do: rumour(frost.keel, quay, 0.4)
+nar: He beats on the door for a quarter of an hour, like a man knocking in a fence post. The rope holds. The whole quay counts the blows.
+go: mole.door.yield
+
+@node mole.door.yield
+place: lamproom
+speaker: KEEL
+cost: 3
+do: set(lens.saved); lens = saved; quest(a1.frost, saved); seenas_board = threat; rep(board, -1)
+if: !has(mole.page10) => xp(1); set(mole.page10)
+if: var.mole.keel_tool == hammer & count(i.hammer) == 0 => give(i.hammer)
+nar: Through the door, the sound of a tall wet man sitting down on the top step.
+line: The Board has come up a great many stairs, assessor, to talk to a door. The Board will sit here a while. Then the Board will go home.
+nar: When the assessor unbars the door he has gone, leaving on the top step the thing he brought and a puddle frozen in the shape of a man sitting down.
+go: mole.sq.after.menu
+
+# ---- Eye: the case made to his face
+@node mole.sq.proved
+place: lamproom
+speaker: KEEL
+cost: 2
+do: mole.keel_low = 1; mole.resolve = 0
+nar: The assessor gives it to him in order: the claim's time, the green rings, the drips.
+line: The Board has been counted. The Board had not expected to be counted tonight. The Board had expected to do the counting.
+go: mole.sq.handed
+
+@node mole.sq.proved.fail
+place: lamproom
+speaker: KEEL
+cost: 1
+do: mole.ice += 1
+line: The Board does not recognise the Shelf's arithmetic, assessor. The Board has its own.
+go: mole.squall.two
+
+# ---- Keel with a boathook (Lamb took the hammer from the store)
+@node mole.squall.keel.hook
+place: lamproom
+speaker: KEEL
+cost: 2
+nar: He comes up with a boathook from the mole steps, twelve feet of ash, and has to bring it in sideways.
+line: The Board's hammer was not in the Board's store, assessor. The Board inquired. The Board was told nothing, and drew its own conclusions, and a boathook.
+nar: He cannot swing it without striking the panes.
+check: "[GRIP] Take hold of the shaft and walk it out of his hands." -> mole.sq.hook.ok / mole.sq.hook.fail {skill: grip, dc: 5, verb: pry, noise: 0.3}
+opt: "Give him the store hammer for the green rings." -> mole.sq.green ? has(lens.green) {do: set(said.green_rings); set(heard.keel.green_rings)}
+claim: "You climbed in a frost that keeps every drip, with a claim you sent three hours early. Put it down." -> mole.sq.proved / mole.sq.proved.hook ? has(claim.time) & (has(lens.keel_motive) | has(lens.green)) & (has(frost.keel) | has(hammer.keel)) {show: has(frost.keel) | has(hammer.keel), do: set(said.keel_proved); set(heard.keel.keel_proved)}
+opt: "Stand aside. Let him." -> mole.sq.hook.let
+
+@node mole.sq.proved.hook
+place: lamproom
+speaker: KEEL
+cost: 1
+line: The Board does not recognise the Shelf's arithmetic, assessor. The Board has its own, and a boathook.
+go: mole.sq.hook.let
+
+@node mole.sq.hook.ok
+place: lamproom
+cost: 2
+nar: The assessor walks the shaft backward out of his hands, like taking in a mooring line. He does not fight for it. He watches it go.
+go: mole.sq.saved
+
+@node mole.sq.hook.fail
+place: lamproom
+cost: 2
+do: meter(cold, 2); wet(0.2)
+nar: The hook goes through a pane behind the lens, the frost blows in, and he stares at the hole he has made in the wrong place.
+line: KEEL: The Board has broken a window. The Board is not, it appears, built for this.
+go: mole.sq.saved
+
+@node mole.sq.hook.let
+place: lamproom
+cost: 1
+do: seenas_board = ally; rep(board, 1)
+nar: He brings the iron of the hook round low, at the green rings, the only swing the room allows him.
+go: mole.sq.break
+
+# ---- Keel with nothing (Lamb took the hammer and the boathook)
+@node mole.sq.empty
+place: lamproom
+speaker: KEEL
+cost: 2
+nar: He comes up into the stair door with nothing in his hands, and stops, and looks at them.
+line: The Board came up without anything to do it with, assessor. The Board noticed on the landing. The Board sat down in Mrs Tallow's chair for some time.
+opt: "Give him the store hammer for the green rings." -> mole.sq.green ? has(lens.green) | (has(wenna.climbs) & !has(mole.wenna_home)) {do: set(said.green_rings); set(heard.keel.green_rings)}
+claim: "You climbed in a frost that keeps every drip, with a claim you sent three hours early." -> mole.sq.empty.sit / mole.sq.empty.sit ? has(claim.time) {show: has(frost.keel) | has(hammer.keel), do: set(said.keel_proved); set(heard.keel.keel_proved)}
+opt: "Let him sit." -> mole.sq.empty.sit
+
+@node mole.sq.empty.sit
+place: lamproom
+speaker: KEEL
+cost: 3
+do: set(lens.saved); lens = saved; quest(a1.frost, saved); set(lens.keel_motive); seenas_board = threat; rep(board, -1)
+if: !has(mole.page10) => xp(1); set(mole.page10)
+nar: He sits down against the desk, and his water freezes him to the floor.
+line: The Board would like it entered, assessor, that it is very tired. A whole lens, from Hesk, and nobody counting. That was all.
+go: mole.sq.saved.down
+
+# ---- editor's notes 2026-10-17: the fall told once (S6), the coat (P3), the shout (P5), the follow (P4)
+@node mole.fall.told
+place: lamproom
+speaker: KEEL
+do: set(mole.fall_told)
+line: The Board stood in the wrong place once, eleven years ago, on this mole, in a new coat, during a speech about progress. Nobody laughed. That was the worst of it. They stood the Board on the quay to drip dry, and after a while they stopped waiting.
+go: mole.squall.two
+
+@node mole.fall.watched
+place: lamproom
+speaker: KEEL
+do: set(mole.fall_told)
+line: That quay watched the Board go off the end of this mole, eleven years ago, in a new coat, during a speech about progress. Nobody laughed. The Board came up out of the harbour and has been coming up out of it ever since.
+nar: He lowers the hammer.
+go: mole.squall.three
+
+@node mole.guard.coat
+place: mole
+cost: 2
+do: set(mole.guard_passed)
+nar: The assessor walks up to the poles in Wenna's oxblood coat, head down, the way the keeper has walked this mole for thirty years.
+line: BRIGHT: Evening, keeper. Mind the ice.
+nar: The poles part. Nobody looks twice at the keeper's coat going to the light.
+go: mole.stairs
+
+@node mole.frost.shout.ok
+place: stairs
+speaker: KEEL
+cost: 2
+nar: The assessor's voice goes up the spiral, official, carrying. High above, the boots stop on the landing.
+line: The Board hears the Shelf. The Board is resting. The Board will answer the Shelf's question when the Board has its breath, which may be some time.
+nar: By the time he has his breath, the assessor is past the chair.
+go: mole.run.frost.win
+
+@node mole.frost.shout.fail
+place: mole
+speaker: KEEL
+cost: 1
+nar: The shout goes up the stairwell and comes back down it, smaller. Above, the boots quicken.
+line: The Board does not correspond with the stairs, assessor.
+go: mole.menu
+
+@node mole.appt.watch.fail
+place: stairs
+speaker: KEEL
+cost: 3
+do: wet(0.1)
+nar: On the thirtieth step the assessor's boot misses. Above, the harbourmaster stops.
+line: The Board knows the sound of the Shelf on a stair, assessor. Come up, then. We will sit in the dark together, and neither of us will do anything, and in the morning we will both say so.
+nar: They sit on the landing in the dark a while. Then he goes down.
+go: mole.desc

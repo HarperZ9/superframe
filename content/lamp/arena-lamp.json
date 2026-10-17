@@ -1,0 +1,162 @@
+{
+ "name": "lamp",
+ "place": "lamp",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "ABBBBBBC",
+  "BBBBBBBB",
+  "BBBDDBBB",
+  "BBDEEDBB",
+  "BBDEEDBB",
+  "BBBDDBEB",
+  "BFBBBBEB",
+  "ABBBBBBA"
+ ],
+ "legend": {
+  "A": {
+   "surface": "stone",
+   "h": 31.1
+  },
+  "B": {
+   "surface": "stone",
+   "h": 30
+  },
+  "C": {
+   "surface": "stone",
+   "h": 32.2,
+   "solid": true
+  },
+  "D": {
+   "surface": "stone",
+   "h": 32.9,
+   "solid": true
+  },
+  "E": {
+   "surface": "stone",
+   "h": 30,
+   "solid": true
+  },
+  "F": {
+   "surface": "stone",
+   "h": 31,
+   "solid": true
+  }
+ },
+ "water": null,
+ "lights": [
+  {
+   "x": 4,
+   "z": 4,
+   "r": 6,
+   "k": 0.55,
+   "group": ""
+  },
+  {
+   "x": 5.9,
+   "z": 6.6,
+   "r": 3.3,
+   "k": 0.38,
+   "group": ""
+  },
+  {
+   "x": 6.9,
+   "z": 3.6,
+   "r": 2.9,
+   "k": 0.36,
+   "group": ""
+  },
+  {
+   "x": 3.4,
+   "z": 7.1,
+   "r": 2.9,
+   "k": 0.36,
+   "group": ""
+  }
+ ],
+ "exits": [
+  [
+   0,
+   0,
+   0.8,
+   8
+  ],
+  [
+   7.2,
+   1,
+   8,
+   8
+  ]
+ ],
+ "tideEnds": false,
+ "anchors": {
+  "cut": [
+   [
+    4,
+    4
+   ],
+   [
+    5.9,
+    6.6
+   ],
+   [
+    6.9,
+    3.6
+   ],
+   [
+    3.4,
+    7.1
+   ]
+  ],
+  "lamp": [
+   [
+    4,
+    4
+   ]
+  ],
+  "snare": [],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   3.5,
+   6.5
+  ],
+  "foes": [
+   [
+    2.5,
+    1.5
+   ],
+   [
+    5.5,
+    1.5
+   ],
+   [
+    3.5,
+    1.5
+   ],
+   [
+    1.5,
+    3.5
+   ]
+  ]
+ },
+ "stage": {
+  "line": "arena: lamp -4 0 -4 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = h - 30"
+ },
+ "source": {
+  "plate": "content/lamp",
+  "rect": [
+   -4,
+   -4,
+   8,
+   8
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

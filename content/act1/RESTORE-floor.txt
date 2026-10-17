@@ -1,0 +1,382 @@
+== floor.hub  (132 -> 74 words)
+  BEFORE:
+    nar: The harbour floor at low water. Lanterns among the pools, the ribs of the old hull, the fish on its side, and past the gully the drowned lamp leaning out of the mud with its small light in it. {when: clock < 23:20}
+    nar: The floor in fog. The lanterns have become rings of light with nobody in them, and the drowned lamp comes and goes as the fog decides. {when: clock >= 23:20 & clock < 23:35}
+    nar: The floor in fog and rain. The pools are pocked all over, and the lanterns are drifting in toward the steps in twos and threes, like a congregation after the last hymn. {when: clock >= 23:35}
+    nar: Out on the mole, Mother is lit. Her beam crosses the floor once in every half-minute, green as a bottle, and each walker looks up as it passes, as if it had said their name. {when: mother == burning}
+  AFTER:
+    nar: The floor at low water: lanterns among the pools, the old hull, the fish, and past the gully the drowned lamp with its small light. {when: clock < 23:20}
+    nar: The floor in fog. The lanterns are rings of light with nobody in them. {when: clock >= 23:20 & clock < 23:35}
+    nar: Fog and rain. The lanterns are drifting in toward the steps in twos and threes. {when: clock >= 23:35}
+    nar: Out on the mole Mother is lit. Her beam crosses the floor every half-minute, green, and every walker looks up. {when: mother == burning}
+== floor.walkers  (61 -> 35 words)
+  BEFORE:
+    nar: The Low Night walkers. Each family keeps its own lantern and its own distance, and each, passing another, says the same four words: "Lowest in nineteen year."
+    nar: Nearest: a family of five in descending sizes, like a set of measures. {when: clock < 23:20}
+    nar: In the fog they are voices first and people after: a family of five, by its arguing; a boy, counting aloud. {when: clock >= 23:20}
+  AFTER:
+    nar: Each family passing another says the same four words: "Lowest in nineteen year."
+    nar: Nearest, a family of five in descending sizes. {when: clock < 23:20}
+    nar: In the fog: a family of five, by its arguing; a boy, counting aloud. {when: clock >= 23:20}
+== floor.walk.family  (42 -> 23 words)
+  BEFORE:
+    nar: The Ruddles, of Tanner's Row, and three children who stand in order of height without being asked. Mr Ruddle raises his lantern to the assessor's coat, and then to the assessor.
+    line: MRS RUDDLE: You're the insurance. Is it wreckers, then? Everyone says.
+  AFTER:
+    nar: The Ruddles of Tanner's Row, and three children in order of height.
+    line: MRS RUDDLE: You're the insurance. Is it wreckers, then? Everyone says.
+== floor.prints.soft  (31 -> 13 words)
+  BEFORE:
+    nar: The rain has begun on the prints. Each one holds a little water, each little water is pocked, and the edges are going the way of a biscuit left in tea.
+  AFTER:
+    nar: The rain has begun on the prints. Each holds a little pocked water.
+== floor.salv.tin  (48 -> 25 words)
+  BEFORE:
+    nar: The assessor kneels, which the mud receives with interest, and reaches down into black water to the elbow. The box comes up with a sound like a kiss: a ship's biscuit tin, good tin, holding the sea and one very old biscuit that the assessor does not examine.
+  AFTER:
+    nar: Into black water to the elbow. A ship's biscuit tin, good tin, holding the sea and one very old biscuit the assessor does not examine.
+== floor.salv.cork  (37 -> 11 words)
+  BEFORE:
+    nar: Six cork floats, black with age, strung on a cord that comes apart at a touch. The assessor keeps the best two. They weigh nothing at all, which on this floor tonight is a kind of comfort.
+  AFTER:
+    nar: Two cork floats, black with age. They weigh nothing at all.
+== floor.pool  (45 -> 23 words)
+  BEFORE:
+    nar: The Brine's yard drain comes down the quay wall in an iron lip, and under it the floor holds a pool. In the pool: a Hesk ale bottle with a beard of weed, and round it a scatter of green glass the size of teardrops.
+  AFTER:
+    nar: Under the Brine's yard drain the floor holds a pool: a Hesk ale bottle, and round it green glass the size of teardrops.
+== floor.pool.carbon.fail  (40 -> 21 words)
+  BEFORE:
+    nar: Sea glass, the assessor decides, and writes it down: frosted, rolled, the sea's work. Then the drop on the glove is not frosted at all, and the assessor rubs out sea glass, and has nothing to put in its place.
+  AFTER:
+    nar: Sea glass, the assessor writes. The drop on the glove is not frosted at all. The assessor rubs out sea glass.
+== floor.salv.bottle  (31 -> 16 words)
+  BEFORE:
+    nar: A Hesk ale bottle, green, the kind the Brine sells and keeps the empties of.
+    voice: undertow: Green glass, in a town where somebody has been very interested lately in green glass. {dc: 7, when: has(prism.green_oven) | has(lens.green)}
+  AFTER:
+    voice: undertow: Green glass, in a town where somebody has been very interested lately in green glass. {dc: 7, when: has(prism.green_oven) | has(lens.green)}
+== floor.lugg.refuse  (30 -> 6 words)
+  BEFORE:
+    nar: Lugg considers this for some time. Then he looks back at the rope, and the conversation is over on his side, though he remains, very politely, available for any other.
+  AFTER:
+    nar: Lugg looks back at the rope.
+== floor.lugg.silent  (45 -> 20 words)
+  BEFORE:
+    nar: The assessor says nothing and looks at the rope, which hums faintly in the current like a wire with a message on it.
+    nar: Lugg seems to find this satisfactory. He shifts his grip so that a yard of rope lies slack within the assessor's reach.
+  AFTER:
+    nar: The rope hums in the current.
+    nar: Lugg shifts his grip, and a yard of slack lies within the assessor's reach.
+== floor.lugg.again  (32 -> 15 words)
+  BEFORE:
+    nar: Lugg is where he was, the water a little higher on his boots, a turn of the rope round his wrist. He looks across the gully more often than at anything else.
+  AFTER:
+    nar: Lugg, a turn of the rope round his wrist, the water higher on his boots.
+== floor.lugg.why.fail  (46 -> 23 words)
+  BEFORE:
+    nar: The assessor says that it must have been very hard, in the voice the Shelf issues for the purpose. Lugg agrees that it was, in a whisper so courteous it is almost a door closing.
+    voice: condolence: You said the kind thing. It was the wrong size. {dc: 3}
+  AFTER:
+    nar: The assessor says it must have been very hard. Lugg agrees, courteously.
+    voice: condolence: You said the kind thing. It was the wrong size. {dc: 3}
+== floor.gully  (80 -> 42 words)
+  BEFORE:
+    nar: The gully is a ditch of moving water between the floor and the rock where the Old Light stands, a dozen yards across, brown, going inland in a hurry as if it had heard something. {when: clock < 23:30}
+    nar: The gully is fuller and faster now, the colour of tea that has been left, and it makes a noise at the edges like somebody sucking a tooth. {when: clock >= 23:30}
+    voice: knees: Knee-deep, at a guess. Knees have been asked worse. Not often, and not by the Shelf. {dc: 4}
+  AFTER:
+    nar: The gully: a dozen yards of brown water going inland in a hurry. {when: clock < 23:30}
+    nar: The gully is fuller and faster now, and loud at the edges. {when: clock >= 23:30}
+    voice: knees: Knee-deep, at a guess. Knees have been asked worse. Not often, and not by the Shelf. {dc: 4}
+== floor.gully.dry  (37 -> 16 words)
+  BEFORE:
+    nar: The assessor crosses with the Kit held up in both arms like a baby at a christening, feet wide, face upstream, and comes out on the rock wet to the waist and dry from the chest up.
+  AFTER:
+    nar: Kit held up in both arms, feet wide, face upstream. Wet to the waist, dry above.
+== floor.gully.rope  (55 -> 27 words)
+  BEFORE:
+    nar: Hand over hand on Lugg's rope, the Kit hung round the assessor's neck. Halfway across the rope goes taut behind, the way a dog's lead does when the dog has decided something: Lugg has leaned his whole height back on it.
+    nar: The far rock. Wet to the waist; the Damp dry, and surprised about it.
+  AFTER:
+    nar: Hand over hand on Lugg's rope. Halfway, it goes taut behind: Lugg has leaned his whole height back on it.
+    nar: Wet to the waist; the Damp dry.
+== floor.gully.waders  (27 -> 15 words)
+  BEFORE:
+    nar: In Merrow's waders the gully is a cold pressure on the legs and nothing more, as if wading through a crowd of fish too polite to touch.
+  AFTER:
+    nar: In Merrow's waders the gully is a cold pressure on the legs and nothing more.
+== floor.gully.closed  (54 -> 25 words)
+  BEFORE:
+    nar: The gully is full and fast, the width of a lane and climbing. On the far side the drowned lamp leans in the fog. {when: clock < 23:52}
+    nar: In its hole a lantern still burns, very small, as if it had been left on for someone. {when: clock < 23:52 & has(lamp.drowned.lit)}
+    nar: The hole is dark. Whatever burned there tonight has been taken home. {when: clock < 23:52 & !has(lamp.drowned.lit)}
+  AFTER:
+    nar: The gully is full and climbing. The drowned lamp leans on the far side. {when: clock < 23:52}
+    nar: In its hole a lantern still burns. {when: clock < 23:52 & has(lamp.drowned.lit)}
+    nar: The hole is dark. {when: clock < 23:52 & !has(lamp.drowned.lit)}
+== floor.merrow.lugg  (76 -> 44 words)
+  BEFORE:
+    line: MERROW: Ferris has eyes like a heron. Ferris saw a light.
+    line: MERROW: Mine was out. I had seven matches and a wet box and a ship going by I couldn't see.
+    line: MERROW: Both true. Write that in your book, and see does it balance.
+    nar: He puts the pipe back in his teeth and bites it, and for a while the only sound is the water coming up the gully on the far side of the rock.
+  AFTER:
+    line: MERROW: Ferris has eyes like a heron. Ferris saw a light.
+    line: MERROW: Mine was out. I had seven matches and a wet box and a ship going by I couldn't see.
+    line: MERROW: Both true. Write that in your book, and see does it balance.
+== floor.merrow.cloth.ok  (53 -> 25 words)
+  BEFORE:
+    nar: The assessor looks, with the lantern held low and the frankness the profession requires. On the cloth of his trousers there are two tide-lines. One at the shin, old and dried to a crust of salt. One at the thigh, dark and still running.
+    line: MERROW: Copper's at the bottom. Water's at the bottom.
+  AFTER:
+    nar: Two tide-lines on his trousers: at the shin, dried to salt; at the thigh, still running.
+    line: MERROW: Copper's at the bottom. Water's at the bottom.
+== floor.merrow.rope  (19 -> 9 words)
+  BEFORE:
+    nar: At the word the coil of rope on his shoulder seems to grow heavier. He does not touch it.
+  AFTER:
+    nar: He does not touch the rope on his shoulder.
+== floor.drowned.look  (136 -> 77 words)
+  BEFORE:
+    nar: The base of the Old Light: dressed stone, each block the size of a coffin, leaning together like old men at a funeral. Two rusted hinge-pins where there was once a door. In the hole, what is left of the lantern gear.
+    voice: carbon: There was a door here. People knocked. The sea came up the steps to meet them, a little higher every year, and one year it did not go down. {dc: 6}
+    nar: Copper ends lie about in the hole where Merrow trimmed his load, bright where he cut them. {when: !has(floor.salv.wire)}
+    nar: A brass collar the width of a dinner plate is still bolted to the old turning gear, low in the hole, at the water. {when: tide < -0.3 & !has(floor.salv.brass)}
+    nar: High in the base there is a niche with a rusted locker in it, the kind a keeper kept his small things in. {when: !has(floor.salv.wick)}
+  AFTER:
+    nar: Dressed stone, each block the size of a coffin. Two rusted hinge-pins where there was once a door.
+    voice: carbon: There was a door here. People knocked. The sea came up the steps to meet them, a little higher every year, and one year it did not go down. {dc: 6}
+    nar: Copper ends, bright where Merrow cut them. {when: !has(floor.salv.wire)}
+    nar: A brass collar on the old turning gear, low in the hole. {when: tide < -0.3 & !has(floor.salv.brass)}
+    nar: A niche high in the base, with a rusted locker. {when: !has(floor.salv.wick)}
+== floor.salv.wire  (36 -> 19 words)
+  BEFORE:
+    nar: Offcuts of old copper wire, a hand long, green on the outside and bright as a new penny at the cut. The assessor coils them into a pocket.
+    line: MERROW: Take them. Offcuts. Copper doesn't mind who. {when: clock < 23:40 & has(met.merrow)}
+  AFTER:
+    nar: A pocketful of copper offcuts, green outside, bright at the cut.
+    line: MERROW: Take them. Offcuts. Copper doesn't mind who. {when: clock < 23:40 & has(met.merrow)}
+== floor.salv.brass.ok  (33 -> 12 words)
+  BEFORE:
+    nar: The collar resists, considers, and comes away with a sound like an old man getting up from a chair. Brass, heavy, green in the crevices and gold where the assessor's thumb rubs it.
+  AFTER:
+    nar: The collar comes away. Heavy brass, gold where the thumb rubs it.
+== floor.salv.brass.fail  (42 -> 21 words)
+  BEFORE:
+    nar: The assessor pulls. The collar does not move. The assessor pulls harder and moves, backward, into the water standing in the bottom of the tower, which is to the knee and not warm.
+    line: MERROW: Twist. Not pull. Brass is like the Board. {when: clock < 23:40 & has(met.merrow)}
+  AFTER:
+    nar: The collar does not move. The assessor does, backward, into knee-deep water.
+    line: MERROW: Twist. Not pull. Brass is like the Board. {when: clock < 23:40 & has(met.merrow)}
+== floor.salv.wick  (48 -> 25 words)
+  BEFORE:
+    nar: The locker's door comes off in the hand. Inside: a tin of lamp-wick, flat cotton, coiled, gone to felt at the outer turns and perfectly good at the heart. A keeper put it here against a long night, and the long night came, and it was the sea's.
+  AFTER:
+    nar: A tin of lamp-wick, gone to felt at the outer turns and good at the heart. A keeper put it here against a long night.
+== floor.hole  (107 -> 61 words)
+  BEFORE:
+    nar: The assessor climbs up into the hole, as Merrow climbed. Inside, the base is a stone throat with water standing in the bottom, and on the wall by the nail there is a fresh black kiss of soot where a lantern struck the stone.
+    nar: Through the hole, outward, the bay: the channel, the dark hump of the Spit, and the open water where the ferry came in. {when: clock < 23:20}
+    nar: Through the hole, outward, there is fog, paper white, and nothing in it at all. {when: clock >= 23:20}
+    nar: Mother's beam goes over, green, and for an instant the inside of the Old Light is lit up like a church, and then is not. {when: mother == burning}
+  AFTER:
+    nar: Inside the hole: a stone throat, water in the bottom, and by the nail a fresh black kiss of soot where a lantern struck.
+    nar: Outward, the bay: the channel, the Spit, the water where the ferry came in. {when: clock < 23:20}
+    nar: Outward, fog, and nothing in it. {when: clock >= 23:20}
+    nar: Mother's beam goes over, green, and for an instant the inside of the Old Light is lit. {when: mother == burning}
+== floor.gully.back  (22 -> 4 words)
+  BEFORE:
+    nar: The gully going back is the gully coming out, only the assessor is colder and the water has had longer to think.
+  AFTER:
+    nar: The gully again, colder.
+== floor.gully.back.wade  (27 -> 13 words)
+  BEFORE:
+    nar: Across, to the waist, the Kit under water for a long count of three. The Damp, in its compartment, says something the assessor chooses not to hear.
+  AFTER:
+    nar: Across, to the waist, the Kit under for a long count of three.
+== floor.gully.back.dry  (34 -> 10 words)
+  BEFORE:
+    nar: Across with the Kit held up like a tray of drinks through a crowd, and out onto the floor, wet to the waist and still, in the upper half, a credit to the Shelf.
+  AFTER:
+    nar: Across with the Kit held high, wet to the waist.
+== floor.gully.back.rope  (45 -> 22 words)
+  BEFORE:
+    nar: Back on Lugg's rope, hand over hand. At the near bank a long hand takes the assessor's collar and lifts, briefly, as if lifting a cat off a table, and sets the assessor down on the floor. Lugg whispers something that the wind takes away.
+  AFTER:
+    nar: Back on Lugg's rope. At the near bank a long hand lifts the assessor by the collar and sets the assessor down.
+== floor.gully.back.waders  (24 -> 14 words)
+  BEFORE:
+    nar: Back across in Merrow's waders, which slap and suck and keep the sea out with an air of doing it as a personal favour.
+  AFTER:
+    nar: Back across in Merrow's waders, which slap and suck and keep the sea out.
+== floor.gully.run  (39 -> 22 words)
+  BEFORE:
+    nar: The gully is no longer a ditch. It is the sea, coming back in a brown hurry, waist-deep in the middle and rising.
+    nar: Merrow is in it ahead of the assessor, the sack on his shoulder, not looking back. {when: has(floor.with_merrow)}
+  AFTER:
+    nar: The gully is the sea now, waist-deep in the middle and rising.
+    nar: Merrow is in it ahead, the sack on his shoulder. {when: has(floor.with_merrow)}
+== floor.gully.go  (17 -> 0 words)
+  BEFORE:
+    nar: The steps, a row of lanterns going up into the fog. The water, coming the other way.
+  AFTER:
+== floor.gully.fallback  (21 -> 10 words)
+  BEFORE:
+    nar: The water is waist-deep in the middle and the steps are lanterns in fog. There is nothing to do but go.
+  AFTER:
+    nar: Waist-deep in the middle. The steps are lanterns in fog.
+== floor.run.gully.win  (110 -> 62 words)
+  BEFORE:
+    nar: The assessor comes up out of the gully and across the floor with the sea pulling at the coat-tails like a child that wants to be carried, and sits down on the second step without having decided to.
+    nar: Merrow is three steps up, setting the sack down. He looks at the assessor, wet to the chest, and nods once. {when: has(floor.with_merrow)}
+    line: MERROW: You'll do. {when: has(floor.with_merrow)}
+    nar: Out in the fog, over where the gully was, a very small light is burning low on the water in the hole of the Old Light. Two women on the steps have stopped to look at it. One of them makes a sign the assessor does not know. {when: has(lamp.drowned.lit)}
+  AFTER:
+    nar: The assessor comes up out of the gully, crosses the floor, and sits down on the second step without having decided to.
+    nar: Merrow, three steps up, sets the sack down and nods once. {when: has(floor.with_merrow)}
+    line: MERROW: You'll do. {when: has(floor.with_merrow)}
+    nar: Out over the gully a small light burns low in the Old Light. A woman on the steps makes a sign the assessor does not know. {when: has(lamp.drowned.lit)}
+== floor.fish.again  (97 -> 45 words)
+  BEFORE:
+    nar: The fish, the claimants, the children going round. The gill lifts, and lets go. {when: clock < 23:35}
+    nar: The rain is on the fish now and it shines like a wet roof. The gill lifts more easily. The rain is doing for it what nobody on the floor has yet agreed to. {when: clock >= 23:35}
+    nar: A candle burns at its head under the sign. The children have stopped circling and sit on their heels in the mud, as if in church. {when: var.floor.award == congregation}
+    nar: The Guild's chalk mark on its flank has been washed half off by the rain, and the boy in the apron has gone. {when: var.floor.award == guild | var.floor.award == lowco}
+  AFTER:
+    nar: The fish, the claimants, the children going round. {when: clock < 23:35}
+    nar: The rain is on the fish and the gill lifts more easily. {when: clock >= 23:35}
+    nar: A candle at its head. The children sit on their heels in the mud. {when: var.floor.award == congregation}
+    nar: The Guild's chalk mark half washed off, and the boy gone. {when: var.floor.award == guild | var.floor.award == lowco}
+== floor.fish.wait  (33 -> 10 words)
+  BEFORE:
+    nar: The assessor waits with the fish. The channel beside it fills by a finger's width, and then another. The children wait too, with the stillness of people who expect to be sent home.
+  AFTER:
+    nar: The channel fills by a finger's width, and then another.
+== floor.dilly.slate.fail  (44 -> 21 words)
+  BEFORE:
+    nar: The assessor tilts the head to read the slate upside down and Dilly, without looking, tilts the slate exactly the same distance the other way. She has been read upside down by better.
+    line: DILLY: Bets are a ha'penny to look. A penny to read.
+  AFTER:
+    nar: Dilly tilts the slate exactly as far the other way.
+    line: DILLY: Bets are a ha'penny to look. A penny to read.
+== floor.dilly.bet.dies  (32 -> 9 words)
+  BEFORE:
+    line: DILLY: Evens. Same as everybody.
+    nar: She writes it down without looking at the assessor, and the assessor joins twenty-two children and a man called Wat Gedge in having bet against the fish.
+  AFTER:
+    line: DILLY: Evens. Same as everybody.
+    nar: She writes it down.
+== floor.runner.marrow  (47 -> 26 words)
+  BEFORE:
+    nar: "Mr Dunlin didn't send me," says Gill. "Mrs Spratt sent me. Mrs Spratt says that's the same thing, near enough, and will be more so by Lady Day."
+    nar: He says this with no idea of what it means, and the assessor writes it down with some idea.
+  AFTER:
+    line: GILL: Mr Dunlin didn't send me. Mrs Spratt did. Mrs Spratt says that's the same thing, near enough, and will be more so by Lady Day.
+== floor.fish.fallback  (15 -> 0 words)
+  BEFORE:
+    nar: Spar under the fish. Children on the spar. The channel running full a yard away.
+  AFTER:
+== floor.fish.knives  (66 -> 34 words)
+  BEFORE:
+    nar: The Guild comes down the floor in the fog: three men in aprons, a handcart, and the knives in a roll carried as respectfully as a bishop's crook.
+    nar: They do not look at the assessor. They look at the fish, the way a tailor looks at a man who has come in for a suit. One of them takes his cap off. The others do not.
+  AFTER:
+    nar: The Guild comes down the floor: three men in aprons, a handcart, the knives in a roll carried as respectfully as a bishop's crook.
+    nar: One of them takes his cap off to the fish.
+== floor.merrow.returns.damp  (34 -> 20 words)
+  BEFORE:
+    inst: THE DAMP: Wet to the thigh, the top fresher than the bottom, and all of it fresh from the gully.
+    nar: Merrow does not stop, and does not ask what the brass thing is for.
+  AFTER:
+    inst: THE DAMP: Wet to the thigh, the top fresher than the bottom, and all of it fresh from the gully.
+== floor.take.copper  (86 -> 43 words)
+  BEFORE:
+    nar: The assessor takes hold of the neck of the sack. Merrow does not let go of it, and does not pull it back. He looks at the assessor's hand on the sacking for some time, as at a gull on his boat.
+    line: MERROW: Copper doesn't care who carries it. Ferris does.
+    nar: Out of the fog round the tower come Lugg and two salvors from the Company's boats, short men with crowbars, who came over on the rope for the carry. Nobody says anything. Lugg's lips move.
+  AFTER:
+    nar: The assessor takes the neck of the sack. Merrow does not let go, and does not pull.
+    line: MERROW: Copper doesn't care who carries it. Ferris does.
+    nar: Out of the fog round the tower come Lugg and two salvors with crowbars. Lugg's lips move.
+== floor.salvors.fight  (35 -> 11 words)
+  BEFORE:
+    nar: The assessor keeps hold. Merrow lets go and steps back against the stones, out of it, with his arms folded, the way a man stands out of a quarrel between the sea and the weather.
+  AFTER:
+    nar: Merrow lets go and steps back against the stones, arms folded.
+== floor.fight.salvors.down  (89 -> 52 words)
+  BEFORE:
+    nar: The assessor comes back to the world with the water at the chin and Merrow's fist in the coat collar, hauling. He wades with the assessor the way he wades with the sack, not quickly and not stopping, and puts the assessor down on the lowest dry step.
+    line: MERROW: Ferris didn't mean the second one. Ferris never means the second one.
+    nar: The sack went back over the gully with the Company. Half an hour has gone with it. On the steps above, two bell jars have turned to look.
+  AFTER:
+    nar: The water at the chin, and Merrow's fist in the coat collar, hauling. He puts the assessor down on the lowest dry step.
+    line: MERROW: Ferris didn't mean the second one. Ferris never means the second one.
+    nar: The sack went back over the gully with the Company, and half an hour with it.
+== floor.conger.leave  (38 -> 14 words)
+  BEFORE:
+    nar: The assessor gets up off the lip of the hole and leaves the conger its hole. The head goes back under the ledge without hurry. It is the most courteous exchange the assessor has had in Gullet tonight.
+  AFTER:
+    nar: The assessor leaves the conger its hole. The head goes back under the ledge.
+== floor.conger.fight  (21 -> 12 words)
+  BEFORE:
+    nar: The assessor goes down into the black water at the bottom of the tower, to the thigh, reaching for the ledge.
+  AFTER:
+    nar: Down into the black water to the thigh, reaching for the ledge.
+== floor.fight.conger.yield  (48 -> 23 words)
+  BEFORE:
+    nar: The conger lets go of the ledge, and of the argument, and withdraws into a crack in the stones too narrow for anything that size, and is gone into it like a rope pulled through a hole. Under the ledge, a wedge of the Old Light's crown glass.
+  AFTER:
+    nar: The conger withdraws into a crack too narrow for anything that size. Under the ledge, a wedge of the Old Light's crown glass.
+== floor.fight.conger.fled  (42 -> 20 words)
+  BEFORE:
+    nar: The assessor comes up out of the water at the bottom of the tower considerably faster than the assessor went down into it, and sits on the lip of the hole, breathing. Under the ledge, the glass goes on catching the light.
+  AFTER:
+    nar: The assessor comes up out of the water a good deal faster than down. The glass stays under the ledge.
+== floor.gulls.lanterns  (53 -> 31 words)
+  BEFORE:
+    nar: Dilly whistles through her fingers, a terrible sound, and eleven children come running and stand round the fish swinging their lanterns. The gulls lift off one by one, offended, and stand on the ribs with their backs to everyone.
+    line: DILLY: Lanterns. They don't like a lantern swung. Everybody on the floor knows that.
+  AFTER:
+    nar: Dilly whistles through her fingers. Eleven children run in swinging lanterns, and the gulls lift off, offended.
+    line: DILLY: Lanterns. They don't like a lantern swung. Everybody on the floor knows that.
+== floor.gulls.fight  (14 -> 0 words)
+  BEFORE:
+    nar: The assessor goes at the gulls on the fish with what comes to hand.
+  AFTER:
+== floor.fight.gulls.yield  (29 -> 15 words)
+  BEFORE:
+    nar: The gulls give the fish up the way gulls give anything up, sideways and complaining, and settle on the ribs to wait. They are being patient, like the tide.
+  AFTER:
+    nar: The gulls give the fish up sideways, complaining, and settle on the ribs to wait.
+== floor.eels.ribs  (33 -> 11 words)
+  BEFORE:
+    nar: The assessor goes the long way, rib to rib, like a bannister in a house that has slid into the sea. The eels go past below and do not take the assessor personally.
+  AFTER:
+    nar: The long way, rib to rib. The eels go past below.
+== floor.call.lugg  (33 -> 18 words)
+  BEFORE:
+    nar: The assessor shouts. Out of the fog a loop of rope comes flat across the water and lands where a hand can find it, and the long pull begins at the other end.
+  AFTER:
+    nar: Out of the fog a loop of rope comes flat across the water, and the long pull begins.
+== floor.eels.line  (36 -> 18 words)
+  BEFORE:
+    nar: The line is where the assessor left it, humming in the current. Hand over hand along it, rib to rib, with the eels going past below and the sea pulling at the coat and getting nothing.
+  AFTER:
+    nar: Hand over hand along the line, rib to rib, the sea pulling at the coat and getting nothing.
+== floor.eels.fight  (13 -> 0 words)
+  BEFORE:
+    nar: The assessor wades into the middle, where the water is thick with loops.
+  AFTER:
+== floor.fight.eels.win  (50 -> 24 words)
+  BEFORE:
+    nar: The eels let go of the assessor's legs one by one, as if declining an invitation, and the water clears enough to walk through. A very large one goes past at the knee with a small yellow eye full of opinion. The water is higher by the minutes it took.
+  AFTER:
+    nar: The eels let go one by one. A very large one goes past at the knee with a small yellow eye full of opinion.
+== floor.fight.eels.yield  (39 -> 4 words)
+  BEFORE:
+    nar: The eels lose interest, minutes after the gully stopped being wadeable. There is a great deal of water and a great deal of silt and the assessor is, it turns out, not among the more interesting things in it.
+  AFTER:
+    nar: The eels lose interest.
+
+60 nodes lost more than 40 percent

@@ -1,0 +1,684 @@
+# Low Water, Act 2: The Mole and Mother, Night 2 (prefix mole2.). Private, 2026-10-17.
+# Places (Act 1 records): mole, stairs, lamproom, gallery. Beat 8: Fisk in the lamp room 22:30 to
+# 23:30 with his button (gate A3; button.tested). The Lamplighters guard the mole. From 02:00 the
+# procession of the Old Bulb stops at the foot of the mole: the standoff, five ways to end it. The
+# Old Bulb does not reach Mother tonight.
+#
+# Act 1 state read here: var.lens, mother.restruck, struck.keel, book.violence, frost.met,
+# panel.restrike, clause.struck. Night 2 is clear; every lamp works.
+# The mechanism agrees with the hill (hill.lwd header): after any loss of supply the arc locks out
+# hot for ninety seconds, and then waits for a hand at the panel for as long as anyone likes.
+# Tonight the Trust keeps a hand at Mother's panel: Hobb restruck her at dusk, by order.
+# If the lens was broken at the frost, the Trust has pulled her fuse: she is dark tonight.
+# The crown of prisms (the Eye), if it comes down with the procession, ends where var.mole2_eye says.
+# Edit pass 2026-10-17 (design/ACT2-EDIT-BRIEF.md).
+
+# ---- new ids
+@var mole2.bulb_end
+default: none
+values: none, held, seized, vigil, knelt, beam, measured, cold
+about: How the standoff at the foot of the mole ended (Act 3 reads it).
+
+@var mole2_eye
+default: none
+values: none, step, trust, kept
+about: Where the crown of prisms ends the night if it reached the foot of the mole: on Mother's step, in the Trust's custody, or kept by the Congregation.
+
+@var mole2.press
+default: 0
+about: How far the procession has pushed against the poles (0 to 3). At 3 the bier tips.
+
+@fact mole2.past_guard
+@fact mole2.wired
+@fact mole2.fisk_up
+@fact mole2.cut
+@fact mole2.door_held
+@fact mole2.hidden
+@fact mole2.standoff_on
+
+@fact mole2.selflit
+about: On Night 2 the Trust posted a Lamplighter to restrike Mother by hand at dusk. A hand at the panel, by order, the night after there was none.
+against: trust 10
+by: the Lamplighters on the mole
+
+# ================================================================ the mole at night
+@node mole2.hub
+hub: yes
+place: mole
+cost: 1
+alt: mole2.standoff ? clock >= 02:00 & clock < 03:30 & has(ev2.procession) & !has(gasholder.procession_stopped) & var.mole2.bulb_end == none
+alt: mole2.after ? clock >= 03:30 & has(ev2.procession) & !has(gasholder.procession_stopped) & var.mole2.bulb_end == none
+alt: mole2.quiet ? clock >= 02:00 & has(gasholder.procession_stopped) & !seen(mole2.quiet)
+alt: mole2.arrive ? !seen(mole2.arrive)
+go: mole2.desc
+
+@node mole2.arrive
+place: mole
+speaker: BRIGHT
+cost: 2
+alt: mole2.arrive.dark ? var.lens == broken
+nar: Mother is burning, green at the edges for anyone who knows. {when: var.lens == whole | var.lens == saved}
+nar: Mother is burning, smaller than last night and white all through. {when: var.lens == green_broken}
+nar: At the root of the mole, two Lamplighters with their poles crossed.
+line: BRIGHT: Evening, Shelf. Hobb lit her at ten past seven. Pressed the button and counted five. Sergeant's orders: a hand at the panel, every dusk, from tonight.
+line: You're the one that lit her, last night. {when: has(mother.restruck)}
+do: set(mole2.selflit)
+go: mole2.guard.first
+
+@node mole2.arrive.dark
+place: mole
+speaker: BRIGHT
+cost: 2
+nar: Mother is dark. A notice is pasted on her door: UNSAFE. LENS DAMAGED. FUSE WITHDRAWN.
+line: Evening, Shelf. Ships can steer by the pub tonight.
+go: mole2.guard.first
+
+@node mole2.guard.first
+place: mole
+speaker: BRIGHT
+alt: mole2.guard.four ? has(book.violence)
+line: Nobody up the light without the Trust. Sergeant's compliments.
+go: mole2.desc
+
+@node mole2.guard.four
+place: mole
+speaker: BRIGHT
+nar: There are four of them tonight.
+line: We were told to expect you. We were told to be four.
+go: mole2.desc
+
+@node mole2.desc
+place: mole
+cost: 1
+nar: Stars to the bottom of the sky; the sea flat and black. {when: clock < 23:00}
+nar: Low water. Far out on the Spit, two lanterns move on something lying on its side. {when: clock >= 23:00 & clock < 01:00}
+nar: Hard frost. Every boot that has walked the mole tonight is written on it. {when: clock >= 01:00 & clock < 05:30}
+nar: Sea smoke stands up off the water in slow white ropes. {when: clock >= 05:30}
+go: mole2.menu
+
+@node mole2.menu
+place: mole
+opt: "Climb the hundred and twelve stairs." -> mole2.stairs ? has(mole2.past_guard)
+opt: "Walk up behind the engineer, carrying his bag." -> mole2.fisk.escort ? clock >= 22:30 & clock < 22:45 & !has(mole2.past_guard)
+check: "[FORM LETTER] Inform the Lamplighters that the Shelf will inspect its insured property." -> mole2.guard.talk.ok / mole2.guard.talk.fail ? !has(mole2.past_guard) {skill: formletter, dc: 6}
+opt: "Walk past them in the Lamplighter's coat, as the relief." -> mole2.guard.coat ? !has(mole2.past_guard) & guise == lamplighter {verb: hide, noise: 0.1}
+opt: "Walk past them in Wenna's oxblood coat." -> mole2.guard.keeper ? !has(mole2.past_guard) & guise == keeper {verb: hide, noise: 0.1}
+check: "[THE DARK] Over the lee rail, along the weed ledge, under their lantern." -> mole2.guard.ledge.ok / mole2.guard.ledge.fail ? !has(mole2.past_guard) & clock < 01:00 {skill: dark, dc: 6, verb: hide, noise: 0.2}
+check: "[BALLAST] Over the lee rail, along the frozen ledge, under their lantern." -> mole2.guard.ledge.ok / mole2.guard.ledge.fail ? !has(mole2.past_guard) & clock >= 01:00 {skill: ballast, dc: 7, verb: hide, noise: 0.2}
+check: "[SUM] Time their watch, and go at the change." -> mole2.guard.watch.ok / mole2.guard.watch.fail ? !has(mole2.past_guard) & !seen(mole2.guard.watch.fail) {skill: sum, dc: 6, verb: wait}
+opt: "Go down the mole steps at low water and climb the tower's sea ladder from the weed." -> mole2.guard.ladder ? !has(mole2.past_guard) & clock >= 23:22 & clock < 00:10 {verb: climb, noise: 0.3}
+check: "[GRIP] Take the poles where they cross, and walk through." -> mole2.guard.shove.ok / mole2.guard.shove.fail ? !has(mole2.past_guard) {skill: grip, dc: 7, noise: 0.7}
+opt: "Walk back to the quay." -> quay2.hub +2
+
+# ---- five ways past the guard
+@node mole2.guard.talk.ok
+place: mole
+speaker: BRIGHT
+cost: 2
+do: set(mole2.past_guard); set(book.mole2_inspect)
+line: LAMB: The Gullet Head Light, insured, with the Shelf's right of inspection at any hour. It is in the schedule.
+line: Nobody told us about schedules. Go on. I'm writing you down.
+go: mole2.menu
+
+@node mole2.guard.talk.fail
+place: mole
+speaker: BRIGHT
+cost: 1
+line: Very good, Shelf. Sergeant says the Shelf can inspect the Trust's letter about it, in the morning.
+voice: chit: He would take a chit. He would take it and write that down too. {dc: 5}
+go: mole2.menu
+
+@node mole2.guard.coat
+place: mole
+speaker: BRIGHT
+cost: 1
+do: set(mole2.past_guard)
+line: About time. Mind the frost on the top flight, it's murder.
+go: mole2.menu
+
+@node mole2.guard.keeper
+place: mole
+speaker: BRIGHT
+cost: 1
+do: set(mole2.past_guard)
+line: Evening, keeper. Hobb did her at ten past. He counted out loud. You'd have laughed.
+go: mole2.menu
+
+@node mole2.guard.ledge.ok
+place: mole
+cost: 4
+do: set(mole2.past_guard); meter(cold, 1)
+nar: Along the weed ledge a foot above the water, under their lantern.
+line: BRIGHT: ...and a stone bottle at my feet, and nobody to tell me there's a Shelf about.
+go: mole2.menu
+
+@node mole2.guard.ledge.fail
+place: mole
+speaker: BRIGHT
+cost: 2
+do: set(book.mole2_ledge); rep(trust, -1); wet(0.4); meter(cold, 2)
+nar: The ledge is glass. The sea takes the assessor to the waist before a brass pole hooks the collar.
+line: Evening, Shelf. Sergeant'll want this one in ink.
+go: mole2.menu
+
+@node mole2.guard.watch.ok
+place: mole
+cost: 12
+do: set(mole2.past_guard); meter(cold, 1)
+nar: They change at the half hour, and both walk ten yards to meet the relief.
+line: FEWELL: You're late.
+line: BRIGHT: I'm cold.
+line: FEWELL: Everyone's cold.
+nar: Behind them, the mole is empty for the length of the complaint.
+go: mole2.menu
+
+@node mole2.guard.watch.fail
+place: mole
+speaker: FEWELL
+cost: 10
+do: meter(cold, 2)
+nar: The change comes on the hour, from the tower end, and finds the assessor behind a bollard.
+line: Cold to be standing about, Shelf.
+go: mole2.menu
+
+@node mole2.guard.ladder
+place: stairs
+cost: 8
+do: set(mole2.past_guard); wet(0.3); meter(cold, 2)
+nar: Along the uncovered weed under the seaward wall to the keeper's old boat ladder, iced to the rungs, and in at the hatch on the first landing.
+go: mole2.stairs
+
+@node mole2.guard.shove.ok
+place: mole
+speaker: BRIGHT
+cost: 2
+do: set(mole2.past_guard); set(book.mole2_shove); rep(trust, -1)
+nar: The assessor takes both poles where they cross and walks forward. They walk backward.
+line: That's assault on Municipal property, that is. I'll put it as a push.
+go: mole2.menu
+
+@node mole2.guard.shove.fail
+place: mole
+speaker: FEWELL
+cost: 2
+do: set(book.mole2_shove); rep(trust, -1); meter(cold, 1)
+nar: The poles turn, the way Lamplighters are taught, and the assessor sits down on the frost.
+line: Again, Shelf? Or shall we write it?
+go: mole2.menu
+
+# ================================================================ the stairs and the lamp room
+@node mole2.stairs
+place: stairs
+cost: 5
+do: meter(wear, 1); var.stairs_at = clock
+nar: The hundred and twelve. The chair on the landing still has last night's shape in its dust. {when: !has(frost.met)}
+nar: The hundred and twelve. On the landing, a dark stain on the chair where Keel's puddle thawed. {when: has(frost.met)}
+go: mole2.lamp
+
+@node mole2.lamp
+place: lamproom
+alt: mole2.fisk.start ? clock >= 22:30 & clock < 23:30 & !seen(mole2.fisk.start)
+alt: mole2.lamp.standoff ? has(mole2.standoff_on) & var.mole2.bulb_end == none
+cost: 1
+nar: The lens turns, humming. {when: var.lens != broken}
+nar: The lamp room is dark. The shards are swept into a heap by the desk, uncounted. {when: var.lens == broken}
+nar: Fisk is bent over the panel. {when: clock >= 22:30 & clock < 23:30}
+go: mole2.lamp.menu
+
+@node mole2.lamp.menu
+place: lamproom
+opt: "Talk to the engineer." -> mole2.fisk.talk ? clock >= 22:30 & clock < 23:30 & !seen(mole2.fisk.talk)
+claim: "Your clause was struck, Mr Fisk. In yellow." -> mole2.fisk.clause.ok / mole2.fisk.clause.fail ? has(clause.struck) | has(ink.crake) {show: clock >= 22:30 & clock < 23:30 & !has(fisk.button)}
+check: "[GRIP] Lift the plate under the panel and follow the button's wire." -> mole2.wire.ok / mole2.wire.fail ? !has(mole2.wired) {skill: grip, dc: 5, verb: pry, noise: 0.2}
+opt: "Test the button with him: cut her supply and bring her back." -> mole2.test.start ? clock >= 22:30 & clock < 23:30 & (has(mole2.wired) | has(fisk.button)) & var.lens != broken & !has(button.tested)
+opt: "Go out onto the gallery." -> mole2.gallery
+opt: "Go down." -> mole2.down
+
+@node mole2.down
+place: mole
+cost: 4
+go: mole2.desc
+
+# ---- Fisk in the lamp room (beat 8)
+@node mole2.fisk.start
+place: lamproom
+speaker: FISK
+cost: 2
+do: set(met.fisk)
+nar: A small neat man kneels at the panel with the cover off, mud to the knee from the coast road.
+line: FISK: Fisk. Dorran Fisk. I drew this: the panel, the lockout, the relay, the button. Forgive me, I'm afraid it's rather elegant.
+alt: mole2.fisk.start.hidden ? has(mole2.hidden)
+go: mole2.lamp.menu
+
+@node mole2.fisk.start.hidden
+place: lamproom
+nar: He has not seen the assessor on the gallery. He is talking to the panel.
+go: mole2.gallery.fisk
+
+@node mole2.fisk.escort
+place: stairs
+speaker: FISK
+cost: 6
+do: set(mole2.past_guard); set(mole2.fisk_up); set(met.fisk); var.stairs_at = clock
+nar: The assessor takes his carpet bag of tools off him without asking.
+line: My assistant. From the Shelf. Thank you, gentlemen.
+line: BRIGHT: Mind the top flight.
+line: A hundred and eleven. No. I make it a hundred and eleven.
+go: mole2.lamp
+
+@node mole2.fisk.talk
+place: lamproom
+speaker: FISK
+cost: 3
+check: "[FORM LETTER] Talk shop: lockouts, relays, tolerances, as one professional to another." -> mole2.fisk.talk.ok / mole2.fisk.talk.fail {skill: formletter, dc: 6}
+check: "[CONDOLENCE] Ask him why he came by the coast road in the dark." -> mole2.fisk.talk.ok / mole2.fisk.talk.fail {skill: condolence, dc: 6}
+opt: "Leave him to his panel." -> mole2.lamp.menu
+
+@node mole2.fisk.talk.ok
+place: lamproom
+speaker: FISK
+cost: 3
+do: set(fisk.button); quest(a2.button, why)
+line: Any loss of supply, the arc locks out hot for ninety seconds. Physics. After that it waits for a hand, as long as anyone likes. So I put a man in the clause. I wrote it so that nobody could ever say no one was at the panel.
+line: Somebody took the man out. I should like to know who. No, I shouldn't. I know who.
+go: mole2.lamp.menu
+
+@node mole2.fisk.talk.fail
+place: lamproom
+speaker: FISK
+cost: 1
+line: I'm sorry. I don't discuss the specification with the insurer. I was told that quite firmly this evening, on the hill, under a very bright lamp.
+go: mole2.lamp.menu
+
+@node mole2.fisk.clause.ok
+place: lamproom
+speaker: FISK
+cost: 3
+do: set(fisk.button); quest(a2.button, why)
+line: LAMB: Clause fourteen, the copy pinned by this panel. A yellow line through it, and in the margin: No keeper. Saving. O.C.
+nar: Fisk cleans his spectacles on his tie and looks at the bare wall where the copy hung.
+line: I wrote it so that nobody could ever say no one was at the panel. Saving. She wrote saving.
+go: mole2.lamp.menu
+
+@node mole2.fisk.clause.fail
+place: lamproom
+speaker: FISK
+cost: 1
+line: Struck? By whom? You'll have to show me. I'm an engineer. I believe things I can measure.
+go: mole2.lamp.menu
+
+# ---- the wire (gate A3, Hands)
+@node mole2.wire.ok
+place: lamproom
+cost: 4
+do: set(mole2.wired)
+nar: Under the plate the button's two wires run to a relay the size of a snuffbox, and from the relay to the arc. To nothing else. No clock. No automatic return.
+line: FISK: You found it. Good. Most people look for a clock. There isn't one. There's a thumb, or there's the dark. {when: clock >= 22:30 & clock < 23:30}
+go: mole2.lamp.menu
+
+@node mole2.wire.fail
+place: lamproom
+cost: 2
+do: meter(cold, 1)
+nar: The fourth screw is frozen into its thread, and keeps the plate and a piece of the assessor's knuckle.
+go: mole2.lamp.menu
+
+# ---- the test: cut her supply and bring her back (button.tested)
+@node mole2.test.start
+place: lamproom
+speaker: FISK
+cost: 2
+line: There's an isolator in the pedestal. Throw it, she goes out. Ninety seconds she's locked out hot. After that she waits for a hand. Then press. Then she lights. If the clause is right.
+opt: "Throw the isolator." -> mole2.test.cut {verb: cutpower, noise: 0.6}
+opt: "Not tonight." -> mole2.lamp.menu
+
+@node mole2.test.cut
+place: lamproom
+speaker: FISK
+cost: 2
+do: set(mole2.cut)
+nar: The isolator goes over with a clack. The arc dies, and down the whole quay faces turn up to a tower gone out for the second night running.
+line: Don't touch the button. You'll want to. Everyone wants to. We let her wait, so they can all see she waits.
+nar: Far down the stairs, boots.
+check: "[BALLAST] Set your back against the stair door and hold it." -> mole2.test.door.ok / mole2.test.door.fail {skill: ballast, dc: 6, noise: 0.5}
+opt: "Bar the stair door with the rope." -> mole2.test.door.rope ? count(i.rope) > 0 {verb: rig, noise: 0.3}
+check: "[FORM LETTER] Call down the stairwell that the Shelf and the engineer are testing the Trust's equipment." -> mole2.test.door.talk / mole2.test.door.fail {skill: formletter, dc: 6}
+
+@node mole2.test.door.ok
+place: lamproom
+speaker: BRIGHT
+cost: 6
+do: set(mole2.door_held); meter(cold, 1)
+nar: Back against the door, heels against the desk. The door is tried, and pushed.
+line: Open up! She's out! The whole quay's looking!
+line: FISK: Yes. That's rather the idea.
+go: mole2.test.press
+
+@node mole2.test.door.rope
+place: lamproom
+speaker: FISK
+cost: 4
+do: set(mole2.door_held)
+nar: The rope goes through the handle and round the rail post twice. The door is tried, and the rope sings.
+line: A well-made knot. I do like a thing that does exactly what it says.
+go: mole2.test.press
+
+@node mole2.test.door.talk
+place: lamproom
+speaker: FISK
+cost: 4
+do: set(mole2.door_held); set(book.mole2_test)
+line: BRIGHT: Testing? Testing what? All right. I'll be writing it down. All of it.
+line: Thank you. I have never in my life been able to make people wait.
+go: mole2.test.press
+
+@node mole2.test.door.fail
+place: lamproom
+speaker: FISK
+cost: 3
+do: set(book.mole2_test); rep(trust, -1)
+nar: The door opens on two poles and Bright's red face. Bright reaches past Fisk and throws the isolator back himself. Nothing happens.
+line: BRIGHT: Why won't she come back on?
+line: Because nobody is at the panel. Forgive me. That was rude. That was what the button was for.
+go: mole2.test.bright
+
+@node mole2.test.bright
+place: lamproom
+speaker: BRIGHT
+cost: 4
+do: set(button.tested); quest(a2.button, proved); rep(trust, -1)
+nar: They stand and look at the dark lens, the supply on, the arc waiting. Fisk reaches round Bright's elbow, presses, and counts five. She catches.
+line: Well I never.
+nar: Bright writes it down, tears out the page, gives it to the assessor, and writes it again.
+go: mole2.lamp.menu
+
+@node mole2.test.press
+place: lamproom
+speaker: FISK
+cost: 6
+do: set(button.tested)
+if: has(clause.struck) | has(ink.crake) | has(fisk.button) => quest(a2.button, proved)
+nar: Ninety seconds, and more. The assessor throws the isolator back. Supply on. Nothing. The town watches nothing.
+line: Now.
+nar: The assessor presses and counts five. She catches.
+line: Exactly as drawn. On Low Night she would have lit at eight minutes to ten. All it wanted was a man.
+go: mole2.lamp.menu
+
+# ================================================================ the gallery
+@node mole2.gallery
+place: gallery
+cost: 1
+do: meter(cold, 1)
+nar: Below, the whole town is lit: the quay's orange, the Gut's paraffin, the white lamps up the hill. {when: clock < 01:00}
+nar: Hard frost on the rail. On the hill path, a slow river of candles coming down. {when: clock >= 01:00}
+opt: "Stay out here by the frosted glass, and watch who comes up." -> mole2.gallery.hide ? clock < 22:30 & !has(mole2.hidden) {verb: hide, noise: 0}
+opt: "Go back in." -> mole2.lamp.menu
+
+@node mole2.gallery.hide
+place: gallery
+cost: 1
+do: set(mole2.hidden)
+go: mole2.gallery.wait
+
+@node mole2.gallery.wait
+place: gallery
+cost: 6
+do: meter(cold, 1)
+alt: mole2.fisk.start ? clock >= 22:30 & !seen(mole2.fisk.start)
+nar: Cold. Nobody yet.
+go: mole2.gallery.wait
+
+# ---- watching Fisk unseen (Shadow): he tests it himself
+@node mole2.gallery.fisk
+place: gallery
+speaker: FISK
+cost: 10
+do: set(button.tested); meter(cold, 2)
+if: has(clause.struck) | has(ink.crake) | has(fisk.button) => quest(a2.button, proved)
+nar: Through the frosted glass: he throws the isolator alone. The beam dies. He sits on the floor with his watch out, talking to the panel.
+line: Ninety seconds, hot. Now you wait. You see? Supply on, and you wait. Nobody can say it isn't so. I wrote a man in.
+nar: He presses, and counts, and she catches, and he puts his face in his hands.
+check: "[CONDOLENCE] Go in to him now." -> mole2.fisk.found.ok / mole2.fisk.found.fail {skill: condolence, dc: 5}
+opt: "Leave him. Go down while he sits there." -> mole2.down
+
+@node mole2.fisk.found.ok
+place: lamproom
+speaker: FISK
+cost: 3
+do: set(fisk.button); quest(a2.button, why)
+line: You saw. Good. I wrote it so that nobody could ever say no one was at the panel. And nobody was.
+go: mole2.lamp.menu
+
+@node mole2.fisk.found.fail
+place: lamproom
+speaker: FISK
+cost: 1
+nar: The gallery door shrieks. He has the cover on and his hat on before the assessor says good evening.
+line: Nothing to see. Routine. Forgive me.
+go: mole2.lamp.menu
+
+# ================================================================ the standoff at the foot of the mole (02:00)
+@node mole2.standoff
+place: mole
+speaker: GORM
+cost: 3
+do: set(mole2.standoff_on); mole2.press = 0
+nar: The procession stops at the root of the mole: forty glass heads, and on a bier on four shoulders the Old Bulb, clear as a held breath, nothing burning in it.
+nar: It burned down the hill on its bag of gas, and went out on the quay. {when: gasholder_carries == lit | gasholder_carries == lit_eye}
+nar: Fennick carries the crown of prisms wrapped in his surplice. {when: (gasholder_carries == bulb_eye | gasholder_carries == lit_eye) & !has(gasholder.carrying)}
+nar: The crown of prisms is in the assessor's arms, in a surplice. {when: has(gasholder.carrying)}
+line: And where would the Congregation be carrying that, at two in the morning? And on whose mole?
+line: FENNICK: To Mother. Her eye was taken from her twelve years ago on these stairs. We are bringing it home.
+line: KEEL: The Board's mole, Sergeant, and the Board will not have a bier on the hundred and twelve stairs in a hard frost, Deacon, whatever is on it.
+line: KEEL: The Board has met the Shelf on those stairs before. {when: has(frost.met) & !has(struck.keel)}
+nar: Keel does not look at the assessor. The bruise on his cheekbone has gone the grey-blue of the rest of him. {when: has(struck.keel)}
+go: mole2.standoff.menu
+
+@node mole2.standoff.menu
+place: mole
+speaker: FENNICK
+alt: mole2.standoff.tip ? var.mole2.press >= 3
+check: "[CONDOLENCE] Go to Fennick. Offer him a vigil at her foot." -> mole2.end.vigil / mole2.vigil.fail {skill: condolence, dc: 6}
+opt: "Kneel at the front in your jar, and begin the vigil yourself." -> mole2.end.knelt.jar ? guise == pilgrim {verb: hide, noise: 0}
+check: "[THE DARK] Douse the Lamplighters' lantern and let the dark settle it." -> mole2.douse.ok / mole2.douse.fail {skill: dark, dc: 6, verb: douse, noise: 0.3}
+opt: "Slip up the stairs while every pole faces the quay, and give them a sign from the top." -> mole2.climb.sign ? has(mole2.past_guard) | guise == lamplighter | guise == keeper {verb: climb, noise: 0.3}
+check: "[SMALL PRINT] Read the maker's stamp on the Old Bulb's collar by their candles." -> mole2.collar.ok / mole2.collar.fail ? !seen(mole2.collar.ok) {skill: smallprint, dc: 6, verb: read}
+claim: "That bulb will not seat in her, Deacon. Her pedestal holds an arc, and you carried the last thing that fitted down these stairs yourself." -> mole2.end.measured / mole2.measured.fail ? seen(mole2.collar.ok) & (has(mole2.wired) | has(panel.restrike) | seen(mole2.lamp)) {show: seen(mole2.collar.ok)}
+check: "[GRIP] Stand between the poles and the bier, and take the weight of both." -> mole2.hold.ok / mole2.hold.fail {skill: grip, dc: 6, noise: 0.5}
+opt: "Stand back with the Lamplighters and watch." -> mole2.standoff.wait
+
+@node mole2.standoff.wait
+place: mole
+speaker: GORM
+cost: 3
+do: mole2.press += 1
+nar: The glass heads lean forward. The poles lean back. The frost under forty pairs of boots goes from white to glass.
+line: And would the Deacon like to take one more step? And would the Deacon like it written?
+go: mole2.standoff.menu
+
+@node mole2.vigil.fail
+place: mole
+speaker: FENNICK
+cost: 2
+do: mole2.press += 1
+line: A vigil is for the dead, assessor. She is not dead. She has her eye shut.
+go: mole2.standoff.menu
+
+@node mole2.douse.fail
+place: mole
+speaker: GORM
+cost: 1
+do: mole2.press += 1; set(book.mole2_douse); rep(trust, -1)
+nar: A brass pole lays itself across the assessor's wrist, on the lantern's shutter.
+line: And what did the Shelf think it was doing with the Trust's lantern? And would the Shelf like that written large, or small?
+go: mole2.standoff.menu
+
+@node mole2.collar.ok
+place: mole
+cost: 2
+do: mole2.press += 1
+nar: On the Old Bulb's brass collar, worn by twelve years of kneeling: Hesk Lamp Works, carbon filament, bayonet cap.
+inst: CANDLEMAS: A bulb. Filament broken. Twelve years' dust inside the glass. What burns on her pedestal tonight is an arc between two rods. I give you the readings.
+go: mole2.standoff.menu
+
+@node mole2.collar.fail
+place: mole
+speaker: GAUZE
+cost: 1
+do: mole2.press += 1
+line: Don't lean on it. You're fogging the jars. We can't see a thing for your breath.
+go: mole2.standoff.menu
+
+@node mole2.measured.fail
+place: mole
+speaker: FENNICK
+cost: 2
+do: mole2.press += 1
+line: You have not seen her pedestal, assessor. I have. Twelve years ago, on my knees, with the old one in my arms.
+go: mole2.standoff.menu
+
+@node mole2.hold.fail
+place: mole
+speaker: KEEL
+cost: 2
+do: mole2.press += 2; meter(cold, 1)
+nar: A pole in the back, a bier handle in the chest, the frost turning under everyone at once.
+line: The Board would advise the Shelf to stand somewhere less popular.
+go: mole2.standoff.menu
+
+@node mole2.hold.ok
+place: mole
+speaker: KEEL
+cost: 3
+do: mole2.press = 0; meter(cold, 1)
+nar: A pole across one shoulder, a bier handle against the other, and the assessor holding both.
+line: The Board would observe that the Shelf is now holding up the Trust and the Congregation at once, which is more than the Board has managed in nineteen years.
+go: mole2.standoff.menu
+
+# ---- the bier tips (press 3)
+@node mole2.standoff.tip
+place: mole
+cost: 1
+nar: The front bearer's boot goes on the glass. The bier tips, and the Old Bulb slides toward the stone, and forty people draw one breath.
+check: "[GRIP] Catch it." -> mole2.end.held / mole2.end.seized {skill: grip, dc: 6, verb: carry, noise: 0.4}
+opt: "Let the Lamplighters catch it." -> mole2.end.seized
+
+# ---- the five endings
+@node mole2.end.held
+place: mole
+speaker: FENNICK
+cost: 3
+do: mole2.bulb_end = held; quest(a2.bulb, ended); rep(congregation, 1)
+if: gasholder_carries == bulb_eye | gasholder_carries == lit_eye => mole2_eye = step
+nar: It comes into the assessor's arms, much lighter than a god should be. The assessor carries it the length of the mole and sets it on the oxblood step, facing up at Mother.
+nar: Fennick lays the crown of prisms beside it, splinter by splinter, on the step. {when: gasholder_carries == bulb_eye | gasholder_carries == lit_eye}
+line: There. She can see it. That will do for tonight.
+go: mole2.after.menu
+
+@node mole2.end.seized
+place: mole
+speaker: GORM
+cost: 3
+do: mole2.bulb_end = seized; quest(a2.bulb, ended); rep(congregation, -1); rep(trust, 1); meter(cold, 1)
+if: gasholder_carries == bulb_eye | gasholder_carries == lit_eye => mole2_eye = trust
+nar: A pole lifts the Old Bulb off the tipping bier, neatly, the way Lamplighters lift a bulb out of a lamp.
+line: And who would like a receipt? And shall the Trust keep it safe till the Alderman says otherwise?
+line: And the glass in the Deacon's surplice? Trust property, would we say? {when: gasholder_carries == bulb_eye | gasholder_carries == lit_eye}
+line: GAUZE: Let them, Ambrose. Let them carry it. They've never carried anything.
+go: mole2.after.menu
+
+@node mole2.end.vigil
+place: mole
+speaker: FENNICK
+cost: 4
+do: mole2.bulb_end = vigil; quest(a2.bulb, ended); rep(congregation, 1); set(heard.fennick.vigil)
+if: gasholder_carries == bulb_eye | gasholder_carries == lit_eye => mole2_eye = step
+line: LAMB: Stairs in a hard frost. Bearers of seventy. And she climbed them twenty-eight years; she would not want a bier dropped on her account.
+line: At her foot, then. Till the light comes. She will know we came.
+nar: They kneel round the bier at the root of the mole. Keel stands in their candlelight, dripping, and does not move them on.
+go: mole2.after.menu
+
+@node mole2.douse.ok
+place: mole
+speaker: FENNICK
+cost: 2
+do: mole2.bulb_end = knelt; quest(a2.bulb, ended); rep(congregation, 1); rep(trust, -1)
+if: gasholder_carries == bulb_eye | gasholder_carries == lit_eye => mole2_eye = kept
+nar: The shutter closes. In the dark the Congregation kneels at once, as it has every night for eleven years when the lamps go, and the poles have nothing to push.
+line: Low light. Low voices. Thank you, whoever that was.
+go: mole2.after.menu
+
+@node mole2.end.knelt.jar
+place: mole
+speaker: GAUZE
+cost: 2
+do: mole2.bulb_end = knelt; quest(a2.bulb, ended); rep(congregation, 2)
+if: gasholder_carries == bulb_eye | gasholder_carries == lit_eye => mole2_eye = kept
+nar: The assessor kneels on the frost at the front, in a jar. Somebody kneels beside. Then everybody does, and the bier is set down because nobody is standing to carry it.
+line: Who are you, under there? No. Don't say. It's better not said.
+go: mole2.after.menu
+
+@node mole2.climb.sign
+place: lamproom
+cost: 6
+do: meter(wear, 1); var.stairs_at = clock
+nar: Nobody is watching the tower. Up the hundred and twelve in the dark; below, forty candles and two lanterns argue at the root of the mole.
+go: mole2.lamp.standoff
+
+@node mole2.lamp.standoff
+place: lamproom
+opt: "Throw the lens clutch with her beam on the procession." -> mole2.end.beam ? var.lens != broken {verb: light, noise: 0.5}
+opt: "Throw the isolator, wait out her ninety seconds, and bring her back in front of them." -> mole2.end.beam ? var.lens != broken & has(button.tested) {verb: cutpower, noise: 0.6}
+opt: "Light the standby paraffin lamp and hang it in the broken lens." -> mole2.end.beam.dark ? var.lens == broken {verb: light, noise: 0.4}
+opt: "Go back down." -> mole2.down
+
+@node mole2.end.beam
+place: lamproom
+cost: 3
+do: mole2.bulb_end = beam; quest(a2.bulb, ended); rep(congregation, 2); rep(trust, -1); set(book.mole2_beam)
+if: gasholder_carries == bulb_eye | gasholder_carries == lit_eye => mole2_eye = step
+nar: Her light lies down along the mole, and at the end of it, white, forty glass heads and a bulb on a bier. They kneel. The Lamplighters step back out of the light as if it were hot.
+nar: Fennick carries the crown of prisms to the foot of the tower and leaves it on the step, in her light. {when: gasholder_carries == bulb_eye | gasholder_carries == lit_eye}
+go: mole2.after.menu
+
+@node mole2.end.beam.dark
+place: lamproom
+cost: 4
+do: mole2.bulb_end = beam; quest(a2.bulb, ended); rep(congregation, 2); rep(trust, -1); set(book.mole2_beam)
+if: gasholder_carries == bulb_eye | gasholder_carries == lit_eye => mole2_eye = step
+nar: The standby lamp hung in the hole in the lens. The broken glass throws its small flame every way at once, and at the root of the mole forty glass heads see Mother, dark all night, open one ragged eye. They kneel where they stand.
+go: mole2.after.menu
+
+@node mole2.end.measured
+place: mole
+speaker: FENNICK
+cost: 4
+do: mole2.bulb_end = measured; quest(a2.bulb, ended); rep(congregation, -1); seenas_congregation = seer
+if: gasholder_carries == bulb_eye | gasholder_carries == lit_eye => mole2_eye = step
+line: We do not say it broke. We say it was opened. I never said it would fit.
+line: These are hers, though. The bulb is ours. Leave her these. {when: gasholder_carries == bulb_eye | gasholder_carries == lit_eye}
+nar: He sets the crown of prisms on the oxblood step and turns the bier round with his own hands, and the procession goes back up the quay. {when: gasholder_carries == bulb_eye | gasholder_carries == lit_eye}
+nar: He turns the bier round with his own hands, and the procession goes back up the quay. {when: !(gasholder_carries == bulb_eye | gasholder_carries == lit_eye)}
+go: mole2.after.menu
+
+# ---- after, or found over after 03:30, or never come
+@node mole2.after
+place: mole
+cost: 2
+do: mole2.bulb_end = cold; quest(a2.bulb, ended)
+if: gasholder_carries == bulb_eye | gasholder_carries == lit_eye => mole2_eye = kept
+nar: The procession has gone back up the hill. At the root of the mole: a ring of trodden frost, candle ends, a bell jar on its side, frosted inside.
+line: BRIGHT: Cold did it. Half past three. Nobody had to do anything. Nobody ever has to, if you wait long enough.
+go: mole2.desc
+
+@node mole2.after.menu
+place: mole
+opt: "Leave them to it." -> mole2.desc
+
+@node mole2.quiet
+place: mole
+speaker: BRIGHT
+cost: 1
+nar: Two o'clock, and the mole is quiet. Up on the hill the candles stand still in a knot round the gasholder, and do not come down.
+line: They were meant to be here at two. Sergeant'll be disappointed. She had a speech.
+go: mole2.desc

@@ -1,0 +1,756 @@
+# Low Water, Act 3: The Gasholder in the gale (prefix gasholder3.). Writer's file, 2026-10-17. Private.
+# Places: gas_frame, gas_altar, gas_vestry (Act 2 records); hill_lane and mole for the road down.
+# Plan: design/ACT3-PLAN.md. Gate B8, the Old Bulb's fate, five routes:
+#   Fist    gasholder3.carry -> gasholder3.carry.road.ok: Lamb carries it down to Mother's stairs
+#   Tongue  gasholder3.council: Fennick and Fisk persuaded to fit it (.fit.ok) or to leave it (.leave.ok)
+#   Shadow  gasholder3.lanes (take it down unseen of the Trust) or gasholder3.fetch (bring it home)
+#   Hands   gasholder3.sleeve: Fisk's adaptor (i.adaptor) finished on Ash's desk
+#   Eye     gasholder3.measure: collar against pedestal; the climb is made only if it can light
+# The mechanism: the Old Bulb's filament is broken and its neck is open inside the bayonet collar.
+# Fisk's adaptor seats the collar on Mother's arc pedestal and brings the carbons up through the
+# open neck, so the arc burns inside the old glass. It lights only if Mother has supply, and the
+# glass will stand the heat for one night. Where Act 2 left things: the Bulb is home unless
+# mole2.bulb_end is held or beam (on Mother's step) or seized (the Trust's hut at the root of the
+# mole); the crown is home if mole2_eye is none or kept, in Ash's poor box.
+# Hand-offs to mole3: gasholder3.bulb_up (the Bulb is at the foot of the stairs, going up; who
+# carries it is gasholder3_bearer), gasholder3.crown_up (the crown is going up; Lamb holds i.crown,
+# or the Congregation brings it), gasholder3.bulb_measured (it will seat and light first time),
+# gasholder3.bulb_cracked (it will not hold an arc), count(i.adaptor).
+# Also: the B1 moment for the Old Bulb as a gale lamp (light_bulb), the frame singing, e3.zealots.
+
+# ---- new ids
+@fact gasholder3.away
+@fact gasholder3.crown_here
+@fact gasholder3.bulb_up
+@fact gasholder3.crown_up
+@fact gasholder3.bulb_home
+@fact gasholder3.bulb_measured
+@fact gasholder3.bulb_cannot
+@fact gasholder3.measure_pencil
+@fact gasholder3.bulb_cracked
+@fact gasholder3.fetched
+@fact gasholder3.confiscated
+@fact gasholder3.congregation_carries
+@fact gasholder3.fennick_consents
+@fact gasholder3.pedestal_known
+@fact gasholder3.sleeve_split
+@fact gasholder3.fisk_refused
+@fact gasholder3.tended
+@fact gasholder3.zealots_done
+@fact gasholder3.ash_given
+
+@var gasholder3_where
+default: home
+values: home, step, trust
+about: Where the Old Bulb is when Night 3 begins: in the Gasholder, on Mother's step, or in the Trust's hut at the root of the mole.
+
+@var gasholder3_bulb
+default: none
+values: none, up, home, cracked, held
+about: The Old Bulb's fate (B8): going up Mother's stairs, kept home, cracked on the road, or held by the Trust.
+
+@var gasholder3_bearer
+default: none
+values: none, lamb, congregation
+about: Who carries the Old Bulb to the foot of Mother's stairs.
+
+@var gasholder3_took
+default: none
+values: none, bulb, crown
+about: What Lamb laid hands on when the zealots stood up.
+
+@event gasholder3.ev_lampout
+at: 03:30
+when: var.light_bulb == 1 & !has(gasholder3.tended) & !has(lampout.bulb) & !has(gasholder3.away) & !has(gasholder3.bulb_up)
+nar: Up on the hill, in the band, the Old Bulb's mantle shakes itself to ash, and nobody is there to see the hill go dark.
+do: set(lampout.bulb)
+
+@encounter e3.zealots
+name: Glass heads in a gale
+area: gasholder
+foe: f.zealot 4
+param: gale (the frame's lattice breaks the wind in bands; candles go out in the gusts)
+param: glass (a jar or the Old Bulb can break on the shingle)
+prop: lamp 0 0
+talk: gasholder3.fx.zealots | Set it down in the straw and kneel ? fight_seconds >= 6
+win: gasholder3.fight.zealots.win
+yield: gasholder3.fight.zealots.yield
+fled: gasholder3.fight.zealots.fled
+down: gasholder3.fight.zealots.down
+
+@encounter e3.zealots.sneak
+name: Glass heads in a gale, in the dark of a gust
+area: gasholder
+opening: sneak
+foe: f.zealot 4
+param: gale
+param: glass
+prop: lamp 0 0
+talk: gasholder3.fx.zealots | Set it down in the straw and kneel ? fight_seconds >= 6
+win: gasholder3.fight.zealots.win
+yield: gasholder3.fight.zealots.yield
+fled: gasholder3.fight.zealots.fled
+down: gasholder3.fight.zealots.down
+
+# ================================================================ the hub
+@node gasholder3.spanner
+place: gas_frame
+cost: 1
+do: give(w.spanner)
+nar: A double-ended spanner as long as a forearm, hung on a nail by the frame's first stanchion, with FISK scratched on the shank and then scratched out.
+go: gasholder3.hub
+
+@node gasholder3.tobit.count
+place: gas_frame
+speaker: TOBIT
+cost: 8
+do: set(gasholder3.move_count)
+line: TOBIT: In the eye I counted the edge. Now I count the wind. It goes one, two, three, and then the big one. Always three first.
+line: TOBIT: If you know it's three, you can be somewhere else on the big one. Try. One.
+nar: The frame sings. Two. Three. On the fourth gust the assessor is already standing where the wind is not, and Tobit nods, as if marking a sum.
+voice: sum: Three, then the big one. He is right, near enough. Near enough is a great deal in a gale. {dc: 4}
+go: gasholder3.hub
+
+@node gasholder3.hub
+hub: yes
+place: gas_frame
+alt: gasholder3.arrive ? !seen(gasholder3.arrive)
+alt: gasholder3.eye ? has(ev3.eye) & !has(ev3.eye_ends) & !seen(gasholder3.eye)
+alt: gasholder3.lamp ? var.light_bulb == 1 & !has(lampout.bulb) & !has(gasholder3.away) & !has(gasholder3.bulb_up) & ((clock >= 21:20 & clock < 22:00 & !has(b1.band1)) | (clock >= 22:40 & clock < 23:20 & !has(b1.band2)) | (clock >= 03:30 & clock < 04:40 & !has(b1.band3)))
+nar: The frame sings in the rising wind, one strut at a time, as if tuning. {when: clock >= 19:00 & clock < 21:00}
+nar: The gale is in the frame. Every strut has its own note, and together they make a chord the quay can hear, low and enormous, and the straw goes round on the shingle in a slow wheel. {when: has(ev3.gale) & !has(ev3.eye)}
+nar: The wind has come back from the north-west and found other struts. The chord is lower now, in a key the town has not heard before. {when: has(ev3.backed)}
+nar: The Old Bulb burns over the altar on the gasholder's own gas, a white room inside the noise. {when: var.light_bulb == 1 & !has(gasholder3.away) & !has(gasholder3.bulb_up) & !has(lampout.bulb)}
+nar: The Old Bulb hangs dark on its chains. {when: var.light_bulb == 0 & !has(gasholder3.away) & !has(gasholder3.bulb_up)}
+nar: The Old Bulb hangs dark on its chains, its mantle gone to ash. {when: var.light_bulb == 1 & has(lampout.bulb) & !has(gasholder3.away) & !has(gasholder3.bulb_up)}
+nar: The chains over the altar hang empty and swing in the gusts. {when: has(gasholder3.away) | has(gasholder3.bulb_up)}
+nar: The Congregation kneels in the lee of the altar, relighting candles as fast as the gusts take them. {when: has(ev3.gale)}
+opt: "Go up to the altar." -> gasholder3.altar
+opt: "Go into the vestry." -> gasholder3.vestry
+opt: "Sister Gauze." -> gasholder3.gauze ? !seen(gasholder3.gauze)
+opt: "Tobit, under the altar trestle." -> gasholder3.tobit ? !seen(gasholder3.tobit)
+opt: "Lift the Old Bulb off its chains and carry it down to Mother yourself." -> gasholder3.carry ? !has(gasholder3.away) & !has(gasholder3.bulb_up) & !has(gasholder3.bulb_home) & !has(gasholder3.zealots_done) {verb: carry, noise: 0.6}
+check: "[THE DARK] Wrap the Old Bulb in an oilskin and take it down the back lanes in the rain, past the Trust." -> gasholder3.lanes.ok / gasholder3.lanes.fail ? !has(gasholder3.away) & !has(gasholder3.bulb_up) & !has(gasholder3.bulb_home) & (has(gasholder3.fennick_consents) | has(gasholder3.congregation_carries)) & !has(ev3.eye) {skill: dark, dc: 7, verb: hide, noise: 0.2}
+check: "[THE DARK] Go down to the root of the mole and bring the Old Bulb home, unseen of the Trust." -> gasholder3.fetch.ok / gasholder3.fetch.fail ? has(gasholder3.away) & !has(gasholder3.bulb_up) & !has(gasholder3.confiscated) {skill: dark, dc: 7, verb: hide, noise: 0.2}
+opt: "Go down to the mole and carry the Old Bulb up the stairs yourself." -> gasholder3.carry.step ? has(gasholder3.away) & var.gasholder3_where == step & !has(gasholder3.bulb_up) {verb: carry, noise: 0.4}
+check: "[GRIP] Climb the frame in the wind." -> gasholder3.climb.ok / gasholder3.climb.fail ? !has(ev3.eye) | has(ev3.eye_ends) {skill: grip, dc: 6, verb: climb, noise: 0.1}
+opt: "Climb the frame in the calm." -> gasholder3.climb.ok ? has(ev3.eye) & !has(ev3.eye_ends) {verb: climb, noise: 0}
+opt: "Take the spanner hanging on the frame's first stanchion." -> gasholder3.spanner ? count(w.spanner) == 0 {verb: carry, noise: 0.2}
+opt: "Crouch under the frame with Tobit." -> gasholder3.tobit.count ? seen(quay3.eye.look) & !has(gasholder3.move_count)
+opt: "Go down the hill path." -> hill3.hub
+
+@node gasholder3.arrive
+place: gas_frame
+cost: 2
+if: var.mole2.bulb_end == held | var.mole2.bulb_end == beam => set(gasholder3.away); gasholder3_where = step
+if: var.mole2.bulb_end == seized => set(gasholder3.away); gasholder3_where = trust
+if: var.mole2_eye == none | var.mole2_eye == kept => set(gasholder3.crown_here)
+do: quest(a3.bulb, open)
+nar: The white lamps on the path are swinging on their brackets, and the light swings with them, so the gasholder gate comes and goes. Above it the frame is making a noise the assessor has no claim form for.
+nar: Inside, the jam jars have been wired to the struts against the wind, and somebody has spent the afternoon roping the straw down. It is still trying to leave.
+go: gasholder3.hub
+
+# ================================================================ the deacon
+@node gasholder3.altar
+place: gas_altar
+speaker: FENNICK
+cost: 2
+alt: gasholder3.altar.cold ? has(gasholder3.zealots_done) | has(gasholder.zealots_done)
+alt: gasholder3.altar.again ? seen(gasholder3.altar)
+line: FENNICK: Assessor. Stand in the lee of the altar or the frame will have your hat. It took mine at seven. It is in the Gut by now, being smelled.
+line: FENNICK: You wrote me down, and drew no column. I have read it back to myself every hour since, in case it changed. {when: has(gasholder.fennick_knew)}
+line: FENNICK: You counted them. I have counted them myself since, twice, to see if I got the same answer. I did. {when: has(relics.counted) & !has(gasholder.fennick_knew)}
+line: FENNICK: You stood in our gate on the second night. It is still standing there, in a way. The Congregation walks round the place. {when: has(gasholder.procession_stopped)}
+line: FENNICK: The Trust gave us a receipt for it. It is very well typed. {when: var.gasholder3_where == trust}
+line: FENNICK: She looked at it with her own light, on the step, and it is still there. Nobody has dared to move it. {when: var.mole2.bulb_end == beam}
+go: gasholder3.fennick.menu
+
+@node gasholder3.altar.again
+place: gas_altar
+speaker: FENNICK
+cost: 1
+line: FENNICK: Still here, assessor. So am I.
+go: gasholder3.fennick.menu
+
+@node gasholder3.altar.cold
+place: gas_altar
+speaker: FENNICK
+cost: 1
+line: FENNICK: The Congregation would like you to stand where the candles can see you. They have had enough surprises from the Shelf.
+go: gasholder3.fennick.menu
+
+@node gasholder3.fennick.menu
+speaker: FENNICK
+cost: 0
+opt: "What does the Congregation mean to do tonight?" -> gasholder3.fennick.plan ? !seen(gasholder3.fennick.plan)
+opt: "'Let me carry it, deacon. My knees are younger.'" -> gasholder3.fennick.carry ? !has(gasholder3.away) & !has(gasholder3.bulb_up) & !has(gasholder3.fennick_consents) & !has(gasholder3.bulb_home) & !seen(gasholder3.fennick.carry)
+opt: "Mother's lens wants her prisms back. The crown, deacon." -> gasholder3.fennick.crown ? has(gasholder3.crown_here) & !seen(gasholder3.fennick.crown)
+opt: "Bring Fisk out of the vestry, and talk to them both." -> gasholder3.council ? has(met.fisk) & !has(gasholder3.bulb_up) & !has(gasholder3.bulb_home) & !seen(gasholder3.council)
+opt: "Leave him in the lee." -> ^hub
+
+@node gasholder3.fennick.plan
+speaker: FENNICK
+cost: 3
+line: FENNICK: At a quarter past twelve the wind will stop. The Glass says so, and the Glass has never once lied to me about weather, only about everything else.
+line: FENNICK: Forty minutes of calm. Long enough to carry it down the hill, along the mole, and up past the sixtieth stair, if Mr Fisk's brass sleeve is finished, and if the Trust's poles let us by, and if God is an engineer. {when: !has(gasholder3.away)}
+line: FENNICK: It is on her step, and we cannot fetch it home in this. In the calm, perhaps. Or perhaps it should go up from where it is, and I should stop pretending it is mine. {when: var.gasholder3_where == step}
+line: FENNICK: The Trust has it in a hut with a padlock and a sergeant. I have prayed about the padlock. {when: var.gasholder3_where == trust}
+line: FENNICK: Mr Fisk is in the vestry with a ruler. He says it can be done once. I find I do not mind once.
+go: gasholder3.fennick.menu
+
+@node gasholder3.fennick.carry
+speaker: FENNICK
+cost: 2
+alt: gasholder3.fennick.carry.no ? !has(gasholder.fennick_knew)
+do: set(gasholder3.fennick_consents)
+line: FENNICK: You have carried my words already, and they were heavier. Take it, then. Hold it by the collar, never the glass. The glass remembers hands.
+go: gasholder3.fennick.menu
+
+@node gasholder3.fennick.carry.no
+speaker: FENNICK
+cost: 1
+line: FENNICK: Younger knees are not the point, assessor. It goes up in the Congregation's arms or it does not go.
+go: gasholder3.fennick.menu
+
+@node gasholder3.fennick.crown
+speaker: FENNICK
+cost: 2
+alt: gasholder3.fennick.crown.no ? !has(gasholder.fennick_knew)
+line: FENNICK: They are in Lumen's poor box. Tell him I said so. Tell him to enter it however he likes.
+do: set(gasholder3.ash_given)
+go: gasholder3.fennick.menu
+
+@node gasholder3.fennick.crown.no
+speaker: FENNICK
+cost: 1
+line: FENNICK: They came to us by grace, and Lumen keeps them. Ask Lumen. He will enter whatever you say to him, and I will read it in the morning.
+go: gasholder3.fennick.menu
+
+# ================================================================ Tongue: the council in the vestry
+@node gasholder3.council
+place: gas_vestry
+speaker: FISK
+cost: 4
+nar: Fennick stands in the vestry door with the gale at his back. Fisk does not look up from the collar, which he is measuring for what is plainly not the first time.
+line: FISK: The pedestal is forty-one millimetres. The collar is thirty-eight and worn. My sleeve makes up the three. I am sorry. "Worn" is an adjective.
+line: FENNICK: Tell him what the Alderman said, Mr Fisk.
+line: FISK: The Alderman said nothing goes on Mother's pedestal that is not in my specification. The Alderman has always been very fond of my specification, in parts.
+check: "[FORM LETTER] Put it to Fisk as an amendment: the Shelf requires a lamp on Mother for the gale, and his sleeve meets the requirement." -> gasholder3.council.fit.ok / gasholder3.council.fit.fail ? !has(gasholder3.fisk_refused) {skill: formletter, dc: 7}
+check: "[CONDOLENCE] Ask Fennick to leave it here, burning for the hill, where his own people can see it." -> gasholder3.council.leave.ok / gasholder3.council.leave.fail ? !has(gasholder3.away) {skill: condolence, dc: 7}
+opt: "Leave them to the collar." -> ^hub
+
+@node gasholder3.council.fit.ok
+place: gas_vestry
+speaker: FISK
+cost: 6
+do: set(gasholder3.congregation_carries); set(gasholder3.fennick_consents); give(i.adaptor); set(said.gasholder3.amendment); set(heard.fisk.amendment); quest(a2.button, proved)
+line: LAMB: Amendment one. Section nine. A lamp shall burn on Mother through the gale, by any fitting the engineer approves. Signed, the Shelf.
+line: FISK: Approved. I have never approved anything before. One usually has to be asked.
+nar: He files the last slot with the collar in Fennick's two hands, tries it, and it turns home with a click.
+line: FENNICK: In the calm, then. All of us, and the Shelf if it wants to walk. {when: clock < 00:15}
+line: FENNICK: In this, then. All of us. Hold your jars on. {when: clock >= 00:15}
+go: ^hub
+
+@node gasholder3.council.fit.fail
+place: gas_vestry
+speaker: FISK
+cost: 3
+do: set(gasholder3.fisk_refused)
+line: FISK: I wrote a clause once that the Alderman struck. I would rather not write another for her to strike. I am sorry. You will find the sleeve on the desk, half done. I am not going to finish it, and I am not going to stop anyone else.
+go: ^hub
+
+@node gasholder3.council.leave.ok
+place: gas_vestry
+speaker: FENNICK
+cost: 4
+do: set(gasholder3.bulb_home); gasholder3_bulb = home; quest(a3.bulb, decided)
+line: LAMB: It has carried one light down a hundred and twelve stairs already, deacon. Let it hold one up here, where forty people can kneel under it.
+line: FENNICK: Then it stays. Twelve years I have wanted to give it back to her. It turns out I would rather keep it where I can see it. That is less holy, and it is the truth.
+line: FISK: I shall finish the sleeve anyway. A part should exist even if nobody fits it. Otherwise how would anyone know it could have been done?
+go: ^hub
+
+@node gasholder3.council.leave.fail
+place: gas_vestry
+speaker: FENNICK
+cost: 3
+do: set(gasholder3.congregation_carries)
+line: FENNICK: No. She asked for it twelve years ago, on the sixtieth stair, and I have been deaf ever since. We go in the calm, sleeve or no sleeve. If it will not seat, we will hold it up to her by hand.
+voice: sum: Without the sleeve it will not seat, and a hand cannot hold an arc. Forty people are about to carry a bulb up a tower to show it to a lamp. {dc: 5}
+go: ^hub
+
+# ================================================================ Hands: the sleeve; Eye: the collar
+@node gasholder3.vestry
+place: gas_vestry
+speaker: ASH
+cost: 1
+nar: The vestry has its shutter nailed and its stove lit, and it is the only still room on the hill. Brother Ash is at the ledger. At the other end of the desk Dorran Fisk has a brass collar in a vice and three rulers laid out by length.
+line: ASH: Received: one assessor, wet. I enter the wet separately now. There is so much of it.
+do: set(met.fisk)
+go: gasholder3.vestry.menu
+
+@node gasholder3.vestry.menu
+speaker: ASH
+cost: 0
+opt: "Mr Fisk. What is the sleeve for?" -> gasholder3.fisk.sleeve ? !seen(gasholder3.fisk.sleeve)
+check: "[GRIP] Finish the sleeve: file the bayonet slots while Fisk holds the collar steady." -> gasholder3.sleeve.ok / gasholder3.sleeve.fail ? count(i.adaptor) == 0 & !has(gasholder3.sleeve_split) {skill: grip, dc: 6, verb: rig, noise: 0.1}
+opt: "Collect the second sleeve from Fisk." -> gasholder3.sleeve.late ? has(gasholder3.sleeve_split) & count(i.adaptor) == 0 & clock >= 03:00 & clock < 06:00
+check: "[SUM] Measure the collar against the pedestal, and the pedestal against tonight." -> gasholder3.measure.ok / gasholder3.measure.fail ? has(gasholder3.pedestal_known) & !has(gasholder3.bulb_measured) & !has(gasholder3.bulb_cannot) & !has(gasholder3.measure_pencil) & (!has(gasholder3.away) | seen(mole2.collar.ok)) {skill: sum, dc: 7, verb: read, noise: 0}
+opt: "Brother Ash. The crown of prisms." -> gasholder3.ash.crown ? has(gasholder3.crown_here) & !seen(gasholder3.ash.crown)
+opt: "Go back out into the frame." -> ^hub
+
+@node gasholder3.fisk.sleeve
+speaker: FISK
+cost: 3
+do: set(gasholder3.pedestal_known)
+line: FISK: Mother's pedestal takes her arc. Two carbons, upright, forty-one millimetres of brass round them. The Old Bulb's collar is a bayonet cap, thirty-eight, with one pin worn to half by twelve years of foreheads.
+line: FISK: The filament is broken and the neck is open. So: the sleeve seats the collar on the pedestal, the carbons come up through the neck, and the arc burns inside the glass. A globe. They made lamps like that when I was an apprentice. I was very happy then.
+line: FISK: The glass will stand it one night. After that it will craze, and then it will be sand. Once, assessor. The specification would say once.
+line: FISK: You helped me put my pages in order this afternoon. I have not thanked you properly. There is no proper way, in my experience. {when: has(day2.fisk)}
+go: gasholder3.vestry.menu
+
+@node gasholder3.sleeve.ok
+place: gas_vestry
+speaker: FISK
+cost: 15
+do: give(i.adaptor); quest(a3.bulb, open)
+nar: The assessor files and Fisk holds, and neither speaks for a quarter of an hour. Outside, the frame plays its chord. The last slot takes the worn pin with a quarter turn, and the sleeve closes on the collar like a hand on a hand.
+line: FISK: It fits. I had stopped expecting things to.
+go: gasholder3.vestry.menu
+
+@node gasholder3.sleeve.fail
+place: gas_vestry
+speaker: FISK
+cost: 15
+do: set(gasholder3.sleeve_split)
+nar: The file goes a hair too deep on the second slot. The brass splits along the cut with a small tidy sound, like a ruler snapping in another room.
+line: FISK: Brass. It forgives nothing, which is why I like it. I have one more blank. It will take me until three, and my hands are not what they were at seven o'clock.
+go: gasholder3.vestry.menu
+
+@node gasholder3.sleeve.late
+speaker: FISK
+cost: 2
+do: give(i.adaptor)
+line: FISK: Three o'clock, as specified. I am sorry it is late. I am sorry it is early, for whoever has to climb with it.
+go: gasholder3.vestry.menu
+
+@node gasholder3.measure.ok
+place: gas_vestry
+cost: 10
+alt: gasholder3.measure.cannot ? (var.lens == broken & var.light_mother == 0) | has(gasholder3.bulb_cracked)
+do: set(gasholder3.bulb_measured)
+nar: Thirty-eight against forty-one, the worn pin against Fisk's slot, the open neck against the height of the carbons: it seats, a quarter turn the wrong way round, and the carbons clear the glass by a finger.
+inst: CANDLEMAS: And she has supply tonight, or the Trust would not have men on her stairs. An arc inside crown-clear glass. It will light first time. I should like to be there.
+line: FISK: A quarter turn the wrong way. I would have spent ten minutes on that at the top of the tower, in a gale, swearing. Thank you.
+go: gasholder3.vestry.menu
+
+@node gasholder3.measure.cannot
+place: gas_vestry
+cost: 10
+do: set(gasholder3.bulb_cannot)
+nar: The collar would seat. The carbons would clear the neck. And there it stops.
+inst: CANDLEMAS: No supply. The Trust pulled her fuse when her lens broke, and nobody has put it back. A globe with nothing in it is a jar. {when: var.lens == broken & var.light_mother == 0}
+inst: CANDLEMAS: That crack runs up from the collar and nearly to the top. Heat it and it opens like a book. {when: has(gasholder3.bulb_cracked)}
+line: FISK: Then it would go up a hundred and twelve stairs in a gale to sit dark on her pedestal. I would rather it stayed where people kneel to it.
+go: gasholder3.vestry.menu
+
+@node gasholder3.measure.fail
+place: gas_vestry
+cost: 10
+do: set(gasholder3.measure_pencil)
+nar: The worn pin will not go into Fisk's slot however the assessor turns the figures. In pencil, at the foot of a page: will not seat.
+voice: sum: Three millimetres short, and a pin worn away. A thing that does not fit does not fit. {dc: 4}
+go: gasholder3.vestry.menu
+
+# ---- the crown, from Ash's poor box
+@node gasholder3.ash.crown
+place: gas_vestry
+speaker: ASH
+cost: 2
+alt: gasholder3.ash.crown.lied ? has(lied.gasholder.municipal)
+alt: gasholder3.ash.crown.give ? has(gasholder3.ash_given) | has(said.gasholder.ash_silence)
+line: ASH: In the poor box, under the candle money. The deacon has not said it may go. I have no column for things the deacon has not said.
+check: "[THE CHIT] Offer him a column for it: on loan to Mother, returnable, the Shelf to sign." -> gasholder3.ash.crown.give / gasholder3.ash.crown.fail {skill: chit, dc: 7}
+check: "[UNDERTOW] Wait until he turns to the stove, and lift the key off its string." -> gasholder3.ash.key.ok / gasholder3.ash.key.fail {skill: undertow, dc: 7, verb: carry, noise: 0.3}
+opt: "Force the poor box's hasp with the boathook." -> gasholder3.ash.force {verb: pry, noise: 0.7}
+opt: "Leave the box shut." -> gasholder3.vestry.menu
+
+@node gasholder3.ash.crown.give
+place: gas_vestry
+speaker: ASH
+cost: 3
+do: give(i.crown); set(gasholder3.crown_up); clear(gasholder3.crown_here); quest(a3.lens, open)
+line: ASH: You kept the ledger out of it, the second night. Nobody asked me where you had it. I noticed. {when: has(said.gasholder.ash_silence)}
+nar: The key comes off its string. Under the candle money, wrapped in the deacon's surplice, the crown: fifty-six prisms on their brass wires, heavier than it looks and colder.
+line: ASH: Entered: one crown, to Mother, on loan. I have written "returnable". I do not know to whom.
+go: gasholder3.vestry.menu
+
+@node gasholder3.ash.crown.lied
+place: gas_vestry
+speaker: ASH
+cost: 1
+line: ASH: The Municipal never had our ledger, I find. Constant Hobb told me on Thursday, very kindly. Entered: one lie, received from the Shelf. The box stays shut.
+go: gasholder3.vestry.menu
+
+@node gasholder3.ash.crown.fail
+place: gas_vestry
+speaker: ASH
+cost: 2
+line: ASH: A loan needs a lender. The deacon is the lender. I am only the column.
+go: gasholder3.vestry.menu
+
+@node gasholder3.ash.key.ok
+place: gas_vestry
+cost: 3
+do: give(i.crown); set(gasholder3.crown_up); clear(gasholder3.crown_here); quest(a3.lens, open); rep(congregation, -1)
+nar: He turns to the stove to warm his pen hand, and the key comes off its string with a small give. The crown goes under the assessor's coat. Fisk sees it, and goes back to measuring the collar for the eleventh time.
+go: gasholder3.vestry.menu
+
+@node gasholder3.ash.key.fail
+place: gas_vestry
+speaker: ASH
+cost: 2
+line: ASH: That is my key, assessor, and that is my string, and that was very nearly my neck. I shall have to enter it. I do not know what column a thing like that goes in.
+nar: He puts the key in his mouth.
+go: gasholder3.vestry.menu
+
+@node gasholder3.ash.force
+place: gas_vestry
+speaker: ASH
+cost: 1
+do: gasholder3_took = crown
+line: ASH: Brothers! The box!
+nar: The hasp gives on the second heave. Ash's cry goes out of the vestry door into the frame, and four jars in the front row turn and stand.
+go: gasholder3.zealots
+
+# ================================================================ Fist: carry it yourself
+@node gasholder3.carry
+place: gas_altar
+cost: 2
+alt: gasholder3.carry.road ? has(gasholder3.fennick_consents) | has(gasholder3.congregation_carries)
+do: gasholder3_took = bulb
+nar: The Old Bulb comes off its chains into the assessor's arms, lighter than a claim and much less certain. In the front row four jars turn, and four young men stand up under them with the gale pulling at their surplices.
+line: FENNICK: Assessor. Put her down.
+go: gasholder3.zealots
+
+@node gasholder3.carry.road
+place: hill_lane
+cost: 5
+do: set(gasholder3.fennick_consents)
+nar: The Old Bulb, wrapped in two surplices and held by the collar, goes out of the gate in the assessor's arms. The wind finds it at once and plays its open neck like a bottle.
+check: "[KNEES] Down Chancel Hill in the gale, one lamp post at a time, without letting the glass touch anything." -> gasholder3.carry.road.ok / gasholder3.carry.road.fail {skill: knees, dc: 7, red}
+check: "[THE VANE] Read the gusts, and go down between them." -> gasholder3.carry.road.ok / gasholder3.carry.road.fail ? !has(ev3.eye) | has(ev3.eye_ends) {skill: vane, dc: 6}
+
+@node gasholder3.carry.road.ok
+place: mole
+speaker: GORM
+cost: 25
+do: set(gasholder3.bulb_up); gasholder3_bulb = up; gasholder3_bearer = lamb; quest(a3.bulb, decided); meter(cold, 2); set(book.gasholder3_carry)
+nar: Twenty-five minutes, and the glass touches nothing. At the root of the mole the Trust's lantern finds a soaked assessor with a god in a surplice.
+line: GORM: And what is the Shelf carrying up the mole tonight? And does the Alderman know? And would the Shelf like to stand still while I write it, or keep walking?
+nar: The assessor keeps walking. Behind, the hill's one white bulb is out. {when: var.light_bulb == 1}
+go: mole3.hub
+
+@node gasholder3.carry.road.fail
+place: hill_lane
+cost: 20
+do: set(gasholder3.bulb_cracked); gasholder3_bulb = cracked; meter(cold, 2)
+nar: At the turn by the substation a gust takes the assessor's legs. The knee goes down on the stone and the Old Bulb rings once against the lamp post, a long clean note the frame up the hill seems to answer.
+nar: A line runs down the glass from the collar, fine as a hair, and stops short of the crown. It does not open. It does not close either.
+voice: knees: It is the knee you will mind tomorrow. The glass will mind it for ever. {dc: 4}
+opt: "Carry it on down to Mother anyway." -> gasholder3.carry.cracked.on {verb: carry, noise: 0.3}
+opt: "Carry it back up to the Gasholder." -> gasholder3.carry.cracked.home {verb: carry, noise: 0.2}
+
+@node gasholder3.carry.cracked.on
+place: mole
+cost: 20
+do: set(gasholder3.bulb_up); gasholder3_bearer = lamb; quest(a3.bulb, decided); meter(cold, 1)
+nar: The rest of the way it hums in the wind through the crack, a note lower than before.
+go: mole3.hub
+
+@node gasholder3.carry.cracked.home
+place: gas_altar
+speaker: FENNICK
+cost: 15
+do: set(gasholder3.bulb_home); quest(a3.bulb, decided); rep(congregation, -1)
+line: FENNICK: Hang it up. It has been opened before, assessor. We will kneel to the crack.
+go: ^hub
+
+@node gasholder3.carry.step
+place: mole
+cost: 20
+do: set(gasholder3.bulb_up); gasholder3_bulb = up; gasholder3_bearer = lamb; quest(a3.bulb, decided); meter(cold, 2)
+nar: Down the hill and out along the quay in the gale, to where the Old Bulb sits on the oxblood step at the foot of Mother's tower, wet, with a puddle in its open neck. Somebody has set a stone on either side of it so it will not roll.
+go: mole3.hub
+
+# ================================================================ Shadow: past the Trust, or home from them
+@node gasholder3.lanes.ok
+place: mole
+cost: 25
+do: set(gasholder3.bulb_up); gasholder3_bulb = up; gasholder3_bearer = lamb; quest(a3.bulb, decided); meter(cold, 2); meter(dread, 1)
+nar: Behind the Gut, under the ropewalk eaves, through the yard where the Brine keeps its empties: the back lanes in the rain band, with the Old Bulb in an oilskin like a loaf. The Trust's lanterns are all on the quay, facing the sea.
+nar: At the root of the mole the sergeant's back is to the town. The assessor goes past it at the pace of somebody who belongs there and is late.
+go: mole3.hub
+
+@node gasholder3.lanes.fail
+place: mole
+speaker: GORM
+cost: 20
+do: set(gasholder3.away); set(gasholder3.confiscated); gasholder3_where = trust; gasholder3_bulb = held; set(book.gasholder3_lanes); rep(trust, -1); meter(cold, 2)
+if: var.light_bulb == 1 & !has(lampout.bulb) => set(lampout.bulb)
+nar: The lanes are fine. The root of the mole is not: a Lamplighter steps out of the hut's lee with his lantern up, and the oilskin is not a loaf.
+line: GORM: And is that the Congregation's property, or the Trust's? And shall we keep it in the hut until somebody knows? And did the Shelf think the back of the Brine was dark?
+go: mole3.hub
+
+@node gasholder3.fetch.ok
+place: gas_altar
+speaker: FENNICK
+cost: 35
+do: clear(gasholder3.away); set(gasholder3.fetched); gasholder3_where = home; meter(cold, 2); meter(dread, 1)
+nar: The Trust's hut has a padlock and a window, and the window has a catch that has never been asked anything. The assessor carries the Old Bulb home up the back lanes in the rain, and hangs it back on its chains with hands too cold to feel the collar. {when: var.gasholder3_where == trust}
+nar: The step is watched from the hut, but the hut is watching the sea. The assessor lifts the Old Bulb off Mother's step between two stones and carries it home up the back lanes in the rain, and hangs it back on its chains with hands too cold to feel the collar. {when: var.gasholder3_where == step}
+line: FENNICK: Oh. Oh, there you are.
+nar: He says it to the Bulb. Then, after a moment, to the assessor.
+go: ^hub
+
+@node gasholder3.fetch.fail
+place: mole
+speaker: GORM
+cost: 20
+do: set(gasholder3.confiscated); set(book.gasholder3_fetch); rep(trust, -1); meter(cold, 2)
+nar: The hut's lee has a Lamplighter in it, and the Lamplighter has a lantern, and the assessor is standing in its light with both hands on the Trust's property.
+line: GORM: And was the Shelf going somewhere with that? And shall I write that the Shelf was only looking?
+go: mole3.hub
+
+# ================================================================ the zealots (e3.zealots, optional)
+@node gasholder3.zealots
+place: gas_altar
+speaker: FENNICK
+cost: 1
+voice: ballast: Four of them, the shingle loose, the wind coming through the lattice in bands. Glass on their heads and glass in your arms. {dc: 4}
+opt: "Hold on to it." -> gasholder3.zealots.fight
+check: "[CONDOLENCE] Tell Fennick why, plainly, with it still in your arms." -> gasholder3.zealots.talk.ok / gasholder3.zealots.talk.fail {skill: condolence, dc: 7}
+check: "[THE DARK] Wait for the next gust to take the candles, and go." -> gasholder3.zealots.slip.ok / gasholder3.zealots.slip.fail ? has(ev3.gale) & (!has(ev3.eye) | has(ev3.eye_ends)) {skill: dark, dc: 7, verb: hide, noise: 0.3}
+opt: "Put it back." -> gasholder3.zealots.back
+
+@node gasholder3.zealots.back
+place: gas_altar
+speaker: FENNICK
+cost: 1
+do: rep(congregation, -1); gasholder3_took = none
+line: FENNICK: Thank you. Sit, brothers. The Shelf is learning the liturgy, slowly.
+go: ^hub
+
+@node gasholder3.zealots.talk.ok
+place: gas_altar
+speaker: FENNICK
+cost: 3
+do: set(gasholder3.fennick_consents); gasholder3_took = none
+line: LAMB: Because she needs a lamp tonight, and this is the only one in Gullet that was ever hers. Because a collier is coming at four. Because you asked me to write you down, or you didn't, and either way I am the one holding it.
+line: FENNICK: Sit down, brothers. Let the Shelf carry it. We will carry the candles behind, as far as the wind lets us.
+go: ^hub
+
+@node gasholder3.zealots.talk.fail
+place: gas_altar
+cost: 1
+nar: The assessor begins with "because", and the nearest young man takes hold of the collar with both hands.
+go: gasholder3.zealots.fight
+
+@node gasholder3.zealots.slip.ok
+place: hill_lane
+cost: 5
+do: rep(congregation, -2); seenas_congregation = thief
+if: var.gasholder3_took == crown => give(i.crown); set(gasholder3.crown_up); clear(gasholder3.crown_here)
+if: var.gasholder3_took == bulb => set(gasholder3.fennick_consents)
+nar: The gust comes on the count of four, as the Vane promised, and takes every candle in the frame at once. In the dark and the noise the assessor goes out of the gate, and nobody hears a step in a chord that size.
+go: gasholder3.slip.after
+
+@node gasholder3.slip.after
+cost: 0
+alt: gasholder3.carry.road ? var.gasholder3_took == bulb
+go: hill3.hub
+
+@node gasholder3.zealots.slip.fail
+place: gas_altar
+cost: 1
+nar: The gust comes early. Half the candles go out, and half do not, and the assessor is standing in what is left of the light with the thing in both arms.
+go: gasholder3.zealots.fight.dark
+
+@node gasholder3.zealots.fight
+place: gas_altar
+cost: 0
+do: fight(e3.zealots)
+nar: They come in slowly, arms wide, leaning into the gusts.
+
+@node gasholder3.zealots.fight.dark
+place: gas_altar
+cost: 0
+do: fight(e3.zealots.sneak)
+nar: They come in by the sound of the assessor's boots on the shingle, half blind, their candles out.
+
+@node gasholder3.fx.zealots
+place: gas_altar
+cost: 2
+nar: The assessor goes down on both knees in the straw and sets it down in front of them, very carefully, with the wind pulling at the cloth.
+go: gasholder3.fight.zealots.yield
+
+@node gasholder3.fight.zealots.win
+place: gas_altar
+speaker: FENNICK
+cost: 15
+nar: Four young men sit in the straw holding their jars, which are whole, because they took them off to fight, which nobody had ever thought to do before.
+line: FENNICK: Go, then. Nobody on the hill heard any of it. The frame is louder than we are.
+do: set(gasholder3.zealots_done); set(struck.zealots3); rep(congregation, -2); seenas_congregation = thief
+if: var.gasholder3_took == crown => give(i.crown); set(gasholder3.crown_up); clear(gasholder3.crown_here)
+if: var.gasholder3_took == bulb => set(gasholder3.fennick_consents)
+if: trait(m.body) == none => offer(m.body)
+go: gasholder3.slip.after
+
+@node gasholder3.fight.zealots.yield
+place: gas_altar
+speaker: FENNICK
+cost: 5
+line: FENNICK: Enough. Enough, brothers. Let it go with the Shelf. It went down once in the arms of a man who did not deserve it either.
+do: set(gasholder3.zealots_done); rep(congregation, -1)
+if: var.gasholder3_took == crown => give(i.crown); set(gasholder3.crown_up); clear(gasholder3.crown_here)
+if: var.gasholder3_took == bulb => set(gasholder3.fennick_consents)
+go: gasholder3.slip.after
+
+@node gasholder3.fight.zealots.fled
+place: hill_lane
+cost: 3
+do: set(gasholder3.zealots_done); rep(congregation, -2); meter(dread, 1)
+nar: Out of the gate empty-handed, with the frame's chord behind and four jars standing in the gateway like a row of lamps that have decided against it.
+go: hill3.hub
+
+@node gasholder3.fight.zealots.down
+place: gas_vestry
+speaker: FISK
+cost: 30
+do: set(gasholder3.zealots_done); set(down.gasholder3); set(gasholder3.pedestal_known); meter(cold, 1); rep(congregation, -2)
+nar: The vestry stove, a bench, a wet surplice folded under the assessor's head. Fisk is sitting beside it with a ruler, not measuring anything.
+line: FISK: Forty-one millimetres, the pedestal. Thirty-eight, the collar. I thought you would want the figures when you woke. People generally want something to hold.
+go: gasholder3.vestry.menu
+
+# ================================================================ the B1 moment: the Old Bulb as a gale lamp
+@node gasholder3.lamp
+place: gas_altar
+speaker: FENNICK
+cost: 3
+if: clock >= 21:20 & clock < 22:00 => set(b1.band1)
+if: clock >= 22:40 & clock < 23:20 => set(b1.band2)
+if: clock >= 03:30 & clock < 04:40 => set(b1.band3)
+nar: The rain band arrives all at once, sideways through the lattice. The mantle inside the Old Bulb shudders in the draught down its open neck, and the white light gutters to yellow, and back, and to yellow.
+line: FENNICK: It is going, assessor. Twelve years of dark and it will go out in a gale on the one night anyone asked it to burn.
+inst: THE GLASS: The band will pass in nine minutes, darling. The next gust is in two. Make of that what you like.
+check: "[GRIP] Hold the vestry door across the windward side of the altar until the band passes." -> gasholder3.lamp.held / gasholder3.lamp.out {skill: grip, dc: 7, verb: carry, noise: 0.2}
+opt: "Ask the Congregation to kneel round the altar on the windward side, close." -> gasholder3.lamp.ring
+opt: "Fit the storm shutter round the neck of the Bulb." -> gasholder3.lamp.shutter ? count(i.storm_shutter) >= 1 {verb: rig, noise: 0.1}
+opt: "Turn the gas down to a bead between the gusts, as the Glass counts them." -> gasholder3.lamp.bead {verb: wait, noise: 0}
+
+@node gasholder3.lamp.ring
+place: gas_altar
+speaker: GAUZE
+cost: 9
+do: set(gasholder3.tended); rep(congregation, 1); meter(cold, 1)
+nar: They come on their knees through the straw, forty of them, and kneel in a ring three deep on the windward side with their jars pressed together. The rain breaks on glass heads. Inside the ring the flame stands up straight.
+line: GAUZE: It's loud in here. It's a good loud. I can stand this kind.
+go: ^hub
+
+@node gasholder3.lamp.shutter
+place: gas_altar
+cost: 4
+do: set(gasholder3.tended); take(i.storm_shutter)
+nar: Tin round the open neck, the slot to leeward. The draught finds nothing to come in by and goes elsewhere, complaining. The mantle settles white.
+go: ^hub
+
+@node gasholder3.lamp.bead
+place: gas_altar
+cost: 9
+do: set(gasholder3.tended)
+nar: The assessor's hand on the gas tap, the Glass in the other. Down to a bead at each gust, up again in each lull, nine minutes of it, while the Congregation watches the light breathe and decides, quietly, that it is praying.
+go: ^hub
+
+@node gasholder3.lamp.held
+place: gas_altar
+cost: 9
+do: set(gasholder3.tended); meter(cold, 2)
+nar: The vestry door, off its hinges, across the windward gap, and the assessor's whole weight against it for nine minutes while the band beats on the far side like a creditor. The mantle steadies.
+go: ^hub
+
+@node gasholder3.lamp.out
+place: gas_altar
+speaker: FENNICK
+cost: 5
+do: set(lampout.bulb); meter(cold, 2)
+nar: The door bucks in a gust, the draught comes round it, and the mantle goes to pieces in the Old Bulb like ash off a cigarette. The hill's one white light goes out.
+line: FENNICK: Well. It has been dark before.
+go: ^hub
+
+# ================================================================ the eye
+@node gasholder3.eye
+place: gas_frame
+cost: 3
+nar: The frame stops singing. Every strut at once, mid-note, and the silence in the lattice is so complete that the Congregation looks up to see what has broken.
+nar: Stars, through the iron, in a round hole in the cloud.
+line: GAUZE: Oh.
+nar: Sister Gauze lifts her jar off with both hands and sets it in the straw.
+line: GAUZE: That's how quiet I wanted it. Eleven years. Somebody might have said it was only a matter of weather.
+if: has(gasholder3.congregation_carries) & !has(gasholder3.bulb_up) & !has(gasholder3.away) => set(gasholder3.bulb_up); gasholder3_bulb = up; gasholder3_bearer = congregation; quest(a3.bulb, decided)
+if: has(gasholder3.congregation_carries) & has(gasholder3.crown_here) => set(gasholder3.crown_up); clear(gasholder3.crown_here)
+go: gasholder3.eye.next
+
+@node gasholder3.eye.next
+cost: 0
+alt: gasholder3.eye.go ? has(gasholder3.bulb_up) & var.gasholder3_bearer == congregation
+go: ^hub
+
+@node gasholder3.eye.go
+place: gas_frame
+speaker: FENNICK
+cost: 2
+nar: The Old Bulb comes off its chains into eight hands. Fisk walks beside it holding the sleeve in a handkerchief. The crown goes under the deacon's arm. {when: has(gasholder3.crown_up) & count(i.crown) == 0}
+nar: The Old Bulb comes off its chains into eight hands. Fisk walks beside it holding the sleeve in a handkerchief. {when: !(has(gasholder3.crown_up) & count(i.crown) == 0)}
+line: FENNICK: Forty minutes, brothers. Walk, do not run. She has waited twelve years. She can wait for the slowest of us.
+opt: "Walk down with them." -> gasholder3.eye.walk
+opt: "Let them go." -> ^hub
+
+@node gasholder3.eye.walk
+place: mole
+cost: 25
+nar: Down Chancel Hill under the stars, with every white lamp standing still for once. Nobody speaks. Forty people are listening for the wind.
+go: mole3.hub
+
+# ================================================================ the Congregation
+@node gasholder3.gauze
+place: gas_frame
+speaker: GAUZE
+cost: 2
+line: GAUZE: It's very loud tonight. Even in here. Even for me. {when: !has(ev3.eye) | has(ev3.eye_ends)}
+line: GAUZE: When he takes it down to her, I'll stay and keep the candles. Somebody has to, and it can't be anybody with ears.
+go: ^hub
+
+@node gasholder3.tobit
+place: gas_altar
+speaker: TOBIT
+cost: 2
+line: TOBIT: I'm under here because the wind doesn't come under here. Mr Fisk has been measuring God with a ruler. He says God is thirty-eight millimetres. I thought God would be bigger.
+line: TOBIT: I made one for the gale. It's all one note, because the frame's doing the rest.
+go: ^hub
+
+# ================================================================ the frame, from the top
+@node gasholder3.climb.ok
+place: gas_frame
+cost: 8
+do: meter(cold, 1)
+nar: From the top ring, holding on with both arms: the town's lamps, the ones that are left, and the black bay, and the sea coming white over the end of the mole. {when: !has(ev3.eye) | has(ev3.eye_ends)}
+nar: From the top ring, in the calm: the whole bay under the stars, flat as a plate, and the Old Light's broken base showing at the Spit, and a boat already on the water. {when: has(ev3.eye) & !has(ev3.eye_ends)}
+nar: Out in the bay's mouth, two masthead lights and a red, rising and falling: the collier, coming on. {when: has(ev3.collier_seen) & !has(ev3.collier_turn)}
+go: ^hub
+
+@node gasholder3.climb.fail
+place: gas_frame
+cost: 6
+do: meter(cold, 2)
+nar: Halfway up, a gust lays the assessor flat against the lattice and keeps the assessor there, cheek to the iron, while the whole frame plays its chord through the bones of the face.
+voice: grip: Down. The view will be there in the calm, and so will your fingers, if you go now. {dc: 3}
+go: ^hub

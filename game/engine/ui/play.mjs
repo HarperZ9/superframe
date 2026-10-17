@@ -1,0 +1,159 @@
+// The play screen: the scene on the left (plate or place card, the clock, what is here and where
+// to go) and the dialogue panel on the right. After each world action (a hotspot, an exit,
+// waiting) the shell asks G.nextScene() for anything that should play now and plays it. A beat
+// with run set opens the Tide Run view; when the run is over, talk.afterRun() goes on.
+import { h, btn, clear } from "./dom.mjs";
+import { hudEl, meterMarks } from "./scene.mjs";
+import { plateCam } from "./platecam.mjs";
+import { lineEl, renderOptions } from "./talk.mjs";
+import { openRun } from "./run.mjs";
+import { fightLayer } from "./fightlayer.mjs";
+import { openSneak } from "./sneak.mjs";
+
+const WAIT = 10; // minutes one "wait" lets pass
+
+export function playScreen(ctx, { startNode = null } = {}) {
+  const G = ctx.G;
+  const P = { talk: null, beat: null, log: [], sel: {}, termsAll: false, ended: null };
+  const els = {
+    plate: h("div.platebox"), hud: h("div.hudbox"), edge: h("div.edge"), here: h("div.here.sheet"),
+    title: h("div.ttitle.caps"), log: h("div.log"), opts: h("div.opts"), foot: h("div.tfoot"),
+  };
+  const bar = h("div.topbar",
+    btn(["Daybook", h("span.k", "Tab")], () => ctx.daybook(), { cls: "chip" }),
+    btn(["Save", h("span.k", "F5")], () => ctx.savesPanel("save"), { cls: "chip" }),
+    btn("Settings", () => ctx.settings(), { cls: "chip" }),
+    btn("Title", () => ctx.title(), { cls: "chip" }));
+  const panel = h("aside.talk", els.title, els.log, els.opts, els.foot);
+  const root = h("div.screen.play", h("div.scene", els.plate, els.hud, els.edge, bar, els.here), panel);
+  ctx.stage.append(root);
+
+  const api = playApi(ctx, P, els, root);
+  api.cam = plateCam(els.plate, ctx);
+
+  const onKey = (e) => { if (e.code === "F5" && ctx.F.top() && ctx.F.top().root === root) { e.preventDefault(); ctx.savesPanel("save"); } };
+  window.addEventListener("keydown", onKey);
+  ctx.F.push({ name: "play", root, onAction: (a) => onAction(ctx, P, api, a), onBack: () => ctx.savesPanel("menu"), onClose: () => { window.removeEventListener("keydown", onKey); api.cam.stop(); } });
+  if (startNode) api.startTalk(startNode); else api.worldStep();
+  return api;
+}
+
+// What the play screen can do: talk, choose, run, close, and the world actions.
+function playApi(ctx, P, els, root) {
+  const G = ctx.G;
+  const api = {
+    P, root, els,
+    render() {
+      const talking = !!P.talk || !!P.ended;
+      root.classList.toggle("talking", talking); if (api.cam) { api.cam.talking(talking); if (!talking) api.cam.focus(null); }
+      renderWorld(ctx, P, els, api); renderTalk(ctx, P, els, api);
+    },
+    startTalk(node) { P.log = []; P.sel = {}; P.talk = G.talk(node); api.take(P.talk.beat); },
+    // A new beat: add its lines, then open a run, show options, or offer to go on.
+    take(beat) {
+      P.beat = beat; P.log.push(...beat.lines);
+      if (beat.end) P.ended = beat.end;
+      api.render();
+      if (beat.run) api.runThen(beat.run);
+      else if (beat.fight) api.fightThen(beat.fight);
+      else if (beat.sneak) openSneak(ctx, beat.sneak, () => api.take(P.talk.afterSneak()));
+      else focusTalk(ctx, els);
+    },
+    choose(i, strain = 0) {
+      if (!P.talk || !P.beat.options || !P.beat.options[i]) return;
+      const o = P.beat.options[i]; if (o.locked) return;
+      api.take(P.talk.choose(i, { strain }));
+    },
+    // A fight plays in the world: over the plate view, under the game camera, with no new screen.
+    fightThen(id) {
+      root.classList.add("fighting");
+      fightLayer(ctx, els.plate.parentElement, id, () => { root.classList.remove("fighting"); api.take(P.talk.afterFight()); }, { cam: api.cam });
+    },
+    runThen(id) {
+      if (G.state.runsOff) { console.warn(`run ${id} requested with runs off; content should branch on !runs`); }
+      openRun(ctx, id, () => api.take(P.talk.afterRun()));
+    },
+    // The conversation is over: the end of the story, or back to the world.
+    close() {
+      const ended = P.ended; P.talk = null; P.beat = null;
+      if (ended) return api.render();
+      api.worldStep();
+    },
+    worldStep() {
+      const s = G.nextScene();
+      if (s) return api.startTalk(s.node);
+      api.render();
+      ctx.F.focus(els.here.querySelector(".f"), { scroll: false });
+    },
+    hotspot(hs) { if (api.cam) api.cam.focus(hs.at); api.startTalk(hs.target); },
+    // An interaction verb from the world: its lines, then its node if it names one.
+    verb(item) {
+      const r = G.verbs.act(item.object.id, item.verb.kind, { label: item.verb.label });
+      if (r.why) { P.log.push({ kind: "nar", who: "", text: r.why }); return api.render(); }
+      P.log.push(...r.lines);
+      if (r.node) { P.talk = G.talk(r.node); P.sel = {}; return api.take({ ...P.talk.beat, lines: P.talk.beat.lines }); }
+      api.worldStep();
+    },
+    exit(x) {
+      if (x.attrs && x.attrs.cost) G.advance(+x.attrs.cost);
+      const node = G.world.enter(x.target, { spawn: x.spawnAt || null });
+      if (node) return api.startTalk(node);
+      api.worldStep();
+    },
+    wait() { G.advance(WAIT); api.worldStep(); },
+  };
+  return api;
+}
+
+function onAction(ctx, P, api, a) {
+  if (a === "daybook") { ctx.daybook(); return true; }
+  if (a === "terms:on" || a === "terms:off") { P.termsAll = a === "terms:on"; renderTalk(ctx, P, api.els, api, { keepFocus: true }); return true; }
+  if (a.startsWith("opt:") && P.beat && P.beat.options) {
+    const i = +a.slice(4) - 1, o = P.beat.options[i];
+    if (o) api.choose(i, (o.check && P.sel[o.key]) || 0);
+    return !!o;
+  }
+  return false;
+}
+
+function focusTalk(ctx, els) {
+  const f = els.opts.querySelector(".f[data-first]") || els.foot.querySelector(".f");
+  if (f) ctx.F.focus(f, { scroll: false });
+  els.log.scrollTop = els.log.scrollHeight;
+}
+
+function renderWorld(ctx, P, els, api) {
+  const G = ctx.G;
+  els.hud.replaceChildren(hudEl(G));
+  els.edge.replaceChildren(...meterMarks(G));
+  const busy = !!P.talk || !!P.ended;
+  const list = h("div.acts");
+  for (const hs of G.world.hotspots()) list.append(btn([h("span.caps.kind", "Here"), hs.label.replace(/^"|"$/g, "")], () => api.hotspot(hs), { cls: "act", disabled: busy }));
+  for (const v of G.verbs.list()) list.append(btn([h("span.caps.kind", v.verb.kind), v.label, v.why ? h("span.why.quiet.small", v.why) : null], () => api.verb(v), { cls: "act", disabled: busy || !!v.why }));
+  for (const x of G.world.exits()) list.append(btn([h("span.caps.kind", "Go"), x.label.replace(/^"|"$/g, "")], () => api.exit(x), { cls: "act", disabled: busy }));
+  list.append(btn([h("span.caps.kind", "Wait"), `Let ${WAIT} minutes pass`], () => api.wait(), { cls: "act", disabled: busy }));
+  if (!busy && list.firstChild) list.firstChild.dataset.first = "";
+  els.here.replaceChildren(h("div.caps.quiet", busy ? "In conversation" : "What is here"), list);
+}
+
+function renderTalk(ctx, P, els, api, { keepFocus = false } = {}) {
+  const G = ctx.G, b = P.beat;
+  const focused = keepFocus && document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.opt : null;
+  const area = G.world.area();
+  els.title.textContent = P.talk ? `${area ? area.name : ""}${P.talk.speaker ? `  /  ${P.talk.speaker}` : ""}` : area ? area.name : "";
+  if (!P.talk && !P.ended) return renderIdle(G, P, els);
+  els.log.replaceChildren(...P.log.map(lineEl));
+  clear(els.foot);
+  if (b && b.options) renderOptions(els.opts, G, b, { sel: P.sel, termsAll: P.termsAll, onChoose: (i, s) => api.choose(i, s), rerender: () => renderTalk(ctx, P, els, api, { keepFocus: true }) });
+  else els.opts.replaceChildren();
+  if (P.ended) els.foot.append(h("p.endnote", h("span.caps", "The end"), ` ${P.ended}`), btn("Back to the title", () => ctx.title(), { cls: "btn go" }));
+  else if (b && b.done) els.foot.append(btn(["Go on", h("span.k", "Enter")], () => api.close(), { cls: "btn go" }));
+  if (focused != null) { const f = els.opts.querySelector(`[data-opt="${focused}"]`); if (f) f.focus({ preventScroll: true }); }
+  els.log.scrollTop = els.log.scrollHeight;
+}
+
+function renderIdle(G, P, els) {
+  els.log.replaceChildren(...P.log.slice(-6).map((l) => { const e = lineEl(l); e.classList.add("past"); return e; }), h("p.ln.idle", "Nobody is speaking. Choose someone or somewhere on the left, or wait."));
+  els.opts.replaceChildren();
+  els.foot.replaceChildren();
+}

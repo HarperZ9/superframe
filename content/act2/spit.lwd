@@ -1,0 +1,570 @@
+# The Spit, by boat. Act 2, Second Water. District file spit.lwd, prefix spit.
+# Places (world2.lwd): spit_water, patience, ann_tull. Beats (design/ACT2-PLAN.md section 5): 9 the
+# last leg of the crossing (the boat itself is quay2's gate A4; quay2.boat says how Lamb came), 10
+# the stripping of the Patience and the Ann Tull (gate A5, five routes). Writing helper, 2026-10-17.
+# Clock: low water 23:46 (-0.42 m); the strippers work 23:20 to 00:40; the flood turns at 23:52 and
+# is back over the Spit's lip at 00:10; at 00:40 the Spit is under and the scene ends. Hard stars,
+# -1 C. The Patience (Master Dace) carries the old town's paraffin, consigned to the Brine and the
+# Guild at owner's risk; the Ann Tull (Master Orme) carries the Municipal's coal, insured with the
+# Shelf. The strippers take the paraffin and leave the coal. Strippers: the town's own (decided 2026-10-17; the
+# Hesk branch removed): Sallis, or Lugg when the Low Company was blamed and Lugg did not row Lamb out).
+# Routes for A5: Fist spit.fight.start (e.strippers); Tongue spit.turn.ok; Shadow spit.watch.ok
+# (guises: spit.blend floor, spit.coat lamplighter); Hands spit.cut.ok / spit.cut.ride; Eye
+# spit.read.ok then spit.cargo.told. The low light is never explained.
+
+# ---- new ids
+@var spit_lead
+default: sallis
+values: sallis, lugg
+about: Who leads the strippers tonight, set on arrival from act2_strippers, cause.wreckers and quay2.boat.
+
+@var spit_cargo
+default: none
+values: none, taken, saved, adrift
+about: What became of the Patience's paraffin: taken to Hesk or the Board, saved in her hold, or adrift to the quay steps on the flood.
+
+@var spit_way
+default: none
+values: none, fist, tongue, shadow, hands, eye, coat
+about: The route by which the stripping ended, for dawn2 and the masters.
+
+@fact spit.cargo
+about: The Patience's casks are stencilled S. BRINE, GULLET, and W.G.G., chalked O.R.: the old town's paraffin, at owner's risk, nobody's insurance but Sabine's and the Guild's. The Ann Tull's coal is the Municipal's, insured with the Shelf. The strippers are taking the paraffin.
+by: SMALL PRINT, by their own lanterns
+
+@fact spit.cargo_wrong
+about: In pencil: both barges' cargoes insured with the Shelf, by the anchor on the hatch.
+by: SMALL PRINT, in pencil
+
+@fact spit.named_back
+about: The strippers' leader will tell the Board the assessor was on the Spit with them, and helped.
+by: the strippers
+
+@fact spit.boat_fast
+@fact spit.no_boat
+@fact spit.stranded
+@fact spit.seen
+@fact spit.fought
+@fact spit.done
+@fact spit.carried
+@fact spit.coat_used
+@fact spit.rode_in
+@fact spit.boat_watched
+@fact spit.hid_early
+@fact spit.painter_cut
+@fact struck.spit
+@fact down.spit
+
+# ---------------------------------------------------------------- the hub
+@node spit.hub
+hub: yes
+place: patience
+alt: spit.arrive ? !seen(spit.arrive)
+alt: spit.over ? clock >= 00:40 & !seen(spit.over)
+alt: spit.adrift ? clock >= 00:10 & !has(spit.boat_fast) & !has(spit.no_boat) & !seen(spit.adrift)
+alt: spit.flood ? clock >= 00:10 & !seen(spit.flood)
+alt: spit.barges ? clock >= 23:20 & !seen(spit.barges)
+nar: Shingle, weed, two barges, and nobody's lantern but the assessor's. {when: clock < 23:20}
+nar: Casks go down the Patience's slope, hand to hand, into their boat. {when: clock >= 23:20 & !has(spit.done) & !has(spit.stranded)}
+nar: The barges lie dark. {when: has(spit.done) & !has(spit.stranded)}
+nar: The strippers sit in a row on the Ann Tull's high side, waiting to be fetched. {when: has(spit.stranded)}
+nar: The flood is round the keels. {when: clock >= 00:10}
+voice: salt: The boat sits on a falling tide. It will be sitting on a rising one. {dc: 4, once, when: !has(spit.boat_fast) & !has(spit.no_boat)}
+inst: THE ALMANAC: The Coffin goes home on the flood, not before. Ten past twelve. Do not ask me to hurry the moon. {when: var.quay2.boat == ebb & clock < 00:10, once}
+opt: "Run the painter round the Patience's rudder and make it fast." -> spit.boat.fast ? !has(spit.boat_fast) & !has(spit.no_boat) +2 {verb: rig, noise: 0.1}
+opt: "Climb the Patience's slope into their lanterns." -> spit.lead ? clock >= 23:20 & !has(spit.done) & !has(spit.stranded) +2
+check: "[THE DARK] Douse the lantern and wait in the lee of the Ann Tull before they come." -> spit.wait.ok / spit.wait.fail ? clock < 23:20 & !has(spit.hid_early) {skill: dark, dc: 5, verb: hide, noise: 0}
+check: "[THE DARK] Douse the lantern and lie in the lee of the Ann Tull, near enough to hear names." -> spit.watch.ok / spit.watch.seen ? clock >= 23:20 & !has(spit.done) & !has(spit.seen) & !has(strippers.named) {skill: dark, dc: 7, verb: hide, noise: 0.1}
+opt: "Pick a bar up off the shingle and join their line." -> spit.blend ? guise == floor & clock >= 23:20 & !has(spit.done) & !has(spit.seen) & !has(spit.stranded) {verb: hide, noise: 0.2}
+opt: "Go round to their boat, where it lies in the gut of water." -> spit.boat ? clock >= 23:20 & !has(spit.done) & !has(spit.boat_watched) & !has(spit.stranded) +2 {verb: wade, noise: 0.2}
+opt: "Read what they are carrying, from the dark under the Patience's bilge." -> spit.read ? clock >= 23:20 & !has(spit.cargo) & !has(spit.cargo_wrong) & !has(spit.done) +2 {verb: read, noise: 0}
+opt: "Take out the Kit." -> spit.kit
+opt: "Push off and row for Gullet." -> spit.leave ? !has(spit.no_boat) & (var.quay2.boat != ebb | clock >= 00:10)
+
+@node spit.kit
+place: patience
+cost: 1
+read: almanac
+read: vane
+inst: CANDLEMAS: Starlight, and their paraffin. I could tell you the colour of every cask, if you would bring me one.
+go: ^hub
+
+@node spit.boat.fast
+place: patience
+cost: 2
+do: set(spit.boat_fast)
+nar: A round turn on the rudder stock and two half hitches, the only knot in the Shelf's manual.
+go: ^hub
+
+# ---------------------------------------------------------------- arrival
+@node spit.arrive
+place: spit_water
+cost: 2
+do: set(a2.afloat); quest(a2.boat, afloat)
+if: has(cause.wreckers) & var.quay2.boat != lugg => spit_lead = lugg
+if: (!has(cause.wreckers) | var.quay2.boat == lugg) => spit_lead = sallis
+if: var.quay2.boat == merrow | var.quay2.boat == lugg => set(spit.boat_fast)
+if: var.quay2.boat == captive | var.quay2.boat == stowed => set(spit.no_boat)
+nar: Past the mole, stars to the waterline on every side. Minus one.
+nar: To the north the Old Light's base stands out of the water, leaning, the hole in its side toward the bay. Nothing burns in it.
+voice: dark: You looked anyway. {dc: 4}
+nar: Merrow rows past it without turning his head. {when: var.quay2.boat == merrow}
+nar: Lugg lifts one oar clear for a stroke, and puts it back. {when: var.quay2.boat == lugg}
+go: spit.land
+
+@node spit.land
+place: patience
+cost: 2
+nar: The keel grates on shingle.
+line: MERROW: Boat's my business. Go on. {when: var.quay2.boat == merrow}
+line: LUGG: I'll mind her. {when: var.quay2.boat == lugg}
+nar: The assessor comes up out of the mud with two hundred yards of the bay's floor on each leg. {when: has(quay2.coffin.failed)}
+alt: spit.barges ? clock >= 23:20 | var.quay2.boat == captive | var.quay2.boat == stowed
+go: spit.hub
+
+# ---------------------------------------------------------------- the protected moment (two lines at the peak)
+@node spit.barges
+place: patience
+cost: 1
+nar: Two barges lie on their sides on the Spit, under more stars than Gullet has lamps.
+nar: Lanterns are moving on both of them.
+go: spit.barges.who
+
+@node spit.barges.who
+place: patience
+cost: 2
+alt: spit.watch.ok ? has(spit.hid_early)
+alt: spit.captive ? var.quay2.boat == captive
+alt: spit.stow ? var.quay2.boat == stowed & !seen(spit.stow)
+nar: The Patience's hatches are off, and her casks go down a line of hands to a boat in the gut of water. The Ann Tull's hatches are open on coal. Nobody is at them.
+line: SALLIS: Thirty-one for the Shelf. Thirty-two for the Shelf. {when: spit_lead == sallis}
+nar: Ferris Lugg stands on the high rail, a head above the line, and passes casks down without a word. {when: spit_lead == lugg}
+voice: hearsay: "Not us," Merrow said, this afternoon. {dc: 4, when: has(day.merrow) & spit_lead == lugg}
+voice: condolence: At a porthole of the Brine two masters are looking for one more lantern out here. Yours. {dc: 5, when: has(brine2.masters_spit)}
+go: spit.hub
+
+# ---------------------------------------------------------------- Fist and Tongue: in their lanterns
+@node spit.lead
+place: patience
+cost: 3
+do: set(spit.seen)
+nar: Up the bilge on hands and boots, on frost, into the lanterns.
+line: SALLIS: Shelf. Every cask counted and docketed. Salvage for the insurer, by the Board's order. That's you. You're welcome. {when: spit_lead == sallis}
+line: SALLIS: Your verdict's yours. The Board's claim's still filed. I collect on the claim. {when: spit_lead == sallis & !has(cause.wreckers)}
+line: SALLIS: You said wreckers yourself. Hobb told the whole office. {when: spit_lead == sallis & has(said.wreckers)}
+line: LUGG: You wrote us wreckers. So. {when: spit_lead == lugg}
+line: LUGG: Again, is it. {when: spit_lead == lugg & has(struck.lugg)}
+voice: ballast: Four with bars on a deck at forty degrees, frost on the deck, and the flood at ten past twelve. A Lamplighter at the mole steps will see the bruises by one. {dc: 4}
+voice: formletter: They have the claim from a newspaper. You have it on the Board's own form. {dc: 6, when: !seen(spit.turn.fail)}
+opt: "Take the bar out of the leader's hands." -> spit.fight.start ? !has(down.spit)
+check: "[FORM LETTER] Read them the claim, the line about wreckers, by their own lantern." -> spit.turn.ok / spit.turn.fail ? !seen(spit.turn.fail) {skill: formletter, dc: 7, id: spit_claim, do: set(said.spit_claim)}
+claim: "Those casks are the Brine's, at owner's risk. Nobody pays for them but Sabine." -> spit.cargo.told / spit.cargo.told ? has(spit.cargo) {show: has(spit.cargo), do: set(said.spit_cargo)}
+opt: "Tell them it is all insured with the Shelf, and the Shelf is here." -> spit.cargo.wrong ? has(spit.cargo_wrong) & !has(spit.cargo) & !seen(spit.cargo.wrong) {do: set(said.spit_insured)}
+opt: "Tell them the Municipal will count the coal and the casks itself, tonight, in its own book." -> spit.coat ? guise == lamplighter & !has(spit.coat_used)
+opt: "Climb down and leave them to it." -> spit.hub
+
+@node spit.fight.start
+place: patience
+cost: 1
+nar: The assessor takes hold of the bar. The leader does not let go, and the deck decides the rest.
+if: has(spit.hid_early) | var.quay2.boat == stowed => fight(e.strippers.sneak)
+if: !has(spit.hid_early) & var.quay2.boat != stowed => fight(e.strippers)
+
+@node spit.turn.ok
+place: patience
+cost: 6
+do: set(strippers.named); set(spit.done); clear(spit.named_back); spit_cargo = saved; spit_way = tongue
+nar: The assessor reads the middle line into the leader's lantern, slowly, as the Board's clerk wrote it. ANTICIPATED MALICIOUS DARKENING BY WRECKERS.
+line: LAMB: Anticipated. The Board wrote you in before you set out. Whoever stands on these barges tonight is who it meant.
+line: SALLIS: Collecting. For the insurer. The Board said. {when: spit_lead == sallis}
+line: LUGG: Wrote us once. Not twice. {when: spit_lead == lugg}
+nar: Halfway down the line a man sets his cask on the shingle, gently, as if it might wake.
+line: SALLIS: Pruett says write him as putting it back. Boddy too. Hask. The Penroses. And Sallis, told by the Board. Put that in. {when: spit_lead == sallis}
+line: LUGG: Write us putting it back. Boddy. Hask. Penroses. Me. {when: spit_lead == lugg}
+nar: The casks go back up the slope, and nobody counts them.
+go: spit.hub
+
+@node spit.turn.fail
+place: patience
+cost: 3
+do: set(spit.seen)
+nar: Three words in, the leader finishes the line from memory, and better.
+line: SALLIS: Malicious darkening by wreckers. Got it pinned in the docket. Board's own copy. {when: spit_lead == sallis}
+line: LUGG: Keel read it out in the Brine. Twice. {when: spit_lead == lugg}
+nar: Two of the line put down their casks and come along the slope with their bars held low.
+opt: "Stand on the slope." -> spit.fight.start
+opt: "Step back off the rail before they put you off it." -> spit.pool {verb: wade, noise: 0.3}
+
+@node spit.pool
+place: patience
+cost: 12
+do: wet(1); meter(cold, 3); meter(dread, 1)
+nar: The pool between the barges is two feet deep and a degree above freezing, and the assessor is in all of it. A boathook lands the assessor on the shingle like a fish nobody ordered.
+line: SALLIS: Shelf's wet. Docket that. {when: spit_lead == sallis}
+line: LUGG: Go home. {when: spit_lead == lugg}
+go: spit.hub
+
+# ---------------------------------------------------------------- the Fray: e.strippers (four outcomes)
+@node spit.fight.strippers.win
+if: trait(m.body) == none => offer(m.body)
+place: patience
+cost: 3
+do: set(strippers.named); set(struck.spit); set(spit.fought); set(spit.done); rep(trust, -1); spit_cargo = saved; spit_way = fist
+nar: The flood ends it, over the low rail without a sound. A bar slides down the deck into the water with a long iron complaint.
+line: SALLIS: Sallis, Board warden. Pruett. Boddy, Hask, the Penroses. Write I was collecting. {when: spit_lead == sallis}
+line: LUGG: Lugg. You know the rest. Boddy. Hask. Penroses. {when: spit_lead == lugg}
+nar: They push off empty, one man bailing with his hat. A second bar lies across the Patience's hatch where its owner left it.
+do: give(w.crowbar)
+go: spit.hub
+
+@node spit.fight.strippers.yield
+if: trait(m.body) == none => offer(m.body)
+place: patience
+cost: 2
+do: set(strippers.named); set(struck.spit); set(spit.fought); set(spit.done); rep(trust, -1); spit_cargo = saved; spit_way = fist
+nar: The leader sets his bar down. It slides off the slope into the water, and he lets it.
+line: SALLIS: All right. Docket's shut. Sallis, Pruett, Boddy, Hask, Penroses. Tell the Board yourself. {when: spit_lead == sallis}
+line: LUGG: Done. Boddy. Hask. Penroses. Lugg. Back in the hold with it. {when: spit_lead == lugg}
+line: LUGG: You shove like a clerk. Low. From the hip. Put them where the water is. {when: spit_lead == lugg & !has(spit.move_shove)}
+if: spit_lead == lugg => set(spit.move_shove)
+nar: Young Penrose unties his leather apron and drops it on the deck at the assessor's feet, and does not look up. {when: spit_lead == sallis}
+if: spit_lead == sallis => give(c.apron)
+go: spit.hub
+
+@node spit.fight.strippers.fled
+if: trait(m.body) == none => offer(m.body)
+place: patience
+cost: 2
+do: set(spit.fought); rep(trust, -1)
+nar: The assessor leaves the slope on the seat of the Shelf greatcoat. Behind, the line takes up the next cask.
+line: SALLIS: That's the Shelf seen off, then. {when: spit_lead == sallis}
+line: LUGG: Go on. {when: spit_lead == lugg}
+go: spit.hub
+
+@node spit.fight.strippers.down
+if: trait(m.body) == none => offer(m.body)
+place: patience
+cost: 25
+do: set(spit.fought); set(down.spit); set(spit.named_back); set(spit.seen); wet(1); meter(cold, 3); meter(dread, 2)
+nar: Off the slope, into the pool with the tide coming into it, and under, and out again on a boathook. Every cask goes past at the height of the assessor's face.
+line: SALLIS: Docket. Shelf present, assisting. Fell in. {when: spit_lead == sallis}
+line: LUGG: Pulled you out. Tell them that too. {when: spit_lead == lugg}
+go: spit.hub
+
+# ---------------------------------------------------------------- Shadow: watch, name them, leave
+@node spit.wait.ok
+place: ann_tull
+cost: 8
+do: set(spit.hid_early); meter(cold, 1)
+nar: Lantern out, coal grit under the knees, the Ann Tull's black weight leaning over. Then oars, and boots on shingle.
+go: spit.barges
+
+@node spit.wait.fail
+place: ann_tull
+cost: 8
+do: meter(cold, 1); meter(dread, 1)
+nar: The lee of the Ann Tull is a sump, shin deep. By the time the oars come, standing up is a job of work, and the boots are already close.
+go: spit.barges
+
+@node spit.watch.ok
+place: ann_tull
+cost: 18
+do: set(strippers.named); meter(cold, 2); meter(dread, 1)
+if: var.spit_way == none => spit_way = shadow
+nar: Lantern out, under the Ann Tull's bilge, near enough to hear a man breathe out when he takes a cask's weight.
+line: SALLIS: Pruett, count. Boddy, Hask, take it from the Penroses before they drop it. {when: spit_lead == sallis}
+line: SALLIS: Lugg says Boddy. Lugg says Hask. Penroses, he says you. {when: spit_lead == lugg}
+nar: Nobody looks under the bilge.
+voice: salt: The mud has the knees. It has had them twenty minutes and means to keep them. {dc: 4}
+voice: dark: Stay. They will go, and you will have been nobody, here, all night. {dc: 5}
+voice: precedent: 2410/N. The bonded warehouse at Corve, watched from its own roof for three nights. Nobody looked up there either. {dc: 6, when: var.precedent == nightclerk}
+opt: "Crawl back to the boat and leave them to it." -> spit.leave ? !has(spit.no_boat) & (var.quay2.boat != ebb | clock >= 00:10) {verb: hide, noise: 0.1}
+opt: "Stay in the dark." -> spit.hub {verb: wait}
+
+@node spit.watch.seen
+place: ann_tull
+cost: 6
+do: set(spit.seen); set(spit.named_back); meter(dread, 2)
+nar: A lantern on a pole comes over the bilge's curve and stops on the assessor.
+line: SALLIS: Shelf. In the dark. I'll put you in the docket as present, then. Assisting. {when: spit_lead == sallis}
+line: LUGG: Seen you. {when: spit_lead == lugg}
+voice: undertow: Go up. Their lantern is warm, and they have already written you down as helping. {dc: 5}
+voice: pride: Then it will be the only thing in their docket that is wrong. {dc: 5}
+opt: "Get up into their light." -> spit.lead
+opt: "Go back to the boat." -> spit.hub
+
+@node spit.blend
+place: patience
+cost: 15
+do: set(strippers.named); set(spit.carried); wet(0.3); meter(cold, 2)
+if: var.spit_way == none => spit_way = shadow
+nar: Oilskin, mud to the knee, a bar off the shingle. Nobody looks at a face over a cask.
+line: SALLIS: Pruett, Boddy, Hask, keep it moving. Penroses, the new one's slow.
+nar: Eleven of the Patience's casks go into their boat through the assessor's hands.
+opt: "Take the next cask down into their boat, and stay there." -> spit.boat.inside {verb: carry, noise: 0.1}
+opt: "Put the bar down and step out of the line." -> spit.hub {verb: hide, noise: 0.1}
+
+@node spit.coat
+place: patience
+cost: 4
+nar: The leader looks at the dark coat and the polished cuffs, and supplies the brass pole himself.
+line: SALLIS: Did the Alderman send you? The Board said this was the Shelf's share. {when: spit_lead == sallis}
+line: LUGG: Hobb's coat. Not Hobb. {when: spit_lead == lugg}
+opt: "Names, for the Municipal's book." -> spit.coat.names
+opt: "Climb down." -> spit.hub
+
+@node spit.coat.names
+place: patience
+cost: 4
+do: set(strippers.named); set(spit.coat_used); set(spit.done); set(book.spit_coat); spit_cargo = saved; spit_way = coat
+line: SALLIS: Sallis. Pruett. Boddy, Hask, the Penroses. I'll take it up with the Board. {when: spit_lead == sallis}
+line: LUGG: Write us in a Lamplighter's book, in a Lamplighter's coat. Same as the Board. Go on, then. {when: spit_lead == lugg}
+nar: They put the casks back and go. Somebody in Gullet will hear a dark coat was on the Spit tonight, and ask whose.
+go: spit.hub
+
+# ---------------------------------------------------------------- Hands: their painter at the turn of the tide
+@node spit.boat
+place: ann_tull
+cost: 4
+do: wet(0.5); meter(cold, 2)
+nar: The gut is thigh deep and black. Their boat lies bows to the Ann Tull, deep with casks, her painter on the rudder chains. One man stows in the stern with his back to the bow.
+inst: THE ALMANAC: Low at fourteen minutes to twelve. Slack six minutes. At eight minutes to, the flood takes hold and runs up the bay to Gullet. Everything floating goes to Gullet tonight. The moon insists.
+opt: "Cut the painter now." -> spit.cut.early ? clock < 23:52 {verb: rig, noise: 0.3}
+opt: "Stand in the water at the painter and wait for the turn." -> spit.boat.wait ? clock < 23:52 {verb: wait, noise: 0}
+check: "[GRIP] Cut it as the flood takes her weight." -> spit.cut.ok / spit.cut.fail ? clock >= 23:52 & clock < 00:30 {skill: grip, dc: 6, verb: rig, noise: 0.2}
+opt: "Wade back out of it." -> spit.hub
+
+@node spit.boat.wait
+place: ann_tull
+cost: 5
+do: meter(cold, 1)
+nar: One hand on the painter, the knife in the other. The water stands still round both.
+go: spit.boat
+
+@node spit.boat.inside
+place: ann_tull
+cost: 2
+nar: In among the casks, the painter's eye on the stem post by the assessor's knee.
+opt: "Wait among the casks for the turn." -> spit.boat.inside.wait ? clock < 23:52 {verb: wait}
+check: "[GRIP] Cut the painter at the turn, and stay aboard." -> spit.cut.ride / spit.cut.fail ? clock >= 23:52 & clock < 00:30 {skill: grip, dc: 5, verb: rig, noise: 0.2}
+opt: "Climb out onto the shingle." -> spit.hub
+
+@node spit.boat.inside.wait
+place: ann_tull
+cost: 5
+nar: The assessor stows the casks square and tight, as for a long passage.
+go: spit.boat.inside
+
+@node spit.cut.early
+place: ann_tull
+cost: 4
+do: set(spit.boat_watched); wet(0.3)
+nar: The painter parts and the boat sits on the mud at slack water, waiting for an instruction. The man in the stern finds the cut end and whistles once.
+line: SALLIS: Chain her. Pruett, sit in the bows.
+go: spit.hub
+
+@node spit.cut.ok
+place: ann_tull
+cost: 6
+do: set(spit.painter_cut); set(spit.stranded); set(strippers.named); set(spit.done); spit_cargo = adrift; spit_way = hands
+nar: The flood leans on her, and the knife goes through the painter at its hardest. The boat swings off and goes up the bay toward Gullet, loaded, the man in her stern sitting down on the casks. There is no other boat.
+line: SALLIS: That's the Board's boat!
+nar: By morning everyone in Gullet will know their names, because somebody will have to row out and fetch them.
+go: spit.hub
+
+@node spit.cut.ride
+place: spit_water
+cost: 35
+do: set(spit.painter_cut); set(spit.stranded); set(strippers.named); set(spit.done); set(spit.rode_in); set(spit.named_back); spit_cargo = adrift; spit_way = hands
+nar: The knife goes through and the flood takes the boat up the bay, with the assessor sitting on the Patience's paraffin.
+line: SALLIS: I'll tell the Board who took it!
+go: spit.home
+
+@node spit.cut.fail
+place: ann_tull
+cost: 6
+do: set(spit.boat_watched); set(spit.seen); set(spit.named_back); wet(1); meter(cold, 3)
+nar: At minus one the hand forgets it is a hand. The knife goes into the gut, the assessor after it to the chin, and up again holding their gunwale in the stern lantern.
+line: SALLIS: Shelf. In the water, at our painter. That goes in the docket, that does. Chain her. {when: spit_lead == sallis}
+line: LUGG: Saw that. Chain her. {when: spit_lead == lugg}
+go: spit.hub
+
+# ---------------------------------------------------------------- Eye: the cargo, and whose it is
+@node spit.read
+place: ann_tull
+cost: 3
+nar: Under the Patience's bilge the casks go past at arm's length, each lit for the length of a man's swing.
+inst: CANDLEMAS: Paraffin light, and plenty of it. I read colour in this. Ask me.
+check: "[SMALL PRINT] Read the stencils on each cask as it passes through their light." -> spit.read.ok / spit.read.fail {skill: smallprint, dc: 7, verb: read, noise: 0}
+opt: "Come away." -> spit.hub
+
+@node spit.read.ok
+place: ann_tull
+cost: 15
+do: set(spit.cargo); meter(wear, 1)
+nar: S. BRINE, GULLET, in black on the staves. W.G.G. on others. Chalked on every one: O.R.
+nar: On the Ann Tull's coaming: MUNICIPAL L. & C. CO., and the small painted anchor from the Shelf's own notepaper. Nobody has touched the coal.
+inst: CANDLEMAS: The chalk is fresh. Hesk chalk is blue. This is blue.
+opt: "Climb up into their lanterns with it." -> spit.lead
+opt: "Keep it, and go." -> spit.hub
+
+@node spit.read.fail
+place: ann_tull
+cost: 15
+do: set(spit.cargo_wrong); meter(wear, 1)
+nar: The chalk smudges past too quick to read. What shows clearly is the Shelf's anchor on the Ann Tull's coaming. In the Daybook, in pencil: both cargoes insured with the Shelf.
+go: spit.hub
+
+@node spit.cargo.told
+place: patience
+cost: 4
+do: set(spit.done); spit_cargo = saved; spit_way = eye
+nar: The leader holds his lantern to the next cask's head and reads the chalk for longer than chalk takes.
+line: SALLIS: Sabine's. The Board said insured. She'll have my ears. Back up with them. {when: spit_lead == sallis}
+line: LUGG: Sabine's. Back. {when: spit_lead == lugg}
+nar: Up the slope go the casks. The coal stays nobody's business.
+go: spit.hub
+
+@node spit.cargo.wrong
+place: patience
+cost: 3
+do: set(spit.seen)
+line: SALLIS: There. Insured. Said so. Faster. {when: spit_lead == sallis}
+line: LUGG: Shelf pays, then. Faster. {when: spit_lead == lugg}
+go: spit.hub
+
+# ---------------------------------------------------------------- arriving with them
+@node spit.captive
+place: patience
+cost: 3
+do: set(spit.seen); set(spit.named_back)
+nar: They put a lantern in the assessor's hand and stand the assessor on the high rail.
+line: SALLIS: Hold it up. You're the Shelf. Witness what's collected for you. {when: spit_lead == sallis}
+line: LUGG: Hold it. You wrote us. Watch us. {when: spit_lead == lugg}
+nar: The assessor's lantern is one of the lanterns now.
+check: "[FORM LETTER] Read them the claim from up here, by the lantern they gave you." -> spit.turn.ok / spit.turn.fail ? !seen(spit.turn.fail) {skill: formletter, dc: 6, id: spit_claim_rail, do: set(said.spit_claim)}
+check: "[SMALL PRINT] Read each cask's stencil as it passes under the lantern you are holding." -> spit.read.ok / spit.read.fail ? !has(spit.cargo) & !has(spit.cargo_wrong) {skill: smallprint, dc: 5, verb: read, noise: 0}
+opt: "Do as told when they want the casks stowed, and go down into their boat." -> spit.boat.inside {verb: carry, noise: 0}
+check: "[THE DARK] Set the lantern down on the slope and step back out of its light." -> spit.slip.ok / spit.slip.fail {skill: dark, dc: 7, verb: douse, noise: 0.1}
+opt: "Put the lantern down and take the bar out of the leader's hand." -> spit.fight.start ? !has(down.spit)
+opt: "Hold the lantern, and watch." -> spit.captive.hold
+
+@node spit.captive.hold
+place: patience
+cost: 30
+do: set(strippers.named); meter(cold, 2)
+nar: Thirty minutes of casks go past the lantern, and thirty minutes of names said over them, as men say names who expect to be paid.
+go: spit.hub
+
+@node spit.slip.ok
+place: ann_tull
+cost: 4
+do: clear(spit.seen)
+nar: Lantern down on the slope, still burning; the assessor steps back out of it. A man glances at the lantern twice, sees it where he left it, and is satisfied.
+go: spit.hub
+
+@node spit.slip.fail
+place: patience
+cost: 3
+do: meter(dread, 1)
+nar: A hand picks the lantern up again and closes the assessor's fingers round it, kindly.
+line: SALLIS: Higher.
+go: spit.captive
+
+@node spit.stow
+place: ann_tull
+cost: 2
+nar: Boots climb out over the assessor's legs. The first cask comes down into the boat a foot from the assessor's head.
+check: "[THE DARK] Lie still under the casks and listen to them name each other." -> spit.stow.names / spit.stow.found {skill: dark, dc: 6, verb: hide, noise: 0}
+opt: "Wait under the tarpaulin, at the painter, for the turn of the tide." -> spit.boat.inside {verb: wait, noise: 0}
+opt: "Slide out from under the tarpaulin onto the shingle." -> spit.hub {verb: hide, noise: 0.1}
+
+@node spit.stow.names
+place: ann_tull
+cost: 15
+do: set(strippers.named); meter(cold, 2)
+if: var.spit_way == none => spit_way = shadow
+line: SALLIS: Pruett, stow it square. Boddy, Hask, Penroses, more.
+nar: Fifteen minutes of casks landing on the tarpaulin. Nobody lifts the corner.
+opt: "Stay, by the painter, for the turn." -> spit.boat.inside {verb: wait}
+opt: "Slide out onto the shingle." -> spit.hub {verb: hide, noise: 0.1}
+
+@node spit.stow.found
+place: ann_tull
+cost: 3
+do: set(spit.seen); set(spit.named_back)
+nar: A cask lands on the assessor's shin, and the assessor says so. A lantern looks in.
+line: SALLIS: Shelf. In our boat. Docket that.
+go: spit.captive
+
+# ---------------------------------------------------------------- the tide
+@node spit.adrift
+place: patience
+cost: 2
+do: set(spit.no_boat)
+nar: At ten past twelve the flood comes over the Spit's lip. The assessor's boat lifts, turns once, and goes up the bay toward Gullet with the stars in her bilge.
+inst: THE ALMANAC: Ten past, as stated. I stated it.
+go: spit.hub
+
+@node spit.flood
+place: patience
+cost: 1
+nar: The Spit gets smaller from the edges in.
+line: SALLIS: Last ones! Count them! {when: !has(spit.done) & !has(spit.stranded)}
+go: spit.hub
+
+@node spit.over
+place: patience
+cost: 2
+if: var.spit_cargo == none => spit_cargo = taken
+alt: spit.fetched ? has(spit.no_boat) & has(spit.stranded)
+alt: spit.passage ? has(spit.no_boat)
+nar: At twenty to one the Spit goes under.
+nar: Their boat pushes off deep with every cask. {when: !has(spit.done) & !has(spit.stranded)}
+go: spit.leave
+
+@node spit.passage
+place: spit_water
+cost: 30
+do: set(spit.named_back)
+line: SALLIS: Get on. Board'll want to see who came home with the salvage. {when: spit_lead == sallis}
+line: LUGG: Get in. {when: spit_lead == lugg}
+nar: The assessor comes up the bay on the cargo, in their lanterns.
+go: spit.home
+
+@node spit.fetched
+place: ann_tull
+cost: 30
+nar: The assessor sits with the strippers on the Ann Tull's high side, the only dry place in the bay, for half an hour.
+line: SALLIS: Docket says thirty-eight. Docket's in the boat.
+nar: A lantern comes out from Gullet: Constant Hobb at the oars of the Board's other boat, sent because a boat full of casks has fetched up at the mole steps by itself.
+go: spit.home
+
+# ---------------------------------------------------------------- home
+@node spit.leave
+place: spit_water
+cost: 15
+if: var.spit_cargo == none => spit_cargo = taken
+nar: The flood carries the boat home faster than any oar. {when: clock >= 00:10}
+nar: The assessor rows against the last of the ebb. {when: clock < 00:10}
+nar: Behind, the lanterns are still moving. {when: !has(spit.done) & !has(spit.stranded) & clock < 00:40}
+line: MERROW: Sabine's paraffin back in the hold. I'll tell her. She'll charge me for the news. {when: var.quay2.boat == merrow & var.spit_cargo == saved}
+line: MERROW: My barges, by custom. Somebody's had them either way. {when: var.quay2.boat == merrow & var.spit_cargo != saved}
+go: spit.home
+
+@node spit.home
+place: mole_steps
+cost: 2
+alt: spit.home.poles ? has(spit.fought) & !seen(spit.home.poles)
+nar: The mole steps, white with frost at the edges.
+nar: At the bottom step, the strippers' boat, come home by itself, deep with casks. Constant Hobb holds a lantern over it as though it might explain itself. {when: var.spit_cargo == adrift & !has(spit.rode_in)}
+nar: The first face in the lantern light at the bottom step is Constant Hobb's, writing. {when: has(spit.rode_in)}
+go: quay2.hub
+
+@node spit.home.poles
+place: mole_steps
+cost: 3
+do: set(book.spit_fight)
+nar: Two Lamplighters at the foot of the mole steps write before the assessor is out of the boat. {when: !has(book.violence)}
+nar: Four Lamplighters at the foot of the mole steps write, and walk the assessor up between them without saying where to. {when: has(book.violence)}
+go: spit.home

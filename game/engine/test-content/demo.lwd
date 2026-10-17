@@ -1,0 +1,92 @@
+# Placeholder dialogue for engine tests. Every LWD/1 feature appears at least once.
+@node t.start
+place: t.quay
+nar: Test narration. The clock is {{clock}} and the tide {{tide}} m.
+voice: eye: Test voice line: always heard.
+voice: ledger: Test passive line: heard only with Ledger 4 or more. {dc: 4}
+do: quest(q.lamp, start)
+go: t.speaker
+
+@node t.speaker
+speaker: SPEAKER
+line: Test line one.
+line: SPEAKER: Test line two, with the speaker named.
+passive: eye -> t.notice {dc: 3}
+go: t.speaker.hub
+
+@node t.notice
+voice: eye: Test interjection: the passive check diverted here.
+set: t.switch
+do: quest(q.lamp, lead)
+return:
+
+@node t.speaker.hub
+hub: yes
+line: SPEAKER: Test hub. Ask me things.
+opt: "Ask the first question." -> t.q1 {once, xp: 5}
+opt: "Ask about the switch." -> t.q2 ? has(t.switch)
+check: "[Eye] Look closer." -> t.look.pass / t.look.fail {skill: eye, dc: 10, xp: 20}
+check: "[Brass] Bluff." -> t.bluff.pass / t.bluff.fail {skill: brass, dc: 12, red}
+claim: "You were there." -> t.claim.ok / t.claim.fail ? has(t.switch) & has(t.read_tide)
+opt: "Think about the tide." -> t.offer ? !has(t.offered)
+opt: "Test the requests." -> t.r.start
+opt: "Leave." -> t.leave
+
+@node t.q1
+line: SPEAKER: Test answer one.
+do: rep(guild, 10); coins += 2
+go: ^hub
+
+@node t.q2
+line: SPEAKER: Test answer two.
+call: t.aside
+line: SPEAKER: Test line after the call returned.
+go: ^hub
+
+@node t.aside
+nar: Test aside, reached by call.
+return:
+
+@node t.look.pass
+nar: Test: the check passed.
+go: ^hub
+
+@node t.look.fail
+nar: Test: the check failed.
+go: ^hub
+
+@node t.bluff.pass
+nar: Test: the red check passed.
+do: rep(board, -5)
+go: ^hub
+
+@node t.bluff.fail
+nar: Test: the red check failed.
+go: ^hub
+
+@node t.claim.ok
+line: SPEAKER: Test claim landed.
+xp: 30
+go: ^hub
+
+@node t.claim.fail
+line: SPEAKER: Test claim missed.
+go: ^hub
+
+@node t.offer
+nar: Test: a thought to carry.
+do: offer(t.tide_reader); set(t.offered)
+go: ^hub
+
+@node t.leave
+cost: 2
+exit: walk
+
+@node t.down
+nar: Test: health ran out.
+end: down
+
+@event t.fog
+at: 23:20
+nar: Test event: fog comes in.
+cmd: setTerm fog 0.08

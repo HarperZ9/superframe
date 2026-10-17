@@ -1,0 +1,621 @@
+# Low Water, Act 3: Chancel Hill in the gale. District file, prefix hill3.
+# Places (places2.lwd): hill_lane, crake_hall, crake_study, station, substation. Writer's file. Private.
+# Beats (design/ACT3-PLAN.md section 3): 4 Crake's position (the drafts in the crossword letters,
+# Lamb's wages among them, the letter that asked for the claim kept open, her offer: the Shelf's
+# typewriter, a post, or the morning boat); 16 the collier seen from the hill at four (consequence
+# only). Also gate B1's moment for the white lamps if the town chose them (light_hill), and whether
+# the substation holds; the optional e3.station.
+# The hill in the gale: the street arcs are Mother's pattern on the second switch (Act 2 hill.lwd).
+# In a rain band the overhead line slaps in the gusts and trips them; each trip needs a hand at the
+# panel after ninety seconds of lockout. If the town did not choose the hill, the Trust's storm order
+# cuts its feeder at dusk and the hill is dark all night, on purpose, for the first time.
+
+# ---- new ids
+@fact hill3.lamps_held
+about: The hill's white arcs held through the gale. The line was kept, or a hand was kept at the panel.
+by: the night
+
+@fact hill3.bearing
+about: From the bay's mouth at four, the white line on the hill stood over the harbour, steady, the one light in Gullet that did not move.
+by: the night
+
+@fact hill3.key
+@fact hill3.stubs_glimpsed
+@fact hill3.envelope_torn
+@fact hill3.collier_seen
+@fact hill3.tended
+@fact hill3.line_lashed
+
+@var hill3_offer
+default: none
+values: none, typewriter, post, boat, refused
+about: What Lamb said to the Alderman's offer on the night of the gale.
+
+@encounter e3.station
+name: The Lamplighters in the gale
+area: hill
+foe: f.lamplighter 3
+param: white-light (no dark in the room unless the hill is out)
+param: gale (the door bangs open on the gusts)
+talk: hill3.fx.station | Ask Gorm what she has written about the gale ? fight_seconds >= 6 & fight_struck == 0
+win: hill3.fight.station.win
+yield: hill3.fight.station.yield
+fled: hill3.fight.station.fled
+down: hill3.fight.station.down
+
+@encounter e3.station.four
+name: The Lamplighters in the gale, in fours
+area: hill
+foe: f.lamplighter 4
+param: white-light (no dark in the room unless the hill is out)
+param: gale (the door bangs open on the gusts)
+talk: hill3.fx.station | Ask Gorm what she has written about the gale ? fight_seconds >= 6 & fight_struck == 0
+win: hill3.fight.station.win
+yield: hill3.fight.station.yield
+fled: hill3.fight.station.fled
+down: hill3.fight.station.down
+
+# B1 (design/ACT3-JOINS.md): if the hill was chosen and never tended in any band, it goes out in the
+# 03:30 band and sets lampout.hill.
+@event hill3.ev.lost
+at: 03:30
+when: var.light_hill == 1 & !has(hill3.tended) & !has(hill3.lamps_held) & !has(lampout.hill)
+nar: On Chancel Hill the overhead line slaps its crossarm in the band, and the white arcs go out, and nobody restrikes them.
+cmd: setLight hill_lane 0.03 0
+do: set(lampout.hill)
+
+# ---------------------------------------------------------------- the hub
+@node hill3.hub
+hub: yes
+place: hill_lane
+alt: hill3.arrive.lit ? !seen(hill3.arrive.lit) & !seen(hill3.arrive.dark) & var.light_hill == 1
+alt: hill3.arrive.dark ? !seen(hill3.arrive.lit) & !seen(hill3.arrive.dark) & var.light_hill != 1
+alt: hill3.collier ? has(ev3.collier_turn) & !has(hill3.collier_seen) & clock < 05:00
+nar: The white lamps swing on their posts in the gale, and the light swings with them, so that the whole hill lurches without moving. {when: var.light_hill == 1 & !has(lampout.hill) & !has(ev3.eye)}
+nar: The hill is dark. Up the lane, one window lit yellow behind a shutter that bangs. {when: (var.light_hill != 1 | has(lampout.hill)) & (!has(ev3.eye) | has(ev3.eye_ends))}
+nar: The eye. The lamps hang still, and over them every star there is. {when: has(ev3.eye) & !has(ev3.eye_ends)}
+voice: vane: South-west and rising! Everything on this hill that is not nailed down has an opinion about it! {when: !has(ev3.eye), once}
+voice: vane: North-west now, and meaner. It comes over the top of the hill and down your collar. {when: has(ev3.backed), once}
+line: STRAND: Forty-one. Forty-two. You're harder to count in a wind. {when: seenas_trust == enemy & var.light_hill == 1 & !has(lampout.hill)}
+opt: "Knock at the Alderman's door." -> hill3.door +2 {do: meter(cold, 1)}
+opt: "Go into the Lamplighters' station." -> hill3.station +1
+opt: "Go down to the substation." -> hill3.sub +3 {do: meter(cold, 1)}
+opt: "Take out the Kit." -> hill3.kit
+opt: "Down the hill to the quay, with the wind behind." -> quay3.hub +5
+opt: "Up to the Gasholder, into the singing frame." -> gasholder3.hub +4
+opt: "Along the terrace to the Ropewalk." -> ropewalk3.hub +5
+
+@node hill3.arrive.lit
+place: hill_lane
+cost: 2
+do: meter(cold, 1); wet(0.2)
+nar: The hill path climbs out of the sodium into white, and the wind meets the assessor at the turn like a man who has been waiting there to say something.
+line: HOBB: Shelf! It's lit! They chose us! I've to stand the panel all night, me, on my own. It's in the order.
+nar: He goes past at a run toward the substation, a lantern in each hand, one of them already out.
+go: hill3.hub
+
+@node hill3.arrive.dark
+place: hill_lane
+cost: 2
+cmd: setLight hill_lane 0.03 0
+do: meter(cold, 1); wet(0.2)
+nar: The hill path climbs out of the sodium into nothing. The white lamps stand on their posts, dead, swinging.
+line: COE: The Alderman's storm order. Hill feeder off at dusk, for the transformer. The town never asked for us, so nobody's to mind.
+voice: dark: The hill, dark. On purpose. I could live here. {dc: 3}
+go: hill3.hub
+
+@node hill3.kit
+place: hill_lane
+cost: 1
+read: glass
+read: vane
+inst: THE GLASS: Nine hundred and seventy-one, darling, and the bottom has fallen out of it. Bands at twenty past nine, twenty to eleven and half past three, regular as a curate. {when: !has(ev3.eye)}
+inst: THE GLASS: Steady. It is lying. Wait an hour. {when: has(ev3.eye) & !has(ev3.eye_ends)}
+go: ^hub
+
+# ---------------------------------------------------------------- the Alderman's door
+@node hill3.door
+place: crake_hall
+speaker: PELLOW
+alt: hill3.door.barred ? (has(cause.trust) | seenas_trust == enemy) & !seen(hill3.door.barred)
+cost: 2
+nar: Mrs Pellow opens the door on a chain, against the wind, and the wind tries to come in with the assessor.
+line: PELLOW: Seven her soup. Eight the shutters. Nine she sat down at the desk and hasn't got up. Come in before it has the door off.
+line: PELLOW: I was reviewed. It was favourable. I've never been so frightened. {when: has(hill.pellow_reviewed)}
+go: hill3.hall
+
+@node hill3.door.barred
+place: crake_hall
+speaker: PELLOW
+cost: 2
+nar: The door opens the width of the chain.
+line: PELLOW: I'm told not to let the Shelf in. I'm told it in writing.
+check: "[CONDOLENCE] Say it is blowing a gale, and the Shelf has nobody else on the hill to say so to." -> hill3.door.let / hill3.door.shut {skill: condolence, dc: 6}
+opt: "Go round to the scullery door and put a shoulder to it in the next gust." -> hill3.scullery {verb: pry, noise: 0.5}
+opt: "Let yourself in by the side door with the station's key." -> hill3.side ? has(hill3.key) | has(hill.key_side) {verb: pry, noise: 0.1}
+opt: "Leave her to the chain." -> ^hub
+
+@node hill3.door.let
+place: crake_hall
+speaker: PELLOW
+cost: 2
+line: PELLOW: It is blowing a gale. She can write me down for it.
+nar: The chain comes off.
+go: hill3.hall
+
+@node hill3.door.shut
+place: crake_hall
+speaker: PELLOW
+cost: 1
+line: PELLOW: Everybody has nobody. That's what a gale is.
+nar: The door shuts, and the wind, finding nothing else to do, takes the assessor's hat a yard down the lane and gives it back.
+go: ^hub
+
+@node hill3.scullery
+place: crake_study
+cost: 3
+do: meter(cold, 1); set(book.scullery); rep(trust, -1)
+nar: The gust and the shoulder arrive together. The latch goes, and the assessor goes with it, into a scullery full of hung pans that all ring at once.
+go: hill3.crake
+
+@node hill3.side
+place: crake_study
+cost: 2
+nar: The key from the station still fits. Nobody on the hill has changed a lock in two nights. Nobody on the hill has ever changed a lock.
+go: hill3.crake
+
+@node hill3.hall
+place: crake_hall
+cost: 1
+nar: On the hall table, under a glove, an envelope addressed in the upright careful hand to Mrs H. Gannet, the Ropewalk.
+opt: "Go in to the Alderman." -> hill3.crake
+opt: "Take the envelope into the kitchen while Mrs Pellow does the shutters, and hold it over the kettle." -> hill3.steam ? !has(crake.drafts) & !has(hill3.envelope_torn) {verb: pry, noise: 0.2}
+
+# ---------------------------------------------------------------- crake.drafts, Hands: the kettle
+@node hill3.steam
+place: crake_hall
+cost: 2
+check: "[GRIP] Lift the flap in the steam without tearing it, and read what is folded in the crossword." -> hill3.steam.ok / hill3.steam.fail {skill: grip, dc: 6, red, verb: pry, noise: 0.1}
+
+@node hill3.steam.ok
+place: crake_hall
+cost: 4
+do: set(crake.drafts)
+nar: The Hesk crossword, every square filled in, in pencil. Folded inside it, a banker's draft on the Bank of Hesk: PAY MRS H. GANNET, fourteen pounds, signed O. CRAKE.
+nar: The flap goes down again on its own glue. The kettle is put back where it was, exactly, as if the kettle might say.
+go: hill3.crake
+
+@node hill3.steam.fail
+place: crake_hall
+speaker: PELLOW
+cost: 3
+do: set(hill3.envelope_torn); set(hill3.stubs_glimpsed)
+nar: The flap tears along a third of its length, and through the tear: a filled crossword, and a corner of blue paper with BANK OF HESK on it.
+line: PELLOW: That'll be the kettle. It does that to her letters. I'll say it was the kettle.
+go: hill3.crake
+
+# ---------------------------------------------------------------- the Alderman's position (beat 4)
+@node hill3.crake
+place: crake_study
+speaker: CRAKE
+alt: hill3.crake.again ? seen(hill3.crake.first)
+go: hill3.crake.first
+
+@node hill3.crake.first
+place: crake_study
+speaker: CRAKE
+cost: 4
+nar: The Alderman at her desk, in the grey, the yellow spectacles on, a pen in her hand that has not moved for some time. The white lamp outside the shutter goes past the gap and back, past and back, on its swinging post. {when: var.light_hill == 1 & !has(lampout.hill)}
+nar: The Alderman at her desk, in the grey, the yellow spectacles on, under the one yellow lamp on a dark hill. {when: var.light_hill != 1 | has(lampout.hill)}
+line: CRAKE: The Shelf. In a gale. You came up the only hill in Gullet that has nothing to do with the sea.
+line: CRAKE: You wrote the Trust. I have read it in the minutes of three companies. Stand, please. {when: has(cause.trust)}
+line: CRAKE: You have had my confession already. Sit down. I have nothing left to strike. {when: has(ink.crake) & !has(cause.trust)}
+line: CRAKE: Mrs Pellow tells me the kettle has been at my letters again. {when: has(hill3.envelope_torn)}
+go: hill3.crake.menu
+
+@node hill3.crake.again
+place: crake_study
+speaker: CRAKE
+cost: 1
+line: CRAKE: Still blowing. Still here.
+go: hill3.crake.menu
+
+@node hill3.crake.menu
+speaker: CRAKE
+cost: 0
+opt: "You pay the Shelf, Alderman. Hester Gannet types it, and you pay for it." -> hill3.crake.drafts ? !has(crake.drafts) & (has(hester.told) | has(hester.seen_typing) | has(e.matched) | has(typist.heard) | has(hill3.stubs_glimpsed)) {id: hill3.crake.pays, do: set(said.crake_pays); set(heard.crake.pays)}
+opt: "Who pays the Shelf, Alderman?" -> hill3.crake.deflect ? !has(crake.drafts) & !has(hester.told) & !has(hester.seen_typing) & !has(e.matched) & !has(typist.heard) & !has(hill3.stubs_glimpsed) & !seen(hill3.crake.deflect)
+check: "[SMALL PRINT] Read the counterfoil book under her elbow, upside down, while she talks." -> hill3.stubs.ok / hill3.stubs.fail ? !has(crake.drafts) & !has(hill3.stubs_glimpsed) {skill: smallprint, dc: 7, verb: read, noise: 0}
+opt: "Take the counterfoil book from under her elbow." -> hill3.stubs.take ? !has(crake.drafts) & (has(cause.trust) | seen(hill3.scullery) | seen(hill3.side) | seen(hill3.crake.deflect)) {verb: pry, noise: 0.3}
+opt: "Did you know there would be a second loss?" -> hill3.crake.knew ? !seen(hill3.crake.knew) & !seen(hill3.crake.knew.told)
+check: "[SMALL PRINT] Read last night's letter off her blotter, backwards, in yellow." -> hill3.blotter.ok / hill3.blotter.fail ? !has(letter.kept_open) & (var.light_hill == 1 & !has(lampout.hill) | count(i.lantern) > 0) {skill: smallprint, dc: 6, verb: read, noise: 0}
+opt: "What do you want from the Shelf tonight, Alderman?" -> hill3.offer ? var.hill3_offer == none & (has(crake.drafts) | seen(hill3.crake.knew.told))
+opt: "Goodnight, Alderman." -> hill3.crake.bye
+
+@node hill3.crake.deflect
+speaker: CRAKE
+cost: 2
+line: CRAKE: The policyholders, assessor, as in any mutual. I am a policyholder three times over. You may draw what conclusion you like from my arithmetic.
+nar: Her elbow settles on a cloth-bound book on the desk, as an elbow settles on something it is used to.
+go: hill3.crake.menu
+
+@node hill3.stubs.ok
+speaker: CRAKE
+cost: 3
+do: set(crake.drafts)
+nar: Counterfoils, a book of them, upside down: MRS H. GANNET, seven pounds, MRS H. GANNET, seven pounds, week after week back past the spine, and then, seven months ago, fourteen.
+line: CRAKE: You read upside down. Sergeant Gorm says it's a vice. She has it too.
+go: hill3.crake.menu
+
+@node hill3.stubs.fail
+speaker: CRAKE
+cost: 2
+do: set(hill3.stubs_glimpsed)
+nar: MRS H. G, a figure, MRS H. G, a figure, and then the Alderman's sleeve comes down over the page like a blind.
+line: CRAKE: Would you like it the right way up? No. I don't think you would.
+go: hill3.crake.menu
+
+@node hill3.stubs.take
+speaker: CRAKE
+cost: 2
+do: set(crake.drafts); rep(trust, -1)
+nar: She lifts her elbow and lets the assessor have it. MRS H. GANNET, seven pounds a week, for six years, and fourteen for the last seven months.
+line: CRAKE: Take it. I can remember every one.
+go: hill3.crake.menu
+
+@node hill3.crake.drafts
+speaker: CRAKE
+cost: 4
+do: set(crake.drafts)
+line: CRAKE: Yes. Every week, in the crossword. Seven pounds, and fourteen since the rewiring, because an uninsured Trust cannot borrow for a single lamp, and I wanted lamps.
+line: CRAKE: Mrs Gannet sends a share to Hesk. The Shelf has a night assessor there, you see. Some of your wages, assessor, for six years. You have been dry on my money.
+nar: She says it the way one gives a receipt.
+go: hill3.crake.menu
+
+@node hill3.crake.knew
+speaker: CRAKE
+cost: 2
+alt: hill3.crake.knew.told ? has(letter.kept_open) | has(hester.told)
+line: CRAKE: I expected a gale. Everybody in Gullet expected a gale. The Glass has said so since Tuesday.
+go: hill3.crake.menu
+
+@node hill3.crake.knew.told
+speaker: CRAKE
+cost: 4
+line: CRAKE: I asked for the claim to be kept open. A gale was forecast.
+line: CRAKE: I expected slates, assessor. A chimney. My white lamps blown off their posts. I did not expect a girl to read it aloud on the quay, and a man to hear a price in it.
+nar: She takes off her pen's cap and puts it back on, twice.
+go: hill3.crake.menu
+
+@node hill3.blotter.ok
+speaker: CRAKE
+cost: 3
+do: set(letter.kept_open)
+nar: Backwards, faint, in yellow on the pink: KEEP 4471/G OPEN. GALE FORECAST. FURTHER LOSS EXPECTED. ONE OPEN CLAIM IS CHEAPER THAN TWO. O.C.
+line: CRAKE: I blot everything. One can't see yellow ink wet, you know. Not through these.
+go: hill3.crake.menu
+
+@node hill3.blotter.fail
+speaker: CRAKE
+cost: 2
+nar: The blotter is a year of letters on top of one another, in yellow, backwards, and they say everything at once.
+line: CRAKE: It's very restful, a blotter. Nothing on it can be read.
+go: hill3.crake.menu
+
+# ---------------------------------------------------------------- her offer
+@node hill3.offer
+speaker: CRAKE
+cost: 4
+line: CRAKE: Mrs Gannet is seventy-eight and types with two fingers, and one of them is going. Somebody will have to type the Shelf. I would go on paying for it. You would be very good at the replies. You have read enough of them.
+line: CRAKE: Or the Municipal's assessor. Salaried. Dry. A desk with a lamp on it. I offered it once by telephone. I offer it now with the lamp.
+line: CRAKE: Or the morning boat, if Captain Penhallow will sail. Your wages will go on arriving in Hesk. They always have. Nobody need ever know whose they were.
+opt: "The typewriter." -> hill3.offer.typewriter {id: hill3.offer.typewriter, do: hill3_offer = typewriter; set(said.crake_typewriter); set(heard.crake.typewriter)}
+opt: "The desk with the lamp on it." -> hill3.offer.post {id: hill3.offer.post, do: hill3_offer = post; set(said.crake_post); set(heard.crake.post)}
+opt: "The boat." -> hill3.offer.boat {id: hill3.offer.boat, do: hill3_offer = boat; set(said.crake_boat); set(heard.crake.boat)}
+opt: "None of them. I am writing the verdict at dawn, Alderman, and you are in it either way." -> hill3.offer.no {id: hill3.offer.no, do: hill3_offer = refused; set(said.crake_offer_no); set(heard.crake.offer_no)}
+
+@node hill3.offer.typewriter
+speaker: CRAKE
+cost: 2
+line: CRAKE: Good. Mrs Gannet will want to ask you herself. Let her. It is her husband's promise; I only pay for it.
+go: hill3.crake.menu
+
+@node hill3.offer.post
+speaker: CRAKE
+cost: 2
+line: CRAKE: I'll have the lamp put in on Monday. White, of course.
+nar: She writes it down, in yellow, and cannot see what she has written.
+go: hill3.crake.menu
+
+@node hill3.offer.boat
+speaker: CRAKE
+cost: 2
+line: CRAKE: Then go dry, assessor. It is what you are for. I mean that kindly. I always mean everything kindly; it is the thing nobody forgives.
+go: hill3.crake.menu
+
+@node hill3.offer.no
+speaker: CRAKE
+cost: 2
+line: CRAKE: Either way. Yes. I have been in it either way since a man from Hesk came up my path with mud to the knee.
+go: hill3.crake.menu
+
+@node hill3.crake.bye
+speaker: CRAKE
+cost: 1
+line: CRAKE: Mind the lane. The lamps swing, and so does everything under them.
+go: ^hub
+
+# ---------------------------------------------------------------- the station
+@node hill3.station
+place: station
+speaker: GORM
+alt: hill3.station.hostile ? has(book.violence) & !seen(hill3.station.hostile) & !seen(hill3.fight.station.win)
+cost: 2
+nar: The station with its door on a hook against the wind, the poles rattling in their rack at every gust.
+line: GORM: Out in this, are we? And who sent you, the Alderman or the weather? Would you like to stand by the stove while I write that down?
+go: hill3.station.menu
+
+@node hill3.station.hostile
+place: station
+speaker: GORM
+cost: 1
+nar: The door comes off its hook in the gale and the assessor comes in with it, into a room where every pole is already off the rack.
+line: GORM: Did you think we'd forget? How many of us shall it be tonight? Shall the wind make one more?
+check: "[FORM LETTER] Say the Shelf has come in out of the weather, which is a thing the Municipal's own rules allow." -> hill3.station.menu / hill3.station.fight {skill: formletter, dc: 7, red}
+opt: "Back out into the gale." -> ^hub
+opt: "Stand your ground." -> hill3.station.fight
+
+@node hill3.station.menu
+speaker: GORM
+cost: 0
+opt: "Ask her to send a second hand down to Hobb at the substation." -> hill3.gorm.hand ? var.light_hill == 1 & !has(hill3.lamps_held) & !has(lampout.hill) & !has(book.violence)
+opt: "Take the Alderman's key off the board again." -> hill3.station.take ? !has(hill3.key)
+opt: "Leave her the stove." -> ^hub
+
+@node hill3.gorm.hand
+speaker: GORM
+cost: 3
+line: GORM: Two hands at the panel, all night, in this? Do you know what the order says? One duty hand? And do you know who wrote the order?
+line: GORM: And would you like to know what I think of it? Fewell? Would you go down and stand with the boy?
+line: FEWELL: Nine foot four of pole and a boy with two lanterns. We'll manage.
+do: set(hill3.lamps_held); set(hill3.bearing); set(book.hill3_hand); set(hill3.tended)
+go: hill3.station.menu
+
+@node hill3.station.take
+place: station
+speaker: GORM
+cost: 1
+line: GORM: Again? Would you like to think about it for as long as the last time?
+nar: Three poles come off the rack, and the door bangs open on the gust, and nobody shuts it.
+opt: "Put it back." -> hill3.station.menu
+opt: "Keep it." -> hill3.station.fight ? !has(down.hill3)
+
+@node hill3.station.fight
+place: station
+cost: 0
+alt: hill3.station.fight4 ? has(book.violence)
+do: fight(e3.station)
+nar: The claims case comes up like a door, and the room is full of brass.
+
+@node hill3.station.fight4
+place: station
+cost: 0
+do: fight(e3.station.four)
+nar: Four poles, a door that will not stay shut, and the gale coming in to watch.
+
+@node hill3.fx.station
+place: station
+speaker: GORM
+cost: 2
+line: GORM: What have I written about the gale? Would you like to read it? "Twenty-one twenty, first band. Hill holds. Shelf on the hill, again." Shall I put down that you asked?
+nar: The poles go back into the rack, one at a time, against the wind.
+go: hill3.fight.station.yield
+
+@node hill3.fight.station.win
+place: station
+speaker: GORM
+cost: 3
+do: set(struck.station3); set(book.violence); rep(trust, -2); seenas_trust = enemy; set(hill3.key)
+if: trait(m.body) == none => offer(m.body)
+nar: Strand sits under the rack counting his breaths aloud, and gets the same number every time, which seems to comfort him. The gale has blown Gorm's book open on the desk and is reading it page by page.
+line: GORM: Is it the same key? Shall I write it down twice, or will once do for both nights?
+go: ^hub
+
+@node hill3.fight.station.yield
+place: station
+speaker: GORM
+cost: 2
+do: set(hill3.key)
+if: !seen(hill3.fx.station) => set(book.violence); rep(trust, -1)
+nar: Gorm lifts the key off its hook and holds it out against the draught.
+line: GORM: Would you shut the door on your way out? Would anybody, tonight?
+go: ^hub
+
+@node hill3.fight.station.fled
+place: hill_lane
+cost: 2
+do: set(book.fled); rep(trust, -1); meter(cold, 1)
+nar: Out into the gale with the door banging behind. The wind takes the assessor down the lane faster than legs would, and nobody follows into weather like this.
+go: ^hub
+
+@node hill3.fight.station.down
+place: station
+speaker: GORM
+cost: 30
+do: set(down.hill3); rep(trust, -1); set(hill3.stubs_glimpsed)
+nar: Half an hour on the bench by the stove, with the door banging and Gorm on her stool writing between bangs.
+line: GORM: Do you know where the Alderman's letter went last night, at eleven? And whose name is on the counterfoils under her elbow? Would you like me to say it, or shall I let you find it?
+go: ^hub
+
+# ---------------------------------------------------------------- the substation (gate B1's moment for the hill)
+@node hill3.sub
+place: substation
+alt: hill3.sub.dark ? var.light_hill != 1
+alt: hill3.sub.lost ? has(lampout.hill)
+alt: hill3.sub.held ? has(hill3.lamps_held)
+alt: hill3.trip ? !has(hill3.lamps_held) & ((clock >= 21:20 & clock < 22:00 & !has(b1.band1)) | (clock >= 22:40 & clock < 23:20 & !has(b1.band2)) | (clock >= 03:30 & clock < 04:00 & !has(b1.band3)))
+cost: 1
+speaker: HOBB
+nar: Hobb in the substation doorway, between his lanterns, with the door tied open by its own handle so that he can see the hill.
+line: HOBB: It goes in the bands. It'll go at twenty past nine, and twenty to eleven, and half past three. I've got both lit. I've lit them four times already.
+go: ^hub
+
+@node hill3.sub.dark
+place: substation
+cost: 1
+nar: The substation hums to itself in the dark, on its house feeder only, with a notice on the door the rain has made into soup: STORM ORDER. HILL ARCS OFF. O.C.
+go: ^hub
+
+@node hill3.sub.lost
+place: substation
+speaker: HOBB
+cost: 1
+nar: The door is shut. Inside, Hobb sits on the floor between two lanterns, one out.
+line: HOBB: I couldn't, after the third. It kept going. The order says six minutes. It doesn't say how many times.
+go: ^hub
+
+@node hill3.sub.held
+place: substation
+speaker: HOBB
+cost: 1
+line: HOBB: Holding! Hear it? That's the arcs. That's a hill.
+go: ^hub
+
+@node hill3.trip
+place: substation
+speaker: HOBB
+cost: 3
+do: meter(cold, 1); wet(0.3)
+if: clock >= 21:20 & clock < 22:00 => set(b1.band1)
+if: clock >= 22:40 & clock < 23:20 => set(b1.band2)
+if: clock >= 03:30 & clock < 04:00 => set(b1.band3)
+nar: The band comes over the hill like a wet sheet. Up the lane the overhead line slaps its crossarm, once, twice, and the white arcs go out together.
+line: HOBB: Ninety seconds. Ninety seconds and then the button. Every time. I can't see the button, Shelf. The wind's had my left lantern.
+opt: "Hold the substation door shut with your back while he works." -> hill3.door.hold {verb: carry, noise: 0.3}
+check: "[CONDOLENCE] Talk him to the button through the dark, the way you walked him across the quay." -> hill3.talk.ok / hill3.talk.fail ? tab_hobb == 1 {skill: condolence, dc: 5}
+check: "[CONDOLENCE] Talk him to the button through the dark, one sentence at a time." -> hill3.talk.ok / hill3.talk.fail ? tab_hobb != 1 {skill: condolence, dc: 7}
+check: "[THE DARK] Find the button yourself, by feel, ninety seconds after every trip." -> hill3.dark.ok / hill3.dark.fail {skill: dark, dc: 6, verb: hide, noise: 0}
+check: "[GRIP] Climb the pole with the claims case strap and lash the slapping line to its crossarm." -> hill3.lash.ok / hill3.lash.fail {skill: grip, dc: 7, red, verb: rig, noise: 0.4}
+check: "[THE VANE] Read the gusts and tell him to press only in the lull that follows each one." -> hill3.lull.ok / hill3.lull.fail {skill: vane, dc: 5, verb: read, noise: 0}
+opt: "Leave him to the order." -> hill3.trip.leave
+
+@node hill3.door.hold
+place: substation
+cost: 0
+check: "[BALLAST] Back to the door. Feet in the gravel. Do not let the rain at the board." -> hill3.hold.ok / hill3.hold.fail {skill: ballast, dc: 6, red, verb: carry, noise: 0.3}
+
+@node hill3.hold.ok
+place: substation
+speaker: HOBB
+cost: 20
+do: set(hill3.lamps_held); set(hill3.bearing); set(hill3.tended); meter(cold, 2)
+nar: Twenty minutes with a door in the small of the back and the gale leaning on the other side of it. The board stays dry. Seven trips; seven presses; the arcs come back every time.
+line: HOBB: That's the band gone. They'll hold now. The board's dry, they'll hold, I know they will. You've got a door printed on you.
+go: ^hub
+
+@node hill3.hold.fail
+place: substation
+cost: 10
+do: set(lampout.hill); set(hill3.tended); meter(cold, 2); wet(0.4)
+cmd: setLight hill_lane 0.03 0
+nar: A gust takes the door, and the assessor with it, and a sheet of rain goes straight onto the slate board. The second switch answers with a bang and a smell, and the hill is dark, and stays dark.
+line: HOBB: That's the switch. That's the switch gone. That's not ninety seconds, that's for good.
+go: ^hub
+
+@node hill3.talk.ok
+place: substation
+speaker: HOBB
+cost: 20
+do: set(hill3.lamps_held); set(hill3.bearing); set(hill3.tended); meter(cold, 1)
+nar: The assessor talks. The panel, the cover, the cold brass under the left thumb. Count with me. Eighty-nine, ninety. Now. Seven times through the band, the same sentences, and by the fourth Hobb is saying them first.
+line: HOBB: Ninety. Now. I did that one on my own. Did you see? You can't see. I did it.
+go: ^hub
+
+@node hill3.talk.fail
+place: substation
+speaker: HOBB
+cost: 10
+do: meter(cold, 1)
+nar: Hobb presses at sixty, and at seventy, and the arcs, locked out and hot, ignore him. By the time the count is right the band has passed and the line has stopped slapping on its own.
+line: HOBB: They're back. That wasn't me. That was the weather being kind. It won't be kind at half past three.
+go: ^hub
+
+@node hill3.dark.ok
+place: substation
+speaker: HOBB
+cost: 20
+do: set(hill3.lamps_held); set(hill3.bearing); set(hill3.tended); meter(cold, 1)
+nar: In the dark the panel is three steps in and one to the left, and the button is where a thumb expects a button to be. Seven trips. Seven times the assessor counts ninety in the black and presses, and the hill comes back blue, then white.
+line: HOBB: You like it. The dark. You stand in it like it's a room.
+go: ^hub
+
+@node hill3.dark.fail
+place: substation
+speaker: HOBB
+cost: 10
+do: meter(cold, 1)
+cmd: setLight crake_study 0.05 0
+nar: The thumb finds a switch where the button should be. It is the first switch, HILL, HOUSES, and the Alderman's yellow window goes out with every other window on the hill.
+line: HOBB: That's houses! That's everybody's kettle! Put it back, put it back.
+nar: The assessor puts it back. In the band's last minute the line stops slapping, and the arcs are restruck, by Hobb, with nobody's help.
+cmd: setLight crake_study 0.8 0
+go: ^hub
+
+@node hill3.lash.ok
+place: substation
+cost: 15
+do: set(hill3.lamps_held); set(hill3.bearing); set(hill3.tended); set(hill3.line_lashed); meter(cold, 2); wet(0.4)
+nar: Up the pole in the gale, legs round the wood, the strap through the case's handle and round the line where it meets the crossarm, pulled, pulled again. The line stops slapping. The arcs come back once, and do not go out again.
+line: HOBB: It's stopped! The line's stopped! You've tied up the Municipal!
+go: ^hub
+
+@node hill3.lash.fail
+place: substation
+cost: 10
+do: meter(cold, 2); wet(0.5); meter(wear, 1)
+nar: Half way up, the line comes round on a gust and takes the strap out of the assessor's hand, and the assessor comes down the pole the fast way, into a hedge that has been waiting all night for exactly this.
+line: HOBB: Are you dead? Don't be dead, I can't do the button and a dead Shelf.
+go: hill3.trip
+
+@node hill3.lull.ok
+place: substation
+speaker: HOBB
+cost: 15
+do: set(hill3.lamps_held); set(hill3.bearing); set(hill3.tended)
+inst: THE VANE: Twenty-four, twenty-six, and drop! Eleven! There! Now, while it breathes in!
+nar: After each gust the wind takes a breath, and the line hangs still for the length of it. Hobb presses in the breath. The arcs come back and hold, and hold, and the band goes over without taking them again.
+line: HOBB: In the breath. I'll remember. In the breath.
+go: ^hub
+
+@node hill3.lull.fail
+place: substation
+speaker: HOBB
+cost: 10
+do: meter(cold, 1)
+inst: THE VANE: Now! No. Now! No. It is gusting in both directions, which is not a direction!
+nar: Hobb presses on the assessor's word into the teeth of a gust, and the line slaps, and the arcs go out again with the button still warm.
+line: HOBB: That's all right. That's all right. I'll do it by the order.
+go: ^hub
+
+@node hill3.trip.leave
+place: substation
+speaker: HOBB
+cost: 1
+line: HOBB: That's all right, Shelf. It's my order. I'll stand it.
+nar: Behind the assessor, up the lane, the arcs go out and, after a while, come back.
+go: ^hub
+
+# ---------------------------------------------------------------- the collier at four (beat 16)
+@node hill3.collier
+place: hill_lane
+cost: 3
+do: set(hill3.collier_seen); meter(cold, 1)
+nar: From the top of the hill, over the roofs, the collier Ellen Varty's lights in the bay's mouth, going up and down on the north-west sea like a lantern carried by somebody running.
+nar: Behind her, from the water, the hill must be the one light in Gullet that does not move. {when: var.light_hill == 1 & has(hill3.lamps_held)}
+nar: Whatever she steers by tonight, it is not the hill. {when: var.light_hill != 1 | has(lampout.hill)}
+nar: Her lights find the dog-leg, swing, and come on up the channel. {when: has(collier.through)}
+nar: Her lights stop going up and down. They stay where they are, out on the Spit, at a slant. {when: has(collier.spit)}
+nar: Mother's beam goes out across the water and lies on her for the length of a breath. {when: !has(collier.through) & !has(collier.spit) & mother == burning}
+nar: Where Mother's beam should be there is nothing, and the lights come on toward the Spit. {when: !has(collier.through) & !has(collier.spit) & mother != burning}
+line: PELLOW: She's at the window. Watching. I've never once seen her watch anything. {when: has(ink.crake) & var.hill3_offer != none}
+go: ^hub

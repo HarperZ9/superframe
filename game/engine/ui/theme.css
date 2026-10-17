@@ -1,0 +1,63 @@
+/* Low Water shell: the paper Daybook look. Two faces: Hanken Grotesk for words, Conso for names,
+   times and numbers. One hot mark per view (the focus ring). Colour never carries meaning alone. */
+@font-face { font-family: "LW Hanken"; src: url("/fonts/hanken-grotesk.woff2") format("woff2"); font-weight: 100 900; font-style: normal; }
+@font-face { font-family: "LW Hanken"; src: url("/fonts/hanken-grotesk-italic.woff2") format("woff2"); font-weight: 100 900; font-style: italic; }
+@font-face { font-family: "LW Conso"; src: url("/fonts/conso-regular.woff2") format("woff2"); }
+
+:root {
+  --paper: rgba(233, 227, 212, 0.95); --paper-solid: #e9e3d4; --paper-2: #ddd5c2;
+  --ink: #1d1418; --ink2: #5a4c4a; --ink3: #7d6f6a; --hot: #9a3b1f;
+  --night: #070509; --rule: rgba(29, 20, 24, 0.16);
+  --body: "LW Hanken", "Segoe UI", sans-serif; --mono: "LW Conso", Consolas, monospace;
+  --ts: 1; --gap: 1rem; --line: 1.65rem;
+}
+html { font-size: calc(var(--ts) * clamp(14px, 1.25vmin + 7px, 22px)); }
+html, body { margin: 0; height: 100%; background: var(--night); color: var(--ink); font-family: var(--body); overflow: hidden; }
+* { box-sizing: border-box; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
+.mono { font-family: var(--mono); white-space: pre-wrap; }
+.small { font-size: 0.8rem; }
+.quiet { color: var(--ink2); }
+.caps { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; }
+[hidden] { display: none !important; }
+
+/* focus: one model for keyboard, mouse and pad; the ring is the view's one hot mark */
+.f { outline: none; border-radius: 3px; }
+.f:focus-visible, .f.is-focus { box-shadow: 0 0 0 2px var(--hot); }
+.f[aria-disabled="true"] { opacity: 0.55; cursor: default; }
+
+#stage { position: fixed; inset: 0; }
+.screen { position: absolute; inset: 0; }
+.sheet { background: var(--paper); box-shadow: 0 0.6rem 2rem rgba(0, 0, 0, 0.55); }
+.ruled { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--line) - 1px), var(--rule) calc(var(--line) - 1px), var(--rule) var(--line)); background-color: var(--paper); }
+
+/* menus: title, settings, saves */
+.menu { position: absolute; left: 7vw; top: 50%; transform: translateY(-50%); background: var(--paper-solid); max-height: 92vh; overflow: auto; width: min(34rem, 86vw); padding: 2.2rem 2.4rem; }
+.menu h1 { font-weight: 600; font-size: 2.6rem; margin: 0 0 0.2rem; letter-spacing: -0.01em; }
+.menu h2 { font-weight: 600; font-size: 1.5rem; margin: 0 0 1rem; }
+.menu .sub { margin: 0 0 1.6rem; color: var(--ink2); }
+.btn { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; width: 100%; padding: 0.55rem 0.8rem; margin: 0.15rem 0; font-weight: 600; font-size: 1.05rem; }
+.btn:hover { background: rgba(29, 20, 24, 0.06); }
+.btn .k { font-family: var(--mono); font-weight: 400; font-size: 0.75rem; color: var(--ink2); }
+.hint { white-space: pre; position: absolute; right: 1.4rem; bottom: 0.9rem; text-align: right; text-shadow: 0 1px 3px #000; color: rgba(233, 227, 212, 0.6); font-family: var(--mono); font-size: 0.72rem; }
+.title-art { position: absolute; inset: 0; background-size: cover; background-position: center; filter: saturate(0.8) brightness(0.7); }
+
+/* settings rows */
+.rows { display: grid; gap: 0.1rem; }
+.row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; padding: 0.25rem 0.6rem; }
+.row .lab { font-weight: 600; }
+.row .help { display: block; font-weight: 400; font-size: 0.78rem; color: var(--ink2); }
+.row .val { font-family: var(--mono); font-size: 0.85rem; min-width: 6rem; text-align: right; }
+.row .val::before { content: "\2039  "; color: var(--ink3); }
+.row .val::after { content: "  \203A"; color: var(--ink3); }
+.sect { font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink2); margin: 0.8rem 0.6rem 0.2rem; }
+
+/* toasts */
+#toasts { position: fixed; left: 50%; top: 0.8rem; transform: translateX(-50%); display: grid; gap: 0.35rem; z-index: 50; pointer-events: none; }
+.toast { background: var(--paper-solid); padding: 0.4rem 0.9rem; font-size: 0.85rem; box-shadow: 0 0.3rem 1rem rgba(0, 0, 0, 0.5); }
+.toast .caps { margin-right: 0.6rem; color: var(--ink2); }
+
+/* reduced motion and high contrast */
+:root.calm * { transition: none !important; animation: none !important; }
+.fade-in { animation: fadein 220ms ease-out; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }

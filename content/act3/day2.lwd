@@ -1,0 +1,193 @@
+# Low Water, the second daylight page between Acts 2 and 3: "Before the Wind". Director's file.
+# Plan: design/ACT3-PLAN.md section 5. Playable, in colour, no checks. Two calls of four before
+# the light goes at 15:30, one small act of the player's in each; Wenna's call asks (the keeper
+# plant, editor A11); Fisk's call pays nothing.
+
+# ---- new ids
+@fact day2.wenna
+@fact day2.pip
+@fact day2.boats
+@fact day2.fisk
+@fact day2.sleep
+@var day2_calls
+default: 0
+
+@place day2_room
+name: The room above the Brine, by day
+zone: brine
+district: brine
+footing: wood
+shelter: yes
+light: 0.8
+sodium: 0
+dark-light: 0.8
+
+@place day2_quay
+name: Lamp Quay, before the wind
+zone: quay
+district: quay
+footing: stone
+light: 0.85
+sodium: 0
+dark-light: 0.85
+
+@place day2_mole
+name: The mole, before the wind
+zone: mole
+district: mole
+footing: stone
+light: 0.85
+sodium: 0
+dark-light: 0.85
+
+@place day2_tube
+name: The tube terminus, by day
+zone: weigh
+district: weigh
+footing: wood
+shelter: yes
+light: 0.6
+sodium: 0
+dark-light: 0.6
+
+# ---------------------------------------------------------------- waking
+@node day2.start
+place: day2_room
+cost: 0
+nar: One in the afternoon. The light through the planking is yellow and moves, because the clouds are moving, fast, all one way.
+nar: The coat on its peg has two tide marks at the hem now, one above the other.
+voice: salt: Something is coming up the coast. The knees knew before the Glass did. {dc: 3}
+inst: THE GLASS: Nine hundred and sixty-two, darling, and the bottom's not in sight. Tonight the wind will want everything that isn't nailed down, and some things that are.
+go: day2.quay
+
+@node day2.quay
+place: day2_quay
+cost: 2
+nar: Gullet in colour for the last time this week, and busy. Shutters going up over the oxblood and the mustard. Sabine and Teague are filling sacks with sand from a cart. Somebody on a ladder is roping the Brine's sign to the Brine.
+nar: Out on the mole, small and dark against a sky the colour of a slate, a woman in an oxblood coat stands looking at the lamp.
+go: day2.hub
+
+@node day2.hub
+hub: yes
+place: day2_quay
+alt: day2.dusk ? var.day2_calls >= 2 | clock >= 15:30
+opt: "Walk out along the mole to Wenna." -> day2.wenna.go ? !has(day2.wenna) +10
+opt: "Go to the tube, where Pip will be." -> day2.pip.go ? !has(day2.pip) +5
+opt: "Go down to the boats, where they are making fast." -> day2.boats.go ? !has(day2.boats) +5
+opt: "Go into the Brine, where the engineer is packing." -> day2.fisk.go ? !has(day2.fisk) +3
+opt: "Go back up and sleep until the wind." -> day2.sleep.go
+
+# ---------------------------------------------------------------- Wenna asks (the keeper plant)
+@node day2.wenna.go
+place: day2_mole
+cost: 15
+do: set(day2.wenna); day2_calls += 1
+nar: The spray is already coming over the rail in single sheets, a long time apart.
+line: WENNA: She'll want a hand at the panel all night. Every time the board trips, and it will trip.
+line: WENNA: My knees'll do the stairs once. Not twice. Not three times.
+nar: She does not look at the assessor. She looks at the lamp.
+opt: "Say you'll sit with her, if it comes to that." -> day2.wenna.yes
+opt: "Say nothing, and look at the lamp too." -> day2.wenna.look
+
+@node day2.wenna.yes
+cost: 3
+do: set(wenna.asked); set(said.day2_mother)
+line: LAMB: If it comes to that.
+line: WENNA: It'll come to that.
+nar: She puts something in the assessor's hand without looking: a brass key on a string, warm from her neck.
+go: day2.hub
+
+@node day2.wenna.look
+cost: 5
+nar: They look at the lamp together until a sheet of spray reaches them both. Neither steps back.
+line: WENNA: You'd do. If you had to.
+do: set(wenna.asked)
+go: day2.hub
+
+# ---------------------------------------------------------------- Pip
+@node day2.pip.go
+place: day2_tube
+cost: 10
+do: set(day2.pip); day2_calls += 1
+nar: Pip is on her crate by the brass mouth with the afternoon canister in her lap, unopened.
+line: PIP: Can a person keep a promise for somebody that's gone? For a company that's gone, even?
+nar: She turns the canister over. The cap is dented from years of being dropped onto the same hook.
+opt: "Ask her who she means." -> day2.pip.who
+opt: "Tell her a promise kept is a promise kept, whoever it was made to." -> day2.pip.answer
+
+@node day2.pip.who
+cost: 3
+line: PIP: Nobody. Somebody I know. Forget I said.
+nar: She hangs the canister on its hook without reading it, which, she told the assessor on the first night, is the shilling.
+go: day2.hub
+
+@node day2.pip.answer
+cost: 3
+do: set(said.day2_promise)
+line: LAMB: A promise kept is kept. Whoever it was made to.
+line: PIP: That's what she says.
+nar: Pip hears what she has said a moment after she has said it, and goes red to the ears, in daylight, where everyone can see.
+go: day2.hub
+
+# ---------------------------------------------------------------- the boats
+@node day2.boats.go
+place: day2_quay
+cost: 10
+do: set(day2.boats); day2_calls += 1
+alt: day2.boats.lugg ? has(merrow.cells) & !has(appt.joined)
+nar: At the mole steps Merrow is doubling his lines, and then doubling the doubles. His boat rides low and clean.
+line: MERROW: Eye comes over about a quarter past twelve. Forty minutes, if the Glass is honest. Forty minutes and you could row to the Old Light and back and have time to look.
+nar: He holds out the end of a line.
+opt: "Take it, and make it fast to the ring." -> day2.boats.rope
+opt: "Leave the line to him." -> day2.hub
+
+@node day2.boats.rope
+cost: 5
+nar: The assessor makes the line fast. Merrow undoes the knot without comment and makes it again, the way it is made.
+line: MERROW: Boat's here at midnight. Whoever wants it.
+do: rep(lowco, 1)
+go: day2.hub
+
+@node day2.boats.lugg
+place: day2_quay
+nar: Lugg is making the Company's boats fast alone. He works bent and careful, not looking up.
+line: LUGG: Eye comes over at a quarter past twelve. Tub would go. Tub always goes.
+opt: "Hold the bow while he ties it." -> day2.boats.hold
+opt: "Leave him to it." -> day2.hub
+
+@node day2.boats.hold
+cost: 5
+nar: The assessor holds the bow. Lugg ties it, and the next one, and then stands with his hand on the gunwale as if it were somebody's shoulder.
+line: LUGG: Boat's here at midnight.
+do: rep(lowco, 1)
+go: day2.hub
+
+# ---------------------------------------------------------------- Fisk (pays nothing)
+@node day2.fisk.go
+place: brine
+cost: 10
+do: set(day2.fisk); day2_calls += 1
+nar: The engineer has his specifications spread on the Brine's table to dry. He is packing them into the satchel in an order that matters to him.
+line: FISK: The coast road will be closed by four. I shall be stuck, assessor. I find I don't mind.
+opt: "Help him put the pages in order." -> day2.fisk.help
+opt: "Leave him to his satchel." -> day2.hub
+
+@node day2.fisk.help
+cost: 5
+nar: The assessor hands him the pages by number. He takes each one as if it might be the last. Then one is.
+line: FISK: Thank you. I am sorry about the adjectives.
+go: day2.hub
+
+# ---------------------------------------------------------------- sleep, dusk
+@node day2.sleep.go
+place: day2_room
+cost: 0
+do: set(day2.sleep); meter(wear, -10)
+nar: The assessor lies down in the moving yellow light and listens to the town nail itself shut.
+go: day2.dusk
+
+@node day2.dusk
+place: day2_quay
+cost: 0
+nar: At half past three the light goes the colour of a bruise, and then the colour of nothing, and the wind arrives at the end of the mole like a person who has run all the way.
+go: quay3.start

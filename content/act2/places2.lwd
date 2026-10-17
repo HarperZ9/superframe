@@ -1,0 +1,174 @@
+# Low Water: Act 2's new places and districts, shared by later acts. Director's file.
+
+# ---------------------------------------------------------------- new places
+# Chancel Hill
+@place hill_lane
+name: The hill path under the white lamps
+zone: hill
+district: hill
+footing: stone
+light: 0.7
+sodium: 0
+dark-light: 0.03
+
+@place crake_hall
+name: The Alderman's hall
+zone: hill
+district: hill
+footing: wood
+shelter: yes
+light: 0.8
+sodium: 0
+dark-light: 0.05
+
+@place crake_study
+name: The Alderman's study
+zone: hill
+district: hill
+footing: wood
+shelter: yes
+stove: yes
+light: 0.8
+sodium: 0
+dark-light: 0.05
+
+@place station
+name: The Lamplighters' station
+zone: hill
+district: hill
+footing: stone
+shelter: yes
+stove: yes
+light: 0.9
+sodium: 0
+dark-light: 0.05
+
+@place substation
+name: The Municipal substation
+zone: hill
+district: hill
+footing: stone
+shelter: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+# The Gasholder
+@place gas_frame
+name: The gasholder frame
+zone: gasholder
+district: gasholder
+footing: shingle
+light: 0.3
+sodium: 0
+dark-light: 0.1
+
+@place gas_altar
+name: Under the Old Bulb
+zone: gasholder
+district: gasholder
+footing: stone
+shelter: yes
+light: 0.4
+sodium: 0
+dark-light: 0.2
+
+@place gas_vestry
+name: Brother Ash's vestry
+zone: gasholder
+district: gasholder
+footing: wood
+shelter: yes
+light: 0.35
+sodium: 0
+dark-light: 0.1
+
+# The Ropewalk
+@place rope_lane
+name: The Ropewalk
+zone: ropewalk
+district: ropewalk
+footing: stone
+light: 0.25
+sodium: 0
+dark-light: 0.04
+
+@place telegraph
+name: The telegraph office
+zone: ropewalk
+district: ropewalk
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 0
+dark-light: 0.05
+
+@place gannet_house
+name: The Gannet house, the front room
+zone: ropewalk
+district: ropewalk
+footing: wood
+shelter: yes
+stove: yes
+light: 0.4
+sodium: 0
+dark-light: 0.4
+
+@place gannet_wall
+name: The passage behind the Gannet house
+zone: ropewalk
+district: ropewalk
+footing: stone
+light: 0.05
+sodium: 0
+dark-light: 0.03
+
+# The Spit, by boat
+@place spit_water
+name: On the water, rowing for the Spit
+zone: spit
+district: spit
+footing: wood
+light: 0.06
+sodium: 0
+dark-light: 0.06
+
+@place patience
+name: The Patience, on her side
+zone: spit
+district: spit
+footing: wood
+light: 0.08
+sodium: 0
+dark-light: 0.05
+
+@place ann_tull
+name: The Ann Tull, on her side
+zone: spit
+district: spit
+footing: weed
+light: 0.06
+sodium: 0
+dark-light: 0.04
+
+@district hill
+name: Chancel Hill
+next: quay, gasholder, ropewalk
+map: 0.5 0.15
+
+@district gasholder
+name: The Gasholder
+next: hill
+map: 0.7 0.08
+
+@district ropewalk
+name: The Ropewalk
+next: quay, hill, gut
+map: 0.2 0.4
+
+@district spit
+name: The Spit
+next: quay
+map: 0.9 0.92
+

@@ -1,0 +1,295 @@
+{
+ "place": "spit",
+ "version": 2,
+ "width": 2880,
+ "height": 1800,
+ "camera": {
+  "yawDeg": 20,
+  "elevDeg": 40,
+  "target": [
+   10.5,
+   1.5,
+   3.5
+  ],
+  "dist": 60,
+  "ortho": true,
+  "scale": 11.25
+ },
+ "pxPerMetre": 80,
+ "near": 1.5,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "stars",
+  "lanterns",
+  "frost"
+ ],
+ "variantInfo": {
+  "stars": {
+   "hour": 23.3,
+   "weather": "Night 2 before 23:20: more stars than Gullet has lamps; Lamb's lantern only"
+  },
+  "lanterns": {
+   "hour": 23.8,
+   "weather": "23:20 on: the strippers' lanterns, the pole lantern on the Ann Tull"
+  },
+  "frost": {
+   "hour": 0.3,
+   "weather": "-1 C toward 00:10: frost on the decks and the casks"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  6,
+  9,
+  10,
+  29,
+  41,
+  7
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "patience",
+    "verb": "climb",
+    "at": [
+     10,
+     0.2,
+     3
+    ],
+    "note": "the Patience on her side: bilge about 40 degrees, frost on the deck (S:163)"
+   },
+   {
+    "id": "ann_tull_hatch",
+    "verb": "salvage",
+    "at": [
+     18,
+     0.2,
+     5
+    ],
+    "note": "the Ann Tull's open coal hatches, MUNICIPAL L. & C. CO. (S:421)"
+   },
+   {
+    "id": "casks",
+    "verb": "carry",
+    "at": [
+     16.5,
+     -0.5,
+     3.4
+    ],
+    "note": "casks stencilled S. BRINE, GULLET and W.G.G., blue chalk O.R. (S:420)"
+   },
+   {
+    "id": "strippers_painter",
+    "verb": "rig",
+    "at": [
+     14.5,
+     -0.5,
+     4.5
+    ],
+    "note": "the painter line between the barges; cut it at the turn of the flood (S:345)"
+   },
+   {
+    "id": "lambs_painter",
+    "verb": "rig",
+    "at": [
+     2.8,
+     -0.8,
+     5.6
+    ],
+    "note": "make Lamb's boat fast to the Patience's rudder, or it floats off at 00:10 (S:74)"
+   }
+  ],
+  "hides": [
+   {
+    "id": "ann_tull_lee",
+    "at": [
+     19.8,
+     -0.5,
+     5.5
+    ],
+    "r": 0.8,
+    "note": "the Ann Tull's lee, a sump, shin deep (S:276)"
+   },
+   {
+    "id": "tarpaulin",
+    "at": [
+     14,
+     -0.5,
+     10.2
+    ],
+    "r": 0.6,
+    "note": "under the tarpaulin among the casks (S:498)"
+   }
+  ],
+  "exits": [
+   {
+    "id": "boat",
+    "at": [
+     0.4,
+     -1.1,
+     6
+    ],
+    "note": "Lamb's boat at the left edge (arena exit 0..0.8, 4..8)"
+   }
+  ],
+  "lamps": [
+   {
+    "id": "pole_lantern",
+    "kind": "paraffin",
+    "at": [
+     18,
+     1.95,
+     4
+    ],
+    "arena": [
+     18,
+     4
+    ]
+   },
+   {
+    "id": "old_light",
+    "kind": "landmark",
+    "at": [
+     5,
+     6,
+     -8
+    ]
+   }
+  ]
+ },
+ "lights": {
+  "stars": [
+   {
+    "at": [
+     2.6,
+     -0.4,
+     5.6
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 9,
+    "group": ""
+   }
+  ],
+  "lanterns": [
+   {
+    "at": [
+     18,
+     2,
+     4
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     13.6,
+     -0.2,
+     8.3
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 9,
+    "group": ""
+   },
+   {
+    "at": [
+     16.2,
+     0.9,
+     3.4
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 9,
+    "group": ""
+   }
+  ],
+  "frost": [
+   {
+    "at": [
+     18,
+     2,
+     4
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     13.6,
+     -0.2,
+     8.3
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 9,
+    "group": ""
+   },
+   {
+    "at": [
+     16.2,
+     0.9,
+     3.4
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 9,
+    "group": ""
+   }
+  ]
+ },
+ "arenas": [
+  {
+   "id": "spit",
+   "file": "arena-spit.json",
+   "stage": "arena: spit 0 0 0 0",
+   "heightToWorld": "y = h - 0",
+   "size": [
+    22,
+    12
+   ]
+  }
+ ],
+ "arena": {
+  "name": "spit",
+  "worldOfArena": "x = arena x, z = arena z, y = arena h",
+  "cell": 1,
+  "origin": [
+   0,
+   0
+  ],
+  "note": "decks at the top centre (the Patience) and right (the Ann Tull); channel left; lantern (18, 4); snare (14.5, 4.5)"
+ },
+ "notes": "The Spit. The tide is the game's: the channel fills first, the Spit goes under from the edges by 00:40."
+}

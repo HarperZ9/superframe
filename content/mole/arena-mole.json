@@ -1,0 +1,124 @@
+{
+ "name": "mole",
+ "place": "mole",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "AAABBBAAAAAAACCA",
+  "AAAAAAAAAAAACCCC",
+  "AAAAAAAAAAAACCCC",
+  "AAAAAAADEDAAACCA"
+ ],
+ "legend": {
+  "A": {
+   "surface": "stone",
+   "h": 5.8
+  },
+  "B": {
+   "surface": "stone",
+   "h": -0.4,
+   "solid": true
+  },
+  "C": {
+   "surface": "stone",
+   "h": 25.8,
+   "solid": true
+  },
+  "D": {
+   "surface": "stone",
+   "h": 6.7,
+   "solid": true
+  },
+  "E": {
+   "surface": "stone",
+   "h": 6.5,
+   "solid": true
+  }
+ },
+ "water": {
+  "a": 0,
+  "b": 1
+ },
+ "lights": [
+  {
+   "x": 5.6,
+   "z": 0.25,
+   "r": 3.3,
+   "k": 0.38,
+   "group": "lantern"
+  }
+ ],
+ "exits": [
+  [
+   0,
+   0,
+   0.8,
+   4
+  ],
+  [
+   15.2,
+   0,
+   16,
+   4
+  ]
+ ],
+ "tideEnds": false,
+ "anchors": {
+  "cut": [
+   [
+    5.6,
+    0.25
+   ]
+  ],
+  "lamp": [
+   [
+    5.6,
+    0.25
+   ]
+  ],
+  "snare": [],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   7.5,
+   2.5
+  ],
+  "foes": [
+   [
+    4.5,
+    1.5
+   ],
+   [
+    11.5,
+    0.5
+   ],
+   [
+    7.5,
+    0.5
+   ],
+   [
+    2.5,
+    1.5
+   ]
+  ]
+ },
+ "stage": {
+  "line": "arena: mole 22 0 -3.6 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = -3.2 + (h + 0.3) / 1.72"
+ },
+ "source": {
+  "plate": "content/mole",
+  "rect": [
+   22,
+   -3.6,
+   16,
+   4
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

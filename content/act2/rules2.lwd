@@ -1,0 +1,215 @@
+# Low Water, Act 2: ruleset additions. Director's file, 2026-10-17. Private.
+# The Act 1 ruleset (../act1/rules.lwd) carries over; this adds Act 2's quests, people, items,
+# tools, opponents and encounters. Plan: design/ACT2-PLAN.md.
+
+# ---------------------------------------------------------------- people
+@char fisk
+name: Dorran Fisk
+speaker: FISK
+faction: trust
+about: The engineer who wrote the restrike clause. Speaks in specifications and apologises for adjectives.
+
+@char pellow
+name: Mrs Pellow
+speaker: PELLOW
+faction: trust
+about: Crake's housekeeper. Has never seen her employer's eyes.
+
+@char rook
+name: Euphemia Rook
+speaker: ROOK
+faction: shelf
+about: Telegraphist. Remembers every message she has sent and pretends not to.
+
+@char ash
+name: Brother Lumen Ash
+speaker: ASH
+faction: congregation
+about: The Congregation's treasurer. His relic ledger balances, which worries him.
+
+@char hester
+name: Hester Gannet
+speaker: HESTER
+faction: shelf
+about: Pip's grandmother; once the Shelf's local clerk. Heard, not seen, in Act 2.
+
+@char sallis
+name: Sallis
+speaker: SALLIS
+faction: board
+about: A tide-warden who believes he is collecting for the insurer (the strippers, town version).
+
+@char penrose
+name: Old Penrose
+speaker: PENROSE
+faction: lowco
+about: A Low Company man with a son who sang at the Brine; goes out with Sallis on the Board's boat.
+
+# ---------------------------------------------------------------- quests
+@quest a2.wire
+name: The Telegraph Book
+about: The 18:30 telegram, and its draft.
+stage: open: Euphemia Rook keeps a book of every telegram she sends.
+stage: draft: The 18:30 telegram had a draft. Someone else's hand is on it.
+stage: read: Lamb has read the draft.
+done: read
+
+@quest a2.button
+name: The Engineer's Button
+about: Dorran Fisk's restrike button, and the clause he wrote for it.
+stage: met: The engineer came by the coast road.
+stage: why: He wrote the clause so that nobody could ever say no one was at the panel.
+stage: proved: The button works, and the clause was struck by someone else.
+done: proved
+
+@quest a2.ink
+name: Crake's Yellow Ink
+about: Who struck the clause.
+stage: seen: The clause was struck in yellow ink.
+stage: hers: The ink is the Alderman's.
+stage: said: The Alderman has said so.
+done: said
+
+@quest a2.ledger
+name: The Trust's Ledger
+about: The keeper's wages, "pending a review".
+stage: open: The Trust keeps one ledger for three companies.
+stage: wages: The keeper's wages stopped six years ago in the Alderman's hand.
+done: wages
+
+@quest a2.station
+name: The Lamplighters' Station
+about: Gorm's book and the books before it.
+stage: open: The Lamplighters' station is on the hill.
+stage: books: Lamb has seen what the books say.
+done: books
+
+@quest a2.bulb
+name: The Procession of the Old Bulb
+about: The Congregation carries the Old Bulb down the hill.
+stage: open: Fennick means to carry the Old Bulb to Mother tonight.
+stage: walking: The procession is on the hill.
+stage: ended: The procession is over.
+done: ended
+
+@quest a2.boat
+name: The Boat to the Spit
+about: Getting out to the stranded barges at the second low water.
+stage: open: Two barges lie on the Spit. Only a boat reaches them.
+stage: afloat: Lamb is on the water.
+done: afloat
+
+@quest a2.masters
+name: The Masters' Complaint
+about: Ships that saw Mother green for a year.
+stage: open: Three masters want the Shelf's signature on their complaint.
+stage: signed: The Shelf has signed, or refused.
+done: signed
+
+@quest a2.errand
+name: Mrs Pellow's Errand
+about: A letter from the hill to the Ropewalk.
+stage: open: Mrs Pellow carries a letter nobody explains.
+stage: known: The letter is to Hester Gannet.
+done: known
+
+@quest a2.relics
+name: Brother Ash's Accounts
+about: The relic ledger that balances.
+stage: open: Brother Ash keeps the relic accounts.
+stage: counted: The relics have been counted against Mother's numbers.
+done: counted
+
+@quest a2.substation
+name: The Second Switch
+about: The hill's own power, and Fisk's test.
+stage: open: The hill has a feeder of its own.
+stage: tested: The button has been tested in the dark.
+done: tested
+
+@quest a2.steward
+name: Spratt's Bid
+about: The Guild's stewardship, on the ice.
+stage: open: Agnes Spratt wants the stewardship.
+stage: decided: The Guild has decided.
+done: decided
+
+@quest a2.ice
+name: The Frozen Gutter
+about: What the ice keeps.
+stage: open: The gutter has frozen.
+stage: read: Lamb has read what froze into it.
+done: read
+
+@quest a2.copper
+name: The Sale of Merrow's Copper
+about: Where the copper goes.
+stage: open: Merrow's copper is for sale, or under the gully on a cork.
+stage: gone: The copper has gone somewhere.
+done: gone
+
+@quest a2.typist
+name: Tube Minded
+about: Who types the Shelf.
+stage: heard: The sticking e, through a wall on the Ropewalk.
+done: heard
+
+# ---------------------------------------------------------------- items and tools
+@item i.draft
+name: The 18:30 draft
+about: A telegraph form in two hands.
+
+@item i.ledger_page
+name: A page of the Trust's ledger
+about: KEEPER: WAGES SUSPENDED PENDING REVIEW, initialled O.C. in yellow.
+
+@item i.fisk_spec
+name: Fisk's own copy of the specification
+about: The restrike clause, unstruck.
+
+@item i.letter_pellow
+name: Mrs Pellow's letter
+about: Sealed. Addressed to Mrs H. Gannet, The Ropewalk, in a hand that is not Mrs Pellow's.
+
+@item i.candle
+name: A church candle and a length of string
+about: A slow fuse, for anyone who knows how long a candle takes.
+
+# ---------------------------------------------------------------- opponents and encounters
+@foe f.stripper
+name: A stripper
+faction: board
+standing: 10
+breath: 6
+poise: 4
+moves: bar, hook_pull, shove_overboard
+yields: standing <= 3
+
+@foe f.stripper_lead
+name: The strippers' leader
+faction: board
+standing: 16
+breath: 6
+poise: 6
+moves: bar, hook_pull, rally
+yields: standing <= 5
+
+@foe f.zealot
+name: A zealot in a bell jar
+faction: congregation
+standing: 9
+breath: 4
+poise: 7
+moves: shove, hold, jar_break
+yields: standing <= 4
+
+@foe f.guard
+name: A Trust guard
+faction: trust
+standing: 9
+breath: 6
+poise: 4
+tool: w.pole
+moves: sweep, pin, call
+sight: white
+yields: standing <= 3

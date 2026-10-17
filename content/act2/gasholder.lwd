@@ -1,0 +1,759 @@
+# Low Water, Act 2: The Gasholder. The disused gasholder frame at the top of Chancel Hill that the
+# Congregation of the Filament made into a church (bible 4.3). Writer's file, 2026-10-17. Private.
+# Places (world2.lwd): gas_frame, gas_altar, gas_vestry; the procession's part ends on hill_lane.
+# Beats (design/ACT2-PLAN.md 5): 7, the Old Bulb, Brother Ash's accounts, Fennick's plan;
+# 11, the procession of the Old Bulb down the hill at 01:00 (a2.bulb).
+# Gate A6 (REWORK-PLAN 3.2), five routes:
+#   Fist    gasholder.relic.take -> gasholder.zealots.fight (e.zealots) -> .win / .yield: relics.counted
+#   Tongue  gasholder.ash.trade (Ash's ledger for Lamb's silence) -> gasholder.fennick.break -> .paid
+#   Shadow  gasholder.row (guise == pilgrim, the Opening's dark at 00:45) -> gasholder.row.ok
+#   Hands   gasholder.cock (the gasholder's own gas) -> gasholder.gas.ok -> gasholder.fennick.break
+#   Eye     gasholder.count (the crown against Mother's numbers) -> gasholder.count.ok
+# Fennick breaks on Night 2 (editor S2). His price is the count: the Eye goes home uncounted, or
+# Lamb counts it and he never says it. Hand-offs: gasholder.procession_left (it left the hill) or
+# gasholder.procession_stopped (it never left), gasholder_carries, gasholder_walked,
+# gasholder.carrying (Lamb holds the Eye in the line onto the quay).
+
+# ---- new ids
+@fact gasholder.accounts
+about: Brother Ash's relic ledger: fifty-six splinters received "by grace", about one a month for six years, and against each a sum paid out "per the deacon, at the back door" in the same week. It balances.
+against: fennick 15
+against: wenna 10
+by: reading, for a price
+
+@fact gasholder.fennick_knew
+about: Fennick, in his own words: he held one of Mother's prisms and one of the oven's to the same candle, saw the difference, and went on buying. He knew what her light was losing.
+against: fennick 10
+against: wenna 5
+by: testimony, at a price
+
+@fact gasholder.count_pencil
+about: In pencil: fifty-one of Mother's prisms on the Gasholder's crown, and five that are not hers.
+by: a miscount by candlelight
+
+@fact gasholder.eye_sealed
+@fact gasholder.procession_left
+@fact gasholder.procession_stopped
+@fact gasholder.notice_read
+@fact gasholder.bulb_lit
+@fact gasholder.gas_failed
+@fact gasholder.ash_closed
+@fact gasholder.ash_priced
+@fact gasholder.row_failed
+@fact gasholder.fennick_refused
+@fact gasholder.zealots_done
+@fact gasholder.returned_113
+@fact gasholder.jar_taken
+@fact gasholder.carrying
+@fact gasholder.escorted
+@fact gasholder.struck_count
+
+@item gasholder.splinter
+name: Splinter 61
+about: A crown glass prism off the Gasholder's crown, numbered 61, still on its loop of brass wire.
+
+@var gasholder_carries
+default: bulb
+values: bulb, bulb_eye, lit, lit_eye
+about: What the procession carries down Chancel Hill: the Old Bulb dark, or burning on a bag of the gasholder's gas (about forty minutes from the gate), with or without the Eye, the crown of fifty-six splinters.
+
+@var gasholder_walked
+default: none
+values: none, shelf, pilgrim
+about: How Lamb went down the hill with the procession, if at all.
+
+@encounter e.zealots.sneak
+name: Glass heads, in the dark of two candles
+area: gasholder
+opening: sneak
+foe: f.zealot 4
+param: candles (a knocked candle lights the straw)
+prop: lamp 0 0
+talk: fx2.zealots.give | Hold the relic up and give it back ? fight_seconds >= 8
+win: gasholder.fight.zealots.win
+yield: gasholder.fight.zealots.yield
+fled: gasholder.fight.zealots.fled
+down: gasholder.fight.zealots.down
+
+@event gasholder.ev_left
+at: 01:40
+when: !has(gasholder.procession_left) & !has(gasholder.procession_stopped)
+do: set(gasholder.procession_left)
+
+
+# ================================================================ the hub
+@node gasholder.hub
+hub: yes
+place: gas_frame
+alt: gasholder.arrive ? !seen(gasholder.arrive)
+alt: gasholder.procession ? has(ev2.procession) & !has(gasholder.procession_left) & !has(gasholder.procession_stopped) & !seen(gasholder.procession)
+alt: gasholder.after ? has(gasholder.procession_left) | has(gasholder.procession_stopped)
+alt: gasholder.gate.thief ? seenas_congregation == thief & !seen(gasholder.gate.thief) & !has(gasholder.returned_113) & !has(gasholder.zealots_done)
+nar: Three rings of iron lattice on shingle, open to the stars. Straw for the knees, candles in jam jars, and over a trestle altar, on chains, the Old Bulb.
+nar: The Old Bulb is burning. Colour turns slowly round the lattice. {when: has(gasholder.bulb_lit)}
+nar: A Municipal notice is nailed to the gate post. The jars tremble whenever the gate opens. {when: has(cause.keeper)}
+nar: By the gate a candle burns in a jar with MERROW chalked on the glass. {when: has(cause.wreckers)}
+nar: Someone has chalked a wave on the altar's front. {when: has(cause.sea)}
+inst: THE VANE: North, two metres a second. Barely a wind. The frame sings in it all the same. {once}
+voice: dark: The candles are cut to burn till a quarter to one and no longer. {dc: 6, when: clock >= 00:00 & clock < 00:45, once}
+opt: "Go up to the altar." -> gasholder.altar
+opt: "Go into the vestry." -> gasholder.vestry
+opt: "Sister Gauze, at the end of the row." -> gasholder.gauze
+opt: "The boy with his jar pushed up on his head." -> gasholder.tobit ? !seen(gasholder.tobit)
+opt: "Speak to the Lamplighter outside the gate." -> gasholder.hobb ? has(cause.keeper) & !seen(gasholder.hobb)
+opt: "Read the notice on the gate post." -> gasholder.notice ? has(cause.keeper) & !has(gasholder.notice_read) {verb: read, noise: 0}
+opt: "Look at the iron tap at the foot of the west leg." -> gasholder.cock ? !has(gasholder.bulb_lit) {verb: read, noise: 0}
+check: "[UNDERTOW] Kneel in the front row under the jar and wait for the Opening." -> gasholder.row.ok / gasholder.row.fail ? guise == pilgrim & clock >= 00:25 & clock < 01:00 & !has(gasholder.eye_sealed) & !has(relics.counted) & !has(gasholder.row_failed) & !has(gasholder.zealots_done) {skill: undertow, dc: 6, verb: hide, noise: 0.1}
+opt: "Put the bell jar on." -> gasholder.jar.on ? count(c.belljar) >= 1 & guise != pilgrim
+opt: "Climb the frame." -> gasholder.climb {verb: climb, noise: 0.1}
+opt: "Go down the hill path." -> hill.hub
+
+@node gasholder.arrive
+place: gas_frame
+cost: 2
+nar: The white lamps stop ten yards short of the gate. Above it the frame sings one thin note in a wind too small to feel, and inside forty people kneel under glass bell jars. When the gate creaks, every jar turns.
+go: gasholder.hub
+
+@node gasholder.gate.thief
+place: gas_frame
+speaker: FENNICK
+cost: 2
+do: set(gasholder.escorted)
+nar: Two young men in jars stand in the gate and do not step aside.
+line: FENNICK: Let the Shelf in, brothers. It took one hundred and thirteen off our steps in front of the Municipal. Walk with it. One at each shoulder.
+go: gasholder.hub
+
+@node gasholder.jar.on
+cost: 1
+do: equip(c.belljar)
+nar: The world goes round and quiet, and every candle is the same distance away.
+go: ^hub
+
+# ================================================================ the altar and the deacon
+@node gasholder.altar
+place: gas_altar
+speaker: FENNICK
+cost: 2
+alt: gasholder.altar.again ? seen(gasholder.altar)
+do: set(met.fennick)
+nar: The Old Bulb is the size of a curled child, its glass gone violet with age, its neck an open ring. The filament hangs inside in two pieces. Round it on brass wires hangs a crown of prisms in three rings.
+nar: One wire on the lowest ring is empty, tagged 113. {when: count(i.prism_113) >= 1}
+line: FENNICK: The Shelf, on our hill. You have come up out of the orange. In here things are the colour they are, which is hard on everybody. {when: has(met.fennick)}
+line: FENNICK: Ambrose Fennick, deacon. You are looking at the Old Bulb. The crown about it is the Eye. Every splinter of it is numbered. {when: !has(met.fennick)}
+line: FENNICK: That coat is oxblood in here. I had forgotten it was. {when: guise == keeper}
+line: FENNICK: The Municipal has sent us a list. You will have seen it on the gate. You wrote it, assessor, in a manner of speaking. {when: has(cause.keeper)}
+go: gasholder.fennick.menu
+
+@node gasholder.altar.again
+place: gas_altar
+speaker: FENNICK
+cost: 1
+alt: gasholder.altar.cold ? has(gasholder.zealots_done)
+line: FENNICK: Assessor. The brass does not polish itself, whatever the Congregation believes. {when: !has(gasholder.bulb_lit)}
+line: FENNICK: I cannot look at it. Ask me something, and I will look at you. {when: has(gasholder.bulb_lit)}
+go: gasholder.fennick.menu
+
+@node gasholder.altar.cold
+place: gas_altar
+speaker: FENNICK
+cost: 1
+line: FENNICK: Count them again if you like. They will still be fifty-six.
+go: ^hub
+
+@node gasholder.fennick.menu
+speaker: FENNICK
+cost: 0
+opt: "What happens at one o'clock?" -> gasholder.fennick.plan ? !seen(gasholder.fennick.plan)
+opt: "The splinters on the crown. Where are they from, deacon?" -> gasholder.fennick.hold ? !has(gasholder.eye_sealed) & !seen(gasholder.fennick.hold)
+opt: "Here. One hundred and thirteen." -> gasholder.fennick.113 ? count(i.prism_113) >= 1
+opt: "Your treasurer's ledger balances, deacon. Fifty-six in, fifty-six paid." -> gasholder.fennick.break ? has(gasholder.accounts) & !has(gasholder.eye_sealed) & !has(gasholder.fennick_refused)
+check: "[SUM] Count the crown by candlelight, number by number, against her numbers." -> gasholder.count.ok / gasholder.count.fail ? !has(relics.counted) & !has(gasholder.eye_sealed) & (has(lens.green) | has(pollard.file) | has(prism.numbered) | has(gasholder.notice_read) | has(gasholder.accounts)) {skill: sum, dc: 6, verb: read, noise: 0}
+opt: "Read the numbers through Candlemas's crown glass eyepiece, from the back row." -> gasholder.count.eye ? item.fit.candlemas_eye >= 1 & !has(relics.counted) & !has(gasholder.eye_sealed) & (has(lens.green) | has(pollard.file) | has(prism.numbered) | has(gasholder.notice_read) | has(gasholder.accounts)) {verb: read, noise: 0}
+opt: "Take a splinter off the crown." -> gasholder.relic.take ? clock < 01:00 & !has(gasholder.eye_sealed) & !has(gasholder.zealots_done) {verb: carry, noise: 0.8}
+opt: "Leave him to his brass." -> ^hub
+
+@node gasholder.fennick.plan
+speaker: FENNICK
+cost: 3
+do: quest(a2.bulb, open)
+line: FENNICK: At one o'clock we lift it down and carry it to her. Down the hill, along the quay, out along the mole and up the hundred and twelve.
+line: FENNICK: I brought it down those stairs in a felt bag, and on the sixtieth it opened. Tonight it goes back up past the sixtieth, and we will all see what it does there.
+line: FENNICK: The harbourmaster broke the green out of her. She has holes in her eye tonight. She should have something of her own up there. {when: var.lens == green_broken}
+line: FENNICK: Her lens is in pieces, they tell me. Then she may as well have her bulb. {when: var.lens == broken}
+line: FENNICK: The Municipal's list has fifty-six numbers on it. The Bulb is not on the list. The Bulb has no number. {when: has(cause.keeper)}
+opt: "And the Eye goes down with it?" -> gasholder.fennick.eye
+opt: "Leave him to his brass." -> ^hub
+
+@node gasholder.fennick.eye
+speaker: FENNICK
+cost: 1
+line: FENNICK: The Eye stays on the hill. It came to us by grace, and grace does not give a thing twice. {when: !has(cause.keeper)}
+line: FENNICK: The Eye stays on the hill for six o'clock and the Municipal's handcart. I have told the Congregation it is an honour to be scheduled. {when: has(cause.keeper)}
+go: gasholder.fennick.menu
+
+@node gasholder.fennick.hold
+speaker: FENNICK
+cost: 1
+line: FENNICK: By grace, assessor. Washed up at low water, and numbered as they come.
+nar: He says it to the Bulb.
+go: gasholder.fennick.menu
+
+@node gasholder.fennick.113
+speaker: FENNICK
+cost: 2
+nar: He hangs it on the empty wire without looking, finding the edge with his thumb.
+line: FENNICK: They counted at dawn and we were one short. I told them it was in a claim. They prayed for it, as for a sailor. {when: has(quay.relic.borrowed)}
+line: FENNICK: You took it off our steps in front of the Municipal, and you bring it back up here in front of nobody. I will tell the Congregation both halves. {when: has(quay.relic.taken)}
+do: take(i.prism_113); set(gasholder.returned_113); rep(congregation, 1)
+if: seenas_congregation == thief => seenas_congregation = pilgrim
+go: gasholder.fennick.menu
+
+# ---- the break, and its price (Tongue and Hands arrive here)
+@node gasholder.fennick.break
+place: gas_altar
+speaker: FENNICK
+cost: 6
+nar: He looks once at the vestry door. {when: !has(gasholder.bulb_lit)}
+line: FENNICK: A mantle and the Company's gas. Twelve years I have kept that light in me, and you put it back in the glass with a match. {when: has(gasholder.bulb_lit)}
+line: FENNICK: Fifty-six. A shilling each the first year and two after, at the back door of the Brine, and I said grace over every one.
+line: FENNICK: In the vestry I held one of hers and one of the oven's to the same candle. Hers threw a rainbow on the wall. The other threw a bottle.
+line: FENNICK: Then I bought the next. A ship steers by her eye, and I was an electrician's mate. I knew what I was taking out of it.
+line: FENNICK: She has fifty-six empty seats tonight, where the harbourmaster broke the green. {when: var.lens == green_broken}
+line: FENNICK: My price is no money. The Eye goes down with the Bulb tonight, back to her, and nobody counts it on the way. Not the Shelf. Not the Municipal. Write me. Do not number them.
+line: FENNICK: You have a sum on you already. I can see it. Strike it out. {when: has(relics.counted)}
+voice: chit: A man's word for fifty-six numbers. You have paid more for less. {dc: 6}
+voice: smallprint: Fifty-six numbers are an exhibit. A deacon's word lasts until he takes it back. {dc: 7}
+opt: "Give him your word: they go down uncounted." -> gasholder.fennick.paid ? !has(relics.counted) {do: set(said.gasholder.uncounted); set(heard.fennick.uncounted)}
+opt: "Strike the count out of the Daybook, and give him your word." -> gasholder.fennick.paid ? has(relics.counted) {do: clear(relics.counted); set(gasholder.struck_count); set(said.gasholder.uncounted); set(heard.fennick.uncounted)}
+opt: "'I have to count them, deacon.'" -> gasholder.fennick.unpaid
+
+@node gasholder.fennick.paid
+place: gas_altar
+speaker: FENNICK
+cost: 4
+nar: The assessor writes his words down and rules no column beside them. He lifts the crown off its wires and wraps it in his surplice.
+nar: The count goes through with one straight line, the numbers legible under it. {when: has(gasholder.struck_count)}
+line: HOBB: Uncounted. Is that one word or two? {when: has(cause.keeper)}
+line: FENNICK: There. Now it is in a book that does not balance.
+do: set(fennick.bought); set(gasholder.fennick_knew); set(gasholder.eye_sealed); quest(a1.splinters, bought); xp(1)
+if: has(gasholder.bulb_lit) => gasholder_carries = lit_eye
+if: !has(gasholder.bulb_lit) => gasholder_carries = bulb_eye
+if: has(cause.keeper) => rep(trust, -1); set(book.gasholder_word)
+go: ^hub
+
+@node gasholder.fennick.unpaid
+place: gas_altar
+speaker: FENNICK
+cost: 2
+do: set(gasholder.fennick_refused)
+line: FENNICK: Then count them. They came by grace.
+nar: He puts his jar back on and goes on saying it to the inside of the glass.
+go: ^hub
+
+# ================================================================ Eye: the count
+@node gasholder.count.eye
+place: gas_altar
+cost: 5
+do: meter(wear, 1)
+inst: CANDLEMAS: From here I read them by the bend they put in a candle. Nobody in the rows will know. Give me a moment per splinter.
+go: gasholder.count.ok
+
+@node gasholder.count.ok
+place: gas_altar
+cost: 20
+nar: Three rings read upside down, a number on every spine, set down in a column. Every one is a seat in Mother. {when: has(lens.green) | has(pollard.file) | has(gasholder.notice_read)}
+nar: Three rings read upside down, a number on every spine. Every one is from the same hundred and sixty-eight as one hundred and thirteen. {when: !has(lens.green) & !has(pollard.file) & !has(gasholder.notice_read)}
+voice: sum: Fifty-six. Six years is seventy-two months. Sixteen months in six years the keeper did not need a shilling. {dc: 5}
+do: set(relics.counted); quest(a2.relics, counted); clear(gasholder.count_pencil); xp(1); meter(wear, 1)
+go: ^hub
+
+@node gasholder.count.fail
+place: gas_altar
+cost: 20
+do: set(gasholder.count_pencil); meter(wear, 1)
+nar: On the middle ring the column loses its place. At the foot, in pencil: fifty-one of hers, and five that are not.
+voice: sum: Five that are not. Sea glass, then. Grace after all. {dc: 4}
+go: ^hub
+
+# ================================================================ Fist: a splinter off the crown, and the zealots
+@node gasholder.relic.take
+place: gas_altar
+speaker: FENNICK
+cost: 1
+nar: A splinter comes off its wire with a small dry click. In the front row four young men stand up under their jars.
+voice: ballast: Four of them, glass on their heads, candles round their feet, and straw under everything. {dc: 4}
+line: FENNICK: Put her back, assessor.
+opt: "Hold on to it." -> gasholder.zealots.fight
+check: "[FORM LETTER] Say it slowly: evidence, a receipt, returned by dawn. Do not move." -> gasholder.zealots.talk.ok / gasholder.zealots.talk.fail {skill: formletter, dc: 7}
+check: "[THE DARK] Pinch out the two nearest candles and walk out of the frame with it." -> gasholder.zealots.slip.ok / gasholder.zealots.slip.fail ? !has(gasholder.escorted) {skill: dark, dc: 7, verb: douse, noise: 0.4}
+opt: "Put it back on its wire." -> gasholder.relic.back
+
+@node gasholder.relic.back
+place: gas_altar
+speaker: FENNICK
+cost: 1
+do: rep(congregation, -1)
+line: FENNICK: Thank you. Sit down, brothers. Slowly. Let the Shelf see you sit.
+go: gasholder.fennick.menu
+
+@node gasholder.zealots.talk.ok
+place: gas_altar
+speaker: FENNICK
+cost: 3
+do: give(gasholder.splinter); rep(congregation, -1)
+if: !has(prism.numbered) => set(prism.numbered)
+line: LAMB: In evidence. The Shelf will receipt it and return it by dawn. Reference four four seven one, oblique G, item one, sub-item...
+nar: At "sub-item" the first young man kneels again.
+line: FENNICK: Sixty-one. Put it on your receipt. We will want it back on the right dawn this time. {when: has(quay.relic.borrowed)}
+line: FENNICK: Sixty-one. Put it on your receipt. {when: !has(quay.relic.borrowed)}
+go: gasholder.fennick.menu
+
+@node gasholder.zealots.talk.fail
+place: gas_altar
+cost: 1
+line: LAMB: In evidence, the Shelf...
+nar: The nearest young man takes the assessor's wrist like a banister.
+go: gasholder.zealots.fight
+
+@node gasholder.zealots.slip.ok
+place: hill_lane
+cost: 3
+do: give(gasholder.splinter); rep(congregation, -2); seenas_congregation = thief
+if: !has(prism.numbered) => set(prism.numbered)
+nar: Two pinches, and the assessor walks out between the rows while the jars turn toward every sound but the right one. Under the first white lamp the splinter reads 61.
+go: hill.hub
+
+@node gasholder.zealots.slip.fail
+place: gas_altar
+cost: 1
+nar: The second candle tips over. The straw takes with a soft whump, and forty jars stand up at once.
+go: gasholder.zealots.fight.dark
+
+@node gasholder.zealots.fight
+place: gas_altar
+cost: 0
+do: fight(e.zealots)
+nar: The first young man comes in low with his arms wide, his jar fogging.
+
+@node gasholder.zealots.fight.dark
+place: gas_altar
+cost: 0
+do: fight(e.zealots.sneak)
+nar: They come for the assessor half blind, by the sound of the splinter's wire.
+
+@node gasholder.fight.zealots.win
+place: gas_altar
+speaker: GORM
+cost: 20
+nar: Four young men in the straw, jars cracked or off. Tobit stands in a black patch where a candle went over, his boots smoking. Nobody stops the assessor counting fifty-six numbers with a cut knuckle.
+line: GORM: Who was shouting in a church? And how many of you are bleeding? And shall I write the Shelf down first? {when: !has(book.violence)}
+line: GORM: Again? Did you bring four of us up a hill to watch you count? {when: has(book.violence)}
+line: FENNICK: Grace defends itself slowly, assessor. You were quicker.
+do: set(relics.counted); quest(a2.relics, counted); set(gasholder.zealots_done); set(struck.zealots); set(book.violence); rep(congregation, -3); seenas_congregation = thief; rep(trust, -1)
+if: trait(m.body) == none => offer(m.body)
+go: ^hub
+
+@node gasholder.fight.zealots.yield
+place: gas_altar
+speaker: FENNICK
+cost: 15
+nar: One young man takes off his jar and sets it in the straw, and the others follow, one at a time.
+line: FENNICK: Count them, then. Count them in front of us, and go.
+nar: Fifty-six numbers, counted with forty bare faces watching.
+line: GORM: And was that shouting, or singing? Shall I write both? {when: !has(book.violence)}
+line: GORM: Is the Shelf counting again? Shall we wait outside, all four of us? {when: has(book.violence)}
+do: set(relics.counted); quest(a2.relics, counted); set(gasholder.zealots_done); set(struck.zealots); set(book.violence); rep(congregation, -2); seenas_congregation = thief; rep(trust, -1)
+if: trait(m.body) == none => offer(m.body)
+go: ^hub
+
+@node gasholder.fight.zealots.fled
+place: hill_lane
+cost: 3
+nar: Out through the rows with the splinter. Behind, the straw burns in a low line, and the Congregation puts it out with its jars, forty glass heads bowing to the fire.
+do: give(gasholder.splinter); set(gasholder.zealots_done); set(book.fled); rep(congregation, -2); seenas_congregation = thief; meter(dread, 1)
+if: !has(prism.numbered) => set(prism.numbered)
+if: trait(m.body) == none => offer(m.body)
+go: hill.hub
+
+@node gasholder.fight.zealots.down
+place: gas_vestry
+speaker: ASH
+cost: 30
+nar: A bench in the vestry, a cold cloth on one eye, straw smoke in the room. Ash's ledger lies open on the desk, the ink wet.
+line: ASH: Received: one assessor, bruised. Paid out: one cloth, one basin of water, and a shilling from your case for the straw. It balances. Everything here balances.
+do: set(gasholder.zealots_done); set(down.gasholder); take(i.chits, 1); meter(cold, 1); rep(congregation, -2); seenas_congregation = thief
+if: trait(m.body) == none => offer(m.body)
+go: gasholder.ash.menu
+
+# ================================================================ Tongue: Brother Ash's accounts
+@node gasholder.vestry
+place: gas_vestry
+speaker: ASH
+cost: 1
+alt: gasholder.vestry.empty ? has(gasholder.procession_left)
+alt: gasholder.ash.meet ? !has(met.ash)
+nar: The old valve house: a desk, a padlocked poor box, a rack of spare jars, a ledger bound in red cloth.
+go: gasholder.ash.menu
+
+@node gasholder.vestry.empty
+place: gas_vestry
+cost: 1
+nar: The desk is bare. Ash has taken the ledger down the hill.
+go: ^hub
+
+@node gasholder.ash.meet
+place: gas_vestry
+speaker: ASH
+cost: 2
+do: set(met.ash); quest(a2.relics, open)
+nar: Brother Lumen Ash is small and very clean, and holds his pen clear of the page so it will not drip.
+line: ASH: Brother Lumen Ash. Treasurer. You will be the Shelf. I'll enter you. Forgive me. I enter everything. It is the only way I know a thing has happened.
+go: gasholder.ash.menu
+
+@node gasholder.ash.menu
+speaker: ASH
+cost: 0
+opt: "What does the ledger say, Brother?" -> gasholder.ash.worry ? !seen(gasholder.ash.worry)
+check: "[THE CHIT] Offer a trade: the ledger, and nobody ever hears the Shelf had it from him." -> gasholder.ash.trade.ok / gasholder.ash.trade.fail ? seen(gasholder.ash.worry) & !has(gasholder.accounts) & !has(gasholder.ash_priced) & !has(gasholder.ash_closed) {skill: chit, dc: 6}
+opt: "Put two chits in the poor box." -> gasholder.ash.paid ? has(gasholder.ash_priced) & !has(gasholder.accounts) & !has(gasholder.ash_closed) & count(i.chits) >= 2
+check: "[FORM LETTER] In the Lamplighter's coat, hold out a hand for the books, as the Municipal does." -> gasholder.ash.coat.ok / gasholder.ash.coat.fail ? guise == lamplighter & !has(gasholder.accounts) & !has(gasholder.ash_closed) {skill: formletter, dc: 6}
+opt: "Read the open ledger while he wrings the cloth." -> gasholder.ash.read ? seen(gasholder.fight.zealots.down) & !has(gasholder.accounts) {verb: read, noise: 0}
+opt: "Take a spare jar from the rack." -> gasholder.jar.take ? count(c.belljar) == 0 {verb: carry, noise: 0.2}
+opt: "Go back out to the frame." -> ^hub
+
+@node gasholder.ash.worry
+speaker: ASH
+cost: 3
+line: ASH: It balances. That is what it says.
+nar: He turns it a quarter turn toward the assessor and keeps his hand flat on it.
+line: ASH: On this side, the splinters as they come to us. Fifty-six, one a month or so, for six years. On that side, money going out in the same weeks, in the right amounts. A gift is entered once, assessor. Ours are entered twice.
+line: ASH: And now the Municipal wants them by six, with a list, and the list is my column. {when: has(cause.keeper)}
+voice: smallprint: His hand is over the payee. {dc: 6}
+go: gasholder.ash.menu
+
+@node gasholder.ash.trade.ok
+speaker: ASH
+cost: 4
+do: set(gasholder.accounts); set(said.gasholder.ash_silence); set(heard.ash.ash_silence)
+line: LAMB: The Shelf found the book, Brother. Nobody showed it.
+nar: He enters that in the margin and turns the ledger round. Fifty-six lines BY GRACE, a number and a month each. Fifty-six lines PER THE DEACON, AT THE BACK DOOR, a shilling the first year and two after. Level at the foot, ruled off twice in red.
+voice: smallprint: Whose back door is left blank, in a careful hand, fifty-six times. {dc: 5}
+voice: sum: Fifty-six received. Your pencil says fifty-one. {when: has(gasholder.count_pencil)}
+line: ASH: Entered: one promise. If it is broken I shall have to enter that too, and I would rather not.
+go: gasholder.ash.menu
+
+@node gasholder.ash.trade.fail
+speaker: ASH
+cost: 2
+do: set(gasholder.ash_priced)
+line: ASH: A trade. Then it goes in the book that the Shelf bought it. Two chits in the poor box, for candles, and you may read it. I am paid, you are receipted, and nobody needs to promise anybody anything.
+go: gasholder.ash.menu
+
+@node gasholder.ash.paid
+speaker: ASH
+cost: 3
+do: take(i.chits, 2); set(gasholder.accounts)
+line: ASH: Two chits, received. Entered before they landed, I'm afraid. There. Both columns. Read to the foot.
+voice: sum: Fifty-six and fifty-six. Your pencil says fifty-one. {when: has(gasholder.count_pencil)}
+voice: smallprint: "Per the deacon, at the back door." Whose door, it does not say. {dc: 5, when: !has(gasholder.count_pencil)}
+go: gasholder.ash.menu
+
+@node gasholder.ash.coat.ok
+speaker: ASH
+cost: 3
+do: set(gasholder.accounts); set(lied.gasholder.municipal)
+nar: A hand held out in Hobb's dark coat, and no word, which is how the Municipal asks.
+line: ASH: Entered: one ledger, to the Municipal, under protest. You will find it in order. Fifty-six by grace, fifty-six per the deacon. It has always been in order. That is what is wrong with it.
+go: gasholder.ash.menu
+
+@node gasholder.ash.coat.fail
+speaker: ASH
+cost: 2
+do: set(gasholder.ash_closed); rep(congregation, -1)
+line: ASH: Constant Hobb wears that coat. He came up last week to read our meter, cut his chin on the gate, and apologised to the gate. You are not Constant Hobb.
+nar: He locks the ledger in the poor box and puts the key in his mouth.
+go: gasholder.ash.menu
+
+@node gasholder.ash.read
+speaker: ASH
+cost: 2
+do: set(gasholder.accounts)
+nar: While he is at the basin, the good eye reads the open page: fifty-six by grace, fifty-six per the deacon, at the back door, level at the foot.
+line: ASH: You read it. Of course you read it. Entered.
+go: gasholder.ash.menu
+
+@node gasholder.jar.take
+place: gas_vestry
+speaker: ASH
+cost: 1
+do: give(c.belljar); set(gasholder.jar_taken)
+line: ASH: Fourteen, that one. Painted on the collar. On loan, I'll put. Mind the rim.
+go: gasholder.ash.menu
+
+# ================================================================ the Congregation
+@node gasholder.gauze
+place: gas_frame
+speaker: GAUZE
+cost: 2
+alt: gasholder.gauze.closed ? has(quay.gauze.refused) & !seen(gasholder.gauze.closed)
+line: GAUZE: You've brought it back on your own head. Keep it, then. {when: worn(c.belljar) & has(quay.gauze.lent)}
+line: GAUZE: The one from the ferry. Your shoes are dry tonight. I can hear it. {when: !worn(c.belljar)}
+line: GAUZE: At a quarter to one he puts all the candles out and walks the row, and tells each of us a true thing. I've had eleven years of them. Some of them were the weather.
+opt: "Will you go down the hill with them, Sister?" -> gasholder.gauze.down
+opt: "Would you lend me a jar again?" -> gasholder.gauze.lend ? count(c.belljar) == 0 & !has(quay.gauze.refused) & seenas_congregation != thief
+opt: "Leave her in her quiet." -> ^hub
+
+@node gasholder.gauze.down
+speaker: GAUZE
+cost: 1
+line: GAUZE: To the mole? No. That's where the next part is.
+go: ^hub
+
+@node gasholder.gauze.lend
+speaker: GAUZE
+cost: 1
+do: give(c.belljar); rep(congregation, 1)
+line: GAUZE: Breathe through your nose. He listens for mouths.
+go: ^hub
+
+@node gasholder.gauze.closed
+speaker: GAUZE
+cost: 1
+line: GAUZE: You said "the Shelf" like a shop. I remember.
+go: ^hub
+
+@node gasholder.tobit
+place: gas_frame
+speaker: TOBIT
+cost: 2
+line: TOBIT: I've got the front candles. I made one for tonight, for going down. It goes: Down, and the bulb goes home on a ladder. Down, and it doesn't know.
+line: TOBIT: There's a tap at the bottom of the west leg with COMPANY on it. Nobody's allowed to turn it. I turned it once, a bit. It hissed at me.
+go: ^hub
+
+@node gasholder.hobb
+place: gas_frame
+speaker: HOBB
+cost: 2
+line: HOBB: I'm to stand here till six and see nothing on the list goes out. The Alderman said. I'm not to go in. They look at you through glass in there. I brought both lanterns.
+line: HOBB: I saw what you did to Mr Fewell's pole. I wrote it down. I'm sorry. {when: has(struck.fewell)}
+go: ^hub
+
+@node gasholder.notice
+place: gas_frame
+cost: 3
+do: set(gasholder.notice_read)
+nar: MUNICIPAL LIGHT AND COKE COMPANY, FOR THE GULLET LAMP TRUST. PRISMS, CROWN GLASS, HELD BY THE CONGREGATION OF THE FILAMENT, TO BE SURRENDERED AT 06:00 BY THE FOLLOWING NUMBERS. Fifty-six of them, and O.C. in yellow ink.
+voice: sum: Fifty-six. A third of a hundred and sixty-eight, to the prism. {dc: 5}
+voice: smallprint: You have seen that yellow on a clause. {dc: 7, when: has(clause.struck)}
+go: ^hub
+
+# ================================================================ Hands: the gasholder's own gas
+@node gasholder.cock
+place: gas_frame
+cost: 2
+nar: An iron stopcock under the Congregation's white paint, its plate reading MUNICIPAL LIGHT AND COKE CO. HOLDER No 2. The old gate lamp's pipe climbs the leg to a bracket an arm's length from the Old Bulb's chain. In the lamp's cupboard, yellow mantles and a cracked leather gas bag.
+voice: sum: The bell went for scrap. Nobody cut the main. {dc: 5}
+inst: CANDLEMAS: A mantle in that bulb, with crown glass round it. I should very much like to read that.
+check: "[GRIP] Climb to the bracket, swing the jet into the Bulb's open neck, tie on a mantle, and shout down for the tap." -> gasholder.gas.ok / gasholder.gas.fail ? clock < 01:00 & !has(gasholder.bulb_lit) {skill: grip, dc: 6, verb: rig, noise: 0.3}
+opt: "Leave the tap alone." -> ^hub
+
+@node gasholder.gas.ok
+place: gas_altar
+cost: 15
+do: set(gasholder.bulb_lit); gasholder_carries = lit; quest(a2.bulb, open)
+line: LAMB: Now, Tobit!
+nar: A hiss, a match up the jet, and the mantle takes with a soft cough. The Old Bulb fills with white light, and the crown throws it round the frame in bars of colour, across forty glass heads that lift one by one to look.
+inst: CANDLEMAS: Crown glass, every splinter, splitting clean. That is a lens, assessor. A small one. It works.
+voice: grip: The bag fills at the main for the walk down. Forty minutes in it, by the weight. {dc: 3}
+go: gasholder.gas.after
+
+@node gasholder.gas.after
+cost: 0
+alt: gasholder.fennick.break ? !has(gasholder.eye_sealed) & !has(gasholder.fennick_refused) & !has(gasholder.zealots_done)
+go: ^hub
+
+@node gasholder.gas.fail
+place: gas_frame
+speaker: FENNICK
+cost: 20
+do: set(gasholder.gas_failed); rep(congregation, -1); meter(dread, 1)
+nar: The mantle will not tie in a cold hand, and the old joint at the bracket starts to leak. The rows smell it before they hear it.
+line: ASH: Candles! Every candle! Now!
+nar: Forty people kneel in the dark, breathing through glass, while the assessor finds the tap by feel.
+line: FENNICK: Not with the Company's gas, assessor. It has never once been kind to us.
+go: ^hub
+
+# ================================================================ Shadow: the Opening, under the jar
+@node gasholder.row.ok
+place: gas_altar
+speaker: FENNICK
+cost: 15
+nar: At a quarter to one the candles go out down the rows, hand to hand, and the deacon comes along the row in the dark, lifting each rim to speak into it.
+line: GAUZE: I don't go down.
+line: FENNICK: Here is the true thing, pilgrim. I bought them. Fifty-six, from her, at the back door. I held hers and the oven's to one candle and saw the difference, and I bought the next.
+line: FENNICK: Tonight they go home to her. Carry them down for me. Nobody counts them on the way.
+nar: A bundle is put into the assessor's arms, the weight of a full kettle, its edges sharp through the cloth.
+do: set(fennick.bought); set(gasholder.fennick_knew); set(gasholder.eye_sealed); set(gasholder.carrying); quest(a1.splinters, bought); xp(1); meter(dread, 1)
+if: has(gasholder.bulb_lit) => gasholder_carries = lit_eye
+if: !has(gasholder.bulb_lit) => gasholder_carries = bulb_eye
+go: gasholder.procession
+
+@node gasholder.row.fail
+place: gas_altar
+speaker: FENNICK
+cost: 15
+do: set(gasholder.row_failed); rep(congregation, -1)
+nar: The candles go out down the rows. The jar fogs, and the assessor lifts the rim for one breath.
+line: GAUZE: Pilgrims don't breathe through their mouths. Or smell of paper.
+line: FENNICK: The true thing, assessor: frost by two, and hard. Mind the hill going down.
+go: ^hub
+
+# ================================================================ 01:00: the procession of the Old Bulb
+@node gasholder.procession
+place: gas_frame
+speaker: FENNICK
+cost: 5
+do: quest(a2.bulb, walking)
+nar: Four young men lift the Old Bulb off its chains onto a padded ladder and take it on their shoulders. {when: !has(gasholder.carrying) & clock < 01:15}
+nar: The tail of the procession is going out of the gate. {when: !has(gasholder.carrying) & clock >= 01:15}
+nar: The candles are lit again, and the assessor is moved gently toward the gate with the bundle. {when: has(gasholder.carrying)}
+nar: The crown goes too, in the deacon's surplice. {when: has(gasholder.eye_sealed) & !has(gasholder.carrying)}
+nar: The crown stays on the altar under a cloth. {when: !has(gasholder.eye_sealed)}
+line: FENNICK: Lift. Mind her on the gate. {when: clock < 01:15}
+opt: "Walk beside it, as the Shelf." -> gasholder.proc.shelf ? !has(gasholder.carrying)
+opt: "Walk in the line under the jar." -> gasholder.proc.pilgrim ? guise == pilgrim
+check: "[PRIDE] Stand in the gate, in the Shelf's coat, and do not move." -> gasholder.proc.stop.ok / gasholder.proc.stop.fail ? !has(gasholder.carrying) & clock < 01:15 {skill: pride, dc: 7, verb: wait, noise: 0.3}
+opt: "Watch from the gate." -> gasholder.proc.watch ? !has(gasholder.carrying)
+
+@node gasholder.proc.stop.ok
+place: gas_frame
+speaker: FENNICK
+cost: 10
+nar: The ladder comes to the assessor and stops.
+line: FENNICK: Twelve years it has waited. It can wait for a coat. Put her down, brothers. Here, inside the gate.
+nar: The candles gather round it in a knot, and nobody goes down the hill.
+do: set(gasholder.procession_stopped); rep(congregation, -2); set(said.gasholder.stopped); set(heard.fennick.stopped)
+go: ^hub
+
+@node gasholder.proc.stop.fail
+place: gas_frame
+cost: 3
+nar: The Congregation divides round the Shelf and goes out through the lattice on either side, ladder and all, without touching the coat.
+do: rep(congregation, -1)
+go: gasholder.proc.watch
+
+@node gasholder.proc.shelf
+place: hill_lane
+cost: 1
+do: gasholder_walked = shelf; set(book.gasholder_shelf)
+nar: Two young men walk between the assessor and the ladder. {when: seenas_congregation == thief}
+go: gasholder.proc.hill
+
+@node gasholder.proc.pilgrim
+place: hill_lane
+cost: 1
+do: gasholder_walked = pilgrim
+go: gasholder.proc.hill
+
+@node gasholder.proc.watch
+place: gas_frame
+cost: 0
+do: set(gasholder.procession_left)
+go: gasholder.proc.hill
+
+# ---- the protected moment: two lines at the peak
+@node gasholder.proc.hill
+place: hill_lane
+cost: 20
+nar: Down Chancel Hill under the white lamps go forty glass heads, and among them, shoulder-high on a ladder, the Old Bulb, with every lamp on the hill passing through it. {when: !has(gasholder.bulb_lit)}
+nar: Down Chancel Hill under the white lamps go forty glass heads, and among them, shoulder-high on a ladder, the Old Bulb, burning. {when: has(gasholder.bulb_lit)}
+nar: Behind them the empty frame goes on singing.
+alt: gasholder.proc.back ? gasholder_walked == none
+alt: gasholder.proc.gorm.pilgrim ? gasholder_walked == pilgrim
+go: gasholder.proc.gorm.shelf
+
+@node gasholder.proc.back
+place: gas_frame
+cost: 0
+go: ^hub
+
+@node gasholder.proc.gorm.shelf
+place: hill_lane
+speaker: GORM
+cost: 3
+nar: Lamplighters line the path at every second lamp, in fours. {when: has(book.violence)}
+line: GORM: And is the Shelf walking with them, or behind them? And shall I write which?
+line: GORM: And is that the Trust's property, under the surplice? And is it six o'clock yet? {when: has(cause.keeper) & has(gasholder.eye_sealed)}
+go: gasholder.proc.foot
+
+@node gasholder.proc.gorm.pilgrim
+place: hill_lane
+speaker: GORM
+cost: 3
+nar: Lamplighters line the path at every second lamp, in fours. {when: has(book.violence)}
+line: GORM: Thirty-eight? Thirty-nine? Forty?
+check: "[BALLAST] Keep the pace of the jars past her on the frost, eyes down." -> gasholder.proc.gorm.ok / gasholder.proc.gorm.fail {skill: ballast, dc: 6, verb: hide, noise: 0.1}
+
+@node gasholder.proc.gorm.ok
+place: hill_lane
+speaker: GORM
+cost: 1
+line: GORM: Forty-one? Was it forty, last time? Shall I put forty-one?
+go: gasholder.proc.foot
+
+@node gasholder.proc.gorm.fail
+place: hill_lane
+speaker: GORM
+cost: 3
+do: set(book.gasholder_pilgrim); rep(trust, -1); rep(congregation, -1); meter(cold, 1)
+nar: The frost takes a heel, and the jar rolls off into the white light, ringing. Her pole stops it.
+line: GORM: And whose head was in this? And does the deacon know?
+go: gasholder.proc.foot
+
+@node gasholder.proc.foot
+place: hill_lane
+cost: 5
+do: set(gasholder.procession_left)
+nar: At the foot of the hill the white lamps end and the sodium begins. The candles go round the corner toward the quay one at a time, each turning orange as it goes.
+opt: "Follow them onto the quay." -> quay2.hub
+opt: "Give the bundle to Tobit and let them go." -> gasholder.proc.handover ? has(gasholder.carrying)
+opt: "Let them go, and go back up the hill." -> hill.hub ? !has(gasholder.carrying)
+
+@node gasholder.proc.handover
+place: hill_lane
+speaker: TOBIT
+cost: 1
+do: clear(gasholder.carrying)
+line: TOBIT: It's heavy. Is it meant to be heavy?
+go: hill.hub
+
+# ================================================================ after one o'clock
+@node gasholder.after
+place: gas_frame
+cost: 1
+nar: Straw, candles burning down, and empty chains over the altar, turning a little. {when: has(gasholder.procession_left)}
+nar: The Old Bulb rests on trestles inside the gate, the Congregation knelt round it, facing downhill. {when: has(gasholder.procession_stopped)}
+nar: The crown lies on the altar under a cloth. {when: !has(gasholder.eye_sealed)}
+opt: "Sister Gauze." -> gasholder.after.gauze ? has(gasholder.procession_left) & !seen(gasholder.after.gauze)
+check: "[SUM] Lift the cloth and count the crown against her numbers." -> gasholder.count.ok / gasholder.count.fail ? !has(relics.counted) & !has(gasholder.eye_sealed) & (has(lens.green) | has(pollard.file) | has(prism.numbered) | has(gasholder.notice_read) | has(gasholder.accounts)) {skill: sum, dc: 6, verb: read, noise: 0}
+opt: "Read the crown's numbers through Candlemas's crown glass eyepiece." -> gasholder.count.eye ? item.fit.candlemas_eye >= 1 & !has(relics.counted) & !has(gasholder.eye_sealed) & (has(lens.green) | has(pollard.file) | has(prism.numbered) | has(gasholder.notice_read) | has(gasholder.accounts)) {verb: read, noise: 0}
+opt: "Go into the vestry." -> gasholder.vestry
+opt: "Climb the frame." -> gasholder.climb {verb: climb, noise: 0.1}
+opt: "Go down the hill path." -> hill.hub
+
+@node gasholder.after.gauze
+place: gas_frame
+speaker: GAUZE
+cost: 1
+line: GAUZE: They've gone down. I keep the candles in. You stayed too, or you came back. In here I can't always tell which.
+line: HOBB: Is it six yet, Sister? {when: has(cause.keeper) & !has(gasholder.eye_sealed)}
+line: GAUZE: No, Constant. Nowhere near. {when: has(cause.keeper) & !has(gasholder.eye_sealed)}
+go: ^hub
+
+@node gasholder.climb
+place: gas_frame
+cost: 6
+nar: From the top ring: the hill's white lamps in a line, the orange of the quay, the black harbour, and Mother's round head at the end of the mole.
+nar: Out on the Spit two dark shapes lie on their sides, with lanterns moving on them. {when: clock >= 23:20 & clock < 00:40}
+voice: knees: Up is the easy half. {dc: 4}
+go: ^hub

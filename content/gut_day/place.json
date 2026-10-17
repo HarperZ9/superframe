@@ -1,0 +1,191 @@
+{
+ "place": "gut_day",
+ "version": 2,
+ "width": 2880,
+ "height": 1100,
+ "camera": {
+  "yawDeg": 6,
+  "elevDeg": 52,
+  "target": [
+   -0.2,
+   2.2,
+   -0.6
+  ],
+  "dist": 40,
+  "ortho": true,
+  "scale": 6.875
+ },
+ "pxPerMetre": 80,
+ "near": 1.5,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "day"
+ ],
+ "variantInfo": {
+  "day": {
+   "hour": 14.8,
+   "weather": "15:00: sun down the lane, smoke from the doors"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  3,
+  83,
+  66
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "spratt_stall",
+    "verb": "talk",
+    "at": [
+     -0.3,
+     0,
+     -0.6
+    ],
+    "note": "Spratt's stall, a plank on two barrels under an overhang (G:263)"
+   },
+   {
+    "id": "gut_wires",
+    "verb": "rig",
+    "at": [
+     1,
+     0,
+     0
+    ],
+    "note": "l.gut_wires: rig the dark lamps with copper through the pulleys (G:1265)"
+   },
+   {
+    "id": "soot_board",
+    "verb": "read",
+    "at": [
+     -4,
+     0,
+     -1.2
+    ],
+    "note": "Shadwell's whitewashed soot board by the door (G:800)"
+   },
+   {
+    "id": "gurry_bin",
+    "verb": "climb",
+    "at": [
+     -5.2,
+     0,
+     -1
+    ],
+    "note": "the gurry bin under the back wall's brackets (G:151)"
+   },
+   {
+    "id": "loft_ladder",
+    "verb": "climb",
+    "at": [
+     6.3,
+     0,
+     -1.2
+    ],
+    "note": "the Low Company's net loft, up the outside ladder (G:233)"
+   },
+   {
+    "id": "culvert_grating",
+    "verb": "pry",
+    "at": [
+     -14,
+     0,
+     0
+    ],
+    "note": "the culvert grating, at low water (G:1591)"
+   }
+  ],
+  "hides": [
+   {
+    "id": "mouth_boxes",
+    "at": [
+     12.8,
+     0,
+     -0.6
+    ],
+    "r": 0.5,
+    "note": "behind the lookouts' fish boxes at the lane's mouth (G:122)"
+   },
+   {
+    "id": "smoke",
+    "at": [
+     -4.6,
+     0,
+     -0.6
+    ],
+    "r": 0.8,
+    "note": "Shadwell's smoke, carried downwind (G:1563)"
+   },
+   {
+    "id": "overhang",
+    "at": [
+     -0.3,
+     0,
+     -1.3
+    ],
+    "r": 0.5,
+    "note": "under Spratt's overhang"
+   }
+  ],
+  "exits": [
+   {
+    "id": "quay",
+    "at": [
+     14,
+     0,
+     0
+    ],
+    "note": "the mouth of the Gut onto the quay"
+   },
+   {
+    "id": "midden",
+    "at": [
+     3.9,
+     0,
+     2.4
+    ],
+    "note": "the midden yard gate"
+   },
+   {
+    "id": "culvert",
+    "at": [
+     -14,
+     0,
+     0
+    ],
+    "note": "the culvert, a brick mouth under the quay (G:1588)"
+   }
+  ],
+  "lamps": []
+ },
+ "notes": "Daylight Gut for the interlude."
+}

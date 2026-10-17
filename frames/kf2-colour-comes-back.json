@@ -1,0 +1,34 @@
+{
+ "kf": "brine_door",
+ "w": 1280,
+ "h": 720,
+ "hour": 23.3,
+ "plan": {
+  "ambient": 0.012,
+  "mist": 0.003,
+  "extinct": 0.003,
+  "impurity": 0.02
+ },
+ "gain": 1.6,
+ "paint": {
+  "seed": 13,
+  "radii": [
+   8,
+   4.5,
+   2.6,
+   1.5
+  ],
+  "relief": 0.25
+ },
+ "lens": {
+  "squeeze": 1.33,
+  "streakLenPx": 50,
+  "streakGain": 0.02,
+  "coating": {
+   "quarterAt": 600
+  }
+ },
+ "lensSources": 24,
+ "seconds": 221.069,
+ "engine": "raw-native origin/main 92934a8 (git archive)"
+}

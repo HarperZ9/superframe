@@ -1,0 +1,273 @@
+{
+ "name": "gasholder",
+ "place": "gasholder",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "AAAAAAAAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAAAAAAAA",
+  "AABAAACAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAAAAAAAA",
+  "AAAAAAADDDEDDAAAAAAA",
+  "AFBAACADGGEGDAAAAAAA",
+  "AAAAAAADDDDDDAAAAAAA",
+  "AAAAAAAAAAAAAAAAAAAA",
+  "AABAAACAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAAAAAAAA",
+  "AAAAAAAAAAAAAAAAAAAA"
+ ],
+ "legend": {
+  "A": {
+   "surface": "shingle",
+   "h": 8
+  },
+  "B": {
+   "surface": "stone",
+   "h": 8
+  },
+  "C": {
+   "surface": "stone",
+   "h": 8.1
+  },
+  "D": {
+   "surface": "stone",
+   "h": 8.3
+  },
+  "E": {
+   "surface": "stone",
+   "h": 12.5,
+   "solid": true
+  },
+  "F": {
+   "surface": "stone",
+   "h": 11.8,
+   "solid": true
+  },
+  "G": {
+   "surface": "stone",
+   "h": 9.1,
+   "solid": true
+  }
+ },
+ "water": null,
+ "lights": [
+  {
+   "x": 3,
+   "z": 2,
+   "r": 3.5,
+   "k": 0.38,
+   "group": "standing"
+  },
+  {
+   "x": 17,
+   "z": 2,
+   "r": 3.5,
+   "k": 0.38,
+   "group": "standing"
+  },
+  {
+   "x": 3,
+   "z": 8.5,
+   "r": 3.5,
+   "k": 0.38,
+   "group": "standing"
+  },
+  {
+   "x": 17,
+   "z": 8.5,
+   "r": 3.5,
+   "k": 0.38,
+   "group": "standing"
+  },
+  {
+   "x": 19.98,
+   "z": 7.08,
+   "r": 2,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 19.52,
+   "z": 8.59,
+   "r": 2,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 18.95,
+   "z": 10.06,
+   "r": 2,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 0.97,
+   "z": 10.1,
+   "r": 2,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 0.22,
+   "z": 8.68,
+   "r": 2,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 0.21,
+   "z": 2.32,
+   "r": 2,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 0.9,
+   "z": 0.86,
+   "r": 2,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 19,
+   "z": 0.92,
+   "r": 2,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 19.65,
+   "z": 2.36,
+   "r": 2,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 8.6,
+   "z": 5.85,
+   "r": 2.1,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 9.15,
+   "z": 5.85,
+   "r": 2.1,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 9.7,
+   "z": 5.85,
+   "r": 2.1,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 10.25,
+   "z": 5.85,
+   "r": 2.1,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 10.8,
+   "z": 5.85,
+   "r": 2.1,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 11.35,
+   "z": 5.85,
+   "r": 2.1,
+   "k": 0.33,
+   "group": "candle"
+  }
+ ],
+ "exits": [
+  [
+   0,
+   0,
+   0.8,
+   11
+  ],
+  [
+   19.2,
+   0,
+   20,
+   11
+  ]
+ ],
+ "tideEnds": false,
+ "anchors": {
+  "cut": [
+   [
+    3,
+    2
+   ],
+   [
+    17,
+    2
+   ],
+   [
+    3,
+    8.5
+   ],
+   [
+    17,
+    8.5
+   ]
+  ],
+  "lamp": [
+   [
+    3,
+    2
+   ]
+  ],
+  "snare": [],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   9.5,
+   7.5
+  ],
+  "foes": [
+   [
+    5.5,
+    2.5
+   ],
+   [
+    13.5,
+    2.5
+   ],
+   [
+    9.5,
+    1.5
+   ],
+   [
+    2.5,
+    5.5
+   ]
+  ]
+ },
+ "stage": {
+  "line": "arena: gasholder 0 0 0 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = h - 8"
+ },
+ "source": {
+  "plate": "content/gasholder",
+  "rect": [
+   0,
+   0,
+   20,
+   11
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

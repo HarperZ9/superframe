@@ -1,0 +1,34 @@
+{
+ "kf": "lamp_quay",
+ "w": 1280,
+ "h": 720,
+ "hour": 23.07,
+ "plan": {
+  "ambient": 0.06,
+  "mist": 0.003,
+  "extinct": 0.003,
+  "impurity": 0.02
+ },
+ "gain": 1.6,
+ "paint": {
+  "seed": 11,
+  "radii": [
+   9,
+   5,
+   3,
+   1.8
+  ],
+  "relief": 0.25
+ },
+ "lens": {
+  "squeeze": 1.33,
+  "streakLenPx": 55,
+  "streakGain": 0.022,
+  "coating": {
+   "quarterAt": 600
+  }
+ },
+ "lensSources": 24,
+ "seconds": 246.523,
+ "engine": "raw-native origin/main 92934a8 (git archive)"
+}

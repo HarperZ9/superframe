@@ -1,0 +1,253 @@
+{
+ "name": "brine",
+ "place": "brine",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "ABCDEFFEDCBG",
+  "CEHIIJJIIHEC",
+  "EKILDMMLLILL",
+  "FIMLLLMLLNLL",
+  "OPINNLLNLMLL",
+  "QCRSLLLLLLLT",
+  "GUVMLLLLLWXX"
+ ],
+ "legend": {
+  "A": {
+   "surface": "stone",
+   "h": -1.8,
+   "solid": true
+  },
+  "B": {
+   "surface": "stone",
+   "h": 8.3,
+   "solid": true
+  },
+  "C": {
+   "surface": "stone",
+   "h": 8.9,
+   "solid": true
+  },
+  "D": {
+   "surface": "stone",
+   "h": 9.3,
+   "solid": true
+  },
+  "E": {
+   "surface": "stone",
+   "h": 9.5,
+   "solid": true
+  },
+  "F": {
+   "surface": "stone",
+   "h": 9.6,
+   "solid": true
+  },
+  "G": {
+   "surface": "stone",
+   "h": -1.6,
+   "solid": true
+  },
+  "H": {
+   "surface": "stone",
+   "h": 9.9,
+   "solid": true
+  },
+  "I": {
+   "surface": "stone",
+   "h": 10.1,
+   "solid": true
+  },
+  "J": {
+   "surface": "stone",
+   "h": 7.7,
+   "solid": true
+  },
+  "K": {
+   "surface": "stone",
+   "h": 10,
+   "solid": true
+  },
+  "L": {
+   "surface": "wood",
+   "h": 6.5
+  },
+  "M": {
+   "surface": "stone",
+   "h": 6.5,
+   "solid": true
+  },
+  "N": {
+   "surface": "stone",
+   "h": 7.3,
+   "solid": true
+  },
+  "O": {
+   "surface": "stone",
+   "h": 9.2,
+   "solid": true
+  },
+  "P": {
+   "surface": "stone",
+   "h": 9.8,
+   "solid": true
+  },
+  "Q": {
+   "surface": "stone",
+   "h": 8.1,
+   "solid": true
+  },
+  "R": {
+   "surface": "stone",
+   "h": 9.4,
+   "solid": true
+  },
+  "S": {
+   "surface": "stone",
+   "h": 9.7,
+   "solid": true
+  },
+  "T": {
+   "surface": "stone",
+   "h": -2,
+   "solid": true
+  },
+  "U": {
+   "surface": "stone",
+   "h": -1.9,
+   "solid": true
+  },
+  "V": {
+   "surface": "stone",
+   "h": 7.5,
+   "solid": true
+  },
+  "W": {
+   "surface": "stone",
+   "h": -2.1,
+   "solid": true
+  },
+  "X": {
+   "surface": "stone",
+   "h": -1.7,
+   "solid": true
+  }
+ },
+ "water": null,
+ "lights": [
+  {
+   "x": 2.15,
+   "z": 2.5,
+   "r": 3.8,
+   "k": 0.4,
+   "group": "fire"
+  },
+  {
+   "x": 9.7,
+   "z": 1.2,
+   "r": 2.2,
+   "k": 0.33,
+   "group": "fire"
+  },
+  {
+   "x": 4.4,
+   "z": 2.6,
+   "r": 5.6,
+   "k": 0.52,
+   "group": "lantern"
+  },
+  {
+   "x": 8,
+   "z": 3.4,
+   "r": 5.6,
+   "k": 0.52,
+   "group": "lantern"
+  },
+  {
+   "x": 1.4,
+   "z": 3.8,
+   "r": 5.6,
+   "k": 0.52,
+   "group": "lantern"
+  }
+ ],
+ "exits": [
+  [
+   11.2,
+   2,
+   12,
+   5
+  ]
+ ],
+ "tideEnds": false,
+ "anchors": {
+  "cut": [
+   [
+    2.15,
+    2.5
+   ],
+   [
+    4.4,
+    2.6
+   ],
+   [
+    8,
+    3.4
+   ],
+   [
+    1.4,
+    3.8
+   ]
+  ],
+  "lamp": [
+   [
+    2.15,
+    2.5
+   ]
+  ],
+  "snare": [],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   5.5,
+   5.5
+  ],
+  "foes": [
+   [
+    3.5,
+    2.5
+   ],
+   [
+    8.5,
+    2.5
+   ],
+   [
+    7.5,
+    2.5
+   ],
+   [
+    3.5,
+    3.5
+   ]
+  ]
+ },
+ "stage": {
+  "line": "arena: brine -6 0 -3.2 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = h - 6.5"
+ },
+ "source": {
+  "plate": "content/brine",
+  "rect": [
+   -6,
+   -3.2,
+   12,
+   7
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

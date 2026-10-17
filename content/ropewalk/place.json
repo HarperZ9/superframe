@@ -1,0 +1,401 @@
+{
+ "place": "ropewalk",
+ "version": 2,
+ "width": 3200,
+ "height": 1560,
+ "camera": {
+  "yawDeg": 18,
+  "elevDeg": 40,
+  "target": [
+   13,
+   1.9,
+   2.6
+  ],
+  "dist": 60,
+  "ortho": true,
+  "scale": 9.75
+ },
+ "pxPerMetre": 80,
+ "near": 1.6667,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night",
+  "frost",
+  "dark"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 22.5,
+   "weather": "Night 2, 22:00 to 01:00: still, clear, one paraffin lamp a street"
+  },
+  "frost": {
+   "hour": 2,
+   "weather": "from 01:00: frost keeps every print; a dark stripe over the warm pipe"
+  },
+  "dark": {
+   "hour": 2.5,
+   "weather": "the lamps doused: two lit blinds, the shutter"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  3,
+  31,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "telegraph_door",
+    "verb": "pry",
+    "at": [
+     3.4999999999999987,
+     0,
+     0
+    ],
+    "note": "the municipal-green door (R:129)"
+   },
+   {
+    "id": "window_card",
+    "verb": "read",
+    "at": [
+     5.199999999999998,
+     0,
+     0
+    ],
+    "note": "the yellow curled card for the Shelf's agent (R:776)"
+   },
+   {
+    "id": "letter_flap",
+    "verb": "eavesdrop",
+    "at": [
+     17.299999999999997,
+     0,
+     0
+    ],
+    "note": "the brass letter flap (R:638)"
+   },
+   {
+    "id": "rocking_step",
+    "verb": "wait",
+    "at": [
+     17.299999999999997,
+     0,
+     -0.19999999999999996
+    ],
+    "note": "a step that rocks"
+   },
+   {
+    "id": "warm_grating",
+    "verb": "pry",
+    "at": [
+     20.699999999999996,
+     0,
+     -1.4
+    ],
+    "note": "the grating breathing warm air over a lead pipe (R:902)"
+   },
+   {
+    "id": "lamp_6",
+    "verb": "douse",
+    "at": [
+     6,
+     0,
+     1.4
+    ],
+    "note": "the street lamp; douse it (R:111)"
+   },
+   {
+    "id": "lamp_19",
+    "verb": "douse",
+    "at": [
+     19,
+     0,
+     1.4
+    ],
+    "note": "the street lamp; douse it"
+   },
+   {
+    "id": "telegraph_wire",
+    "verb": "rig",
+    "at": [
+     10.4,
+     0,
+     0.6
+    ],
+    "note": "the telegraph wire on the old rope posts; hang the Vane (R:482)"
+   }
+  ],
+  "hides": [
+   {
+    "id": "passage",
+    "at": [
+     20.699999999999996,
+     0,
+     -3
+    ],
+    "r": 0.4,
+    "note": "the yard-wide passage (R:823)"
+   }
+  ],
+  "exits": [
+   {
+    "id": "gannet_wall",
+    "at": [
+     20.699999999999996,
+     0,
+     -0.6
+    ],
+    "note": "the passage behind the Gannet house"
+   },
+   {
+    "id": "west",
+    "at": [
+     0,
+     0,
+     3
+    ],
+    "note": "toward the quay (arena exit x 0..0.8)"
+   },
+   {
+    "id": "east",
+    "at": [
+     26,
+     0,
+     3
+    ],
+    "note": "toward the hill steps and the Gut yards (arena exit x 25.2..26)"
+   }
+  ],
+  "lamps": [
+   {
+    "id": "lamp_6",
+    "kind": "paraffin",
+    "at": [
+     6,
+     3,
+     1
+    ],
+    "arena": [
+     6,
+     1
+    ]
+   },
+   {
+    "id": "lamp_19",
+    "kind": "paraffin",
+    "at": [
+     19,
+     3,
+     1
+    ],
+    "arena": [
+     19,
+     1
+    ]
+   }
+  ]
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     5.2,
+     1.6,
+     -0.1
+    ],
+    "kind": "paraffin",
+    "I": 1.4,
+    "reach": 5,
+    "group": "window"
+   },
+   {
+    "at": [
+     19,
+     1.6,
+     -0.1
+    ],
+    "kind": "paraffin",
+    "I": 1.2,
+    "reach": 5,
+    "group": "window"
+   },
+   {
+    "at": [
+     20.7,
+     1.5,
+     -3.6
+    ],
+    "kind": "paraffin",
+    "I": 1,
+    "reach": 3,
+    "group": "window"
+   },
+   {
+    "at": [
+     6,
+     2.95,
+     1
+    ],
+    "kind": "paraffin",
+    "I": 22,
+    "reach": 14,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     19,
+     2.95,
+     1
+    ],
+    "kind": "paraffin",
+    "I": 22,
+    "reach": 14,
+    "group": "lantern"
+   }
+  ],
+  "frost": [
+   {
+    "at": [
+     5.2,
+     1.6,
+     -0.1
+    ],
+    "kind": "paraffin",
+    "I": 1.4,
+    "reach": 5,
+    "group": "window"
+   },
+   {
+    "at": [
+     19,
+     1.6,
+     -0.1
+    ],
+    "kind": "paraffin",
+    "I": 1.2,
+    "reach": 5,
+    "group": "window"
+   },
+   {
+    "at": [
+     20.7,
+     1.5,
+     -3.6
+    ],
+    "kind": "paraffin",
+    "I": 1,
+    "reach": 3,
+    "group": "window"
+   },
+   {
+    "at": [
+     6,
+     2.95,
+     1
+    ],
+    "kind": "paraffin",
+    "I": 22,
+    "reach": 14,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     19,
+     2.95,
+     1
+    ],
+    "kind": "paraffin",
+    "I": 22,
+    "reach": 14,
+    "group": "lantern"
+   }
+  ],
+  "dark": [
+   {
+    "at": [
+     5.2,
+     1.6,
+     -0.1
+    ],
+    "kind": "paraffin",
+    "I": 1.4,
+    "reach": 5,
+    "group": "window"
+   },
+   {
+    "at": [
+     19,
+     1.6,
+     -0.1
+    ],
+    "kind": "paraffin",
+    "I": 1.2,
+    "reach": 5,
+    "group": "window"
+   },
+   {
+    "at": [
+     20.7,
+     1.5,
+     -3.6
+    ],
+    "kind": "paraffin",
+    "I": 1,
+    "reach": 3,
+    "group": "window"
+   }
+  ]
+ },
+ "arenas": [
+  {
+   "id": "ropewalk",
+   "file": "arena-ropewalk.json",
+   "stage": "arena: ropewalk 0 0 0 0",
+   "heightToWorld": "y = h - 9",
+   "size": [
+    26,
+    6
+   ]
+  }
+ ],
+ "arena": {
+  "name": "ropewalk",
+  "worldOfArena": "x = arena x, z = arena z, y = 0 (arena h 9)",
+  "cell": 1,
+  "origin": [
+   0,
+   0
+  ],
+  "note": "lamps at (6, 1) and (19, 1) as the arena; the script has one lamp halfway (ROPEWALK text 98)"
+ },
+ "notes": "The Ropewalk lane, matched to the combat arena ROPEWALK."
+}

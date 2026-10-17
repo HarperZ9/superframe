@@ -1,0 +1,113 @@
+# Low Water, Act 2: encounters and their talk exits (Act 2 only; foes are in rules2.lwd). Director's file.
+
+@encounter e.strippers
+name: The second low water
+area: spit
+foe: f.stripper_lead 1
+foe: f.stripper 3
+param: deck-tilt (the barges lie on their sides)
+prop: snare 0 0 ? has(spit.painter_cut)
+talk: fx2.strippers.claim | Read them the claim ? fight_struck >= 1 & fight_lamb_standing >= 4
+param: tide-ends-fight
+win: spit.fight.strippers.win
+yield: spit.fight.strippers.yield
+fled: spit.fight.strippers.fled
+down: spit.fight.strippers.down
+
+@encounter e.station
+name: The Lamplighters' station
+area: hill
+foe: f.lamplighter 3
+param: white-light (no dark anywhere in the room)
+prop: cut 0 0 ? has(hill.dark)
+talk: fx2.station.tea | Put the pole down and ask for tea ? fight_struck == 0 & fight_seconds >= 5
+win: hill.fight.station.win
+yield: hill.fight.station.yield
+fled: hill.fight.station.fled
+down: hill.fight.station.down
+
+@encounter e.zealots
+name: Glass heads
+area: gasholder
+foe: f.zealot 4
+param: candles (a knocked candle lights the straw)
+prop: lamp 0 0
+talk: fx2.zealots.give | Hold the relic up and give it back ? fight_seconds >= 8
+win: gasholder.fight.zealots.win
+yield: gasholder.fight.zealots.yield
+fled: gasholder.fight.zealots.fled
+down: gasholder.fight.zealots.down
+
+@encounter e.ice
+name: On the ice
+area: gut
+foe: f.gutter 2
+param: ice-floor (both sides slide)
+talk: fx2.ice.steward | Call for the steward ? fight_seconds >= 10
+win: gut2.fight.ice.win
+yield: gut2.fight.ice.yield
+fled: gut2.fight.ice.fled
+down: gut2.fight.ice.down
+
+@encounter e.substation
+name: The second switch
+area: hill
+foe: f.guard 2
+prop: lamp 0 0
+talk: fx2.substation.fisk | Let the engineer speak ? has(met.fisk)
+win: hill.fight.substation.win
+yield: hill.fight.substation.yield
+fled: hill.fight.substation.fled
+down: hill.fight.substation.down
+
+# Props marked 0 0 are placed by the combat engineer when the spit, hill and gasholder arenas exist
+# (the painter as a snare, the substation's white lamp, the altar candles).
+
+@encounter e.strippers.sneak
+name: The second low water, from the tarpaulin
+area: spit
+opening: sneak
+foe: f.stripper_lead 1
+foe: f.stripper 3
+param: deck-tilt (the barges lie on their sides)
+param: tide-ends-fight
+talk: fx2.strippers.claim | Read them the claim ? fight_struck >= 1 & fight_lamb_standing >= 4
+win: spit.fight.strippers.win
+yield: spit.fight.strippers.yield
+fled: spit.fight.strippers.fled
+down: spit.fight.strippers.down
+
+@node fx2.strippers.claim
+place: patience
+cost: 2
+nar: The assessor takes the claim out of the case and reads it aloud over the barge's tilted rail: Nature of loss, darkness, malicious.
+line: SALLIS: Malicious. Then who are we collecting for? {when: !has(cause.wreckers)}
+line: LUGG: Malicious. That's us, is it. That's the Company. {when: has(cause.wreckers)}
+go: spit.fight.strippers.yield
+
+@node fx2.station.tea
+place: station
+cost: 2
+nar: The assessor puts the pole down on the station's clean floor and asks, in the Shelf's best voice, whether there is tea.
+line: GORM: Is there tea? Has the Shelf ever been refused tea in this station? Would it like sugar?
+go: hill.fight.station.yield
+
+@node fx2.zealots.give
+place: gas_altar
+cost: 2
+nar: The assessor holds the relic up in the candlelight where every jar can see it, and sets it on the altar step. The glass heads stop. One of them is crying inside its jar, and has nowhere to put it.
+go: gasholder.fight.zealots.yield
+
+@node fx2.ice.steward
+place: gutter
+cost: 1
+line: LAMB: Steward!
+nar: The word goes up the frozen lane and comes back with somebody large attached to it.
+go: gut2.fight.ice.yield
+
+@node fx2.substation.fisk
+place: substation
+cost: 2
+line: FISK: Gentlemen. The specification. Section nine. I wrote it, and I am sorry for the adjectives.
+nar: The guards have never been apologised to by a specification. They lower their poles to see what it feels like.
+go: hill.fight.substation.yield

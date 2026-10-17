@@ -1,0 +1,34 @@
+# Low Water, Act 2: Second Water, with the daylight interlude first. Root file. Private, 2026-10-17.
+# Plan: design/ACT2-PLAN.md. The Act 1 ruleset, facts and combat records carry over by include.
+@meta
+title: Low Water. Act 2: Second Water
+format: lwd/1
+act: 2
+night: 2
+start: day.start
+clock: 14:00
+end-clock: 06:20
+include: ../act1/rules.lwd
+include: ../act1/places.lwd
+include: ../act1/facts.lwd
+include: ../act1/combat.lwd
+include: ../act1/gear.lwd
+include: carried.lwd
+include: rules2.lwd
+include: encounters2.lwd
+include: places2.lwd
+include: world2.lwd
+include: facts2.lwd
+include: day.lwd
+include: hill.lwd
+include: gasholder.lwd
+include: ropewalk.lwd
+include: spit.lwd
+include: quay2.lwd
+include: brine2.lwd
+include: weigh2.lwd
+include: mole2.lwd
+include: gut2.lwd
+include: floor2.lwd
+include: dawn2.lwd
+include: insights2.lwd

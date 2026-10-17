@@ -1,0 +1,20 @@
+# Combat test places (placeholders, not story content). Light and sodium as content sets them
+# for the matching places in content/act1/world.lwd.
+@place floor
+name: Test floor
+light: 0.08
+sodium: 0.4
+footing: mud
+
+@place quay
+name: Test quay
+light: 0.6
+sodium: 0.95
+footing: stone
+
+@place weigh_in
+name: Test weigh-house
+light: 0.3
+sodium: 0
+footing: wood
+shelter: yes

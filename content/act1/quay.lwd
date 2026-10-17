@@ -1,0 +1,2530 @@
+# Low Water, Act 1: Lamp Quay. District file, prefix quay.
+# Places: quay, steps, harbour, mole_steps, ferry. Beats (design/ACT1-PLAN.md section 6):
+# 1 prologue, 2 berth, 3 Keel, 4 Gorm's book, 5 the harbour office telephone, 6 Fennick's blessing,
+# 17 Crake on the restrike, 21 the provisional cause on the quay, 26 Crake's second call,
+# 27 the second blackout, 35 high water, 36 Crake's third call. Also: Keel's hair for the Damp,
+# Hobb on the quay, Penhallow at the berth, Merrow in the cells and at his boat, and the Fray's
+# e.lamplighters and e.wardens. Shared entry nodes defined here: quay.prologue, quay.hub, quay.phone.
+# Creation note for the engineer: the prologue's memory of three claims is where the creation
+# sheet opens (G.create). The options set var precedent and var quay.trusted so the script can
+# read the choice; the sheet itself is the interface's.
+
+# ---- new ids
+@fact quay.bearing
+about: The bay chart: the Old Light on Hound Rock stands west of the dog-leg. A light there shows a ship on the wrong side of the channel, so a master turns away from it.
+by: reading, the harbour office chart
+
+@fact quay.crake.yellow
+about: The Alderman admits the restrike clause was "edited" by her own hand, in her own yellow ink, for economy.
+against: trust 20
+by: testimony, by telephone
+
+@fact quay.crake.deal
+about: At half past five the Alderman offered the keeper six years' back pay for a cause that leaves out the Trust.
+against: trust 15
+by: testimony, by telephone
+
+@fact quay.keel.quoted
+about: The harbourmaster keeps a record of what the assessor says to him and reads it back.
+by: hearing
+
+@fact quay.round.known
+about: The Lamplighters' round: a lamp each, a turn to the weigh-house corner every quarter hour, and a gap of two lamps by the steps when Strand counts his paving stones.
+by: watching, or Gorm's book
+
+@fact quay.crake.said_restrikes
+about: The Alderman, by telephone, before midnight: "It restrikes itself when the supply comes back."
+by: the Record
+
+@fact quay.crake.slip
+about: The Alderman, by telephone, the moment Mother was relit: Mrs Tallow "has not climbed those stairs since the sodium came". She knew the keeper did not keep the night.
+against: trust 10
+by: the Record
+
+@fact quay.bearing_wrong
+about: In pencil: the light on Hound Rock was set to draw the ferry in.
+by: a misreading of the chart
+
+@fact quay.claim.third
+@fact quay.crake.restrike_done
+@fact quay.crake.two_done
+@fact quay.crake.three_done
+@fact quay.prov_seen
+@fact quay.highwater_seen
+@fact quay.table
+@fact quay.gauze.lent
+@fact quay.gauze.refused
+@fact quay.keel.hair
+@fact quay.keel.office_seen
+@fact quay.stepdown
+@fact quay.wall
+@fact quay.hobb.favour
+@fact quay.dark.seen
+@fact quay.penhallow.words
+@fact quay.gorm.page_tried
+@fact quay.gorm.follows
+@fact quay.merrow.cells_seen
+@fact quay.merrow.boat_seen
+@fact quay.fennick.dark_done
+@fact quay.relic.borrowed
+@fact quay.tobit.sung
+@fact quay.line.clicked
+@fact quay.relic.taken
+@fact quay.relic.douse_failed
+@fact quay.appt.done
+@fact struck.fewell
+@fact struck.strand
+@fact down.cells
+@fact down.harbour
+
+@var quay.cuffs
+default: 0
+about: How many times Lamb has looked at Keel's cuffs. The third look offers m.wet.
+
+@var quay.trusted
+default: none
+values: none, candlemas, glass, almanac, damp, vane
+about: The instrument Lamb's hand went to as the ship heeled. The creation sheet's trusted instrument.
+
+# ================================================================ 1. THE PROLOGUE: the deck, a memory
+@node quay.prologue
+place: ferry
+speaker: PENHALLOW
+cost: 0
+nar: Filed afterwards, from memory, which is admissible but not preferred.
+nar: The deck of the Saint Cuthwin, twenty-two minutes past ten by the ship's clock.
+nar: The assessor sits by the rail, the claims case on both knees. Where the bay narrows to the Spit there should be a lamp. There is a place in the dark where the dark is more expensive.
+line: PENHALLOW: Where is she? Where's the old cow? Mr Tate, where is Mother? There isn't any fog. I can see the stars over Gullet and I cannot see the one thing on that hill I pay harbour dues to look at.
+opt: "Open the case and read the claim." -> quay.pro.claim1
+opt: "Look where the lamp should be." -> quay.pro.lamp
+
+@node quay.pro.lamp
+place: ferry
+cost: 0
+nar: The town is three sodium lamps on a quay. At the end of the mole stands a shape with a great round head and no light in it.
+voice: precedent: Lights fail. Claims follow. Nine in ten are a fuse and a frightened man. The tenth is why the Shelf sends someone. {dc: 5}
+opt: "Open the case and read the claim." -> quay.pro.claim1
+
+@node quay.pro.claim1
+place: ferry
+cost: 0
+nar: The claim is a telegraph form, initialled three times in Hesk by people who did not read it.
+nar: CLAIM 4471/G. Harbour Board of Gullet against the Mutual Indemnity of the Lower Shelf. Nature of loss: darkness, malicious. Time of loss: see below. Time of claim: three hours before the time of loss.
+voice: smallprint: "See below." There is nothing below. Below is the bottom of the form, and a thumbprint in tea. {dc: 4}
+voice: sum: Eighteen thirty, the claim. The loss, three hours after. That puts the dark at about half past nine. You are looking at it, forty minutes late. {dc: 6}
+voice: sum: A claim before its loss. You count it on your fingers and get the same answer twice, which is no comfort. {below: 6}
+go: quay.pro.heel
+
+@node quay.pro.heel
+place: ferry
+cost: 0
+nar: Then Penhallow stops shouting. The engine note changes.
+line: PENHALLOW: Shoal water. Mr Tate, that's the Spit under us. Hard over, hard over now.
+nar: The deck heels. The assessor's mind does what it has always done, which is to file: it reaches into eleven years and takes out three claims, the way a hand finds a rail.
+nar: Which three?
+opt: "The granary at Pell. The Rendle bank. The Sallow ferry." -> quay.pro.ledger {do: precedent = ledger}
+opt: "The choir at Mudlow. The Kettle Reach dyke. The tannery at Tull." -> quay.pro.wader {do: precedent = wader}
+opt: "The glasshouses on Orrery Lane. The Widow Arbery's roof. The bell at Brack." -> quay.pro.condoler {do: precedent = condoler}
+opt: "None of them in particular. Eleven years of small claims, in no order." -> quay.pro.custom {do: precedent = custom}
+
+@node quay.pro.ledger
+place: ferry
+cost: 0
+nar: 1180/P. The granary at Pell. A clock in the counting room stopped at a quarter to four; the owner swore the fire began at six. The clock was right. The owner was out at a quarter to four, buying paraffin.
+nar: 0441/R. The Rendle bank, whose ledger balanced to the farthing. No ledger in the history of banking has balanced to the farthing. The assessor found the farthing.
+nar: 2003/S. The Sallow ferry, sunk at her moorings at an hour when, by the timetable, she was at sea. The timetable lied. The ferry did not.
+voice: sum: Times. Everything is times. A clock is a witness that has been paid by somebody. {dc: 2}
+go: quay.pro.case
+
+@node quay.pro.wader
+place: ferry
+cost: 0
+nar: 0907/M. The choir at Mudlow, flooded mid-anthem. The assessor waded the nave to the chest and read the tide mark on the organ pipes. Third verse. The sexton had said the second.
+nar: 1312/K. The Kettle Reach dyke, walked end to end at low water, in boots, to the place where a farmer had cut it for his ducks.
+nar: 1766/T. The tannery at Tull, which nobody would enter, assessed by smell. The smell is in the file, in three paragraphs, and the file is kept in a separate cabinet.
+voice: knees: Wet to the chest, twice. We did not complain. We complained afterwards, which is permitted. {dc: 2}
+go: quay.pro.case
+
+@node quay.pro.condoler
+place: ferry
+cost: 0
+nar: 2216/H. The glasshouses on Orrery Lane, hailed out in eleven minutes, and an old man who had grown one orchid for forty years under the last pane to go. The claim was for glass. The assessor wrote down the orchid.
+nar: 0519/W. The Widow Arbery's roof, paid for twice, once to a builder and once to the man who said he was the builder's brother. She knew. She paid him to have someone to talk to on Thursdays.
+nar: 1655/B. The bell at Brack, which fell on the man who rang it. His widow asked whether the bell had meant it. The assessor said no. That was not in the claim either.
+voice: condolence: You remember the orchid. That is what you are for, under the bowler. {dc: 2}
+go: quay.pro.case
+
+@node quay.pro.custom
+place: ferry
+cost: 0
+nar: No three claims come: chimneys, a drowned cow, a piano that fell down a flight of stairs one step at a time over a week.
+voice: precedent: There is always a case number. You will find it later. Precedent waits. {dc: 2}
+go: quay.pro.case
+
+@node quay.pro.case
+place: ferry
+cost: 0
+nar: The case slides, and the assessor's hand goes in after one of the instruments the way a hand goes after a falling cup.
+opt: "Candlemas, the brass photometer." -> quay.pro.inst.candlemas {do: quay.trusted = candlemas}
+opt: "The Glass, the pocket barometer." -> quay.pro.inst.glass {do: quay.trusted = glass}
+opt: "The Almanac, the tide table with its brass dial." -> quay.pro.inst.almanac {do: quay.trusted = almanac}
+opt: "The Damp, the hair hygrometer." -> quay.pro.inst.damp {do: quay.trusted = damp}
+opt: "The Vane, the tin cockerel on its stick." -> quay.pro.inst.vane {do: quay.trusted = vane}
+
+@node quay.pro.inst.candlemas
+place: ferry
+cost: 0
+inst: CANDLEMAS: Thank you. Somebody in this case has taste. There is no light out there worth the name.
+go: quay.pro.light
+
+@node quay.pro.inst.glass
+place: ferry
+cost: 0
+inst: THE GLASS: Oh, you picked me. Nine hundred and ninety-eight and steady, darling. The weather is perfectly fine. It is the people who have done this.
+go: quay.pro.light
+
+@node quay.pro.inst.almanac
+place: ferry
+cost: 0
+inst: THE ALMANAC: Twenty minutes to low water. The Spit carries a fathom less than the master thinks. Nobody consults a book in a hurry.
+go: quay.pro.light
+
+@node quay.pro.inst.damp
+place: ferry
+cost: 0
+inst: THE DAMP: Oh. Me. Nobody chooses me. Your left cuff is wet, if you want to know, and I am a dead man's hair in a brass box, and I am very grateful.
+go: quay.pro.light
+
+@node quay.pro.inst.vane
+place: ferry
+cost: 0
+inst: THE VANE: Hold me up! West, six metres, and the bow coming round through north, and the spray going over in a sheet! I love a crisis!
+go: quay.pro.light
+
+@node quay.pro.light
+place: ferry
+cost: 0
+do: set(memory.low_light); quest(a1.lowlight, seen)
+nar: And there, low on the water where no light should be: a light. Small, warm, steady, the colour of a lantern, off the starboard bow, where the charts mark only a drowned tower on a rock.
+line: PENHALLOW: That's the Old Light. That's on Hound Rock. That's on the wrong side of us. We're west of the dog-leg. Over, put her over.
+nar: The helm goes over. The Spit passes under the starboard rail at a boat's length, with a gull standing on it looking surprised.
+nar: The clock in the wheelhouse door says twenty-four minutes past ten. The assessor writes it down, because that is what the hand does while the rest is frightened.
+voice: dark: The light did not move when the ship moved. It was not on a boat. It was in the stone. {dc: 5}
+go: quay.pro.claim2
+
+@node quay.pro.claim2
+place: ferry
+cost: 0
+do: set(claim.time); quest(a1.claim, open)
+nar: The assessor reads the claim a second time, with hands steady enough for reading if not for signing. It has not changed.
+line: PENHALLOW: Forty souls and a mail bag and a crate of Hesk eggs, and she lets her eye shut on Low Night. I'll have words with whoever keeps that light.
+go: quay.pro.berth
+
+# ================================================================ 2. BERTH AT THE MOLE STEPS, 22:41
+@node quay.pro.berth
+camera: wide
+place: mole_steps
+speaker: PENHALLOW
+cost: 2
+do: set(spray.mole); set(met.penhallow); wet(0.2)
+nar: Twenty-one minutes to eleven by the assessor's own watch. The Saint Cuthwin berths at the mole steps, and over the mole's windward side the sea comes in sheets.
+nar: The first sheet takes the assessor's coat on the left side from collar to hem. The coat has been dry for eleven years, as a matter of professional pride. It is not dry now.
+voice: pride: You stood in a burning granary in this coat and kept it dry. A puddle on a breakwater has done what fire could not. {dc: 3}
+inst: THE VANE: West! Spray on the windward side from here to the lamp, and everybody who walked this mole tonight walked through it! Write that down!
+line: PENHALLOW: Off you go, Shelf. Not me. I'm not leaving this ship until I've had words with that light, and the light's not talking yet.
+voice: pride: Wet already. The town will see it. The town will think you are the kind of assessor who gets wet. {below: 3}
+go: quay.pro.berth.menu
+
+@node quay.pro.berth.menu
+place: mole_steps
+cost: 0
+opt: "Take a reading from each instrument at the foot of the steps." -> quay.pro.readings ? !seen(quay.pro.readings) {verb: read, noise: 0}
+opt: "Read the claim a third time, on the gangway." -> quay.claim.third ? !has(quay.claim.third)
+opt: "Ask the master what she saw." -> quay.pen.berth ? !seen(quay.pen.berth)
+opt: "Your ship's clock. Is it right?" -> quay.pen.clock ? seen(quay.pen.berth) & !has(ship.clock) & !seen(quay.pen.clock)
+opt: "Go up the mole to the quay." -> quay.arrive +2
+
+@node quay.pro.readings
+place: mole_steps
+cost: 2
+read: almanac
+read: glass
+inst: CANDLEMAS: A caged paraffin lamp, honest, and beyond it a quay drowned in sodium. Here your cuff is navy, and wet. Up there I will tell you nothing at all.
+inst: THE DAMP: Your left side is wet and your right side is dry. You are a document in two minds. I was a man's hair once. His name was Pollard. He would have liked this place.
+voice: precedent: Pollard. You knew a Pollard. Everyone in the Shelf knew a Pollard, and nobody can say when they stopped knowing him. {dc: 6}
+go: quay.pro.berth.menu
+
+@node quay.claim.third
+cost: 0
+call: quay.claim.read
+go: quay.pro.berth.menu
+
+@node quay.claim.third.hub
+cost: 0
+call: quay.claim.read
+go: ^hub
+
+@node quay.claim.read
+cost: 1
+if: !has(quay.claim.third) => xp(1)
+do: set(quay.claim.third)
+nar: The assessor reads the line once more, in case it would be ashamed of itself by the third reading. It is not.
+voice: smallprint: Not "anticipated darkening", which is a fear. "Darkness, malicious", which is a fact, dated before it happened. The Board has insured an appointment. {dc: 7}
+return:
+
+@node quay.pen.berth
+place: mole_steps
+speaker: PENHALLOW
+cost: 3
+nar: Ysolde Penhallow leans on the rail, a square woman with a pipe she does not light at sea.
+line: PENHALLOW: Log, twenty-two twenty-four by the ship's clock. Gullet Head Light not showing. Light low on Hound Rock, bearing west by south. Helm hard a-port. Cleared the Spit by one boat's length.
+opt: "Keel's claim says wreckers darkened the lamp." -> quay.pen.wreckers {once, id: quay.pen.wreckers, do: set(said.wreckers); set(heard.penhallow.wreckers)}
+opt: "Your ship's clock. Is it right?" -> quay.pen.clock ? !has(ship.clock) & !seen(quay.pen.clock)
+opt: "Thank her." -> quay.pro.berth.menu
+
+@node quay.pen.wreckers
+place: mole_steps
+speaker: PENHALLOW
+cost: 2
+line: PENHALLOW: Keel's claim is Keel's. My log says twenty-two twenty-four, Gullet Head Light not showing, a light on Hound Rock, helm hard over. The rest is for the Board.
+go: quay.pro.berth.menu
+
+@node quay.pen.clock
+place: mole_steps
+speaker: PENHALLOW
+cost: 2
+line: PENHALLOW: Ship's clock. Set by Mr Tate at Hesk, eighteen hundred, as logged.
+check: "[SUM] Compare the wheelhouse clock with your own watch, through the door." -> quay.pen.clock.ok / quay.pen.clock.fail {skill: sum, dc: 7, verb: read, noise: 0}
+
+@node quay.pen.clock.ok
+place: mole_steps
+speaker: PENHALLOW
+cost: 2
+do: set(ship.clock); offer(m.clocks)
+nar: Through the wheelhouse door the ship's clock says thirteen minutes to eleven. The assessor's watch says nine minutes to. Four minutes fast, and comfortable about it.
+line: PENHALLOW: Four fast. Tate sets it for the Hesk berth. It's in the log, every night.
+voice: sum: So the light came at twenty past by the true time. You wrote the ship's lie in your own hand and called it memory. {dc: 7}
+go: quay.pro.berth.menu
+
+@node quay.pen.clock.fail
+place: mole_steps
+speaker: PENHALLOW
+cost: 1
+nar: The wheelhouse door swings with the swell, and by the time the assessor has the minute hand the hour hand has gone, and Penhallow is watching the assessor watch her clock.
+line: PENHALLOW: Ship's time, Shelf. Logged at every bell.
+go: quay.pro.berth.menu
+
+# ================================================================ ARRIVAL AND THE QUAY HUB
+@node quay.arrive
+camera: near
+place: quay
+cost: 2
+do: wet(0.1)
+nar: Lamp Quay, a little before eleven, at the lowest tide in nineteen years.
+nar: Three sodium lamps hang over it on swan-neck posts. Under them a row of crooked houses leans out over the water, five storeys of plaster that are, by day, oxblood and mustard and teal and bone. Tonight they are one colour, which is the colour of a lamp.
+inst: CANDLEMAS: Sodium. One line of the spectrum, and the orange one. I will not call it a colour.
+voice: condolence: Everyone here has the same face. Nobody can tell whose cheek went red, so nobody blushes, so nobody is sorry. {dc: 5}
+voice: hearsay: Heads turning, under the lamps. The town has seen a bowler come up the mole. The town has decided what a bowler is for. {dc: 4}
+go: quay.hub
+
+@node quay.hub
+place: quay
+hub: yes
+cost: 0
+alt: quay.phone.ring ? has(mother.restruck) & !has(quay.crake.restrike_done) & clock < 05:30
+alt: quay.phone.ring ? clock >= 02:00 & clock < 02:30 & !has(quay.crake.two_done)
+alt: quay.phone.ring ? clock >= 05:30 & clock < 05:50 & !has(quay.crake.three_done)
+alt: quay.hub.dark ? power.quay == off
+alt: quay.highwater ? clock >= 05:10 & !has(quay.highwater_seen)
+alt: quay.prov ? has(ev.prov_travels) & (var.prov == wreckers | var.prov == trust) & !has(quay.prov_seen)
+alt: quay.lamplighters.stop ? power.quay == on & (clock < 01:30 | clock >= 03:20) & !seen(quay.lamplighters.stop) & (rep.trust <= -2 | (worn(c.lamplighter_coat) & has(gorm.warned)))
+alt: quay.wardens.stop ? rep.board <= -2 & clock >= 00:40 & clock < 04:15 & !seen(quay.wardens.stop)
+alt: quay.gorm.book ? !has(gorm.warned) & (has(met.keel) | has(met.fennick) | has(met.crake)) & clock < 01:30
+nar: Lamp Quay. The steps go down to the floor at its middle; the Brine, the weigh-house and the harbour office stand round it, and the mole runs out to Mother.
+call: quay.hub.sky
+call: quay.hub.appt
+call: quay.hub.prov
+opt: "Go to the top of the steps." -> quay.steps +1
+opt: "Go into the harbour office." -> quay.harbour +1
+opt: "Walk along to the mole steps." -> quay.molesteps +2
+opt: "Speak to the Lamplighter with the open book." -> quay.gorm ? has(gorm.warned) & (clock < 01:30 | clock >= 03:20)
+opt: "Speak to the young Lamplighter with the two lanterns." -> quay.hobb ? clock >= 00:40 & clock < 04:15
+opt: "Go to the harbourmaster, standing at the edge of the quay." -> quay.keel.dawn ? clock >= 05:10
+opt: "Read the claim a third time." -> quay.claim.third.hub ? !has(quay.claim.third)
+opt: "Go into the Brine." -> brine.hub +1
+opt: "Go to the weigh-house." -> weigh.hub +1
+opt: "Walk out along the mole toward Mother." -> mole.hub +1
+opt: "Go down the steps to the harbour floor." -> floor.hub ? tide < -0.27 +3
+opt: "Go up the lane into the Gut." -> gut.hub ? has(gut.open) +2
+check: "[GRIP] The Guild's back wall, into the Gut, while the Gut is shut." -> quay.wall.ok / quay.wall.fail ? !has(gut.open) & !has(quay.wall) {skill: grip, dc: 7, red, verb: climb, noise: 0.3}
+
+# ---- the quay's weather, by the hour (a call from the hub; each returns)
+@node quay.hub.sky
+cost: 0
+alt: quay.sky.highwater ? clock >= 05:10
+alt: quay.sky.frost ? clock >= 04:10
+alt: quay.sky.fog ? clock >= 02:40
+alt: quay.sky.heavy ? clock >= 01:30
+alt: quay.sky.rain ? clock >= 23:35
+alt: quay.sky.mist ? clock >= 23:20
+nar: Below the quay's edge lanterns go about on the floor of the sea, politely, like guests in a house whose owner has stepped out.
+return:
+
+@node quay.sky.mist
+cost: 0
+nar: Fog has come off the Flats. It took the far things first, like a creditor: the stranded boat, the Spit, Mother's head. The near lamps stay, and are lonelier.
+return:
+
+@node quay.sky.rain
+cost: 0
+nar: Rain, fine and sideways, from the south-west. Every drop is the same orange. Below the edge the pools on the floor have joined hands.
+return:
+
+@node quay.sky.heavy
+cost: 0
+nar: Heavy rain. It comes down the swan necks of the lamps and drips from their heads like something they are ashamed of. The harbour is a basin of black water, filling.
+return:
+
+@node quay.sky.fog
+cost: 0
+nar: The rain has thinned and the fog has come back thicker, as if it had gone home for more. The quay ends where the lamplight gives up.
+return:
+
+@node quay.sky.frost
+cost: 0
+nar: The cold has come in behind the rain like a bailiff. Frost on the rails and the lip of every step. Every word said aloud hangs in the air long enough to be read.
+return:
+
+@node quay.sky.highwater
+cost: 0
+nar: High water. A skin of black sea slides over the quay's lip and back. Over the hill the sky has begun, very slightly, to admit to grey.
+return:
+
+# ---- the Guild's back wall, before the Gut opens
+@node quay.wall.ok
+place: quay
+cost: 3
+do: set(quay.wall)
+nar: The Guild's back wall has broken pottery set in its top, which the Guild calls security and the gulls call a perch. A drainpipe, a bracket, a loose brick that holds, and the assessor is over with the bowler in the teeth.
+nar: On the far side the Gut breathes out a smell that has a vote of its own. Nobody sees the assessor arrive. In the Gut nobody looks at anything; they smell it.
+go: gut.hub
+
+@node quay.wall.fail
+place: quay
+cost: 4
+do: set(quay.wall); wet(0.1); meter(cold, 1)
+nar: The drainpipe comes away at the second bracket with the slow courtesy of old iron, and the assessor comes down with it into a barrel of something that was herring last week and is now an opinion.
+nar: A window opens above. A woman's voice says that the Shelf is in her barrel. A second voice says it is Low Night, Mags, let it be. The window shuts.
+nar: The Gut opens at twenty to one, by the front lane.
+go: ^hub
+
+# ================================================================ 4. GORM'S BOOK
+@node quay.gorm.book
+place: quay
+speaker: GORM
+cost: 3
+do: set(gorm.warned); set(met.gorm); quest(a1.book, noticed); offer(m.watched)
+nar: Under the next lamp stands a woman in a dark coat, with a brass pole longer than she is and a book on the crook of her arm. When the assessor looks at her, she writes.
+nar: Item: one sergeant of the Lamplighters, dry. The only dry thing on the quay. The assessor would like to know how.
+line: GORM: And who might you be, at this hour? And would you like to tell me, or shall I wait?
+nar: Along the quay, four more dark coats, four more poles, four open books.
+line: FEWELL: Pole's nine foot six, regulation. Mine's nine foot seven. Nobody's ever measured.
+line: BRIGHT: Lovely night for it! Lamps all on, nobody drowned, Shelf on the quay. Lovely!
+line: STRAND: Twenty-two fifty-one. Bowler. Coat, navy, wet on the windward side. Case, leather, one.
+line: COE: The Alderman says a lit town is a safe town, and a safe town is a written town.
+voice: hearsay: Five books. Five pencils. By morning the Alderman will know who you spoke to, in what order, and how long you stood with each. That is a kind of rumour that does not need the wind. {dc: 5}
+go: ^hub
+
+@node quay.gorm
+place: quay
+speaker: GORM
+cost: 2
+alt: quay.gorm.follow ? var.prov == trust & clock >= 00:30 & !has(quay.gorm.follows)
+nar: Sergeant Ida Gorm stands under the middle lamp with her pole grounded beside her like a crozier. She does not stop writing to be spoken to.
+line: GORM: Back again, is it? And what will you be telling me this time?
+go: quay.gorm.menu
+
+@node quay.gorm.menu
+cost: 0
+opt: "What is in the book, sergeant?" -> quay.gorm.what ? !seen(quay.gorm.what)
+opt: "Keel says it was wreckers." -> quay.gorm.wreckers {once, id: quay.gorm.wreckers, do: set(said.wreckers); set(book.wreckers)}
+check: "[HEARSAY] Read the page upside down while she writes." -> quay.gorm.page.ok / quay.gorm.page.fail ? !has(quay.gorm.page_tried) {skill: hearsay, dc: 7, do: set(quay.gorm.page_tried), verb: read, noise: 0.1}
+opt: "Walk away from her, fast, out of the lamplight." -> quay.lamplighters.stop ? has(quay.gorm.follows) & !seen(quay.lamplighters.stop) {verb: hide, noise: 0.5}
+check: "[THE DARK] Step out of the sodium into the fog, stand still, and let her lose you." -> quay.gorm.shake.ok / quay.gorm.shake.fail ? has(quay.gorm.follows) & (fog > 0.05 | power.quay == off) {skill: dark, dc: 6, verb: hide, noise: 0.1}
+opt: "Leave her to the book." -> ^hub
+
+@node quay.gorm.what
+speaker: GORM
+cost: 2
+line: GORM: What would you expect to be in a Lamplighter's book? Lamps? Do you know how many lamps there are on Lamp Quay? Three? And how many pages have I filled tonight?
+nar: Every page is close-written, back to the start of the night.
+line: GORM: Would you like to guess how many are about lamps?
+go: quay.gorm.menu
+
+@node quay.gorm.wreckers
+speaker: GORM
+cost: 2
+line: GORM: Does he? And is that what the Shelf thinks, or what the Shelf heard?
+nar: She writes it down. The pencil makes a word that begins with a W.
+line: GORM: Would you rather hear it read back from me, or from the Alderman, at breakfast?
+go: quay.gorm.menu
+
+@node quay.gorm.page.ok
+speaker: GORM
+cost: 2
+do: quest(a1.book, page); set(quay.round.known)
+nar: 22.51 Bowler up the mole, wet. With KEEL at the steps. Long. Bowler looks at KEEL's cuffs. Why? FENNICK shows bowler something. Under lamp, no. Off lamp, yes.
+call: quay.gorm.page.lines
+nar: In the margin, the round: a lamp each, the weigh-house corner at the quarter hours, Strand's paving stones by the steps. Underlined twice: Telephone the Alderman on any mention of wiring.
+line: GORM: Can you read upside down, then? And would you like to know what I just wrote about it?
+go: quay.gorm.menu
+
+@node quay.gorm.page.lines
+cost: 0
+alt: quay.gorm.page.light ? said(quay.keel.light)
+alt: quay.gorm.page.wreck ? has(said.wreckers)
+nar: Then three lines about a boy called Hobb and his lanterns, which Gorm has crossed out kindly.
+return:
+
+@node quay.gorm.page.light
+cost: 0
+nar: Bowler tells KEEL a light turned the ferry. A light in the OLD LIGHT. Mark: Low Company. Mark: ask.
+return:
+
+@node quay.gorm.page.wreck
+cost: 0
+nar: Bowler says WRECKERS, out loud, on the quay. To whom else? Find out.
+return:
+
+@node quay.gorm.page.fail
+speaker: GORM
+cost: 2
+do: set(book.reading)
+nar: Gorm tilts the book away by a degree, without looking up, the way a woman moves a cup away from a cat.
+line: GORM: Would you like me to turn it round? Would you like me to read it to you, slowly, from the beginning?
+nar: She writes: Bowler tries to read the book. Then something else, and smiles at it.
+go: quay.gorm.menu
+
+@node quay.gorm.follow
+place: quay
+speaker: GORM
+cost: 2
+do: set(quay.gorm.follows); meter(dread, 1)
+nar: Gorm is under the lamp nearest the assessor now, and when the assessor moves, she moves.
+line: GORM: Did you think the Alderman would not hear what you sent up the tube? Where are you going next? Shall I come? Shall I carry your case?
+voice: dark: She can only follow you where the lamps are. Out of the light she is a woman with a stick. {dc: 5}
+voice: dark: She will follow you everywhere now. Into the Brine. Into sleep, probably. {below: 5}
+go: quay.gorm.menu
+
+# ================================================================ THE STEPS
+@node quay.steps
+place: steps
+cost: 1
+alt: quay.fennick.dark ? power.quay == off & clock >= 01:20 & !has(quay.fennick.dark_done)
+nar: The quay steps go down further than steps should, each one wetter than the one above it. At the top stands an old paraffin post with no lamp in it, left for the gulls.
+call: quay.steps.who
+opt: "Speak to the harbourmaster." -> quay.keel.start ? !has(met.keel) & clock < 23:58
+opt: "Go back to the harbourmaster." -> quay.keel.again ? has(met.keel) & clock < 23:58
+opt: "Go down to the deacon, blessing the floor." -> quay.fennick.start ? !has(met.fennick) & clock < 23:50
+opt: "Go back to the deacon." -> quay.fennick.again ? has(met.fennick) & clock < 23:50
+opt: "Speak to the woman kneeling in the bell jar." -> quay.gauze ? clock < 23:50 & !has(quay.gauze.lent) & !has(quay.gauze.refused)
+opt: "Speak to the choirboy." -> quay.tobit ? clock < 23:50 & !has(quay.tobit.sung)
+opt: "Go down to the deacon at his vigil." -> quay.fennick.vigil ? clock >= 01:20 & (clock < 01:30 | clock >= 02:40)
+opt: "Look at the old paraffin post." -> quay.post
+opt: "Go down the steps to the harbour floor." -> floor.hub ? tide < -0.27 +2
+opt: "Look down at the water on the steps." -> quay.steps.water ? tide >= -0.27
+opt: "Go back up onto the quay." -> ^hub
+
+@node quay.steps.who
+cost: 0
+alt: quay.steps.who.blessing ? clock < 23:50
+alt: quay.steps.who.vigil ? clock >= 01:20 & (clock < 01:30 | clock >= 02:40)
+nar: Nobody is on the steps now but the water and whatever the water has brought.
+return:
+
+@node quay.steps.who.blessing
+cost: 0
+nar: Below the reach of the quay lamps the Congregation of the Filament kneels in a row, bell jars over their heads and a candle in a jam jar at every knee, while a man in a white surplice blesses the mud.
+return:
+
+@node quay.steps.who.vigil
+cost: 0
+nar: On the last step the water has left, the deacon kneels alone under a bell jar fogged from inside, a pale shape praying in a cloud.
+return:
+
+@node quay.steps.water
+place: steps
+cost: 1
+nar: The sea comes up the lowest steps one at a time, like someone climbing to knock.
+go: quay.steps
+
+# ================================================================ 3. KEEL AT THE TOP OF THE STEPS
+@node quay.keel.start
+place: steps
+speaker: KEEL
+cost: 4
+do: set(met.keel)
+nar: At the top of the steps stands the harbourmaster, very tall, in a greatcoat that has given up being blue. Water runs from his cuffs and from the brim of his hat. He is standing in a puddle that he has brought with him.
+nar: Item: one harbourmaster, wet. The assessor declines to estimate how wet. The estimate would be challenged.
+line: KEEL: You will be the Shelf. The Board telegraphed. The Board is gratified.
+line: KEEL: Absalom Keel, harbourmaster, for the Harbour Board of Gullet, which is to say, for the purposes of this evening, the Board. Do not stand there. That is where the Board stands. You will find it is already wet.
+inst: THE DAMP: Saturated. Completely, uniformly, perfectly. I can't read him. Nobody can.
+voice: pride: He is wetter than you. Take comfort in that while it lasts. {dc: 4}
+voice: undertow: He has stood at the top of these steps since the ferry was sighted, waiting for a bowler. Ask yourself what he rehearsed. {dc: 6}
+line: KEEL: The Board is told the Shelf was on the deck of the Saint Cuthwin at twenty past ten. Did the Shelf see anything on the water?
+opt: "A light, low, in the drowned lamp. It turned us off the Spit." -> quay.keel.light {id: quay.keel.light, do: set(said.light_turned); set(heard.keel.light_turned)}
+opt: "Nothing. It was dark." -> quay.keel.nothing {id: quay.keel.nothing, do: set(said.keel_nothing); set(heard.keel.nothing)}
+opt: "I was below, with the eggs." -> quay.keel.below {id: quay.keel.below, do: set(said.keel_below); set(lied.keel_below); set(heard.keel.below)}
+
+@node quay.keel.again
+place: steps
+speaker: KEEL
+cost: 1
+alt: quay.keel.again.lit ? mother == burning
+nar: The harbourmaster has not moved. The puddle has grown by the width of a hand.
+line: KEEL: The Shelf returns. The Board remains.
+go: quay.keel.menu
+
+@node quay.keel.again.lit
+place: steps
+speaker: KEEL
+cost: 2
+nar: Mother's beam goes over the quay, and every drop running off him is lit, for a moment, faintly green.
+line: KEEL: She burns. The Board did not authorise the Shelf to touch the Board's lamp. The Board will note it, tonight, and nothing more. The Board would ask only this. Did the Shelf look at her? Closely? From inside?
+go: quay.keel.menu
+
+@node quay.keel.menu
+speaker: KEEL
+cost: 0
+opt: "What happened to the lamp?" -> quay.keel.story ? !seen(quay.keel.story) & !seen(quay.keel.story.dark)
+opt: "Your claim was sent at half past six. She went dark at twenty to ten." -> quay.keel.time ? has(claim.time) & !seen(quay.keel.time) {id: quay.keel.time}
+opt: "Who keeps the weigh-house office?" -> quay.keel.key ? !has(key.office)
+opt: "Look at his cuffs." -> quay.keel.cuffs ? var.quay.cuffs < 3 {do: quay.cuffs += 1, verb: read, noise: 0}
+claim: "You signed the works order that put Mother on the quay board." -> quay.keel.order.ok / quay.keel.order.fail ? has(works.order) & has(claim.time) {show: has(works.order) | has(claim.time), once}
+claim: "You want a whole new lens because a third of the old one is bottle glass." -> quay.keel.lens.ok / quay.keel.lens.fail ? has(lens.green) | (has(prism.green_oven) & has(prism.numbered)) {show: has(lens.green) | has(prism.green_oven) | has(prism.numbered), once}
+opt: "Leave him dripping." -> quay.steps
+
+@node quay.keel.story
+speaker: KEEL
+cost: 4
+alt: quay.keel.story.dark ? power.quay == off
+line: KEEL: Wreckers. The word is old and so is the crime. A light goes out, a ship goes in, and in the morning there is copper on the mud and nobody's footprints.
+line: KEEL: The Low Company has wanted Mother dark since the Trust closed the Old Light to salvage. Their master, Merrow, said in the Brine, before witnesses, that he would see her blind. The Board has the witnesses' names, and in two cases their mothers' addresses.
+line: KEEL: Tonight she went dark, and tonight Merrow is on the floor with a sack. The Board does not believe in coincidence. The Board believes in tides. Gullet has not hanged a man in sixty years, assessor. The Board mentions it only as a fact about the calendar.
+voice: carbon: He has the copper in the morning before the morning has come. A man describing a crime he finished describing at half past six. {dc: 7}
+go: quay.keel.menu
+
+@node quay.keel.story.dark
+speaker: KEEL
+cost: 4
+do: set(keel.rattled)
+nar: In the dark the harbourmaster is a tall noise, and the noise is water.
+line: KEEL: Wreckers. The word is old and. The crime is old. A light goes out and a ship. The Board.
+line: KEEL: The Board would like the lamps back on before it continues.
+nar: Without the lamp he has lost his place, the way a man reading aloud loses it when someone takes the page.
+go: quay.keel.menu
+
+@node quay.keel.time
+speaker: KEEL
+cost: 3
+if: power.quay == on & clock < 01:30 => set(book.claim_time)
+line: KEEL: The Board anticipated. That is the Board's function. Merrow's threat was made on Tuesday, and the policy, as the Shelf will know better than the Board, rewards the prudent.
+line: KEEL: Would the Shelf have preferred the Board to wait until she was dark? Until the ferry was on the Spit? Until there were forty claims, each with a name?
+nar: He says "until she was dark" as if it were a date he had written down.
+inst: THE GLASS: Low, darling, and falling. I only do the weather. You do the people.
+voice: precedent: 3307/D. The Dunmore mill, insured against fire a week before it burned. The owner said "prudence" eleven times in his statement. Count them here. {dc: 6}
+go: quay.keel.menu
+
+@node quay.keel.light
+speaker: KEEL
+cost: 3
+if: power.quay == on & clock < 01:30 => set(book.light_turned)
+line: KEEL: A light. In the Old Light. Then he was there, the wrecker, with his lantern. Signalling. A ship sees a lamp where no lamp should be, and steers for it, and is lost.
+line: KEEL: The Board will note that the Shelf saw the wrecker's light with the Shelf's own eyes. The Board is grateful. The Shelf is a witness.
+go: quay.keel.menu
+
+@node quay.keel.cuffs
+speaker: KEEL
+cost: 1
+alt: quay.keel.cuffs.three ? var.quay.cuffs >= 3
+alt: quay.keel.cuffs.two ? var.quay.cuffs >= 2
+nar: Water comes out of his cuffs in two thin, steady threads. There has been no rain all night. His sleeves are not wet from outside. They are wet from inside, the way a spring is.
+line: KEEL: The Board is aware of its cuffs, assessor.
+go: quay.keel.menu
+
+@node quay.keel.cuffs.two
+speaker: KEEL
+cost: 1
+nar: The assessor counts the drops for a minute and gets sixty-one, and suspects the second minute will also be sixty-one.
+line: KEEL: Eleven years. The night they lit her with electricity the Board was on the mole in its best coat, and the Board went off the mole, and the Board came out, and did not at any point since dry. The Board has seen doctors. The doctors were also wet, by the end.
+voice: salt: Your own skin knows. That water is the same temperature as the harbour. Not his blood. The harbour's. {dc: 7}
+go: quay.keel.menu
+
+@node quay.keel.cuffs.three
+speaker: KEEL
+cost: 2
+do: offer(m.wet); set(quay.keel.quoted)
+nar: He turns the cuff over, slowly. Inside there is nothing but a wrist, and water running over it the way it runs over a weir.
+line: KEEL: Three times. The Board has counted. Most persons ask once. Children ask twice. Nobody has asked three times in nine years. The Board does not know the answer. The Board would be obliged if the Shelf did not find it before the Board does.
+nar: In the margin, in pencil, before the assessor has decided to write it: Why is he wet?
+go: quay.keel.menu
+
+@node quay.keel.key
+speaker: KEEL
+cost: 2
+alt: quay.keel.key.give ? has(met.marrow) | clock >= 23:30
+line: KEEL: The Board keeps the office. The Board's papers are the Board's.
+nar: His hand goes to a pocket and stays there.
+go: quay.keel.menu
+
+@node quay.keel.key.give
+speaker: KEEL
+cost: 2
+do: set(key.office); give(i.key_office)
+line: KEEL: The Guild are in the weigh-house drinking to their strike, and the Shelf will want the scales' book for the claim. Take it. Bring it back. The Board will know if anything is moved. The Board is very sensitive to damp.
+nar: The key is wet. Of course it is.
+go: quay.keel.menu
+
+@node quay.keel.order.ok
+speaker: KEEL
+cost: 5
+do: set(keel.rattled); rumour(keel_knew, quay, 0.3); set(said.works_order); set(heard.keel.works_order); quest(a1.claim, foreknown)
+nar: The assessor holds up the works order. The harbourmaster's signature is on it in a neat, dry hand: the only dry thing about him.
+line: KEEL: The Trust required. The Alderman required. The Board signs what it is required to sign. The Guild's vote is a fishmongers' superstition. The Board could not be expected to rewire the town around a superstition.
+line: LAMB: But you knew it would happen on Low Night. You filed at half past six.
+line: KEEL: The Board. Would ask the Shelf. To consider the town. A new lens, assessor. A whole new lens, from Hesk, paid by the Shelf. You have not seen what is in that lamp.
+alt: quay.keel.gorm ? light >= 0.3 & power.quay == on & clock < 01:30
+go: quay.keel.menu
+
+@node quay.keel.order.fail
+speaker: KEEL
+cost: 2
+line: KEEL: The Board signs a great many things. The Board does not recall them individually. Does the Shelf have something in writing, or only a feeling and a time?
+nar: The harbourmaster watches the assessor understand this, and is kind about it, the way a tide is kind.
+go: quay.keel.menu
+
+@node quay.keel.gorm
+speaker: GORM
+cost: 2
+do: set(book.works_order); set(quay.line.clicked)
+nar: Under the next lamp Gorm closes her book on a finger and walks to the harbour office.
+line: GORM: Did you think I would not hear the word "works", at that volume? Would you like to guess who I am telling?
+go: quay.keel.menu
+
+@node quay.keel.lens.ok
+speaker: KEEL
+cost: 5
+do: set(lens.keel_motive); set(keel.rattled); quest(a1.claim, glass); set(said.lens_green); set(heard.keel.lens_green)
+nar: The harbourmaster takes off his hat and holds it upside down, and it fills, slowly, from his own hair.
+line: KEEL: The Board has watched her go round every night for nineteen years. The Board noticed, five winters ago, that she had begun to be a different colour.
+line: KEEL: A whole new lens. The Shelf pays. Nobody counts the old rings, because the old rings are in the sea, where broken lamps go. The town has a light. Mrs Tallow has her chair. The Brine has its oven. The Board has done nothing, which is, assessor, the Board's whole art.
+go: quay.keel.menu
+
+@node quay.keel.lens.fail
+speaker: KEEL
+cost: 2
+line: KEEL: Bottle glass. In the Gullet Head Light. Has the Shelf been inside the lens? With a light? No? Then the Shelf has a story, and the Board has a lamp.
+nar: He puts his hat back on. It is the first time the assessor has seen him enjoy something.
+go: quay.keel.menu
+
+# ================================================================ 6. FENNICK'S BLESSING ON THE STEPS (to 23:50)
+@node quay.fennick.start
+place: steps
+speaker: FENNICK
+cost: 4
+do: set(met.fennick); quest(a1.splinters, relic)
+nar: On the lowest dry step a man in a white surplice over oilskins is blessing the mud, a glass bell jar under one arm, carried the way another man carries a hat.
+line: FENNICK: Low water, low light. You've come at the right hour. The sea is showing us its floor, and the floor is a kind of altar, the lowest there is.
+line: FENNICK: Ambrose Fennick. Deacon. You will have heard that we pray to a broken bulb. We do not say it broke. We say it was opened.
+line: FENNICK: I carried it, twelve years ago, down the hundred and twelve, in a felt bag. On the sixtieth stair the filament parted, and the light came out of it, and the nearest thing to it was me.
+voice: precedent: 1102/F, the Fellcote chapel, a relic of St Anselm's thumb insured for four hundred pounds. Three thumbs were found. All were insured. {dc: 7}
+go: quay.fennick.menu
+
+@node quay.fennick.again
+place: steps
+speaker: FENNICK
+cost: 1
+line: FENNICK: The Shelf, on our steps again. The steps are glad. The mud is indifferent. It is the mud's devotion.
+go: quay.fennick.menu
+
+@node quay.fennick.menu
+speaker: FENNICK
+cost: 0
+opt: "What did you see when the lamps went out?" -> quay.fennick.pink ? !seen(quay.fennick.pink)
+opt: "The Congregation keeps relics. Splinters of the Eye." -> quay.fennick.relic.lit ? light >= 0.1 & !seen(quay.fennick.relic.lit)
+opt: "Show me the splinter. Here, in the dark." -> quay.fennick.relic.dark ? light < 0.1 & !has(prism.numbered)
+check: "[BALLAST] Step down with him off the last stair, out of the lamp, into the mud." -> quay.fennick.stepdown / quay.fennick.stepdown.fail ? light >= 0.1 & tide < -0.27 & !has(prism.numbered) {skill: ballast, dc: 5, verb: hide, noise: 0.1}
+check: "[GRIP] Pinch out the Congregation's candles, one by one along the row." -> quay.relic.douse.ok / quay.relic.douse.fail ? clock < 23:50 & !has(prism.numbered) & !has(quay.relic.douse_failed) {skill: grip, dc: 5, verb: douse, noise: 0.2}
+opt: "Read the splinter through the jar with Candlemas's crown glass eyepiece." -> quay.relic.eye ? item.fit.candlemas_eye >= 1 & !has(prism.numbered) {verb: read, noise: 0}
+check: "[UNDERTOW] Kneel in the row under the borrowed jar, and keep still while he walks it." -> quay.relic.kneel.ok / quay.relic.kneel.fail ? guise == pilgrim & clock < 23:50 & !has(prism.numbered) {skill: undertow, dc: 6, verb: hide, noise: 0.1}
+opt: "Take the jar from under his arm." -> quay.relic.take ? clock < 23:50 & !has(prism.numbered) & !has(quay.relic.taken) {verb: carry, noise: 0.8}
+opt: "The old post at the top of the steps. May I light it?" -> quay.fennick.leave ? project.l.steps_post == 0 & !seen(quay.fennick.leave)
+opt: "Go back up onto the steps." -> quay.fennick.stepup ? at(floor)
+opt: "Leave him to the mud." -> quay.steps ? !at(floor)
+
+@node quay.fennick.pink
+speaker: FENNICK
+cost: 3
+do: set(lamps.pink); offer(m.pink)
+line: FENNICK: At twenty to ten the quay went out, and Mother with it, all at once. We sang. It is what the dark is for.
+line: FENNICK: Then the lamps came back, pink. Pink, assessor, like a cut. The Municipal will tell you it is the neon in them, and the Congregation will tell you it is something else, and both are true, which is how you know a thing is holy.
+line: FENNICK: Mother did not wake. We waited for her half an hour. That was the first time I was afraid tonight.
+inst: CANDLEMAS: Red, then pink, then orange. Ten minutes, and it cannot be hurried.
+go: quay.fennick.menu
+
+@node quay.fennick.relic.lit
+speaker: FENNICK
+cost: 3
+do: offer(m.grace)
+line: FENNICK: The splinters come to us by grace, washed up at low water. Every Low Night, a splinter or two, for those with eyes. We number them as they come. Grace is orderly, assessor. It keeps a schedule, and it keeps a receipt.
+nar: He says it in the voice of a man reading a notice he has nailed up himself.
+line: FENNICK: Under the lamp is not the place to show you. The Lamplighters read lips. Low light, low voices.
+go: quay.fennick.menu
+
+@node quay.fennick.stepdown
+place: floor
+speaker: FENNICK
+cost: 2
+do: set(quay.stepdown)
+nar: They step off the last stair into mud that takes the boots to the ankle and does not want to give them back. The sodium is behind them now.
+line: FENNICK: There. Now we are nobody. Now we can speak.
+go: quay.fennick.menu
+
+@node quay.fennick.stepup
+place: steps
+speaker: FENNICK
+cost: 1
+go: quay.fennick.menu
+
+@node quay.fennick.relic.dark
+speaker: FENNICK
+cost: 5
+if: !has(prism.numbered) => xp(1)
+do: set(prism.numbered); quest(a1.splinters, numbered)
+nar: In the dark he opens the bell jar's base. Inside, on velvet, is a wedge of glass the length of a finger, sharp along every edge, with a number cut into its spine.
+line: FENNICK: One hundred and thirteen. Every splinter of the Eye is numbered. The Lord is an engineer, assessor. He leaves a schedule.
+inst: CANDLEMAS: Look how it splits the lantern light: clean, red to violet. Crown glass from a lens-maker's mould. The sea frosts everything it keeps.
+line: FENNICK: I did not say the sea made it. I said the sea returned it.
+line: LAMB: Who sold it to you, deacon?
+line: FENNICK: Speak to me in the dark and I will tell you something true. That is not the same as telling you everything.
+voice: undertow: Ask to hold it. He will want it back. People always let you hold the thing they most want back. {dc: 7}
+check: "[CONDOLENCE] Ask to keep it for the night, for the claim, and give your word." -> quay.relic.lend.ok / quay.relic.lend.fail ? !has(quay.relic.borrowed) {skill: condolence, dc: 7, red}
+opt: "Give it back to him." -> quay.fennick.menu
+
+@node quay.relic.lend.ok
+speaker: FENNICK
+cost: 2
+do: give(i.prism_113); set(quay.relic.borrowed); rep(congregation, -1)
+line: LAMB: One prism on a nail beside a green one, deacon. So that someone in Hesk can see the difference without being told it.
+line: FENNICK: It has been in a lamp, and in a bag, and in the mud, and in my jar. It may as well be in a claim. Bring it back before dawn. They count at dawn.
+go: quay.fennick.menu
+
+@node quay.relic.lend.fail
+speaker: FENNICK
+cost: 2
+nar: The assessor asks, and it comes out in the voice of a claims office, which is the wrong voice for a mud flat at night. Fennick closes the jar, slowly and without offence, like a man closing a hymn book after the last verse.
+line: FENNICK: No. You would put it on a form. It has a number already, assessor. It does not need yours.
+nar: He laughs, a short soft laugh, surprised at himself, and the nearest kneeling Congregant turns her jar toward the sound.
+go: quay.fennick.menu
+
+@node quay.fennick.leave
+speaker: FENNICK
+cost: 2
+alt: quay.fennick.leave.no ? rep.congregation < 0
+do: project(l.steps_post)
+line: FENNICK: The post held a paraffin lamp for sixty years, until the Municipal brought its sodium and left the post for the gulls to preach from. Light it, if you can find it a wick. Honest light. Light it for her, out there, and not for the sergeant with the book, though the sergeant will see by it too. Everything lit is lit for everybody. That is the trouble with light.
+go: quay.fennick.menu
+
+@node quay.fennick.leave.no
+speaker: FENNICK
+cost: 1
+line: FENNICK: Not tonight. Tonight you have been unkind to the Eye, or to us, or to something. I do not remember which. The post will remember for me.
+go: quay.fennick.menu
+
+# ---- Sister Gauze
+@node quay.gauze
+place: steps
+speaker: GAUZE
+cost: 2
+nar: At the end of the row, a woman whose bell jar is older than the rest, fogged in a ring where eleven years of breathing have worn the glass.
+line: GAUZE: You're the one from the ferry. Everything sounds like a spoon on a cup in here. Your shoes were very wet.
+line: GAUZE: Sister Gauze. I put it on the night they first lit the arc, and a man went in off the mole. I did not want to hear the next part. I haven't heard a next part since.
+voice: condolence: The night Keel fell. She heard him go into the water and put a jar over her head so that nothing would ever be that loud again. {dc: 6}
+opt: "Sister, would you lend me a jar? Only for a while. I will bring it back." -> quay.gauze.lend
+opt: "I need one of those jars. The Shelf will pay for it." -> quay.gauze.refuse
+opt: "Leave her in her quiet." -> quay.steps
+
+@node quay.gauze.lend
+speaker: GAUZE
+cost: 2
+do: give(c.belljar); set(quay.gauze.lent); rep(congregation, 1)
+nar: She brings a spare out of the canvas bag beside her.
+line: GAUZE: Mind your breath. It fogs. You'll think you're blind and you're only warm. It doesn't fix anything. It makes everything the same distance away, and you can manage things at a distance.
+go: quay.steps
+
+@node quay.gauze.refuse
+speaker: GAUZE
+cost: 1
+do: set(quay.gauze.refused)
+line: GAUZE: Pay. Oh, dear. They're not for paying. They're for when you can't bear it, and you can bear it, I can hear you can. You said "the Shelf" like a shop.
+nar: She turns her jar away by a few degrees, and the conversation closes at the speed of a door on a good hinge.
+go: quay.steps
+
+# ---- Tobit Quill and the hymn of the restart
+@node quay.tobit
+place: steps
+speaker: TOBIT
+cost: 3
+do: set(quay.tobit.sung); set(lamps.pink); offer(m.pink)
+nar: The smallest of the Congregation, nine perhaps, has his jar pushed up on his head and is singing the same eight bars under his breath.
+line: TOBIT: It's the waking hymn. I made it tonight. It goes:
+line: TOBIT: Red, and the dark lets go of the lamp. Red, and the dark lets go. Rose, and the town has a face again. Rose, and it's not yet so. Orange, and none of us know our coats. Orange, and none of us know.
+go: quay.steps
+
+# ---- Dilly Rudd on the steps, 23:48 to 00:30
+# ---- the old paraffin post (Lamps of Gullet: l.steps_post)
+@node quay.post
+place: steps
+cost: 1
+alt: quay.post.lit ? project.l.steps_post >= 2
+nar: An iron post with an empty lantern cage, whitened by gulls, and a little door at its foot for the wick and the fill.
+call: quay.post.state
+opt: "Wick it and fill it, and light it." -> quay.post.light ? project.l.steps_post == 1 & count(s.wick) >= 1 & count(i.paraffin) >= 1 {verb: light, noise: 0.2}
+opt: "Leave it." -> quay.steps
+
+@node quay.post.state
+cost: 0
+alt: quay.post.state.leave ? project.l.steps_post == 1
+nar: It stands on the Congregation's steps. Lighting it would want the deacon's leave, a wick and a fill.
+return:
+
+@node quay.post.state.leave
+cost: 0
+nar: The deacon has given leave. It wants a wick, which the floor's salvage gives, and a fill of paraffin, which the Brine sells.
+return:
+
+@node quay.post.light
+place: steps
+cost: 4
+do: project(l.steps_post)
+nar: The little door groans, which every gull on the quay takes personally. The assessor seats the wick, pours the fill and strikes a match in the cage's lee. The flame takes, and the top of the steps is in another light: warm, smoky and true. The assessor's coat is navy. Somebody on the quay says, quite loudly, "Oh."
+inst: CANDLEMAS: Paraffin. On the quay. Bring me things. Bring me everything.
+go: quay.steps
+
+@node quay.post.lit
+place: steps
+cost: 1
+nar: People have begun to stop under the old post on their way past, for no reason they could give, and look at their own hands.
+opt: "Stand in the post's light and watch the Lamplighters' round." -> quay.round.watch ? !has(quay.round.known) {verb: wait, noise: 0}
+opt: "Leave it burning." -> quay.steps
+
+# ---- Fennick's vigil, 01:20 to 06:10 (the steps, except the heavy rain)
+@node quay.fennick.vigil
+place: steps
+speaker: FENNICK
+cost: 3
+alt: quay.fennick.vigil.wreckers ? var.prov == wreckers
+alt: quay.fennick.vigil.keeper ? var.prov == keeper
+nar: The deacon kneels on the last dry step under his own bell jar, one candle burning inside it.
+line: FENNICK: A vigil for her, assessor. Someone ought to keep it who is not paid to.
+go: quay.fennick.vigil.menu
+
+@node quay.fennick.vigil.wreckers
+place: steps
+speaker: FENNICK
+cost: 3
+line: FENNICK: Wreckers. They have Merrow in the Municipal's room under the harbour office. I prayed for him. It is the first time I have prayed for a thief who was not myself.
+line: FENNICK: If the light in the Old Light was his, he lit it for us. If it was not his, then something else lit it, and I would rather that than the rope.
+go: quay.fennick.vigil.menu
+
+@node quay.fennick.vigil.keeper
+place: steps
+speaker: FENNICK
+cost: 3
+nar: The deacon kneels under his jar. His folded hands are not still.
+line: FENNICK: The keeper. And the lens not the lens insured, they are saying, which means somebody will go up the hill to the gasholder with a list of numbers by dawn. I have been afraid twice tonight, assessor. The first time was for her. This time it is for me, and that is less holy, and I know it.
+go: quay.fennick.vigil.menu
+
+@node quay.fennick.vigil.menu
+speaker: FENNICK
+cost: 0
+opt: "You bought the splinters from the keeper. Every one." -> quay.fennick.bought.lit ? has(prism.numbered) & !has(fennick.bought) & !seen(quay.fennick.bought.lit)
+opt: "Show me the splinter, deacon." -> quay.fennick.vigil.relic ? !has(prism.numbered) & !seen(quay.fennick.vigil.relic)
+opt: "Pinch out the candle under his jar." -> quay.relic.vigil.douse ? !has(prism.numbered) {verb: douse, noise: 0.1}
+opt: "Read the splinter through his jar with Candlemas's crown glass eyepiece." -> quay.relic.eye ? item.fit.candlemas_eye >= 1 & !has(prism.numbered) {verb: read, noise: 0}
+opt: "Leave him to his vigil." -> quay.steps
+
+@node quay.fennick.bought.lit
+speaker: FENNICK
+cost: 2
+line: FENNICK: Bought? They come by grace, assessor. Washed up at low water, for those with eyes.
+go: quay.fennick.vigil.menu
+
+@node quay.fennick.vigil.relic
+speaker: FENNICK
+cost: 1
+line: FENNICK: In the dark, assessor. Always in the dark. Under the lamp it is a thing the Municipal could write down.
+go: quay.fennick.vigil.menu
+
+# ---- 27. Fennick in the second blackout (02:50 to 03:20)
+@node quay.fennick.dark
+place: steps
+speaker: FENNICK
+cost: 4
+do: set(quay.fennick.dark_done); offer(m.dark)
+nar: The assessor finds the deacon in the dark by his breathing, coming faintly through glass.
+line: FENNICK: Low light, low water, low voices. You came. Listen to the Lamplighters not writing.
+alt: quay.fennick.dark.relic ? !has(prism.numbered)
+go: quay.fennick.dark.true
+
+@node quay.fennick.dark.relic
+place: steps
+speaker: FENNICK
+cost: 3
+if: !has(prism.numbered) => xp(1)
+do: set(prism.numbered); quest(a1.splinters, numbered)
+nar: Something is put into the assessor's hand: cold, sharp along every edge, a number on its spine the thumb can read.
+line: FENNICK: One hundred and thirteen. Feel the edge. The sea has never made anything that sharp.
+voice: dark: Glass from a mould, numbered by a maker. You can read it in the dark with your thumb, the way the blind read. One of hers. One of a hundred and sixty-eight. {dc: 4}
+go: quay.fennick.dark.true
+
+@node quay.fennick.dark.true
+place: steps
+speaker: FENNICK
+cost: 3
+line: FENNICK: Here is the true thing. I do not know where the light went when it left the bulb. I have built a church on not knowing, and it keeps the rain off forty people.
+claim: "Your splinters leave her lens one a month, by number, ring by ring. Grace does not keep a calendar." -> quay.fennick.numbers.ok / quay.fennick.numbers.fail ? has(prism.numbered) & has(lens.green) {show: has(prism.numbered), once}
+opt: "Leave him in the dark." -> quay.hub.dark
+
+@node quay.fennick.numbers.ok
+place: steps
+speaker: FENNICK
+cost: 3
+do: set(fennick.bought); quest(a1.splinters, bought)
+line: LAMB: The green rings in her lens, counted from the bottom. Your splinters, counted from the first. The same numbers, one a month, in order.
+line: FENNICK: By grace, assessor.
+nar: He says it the way a man says the name of his bank.
+go: quay.hub.dark
+
+@node quay.fennick.numbers.fail
+place: steps
+speaker: FENNICK
+cost: 1
+line: FENNICK: By grace, assessor. They come by grace.
+go: quay.hub.dark
+
+# ================================================================ 5. THE HARBOUR OFFICE
+@node quay.harbour
+place: harbour
+cost: 1
+alt: quay.phone ? !has(met.crake) | (has(mother.restruck) & !has(quay.crake.restrike_done)) | (clock >= 02:00 & clock < 02:30 & !has(quay.crake.two_done)) | (clock >= 05:30 & clock < 05:50 & !has(quay.crake.three_done))
+alt: quay.harbour.keel ? clock >= 00:10 & clock < 04:15 & !has(quay.keel.office_seen)
+go: quay.harbour.room
+
+@node quay.harbour.room
+place: harbour
+cost: 0
+nar: The harbour office: a stove, a chart under glass, a chair with a hole in its seat. A paraffin lamp, so that in here things are the colour they are.
+call: quay.harbour.who
+opt: "Read the bay chart." -> quay.chart ? !has(quay.bearing) {verb: read, noise: 0}
+opt: "Take the harbour table down from its nail." -> quay.table.take ? !has(quay.table) {verb: carry, noise: 0}
+opt: "Speak to the harbourmaster." -> quay.keel.office ? clock >= 00:10 & clock < 04:15
+opt: "Ask the Lamplighter at the cellar door to let you down to the cells." -> quay.cells.guard ? has(merrow.cells) & !has(quay.merrow.cells_seen) & guise != lamplighter
+opt: "Nod to the Lamplighter at the cellar door, in Hobb's coat, and go down." -> quay.cells.coat ? has(merrow.cells) & !has(quay.merrow.cells_seen) & guise == lamplighter {verb: hide, noise: 0.1}
+opt: "Read the book the sergeant left on the stove." -> quay.harbour.gormbook ? clock >= 01:30 & clock < 02:40 & guise == lamplighter & !has(quay.round.known) {verb: read, noise: 0.1}
+opt: "Look at the telephone." -> quay.phone.silent
+opt: "Go back out onto the quay." -> ^hub
+
+@node quay.harbour.who
+cost: 0
+alt: quay.harbour.who.coat ? clock >= 01:30 & clock < 02:40 & guise == lamplighter & !has(quay.round.known)
+alt: quay.harbour.who.gorm ? clock >= 01:30 & clock < 02:40
+alt: quay.harbour.who.keel ? clock >= 00:10 & clock < 04:15
+nar: Nobody is here. The bucket under the chair has an inch of water in it, which is the harbourmaster's, and is waiting for him.
+return:
+
+@node quay.harbour.who.keel
+cost: 0
+nar: The harbourmaster sits in the chair with the hole in it, and the bucket beneath him keeps time.
+return:
+
+@node quay.harbour.who.gorm
+cost: 0
+nar: The harbourmaster sits in his chair. Sergeant Gorm stands by the stove with her book open on the warm iron. They are not speaking, in the practised way of people who have not spoken for years.
+return:
+
+# ---- the chart and the Old Light's bearing
+@node quay.chart
+place: harbour
+cost: 3
+nar: The Admiralty's chart, corrected in pencil. The channel goes round the Spit in a dog-leg. Hound Rock sits alone to the west of the dog-leg, marked with a ruin and two words: OLD LIGHT. Beside it, in a round pencil hand: shows at LW springs.
+check: "[CARBON] Put the ferry on the chart: the light to starboard, the Spit under the bow." -> quay.chart.ok / quay.chart.fail ? has(memory.low_light) {skill: carbon, dc: 6, verb: read, noise: 0}
+opt: "Leave the chart." -> quay.harbour.room
+
+# ---- the Gullet harbour table
+@node quay.table.take
+place: harbour
+cost: 1
+do: give(i.harbour_table); set(quay.table)
+nar: On a nail by the chart, the Gullet harbour table for the year: every step and gate against every hour of every tide.
+inst: THE ALMANAC: Give me that this minute. Exact heights. I could be insufferable to the minute.
+go: quay.harbour.room
+
+# ---- the telephone: the shared entry, quay.phone
+@node quay.phone
+place: harbour
+cost: 0
+alt: quay.crake.three ? clock >= 05:30 & clock < 05:50 & !has(quay.crake.three_done)
+alt: quay.crake.two ? clock >= 02:00 & clock < 02:30 & !has(quay.crake.two_done)
+alt: quay.crake.restrike ? has(mother.restruck) & !has(quay.crake.restrike_done)
+alt: quay.crake.first ? !has(met.crake)
+go: quay.phone.silent
+
+@node quay.phone.silent
+place: harbour
+cost: 1
+nar: The telephone hangs on the wall. It does not ring. It has the look of a thing that is about to.
+voice: hearsay: Somewhere on this quay is a second earpiece on the same wire. You heard the clicks. {dc: 6, when: has(quay.line.clicked)}
+go: quay.harbour.room
+
+@node quay.phone.ring
+place: quay
+cost: 0
+nar: Across the quay the telephone in the harbour office begins to ring, as if everyone can hear it, which everyone can.
+opt: "Go in and answer it." -> quay.phone +1
+opt: "Let it ring." -> quay.phone.ignore {verb: wait, noise: 0}
+
+@node quay.phone.ignore
+place: quay
+cost: 1
+alt: quay.phone.ignore.restrike ? has(mother.restruck) & !has(quay.crake.restrike_done)
+alt: quay.phone.ignore.two ? clock >= 02:00 & clock < 02:30 & !has(quay.crake.two_done)
+go: quay.phone.ignore.three
+
+@node quay.phone.ignore.restrike
+place: quay
+cost: 1
+do: set(quay.crake.restrike_done); rep(trust, -1)
+nar: It rings eleven times and stops. Under the nearest lamp a Lamplighter writes a line. The Alderman does not ring twice. She writes.
+go: ^hub
+
+@node quay.phone.ignore.two
+place: quay
+cost: 1
+do: set(quay.crake.two_done); rep(trust, -1)
+nar: It rings a long time. Eventually a Lamplighter answers, and says "Yes, Alderman," three times, and then, "No, Alderman, it would not come to the telephone."
+go: ^hub
+
+@node quay.phone.ignore.three
+place: quay
+cost: 1
+do: set(quay.crake.three_done)
+nar: It rings, and stops. Some offers are made once, at half past five, and are worth exactly what nobody said yes to.
+go: ^hub
+
+# ---- the first call (beat 5)
+@node quay.crake.first
+place: harbour
+speaker: CRAKE
+cost: 4
+do: set(met.crake); set(quay.line.clicked)
+nar: The telephone is ringing as the assessor comes in.
+line: CRAKE: Absalom? No. You are the Shelf. Good evening. Ottilie Crake, for the Lamp Trust and for the Municipal Light and Coke Company, which is one desk with two blotters. I gather you've been looking at our lamp.
+line: CRAKE: Let me save you an evening. Mother is automatic now. She comes on with the quay and goes off with the quay. Modern, cheap, and seven months without a single human hand.
+line: LAMB: Except tonight.
+line: CRAKE: Tonight a fishmongers' club interfered with municipal equipment. I have asked Sergeant Gorm to write it down. She writes everything down. It is a great comfort.
+go: quay.crake.first.menu
+
+@node quay.crake.first.menu
+speaker: CRAKE
+cost: 0
+opt: "Who restrikes the arc when the power comes back?" -> quay.crake.restrike_lie ? !seen(quay.crake.restrike_lie)
+opt: "Why does the keeper sit in the Brine every night?" -> quay.crake.keeper ? !seen(quay.crake.keeper)
+opt: "The harbourmaster says it was wreckers." -> quay.crake.wreckers {once, id: quay.crake.wreckers, do: set(said.wreckers); set(heard.crake.wreckers)}
+check: "[PRECEDENT] Ask whether the Shelf was given notice that the light had been altered." -> quay.crake.notice.ok / quay.crake.notice.fail {skill: precedent, dc: 6}
+opt: "Goodnight, Alderman." -> quay.crake.bye
+
+@node quay.crake.restrike_lie
+speaker: CRAKE
+cost: 3
+do: set(quay.crake.said_restrikes)
+line: CRAKE: It restrikes itself when the supply comes back. The engineer was very proud of that. Automatic, assessor. Nobody has to climb anything.
+go: quay.crake.first.menu
+
+@node quay.crake.keeper
+speaker: CRAKE
+cost: 2
+line: CRAKE: Nobody was dismissed. A post was reviewed. The review is ongoing. I am sure it will be favourable. Mrs Tallow is very attached to that lamp. It is a town that cannot let go of a fish.
+go: quay.crake.first.menu
+
+@node quay.crake.wreckers
+speaker: CRAKE
+cost: 2
+line: CRAKE: Absalom has a vocabulary. Wreckers, salvors, persons of the floor. A very old-fashioned vocabulary for a man who signs very modern papers.
+line: CRAKE: I would put the Guild in your report. The Guild touched the switch. The Guild always touches the switch. That is not old-fashioned. That is simply true.
+go: quay.crake.first.menu
+
+@node quay.crake.notice.ok
+speaker: CRAKE
+cost: 3
+line: LAMB: A material alteration to the insured property is to be notified to the Mutual in writing before renewal. Was it?
+line: CRAKE: A letter went to the Shelf in March. The Trust's clerk keeps copies. I shall have him find it for you by Monday.
+line: LAMB: The Shelf's file has no letter since the conversion twelve years ago.
+line: CRAKE: Then the post has failed us both, and I shall write to the postmaster, who is my cousin and very sorry about most things.
+voice: precedent: 2290/L, the Lantham windmill. An engine fitted and not declared. The claim was void. {dc: 6}
+go: quay.crake.first.menu
+
+@node quay.crake.notice.fail
+speaker: CRAKE
+cost: 2
+nar: The assessor does not quite remember what the policy calls it, and calls it a change.
+line: CRAKE: A change? Everything in Gullet has changed in seven months except the fish. We did not write to the Shelf every time we put in a light bulb.
+nar: She laughs, warmly, and the assessor is somehow on the side of people who write too many letters.
+go: quay.crake.first.menu
+
+@node quay.crake.bye
+speaker: CRAKE
+cost: 1
+line: CRAKE: I have told the Shelf's office I shall expect your verdict by dawn. They agreed. They always agree. Goodnight.
+nar: The line goes dead, and then, very faintly, does something a dead line should not do, which is click twice.
+voice: hearsay: An earpiece on the same wire going back on its hook, somewhere that is not the hill. Someone on this quay listened to all of that. {dc: 5}
+go: quay.harbour.room
+
+# ---- 17. the restrike call, at once
+@node quay.crake.restrike
+place: harbour
+speaker: CRAKE
+cost: 4
+do: set(quay.crake.restrike_done); set(met.crake); set(quay.line.clicked); set(quay.crake.slip)
+nar: The earpiece, lifted, is already talking.
+line: CRAKE: You've lit her. Don't tell me it was the keeper; Mrs Tallow has not climbed those stairs since the sodium came. This is Ottilie Crake. I can see her from my window, assessor, because the fog stays in the harbour and leaves the hill alone.
+line: CRAKE: She is green.
+nar: The Alderman says the word the way other people say the name of a disease, voice lowered, so the house will not hear.
+opt: "She stays lit. A green light is a light." -> quay.crake.restrike.stay {id: quay.crake.green_stays, do: set(said.mother_stays); set(heard.crake.mother_stays); rep(trust, -1)}
+opt: "Why does the colour frighten you, Alderman?" -> quay.crake.restrike.colour
+opt: "What do you want me to do?" -> quay.crake.restrike.want
+
+@node quay.crake.restrike.colour
+speaker: CRAKE
+cost: 3
+line: CRAKE: Colour is a daytime extravagance. At night a town needs to see, not to admire. Under the sodium nobody quarrels about whose cheek went red, and nobody says the lamp has gone green. Lumens per shilling, assessor. You may put that on my headstone, and you may light it with sodium.
+opt: "She stays lit. A green light is a light." -> quay.crake.restrike.stay {id: quay.crake.green_stays, do: set(said.mother_stays); set(heard.crake.mother_stays); rep(trust, -1)}
+opt: "What do you want me to do?" -> quay.crake.restrike.want
+
+@node quay.crake.restrike.want
+speaker: CRAKE
+cost: 2
+line: CRAKE: Pull the quay switch for half an hour. Only that. Let her go dark the way she went dark before, and an engineer from Hesk will look at her lens in daylight, quietly, and we shall have a whole new one by spring. The Shelf paying, of course. That is what the claim is for.
+opt: "She stays lit." -> quay.crake.restrike.stay {id: quay.crake.green_stays, do: set(said.mother_stays); set(heard.crake.mother_stays); rep(trust, -1)}
+opt: "I will think about it." -> quay.crake.restrike.think {do: rep(trust, 1)}
+
+@node quay.crake.restrike.stay
+speaker: CRAKE
+cost: 1
+line: CRAKE: Then I shall write it down, and so will the sergeant. Goodnight, assessor. Do look at her, while she lasts.
+nar: The line clicks twice.
+go: quay.harbour.room
+
+@node quay.crake.restrike.think
+speaker: CRAKE
+cost: 1
+line: CRAKE: Thank you. That is all anyone in this town ever has to do for me. Thinking about it is very often enough.
+go: quay.harbour.room
+
+# ---- 26. the second call, 02:00 to 02:30, shaped by the provisional cause
+@node quay.crake.two
+place: harbour
+speaker: CRAKE
+cost: 3
+do: set(quay.crake.two_done); set(met.crake)
+nar: The harbourmaster does not answer the telephone. By the stove Sergeant Gorm opens her book to a clean page.
+line: CRAKE: Assessor. Two in the morning, and raining on the hill, which it never does. The sergeant has told me what you sent up the tube.
+alt: quay.crake.two.wreckers ? var.prov == wreckers
+alt: quay.crake.two.guild ? var.prov == guild
+alt: quay.crake.two.trust ? var.prov == trust
+alt: quay.crake.two.keeper ? var.prov == keeper
+alt: quay.crake.two.sea ? var.prov == sea
+alt: quay.crake.two.refused ? var.prov == refused
+line: CRAKE: Or rather, what you did not send. You are a very patient person, assessor. Patience at the Shelf's rates is an expensive virtue.
+go: quay.crake.two.menu
+
+@node quay.crake.two.wreckers
+speaker: CRAKE
+cost: 3
+line: CRAKE: Wreckers. Very sensible. Very traditional. Mr Merrow is in the Municipal's room under your feet, I believe, and quite dry, which I gather is unusual for him.
+line: CRAKE: After tonight the Municipal will need an assessor of its own. Salaried. Dry. A desk with a lamp on it. I put it only as a thought, which is how all the best posts begin.
+go: quay.crake.two.menu
+
+@node quay.crake.two.guild
+speaker: CRAKE
+cost: 3
+line: CRAKE: The Guild. Thank you. It is so much nicer when things are simply true. I have told the Municipal's counter to take the Shelf's chits at par from tomorrow, whatever the rumour does to them. A courtesy between two careful offices.
+go: quay.crake.two.menu
+
+@node quay.crake.two.trust
+speaker: CRAKE
+cost: 3
+do: meter(dread, 1)
+line: CRAKE: The Trust. The rewiring. My, my. I am not angry. I am never angry after midnight; it uses the lamp oil.
+line: CRAKE: I only want you to know that Gullet is a small town to be disliked in, and a cold one, and its landladies take their lead from the Municipal about whose chits are good. I should hate for you to be cold.
+voice: formletter: It is to be understood that no threat has been made. It is to be understood also that the assessor has understood. {dc: 4}
+go: quay.crake.two.menu
+
+@node quay.crake.two.keeper
+speaker: CRAKE
+cost: 3
+line: CRAKE: The keeper. Poor Mrs Tallow. I have asked for the review of her post to sit at nine o'clock. It will find she was absent. It will find it kindly. Nobody in Gullet is ever simply put out on the quay.
+go: quay.crake.two.menu
+
+@node quay.crake.two.sea
+speaker: CRAKE
+cost: 3
+line: CRAKE: An act of the sea. How restful. You have chosen the one party in the bay that has no address and cannot be fined. The town is suspicious, of course. It will get over it by Thursday, if the lamps come on.
+go: quay.crake.two.menu
+
+@node quay.crake.two.refused
+speaker: CRAKE
+cost: 3
+line: CRAKE: Insufficient light. It is either very honest or very rude, and because it is two in the morning I have decided to think it honest.
+line: CRAKE: The Shelf's office has stopped answering my telephone, assessor. Did you know? Perhaps we are both alone tonight, in our separate rooms, with our separate lamps.
+go: quay.crake.two.menu
+
+@node quay.crake.two.menu
+speaker: CRAKE
+cost: 0
+claim: "The restrike clause is struck through in yellow ink. Your ink." -> quay.crake.yellow.ok / quay.crake.yellow.fail ? has(clause.struck) {show: has(clause.struck) | has(works.order), once}
+opt: "Thank you for the offer, Alderman. No." -> quay.crake.two.no {id: quay.crake.two.no, do: set(said.crake_refused); set(heard.keel.crake_refused); set(book.crake_refused); rep(trust, -1)}
+opt: "I will think about it." -> quay.crake.two.think {id: quay.crake.two.think, do: rep(trust, 1); set(book.crake_think)}
+
+@node quay.crake.yellow.ok
+speaker: CRAKE
+cost: 4
+do: quest(a1.claim, restrike)
+line: LAMB: After any interruption of supply the arc shall be restruck by the keeper on duty at the lamp-room panel. A line through it, in yellow. In the margin, in the same yellow: No keeper. Saving.
+nar: The harbourmaster's bucket stops for the space of a breath. Gorm's pencil stops altogether.
+call: quay.crake.yellow.record
+line: CRAKE: You have read a copy, in a weigh-house, by lamplight, and found a line in a colour nobody in this town can see at night. I should very much like to know whose lamp you read it by. The engineer will be on the evening boat tomorrow. Read it to him.
+go: quay.crake.two.menu
+
+@node quay.crake.yellow.fail
+speaker: CRAKE
+cost: 2
+line: CRAKE: Yellow ink? I have been told I write in yellow by the Lamplighters, by my sister and by a man from the gas board. Not one of them could show me a word of it under a lamp.
+nar: She is right, in a way. The assessor has not read it out of the sodium. The assessor has only been told.
+go: quay.crake.two.menu
+
+@node quay.crake.two.no
+speaker: CRAKE
+cost: 1
+line: CRAKE: A no at two in the morning is a different animal from a no at breakfast. I shall ring again before the tube goes. Everyone in Gullet changes their mind before dawn. It is the frost.
+nar: In his chair the harbourmaster has heard every word. He drips, which in him is a kind of attention.
+go: quay.harbour.room
+
+@node quay.crake.two.think
+speaker: CRAKE
+cost: 1
+line: CRAKE: That is all I ask. That is all I ever ask. Goodnight again, assessor.
+go: quay.harbour.room
+
+# ---- 36. the third call, 05:30: a deal for a cause
+@node quay.crake.three
+place: harbour
+speaker: CRAKE
+cost: 4
+do: set(quay.crake.three_done); set(met.crake)
+nar: Half past five. The stove has gone to ash; there is frost on the window.
+line: CRAKE: Assessor. In forty minutes the tube takes whatever you write, so let us both be practical, which is a kind of tenderness at this hour.
+alt: quay.crake.three.deal ? has(works.order) | has(clause.struck)
+line: CRAKE: I gather you have very little. Write what the Board asked for, and I shall write to the Shelf myself to commend your diligence in a difficult town. A letter from an Alderman is worth something, still, in Hesk.
+opt: "No, Alderman." -> quay.crake.three.no {do: set(said.crake_deal_no)}
+opt: "I will write what I can make a case for." -> quay.crake.three.case
+
+@node quay.crake.three.deal
+speaker: CRAKE
+cost: 4
+do: set(quay.crake.deal)
+line: CRAKE: You have the works order, and you have my margin. Here is what I can do with both of us still standing.
+line: CRAKE: Mrs Tallow's wages. Six years of them, back pay, from the Trust's own reserve, paid on Monday, and her post confirmed, with a boy to climb the stairs for her. I have the pen in my hand.
+line: CRAKE: In return the cause leaves out the Trust. Write the Guild, the sea, the keeper if you like, and I will still pay her; I am not a monster, I am a ledger. Only not the Trust, and not my ink.
+voice: undertow: Say yes. Who is hurt? The Trust pays, the keeper eats, the light burns. Who is hurt? {dc: 4}
+opt: "Yes. The keeper's wages, and the cause leaves out the Trust." -> quay.crake.three.yes {id: quay.crake.deal_yes, do: set(said.crake_deal_yes)}
+opt: "No. Pay her anyway, Alderman. You owe it." -> quay.crake.three.no {id: quay.crake.deal_no, do: set(said.crake_deal_no)}
+opt: "Say it again, slowly, so I can write it down." -> quay.crake.three.write
+
+@node quay.crake.three.yes
+speaker: CRAKE
+cost: 1
+line: CRAKE: Thank you. I knew you were careful. I shall have the pen moving by nine.
+nar: The line clicks twice. Somewhere on the quay an earpiece goes back on its hook.
+go: quay.harbour.room
+
+@node quay.crake.three.no
+speaker: CRAKE
+cost: 1
+line: CRAKE: Then write what you like, and I shall answer it in daylight, which is my time, as the night was yours.
+nar: She puts the earpiece down softly, the way a careful person puts down a cup they have decided not to throw.
+go: quay.harbour.room
+
+@node quay.crake.three.case
+speaker: CRAKE
+cost: 1
+line: CRAKE: A case. How very like an insurer. Then I shall wait to be a case, and you will find I am a very well-documented one.
+go: quay.harbour.room
+
+@node quay.crake.three.write
+speaker: CRAKE
+cost: 2
+line: CRAKE: You are writing. Of course you are. No. I made you an offer by telephone. Telephones have no ink. Goodnight.
+nar: The assessor writes the offer down anyway, with the time beside it.
+go: quay.harbour.room
+
+# ================================================================ KEEL IN THE HARBOUR OFFICE (00:10 to 04:15)
+@node quay.harbour.keel
+place: harbour
+speaker: KEEL
+cost: 3
+do: set(quay.keel.office_seen)
+nar: The harbourmaster has come in from the tube and sat down in his chair. The water runs off him through the hole in the seat into the bucket.
+line: KEEL: The Shelf. The Board has heard what went up the tube, and has come in out of the weather, though the Board, as the Shelf knows, does not strictly come out of the weather.
+call: quay.keel.quote
+go: quay.keel.office
+
+@node quay.keel.quote
+cost: 0
+alt: quay.keel.quote.light ? said(quay.keel.light)
+alt: quay.keel.quote.nothing ? said(quay.keel.nothing)
+alt: quay.keel.quote.below ? said(quay.keel.below)
+alt: quay.keel.quote.order ? has(said.works_order)
+line: KEEL: The Shelf said very little to the Board on the steps. The Board notes a silence as carefully as a statement. It is easier to file.
+return:
+
+@node quay.keel.quote.light
+cost: 0
+do: set(quay.keel.quoted)
+line: KEEL: The Board quotes the Shelf, from the harbour log: "I saw a light in the drowned lamp from the ferry. It lured us onto the Spit." In ink, with the hour.
+return:
+
+@node quay.keel.quote.order
+cost: 0
+do: set(quay.keel.quoted)
+line: KEEL: On the steps the Shelf said, the Board quotes, "You signed the works order that put Mother on the quay board." The Board has been thinking about the word "you". The Board signed. The Board is not, strictly, a you.
+return:
+
+@node quay.keel.office
+place: harbour
+speaker: KEEL
+cost: 0
+opt: "What will the Board do now?" -> quay.keel.office.now ? !seen(quay.keel.office.now)
+opt: "The Damp would like one of your hairs." -> quay.keel.hair ? clock >= 00:05 & var.damp_hair == pollard & !has(quay.keel.hair)
+opt: "I said it turned us." -> quay.keel.ink ? said(quay.keel.light) & !seen(quay.keel.ink)
+opt: "Look at his cuffs." -> quay.keel.cuffs.office ? var.quay.cuffs < 3 {do: quay.cuffs += 1, verb: read, noise: 0}
+opt: "Leave him to his bucket." -> quay.harbour.room
+
+@node quay.keel.cuffs.office
+place: harbour
+speaker: KEEL
+cost: 1
+alt: quay.keel.cuffs.three ? var.quay.cuffs >= 3
+nar: In the paraffin light the water running out of his cuffs is not orange and not green. It is the colour of the harbour, exactly, a grey with a brown thought in it.
+line: KEEL: The Board is aware of its cuffs.
+go: quay.keel.office
+
+@node quay.keel.office.now
+place: harbour
+speaker: KEEL
+cost: 3
+alt: quay.keel.now.wreckers ? var.prov == wreckers
+line: KEEL: The Board will sit, assessor, and drip, and wait for dawn, and accept the Shelf's cause, whatever it is, because the Board does not appeal. The Board is not the kind of body that appeals.
+go: quay.keel.office
+
+@node quay.keel.now.wreckers
+place: harbour
+speaker: KEEL
+cost: 3
+line: KEEL: The Shelf has written wreckers. The Board is gratified. The lens will be ordered from Hesk by Friday.
+nar: Water runs from him at exactly its old rate.
+line: KEEL: Merrow is under the floor. The Board can hear him not asking anything. It is a very loud kind of quiet.
+go: quay.keel.office
+
+# ---- the Damp's hair: Keel's side (a1.hair)
+@node quay.keel.hair
+place: harbour
+speaker: KEEL
+cost: 4
+do: quest(a1.hair, asked)
+inst: THE DAMP: I should like to be someone else for a while. Anyone. Him, even.
+line: LAMB: An instrument of the Shelf requires a single hair, harbourmaster.
+line: KEEL: The Board's hair is the Board's. But the Board has never been asked for it in nineteen years, by anyone, for any purpose, and the Board finds it is curious to see what the Shelf's instrument would make of it.
+nar: He takes off the hat and draws out one long grey hair, and it drips from its tip, like a very thin cuff.
+opt: "Restring the Damp with it, here, at his desk." -> quay.keel.hair.fit {verb: rig, noise: 0}
+opt: "Thank him, and leave the Damp as it is." -> quay.keel.hair.no
+
+@node quay.keel.hair.fit
+place: harbour
+speaker: KEEL
+cost: 20
+do: damp_hair = keel; set(quay.keel.hair); quest(a1.hair, rehaired); give(i.hair)
+nar: Twenty minutes at his desk. Assessor Pollard's hair comes out in one sad curl and goes into an envelope marked POLLARD. Keel's goes in, and at once begins to drip onto the dial.
+inst: THE DAMP: SATURATED.
+inst: THE DAMP: Saturated! Everything! The desk. The lamp. The air. You. The Board. The concept of Tuesday. Totally, gloriously, unarguably wet. I have never been so sure of anything in my life.
+line: KEEL: The Board has always wondered what it would say.
+voice: dark: It reads him as it reads everything. Saturated, the same, all the way through. Which means, if you ever take it somewhere it reads dry, you will know you have found a place he has never been. {dc: 8}
+go: quay.keel.office
+
+@node quay.keel.hair.no
+place: harbour
+speaker: KEEL
+cost: 1
+line: KEEL: As the Shelf pleases. The offer stands while the Board does, which is to say indefinitely.
+nar: He lets the hair go. It falls into the bucket and makes, impossibly, a small splash.
+go: quay.keel.office
+
+# ---- Merrow in the Municipal's room (if the cause is wreckers, from 00:30)
+@node quay.cells
+place: harbour
+speaker: MERROW
+cost: 4
+do: set(quay.merrow.cells_seen); set(met.merrow)
+nar: Down six steps under the office Tub Merrow sits on a crate of mantles with his cold pipe, dry for the first time anyone can remember.
+line: MERROW: The Shelf. Wreckers, you wrote. I heard it come down the quay. Took about four minutes. Good wind for it.
+opt: "I saw your light from the ferry. It turned us." -> quay.cells.light ? has(memory.low_light) {do: set(heard.merrow.light_turned); set(said.light_turned)}
+opt: "Leave him in the dry." -> quay.harbour.room
+
+@node quay.cells.light
+place: harbour
+speaker: MERROW
+cost: 3
+line: MERROW: I know. I saw a light on the water going the wrong way. Then it went the right way. I thought that was the sea's business.
+line: MERROW: You wrote wreckers with that in your book. That's all right. People write what they can carry. Copper's heavier than it looks, too.
+go: quay.harbour.room
+
+# ================================================================ 21. THE PROVISIONAL CAUSE ON THE QUAY (from 00:20)
+@node quay.prov
+place: quay
+cost: 2
+do: set(quay.prov_seen)
+alt: quay.prov.wreckers ? var.prov == wreckers
+go: quay.prov.trust
+
+@node quay.prov.wreckers
+place: quay
+cost: 2
+nar: At half past twelve two Lamplighters walk Tub Merrow from the Brine to the harbour office, one at each elbow, with the formality of men carrying a wardrobe. He does not ask anything.
+voice: hearsay: "The Shelf said wreckers." By breakfast it will be "the Shelf saw them do it". {dc: 4}
+go: ^hub
+
+@node quay.prov.trust
+place: quay
+cost: 2
+do: meter(dread, 1)
+nar: The Lamplighters stand in a loose line along the quay now, and when the assessor moves the nearest pole moves too, one lamp away.
+voice: dark: From now on, under the sodium, you are a shop window. Learn where the light ends. {dc: 5}
+go: ^hub
+
+# ================================================================ 27. THE SECOND BLACKOUT ON THE QUAY (02:50 to 03:20)
+@node quay.hub.dark
+place: quay
+cost: 0
+alt: quay.dark.first ? !has(quay.dark.seen)
+alt: quay.appt.cells ? var.appt == cells & has(merrow.cells) & !has(appt.stopped) & !has(quay.appt.done) & clock < 03:20
+alt: quay.appt.search ? var.appt == search & !has(quay.appt.done) & clock < 03:20
+alt: quay.appt.keel ? var.appt == keel & !has(quay.appt.done) & clock < 03:20
+nar: Lamp Quay in the dark. Three cold shapes on bent necks, and the fog gone white. Somewhere a brass pole knocks on a post, and somewhere a lantern swings, held by someone afraid of everything outside it.
+opt: "Find the deacon on the steps, in the dark." -> quay.fennick.dark ? !has(quay.fennick.dark_done)
+opt: "Go toward the young Lamplighter's lantern." -> quay.hobb.dark ? clock < 04:15
+check: "[THE DARK] Stand still and listen to the quay with the lamps out." -> quay.dark.listen.ok / quay.dark.listen.fail ? !seen(quay.dark.listen.ok) {skill: dark, dc: 6, verb: eavesdrop, noise: 0}
+opt: "Go into the harbour office, where there is a lamp." -> quay.harbour +1
+opt: "Feel along the house fronts to the Brine." -> brine.hub +2
+opt: "Feel along to the weigh-house." -> weigh.hub +2
+opt: "Walk the mole in the dark." -> mole.hub +2
+
+@node quay.dark.first
+place: quay
+cost: 1
+do: set(quay.dark.seen); offer(m.dark)
+nar: Ten to three. The three sodium lamps go out together, and everyone on the quay stops talking at once, and then begins again much more quietly.
+call: quay.dark.mother
+inst: CANDLEMAS: Dark. Two parts in a hundred. You are invisible now, and so is everyone else, and so is the edge of the quay.
+voice: dark: Now the books are shut. Nobody can see you, you cannot see them, and you can hear everything. {dc: 4}
+go: quay.hub.dark
+
+@node quay.dark.mother
+cost: 0
+alt: quay.dark.mother.out ? has(mother.restruck) | has(mother.out_again)
+return:
+
+@node quay.dark.mother.out
+cost: 0
+nar: Out at the end of the mole the green beam stops mid-sweep and does not come back. She needs a hand at the panel again. Somebody will have to climb.
+return:
+
+@node quay.dark.listen.ok
+place: quay
+cost: 4
+do: meter(dread, 1)
+line: COE: The Alderman says. The Alderman says. I can't remember what the Alderman says. It's never gone out before when I was saying it.
+line: FEWELL: Twenty years, and nobody's once asked what I write. I write the weather, mostly. Nobody reads the weather.
+line: STRAND: Four hundred and six. Four hundred and seven. Paving stones, my lamp to the steps. I count them when it's dark.
+line: BRIGHT: It's lovely, isn't it. I'm going to stand very still until it comes back.
+go: quay.hub.dark
+
+@node quay.dark.listen.fail
+place: quay
+cost: 3
+do: meter(dread, 2)
+nar: Only water comes: the sea against the wall, the gutters, and under it something that is either a tide or a breath, very slow, very near.
+nar: Close by a man laughs, once, and the assessor will never know who, or whether it was at the assessor.
+go: quay.hub.dark
+
+# ================================================================ HOBB ON THE QUAY (00:40 to 04:15)
+@node quay.hobb
+place: quay
+speaker: HOBB
+cost: 2
+do: set(met.hobb)
+alt: quay.hobb.again ? seen(quay.hobb.first)
+go: quay.hobb.first
+
+@node quay.hobb.first
+place: quay
+speaker: HOBB
+cost: 3
+nar: The youngest Lamplighter stands under the end lamp, as far from the sergeant as the quay allows, with a storm lantern lit in each hand.
+line: HOBB: Constant Hobb, Lamplighter third class. I know. Two. One's for seeing. The other's in case the first goes out. And if the lamps go, there's two, which is enough to stand in the middle of. I just don't like the dark, Shelf. I'm sorry.
+go: quay.hobb.menu
+
+@node quay.hobb.again
+place: quay
+speaker: HOBB
+cost: 1
+line: HOBB: Still here. Both lit.
+go: quay.hobb.menu
+
+@node quay.hobb.menu
+speaker: HOBB
+cost: 0
+opt: "Your second lantern is guttering. Here, a fill of paraffin." -> quay.hobb.fill ? count(i.paraffin) >= 1 & !has(quay.hobb.favour) {do: take(i.paraffin), verb: light, noise: 0.1}
+opt: "Keel says it was wreckers." -> quay.hobb.wreckers {once, id: quay.hobb.wreckers, do: set(said.wreckers); set(heard.hobb.wreckers); set(book.wreckers)}
+opt: "You were outside the weigh-house at twenty to ten. What did you hear?" -> quay.hobb.switch ? has(quay.hobb.favour) & !seen(quay.hobb.switch)
+opt: "Leave him to his two lights." -> ^hub
+
+@node quay.hobb.fill
+speaker: HOBB
+cost: 2
+do: set(quay.hobb.favour); tab_hobb = 1
+nar: The left lantern's flame is short and blue. The assessor fills it from the case, in full view of the sergeant.
+line: HOBB: Oh. Thank you. The sergeant says the Municipal issues one fill per lantern per night, and I've got two lanterns, so that's my lookout. I'll not forget it. I see things, standing about. Nobody minds what the boy with two lanterns sees.
+nar: Constant Hobb is on the assessor's tab.
+go: quay.hobb.menu
+
+@node quay.hobb.wreckers
+speaker: HOBB
+cost: 2
+line: HOBB: I don't know anything about wreckers, Shelf. I'm not supposed to know anything. It's in the regulations.
+go: quay.hobb.menu
+
+@node quay.hobb.switch
+speaker: HOBB
+cost: 2
+line: HOBB: I heard the handle go down, inside. Then the singing go quiet, and somebody say lights out for the nose, like they say every year. I didn't put it in my book. Nobody ever asks the one with two lanterns where he was standing.
+go: quay.hobb.menu
+
+@node quay.hobb.dark
+place: quay
+speaker: HOBB
+cost: 3
+alt: quay.hobb.dark.tab ? has(quay.hobb.favour)
+nar: Hobb stands exactly between his two lanterns, set on the stones a yard apart.
+line: HOBB: Is someone there? Please say it's the Shelf. I'm to reset the board at twenty past. It's in the weigh-house. It's dark all the way there.
+opt: "I will walk with you as far as the weigh-house, when it is time." -> quay.hobb.dark.walk {verb: wait, noise: 0.1}
+opt: "Leave him between his lanterns." -> quay.hub.dark
+
+@node quay.hobb.dark.walk
+place: quay
+speaker: HOBB
+cost: 4
+do: set(quay.hobb.favour); tab_hobb = 1; meter(dread, -1)
+nar: The assessor stands in his two small rooms of light and talks about nothing: the Shelf's canteen, a cat the assessor once assessed. At twenty past three they cross the dark quay together at the pace of the slower of them, which is not always Hobb.
+line: HOBB: Nobody's ever walked me. I owe you, Shelf. I'll remember.
+nar: He goes into the weigh-house alone, both lanterns held out in front, and a minute later the quay comes back on, red first, then rose, the way the boy on the steps said it would.
+go: weigh.hub
+
+@node quay.hobb.dark.tab
+place: quay
+speaker: HOBB
+cost: 2
+line: HOBB: It's you. I'm all right. I've got both. You filled the other one. I've been thinking about that the whole time it's been dark. I'll go to the board at twenty past. I'll tell you anything I see, after.
+go: quay.hub.dark
+
+# ================================================================ 35. HIGH WATER, 05:10
+@node quay.highwater
+place: quay
+cost: 3
+do: set(quay.highwater_seen)
+nar: Ten past five. High water. The sea slides across the quay's stones and back, and the bollards stand in it like old men paddling.
+call: quay.highwater.fish
+nar: The harbourmaster stands at the quay's very edge with the sea washing over his boots, as he stood at the top of the steps seven hours ago.
+call: quay.highwater.keel
+go: ^hub
+
+@node quay.highwater.fish
+cost: 0
+alt: quay.fish.turned ? var.fish == turned
+alt: quay.fish.gulls ? var.fish == gulls
+alt: quay.fish.eaten ? var.fish == eaten
+nar: Of the great fish there is no sign. Somewhere in the bay there is a fish the size of a cart with its opinions intact.
+return:
+
+@node quay.fish.turned
+cost: 0
+nar: Of the great fish there is no sign but a story. Dilly Rudd is asleep in the Brine's doorway with the FISH column paid out in full to people who said it would live.
+return:
+
+@node quay.fish.gulls
+cost: 0
+nar: Against the drowned steps the swell knocks the great fish's spine, long and clean and arched like a church roof. The gulls are asleep along the rail, too full to stand.
+return:
+
+@node quay.fish.eaten
+cost: 0
+nar: The Guild's smokehouses are working at full draught. Somebody has nailed the great fish's head over the weigh-house door, where the town balance can see it, as is the custom with a fish that was voted on.
+return:
+
+@node quay.highwater.keel
+cost: 0
+alt: quay.highwater.keel.broken ? var.lens == broken
+alt: quay.highwater.keel.saved ? var.lens == saved
+alt: quay.highwater.keel.green ? var.lens == green_broken
+return:
+
+@node quay.highwater.keel.broken
+cost: 0
+nar: There is glass in the turn-ups of his trousers, green and clear, ground fine.
+return:
+
+@node quay.highwater.keel.saved
+cost: 0
+nar: His hands hang open, as if they had recently been made to let go of something heavy and have not yet found anything else to hold.
+return:
+
+@node quay.highwater.keel.green
+cost: 0
+nar: There is green glass in his cuffs, washed into the folds by his own water, and none of the clear. He looks like a man who has done a precise thing for the first time in nineteen years.
+return:
+
+# ---- Keel on the quay at dawn, 05:10 to 06:10
+@node quay.keel.dawn
+place: quay
+speaker: KEEL
+cost: 3
+alt: quay.keel.dawn.again ? seen(quay.keel.dawn.first)
+go: quay.keel.dawn.first
+
+@node quay.keel.dawn.first
+place: quay
+speaker: KEEL
+cost: 3
+nar: The assessor stands beside him, a careful yard to the dry side. The sea comes over both their boots, and goes back.
+line: KEEL: High water. The Board likes high water. At high water everybody is as wet as the Board, for a minute, and nobody remarks on it.
+call: quay.keel.dawn.night
+line: KEEL: The Board would like the Shelf to know that the Board was, at no point tonight, damp in its convictions.
+go: quay.keel.dawn.menu
+
+@node quay.keel.dawn.night
+cost: 0
+alt: quay.keel.dawn.met ? has(frost.met)
+alt: quay.keel.dawn.prints ? has(frost.keel)
+return:
+
+@node quay.keel.dawn.met
+cost: 0
+line: KEEL: The Board will not speak of the lamp room on the quay. The Board will say only that the frost was on the inside of the glass, and that the Shelf did not slip, and that the Board did.
+return:
+
+@node quay.keel.dawn.prints
+cost: 0
+line: KEEL: The Board is told there are marks on the stairs, one per step. The Board did not know it left marks. The Board has never before been anywhere cold enough to keep them.
+return:
+
+@node quay.keel.dawn.again
+place: quay
+speaker: KEEL
+cost: 1
+nar: He has not moved. The sea has come and gone over his boots perhaps forty times since, and he has not noticed one of them.
+go: quay.keel.dawn.menu
+
+@node quay.keel.dawn.menu
+speaker: KEEL
+cost: 0
+opt: "Look at his cuffs." -> quay.keel.cuffs.dawn ? var.quay.cuffs < 3 {do: quay.cuffs += 1}
+opt: "Leave him at the edge." -> ^hub
+
+@node quay.keel.cuffs.dawn
+place: quay
+speaker: KEEL
+cost: 1
+alt: quay.keel.cuffs.three ? var.quay.cuffs >= 3
+nar: At high water his cuffs run into the sea and the sea runs into his cuffs, and there is no telling which way the water is going.
+go: quay.keel.dawn.menu
+
+# ================================================================ THE MOLE STEPS AND THE FERRY (after the berth)
+@node quay.molesteps
+place: mole_steps
+cost: 1
+alt: quay.molesteps.ferry ? clock < 23:30
+nar: The mole steps, under their caged lamp. The Saint Cuthwin has gone to the inner berth, her master ashore, waiting for Mother to burn true.
+opt: "Go back along to the quay." -> ^hub +2
+
+@node quay.molesteps.ferry
+place: mole_steps
+speaker: PENHALLOW
+cost: 1
+nar: The Saint Cuthwin lies at the mole steps with her gangway down, and Penhallow on the bridge wing with her cold pipe.
+line: PENHALLOW: Log, every night this winter: Gullet Head Light showing green, reduced. I'll not sail out of here till she burns true. At half past I'm for the Brine.
+opt: "Go back along to the quay." -> ^hub +2
+
+# ---- Merrow at his boat, 04:00 to 06:10
+# ================================================================ THE FRAY ON THE QUAY (SYSTEMS-FULL 18; encounters in combat.lwd)
+# ---- e.lamplighters: two poles. Trust -2, a blown lamplighter guise under the sodium, or fleeing Gorm.
+@node quay.lamplighters.stop
+place: quay
+speaker: FEWELL
+cost: 2
+nar: Two brass poles come down across the assessor's path, one high, one low. Fewell holds the high one. Strand holds the low one, at the shins.
+line: FEWELL: Regulation says I'm to ask you to come along to the harbour office quietly, Shelf. Twenty years I've never once had to say it. I'm saying it now.
+call: quay.lamplighters.why
+voice: undertow: They are waiting for you to make them hit you. Do not. {dc: 6}
+check: "[FORM LETTER] Inform them, in the Shelf's own words, that obstruction of an assessor is noted." -> quay.lamplighters.talk.ok / quay.lamplighters.talk.fail {skill: formletter, dc: 7, red}
+opt: "Step through the gap in their round, by the steps, while Strand counts." -> quay.lamplighters.slip ? has(quay.round.known) {verb: hide, noise: 0.2}
+opt: "Break for the dark end of the quay." -> quay.lamplighters.run {verb: hide, noise: 0.6}
+opt: "Go with them quietly." -> quay.fight.lamplighters.down
+opt: "Stand your ground. If they want the Shelf, they can take it." -> quay.lamplighters.fight
+
+@node quay.lamplighters.why
+cost: 0
+alt: quay.lamplighters.why.coat ? worn(c.lamplighter_coat)
+alt: quay.lamplighters.why.fled ? has(quay.gorm.follows) & rep.trust > -2
+nar: Under the next lamp Sergeant Gorm has closed her book on a finger, which is the most frightening thing the assessor has seen her do.
+return:
+
+@node quay.lamplighters.why.coat
+cost: 0
+line: FEWELL: That's Constant Hobb's spare coat. Polished cuffs. I'd know them in the dark, let alone under a lamp.
+return:
+
+@node quay.lamplighters.why.fled
+cost: 0
+line: STRAND: Sergeant says you walked off from her. Nobody walks off from the sergeant. Twelve years, nought.
+return:
+
+@node quay.lamplighters.talk.ok
+place: quay
+speaker: STRAND
+cost: 2
+do: set(book.obstruction)
+line: LAMB: Obstruction of the Shelf's assessor will be reported, by name, with the hour. The Municipal's own insurance is written by the Shelf.
+nar: This last part is true.
+line: STRAND: That's us, then. Insured by them. Fewell, did you know that?
+line: FEWELL: Nobody ever tells us what we're insured by.
+nar: The poles go back to the posts. Gorm writes one line, and it is a long one.
+go: ^hub
+
+@node quay.lamplighters.talk.fail
+place: quay
+speaker: FEWELL
+cost: 1
+nar: It comes out wet, and too fast, and in the middle of it the assessor says "hereby" twice.
+line: FEWELL: Hereby what, Shelf?
+line: STRAND: Two heres. Nought bys.
+opt: "Break for the dark end of the quay." -> quay.lamplighters.run
+opt: "Go with them quietly." -> quay.fight.lamplighters.down
+opt: "Stand your ground." -> quay.lamplighters.fight
+
+@node quay.lamplighters.run
+place: quay
+cost: 0
+alt: quay.lamplighters.run.fallback ? !runs
+do: run(r.shadow)
+nar: The assessor goes sideways under Fewell's pole and runs for where the lamplight gives up.
+
+@node quay.lamplighters.run.fallback
+place: quay
+cost: 0
+check: "[BALLAST] Duck the pole and run for the dark on the wet stone." -> quay.fight.lamplighters.fled / quay.fight.lamplighters.down {skill: ballast, dc: 7}
+
+@node quay.lamplighters.fight
+place: quay
+cost: 0
+do: fight(e.lamplighters)
+nar: The assessor sets the claims case in front, and the two poles come in.
+
+@node quay.fight.lamplighters.win
+place: quay
+speaker: FEWELL
+cost: 3
+do: set(struck.fewell); set(struck.strand); set(book.violence); rep(trust, -2); seenas_trust = enemy; offer(m.poles)
+if: trait(m.body) == none => offer(m.body)
+nar: Strand sits on the wet stones holding his shin. Fewell's pole is in the gutter, bent, and Fewell is on one knee looking at it the way a man looks at a dog that has been run over.
+line: FEWELL: Twenty years. Never late, never early, never once hit.
+nar: Under the middle lamp Gorm has watched every second, and her pencil has not stopped once.
+voice: carbon: The case's corner into Strand's shin. The pole's butt into your ribs. You will feel each one tomorrow, in order, like an inventory. {dc: 5}
+go: ^hub
+
+@node quay.fight.lamplighters.yield
+place: quay
+speaker: STRAND
+cost: 2
+do: set(struck.strand); set(book.violence); rep(trust, -1); offer(m.poles)
+if: trait(m.body) == none => offer(m.body)
+nar: Strand drops his pole and holds up both hands, palms out, and Fewell, seeing him, grounds his own and leans on it.
+line: STRAND: That's plenty. Nought more, please.
+line: FEWELL: We'll tell the sergeant you came along quietly. She won't believe it. She'll write it down anyway.
+go: ^hub
+
+@node quay.fight.lamplighters.fled
+place: quay
+cost: 2
+do: set(book.fled); rep(trust, -1); meter(dread, 1)
+if: trait(m.body) == none => offer(m.body)
+nar: The assessor is into the dark at the quay's end before the poles come round. The two Lamplighters stay under the sodium. Out here they would be two men with sticks in the dark, and they know it.
+voice: pride: The whole quay saw which way the bowler ran. {dc: 2}
+go: ^hub
+
+@node quay.fight.lamplighters.down
+place: harbour
+speaker: GORM
+cost: 40
+do: set(down.cells); take(i.chits, 2); meter(cold, 2); meter(dread, 1); rep(trust, -1)
+if: trait(m.body) == none & seen(quay.lamplighters.fight) => offer(m.body)
+nar: The assessor spends forty minutes on a wet bench in the cells. Sergeant Gorm asks questions and writes each answer down whether or not there is one.
+line: GORM: Who sent you up the mole? Why did you look at the harbourmaster's cuffs? What did the deacon show you, off the lamp? Shall I ask again?
+call: quay.down.cells.merrow
+nar: At the end she opens the door. Two of the Shelf's chits have gone from the case, as costs.
+voice: dark: You answered some of them. You do not remember which. She does. {dc: 6}
+go: ^hub
+
+@node quay.down.cells.merrow
+cost: 0
+alt: quay.down.cells.merrow.in ? has(merrow.cells)
+return:
+
+@node quay.down.cells.merrow.in
+cost: 0
+nar: On the crate of mantles at the far end, Tub Merrow watches the whole interview with great contentment.
+line: MERROW: Same tide, Shelf.
+return:
+
+# ---- e.wardens: Keel's two tide-wardens from Hesk. Movement II on, Board -2.
+@node quay.wardens.stop
+place: quay
+cost: 2
+nar: Two tide-wardens from Hesk come along the quay in step, one with a boathook, one with a chain. Tonight the Board has sent them for the Shelf.
+line: KEEL: The Board would like a word with the Shelf. The Board's wardens will bring the Shelf. The Board does not wish to raise its voice.
+opt: "Step into the harbour office before they reach you." -> quay.wardens.door {verb: hide, noise: 0.1}
+check: "[FORM LETTER] Say, clearly, that the Alderman expects the Shelf's verdict by dawn, from a dry assessor." -> quay.wardens.crake.ok / quay.wardens.crake.fail ? has(met.crake) {skill: formletter, dc: 7, red}
+opt: "Stand and meet them." -> quay.wardens.fight
+
+@node quay.wardens.door
+place: harbour
+speaker: KEEL
+cost: 2
+do: rep(board, 1)
+nar: The assessor walks past the harbourmaster into his own office and sits in the one chair that is not his.
+line: KEEL: The Shelf has come into the Board's office. The Board cannot have the Shelf taken out of it. It would be in the log. Mr Cobb, Mr Prothero, the Board thanks you. The Board will ring.
+go: quay.harbour.room
+
+@node quay.wardens.crake.ok
+place: quay
+cost: 2
+line: LAMB: The Alderman expects the Shelf's verdict by dawn, from a dry assessor. Somebody write that down.
+nar: The man with the chain looks at the man with the hook. The Board's wardens are paid by the Board, and the Board's lamp is paid for by the Trust, and every man in Hesk knows which way that water runs.
+line: KEEL: The Board withdraws its request. The Board was only asking.
+go: ^hub
+
+@node quay.wardens.crake.fail
+place: quay
+cost: 1
+nar: The assessor says the Alderman's name. The man with the chain says, mildly, that he is from Hesk, and in Hesk an alderman is a man who opens a bridge.
+opt: "Stand and meet them." -> quay.wardens.fight
+opt: "Step into the harbour office." -> quay.wardens.door
+
+@node quay.wardens.fight
+place: quay
+cost: 0
+do: fight(e.wardens)
+nar: The boathook comes round low, slow as a tide, for the hem of the Shelf's coat.
+
+@node quay.fight.wardens.win
+place: quay
+cost: 3
+do: rep(board, -2); seenas_board = threat; set(book.violence)
+if: trait(m.body) == none => offer(m.body)
+nar: One warden sits against a bollard with his boathook in the harbour. The other has his chain round his own boots. In the office doorway the harbourmaster drips and says nothing.
+voice: carbon: The hook in the coat. The turn. His weight going past you toward the edge, and the edge taking it. The quay threw him. {dc: 6}
+go: ^hub
+
+@node quay.fight.wardens.yield
+place: quay
+cost: 2
+do: rep(board, -1); set(book.violence)
+if: trait(m.body) == none => offer(m.body)
+nar: The man with the chain lets it fall and steps back, hands open. They walk back to the office in step and stand either side of the harbourmaster like two bookends with nothing between them.
+go: ^hub
+
+@node quay.fight.wardens.fled
+place: quay
+cost: 3
+do: rep(board, -1); meter(dread, 1)
+if: trait(m.body) == none => offer(m.body)
+nar: The assessor goes fast along the house fronts with the case in both arms. Heavy men are slow men. Behind, the harbourmaster's voice says something about the Board's patience that loses its ending on the wet air.
+voice: salt: Away from the edge. The edge was what they wanted. {dc: 5}
+go: ^hub
+
+@node quay.fight.wardens.down
+place: quay
+speaker: HOBB
+cost: 30
+do: set(down.harbour); wet(1); damp_wet = 1; meter(cold, 3); take(i.lantern)
+if: trait(m.body) == none => offer(m.body)
+nar: The hook takes the coat at the hip and the quay goes out from under the assessor, and then there is the harbour: black, very cold, tasting of tar and of the whole town's night.
+nar: A hand has the collar. Then a lantern held out over the water on the end of a pole, and a young voice saying please, please, as if please were a rope.
+line: HOBB: I've got you. Don't let go of the pole. I don't like the water either. I don't like anything.
+nar: Thirty minutes later the assessor sits on the Brine's step in a borrowed blanket, and the storm lantern lies on the bottom of the harbour.
+inst: THE DAMP: Saturated. I am no use to anyone until a fire has had me.
+go: ^hub
+
+# ================================================================ REWORK: routes, the Record and the town's appointment (REWORK-PLAN 3.1 rows 6, 10, 14)
+# ---- the chart: Lamb draws the line
+@node quay.chart.ok
+place: harbour
+cost: 3
+do: set(quay.bearing)
+if: has(memory.low_light) => quest(a1.claim, light)
+nar: A pencil line from the channel's elbow to Hound Rock, and the ferry on it, west of the dog-leg, with the Spit under her bow.
+line: LAMB: It did not draw us in. It told the master where she was, and she turned away from it.
+go: quay.harbour.room
+
+@node quay.chart.fail
+place: harbour
+cost: 3
+do: set(quay.bearing_wrong)
+nar: The pencil line runs from the Old Light straight to the Spit's tip. The assessor writes LURE beside it, in pencil.
+voice: precedent: Pencil rubs out. The master said it sent her away. {below: 6}
+go: quay.harbour.room
+
+# ---- the Record bites: Keel's log, and Crake's own words
+@node quay.keel.ink
+place: harbour
+speaker: KEEL
+cost: 1
+line: KEEL: The log is in ink, assessor. Ink does not turn.
+go: quay.keel.office
+
+@node quay.crake.yellow.record
+cost: 0
+alt: quay.crake.yellow.said ? has(quay.crake.said_restrikes)
+return:
+
+@node quay.crake.yellow.said
+cost: 0
+line: LAMB: Before midnight you told me it restrikes itself when the supply comes back.
+line: CRAKE: And so it would, with a keeper at the button. I described the design, assessor. You are reading me the budget.
+return:
+
+# ---- relic 113: Hands (the candles), Eye (the eyepiece), Fist (the zealots)
+@node quay.relic.douse.ok
+place: steps
+speaker: FENNICK
+cost: 3
+nar: Twelve wicks, pinched one after another along the row, the jars turning to follow the hand like heads in a choir. The last candle goes, and the lowest steps are dark.
+line: FENNICK: You have made me a chapel, assessor. Very well.
+go: quay.fennick.relic.dark
+
+@node quay.relic.douse.fail
+place: steps
+speaker: TOBIT
+cost: 2
+do: set(quay.relic.douse_failed); rep(congregation, -1)
+nar: The fourth candle tips against a surplice hem, and Sister Gauze puts it out with her jar in one practised movement. The row relights itself, glaring through glass.
+line: TOBIT: You're not allowed. Those are the waking candles.
+line: FENNICK: Not like that, assessor.
+go: quay.fennick.menu
+
+@node quay.relic.eye
+place: steps
+cost: 2
+if: !has(prism.numbered) => xp(1)
+do: set(prism.numbered); quest(a1.splinters, numbered)
+inst: CANDLEMAS: Through his jar and through my eye: one hundred and thirteen, cut on the spine. The edges are sharp. The sea has never kept an edge.
+nar: The deacon goes on praying. He has not noticed being read.
+go: quay.steps
+
+@node quay.relic.take
+place: steps
+speaker: FENNICK
+cost: 1
+nar: The assessor's hand is on the jar under the deacon's arm. Along the row, twelve bell jars turn toward it.
+voice: ballast: Twelve of them, on wet steps, slow and armoured at the head. Every Lamplighter on the quay is watching. {dc: 4}
+line: FENNICK: Assessor. That is not yours.
+check: "[GRIP] Wrench the jar free and back up the steps with it." -> quay.relic.take.ok / quay.relic.take.fail {skill: grip, dc: 7, red, verb: carry, noise: 0.8}
+opt: "Let go of the jar." -> quay.fennick.menu
+
+@node quay.relic.take.ok
+place: steps
+cost: 4
+do: give(i.prism_113); set(prism.numbered); set(quay.relic.taken); quest(a1.splinters, numbered); rep(congregation, -2); seenas_congregation = thief
+if: power.quay == on & clock < 01:30 => set(book.violence)
+if: trait(m.body) == none => offer(m.body)
+nar: The jar comes free. The Congregation comes up the steps after the assessor, glass knocking on glass, and the claims case catches a jar, which cracks across: inside it is an old man with the rain suddenly on his face.
+nar: Under the lamp the splinter on its velvet has a number cut into its spine: 113.
+voice: pride: You have it. Everyone on the quay saw how. {dc: 3}
+go: quay.steps
+
+@node quay.relic.take.fail
+place: steps
+speaker: FENNICK
+cost: 4
+do: set(quay.relic.taken); rep(congregation, -1); meter(cold, 1)
+if: power.quay == on & clock < 01:30 => set(book.violence)
+if: trait(m.body) == none => offer(m.body)
+nar: The Congregation folds round the assessor like a slow tide of glass, and nobody strikes anybody. The assessor ends on a wet step, and the jar is back under the deacon's arm.
+line: FENNICK: Grace defends itself, assessor. Slowly, but in numbers.
+go: quay.steps
+
+@node quay.relic.vigil.douse
+place: steps
+speaker: FENNICK
+cost: 3
+if: !has(prism.numbered) => xp(1)
+do: set(prism.numbered); quest(a1.splinters, numbered)
+nar: The assessor lifts the jar's rim and pinches the wick. Something cold and sharp is put into the assessor's hand, with a number on its spine the thumb can read.
+line: FENNICK: You have learned the liturgy. One hundred and thirteen. Feel the edge.
+go: quay.fennick.vigil.menu
+
+# ---- Gorm's book: the round, the fog
+@node quay.gorm.shake.ok
+place: quay
+speaker: GORM
+cost: 4
+do: clear(quay.gorm.follows)
+nar: Two steps out of the sodium and the fog has the assessor. Gorm's lamp comes past at the distance of an arm, and goes on.
+line: GORM: Fewell? Did you see where the Shelf went? Bright? Does nobody on this quay look where they are looking?
+go: ^hub
+
+@node quay.gorm.shake.fail
+place: quay
+speaker: BRIGHT
+cost: 2
+do: meter(dread, 1); set(book.shadow)
+nar: Two steps out of the sodium, straight into Lamplighter Bright under the next lamp.
+line: BRIGHT: Hello! Lovely!
+nar: Behind, the pencil moves.
+go: quay.gorm.menu
+
+@node quay.round.watch
+place: steps
+cost: 12
+do: set(quay.round.known)
+nar: The assessor spends a quarter of an hour under the post in honest light, watching five dark coats. At the quarter hour all five turn toward the weigh-house corner. Strand stops by the steps every time to count his paving stones, and for that long two lamps watch nothing.
+go: quay.post
+
+@node quay.lamplighters.slip
+place: quay
+cost: 2
+nar: Strand has begun to count. The assessor steps between the two poles' shadows while he says four hundred and six, and is past the steps at four hundred and seven. Nobody's pencil moves.
+go: ^hub
+
+# ---- the town's appointment: the hints from 01:00
+@node quay.hub.appt
+cost: 0
+alt: quay.hint.cells ? has(appt.known) & clock < 02:50 & var.appt == cells
+alt: quay.hint.vote ? has(appt.known) & clock < 02:50 & var.appt == vote
+alt: quay.hint.search ? has(appt.known) & clock < 02:50 & var.appt == search
+alt: quay.hint.oven ? has(appt.known) & clock < 02:50 & var.appt == oven
+alt: quay.hint.keel ? has(appt.known) & clock < 02:50 & var.appt == keel
+return:
+
+@node quay.hint.cells
+cost: 0
+nar: Two of the Low Company mend a net by the harbour office that does not need mending, sitting with their backs to the cellar grating.
+return:
+
+@node quay.hint.vote
+cost: 0
+nar: Guild aprons go into the weigh-house in ones and twos with blindfolds in their pockets, though the vote was hours ago.
+return:
+
+@node quay.hint.search
+cost: 0
+nar: At the harbour office door Gorm is counting shuttered lanterns into a crate. Five. She counts them again.
+return:
+
+@node quay.hint.oven
+cost: 0
+nar: A boy goes round the back of the Brine with a sack of empties and comes back without it. Then he does it again.
+return:
+
+@node quay.hint.keel
+cost: 0
+nar: In the harbour office window the harbourmaster sits with his hat already on, facing the mole.
+return:
+
+# ---- appt == search: the Lamplighters search the Brine in the 02:50 dark
+@node quay.appt.search
+place: quay
+speaker: GORM
+cost: 2
+do: set(quay.appt.done)
+nar: Five shuttered lanterns open a crack each at the harbour office door. Beside them waits one crate, empty, for carrying things away in.
+line: GORM: Fewell? Strand? Bright, Coe, Hobb? Does everyone know which door? Does everyone know what we are looking for?
+line: COE: The oven, the slate and the empties. The Alderman says.
+check: "[FORM LETTER] Tell the sergeant the Brine's slate and empties are already the Shelf's evidence, and not hers to carry." -> quay.appt.search.talk.ok / quay.appt.search.talk.fail {skill: formletter, dc: 7, red}
+opt: "Bar the Brine's back door with your rope before they reach it." -> quay.appt.search.rig ? count(i.rope) >= 1 {do: take(i.rope), verb: rig, noise: 0.3}
+check: "[THE DARK] Reach the Brine ahead of them through the dark and warn Sabine." -> quay.appt.search.run.ok / quay.appt.search.run.fail {skill: dark, dc: 6, verb: hide, noise: 0.2}
+opt: "Stand in the Brine's doorway with the claims case." -> quay.lamplighters.fight {do: set(appt.stopped)}
+opt: "Fall in behind them, with the Shelf's authority." -> quay.appt.search.join {do: set(appt.joined); rep(trust, 1); seenas_trust = useful}
+check: "[THE DARK] Stay in the dark and watch which door they take." -> quay.appt.search.watch / quay.appt.search.watch.fail {skill: dark, dc: 5, verb: hide, noise: 0}
+
+@node quay.appt.search.talk.ok
+place: quay
+speaker: GORM
+cost: 3
+do: set(appt.stopped)
+nar: Five lanterns close, one at a time.
+line: GORM: Is that so? And shall I write that the Shelf took the Brine's slate into evidence at ten to three, in the dark, with nobody to see it?
+nar: She writes it anyway, by feel.
+go: quay.hub.dark
+
+@node quay.appt.search.talk.fail
+place: quay
+speaker: GORM
+cost: 2
+do: set(appt.watched)
+line: GORM: Evidence? Whose evidence? And would the Shelf like to come and watch us find it?
+nar: The five lanterns go along the house fronts toward the Brine.
+go: brine.hub
+
+@node quay.appt.search.rig
+place: quay
+cost: 4
+do: set(appt.stopped)
+nar: The assessor lashes the Brine's yard door to the mangle with the rope, in a knot the Shelf's manual calls the Insurer's and every sailor calls a mess.
+nar: When the lanterns arrive at the front, Sabine is already in the doorway with her fork and her prices, and the search becomes an argument on a step, which in Gullet is where searches go to die.
+go: quay.hub.dark
+
+@node quay.appt.search.run.ok
+place: quay
+cost: 3
+do: set(appt.stopped)
+nar: The assessor is in at the Brine's door a full minute ahead of the lanterns. Sabine hears it once and moves faster than a woman her size has any business moving. Something in a sack goes out of the back window into the dark of the yard.
+go: brine.hub
+
+@node quay.appt.search.run.fail
+place: quay
+speaker: GORM
+cost: 2
+do: set(appt.watched); set(book.search)
+nar: Halfway along the house fronts a shutter opens, full on the assessor.
+line: GORM: Running ahead of us, were you? And who were you running to tell?
+go: brine.hub
+
+@node quay.appt.search.join
+place: quay
+speaker: HOBB
+cost: 2
+nar: The assessor falls in at the back, beside the boy with two lanterns.
+line: HOBB: I don't want to search the Brine, Shelf. Sabine gave me an egg once when I was cold.
+go: brine.hub
+
+@node quay.appt.search.watch
+place: quay
+cost: 3
+do: set(appt.watched)
+nar: From the dark by the weigh-house the assessor watches five small lights go in at the Brine's door, and then the portholes go bright from inside, one after another, as the lanterns open.
+go: quay.hub.dark
+
+# ---- appt == keel: the harbourmaster goes up the mole early, in the dark
+@node quay.appt.keel
+place: quay
+speaker: KEEL
+cost: 2
+do: set(quay.appt.done)
+nar: The harbour office door opens in the dark. A tall wet noise crosses the quay toward the mole, without a lamp.
+line: KEEL: The Board is going to look at her. Only look.
+check: "[CONDOLENCE] Ask him, quietly, what the Board means to look at her with." -> quay.appt.keel.talk.ok / quay.appt.keel.talk.fail {skill: condolence, dc: 6}
+check: "[BALLAST] Stand on the root of the mole in his way, on the wet stone." -> quay.appt.keel.block.ok / quay.appt.keel.block.fail {skill: ballast, dc: 6, noise: 0.3}
+opt: "Light your lantern and set it on the mole's root, where the whole quay can see him." -> quay.appt.keel.light ? count(i.lantern) >= 1 {verb: light, noise: 0.4}
+opt: "Walk out along the mole with him." -> quay.appt.keel.join {do: set(appt.joined)}
+check: "[THE DARK] Follow him at a distance in the dark." -> quay.appt.keel.watch / quay.appt.keel.watch.fail {skill: dark, dc: 5, verb: hide, noise: 0.1}
+
+@node quay.appt.keel.talk.ok
+place: quay
+speaker: KEEL
+cost: 3
+do: set(appt.stopped)
+line: KEEL: With its hands, assessor. The Board was going to put its hands on her.
+nar: He stands at the root of the mole a long time, and then goes back into the harbour office.
+go: quay.hub.dark
+
+@node quay.appt.keel.talk.fail
+place: quay
+speaker: KEEL
+cost: 1
+line: KEEL: The Board does not need to be asked. The Board knows the way.
+nar: The wet noise goes out along the mole and is lost in the sea's.
+go: quay.hub.dark
+
+@node quay.appt.keel.block.ok
+place: quay
+speaker: KEEL
+cost: 3
+do: set(appt.stopped)
+nar: The assessor plants both feet on the wet stone of the mole's root. The harbourmaster stops a yard off.
+line: KEEL: The Board does not lay hands on the Shelf. The Board will go back and sit.
+go: quay.hub.dark
+
+@node quay.appt.keel.block.fail
+place: quay
+cost: 2
+do: wet(0.3)
+nar: The assessor's boot finds weed and the assessor finds the stone. The harbourmaster steps round, carefully, and goes on out along the mole.
+go: quay.hub.dark
+
+@node quay.appt.keel.light
+place: quay
+speaker: KEEL
+cost: 3
+do: set(appt.stopped)
+nar: The lantern sits on the stone at the mole's root, and the harbourmaster stands in its light, seen from every window on the quay.
+line: KEEL: The Board. The Board was taking the air.
+nar: He goes back into the harbour office.
+go: quay.hub.dark
+
+@node quay.appt.keel.join
+place: quay
+speaker: KEEL
+cost: 3
+nar: They walk the mole together in the dark, the sea on both hands, the assessor half a step behind and to the dry side.
+line: KEEL: The Shelf will be a witness, then. The Board is used to the Shelf being a witness.
+go: mole.hub
+
+@node quay.appt.keel.watch
+place: quay
+cost: 3
+do: set(appt.watched)
+nar: The assessor goes after him at the distance of a lamp that is not lit, by the sound of water landing on stone ahead.
+go: mole.hub
+
+# ================================================================ EDITOR'S NOTES (design/REWORK-ADDENDUM.md, quay)
+# ---- S12: Keel's question at first meeting, and what he files
+@node quay.keel.nothing
+speaker: KEEL
+cost: 2
+line: KEEL: Nothing. The Board will note that the Shelf saw nothing on the water. The Board will note it carefully.
+go: quay.keel.menu
+
+@node quay.keel.below
+speaker: KEEL
+cost: 2
+line: KEEL: Below. With the eggs. The Board is sorry the Shelf missed the view.
+nar: Water runs from his cuffs. The assessor's own left sleeve, salt from the rail, drips onto the step beside it.
+go: quay.keel.menu
+
+@node quay.keel.quote.nothing
+cost: 0
+do: set(quay.keel.quoted)
+line: KEEL: The Board quotes the Shelf, from the harbour log: "Nothing. It was dark." The Board has written beneath it: the wreckers took care that nothing should be seen.
+return:
+
+@node quay.keel.quote.below
+cost: 0
+do: set(quay.keel.quoted)
+line: KEEL: The Board quotes the Shelf, from the harbour log: "I was below, with the eggs." The Board asked the master of the Saint Cuthwin where her passenger stood at twenty past ten. She says the rail.
+return:
+
+# ---- S9: what the town has heard, in the hub's description (wreckers and trust have their own scenes)
+@node quay.hub.prov
+cost: 0
+alt: quay.hubprov.guild ? has(ev.prov_travels) & var.prov == guild
+alt: quay.hubprov.keeper ? has(ev.prov_travels) & var.prov == keeper
+alt: quay.hubprov.sea ? has(ev.prov_travels) & var.prov == sea
+alt: quay.hubprov.refused ? has(ev.prov_travels) & var.prov == refused
+return:
+
+@node quay.hubprov.guild
+cost: 0
+nar: Somebody has chalked a flatfish on the harbour office door, lying on its back.
+return:
+
+@node quay.hubprov.keeper
+cost: 0
+nar: The Brine's porthole that faces the steps has a curtain across it now.
+voice: condolence: Being right about her in public is the thing this quay will not forgive. {dc: 6, once}
+return:
+
+@node quay.hubprov.sea
+cost: 0
+nar: People raise their hats to the bowler who did not raise a hat all night, and look past it at the water.
+return:
+
+@node quay.hubprov.refused
+cost: 0
+nar: A potman asks, kindly, whether the Shelf's chits are still good, and does not wait for the answer.
+return:
+
+# ---- P3: the bell jar in the kneeling row
+@node quay.relic.kneel.ok
+place: steps
+speaker: FENNICK
+cost: 4
+if: !has(prism.numbered) => xp(1)
+do: set(prism.numbered); quest(a1.splinters, numbered)
+nar: Under the borrowed jar the world goes round and quiet. At the assessor's knee, by candlelight, lies a wedge of glass on velvet with 113 cut on its spine.
+line: FENNICK: Look, sister. By grace. One of hers.
+go: quay.steps
+
+@node quay.relic.kneel.fail
+place: steps
+speaker: FENNICK
+cost: 3
+nar: The jar fogs. The assessor lifts its rim to breathe, and the deacon sees a bowler's brim, closes his own jar, and goes on down the row showing nobody anything.
+line: FENNICK: Pilgrims breathe through their noses, assessor.
+go: quay.steps
+
+# ---- P3: the Lamplighter coat, the cells and the sergeant's book
+@node quay.cells.guard
+place: harbour
+speaker: COE
+cost: 1
+line: COE: The Alderman says no visitors for the prisoner.
+check: "[FORM LETTER] Inform her the Shelf examines every witness to a claim, prisoners included." -> quay.cells / quay.cells.refused {skill: formletter, dc: 6}
+opt: "Leave it." -> quay.harbour.room
+
+@node quay.cells.refused
+place: harbour
+speaker: COE
+cost: 1
+line: COE: The Alderman says the Shelf may examine him at the inquiry. The Alderman says there will be an inquiry.
+go: quay.harbour.room
+
+@node quay.cells.coat
+place: harbour
+speaker: COE
+cost: 1
+line: COE: Evening, Constant. You've grown.
+go: quay.cells
+
+@node quay.harbour.who.coat
+cost: 0
+nar: Sergeant Gorm, at the stove with her back to the door, says without turning: "Is that Constant? Will you mind the stove?" She goes out to the quay. Her book lies open on the warm iron.
+return:
+
+@node quay.harbour.gormbook
+place: harbour
+cost: 3
+do: set(quay.round.known); quest(a1.book, page)
+nar: Gorm's book lies on the iron with its pages curling: Bowler, Drip, Jar, Two, and the round, the quarter hours, Strand's paving stones. Every page is about people.
+go: quay.harbour.room
+
+# ---- P4: the Shadow routes' failure scenes
+@node quay.fennick.stepdown.fail
+place: steps
+speaker: FENNICK
+cost: 3
+do: wet(0.1)
+nar: The mud takes the assessor's left boot to the shin and keeps it. While the assessor negotiates, a Lamplighter's lantern on the quay finds the two of them and stays.
+line: FENNICK: Not tonight, then. The mud has its own opinions about the Shelf.
+go: quay.fennick.menu
+
+@node quay.appt.keel.watch.fail
+place: quay
+speaker: KEEL
+cost: 2
+do: set(appt.joined)
+nar: The wet noise ahead stops, and waits, and the assessor walks into the back of it.
+line: KEEL: The Shelf may walk beside the Board. It is no wetter.
+go: mole.hub
+
+@node quay.appt.search.watch.fail
+place: quay
+speaker: HOBB
+cost: 2
+do: set(appt.watched); set(book.search)
+nar: A shutter swings, and the assessor is standing in a small yellow room of Hobb's light.
+line: HOBB: Oh. It's you. I won't say. I'll have to say if she asks.
+go: brine.hub
+
+# ---- appt == cells: the Low Company at the grating under the harbour office, 02:50
+@node quay.appt.cells
+place: quay
+speaker: LUGG
+cost: 2
+do: set(quay.appt.done)
+nar: At the cellar grating under the harbour office, iron meets iron. Two young salvors have a crowbar, and Ferris Lugg is folded nearly in half over the padlock.
+line: LUGG: Two bolts and a lock. Mind the light, Shelf.
+check: "[GRIP] Put your weight on the crowbar and keep it there." -> quay.appt.cells.hold / quay.appt.cells.hold.fail {skill: grip, dc: 7, noise: 0.5}
+check: "[CONDOLENCE] Tell Merrow, through the grating, to sit tight: the five minutes are in the Shelf's book." -> quay.appt.cells.talk / quay.appt.cells.talk.fail {skill: condolence, dc: 7}
+opt: "Hold the lantern for them, shuttered, low on the bolts." -> quay.appt.cells.join ? count(i.lantern) >= 1 {verb: light, noise: 0.3}
+check: "[THE DARK] Watch from under the quay steps." -> quay.appt.cells.watch / quay.appt.cells.watch.fail {skill: dark, dc: 6, verb: hide, noise: 0.1}
+
+@node quay.appt.cells.hold
+place: quay
+speaker: LUGG
+cost: 3
+do: set(appt.stopped); rep(lowco, -1)
+nar: The assessor's whole weight goes on the bar. Lugg looks at it, and then up the quay, where Gorm's lantern is coming.
+line: LUGG: Another night.
+nar: The grating stays shut. Below, Merrow says nothing at all.
+go: quay.hub.dark
+
+@node quay.appt.cells.hold.fail
+place: quay
+speaker: LUGG
+cost: 3
+do: clear(merrow.cells); rep(lowco, -1)
+nar: Lugg lifts the assessor off the crowbar by the collar and sets the assessor down on the stones. The second bolt goes, and a short wide shape is gone toward the mole steps.
+go: quay.hub.dark
+
+@node quay.appt.cells.talk
+place: quay
+speaker: MERROW
+cost: 3
+do: set(appt.stopped); rep(lowco, 1)
+line: MERROW: Sit, then. The sea's in no hurry. Neither am I.
+nar: Lugg straightens up, which takes some time, and takes the crowbar with him.
+go: quay.hub.dark
+
+@node quay.appt.cells.talk.fail
+place: quay
+speaker: MERROW
+cost: 2
+do: clear(merrow.cells)
+line: MERROW: Books are dry. I've had dry.
+nar: The second bolt goes, and the grating, and Merrow, toward the mole steps and his boat.
+go: quay.hub.dark
+
+@node quay.appt.cells.join
+place: quay
+speaker: LUGG
+cost: 3
+do: clear(merrow.cells); set(appt.joined); rep(lowco, 2); seenas_lowco = ours; rep(trust, -1)
+nar: The assessor lays the lantern's light low on the bolts. Two bolts go, and a lock, and a short wide man comes up through the grating with his cold pipe in his teeth.
+line: MERROW: Shelf.
+nar: That is all, and he goes down the mole steps to his boat.
+go: quay.hub.dark
+
+@node quay.appt.cells.watch
+place: quay
+cost: 3
+do: clear(merrow.cells); set(appt.watched)
+nar: Under the quay steps, among the weed and the wet, the assessor hears both bolts go, the grating lift, and a pair of boots cross the quay and go down the mole steps. Oars. Then the sea.
+go: quay.hub.dark
+
+@node quay.appt.cells.watch.fail
+place: quay
+speaker: GORM
+cost: 3
+do: clear(merrow.cells); set(appt.watched); set(book.cells)
+nar: The bolts go, the boots go, and a shuttered lantern opens a crack under the steps, full on the assessor.
+line: GORM: And what are you doing under the steps in the dark? And who were you waiting for?
+go: quay.hub.dark

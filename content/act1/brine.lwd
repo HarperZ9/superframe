@@ -1,0 +1,2265 @@
+# The Brine: the public house in the upturned hull. District file, Act 1 (brine.lwd).
+# Places: brine, yard, oven, room. Writer's draft, 2026-10-16. Private.
+# Beats (design/ACT1-PLAN.md section 6): 7, 8, 9, 18, 20, 24, 25, 29, 37; the Brine's reaction to
+# var.prov after 00:20; the Wenna thread for a1.stairs. Shared entry nodes defined here:
+# brine.hub, brine.room, bench, wall.
+
+# ---- new ids
+@fact brine.moulds
+about: At twenty to four Sabine laid four empty clay moulds on the oven coals with the bread. Clay does not burn. It cracks.
+against: sabine 5
+by: eyes
+
+@fact brine.wenna_confessed
+@fact brine.wenna_trusts
+@fact brine.wenna_climbs_again
+@fact brine.slate_wiped
+@fact brine.oven_kept
+@fact brine.sabine_let_oven
+@fact brine.took_back
+@fact brine.prov_proved
+@fact brine.doused
+@fact brine.pip_unpaid
+@fact brine.bottle_glass
+@fact brine.socks
+@fact brine.hobb_coat
+@fact brine.hair_asked
+@fact brine.clock_set
+@fact brine.clock_left
+@fact brine.jory
+@fact brine.letter_given
+@fact brine.tobit_jar
+@fact brine.sabine_has_sack
+@fact brine.move_stool
+@fact brine.brawled
+@fact brine.ash_latched
+@fact brine.damp_door
+@fact brine.glass_gone
+@fact brine.search_found
+
+# ---------------------------------------------------------------- the hub
+@node brine.hub
+hub: yes
+place: brine
+cost: 0
+do: silent_scene = 0
+alt: brine.first ? !seen(brine.first)
+alt: brine.prov.keeper ? prov == keeper & has(ev.prov_travels) & !seen(brine.prov.keeper)
+alt: brine.prov.trust ? prov == trust & has(ev.prov_travels) & !seen(brine.prov.trust)
+alt: brine.prov.refused ? prov == refused & has(ev.prov_travels) & !seen(brine.prov.refused)
+alt: brine.merrow.taken ? has(merrow.cells) & !seen(brine.merrow.taken) & clock < 01:30
+alt: brine.penhallow.arrive ? clock >= 23:30 & clock < 23:50 & !seen(brine.penhallow.arrive)
+alt: brine.merrow.arrive.robbed ? has(floor.copper_taken) & clock >= 23:50 & clock < 00:40 & !has(merrow.cells) & !seen(brine.merrow.arrive.robbed) & !seen(brine.merrow.arrive)
+alt: brine.merrow.arrive.sunk ? has(floor.copper_sunk) & clock >= 23:50 & clock < 00:40 & !has(merrow.cells) & !seen(brine.merrow.arrive.sunk)
+alt: brine.merrow.arrive ? !has(floor.copper_taken) & !has(floor.copper_sunk) & clock >= 23:50 & clock < 00:40 & !has(merrow.cells) & !seen(brine.merrow.arrive)
+alt: brine.pilgrims ? clock >= 23:50 & clock < 01:20 & !seen(brine.pilgrims)
+alt: brine.wenna.door ? clock >= 00:10 & clock < 05:40 & !has(wenna.climbs) & !seen(brine.wenna.door) & !(has(ev.blackout) & !has(ev.blackout_ends))
+alt: brine.wethour ? clock >= 01:30 & clock < 02:40 & !seen(brine.wethour)
+alt: brine.brawl ? clock >= 01:50 & clock < 02:40 & seen(brine.wethour) & !seen(brine.brawl)
+alt: brine.blackout ? has(ev.blackout) & !has(ev.blackout_ends) & !seen(brine.blackout)
+alt: brine.relight ? has(brine.doused) & has(ev.blackout_ends) & !seen(brine.relight)
+alt: brine.oven.fire ? clock >= 03:40 & clock < 03:50 & !seen(brine.oven.fire)
+alt: brine.penhallow.window ? clock >= 05:40 & !seen(brine.penhallow.window)
+nar: The Brine smells of paraffin, vinegar, wet wool and bread.
+voice: glass: Falling, darling, and the whole town is breathing on a count. Something is booked for the next time the lamps go. {when: has(appt.known) & clock < 02:50, once}
+voice: hearsay: At the back table the Low Company's young end keeps looking at the clock, then at the door, then at a crowbar wrapped in a net. {dc: 5, when: has(appt.known) & appt == cells & clock < 02:50, once}
+voice: hearsay: Sabine has bought no flour for tomorrow and a full sack of coal tonight. {dc: 5, when: has(appt.known) & appt == oven & clock < 02:50, once}
+voice: hearsay: A Lamplighter looked in at the door, ordered nothing, and counted the stairs. {dc: 5, when: has(appt.known) & appt == search & clock < 02:50, once}
+voice: hearsay: Two gutters ask Sabine the time. Both are wearing watches. {dc: 5, when: has(appt.known) & appt == vote & clock < 02:50, once}
+voice: hearsay: The Board's boatman says the harbourmaster has sent for his oilskin and a lantern, and it is hours till anything. {dc: 5, when: has(appt.known) & appt == keel & clock < 02:50, once}
+voice: hearsay: The midnight word is wreckers, and the Low Company's corner has gone quiet and started watching the door. {when: prov == wreckers & has(ev.prov_travels), once}
+voice: hearsay: The Guild, the tube said. No fish-men in the Brine tonight, and Sabine has turned their tankards to the wall. {when: prov == guild & has(ev.prov_travels), once}
+voice: hearsay: Act of the sea, the tube said. Everybody in the Brine is being very polite to everybody. {when: prov == sea & has(ev.prov_travels), once}
+voice: hearsay: The bench by the door has gone quiet for you. The bench by the stove has not noticed you. Between them, the whole of the Brine's opinion. {dc: 5, once}
+opt: "Talk to Sabine." -> brine.sabine
+opt: "Talk to the woman by the stove." -> brine.wenna.start ? !has(met.wenna) & !(clock >= 23:20 & clock < 23:30)
+opt: "Sit down by Wenna." -> brine.wenna ? has(met.wenna) & !(clock >= 23:20 & clock < 23:30)
+opt: "Look at the empty chair by the stove." -> brine.wenna.chair ? clock >= 23:20 & clock < 23:30
+opt: "Talk to the pot girl." -> brine.pip.start ? !has(met.pip) & (clock < 23:55 | clock >= 00:15) & clock < 05:50
+opt: "Talk to Pip." -> brine.pip ? has(met.pip) & (clock < 23:55 | clock >= 00:15) & clock < 05:50
+opt: "Talk to the man whose luggage is strapped together." -> brine.teague.start ? !seen(brine.teague.start)
+opt: "Talk to Orrin Teague." -> brine.teague ? seen(brine.teague.start)
+opt: "Talk to the ferry's master." -> brine.penhallow ? clock >= 23:30
+opt: "Talk to Merrow, steaming at the stove." -> brine.merrow ? (seen(brine.merrow.arrive) | seen(brine.merrow.arrive.robbed) | seen(brine.merrow.arrive.sunk)) & clock < 00:40 & !has(merrow.cells)
+opt: "Look under the settle by the stove." -> brine.sack ? seen(brine.merrow.arrive) & !has(floor.copper_taken) & !has(floor.copper_sunk) & copper == none & (clock < 00:40 | has(merrow.cells)) & clock < 02:40
+opt: "Put down the sack you carried up from the floor." -> brine.sack.carried ? has(floor.copper_taken) & count(i.copper_sack) >= 1 & copper == none
+opt: "Talk to the old woman with the cockle rake." -> brine.cockle ? clock >= 23:55
+opt: "Talk to the deacon, who is dripping." -> brine.fennick ? (clock >= 23:50 & clock < 01:20) | (clock >= 01:30 & clock < 02:40)
+opt: "Talk to the woman in the bell jar." -> brine.gauze ? clock >= 23:50
+opt: "Talk to the choirboy." -> brine.tobit ? clock >= 23:50 & clock < 01:00
+opt: "Look under the far table." -> brine.tobit.asleep ? clock >= 01:00 & !has(brine.tobit_jar)
+opt: "Hold the green prism up to the paraffin." -> brine.prism.read ? count(i.prism_green) >= 1 & !has(prism.green_oven) {verb: read}
+opt: "Sit down at the back table with the Low Company." -> brine.cells.table ? appt == cells & has(appt.known) & clock < 02:50 & !seen(brine.cells.table)
+opt: "Look at the clock over the bar." -> brine.clock
+opt: "Look at the slate behind the bar." -> brine.slate ? !has(tab.wenna)
+opt: "Stand in the doorway with Candlemas." -> brine.doorway ? !seen(brine.doorway) {verb: read}
+opt: "Look at the broken porthole lamp." -> brine.porthole ? !has(lamp.porthole.lit)
+opt: "Sit by the stove." -> brine.stove
+opt: "Dry the Damp at the stove." -> brine.dry ? damp_wet == 1
+opt: "Go behind the bar to the bread oven." -> brine.oven ? !(clock >= 03:40 & clock < 03:50)
+opt: "Go out the back door to the yard." -> brine.yard +1
+opt: "Go up the stair to the room." -> brine.room ? clock >= 00:05 +1
+opt: "Go out to the quay." -> quay.hub +1
+opt: "Take the yard lane to the Gut." -> gut.hub ? has(gut.open) +2
+
+# ---------------------------------------------------------------- first entry
+@node brine.first
+place: brine
+cost: 2
+nar: The Brine is a boat that gave up and lay down on the quay with its keel to the sky. Inside it smells of paraffin, vinegar, wet wool and bread.
+nar: The light is yellow and honest, and the assessor's coat is suddenly the colour it is.
+inst: CANDLEMAS: Paraffin. At last. Ask me anything about anything's colour.
+voice: pride: Navy. The coat is navy. It has been orange since the mole. {dc: 5}
+alt: brine.first.quarrel ? clock >= 23:20 & clock < 23:30
+go: brine.sabine.meet
+
+@node brine.first.quarrel
+cost: 2
+do: set(met.pip)
+nar: A girl of nineteen with wet knees is keeping the bar and watching the door behind it.
+line: PIP: Sabine's out the back, having words. She'll be a minute. I can do you an egg, but not a price.
+nar: Through the oven wall come two women's voices, too low to give the room more than their tune.
+voice: undertow: The back door. The yard. Round the side, quietly. {dc: 4}
+go: brine.hub
+
+# ---------------------------------------------------------------- Sabine
+@node brine.sabine.meet
+speaker: SABINE
+cost: 3
+do: set(met.sabine)
+nar: Behind the bar a wide, quick woman fishes an egg out of a jar with a fork, then puts the fork behind her ear like a pencil.
+line: SABINE: Pickled egg, a penny. A straight answer, tuppence. I'm out of straight answers. The egg's very good.
+line: SABINE: Sabine Brine. You'll be the Shelf. H. Lamb, the telegram said. What's the H, Halfpenny? Your chits are a shilling here tonight.
+go: brine.sabine
+
+@node brine.sabine
+speaker: SABINE
+cost: 1
+alt: brine.sabine.away ? clock >= 23:20 & clock < 23:30
+alt: brine.sabine.meet ? !has(met.sabine)
+alt: brine.sabine.again.oven ? has(sabine.oven) & !seen(brine.sabine.again.oven)
+alt: brine.sabine.hat ? has(floor.hat_lost) & !seen(brine.sabine.hat)
+nar: Sabine wipes a glass that was clean already, at a speed which suggests the glass is being charged by the minute.
+opt: "When did the keeper leave tonight?" -> brine.sabine.alibi ? !seen(brine.sabine.alibi)
+opt: "What did you see when the quay went dark?" -> brine.sabine.dark ? !seen(brine.sabine.dark)
+opt: "A pickled egg and a strong tea." -> brine.buy.supper ? count(i.chits) >= 1 & !(prov == keeper & has(ev.prov_travels) & !has(brine.took_back)) & !(rumour(shelf.failed) > 0.5)
+opt: "A pickled egg and a strong tea." -> brine.buy.supper.dear ? count(i.chits) >= 2 & ((prov == keeper & has(ev.prov_travels) & !has(brine.took_back)) | rumour(shelf.failed) > 0.5)
+opt: "A rum." -> brine.buy.rum ? count(i.chits) >= 1 & !(prov == keeper & has(ev.prov_travels) & !has(brine.took_back)) & !(rumour(shelf.failed) > 0.5)
+opt: "A rum." -> brine.buy.rum.dear ? count(i.chits) >= 2 & ((prov == keeper & has(ev.prov_travels) & !has(brine.took_back)) | rumour(shelf.failed) > 0.5)
+opt: "The oilskin on the peg by the door." -> brine.peg ? count(c.oilskin) == 0
+opt: "Those mittens." -> brine.mittens ? count(c.mittens) == 0
+opt: "Tell me about the bread oven." -> brine.sabine.oven.ask ? !has(prism.green_oven) & !seen(brine.sabine.oven.ask)
+opt: "I know what comes out of your oven besides bread." -> brine.sabine.oven.seen ? (has(prism.green_oven) | has(oven.inferred)) & !has(sabine.oven) & !has(brine.oven_kept)
+claim: "Wenna never left. Your slate says so, and so does your clock." -> brine.sabine.tab.ok / brine.sabine.tab.fail ? has(tab.wenna) & has(brine.clock) {show: !seen(brine.sabine.tab.ok) & seen(brine.sabine.alibi), do: set(said.wenna_never_left); set(heard.sabine.wenna_never_left); set(heard.wenna.wenna_never_left)}
+opt: "Put Wenna's rounds on the Shelf." -> brine.sabine.pay ? has(tab.wenna) & !has(brine.slate_wiped) & count(i.chits) >= 1
+opt: "Who's the man writing at the end of the bar?" -> brine.sabine.lamplighters ? clock < 00:20 & !seen(brine.sabine.lamplighters)
+opt: "The room upstairs." -> brine.room.early ? clock < 00:05 & !has(room.let)
+opt: "The room upstairs." -> brine.room ? clock >= 00:05 & !has(room.let)
+opt: "May I set your clock right?" -> brine.clock.ask ? has(brine.jory) & !has(brine.clock_set) & !has(brine.clock_left)
+opt: "How do you keep the peace in here?" -> brine.stool ? !has(brine.move_stool) & !seen(brine.stool.lesson)
+opt: "Leave her to her glasses." -> brine.hub
+
+@node brine.sabine.away
+cost: 1
+nar: Sabine's stool is empty and still turning on its screw. From the oven's side of the wall comes the low weather of an argument.
+check: "[UNDERTOW] Lean over the bar and read the slate while her back is out of the room." -> brine.slate.read / brine.slate.caught ? !has(tab.wenna) {skill: undertow, dc: 5, verb: hide, noise: 0.1}
+opt: "Go round to the yard." -> brine.yard
+opt: "Wait." -> brine.hub
+
+@node brine.sabine.again.oven
+speaker: SABINE
+cost: 1
+line: SABINE: You again. You've had a look in my oven. I've had a look at you.
+go: brine.sabine
+
+@node brine.sabine.alibi
+speaker: SABINE
+cost: 3
+line: SABINE: Wenna? Left at nine to light up. I remember because the clock struck and she didn't.
+voice: undertow: She brought up the clock. Nobody asked about the clock. {dc: 7}
+go: brine.sabine
+
+@node brine.sabine.dark
+speaker: SABINE
+cost: 3
+line: SABINE: Twenty to ten, the quay went out. Every lamp. My portholes went black as a bill.
+line: SABINE: Then a bit before ten they came back pink. Pink as a gum, all three, the whole quay looking slapped. Then orange.
+voice: candlemas: Red, then pink, then orange. Ten minutes, and it cannot be hurried. {when: !has(lamps.pink)}
+voice: carbon: Twenty to ten. The quay goes out. Sabine does not look at the stove. Why not? {dc: 7}
+if: !has(lamps.pink) => xp(1)
+do: set(lamps.pink)
+go: brine.sabine
+
+@node brine.buy.supper
+speaker: SABINE
+cost: 2
+line: SABINE: An egg and a tea, a chit. A shilling for threepence of comfort, and the ninepence goes on the slate in your favour, where it'll be very happy.
+do: take(i.chits, 1); give(i.egg); give(i.tea); offer(m.owed)
+go: brine.sabine
+
+@node brine.buy.supper.dear
+speaker: SABINE
+cost: 2
+line: SABINE: An egg and a tea. Two chits. Prices went up at midnight, with everything else the Shelf touched.
+do: take(i.chits, 2); give(i.egg); give(i.tea)
+go: brine.sabine
+
+@node brine.buy.rum
+speaker: SABINE
+cost: 2
+line: SABINE: Brine rum, a chit, and it'll take the fear off you and put it back at breakfast with interest. That's the rum's price. Mine's the chit.
+do: take(i.chits, 1); give(i.rum)
+go: brine.sabine
+
+@node brine.buy.rum.dear
+speaker: SABINE
+cost: 2
+line: SABINE: Two chits. Rum's gone up with everything else tonight. Except the rum. The rum's the same.
+do: take(i.chits, 2); give(i.rum)
+go: brine.sabine
+
+@node brine.peg
+speaker: SABINE
+cost: 2
+nar: On the peg by the door hangs an oilskin with a broad man's shoulders still in it.
+line: SABINE: That's a chit for the night, returned dry or paid for twice. It was my uncle's, then it was Jory's, now it's the peg's. The peg won't mind lending.
+opt: "Take it, for a chit." -> brine.peg.take ? count(i.chits) >= 1
+opt: "Leave it on its peg." -> brine.sabine
+
+@node brine.peg.take
+speaker: SABINE
+cost: 1
+nar: The oilskin is too wide at the shoulder by the width of a whole other person.
+line: SABINE: Suits you. It's a coat that's stopped caring.
+do: take(i.chits, 1); give(c.oilskin)
+go: brine.sabine
+
+@node brine.mittens
+speaker: SABINE
+cost: 2
+nar: The mittens are three colours of wool in here, and one under the sodium.
+line: SABINE: Off my own hands? A chit, and my hands go cold, which is another, but I'll waive that one because I like your hat.
+opt: "Buy them, for a chit." -> brine.mittens.take ? count(i.chits) >= 1
+opt: "Let her keep her hands warm." -> brine.sabine
+
+@node brine.mittens.take
+speaker: SABINE
+cost: 1
+nar: They come off her hands warm, which is their whole argument.
+do: take(i.chits, 1); give(c.mittens)
+go: brine.sabine
+
+@node brine.sabine.oven.ask
+speaker: SABINE
+cost: 2
+line: SABINE: Bottles? I sell what's in them. What's left is between me and the oven. Bread's at four.
+voice: undertow: She said bottles. You asked about the oven. {dc: 5}
+go: brine.sabine
+
+@node brine.sabine.oven.seen
+speaker: SABINE
+cost: 3
+line: SABINE: You've seen a loaf with a stone in it. That happens in the cheap ones. I don't promise teeth.
+nar: She goes on wiping the glass.
+opt: "Then it was a stone." -> brine.sabine.oven.kept
+opt: "Leave it there, for now." -> brine.sabine
+
+@node brine.sabine.oven.kept
+speaker: SABINE
+cost: 3
+line: LAMB: Then it was a stone.
+line: SABINE: That's the dearest thing anyone's bought in here this year, and you didn't pay for it. Give me your column.
+nar: She takes the slate down and wipes everything under the little bowler hat.
+line: SABINE: Room's yours from midnight for nothing. Don't tell anyone.
+voice: formletter: It is recorded that the assessor has entered into an understanding with a witness. It is not recorded where. {dc: 5}
+do: set(brine.oven_kept); set(brine.slate_wiped); quest(a1.slate, wiped); rep(brine, 1); seenas_brine = regular; set(said.stone); set(heard.sabine.stone)
+go: brine.sabine
+
+@node brine.sabine.tab.ok
+speaker: SABINE
+cost: 4
+line: SABINE: You've a good memory for other people's chalk. That's tuppence a mark for reading. Call it a shilling.
+line: SABINE: She sat there, and I let her, and I'll let her tomorrow. That costs six years of her wages, and nobody's sent me the bill for it but her.
+nar: By the stove, Wenna's ears have gone the colour of the stove door.
+voice: hearsay: The man at the end of the bar has stopped drinking to write in his cuff. {dc: 4, when: clock < 00:20}
+if: clock < 00:20 => set(book.wenna_never_left)
+do: rep(brine, -1)
+go: brine.sabine
+
+@node brine.sabine.tab.fail
+speaker: SABINE
+cost: 2
+line: SABINE: My slate says what people owe, not where they sat.
+voice: sum: You had the chalk without the clock, or the clock without the chalk. A case wants both. {dc: 4}
+go: brine.sabine
+
+@node brine.sabine.pay
+speaker: SABINE
+cost: 3
+line: LAMB: Put Wenna's rounds on the Shelf. The quarter to ten, the ten past, and the pie.
+line: SABINE: The Shelf's buying a keeper's pie. A chit, and I'll throw in a wipe.
+nar: She holds the chit to the paraffin as if it might be forged, then rubs out Wenna's three marks, and everything in the assessor's column but the hat.
+line: SABINE: You're square here. Square's rare in Gullet. Don't spend it all on the stairs.
+line: WENNA: I pay my own pies.
+nar: She moves her chair four inches toward the assessor.
+do: take(i.chits, 1); set(brine.slate_wiped); quest(a1.slate, wiped); rep(brine, 1); seenas_brine = regular; set(brine.wenna_trusts)
+go: brine.sabine
+
+@node brine.sabine.lamplighters
+speaker: SABINE
+cost: 3
+nar: At the far end of the bar sits a man in a dark coat, a brass pole leaning on the wall beside him.
+line: SABINE: Lamplighter Fewell. They drink small beer and make it last an hour. Nobody makes a pint last an hour unless they're paid to.
+line: SABINE: He writes in his cuff. I've watched him write down the price of an egg. What does Ida Gorm want with the price of an egg?
+go: brine.sabine
+
+@node brine.wenna.start
+speaker: WENNA
+cost: 3
+do: set(met.wenna)
+nar: Up close she is small and round-backed, with white hair cropped by something that was not scissors and hands shiny with old burns. Under the oilskin is a coat of darker cloth.
+line: LAMB: Mrs Tallow. The keeper.
+line: WENNA: That's me. You've come about her.
+line: WENNA: She's not dark. She's got her eye shut. There's a difference, and you'll learn it or you'll go home on the morning boat.
+inst: CANDLEMAS: The coat beneath is oxblood. Nobody on the quay has seen it as oxblood for two years. It is very good oxblood.
+voice: condolence: She sits where she can see the window, the mole, and the place where her lamp should be. She has not looked once since you came in. {dc: 6}
+go: brine.wenna
+
+@node brine.wenna
+speaker: WENNA
+cost: 1
+alt: brine.wenna.silent ? prov == keeper & has(ev.prov_travels) & !has(brine.took_back) & !has(brine.prov_proved) & !(has(ev.blackout) & !has(ev.blackout_ends))
+nar: Wenna looks at the fire as if it owed her money and she had decided not to ask.
+voice: knees: She has been up the stairs tonight and come down them. Her knees are telling her about it in a voice only she can hear. {when: has(wenna.climbs), once}
+voice: condolence: There is a bruise coming up on your cheekbone and she is pretending, kindly, that there is not. {dc: 5, when: has(brine.brawled), once}
+opt: "Where were you when she went out?" -> brine.wenna.where ? !has(brine.wenna_confessed) & !seen(brine.wenna.where)
+opt: "Tell me about yourself, Mrs Tallow." -> brine.wenna.mother ? !seen(brine.wenna.mother)
+opt: "Hold the Damp to her coat." -> brine.wenna.coat.read ? !has(coat.wenna_dry) & damp_wet != 1 & damp_hair != keel {verb: read}
+claim: "Your coat is dry, Mrs Tallow." -> brine.wenna.coat.ok / brine.wenna.coat.fail ? has(coat.wenna_dry) & has(spray.mole) {show: !has(brine.wenna_confessed) & seen(brine.wenna.where), do: set(said.wenna_dry); set(heard.wenna.wenna_dry)}
+claim: "You were here all night. The slate says so." -> brine.wenna.tab.ok / brine.wenna.tab.fail ? has(tab.wenna) {show: !has(brine.wenna_confessed) & seen(brine.wenna.where), do: set(said.wenna_here); set(heard.wenna.wenna_here)}
+claim: "I heard you in the yard with Sabine. Three years." -> brine.wenna.yard.ok / brine.wenna.tab.fail ? has(overheard.last_three) {show: !has(brine.wenna_confessed) & has(overheard.last_three), do: set(said.heard_yard); set(heard.wenna.heard_yard)}
+check: "[CONDOLENCE] You heard her stop. Didn't you." -> brine.wenna.motor.ok / brine.wenna.motor.fail ? has(brine.wenna_confessed) & !has(wenna.heard_motor) {skill: condolence, dc: 7}
+opt: "Tell me about the green glass." -> brine.wenna.glass ? has(brine.wenna_confessed) & (has(brine.wenna_trusts) | has(prism.green_oven) | has(lens.green) | has(oven.inferred)) & !seen(brine.wenna.glass)
+opt: "Come with me to Mother." -> brine.wenna.climb ? has(brine.wenna_confessed) & mother != burning & !has(wenna.climbs) & !has(lens.broken) & !has(ev.blackout)
+opt: "She's out again. Come up with me." -> brine.wenna.again ? has(mother.out_again) & !has(brine.wenna_climbs_again)
+opt: "Ask her for a hair, for the Damp." -> brine.hair.wenna ? has(brine.hair_asked) & damp_hair == pollard
+opt: "The coat under your oilskin." -> brine.wenna.coat.give ? has(brine.wenna_trusts) & count(c.keeper_coat) == 0
+opt: "Leave her to the fire." -> brine.hub
+
+@node brine.wenna.chair
+cost: 2
+nar: The chair by the stove is empty. Beside it, half a pie, the fork laid across at the angle of someone who means to come back.
+line: PIP: First time that chair's been empty at this hour in three years. She's out the back with Sabine. I'm keeping it not my business very carefully.
+go: brine.hub
+
+@node brine.wenna.where
+speaker: WENNA
+cost: 3
+line: WENNA: In the lamp room. Where I always am. She went out, quick, the way they do. She's old. I came down for a man to look at her.
+line: WENNA: A hundred and twelve stairs. You count them, after a while.
+voice: knees: A hundred and twelve stairs down at sixty-four, in the dark, then the mole in the spray. Look at her knees. {dc: 7}
+go: brine.wenna
+
+@node brine.wenna.mother
+speaker: WENNA
+cost: 3
+line: LAMB: Tell me about yourself, Mrs Tallow.
+line: WENNA: She's ninety years old. First order lens, out of Hesk. A hundred and sixty-eight prisms, every one numbered on the edge. She turned on clockwork till the electric, and on a motor since.
+line: WENNA: She throws twenty miles on a clear night. Threw. Four seconds dark, one bright. Ships set their watches by her.
+line: LAMB: That's about her. I asked about you.
+line: WENNA: That's what there is.
+voice: sum: Twenty miles, she says. The Shelf's schedule says eighteen. Old keepers round up. {below: 5}
+go: brine.wenna
+
+@node brine.wenna.coat.read
+cost: 2
+voice: damp: Dry. Bone dry, apart from a drop of beer on the left cuff. Nobody has walked that mole in this coat tonight. I would know. I am from there. {when: damp_hair == pollard}
+voice: damp: My own coat. Dry. I'd know. {when: damp_hair == wenna}
+voice: damp: Dry at the shoulder, dry at the hem, a fleck of beer at the cuff. Not out in spray tonight. {when: damp_hair != pollard & damp_hair != wenna}
+line: WENNA: That's a hair in a box. You're holding a hair in a box at my coat.
+do: set(coat.wenna_dry)
+go: brine.wenna
+
+@node brine.wenna.coat.ok
+speaker: WENNA
+cost: 5
+line: LAMB: The mole's been spray-swept since nine. Anyone who walked it is wet on the windward side. I am. Your coat is dry.
+nar: She smooths the coat over her knee for a long time.
+line: WENNA: It's a good coat.
+line: WENNA: All right. I was here. I've been here every night for three years. The stairs, and the money. They stopped the money, you know. Six years. Pending a review.
+line: WENNA: She comes on by herself now, with the quay. Seven months. I sit here and see her through the window, and I know she's lit, and I have my pie.
+do: set(brine.wenna_confessed)
+go: brine.wenna
+
+@node brine.wenna.coat.fail
+speaker: WENNA
+cost: 2
+line: WENNA: It's an oilskin. It's what they're for. Water runs off.
+voice: precedent: A dry coat proves nothing on its own. Which way was the wind? Was there spray? Get the weather first, then the coat. {dc: 5}
+go: brine.wenna
+
+@node brine.wenna.tab.ok
+speaker: WENNA
+cost: 4
+line: LAMB: A round at a quarter to ten. A round at ten past. A pie.
+line: WENNA: Sabine and her chalk. She'll put me in the ground with a bill on the lid.
+line: WENNA: All right. I was here, every night for three years. I'm sixty-four, there's a hundred and twelve stairs, there's a fire in here, and nobody's paid me since before the sodium.
+do: set(brine.wenna_confessed)
+go: brine.wenna
+
+@node brine.wenna.tab.fail
+speaker: WENNA
+cost: 2
+line: WENNA: You've not seen any slate. You've seen Sabine's back.
+voice: undertow: She knows exactly what is on that slate. Go and look at it. {dc: 5}
+go: brine.wenna
+
+@node brine.wenna.motor.ok
+speaker: WENNA
+cost: 4
+line: WENNA: Twenty to ten. You can hear it, if you've heard it thirty years. There's a motor turns her, under the lens, and it hums a note like a kettle thinking about it. It stopped. Not slowed. Stopped.
+line: WENNA: And I sat with my pie, and I thought, she'll come back with the quay, she always does now, that's what they did to her. And the quay came back, pink, and she didn't.
+line: WENNA: Hot arc wants a hand at the panel after a stop. There's a card by the panel says so. I've not forgotten. I sat.
+voice: carbon: Twenty to ten. Across the water, through a porthole, under the talk of a full bar, a hum stops. She puts her fork down. She picks it up again. {dc: 6}
+do: set(wenna.heard_motor)
+go: brine.wenna
+
+@node brine.wenna.motor.fail
+speaker: WENNA
+cost: 3
+line: WENNA: The motor's a quarter of a horse, off the same feed as the arc. It turns her once in twenty seconds. It's oiled on the first of the month, and it was.
+voice: carbon: The same feed as the arc. Write that down; she did not mean to give it to you. {dc: 5}
+go: brine.wenna
+
+@node brine.wenna.glass
+speaker: WENNA
+cost: 6
+line: WENNA: Glass is glass. She doesn't know the difference. Ships might. Ships are fussy.
+line: WENNA: The deacon pays in coin and he doesn't ask. Sabine fires the oven on bread nights and I bring her the moulds. One prism a month, for six years. Seventy-two, near enough. A third of her, near enough.
+line: WENNA: She's dimmer. I know she's dimmer. Nobody in town can tell, because of the sodium. You can't see anything from under it.
+line: WENNA: The harbourmaster went up in the spring and stood a long while dripping on my floor. Said the Board would see about a new lens. She didn't want a new lens. She wanted her own back.
+line: WENNA: I kept her lit. That's my job. Nobody said I had to keep her honest.
+voice: undertow: A new lens. Paid for by whom? A whole new lens, and nobody would ever count the green. {dc: 7}
+do: set(lens.keel_motive); rumour(lens.green, brine, 0.2)
+opt: "It stays in the Daybook. Not in the Brine." -> brine.wenna.glass.kept
+opt: "The Shelf will have to know." -> brine.wenna.glass.told
+
+@node brine.wenna.glass.kept
+speaker: WENNA
+cost: 2
+line: WENNA: The Daybook. That's your Shelf's book.
+line: WENNA: All right. Things go in books in this town and don't come out. I've kept a book thirty-one years. Nobody's read it.
+voice: formletter: A promise made to a party, in the assessor's own voice, in a bar. Remember that you made it. Dawn will. {dc: 5}
+do: set(brine.wenna_trusts); set(said.kept_glass); set(heard.wenna.kept_glass)
+go: brine.wenna
+
+@node brine.wenna.glass.told
+speaker: WENNA
+cost: 2
+line: WENNA: Good. I'm tired of being the only one who knows. Sabine knows, but she charges for it.
+nar: For the first time tonight the chair takes her whole weight.
+do: set(said.told_glass); set(heard.wenna.told_glass)
+go: brine.wenna
+
+@node brine.wenna.climb
+speaker: WENNA
+cost: 3
+do: quest(a1.stairs, asked)
+nar: Wenna looks at the window for the first time. Along the mole the dark has the shape of a lamp not being lit.
+line: WENNA: My knees.
+check: "[CONDOLENCE] Tell her she's the only one who knows how." -> brine.wenna.climb.yes / brine.wenna.climb.no {skill: condolence, dc: 7}
+claim: "The ferry nearly went onto the Spit tonight. I was on it." -> brine.wenna.climb.yes / brine.wenna.climb.ferry ? has(memory.low_light) & has(wenna.heard_motor) {do: set(said.ferry); set(heard.wenna.ferry)}
+check: "[KNEES] Offer to go up ahead of her, and count." -> brine.wenna.climb.yes / brine.wenna.climb.knees {skill: knees, dc: 6}
+opt: "Leave it, for now." -> brine.wenna
+
+@node brine.wenna.climb.yes
+speaker: WENNA
+cost: 3
+line: WENNA: All right. All right. Somebody ought to see her before they take her eye out and sell it to the Shelf.
+nar: She stands in stages, like a ladder being put up. Under the oilskin is the oxblood coat.
+line: SABINE: Wenna Tallow. Out of that door, your pie's a penny dearer when you come back. I'll keep it warm for nothing.
+line: WENNA: Keep it warm, then.
+do: set(wenna.climbs); quest(a1.stairs, climbing); set(brine.wenna_trusts); rep(brine, 1)
+go: mole.hub
+
+@node brine.wenna.climb.no
+speaker: WENNA
+cost: 2
+line: WENNA: There's men paid to know how. Let them climb. Nobody's paid me since before the sodium.
+nar: She settles back into the chair. It receives her the way a harbour receives a boat.
+do: quest(a1.stairs, refused)
+go: brine.wenna
+
+@node brine.wenna.climb.ferry
+speaker: WENNA
+cost: 2
+line: WENNA: Ships are fussy. I said so.
+line: WENNA: Forty people. And you on it. And you come in here and tell me about it with your coat wet.
+line: WENNA: Not tonight. I've heard her stop. I'm not going up there to find out she won't start for me either.
+do: quest(a1.stairs, refused)
+go: brine.wenna
+
+@node brine.wenna.climb.knees
+speaker: WENNA
+cost: 2
+nar: The assessor stands, and both knees make a small dry sound.
+line: WENNA: You'll count for me. You'll be on forty when I'm on twelve and you'll stop to tell me about it.
+line: WENNA: No. Sit down before you fall down.
+voice: hearsay: Pip laughed. Then Teague. Then, under her breath, Wenna. {dc: 4}
+do: quest(a1.stairs, refused); rep(brine, 1)
+go: brine.wenna
+
+@node brine.wenna.again
+speaker: WENNA
+cost: 3
+alt: brine.wenna.again.easy ? seen(brine.wenna.climb.yes)
+line: WENNA: You put her on with your own hands, by yourself, in your Shelf coat. She went out again with the rain.
+line: WENNA: Now you want my hands.
+check: "[CONDOLENCE] Tell her you should have asked her the first time." -> brine.wenna.again.yes / brine.wenna.again.no {skill: condolence, dc: 7}
+opt: "Leave it." -> brine.wenna
+
+@node brine.wenna.again.easy
+speaker: WENNA
+cost: 2
+line: WENNA: Twice in a night. She's never gone twice in a night.
+line: WENNA: My knees have been up once already. They know the way.
+opt: "Then come." -> brine.wenna.again.yes
+opt: "Leave it." -> brine.wenna
+
+@node brine.wenna.again.yes
+speaker: WENNA
+cost: 3
+nar: She gets up faster than the first time.
+line: WENNA: The board's to come back first. When Hobb puts the quay on, she'll want a hand within the minute, while the arc still remembers.
+voice: dark: The quay is black outside. Wait at the bottom of the stairs with her, in the dark, until the lamps go pink. {when: power.quay != on}
+do: set(brine.wenna_climbs_again); set(wenna.climbs); clear(mole.wenna_home); quest(a1.stairs, dark); set(brine.wenna_trusts)
+go: mole.hub
+
+@node brine.wenna.again.no
+speaker: WENNA
+cost: 2
+line: WENNA: You've your own hands. You've used them. Use them again.
+nar: She turns back to the stove and holds her burnt hands to its heat.
+do: quest(a1.stairs, dark)
+go: brine.wenna
+
+@node brine.wenna.silent
+cost: 2
+nar: Wenna has turned her chair so its back is to the assessor. The back of a chair can say a great deal. This one says it in oak.
+line: SABINE: She's not talking to the Shelf, love. Talking's free. It's the Shelf that's dear.
+opt: "Tell her the midnight word was wrong." -> brine.wenna.takeback
+claim: "You were here all night, and you heard her stop. That's what I wrote." -> brine.wenna.proved / brine.wenna.unproved ? has(wenna.heard_motor) | (has(coat.wenna_dry) & has(tab.wenna))
+opt: "Leave her her back." -> brine.hub
+
+@node brine.wenna.takeback
+speaker: WENNA
+cost: 3
+line: LAMB: The word I sent up the tube at midnight was wrong. I'll say so to anyone who asks, and to some who don't.
+nar: Pip drops a tray, on purpose, so the room has something else to look at.
+line: SABINE: Prices are down, then. A chit, and a penny for the egg. Don't make me raise them again; it's hard on the chalk.
+nar: The chair turns a quarter of the way back. Not more.
+line: WENNA: Wrong's a big word for the Shelf to say in a bar.
+voice: formletter: The Shelf has been informed of nothing. The Brine has been informed of everything. The two will now disagree. {dc: 5}
+do: set(brine.took_back); set(said.took_back); set(heard.wenna.took_back); set(heard.sabine.took_back); rep(brine, 1); seenas_brine = customer
+go: brine.wenna
+
+@node brine.wenna.proved
+speaker: WENNA
+cost: 4
+line: LAMB: The dry coat. The spray since nine. The rounds on the slate. The slow clock. And the motor, which you heard stop.
+nar: The chair turns round.
+line: WENNA: You've got it right. That's worse.
+line: WENNA: I'd sooner you'd got it wrong and I could have hated you for it. Now I've to sit here and be what you wrote.
+do: set(brine.prov_proved)
+go: brine.wenna
+
+@node brine.wenna.unproved
+cost: 2
+nar: The assessor talks to the back of the chair for some time. The back of the chair wins.
+voice: precedent: An accusation without the paper is a rumour in a hat. Get the coat read, or the slate, or her own word. {dc: 4}
+go: brine.hub
+
+@node brine.wenna.coat.give
+speaker: WENNA
+cost: 3
+line: WENNA: Take the coat. Not the oilskin. The other.
+nar: She shrugs off the oxblood coat and folds it over her arm, brass inward.
+line: WENNA: They never paid me to wear it, so it's mine to lend. It knows the stairs. It'll pull you up them if your knees won't.
+do: give(c.keeper_coat)
+go: brine.wenna
+
+# ---------------------------------------------------------------- Pip
+@node brine.pip.start
+speaker: PIP
+cost: 2
+do: set(met.pip)
+nar: The pot girl is wet to just above the knees, a grey line round each leg where the water stopped, exact as the mark on a pier.
+line: PIP: Pip. Gannet. Pots, pints, messages, and the Shelf's tube in the weigh-house, a shilling a week. You'll be who it thumps for.
+go: brine.pip
+
+@node brine.pip
+speaker: PIP
+cost: 1
+opt: "How's the tide?" -> brine.pip.tide
+opt: "The tube." -> brine.pip.tube ? !seen(brine.pip.tube)
+opt: "The Shelf owes you three weeks. Here." -> brine.pip.pay ? has(brine.pip_unpaid) & tab_pip == 0 & count(i.chits) >= 1
+opt: "Ask her for a hair, for the Damp." -> brine.hair.pip ? has(brine.hair_asked) & damp_hair == pollard
+opt: "Let her get on." -> brine.hub
+
+@node brine.pip.tide
+speaker: PIP
+cost: 1
+alt: brine.pip.tide.out ? clock < 23:12
+alt: brine.pip.tide.flood ? clock < 23:48
+go: brine.pip.tide.in
+
+@node brine.pip.tide.out
+speaker: PIP
+cost: 1
+line: PIP: Still going out. Slow now. I can feel it in the backs of my legs, like a dog wanting out.
+go: brine.pip
+
+@node brine.pip.tide.flood
+speaker: PIP
+cost: 1
+line: PIP: Turned. It's coming. The backs of my knees went cold at ten past eleven. It'll want the gully first.
+go: brine.pip
+
+@node brine.pip.tide.in
+speaker: PIP
+cost: 1
+line: PIP: In. Floor's gone. My legs have gone quiet. They don't care about a full harbour, only an empty one.
+go: brine.pip
+
+@node brine.pip.tube
+speaker: PIP
+cost: 3
+line: PIP: It comes in a brass can, thump, into the basket. I put the paper on the hook and I don't read it. That's the shilling. Mostly I don't read it.
+line: PIP: Only the shilling's not come up the tube for three weeks. Three weeks I've minded it for nothing, and the Shelf's a lot to say for something that doesn't pay its girl.
+voice: undertow: Mostly. She said mostly. {dc: 6}
+do: set(brine.pip_unpaid)
+go: brine.pip
+
+@node brine.pip.pay
+speaker: PIP
+cost: 3
+nar: The assessor writes three shillings on a chit and signs it.
+line: PIP: That's a chit, and you've written three on it, and signed. That's more than paid.
+line: PIP: I'll owe you, then. Not the Shelf. You. That's different. The Shelf can whistle.
+do: take(i.chits, 1); tab_pip = 1; rep(brine, 1)
+go: brine.pip
+
+@node brine.teague.start
+speaker: TEAGUE
+cost: 3
+nar: At the table by the door sits a man with two cases, a hatbox and an umbrella strapped together with a belt. Dust lies on the top case in a layer you could date.
+line: TEAGUE: Orrin Teague. I shan't get up; I'm off on the morning boat.
+line: TEAGUE: I have been off on the morning boat for nine years. It has not yet suited.
+go: brine.teague
+
+@node brine.teague
+speaker: TEAGUE
+cost: 1
+nar: Orrin Teague keeps one hand on the belt of his luggage at all times, as a man keeps a hand on a dog that has never once run off.
+opt: "Did Merrow say something in here about Mother?" -> brine.teague.blind ? !seen(brine.teague.blind)
+opt: "You face the stove. You'd see who comes and goes." -> brine.teague.clock ? !seen(brine.teague.clock)
+opt: "That letter in your hand." -> brine.teague.letter ? clock >= 01:30 & clock < 02:40 & count(i.orrin_letter) == 0 & tab_orrin == 0 & !seen(brine.teague.letter.no)
+opt: "Leave him to wait." -> brine.hub
+
+@node brine.teague.blind
+speaker: TEAGUE
+cost: 3
+line: TEAGUE: He said he'd see her blind. Merrow. Four weeks ago, at the bar, after four rums. I count. There is nothing else to do between boats.
+line: TEAGUE: The Trust had chained the Old Light and he'd been going out to that stump since he was a boy. He meant he'd see her blind before he asked the Trust's leave. That's not a threat. That's grammar.
+go: brine.teague
+
+@node brine.teague.clock
+speaker: TEAGUE
+cost: 3
+line: TEAGUE: The Brine's clock is eleven minutes slow. My watch I set to the morning boat every morning, in case. I can tell you when anything happened in this room to the minute.
+line: LAMB: The keeper. When did she leave?
+nar: Teague looks at the stove, and at Wenna's back, and at Sabine, who is looking at him.
+line: TEAGUE: I'm off on the morning boat. I shouldn't like to leave a quarrel behind me.
+do: set(brine.clock); quest(a1.minutes, slow); offer(m.clocks)
+go: brine.teague
+
+@node brine.teague.letter
+speaker: TEAGUE
+cost: 3
+nar: Teague is reading the address on a letter, written nine years ago in a hand that has since grown older than the envelope.
+line: TEAGUE: To my sister, by the station, Hesk. It says I'm coming. I wanted to bring it myself, so it would be true when it arrived.
+line: TEAGUE: You'll be going up the bay at the end of this. You could carry it. Then one of us would have gone.
+opt: "I'll carry it." -> brine.teague.letter.take
+opt: "You should carry it yourself." -> brine.teague.letter.no
+
+@node brine.teague.letter.take
+speaker: TEAGUE
+cost: 2
+nar: He hands it over. His hand stays open afterwards, palm up.
+line: TEAGUE: There. Then I can have another half. A man whose letter's gone can sit as long as he likes.
+do: give(i.orrin_letter); tab_orrin = 1; rep(brine, 1)
+go: brine.teague
+
+@node brine.teague.letter.no
+speaker: TEAGUE
+cost: 1
+line: TEAGUE: I shall. On the morning boat.
+nar: He buttons the letter back into his pocket and pats it twice, the way a person pats a pocket with a ticket in it.
+go: brine.teague
+
+# ---------------------------------------------------------------- Ysolde Penhallow
+@node brine.penhallow.arrive
+speaker: PENHALLOW
+cost: 3
+do: set(met.penhallow)
+nar: The door bangs, and a woman in a pilot coat brings the bay in with her like an untrained dog.
+line: PENHALLOW: Rum. For the light. Not for me. I'll drink it on the light's behalf, since it's not here.
+line: SABINE: The light's tab is closed, Captain. I'll open you one.
+go: brine.hub
+
+@node brine.penhallow.meet
+speaker: PENHALLOW
+cost: 2
+do: set(met.penhallow)
+nar: At the bar sits the master of the Saint Cuthwin, in a pilot coat stiff with salt.
+line: PENHALLOW: You were on my deck. Passenger with the case. You held the rail like a clerk holding a pen.
+go: brine.penhallow
+
+@node brine.penhallow
+speaker: PENHALLOW
+cost: 1
+alt: brine.penhallow.meet ? !has(met.penhallow)
+nar: Penhallow sits facing the porthole that looks along the mole, keeping a watch nobody has set her.
+opt: "The light that turned you." -> brine.penhallow.light ? !seen(brine.penhallow.light)
+opt: "On deck, your clock said twenty-four minutes past ten." -> brine.penhallow.clock ? has(memory.low_light) & !has(ship.clock)
+opt: "Will you sail in the morning?" -> brine.penhallow.sail ? !seen(brine.penhallow.sail)
+opt: "Orrin Teague's letter. Will you carry it?" -> brine.penhallow.letter ? count(i.orrin_letter) >= 1 & !has(brine.letter_given)
+opt: "Leave her to her watch." -> brine.hub
+
+@node brine.penhallow.light
+speaker: PENHALLOW
+cost: 4
+line: PENHALLOW: I steered for Mother. Her flash two points on the starboard bow, and the channel keeps you. She wasn't there. Twenty years and she wasn't there.
+line: PENHALLOW: Then a light, low on the water, bearing west-nor'-west, by the Old Light's stump. I put the helm over to keep off it, and there was the Spit a boat's length to starboard, breaking white.
+line: PENHALLOW: Wreckers show a light to bring you in. That light sent me out.
+line: PENHALLOW: In thirty years of this bay I have met one wrecker, and he was the weather.
+go: brine.penhallow
+
+@node brine.penhallow.clock
+speaker: PENHALLOW
+cost: 3
+line: LAMB: On deck, when the helm went over, your clock said twenty-four minutes past ten.
+line: PENHALLOW: Then it was twenty past. I keep her four minutes fast. It's in the log: clock fast four minutes, by order of the master.
+inst: THE ALMANAC: Four minutes. I could have told you, but nobody asked the Almanac.
+voice: sum: Eighteen past to twenty-five past, he said. Twenty-four less four, she says. {dc: 6, when: has(merrow.light)}
+do: set(ship.clock); offer(m.clocks)
+go: brine.penhallow
+
+@node brine.penhallow.sail
+speaker: PENHALLOW
+cost: 3
+line: PENHALLOW: Not until Mother burns true. I've forty tickets for the morning and a company that'll fine me by the hour, and I'll sit in this bar and drink the fine.
+line: PENHALLOW: She's gone green this year, your Mother. I've logged it every crossing since spring: Mother green, est. half power. The Board has my log every quarter and sends back a receipt.
+voice: smallprint: A ferry's log, received by the Board every quarter since spring. Receipts, signed. {dc: 7}
+go: brine.penhallow
+
+@node brine.penhallow.letter
+speaker: PENHALLOW
+cost: 2
+nar: She puts the letter inside her coat, against the log.
+line: PENHALLOW: I'll carry it when I sail, which is when Mother burns true. Tell him he'll wait for the light like the rest of us.
+do: take(i.orrin_letter); set(brine.letter_given)
+go: brine.penhallow
+
+@node brine.penhallow.window
+speaker: PENHALLOW
+cost: 3
+nar: At twenty to six Penhallow stands at the porthole with her cap on, which on a ship's master means a decision.
+alt: brine.penhallow.window.broken ? has(lens.broken)
+alt: brine.penhallow.window.honest ? (mother == burning & (!has(mother.out_again) | has(brine.wenna_climbs_again))) & lens == green_broken
+alt: brine.penhallow.window.green ? (mother == burning & (!has(mother.out_again) | has(brine.wenna_climbs_again)))
+go: brine.penhallow.window.dark
+
+@node brine.penhallow.window.dark
+speaker: PENHALLOW
+cost: 2
+line: PENHALLOW: Dark. Log: Mother not lit at twenty to six. No sailing. Tell your Shelf.
+go: brine.hub
+
+@node brine.penhallow.window.green
+speaker: PENHALLOW
+cost: 2
+line: PENHALLOW: She burns. Log: Mother lit, green, est. a third power. Master declines to sail.
+inst: CANDLEMAS: She is right. Green, and thin. I would not sail on it either, and I am a photometer.
+go: brine.hub
+
+@node brine.penhallow.window.honest
+speaker: PENHALLOW
+cost: 3
+line: PENHALLOW: White. Thin. Log: Mother white, est. two thirds power. Master will reconsider at the turn of the tide.
+inst: CANDLEMAS: White light at about two thirds of rated strength, and no green in it. Honest. Short-changed, but honest.
+go: brine.hub
+
+@node brine.penhallow.window.broken
+speaker: PENHALLOW
+cost: 3
+line: PENHALLOW: Somebody's put her eye out. You can see the gap from here.
+line: PENHALLOW: Log: Mother's lens broken. No sailing. Notify Hesk.
+go: brine.hub
+
+# ---------------------------------------------------------------- Merrow at the stove (23:50 to 00:40)
+@node brine.merrow.arrive
+speaker: MERROW
+cost: 3
+nar: Merrow is steaming at the stove, wet to the thigh. Under the settle a sack, and on the sack, by chance, Sabine's boot.
+line: MERROW: The sea came for the gully. I came for the stove. Neither of us waited to be asked.
+voice: damp: Wet to the thigh, and drying from the top down. Give me five minutes near him and I will tell you when. {when: damp_wet != 1 & damp_hair == pollard}
+do: set(met.merrow); quest(a1.copper, sack)
+go: brine.hub
+
+@node brine.merrow
+speaker: MERROW
+cost: 1
+nar: Merrow turns at the stove like a joint on a spit. His pipe is cold.
+opt: "Hold the Damp to his trousers." -> brine.merrow.damp ? !has(merrow.wet_thigh) & damp_wet != 1 & damp_hair != keel {verb: read}
+opt: "Where were you tonight?" -> brine.merrow.where ? !seen(brine.merrow.where)
+opt: "I saw a light from the ferry, in the drowned lamp." -> brine.merrow.light ? has(memory.low_light) & !has(merrow.light)
+opt: "Keel says wreckers." -> brine.merrow.rope ? !seen(brine.merrow.rope)
+opt: "The sack under the settle." -> brine.sack ? copper == none & !has(floor.copper_taken) & !has(floor.copper_sunk)
+opt: "The sack on my shoulder." -> brine.sack.carried ? copper == none & has(floor.copper_taken) & count(i.copper_sack) >= 1
+opt: "Ask him for a hair, for the Damp." -> brine.hair.merrow ? has(brine.hair_asked) & damp_hair == pollard
+opt: "Leave him to steam." -> brine.hub
+
+@node brine.merrow.damp
+speaker: MERROW
+cost: 2
+voice: damp: Wet to here, and here is the thigh. Salt, mud, weed. Before ten past eleven that gully was shin-deep. He waded it late. He waded it full. {when: damp_hair == pollard}
+voice: damp: Mud. Gully mud. Thigh. Late. {when: damp_hair == merrow}
+voice: damp: Wet to mid-thigh with salt water, drying from the top. He waded deep water within the hour. {when: damp_hair != pollard & damp_hair != merrow}
+line: MERROW: That's a hair in a box. I had an uncle kept a toe.
+do: set(merrow.wet_thigh)
+go: brine.merrow
+
+@node brine.merrow.where
+speaker: MERROW
+cost: 2
+alt: brine.merrow.where.true ? has(merrow.light)
+line: MERROW: Asleep on my boat.
+nar: He says it to the stove, which is steaming him like a pudding.
+go: brine.merrow
+
+@node brine.merrow.where.true
+speaker: MERROW
+cost: 2
+line: MERROW: In the Old Light. You know that. You'd not be talking to me in a warm room if you didn't.
+go: brine.merrow
+
+@node brine.merrow.light
+speaker: MERROW
+cost: 4
+line: LAMB: I was on the ferry. I saw a light low on the water, in the drowned lamp, as she turned off the Spit.
+nar: Merrow takes the cold pipe out and looks into the bowl.
+line: MERROW: Knocked the lantern out climbing in, at eighteen past. Lit it again at twenty-five past. In between, it was dark in there. I'd know. I was in it.
+line: MERROW: I'm not saying I saved anybody. I'm saying I was there with a light that was out.
+nar: The assessor writes both times down and draws no line between them.
+voice: sum: Twenty-four by the ship's clock, less four. Eighteen to twenty-five, the lantern. {dc: 6, when: has(ship.clock)}
+voice: sum: Twenty-four by the ship's clock. Twenty-five, the lantern. Near enough. {below: 6, when: !has(ship.clock)}
+do: set(merrow.light); quest(a1.lowlight, merrow); rep(lowco, 1); seenas_lowco = witness
+go: brine.merrow
+
+@node brine.merrow.rope
+speaker: MERROW
+cost: 3
+line: MERROW: Wreckers. Gullet's not hanged anybody in sixty years. Keel says it like he's reading the tide table.
+line: MERROW: Copper doesn't care who owns it. Copper's a better citizen than most. The rope cares. That's the difference.
+voice: condolence: He is afraid, and it has gone into his hands. Look at his hands on the pipe. {dc: 6}
+do: offer(m.copper)
+go: brine.merrow
+
+@node brine.merrow.taken
+speaker: SABINE
+cost: 3
+nar: The settle by the stove has a man's shape steamed into the wood and no man in it.
+line: SABINE: Two Lamplighters, at half past, very polite. Wreckers, they said, on the Shelf's say-so. He left his pipe.
+nar: His pipe is on the settle.
+voice: undertow: The sack. They did not look under the settle. {dc: 5, when: copper == none}
+go: brine.hub
+
+# ---------------------------------------------------------------- the sack
+@node brine.sack
+cost: 2
+alt: brine.sack.alone ? has(merrow.cells) | clock >= 00:40
+nar: Under the settle lies a sack. Through a split in the weave show copper wire, gear teeth, and a brass plate stamped TRUST.
+line: MERROW: That's mine. It wasn't, at ten. It is now.
+voice: precedent: Salvage from Trust property without leave. The law calls it theft and the floor calls it Tuesday. {dc: 6}
+go: brine.sack.choose
+
+@node brine.sack.alone
+cost: 2
+nar: The sack is still under the settle. Sabine's boot rests on it again, which means somebody has moved it.
+go: brine.sack.choose
+
+@node brine.sack.choose
+cost: 0
+check: "[GRIP] Carry it out to the yard and bury it in the bottles." -> brine.sack.hide / brine.sack.hide.fail {skill: grip, dc: 6, verb: hide, noise: 0.3}
+opt: "Carry it to the Lamplighter on the step." -> brine.sack.return {verb: carry, noise: 0.1}
+opt: "Write it down for the Shelf and leave it where it is." -> brine.sack.report
+opt: "Leave it under the settle." -> brine.hub
+
+@node brine.sack.hide
+cost: 4
+place: yard
+nar: Twenty green empties come off the stack, the sack goes in, and the empties go back in an order only Sabine would know was new.
+line: SABINE: That's twenty bottles disarranged, and I never saw it.
+voice: formletter: The assessor has concealed stolen property belonging to a party to the claim. The sentence is accurate. Try not to read it twice. {dc: 6}
+do: take(i.copper_sack); copper = hidden; quest(a1.copper, hidden); rep(lowco, 2); seenas_lowco = ours; set(said.sack_hidden)
+go: brine.hub
+
+@node brine.sack.hide.fail
+cost: 4
+place: yard
+nar: At the back step the sack splits. Copper pours over the flags, and a brass plate lands face up and says TRUST to the sky.
+line: SABINE: Well. That's a broom's worth of sweeping.
+nar: She sweeps it under her back step and stands on it. One length of wire is still in the assessor's hand.
+voice: hearsay: The copper is hidden now, and Sabine hid it, and Sabine knows. That is a debt. {dc: 5}
+do: give(s.copper_wire); take(i.copper_sack); copper = hidden; quest(a1.copper, hidden); rep(lowco, 1); set(brine.sabine_has_sack)
+go: brine.hub
+
+@node brine.sack.return
+cost: 4
+speaker: COE
+nar: At the door a Lamplighter is lighting a pipe in the lee of the hull.
+line: COE: Trust property. Written down. Thank you, assessor.
+nar: He writes it in his cuff and goes off along the quay with the sack on one shoulder and his pole on the other.
+do: take(i.copper_sack); copper = returned; quest(a1.copper, returned); rep(lowco, -2); rep(trust, 1); set(book.copper); set(said.sack_returned)
+go: brine.hub
+
+@node brine.sack.report
+cost: 3
+nar: The assessor writes, where anyone may watch: Item: one sack, Trust copper, under a settle. Owner absent. Finder known.
+line: MERROW: The Shelf's a long way off. The rope's not.
+voice: precedent: Reported, not seized. The Shelf will decide in daylight, months from now. {dc: 5}
+do: take(i.copper_sack); copper = reported; quest(a1.copper, reported); rep(shelf, 1); rep(lowco, -1)
+go: brine.hub
+
+# ---------------------------------------------------------------- the pilgrims come in (23:50)
+@node brine.pilgrims
+cost: 2
+nar: At ten to midnight the Congregation comes in out of the rain and shelves its bell jars, a row of glass heads waiting to be called for.
+nar: The deacon comes in dripping, with a choirboy of nine and a woman who keeps her jar on. Behind them, off the floor with a cockle rake, an old woman of eighty-one takes the seat by the stove that is not Wenna's.
+line: SABINE: Jars on the shelf, prayers at the door, and a halfpenny off for the deacon if he drips in the bucket.
+go: brine.hub
+
+# ---------------------------------------------------------------- Nan Cockle
+@node brine.cockle
+speaker: COCKLE
+cost: 1
+alt: brine.cockle.meet ? !has(met.cockle)
+nar: Nan Cockle is drying from the hip down, her rake across her knees.
+opt: "Tell me about the Old Light." -> brine.cockle.door ? clock >= 01:30 & !seen(brine.cockle.door)
+opt: "Jory Brine." -> brine.cockle.jory ? has(brine.clock) & !has(brine.jory) & clock >= 01:30
+opt: "Leave her to dry." -> brine.hub
+
+@node brine.cockle.meet
+speaker: COCKLE
+cost: 3
+do: set(met.cockle)
+line: COCKLE: My fifth Low Night this low. The first, a pram wheel; I was five. The second, a cask of something I've forgotten. The third, the Pennock boy, alive. The fourth, nineteen years back, a bell I gave to a widow. This one, nothing yet.
+voice: undertow: A bell, given to a widow, nineteen years ago. Which widow? Look behind the bar. {dc: 7}
+go: brine.cockle
+
+@node brine.cockle.door
+speaker: COCKLE
+cost: 5
+line: COCKLE: My first Low Night it had a door. Iron, gone green, at the foot of the tower. I walked out to it at five and my mother didn't know.
+line: COCKLE: I went in. Stairs going up into nothing. On the wall, the keepers' names cut with a nail, and the last with no date, because he went up the stairs one night and the stairs weren't there.
+line: COCKLE: The door rusted through between my third Low Night and my fourth, and the hole's what's left. That's the hole Tub crawls into. That hole's a door.
+voice: carbon: A door, then a hole. A lantern hung in a door looks, from the sea, as if someone is home. {dc: 6}
+voice: dark: The last name, with no date. Do not think about it. You are thinking about it. {dc: 5}
+do: rep(lowco, 1)
+go: brine.cockle
+
+@node brine.cockle.jory
+speaker: COCKLE
+cost: 6
+line: COCKLE: Jory Brine. Everyone who looks at that clock ends up asking me, because Sabine charges for it and I don't.
+line: COCKLE: My fourth Low Night, nineteen years back. Jory took the clock down at teatime to wind it, dropped it, hung it back. Nobody knew it had lost eleven minutes. A clock doesn't look ashamed.
+line: COCKLE: He went out on the floor for the bell off the Pennock wreck. Told Sabine he'd be back by the gully's shutting, half past eleven by the clock. He came back by the clock, to the minute.
+line: COCKLE: The gully had shut eleven minutes before. I was on the steps with a lantern, shouting. You can't shout eleven minutes.
+nar: Behind the bar Sabine dries the same glass. She lets Cockle tell it every year so that she will not have to.
+line: COCKLE: I got the bell off the mud in the spring and gave it her. She never hung it. She adds the eleven minutes for everyone else. For herself it's still the time he thought it was.
+if: !has(brine.jory) => xp(1)
+do: set(brine.jory); quest(a1.minutes, jory)
+go: brine.cockle
+
+# ---------------------------------------------------------------- Sister Gauze
+@node brine.gauze
+speaker: GAUZE
+cost: 2
+alt: brine.gauze.menu ? seen(brine.gauze.menu)
+nar: Sister Gauze sits under her bell jar, as she has for eleven years. A patch of breath at mouth height grows and shrinks. Her stout has a long straw.
+line: LAMB: Good evening, Sister.
+nar: The words take a while to get round the inside of the glass.
+line: GAUZE: Evening. You'll be the Shelf. Under the lamps the air is orange, and it gets in. Under the jar the air is only my own.
+go: brine.gauze.menu
+
+@node brine.gauze.menu
+speaker: GAUZE
+cost: 0
+opt: "Why the jar?" -> brine.gauze.why ? !seen(brine.gauze.why)
+opt: "Does the deacon keep many relics?" -> brine.gauze.relics ? !seen(brine.gauze.relics)
+opt: "Leave her to her straw." -> brine.hub
+
+@node brine.gauze.why
+speaker: GAUZE
+cost: 3
+line: GAUZE: Very well, thank you, and you.
+line: GAUZE: Brother Ambrose said the light came out of the Old Bulb and into him. I thought, if light can get into a person, I would like some say in what else does.
+go: brine.gauze.menu
+
+@node brine.gauze.relics
+speaker: GAUZE
+cost: 3
+line: GAUZE: He holds every one up to a candle. You can hear the little catch in his breath. Glass carries a sigh very well. It is the only thing glass carries well.
+line: GAUZE: He keeps a green one apart, in a matchbox. He says it is a lesson. I have never asked in what.
+go: brine.gauze.menu
+
+# ---------------------------------------------------------------- the deacon, dripping
+@node brine.fennick
+speaker: FENNICK
+cost: 2
+alt: brine.fennick.wet ? clock >= 01:30 & !seen(brine.fennick.wet)
+nar: The deacon drips onto the boards, devoutly.
+line: FENNICK: Assessor. Even a church comes in out of the rain. Low light, low water, low voices. Sabine's is the warmest circuit on the quay.
+opt: "Tell me about the splinters of the Eye." -> brine.fennick.grace ? !seen(brine.fennick.grace)
+opt: "Leave him to his bucket." -> brine.hub
+
+@node brine.fennick.grace
+speaker: FENNICK
+cost: 4
+line: FENNICK: They come up at low water, by grace. Splinters of the Eye. We number them. The Lord is an engineer, assessor. He leaves a schedule.
+line: FENNICK: Grace is not a transaction. Grace is a supply. One draws on it.
+voice: chit: A supply. Somewhere there is a meter, and somebody reads it. {dc: 5}
+voice: precedent: Sea glass comes up frosted. A splinter washed down from a lamp would come up blind. Ask to see one with sharp edges. {dc: 7}
+do: offer(m.grace)
+go: brine.hub
+
+@node brine.fennick.wet
+speaker: FENNICK
+cost: 4
+nar: The deacon kneels at a table with a candle stub, lit for no one in particular.
+line: FENNICK: Wenna comes to service. Rarely to pray. Always on the first of the month. It is a kind of liturgy, assessor, the first of the month. Rent is a liturgy. Wages were.
+voice: undertow: The first of the month. Count the months in six years. {dc: 7}
+opt: "Tell me about the splinters of the Eye." -> brine.fennick.grace ? !seen(brine.fennick.grace)
+opt: "Leave him to his candle." -> brine.hub
+
+# ---------------------------------------------------------------- Tobit
+@node brine.tobit
+speaker: TOBIT
+cost: 2
+nar: A boy of nine in a choir smock holds a bell jar too big for him on his knees.
+line: TOBIT: The lamps went pink. I made a hymn about it. Do you want the hymn? It's a penny. Sabine said I should charge.
+opt: "Sing it, then. I'll owe you the penny." -> brine.tobit.hymn ? !seen(brine.tobit.hymn)
+opt: "Leave him to mind his jar." -> brine.hub
+
+@node brine.tobit.hymn
+speaker: TOBIT
+cost: 3
+nar: He stands on the bench to do it properly.
+line: TOBIT: Out went the quay and out went the light, up came the pink like a cut in the night. Pink for a minute, and orange for good. The Lord put it back as we knew that He would.
+nar: The Brine applauds. It has heard it eleven times since ten o'clock.
+line: TOBIT: That's a penny. You owe me. I'll write it down.
+if: !has(lamps.pink) => xp(1)
+do: set(lamps.pink); offer(m.pink); rep(congregation, 1)
+go: brine.hub
+
+@node brine.tobit.asleep
+cost: 2
+nar: Under the far table Tobit is asleep on a flour sack, his bell jar on its side where the first boot will kick it.
+opt: "Set his jar upright and out of the way of boots." -> brine.tobit.jar
+opt: "Leave him sleeping." -> brine.hub
+
+@node brine.tobit.jar
+cost: 1
+nar: The assessor sets the jar upright, out of the way of boots. He says something in his sleep that sounds like a price.
+do: set(brine.tobit_jar); rep(congregation, 1)
+go: brine.hub
+
+# ---------------------------------------------------------------- the clock (a1.minutes)
+@node brine.clock
+cost: 2
+nar: Over the bar hangs a brass ship's clock with a crack across its glass from nine to three. It ticks with the confidence of a clock that knows it is wrong.
+nar: It is eleven minutes behind the assessor's watch.
+voice: sum: Eleven minutes slow. Not ten, not twelve. A clock that loses keeps losing. This one stopped and kept the loss. Somebody keeps it exactly this wrong. {dc: 6}
+inst: THE ALMANAC: The sea keeps proper time. Everything else in Gullet is approximately sincere.
+line: SABINE: It's slow. Eleven minutes, since my husband dropped it. Everyone knows. I add it on for them.
+do: set(brine.clock); quest(a1.minutes, slow); offer(m.clocks)
+opt: "Ask Sabine why she has never set it right." -> brine.clock.why ? !has(brine.jory) & !seen(brine.clock.why)
+opt: "Ask Sabine if you may set it right." -> brine.clock.ask ? has(brine.jory) & !has(brine.clock_set) & !has(brine.clock_left)
+opt: "Leave it ticking." -> brine.hub
+
+@node brine.clock.why
+speaker: SABINE
+cost: 2
+line: SABINE: That's a story, love, and stories are the dearest thing I sell. Ask Nan Cockle when it rains. She gives it away and I let her.
+go: brine.hub
+
+@node brine.clock.ask
+speaker: SABINE
+cost: 3
+line: LAMB: May I set it right?
+nar: Sabine looks at the clock. Not at its face. At the crack.
+line: SABINE: It's been eleven minutes wrong for nineteen years. Go on, then. It's free. It's the only free thing in the house, and I'd rather not watch.
+opt: "Set it right." -> brine.clock.set {verb: rig, noise: 0}
+opt: "Leave it as he left it." -> brine.clock.leave
+
+@node brine.clock.set
+cost: 3
+nar: The assessor stands on the rail of the bar, opens the cracked glass, and moves the minute hand on by eleven minutes, gently, the way one closes someone's eyes.
+nar: Several people take out their watches and find they have been carrying the true time all along, and correcting for her.
+line: SABINE: There. Now I'll have to stop adding. That'll save me a fortune in arithmetic.
+nar: Her voice is steady. She goes into the back for something she does not come back with.
+do: set(brine.clock_set); quest(a1.minutes, set)
+go: brine.hub
+
+@node brine.clock.leave
+speaker: SABINE
+cost: 2
+line: SABINE: That's the dearest thing you've left alone all night.
+nar: She puts an egg in front of the assessor and does not charge for it.
+do: set(brine.clock_left); quest(a1.minutes, left); rep(brine, 1); give(i.egg)
+go: brine.hub
+
+# ---------------------------------------------------------------- the slate (C7, m.owed)
+@node brine.slate
+speaker: SABINE
+cost: 2
+alt: brine.sabine.away ? clock >= 23:20 & clock < 23:30
+alt: brine.slate.fog ? fog > 0.03 & clock >= 23:30 & clock < 00:00 & !seen(brine.slate.fog)
+nar: The slate is behind Sabine, and Sabine is wider than the slate.
+line: SABINE: Customers' accounts are customers' business, love. Reading's tuppence a line.
+voice: hearsay: Tell her someone is at her bottles. She cannot bear a bottle out of place. {dc: 5}
+voice: undertow: Wait for the fog. When the fog comes, the yard calls her. {dc: 4}
+check: "[HEARSAY] Mention, carelessly, someone at the bottles in the yard." -> brine.slate.read / brine.slate.fail {skill: hearsay, dc: 7}
+check: "[SUM] Read the slate backwards in the clock's glass, and add eleven." -> brine.slate.mirror / brine.slate.mirror.fail ? seen(brine.clock) {skill: sum, dc: 6, verb: read, noise: 0}
+opt: "Leave the slate to her." -> brine.hub
+
+@node brine.slate.fog
+cost: 1
+nar: The fog has got into the yard. Somebody out there calls about the bread, and Sabine goes.
+check: "[UNDERTOW] Lean over the bar and read the slate before she is back." -> brine.slate.read / brine.slate.caught ? !has(tab.wenna) {skill: undertow, dc: 5, verb: hide, noise: 0.1}
+opt: "Leave it." -> brine.hub
+
+@node brine.slate.fail
+speaker: SABINE
+cost: 2
+nar: Sabine turns the slate to the wall without looking. Its back is a second slate.
+line: SABINE: My bottles are counted, love. Tuppence for the try. I'll put it on your column.
+nar: She chalks tuppence under a little bowler hat. The assessor has been in the Brine a matter of minutes and already owes it money.
+do: offer(m.owed)
+go: brine.hub
+
+@node brine.slate.read
+cost: 3
+nar: Each column has a drawing at its head. A drip, for the harbourmaster, settled in full this evening and underlined twice. A fish with a halo, owing four pounds. A bowler hat, newly begun.
+nar: In the column marked with a lighthouse: a round at a quarter to ten. A round at ten past ten. A pie.
+nar: Wenna did not leave at nine. Wenna did not leave.
+voice: sum: By the Brine's clock, so add eleven. Four minutes to ten and twenty-one past, true time. {dc: 5, when: has(brine.clock)}
+voice: undertow: Settled in full this evening, for the first time in eleven years. Before or after he telegraphed the Shelf? {dc: 7}
+do: set(tab.wenna); quest(a1.slate, tab); offer(m.owed)
+go: brine.hub
+
+# ---------------------------------------------------------------- the doorway (m.colour)
+@node brine.doorway
+cost: 2
+nar: The assessor stands in the doorway with Candlemas, half in the paraffin and half under the sodium.
+nar: The right sleeve is navy. The left is the colour of a lamp. It is one coat.
+inst: CANDLEMAS: Navy. And on that side, nothing I will name. Remember what it was in here and you will know what it is out there. I cannot do that for you.
+do: offer(m.colour)
+go: brine.hub
+
+# ---------------------------------------------------------------- the porthole lamp (l.brine_porthole)
+@node brine.porthole
+speaker: SABINE
+cost: 2
+nar: The porthole lamp over the back door was the Brine's riding light when it was a boat. Collar sheared, glass gone, the yard dark for a year.
+line: SABINE: Mend it if you like. The yard's been dark a year.
+voice: hearsay: A lit yard is a yard nobody whispers in. Think about who whispers in that yard before you light it. {dc: 6}
+opt: "Mend it: bottle glass in the eye, brass round the collar." -> brine.porthole.mend ? count(s.bottle_glass) >= 1 & count(s.brass) >= 1 {verb: light, noise: 0.1}
+opt: "Leave it dark." -> brine.hub
+
+@node brine.porthole.mend
+speaker: SABINE
+cost: 15
+nar: The bottle glass goes into the eye and the brass round the collar, and Pip passes up a spill from the stove.
+nar: The yard lights green-gold, and the stack of empties throws back a hundred small reflections.
+inst: CANDLEMAS: Paraffin through bottle glass. Faintly green. The bottles are seeing a relative.
+line: SABINE: That's a lamp I didn't pay for.
+do: project(l.brine_porthole); rep(brine, 1)
+go: brine.hub
+
+# ---------------------------------------------------------------- the stove
+@node brine.stove
+cost: 10
+nar: The assessor sits on the settle across from Wenna's chair, by a brass rail where generations of wet socks have been dried and argued over.
+nar: The coat steams at the shoulders.
+do: meter(cold, -2)
+go: brine.hub
+
+@node brine.dry
+cost: 10
+nar: Ten minutes holding the Damp to the stove until its hair stops weeping. Nobody in the Brine finds this strange.
+voice: damp: Thank you. I was a man's hair once. He used to sit like this. {when: damp_hair == pollard}
+voice: damp: Dry. Reading again. {when: damp_hair != pollard}
+do: damp_wet = 0
+go: brine.hub
+
+# ---------------------------------------------------------------- the bread oven (C8)
+@node brine.oven
+speaker: SABINE
+place: oven
+cost: 1
+alt: brine.oven.sneak ? clock >= 23:20 & clock < 23:30
+alt: brine.oven.open ? has(brine.sabine_let_oven) | has(brine.oven_kept) | has(sabine.oven)
+alt: brine.oven.fog ? fog > 0.03 & clock >= 23:30 & clock < 00:30 & !seen(brine.oven.fog)
+nar: The bread oven is in the wall behind the bar, ticking with heat. Sabine stands in front of it.
+line: SABINE: Behind my bar's a shilling a step, love. Bread's at four.
+voice: chit: Buy a hot loaf from the back of the oven, at any price. Make her open it herself. {dc: 5}
+check: "[THE CHIT] Buy a hot loaf, from the back of the oven, now." -> brine.oven.bought / brine.oven.cold {skill: chit, dc: 7}
+opt: "Hold the Damp toward the oven door from across the bar." -> brine.oven.damp ? damp_wet != 1 & damp_hair != keel & !seen(brine.oven.damp) {verb: read, noise: 0}
+opt: "Wait for the yard to call her away." -> brine.hub {verb: wait}
+
+@node brine.oven.bought
+speaker: SABINE
+place: oven
+cost: 2
+line: SABINE: From the back? The back's where the dear ones are. A chit, and I'll not do it twice.
+nar: She reaches past something on the oven floor for a loaf, without looking at the something, which is how the assessor knows where to look.
+do: take(i.chits, 1); set(brine.sabine_let_oven)
+go: brine.oven.open
+
+@node brine.oven.cold
+speaker: SABINE
+cost: 2
+nar: Sabine puts yesterday's loaf on the bar, as hard as a verdict.
+line: SABINE: Back of the oven's not done. That one's done. The oven stays shut till four, same as every Low Night.
+voice: sum: Bread at four. The oven is fired again before that. Twenty to, say. Note the hour. {dc: 4}
+go: brine.hub
+
+@node brine.oven.open
+place: oven
+cost: 3
+nar: Among the loaves sits a wedge of glass in a clay mould, the shape of one of Mother's prisms.
+inst: CANDLEMAS: Green. Unarguably, vulgarly green. That is no lens-maker's glass. It bends light like a drunk turning a corner. Take it out under the sodium and I will deny I ever saw it, so look now.
+voice: grip: Still hot. The clay holds it. Your fingers will tell you before your brain does. {dc: 3, when: clock < 01:30}
+do: set(prism.green_oven); quest(a1.slate, oven)
+check: "[GRIP] Lift it out, hot as it is." -> brine.oven.take.hot / brine.oven.burn ? count(i.prism_green) == 0 & clock < 01:30 {skill: grip, dc: 6, verb: carry, noise: 0}
+opt: "Lift it out. It has cooled." -> brine.oven.take ? count(i.prism_green) == 0 & clock >= 01:30
+opt: "Close the oven door on it." -> brine.hub
+
+@node brine.oven.take
+place: oven
+cost: 2
+nar: The prism comes out of the mould with a small sound, like a tooth leaving. It is heavier than it should be, which is the sort of thing the assessor is paid to notice.
+do: give(i.prism_green)
+go: brine.hub
+
+@node brine.oven.burn
+place: oven
+cost: 2
+nar: The fingers decide before the assessor does. The prism drops back among the loaves.
+voice: grip: Told you. Cool them in the rain, or wait for the glass to cool, and try again. {below: 6}
+go: brine.hub
+
+# ---------------------------------------------------------------- the oven again (03:40 to 03:50, beat 29)
+@node brine.oven.fire
+speaker: SABINE
+place: oven
+cost: 4
+nar: At twenty to four Sabine feeds the oven. Bread night.
+nar: Then she takes four empty clay moulds from her apron and lays them on the coals like a woman putting letters on a fire.
+voice: carbon: Clay does not burn. It cracks. By morning they will be four bits of brick among the ash. {dc: 5}
+do: set(brine.moulds)
+claim: "You cast them here. Tonight, and for six years." -> brine.oven.admit / brine.oven.deny ? (has(prism.green_oven) | has(oven.inferred)) & has(overheard.last_three) {do: set(said.oven); set(heard.sabine.oven)}
+opt: "Hand her the next loaf, and say nothing." -> brine.oven.quiet
+opt: "Leave her to the bread." -> brine.hub
+
+@node brine.oven.admit
+speaker: SABINE
+place: oven
+cost: 5
+line: SABINE: Six years. On bread nights. Wenna brings the moulds and I bring the bottles, and a loaf of glass comes out with the loaves, and she took it up the stairs, when she took things up the stairs.
+line: SABINE: A penny's worth of empties a month to keep her in pie, and the deacon's coin to keep her in coal. What did it cost? Mother's a third green and Wenna's still alive. I'd pay it again. I'd charge you double to watch.
+line: SABINE: That was the last three, tonight. I told her. With the Shelf on the quay I'll not fire for glass again.
+nar: She shuts the oven door.
+do: set(sabine.oven); quest(a1.slate, oven)
+go: brine.hub
+
+@node brine.oven.deny
+speaker: SABINE
+place: oven
+cost: 2
+line: SABINE: Bread night, love. Flour, salt, a peel. Moulds are for jellies. I'm a great one for a jelly.
+voice: precedent: She will not admit to the oven on the strength of the oven. Somebody must have heard her say it. {dc: 5}
+go: brine.hub
+
+@node brine.oven.quiet
+place: oven
+cost: 4
+do: silent_scene = 1
+nar: The assessor hands her the next loaf, and says nothing, and she takes it and says nothing.
+line: SABINE: You'd make a baker. Bakers keep their mouths shut. It's the heat.
+do: rep(brine, 1)
+go: brine.hub
+
+# ---------------------------------------------------------------- the yard (C11, beat 8)
+@node brine.yard
+place: yard
+cost: 1
+alt: brine.yard.overhear ? clock >= 23:20 & clock < 23:30 & fog > 0.03 & !has(overheard.last_three)
+alt: brine.yard.seen ? clock >= 23:20 & clock < 23:30 & !has(overheard.last_three)
+nar: Behind the Brine stand barrels, a mangle, and a stack of green bottles taller than a man. The back door is propped on a brick.
+voice: vane: West, still! The oven chimney has thrown its smoke east all evening, right across the weigh-house. Somebody baked at eight! {when: clock < 23:35}
+voice: vane: South-west and wet! The yard is a sluice! Everything says itself into the rain! {when: clock >= 23:35 & clock < 04:10}
+go: brine.yard.menu
+
+@node brine.yard.menu
+cost: 0
+opt: "Look at the bottles." -> brine.yard.bottles ? !seen(brine.yard.bottles)
+opt: "Knock the punt out of a bottle." -> brine.yard.punt ? !has(brine.bottle_glass) {verb: salvage, noise: 0.2}
+opt: "Rake the oven out through its ash door with the bread peel." -> brine.yard.rake ? count(i.prism_green) == 0 & !has(prism.green_oven) & !has(brine.ash_latched) {verb: pry, noise: 0.3}
+opt: "Go in by the back door, to the oven." -> brine.oven
+opt: "Go back into the bar." -> brine.hub
+opt: "Take the yard lane to the Gut." -> gut.hub ? has(gut.open) +2
+opt: "Go round to the quay." -> quay.hub +1
+
+@node brine.yard.overhear
+place: yard
+cost: 5
+nar: The fog has the yard. Through the back door, two women's voices carry straight to the bottle stack.
+line: SABINE: That's the last three. I'm not firing that oven for glass again, Wenna. Not with the Shelf on the quay. You've not been up those stairs at night in three years, and you'll not go up them tonight on my glass.
+line: WENNA: She needs three more for the bottom ring. The bottom ring's the one the ships see.
+line: SABINE: The ships can see the Spit, then. Eat your pie.
+line: WENNA: Then I'll go to the deacon for coal and you'll be a pie customer short.
+line: SABINE: I've been a customer short before. I bore it.
+inst: THE VANE: Straight from the door to your ear! Lucky! Or I am very good!
+do: set(overheard.last_three)
+go: brine.yard.menu
+
+@node brine.yard.seen
+place: yard
+speaker: SABINE
+cost: 2
+nar: The yard is open to the quay lamps. Two voices stop at once. Sabine's face appears in the doorway and smiles.
+line: SABINE: Evening, love. The fog's no help to you. You're not standing in it.
+voice: dark: Too much light. Wait for the fog to thicken, and come back a shape. {dc: 4}
+go: brine.yard.menu
+
+@node brine.yard.bottles
+place: yard
+cost: 2
+nar: Some bottles have their bottoms knocked out, neatly, all the same way. A punt weighs exactly what a mould the length of a finger would want.
+voice: carbon: A cloth, a tap. One bottle a month, for years, at the back door. {dc: 5}
+go: brine.yard.menu
+
+@node brine.yard.punt
+place: yard
+cost: 2
+nar: One tap with the Vane's stick and a punt drops into the assessor's hand.
+inst: THE VANE: I am a wind instrument. Not a hammer. Please write that down.
+do: give(s.bottle_glass); set(brine.bottle_glass)
+go: brine.yard.menu
+
+# ---------------------------------------------------------------- the room above the Brine (beat 20)
+@node brine.room
+place: room
+cost: 1
+alt: brine.room.early ? !has(room.let) & clock < 00:05
+alt: brine.room.let ? !has(room.let)
+nar: The room is the hull's bow, turned over, with a round window looking along the quay to the mole. It holds a stove the size of a hatbox, a bed, a bench made of a door, and a wall of bare planking, the only straight thing in the room.
+opt: "Stand at the round window." -> brine.room.window
+opt: "Go to the bench." -> bench
+opt: "Go to the wall." -> wall
+opt: "Dry the Damp at the stove." -> brine.room.dry ? damp_wet == 1
+opt: "Sit by the stove." -> brine.room.stove
+opt: "Put on the dry socks folded on the bed." -> brine.room.socks ? !has(brine.socks)
+opt: "The dark coat on the hook." -> brine.room.hobb ? tab_hobb == 1 & !has(brine.hobb_coat)
+opt: "Go down to the bar." -> brine.hub
+
+@node brine.room.early
+speaker: SABINE
+cost: 2
+line: SABINE: Room's let from five past midnight, love, a chit a night. Before that it's mine, and I've not finished being in it.
+go: brine.hub
+
+@node brine.room.let
+speaker: SABINE
+place: room
+cost: 4
+alt: brine.room.let.free ? has(brine.slate_wiped)
+nar: Sabine takes a candle and goes up the stair, which is a ship's ladder with ambitions.
+line: SABINE: A chit a night. Stove, bed, bench, a wall to look at. Coal's in the price. Candles aren't.
+opt: "Take it, for a chit." -> brine.room.take ? count(i.chits) >= 1
+opt: "I've no chits left." -> brine.room.nochit ? count(i.chits) == 0
+opt: "Not yet." -> brine.hub
+
+@node brine.room.take
+speaker: SABINE
+cost: 1
+line: SABINE: Done. If you see anything on the wall in the morning, it's what you put there.
+do: take(i.chits, 1); set(room.let); quest(a1.room, let)
+go: brine.room
+
+@node brine.room.let.free
+speaker: SABINE
+place: room
+cost: 2
+nar: Sabine takes a candle and goes up the stair, which is a ship's ladder with ambitions.
+line: SABINE: Your column's clean, so the room's free. Don't tell anyone.
+do: set(room.let); quest(a1.room, let)
+go: brine.room
+
+@node brine.room.nochit
+speaker: SABINE
+cost: 2
+line: SABINE: No chits. Then it's a favour, and favours are the dearest thing in Gullet. Sleep in it. You'll owe me.
+nar: Later there is a new mark under the bowler hat: a little drawing of a bed.
+do: set(room.let); quest(a1.room, let)
+go: brine.room
+
+@node brine.room.window
+place: room
+cost: 2
+voice: candlemas: Green. Four seconds dark, one bright, and the bright is the colour of a bottle. Weak, too. {when: (mother == burning & (!has(mother.out_again) | has(brine.wenna_climbs_again)))}
+voice: candlemas: Nothing at the end of the mole. I am a photometer. I do not measure absences, though for her I could make an exception. {when: !(mother == burning & (!has(mother.out_again) | has(brine.wenna_climbs_again)))}
+go: brine.room
+
+@node brine.room.dry
+place: room
+cost: 10
+voice: damp: Dry. I can read again. You keep a warm room. {when: damp_hair != pollard}
+voice: damp: Dry. Assessor Pollard would have liked this room. He would have complained about it. {when: damp_hair == pollard}
+do: damp_wet = 0
+go: brine.room
+
+@node brine.room.stove
+place: room
+cost: 20
+nar: The assessor spends twenty minutes in the one chair, with the Brine's noise coming up through the boards like weather heard from a cellar.
+do: meter(cold, -3); meter(wear, -1)
+go: brine.room
+
+@node brine.room.socks
+place: room
+cost: 2
+nar: The socks on the bed are grey, darned at the heels in different decades, and so dry they crackle.
+do: set(brine.socks); meter(cold, -2)
+go: brine.room
+
+@node brine.room.hobb
+place: room
+cost: 2
+nar: On the hook behind the door hangs a Lamplighter's dark coat with a note pinned to it in careful capitals: FOR THE ASSESSOR. IN CASE. C. HOBB.
+do: give(c.lamplighter_coat); set(brine.hobb_coat)
+go: brine.room
+
+@node bench
+place: room
+cost: 1
+nar: The bench is a door on two barrels, its brass knob still on, so the bench can be opened if it ever comes to that.
+voice: damp: Before you start. A word. From the hair. {when: damp_hair == pollard & !has(brine.hair_asked)}
+opt: "Listen to the Damp." -> brine.hair.ask ? damp_hair == pollard & !has(brine.hair_asked)
+opt: "Rehair the Damp." -> brine.hair.choose ? damp_hair == pollard & has(brine.hair_asked)
+opt: "Put the Kit away." -> brine.room
+
+# ---------------------------------------------------------------- the wall (shared entry): the case board
+@node wall
+place: room
+cost: 1
+nar: Sabine has taken down a Hesk Glassworks calendar to make room for the wall, and left a pale rectangle where four years of months used to be.
+nar: Whatever the assessor pins here, the assessor will have to look at.
+if: has(tab.wenna) | has(prism.green_oven) | has(coat.wenna_dry) | has(overheard.last_three) | has(claim.time) | has(works.order) | has(prints.read) | has(scales.switch) => quest(a1.room, wall)
+voice: carbon: Pin it as it happened. The steps here, the drowned lamp there, a chalk line between. {dc: 5}
+opt: "Step back from the wall." -> brine.room
+
+# ---------------------------------------------------------------- the Damp's hair (beat 24)
+@node brine.hair.ask
+place: room
+cost: 3
+inst: THE DAMP: I have been Assessor Pollard for twelve years in this box. Retired or deceased; the paperwork disagrees, and I have stopped asking it.
+inst: THE DAMP: I am tired of reading the world as a man who was never dry. I should like to be someone else.
+inst: THE DAMP: There are people downstairs with more hair than they need. Ask one. Or give me yours, and find out what you sound like.
+do: set(brine.hair_asked); quest(a1.hair, asked)
+go: brine.hair.choose
+
+@node brine.hair.choose
+place: room
+cost: 0
+nar: Whose hair, then.
+voice: hearsay: The harbourmaster has hair, under that hat, and it has been wet for eleven years. You would have to ask him on the quay. {dc: 5}
+voice: hearsay: Merrow keeps a loft in the Gut after the stove. A salvor's hair can be asked for there. {dc: 6, when: clock >= 00:40 & clock < 04:00}
+opt: "Mine, then." -> brine.hair.lamb
+opt: "Go down and ask Wenna." -> brine.hair.wenna ? has(met.wenna) & !(clock >= 23:20 & clock < 23:30)
+opt: "Go down and ask Pip." -> brine.hair.pip ? has(met.pip) & (clock < 23:55 | clock >= 00:15) & clock < 05:50
+opt: "Go down and ask Merrow, at the stove." -> brine.hair.merrow ? seen(brine.merrow.arrive) & clock < 00:40 & !has(merrow.cells)
+opt: "Keep Pollard." -> brine.hair.keep
+
+@node brine.hair.unpick
+cost: 0
+nar: Assessor Pollard comes out of the frame as one grey hair. It goes into an envelope, and the envelope gets his name, because somebody should write it.
+do: give(i.hair)
+if: trait(m.pollard) == researching => forget(m.pollard)
+return:
+
+@node brine.hair.wenna
+speaker: WENNA
+place: brine
+cost: 3
+nar: Wenna listens to the request without turning her head. Then she turns it.
+line: WENNA: A hair. For your box.
+opt: "Ask her plainly." -> brine.hair.wenna.yes ? has(brine.wenna_trusts)
+check: "[CONDOLENCE] Tell her what it's for: to read her stone and her stairs." -> brine.hair.wenna.yes / brine.hair.wenna.no {skill: condolence, dc: 7, red}
+opt: "Leave it." -> brine.hub
+
+@node brine.hair.wenna.yes
+speaker: WENNA
+place: brine
+cost: 2
+line: WENNA: It's been up a hundred and twelve stairs more times than you have. Don't let it get above itself.
+nar: She takes one long white hair from behind her ear with a brass-handled lamp knife.
+go: brine.hair.fit.wenna
+
+@node brine.hair.wenna.no
+speaker: WENNA
+place: brine
+cost: 2
+line: WENNA: My hair's my business. It's about the only thing that is. Ask the girl. She's got plenty and none of it's been anywhere.
+go: brine.hub
+
+@node brine.hair.fit.wenna
+place: room
+cost: 20
+call: brine.hair.unpick
+nar: The white hair goes in. The needle shivers, finds its place, and stays.
+inst: THE DAMP: Dry in here. Stove's drawing well. Stone would be better. Take me out on the mole.
+do: damp_hair = wenna; damp_wet = 0; quest(a1.hair, rehaired)
+go: brine.room
+
+@node brine.hair.pip
+speaker: PIP
+place: brine
+cost: 3
+line: PIP: A hair? For the little box? Have two. Have a handful. I'm moulting for the winter.
+nar: She pulls one out without ceremony.
+line: PIP: It'll want to be out on the floor. Don't keep it in.
+go: brine.hair.fit.pip
+
+@node brine.hair.fit.pip
+place: room
+cost: 20
+call: brine.hair.unpick
+nar: The brown hair goes in and the needle twitches toward the harbour like a dog's ear.
+inst: THE DAMP: Oh. Oh, there's water everywhere. It's rising, isn't it? Is it? It is. I can feel it in the backs of my knees. I haven't got knees. I've got a box. Can we go out?
+do: damp_hair = pip; damp_wet = 0; quest(a1.hair, rehaired)
+go: brine.room
+
+@node brine.hair.merrow
+speaker: MERROW
+place: brine
+cost: 3
+line: MERROW: A hair. For the hair box.
+nar: He saws one from his beard with a gutting knife, black and as thick as fuse wire.
+line: MERROW: That's been in the gully. It knows mud. Don't take it anywhere dry; it won't like you.
+go: brine.hair.fit.merrow
+
+@node brine.hair.fit.merrow
+place: room
+cost: 20
+call: brine.hair.unpick
+nar: The needle swings once, hard, and stops.
+inst: THE DAMP: Wet there. Dry here. Mud would tell me more.
+do: damp_hair = merrow; damp_wet = 0; quest(a1.hair, rehaired)
+go: brine.room
+
+@node brine.hair.lamb
+place: room
+cost: 4
+nar: In a shaving mirror the size of a playing card, nailed to the rib above the bench, the assessor has a face, and hair, and has not looked at either with interest for some years.
+nar: One hair comes from the crown, where nobody will miss it, the assessor included.
+go: brine.hair.fit.lamb
+
+@node brine.hair.fit.lamb
+place: room
+cost: 20
+call: brine.hair.unpick
+nar: The needle moves, considers, and settles with a small, precise click.
+inst: THE DAMP: Item: one hygrometer, rehaired. Humidity in the room, sixty-one parts in a hundred and falling as the stove draws. The assessor's coat, on the hook, still damp at the hem. The assessor declines to be judged on the hem.
+voice: pride: So that is what you sound like. Itemised. {dc: 4}
+do: damp_hair = lamb; damp_wet = 0; quest(a1.hair, rehaired)
+go: brine.room
+
+@node brine.hair.keep
+place: room
+cost: 1
+inst: THE DAMP: Oh. All right. I'll go on being him, then. Somebody has to.
+voice: precedent: If the Damp keeps his hair, it keeps his memory. There is a file in the weigh-house office with his initials on it. {dc: 6}
+go: bench
+
+# ---------------------------------------------------------------- the sack Lamb carries (floor.copper_taken)
+@node brine.merrow.arrive.robbed
+speaker: MERROW
+cost: 3
+nar: Merrow is steaming at the stove. He sees the sack on the assessor's shoulder before he sees the assessor.
+line: MERROW: That's my sack. You carry it like a clerk carries a ledger. Wrong shoulder.
+line: MERROW: The floor had it off me fair. Lugg's sore about it. I'm not. I'm dry, nearly.
+do: set(met.merrow); quest(a1.copper, sack)
+go: brine.hub
+
+@node brine.sack.carried
+cost: 2
+nar: The sack's brass plate says TRUST to anybody who looks. In the Brine, everybody looks.
+line: SABINE: You can't drink with that on. Put it down, give it back, or hide it.
+voice: precedent: Taken from a thief, in a fair fight, by an officer of the insurer. Every one of those words is arguable. {dc: 6}
+go: brine.sack.choose
+
+# ---------------------------------------------------------------- Sabine's stool rule (move: brine.move_stool)
+@node brine.stool
+speaker: SABINE
+cost: 2
+line: SABINE: How I keep the peace? That's a trade, love. A chit, or something true about yourself I didn't know. The second's rarer.
+opt: "A chit." -> brine.stool.paid ? count(i.chits) >= 1
+opt: "Something true, then." -> brine.stool.true
+opt: "Not tonight." -> brine.sabine
+
+@node brine.stool.true
+speaker: SABINE
+cost: 3
+line: LAMB: In eleven years I have never once been wet on a claim. I took this one because I thought it would be dry. It said darkness.
+line: SABINE: That'll do. That's worth two chits, and I'll owe you the difference, which means you'll never see it.
+go: brine.stool.lesson
+
+@node brine.stool.paid
+speaker: SABINE
+cost: 1
+do: take(i.chits, 1)
+line: SABINE: A chit. Thank you. Now watch.
+go: brine.stool.lesson
+
+@node brine.stool.lesson
+speaker: SABINE
+cost: 3
+nar: Sabine holds a three-legged stool up by one leg, seat outward.
+line: SABINE: Any chair's a shield. Once. A fist goes into the seat and stops, and the man looks at his knuckles, and in that time you've gone. After that the chair's firewood.
+line: SABINE: That's the stool rule. Thirty years. Never lost a customer. Lost a lot of stools.
+voice: grip: Seat out, legs toward you, one hand on the rung. The hands understand it before you do. {dc: 4}
+do: set(brine.move_stool)
+go: brine.sabine
+
+@node brine.sabine.hat
+speaker: SABINE
+cost: 1
+line: SABINE: You came in with a hat, love, I'd have sworn. The gully has it now.
+go: brine.sabine
+
+# ---------------------------------------------------------------- the Wet Hour (01:30 to 02:40, beat 25)
+@node brine.wethour
+place: brine
+cost: 2
+nar: Half past one, and the rain comes down on the hull like gravel thrown by a patient man. The Brine fills with everyone the weather has found.
+nar: Item: the ferry's master, not sailing. Item: Teague, a letter out. Item: the deacon, dripping. Item: one choirboy, asleep. Item: Sabine, everywhere.
+voice: hearsay: Everything said in here tonight will be all over Gullet by breakfast, and half of it will be true. {dc: 4}
+go: brine.hub
+
+# ---------------------------------------------------------------- the brawl (e.brawl, the Wet Hour)
+@node brine.brawl
+cost: 2
+alt: brine.brawl.spark.wreckers ? prov == wreckers
+go: brine.brawl.spark.other
+
+@node brine.brawl.spark.wreckers
+cost: 2
+nar: A Board boatman says wreckers into his beer. A young salvor says it's a word for people who have never been on the floor in the dark.
+nar: A bench goes over. Then the bench's neighbour, out of loyalty.
+go: brine.brawl.choose
+
+@node brine.brawl.spark.other
+cost: 2
+nar: A Board boatman says the Shelf's midnight word out loud, and a young salvor says what he thinks of it.
+nar: A bench goes over. Then the bench's neighbour, out of loyalty.
+go: brine.brawl.choose
+
+@node brine.brawl.choose
+cost: 0
+nar: In three breaths the Wet Hour is a fight: elbows, spilt halves, a pie in flight, Penhallow on the bar with a bottle by the neck.
+voice: hearsay: It is about your word. Everyone in it is fighting about what you wrote, and nobody is fighting you. Yet. {dc: 4}
+voice: undertow: Join it. Go on. You have wanted to hit something since the ferry. {dc: 5}
+opt: "Pick up a stool and wade in." -> brine.brawl.join ? has(brine.move_stool)
+opt: "Wade in." -> brine.brawl.join ? !has(brine.move_stool)
+opt: "Hand Sabine her pickling fork." -> brine.brawl.fork
+check: "[HEARSAY] Shout that the harbourmaster is outside, counting the broken chairs for the claim." -> brine.brawl.turned / brine.brawl.turned.fail {skill: hearsay, dc: 7}
+opt: "Keep out of it, behind the stove." -> brine.brawl.watch
+
+@node brine.brawl.join
+cost: 1
+nar: The assessor goes in, hat first.
+do: set(brine.brawled); fight(e.brawl)
+
+@node brine.brawl.fork
+speaker: SABINE
+cost: 3
+nar: Sabine walks into the fight with her pickling fork at shoulder height. People get out of her way the way water gets out of the way of a keel.
+line: SABINE: Every bench that's over is a shilling. Every glass, tuppence. Every pie thrown is a pie paid for, by the thrower, now. I've the chalk in my other hand and I know all your drawings.
+nar: The fight stops from the middle outward. The boatman puts down his pie and pays for it.
+do: rep(brine, 1)
+go: brine.brawl.after
+
+@node brine.brawl.turned
+cost: 3
+nar: Every head turns to the porthole. Then the whole fight goes out to look at the harbourmaster in the rain, still arguing.
+line: SABINE: That's half my custom gone out to look at a man being wet. He's always wet. They've seen it.
+voice: hearsay: A rumour, turned like a ship. It will come back on the tide, and it will have the harbourmaster's name on it, not yours. {dc: 5}
+do: rumour(claim.time, quay, 0.1); rep(board, -1)
+go: brine.brawl.after
+
+@node brine.brawl.turned.fail
+cost: 2
+nar: The porthole shows rain. The room looks back at the bench, and at the hat.
+nar: The fight, which had been about the Shelf's word, discovers that it can be about the Shelf.
+voice: hearsay: Wrong lie, wrong room. They know Keel does not count anything that is not his. {below: 7}
+opt: "Then fight." -> brine.brawl.join
+opt: "Out of the back door, fast." -> brine.fight.brawl.fled
+
+@node brine.brawl.watch
+cost: 4
+nar: The assessor watches from behind the stove with Wenna. A pie goes overhead, and a bench breaks.
+line: WENNA: Thirty years of these. They're always about something and they always end in pies.
+voice: carbon: The boatman swung first. The salvor ducked. The pie hit the deacon, and the deacon blessed it. Note the order. Somebody will ask. {dc: 5}
+go: brine.brawl.after
+
+@node brine.brawl.after
+cost: 2
+nar: Ten minutes later everyone is drinking with the person they were hitting, which in Gullet is how a quarrel is filed.
+line: SABINE: Three benches, seven glasses, four pies and a stool. It's on everybody's slate.
+go: brine.hub
+
+@node brine.fight.brawl.win
+cost: 3
+nar: When it ends, the assessor is standing, which is not true of everyone. The young salvor sits on the floor holding his jaw and laughing.
+line: SABINE: Firewood, that stool. I'll put it on the boatman; he started it, and he's lying down.
+line: PENHALLOW: Good elbow, passenger. Wasted on paperwork.
+voice: carbon: The boatman swung. You caught it. You pushed. He went over. The pie was not yours. Put it in the Daybook exactly so, before somebody tells it better. {dc: 5}
+do: set(brine.brawled); rep(brine, -1); rep(lowco, 1); seenas_lowco = ours
+if: trait(m.body) == none => offer(m.body)
+go: brine.hub
+
+@node brine.fight.brawl.yield
+cost: 3
+nar: The boatman sits on a bench with both hands up. He wanted to fight the salvors, he says, which is traditional.
+line: SABINE: Yielded. Somebody stand that bench up.
+do: set(brine.brawled); rep(board, -1); rep(lowco, 1)
+if: trait(m.body) == none => offer(m.body)
+go: brine.hub
+
+@node brine.fight.brawl.fled
+place: yard
+cost: 5
+nar: The assessor leaves by the back door at a speed that is not dignified and is very nearly efficient, and stands among the bottles in the Wet Hour rain.
+do: set(brine.brawled); wet(0.3); meter(cold, 1)
+go: brine.yard.menu
+
+@node brine.fight.brawl.down
+cost: 30
+nar: The assessor wakes on the settle, under the oilskin from the peg.
+line: SABINE: You went down like a sack of flour off a cart, love, and the boatman on top of you, and Penhallow sat on him. It's on the slate. One assessor, flattened. I've drawn you lying down.
+line: WENNA: You were out a half hour. You talk when you're out. Numbers, mostly.
+voice: condolence: She covered you with the oilskin. Wenna did. She has not said so and will not. {dc: 6}
+do: set(brine.brawled); set(down.brine); meter(dread, 1); meter(cold, -2); take(i.chits, 1)
+go: brine.hub
+
+# ---------------------------------------------------------------- the second blackout (02:50 to 03:20)
+@node brine.blackout
+speaker: SABINE
+cost: 3
+nar: Ten to three. Every porthole goes black at once.
+line: SABINE: Low Night rule. When the quay's dark, the Brine's dark. Nobody's to be the only light on the quay; it's bad luck and bad for trade. Lamps down, all but the stove.
+nar: The Brine shrinks to the stove's red mouth and the faces in front of it.
+cmd: setLight brine 0.06 0
+do: set(brine.doused)
+go: brine.blackout.appt
+
+@node brine.blackout.talk
+cost: 3
+nar: In the dark the Brine talks low and all at once.
+line: SABINE: Jory used to say the dark was cheaper than a lamp and kinder than a mirror. He was wrong about most things. Not that.
+line: COCKLE: My third Low Night I saw a light on the water. No, I didn't. There never is, when you look.
+go: brine.hub
+
+@node brine.blackout.wenna
+speaker: WENNA
+cost: 3
+line: WENNA: She's gone again. I heard her. Same note as before, the kettle thinking, and then not. That's twice in a night.
+line: WENNA: Somebody'll have to go up when the quay comes back. Hot arc wants a hand.
+do: set(wenna.heard_motor); quest(a1.stairs, dark)
+opt: "Then come with me. When the board's back." -> brine.wenna.again
+opt: "Say nothing, and sit with her." -> brine.hub
+
+@node brine.relight
+speaker: SABINE
+cost: 2
+cmd: setLight brine 0.5 0.05
+nar: Twenty past three. The portholes go pink, then orange, and Sabine goes round with a taper, and everybody stops saying what they were saying.
+line: SABINE: That's the dark over. Prices back on.
+inst: CANDLEMAS: Pink.
+go: brine.hub
+
+# ---------------------------------------------------------------- the provisional cause travels (after 00:20)
+@node brine.prov.keeper
+speaker: SABINE
+cost: 3
+nar: The Brine is quieter by the exact amount of one word, and the word is keeper.
+line: SABINE: There's the Shelf. Prices went up at midnight, about the time somebody put my oldest friend in a telegram. Double.
+nar: By the stove, Wenna has turned her chair so that its back is to the room.
+do: seenas_brine = trouble; rep(brine, -1)
+go: brine.hub
+
+@node brine.prov.trust
+speaker: SABINE
+cost: 2
+line: SABINE: The Trust. You've made an enemy with a ledger. Have a drink on the house.
+line: WENNA: About time somebody wrote them down.
+do: rep(brine, 1); give(i.rum)
+go: brine.hub
+
+@node brine.prov.refused
+speaker: SABINE
+cost: 2
+line: SABINE: Insufficient light, you told them. The Shelf's chits are going round the quay at ninepence. I'll take yours at eight, because I like you, and at seven tomorrow.
+go: brine.hub
+
+# ---------------------------------------------------------------- the rework: the green prism, more routes (path row 4)
+@node brine.oven.fog
+cost: 1
+nar: Somebody calls through the back door about the bread. Sabine goes, wiping her hands, and the oven is nobody's for a minute.
+go: brine.oven.sneak
+
+@node brine.oven.damp
+place: brine
+cost: 2
+voice: damp: The door is dry in a shape. Four fingers and a thumb, where a wet hand held it shut while something set. An hour old, or more. {when: damp_hair == pollard}
+voice: damp: Dry in the shape of a hand on the latch. Old. {when: damp_hair != pollard}
+line: SABINE: Don't point things at my oven.
+if: has(soot.east) => set(oven.inferred)
+do: set(brine.damp_door)
+go: brine.hub
+
+@node brine.oven.take.hot
+place: oven
+cost: 2
+nar: The prism goes into the Shelf's handkerchief, and the handkerchief begins to smell of scorch.
+voice: grip: Two fingers will blister by morning. They have already filed the complaint. {dc: 3}
+do: give(i.prism_green); meter(cold, 1)
+go: brine.hub
+
+@node brine.yard.rake
+place: yard
+cost: 2
+nar: Under the chimney is the oven's iron ash door, warm to the knuckle. The bread peel leans by the back door.
+check: "[GRIP] Feel along the oven floor with the peel's blade, by touch." -> brine.yard.rake.ok / brine.yard.rake.fail {skill: grip, dc: 6, verb: pry, noise: 0.3}
+opt: "Leave the ash door shut." -> brine.yard.menu
+
+@node brine.yard.rake.ok
+place: yard
+cost: 6
+nar: The peel finds the loaves by their give and something else by its knock, and draws it out onto the flags: a wedge of glass in a clay mould, warm.
+inst: CANDLEMAS: Under this sodium it is the colour of everything else. Take it indoors and ask me again.
+do: give(i.prism_green)
+go: brine.yard.menu
+
+@node brine.yard.rake.fail
+place: yard
+speaker: SABINE
+cost: 3
+nar: Out comes a loaf, alight. The back door opens and a hand takes the peel.
+line: SABINE: My peel, my loaf, my ash on my flags. That door's latched from now on.
+do: set(brine.ash_latched)
+go: brine.yard.menu
+
+@node brine.prism.read
+place: brine
+cost: 2
+inst: CANDLEMAS: Green. Unarguably, vulgarly green. That is no lens-maker's glass. It bends light like a drunk turning a corner.
+line: SABINE: Put that away before somebody prices it.
+do: set(prism.green_oven); quest(a1.slate, oven)
+go: brine.hub
+
+# ---------------------------------------------------------------- the rework: Wenna's absence, the yard route (path row 5)
+@node brine.wenna.yard.ok
+speaker: WENNA
+cost: 3
+line: WENNA: Sabine talks loud when she's frightened. She always did, even on the floor, at eight years old.
+line: WENNA: Three years. I sit here and she comes on with the quay, and I have my pie.
+do: set(brine.wenna_confessed)
+go: brine.wenna
+
+# ---------------------------------------------------------------- the rework: Wenna gets up (every play)
+@node brine.wenna.door
+speaker: WENNA
+cost: 2
+nar: Wenna gets up. The room goes quiet the way a room does for a dropped glass.
+nar: She walks to the door in stages, opens it on the weather, and stands with one hand on the frame, looking along the mole at the place where her lamp is.
+opt: "Take her arm." -> brine.wenna.door.arm
+opt: "Hold the door, and say nothing." -> brine.wenna.door.shut {verb: wait}
+
+@node brine.wenna.door.arm
+speaker: WENNA
+cost: 2
+alt: brine.wenna.door.go ? has(brine.wenna_confessed) & mother != burning & !has(lens.broken) & !has(ev.blackout)
+line: WENNA: Not with you. Not yet.
+nar: She shuts the door on the mole and goes back to her chair.
+do: quest(a1.stairs, refused)
+go: brine.hub
+
+@node brine.wenna.door.go
+speaker: WENNA
+cost: 2
+line: WENNA: Hundred and twelve. Count them for me.
+nar: She does not let go of the assessor's arm.
+line: SABINE: Go on, then, Wenna Tallow. I'll keep your pie warm.
+do: set(wenna.climbs); quest(a1.stairs, climbing); set(brine.wenna_trusts); rep(brine, 1)
+go: mole.hub
+
+@node brine.wenna.door.shut
+speaker: WENNA
+cost: 2
+line: WENNA: Hundred and twelve.
+nar: She shuts the door and goes back to her chair.
+go: brine.hub
+
+# ---------------------------------------------------------------- the rework: the town's appointment (path row 14)
+@node brine.blackout.appt
+cost: 0
+alt: brine.appt.oven ? appt == oven & !seen(brine.appt.oven)
+alt: brine.appt.search ? appt == search & !seen(brine.appt.search)
+alt: brine.appt.cells ? appt == cells & !seen(brine.appt.cells)
+go: brine.blackout.next
+
+@node brine.blackout.next
+cost: 0
+alt: brine.blackout.wenna ? has(mother.out_again) & !seen(brine.blackout.wenna)
+go: brine.blackout.talk
+
+# appt == cells: the plan at the back table (01:00 to 02:50), then the dark
+@node brine.cells.table
+speaker: COCKLE
+cost: 3
+nar: At the back table, Nan Cockle, two young salvors and a crowbar in a net are not planning anything, loudly.
+line: COCKLE: When the lights go at ten to three, the grating on the Lamplighters' cells is two bolts and a padlock older than me. Tub comes out, goes down the mole steps into his boat, and he's in Hesk by the morning boat that never goes.
+line: COCKLE: Sit, if you're sitting. Go, if you're going.
+opt: "Offer to keep the Lamplighters looking at you when the lights go." -> brine.cells.join
+opt: "Send word to the Lamplighters." -> brine.cells.warn
+check: "[CONDOLENCE] Tell her a man who runs from the cells is a man who did it." -> brine.cells.talked / brine.cells.talked.fail {skill: condolence, dc: 7}
+check: "[UNDERTOW] Lift the crowbar out of its net while they argue." -> brine.cells.bar / brine.cells.bar.fail {skill: undertow, dc: 6, verb: hide, noise: 0.2}
+check: "[GRIP] Put a hand flat on the net, and keep it there." -> brine.cells.hold / brine.cells.hold.fail {skill: grip, dc: 7}
+opt: "Leave them to it." -> brine.cells.leave {verb: wait}
+
+@node brine.cells.join
+speaker: COCKLE
+cost: 2
+line: COCKLE: The Shelf, standing under a lamp being important. They'll write you down for an hour. That's worth a crowbar.
+voice: formletter: The assessor is recorded as party to an escape from lawful custody. Nobody will record it kindly. {dc: 5}
+do: set(appt.joined); rep(lowco, 2); seenas_lowco = ours; set(said.cells_join); set(heard.cockle.cells_join)
+go: brine.hub
+
+@node brine.cells.warn
+cost: 2
+nar: The assessor writes one line on the back of a chit and gives it to Pip for the weigh-house.
+line: COCKLE: I saw that. I'm old. I'm not blind.
+do: set(appt.stopped); rep(lowco, -3); rep(trust, 1); seenas_lowco = hangman; set(book.cells_warned)
+go: brine.hub
+
+@node brine.cells.talked
+speaker: COCKLE
+cost: 3
+line: COCKLE: He'll hang for running. You're telling me he'll not hang for sitting.
+nar: She puts her hand flat on the net.
+line: COCKLE: Sit tight, then. All of us. If you're wrong, Shelf, I'll be at the steps with a lantern. I was, my fourth.
+do: set(appt.stopped); rep(lowco, 1); set(said.cells_sit); set(heard.cockle.cells_sit)
+go: brine.hub
+
+@node brine.cells.talked.fail
+speaker: COCKLE
+cost: 2
+line: COCKLE: You'd know, would you. From your office.
+nar: The young salvors leave early, with the net.
+do: rep(lowco, -1)
+go: brine.hub
+
+@node brine.cells.bar
+cost: 3
+nar: While the young end argues about the padlock, the net is lighter by one crowbar, and the crowbar is under the settle with Sabine's boot on it.
+line: SABINE: I never saw that.
+voice: grip: A padlock older than her, and nothing to open it with. {dc: 4}
+do: set(appt.stopped); rep(brine, 1)
+go: brine.hub
+
+@node brine.cells.bar.fail
+speaker: COCKLE
+cost: 3
+nar: The assessor's hand is in the net when the bigger salvor stands up.
+line: COCKLE: Not in Sabine's. She'll charge the lot of us. Sit down, Ned.
+do: rep(lowco, -1)
+go: brine.hub
+
+@node brine.cells.leave
+cost: 1
+do: set(appt.watched)
+go: brine.hub
+
+@node brine.appt.cells
+cost: 2
+alt: brine.appt.cells.stayed ? has(appt.stopped)
+nar: In the dark the back table empties. The door opens and shuts without its bell.
+line: COCKLE: Listen.
+nar: Somewhere along the quay, iron meets iron, twice.
+go: brine.blackout.next
+
+@node brine.appt.cells.stayed
+cost: 2
+nar: In the dark the back table is still full. Nan Cockle's hand is flat on an empty net.
+go: brine.blackout.next
+
+# appt == oven: Sabine's last firing
+@node brine.appt.oven
+speaker: SABINE
+place: oven
+cost: 3
+nar: In the dark Sabine is feeding the oven: green bottles two at a time, then the clay moulds, then a ledger with a lighthouse on the cover.
+line: SABINE: Last firing. Bread's off. The oven's not a light, love, it's a stomach.
+check: "[CONDOLENCE] Tell her that glass is the only thing that says Wenna kept Mother lit." -> brine.appt.oven.talked / brine.appt.oven.talked.fail {skill: condolence, dc: 7}
+check: "[GRIP] Take the peel out of her hands." -> brine.appt.oven.grab / brine.appt.oven.grab.fail {skill: grip, dc: 7, verb: pry, noise: 0.4}
+check: "[THE DARK] Come round behind her in the dark and take the moulds off the stack before they go in." -> brine.appt.oven.hide / brine.appt.oven.hide.fail {skill: dark, dc: 6, verb: hide, noise: 0.2}
+opt: "Empty the rain butt into the oven." -> brine.appt.oven.douse {verb: douse, noise: 0.7}
+opt: "Hand her the next bottle." -> brine.appt.oven.join {verb: carry}
+opt: "Watch from the dark, and count." -> brine.appt.oven.watch {verb: wait}
+
+@node brine.appt.oven.talked
+speaker: SABINE
+place: oven
+cost: 3
+line: SABINE: It says she kept her lit with my bottles. That's what it says.
+nar: She puts the two bottles down on the flags, upright, the way you put down something that is still full.
+do: set(appt.stopped); rep(brine, 1)
+go: brine.blackout.next
+
+@node brine.appt.oven.talked.fail
+speaker: SABINE
+place: oven
+cost: 2
+line: SABINE: You'd make a good priest, love. They charge nothing and it shows.
+nar: She feeds the oven faster.
+do: set(appt.watched); set(brine.glass_gone)
+go: brine.blackout.next
+
+@node brine.appt.oven.grab
+place: oven
+cost: 2
+nar: She lets the peel go, and stands there with nothing in her hands.
+line: SABINE: Keep it, then. You've cost me more than a peel tonight.
+do: set(appt.stopped); rep(brine, -2)
+go: brine.blackout.next
+
+@node brine.appt.oven.grab.fail
+speaker: SABINE
+place: oven
+cost: 3
+nar: Sabine keeps the peel. The assessor's hand finds the hot iron of the door.
+line: SABINE: Run it under the pump. That's free.
+do: set(appt.watched); set(brine.glass_gone); meter(cold, 1)
+go: brine.blackout.next
+
+@node brine.appt.oven.douse
+place: oven
+cost: 4
+nar: Two buckets from the rain butt, and the oven answers like a struck animal. Steam fills the bar to the ribs.
+line: SABINE: That's my oven out for a week. You'll pay it. You'll pay it in a way I'll think of.
+do: set(appt.stopped); rep(brine, -2); seenas_brine = trouble
+go: brine.blackout.next
+
+@node brine.appt.oven.join
+speaker: SABINE
+place: oven
+cost: 4
+nar: The assessor holds out two bottles. Sabine takes them.
+line: SABINE: There's a thing I never priced.
+voice: formletter: The assessor is recorded as having destroyed evidence material to the claim, by hand, in the dark. Nobody recorded it. {dc: 5}
+do: set(appt.joined); set(brine.glass_gone); rep(brine, 2); seenas_brine = regular
+go: brine.blackout.next
+
+@node brine.appt.oven.watch
+place: oven
+cost: 3
+nar: The assessor stands in the dark behind the bar and counts. Forty-one bottles. Seven moulds. One ledger, which takes longer than the rest.
+do: set(appt.watched); set(brine.glass_gone); set(brine.moulds)
+go: brine.blackout.next
+
+# appt == search: the Lamplighters search the Brine in the dark
+@node brine.appt.search
+speaker: STRAND
+cost: 3
+nar: The door opens on four brass poles and four lanterns, the only light on the quay.
+line: STRAND: Municipal search. The Trust's compliments. Oven, slate, and the room above.
+line: SABINE: The moulds are in the ash pit and your wall's upstairs. Whatever you are tonight, love, be it now.
+check: "[FORM LETTER] The room above is let to the Mutual Indemnity. Nobody reads the Shelf's papers." -> brine.appt.search.letter / brine.appt.search.letter.fail {skill: formletter, dc: 7}
+opt: "Bar the stair door with a chair." -> brine.appt.search.bar {verb: rig, noise: 0.4}
+check: "[THE DARK] Carry the moulds out of the ash pit into the yard while their lanterns are on the slate." -> brine.appt.search.carry / brine.appt.search.caught {skill: dark, dc: 6, verb: hide, noise: 0.3}
+check: "[BALLAST] Stand in the stair door and do not move." -> brine.appt.search.stand / brine.appt.search.moved {skill: ballast, dc: 7}
+opt: "Show them the oven." -> brine.appt.search.join
+opt: "Stand back and let them look." -> brine.appt.search.watch {verb: wait}
+
+@node brine.appt.search.letter
+speaker: STRAND
+cost: 3
+line: STRAND: Let to the Shelf. Written down.
+nar: They search the bar and open the oven on yesterday's ash. The ash pit is behind Sabine, and Sabine does not move.
+do: set(appt.stopped); rep(brine, 2); rep(trust, -1); set(book.search_refused)
+go: brine.blackout.next
+
+@node brine.appt.search.letter.fail
+speaker: STRAND
+cost: 2
+line: STRAND: The Trust has the Alderman's word, assessor, and the Shelf has a tube. Written down.
+go: brine.appt.search.found
+
+@node brine.appt.search.bar
+cost: 3
+nar: A chair goes under the stair door's latch. The first Lamplighter tries it twice, then looks at the assessor.
+nar: They leave the stair alone. Strand writes something long.
+do: set(appt.stopped); rep(trust, -2); set(book.search_barred)
+go: brine.blackout.next
+
+@node brine.appt.search.carry
+place: yard
+cost: 4
+nar: Seven warm moulds go from the ash pit into the yard. Inside, four lanterns light a slate nobody can read.
+do: set(appt.stopped); rep(brine, 2)
+go: brine.blackout.next
+
+@node brine.appt.search.caught
+speaker: STRAND
+cost: 3
+nar: A lantern finds the assessor with a clay mould in each hand.
+line: STRAND: Thank you, assessor. That saves us the ash.
+do: rep(trust, -2); set(book.search_caught)
+go: brine.appt.search.found
+
+@node brine.appt.search.stand
+speaker: STRAND
+cost: 3
+nar: A pole comes up, considers the Shelf's coat, and goes down again.
+line: STRAND: Nobody's laying a hand on the Shelf. Not tonight. Written down.
+do: set(appt.stopped); rep(trust, -1); set(book.search_refused)
+go: brine.blackout.next
+
+@node brine.appt.search.moved
+speaker: STRAND
+cost: 3
+nar: A pole slides behind the assessor's knees, very politely, and the assessor sits down on the bottom stair without having decided to.
+do: set(book.violence); rep(trust, -1)
+go: brine.appt.search.found
+
+@node brine.appt.search.join
+cost: 2
+nar: The assessor points at the ash pit. Sabine watches the finger the way a woman watches a dog she has fed for years go to someone else's whistle.
+do: set(appt.joined); rep(trust, 1); rep(brine, -3); seenas_brine = trouble
+go: brine.appt.search.found
+
+@node brine.appt.search.watch
+cost: 2
+do: set(appt.watched); rep(brine, -1)
+go: brine.appt.search.found
+
+@node brine.appt.search.found
+cost: 3
+nar: Seven moulds go into a Municipal sack, and the sack goes out of the door with four lanterns round it, and the Brine is dark again.
+line: SABINE: That'll be Wenna, then. In the morning.
+do: set(brine.search_found); rumour(prism.green_oven, quay, 0.3)
+go: brine.blackout.next
+
+# ---------------------------------------------------------------- editor's notes (2026-10-17): Shadow and Eye routes with failure scenes
+@node brine.oven.sneak
+place: oven
+cost: 1
+nar: Sabine is out the back. The oven is three steps behind the bar, and the third step creaks.
+check: "[UNDERTOW] Go behind the bar while her back is turned." -> brine.oven.open / brine.oven.sneak.fail {skill: undertow, dc: 5, verb: hide, noise: 0.2}
+opt: "Stay this side of the bar." -> brine.hub {verb: wait}
+
+@node brine.oven.sneak.fail
+speaker: SABINE
+place: oven
+cost: 2
+nar: The third step creaks. The yard door opens on it.
+line: SABINE: Behind my bar's a shilling a step, love, and you've taken three. Out you come.
+nar: She stands with her back to the oven door for the rest of the hour, and wipes nothing.
+go: brine.hub
+
+@node brine.slate.caught
+speaker: SABINE
+cost: 2
+nar: The assessor's face is a foot from the slate when Sabine comes back in with flour on her hands.
+line: SABINE: Reading's tuppence a line, and you've had none of it. Sit down.
+nar: She turns the slate to the wall. Its back is a second slate, kept for exactly this.
+go: brine.hub
+
+@node brine.slate.mirror
+cost: 3
+nar: The slate is in the clock's glass, small and backwards, across the crack.
+nar: Under the lighthouse, reversed: a round at a quarter to ten by the clock. A round at ten past. A pie.
+voice: sum: The clock in whose glass you read it is eleven minutes behind. Add them yourself. {dc: 5}
+do: set(tab.wenna); quest(a1.slate, tab); offer(m.owed)
+go: brine.hub
+
+@node brine.slate.mirror.fail
+cost: 3
+nar: The assessor pencils "Wenna: rounds at 2.40 and 1.10?" in the Daybook, which is wrong, and is in pencil.
+line: SABINE: Staring at my clock's free. Staring at my slate isn't.
+go: brine.hub
+
+@node brine.cells.hold
+speaker: COCKLE
+cost: 3
+nar: The young salvor pulls once, and finds the Shelf heavier than it looks.
+line: COCKLE: Let go, Ned. The Shelf's sitting on it. We'll sit too.
+do: set(appt.stopped); rep(lowco, -1)
+go: brine.hub
+
+@node brine.cells.hold.fail
+speaker: COCKLE
+cost: 3
+nar: The net comes out from under the assessor's hand, crowbar and all.
+line: COCKLE: There. Now you've had your say. Go and sit by the stove.
+do: rep(lowco, -1)
+go: brine.hub
+
+@node brine.appt.oven.hide
+place: oven
+cost: 3
+nar: Seven warm moulds go into the assessor's coat while Sabine's back is to the fire. She feeds the oven bottles and does not count.
+do: set(appt.stopped); set(brine.moulds)
+go: brine.blackout.next
+
+@node brine.appt.oven.hide.fail
+speaker: SABINE
+place: oven
+cost: 2
+nar: A mould slides off the stack and breaks on the flags.
+line: SABINE: That's one less for the fire, then. Mind your feet.
+do: set(appt.watched); set(brine.glass_gone)
+go: brine.blackout.next
+
+@node brine.merrow.arrive.sunk
+speaker: MERROW
+cost: 3
+nar: Merrow is steaming at the stove, with nothing in his hands.
+line: MERROW: There's a cork bobbing in the gully with my copper under it. You know where. So do I.
+do: set(met.merrow); quest(a1.copper, sack)
+go: brine.hub

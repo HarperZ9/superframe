@@ -1,0 +1,457 @@
+# Low Water, Act 3: the Ropewalk in the gale. One paraffin lamp a street, swinging. Gate B2, the door
+# on the Ropewalk (design/ACT3-PLAN.md sections 3 and 4, beat 3, turn one): Hester Gannet at the
+# Trust's old typewriter; the agency ledger with the night assessor's wages in it; Pip, who has
+# known since she was fifteen; the letter that asked for the claim kept open. Places: rope_lane,
+# telegraph, gannet_house (the front room and, behind its door, the back room), gannet_wall (the
+# passage). Reads weigh3.sent (Lamb sent a message down the tube from the weigh-house, B2 Hands).
+# Sets for dawn3: hester.seen_typing, hester.told, pip.told, crake.drafts, letter.kept_open,
+# e.matched, ropewalk3.offered. Writer's file, 2026-10-17. Private.
+
+# ---- new ids
+@fact ropewalk3.wages
+about: H. Lamb, in Hester Gannet's agency ledger: the night assessor's wages, eleven years at the usual rate, sent to Hesk from the agency's float. For six years the float has been the Alderman's drafts.
+by: the agency ledger
+
+@fact ropewalk3.sallis
+about: Pip read FURTHER LOSS ANTICIPATED aloud on the quay the first morning, because people asked. Sallis asked her to read it twice.
+by: Pip's word
+
+@fact ropewalk3.pencil_e
+about: In pencil: the e on the Shelf's strips and the e on the struck clause are not the same e. The Shelf's machine is not the Trust's.
+by: a misreading under a swinging lamp
+
+@fact ropewalk3.pip_shut
+@fact ropewalk3.door_broken
+@fact ropewalk3.tube_room
+@fact ropewalk3.letter_given
+@fact ropewalk3.case_ready
+
+@var ropewalk3_way
+default: none
+values: none, fist, tongue, shadow, hands, eye
+about: How Lamb came through the door on the Ropewalk (gate B2).
+
+# ================================================================ THE STREET IN THE GALE
+@node ropewalk3.beetle
+place: rope_lane
+cost: 2
+do: give(w.beetle)
+nar: A cooper's beetle stands against the yard door where the cooper left it in the spring, a head of elm as big as a loaf, iron-banded, on a handle polished by one man's two hands.
+voice: grip: Too heavy. Lift it anyway. {dc: 5}
+go: ropewalk3.hub
+
+@node ropewalk3.hub
+hub: yes
+place: rope_lane
+cost: 0
+alt: ropewalk3.hands.land ? has(weigh3.sent) & !has(hester.seen_typing) & !seen(ropewalk3.hands.land)
+nar: The Ropewalk in the wind. The one lamp swings on its bracket, so that the street lurches toward the telegraph office and away from it, and the Gannet house's window stays lit through all of it. {when: clock < 00:15 | clock >= 01:00}
+nar: The Ropewalk in the eye: the lamp hangs still, rain runs off every sill at once, and overhead there are stars, which nobody on this street has looked at in years. {when: clock >= 00:15 & clock < 01:00}
+nar: The rain comes down the street in a band, sideways, and the gutters stand up off the cobbles. {when: rain > 0.5 & (clock < 00:15 | clock >= 01:00)}
+voice: hearsay: Two shutters have opened a finger's width on this street since you came into it. The Ropewalk has read its Shelf strips too. {when: has(hester.seen_typing), once}
+do: quest(a3.shelf, door)
+opt: "Get out of the wind into the telegraph office." -> ropewalk3.rook +1
+opt: "Knock at the Gannet house's front door." -> ropewalk3.front ? !has(hester.seen_typing) & !has(ropewalk3.pip_shut) +1
+opt: "Go down the passage behind the Gannet house." -> ropewalk3.passage ? !has(hester.seen_typing) +1 {verb: hide, noise: 0.1}
+opt: "Go back to the Gannet house." -> ropewalk3.after ? has(hester.seen_typing) +1
+opt: "Take the cooper's beetle from beside the yard door." -> ropewalk3.beetle ? count(w.beetle) == 0 {verb: carry, noise: 0.3}
+opt: "Run down to the quay with the wind behind you." -> quay3.hub +3
+opt: "Climb the steps to Chancel Hill, into the wind." -> hill3.hub +6
+opt: "Cut through the yards into the Gut." -> gut3.hub +3
+
+# ---- the telegraph office: shelter, Rook, and her lamp for the Eye route
+@node ropewalk3.rook
+place: telegraph
+speaker: ROOK
+cost: 2
+nar: The office stove is drawing so hard in the gale that the flue sings. Rook has her mittens on and her coat on and the sounder silent in front of her.
+line: ROOK: GALE WARNING ALL STATIONS STOP SOUTH WEST SEVERE BACKING NORTH WEST AFTER MIDNIGHT STOP. Four o'clock, from Hesk. Then the line went. I don't recall it. {once}
+line: ROOK: You signed my book. I've put the gale in it, under you. {when: has(said.rook_witness), once}
+opt: "Ask about the card in her window." -> ropewalk3.rook.card ? !seen(ropewalk3.rook.card)
+check: "[SMALL PRINT] Lay the Shelf's strips beside the Trust's typed clause, under her lamp, e by e." -> ropewalk3.eye.ok / ropewalk3.eye.fail ? (has(clause.struck) | has(works.order) | count(i.fisk_spec) > 0) & (has(shelf.e) | has(weigh2.tube_read) | has(ev2.shelf_reply) | has(day.pip)) & !has(e.matched) & !has(ropewalk3.pencil_e) {skill: smallprint, dc: 6, verb: read, noise: 0, do: meter(wear, 1)}
+opt: "Go back out into it." -> ropewalk3.hub
+
+@node ropewalk3.rook.card
+place: telegraph
+speaker: ROOK
+cost: 2
+line: ROOK: Claims received Tuesdays. Nobody's claimed at that counter in eleven years.
+line: ROOK: She still comes, Tuesdays. Sits on that chair from two till four with her bag on her knee. I sell her a stamp so it looks like business.
+go: ropewalk3.rook
+
+# ---- Eye: the bent e
+@node ropewalk3.eye.ok
+place: telegraph
+cost: 8
+do: set(e.matched); set(ropewalk3.case_ready)
+nar: The strips on the left, the clause on the right, the lamp between. Every e on the strips jumps high and late. Every e on the clause jumps the same height, the same lateness, with the same nick out of its bowl where something once hit it.
+inst: CANDLEMAS: Same face, same scar. I would know that letter in a crowd.
+line: ROOK: You'll be wanting the passage, then. She doesn't answer the front after dark.
+go: ropewalk3.hub
+
+@node ropewalk3.eye.fail
+place: telegraph
+cost: 6
+do: set(ropewalk3.pencil_e)
+nar: The office lamp jumps every time the gale leans on the door, and the letters jump with it. Two e's that ought to agree will not hold still long enough to agree. The assessor writes it down, in pencil, and believes it.
+go: ropewalk3.hub
+
+# ================================================================ THE FRONT DOOR: Tongue, through Pip
+@node ropewalk3.front
+place: rope_lane
+speaker: PIP
+cost: 2
+do: wet(0.1)
+nar: Pip opens the door on the chain, in her coat, with a canister under her arm, ready to run.
+line: PIP: You. In this.
+line: PIP: You told me she was typing. I didn't sleep after. {when: has(said.told_pip), once}
+line: PIP: You said she was quiet. She's never quiet. You knew that. {when: has(lied.pip_quiet), once}
+line: PIP: Wenna's coat. Come in, before it blows away with you in it. {when: guise == keeper}
+opt: "Hand her the Alderman's letter, unopened." -> ropewalk3.letter ? count(i.letter_pellow) > 0 & !has(ropewalk.letter_opened)
+opt: "Step in out of the wind." -> ropewalk3.pip ? guise == keeper | has(said.day2_promise) | has(said.told_pip)
+check: "[CONDOLENCE] Ask if you can come in and talk about her nan." -> ropewalk3.pip / ropewalk3.front.fail ? guise != keeper & !has(said.day2_promise) & !has(said.told_pip) & !has(lied.pip_quiet) {skill: condolence, dc: 6}
+check: "[CONDOLENCE] Ask if you can come in and talk about her nan." -> ropewalk3.pip / ropewalk3.front.fail ? guise != keeper & !has(said.day2_promise) & !has(said.told_pip) & has(lied.pip_quiet) {skill: condolence, dc: 8}
+opt: "Let her get on with her running." -> ropewalk3.hub
+
+@node ropewalk3.front.fail
+place: rope_lane
+speaker: PIP
+cost: 1
+do: set(ropewalk3.pip_shut)
+line: PIP: Go home, assessor. Go home on the boat, if there's a boat.
+nar: The chain stays on. The door shuts on it, and the wind takes the noise away before the street can have it.
+go: ropewalk3.hub
+
+@node ropewalk3.pip
+place: gannet_house
+speaker: PIP
+cost: 4
+nar: The front room. The stove, the crossword, Pip's wet boots by the fender. At the back, the door, and under it a line of light that jumps a little, every time, with the sound of a key coming down.
+line: PIP: That's what you came for. I know.
+line: PIP: You said a promise kept is kept, whoever it was made to. I've thought about that all day. {when: has(said.day2_promise)}
+opt: "Tell me, Pip." -> ropewalk3.pip.tells
+opt: "You don't have to tell me anything. Just knock." -> ropewalk3.pip.spared {do: set(said.pip_spared); set(heard.pip.pip_spared)}
+
+@node ropewalk3.pip.tells
+place: gannet_house
+speaker: PIP
+cost: 6
+do: set(pip.told); set(ropewalk3.sallis); set(said.pip_asked); set(heard.pip.pip_asked)
+line: PIP: Since I was fifteen. The shilling a week is hers. She gives it me on a Friday so I've got wages like a person.
+line: PIP: I put the paper on the hook at the weigh-house and I don't read it, because I've watched it typed. That's why mostly I don't read it.
+line: PIP: And the first morning I did read one. Out loud, on the quay, because they all asked and I'm the tube. FURTHER LOSS ANTICIPATED.
+line: PIP: Sallis was on the steps. He asked me to read it again. So I read it again.
+nar: She looks at the canister under her arm as if it might have done it by itself.
+go: ropewalk3.pip.knock
+
+@node ropewalk3.pip.spared
+place: gannet_house
+speaker: PIP
+cost: 2
+line: PIP: Thank you.
+nar: She says it to the stove, very fast, and goes to the back room door before she can change her mind about anything.
+go: ropewalk3.pip.knock
+
+@node ropewalk3.pip.knock
+place: gannet_house
+speaker: PIP
+cost: 1
+do: ropewalk3_way = tongue
+line: PIP: Nan. It's the Shelf. It's come to the door this time.
+nar: The key stops in the middle of a word. A bolt goes back.
+go: ropewalk3.door
+
+# ---- Tongue, the other way: the Alderman's letter, carried unopened
+@node ropewalk3.letter
+place: gannet_house
+speaker: HESTER
+cost: 3
+do: take(i.letter_pellow); set(ropewalk3.letter_given); ropewalk3_way = tongue
+nar: Pip takes the letter and turns it over and goes very still at the hand on it. She carries it down the room to the back door and puts it under. The typing stops.
+line: HESTER: It hasn't been opened. Who brought it?
+line: PIP: The assessor, Nan. All the way.
+line: HESTER: Then the assessor had better come in out of the wet.
+go: ropewalk3.door
+
+# ================================================================ THE PASSAGE: Fist, Shadow, Hands, Eye
+@node ropewalk3.passage
+place: gannet_wall
+cost: 1
+do: wet(0.2)
+nar: The passage behind the Gannet house is a flume. Rain runs down it ankle deep toward the street, and the back room's shutter rattles on its hook. Beside the back door, a smaller door to a lean-to stands on the latch: the tube room, where the pipe comes up.
+nar: In the yard beyond, under a sheet of tin, the handle of a pump. {once}
+line: HESTER: Somebody banged my pipe tonight like a coal merchant. I sent them WAIT. They can wait. {when: has(weigh3.sent_blank) & !has(weigh3.sent), once}
+opt: "Put the case to her through the door: the e, and whose machine it was." -> ropewalk3.eye.door ? has(ropewalk3.case_ready) {verb: wait, noise: 0.2}
+check: "[GRIP] Put a shoulder to the back door, hard, while the gale covers it." -> ropewalk3.fist.ok / ropewalk3.fist.fail {skill: grip, dc: 6, verb: pry, noise: 0.9}
+opt: "Get in against the wall and wait for Pip to go out to the pump." -> ropewalk3.shadow.wait {verb: hide, noise: 0}
+opt: "Back to the street." -> ropewalk3.hub
+
+# ---- Eye: Hester opens when the case is put, and says why
+@node ropewalk3.eye.door
+place: gannet_wall
+speaker: HESTER
+cost: 3
+do: set(said.hester_case); set(heard.hester.hester_case); ropewalk3_way = eye
+line: LAMB: Mrs Gannet. The e on the Shelf's strips is the e on the Trust's specification. It's the Trust's old machine, and it's in your back room.
+nar: Inside, the key that was coming down does not come down.
+line: HESTER: That machine came up the hill in a handcart seven months ago with Mrs Pellow pushing. Mine had lost its carriage. Beggars choose last.
+line: HESTER: You've done the work. You may as well see the rest of it.
+go: ropewalk3.door
+
+# ---- Fist: the back door
+@node ropewalk3.fist.ok
+place: gannet_wall
+cost: 3
+do: set(ropewalk3.door_broken); rep(brine, -2); seenas_brine = trouble; ropewalk3_way = fist
+nar: The door goes at the hinges on the second shoulder and falls in flat, with the assessor on it. Somewhere at the front of the house, running feet.
+go: ropewalk3.door
+
+@node ropewalk3.fist.fail
+place: gannet_wall
+speaker: PIP
+cost: 4
+do: set(ropewalk3.pip_shut); rep(brine, -1); wet(0.2)
+nar: The door holds. The shoulder does not enjoy it. The tube room's latch lifts and Pip comes out of the lean-to into the rain with a canister held up like a stone.
+line: PIP: You'd break it? Her door? Grandad hung that door.
+line: PIP: Go home on the boat. If there's a boat.
+nar: She goes back in. The latch goes down on the inside, and the gale makes sure nobody else on the Ropewalk heard any of it.
+go: ropewalk3.hub
+
+# ---- Shadow: in through the tube room while Pip works the pump
+@node ropewalk3.shadow.wait
+place: gannet_wall
+cost: 15
+do: wet(0.3); meter(cold, 1)
+nar: Back to the wet wall, lantern shut. After a quarter of an hour the tube room's latch lifts. Pip comes out with her shoulders up and goes across the yard to the pump, and leans on it, and leans on it again, sending something to the weigh-house on the town's own breath.
+check: "[THE DARK] While she pumps, in at the tube room door behind her." -> ropewalk3.shadow.ok / ropewalk3.shadow.fail ? rain <= 0.5 {skill: dark, dc: 6, verb: hide, noise: 0.2}
+check: "[THE DARK] The rain band is on the yard. In at the tube room door behind her, under its noise." -> ropewalk3.shadow.ok / ropewalk3.shadow.fail ? rain > 0.5 {skill: dark, dc: 4, verb: hide, noise: 0.1}
+opt: "Stay where you are." -> ropewalk3.passage
+
+@node ropewalk3.shadow.ok
+place: gannet_house
+cost: 3
+do: set(ropewalk3.tube_room)
+nar: The tube room: a lean-to the size of a wardrobe, the lead pipe coming up through the floor into a brass mouth like the weigh-house's, a rack of empty canisters, and a biscuit tin on a shelf painted with a ship that never sailed anywhere.
+nar: The inner door to the back room is open a hand's width, for Pip coming back.
+opt: "Open the biscuit tin." -> ropewalk3.tin
+opt: "Put an eye to the gap." -> ropewalk3.shadow.gap
+
+@node ropewalk3.tin
+place: gannet_house
+cost: 6
+do: set(crake.drafts); set(letter.kept_open)
+nar: Crosswords from the Hesk paper, a year of them, each filled in in upright capitals and folded round a banker's counterfoil: GULLET LAMP TRUST, to the order of the Gullet agency. The newest folds round nothing but a letter.
+nar: KEEP 4471/G OPEN. A GALE IS FORECAST FOR THE THIRD NIGHT AND THE TRUST EXPECTS FURTHER LOSS. ONE OPEN CLAIM IS CHEAPER THAN TWO. O.C. Low Night, one o'clock.
+go: ropewalk3.shadow.gap
+
+@node ropewalk3.shadow.gap
+place: gannet_house
+cost: 1
+do: ropewalk3_way = shadow
+nar: Through the gap, close enough to hear the ribbon advance:
+go: ropewalk3.door
+
+@node ropewalk3.shadow.fail
+place: gannet_wall
+speaker: PIP
+cost: 3
+do: set(ropewalk3.pip_shut); wet(0.2)
+nar: Halfway across the yard the assessor's boot finds the pump's drain, and Pip turns round with the handle in both hands.
+line: PIP: I knew. I knew somebody'd come in that way one night. I didn't think it'd be you.
+nar: She stands in the tube room door until the assessor has gone back down the passage, and the rain goes on falling between them as though it had been asked to.
+go: ropewalk3.hub
+
+# ---- Hands: the message sent down the tube from the weigh-house lands
+@node ropewalk3.hands.land
+place: gannet_wall
+speaker: HESTER
+cost: 3
+do: wet(0.2); ropewalk3_way = hands
+nar: The passage is running with rain, and the back door stands open in it. In the doorway, with the light behind her and a canister in her hand, a small old woman in a shawl, reading the assessor's own handwriting.
+line: HESTER: Nobody has ever sent anything up the tube. It only goes one way, assessor. Everyone knows that, so nobody tries.
+line: HESTER: THE SHELF'S ASSESSOR IS ON THE WAY. OPEN THE BACK DOOR. Well, it's open. {when: weigh3_msg == door}
+line: HESTER: WHO TYPES THE SHELF. No question mark. You'd want to watch that, in this trade. {when: weigh3_msg == who}
+line: HESTER: A blank chit. Thirty years of clerking and nobody has ever sent me nothing on purpose. I had to come and see. {when: weigh3_msg == blank}
+line: HESTER: Well. You'd better see what you sent it to.
+go: ropewalk3.door
+
+# ================================================================ THE DOOR (protected moment 1)
+# The peak: Hester at the Trust's machine, and the night assessor's wages in the same ledger. Two lines.
+@node ropewalk3.door
+place: gannet_house
+cost: 2
+if: !has(hester.seen_typing) => xp(1)
+do: set(hester.seen_typing); set(met.hester); quest(a3.shelf, hester)
+nar: Hester Gannet sits at the Trust's old typewriter in a shawl and a hairnet, typing, every e coming down late.
+nar: Open at her elbow is the agency ledger, and halfway down the page, under NIGHT ASSESSOR, HESK, AT THE USUAL RATE: H. LAMB.
+go: ropewalk3.door.next
+
+@node ropewalk3.door.next
+cost: 0
+alt: ropewalk3.fist.after ? ropewalk3_way == fist
+go: ropewalk3.hester
+
+# ---- Fist: what a broken door earns
+@node ropewalk3.fist.after
+place: gannet_house
+speaker: HESTER
+cost: 4
+line: HESTER: That was Will's door.
+nar: She goes on typing. That is all the broken door has bought.
+nar: Pip comes through from the front room at a run and stops on the threshold with her hands up, as if the floor had moved.
+line: PIP: You broke it. You broke it in the wind so nobody would hear, and I heard.
+opt: "Tell me, Pip, since she won't." -> ropewalk3.fist.pip
+opt: "Take the letters off her desk and read them." -> ropewalk3.fist.letters {verb: carry, noise: 0.3}
+opt: "Leave by the door you broke." -> ropewalk3.hub
+
+@node ropewalk3.fist.pip
+place: gannet_house
+speaker: PIP
+cost: 5
+do: set(pip.told); set(ropewalk3.sallis)
+line: PIP: She's typed it since Grandad died. Eleven years. The Shelf's been dead as long as he has, and nobody told the tube.
+line: PIP: And I read one out on the quay the first morning, FURTHER LOSS ANTICIPATED, because they asked. Sallis asked me twice. Are you happy?
+nar: Behind her, the keys go on.
+go: ropewalk3.fist.after.menu
+
+@node ropewalk3.fist.letters
+place: gannet_house
+speaker: HESTER
+cost: 5
+do: set(crake.drafts); set(letter.kept_open)
+nar: Crosswords folded round banker's counterfoils, GULLET LAMP TRUST to the order of the Gullet agency, a year of them. On top, a letter: KEEP 4471/G OPEN. A GALE IS FORECAST AND THE TRUST EXPECTS FURTHER LOSS. ONE OPEN CLAIM IS CHEAPER THAN TWO. O.C.
+line: HESTER: Put them back in order when you've done. You'll find I keep things in order.
+go: ropewalk3.fist.after.menu
+
+@node ropewalk3.fist.after.menu
+place: gannet_house
+cost: 0
+opt: "Ask Pip." -> ropewalk3.fist.pip ? !has(pip.told)
+opt: "Read the letters on her desk." -> ropewalk3.fist.letters ? !has(crake.drafts)
+opt: "Go." -> ropewalk3.hub
+
+# ---- every other way in: she talks
+@node ropewalk3.hester
+place: gannet_house
+speaker: HESTER
+cost: 2
+alt: ropewalk3.offer ? has(hester.told) & has(ropewalk3.wages) & !has(ropewalk3.offered)
+line: HESTER: Sit down. Not there; that's Will's. There.
+line: HESTER: You leaned on my back door two nights ago. It's a good door. {when: has(ropewalk.forced_back), once}
+line: HESTER: You'll be the one who opened her crossword. Nine down was wrong; I told you. {when: has(ropewalk.letter_opened), once}
+line: HESTER: You stood in my passage at four in the morning and listened. I heard you not breathing. {when: has(typist.heard) & !has(ropewalk.forced_back), once}
+opt: "Ask who she types for." -> ropewalk3.who ? !has(hester.told)
+opt: "Ask about the ledger, and the name in it." -> ropewalk3.ledger ? !has(ropewalk3.wages)
+opt: "Ask why the Shelf kept the claim open." -> ropewalk3.why ? !seen(ropewalk3.why)
+opt: "Ask to read the Alderman's letters." -> ropewalk3.letters ? !has(crake.drafts)
+opt: "Leave her to the machine." -> ropewalk3.hub
+
+@node ropewalk3.who
+place: gannet_house
+speaker: HESTER
+cost: 6
+do: set(hester.told); quest(a3.shelf, why)
+line: HESTER: Will was the agent. I was his wife, which is the same post without the title.
+line: HESTER: The Shelf's last letter came the week he took the fever: DISCONTINUING THE GULLET AGENCY. He signed the town's renewals from his bed so nobody's house would be bare in a winter. Then he died, and the renewals were signed.
+line: HESTER: So I typed. Small claims from the float, at the usual rate. A chimney. A boat. Mrs Spratt's mother's teeth.
+line: HESTER: In Hesk there's one clerk left, Abel Strode, in one room. He answers what comes down the old lines. The winter Will died he put an advertisement in for a night assessor. One person answered it.
+go: ropewalk3.hester
+
+@node ropewalk3.ledger
+place: gannet_house
+speaker: HESTER
+cost: 5
+do: set(ropewalk3.wages)
+line: HESTER: The Gullet share of you. Every quarter, to Abel, for the night assessor's wages.
+line: HESTER: Six years ago the float ran dry, the year they stopped Mrs Tallow's money. The Alderman started sending me the crossword on a Tuesday, done, with a draft folded in it. A Trust nobody insures can't borrow for sodium.
+line: HESTER: Seven shillings in every pound of you is hers, near enough. The rest is the float and Abel's own pocket. He hasn't told you because you never asked who paid. Nobody does, while it's paid.
+opt: "Look at the column a while." -> ropewalk3.ledger.look
+opt: "Close the ledger." -> ropewalk3.hester
+
+@node ropewalk3.ledger.look
+place: gannet_house
+cost: 2
+nar: Eleven years in a column, in a hand that never once went over the line. Pell, Rendle, Mudlow, Brack: every claim the assessor ever stayed dry through is in here as a figure, carried forward.
+voice: pride: Eleven years of her shillings, and you called it the Shelf's rate and were proud of it. {dc: 4}
+voice: salt: The knees were dry. The hem was dry. Skin does not ask whose money. {dc: 5}
+voice: pride: Skin would not. {dc: 4}
+go: ropewalk3.hester
+
+@node ropewalk3.why
+place: gannet_house
+speaker: HESTER
+cost: 5
+do: set(ropewalk3.sallis)
+line: HESTER: The night of Low Night, after your word went up the tube, Mrs Pellow brought a letter at one in the morning. Keep the claim open; a gale's coming.
+line: HESTER: So I typed FURTHER LOSS ANTICIPATED, which is what she asked, and is also true of most places.
+line: HESTER: Pip read it out on the quay. I didn't think who'd be listening. In eleven years it never came up.
+go: ropewalk3.hester
+
+@node ropewalk3.letters
+place: gannet_house
+speaker: HESTER
+cost: 6
+do: set(crake.drafts); set(letter.kept_open)
+line: HESTER: The tin. Mind the lid; it's sharp.
+nar: Crosswords from the Hesk paper, each filled in in upright capitals and folded round a banker's counterfoil: GULLET LAMP TRUST, to the order of the Gullet agency. On top, a letter: KEEP 4471/G OPEN. A GALE IS FORECAST AND THE TRUST EXPECTS FURTHER LOSS. ONE OPEN CLAIM IS CHEAPER THAN TWO. O.C. {when: !seen(ropewalk3.why)}
+nar: On top, the letter she told you about, in upright capitals, initialled O.C. {when: seen(ropewalk3.why)}
+line: HESTER: Tuesday's has the money. Friday's is only the crossword. She can't help doing the crossword. {when: has(ropewalk.letter_opened) | has(ropewalk.envelope_read)}
+line: HESTER: She hasn't once got nine down. {when: !has(ropewalk.letter_opened) & !has(ropewalk.envelope_read)}
+go: ropewalk3.hester
+
+# ---- the offer (dawn3 reads ropewalk3.offered and said.typewriter_*)
+@node ropewalk3.offer
+place: gannet_house
+speaker: HESTER
+cost: 4
+do: set(ropewalk3.offered)
+line: HESTER: Whatever you write at dawn comes down that pipe to this room, and somebody types what the Shelf says back.
+line: HESTER: My eyes are going. Pip won't, and she shouldn't. You know the forms.
+nar: She turns the machine on the desk a quarter turn, toward the empty chair.
+do: give(w.fid); give(c.guernsey); set(ropewalk3.move_return)
+line: HESTER: Take Will's fid. And his jersey; it's warm wet, which is the only kind of warm there is in this town.
+line: HESTER: And if anybody comes at you on the way down, count, the way I count a line. On four you're already there.
+opt: "Say yes." -> ropewalk3.offer.yes {do: set(said.typewriter_yes); set(heard.hester.typewriter_yes); set(heard.pip.typewriter_yes)}
+opt: "Say no." -> ropewalk3.offer.no {do: set(said.typewriter_no); set(heard.hester.typewriter_no)}
+opt: "Say you'll answer at dawn." -> ropewalk3.offer.later {do: set(said.typewriter_later); set(heard.hester.typewriter_later)}
+
+@node ropewalk3.offer.yes
+place: gannet_house
+speaker: HESTER
+cost: 2
+line: HESTER: Then you'll want to practise the e. It wants a heavier finger than you'd think.
+go: ropewalk3.hester
+
+@node ropewalk3.offer.no
+place: gannet_house
+speaker: HESTER
+cost: 2
+line: HESTER: No is an answer. The Shelf's had worse.
+nar: She turns the machine back a quarter turn, square to herself.
+go: ropewalk3.hester
+
+@node ropewalk3.offer.later
+place: gannet_house
+speaker: HESTER
+cost: 1
+line: HESTER: Dawn, then. I'll be here. I'm always here.
+go: ropewalk3.hester
+
+# ---- coming back after the door
+@node ropewalk3.after
+place: gannet_house
+speaker: HESTER
+cost: 1
+alt: ropewalk3.after.broken ? has(ropewalk3.door_broken)
+nar: The back room, the machine, the ledger squared off on the desk. Pip is out, running. The gale leans on the shutter and the shutter leans back.
+go: ropewalk3.hester
+
+@node ropewalk3.after.broken
+place: gannet_house
+speaker: HESTER
+cost: 1
+nar: The back door is propped in its frame with a chair, and the rain gets round it anyway.
+line: HESTER: The door's still broken, if you were wondering.
+opt: "Ask Pip." -> ropewalk3.fist.pip ? !has(pip.told)
+opt: "Read the letters on her desk." -> ropewalk3.fist.letters ? !has(crake.drafts)
+opt: "Go." -> ropewalk3.hub

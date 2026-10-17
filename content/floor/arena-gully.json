@@ -1,0 +1,272 @@
+{
+ "name": "gully",
+ "place": "floor",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "ABCDEEEEEEEEEEEE",
+  "FABGHEEEEEIEEEEE",
+  "GBBBGJEKLMNEEIIE",
+  "OGBBBCPQRSTUVEEE",
+  "EOPFBBFGWRXYQEEE",
+  "EEEJFBBBCPOEEOOO",
+  "ZEEEDGBABBCDOOaO",
+  "OOOEEOGFBABFGPDO",
+  "OOOOEEODGFBbcABC",
+  "OOOOOOOEdWGFAeeA",
+  "OOOOOOOEEOODGFfg",
+  "OOOOOOOOOOOOOOhh"
+ ],
+ "legend": {
+  "A": {
+   "surface": "mud",
+   "h": -1.3
+  },
+  "B": {
+   "surface": "mud",
+   "h": -1.2
+  },
+  "C": {
+   "surface": "mud",
+   "h": -1
+  },
+  "D": {
+   "surface": "mud",
+   "h": -0.6
+  },
+  "E": {
+   "surface": "mud",
+   "h": -0.3
+  },
+  "F": {
+   "surface": "mud",
+   "h": -1.1
+  },
+  "G": {
+   "surface": "mud",
+   "h": -0.9
+  },
+  "H": {
+   "surface": "stone",
+   "h": 0.1,
+   "solid": true
+  },
+  "I": {
+   "surface": "mud",
+   "h": -0.2
+  },
+  "J": {
+   "surface": "mud",
+   "h": -0.7
+  },
+  "K": {
+   "surface": "stone",
+   "h": 0.7,
+   "solid": true
+  },
+  "L": {
+   "surface": "stone",
+   "h": 0.5,
+   "solid": true
+  },
+  "M": {
+   "surface": "stone",
+   "h": 0.4,
+   "solid": true
+  },
+  "N": {
+   "surface": "stone",
+   "h": 5.8,
+   "solid": true
+  },
+  "O": {
+   "surface": "mud",
+   "h": -0.4
+  },
+  "P": {
+   "surface": "mud",
+   "h": -0.8
+  },
+  "Q": {
+   "surface": "stone",
+   "h": 1.3,
+   "solid": true
+  },
+  "R": {
+   "surface": "stone",
+   "h": 1.1,
+   "solid": true
+  },
+  "S": {
+   "surface": "stone",
+   "h": 1,
+   "solid": true
+  },
+  "T": {
+   "surface": "stone",
+   "h": 0.9,
+   "solid": true
+  },
+  "U": {
+   "surface": "stone",
+   "h": 0.8,
+   "solid": true
+  },
+  "V": {
+   "surface": "stone",
+   "h": 0.6,
+   "solid": true
+  },
+  "W": {
+   "surface": "mud",
+   "h": -0.5
+  },
+  "X": {
+   "surface": "stone",
+   "h": 1.6,
+   "solid": true
+  },
+  "Y": {
+   "surface": "stone",
+   "h": 1.4,
+   "solid": true
+  },
+  "Z": {
+   "surface": "stone",
+   "h": -0.3,
+   "solid": true
+  },
+  "a": {
+   "surface": "stone",
+   "h": 0.3,
+   "solid": true
+  },
+  "b": {
+   "surface": "stone",
+   "h": -1.2,
+   "solid": true
+  },
+  "c": {
+   "surface": "stone",
+   "h": -0.8,
+   "solid": true
+  },
+  "d": {
+   "surface": "weed",
+   "h": -0.3
+  },
+  "e": {
+   "surface": "mud",
+   "h": -1.4
+  },
+  "f": {
+   "surface": "shingle",
+   "h": -0.9
+  },
+  "g": {
+   "surface": "shingle",
+   "h": -0.8
+  },
+  "h": {
+   "surface": "shingle",
+   "h": -0.7
+  }
+ },
+ "water": {
+  "a": 0,
+  "b": 1
+ },
+ "lights": [
+  {
+   "x": 4.4,
+   "z": 1.6,
+   "r": 2.6,
+   "k": 0.35,
+   "group": "lantern"
+  },
+  {
+   "x": 14.4,
+   "z": 6.6,
+   "r": 2.6,
+   "k": 0.35,
+   "group": "lantern"
+  }
+ ],
+ "exits": [
+  [
+   0,
+   0,
+   0.8,
+   12
+  ],
+  [
+   15.2,
+   0,
+   16,
+   12
+  ]
+ ],
+ "tideEnds": true,
+ "anchors": {
+  "cut": [
+   [
+    4.4,
+    1.6
+   ],
+   [
+    14.4,
+    6.6
+   ]
+  ],
+  "lamp": [
+   [
+    4.4,
+    1.6
+   ]
+  ],
+  "snare": [],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   7.5,
+   8.5
+  ],
+  "foes": [
+   [
+    4.5,
+    2.5
+   ],
+   [
+    11.5,
+    2.5
+   ],
+   [
+    7.5,
+    1.5
+   ],
+   [
+    2.5,
+    5.5
+   ]
+  ]
+ },
+ "stage": {
+  "line": "arena: gully -2 0 3 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = -3.2 + (h + 0.3) / 1.72"
+ },
+ "source": {
+  "plate": "content/floor",
+  "rect": [
+   -2,
+   3,
+   16,
+   12
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

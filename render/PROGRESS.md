@@ -1,0 +1,51 @@
+<!-- writing-profile: research -->
+# Plates for the closer camera: progress
+
+Environment art, from 2026-10-17. Brief: re-frame and re-bake every plate for the orthographic
+camera of design/CAMERA.md, raise detail and light composition, then build the Act 1 and Act 2
+districts, the daylight interlude and the three pull-backs, with before and after stills.
+
+Density (CAMERA.md correction, 2026-10-17): the quay at 2.25 times, about 132 px a person at 1080p,
+so 80 px a metre at the plate camera (elevation 30 degrees); rooms at 1.75 times their old framing,
+about 190 px a metre. One plate pixel is one screen pixel at 1920 x 1080, so the camera never
+magnifies paint. Every plate is at least 1920 x 1080.
+
+## Steps
+1. DONE Read PROGRESS, the camera decision, the look bible, PRODUCTION, STATE, the character
+   pipeline, the two memory notes, the old bake code and plates; set lists of every place from the
+   scripts (render/SETLIST.md).
+2. DONE Engine root for render/ moved to the Low Water worktree (render/rn.mjs).
+3. DONE Plate kit: kit/world.mjs (props bucketed on a floor grid so a place can hold hundreds of
+   props), kit/ids.mjs (shared surface kinds: spectral material, dither tone, palette class, how
+   rain and frost change each), kit/props.mjs (set dressing).
+4. DONE Bake v2: bake2.mjs, v2/shade.mjs (trace once, shade every weather and time variant from the
+   same hit; any number of lights, ten chosen per pixel), v2/post2.mjs (painter, our ink, grade, lens
+   layers without screen-centred ghosts), v2/dark.mjs (blackout dither, four lights per pixel).
+5. DONE The harbour as one world (worlds/harbour.mjs, worlds/town.mjs): quay, floor, mole, Mother,
+   the Saint Cuthwin, the Gut's mouth, the hill and the gasholder on the skyline. Quay re-framed at
+   4800 x 2560 (night, rain, frost, dawn, blackout). Crops judged at full size before the bake: the
+   first pass was flat-lit (every facade the same orange); sodium cut from 85 to 48, gain and
+   ambient lowered, the post by the steps removed so the steps sit in a dark pocket, the Brine's
+   door set ajar with paraffin behind it.
+6. DONE Rooms re-framed and dressed: the Brine (worlds/brine_in.mjs), the weigh-house after-vote
+   (weigh_in.mjs: no baked crowd, aprons on pegs, tallies, weighbridge and its book, the store, the
+   quay board, the tube terminus), the lamp room (lamp_in.mjs, lit, dark and frost).
+7. DONE Act 1 districts that had no plate: the floor (camera on the harbour world; night, rain,
+   a fog dither in the Flats look, blackout), the mole (night, frost), the 112 stairs (stairs.mjs,
+   a tall plate), the harbour office and the cells as one section (office_in.mjs), the Gut
+   (gut.mjs, palette-locked through the engine's palettelight: night, rigged, frozen, blackout).
+8. DONE (scenes; bakes in 12) Act 2 districts, laid on the combat engineer's arenas (world x, z = arena x, z): Chancel Hill
+   (hill.mjs: lit, frost, switch thrown), the Lamplighters' station (station.mjs, arena HILL),
+   the Gasholder (gasholder.mjs, arena GASHOLDER), the Ropewalk (ropewalk.mjs, arena ROPEWALK),
+   the Spit and the Old Light (spit.mjs, arena SPIT).
+9. DONE (scenes; bakes in 12) Daylight for the interlude: quay_day (day, 16:00), mole_day, brine_day, room and room_day,
+   weigh_day, gut_day (painted by day; the palette is the Gut's night).
+10. DONE (scenes; bakes in 12) The three pull-backs: wide_arrival (22:41), wide_blackout (dither), wide_dawn.
+11. DONE Coordination: design/NOTES-FOR-ENGINEER.md "plates v2" (density and `near`, orthographic
+    camera, half-size world buffers, lens layers, marks for spots, hides, exits, lamps and paths,
+    the plate table, arena matches and a QUAY proposal).
+12. IN PROGRESS Bakes in two Idle lanes (render/queue.sh, render/chain.sh), then fix-ups found by
+    looking: the floor too dark to read (moon and lanterns raised, more dressing), the station's
+    floor a mirror (indoor floors made matte), white arcs too green (now the 4100 K type).
+13. TODO Before and after stills (render/stills_all.sh), figures in the quay, Brine and weigh-house
+    stills (render/v2/figs.mjs with the character lead's cast), and the honest read.

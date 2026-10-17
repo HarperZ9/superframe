@@ -1,0 +1,241 @@
+{
+ "name": "floor",
+ "place": "floor",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "AAAAAAAAAAAAAAA",
+  "AABBAAABBBBBBBB",
+  "AACBBBDBAABBEFF",
+  "AAADGGGBBBBHIIJ",
+  "AAAAAABBBKJILMN",
+  "OABBBBBABPJMFBB",
+  "ABBBBQRSBBEBBTB",
+  "ABBBBQUSBBBBTTB",
+  "BBBBBVBBBBWBTTT",
+  "BBTBBBBBBBBBBBT",
+  "BBTBBBBBBBBBBBT",
+  "BBTBBBBBBBBBBBB",
+  "TTBBBTTBBBBBBBB"
+ ],
+ "legend": {
+  "A": {
+   "surface": "mud",
+   "h": -0.3
+  },
+  "B": {
+   "surface": "mud",
+   "h": -0.4
+  },
+  "C": {
+   "surface": "stone",
+   "h": 1.4,
+   "solid": true
+  },
+  "D": {
+   "surface": "weed",
+   "h": -0.1
+  },
+  "E": {
+   "surface": "stone",
+   "h": 1.8,
+   "solid": true
+  },
+  "F": {
+   "surface": "stone",
+   "h": 2.3,
+   "solid": true
+  },
+  "G": {
+   "surface": "weed",
+   "h": 0
+  },
+  "H": {
+   "surface": "stone",
+   "h": 2.5,
+   "solid": true
+  },
+  "I": {
+   "surface": "stone",
+   "h": 2.9,
+   "solid": true
+  },
+  "J": {
+   "surface": "stone",
+   "h": 2.6,
+   "solid": true
+  },
+  "K": {
+   "surface": "stone",
+   "h": 1.2,
+   "solid": true
+  },
+  "L": {
+   "surface": "stone",
+   "h": 3,
+   "solid": true
+  },
+  "M": {
+   "surface": "stone",
+   "h": 2.7,
+   "solid": true
+  },
+  "N": {
+   "surface": "stone",
+   "h": 1.9,
+   "solid": true
+  },
+  "O": {
+   "surface": "weed",
+   "h": 0.2
+  },
+  "P": {
+   "surface": "stone",
+   "h": 2.1,
+   "solid": true
+  },
+  "Q": {
+   "surface": "stone",
+   "h": 5.8,
+   "solid": true
+  },
+  "R": {
+   "surface": "stone",
+   "h": 6.6,
+   "solid": true
+  },
+  "S": {
+   "surface": "stone",
+   "h": 4.5,
+   "solid": true
+  },
+  "T": {
+   "surface": "mud",
+   "h": -0.5
+  },
+  "U": {
+   "surface": "stone",
+   "h": 6.7,
+   "solid": true
+  },
+  "V": {
+   "surface": "stone",
+   "h": -0.3,
+   "solid": true
+  },
+  "W": {
+   "surface": "stone",
+   "h": 0.2,
+   "solid": true
+  }
+ },
+ "water": {
+  "a": 0,
+  "b": 1
+ },
+ "lights": [
+  {
+   "x": 8.3,
+   "z": 2.4,
+   "r": 2.2,
+   "k": 0.33,
+   "group": "candle"
+  },
+  {
+   "x": 14.5,
+   "z": 1,
+   "r": 2.6,
+   "k": 0.35,
+   "group": "lantern"
+  },
+  {
+   "x": 9.8,
+   "z": 0.8,
+   "r": 2.6,
+   "k": 0.35,
+   "group": "lantern"
+  }
+ ],
+ "exits": [
+  [
+   0,
+   0,
+   0.8,
+   13
+  ],
+  [
+   14.2,
+   0,
+   15,
+   13
+  ]
+ ],
+ "tideEnds": true,
+ "anchors": {
+  "cut": [
+   [
+    14.5,
+    1
+   ],
+   [
+    9.8,
+    0.8
+   ]
+  ],
+  "lamp": [
+   [
+    14.5,
+    1
+   ]
+  ],
+  "snare": [
+   [
+    4,
+    2.5
+   ]
+  ],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   7.5,
+   9.5
+  ],
+  "foes": [
+   [
+    4.5,
+    3.5
+   ],
+   [
+    10.5,
+    3.5
+   ],
+   [
+    7.5,
+    1.5
+   ],
+   [
+    2.5,
+    6.5
+   ]
+  ]
+ },
+ "stage": {
+  "line": "arena: floor -20 0 4 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = -3.2 + (h + 0.3) / 1.72"
+ },
+ "source": {
+  "plate": "content/floor",
+  "rect": [
+   -20,
+   4,
+   15,
+   13
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

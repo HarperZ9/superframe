@@ -1,0 +1,195 @@
+# Low Water, Act 3: the gale. Night schedule, the Old Light's places, the night's events.
+# Director's file, 2026-10-17. Plan: design/ACT3-PLAN.md. Calendar: design/PRODUCTION.md 8, night 3.
+
+@night n3
+low: 00:34 -0.30
+high: 06:44 6.2
+at: 19:08 temp 7
+at: 19:08 fog 0
+at: 19:08 frost 0
+at: 19:08 wind.dir 225
+at: 19:08 wind.speed 10
+at: 19:08 rain 0.1
+at: 21:00 wind.speed 14
+at: 21:20 rain 0.8
+at: 22:00 rain 0.2
+at: 22:40 rain 0.9
+at: 23:20 rain 0.3
+at: 23:50 wind.speed 18
+at: 23:50 rain 0.9
+at: 00:15 wind.speed 1
+at: 00:15 rain 0
+at: 01:10 wind.dir 315
+at: 01:10 wind.speed 20
+at: 01:10 rain 0.7
+at: 02:30 rain 0.3
+at: 03:30 rain 0.8
+at: 04:40 rain 0.2
+at: 05:30 rain 0
+at: 05:30 wind.speed 12
+at: 06:04 wind.speed 6
+
+# ---------------------------------------------------------------- the Old Light (new in Act 3)
+@place oldlight_door
+name: The Old Light, at the drowned door
+zone: oldlight
+district: oldlight
+footing: weed
+light: 0.05
+sodium: 0
+dark-light: 0.05
+
+@place oldlight_mid
+name: The Old Light, the middle room
+zone: oldlight
+district: oldlight
+footing: stone
+shelter: yes
+light: 0.03
+sodium: 0
+dark-light: 0.03
+
+@place oldlight_low
+name: The Old Light, the low room
+zone: oldlight
+district: oldlight
+footing: stone
+shelter: yes
+light: 0.02
+sodium: 0
+dark-light: 0.02
+
+@place oldlight_stair
+name: The Old Light, the broken stair
+zone: oldlight
+district: oldlight
+footing: stone
+shelter: yes
+light: 0.04
+sodium: 0
+dark-light: 0.04
+
+@place eye_water
+name: On the water, in the eye of the storm
+zone: spit
+district: oldlight
+footing: wood
+light: 0.1
+sodium: 0
+dark-light: 0.1
+
+@district oldlight
+name: The Old Light
+next: quay
+map: 0.88 0.95
+
+# ---------------------------------------------------------------- the night's events
+@event ev3.dusk
+at: 19:08
+do: set(ev3.dusk)
+
+@event ev3.gale
+at: 21:00
+nar: The wind comes round the Spit and finds the town. Every loose thing in Gullet tries to leave at once.
+do: set(ev3.gale)
+
+@event ev3.vote
+at: 22:30
+do: set(ev3.vote_called)
+
+@event ev3.boats_last
+at: 00:00
+do: set(ev3.boats_last)
+
+@event ev3.eye
+at: 00:15
+camera: wide
+nar: The wind stops. Not drops: stops, the way a held breath stops. The rain stops with it. Over Gullet, in a round hole in the cloud, every star there is.
+do: set(ev3.eye)
+
+@event ev3.eye_near
+at: 00:17
+camera: near
+do: set(ev3.eye_seen)
+
+@event ev3.eye_ends
+at: 01:00
+do: set(ev3.eye_ends)
+
+@event ev3.backed
+at: 01:10
+nar: The wind comes back from the north-west, harder, as if it had only gone round to fetch something.
+do: set(ev3.backed)
+
+@event ev3.collier_seen
+at: 03:10
+do: set(ev3.collier_seen)
+
+@event ev3.wreckers_climb
+at: 03:30
+do: set(ev3.wreckers_climb)
+
+@event ev3.collier
+at: 04:00
+do: set(ev3.collier_turn)
+
+@event ev3.lamps_judged
+at: 04:30
+when: !has(lampout.steps) & !has(lampout.porthole) & !has(lampout.gut) & !has(lampout.balance) & !has(lampout.hill) & !has(lampout.bulb) & !has(lampout.mother) & !has(loss3.lamp)
+do: set(gale.lamps_held); quest(a3.lamps, kept)
+
+# ---------------------------------------------------------------- resolving the night wherever Lamb is
+# (director, 2026-10-17). mole3 plays these scenes when Lamb is on the mole; these events settle
+# them otherwise, and fire only when mole3 has not already set the flags.
+@event ev3.wreck_mother
+at: 03:55
+when: !has(mole3.wreck_met) & !has(wreckers.real) & !has(loss3.mother) & !has(loss3.lamp) & (var.mole3.mother == on | (var.mole3.mother == auto & var.light_mother == 1 & !has(said.day2_mother)))
+nar: Far out along the mole, through the rain, Mother's beam stops in the middle of a sweep, as if a hand had been put over it. It does not come back.
+do: set(loss3.mother); mole3.mother = off; mole3.target = mother; quest(a3.wreckers, done)
+
+@event ev3.wreck_steps
+at: 03:55
+when: !has(mole3.wreck_met) & !has(wreckers.real) & !has(loss3.mother) & !has(loss3.lamp) & !(var.mole3.mother == on | (var.mole3.mother == auto & var.light_mother == 1 & !has(said.day2_mother))) & var.light_steps == 1 & !has(lampout.steps)
+nar: At the top of the quay steps the paraffin post goes out, not in a gust: all at once, the way a lamp goes out when somebody turns it down.
+do: set(loss3.lamp); set(lampout.steps); mole3.target = lamp; quest(a3.wreckers, done)
+
+@event ev3.wreck_balance
+at: 03:55
+when: !has(mole3.wreck_met) & !has(wreckers.real) & !has(loss3.mother) & !has(loss3.lamp) & !(var.mole3.mother == on | (var.mole3.mother == auto & var.light_mother == 1 & !has(said.day2_mother))) & var.light_balance == 1 & !has(lampout.balance) & (var.light_steps == 0 | has(lampout.steps))
+nar: On the weigh-house roof the lamp on the town balance goes out all at once. A slate comes down into the street a moment later.
+do: set(loss3.lamp); set(lampout.balance); mole3.target = lamp; quest(a3.wreckers, done)
+
+@event ev3.wreck_hill
+at: 03:55
+when: !has(mole3.wreck_met) & !has(wreckers.real) & !has(loss3.mother) & !has(loss3.lamp) & !(var.mole3.mother == on | (var.mole3.mother == auto & var.light_mother == 1 & !has(said.day2_mother))) & var.light_hill == 1 & !has(lampout.hill) & (var.light_steps == 0 | has(lampout.steps)) & (var.light_balance == 0 | has(lampout.balance))
+nar: Up on Chancel Hill the white lamps go out together, which they only do when somebody throws the second switch.
+do: set(loss3.lamp); set(lampout.hill); mole3.target = lamp; quest(a3.wreckers, done)
+
+@event ev3.wreck_bulb
+at: 03:55
+when: !has(mole3.wreck_met) & !has(wreckers.real) & !has(loss3.mother) & !has(loss3.lamp) & !(var.mole3.mother == on | (var.mole3.mother == auto & var.light_mother == 1 & !has(said.day2_mother))) & var.light_bulb == 1 & !has(lampout.bulb) & (var.light_steps == 0 | has(lampout.steps)) & (var.light_balance == 0 | has(lampout.balance)) & (var.light_hill == 0 | has(lampout.hill))
+nar: In the gasholder frame the Old Bulb's light goes out, and the frame goes on singing in the dark.
+do: set(loss3.lamp); set(lampout.bulb); mole3.target = lamp; quest(a3.wreckers, done)
+
+@event ev3.collier_through
+at: 04:05
+when: !has(collier.through) & !has(collier.spit) & ((!has(loss3.mother) & (var.mole3.mother == on | (var.mole3.mother == auto & var.light_mother == 1 & !has(said.day2_mother)))) | (var.light_steps == 1 & !has(lampout.steps) & var.light_balance == 1 & !has(lampout.balance)) | ((has(hill3.bearing) | var.light_hill == 1) & !has(lampout.hill) & var.light_bulb == 1 & !has(lampout.bulb)) | has(oldlight.lanterns))
+nar: Out at the bay's mouth the collier's lights turn, slowly, the way a large animal turns, and line up on the leading lights the town has kept. They come in through the dog-leg one after another, and the Spit is behind them.
+do: set(collier.through); quest(a3.wreckers, stopped)
+
+@event ev3.collier_spit
+at: 04:05
+when: !has(collier.through) & !has(collier.spit) & !((!has(loss3.mother) & (var.mole3.mother == on | (var.mole3.mother == auto & var.light_mother == 1 & !has(said.day2_mother)))) | (var.light_steps == 1 & !has(lampout.steps) & var.light_balance == 1 & !has(lampout.balance)) | ((has(hill3.bearing) | var.light_hill == 1) & !has(lampout.hill) & var.light_bulb == 1 & !has(lampout.bulb)) | has(oldlight.lanterns))
+nar: Out at the bay's mouth the collier's lights come on toward the town, steering for a lamp that is not there. Then they stop moving, and lean.
+do: set(collier.spit)
+
+@event ev3.surge
+at: 05:30
+nar: The water is over the quay's edge and coming. Somebody is ringing the Brine's bell, the one over the bar that nobody has rung since Jory, and the whole town is going toward it.
+do: set(ev3.surge)
+go: brine3.surge.open
+
+@event ev3.dawn
+at: 06:20
+when: !seen(dawn3.start)
+go: dawn3.start

@@ -1,0 +1,222 @@
+# Low Water, Act 1: the encounters and their talk exits (Act 1 only; tools and foes are in combat.lwd).
+# Director's file. System: design/SYSTEMS-FULL.md section 18; four ways through: NOTES-FOR-ENGINEER.
+
+# Low Water, Act 1: the Fray. Opponents, tools and encounters. Director's file.
+# System: design/SYSTEMS-FULL.md section 18. The combat engineer (game/engine/combat/) owns the
+# tuning numbers; the numbers here are the director's first guess, in the same units as Lamb's
+# (Standing 6 + 2 x COAT, Breath 4 + KNEES). Encounters hand back to the district's nodes:
+#   <district>.fight.<name>.win / .yield / .fled / .down
+# Start one with: do: fight(e.<name>)
+
+# ---------------------------------------------------------------- encounters (SYSTEMS-FULL 18.11)
+@encounter e.salvors
+name: Copper on the floor
+area: floor
+foe: f.lugg 1
+foe: f.salvor 2
+prop: snare 12 7 ? has(floor.handline)
+talk: fx.salvors.parley | Put the sack down ? fight_struck >= 1 & fight_lamb_standing >= 4
+win: floor.fight.salvors.win
+yield: floor.fight.salvors.yield
+fled: floor.fight.salvors.fled
+down: floor.fight.salvors.down
+param: tide-ends-fight
+
+@encounter e.conger
+name: The thing in the hole
+area: floor
+foe: f.conger 1
+win: floor.fight.conger.win
+yield: floor.fight.conger.yield
+fled: floor.fight.conger.fled
+down: floor.fight.conger.down
+
+@encounter e.gulls
+name: Gulls at the fish
+area: floor
+foe: f.gulls 3
+talk: fx.gulls.children | Wave the children in with their lanterns ? fight_seconds >= 15
+win: floor.fight.gulls.win
+yield: floor.fight.gulls.yield
+fled: floor.fight.gulls.fled
+down: floor.fight.gulls.down
+
+@encounter e.eels
+name: Eels in the gully
+area: floor
+foe: f.eel 3
+win: floor.fight.eels.win
+yield: floor.fight.eels.yield
+fled: floor.fight.eels.fled
+down: floor.fight.eels.down
+
+@encounter e.afterdark
+name: The after-vote in the dark
+area: weigh
+light: blackout
+opening: alerted
+prop: cut 7 1
+foe: f.panbearer 1
+foe: f.gutter 2
+talk: fx.afterdark.nose | Name the switch yourself, aloud ? fight_seconds >= 15 & (has(scales.switch) | has(scales.kept) | has(lamps.pink))
+win: weigh.fight.afterdark.win
+yield: weigh.fight.afterdark.yield
+fled: weigh.fight.afterdark.fled
+down: weigh.fight.afterdark.down
+
+@encounter e.lamplighters
+name: Two poles
+area: quay
+foe: f.fewell 1
+foe: f.strand 1
+prop: cut 3.5 2 ? power.quay == off
+prop: cut 10.5 2 ? power.quay == off
+prop: cut 17.5 2 ? power.quay == off
+talk: fx.lamplighters.quiet | Go quietly ? fight_lamb_standing <= 4
+talk: fx.lamplighters.warrant | Show the Shelf's warrant ? fight_struck == 0 & fight_seconds >= 5
+win: quay.fight.lamplighters.win
+yield: quay.fight.lamplighters.yield
+fled: quay.fight.lamplighters.fled
+down: quay.fight.lamplighters.down
+
+@encounter e.wardens
+name: The Board's tide-wardens
+area: quay
+foe: f.warden 2
+talk: fx.wardens.crake | Say the Alderman's name ? has(met.crake) & fight_seconds >= 5
+win: quay.fight.wardens.win
+yield: quay.fight.wardens.yield
+fled: quay.fight.wardens.fled
+down: quay.fight.wardens.down
+
+@encounter e.brawl
+name: The Wet Hour
+area: brine
+param: brawl (everyone fights everyone; Lamb may join, stop it, or keep out of it)
+talk: fx.brawl.fork | Catch Sabine's eye ? fight_seconds >= 10
+win: brine.fight.brawl.win
+yield: brine.fight.brawl.yield
+fled: brine.fight.brawl.fled
+down: brine.fight.brawl.down
+
+@encounter e.dogs
+name: The middens
+area: gut
+foe: f.dog 3
+talk: fx.dogs.egg | Throw them the egg ? count(i.egg) > 0
+win: gut.fight.dogs.win
+yield: gut.fight.dogs.yield
+fled: gut.fight.dogs.fled
+down: gut.fight.dogs.down
+
+@encounter e.hammer
+name: Keel and the hammer
+area: lamp
+foe: f.keel 1
+param: frost-floor
+param: lens-behind (a missed heavy can strike the lens)
+talk: fx.hammer.green | Only the green rings, then ? fight_seconds >= 8 & has(lens.green)
+talk: fx.hammer.sit | Sit down, harbourmaster ? fight_struck >= 1 & fight_foes_yielding == 0
+win: mole.fight.hammer.win
+yield: mole.fight.hammer.yield
+fled: mole.fight.hammer.fled
+down: mole.fight.hammer.down
+
+# ---------------------------------------------------------------- sneak openings (a Shadow route that ends in a fight)
+@encounter e.salvors.sneak
+name: Copper on the floor, from behind
+area: floor
+opening: sneak
+foe: f.lugg 1
+foe: f.salvor 2
+prop: snare 12 7 ? has(floor.handline)
+talk: fx.salvors.parley | Put the sack down ? fight_struck >= 1 & fight_lamb_standing >= 4
+param: tide-ends-fight
+win: floor.fight.salvors.win
+yield: floor.fight.salvors.yield
+fled: floor.fight.salvors.fled
+down: floor.fight.salvors.down
+
+@encounter e.hammer.sneak
+name: Keel and the hammer, from the gallery
+area: lamp
+opening: sneak
+foe: f.keel 1
+param: frost-floor
+param: lens-behind (a missed heavy can strike the lens)
+talk: fx.hammer.green | Only the green rings, then ? fight_seconds >= 8 & has(lens.green)
+talk: fx.hammer.sit | Sit down, harbourmaster ? fight_struck >= 1 & fight_foes_yielding == 0
+win: mole.fight.hammer.win
+yield: mole.fight.hammer.yield
+fled: mole.fight.hammer.fled
+down: mole.fight.hammer.down
+
+# ---------------------------------------------------------------- talk exits: short scenes that end a fight in words
+@node fx.salvors.parley
+place: drowned
+cost: 2
+line: LAMB: Put it down. All of you. The water's coming.
+nar: Lugg looks at the sack, and at Merrow, and at the tide, which has got into the hole in the tower and is talking to itself in there.
+line: MERROW: Sea's had enough of this. So have I.
+go: floor.fight.salvors.yield
+
+@node fx.gulls.children
+place: fish
+cost: 1
+nar: The assessor waves both arms. Dilly's children come running with their lanterns held high, shrieking, a dozen small suns, and the gulls lift off the fish all at once like a lid.
+go: floor.fight.gulls.win
+
+@node fx.afterdark.nose
+place: weigh_in
+cost: 2
+line: LAMB: Twenty-two minutes to ten. The switch, and back at eight minutes to. There are scales on the handle. I didn't need to smell them.
+nar: The knives stop. In the dark somebody laughs, once, the way people laugh at a card trick.
+line: MARROW: A nose. Let it be.
+go: weigh.fight.afterdark.yield
+
+@node fx.lamplighters.quiet
+place: quay
+cost: 1
+nar: The assessor lowers the case and holds out both wrists, which is the Shelf's posture for this, though it has never before been required.
+go: quay.fight.lamplighters.down
+
+@node fx.lamplighters.warrant
+place: quay
+cost: 2
+nar: The assessor produces the Shelf's warrant of inspection, folded small, and holds it to the sodium. Under that light it is the colour of everything else, but it has a seal.
+line: STRAND: Is that real? Is it? Would the Sergeant want us to find out?
+go: quay.fight.lamplighters.yield
+
+@node fx.wardens.crake
+place: quay
+cost: 2
+line: LAMB: The Alderman will want to know who laid hands on the Shelf.
+nar: The name goes into the wardens like cold into a tooth. They look at each other, and at the harbour office window, where the telephone is.
+go: quay.fight.wardens.yield
+
+@node fx.brawl.fork
+place: brine
+cost: 1
+nar: Sabine catches the assessor's eye across the room and lifts the pickling fork from behind her ear. She raps it twice on the pump. The Brine stops, mid-swing, like a clock someone has put a finger in.
+go: brine.fight.brawl.yield
+
+@node fx.dogs.egg
+place: gut
+cost: 1
+do: take(i.egg)
+nar: The egg goes into the middens. Three dogs go after it, and for a while the Gut is a quarrel about an egg, which is a quarrel the dogs understand.
+go: gut.fight.dogs.yield
+
+@node fx.hammer.green
+place: lamproom
+cost: 1
+line: LAMB: The green ones. Only the green ones. Leave her the rest.
+nar: The hammer stops at the top of its swing.
+go: mole.sq.green
+
+@node fx.hammer.sit
+place: lamproom
+cost: 1
+line: LAMB: Sit down, harbourmaster.
+nar: He sits, on the ice, in his own water, as if he has been waiting eleven years for somebody to say it.
+go: mole.fight.hammer.yield

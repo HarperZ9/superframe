@@ -1,0 +1,260 @@
+# Placeholder test place: every interaction verb, the stealth layer and a sneak scene.
+# Stand-in names and lines only; not story content.
+
+@object o.wall
+name: Test wall
+place: t.yard
+at: 1 4
+verb: climb "Test climb the wall." {skill: knots, dc: 4, ok: t.y.top, fail: t.y.slip, cost: 2}
+
+@object o.pool
+name: Test pool
+place: t.yard
+verb: wade {wet: 0.3, text: Test: the water is to the knee.}
+
+@object o.barrel
+name: Test barrel
+place: t.yard
+at: 2 2
+verb: hide {cover: 0.9}
+
+@object o.lamp
+name: Test lamp
+place: t.yard
+verb: light "Test light the lamp." ? light < 0.3 {light: 0.6, sodium: 0}
+verb: douse "Test douse the lamp." ? light >= 0.3
+
+@object o.board
+name: Test fuse board
+place: t.yard
+verb: power "Test cut the yard power." ? power.yard == on {zone: yard, to: off}
+verb: power "Test restore the yard power." ? power.yard == off {zone: yard, to: on}
+
+@object o.crate
+name: Test crate
+place: t.yard
+verb: pry {needs: knife, give: glass 1, once, noise: 0.9}
+
+@object o.rope
+name: Test rope
+place: t.yard
+verb: rig {uses: wick 1, do: set(t.rigged), text: Test: the rope is rigged.}
+
+@object o.scrap
+name: Test scrap
+place: t.yard
+verb: salvage {give: timber 1, gone: tide > 0}
+
+@object o.window
+name: Test window
+place: t.yard
+verb: eavesdrop {who: t.speaker, range: 4, dir: 90, ok: t.y.heard, fail: t.y.muffled}
+
+@object o.post
+name: Test tide post
+place: t.yard
+verb: read {inst: tidegauge}
+
+@fact t.rigged
+about: Test fact: the rope is rigged.
+
+@watcher w.guard
+name: Test guard
+char: t.watcher
+place: t.yard
+area: t.quay
+path: 0 6 6 6
+speed: 1
+cone: 6 50
+say: suspicious Test: what was that?
+say: searching Test: someone there?
+say: seen Test: you, stop!
+say: lost Test: nothing.
+alert: t.y.caught
+rep: -1
+role: lamplighter
+ambush: e.t.guard
+
+@watcher w.dog
+name: Test dog
+post: 6 0 270
+cone: 3 40
+hearing: 3
+fight: e.t.dog
+
+@hide h.barrel
+name: Test barrel
+at: 2 2
+r: 0.8
+cover: 0.9
+
+@sneak s.yard
+name: Test sneak across the yard
+area: t.quay
+watcher: w.guard
+hide: h.barrel
+goal: 6 2 0.6
+limit: 20
+win: t.y.win
+alert: t.y.caught
+param: rect -1 -1 7 7 0
+param: start 0 0
+param: throw glass
+
+@sneak s.kennel
+name: Test sneak past the dog
+watcher: w.dog
+goal: 8 0 0.6
+win: t.y.win
+alert: t.y.caught
+param: rect -1 -2 9 2 0
+param: start 0 0
+
+# --- nodes
+@node t.y.go
+nar: Test: into the yard.
+do: sneak(s.yard)
+
+@node t.y.top
+nar: Test: on top of the wall.
+do: set(t.y.wall_talked)
+go: ^hub
+
+@node t.y.slip
+nar: Test: slipped off the wall.
+go: ^hub
+
+@node t.y.heard
+nar: Test: overheard the speaker.
+go: ^hub
+
+@node t.y.muffled
+nar: Test: could not make it out.
+go: ^hub
+
+@node t.y.caught
+nar: Test: caught in the yard.
+go: ^hub
+
+@node t.y.win
+nar: Test: across the yard unseen.
+go: ^hub
+
+@encounter e.t.guard
+name: Test guard fight
+foe: f.t.guard 1
+talk: t.y.win | Test: put it down, both of us. ? fight_seconds >= 0
+win: t.y.win
+down: t.y.caught
+
+@encounter e.t.dog
+name: Test dog fight
+foe: f.t.guard 1
+win: t.y.win
+down: t.y.caught
+
+@foe f.t.guard
+name: Test guard
+
+# --- the director's spellings (NOTES section 7): @spot records, the new verbs, a nose, a cue
+@spot sp.switch
+place: t.yard
+verb: cutpower
+name: Test pull the yard switch.
+zone: yard
+when: power.yard == on
+noise: 0.6
+
+@spot sp.bottle
+place: t.yard
+at: 3 0 3 1
+verb: throw
+name: Test throw a bottle.
+uses: glass 1
+minutes: 4
+
+@spot sp.sack
+place: t.yard
+verb: carry
+name: Test shoulder the sack.
+item: timber
+needs: timber, skill.knots >= 1
+once: yes
+
+@spot sp.scale
+place: t.yard
+verb: weigh
+name: Test weigh the fish.
+do: set(t.weighed)
+
+@spot sp.chalk
+place: t.yard
+verb: mark
+name: Test chalk the stone.
+
+@spot sp.bench
+place: t.yard
+verb: wait
+name: Test wait for the tide to turn.
+until: tide > -0.4
+step: 5
+max: 90
+
+@spot sp.candle
+place: t.yard
+verb: rig
+name: Test rig a candle timer.
+do: after(20, "set(t.timer_done)")
+
+@fact t.weighed
+about: Test fact: the fish was weighed.
+
+@fact t.timer_done
+about: Test fact: the candle burned down.
+
+@watcher w.nose
+name: Test nose
+post: 4 0 270
+cone: 2 30
+smell: 6
+
+@sneak s.nose
+name: Test sneak past a nose
+watcher: w.nose
+goal: 8 0 0.5
+win: t.y.win
+alert: t.y.caught
+param: rect -1 -2 9 2 0
+param: start 0 0
+
+@cue c.turning
+on: turning
+skill: eye
+text: Test voice: he is turning.
+
+@node t.y.fight
+nar: Test: the guard turns round.
+do: fight(e.t.guard)
+
+@node t.y.wide
+camera: wide
+nar: Test: the camera pulls back to the whole quay.
+opt: "Test: back." -> t.y.near
+
+@node t.y.near
+camera: near
+nar: Test: the camera comes close again.
+go: ^hub
+
+@gate g.t.wall
+name: Test the yard wall
+resolved: done.o.wall.climb
+resolved: t.y.wall_talked
+
+@gate g.t.crate
+name: Test the crate
+resolved: done.o.crate.pry
+pages: 2
+
+@fact t.y.wall_talked
+about: Test fact: talked past the wall.

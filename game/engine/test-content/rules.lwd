@@ -1,0 +1,282 @@
+# Placeholder ruleset for engine tests. Not story content: names and lines are stand-ins
+# until the director's spec (design/SYSTEMS-FULL.md) replaces them.
+@meta
+title: Engine test content
+format: lwd/1
+start: t.start
+clock: 23:00
+
+@rules
+check-mode: dice
+xp-per-level: 100
+points-per-level: 1
+skill-cap: 4
+creation-points: 9
+attr-min: 1
+attr-max: 5
+cabinet-slots: 2
+start-area: t.quay
+autosave-minutes: 10
+
+@attr wits
+name: Wits
+short: WIT
+about: Test attribute A.
+strain: tension 2
+
+@attr nerve
+name: Nerve
+short: NRV
+about: Test attribute B.
+strain: rep 1
+
+@attr hands
+name: Hands
+short: HND
+about: Test attribute C.
+
+@skill eye
+name: Eye
+attr: wits
+glyph: ◉
+about: Test skill: noticing.
+
+@skill ledger
+name: Ledger
+attr: wits
+glyph: ▤
+about: Test skill: sums.
+
+@skill brass
+name: Brass
+attr: nerve
+glyph: ◆
+about: Test skill: front.
+
+@skill knots
+name: Knots
+attr: hands
+glyph: ∞
+about: Test skill: rope and tools.
+
+@resource health
+name: Health
+max: 2 + attr.hands
+on-zero: t.down
+
+@resource dry
+name: Dryness
+max: 5
+
+@var coins
+default: 3
+about: Test currency.
+
+@var mood
+default: calm
+values: calm, rattled
+
+@trait t.tide_reader
+name: Test trait: tide tables
+about: Placeholder. While researched, Ledger suffers; once done, Eye sees better at low water.
+glyph: ≈
+research: 30
+while: skill.ledger -1
+mod: skill.eye +2 ? tide < -0.27
+do: xp(10)
+
+@trait t.night_eyes
+name: Test trait: night eyes
+about: Placeholder.
+research: 60
+mod: skill.eye +1 ? light < 0.1
+
+@item coat
+name: Test oilskin
+slot: body
+mod: res.dry.max +2
+mod: skill.brass -1 ? light >= 0.5
+about: Placeholder clothing.
+
+@item lantern
+name: Test lantern
+slot: hand
+mod: skill.eye +2 ? light < 0.2
+salvage: wick 1, glass 1
+about: Placeholder carried light.
+
+@item glass
+name: Glass shard
+stack: yes
+
+@item wick
+name: Wick
+stack: yes
+
+@item timber
+name: Timber
+stack: yes
+
+@item nails
+name: Nails
+stack: yes
+
+@item knife
+name: Test knife
+slot: hand
+
+@recipe r.lantern
+name: Make a lantern
+in: wick 1
+in: glass 1
+out: lantern 1
+tool: knife
+cost: 15
+
+@faction guild
+name: Test Guild
+start: 0
+tier: -100 Hostile
+tier: -20 Wary
+tier: 20 Friendly
+tier: 60 Trusted
+
+@faction board
+name: Test Board
+start: 10
+tier: -100 Hostile
+tier: 0 Neutral
+tier: 40 Owing
+
+@modifier m.fog
+skill: eye
+mod: -2
+when: fog > 0.05
+why: Fog
+
+@modifier m.sodium
+skill: eye
+mod: -1
+when: sodium > 0.6
+why: Sodium light
+
+@modifier m.dark
+skill: brass
+mod: 2
+when: light < 0.1
+why: Dark: nobody sees your face
+
+@archetype a.clerk
+name: Test clerk
+attr: wits 4
+attr: nerve 2
+attr: hands 3
+skill: ledger 1
+item: coat 1
+trait: t.night_eyes
+
+@archetype a.diver
+name: Test diver
+attr: wits 2
+attr: nerve 3
+attr: hands 4
+skill: knots 1
+item: knife 1
+
+@quest q.lamp
+name: Test quest
+stage: start: Find out about the lamp.
+stage: lead: Someone mentioned a switch.
+stage: done: Settled.
+done: done
+
+@meter cover
+name: Test cover
+scope: district
+min: 0
+max: 1
+start: 0
+decay: 0.5
+warn: 0.6 People are watching you.
+
+@instrument tidegauge
+name: TEST GAUGE
+key: KeyT
+say: Tide {{tide}} m. The floor is closed. {when: tide >= -0.27}
+say: Tide {{tide}} m. The floor is open. {when: tide < -0.27, set: t.read_tide}
+
+@fact t.read_tide
+about: Test fact: the floor was open.
+
+@fact t.switch
+about: Test fact: someone mentioned the switch.
+
+@district d.quay
+name: Test quay
+next: d.gut
+map: 0.4 0.55
+
+@district d.gut
+name: Test gut
+next: d.quay
+map: 0.7 0.35
+
+@area t.quay
+name: Test quay
+district: d.quay
+plate: quay
+place: t.quay
+spawn: -1.2 0 -2.6
+hotspot: "Test speaker" -> t.speaker ? !seen(t.speaker) {at: -1.9 0 -0.2, r: 1.7, who: keel}
+hotspot: "Test speaker again" -> t.speaker.hub {at: -1.9 0 -0.2, r: 1.7, who: keel}
+exit: "Into the bar" -> t.bar {at: -6.2 0 -0.2, r: 1.3, spawn: 4.6 0 1.3}
+figure: keel {at: -2.2 0 -0.9, face: 1}
+
+@area t.bar
+name: Test bar
+district: d.gut
+plate: brine
+place: t.bar
+spawn: 4.6 0 1.3
+grid: -7.5 -4 0.2 75 40
+exit: "Out to the quay" -> t.quay {at: 5.0 0 1.5, r: 1.0, spawn: -6.2 0 -0.1}
+
+@place t.quay
+name: Test quay
+zone: quay
+light: 0.6
+sodium: 0.95
+dark-light: 0.03
+
+@place t.bar
+name: Test bar
+zone: bar
+light: 0.5
+sodium: 0
+dark-light: 0.5
+
+@hazard h.tide
+name: Rising water
+where: at(t.quay)
+when: tide > 0
+every: 2
+do: hurt(health, 1); res.dry -= 1
+warn: Test: the water is coming in.
+danger: min(1, tide)
+
+@project p.jetty
+name: Test jetty
+district: d.quay
+stage: Clear the wreck | needs: timber 1 | do: rep(board, 5) | about: Placeholder stage one.
+stage: Rebuild | needs: timber 2, nails 1 | do: rep(board, 10); set(t.jetty_built) | about: Placeholder stage two.
+
+@fact t.jetty_built
+about: Test fact: the jetty is rebuilt.
+
+@item t.hook
+name: Test boathook
+slot: hand
+requires: skill.knots >= 3
+mod: skill.knots +1
+upgrade: 1 | needs: nails 1 | mod: skill.knots +1 | about: Test: a new ferrule.
+upgrade: 2 | needs: timber 1, nails 1 | mod: weapon.reach +1 | about: Test: a longer shaft.

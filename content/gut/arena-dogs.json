@@ -1,0 +1,97 @@
+{
+ "name": "dogs",
+ "place": "gut",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "AABB",
+  "AABB",
+  "ACDB",
+  "EEEE"
+ ],
+ "legend": {
+  "A": {
+   "surface": "stone",
+   "h": 5.9
+  },
+  "B": {
+   "surface": "stone",
+   "h": 6.2,
+   "solid": true
+  },
+  "C": {
+   "surface": "stone",
+   "h": 5.9,
+   "solid": true
+  },
+  "D": {
+   "surface": "stone",
+   "h": 6.3,
+   "solid": true
+  },
+  "E": {
+   "surface": "stone",
+   "h": 7.9,
+   "solid": true
+  }
+ },
+ "water": null,
+ "lights": [],
+ "exits": [
+  [
+   0,
+   0,
+   0.8,
+   3
+  ]
+ ],
+ "tideEnds": false,
+ "anchors": {
+  "cut": [],
+  "lamp": [],
+  "snare": [],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   1.5,
+   1.5
+  ],
+  "foes": [
+   [
+    1.5,
+    0.5
+   ],
+   [
+    1.5,
+    0.5
+   ],
+   [
+    1.5,
+    0.5
+   ],
+   [
+    0.5,
+    1.5
+   ]
+  ]
+ },
+ "stage": {
+  "line": "arena: dogs 1.8 0 2.4 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = h - 6.2"
+ },
+ "source": {
+  "plate": "content/gut",
+  "rect": [
+   1.8,
+   2.4,
+   4,
+   4
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

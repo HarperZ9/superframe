@@ -1,0 +1,207 @@
+{
+  "_about": "Frame timings for every character clip, 30 frames a second. The combat engineer owns these numbers and tunes them from the clean-room spec; the art reads them and never hard-codes a length. startup, active and recovery are frame counts; iframes [from, to) and cancel (frames into recovery from which the next action may start) are frames; move is root travel in metres over the clip; hit is the strike's reach (m) and arc (deg). Values here are the art lead's first pass, written before any spec exists: placeholders to be replaced, not a design.",
+  "fps": 30,
+  "default": {
+    "idle": {
+      "frames": 96
+    },
+    "walk": {
+      "frames": 24,
+      "speed": 1.35
+    },
+    "run": {
+      "frames": 20,
+      "speed": 4.2
+    },
+    "turn": {
+      "frames": 39,
+      "free": 12,
+      "move": 0.25
+    },
+    "stop": {
+      "frames": 18,
+      "move": 0.7
+    },
+    "talk_a": {
+      "frames": 54
+    },
+    "talk_b": {
+      "frames": 60
+    },
+    "talk_c": {
+      "frames": 42
+    },
+    "examine": {
+      "frames": 72,
+      "move": 0.12,
+      "hold": [
+        0.42,
+        0.75
+      ]
+    },
+    "dodge_f": {
+      "startup": 3,
+      "active": 14,
+      "recovery": 8,
+      "iframes": [
+        3,
+        14
+      ],
+      "move": 3.0,
+      "cancel": 4
+    },
+    "dodge_b": {
+      "startup": 2,
+      "active": 9,
+      "recovery": 7,
+      "iframes": [
+        2,
+        9
+      ],
+      "move": 1.8,
+      "cancel": 3
+    },
+    "dodge_l": {
+      "startup": 2,
+      "active": 9,
+      "recovery": 7,
+      "iframes": [
+        2,
+        9
+      ],
+      "move": 2.0,
+      "cancel": 3
+    },
+    "dodge_r": {
+      "startup": 2,
+      "active": 9,
+      "recovery": 7,
+      "iframes": [
+        2,
+        9
+      ],
+      "move": 2.0,
+      "cancel": 3
+    },
+    "light_1": {
+      "startup": 7,
+      "active": 3,
+      "recovery": 12,
+      "move": 0.35,
+      "cancel": 5,
+      "hit": {
+        "reach": 1.4,
+        "arc": 30
+      }
+    },
+    "light_2": {
+      "startup": 7,
+      "active": 4,
+      "recovery": 13,
+      "move": 0.3,
+      "cancel": 6,
+      "hit": {
+        "reach": 1.3,
+        "arc": 120
+      }
+    },
+    "light_3": {
+      "startup": 12,
+      "active": 4,
+      "recovery": 20,
+      "move": 0.45,
+      "cancel": 12,
+      "hit": {
+        "reach": 1.35,
+        "arc": 40
+      }
+    },
+    "heavy": {
+      "startup": 24,
+      "active": 10,
+      "recovery": 22,
+      "move": 0.6,
+      "cancel": 14,
+      "hit": {
+        "reach": 1.5,
+        "arc": 360
+      }
+    },
+    "hit": {
+      "startup": 1,
+      "active": 8,
+      "recovery": 8,
+      "move": -0.25
+    },
+    "stagger": {
+      "startup": 1,
+      "active": 30,
+      "recovery": 12,
+      "move": -1.1
+    },
+    "fall": {
+      "startup": 1,
+      "active": 18,
+      "recovery": 20,
+      "move": -1.3
+    },
+    "getup": {
+      "startup": 8,
+      "active": 22,
+      "recovery": 12,
+      "move": 0.0,
+      "iframes": [
+        0,
+        30
+      ]
+    },
+    "turn_run": {
+      "frames": 28,
+      "free": 8,
+      "move": 0.25
+    },
+    "wade": {
+      "frames": 60,
+      "speed": 0.8
+    }
+  },
+  "fennick": {
+    "walk": {
+      "frames": 36,
+      "speed": 1.2
+    },
+    "light_1": {
+      "startup": 9,
+      "active": 3,
+      "recovery": 14,
+      "move": 0.3,
+      "cancel": 6,
+      "hit": {
+        "reach": 1.9,
+        "arc": 25
+      }
+    }
+  },
+  "marrow": {
+    "walk": {
+      "frames": 38,
+      "speed": 1.15
+    },
+    "run": {
+      "frames": 24,
+      "speed": 3.6
+    },
+    "heavy": {
+      "startup": 30,
+      "active": 10,
+      "recovery": 26,
+      "move": 0.5,
+      "cancel": 16,
+      "hit": {
+        "reach": 1.2,
+        "arc": 360
+      }
+    }
+  },
+  "_spec": "Calm-clip numbers marked from cleanroom/spec/CHARACTER-PRESENTATION.md v2 section 7.2 (2026-10-17), halved from 60 Hz frames: turn while walking 78 frames, movement free from 23; turn while running 55 frames, free from 15; root carried 0.2 to 0.3 m. Keys are continuous curves, so the clips play at 60 Hz without re-keying."
+}

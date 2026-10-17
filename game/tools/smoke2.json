@@ -1,0 +1,10 @@
+[
+ {"frames": 3, "still": "a-title"},
+ {"press": "Space", "frames": 2}, {"read": 2},
+ {"go": "brine", "until": "!window.__lw.walking && window.__lw.talking", "max": 900},
+ {"read": 2}, {"frames": 2, "still": "b-brine"},
+ {"eval": "window.__lw.closeTalk()", "frames": 2},
+ {"go": "stove", "until": "!window.__lw.walking && window.__lw.talking", "max": 900},
+ {"read": 2, "still": "c-stove"},
+ {"eval": "window.__lw.closeTalk(); window.__lw.skip(50)", "frames": 30, "still": "d-late"}
+]

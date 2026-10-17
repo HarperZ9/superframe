@@ -1,0 +1,208 @@
+# Low Water, Act 1: places, districts, the night's events, hazards and Tide Runs. Director's file.
+# The weather itself is the night schedule (design/PRODUCTION.md section 8; request R11). Events
+# here set the flags and commands the script reads.
+
+# Areas (walkable plates) are wired by the engineer once the plates' coordinates are known:
+# quay (content/quay), brine (content/brine), weigh (content/weigh), lamp (content/lamp).
+
+# ---------------------------------------------------------------- the night's events
+@event ev.fog
+at: 23:20
+do: set(ev.fog)
+
+@event ev.rain
+at: 23:35
+do: set(ev.rain)
+
+@event ev.eave
+at: 23:50
+do: set(ev.eave_wet)
+
+@event ev.drowned_covered
+at: 23:52
+do: set(ev.drowned_covered)
+
+@event ev.midnight
+at: 00:00
+go: weigh.tube.midnight
+
+@event ev.prov_travels
+at: 00:20
+do: set(ev.prov_travels)
+
+@event ev.cells
+at: 00:30
+when: var.prov == wreckers
+do: set(merrow.cells)
+
+@event ev.gut_open
+at: 00:40
+do: set(gut.open)
+
+@event ev.heavy_rain
+at: 01:30
+do: set(ev.heavy_rain); set(ev.soot_gone)
+
+@event ev.crake_two
+at: 02:00
+do: set(ev.crake_two)
+
+@event ev.rain_eases
+at: 02:40
+do: set(ev.rain_eases)
+
+@event ev.appt_set
+at: 00:25
+if: var.prov == wreckers => appt = cells
+if: var.prov == guild => appt = vote
+if: var.prov == trust => appt = search
+if: var.prov == keeper => appt = oven
+if: var.prov == sea | var.prov == refused | var.prov == none => appt = keel
+
+@event ev.appt_rumour
+at: 01:00
+do: set(appt.known)
+nar: Item: the town has stopped looking at the quay lamps the way people look at lamps, and started looking at them the way people look at clocks.
+
+@event ev.blackout
+at: 02:50
+camera: wide
+cmd: setPower quay off
+do: set(ev.blackout)
+if: mother == burning => set(mother.out_again)
+
+@event ev.blackout_near
+at: 02:52
+camera: near
+do: set(ev.blackout_seen)
+
+@event ev.blackout_ends
+at: 03:20
+cmd: setPower quay on
+do: set(ev.blackout_ends)
+
+@event ev.tin
+at: 03:22
+when: !seen(weigh.pip.tin) & (has(appt.stopped) | has(appt.joined) | has(appt.watched))
+go: weigh.pip.tin
+
+@event ev.frost
+at: 04:10
+do: set(ev.frost)
+
+@event ev.hammer
+at: 04:15
+do: set(ev.hammer)
+
+@event ev.hobb_runs
+at: 04:25
+when: var.tab_hobb == 1 & !has(hammer.keel) & !has(weigh.hammer_taken) & !at(weigh_out) & !at(weigh_in) & !at(office) & !at(tube)
+nar: Somebody is running on the frost, badly, with two lights. It is Constant Hobb, a lantern in each hand, both swinging, so that he arrives inside a small private storm of shadows.
+line: HOBB: Shelf. I'm not supposed to. The Sergeant says we don't come to people, people come to us. Only you did me a turn, and I'm doing you one, and then we're square, all right?
+line: HOBB: The harbourmaster's had the hammer out of the weigh-house store. The lump hammer. Ten minutes since. He's gone up the mole with it, dripping, and the drips are freezing behind him like he's laying a path to come back by.
+nar: He looks at the dark at the end of the mole the way he looks at all dark: as if it had his name.
+line: HOBB: I'm going back to my lamp. I've told nobody this. Nobody's told me.
+do: set(hammer.keel); quest(a1.frost, hammer); tab_hobb = 0
+
+@event ev.keel_climbs
+at: 04:30
+do: set(ev.keel_climbs)
+
+@event ev.lens
+at: 04:55
+when: !has(frost.met)
+do: set(lens.broken); lens = broken
+
+@event ev.high_water
+at: 05:10
+do: set(ev.high_water)
+
+@event ev.crake_three
+at: 05:30
+do: set(ev.crake_three)
+
+@event ev.dawn
+at: 06:00
+go: dawn.start
+
+# ---------------------------------------------------------------- hazards (active only inside their runs; R10)
+@hazard h.water
+name: The flood
+where: at(gully) | at(fish) | at(drowned)
+when: tide > -0.35
+every: 2
+do: wet(0.1); meter(cold, 1)
+warn: The water is coming back along the gully.
+danger: min(1, (tide + 0.35) * 2)
+
+@hazard h.frost
+name: Frost
+where: at(mole) | at(stairs)
+when: frost > 0
+every: 3
+do: meter(cold, 1)
+warn: The mole is white, and the white is slippery.
+danger: 0.6
+
+@hazard h.dark
+name: The dark
+where: at(quay) | at(weigh_out)
+when: light < 0.05
+every: 4
+do: meter(dread, 1)
+warn: The lamps are out. The edge of the quay is wherever it is.
+danger: 0.5
+
+# ---------------------------------------------------------------- Tide Runs (R10)
+@run r.gully
+name: The gully back
+area: floor
+hazard: h.water
+goal: steps
+rate: 4
+limit: 12
+win: floor.run.gully.win
+lose: floor.run.gully.lose
+param: depth-loses waist
+
+@run r.fish
+name: Turning the fish
+area: floor
+hazard: h.water
+goal: channel
+rate: 4
+limit: 8
+win: floor.run.fish.win
+lose: floor.run.fish.lose
+param: helpers dilly
+
+@run r.shadow
+name: The Lamplighter's shadow
+area: quay
+hazard: h.dark
+goal: office_window
+rate: 4
+limit: 10
+win: weigh.run.shadow.win
+lose: weigh.run.shadow.lose
+param: pursuer hobb
+param: sight 3
+
+@run r.frost
+name: Frost on the mole
+area: lamp
+hazard: h.frost
+goal: lamproom
+rate: 4
+limit: 20
+win: mole.run.frost.win
+lose: mole.run.frost.lose
+param: frost-ballast 6
+param: climb 112
+
+# ---------------------------------------------------------------- the Lamps of Gullet: three lit
+@event ev.lamps_three
+at: 04:40
+when: has(lamp.steps_post.lit) + has(lamp.porthole.lit) + has(lamp.gut.lit) + has(lamp.balance.lit) + has(lamp.drowned.lit) + has(mother.restruck) >= 3
+do: quest(a1.lamps, three)
+nar: Item: three lights in Gullet tonight that were dark when the assessor came off the ferry. The assessor did not come to light anything. The assessor came to say why it was dark.

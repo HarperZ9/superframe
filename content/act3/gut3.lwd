@@ -1,0 +1,608 @@
+# Low Water, Act 3: The Gut in the gale (gut3). The Guild under its steward (gut2_steward); the
+# Gut's wire lamps if the town chose them (light_gut, a B1 moment); the salt sacks for the Brine's
+# surge (B10 Hands, gut3.salt_sent; the optional fight e3.ice2 is defined here); the Guild's part in
+# the town's last vote in the Brine (gut3_guild, gut3_comes). Writer's file, 2026-10-17. Private.
+
+# ---- new ids
+@fact gut3.wires_held
+
+@fact gut3.wires_out
+
+@fact gut3.salt_sent
+
+@fact gut3.salt_lost
+
+@fact gut3.lull_known
+
+@fact gut3.noll_fell
+
+@fact gut3.tended
+@fact gut3.swimmer
+
+@event gut3.ev.lampout
+at: 03:30
+when: var.light_gut == 1 & !has(gut3.tended) & !has(lampout.gut)
+do: set(lampout.gut); set(gut3.wires_out); quest(a3.lamps, lost)
+
+@var gut3_guild
+default: none
+values: none, keeper, trust, split, home
+about: How the Guild votes in the Brine at dawn: for a paid keeper, with the Trust, divided, or not at all (it stays home to hold the Gut).
+
+@var gut3_comes
+default: none
+values: none, steward, all
+about: Who from the Guild comes to the Brine for the last vote.
+
+@encounter e3.ice2
+name: The Guild's quarrel in the wind
+area: gut
+foe: f.gutter 2
+param: gale (gusts down the lane, both sides)
+talk: gut3.fx.ice2 | Ask whose fish the Brine has fed for thirty years ? fight_seconds >= 8
+win: gut3.fight.ice2.win
+yield: gut3.fight.ice2.yield
+fled: gut3.fight.ice2.fled
+down: gut3.fight.ice2.down
+
+@encounter e3.ice2.sneak
+name: The Guild's quarrel, from the smoke
+area: gut
+opening: sneak
+foe: f.gutter 2
+param: gale
+talk: gut3.fx.ice2 | Ask whose fish the Brine has fed for thirty years ? fight_seconds >= 8
+win: gut3.fight.ice2.win
+yield: gut3.fight.ice2.yield
+fled: gut3.fight.ice2.fled
+down: gut3.fight.ice2.down
+
+# ---------------------------------------------------------------- the hub
+@node gut3.hub
+hub: yes
+place: gut
+alt: gut3.band.b1 ? var.light_gut == 1 & !has(gut3.tended) & !has(lampout.gut) & !has(b1.band1) & clock >= 21:20 & clock < 21:50
+alt: gut3.band.b2 ? var.light_gut == 1 & !has(gut3.tended) & !has(lampout.gut) & !has(b1.band2) & clock >= 22:40 & clock < 23:10
+alt: gut3.band.b3 ? var.light_gut == 1 & !has(gut3.tended) & !has(lampout.gut) & !has(b1.band3) & clock >= 03:30 & clock < 04:00
+alt: gut3.eye ? has(ev3.eye) & !has(ev3.eye_ends) & !seen(gut3.eye)
+alt: gut3.chimney ? clock >= 04:05 & (has(collier.spit) | has(collier.through)) & !seen(gut3.chimney)
+alt: gut3.first ? !seen(gut3.first)
+nar: The Gut in the gale. The lane is a flue, and the wind goes down it all night without stopping at the quay.
+call: gut3.hub.dark
+nar: The wire lamps went out at the half-past-three band, one after another down the lane, and nobody had trimmed them all night. {when: has(lampout.gut) & !has(gut3.tended), once}
+inst: THE VANE: South-west, eighteen, gusting! Down the lane and out at the quay! Nothing you say here will reach the hall! {when: clock < 01:10 & !has(ev3.eye), once}
+inst: THE VANE: North-west now, twenty! It comes over the smokehouse roofs and falls into the lane from above! {when: has(ev3.backed), once}
+opt: "The steward." -> gut3.steward +1
+opt: "The other one." -> gut3.other ? clock < 05:00 +1
+opt: "Shadwell's fire-door." -> gut3.smoke +1
+opt: "The salt for the Brine." -> gut3.salt ? !has(gut3.salt_sent) & !has(gut3.salt_lost) +1
+opt: "Up the lane to the Brine." -> brine3.hub +2
+opt: "Down the lane to the quay." -> quay3.hub +2
+opt: "Through to the weigh-house." -> weigh3.hub +2
+opt: "Up the back steps to the Ropewalk." -> ropewalk3.hub +3
+
+@node gut3.hub.dark
+when: var.light_gut == 0
+nar: The wire lamps are dark tonight; their oil went to the town's three. They swing on their pulleys overhead, unlit, knocking together like a row of empty bells.
+return:
+
+@node gut3.first
+place: gut
+cost: 2
+nar: Stall shutters are nailed down. Eels are in from the rails. The gutter has thawed and runs fast, and the violet bands go by at a run, breaking against the stones.
+call: gut3.first.spratt
+call: gut3.first.marrow
+go: gut3.hub
+
+@node gut3.first.spratt
+when: gut2_steward == spratt
+nar: On the hall door, newly painted: STEWARD A. SPRATT. LAMPS ON. Somebody has already added, in chalk under it, AND OIL?
+return:
+
+@node gut3.first.marrow
+when: gut2_steward != spratt
+nar: The fish of the year hangs over the hall door, lashed to its hook with a second rope so the gale cannot have it.
+return:
+
+# ---------------------------------------------------------------- the steward in the gale
+@node gut3.steward
+place: hall
+alt: gut3.steward.spratt ? gut2_steward == spratt
+alt: gut3.steward.marrow.vote ? seen(gut3.steward.marrow) & clock >= 04:00 & gut3_guild == none
+cost: 1
+go: gut3.steward.marrow
+
+@node gut3.steward.marrow
+place: hall
+speaker: MARROW
+cost: 3
+nar: Marrow has the hall's benches up against its doors and forty aprons sitting on the benches, as ballast.
+line: MARROW: The Brine wants us at dawn for the town's vote. Sabine sent a pickled egg with the message, which is how you know it's serious.
+line: MARROW: The Guild will go. The Guild votes for a keeper, paid. My father walked down to the lamp and shook Wenna Tallow's hand the winter they gave her the post. He'd want her paid. So do I.
+call: gut3.steward.marrow.cause
+opt: "Bring all of them. Every apron." -> gut3.vote.all ? clock < 06:00 {do: set(said.guild_all)}
+opt: "Leave them here to hold the Gut. Come yourself." -> gut3.vote.steward ? clock < 06:00 {do: set(said.guild_steward)}
+opt: "Keep the whole Guild home. The Gut will flood before the Brine does." -> gut3.vote.home ? clock < 06:00 {do: set(said.guild_home)}
+opt: "Leave him to his ballast." -> ^hub
+
+@node gut3.steward.marrow.cause
+when: has(cause.keeper)
+line: MARROW: You wrote her down, on the first night. The Guild's vote won't take that back. It'll put a wage beside it.
+return:
+
+@node gut3.steward.marrow.vote
+place: hall
+speaker: MARROW
+cost: 1
+line: MARROW: Dawn's near. The Guild goes when I go. Say how you'd have it.
+opt: "Bring all of them. Every apron." -> gut3.vote.all {do: set(said.guild_all)}
+opt: "Leave them here to hold the Gut. Come yourself." -> gut3.vote.steward {do: set(said.guild_steward)}
+opt: "Keep the whole Guild home. The Gut will flood before the Brine does." -> gut3.vote.home {do: set(said.guild_home)}
+opt: "Say nothing." -> gut3.vote.default
+
+@node gut3.steward.spratt
+place: hall
+speaker: SPRATT
+alt: gut3.steward.spratt.broke ? has(gut2.broke_keep)
+cost: 3
+nar: Agnes Spratt has the steward's chair and her eel tub beside it, the live ones moving in it with the patience of a queue.
+line: SPRATT: The hill's contract came this morning, by a Lamplighter, under an umbrella. The workhouse buys our fish. The Guild votes with the hill at the Brine, as I said it would.
+line: SPRATT: That means no wage for a keeper. A paid keeper is a Trust that admits it stopped paying one.
+call: gut3.steward.spratt.kept
+check: "[THE CHIT] Tell her what the hill's money has bought this week besides fish." -> gut3.spratt.turn.ok / gut3.spratt.turn.fail ? has(crake.drafts) | has(hester.told) {skill: chit, dc: 6}
+opt: "Bring every apron to the Brine." -> gut3.vote.all ? clock < 06:00 {do: set(said.guild_all)}
+opt: "Keep the Guild home tonight. Let the hill vote without you." -> gut3.vote.home ? clock < 06:00 {do: set(said.guild_home)}
+opt: "Leave her to her tub." -> ^hub
+
+@node gut3.steward.spratt.kept
+when: gut_spratt == kept & !has(gut2.broke_keep)
+line: SPRATT: You kept a thing for me once. If you want something kept now, ask. I don't ask twice and I don't offer twice.
+opt: "Keep the Guild's vote off the hill's side. That's what I'm asking." -> gut3.spratt.kept.ask {do: set(said.spratt_ask)}
+
+@node gut3.steward.spratt.broke
+place: hall
+speaker: SPRATT
+cost: 2
+line: SPRATT: The Shelf. Stood on the ice and pointed down at my fish after it said between us. You'll get nothing in this hall you didn't come with.
+nar: She turns the chair so its back is to the assessor. The eels go on queueing.
+opt: "Leave." -> ^hub
+
+@node gut3.spratt.kept.ask
+place: hall
+speaker: SPRATT
+cost: 2
+do: gut3_guild = split; gut3_comes = all
+line: SPRATT: Then it's kept. The Guild comes to the Brine and votes as each apron likes. The hill can have the ones that love it. I'll not whip them.
+line: SPRATT: There. We're even. Don't come back for change.
+go: ^hub
+
+@node gut3.spratt.turn.ok
+place: hall
+speaker: SPRATT
+cost: 3
+do: gut3_guild = keeper; gut3_comes = all; rep(trust, -1)
+line: LAMB: Your workhouse contract and the Shelf's wages come out of one purse on the hill. The same purse asked for this claim kept open through the gale.
+nar: Agnes Spratt looks at her eels for a long time. She kills one, which has not happened since the ice.
+line: SPRATT: Then we'll vote for the keeper and take their fish money too. Let them choose which one to stop paying.
+go: ^hub
+
+@node gut3.spratt.turn.fail
+place: hall
+speaker: SPRATT
+cost: 2
+line: SPRATT: Money's money. If the hill's buying the Shelf as well as my fish, the hill's a good customer.
+voice: chit: She heard the price and not the goods. Bring her the letter itself, and she will read it twice. {dc: 3}
+go: ^hub
+
+# ---------------------------------------------------------------- the one who lost the ice
+@node gut3.other
+place: gut
+alt: gut3.other.spratt ? gut2_steward != spratt
+cost: 2
+speaker: MARROW
+nar: Marrow is on the hall bench among the aprons, mending. When the gale slams the door he is the one who gets up to hold it.
+line: MARROW: She'll vote with the hill. Let her. I'll go to the Brine and stand by the wall and vote the other way, on my own, like my father taught me. One nose is still a nose.
+go: ^hub
+
+@node gut3.other.spratt
+place: gut
+speaker: SPRATT
+cost: 2
+nar: Agnes Spratt has her stall shuttered and is sitting on top of it to keep it there.
+line: SPRATT: He's got them all sat on benches as ballast. That's a steward for you. In a gale he makes the Guild into furniture.
+go: ^hub
+
+# ---------------------------------------------------------------- Shadwell: the board, the salt
+@node gut3.smoke
+place: smokehouse
+speaker: SHADWELL
+cost: 2
+nar: The smokehouse is the only still air in the Gut. The fire is out; Shadwell will not burn in a gale.
+line: SHADWELL: The board reads nothing tonight. Smoke won't lie down to be read. I'm telling the time by the Glass like a Christian.
+call: gut3.smoke.salt
+opt: "When does the wind let up, between the bands?" -> gut3.smoke.lull ? !has(gut3.lull_known) {verb: read, noise: 0}
+opt: "Go back out." -> ^hub
+
+@node gut3.smoke.salt
+when: !has(gut3.salt_sent)
+line: SHADWELL: The Brine'll want salt for its door before high water. I've forty sacks of curing salt and Agnes has twenty in the barrels. Getting them up the yard lane in this wind is a job for the whole Guild, or for one fool.
+return:
+
+@node gut3.smoke.lull
+place: smokehouse
+speaker: SHADWELL
+cost: 3
+do: set(gut3.lull_known)
+read: glass
+read: vane
+line: SHADWELL: Before every band there's a breath. Ten minutes, near enough, when the wind sits back to fill its lungs. You'll feel it in the chimney. Anybody with sense works in that.
+go: gut3.smoke
+
+# ---------------------------------------------------------------- B10, Hands for the Brine: the salt sacks (five ways to get them there)
+# ---- after the collier: Marrow's father, thirty-one years on (the emotional pass, 2026-10-17)
+@node gut3.chimney
+place: gut
+cost: 2
+alt: gut3.chimney.through ? has(collier.through)
+nar: Shadwell's fire-doors are open, all six, in a gale, which nobody does. The smoke goes out flat over the water toward the Spit, thick as a hawser.
+line: SHADWELL: He came and said fire them. Wet oak, he said, the worst we've got. The herring will taste of it for a week.
+nar: At the end of the lane, where the cobbles go down into the sea, Marrow stands with his blindfold in his hand, not on, facing the Spit.
+line: MARROW: Twenty men on a collier. One of them will be able to swim. {when: has(heard.marrow.father)}
+line: MARROW: Somebody out there might be able to swim. {when: !has(heard.marrow.father)}
+opt: "Stand with him." -> gut3.chimney.stand
+opt: "Leave him to it." -> ^hub
+
+@node gut3.chimney.stand
+place: gut
+cost: 40
+do: set(gut3.swimmer); meter(cold, 2); wet(0.3)
+nar: Nobody says anything. The smoke goes out over the water, and the gale tears the top off it, and more comes.
+nar: At a quarter to five a man comes up the cobbles out of the sea on his hands and knees, black with coal and stinking of oak smoke.
+nar: Marrow puts his own coat round him and says nothing at all. Then he goes in and shuts the fire-doors, one at a time, all six.
+go: ^hub
+
+@node gut3.chimney.through
+place: gut
+cost: 2
+nar: Marrow is out under the eave in the gale, looking down the mole, the way his father did every Low Night for twenty years before he pulled the switch.
+line: MARROW: Burning. Nothing to do with us. {when: mother == burning}
+line: MARROW: Dark. And the ship came in anyway, on ours. He'd not have believed it. {when: mother != burning}
+nar: He goes back in. The door shuts behind him, quietly, which is not how he shuts doors.
+go: ^hub
+
+@node gut3.salt
+place: gut
+cost: 2
+nar: Sixty sacks of salt, forty in Shadwell's store and twenty in Agnes Spratt's barrels, and the yard lane to the Brine running ankle-deep.
+call: gut3.salt.guard
+check: "[FORM LETTER] Ask the steward, in front of the Guild, to give the Brine its salt." -> gut3.salt.ask.ok / gut3.salt.ask.fail {skill: formletter, dc: 6}
+opt: "Take the sacks past them." -> gut3.salt.fight ? !has(down.gut3) {verb: carry, noise: 0.7}
+check: "[THE DARK] Move the sacks in the eye, while nobody is watching the store." -> gut3.salt.eye.ok / gut3.salt.eye.fail ? has(ev3.eye) & !has(ev3.eye_ends) {skill: dark, dc: 6, verb: hide, noise: 0.2}
+check: "[GRIP] Rig a rope line down the yard lane and send the sacks along it on a hook." -> gut3.salt.line.ok / gut3.salt.line.fail ? count(i.rope) >= 1 {skill: grip, dc: 6, verb: rig, noise: 0.3}
+opt: "Wait for the breath before the band, and carry then." -> gut3.salt.lull ? has(gut3.lull_known) {verb: wait, noise: 0.2}
+opt: "Leave it." -> ^hub
+
+@node gut3.salt.guard
+when: gut2_steward == spratt
+nar: Two gutters sit on Spratt's barrels. The Brine, they say, can pay for salt like everybody else.
+return:
+
+@node gut3.salt.ask.ok
+place: gut
+speaker: MARROW
+alt: gut3.salt.ask.ok.spratt ? gut2_steward == spratt
+cost: 4
+do: set(gut3.salt_sent)
+line: MARROW: Salt for the Brine. Sabine has fed this Guild on the slate for thirty years. Benches down, aprons. Two sacks a man.
+nar: The Guild carries the salt up the yard lane in a line, bent into the wind, each apron with a sack on each shoulder.
+do: give(w.salt)
+go: ^hub
+
+@node gut3.salt.ask.ok.spratt
+place: gut
+speaker: SPRATT
+cost: 4
+do: set(gut3.salt_sent)
+line: SPRATT: Sabine's slate has me down for nine shillings. Take her the salt and tell her we're square.
+nar: The gutters get off the barrels. It takes the Guild twenty minutes and they curse the Shelf in rotation the whole way.
+go: ^hub
+
+@node gut3.salt.ask.fail
+place: gut
+speaker: SPRATT
+cost: 2
+line: SPRATT: The Shelf asks very nicely, for a thing that isn't paying.
+nar: Nobody moves. The salt stays where it is, and the request is repeated round the hall in the Shelf's own voice for some time afterwards.
+go: gut3.salt
+
+@node gut3.salt.fight
+place: gut
+cost: 1
+nar: The two gutters stand up off the barrels as the assessor bends for a sack.
+do: fight(e3.ice2)
+
+@node gut3.salt.eye.ok
+place: gut
+cost: 15
+do: set(gut3.salt_sent); wet(0.2)
+nar: In the eye the Gut goes silent, and the Guild comes out into the lane to look at the stars. Behind them the assessor moves sixty sacks up the yard lane, two at a time, in forty minutes, and nobody turns round.
+voice: knees: Sixty sacks. Forty minutes. The stars were very good, by all accounts. {dc: 3}
+do: give(w.salt)
+go: ^hub
+
+@node gut3.salt.eye.fail
+place: gut
+speaker: NOLL
+cost: 8
+nar: The calm makes every sound loud. A sack thumps on the cobbles, and a face turns round from the stars.
+line: NOLL: That's the Shelf, stealing salt in the
+line: MAB: eye of the storm. Under the stars. That's going in the song.
+go: gut3.salt.fight
+
+@node gut3.salt.line.ok
+place: gut
+cost: 12
+do: set(gut3.salt_sent); take(i.rope)
+nar: The rope goes from the smokehouse eave to the Brine's back door, taut, humming in the wind. The sacks go down it on a meat hook, one after another, and arrive at Sabine's door like a slow delivery from heaven.
+do: give(w.salt)
+go: ^hub
+
+@node gut3.salt.line.fail
+place: gut
+cost: 6
+do: set(gut3.salt_lost); wet(0.3)
+nar: A gust takes the line in the middle and the hook with it. Three sacks go into the yard lane's flood, split, and the water there turns briefly to brine.
+line: SHADWELL: That's my grandfather's salt in the harbour. The rest stays dry where it is.
+go: ^hub
+
+@node gut3.salt.lull
+place: gut
+cost: 10
+do: set(gut3.salt_sent)
+nar: The wind sits back, as Shadwell said it would. For ten minutes the yard lane is only wet, and the assessor carries salt in it. Then the band comes, and the last sack goes into the Brine's back door on the first gust.
+go: ^hub
+
+# ---- e3.ice2, its talk exit and outcomes
+@node gut3.fx.ice2
+place: gut
+speaker: MAB
+cost: 2
+line: LAMB: Whose fish has the Brine bought for thirty years? Whose tab is chalked on Sabine's wall, every apron in this lane?
+line: MAB: Mine.
+line: NOLL: Mine. Hers. All
+line: MAB: of ours. Oh, give it the salt.
+go: gut3.fight.ice2.yield
+
+@node gut3.fight.ice2.win
+place: gut
+cost: 6
+do: set(gut3.salt_sent); rep(guild, -1)
+nar: The gutters sit down in the gutter, which is running ankle-deep and violet, and stay there. The assessor carries the salt up the yard lane alone, a sack at a time, and nobody stops the Shelf, and nobody helps.
+voice: pride: Twenty trips in a gale, past two gutters sitting in their own gutter. The Brine will have its step. {dc: 3}
+go: ^hub
+
+@node gut3.fight.ice2.yield
+place: gut
+cost: 4
+do: set(gut3.salt_sent)
+nar: The gutters pick up a sack each and walk it up the yard lane, arguing about whose idea it was.
+go: ^hub
+
+@node gut3.fight.ice2.fled
+place: gut
+cost: 2
+nar: The assessor backs out of the quarrel into the wind, which pushes, helpfully, toward the quay.
+voice: undertow: The salt is still there. So are they. There are other ways to move a sack. {dc: 3}
+go: ^hub
+
+@node gut3.fight.ice2.down
+place: gutter
+speaker: NOLL
+cost: 20
+do: wet(0.4); meter(cold, 3)
+do: set(down.gut3)
+nar: The assessor wakes in the running gutter, propped against a salt sack, which someone has put there to keep the Shelf from going down the drain.
+line: NOLL: We used the salt to stop you. That's
+line: MAB: funny. That's what it's for, tonight. Stopping things going under.
+go: ^hub
+
+# ---------------------------------------------------------------- B1: the Gut's wire lamps in a band (if the town chose them)
+@node gut3.band.b1
+do: set(b1.band1); set(gut3.tended)
+go: gut3.band
+
+@node gut3.band.b2
+do: set(b1.band2); set(gut3.tended)
+go: gut3.band
+
+@node gut3.band.b3
+do: set(b1.band3); set(gut3.tended)
+go: gut3.band
+
+@node gut3.band
+place: gut
+cost: 2
+do: quest(a3.lamps, open)
+nar: The band comes down the lane in one piece. Half the wire lamps go out in the first gust, and the rest swing so hard their glass knocks on the eaves. At the lane mouth Noll Whelk has the lamp ladder up against the wind and one foot on it.
+line: NOLL: Somebody's got to trim them, and Mab won't let me, so it's
+line: MAB: not you. Get down. You'll go up that ladder and come down the lane in a different shape.
+call: gut3.band.steward
+opt: "Hold the ladder against the wind while he goes up." -> gut3.band.hold {verb: climb, noise: 0.4}
+check: "[CONDOLENCE] Ask the steward to send the Guild's ladders and twenty aprons, not one boy." -> gut3.band.ask.ok / gut3.band.ask.fail {skill: condolence, dc: 6}
+opt: "Work along the lee of the smokehouses, where the wind cannot reach, and trim from the eaves." -> gut3.band.lee {verb: hide, noise: 0.1}
+opt: "Fit the storm shutters to the lamps." -> gut3.band.shutter ? count(i.storm_shutter) >= 1 {verb: rig, noise: 0.2}
+opt: "You knew the breath before the band was coming. Trim them in it, before the band." -> gut3.band.lull ? has(gut3.lull_known) {verb: wait, noise: 0}
+opt: "Let him climb." -> gut3.band.noll
+
+@node gut3.band.steward
+when: gut2_steward == spratt
+line: SPRATT: The hill's contract wants the lamps on. If they go out the hill will notice. Trim them.
+return:
+
+@node gut3.band.hold
+place: gut
+cost: 2
+check: "[GRIP] Hold the ladder in the gust." -> gut3.band.hold.ok / gut3.band.hold.fail {skill: grip, dc: 6}
+
+@node gut3.band.hold.ok
+place: gut
+speaker: NOLL
+cost: 10
+do: set(gut3.wires_held); meter(cold, 2); wet(0.3)
+nar: Six lamps, six wicks trimmed, the ladder moved six times along the lane with the assessor's whole weight on its feet. At the last one Noll comes down and stands in front of the assessor dripping.
+line: NOLL: You held it. I'd have told the Brine you
+line: MAB: let go. He would. He'd have made a song of it.
+go: ^hub
+
+@node gut3.band.hold.fail
+place: gut
+cost: 15
+do: set(gut3.noll_fell); set(gut3.wires_out); set(lampout.gut); quest(a3.lamps, lost)
+nar: At the third lamp the gust takes the ladder sideways, and Noll comes down with it onto the shutters of the eel stall, and lies there swearing, which Mab says afterwards is how she knew. The lamps go out one by one down the lane, and nobody climbs again.
+line: MAB: His arm. Not his neck. His arm. Nobody's going up that ladder again tonight.
+go: ^hub
+
+@node gut3.band.ask.ok
+place: gut
+speaker: MARROW
+alt: gut3.band.ask.spratt ? gut2_steward == spratt
+cost: 10
+do: set(gut3.wires_held)
+line: MARROW: Twenty aprons and the hall's ladders. Two to a ladder. Nobody climbs alone in my Gut.
+nar: The Guild comes out of the hall in a body and takes the lane back a lamp at a time.
+go: ^hub
+
+@node gut3.band.ask.spratt
+place: gut
+speaker: SPRATT
+cost: 10
+do: set(gut3.wires_held)
+line: SPRATT: Twenty aprons, then, and I'm paying them out of the hill's money. That's what money's for.
+nar: The Guild comes out and does it with the lamps on, which is the only way Agnes Spratt has ever wanted anything done.
+go: ^hub
+
+@node gut3.band.ask.fail
+place: gut
+speaker: NOLL
+cost: 2
+nar: The hall door stays shut. The wind is louder than the Shelf.
+line: NOLL: Told you. Nobody. So
+line: MAB: no. Get off the ladder.
+go: gut3.band
+
+@node gut3.band.lee
+place: gut
+cost: 12
+check: "[BALLAST] Walk the eaves along the lee side." -> gut3.band.lee.ok / gut3.band.lee.fail {skill: ballast, dc: 6}
+
+@node gut3.band.lee.ok
+place: gut
+cost: 8
+do: set(gut3.wires_held); wet(0.2)
+nar: In the lee of the smokehouses the wind passes overhead, and the assessor goes from eave to eave along the lane with a wick knife and a can, unseen from below, and the lamps come back one by one.
+go: ^hub
+
+@node gut3.band.lee.fail
+place: gut
+cost: 6
+do: set(gut3.wires_out); set(lampout.gut); quest(a3.lamps, lost); wet(0.4)
+nar: The lee ends at the lane mouth, where the smokehouses stop and the wind does not. The assessor comes down off the last eave into the gutter, and the wick knife goes down the drain, and the lamps stay out.
+go: ^hub
+
+@node gut3.band.shutter
+place: gut
+cost: 8
+do: set(gut3.wires_held); take(i.storm_shutter)
+nar: One tin shutter on the worst lamp, the one at the lane mouth that takes the wind first. With it lit, Noll can reach the others from the lee of it. The lane comes back in twelve colours, one of them behind a slot of tin.
+go: ^hub
+
+@node gut3.band.lull
+place: gut
+cost: 6
+do: set(gut3.wires_held)
+nar: The assessor and the twins trim every lamp in the breath before the band, as Shadwell said, with the wind sat back and the ladder steady. When the band comes the lamps are full and short-wicked, and they lean in the gust and stay lit.
+go: ^hub
+
+@node gut3.band.noll
+place: gut
+speaker: MAB
+cost: 12
+do: set(gut3.noll_fell); set(gut3.wires_out); set(lampout.gut); quest(a3.lamps, lost)
+nar: Noll goes up alone. He trims three lamps, swinging out over the lane on the ladder's top rung like a man on a bell rope, and on the fourth the gust takes the ladder and puts him on the eel stall's shutters.
+line: MAB: His arm. I said. I said it before he went up and I'll say it at the Brine.
+nar: The lamps go out down the lane one by one, and nobody climbs again tonight.
+go: ^hub
+
+# ---------------------------------------------------------------- the eye in the Gut
+@node gut3.eye
+place: gutter
+speaker: MAB
+cost: 3
+nar: The wind stops. Every apron in the Gut comes out of a door and stands in the lane with its face up, and the gutter runs on by itself, very loud.
+line: NOLL: That's the
+line: MAB: stars. Don't say it. Everybody knows what they are.
+go: gut3.hub
+
+# ---------------------------------------------------------------- the Guild goes to the Brine (who comes, how they vote)
+@node gut3.vote.all
+place: hall
+speaker: MARROW
+alt: gut3.vote.all.spratt ? gut2_steward == spratt & gut3_guild == none
+alt: gut3.vote.all.spratt2 ? gut2_steward == spratt
+cost: 2
+do: gut3_comes = all
+call: gut3.vote.set.keeper
+line: MARROW: All of us, then. Benches down. If the water comes into the Brine it'll find forty aprons standing in it voting.
+go: ^hub
+
+@node gut3.vote.set.keeper
+when: gut3_guild == none
+do: gut3_guild = keeper
+return:
+
+@node gut3.vote.all.spratt
+place: hall
+speaker: SPRATT
+cost: 2
+do: gut3_comes = all; gut3_guild = trust
+line: SPRATT: All of us, for the hill. The Shelf wanted them all; it'll have them all, voting the way the Shelf didn't want.
+go: ^hub
+
+@node gut3.vote.all.spratt2
+place: hall
+speaker: SPRATT
+cost: 2
+do: gut3_comes = all
+line: SPRATT: All of us. Every apron votes as it said it would, and I'll stand at the back and count.
+go: ^hub
+
+@node gut3.vote.steward
+place: hall
+speaker: MARROW
+cost: 2
+do: gut3_comes = steward; gut3_guild = keeper
+line: MARROW: Just me, then, and my nose. The Guild holds the Gut. I'll carry its vote up the yard lane in one apron.
+go: ^hub
+
+@node gut3.vote.default
+place: hall
+speaker: MARROW
+cost: 1
+do: gut3_comes = all; gut3_guild = keeper
+line: MARROW: Then we all go, and we vote for her wage, and the Shelf can watch.
+go: ^hub
+
+@node gut3.vote.home
+place: hall
+alt: gut3.vote.home.spratt ? gut2_steward == spratt
+cost: 2
+do: gut3_guild = home; gut3_comes = none
+line: MARROW: Benches stay where they are. The Guild holds its own lane and votes for nobody. Let the Brine count us as water.
+go: ^hub
+
+@node gut3.vote.home.spratt
+place: hall
+cost: 2
+do: gut3_guild = home; gut3_comes = none
+line: SPRATT: Home, then. The hill can have its vote without our hands in it. That's not the same as against, and the hill will know the difference.
+go: ^hub
