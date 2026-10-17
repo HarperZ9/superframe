@@ -50,7 +50,9 @@ export function plateArena(place, pos, ids, { cell = 0.5, datum = PLATE_DATUM, f
     exits: (marks.exits || []).map((e) => [e.at[0] - 1, e.at[2] - 1, e.at[0] + 1, e.at[2] + 1]),
   };
   arena.anchors = anchorsFrom(marks, arena);
-  arena.spawns = (fight && fight.lamb) ? { lamb: fight.lamb, foes: fight.foes } : chooseSpawns(arena, marks, place);
+  // the art lead's marks are placed on the painted room; a mark that lands on a cell this grid
+  // leaves solid (a wall edge, a sample gap) moves to the nearest clear cell within 2 m
+  arena.spawns = (fight && fight.lamb) ? { lamb: snapClear(arena, fight.lamb), foes: (fight.foes || []).map((f) => snapClear(arena, f)) } : chooseSpawns(arena, marks, place);
   return arena;
 }
 
@@ -76,6 +78,26 @@ function anchorsFrom(marks, arena) {
     snare: spots.filter((s) => /rig|rope|snare|trip/.test(s.verb)).map(at),
     sluice: spots.filter((s) => /sluice|lever|valve/.test(s.verb)).map(at),
   };
+}
+
+// The centre of the nearest cell whose 3 by 3 patch is walkable (else the nearest walkable cell),
+// within 2 m of p; p itself when its cell is already walkable, or nothing clear is near.
+export function snapClear(arena, p) {
+  const { w, h, cells } = arena.grid, c = arena.cell, [ox, oz] = arena.origin;
+  const at = (x, z) => x >= 0 && z >= 0 && x < w && z < h && cells[z * w + x];
+  const ci = Math.floor((p[0] - ox) / c), ri = Math.floor((p[1] - oz) / c);
+  if (at(ci, ri)) return p;
+  const clear = (x, z) => { for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) if (!at(x + dx, z + dz)) return false; return true; };
+  const reach = Math.ceil(2 / c);
+  for (const test of [clear, at]) {
+    let best = null, bd = Infinity;
+    for (let dz = -reach; dz <= reach; dz++) for (let dx = -reach; dx <= reach; dx++) {
+      const d = Math.hypot(dx, dz);
+      if (d < bd && test(ci + dx, ri + dz)) { bd = d; best = [ox + (ci + dx + 0.5) * c, oz + (ri + dz + 0.5) * c]; }
+    }
+    if (best) return best;
+  }
+  return p;
 }
 
 // Without fight marks: Lamb at the first exit (or the middle), opponents at walkable cells 5 to 9 m

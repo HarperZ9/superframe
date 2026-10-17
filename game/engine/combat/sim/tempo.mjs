@@ -1,25 +1,28 @@
-// Attributes scale how fast Lamb moves (author, 2026-10-17: "attributes scaling animation speed,
-// and other variables"). The table, with soft-capped points above 3 (data/build.mjs soft) and
-// hard limits so speed never breaks a window or an animation:
+// Attributes scale how fast Lamb moves (author, 2026-10-17; the mapping is the director's,
+// SYSTEMS-FULL 19.11a; the curves are the combat engineer's). Soft-capped points above 3, hard limits
+// so speed never breaks a window or an animation:
 //
-//   variable          driven by        per point            limit
-//   swing tempo       GRIP             -3% startup and recovery     0.82x to 1.10x
-//   cancel windows    GRIP             open 0.7 frame earlier       4 frames
-//   dodge tempo       NOSE             -3.5% every dodge frame      0.80x to 1.10x
-//   i-frames          NOSE             +0.6 frame on the window     4 frames
-//   parry window      BALLAST          +0.5 frame                   3 frames
-//   hit-stun          COAT             -4% on staggers, knockdowns  0.75x
-//   load              the load band    light 0.97x, heavy 1.06x, over 1.12x on everything
+//   variable                     driven by   per point                 limit
+//   light strings (whole move)   NOSE        -3%                       0.82x to 1.10x
+//   heavy strikes' recovery      COAT        -3.5%                     0.80x
+//   sidestep and roll            NOSE        -3.5% every frame         0.80x to 1.10x
+//   i-frames                     NOSE        +0.6 frame                4 frames
+//   cancel windows open earlier  NOSE        0.6 frame                 4 frames
+//   parry window                 BALLAST     +0.5 frame                3 frames
+//   stagger and knockdown        COAT        -4%                       0.75x
+//   read window, bench minutes   PEN         (data/build.mjs read; bench -6% a point, 0.6x)
+//   Composure regain             HAT         +10% a point              1.6x
+//   load                         band        light 0.97x, heavy 1.06x, over 1.12x on all of it
+//   under a tool's requirement   every animation 1.3x slower (19.3; data/tools.mjs slow)
 //
-// Active frames never change (a hit lands as long as it always did); only wind-ups, recoveries,
-// windows and dodges move. The animation follows: anim/drive.mjs warps clips to these frames, so
-// the clip's playback rate is the move's tempo.
+// Active frames never change; only wind-ups, recoveries, windows and dodges move. The animation
+// follows: anim/drive.mjs warps clips to these frames and reports the playback rate.
 import { soft } from "../data/build.mjs";
 
 export const TEMPO = {
-  swing: { per: 0.03, min: 0.82, max: 1.1 }, cancel: { per: 0.7, max: 4 },
+  light: { per: 0.03, min: 0.82, max: 1.1 }, heavy: { per: 0.035, min: 0.8 }, cancel: { per: 0.6, max: 4 },
   dodge: { per: 0.035, min: 0.8, max: 1.1 }, iframe: { per: 0.6, max: 4 },
-  parry: { per: 0.5, max: 3 }, stun: { per: 0.04, min: 0.75 },
+  parry: { per: 0.5, max: 3 }, stun: { per: 0.04, min: 0.75 }, regain: { per: 0.1, max: 1.6 }, bench: { per: 0.06, min: 0.6 },
   load: { light: 0.97, medium: 1, heavy: 1.06, over: 1.12 },
 };
 
@@ -29,12 +32,15 @@ const up = (L, k) => Math.max(0, soft(L[k] ?? 3) - 3);
 export function tempoOf(L, band = "medium") {
   const lf = TEMPO.load[band] || 1;
   return {
-    swing: clamp(1 - TEMPO.swing.per * up(L, "grip"), TEMPO.swing.min, TEMPO.swing.max) * lf,
-    cancel: Math.round(Math.min(TEMPO.cancel.max, TEMPO.cancel.per * up(L, "grip"))),
+    swing: clamp(1 - TEMPO.light.per * up(L, "nose"), TEMPO.light.min, TEMPO.light.max) * lf,
+    heavy: Math.max(TEMPO.heavy.min, 1 - TEMPO.heavy.per * up(L, "coat")) * lf,
+    cancel: Math.round(Math.min(TEMPO.cancel.max, TEMPO.cancel.per * up(L, "nose"))),
     dodge: clamp(1 - TEMPO.dodge.per * up(L, "nose"), TEMPO.dodge.min, TEMPO.dodge.max) * lf,
     iframe: Math.round(Math.min(TEMPO.iframe.max, TEMPO.iframe.per * up(L, "nose"))),
     parry: Math.round(Math.min(TEMPO.parry.max, TEMPO.parry.per * up(L, "ballast"))),
     stun: Math.max(TEMPO.stun.min, 1 - TEMPO.stun.per * up(L, "coat")),
+    regain: Math.min(TEMPO.regain.max, 1 + TEMPO.regain.per * up(L, "hat")),
+    bench: Math.max(TEMPO.bench.min, 1 - TEMPO.bench.per * up(L, "pen")),
   };
 }
 
@@ -69,7 +75,9 @@ export function tempoMoves(moves, p, t) {
     } else if (kind === "parry") {
       if (m.parry && t.parry) m = { ...m, active: m.active + t.parry, parry: [m.parry[0], m.parry[1] + t.parry] };
     } else if (kind === "attack" || kind === "riposte" || kind === "item") {
-      m = scaleMove(m, t.swing);
+      // heavies keep their wind-up and recover by COAT; everything else moves at the NOSE tempo
+      if (/heavy/.test(id)) m = { ...m, recovery: Math.max(1, Math.round((m.recovery || 0) * t.heavy)) };
+      else m = scaleMove(m, t.swing);
       if (t.cancel) m = { ...m, cancel: Object.fromEntries(Object.entries(m.cancel).map(([key, v]) => [key, [Math.max(m.startup + m.active, v[0] - t.cancel), v[1]]])) };
     }
     // the move's length at base tempo, so the animation knows how much faster this body plays it

@@ -287,15 +287,31 @@ approved); cleanroom/spec/CHARACTER-BUILDING.md (shapes, adapted, no table copie
 
 ### The attribute-to-variable table (sim/tempo.mjs)
 
-| Variable | Driven by | Per point (soft-capped, above 3) | Limit |
+The mapping of attribute to variable is the director's (SYSTEMS-FULL 19.11a, 2026-10-17); the
+curves and limits are mine. Soft-capped points above 3 count.
+
+| Variable | Driven by | Per point | Limit |
 |---|---|---|---|
-| Swing tempo (startup and recovery) | GRIP | -3% | 0.82x to 1.10x |
-| Cancel windows open earlier | GRIP | 0.7 frame | 4 frames |
-| Dodge tempo (every frame) | NOSE | -3.5% | 0.80x to 1.10x |
+| Light strings (whole move) | NOSE | -3% | 0.82x to 1.10x |
+| Heavy strikes' recovery | COAT | -3.5% | 0.80x |
+| Sidestep and roll (every frame) | NOSE | -3.5% | 0.80x to 1.10x |
 | I-frames | NOSE | +0.6 frame | 4 frames |
+| Cancel windows open earlier | NOSE | 0.6 frame | 4 frames |
 | Parry window | BALLAST | +0.5 frame | 3 frames |
-| Hit-stun on Lamb | COAT | -4% | 0.75x |
+| Stagger and knockdown on Lamb | COAT | -4% | 0.75x |
+| Bench minutes | PEN | -6% | 0.6x |
+| Composure regain | HAT | +10% | 1.6x |
 | Load | band | light 0.97x, heavy 1.06x, over 1.12x on all of it | |
+
+### Breakpoints (19.11a; roster.mjs breakpoints())
+
+| At | What changes |
+|---|---|
+| COAT 8 | a heavy strike in flight is not interrupted by a light hit |
+| NOSE 8 | a clean evade refills breath |
+| PEN 8 | the opponent's whole wind-up is a weak point, not only the read window |
+| HAT 8 | the first talk exit in a fight costs no Composure |
+| any compartment 10 | the held tool's second special (slam, flurry, skewer, stamp, wrench, open), 4 Composure |
 
 Active frames never scale. Clip playback follows: anim/drive.mjs poseOf gives `rate` (clip length
 over the move's frames at this body's tempo) and `t` from the frames, so they cannot drift.
@@ -315,12 +331,20 @@ over the move's frames at this body's tempo) and `t` from the frames, so they ca
 
 ### Results (scripted fighter, every Act 1 to 3 encounter but the sneak openings, 2 seeds)
 
-| Build | Fights won | Down | Mean length of fights won |
-|---|---|---|---|
-| Focused Fist (COAT 9; GRIP, BALLAST, KNEES, PRIDE 9; hammer, weighted head, temper 3) | 56 of 56 | 0 | 12.8 s |
-| Spread (compartments 6, 6, 5, 5; every voice 5; case, temper 3) | 52 of 56 (93%) | 2 | 13.6 s |
-| Early Lamb (the starting defaults) | 19 of 56 (34%) | 36 | 21.5 s |
+After the breakpoints and the director's tempo mapping (tools/minmax.mjs; the pilot now spends
+Composure on specials):
 
-Harness (node tools/playthrough.mjs --build all): Fist 7 of 8 fights won, Hands 4 of 5, Eye 2 of 3,
-Shadow 1 of 4, Tongue none fought. Idle-down: 7.7 to 14.3 s, the conger 16.1 s (one opponent of
-Standing 18 against a greatcoat that softens blows; 1.1 s over the target).
+| Build | Fights won | Down | Mean length of fights won | Standing left at the end |
+|---|---|---|---|---|
+| Focused Fist (COAT 10; GRIP, BALLAST, KNEES, PRIDE 10; hammer, weighted head, temper 3) | 55 of 56 | 1 | 11.9 s | 81% |
+| Spread (compartments 6, 6, 5, 5; every voice 5; case, temper 3) | 55 of 56 | 1 | 15.3 s | 69% |
+| Early Lamb (the starting defaults) | 19 of 56 (34%) | 36 | 21.5 s | 32% |
+
+The focused build ends fights 22% faster and keeps 12 points more of its Standing; the spread build
+wins as often. tests/tempo.test.mjs holds the focused build under 0.88x the spread build's fight
+length, with more Standing left and a win rate within 0.05.
+
+Harness (node tools/playthrough.mjs --build all, after the taught-move aliases): Fist 7 of 9 fights
+won, Hands 4 of 5, Eye 1 of 3, Shadow 1 of 4, Tongue none fought. The harness Fist never raises a
+compartment past COAT 4, so it reaches no breakpoint; the min-max gap above is what a committed
+player sees. Idle-down: 7.7 to 14.3 s, the conger 16.1 s (1.1 s over the target).

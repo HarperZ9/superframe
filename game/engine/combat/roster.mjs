@@ -16,7 +16,9 @@ import { tempoOf, tempoMoves } from "./sim/tempo.mjs";
 export const BREATH = { regenShare: 0.55, delay: 30, foe: 1.4 };
 export const FOE_WINDUP = 1.6;
 export const loadBand = (load) => (load <= RULES.loadBands[0] ? "light" : load <= RULES.loadBands[1] ? "medium" : "heavy");
-export const learnedFromFlags = (flags = []) => [...new Set(flags.map((f) => (/\.move_(\w+)$/.exec(f) || [])[1]).filter(Boolean))];
+// the content's short flag names for some lessons (content/act2, act3), onto the move names
+export const MOVE_ALIASES = { guard: "lampguard", shove: "shovethrough", return: "carriage", reset: "recall", turn: "tuberunner", hold: "galleryhold", count: "countedge", drag: "wardensdrag", pull: "hookpull" };
+export const learnedFromFlags = (flags = []) => [...new Set(flags.map((f) => (/\.move_(\w+)$/.exec(f) || [])[1]).filter(Boolean).map((n) => MOVE_ALIASES[n] || n))];
 export const LEARNABLE = Object.keys(LEARNED);
 const up = (L, k) => Math.max(0, soft(L[k] ?? 3) - 3);
 
@@ -53,6 +55,13 @@ export function buildBonus(L, toolId = "w.hands", temper = 0, band = "medium") {
   };
 }
 
+// Breakpoints (19.11a): at 8 a compartment's pillar gains a property, at 10 any compartment opens the
+// tool class's second special. Raw values, before the soft cap.
+export function breakpoints(L) {
+  const at = (k, n) => (L[k] ?? 0) >= n;
+  return { coat8: at("coat", 8), nose8: at("nose", 8), pen8: at("pen", 8), hat8: at("hat", 8), second: ["coat", "nose", "pen", "hat"].some((k) => at(k, 10)) };
+}
+
 // Load (19.6): tool and clothing weight (a soaked coat counts its soaked weight) against 6 + 2.5 x COAT.
 export function loadOf(L, tool, gear = START_GEAR) {
   const wet = (L.wet ?? 0) > 0.5, weight = tool.weight + gear.reduce((s, g) => s + ((CLOTHING[g] || {})[wet ? "soaked" : "weight"] || 0), 0);
@@ -73,7 +82,7 @@ export function lambDef(levels = {}, toolId = "w.case", over = {}, learned = [],
     composureMax: D.composure.base + D.composure.perHat * soft(L.hat),
     staminaRegen: stamina * BREATH.regenShare * LOAD.regen[ld.band] * (L.wear >= 6 ? 0.75 : 1), staminaDelay: BREATH.delay,
     speed: 3.3, accel: 28, turn: 14, radius: 0.38, height: 1.95, view: L.dread >= 7 ? 0.7 : 1, sight: "eyes",
-    load, slow: !b.met, art: (TOOLS21[toolId] || TOOLS21["w.hands"]).art, tempo: tempoOf(L, ld.band),
+    load, slow: !b.met, art: (TOOLS21[toolId] || TOOLS21["w.hands"]).art, tempo: tempoOf(L, ld.band), breaks: breakpoints(L),
     items: items || { lantern: 1, bottle: 1 }, lantern: 5, faction: null, char: "lamb", learned, ...over,
   };
 }
@@ -131,6 +140,9 @@ function addFeint(moves, p, P) {
   moves[`${p}heavy`] = { ...h, tap: { before: 8, into: `${p}feint` } };
 }
 
+// The second special per tool class (19.11a), opened by any compartment at 10.
+export const SECOND = { shield: "slam", light: "flurry", short: "open", long: "skewer", heavy: "stamp", bar: "wrench", unarmed: "shoulder" };
+
 const ownFootwork = (set, p) => ({ ...set, step: `${p}${set.step}`, roll: Object.fromEntries(Object.entries(set.roll).map(([k, v]) => [k, `${p}${v}`])) });
 
 // A fighter spec for createWorld. brain: true gives the archetype's brain.
@@ -143,13 +155,14 @@ export function fighterSpec(id, team, def, at, { face = 0, brain = false } = {})
     Object.assign(moves, strengthen(moves, p, b));
     if ((def.learned || []).includes("feint")) addFeint(moves, p, def.tool);
     Object.assign(moves, artMoves(def.tool, def.art, p), runMove(def.tool, p));
+    if (def.breaks && def.breaks.second) Object.assign(moves, artMoves(def.tool, SECOND[def.tool.cls] || "shoulder", p, "art2"));
     const lv = learnedVariants(moves, p, def); Object.assign(moves, lv.moves); variants = lv.variants;
     if (def.tempo) Object.assign(moves, tempoMoves(moves, p, def.tempo));
   }
   const A = def.style && ARCHETYPES[def.style];
   if (A) for (const s of A.specials) moves[s] = SPECIALS[s];
   const base = { ...BODY_MOVESET, light: `${p}light_1`, heavy: `${p}heavy`, catch: `${p}catch` };
-  const moveset = team === "lamb" ? { ...ownFootwork(base, p), art: moves[`${p}art`] ? `${p}art` : null, run: `${p}run`, use: ["use_lantern", "use_bottle", "use_rope", "use_salt"] } : base;
+  const moveset = team === "lamb" ? { ...ownFootwork(base, p), art: moves[`${p}art`] ? `${p}art` : null, art2: moves[`${p}art2`] ? `${p}art2` : null, run: `${p}run`, use: ["use_lantern", "use_bottle", "use_rope", "use_salt"] } : base;
   const handset = { light: `${p}hands:light_1`, heavy: `${p}hands:heavy`, catch: `${p}hands:catch` };
   return { id, team, x: at[0], z: at[1], face, def: { ...def, moveset, hands: handset, variants }, moves, brain: brain && A ? createBrain(A.brain) : null };
 }

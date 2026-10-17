@@ -20,5 +20,7 @@ export async function loadPlateArena(contentDir, plate, opts = {}) {
   const place = JSON.parse(await readFile(`${dir}/place.json`, "utf8"));
   const [p, i] = await Promise.all([readFile(`${dir}/geo-pos.f32`), readFile(`${dir}/geo-id.u8`)]);
   const pos = new Float32Array(p.buffer, p.byteOffset, p.byteLength / 4), ids = new Uint8Array(i.buffer, i.byteOffset, i.byteLength);
-  return plateArena(place, pos, ids, { datum: TIDAL[plate] || null, fight: (place.marks || {}).fight || null, ...opts });
+  // a plate with two fight grounds (the Gut: gut and dogs) holds one set of marks per arena id
+  const m = place.marks || {}, { fightId, ...rest } = opts, fight = (fightId && (m.fights || {})[fightId]) || m.fight || null;
+  return plateArena(place, pos, ids, { datum: TIDAL[plate] || null, fight, ...rest });
 }

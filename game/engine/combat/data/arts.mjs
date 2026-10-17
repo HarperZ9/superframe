@@ -3,8 +3,8 @@
 // grit (what the move spends) and pierce (armour does not soften it).
 const F = (n, s) => Math.max(1, Math.round(n * s));
 
-export function artMoves(P, art, prefix) {
-  const s = P.speed, r = P.reach, id = `${prefix}art`, base = { composure: 3, stamina: 0, anim: `${P.cls}.art_${art}` };
+export function artMoves(P, art, prefix, slot = "art") {
+  const s = P.speed, r = P.reach, id = `${prefix}${slot}`, base = { composure: slot === "art2" ? 4 : 3, stamina: 0, anim: `${P.cls}.${slot}_${art}` };
   const A = {
     // the case held up for half a second: anything from the front is caught
     brace: { kind: "parry", startup: 4, active: 30, recovery: 16, parry: [4, 33] },
@@ -20,6 +20,16 @@ export function artMoves(P, art, prefix) {
     break: { startup: F(24, s), active: 6, recovery: 34, dmg: 4, poise: 6, hits: [{ arc: [-30, 30], r: [0.3, r + 0.4] }], guardBreak: true, knockdown: true, armor: [4, 28, 3], track: 3, hitstop: 7, knock: 3.5, shake: 0.8 },
     // the crowbar under a tool or an arm: the tool comes away
     pry: { startup: F(12, s), active: 4, recovery: 26, dmg: 0, poise: 0, hits: [{ arc: [-30, 30], r: [0.2, r + 0.2] }], grapple: true, parryable: false, blockable: false, track: 8, hitstop: 6 },
+    // second specials (19.11a, at 10): the case slammed shut on a guard
+    slam: { startup: F(12, s), active: 5, recovery: 26, dmg: 2.5, poise: 5, hits: [{ arc: [-50, 50], r: [0.2, r + 0.4] }], guardBreak: true, knockdown: true, track: 8, hitstop: 8, knock: 3.5, shake: 0.6 },
+    // the stick, every way at once
+    flurry: { startup: F(6, s), active: 18, recovery: 18, dmg: 3, poise: 3, hits: [{ arc: [-120, 120], r: [0.2, r + 0.5] }], track: 12, hitstop: 3, knock: 1.8, shake: 0.25 },
+    // the long tool straight through, past armour
+    skewer: { startup: F(14, s), active: 5, recovery: 28, dmg: 3.5, poise: 4, hits: [{ arc: [-10, 10], r: [0.4, r + 1.4] }], root: [[6, 16, 4]], pierce: true, blockable: false, track: 6, hitstop: 6, knock: 2.5, shake: 0.45 },
+    // the heavy brought down on the ground: everyone near goes over
+    stamp: { startup: F(22, s), active: 5, recovery: 32, dmg: 3, poise: 6, hits: [{ arc: [-180, 180], r: [0, 2.6] }], knockdown: true, armor: [0, 26, 4], hitstop: 8, knock: 3.5, shake: 0.9 },
+    // the bar turned in a grip: a tool out of a hand and the body after it
+    wrench: { startup: F(12, s), active: 5, recovery: 26, dmg: 1.5, poise: 4, hits: [{ arc: [-35, 35], r: [0.2, r + 0.3] }], grapple: true, parryable: false, blockable: false, track: 8, hitstop: 6, knock: 2 },
     // the shoulder, at a run
     shoulder: { startup: 10, active: 6, recovery: 22, dmg: 0.5, poise: 2, hits: [{ arc: [-40, 40], r: [0.2, 1.3] }], shove: true, root: [[0, 16, 7]], track: 8, hitstop: 4, knock: 6, shake: 0.3 },
   }[art];

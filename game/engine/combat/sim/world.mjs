@@ -95,7 +95,9 @@ function heldPress(W, F) {
 // A talk exit costs Composure (19.2): the words have to be found in the middle of it.
 function talkExit(W, F) {
   if (F.team !== "lamb" || !W.talk || F.fallen) return;
-  const cost = W.talk.cost ?? COMPOSURE.talk;
+  const free = (W.defs[F.id].breaks || {}).hat8 && !W.freeTalkUsed;
+  const cost = free ? 0 : W.talk.cost ?? COMPOSURE.talk;
+  if (free) W.freeTalkUsed = true;
   if (F.composure < cost) { W.emit({ type: "nocomposure", id: F.id, action: "talk" }); return; }
   F.composure -= cost; W.talkTaken = W.talk;
 }
@@ -157,7 +159,8 @@ function separate(W) {
 function witness(W) {
   const L0 = W.lamb();
   for (const e of W.events) {
-    const fill = (n) => { L0.composure = Math.min(L0.composureMax, L0.composure + n); };
+    const regain = (W.defs[L0.id].tempo || {}).regain || 1, fill = (n) => { L0.composure = Math.min(L0.composureMax, L0.composure + n * regain); };
+    if (e.type === "evade" && e.id === L0.id && (W.defs[L0.id].breaks || {}).nose8 && L0.act && W.moves[L0.act.id].kind === "dodge") { L0.st = Math.min(L0.stMax, L0.st + 1.5); W.emit({ type: "breathback", id: L0.id }); }
     if (L0 && e.type === "parry" && e.id === L0.id) fill(COMPOSURE.catch);
     if (L0 && e.type === "hit" && e.by === L0.id) fill(e.move === "riposte" ? COMPOSURE.riposte : COMPOSURE.hit);
     if (e.type === "tell") W.telegraphsSeen = (W.telegraphsSeen || 0) + 1;

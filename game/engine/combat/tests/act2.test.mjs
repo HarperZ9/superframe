@@ -8,6 +8,7 @@ import { createGame } from "../../game.mjs";
 import { installCombat } from "../encounter.mjs";
 import { ARENAS } from "../data/arenas.mjs";
 import { learnedFromFlags, lambDef } from "../roster.mjs";
+import { LEARNED } from "../data/learned.mjs";
 import { makeWorld, makeG, run, press, HERE } from "./helpers.mjs";
 
 const CONTENT = join(HERE, "..", "..", "..", "..", "content");
@@ -110,4 +111,23 @@ test("the brawl fills itself with brawlers, and it ends: Lamb last standing, dow
   assert.ok(new Set(W.fighters.map((F) => F.team)).size === W.fighters.length, "everyone on a side of their own");
   for (let i = 0; i < 60 * 70 && !W.result; i++) C.step({});
   assert.ok(W.result, "the brawl ended within 70 seconds");
+});
+
+test("every lesson the content teaches maps onto a built move", () => {
+  const flags = ["weigh3.move_guard", "weigh2.move_snare", "spit.move_shove", "ropewalk3.move_return", "ropewalk.move_reset", "quay2.move_turn", "quay2.move_oarsweep", "mole3.move_hold", "gasholder3.move_count", "gut.move_feint", "floor.move_mudstep", "floor.move_hookpull", "brine.move_stool", "hill.move_sweep"];
+  for (const n of learnedFromFlags(flags)) assert.ok(LEARNED[n], `${n} is a learned move`);
+});
+
+test("Pip's turn (taught as quay2.move_turn) starts without error and re-aims past the opponent", async () => {
+  const { makeWorld } = await import("./helpers.mjs");
+  const learned = learnedFromFlags(["quay2.move_turn"]);
+  assert.deepEqual(learned, ["tuberunner"]);
+  const W = makeWorld({ learned, brains: false, foes: [["holder", [6.5, 5.5]]] });
+  const id = Object.keys(W.moves).find((k) => W.moves[k].behind);
+  assert.ok(id, "a move with the behind flag exists");
+  const L = W.fighters.find((F) => F.team === "lamb"), T = W.fighters.find((F) => F.team === "foe");
+  T.x = L.x + 1.5; T.z = L.z;
+  const { startMove } = await import("../sim/fighter.mjs");
+  startMove(W, L, id, {});
+  assert.ok(Number.isFinite(L.act.dir));
 });

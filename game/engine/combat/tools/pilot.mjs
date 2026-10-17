@@ -114,7 +114,9 @@ function offend(W, L, T, out, S, style) {
   const pick = r01(W, "atk"), fighter = style === "fighter";
   S.cool = W.tick + (fighter ? 18 : 40) + Math.floor(r01(W, "cool") * (fighter ? 18 : 30));
   if (fighter) {
-    const crowd = W.fighters.filter((F) => F.team !== "lamb" && live(F) && dist(L, F) < 2.6).length;
+    const crowd = W.fighters.filter((F) => F.team !== "lamb" && live(F) && dist(L, F) < 2.6).length, set = W.defs.lamb.moveset;
+    if (set.art2 && L.composure >= W.moves[set.art2].composure && (crowd >= 2 || d < 2)) { out.press.push("art2"); return out; }
+    if (set.art && L.composure >= W.moves[set.art].composure && d < 2.2 && W.moves[set.art].kind !== "parry") { out.press.push("art"); return out; }
     if (crowd >= 2 && L.st >= 3) { S.hold = 30; out.press.push("heavy"); out.hold.heavy = true; return out; }
     const foot = W.field.footing(T.x, T.z), behind = W.field.depthAt(T.x + Math.cos(a) * 1.2, T.z + Math.sin(a) * 1.2);
     if ((foot.frost || foot.kind.startsWith("wet ") || behind >= 0.4) && L.st >= 1 && d < 1.4) { out.press.push("shove"); return out; }

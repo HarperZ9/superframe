@@ -157,3 +157,15 @@ tests (node --test), not proof.
    - fixes: the NOSE evasion window was never applied (NaN), raw move kinds, wall-aware steering,
      a damaged encounter.mjs restored by hand after a bad scripted edit.
    node --test from game/engine: 199 of 199 pass; harness green.
+24. DONE Coordinator, 2026-10-17 (min-maxing should pay visibly): the 19.11a breakpoints at 8 and
+   10 (roster.mjs breakpoints(), sim/hits.mjs, sim/world.mjs, data/arts.mjs second specials), the
+   director's tempo mapping (sim/tempo.mjs), PEN shortens bench minutes, the pilot spends
+   Composure. Focused 11.9 s and 81% Standing left, spread 15.3 s and 69%, both 55 of 56.
+   - taught-move flags: the content's short names (move_turn, move_guard, move_hold, move_shove,
+     move_return, move_reset, move_count) map onto the learned moves (roster.mjs MOVE_ALIASES);
+     before this the harness Fist learned three moves that did nothing.
+   - fix: Pip's turn and Rook's step ran before the move existed and threw (sim/fighter.mjs
+     startMove); exposed by the aliases, regression test in tests/act2.test.mjs.
+   - plates: the art lead's marks.fight are read; a mark on a cell the grid leaves solid moves to
+     the nearest clear cell within 2 m (sim/plate.mjs snapClear; the quay's first foe moved 1.8 m).
+   node --test from game/engine: 201 of 201 pass; harness Fist 7 of 9.

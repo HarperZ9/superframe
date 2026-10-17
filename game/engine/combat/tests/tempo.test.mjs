@@ -8,19 +8,19 @@ import { poseOf } from "../anim/drive.mjs";
 import { makeWorld, run, press } from "./helpers.mjs";
 import { BUILDS, runBuild } from "../tools/minmax.mjs";
 
-test("the curves: GRIP quickens swings, NOSE quickens dodges and widens windows, BALLAST the parry, COAT shortens stun", () => {
+test("the curves (19.11a): NOSE quickens light strings and dodges, COAT heavy recovery and stun, BALLAST the parry", () => {
   const base = tempoOf({}), up = tempoOf({ grip: 8, nose: 8, ballast: 8, coat: 8 });
   assert.equal(base.swing, 1); assert.equal(base.dodge, 1); assert.equal(base.stun, 1);
-  assert.ok(up.swing < 1 && up.dodge < 1 && up.iframe > 0 && up.parry > 0 && up.cancel > 0 && up.stun < 1);
+  assert.ok(up.swing < 1 && up.dodge < 1 && up.iframe > 0 && up.parry > 0 && up.cancel > 0 && up.stun < 1 && up.heavy < 1 && up.regain === 1);
 });
 
 test("soft caps and hard limits: speed never runs past its limit, and load slows everything", () => {
   const max = tempoOf({ grip: 30, nose: 30, ballast: 30, coat: 30 });
-  assert.ok(max.swing >= TEMPO.swing.min && max.dodge >= TEMPO.dodge.min && max.stun >= TEMPO.stun.min);
+  assert.ok(max.swing >= TEMPO.light.min && max.heavy >= TEMPO.heavy.min && max.dodge >= TEMPO.dodge.min && max.stun >= TEMPO.stun.min);
   assert.ok(max.iframe <= TEMPO.iframe.max && max.parry <= TEMPO.parry.max && max.cancel <= TEMPO.cancel.max);
   assert.ok(tempoOf({}, "heavy").swing > tempoOf({}, "medium").swing && tempoOf({}, "light").dodge < tempoOf({}, "medium").dodge);
   // the soft cap: the second five points buy less than the first
-  const a = 1 - tempoOf({ grip: 6 }).swing, b = tempoOf({ grip: 6 }).swing - tempoOf({ grip: 9 }).swing;
+  const a = 1 - tempoOf({ nose: 6 }).swing, b = tempoOf({ nose: 6 }).swing - tempoOf({ nose: 9 }).swing;
   assert.ok(b < a);
 });
 
@@ -41,9 +41,9 @@ test("a quick build's strike and roll come out faster in the fight, and the clip
   assert.ok(pq.rate > ps.rate, `clip rate ${pq.rate} against ${ps.rate}`);
 });
 
-test("min-maxing pays: a focused fighter wins at least as often and ends fights sooner than a spread build", { timeout: 600000 }, () => {
+test("min-maxing pays: a committed build ends fights noticeably sooner and with more Standing left; spread stays viable", { timeout: 600000 }, () => {
   const f = runBuild(BUILDS.focused, 1), s = runBuild(BUILDS.spread, 1);
-  assert.ok(f.rate >= s.rate, `focused ${f.rate} spread ${s.rate}`);
-  assert.ok(f.meanWonSeconds < s.meanWonSeconds, `focused ${f.meanWonSeconds} s spread ${s.meanWonSeconds} s`);
-  assert.ok(s.rate >= 0.6, `the spread build stays viable: ${s.rate}`);
+  assert.ok(f.meanWonSeconds < s.meanWonSeconds * 0.88, `focused ${f.meanWonSeconds} s spread ${s.meanWonSeconds} s`);
+  assert.ok(f.standingLeft > s.standingLeft, `Standing left: focused ${f.standingLeft} spread ${s.standingLeft}`);
+  assert.ok(f.rate >= s.rate - 0.05 && s.rate >= 0.6, `wins: focused ${f.rate} spread ${s.rate}`);
 });

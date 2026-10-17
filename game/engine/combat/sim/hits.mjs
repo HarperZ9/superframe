@@ -65,7 +65,8 @@ function weakPoint(W, A, T, tm, f) {
   const d = W.defs[A.id], b = d.bonus; if (!b || A.team !== "lamb") return 1;
   if (A.carriage) { A.carriage = false; return 1 + b.weak; }
   if (!tm || (tm.kind !== "attack" && tm.kind !== "item")) return 1;
-  const counted = (d.learned || []).includes("countedge") && (W.telegraphsSeen || 0) <= 3, win = 8 + b.read * (counted ? 2 : 1);
+  const counted = (d.learned || []).includes("countedge") && (W.telegraphsSeen || 0) <= 3;
+  const win = (d.breaks || {}).pen8 ? tm.startup : 8 + b.read * (counted ? 2 : 1); // PEN 8: the whole wind-up shows its weak point
   return f >= tm.startup - win && f < tm.startup ? (W.emit({ type: "weakpoint", id: T.id, by: A.id }), 1 + b.weak) : 1;
 }
 
@@ -135,7 +136,8 @@ function towardWater(W, T) {
 
 function takeHit(W, A, T, m, src, tm, f) {
   const foot = W.field.footing(T.x, T.z), scale = foot.frost ? RULES.frostPoise : foot.wet ? RULES.wetPoise : 1;
-  const armor = tm && !m.pierce ? armorAt(tm, f) : 0, pd = Math.max(0, m.poise * scale - armor), sneak = unaware(T);
+  const planted = (W.defs[T.id].breaks || {}).coat8 && tm && /heavy/.test(tm.id) && f < tm.startup && m.poise < 1.5 && !m.pierce;
+  const armor = planted ? 99 : tm && !m.pierce ? armorAt(tm, f) : 0, pd = Math.max(0, m.poise * scale - armor), sneak = unaware(T);
   const weakMul = weakPoint(W, A, T, tm, f), soften = W.defs[T.id].soften || 1;
   const dmg = m.takedown && sneak && takedownFor(W, T) === "out" ? T.hp : m.dmg * (sneak ? SNEAK_BONUS : 1) * weakMul * soften;
   T.hp = Math.max(0, T.hp - dmg); T.poise -= pd; if (pd > 0) T.poiseWait = RULES.poiseDelay;

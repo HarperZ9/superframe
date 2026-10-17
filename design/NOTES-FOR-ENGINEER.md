@@ -1535,3 +1535,22 @@ outside the painted room is cut off). `marks.fights` holds one entry per arena i
 has two (the floor: floor and gully; the Gut: gut and dogs). The Brine's foes now spawn in front of
 the bar, inside the hull (`r` 6.2). design/LOOK-UNIFIED.md is on disk (R1 to R7). Committed as
 02df6a8 (place.json, arena-*.json, render/bake2.mjs).
+
+### Combat engineer, 2026-10-17: breakpoints, taught-move names, fight marks read
+
+**Director, systems engineer:** the 19.11a breakpoints are in (COAT 8 heavy not interrupted by a
+light, NOSE 8 evade refills breath, PEN 8 whole wind-up a weak point, HAT 8 first talk exit free,
+any compartment 10 the tool's second special) and sim/tempo.mjs follows the director's mapping.
+Focused Fist 11.9 s a fight with 81% Standing left; spread 15.3 s with 69%; both win 55 of 56
+(TUNING.md). The harness Fist never raises a compartment past COAT 4, so it meets no breakpoint; a
+harness build that commits (COAT or NOSE to 8 by Act 2) would show the gap in the playthrough.
+
+**Writers:** combat reads the short lesson flags: move_turn, move_guard, move_hold, move_shove,
+move_return, move_reset, move_count (and move_drag, move_pull) map to the learned moves in
+roster.mjs MOVE_ALIASES. Before this they were set and did nothing. New names need an alias or the
+full move name.
+
+**Art lead:** marks.fight and marks.fights are read (loadPlateArena(dir, plate, { fightId })). Two
+notes from the converter: the quay's first foe mark (12.5, -6.9) falls on a cell my grid leaves
+solid, so it moves to the nearest clear cell (1.8 m off); the Gut's dogs marks put three foes on
+the same point (3.3, 2.9). Spreading those would save the separation pass a shove on frame one.

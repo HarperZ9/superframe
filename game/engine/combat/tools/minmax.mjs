@@ -16,13 +16,14 @@ const ACTS = { act1: () => [read("act1", "combat.lwd"), read("act1", "encounters
 const five = (v) => Object.fromEntries(["grip", "ballast", "knees", "pride", "formletter", "sum", "dark", "salt", "carbon", "precedent", "undertow", "condolence", "hearsay", "smell"].map((k) => [k, v]));
 
 export const BUILDS = {
-  focused: { levels: { coat: 9, nose: 6, pen: 3, hat: 4, ...five(3), grip: 9, ballast: 9, knees: 9, pride: 9 }, tool: "w.hammer", temper: 3, fitting: "weighted_head" },
+  // a committed Fist: COAT to 10 (breakpoints at 8 and 10), its voices to the cap
+  focused: { levels: { coat: 10, nose: 6, pen: 3, hat: 3, ...five(3), grip: 10, ballast: 10, knees: 10, pride: 10 }, tool: "w.hammer", temper: 3, fitting: "weighted_head" },
   spread: { levels: { coat: 6, nose: 6, pen: 5, hat: 5, ...five(5) }, tool: "w.case", temper: 3 },
   early: { levels: {}, tool: "w.case", temper: 0 },
 };
 
 export function runBuild(lamb, seeds = 2) {
-  const r = { fights: 0, won: 0, down: 0, wonSeconds: [], allSeconds: [] };
+  const r = { fights: 0, won: 0, down: 0, wonSeconds: [], allSeconds: [], left: [] };
   for (const act of Object.keys(ACTS)) {
     const ids = Object.keys(installCombat(createGame({ sources: ACTS[act](), seed: 1 })).defs).filter((id) => !id.includes(".sneak"));
     for (const id of ids) for (let s = 1; s <= seeds; s++) {
@@ -31,12 +32,12 @@ export function runBuild(lamb, seeds = 2) {
       for (let i = 0; i < 60 * 125 && !W.result; i++) C.step(pilot(W));
       const o = W.result ? W.result.outcome : "none", sec = W.tick / 60;
       r.fights++; r.allSeconds.push(sec);
-      if (o === "win" || o === "yield") { r.won++; r.wonSeconds.push(sec); }
+      if (o === "win" || o === "yield") { r.won++; r.wonSeconds.push(sec); r.left.push(W.lamb().hp / W.lamb().hpMax); }
       if (o === "down" || o === "lose") r.down++;
     }
   }
   const mean = (a) => (a.length ? +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(1) : null);
-  return { fights: r.fights, won: r.won, rate: +(r.won / r.fights).toFixed(2), down: r.down, meanWonSeconds: mean(r.wonSeconds), meanSeconds: mean(r.allSeconds) };
+  return { fights: r.fights, won: r.won, rate: +(r.won / r.fights).toFixed(2), down: r.down, meanWonSeconds: mean(r.wonSeconds), meanSeconds: mean(r.allSeconds), standingLeft: r.left.length ? +(r.left.reduce((x, y) => x + y, 0) / r.left.length).toFixed(2) : null };
 }
 
 if (process.argv[1] && process.argv[1].endsWith("minmax.mjs")) {

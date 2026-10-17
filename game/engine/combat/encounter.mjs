@@ -145,7 +145,7 @@ function buildWorld(G, enc, arenas, barkText, opts = {}, plates = null) {
 
 export function inputFromG(G) {
   const I = G.input, mv = I.get("move") || { x: 0, z: 0 };
-  const names = ["light", "heavy", "catch", "step", "roll", "shove", "grapple", "use", "lock", "next", "prev", "lantern", "interact", "talk", "art"];
+  const names = ["light", "heavy", "catch", "step", "roll", "shove", "grapple", "use", "lock", "next", "prev", "lantern", "interact", "talk", "art", "art2"];
   return { mx: +mv.x || 0, mz: -(+mv.z || 0), press: names.filter((n) => I.pressed(n)), hold: { heavy: !!I.get("heavy"), block: !!I.get("block"), run: !!I.get("run") } };
 }
 
@@ -236,7 +236,7 @@ function upgrade(G, tool) {
   const c = upgradeCost(G, tool); if (!c || !c.affordable) return false;
   for (const [id, n] of Object.entries(c.needs)) G.inv.take(id, n);
   const tools = (G.state.ext.combat.tools ||= {}); tools[tool] = { ...toolState(G, tool), temper: c.next };
-  if (G.advance) G.advance(c.minutes);
+  if (G.advance) G.advance(Math.round(c.minutes * (lambFromGame(G).def.tempo.bench || 1))); // PEN works the bench faster
   G.emit("combat.temper", { tool, temper: c.next });
   return true;
 }

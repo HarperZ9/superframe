@@ -29,7 +29,7 @@ const has = (F, use) => F.items[use] > 0;
 export function resolveAction(W, F, a, inp) {
   const def = W.defs[F.id], set = F.tool ? def.moveset : { ...def.moveset, ...def.hands }, cur = F.act && W.moves[F.act.id];
   if (a === "roll") return chooseRoll(W, F, set.roll);
-  if (a === "art") return set.art && F.composure >= W.moves[set.art].composure ? set.art : (W.emit({ type: "nocomposure", id: F.id, action: a }), null);
+  if (a === "art" || a === "art2") return set[a] && F.composure >= W.moves[set[a]].composure ? set[a] : (W.emit({ type: "nocomposure", id: F.id, action: a }), null);
   if (a === "light" && set.run && F.running && !F.act) return set.run;
   if (a === "light" && set.takedown && W.takedownTarget(F)) return set.takedown;
   if (a === "light" && set.riposte && W.riposteTarget(F)) return set.riposte;
@@ -77,7 +77,6 @@ export function startMove(W, F, id, inp = {}, extra = {}) {
   const m = W.moves[id];
   if (!m) throw new Error(`combat: no move ${id}`);
   if (m.composure) F.composure = Math.max(0, F.composure - m.composure);
-  if (m.resetRead || m.behind) learnedStart(W, F, m);
   if (m.stamina > 0) {
     F.st -= m.stamina; F.winded = F.st <= 0; if (F.st < 0) F.st = 0;
     F.stWait = W.defs[F.id].staminaDelay * (F.winded ? 2 : 1);
@@ -93,6 +92,7 @@ export function startMove(W, F, id, inp = {}, extra = {}) {
   const carry = m.kind === "attack" || m.kind === "riposte" ? [F.vx * 0.6, F.vz * 0.6] : null;
   F.act = { id, f: 0, end: Math.round(m.total * stun) + slow, hit: [], charge: 0, charging: false, dir, seq: (F.seq = (F.seq || 0) + 1), carry, ...extra };
   if (["attack", "riposte", "parry"].includes(m.kind) || m.shove || m.grapple) F.lastOffense = W.tick;
+  if (m.resetRead || m.behind) learnedStart(W, F, m); // after F.act exists: the turn re-aims it
   W.emit({ type: "move", id: F.id, move: id });
   if (m.tell) W.emit({ type: "tell", id: F.id, move: id, kind: m.tell.kind, frames: m.startup });
 }

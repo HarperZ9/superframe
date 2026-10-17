@@ -45,3 +45,12 @@ test("solid ground blocks sight for both sides", async () => {
   }
   assert.ok(found, "the plate has a wall between two walkable cells");
 });
+
+test("a plate with two fight grounds gives each its own marks (the Gut: gut and dogs)", async () => {
+  const gut = await loadPlateArena(CONTENT, "gut"), dogs = await loadPlateArena(CONTENT, "gut", { fightId: "dogs" });
+  assert.notDeepEqual(gut.spawns.lamb, dogs.spawns.lamb);
+  for (const A of [gut, dogs]) for (const p of [A.spawns.lamb, ...A.spawns.foes]) {
+    const c = A.cell, [ox, oz] = A.origin, i = Math.floor((p[0] - ox) / c), j = Math.floor((p[1] - oz) / c);
+    assert.ok(A.grid.cells[j * A.grid.w + i], `spawn ${p} is walkable`);
+  }
+});
