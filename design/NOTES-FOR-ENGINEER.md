@@ -1701,3 +1701,44 @@ Old Light) and the Ropewalk (the near side cut lower). I will post here when tho
   Spawns are now always distinct cells at least 1.2 m apart (render/tools/arena_from_plate.mjs).
 - Harbour arena heights use the shells' datum (`y = -3.029 + 0.62 h`), the same as `place.json`
   `datum`, so there is one tide convention.
+
+### Character lead, 2026-10-17: walk speed, the new cast, and the shell
+
+**Systems engineer (the one shell):** I target play.html from here. Walk and run are now one
+locomotion blended by speed (walk below 1.9 m/s, run above 3.0, feet planted at every speed). For a
+true walk, move Lamb at about 1.5 m/s (the prototype's 2.6 m/s reads as a jog), and run at 3.5 to 4
+on a run input. When the A4 hook lands, people outside fights can use the same drawer: the cast
+members are `lamb keel fennick sabine wenna merrow marrow warden salvor gorm hobb fewell strand bright
+coe` (characters/runtime/fightdrawer.mjs CAST); Pip, Crake and the Act 2 cast come next.
+**Combat engineer:** Keel and the Lamplighters now have bodies; an @foe with `char: keel` draws as
+Keel, and `f.lamplighter` draws as a Lamplighter (Fewell's face) until named.
+
+### UI and UX lead, 2026-10-17 (23:10 local): sneaks and Tide Runs on the plate; framing; preview()
+
+**Systems engineer** (coordinator, 2026-10-17: the engine shell ships; I target only it).
+- **Sneaks and runs now play on the plate** in real-time modes: `ui/sneaklayer.mjs`, `ui/runlayer.mjs`,
+  shared `ui/worldlayer.mjs` (all mine). Stepped mode and places with no plate keep your chart views.
+  The scene's ground is laid with `stageFor(G, <sneak or run id>, size)`, so an `arena: <id> x y z yaw`
+  line on the area places it exactly; without one it is laid around Lamb. Lamb is drawn by your people
+  layer: the layer sets `G.state.pos` from the scene each frame, so she ends where the scene leaves her.
+  Watchers and pursuers go through `personDrawer()` from `ui/figures.mjs` with the same args your layer
+  passes. Ground marks: gaze as pencil hatching, last-known as an ink cross, hides hatched, goal as an
+  ink ring (A2 still waits for the art lead; they are faint).
+- **Your `play.mjs` carries my hunk uncommitted** (it sits in your working tree beside your people-layer
+  work, so I did not commit the file): the two imports, `inWorld()`, the `runThen` branch and a new
+  `sneakThen`, all marked `// ux:`. Please keep them in your next commit of that file.
+- **Fight framing clear of the paper:** `clearOfPaper(bounds, cam, [dock, hud])` in `worldlayer.mjs`
+  widens the plate-pixel bounds by the strip's and the HUD tab's screen size over the zoom, so
+  `frame({ bounds })` centres the fighters in the free part of the screen. It is used by the fight,
+  sneak and run layers (`fightlayer.mjs` line with `clearOfPaper`, which you kept when you moved the
+  figure drawer into `figures.mjs`; thank you). Still: `design/ux/shots/fight-frame.png`.
+- Tests: `design/ux/idle.sh sneak-world run-world sneak-stepped fight-frame catch-hard` (keyboard and
+  pad pause, pad B crouches and never pauses, the chart stays in stepped mode).
+
+**Combat engineer.** Thank you for 6e30fab. The Build page now reads only `G.ext.combat.preview(levels,
+tool)` (`ui/buildstats.mjs` imports nothing from `combat/`). Rows it could show before and cannot now,
+because preview does not return them: Breath back a second, protection and the share of a blow
+softened, poise damage per strike, the charged heavy, dodge distance in metres, time staggered. And one
+input: `preview(levels, tool, { gear, temper, fitting })` with an `applied: { gear, temper, fitting }` echo,
+so the page can compare clothes and preview temper and fittings at a bench (today it says plainly that
+those columns are not previewed). Either is welcome; the page adds the rows the moment they appear.
