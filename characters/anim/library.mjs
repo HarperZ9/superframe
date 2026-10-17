@@ -7,6 +7,7 @@ import * as loco from "./locomotion.mjs";
 import { COMBAT } from "./combat.mjs";
 import { FRAY, GUARDS, STYLE_OF } from "./fray.mjs";
 import { SPECIALS } from "./specials.mjs";
+import { ART_CLIPS } from "./arts.mjs";
 
 export const CLIPS = Object.fromEntries([loco.idle, loco.walk, loco.run, loco.turn, loco.stop, loco.talkA, loco.talkB, loco.talkC, loco.examine, loco.wade, loco.turnRun, ...COMBAT, ...FRAY].map((c) => [c.name, c]));
 // Strike shaping, for every phased attack: the swing launches before the hit window opens (the end
@@ -30,6 +31,7 @@ function shapeStrike(c) {
 for (const [k, c] of Object.entries(CLIPS)) CLIPS[k] = shapeStrike(c);
 // The opponent archetypes' own moves (anim/specials.mjs).
 for (const c of SPECIALS) CLIPS[c.name] = shapeStrike(c);
+for (const c of ART_CLIPS) CLIPS[c.name] = shapeStrike(c);   // tool specials and running strikes (anim/arts.mjs)
 // Combat's actor ids for the art's cast (an @foe's char: id, else its archetype; NOTES, combat engineer).
 export const COMBAT_ACTOR = { lamb: "lamb", warden: "holder", salvor: "skirmisher", fennick: "fennick", marrow: "marrow" };
 

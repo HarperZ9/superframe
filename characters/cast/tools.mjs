@@ -60,6 +60,17 @@ export const TOOLS = {
     shaft(M, B, "handR", 1.6, 1.74, 0.014, "iron");
     blobAt(M, B, "handR", 1.66, [0, 0.08, 0.02], [0.012, 0.075, 0.012], "iron");
   } },
+  // the rest of combat's tools (data/build.mjs), each on its class's grip
+  marlinspike: { id: "w.marlinspike", cls: "short", blade: [0.04, 0.3], build(M, B) { shaft(M, B, "handR", -0.05, 0.06, 0.018, "wood"); shaft(M, B, "handR", 0.06, 0.3, (s) => 0.013 * (1 - (s - 0.06) / 0.26) + 0.002, "steel"); } },
+  eelspear: { id: "w.eelspear", cls: "long", twoHand: 0.5, blade: [1.2, 1.9], build(M, B) { shaft(M, B, "handR", -0.4, 1.7, 0.016, "wood"); for (const x of [-0.04, 0, 0.04]) blobAt(M, B, "handR", 1.82, [x, 0, 0], [0.006, 0.006, 0.12], "iron"); } },
+  chain: { id: "w.chain", cls: "long", blade: [0.3, 1.2], build(M, B) { for (let k = 0; k < 12; k++) blobAt(M, B, "handR", 0.08 + k * 0.09, [0, 0, 0], [0.018, 0.018, 0.035], "iron"); blobAt(M, B, "handR", 1.2, [0, 0, 0], [0.05, 0.05, 0.05], "iron"); } },
+  oar: { id: "w.oar", cls: "long", twoHand: 0.55, blade: [1.2, 2.1], build(M, B) { shaft(M, B, "handR", -0.3, 1.6, 0.02, "wood"); blobAt(M, B, "handR", 1.85, [0, 0, 0], [0.012, 0.09, 0.3], "wood"); } },
+  belljar: { id: "w.belljar", cls: "shield", left: "case", blade: [-0.1, 0.2], build(M, B) { prop(M, B, "handL", [[0, -0.06, 0, 0.02], [0, -0.1, 0, 0.12], [0, -0.3, 0, 0.13], [0, -0.34, 0, 0.13]], "glass", { seg: 16, capB: false }); } },
+  beetle: { id: "w.beetle", cls: "heavy", twoHand: -0.2, blade: [0.5, 0.75], build(M, B) { shaft(M, B, "handR", -0.3, 0.6, 0.02, "wood"); blobAt(M, B, "handR", 0.66, [0, 0, 0], [0.1, 0.09, 0.14], "wood"); } },
+  fid: { id: "w.fid", cls: "short", blade: [0.04, 0.26], build(M, B) { shaft(M, B, "handR", -0.05, 0.26, (s) => 0.022 * (1 - Math.max(0, s) / 0.28) + 0.003, "wood"); } },
+  key: { id: "w.key", cls: "shield", left: "case", blade: [-0.1, 0.3], build(M, B) { prop(M, B, "handL", [[0, -0.06, 0, 0.012], [0, -0.42, 0, 0.012]], "iron", { seg: 6 }); propBlob(M, B, "handL", [0, -0.02, 0], [0.05, 0.05, 0.012], "iron", { rings: 5, seg: 12 }); propBlob(M, B, "handL", [0.03, -0.4, 0], [0.04, 0.03, 0.01], "iron", { rings: 4, seg: 8 }); } },
+  spanner: { id: "w.spanner", cls: "bar", blade: [0.2, 0.55], build(M, B) { shaft(M, B, "handR", -0.08, 0.5, 0.015, "steel"); blobAt(M, B, "handR", 0.55, [0, 0, 0], [0.025, 0.05, 0.06], "steel"); } },
+  tiller: { id: "w.tiller", cls: "long", twoHand: 0.5, blade: [0.6, 1.4], build(M, B) { shaft(M, B, "handR", -0.3, 1.4, (s) => 0.02 + Math.max(0, s - 0.8) * 0.03, "wood"); } },
   // for the cast: the deacon's crook and the steward's priest
   crook: { id: "w.pole", cls: "long", twoHand: 0.5, blade: [0.6, 1.3], build(M, B) {
     shaft(M, B, "handR", -0.5, 1.25, 0.017, "wood", (s) => (s < -0.45 || s > 1.1 ? "brass" : null));

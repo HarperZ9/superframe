@@ -124,7 +124,7 @@ export function createCast({ timing, combat = null, members }) {
         if (!L.clips[name]) { (st.missing ||= new Set()).has(name) || (st.missing.add(name), console.warn(`actor ${who}: no clip for combat's "${pose.anim || pose.clip}"; showing the guard`)); name = artName("guard"); }
         const len = L.length(who, name) || 1;
         if (name !== st.clip) { st.prev = st.clip; st.prevFrame = st.frame; st.fade = st.fadeLen = pose.loop ? 4 : 2; }
-        st.clip = name; st.external = true;
+        st.clip = name; st.external = true; st.rate = pose.rate ?? 1;   // combat times the clip (t from its frames, warped per phase); rate is kept for secondary motion
         // a loop plays by the ground actually covered, so the planted foot stays planted at any speed
         const sp = L.timing(who, name).speed, moved = Math.hypot(st.pos[0] - ox, st.pos[2] - oz);
         st.frame = pose.loop ? (st.frame + (sp ? (moved / sp) * FPS : dt * FPS)) % len : pose.t != null ? Math.min(len - 1e-3, pose.t * FPS) : (pose.u || 0) * len;
