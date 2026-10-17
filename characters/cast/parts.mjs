@@ -100,12 +100,23 @@ function hand(M, B, s, r, mat, kind) {
 // Neck and head, sculpted: signed-distance features smooth-unioned into one surface (rig/sdfmesh.mjs).
 // o: { r (head radius), jaw, chin, nose: [len, r, droop, hook], hair ('cap'|'crop'|'none'), skin, brow (mat),
 //      browW (ridge), jowls, lids (0 open .. 1 heavy), mouth (width), stubble, ears }
+// Expressions for baked portraits: setExpression(name) before a build changes every head built after
+// it (brows up or down and pinched, lids, the mouth open or pressed), then setExpression(null).
+export const EXPRESSIONS = {
+  neutral: {},
+  wary: { browY: -0.05, browIn: -0.05, lidsAdd: 0.35, mouthW: 0.9 },
+  startled: { browY: 0.09, browIn: 0.03, lidsAdd: -0.4, open: 0.08, mouthW: 0.85 },
+  set: { browY: -0.03, browIn: -0.08, lidsAdd: 0.15, mouthW: 1.1, press: true },
+};
+let EXPR = null;
+export const setExpression = (name) => { EXPR = name ? EXPRESSIONS[name] : null; };
 export function head(M, B, P, o) {
+  const X = EXPR || {};
   const h = J(B, "head"), R = o.r, W = { head: 1 }, sk = mid(o.skin || "skin");
   limb(M, B, "neck", "head", o.neck || 0.055, (o.neck || 0.055) * 0.92, sk, { rings: 4, seg: 12, over: 0.15 });
   const c = add(h, [0, R * 0.9, R * 0.05]), at = (v) => add(c, v.map((x) => x * R)), E = (cc, r, mat = sk, k = 0.03, op, bias) => ({ t: "ell", c: at(cc), r: r.map((x) => x * R), mat, k: k * R / 0.15, op, bias });
   const Cp = (a, b, r0, r1, mat = sk, k = 0.015, op) => ({ t: "cap", a: at(a), b: at(b), r0: r0 * R, r1: r1 * R, mat, k, op });
-  const warmM = mid("cheek"), coolM = mid("jawcool"), j = o.jaw || 1, lid = o.lids ?? 0.4, mw = o.mouth || 1, [nl, nr, nd, hk = 0] = o.nose || [0.07, 0.022, 0.3];
+  const warmM = mid("cheek"), coolM = mid("jawcool"), j = o.jaw || 1, lid = Math.max(0, Math.min(1, (o.lids ?? 0.4) + (X.lidsAdd || 0))), mw = (o.mouth || 1) * (X.mouthW || 1), by = X.browY || 0, bi = X.browIn || 0, op = X.open || 0, [nl, nr, nd, hk = 0] = o.nose || [0.07, 0.022, 0.3];
   const NL = nl / R, NR = nr / R, prims = [
     E([0, 0.02, -0.03], [0.86, 1, 0.95], sk, 0),
     E([0, -0.48, 0.2], [0.64 * j, 0.5, 0.66], coolM, 0.05),
@@ -117,7 +128,8 @@ export function head(M, B, P, o) {
       E([x * 0.33, 0.12, 0.66], [0.14, 0.14, 0.14], mid("white"), 0, "hard"),
       E([x * 0.32, 0.12, 0.79], [0.07, 0.075, 0.025], mid("eye"), 0, "hard", 0.004),
       E([x * 0.33, 0.19 + 0.02 * lid, 0.71], [0.18, 0.06 + 0.07 * lid, 0.15], sk, 0.01),
-      E([x * 0.36, 0.33, 0.82], [0.21, 0.045, 0.06], mid(o.brow || "brow"), 0.006, null, 0.01),
+      E([x * 0.36, 0.33 + by, 0.82], [0.21, 0.045, 0.06], mid(o.brow || "brow"), 0.006, null, 0.01),
+      E([x * 0.2, 0.33 + by + bi, 0.85], [0.1, 0.045, 0.05], mid(o.brow || "brow"), 0.006, null, 0.01),   // the inner brow (pinched down or lifted)
       E([x * 0.9, 0.0, 0.05], [0.1, 0.27, 0.17], warmM, 0.02),
       ...(o.jowls ? [E([x * 0.46, -0.6, 0.36], [0.3 * o.jowls, 0.32 * o.jowls, 0.3], sk, 0.06)] : []),
     ]),
@@ -125,8 +137,8 @@ export function head(M, B, P, o) {
     Cp([0, 0.02 + hk * 0.3 * NL, 0.86 + NL * 0.45], [0, -0.12 - nd * NL, 0.9 + NL * 0.8], NR * 0.85, NR * 1.15, warmM),
     ...[-1, 1].map((x) => E([x * NR * 1.0, -0.16 - nd * NL - NR * 0.4, 0.86 + NL * 0.7], [NR * 0.7, NR * 0.55, NR * 0.75], sk, 0.02)),
     E([0, -0.47, 0.83], [0.25 * mw, 0.06, 0.08], mid("lip"), 0.01, null, 0.003),
-    E([0, -0.57, 0.81], [0.21 * mw, 0.07, 0.08], mid("lip"), 0.01, null, 0.003),
-    Cp([-0.22 * mw, -0.52, 0.9], [0.22 * mw, -0.52, 0.9], 0.018, 0.018, sk, 0.004, "sub"),
+    E([0, -0.57 - op, 0.81], [0.21 * mw, X.press ? 0.05 : 0.07, 0.08], mid("lip"), 0.01, null, 0.003),
+    Cp([-0.22 * mw, -0.52 - op / 2, 0.9], [0.22 * mw, -0.52 - op / 2, 0.9], 0.018 + op * 0.5, 0.018 + op * 0.5, sk, 0.004, "sub"),
   ];
   sdfPart(M, prims, { weights: W, cell: R * (o.cell || 0.1) });
   if (o.hair === "cap" || o.hair === "crop") blob(M, add(c, [0, R * 0.16, -R * 0.12]), [R * 0.91, R * 0.9, R * 0.9], W, mid(o.hairMat || "hair"), { rings: 10, seg: 18, rmod: (th) => (Math.sin(th) > 0.55 ? 0.9 : 1) });

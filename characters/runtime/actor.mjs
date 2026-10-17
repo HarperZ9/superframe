@@ -30,10 +30,14 @@ export function blend(a, b, t) {
   for (const j of new Set([...Object.keys(a), ...Object.keys(b)])) {
     if (Array.isArray(a[j]) || Array.isArray(b[j])) { o[j] = t < 0.5 ? a[j] : b[j]; continue; }
     o[j] = {}; const A = a[j] || {}, B = b[j] || {};
-    // whole-body angles: a finished turn (a roll's 360, a heavy's -360) counts as 0, mid-turn angles stay
-    // as they are, so a blend never takes the short way round across the middle of a roll
-    const n = (x) => { const r = ((x % 360) + 360) % 360; return r > 330 ? r - 360 : r; };
-    for (const k of new Set([...Object.keys(A), ...Object.keys(B)])) { const a = A[k] || 0, b = B[k] || 0, ang = j === "root" && (k === "pitch" || k === "yaw" || k === "roll"); o[j][k] = ang ? n(a) * (1 - t) + n(b) * t : a * (1 - t) + b * t; }
+    // whole-body angles (a is the pose arriving, b the pose being left): the arriving angle is taken a
+    // whole turn on, in the direction the leaving clip was turning, so a cut-short roll or spin finishes
+    // its turn forward instead of unwinding, and never jumps across a wrap
+    for (const k of new Set([...Object.keys(A), ...Object.keys(B)])) {
+      const a = A[k] || 0, b = B[k] || 0, ang = j === "root" && (k === "pitch" || k === "yaw" || k === "roll");
+      let a2 = a; if (ang) a2 = b >= 0 ? a + 360 * Math.max(0, Math.ceil((b - a - 30) / 360)) : a - 360 * Math.max(0, Math.ceil((a - b - 30) / 360));
+      o[j][k] = a2 * (1 - t) + b * t;
+    }
   }
   return o;
 }
@@ -230,8 +234,15 @@ export function createCast({ timing, combat = null, members }) {
           // planted: low, and no longer travelling forward under the body (the heel has struck)
           const down = f[1] < (k ? 0.13 : 0.1) && (k || back);
           if (!down) { if (k) { k.w -= 0.06; if (k.w <= 0) st.locks[s] = null; } continue; }
+          if (!k && (L.clips[st.clip]?.tags?.includes("move") || (st.prev && L.clips[st.prev]?.tags?.includes("move")))) continue;   // no new locks in or out of a dodge: the body travels
           if (!k) { const wp = self.toWorld(f); st.locks[s] = { p: [wp[0], 0, wp[2]], y: Math.min(f[1], 0.05), w: 0.15 }; }
-          else k.w = Math.min(1, k.w + 0.2);   // held until the clip lifts the foot; the leg's reach limits it
+          else {
+            // held until the clip lifts the foot; when the clip carries the body away from the planted
+            // spot (a lunge, root motion) the lock lets go over a few frames instead of stretching the leg
+            const wp = self.toWorld(f), far = Math.hypot(wp[0] - k.p[0], wp[2] - k.p[2]);
+            if (far > 0.22) { k.w -= far > 0.6 ? 0.34 : 0.2; if (k.w <= 0) st.locks[s] = null; }
+            else k.w = Math.min(1, k.w + 0.2);
+          }
         }
       },
       toWorld(v) { return placeFn(st.facing, st.pos).p(v); },

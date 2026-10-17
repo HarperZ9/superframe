@@ -24,13 +24,14 @@ function shapeStrike(c) {
   const top = keys[iTop].pose, hit = act[0].pose, last = act[act.length - 1].pose;
   // the swing ramps up over the last third of the windup (16 % of the arc by 0.86, 48 % by its end),
   // so the hand accelerates over several frames instead of leaving a hold at full speed
-  const hasMid = keys.some((k) => at(k) && at(k)[0] === "s" && at(k)[1] > 0.55 && at(k)[1] < 1);
   // Most of the arc travels in the last frames of the wind-up (20 % by 0.76, 52 % by 0.9, 82 % at its
   // end), so the 2 to 3 active frames cover only the contact part of the swing. Combat's frame counts
   // are unchanged; its warp still lands the windup's end on its last startup frame.
-  keys[iTop] = { at: ["s", 1], pose: mixPose(top, hit, 0.82) };
-  if (!hasMid) keys.push({ at: ["s", 0.6], pose: top });
-  keys.push({ at: ["s", 0.76], pose: mixPose(top, hit, 0.2) }, { at: ["s", 0.9], pose: mixPose(top, hit, 0.52) });
+  // With combat's sweep (its last wind-up frames, where the arc travels), the clip gets a `sweep` phase:
+  // the windup ends on the held top, the sweep carries the arc (20 %, 52 %, 82 %), active is contact.
+  keys[iTop] = { at: ["s", 1], pose: top };
+  keys.push({ at: ["w", 0.33], pose: mixPose(top, hit, 0.2) }, { at: ["w", 0.66], pose: mixPose(top, hit, 0.52) }, { at: ["w", 1], pose: mixPose(top, hit, 0.82) });
+  c = { ...c, phases: ["startup", "sweep", "active", "recovery"] };
   // follow-through: the swing carries on past contact and slows over several frames, rather than
   // stopping dead on the last active frame
   if (!keys.some((k) => at(k) && at(k)[0] === "r" && at(k)[1] < 0.3)) keys.push({ at: ["r", 0.14], pose: mixPose(last, top, -0.12) });

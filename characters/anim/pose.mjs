@@ -19,11 +19,14 @@ export function layout(clip, T = {}) {
   if (!clip.phases) { const n = T.frames ?? (span(T) || clip.frames); return { length: n, starts: { all: [0, n] } }; }
   let src = T;
   if (!T.startup && !T.active && T.recovery && T.art && span(T.art)) { const k = T.recovery / span(T.art); src = Object.fromEntries(clip.phases.map((p) => [p, (T.art[p] || 0) * k])); }
+  // a sweep phase splits combat's startup: windup to sweep[0], sweep from there to the last startup
+  // frame (combat's `sweep: [from, to)`); without one from combat, the sweep is the last 38 % of startup
+  if (clip.phases.includes("sweep") && src.startup != null) { const st = src.startup, s0 = T.sweep ? T.sweep[0] : st * 0.62; src = { ...src, startup: s0, sweep: st - s0 }; }
   let f = 0; const starts = {};
   for (const ph of clip.phases) { const n = src[ph] ?? clip.defaults?.[ph] ?? 6; starts[ph] = [f, n]; f += n; }
   return { length: f, starts };
 }
-const keyFrame = (k, L) => { if (Array.isArray(k.at)) { const [ph, u] = k.at, s = L.starts[{ s: "startup", a: "active", r: "recovery" }[ph] || ph]; return s[0] + u * s[1]; } return k.at * L.length; };
+const keyFrame = (k, L) => { if (Array.isArray(k.at)) { const [ph, u] = k.at, s = L.starts[{ s: "startup", w: "sweep", a: "active", r: "recovery" }[ph] || ph]; return s[0] + u * s[1]; } return k.at * L.length; };
 
 // Monotone cubic (Fritsch-Carlson) through (t_i, v_i), evaluated at t.
 function mcubic(ts, vs, t, smooth = false) {

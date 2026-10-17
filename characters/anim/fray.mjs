@@ -160,6 +160,36 @@ const lurch = directional("lurch", (d, x, z) => [
 ]);
 
 const actions = [
+  fr("flinch", [
+    { at: 0, pose: GUARD },
+    { at: 0.2, pose: G(GUARD, { root: { y: -0.06 }, spine: { bend: -6 }, chest: { bend: -8, turn: 8 }, head: { bend: -10, turn: 12 }, clavL: { lift: 10 }, clavR: { lift: 10 }, armL: { out: 40 } }) },
+    { at: 1, pose: GUARD },
+  ], ["combat", "react"]),
+  fr("snared", [
+    { at: 0, pose: GUARD },
+    ...[0.15, 0.35, 0.55, 0.75].map((u, i) => ({ at: u, pose: G(STAND, { root: { y: -0.08 }, thighL: { fwd: 6, out: 2 }, thighR: { fwd: -4, out: 2 }, shinL: { bend: 10 }, shinR: { bend: 10 }, spine: { bend: 18, side: i % 2 ? 8 : -8 }, chest: { turn: i % 2 ? 20 : -20 }, armL: { fwd: 30, out: 60 }, armR: { fwd: 40, out: 50 }, head: { bend: 28 }, hands: ["open", null] }) })),
+    { at: 1, pose: GUARD },
+  ], ["combat", "react"]),
+  ph("takedown", [
+    { at: ["s", 0], pose: GUARD },
+    { at: ["s", 1], pose: G({ root: { y: -0.1, zf: 0.5 }, spine: { bend: 20 }, armL: { fwd: 90, out: 6 }, foreL: { bend: 30 }, armR: { fwd: 80 }, foreR: { bend: 40 }, hands: ["open", null] }) },
+    { at: ["a", 1], pose: G({ root: { y: -0.2, zf: 0.8 }, spine: { bend: 34 }, chest: { turn: 20 }, armL: { fwd: 60, out: 10 }, foreL: { bend: 80 }, armR: { fwd: 50 }, foreR: { bend: 70 }, thighL: { fwd: 50 }, shinL: { bend: 60 } }) },
+    { at: ["r", 0.5], pose: G({ root: { y: -0.36, zf: 1 }, spine: { bend: 40 }, thighL: { fwd: 70 }, shinL: { bend: 100 }, thighR: { fwd: -10 }, shinR: { bend: 100 }, armL: { fwd: 40 }, foreL: { bend: 60 } }) },
+    { at: ["r", 1], pose: G({ root: { zf: 1 } }) },
+  ], ["combat", "attack"]),
+  ph("use_rope", [
+    { at: ["s", 0], pose: GUARD },
+    ...[0.35, 0.7].map((u, i) => ({ at: ["s", u], pose: G({ clavL: { lift: 20 }, armL: { fwd: 160, out: 30 + i * 20, twist: (i - 0.5) * 40 }, foreL: { bend: 30 }, hands: ["fist", null] }) })),
+    { at: ["s", 1], pose: G({ chest: { turn: 30 }, armL: { fwd: 30, out: -10 }, foreL: { bend: 40 } }) },
+    { at: ["a", 1], pose: G({ root: { y: -0.16 }, spine: { bend: 22 }, chest: { turn: -30 }, armL: { fwd: 40, out: 60 }, foreL: { bend: 6 }, hands: ["open", null] }) },
+    { at: ["r", 1], pose: GUARD },
+  ], ["combat", "use"]),
+  ph("use_salt", [
+    { at: ["s", 0], pose: GUARD },
+    { at: ["s", 1], pose: G({ chest: { turn: 26, bend: 6 }, armL: { fwd: 10, out: 10 }, foreL: { bend: 110 }, hands: ["fist", null] }) },
+    { at: ["a", 1], pose: G({ root: { zf: 0.2 }, chest: { turn: -20, bend: 10 }, armL: { fwd: 80, out: 0 }, foreL: { bend: 6 }, hands: ["open", null] }) },
+    { at: ["r", 1], pose: GUARD },
+  ], ["combat", "use"]),
   ph("riposte", [
     { at: ["s", 0], pose: GUARD },
     { at: ["s", 1], pose: G(GUARD, { root: { zf: 0.4 }, chest: { turn: -30, bend: 6 }, armR: { fwd: 120, out: 10 }, foreR: { bend: 90 }, handR: { bend: 60 } }) },
