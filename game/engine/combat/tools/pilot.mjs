@@ -17,7 +17,13 @@ const r01 = (W, k) => rand01(W.seed ^ 0x5151, `${k}:${W.tick}`);
 // Openings: with unaware opponents it creeps (half stick, lantern shut) to a point behind the
 // nearest and takes it down; with a sluice it waits by the lever until an opponent stands in the
 // zone, then works it.
-export function createPilot({ catchShare = null, style = null, kite: kiteOpts = null } = {}) {
+// Talk exits (option talk): when the fight offers a way out (W.talk), the pilot decides once per offer
+// whether to take it: talk: <0..1> as a share, "auto" for TALK_RATE by the build (a HAT-led Lamb, HAT
+// 7 or more, takes every exit it is offered; anyone else half of them), null never (the default, so
+// measurements that predate exits are unchanged). A taken exit is pressed until it goes through (it
+// can wait on Composure) or the offer is withdrawn.
+export const TALK_RATE = { hat: 1, other: 0.5 };
+export function createPilot({ catchShare = null, style = null, kite: kiteOpts = null, talk = null } = {}) {
   const S = { hold: 0, cool: 0, last: "", K: { ...KITE, ...(kiteOpts || {}) } };
   const decide = (W) => {
     const L = W.lamb();
@@ -48,9 +54,19 @@ export function createPilot({ catchShare = null, style = null, kite: kiteOpts = 
     if (L.act && W.moves[L.act.id].next.light && L.act.f > W.moves[L.act.id].startup && r01(W, "chain") < 0.08) { out.press.push("light"); return out; }
     return offend(W, L, T, out, S, style);
   };
+  const wantsTalk = (W) => {
+    if (talk == null || !W.talk) return false;
+    const node = W.talk.node; S.talked ||= {};
+    if (!(node in S.talked)) {
+      const lv = W.defs.lamb.levels || {}, rate = talk === "auto" ? ((lv.hat ?? 3) >= 7 ? TALK_RATE.hat : TALK_RATE.other) : +talk;
+      S.talked[node] = r01(W, `talk:${node}`) < rate;
+    }
+    return S.talked[node];
+  };
   return (W) => {
     S.goal = null;
     const out = decide(W), L = W.lamb();
+    if (L && !L.fallen && wantsTalk(W)) out.press = [...(out.press || []), "talk"];
     // stuck: wanting to walk but not getting anywhere for half a second (a wall the sidle cannot pass)
     if (L && S.goal && W.tick % 30 === 0) { S.stuck = S.at && Math.hypot(L.x - S.at[0], L.z - S.at[1]) < 0.3 ? (S.stuck || 0) + 1 : 0; S.at = [L.x, L.z]; }
     return steer(W, out, S.goal, (S.stuck || 0) > 0);

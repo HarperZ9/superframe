@@ -229,6 +229,34 @@ Judged from stills and frame measurements, not from playing it.
    shift with almost no change of pose; at the game camera it reads as a shuffle, and its 12 safe frames
    are invisible. I did not compare the dash and the roll frame by frame. Owner: character lead.
 
+## Talk exits taken by the scripted player
+
+The pilot now takes a talk exit when the fight offers one (tools/pilot.mjs, option `talk`). The rate,
+chosen and recorded here: a HAT-led Lamb (HAT 7 or more, the Tongue style) takes every exit it is
+offered; any other build takes half of them, decided once per offer by the fight's seeded roll. A taken
+exit is pressed until it goes through (it can wait on Composure, 2 a time) or the offer goes. Measurements
+before this section never take exits (the default), so they stay comparable.
+
+**e.strippers with exits counted**, 6 seeds per style (fair play; won, talked out, down):
+
+| Style | Without exits | With exits |
+|---|---|---|
+| Fist | 5 won, 1 down | 2 won, 3 talked out, 1 down |
+| Tongue | 0 won, 6 down | 0 won, 2 talked out, 4 down |
+| Shadow | 1 won, 5 down | 0 won, 3 talked out, 3 down |
+| Hands | 0 won, 6 down | 0 won, 0 talked out, 6 down |
+| Eye | 1 won, 5 down | 0 won, 4 talked out, 2 down |
+
+Why not more: the exit ("Read them the claim") needs one blow landed and Lamb at Standing 4 or more,
+and it costs 2 Composure, which starts at 0 and fills by catches (1.5) and blows (0.5). Tongue was
+offered it in 4 of 6 fights but had the Composure in time in only 2; in the other two it went below
+Standing 4 before landing a blow. Hands was offered it in 5 of 6 and its half-rate roll declined 4 of
+them; the one it took waited on Composure until Lamb went down. At HAT 8 (the breakpoint) one exit a
+fight is free of Composure; the Tongue sheet here is HAT 7. So the exit is a real route, but it has to
+be earned in the fight, which is the design (19.2); whether that is too strict for Tongue is the
+director's call. Across Acts 1 and 2 (3 seeds, 57 fights a style; world-runs/fair-talk.txt) the
+exits end 7 to 21 fights a style in talk, and downs fall for Tongue from 15 to 10.
+
 ## What this does not prove
 
 - A scripted kiter with perfect reactions is not a person. It dodges thrown stones it can see coming

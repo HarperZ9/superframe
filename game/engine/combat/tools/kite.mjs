@@ -2,7 +2,7 @@
 // plate (the ground the shell fights on). Fair play is the scripted pilot playing like the build;
 // kiting is the pilot's retreat-and-poke policy (tools/pilot.mjs kite). Prints, per style and
 // policy: fights, won (win or yield), down, timed out, mean seconds, mean Standing lost.
-//   node tools/kite.mjs [seeds=3] [--rows]   (--rows: the placeholder arenas instead of plates)
+//   node tools/kite.mjs [seeds=3] [--rows] [--detail] [--cell 0.25] [--talk]   (--rows: the placeholder arenas instead of plates)
 // Brawls and sneak openings are left out: keeping out of a brawl is a fair answer, and a sneak
 // opening is decided before anyone kites. design/COMBAT-WORLD.md reads these numbers.
 import { readFileSync, readdirSync, existsSync } from "node:fs";
@@ -31,7 +31,7 @@ async function plateFor(area) {
 }
 
 export async function runPolicy(style, policy, { seeds = 3, rows = false, acts = Object.keys(ACTS) } = {}) {
-  const r = { fights: 0, won: 0, down: 0, timeout: 0, timeWon: 0, fled: 0, sec: 0, lost: 0, per: {} };
+  const r = { fights: 0, won: 0, down: 0, timeout: 0, timeWon: 0, fled: 0, talk: 0, sec: 0, lost: 0, per: {} };
   for (const act of acts) {
     const defs = installCombat(createGame({ sources: ACTS[act](), seed: 1 })).defs;
     const ids = Object.keys(defs).filter((id) => !id.includes(".sneak") && defs[id].foes.length);
@@ -39,7 +39,7 @@ export async function runPolicy(style, policy, { seeds = 3, rows = false, acts =
       const G = createGame({ sources: ACTS[act](), seed: s }), C = installCombat(G);
       const A = rows ? null : await plateFor(defs[id].area);
       if (A) C.usePlate(defs[id].area, A);
-      const W = C.start(id, { lamb: STYLES[style] }), pilot = createPilot(policy === "fair" ? {} : { style: "kite", kite: policy === "kite" ? null : policy });
+      const W = C.start(id, { lamb: STYLES[style] }), pilot = createPilot(policy === "fair" ? {} : policy === "fair+talk" ? { talk: "auto" } : { style: "kite", kite: policy === "kite" ? null : policy });
       for (let i = 0; i < 60 * 125 && !W.result; i++) C.step(pilot(W));
       const o = W.result ? W.result.outcome : "none", L = W.lamb(), won = o === "win" || o === "yield";
       r.fights++; r.sec += W.tick / 60; r.lost += (L.hpMax - L.hp) / L.hpMax;
@@ -47,11 +47,12 @@ export async function runPolicy(style, policy, { seeds = 3, rows = false, acts =
       if (o === "down" || o === "lose") r.down++;
       if (W.result && W.result.reason === "time") { r.timeout++; if (won) r.timeWon++; }
       if (o === "fled" && W.result.reason === "exit") r.fled++;
-      const p = (r.per[id] ||= { won: 0, n: 0, sec: 0 }); p.n++; p.sec += W.tick / 60; if (won) p.won++;
+      if (o === "talk") r.talk++;
+      const p = (r.per[id] ||= { won: 0, n: 0, sec: 0, talk: 0, down: 0 }); p.n++; p.sec += W.tick / 60; if (won) p.won++; if (o === "talk") p.talk++; if (o === "down" || o === "lose") p.down++;
     }
   }
   const f = (x) => +(x / r.fights).toFixed(2);
-  return { fights: r.fights, won: r.won, down: r.down, fled: r.fled, timeout: r.timeout, wonAtTime: r.timeWon, meanSeconds: +(r.sec / r.fights).toFixed(1), standingLost: f(r.lost), per: r.per };
+  return { fights: r.fights, won: r.won, down: r.down, talk: r.talk, fled: r.fled, timeout: r.timeout, wonAtTime: r.timeWon, meanSeconds: +(r.sec / r.fights).toFixed(1), standingLost: f(r.lost), per: r.per };
 }
 
 // The kiting variants searched for the strongest kiter (an honest test needs the best kiter, not a
@@ -75,9 +76,11 @@ if (process.argv[1] && process.argv[1].endsWith("kite.mjs") && process.argv.incl
   }
 } else if (process.argv[1] && process.argv[1].endsWith("kite.mjs")) {
   const seeds = +(process.argv.find((a, i) => /^\d+$/.test(a) && process.argv[i - 1] !== "--cell") || 3), rows = process.argv.includes("--rows"), detail = process.argv.includes("--detail");
-  for (const style of Object.keys(STYLES)) for (const policy of ["fair", "kite"]) {
+  // --talk: fair play takes talk exits (tools/pilot.mjs TALK_RATE) and the kiter is left out
+  const policies = process.argv.includes("--talk") ? ["fair", "fair+talk"] : ["fair", "kite"];
+  for (const style of Object.keys(STYLES)) for (const policy of policies) {
     const { per, ...sum } = await runPolicy(style, policy, { seeds, rows });
-    console.log(style.padEnd(7), policy.padEnd(5), JSON.stringify(sum));
-    if (detail) for (const [id, p] of Object.entries(per)) console.log("   ", id.padEnd(22), `${p.won}/${p.n}`, (p.sec / p.n).toFixed(1));
+    console.log(style.padEnd(7), policy.padEnd(9), JSON.stringify(sum));
+    if (detail) for (const [id, p] of Object.entries(per)) console.log("   ", id.padEnd(22), `${p.won}/${p.n}`, (p.sec / p.n).toFixed(1), p.talk ? `talk ${p.talk}` : "");
   }
 }
