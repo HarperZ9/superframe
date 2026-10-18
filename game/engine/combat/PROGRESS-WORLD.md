@@ -88,7 +88,17 @@ Outputs are kept in world-runs/ (out/ is ignored by git) (`*-before.txt` predate
    - pieces landed (8ae7507, b314c79, 5342098); light hit-stop 4/6 and shake 0.15/0.3 (767f601; three
      settings measured, outcomes within noise); recaptured as feel5: heavies, catches, ripostes and hits
      on Lamb now 16 to 18 px of shake against a 1.2 px floor; lights still 1.2 to 1.4 px (the tell clamp).
-8. OPEN
+8. DONE Coordinator, 2026-10-17 (telegraph cap stays; shake size as a tuning value):
+   - IMPACT.shakeScale and punchScale in ui/fightcam.mjs; exact strips at 100, 60, 40% (camera offsets
+     logged per frame): shake peaks 5.5 to 6.4 px at 100%; the earlier 16 to 18 px was mostly the 3.9% zoom
+     punch (corrected in COMBAT-WORLD.md). Pick: 100%; turn the punch down first if heavy hits feel busy.
+   - My mistake: ad12018 committed the systems engineer's uncommitted edge-clamp edits in fightcam.mjs with
+     my hunk, which tangled their revert (f5d09a2). Shared files now get explicit hunks only.
+   - Director (96864fd): Composure from held ground (+0.35 per block or evade while not striking) and HAT
+     words (+0.5, voices at 4+), exit cost 1 at HAT 4+; strippers: Tongue talks out 6 of 6 (was 2).
+     Ropewalk on the authored strand: kiter 20 to 17 wins, 44 to 53 s, 18 stumbles; fair unchanged.
+   Tests 255 of 255.
+9. OPEN
    - Feel items 1 to 7 in design/COMBAT-WORLD.md, owners named (camera shake under LOOK-UNIFIED R5 is the
      first, a decision for the art direction and the author).
    - In unstaged shell runs the chase blow catches a fleeing Lamb at 2.3 to 2.7 s, before the 3.5 s clock,
