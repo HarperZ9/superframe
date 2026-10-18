@@ -50,7 +50,7 @@ fled: weigh2.fight.room.fled
 down: weigh2.fight.room.down
 
 talk: weigh2.fx.card | Read them the card over the board ? fight_seconds >= 8
-talk: weigh2.fx.gorm | Ask whether the sergeant knows what they're guarding ? fight_struck >= 1
+talk: weigh2.fx.gorm | Ask whether the sergeant knows what they're guarding ? (fight_struck >= 1 | fight_seconds >= 10)
 
 @node weigh2.fx.card
 place: weigh_in

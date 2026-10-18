@@ -46,7 +46,7 @@ foe: f.wrecker 1
 param: gale (gusts over 20 m/s stagger mid-swing, both sides)
 param: roof (wet lead, the beam, the pans swinging on their chains)
 talk: weigh3.fx.letter | Tell him who gets the salvage ? fight_seconds >= 6
-talk: weigh3.fx.names | Say his name, and Sallis's ? fight_struck >= 1 & has(strippers.named)
+talk: weigh3.fx.names | Say his name, and Sallis's ? (fight_struck >= 1 | fight_seconds >= 10) & has(strippers.named)
 win: weigh3.fight.lamp.win
 yield: weigh3.fight.lamp.yield
 fled: weigh3.fight.lamp.fled

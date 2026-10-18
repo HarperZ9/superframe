@@ -134,7 +134,7 @@ foe: f.stripper_lead 1
 foe: f.stripper 2
 param: eye-ends (the water rises when the eye passes)
 prop: snare 0 0 ? has(oldlight.line_rigged)
-talk: fx3.oldlight.claim | Read them the claim ? fight_struck >= 1 & fight_lamb_standing >= 4
+talk: fx3.oldlight.claim | Read them the claim ? (fight_struck >= 1 | fight_seconds >= 10) & fight_lamb_standing >= 4
 win: oldlight.fight.win
 yield: oldlight.fight.yield
 fled: oldlight.fight.fled
@@ -148,7 +148,7 @@ foe: f.stripper_lead 1
 foe: f.stripper 2
 param: eye-ends
 prop: snare 0 0 ? has(oldlight.line_rigged)
-talk: fx3.oldlight.claim | Read them the claim ? fight_struck >= 1 & fight_lamb_standing >= 4
+talk: fx3.oldlight.claim | Read them the claim ? (fight_struck >= 1 | fight_seconds >= 10) & fight_lamb_standing >= 4
 win: oldlight.fight.win
 yield: oldlight.fight.yield
 fled: oldlight.fight.fled
@@ -162,7 +162,7 @@ foe: f.wrecker 2
 param: gale (gusts over 20 m/s stagger mid-swing, both sides)
 param: lens-behind
 prop: cut 4 4 ? mother != burning
-talk: fx3.gallery.names | Say their names, and the Patience's ? fight_struck >= 1 & has(strippers.named)
+talk: fx3.gallery.names | Say their names, and the Patience's ? (fight_struck >= 1 | fight_seconds >= 10) & has(strippers.named)
 win: mole3.fight.gallery.win
 yield: mole3.fight.gallery.yield
 fled: mole3.fight.gallery.fled
@@ -176,7 +176,7 @@ foe: f.wrecker_lead 1
 foe: f.wrecker 2
 param: gale
 param: lens-behind
-talk: fx3.gallery.names | Say their names, and the Patience's ? fight_struck >= 1 & has(strippers.named)
+talk: fx3.gallery.names | Say their names, and the Patience's ? (fight_struck >= 1 | fight_seconds >= 10) & has(strippers.named)
 win: mole3.fight.gallery.win
 yield: mole3.fight.gallery.yield
 fled: mole3.fight.gallery.fled

@@ -293,6 +293,16 @@ Section 19 of SYSTEMS-FULL is approved and placed: one sheet with four combat pi
 ## Decision: the page economy (2026-10-17)
 The pace is set by what builds need. A committed build reaches a compartment at 8 by mid Act 2 and at 10 by late Act 3, which with a chapter raise every fourth page (archetypes start the main compartment at 5) means 12 and 20 pages; every third brought 10 by the end of Act 2, too early. Measured with the corrected gates, the five builds end the acts at 10 to 15, 17 to 22 and 23 to 34 pages, so every build meets both targets. Why this mechanism and not two-page wins, a cheaper rank or a 44-page target: SYSTEMS-FULL 19.4.
 
+## Decision: talkers earn the talk exit with words and held ground (2026-10-17)
+Problem (combat engineer's measure): a talk exit in a fight needed a landed blow, Standing 4 and 2 Composure, and Composure filled only from catches and landed blows. Tongue was offered the strippers' exit in 4 of 6 fights and could pay in 2; Hands paid in none. A talker had to earn the right to talk by hitting people, which cuts against the play styles the author asked for.
+Decision:
+1. **Content.** No talk exit requires a landed blow alone. Each exit that read `fight_struck >= 1` now reads `fight_struck >= 1 | fight_seconds >= 10` (11 exits across the three acts): ten seconds of holding ground earns the word. Exits written as "only if no blow was struck" (the warrant, the station's tea, Rook's witness, Brine word) are unchanged, as is Keel's sit, which needs the struggle.
+2. **Engine (combat engineer to build and measure).** Composure also fills from words and held ground: each blow blocked, caught or sidestepped without striking back fills it, and so does a HAT voice's bark. A talk exit costs 2 Composure, or 1 when HAT is 4 or more.
+Why words and held ground rather than only a cheaper cost: a cheaper cost still leaves Hands and Tongue unable to earn the first point without striking. Filling from held ground lets every style that stands its ground talk, and HAT makes it cheaper, so the charisma build is the best at it.
+
+## Ropewalk hazards (2026-10-17)
+The strand down the walk (rope, rect 6.5 2.7 18.5 3.1) and the coil of telegraph wire under the Vane's post (net, at 10.4 0 1.2, r 0.8) are authored in content/ropewalk/place.json under terrain.hazards. The Act 2 Ropewalk sets them down in one line: "a strand lies between the old rope posts, laid out for twisting and never twisted, and under the post by the telegraph office a coil of dead wire". Measured before authoring (combat engineer): a kiter trips, fair play rarely does. The quay pieces stay out.
+
 ## Next
 
 1. A first full play of Act 1 in the shell when the areas, combat and art land; time Movement I

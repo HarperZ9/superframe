@@ -69,7 +69,7 @@ foe: f.lamplighter 2
 param: frost (after 01:00 the cobbles are glass)
 prop: lamp 0 0 ? has(ropewalk.lamp_doused)
 talk: ropewalk.fx.rook | Let Rook speak ? has(said.rook_witness)
-talk: ropewalk.fx.card | Hold up the Shelf's card ? fight_struck >= 1
+talk: ropewalk.fx.card | Hold up the Shelf's card ? (fight_struck >= 1 | fight_seconds >= 10)
 win: ropewalk.fight.door.win
 yield: ropewalk.fight.door.yield
 fled: ropewalk.fight.door.fled
@@ -107,6 +107,7 @@ alt: ropewalk.pip.early ? has(day.pip) & clock < 22:00 & !seen(ropewalk.pip.earl
 call: ropewalk.arrive
 nar: The Ropewalk: a quarter of a mile laid straight for rope, one paraffin lamp halfway. The telegraph office; four doors up, the Gannet house. {when: !has(ropewalk.lamp_doused)}
 nar: The Ropewalk with its lamp out: two lit blinds, and the dark. {when: has(ropewalk.lamp_doused)}
+nar: Down the middle of the walk a strand lies between the old rope posts, laid out for twisting and never twisted, and under the post by the telegraph office a coil of dead wire. {once}
 nar: Rook locks the green door, tries it twice, and goes off toward the quay. {when: has(ev2.rook_out) & !has(ev2.rook_back), once}
 voice: dark: Frost on every stone, and every step anybody takes now stays where it was put. Yours too. {when: clock >= 01:00, once}
 voice: hearsay: Two doors on this street have opened a crack since you came into it. They have not closed. {when: has(book.violence), once}

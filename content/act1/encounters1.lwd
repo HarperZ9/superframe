@@ -15,7 +15,7 @@ area: floor
 foe: f.lugg 1
 foe: f.salvor 2
 prop: snare 12 7 ? has(floor.handline)
-talk: fx.salvors.parley | Put the sack down ? fight_struck >= 1 & fight_lamb_standing >= 4
+talk: fx.salvors.parley | Put the sack down ? (fight_struck >= 1 | fight_seconds >= 10) & fight_lamb_standing >= 4
 win: floor.fight.salvors.win
 yield: floor.fight.salvors.yield
 fled: floor.fight.salvors.fled
@@ -130,7 +130,7 @@ opening: sneak
 foe: f.lugg 1
 foe: f.salvor 2
 prop: snare 12 7 ? has(floor.handline)
-talk: fx.salvors.parley | Put the sack down ? fight_struck >= 1 & fight_lamb_standing >= 4
+talk: fx.salvors.parley | Put the sack down ? (fight_struck >= 1 | fight_seconds >= 10) & fight_lamb_standing >= 4
 param: tide-ends-fight
 win: floor.fight.salvors.win
 yield: floor.fight.salvors.yield

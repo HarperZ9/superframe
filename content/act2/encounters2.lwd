@@ -7,7 +7,7 @@ foe: f.stripper_lead 1
 foe: f.stripper 3
 param: deck-tilt (the barges lie on their sides)
 prop: snare 0 0 ? has(spit.painter_cut)
-talk: fx2.strippers.claim | Read them the claim ? fight_struck >= 1 & fight_lamb_standing >= 4
+talk: fx2.strippers.claim | Read them the claim ? (fight_struck >= 1 | fight_seconds >= 10) & fight_lamb_standing >= 4
 param: tide-ends-fight
 win: spit.fight.strippers.win
 yield: spit.fight.strippers.yield
@@ -71,7 +71,7 @@ foe: f.stripper_lead 1
 foe: f.stripper 3
 param: deck-tilt (the barges lie on their sides)
 param: tide-ends-fight
-talk: fx2.strippers.claim | Read them the claim ? fight_struck >= 1 & fight_lamb_standing >= 4
+talk: fx2.strippers.claim | Read them the claim ? (fight_struck >= 1 | fight_seconds >= 10) & fight_lamb_standing >= 4
 win: spit.fight.strippers.win
 yield: spit.fight.strippers.yield
 fled: spit.fight.strippers.fled
