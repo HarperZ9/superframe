@@ -304,6 +304,15 @@ Measured after the build (combat engineer, b9df09c; e.strippers, 6 seeds): Tongu
 ## Ropewalk hazards (2026-10-17)
 The strand down the walk (rope, rect 6.5 2.7 18.5 3.1) and the coil of telegraph wire under the Vane's post (net, at 10.4 0 1.2, r 0.8) are authored in content/ropewalk/place.json under terrain.hazards. The Act 2 Ropewalk sets them down in one line: "a strand lies between the old rope posts, laid out for twisting and never twisted, and under the post by the telegraph office a coil of dead wire". Measured before authoring (combat engineer): a kiter trips, fair play rarely does. The quay pieces stay out.
 
+## Resume point (director, 2026-10-17, wrap-up)
+Branch: dev (shared). Last director commit: 9c18121. All three acts validate 0/0 (Act 1 1,652 nodes, Act 2 758, Act 3 592).
+Done this session: editor passes 4 and 5 answered; build layer (SYSTEMS-FULL 19, 21 tools, gear.lwd); gates corrected and insights1/2/3 (chapter page every fourth); interrogations (section 20, interrog1/2.lwd, a press for every style, lies catchable by one fact per route, signposts so every style reaches 4 or more of 6); Act 1 area wiring with marks restaged; fight barks and sneak cues (barks.lwd, variants per key); held-ground talk exits; Ropewalk strand and coil.
+Open, in order:
+1. Wenna's and Hobb's lies are not caught on the attentive routes: give those routes an earlier catch fact.
+2. Editor: a read of section 20's interrogations, and of the gear and teacher scenes for voice.
+3. Areas for Acts 2 and 3 are not yet wired.
+4. Author still to read: strippers decision (made by the coordinator), collier rule, page economy.
+
 ## Next
 
 1. A first full play of Act 1 in the shell when the areas, combat and art land; time Movement I
