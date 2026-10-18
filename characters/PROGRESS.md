@@ -429,3 +429,36 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
       pixels one pixel from a leg, and the check's own geo mapping lands that pixel on the leg. The
       mask is now eroded by 2 px: a pixel keeps shadow only if the floor test also holds 2 px to each side.
     - Still open: Strand's idle pole dips under the floor in the crowd (0.59 m of room ahead).
+64. DONE Weight in the fight (combat engineer's feel capture, coordinator 2026-10-17; author: the moves "will
+    need to feel incredible, and have weight to them"). Commit 8ae7507. Strips: out/feel-sheet.png
+    (proto/feel_sheet.mjs, driven through combat's own warp).
+    - Knockdown: a fall over combat's 48 frames (60 fps). It was a 5-frame snap, because the old clip
+      keyed the fall into startup and active phases that combat gives 0 frames. The new fall: struck at
+      0.1, the knees going at 0.28, falling at 0.45, ground impact at 0.55 (frame 26), a bounce at 0.64,
+      settled by 0.74. getup is re-keyed over its 50 frames. Both carry `grounded`, so the lowest point
+      stays on the floor throughout (no float as the body pitches).
+    - world.lunge and world.throw: keyed clips, where before the lunge played the walk and the throw
+      had no wind-up. Key times sit under combat's tell warp ((f / startup)^1.8). The lunge coils from
+      frame 4, drives from frame 12 (when combat's travel starts), loads at 28, strikes on the active
+      frames and stumbles in recovery. The throw dips for the stone as the tell starts (frame 6), is at
+      full draw by 17, holds, releases, then follows through. Combat frame counts are unchanged; the art
+      timing.json halves them.
+    - Hit reactions (runtime/feel.mjs): additive, from combat's fxOf contacts once a tick. The struck
+      body snaps away from the blow within 0.035 s and springs back over about 0.36 s with one
+      overshoot, scaled by power. A blow from the front throws the chest and head back, from a side
+      bends and turns the body away, from behind pitches it forward. The striker recoils on a heavy
+      blow (power 0.6 and up), a block or a catch. Limit: contacts on ticks the render skips are missed.
+    - Sidestep: lean 26 degrees, pelvis shift 20, root roll 20, a 0.26 m drop, and the weight carried
+      onto a deep landing knee with the trailing leg extended.
+    - Lamb's outline: when other figures are drawn over Lamb, Lamb's silhouette edge (2 px) is inked
+      over them in pale ink. It is found by reading the canvas over Lamb's box after the frame's figures.
+    - Visual check 6 of 6, with its control failing as it must.
+    - Follow-up (combat engineer, fxOf(W, since)): reactions now read every contact since the last drawn
+      tick, so skipped ticks still land. They age by combat's ticks and hold at the full snap while
+      the body is in hit-stop (fxOf's frozen). drawer_test 18 of 18.
+    - Before and after strips: stills/feel-compare/{lunge,throw,knockdown,hit-reaction}.png
+      (proto/feel_compare.py; before = combat's feel4, after = stills/feel-after, both seed 12 with
+      --stage). The fight diverges between builds, so the strips pair the same kind of moment, not the
+      same tick. Seen: the lunge drives low with the coil before it, where it used to walk; Lamb's fall
+      runs about 30 frames to the ground; Lamb's outline shows through the wardens. The throw strip is
+      small at this crop and reads poorly. The after capture predates the since and frozen change.

@@ -38,8 +38,8 @@ Object.entries(MOVES).forEach(([anim, m], r) => {
 {
   const a = cast.actor("warden", { tool: "w.stick" }), r = rows - 1; for (let i = 0; i < 20; i++) a.drive({ x: 0, z: 0, face: 0, pose: { anim: "guard", loop: true }, dt: 1 / 60 });
   const W0 = { tick: 1, events: [], byId: (id) => (id === "t" ? { x: 0, z: 0, face: 0 } : { x: 1.2, z: 0, face: Math.PI }) };
-  const R = makeReactions(() => ({ contacts: [{ kind: "hit", id: "t", by: "s", power: 1 }] })); R.read(W0); const t0 = performance.now() / 1000;
-  for (let col = 0; col < N; col++) { const now = t0 + col * 0.05; a.adjust(R.layer("t", 0, now), "hit"); blit(a.render(view(a), cw, ch, rig, { ss: 1 }), r, col); }
+  const R = makeReactions((W) => ({ contacts: W.tick === 1 ? [{ kind: "hit", id: "t", by: "s", power: 1, t: 1 }] : [], frozen: [] })); R.read(W0);
+  for (let col = 0; col < N; col++) { a.adjust(R.layer("t", 0), "hit"); blit(a.render(view(a), cw, ch, rig, { ss: 1 }), r, col); for (let k = 0; k < 3; k++) { W0.tick++; R.read(W0); } }   // every 3 ticks (0.05 s)
 }
 writePng(out, { width: W, height: H, data: toRgba8(img, W, H) });
 console.log(out);

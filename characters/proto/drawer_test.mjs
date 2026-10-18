@@ -54,6 +54,16 @@ console.warn = warn0;
     const hip = S[INDEX.pelvis].p[1], ank = (S[INDEX.footL].p[1] + S[INDEX.footR].p[1]) / 2;
     expect(Math.abs(hip - (seatY + 0.09)) < 0.01 && Math.abs(ank - h0) < 0.02, `${who} seated on a ${seatY} m seat: pelvis ${hip.toFixed(3)} m (seat + 0.09), ankles ${ank.toFixed(3)} m against ${h0.toFixed(3)} standing (thighs tilted ${fit.da.toFixed(0)} degrees)`);
   } }
+// hit reactions: a contact on a tick the render skipped still lands (fxOf(W, since)), and a body in hit-stop holds
+{ const { makeReactions } = await import("../runtime/feel.mjs");
+  const log = [{ kind: "hit", id: "t", by: "s", power: 0.9, t: 12 }], seen = [];
+  const fx = (W, since) => { seen.push(since); return { contacts: log.filter((c) => (since == null ? c.t === W.tick : c.t > since && c.t <= W.tick)), frozen: W.tick < 16 ? ["t"] : [] }; };
+  const W = { tick: 10, byId: (id) => (id === "t" ? { x: 0, z: 0, face: 0 } : { x: 1, z: 0, face: Math.PI }) }, R = makeReactions(fx);
+  R.read(W); W.tick = 14; R.read(W);   // ticks 11 to 14 drawn as one frame: the hit at 12 is in it
+  const held = R.layer("t", 0); W.tick = 15; R.read(W); const stillHeld = R.layer("t", 0); W.tick = 20; R.read(W); const moving = R.layer("t", 0);
+  expect(seen[1] === 10 && !!held, "a hit on a skipped tick (12, drawn at 14) still starts a reaction, read with fxOf(W, 10)");
+  expect(JSON.stringify(held) === JSON.stringify(stillHeld) && JSON.stringify(moving) !== JSON.stringify(held), "the reaction holds while the body is in hit-stop (frozen to tick 15) and moves on after");
+  expect(held.chest.bend < 0, `a blow from the front throws the chest back (bend ${held.chest.bend.toFixed(1)})`); }
 // solo: the visual check draws a figure alone and reads back its per-pixel depth
 { const ctx = new Proxy({}, { get: (t, k) => (k in t ? t[k] : () => {}), set: (t, k, v) => { t[k] = v; return true; } });
   globalThis.ImageData ||= class { constructor(w, h) { this.width = w; this.height = h; this.data = new Uint8ClampedArray(w * h * 4); } };
