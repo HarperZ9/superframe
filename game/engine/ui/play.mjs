@@ -113,6 +113,7 @@ function playApi(ctx, P, els, root) {
         if (P2) P2.hide([]);
         api.take(P.talk.afterFight());
       }, { cam: api.cam });
+      api.fight = F; // the live fight layer (tools reach its tickCam for frame-exact captures)
       // Lamb's momentum carries into the fight (no stop at the cut)
       const L0 = F.W.lamb && F.W.lamb(); if (L0 && S.taken && (v0[0] || v0[1])) { L0.vx = v0[0]; L0.vz = v0[1]; }
     },

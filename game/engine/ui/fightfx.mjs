@@ -9,18 +9,25 @@ import { fxOf } from "../combat/anim/fx.mjs";
 const INK = "rgba(26,17,24,", PAPER = "rgba(233,227,212,", LIFE = 0.28; // a contact mark lasts 0.28 s
 
 export function fightFx() {
-  let tells = new Map(), marks = [], cur = null;
+  let tells = new Map(), marks = [], cur = null; const trails = new Map(); // a thrown thing's last positions (its arc so far)
   // a stone, mud or rope: a small dark mark and a short trail behind it; a lantern: its light
   function thrown(g, T, screen) {
+    const live = new Set();
     for (const t of T) {
-      const p = screen([t.x, t.y, t.z]), q = screen([t.x - t.vx * 0.06, t.y, t.z - t.vz * 0.06]); if (!p) continue;
-      const r = Math.max(2, p.ppm * (t.use === "lantern" ? 0.12 : t.use === "rope" ? 0.06 : 0.07));
+      live.add(t.n); const hist = trails.get(t.n) || []; hist.push([t.x, t.y, t.z]); if (hist.length > 14) hist.shift(); trails.set(t.n, hist);
+      const p = screen([t.x, t.y, t.z]); if (!p) continue;
+      // big enough to see in its 0.3 s of flight (combat engineer's capture: 10 px at 1080p was too small)
+      const r = Math.max(5, p.ppm * (t.use === "lantern" ? 0.14 : t.use === "rope" ? 0.08 : 0.11));
+      // the arc it has flown, as a fading ink line, so the eye finds where it came from
+      g.lineCap = "round";
+      for (let i = 1; i < hist.length; i++) { const a = screen(hist[i - 1]), b = screen(hist[i]); if (!a || !b) continue; g.strokeStyle = `${INK}${(0.15 + 0.6 * (i / hist.length)).toFixed(2)})`; g.lineWidth = Math.max(1.5, r * 0.7 * (i / hist.length)); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); }
+
       if (t.use === "lantern") { const gr = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 6); gr.addColorStop(0, "rgba(255,196,120,0.55)"); gr.addColorStop(1, "rgba(255,196,120,0)"); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, r * 6, 0, Math.PI * 2); g.fill(); }
-      if (q) { g.strokeStyle = `${INK}0.55)`; g.lineWidth = Math.max(1, r * 0.8); g.lineCap = "round"; g.beginPath(); g.moveTo(q.x, q.y); g.lineTo(p.x, p.y); g.stroke(); }
       g.fillStyle = t.use === "mud" ? `${INK}0.75)` : `${INK}0.95)`; g.strokeStyle = `${PAPER}0.8)`; g.lineWidth = 1;
       g.beginPath(); g.arc(p.x, p.y, r, 0, Math.PI * 2); g.fill(); g.stroke();
       // where it will land is not drawn: the wind-up is the warning (48 frames)
     }
+    for (const n of [...trails.keys()]) if (!live.has(n)) trails.delete(n);
   }
   // a contact's mark at the struck body, sized by power (a catch the strongest), fading over LIFE
   function contact(g, m, screen) {

@@ -14,7 +14,7 @@ export function usePlateFor(G, cam, id) {
   const S = fightFromScene(G, pj, id);
   try {
     const A = plateArena(pj, geo.pos, geo.ids, { datum: pj.datum || null, fight: S.fight, cell: GROUND_CELL });
-    A.collision = hardenGround(A, pj, geo.pos, geo.ids, { margin: "hard" }); // props closed and a body's margin kept for fighters
+    A.collision = hardenGround(A, pj, geo.pos, geo.ids, { margin: "soft" }); // props and tops closed; the body margin marked (cell.margin), not closed, so a fight has the plate's whole walkable ground (coordinator, 2026-10-17)
     A.spawns = { lamb: snapClear(A, A.spawns.lamb), foes: A.spawns.foes.map((f) => snapClear(A, f)) }; // clear of what hardening closed
     C.usePlate(enc.area, A);
   }

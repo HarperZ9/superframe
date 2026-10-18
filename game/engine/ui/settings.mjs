@@ -22,7 +22,7 @@ function rows(ctx) {
     // ux: interface scale, shake, rumble, pause on focus loss (UI-SYSTEM section 9)
     { sect: "Reading", label: "Interface scale", help: "Size of every panel, apart from the text size", value: () => `${Math.round((p.uiScale || 1) * 100)} percent`, step: (d) => { p.uiScale = cycle(UI_SCALES, p.uiScale || 1, d); } },
     { sect: "Reading", label: "Portraits in conversation", help: "The painted face of whoever is speaking, at the top of the talk panel", value: () => onoff(p.portraits !== false), step: () => { p.portraits = p.portraits === false; } },
-    { sect: "Feel", label: "Screen shake", help: "How much the view and the strip move when a blow lands", value: () => p.shake, step: (d) => { p.shake = cycle(SHAKES, p.shake, d); } },
+    { sect: "Feel", label: "Camera shake", help: "How the camera answers a blow in a fight: full, reduced, or off. Exploring and talking always keep a calm camera", value: () => ({ on: "full", light: "reduced", off: "off" }[p.shake] || p.shake), step: (d) => { p.shake = cycle(SHAKES, p.shake, d); } },
     { sect: "Feel", label: "Controller rumble", help: "The pad answers blows, blocks and catches", value: () => onoff(p.rumble), step: () => { p.rumble = !p.rumble; } },
     { sect: "Feel", label: "Pause when the window loses focus", help: "Fights and runs stop while you are away", value: () => onoff(p.pauseOnBlur), step: () => { p.pauseOnBlur = !p.pauseOnBlur; } },
     { sect: "Tide Runs", label: "Tide Runs", help: "Off: the story takes another way round each run", value: () => onoff(!p.runsOff), step: () => { p.runsOff = !p.runsOff; } },

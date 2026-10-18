@@ -24,6 +24,9 @@ import { createDock, fightStrip } from "./strip.mjs";
 import { glyph } from "./bindings.mjs";
 import { figureDrawer } from "./figures.mjs";
 import { fightFx } from "./fightfx.mjs";
+import { fightCam } from "./fightcam.mjs";
+// the combat-impact treatment that ships (CAMERA.md, "Combat impacts", chosen by testing)
+export const IMPACT_DEFAULT = "both";
 import { groundAt, clearAhead } from "../world/plateworld.mjs";
 export { setFigureDrawer } from "./figures.mjs";
 // one drawer for fights, sneaks and runs (ui/runlayer.mjs and ui/sneaklayer.mjs draw through this)
@@ -63,24 +66,18 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
   const onBlur = () => { if (prefs.pauseOnBlur !== false) pause(); };
   addEventListener("blur", onBlur);
 
-  // Screen shake (LOOK-UNIFIED R5: at most 2 plate pixels, snapped; no zoom punch): the plate and
-  // the figures move together on a damped spring, the paper stays still. Off, light or on.
-  let shake = null;
+  // The camera's answer to a blow (ui/fightcam.mjs; CAMERA.md "Combat impacts"): directional shake by
+  // weight and a zoom punch on heavy hits and catches, the plate, its people and the fight together, the
+  // paper still. Treatment from ?impact=shake|punch|both (testing), else the one CAMERA.md chose.
+  const impactMode = (ctx.q && ctx.q.get && ctx.q.get("impact")) || IMPACT_DEFAULT;
+  const camfx = fightCam({ prefs, mode: impactMode, layers: () => [cam && cam.element && cam.element.parentElement, canvas, fxCanvas], view: () => { const r = root.getBoundingClientRect(); return { w: r.width, h: r.height }; } });
   function shakeStart(e) {
-    if (prefs.shake === "off" || document.documentElement.classList.contains("calm")) return;
-    const amp = Math.min(1, e.amp || 0.2) * (prefs.shake === "light" ? 0.5 : 1);
-    shake = { amp, t: 0, frames: e.frames || 8, dir: e.dir || [1, 0], k: (e.spring && e.spring.k) || 200, damp: (e.spring && e.spring.damp) || 16 };
+    const L = W.lamb && W.lamb(), at = L ? [L.x, L.z] : [0, 0], d = e.dir || [1, 0];
+    const a = fxScreen([at[0], 1, at[1]]), b = fxScreen([at[0] + d[0], 1, at[1] + (d[1] ?? 0)]);
+    camfx.blow(e, a && b ? [b.x - a.x, b.y - a.y] : [1, 0]);
   }
-  function shakeStep() {
-    const els = [cam && cam.element, canvas].filter(Boolean);
-    if (!shake) return;
-    shake.t += 1;
-    const w = Math.sqrt(shake.k), env = Math.exp(-shake.damp * shake.t / 120), v = shake.amp * env * Math.cos(w * shake.t / 60);
-    const zoom = cam && cam.frameNow && cam.frameNow() ? cam.frameNow().zoom : 1, px = Math.round(v * 2 * zoom); // whole plate pixels, at most 2
-    const [dx, dy] = Array.isArray(shake.dir) ? shake.dir : [1, 0], L = Math.hypot(dx, dy) || 1;
-    for (const el of els) el.style.translate = `${Math.round((px * dx) / L)}px ${Math.round((px * dy) / L)}px`;
-    if (shake.t > shake.frames * 3 || env < 0.05) { shake = null; for (const el of els) el.style.translate = ""; }
-  }
+  let lastTick = performance.now();
+  function shakeStep(dt = null) { const now = performance.now(), d = dt ?? Math.min(0.05, (now - lastTick) / 1000); lastTick = now; camfx.tick(d); }
   // Controller rumble for blows that touch Lamb (combat emits low and high motor strengths).
   function rumble(e) {
     if (prefs.rumble === false) return;
@@ -126,7 +123,9 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
     if (!cam) { g.fillStyle = "#1a1416"; g.fillRect(0, 0, canvas.width, canvas.height); }
     const far = (F) => (cam && cam.depthOf ? -cam.depthOf(stage.toWorld([F.x, F.z])) : F.z), order = [...W.fighters].sort((a, b) => far(a) - far(b)); // far ones first
     const now = performance.now(), dt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
-    fx.read(W); // this frame's tells, contacts and things in the air (combat/anim/fx.mjs)
+    const fr = fx.read(W); // this frame's tells, contacts and things in the air (combat/anim/fx.mjs)
+    camfx.tells(fr.tells.map((t) => { const F = W.fighters.find((x) => x.id === t.id), sp = F && fxScreen([F.x, 0, F.z]); return sp ? [sp.x, sp.y] : null; }).filter(Boolean));
+    for (const c of fr.contacts) { const sp = fxScreen([c.x, 1, c.z]); if (sp) camfx.contact(c, [sp.x, sp.y]); }
     for (const F of order) { const s = screenOf(F); if (!s) continue; const args = { ...s, face: F.face, down: F.fallen || F.out || F.yielded, W, reach: onPlate && s.at ? clearAhead(A, s.at, F.face) : null, tell: fx.tellOf(F.id) }; figureDrawer()(g, F, args); }
     if (fxCanvas.width !== canvas.width || fxCanvas.height !== canvas.height) { fxCanvas.width = canvas.width; fxCanvas.height = canvas.height; }
     const gf = fxCanvas.getContext("2d"); gf.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
@@ -136,7 +135,7 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
   function frame() { if (closed) return; if (!G.loop.paused) shakeStep(); draw(); raf = requestAnimationFrame(frame); }
   function finish() {
     if (closed || !ended) return; closed = true; clearTimeout(settle); cancelAnimationFrame(raf);
-    for (const off of offs) off(); unbind(); removeEventListener("blur", onBlur); shake = null; if (cam) { cam.frameOn(null); cam.element.style.translate = ""; }
+    for (const off of offs) off(); unbind(); removeEventListener("blur", onBlur); camfx.stop(); if (cam) cam.frameOn(null);
     G.loop.clockRate = 0; G.loop.paused = false;
     if (ctx.F && layer) ctx.F.pop(layer);
     strip.leave().then(() => root.remove());
@@ -148,5 +147,6 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
   }
   if (ctx.F) layer = ctx.F.push({ name: "fight", root, onAction: () => !pauseEl, onBack: () => { if (pauseEl) resume(); return true; } });
   raf = requestAnimationFrame(frame);
-  return { W, finish, draw, stage, strip, dock, pause, resume };
+  // tickCam(dt): the impact camera stepped by hand (tools: frame-exact captures with the loop held)
+  return { W, finish, draw, stage, strip, dock, pause, resume, tickCam: (dt) => camfx.tick(dt), camfx };
 }

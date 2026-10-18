@@ -12,6 +12,8 @@ test("fight fx: a stone in the air is drawn with a trail; a fighter's tell reach
   fx.read(w);
   const t = fx.tellOf("f#0"); assert.ok(t); assert.equal(t.kind, "throw"); assert.equal(t.answer, "throw");
   assert.equal(fx.tellOf("lamb"), null);
+  fx.draw(fakeG().g, screen, 1 / 60);
+  w.projectiles[0].x = 0.6; fx.read(w); // a frame later it has moved: its arc so far is drawn behind it
   const { g, calls } = fakeG(); fx.draw(g, screen, 1 / 60);
   assert.ok(calls.some((c) => c[0] === "arc"), "the stone is drawn");
   assert.ok(calls.some((c) => c[0] === "lineTo"), "with a trail");

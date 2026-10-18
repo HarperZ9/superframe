@@ -65,7 +65,7 @@ export function plateCam(box, ctx) {
   const G = ctx.G, img = h("canvas.platecam-img"), dark = h("canvas.platecam-img"), wrap = h("div.platecam", img, dark), card = h("div.placecard.sheet");
   dark.style.opacity = "0";
   let area = null, pj = null, geo = null, basis = null, cur = null, last = performance.now(), raf = 0, talking = false, focusAt = null, ready = false, stopped = false, boundsFn = null;
-  let layers = null, lensKey = "", fade = 0, token = 0;
+  let layers = null, lensKey = "", fade = 0, token = 0, manual = null; // manual: the camera eased by hand (frame-exact captures), else by real time
   const loaders = [];
   box.replaceChildren(card, wrap);
   // where there is no painted plate (hub districts), a card names the place
@@ -117,7 +117,7 @@ export function plateCam(box, ctx) {
     if (ready && layers) { const k = JSON.stringify(lensWeights(lens())); if (k !== lensKey) { lensKey = k; mixInto(img, layers, lensWeights(lens())); } }
     if (ready && wrap.clientWidth) {
       const t = target(), calm = document.documentElement.classList.contains("calm");
-      cur = calm ? t : ease(cur, t, dt);
+      if (manual == null) cur = calm ? t : ease(cur, t, dt); else if (manual > 0) { cur = calm ? t : ease(cur, t, manual); manual = 0; } // held: eased only by advance(dt)
       for (const el of [img, dark]) { el.style.width = `${plateW() * cur.zoom}px`; el.style.transform = `translate(${-cur.left * cur.zoom}px, ${-cur.top * cur.zoom}px)`; }
       const want = pj && pj.dark && powerOff() ? 1 : 0; fade += Math.sign(want - fade) * Math.min(Math.abs(want - fade), calm ? 1 : dt / 1.4); dark.style.opacity = fade.toFixed(3);
       wrap.dataset.zoom = cur.zoom.toFixed(3); wrap.dataset.left = cur.left; wrap.dataset.top = cur.top;
@@ -144,6 +144,9 @@ export function plateCam(box, ctx) {
     place: () => pj, arena: () => (geo && geo.arena) || null, geo: () => geo, area: () => area, darkness: () => fade,
     onLoad(fn) { loaders.push(fn); if (geo) fn(api); return () => { const i = loaders.indexOf(fn); if (i >= 0) loaders.splice(i, 1); }; },
     ready: () => ready && !!cur,
+    // frame-exact tools: hold(true) stops real-time easing; advance(dt) eases by dt on the next frame
+    hold(on) { manual = on ? 0 : null; },
+    advance(dt) { if (manual != null) manual += dt; },
     element: wrap,
     stop() { stopped = true; cancelAnimationFrame(raf); },
   };
