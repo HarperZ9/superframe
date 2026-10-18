@@ -8,14 +8,11 @@
 //          a guard break and a catch (combat's fx contacts)
 // Treatments (CAMERA.md records which ships): "shake", "punch", "both". Settings: Camera shake full,
 // reduced (40 %), off (none; also off in calm mode).
-// A shaking view never hides a telegraph: the shake is clamped so that no showing tell point comes
-// within 8 px of the view's edge, and a punch that would push a tell there is not played. (The first
-// rule, a flat 3 px cap while any tell showed, swallowed every light string in a two-opponent fight,
-// where a tell is nearly always up: combat engineer's feel5 capture, 2026-10-17. The layers move as
-// one, so a tell inside the view stays on its body; only the edge can hide it.)
+// A shaking view never hides a telegraph: while an opponent's tell shows, the shake is held to 3 px,
+// and a punch that would push a tell out of view is not played.
 //   const C = fightCam({ prefs, mode, layers, view, toScreen }); C.blow(e); C.contact(c, sp);
 //   C.tells(list of screen points); C.tick(dt) each frame; C.stop()
-const SHAKE_MAX = 18, SHAKE_F = 10, SHAKE_TAU = 0.06, SHAKE_LIFE = 0.25, PUNCH_T = 0.12, EDGE = 8;
+const SHAKE_MAX = 18, SHAKE_F = 10, SHAKE_TAU = 0.06, SHAKE_LIFE = 0.25, PUNCH_T = 0.12, TELL_CAP = 3;
 // The impact shake's tuning value (coordinator, 2026-10-17: the author judges the size in play): a share
 // of the amplitude above, read every frame, so a tool or the settings can change it live. Combat
 // engineer's strips at 1, 0.6 and 0.4 are in design/COMBAT-WORLD.md, "Shake size".
@@ -30,21 +27,6 @@ export function fightCam({ prefs = {}, mode = "both", layers = () => [], view = 
   const scale = () => view().h / 1080;
   function apply(dx, dy, z, o) {
     for (const el of layers()) { if (!el) continue; el.style.transformOrigin = o ? `${o[0]}px ${o[1]}px` : ""; el.style.translate = dx || dy ? `${dx.toFixed(1)}px ${dy.toFixed(1)}px` : ""; el.style.scale = z !== 1 ? z.toFixed(4) : ""; }
-  }
-  // the range of shake offsets v along d that keeps every tell point (after any punch) EDGE px inside the
-  // view; a tell already past the edge only forbids moves that push it further out
-  function shakeRoom(d, pu) {
-    const v = view(); let lo = -Infinity, hi = Infinity;
-    const z = pu ? 1 + pu.amount * Math.sin((Math.PI * Math.min(pu.t, PUNCH_T)) / PUNCH_T) : 1, o = pu ? pu.o : [0, 0];
-    for (const [x0, y0] of tellPts) {
-      const p = [o[0] + (x0 - o[0]) * z, o[1] + (y0 - o[1]) * z], max = [v.w - EDGE, v.h - EDGE];
-      for (let k = 0; k < 2; k++) {
-        if (!d[k]) continue;
-        let a = (EDGE - p[k]) / d[k], b = (max[k] - p[k]) / d[k]; if (a > b) [a, b] = [b, a];
-        lo = Math.max(lo, Math.min(a, 0)); hi = Math.min(hi, Math.max(b, 0));
-      }
-    }
-    return lo > hi ? [0, 0] : [lo, hi];
   }
   return {
     mode,
@@ -71,7 +53,7 @@ export function fightCam({ prefs = {}, mode = "both", layers = () => [], view = 
       if (shake) {
         shake.t += dt;
         const env = Math.exp(-shake.t / SHAKE_TAU), v = shake.amp * IMPACT.shakeScale * scale() * gain() * env * Math.cos(2 * Math.PI * SHAKE_F * shake.t);
-        const [lo, hi] = shakeRoom(shake.d, punch), vv = Math.max(lo, Math.min(hi, v));
+        const cap = tellPts.length ? TELL_CAP : Infinity, vv = Math.max(-cap, Math.min(cap, v));
         dx = shake.d[0] * vv; dy = shake.d[1] * vv;
         if (shake.t > SHAKE_LIFE) shake = null;
       }

@@ -94,18 +94,14 @@ Why both:
    body it struck. The two are short (0.25 s and 0.12 s) and fall inside the hit-stop and recoil,
    so the next exchange starts on a still view.
 
-A shaking view never hides a telegraph. The layers move as one, so a tell inside the view stays on
-its body; only the view's edge can hide it. The shake is therefore clamped so that no showing tell
-point comes within 8 px of the edge, and a punch that would push a tell there is skipped. Both rules
-are covered by `engine/tests/fightcam.test.mjs`.
+A shaking view never hides a telegraph. While an opponent's tell shows, the shake is clamped to
+3 px, and a punch that would push any tell point within 8 px of the view's edge is skipped. Both
+rules are covered by `engine/tests/fightcam.test.mjs`. In the test fight no tell showed during an
+impact, so the clamp was exercised by the tests only, not seen in a capture.
 
-Correction, same day. The first rule was a flat 3 px cap on the shake while any tell showed. The
-combat engineer's frame-by-frame capture (combat/capture/feel5) showed that in a two-opponent fight a
-tell is nearly always up, so every light string was held to the 3 px cap and Lamb's light strikes
-measured 1.2 to 1.4 px, inside the quiet-moment noise (median 1.2 px). The edge clamp replaced it. In
-the systems engineer's own test fight no tell showed during an impact under either rule (per-contact
-peaks 4.5, 6.4, 4.5 and 6.4 px both times), so the change is confirmed by the tests and awaits the
-combat engineer's recapture.
+Ruling, same day (coordinator): the 3 px cap stays. Light hits get their weight from the 4- and
+6-frame hit-stop and the body reactions, not from shake. An edge-only clamp (a22426f) was tried and
+taken back in the next commit; it had crossed with the ruling.
 
 Setting: **Camera shake** full, reduced (40 %), off. Off, and calm mode, turn both treatments off;
 hit-stop stays.
