@@ -66,12 +66,15 @@ export function loadEncounters(book) {
       opening: one(r, "opening") || "open", props: props.filter((p) => p.prop), talks,
       nodes: Object.fromEntries(["win", "yield", "fled", "down", "lose"].map((k) => [k, one(r, k) || null])) };
   }
-  const barks = { ...BARK_TEXT };
+  // every @bark record with a key is kept: a key's lines are its variants (sim/barks.mjs picks among
+  // them without repeating one in a fight until they run out); a key with no record keeps its placeholder
+  const authored = {};
   for (const r of Object.values(recs.bark || {})) {
     const key = one(r, "key"), text = one(r, "text");
     if (!BARK_KEYS.includes(key) || !text) { errors.push({ file: r.file, line: r.line, level: "warn", msg: `bark ${r.id}: needs key (${BARK_KEYS.join(", ")}) and text` }); continue; }
-    barks[key] = text;
+    (authored[key] ||= []).push(text);
   }
+  const barks = { ...Object.fromEntries(Object.entries(BARK_TEXT).map(([k, v]) => [k, [v]])), ...authored };
   return { encounters: out, errors, barks };
 }
 

@@ -5,6 +5,7 @@
 // where there is one, otherwise the key). A voice speaks at most once every `gap` frames, and
 // only one bark plays every `spacing` frames.
 import { angleTo, wrapAngle } from "./fighter.mjs";
+import { rand01 } from "../../core/rng.mjs";
 
 export const BARK_TEXT = {
   "footing.frost": "Frost under the left boot.",
@@ -46,8 +47,20 @@ const upwind = (W, L, F) => { const t = W.field.terms, d = Math.hypot(L.x - F.x,
 
 export const BARK_KEYS = ["footing.frost", "footing.wet", "breath.low", "tide.near", "smell.behind", "tell.grab", "dark.near", "pride.losing", "words.condolence", "words.formletter", "words.chit", "words.hearsay"];
 
+// A key's text is a line or a list of variants. Each bark picks one at random (the fight's seeded roll)
+// among the lines not yet spoken this fight; when every variant has been spoken the key starts afresh.
+export function pickLine(W, key, lines, used) {
+  if (!Array.isArray(lines)) return lines;
+  if (!lines.length) return key;
+  let left = lines.map((_, i) => i).filter((i) => !used.has(`${key}#${i}`));
+  if (!left.length) { for (let i = 0; i < lines.length; i++) used.delete(`${key}#${i}`); left = lines.map((_, i) => i); }
+  const i = left[Math.min(left.length - 1, Math.floor(rand01(W.seed, `bark:${key}:${W.tick}`) * left.length))];
+  used.add(`${key}#${i}`);
+  return lines[i];
+}
+
 export function createBarks({ gap = 600, spacing = 150, every = 15, text = BARK_TEXT } = {}) {
-  const last = {};
+  const last = {}, used = new Set();
   let lastAny = -1e9, tide = null;
   return (W) => {
     if (W.tick % every) return;
@@ -62,7 +75,7 @@ export function createBarks({ gap = 600, spacing = 150, every = 15, text = BARK_
     for (const r of RULES) {
       if (W.tick - (last[r.voice] ?? -1e9) < gap || (r.words && (lv[r.voice] ?? 0) < WORDS_FROM) || !r.when(W, L, s)) continue;
       last[r.voice] = lastAny = W.tick;
-      W.emit({ type: "bark", voice: r.voice, key: r.key, text: text[r.key] || r.key });
+      W.emit({ type: "bark", voice: r.voice, key: r.key, text: pickLine(W, r.key, text[r.key] || r.key, used) });
       return;
     }
   };

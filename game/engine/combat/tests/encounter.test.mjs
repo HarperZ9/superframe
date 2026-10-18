@@ -91,3 +91,17 @@ test("every @foe in the Act 1 file gets an archetype that suits its tool", async
     if (tool && /pole|boathook|hammer/.test(tool)) assert.equal(style, "holder", `${id} carries ${tool}`);
   }
 });
+
+test("every @bark record with a key is kept; a fight speaks each variant once before any repeats", async () => {
+  const { loadEncounters } = await import("../encounter.mjs");
+  const { pickLine } = await import("../sim/barks.mjs");
+  const rec = (id, key, text) => ({ id, file: "t.lwd", line: 1, kv: [{ key: "key", value: key }, { key: "text", value: text }] });
+  const book = { records: { bark: { a: rec("a", "words.chit", "one"), b: rec("b", "words.chit", "two"), c: rec("c", "words.chit", "three") } } };
+  const { barks } = loadEncounters(book);
+  assert.deepEqual(barks["words.chit"].sort(), ["one", "three", "two"]);
+  assert.equal(barks["breath.low"].length, 1, "a key without records keeps its placeholder");
+  const used = new Set(), W = { seed: 7, tick: 0 }, said = [];
+  for (let i = 0; i < 6; i++) { W.tick = i * 100; said.push(pickLine(W, "words.chit", barks["words.chit"], used)); }
+  assert.equal(new Set(said.slice(0, 3)).size, 3, "the first three are all different");
+  assert.equal(new Set(said.slice(3, 6)).size, 3, "then the variants start afresh, again without repeats");
+});
