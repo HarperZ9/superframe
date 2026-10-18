@@ -20,10 +20,16 @@ test("impact camera: a catch punches 2 to 4 % in and back within 120 ms; a light
   const z = +L[0].style.scale; assert.ok(z > 1.02 && z <= 1.04, `zoom ${z}`);
   C.tick(0.07); assert.equal(L[0].style.scale || "", "", "back by 130 ms");
 });
-test("impact camera: a showing tell holds the shake to 3 px and blocks a punch that would push it out of view", () => {
+test("impact camera: a tell near the edge stops the shake that would push it out, and blocks such a punch", () => {
   const { L, C } = make("both");
-  C.tells([[1915, 540]]); C.blow({ amp: 1 }, [1, 0]); C.tick(0.001); assert.ok(px(L) <= 3.01, `held to ${px(L)}`);
+  C.tells([[1915, 540]]); C.blow({ amp: 1 }, [1, 0]); C.tick(0.001); assert.equal(px(L), 0, `the tell is past the 8 px margin: no push outward`);
+  const n = make("shake"); n.C.tells([[1900, 540]]); n.C.blow({ amp: 1 }, [1, 0]); n.C.tick(0.001); assert.ok(Math.abs(px(n.L) - 12) < 0.2, `held to the 12 px of room, got ${px(n.L)}`);
   C.contact({ kind: "catch", power: 1 }, [100, 540]); C.tick(0.06); assert.equal(L[0].style.scale || "", "", "the tell at the edge would leave the view: no punch");
+});
+test("impact camera: a tell well inside the view does not damp the shake (light strings in a two-opponent fight)", () => {
+  const { L, C } = make("shake");
+  C.tells([[960, 540], [700, 600]]); C.blow({ amp: 0.15 }, [1, 0]); C.tick(0.001);
+  assert.ok(px(L) > 4.5, `a light blow keeps its ${px(L)} px`);
 });
 test("impact camera: reduced is 40 %, off is nothing", () => {
   const r = make("shake", { shake: "light" }); r.C.blow({ amp: 1 }, [1, 0]); r.C.tick(0.001); assert.ok(px(r.L) < 7.5 && px(r.L) > 6.5, `reduced ${px(r.L)}`);
