@@ -24,7 +24,8 @@ import { findContacts, applyHit } from "./hits.mjs";
 import { softTarget, riposteTarget, toggleLock, switchLock, keepLock, lamps, visible } from "./target.mjs";
 import { spawnProjectile, stepProjectiles } from "./projectiles.mjs";
 import { createBarks } from "./barks.mjs";
-import { COMPOSURE } from "../data/build.mjs";
+import { COMPOSURE, HAT_TALK } from "../data/build.mjs";
+import { HAT_VOICES } from "./barks.mjs";
 import { stepAwareness, takedownTarget, applyOpening } from "./stealth.mjs";
 import { installProps, interact, stepProps, parseProp, anchorProps } from "./props.mjs";
 import { hashStr } from "../../core/rng.mjs";
@@ -101,7 +102,7 @@ function heldPress(W, F) {
 function talkExit(W, F) {
   if (F.team !== "lamb" || !W.talk || F.fallen) return;
   const free = (W.defs[F.id].breaks || {}).hat8 && !W.freeTalkUsed;
-  const cost = free ? 0 : W.talk.cost ?? COMPOSURE.talk;
+  const hat = ((W.defs[F.id].levels || {}).hat ?? 0) >= HAT_TALK, cost = free ? 0 : W.talk.cost ?? (hat ? COMPOSURE.talkHat : COMPOSURE.talk);
   if (free) W.freeTalkUsed = true;
   if (F.composure < cost) { W.emit({ type: "nocomposure", id: F.id, action: "talk" }); return; }
   F.composure -= cost; W.talkTaken = W.talk;
@@ -167,6 +168,12 @@ function witness(W) {
     const regain = (W.defs[L0.id].tempo || {}).regain || 1, fill = (n) => { L0.composure = Math.min(L0.composureMax, L0.composure + n * regain); };
     if (e.type === "evade" && e.id === L0.id && (W.defs[L0.id].breaks || {}).nose8 && L0.act && W.moves[L0.act.id].kind === "dodge") { L0.st = Math.min(L0.stMax, L0.st + 1.5); W.emit({ type: "breathback", id: L0.id }); }
     if (L0 && e.type === "parry" && e.id === L0.id) fill(COMPOSURE.catch);
+    // held ground: a blow blocked or slipped while Lamb has not struck in the last second
+    const held = L0 && W.tick - (L0.struckAt ?? -1e9) > 60;
+    if (held && e.type === "block" && e.id === L0.id) fill(COMPOSURE.block);
+    if (held && e.type === "evade" && e.id === L0.id) fill(COMPOSURE.evade);
+    if (L0 && e.type === "bark" && HAT_VOICES.includes(e.voice)) fill(COMPOSURE.words);
+    if (L0 && e.type === "hit" && e.by === L0.id) L0.struckAt = W.tick;
     if (L0 && e.type === "hit" && e.by === L0.id) fill(e.move === "riposte" ? COMPOSURE.riposte : COMPOSURE.hit);
     if (e.type === "tell") W.telegraphsSeen = (W.telegraphsSeen || 0) + 1;
     if (e.type !== "hit" || e.by !== (W.lamb() || {}).id) continue;
@@ -226,11 +233,11 @@ function step(W, inputs) {
   stepProps(W);
   stepAwareness(W);
   for (const F of W.fighters) keepLock(W, F);
+  if (W.barks) W.barks(W); // before witness: a HAT voice's words fill Composure on the frame they are spoken
   witness(W);
   // the contact log for renderers (anim/fx.mjs fxOf since): the last 30 ticks of contacts, with where
   W.fxLog = (W.fxLog || []).filter((e) => e.t > W.tick - 30);
   for (const e of W.events) if (FX_KINDS.has(e.type)) { const T = W.byId(e.id); W.fxLog.push({ ...e, x: T ? T.x : null, z: T ? T.z : null }); }
-  if (W.barks) W.barks(W);
   judge(W);
   return W.events;
 }

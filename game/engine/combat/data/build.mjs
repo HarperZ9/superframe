@@ -88,7 +88,12 @@ export const TEMPER_STEP = { dmg: 0.08, poise: 0.06 };
 
 // Composure (19.2): filled by landing blows, catching and ripostes; spent on learned moves, tool
 // specials and talk exits.
-export const COMPOSURE = { hit: 0.5, catch: 1.5, riposte: 1, art: 3, talk: 2 };
+// Composure (19.2): filled by blows, catches, ripostes; and (director, 2026-10-17) by held ground and
+// words: each blow Lamb blocks or slips while not striking back (block, evade), each HAT-voice bark
+// (words). A talk exit costs talk, or talkHat when HAT is HAT_TALK or more. Fill amounts chosen so a
+// Tongue or Hands Lamb holding its ground about ten seconds can pay one exit (design/COMBAT-WORLD.md).
+export const COMPOSURE = { hit: 0.5, catch: 1.5, riposte: 1, art: 3, talk: 2, talkHat: 1, block: 0.35, evade: 0.35, words: 0.5 };
+export const HAT_TALK = 4;
 
 // Running: hold run for 1.55 times the walk, 0.6 Breath a second.
 export const RUN = { speed: 1.55, breath: 0.6 };

@@ -317,6 +317,53 @@ be earned in the fight, which is the design (19.2); whether that is too strict f
 director's call. Across Acts 1 and 2 (3 seeds, 57 fights a style; world-runs/fair-talk.txt) the
 exits end 7 to 21 fights a style in talk, and downs fall for Tongue from 15 to 10.
 
+## Talk exits earned by held ground (director, 2026-10-17)
+
+The director's decision (STATE.md, "talkers earn the talk exit with words and held ground"): content
+exits that wanted a blow landed now read `fight_struck >= 1 | fight_seconds >= 10`, and combat fills
+Composure from held ground and words. Built (data/build.mjs COMPOSURE, sim/world.mjs, sim/barks.mjs):
+- a blow Lamb blocks or slips (an evade) while it has not struck in the last second: +0.35 each;
+- each HAT-voice bark: +0.5. The four HAT voices speak only at level 4 or more, at most once each per
+  10 s: condolence when an opponent is hurt (under 70% Standing), form letter after 4 s of held ground,
+  chit while the guard is up and Lamb holds, hearsay with two or more opponents while Lamb holds. Their
+  lines are placeholders for @bark records (keys words.condolence, words.formletter, words.chit,
+  words.hearsay);
+- a catch still fills 1.5, a landed blow 0.5;
+- a talk exit costs 2 Composure, or 1 at HAT 4 or more.
+Chosen so a Tongue or Hands Lamb holding ground about ten seconds can pay one exit. Measured at 10 s into
+e.strippers: Tongue 2.8 to 3.2 Composure (cost 1); Hands 0.8 to 3.6 (cost 2), 4 of 6 able to pay.
+
+**e.strippers, per style**, 6 seeds, the pilot taking exits at its recorded rate (tools/exits.mjs;
+world-runs/exits-strippers.txt):
+
+| Style | Offered | Could pay while offered | Chose to take | Taken | Won | Down |
+|---|---|---|---|---|---|---|
+| Fist | 6 | 5 | 4 | 4 | 1 | 1 |
+| Tongue | 6 | 6 | 6 | 6 | 0 | 0 |
+| Shadow | 6 | 6 | 3 | 3 | 0 | 3 |
+| Hands | 6 | 5 | 2 | 1 | 1 | 4 |
+| Eye | 6 | 5 | 4 | 4 | 0 | 2 |
+
+Offered in every fight, at 2.5 to 10 s. Tongue takes every one it is offered, and every one goes through.
+The other styles' takes follow the pilot's half-rate roll; one Hands Lamb chose the exit and went down
+before it could pay. Before the change Tongue talked out of 2 of 6 and went down in 4.
+
+## The Ropewalk on the authored record
+
+The director authored the strand and the coil (content/ropewalk/place.json, 96864fd). Re-run on the
+authored record against the same plate stripped, five styles, two Ropewalk fights, 4 seeds, 40 fights
+a row (tools/ropewalk-authored.mjs; world-runs/ropewalk-authored.txt):
+
+| | Won | Seconds | Standing lost | Lamb tripped |
+|---|---|---|---|---|
+| Fair, bare | 37 | 9.9 | 0.28 | 0 |
+| Fair, authored | 37 | 10.6 | 0.30 | 3 |
+| Strongest kiter, bare | 20 | 44.3 | 0.57 | 0 |
+| Strongest kiter, authored | 17 | 52.6 | 0.56 | 18 |
+
+The strand does what it was placed to do: the kiter stumbles on it 18 times in 40 fights, wins 3 fewer
+and takes 8 s longer; fair play is untouched in wins and pays 0.7 s and 3 stumbles.
+
 ## What this does not prove
 
 - A scripted kiter with perfect reactions is not a person. It dodges thrown stones it can see coming
