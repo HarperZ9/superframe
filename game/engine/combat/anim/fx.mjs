@@ -9,7 +9,7 @@
 //                                                         "lunge" or "throw" when it is the world's answer to
 //                                                         kiting; k 0..1 through the tell; unstoppable when it
 //                                                         cannot be caught or blocked (the drag, the rope)
-//     contacts: [{ kind, id, by, x, z, power }]          this frame's contacts: hit | catch | block | guardbreak |
+//     contacts: [{ kind, id, by, x, z, power, t }]       contacts since `since`: hit | catch | block | guardbreak |
 //                                                         evade, at the struck body; power 0..1 for size
 //     frozen:   [id]                                      bodies in hit-stop this frame (hold their pose)
 //   }
@@ -18,7 +18,10 @@
 const ANSWERS = { "world.lunge": "lunge", "world.throw": "throw" };
 const CONTACT = { hit: "hit", parry: "catch", block: "block", guardbreak: "guardbreak", evade: "evade" };
 
-export function fxOf(W) {
+// fxOf(W, since): contacts of every tick after `since` (default: this tick only), from the world's
+// short contact log (sim/world.mjs keeps the last 30 ticks), so a renderer that draws less often than
+// the simulation steps misses none. Each contact carries its tick `t`.
+export function fxOf(W, since = W.tick - 1) {
   const thrown = W.projectiles.map((P) => ({ n: P.n, use: P.use, x: P.x, z: P.z, y: P.y, vx: P.vx, vz: P.vz }));
   const tells = [];
   for (const F of W.fighters) {
@@ -28,11 +31,11 @@ export function fxOf(W) {
     tells.push({ id: F.id, kind: m.tell.kind, answer: ANSWERS[m.id] || null, k: (F.act.f - m.tell.at[0]) / Math.max(1, m.tell.at[1] - m.tell.at[0]), unstoppable: m.parryable === false && m.blockable === false });
   }
   const contacts = [];
-  for (const e of W.events) {
+  for (const e of (W.fxLog || W.events).filter((x) => (x.t ?? W.tick) > since)) {
     const kind = CONTACT[e.type]; if (!kind) continue;
     const T = W.byId(e.id); if (!T) continue;
     const power = kind === "hit" ? Math.min(1, ((e.dmg || 0) + (e.poise || 0) * 0.5) / 3) : kind === "catch" || kind === "guardbreak" ? 1 : kind === "block" ? 0.4 : 0.2;
-    contacts.push({ kind, id: e.id, by: e.by, x: T.x, z: T.z, power: +power.toFixed(2) });
+    contacts.push({ kind, id: e.id, by: e.by, x: e.x ?? T.x, z: e.z ?? T.z, power: +power.toFixed(2), t: e.t ?? W.tick });
   }
   const frozen = W.fighters.filter((F) => F.hitstop > 0).map((F) => F.id);
   return { thrown, tells, contacts, frozen };

@@ -41,3 +41,15 @@ test("fxOf lists thrown things, tells with the world's answers, contacts and fro
   assert.ok(hit && hit.kind === "hit" && hit.power > 0, "the stone's contact is listed");
   assert.ok(fx.frozen.includes("lamb"), "the struck body holds in hit-stop");
 });
+
+test("fxOf(W, since) returns contacts from ticks a renderer skipped", async () => {
+  const { fxOf } = await import("../anim/fx.mjs");
+  const W = makeWorld({ brains: false, foes: [["holder", [5.2, 8]]], lambAt: [4, 8] });
+  W.fighters[0].face = 0; W.fighters[0].lock = "foe0";
+  const t0 = W.tick; let seen = null;
+  for (let i = 0; i < 40 && !seen; i++) { W.step(i === 0 ? { lamb: { press: ["light"] } } : {}); seen = W.events.find((e) => e.type === "hit"); }
+  assert.ok(seen, "the light strike lands");
+  W.step({}); W.step({});
+  assert.equal(fxOf(W).contacts.length, 0, "this tick alone: nothing");
+  assert.ok(fxOf(W, t0).contacts.some((c) => c.kind === "hit" && c.t === seen.t), "since the start: the hit, with its tick");
+});

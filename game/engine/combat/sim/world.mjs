@@ -32,6 +32,8 @@ import { engaged } from "./ground.mjs";
 import { retreatingFrom, apart } from "../ai/pursuit.mjs";
 import { WORLD, OFF } from "../data/world.mjs";
 
+const FX_KINDS = new Set(["hit", "parry", "block", "guardbreak", "evade"]);
+
 export function createWorld({ G, arena, fighters, seed = 1, minutesPerFrame = 0, envEvery = 30, record = false, barks = true, barkText = null, opening = "open", lastSeen = null, props = [], limitFrames = 0, endEmpty = false }) {
   const table = { ...COMMON };
   for (const f of fighters) Object.assign(table, f.moves || {});
@@ -225,6 +227,9 @@ function step(W, inputs) {
   stepAwareness(W);
   for (const F of W.fighters) keepLock(W, F);
   witness(W);
+  // the contact log for renderers (anim/fx.mjs fxOf since): the last 30 ticks of contacts, with where
+  W.fxLog = (W.fxLog || []).filter((e) => e.t > W.tick - 30);
+  for (const e of W.events) if (FX_KINDS.has(e.type)) { const T = W.byId(e.id); W.fxLog.push({ ...e, x: T ? T.x : null, z: T ? T.z : null }); }
   if (W.barks) W.barks(W);
   judge(W);
   return W.events;
