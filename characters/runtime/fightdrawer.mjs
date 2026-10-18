@@ -23,6 +23,7 @@ import * as FOLK from "../cast/folk.mjs";
 import { plateCtx } from "./platectx.mjs";
 import { exposure } from "./expose.mjs";
 import { queueShadow } from "./groundshadow.mjs";
+import { makeReactions, queueLambOutline } from "./feel.mjs";
 import { STAND } from "../anim/stances.mjs";
 import { INDEX } from "../rig/skeleton.mjs";
 const CAST = { lamb, fennick, marrow, warden, salvor, keel, sabine, wenna, merrow, gorm: GORM, hobb: HOBB, fewell: FEWELL, strand: STRAND, bright: BRIGHT, coe: COE, ...Object.fromEntries(Object.entries(FOLK).map(([k, m]) => [k.toLowerCase(), m])) };
@@ -40,6 +41,9 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
   const timing = await (await fetch(base + "anim/timing.json")).json();
   let combat = null; try { const r = await fetch(combatUrl); if (r.ok) combat = await r.json(); } catch (e) { console.warn("fight figures: combat timing not loaded:", e.message); }
   const cast = createCast({ timing, combat, members: MEMBERS }), actors = new Map(), tables = {};
+  // combat's per-frame contacts (anim/fx.mjs, pure) drive the hit reactions; without it, none
+  let fxOf = null; try { ({ fxOf } = await import(combatUrl.replace(/out\/timing\.combat\.json$/, "anim/fx.mjs"))); } catch (e) { console.warn("fight figures: no combat fx, so no hit reactions:", e.message); }
+  const reactions = makeReactions(fxOf);
   const clipsFor = (who) => tables[who] || (tables[who] = cast.clips(who));
   const cosE = Math.cos((camera.elevDeg * Math.PI) / 180);
 
@@ -235,6 +239,8 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     a.drive({ x: F.x, z: F.z, face: face ?? F.face, pose: { ...pose, anim: down && !pose.anim ? "knockdown" : pose.anim }, dt: 1 / 60 });
     if (seated) { if (args.seatY != null) fitSeat(a, args.seatY); } else if (a.seatFit) fitSeat(a, null);
     a.seen = performance.now();
+    // weight on contact: the struck body snaps away from the blow, a heavy striker recoils (runtime/feel.mjs)
+    if (W && W.byId) { reactions.read(W); const proto = Object.getPrototypeOf(F), cid = proto && Object.prototype.hasOwnProperty.call(proto, "id") ? proto.id : F.id; a.adjust(reactions.layer(cid, face ?? F.face ?? 0), "hit"); }
     const toolK = keepToolClear(a, args.room || args.reach, args.face ?? face ?? null);
     (globalThis.__lwToolStats ||= {})[F.id] = { room: args.room || args.reach, wrist: [+(a.clear?.b || 0).toFixed(1), +(a.clear?.s || 0).toFixed(1)], target: [a.clear?.tb, a.clear?.ts], k: +toolK.toFixed(1), pos: a.pos.map((v) => +v.toFixed(2)), ...(globalThis.__lwFigureDebug ? (() => { const w = a.weapon && a.weapon(), S = a.skeleton(), r3 = (v) => v.map((q) => +q.toFixed(2)); return { tip: w && r3(w.tip), butt: w && w.butt && r3(w.butt), handL: r3(a.toWorld(S[INDEX.handL].p)), handR: r3(a.toWorld(S[INDEX.handR].p)), head: r3(a.toWorld(S[INDEX.head].p)) }; })() : {}) };   // read by proto/markup.mjs
     // render in the actor's own frame at the plate camera's orientation and scale, feet on (x, y)
@@ -290,6 +296,7 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
         for (let dy = -wpx; dy <= wpx && !hit; dy++) for (let dx = -wpx; dx <= wpx; dx++) { const X2 = px + dx, Y2 = py + dy; if (X2 < 0 || Y2 < 0 || X2 >= r.w || Y2 >= r.h) continue; if (src[(Y2 * r.w + X2) * 4 + 3] > 200) { hit = src[(Y2 * r.w + X2) * 4 + 3]; break; } }
         if (hit) { d[i * 4] = rc[0]; d[i * 4 + 1] = rc[1]; d[i * 4 + 2] = rc[2]; d[i * 4 + 3] = Math.round(170 * hit / 255); } }
     }
+    if (!args.solo && (who === "lamb" || F.team === "lamb")) queueLambOutline(g, { ox, oy, w: r.w, h: r.h, rgba: new Uint8ClampedArray(d) });   // Lamb's edge inked through anyone drawn over Lamb
     const c = (drawFighter.scratch ||= new OffscreenCanvas(8, 8)); c.width = r.w; c.height = r.h; c.getContext("2d").putImageData(img, 0, 0);
     g.save();
     if (look.has("pool")) { const gr = g.createRadialGradient(x, y, 0, x, y, 0.9 * truePpm); gr.addColorStop(0, "rgba(255,220,170,0.28)"); gr.addColorStop(1, "rgba(255,220,170,0)"); g.save(); g.scale(1, Math.sin(cam.elevDeg * D2R)); g.fillStyle = gr; g.beginPath(); g.arc(x, y / Math.sin(cam.elevDeg * D2R), 0.9 * truePpm, 0, Math.PI * 2); g.fill(); g.restore(); }

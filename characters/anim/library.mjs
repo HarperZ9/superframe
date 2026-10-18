@@ -8,8 +8,9 @@ import { COMBAT } from "./combat.mjs";
 import { FRAY, GUARDS, STYLE_OF } from "./fray.mjs";
 import { SPECIALS } from "./specials.mjs";
 import { ART_CLIPS } from "./arts.mjs";
+import { REACT } from "./react.mjs";
 
-export const CLIPS = Object.fromEntries([loco.idle, loco.walk, loco.run, loco.turn, loco.stop, loco.talkA, loco.talkB, loco.talkC, loco.examine, loco.sit, loco.wade, loco.turnRun, ...COMBAT, ...FRAY].map((c) => [c.name, c]));
+export const CLIPS = Object.fromEntries([loco.idle, loco.walk, loco.run, loco.turn, loco.stop, loco.talkA, loco.talkB, loco.talkC, loco.examine, loco.sit, loco.wade, loco.turnRun, ...COMBAT, ...FRAY, ...REACT].map((c) => [c.name, c]));   // REACT last: it replaces the older knockdown, getup and sidestep
 // Strike shaping, for every phased attack: the swing launches before the hit window opens (the end
 // of the windup is already a third of the way into the swing, the held windup pose moves back to
 // 70 % of startup), and it carries through after it closes (a follow-through key past the contact

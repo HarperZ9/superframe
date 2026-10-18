@@ -265,7 +265,7 @@ export function createCast({ timing, combat = null, members }) {
       body() { const S = self.skeleton(); return { a: self.toWorld(S[INDEX.pelvis].p), b: self.toWorld(S[INDEX.neck].p), radius: info.radius || 0.3 }; },
       render(view, w, h, rig, { ss = 1, bands = 4, tone = null, shadows = true, smear = true } = {}) {
         const V = spriteView(view, { w: w * ss, h: h * ss, height: view.height, centre: view.centre }), G = makeG(w * ss, h * ss), m = built(who, lodFor((h * ss) / view.height), st.tool);
-        const pose = self.pose(), S = skin(m.M, m.B, solveFigure(C, m, pose, self.locksLocal())), dy = groundShift(m.M, S, PROP_IDS, lying(pose)), pl = placeFn(st.facing, [st.pos[0], st.pos[1] + dy, st.pos[2]]);
+        const pose = self.pose(), S = skin(m.M, m.B, solveFigure(C, m, pose, self.locksLocal())), dy = groundShift(m.M, S, PROP_IDS, lying(pose) || !!(L.clips[st.clip] && L.clips[st.clip].grounded)), pl = placeFn(st.facing, [st.pos[0], st.pos[1] + dy, st.pos[2]]);   // a fall or get-up (clip.grounded) keeps its lowest point on the floor throughout
         const hid = hiddenOf(pose, m); rasterize(V, m.M, S, G, pl, hid);
         // smear: when the tool sweeps far in one frame (a fast strike's two-frame hit window), draw it
         // again at points between last frame and this one, so the swing reads as an arc, not a jump

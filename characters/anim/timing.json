@@ -166,6 +166,18 @@
     "wade": {
       "frames": 60,
       "speed": 0.8
+    },
+    "world.lunge": {
+      "startup": 14,
+      "active": 3,
+      "recovery": 13,
+      "_note": "combat's world.lunge (28/6/26 at 60 fps) halved; combat's warp governs"
+    },
+    "world.throw": {
+      "startup": 24,
+      "active": 1,
+      "recovery": 18,
+      "_note": "combat's world.throw (48/1/36 at 60 fps) halved; combat's warp governs"
     }
   },
   "fennick": {
