@@ -61,10 +61,28 @@ Outputs are kept in world-runs/ (out/ is ignored by git) (`*-before.txt` predate
    - systems engineer told (terrainAt, stepDrop, ledgeClear, beams, spawn lips, BEAM_RATE import).
    - design/COMBAT-WORLD.md written: rules, reasons, results, ablation, limits.
    Tests: combat 106 of 106; engine and combat 242 of 242.
-6. OPEN
-   - No plate has authored hazards yet (place.json "terrain" agreed, empty); nets and ropes are tested on
-     a synthetic arena only. The art lead or plate owner would add them.
-   - The clock and its answers raise a kiter's Standing loss but do not lower its wins at 2 to 3 seeds.
+6. DONE Coordinator, 2026-10-17 (accepted; Hands spacing left alone; strippers' exit visible; lead with
+   the clock's cost):
+   - Burning Mother: tools/beam.mjs on the quay and floor fights (quay2.wardens plus four Act 1), 100
+     fights a row. Lit only, the beam changed nothing; added: a body in an arm is seen within 12 m
+     through fog (WORLD.beam.reveal). Fog kiter: 12 wins, 0.05 lost with Mother dark; 27, 0.20 burning.
+   - Hazards: nets and ropes trip only a body moving fast with its eyes behind it (the first rule helped
+     kiters: chasers tripped). Proposal for the director: design/HAZARDS-PROPOSAL.md (quay, Spit,
+     Ropewalk), measured with tools/hazards.mjs; the Ropewalk strand is the one that bites.
+   - Presentation: anim/fx.mjs fxOf(W) (thrown, tells with answers, contacts, frozen); the systems
+     engineer draws it (ui/fightfx.mjs, 195c099) and the character lead gave tells distinct shapes.
+   - Found by the shell probe and fixed: sight treated a 0.5 m bench as a wall (plate tops, field
+     sightClear; the systems engineer applied the same rule to sneaks, 55e76ee); "unreachable" meant "no
+     straight line" (now: no path); stones stopped at benches.
+   - Feel capture in the shell at 1080p, frame-exact (tools/feel_capture.py, showcase.mjs, feel_review.py);
+     findings in design/COMBAT-WORLD.md "Feel". Talk exit visible at 5.0 s.
+   Tests: 108 combat; 248 with the engine's at 8c7fbc8 (the engine has moved since).
+7. OPEN
+   - Feel items 1 to 7 in design/COMBAT-WORLD.md, owners named (camera shake under LOOK-UNIFIED R5 is the
+     first, a decision for the art direction and the author).
+   - In unstaged shell runs the chase blow catches a fleeing Lamb at 2.3 to 2.7 s, before the 3.5 s clock,
+     so lunges and stones rarely appear live on the quay; the readability capture staged them.
+   - The clock and its answers raise a kiter's cost but not its losses (88 kiting wins on, 75 off).
    - Brains that path round walls cost fair Tongue about 7 of 114 wins and spread 5 of 140.
-   - e.strippers: no fair win for Tongue, Shadow, Eye (before and after); the talk exit gets every style out.
-   - The beam is untested by measurement (no measured fight under a burning Mother).
+   - The shell's fight grid (0.25 m, scene-laid) covers less of the quay than the plate's marks (531 m2
+     against 646 m2 at the same cell): worth a look by the systems engineer.

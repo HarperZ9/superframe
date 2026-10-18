@@ -21,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 GAME = HERE.parents[2]
 FRAME_MS = 1000 / 60
 
-SETUP = """async ([style, seed]) => {
+SETUP = """async ([style, seed, stage]) => { window.__stage = !!stage;
   const c = window.__lw; c.newGame(11); c.G.create({ archetype: 'p.wader', enter: false });
   c.G.setPlace('quay'); c.G.state.pos = [16.1, 0, -2.9]; c.G.state.flags.push('met.crake'); c.play();
   if (c.play.P.talk) { c.play.P.talk = null; c.play.P.beat = null; c.play.render(); }
@@ -30,7 +30,14 @@ SETUP = """async ([style, seed]) => {
   const C = c.G.ext.combat, start = C.start.bind(C), step = C.step.bind(C), show = createShowcase();
   window.__show = show; window.__ev = [];
   C.start = (id, o) => { const W = start(id, { ...(o || {}), lamb: STYLES[style] }); W.seed = seed >>> 0; return W; };
-  C.step = (input) => { const W = C.current && C.current.W; const ev = step(W && !W.result ? show(W) : input);
+  C.step = (input) => { const W = C.current && C.current.W;
+    // --stage: a staged trigger for the readability check, labelled as such in capture.json: from 1.5 s
+    // into the flight until one lunge and one stone have fired (or 8 s), every opponent's kiting clock
+    // is held at its threshold, so the answers fire wherever the rules allow (distance, sight, a straight
+    // line, cooldowns); everything else is the live fight
+    const answered = (k) => (window.__ev || []).some((e) => e.type === 'punish' && e.how === k);
+    if (window.__stage && W && W.tick >= 90 && W.tick < 480 && !(answered('lunge') && answered('throw'))) for (const F of W.fighters) if (F.team !== 'lamb' && F.mem) { F.mem.pur = F.mem.pur || { clock: 0, cut: 0, thrown: 0, lunged: 0, chase: 0, rest: 0 }; F.mem.pur.clock = Math.max(F.mem.pur.clock, 210); window.__staged = (window.__staged || 0) + 1; }
+    const ev = step(W && !W.result ? show(W) : input);
     for (const e of ev) if (['parry','evade','punish','hit','flinch','stagger','knockdown','block','guardbreak','weakpoint','ledgefall','talk.offer','trip','move'].includes(e.type)) window.__ev.push(e); return ev; };
   return true; }"""
 
@@ -55,7 +62,7 @@ def kinds(ev):
     return k
 
 
-def session(pw, port, style, seed, out=None, max_frames=60 * 60):
+def session(pw, port, style, seed, out=None, max_frames=60 * 60, stage=False):
     b = pw.chromium.launch(headless=True, args=["--disable-gpu", "--disable-gpu-compositing", "--disable-gpu-rasterization"])
     ctx = b.new_context(viewport={"width": 1920, "height": 1080})
     pg = ctx.new_page(); logs = []
@@ -77,7 +84,7 @@ def session(pw, port, style, seed, out=None, max_frames=60 * 60):
             time.sleep(step / 1000)
         return False
     if not until("document.documentElement.dataset.ready === '1' && !!window.__lw", 240): raise RuntimeError("shell not ready: " + " | ".join(logs[-5:]))
-    pg.evaluate(SETUP, [style, seed])
+    pg.evaluate(SETUP, [style, seed, stage])
     if not until("(() => { const p = window.__lw.play; return p && p.cam.ready() && !!p.cam.arena(); })()", 300): raise RuntimeError("plate not ready")
     time.sleep(0.5)
     pg.evaluate("window.__crank(0)"); time.sleep(0.2)  # from here the page moves only when cranked
@@ -105,10 +112,10 @@ def session(pw, port, style, seed, out=None, max_frames=60 * 60):
             if out:
                 for _ in range(90): pg.evaluate("window.__crank(1000 / 60)"); frames += 1; pg.screenshot(path=str(fdir / f"f{frames:05d}.png"))
             break
-    ev = pg.evaluate("window.__ev"); log = pg.evaluate("window.__show ? [] : []")
+    ev = pg.evaluate("window.__ev"); staged = pg.evaluate("window.__staged || 0")
     res = pg.evaluate(STATE)
     ctx.close(); b.close()
-    return {"seed": seed, "frames": frames, "result": res["result"], "kinds": sorted(kinds(ev)), "events": ev, "firsts": firsts, "offer": offer_seen, "track": track, "console": [l for l in logs if "error" in l.lower()][:20]}
+    return {"seed": seed, "frames": frames, "result": res["result"], "kinds": sorted(kinds(ev)), "events": ev, "firsts": firsts, "offer": offer_seen, "track": track, "staged": staged, "console": [l for l in logs if "error" in l.lower()][:20]}
 
 
 def main():
@@ -117,6 +124,7 @@ def main():
     ap.add_argument("--style", default="shadow")
     ap.add_argument("--seeds", default="11,12,13,14,15,16")
     ap.add_argument("--port", type=int, default=8761)
+    ap.add_argument("--stage", action="store_true", help="staged trigger for the kiting answers (see SETUP)")
     a = ap.parse_args()
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     srv = subprocess.Popen(["node", str(GAME / "serve.mjs"), "--port", str(a.port)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -127,17 +135,17 @@ def main():
         with sync_playwright() as pw:
             chosen, tries = None, []
             for s in [int(x) for x in a.seeds.split(",")]:
-                r = session(pw, a.port, a.style, s)
+                r = session(pw, a.port, a.style, s, stage=a.stage)
                 tries.append({"seed": s, "kinds": r["kinds"], "result": r["result"], "console": r["console"]}); print("dry", s, r["kinds"], r["result"], flush=True)
                 if need <= set(r["kinds"]): chosen = s; break
             if chosen is None: chosen = max(tries, key=lambda t: len(need & set(t["kinds"])))["seed"]
-            r = session(pw, a.port, a.style, chosen, out=out)
+            r = session(pw, a.port, a.style, chosen, out=out, stage=a.stage)
     finally:
         srv.terminate()
     import imageio_ffmpeg
     ff = imageio_ffmpeg.get_ffmpeg_exe()
     subprocess.run([ff, "-y", "-loglevel", "error", "-framerate", "60", "-i", str(out / "frames" / "f%05d.png"), "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", str(out / "fight.mp4")], check=True)
-    rec = {"style": a.style, "seed": chosen, "dry": tries, **{k: r[k] for k in ("frames", "result", "kinds", "firsts", "offer", "console")}, "events": r["events"], "track": r["track"]}
+    rec = {"style": a.style, "seed": chosen, "dry": tries, **{k: r[k] for k in ("frames", "result", "kinds", "firsts", "offer", "console")}, "events": r["events"], "track": r["track"], "staged": r["staged"]}
     (out / "capture.json").write_text(json.dumps(rec, indent=1), encoding="utf-8")
     print(json.dumps({k: rec[k] for k in ("style", "seed", "frames", "result", "kinds", "firsts", "offer", "console")}))
 

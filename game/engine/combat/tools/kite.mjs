@@ -21,10 +21,12 @@ export { STYLES } from "../data/styles.mjs";
 import { STYLES } from "../data/styles.mjs";
 
 const plateCache = {};
+// the shell fights on a finer grid (world/plateworld.mjs GROUND_CELL 0.25 m); --cell 0.25 measures on it
+const CELL = (() => { const i = process.argv.indexOf("--cell"); return i > 0 ? +process.argv[i + 1] : 0.5; })();
 async function plateFor(area) {
   if (area in plateCache) return plateCache[area];
   const plate = PLATE_OF[area] || area, place = join(CONTENT, plate, "place.json");
-  plateCache[area] = existsSync(place) ? await loadPlateArena(CONTENT, plate, { fightId: area }) : null;
+  plateCache[area] = existsSync(place) ? await loadPlateArena(CONTENT, plate, { fightId: area, cell: CELL }) : null;
   return plateCache[area];
 }
 
@@ -72,7 +74,7 @@ if (process.argv[1] && process.argv[1].endsWith("kite.mjs") && process.argv.incl
     console.log(style.padEnd(7), "fair", JSON.stringify(fair)); console.log(style.padEnd(7), "best kite", JSON.stringify(b.v), JSON.stringify(kite));
   }
 } else if (process.argv[1] && process.argv[1].endsWith("kite.mjs")) {
-  const seeds = +(process.argv.find((a) => /^\d+$/.test(a)) || 3), rows = process.argv.includes("--rows"), detail = process.argv.includes("--detail");
+  const seeds = +(process.argv.find((a, i) => /^\d+$/.test(a) && process.argv[i - 1] !== "--cell") || 3), rows = process.argv.includes("--rows"), detail = process.argv.includes("--detail");
   for (const style of Object.keys(STYLES)) for (const policy of ["fair", "kite"]) {
     const { per, ...sum } = await runPolicy(style, policy, { seeds, rows });
     console.log(style.padEnd(7), policy.padEnd(5), JSON.stringify(sum));

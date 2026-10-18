@@ -3,7 +3,7 @@ quarter-speed reel of each named move, and contact sheets, so feel can be judged
 
     python game/engine/combat/tools/feel_review.py <capture dir>
 
-Writes close.mp4 (800 x 450 around Lamb, shown at 1600 x 900, 60 fps), moves-slow.mp4 (each move
+Writes close.mp4 (480 x 270 around Lamb, shown at 960 x 540, 60 fps), moves-slow.mp4 (each move
 from 20 frames before to 40 after, at quarter speed, labelled), sheet-<move>.png (every second frame
 of the same span), and review.json (frame numbers used). Reads frames/ and capture.json only.
 """
@@ -11,7 +11,7 @@ import json, subprocess, sys
 from pathlib import Path
 from PIL import Image, ImageDraw
 
-W, H = 800, 450
+W, H = 480, 270
 
 
 def main():
@@ -22,7 +22,7 @@ def main():
     centre, cx, cy = {}, 960.0, 540.0
     for f in frames:
         l = track.get(f, (None, None))[0]
-        if l: cx += (l[0] - cx) * 0.12; cy += (l[1] - 80 - cy) * 0.12
+        if l: cx += (l[0] - cx) * 0.25; cy += (l[1] - 70 - cy) * 0.25
         centre[f] = (min(1920 - W / 2, max(W / 2, cx)), min(1080 - H / 2, max(H / 2, cy)))
     def crop(f, label=None):
         x, y = centre[f]; im = Image.open(d / "frames" / f"f{f:05d}.png").crop((int(x - W / 2), int(y - H / 2), int(x + W / 2), int(y + H / 2))).resize((W * 2, H * 2), Image.NEAREST)

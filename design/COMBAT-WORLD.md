@@ -77,64 +77,67 @@ left the fight.
 
 ## Results
 
-Kiting against fair play, after the rules. Fights won (win or yield), mean seconds per fight, mean
-share of Standing lost. Act 1 and Act 2 plates, 19 encounters.
+**What kiting costs, first.** Against the same opponents on the same plates, kiting takes 4 to 6 times as
+long as fair play and loses more Standing: the default kiter spends 57 to 68 s a fight against 12 to 15 s,
+and loses 0.44 to 0.76 of its Standing against 0.24 to 0.48. The clock's answers are where the cost comes
+from: across 38 fights per style the strongest kiters (Fist, Tongue, Shadow, Eye) draw 17 to 106 thrown
+stones, 24 to 160 lunges and 42 to 162 chase blows, and lose 13 to 46 Standing to them; fair play draws
+at most one stone and 3 or 4 chase blows per style, and loses 0 to 0.5 Standing to them in total
+(world-runs/punishes.txt). Win rates follow below. Measured after the sight fix of 2026-10-17 (sight
+passes over benches and crates); world-runs/*-after.txt.
 
 **The default kiter**, 3 seeds, 57 fights per style and policy (world-runs/kite-before.txt,
-kite-after.txt):
+kite-after.txt). Won (win or yield), mean seconds, mean share of Standing lost:
 
 | Style | Fair before | Fair after | Kite before | Kite after |
 |---|---|---|---|---|
-| Fist | 57 won, 11.7 s, 0.25 lost | 55, 12.7 s, 0.26 | 22 won (11 at the time cap), 83.6 s, 0.36 | 13 (3 at the cap), 74.9 s, 0.47 |
-| Tongue | 48, 13.0 s, 0.34 | 42, 13.9 s, 0.48 | 2, 55.0 s, 0.79 | 2, 58.2 s, 0.76 |
-| Shadow | 52, 13.2 s, 0.37 | 51, 14.5 s, 0.42 | 6, 73.5 s, 0.74 | 5, 69.1 s, 0.65 |
-| Hands | 50, 13.8 s, 0.36 | 52, 11.3 s, 0.30 | 12, 67.3 s, 0.64 | 14, 61.9 s, 0.65 |
-| Eye | 53, 12.4 s, 0.35 | 51, 13.5 s, 0.40 | 6, 60.5 s, 0.79 | 3, 57.6 s, 0.76 |
+| Fist | 57 won, 11.7 s, 0.25 lost | 57, 12.4 s, 0.24 | 22 won (11 at the time cap), 83.6 s, 0.36 | 17 (5 at the cap), 67.3 s, 0.44 |
+| Tongue | 48, 13.0 s, 0.34 | 42, 14.4 s, 0.48 | 2, 55.0 s, 0.79 | 3, 60.6 s, 0.70 |
+| Shadow | 52, 13.2 s, 0.37 | 49, 14.9 s, 0.44 | 6, 73.5 s, 0.74 | 1, 63.8 s, 0.70 |
+| Hands | 50, 13.8 s, 0.36 | 51, 11.6 s, 0.32 | 12, 67.3 s, 0.64 | 8, 67.8 s, 0.59 |
+| Eye | 53, 12.4 s, 0.35 | 51, 13.0 s, 0.40 | 6, 60.5 s, 0.79 | 3, 57.5 s, 0.76 |
 
 **The strongest kiter per style**, 2 seeds, 38 fights each (world-runs/kite-search-before.txt,
 kite-search-after.txt):
 
 | Style | Fair after | Strongest kiter before | Strongest kiter after |
 |---|---|---|---|
-| Fist | 36, 13.1 s, 0.27 | 28 (7 at the cap), 69.1 s, 0.40 | 22 (5 at the cap), 69.2 s, 0.31 |
-| Tongue | 27, 13.5 s, 0.48 | 10, 44.1 s, 0.56 | 8, 49.4 s, 0.68 |
-| Shadow | 34, 14.9 s, 0.41 | 12, 66.5 s, 0.71 | 8, 75.7 s, 0.65 |
-| Hands | 35, 11.0 s, 0.28 | 35, 23.1 s, 0.40 | 36, 23.9 s, 0.40 |
-| Eye | 33, 13.9 s, 0.45 | 11, 44.3 s, 0.79 | 7, 59.5 s, 0.68 |
+| Fist | 38, 12.2 s, 0.23 | 28 (7 at the cap), 69.1 s, 0.40 | 26, 54.2 s, 0.45 |
+| Tongue | 29, 13.8 s, 0.47 | 10, 44.1 s, 0.56 | 11, 52.0 s, 0.78 |
+| Shadow | 33, 15.2 s, 0.41 | 12, 66.5 s, 0.71 | 9, 70.5 s, 0.71 |
+| Hands | 35, 11.4 s, 0.30 | 35, 23.1 s, 0.40 | 35, 28.8 s, 0.42 |
+| Eye | 33, 13.4 s, 0.45 | 11, 44.3 s, 0.79 | 7, 58.3 s, 0.72 |
 
-Every kiter loses time: 2 to 6 times as long as fair play. Every kiter but Hands also loses fights.
+Every kiter loses time, 2.5 to 5 times as long as fair play. Every kiter but Hands also loses fights.
 The Hands kiter (ring 2.6 m with the boathook, meeting the approach) wins as often as fair play but takes
-2.2 times as long and loses 0.12 more Standing a fight; at 2.6 m it stands inside most opponents' reach,
-so the world rules barely see it (11 throws in 38 fights). It is closer to spacing than to kiting, and I
-leave it alone.
+2.5 times as long and loses 0.12 more Standing a fight; at 2.6 m it stands inside most opponents' reach,
+so the world rules barely see it (no stones, no lunges in 38 fights). It is spacing, not kiting
+(coordinator's ruling, 2026-10-17), and is left alone.
 
-**Where the answers land** (world-runs/punishes.txt, 38 fights per row): fair play draws 3 to 12 throws,
-no lunges and 3 or 4 chase blows per style across all 38 fights, costing 0.5 to 2.2 Standing in total.
-The kiters (Fist, Tongue, Shadow, Eye) draw 96 to 167 throws, 21 to 162 lunges and 44 to 206 chase
-blows, costing 17 to 50 Standing.
+**On the shell's own grid.** The shell lays fights on a 0.25 m grid (world/plateworld.mjs GROUND_CELL);
+the tables above use 0.5 m. At 0.25 m (tools/kite.mjs --cell 0.25, 2 seeds, 38 fights per row) fair play
+wins 26 to 37 per style and the default kiter 3 to 21, the same picture (world-runs/kite-cell025.txt).
 
 **Ablation**, the strongest kiter per style, all five styles summed, 2 seeds, 190 fights
-(world-runs/ablation.txt):
+(world-runs/ablation.txt; the first four rows after the sight fix, the rest from the run before it):
 
 | Switched off | Fair won | Kite won | Kite at the cap | Kite seconds | Kite Standing lost |
 |---|---|---|---|---|---|
-| nothing | 165 | 76 | 0 | 54.9 | 0.56 |
-| every rule | 176 | 102 | 19 | 62.5 | 0.48 |
-| break-off rule | 165 | 91 | 15 | 54.9 | 0.56 |
-| ledges | 167 | 86 | 3 | 51.0 | 0.59 |
-| engaged running | 165 | 85 | 1 | 51.1 | 0.58 |
-| sight leash | 165 | 82 | 0 | 47.1 | 0.59 |
-| walking round the ground | 172 | 77 | 0 | 51.6 | 0.62 |
-| clock, answers, pursuit, cut-offs | 169 | 73 | 0 | 61.1 | 0.57 |
-| beam | 165 | 76 | 0 | 54.9 | 0.56 |
+| nothing | 168 | 88 | 0 | 52.8 | 0.62 |
+| every rule | 177 | 106 | 21 | 60.0 | 0.50 |
+| break-off rule | 168 | 101 | 13 | 52.8 | 0.62 |
+| clock, answers, pursuit, cut-offs | 168 | 75 | 0 | 60.4 | 0.54 |
+| ledges (before the sight fix) | 167 of 190 | 86 against 76 with all on | 3 | 51.0 | 0.59 |
+| engaged running (before) | 165 | 85 against 76 | 1 | 51.1 | 0.58 |
+| sight leash (before) | 165 | 82 against 76 | 0 | 47.1 | 0.59 |
+| walking round the ground (before) | 172 | 77 against 76 | 0 | 51.6 | 0.62 |
 
-Reading it: the break-off rule and the ledges do the most against kiting wins; engaged running and the
-leash add to it. The clock and its answers do not lower kiting wins at this sample (73 off, 76 on). Per
-style at 3 seeds they raise the Standing a kiter loses (Tongue 0.63 to 0.72, Shadow 0.65 to 0.69, Eye
-0.68 to 0.71) and end kiting fights 7 to 12 s sooner, with Tongue's kiter down 32 times against 27. I
-keep them for that, and because a crowd that never answers a runner reads as broken; it is the weakest
-rule by this measure. Walking round the ground makes opponents better at reaching Lamb, which costs fair
-play the most (172 to 165): that is the honest price of opponents who no longer stall at walls.
+Reading it: the break-off rule does the most against kiting wins, then the ledges, engaged running and
+the leash. The clock and its answers do not lower kiting wins: with them on the strongest kiters win
+88 against 75 with them off, because a chase that arrives brings the opponent into the kiter's reach.
+What they do is raise the price: kiters lose 0.62 of their Standing against 0.54 and their fights end
+7.6 s sooner. I keep them for that cost, and because a crowd that never answers a runner reads as
+broken; it is the weakest rule by the win measure, and the first to revisit with a person playing.
 
 **Min-max** (tools/minmax.mjs, placeholder arenas, Acts 1 to 3, 2 seeds, 56 fights per build;
 world-runs/minmax-before.txt, minmax-after.txt):
@@ -172,6 +175,59 @@ styles, 4 seeds, 100 fights per row (tools/beam.mjs; world-runs/beam.txt, beam-r
   against 0.18 lost, because opponents see Lamb coming. The light cuts both ways, which is the point.
 - Fog makes fair play easier in these fights (99 of 100 against 91 in clear air): opponents lose Lamb at
   1.6 m. That predates this work and is worth a look by whoever owns the sight rule.
+
+## Feel: a live fight at 1080p
+
+The author asked for dashes, rolls, dodges, parries and combination strikes that "feel incredible, and
+have weight to them". Captured in the shell itself (play.html, Lamp Quay, e.wardens, Lamb at the Shadow
+mid-game sheet, played by tools/showcase.mjs), 1920 x 1080, every frame exactly 1/60 s of game time
+(hand-cranked animation frames, tools/feel_capture.py), GPU off. Two captures, kept out of git
+(game/engine/combat/capture/):
+- feel2: the live fight, 1382 frames: fight.mp4, close.mp4 (a follow camera on Lamb), moves-slow.mp4 (each
+  move at quarter speed), contact sheets.
+- feel4: the same, with a staged trigger for the readability check: from 1.5 s into Lamb's flight the
+  opponents' kiting clocks are held at the threshold until one lunge and one stone have fired. In eight
+  unstaged shell runs the chase blow always caught Lamb first, at 2.3 to 2.7 s, so neither fired; the
+  staging is recorded in capture.json.
+
+Judged from stills and frame measurements, not from playing it.
+
+**What reads**
+- The talk exit is on screen: "A way out [T] Say the Alderman's name" slides in at 5.0 s (frame 300),
+  right of the fight, while Lamb has landed no blow. The same panel serves e.strippers' exit.
+- Telegraphs: the tightening ring under a winding-up opponent, and the character lead's new shapes per
+  kind. The lunge's wedge runs out along the facing for 14 frames before it lands, and the drag's toothed
+  ring stands apart from the rest. Both are clear at the game camera.
+- The catch: the contact mark (a thick ring) lands on the frame of the catch, and the caught warden rears
+  back with the arm up about 24 frames later, a readable opening.
+- Thrown things are drawn now (the shell drew none before this work): the stone is a dark mark with a
+  paper rim and a short trail.
+
+**What is weak, in order of how much it costs the feel**
+1. **No camera response.** Measured by phase correlation on the plate: 0 px of movement on a charged heavy
+   that lands, 0 to 1 px on a catch, about 1 px on the drag. LOOK-UNIFIED R5 caps shake at 2 plate pixels,
+   rounded to whole pixels, and a light strike's shake (0.08) rounds to nothing. Weight now comes only
+   from hit-stop and the marks. A decision for the art direction and the author: relax R5 for heavies,
+   catches and knockdowns, or carry weight some other way. Owner: art direction, then the systems
+   engineer (ui/fightlayer.mjs).
+2. **Hit reactions do not show.** A warden struck by the charged heavy holds the same pose for 12
+   frames and walks on; an armoured blow has no recoil pose at all. Lamb knocked down by the drag stands
+   frozen for the hit-stop, then is lying down 5 frames later with no fall between. Owner: character lead
+   (hit, recoil and fall clips, read through poseOf).
+3. **The answers have no body.** The lunge plays a walk while it covers 4 m; the throw has no wind-up
+   pose, so the 48-frame telegraph is only the line at the feet. There are no `world.lunge` or
+   `world.throw` clips. Owner: character lead; combat's frames and phases are in data/foes.mjs.
+4. **The stone is small.** About 10 px at 1080p, flying 0.3 s. It reads once you know to look. A larger
+   mark or a brief arc line would help. Owner: systems engineer (ui/fightfx.mjs).
+5. **Lamb disappears behind opponents.** At the 30 degree camera two wardens in front cover Lamb
+   completely through a whole exchange (the charged heavy frames). An outline of Lamb through occluders
+   would fix it. Owner: character lead or systems engineer.
+6. **Light strikes feel light.** 2 frames of hit-stop, no shake, a 40 px mark gone in 0.28 s; strings read
+   as taps. Combat could lengthen light hit-stop to 3 or 4 frames, but I have not changed it: that is a
+   call to make with a person playing, after items 1 and 2.
+7. **The sidestep barely shows.** Lamb's sidestep from the stone (feel4, frame 148) is a small sideways
+   shift with almost no change of pose; at the game camera it reads as a shuffle, and its 12 safe frames
+   are invisible. I did not compare the dash and the roll frame by frame. Owner: character lead.
 
 ## What this does not prove
 
