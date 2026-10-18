@@ -462,3 +462,21 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
       same tick. Seen: the lunge drives low with the coil before it, where it used to walk; Lamb's fall
       runs about 30 frames to the ground; Lamb's outline shows through the wardens. The throw strip is
       small at this crop and reads poorly. The after capture predates the since and frozen change.
+
+RESUME (2026-10-17, usage nearly out). State: everything committed on dev through 5342098. Visual check
+passes 6 of 6 (run `node game/engine/tools/visual-check.mjs --port <p>` from the repo root with
+`node game/serve.mjs --port <p>` running). Tests: `node characters/proto/drawer_test.mjs` (18 of 18) and
+`node characters/proto/actor_test.mjs` (pass).
+Next, in order:
+1. Recapture feel at full speed with the since/frozen reactions and the systems engineer's impact
+   camera (b314c79): `python game/engine/combat/tools/feel_capture.py --out characters/stills/feel-after2
+   --seeds 12 --stage`, then `python characters/proto/feel_compare.py game/engine/combat/capture/feel4
+   characters/stills/feel-after2 characters/stills/feel-compare`. Make a larger crop for the throw strip.
+2. Strand's idle pole dips under the floor in the crowd (0.59 m of room ahead): give the lamplighters'
+   carry an upright idle, or widen the tool search with forearm bend.
+3. Merrow sits at 1.98 against the 2.0 brightness band at the stove; find the term that drives him
+   there (not the lamp floor).
+4. Keel's coat flares like a bell when seated: split the coat skirt at the back.
+5. Held for the art director's direction: new bodies, Keel's eyes and skin.
+Never edit a runtime file while a capture runs (the server reads the working tree). Beware `//` comments
+inside one-line edits: twice they swallowed the rest of a line.
