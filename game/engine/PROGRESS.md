@@ -252,3 +252,15 @@ R1 to R13 from that file.
 - 2026-10-17 06:35Z: one game in the engine shell, prototype retired; chapter pages; the UI lead's asks; NOTES entry.
 - 2026-10-17 20:40Z: live world, interrogations, fluid fight cuts; NOTES entry.
 - 2026-10-17 21:47Z: collision, visual check, marks check; NOTES entry.
+
+## Resume, 2026-10-17 (systems engineer, wrap-up)
+
+Done and on dev: combat impact camera, both treatments (b314c79); shake cap back at 3 px while a tell
+shows, per the coordinator's ruling (f5d09a2; the edge clamp a22426f is taken back); combat's
+IMPACT.shakeScale/punchScale kept. Camera shake setting, larger stones with a trail, fight grid with
+soft margins (613 of 646 m2). CAMERA.md has the "Combat impacts" section and the ruling.
+To resume:
+1. `node --test tests/*.test.mjs` in game/engine, then serve on 8754 and run `node tools/visual-check.mjs --port 8754`.
+2. `node tools/impact-capture.mjs --frames 300` regenerates game/capture/impact/ (add `--dump a,b` for every frame in a range).
+Open: framing ease drifts about 2 px a frame and steps 11 px when fight bounds change (not the
+impact camera); Strand's pole under the floor (character lead's).
