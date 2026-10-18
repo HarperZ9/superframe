@@ -98,7 +98,9 @@ Outputs are kept in world-runs/ (out/ is ignored by git) (`*-before.txt` predate
      words (+0.5, voices at 4+), exit cost 1 at HAT 4+; strippers: Tongue talks out 6 of 6 (was 2).
      Ropewalk on the authored strand: kiter 20 to 17 wins, 44 to 53 s, 18 stumbles; fair unchanged.
    Tests 255 of 255.
-9. OPEN
+9. DONE Director: every @bark record kept; a fight rotates a key's lines without repeats (d9f759a).
+   Stopped here at the coordinator's wrap-up (usage limit). Tests: combat suite run at stop, see log.
+10. OPEN
    - Feel items 1 to 7 in design/COMBAT-WORLD.md, owners named (camera shake under LOOK-UNIFIED R5 is the
      first, a decision for the art direction and the author).
    - In unstaged shell runs the chase blow catches a fleeing Lamb at 2.3 to 2.7 s, before the 3.5 s clock,
