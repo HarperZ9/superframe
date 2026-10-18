@@ -77,7 +77,16 @@ Outputs are kept in world-runs/ (out/ is ignored by git) (`*-before.txt` predate
    - Feel capture in the shell at 1080p, frame-exact (tools/feel_capture.py, showcase.mjs, feel_review.py);
      findings in design/COMBAT-WORLD.md "Feel". Talk exit visible at 5.0 s.
    Tests: 108 combat; 248 with the engine's at 8c7fbc8 (the engine has moved since).
-7. OPEN
+7. DONE Coordinator, 2026-10-17 (shake cap lifted for combat impacts; shake, zoom punch, hit reactions,
+   falls, lunge and throw clips with the systems engineer and the character lead):
+   - talk exits in the pilot (TALK_RATE: HAT 7+ every offer, others half); e.strippers with exits:
+     talked out 3, 2, 3, 0, 4 of 6 for Fist, Tongue, Shadow, Hands, Eye (design/COMBAT-WORLD.md).
+   - the Ropewalk strand sent to the director (design/NOTES-FOR-ENGINEER.md, last section).
+   - tools/feel_measure.py: held frames and shake per contact against a quiet-moment floor. Baseline on
+     feel2: shake 0.4 to 3 px at contacts, floor median 0.8, p90 7; held 0 to 2 frames (asked 2 to 12).
+   - NEXT when their pieces land: retune light hit-stop, recapture each move at full speed
+     (feel_capture.py, then feel_review.py and feel_measure.py), compare with the baseline.
+8. OPEN
    - Feel items 1 to 7 in design/COMBAT-WORLD.md, owners named (camera shake under LOOK-UNIFIED R5 is the
      first, a decision for the art direction and the author).
    - In unstaged shell runs the chase blow catches a fleeing Lamb at 2.3 to 2.7 s, before the 3.5 s clock,
