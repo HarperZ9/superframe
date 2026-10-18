@@ -84,8 +84,10 @@ Outputs are kept in world-runs/ (out/ is ignored by git) (`*-before.txt` predate
    - the Ropewalk strand sent to the director (design/NOTES-FOR-ENGINEER.md, last section).
    - tools/feel_measure.py: held frames and shake per contact against a quiet-moment floor. Baseline on
      feel2: shake 0.4 to 3 px at contacts, floor median 0.8, p90 7; held 0 to 2 frames (asked 2 to 12).
-   - NEXT when their pieces land: retune light hit-stop, recapture each move at full speed
-     (feel_capture.py, then feel_review.py and feel_measure.py), compare with the baseline.
+   - fxOf(W, since) and a 30-tick contact log (the character lead adopted it with frozen).
+   - pieces landed (8ae7507, b314c79, 5342098); light hit-stop 4/6 and shake 0.15/0.3 (767f601; three
+     settings measured, outcomes within noise); recaptured as feel5: heavies, catches, ripostes and hits
+     on Lamb now 16 to 18 px of shake against a 1.2 px floor; lights still 1.2 to 1.4 px (the tell clamp).
 8. OPEN
    - Feel items 1 to 7 in design/COMBAT-WORLD.md, owners named (camera shake under LOOK-UNIFIED R5 is the
      first, a decision for the art direction and the author).

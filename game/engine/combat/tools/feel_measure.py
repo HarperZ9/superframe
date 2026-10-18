@@ -59,16 +59,21 @@ def measure(d, t, tf, body):
     P = np.array(pos, dtype=float); K = np.ones(5) / 5
     sm = np.stack([np.convolve(np.pad(P[:, i], 2, mode="edge"), K, mode="valid") for i in (0, 1)], axis=1)
     sh = float(np.abs((P - sm)[3:]).max())
-    # held: frames the body's box stays still after t, with the plate's motion taken out
+    # held: still frames of the body's box in the 14 frames after contact (the plate's motion and the
+    # punch's first frames taken out by aligning on the far patch), counted from the first still frame;
+    # a reaction that snaps then holds counts its hold
     held = 0
     if body:
         bx = (slice(max(0, body[1] - 170), body[1] + 10), slice(max(0, body[0] - 60), body[0] + 60))
-        for k in range(1, 20):
+        still = []
+        for k in range(1, 15):
             a, b = frames.get(t + k - 1), frames.get(t + k)
             if a is None or b is None: break
             x, y = shift(b[box], a[box]); a2 = np.roll(a, (y, x), axis=(0, 1))
-            if np.abs(b[bx] - a2[bx]).mean() > 1.5: break
-            held += 1
+            still.append(np.abs(b[bx] - a2[bx]).mean() <= 2.0)
+        run = best = 0
+        for s_ in still: run = run + 1 if s_ else 0; best = max(best, run)
+        held = best
     return {"held": held, "shake_px": round(sh, 1)}
 
 

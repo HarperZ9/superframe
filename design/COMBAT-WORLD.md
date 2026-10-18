@@ -229,6 +229,38 @@ Judged from stills and frame measurements, not from playing it.
    shift with almost no change of pose; at the game camera it reads as a shuffle, and its 12 safe frames
    are invisible. I did not compare the dash and the roll frame by frame. Owner: character lead.
 
+**After the fixes (2026-10-17, evening).** The art direction lifted the 2-pixel cap for combat impacts.
+The systems engineer added an impact camera: shake along the blow plus a 2 to 4% zoom punch on heavy
+hits, catches and guard breaks, and larger stones. The character lead added a real knockdown, additive
+hit reactions read from fxOf, lunge and throw clips, a clearer sidestep and Lamb's outline through
+bodies in front. Combat raised light strikes to 4 frames of hit-stop (6 on a string's last blow) and
+shake 0.15 and 0.3. Three hit-stop settings were measured first (2/3, 3/5, 4/6): fight outcomes did not
+move beyond noise (163 to 168 of 190 fair wins, 13.2 to 14.2 s), so the choice is for feel.
+Recaptured at full speed, frame by frame (feel5, seed 12, staged answers as in feel4; tools/feel_measure.py,
+shake measured as the plate's jitter less its 5-frame mean, on a patch away from bodies and panels):
+
+| Contact | Before (feel2) | After (feel5) |
+|---|---|---|
+| Lamb's heavy and charged heavy land | 2.2 px | 15.8 to 17.0 px |
+| Riposte | 1.0 px | 17.8 px |
+| Catch | 0.6 to 1.0 px | 15.6 to 18.4 px |
+| Lamb struck by a heavy or the drag | 0.4 to 3.0 px | 17.0 to 18.4 px |
+| Lamb's light strikes land | 0.6 to 1.2 px | 1.2 to 1.4 px |
+| Quiet moments (no contact within 25 frames) | median 0.8, p90 7.0 | median 1.2, p90 1.8 |
+
+What the frames show now: the charged heavy lands with a mark on both wardens, they snap back, hold
+through the 6 frames of hit-stop, then are thrown back and down (frames 1022 to 1040). The drag hooks
+Lamb, Lamb staggers, falls, bounces and settles (610 to 660). The lunge coils low under its wedge and
+drives in on low strides. The throw shows its draw under the dashed aim line, and the stone is visible
+in flight. Lamb shows as an ink outline through a warden in front.
+
+Still weak: **light strikes have no camera response** (1.2 to 1.4 px, at the floor). In a fight with two
+opponents a telegraph is nearly always showing, and the impact camera holds shake to 3 px while one
+shows, so a string's shake is swallowed. That is the systems engineer's rule, and a good one for reading
+tells; I have asked whether the clamp could spare the body being struck. The "held frames" measure did not
+work: the snap reactions and marks change the struck body's box on every frame, so hit-stop on screen is
+judged from the strips, not counted.
+
 ## Talk exits taken by the scripted player
 
 The pilot now takes a talk exit when the fight offers one (tools/pilot.mjs, option `talk`). The rate,
