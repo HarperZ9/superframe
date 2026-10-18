@@ -42,13 +42,18 @@ const F = (n, s) => Math.max(1, Math.round(n * s));
 
 // The light string: each link a little longer, the last with the most weight. The only cancel
 // is into a step or roll once the committed part (startup, active and 8 frames) is over.
+// A light strike's impact: hit-stop frames and shake for a link and for the string's last blow
+// (design/COMBAT-WORLD.md, "Feel": retuned after the 1080p capture; LIGHT_HS in the environment overrides
+// for a measurement run only, "link,last").
+const lhs = (typeof process !== "undefined" && process.env && process.env.LIGHT_HS) || "";
+export const LIGHT_IMPACT = lhs ? { hitstop: lhs.split(",").map(Number), shake: [0.08, 0.2] } : { hitstop: [4, 6], shake: [0.15, 0.3] };
 function lightLink(P, i, n, s, prefix, w) {
   const last = i === n, su = F((14 + 2 * (i - 1) + (last && n > 1 ? 3 : 0)) * w, s), ac = 6, rc = F(22 + (last ? 6 : 0), s);
   const commit = su + ac + 5, end = su + ac + rc - 1;
   const m = {
     startup: su, active: ac, recovery: rc, stamina: 1, dmg: P.light[0] * (last && n > 1 ? 1.4 : 1), poise: P.light[1] * (last && n > 1 ? 1.5 : 1),
     hits: [{ arc: [-P.arc - (i === 2 ? 15 : 0), P.arc], r: [0.25, P.reach + 0.4] }], root: [[2, su, 1.8 + (last ? 0.8 : 0)]],
-    cancel: { step: [commit, end], roll: [commit, end] }, track: 6, hitstop: last ? 3 : 2, knock: last ? 2.2 : 1.0, shake: last ? 0.2 : 0.08, anim: `${P.cls}.light_${i}`,
+    cancel: { step: [commit, end], roll: [commit, end] }, track: 6, hitstop: LIGHT_IMPACT.hitstop[last ? 1 : 0], knock: last ? 2.2 : 1.0, shake: LIGHT_IMPACT.shake[last ? 1 : 0], anim: `${P.cls}.light_${i}`,
   };
   if (w > 1) { m.tell = { at: [3, su - 1], kind: "swing" }; m.track = 9; m.trackUntil = su - 3; }
   // the swing's travel sits in the end of the wind-up: 4 frames, 7 on the string's last and widest link
