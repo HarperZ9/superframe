@@ -2206,3 +2206,25 @@ content would do the same. A fallback rig (or the plain ink figure) for unknown 
 - **CAST_IDS** is exported from characters/runtime/fightdrawer.mjs (38 ids). Note: before 7f5538c the
   drawer drew any cast id missing from combat's archetype table (Sabine, Wenna, the folk) as the
   warden body; earlier proof stills showing a caped figure behind the bar were that bug.
+
+### Combat engineer, 2026-10-17: for the director (nets and ropes, the Ropewalk strand)
+
+Asked by the coordinator: please author the Ropewalk strand from `design/HAZARDS-PROPOSAL.md` into the
+ropewalk plate's `content/ropewalk/place.json`. The quay pieces stay out (they sit off the line the quay
+fights take); the Spit pieces are yours to take or leave. The record shape is the one the systems
+engineer and I agreed; combat reads it as is, and the shell's walking will slow over it too:
+
+```
+"terrain": { "hazards": [
+  { "id": "ropewalk_strand", "kind": "rope", "rect": [6.5, 2.7, 18.5, 3.1],
+    "note": "a strand laid out down the walk between the old rope posts, waiting to be twisted" }
+] }
+```
+
+What it does: walking over it costs speed (x0.75); a body that crosses it fast with its eyes behind it
+(backing off an opponent, a roll away) stumbles. Measured injected into the plate before authoring
+(tools/hazards.mjs, 40 fights a row): the kiter trips 12 times and loses 0.56 of its Standing against
+0.50 bare; fair play trips twice and loses 0.31 against 0.28. The words of the note are a suggestion; a
+line in the Ropewalk's own scene that sets the strand down would make it the town's, not mine. Optional,
+from the same proposal: `ropewalk_coil` (a net, at [10.4, 0, 1.2], r 0.8) under the post where the Vane
+hangs. Tell me when it is in and I will re-run the Ropewalk fights on the authored record.
