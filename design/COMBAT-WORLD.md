@@ -237,7 +237,9 @@ bodies in front. Combat raised light strikes to 4 frames of hit-stop (6 on a str
 shake 0.15 and 0.3. Three hit-stop settings were measured first (2/3, 3/5, 4/6): fight outcomes did not
 move beyond noise (163 to 168 of 190 fair wins, 13.2 to 14.2 s), so the choice is for feel.
 Recaptured at full speed, frame by frame (feel5, seed 12, staged answers as in feel4; tools/feel_measure.py,
-shake measured as the plate's jitter less its 5-frame mean, on a patch away from bodies and panels):
+the plate's jitter less its 5-frame mean, on a patch away from bodies and panels). Correction, same
+evening: this measure counts the zoom punch as well as the shake, and on the after column most of it is
+the punch; the camera's own offsets give the shake alone (see "Shake size" below):
 
 | Contact | Before (feel2) | After (feel5) |
 |---|---|---|
@@ -260,6 +262,32 @@ shows, so a string's shake is swallowed. That is the systems engineer's rule, an
 tells; I have asked whether the clamp could spare the body being struck. The "held frames" measure did not
 work: the snap reactions and marks change the struck body's box on every frame, so hit-stop on screen is
 judged from the strips, not counted.
+
+## Shake size (coordinator, 2026-10-17)
+
+The coordinator asked for the impact shake as a tuning value and strips at 100%, 60% and 40% on the
+charged heavy and a catch. The tuning values are `IMPACT.shakeScale` and, added for the reason below,
+`IMPACT.punchScale` in ui/fightcam.mjs (read every frame, default 1). The captures are seed 12 with the
+staged answers, pictured only around the catch (frame 603) and the charged heavy (1022), and log the
+camera's own applied offset and zoom each frame, so the numbers are exact, not estimated
+(capture/shake-1, shake-0.6, shake-0.4; strips in game/engine/combat/world-runs/shake-catch.png and shake-heavy.png, kept out of git like every png;
+each strip uses one fixed crop, so the punch shows as the scene growing).
+
+| | Shake peak at 100% | at 60% | at 40% | Zoom punch (all three) |
+|---|---|---|---|---|
+| Catch | 5.5 px | 3.3 px | 1.9 px | 3.9% |
+| Charged heavy | 6.4 px | 3.9 px | 1.1 px | 3.9% |
+
+The shake is gone in 4 to 5 frames at every setting. My earlier figure of 16 to 18 px on heavy hits was
+wrong as a shake figure: the jitter measure took in the zoom punch, which at 3.9% about the struck body
+moves the plate around it by tens of pixels. The shake itself is 6.4 px at most.
+
+Which reads best: 100%. At 40% the shake is 1 to 2 px and invisible against the camera's own easing
+(the quiet floor is about 1.2 px); 60% reads but is close to the floor on a catch. At 100% it is a short,
+directional knock that is over before the next exchange. If the author finds heavy hits too busy in play,
+the punch is the first thing to turn down (punchScale 0.5 gives about 2%), not the shake. The 60% capture
+lands its contacts one frame later than the other two (a capture timing step, not the fight); the strips
+are aligned by contact.
 
 ## Talk exits taken by the scripted player
 

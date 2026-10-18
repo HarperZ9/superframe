@@ -48,6 +48,8 @@ STATE = """() => { const C = window.__lw.G.ext.combat, W = C.current && C.curren
   const scr = (F) => { const s = p.cam.toScreen([F.x, W.field.cellAt(F.x, F.z).h, F.z]); return s ? [Math.round(s[0]), Math.round(s[1])] : null; };
   return { fighting: p.root.classList.contains('fighting'), tick: W ? W.tick : null, result: W ? W.result : null,
     lamb: W ? scr(W.lamb()) : null, foes: W ? W.fighters.filter((F) => F.team !== 'lamb' && !F.out).map(scr) : [],
+    // the impact camera's applied offset and zoom this frame (ui/fightcam.mjs sets them on the layers)
+    cam: (() => { const el = [...document.querySelectorAll('canvas, img, div')].find((e) => e.style.translate || (e.style.scale && e.style.scale !== '1')); return el ? [el.style.translate || '', el.style.scale || ''] : null; })(),
     offer: (() => { const o = document.querySelector('.talkoffer'); return o ? { hidden: o.hidden, text: o.textContent.trim().slice(0, 80) } : null; })() }; }"""
 
 
@@ -90,7 +92,7 @@ def session(pw, port, style, seed, out=None, max_frames=60 * 60, stage=False, sh
     time.sleep(0.5)
     pg.evaluate("window.__crank(0)"); time.sleep(0.2)  # from here the page moves only when cranked
     pg.evaluate(START_FIGHT)
-    frames, firsts, offer_seen, track = 0, {}, None, []
+    frames, firsts, offer_seen, track, cams = 0, {}, None, [], []
     fdir = None
     if out:
         fdir = out / "frames"; shutil.rmtree(fdir, ignore_errors=True); fdir.mkdir(parents=True)
@@ -98,7 +100,7 @@ def session(pw, port, style, seed, out=None, max_frames=60 * 60, stage=False, sh
         n = 1 if out else 30
         pg.evaluate(f"(() => {{ for (let i = 0; i < {n}; i++) window.__crank(1000 / 60); }})()"); frames += n
         st = pg.evaluate(STATE)
-        if out: track.append([frames, st["lamb"], st["foes"]])
+        if out: track.append([frames, st["lamb"], st["foes"]]); cams.append([frames, st.get("cam")])
         if out and (not windows or any(a <= frames <= b for a, b in windows)):
             pg.screenshot(path=str(fdir / f"f{frames:05d}.png"))
             ev = pg.evaluate("window.__ev.length")
@@ -116,7 +118,7 @@ def session(pw, port, style, seed, out=None, max_frames=60 * 60, stage=False, sh
     ev = pg.evaluate("window.__ev"); staged = pg.evaluate("window.__staged || 0")
     res = pg.evaluate(STATE)
     ctx.close(); b.close()
-    return {"seed": seed, "frames": frames, "result": res["result"], "kinds": sorted(kinds(ev)), "events": ev, "firsts": firsts, "offer": offer_seen, "track": track, "staged": staged, "console": [l for l in logs if "error" in l.lower()][:20]}
+    return {"seed": seed, "frames": frames, "result": res["result"], "kinds": sorted(kinds(ev)), "events": ev, "firsts": firsts, "offer": offer_seen, "track": track, "cams": cams, "staged": staged, "console": [l for l in logs if "error" in l.lower()][:20]}
 
 
 def main():
@@ -151,7 +153,7 @@ def main():
     import imageio_ffmpeg
     ff = imageio_ffmpeg.get_ffmpeg_exe()
     if not a.windows: subprocess.run([ff, "-y", "-loglevel", "error", "-framerate", "60", "-i", str(out / "frames" / "f%05d.png"), "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", str(out / "fight.mp4")], check=True)
-    rec = {"style": a.style, "seed": chosen, "shake_scale": a.shake_scale, "windows": a.windows, "dry": tries, **{k: r[k] for k in ("frames", "result", "kinds", "firsts", "offer", "console")}, "events": r["events"], "track": r["track"], "staged": r["staged"]}
+    rec = {"style": a.style, "seed": chosen, "shake_scale": a.shake_scale, "windows": a.windows, "dry": tries, **{k: r[k] for k in ("frames", "result", "kinds", "firsts", "offer", "console")}, "events": r["events"], "track": r["track"], "cams": r["cams"], "staged": r["staged"]}
     (out / "capture.json").write_text(json.dumps(rec, indent=1), encoding="utf-8")
     print(json.dumps({k: rec[k] for k in ("style", "seed", "frames", "result", "kinds", "firsts", "offer", "console")}))
 

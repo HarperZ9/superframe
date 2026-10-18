@@ -19,7 +19,9 @@ const SHAKE_MAX = 18, SHAKE_F = 10, SHAKE_TAU = 0.06, SHAKE_LIFE = 0.25, PUNCH_T
 // The impact shake's tuning value (coordinator, 2026-10-17: the author judges the size in play): a share
 // of the amplitude above, read every frame, so a tool or the settings can change it live. Combat
 // engineer's strips at 1, 0.6 and 0.4 are in design/COMBAT-WORLD.md, "Shake size".
-export const IMPACT = { shakeScale: 1 };
+// punchScale the same for the zoom punch: at 1080p the punch (2 to 4% about the struck body) moves the
+// plate far more than the shake does (6.4 px peak on a charged heavy), so it is the one to judge first.
+export const IMPACT = { shakeScale: 1, punchScale: 1 };
 
 export function fightCam({ prefs = {}, mode = "both", layers = () => [], view = () => ({ w: 1280, h: 720 }) } = {}) {
   let shake = null, punch = null, tellPts = [];
@@ -57,7 +59,7 @@ export function fightCam({ prefs = {}, mode = "both", layers = () => [], view = 
       if (mode === "shake" || !gain() || !sp) return;
       const big = c.kind === "catch" || c.kind === "guardbreak" || (c.kind === "hit" && c.power >= 0.66);
       if (!big) return;
-      const amount = (0.02 + 0.02 * Math.min(1, c.power)) * gain();
+      const amount = (0.02 + 0.02 * Math.min(1, c.power)) * IMPACT.punchScale * gain();
       // the punch scales about the struck body: a tell point p goes to sp + (p - sp) x (1 + amount); skip it if any would leave the view
       const v = view(), z = 1 + amount, out = tellPts.some(([x, y]) => { const X = sp[0] + (x - sp[0]) * z, Y = sp[1] + (y - sp[1]) * z; return X < 8 || Y < 8 || X > v.w - 8 || Y > v.h - 8; });
       if (out) return;
