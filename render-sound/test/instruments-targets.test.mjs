@@ -4,7 +4,8 @@
 // swell. Each target has a control the measurement must reject.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { piano, pianoB, sympathetic } from "../instruments/inst/piano.mjs";
+import { piano, pianoB, sympathetic, soundboardIR } from "../instruments/inst/piano.mjs";
+import { convolve } from "../instruments/fft.mjs";
 import { pluck } from "../instruments/inst/pluck.mjs";
 import { ride } from "../instruments/inst/drums.mjs";
 import { spectrum } from "../instruments/fft.mjs";
@@ -54,8 +55,17 @@ test("hammer noise lifts the attack's highs by 3 dB or more and is gone 100 ms l
   assert.ok(Math.abs(hiE(withN, 0.1) - hiE(without, 0.1)) < 1, "control window: 100 ms on, the two are the same");
 });
 
+test("the soundboard colours without lifting the level (within 3 dB); the sympathetic strings sit 12 dB or more under the dry piano", () => {
+  const x = piano(50, 2, 0.4, 3, { pedal: true }), rmsDb = (a) => { let e = 0; for (const v of a) e += v * v; return dB(e / a.length) / 2 * 2; };
+  const board = convolve(x, soundboardIR()).subarray(0, x.length);
+  assert.ok(Math.abs(rmsDb(board) - rmsDb(x)) < 3, `board ${(rmsDb(board) - rmsDb(x)).toFixed(1)} dB`);
+  assert.ok(rmsDb(sympathetic(x)) < rmsDb(x) - 12, `sympathetic ${(rmsDb(sympathetic(x)) - rmsDb(x)).toFixed(1)} dB`);
+  const unit = soundboardIR().map((v, i) => (i ? v * 6 : v));          // control: the wood far too loud
+  assert.ok(rmsDb(convolve(x, unit).subarray(0, x.length)) - rmsDb(x) > 3);
+});
+
 test("sympathetic strings answer the octave of a struck C3, not the semitone beside it; a tone between strings gets no such answer", () => {
-  const s = sympathetic(piano(48, 2, 0.8, 4, { pedal: true }));
+  const s = sympathetic(piano(48, 2, 0.8, 4, { pedal: true }), 0.06);
   const oct = goertzel(s, mtof(60), at(0.5), at(1)), semi = goertzel(s, mtof(61), at(0.5), at(1));
   assert.ok(dB(oct) - dB(semi) > 10, `octave against semitone: ${(dB(oct) - dB(semi)).toFixed(1)} dB`);
   const between = Float32Array.from({ length: at(2) }, (_, i) => Math.sin(2 * Math.PI * mtof(60.5) * i / SR) * 0.2), sb = sympathetic(between);

@@ -65,16 +65,19 @@ export function soundboardIR(seed = 9) {
   const r = rng(seed), n = Math.round(0.35 * SR), list = [];
   for (let k = 0; k < 140; k++) { const f = 80 * Math.pow(2, r() * 6); list.push({ f, a: (0.4 + r()) / Math.sqrt(1 + f / 400), t60: 0.02 + 0.18 * Math.pow(r(), 2) * Math.min(1, 600 / f) * 3, ph: r() * TAU }); }
   const ir = partials(list, n);
-  ir[0] += 1.0;                                                  // keep the direct sound
+  // the wood carries about 4% of the direct sound's energy, so the body colours the tone without lifting
+  // its level (a unit-energy IR here put the stem 13 dB up, since the modes sit where a piano is loudest)
   let e = 0; for (const x of ir) e += x * x;
-  const g = 1 / Math.sqrt(e);
+  const g = Math.sqrt(0.04 / e);
   for (let i = 0; i < n; i++) ir[i] *= g;
+  ir[0] += 1.0;                                                  // the direct sound
   return ir;
 }
 
 // sympathetic strings: with the dampers up, every string from C2 to B5 rings when the sound holds its
-// frequencies. A bank of resonators fed the stem, mixed back at `level`.
-export function sympathetic(mono, level = 0.06, t60 = 4, lo = 36, hi = 83) {
+// frequencies. A bank of resonators fed the stem, mixed back at `level` (the default sits about 18 dB under
+// the dry piano).
+export function sympathetic(mono, level = 0.006, t60 = 4, lo = 36, hi = 83) {
   const out = new Float32Array(mono.length), k = Math.exp(-6.9078 / (t60 * SR));
   for (let m = lo; m <= hi; m++) {
     const w = TAU * 440 * Math.pow(2, (m - 69) / 12) / SR, c = 2 * k * Math.cos(w), k2 = k * k, b = (1 - k) * 2;
