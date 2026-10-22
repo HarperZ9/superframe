@@ -1,8 +1,10 @@
 {
   "name": "render-sound",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
-  "description": "Zero-dependency acoustic renderer: polytope structure descriptors to Web-Audio-compatible frequency-magnitude buffers (Uint8Array[256]).",
+  "description": "Zero-dependency sound: polytope sonification, a DFT, and an instrument library (piano, electric piano, plucked strings, winds, organ, drums, pads, strings, choir, rooms, tape).",
   "license": "FSL-1.1-MIT",
-  "scripts": { "test": "node --test" }
+  "scripts": {
+    "test": "node --test"
+  }
 }
