@@ -2,6 +2,8 @@
 
 ## render-sound 0.3.0 (unreleased)
 
+- The soundboard IR now carries about 4% of the direct energy and the sympathetic strings default to 0.006; at unit energy the body lifted a piano stem by up to 13 dB. A test holds both levels, with a control.
+
 - New `render-sound/instruments/`: a zero-dependency instrument library. Piano (modal, with inharmonicity by register, double decay, hammer noise, soundboard and sympathetic strings), electric piano (FM), plucked strings and an upright bass (extended Karplus-Strong with a wood body, finger slip and fingerboard rattle), flute and reed waveguides, drawbar organ, drums and a ride, pads, a string section, a wordless choir, generated rooms, tape and stereo effects. Measurement helpers: pitch, BS.1770 loudness, true peak, loop seams.
 - Tests for tuning, headroom, determinism and measured targets, each with a control that must fail (`render-sound/test/instruments-*.test.mjs`).
 - A CI workflow runs `node --test` in `render-sound/` on Ubuntu and Windows.
