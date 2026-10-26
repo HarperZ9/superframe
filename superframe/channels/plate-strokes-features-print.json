@@ -1,0 +1,103 @@
+{
+ "name": "plate-strokes-features-print",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0001",
+ "lanes": [
+  "image",
+  "type",
+  "sound",
+  "field"
+ ],
+ "domains": [
+  "geometry",
+  "drafting",
+  "calligraphy",
+  "signal processing",
+  "photochemistry",
+  "composition",
+  "print"
+ ],
+ "quality": 0.8583,
+ "novelty": 1.115,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/1",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#ebe5d8",
+   "ink": "#15130f",
+   "accent": "#c4632b"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "construct.plate",
+    "params": {
+     "levels": 4,
+     "pitch": 0.019939904547296466,
+     "dust": 0.08739115395583212
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "lettering.strokes",
+    "params": {
+     "width": 0.7360804281197488
+    },
+    "in": {
+     "glyphs": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "perceive.features",
+    "params": {
+     "measure": "centroid"
+    },
+    "in": {
+     "audio": "n1.vector"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "develop.print",
+    "params": {
+     "gamma": 4.926956106442958,
+     "invert": true
+    },
+    "in": {
+     "field": "n2.series"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.finish",
+    "params": {
+     "scale": 0.6503639764431863,
+     "frame": "plate",
+     "accentWidth": 0.03996039693709463,
+     "spectrum": false,
+     "depth": 0.017151744349393993,
+     "shadow": 0.3901412505656481,
+     "grain": 5.786299321707338
+    },
+    "in": {
+     "subject": "n3.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n4.raster"
+  },
+  "cost": 205
+ }
+}

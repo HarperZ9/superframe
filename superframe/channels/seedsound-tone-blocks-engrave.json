@@ -1,0 +1,96 @@
+{
+ "name": "seedsound-tone-blocks-engrave",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0046",
+ "lanes": [
+  "sound",
+  "type",
+  "image",
+  "reveal",
+  "vector"
+ ],
+ "domains": [
+  "music",
+  "engraving",
+  "codecs",
+  "exhibition design",
+  "fluid dynamics"
+ ],
+ "quality": 0.7947,
+ "novelty": 1.238,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/46",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#e7e1d3",
+   "ink": "#2b2622",
+   "accent": "#2f6f63"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "site.seedsound",
+    "params": {},
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "lettering.tone",
+    "params": {
+     "part": "both"
+    },
+    "in": {
+     "glyphs": "n0.audio"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "op.blocks",
+    "params": {
+     "count": 237,
+     "copy": 0.597389176255092
+    },
+    "in": {
+     "raster": "n1.field"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.5320216925814747
+    },
+    "in": {
+     "trick": "n2.raster",
+     "reveal": "n1.field"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "burin.engrave",
+    "params": {
+     "dsep": 8.263407762628049,
+     "gamma": 1.9448850112035871,
+     "gain": 0.6119758165441453
+    },
+    "in": {
+     "field": "n3.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n4.vector",
+   "audio": "n0.audio"
+  },
+  "cost": 460
+ }
+}

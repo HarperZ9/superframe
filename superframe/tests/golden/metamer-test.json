@@ -1,0 +1,54 @@
+{
+ "date": "2026-10-26",
+ "note": "Near-metamers only (RGB photographs, no spectra): a separation here is weak evidence that the engine reads ticks, and no separation would be weak evidence against.",
+ "results": [
+  {
+   "third": "a fifth yellow sheet",
+   "pair": "Albers depth 3 vs 4",
+   "law": "weber",
+   "dE_before_measured": 1.01,
+   "dE_before_ticks": 1.3,
+   "dE_after_ticks": 0.87,
+   "dE_after_summaries": 0.76,
+   "gain_ticks": 0.67,
+   "gain_summaries": 0.75,
+   "separates": false
+  },
+  {
+   "third": "an Olivetti cyan sheet",
+   "pair": "Albers depth 3 vs 4",
+   "law": "weber",
+   "dE_before_measured": 1.01,
+   "dE_before_ticks": 1.3,
+   "dE_after_ticks": 1.69,
+   "dE_after_summaries": 1.24,
+   "gain_ticks": 1.3,
+   "gain_summaries": 1.23,
+   "separates": false
+  },
+  {
+   "third": "red",
+   "pair": "Olivetti green+cyan vs cyan+yellow",
+   "law": "density_add",
+   "dE_before_measured": 3.96,
+   "dE_before_ticks": 18.44,
+   "dE_after_ticks": 12.32,
+   "dE_after_summaries": 3.19,
+   "gain_ticks": 0.67,
+   "gain_summaries": 0.81,
+   "separates": false
+  },
+  {
+   "third": "yellow",
+   "pair": "Olivetti green+cyan vs cyan+yellow",
+   "law": "density_add",
+   "dE_before_measured": 3.96,
+   "dE_before_ticks": 18.44,
+   "dE_after_ticks": 5.41,
+   "dE_after_summaries": 3.97,
+   "gain_ticks": 0.29,
+   "gain_summaries": 1,
+   "separates": false
+  }
+ ]
+}

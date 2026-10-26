@@ -1,0 +1,62 @@
+{
+ "date": "2026-10-26",
+ "method": "true metamers by construction (same XYZ under D65, 16 bands, CIE 1931 2-degree observer); dE CIE76 in D65-adapted Lab",
+ "pairs": [
+  {
+   "pair": "Albers yellow sheet (measured #e8e756)",
+   "spectral_distance": 0.102,
+   "dE_D65": 0,
+   "dE_illuminant_A": 1.31,
+   "dE_KM_mix_with_red": 1.24,
+   "dE_under_cyan_glaze": 1.38,
+   "rgb_engine_control": 0,
+   "XYZ_match": true
+  },
+  {
+   "pair": "Olivetti green+cyan overlap (measured #029642)",
+   "spectral_distance": 0.007,
+   "dE_D65": 0,
+   "dE_illuminant_A": 0.28,
+   "dE_KM_mix_with_red": 0.45,
+   "dE_under_cyan_glaze": 0.22,
+   "rgb_engine_control": 0,
+   "XYZ_match": true
+  },
+  {
+   "pair": "a muted sage",
+   "spectral_distance": 0.132,
+   "dE_D65": 0,
+   "dE_illuminant_A": 3.56,
+   "dE_KM_mix_with_red": 3.18,
+   "dE_under_cyan_glaze": 3.66,
+   "rgb_engine_control": 0,
+   "XYZ_match": true
+  },
+  {
+   "pair": "Frankenthaler purple",
+   "spectral_distance": 0.032,
+   "dE_D65": 0,
+   "dE_illuminant_A": 2.02,
+   "dE_KM_mix_with_red": 2.18,
+   "dE_under_cyan_glaze": 2.37,
+   "rgb_engine_control": 0,
+   "XYZ_match": true
+  }
+ ],
+ "in_medium": {
+  "filter_metamers_dE_D65": 0,
+  "D65": {
+   "ink_alone": 0.17,
+   "with_third_ink": 1.43,
+   "neutral_scene_ink_alone": 0.11,
+   "neutral_scene_with_third_ink": 1.55
+  },
+  "A": {
+   "ink_alone": 1.61,
+   "with_third_ink": 1.9,
+   "neutral_scene_ink_alone": 1.61,
+   "neutral_scene_with_third_ink": 2.1
+  }
+ },
+ "note": "The RGB engine sees each pair as one colour, so every recombination of the pair is identical in it (dE 0) by construction; separation here is the spectral engine reading what the RGB summary hides."
+}

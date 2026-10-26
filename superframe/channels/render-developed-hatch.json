@@ -1,0 +1,69 @@
+{
+ "name": "render-developed-hatch",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-1",
+ "id": "0065",
+ "lanes": [
+  "image",
+  "type",
+  "vector"
+ ],
+ "domains": [
+  "rendering",
+  "graphics",
+  "photochemistry",
+  "drafting"
+ ],
+ "quality": 0.8472,
+ "novelty": 1.086,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run1/65",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#ebe5d8",
+   "ink": "#15130f",
+   "accent": "#c4632b"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "raw.render",
+    "params": {
+     "view": "high",
+     "orbit": 2.45070313282311
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "lettering.developed",
+    "params": {},
+    "in": {
+     "glyphs": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "substrate.hatch",
+    "params": {
+     "cross": true
+    },
+    "in": {
+     "vector": "n1.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "film"
+   }
+  },
+  "out": {
+   "image": "n2.vector"
+  },
+  "cost": 960
+ }
+}

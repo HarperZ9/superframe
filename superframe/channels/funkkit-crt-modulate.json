@@ -1,0 +1,92 @@
+{
+ "name": "funkkit-crt-modulate",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0144",
+ "lanes": [
+  "sound",
+  "image"
+ ],
+ "domains": [
+  "music",
+  "jazz-funk",
+  "broadcast engineering",
+  "display physics",
+  "video synthesis",
+  "composition",
+  "print"
+ ],
+ "quality": 0.9055,
+ "novelty": 0.711,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/144",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "inst.funkkit",
+    "params": {
+     "preset": "dry-break",
+     "seed": 4561
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "signal.crt",
+    "params": {
+     "content": "bars",
+     "lines": 86,
+     "snow": 0.5039700855966657,
+     "tear": 0.0447731357999146,
+     "roll": 0.21246902598068118,
+     "mask": 0.012391269765794277
+    },
+    "in": {}
+   },
+   {
+    "id": "n2",
+    "node": "compose.modulate",
+    "params": {
+     "amount": 0.11941024307161568
+    },
+    "in": {
+     "raster": "n0.audio",
+     "field": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "compose.finish",
+    "params": {
+     "place": "low-third",
+     "frame": "cutout",
+     "accent": 0.6310637686401606,
+     "shadow": 0.0939526156289503,
+     "spectrum": true
+    },
+    "in": {
+     "subject": "n2.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "film"
+   }
+  },
+  "out": {
+   "image": "n3.raster",
+   "audio": "n0.audio"
+  },
+  "cost": 399
+ }
+}

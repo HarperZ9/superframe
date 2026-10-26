@@ -1,0 +1,54 @@
+{
+ "name": "membrane-posterize",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-1",
+ "id": "0195",
+ "lanes": [
+  "field",
+  "image"
+ ],
+ "domains": [
+  "acoustics",
+  "mathematics",
+  "print"
+ ],
+ "quality": 0.8508,
+ "novelty": 1.256,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run1/195",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#f3efe6",
+   "ink": "#1d2a3a",
+   "accent": "#b23a2e"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "chladni.membrane",
+    "params": {},
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.posterize",
+    "params": {},
+    "in": {
+     "raster": "n0.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n1.raster"
+  },
+  "cost": 30
+ }
+}

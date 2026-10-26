@@ -1,0 +1,79 @@
+{
+ "name": "chladni-misprint",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0158",
+ "lanes": [
+  "image",
+  "field"
+ ],
+ "domains": [
+  "acoustics",
+  "print",
+  "composition"
+ ],
+ "quality": 0.9444,
+ "novelty": 0.763,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/158",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#0e0f13",
+   "ink": "#e9e4d8",
+   "accent": "#d79e35"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "compose.chladni",
+    "params": {
+     "m": 6,
+     "mix": 73.06803021579981,
+     "width": 0.2802523902896792,
+     "sand": 0.32484001386910677
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "register.misprint",
+    "params": {
+     "plate": "tone",
+     "radius": 11
+    },
+    "in": {
+     "field": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-right",
+     "scale": 0.6596910982299595,
+     "frame": "plate",
+     "accent": 0.3999113282188773,
+     "accentWidth": 0.009085485385730863,
+     "grain": 2.3620713497512043,
+     "spectrum": false
+    },
+    "in": {
+     "subject": "n1.field",
+     "depth": "n0.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n2.raster"
+  },
+  "cost": 100
+ }
+}

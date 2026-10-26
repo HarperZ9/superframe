@@ -1,0 +1,72 @@
+{
+ "name": "membrane-streak-developed",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0043",
+ "lanes": [
+  "field",
+  "image",
+  "type"
+ ],
+ "domains": [
+  "acoustics",
+  "mathematics",
+  "codecs",
+  "print",
+  "photochemistry"
+ ],
+ "quality": 0.6897,
+ "novelty": 1.211,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/43",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#e7e1d3",
+   "ink": "#2b2622",
+   "accent": "#2f6f63"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "chladni.membrane",
+    "params": {
+     "n": 6,
+     "m": 2,
+     "mix": 78.22433579480276
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.streak",
+    "params": {
+     "count": 1719,
+     "figure": 0.2043034548405558
+    },
+    "in": {
+     "raster": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "lettering.developed",
+    "params": {},
+    "in": {
+     "glyphs": "n1.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n2.field"
+  },
+  "cost": 70
+ }
+}

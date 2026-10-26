@@ -1,0 +1,72 @@
+{
+ "name": "scene-fractal-warp",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0011",
+ "lanes": [
+  "image",
+  "field"
+ ],
+ "domains": [
+  "painting",
+  "astronomy",
+  "complex dynamics",
+  "fluid dynamics"
+ ],
+ "quality": 0.9021,
+ "novelty": 0.918,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/11",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#0e0f13",
+   "ink": "#e9e4d8",
+   "accent": "#d79e35"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "brush.scene",
+    "params": {
+     "scene": "nocturne"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "site.fractal",
+    "params": {
+     "type": "newton",
+     "scale": 3.253844498332502,
+     "cx": 0.7938472544774413,
+     "cy": -0.40925307385623455,
+     "maxIter": 77
+    },
+    "in": {}
+   },
+   {
+    "id": "n2",
+    "node": "field.warp",
+    "params": {
+     "amount": 12.565772929228842
+    },
+    "in": {
+     "field": "n0.raster",
+     "by": "n1.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n2.field"
+  },
+  "cost": 951
+ }
+}

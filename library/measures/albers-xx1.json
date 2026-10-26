@@ -1,0 +1,149 @@
+{
+ "format": "refdb.measure/1",
+ "name": "albers-xx1",
+ "source": "Albers, Interaction of Color, plate XX-1; BugNews save 2026-10-25 image 3",
+ "method": "(agreed shape, 2026-10-26; replaces the library's hand-box means and the superframe's\nfirst-step ΔE, which included clipped paper):\n- source: the BugNews save, image 3 (1200 x 851);\n- sheets: the superframe's four sheet boxes (read from a b* map); each pixel's depth is the number of\n  boxes covering it; pixels within 8 px of any sheet edge are dropped (JPEG ringing);\n- per depth: the median sRGB of the remaining pixels, converted to CIE L*a*b* (D65, proper sRGB\n  linearisation, not 8-bit OpenCV Lab);\n- the paper is clipped at white in this save, so depth 0 is reported but every fit and step ratio\n  uses depths 1 to 4 only (the unclipped regions);\n- fits on depths 1 to 4: L* against depth (linear) and against ln(depth) (Weber-Fechner).\nIt measures a printed reproduction: it calibrates how the print renders perceived steps.",
+ "boxes": [
+  [
+   780,
+   127,
+   940,
+   567
+  ],
+  [
+   860,
+   207,
+   1020,
+   647
+  ],
+  [
+   736,
+   287,
+   1173,
+   447
+  ],
+  [
+   700,
+   367,
+   1140,
+   527
+  ]
+ ],
+ "edge_px": 8,
+ "levels": [
+  {
+   "depth": 0,
+   "rgb_median": [
+    255.0,
+    255.0,
+    255.0
+   ],
+   "lab": [
+    100.0,
+    0.01,
+    -0.01
+   ],
+   "n": 12000,
+   "clipped": true
+  },
+  {
+   "depth": 1,
+   "rgb_median": [
+    232.0,
+    231.0,
+    86.0
+   ],
+   "lab": [
+    89.38,
+    -17.06,
+    68.14
+   ],
+   "n": 54362,
+   "clipped": false
+  },
+  {
+   "depth": 2,
+   "rgb_median": [
+    219.0,
+    224.0,
+    66.0
+   ],
+   "lab": [
+    86.39,
+    -20.04,
+    72.26
+   ],
+   "n": 29268,
+   "clipped": false
+  },
+  {
+   "depth": 3,
+   "rgb_median": [
+    216.0,
+    222.0,
+    60.0
+   ],
+   "lab": [
+    85.59,
+    -20.58,
+    73.43
+   ],
+   "n": 15624,
+   "clipped": false
+  },
+  {
+   "depth": 4,
+   "rgb_median": [
+    215.0,
+    222.0,
+    57.0
+   ],
+   "lab": [
+    85.5,
+    -21.12,
+    74.27
+   ],
+   "n": 3844,
+   "clipped": false
+  }
+ ],
+ "steps": [
+  {
+   "from": 0,
+   "to": 1,
+   "dL": -10.62,
+   "dE": 71.05,
+   "uses_clipped_paper": true
+  },
+  {
+   "from": 1,
+   "to": 2,
+   "dL": -2.99,
+   "dE": 5.9,
+   "uses_clipped_paper": false
+  },
+  {
+   "from": 2,
+   "to": 3,
+   "dL": -0.8,
+   "dE": 1.52,
+   "uses_clipped_paper": false
+  },
+  {
+   "from": 3,
+   "to": 4,
+   "dL": -0.09,
+   "dE": 1.0,
+   "uses_clipped_paper": false
+  }
+ ],
+ "unclipped_step_ratio": [
+  0.258,
+  0.658
+ ],
+ "L_fit_depth_1_4": {
+  "linear_rmse": 0.744,
+  "ln_depth_rmse": 0.454,
+  "ln_slope_L_per_ln_depth": -2.901
+ }
+}

@@ -1,0 +1,108 @@
+{
+ "name": "shepard-pressed-pixelate-hatch",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-1",
+ "id": "0226",
+ "lanes": [
+  "sound",
+  "reveal",
+  "type",
+  "image",
+  "vector"
+ ],
+ "domains": [
+  "psychoacoustics",
+  "acoustics",
+  "exhibition design",
+  "print",
+  "material",
+  "display tech",
+  "drafting"
+ ],
+ "quality": 0.7525,
+ "novelty": 1.06,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run1/226",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "sound.shepard",
+    "params": {
+     "seconds": 10.363361436873674,
+     "dir": "up"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "reveal.spectrogram",
+    "params": {
+     "log": true
+    },
+    "in": {
+     "audio": "n0.audio"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "reveal.pair",
+    "params": {},
+    "in": {
+     "trick": "n0.audio",
+     "reveal": "n1.field"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "lettering.pressed",
+    "params": {
+     "chamfer": 0.6780732435407117,
+     "uneven": 0.4794398141093552
+    },
+    "in": {
+     "glyphs": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "op.pixelate",
+    "params": {
+     "size": 10
+    },
+    "in": {
+     "raster": "n3.field"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "substrate.hatch",
+    "params": {
+     "spacing": 14.525310528464615,
+     "cross": true
+    },
+    "in": {
+     "vector": "n4.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n5.vector",
+   "audio": "n0.audio"
+  },
+  "cost": 511
+ }
+}

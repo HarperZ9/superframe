@@ -1,0 +1,129 @@
+{
+ "name": "surface-speckle-ridgelines-maskreveal",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0010",
+ "lanes": [
+  "field",
+  "image",
+  "vector",
+  "sound",
+  "reveal"
+ ],
+ "domains": [
+  "fluid mechanics",
+  "numerical methods",
+  "photography",
+  "cartography",
+  "data graphics",
+  "psychoacoustics",
+  "acoustics",
+  "exhibition design",
+  "composition",
+  "print"
+ ],
+ "quality": 0.9398,
+ "novelty": 1.115,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/10",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#f3efe6",
+   "ink": "#1d2a3a",
+   "accent": "#b23a2e"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "liquid.surface",
+    "params": {
+     "drops": 66,
+     "steps": 456,
+     "stiffness": 0.017716951312031597
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.speckle",
+    "params": {
+     "std": 0.01694535043556243
+    },
+    "in": {
+     "raster": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "site.ridgelines",
+    "params": {
+     "rows": 39,
+     "lift": 0.44390103225596245
+    },
+    "in": {
+     "field": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "perceive.maskreveal",
+    "params": {
+     "centerHz": 213.53988707996905,
+     "depthDb": 20.318716925103217
+    },
+    "in": {
+     "audio": "n2.vector"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "reveal.spectrogram",
+    "params": {
+     "log": false
+    },
+    "in": {
+     "audio": "n3.audio"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.417728690803051
+    },
+    "in": {
+     "trick": "n3.audio",
+     "reveal": "n4.field"
+    }
+   },
+   {
+    "id": "n6",
+    "node": "compose.finish",
+    "params": {
+     "scale": 0.7695425144350156,
+     "frame": "cutout",
+     "accent": 0.30372144747525454,
+     "accentWidth": 0.05204332871362567,
+     "grain": 3.796876118052751,
+     "grainPx": 2.127101184427738,
+     "spectrum": false
+    },
+    "in": {
+     "subject": "n5.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n6.raster"
+  },
+  "cost": 992
+ }
+}

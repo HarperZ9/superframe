@@ -1,0 +1,112 @@
+{
+ "name": "colony-oscilloscope-hatch-seedsound-blend-stroke",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-1",
+ "id": "0177",
+ "lanes": [
+  "matter",
+  "sound",
+  "vector",
+  "image"
+ ],
+ "domains": [
+  "biology",
+  "agent simulation",
+  "electronics",
+  "vector graphics",
+  "drafting",
+  "music",
+  "compositing",
+  "painting"
+ ],
+ "quality": 0.832,
+ "novelty": 1.073,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run1/177",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "swimmers.colony",
+    "params": {
+     "pellets": 3
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "site.oscilloscope",
+    "params": {
+     "hz": 158.8858832512051,
+     "seconds": 6.091850819066167,
+     "maxPoints": 76
+    },
+    "in": {
+     "vector": "n0.particles"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "substrate.hatch",
+    "params": {
+     "spacing": 11.809830059297383,
+     "cross": true
+    },
+    "in": {
+     "vector": "n1.audio"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "site.seedsound",
+    "params": {
+     "seed": "grove"
+    },
+    "in": {}
+   },
+   {
+    "id": "n4",
+    "node": "compose.blend",
+    "params": {
+     "mode": "screen",
+     "opacity": 0.5048784577520564
+    },
+    "in": {
+     "a": "n2.vector",
+     "b": "n3.audio"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "brush.stroke",
+    "params": {
+     "preset": "haze",
+     "size": 0.0191625962368994,
+     "colour": "ink",
+     "maxPaths": 525
+    },
+    "in": {
+     "vector": "n4.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n5.raster",
+   "audio": "n1.audio"
+  },
+  "cost": 2440
+ }
+}

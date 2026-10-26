@@ -1,0 +1,110 @@
+{
+ "desktop": {
+  "passed": 16,
+  "applicable": 18,
+  "score": 0.889,
+  "pages": {
+   "2026_10_24_feed_test_29_build_index_html": {
+    "url": "http://127.0.0.1:8739/feed-29/build/index.html",
+    "criteria": {
+     "R1": true,
+     "R2": true,
+     "R3": true,
+     "R5": false,
+     "R6": true,
+     "M1": false,
+     "M2": true,
+     "M3": true,
+     "T1": true,
+     "T2": true,
+     "T3": true,
+     "T4": true,
+     "T5": true,
+     "T6": true,
+     "T7": true,
+     "T8": true,
+     "E": true,
+     "C4": true
+    },
+    "passed": 16,
+    "applicable": 18,
+    "score": 0.889,
+    "detail": {
+     "canvas_ratio_min": 2.002,
+     "banded_share_max": 0.0,
+     "worst_band_px": 0.0,
+     "aa_share_min": 0.962,
+     "stair_share_max": 0.004,
+     "surface_sd": [
+      1.92
+     ],
+     "clip_high_max": 0.0,
+     "spaces": [
+      "srgb"
+     ],
+     "p95_ms": 16.9,
+     "dropped": 1,
+     "cb_p95_ms": 0.0,
+     "cls": 0.0001,
+     "errors": [],
+     "provenance_strings": [],
+     "type_fails": {}
+    }
+   }
+  }
+ },
+ "phone": {
+  "passed": 16,
+  "applicable": 18,
+  "score": 0.889,
+  "pages": {
+   "2026_10_24_feed_test_29_build_index_html": {
+    "url": "http://127.0.0.1:8739/feed-29/build/index.html",
+    "criteria": {
+     "R1": true,
+     "R2": true,
+     "R3": true,
+     "R5": false,
+     "R6": true,
+     "M1": false,
+     "M2": true,
+     "M3": true,
+     "T1": true,
+     "T2": true,
+     "T3": true,
+     "T4": true,
+     "T5": true,
+     "T6": true,
+     "T7": true,
+     "T8": true,
+     "E": true,
+     "C4": true
+    },
+    "passed": 16,
+    "applicable": 18,
+    "score": 0.889,
+    "detail": {
+     "canvas_ratio_min": 2,
+     "banded_share_max": 0.0,
+     "worst_band_px": 0.0,
+     "aa_share_min": 0.983,
+     "stair_share_max": 0.007,
+     "surface_sd": [
+      0.0
+     ],
+     "clip_high_max": 0.0,
+     "spaces": [
+      "srgb"
+     ],
+     "p95_ms": 16.9,
+     "dropped": 1,
+     "cb_p95_ms": 0.0,
+     "cls": 0.0004,
+     "errors": [],
+     "provenance_strings": [],
+     "type_fails": {}
+    }
+   }
+  }
+ }
+}

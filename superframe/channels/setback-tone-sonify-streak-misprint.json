@@ -1,0 +1,120 @@
+{
+ "name": "setback-tone-sonify-streak-misprint",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0009",
+ "lanes": [
+  "vector",
+  "type",
+  "sound",
+  "image",
+  "field"
+ ],
+ "domains": [
+  "urban planning",
+  "law",
+  "architecture",
+  "engraving",
+  "sonification",
+  "codecs",
+  "print",
+  "composition"
+ ],
+ "quality": 0.8129,
+ "novelty": 1.075,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/9",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#e7e1d3",
+   "ink": "#2b2622",
+   "accent": "#2f6f63"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "zoning.setback",
+    "params": {
+     "buildings": 8,
+     "street": 0.19746631211601198,
+     "ratio": 2.119494740269147
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "lettering.tone",
+    "params": {
+     "part": "shadow"
+    },
+    "in": {
+     "glyphs": "n0.vector"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "data.sonify",
+    "params": {
+     "step": 0.09711639910936357,
+     "voice": "bell"
+    },
+    "in": {
+     "series": "n1.field"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "op.streak",
+    "params": {
+     "figure": 0.2938971596304327
+    },
+    "in": {
+     "raster": "n2.events"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "register.misprint",
+    "params": {
+     "plate": "dis",
+     "radius": 12
+    },
+    "in": {
+     "field": "n3.raster"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "compose.finish",
+    "params": {
+     "place": "low-third",
+     "scale": 0.47937187150586397,
+     "frame": "plate",
+     "accent": 0.912934796884656,
+     "accentWidth": 0.11085137718357146,
+     "depth": 0.03606251057935878,
+     "shadow": 0.36549580632708967,
+     "grain": 1.3143593462184073,
+     "grainPx": 3.0995065025985244,
+     "spectrum": false
+    },
+    "in": {
+     "subject": "n4.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n5.raster",
+   "audio": "n2.events"
+  },
+  "cost": 101
+ }
+}

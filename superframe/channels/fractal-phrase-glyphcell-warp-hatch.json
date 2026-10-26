@@ -1,0 +1,109 @@
+{
+ "name": "fractal-phrase-glyphcell-warp-hatch",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0047",
+ "lanes": [
+  "image",
+  "sound",
+  "reveal",
+  "type",
+  "field",
+  "vector"
+ ],
+ "domains": [
+  "complex dynamics",
+  "music",
+  "exhibition design",
+  "print",
+  "display tech",
+  "fluid dynamics",
+  "drafting"
+ ],
+ "quality": 0.858,
+ "novelty": 1.224,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/47",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#f3efe6",
+   "ink": "#1d2a3a",
+   "accent": "#b23a2e"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "site.fractal",
+    "params": {
+     "type": "celtic",
+     "scale": 0.05769021454783135,
+     "cx": -0.3716965279309079,
+     "cy": -0.07972219679504633,
+     "maxIter": 283
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "sound.phrase",
+    "params": {},
+    "in": {}
+   },
+   {
+    "id": "n2",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.6500109825283289
+    },
+    "in": {
+     "trick": "n0.raster",
+     "reveal": "n1.audio"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "lettering.glyphcell",
+    "params": {
+     "misregister": 0.35035628238692884
+    },
+    "in": {
+     "glyphs": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "field.warp",
+    "params": {
+     "amount": 35.078114359639585
+    },
+    "in": {
+     "field": "n3.particles",
+     "by": "n1.audio"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "substrate.hatch",
+    "params": {
+     "spacing": 12.12790553830564,
+     "cross": true
+    },
+    "in": {
+     "vector": "n4.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n5.vector"
+  },
+  "cost": 300
+ }
+}

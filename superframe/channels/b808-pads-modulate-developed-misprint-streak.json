@@ -1,0 +1,118 @@
+{
+ "name": "b808-pads-modulate-developed-misprint-streak",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0108",
+ "lanes": [
+  "sound",
+  "image",
+  "type",
+  "field"
+ ],
+ "domains": [
+  "music",
+  "synthesis",
+  "video synthesis",
+  "photochemistry",
+  "print",
+  "codecs",
+  "composition"
+ ],
+ "quality": 0.9449,
+ "novelty": 0.853,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/108",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "inst.b808",
+    "params": {
+     "seed": 7400
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "inst.pads",
+    "params": {
+     "seed": 9501
+    },
+    "in": {}
+   },
+   {
+    "id": "n2",
+    "node": "compose.modulate",
+    "params": {},
+    "in": {
+     "raster": "n0.audio",
+     "field": "n1.audio"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "lettering.developed",
+    "params": {},
+    "in": {
+     "glyphs": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "register.misprint",
+    "params": {
+     "radius": 8
+    },
+    "in": {
+     "field": "n3.field"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "op.streak",
+    "params": {
+     "count": 581
+    },
+    "in": {
+     "raster": "n4.field"
+    }
+   },
+   {
+    "id": "n6",
+    "node": "compose.finish",
+    "params": {
+     "frame": "plate",
+     "accent": 0.15590701205655932,
+     "accentWidth": 0.036117403041571385,
+     "depth": 0.011749402433633805,
+     "shadow": 0.24649905133992434,
+     "grain": 2.8132639868184928,
+     "grainPx": 3.0456834603101015,
+     "spectrum": false
+    },
+    "in": {
+     "subject": "n5.raster",
+     "depth": "n1.audio"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n6.raster",
+   "audio": "n0.audio"
+  },
+  "cost": 1265
+ }
+}

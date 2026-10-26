@@ -1,0 +1,131 @@
+{
+ "name": "falsescale-letters-plexus-relief",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0107",
+ "lanes": [
+  "sound",
+  "reveal",
+  "type",
+  "image",
+  "field"
+ ],
+ "domains": [
+  "psychoacoustics",
+  "music theory",
+  "exhibition design",
+  "information theory",
+  "typography",
+  "network science",
+  "letterpress",
+  "optics",
+  "composition",
+  "print"
+ ],
+ "quality": 0.8546,
+ "novelty": 1.368,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/107",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#0e0f13",
+   "ink": "#e9e4d8",
+   "accent": "#d79e35"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "sound.falsescale",
+    "params": {
+     "root": 45,
+     "drift": 22.310288693755865,
+     "step": 0.226730276318267,
+     "climbs": 4
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "reveal.pitchruler",
+    "params": {},
+    "in": {
+     "events": "n0.events"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.6136838437989354
+    },
+    "in": {
+     "trick": "n0.events",
+     "reveal": "n1.vector"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "bits.letters",
+    "params": {
+     "bits": 8,
+     "faint": 0.14151790319010615
+    },
+    "in": {
+     "glyphs": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.plexus",
+    "params": {
+     "max": 421
+    },
+    "in": {
+     "particles": "n3.raster"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "raking.relief",
+    "params": {
+     "lampDeg": 41.3415155634284,
+     "azDeg": 220.45254847034812,
+     "bite": 0.3456213612342254,
+     "press": 0.9008226403035223
+    },
+    "in": {
+     "field": "n4.raster"
+    }
+   },
+   {
+    "id": "n6",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-right",
+     "frame": "plate",
+     "accent": 0.20401743240654469,
+     "accentWidth": 0.03694441880565137,
+     "spectrum": false,
+     "grain": 4.857028942089528,
+     "grainPx": 2.4430425397120414
+    },
+    "in": {
+     "subject": "n5.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n6.raster",
+   "audio": "n0.events"
+  },
+  "cost": 463
+ }
+}

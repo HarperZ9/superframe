@@ -1,0 +1,116 @@
+{
+ "name": "fbm-invert-sdf-alias-ridgelines",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0178",
+ "lanes": [
+  "field",
+  "image",
+  "type",
+  "sound",
+  "vector"
+ ],
+ "domains": [
+  "procedural",
+  "geology",
+  "photography",
+  "geometry",
+  "signal processing",
+  "cartography",
+  "data graphics",
+  "composition",
+  "print"
+ ],
+ "quality": 0.8841,
+ "novelty": 0.739,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/178",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "field.fbm",
+    "params": {
+     "feature": 19.198781292543,
+     "octaves": 4
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.invert",
+    "params": {},
+    "in": {
+     "raster": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "lettering.sdf",
+    "params": {
+     "reach": 6.057233847794123
+    },
+    "in": {
+     "glyphs": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "sound.alias",
+    "params": {
+     "hold": 79
+    },
+    "in": {
+     "audio": "n2.field"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "site.ridgelines",
+    "params": {
+     "rows": 68,
+     "lift": 0.29602831131778656
+    },
+    "in": {
+     "field": "n3.audio"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "compose.finish",
+    "params": {
+     "place": "low-third",
+     "scale": 0.8020510288188234,
+     "frame": "plate",
+     "accent": 0.7420744004193693,
+     "depth": 0.27690760578261686,
+     "shadow": 0.3816353391157463,
+     "grainPx": 2.8895917532034217,
+     "spectrum": false
+    },
+    "in": {
+     "subject": "n4.vector",
+     "depth": "n2.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n5.raster",
+   "audio": "n3.audio"
+  },
+  "cost": 120
+ }
+}

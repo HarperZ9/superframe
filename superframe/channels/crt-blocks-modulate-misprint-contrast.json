@@ -1,0 +1,113 @@
+{
+ "name": "crt-blocks-modulate-misprint-contrast",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0180",
+ "lanes": [
+  "image",
+  "field"
+ ],
+ "domains": [
+  "broadcast engineering",
+  "display physics",
+  "codecs",
+  "video synthesis",
+  "print",
+  "photography",
+  "composition"
+ ],
+ "quality": 0.8657,
+ "novelty": 0.742,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/180",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "signal.crt",
+    "params": {
+     "lines": 82,
+     "snow": 0.35471296990290285,
+     "roll": 0.5576380286365747,
+     "mask": 0.5361142646055669
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.blocks",
+    "params": {
+     "count": 160,
+     "copy": 0.7659598046448082
+    },
+    "in": {
+     "raster": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "compose.modulate",
+    "params": {
+     "amount": -0.11111834524199367
+    },
+    "in": {
+     "raster": "n1.raster",
+     "field": "n0.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "register.misprint",
+    "params": {
+     "plate": "dis",
+     "radius": 14
+    },
+    "in": {
+     "field": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "op.contrast",
+    "params": {
+     "c": 0.793584878090769
+    },
+    "in": {
+     "raster": "n3.field"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-right",
+     "scale": 0.6088072411576286,
+     "frame": "plate",
+     "shadow": 0.3159122691722587,
+     "grain": 3.1967896152287727,
+     "spectrum": true
+    },
+    "in": {
+     "subject": "n4.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n5.raster"
+  },
+  "cost": 213
+ }
+}

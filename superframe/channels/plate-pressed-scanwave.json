@@ -1,0 +1,90 @@
+{
+ "name": "plate-pressed-scanwave",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0000",
+ "lanes": [
+  "image",
+  "type",
+  "reveal"
+ ],
+ "domains": [
+  "geometry",
+  "drafting",
+  "print",
+  "material",
+  "exhibition design",
+  "display tech"
+ ],
+ "quality": 0.9395,
+ "novelty": 0.922,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/0",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "construct.plate",
+    "params": {
+     "levels": 9,
+     "pitch": 0.009794740186072886,
+     "fill": 0.5756156430579722,
+     "dust": 0.23783119185827672
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "lettering.pressed",
+    "params": {
+     "depth": 0.560289577068761,
+     "chamfer": 0.5849395226920023,
+     "uneven": 0.24369251588359475
+    },
+    "in": {
+     "glyphs": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.48813948938623064
+    },
+    "in": {
+     "trick": "n1.field",
+     "reveal": "n0.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "op.scanwave",
+    "params": {
+     "wavelength": 140.98242452833802,
+     "amp": 9.80567377153784,
+     "band": 3
+    },
+    "in": {
+     "raster": "n2.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n3.raster"
+  },
+  "cost": 260
+ }
+}

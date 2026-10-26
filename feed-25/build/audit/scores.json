@@ -1,0 +1,118 @@
+{
+ "gallery": {
+  "passed": 19,
+  "applicable": 19,
+  "score": 1.0,
+  "pages": {
+   "2026_10_23_feed_test_25_build_index_html": {
+    "url": "http://127.0.0.1:8727/feed-25/build/index.html",
+    "criteria": {
+     "R1": true,
+     "R2": true,
+     "R3": true,
+     "R4": true,
+     "R5": true,
+     "R6": true,
+     "M1": true,
+     "M2": true,
+     "M3": true,
+     "T1": true,
+     "T2": true,
+     "T3": true,
+     "T4": true,
+     "T5": true,
+     "T6": true,
+     "T7": true,
+     "T8": true,
+     "E": true,
+     "C4": true
+    },
+    "passed": 19,
+    "applicable": 19,
+    "score": 1.0,
+    "detail": {
+     "canvas_ratio_min": 2,
+     "banded_share_max": 0.0,
+     "worst_band_px": 0.0,
+     "aa_share_min": 0.665,
+     "stair_share_max": 0.211,
+     "surface_sd": [
+      3.37
+     ],
+     "clip_high_max": 0.0,
+     "spaces": [
+      "display-p3"
+     ],
+     "p95_ms": 16.8,
+     "dropped": 0,
+     "cb_p95_ms": 0.0,
+     "cls": 0.0001,
+     "errors": [],
+     "provenance_strings": [],
+     "type_fails": {}
+    }
+   }
+  }
+ },
+ "gallery-375": {
+  "passed": 17,
+  "applicable": 19,
+  "score": 0.895,
+  "pages": {
+   "2026_10_23_feed_test_25_build_index_html": {
+    "url": "http://127.0.0.1:8727/feed-25/build/index.html",
+    "criteria": {
+     "R1": true,
+     "R2": true,
+     "R3": true,
+     "R4": false,
+     "R5": true,
+     "R6": true,
+     "M1": true,
+     "M2": true,
+     "M3": true,
+     "T1": true,
+     "T2": false,
+     "T3": true,
+     "T4": true,
+     "T5": true,
+     "T6": true,
+     "T7": true,
+     "T8": true,
+     "E": true,
+     "C4": true
+    },
+    "passed": 17,
+    "applicable": 19,
+    "score": 0.895,
+    "detail": {
+     "canvas_ratio_min": 2,
+     "banded_share_max": 0.0,
+     "worst_band_px": 0.0,
+     "aa_share_min": 0.729,
+     "stair_share_max": 0.157,
+     "surface_sd": [
+      8.06,
+      0.0
+     ],
+     "clip_high_max": 0.0,
+     "spaces": [
+      "display-p3"
+     ],
+     "p95_ms": 16.8,
+     "dropped": 0,
+     "cb_p95_ms": 0.0,
+     "cls": 0.0006,
+     "errors": [],
+     "provenance_strings": [],
+     "type_fails": {
+      "T2 line length 45-80": [
+       "p cpl=38 'The plexus joins swimmers near'",
+       "p cpl=40 'Two membrane modes trade place'"
+      ]
+     }
+    }
+   }
+  }
+ }
+}

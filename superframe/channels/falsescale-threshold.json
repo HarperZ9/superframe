@@ -1,0 +1,97 @@
+{
+ "name": "falsescale-threshold",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0007",
+ "lanes": [
+  "sound",
+  "reveal",
+  "image"
+ ],
+ "domains": [
+  "psychoacoustics",
+  "music theory",
+  "exhibition design",
+  "print",
+  "composition"
+ ],
+ "quality": 0.8628,
+ "novelty": 1.242,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/7",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "sound.falsescale",
+    "params": {
+     "root": 59,
+     "step": 0.7860734368674458,
+     "climbs": 2
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "reveal.pitchruler",
+    "params": {},
+    "in": {
+     "events": "n0.events"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "reveal.pair",
+    "params": {},
+    "in": {
+     "trick": "n0.events",
+     "reveal": "n1.vector"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "op.threshold",
+    "params": {
+     "t": 0.7373484114650637
+    },
+    "in": {
+     "raster": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.finish",
+    "params": {
+     "accent": 0.6295230593532324,
+     "accentWidth": 0.019917051419615747,
+     "spectrum": false,
+     "depth": 0.000039163790643215175,
+     "shadow": 0.43096102320123464,
+     "grain": 3.2627705531194806
+    },
+    "in": {
+     "subject": "n3.raster",
+     "depth": "n0.events"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n4.raster",
+   "audio": "n0.events"
+  },
+  "cost": 24
+ }
+}

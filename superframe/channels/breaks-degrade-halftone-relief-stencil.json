@@ -1,0 +1,117 @@
+{
+ "name": "breaks-degrade-halftone-relief-stencil",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0088",
+ "lanes": [
+  "sound",
+  "particles",
+  "field",
+  "type",
+  "image"
+ ],
+ "domains": [
+  "music",
+  "drum and bass",
+  "media archaeology",
+  "print",
+  "letterpress",
+  "optics",
+  "street art",
+  "composition"
+ ],
+ "quality": 0.9208,
+ "novelty": 1.263,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/88",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "inst.breaks",
+    "params": {
+     "preset": "atmos-roller",
+     "seed": 7952
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "sound.degrade",
+    "params": {
+     "generation": 6
+    },
+    "in": {
+     "audio": "n0.audio"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "substrate.halftone",
+    "params": {
+     "cell": 9.057753881206736
+    },
+    "in": {
+     "field": "n1.audio"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "raking.relief",
+    "params": {
+     "lampDeg": 28.78166488185525,
+     "bite": 0.9746952382149174,
+     "press": 0.8457597380271181
+    },
+    "in": {
+     "field": "n2.particles"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "lettering.stencil",
+    "params": {
+     "bridge": 11.726946549722925
+    },
+    "in": {
+     "glyphs": "n3.field"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "compose.finish",
+    "params": {
+     "place": "centre",
+     "scale": 0.698796160435304,
+     "frame": "cutout",
+     "accent": 0.403735363855958,
+     "accentWidth": 0.039093633582815535,
+     "spectrum": false,
+     "depth": 0.15461510890163482,
+     "shadow": 0.3248862436739728
+    },
+    "in": {
+     "subject": "n4.field",
+     "depth": "n3.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n5.raster"
+  },
+  "cost": 400
+ }
+}

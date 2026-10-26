@@ -1,0 +1,88 @@
+{
+ "name": "hamming-streak-hatch-contrast",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-1",
+ "id": "0041",
+ "lanes": [
+  "field",
+  "image",
+  "vector"
+ ],
+ "domains": [
+  "information theory",
+  "number theory",
+  "codecs",
+  "print",
+  "drafting",
+  "photography"
+ ],
+ "quality": 0.8339,
+ "novelty": 2,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run1/41",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#e7e1d3",
+   "ink": "#2b2622",
+   "accent": "#2f6f63"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "bits.hamming",
+    "params": {
+     "op": "or",
+     "mod": 13,
+     "x0": 2833,
+     "y0": 199
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.streak",
+    "params": {
+     "count": 1862,
+     "figure": 0.4717889176681638
+    },
+    "in": {
+     "raster": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "substrate.hatch",
+    "params": {
+     "angle": 156.3680384773761,
+     "spacing": 13.294150717556477,
+     "cross": false
+    },
+    "in": {
+     "vector": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "op.contrast",
+    "params": {
+     "c": 0.6334466715343297
+    },
+    "in": {
+     "raster": "n2.vector"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "film"
+   }
+  },
+  "out": {
+   "image": "n3.raster"
+  },
+  "cost": 53
+ }
+}

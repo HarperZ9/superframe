@@ -1,0 +1,115 @@
+{
+ "name": "film-sdf-maskreveal",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0002",
+ "lanes": [
+  "image",
+  "type",
+  "sound",
+  "reveal"
+ ],
+ "domains": [
+  "optics",
+  "geometry",
+  "psychoacoustics",
+  "acoustics",
+  "exhibition design",
+  "composition",
+  "print"
+ ],
+ "quality": 0.9302,
+ "novelty": 1.022,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/2",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "compose.film",
+    "params": {
+     "dMin": 220.5525289522484,
+     "dMax": 955.4749441798776,
+     "scale": 2.17757673189044
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "lettering.sdf",
+    "params": {
+     "reach": 2.4236079836264253
+    },
+    "in": {
+     "glyphs": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "perceive.maskreveal",
+    "params": {
+     "centerHz": 1769.9252646416426,
+     "depthDb": 26.802747370675206
+    },
+    "in": {
+     "audio": "n1.field"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "reveal.spectrogram",
+    "params": {},
+    "in": {
+     "audio": "n2.audio"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.6101858356036245
+    },
+    "in": {
+     "trick": "n2.audio",
+     "reveal": "n3.field"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "compose.finish",
+    "params": {
+     "scale": 0.6540040285256691,
+     "accent": 0.5500142618548125,
+     "accentWidth": 0.06979444505646826,
+     "spectrum": true,
+     "depth": 0.16492065519560128,
+     "shadow": 0.01691055332776159,
+     "grain": 2.269007656443864,
+     "grainPx": 2.9944408698938787
+    },
+    "in": {
+     "subject": "n4.raster",
+     "depth": "n1.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n5.raster",
+   "audio": "n2.audio"
+  },
+  "cost": 155
+ }
+}

@@ -1,0 +1,106 @@
+{
+ "name": "funkkit-sand-sdf-hatch",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0024",
+ "lanes": [
+  "sound",
+  "matter",
+  "type",
+  "vector",
+  "image"
+ ],
+ "domains": [
+  "music",
+  "jazz-funk",
+  "acoustics",
+  "granular physics",
+  "geometry",
+  "drafting",
+  "composition",
+  "print"
+ ],
+ "quality": 0.9559,
+ "novelty": 0.583,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/24",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "inst.funkkit",
+    "params": {
+     "preset": "dry-break",
+     "seed": 775
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "chladni.sand",
+    "params": {
+     "grains": 16093,
+     "steps": 231,
+     "spell": 0.5017425087280571
+    },
+    "in": {
+     "field": "n0.audio"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "lettering.sdf",
+    "params": {},
+    "in": {
+     "glyphs": "n1.particles"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "substrate.hatch",
+    "params": {
+     "angle": 109.2383135156706,
+     "spacing": 2.2370241777971387,
+     "cross": true
+    },
+    "in": {
+     "vector": "n2.field"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.finish",
+    "params": {
+     "place": "centre",
+     "accent": 0.6612380056176335,
+     "accentWidth": 0.013317489046603442,
+     "spectrum": false,
+     "depth": 0.13352706347359344,
+     "grain": 5.0367833115160465,
+     "grainPx": 3.0727909506298605
+    },
+    "in": {
+     "subject": "n3.vector",
+     "depth": "n0.audio"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n4.raster"
+  },
+  "cost": 1073
+ }
+}

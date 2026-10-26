@@ -1,0 +1,6 @@
+{ "schema": "superframe.recipe/1", "seed": "valley", "size": [768, 576],
+  "note": "feed sets 28 and 29: one scene in two mediums; our painted valley translated to pixel art",
+  "nodes": [
+    { "id": "paint", "node": "painting.valley", "params": { "dabs": 1 } },
+    { "id": "px", "node": "medium.pixelart", "in": { "raster": "paint" }, "params": { "cell": 4, "colors": 16, "dither": 0.4, "accent": 0.35, "outline": true } } ],
+  "out": { "image": "px" } }

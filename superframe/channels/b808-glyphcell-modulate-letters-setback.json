@@ -1,0 +1,112 @@
+{
+ "name": "b808-glyphcell-modulate-letters-setback",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0049",
+ "lanes": [
+  "sound",
+  "type",
+  "image",
+  "vector",
+  "reveal"
+ ],
+ "domains": [
+  "music",
+  "synthesis",
+  "print",
+  "display tech",
+  "video synthesis",
+  "information theory",
+  "typography",
+  "urban planning",
+  "law",
+  "architecture",
+  "exhibition design"
+ ],
+ "quality": 0.8869,
+ "novelty": 0.806,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/49",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "inst.b808",
+    "params": {
+     "preset": "deep-clean"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "lettering.glyphcell",
+    "params": {
+     "cell": 6
+    },
+    "in": {
+     "glyphs": "n0.audio"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "compose.modulate",
+    "params": {},
+    "in": {
+     "raster": "n1.particles",
+     "field": "n0.audio"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "bits.letters",
+    "params": {
+     "pitch": 18,
+     "bits": 5,
+     "minSide": 0.3913408708875067,
+     "faint": 0.2048966278322041
+    },
+    "in": {
+     "glyphs": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "zoning.setback",
+    "params": {
+     "street": 0.38034742055460813,
+     "ratio": 3.9661865767557174
+    },
+    "in": {}
+   },
+   {
+    "id": "n5",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.666722747310996
+    },
+    "in": {
+     "trick": "n3.raster",
+     "reveal": "n4.vector"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n5.raster",
+   "audio": "n0.audio"
+  },
+  "cost": 370
+ }
+}

@@ -1,0 +1,82 @@
+{
+ "name": "phrase-paper-modulate-mix",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-1",
+ "id": "0225",
+ "lanes": [
+  "sound",
+  "vector",
+  "image",
+  "field"
+ ],
+ "domains": [
+  "music",
+  "collage",
+  "material",
+  "video synthesis",
+  "mathematics"
+ ],
+ "quality": 0.9313,
+ "novelty": 0.883,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run1/225",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#f3efe6",
+   "ink": "#1d2a3a",
+   "accent": "#b23a2e"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "sound.phrase",
+    "params": {},
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "tear.paper",
+    "params": {
+     "pieces": 10,
+     "amp": 7.3863673424348235,
+     "freq": 0.03139325652737171
+    },
+    "in": {}
+   },
+   {
+    "id": "n2",
+    "node": "compose.modulate",
+    "params": {
+     "amount": -0.09005342712625862
+    },
+    "in": {
+     "raster": "n0.audio",
+     "field": "n1.vector"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "field.mix",
+    "params": {
+     "op": "multiply"
+    },
+    "in": {
+     "a": "n2.raster",
+     "b": "n1.vector"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n3.field"
+  },
+  "cost": 63
+ }
+}

@@ -1,0 +1,95 @@
+{
+ "name": "plate-engrave-alias",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0165",
+ "lanes": [
+  "field",
+  "vector",
+  "sound",
+  "image"
+ ],
+ "domains": [
+  "acoustics",
+  "mechanics",
+  "engraving",
+  "fluid dynamics",
+  "signal processing",
+  "composition",
+  "print"
+ ],
+ "quality": 0.9632,
+ "novelty": 0.586,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/165",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "chladni.plate",
+    "params": {
+     "mode": 1,
+     "between": 0.18136049062013626,
+     "edge": "free"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "burin.engrave",
+    "params": {
+     "gamma": 2.864352124929428,
+     "baseAngle": 0.2245647870004177,
+     "gain": 2.6627150051062927
+    },
+    "in": {
+     "field": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "sound.alias",
+    "params": {
+     "hold": 41
+    },
+    "in": {
+     "audio": "n1.vector"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "compose.finish",
+    "params": {
+     "place": "high-third",
+     "scale": 0.8150489834113978,
+     "frame": "cutout",
+     "accentWidth": 0.047416472043842084,
+     "spectrum": false,
+     "shadow": 0.013683870318345726,
+     "grain": 4.320319880172611
+    },
+    "in": {
+     "subject": "n2.audio"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n3.raster",
+   "audio": "n2.audio"
+  },
+  "cost": 655
+ }
+}

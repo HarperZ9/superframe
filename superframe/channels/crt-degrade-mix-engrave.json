@@ -1,0 +1,90 @@
+{
+ "name": "crt-degrade-mix-engrave",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0058",
+ "lanes": [
+  "image",
+  "sound",
+  "field",
+  "vector"
+ ],
+ "domains": [
+  "broadcast engineering",
+  "display physics",
+  "media archaeology",
+  "mathematics",
+  "engraving",
+  "fluid dynamics"
+ ],
+ "quality": 0.7567,
+ "novelty": 1.159,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/58",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "signal.crt",
+    "params": {
+     "content": "static",
+     "lines": 180,
+     "roll": 1.6944781504571438,
+     "mask": 0.5124820162542164
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "sound.degrade",
+    "params": {
+     "generation": 1
+    },
+    "in": {
+     "audio": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "field.mix",
+    "params": {
+     "op": "max"
+    },
+    "in": {
+     "a": "n1.audio",
+     "b": "n0.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "burin.engrave",
+    "params": {
+     "dsep": 3.641607162891887,
+     "gamma": 1.1214407483115791,
+     "gain": 2.3392901367042214
+    },
+    "in": {
+     "field": "n2.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n3.vector",
+   "audio": "n1.audio"
+  },
+  "cost": 533
+ }
+}

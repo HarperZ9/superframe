@@ -1,0 +1,100 @@
+{
+ "name": "reference-pixelate-degrade-letters",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0137",
+ "lanes": [
+  "analog",
+  "image",
+  "sound",
+  "type"
+ ],
+ "domains": [
+  "art history",
+  "display tech",
+  "media archaeology",
+  "information theory",
+  "typography",
+  "composition",
+  "print"
+ ],
+ "quality": 0.9536,
+ "novelty": 0.592,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/137",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "analog.reference",
+    "params": {
+     "ref": "D1-brush-still"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.pixelate",
+    "params": {
+     "size": 3
+    },
+    "in": {
+     "raster": "n0.material"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "sound.degrade",
+    "params": {},
+    "in": {
+     "audio": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "bits.letters",
+    "params": {
+     "bits": 5,
+     "minSide": 0.5943098532385193,
+     "faint": 0.10549481539055705
+    },
+    "in": {
+     "glyphs": "n2.audio"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-left",
+     "accent": 0.7611085555981845,
+     "accentWidth": 0.03819026263896376,
+     "shadow": 0.05378950829617679,
+     "grain": 1.3164402204565704,
+     "grainPx": 3.072646487690508,
+     "spectrum": false
+    },
+    "in": {
+     "subject": "n3.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n4.raster"
+  },
+  "cost": 50
+ }
+}

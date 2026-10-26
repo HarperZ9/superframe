@@ -1,0 +1,81 @@
+{
+ "name": "grain-refract",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0011",
+ "lanes": [
+  "field",
+  "image"
+ ],
+ "domains": [
+  "photography",
+  "optics",
+  "materials",
+  "composition",
+  "print"
+ ],
+ "quality": 0.8551,
+ "novelty": 1.096,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/11",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#ebe5d8",
+   "ink": "#15130f",
+   "accent": "#c4632b"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "substrate.grain",
+    "params": {
+     "sd": 6.068906593602151,
+     "clump": 3.6799274689983577
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "glass.refract",
+    "params": {
+     "body": "arch",
+     "glass": "silica",
+     "thickness": 0.011965136495418846,
+     "reedDepth": 0.006716856341809034
+    },
+    "in": {
+     "raster": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-left",
+     "scale": 0.7042183881578967,
+     "frame": "plate",
+     "accent": 0.5819577563088387,
+     "shadow": 0.38383765413891524,
+     "grain": 3.0932087419554595,
+     "grainPx": 2.1821082700043917,
+     "spectrum": true
+    },
+    "in": {
+     "subject": "n1.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n2.raster"
+  },
+  "cost": 310
+ }
+}

@@ -1,0 +1,114 @@
+{
+ "name": "series-contrast-nightlights-sound",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0125",
+ "lanes": [
+  "data",
+  "image",
+  "type",
+  "reveal",
+  "sound"
+ ],
+ "domains": [
+  "economics",
+  "photography",
+  "urban",
+  "remote sensing",
+  "music theory",
+  "acoustics",
+  "typography",
+  "composition",
+  "print"
+ ],
+ "quality": 0.8126,
+ "novelty": 0.577,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/125",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "data.series",
+    "params": {
+     "name": "cpi-cents-left"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.contrast",
+    "params": {
+     "c": 1.7297523813322186
+    },
+    "in": {
+     "raster": "n0.series"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "lettering.nightlights",
+    "params": {
+     "pitch": 7.433711241930723,
+     "angle": -0.43802787945605814
+    },
+    "in": {
+     "glyphs": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "reveal.pitchruler",
+    "params": {},
+    "in": {
+     "events": "n2.particles"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "lettering.sound",
+    "params": {
+     "fLow": 238.49665131419897,
+     "colSec": 0.02378828998096287
+    },
+    "in": {
+     "glyphs": "n3.vector"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "compose.finish",
+    "params": {
+     "scale": 0.5184706220193767,
+     "frame": "cutout",
+     "spectrum": false,
+     "depth": 0.07225256734527648,
+     "shadow": 0.4393718229839578,
+     "grain": 3.3730061864480376,
+     "grainPx": 2.7070724166929723
+    },
+    "in": {
+     "subject": "n4.audio",
+     "depth": "n0.series"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n5.raster"
+  },
+  "cost": 508
+ }
+}

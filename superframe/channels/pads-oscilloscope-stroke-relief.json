@@ -1,0 +1,108 @@
+{
+ "name": "pads-oscilloscope-stroke-relief",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0175",
+ "lanes": [
+  "sound",
+  "image",
+  "field"
+ ],
+ "domains": [
+  "music",
+  "synthesis",
+  "electronics",
+  "vector graphics",
+  "painting",
+  "letterpress",
+  "optics",
+  "composition",
+  "print"
+ ],
+ "quality": 0.8886,
+ "novelty": 0.933,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/175",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "inst.pads",
+    "params": {
+     "preset": "atlantic-drift",
+     "seed": 7084
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "site.oscilloscope",
+    "params": {
+     "hz": 83.72811893001199,
+     "maxPoints": 239
+    },
+    "in": {
+     "vector": "n0.audio"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "brush.stroke",
+    "params": {
+     "preset": "rim",
+     "size": 0.005622737484253438,
+     "colour": "ink",
+     "maxPaths": 276
+    },
+    "in": {
+     "vector": "n1.audio"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "raking.relief",
+    "params": {
+     "lampDeg": 51.29273010115139,
+     "bite": 0.9524846968473867
+    },
+    "in": {
+     "field": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-left",
+     "frame": "plate",
+     "accent": 0.6811698556412011,
+     "accentWidth": 0.04366447339765728,
+     "spectrum": false,
+     "depth": 0.106178806303069,
+     "grainPx": 2.60676215197891
+    },
+    "in": {
+     "subject": "n3.field",
+     "depth": "n0.audio"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n4.raster"
+  },
+  "cost": 2124
+ }
+}

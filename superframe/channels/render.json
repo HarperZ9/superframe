@@ -1,0 +1,79 @@
+{
+ "name": "render",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0014",
+ "lanes": [
+  "image",
+  "reveal"
+ ],
+ "domains": [
+  "rendering",
+  "graphics",
+  "exhibition design",
+  "composition",
+  "print"
+ ],
+ "quality": 0.8906,
+ "novelty": 0.58,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/14",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#0e0f13",
+   "ink": "#e9e4d8",
+   "accent": "#d79e35"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "raw.render",
+    "params": {
+     "view": "close",
+     "orbit": -0.678149868566543
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.4816814021207392
+    },
+    "in": {
+     "trick": "n0.raster",
+     "reveal": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "compose.finish",
+    "params": {
+     "place": "centre",
+     "scale": 0.6527873725374229,
+     "accent": 0.7578862579539418,
+     "accentWidth": 0.13277375429403038,
+     "spectrum": true,
+     "depth": 0.13124983562156559,
+     "grain": 4.226400059368461,
+     "grainPx": 2.024643856100738
+    },
+    "in": {
+     "subject": "n1.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n2.raster"
+  },
+  "cost": 905
+ }
+}

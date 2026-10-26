@@ -1,0 +1,127 @@
+{
+ "made": "2026-10-26",
+ "source": "reference-library routing/metamer_isomer_scan.json and palettes.json",
+ "limits": "RGB-only sources: spectra are inferred by upsampling; a split is a model property, not a measurement",
+ "rows": [
+  {
+   "kind": "metamer",
+   "a": "st-local-d5a5ad2a9aa4#image 1",
+   "b": "st-mangoddango-2114231064323608927#image 2",
+   "scan_mean_dE": 1.02,
+   "dE_D65": 14.11,
+   "dE_A": 13.31,
+   "dE_candle": 12.79,
+   "split": -0.8
+  },
+  {
+   "kind": "metamer",
+   "a": "st-local-314de4c78109#image 1",
+   "b": "st-y_solanum-2113865582491922899#image 1",
+   "scan_mean_dE": 1.67,
+   "dE_D65": 10.32,
+   "dE_A": 11.91,
+   "dE_candle": 12.12,
+   "split": 1.59
+  },
+  {
+   "kind": "isomer",
+   "a": "st-Yaduvam-2113990659652858159#image 3",
+   "b": "st-local-64a800b34ab2#image 1",
+   "scan_mean_dE": 2.12,
+   "dE_D65": 4.42,
+   "dE_A": 4.42,
+   "dE_candle": 4.35,
+   "split": 0.01
+  },
+  {
+   "kind": "isomer",
+   "a": "st-local-64a800b34ab2#image 1",
+   "b": "st-pierscowburn-2113996522211971104#image 3",
+   "scan_mean_dE": 2.99,
+   "dE_D65": 4.33,
+   "dE_A": 4.46,
+   "dE_candle": 4.51,
+   "split": 0.14
+  },
+  {
+   "kind": "isomer",
+   "a": "st-local-de8bf4d2588f#image 1",
+   "b": "st-longtheriverrun-2114262230929961119#image 4",
+   "scan_mean_dE": 3.15,
+   "dE_D65": 3.3,
+   "dE_A": 3.74,
+   "dE_candle": 3.81,
+   "split": 0.44
+  },
+  {
+   "kind": "isomer",
+   "a": "st-DRUGONDRAGON-2113610814964076788#image 1",
+   "b": "st-MeditateColor-2113394717165572222#image 1",
+   "scan_mean_dE": 2.57,
+   "dE_D65": 3.12,
+   "dE_A": 3.54,
+   "dE_candle": 3.66,
+   "split": 0.43
+  },
+  {
+   "kind": "isomer",
+   "a": "st-MeditateColor-2113376597797671345#image 4",
+   "b": "st-archaeologyart-2114099360174678424#image 1",
+   "scan_mean_dE": 4.19,
+   "dE_D65": 3.57,
+   "dE_A": 3.39,
+   "dE_candle": 3.33,
+   "split": -0.18
+  },
+  {
+   "kind": "isomer",
+   "a": "st-MeditateColor-2113394717165572222#image 2",
+   "b": "st-camillerouxart-2114123654489657598#image 1",
+   "scan_mean_dE": 2.76,
+   "dE_D65": 3.1,
+   "dE_A": 2.63,
+   "dE_candle": 2.22,
+   "split": -0.47
+  },
+  {
+   "kind": "isomer",
+   "a": "st-MeditateColor-2113394717165572222#image 2",
+   "b": "st-camillerouxart-2114123654489657598#image 4",
+   "scan_mean_dE": 5.77,
+   "dE_D65": 3.05,
+   "dE_A": 3.57,
+   "dE_candle": 3.81,
+   "split": 0.52
+  },
+  {
+   "kind": "duplicate",
+   "a": "st-impression_ists-2114294768427581756#image 2",
+   "b": "st-impression_ists-2114419865792725188#image 1",
+   "scan_mean_dE": 0,
+   "dE_D65": 0,
+   "dE_A": 0,
+   "dE_candle": 0,
+   "split": 0
+  },
+  {
+   "kind": "duplicate",
+   "a": "st-pmamtraveller-2113708231205982607#image 1",
+   "b": "st-solisolsoli-2114371654931665246#image 1",
+   "scan_mean_dE": 0.06,
+   "dE_D65": 0.04,
+   "dE_A": 0.04,
+   "dE_candle": 0.04,
+   "split": 0
+  },
+  {
+   "kind": "duplicate",
+   "a": "st-solisolsoli-2114371654931665246#image 4",
+   "b": "st-solisolsoli-2114438847178416143#image 3",
+   "scan_mean_dE": 0.63,
+   "dE_D65": 0.3,
+   "dE_A": 0.3,
+   "dE_candle": 0.3,
+   "split": 0
+  }
+ ]
+}

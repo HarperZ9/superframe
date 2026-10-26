@@ -1,0 +1,95 @@
+{
+ "name": "falsescale-scanwave-mix",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-1",
+ "id": "0117",
+ "lanes": [
+  "sound",
+  "reveal",
+  "image",
+  "field"
+ ],
+ "domains": [
+  "psychoacoustics",
+  "music theory",
+  "exhibition design",
+  "display tech",
+  "mathematics"
+ ],
+ "quality": 0.8341,
+ "novelty": 0.972,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run1/117",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#f3efe6",
+   "ink": "#1d2a3a",
+   "accent": "#b23a2e"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "sound.falsescale",
+    "params": {
+     "root": 59,
+     "drift": 32.65109281940386,
+     "step": 0.7499794972129168,
+     "climbs": 3
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "reveal.pitchruler",
+    "params": {},
+    "in": {
+     "events": "n0.events"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.6517502754926681
+    },
+    "in": {
+     "trick": "n0.events",
+     "reveal": "n1.vector"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "op.scanwave",
+    "params": {
+     "amp": 8.920702152885497
+    },
+    "in": {
+     "raster": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "field.mix",
+    "params": {
+     "op": "screen"
+    },
+    "in": {
+     "a": "n3.raster",
+     "b": "n2.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n4.field"
+  },
+  "cost": 27
+ }
+}

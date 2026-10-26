@@ -1,0 +1,4649 @@
+{
+ "comment": "every published file, its workspace source and the source SHA-256",
+ "files": [
+  {
+   "path": "dataviz/data/cpi-annual.json",
+   "source": "2026-10-23-dataviz-art/data/cpi-annual.json",
+   "bytes": 9658,
+   "sourceSha256": "4cddc419f30ca803007aa4cfb9aea44cc9cfb8b94097c0126ef68eecdab4ffb6"
+  },
+  {
+   "path": "dataviz/data/gini-sample.json",
+   "source": "2026-10-23-dataviz-art/data/gini-sample.json",
+   "bytes": 8046,
+   "sourceSha256": "4bd1bc6de552d329b470842a1ab050918af0f4c3f290a21b8dfde8d468bb43b0"
+  },
+  {
+   "path": "dataviz/lib/sonify.js",
+   "source": "2026-10-23-dataviz-art/lib/sonify.js",
+   "bytes": 2162,
+   "sourceSha256": "a45f134653ad2c8e60b264aaabf7731cd498be67ce42438486ebdcb2deb7ece4"
+  },
+  {
+   "path": "feed-22/build/chladni.js",
+   "source": "2026-10-23-feed-test-22/build/chladni.js",
+   "bytes": 20522,
+   "sourceSha256": "fafa52bb0a3ae384952e9e3b8dd347145658a9d766d6cf4e02c6a13417cb17a1"
+  },
+  {
+   "path": "feed-22/build/chladni.test.mjs",
+   "source": "2026-10-23-feed-test-22/build/chladni.test.mjs",
+   "bytes": 6517,
+   "sourceSha256": "f6acdcb994b6941470070be117c650d4b40fad2ad30217f83937b2c04b578daf"
+  },
+  {
+   "path": "feed-22/build/demo.css",
+   "source": "2026-10-23-feed-test-22/build/demo.css",
+   "bytes": 8056,
+   "sourceSha256": "5659fa31d72432d13c742fd9f1f71e6a3ebb53536fddfd5528b7504749cf9611"
+  },
+  {
+   "path": "feed-22/build/demo.js",
+   "source": "2026-10-23-feed-test-22/build/demo.js",
+   "bytes": 10870,
+   "sourceSha256": "3393b82ab99465f6aef48341a4a95ee93c61d0559a3d06f960758051a60d3a97"
+  },
+  {
+   "path": "feed-22/build/index.html",
+   "source": "2026-10-23-feed-test-22/build/index.html",
+   "bytes": 5219,
+   "sourceSha256": "acf28b37fa28fac6c09b9aae88f514b8da8f53474c924a251d82924abaec5e97"
+  },
+  {
+   "path": "feed-22/build/life.js",
+   "source": "2026-10-23-feed-test-22/build/life.js",
+   "bytes": 4781,
+   "sourceSha256": "3cffb7f2e302b4470af902088e7d0d23cc92835b0fbdc394240000fdc91a13a7"
+  },
+  {
+   "path": "feed-22/build/package.json",
+   "source": "2026-10-23-feed-test-22/build/package.json",
+   "bytes": 18,
+   "sourceSha256": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae"
+  },
+  {
+   "path": "feed-22/build/plate-gl.js",
+   "source": "2026-10-23-feed-test-22/build/plate-gl.js",
+   "bytes": 11296,
+   "sourceSha256": "f061771495b8f52a3de2aecfec8ae40ab2b358c1973c4f2af05bdf1ead57aadc"
+  },
+  {
+   "path": "feed-22/build/swimmers.js",
+   "source": "2026-10-23-feed-test-22/build/swimmers.js",
+   "bytes": 12567,
+   "sourceSha256": "5f619efffa3c2a27f22febb32736ea6c931f6ee7b76ba43b03547f2cd524c882"
+  },
+  {
+   "path": "feed-22/build/swimmers.test.mjs",
+   "source": "2026-10-23-feed-test-22/build/swimmers.test.mjs",
+   "bytes": 4318,
+   "sourceSha256": "d1eb8d0871718a7a84645150fc286d5873e52adf151f61ab23256f3968d420c9"
+  },
+  {
+   "path": "feed-23/build/brush/cloud.js",
+   "source": "2026-10-23-feed-test-23/build/brush/cloud.js",
+   "bytes": 9023,
+   "sourceSha256": "a0428df2581856a18ebacb5131d855665dcf2c5029e8917ce3c54a4b1a09efd3"
+  },
+  {
+   "path": "feed-23/build/brush/cloud2d.js",
+   "source": "2026-10-23-feed-test-23/build/brush/cloud2d.js",
+   "bytes": 10884,
+   "sourceSha256": "180f59445f92b27978fa1d18c858db52962fe5735a4eb69e685faa740ee2f7b2"
+  },
+  {
+   "path": "feed-23/build/brush/cloudref.js",
+   "source": "2026-10-23-feed-test-23/build/brush/cloudref.js",
+   "bytes": 2592,
+   "sourceSha256": "cce83b6aa1e950ed1b41c018bfe9e8bcc46967ca84b7a3e3b4133ce1f1baad0f"
+  },
+  {
+   "path": "feed-23/build/brush/core.js",
+   "source": "2026-10-23-feed-test-23/build/brush/core.js",
+   "bytes": 3866,
+   "sourceSha256": "36cba639f1e32b360d33428b6c32440f5bc359d0b9515ee8e01ec74ccec35849"
+  },
+  {
+   "path": "feed-23/build/brush/dynamics.js",
+   "source": "2026-10-23-feed-test-23/build/brush/dynamics.js",
+   "bytes": 2210,
+   "sourceSha256": "dfe0d04276d1311a363165b840774896f42859c05f311698db11a29be5678e04"
+  },
+  {
+   "path": "feed-23/build/brush/grain.js",
+   "source": "2026-10-23-feed-test-23/build/brush/grain.js",
+   "bytes": 2647,
+   "sourceSha256": "003b03462cb22a3ebda27a51d5a65f875035759dbccdaa54a9a32b8c0f127896"
+  },
+  {
+   "path": "feed-23/build/brush/index.js",
+   "source": "2026-10-23-feed-test-23/build/brush/index.js",
+   "bytes": 2855,
+   "sourceSha256": "0b3b6d6d46a6a71d3903dd18dc50220238959ac47c63cb1295feef8dc1fde384"
+  },
+  {
+   "path": "feed-23/build/brush/paths.js",
+   "source": "2026-10-23-feed-test-23/build/brush/paths.js",
+   "bytes": 6857,
+   "sourceSha256": "230ead2e0ad3a91bb74018960544bdf648776475cd3f131f23e0907384a80467"
+  },
+  {
+   "path": "feed-23/build/brush/png.js",
+   "source": "2026-10-23-feed-test-23/build/brush/png.js",
+   "bytes": 3162,
+   "sourceSha256": "f276474c54bef1c2d26043caf668ee4c3df6007ded3cc772f8ab7927ab679a0d"
+  },
+  {
+   "path": "feed-23/build/brush/post.js",
+   "source": "2026-10-23-feed-test-23/build/brush/post.js",
+   "bytes": 3946,
+   "sourceSha256": "ae55e62a7b4888d154c0960f6223c9c8ba77cd50344e941e403ebb13f3e31f2c"
+  },
+  {
+   "path": "feed-23/build/brush/presets.js",
+   "source": "2026-10-23-feed-test-23/build/brush/presets.js",
+   "bytes": 3404,
+   "sourceSha256": "a507cc0f58399a7b03e7c30db4e276a36d08b094cba30e9b5be0daaf89641cb9"
+  },
+  {
+   "path": "feed-23/build/brush/scenes.js",
+   "source": "2026-10-23-feed-test-23/build/brush/scenes.js",
+   "bytes": 10389,
+   "sourceSha256": "6697e9a50ef630edba00a80a01b3dc708f2990b44960ba3192b82fbe445dfcf5"
+  },
+  {
+   "path": "feed-23/build/brush/stroke.js",
+   "source": "2026-10-23-feed-test-23/build/brush/stroke.js",
+   "bytes": 6208,
+   "sourceSha256": "0787a5ba6e9d4e2749b585e5c18929e6d2c795257c77a33660fea250c397864c"
+  },
+  {
+   "path": "feed-23/build/brush/surface.js",
+   "source": "2026-10-23-feed-test-23/build/brush/surface.js",
+   "bytes": 10891,
+   "sourceSha256": "9a551081be0d1d9bcd21cd953e4a4bf146dd43e31cfd90a596efceaa1a5f5e40"
+  },
+  {
+   "path": "feed-23/build/brush/test/cloud.test.mjs",
+   "source": "2026-10-23-feed-test-23/build/brush/test/cloud.test.mjs",
+   "bytes": 3877,
+   "sourceSha256": "27728a334e147b991a5cd5ae5c4345243004784c4c76ba17324b1d037e12e90e"
+  },
+  {
+   "path": "feed-23/build/brush/test/golden/starcloud-160.rgba",
+   "source": "2026-10-23-feed-test-23/build/brush/test/golden/starcloud-160.rgba",
+   "bytes": 136320,
+   "sourceSha256": "271323903f709e55f41d13f8ba9f9382247665e1059c03f86d2af8b1da039072"
+  },
+  {
+   "path": "feed-23/build/brush/test/quality.test.mjs",
+   "source": "2026-10-23-feed-test-23/build/brush/test/quality.test.mjs",
+   "bytes": 2427,
+   "sourceSha256": "efc2cbce36b2430bd16f64d4b693d373f0510fd33eda8aad3057e235b689919c"
+  },
+  {
+   "path": "feed-23/build/brush/test/stroke.test.mjs",
+   "source": "2026-10-23-feed-test-23/build/brush/test/stroke.test.mjs",
+   "bytes": 6576,
+   "sourceSha256": "d1b8ab8523b88ed92f298372c7202b667c5b9f527e61cd4809af705287db51c9"
+  },
+  {
+   "path": "feed-23/build/brush/test/surface.test.mjs",
+   "source": "2026-10-23-feed-test-23/build/brush/test/surface.test.mjs",
+   "bytes": 6035,
+   "sourceSha256": "a99c8d2450231a58dccc880232eb1b486cc032a47c1174a7be0b213ed7d5ffaf"
+  },
+  {
+   "path": "feed-23/build/brush/tips.js",
+   "source": "2026-10-23-feed-test-23/build/brush/tips.js",
+   "bytes": 5119,
+   "sourceSha256": "3555a1b6266dab2f9d92fb7c0b3cfdccac915252e8aa0ca8719a4a907e708db5"
+  },
+  {
+   "path": "feed-23/build/demo-canvas.js",
+   "source": "2026-10-23-feed-test-23/build/demo-canvas.js",
+   "bytes": 474,
+   "sourceSha256": "10212a161325f9f04137b0a1fc060da78c7a7b14d12de8fed120b1bbdae1f240"
+  },
+  {
+   "path": "feed-23/build/demo-studio.js",
+   "source": "2026-10-23-feed-test-23/build/demo-studio.js",
+   "bytes": 7604,
+   "sourceSha256": "88a5fd32c82ee0eb0b92bf2168a2f94d74f49596ffaf5feab0b260bc82029722"
+  },
+  {
+   "path": "feed-23/build/demo-worker.js",
+   "source": "2026-10-23-feed-test-23/build/demo-worker.js",
+   "bytes": 1064,
+   "sourceSha256": "81ecfc75700e8f02c27866a37a3271cea41165f1c21d5907f505e0b7c8cd11b7"
+  },
+  {
+   "path": "feed-23/build/demo.css",
+   "source": "2026-10-23-feed-test-23/build/demo.css",
+   "bytes": 7704,
+   "sourceSha256": "dbb7426f2f0c4a1007fea17955e60e67421b15ced5bd58dce45442e55b741907"
+  },
+  {
+   "path": "feed-23/build/demo.js",
+   "source": "2026-10-23-feed-test-23/build/demo.js",
+   "bytes": 10536,
+   "sourceSha256": "37f25c3be67267cbaf1527858e8288f6b2e2d5a3c482dc429ef0262d3d956585"
+  },
+  {
+   "path": "feed-23/build/index.html",
+   "source": "2026-10-23-feed-test-23/build/index.html",
+   "bytes": 5806,
+   "sourceSha256": "453ea9f4c045d2a057a2da90e2bd64ad4511e1f04c3a52254bff1212225d4940"
+  },
+  {
+   "path": "feed-23/build/ledger/ledger.js",
+   "source": "2026-10-23-feed-test-23/build/ledger/ledger.js",
+   "bytes": 9814,
+   "sourceSha256": "59a8bef705cc3ff28ec1ec97dc16c02cb24a541adea00a2c68915fb7a19f4db7"
+  },
+  {
+   "path": "feed-23/build/ledger/ledger.test.mjs",
+   "source": "2026-10-23-feed-test-23/build/ledger/ledger.test.mjs",
+   "bytes": 3253,
+   "sourceSha256": "cf46f24c4ad68ea6079f01e192d14cf660baf7162f3658ca17cf1fbd02d05b53"
+  },
+  {
+   "path": "feed-23/build/package.json",
+   "source": "2026-10-23-feed-test-23/build/package.json",
+   "bytes": 18,
+   "sourceSha256": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae"
+  },
+  {
+   "path": "feed-23/build/render-worker.js",
+   "source": "2026-10-23-feed-test-23/build/render-worker.js",
+   "bytes": 1567,
+   "sourceSha256": "e3ce48299633738f09f2f7782a151d57c659173c21d9d0870f99e5eb7fbf516f"
+  },
+  {
+   "path": "feed-23/build/tools/golden.mjs",
+   "source": "2026-10-23-feed-test-23/build/tools/golden.mjs",
+   "bytes": 577,
+   "sourceSha256": "8e0a751fe66bfebe073826d00b1c2ddae5f7b4dca758703cdc08b96c0f72d54a"
+  },
+  {
+   "path": "feed-23/build/tools/render.mjs",
+   "source": "2026-10-23-feed-test-23/build/tools/render.mjs",
+   "bytes": 897,
+   "sourceSha256": "b4c7f2107cf9dba6a1664ad460e1eeea30b5ba908f3d49bf8f299bcf7ec1cae2"
+  },
+  {
+   "path": "feed-23/build/tools/serve.mjs",
+   "source": "2026-10-23-feed-test-23/build/tools/serve.mjs",
+   "bytes": 1465,
+   "sourceSha256": "bcd318cf31ff19928ff336815057ed4e45582cd220ffd9e2fd44d93106917297"
+  },
+  {
+   "path": "feed-23/build/tools/tipsheet.mjs",
+   "source": "2026-10-23-feed-test-23/build/tools/tipsheet.mjs",
+   "bytes": 838,
+   "sourceSha256": "ccf00089f2f37e8a172b7e7589a7732b535b8bbe6df786899e0e73f64ebfff5f"
+  },
+  {
+   "path": "feed-24/build/bitmosaic.js",
+   "source": "2026-10-23-feed-test-24/build/bitmosaic.js",
+   "bytes": 3184,
+   "sourceSha256": "3ba60f093ff8cf3f95dc9040cb9c92b5bef283726338a01ffc48145578490bc3"
+  },
+  {
+   "path": "feed-24/build/bitmosaic.test.mjs",
+   "source": "2026-10-23-feed-test-24/build/bitmosaic.test.mjs",
+   "bytes": 3040,
+   "sourceSha256": "2ae2087fbd6827421a5f383e5e8f99dc10773055caa5f8c5853b148163d483ba"
+  },
+  {
+   "path": "feed-24/build/construct.js",
+   "source": "2026-10-23-feed-test-24/build/construct.js",
+   "bytes": 12971,
+   "sourceSha256": "37677cd9d92c4e72d95aee5b71bdea71969729835073eab04e5a7a65aebe67fd"
+  },
+  {
+   "path": "feed-24/build/construct.test.mjs",
+   "source": "2026-10-23-feed-test-24/build/construct.test.mjs",
+   "bytes": 8706,
+   "sourceSha256": "9effe41f417a696c5d920cbf32712df33d942c6ff9bf879e97178b2bc176beea"
+  },
+  {
+   "path": "feed-24/build/demo.css",
+   "source": "2026-10-23-feed-test-24/build/demo.css",
+   "bytes": 3614,
+   "sourceSha256": "2ea951cdadde382062e5f8e781a0357c6e3cf29d7087a51867d8e9bcccb555ff"
+  },
+  {
+   "path": "feed-24/build/demo.js",
+   "source": "2026-10-23-feed-test-24/build/demo.js",
+   "bytes": 15531,
+   "sourceSha256": "35f9ce2bca32d39368b4a241c4fcb332d6da46a4db9a4d0803ed97017809133c"
+  },
+  {
+   "path": "feed-24/build/fixtures/pickover.js",
+   "source": "2026-10-23-feed-test-24/build/fixtures/pickover.js",
+   "bytes": 1053,
+   "sourceSha256": "276b94ab5c1b9c73837db6292984b006bbc77d59cb2ec6b251065f10c5e55cb4"
+  },
+  {
+   "path": "feed-24/build/golden.js",
+   "source": "2026-10-23-feed-test-24/build/golden.js",
+   "bytes": 3576,
+   "sourceSha256": "0a4ab5e3305dab3834c7d33940c53bad769e68d9c6238a319913e0e24e1b63fb"
+  },
+  {
+   "path": "feed-24/build/golden/bitmosaic-eE-320x160.full.json",
+   "source": "2026-10-23-feed-test-24/build/golden/bitmosaic-eE-320x160.full.json",
+   "bytes": 68325,
+   "sourceSha256": "e29d543256305ae4d2ccea4d7ef675af36dbdda756c55d3ffb34b737b8ee4603"
+  },
+  {
+   "path": "feed-24/build/golden/construct-H-2.5s.json",
+   "source": "2026-10-23-feed-test-24/build/golden/construct-H-2.5s.json",
+   "bytes": 22881,
+   "sourceSha256": "9e8589300ac29decac282a54dbf940d12d7c197db06efa00243f597488647341"
+  },
+  {
+   "path": "feed-24/build/golden/hamming-fitted-ink.json",
+   "source": "2026-10-23-feed-test-24/build/golden/hamming-fitted-ink.json",
+   "bytes": 25655,
+   "sourceSha256": "1f1dd7d79f9133a95de0c1ce50be6db460f3dcc4ba6c40e49afc8131057ff7a4"
+  },
+  {
+   "path": "feed-24/build/golden/hamming-ink-320x240.full.json",
+   "source": "2026-10-23-feed-test-24/build/golden/hamming-ink-320x240.full.json",
+   "bytes": 102456,
+   "sourceSha256": "c9f7f15e8afed0996cbd11967eaf5dd92b12ea9760b7b6cd5926b92f036e3e82"
+  },
+  {
+   "path": "feed-24/build/golden/orbital-2s3d-300.full.json",
+   "source": "2026-10-23-feed-test-24/build/golden/orbital-2s3d-300.full.json",
+   "bytes": 120053,
+   "sourceSha256": "e5478f6ab8a7cd6be7534a6c784de7ac2cc8d7e97c452511bd562fa1275cee73"
+  },
+  {
+   "path": "feed-24/build/golden/orbital-2s3d-t0-opaque.json",
+   "source": "2026-10-23-feed-test-24/build/golden/orbital-2s3d-t0-opaque.json",
+   "bytes": 19259,
+   "sourceSha256": "b77f499fd062537a547d6068ef7a02af780b063f8a43a26aa6782f2daa0216dc"
+  },
+  {
+   "path": "feed-24/build/golden/plate-H-480x320.full.json",
+   "source": "2026-10-23-feed-test-24/build/golden/plate-H-480x320.full.json",
+   "bytes": 204852,
+   "sourceSha256": "747ed09148b50efe76fc2dd6cc5f94c27c4161f9e7bcd434a959598af2d93941"
+  },
+  {
+   "path": "feed-24/build/goldencheck.mjs",
+   "source": "2026-10-23-feed-test-24/build/goldencheck.mjs",
+   "bytes": 2599,
+   "sourceSha256": "8aaa41cbdb015834d21cd7f0cd1d37ed6688265b33b14b2f19f9bf59df7bd2f8"
+  },
+  {
+   "path": "feed-24/build/hamming.js",
+   "source": "2026-10-23-feed-test-24/build/hamming.js",
+   "bytes": 3442,
+   "sourceSha256": "097e5bc35571a237c71e47a5bc7944e878bad7f9846f4b10f4050154bfcb7d98"
+  },
+  {
+   "path": "feed-24/build/hamming.test.mjs",
+   "source": "2026-10-23-feed-test-24/build/hamming.test.mjs",
+   "bytes": 4328,
+   "sourceSha256": "366b42ae99b7b683cdbeddf0ace463a51ef33741ded139eb315547955f8941fb"
+  },
+  {
+   "path": "feed-24/build/index.html",
+   "source": "2026-10-23-feed-test-24/build/index.html",
+   "bytes": 6456,
+   "sourceSha256": "b43a60284678650fcf800f0781b832f68f9a8b92244dcac91bd1af55ed0ff217"
+  },
+  {
+   "path": "feed-24/build/lettering24.js",
+   "source": "2026-10-23-feed-test-24/build/lettering24.js",
+   "bytes": 3820,
+   "sourceSha256": "47390846aaa7b9f726152fe645daf9e7e87bf725ba4ba41f6dcfdb4c00c90969"
+  },
+  {
+   "path": "feed-24/build/nodes.js",
+   "source": "2026-10-23-feed-test-24/build/nodes.js",
+   "bytes": 3508,
+   "sourceSha256": "daab1ffb71a41e2c924afe809e48d239fa89da17794fcb4c05a25415f541b553"
+  },
+  {
+   "path": "feed-24/build/nodes.test.mjs",
+   "source": "2026-10-23-feed-test-24/build/nodes.test.mjs",
+   "bytes": 1389,
+   "sourceSha256": "b72330e87ccee3a9b4d91bdaf5ac1c6d1652a69838f8a8e8c7517c551f13b48e"
+  },
+  {
+   "path": "feed-24/build/orbital-paint-worker.js",
+   "source": "2026-10-23-feed-test-24/build/orbital-paint-worker.js",
+   "bytes": 1985,
+   "sourceSha256": "840678d0409c0768e29adf26fa0384f7cf9e8a6ec88eadc600cbd1a7e1c91caf"
+  },
+  {
+   "path": "feed-24/build/orbital-render.js",
+   "source": "2026-10-23-feed-test-24/build/orbital-render.js",
+   "bytes": 9044,
+   "sourceSha256": "bcff9dc6b55261e9f461ae40ff4dd8c619fa027095864169440acf147e8065a0"
+  },
+  {
+   "path": "feed-24/build/orbital-room.js",
+   "source": "2026-10-23-feed-test-24/build/orbital-room.js",
+   "bytes": 7334,
+   "sourceSha256": "43969fb261813ca7b4b3204c7b9d462748188cebfa2a6199b434a025080b16be"
+  },
+  {
+   "path": "feed-24/build/orbital-worker.js",
+   "source": "2026-10-23-feed-test-24/build/orbital-worker.js",
+   "bytes": 2564,
+   "sourceSha256": "a0da423f3718ad6528d3f92966597668df1983bfd96fa3ed5c6f7cc870569bf0"
+  },
+  {
+   "path": "feed-24/build/orbital.js",
+   "source": "2026-10-23-feed-test-24/build/orbital.js",
+   "bytes": 10970,
+   "sourceSha256": "46418582cae956574e6cf3733ad52ac92a4954dc939a2ac51172609f82303014"
+  },
+  {
+   "path": "feed-24/build/orbital.test.mjs",
+   "source": "2026-10-23-feed-test-24/build/orbital.test.mjs",
+   "bytes": 7111,
+   "sourceSha256": "dddcd83fcdc6d33ff76cc8dbc67dbbdfc72e4b33f793bb92ab40883c99644bca"
+  },
+  {
+   "path": "feed-24/build/package.json",
+   "source": "2026-10-23-feed-test-24/build/package.json",
+   "bytes": 378,
+   "sourceSha256": "f4bb30c6f6cf11c89c1c6b6442069d255f9e2f2f113bd96581bb3f4b752c8739"
+  },
+  {
+   "path": "feed-24/build/png16.js",
+   "source": "2026-10-23-feed-test-24/build/png16.js",
+   "bytes": 3276,
+   "sourceSha256": "6c305851bd6ed648d00c587f836796ce7ca09853bcfdf9f5c11f06ceef3aede8"
+  },
+  {
+   "path": "feed-24/build/png16.test.mjs",
+   "source": "2026-10-23-feed-test-24/build/png16.test.mjs",
+   "bytes": 2432,
+   "sourceSha256": "619e86598465978a26e4ee8616bff027dc7aab3598480aa082cff7bb3656867b"
+  },
+  {
+   "path": "feed-24/build/quality.test.mjs",
+   "source": "2026-10-23-feed-test-24/build/quality.test.mjs",
+   "bytes": 4447,
+   "sourceSha256": "90823387785ec6b0cfcd38b9ab92d6e71d56ba34db6e6c8de47c0e3e0a9aebcf"
+  },
+  {
+   "path": "feed-24/build/raster.js",
+   "source": "2026-10-23-feed-test-24/build/raster.js",
+   "bytes": 7412,
+   "sourceSha256": "77c387617957bacfaec9f85b10ef5cc46861964c015eec50f101cf80b0bfa7b5"
+  },
+  {
+   "path": "feed-25/build/anim.mjs",
+   "source": "2026-10-23-feed-test-25/build/anim.mjs",
+   "bytes": 3794,
+   "sourceSha256": "3030e8de4e5c6dccccce410de9b653ea876ac3fc0e82efbd15a3651cad78bed0"
+  },
+  {
+   "path": "feed-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html.json",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html.json",
+   "bytes": 31721,
+   "sourceSha256": "7d26e166a2a0070f8e6108206472091bd2c73a600978112af1ddf0d1c61cc5c7"
+  },
+  {
+   "path": "feed-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__canvas0.png",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__canvas0.png",
+   "bytes": 794669,
+   "sourceSha256": "0acd7772f42aa1d867857f2ece780806defdac7c501c25b8d863ae77dcb56026"
+  },
+  {
+   "path": "feed-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__canvas0_200.png",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__canvas0_200.png",
+   "bytes": 393137,
+   "sourceSha256": "a38a2fa731b670b59216b1226811a533333c2a97ab90824cc2b15543e9e47b92"
+  },
+  {
+   "path": "feed-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__canvas1.png",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__canvas1.png",
+   "bytes": 2436,
+   "sourceSha256": "90caec42a380268c5675c165f09b3c7a9d14a08f98c9cc68dcd783d9942f6122"
+  },
+  {
+   "path": "feed-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__canvas1_200.png",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__canvas1_200.png",
+   "bytes": 2582,
+   "sourceSha256": "2542f24313e13c7e4193306dcd8faff0145c9d88621c4988a9773cccaa049a82"
+  },
+  {
+   "path": "feed-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__view.png",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__view.png",
+   "bytes": 915165,
+   "sourceSha256": "678f5b74160f00bef65a30e39dcda93ac4b66bf9b4653fc69057f930e590bd53"
+  },
+  {
+   "path": "feed-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__view_200.png",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery-375/2026_10_23_feed_test_25_build_index_html__view_200.png",
+   "bytes": 385390,
+   "sourceSha256": "e9db8e3cc0ccaaecc4506097b734280b3dc5a945bcdbd6fcf8560e76830719c6"
+  },
+  {
+   "path": "feed-25/build/audit/gallery/2026_10_23_feed_test_25_build_index_html.json",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery/2026_10_23_feed_test_25_build_index_html.json",
+   "bytes": 30208,
+   "sourceSha256": "f4d18dd229dea28637e9c90a588185d549eb17c6802995aceccbcf985d89d836"
+  },
+  {
+   "path": "feed-25/build/audit/gallery/2026_10_23_feed_test_25_build_index_html__canvas1.png",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery/2026_10_23_feed_test_25_build_index_html__canvas1.png",
+   "bytes": 3055299,
+   "sourceSha256": "584be0658a7425d86eb7c0a1ef75721d729df181e1ea52c0d56e993298443b14"
+  },
+  {
+   "path": "feed-25/build/audit/gallery/2026_10_23_feed_test_25_build_index_html__canvas1_200.png",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery/2026_10_23_feed_test_25_build_index_html__canvas1_200.png",
+   "bytes": 311456,
+   "sourceSha256": "44e6545891d8f0e0c13abb731f5c28d53ca18c3a950aece4ce994700f3203baf"
+  },
+  {
+   "path": "feed-25/build/audit/gallery/2026_10_23_feed_test_25_build_index_html__view.png",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery/2026_10_23_feed_test_25_build_index_html__view.png",
+   "bytes": 4102096,
+   "sourceSha256": "80ae9f12d1890efc1780c62d751bff961805fae777270b1d5f501490fc669596"
+  },
+  {
+   "path": "feed-25/build/audit/gallery/2026_10_23_feed_test_25_build_index_html__view_200.png",
+   "source": "2026-10-23-feed-test-25/build/audit/gallery/2026_10_23_feed_test_25_build_index_html__view_200.png",
+   "bytes": 241086,
+   "sourceSha256": "60062d00a9dcf24a2833a54d969b40880b945b939c45ca034c8504f92fc8c466"
+  },
+  {
+   "path": "feed-25/build/audit/scores.json",
+   "source": "2026-10-23-feed-test-25/build/audit/scores.json",
+   "bytes": 2365,
+   "sourceSha256": "9302ee0eeba6490b9c6df861113dededb4e3ea9c4e9538b7369851bf2b93efe3"
+  },
+  {
+   "path": "feed-25/build/compose.mjs",
+   "source": "2026-10-23-feed-test-25/build/compose.mjs",
+   "bytes": 5998,
+   "sourceSha256": "12f79d2f54e249369da7772cdb37c120b1b83b5db1394807855ebb7bcd585ffe"
+  },
+  {
+   "path": "feed-25/build/gallery.css",
+   "source": "2026-10-23-feed-test-25/build/gallery.css",
+   "bytes": 2448,
+   "sourceSha256": "de4efd6213f604391f494b01803bb15381355360596f5efe0b5e68cd88e49b02"
+  },
+  {
+   "path": "feed-25/build/gallery.js",
+   "source": "2026-10-23-feed-test-25/build/gallery.js",
+   "bytes": 2477,
+   "sourceSha256": "39fd630ba0fae2f0c24b981462fba6ce493bb2d9a63c46952b3cc27204d6085d"
+  },
+  {
+   "path": "feed-25/build/glitch.mjs",
+   "source": "2026-10-23-feed-test-25/build/glitch.mjs",
+   "bytes": 9684,
+   "sourceSha256": "805dbc802e239788ffcd14985ece01eb7798bf93a9ae97c068d798459735bda1"
+  },
+  {
+   "path": "feed-25/build/glyphs.mjs",
+   "source": "2026-10-23-feed-test-25/build/glyphs.mjs",
+   "bytes": 6412,
+   "sourceSha256": "b0361efc980c6c4939a9c16fb8f3afc45187208bed8e9372d1e9e19a38c0cf42"
+  },
+  {
+   "path": "feed-25/build/hud.mjs",
+   "source": "2026-10-23-feed-test-25/build/hud.mjs",
+   "bytes": 6129,
+   "sourceSha256": "b5cb1ea43659e606bf3514348e1888caace194ee6b0351602522c307ebc8f845"
+  },
+  {
+   "path": "feed-25/build/index.html",
+   "source": "2026-10-23-feed-test-25/build/index.html",
+   "bytes": 8133,
+   "sourceSha256": "85fc2dc92fa714536ec27e6e1f6faacde925e269791cdb1923692cdc735a5952"
+  },
+  {
+   "path": "feed-25/build/layer.mjs",
+   "source": "2026-10-23-feed-test-25/build/layer.mjs",
+   "bytes": 7971,
+   "sourceSha256": "bf67307d32b4f1d580f066383d3500db5584004bf1fa80d02167e49bf5765f34"
+  },
+  {
+   "path": "feed-25/build/live-worker.mjs",
+   "source": "2026-10-23-feed-test-25/build/live-worker.mjs",
+   "bytes": 1131,
+   "sourceSha256": "65a5c55d7ed4426004e5c490d2f1663725d7df41e7e3ce1dd8b0f94f78582906"
+  },
+  {
+   "path": "feed-25/build/numerals.mjs",
+   "source": "2026-10-23-feed-test-25/build/numerals.mjs",
+   "bytes": 5697,
+   "sourceSha256": "a5d0659b5d038b2cb297b6e97d48ae963247b60cca0ce4397368669fb4565d11"
+  },
+  {
+   "path": "feed-25/build/ops.mjs",
+   "source": "2026-10-23-feed-test-25/build/ops.mjs",
+   "bytes": 390,
+   "sourceSha256": "b564e5706c39eb2b0daea486854cc78fc1ce8182b93bf2a79b6ec9e8469d5413"
+  },
+  {
+   "path": "feed-25/build/package.json",
+   "source": "2026-10-23-feed-test-25/build/package.json",
+   "bytes": 297,
+   "sourceSha256": "62c3dda489c947681e73713f441e57b6f97f45bf98e493d2e9884d2f9a03a9c8"
+  },
+  {
+   "path": "feed-25/build/pieces-glyph.mjs",
+   "source": "2026-10-23-feed-test-25/build/pieces-glyph.mjs",
+   "bytes": 8307,
+   "sourceSha256": "12e3ffadb6288e8f4e4f36c7f0460fd66354effab09326b52374158b2f503bbe"
+  },
+  {
+   "path": "feed-25/build/pieces-sheets.mjs",
+   "source": "2026-10-23-feed-test-25/build/pieces-sheets.mjs",
+   "bytes": 11544,
+   "sourceSha256": "fd62f0aee16f830e79ea410bc85eeba597ffe521244eb2a28cc60a0a18c32bc8"
+  },
+  {
+   "path": "feed-25/build/pieces.mjs",
+   "source": "2026-10-23-feed-test-25/build/pieces.mjs",
+   "bytes": 618,
+   "sourceSha256": "6c57068728a5a70be5a076fb27e46fc947cd04f341d4fdc795dc91eca5e8923e"
+  },
+  {
+   "path": "feed-25/build/plates/plates.json",
+   "source": "2026-10-23-feed-test-25/build/plates/plates.json",
+   "bytes": 1788,
+   "sourceSha256": "c21cd87f389c213e3e0e7b3d4fbf12fd6ffd139a77003981621f0093da9b006e"
+  },
+  {
+   "path": "feed-25/build/previews/feedback-plate-poster-1080.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/feedback-plate-poster-1080.webp",
+   "bytes": 169930,
+   "sourceSha256": "198c4a747af54e055d6d6d628737ccd01833c52f30e171b24164327ba1b618a9"
+  },
+  {
+   "path": "feed-25/build/previews/glyph-field-1200.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/glyph-field-1200.webp",
+   "bytes": 357446,
+   "sourceSha256": "59c0bf5a0832e5cb9398148055e99b9a40948dd37e39840f33a3196570ec86e6"
+  },
+  {
+   "path": "feed-25/build/previews/glyph-field-1600.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/glyph-field-1600.webp",
+   "bytes": 485972,
+   "sourceSha256": "78b549e273370335178cad490fc47193d33d22d45a89a2e50d53b95096b15841"
+  },
+  {
+   "path": "feed-25/build/previews/glyph-field-2400.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/glyph-field-2400.webp",
+   "bytes": 754556,
+   "sourceSha256": "7629f81beb70341d5e6bc30822af6bace4832156f033867298ad38b9d2457576"
+  },
+  {
+   "path": "feed-25/build/previews/sheet-one-1200.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/sheet-one-1200.webp",
+   "bytes": 290380,
+   "sourceSha256": "3b5be2c2b106dda30b7b20393de25a1cac843d4a53b786a8723f4d0822e7c099"
+  },
+  {
+   "path": "feed-25/build/previews/sheet-one-1600.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/sheet-one-1600.webp",
+   "bytes": 420526,
+   "sourceSha256": "425c7c3eba5e8690a654a4d9ac1b61791bedeb1ba0b141f857d5a5314130dce9"
+  },
+  {
+   "path": "feed-25/build/previews/sheet-one-2400.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/sheet-one-2400.webp",
+   "bytes": 691762,
+   "sourceSha256": "d8a8ed785636bf014f1238cb0bf7478a71828268de4a9a56ef6400eb8019b524"
+  },
+  {
+   "path": "feed-25/build/previews/sheet-two-1200.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/sheet-two-1200.webp",
+   "bytes": 308892,
+   "sourceSha256": "d2ad4d32b869b3ec265abe5053f080a6a2cf76761c59472ba8ad0ca198988c6c"
+  },
+  {
+   "path": "feed-25/build/previews/sheet-two-1600.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/sheet-two-1600.webp",
+   "bytes": 468752,
+   "sourceSha256": "aa5de91bd13e36759184768f1054258567cf1c68975c54364ab9ba7b52cd727d"
+  },
+  {
+   "path": "feed-25/build/previews/sheet-two-2400.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/sheet-two-2400.webp",
+   "bytes": 816322,
+   "sourceSha256": "d97c5b1deb1c3524c8439a591c956dcdd92d46fbdf5162397da941ab1e1a8845"
+  },
+  {
+   "path": "feed-25/build/previews/static-weather-1200.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/static-weather-1200.webp",
+   "bytes": 250414,
+   "sourceSha256": "f5644de8fc64ef701955e3af35f48dcb9aa50f1824af27ecef5bb1e10d578716"
+  },
+  {
+   "path": "feed-25/build/previews/static-weather-1600.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/static-weather-1600.webp",
+   "bytes": 363696,
+   "sourceSha256": "15c3d40e2f3e628cedcbbe6de53b4fdadbbcac9c82aba662bcdf6df2f7fd3a91"
+  },
+  {
+   "path": "feed-25/build/previews/static-weather-2400.webp",
+   "source": "2026-10-23-feed-test-25/build/previews/static-weather-2400.webp",
+   "bytes": 599262,
+   "sourceSha256": "7e4e7bfdcbd52ef7f2e7fe2b6814cd504b270e13dc7222f9ba5974e6f362d0d5"
+  },
+  {
+   "path": "feed-25/build/px.mjs",
+   "source": "2026-10-23-feed-test-25/build/px.mjs",
+   "bytes": 2632,
+   "sourceSha256": "9f015bc0a6835ea1694088c0ac7ab9c12da3b70a28f999174f12acb70b101534"
+  },
+  {
+   "path": "feed-25/build/render.mjs",
+   "source": "2026-10-23-feed-test-25/build/render.mjs",
+   "bytes": 4963,
+   "sourceSha256": "cfbd1ee901e1e24d4c6f72671d6ec74d92b9c680597b5571a9aac031c3673c4f"
+  },
+  {
+   "path": "feed-25/build/similarity.json",
+   "source": "2026-10-23-feed-test-25/build/similarity.json",
+   "bytes": 9668,
+   "sourceSha256": "3ea90ce8a32a77ee4d6f9c8df13731485ba51cb5b4886d0ffc42169464073f63"
+  },
+  {
+   "path": "feed-25/build/sources.mjs",
+   "source": "2026-10-23-feed-test-25/build/sources.mjs",
+   "bytes": 8449,
+   "sourceSha256": "89aa6adc0870b41dfc08161925a837344f5b0216589fef4702e59547978333c7"
+  },
+  {
+   "path": "feed-25/build/tests/golden.mjs",
+   "source": "2026-10-23-feed-test-25/build/tests/golden.mjs",
+   "bytes": 2287,
+   "sourceSha256": "d15860865eb715646a27090e24cd81ffbee0465c8855db8373e895af4f2a9e72"
+  },
+  {
+   "path": "feed-25/build/tests/golden/feedback-plate.json",
+   "source": "2026-10-23-feed-test-25/build/tests/golden/feedback-plate.json",
+   "bytes": 87430,
+   "sourceSha256": "bf58c90bacfbcd1c978088f0e31a49d3f75bfe903f337a2c9fcde048d4e8c682"
+  },
+  {
+   "path": "feed-25/build/tests/golden/glyph-field.json",
+   "source": "2026-10-23-feed-test-25/build/tests/golden/glyph-field.json",
+   "bytes": 87427,
+   "sourceSha256": "c7e7d6257b5b7fab6465e248161a9c3b5b36ea140422d647f6a3934a8749d042"
+  },
+  {
+   "path": "feed-25/build/tests/golden/sheet-one.json",
+   "source": "2026-10-23-feed-test-25/build/tests/golden/sheet-one.json",
+   "bytes": 87425,
+   "sourceSha256": "c74d09e318e6859aeb74b5885285dc4fa269c5bb2cf8e2a8868d22c51597da26"
+  },
+  {
+   "path": "feed-25/build/tests/golden/sheet-two.json",
+   "source": "2026-10-23-feed-test-25/build/tests/golden/sheet-two.json",
+   "bytes": 87425,
+   "sourceSha256": "f9b279496d898a39859a1efdb3f23885e25b7e03c02e44ff1eab7d41805ca2f8"
+  },
+  {
+   "path": "feed-25/build/tests/golden/static-weather.json",
+   "source": "2026-10-23-feed-test-25/build/tests/golden/static-weather.json",
+   "bytes": 87430,
+   "sourceSha256": "69e354437aa94d806de93fef8b856681a94d084071df35b8e792e9f1aa1db64e"
+  },
+  {
+   "path": "feed-25/build/tests/layer.test.mjs",
+   "source": "2026-10-23-feed-test-25/build/tests/layer.test.mjs",
+   "bytes": 2762,
+   "sourceSha256": "1e50043ead67836b49dd428c0d8d33d3cd30aa6e00073e5198a8b8563896062e"
+  },
+  {
+   "path": "feed-25/build/tests/marks.test.mjs",
+   "source": "2026-10-23-feed-test-25/build/tests/marks.test.mjs",
+   "bytes": 3331,
+   "sourceSha256": "93776c3457a5b2ea352ab5e678b582055fa6e91504e4152d9c1a8f79251492f7"
+  },
+  {
+   "path": "feed-25/build/tests/ops.test.mjs",
+   "source": "2026-10-23-feed-test-25/build/tests/ops.test.mjs",
+   "bytes": 4673,
+   "sourceSha256": "30d5d1d43fd72cce39ee63c2f0f6f1c2139215d7263b9e24d862a943676c11c4"
+  },
+  {
+   "path": "feed-25/build/tests/pieces.test.mjs",
+   "source": "2026-10-23-feed-test-25/build/tests/pieces.test.mjs",
+   "bytes": 1357,
+   "sourceSha256": "9bcbbe32f37a26b4bc0bf5b24259d414a8c7b297f653a42e29df0b7d1f825fe8"
+  },
+  {
+   "path": "feed-25/build/tone.mjs",
+   "source": "2026-10-23-feed-test-25/build/tone.mjs",
+   "bytes": 4899,
+   "sourceSha256": "176a630a50105e8fc755b23b36990baa23b3ffb1aeff97d3d62b3e14ff482ef6"
+  },
+  {
+   "path": "feed-25/build/tools/previews.sh",
+   "source": "2026-10-23-feed-test-25/build/tools/previews.sh",
+   "bytes": 583,
+   "sourceSha256": "6815ea827370d7f4ba18f5652cd83eabbbb4f0c08786f47538d58b1b54561003"
+  },
+  {
+   "path": "glass/crt.js",
+   "source": "2026-10-23-glass/crt.js",
+   "bytes": 9741,
+   "sourceSha256": "5fc76e402c8de226906ea1d677b27d04b81c74d2ea88f130c75251434e2eae47"
+  },
+  {
+   "path": "glass/glass.js",
+   "source": "2026-10-23-glass/glass.js",
+   "bytes": 10983,
+   "sourceSha256": "9fdca8ffcdd21260b95932056b2f300387410e6f620191bc24f7ec871f26dbd9"
+  },
+  {
+   "path": "glass/lib/body.js",
+   "source": "2026-10-23-glass/lib/body.js",
+   "bytes": 7236,
+   "sourceSha256": "debc734aef1a5137b01746ac64120891cceece2898d431c99ca72b3505aa95b7"
+  },
+  {
+   "path": "glass/lib/optics.js",
+   "source": "2026-10-23-glass/lib/optics.js",
+   "bytes": 4701,
+   "sourceSha256": "7c5a09d5f42c77ba4a3e5eb6e3bf3e9b3804229c13736fa6f54a8ba5c1bee7bd"
+  },
+  {
+   "path": "glass/lib/raster.js",
+   "source": "2026-10-23-glass/lib/raster.js",
+   "bytes": 7390,
+   "sourceSha256": "af211b95b2535c6690fa4dd57a4f7f3d151094b7975c593a60453be73e37b9c1"
+  },
+  {
+   "path": "glass/lib/sky.js",
+   "source": "2026-10-23-glass/lib/sky.js",
+   "bytes": 2349,
+   "sourceSha256": "777a57d4986e248e544d2e4fa29a7aa956d368a79910c919e37d3d8e561d3f32"
+  },
+  {
+   "path": "glass/lib/surface.js",
+   "source": "2026-10-23-glass/lib/surface.js",
+   "bytes": 7253,
+   "sourceSha256": "e07af381dd7af188936d8d889e5bb28eb222a837a75d0e622276e6dbd37165df"
+  },
+  {
+   "path": "glass/liquid.js",
+   "source": "2026-10-23-glass/liquid.js",
+   "bytes": 10624,
+   "sourceSha256": "bb6bce965ee02a3d6e4225fde7753929f92528a769b76304f8bebeafeae8714d"
+  },
+  {
+   "path": "lettering/fonts/hanken-grotesk.woff2",
+   "source": "2026-10-23-lettering/fonts/hanken-grotesk.woff2",
+   "bytes": 34704,
+   "sourceSha256": "e9201eddf1d41d0b62253295d869ce3cf65768f7102b797f02c7f8c876b4a9d5"
+  },
+  {
+   "path": "lettering/lib/fields.mjs",
+   "source": "2026-10-23-lettering/lib/fields.mjs",
+   "bytes": 7599,
+   "sourceSha256": "70e4585de0f4be29e05d12deeabf7ed2aa96361a0b4351c3e78dadd904add367"
+  },
+  {
+   "path": "lettering/lib/glyph.mjs",
+   "source": "2026-10-23-lettering/lib/glyph.mjs",
+   "bytes": 11349,
+   "sourceSha256": "7bdcc4289df4daf161646e25a62f3cca3d5e57cb57629d58e38f6b5237a05d8e"
+  },
+  {
+   "path": "lettering/lib/letter.mjs",
+   "source": "2026-10-23-lettering/lib/letter.mjs",
+   "bytes": 13474,
+   "sourceSha256": "b2cfdee7570a4ef32472ea9fbf715e13f4751e469f55696c0f4eb6312617b5c4"
+  },
+  {
+   "path": "lettering/lib/paint.mjs",
+   "source": "2026-10-23-lettering/lib/paint.mjs",
+   "bytes": 4196,
+   "sourceSha256": "a87f97693af2157db8f7cdae4aaab630482d7a49fdc460f153e1c25a8d7d1996"
+  },
+  {
+   "path": "lettering/lib/skeleton.mjs",
+   "source": "2026-10-23-lettering/lib/skeleton.mjs",
+   "bytes": 13321,
+   "sourceSha256": "84e99fd88fc4012200553eef8341872f2010fa5bf8fb5b338971cdfa5a2e892f"
+  },
+  {
+   "path": "lettering/lib/ssim.mjs",
+   "source": "2026-10-23-lettering/lib/ssim.mjs",
+   "bytes": 2176,
+   "sourceSha256": "8ccbb089b767455b6ce50f3d4182a9f24cafce62c3fd764349cf336b10994f59"
+  },
+  {
+   "path": "lettering/lib/techniques/chladni.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/chladni.mjs",
+   "bytes": 6541,
+   "sourceSha256": "cfd6a88ec9daa68bdd3ac8b509bd6e08c9574cb00dbbf04fb25d9c8a053f17a0"
+  },
+  {
+   "path": "lettering/lib/techniques/data.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/data.mjs",
+   "bytes": 3979,
+   "sourceSha256": "9c3b1439716846aa27733e89898a24609a239a7712ff3d1707b850ccebd65f30"
+  },
+  {
+   "path": "lettering/lib/techniques/developed.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/developed.mjs",
+   "bytes": 4422,
+   "sourceSha256": "64341c5030bc82d24765ef6cb601245986598b9e190f910c668918aa14438899"
+  },
+  {
+   "path": "lettering/lib/techniques/engraved.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/engraved.mjs",
+   "bytes": 4747,
+   "sourceSha256": "505029f04d20bd72d5a764c77d0ab2b38f484ecad1d43d63734a25552dd80fdf"
+  },
+  {
+   "path": "lettering/lib/techniques/glyphcell.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/glyphcell.mjs",
+   "bytes": 9922,
+   "sourceSha256": "1e2624cdfb17a8ac1a5a88296756eb7e4746ee7655b4e649cb800836c8348217"
+  },
+  {
+   "path": "lettering/lib/techniques/light.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/light.mjs",
+   "bytes": 5701,
+   "sourceSha256": "b94eaa54443ef22626df887b27cb9069f2dd6ff19e51971c86df4b1b9a279e9f"
+  },
+  {
+   "path": "lettering/lib/techniques/nightlights.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/nightlights.mjs",
+   "bytes": 6006,
+   "sourceSha256": "1242431fd8eb9829097043a11411012940dfe1ac6930a0096d97f279af5951fb"
+  },
+  {
+   "path": "lettering/lib/techniques/painted.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/painted.mjs",
+   "bytes": 3746,
+   "sourceSha256": "2a2620eb011bb5cb27721c9c43e07e9b6a25acb96307ac97e673c33c286c68f3"
+  },
+  {
+   "path": "lettering/lib/techniques/raked.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/raked.mjs",
+   "bytes": 9748,
+   "sourceSha256": "8c7605f99885e0547b16162ff1c856ad42b7b7be55a562192bf14a02b679993e"
+  },
+  {
+   "path": "lettering/lib/techniques/rope.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/rope.mjs",
+   "bytes": 4674,
+   "sourceSha256": "8cc99c43f80a5c56d0001257069e909df971ac904a98d0deff4908cd32e2d833"
+  },
+  {
+   "path": "lettering/lib/techniques/sound.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/sound.mjs",
+   "bytes": 6251,
+   "sourceSha256": "bc0b2d9d0c7714e7f0fe69f261c290ec140c1baf907afea9739cbefc3f2e8e69"
+  },
+  {
+   "path": "lettering/lib/techniques/sprayed.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/sprayed.mjs",
+   "bytes": 14022,
+   "sourceSha256": "8b303c0885fbbfb4bafb4c5e70146329850f1375b5fcc9f7f94a9004b34ada6b"
+  },
+  {
+   "path": "lettering/lib/techniques/swarm.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/swarm.mjs",
+   "bytes": 8840,
+   "sourceSha256": "5e002fbe1129e3fd75c2f6d1e0e1dce6ccccaa19e4b0f9a745b0bdd4813c5b95"
+  },
+  {
+   "path": "lettering/lib/techniques/torn.mjs",
+   "source": "2026-10-23-lettering/lib/techniques/torn.mjs",
+   "bytes": 5202,
+   "sourceSha256": "2f1d93ae1800dcd01406f18cad71c5aa5576744e989d8428500316430c1ba0f0"
+  },
+  {
+   "path": "lettering/tests/shapes.mjs",
+   "source": "2026-10-23-lettering/tests/shapes.mjs",
+   "bytes": 1203,
+   "sourceSha256": "fe1a3d1bae3de3fd46042d6c07c3a79785592a2b6dc880e064f78ef957ae67fa"
+  },
+  {
+   "path": "playbook/cadence.js",
+   "source": "2026-10-23-playbook-builds/cadence.js",
+   "bytes": 10321,
+   "sourceSha256": "0190aec206108fa0286d0a82e039604854e59233eff4b48db593c9a5a66b1c28"
+  },
+  {
+   "path": "playbook/caustic.js",
+   "source": "2026-10-23-playbook-builds/caustic.js",
+   "bytes": 13690,
+   "sourceSha256": "1d2819dbf9a0378d51075d77c7708ba40b611082ba0d21de4e9158357caad4e0"
+  },
+  {
+   "path": "playbook/dotfield2.js",
+   "source": "2026-10-23-playbook-builds/dotfield2.js",
+   "bytes": 18319,
+   "sourceSha256": "f7d7173d492c7769491ea5a08abbea8a5c76ea56bb3961f509f46685bbff99ae"
+  },
+  {
+   "path": "playbook/lib/morphcloud-targets.js",
+   "source": "2026-10-23-playbook-builds/lib/morphcloud-targets.js",
+   "bytes": 8238,
+   "sourceSha256": "59119bf0d16b9f07e2b3a9025665a61bc33c934690cd473d209bed75480f6bc8"
+  },
+  {
+   "path": "playbook/lib/node.js",
+   "source": "2026-10-23-playbook-builds/lib/node.js",
+   "bytes": 1520,
+   "sourceSha256": "f186d60616cdc3f11a54b72ff5fbf9af8853c63764e4e884e87f4091226bab44"
+  },
+  {
+   "path": "playbook/lib/png.js",
+   "source": "2026-10-23-playbook-builds/lib/png.js",
+   "bytes": 3185,
+   "sourceSha256": "0bbfeac3b1af83c4e9cc06d221041d4134495c6d1bf5d8323685e19ea363150e"
+  },
+  {
+   "path": "playbook/lib/raster.js",
+   "source": "2026-10-23-playbook-builds/lib/raster.js",
+   "bytes": 7307,
+   "sourceSha256": "06b4e69a481eac30b2fede3b278f1d9c854447368b9e0313cc1e576b35918969"
+  },
+  {
+   "path": "playbook/lib/typepile-numerals.js",
+   "source": "2026-10-23-playbook-builds/lib/typepile-numerals.js",
+   "bytes": 5888,
+   "sourceSha256": "785aa7a5305b8b2299daf89a213a150e80a0849786387dbcb82945063e02e601"
+  },
+  {
+   "path": "playbook/lib/util.js",
+   "source": "2026-10-23-playbook-builds/lib/util.js",
+   "bytes": 3938,
+   "sourceSha256": "778cad09acb47cbabb1ecb42732a6942719bbd99ad35c2abc2c2b7da7a52cfee"
+  },
+  {
+   "path": "playbook/morphcloud.js",
+   "source": "2026-10-23-playbook-builds/morphcloud.js",
+   "bytes": 8461,
+   "sourceSha256": "f06b7eed59783d957835f67cdcff881d9f30e417470603616726e76d8d769a1b"
+  },
+  {
+   "path": "playbook/mosaic.js",
+   "source": "2026-10-23-playbook-builds/mosaic.js",
+   "bytes": 13371,
+   "sourceSha256": "60f8f8f2dc8d9810ff945c75b19240cfad963d2bf30ff6e1158f4d5b7a43d20d"
+  },
+  {
+   "path": "playbook/typepile.js",
+   "source": "2026-10-23-playbook-builds/typepile.js",
+   "bytes": 14336,
+   "sourceSha256": "dbe77fa20d6f54e7805aef9802977ba0be19df59b855c2d43443fdf750afe93e"
+  },
+  {
+   "path": "sound/sound/dsp.js",
+   "source": "2026-10-23-sound/sound/dsp.js",
+   "bytes": 1660,
+   "sourceSha256": "843d76923038760db782b9afe23101005f5eabe0ec7d4a987398e5782d4c51f5"
+  },
+  {
+   "path": "sound/sound/engine.js",
+   "source": "2026-10-23-sound/sound/engine.js",
+   "bytes": 3556,
+   "sourceSha256": "618ae30b63cdbc4e6ff4bd1b8a6d643fda9d08d44a7fdd4e35523f03042bf94b"
+  },
+  {
+   "path": "sound/sound/fx.js",
+   "source": "2026-10-23-sound/sound/fx.js",
+   "bytes": 9137,
+   "sourceSha256": "657000aed158ae015e307f1c31bca27e621b3dfc81fda180d780959f906b74a5"
+  },
+  {
+   "path": "sound/sound/limiter.js",
+   "source": "2026-10-23-sound/sound/limiter.js",
+   "bytes": 3954,
+   "sourceSha256": "83c5aaf84fcd20883b4abb9488bb166117f938534960153b686fb135e8832c52"
+  },
+  {
+   "path": "sound/sound/motifs/crowd-of-one.js",
+   "source": "2026-10-23-sound/sound/motifs/crowd-of-one.js",
+   "bytes": 1632,
+   "sourceSha256": "b25f2a920763743eb48c34b458e302edae59c9c3da7d27e2bccbcbeed56b6169"
+  },
+  {
+   "path": "sound/sound/motifs/false-scale.js",
+   "source": "2026-10-23-sound/sound/motifs/false-scale.js",
+   "bytes": 2524,
+   "sourceSha256": "e95f14a6cc07dbbe4bff09ad79ef4f1e43c8385de905339e7564e32b3d99ded8"
+  },
+  {
+   "path": "sound/sound/motifs/index.js",
+   "source": "2026-10-23-sound/sound/motifs/index.js",
+   "bytes": 1320,
+   "sourceSha256": "326dc965fa6b968220c14f705114219419ae206a3aecf70d9fa3da549d6ce287"
+  },
+  {
+   "path": "sound/sound/motifs/longing.js",
+   "source": "2026-10-23-sound/sound/motifs/longing.js",
+   "bytes": 3349,
+   "sourceSha256": "a854fa5ba7a9177fd72465e6486c4b799aa83479e6af78167a40b01b67fb5a0d"
+  },
+  {
+   "path": "sound/sound/motifs/memory.js",
+   "source": "2026-10-23-sound/sound/motifs/memory.js",
+   "bytes": 3969,
+   "sourceSha256": "ccf8b51432b021f6999a42635a1bc03ee6fc0ad8d8d1bbb2e9d3f16ca5301aab"
+  },
+  {
+   "path": "sound/sound/motifs/momentum.js",
+   "source": "2026-10-23-sound/sound/motifs/momentum.js",
+   "bytes": 2197,
+   "sourceSha256": "e223664b8fda1c3fd305aadb47fc62e6bf0b444742acc0c4a6b20fb49735bd3d"
+  },
+  {
+   "path": "sound/sound/motifs/pain.js",
+   "source": "2026-10-23-sound/sound/motifs/pain.js",
+   "bytes": 1406,
+   "sourceSha256": "8bd85062c37650ed4d23920cb4d294d4dafa7d5dad07785f20bc3ed9f5ef69e2"
+  },
+  {
+   "path": "sound/sound/motifs/phantom-words.js",
+   "source": "2026-10-23-sound/sound/motifs/phantom-words.js",
+   "bytes": 3488,
+   "sourceSha256": "a0ab94c4f2a8c31ca64bed06783c3b8249d7b49b3ef89258875f837d78ef800f"
+  },
+  {
+   "path": "sound/sound/motifs/play.js",
+   "source": "2026-10-23-sound/sound/motifs/play.js",
+   "bytes": 855,
+   "sourceSha256": "84bf6b112ccdd577ca966e294712f3eaa2bac542cedade7706f475a3855233fd"
+  },
+  {
+   "path": "sound/sound/motifs/shepard.js",
+   "source": "2026-10-23-sound/sound/motifs/shepard.js",
+   "bytes": 3247,
+   "sourceSha256": "1489c37054e45739a77751c4ba3c0e9627ad3bd37e6ccf5e2599506e3cb15936"
+  },
+  {
+   "path": "sound/sound/motifs/spectrogram-picture.js",
+   "source": "2026-10-23-sound/sound/motifs/spectrogram-picture.js",
+   "bytes": 6611,
+   "sourceSha256": "bcef9fc9bd40e570faa0dca94b3fc20c2fd278f04ab20bc7a79d146a76a87021"
+  },
+  {
+   "path": "sound/sound/motifs/thought.js",
+   "source": "2026-10-23-sound/sound/motifs/thought.js",
+   "bytes": 3699,
+   "sourceSha256": "864fca2a7861a5fbb5be830e0eda74706666654de0c622706a8ed3953ac80140"
+  },
+  {
+   "path": "sound/sound/motifs/trauma.js",
+   "source": "2026-10-23-sound/sound/motifs/trauma.js",
+   "bytes": 3636,
+   "sourceSha256": "d848c55e7d228dd4b7bf2db9d33a432c3d986cf22931b2e7e4542660f42ad49a"
+  },
+  {
+   "path": "sound/sound/motifs/vanishing-record.js",
+   "source": "2026-10-23-sound/sound/motifs/vanishing-record.js",
+   "bytes": 2060,
+   "sourceSha256": "82366f2dea4933f79b3b5713db989fafe7111b232c8aac28b46c993f525f9488"
+  },
+  {
+   "path": "sound/sound/util.js",
+   "source": "2026-10-23-sound/sound/util.js",
+   "bytes": 3184,
+   "sourceSha256": "634f426455886b285d52d3404ee6259bb2def3bafe11eae329712ae53950bcfd"
+  },
+  {
+   "path": "sound/sound/v3/instruments/breaks.js",
+   "source": "2026-10-23-sound/sound/v3/instruments/breaks.js",
+   "bytes": 4788,
+   "sourceSha256": "df3ae94a80d5256cab49cbf996b25a28050d8aba58164e3919e86ecc2e5f73d7"
+  },
+  {
+   "path": "sound/sound/v3/instruments/core.js",
+   "source": "2026-10-23-sound/sound/v3/instruments/core.js",
+   "bytes": 5581,
+   "sourceSha256": "c2a6605076a0004260d3c19a177818101e9e0c12c33bbfe50019ea0536a55c86"
+  },
+  {
+   "path": "sound/sound/v3/instruments/funkkit.js",
+   "source": "2026-10-23-sound/sound/v3/instruments/funkkit.js",
+   "bytes": 7793,
+   "sourceSha256": "a2a2d59f2e0c1d6d2d80470a3857c37ac81033c5057f295ac0e8055042570b44"
+  },
+  {
+   "path": "sound/sound/v3/instruments/index.js",
+   "source": "2026-10-23-sound/sound/v3/instruments/index.js",
+   "bytes": 2492,
+   "sourceSha256": "890648568932dad005822963dbe7ace2182cd8ed326f78eaa1376798b2625d99"
+  },
+  {
+   "path": "sound/sound/v3/instruments/keys.js",
+   "source": "2026-10-23-sound/sound/v3/instruments/keys.js",
+   "bytes": 5303,
+   "sourceSha256": "68b3518de4e4b8f641747ffc6ae41fefb2aa6f72256d2d484da53a75ddbcd0e7"
+  },
+  {
+   "path": "sound/sound/v3/instruments/low.js",
+   "source": "2026-10-23-sound/sound/v3/instruments/low.js",
+   "bytes": 4258,
+   "sourceSha256": "51ababa53fd1b24125b2475e6616712568aff9ba138704f2e1071e614192fc77"
+  },
+  {
+   "path": "sound/sound/v3/instruments/pads.js",
+   "source": "2026-10-23-sound/sound/v3/instruments/pads.js",
+   "bytes": 3398,
+   "sourceSha256": "27de6685945e10e7a924ae3686dd10be4679690b7529954940736a482aa7551c"
+  },
+  {
+   "path": "sound/sound/v3/instruments/perceive.js",
+   "source": "2026-10-23-sound/sound/v3/instruments/perceive.js",
+   "bytes": 5485,
+   "sourceSha256": "c3656c4e2f3823d37b31b1539498097138cbd3c7826e56d84ed8f0fa978f2fa4"
+  },
+  {
+   "path": "sound/sound/v3/instruments/reed.js",
+   "source": "2026-10-23-sound/sound/v3/instruments/reed.js",
+   "bytes": 4962,
+   "sourceSha256": "1c74a7f64881309739a4753fb412204cbc2880d06a84a5607a7e3f9ce8563d7f"
+  },
+  {
+   "path": "sound/sound/v3/instruments/space.js",
+   "source": "2026-10-23-sound/sound/v3/instruments/space.js",
+   "bytes": 2561,
+   "sourceSha256": "8d87213b7ebee25f4b1944a85fdb94ce80d81af850690feaaf6687f90bb52e52"
+  },
+  {
+   "path": "sound/sound/voices.js",
+   "source": "2026-10-23-sound/sound/voices.js",
+   "bytes": 12136,
+   "sourceSha256": "653dbb697ca44860cae62800b934d689d06015ff3ac5ac381226310e337adc1d"
+  },
+  {
+   "path": "studio/lib/blend.mjs",
+   "source": "2026-10-23-studio/lib/blend.mjs",
+   "bytes": 6331,
+   "sourceSha256": "32599024a2c071030e796b535410ea1fa4ee0c77407045dec2afc510c4460bb8"
+  },
+  {
+   "path": "studio/lib/descriptor.mjs",
+   "source": "2026-10-23-studio/lib/descriptor.mjs",
+   "bytes": 4778,
+   "sourceSha256": "2f56b934959673ad9c921e278af577098534a9147b4f77998d9600f9c17c3338"
+  },
+  {
+   "path": "studio/lib/drivers.mjs",
+   "source": "2026-10-23-studio/lib/drivers.mjs",
+   "bytes": 11275,
+   "sourceSha256": "22f4467686a33bbf3877ebaad772589186949974a8e6e1b0d5abb336e3a03e10"
+  },
+  {
+   "path": "studio/lib/field.mjs",
+   "source": "2026-10-23-studio/lib/field.mjs",
+   "bytes": 3172,
+   "sourceSha256": "6ab7e3d978ccbd9773dc88afe283f25e01c1f26ea723c989d5999feb80d9ae0f"
+  },
+  {
+   "path": "studio/lib/fluid.mjs",
+   "source": "2026-10-23-studio/lib/fluid.mjs",
+   "bytes": 4903,
+   "sourceSha256": "1a9dc6c30af4cdca2fbc148fb84fb57fc139aa226ff7def31b0b08fcef84eca7"
+  },
+  {
+   "path": "studio/lib/lanes/image.mjs",
+   "source": "2026-10-23-studio/lib/lanes/image.mjs",
+   "bytes": 5968,
+   "sourceSha256": "9c281e174f13c3afb30565866b22c446e8582b5ac0b2e0615a45274afbb78023"
+  },
+  {
+   "path": "studio/lib/lanes/motion.mjs",
+   "source": "2026-10-23-studio/lib/lanes/motion.mjs",
+   "bytes": 3717,
+   "sourceSha256": "3155e7dc021bbd186e15477ec853280e329f91e0522bd22226cd4677a1796047"
+  },
+  {
+   "path": "studio/lib/lanes/sound.mjs",
+   "source": "2026-10-23-studio/lib/lanes/sound.mjs",
+   "bytes": 8876,
+   "sourceSha256": "2800ae6704b8f33b2d2515e0ac99a02af97dc14d101e70b3db47832009dba3ee"
+  },
+  {
+   "path": "studio/lib/lanes/type.mjs",
+   "source": "2026-10-23-studio/lib/lanes/type.mjs",
+   "bytes": 3653,
+   "sourceSha256": "d8b6642bf6b010fd1521aa851789c1a845a35dd02354811a23b4bff92fd7f5fc"
+  },
+  {
+   "path": "studio/lib/loudness.mjs",
+   "source": "2026-10-23-studio/lib/loudness.mjs",
+   "bytes": 4747,
+   "sourceSha256": "92d052c377aebd16eccca4f365e6414b2ae9c9743fc8299b8d67d657faa4fb09"
+  },
+  {
+   "path": "studio/lib/materials.mjs",
+   "source": "2026-10-23-studio/lib/materials.mjs",
+   "bytes": 11556,
+   "sourceSha256": "eb73715caac0bf0b7af7520a4278db61c7e4fedc916d3c6f36466655b626c29a"
+  },
+  {
+   "path": "studio/lib/nodes.mjs",
+   "source": "2026-10-23-studio/lib/nodes.mjs",
+   "bytes": 3946,
+   "sourceSha256": "d46220dfbf4662c6a2bf8ee3fdbf8ab11199d93b1124af0b8271e1c3bf1e2a98"
+  },
+  {
+   "path": "studio/lib/plates-matter.mjs",
+   "source": "2026-10-23-studio/lib/plates-matter.mjs",
+   "bytes": 12718,
+   "sourceSha256": "b3896f385eda3f0ff8929b8d1646381c967e01c518958236817ce7cacd08d06c"
+  },
+  {
+   "path": "studio/lib/plates-optics.mjs",
+   "source": "2026-10-23-studio/lib/plates-optics.mjs",
+   "bytes": 4755,
+   "sourceSha256": "70aba32612104eca802e6bc7e288690de8a638120ef24bc9fd0e3d2f9077fc94"
+  },
+  {
+   "path": "studio/lib/plates-surface.mjs",
+   "source": "2026-10-23-studio/lib/plates-surface.mjs",
+   "bytes": 8257,
+   "sourceSha256": "92c71960d50c66b89f9ae3b47e91bcd8945f18c01af30bca08d3226bab81e8ed"
+  },
+  {
+   "path": "studio/lib/recipients.mjs",
+   "source": "2026-10-23-studio/lib/recipients.mjs",
+   "bytes": 4440,
+   "sourceSha256": "e681538f3e56a931bdac28dc679897dd9a360941d5ec9331d79a116c1885014b"
+  },
+  {
+   "path": "studio/lib/schema.mjs",
+   "source": "2026-10-23-studio/lib/schema.mjs",
+   "bytes": 7637,
+   "sourceSha256": "7f33e39149a84319ed6fbcbb71c558d907ffe50104e28c042f8faac974d461ce"
+  },
+  {
+   "path": "studio/lib/transition.mjs",
+   "source": "2026-10-23-studio/lib/transition.mjs",
+   "bytes": 3504,
+   "sourceSha256": "dd384915c8c38ec9188a912be805cb79523efcbcb6675f67d5861e93e7d58bae"
+  },
+  {
+   "path": "studio/lib/voices-extra.mjs",
+   "source": "2026-10-23-studio/lib/voices-extra.mjs",
+   "bytes": 3618,
+   "sourceSha256": "eff689113046fd7679ba0b0acb79fabeb15f8a7c62c54ad00703d5d2211ae4a6"
+  },
+  {
+   "path": "studio/lib/wav.mjs",
+   "source": "2026-10-23-studio/lib/wav.mjs",
+   "bytes": 2468,
+   "sourceSha256": "b05dd4d39743c9848933acd100629d2236ec9b483d1c238b432b116d2a7c2ca3"
+  },
+  {
+   "path": "substrate/lib/demo/demo.css",
+   "source": "2026-10-23-substrate/lib/demo/demo.css",
+   "bytes": 3850,
+   "sourceSha256": "0c65c84fc6527befc3c7a8aaedca3f7b704f9cde96a17b3d43645becd7d08cd1"
+  },
+  {
+   "path": "substrate/lib/demo/demo.mjs",
+   "source": "2026-10-23-substrate/lib/demo/demo.mjs",
+   "bytes": 10610,
+   "sourceSha256": "b0fdd8f9a3b2271dbece6b24cd8d0d511b491f574191b65116e2ad022b70a3ce"
+  },
+  {
+   "path": "substrate/lib/demo/fonts/OFL-hanken-grotesk.txt",
+   "source": "2026-10-23-substrate/lib/demo/fonts/OFL-hanken-grotesk.txt",
+   "bytes": 4402,
+   "sourceSha256": "e02ccb89a86839b22feff7872ff5cc355cc0f58318d29eee20e2cf83a612f16d"
+  },
+  {
+   "path": "substrate/lib/demo/fonts/hanken-grotesk.woff2",
+   "source": "2026-10-23-substrate/lib/demo/fonts/hanken-grotesk.woff2",
+   "bytes": 34704,
+   "sourceSha256": "e9201eddf1d41d0b62253295d869ce3cf65768f7102b797f02c7f8c876b4a9d5"
+  },
+  {
+   "path": "substrate/lib/demo/index.html",
+   "source": "2026-10-23-substrate/lib/demo/index.html",
+   "bytes": 3081,
+   "sourceSha256": "ab8dd7f760b71e74c7ad18e0555e1c191f754627916161f220ff98c0f96f6b76"
+  },
+  {
+   "path": "substrate/lib/demo/serve.mjs",
+   "source": "2026-10-23-substrate/lib/demo/serve.mjs",
+   "bytes": 1523,
+   "sourceSha256": "9027d7558b0dbddc58565c11665d2da75685e0cbdfb73875ed371f710c58f209"
+  },
+  {
+   "path": "substrate/lib/motion.mjs",
+   "source": "2026-10-23-substrate/lib/motion.mjs",
+   "bytes": 11625,
+   "sourceSha256": "842af91e613f293407057e163fd4029415a499d95a7e968a6005e5aa50d6e0f6"
+  },
+  {
+   "path": "substrate/lib/package.json",
+   "source": "2026-10-23-substrate/lib/package.json",
+   "bytes": 594,
+   "sourceSha256": "4d526eed312f03cc6cdd8a907c8a46e0c3b67c9fc0ff248d27066576fc6e4e14"
+  },
+  {
+   "path": "substrate/lib/provenance.mjs",
+   "source": "2026-10-23-substrate/lib/provenance.mjs",
+   "bytes": 8122,
+   "sourceSha256": "ad728df406144bdc9ec239a59d14eeb9cb79ad70f670150e7c0c552b2c51309e"
+  },
+  {
+   "path": "substrate/lib/raster.mjs",
+   "source": "2026-10-23-substrate/lib/raster.mjs",
+   "bytes": 4781,
+   "sourceSha256": "ab83a45086e94923cdc9e7731e1d095ab48dda2ab494f7853c0bbbe3f9bb90e2"
+  },
+  {
+   "path": "substrate/lib/test/motion.test.mjs",
+   "source": "2026-10-23-substrate/lib/test/motion.test.mjs",
+   "bytes": 6942,
+   "sourceSha256": "ac8605eb7933f010d5645619d42b4eaf487c123bfe8e3ae7931fd4238ec91d7b"
+  },
+  {
+   "path": "substrate/lib/test/provenance.test.mjs",
+   "source": "2026-10-23-substrate/lib/test/provenance.test.mjs",
+   "bytes": 5640,
+   "sourceSha256": "4a2d56b5fdd25ce29ede54a42f9d3895ad42d4b5ab0148bc573a6b067d9fe58c"
+  },
+  {
+   "path": "substrate/lib/test/raster.test.mjs",
+   "source": "2026-10-23-substrate/lib/test/raster.test.mjs",
+   "bytes": 2796,
+   "sourceSha256": "397de808852f7325db429f3076210773d5d236f274b02284f7f5ad080bcfb305"
+  },
+  {
+   "path": "substrate/lib/test/thinfilm.test.mjs",
+   "source": "2026-10-23-substrate/lib/test/thinfilm.test.mjs",
+   "bytes": 3095,
+   "sourceSha256": "472c8100484a7d1a085dd3aa2d25c183c845149e66f4882809cb3f52ebc964ea"
+  },
+  {
+   "path": "substrate/lib/test/vector.test.mjs",
+   "source": "2026-10-23-substrate/lib/test/vector.test.mjs",
+   "bytes": 4777,
+   "sourceSha256": "e7930f4dcd402c340a33486eb55418b725c4a183172425c904e927366949a7a0"
+  },
+  {
+   "path": "substrate/lib/thinfilm.mjs",
+   "source": "2026-10-23-substrate/lib/thinfilm.mjs",
+   "bytes": 3656,
+   "sourceSha256": "520c8da23d24106611d0844356aa2aec47f24078ccc53537008db9c370035487"
+  },
+  {
+   "path": "substrate/lib/vector.mjs",
+   "source": "2026-10-23-substrate/lib/vector.mjs",
+   "bytes": 9106,
+   "sourceSha256": "10fd538fc750bfc7223124b0678a5840f5d9466f481faa86a320afc553880be6"
+  },
+  {
+   "path": "substrate/lib/vendor/SUPERSTACK.sha256",
+   "source": "2026-10-23-substrate/lib/vendor/SUPERSTACK.sha256",
+   "bytes": 161,
+   "sourceSha256": "a381db6eec28266641f7682b7edc29b678046d29db05ff48655edd450eccd30b"
+  },
+  {
+   "path": "substrate/lib/vendor/superstack.LICENSE",
+   "source": "2026-10-23-substrate/lib/vendor/superstack.LICENSE",
+   "bytes": 4216,
+   "sourceSha256": "5d4abfef8a42cb0b1762662ae9745b01cd729991e60c2fee83d6ea8ee752cb6d"
+  },
+  {
+   "path": "substrate/lib/vendor/superstack.mjs",
+   "source": "2026-10-23-substrate/lib/vendor/superstack.mjs",
+   "bytes": 26932,
+   "sourceSha256": "b972095e4eadb007fb892e48027fe6d970328eb2256749e046b296f500208878"
+  },
+  {
+   "path": "superframe/adapters/core.mjs",
+   "source": "2026-10-23-superframe/adapters/core.mjs",
+   "bytes": 9481,
+   "sourceSha256": "8ddfe98009a6445db3bac821c0689f75b079ff49c8e186ddd57a0212d33e3a8c"
+  },
+  {
+   "path": "superframe/adapters/feed32.mjs",
+   "source": "2026-10-23-superframe/adapters/feed32.mjs",
+   "bytes": 9780,
+   "sourceSha256": "0b6ddfdb7bc45c0a19376d294669fd19325f5932cf0bc89714f7fb8d0a137e5b"
+  },
+  {
+   "path": "superframe/adapters/finish.mjs",
+   "source": "2026-10-23-superframe/adapters/finish.mjs",
+   "bytes": 7956,
+   "sourceSha256": "fe308c1747b9fc773ebb8d37b07ab811bce47e36e1a8a7ad5efe3e2b9f22519c"
+  },
+  {
+   "path": "superframe/adapters/image.mjs",
+   "source": "2026-10-23-superframe/adapters/image.mjs",
+   "bytes": 12331,
+   "sourceSha256": "6790667573bc89b30b8cf6b808484ee2245812ecd7f661045caef0cf1de7f38d"
+  },
+  {
+   "path": "superframe/adapters/instruments.mjs",
+   "source": "2026-10-23-superframe/adapters/instruments.mjs",
+   "bytes": 7541,
+   "sourceSha256": "30e7d36dae79c3fd9bf321251ed4d7cb754291717dec0bec7b99201b9ede3c47"
+  },
+  {
+   "path": "superframe/adapters/lettering30.mjs",
+   "source": "2026-10-23-superframe/adapters/lettering30.mjs",
+   "bytes": 3362,
+   "sourceSha256": "500b11d5ff0ba8ec8adbacc49f97fd58e6393d41e4f531442fff728f9cfe715a"
+  },
+  {
+   "path": "superframe/adapters/marks.mjs",
+   "source": "2026-10-23-superframe/adapters/marks.mjs",
+   "bytes": 3735,
+   "sourceSha256": "01ba47a8bf5e371db40cd54a9806646ec148f5c0bf05e34da0df5c7772432fd6"
+  },
+  {
+   "path": "superframe/adapters/matter.mjs",
+   "source": "2026-10-23-superframe/adapters/matter.mjs",
+   "bytes": 13396,
+   "sourceSha256": "e1ad334c0dd81d70df925df48273dfc4e52f5e7d2f0e801fecfcd51d5beaa973"
+  },
+  {
+   "path": "superframe/adapters/medium.mjs",
+   "source": "2026-10-23-superframe/adapters/medium.mjs",
+   "bytes": 4155,
+   "sourceSha256": "a83adc276363cc358cfb7bea5fa38121b54e5e978b061056a15c482bd271a7b8"
+  },
+  {
+   "path": "superframe/adapters/nameart.mjs",
+   "source": "2026-10-23-superframe/adapters/nameart.mjs",
+   "bytes": 252,
+   "sourceSha256": "0916fcedbaf4925ee672c0a14526f9467fc4fc8e712da8b50b984170d9d84df0"
+  },
+  {
+   "path": "superframe/adapters/namemosaic.mjs",
+   "source": "2026-10-23-superframe/adapters/namemosaic.mjs",
+   "bytes": 252,
+   "sourceSha256": "f5ec787e1965150b2dffb8c2291e6d9d59f26e32d9b2b8a1ba8ca94933c78039"
+  },
+  {
+   "path": "superframe/adapters/optics.mjs",
+   "source": "2026-10-23-superframe/adapters/optics.mjs",
+   "bytes": 7632,
+   "sourceSha256": "557c5fb0ce5493c368343f0110d5f578eec56fa9e696d2b68424777e26391733"
+  },
+  {
+   "path": "superframe/adapters/playbook.mjs",
+   "source": "2026-10-23-superframe/adapters/playbook.mjs",
+   "bytes": 9099,
+   "sourceSha256": "fcf194a1287a3d3c33010466207e7e6cbfb875471ebd4fc83c9a5acf4259f360"
+  },
+  {
+   "path": "superframe/adapters/poster.mjs",
+   "source": "2026-10-23-superframe/adapters/poster.mjs",
+   "bytes": 7794,
+   "sourceSha256": "857058c1e975cefb72e1ab24b4ec5fe60476abf2b7edfcd04393e5ce90f76495"
+  },
+  {
+   "path": "superframe/adapters/print.mjs",
+   "source": "2026-10-23-superframe/adapters/print.mjs",
+   "bytes": 12756,
+   "sourceSha256": "33096b58eb79a24dc2e2048eda4651d01469606f6fe91306d6ea7a38d0b7ff1e"
+  },
+  {
+   "path": "superframe/adapters/site.mjs",
+   "source": "2026-10-23-superframe/adapters/site.mjs",
+   "bytes": 9814,
+   "sourceSha256": "a700683ab2823f619bcc1a24cd64f82794372a043a8786d91fce2be3a058e7ef"
+  },
+  {
+   "path": "superframe/adapters/sound.mjs",
+   "source": "2026-10-23-superframe/adapters/sound.mjs",
+   "bytes": 11019,
+   "sourceSha256": "0fb41aea6310d62322b1b7356ef0de3cf1d707b475704ff90ea5498302445420"
+  },
+  {
+   "path": "superframe/adapters/story.mjs",
+   "source": "2026-10-23-superframe/adapters/story.mjs",
+   "bytes": 15973,
+   "sourceSha256": "2a0c1e6e5d7d9ae3a13b9fa5cbdf7ba07df5047a70cbf9f097ee188044b9d546"
+  },
+  {
+   "path": "superframe/adapters/studio.mjs",
+   "source": "2026-10-23-superframe/adapters/studio.mjs",
+   "bytes": 4654,
+   "sourceSha256": "1d0f87430bfb73154c9431a07ffd86f96548e1a2d7983ca472fdf293d60d5f86"
+  },
+  {
+   "path": "superframe/adapters/type.mjs",
+   "source": "2026-10-23-superframe/adapters/type.mjs",
+   "bytes": 10676,
+   "sourceSha256": "22487a2e24c6c9881f55f8e4d068f908328c65eb5c8d494d6f5581aedb7ee98c"
+  },
+  {
+   "path": "superframe/adapters/typeengine.mjs",
+   "source": "2026-10-23-superframe/adapters/typeengine.mjs",
+   "bytes": 254,
+   "sourceSha256": "441318f9cf6460cda8811987690232fdae8f68c598f12574e22f9846d86a4b66"
+  },
+  {
+   "path": "superframe/adapters/universe.mjs",
+   "source": "2026-10-23-superframe/adapters/universe.mjs",
+   "bytes": 6837,
+   "sourceSha256": "b7b64b7255e94984046c9ecd4cfd0a03054f41687aef052d8cd8cffe62291574"
+  },
+  {
+   "path": "superframe/adapters/visualizer.mjs",
+   "source": "2026-10-23-superframe/adapters/visualizer.mjs",
+   "bytes": 22205,
+   "sourceSha256": "4249a13ed0c7980a6e29e02472b8a2bbfffcf0a64783fc2f44974a7734228329"
+  },
+  {
+   "path": "superframe/channels/b808-glyphcell-modulate-letters-setback.json",
+   "source": "2026-10-23-superframe/channels/b808-glyphcell-modulate-letters-setback.json",
+   "bytes": 1783,
+   "sourceSha256": "34d690fcb037c018bee5887a7d9142d5f1b86a4fe6ed3342f853c483818591b3"
+  },
+  {
+   "path": "superframe/channels/b808-pads-modulate-developed-misprint-streak.json",
+   "source": "2026-10-23-superframe/channels/b808-pads-modulate-developed-misprint-streak.json",
+   "bytes": 1900,
+   "sourceSha256": "263bea6a5b5cc08f2fa05d17eddf1a88f6367224c7a8d89a00d77e54727314b5"
+  },
+  {
+   "path": "superframe/channels/breaks-degrade-halftone-relief-stencil.json",
+   "source": "2026-10-23-superframe/channels/breaks-degrade-halftone-relief-stencil.json",
+   "bytes": 1949,
+   "sourceSha256": "d6afa3081d986568d36627de79e6d3d297aa672df684fe4d40dd5c59a2905b86"
+  },
+  {
+   "path": "superframe/channels/chladni-construction.json",
+   "source": "2026-10-23-superframe/channels/chladni-construction.json",
+   "bytes": 1562,
+   "sourceSha256": "92bfa998ebe87904a59119a5f68b0703acda694d18f3ec99f87977489a06d276"
+  },
+  {
+   "path": "superframe/channels/chladni-developed-seriesnotes.json",
+   "source": "2026-10-23-superframe/channels/chladni-developed-seriesnotes.json",
+   "bytes": 1525,
+   "sourceSha256": "9763d515a039aa404a397000cf264e087d5343f7d71c84c5785a4ef9ee7e3487"
+  },
+  {
+   "path": "superframe/channels/chladni-misprint.json",
+   "source": "2026-10-23-superframe/channels/chladni-misprint.json",
+   "bytes": 1325,
+   "sourceSha256": "a672119e3a06fb11419f17c6f628639228aaf295df584e9b9fb2fec96b78fd73"
+  },
+  {
+   "path": "superframe/channels/colony-oscilloscope-hatch-seedsound-blend-stroke.json",
+   "source": "2026-10-23-superframe/channels/colony-oscilloscope-hatch-seedsound-blend-stroke.json",
+   "bytes": 1790,
+   "sourceSha256": "a8752017f53d3a97b9312536aa3f1984a269b19f5caee6bb6d2aadeb7c51ed5a"
+  },
+  {
+   "path": "superframe/channels/construction-pixelate-strokes-scanwave.json",
+   "source": "2026-10-23-superframe/channels/construction-pixelate-strokes-scanwave.json",
+   "bytes": 1683,
+   "sourceSha256": "89ae1eee79043381ff3ab0fafd262820791ce38c7dbc01e6e9dd7737ccfd5e23"
+  },
+  {
+   "path": "superframe/channels/crt-blocks-modulate-misprint-contrast.json",
+   "source": "2026-10-23-superframe/channels/crt-blocks-modulate-misprint-contrast.json",
+   "bytes": 1870,
+   "sourceSha256": "998dee2bb4c53adfccd19ad79baf446f79f8d44f929dcb14bb742424aa7ce952"
+  },
+  {
+   "path": "superframe/channels/crt-degrade-mix-engrave.json",
+   "source": "2026-10-23-superframe/channels/crt-degrade-mix-engrave.json",
+   "bytes": 1430,
+   "sourceSha256": "8092d6bb84f632c4bde1abf39e24aa44be239c07e1ca4011f9764779a2c14bc1"
+  },
+  {
+   "path": "superframe/channels/crt-stencil-sand-saturate.json",
+   "source": "2026-10-23-superframe/channels/crt-stencil-sand-saturate.json",
+   "bytes": 1985,
+   "sourceSha256": "4563d57771a9b749e66fa9680d5f4b6436b5fee6fbb3d6a0d3c3019411cec7df"
+  },
+  {
+   "path": "superframe/channels/curl-alias-blocks-print.json",
+   "source": "2026-10-23-superframe/channels/curl-alias-blocks-print.json",
+   "bytes": 1611,
+   "sourceSha256": "040d447bdbf5fd6c00a2d1975e4d90c791df57d56e1d74d4aa45ed853426a9e6"
+  },
+  {
+   "path": "superframe/channels/falsescale-contour-glyphcell-loom.json",
+   "source": "2026-10-23-superframe/channels/falsescale-contour-glyphcell-loom.json",
+   "bytes": 1750,
+   "sourceSha256": "e30bf63a42e49f4cf9104c4de6e38d3aeeecf2c466934296193eba18d5773eb5"
+  },
+  {
+   "path": "superframe/channels/falsescale-letters-plexus-relief.json",
+   "source": "2026-10-23-superframe/channels/falsescale-letters-plexus-relief.json",
+   "bytes": 2212,
+   "sourceSha256": "1d06673a2b3c47befc60be4e578a6828d5d4aef866f7662de8d2a63dce85a027"
+  },
+  {
+   "path": "superframe/channels/falsescale-scanwave-mix.json",
+   "source": "2026-10-23-superframe/channels/falsescale-scanwave-mix.json",
+   "bytes": 1472,
+   "sourceSha256": "e88f09334528a8c894e4fd55f76c721e3b0ac0ed27d4a3364a142e24d0873d79"
+  },
+  {
+   "path": "superframe/channels/falsescale-threshold.json",
+   "source": "2026-10-23-superframe/channels/falsescale-threshold.json",
+   "bytes": 1611,
+   "sourceSha256": "f6258337cfe7d7ae248a3722c15c5eb696f4925ee2d08a2564e6a01a509502d6"
+  },
+  {
+   "path": "superframe/channels/fbm-glyphcell-alias-hatch-mosh.json",
+   "source": "2026-10-23-superframe/channels/fbm-glyphcell-alias-hatch-mosh.json",
+   "bytes": 1534,
+   "sourceSha256": "cd4e7b16fe90866db4cee9f7aa934a63b07f13d20a1b3351fce21de929b3b0b8"
+  },
+  {
+   "path": "superframe/channels/fbm-groove-retro.json",
+   "source": "2026-10-23-superframe/channels/fbm-groove-retro.json",
+   "bytes": 1337,
+   "sourceSha256": "7f118b931ab2bc130864e47a5074f92284998396b6d51c85c0765cbb33e90df1"
+  },
+  {
+   "path": "superframe/channels/fbm-invert-sdf-alias-ridgelines.json",
+   "source": "2026-10-23-superframe/channels/fbm-invert-sdf-alias-ridgelines.json",
+   "bytes": 1875,
+   "sourceSha256": "f7b562484ddf46ec4bd1cf0dafc20d010570b2e8876603028477ba2727eadc88"
+  },
+  {
+   "path": "superframe/channels/film-sdf-maskreveal.json",
+   "source": "2026-10-23-superframe/channels/film-sdf-maskreveal.json",
+   "bytes": 1969,
+   "sourceSha256": "23af07a5260f8c94290a74cf2a877f69032321d519664f65f8cd18bb6b61ed38"
+  },
+  {
+   "path": "superframe/channels/film-sonify-print-sdf-sound.json",
+   "source": "2026-10-23-superframe/channels/film-sonify-print-sdf-sound.json",
+   "bytes": 1471,
+   "sourceSha256": "9b091bb9430f5e2d65205d9d14f2cb7296f32d6964be86c91e0fe9aff974a47c"
+  },
+  {
+   "path": "superframe/channels/fractal-oscilloscope-breaks-warp-developed-engrave.json",
+   "source": "2026-10-23-superframe/channels/fractal-oscilloscope-breaks-warp-developed-engrave.json",
+   "bytes": 1799,
+   "sourceSha256": "8fa53afb54c90e94b8a24d5a469d0251e12ae2e0f29143c36849505b54b2a987"
+  },
+  {
+   "path": "superframe/channels/fractal-phrase-glyphcell-warp-hatch.json",
+   "source": "2026-10-23-superframe/channels/fractal-phrase-glyphcell-warp-hatch.json",
+   "bytes": 1748,
+   "sourceSha256": "1f860db81e97f9d71a4efc1dcd3ab8744ff479f7e9a4790cfee569b4c900c4e5"
+  },
+  {
+   "path": "superframe/channels/fractal-relief.json",
+   "source": "2026-10-23-superframe/channels/fractal-relief.json",
+   "bytes": 1009,
+   "sourceSha256": "9f1d128a329abcd1709fe4c413df6dcdf4ebe9ac5d93eb474c7d31add12be6ca"
+  },
+  {
+   "path": "superframe/channels/fractal-sonify-misprint-sdf.json",
+   "source": "2026-10-23-superframe/channels/fractal-sonify-misprint-sdf.json",
+   "bytes": 1691,
+   "sourceSha256": "4f3bf5d571777759abe8e815b7793f15a07c989d93ebb3e740dd27dcd15dc4cf"
+  },
+  {
+   "path": "superframe/channels/funkkit-crt-modulate.json",
+   "source": "2026-10-23-superframe/channels/funkkit-crt-modulate.json",
+   "bytes": 1548,
+   "sourceSha256": "1ed0949fcfeb59157b3e243a5cdc30eafc8762d37def6d9a77e0230dc53dff99"
+  },
+  {
+   "path": "superframe/channels/funkkit-sand-sdf-hatch.json",
+   "source": "2026-10-23-superframe/channels/funkkit-sand-sdf-hatch.json",
+   "bytes": 1743,
+   "sourceSha256": "b5f06b7ccac7ceff26a7479fc763f678af4507194b79b6bc2a7be7071bf9784f"
+  },
+  {
+   "path": "superframe/channels/grain-refract.json",
+   "source": "2026-10-23-superframe/channels/grain-refract.json",
+   "bytes": 1387,
+   "sourceSha256": "90b038982844f24c1dd3413cc4ae0e8fafa390f27d41270115bd6e73fcffc2d8"
+  },
+  {
+   "path": "superframe/channels/grain-retro-tone.json",
+   "source": "2026-10-23-superframe/channels/grain-retro-tone.json",
+   "bytes": 1630,
+   "sourceSha256": "7dc4dfc9ad4632daa574e366238d3edc2bc6b0deb27e33b1e3e2bff6b42686de"
+  },
+  {
+   "path": "superframe/channels/groove-letters-invert-scanwave.json",
+   "source": "2026-10-23-superframe/channels/groove-letters-invert-scanwave.json",
+   "bytes": 1420,
+   "sourceSha256": "2533ffa6f212c6f62736ab80de1159902a9347cee05a5fd93cb02d750c52ef87"
+  },
+  {
+   "path": "superframe/channels/groove-threshold-nightlights-plexus-strokes.json",
+   "source": "2026-10-23-superframe/channels/groove-threshold-nightlights-plexus-strokes.json",
+   "bytes": 1872,
+   "sourceSha256": "89de013a5e40f2e11ede087a4336cf69aaa45a3cb9882d830f590a59ec74b0ad"
+  },
+  {
+   "path": "superframe/channels/hamming-streak-hatch-contrast.json",
+   "source": "2026-10-23-superframe/channels/hamming-streak-hatch-contrast.json",
+   "bytes": 1349,
+   "sourceSha256": "eb36c50429fb61c175ef6946fa77a3dba509dae55adb975190a5c1bcbf843752"
+  },
+  {
+   "path": "superframe/channels/material-saturate-print-nightlights-keys-warp.json",
+   "source": "2026-10-23-superframe/channels/material-saturate-print-nightlights-keys-warp.json",
+   "bytes": 2051,
+   "sourceSha256": "621ea37efcd45754d80d8cacdb5f2ca874d4e9780edf574cd6e0f347b311bf54"
+  },
+  {
+   "path": "superframe/channels/membrane-posterize.json",
+   "source": "2026-10-23-superframe/channels/membrane-posterize.json",
+   "bytes": 788,
+   "sourceSha256": "1973af0cf83fee29a746656ad749b5e9a8a61c0eb6097a25009600e7b455698e"
+  },
+  {
+   "path": "superframe/channels/membrane-streak-developed.json",
+   "source": "2026-10-23-superframe/channels/membrane-streak-developed.json",
+   "bytes": 1077,
+   "sourceSha256": "3b76e14b88f4838b276a817f8f7baad287226202a647c7647194e7e6878520eb"
+  },
+  {
+   "path": "superframe/channels/membrane-stroke-alias-scene-engrave.json",
+   "source": "2026-10-23-superframe/channels/membrane-stroke-alias-scene-engrave.json",
+   "bytes": 2211,
+   "sourceSha256": "dc45ffe2c20fb88c2d7ffba8872096192ecb02a7ea5015c0164c8e9332060902"
+  },
+  {
+   "path": "superframe/channels/membrane-threshold-tone-plexus.json",
+   "source": "2026-10-23-superframe/channels/membrane-threshold-tone-plexus.json",
+   "bytes": 1579,
+   "sourceSha256": "ea12aed371c7b7fec3c7c312e5635dca0eeb5eca73615e4157b301074714d0f5"
+  },
+  {
+   "path": "superframe/channels/metal-funkkit-warp-paper-blend-posterize-sdf.json",
+   "source": "2026-10-23-superframe/channels/metal-funkkit-warp-paper-blend-posterize-sdf.json",
+   "bytes": 2235,
+   "sourceSha256": "3f3a0f4a1ebb18475a90bfee5fdb53bdeade0f588e4a0be64e48f47ec5eaf270"
+  },
+  {
+   "path": "superframe/channels/metal-haas-modulate-glyphcell-speckle.json",
+   "source": "2026-10-23-superframe/channels/metal-haas-modulate-glyphcell-speckle.json",
+   "bytes": 2176,
+   "sourceSha256": "84abd8f91560f49aac59c3f27fbad55bb1dedc9506ba5156ea2cb9b5fb4643eb"
+  },
+  {
+   "path": "superframe/channels/metal-relief.json",
+   "source": "2026-10-23-superframe/channels/metal-relief.json",
+   "bytes": 1410,
+   "sourceSha256": "2c46171ae784bfeeebd02cec05d93ad1105c70518ab9b93c23f304825681276b"
+  },
+  {
+   "path": "superframe/channels/noise-relief-strokes-maskreveal-stroke.json",
+   "source": "2026-10-23-superframe/channels/noise-relief-strokes-maskreveal-stroke.json",
+   "bytes": 2321,
+   "sourceSha256": "7c94005be6fb25c42a2bb7ed661366ab52354dabe5345057258cc122ddc2b83e"
+  },
+  {
+   "path": "superframe/channels/noise-seriesnotes-letters.json",
+   "source": "2026-10-23-superframe/channels/noise-seriesnotes-letters.json",
+   "bytes": 1609,
+   "sourceSha256": "f8a54fd6695c6a0fc5eea4d4e516718a6972964554fd0cdab49830bb645cf485"
+  },
+  {
+   "path": "superframe/channels/pads-oscilloscope-stroke-relief.json",
+   "source": "2026-10-23-superframe/channels/pads-oscilloscope-stroke-relief.json",
+   "bytes": 1798,
+   "sourceSha256": "70078475adc26f61005dc18fe54982fe3d2587c23dde6b5c166454b5085376ed"
+  },
+  {
+   "path": "superframe/channels/phrase-paper-modulate-mix.json",
+   "source": "2026-10-23-superframe/channels/phrase-paper-modulate-mix.json",
+   "bytes": 1251,
+   "sourceSha256": "2ca042ffebfcd29fed5fbbeaf843d957ccc6ddf39ebf2653946d87777251884e"
+  },
+  {
+   "path": "superframe/channels/plate-engrave-alias.json",
+   "source": "2026-10-23-superframe/channels/plate-engrave-alias.json",
+   "bytes": 1576,
+   "sourceSha256": "163ca9c04e06ca07d188cdd9877cfdbe1d35ec8cdd61b570f4aa91acc352a799"
+  },
+  {
+   "path": "superframe/channels/plate-pressed-scanwave.json",
+   "source": "2026-10-23-superframe/channels/plate-pressed-scanwave.json",
+   "bytes": 1480,
+   "sourceSha256": "0c2e7f2e530f3395e3fa1b374ff5ce79138de261b724c8b2969c4cee14322788"
+  },
+  {
+   "path": "superframe/channels/plate-scene-mix-threshold-sdf.json",
+   "source": "2026-10-23-superframe/channels/plate-scene-mix-threshold-sdf.json",
+   "bytes": 1839,
+   "sourceSha256": "b8f2a5d2158844001f97fddf620c5d5612aa23ad97de2d0a4c30f6ea320629ce"
+  },
+  {
+   "path": "superframe/channels/plate-strokes-features-print.json",
+   "source": "2026-10-23-superframe/channels/plate-strokes-features-print.json",
+   "bytes": 1709,
+   "sourceSha256": "5016c9f986f85cd623390772a732aa2a445ef538ea69ebc439a2a1a4f4c9ed19"
+  },
+  {
+   "path": "superframe/channels/reference-contrast-glyphcell-paper.json",
+   "source": "2026-10-23-superframe/channels/reference-contrast-glyphcell-paper.json",
+   "bytes": 1515,
+   "sourceSha256": "ffa41fb2a0f4124a8afa3e69e8e9b007449940b22f35d1e1e8a5b7190b9524c0"
+  },
+  {
+   "path": "superframe/channels/reference-pixelate-degrade-letters.json",
+   "source": "2026-10-23-superframe/channels/reference-pixelate-degrade-letters.json",
+   "bytes": 1650,
+   "sourceSha256": "6dcb9013bbf1fdbc5b1511a020da4a3b9d48e3e6c8cc7db535d8923418d0e021"
+  },
+  {
+   "path": "superframe/channels/render-developed-hatch.json",
+   "source": "2026-10-23-superframe/channels/render-developed-hatch.json",
+   "bytes": 1027,
+   "sourceSha256": "481c5b9b21880fa25ac210d4fdd2f73037a24b2f2300e497874d1f288f08ab23"
+  },
+  {
+   "path": "superframe/channels/render.json",
+   "source": "2026-10-23-superframe/channels/render.json",
+   "bytes": 1316,
+   "sourceSha256": "172e9858725c3748eb2f2c9962b13fb6d3e7262c8871d2977981bd67f21968eb"
+  },
+  {
+   "path": "superframe/channels/scene-fractal-warp.json",
+   "source": "2026-10-23-superframe/channels/scene-fractal-warp.json",
+   "bytes": 1131,
+   "sourceSha256": "698033655a3e04426544cd12096d488ab58ef6f973df7173018b6c4209dc2772"
+  },
+  {
+   "path": "superframe/channels/seedsound-tone-blocks-engrave.json",
+   "source": "2026-10-23-superframe/channels/seedsound-tone-blocks-engrave.json",
+   "bytes": 1491,
+   "sourceSha256": "867fb2be136ae3c500e22f324b6b45fd59bd3ce0d4264e89bb79258f3e1ae6e0"
+  },
+  {
+   "path": "superframe/channels/series-contrast-nightlights-sound.json",
+   "source": "2026-10-23-superframe/channels/series-contrast-nightlights-sound.json",
+   "bytes": 1890,
+   "sourceSha256": "660dc84fb1d2f667024f64c8f39f0ec5fa6a8dea843ab69310235e51bb5e5e23"
+  },
+  {
+   "path": "superframe/channels/setback-posterize-contour-tone.json",
+   "source": "2026-10-23-superframe/channels/setback-posterize-contour-tone.json",
+   "bytes": 1301,
+   "sourceSha256": "08bcfc40346a4dcec2c4a6807619dfbc198a054eaefbccb8bcf36967eb6f9ed9"
+  },
+  {
+   "path": "superframe/channels/setback-tone-sonify-streak-misprint.json",
+   "source": "2026-10-23-superframe/channels/setback-tone-sonify-streak-misprint.json",
+   "bytes": 2009,
+   "sourceSha256": "738bd30c9627ce5a31895c3398681ba615b75c3cbb5fab1334fc1247978f511d"
+  },
+  {
+   "path": "superframe/channels/shepard-pressed-pixelate-hatch.json",
+   "source": "2026-10-23-superframe/channels/shepard-pressed-pixelate-hatch.json",
+   "bytes": 1671,
+   "sourceSha256": "a5f557059aa961daa3bf86245074411d55908e1471b68237c67db2be318d7f2d"
+  },
+  {
+   "path": "superframe/channels/spheres-pixelart.json",
+   "source": "2026-10-23-superframe/channels/spheres-pixelart.json",
+   "bytes": 524,
+   "sourceSha256": "bc62ca8a5e41ac9e38406a39869ed52a432e1d1f89dc7dbfb68f5541e158d283"
+  },
+  {
+   "path": "superframe/channels/surface-mosh.json",
+   "source": "2026-10-23-superframe/channels/surface-mosh.json",
+   "bytes": 1459,
+   "sourceSha256": "f4f034abcbea8ba44fdb1c29e1897af030ed3e6f2afc9555c15654c19ee837a3"
+  },
+  {
+   "path": "superframe/channels/surface-speckle-ridgelines-maskreveal.json",
+   "source": "2026-10-23-superframe/channels/surface-speckle-ridgelines-maskreveal.json",
+   "bytes": 2152,
+   "sourceSha256": "323605cb6af314ac901f9ebd08136a3e043c35bbe69ffbce029152cc5026f074"
+  },
+  {
+   "path": "superframe/channels/sweep-recall-plexus-posterize.json",
+   "source": "2026-10-23-superframe/channels/sweep-recall-plexus-posterize.json",
+   "bytes": 1509,
+   "sourceSha256": "f8ea6ebd9eb7c194c1916398c9b3d2f7dbe7d13e9f53bcfa853c71d790c24ae8"
+  },
+  {
+   "path": "superframe/channels/sweep-scanwave-misprint-saturate.json",
+   "source": "2026-10-23-superframe/channels/sweep-scanwave-misprint-saturate.json",
+   "bytes": 1707,
+   "sourceSha256": "011040c445d1ba5cf0787b41fc1572af9961575e6757307336ea82149c7befca"
+  },
+  {
+   "path": "superframe/channels/valley-pixelart.json",
+   "source": "2026-10-23-superframe/channels/valley-pixelart.json",
+   "bytes": 458,
+   "sourceSha256": "1577bd09fc3237fdb4b94708adb6f268a4091436056b8104f5c358e4cf9c79e1"
+  },
+  {
+   "path": "superframe/cli/superframe.mjs",
+   "source": "2026-10-23-superframe/cli/superframe.mjs",
+   "bytes": 9353,
+   "sourceSha256": "1aebfa32dc4a57535fa6d267756d1e7d609e7fdd91e7a185676235188edb14fc"
+  },
+  {
+   "path": "superframe/lib/artifact/common.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/common.mjs",
+   "bytes": 5809,
+   "sourceSha256": "0541012d882a78d64bef5e5cb0d718582ad104aeef61760086735daf9275410a"
+  },
+  {
+   "path": "superframe/lib/artifact/intent.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/intent.mjs",
+   "bytes": 7335,
+   "sourceSha256": "a52e15ab6350091ca5b87a2ffac34d199659bb20d5c88cd4cd0ce27a35de47e2"
+  },
+  {
+   "path": "superframe/lib/artifact/ir.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/ir.mjs",
+   "bytes": 6411,
+   "sourceSha256": "fbe5a3bc5e62d17a605e197f8af71ccd839b49a93efff97f201b36d629fce472"
+  },
+  {
+   "path": "superframe/lib/artifact/lines.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/lines.mjs",
+   "bytes": 4879,
+   "sourceSha256": "bd2eb31cd2c9731a4c8768b9f8b6c9bc4bfd1e43fb0bfcf63256137c83fa54d4"
+  },
+  {
+   "path": "superframe/lib/artifact/material.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/material.mjs",
+   "bytes": 2908,
+   "sourceSha256": "0ccf395103055e49ef4e37eef60dca75bbf608992b439ad732af1a20075d8ac4"
+  },
+  {
+   "path": "superframe/lib/artifact/ops.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/ops.mjs",
+   "bytes": 3359,
+   "sourceSha256": "726f4a1e27d560f8b951d0926a5fea7903e65c01594281be5a6fef95d89b119b"
+  },
+  {
+   "path": "superframe/lib/artifact/paint.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/paint.mjs",
+   "bytes": 2239,
+   "sourceSha256": "c2daf1fb813eebb42e7cfdcf3a4080cd2beccaaa8d604a3e710e622df09222b0"
+  },
+  {
+   "path": "superframe/lib/artifact/render.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/render.mjs",
+   "bytes": 3413,
+   "sourceSha256": "978c0cd6249fbd286baf46fb00af0fc77aadd125f17d2e57e3a317dca8d5b36e"
+  },
+  {
+   "path": "superframe/lib/artifact/simulate.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/simulate.mjs",
+   "bytes": 5280,
+   "sourceSha256": "3dedecd18ca3458aca78c781c6a7cc1018c3ec717b5eb284e25e3e009c1c8d76"
+  },
+  {
+   "path": "superframe/lib/artifact/sound.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/sound.mjs",
+   "bytes": 3402,
+   "sourceSha256": "a3c7f1704abe3bf11ba40126e86a8da94583aad3c21737f81e01d500382cffb5"
+  },
+  {
+   "path": "superframe/lib/artifact/study.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/study.mjs",
+   "bytes": 8025,
+   "sourceSha256": "ec12a4d1b57c03e6220deade51c3baca68bce5b123d64260d52a883a8d8341d6"
+  },
+  {
+   "path": "superframe/lib/artifact/type.mjs",
+   "source": "2026-10-23-superframe/lib/artifact/type.mjs",
+   "bytes": 3820,
+   "sourceSha256": "3f8ea6709de3fda777eadb3d00ce962a7f86313be9121e25ff0656a57b514e2f"
+  },
+  {
+   "path": "superframe/lib/autofeed.mjs",
+   "source": "2026-10-23-superframe/lib/autofeed.mjs",
+   "bytes": 1991,
+   "sourceSha256": "6120ddaa8636663ae8999879a52a3c7301e0e016ba636e3f2cdd3ef37d2890ea"
+  },
+  {
+   "path": "superframe/lib/convert.mjs",
+   "source": "2026-10-23-superframe/lib/convert.mjs",
+   "bytes": 13490,
+   "sourceSha256": "9239f7555768289898cadd5cce9b2e87969e56ef58aa70610845b22590d6aca0"
+  },
+  {
+   "path": "superframe/lib/dist.mjs",
+   "source": "2026-10-23-superframe/lib/dist.mjs",
+   "bytes": 1642,
+   "sourceSha256": "87f194c6c952aff01e9a7a8e81fec670207465aaac0f21b7f90009dfb73d66c7"
+  },
+  {
+   "path": "superframe/lib/dualedge.mjs",
+   "source": "2026-10-23-superframe/lib/dualedge.mjs",
+   "bytes": 1673,
+   "sourceSha256": "3a422cbd0446e4dbd142eb1860dad7af91622f2c8df60105800e3f922735ea15"
+  },
+  {
+   "path": "superframe/lib/export.mjs",
+   "source": "2026-10-23-superframe/lib/export.mjs",
+   "bytes": 5148,
+   "sourceSha256": "650967d80c22230a29c6983b0faaf0491b4b70c46cecc1a4d62650e3750d4a12"
+  },
+  {
+   "path": "superframe/lib/fill.mjs",
+   "source": "2026-10-23-superframe/lib/fill.mjs",
+   "bytes": 2707,
+   "sourceSha256": "023b28a1f858953abe904947fff69e4e718637e5754eadbddb8cc877018d4be7"
+  },
+  {
+   "path": "superframe/lib/flash.mjs",
+   "source": "2026-10-23-superframe/lib/flash.mjs",
+   "bytes": 3516,
+   "sourceSha256": "5a00ea4433e001febf8a3363eec358adec820bc77aaa0823ca86c63b08791074"
+  },
+  {
+   "path": "superframe/lib/graph.mjs",
+   "source": "2026-10-23-superframe/lib/graph.mjs",
+   "bytes": 7886,
+   "sourceSha256": "baa1548170913356f72959b8a5b815856cd239257c0b907b15f18036a878a863"
+  },
+  {
+   "path": "superframe/lib/medium/additives.mjs",
+   "source": "2026-10-23-superframe/lib/medium/additives.mjs",
+   "bytes": 21870,
+   "sourceSha256": "d8db30f9290b475a211f1d0f9bbbc7e375d5d772214528b0a5f60f74b657d077"
+  },
+  {
+   "path": "superframe/lib/medium/artscenes.mjs",
+   "source": "2026-10-23-superframe/lib/medium/artscenes.mjs",
+   "bytes": 10623,
+   "sourceSha256": "9cd39e232dad9f5ff1ff0583dbe8047dbf48d6bbf8c3db6a288333447c43ed0e"
+  },
+  {
+   "path": "superframe/lib/medium/bed.mjs",
+   "source": "2026-10-23-superframe/lib/medium/bed.mjs",
+   "bytes": 2439,
+   "sourceSha256": "d207977543806f8cd1a1a65c28b847e126d85d4a58ada22a5c0b2979aaf6bbc4"
+  },
+  {
+   "path": "superframe/lib/medium/finebuf.mjs",
+   "source": "2026-10-23-superframe/lib/medium/finebuf.mjs",
+   "bytes": 2299,
+   "sourceSha256": "4c565122ec56a2700fee8d2c95007aca5a27c04173e5918a29379627f30b23e7"
+  },
+  {
+   "path": "superframe/lib/medium/gpu/display.js",
+   "source": "2026-10-23-superframe/lib/medium/gpu/display.js",
+   "bytes": 11273,
+   "sourceSha256": "bd939fe5e9d324b0d050203e5700ecd5e0d698315adabe0c37d334339400166a"
+  },
+  {
+   "path": "superframe/lib/medium/gpu/medium.js",
+   "source": "2026-10-23-superframe/lib/medium/gpu/medium.js",
+   "bytes": 25676,
+   "sourceSha256": "47df264128b69565cd3ceb10b08c86853efe3c137481c49f308f5609cf6e444d"
+  },
+  {
+   "path": "superframe/lib/medium/gpu/pigment.js",
+   "source": "2026-10-23-superframe/lib/medium/gpu/pigment.js",
+   "bytes": 4997,
+   "sourceSha256": "1130a1dd843eef601f1e2981bc27b782191bad12ff74790e0223920f8b0bd363"
+  },
+  {
+   "path": "superframe/lib/medium/gpu/shaders.js",
+   "source": "2026-10-23-superframe/lib/medium/gpu/shaders.js",
+   "bytes": 5942,
+   "sourceSha256": "00c44c49c8b97340aa6474df21e9defd09b0570d44cef88e285dde3cb8b8c797"
+  },
+  {
+   "path": "superframe/lib/medium/grid.mjs",
+   "source": "2026-10-23-superframe/lib/medium/grid.mjs",
+   "bytes": 6494,
+   "sourceSha256": "c42870a205b4b5b6021ae4d1d7ebc6a78013ba605d218b5815f0a4a404c212dc"
+  },
+  {
+   "path": "superframe/lib/medium/index.mjs",
+   "source": "2026-10-23-superframe/lib/medium/index.mjs",
+   "bytes": 1228,
+   "sourceSha256": "dbe707dcabb1a7f0dab58525d0f87586ca69de560cf176fb622284c55066a55b"
+  },
+  {
+   "path": "superframe/lib/medium/inkbloom.mjs",
+   "source": "2026-10-23-superframe/lib/medium/inkbloom.mjs",
+   "bytes": 6044,
+   "sourceSha256": "b7e2270dd5403ce9de0ddc03647e49816c1592c3f1d4bc439c735705b3512b81"
+  },
+  {
+   "path": "superframe/lib/medium/loops.mjs",
+   "source": "2026-10-23-superframe/lib/medium/loops.mjs",
+   "bytes": 10796,
+   "sourceSha256": "bc180c3affc17bd4c54afeba7d91c39a3742f2a9a5a4e58b622ed8c5438ffa4c"
+  },
+  {
+   "path": "superframe/lib/medium/medium.mjs",
+   "source": "2026-10-23-superframe/lib/medium/medium.mjs",
+   "bytes": 16657,
+   "sourceSha256": "68cf1efd6c5c22881fd539b54ab34f1097d62abf9fa4fa32394d8a37f076d03c"
+  },
+  {
+   "path": "superframe/lib/medium/mosaicview.mjs",
+   "source": "2026-10-23-superframe/lib/medium/mosaicview.mjs",
+   "bytes": 8145,
+   "sourceSha256": "543cb49cd788dab0bd0336cc8e7314ee7c92f907eb35d9029e97d760909f6f58"
+  },
+  {
+   "path": "superframe/lib/medium/motes.mjs",
+   "source": "2026-10-23-superframe/lib/medium/motes.mjs",
+   "bytes": 3285,
+   "sourceSha256": "d5b7a6463ec2c57ea309876f899a6507a8f45bf9bb58c03acfcaec8d198a7240"
+  },
+  {
+   "path": "superframe/lib/medium/optics.mjs",
+   "source": "2026-10-23-superframe/lib/medium/optics.mjs",
+   "bytes": 7548,
+   "sourceSha256": "9073123f147d744c1db09524c68612f1a5a8bdeecf157952f91e37b68b97bd02"
+  },
+  {
+   "path": "superframe/lib/medium/ports.mjs",
+   "source": "2026-10-23-superframe/lib/medium/ports.mjs",
+   "bytes": 5186,
+   "sourceSha256": "083a316ee8020bc0ec521c384131ff791d24f3f8318f36f01798b19e112cde9e"
+  },
+  {
+   "path": "superframe/lib/medium/reaction.mjs",
+   "source": "2026-10-23-superframe/lib/medium/reaction.mjs",
+   "bytes": 1964,
+   "sourceSha256": "9ca563f33dfda6a9dc5eeed900c2bf4880b28fd8c3410036c295966be1a303fa"
+  },
+  {
+   "path": "superframe/lib/medium/render.mjs",
+   "source": "2026-10-23-superframe/lib/medium/render.mjs",
+   "bytes": 14613,
+   "sourceSha256": "bfdc5a89ab437f44f8b31ed42502f4af83a55b3fb678aed47cab1f9db94c19d2"
+  },
+  {
+   "path": "superframe/lib/medium/scenes.mjs",
+   "source": "2026-10-23-superframe/lib/medium/scenes.mjs",
+   "bytes": 3282,
+   "sourceSha256": "ca6f47dd067f8e97ee6df33504a0de17bfebddf3f3c2d8ecb75e68bf2d642af9"
+  },
+  {
+   "path": "superframe/lib/medium/sheets.mjs",
+   "source": "2026-10-23-superframe/lib/medium/sheets.mjs",
+   "bytes": 2581,
+   "sourceSha256": "692280e1399f43d2dbf3c04f4e172856bfc0c6766a6a8abafcca56a47c9173f4"
+  },
+  {
+   "path": "superframe/lib/medium/specoptics.mjs",
+   "source": "2026-10-23-superframe/lib/medium/specoptics.mjs",
+   "bytes": 4410,
+   "sourceSha256": "45e5d85590a14f4fc7e92c52b3ae41516563184a8794ee281e0080574ac99f9d"
+  },
+  {
+   "path": "superframe/lib/medium/spectral.mjs",
+   "source": "2026-10-23-superframe/lib/medium/spectral.mjs",
+   "bytes": 9982,
+   "sourceSha256": "423d4368dd8a7a60347053ff2b9d5d8d3980fa03a6b5bf94f27d3c1fefa9ca7d"
+  },
+  {
+   "path": "superframe/lib/medium/tesserae.mjs",
+   "source": "2026-10-23-superframe/lib/medium/tesserae.mjs",
+   "bytes": 10549,
+   "sourceSha256": "84597609b5029adb6eeb832601d388de8acf51d37b1d6ef14565932294482044"
+  },
+  {
+   "path": "superframe/lib/medium/ticks.mjs",
+   "source": "2026-10-23-superframe/lib/medium/ticks.mjs",
+   "bytes": 12266,
+   "sourceSha256": "766cbe2a31d8f8d96ba358e2691c9cb95d5e0de6897f5e90b27fd687830f179b"
+  },
+  {
+   "path": "superframe/lib/medium/timing.mjs",
+   "source": "2026-10-23-superframe/lib/medium/timing.mjs",
+   "bytes": 1909,
+   "sourceSha256": "77ef2906fb54c28732f4a6af3e7bd486da7310536226abe1014146c3527a2776"
+  },
+  {
+   "path": "superframe/lib/medium/topview.mjs",
+   "source": "2026-10-23-superframe/lib/medium/topview.mjs",
+   "bytes": 353,
+   "sourceSha256": "68cbb8fa875f502ee3ca5a8a16b7132299ff6a076eb0f6dbe27de8fe2d8e2121"
+  },
+  {
+   "path": "superframe/lib/medium/view.mjs",
+   "source": "2026-10-23-superframe/lib/medium/view.mjs",
+   "bytes": 13905,
+   "sourceSha256": "886ea8844c68fada54be2ff642cbf91bac31e79e8f99d78e9e2a586dc5a4c406"
+  },
+  {
+   "path": "superframe/lib/medium/wisps.mjs",
+   "source": "2026-10-23-superframe/lib/medium/wisps.mjs",
+   "bytes": 4563,
+   "sourceSha256": "61662365f44a6d271dee3d38a162df1a6fe04f6e2ece0fcf51accfcdcd333c65"
+  },
+  {
+   "path": "superframe/lib/mosaic/analysis.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/analysis.mjs",
+   "bytes": 3760,
+   "sourceSha256": "b5a59733880616879639105ead494b180f073721b2616012794ea04c8523d212"
+  },
+  {
+   "path": "superframe/lib/mosaic/codemosaic.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/codemosaic.mjs",
+   "bytes": 4288,
+   "sourceSha256": "5bcf4891657327a76f9193844a0f96ca0218f928c9dd32820555f709b369067f"
+  },
+  {
+   "path": "superframe/lib/mosaic/data/code-lines.json",
+   "source": "2026-10-23-superframe/lib/mosaic/data/code-lines.json",
+   "bytes": 207584,
+   "sourceSha256": "d41793b5e58243819b6d14b584af8e2f1b9d81fae5ced03b0d69674659bc5bc9"
+  },
+  {
+   "path": "superframe/lib/mosaic/digits.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/digits.mjs",
+   "bytes": 1423,
+   "sourceSha256": "39ddfe2e4762a66d3c56e4dee9db6821bcba1cfaa52ab7fc701f06e470709438"
+  },
+  {
+   "path": "superframe/lib/mosaic/field.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/field.mjs",
+   "bytes": 4679,
+   "sourceSha256": "f68c7c7c9be15293d34456fcee6403ef3ce8d1194bf42733ffcf433d2ac8c0bd"
+  },
+  {
+   "path": "superframe/lib/mosaic/glyphs.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/glyphs.mjs",
+   "bytes": 6149,
+   "sourceSha256": "02778fe63fe6a7988f024e9382700b3f328f4cdd892aedefd43378fe4ac364b7"
+  },
+  {
+   "path": "superframe/lib/mosaic/index.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/index.mjs",
+   "bytes": 1840,
+   "sourceSha256": "6b9a806e901d2f7a355618ef2e13e3b69b2602484d916bbd9068993cdc31e92c"
+  },
+  {
+   "path": "superframe/lib/mosaic/marks.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/marks.mjs",
+   "bytes": 10743,
+   "sourceSha256": "660360a41f399c1184f4fa017336d4f574f41662206da2aa21497ea21310f1d6"
+  },
+  {
+   "path": "superframe/lib/mosaic/recipes.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/recipes.mjs",
+   "bytes": 7824,
+   "sourceSha256": "3dc57212be4c6c8f5b6700a51cad77aca677fbe46239cd481f1baec3f26d12d5"
+  },
+  {
+   "path": "superframe/lib/mosaic/tiles/andamento.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/tiles/andamento.mjs",
+   "bytes": 15528,
+   "sourceSha256": "58d7f066180411265232bd9943ba6fc597b891a3f4192c8b43e912ab3dbfff54"
+  },
+  {
+   "path": "superframe/lib/mosaic/tiles/codecells.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/tiles/codecells.mjs",
+   "bytes": 6691,
+   "sourceSha256": "44142871069b764077031b7586c44a8bd3cf78539a44ace4fa4e4d93309d1d74"
+  },
+  {
+   "path": "superframe/lib/mosaic/tiles/index.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/tiles/index.mjs",
+   "bytes": 7127,
+   "sourceSha256": "1c2527aa65625c980fbc9f19c56db6816142f50c8c05cdb13402d236718679e9"
+  },
+  {
+   "path": "superframe/lib/mosaic/tiles/pix.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/tiles/pix.mjs",
+   "bytes": 2186,
+   "sourceSha256": "732182399e76a95e21988d8804cda3b0d53b99581fcce695410c7074a7f3aa4f"
+  },
+  {
+   "path": "superframe/lib/mosaic/tiles/tesserae.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/tiles/tesserae.mjs",
+   "bytes": 4021,
+   "sourceSha256": "9a882d0e22432d303aff2e4153702fab46f00aa63bf6e06f616e8fb9f8100a30"
+  },
+  {
+   "path": "superframe/lib/mosaic/tiles/textfield.mjs",
+   "source": "2026-10-23-superframe/lib/mosaic/tiles/textfield.mjs",
+   "bytes": 3136,
+   "sourceSha256": "94b30a1f508cc2d55fccb02c51db89a7675fec14b0b43d03605001e7235f3f1c"
+  },
+  {
+   "path": "superframe/lib/node.mjs",
+   "source": "2026-10-23-superframe/lib/node.mjs",
+   "bytes": 4716,
+   "sourceSha256": "a9dec3ffe80f3c3117f579fce8121f568f54ba7b36a04200d63d75002406556c"
+  },
+  {
+   "path": "superframe/lib/pix.mjs",
+   "source": "2026-10-23-superframe/lib/pix.mjs",
+   "bytes": 9057,
+   "sourceSha256": "7891265cd84fdab107896185473e9d1f92bfdbc26b728b1df1ddd8e64e429ff0"
+  },
+  {
+   "path": "superframe/lib/props.mjs",
+   "source": "2026-10-23-superframe/lib/props.mjs",
+   "bytes": 3156,
+   "sourceSha256": "74178d600c59e6844814561e23ee3cba89cddf62c625fcc9659887bcd62a84d2"
+  },
+  {
+   "path": "superframe/lib/recipient.mjs",
+   "source": "2026-10-23-superframe/lib/recipient.mjs",
+   "bytes": 8143,
+   "sourceSha256": "962232077394e350945431efa808336cfbab8e05514785c696722299ec997f9f"
+  },
+  {
+   "path": "superframe/lib/registry.mjs",
+   "source": "2026-10-23-superframe/lib/registry.mjs",
+   "bytes": 2835,
+   "sourceSha256": "a45e32e8af48aca9e46583a8dec56a283cfb52371cb6c302b7d1dc839dfaf17c"
+  },
+  {
+   "path": "superframe/lib/seed.mjs",
+   "source": "2026-10-23-superframe/lib/seed.mjs",
+   "bytes": 878,
+   "sourceSha256": "cbe4a1e6d62e44ca94237f6a99f01fc5e509a08217e0e403a3eb7968959c4820"
+  },
+  {
+   "path": "superframe/lib/stream.mjs",
+   "source": "2026-10-23-superframe/lib/stream.mjs",
+   "bytes": 3102,
+   "sourceSha256": "34e1211c0b026d2613ed13392816692f340406578f0246a311794c79c0f7c605"
+  },
+  {
+   "path": "superframe/lib/synth.mjs",
+   "source": "2026-10-23-superframe/lib/synth.mjs",
+   "bytes": 4470,
+   "sourceSha256": "5959db6130496e5518f9f1a345a19b685178101b1d5f4302cef3acf7a657061d"
+  },
+  {
+   "path": "superframe/lib/tools.mjs",
+   "source": "2026-10-23-superframe/lib/tools.mjs",
+   "bytes": 6438,
+   "sourceSha256": "ca45ea3fb92672735699f0354a8e9c4445866d5c5f411444c15faa0a89e8a30d"
+  },
+  {
+   "path": "superframe/lib/transform.mjs",
+   "source": "2026-10-23-superframe/lib/transform.mjs",
+   "bytes": 8087,
+   "sourceSha256": "9d24a894fff8cdab306ec69c56f0d3a3081a452baef5fa1df20fe5a6b01cc48a"
+  },
+  {
+   "path": "superframe/lib/types.mjs",
+   "source": "2026-10-23-superframe/lib/types.mjs",
+   "bytes": 6106,
+   "sourceSha256": "f13e3f1f3b9efe9a93e3e33fc2e44f9f2d29837aa3c10985abba9f68747dcd93"
+  },
+  {
+   "path": "superframe/lib/voices.mjs",
+   "source": "2026-10-23-superframe/lib/voices.mjs",
+   "bytes": 3160,
+   "sourceSha256": "809f7077cfcd36c2e7635b78e37eb931500543a205df8eec5d935adc2238bc90"
+  },
+  {
+   "path": "superframe/room/index.html",
+   "source": "2026-10-23-superframe/room/index.html",
+   "bytes": 5282,
+   "sourceSha256": "b63deefeffd72d6025a3d9746a890dd8d09017f3206d101e826a2d8dd86a3b3d"
+  },
+  {
+   "path": "superframe/room/recipes.mjs",
+   "source": "2026-10-23-superframe/room/recipes.mjs",
+   "bytes": 3454,
+   "sourceSha256": "add1f55d64aee922535d6259511434802e1b195b6e17382cd32996ad141095e3"
+  },
+  {
+   "path": "superframe/room/room.css",
+   "source": "2026-10-23-superframe/room/room.css",
+   "bytes": 4317,
+   "sourceSha256": "9ecc96b12fb8e3361cdaf4a3ad6dd83241033a2c50a27280b7062f4e69e15d2a"
+  },
+  {
+   "path": "superframe/room/room.js",
+   "source": "2026-10-23-superframe/room/room.js",
+   "bytes": 12791,
+   "sourceSha256": "6da14b64422831064e19b00f50eee1ce5747e937af5d0df98c9d9463eeb3d68e"
+  },
+  {
+   "path": "superframe/room/save.js",
+   "source": "2026-10-23-superframe/room/save.js",
+   "bytes": 4326,
+   "sourceSha256": "89d434c6aac0e4fe8746c40d5b56d9e5078aca941841a63c34eef9afdb1a27cf"
+  },
+  {
+   "path": "superframe/room/serve.mjs",
+   "source": "2026-10-23-superframe/room/serve.mjs",
+   "bytes": 4620,
+   "sourceSha256": "d2556a39f1205dd6b239471b953b7e63855ad2bf3a7b110ddf341c40b58f57f5"
+  },
+  {
+   "path": "superframe/tests/adapters.golden.test.mjs",
+   "source": "2026-10-23-superframe/tests/adapters.golden.test.mjs",
+   "bytes": 2532,
+   "sourceSha256": "5bf2601616dbde604d581baf3327b81c4ab19b341c09c589ac559e19144bca39"
+  },
+  {
+   "path": "superframe/tests/artifact.test.mjs",
+   "source": "2026-10-23-superframe/tests/artifact.test.mjs",
+   "bytes": 6520,
+   "sourceSha256": "64f0975af61bf56102ef4cbfbd0c2f8554a589b217cc4ead37dd69317005625c"
+  },
+  {
+   "path": "superframe/tests/dualedge.test.mjs",
+   "source": "2026-10-23-superframe/tests/dualedge.test.mjs",
+   "bytes": 1503,
+   "sourceSha256": "539847a57b8ac3872926846d8d711278f671616b1a9d93c2184429f537c1eee7"
+  },
+  {
+   "path": "superframe/tests/export.test.mjs",
+   "source": "2026-10-23-superframe/tests/export.test.mjs",
+   "bytes": 1464,
+   "sourceSha256": "3629ca664485a11048b3e5da60497920e8dab17b1bd8889de80d0487f9105239"
+  },
+  {
+   "path": "superframe/tests/finish.test.mjs",
+   "source": "2026-10-23-superframe/tests/finish.test.mjs",
+   "bytes": 2317,
+   "sourceSha256": "6ba1b9c5bdf6c5ff423854f1d94788fdefdf952083fd84e984a3c17bdccc6db9"
+  },
+  {
+   "path": "superframe/tests/fixtures/adapters-broken/broken.mjs",
+   "source": "2026-10-23-superframe/tests/fixtures/adapters-broken/broken.mjs",
+   "bytes": 140,
+   "sourceSha256": "b676fbd5e5119d4f7baadff6b8f935321cf644ab85b1b2a67a5fa6692116f5d9"
+  },
+  {
+   "path": "superframe/tests/fixtures/adapters-broken/good.mjs",
+   "source": "2026-10-23-superframe/tests/fixtures/adapters-broken/good.mjs",
+   "bytes": 86,
+   "sourceSha256": "c5b1d6e8ca757a91bfbec332668546dfcf33ae515ac840b362e6e55fb76aeb44"
+  },
+  {
+   "path": "superframe/tests/golden/metamer-scan.json",
+   "source": "2026-10-23-superframe/tests/golden/metamer-scan.json",
+   "bytes": 3048,
+   "sourceSha256": "36c4f231c9b15660f056bc86a158a6e96dad0de242a5153ea529f9561d0c4b94"
+  },
+  {
+   "path": "superframe/tests/golden/metamer-spectral.json",
+   "source": "2026-10-23-superframe/tests/golden/metamer-spectral.json",
+   "bytes": 1670,
+   "sourceSha256": "c354ef283e1a27f214298456cd78e86147c8a5ffb389c633b20c0e34d58a28a2"
+  },
+  {
+   "path": "superframe/tests/golden/metamer-test.json",
+   "source": "2026-10-23-superframe/tests/golden/metamer-test.json",
+   "bytes": 1376,
+   "sourceSha256": "4fe3b598f934a1ef42e973976a2453ceeb65ce66397a04d8ba3856e93d1311ab"
+  },
+  {
+   "path": "superframe/tests/golden/nodes.json",
+   "source": "2026-10-23-superframe/tests/golden/nodes.json",
+   "bytes": 6279,
+   "sourceSha256": "87ce3320d7cf255f6d7e3b0a157535dcc364e89e74917abb5b939ed074cbb8d0"
+  },
+  {
+   "path": "superframe/tests/graph.test.mjs",
+   "source": "2026-10-23-superframe/tests/graph.test.mjs",
+   "bytes": 4284,
+   "sourceSha256": "24ac36005c6e10d468c7a4916de9be9df50493e46629214ce4118c4b527289b5"
+  },
+  {
+   "path": "superframe/tests/medium.test.mjs",
+   "source": "2026-10-23-superframe/tests/medium.test.mjs",
+   "bytes": 14221,
+   "sourceSha256": "defcf608d64f6a53b30ac1564eaeaad3b0598ee500c5f3851dab9ee04f323577"
+  },
+  {
+   "path": "superframe/tests/mosaic.test.mjs",
+   "source": "2026-10-23-superframe/tests/mosaic.test.mjs",
+   "bytes": 8965,
+   "sourceSha256": "3eec7d931f65fd74b0d8b7bd2287cf4141640a54975df2483f1c9344ef936bc9"
+  },
+  {
+   "path": "superframe/tests/recipient.test.mjs",
+   "source": "2026-10-23-superframe/tests/recipient.test.mjs",
+   "bytes": 2818,
+   "sourceSha256": "2fa3a026d9b1816b301ed7619b2ece9751d822afa508ab79d975f618a0857640"
+  },
+  {
+   "path": "superframe/tests/registry.test.mjs",
+   "source": "2026-10-23-superframe/tests/registry.test.mjs",
+   "bytes": 999,
+   "sourceSha256": "ad12c53efd1ecf968a736bf125cc0b58b70bd00f8ef68ce5ab7e2c3d9229849b"
+  },
+  {
+   "path": "superframe/tests/spectral.test.mjs",
+   "source": "2026-10-23-superframe/tests/spectral.test.mjs",
+   "bytes": 8428,
+   "sourceSha256": "32034a8a7037aed66515a91bd862ace8a3c443e08d2e2fb4cb83beb43b547e00"
+  },
+  {
+   "path": "superframe/tests/story.test.mjs",
+   "source": "2026-10-23-superframe/tests/story.test.mjs",
+   "bytes": 9527,
+   "sourceSha256": "18b51ba3d17e380a0843c32197f83e1f72ee4d4dd642c2bda2f4871f9ff23034"
+  },
+  {
+   "path": "superframe/tests/stream.test.mjs",
+   "source": "2026-10-23-superframe/tests/stream.test.mjs",
+   "bytes": 1367,
+   "sourceSha256": "f9fb1e19ca572de60db0fcb8d7850063ffad599343f5d4295b6a092d583b027d"
+  },
+  {
+   "path": "superframe/tests/tools.test.mjs",
+   "source": "2026-10-23-superframe/tests/tools.test.mjs",
+   "bytes": 2604,
+   "sourceSha256": "3d1223d763e2068c0698902413d7d5438e9105ddb3899a58f05d7b75edcbdb47"
+  },
+  {
+   "path": "superframe/tests/transfer.test.mjs",
+   "source": "2026-10-23-superframe/tests/transfer.test.mjs",
+   "bytes": 4255,
+   "sourceSha256": "ad27748f77a782c5af7d3c86f1171c017fc28c6e42cdd3bbcb35bfa5c71d38cb"
+  },
+  {
+   "path": "superframe/tests/transform.test.mjs",
+   "source": "2026-10-23-superframe/tests/transform.test.mjs",
+   "bytes": 2091,
+   "sourceSha256": "e90767a4de74497fc5cf5bd94ef670d8d79f825263d05e995da80084399de7a0"
+  },
+  {
+   "path": "superframe/tools/check_comment_swallow.mjs",
+   "source": "2026-10-23-superframe/tools/check_comment_swallow.mjs",
+   "bytes": 3242,
+   "sourceSha256": "a0d43292d57996c6414081781ca5d7abbc0a5b9b6439f5f5aaad8b161861a46d"
+  },
+  {
+   "path": "superframe/tools/gendocs.mjs",
+   "source": "2026-10-23-superframe/tools/gendocs.mjs",
+   "bytes": 2742,
+   "sourceSha256": "60dd875f54a8751cffb932d96af6f793ca4eec0d26d54616545d481b4d2f269b"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/LICENSE-NOTE.md",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/LICENSE-NOTE.md",
+   "bytes": 522,
+   "sourceSha256": "44a0dc609ae51abd4b183f3a1c7c0745b84c19470476d91df9d289266c3416d2"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/SHA256SUMS",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/SHA256SUMS",
+   "bytes": 415,
+   "sourceSha256": "0c7a181c2071d786b42d67465fd2b285f1d163ff11a4e74eb09c4caa880271a3"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/raw-loader.mjs",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/raw-loader.mjs",
+   "bytes": 7875,
+   "sourceSha256": "8a762c65c04ed52ddf76bcf4a58105d10b6062a4db80a8923e8f85f1eb7fcdee"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/raw-native-gpu.mjs",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/raw-native-gpu.mjs",
+   "bytes": 105658,
+   "sourceSha256": "ff6565d00ae528e0509a5ec76f0f5bdaef9a0c4daed48246f660d6d03f5fe615"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/raw-native-gpu.wasm",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/raw-native-gpu.wasm",
+   "bytes": 405523,
+   "sourceSha256": "2299b9d34191147c6afe5f638dc27220061ad7564126e27b63cfc3f89952d2f3"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/raw-native.mjs",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/raw-native.mjs",
+   "bytes": 63890,
+   "sourceSha256": "c02ede3e72d1e6691d6ac190319053b8a982cd9de44c64f95a00edb6f95d33c5"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/raw-native.wasm",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/raw-native.wasm",
+   "bytes": 343276,
+   "sourceSha256": "45e25940368d664e21088708ba1c515b0e5d9ef60a2bea4b8b93f8f31113a470"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/audio.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/audio.js",
+   "bytes": 7175,
+   "sourceSha256": "3b74e6f166e6ef47adbe0943cc8be2d74f1544883fa6dd334d2d632d2bd19835"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/fractal-color.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-color.js",
+   "bytes": 11038,
+   "sourceSha256": "60670847f8fe336e5418161dabef3a47169e0fb0e8f2a3c25cd89c2404c8afa2"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/fractal-colouring.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-colouring.js",
+   "bytes": 8529,
+   "sourceSha256": "7dcb1ce8b338b8afbcfa1648796c96c11523ecc9e87ac88be7dc885953dbbeb1"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/fractal-formula-cpu.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-formula-cpu.js",
+   "bytes": 4331,
+   "sourceSha256": "7fc7cda3220f1b765719d34216bd42dbf33904797ed3cf50e065c7a4012c52e4"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/fractal-formula.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-formula.js",
+   "bytes": 23338,
+   "sourceSha256": "53634d3e8fbe83f84d8afd55b0f4066ce3c670a7c6e089d9f40bcd24cafd7cbe"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/fractal-formulas.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-formulas.js",
+   "bytes": 7474,
+   "sourceSha256": "2d321b083b916213870d398e8e36c41e21d38c372c1f14a2501a501af359eff9"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/fractal-glsl-formula.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-glsl-formula.js",
+   "bytes": 7382,
+   "sourceSha256": "2933aea1338f5825b3cf15d0b419b1eeb8cd6f1fa244fdc124646a012d643a99"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/fractal-glsl-lib.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-glsl-lib.js",
+   "bytes": 15891,
+   "sourceSha256": "d30f5243a473e9cc8a423bbe51195102abe443107697610bf9dfdaca17278e27"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/fractal-glsl-lyapunov.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-glsl-lyapunov.js",
+   "bytes": 3803,
+   "sourceSha256": "c8e5f766e400f9f91d35be1e0c02f56ccc50ab570aaf2ac767bc3c4727109fb5"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/media-engine/contracts.mjs",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/media-engine/contracts.mjs",
+   "bytes": 26932,
+   "sourceSha256": "b972095e4eadb007fb892e48027fe6d970328eb2256749e046b296f500208878"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/media-engine/seed.mjs",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/media-engine/seed.mjs",
+   "bytes": 3085,
+   "sourceSha256": "2cc355d90663ba427330519642a6e1e07576498384de0db7540d870725df01f2"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/media-engine/sound.mjs",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/media-engine/sound.mjs",
+   "bytes": 17060,
+   "sourceSha256": "64b49ab250b9dfeb5ea26005a4fbce88d69221844f2b945ad65b3d6843446adc"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/midi-writer.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/midi-writer.js",
+   "bytes": 2461,
+   "sourceSha256": "91ebbcc1498ed581c3140340b3ece2ab6c34ed65c7e8c1a66182dac600771831"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/plot-maps.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/plot-maps.js",
+   "bytes": 19657,
+   "sourceSha256": "dbfe29a60a76719a7a734fa613823e5ce5e0a79ed5623f32d009f08bfc32df4e"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/plotter.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/plotter.js",
+   "bytes": 22969,
+   "sourceSha256": "33701d7a8adadd164b907015366fd51ae4dee4a7c8e8acc8a5f111c8699f40ea"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/relief-stl.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/relief-stl.js",
+   "bytes": 5071,
+   "sourceSha256": "206bc305416f91e23012122522f7d0bd1749ee53603e17ff57be635fab0e1a46"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/retro-crt.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/retro-crt.js",
+   "bytes": 13260,
+   "sourceSha256": "413b7924645a5102489c9358bd0e242781ea210ec2712646acb3a8f7079e7a65"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/retro-dither.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/retro-dither.js",
+   "bytes": 6100,
+   "sourceSha256": "faad1855c7cc6be230a89321a82044ab5b4d5c0d9f4cd185e7e2e0e8b27032ec"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/retro-engine.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/retro-engine.js",
+   "bytes": 8577,
+   "sourceSha256": "1a9a4a8c3c7aba3535b9394df4d578e45e27266b7d9f7435d09135a6f0387873"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/retro-palettes.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/retro-palettes.js",
+   "bytes": 6312,
+   "sourceSha256": "2e3d6ba82d1a867f544c5526b04240ff659bef68b765604a1ead8de048a5a9e3"
+  },
+  {
+   "path": "superframe/upstream/site-3ca6529/system/weave-engine.js",
+   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/weave-engine.js",
+   "bytes": 12990,
+   "sourceSha256": "64ee2b2f774bcbe3045c9400242204f7fa08403d79230014eb2cd52a3e724f09"
+  },
+  {
+   "path": "techniques/fonts/hanken-grotesk-italic.woff2",
+   "source": "2026-10-23-techniques/fonts/hanken-grotesk-italic.woff2",
+   "bytes": 13896,
+   "sourceSha256": "53168ef35821f9ec781d281e9efefb097833a1f60760552ac9cba4f4ccc43aa6"
+  },
+  {
+   "path": "techniques/fonts/hanken-grotesk.woff2",
+   "source": "2026-10-23-techniques/fonts/hanken-grotesk.woff2",
+   "bytes": 34704,
+   "sourceSha256": "e9201eddf1d41d0b62253295d869ce3cf65768f7102b797f02c7f8c876b4a9d5"
+  },
+  {
+   "path": "techniques/lib/burin.js",
+   "source": "2026-10-23-techniques/lib/burin.js",
+   "bytes": 10942,
+   "sourceSha256": "174ff3c23716b7728b0413d723f60b1f7925d8f8afb4b6f5ce0b2c4173d2b652"
+  },
+  {
+   "path": "techniques/lib/develop.js",
+   "source": "2026-10-23-techniques/lib/develop.js",
+   "bytes": 5986,
+   "sourceSha256": "fcab2b02d6225f50a0db230cfaf59822a69e8dc3640461774d41613228f07625"
+  },
+  {
+   "path": "techniques/lib/gl.js",
+   "source": "2026-10-23-techniques/lib/gl.js",
+   "bytes": 3498,
+   "sourceSha256": "2d9dbc01e2cb0d0f3003fbfedd4e900361aac42dafd0e1c8899d38f287b56a69"
+  },
+  {
+   "path": "techniques/lib/light.js",
+   "source": "2026-10-23-techniques/lib/light.js",
+   "bytes": 4534,
+   "sourceSha256": "7cad1cd7f006b26f482249d68ffe9133c9fb488428f5659cfc2e91c2fe6ed29c"
+  },
+  {
+   "path": "techniques/lib/powers.js",
+   "source": "2026-10-23-techniques/lib/powers.js",
+   "bytes": 5938,
+   "sourceSha256": "745d0e8fd3217ff8cc2611f31b321929eba0dedacb85474af8c435de19279399"
+  },
+  {
+   "path": "techniques/lib/raking.js",
+   "source": "2026-10-23-techniques/lib/raking.js",
+   "bytes": 5427,
+   "sourceSha256": "92d3db006761e58bbe568d1d39e91fb40b31e4d6b1fed47c903b598f82174dd3"
+  },
+  {
+   "path": "techniques/lib/register.js",
+   "source": "2026-10-23-techniques/lib/register.js",
+   "bytes": 4821,
+   "sourceSha256": "8cca747dfd9faeeda5e637429eeb8127fc3594c05c1494db94b1370707960ba0"
+  },
+  {
+   "path": "techniques/lib/rope.js",
+   "source": "2026-10-23-techniques/lib/rope.js",
+   "bytes": 7744,
+   "sourceSha256": "81bbd51dce23959ce62992cfb21b743e0f4118b3d6536e05f57665f53b22c27d"
+  },
+  {
+   "path": "techniques/lib/tear.js",
+   "source": "2026-10-23-techniques/lib/tear.js",
+   "bytes": 7791,
+   "sourceSha256": "d10cccfdad4f2150d4b6785ba5114a11759b320ec3c41e8607b9d8366ed5f969"
+  },
+  {
+   "path": "techniques/lib/timing.js",
+   "source": "2026-10-23-techniques/lib/timing.js",
+   "bytes": 1674,
+   "sourceSha256": "c937cc64228f0cbe87f9403227a44c91e76f36ac17fd00ee8b7a9ba630ec266e"
+  },
+  {
+   "path": "techniques/lib/util.js",
+   "source": "2026-10-23-techniques/lib/util.js",
+   "bytes": 7111,
+   "sourceSha256": "bf3f55fb79c8fca419f436c7aa6e61fa1ad849730f9db801cb9ec6dbb9cd4ca4"
+  },
+  {
+   "path": "techniques/lib/zoning.js",
+   "source": "2026-10-23-techniques/lib/zoning.js",
+   "bytes": 8703,
+   "sourceSha256": "710fa29bb3a46b470937fb1dea9846c42fed4f4515add660904551a3a65506f6"
+  },
+  {
+   "path": "typeengine/adapters/superframe.mjs",
+   "source": "2026-10-23-typeengine/adapters/superframe.mjs",
+   "bytes": 5393,
+   "sourceSha256": "536c1b018ae741c0a60f3ad157ab643046fd3cf8f8311bdb732b0236cb869485"
+  },
+  {
+   "path": "typeengine/lib/adapters.mjs",
+   "source": "2026-10-23-typeengine/lib/adapters.mjs",
+   "bytes": 16806,
+   "sourceSha256": "8da6eb5aee8c05e97c1b23f1337fed92805242d1dc5553cc9ea32ac93970f31e"
+  },
+  {
+   "path": "typeengine/lib/faces.mjs",
+   "source": "2026-10-23-typeengine/lib/faces.mjs",
+   "bytes": 5171,
+   "sourceSha256": "5d7761e309b0e889dd7352a974895b76a7692aeb04fe2d7ae26905cf62fe7b25"
+  },
+  {
+   "path": "typeengine/lib/fields.mjs",
+   "source": "2026-10-23-typeengine/lib/fields.mjs",
+   "bytes": 6149,
+   "sourceSha256": "19868eee9e8cc1778ab89277d9ccc7b166745ea82c0e30501d3d62cf63662afe"
+  },
+  {
+   "path": "typeengine/lib/generate.mjs",
+   "source": "2026-10-23-typeengine/lib/generate.mjs",
+   "bytes": 6199,
+   "sourceSha256": "3331bda05a43ac79780fb1fc1eb3fe89611fd950a2d9435ad0c1ceccca4c6a85"
+  },
+  {
+   "path": "typeengine/lib/inputs.mjs",
+   "source": "2026-10-23-typeengine/lib/inputs.mjs",
+   "bytes": 1265,
+   "sourceSha256": "1003b0f68438cfd533bbf890a97bcf54f749a1443b37c4d84ca1e26a2779d55c"
+  },
+  {
+   "path": "typeengine/lib/living/axes.mjs",
+   "source": "2026-10-23-typeengine/lib/living/axes.mjs",
+   "bytes": 3110,
+   "sourceSha256": "066443de12e049f0446a4da2c466f9f404aa284b585a276810eec06709020b0b"
+  },
+  {
+   "path": "typeengine/lib/living/compose.mjs",
+   "source": "2026-10-23-typeengine/lib/living/compose.mjs",
+   "bytes": 4727,
+   "sourceSha256": "77d6bc1188a6165299a9bb13985663b18d83c27c22220b5244ad9a22d42a7d45"
+  },
+  {
+   "path": "typeengine/lib/living/fields.mjs",
+   "source": "2026-10-23-typeengine/lib/living/fields.mjs",
+   "bytes": 4747,
+   "sourceSha256": "208c7c632e93fe1042726bd030ab2a4692ef6b4eb09b57d957fc16521ee1d431"
+  },
+  {
+   "path": "typeengine/lib/living/graph.mjs",
+   "source": "2026-10-23-typeengine/lib/living/graph.mjs",
+   "bytes": 2078,
+   "sourceSha256": "58f06b0e2a7706f7ab4a4652b8f19bed2a508188271115b74a851330f8c7f63d"
+  },
+  {
+   "path": "typeengine/lib/living/index.mjs",
+   "source": "2026-10-23-typeengine/lib/living/index.mjs",
+   "bytes": 10263,
+   "sourceSha256": "35b49e243b8dc8a38fc9a14bb4a1b7cc9829ee8127266d894db5a2e11c3d8a4a"
+  },
+  {
+   "path": "typeengine/lib/living/night.mjs",
+   "source": "2026-10-23-typeengine/lib/living/night.mjs",
+   "bytes": 2266,
+   "sourceSha256": "da7b05aec9b33a3625266496799da4c83cd3d7b939b66e27f2489ba17484266d"
+  },
+  {
+   "path": "typeengine/lib/living/pictures.mjs",
+   "source": "2026-10-23-typeengine/lib/living/pictures.mjs",
+   "bytes": 3992,
+   "sourceSha256": "a59f45d1d118445bf3561d9f01d429cd9e2b2187fab14480ca7272422f458bd7"
+  },
+  {
+   "path": "typeengine/lib/living/reveal.mjs",
+   "source": "2026-10-23-typeengine/lib/living/reveal.mjs",
+   "bytes": 2629,
+   "sourceSha256": "9ae06f72b1c540254ce1799e9d3f69b98b0ead4d34c47f2ae82473c7ec76f567"
+  },
+  {
+   "path": "typeengine/lib/living/states-cuts.mjs",
+   "source": "2026-10-23-typeengine/lib/living/states-cuts.mjs",
+   "bytes": 1623,
+   "sourceSha256": "06bddd1b5b002acd0e709ad32fd4d8ca0fddb5dbb76895323ba9260b40791792"
+  },
+  {
+   "path": "typeengine/lib/living/states-digital.mjs",
+   "source": "2026-10-23-typeengine/lib/living/states-digital.mjs",
+   "bytes": 6474,
+   "sourceSha256": "69b55452ec2254c6d1c25486dc7acafbc66f113b70d73673c4486381201fa6fd"
+  },
+  {
+   "path": "typeengine/lib/living/states-tiles.mjs",
+   "source": "2026-10-23-typeengine/lib/living/states-tiles.mjs",
+   "bytes": 3022,
+   "sourceSha256": "34b3883031e55a0670b19bd7987dfd3b4f2859d378e226061b62cb264263942d"
+  },
+  {
+   "path": "typeengine/lib/living/states.mjs",
+   "source": "2026-10-23-typeengine/lib/living/states.mjs",
+   "bytes": 6952,
+   "sourceSha256": "e6ade73531a2f3c067f338bf83cd902d525936070166bb99b6bdc53967e6d518"
+  },
+  {
+   "path": "typeengine/lib/living/transfer.mjs",
+   "source": "2026-10-23-typeengine/lib/living/transfer.mjs",
+   "bytes": 11792,
+   "sourceSha256": "b4bfd0ce30cf65bcd8b88e13bfd95c747bf9987edf8f8ce19235ab0bf187c366"
+  },
+  {
+   "path": "typeengine/lib/material.mjs",
+   "source": "2026-10-23-typeengine/lib/material.mjs",
+   "bytes": 4806,
+   "sourceSha256": "2cd708ef5f41684e7bd05ac79d97fc8ab7c705cbc3d2621675a684994232bff5"
+  },
+  {
+   "path": "typeengine/lib/materials-core.mjs",
+   "source": "2026-10-23-typeengine/lib/materials-core.mjs",
+   "bytes": 6720,
+   "sourceSha256": "7e735f96cf243fac8dd7234ecca49dcaa86877a8eae4073d214fda5f52629c02"
+  },
+  {
+   "path": "typeengine/lib/materials-media.mjs",
+   "source": "2026-10-23-typeengine/lib/materials-media.mjs",
+   "bytes": 10715,
+   "sourceSha256": "661b307238323c5b5f6770fe2e66390d386c4f40229c885fe3a7d81a312d8fa1"
+  },
+  {
+   "path": "typeengine/lib/materials.mjs",
+   "source": "2026-10-23-typeengine/lib/materials.mjs",
+   "bytes": 1078,
+   "sourceSha256": "0d736446cf56b4033c6840c9591cf934b02ce66125835b6c532c098d822e8270"
+  },
+  {
+   "path": "typeengine/lib/program.mjs",
+   "source": "2026-10-23-typeengine/lib/program.mjs",
+   "bytes": 5406,
+   "sourceSha256": "fcbf6008f89d6407cef847c510d8f788464b90a57c6b754704caafd567e3d9e0"
+  },
+  {
+   "path": "typeengine/lib/props.mjs",
+   "source": "2026-10-23-typeengine/lib/props.mjs",
+   "bytes": 9547,
+   "sourceSha256": "487c2e0850674bccb5c170fd3c78f57f12204517092b7b660c22c4ae2e38a271"
+  },
+  {
+   "path": "typeengine/lib/render.mjs",
+   "source": "2026-10-23-typeengine/lib/render.mjs",
+   "bytes": 7983,
+   "sourceSha256": "5ef9b12baa61083eb9b4a79306ee226889eac57587ba738c2e3713e8ea014250"
+  },
+  {
+   "path": "typeengine/lib/score.mjs",
+   "source": "2026-10-23-typeengine/lib/score.mjs",
+   "bytes": 6615,
+   "sourceSha256": "24a15483c4f3a114498bb5ef65b6b27985a908d7f151d746decb72ef56fa399b"
+  },
+  {
+   "path": "typeengine/lib/setline.mjs",
+   "source": "2026-10-23-typeengine/lib/setline.mjs",
+   "bytes": 3123,
+   "sourceSha256": "4114150f57fc548791f32db7c4f084b8f59888e7e2697b9c03a8651e2ff0d281"
+  },
+  {
+   "path": "typeengine/lib/shape.mjs",
+   "source": "2026-10-23-typeengine/lib/shape.mjs",
+   "bytes": 11810,
+   "sourceSha256": "f83dbc05fb91c2cf9eff2d772f10f995f23d30bcc27df40838e3ef82bf9c1eda"
+  },
+  {
+   "path": "typeengine/out/ramps/charcoal.json",
+   "source": "2026-10-23-typeengine/out/ramps/charcoal.json",
+   "bytes": 2824,
+   "sourceSha256": "96b3cd33554f1bbe161f06c08b36a106d6c3fabf42f001326647798f68f522a8"
+  },
+  {
+   "path": "typeengine/out/ramps/code.json",
+   "source": "2026-10-23-typeengine/out/ramps/code.json",
+   "bytes": 2816,
+   "sourceSha256": "bb15e746863ae788a23a4f128d52a1d418c9e0ad7de277a1b39100aa9f9e7ec9"
+  },
+  {
+   "path": "typeengine/out/ramps/engraved.json",
+   "source": "2026-10-23-typeengine/out/ramps/engraved.json",
+   "bytes": 2820,
+   "sourceSha256": "5dc6794b90ac80342064f295516015c7c1d0d2863be5becd88dcb2691f4a2944"
+  },
+  {
+   "path": "typeengine/out/ramps/ink.json",
+   "source": "2026-10-23-typeengine/out/ramps/ink.json",
+   "bytes": 2820,
+   "sourceSha256": "841f12e28039e16333f8ace488830ec3727c75bf149191e98038f1e122900205"
+  },
+  {
+   "path": "typeface/dist/static/AccessionDisplay-Black.woff2",
+   "source": "2026-10-23-typeface/dist/static/AccessionDisplay-Black.woff2",
+   "bytes": 42804,
+   "sourceSha256": "16bb94d0205c6503b8024f0a401d05c8923ede3dc33bef78b1bb754b87bb2469"
+  },
+  {
+   "path": "typeface/forge/family/caseforms.mjs",
+   "source": "2026-10-23-typeface/forge/family/caseforms.mjs",
+   "bytes": 1173,
+   "sourceSha256": "663f358b2f441fcfd0adc885795eec5a12812cfe015102f9f6a804533ced1693"
+  },
+  {
+   "path": "typeface/forge/family/compose.mjs",
+   "source": "2026-10-23-typeface/forge/family/compose.mjs",
+   "bytes": 6580,
+   "sourceSha256": "443f576a7c7c0e350f358f18b7a5a06e0d93d7b546350b0a230acbc4239bf59e"
+  },
+  {
+   "path": "typeface/forge/family/cuts.mjs",
+   "source": "2026-10-23-typeface/forge/family/cuts.mjs",
+   "bytes": 7014,
+   "sourceSha256": "97b8b2f5400d4f6f44ab1a12e86bfd02c56abb0cfd5f4cb6e6f832b48f361e76"
+  },
+  {
+   "path": "typeface/forge/family/extras.mjs",
+   "source": "2026-10-23-typeface/forge/family/extras.mjs",
+   "bytes": 7578,
+   "sourceSha256": "382d7b2bb96a7915e6307fb4030b28f39a0e1d2eaa393e869c7d31c17a772345"
+  },
+  {
+   "path": "typeface/forge/family/family.mjs",
+   "source": "2026-10-23-typeface/forge/family/family.mjs",
+   "bytes": 4718,
+   "sourceSha256": "233701377b4a743fbbe0998a7b321c8c6393ea9e37c9c49629021d2f46aba9c5"
+  },
+  {
+   "path": "typeface/forge/family/figset.mjs",
+   "source": "2026-10-23-typeface/forge/family/figset.mjs",
+   "bytes": 1806,
+   "sourceSha256": "a5a4817535aa1962a1d44af16fd3c62102a350968e45ba4ff08c1f8ff7299cc8"
+  },
+  {
+   "path": "typeface/forge/family/figures.mjs",
+   "source": "2026-10-23-typeface/forge/family/figures.mjs",
+   "bytes": 4980,
+   "sourceSha256": "dd27ae60ab240ec8ab6ffa096cca8f224f28ce3d308530dadef47265b1aee577"
+  },
+  {
+   "path": "typeface/forge/family/glyph.mjs",
+   "source": "2026-10-23-typeface/forge/family/glyph.mjs",
+   "bytes": 5311,
+   "sourceSha256": "4294396de41f4a1dbecde21dc4337cf290754534a3702cc524a81d30054b3098"
+  },
+  {
+   "path": "typeface/forge/family/kern.mjs",
+   "source": "2026-10-23-typeface/forge/family/kern.mjs",
+   "bytes": 6982,
+   "sourceSha256": "98c0f10298da0ab43aa6c44904a0594990c6146acf48ea23ccb4557fc3fec4de"
+  },
+  {
+   "path": "typeface/forge/family/kit.mjs",
+   "source": "2026-10-23-typeface/forge/family/kit.mjs",
+   "bytes": 5298,
+   "sourceSha256": "5a85472869424fd6d7556d9a86c049cf461f90776dc197a2493386f6e90a9ef1"
+  },
+  {
+   "path": "typeface/forge/family/lower.mjs",
+   "source": "2026-10-23-typeface/forge/family/lower.mjs",
+   "bytes": 6930,
+   "sourceSha256": "ad1f1c7797c468b048d48c1e7caab4c9d04ebbbfa32d6d7e7facf236b0b999ed"
+  },
+  {
+   "path": "typeface/forge/family/lower2.mjs",
+   "source": "2026-10-23-typeface/forge/family/lower2.mjs",
+   "bytes": 3995,
+   "sourceSha256": "312be4567fd21dbfdeb5eebd8bcfd17bf021aad12858ee59624a2d6a104b3201"
+  },
+  {
+   "path": "typeface/forge/family/marks.mjs",
+   "source": "2026-10-23-typeface/forge/family/marks.mjs",
+   "bytes": 5066,
+   "sourceSha256": "b07b2c3b6a223824c629d9eee165a06925f26db5b557de77a687c1f803576bb5"
+  },
+  {
+   "path": "typeface/forge/family/materials.mjs",
+   "source": "2026-10-23-typeface/forge/family/materials.mjs",
+   "bytes": 3105,
+   "sourceSha256": "9913f4bc88d3cf50f898d92587bfe97216bba6c2d4285fe1eac972b9cfdf9c7d"
+  },
+  {
+   "path": "typeface/forge/family/mono.mjs",
+   "source": "2026-10-23-typeface/forge/family/mono.mjs",
+   "bytes": 1959,
+   "sourceSha256": "d681c2a27c57003a8fd530f26ee0e686350c2ef70349df93164d12d8494e016c"
+  },
+  {
+   "path": "typeface/forge/family/path.mjs",
+   "source": "2026-10-23-typeface/forge/family/path.mjs",
+   "bytes": 3988,
+   "sourceSha256": "0896aace5f5d59023e65fd774677582f0c98e2c6d3d8b0985365fd0d44489ebc"
+  },
+  {
+   "path": "typeface/forge/family/pen.mjs",
+   "source": "2026-10-23-typeface/forge/family/pen.mjs",
+   "bytes": 6615,
+   "sourceSha256": "6b2dfd2bdc6271fad6ff4f6e4261426b51c663dd52dfdb10f749ce7220edc8ed"
+  },
+  {
+   "path": "typeface/forge/family/punct.mjs",
+   "source": "2026-10-23-typeface/forge/family/punct.mjs",
+   "bytes": 8267,
+   "sourceSha256": "f7c71c2b49efea055147dd8a966724d36b5cfd687aa082dff680de96af699b2b"
+  },
+  {
+   "path": "typeface/forge/family/refcuts.mjs",
+   "source": "2026-10-23-typeface/forge/family/refcuts.mjs",
+   "bytes": 6942,
+   "sourceSha256": "e94366e2180a841a79a3ce86eeaac47419154d0876a02c770440266e6386ae4f"
+  },
+  {
+   "path": "typeface/forge/family/registry.mjs",
+   "source": "2026-10-23-typeface/forge/family/registry.mjs",
+   "bytes": 1987,
+   "sourceSha256": "8eb217f601645c065c0c8e1c35bb9426e2f2072ad6a35c77380505c56afd793f"
+  },
+  {
+   "path": "typeface/forge/family/styles.mjs",
+   "source": "2026-10-23-typeface/forge/family/styles.mjs",
+   "bytes": 4157,
+   "sourceSha256": "6e6900a4bc40f5f10335c3f473183551f2e857679ec065d0d95822a678aa891f"
+  },
+  {
+   "path": "typeface/forge/family/svg.mjs",
+   "source": "2026-10-23-typeface/forge/family/svg.mjs",
+   "bytes": 1857,
+   "sourceSha256": "151348b6002ff5e0790bf9bfa6aadef2dbb6943d89528aa8a3f5a60d5ab19173"
+  },
+  {
+   "path": "typeface/forge/family/symbols.mjs",
+   "source": "2026-10-23-typeface/forge/family/symbols.mjs",
+   "bytes": 15024,
+   "sourceSha256": "1aadc17ba235f121b6f72f9a06c8f8b958a405506bd8caf2a9e13872b2a4efdc"
+  },
+  {
+   "path": "typeface/forge/family/upper.mjs",
+   "source": "2026-10-23-typeface/forge/family/upper.mjs",
+   "bytes": 6988,
+   "sourceSha256": "8f7a78570d92966fce263e863172443974ec04f78af8f85f472ff16546fac5cb"
+  },
+  {
+   "path": "typeface/forge/upstream/media-engine/contracts.mjs",
+   "source": "2026-10-23-typeface/forge/upstream/media-engine/contracts.mjs",
+   "bytes": 26932,
+   "sourceSha256": "b972095e4eadb007fb892e48027fe6d970328eb2256749e046b296f500208878"
+  },
+  {
+   "path": "typeface/forge/upstream/media-engine/seed.mjs",
+   "source": "2026-10-23-typeface/forge/upstream/media-engine/seed.mjs",
+   "bytes": 3085,
+   "sourceSha256": "2cc355d90663ba427330519642a6e1e07576498384de0db7540d870725df01f2"
+  },
+  {
+   "path": "typeface/forge/upstream/type-forge/forge.mjs",
+   "source": "2026-10-23-typeface/forge/upstream/type-forge/forge.mjs",
+   "bytes": 7826,
+   "sourceSha256": "0d127a0b3c318f266c5c89c6375912a0e5a8d226cdf9550acb225f47c29f3445"
+  },
+  {
+   "path": "typeface/forge/upstream/type-forge/geometry.mjs",
+   "source": "2026-10-23-typeface/forge/upstream/type-forge/geometry.mjs",
+   "bytes": 1222,
+   "sourceSha256": "cbb387e5d9875a824af74b0fcf1995334c6150d62639c3215318949529f63684"
+  },
+  {
+   "path": "typeface/forge/upstream/type-forge/pyround.mjs",
+   "source": "2026-10-23-typeface/forge/upstream/type-forge/pyround.mjs",
+   "bytes": 1510,
+   "sourceSha256": "ea4d57b5307cdfbb14395c2aefe5e32a2ee8b0ba5dfa1973553f6d4a658db6db"
+  },
+  {
+   "path": "typeface/forge/upstream/type-forge/skeletons-caps.mjs",
+   "source": "2026-10-23-typeface/forge/upstream/type-forge/skeletons-caps.mjs",
+   "bytes": 6253,
+   "sourceSha256": "5981efdab61e84ba33718a110cb878b8f9aeabe0b44ba40082daae694b9b266e"
+  },
+  {
+   "path": "typeface/forge/upstream/type-forge/skeletons.mjs",
+   "source": "2026-10-23-typeface/forge/upstream/type-forge/skeletons.mjs",
+   "bytes": 8032,
+   "sourceSha256": "72fbbcb2ff5bf04e1a21f93600f36463bc88ad77c00e287ea7d3267f7ec7c2fe"
+  },
+  {
+   "path": "ui/assets/columbia-disc-720.webp",
+   "source": "2026-10-23-ui-direction/assets/columbia-disc-720.webp",
+   "bytes": 28822,
+   "sourceSha256": "0f5b0afbaa610f04c06a833768959be1d85d84b0c70749478c55fdeac92237d5"
+  },
+  {
+   "path": "ui/shell/fonts/accession/accession.css",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/accession.css",
+   "bytes": 2872,
+   "sourceSha256": "e31de315c7fba951f18d38bec83d404818732f99f0ac841eebd65b6a742bb48f"
+  },
+  {
+   "path": "ui/shell/fonts/accession/cuts/AccessionEngraved.woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/cuts/AccessionEngraved.woff2",
+   "bytes": 60488,
+   "sourceSha256": "202607f856684808c72c2b8d1b690f99b4fd90011e7f6a773fcd7abb4e769b2c"
+  },
+  {
+   "path": "ui/shell/fonts/accession/cuts/AccessionLit.woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/cuts/AccessionLit.woff2",
+   "bytes": 64440,
+   "sourceSha256": "ea73a461373ca0391a98977ab2ea866d04cffaba76e4e0ae996cecf13b8c1569"
+  },
+  {
+   "path": "ui/shell/fonts/accession/cuts/AccessionScreen.woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/cuts/AccessionScreen.woff2",
+   "bytes": 229708,
+   "sourceSha256": "dc7100672a777d3832051b4febd6af4f8674ff711ba2ece511669c07116c0362"
+  },
+  {
+   "path": "ui/shell/fonts/accession/cuts/AccessionTray.woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/cuts/AccessionTray.woff2",
+   "bytes": 35784,
+   "sourceSha256": "c48083bff5b11a7edf0571ab0259568ca21359725f9239254b2016d9a85922be"
+  },
+  {
+   "path": "ui/shell/fonts/accession/cuts/AccessionTwoInk.woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/cuts/AccessionTwoInk.woff2",
+   "bytes": 38748,
+   "sourceSha256": "5376acc763f6a024e7640c035f85934e45566b2d8961fb49f8ee67adebe6a9c7"
+  },
+  {
+   "path": "ui/shell/fonts/accession/cuts/AccessionWorn.woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/cuts/AccessionWorn.woff2",
+   "bytes": 49808,
+   "sourceSha256": "9dbb277084e2f1e427192e13b5891de874edd6d62c2572e3c838abb7b0260eee"
+  },
+  {
+   "path": "ui/shell/fonts/accession/variable/AccessionCarved[wght].woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/variable/AccessionCarved[wght].woff2",
+   "bytes": 74632,
+   "sourceSha256": "6856c6f7b8586f56168691a3f9c048ea2d54921b338d804c6b6fcd603a9ec8ea"
+  },
+  {
+   "path": "ui/shell/fonts/accession/variable/AccessionDisplay[wght].woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/variable/AccessionDisplay[wght].woff2",
+   "bytes": 75160,
+   "sourceSha256": "25c48d4e01a88b5b5aa56a32009a84451eb7643639598c6982ee64509c87635a"
+  },
+  {
+   "path": "ui/shell/fonts/accession/variable/AccessionMaterial[INKS,WEAR,wght].woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/variable/AccessionMaterial[INKS,WEAR,wght].woff2",
+   "bytes": 133736,
+   "sourceSha256": "d84cead2d0e08baea24e206262fb73e86772ec8ace9f9fc2cdb8457f1555ad6b"
+  },
+  {
+   "path": "ui/shell/fonts/accession/variable/AccessionMono[wght].woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/variable/AccessionMono[wght].woff2",
+   "bytes": 44988,
+   "sourceSha256": "43fd2ddf7250c03b12b30f7c63b8be43dfacd551a3ef95c2241d451537e4e8ac"
+  },
+  {
+   "path": "ui/shell/fonts/accession/variable/AccessionSlab[wght].woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/variable/AccessionSlab[wght].woff2",
+   "bytes": 79520,
+   "sourceSha256": "6fab1900ed0fb086b6a1cb65558ad5ba2bfe6c06c6f37d75ebeac710211423b1"
+  },
+  {
+   "path": "ui/shell/fonts/accession/variable/AccessionStencil[wght].woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/variable/AccessionStencil[wght].woff2",
+   "bytes": 76036,
+   "sourceSha256": "b52ebf9825ba9f8e9bdd53b92dd7dd47a6d62345661e4c8a7d38c2a9288959f2"
+  },
+  {
+   "path": "ui/shell/fonts/accession/variable/AccessionSuper[wght].woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/variable/AccessionSuper[wght].woff2",
+   "bytes": 50656,
+   "sourceSha256": "f7d247efa33e1d65cccf4f30ca36b6baabe87267b340a5cc54e10868bcbb7e2b"
+  },
+  {
+   "path": "ui/shell/fonts/accession/variable/AccessionText[INKS,wght].woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/accession/variable/AccessionText[INKS,wght].woff2",
+   "bytes": 77012,
+   "sourceSha256": "81961ae11495c8126e3b4c8985286360fb0ef73fd28baae38409cd5966361c2f"
+  },
+  {
+   "path": "ui/shell/fonts/hanken-grotesk-italic.woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/hanken-grotesk-italic.woff2",
+   "bytes": 13896,
+   "sourceSha256": "53168ef35821f9ec781d281e9efefb097833a1f60760552ac9cba4f4ccc43aa6"
+  },
+  {
+   "path": "ui/shell/fonts/hanken-grotesk.woff2",
+   "source": "2026-10-23-ui-direction/shell/fonts/hanken-grotesk.woff2",
+   "bytes": 34704,
+   "sourceSha256": "e9201eddf1d41d0b62253295d869ce3cf65768f7102b797f02c7f8c876b4a9d5"
+  },
+  {
+   "path": "ui/shell/fonts/mint-carved.ttf",
+   "source": "2026-10-23-ui-direction/shell/fonts/mint-carved.ttf",
+   "bytes": 51620,
+   "sourceSha256": "3b12720cea336ebfabb8d103e648e446c4ea0654a661b97b422a0dce981cb97b"
+  },
+  {
+   "path": "ui/shell/fonts/mint-deco.ttf",
+   "source": "2026-10-23-ui-direction/shell/fonts/mint-deco.ttf",
+   "bytes": 56364,
+   "sourceSha256": "029a3523476ccdcf2798f4dbf4d15ade17a38877dd5eff63e5f8c73bb931f329"
+  },
+  {
+   "path": "ui/shell/lettering.js",
+   "source": "2026-10-23-ui-direction/shell/lettering.js",
+   "bytes": 14951,
+   "sourceSha256": "b2d12caa464cf61c1dfff4ce211fca5c3585b440cfdcbecc52a785de7a2ffd9f"
+  },
+  {
+   "path": "ui/shell/media.js",
+   "source": "2026-10-23-ui-direction/shell/media.js",
+   "bytes": 2099,
+   "sourceSha256": "30766ca6708342bd1a8493eaf90bda0e17ed3179a9ceaf6fe43545ff92290602"
+  },
+  {
+   "path": "ui/shell/negative.js",
+   "source": "2026-10-23-ui-direction/shell/negative.js",
+   "bytes": 2126,
+   "sourceSha256": "da7d5c62608a1604ac187da654d950b3f989ff4cf0ece0c8429297106cc12f5f"
+  },
+  {
+   "path": "ui/shell/organic/organic-gen.js",
+   "source": "2026-10-23-ui-direction/shell/organic/organic-gen.js",
+   "bytes": 14035,
+   "sourceSha256": "3940366f47372151edcdbea58acfef2762c39ef0708cfdf9122d01fe65873ad7"
+  },
+  {
+   "path": "ui/shell/organic/organic.css",
+   "source": "2026-10-23-ui-direction/shell/organic/organic.css",
+   "bytes": 11872,
+   "sourceSha256": "b3f562ef287c973adcfcb3c66a5004927a57f56cda7917be5060a626958ac444"
+  },
+  {
+   "path": "ui/shell/organic/organic.js",
+   "source": "2026-10-23-ui-direction/shell/organic/organic.js",
+   "bytes": 11151,
+   "sourceSha256": "e01dc397636354c82ece46eff50896fded4d6266e98337ae7bf53e85a180050a"
+  },
+  {
+   "path": "ui/shell/organic/root.js",
+   "source": "2026-10-23-ui-direction/shell/organic/root.js",
+   "bytes": 717,
+   "sourceSha256": "bf1347456ddabb594e728e89b388b22e88fa92c0246f7259855489e54cf660ec"
+  },
+  {
+   "path": "ui/shell/shell.css",
+   "source": "2026-10-23-ui-direction/shell/shell.css",
+   "bytes": 38438,
+   "sourceSha256": "d901eca0455f5ec665d716f8d8c1475bc1c7a0f4fcbdd1de12d9c8da555648e4"
+  },
+  {
+   "path": "ui/shell/shell.js",
+   "source": "2026-10-23-ui-direction/shell/shell.js",
+   "bytes": 10460,
+   "sourceSha256": "11e1fa57aaa4aee9c093f1dbdbd2a5bf8132729016982c916bac2d8c12807c69"
+  },
+  {
+   "path": "ui/shell/slots.js",
+   "source": "2026-10-23-ui-direction/shell/slots.js",
+   "bytes": 5061,
+   "sourceSha256": "a37f50f0ead267aa311790c5b55c55fc87db90730af8a89cc0510edba217cce5"
+  },
+  {
+   "path": "ui/shell/type.css",
+   "source": "2026-10-23-ui-direction/shell/type.css",
+   "bytes": 3388,
+   "sourceSha256": "3d5bdb7d47eb49fcc19113d9789a5c1a5f6cc892dcfed32a1005bce67156f20c"
+  },
+  {
+   "path": "universe/lib/seam-cores.mjs",
+   "source": "2026-10-23-universe/lib/seam-cores.mjs",
+   "bytes": 14379,
+   "sourceSha256": "66908938385e3c0789f40af235b1e159f5e8312d620a39d70e5c01fb038dc56e"
+  },
+  {
+   "path": "feed-28/build/illusion.mjs",
+   "source": "2026-10-24-feed-test-28/build/illusion.mjs",
+   "bytes": 5600,
+   "sourceSha256": "4aaffbd7de06a160122b59ec2ae9e5da27c442989f88358beafe3aeb101c4af9"
+  },
+  {
+   "path": "feed-28/build/ours-clips.json",
+   "source": "2026-10-24-feed-test-28/build/ours-clips.json",
+   "bytes": 5821,
+   "sourceSha256": "9590db38c6b44c78c1a6a2299d7e180bfb8e8175241a1299fd774be7cf381442"
+  },
+  {
+   "path": "feed-28/build/package.json",
+   "source": "2026-10-24-feed-test-28/build/package.json",
+   "bytes": 105,
+   "sourceSha256": "d41dc2555c301ed53bd606c39401307a927b81cfcc5bb295d7aa8554d49f9aa2"
+  },
+  {
+   "path": "feed-28/build/tests/golden/set28.json",
+   "source": "2026-10-24-feed-test-28/build/tests/golden/set28.json",
+   "bytes": 13123,
+   "sourceSha256": "99236fcf2f1edad70f82106f59e7f81d59e38785bed9ab45e17bc3100a8312bb"
+  },
+  {
+   "path": "feed-28/build/tests/set28.test.mjs",
+   "source": "2026-10-24-feed-test-28/build/tests/set28.test.mjs",
+   "bytes": 5421,
+   "sourceSha256": "828a449a9fe6b1f7b8a90f139760cf48503e981ee81eb3dcc1ccc5a5744253d4"
+  },
+  {
+   "path": "feed-28/build/timebands.mjs",
+   "source": "2026-10-24-feed-test-28/build/timebands.mjs",
+   "bytes": 7975,
+   "sourceSha256": "89cb7a2edce577aaa6c4fa6733aafb0b3b9ae3f79288c32ae0ceb3564aea57c1"
+  },
+  {
+   "path": "feed-28/build/tools/illusion.mjs",
+   "source": "2026-10-24-feed-test-28/build/tools/illusion.mjs",
+   "bytes": 1156,
+   "sourceSha256": "c9b9d99ddbc10eb8b8d6421ca8362d483f66fdd51998d44e2ce573987c934e03"
+  },
+  {
+   "path": "feed-28/build/tools/timebands.mjs",
+   "source": "2026-10-24-feed-test-28/build/tools/timebands.mjs",
+   "bytes": 1019,
+   "sourceSha256": "f168953edbe3320ab8dd9eb316ba469955ebd25335d46bad4c3ab3b0f10006ef"
+  },
+  {
+   "path": "feed-29/build/audit/desktop/2026_10_24_feed_test_29_build_index_html.json",
+   "source": "2026-10-24-feed-test-29/build/audit/desktop/2026_10_24_feed_test_29_build_index_html.json",
+   "bytes": 21841,
+   "sourceSha256": "f2f24fe19cccf4901794af222d701b6742cc6e6260510c1adcd828bce895cfd1"
+  },
+  {
+   "path": "feed-29/build/audit/desktop/2026_10_24_feed_test_29_build_index_html__canvas0.png",
+   "source": "2026-10-24-feed-test-29/build/audit/desktop/2026_10_24_feed_test_29_build_index_html__canvas0.png",
+   "bytes": 508674,
+   "sourceSha256": "376396c154613340931a153e7fa532722b05bfe0008116823d9882941405ce5f"
+  },
+  {
+   "path": "feed-29/build/audit/desktop/2026_10_24_feed_test_29_build_index_html__canvas0_200.png",
+   "source": "2026-10-24-feed-test-29/build/audit/desktop/2026_10_24_feed_test_29_build_index_html__canvas0_200.png",
+   "bytes": 254950,
+   "sourceSha256": "fd14cab69afc0bae6614482b6df20df31156c400131ec4ea891508ba600e1ac5"
+  },
+  {
+   "path": "feed-29/build/audit/desktop/2026_10_24_feed_test_29_build_index_html__view.png",
+   "source": "2026-10-24-feed-test-29/build/audit/desktop/2026_10_24_feed_test_29_build_index_html__view.png",
+   "bytes": 4314422,
+   "sourceSha256": "d099c220c034d72f05eafe098b661e404e8be77bd6031c945c86c6e18357d017"
+  },
+  {
+   "path": "feed-29/build/audit/desktop/2026_10_24_feed_test_29_build_index_html__view_200.png",
+   "source": "2026-10-24-feed-test-29/build/audit/desktop/2026_10_24_feed_test_29_build_index_html__view_200.png",
+   "bytes": 228679,
+   "sourceSha256": "4fa91bd8b5ccb6533ce5fb4299030d359c5b3a2ee6afd8ad5fe00f5db5b291cd"
+  },
+  {
+   "path": "feed-29/build/audit/phone/2026_10_24_feed_test_29_build_index_html.json",
+   "source": "2026-10-24-feed-test-29/build/audit/phone/2026_10_24_feed_test_29_build_index_html.json",
+   "bytes": 21767,
+   "sourceSha256": "6e7c64a29902bd950d719aae06900459f13692c493f6fb86f11d081a4348c6bf"
+  },
+  {
+   "path": "feed-29/build/audit/phone/2026_10_24_feed_test_29_build_index_html__canvas0.png",
+   "source": "2026-10-24-feed-test-29/build/audit/phone/2026_10_24_feed_test_29_build_index_html__canvas0.png",
+   "bytes": 74771,
+   "sourceSha256": "3177ac1440461671d49122c189d0caa01c7b4c8885b0bc45c855c67621afc9ae"
+  },
+  {
+   "path": "feed-29/build/audit/phone/2026_10_24_feed_test_29_build_index_html__canvas0_200.png",
+   "source": "2026-10-24-feed-test-29/build/audit/phone/2026_10_24_feed_test_29_build_index_html__canvas0_200.png",
+   "bytes": 112422,
+   "sourceSha256": "04319e342d291f1d4ea701b63ad7daa7ef7ebfaa5df51c68c5c5753f98253106"
+  },
+  {
+   "path": "feed-29/build/audit/phone/2026_10_24_feed_test_29_build_index_html__view.png",
+   "source": "2026-10-24-feed-test-29/build/audit/phone/2026_10_24_feed_test_29_build_index_html__view.png",
+   "bytes": 1020699,
+   "sourceSha256": "166dee315b44fbfca828b526a577b3106698ea92b54b5b402d42c9eb65c81a4b"
+  },
+  {
+   "path": "feed-29/build/audit/phone/2026_10_24_feed_test_29_build_index_html__view_200.png",
+   "source": "2026-10-24-feed-test-29/build/audit/phone/2026_10_24_feed_test_29_build_index_html__view_200.png",
+   "bytes": 75540,
+   "sourceSha256": "e06fb84508cc592aa54c5eea40f3014ca001b7cebed347b92c860a7ce956aa01"
+  },
+  {
+   "path": "feed-29/build/audit/scores.json",
+   "source": "2026-10-24-feed-test-29/build/audit/scores.json",
+   "bytes": 2154,
+   "sourceSha256": "e518a76130bd489c6c55264c3650b655030c98940c7519f13efd218f00fc4398"
+  },
+  {
+   "path": "feed-29/build/gallery.css",
+   "source": "2026-10-24-feed-test-29/build/gallery.css",
+   "bytes": 1926,
+   "sourceSha256": "9dc7e2a878a3f47fdb6c369e770afda1603d5a7c702e7c4d6e9db65612d24a18"
+  },
+  {
+   "path": "feed-29/build/gallery.js",
+   "source": "2026-10-24-feed-test-29/build/gallery.js",
+   "bytes": 548,
+   "sourceSha256": "3043cd37d699a786681bd362981dcd1f9760145f41030cf0e7c7f3b3037ab18c"
+  },
+  {
+   "path": "feed-29/build/gradfield.mjs",
+   "source": "2026-10-24-feed-test-29/build/gradfield.mjs",
+   "bytes": 5589,
+   "sourceSha256": "e33a8211da5bbac1cb8936f3239e320e10ae4c7d671d8e9388e4ef03502dcfd1"
+  },
+  {
+   "path": "feed-29/build/index.html",
+   "source": "2026-10-24-feed-test-29/build/index.html",
+   "bytes": 9577,
+   "sourceSha256": "11282d46e844d6a2ec0ce8b696c71c75aa76e915b7da166095603df2c97e05b4"
+  },
+  {
+   "path": "feed-29/build/letters/capsule.mjs",
+   "source": "2026-10-24-feed-test-29/build/letters/capsule.mjs",
+   "bytes": 7638,
+   "sourceSha256": "e8ab11a308835e1052b850b34a6bdc6a9fbeca39c97e85a2bcd96aebcbe24c36"
+  },
+  {
+   "path": "feed-29/build/lib/color.mjs",
+   "source": "2026-10-24-feed-test-29/build/lib/color.mjs",
+   "bytes": 6994,
+   "sourceSha256": "cf8bb8b923bfda99fa734e90b3cea405775651ef9a4e0a6769f071f1ecc9ca14"
+  },
+  {
+   "path": "feed-29/build/lib/field.mjs",
+   "source": "2026-10-24-feed-test-29/build/lib/field.mjs",
+   "bytes": 5238,
+   "sourceSha256": "be7b5897508db334de364f348c4b9c8185743bac2bec39eb6d961ff9c6299856"
+  },
+  {
+   "path": "feed-29/build/lib/io.mjs",
+   "source": "2026-10-24-feed-test-29/build/lib/io.mjs",
+   "bytes": 3163,
+   "sourceSha256": "f4a73c7ebd0cdcb85f1674690ccca2922622de2818e65e1d2c59dfeb92a3cead"
+  },
+  {
+   "path": "feed-29/build/motifs.mjs",
+   "source": "2026-10-24-feed-test-29/build/motifs.mjs",
+   "bytes": 13233,
+   "sourceSha256": "3a1fa1a3ba45d2c8838fd95088c89b58e5e6179024186ffc05830f8cae398ba9"
+  },
+  {
+   "path": "feed-29/build/package.json",
+   "source": "2026-10-24-feed-test-29/build/package.json",
+   "bytes": 105,
+   "sourceSha256": "5c753e40a9693748692db5ddcf288fff89c285260190141e820880c756090e08"
+  },
+  {
+   "path": "feed-29/build/painting.mjs",
+   "source": "2026-10-24-feed-test-29/build/painting.mjs",
+   "bytes": 8473,
+   "sourceSha256": "4d27a7ac3f0652438ec7081aa011feaef4532a08aa3b575be0f75efd7027063e"
+  },
+  {
+   "path": "feed-29/build/pixelart.mjs",
+   "source": "2026-10-24-feed-test-29/build/pixelart.mjs",
+   "bytes": 8081,
+   "sourceSha256": "096af9cbf1937909cf570090427ec79abd9988a681187ca33f9af0d81cff25d0"
+  },
+  {
+   "path": "feed-29/build/scene.mjs",
+   "source": "2026-10-24-feed-test-29/build/scene.mjs",
+   "bytes": 5335,
+   "sourceSha256": "b69c42646afe2c4f154084fa505a2c655a844baee69797bf72d78eef99f01db6"
+  },
+  {
+   "path": "feed-29/build/similarity.json",
+   "source": "2026-10-24-feed-test-29/build/similarity.json",
+   "bytes": 15765,
+   "sourceSha256": "183decdd3b23cd3eff1c85a30ab9c927858f248039f4516951f895e022803ff9"
+  },
+  {
+   "path": "feed-29/build/spotink.mjs",
+   "source": "2026-10-24-feed-test-29/build/spotink.mjs",
+   "bytes": 10025,
+   "sourceSha256": "32a1fafd6933af30bca4e530925c90454f6e090b481aada940674774f8f10a1f"
+  },
+  {
+   "path": "feed-29/build/tests/golden/gradfield.json",
+   "source": "2026-10-24-feed-test-29/build/tests/golden/gradfield.json",
+   "bytes": 39358,
+   "sourceSha256": "803a0e0b68b4ff5c91e488c0c58b84a72da307041211d47ed473600110dc660b"
+  },
+  {
+   "path": "feed-29/build/tests/golden/translate.json",
+   "source": "2026-10-24-feed-test-29/build/tests/golden/translate.json",
+   "bytes": 32797,
+   "sourceSha256": "94ccef0f1e3acb789603132287d31ab8134087d9ed042932c4dfb7e7fea63035"
+  },
+  {
+   "path": "feed-29/build/tests/gradfield.test.mjs",
+   "source": "2026-10-24-feed-test-29/build/tests/gradfield.test.mjs",
+   "bytes": 7356,
+   "sourceSha256": "e3f10fae43ef82321423387e72afe2562c4f090a0ebfee5d40d47cef48470754"
+  },
+  {
+   "path": "feed-29/build/tests/translate.test.mjs",
+   "source": "2026-10-24-feed-test-29/build/tests/translate.test.mjs",
+   "bytes": 6917,
+   "sourceSha256": "603c68cf5e94579ffab1fe816475e9f68c8bbc0781f1f4effadb0e3f393c8a4f"
+  },
+  {
+   "path": "feed-29/build/tools/ink.mjs",
+   "source": "2026-10-24-feed-test-29/build/tools/ink.mjs",
+   "bytes": 755,
+   "sourceSha256": "f6283f4477d567dd2a840dc941cb08c6f6ca61438a3d98c0b8d63fd7045c21ef"
+  },
+  {
+   "path": "feed-29/build/tools/previews.sh",
+   "source": "2026-10-24-feed-test-29/build/tools/previews.sh",
+   "bytes": 1425,
+   "sourceSha256": "9903b948e3d7085e9481d0c1bf2742270aeb749376dea757c56c22ce32ccf6b3"
+  },
+  {
+   "path": "feed-29/build/tools/render.mjs",
+   "source": "2026-10-24-feed-test-29/build/tools/render.mjs",
+   "bytes": 2071,
+   "sourceSha256": "c8ae844451f464f34c315330b35ecc9c7f400db0dc7fe3b4bee9f20f19f1ee8a"
+  },
+  {
+   "path": "feed-29/build/tools/translate.mjs",
+   "source": "2026-10-24-feed-test-29/build/tools/translate.mjs",
+   "bytes": 1823,
+   "sourceSha256": "4b7bdaf43b4e88f6bee6b3725eef71e75c4c9ccbfc169da2032902d37fcb90f8"
+  },
+  {
+   "path": "feed-30/build/lib/bubbly.mjs",
+   "source": "2026-10-24-feed-test-30/build/lib/bubbly.mjs",
+   "bytes": 8723,
+   "sourceSha256": "b87c262ef2aba5133ee3f324952f5724face940249c06ec64170b48a60309a33"
+  },
+  {
+   "path": "feed-30/build/lib/feed30.mjs",
+   "source": "2026-10-24-feed-test-30/build/lib/feed30.mjs",
+   "bytes": 2809,
+   "sourceSha256": "5e28b07d26df06cb14479a75ce622b4261beaaaa859bc8845a6c0433d9df9d4d"
+  },
+  {
+   "path": "feed-30/build/lib/geom.mjs",
+   "source": "2026-10-24-feed-test-30/build/lib/geom.mjs",
+   "bytes": 4568,
+   "sourceSha256": "379f619df468fb044ac679a5d93d318f13107f136d3dbe50889cee3b35de3918"
+  },
+  {
+   "path": "feed-30/build/lib/manyfold.mjs",
+   "source": "2026-10-24-feed-test-30/build/lib/manyfold.mjs",
+   "bytes": 7769,
+   "sourceSha256": "f22b76470560f260e51d1b94632932cb41cc2f08f6de1001497990e7d7de818a"
+  },
+  {
+   "path": "feed-30/build/lib/marquetry.mjs",
+   "source": "2026-10-24-feed-test-30/build/lib/marquetry.mjs",
+   "bytes": 7475,
+   "sourceSha256": "860698ca9de9b75f3b88949df4937abab556816bab4f84fd5a9ce1148d2125e8"
+  },
+  {
+   "path": "feed-30/build/lib/raster.mjs",
+   "source": "2026-10-24-feed-test-30/build/lib/raster.mjs",
+   "bytes": 5897,
+   "sourceSha256": "a8fcb8763053502bbaf4864e1f618a6713c49e0e06e2101cf1a48e230840f59f"
+  },
+  {
+   "path": "feed-30/build/lib/skel.mjs",
+   "source": "2026-10-24-feed-test-30/build/lib/skel.mjs",
+   "bytes": 6100,
+   "sourceSha256": "d057e7f43b608ca570dec2e733201ebbad28a3e588abfd2e15d26bc8c16ef059"
+  },
+  {
+   "path": "feed-30/build/lib/swash.mjs",
+   "source": "2026-10-24-feed-test-30/build/lib/swash.mjs",
+   "bytes": 10347,
+   "sourceSha256": "c1597bea2c3b4239c90200800800751ab174991a0521778688b3068d69c738bc"
+  },
+  {
+   "path": "feed-30/build/lib/vessel.mjs",
+   "source": "2026-10-24-feed-test-30/build/lib/vessel.mjs",
+   "bytes": 9567,
+   "sourceSha256": "ca763eb4892285736018c34f6d211d6f044c0bf1b1a9f273b15cb3c70e19e333"
+  },
+  {
+   "path": "feed-30/build/lib/wood.mjs",
+   "source": "2026-10-24-feed-test-30/build/lib/wood.mjs",
+   "bytes": 2815,
+   "sourceSha256": "ffe7ce7f2c1bb499dc7dacc51cd4d028840416d9d496e15b6b96ca23edc09cef"
+  },
+  {
+   "path": "feed-32/build/eqseq.mjs",
+   "source": "2026-10-24-feed-test-32/build/eqseq.mjs",
+   "bytes": 6654,
+   "sourceSha256": "dbb06c4762a17bf70a353506994b6d28aa2561a2759c8fb9e2dbac7d7140c53d"
+  },
+  {
+   "path": "feed-32/build/film.mjs",
+   "source": "2026-10-24-feed-test-32/build/film.mjs",
+   "bytes": 6645,
+   "sourceSha256": "9daf5abf1a7904b22a51b3b4eed9d47f5809ebc52e75c52f57ae7fa2a7ed552f"
+  },
+  {
+   "path": "feed-32/build/hollowgrid.mjs",
+   "source": "2026-10-24-feed-test-32/build/hollowgrid.mjs",
+   "bytes": 5106,
+   "sourceSha256": "4e5ea8cd7d6751daa0cb2336113d6d87a90a430ad58ef34f7c9f1345d50d0c27"
+  },
+  {
+   "path": "feed-32/build/package.json",
+   "source": "2026-10-24-feed-test-32/build/package.json",
+   "bytes": 158,
+   "sourceSha256": "29152b5f39fd94e9d48b927ff548c39517000604aa033e4395286ee6504e02df"
+  },
+  {
+   "path": "feed-32/build/sequences.mjs",
+   "source": "2026-10-24-feed-test-32/build/sequences.mjs",
+   "bytes": 2935,
+   "sourceSha256": "d0f93ea5ac6bbd8eccc327a277c2023d622f0a56077d627c214761f3a2e5c1eb"
+  },
+  {
+   "path": "feed-32/build/settype.mjs",
+   "source": "2026-10-24-feed-test-32/build/settype.mjs",
+   "bytes": 484,
+   "sourceSha256": "a7e4dd4258e13b64cbf4856c1cff6ff2a75e4d9bc8755ea2ea0fee5a2f5665cf"
+  },
+  {
+   "path": "feed-32/build/similarity.json",
+   "source": "2026-10-24-feed-test-32/build/similarity.json",
+   "bytes": 6375,
+   "sourceSha256": "4154ea21e20c458b6b683880630216d0aba07b5cb45b633a63a82fd761999716"
+  },
+  {
+   "path": "feed-32/build/strata.mjs",
+   "source": "2026-10-24-feed-test-32/build/strata.mjs",
+   "bytes": 9020,
+   "sourceSha256": "74bc57b3bb17b773d8237f413c231530d94079d9ff24a5c9881296b53a2177b5"
+  },
+  {
+   "path": "feed-32/build/subtitle.mjs",
+   "source": "2026-10-24-feed-test-32/build/subtitle.mjs",
+   "bytes": 12653,
+   "sourceSha256": "f4cf62fc35b2d9c52c807cb6b76bccc53eb6e3807d16d3b180eed735a8b19441"
+  },
+  {
+   "path": "feed-32/build/tests/eqseq.test.mjs",
+   "source": "2026-10-24-feed-test-32/build/tests/eqseq.test.mjs",
+   "bytes": 2350,
+   "sourceSha256": "22d3aea3b81b7256627df30250bbb9dd401be44389683029847842efb7ba37f2"
+  },
+  {
+   "path": "feed-32/build/tests/film.test.mjs",
+   "source": "2026-10-24-feed-test-32/build/tests/film.test.mjs",
+   "bytes": 5307,
+   "sourceSha256": "f7713de04bbcc96cf8285a987c2a9db89c23e94c5d8b298174a03c541857721e"
+  },
+  {
+   "path": "feed-32/build/tests/hollowgrid.test.mjs",
+   "source": "2026-10-24-feed-test-32/build/tests/hollowgrid.test.mjs",
+   "bytes": 2387,
+   "sourceSha256": "8d672d0ae39c5018ecdabb2743fa457c64dd1a39049cadc9c80a6b00162fdde6"
+  },
+  {
+   "path": "feed-32/build/tests/strata.test.mjs",
+   "source": "2026-10-24-feed-test-32/build/tests/strata.test.mjs",
+   "bytes": 4211,
+   "sourceSha256": "230dae99f346b30d7ab52566d9947c7ebdb6c96b134e8b028be35a5742031a47"
+  },
+  {
+   "path": "feed-32/build/tests/subtitle.test.mjs",
+   "source": "2026-10-24-feed-test-32/build/tests/subtitle.test.mjs",
+   "bytes": 5045,
+   "sourceSha256": "d9baad0470cb677725caff411a806876f06203a9e01bfe52c1c78a81ea77d46f"
+  },
+  {
+   "path": "feed-32/build/tools/render.mjs",
+   "source": "2026-10-24-feed-test-32/build/tools/render.mjs",
+   "bytes": 5509,
+   "sourceSha256": "76401c28ae93b7982f23d139197045dece1dd076a3d5f66104da73287dc85906"
+  },
+  {
+   "path": "name-art/concepts/01-shallow-glass.mjs",
+   "source": "2026-10-24-name-art/concepts/01-shallow-glass.mjs",
+   "bytes": 4245,
+   "sourceSha256": "2c93c317a487d0618c050aa93375d01d77de4377d64b87161679c872e8cdcaac"
+  },
+  {
+   "path": "name-art/concepts/02-banknote.mjs",
+   "source": "2026-10-24-name-art/concepts/02-banknote.mjs",
+   "bytes": 6354,
+   "sourceSha256": "b2b5a5a874e2c2d886db4b091f906f8ef045514bb7b8d5207317584e90a0485a"
+  },
+  {
+   "path": "name-art/concepts/03-slab.mjs",
+   "source": "2026-10-24-name-art/concepts/03-slab.mjs",
+   "bytes": 4884,
+   "sourceSha256": "f7e9971c227017cff6a6481c8937f83f16848a44ef1980c0be3dae7249d1fcd7"
+  },
+  {
+   "path": "name-art/concepts/04-capsules.mjs",
+   "source": "2026-10-24-name-art/concepts/04-capsules.mjs",
+   "bytes": 3226,
+   "sourceSha256": "afb7ffc4a3efd17dc5ff46edd13ac9442b37d3ffcddbf1716a45ffa88cd8e83e"
+  },
+  {
+   "path": "name-art/concepts/05-cloud.mjs",
+   "source": "2026-10-24-name-art/concepts/05-cloud.mjs",
+   "bytes": 4294,
+   "sourceSha256": "15293dfe91dec1999c757fcccbcdec9bafcc7ab4f993e5aef345e0b3fe85ba1e"
+  },
+  {
+   "path": "name-art/concepts/06-code-mosaic.mjs",
+   "source": "2026-10-24-name-art/concepts/06-code-mosaic.mjs",
+   "bytes": 3737,
+   "sourceSha256": "aee6cc2fa99e41fb02ce9480faa2290bf1640d648d9090f76de1f63ed2769c35"
+  },
+  {
+   "path": "name-art/concepts/07-crt-signal.mjs",
+   "source": "2026-10-24-name-art/concepts/07-crt-signal.mjs",
+   "bytes": 2479,
+   "sourceSha256": "e150b4ccd5291917d19e273bec4b93907370bd3d782dc86d0ebd83967a2a3645"
+  },
+  {
+   "path": "name-art/concepts/08-deco-sunburst.mjs",
+   "source": "2026-10-24-name-art/concepts/08-deco-sunburst.mjs",
+   "bytes": 4986,
+   "sourceSha256": "d4f0048ee3868c748d3863a37d8c15e45a048725f8520873a165d22c431adac0"
+  },
+  {
+   "path": "name-art/concepts/09-surreal-doors.mjs",
+   "source": "2026-10-24-name-art/concepts/09-surreal-doors.mjs",
+   "bytes": 4782,
+   "sourceSha256": "2a5f44c5feb362462497006f16f9de062b331c9cd9599abba44a315eb200043b"
+  },
+  {
+   "path": "name-art/concepts/10-metaballs.mjs",
+   "source": "2026-10-24-name-art/concepts/10-metaballs.mjs",
+   "bytes": 4673,
+   "sourceSha256": "69392a327046d6ba90648c8bbde9c4e2dc4565d3151e77eca0f2b82b0b293cc8"
+  },
+  {
+   "path": "name-art/concepts/11-pearls.mjs",
+   "source": "2026-10-24-name-art/concepts/11-pearls.mjs",
+   "bytes": 5253,
+   "sourceSha256": "5846b37cc49e3f017c820ba6f7c5c51002abf60f33c177936f242710f3c284f6"
+  },
+  {
+   "path": "name-art/concepts/12-riso.mjs",
+   "source": "2026-10-24-name-art/concepts/12-riso.mjs",
+   "bytes": 3174,
+   "sourceSha256": "2f2775bfe1181addc13861b9f05549bec538a6526ed18f429c1f9d475509a672"
+  },
+  {
+   "path": "name-art/concepts/13-monogram-orb.mjs",
+   "source": "2026-10-24-name-art/concepts/13-monogram-orb.mjs",
+   "bytes": 3885,
+   "sourceSha256": "122a0b96f28e158d218adeb6783a51bf0097ddf2068bd89ea9acda1a6d6ebd81"
+  },
+  {
+   "path": "name-art/concepts/14-glass-tubes.mjs",
+   "source": "2026-10-24-name-art/concepts/14-glass-tubes.mjs",
+   "bytes": 4363,
+   "sourceSha256": "1a1f8b5f8764d4e894431befa2f2a326c09204320546f76898de440411e5d4fb"
+  },
+  {
+   "path": "name-art/concepts/15-deco-arc.mjs",
+   "source": "2026-10-24-name-art/concepts/15-deco-arc.mjs",
+   "bytes": 5908,
+   "sourceSha256": "3bf6769c7e4b6625c1be546eb7d1c5943f36e67311cf28ad46979ca24287ec74"
+  },
+  {
+   "path": "name-art/concepts/16-intaglio-lines.mjs",
+   "source": "2026-10-24-name-art/concepts/16-intaglio-lines.mjs",
+   "bytes": 7186,
+   "sourceSha256": "ce96f98e20ce562ab6a20ca3c221263b149da293599b43953e584425baa9bb1d"
+  },
+  {
+   "path": "name-art/concepts/17-pearls-large.mjs",
+   "source": "2026-10-24-name-art/concepts/17-pearls-large.mjs",
+   "bytes": 4583,
+   "sourceSha256": "826e42bf04dce9d48ebeb0280dc4b18eac03937885b8970a3d2f31eb09e00c05"
+  },
+  {
+   "path": "name-art/concepts/20-mosaic-andamento.mjs",
+   "source": "2026-10-24-name-art/concepts/20-mosaic-andamento.mjs",
+   "bytes": 1183,
+   "sourceSha256": "fd82dc7bc001ff45b702802b6da73898cd11557fe5dbced87cb8fd0aaa669260"
+  },
+  {
+   "path": "name-art/concepts/21-mosaic-code.mjs",
+   "source": "2026-10-24-name-art/concepts/21-mosaic-code.mjs",
+   "bytes": 1149,
+   "sourceSha256": "ac1f9f5024ccf4d0ffc3f5941adaa126971e9b97056a53b76be6aea59d7da1c2"
+  },
+  {
+   "path": "name-art/concepts/22-mosaic-smalti.mjs",
+   "source": "2026-10-24-name-art/concepts/22-mosaic-smalti.mjs",
+   "bytes": 1173,
+   "sourceSha256": "4cd42a7d7d84a6187a8d35e1ef56f69e3b5c395b4a961d732faf1640db40db09"
+  },
+  {
+   "path": "name-art/concepts/23-mosaic-scales.mjs",
+   "source": "2026-10-24-name-art/concepts/23-mosaic-scales.mjs",
+   "bytes": 1043,
+   "sourceSha256": "34723735edcfa3c7bc8f2c0c381a4cca283e0dea29312c5b27d5257be650e13c"
+  },
+  {
+   "path": "name-art/concepts/24-mosaic-echo.mjs",
+   "source": "2026-10-24-name-art/concepts/24-mosaic-echo.mjs",
+   "bytes": 1127,
+   "sourceSha256": "a6f1aba8338ba7c58bffce766a0dd3eacf3ad97b1328a2a16df46e1a5281909d"
+  },
+  {
+   "path": "name-art/concepts/25-mosaic-divisumma.mjs",
+   "source": "2026-10-24-name-art/concepts/25-mosaic-divisumma.mjs",
+   "bytes": 5317,
+   "sourceSha256": "63d55b7782e4bced6a74a629211f537e45c86ddf49117ad137f3e3b1f39b74b9"
+  },
+  {
+   "path": "name-art/concepts/30-crystal-plate.mjs",
+   "source": "2026-10-24-name-art/concepts/30-crystal-plate.mjs",
+   "bytes": 4918,
+   "sourceSha256": "e0368f6b131fe38d354e19e8c53b1f4220a32e83e98981cdc2eff769afc9c2f0"
+  },
+  {
+   "path": "name-art/concepts/31-crystal-rods.mjs",
+   "source": "2026-10-24-name-art/concepts/31-crystal-rods.mjs",
+   "bytes": 3830,
+   "sourceSha256": "08dff0895a8d4cf9ed48b593542e0946dac70582306d50f92644f7ad4442fbc7"
+  },
+  {
+   "path": "name-art/concepts/32-crystal-light.mjs",
+   "source": "2026-10-24-name-art/concepts/32-crystal-light.mjs",
+   "bytes": 2884,
+   "sourceSha256": "a19ab0b23a2c45033c9f3cb2aa24f5b07903d12f60d29f06aeacc05cfddb1001"
+  },
+  {
+   "path": "name-art/concepts/33-intaglio-orb.mjs",
+   "source": "2026-10-24-name-art/concepts/33-intaglio-orb.mjs",
+   "bytes": 2691,
+   "sourceSha256": "fc686e700cebae4ed728f69675dca1815a9fb9f615cbab93e93cd592045ee339"
+  },
+  {
+   "path": "name-art/concepts/34-deco-built.mjs",
+   "source": "2026-10-24-name-art/concepts/34-deco-built.mjs",
+   "bytes": 7509,
+   "sourceSha256": "7ab62549cc49d89686d20bbe4c11a3dd7800f46feef1504adc52cd96b8ff3f72"
+  },
+  {
+   "path": "name-art/concepts/35-pearls-strung.mjs",
+   "source": "2026-10-24-name-art/concepts/35-pearls-strung.mjs",
+   "bytes": 8147,
+   "sourceSha256": "8888939fa32dcc00bf8c0d49bbe3c45ec2de76fae18a7ef30476bcff3271231f"
+  },
+  {
+   "path": "name-art/concepts/36-orb-crystal.mjs",
+   "source": "2026-10-24-name-art/concepts/36-orb-crystal.mjs",
+   "bytes": 4006,
+   "sourceSha256": "071f37011b91c5bfb631fa2f28d793ce0a62588c3f6da31b3798d1077e68e7de"
+  },
+  {
+   "path": "name-art/concepts/37-deco-motif.mjs",
+   "source": "2026-10-24-name-art/concepts/37-deco-motif.mjs",
+   "bytes": 9210,
+   "sourceSha256": "040bbb0d0272d7560924c118f7bbf6e591a40c42c798233d916fef8c9c8f7b41"
+  },
+  {
+   "path": "name-art/lib/crystal.mjs",
+   "source": "2026-10-24-name-art/lib/crystal.mjs",
+   "bytes": 12339,
+   "sourceSha256": "a7ffd3f4a5bcd703edeb5ad3abf63353b007c2cb7639f22302995ca21f970e9c"
+  },
+  {
+   "path": "name-art/lib/draw.mjs",
+   "source": "2026-10-24-name-art/lib/draw.mjs",
+   "bytes": 2379,
+   "sourceSha256": "3f53c358c5a7f68d1ee18bd712d5966934802dd10279c2e2fc1dc9f2c1e6dcc4"
+  },
+  {
+   "path": "name-art/lib/frame.mjs",
+   "source": "2026-10-24-name-art/lib/frame.mjs",
+   "bytes": 2697,
+   "sourceSha256": "3ea30fe1bc4ff886654c2b8d62d3491cf0af87b5afc7aacf22131e1729ad684d"
+  },
+  {
+   "path": "name-art/lib/img.mjs",
+   "source": "2026-10-24-name-art/lib/img.mjs",
+   "bytes": 7997,
+   "sourceSha256": "bd1e55888c703a540de9f0380ebafe428e402ea1e6137f9d7314fa9f2f40b7bd"
+  },
+  {
+   "path": "name-art/lib/mosaic/andamento.mjs",
+   "source": "2026-10-24-name-art/lib/mosaic/andamento.mjs",
+   "bytes": 15025,
+   "sourceSha256": "c6a76c2cacc8ef8af8d269b6bf71eb1c96f1c8f038558de8a14cf461a9aaf781"
+  },
+  {
+   "path": "name-art/lib/mosaic/codecells.mjs",
+   "source": "2026-10-24-name-art/lib/mosaic/codecells.mjs",
+   "bytes": 5679,
+   "sourceSha256": "627cd6030e2f87d151f05519d2def26750c03c714418a13329c48c72c06b905a"
+  },
+  {
+   "path": "name-art/lib/mosaic/index.mjs",
+   "source": "2026-10-24-name-art/lib/mosaic/index.mjs",
+   "bytes": 6648,
+   "sourceSha256": "f0809d30d82c563ded5411a7dc315228d9c8864fd1f89d2d74e87d3defa9cf72"
+  },
+  {
+   "path": "name-art/lib/mosaic/tesserae.mjs",
+   "source": "2026-10-24-name-art/lib/mosaic/tesserae.mjs",
+   "bytes": 3716,
+   "sourceSha256": "731b411f8282f9b9e9aeb651fe4824693cf6568467e14c4af5bfdb1e8bab219b"
+  },
+  {
+   "path": "name-art/lib/mosaic/textfield.mjs",
+   "source": "2026-10-24-name-art/lib/mosaic/textfield.mjs",
+   "bytes": 2769,
+   "sourceSha256": "bb99cb05637827cf61cde2b7132daa1a2ab60e956884f7d00d9e5bc044891ff0"
+  },
+  {
+   "path": "name-art/lib/name.mjs",
+   "source": "2026-10-24-name-art/lib/name.mjs",
+   "bytes": 13105,
+   "sourceSha256": "ced04aba9898449cfa8f51a8259d9d4c88cb743e3fbb4bff88df1a9e2aa77e84"
+  },
+  {
+   "path": "name-art/lib/note.mjs",
+   "source": "2026-10-24-name-art/lib/note.mjs",
+   "bytes": 3980,
+   "sourceSha256": "b58061a435cb0137cb7a037cb5bfcf29691d4e8f7feef6c7d60c4493eff2c53e"
+  },
+  {
+   "path": "name-art/lib/strokes.mjs",
+   "source": "2026-10-24-name-art/lib/strokes.mjs",
+   "bytes": 8914,
+   "sourceSha256": "19e246e72f8f88b292108cbcefd8b724bf03edcf1ca667cb0fcd039aeb61f940"
+  },
+  {
+   "path": "name-art/superframe/mosaic-node.mjs",
+   "source": "2026-10-24-name-art/superframe/mosaic-node.mjs",
+   "bytes": 2985,
+   "sourceSha256": "4a7610a8cbd77f26655ae073b0a16e7dca6859f84f80cb940135450f8a6303ae"
+  },
+  {
+   "path": "name-art/superframe/nameart.mjs",
+   "source": "2026-10-24-name-art/superframe/nameart.mjs",
+   "bytes": 5512,
+   "sourceSha256": "8744fc8da6e3159f1724618aaa9eca3fdfc3302f7f9416a2f8d01630194418c9"
+  },
+  {
+   "path": "visualizer/lib/draw.mjs",
+   "source": "2026-10-24-visualizer/lib/draw.mjs",
+   "bytes": 4574,
+   "sourceSha256": "9faeb03a1899fdf47024e6c5e9b211d231b5e1391b26b292eb6cf73cdc4c2a1b"
+  },
+  {
+   "path": "visualizer/lib/features.mjs",
+   "source": "2026-10-24-visualizer/lib/features.mjs",
+   "bytes": 16833,
+   "sourceSha256": "8fbb8a1c127f6fd972c600b38ac4105eb99e7d16e35a53cadc703a2be9e50407"
+  },
+  {
+   "path": "visualizer/lib/fft.mjs",
+   "source": "2026-10-24-visualizer/lib/fft.mjs",
+   "bytes": 2318,
+   "sourceSha256": "082caa26df29df500e5fb328fcc68cd84b1f90b402a8583f36d75e89541b9a93"
+  },
+  {
+   "path": "visualizer/lib/flow.mjs",
+   "source": "2026-10-24-visualizer/lib/flow.mjs",
+   "bytes": 10749,
+   "sourceSha256": "8b1f85774e9f49c993cc256401bd725352e6f98e8a1e6b3291997d9e253d1632"
+  },
+  {
+   "path": "visualizer/lib/loudness.mjs",
+   "source": "2026-10-24-visualizer/lib/loudness.mjs",
+   "bytes": 3355,
+   "sourceSha256": "c313d977b611382b4fe5bc08c663b522ac4b6970835ffb3a58d86ea7b4d4c069"
+  },
+  {
+   "path": "visualizer/lib/meter.mjs",
+   "source": "2026-10-24-visualizer/lib/meter.mjs",
+   "bytes": 8663,
+   "sourceSha256": "03f13daa73527d6ee01c807fd695c5f5d9f56f2b97a86b81eb06034fca4f4402"
+  },
+  {
+   "path": "visualizer/lib/midi.mjs",
+   "source": "2026-10-24-visualizer/lib/midi.mjs",
+   "bytes": 6615,
+   "sourceSha256": "be671fd2fce304c490f41558935e25c4baaf0f13a9bd59313b8fbbd82b5149a7"
+  },
+  {
+   "path": "visualizer/lib/series.mjs",
+   "source": "2026-10-24-visualizer/lib/series.mjs",
+   "bytes": 7299,
+   "sourceSha256": "bf27b4ae782edc31249b4508808f13cc4e7fa6f3785679255c1c42afee6f645e"
+  },
+  {
+   "path": "visualizer/lib/synthetic.mjs",
+   "source": "2026-10-24-visualizer/lib/synthetic.mjs",
+   "bytes": 3572,
+   "sourceSha256": "562f528a6f2ace53f289622e5907f66f04ce51c08ba0652f48ecec54ce9b9b2c"
+  },
+  {
+   "path": "visualizer/lib/wav.mjs",
+   "source": "2026-10-24-visualizer/lib/wav.mjs",
+   "bytes": 5741,
+   "sourceSha256": "923bcdf967d3e777d0fa426976d9b4904a3c90abee4c851f0641dfd8243abf1c"
+  },
+  {
+   "path": "visualizer/render/finish.mjs",
+   "source": "2026-10-24-visualizer/render/finish.mjs",
+   "bytes": 4193,
+   "sourceSha256": "b5517044087e2589be1d519fa560cd57869ab307888893e46f0feab0ec747ae8"
+  },
+  {
+   "path": "visualizer/render/grid.mjs",
+   "source": "2026-10-24-visualizer/render/grid.mjs",
+   "bytes": 9794,
+   "sourceSha256": "8745b25362cec8f6cfa93ac6b81cc98af6cbf6c3728c3c0f0e8c690ad41cdc79"
+  },
+  {
+   "path": "visualizer/render/meter.mjs",
+   "source": "2026-10-24-visualizer/render/meter.mjs",
+   "bytes": 5311,
+   "sourceSha256": "7bb49c56bfd7b9e1aa6beb927a2d9e40766ba51d7b63c4e0ba4373f6ff34f9c5"
+  },
+  {
+   "path": "visualizer/render/phosphor.mjs",
+   "source": "2026-10-24-visualizer/render/phosphor.mjs",
+   "bytes": 2227,
+   "sourceSha256": "3dbb88731e7b1e9d7d7b7172e568d08cdcd3d3fa347bfbc452a4329fcd5f736c"
+  },
+  {
+   "path": "visualizer/render/ribbons.mjs",
+   "source": "2026-10-24-visualizer/render/ribbons.mjs",
+   "bytes": 2753,
+   "sourceSha256": "ae19af3edcdff89ca83db2a571c45afee7955d2b294eff70313e7f7763c3d67d"
+  },
+  {
+   "path": "visualizer/render/seabed.mjs",
+   "source": "2026-10-24-visualizer/render/seabed.mjs",
+   "bytes": 9062,
+   "sourceSha256": "80c39896b2b0155c640980aba1271e97984404c3e0245367513b2c37761f81dc"
+  },
+  {
+   "path": "visualizer/render/water.mjs",
+   "source": "2026-10-24-visualizer/render/water.mjs",
+   "bytes": 2533,
+   "sourceSha256": "18e1c6a014a152b047e627ad32e89a341c6bc66508d252b98f12ea7317849901"
+  },
+  {
+   "path": "library/measures/albers-xx1.json",
+   "source": "2026-10-25-reference-library/measures/albers-xx1.json",
+   "bytes": 2746,
+   "sourceSha256": "55c27d97e388f0517f888bc15bd19cfdf00d49d5dee234a6372d6fdb173ec6cf"
+  },
+  {
+   "path": "creation/adapters/superframe-nodes.mjs",
+   "source": "2026-10-26-creation-engine/adapters/superframe-nodes.mjs",
+   "bytes": 3718,
+   "sourceSha256": "b340b596f437849093e982bef1ee8130523b89c0535e2d81a61b75979eee0f40"
+  },
+  {
+   "path": "creation/data/sound-features.json",
+   "source": "2026-10-26-creation-engine/data/sound-features.json",
+   "bytes": 121634,
+   "sourceSha256": "e4ddb0c85817523a7bb6284774c322bac4a8f570669bf20451e7fbcc761a039f"
+  },
+  {
+   "path": "creation/lib/bench/context.mjs",
+   "source": "2026-10-26-creation-engine/lib/bench/context.mjs",
+   "bytes": 2653,
+   "sourceSha256": "3c904b13bf50b220d90ae8349afcc152a075d5dd91e954153103b1a139e700fc"
+  },
+  {
+   "path": "creation/lib/bench/fidelity.mjs",
+   "source": "2026-10-26-creation-engine/lib/bench/fidelity.mjs",
+   "bytes": 29072,
+   "sourceSha256": "4c3e152acce53af1623116382af5ee668d66ea84ef59ec2f8b428581db82356c"
+  },
+  {
+   "path": "creation/lib/core/align.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/align.mjs",
+   "bytes": 4037,
+   "sourceSha256": "8f8384cd244370fa626fc33a9b8b12e8c7168e690b0ef19ae21f98a6dbd16222"
+  },
+  {
+   "path": "creation/lib/core/combine.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/combine.mjs",
+   "bytes": 8134,
+   "sourceSha256": "fca49dc6a0fba07cf092ba47932fd9ccd18726c60e7378af63d803b455cb79bb"
+  },
+  {
+   "path": "creation/lib/core/gen.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/gen.mjs",
+   "bytes": 3736,
+   "sourceSha256": "e3659d052c02a9ea76edc8d31bfd03028e687b90ab2036efaf7d0323aefb786a"
+  },
+  {
+   "path": "creation/lib/core/isomer.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/isomer.mjs",
+   "bytes": 3707,
+   "sourceSha256": "a15158d09968dde615d1b412e89500e3760c12a345f4d4bb7311c9913c99e7eb"
+  },
+  {
+   "path": "creation/lib/core/kelvin.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/kelvin.mjs",
+   "bytes": 3498,
+   "sourceSha256": "a5ee4a72148272113d84b5e2b943116a60f0b15d3394a76d29e3768a85f3a9b9"
+  },
+  {
+   "path": "creation/lib/core/layer.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/layer.mjs",
+   "bytes": 7384,
+   "sourceSha256": "fe1c74ea1579e12b44c4d171a20953f852f6b65b2be42a500db8407d46ccbbaa"
+  },
+  {
+   "path": "creation/lib/core/metamer.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/metamer.mjs",
+   "bytes": 6752,
+   "sourceSha256": "912dc15681017cc903064b12ce11514e2a4daafbef0ab2b94796ee0427681b71"
+  },
+  {
+   "path": "creation/lib/core/motion.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/motion.mjs",
+   "bytes": 3904,
+   "sourceSha256": "25de50ea6d8c94bdc268d08ca73f59b2f6c362d1cf38baf00a20505b1ad1e902"
+  },
+  {
+   "path": "creation/lib/core/record.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/record.mjs",
+   "bytes": 5989,
+   "sourceSha256": "2fd898e17464cc4d9f2b667eda63b97972a4b8725a3aa823391a218f3dd7f733"
+  },
+  {
+   "path": "creation/lib/core/senses.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/senses.mjs",
+   "bytes": 8552,
+   "sourceSha256": "51251ab5ae4ba0cc6016cb69dcace764ae4041257957a79c7d9924138cd3da6a"
+  },
+  {
+   "path": "creation/lib/core/spectral.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/spectral.mjs",
+   "bytes": 7099,
+   "sourceSha256": "7e964c75bc92277439d17fb04826b4664a55061d6def4b6fdfe6e5357d1e8692"
+  },
+  {
+   "path": "creation/lib/core/ticks.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/ticks.mjs",
+   "bytes": 11175,
+   "sourceSha256": "e9db2b104a14682d77bc32f93bb8ea0babb1c08014c0ba4dbebc2857be1c81c8"
+  },
+  {
+   "path": "creation/lib/core/views.mjs",
+   "source": "2026-10-26-creation-engine/lib/core/views.mjs",
+   "bytes": 4141,
+   "sourceSha256": "850823a2cd7c89d77be7356b8342a0f97524ac94c7b1f4b5012a9be11e2d5444"
+  },
+  {
+   "path": "creation/lib/elements.mjs",
+   "source": "2026-10-26-creation-engine/lib/elements.mjs",
+   "bytes": 9189,
+   "sourceSha256": "f91557b9100f761bf7d170fb09c270e79943df5d2d17d361a5376df313308eba"
+  },
+  {
+   "path": "creation/lib/gen/advect.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/advect.mjs",
+   "bytes": 4345,
+   "sourceSha256": "2c9bc33ffb5a8f1cb354ece645028baa1c64dcaa90cc0185da3d7b98a3864f6e"
+  },
+  {
+   "path": "creation/lib/gen/automata.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/automata.mjs",
+   "bytes": 7554,
+   "sourceSha256": "3998beb213d7ddd4fedf1d9f1ce79f505576c110d56ea1141f7e07c401a61e00"
+  },
+  {
+   "path": "creation/lib/gen/contour.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/contour.mjs",
+   "bytes": 4143,
+   "sourceSha256": "87f10cb45ef855747d6a333df26d624e500e5358d6c52411f859d07b5b6600f4"
+  },
+  {
+   "path": "creation/lib/gen/dry.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/dry.mjs",
+   "bytes": 6115,
+   "sourceSha256": "d48aa18a13ba927cd96b6a4e4fd4fd1528eb2d7bb67dc206629a763e06668f1a"
+  },
+  {
+   "path": "creation/lib/gen/front.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/front.mjs",
+   "bytes": 4131,
+   "sourceSha256": "d547a7e567b0a59844b76968694b1e12113bb85cf8bc791497c2a96cafa8d554"
+  },
+  {
+   "path": "creation/lib/gen/frost.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/frost.mjs",
+   "bytes": 3842,
+   "sourceSha256": "82241f20d77a39801b5b45a9285c94e12eeea324f7b6717784b8d33b58599523"
+  },
+  {
+   "path": "creation/lib/gen/glass.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/glass.mjs",
+   "bytes": 4175,
+   "sourceSha256": "6a6f8eeeaa9a9b771e0be6e2860c4d782813dacdf78e5416b080a886ff154335"
+  },
+  {
+   "path": "creation/lib/gen/glyph.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/glyph.mjs",
+   "bytes": 3438,
+   "sourceSha256": "7daaedb5ffd09bd04e8a6c79cee51ce4ec161b55e95cdc67c7d729409b47a6ec"
+  },
+  {
+   "path": "creation/lib/gen/growth.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/growth.mjs",
+   "bytes": 6905,
+   "sourceSha256": "c6635dd616c47a062402277f1aa52be2ed219e4e76c54252ce576aa99ceba4ea"
+  },
+  {
+   "path": "creation/lib/gen/heat.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/heat.mjs",
+   "bytes": 3934,
+   "sourceSha256": "03dd3a573c7471ead5b5c0a5962e91a88deea2e37d3dbeef6223afdfd4ad2552"
+  },
+  {
+   "path": "creation/lib/gen/index.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/index.mjs",
+   "bytes": 1505,
+   "sourceSha256": "fb578165aa3b1dfa14f2c7607f65313d1b249bf4f2a7f7b169fee87840677a6b"
+  },
+  {
+   "path": "creation/lib/gen/intaglio.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/intaglio.mjs",
+   "bytes": 5107,
+   "sourceSha256": "e2dc430ff925dc429fc8887cab4541bb4bd9ece38bc91ac587090c79ad6f3add"
+  },
+  {
+   "path": "creation/lib/gen/kasane.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/kasane.mjs",
+   "bytes": 3419,
+   "sourceSha256": "17e73b10e066d6f3ae1d4d266f115e4f9f8bc49c7e388c82d456bbbf5dd17aad"
+  },
+  {
+   "path": "creation/lib/gen/leaf.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/leaf.mjs",
+   "bytes": 5699,
+   "sourceSha256": "7e92407a5688aa9a02fe763c44da3891228bc244c8adcdcd561517d18192be49"
+  },
+  {
+   "path": "creation/lib/gen/marble.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/marble.mjs",
+   "bytes": 4634,
+   "sourceSha256": "330f730a9485a02506511a2bbf7de75d1daa4c151ee1c2d0991d8120e6191648"
+  },
+  {
+   "path": "creation/lib/gen/material.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/material.mjs",
+   "bytes": 8612,
+   "sourceSha256": "93c95390643e17634a3539b77fb655b932e4c70124413b1618992ecebd44fab9"
+  },
+  {
+   "path": "creation/lib/gen/mosaic.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/mosaic.mjs",
+   "bytes": 6882,
+   "sourceSha256": "103f3ed9743d28cc312b6a21f37a7edae74c16d850e10b908aeae79edc5e0a22"
+  },
+  {
+   "path": "creation/lib/gen/orbit.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/orbit.mjs",
+   "bytes": 6379,
+   "sourceSha256": "4522e52526b3632aba92585bc98e2cc38c6a003226ace0809049b5994e760b29"
+  },
+  {
+   "path": "creation/lib/gen/path.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/path.mjs",
+   "bytes": 4624,
+   "sourceSha256": "1b0298ba6f53a50837eee238aebb00b9d8ca13794802b4694561091b78688d53"
+  },
+  {
+   "path": "creation/lib/gen/plates.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/plates.mjs",
+   "bytes": 8520,
+   "sourceSha256": "9f0e7a04487e3df02cc8252911c273ccc74bcced3c1492e27d314a6d900d956f"
+  },
+  {
+   "path": "creation/lib/gen/plates2.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/plates2.mjs",
+   "bytes": 9118,
+   "sourceSha256": "075bfa7dacfdd92100f2ddea61e73167e5a6df180ce51677f85a10ddb67cebfe"
+  },
+  {
+   "path": "creation/lib/gen/plates3.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/plates3.mjs",
+   "bytes": 7272,
+   "sourceSha256": "7f24ee50bbc1eb0036431b838591fc8de7b8bf35ec8fedfc5e23c3fb123f3b17"
+  },
+  {
+   "path": "creation/lib/gen/rd.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/rd.mjs",
+   "bytes": 3595,
+   "sourceSha256": "4b30b82cb137d3c0e7b3cafe6028e9e7599c071048ca70d89908d967e37c47e3"
+  },
+  {
+   "path": "creation/lib/gen/ribbon.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/ribbon.mjs",
+   "bytes": 4930,
+   "sourceSha256": "20895a4f562f4d239856fa1018402b1c44d4891ed79ef31f7ab177ffbf9cf73b"
+  },
+  {
+   "path": "creation/lib/gen/sheet.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/sheet.mjs",
+   "bytes": 3036,
+   "sourceSha256": "9582cb361ab399f1412805893bb26f24f520b510eb800bb78b03d2d6e7f58717"
+  },
+  {
+   "path": "creation/lib/gen/sound.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/sound.mjs",
+   "bytes": 5103,
+   "sourceSha256": "88121a233c70797d5fecf3b6f7848bb2f3e2393719ac645c8612c9e5ac56abad"
+  },
+  {
+   "path": "creation/lib/gen/symmetry.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/symmetry.mjs",
+   "bytes": 7253,
+   "sourceSha256": "b0cce15058a70bfe07bdb4b443698f35b836af202a8f4970297a4ce003daf169"
+  },
+  {
+   "path": "creation/lib/gen/timing.mjs",
+   "source": "2026-10-26-creation-engine/lib/gen/timing.mjs",
+   "bytes": 4627,
+   "sourceSha256": "096ffb594b7dc75a2017aad71ff4d54d1455f0656d71a2225a299f454198eb0b"
+  },
+  {
+   "path": "creation/lib/ir/backends.mjs",
+   "source": "2026-10-26-creation-engine/lib/ir/backends.mjs",
+   "bytes": 8799,
+   "sourceSha256": "fae1c8a02fa1fea6ebe58c08ced94d21ba6497f10a12b30f013a5af5705240bc"
+  },
+  {
+   "path": "creation/lib/ir/frontends.mjs",
+   "source": "2026-10-26-creation-engine/lib/ir/frontends.mjs",
+   "bytes": 11508,
+   "sourceSha256": "02cff8e9433c31e33dfafd795f269c88663729cbc7915a1005b502fcf1ac9fa0"
+  },
+  {
+   "path": "creation/lib/ir/ir.mjs",
+   "source": "2026-10-26-creation-engine/lib/ir/ir.mjs",
+   "bytes": 5792,
+   "sourceSha256": "77917fb82e3977a6483af8282f243713165a7b6f09238c5eb74ede65cdc6e718"
+  },
+  {
+   "path": "creation/lib/ir/language.mjs",
+   "source": "2026-10-26-creation-engine/lib/ir/language.mjs",
+   "bytes": 6386,
+   "sourceSha256": "5d450ce1678797bafcdc62c5cd76106d76a755184187641035024c0d19db2d57"
+  },
+  {
+   "path": "creation/lib/ir/plates.mjs",
+   "source": "2026-10-26-creation-engine/lib/ir/plates.mjs",
+   "bytes": 10763,
+   "sourceSha256": "0205c965308c26ce86a500d83f00180ec62e995ffdfebf3f47e7721a0ff2a44f"
+  },
+  {
+   "path": "creation/lib/ir/png.mjs",
+   "source": "2026-10-26-creation-engine/lib/ir/png.mjs",
+   "bytes": 3168,
+   "sourceSha256": "f345a22c25acf6ebf522d17e5afebb04f909c1ad9b576e7d4f19d13908ff7086"
+  },
+  {
+   "path": "creation/lib/ir/wallpaper.mjs",
+   "source": "2026-10-26-creation-engine/lib/ir/wallpaper.mjs",
+   "bytes": 8019,
+   "sourceSha256": "8b2ccd6f040861bb77e0f0475ef0ed1cfd9c2f2f91b457b0a53ae4a0588257c8"
+  },
+  {
+   "path": "creation/lib/render4k.mjs",
+   "source": "2026-10-26-creation-engine/lib/render4k.mjs",
+   "bytes": 8230,
+   "sourceSha256": "dfea4bf7955551bb9f630994a1352468204cc070934891bf5db83063f7f86f87"
+  },
+  {
+   "path": "creation/tests/adapter.test.mjs",
+   "source": "2026-10-26-creation-engine/tests/adapter.test.mjs",
+   "bytes": 856,
+   "sourceSha256": "97ff5b25e46cf5ecc915339a297812d3d5b23764f3d2a9c0796229f36129da09"
+  },
+  {
+   "path": "creation/tests/engine.test.mjs",
+   "source": "2026-10-26-creation-engine/tests/engine.test.mjs",
+   "bytes": 8945,
+   "sourceSha256": "b89bbfcf5ed2eab03de2837227149dc7efdb004dd06687011e374780a4808749"
+  },
+  {
+   "path": "creation/tests/fixtures/corpus.txt",
+   "source": "2026-10-26-creation-engine/tests/fixtures/corpus.txt",
+   "bytes": 142786,
+   "sourceSha256": "374b6dc729ae7153d6515eb45693615fe5a461fdfc650fe1ec1229e365dfa44c"
+  },
+  {
+   "path": "creation/tests/kasane.test.mjs",
+   "source": "2026-10-26-creation-engine/tests/kasane.test.mjs",
+   "bytes": 1251,
+   "sourceSha256": "d183be9dcde16bf085183e9c3593be33318b820b9d5d7af576cb6ac88492aa1a"
+  },
+  {
+   "path": "creation/tests/language.test.mjs",
+   "source": "2026-10-26-creation-engine/tests/language.test.mjs",
+   "bytes": 1695,
+   "sourceSha256": "baa515bbfbe5f4e53c76814e66161020132176940cb9b25675789b09487af367"
+  },
+  {
+   "path": "creation/tests/senses.test.mjs",
+   "source": "2026-10-26-creation-engine/tests/senses.test.mjs",
+   "bytes": 1387,
+   "sourceSha256": "9358d26d62e6d53100ecc080892e105cf916f7aa89268eb4c506f611ce34e484"
+  }
+ ]
+}

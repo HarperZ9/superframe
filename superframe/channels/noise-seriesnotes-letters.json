@@ -1,0 +1,95 @@
+{
+ "name": "noise-seriesnotes-letters",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0008",
+ "lanes": [
+  "image",
+  "sound",
+  "type"
+ ],
+ "domains": [
+  "procedural",
+  "sonification",
+  "information theory",
+  "typography",
+  "composition",
+  "print"
+ ],
+ "quality": 0.9469,
+ "novelty": 1.165,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/8",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#0e0f13",
+   "ink": "#e9e4d8",
+   "accent": "#d79e35"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "compose.noise",
+    "params": {
+     "scale": 3.3681110298420784,
+     "octaves": 2
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "perceive.seriesnotes",
+    "params": {
+     "step": 0.8111634786590003,
+     "root": 45
+    },
+    "in": {
+     "series": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "bits.letters",
+    "params": {
+     "pitch": 22,
+     "bits": 7,
+     "minSide": 0.22183536422671746
+    },
+    "in": {
+     "glyphs": "n1.events"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-right",
+     "scale": 0.6374062086828053,
+     "frame": "plate",
+     "accent": 0.5603010365739465,
+     "accentWidth": 0.04742066506762058,
+     "spectrum": false,
+     "shadow": 0.21315966243855655,
+     "grainPx": 2.334137461706996
+    },
+    "in": {
+     "subject": "n2.raster",
+     "depth": "n1.events"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n3.raster",
+   "audio": "n1.events"
+  },
+  "cost": 51
+ }
+}

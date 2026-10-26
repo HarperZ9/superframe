@@ -1,0 +1,102 @@
+{
+ "name": "curl-alias-blocks-print",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0038",
+ "lanes": [
+  "type",
+  "sound",
+  "image",
+  "field"
+ ],
+ "domains": [
+  "procedural",
+  "asemic writing",
+  "signal processing",
+  "codecs",
+  "photochemistry",
+  "composition",
+  "print"
+ ],
+ "quality": 0.9172,
+ "novelty": 0.592,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/38",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "glyphs.curl",
+    "params": {
+     "tubes": 6,
+     "blobs": 4
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "sound.alias",
+    "params": {
+     "hold": 50
+    },
+    "in": {
+     "audio": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "op.blocks",
+    "params": {
+     "count": 335
+    },
+    "in": {
+     "raster": "n1.audio"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "develop.print",
+    "params": {
+     "gamma": 4.155598697485402,
+     "invert": true
+    },
+    "in": {
+     "field": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-right",
+     "accent": 0.5495768738910556,
+     "accentWidth": 0.07435266909655185,
+     "spectrum": false,
+     "depth": 0.1633220690302551,
+     "shadow": 0.44474279577843845,
+     "grainPx": 2.3811274362728
+    },
+    "in": {
+     "subject": "n3.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n4.raster"
+  },
+  "cost": 70
+ }
+}

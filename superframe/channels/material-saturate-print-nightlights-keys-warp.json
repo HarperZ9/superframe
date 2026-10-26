@@ -1,0 +1,126 @@
+{
+ "name": "material-saturate-print-nightlights-keys-warp",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0006",
+ "lanes": [
+  "material",
+  "image",
+  "field",
+  "type",
+  "sound"
+ ],
+ "domains": [
+  "material design",
+  "colour",
+  "photochemistry",
+  "urban",
+  "remote sensing",
+  "music",
+  "jazz harmony",
+  "fluid dynamics",
+  "composition",
+  "print"
+ ],
+ "quality": 0.8032,
+ "novelty": 1.105,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/6",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "studio.material",
+    "params": {
+     "id": "glass"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.saturate",
+    "params": {
+     "s": 0.6143265537684783
+    },
+    "in": {
+     "raster": "n0.material"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "develop.print",
+    "params": {
+     "invert": true
+    },
+    "in": {
+     "field": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "lettering.nightlights",
+    "params": {
+     "pitch": 10.888502595946193
+    },
+    "in": {
+     "glyphs": "n2.field"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "inst.keys",
+    "params": {
+     "preset": "warm-tine",
+     "seed": 7340
+    },
+    "in": {}
+   },
+   {
+    "id": "n5",
+    "node": "field.warp",
+    "params": {
+     "amount": 34.987788973376155
+    },
+    "in": {
+     "field": "n3.particles",
+     "by": "n4.audio"
+    }
+   },
+   {
+    "id": "n6",
+    "node": "compose.finish",
+    "params": {
+     "place": "centre",
+     "scale": 0.4821161812939681,
+     "frame": "plate",
+     "accentWidth": 0.042631436139345176,
+     "spectrum": false,
+     "shadow": 0.2356353506911546,
+     "grain": 4.7316501893103124,
+     "grainPx": 2.923043649084866
+    },
+    "in": {
+     "subject": "n5.field",
+     "depth": "n2.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n6.raster"
+  },
+  "cost": 721
+ }
+}

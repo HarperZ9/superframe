@@ -1,0 +1,96 @@
+{
+ "name": "film-sonify-print-sdf-sound",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-1",
+ "id": "0138",
+ "lanes": [
+  "image",
+  "sound",
+  "field",
+  "type"
+ ],
+ "domains": [
+  "optics",
+  "sonification",
+  "photochemistry",
+  "geometry",
+  "acoustics",
+  "typography"
+ ],
+ "quality": 0.9332,
+ "novelty": 0.872,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run1/138",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#f3efe6",
+   "ink": "#1d2a3a",
+   "accent": "#b23a2e"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "compose.film",
+    "params": {
+     "dMin": 362.8399267559871,
+     "scale": 1.7378394254483283
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "data.sonify",
+    "params": {
+     "voice": "pluck"
+    },
+    "in": {
+     "series": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "develop.print",
+    "params": {
+     "gamma": 3.2898532717954367,
+     "invert": false
+    },
+    "in": {
+     "field": "n1.events"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "lettering.sdf",
+    "params": {
+     "reach": 6.646059030434117
+    },
+    "in": {
+     "glyphs": "n2.field"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "lettering.sound",
+    "params": {
+     "rows": 41,
+     "fHigh": 7803.5241845063865
+    },
+    "in": {
+     "glyphs": "n3.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n4.audio"
+  },
+  "cost": 511
+ }
+}

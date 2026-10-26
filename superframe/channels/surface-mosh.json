@@ -1,0 +1,84 @@
+{
+ "name": "surface-mosh",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0114",
+ "lanes": [
+  "field",
+  "image"
+ ],
+ "domains": [
+  "fluid mechanics",
+  "numerical methods",
+  "codecs",
+  "composition",
+  "print"
+ ],
+ "quality": 0.831,
+ "novelty": 0.645,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/114",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "liquid.surface",
+    "params": {
+     "drops": 92,
+     "steps": 491,
+     "stiffness": 0.019848850665148347,
+     "wind": 0.02427737982943654
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.mosh",
+    "params": {
+     "block": 56,
+     "steps": 10,
+     "carry": 0.7502932960633188,
+     "strength": 1.9431502688676119
+    },
+    "in": {
+     "raster": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "compose.finish",
+    "params": {
+     "place": "high-third",
+     "scale": 0.6778464277577586,
+     "frame": "cutout",
+     "accent": 0.18074923264794052,
+     "accentWidth": 0.05668729964178056,
+     "spectrum": false,
+     "depth": 0.27367716577136886,
+     "grain": 2.6370348023250703,
+     "grainPx": 2.0203697769902647
+    },
+    "in": {
+     "subject": "n1.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n2.raster"
+  },
+  "cost": 997
+ }
+}

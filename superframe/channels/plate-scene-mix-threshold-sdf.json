@@ -1,0 +1,112 @@
+{
+ "name": "plate-scene-mix-threshold-sdf",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0099",
+ "lanes": [
+  "image",
+  "field",
+  "type"
+ ],
+ "domains": [
+  "geometry",
+  "drafting",
+  "painting",
+  "astronomy",
+  "mathematics",
+  "print",
+  "composition"
+ ],
+ "quality": 0.9888,
+ "novelty": 0.612,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/99",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "construct.plate",
+    "params": {
+     "levels": 10,
+     "pitch": 0.008044280007947237,
+     "fill": 0.5857817218638957,
+     "dust": 0.11575427788775414
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "brush.scene",
+    "params": {
+     "scene": "nocturne"
+    },
+    "in": {}
+   },
+   {
+    "id": "n2",
+    "node": "field.mix",
+    "params": {
+     "op": "multiply"
+    },
+    "in": {
+     "a": "n0.raster",
+     "b": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "op.threshold",
+    "params": {
+     "t": 0.3134273867122829
+    },
+    "in": {
+     "raster": "n2.field"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "lettering.sdf",
+    "params": {
+     "reach": 3.8545848983339965
+    },
+    "in": {
+     "glyphs": "n3.raster"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "compose.finish",
+    "params": {
+     "scale": 0.6711531139793806,
+     "frame": "plate",
+     "accent": 0.07995596760883927,
+     "accentWidth": 0.02583051700610668,
+     "shadow": 0.2184314443729818,
+     "grainPx": 3.0261142401956023,
+     "spectrum": true
+    },
+    "in": {
+     "subject": "n4.field",
+     "depth": "n1.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n5.raster"
+  },
+  "cost": 1098
+ }
+}

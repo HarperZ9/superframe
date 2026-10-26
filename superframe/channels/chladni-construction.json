@@ -1,0 +1,92 @@
+{
+ "name": "chladni-construction",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0040",
+ "lanes": [
+  "image",
+  "vector",
+  "reveal"
+ ],
+ "domains": [
+  "acoustics",
+  "geometry",
+  "architecture",
+  "exhibition design",
+  "composition",
+  "print"
+ ],
+ "quality": 0.946,
+ "novelty": 0.545,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/40",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#0e0f13",
+   "ink": "#e9e4d8",
+   "accent": "#d79e35"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "compose.chladni",
+    "params": {
+     "m": 1,
+     "width": 0.092143872147426,
+     "sand": 0.04405099339783192
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "golden.construction",
+    "params": {
+     "levels": 8,
+     "spiral": true,
+     "width": 0.9991361872525886
+    },
+    "in": {}
+   },
+   {
+    "id": "n2",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.3800831330008805
+    },
+    "in": {
+     "trick": "n0.raster",
+     "reveal": "n1.vector"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "compose.finish",
+    "params": {
+     "scale": 0.7711399229220115,
+     "frame": "plate",
+     "accent": 0.9399123857729137,
+     "accentWidth": 0.12923571472987533,
+     "shadow": 0.20453636813908815,
+     "grain": 1.5005562317557635,
+     "grainPx": 2.5802318210713566,
+     "spectrum": false
+    },
+    "in": {
+     "subject": "n2.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n3.raster"
+  },
+  "cost": 67
+ }
+}

@@ -1,0 +1,6 @@
+{ "schema": "superframe.recipe/1", "seed": "s2", "size": [640, 800],
+  "note": "feed set 29: film-coated spheres with a reflected horizon, read through the pixel-art translation",
+  "nodes": [
+    { "id": "poster", "node": "gradfield.poster", "params": { "motif": "spheres", "palette": "film", "ground": "#18161a", "grain": 3 } },
+    { "id": "px", "node": "medium.pixelart", "in": { "raster": "poster" }, "params": { "cell": 5, "colors": 12, "dither": 0.6, "accent": 0, "outline": false } } ],
+  "out": { "image": "px" } }

@@ -1,0 +1,63 @@
+{
+ "name": "fractal-relief",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0022",
+ "lanes": [
+  "image",
+  "field"
+ ],
+ "domains": [
+  "complex dynamics",
+  "letterpress",
+  "optics"
+ ],
+ "quality": 0.7749,
+ "novelty": 1.29,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/22",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "site.fractal",
+    "params": {
+     "type": "tricorn",
+     "cy": 0.1567341866903007,
+     "maxIter": 181
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "raking.relief",
+    "params": {
+     "lampDeg": 50.632732533384115,
+     "azDeg": 25.257691740989685,
+     "bite": 0.49501651898026466,
+     "press": 0.7933304802281782
+    },
+    "in": {
+     "field": "n0.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n1.field"
+  },
+  "cost": 189
+ }
+}

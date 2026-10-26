@@ -1,0 +1,134 @@
+{
+ "name": "metal-haas-modulate-glyphcell-speckle",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0056",
+ "lanes": [
+  "sound",
+  "reveal",
+  "image",
+  "type"
+ ],
+ "domains": [
+  "acoustics",
+  "industrial",
+  "psychoacoustics",
+  "spatial audio",
+  "exhibition design",
+  "video synthesis",
+  "print",
+  "display tech",
+  "photography",
+  "composition"
+ ],
+ "quality": 0.8886,
+ "novelty": 0.519,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/56",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "inst.metal",
+    "params": {
+     "preset": "sheet-scrape"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "perceive.haas",
+    "params": {
+     "ms": 2.7073797564953566,
+     "fromHz": 1761.3994454033673
+    },
+    "in": {
+     "audio": "n0.audio"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "reveal.spectrogram",
+    "params": {
+     "log": true
+    },
+    "in": {
+     "audio": "n1.audio"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.6793509449809789
+    },
+    "in": {
+     "trick": "n1.audio",
+     "reveal": "n2.field"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.modulate",
+    "params": {
+     "amount": 0.0159207577817142
+    },
+    "in": {
+     "raster": "n3.raster",
+     "field": "n1.audio"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "lettering.glyphcell",
+    "params": {
+     "cell": 23
+    },
+    "in": {
+     "glyphs": "n4.raster"
+    }
+   },
+   {
+    "id": "n6",
+    "node": "op.speckle",
+    "params": {},
+    "in": {
+     "raster": "n5.particles"
+    }
+   },
+   {
+    "id": "n7",
+    "node": "compose.finish",
+    "params": {
+     "frame": "cutout",
+     "spectrum": false,
+     "depth": 0.05310666407458484,
+     "shadow": 0.04946315928827971,
+     "grain": 2.938872974831611,
+     "grainPx": 2.8551628571003675
+    },
+    "in": {
+     "subject": "n6.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n7.raster",
+   "audio": "n1.audio"
+  },
+  "cost": 410
+ }
+}

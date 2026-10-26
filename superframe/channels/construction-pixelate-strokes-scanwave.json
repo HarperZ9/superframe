@@ -1,0 +1,107 @@
+{
+ "name": "construction-pixelate-strokes-scanwave",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0036",
+ "lanes": [
+  "vector",
+  "image",
+  "reveal",
+  "type"
+ ],
+ "domains": [
+  "geometry",
+  "architecture",
+  "display tech",
+  "music theory",
+  "calligraphy",
+  "composition",
+  "print"
+ ],
+ "quality": 0.8002,
+ "novelty": 0.856,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/36",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "golden.construction",
+    "params": {
+     "levels": 6,
+     "spiral": true
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.pixelate",
+    "params": {
+     "size": 25
+    },
+    "in": {
+     "raster": "n0.vector"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "reveal.pitchruler",
+    "params": {},
+    "in": {
+     "events": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "lettering.strokes",
+    "params": {
+     "width": 1.1661621034145355
+    },
+    "in": {
+     "glyphs": "n2.vector"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "op.scanwave",
+    "params": {
+     "wavelength": 37.89936519693583,
+     "band": 12
+    },
+    "in": {
+     "raster": "n3.vector"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "compose.finish",
+    "params": {
+     "accent": 0.6054736520163715,
+     "spectrum": false,
+     "depth": 0.0021433036192320285,
+     "grain": 3.7575653309002517
+    },
+    "in": {
+     "subject": "n4.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n5.raster"
+  },
+  "cost": 104
+ }
+}

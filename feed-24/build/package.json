@@ -1,0 +1,7 @@
+{
+  "name": "feed-test-24-build",
+  "private": true,
+  "type": "module",
+  "description": "Feed set 24 generators: Hamming field, annotated construction plate, orbital superpositions with flow. Private study.",
+  "scripts": { "test": "node --test hamming.test.mjs construct.test.mjs orbital.test.mjs bitmosaic.test.mjs nodes.test.mjs quality.test.mjs png16.test.mjs" }
+}

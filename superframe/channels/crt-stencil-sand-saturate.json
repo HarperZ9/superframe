@@ -1,0 +1,117 @@
+{
+ "name": "crt-stencil-sand-saturate",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0000",
+ "lanes": [
+  "image",
+  "reveal",
+  "type",
+  "matter"
+ ],
+ "domains": [
+  "broadcast engineering",
+  "display physics",
+  "music theory",
+  "street art",
+  "acoustics",
+  "granular physics",
+  "colour",
+  "composition",
+  "print"
+ ],
+ "quality": 0.9895,
+ "novelty": 1.022,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/0",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "signal.crt",
+    "params": {
+     "content": "bars",
+     "lines": 327,
+     "snow": 0.44753438481129704,
+     "roll": 1.2279648967087269,
+     "mask": 0.11071324087679386
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "reveal.pitchruler",
+    "params": {},
+    "in": {
+     "events": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "lettering.stencil",
+    "params": {
+     "bridge": 4.0098491290118545
+    },
+    "in": {
+     "glyphs": "n1.vector"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "chladni.sand",
+    "params": {
+     "grains": 2670
+    },
+    "in": {
+     "field": "n2.field",
+     "glyphs": "n1.vector"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "op.saturate",
+    "params": {
+     "s": 1.4482978027081117
+    },
+    "in": {
+     "raster": "n3.particles"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-right",
+     "scale": 0.6618969853548333,
+     "frame": "plate",
+     "accent": 0.8586523057892919,
+     "accentWidth": 0.07103143599815667,
+     "depth": 0.339319016423542,
+     "shadow": 0.28484012465924025,
+     "grain": 1.0995747980661692,
+     "spectrum": false
+    },
+    "in": {
+     "subject": "n4.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "film"
+   }
+  },
+  "out": {
+   "image": "n5.raster"
+  },
+  "cost": 654
+ }
+}

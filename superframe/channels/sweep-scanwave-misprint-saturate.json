@@ -1,0 +1,104 @@
+{
+ "name": "sweep-scanwave-misprint-saturate",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0216",
+ "lanes": [
+  "vector",
+  "image",
+  "field"
+ ],
+ "domains": [
+  "data graphics",
+  "print",
+  "display tech",
+  "colour",
+  "composition"
+ ],
+ "quality": 0.9491,
+ "novelty": 0.598,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/216",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "ledger.sweep",
+    "params": {
+     "cols": 26,
+     "rows": 46,
+     "maxLen": 8,
+     "inks": "night"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.scanwave",
+    "params": {
+     "wavelength": 10.614151917397976,
+     "amp": 11.488390600541607,
+     "band": 22
+    },
+    "in": {
+     "raster": "n0.vector"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "register.misprint",
+    "params": {
+     "plate": "edge",
+     "radius": 6
+    },
+    "in": {
+     "field": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "op.saturate",
+    "params": {
+     "s": 0.37340701383072883
+    },
+    "in": {
+     "raster": "n2.field"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.finish",
+    "params": {
+     "scale": 0.659246372168418,
+     "frame": "plate",
+     "accentWidth": 0.005670821801759303,
+     "spectrum": false,
+     "depth": 0.1549106956459582,
+     "grain": 4.496663544233889,
+     "grainPx": 2.413899165019393
+    },
+    "in": {
+     "subject": "n3.raster",
+     "depth": "n1.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n4.raster"
+  },
+  "cost": 85
+ }
+}

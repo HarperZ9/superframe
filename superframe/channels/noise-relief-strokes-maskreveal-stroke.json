@@ -1,0 +1,139 @@
+{
+ "name": "noise-relief-strokes-maskreveal-stroke",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0113",
+ "lanes": [
+  "image",
+  "field",
+  "type",
+  "sound",
+  "reveal"
+ ],
+ "domains": [
+  "procedural",
+  "letterpress",
+  "optics",
+  "geometry",
+  "calligraphy",
+  "psychoacoustics",
+  "acoustics",
+  "exhibition design",
+  "painting",
+  "composition",
+  "print"
+ ],
+ "quality": 0.9692,
+ "novelty": 0.583,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/113",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#0e0f13",
+   "ink": "#e9e4d8",
+   "accent": "#d79e35"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "compose.noise",
+    "params": {
+     "scale": 1.0358607007744707
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "raking.relief",
+    "params": {
+     "lampDeg": 40.791883709141985,
+     "azDeg": 1.204449562355876,
+     "bite": 0.12305477126501502,
+     "press": 0.3615821540122852
+    },
+    "in": {
+     "field": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "lettering.strokes",
+    "params": {},
+    "in": {
+     "glyphs": "n1.field"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "perceive.maskreveal",
+    "params": {
+     "centerHz": 3258.3456648513675,
+     "depthDb": 25.82918106112629
+    },
+    "in": {
+     "audio": "n2.vector"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "reveal.spectrogram",
+    "params": {
+     "log": true
+    },
+    "in": {
+     "audio": "n3.audio"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.393540246412158
+    },
+    "in": {
+     "trick": "n3.audio",
+     "reveal": "n4.field"
+    }
+   },
+   {
+    "id": "n6",
+    "node": "brush.stroke",
+    "params": {
+     "preset": "filament",
+     "size": 0.0071398565853311126,
+     "maxPaths": 248
+    },
+    "in": {
+     "vector": "n5.raster"
+    }
+   },
+   {
+    "id": "n7",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-right",
+     "accent": 0.684040489140898,
+     "spectrum": false,
+     "depth": 0.16068042155820875,
+     "shadow": 0.461783885024488,
+     "grain": 1.6345938422717154
+    },
+    "in": {
+     "subject": "n6.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n7.raster"
+  },
+  "cost": 1227
+ }
+}

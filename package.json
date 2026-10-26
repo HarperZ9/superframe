@@ -1,0 +1,20 @@
+{
+  "name": "superframe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "One engine for every medium: describe a piece in words, render it from a seed as paint, type, line, material, sound and touch, and read it back as a study.",
+  "license": "FSL-1.1-MIT",
+  "bin": {
+    "superframe": "superframe/cli/superframe.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test superframe/tests/*.test.mjs creation/tests/*.test.mjs",
+    "make": "node superframe/cli/superframe.mjs make"
+  },
+  "author": "Zain Dana Harper <zaindharper@gmail.com>",
+  "repository": "github:HarperZ9/superframe"
+}

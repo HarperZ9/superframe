@@ -1,0 +1,97 @@
+{
+ "name": "reference-contrast-glyphcell-paper",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-1",
+ "id": "0116",
+ "lanes": [
+  "analog",
+  "image",
+  "type",
+  "vector",
+  "reveal"
+ ],
+ "domains": [
+  "art history",
+  "photography",
+  "print",
+  "display tech",
+  "collage",
+  "material",
+  "exhibition design"
+ ],
+ "quality": 0.836,
+ "novelty": 0.955,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run1/116",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#e7e1d3",
+   "ink": "#2b2622",
+   "accent": "#2f6f63"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "analog.reference",
+    "params": {
+     "ref": "D6-beat"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.contrast",
+    "params": {
+     "c": 1.5126246940344572
+    },
+    "in": {
+     "raster": "n0.material"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "lettering.glyphcell",
+    "params": {
+     "cell": 3,
+     "misregister": 0.0160337851382792
+    },
+    "in": {
+     "glyphs": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "tear.paper",
+    "params": {
+     "pieces": 4,
+     "amp": 27.561609053984284,
+     "freq": 0.010894467837642878
+    },
+    "in": {}
+   },
+   {
+    "id": "n4",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.6149983290582894
+    },
+    "in": {
+     "trick": "n2.particles",
+     "reveal": "n3.vector"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n4.raster"
+  },
+  "cost": 105
+ }
+}

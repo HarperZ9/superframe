@@ -1,0 +1,113 @@
+{
+ "name": "groove-threshold-nightlights-plexus-strokes",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0204",
+ "lanes": [
+  "sound",
+  "image",
+  "type"
+ ],
+ "domains": [
+  "music",
+  "print",
+  "urban",
+  "remote sensing",
+  "network science",
+  "geometry",
+  "calligraphy",
+  "composition"
+ ],
+ "quality": 0.933,
+ "novelty": 0.719,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/204",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "sound.groove",
+    "params": {
+     "bars": 4,
+     "bpm": 70.67783489823341
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.threshold",
+    "params": {
+     "t": 0.7067235677968711
+    },
+    "in": {
+     "raster": "n0.audio"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "lettering.nightlights",
+    "params": {
+     "pitch": 11.91255633533001,
+     "angle": 0.8694485134910792
+    },
+    "in": {
+     "glyphs": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "compose.plexus",
+    "params": {
+     "max": 434
+    },
+    "in": {
+     "particles": "n2.particles"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "lettering.strokes",
+    "params": {
+     "width": 1.802054643118754
+    },
+    "in": {
+     "glyphs": "n3.raster"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-right",
+     "scale": 0.5732232252834365,
+     "accent": 0.23403528821654618,
+     "accentWidth": 0.023562891250476243,
+     "grain": 5.856515152473003,
+     "grainPx": 2.4306452637538314,
+     "spectrum": false
+    },
+    "in": {
+     "subject": "n4.vector"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n5.raster",
+   "audio": "n0.audio"
+  },
+  "cost": 572
+ }
+}

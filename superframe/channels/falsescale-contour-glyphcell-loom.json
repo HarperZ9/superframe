@@ -1,0 +1,110 @@
+{
+ "name": "falsescale-contour-glyphcell-loom",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0007",
+ "lanes": [
+  "sound",
+  "reveal",
+  "field",
+  "type"
+ ],
+ "domains": [
+  "psychoacoustics",
+  "music theory",
+  "exhibition design",
+  "cartography",
+  "print",
+  "display tech",
+  "textiles",
+  "computing history"
+ ],
+ "quality": 0.7392,
+ "novelty": 1.48,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/7",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#ebe5d8",
+   "ink": "#15130f",
+   "accent": "#c4632b"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "sound.falsescale",
+    "params": {
+     "root": 45,
+     "drift": 36.652329597156495,
+     "step": 0.3656821326352656
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "reveal.pitchruler",
+    "params": {},
+    "in": {
+     "events": "n0.events"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.6357813040725886
+    },
+    "in": {
+     "trick": "n0.events",
+     "reveal": "n1.vector"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "field.contour",
+    "params": {
+     "bands": 2
+    },
+    "in": {
+     "field": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "lettering.glyphcell",
+    "params": {
+     "cell": 21,
+     "misregister": 0.3210650080814958
+    },
+    "in": {
+     "glyphs": "n3.field"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "site.loom",
+    "params": {
+     "structure": "twill22",
+     "ends": 217,
+     "drive": 0.7181974414270371
+    },
+    "in": {
+     "field": "n4.particles"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n5.field",
+   "audio": "n0.events"
+  },
+  "cost": 92
+ }
+}

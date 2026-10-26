@@ -1,0 +1,103 @@
+{
+ "name": "fractal-sonify-misprint-sdf",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0005",
+ "lanes": [
+  "image",
+  "sound",
+  "field",
+  "type"
+ ],
+ "domains": [
+  "complex dynamics",
+  "sonification",
+  "print",
+  "geometry",
+  "composition"
+ ],
+ "quality": 0.7032,
+ "novelty": 1.593,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/5",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#ebe5d8",
+   "ink": "#15130f",
+   "accent": "#c4632b"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "site.fractal",
+    "params": {
+     "type": "nova",
+     "cx": -1.2876736184116453,
+     "cy": 0.38671105494722724
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "data.sonify",
+    "params": {
+     "voice": "bell"
+    },
+    "in": {
+     "series": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "register.misprint",
+    "params": {
+     "plate": "dis",
+     "radius": 5
+    },
+    "in": {
+     "field": "n1.events"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "lettering.sdf",
+    "params": {
+     "reach": 3.0443483609706163
+    },
+    "in": {
+     "glyphs": "n2.field"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.finish",
+    "params": {
+     "place": "high-third",
+     "scale": 0.7257662431010976,
+     "frame": "cutout",
+     "accent": 0.8253511635120958,
+     "depth": 0.2009641188662499,
+     "shadow": 0.056454157340340316,
+     "grain": 4.003302473668009,
+     "spectrum": true
+    },
+    "in": {
+     "subject": "n3.field",
+     "depth": "n0.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "film"
+   }
+  },
+  "out": {
+   "image": "n4.raster"
+  },
+  "cost": 197
+ }
+}

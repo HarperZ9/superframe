@@ -1,0 +1,99 @@
+{
+ "name": "sweep-recall-plexus-posterize",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-1",
+ "id": "0039",
+ "lanes": [
+  "vector",
+  "sound",
+  "image",
+  "reveal"
+ ],
+ "domains": [
+  "data graphics",
+  "print",
+  "neuroscience",
+  "codecs",
+  "network science",
+  "exhibition design"
+ ],
+ "quality": 0.8063,
+ "novelty": 1.247,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run1/39",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#e7e1d3",
+   "ink": "#2b2622",
+   "accent": "#2f6f63"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "ledger.sweep",
+    "params": {
+     "cols": 13,
+     "rows": 28,
+     "maxLen": 3,
+     "inks": "night"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "sound.recall",
+    "params": {
+     "generation": 1
+    },
+    "in": {
+     "audio": "n0.vector"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "compose.plexus",
+    "params": {
+     "radius": 0.15702431268058717,
+     "max": 170
+    },
+    "in": {
+     "particles": "n1.audio"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "op.posterize",
+    "params": {
+     "levels": 4
+    },
+    "in": {
+     "raster": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.5167526074685156
+    },
+    "in": {
+     "trick": "n3.raster",
+     "reveal": "n0.vector"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n4.raster",
+   "audio": "n1.audio"
+  },
+  "cost": 153
+ }
+}

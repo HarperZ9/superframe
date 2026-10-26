@@ -1,0 +1,132 @@
+{
+ "name": "membrane-stroke-alias-scene-engrave",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0193",
+ "lanes": [
+  "field",
+  "image",
+  "sound",
+  "reveal",
+  "vector"
+ ],
+ "domains": [
+  "acoustics",
+  "mathematics",
+  "painting",
+  "signal processing",
+  "astronomy",
+  "exhibition design",
+  "engraving",
+  "fluid dynamics",
+  "composition",
+  "print"
+ ],
+ "quality": 0.921,
+ "novelty": 1.899,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/193",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#0e0f13",
+   "ink": "#e9e4d8",
+   "accent": "#d79e35"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "chladni.membrane",
+    "params": {
+     "n": 5,
+     "m": 9
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "brush.stroke",
+    "params": {
+     "preset": "haze",
+     "size": 0.010706124877913888,
+     "colour": "accent",
+     "maxPaths": 167
+    },
+    "in": {
+     "vector": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "sound.alias",
+    "params": {
+     "hold": 73
+    },
+    "in": {
+     "audio": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "brush.scene",
+    "params": {
+     "scene": "starcloud"
+    },
+    "in": {}
+   },
+   {
+    "id": "n4",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.6032350425608456
+    },
+    "in": {
+     "trick": "n2.audio",
+     "reveal": "n3.raster"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "burin.engrave",
+    "params": {
+     "dsep": 6.835023231687956,
+     "gamma": 2.335720596089959,
+     "baseAngle": -0.6883653335273267,
+     "gain": 1.1275329185882583
+    },
+    "in": {
+     "field": "n4.raster"
+    }
+   },
+   {
+    "id": "n6",
+    "node": "compose.finish",
+    "params": {
+     "frame": "cutout",
+     "accent": 0.5605247467756271,
+     "accentWidth": 0.04692437726072968,
+     "spectrum": true,
+     "depth": 0.17792607499286534,
+     "shadow": 0.3371437187306583,
+     "grain": 1.014972310140729,
+     "grainPx": 2.918507084809244
+    },
+    "in": {
+     "subject": "n5.vector"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "film"
+   }
+  },
+  "out": {
+   "image": "n6.raster",
+   "audio": "n2.audio"
+  },
+  "cost": 1843
+ }
+}

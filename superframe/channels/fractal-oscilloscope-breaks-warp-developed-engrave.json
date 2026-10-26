@@ -1,0 +1,110 @@
+{
+ "name": "fractal-oscilloscope-breaks-warp-developed-engrave",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0016",
+ "lanes": [
+  "image",
+  "sound",
+  "field",
+  "type",
+  "vector"
+ ],
+ "domains": [
+  "complex dynamics",
+  "electronics",
+  "vector graphics",
+  "music",
+  "drum and bass",
+  "fluid dynamics",
+  "photochemistry",
+  "engraving"
+ ],
+ "quality": 0.9022,
+ "novelty": 1.068,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/16",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#ebe5d8",
+   "ink": "#15130f",
+   "accent": "#c4632b"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "site.fractal",
+    "params": {
+     "type": "newton",
+     "scale": 1.420957648500634,
+     "cx": 0.9527070234762505,
+     "cy": -0.7309321737848222,
+     "maxIter": 375
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "site.oscilloscope",
+    "params": {
+     "maxPoints": 485
+    },
+    "in": {
+     "vector": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "inst.breaks",
+    "params": {
+     "preset": "atmos-roller"
+    },
+    "in": {}
+   },
+   {
+    "id": "n3",
+    "node": "field.warp",
+    "params": {
+     "amount": 26.900186729617417
+    },
+    "in": {
+     "field": "n1.audio",
+     "by": "n2.audio"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "lettering.developed",
+    "params": {},
+    "in": {
+     "glyphs": "n3.field"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "burin.engrave",
+    "params": {
+     "dsep": 4.4068551189266145,
+     "gamma": 0.7435177467763423,
+     "baseAngle": -0.7168628141283989
+    },
+    "in": {
+     "field": "n4.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n5.vector",
+   "audio": "n1.audio"
+  },
+  "cost": 810
+ }
+}

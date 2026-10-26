@@ -1,0 +1,91 @@
+{
+ "name": "chladni-developed-seriesnotes",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0179",
+ "lanes": [
+  "image",
+  "type",
+  "sound"
+ ],
+ "domains": [
+  "acoustics",
+  "photochemistry",
+  "sonification",
+  "composition",
+  "print"
+ ],
+ "quality": 0.8957,
+ "novelty": 0.514,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/179",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "compose.chladni",
+    "params": {
+     "n": 11,
+     "m": 12,
+     "mix": 58.27857393538579,
+     "width": 0.1716308160498738
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "lettering.developed",
+    "params": {},
+    "in": {
+     "glyphs": "n0.raster"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "perceive.seriesnotes",
+    "params": {
+     "root": 67
+    },
+    "in": {
+     "series": "n1.field"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "compose.finish",
+    "params": {
+     "place": "centre",
+     "scale": 0.7234448388218879,
+     "frame": "cutout",
+     "accentWidth": 0.1385597330192104,
+     "spectrum": false,
+     "shadow": 0.07976775884162635,
+     "grain": 4.936248846631497,
+     "grainPx": 2.9329343923367563
+    },
+    "in": {
+     "subject": "n2.events",
+     "depth": "n1.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n3.raster",
+   "audio": "n2.events"
+  },
+  "cost": 101
+ }
+}

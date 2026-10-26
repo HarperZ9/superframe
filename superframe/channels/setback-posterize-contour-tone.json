@@ -1,0 +1,86 @@
+{
+ "name": "setback-posterize-contour-tone",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0020",
+ "lanes": [
+  "vector",
+  "image",
+  "field",
+  "type"
+ ],
+ "domains": [
+  "urban planning",
+  "law",
+  "architecture",
+  "print",
+  "cartography",
+  "engraving"
+ ],
+ "quality": 0.8847,
+ "novelty": 0.931,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/20",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#ebe5d8",
+   "ink": "#15130f",
+   "accent": "#c4632b"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "zoning.setback",
+    "params": {
+     "buildings": 3,
+     "street": 0.08602401643991471,
+     "ratio": 2.3283087969757617
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.posterize",
+    "params": {
+     "levels": 7
+    },
+    "in": {
+     "raster": "n0.vector"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "field.contour",
+    "params": {
+     "bands": 7,
+     "width": 0.15344730962533504
+    },
+    "in": {
+     "field": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "lettering.tone",
+    "params": {
+     "part": "both"
+    },
+    "in": {
+     "glyphs": "n2.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n3.field"
+  },
+  "cost": 63
+ }
+}

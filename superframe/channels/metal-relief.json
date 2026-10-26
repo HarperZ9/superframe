@@ -1,0 +1,83 @@
+{
+ "name": "metal-relief",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0003",
+ "lanes": [
+  "sound",
+  "field",
+  "image"
+ ],
+ "domains": [
+  "acoustics",
+  "industrial",
+  "letterpress",
+  "optics",
+  "composition",
+  "print"
+ ],
+ "quality": 0.8338,
+ "novelty": 1.147,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/3",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "inst.metal",
+    "params": {
+     "preset": "sheet-scrape",
+     "seed": 589
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "raking.relief",
+    "params": {
+     "lampDeg": 50.95222568605095,
+     "bite": 0.7251619277289137,
+     "press": 0.10277638179250062
+    },
+    "in": {
+     "field": "n0.audio"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-right",
+     "scale": 0.676199409076944,
+     "accent": 0.12527683237567544,
+     "accentWidth": 0.021755289831198753,
+     "spectrum": false,
+     "depth": 0.1584480925812386,
+     "shadow": 0.34547192428726703,
+     "grain": 3.129485363513232
+    },
+    "in": {
+     "subject": "n1.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n2.raster",
+   "audio": "n0.audio"
+  },
+  "cost": 330
+ }
+}

@@ -1,0 +1,99 @@
+{
+ "name": "membrane-threshold-tone-plexus",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-3",
+ "id": "0000",
+ "lanes": [
+  "field",
+  "image",
+  "type"
+ ],
+ "domains": [
+  "acoustics",
+  "mathematics",
+  "print",
+  "engraving",
+  "network science",
+  "composition"
+ ],
+ "quality": 0.9664,
+ "novelty": 0.693,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run3/0",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "chladni.membrane",
+    "params": {
+     "n": 3,
+     "mix": 46.61337137455121
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "op.threshold",
+    "params": {
+     "t": 0.5071834302507341
+    },
+    "in": {
+     "raster": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "lettering.tone",
+    "params": {
+     "part": "shadow"
+    },
+    "in": {
+     "glyphs": "n1.raster"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "compose.plexus",
+    "params": {
+     "radius": 0.16529994132462889,
+     "max": 454
+    },
+    "in": {
+     "particles": "n2.field"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.finish",
+    "params": {
+     "place": "centre",
+     "scale": 0.6840411270526238,
+     "accent": 0.663432695902884,
+     "spectrum": false,
+     "shadow": 0.1799317931290716,
+     "grain": 4.731954794190824
+    },
+    "in": {
+     "subject": "n3.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n4.raster"
+  },
+  "cost": 482
+ }
+}

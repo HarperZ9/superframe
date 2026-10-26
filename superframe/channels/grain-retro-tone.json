@@ -1,0 +1,100 @@
+{
+ "name": "grain-retro-tone",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-4",
+ "id": "0034",
+ "lanes": [
+  "field",
+  "reveal",
+  "image",
+  "type"
+ ],
+ "domains": [
+  "photography",
+  "music theory",
+  "games",
+  "colour science",
+  "engraving",
+  "composition",
+  "print"
+ ],
+ "quality": 0.9461,
+ "novelty": 0.478,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run4/34",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#08090c",
+   "ink": "#cfd6dd",
+   "accent": "#e2552c"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "substrate.grain",
+    "params": {
+     "sd": 10.114032906014472,
+     "clump": 2.836128272814676
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "reveal.pitchruler",
+    "params": {},
+    "in": {
+     "events": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "site.retro",
+    "params": {
+     "palette": "zx",
+     "grid": 228,
+     "dither": "bayer2",
+     "strength": 0.8072026283480227
+    },
+    "in": {
+     "raster": "n1.vector"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "lettering.tone",
+    "params": {},
+    "in": {
+     "glyphs": "n2.raster"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "compose.finish",
+    "params": {
+     "place": "high-third",
+     "scale": 0.7889005466527306,
+     "frame": "cutout",
+     "accent": 0.9172333672177047,
+     "accentWidth": 0.0681078351661563,
+     "spectrum": false,
+     "grain": 3.5454420915804805
+    },
+    "in": {
+     "subject": "n3.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n4.raster"
+  },
+  "cost": 82
+ }
+}

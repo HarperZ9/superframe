@@ -1,0 +1,100 @@
+{
+ "name": "fbm-glyphcell-alias-hatch-mosh",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-2",
+ "id": "0056",
+ "lanes": [
+  "field",
+  "type",
+  "sound",
+  "vector",
+  "image"
+ ],
+ "domains": [
+  "procedural",
+  "geology",
+  "print",
+  "display tech",
+  "signal processing",
+  "drafting",
+  "codecs"
+ ],
+ "quality": 0.7741,
+ "novelty": 1.033,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run2/56",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#141210",
+   "ink": "#d8cfbf",
+   "accent": "#7f9fb0"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "field.fbm",
+    "params": {
+     "feature": 6.4601481883377305,
+     "octaves": 6
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "lettering.glyphcell",
+    "params": {
+     "cell": 13
+    },
+    "in": {
+     "glyphs": "n0.field"
+    }
+   },
+   {
+    "id": "n2",
+    "node": "sound.alias",
+    "params": {
+     "hold": 73
+    },
+    "in": {
+     "audio": "n1.particles"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "substrate.hatch",
+    "params": {
+     "angle": 27.396334293298423,
+     "spacing": 10.891528091393411
+    },
+    "in": {
+     "vector": "n2.audio"
+    }
+   },
+   {
+    "id": "n4",
+    "node": "op.mosh",
+    "params": {
+     "block": 61,
+     "steps": 3,
+     "carry": 0.4541791572701186,
+     "strength": 1.1117692217230797
+    },
+    "in": {
+     "raster": "n3.vector"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n4.raster"
+  },
+  "cost": 140
+ }
+}

@@ -1,0 +1,137 @@
+{
+ "name": "metal-funkkit-warp-paper-blend-posterize-sdf",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\trial4",
+ "id": "0004",
+ "lanes": [
+  "sound",
+  "field",
+  "vector",
+  "image",
+  "type"
+ ],
+ "domains": [
+  "acoustics",
+  "industrial",
+  "music",
+  "jazz-funk",
+  "fluid dynamics",
+  "collage",
+  "material",
+  "compositing",
+  "print",
+  "geometry",
+  "composition"
+ ],
+ "quality": 0.8905,
+ "novelty": 1.055,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "trial4/4",
+  "size": [
+   256,
+   256
+  ],
+  "palette": {
+   "ground": "#e7e1d3",
+   "ink": "#2b2622",
+   "accent": "#2f6f63"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "inst.metal",
+    "params": {
+     "preset": "sheet-scrape"
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "inst.funkkit",
+    "params": {
+     "preset": "deep-pocket",
+     "seed": 9469
+    },
+    "in": {}
+   },
+   {
+    "id": "n2",
+    "node": "field.warp",
+    "params": {
+     "amount": 56.05136930476874
+    },
+    "in": {
+     "field": "n0.audio",
+     "by": "n1.audio"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "tear.paper",
+    "params": {
+     "pieces": 10
+    },
+    "in": {}
+   },
+   {
+    "id": "n4",
+    "node": "compose.blend",
+    "params": {
+     "mode": "difference",
+     "opacity": 0.875586089398712
+    },
+    "in": {
+     "a": "n2.field",
+     "b": "n3.vector"
+    }
+   },
+   {
+    "id": "n5",
+    "node": "op.posterize",
+    "params": {
+     "levels": 9
+    },
+    "in": {
+     "raster": "n4.raster"
+    }
+   },
+   {
+    "id": "n6",
+    "node": "lettering.sdf",
+    "params": {},
+    "in": {
+     "glyphs": "n5.raster"
+    }
+   },
+   {
+    "id": "n7",
+    "node": "compose.finish",
+    "params": {
+     "place": "thirds-right",
+     "scale": 0.6914441356365568,
+     "frame": "plate",
+     "accent": 0.2654711091890931,
+     "accentWidth": 0.093683580448851,
+     "spectrum": false,
+     "depth": 0.019055298750754443,
+     "shadow": 0.3788791864644736,
+     "grain": 4.698762495908887,
+     "grainPx": 2.754255579598248
+    },
+    "in": {
+     "subject": "n6.field"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "tri"
+   }
+  },
+  "out": {
+   "image": "n7.raster",
+   "audio": "n1.audio"
+  },
+  "cost": 600
+ }
+}

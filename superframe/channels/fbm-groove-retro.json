@@ -1,0 +1,87 @@
+{
+ "name": "fbm-groove-retro",
+ "run": "C:\\dev\\mission-control\\superframe\\out\\explore\\run-1",
+ "id": "0175",
+ "lanes": [
+  "field",
+  "sound",
+  "reveal",
+  "image"
+ ],
+ "domains": [
+  "procedural",
+  "geology",
+  "music",
+  "exhibition design",
+  "games",
+  "colour science"
+ ],
+ "quality": 0.802,
+ "novelty": 1.174,
+ "recipe": {
+  "schema": "superframe.recipe/1",
+  "seed": "run1/175",
+  "size": [
+   192,
+   192
+  ],
+  "palette": {
+   "ground": "#0e0f13",
+   "ink": "#e9e4d8",
+   "accent": "#d79e35"
+  },
+  "nodes": [
+   {
+    "id": "n0",
+    "node": "field.fbm",
+    "params": {
+     "feature": 87.29297488683824,
+     "octaves": 7
+    },
+    "in": {}
+   },
+   {
+    "id": "n1",
+    "node": "sound.groove",
+    "params": {
+     "bars": 6,
+     "bpm": 132.92539043352008
+    },
+    "in": {}
+   },
+   {
+    "id": "n2",
+    "node": "reveal.pair",
+    "params": {
+     "split": 0.36052825041115283
+    },
+    "in": {
+     "trick": "n0.field",
+     "reveal": "n1.audio"
+    }
+   },
+   {
+    "id": "n3",
+    "node": "site.retro",
+    "params": {
+     "palette": "gameboy",
+     "grid": 215,
+     "dither": "none",
+     "strength": 0.0994150370825082
+    },
+    "in": {
+     "raster": "n2.raster"
+    }
+   }
+  ],
+  "convert": {
+   "field>raster": {
+    "ramp": "duo"
+   }
+  },
+  "out": {
+   "image": "n3.raster"
+  },
+  "cost": 85
+ }
+}
