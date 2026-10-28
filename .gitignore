@@ -4,6 +4,11 @@
 .envrc
 .envrc.local
 node_modules/
-/out/
+out/
 CLAUDE.local.md
 *.log
+__pycache__/
+.ruff_cache/
+# native build output: build it with buildc and gcc (see superframe/tests/native-lightlut.test.mjs)
+superframe/native/**/target/
+*.exe

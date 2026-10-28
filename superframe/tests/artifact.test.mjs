@@ -11,6 +11,9 @@ import { compute } from '../lib/artifact/render.mjs';
 import { normalise, recipeHash, bbox } from '../lib/artifact/ir.mjs';
 import { parseIntent } from '../lib/artifact/intent.mjs';
 import { edit, reseed, isomer, metamer, route, cross } from '../lib/artifact/ops.mjs';
+import { reach } from '../lib/artifact/hatch.mjs';
+import { orientationAgreement } from '../lib/artifact/orient.mjs';
+import { fieldFor } from '../lib/artifact/common.mjs';
 import { deltaE } from '../../creation/lib/core/spectral.mjs';
 
 const BASE = {
@@ -33,7 +36,7 @@ test('same recipe and seed give the same bytes in every medium, three runs', () 
 
 test('a one-weight edit changes pixels only inside that element\'s bbox, and sound only in its window', () => {
   const a = compute(BASE), b = compute(edit(BASE, 'elements.marble.weights.drops', 6)), r = normalise(BASE), [W, H] = r.size, [w, h] = r.sim;
-  const B = bbox(r.elements[1], w, h), sx = W / w, margin = 2 * sx + 4 + 2 * 3;   // bilinear reach, normals and stroke, and the unsharp mask's 2r
+  const B = bbox(r.elements[1], w, h), sx = W / w, margin = 2 * sx + 4 + 2 * 3 + reach(3.2) * sx;   // plus the hatch strokes' reach (hatch.mjs)   // bilinear reach, normals and stroke, and the unsharp mask's 2r
   const X0 = B.x0 * sx - margin, X1 = B.x1 * sx + margin, Y0 = B.y0 * sx - margin, Y1 = B.y1 * sx + margin;
   const report = {};
   for (const [k, A] of Object.entries(media(a))) {
@@ -90,4 +93,14 @@ test('route and cross are recipes too; the study names unread weights and record
   const s = compute(edit(BASE, 'elements.frost.weights.bogus', 3)).study.elements[2].weights;
   assert.ok(s.unread.includes('bogus')); assert.ok(!s.unread.includes('preset'));
   for (const e of o.study.elements) assert.deepEqual(Object.keys(e.transparency_record), ['type', 'paint', 'lines', 'material', 'sound']);
+});
+
+test('curvature hatching follows the form; the flat control does not', () => {
+  const r = { ...BASE, size: [768, 432], sim: [384, 216] }, score = mode => {
+    const o = compute({ ...r, lines: { hatch: mode } }, { only: ['lines'] }), [w, h] = o.r.sim;
+    return orientationAgreement(o.lines.hatch.cover(), o.lines.W, o.lines.H, fieldFor(o.r, o.layers, 'lines'), w, h, { B: 12 }).score;
+  };
+  const curv = score('curvature'), flat = score('flat');
+  assert.ok(flat > 0.4 && flat < 0.6, `flat control should sit near chance (0.5), got ${flat}`);
+  assert.ok(curv > flat + 0.08, `curvature ${curv} should beat flat ${flat} by 0.08`);
 });

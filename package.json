@@ -1,6 +1,6 @@
 {
   "name": "superframe",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "One engine for every medium: describe a piece in words, render it from a seed as paint, type, line, material, sound and touch, and read it back as a study.",
@@ -9,7 +9,7 @@
     "superframe": "superframe/cli/superframe.mjs"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "test": "node --test superframe/tests/*.test.mjs creation/tests/*.test.mjs",

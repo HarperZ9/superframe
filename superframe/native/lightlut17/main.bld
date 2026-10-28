@@ -1,0 +1,60 @@
+// lightlut17: the first, fixed-size build of the kernel, kept to compare against native/lightlut. Look a surface up in a spectral light-response table (superframe tools/light-response.mjs), for a C or
+// C++ host such as Low Water's game layer. The same arithmetic as lib/medium/lightlut.mjs:
+//   the table is 17 x 17 x 17 entries of reflected linear RGB, f32, index ((b * 17 + g) * 17 + r) * 3;
+//   the grid is in gamma 2.2: entry i holds albedo (i / 16) ^ 2.2 per channel; lookup is trilinear.
+// The host reads spectral-response.bin, points a Table17 at one kind's slice (its offset_floats in the manifest),
+// and calls lw_light_reflect. BuildLang 1.10 has no raw-pointer arithmetic, so the table is a repr(C) struct whose
+// one field is the fixed array.
+#[repr(C)]
+struct Table17 {
+    v: [f32; 14739],
+}
+
+#[repr(C)]
+struct Rgb {
+    r: f64,
+    g: f64,
+    b: f64,
+}
+
+fn grid_coord(x: f64) -> f64 {
+    let c = min(max(x, 0.0), 1.0);
+    pow(c, 1.0 / 2.2) * 16.0
+}
+
+fn base(q: f64) -> i64 {
+    let f = floor(q) as i64;
+    if f > 15 { 15 } else { f }
+}
+
+fn at(t: *const Table17, r: i64, g: i64, b: i64, ch: i64) -> f64 {
+    let i = ((b * 17 + g) * 17 + r) * 3 + ch;
+    unsafe { (*t).v[i as usize] as f64 }
+}
+
+fn channel(t: *const Table17, r0: i64, g0: i64, b0: i64, fr: f64, fg: f64, fb: f64, ch: i64) -> f64 {
+    let c00 = at(t, r0, g0, b0, ch) * (1.0 - fr) + at(t, r0 + 1, g0, b0, ch) * fr;
+    let c10 = at(t, r0, g0 + 1, b0, ch) * (1.0 - fr) + at(t, r0 + 1, g0 + 1, b0, ch) * fr;
+    let c01 = at(t, r0, g0, b0 + 1, ch) * (1.0 - fr) + at(t, r0 + 1, g0, b0 + 1, ch) * fr;
+    let c11 = at(t, r0, g0 + 1, b0 + 1, ch) * (1.0 - fr) + at(t, r0 + 1, g0 + 1, b0 + 1, ch) * fr;
+    let c0 = c00 * (1.0 - fg) + c10 * fg;
+    let c1 = c01 * (1.0 - fg) + c11 * fg;
+    c0 * (1.0 - fb) + c1 * fb
+}
+
+extern "C" fn lw_light_reflect(t: *const Table17, r: f64, g: f64, b: f64) -> Rgb {
+    let qr = grid_coord(r);
+    let qg = grid_coord(g);
+    let qb = grid_coord(b);
+    let r0 = base(qr);
+    let g0 = base(qg);
+    let b0 = base(qb);
+    let fr = qr - (r0 as f64);
+    let fg = qg - (g0 as f64);
+    let fb = qb - (b0 as f64);
+    Rgb {
+        r: channel(t, r0, g0, b0, fr, fg, fb, 0),
+        g: channel(t, r0, g0, b0, fr, fg, fb, 1),
+        b: channel(t, r0, g0, b0, fr, fg, fb, 2),
+    }
+}

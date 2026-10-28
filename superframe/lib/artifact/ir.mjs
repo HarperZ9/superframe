@@ -60,7 +60,9 @@ export function normalise(r) {
   return {
     schema: SCHEMA, seed: String(r.seed ?? 'artifact'), size, sim, text: String(r.text ?? ''),
     palette: { paper: r.palette?.paper ?? '#ece6d9', ink: r.palette?.ink ?? '#22252c' },
-    media, detail: clamp01(num(r.detail, 0.5)), sound: { seconds: num(r.sound?.seconds, 16), rate: 48000, bands: 72, lo: 70, hi: 7000 },
+    media, detail: clamp01(num(r.detail, 0.5)),
+    lines: { hatch: ['curvature', 'flat', 'none'].includes(r.lines?.hatch) ? r.lines.hatch : 'curvature', angle: num(r.lines?.angle, 45) },
+    sound: { seconds: num(r.sound?.seconds, 16), rate: 48000, bands: 72, lo: 70, hi: 7000 },
     elements,
   };
 }

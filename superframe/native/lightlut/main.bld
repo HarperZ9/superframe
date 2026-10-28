@@ -1,0 +1,56 @@
+// lightlut: look a surface up in a spectral light-response table (superframe tools/light-response.mjs), for a C or
+// C++ host such as Low Water's game layer. The same arithmetic as lib/medium/lightlut.mjs:
+//   a table is side x side x side entries of reflected linear RGB, f32, index ((b * side + g) * side + r) * 3;
+//   the grid is in gamma 2.2: entry i holds albedo (i / (side - 1)) ^ 2.2 per channel; lookup is trilinear.
+// The host reads spectral-response.bin and passes one kind's floats (from its offset_floats in the manifest), their
+// count, and the manifest's grid side. The table is read as a slice, so every read is checked against the count the
+// host passed, and the grid size is a run-time value (native/lightlut17 is the earlier build, fixed at 17).
+
+#[repr(C)]
+struct Rgb {
+    r: f64,
+    g: f64,
+    b: f64,
+}
+
+fn grid_coord(x: f64, side: usize) -> f64 {
+    let c = min(max(x, 0.0), 1.0);
+    pow(c, 1.0 / 2.2) * ((side - 1) as f64)
+}
+
+fn base(q: f64, side: usize) -> usize {
+    let f = floor(q) as usize;
+    if f > side - 2 { side - 2 } else { f }
+}
+
+fn at(t: &[f32], side: usize, r: usize, g: usize, b: usize, ch: usize) -> f64 {
+    t[((b * side + g) * side + r) * 3 + ch] as f64
+}
+
+fn channel(t: &[f32], side: usize, r0: usize, g0: usize, b0: usize, fr: f64, fg: f64, fb: f64, ch: usize) -> f64 {
+    let c00 = at(t, side, r0, g0, b0, ch) * (1.0 - fr) + at(t, side, r0 + 1, g0, b0, ch) * fr;
+    let c10 = at(t, side, r0, g0 + 1, b0, ch) * (1.0 - fr) + at(t, side, r0 + 1, g0 + 1, b0, ch) * fr;
+    let c01 = at(t, side, r0, g0, b0 + 1, ch) * (1.0 - fr) + at(t, side, r0 + 1, g0, b0 + 1, ch) * fr;
+    let c11 = at(t, side, r0, g0 + 1, b0 + 1, ch) * (1.0 - fr) + at(t, side, r0 + 1, g0 + 1, b0 + 1, ch) * fr;
+    let c0 = c00 * (1.0 - fg) + c10 * fg;
+    let c1 = c01 * (1.0 - fg) + c11 * fg;
+    c0 * (1.0 - fb) + c1 * fb
+}
+
+extern "C" fn lw_light_reflect(p: *const f32, n: usize, side: usize, r: f64, g: f64, b: f64) -> Rgb {
+    let t = unsafe { slice::from_raw_parts(p, n) };
+    let qr = grid_coord(r, side);
+    let qg = grid_coord(g, side);
+    let qb = grid_coord(b, side);
+    let r0 = base(qr, side);
+    let g0 = base(qg, side);
+    let b0 = base(qb, side);
+    let fr = qr - (r0 as f64);
+    let fg = qg - (g0 as f64);
+    let fb = qb - (b0 as f64);
+    Rgb {
+        r: channel(t, side, r0, g0, b0, fr, fg, fb, 0),
+        g: channel(t, side, r0, g0, b0, fr, fg, fb, 1),
+        b: channel(t, side, r0, g0, b0, fr, fg, fb, 2),
+    }
+}
