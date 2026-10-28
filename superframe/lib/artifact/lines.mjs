@@ -10,6 +10,7 @@
 import { hexLin } from '../../../creation/lib/core/layer.mjs';
 import { svgOf } from '../export.mjs';
 import { fieldFor } from './common.mjs';
+import { hatch } from './hatch.mjs';
 
 const lerpT = (a, b, l) => (l - a) / (b - a || 1e-9);
 
@@ -47,9 +48,17 @@ export function lines(r, layers) {
     const level = 0.04 + 0.9 * (q + 0.5) / n, width = (1.2 + 2.6 * q / Math.max(1, n - 1)) * unit * (0.5 + r.media.lines);
     for (const p of isolines(F, w, h, level)) if (p.pts.length > 1) paths.push({ pts: p.pts.map(([x, y]) => [(x + 0.5) * sx, (y + 0.5) * sy]), closed: p.closed, width, level: +level.toFixed(4) });
   }
+  // tone as hatching along the form (hatch.mjs); r.lines.hatch: 'curvature' (default), 'flat' (the control) or 'none'
+  const hm = r.lines?.hatch ?? 'curvature', hd = 3.2;
+  let hatchCount = 0;
+  if (hm !== 'none') {
+    const { strokes } = hatch(F, w, h, { mode: hm, angle: r.lines?.angle ?? 45, seed: `${r.seed}/hatch`, d: hd });
+    for (const s of strokes) if (s.pts.length > 1) paths.push({ pts: s.pts.map(([x, y]) => [(x + 0.5) * sx, (y + 0.5) * sy]), closed: false, width: (0.45 + 0.75 * s.tone) * sx, hatch: true });
+    hatchCount = strokes.length;
+  }
   const V = { w: W, h: H, paths }, cover = rasterMax(V, W, H), paper = hexLin(r.palette.paper), ink = hexLin(r.palette.ink), rgb = new Float32Array(3 * W * H);
   for (let k = 0; k < W * H; k++) for (let c = 0; c < 3; c++) rgb[3 * k + c] = paper[c] + (ink[c] - paper[c]) * cover[k];
-  return { W, H, V, rgb, cover, levels: n, svg: () => svgOf(V, { ground: r.palette.paper, ink: r.palette.ink, title: 'lines' }) };
+  return { W, H, V, rgb, cover, levels: n, hatch: { mode: hm, strokes: hatchCount, d: hd, cover: () => rasterMax({ w: W, h: H, paths: paths.filter(p => p.hatch) }, W, H) }, svg: () => svgOf(V, { ground: r.palette.paper, ink: r.palette.ink, title: 'lines' }) };
 }
 
 // exact distance to each segment, coverage = clamp(halfwidth + 0.5 - d), kept as the max over all segments
