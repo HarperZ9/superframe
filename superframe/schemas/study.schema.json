@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "superframe.study/1",
+  "title": "Superframe study record",
+  "description": "One study of one subject under one or more criteria. Written as superstack canonical JSON v2 and sealed: receipt_sha256 is the SHA-256 of the canonical bytes of every other field.",
+  "type": "object",
+  "required": ["schema", "frame", "subject", "tool", "criteria", "plates", "receipt_sha256"],
+  "additionalProperties": false,
+  "$defs": {
+    "hex": { "type": "string", "pattern": "^#[0-9a-f]{6}$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "share": { "type": "number", "minimum": 0, "maximum": 1 },
+    "swatch": {
+      "type": "object",
+      "required": ["i", "hex", "rgb", "lab", "L", "C", "h", "share", "pixels", "gamut_clipped"],
+      "properties": {
+        "i": { "type": "integer", "minimum": 0 },
+        "hex": { "$ref": "#/$defs/hex" },
+        "rgb": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 255 }, "minItems": 3, "maxItems": 3 },
+        "lab": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+        "L": { "type": "number" }, "C": { "type": "number" }, "h": { "type": "number" },
+        "hsv_hue": { "type": ["number", "null"] },
+        "share": { "$ref": "#/$defs/share" },
+        "pixels": { "type": "integer", "minimum": 0 },
+        "gamut_clipped": { "type": "boolean" }
+      }
+    },
+    "balance": {
+      "type": "object",
+      "required": ["scale", "scale_name", "method", "distance_method", "distance", "parts_in_100", "excluded_share", "rows"],
+      "properties": {
+        "scale": { "enum": ["goethe", "lstar"] },
+        "method": { "type": "string" },
+        "distance": { "$ref": "#/$defs/share" },
+        "parts_in_100": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "excluded_share": { "$ref": "#/$defs/share" },
+        "rows": { "type": "array", "items": { "type": "object", "required": ["i", "hex", "value", "painted", "balanced", "change"] } }
+      }
+    },
+    "colour": {
+      "type": "object",
+      "required": ["space", "opaque_pixels", "palette", "extension", "hue", "value", "colourfulness", "composition", "bezold", "simultaneous"],
+      "properties": {
+        "palette": {
+          "type": "object", "required": ["method", "params", "swatches"],
+          "properties": { "swatches": { "type": "array", "items": { "$ref": "#/$defs/swatch" } } }
+        },
+        "extension": { "type": "object", "required": ["goethe", "lstar"], "properties": { "goethe": { "$ref": "#/$defs/balance" }, "lstar": { "$ref": "#/$defs/balance" } } },
+        "hue": { "type": "object", "required": ["method", "bins", "area", "achromatic_share"] },
+        "value": { "type": "object", "required": ["method", "bands", "mean_L", "key"] },
+        "colourfulness": { "type": "object", "required": ["method", "M"] },
+        "composition": { "type": "object", "required": ["method", "coherence", "where", "adjacency"] },
+        "bezold": { "type": "object", "required": ["method", "coverage", "rows"] },
+        "simultaneous": { "type": "object", "required": ["method", "rows"] },
+        "controls": { "type": "object", "required": ["method", "shuffle", "grey"] }
+      }
+    }
+  },
+  "properties": {
+    "schema": { "const": "superframe.study/1" },
+    "frame": {
+      "type": "object",
+      "required": ["object", "perspective", "need", "objective", "criteria", "intent"],
+      "properties": {
+        "object": { "type": "string" }, "perspective": { "type": "string" }, "need": { "type": "string" },
+        "objective": { "type": "string" }, "criteria": { "type": "string" },
+        "intent": {
+          "type": "object", "required": ["studier", "studier_status", "maker", "maker_status"],
+          "properties": {
+            "studier": { "type": "string" }, "studier_status": { "const": "declared" },
+            "maker": { "type": ["string", "null"] }, "maker_status": { "enum": ["inferred", "not inferred by this study"] }
+          }
+        }
+      }
+    },
+    "subject": {
+      "type": "object", "required": ["file", "sha256", "w", "h", "decoder"],
+      "properties": { "file": { "type": "string" }, "sha256": { "$ref": "#/$defs/sha256" }, "w": { "type": "integer", "minimum": 1 }, "h": { "type": "integer", "minimum": 1 }, "decoder": { "type": "string" } }
+    },
+    "tool": { "type": "object", "required": ["name", "seed_rule", "canonical_json", "float_places"] },
+    "criteria": { "type": "object", "minProperties": 1, "properties": { "colour": { "$ref": "#/$defs/colour" } } },
+    "plates": {
+      "type": "array",
+      "items": {
+        "type": "object", "required": ["id", "criterion", "title", "file"],
+        "properties": { "id": { "type": "string" }, "criterion": { "type": "string" }, "title": { "type": "string" }, "file": { "type": "string" },
+          "w": { "type": "integer", "minimum": 3840 }, "h": { "type": "integer", "minimum": 1 }, "png_sha256": { "$ref": "#/$defs/sha256" } }
+      }
+    },
+    "receipt_sha256": { "$ref": "#/$defs/sha256" }
+  }
+}
