@@ -4,12 +4,16 @@
 //   glass.refract  whatever is behind, seen through a glass body (a word, a figure, an arch or a field as height)
 //   liquid.surface the wave-equation surface as a height field
 //   liquid.shore   a scene seen across rippled water to the horizon; a word stands in it and reflects
+//   optics.bow     the rainbow from measured water dispersion: light per unit solid angle around the antisolar
+//                  point, ray-traced through drops with Fresnel weights (lib/medium/refraction.mjs)
 import { defineNode } from '../lib/node.mjs';
 import { make } from '../lib/types.mjs';
 import { signal, display } from '../../glass/crt.js';
 import { renderGlass, fromMask, flute, figure, arch, maskFromSdf, sd, GLASSES } from '../../glass/glass.js';
 import { Water, renderShore } from '../../glass/liquid.js';
 import { sky } from '../../glass/lib/sky.js';
+import { index, bowHistogram } from '../lib/medium/refraction.mjs';
+import { LAMBDA, spectrumRGB } from '../lib/medium/spectral.mjs';
 
 const G = 'glass';
 const ras = R => make.raster(R.w, R.h, R.data);
@@ -91,6 +95,37 @@ export const NODES = [
         objects.push({ raster: L, contact: ymax + 1 });
       }
       return { raster: ras(renderShore(above, sea, { horizon: p.horizon, ripple: p.ripple, objects, sun: { x: 0.25, y: p.horizon - 0.02 } })) };
+    },
+  }),
+  defineNode({
+    id: 'optics.bow', title: 'Rainbow from measured dispersion', lane: 'image', domains: ['optics', 'weather', 'physics'], source: 'lib/medium/refraction.mjs bowHistogram',
+    doc: 'Sunlight through water drops, ray-traced with exact Fresnel weights and water dispersion measured by Daimon and Masumura (2007): the primary bow (red outside), the secondary (red inside) and the Alexander dark band between them, centred on the antisolar point. Geometric optics: the large-drop limit, without supernumerary arcs.',
+    inputs: {},
+    outputs: { raster: 'raster' },
+    params: { span: { type: 'number', min: 55, max: 90, default: 60, unit: 'degrees from centre to frame edge' } },
+    cost: () => 30,
+    render: ({ params, w, h }) => {
+      // 16 wavelengths of D65 sunlight, each ray-traced through drops, smeared by the sun's 0.53 degree disk, then
+      // turned to colour through the CIE matching functions (lib/medium/spectral.mjs)
+      const bin = 0.05, nb = Math.round(90 / bin), sunR = 0.265;
+      const kern = []; for (let d = -sunR; d <= sunR + 1e-9; d += bin) kern.push(Math.sqrt(Math.max(0, 1 - (d / sunR) ** 2)));
+      const ks = kern.reduce((x, y) => x + y, 0), half = (kern.length - 1) / 2;
+      const spec = LAMBDA.map(nm => {
+        const H = bowHistogram(index('water', nm), { rays: 6e4, bin, maxDeg: 90 }).h, o = new Float64Array(nb);
+        for (let a = 0; a < nb; a++) { let v = 0; for (let k = 0; k < kern.length; k++) { const q = a + k - half; if (q >= 0 && q < nb) v += H[q] * kern[k]; } o[a] = v / ks; }
+        return o;
+      });
+      let peak = 0; for (let a = Math.round(30 / bin); a < Math.round(56 / bin); a++) for (const o of spec) peak = Math.max(peak, o[a]);
+      const col = new Array(nb);
+      for (let a = 0; a < nb; a++) col[a] = spectrumRGB(spec.map(o => o[a] / peak));
+      const out = make.raster(w, h), skyLo = [0.16, 0.2, 0.28], gain = 0.9;
+      for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+        const dx = (i + 0.5 - w / 2) / (w / 2), dy = (j + 0.5 - h) / (w / 2), a = Math.floor(Math.hypot(dx, dy) * params.span / bin), p = 4 * (j * w + i);
+        const c = a < nb ? col[a] : [0, 0, 0];
+        for (let ch = 0; ch < 3; ch++) out.data[p + ch] = skyLo[ch] + gain * c[ch];
+        out.data[p + 3] = 1;
+      }
+      return { raster: out };
     },
   }),
 ];
