@@ -121,7 +121,7 @@ There are 461 tests. On a clean clone 446 pass and 15 skip: the skipped ones nee
 - golden hashes for every node;
 - each measured library's predictions, with a control beside each that must fail.
 
-Node 22 or later. There are no dependencies. Python 3 runs the study verifier, with the standard library only.
+Node 24 or later. There are no dependencies. Python 3 runs the study verifier, with the standard library only.
 
 ## Limits
 

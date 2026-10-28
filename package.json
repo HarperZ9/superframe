@@ -9,7 +9,7 @@
     "superframe": "superframe/cli/superframe.mjs"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "test": "node --test superframe/tests/*.test.mjs creation/tests/*.test.mjs",

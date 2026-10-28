@@ -21,6 +21,10 @@ Added:
 - Tools for the plates, demos and studies of each library. Paths they need come from settings (`SUPERFRAME_PY`, `SUPERFRAME_DECOMPOSE`, `SUPERFRAME_LIBRARY`, `SUPERFRAME_CIE`, `FFMPEG`), listed in the README.
 - A test workflow that runs `npm test` on every pull request.
 
+Changed:
+
+- Node 24 or later is now required. 0.1.0 stated Node 22, but on Node 22 six of its golden hashes fail (`sound.phrase`, `sound.shepard`, `reveal.spectrogram`, `perceive.haas`, `perceive.maskreveal`, `perceive.features`), and two more nodes in this release fail there too. The same suite passes on Node 24 and Node 25. The cause is not traced; the likely candidate is a change in the engine's floating-point maths between versions.
+
 Tests: 461 in all. A clean clone passes 446 and skips 15 that need a render, a light table, the reference library or a native build.
 
 Recorded misses, kept as measured:
