@@ -12,8 +12,10 @@
     "node": ">=24"
   },
   "scripts": {
-    "test": "node --test superframe/tests/*.test.mjs creation/tests/*.test.mjs",
-    "make": "node superframe/cli/superframe.mjs make"
+    "test": "node --test superframe/tests/*.test.mjs creation/tests/*.test.mjs packages/*/tests/*.test.mjs",
+    "make": "node superframe/cli/superframe.mjs make",
+    "test:py": "python -B -m pytest -q -p no:cacheprovider packages",
+    "test:all": "npm test && npm run test:py"
   },
   "author": "Zain Dana Harper <zaindharper@gmail.com>",
   "repository": "github:HarperZ9/superframe"

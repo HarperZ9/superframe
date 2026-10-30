@@ -12,3 +12,6 @@ __pycache__/
 # native build output: build it with buildc and gcc (see superframe/tests/native-lightlut.test.mjs)
 superframe/native/**/target/
 *.exe
+# kernel run receipts are machine-local evidence; kernels check writes them
+packages/kernels/receipts/
+.pytest_cache/

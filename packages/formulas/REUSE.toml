@@ -1,0 +1,18 @@
+version = 1
+SPDX-PackageName = "formulas"
+SPDX-PackageSupplier = "Zain Dana Harper"
+SPDX-PackageDownloadLocation = "https://github.com/HarperZ9/superframe"
+
+# Python sources carry SPDX headers. This covers files that cannot hold one.
+[[annotations]]
+path = ["**/*.md", "**/*.json", "**/*.cmd", "REUSE.toml"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Zain Dana Harper"
+SPDX-License-Identifier = "FSL-1.1-MIT"
+
+# Vendored verbatim and hash-pinned (tests/test_twolines_guard.py), so it cannot take a header.
+[[annotations]]
+path = ["formulas/units/twolines.py"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Zain Dana Harper"
+SPDX-License-Identifier = "FSL-1.1-MIT"
