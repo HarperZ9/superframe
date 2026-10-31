@@ -1,0 +1,104 @@
+{
+ "provenance": {
+  "source": "kuhn2002",
+  "citation": "Kuhn, M. G. 2002, Optical time-domain eavesdropping risks of CRT displays, IEEE S&P, eqs. 8-10, Fig. 3",
+  "licence": "IEEE copyright; author copy; numbers are facts, PDF kept internal",
+  "files": {
+   "ieee02-optical.pdf": "c86665f1495594831c7adc5c22f15354ad4ab29f67f63a3c25e17a691f8c03d4"
+  },
+  "status": "measured",
+  "method": "equations transcribed from eqs. 8-10; Fig. 3 digitised from vector paths (digitised points private, see data/PRIVATE.json)",
+  "built": "2026-10-30",
+  "units": "W/(V s sr) for 1 V video drive; absolute scale within a factor of 2 (Kuhn)",
+  "limits": "one monitor (P22 per EIA, triple not identified beyond P22), video-level drive"
+ },
+ "model": {
+  "red": {
+   "exp": [
+    {
+     "a": 4,
+     "f_hz": 360
+    },
+    {
+     "a": 1.75,
+     "f_hz": 1600.0
+    },
+    {
+     "a": 2,
+     "f_hz": 8000.0
+    },
+    {
+     "a": 2.25,
+     "f_hz": 25000.0
+    },
+    {
+     "a": 15,
+     "f_hz": 700000.0
+    },
+    {
+     "a": 29,
+     "f_hz": 7000000.0
+    }
+   ]
+  },
+  "green": {
+   "power": {
+    "A": 0.00021,
+    "t0_s": 5.5e-06,
+    "n": 1.1
+   },
+   "exp": [
+    {
+     "a": 37,
+     "f_hz": 150000.0
+    },
+    {
+     "a": 100,
+     "f_hz": 700000.0
+    },
+    {
+     "a": 90,
+     "f_hz": 5000000.0
+    }
+   ]
+  },
+  "blue": {
+   "power": {
+    "A": 0.00019,
+    "t0_s": 5e-06,
+    "n": 1.11
+   },
+   "exp": [
+    {
+     "a": 75,
+     "f_hz": 100000.0
+    },
+    {
+     "a": 1000,
+     "f_hz": 1100000.0
+    },
+    {
+     "a": 1100,
+     "f_hz": 4000000.0
+    }
+   ]
+  }
+ },
+ "fig3_vs_model": {
+  "blue": {
+   "points": 351,
+   "max_abs_log10_err": 0.0038,
+   "median_abs_log10_err": 0.0009
+  },
+  "green": {
+   "points": 341,
+   "max_abs_log10_err": 0.0038,
+   "median_abs_log10_err": 0.0008
+  },
+  "red": {
+   "points": 321,
+   "max_abs_log10_err": 0.0076,
+   "median_abs_log10_err": 0.0007
+  }
+ }
+}

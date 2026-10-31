@@ -1,0 +1,180 @@
+{
+ "provenance": {
+  "source": "rii-database",
+  "citation": "refractiveindex.info database release v2026-05-24 (Polyanskiy 2024, Sci. Data 11, 94); per-record primary papers",
+  "licence": "CC0 1.0",
+  "files": {
+   "rii-database-2026-05-24.zip": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb"
+  },
+  "status": "measured",
+  "method": "1 - R from tabulated n, k; Planck 300 K weights over 8-14 um",
+  "built": "2026-10-30"
+ },
+ "rows": [
+  {
+   "material": "tungsten",
+   "rii_record": "main/W/nk/Ordal.yml",
+   "coverage_um": [
+    0.667,
+    200.0
+   ],
+   "n_10um": 9.1935519,
+   "k_10um": 44.019189,
+   "emissivity_normal_10um": 0.018,
+   "emissivity_normal_8_14um_planck300": 0.0177,
+   "reference": "M. A. Ordal, R. J. Bell, R. W. Alexander, L. A. Newquist, M. R. Querry. Optical properties of Al, Fe, Ti, Ta, W, and Mo at submillimeter wavelengths.   Appl. Opt.   27 , 1203-1209 (1988)",
+   "status": "measured",
+   "note": "1 - R of a smooth opaque body; a polymer film thinner than about 50 um is partly transparent at 10 um"
+  },
+  {
+   "material": "copper",
+   "rii_record": "main/Cu/nk/Ordal.yml",
+   "coverage_um": [
+    0.517,
+    55.6
+   ],
+   "n_10um": 8.31,
+   "k_10um": 63.0,
+   "emissivity_normal_10um": 0.0082,
+   "emissivity_normal_8_14um_planck300": 0.008,
+   "reference": "M. A. Ordal, R. J. Bell, R. W. Alexander, L. L. Long, M. R. Querry. Optical properties of fourteen metals in the infrared and far infrared: Al, Co, Cu, Au, Fe, Pb, Mo, Ni, Pd, Pt, Ag, Ti, V, and W.   Appl. Opt.   24 , 4493-4499 (1985)",
+   "status": "measured",
+   "note": "1 - R of a smooth opaque body; a polymer film thinner than about 50 um is partly transparent at 10 um"
+  },
+  {
+   "material": "nickel",
+   "rii_record": "main/Ni/nk/Ordal.yml",
+   "coverage_um": [
+    0.667,
+    286.0
+   ],
+   "n_10um": 8.42,
+   "k_10um": 35.7,
+   "emissivity_normal_10um": 0.0247,
+   "emissivity_normal_8_14um_planck300": 0.0241,
+   "reference": "M. A. Ordal, R. J. Bell, R. W. Alexander, L. L. Long, M. R. Querry. Optical properties of Au, Ni, and Pb at submillimeter wavelengths.   Appl. Opt.   26 , 744-752 (1987)",
+   "status": "measured",
+   "note": "1 - R of a smooth opaque body; a polymer film thinner than about 50 um is partly transparent at 10 um"
+  },
+  {
+   "material": "iron",
+   "rii_record": "main/Fe/nk/Ordal.yml",
+   "coverage_um": [
+    0.667,
+    286.0
+   ],
+   "n_10um": 7.0686579,
+   "k_10um": 27.901743,
+   "emissivity_normal_10um": 0.0335,
+   "emissivity_normal_8_14um_planck300": 0.0316,
+   "reference": "M. A. Ordal, R. J. Bell, R. W. Alexander, L. A. Newquist, M. R. Querry. Optical properties of Al, Fe, Ti, Ta, W, and Mo at submillimeter wavelengths.   Appl. Opt.   27 , 1203-1209 (1988)",
+   "status": "measured",
+   "note": "1 - R of a smooth opaque body; a polymer film thinner than about 50 um is partly transparent at 10 um"
+  },
+  {
+   "material": "aluminium",
+   "rii_record": "main/Al/nk/Ordal.yml",
+   "coverage_um": [
+    0.667,
+    200.0
+   ],
+   "n_10um": 25.832564,
+   "k_10um": 90.72043,
+   "emissivity_normal_10um": 0.0115,
+   "emissivity_normal_8_14um_planck300": 0.0114,
+   "reference": "M. A. Ordal, R. J. Bell, R. W. Alexander, L. A. Newquist, M. R. Querry. Optical properties of Al, Fe, Ti, Ta, W, and Mo at submillimeter wavelengths.   Appl. Opt.   27 , 1203-1209 (1988)",
+   "status": "measured",
+   "note": "1 - R of a smooth opaque body; a polymer film thinner than about 50 um is partly transparent at 10 um"
+  },
+  {
+   "material": "soda_lime_glass",
+   "rii_record": "glass/misc/soda-lime/nk/Rubin-IR.yml",
+   "coverage_um": [
+    5.0,
+    300.0
+   ],
+   "n_10um": 1.707,
+   "k_10um": 1.123,
+   "emissivity_normal_10um": 0.795,
+   "emissivity_normal_8_14um_planck300": 0.8776,
+   "reference": "M. Rubin. Optical properties of soda lime silica glasses.   Sol. Energy Mater.   12 , 275-288 (1985)",
+   "status": "measured",
+   "note": "1 - R of a smooth opaque body; a polymer film thinner than about 50 um is partly transparent at 10 um"
+  },
+  {
+   "material": "fused_silica",
+   "rii_record": "main/SiO2/nk/Popova.yml",
+   "coverage_um": [
+    7.0,
+    50.0
+   ],
+   "n_10um": 2.5509466019417473,
+   "k_10um": 0.3929433009708735,
+   "emissivity_normal_10um": 0.7994,
+   "emissivity_normal_8_14um_planck300": 0.7878,
+   "reference": "1) S. Popova, T. Tolstykh, V. Vorobev. Optical characteristics of amorphous quartz in the 1400–200 cm -1  region,  Opt. Spectrosc.   33 , 444–445 (1972), as cited in Ref. 2  2) R. Kitamura, L. Pilon, M. Jonasz. Optical constants of silica glass from extreme ultraviolet to far infrared at near room t",
+   "status": "measured",
+   "note": "1 - R of a smooth opaque body; a polymer film thinner than about 50 um is partly transparent at 10 um"
+  },
+  {
+   "material": "pmma",
+   "rii_record": "organic/(C5H8O2)n - poly(methyl methacrylate)/nk/Zhang-Tomson.yml",
+   "coverage_um": [
+    0.4,
+    19.942
+   ],
+   "n_10um": 1.496541038961039,
+   "k_10um": 0.04021298701298699,
+   "emissivity_normal_10um": 0.9602,
+   "emissivity_normal_8_14um_planck300": 0.9553,
+   "reference": "1) X. Zhang, J. Qiu, X. Li, J. Zhao, L. Liu. Complex refractive indices measurements of polymers in visible and near-infrared bands.   Appl. Opt.   59 , 2337-2344 (2020)  (0.4-2 µm)  2) X. Zhang, J. Qiu, J. Zhao, X. Li, L. Liu. Complex refractive indices measurements of polymers in infrared bands.  ",
+   "status": "measured",
+   "note": "1 - R of a smooth opaque body; a polymer film thinner than about 50 um is partly transparent at 10 um"
+  },
+  {
+   "material": "polycarbonate",
+   "rii_record": "organic/(C16H14O3)n - polycarbonate/nk/Zhang.yml",
+   "coverage_um": [
+    0.4,
+    19.942
+   ],
+   "n_10um": 1.7152146753246753,
+   "k_10um": 0.05450129870129873,
+   "emissivity_normal_10um": 0.9302,
+   "emissivity_normal_8_14um_planck300": 0.9358,
+   "reference": "1) X. Zhang, J. Qiu, X. Li, J. Zhao, L. Liu. Complex refractive indices measurements of polymers in visible and near-infrared bands.   Appl. Opt.   59 , 2337-2344 (2020)  (0.4-2 µm)  2) X. Zhang, J. Qiu, J. Zhao, X. Li, L. Liu. Complex refractive indices measurements of polymers in infrared bands.  ",
+   "status": "measured",
+   "note": "1 - R of a smooth opaque body; a polymer film thinner than about 50 um is partly transparent at 10 um"
+  },
+  {
+   "material": "kapton",
+   "rii_record": "other/commercial polymers/Kapton/nk/Zhang.yml",
+   "coverage_um": [
+    1.667,
+    20.0
+   ],
+   "n_10um": 1.83379,
+   "k_10um": 0.009866,
+   "emissivity_normal_10um": 0.9134,
+   "emissivity_normal_8_14um_planck300": 0.9156,
+   "reference": "Z. M. Zhang, G. Lefever-Button, F. R. Powell. Infrared refractive index and extinction coefficient of polyimide films.   Int. J. Thermophys.   19 , 905-916 (1998)   [ Calculation script (Python) ]",
+   "status": "measured",
+   "note": "1 - R of a smooth opaque body; a polymer film thinner than about 50 um is partly transparent at 10 um"
+  },
+  {
+   "material": "graphite",
+   "rii_record": "main/C/nk/Querry-Pyrolytic.yml",
+   "coverage_um": [
+    0.21,
+    55.5556
+   ],
+   "n_10um": 5.014,
+   "k_10um": 4.844,
+   "emissivity_normal_10um": 0.3363,
+   "emissivity_normal_8_14um_planck300": 0.326,
+   "reference": "M. R. Querry. Optical constants,   Contractor Report  CRDC-CR-85034 (1985)",
+   "status": "measured",
+   "note": "1 - R of a smooth opaque body; a polymer film thinner than about 50 um is partly transparent at 10 um"
+  }
+ ]
+}

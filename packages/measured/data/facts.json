@@ -1,0 +1,131 @@
+{
+ "provenance": {
+  "method": "values read from primary documents; quotes re-found in the text layer at build time",
+  "built_from": [
+   "kodak-2383",
+   "kodak-5219",
+   "lekner-dorf1988",
+   "marshall-palmer1948",
+   "steck-cesium"
+  ],
+  "private_overlay": "facts.private.json (see data/PRIVATE.json)"
+ },
+ "rows": [
+  {
+   "id": "cs.clock_zeeman",
+   "value": 427.45,
+   "unit": "Hz/G^2",
+   "source": "steck-cesium",
+   "citation": "Steck, D. A., Cesium D Line Data (current revision, steck.us/alkalidata)",
+   "file": "cesiumnumbers.pdf",
+   "sha256": "f3f6fefb10447fd26ec2076a7c2049a5043b45063a66ffbfec4d04367f2023a4",
+   "licence": "author-hosted free document; cite",
+   "status": "measured",
+   "note": "second-order Zeeman shift of the Cs clock transition, listed as 2 pi x 427.45 Hz/G^2 (angular)"
+  },
+  {
+   "id": "mp1948.N0",
+   "value": 8000.0,
+   "unit": "m^-3 mm^-1",
+   "source": "marshall-palmer1948",
+   "citation": "Marshall and Palmer 1948, The distribution of raindrops with size, J. Meteor. 5, 165",
+   "file": "marshall-palmer-1948.pdf",
+   "sha256": "5f9441b884344c1e308e77fea837323a8a60b440044e55663154bdb49d56b832",
+   "licence": "AMS copyright; mirror scan; fitted constants are facts",
+   "status": "measured",
+   "note": "printed as N0 = 0.08 cm^-4 (the scan's text layer drops the exponent sign); 0.08 cm^-4 = 8000 m^-3 mm^-1"
+  },
+  {
+   "id": "mp1948.Lambda",
+   "value": 4.1,
+   "unit": "mm^-1 at R^-0.21",
+   "source": "marshall-palmer1948",
+   "citation": "Marshall and Palmer 1948, The distribution of raindrops with size, J. Meteor. 5, 165",
+   "file": "marshall-palmer-1948.pdf",
+   "sha256": "5f9441b884344c1e308e77fea837323a8a60b440044e55663154bdb49d56b832",
+   "licence": "AMS copyright; mirror scan; fitted constants are facts",
+   "status": "measured",
+   "note": "printed as Lambda = 41 R^-0.21 cm^-1 with R in mm/h; = 4.1 R^-0.21 mm^-1"
+  },
+  {
+   "id": "kodak2383.base_um",
+   "value": 120.0,
+   "unit": "um",
+   "source": "kodak-2383",
+   "citation": "Eastman Kodak, KODAK VISION Color Print Film 2383/3383 data sheet H-1-2383 (2022)",
+   "file": "KODAK-VISION-Color-Print-Film-2383-3383-data-sheet.pdf",
+   "sha256": "181eecf54c11da2dab995ffc230a549d675883bd30cced41e7d823302c2c4db2",
+   "licence": "Kodak copyright public data sheet; PDF not redistributed",
+   "status": "measured",
+   "note": "print film on 120 um (0.0047 in) ESTAR polyester base, no rem-jet"
+  },
+  {
+   "id": "kodak5219.base",
+   "value": null,
+   "unit": "",
+   "source": "kodak-5219",
+   "citation": "Eastman Kodak, KODAK VISION3 500T 5219/7219 technical data H-1-5219t (2015)",
+   "file": "VISION3-500T-7219-TECHNICAL-DATA.pdf",
+   "sha256": "06eca2287fbaf57a1aeacbb8151bbd48e23aefb30af2114b412e9c1c63f4d1db",
+   "licence": "Kodak copyright public data sheet; digitised values are facts; PDF not redistributed",
+   "status": "measured",
+   "note": "camera negative 5219/7219: acetate safety base with rem-jet backing; thickness not printed"
+  },
+  {
+   "id": "lekner_dorf.p_water",
+   "value": 0.475,
+   "ours": 0.4749,
+   "unit": "",
+   "source": "lekner-dorf1988",
+   "citation": "Lekner and Dorf 1988, Why some things are darker when wet, Appl. Opt. 27, 1278, eqs. 1-11",
+   "file": "darkerwhenwet.pdf",
+   "sha256": "b3161670382147a7c0fb856626098f717fa3307bf61b8e69e48789bd9360baf3",
+   "licence": "OSA copyright; author scan; formulas are facts",
+   "status": "measured",
+   "read_by_eye": true,
+   "note": "eq. 9 for water; Angstrom's 1 - 1/n^2 gives 0.437; reproduced by measured/wet.py"
+  },
+  {
+   "id": "lekner_dorf.aw_ad_1.5",
+   "value": 1.07,
+   "ours": 1.0677,
+   "unit": "",
+   "source": "lekner-dorf1988",
+   "citation": "Lekner and Dorf 1988, Why some things are darker when wet, Appl. Opt. 27, 1278, eqs. 1-11",
+   "file": "darkerwhenwet.pdf",
+   "sha256": "b3161670382147a7c0fb856626098f717fa3307bf61b8e69e48789bd9360baf3",
+   "licence": "OSA copyright; author scan; formulas are facts",
+   "status": "measured",
+   "read_by_eye": true,
+   "note": "a_w/a_d for small a_d, n_l = 4/3, n_r = 1.5; reproduced by measured/wet.py"
+  },
+  {
+   "id": "lekner_dorf.aw_ad_2.0",
+   "value": 1.08,
+   "ours": 1.082,
+   "unit": "",
+   "source": "lekner-dorf1988",
+   "citation": "Lekner and Dorf 1988, Why some things are darker when wet, Appl. Opt. 27, 1278, eqs. 1-11",
+   "file": "darkerwhenwet.pdf",
+   "sha256": "b3161670382147a7c0fb856626098f717fa3307bf61b8e69e48789bd9360baf3",
+   "licence": "OSA copyright; author scan; formulas are facts",
+   "status": "measured",
+   "read_by_eye": true,
+   "note": "n_r = 2; reproduced by measured/wet.py"
+  },
+  {
+   "id": "lekner_dorf.aw_ad_2.5",
+   "value": 1.1,
+   "ours": 1.0999,
+   "unit": "",
+   "source": "lekner-dorf1988",
+   "citation": "Lekner and Dorf 1988, Why some things are darker when wet, Appl. Opt. 27, 1278, eqs. 1-11",
+   "file": "darkerwhenwet.pdf",
+   "sha256": "b3161670382147a7c0fb856626098f717fa3307bf61b8e69e48789bd9360baf3",
+   "licence": "OSA copyright; author scan; formulas are facts",
+   "status": "measured",
+   "read_by_eye": true,
+   "note": "n_r = 2.5; reproduced by measured/wet.py"
+  }
+ ]
+}
