@@ -31,7 +31,7 @@ core/            importable from Node and the browser; no DOM, no GL, no view st
   registry.js    one way in for any view or tool
   adapters/      read the virtual bench and lens pipeline file formats
   families.js    spherical-harmonic globes as a registered shape family
-solvers/         sound (wave field) and pcb (place, route, rules, fields, Gerber), importable with no browser
+solvers/         sound (wave field), pcb (place, route, rules, fields, Gerber) and fluid (Navier-Stokes), importable with no browser
 tools/steer.js   choose between candidates to steer any registered parameter space, with a replayable record
 properties/      a property as a physical object: state space, operations, elements, instrument, route
 views/           pages generated from core (stage 2 onward)
