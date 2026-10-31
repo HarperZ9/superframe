@@ -1,0 +1,140 @@
+{
+ "schema": "instrument-reading/0.1 (extends every-dimension.state/0.1, extends project-telos.measurement-bus/v1)",
+ "tool": "every-dimension.slice",
+ "generated_at": "2026-10-31T00:45:45.189826+00:00",
+ "run_id": "room-sim-20261030",
+ "frame_id": 0,
+ "bus_fields": [
+  "event_id",
+  "run_id",
+  "frame_id",
+  "actor",
+  "domain",
+  "subject_ref",
+  "timestamp",
+  "clock_domain",
+  "coordinate_space",
+  "units",
+  "value_shape",
+  "value",
+  "uncertainty",
+  "provenance",
+  "privacy",
+  "severity",
+  "event_hash"
+ ],
+ "channels": [
+  "room.volume"
+ ],
+ "events": [
+  {
+   "event_id": "room-sim-20261030:0:room.volume",
+   "run_id": "room-sim-20261030",
+   "frame_id": 0,
+   "actor": "instrument.room-shape-meter",
+   "domain": "acoustics",
+   "subject_ref": "room.volume",
+   "timestamp": "2026-10-31T00:45:45.189826+00:00",
+   "clock_domain": "host.perf_counter",
+   "coordinate_space": "room interior",
+   "units": {
+    "volume": "m^3",
+    "surface": "m^2",
+    "t60": "s"
+   },
+   "value_shape": "object",
+   "value": {
+    "volume_m3": 51.274358344488796,
+    "surface_m2": 124.21555922966573,
+    "t60_s": 0.8267201624359422,
+    "alpha_sabine": 0.08038806626015622,
+    "modes_used": 25,
+    "band_hz": [
+     21.05,
+     150.0
+    ]
+   },
+   "uncertainty": {
+    "status": "estimated",
+    "volume_rel_median": 0.16,
+    "volume_rel_q90": 0.42,
+    "t60_rel_median": 0.011,
+    "basis": "twin study room-shape-meter, laptop speaker, |V_est / V - 1| over 80 simulated rooms (run 20261031T004139Z, post hoc after deviation D1); a twin spread, not a field calibration"
+   },
+   "provenance": {
+    "measurement_hash": "sha256:b8c75d5b99c2f3806bb087e85a44620b574d2641daa661021171af829af55066",
+    "source": "room-shape meter (Weyl mode count, matrix pencil)",
+    "generated_by": "hardware-pipeline/room/receipt.py"
+   },
+   "privacy": {
+    "raw_payload_required": false,
+    "exported_value_is_summary": true
+   },
+   "severity": "info",
+   "state": {
+    "dimension": "space",
+    "range": [
+     5.0,
+     600.0
+    ],
+    "information": {
+     "modes_in_band": 25,
+     "estimator": "Poisson-corrected Weyl count"
+    },
+    "homeostasis": null
+   },
+   "event_hash": "sha256:9b10d446b5a79abdc42bb7771167aa78e7fc05c2d3259dfbe75dd79cde61f827",
+   "instrument": {
+    "id": "room-shape-meter/laptop-0",
+    "kind": "room-weyl",
+    "build": {
+     "design_sha256": null,
+     "firmware_sha256": null,
+     "code_sha256": "sha256:2384302c9a46df6b50534d5a8ba6f691fc03f61fc645b96215a81f0f8ca5bc1a"
+    },
+    "calibration": {
+     "state": "UNCAL",
+     "uncal": true,
+     "record_sha256": null,
+     "reference": null,
+     "traceability": "none: no reference used yet",
+     "why": "no calibration record",
+     "valid_until": null
+    },
+    "conditions": {
+     "protocol": "corner to opposite corner, 0.1 to 0.3 m off the walls, doors and windows shut, laptop DSP off",
+     "sweep": {
+      "f1_hz": 20.0,
+      "f2_hz": 1000.0,
+      "seconds": 10.0
+     },
+     "speaker": "laptop (fc 150 Hz)",
+     "background_dba": 30.0,
+     "truth_for_this_sim": {
+      "volume_m3": 52.58496961990046,
+      "t60_s": 0.8032753473684813
+     }
+    },
+    "self_test": {
+     "loopback": {
+      "ran": true,
+      "pass": true,
+      "value": -92.18582032963324
+     },
+     "known_inject": {
+      "ran": true,
+      "pass": true,
+      "value": 0.02290485740047643
+     },
+     "auto_zero": {
+      "ran": true,
+      "pass": true,
+      "value": "silence capture before the sweep sets the noise floor"
+     }
+    },
+    "sim": true
+   }
+  }
+ ],
+ "receipt_hash": "sha256:a0b9bbba14f3978c99e287b6dd13b1a532f52c724fcd952aa1e4d78402a89fad"
+}
