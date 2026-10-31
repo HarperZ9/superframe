@@ -1,0 +1,154 @@
+<meta charset="utf-8">
+<title>Lens Room</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* Layout: the view fills the room; one column carries collapsible control groups and the measured readout.
+   Fonts: Hanken Grotesk and JetBrains Mono for now. Port to the site kit and dynamic type engine is pending. */
+:root{--bg:#0b0d12;--panel:#12151c;--line:#262b36;--fg:#e8e6df;--dim:#9a9ca3;--accent:#8fd3ff;--good:#7fd6a4;--warn:#ffc27a;
+--ui:"Hanken Grotesk",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Consolas,monospace;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:14px/1.4 var(--ui)}
+#app{display:grid;grid-template-columns:minmax(0,1fr) 330px;height:100%;min-height:0}
+#app.full{grid-template-columns:minmax(0,1fr) 0}
+#app.full #panel{display:none}
+#view{position:relative;min-width:0;min-height:0;background:#000;overflow:hidden}
+#gl,#over{position:absolute;inset:0;width:100%;height:100%;display:block}
+#gl{touch-action:none;cursor:grab}
+#gl:active{cursor:grabbing}
+#over{background:#05060a}
+#tabs{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:4px;max-width:calc(100% - 110px);z-index:3}
+#tabs button{background:rgba(12,14,20,.72);backdrop-filter:blur(6px);padding:4px 9px;font-size:13px}
+#hide{position:absolute;right:10px;top:10px;z-index:3;background:rgba(12,14,20,.72);padding:4px 9px;font-size:13px}
+#panel{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding-block:12px;padding-left:14px;padding-right:max(14px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:6px}
+h1{font-size:18px;font-weight:600;margin:0 0 4px}
+details{border-top:1px solid var(--line);padding:6px 0}
+summary{cursor:pointer;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);font-weight:600;padding:3px 0}
+details>div{display:flex;flex-direction:column;gap:7px;margin-top:6px}
+select,button,input[type=text],textarea{font:inherit;color:var(--fg);background:#1a1e27;border:1px solid var(--line);border-radius:5px;padding:6px 8px;min-width:0}
+select{width:100%}
+textarea{width:100%;font:12px var(--mono);resize:vertical;min-height:44px}
+button{cursor:pointer}
+button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:grid;grid-template-columns:78px minmax(0,1fr) 54px;align-items:center;gap:8px}
+.row label{color:var(--dim);font-size:13px}
+.row output{font:12px var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);min-width:0}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+canvas.mini{width:100%;max-width:300px;aspect-ratio:1;background:#000;border:1px solid var(--line);border-radius:5px}
+dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 12px;margin:0;font-size:13px}
+dt{color:var(--dim)}dd{margin:0;font:12px var(--mono);text-align:right;overflow-wrap:anywhere}
+.note{font-size:12.5px;color:var(--dim);margin:0}
+.bad{color:var(--warn);font:12px var(--mono);white-space:pre-wrap;margin:0}
+.flag{color:var(--warn)}
+#pad{position:absolute;right:10px;bottom:10px;z-index:3;display:grid;grid-template-columns:repeat(3,62px);gap:4px}#pad button{background:rgba(12,14,20,.72);padding:9px 2px;font-size:12px;touch-action:none}
+#err{position:absolute;inset:50px 16px 16px;color:var(--fg);white-space:pre-wrap;font:12px var(--mono);overflow:auto;z-index:4}
+@media (max-width:760px){html,body{height:auto}#app{grid-template-columns:1fr;grid-template-rows:60vh auto;height:auto}#view{height:60vh}#panel{border-left:0;border-top:1px solid var(--line);padding-left:max(14px,env(safe-area-inset-left,0px))}#app.full{grid-template-rows:100vh 0}#app.full #view{height:100vh}}
+</style>
+<div id="app">
+<div id="view">
+ <canvas id="gl" aria-label="View through the selected optics. Drag to look around."></canvas>
+ <canvas id="over" hidden aria-label="Side view or plot of the same rays"></canvas>
+ <div id="tabs" role="group" aria-label="View"></div>
+ <button id="hide" aria-pressed="false" title="Hide the controls">Controls</button>
+ <div id="err" hidden></div>
+ <div id="pad" hidden role="group" aria-label="Walk controls"><button data-k="up" aria-label="Rise">Rise</button><button data-k="f" aria-label="Forward">Forward</button><button data-k="dn" aria-label="Sink">Sink</button><button data-k="l" aria-label="Left">Left</button><button data-k="b" aria-label="Back">Back</button><button data-k="r" aria-label="Right">Right</button></div>
+</div>
+<div id="panel">
+<h1>Lens Room</h1>
+<label class="note">Level <select id="level" style="width:auto"><option value="0">What you see</option><option value="1">What it does</option><option value="2" selected>The rays</option><option value="3">Numbers and equations</option></select></label>
+<p id="plain" class="note"></p>
+<div class="btns" role="group" aria-label="Kind of instrument"><button data-kind="lens" aria-pressed="true">Lens</button><button data-kind="train" aria-pressed="false">Train</button><button data-kind="world" aria-pressed="false">World</button></div>
+
+<details open data-for="lens"><summary>Lens</summary><div>
+ <select id="shape" aria-label="Lens shape"></select>
+ <div class="btns"><button id="glass" aria-pressed="true">Glass</button><button id="mirror" aria-pressed="false">Mirror</button><button id="inv" aria-pressed="false">Inside out</button></div>
+ <div id="lens"></div>
+</div></details>
+
+<details data-for="lens" id="stackD"><summary>Second lens</summary><div>
+ <div class="btns"><button id="two" aria-pressed="false">Add second lens</button><button id="pGal">Galilean telescope</button><button id="pMic">Microscope</button><button id="pAch">Convex and concave doublet</button></div>
+ <select id="shape2" aria-label="Second lens shape"></select>
+ <div id="lens2"></div>
+</div></details>
+
+<details data-for="lens" id="formD"><summary>Formula lens</summary><div>
+ <textarea id="ftext" rows="2" spellcheck="false" aria-label="Formula">z = 0.2*sin(5*x)*cos(5*y)</textarea>
+ <div class="btns"><button id="fgo">Compile</button><select id="fex" aria-label="Formula examples" style="width:auto;flex:1"></select></div>
+ <p id="ferr" class="note" role="status" aria-live="polite"></p>
+</div></details>
+
+
+<details data-for="lens" id="matD"><summary>Material</summary><div>
+ <select id="matsel" aria-label="Lens material"></select><div id="matS"></div><p id="matnote" class="note"></p>
+ <select id="mirsel" aria-label="Mirror finish" hidden></select>
+</div></details>
+<details data-for="lens world" id="medD"><summary>Medium and gradients</summary><div>
+ <div class="btns"><button id="scatBtn" aria-pressed="false">Scattering</button><button id="trBtn" aria-pressed="false" data-for2="lens">Transmission gradient</button></div><div id="scatS"></div>
+ <label class="note">Density by position, 0 to 1<textarea id="fRho" rows="1" spellcheck="false">1</textarea></label>
+ <label class="note">Absorption weight by position<textarea id="fAbs" rows="1" spellcheck="false">1</textarea></label>
+ <label class="note">Surface transmission by position<textarea id="fTr" rows="1" spellcheck="false">1</textarea></label>
+ <p id="scaterr" class="note" role="status"></p>
+</div></details>
+<details data-for="lens" id="liqD"><summary>Liquid controls</summary><div id="liqS"></div></details>
+<details data-for="lens" id="polD"><summary>Polarisation</summary><div>
+ <div class="btns"><button id="polP" aria-pressed="false">Before the lens</button><button id="polA" aria-pressed="false">After the lens</button><button id="polX">Crossed</button></div><div id="polS"></div>
+</div></details>
+<details data-for="lens" id="morD"><summary>Morph</summary><div>
+ <select id="morphB" aria-label="Morph target"></select><div id="morS"></div><div class="btns"><button id="morphOn" aria-pressed="false">Blend</button><button id="breathe" aria-pressed="false">Breathe</button></div>
+</div></details>
+<details open data-for="lens" id="sceD"><summary>Far side</summary><div>
+ <select id="scene" aria-label="World on the far side"></select>
+ <div class="btns" data-for2="lens"><button id="imgbtn">Your image</button><button id="ptBtn" aria-pressed="true">Path traced</button><button id="immerse">Immerse</button></div>
+ <input id="file" type="file" accept="image/*" hidden>
+ <p class="note">Samples per second: <span id="spsv">measuring</span></p>
+ <div id="metaC" hidden><label class="note">Light <select id="metaIll" style="width:auto"><option value="D65">D65 daylight, the match</option><option value="A">Illuminant A, tungsten</option><option value="LED">Three band LED</option></select></label><label class="note">Observer <select id="metaOb" style="width:auto"><option value="human">Human</option><option value="protan">Protan</option><option value="deutan">Deutan</option><option value="tritan">Tritan</option><option value="bee">Bee bands, false colour</option><option value="bird">Bird bands, false colour</option></select></label></div>
+ <div id="patC" hidden><select id="patK" aria-label="Pattern"><option value="0">Moire of two grids</option><option value="1">Sunflower</option><option value="2">Honeycomb</option><option value="3">Turing</option><option value="4">Caustic</option></select><div id="patS"></div></div>
+ <div class="btns"><button id="texBtn" aria-pressed="false">Pattern on the lens</button></div>
+</div></details>
+<details open id="percD"><summary>Seen as</summary><div>
+ <select id="frame" aria-label="Perception frame"></select><p id="framenote" class="note"></p><div id="frameS"></div>
+</div></details>
+<details data-for="lens" id="focD"><summary>Focus and framing</summary><div>
+ <div class="btns"><button id="afBtn">Autofocus</button><button id="clickF" aria-pressed="false">Click to focus</button></div>
+ <div class="btns"><button data-frm="front">Front</button><button data-frm="close">Close</button><button data-frm="three">Three quarter</button><button data-frm="top">From above</button></div>
+ <p id="afnote" class="note"></p>
+</div></details>
+<details data-for="lens" id="cmpD"><summary>Compare</summary><div>
+ <div class="btns"><button id="cmpBtn" aria-pressed="false">Hold these settings on the left</button><button id="saveBtn">Save PNG</button></div><div id="cmpS"></div>
+ <label class="note">Render size <select id="qsel" style="width:auto"><option value="3840">Up to 4K, when the machine keeps up</option><option value="1920">Up to 1080p</option><option value="960">Light</option></select></label>
+</div></details>
+<details id="waveD" data-for="lens train"><summary>Wave view</summary><div>
+ <div class="btns"><button id="wAiry">Airy check</button><button id="wDonut">Spiral donut</button><button id="wIdeal" aria-pressed="true">Ideal focusing lens</button></div>
+ <div id="waveS"></div><p class="note" id="wnoteT"></p>
+</div></details>
+
+
+<details open data-for="train"><summary>Optical train</summary><div>
+ <select id="tpreset" aria-label="Instrument prescription"></select>
+ <div id="trainS"></div>
+ <p id="tnote" class="note"></p>
+</div></details>
+<details open data-for="train"><summary>Spot at the image plane</summary><div><canvas id="spot" class="mini" width="300" height="300" aria-label="Spot diagram: where rays from a pupil grid land on the image plane"></canvas></div></details>
+
+<details open data-for="world"><summary>World field</summary><div>
+ <select id="wfield" aria-label="Index field"></select>
+ <div id="worldS"></div>
+ <div class="btns"><button id="wmove" aria-pressed="false">Move the marker</button></div>
+ <p id="wnote" class="note"></p>
+</div></details>
+
+<details open data-for="lens" id="inD"><summary>Inside the lens</summary><div>
+ <select id="inner" aria-label="Things embedded in the medium"><option value="">Nothing embedded</option><option value="spheres">Floating spheres and a grid</option><option value="tree">Branching tree</option><option value="crystals">Crystals</option><option value="cell">Cell-like bodies</option><option value="room">A small lit room</option></select>
+ <div class="btns"><button id="iLamp" aria-pressed="false">Lamp inside</button><button id="walkBtn">Walk inside</button><button id="chkBtn">Run known answers</button></div><div id="inS"></div><p class="note">Move with WASD or arrows, Q and E to rise and sink, drag to look.</p>
+</div></details>
+<details open data-for="lens world" id="camD"><summary>Your camera</summary><div><div id="cam"></div></div></details>
+<details data-for="lens" id="sideD"><summary>Side view, traced rays</summary><div><canvas id="sec" class="mini" width="300" height="300" aria-label="Cross section with rays entering from the left"></canvas></div></details>
+<details open><summary>Measured</summary><div><dl id="read"></dl><p id="model" class="note"></p></div></details>
+</div></div>
+
+<!-- ROOM-SCRIPT -->
