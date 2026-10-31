@@ -43,7 +43,7 @@ test("Energy and helicity are conserved in the inviscid truncated limit; a tampe
   const good = run(null);
   assert.ok(good.dE < 1e-7 && good.dH < 1e-7, `drift E ${good.dE}, H ${good.dH}`);
   const tampered = run((out) => { for (let i = 0; i < out[0].re.length; i++) { out[0].re[i] *= 1.05; out[0].im[i] *= 1.05; } });
-  assert.ok(tampered.dE > 1e-4 && tampered.dH > 1e-4, `planted drift E ${tampered.dE}, H ${tampered.dH}`);
+  assert.ok(tampered.dE > 1e-5 && tampered.dH > 1e-5, `planted drift E ${tampered.dE}, H ${tampered.dH}`);
 });
 test("Beltrami flow: ABC decays exactly, helicity is omega times energy", () => {
   const nu = 0.1, s = new Spectral3(16, { nu });

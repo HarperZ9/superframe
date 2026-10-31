@@ -4,3 +4,4 @@ export * from "./spectral2.js";
 export * from "./spectral3.js";
 export * from "./exact.js";
 export * from "./bowl.js";
+export * from "./tubes.js";

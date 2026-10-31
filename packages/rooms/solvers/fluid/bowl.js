@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 // A bowl-like swirl with a drain, on the 2D solver. Stated method and limits:
-//  Wall: Brinkman penalty on a ring, target velocity tangential; a soft wall of thickness about sqrt(nu eta).
+//  Wall: Brinkman penalty on a ring, target velocity tangential; a soft wall of thickness about sqrt(nu eta). It rings at the grid scale when that thickness
+//  falls under one cell, and the vorticity view shows it.
 //  Drain: a fixed potential flow from a uniform sink disc to a source ring just inside the wall, zero net volume so it
 //  lives on a torus. Inside the sink disc the 2D divergence is -a, the same term as axial strain a in the third
 //  dimension, so the core obeys the Burgers equation for vertical vorticity. The plane sees stretching only as a
@@ -38,15 +39,17 @@ export function bowlWall(sim, Rw, V, eta, width = 0.08) {
   for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
     const X = i * dx - cx, Y = j * dy - cy, r = Math.hypot(X, Y), q = j * nx + i;
     chi[q] = smooth(r - Rw, width);
-    if (r > 0) { ux[q] = (-V * Y) / r; uy[q] = (V * X) / r; }
+    // The target falls to zero before the box edge: a jump there would ring across the whole grid.
+    const fade = 0.5 * (1 - Math.tanh((r - Rw - 0.22) / 0.05));
+    if (r > 0) { ux[q] = (-V * fade * Y) / r; uy[q] = (V * fade * X) / r; }
   }
   return { chi, ux, uy, eta };
 }
 /** The model case: a bowl of radius Rw with a rim swirl V, a drain of strain a, and dyes. */
-export function bowl({ N = 128, nu = 0.02, a = 2, R = 0.7, Rw = 2.6, V = 1, eta = 0.02, dyes = 1, kappa = 0, scheme = "rk4" } = {}) {
+export function bowl({ N = 128, nu = 0.02, a = 2, R = 0.7, Rw = 2.6, V = 1, eta = 0.02, wallWidth = 0.08, dyes = 1, kappa = 0, scheme = "rk4" } = {}) {
   const sim = new Spectral2(N, N, { nu, dyes, kappa, scheme });
   sim.flow = drainFlow(sim, a, R, Rw - 0.35);
-  sim.wall = bowlWall(sim, Rw, V, eta);
+  sim.wall = bowlWall(sim, Rw, V, eta, wallWidth);
   return sim;
 }
 /** Azimuthal average of a physical field about the box centre. */

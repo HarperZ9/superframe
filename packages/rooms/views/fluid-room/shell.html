@@ -1,0 +1,46 @@
+<meta charset="utf-8">
+<title>Fluid Room</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* Layout: the flow fills the room; one instrument column holds cases and measured values. Site kit and dynamic type port pending, as in the other rooms. */
+:root{--bg:#0a0c10;--panel:#11141a;--line:#262b35;--fg:#e8e6df;--dim:#9a9ca3;--accent:#ffc978;--ui:"Hanken Grotesk",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Consolas,monospace;color-scheme:dark}
+html,body{height:100%;margin:0}body{background:var(--bg);color:var(--fg);font:14px/1.4 var(--ui)}
+#app{display:grid;grid-template-columns:minmax(0,1fr) 310px;height:100%}
+#view{position:relative;min-width:0;display:flex;align-items:center;justify-content:center;background:#000}
+#gl{max-width:100%;max-height:100%;aspect-ratio:1;height:100%;touch-action:none;cursor:crosshair;display:block}
+#panel{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding-block:14px;padding-left:16px;padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+h1{font-size:18px;font-weight:600;margin:0}h2{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);font-weight:600;margin:0 0 6px}
+section{display:flex;flex-direction:column;gap:7px}
+select,button{font:inherit;color:var(--fg);background:#1a1e27;border:1px solid var(--line);border-radius:5px;padding:6px 8px;min-height:32px}button{cursor:pointer}
+button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:grid;grid-template-columns:76px minmax(0,1fr) 62px;align-items:center;gap:8px}.row label{color:var(--dim)}.row output{font:12px var(--mono);text-align:right}
+input[type=range]{width:100%;min-width:0;accent-color:var(--accent)}.btns{display:flex;flex-wrap:wrap;gap:6px}
+canvas.scope{width:100%;height:90px;background:#000;border:1px solid var(--line);border-radius:5px}
+dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 12px;margin:0;font-size:13px}dt{color:var(--dim)}dd{margin:0;font:12px var(--mono);text-align:right}
+#note{color:var(--dim);font-size:12px;margin:0}
+#err{position:absolute;inset:16px;white-space:pre-wrap;font:12px var(--mono)}
+@media (max-width:760px){#app{grid-template-columns:1fr;grid-template-rows:auto auto;height:auto}#gl{height:auto;width:100%}#panel{border-left:0;border-top:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px))}}
+</style>
+<div id="app"><div id="view"><canvas id="gl" width="1024" height="1024" role="img" aria-label="The flow field. Drag to stir."></canvas><div id="err" hidden></div></div>
+<div id="panel"><h1>Fluid Room</h1>
+<section><select id="case" aria-label="Case"></select>
+<div class="btns" id="vw"></div>
+<div class="btns"><button id="run" aria-pressed="true">Running</button><button id="rev">Reverse time</button><button id="reset">Restart</button></div><p id="note"></p></section>
+<section><h2>Flow</h2><div id="sl"></div></section>
+<section><h2>Measured</h2><canvas class="scope" id="spec" width="560" height="180" aria-label="Energy spectrum against wavenumber, log axes, with a k to the minus five thirds guide"></canvas><dl id="read"></dl></section>
+</div></div>
+<script id="vs" type="x">{{vs}}</script>
+<script id="fft" type="x">{{fft}}</script>
+<script id="prep" type="x">{{prep}}</script>
+<script id="viewp" type="x">{{viewp}}</script>
+<script id="nl" type="x">{{nl}}</script>
+<script id="rhs" type="x">{{rhs}}</script>
+<script id="upd" type="x">{{upd}}</script>
+<script id="stir" type="x">{{stir}}</script>
+<script id="dye" type="x">{{dye}}</script>
+<script id="show" type="x">{{show}}</script>
+<script id="vol" type="x">{{vol}}</script>
+<script id="worker3" type="x">{{worker3}}</script>
+<!-- ROOM-SCRIPT -->

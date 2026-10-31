@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 // 2D periodic pseudospectral vorticity solver with 2/3 dealiasing and exact integration of viscosity (IFRK4 or IF
-// Heun, the scheme the GPU view runs). Carries any number of passive dyes. Extras are physical-space hooks:
+// SSP RK3, the scheme the GPU view runs). Carries any number of passive dyes. Extras are physical-space hooks:
 //   drive: a body force on vorticity in spectral space, f(q, t) -> [re, im] per unit time (Kolmogorov forcing)
 //   flow:  a fixed extra velocity {ux, uy} per cell, may have divergence (a drain); advection is in conservative form
 //   wall:  Brinkman penalty mask chi in 0..1 with target velocity, strength 1/eta; first order in sqrt(nu eta)
@@ -95,9 +95,9 @@ export class Spectral2 {
       W.im[i] += kx[i] * gr[i] - ky[i] * fr[i];
     }
   }
-  /** One step of length dt; scheme "rk4" (IFRK4) or "heun" (IF Heun, as the GPU does). */
+  /** One step of length dt; scheme "rk4" (IFRK4) or "ssp3" (as the GPU does). */
   step(dt) {
-    if (this.scheme === "heun") this.stepHeun(dt);
+    if (this.scheme === "ssp3") this.stepSSP3(dt);
     else this.stepRK4(dt);
     if (this.dynamicMean) this.stepMean(dt);
     this.t += dt;
@@ -110,22 +110,23 @@ export class Spectral2 {
     Umean[0] += dt * (fx / n + meanForce[0]);
     Umean[1] += dt * (fy / n + meanForce[1]);
   }
-  stepHeun(dt) {
-    const { n, k2, fields } = this;
-    const a = this.rhs(fields, this.t);
-    const pred = fields.map((F, q) => {
-      const re = new Float64Array(n), im = new Float64Array(n);
-      for (let i = 0; i < n; i++) { const e = Math.exp(-F.visc * k2[i] * dt); re[i] = e * (F.re[i] + dt * a[q].re[i]); im[i] = e * (F.im[i] + dt * a[q].im[i]); }
-      return { re, im, visc: F.visc };
-    });
-    const b = this.rhs(pred, this.t + dt);
-    fields.forEach((F, q) => {
-      for (let i = 0; i < n; i++) {
-        const e = Math.exp(-F.visc * k2[i] * dt);
-        F.re[i] = e * (F.re[i] + 0.5 * dt * a[q].re[i]) + 0.5 * dt * b[q].re[i];
-        F.im[i] = e * (F.im[i] + 0.5 * dt * a[q].im[i]) + 0.5 * dt * b[q].im[i];
-      }
-    });
+  /** Shu-Osher SSP RK3 with the integrating factor. Stable to 1.73 on the imaginary axis, so the GPU can run thin viscosity. */
+  stepSSP3(dt) {
+    const { n, k2, fields, t } = this;
+    const stage = (cur, A, P, B, Q, when) => {
+      const r = this.rhs(cur, when);
+      return fields.map((F, q) => {
+        const re = new Float64Array(n), im = new Float64Array(n), v = F.visc;
+        for (let i = 0; i < n; i++) {
+          const l = -v * k2[i] * dt, a = A ? A * Math.exp(l * P) : 0, b = B * Math.exp(l * Q);
+          re[i] = a * F.re[i] + b * (cur[q].re[i] + dt * r[q].re[i]);
+          im[i] = a * F.im[i] + b * (cur[q].im[i] + dt * r[q].im[i]);
+        }
+        return { re, im, visc: v };
+      });
+    };
+    const w1 = stage(fields, 0, 0, 1, 1, t), w2 = stage(w1, 0.75, 0.5, 0.25, -0.5, t + dt), w3 = stage(w2, 1 / 3, 1, 2 / 3, 0.5, t + dt / 2);
+    fields.forEach((F, q) => { F.re = w3[q].re; F.im = w3[q].im; });
   }
   stepRK4(dt) {
     const { n, k2, fields, t } = this;

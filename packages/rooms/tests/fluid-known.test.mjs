@@ -20,18 +20,18 @@ test("2D Taylor-Green decays exactly; double viscosity is caught", () => {
   assert.ok(within(decay(0.1), ref, 1e-12).ok, `energy ${decay(0.1)} against ${ref}`);
   assert.ok(!within(decay(0.2), ref, 1e-3).ok, "planted viscosity must fail");
 });
-test("Heun scheme, as on the GPU, holds Taylor-Green to second order", () => {
+test("SSP RK3, as on the GPU, converges at third order", () => {
   const run = (dt) => {
-    const s = new Spectral2(32, 32, { nu: 0.1, scheme: "heun" });
+    const s = new Spectral2(32, 32, { nu: 0.1, scheme: "ssp3" });
     s.setField(0, (x, y) => taylorGreen2Omega(1, 0.1, 0)(x, y) + 0.3 * Math.cos(2 * x) * Math.sin(y));
     for (let i = 0; i < Math.round(1 / dt); i++) s.step(dt);
     return s;
   };
   const ref = new Spectral2(32, 32, { nu: 0.1 });
   ref.setField(0, (x, y) => taylorGreen2Omega(1, 0.1, 0)(x, y) + 0.3 * Math.cos(2 * x) * Math.sin(y));
-  for (let i = 0; i < 200; i++) ref.step(0.005);
-  const e1 = Math.abs(run(0.02).energy() - ref.energy()), e2 = Math.abs(run(0.01).energy() - ref.energy());
-  near(e1 / e2, 4, 1.2, "Heun convergence ratio");
+  for (let i = 0; i < 400; i++) ref.step(0.0025);
+  const e1 = Math.abs(run(0.1).energy() - ref.energy()), e2 = Math.abs(run(0.05).energy() - ref.energy());
+  near(e1 / e2, 8, 2.5, "convergence ratio on halving the step");
 });
 test("Poiseuille through penalised walls matches the parabola; the soft wall's error is stated", () => {
   const nu = 1, g = 1, y0 = 1, y1 = 1 + Math.PI, Ny = 128, eta = 0.002;
