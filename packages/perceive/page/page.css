@@ -1,0 +1,31 @@
+/* perceive page: own names mapped onto kit tokens, so light and dark follow the kit */
+[hidden] { display: none !important; }
+.pick { display: grid; gap: var(--sp-2); max-width: 46rem; margin-bottom: var(--sp-4); }
+.pick label { font: 600 var(--fs-4)/1.25 var(--face-text); }
+.pick select { min-height: 48px; font-size: var(--fs-3); width: 100%; }
+.stage { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--sp-4); align-items: start; }
+.stage figure { margin: 0; min-width: 0; }
+canvas { display: block; width: 100%; background: var(--mat); touch-action: none; cursor: crosshair; }
+figcaption { font-size: var(--fs-2); color: var(--ink); margin-top: var(--sp-2); line-height: 1.5; }
+.side { display: grid; gap: var(--sp-3); min-width: 0; }
+.side fieldset { min-width: 0; margin: 0; }
+.side label { display: grid; gap: 4px; font-size: var(--fs-2); }
+.side select { min-height: 44px; width: 100%; }
+.row { display: flex; flex-wrap: wrap; gap: 6px; }
+.row button { min-height: 44px; }
+.check { display: flex !important; align-items: center; gap: 8px; min-height: 44px; }
+.say { font-size: var(--fs-2); line-height: 1.5; margin: 0; }
+.loss { margin-top: var(--sp-4); }
+.loss dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px var(--sp-3); margin: 0; font-size: var(--fs-2); line-height: 1.5; }
+.loss dt { font-weight: 600; }
+.loss dd { margin: 0; }
+.prose { max-width: 70ch; }
+.prose p, .prose li { line-height: 1.6; }
+code, .math { font-family: var(--face-utility); font-size: .95em; }
+.math { display: block; padding: var(--sp-2) var(--sp-3); background: var(--wall-2); margin: var(--sp-2) 0; overflow-x: auto; white-space: pre-wrap; }
+table { border-collapse: collapse; width: 100%; font-size: var(--fs-2); }
+th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.plainlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: var(--sp-3) var(--sp-5); padding: 0; list-style: none; }
+.plainlist h3 { margin: 0 0 4px; font-size: var(--fs-3); }
+.plainlist p { margin: 0; line-height: 1.5; }
+@media (max-width: 760px) { .stage { grid-template-columns: minmax(0, 1fr); } .loss dl { grid-template-columns: minmax(0, 1fr); } .loss dt { margin-top: 6px; } }
