@@ -94,8 +94,8 @@ A program compiled cold on the view took 2.7 s (a harmonic shape new to the driv
 
 The standing limits are 300 lines per file and 50 per function. The page's code came across as moved statements, so a formatter could show each one and an AST check could prove it unchanged. That proof is worth more than short functions during the move.
 
-- Files over 300 lines: `core/train.js` (378, mostly the prescription table), `views/lens-room/src/20-boot-extras.js` (375) and `43-tabs.js` (366), which are control wiring.
-- Functions over 50 lines: 26. The largest are `bootExtras` (374), `drawDiagram` (193), `runWave` (172), `lensFS` (148), `insideChecks` (138), `fParse` (130) and `measureLens` (130). Generators like `lensFS` are mostly template text.
+- Files over 300 lines: `core/train.js` (378, mostly the prescription table), `solvers/pcb/router.js` (500), `solvers/pcb/checks.js` (356), and three view files of wiring and drawing: `lens-room/src/20-boot-extras.js` (375), `lens-room/src/43-tabs.js` (366), `pcb-room/src/11-2d-drawings-a.js` (393).
+- Functions over 50 lines: 66. The largest are `bootExtras` (374), `bindInput` (299), `checksGen` (292), `drawDiagram` (193), `dcSolve` (183), `schematic` (183) and `runWave` (172). Generators like `lensFS` are mostly template text.
 - GLSL bodies stay dense strings. Their bytes are what the golden hashes hold, and reformatting them changes the hash.
 
 Now that parity is recorded, each long function can be split in its own change and rechecked with the same comparison.
