@@ -30,6 +30,9 @@ core/            importable from Node and the browser; no DOM, no GL, no view st
   shaders/       program generators; one small program per shape
   registry.js    one way in for any view or tool
   adapters/      read the virtual bench and lens pipeline file formats
+  families.js    spherical-harmonic globes as a registered shape family
+solvers/         sound (wave field) and pcb (place, route, rules, fields, Gerber), importable with no browser
+properties/      a property as a physical object: state space, operations, elements, instrument, route
 views/           pages generated from core (stage 2 onward)
 tests/           known answers, golden hashes from the source page, planted bad values
 ```
@@ -51,6 +54,34 @@ tests/           known answers, golden hashes from the source page, planted bad 
 - The page's `fCompile` rejected `g = 0` written with a space before the equals sign, because the left side kept its trailing space and the tokenizer refuses a bare space. The core trims it. It is the one intended behaviour change, and it only turns an error into a working formula.
 - `firstDark` places the ring by bin index, and one bin is about a tenth of the Airy radius at the page's grid. It reads 2.3 percent low on an ideal stop. The test states that resolution and allows 3 percent. The page's rule is kept so its readout does not change.
 - With mu 0.1 and b 4 the weak-field index gives 4.0 percent more deflection than 4GM/(b c^2), which is the second-order term and not a fault. The test uses mu 0.01, where the first-order form holds to 0.4 percent.
+
+## Room left for the render and diagram layers
+
+Three directions came in while this was being built, and this layout keeps a place for each. Each is read for technique and rebuilt, with no figure or code copied.
+
+- **Probe-based global illumination.** Ideas from public WebGPU path-tracing work: probes storing irradiance, screen-space fallback, temporal accumulation with hysteresis, sky light. In this package it would be a new shader family under `core/shaders/` that a program opts into, like `pol` or `scat`, with its probe volume as data. It must honour the flat-loop rule, and its known answer is a furnace test against the path tracer.
+- **A shared diagram layer.** Sections, exploded views, block diagrams of processor, bus and memory, and a table by generation (a row per seed, a column per step, the form of a substitution tile table). `packages/diagram` on the open pull request is its likely home, reading registered records here. Lens Room's section and the PCB room's drawings are the first clients. None of it is built yet.
+- **Spherical harmonic shapes.** Built: `core/families.js` registers Y(l,m) deformed globes on request, with flat generated GLSL and orthonormality tests.
+
+## Properties as physical objects
+
+The author's direction, 2026-10-31: "each property has a shape and a form and a function and a structure and a geometry too. So these are like potential instruments in potential space in this hypothetical calculation space."
+
+A record in `properties/model.js` holds:
+
+| Field | Meaning |
+|---|---|
+| state space and shape | a real mathematical object, marked as drawn in chosen coordinates |
+| operations | what can move a state |
+| elements | the physical part that performs each operation |
+| instrument | the parts assembled for one compiled path |
+| fabrication route | how it would be made, and that route's limits |
+| verdict | what the bench checked, with the result |
+| state | `potential` until a physical part is measured |
+
+The plain label is a separate function from anything drawn. A passing verdict never changes the state; only `recordMeasurement`, which requires a part, an instrument, a reading, a person and a date, can do that.
+
+Two cases exist. Polarisation on the Poincare sphere: a waveplate is a rotation of the sphere, and a path compiles to quartz plates whose Jones product is checked against the path's end. Impedance on the Smith chart: a line is a rotation and a stub moves along a conductance circle, and a matched path compiles to microstrip on the PCB engine's stackup, with reflection checked by a transfer matrix and by the engine's time-domain line solver.
 
 ## Which size rules bend, and why
 
