@@ -7,6 +7,7 @@ Every fixture is synthetic and lives in a temp dir.
 """
 import hashlib
 import io
+import datetime
 import os
 import sys
 import tempfile
@@ -165,6 +166,7 @@ class TestTranscriptCapture(Base):
         transcript = os.path.join(self.d, "proj", "sess.jsonl")
         time.sleep(0.05)
         write(transcript, "")
+        started = datetime.datetime.now(datetime.timezone.utc).isoformat()
         time.sleep(0.05)
         data = write(os.path.join(self.d, "out", "result.json"), "{}")
         new_note = write(os.path.join(self.d, "intake", "notes-40.md"), "# intake batch 40\n")
@@ -174,6 +176,7 @@ class TestTranscriptCapture(Base):
             return json.dumps({"message": {"content": [
                 {"type": "tool_use", "name": name, "input": {"file_path": path}}]}})
         with open(transcript, "w", encoding="utf-8") as f:
+            f.write(json.dumps({"timestamp": started}) + "\n")
             f.write("\n".join([use(data), use(old_note, "Edit"), use(new_note),
                                use(os.path.join(self.d, "gone.md"))]) + "\n")
         with open(sub, "w", encoding="utf-8") as f:

@@ -9,7 +9,10 @@ refused. A living document itself is always accepted.
 """
 from __future__ import annotations
 
+import json
 import os
+import sys
+from datetime import datetime
 
 from . import living, schema
 
@@ -160,16 +163,38 @@ def _tool_paths(line: str):
                 yield p
 
 
+def _born(path: str) -> float:
+    """Creation time where the platform records one (Windows, macOS). Elsewhere st_ctime, the last inode change."""
+    st = os.stat(path)
+    return getattr(st, "st_birthtime", st.st_ctime)
+
+
+def _session_start(transcript: str) -> float:
+    """When the session began: the transcript's creation time, or its first record's timestamp on Linux,
+    where rewriting the file moves st_ctime and Python exposes no creation time."""
+    st = os.stat(transcript)
+    if hasattr(st, "st_birthtime"):
+        return st.st_birthtime
+    try:
+        with open(transcript, encoding="utf-8") as fh:
+            stamp = json.loads(fh.readline()).get("timestamp")
+        return datetime.fromisoformat(stamp.replace("Z", "+00:00")).timestamp()
+    except (OSError, ValueError, AttributeError) as exc:
+        print(f"library: no timestamp in the first record of {transcript} ({exc}); using its st_ctime", file=sys.stderr)
+        return st.st_ctime
+
+
 def capture_transcript(conn, transcript: str, session_id: str):
     """Catalogue what the session wrote. Returns (ingested_ids, refusals, skipped).
 
     The no-new-notes rule applies only to files created after the session
-    started (Windows creation time against the transcript's). Edits to files
-    that already existed are catalogued without the rule.
+    started. Edits to files that already existed are catalogued without the rule.
+    Limit: without a creation time (Linux), an edited old file counts as new, so the
+    rule applies to it too.
     """
     done, refused, skipped = [], [], []
     try:
-        started = os.path.getctime(transcript)
+        started = _session_start(transcript)
     except OSError:
         started = 0.0
     for p in written_paths(transcript):
@@ -177,7 +202,7 @@ def capture_transcript(conn, transcript: str, session_id: str):
             skipped.append(p)
             continue
         try:
-            new_file = os.path.getctime(p) >= started
+            new_file = _born(p) >= started
             done.append(ingest(conn, p, session_id=session_id, enforce=new_file))
         except Refused as exc:
             refused.append((p, exc.doc[0]))
