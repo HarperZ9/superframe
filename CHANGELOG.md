@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+Added:
+
+- `packages/`: the instruments under the engine, each with its known-answer tests. See `packages/README.md`.
+- `npm run test:packages` and `npm run test:py`, both run on CI.
+
 ## 0.2.0 (2026-10-28)
 
 Superframe is one part of a larger creative and study platform. This release adds the study generator and the measured libraries. Each library was written against a pre-registration, and its README keeps the PREREG and RESULTS, misses included.

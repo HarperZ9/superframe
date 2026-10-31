@@ -1,0 +1,33 @@
+/* cad pages: the diagram page's rules plus the sheets, mapped onto kit tokens so light and dark follow the kit */
+:root { --dw-ink: var(--ink); --dw-paper: var(--mat); --dw-soft: var(--soft); --dw-sel: var(--red); --dw-wire: var(--tide-2); --dw-face: var(--face-utility, monospace); }
+.cad-top { display: grid; grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr); gap: var(--sp-4); align-items: start; }
+.cad-bar { margin-top: var(--sp-3); display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--sp-3); }
+.cad-bar fieldset { min-width: 0; } .cad-bar label { display: grid; gap: 4px; font-size: var(--fs-2); } .cad-bar select { min-height: 44px; width: 100%; }
+.cad-bar button, .cad-get button, .pick button { min-height: 44px; margin: 0 6px 6px 0; }
+#drag-cut[aria-pressed="true"], .pick button[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); }
+.cad-params { min-width: 0; }
+#params { display: grid; gap: 2px; }
+#params label { display: flex; justify-content: space-between; gap: 8px; font-size: var(--fs-2); margin-top: 6px; }
+#params output { font-family: var(--face-utility); white-space: nowrap; }
+#params input { width: 100%; }
+.cad-problems { border-left: 3px solid var(--drift); padding: 6px 10px; color: var(--drift); }
+.cad-sheet-wrap { margin-top: var(--sp-5); }
+.cad-bp { overflow: auto; background: var(--mat); max-height: 82vh; }
+.cad-bp svg { display: block; width: 100%; height: auto; }
+.cad-bp [data-part], .cad-bp [data-item] { cursor: pointer; }
+.cad-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-4); margin-top: var(--sp-5); }
+.cad-two figure { margin: 0; min-width: 0; }
+.cad-sch-wrap { overflow: auto; background: var(--mat); }
+.cad-sch-wrap svg { display: block; width: 100%; height: auto; min-width: 520px; }
+.cad-read { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 2px 12px; font-size: var(--fs-2); margin: 0 0 var(--sp-3); }
+.cad-read dt { color: var(--soft); } .cad-read dd { margin: 0; font-family: var(--face-utility); }
+#cv-phys { display: block; width: 100%; background: var(--mat); }
+tr[data-part] { cursor: pointer; } tr.sel td { background: var(--wall-2); font-weight: 700; }
+tr[data-part]:focus-visible { outline: 2px solid var(--red); }
+.cad-get { margin-top: var(--sp-4); }
+.sp h3 { margin-top: var(--sp-4); } .sp-as li { margin-bottom: 6px; line-height: 1.5; } .sp-how, .sp-door { color: var(--soft); }
+tr.sp-sum td { font-weight: 700; border-top: 2px solid var(--ink); }
+.cad-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--sp-4); list-style: none; padding: 0; margin: 0; }
+.cad-cards li { margin: 0; } .cad-cards a { font-weight: 700; } .cad-cards .thumb { background: var(--mat); }
+.cad-cards .thumb svg { display: block; width: 100%; height: auto; }
+@media (max-width: 860px) { .cad-top, .cad-two { grid-template-columns: minmax(0, 1fr); } .cad-read { grid-template-columns: minmax(0, 1fr); } }

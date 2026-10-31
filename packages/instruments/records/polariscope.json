@@ -1,0 +1,95 @@
+{
+ "schema": "superframe.instrument-record/1",
+ "id": "polariscope",
+ "pipeline_id": "polariscope",
+ "name": "Photoelastic polariscope",
+ "atlas_id": null,
+ "written": "2026-10-30",
+ "summary": "Stress made visible: a screen, one polariser sheet and a phone. The cheapest first real-world build. On paper.",
+ "views": {
+  "pipeline_example": "examples/polariscope.json",
+  "cad_model": "diagram/cad/instruments/polariscope.js",
+  "cad_page": "cad-polariscope.html"
+ },
+ "design": {
+  "D": {
+   "value": 40,
+   "unit": "mm",
+   "label": "Disc diameter"
+  },
+  "t": {
+   "value": 3,
+   "unit": "mm",
+   "label": "Disc thickness"
+  },
+  "P": {
+   "value": 50,
+   "unit": "N",
+   "label": "Load"
+  },
+  "fs": {
+   "value": 7,
+   "unit": "N/mm per fringe",
+   "label": "Fringe constant"
+  },
+  "theta": {
+   "value": 30,
+   "unit": "deg",
+   "label": "Analyser angle"
+  },
+  "frameW": {
+   "value": 160,
+   "unit": "mm",
+   "label": "Frame width"
+  },
+  "frameH": {
+   "value": 160,
+   "unit": "mm",
+   "label": "Frame height"
+  }
+ },
+ "fixed": {
+  "yieldMPa": 60,
+  "whiteOrders": 4.5,
+  "colourRes": 0.1,
+  "stepRes": 0.02,
+  "g": 9.81
+ },
+ "assumptions": [
+  {
+   "assumption": "the screen's light is linearly polarised",
+   "how_checked": "rotate the analyser sheet over the white screen: near-black at one angle",
+   "if_broken": "no fringes; use a second sheet as the polariser",
+   "optional": true,
+   "door": "put a second polariser sheet over a plain light source"
+  },
+  {
+   "assumption": "the part is linear elastic and its fringes do not creep in time",
+   "how_checked": "photograph at 10 s and 5 min under a fixed load; fringe order unchanged within 0.1",
+   "if_broken": "photoviscoelastic: report time under load with every reading",
+   "optional": true,
+   "door": "report the time under load with every reading (photoviscoelastic)"
+  },
+  {
+   "assumption": "residual (frozen-in) stress is known or subtracted",
+   "how_checked": "photograph the unloaded part first; that image is the zero",
+   "if_broken": "the moulding stresses of the Brockhaus figures, exactly; subtract the zero image",
+   "optional": true,
+   "door": "photograph the unloaded part and subtract that zero image"
+  },
+  {
+   "assumption": "stress is uniform through the thickness (plane stress)",
+   "how_checked": "thin flat parts only; thickness under a tenth of the in-plane size",
+   "if_broken": "an integrated value, not a local one",
+   "optional": false,
+   "door": ""
+  },
+  {
+   "assumption": "the colour-to-order map holds for this screen and camera",
+   "how_checked": "the stage-2 twin's map against the calibration disc, order by order",
+   "if_broken": "count orders in single-colour light instead",
+   "optional": true,
+   "door": "count orders in single-colour light instead"
+  }
+ ]
+}

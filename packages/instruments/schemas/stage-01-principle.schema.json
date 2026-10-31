@@ -1,0 +1,210 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://harperz9.local/hardware-pipeline/schemas/stage-01-principle.schema.json",
+ "title": "Principle: the law, its form, and the wall-audit assumptions it rests on",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "stage",
+  "key",
+  "status",
+  "inputs",
+  "outputs",
+  "gate",
+  "tools",
+  "spec",
+  "does_not_prove"
+ ],
+ "properties": {
+  "stage": {
+   "const": 1
+  },
+  "key": {
+   "const": "principle"
+  },
+  "status": {
+   "enum": [
+    "paper",
+    "built",
+    "run",
+    "passed",
+    "failed",
+    "blocked",
+    "existing-device"
+   ]
+  },
+  "inputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "outputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "gate": {
+   "type": "object",
+   "properties": {
+    "condition": {
+     "type": "string"
+    },
+    "metric": {
+     "type": "string"
+    },
+    "op": {
+     "enum": [
+      "<",
+      "<=",
+      ">",
+      ">=",
+      "==",
+      "in"
+     ]
+    },
+    "threshold": {},
+    "measured": {},
+    "verdict": {
+     "enum": [
+      "pass",
+      "fail",
+      "open",
+      "not-applicable"
+     ]
+    },
+    "evidence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "condition",
+    "metric",
+    "op",
+    "threshold",
+    "verdict"
+   ],
+   "additionalProperties": false
+  },
+  "tools": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "role": {
+      "type": "string"
+     },
+     "licence": {
+      "type": "string"
+     },
+     "ours": {
+      "type": "boolean"
+     },
+     "lineage": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "name",
+     "role",
+     "licence",
+     "ours"
+    ],
+    "additionalProperties": false
+   },
+   "minItems": 1
+  },
+  "spec": {
+   "type": "object",
+   "properties": {
+    "law": {
+     "type": "object",
+     "properties": {
+      "name": {
+       "type": "string"
+      },
+      "form": {
+       "type": "string"
+      },
+      "catalogue_id": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "lineage": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "name",
+      "form",
+      "catalogue_id",
+      "lineage"
+     ],
+     "additionalProperties": false
+    },
+    "quantity": {
+     "type": "string"
+    },
+    "signal": {
+     "type": "string"
+    },
+    "inversion": {
+     "type": "string"
+    },
+    "wall_assumptions": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "assumption": {
+        "type": "string"
+       },
+       "how_checked": {
+        "type": "string"
+       },
+       "if_broken": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "assumption",
+       "how_checked",
+       "if_broken"
+      ],
+      "additionalProperties": false
+     },
+     "minItems": 1
+    },
+    "fundamental_bound": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "law",
+    "quantity",
+    "signal",
+    "inversion",
+    "wall_assumptions",
+    "fundamental_bound"
+   ],
+   "additionalProperties": false
+  },
+  "notes": {
+   "type": "string"
+  },
+  "does_not_prove": {
+   "type": "string"
+  }
+ }
+}

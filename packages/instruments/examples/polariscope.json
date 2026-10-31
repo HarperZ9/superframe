@@ -1,0 +1,639 @@
+{
+ "schema": "hardware-pipeline.instrument/0.1",
+ "id": "polariscope",
+ "name": "Photoelastic polariscope",
+ "atlas_id": null,
+ "written": "2026-10-30",
+ "summary": "Stress made visible: a screen, one polariser sheet and a phone. The cheapest first real-world build. On paper.",
+ "stages": [
+  {
+   "stage": 1,
+   "key": "principle",
+   "status": "paper",
+   "inputs": [
+    "the 1908 Brockhaus 'Licht' plate the author saved (figures 5 and 6: cooled and pressed glass)",
+    "law catalogue"
+   ],
+   "outputs": [
+    "the stress-optic law, its inversion and its assumptions"
+   ],
+   "gate": {
+    "condition": "every assumption names a check that can fail",
+    "metric": "assumptions without a check",
+    "op": "==",
+    "threshold": 0,
+    "verdict": "pass",
+    "measured": 0
+   },
+   "tools": [
+    {
+     "name": "CHECKS.json",
+     "role": "named check techniques the stage uses",
+     "licence": "ours",
+     "ours": true,
+     "lineage": "the private study 2026-10-30-checks"
+    }
+   ],
+   "spec": {
+    "law": {
+     "name": "stress-optic law (temporary birefringence)",
+     "form": "delta = 2 pi t C (sigma1 - sigma2) / lambda; fringe order N = t (sigma1 - sigma2) / f_sigma, with f_sigma = lambda / C",
+     "catalogue_id": null,
+     "lineage": "Brewster (1816), stressed glass between polarisers; Maxwell (1853), the stress-optic relation; Coker and Filon, A Treatise on Photo-Elasticity (1931); Frocht, Photoelasticity (1941), the disc calibration; Michel-Levy (1888), the interference-colour chart"
+    },
+    "quantity": "principal stress difference sigma1 - sigma2 across a transparent part, and the principal directions",
+    "signal": "fringe order (isochromatics) and extinction bands (isoclinics) seen through crossed polarisers",
+    "inversion": "sigma1 - sigma2 = N f_sigma / t, with f_sigma measured on a calibration disc of the same sheet",
+    "wall_assumptions": [
+     {
+      "assumption": "the screen's light is linearly polarised",
+      "how_checked": "rotate the analyser sheet over the white screen: near-black at one angle",
+      "if_broken": "no fringes; use a second sheet as the polariser"
+     },
+     {
+      "assumption": "the part is linear elastic and its fringes do not creep in time",
+      "how_checked": "photograph at 10 s and 5 min under a fixed load; fringe order unchanged within 0.1",
+      "if_broken": "photoviscoelastic: report time under load with every reading"
+     },
+     {
+      "assumption": "residual (frozen-in) stress is known or subtracted",
+      "how_checked": "photograph the unloaded part first; that image is the zero",
+      "if_broken": "the moulding stresses of the Brockhaus figures, exactly; subtract the zero image"
+     },
+     {
+      "assumption": "stress is uniform through the thickness (plane stress)",
+      "how_checked": "thin flat parts only; thickness under a tenth of the in-plane size",
+      "if_broken": "an integrated value, not a local one"
+     },
+     {
+      "assumption": "the colour-to-order map holds for this screen and camera",
+      "how_checked": "the stage-2 twin's map against the calibration disc, order by order",
+      "if_broken": "count orders in single-colour light instead"
+     }
+    ],
+    "fundamental_bound": "white-light colours wash out past about 4 to 5 orders (from memory, moderate); fringe-order resolution about 0.1 by colour, about 0.02 with phase stepping"
+   },
+   "does_not_prove": "Fringes give the difference of principal stresses, not each stress; separating them needs a second method."
+  },
+  {
+   "stage": 2,
+   "key": "twin",
+   "status": "paper",
+   "inputs": [
+    "stage 1",
+    "the screen's spectrum and the camera's spectral response, each to be measured"
+   ],
+   "outputs": [
+    "a Jones-calculus twin: retardation to the RGB the camera records, for this screen"
+   ],
+   "gate": {
+    "condition": "the twin's colour-to-order map recovers a planted retardation ramp within 0.1 order up to order 3",
+    "metric": "max |N_est - N_planted|",
+    "op": "<",
+    "threshold": 0.1,
+    "verdict": "open"
+   },
+   "tools": [
+    {
+     "name": "Python 3.12 and NumPy",
+     "role": "simulation and analysis",
+     "licence": "PSF-2.0 and BSD-3-Clause",
+     "ours": false,
+     "lineage": "NumPy: Oliphant (2006), from Numeric (Hugunin, 1995)"
+    },
+    {
+     "name": "tools/perceive",
+     "role": "perceptual bridge for the returned quantity",
+     "licence": "ours",
+     "ours": true,
+     "lineage": "registry.js bridges: heat, sound, polarisation"
+    }
+   ],
+   "spec": {
+    "model": "plane and circular polariscope as Jones matrices; per wavelength, I = sin^2(2 theta) sin^2(delta / 2) (plane) or sin^2(delta / 2) (circular); integrate over the screen's spectral power times each camera channel's sensitivity",
+    "code": [
+     "planned: polariscope/twin.py; the page's toy already runs the white-light case in the browser"
+    ],
+    "noise_sources": [
+     {
+      "name": "camera shot and read noise",
+      "formula": "sqrt(electrons) plus read noise per pixel",
+      "value": "small next to colour ambiguity at these light levels"
+     },
+     {
+      "name": "screen spectral lines",
+      "formula": "three narrow primaries instead of a continuum",
+      "value": "colours differ from the Michel-Levy chart; the twin fixes that"
+     },
+     {
+      "name": "imperfect polarisers",
+      "formula": "extinction ratio",
+      "value": "unknown; measured as the dark level with no part"
+     }
+    ],
+    "bounds": [
+     {
+      "name": "colour washout",
+      "formula": "coherence of the source over the retardation",
+      "value": "about 4 orders in white light"
+     },
+     {
+      "name": "single-primary counting",
+      "formula": "intensity sin^2(pi N) in one primary",
+      "value": "dozens of orders countable, sign ambiguous"
+     }
+    ],
+    "known_answer_tests": [
+     {
+      "name": "planted retardation ramp",
+      "truth": "a linear N from 0 to 5",
+      "pass_condition": "within 0.1 order to N = 3",
+      "result": null
+     }
+    ]
+   },
+   "does_not_prove": "A twin built on measured spectra still assumes ideal sheets and no stray light."
+  },
+  {
+   "stage": 3,
+   "key": "front_end",
+   "status": "existing-device",
+   "inputs": [
+    "a laptop or phone screen",
+    "a phone camera"
+   ],
+   "outputs": [
+    "the optical chain and its settings"
+   ],
+   "gate": {
+    "condition": "extinction with crossed polarisers and no part: dark level below 2 percent of the open level in every channel",
+    "metric": "dark / open",
+    "op": "<",
+    "threshold": 0.02,
+    "verdict": "open"
+   },
+   "tools": [
+    {
+     "name": "phone camera in manual mode (fixed exposure, white balance, ISO)",
+     "role": "detector",
+     "licence": "existing device",
+     "ours": false
+    }
+   ],
+   "spec": {
+    "existing_device": true,
+    "chain": [
+     {
+      "element": "source and polariser",
+      "part_or_device": "the screen itself, showing white, then pure green",
+      "key_spec": "linearly polarised output"
+     },
+     {
+      "element": "specimen",
+      "part_or_device": "clear polycarbonate parts (high sensitivity; acrylic shows few fringes)",
+      "key_spec": "thin, flat, stress-free when annealed"
+     },
+     {
+      "element": "analyser",
+      "part_or_device": "one linear polariser sheet; circular: two pairs of cinema 3D glasses (each lens a linear polariser plus a quarter-wave film; from memory, moderate)",
+      "key_spec": "extinction measured"
+     },
+     {
+      "element": "detector",
+      "part_or_device": "phone camera, RAW where available",
+      "key_spec": "fixed exposure and white balance"
+     }
+    ],
+    "noise_budget": [
+     {
+      "source": "colour ambiguity between orders",
+      "density": "about 0.1 order",
+      "share_of_total": "dominant"
+     },
+     {
+      "source": "camera noise",
+      "density": "below 0.02 order after spatial averaging",
+      "share_of_total": "small"
+     }
+    ],
+    "adc": {
+     "bits": null,
+     "fs_hz": null,
+     "enob_or_floor": "the camera's RAW depth, 10 to 12 bits typical (from memory, low)"
+    },
+    "margin_to_bound": "colour is the limit; phase stepping with marked analyser angles buys about 5 times"
+   },
+   "does_not_prove": "One phone's colour pipeline is not another's; RAW avoids most of it."
+  },
+  {
+   "stage": 4,
+   "key": "schematic_pcb",
+   "status": "existing-device",
+   "inputs": [
+    "stage 3"
+   ],
+   "outputs": [
+    "a printed jig and a BOM of one sheet"
+   ],
+   "gate": {
+    "condition": "BOM lines without alternate",
+    "metric": "count",
+    "op": "==",
+    "threshold": 0,
+    "verdict": "pass",
+    "measured": 0
+   },
+   "tools": [
+    {
+     "name": "OpenSCAD",
+     "role": "printable load frame and disc holder",
+     "licence": "GPL-2.0 (from memory, moderate)",
+     "ours": false,
+     "lineage": "Marius Kintel and Clifford Wolf (2010)"
+    }
+   ],
+   "spec": {
+    "existing_device": true,
+    "eda": {
+     "tool": "OpenSCAD for the jig; no circuit",
+     "version": "current",
+     "files": [
+      "planned: frame.scad"
+     ]
+    },
+    "checks": [
+     "frame fits the screen",
+     "load points 4-point bend span marked"
+    ],
+    "bom": [
+     {
+      "ref": "P1",
+      "part": "linear polariser sheet",
+      "function": "analyser",
+      "lifecycle": "commodity",
+      "lifecycle_source": "n/a",
+      "alternates": [
+       "polarised sunglasses (unknown axis; check over the screen)",
+       "cinema 3D glasses"
+      ]
+     },
+     {
+      "ref": "S1",
+      "part": "polycarbonate offcut, 2 to 3 mm",
+      "function": "calibration disc and beam",
+      "lifecycle": "commodity",
+      "lifecycle_source": "n/a",
+      "alternates": [
+       "epoxy casting",
+       "gelatin (very sensitive, soft)"
+      ]
+     },
+     {
+      "ref": "W1",
+      "part": "water bottles as weights",
+      "function": "known load",
+      "lifecycle": "existing",
+      "lifecycle_source": "n/a",
+      "alternates": [
+       "kitchen-scale-weighed stones"
+      ]
+     }
+    ],
+    "spend": "gated: nothing ordered, priced or fabricated"
+   },
+   "does_not_prove": "A jig that fits proves nothing about the stress it applies."
+  },
+  {
+   "stage": 5,
+   "key": "firmware",
+   "status": "paper",
+   "inputs": [
+    "stage 3"
+   ],
+   "outputs": [
+    "capture and analysis code with self-tests"
+   ],
+   "gate": {
+    "condition": "the dark-frame and zero-load tests run before every capture set",
+    "metric": "capture sets without both",
+    "op": "==",
+    "threshold": 0,
+    "verdict": "open"
+   },
+   "tools": [
+    {
+     "name": "Python 3.12 and NumPy",
+     "role": "simulation and analysis",
+     "licence": "PSF-2.0 and BSD-3-Clause",
+     "ours": false,
+     "lineage": "NumPy: Oliphant (2006), from Numeric (Hugunin, 1995)"
+    },
+    {
+     "name": "OpenCV",
+     "role": "image registration and fringe tracing (R&D only; shipped code is ours)",
+     "licence": "Apache-2.0",
+     "ours": false,
+     "lineage": "Bradski (2000), Intel; now OpenCV.org"
+    }
+   ],
+   "spec": {
+    "platform": "phone captures; host Python analysis",
+    "toolchain": {
+     "name": "Python and NumPy; OpenCV only for R&D registration",
+     "pinned": "versions and code sha256 in each receipt"
+    },
+    "reproducible_build": {
+     "method": "source, hashed",
+     "check": "same images give the same fringe map"
+    },
+    "self_tests": [
+     {
+      "name": "dark frame (auto-zero)",
+      "check_id": "autozero",
+      "method": "crossed sheets, no part",
+      "pass_condition": "dark below 2 percent of open"
+     },
+     {
+      "name": "zero-load image",
+      "check_id": "artifactcontrol",
+      "method": "the unloaded part",
+      "pass_condition": "residual fringes recorded and subtracted"
+     },
+     {
+      "name": "analytic specimen",
+      "check_id": "analyticspecimen",
+      "method": "disc in diametral compression",
+      "pass_condition": "fringe pattern matches the closed-form field within 0.1 order"
+     }
+    ]
+   },
+   "does_not_prove": "Passing self-tests says the optics and code behave, not that a part is safe."
+  },
+  {
+   "stage": 6,
+   "key": "calibration",
+   "status": "paper",
+   "inputs": [
+    "stage 5",
+    "known loads"
+   ],
+   "outputs": [
+    "f_sigma for this sheet, with its uncertainty"
+   ],
+   "gate": {
+    "condition": "f_sigma from the disc and from the beam agree within their combined uncertainty",
+    "metric": "|f_disc - f_beam| / u_c",
+    "op": "<",
+    "threshold": 2.0,
+    "verdict": "open"
+   },
+   "tools": [
+    {
+     "name": "Python 3.12 and NumPy",
+     "role": "simulation and analysis",
+     "licence": "PSF-2.0 and BSD-3-Clause",
+     "ours": false,
+     "lineage": "NumPy: Oliphant (2006), from Numeric (Hugunin, 1995)"
+    },
+    {
+     "name": "CHECKS.json",
+     "role": "named check techniques the stage uses",
+     "licence": "ours",
+     "ours": true,
+     "lineage": "the private study 2026-10-30-checks"
+    }
+   ],
+   "spec": {
+    "method": "two specimens of one sheet. Disc of diameter D in diametral compression P: at the centre sigma1 - sigma2 = 8 P / (pi D t), so f_sigma = 8 P / (pi D N_centre) (Frocht). Beam in four-point bending: sigma = M y / I between the inner loads, fringes run parallel to the neutral axis with a linear order gradient",
+    "references": [
+     {
+      "name": "load from water bottles",
+      "kind": "working",
+      "traceability": "volume times density (1 L of water near 0.998 kg at 20 C) or a kitchen scale of unknown calibration"
+     },
+     {
+      "name": "ruler and calipers for D and t",
+      "kind": "working",
+      "traceability": "unchecked"
+     },
+     {
+      "name": "closed-form disc and beam fields",
+      "kind": "primary",
+      "traceability": "elasticity theory: the shape of the field is exact; its scale rests on P, D and t"
+     }
+    ],
+    "record_fields": [
+     "sheet and batch",
+     "D, t",
+     "loads",
+     "N at each load",
+     "f_sigma and its fit residual",
+     "temperature",
+     "date",
+     "record sha256"
+    ],
+    "is_primary_standard": false,
+    "honest_traceability": "The fringe pattern's shape is a known answer from theory; its scale is only as good as a water bottle and a ruler. Readings say UNCAL until the disc and beam agree."
+   },
+   "does_not_prove": "Two specimens from one sheet share its errors."
+  },
+  {
+   "stage": 7,
+   "key": "hil",
+   "status": "paper",
+   "inputs": [
+    "stage 6"
+   ],
+   "outputs": [
+    "a screen-to-camera round trip with planted retardation"
+   ],
+   "gate": {
+    "condition": "a planted retardation pattern shown on a second screen layer is read back within 0.1 order",
+    "metric": "max order error",
+    "op": "<",
+    "threshold": 0.1,
+    "verdict": "open"
+   },
+   "tools": [
+    {
+     "name": "Python 3.12 and NumPy",
+     "role": "simulation and analysis",
+     "licence": "PSF-2.0 and BSD-3-Clause",
+     "ours": false,
+     "lineage": "NumPy: Oliphant (2006), from Numeric (Hugunin, 1995)"
+    }
+   ],
+   "spec": {
+    "rig": "digital to analog to digital: the screen displays the colours the twin predicts for a planted retardation map; the camera records them; the analysis must return the planted map. Then the physical disc under a known load closes the loop through real plastic",
+    "signals": [
+     {
+      "name": "planted ramp, displayed",
+      "truth": "the planted N map"
+     },
+     {
+      "name": "disc under load",
+      "truth": "Frocht's closed-form N map"
+     }
+    ],
+    "scoring": {
+     "error_vs_truth": "pixel-wise |N_est - N_true|",
+     "bits_lost": "log2 of distinguishable orders before and after the camera, per pixel"
+    },
+    "results": null
+   },
+   "does_not_prove": "A displayed planted map tests the camera and colour map, not the polariser sheets."
+  },
+  {
+   "stage": 8,
+   "key": "field",
+   "status": "paper",
+   "inputs": [
+    "stage 7 pass"
+   ],
+   "outputs": [
+    "stress maps of real parts under a preregistered protocol"
+   ],
+   "gate": {
+    "condition": "on 3 parts with a closed-form answer (disc, ring, notched beam) the mapped stress agrees within 15 percent",
+    "metric": "median relative error",
+    "op": "<",
+    "threshold": 0.15,
+    "verdict": "open"
+   },
+   "tools": [
+    {
+     "name": "studyrun",
+     "role": "preregistration lock, controls, verdicts",
+     "licence": "ours",
+     "ours": true,
+     "lineage": "the private study 2026-10-29-pipelines"
+    }
+   ],
+   "spec": {
+    "sites": [
+     "the author's bench, daylight off",
+     "plastic offcuts: disc, ring, notched beam",
+     "a clear plastic tree-tie or guard under its own clamp load (a real use)"
+    ],
+    "protocol": {
+     "prereg": "a studyrun spec before the first field capture (not written yet)",
+     "known_answers": [
+      "disc",
+      "ring",
+      "notched-beam stress concentration factor"
+     ],
+     "kill_condition": "median error above 15 percent on the known-answer parts",
+     "controls": [
+      "zero-load image of each part",
+      "the analyser rotated 90 degrees (fringes must invert)"
+     ]
+    },
+    "conditions_logged": [
+     "temperature",
+     "time under load",
+     "screen brightness and colour",
+     "camera settings"
+    ]
+   },
+   "does_not_prove": "Agreement on textbook shapes does not cover parts with complex 3D stress."
+  },
+  {
+   "stage": 9,
+   "key": "data_return",
+   "status": "paper",
+   "inputs": [
+    "each analysed capture"
+   ],
+   "outputs": [
+    "a receipt per part and load"
+   ],
+   "gate": {
+    "condition": "each receipt validates against receipt.schema.json",
+    "metric": "invalid receipts",
+    "op": "==",
+    "threshold": 0,
+    "verdict": "open"
+   },
+   "tools": [
+    {
+     "name": "every-dimension bus.py",
+     "role": "receipt events on the measurement bus",
+     "licence": "ours",
+     "ours": true,
+     "lineage": "extends project-telos.measurement-bus/v1"
+    },
+    {
+     "name": "tools/perceive",
+     "role": "perceptual bridge for the returned quantity",
+     "licence": "ours",
+     "ours": true,
+     "lineage": "registry.js bridges: heat, sound, polarisation"
+    }
+   ],
+   "spec": {
+    "receipt_schema": "schemas/receipt.schema.json",
+    "value_fields": [
+     "max_fringe_order",
+     "sigma_diff_MPa_at_points",
+     "f_sigma_N_per_mm",
+     "load_N",
+     "time_under_load_s",
+     "image_sha256"
+    ],
+    "uncal_policy": "UNCAL until the disc and beam calibrations agree; also when the zero-load image was not taken",
+    "feeds": {
+     "measurement_bus": "domain mechanics, dimension space",
+     "perceptual_bridge": "tools/perceive 'polarisation' bridge",
+     "findings": "a FINDINGS entry when the field study runs"
+    },
+    "example": null
+   },
+   "does_not_prove": "An image hash proves which photograph was read, not what stress the part held."
+  },
+  {
+   "stage": 10,
+   "key": "manufacturing",
+   "status": "paper",
+   "inputs": [
+    "a passing field study"
+   ],
+   "outputs": [
+    "a kit: sheet, printed frame, calibration disc, analysis code"
+   ],
+   "gate": {
+    "condition": "each kit's disc reads within 0.1 order of the reference kit's disc at the same load",
+    "metric": "kits outside tolerance",
+    "op": "==",
+    "threshold": 0,
+    "verdict": "open"
+   },
+   "tools": [
+    {
+     "name": "studyrun",
+     "role": "preregistration lock, controls, verdicts",
+     "licence": "ours",
+     "ours": true,
+     "lineage": "the private study 2026-10-29-pipelines"
+    }
+   ],
+   "spec": {
+    "design_for_test": [
+     "each kit ships its own calibration disc",
+     "the dark-frame test runs on first use"
+    ],
+    "fixture": "a reference load frame and one reference disc kept as the kit standard",
+    "yield": {
+     "metric": "share of kits whose disc passes",
+     "tracking": "one receipt per kit"
+    },
+    "build_capsule": {
+     "design_sha256": "frame .scad and sheet spec",
+     "firmware_sha256": "analysis code sha256",
+     "calibration_record_sha256": "the kit's disc record",
+     "test_receipts": "first-use dark-frame and disc receipts"
+    }
+   },
+   "does_not_prove": "A kit standard is only a shared reference, not an absolute one."
+  }
+ ]
+}

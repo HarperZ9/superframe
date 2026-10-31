@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<!-- Built by packages/diagram/page/build.py from src/*.js, page/*.js and diagrams/{{ID}}.js.
+     Style: the site's system/kit, inlined between the markers. -->
+<!-- site-kit:begin --><!-- site-kit:end -->
+<style>{{CSS}}</style>
+</head>
+<body data-region="{{REGION}}">
+<a class="skip" href="#toy">Skip to the model</a>
+<main class="k-page">
+<header class="k-head"><p class="k-super" aria-hidden="true">{{SUPER}}</p>
+ <h1>{{TITLE}}</h1>
+ <p class="k-lede">{{LEDE}}</p>
+ <hr class="k-horizon">
+</header>
+
+<section class="k-layer" data-layer="toy" id="toy" aria-labelledby="toy-h">
+<div class="k-layer-head"><h2 id="toy-h">Spin it, take it apart, press play</h2><span class="k-depth">toy</span></div>
+<div class="dg-top">
+ <figure class="k-frame dg-stagewrap">
+  <div id="stage" class="dg-stage"><canvas class="cv-gl" aria-hidden="true"></canvas><canvas class="cv-cpu" aria-hidden="true" hidden></canvas><canvas class="cv-ov" tabindex="0" role="img" aria-label="{{TITLE}}: a 3D model. Arrow keys turn it, plus and minus zoom."></canvas></div>
+  <figcaption id="lens-3d" class="lens" aria-live="polite">Lens: 3D model.</figcaption>
+ </figure>
+ <div class="dg-side">
+  <h3 id="parts-h">Parts</h3>
+  <ol id="parts" class="dg-parts" aria-labelledby="parts-h"></ol>
+  <div id="inspect" class="dg-inspect" aria-live="polite"></div>
+ </div>
+</div>
+<div class="k-controls dg-bar">
+ <fieldset><legend>Take it apart</legend><label for="explode">Tear down</label><input id="explode" type="range" min="0" max="100" step="1" value="0"></fieldset>
+ <fieldset><legend>Cut it open</legend>
+  <label class="check"><input id="cut-on" type="checkbox"> Cutting plane</label>
+  <label for="cut-axis">Plane facing<select id="cut-axis"><option value="x">x</option><option value="y">y</option><option value="z" selected>z</option></select></label>
+  <label for="cut-d">Where it cuts</label><input id="cut-d" type="range" min="-100" max="100" step="1" value="0">
+ </fieldset>
+ <fieldset><legend>See through</legend>
+  <button type="button" id="xray" aria-pressed="false">X-ray</button>
+  <label for="opacity">Picked part's opacity</label><input id="opacity" type="range" min="0" max="100" step="1" value="100" disabled>
+ </fieldset>
+ <fieldset><legend>Time</legend>
+  <button class="k-primary" id="play" type="button">Play</button>
+  <label for="time">Scrub</label><input id="time" type="range" min="0" max="1000" step="1" value="0">
+  <output id="t-read" for="time"></output>
+ </fieldset>
+ <fieldset><legend>Physics layer</legend>
+  <label for="overlay">Show<select id="overlay"><option value="">plain materials</option><option value="temperature">temperature (heat model)</option><option value="thermal">thermal camera, 8 to 14 um</option><option value="current">current density and heating</option></select></label>
+  <label for="variant-pick">Circuit<select id="variant-pick"></select></label>
+ </fieldset>
+ <fieldset><legend>Drawing</legend>
+  <div class="pick" role="group" aria-label="Renderer"><button type="button" data-path="gpu" aria-pressed="true">Shaded, GPU</button><button type="button" data-path="cpu" aria-pressed="false">Shaded, CPU</button><button type="button" data-path="line" aria-pressed="false">Single line</button></div>
+  <button type="button" id="reset">Reset the view</button>
+ </fieldset>
+ {{KNOBS}}
+</div>
+<div class="dg-views">
+ <figure class="k-frame"><h3>Schematic</h3><div id="sch" class="dg-schwrap"></div><figcaption id="lens-sch" class="lens" aria-live="polite"></figcaption></figure>
+ <figure class="k-frame"><h3>Over time</h3><canvas id="cv-trace" aria-label="Traces of the model's quantities over time, with the playhead in red"></canvas><div id="table" class="k-scroll dg-table" hidden></div><figcaption id="lens-time" class="lens" aria-live="polite"></figcaption></figure>
+</div>
+<figure class="k-frame dg-st" id="spacetime"><h3>Spacetime: time as the fourth axis</h3>
+ <canvas id="cv-st" aria-label="Spacetime view"></canvas>
+ <div class="k-controls dg-stbar">
+  <fieldset><legend>Turn in 4D</legend><div class="k-rack">{{STKNOBS}}</div></fieldset>
+  <fieldset><legend>Slice</legend><label class="check"><input id="st-follow" type="checkbox" checked> Follow the playhead</label><label for="st-t">Slice at time</label><input id="st-t" type="range" min="0" max="1000" step="1" value="500">
+   <label for="st-lens">Lens<select id="st-lens"><option value="perspective">perspective</option><option value="orthographic">orthographic (shadow)</option></select></label></fieldset>
+ </div>
+ <figcaption id="lens-st" class="lens" aria-live="polite"></figcaption>
+</figure>
+</section>
+
+<p class="k-message">{{MESSAGE}}</p>
+
+<section class="k-layer" data-layer="plain" id="plain" aria-labelledby="plain-h">
+<div class="k-layer-head"><h2 id="plain-h">In plain words</h2><span class="k-depth">plain</span></div>
+<div class="prose">{{PLAIN}}</div>
+<div id="variants" class="dg-variants"></div>
+</section>
+
+<section class="k-layer" data-layer="pro" id="pro" aria-labelledby="pro-h">
+<div class="k-layer-head"><h2 id="pro-h">The working</h2><span class="k-depth">pro</span></div>
+<div class="prose">{{WORKING}}</div>
+<h3>Physics layers: models and limits</h3>
+<div class="prose">{{OVERLAYS}}</div>
+<h3>Parts</h3>
+<div class="k-scroll"><table><thead><tr><th scope="col">#</th><th scope="col">Part</th><th scope="col">Material</th><th scope="col">Carries</th><th scope="col">Text alternative</th></tr></thead><tbody>{{PARTS}}</tbody></table></div>
+<h3>Lenses</h3>
+<div class="k-scroll"><table><thead><tr><th scope="col">View</th><th scope="col">Keeps</th><th scope="col">Drops</th></tr></thead><tbody>{{LENSES}}</tbody></table></div>
+<h3>Sources</h3>
+<ul class="prose">{{SOURCES}}</ul>
+<h3>Engine tests</h3>
+<p>{{TESTSUM}}</p>
+</section>
+<p class="k-meta k-foot"><a href="index.html">All seven diagrams</a>. Engine: packages/diagram (dependency-free JavaScript, WebGL2 with a software fallback). Built {{DATE}}.</p>
+</main>
+<script id="mat-data" type="application/json">{{MAT}}</script>
+<script>{{JS}}</script>
+</body>
+</html>

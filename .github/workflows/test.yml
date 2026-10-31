@@ -17,3 +17,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm test
+      - run: python -m pip install -r packages/requirements.txt
+      - run: npm run test:packages
+      - run: npm run test:py
+      - run: python packages/build_manifest.py --check

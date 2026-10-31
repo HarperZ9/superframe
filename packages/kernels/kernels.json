@@ -1,0 +1,545 @@
+{
+  "library": "kernels",
+  "library_version": "0.2.0",
+  "canonical_form": "canonical-record/1",
+  "contract": [
+    "spec",
+    "reference",
+    "cpu_fast",
+    "gpu_fast",
+    "equivalence",
+    "benchmark",
+    "receipt",
+    "buildlang_note"
+  ],
+  "kernels": [
+    {
+      "name": "blend",
+      "version": "0.1.0",
+      "mode": "bit-identical",
+      "path": "blend/",
+      "contract": {
+        "spec": "blend/SPEC.md",
+        "reference": "numpy scalar loops",
+        "cpu_fast": "numpy vectorised + thread split over time",
+        "gpu_fast": "torch CUDA eager",
+        "benchmark": "smoke only",
+        "receipt": "out/receipts/receipts.jsonl",
+        "buildlang_note": "blend/SPEC.md#buildlang-port-note",
+        "equivalence": {
+          "pass": true,
+          "checked": "2026-10-30T22:31:43",
+          "vs_reference": {
+            "cpu": {
+              "pass": true,
+              "max_ulp": 0
+            },
+            "cpu-threads4": {
+              "pass": true,
+              "max_ulp": 0
+            },
+            "cuda": {
+              "pass": true,
+              "max_ulp": 0
+            }
+          },
+          "cross_device": {
+            "cpu~cpu-threads4": {
+              "pass": true,
+              "max_ulp": 0,
+              "receipt_outputs_equal": true
+            },
+            "cpu~cuda": {
+              "pass": true,
+              "max_ulp": 0,
+              "receipt_outputs_equal": true
+            }
+          },
+          "known_answers": [
+            {
+              "name": "one-hot weight, zero detune: y == gain * x[1]",
+              "pass": true
+            },
+            {
+              "name": "detuned read equals periodic linear interpolation (1e-5)",
+              "pass": true
+            }
+          ],
+          "controls": {
+            "one_ulp_perturbation_detected": true,
+            "open_builtin_max_ulp": {
+              "cpu": "different output shape",
+              "cuda": "different output shape"
+            },
+            "drift_variants": [
+              {
+                "name": "fused multiply-add accumulation (torch.addcmul)",
+                "caught": true,
+                "fraction_differing": 0.4846979166666667,
+                "max_abs": 2.384185791015625e-07
+              },
+              {
+                "name": "library reduction order (torch.sum over sources)",
+                "caught": true,
+                "fraction_differing": 0.5753645833333333,
+                "max_abs": 4.76837158203125e-07
+              }
+            ]
+          },
+          "check_size": {
+            "N": 8,
+            "C": 2,
+            "L": 4096,
+            "T": 48000
+          },
+          "output_hash": {
+            "y": "ff9d0dac65a24c83f8d4f67d8432f29cb06d4f2fc37931d5fe231306b2883334"
+          },
+          "seed": 1249272797,
+          "stress": {
+            "base": true,
+            "repeat": true,
+            "seed1": true,
+            "seed2": true,
+            "amp": true,
+            "tiny": true,
+            "spikes": true,
+            "zero_block": true,
+            "const_rows": true,
+            "int_edges": true
+          },
+          "batch": true,
+          "gates": {
+            "static_ban": true,
+            "fp64_ulp": true,
+            "input_overwrite:cpu": true,
+            "input_overwrite:cuda": true,
+            "stream_sync": true,
+            "nan_sentinel": true
+          }
+        }
+      }
+    },
+    {
+      "name": "advect_diffuse",
+      "version": "0.1.0",
+      "mode": "bit-identical",
+      "path": "advect_diffuse/",
+      "contract": {
+        "spec": "advect_diffuse/SPEC.md",
+        "reference": "Python float scalar loops",
+        "cpu_fast": "numpy vectorised",
+        "gpu_fast": "torch CUDA eager",
+        "benchmark": "smoke only",
+        "receipt": "out/receipts/receipts.jsonl",
+        "buildlang_note": "advect_diffuse/SPEC.md#buildlang-port-note",
+        "equivalence": {
+          "pass": true,
+          "checked": "2026-10-30T22:31:45",
+          "vs_reference": {
+            "cpu": {
+              "pass": true,
+              "max_ulp": 0
+            },
+            "cpu-threads4": {
+              "pass": true,
+              "max_ulp": 0
+            },
+            "cuda": {
+              "pass": true,
+              "max_ulp": 0
+            }
+          },
+          "cross_device": {
+            "cpu~cpu-threads4": {
+              "pass": true,
+              "max_ulp": 0,
+              "receipt_outputs_equal": true
+            },
+            "cpu~cuda": {
+              "pass": true,
+              "max_ulp": 0,
+              "receipt_outputs_equal": true
+            }
+          },
+          "known_answers": [
+            {
+              "name": "zero velocity, zero diffusivity: identity",
+              "pass": true
+            },
+            {
+              "name": "diffusion conserves the total (rel 5.2e-18 < 1e-12)",
+              "pass": true
+            },
+            {
+              "name": "diffusion lowers the maximum (discrete maximum principle)",
+              "pass": true
+            },
+            {
+              "name": "uniform one-cell shift equals a roll (1e-12)",
+              "pass": true
+            }
+          ],
+          "controls": {
+            "one_ulp_perturbation_detected": true,
+            "open_builtin_max_ulp": {
+              "cpu": {
+                "q": {
+                  "max_ulp": 9092560306956805120,
+                  "max_abs": 0.00079756041683815,
+                  "bitwise_equal": false
+                }
+              },
+              "cuda": {
+                "q": {
+                  "max_ulp": 9119629538414053376,
+                  "max_abs": 0.003733625480312419,
+                  "bitwise_equal": false
+                }
+              }
+            },
+            "drift_variants": []
+          },
+          "check_size": {
+            "ny": 256,
+            "nx": 256,
+            "kappa": 0.0002
+          },
+          "output_hash": {
+            "q": "774340b8ad36e2b7d8038358f5eaace1215e72f437050690f7fd8775cec7754b"
+          },
+          "seed": 416777983,
+          "stress": {
+            "base": true,
+            "repeat": true,
+            "seed1": true,
+            "seed2": true,
+            "amp": true,
+            "tiny": true,
+            "spikes": true,
+            "zero_block": true,
+            "const_rows": true,
+            "int_edges": true
+          },
+          "batch": null,
+          "gates": {
+            "static_ban": true,
+            "fp64_ulp": true,
+            "input_overwrite:cpu": true,
+            "input_overwrite:cuda": true,
+            "stream_sync": true,
+            "nan_sentinel": true
+          }
+        }
+      }
+    },
+    {
+      "name": "lattice_resample",
+      "version": "0.1.0",
+      "mode": "bit-identical",
+      "path": "lattice_resample/",
+      "contract": {
+        "spec": "lattice_resample/SPEC.md",
+        "reference": "numpy scalar loops",
+        "cpu_fast": "numpy vectorised",
+        "gpu_fast": "torch CUDA eager",
+        "benchmark": "smoke only",
+        "receipt": "out/receipts/receipts.jsonl",
+        "buildlang_note": "lattice_resample/SPEC.md#buildlang-port-note",
+        "equivalence": {
+          "pass": true,
+          "checked": "2026-10-30T22:31:47",
+          "vs_reference": {
+            "cpu": {
+              "pass": true,
+              "max_ulp": 0
+            },
+            "cpu-threads4": {
+              "pass": true,
+              "max_ulp": 0
+            },
+            "cuda": {
+              "pass": true,
+              "max_ulp": 0
+            }
+          },
+          "cross_device": {
+            "cpu~cpu-threads4": {
+              "pass": true,
+              "max_ulp": 0,
+              "receipt_outputs_equal": true
+            },
+            "cpu~cuda": {
+              "pass": true,
+              "max_ulp": 0,
+              "receipt_outputs_equal": true
+            }
+          },
+          "known_answers": [
+            {
+              "name": "hex: linear image reconstructs in the interior (err 1.2e-07 < 1e-5)",
+              "pass": true
+            },
+            {
+              "name": "square: linear image reconstructs in the interior (err 1.2e-07 < 1e-5)",
+              "pass": true
+            }
+          ],
+          "controls": {
+            "one_ulp_perturbation_detected": true,
+            "open_builtin_max_ulp": {
+              "cpu": {
+                "samples": {
+                  "max_ulp": 8889,
+                  "max_abs": 2.384185791015625e-07,
+                  "bitwise_equal": false
+                }
+              },
+              "cuda": {
+                "samples": {
+                  "max_ulp": 2677385,
+                  "max_abs": 4.589557647705078e-06,
+                  "bitwise_equal": false
+                }
+              }
+            },
+            "drift_variants": []
+          },
+          "check_size": {
+            "C": 2,
+            "H": 256,
+            "W": 256,
+            "kind": "hex",
+            "spacing": 1.5
+          },
+          "output_hash": {
+            "recon": "d47f737de1f092463b124a48b20bbf7b75be95160f971e8a67d4ab64b8cbda10",
+            "samples": "3181c17569e96fff14df6315aa589c71e72f30a2aee0c3df9854a45948dd3b94"
+          },
+          "seed": 2952167199,
+          "stress": {
+            "base": true,
+            "repeat": true,
+            "seed1": true,
+            "seed2": true,
+            "amp": true,
+            "tiny": true,
+            "spikes": true,
+            "zero_block": true,
+            "const_rows": true,
+            "int_edges": null
+          },
+          "batch": true,
+          "gates": {
+            "static_ban": true,
+            "fp64_ulp": true,
+            "input_overwrite:cpu": true,
+            "input_overwrite:cuda": true,
+            "stream_sync": true,
+            "nan_sentinel": true
+          }
+        }
+      }
+    },
+    {
+      "name": "spectral_shade",
+      "version": "0.1.0",
+      "mode": "bit-identical",
+      "path": "spectral_shade/",
+      "contract": {
+        "spec": "spectral_shade/SPEC.md",
+        "reference": "numpy scalar loops",
+        "cpu_fast": "numpy vectorised + thread split over pixels",
+        "gpu_fast": "torch CUDA eager",
+        "benchmark": "smoke only",
+        "receipt": "out/receipts/receipts.jsonl",
+        "buildlang_note": "spectral_shade/SPEC.md#buildlang-port-note",
+        "equivalence": {
+          "pass": true,
+          "checked": "2026-10-30T22:31:53",
+          "vs_reference": {
+            "cpu": {
+              "pass": true,
+              "max_ulp": 0
+            },
+            "cpu-threads4": {
+              "pass": true,
+              "max_ulp": 0
+            },
+            "cuda": {
+              "pass": true,
+              "max_ulp": 0
+            }
+          },
+          "cross_device": {
+            "cpu~cpu-threads4": {
+              "pass": true,
+              "max_ulp": 0,
+              "receipt_outputs_equal": true
+            },
+            "cpu~cuda": {
+              "pass": true,
+              "max_ulp": 0,
+              "receipt_outputs_equal": true
+            }
+          },
+          "known_answers": [
+            {
+              "name": "Fresnel agrees with tools/materials optics.fresnel (max abs 1.8e-07 < 2e-6)",
+              "pass": true
+            },
+            {
+              "name": "normal-incidence gold XYZ agrees with tools/materials to_xyz (rel 1.2e-07 < 1e-5)",
+              "pass": true
+            },
+            {
+              "name": "glass n=1.5 at normal incidence: R = 0.04 (1e-7)",
+              "pass": true
+            }
+          ],
+          "controls": {
+            "one_ulp_perturbation_detected": true,
+            "open_builtin_max_ulp": null,
+            "drift_variants": []
+          },
+          "check_size": {
+            "P": 65536
+          },
+          "output_hash": {
+            "xyz": "f2d493b63a8f407eca514d3102a0974054db3ce1b6dfe05b58975a5a15185774"
+          },
+          "seed": 2653480166,
+          "stress": {
+            "base": true,
+            "repeat": true,
+            "seed1": true,
+            "seed2": true,
+            "amp": true,
+            "tiny": true,
+            "spikes": true,
+            "zero_block": true,
+            "const_rows": null,
+            "int_edges": true
+          },
+          "batch": true,
+          "gates": {
+            "static_ban": true,
+            "fp64_ulp": true,
+            "input_overwrite:cpu": true,
+            "input_overwrite:cuda": true,
+            "stream_sync": true,
+            "nan_sentinel": true
+          }
+        }
+      }
+    }
+  ],
+  "shared": [
+    {
+      "name": "fixed_sum",
+      "path": "kcore/fixed.py",
+      "mode": "bit-identical",
+      "note": "power-of-two tree reduction used by spectral_shade"
+    }
+  ],
+  "pipelines": [
+    {
+      "name": "blend>lattice_resample>spectral_shade",
+      "checked": "2026-10-30T00:35:18",
+      "placements": {
+        "cpu/cpu/cpu": {
+          "blend": true,
+          "resample": true,
+          "shade": true
+        },
+        "cpu/cpu/cuda": {
+          "blend": true,
+          "resample": true,
+          "shade": true
+        },
+        "cpu/cuda/cpu": {
+          "blend": true,
+          "resample": true,
+          "shade": true
+        },
+        "cpu/cuda/cuda": {
+          "blend": true,
+          "resample": true,
+          "shade": true
+        },
+        "cuda/cpu/cpu": {
+          "blend": true,
+          "resample": true,
+          "shade": true
+        },
+        "cuda/cpu/cuda": {
+          "blend": true,
+          "resample": true,
+          "shade": true
+        },
+        "cuda/cuda/cpu": {
+          "blend": true,
+          "resample": true,
+          "shade": true
+        },
+        "cuda/cuda/cuda": {
+          "blend": true,
+          "resample": true,
+          "shade": true
+        },
+        "shared/cuda/shared": {
+          "blend": true,
+          "resample": true,
+          "shade": true
+        }
+      },
+      "all_bit_identical": true,
+      "xyz_hash": "2348348a2d7148dcdf77916b566fd98b3f10de6c87b85b3f524deb20c4eca54c",
+      "xyz_mean": [
+        0.33288827538490295,
+        0.31081774830818176,
+        0.18466021120548248
+      ],
+      "shape": [
+        96,
+        128
+      ]
+    }
+  ],
+  "planted_controls": {
+    "checked": "2026-10-30T22:31:56",
+    "seed": 3992202505,
+    "stress": {
+      "planted": "planted.clamp_fast_path",
+      "caught": true
+    },
+    "stress_constant_swap": {
+      "planted": "planted.constant_swap",
+      "caught": true
+    },
+    "batch": {
+      "planted": "planted.size_dependent_order",
+      "caught": true
+    },
+    "stream_sync": {
+      "planted": "planted.side_stream",
+      "caught": true
+    },
+    "nan_sentinel": {
+      "planted": "planted.lazy_output",
+      "caught": true
+    },
+    "input_overwrite": {
+      "planted": "planted.memoised",
+      "caught": true
+    },
+    "fp64_ulp": {
+      "planted": "planted.half_precision",
+      "caught": true
+    },
+    "static_ban": {
+      "planted": "planted.library_reduction",
+      "caught": true
+    }
+  }
+}

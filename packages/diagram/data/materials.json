@@ -1,0 +1,868 @@
+{
+ "about": "Values copied from packages/materials (data/materials.json) and packages/measured (LWIR emissivity); null means neither holds a value.",
+ "lwir_nm": 10000.0,
+ "materials": {
+  "tungsten": {
+   "name": "Tungsten",
+   "class": "metal",
+   "phase": "solid",
+   "sigma": {
+    "value": 18520000.0,
+    "unit": "S/m",
+    "source": "wikidata:Q743#P2055",
+    "confidence": "low"
+   },
+   "density": {
+    "value": 19300.0,
+    "unit": "kg/m^3",
+    "source": "wikidata:Q743#P2054",
+    "confidence": "high"
+   },
+   "specific_heat": {
+    "value": 138.0,
+    "unit": "J/(kg K)",
+    "source": "wikidata:Q743#P2056",
+    "confidence": "low"
+   },
+   "thermal_conductivity": {
+    "value": 173.0,
+    "unit": "W/(m K)",
+    "source": "wikidata:Q743#P2068",
+    "confidence": "low"
+   },
+   "melting_point": {
+    "value": 3683.2,
+    "unit": "K",
+    "source": "wikidata:Q743#P2101",
+    "confidence": "high"
+   },
+   "youngs_modulus": null,
+   "poisson_ratio": {
+    "value": 0.289,
+    "unit": "1",
+    "source": "wikidata:Q743#P5593",
+    "confidence": "low"
+   },
+   "n590": {
+    "value": 1.1053,
+    "unit": "1",
+    "source": "refractiveindex.info:main/W/Werner",
+    "confidence": "high"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.9783,
+     0.9138,
+     0.8818
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "normal-incidence Fresnel reflectance"
+   },
+   "emissivity_lwir": {
+    "value": 0.018,
+    "unit": "1",
+    "n": 9.19355,
+    "k": 44.01919,
+    "band_8_14um": 0.0177,
+    "source": "refractiveindex.info v2026-05-24 main/W/nk/Ordal.yml (measured n, k; 1 - R at normal incidence)",
+    "sha256": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb",
+    "status": "measured",
+    "confidence": "moderate",
+    "note": "smooth opaque body at 10 um; oxide and roughness raise a metal's value"
+   }
+  },
+  "copper": {
+   "name": "Copper",
+   "class": "metal",
+   "phase": "solid",
+   "sigma": {
+    "value": 58100000.0,
+    "unit": "S/m",
+    "source": "wikidata:Q753#P2055",
+    "confidence": "low"
+   },
+   "density": {
+    "value": 8940.0,
+    "unit": "kg/m^3",
+    "source": "wikidata:Q753#P2054",
+    "confidence": "moderate"
+   },
+   "specific_heat": {
+    "value": 385.0,
+    "unit": "J/(kg K)",
+    "source": "wikidata:Q753#P2056",
+    "confidence": "low"
+   },
+   "thermal_conductivity": {
+    "value": 386.0,
+    "unit": "W/(m K)",
+    "source": "wikidata:Q753#P2068",
+    "confidence": "low"
+   },
+   "melting_point": {
+    "value": 1357.0,
+    "unit": "K",
+    "source": "wikidata:Q753#P2101",
+    "confidence": "low"
+   },
+   "youngs_modulus": null,
+   "poisson_ratio": {
+    "value": 0.352,
+    "unit": "1",
+    "source": "wikidata:Q753#P5593",
+    "confidence": "low"
+   },
+   "n590": {
+    "value": 0.60893,
+    "unit": "1",
+    "source": "refractiveindex.info:main/Cu/Johnson",
+    "confidence": "high"
+   },
+   "drude": {
+    "n_e": 8.4723e+28,
+    "tau_s": 2.4336e-14
+   },
+   "srgb": {
+    "value": [
+     0.9693,
+     0.811,
+     0.7499
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "normal-incidence Fresnel reflectance"
+   },
+   "emissivity_lwir": {
+    "value": 0.0082,
+    "unit": "1",
+    "n": 8.31,
+    "k": 63.0,
+    "band_8_14um": 0.008,
+    "source": "refractiveindex.info v2026-05-24 main/Cu/nk/Ordal.yml (measured n, k; 1 - R at normal incidence)",
+    "sha256": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb",
+    "status": "measured",
+    "confidence": "moderate",
+    "note": "smooth opaque body at 10 um; oxide and roughness raise a metal's value"
+   }
+  },
+  "nickel": {
+   "name": "Nickel",
+   "class": "metal",
+   "phase": "solid",
+   "sigma": {
+    "value": 13900000.0,
+    "unit": "S/m",
+    "source": "wikidata:Q744#P2055",
+    "confidence": "low"
+   },
+   "density": {
+    "value": 8900.0,
+    "unit": "kg/m^3",
+    "source": "wikidata:Q744#P2054",
+    "confidence": "moderate"
+   },
+   "specific_heat": {
+    "value": 444.0,
+    "unit": "J/(kg K)",
+    "source": "wikidata:Q744#P2056",
+    "confidence": "low"
+   },
+   "thermal_conductivity": {
+    "value": 91.0,
+    "unit": "W/(m K)",
+    "source": "wikidata:Q744#P2068",
+    "confidence": "low"
+   },
+   "melting_point": {
+    "value": 1728.1,
+    "unit": "K",
+    "source": "wikidata:Q744#P2101",
+    "confidence": "high"
+   },
+   "youngs_modulus": null,
+   "poisson_ratio": {
+    "value": 0.276,
+    "unit": "1",
+    "source": "wikidata:Q744#P5593",
+    "confidence": "low"
+   },
+   "n590": {
+    "value": 1.9669,
+    "unit": "1",
+    "source": "refractiveindex.info:main/Ni/Johnson",
+    "confidence": "high"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.8527,
+     0.8213,
+     0.7756
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "normal-incidence Fresnel reflectance"
+   },
+   "emissivity_lwir": {
+    "value": 0.0247,
+    "unit": "1",
+    "n": 8.42,
+    "k": 35.7,
+    "band_8_14um": 0.0241,
+    "source": "refractiveindex.info v2026-05-24 main/Ni/nk/Ordal.yml (measured n, k; 1 - R at normal incidence)",
+    "sha256": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb",
+    "status": "measured",
+    "confidence": "moderate",
+    "note": "smooth opaque body at 10 um; oxide and roughness raise a metal's value"
+   }
+  },
+  "iron": {
+   "name": "Iron",
+   "class": "metal",
+   "phase": "solid",
+   "sigma": {
+    "value": 10000000.0,
+    "unit": "S/m",
+    "source": "wikidata:Q677#P2055",
+    "confidence": "low"
+   },
+   "density": {
+    "value": 7874.0,
+    "unit": "kg/m^3",
+    "source": "wikidata:Q677#P2054",
+    "confidence": "moderate"
+   },
+   "specific_heat": {
+    "value": 449.0,
+    "unit": "J/(kg K)",
+    "source": "wikidata:Q677#P2056",
+    "confidence": "low"
+   },
+   "thermal_conductivity": {
+    "value": 84.0,
+    "unit": "W/(m K)",
+    "source": "wikidata:Q677#P2068",
+    "confidence": "low"
+   },
+   "melting_point": {
+    "value": 1811.2,
+    "unit": "K",
+    "source": "wikidata:Q677#P2101",
+    "confidence": "high"
+   },
+   "youngs_modulus": null,
+   "poisson_ratio": {
+    "value": 0.353,
+    "unit": "1",
+    "source": "wikidata:Q677#P5593",
+    "confidence": "low"
+   },
+   "n590": {
+    "value": 2.9263,
+    "unit": "1",
+    "source": "refractiveindex.info:main/Fe/Johnson",
+    "confidence": "high"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.7545,
+     0.744,
+     0.7315
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "normal-incidence Fresnel reflectance"
+   },
+   "emissivity_lwir": {
+    "value": 0.0335,
+    "unit": "1",
+    "n": 7.06866,
+    "k": 27.90174,
+    "band_8_14um": 0.0316,
+    "source": "refractiveindex.info v2026-05-24 main/Fe/nk/Ordal.yml (measured n, k; 1 - R at normal incidence)",
+    "sha256": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb",
+    "status": "measured",
+    "confidence": "moderate",
+    "note": "smooth opaque body at 10 um; oxide and roughness raise a metal's value"
+   }
+  },
+  "aluminium": {
+   "name": "Aluminium",
+   "class": "metal",
+   "phase": "solid",
+   "sigma": {
+    "value": 35000000.0,
+    "unit": "S/m",
+    "source": "wikidata:Q663#P2055",
+    "confidence": "high"
+   },
+   "density": {
+    "value": 2700.0,
+    "unit": "kg/m^3",
+    "source": "wikidata:Q663#P2054",
+    "confidence": "high"
+   },
+   "specific_heat": {
+    "value": 897.0,
+    "unit": "J/(kg K)",
+    "source": "wikidata:Q663#P2056",
+    "confidence": "low"
+   },
+   "thermal_conductivity": {
+    "value": 236.0,
+    "unit": "W/(m K)",
+    "source": "wikidata:Q663#P2068",
+    "confidence": "low"
+   },
+   "melting_point": {
+    "value": 933.15,
+    "unit": "K",
+    "source": "wikidata:Q663#P2101",
+    "confidence": "high"
+   },
+   "youngs_modulus": null,
+   "poisson_ratio": null,
+   "n590": {
+    "value": 1.2103,
+    "unit": "1",
+    "source": "refractiveindex.info:main/Al/Rakic",
+    "confidence": "high"
+   },
+   "drude": {
+    "n_e": 1.8078e+29,
+    "tau_s": 6.8703e-15
+   },
+   "srgb": {
+    "value": [
+     0.9581,
+     0.9621,
+     0.965
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "normal-incidence Fresnel reflectance"
+   },
+   "emissivity_lwir": {
+    "value": 0.0115,
+    "unit": "1",
+    "n": 25.83256,
+    "k": 90.72043,
+    "band_8_14um": 0.0114,
+    "source": "refractiveindex.info v2026-05-24 main/Al/nk/Ordal.yml (measured n, k; 1 - R at normal incidence)",
+    "sha256": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb",
+    "status": "measured",
+    "confidence": "moderate",
+    "note": "smooth opaque body at 10 um; oxide and roughness raise a metal's value"
+   }
+  },
+  "brass": {
+   "name": "Brass (Cu70 Zn30)",
+   "class": "metal",
+   "phase": "solid",
+   "sigma": null,
+   "density": {
+    "value": 8560.0,
+    "unit": "kg/m^3",
+    "source": "wikidata:Q39782#P2054",
+    "confidence": "high"
+   },
+   "specific_heat": {
+    "value": 377.0,
+    "unit": "J/(kg K)",
+    "source": "wikidata:Q39782#P2056",
+    "confidence": "low"
+   },
+   "thermal_conductivity": {
+    "value": 121.0,
+    "unit": "W/(m K)",
+    "source": "wikidata:Q39782#P2068",
+    "confidence": "low"
+   },
+   "melting_point": {
+    "value": 1205.2,
+    "unit": "K",
+    "source": "wikidata:Q39782#P2101",
+    "confidence": "high"
+   },
+   "youngs_modulus": {
+    "value": 120000000000.0,
+    "unit": "Pa",
+    "source": "wikidata:Q39782#P5480",
+    "confidence": "low"
+   },
+   "poisson_ratio": {
+    "value": 0.37,
+    "unit": "1",
+    "source": "wikidata:Q39782#P5593",
+    "confidence": "low"
+   },
+   "n590": {
+    "value": 0.46,
+    "unit": "1",
+    "source": "refractiveindex.info:other/Cu-Zn/Querry-Cu70Zn30",
+    "confidence": "high"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.9591,
+     0.8954,
+     0.682
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "normal-incidence Fresnel reflectance"
+   },
+   "emissivity_lwir": null
+  },
+  "stainless_steel": {
+   "name": "Stainless steel (austenitic)",
+   "class": "metal",
+   "phase": "solid",
+   "sigma": null,
+   "density": {
+    "value": 8000.0,
+    "unit": "kg/m^3",
+    "source": "physicallybased.info:Stainless Steel",
+    "confidence": "moderate"
+   },
+   "specific_heat": null,
+   "thermal_conductivity": null,
+   "melting_point": null,
+   "youngs_modulus": null,
+   "poisson_ratio": null,
+   "n590": {
+    "value": 2.1941,
+    "unit": "1",
+    "source": "refractiveindex.info:other/stainless_steel/Karlsson-austenitic",
+    "confidence": "high"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.8375,
+     0.8204,
+     0.7968
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "normal-incidence Fresnel reflectance"
+   },
+   "emissivity_lwir": null
+  },
+  "soda_lime_glass": {
+   "name": "Soda-lime glass",
+   "class": "dielectric",
+   "phase": "solid",
+   "sigma": null,
+   "density": {
+    "value": 2520.0,
+    "unit": "kg/m^3",
+    "source": "physicallybased.info:Glass (Soda-lime)",
+    "confidence": "moderate"
+   },
+   "specific_heat": null,
+   "thermal_conductivity": null,
+   "melting_point": null,
+   "youngs_modulus": null,
+   "poisson_ratio": null,
+   "n590": {
+    "value": 1.5233,
+    "unit": "1",
+    "source": "refractiveindex.info:glass/soda-lime/Rubin-clear",
+    "confidence": "high"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.8722,
+     0.9447,
+     0.9383
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "Fresnel reflectance plus a 0.01 m layer over a white ground (Beer-Lambert from k)"
+   },
+   "emissivity_lwir": {
+    "value": 0.795,
+    "unit": "1",
+    "n": 1.707,
+    "k": 1.123,
+    "band_8_14um": 0.8776,
+    "source": "refractiveindex.info v2026-05-24 glass/misc/soda-lime/nk/Rubin-IR.yml (measured n, k; 1 - R at normal incidence)",
+    "sha256": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb",
+    "status": "measured",
+    "confidence": "moderate",
+    "note": "smooth opaque body at 10 um; oxide and roughness raise a metal's value"
+   }
+  },
+  "fused_silica": {
+   "name": "Fused silica",
+   "class": "dielectric",
+   "phase": "solid",
+   "sigma": null,
+   "density": {
+    "value": 2634.2,
+    "unit": "kg/m^3",
+    "source": "wikidata:Q2122463#P2054",
+    "confidence": "moderate"
+   },
+   "specific_heat": null,
+   "thermal_conductivity": null,
+   "melting_point": null,
+   "youngs_modulus": null,
+   "poisson_ratio": {
+    "value": -0.014,
+    "unit": "1",
+    "source": "wikidata:Q2122463#P5593",
+    "confidence": "low"
+   },
+   "n590": {
+    "value": 1.4584,
+    "unit": "1",
+    "source": "refractiveindex.info:glass/fused_silica/Malitson",
+    "confidence": "high"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.9851,
+     0.985,
+     0.9847
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "Fresnel reflectance plus a clear layer over a white ground (k unknown, taken as 0)"
+   },
+   "emissivity_lwir": {
+    "value": 0.7994,
+    "unit": "1",
+    "n": 2.55095,
+    "k": 0.39294,
+    "band_8_14um": 0.7878,
+    "source": "refractiveindex.info v2026-05-24 main/SiO2/nk/Popova.yml (measured n, k; 1 - R at normal incidence)",
+    "sha256": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb",
+    "status": "measured",
+    "confidence": "moderate",
+    "note": "smooth opaque body at 10 um; oxide and roughness raise a metal's value"
+   }
+  },
+  "pmma": {
+   "name": "Acrylic (PMMA)",
+   "class": "dielectric",
+   "phase": "solid",
+   "sigma": null,
+   "density": {
+    "value": 1190.0,
+    "unit": "kg/m^3",
+    "source": "wikidata:Q146123#P2054",
+    "confidence": "moderate"
+   },
+   "specific_heat": null,
+   "thermal_conductivity": null,
+   "melting_point": null,
+   "youngs_modulus": {
+    "value": 2380000000.0,
+    "unit": "Pa",
+    "source": "wikidata:Q146123#P5480",
+    "confidence": "low"
+   },
+   "poisson_ratio": null,
+   "n590": {
+    "value": 1.4905,
+    "unit": "1",
+    "source": "refractiveindex.info:organic/poly_methyl_methacrylate/Sultanova",
+    "confidence": "moderate"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.9835,
+     0.9833,
+     0.9828
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "moderate",
+    "method": "Fresnel reflectance plus a clear layer over a white ground (k unknown, taken as 0)"
+   },
+   "emissivity_lwir": {
+    "value": 0.9602,
+    "unit": "1",
+    "n": 1.49654,
+    "k": 0.04021,
+    "band_8_14um": 0.9553,
+    "source": "refractiveindex.info v2026-05-24 organic/(C5H8O2)n - poly(methyl methacrylate)/nk/Zhang-Tomson.yml (measured n, k; 1 - R at normal incidence)",
+    "sha256": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb",
+    "status": "measured",
+    "confidence": "moderate",
+    "note": "smooth opaque body at 10 um; oxide and roughness raise a metal's value"
+   }
+  },
+  "kapton": {
+   "name": "Polyimide (Kapton)",
+   "class": "dielectric",
+   "phase": "solid",
+   "sigma": null,
+   "density": null,
+   "specific_heat": null,
+   "thermal_conductivity": null,
+   "melting_point": null,
+   "youngs_modulus": null,
+   "poisson_ratio": null,
+   "n590": {
+    "value": 1.8177,
+    "unit": "1",
+    "source": "refractiveindex.info:other/Kapton/French",
+    "confidence": "high"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.9571,
+     0.748,
+     0.372
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "Fresnel reflectance plus a 5e-05 m layer over a white ground (Beer-Lambert from k)"
+   },
+   "emissivity_lwir": {
+    "value": 0.9134,
+    "unit": "1",
+    "n": 1.83379,
+    "k": 0.00987,
+    "band_8_14um": 0.9156,
+    "source": "refractiveindex.info v2026-05-24 other/commercial polymers/Kapton/nk/Zhang.yml (measured n, k; 1 - R at normal incidence)",
+    "sha256": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb",
+    "status": "measured",
+    "confidence": "moderate",
+    "note": "smooth opaque body at 10 um; oxide and roughness raise a metal's value"
+   }
+  },
+  "polycarbonate": {
+   "name": "Polycarbonate",
+   "class": "dielectric",
+   "phase": "solid",
+   "sigma": null,
+   "density": {
+    "value": 1200.0,
+    "unit": "kg/m^3",
+    "source": "wikidata:Q62246#P2054",
+    "confidence": "moderate"
+   },
+   "specific_heat": {
+    "value": 1250.0,
+    "unit": "J/(kg K)",
+    "source": "wikidata:Q62246#P2056",
+    "confidence": "low"
+   },
+   "thermal_conductivity": {
+    "value": 0.2,
+    "unit": "W/(m K)",
+    "source": "wikidata:Q62246#P2068",
+    "confidence": "low"
+   },
+   "melting_point": null,
+   "youngs_modulus": {
+    "value": 2250000000.0,
+    "unit": "Pa",
+    "source": "wikidata:Q62246#P5480",
+    "confidence": "low"
+   },
+   "poisson_ratio": {
+    "value": 0.37,
+    "unit": "1",
+    "source": "wikidata:Q62246#P5593",
+    "confidence": "low"
+   },
+   "n590": {
+    "value": 1.5845,
+    "unit": "1",
+    "source": "refractiveindex.info:organic/polycarbonate/Sultanova",
+    "confidence": "moderate"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.9786,
+     0.9781,
+     0.977
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "moderate",
+    "method": "Fresnel reflectance plus a clear layer over a white ground (k unknown, taken as 0)"
+   },
+   "emissivity_lwir": {
+    "value": 0.9302,
+    "unit": "1",
+    "n": 1.71521,
+    "k": 0.0545,
+    "band_8_14um": 0.9358,
+    "source": "refractiveindex.info v2026-05-24 organic/(C16H14O3)n - polycarbonate/nk/Zhang.yml (measured n, k; 1 - R at normal incidence)",
+    "sha256": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb",
+    "status": "measured",
+    "confidence": "moderate",
+    "note": "smooth opaque body at 10 um; oxide and roughness raise a metal's value"
+   }
+  },
+  "air": {
+   "name": "Air",
+   "class": "gas",
+   "phase": "gas",
+   "sigma": null,
+   "density": {
+    "value": 1.2923,
+    "unit": "kg/m^3",
+    "source": "derived:ideal gas law pM/(RT)",
+    "confidence": "moderate"
+   },
+   "specific_heat": null,
+   "thermal_conductivity": null,
+   "melting_point": null,
+   "youngs_modulus": null,
+   "poisson_ratio": null,
+   "n590": {
+    "value": 1.00027714,
+    "unit": "1",
+    "source": "refractiveindex.info:other/air/Ciddor",
+    "confidence": "high"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.9999,
+     1.0,
+     1.0
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "Fresnel reflectance plus a clear layer over a white ground (k unknown, taken as 0)"
+   },
+   "emissivity_lwir": null
+  },
+  "argon": {
+   "name": "Argon",
+   "class": "gas",
+   "phase": "gas",
+   "sigma": null,
+   "density": {
+    "value": 1.7823,
+    "unit": "kg/m^3",
+    "source": "derived:ideal gas law pM/(RT)",
+    "confidence": "moderate"
+   },
+   "specific_heat": null,
+   "thermal_conductivity": {
+    "value": 0.01772,
+    "unit": "W/(m K)",
+    "source": "wikidata:Q696#P2068",
+    "confidence": "low"
+   },
+   "melting_point": {
+    "value": 83.81,
+    "unit": "K",
+    "source": "wikidata:Q696#P2101",
+    "confidence": "low"
+   },
+   "youngs_modulus": null,
+   "poisson_ratio": null,
+   "n590": {
+    "value": 1.00026702,
+    "unit": "1",
+    "source": "refractiveindex.info:main/Ar/Peck-15C",
+    "confidence": "moderate"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.9999,
+     1.0,
+     1.0
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "moderate",
+    "method": "Fresnel reflectance plus a clear layer over a white ground (k unknown, taken as 0)"
+   },
+   "emissivity_lwir": null
+  },
+  "graphite": {
+   "name": "Graphite",
+   "class": "mineral",
+   "phase": "solid",
+   "sigma": null,
+   "density": {
+    "value": 2160.0,
+    "unit": "kg/m^3",
+    "source": "wikidata:Q5309#P2054",
+    "confidence": "low"
+   },
+   "specific_heat": null,
+   "thermal_conductivity": null,
+   "melting_point": null,
+   "youngs_modulus": null,
+   "poisson_ratio": null,
+   "n590": {
+    "value": 2.7747,
+    "unit": "1",
+    "source": "refractiveindex.info:main/C/Djurisic-o",
+    "confidence": "high"
+   },
+   "drude": null,
+   "srgb": {
+    "value": [
+     0.623,
+     0.6007,
+     0.5743
+    ],
+    "unit": "sRGB encoded, D65",
+    "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+    "licence": "derived in this library from cited inputs",
+    "confidence": "high",
+    "method": "Fresnel reflectance plus a 0.005 m layer over a white ground (Beer-Lambert from k)"
+   },
+   "emissivity_lwir": {
+    "value": 0.3363,
+    "unit": "1",
+    "n": 5.014,
+    "k": 4.844,
+    "band_8_14um": 0.326,
+    "source": "refractiveindex.info v2026-05-24 main/C/nk/Querry-Pyrolytic.yml (measured n, k; 1 - R at normal incidence)",
+    "sha256": "6cdebebd17fe02b6dc2b03189e15e6c689afc6619c558e1df7b9ac307b6d14eb",
+    "status": "measured",
+    "confidence": "low",
+    "note": "polished pyrolytic graphite (Querry); machined or rough graphite reads far higher"
+   }
+  }
+ }
+}

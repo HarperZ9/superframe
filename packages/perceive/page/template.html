@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perceptual bridge</title>
+<!-- Built by packages/perceive/page/build.py from src/*.js, page/*.js, data/*.json, ndim's src and laws, and data/tests.json.
+     Style: the site's system/kit, inlined between the markers. -->
+<!-- site-kit:begin --><!-- site-kit:end -->
+<style>{{CSS}}</style>
+</head>
+<body data-region="glitch">
+<a class="skip" href="#toy">Skip to the toy</a>
+<main class="k-page">
+<header class="k-head"><p class="k-super" aria-hidden="true">Sense</p>
+ <h1>Perceptual bridge</h1>
+ <p class="k-lede">Most of the world is out of reach of our senses: radio and X-rays, a bat's cry, the field round a wire, the twist of light, a fourth direction. Pick one, slide the window, and see it, hear it, feel it, with every view saying what it keeps and what it drops.</p>
+ <hr class="k-horizon">
+</header>
+
+<section class="k-layer" data-layer="toy" id="toy" aria-labelledby="toy-h">
+<div class="k-layer-head"><h2 id="toy-h">Slide to see and hear the invisible</h2><span class="k-depth">toy</span></div>
+<div class="pick"><label for="pick">What invisible thing do you want to see and hear?</label>
+<select id="pick">{{PICK}}</select></div>
+<div class="stage">
+ <figure class="k-frame"><canvas id="cv" aria-label="The chosen field or spectrum, drawn for the eye"></canvas>
+  <figcaption id="desc" aria-live="polite"></figcaption></figure>
+ <div class="side k-controls">
+  <fieldset><legend>Sound and touch</legend>
+   <button class="k-primary" id="play" type="button" aria-pressed="false">Play sound</button>
+   <p class="say" id="sound-text" aria-live="polite"></p>
+   <label class="check"><input id="buzz" type="checkbox"> Vibrate (phones)</label>
+   <p class="say" id="buzz-note"></p>
+  </fieldset>
+  <fieldset data-view="bb h na au"><legend>Window on the spectrum</legend>
+   <label for="w-c">Where the window sits (wavelength, log scale)<input id="w-c" type="range" min="-13" max="3" step="0.05" value="-5"></label>
+   <label for="w-wd">How wide it is (decades)<input id="w-wd" type="range" min="0.1" max="6" step="0.1" value="1"></label>
+   <div class="row" role="group" aria-label="Jump to a band">
+    <button type="button" data-win="-11,2.5">X-rays</button><button type="button" data-win="-7.3,1">Ultraviolet</button><button type="button" data-win="-6.28,0.3">Visible, unshifted</button><button type="button" data-win="-5,1">Heat glow</button><button type="button" data-win="0,4">Radio</button>
+   </div>
+   <label for="w-sp">Colour spacing<select id="w-sp"><option value="linear">even steps of wavelength</option><option value="cie">even steps of perceived colour (CIE u'v')</option></select></label>
+  </fieldset>
+  <fieldset data-view="bb"><legend>Temperature</legend>
+   <label for="w-t">How hot the body is (3 K to 30 000 K, log)<input id="w-t" type="range" min="0.5" max="4.5" step="0.01" value="2.477"></label>
+  </fieldset>
+  <fieldset data-view="mat"><legend>Material</legend><label for="mat">Which material<select id="mat"></select></label></fieldset>
+  <fieldset data-view="bat"><legend>Bat detector</legend>
+   <label for="bat-lo">Tuning (kHz)<input id="bat-lo" type="range" min="20" max="100" step="0.5" value="45"></label>
+   <label for="bat-kind">Which call<select id="bat-kind"><option value="fm">sweep, 75 to 45 kHz</option><option value="cf">constant 83 kHz</option></select></label>
+  </fieldset>
+  <fieldset data-view="rings"><legend>Series</legend>
+   <label for="ring-s">Ring measure<select id="ring-s"><option value="mxd">maximum late-wood density</option><option value="rw">ring width</option><option value="ew">early wood width</option><option value="lw">late wood width</option><option value="mind">minimum density</option></select></label>
+   <label for="clim-s">Climate<select id="clim-s"><option value="temp">summer temperature</option><option value="prec">summer rainfall</option><option value="sun">summer sunshine</option></select></label>
+  </fieldset>
+  <fieldset data-view="laws"><legend>Law</legend><label for="law">Which law<select id="law"></select></label></fieldset>
+  <fieldset data-view="elec"><legend>Charges and probe</legend>
+   <label for="e-pre">Arrangement<select id="e-pre"><option value="dipole">a plus and a minus</option><option value="alike">two alike</option><option value="three">three charges</option><option value="plates">two charged plates</option></select></label>
+   <label for="e-px">Probe across<input id="e-px" type="range" min="-100" max="100" step="1" value="-40"></label>
+   <label for="e-py">Probe up and down<input id="e-py" type="range" min="-100" max="100" step="1" value="40"></label>
+   <label for="e-snd">Sound<select id="e-snd"><option value="probe">the probe's voltage as pitch</option><option value="50">50 Hz mains, as it is</option><option value="60">60 Hz mains, as it is</option></select></label>
+   <label for="e-harm">Mains distortion (%)<input id="e-harm" type="range" min="0" max="100" step="1" value="20"></label>
+   <p class="say">Drag a charge, or drag anywhere else to move the probe.</p>
+  </fieldset>
+  <fieldset data-view="mag"><legend>Wires and compass</legend>
+   <label for="m-pre">Wires<select id="m-pre"><option value="one">one wire</option><option value="same">two, same way</option><option value="loop">two, opposite ways (a loop's cross-section)</option><option value="quad">four, alternating</option></select></label>
+   <label for="m-px">Compass across<input id="m-px" type="range" min="-100" max="100" step="1" value="24"></label>
+   <label for="m-py">Compass up and down<input id="m-py" type="range" min="-100" max="100" step="1" value="30"></label>
+   <p class="say">Drag a wire, or drag anywhere else to move the compass.</p>
+  </fieldset>
+  <fieldset data-view="pol"><legend>Polarisation state</legend>
+   <label for="p-psi">Orientation (degrees)<input id="p-psi" type="range" min="-90" max="90" step="1" value="0"></label>
+   <label for="p-chi">Ellipticity (degrees: 0 flat, 45 circular)<input id="p-chi" type="range" min="-45" max="45" step="1" value="20"></label>
+   <label for="p-dop">Polarised share (%)<input id="p-dop" type="range" min="0" max="100" step="1" value="100"></label>
+   <div class="row" role="group" aria-label="Named states"><button type="button" data-pol="H">Horizontal</button><button type="button" data-pol="V">Vertical</button><button type="button" data-pol="D">Diagonal</button><button type="button" data-pol="A">Antidiagonal</button><button type="button" data-pol="R">Circular, S3 +1</button><button type="button" data-pol="L">Circular, S3 -1</button></div>
+  </fieldset>
+  <fieldset data-view="heat"><legend>Heat</legend>
+   <label for="h-pre">Start<select id="h-pre"><option value="spot">one hot spot</option><option value="pair">a hot spot and a cold one</option><option value="line">a hot edge</option></select></label>
+   <label for="h-mode">Tapping the sheet<select id="h-mode"><option value="hot">adds a hot spot</option><option value="cold">adds a cold spot</option><option value="probe">moves the probe</option></select></label>
+   <button type="button" id="h-step">Let time pass (10 s)</button>
+  </fieldset>
+  <fieldset data-view="geo"><legend>Surface</legend>
+   <label for="g-kind">Shape<select id="g-kind"><option value="torus">a ring (torus)</option><option value="sphere">a ball</option><option value="saddle">a saddle</option><option value="bump">a bump</option></select></label>
+   <label for="g-s">Where the point is on the path (0.1%)<input id="g-s" type="range" min="0" max="1000" step="1" value="300"></label>
+   <button type="button" id="g-run" aria-pressed="false">Walk the path</button>
+  </fieldset>
+  <fieldset data-view="dims"><legend>Shape and senses</legend>
+   <label for="d-shape">Shape<select id="d-shape"><option value="cube:4">tesseract (4D cube)</option><option value="simplex:4">5-cell (4D triangle)</option><option value="cross:4">16-cell</option><option value="24-cell">24-cell</option><option value="cube:5">penteract (5D cube)</option></select></label>
+   <label for="d-w">Carry w by<select id="d-w"><option value="colour">colour</option><option value="time">time (a moving slice)</option><option value="sound">sound</option><option value="touch">touch</option><option value="none">nothing (flatten it)</option></select></label>
+   <label id="d-v-wrap" hidden for="d-v">Carry v by<select id="d-v"><option value="sound">sound</option><option value="colour">colour</option><option value="time">time (a moving slice)</option><option value="touch">touch</option><option value="none">nothing (flatten it)</option></select></label>
+   {{PLANES}}
+   <label for="d-s">Where the slice is (when an axis is time)<input id="d-s" type="range" min="-100" max="100" step="1" value="0"></label>
+  </fieldset>
+ </div>
+</div>
+<div class="loss k-card" aria-labelledby="lp-h">
+ <h3 id="lp-h">What this view keeps and loses</h3>
+ <dl>
+  <dt>Quantity</dt><dd id="lp-q"></dd>
+  <dt>Map</dt><dd id="lp-map"></dd>
+  <dt>Keeps</dt><dd id="lp-keeps"></dd>
+  <dt>Loses</dt><dd id="lp-loses"></dd>
+  <dt>Bits</dt><dd id="lp-bits"></dd>
+  <dt>Inverse</dt><dd id="lp-inv"></dd>
+ </dl>
+</div>
+</section>
+
+<p class="k-message">Any band of any spectrum, and any field, can be shifted into sight, sound and touch, so long as each view says what it keeps and what it loses.</p>
+
+<section class="k-layer" data-layer="plain" id="plain" aria-labelledby="plain-h">
+<div class="k-layer-head"><h2 id="plain-h">In plain words</h2><span class="k-depth">plain</span></div>
+<div class="prose">
+<p>Your eyes catch one thin band of light, from violet at 380 nanometres to red at 750. Your ears catch sound from about 20 to 20 000 vibrations a second. Everything else goes by unnoticed: the heat glowing off your hand, the radio passing through the room, the cry of a hunting bat, the field around a wire, the way light twists as it travels.</p>
+<p>The bridge works the same way every time. Pick a window on the hidden range. Stretch or squeeze it to fit a range you can sense. Then say what was lost on the way. A window ten times wider than the rainbow has to squeeze ten colours' worth of detail into one, so close neighbours become one colour. The page counts those losses in bits and names the parts of the wave it dropped.</p>
+<p>Each bridge has a sight, a sound and a sentence, so the page works for people who cannot see it or cannot hear it. The figure caption says in words what the picture shows. The line under Play says in words what the sound is doing.</p>
+</div>
+{{PLAIN}}
+<h3>Whose ideas these are</h3>
+<div class="prose"><ul>
+<li>Shifting a band you cannot sense into one you can: heterodyne bat detectors, which mix a bat's ultrasound with a steady tone (after Pierce and Griffin's 1938 recordings of bat ultrasound); Landsat false-colour images, which paint shortwave infrared as visible colour; audification, playing seismic records fast enough to hear (Speeth 1961, Hayward 1994).</li>
+<li>Carrying one sense in another: Paul Bach-y-Rita's tactile vision substitution (1969), which let blind people feel a camera's picture on their skin; Peter Meijer's The vOICe (1992), which turns images into sound for blind users (@seeingwithsound).</li>
+<li>One notation for sound and colour together: Channa Horwitz's Sonakinatography (1970), where one number grid sets time, colour and sound. Every view here reads one state and paints and plays it from that same state.</li>
+<li>The physics: Planck (1900) and Wien (1893) for the glow of hot bodies; CIE 1931 colour matching (data CC BY-SA 4.0); the mel scale (Stevens, Volkmann and Newman 1937); Faraday's lines of force; Oersted's compass (1820); streamlines and line-integral convolution (Cabral and Leedom 1993); Stokes (1852), Poincare (1892) and Jones (1941) for polarisation; Fourier (1822) for heat; Gauss (1827) for curvature; Abbott's Flatland (1884) and Hinton's tesseract (1888) for higher dimensions.</li>
+<li>The data: tree rings and Alpine climate from the ring-channel study; n and k from the materials library; the law signatures and the shapes from ndim.</li>
+</ul></div>
+</section>
+
+<section class="k-layer" data-layer="pro" id="pro" aria-labelledby="pro-h">
+<div class="k-layer-head"><h2 id="pro-h">The working</h2><span class="k-depth">pro</span></div>
+<div class="prose">{{PRO}}</div>
+<h3>Every bridge</h3>
+<div class="k-scroll"><table><thead><tr><th scope="col">Bridge</th><th scope="col">Quantity and units</th><th scope="col">Geometry</th><th scope="col">Map</th><th scope="col">Keeps</th><th scope="col">Loses</th><th scope="col">Known answer</th></tr></thead><tbody>{{ROWS}}</tbody></table></div>
+<h3>Known-answer tests</h3>
+<p>{{TESTSUM}}</p>
+<details><summary>Every check</summary><div class="k-scroll"><table><thead><tr><th scope="col">Check</th><th scope="col">Verdict</th><th scope="col">Detail</th></tr></thead><tbody>{{TESTROWS}}</tbody></table></div></details>
+<div class="prose">{{MISSING}}</div>
+</section>
+<p class="k-meta k-foot">Library: packages/perceive (dependency-free JavaScript), using packages/ndim for shapes. Built {{DATE}}.</p>
+</main>
+<script id="mat-data" type="application/json">{{MAT}}</script>
+<script id="rings-data" type="application/json">{{RINGS}}</script>
+<script id="laws-data" type="application/json">{{LAWS}}</script>
+<script>{{JS}}</script>
+</body>
+</html>

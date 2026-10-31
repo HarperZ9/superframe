@@ -1,0 +1,2683 @@
+{
+ "retrieved": "2026-10-29",
+ "licence_pages_checked": {
+  "refractiveindex.info": "https://refractiveindex.info/about",
+  "physicallybased.info": "https://github.com/AntonPalmqvist/physically-based-api",
+  "wikidata": "https://www.wikidata.org/wiki/Wikidata:Licensing",
+  "usda-fpl-gtr-282": "https://research.fs.usda.gov/treesearch/62200",
+  "cie": "https://doi.org/10.25039/CIE.DS.xvudnb9b",
+  "doi": "https://api.crossref.org/works/<doi> (licence field) and the article page",
+  "pubchem-hsdb": "https://www.nlm.nih.gov/web_policies.html",
+  "derived": null
+ },
+ "refractiveindex_pages": {
+  "gold": {
+   "book": "main/Au",
+   "page": "Johnson",
+   "page_name": "Johnson and Christy 1972: n,k 0.188–1.937 µm",
+   "data_path": "main/Au/nk/Johnson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Au/nk/Johnson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Au&page=Johnson",
+   "file": "ri/gold/Johnson.yml",
+   "sha256": "9f4bdab6bd49f7c6a1c48b5fb5482c7448caf4b6de39594a34ecd66dcf592774",
+   "visible_overlap_from_name": 1.0
+  },
+  "silver": {
+   "book": "main/Ag",
+   "page": "Johnson",
+   "page_name": "Johnson and Christy 1972: n,k 0.188–1.94 µm",
+   "data_path": "main/Ag/nk/Johnson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Ag/nk/Johnson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Ag&page=Johnson",
+   "file": "ri/silver/Johnson.yml",
+   "sha256": "8c79d5e2529e4d3a51e1502b42f2e96e63b3cb49e1036c66b86eb9dbdd0c65a5",
+   "visible_overlap_from_name": 1.0
+  },
+  "copper": {
+   "book": "main/Cu",
+   "page": "Johnson",
+   "page_name": "Johnson and Christy 1972: n,k 0.188–1.937 µm",
+   "data_path": "main/Cu/nk/Johnson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Cu/nk/Johnson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Cu&page=Johnson",
+   "file": "ri/copper/Johnson.yml",
+   "sha256": "265ef243207866361daff0544b5d11fe7142bb2ec79681913546d4334f81a009",
+   "visible_overlap_from_name": 1.0
+  },
+  "aluminium": {
+   "book": "main/Al",
+   "page": "Rakic",
+   "page_name": "Rakić 1995: n,k 0.000124–200 µm",
+   "data_path": "main/Al/nk/Rakic.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Al/nk/Rakic.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Al&page=Rakic",
+   "file": "ri/aluminium/Rakic.yml",
+   "sha256": "e93b31fe821551836e5b000949c67c633b8a1ca1f2c5549f4db0f1c03b24844d",
+   "visible_overlap_from_name": 1.0
+  },
+  "iron": {
+   "book": "main/Fe",
+   "page": "Johnson",
+   "page_name": "Johnson and Christy 1974: n,k 0.188–1.94 µm",
+   "data_path": "main/Fe/nk/Johnson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Fe/nk/Johnson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Fe&page=Johnson",
+   "file": "ri/iron/Johnson.yml",
+   "sha256": "8d774beaac808662370242790c18b9998a9856ba850d9f35c45f6db3da31a7cd",
+   "visible_overlap_from_name": 1.0
+  },
+  "nickel": {
+   "book": "main/Ni",
+   "page": "Johnson",
+   "page_name": "Johnson and Christy 1974: n,k 0.188–1.937 µm",
+   "data_path": "main/Ni/nk/Johnson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Ni/nk/Johnson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Ni&page=Johnson",
+   "file": "ri/nickel/Johnson.yml",
+   "sha256": "76423eb6a66de6eddb21214a862920356e31d1608a4098931c04cfed0019002c",
+   "visible_overlap_from_name": 1.0
+  },
+  "chromium": {
+   "book": "main/Cr",
+   "page": "Johnson",
+   "page_name": "Johnson and Christy 1974: n,k 0.188–1.937 µm",
+   "data_path": "main/Cr/nk/Johnson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Cr/nk/Johnson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Cr&page=Johnson",
+   "file": "ri/chromium/Johnson.yml",
+   "sha256": "756f5c6be6c19c46dc3fb1580db069aafef1bb3b914293e141d7fc4b738ee5e4",
+   "visible_overlap_from_name": 1.0
+  },
+  "titanium": {
+   "book": "main/Ti",
+   "page": "Johnson",
+   "page_name": "Johnson and Christy 1974: n,k 0.188–1.94 µm",
+   "data_path": "main/Ti/nk/Johnson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Ti/nk/Johnson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Ti&page=Johnson",
+   "file": "ri/titanium/Johnson.yml",
+   "sha256": "99f8599b60e1dcd056ac6c18cd0c7fb401fd8218bfeaeba2be8c250580305328",
+   "visible_overlap_from_name": 1.0
+  },
+  "platinum": {
+   "book": "main/Pt",
+   "page": "Werner",
+   "page_name": "Werner et al. 2009: n,k 0.0176–2.48 µm",
+   "data_path": "main/Pt/nk/Werner.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Pt/nk/Werner.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Pt&page=Werner",
+   "file": "ri/platinum/Werner.yml",
+   "sha256": "c07deed7b737ad12c3f006eff89fd74db5262f5e5cec29370e8209f475d9e4ee",
+   "visible_overlap_from_name": 1.0
+  },
+  "palladium": {
+   "book": "main/Pd",
+   "page": "Johnson",
+   "page_name": "Johnson and Christy 1974: n,k 0.188–1.94 µm",
+   "data_path": "main/Pd/nk/Johnson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Pd/nk/Johnson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Pd&page=Johnson",
+   "file": "ri/palladium/Johnson.yml",
+   "sha256": "e331ba7b55a0c119fcaa927e18e2927c8674ace4712cb4d36a2147bc14ab4ffc",
+   "visible_overlap_from_name": 1.0
+  },
+  "tungsten": {
+   "book": "main/W",
+   "page": "Werner",
+   "page_name": "Werner et al. 2009: n,k 0.0176–2.48 µm",
+   "data_path": "main/W/nk/Werner.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/W/nk/Werner.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=W&page=Werner",
+   "file": "ri/tungsten/Werner.yml",
+   "sha256": "7311082e9c342bea166a1a9a08725e6d4ea3c2eb5e6ac8db89b6d28df6b72dda",
+   "visible_overlap_from_name": 1.0
+  },
+  "zinc": {
+   "book": "main/Zn",
+   "page": "Werner",
+   "page_name": "Werner et al. 2009: n,k 0.0176–2.48 µm",
+   "data_path": "main/Zn/nk/Werner.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Zn/nk/Werner.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Zn&page=Werner",
+   "file": "ri/zinc/Werner.yml",
+   "sha256": "c29023bed42520fbf3cec2272c9f31080429508073edf9124a0e76cbcaee6abf",
+   "visible_overlap_from_name": 1.0
+  },
+  "lead": {
+   "book": "main/Pb",
+   "page": "Werner",
+   "page_name": "Werner et al. 2009: n,k 0.0176–2.48 µm",
+   "data_path": "main/Pb/nk/Werner.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Pb/nk/Werner.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Pb&page=Werner",
+   "file": "ri/lead/Werner.yml",
+   "sha256": "4bd6688c7fef081e97f6b50d93690eeb3cb9cb8c59300e6fed933aaa8360aa66",
+   "visible_overlap_from_name": 1.0
+  },
+  "cobalt": {
+   "book": "main/Co",
+   "page": "Johnson",
+   "page_name": "Johnson and Christy 1974: n,k 0.188–1.937 µm",
+   "data_path": "main/Co/nk/Johnson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Co/nk/Johnson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Co&page=Johnson",
+   "file": "ri/cobalt/Johnson.yml",
+   "sha256": "c6acdadfefb53e41ce5d648ef00fd8bea21fe1c7276e8326a8a2ea09d7ccc706",
+   "visible_overlap_from_name": 1.0
+  },
+  "molybdenum": {
+   "book": "main/Mo",
+   "page": "Werner",
+   "page_name": "Werner et al. 2009: n,k 0.01759–2.480 µm",
+   "data_path": "main/Mo/nk/Werner.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Mo/nk/Werner.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Mo&page=Werner",
+   "file": "ri/molybdenum/Werner.yml",
+   "sha256": "683385a14ca7bba7cb0c3a4d0182a872e1809ae2869a8ea4814316e8921fcf55",
+   "visible_overlap_from_name": 1.0
+  },
+  "vanadium": {
+   "book": "main/V",
+   "page": "Johnson",
+   "page_name": "Johnson and Christy 1974: n,k 0.188–1.937 µm",
+   "data_path": "main/V/nk/Johnson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/V/nk/Johnson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=V&page=Johnson",
+   "file": "ri/vanadium/Johnson.yml",
+   "sha256": "77d3af8515e2058aeaae71548505a288a5b94670ab316959982e0972395e561d",
+   "visible_overlap_from_name": 1.0
+  },
+  "tantalum": {
+   "book": "main/Ta",
+   "page": "Werner",
+   "page_name": "Werner et al. 2009: n,k 0.0176–2.48 µm",
+   "data_path": "main/Ta/nk/Werner.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Ta/nk/Werner.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Ta&page=Werner",
+   "file": "ri/tantalum/Werner.yml",
+   "sha256": "b394369ad87873b3cbe99d4c5c8a48c5c36a7a7e85397cfe0261b00530f2af93",
+   "visible_overlap_from_name": 1.0
+  },
+  "manganese": {
+   "book": "main/Mn",
+   "page": "Johnson",
+   "page_name": "Johnson and Christy 1974: n,k 0.188–1.937 µm",
+   "data_path": "main/Mn/nk/Johnson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Mn/nk/Johnson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Mn&page=Johnson",
+   "file": "ri/manganese/Johnson.yml",
+   "sha256": "8699e71acd4bcd83e952682cf29cc360a87dc1ada3c7995e97a2c9de2c9f35e3",
+   "visible_overlap_from_name": 1.0
+  },
+  "magnesium": {
+   "book": "main/Mg",
+   "page": "Palm",
+   "page_name": "Palm et al. 2018: n,k 0.250–1.68 µm",
+   "data_path": "main/Mg/nk/Palm.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Mg/nk/Palm.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Mg&page=Palm",
+   "file": "ri/magnesium/Palm.yml",
+   "sha256": "f2dfe0ad7d54e4c7f826c90e76717ff7ec2a9485301ea782d97132de68d5f4bf",
+   "visible_overlap_from_name": 1.0
+  },
+  "rhodium": {
+   "book": "main/Rh",
+   "page": "Weaver",
+   "page_name": "Weaver et al. 1977: n,k 0.20–12.40 µm",
+   "data_path": "main/Rh/nk/Weaver.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Rh/nk/Weaver.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Rh&page=Weaver",
+   "file": "ri/rhodium/Weaver.yml",
+   "sha256": "e240d76893d5bad371fe1a913fb142f9bc339d0d71e0984b23ad8bb741083661",
+   "visible_overlap_from_name": 1.0
+  },
+  "iridium": {
+   "book": "main/Ir",
+   "page": "Schmitt-ALD",
+   "page_name": "Schmitt et al. 2022: n,k 0.200–20.0 µm; ALD deposition",
+   "data_path": "main/Ir/nk/Schmitt-ALD.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Ir/nk/Schmitt-ALD.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Ir&page=Schmitt-ALD",
+   "file": "ri/iridium/Schmitt-ALD.yml",
+   "sha256": "83f594001d7e6c9fef0f010ca608aa53697bf15a17dba6d322e15325dc375482",
+   "visible_overlap_from_name": 1.0
+  },
+  "beryllium": {
+   "book": "main/Be",
+   "page": "Rakic-BB",
+   "page_name": "Rakić et al. 1998: Brendel-Bormann model; n,k 0.248–62.0 µm",
+   "data_path": "main/Be/nk/Rakic-BB.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Be/nk/Rakic-BB.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Be&page=Rakic-BB",
+   "file": "ri/beryllium/Rakic-BB.yml",
+   "sha256": "5dba6181beb7071ff9c57ec0c02ea3d8eb566008e8cf41943edd7d7419a864e5",
+   "visible_overlap_from_name": 1.0
+  },
+  "bismuth": {
+   "book": "main/Bi",
+   "page": "Werner",
+   "page_name": "Werner et al. 2009: n,k 0.0176–2.48 µm",
+   "data_path": "main/Bi/nk/Werner.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Bi/nk/Werner.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Bi&page=Werner",
+   "file": "ri/bismuth/Werner.yml",
+   "sha256": "36ceb2932144b06297a29124e1fed0e4001c75a4da0988b5ab5dfba76122c96a",
+   "visible_overlap_from_name": 1.0
+  },
+  "sodium": {
+   "book": "main/Na",
+   "page": "Inagaki",
+   "page_name": "Inagaki et al. 1976: n,k 0.326–2.07 µm",
+   "data_path": "main/Na/nk/Inagaki.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Na/nk/Inagaki.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Na&page=Inagaki",
+   "file": "ri/sodium/Inagaki.yml",
+   "sha256": "8bbdbcd19cdd48b1e8ace252e57e73b0fa1e43748b21096bd3260727213f56f4",
+   "visible_overlap_from_name": 1.0
+  },
+  "potassium": {
+   "book": "main/K",
+   "page": "Smith",
+   "page_name": "Smith 1969: n,k 0.313–2.24 µm",
+   "data_path": "main/K/nk/Smith.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/K/nk/Smith.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=K&page=Smith",
+   "file": "ri/potassium/Smith.yml",
+   "sha256": "ee6fb848bd15c27e87cee238195b315974f748c96379ef078189cf7c5fd914aa",
+   "visible_overlap_from_name": 1.0
+  },
+  "mercury": {
+   "book": "main/Hg",
+   "page": "Inagaki",
+   "page_name": "Inagaki et al. 1981: n,k 0.0636–6.20 µm",
+   "data_path": "main/Hg/nk/Inagaki.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Hg/nk/Inagaki.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Hg&page=Inagaki",
+   "file": "ri/mercury/Inagaki.yml",
+   "sha256": "be585b9a15d93bc5b94ceb363ceb6540099c7a37ac5a51ac6b3e9c0c6cbb2c54",
+   "visible_overlap_from_name": 1.0
+  },
+  "brass": {
+   "book": "other/Cu-Zn",
+   "page": "Querry-Cu70Zn30",
+   "page_name": "Querry 1985: n,k 0.21–55.6 µm; 70% Cu 30% Zn",
+   "data_path": "other/alloys/Cu-Zn/nk/Querry-Cu70Zn30.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/alloys/Cu-Zn/nk/Querry-Cu70Zn30.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=Cu-Zn&page=Querry-Cu70Zn30",
+   "file": "ri/brass/Querry-Cu70Zn30.yml",
+   "sha256": "43d00547dd1d9b1bbbf21e7dd887f59fec7325d8d7cbdd4ccc27d0668ae8b60b",
+   "visible_overlap_from_name": 1.0
+  },
+  "stainless_steel": {
+   "book": "other/stainless_steel",
+   "page": "Karlsson-austenitic",
+   "page_name": "Karlsson and Ribbing 1982: Austenitic steel; n,k 0.20–2.50 µm",
+   "data_path": "other/alloys/stainless steel/nk/Karlsson-austenitic.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/alloys/stainless%20steel/nk/Karlsson-austenitic.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=stainless_steel&page=Karlsson-austenitic",
+   "file": "ri/stainless_steel/Karlsson-austenitic.yml",
+   "sha256": "34eac3be29bae7cf517c1138312db2379f1c0762836e249d9aae047853e163b5",
+   "visible_overlap_from_name": 1.0
+  },
+  "silicon": {
+   "book": "main/Si",
+   "page": "Aspnes",
+   "page_name": "Aspnes and Studna 1983: n,k 0.21–0.83 µm",
+   "data_path": "main/Si/nk/Aspnes.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Si/nk/Aspnes.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Si&page=Aspnes",
+   "file": "ri/silicon/Aspnes.yml",
+   "sha256": "766489862d0d4dc6011e9f078e556a4a24fe79622bec0b1f1a80b297c84ce00d",
+   "visible_overlap_from_name": 1.0
+  },
+  "germanium": {
+   "book": "main/Ge",
+   "page": "Aspnes",
+   "page_name": "Aspnes and Studna 1983: n,k 0.21–0.83 µm",
+   "data_path": "main/Ge/nk/Aspnes.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Ge/nk/Aspnes.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Ge&page=Aspnes",
+   "file": "ri/germanium/Aspnes.yml",
+   "sha256": "66faa4887d443a058ab53422db783bbf9090d22752036f0c826bbd073f7746bf",
+   "visible_overlap_from_name": 1.0
+  },
+  "gallium_arsenide": {
+   "book": "main/GaAs",
+   "page": "Aspnes",
+   "page_name": "Aspnes et al. 1986: n,k 0.207–0.827 µm",
+   "data_path": "main/GaAs/nk/Aspnes.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/GaAs/nk/Aspnes.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=GaAs&page=Aspnes",
+   "file": "ri/gallium_arsenide/Aspnes.yml",
+   "sha256": "45565b33ad36fc8e65d3b0d63a1db6e8aed1e64177e7c6b0e53968c105b4fc9c",
+   "visible_overlap_from_name": 1.0
+  },
+  "fused_silica": {
+   "book": "glass/fused_silica",
+   "page": "Malitson",
+   "page_name": "Malitson 1965: n 0.21–3.71 µm",
+   "data_path": "main/SiO2/nk/Malitson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/SiO2/nk/Malitson.yml",
+   "web": "https://refractiveindex.info/?shelf=glass&book=fused_silica&page=Malitson",
+   "file": "ri/fused_silica/Malitson.yml",
+   "sha256": "c587670f397241ecb93a1af3279d6fe7ed67888e587e399074b0eab729c92b52",
+   "visible_overlap_from_name": 1.0
+  },
+  "bk7": {
+   "book": "popular_glass/BK7",
+   "page": "SCHOTT",
+   "page_name": "N-BK7 (SCHOTT)",
+   "data_path": "specs/schott/optical/N-BK7.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/specs/schott/optical/N-BK7.yml",
+   "web": "https://refractiveindex.info/?shelf=popular_glass&book=BK7&page=SCHOTT",
+   "file": "ri/bk7/N-BK7.yml",
+   "sha256": "87da400af68251beaeb605a85fb949483fa082c609a5b1d78b4823cb9f4f65b8",
+   "visible_overlap_from_name": 0.0
+  },
+  "soda_lime_glass": {
+   "book": "glass/soda-lime",
+   "page": "Rubin-clear",
+   "page_name": "Rubin 1985: Clear; n,k 0.31–4.6 µm",
+   "data_path": "glass/misc/soda-lime/nk/Rubin-clear.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/glass/misc/soda-lime/nk/Rubin-clear.yml",
+   "web": "https://refractiveindex.info/?shelf=glass&book=soda-lime&page=Rubin-clear",
+   "file": "ri/soda_lime_glass/Rubin-clear.yml",
+   "sha256": "73139b7cc4ed0af9d347d1ccaec2cc4719584f9e10dd7232d2f2bd8d97f62d73",
+   "visible_overlap_from_name": 1.0
+  },
+  "sapphire": {
+   "book": "main/Al2O3",
+   "page": "Malitson-o",
+   "page_name": "Malitson and Dodge 1972: α-Al2O3 (Sapphire); n(o) 0.20–5.0 µm",
+   "data_path": "main/Al2O3/nk/Malitson-o.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Al2O3/nk/Malitson-o.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Al2O3&page=Malitson-o",
+   "file": "ri/sapphire/Malitson-o.yml",
+   "sha256": "459f0cb41f105b9a01dc96a7d2eab0a71c5d43f7355fba3c4d3d6969fc76a41b",
+   "visible_overlap_from_name": 1.0
+  },
+  "diamond": {
+   "book": "main/C",
+   "page": "Phillip",
+   "page_name": "Phillip and Taft 1964: Diamond; n,k 0.0354–10 µm",
+   "data_path": "main/C/nk/Phillip.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/C/nk/Phillip.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=C&page=Phillip",
+   "file": "ri/diamond/Phillip.yml",
+   "sha256": "9629e1b3b8a2121675e0e76de89d70db8e9b8759944f3a4b3d7af9096beaa689",
+   "visible_overlap_from_name": 1.0
+  },
+  "magnesium_fluoride": {
+   "book": "main/MgF2",
+   "page": "Li-o",
+   "page_name": "Li 1980: n(o) 0.14–7.5 µm",
+   "data_path": "main/MgF2/nk/Li-o.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/MgF2/nk/Li-o.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=MgF2&page=Li-o",
+   "file": "ri/magnesium_fluoride/Li-o.yml",
+   "sha256": "d28536113b8841479452b13b8d8a4a03bcc3e351b46b987ff9b84de8e8ed24d6",
+   "visible_overlap_from_name": 1.0
+  },
+  "ice": {
+   "book": "main/H2O",
+   "page": "Warren-2008",
+   "page_name": "Warren and Brandt 2008: Ice; n,k 0.00443–2e6 µm",
+   "data_path": "main/H2O/nk/Warren-2008.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/H2O/nk/Warren-2008.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=H2O&page=Warren-2008",
+   "file": "ri/ice/Warren-2008.yml",
+   "sha256": "a8577eaa1fabb9245957397344ce23efb20dd4c57cd7f442710d2d2373e0bbd6",
+   "visible_overlap_from_name": 1.0
+  },
+  "pmma": {
+   "book": "organic/poly_methyl_methacrylate",
+   "page": "Sultanova",
+   "page_name": "Sultanova et al. 2009: n 0.437–1.052 µm",
+   "data_path": "organic/(C5H8O2)n - poly(methyl methacrylate)/nk/Sultanova.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/%28C5H8O2%29n%20-%20poly%28methyl%20methacrylate%29/nk/Sultanova.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=poly_methyl_methacrylate&page=Sultanova",
+   "file": "ri/pmma/Sultanova.yml",
+   "sha256": "7ab2a92e75476c29702210d50be32b1c12840557f735d808c2d651153de953ea",
+   "visible_overlap_from_name": 0.858
+  },
+  "polycarbonate": {
+   "book": "organic/polycarbonate",
+   "page": "Sultanova",
+   "page_name": "Sultanova et al. 2009: n 0.437–1.05 µm",
+   "data_path": "organic/(C16H14O3)n - polycarbonate/nk/Sultanova.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/%28C16H14O3%29n%20-%20polycarbonate/nk/Sultanova.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=polycarbonate&page=Sultanova",
+   "file": "ri/polycarbonate/Sultanova.yml",
+   "sha256": "61cc07f568cafb8f6150053b08c9a9f98d9ce2da2e938264994766e3577d80e3",
+   "visible_overlap_from_name": 0.858
+  },
+  "polystyrene": {
+   "book": "organic/polystyrene",
+   "page": "Sultanova",
+   "page_name": "Sultanova et al. 2009: n 0.437–1.05 µm",
+   "data_path": "organic/(C8H8)n - polystyrene/nk/Sultanova.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/%28C8H8%29n%20-%20polystyrene/nk/Sultanova.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=polystyrene&page=Sultanova",
+   "file": "ri/polystyrene/Sultanova.yml",
+   "sha256": "7e6c27475da34c102fe2a6c9a8b89a8781869c5804543998c68f6a68ed5eaf14",
+   "visible_overlap_from_name": 0.858
+  },
+  "pet": {
+   "book": "organic/polyethylene_terephthalate",
+   "page": "Zhang",
+   "page_name": "Zhang et al. 2020: n,k 0.4–20 µm",
+   "data_path": "organic/(C10H8O4)n - polyethylene terephthalate/nk/Zhang.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/%28C10H8O4%29n%20-%20polyethylene%20terephthalate/nk/Zhang.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=polyethylene_terephthalate&page=Zhang",
+   "file": "ri/pet/Zhang.yml",
+   "sha256": "685cec3641a69cf04b6b0bca410b0e4440b23eda36663b455f45610957070497",
+   "visible_overlap_from_name": 0.95
+  },
+  "pvc": {
+   "book": "organic/polyvinil_chloride",
+   "page": "Zhang",
+   "page_name": "Zhang et al. 2020: n,k 0.4–20 µm",
+   "data_path": "organic/(C2H3Cl)n - polyvinyl chloride/nk/Zhang.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/%28C2H3Cl%29n%20-%20polyvinyl%20chloride/nk/Zhang.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=polyvinil_chloride&page=Zhang",
+   "file": "ri/pvc/Zhang.yml",
+   "sha256": "e0fcb0871c21daa74e5cf75a6d19d0f8334ce99df61f95eccab317f8fbd8e4e4",
+   "visible_overlap_from_name": 0.95
+  },
+  "pdms": {
+   "book": "organic/polydimethylsiloxane",
+   "page": "Gupta",
+   "page_name": "Gupta et al. 2019: n 0.30–1.69 µm",
+   "data_path": "organic/(C2H6OSi)n - polydimethylsiloxane/nk/Gupta.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/%28C2H6OSi%29n%20-%20polydimethylsiloxane/nk/Gupta.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=polydimethylsiloxane&page=Gupta",
+   "file": "ri/pdms/Gupta.yml",
+   "sha256": "b3e159d36677a71e7bbccf90e404b57130bd6cd983d60f76d2e655ff80c64962",
+   "visible_overlap_from_name": 1.0
+  },
+  "kapton": {
+   "book": "other/Kapton",
+   "page": "French",
+   "page_name": "French et al. 2009: n 0.19–1.59 µm, k 0.48–2.49 µm",
+   "data_path": "other/commercial polymers/Kapton/nk/French.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/commercial%20polymers/Kapton/nk/French.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=Kapton&page=French",
+   "file": "ri/kapton/French.yml",
+   "sha256": "a214509469e0b372bb43145ac8fcbf7f57857ce6215926c6d51015335d582806",
+   "visible_overlap_from_name": 1.0
+  },
+  "cellulose": {
+   "book": "organic/cellulose",
+   "page": "Sultanova",
+   "page_name": "Sultanova et al. 2009: n 0.437–1.05 µm",
+   "data_path": "organic/(C6H10O5)n - cellulose/nk/Sultanova.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/%28C6H10O5%29n%20-%20cellulose/nk/Sultanova.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=cellulose&page=Sultanova",
+   "file": "ri/cellulose/Sultanova.yml",
+   "sha256": "2100346cba95aa70a21712c1f86f17b84501f60b0d92a34013cb0f70178c391e",
+   "visible_overlap_from_name": 0.858
+  },
+  "water": {
+   "book": "main/H2O",
+   "page": "Hale",
+   "page_name": "Hale and Querry 1973: Water; n,k 0.2–200 µm; 25 °C",
+   "data_path": "main/H2O/nk/Hale.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/H2O/nk/Hale.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=H2O&page=Hale",
+   "file": "ri/water/Hale.yml",
+   "sha256": "df1af6b4352c3378cf81b149ac2280de30d80e2941d147786d5e7cd5044a8847",
+   "visible_overlap_from_name": 1.0
+  },
+  "ethanol": {
+   "book": "organic/ethanol",
+   "page": "Sani",
+   "page_name": "Sani and Dell'Oro 2016: n,k 0.185–61 µm",
+   "data_path": "organic/C2H6O - ethanol/nk/Sani.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/C2H6O%20-%20ethanol/nk/Sani.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=ethanol&page=Sani",
+   "file": "ri/ethanol/Sani.yml",
+   "sha256": "0c274a1694516d76a498f3ddd159fe5734bdefae96f25657a263987b14feeab4",
+   "visible_overlap_from_name": 1.0
+  },
+  "methanol": {
+   "book": "organic/methanol",
+   "page": "Moutzouris",
+   "page_name": "Moutzouris et al. 2013: n 0.450–1.55 µm",
+   "data_path": "organic/CH4O - methanol/nk/Moutzouris.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/CH4O%20-%20methanol/nk/Moutzouris.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=methanol&page=Moutzouris",
+   "file": "ri/methanol/Moutzouris.yml",
+   "sha256": "f5aedae05eb5f787ee175bf9bd2d74ff0472c818e0663657496056947f3f3b82",
+   "visible_overlap_from_name": 0.825
+  },
+  "glycerol": {
+   "book": "organic/glycerol",
+   "page": "Rheims",
+   "page_name": "Rheims et al. 1997: n 0.589–1.05 µm",
+   "data_path": "organic/C3H8O3 - glycerol/nk/Rheims.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/C3H8O3%20-%20glycerol/nk/Rheims.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=glycerol&page=Rheims",
+   "file": "ri/glycerol/Rheims.yml",
+   "sha256": "1963add17ea6dc207dbe95a2c7f72af21ba2558abcd7efe060aad1e41b2eda3f",
+   "visible_overlap_from_name": 0.478
+  },
+  "acetone": {
+   "book": "organic/acetone",
+   "page": "Rheims",
+   "page_name": "Rheims et al. 1997: n 0.477–0.83 µm",
+   "data_path": "organic/C3H6O - acetone/nk/Rheims.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/C3H6O%20-%20acetone/nk/Rheims.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=acetone&page=Rheims",
+   "file": "ri/acetone/Rheims.yml",
+   "sha256": "cc1acb5da73bca94607673be2daf82da494dc2286a518b4d2650a27c54d00261",
+   "visible_overlap_from_name": 0.758
+  },
+  "benzene": {
+   "book": "organic/benzene",
+   "page": "Moutzouris",
+   "page_name": "Moutzouris et al. 2013: n 0.450–1.55 µm",
+   "data_path": "organic/C6H6 - benzene/nk/Moutzouris.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/C6H6%20-%20benzene/nk/Moutzouris.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=benzene&page=Moutzouris",
+   "file": "ri/benzene/Moutzouris.yml",
+   "sha256": "c155d12a7ed82f6c74c17c9dd1406a5085277d86966e2ad2fd3e7dc3d91a4a13",
+   "visible_overlap_from_name": 0.825
+  },
+  "toluene": {
+   "book": "organic/toluene",
+   "page": "Kedenburg",
+   "page_name": "Kedenburg et al. 2012: n 0.5–1.6 µm, k 0.5–1.75 µm",
+   "data_path": "organic/C7H8 - toluene/nk/Kedenburg.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/C7H8%20-%20toluene/nk/Kedenburg.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=toluene&page=Kedenburg",
+   "file": "ri/toluene/Kedenburg.yml",
+   "sha256": "352e79e859a1f3511afd8c54ff41afa6b6844dc7e902899b683ed80ade5b107a",
+   "visible_overlap_from_name": 0.7
+  },
+  "hexane": {
+   "book": "organic/hexane",
+   "page": "Kozma",
+   "page_name": "Kozma et al. 2005: n-Hexane; n 0.230–0.641 µm",
+   "data_path": "organic/C6H14 - hexane/nk/Kozma.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/C6H14%20-%20hexane/nk/Kozma.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=hexane&page=Kozma",
+   "file": "ri/hexane/Kozma.yml",
+   "sha256": "fa391b87f1070867154d9df4c4bb8624c8947e0ee679a15f86c792f8945622f0",
+   "visible_overlap_from_name": 0.652
+  },
+  "ethylene_glycol": {
+   "book": "organic/ethylene_glycol",
+   "page": "Sani",
+   "page_name": "Sani and Dell'Oro 2014: n,k 0.185–55.0 µm",
+   "data_path": "organic/C2H6O2 - ethylene glycol/nk/Sani.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/C2H6O2%20-%20ethylene%20glycol/nk/Sani.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=ethylene_glycol&page=Sani",
+   "file": "ri/ethylene_glycol/Sani.yml",
+   "sha256": "19b122dcdbbfaafe4f53434ea67baa68652235e7b33fad3e0287f28e96ae7146",
+   "visible_overlap_from_name": 1.0
+  },
+  "oleic_acid": {
+   "book": "organic/oleic_acid",
+   "page": "Jones",
+   "page_name": "Jones et al. 2015: n 0.595–0.670 µm",
+   "data_path": "organic/C18H34O2 - oleic acid/nk/Jones.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/C18H34O2%20-%20oleic%20acid/nk/Jones.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=oleic_acid&page=Jones",
+   "file": "ri/oleic_acid/Jones.yml",
+   "sha256": "6aeebde965e1915796e92a22112d140544e6541a6cabae5a7b2ba09ab8319759",
+   "visible_overlap_from_name": 0.188
+  },
+  "carbon_disulfide": {
+   "book": "main/CS2",
+   "page": "Chemnitz",
+   "page_name": "Chemnitz et al. 2017: n 0.3–12 µm",
+   "data_path": "main/CS2/nk/Chemnitz.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/CS2/nk/Chemnitz.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=CS2&page=Chemnitz",
+   "file": "ri/carbon_disulfide/Chemnitz.yml",
+   "sha256": "5183df39f8860fb5fa595a4275adfa606ea5fbb673db06052f7d0a22e10e11c4",
+   "visible_overlap_from_name": 1.0
+  },
+  "carbon_tetrachloride": {
+   "book": "organic/carbon_tetrachloride",
+   "page": "Kedenburg",
+   "page_name": "Kedenburg et al. 2012: n 0.5–1.6 µm, k 0.5–1.5 µm",
+   "data_path": "organic/CCl4 - carbon tetrachloride/nk/Kedenburg.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/CCl4%20-%20carbon%20tetrachloride/nk/Kedenburg.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=carbon_tetrachloride&page=Kedenburg",
+   "file": "ri/carbon_tetrachloride/Kedenburg.yml",
+   "sha256": "5f5e2a471288345033ddd44a6984ed848c0510547695a48b5497c1878215366b",
+   "visible_overlap_from_name": 0.7
+  },
+  "biodiesel": {
+   "book": "other/biodisel",
+   "page": "Wang-20C",
+   "page_name": "Wang et al. 2015: 20 °C; n,k 0.300–2.50 µm",
+   "data_path": "other/fuel/biodisel/nk/Wang-20C.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/fuel/biodisel/nk/Wang-20C.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=biodisel&page=Wang-20C",
+   "file": "ri/biodiesel/Wang-20C.yml",
+   "sha256": "d7557045048450e58fe123be12950a13f6788c81fbdd45c7b66cbc776a035f7e",
+   "visible_overlap_from_name": 1.0
+  },
+  "air": {
+   "book": "other/air",
+   "page": "Ciddor",
+   "page_name": "Ciddor 1996: n 0.23–1.690 µm",
+   "data_path": "other/mixed gases/air/nk/Ciddor.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/mixed%20gases/air/nk/Ciddor.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=air&page=Ciddor",
+   "file": "ri/air/Ciddor.yml",
+   "sha256": "20646b8cff1a0d25a5b7f4f3d10f5a65a8479bec308548bea9afa625ff208fa3",
+   "visible_overlap_from_name": 1.0
+  },
+  "nitrogen": {
+   "book": "main/N2",
+   "page": "Peck-15C",
+   "page_name": "Peck and Khanna 1966: n 0.47–2.06 µm; 15 °C",
+   "data_path": "main/N2/nk/Peck-15C.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/N2/nk/Peck-15C.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=N2&page=Peck-15C",
+   "file": "ri/nitrogen/Peck-15C.yml",
+   "sha256": "4fda5c3298cd8004343053cb9c5e7b1399e2f6c9621ec3bdd391f32e490f48f8",
+   "visible_overlap_from_name": 0.775
+  },
+  "oxygen": {
+   "book": "main/O2",
+   "page": "Zhang",
+   "page_name": "Zhang et al. 2008: n 0.4–1.8 µm; 20 °C",
+   "data_path": "main/O2/nk/Zhang.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/O2/nk/Zhang.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=O2&page=Zhang",
+   "file": "ri/oxygen/Zhang.yml",
+   "sha256": "f4b832f07487dbf5e1b66bab2975f365dc9c43cc7759c4b67c52097a0cb53b7c",
+   "visible_overlap_from_name": 0.95
+  },
+  "argon": {
+   "book": "main/Ar",
+   "page": "Peck-15C",
+   "page_name": "Peck and Fisher 1964: n 0.47–2.06 µm; 15 °C",
+   "data_path": "main/Ar/nk/Peck-15C.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Ar/nk/Peck-15C.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Ar&page=Peck-15C",
+   "file": "ri/argon/Peck-15C.yml",
+   "sha256": "9dffe9e552384668e6074fb3213a22c055a2ea7d09dce77c751e166abbd7a387",
+   "visible_overlap_from_name": 0.775
+  },
+  "helium": {
+   "book": "main/He",
+   "page": "Ermolov",
+   "page_name": "Ermolov et al. 2015: n 0.09–1.00 µm",
+   "data_path": "main/He/nk/Ermolov.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/He/nk/Ermolov.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=He&page=Ermolov",
+   "file": "ri/helium/Ermolov.yml",
+   "sha256": "2b7537796187df8464abc778575d2854166353091ac74575d3460e62a535b4ac",
+   "visible_overlap_from_name": 1.0
+  },
+  "hydrogen": {
+   "book": "main/H2",
+   "page": "Peck",
+   "page_name": "Peck and Hung 1977: n 0.168–1.695 µm",
+   "data_path": "main/H2/nk/Peck.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/H2/nk/Peck.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=H2&page=Peck",
+   "file": "ri/hydrogen/Peck.yml",
+   "sha256": "b5cc7075c70237fc7261f65d3507da2c3e0354e06b440532d710a94c205abee9",
+   "visible_overlap_from_name": 1.0
+  },
+  "neon": {
+   "book": "main/Ne",
+   "page": "Borzsonyi",
+   "page_name": "Börzsönyi et al. 2008: n 0.4–1.0 µm",
+   "data_path": "main/Ne/nk/Borzsonyi.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Ne/nk/Borzsonyi.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Ne&page=Borzsonyi",
+   "file": "ri/neon/Borzsonyi.yml",
+   "sha256": "7c53a2a734b1eb3a2b9533dac35f42e69209cf2c89d8d3925d1f4576111e482b",
+   "visible_overlap_from_name": 0.95
+  },
+  "krypton": {
+   "book": "main/Kr",
+   "page": "Borzsonyi",
+   "page_name": "Börzsönyi et al. 2008: n 0.4–1.0 µm",
+   "data_path": "main/Kr/nk/Borzsonyi.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Kr/nk/Borzsonyi.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Kr&page=Borzsonyi",
+   "file": "ri/krypton/Borzsonyi.yml",
+   "sha256": "04ff0e7eecec19d24836ccc70133f089a5dc8e46def19d0cf58aefa56d8e92ca",
+   "visible_overlap_from_name": 0.95
+  },
+  "xenon": {
+   "book": "main/Xe",
+   "page": "Borzsonyi",
+   "page_name": "Börzsönyi et al. 2008: n 0.4–1.0 µm",
+   "data_path": "main/Xe/nk/Borzsonyi.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Xe/nk/Borzsonyi.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Xe&page=Borzsonyi",
+   "file": "ri/xenon/Borzsonyi.yml",
+   "sha256": "e8f1297e6337f4bdfa9ca0ababa70b2fe215fdf2491fef35bc7ada58970364fd",
+   "visible_overlap_from_name": 0.95
+  },
+  "carbon_dioxide": {
+   "book": "main/CO2",
+   "page": "Bideau-Mehu",
+   "page_name": "Bideau-Mehu et al. 1973: n 0.181–1.69 µm",
+   "data_path": "main/CO2/nk/Bideau-Mehu.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/CO2/nk/Bideau-Mehu.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=CO2&page=Bideau-Mehu",
+   "file": "ri/carbon_dioxide/Bideau-Mehu.yml",
+   "sha256": "d3b52d2a0b667a2e95aec110f35a7fced0c2ab3f02583d2e604aeb58c204f55c",
+   "visible_overlap_from_name": 1.0
+  },
+  "methane": {
+   "book": "organic/methane",
+   "page": "Loria",
+   "page_name": "Loria 1909: Gas at 0 °C; n 0.529–0.659 µm",
+   "data_path": "organic/CH4 - methane/nk/Loria.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/CH4%20-%20methane/nk/Loria.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=methane&page=Loria",
+   "file": "ri/methane/Loria.yml",
+   "sha256": "73890e1ca7d5164e8f898fc10905ac1a82e2738f673e985b904ec117697f3f8c",
+   "visible_overlap_from_name": 0.325
+  },
+  "ammonia": {
+   "book": "main/NH3",
+   "page": "Cuthbertson",
+   "page_name": "Cuthbertson and Cuthbertson 1914: n 0.480–0.671 µm",
+   "data_path": "main/NH3/nk/Cuthbertson.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/NH3/nk/Cuthbertson.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=NH3&page=Cuthbertson",
+   "file": "ri/ammonia/Cuthbertson.yml",
+   "sha256": "551d7345e75359eac33881999c06896d2e49aa762d28ba2ea7a639e0273415c1",
+   "visible_overlap_from_name": 0.478
+  },
+  "sulfur_hexafluoride": {
+   "book": "main/SF6",
+   "page": "Vukovic",
+   "page_name": "Vukovic et al. 1996: n 0.6–1.3 µm",
+   "data_path": "main/SF6/nk/Vukovic.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/SF6/nk/Vukovic.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=SF6&page=Vukovic",
+   "file": "ri/sulfur_hexafluoride/Vukovic.yml",
+   "sha256": "9a6752f3283472d310cbfbd69d37d10efca9bf2343465c783cad73774ea2151e",
+   "visible_overlap_from_name": 0.45
+  },
+  "blood": {
+   "book": "other/blood",
+   "page": "Liu",
+   "page_name": "Liu et al. 2019: n 0.400–0.750 µm",
+   "data_path": "other/human body/blood/nk/Liu.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/human%20body/blood/nk/Liu.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=blood&page=Liu",
+   "file": "ri/blood/Liu.yml",
+   "sha256": "11ca69129afaded0ebe3f243b1cfd748c3769509c7d7faaa16678f082aa1c14a",
+   "visible_overlap_from_name": 0.875
+  },
+  "blood_plasma": {
+   "book": "other/blood",
+   "page": "Liu-plasma",
+   "page_name": "Liu et al. 2019: Plasma; n 0.400–0.750 µm",
+   "data_path": "other/human body/blood/nk/Liu-plasma.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/human%20body/blood/nk/Liu-plasma.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=blood&page=Liu-plasma",
+   "file": "ri/blood_plasma/Liu-plasma.yml",
+   "sha256": "fd5eba6705237fe7d8e00933a513fb8310765ad236a09460780883d6b7f5b67b",
+   "visible_overlap_from_name": 0.875
+  },
+  "adipose": {
+   "book": "other/adipose_tissue",
+   "page": "Yanina",
+   "page_name": "Yanina et al. 2019: n,k 0.475–1.55 µm",
+   "data_path": "other/human body/adipose tissue/nk/Yanina.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/human%20body/adipose%20tissue/nk/Yanina.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=adipose_tissue&page=Yanina",
+   "file": "ri/adipose/Yanina.yml",
+   "sha256": "4d3645b6a17a20a4bcfdb383c94776d57bc41ee43b079e3de00a3e9e27db62e3",
+   "visible_overlap_from_name": 0.763
+  },
+  "liver": {
+   "book": "other/liver",
+   "page": "Giannios",
+   "page_name": "Giannios et al. 2017: n,k 0.45–1.551 µm",
+   "data_path": "other/human body/liver/nk/Giannios.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/human%20body/liver/nk/Giannios.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=liver&page=Giannios",
+   "file": "ri/liver/Giannios.yml",
+   "sha256": "930689bd4222b3a89a484daae9f76527695525bf59e4877cb5b4e544c994da27",
+   "visible_overlap_from_name": 0.825
+  },
+  "colon_mucosa": {
+   "book": "other/colon",
+   "page": "Giannios-mucosa",
+   "page_name": "Giannios et al. 2017: Mucosa; n,k 0.45–1.551 µm",
+   "data_path": "other/human body/colon/nk/Giannios-mucosa.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/human%20body/colon/nk/Giannios-mucosa.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=colon&page=Giannios-mucosa",
+   "file": "ri/colon_mucosa/Giannios-mucosa.yml",
+   "sha256": "a6335f12f15b6c29dbd82bcc25c4e50fcebed2437c9aaecc1aa32b56b9a0230d",
+   "visible_overlap_from_name": 0.825
+  },
+  "dna": {
+   "book": "other/DNA",
+   "page": "Inagaki",
+   "page_name": "Inagaki et al. 1974: n,k 0.015–0.62 µm",
+   "data_path": "other/human body/DNA/nk/Inagaki.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/human%20body/DNA/nk/Inagaki.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=DNA&page=Inagaki",
+   "file": "ri/dna/Inagaki.yml",
+   "sha256": "204e90007b98b6a0758817f579cb0d120561e019d91912a0310e32ea6c1be965",
+   "visible_overlap_from_name": 0.6
+  },
+  "silk_fibroin": {
+   "book": "other/Bombyx_mori",
+   "page": "Perotto",
+   "page_name": "Perotto et al. 2017: Native fibroin film; n 0.3–1.7 µm",
+   "data_path": "other/silk/Bombyx mori/nk/Perotto.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/silk/Bombyx%20mori/nk/Perotto.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=Bombyx_mori&page=Perotto",
+   "file": "ri/silk_fibroin/Perotto.yml",
+   "sha256": "f5f02ae09f626e01ca61ab357796444d05d0fcac2a84aa6564684c9005615e0d",
+   "visible_overlap_from_name": 1.0
+  },
+  "quartz": {
+   "book": "main/SiO2",
+   "page": "Ghosh-o",
+   "page_name": "Ghosh 1999: α-Quartz, n(o) 0.198–2.05 µm",
+   "data_path": "main/SiO2/nk/Ghosh-o.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/SiO2/nk/Ghosh-o.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=SiO2&page=Ghosh-o",
+   "file": "ri/quartz/Ghosh-o.yml",
+   "sha256": "c63dabfdfe9921c8c19264ff6126d68cd78abb1552e40f536c2ffaa083773e7d",
+   "visible_overlap_from_name": 1.0
+  },
+  "calcite": {
+   "book": "main/CaCO3",
+   "page": "Ghosh-o",
+   "page_name": "Ghosh 1999: n(o) 0.204–2.172 µm",
+   "data_path": "main/CaCO3/nk/Ghosh-o.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/CaCO3/nk/Ghosh-o.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=CaCO3&page=Ghosh-o",
+   "file": "ri/calcite/Ghosh-o.yml",
+   "sha256": "ddfcf1c8793522b5ddc2efaa2a92bcfb125db082c35ed2d52982a4f565ae4e7e",
+   "visible_overlap_from_name": 1.0
+  },
+  "fluorite": {
+   "book": "main/CaF2",
+   "page": "Li",
+   "page_name": "Li 1980: n 0.15–12.0 µm; 20 °C",
+   "data_path": "main/CaF2/nk/Li.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/CaF2/nk/Li.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=CaF2&page=Li",
+   "file": "ri/fluorite/Li.yml",
+   "sha256": "66fd889e1874466f5ce78bf75d422337d0a99cfaf7a92a599f8dba40eec20751",
+   "visible_overlap_from_name": 1.0
+  },
+  "halite": {
+   "book": "main/NaCl",
+   "page": "Li",
+   "page_name": "Li 1976: n 0.20–30 µm",
+   "data_path": "main/NaCl/nk/Li.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/NaCl/nk/Li.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=NaCl&page=Li",
+   "file": "ri/halite/Li.yml",
+   "sha256": "20e0b06e16a1abb3668487635430994c0046cef05cd68ee0878804ac5dceae89",
+   "visible_overlap_from_name": 1.0
+  },
+  "magnetite": {
+   "book": "main/Fe3O4",
+   "page": "Querry",
+   "page_name": "Querry 1985: n,k 0.21–55.6 µm",
+   "data_path": "main/Fe3O4/nk/Querry.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Fe3O4/nk/Querry.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Fe3O4&page=Querry",
+   "file": "ri/magnetite/Querry.yml",
+   "sha256": "c42e5a5007827fb3548df61daf222b164a7799206790fb2116c8488aefe9e802",
+   "visible_overlap_from_name": 1.0
+  },
+  "sphalerite": {
+   "book": "main/ZnS",
+   "page": "Ozaki",
+   "page_name": "Ozaki and Adachi 1993: Cubic ZnS; n,k 0.221–1.03 µm",
+   "data_path": "main/ZnS/nk/Ozaki.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/ZnS/nk/Ozaki.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=ZnS&page=Ozaki",
+   "file": "ri/sphalerite/Ozaki.yml",
+   "sha256": "078334a3a47a1e539e5066d49b4e8c495c5112a8780f507e8b289aca170d96cb",
+   "visible_overlap_from_name": 1.0
+  },
+  "spinel": {
+   "book": "main/MgAl2O4",
+   "page": "Tropf",
+   "page_name": "Tropf and Thomas 1991: n 0.35–5.5 µm",
+   "data_path": "main/MgAl2O4/nk/Tropf.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/MgAl2O4/nk/Tropf.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=MgAl2O4&page=Tropf",
+   "file": "ri/spinel/Tropf.yml",
+   "sha256": "d7ccd5d6895e76d1bf39f27714140e35be8a3d127f030cc6183aa1f4b336a40c",
+   "visible_overlap_from_name": 1.0
+  },
+  "periclase": {
+   "book": "main/MgO",
+   "page": "Stephens",
+   "page_name": "Stephens and Malitson 1952: n 0.36–5.4 µm",
+   "data_path": "main/MgO/nk/Stephens.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/MgO/nk/Stephens.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=MgO&page=Stephens",
+   "file": "ri/periclase/Stephens.yml",
+   "sha256": "468127fb84d8f57d235bd6adad078a71b0346d5536a62e36e77b549edd71d8cb",
+   "visible_overlap_from_name": 1.0
+  },
+  "zircon_cubic": {
+   "book": "main/ZrO2",
+   "page": "Wood",
+   "page_name": "Wood and Nassau 1982: Cubic zirconia stabilized with yttria; n 0.361–5.14 µm",
+   "data_path": "other/mixed crystals/ZrO2-Y2O3/nk/Wood.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/mixed%20crystals/ZrO2-Y2O3/nk/Wood.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=ZrO2&page=Wood",
+   "file": "ri/zircon_cubic/Wood.yml",
+   "sha256": "f15eb1b06567dc39ee950d0934b16989319eb6e16038801a8ab735a9d1ff07c6",
+   "visible_overlap_from_name": 1.0
+  },
+  "yag": {
+   "book": "main/Y3Al5O12",
+   "page": "Hrabovsky",
+   "page_name": "Hrabovský et al. 2021: n 0.193–1.69 µm",
+   "data_path": "main/Y3Al5O12/nk/Hrabovsky.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Y3Al5O12/nk/Hrabovsky.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Y3Al5O12&page=Hrabovsky",
+   "file": "ri/yag/Hrabovsky.yml",
+   "sha256": "b3786f5f4d1302057a3a08a3a8813f28350caca7d03cd7e001186492a386793e",
+   "visible_overlap_from_name": 1.0
+  },
+  "graphite": {
+   "book": "main/C",
+   "page": "Djurisic-o",
+   "page_name": "Djurišić and Li 1999: Graphite; n,k (o); 0.0310–10.332 µm",
+   "data_path": "main/C/nk/Djurisic-o.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/C/nk/Djurisic-o.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=C&page=Djurisic-o",
+   "file": "ri/graphite/Djurisic-o.yml",
+   "sha256": "afbb39ae73f32ad92eb0b39adec5ec789df38ca4d7dee20105c1442f8010c586",
+   "visible_overlap_from_name": 1.0
+  },
+  "silicon_carbide": {
+   "book": "main/SiC",
+   "page": "Wang-6H-o",
+   "page_name": "Wang et al. 2013: 6H-SiC; n(o) 0.436–2.33 µm",
+   "data_path": "main/SiC/nk/Wang-6H-o.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/SiC/nk/Wang-6H-o.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=SiC&page=Wang-6H-o",
+   "file": "ri/silicon_carbide/Wang-6H-o.yml",
+   "sha256": "5d8bd21287c1a42eb9fcbd1acc25ec59f58bf5ee9b6aba5a39cf4aa5b43e533b",
+   "visible_overlap_from_name": 0.86
+  },
+  "titanium_white": {
+   "book": "main/TiO2",
+   "page": "Devore-o",
+   "page_name": "Devore 1951: n(o) 0.43–1.53 µm",
+   "data_path": "main/TiO2/nk/Devore-o.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/TiO2/nk/Devore-o.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=TiO2&page=Devore-o",
+   "file": "ri/titanium_white/Devore-o.yml",
+   "sha256": "0bd080dd5246e6d11e63ad35ef1f58154b2555b550c990f3808914cd84bc71bc",
+   "visible_overlap_from_name": 0.875
+  },
+  "zinc_white": {
+   "book": "main/ZnO",
+   "page": "Stelling",
+   "page_name": "Stelling et al. 2017: n,k 0.302–1.685 µm",
+   "data_path": "main/ZnO/nk/Stelling.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/ZnO/nk/Stelling.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=ZnO&page=Stelling",
+   "file": "ri/zinc_white/Stelling.yml",
+   "sha256": "a5f5cba6323e2bcaa1dd4389b5722201717217c9012d990c8cb2bd39753e6ed5",
+   "visible_overlap_from_name": 1.0
+  },
+  "red_ochre": {
+   "book": "main/Fe2O3",
+   "page": "Querry-o",
+   "page_name": "Querry 1985: α-Fe2O3 (Hematite); n,k(o) 0.21–55.6 µm",
+   "data_path": "main/Fe2O3/nk/Querry-o.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/Fe2O3/nk/Querry-o.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=Fe2O3&page=Querry-o",
+   "file": "ri/red_ochre/Querry-o.yml",
+   "sha256": "6952dc0d38a812d3b8d2cd200c8ab69096d8a25c05becc543a6603e3310bace7",
+   "visible_overlap_from_name": 1.0
+  },
+  "cadmium_yellow": {
+   "book": "main/CdS",
+   "page": "Ninomiya-o",
+   "page_name": "Ninomiya and Adachi 1995: n,k(o) 0.218–1.03 µm",
+   "data_path": "main/CdS/nk/Ninomiya-o.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/CdS/nk/Ninomiya-o.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=CdS&page=Ninomiya-o",
+   "file": "ri/cadmium_yellow/Ninomiya-o.yml",
+   "sha256": "4b00f01bf0a42a5dbe133717537d918b1d01d1cae1c547a7f4811b959b7042c4",
+   "visible_overlap_from_name": 1.0
+  },
+  "cadmium_red": {
+   "book": "main/CdSe",
+   "page": "Ninomiya-cubic",
+   "page_name": "Ninomiya and Adachi 1995: Cubic; n,k 0.207–0.827 µm",
+   "data_path": "main/CdSe/nk/Ninomiya-cubic.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/CdSe/nk/Ninomiya-cubic.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=CdSe&page=Ninomiya-cubic",
+   "file": "ri/cadmium_red/Ninomiya-cubic.yml",
+   "sha256": "52e221438a47ebbbe00c31ea97fd6aa046769bdf1ed67895172a966d51d41304",
+   "visible_overlap_from_name": 1.0
+  },
+  "vermilion": {
+   "book": "main/HgS",
+   "page": "Bond-o",
+   "page_name": "Bond et al. 1967: α-HgS; n(o) 0.62–11 µm",
+   "data_path": "main/HgS/nk/Bond-o.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/HgS/nk/Bond-o.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=HgS&page=Bond-o",
+   "file": "ri/vermilion/Bond-o.yml",
+   "sha256": "0e6e54bad021a7217116970fdb1a55ac3c732f4d84bf0cec807cb883df6d7bd5",
+   "visible_overlap_from_name": 0.4
+  },
+  "lamp_black": {
+   "book": "other/acetylene_soot",
+   "page": "Dlazell",
+   "page_name": "Dalzell and Sarofim 1969: n,k 0.4358–10 µm",
+   "data_path": "other/soots/acetylene soot/nk/Dalzell.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/soots/acetylene%20soot/nk/Dalzell.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=acetylene_soot&page=Dlazell",
+   "file": "ri/lamp_black/Dalzell.yml",
+   "sha256": "7e17021a54ab7d4832e40a741eec0d020089b75d2aee2944a4ba7bf4367d49ba",
+   "visible_overlap_from_name": 0.86
+  },
+  "propane_soot": {
+   "book": "other/propane_soot",
+   "page": "Dlazell",
+   "page_name": "Dalzell and Sarofim 1969: n,k 0.4358–10 µm",
+   "data_path": "other/soots/propane soot/nk/Dalzell.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/soots/propane%20soot/nk/Dalzell.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=propane_soot&page=Dlazell",
+   "file": "ri/propane_soot/Dalzell.yml",
+   "sha256": "3fb9dd0dfdb19eea4b0fa52c1076df5e9fa0be9473ad2f456c5114c572b7a256",
+   "visible_overlap_from_name": 0.86
+  },
+  "diesel_soot": {
+   "book": "other/diesel_soot",
+   "page": "Querry-NMSU",
+   "page_name": "Querry 1987: Sample 1; n,k 0.260–55.6 µm",
+   "data_path": "other/soots/diesel soot/nk/Querry-NMSU.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/soots/diesel%20soot/nk/Querry-NMSU.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=diesel_soot&page=Querry-NMSU",
+   "file": "ri/diesel_soot/Querry-NMSU.yml",
+   "sha256": "e0202d21b81cd5d2d7c841eb3a8fd24d904c67268c3646e6aecea1a63fb40fd6",
+   "visible_overlap_from_name": 1.0
+  },
+  "rhodamine_6g": {
+   "book": "organic/rhodamine_6g",
+   "page": "Seckin",
+   "page_name": "Seçkin et al. 2023: n,k 0.193–1.69 µm",
+   "data_path": "organic/C28H31ClN2O3 - Rhodamine 6G/nk/Seckin.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/organic/C28H31ClN2O3%20-%20Rhodamine%206G/nk/Seckin.yml",
+   "web": "https://refractiveindex.info/?shelf=organic&book=rhodamine_6g&page=Seckin",
+   "file": "ri/rhodamine_6g/Seckin.yml",
+   "sha256": "bd4e128362aa455b426b325ef9e38780d2a638e2db5a69af03c56c156de76583",
+   "visible_overlap_from_name": 1.0
+  },
+  "tenorite": {
+   "book": "main/CuO",
+   "page": "Brimhall",
+   "page_name": "Brimhall et al. 2009: n,k 0.0101–0.0348 µm",
+   "data_path": "main/CuO/nk/Brimhall.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/main/CuO/nk/Brimhall.yml",
+   "web": "https://refractiveindex.info/?shelf=main&book=CuO&page=Brimhall",
+   "file": "ri/tenorite/Brimhall.yml",
+   "sha256": "f09e8ccde3e36b42767d3447e6e5a4872f00cdd46576723eb7778c15c6111f07",
+   "visible_overlap_from_name": 0.0
+  },
+  "pedot_pss": {
+   "book": "other/PEDOT-PSS",
+   "page": "Chen",
+   "page_name": "Chen et al. 2015: n,k 0.3–1.1 µm",
+   "data_path": "other/mixed organic/PEDOT-PSS/nk/Chen.yml",
+   "url": "https://raw.githubusercontent.com/polyanskiy/refractiveindex.info-database/main/database/data/other/mixed%20organic/PEDOT-PSS/nk/Chen.yml",
+   "web": "https://refractiveindex.info/?shelf=other&book=PEDOT-PSS&page=Chen",
+   "file": "ri/pedot_pss/Chen.yml",
+   "sha256": "737f03c247a1e2388341ded150f039a590e91cf94b489fddbeccfbd3b25472a3",
+   "visible_overlap_from_name": 1.0
+  }
+ },
+ "files": [
+  {
+   "file": "ca-s1-table/README.txt",
+   "sha256": "502d8240a034a6c8023f963537b8cecd916afa92dacd65d5fb8451932435d01a",
+   "bytes": 482,
+   "licence": "CC-BY-4.0 (transcribed table of doi:10.3390/met12081274)",
+   "shipped": true
+  },
+  {
+   "file": "cie-cmf/CIE_xyz_1931_2deg.csv",
+   "sha256": "fa663e3535a7e0763a745993a1f0a192eb0275ac46ad2d1befd7626841e713c1",
+   "bytes": 24021,
+   "licence": "CC-BY-SA-4.0",
+   "shipped": true
+  },
+  {
+   "file": "cie-cmf/CIE_xyz_1931_2deg.csv_metadata.json",
+   "sha256": "03abcaecf4e63d77045ef57c4514b52c8bb1a46dd18e1f93a50044a0f4f481c8",
+   "bytes": 3787,
+   "licence": "CC-BY-SA-4.0",
+   "shipped": true
+  },
+  {
+   "file": "cie-d65/CIE_std_illum_D65.csv",
+   "sha256": "e76f210bffff3d552ef7113025da5f325d5dfec200dd4b878b1a2f3a507032cb",
+   "bytes": 6820,
+   "licence": "CC-BY-SA-4.0",
+   "shipped": true
+  },
+  {
+   "file": "cie-d65/CIE_std_illum_D65.csv_metadata_v2.json",
+   "sha256": "71994379b81c65db111f652e747a00b599b5456c2a8242e9a0d6f379f560a14e",
+   "bytes": 2577,
+   "licence": "CC-BY-SA-4.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.1021_acsami.1c09733.json",
+   "sha256": "d49dbe85c71201bd21836af9482bf1c812bb9d06b53c78941cc1d3d865509934",
+   "bytes": 7625,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.1021_acsami.2c10121.json",
+   "sha256": "1c216975abea515fb276d07303619b8af86bda5f658ee1764ea0175a645fbe15",
+   "bytes": 12837,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.1038_s41467-022-33081-7.json",
+   "sha256": "d06f7672402ec82b3cb72ff7492ea5846468f2d5e4afa52752f48c06514eec46",
+   "bytes": 22472,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.1038_s41598-019-43625-5.json",
+   "sha256": "ebb7022e0118dfde34b00c9882cf70825071002478afa1622f3483be5f8ce490",
+   "bytes": 34806,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.1103_PhysRevFluids.10.054002.json",
+   "sha256": "0d1446383443dccd41bac1a394606f19c86d4b63eb7d50d16448b142f8f95fcd",
+   "bytes": 12298,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.3390_ijms24076269.json",
+   "sha256": "5e4229872aa64b798e04f963fb2a1bffe7a570583b15d57e9df2d17420952cfe",
+   "bytes": 35875,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.3390_ma15062313.json",
+   "sha256": "45cb0ecc1580333ea965186d977a5820e3399c2cd4989dd64a644a714cc71983",
+   "bytes": 25304,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.3390_met12081274.json",
+   "sha256": "4c2ec581b7fa8cbb0e33e3f366598e98fd30559a749a1a4c11b54b68a1a62877",
+   "bytes": 15058,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.3390_molecules29051062.json",
+   "sha256": "ee77cd491938a51462a46880c10e011d07e3bbd5ed446c8c9bd5f9785bc74fc8",
+   "bytes": 24918,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.3390_nano10061187.json",
+   "sha256": "00a576766732e54547ed659718fcff82dcafc946b1efe521fa9c6504db0c0dad",
+   "bytes": 20445,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.3390_nano11010129.json",
+   "sha256": "ff42cc4a24e8190852c32e511cbcef799b59d9e8d09a7bb0a3249d63d2057f08",
+   "bytes": 32457,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.3390_nano13131952.json",
+   "sha256": "6af43e5c4f58ca9fe7358c1a62158332289503ae66cf989070780ccf8b65dc77",
+   "bytes": 29533,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.3390_polym12122770.json",
+   "sha256": "1c4863aa9db6e00a9fa45607677d564d75da3671fc8677082b45e02edf8d3388",
+   "bytes": 15109,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.3390_polym13030403.json",
+   "sha256": "eea28bf73aef78ebe5062ea50904757710866f776cd16758447710286235562a",
+   "bytes": 12928,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.3390_polym15081901.json",
+   "sha256": "9633ca87e891d6db64cb1c4ec0d702b740c6cc1eedb542809d01528966fa287c",
+   "bytes": 36411,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "crossref-licences/10.3390_polym17101394.json",
+   "sha256": "c43c583480c7fa9d9b005530ce837aa900c36c11cfbf29ec91fbc1e6217f1422",
+   "bytes": 23088,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "lic-agpl/agpl-3.0.txt",
+   "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0",
+   "bytes": 34523,
+   "licence": "licence text, distributed verbatim",
+   "shipped": false
+  },
+  {
+   "file": "lic-cc0/legalcode.txt",
+   "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+   "bytes": 7048,
+   "licence": "licence text, distributed verbatim",
+   "shipped": false
+  },
+  {
+   "file": "lic-ccby/legalcode.txt",
+   "sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411",
+   "bytes": 18657,
+   "licence": "licence text, distributed verbatim",
+   "shipped": false
+  },
+  {
+   "file": "lic-ccbysa/legalcode.txt",
+   "sha256": "28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5",
+   "bytes": 20138,
+   "licence": "licence text, distributed verbatim",
+   "shipped": false
+  },
+  {
+   "file": "nist-water/water_298K.txt",
+   "sha256": "53cd427f9080534930c4e038f69d5ac8e8e7476c445eb8c026d6ef34bc3181c9",
+   "bytes": 347,
+   "licence": "NIST SRD 69, copyright under the SRD Act: validation only, not shipped",
+   "shipped": false
+  },
+  {
+   "file": "pb-license/LICENSE",
+   "sha256": "5537d4d10b76b81b6e8dfd8b644480a4b1efa332fbb0cdb61126c5be781ef7b4",
+   "bytes": 6554,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "pb-lights/lightsources.json",
+   "sha256": "f37beda9f5da931b0d4813d9d756733a2b58fc5f60dd618b554a471baf29c71e",
+   "bytes": 78591,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "pb-materials/materials.json",
+   "sha256": "36dd2b5a5b3ca18615e557ff6fec0628a61030fbbc4f8d7cb5501b0713f16462",
+   "bytes": 341913,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "pb-schema/Material.json",
+   "sha256": "a152a0eab29af085d8cfb7c4c447d88fd87ef8586854f548cb1e06413743e9cf",
+   "bytes": 15496,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/acetone__Other_Experimental_Properties.json",
+   "sha256": "f7d514141dd34c791a15a349aa9927d7a9a0c4760f712de892e729b8e891941a",
+   "bytes": 9691,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/acetone__Surface_Tension.json",
+   "sha256": "bffcd95dc7a6be779e3e617f962a9350d9d60deb91ea53bec9ec99482f07014a",
+   "bytes": 3485,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/acetone__Viscosity.json",
+   "sha256": "7be375d143d845522fe665af96425943adc28905bcb776bdbbfdf997b77925f0",
+   "bytes": 4411,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/ammonia__Other_Experimental_Properties.json",
+   "sha256": "d256555ecb8e01a23a85c2211cd434fdde68e527b3520209ee91f67fdf22e34b",
+   "bytes": 7622,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/ammonia__Surface_Tension.json",
+   "sha256": "504e9b9cbd7ba16ce38080607f44a4111e0298ee654f737e29506c45e3a4a68d",
+   "bytes": 3393,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/ammonia__Viscosity.json",
+   "sha256": "9d3c65e8baabd6b3da019e988e155c838cf041edfb3643e2481f46e1146d2382",
+   "bytes": 3305,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/argon__Other_Experimental_Properties.json",
+   "sha256": "5298544fd890afaa919879a93f366e607604617a64af40830334299b887335b3",
+   "bytes": 12089,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/benzene__Other_Experimental_Properties.json",
+   "sha256": "e5f5aadb3362520d0d0b85b308190c6cac649cd3a6d12e6b5dbee15109385f1c",
+   "bytes": 7388,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/benzene__Surface_Tension.json",
+   "sha256": "6403af1967bf170cbe89fc4f2ffa8f1bc98438de5337b235e2b0f294f5965122",
+   "bytes": 3369,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/benzene__Viscosity.json",
+   "sha256": "47a8f3506f804815564b45a7ce56e555eb4a1632f360625b2b74b4ee267347e6",
+   "bytes": 3257,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/carbon_dioxide__Other_Experimental_Properties.json",
+   "sha256": "087b00525bf937a9b81f3a29f69a6a3253f2a53e0dba8b46b15470f69e93822a",
+   "bytes": 8055,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/carbon_dioxide__Surface_Tension.json",
+   "sha256": "0d5cb3c8ed5f2c15a0951d6cfc3db758f59bfcfaa2dd399cb860f0bacd0b36b1",
+   "bytes": 3473,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/carbon_dioxide__Viscosity.json",
+   "sha256": "fb8f37d405231c65f627a6dcfba16faf2de569010829fa7623c7290319d8f706",
+   "bytes": 3288,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/carbon_disulfide__Other_Experimental_Properties.json",
+   "sha256": "48efcc32bc7be26b06a60e72da4ff6f2f575f15617ae284b75b28ad6b5269be3",
+   "bytes": 11230,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/carbon_disulfide__Surface_Tension.json",
+   "sha256": "7fbf65cba79292e83e270270b4eb04af79fde381ceb7d355c95e82b144d06196",
+   "bytes": 3474,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/carbon_disulfide__Viscosity.json",
+   "sha256": "4811eec838e35b5d5aa8b0e790a9bd2dd328107fb39d69738c2f4e3a6dc61eb2",
+   "bytes": 3379,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/carbon_tetrachloride__Other_Experimental_Properties.json",
+   "sha256": "f32320679ebea1e5811e32642b3f6542e821bde09161a9d28c742f3ea2359e8e",
+   "bytes": 7848,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/carbon_tetrachloride__Surface_Tension.json",
+   "sha256": "02ddd5e2d675153d3c488d1a5141b8d812f50631140eb5106c2a12c3a2d56fe4",
+   "bytes": 3470,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/carbon_tetrachloride__Viscosity.json",
+   "sha256": "caea7eb87066e74f23237f0c42d80d9853468b5694178092274e9b2ab4c74df1",
+   "bytes": 4427,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/ethanol__Other_Experimental_Properties.json",
+   "sha256": "0ba6c01e75da20f66ea434c5d4c0cc75c2456eec160377cbb1f8c3847a072484",
+   "bytes": 51869,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/ethanol__Surface_Tension.json",
+   "sha256": "1a1e157d6e3d40908b8f4f8182e94d95651811198ccfdd032381de48e683000d",
+   "bytes": 3370,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/ethanol__Viscosity.json",
+   "sha256": "af7f6cd5e38b762b37a8a483735ecc44ae70d7acfb3b1351146f710196d99e5e",
+   "bytes": 4325,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/ethylene_glycol__Other_Experimental_Properties.json",
+   "sha256": "e558188b5b29903823eafd8b693204f15aba61e01ace135dee930439ee53e00c",
+   "bytes": 8949,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/ethylene_glycol__Surface_Tension.json",
+   "sha256": "0457a2c96375aeb0cd172e1d6b2d4d21372256889bf755a8c21818bd145373ab",
+   "bytes": 3453,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/ethylene_glycol__Viscosity.json",
+   "sha256": "5e56bcb91250f577047bd67913052a69dc871019ebc412b87f84f724737c270b",
+   "bytes": 6406,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/glycerol__Other_Experimental_Properties.json",
+   "sha256": "97f0d7330ace90a1317690294a69a9e00f750e657fa6f5715433a65a41951be5",
+   "bytes": 8237,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/glycerol__Viscosity.json",
+   "sha256": "9aef82310c97298424b3f69c27d6ecb13ebf1fe4b6373c14f6807088dee51e64",
+   "bytes": 3262,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/helium__Other_Experimental_Properties.json",
+   "sha256": "c61070f303dd3544618aa0e911e8aec9b6bb54f65c1469e6592660b84537edd0",
+   "bytes": 16129,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/helium__Viscosity.json",
+   "sha256": "9fb57251f1004a8b24824c50e350ea052a48480114b9c474524e9ee804811ec7",
+   "bytes": 3424,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/hexane__Other_Experimental_Properties.json",
+   "sha256": "27abe45adafad0c008abc4d80e12993ef22f0ee8204af1b83f9b7f046510e3eb",
+   "bytes": 8226,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/hexane__Surface_Tension.json",
+   "sha256": "341863463525afa7dd3bfb08eb190481d29bffc28b1938503d98e0d9dda43ec5",
+   "bytes": 3365,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/hexane__Viscosity.json",
+   "sha256": "e5711b5db80563caa9840f1dc36b4ad4f9f9c7f564fa6f9f9d37598fca0eaf00",
+   "bytes": 5630,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/hydrogen__Other_Experimental_Properties.json",
+   "sha256": "0d70eab7530009b3ce075f73d9c9bc1680fe73273cae3083fe5271bfc82ed54c",
+   "bytes": 14800,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/mercury__Other_Experimental_Properties.json",
+   "sha256": "18123b435835edbd679101b93fd3e736a8860ad6ab78b9077993f6259cf2a5ad",
+   "bytes": 10227,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/mercury__Surface_Tension.json",
+   "sha256": "c54e5907bd3aea81f2fb03b893b9c561b75ea481124db98a1769d6e247ca9515",
+   "bytes": 3321,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/mercury__Viscosity.json",
+   "sha256": "6bdfaf9ca36bad816add9c23ce382a25a77f7d669c8d521edc1627ae44c8b2f3",
+   "bytes": 3410,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/methane__Other_Experimental_Properties.json",
+   "sha256": "6a7e383b64b8dacd9df60841d5aadc2c72b468d3ed47ccff6135e6a37822c2d3",
+   "bytes": 10288,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/methane__Surface_Tension.json",
+   "sha256": "f6eeefbcd507fdf771f9d07e151004e226e5003b308e90c134b28401e18e4796",
+   "bytes": 3472,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/methane__Viscosity.json",
+   "sha256": "bd9172ce3f1641d4db5a615e282726378c75679f9b3adf7dccad68318fb7caef",
+   "bytes": 3404,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/methanol__Other_Experimental_Properties.json",
+   "sha256": "19d76aadbd236873ae533ae3c60cbbb25f4bd17f7325a9859de5634012b315c7",
+   "bytes": 7930,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/methanol__Surface_Tension.json",
+   "sha256": "7a7ba5eec77f77b53a12427e808f46d69b15d53a8723c8d07feb947eb114d13d",
+   "bytes": 3372,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/methanol__Viscosity.json",
+   "sha256": "77fa8ef32ea97aae3c34fd91bf42d70cef3a34f3c5a22db69e7f511630535f57",
+   "bytes": 4314,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/neon__Other_Experimental_Properties.json",
+   "sha256": "57963dd11c021ac95f420d0aa7aab3a53bf8f23021d39e45a4938a753e637ad3",
+   "bytes": 10721,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/nitrogen__Other_Experimental_Properties.json",
+   "sha256": "c5c8b0eed3fcdaf314d732450923b14e85f17a9bac4f193f1878ba98ccf5bf9c",
+   "bytes": 13053,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/nitrogen__Surface_Tension.json",
+   "sha256": "25ff5e80794fec03b78a0968860ea29cc726fd431ebde48e3ed15742703a2c84",
+   "bytes": 3418,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/nitrogen__Viscosity.json",
+   "sha256": "8f91cc524ded79874e3033f616a9d52b9f144462683c3b9bb502da195a232661",
+   "bytes": 3362,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/oleic_acid__Other_Experimental_Properties.json",
+   "sha256": "154b26af0638129fe43a41327e93503726a5a25aa952025c7202f425d0449521",
+   "bytes": 9315,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/oleic_acid__Surface_Tension.json",
+   "sha256": "ff1236ff531eae9fc8b6036b6af54f9be6b201f36392fc7548ff54318ac387c2",
+   "bytes": 3524,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/oleic_acid__Viscosity.json",
+   "sha256": "530cfb07237826a7ebf990af98b89c521e81381cc56ebad7c6f2cdd43ae5d687",
+   "bytes": 3251,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/oxygen__Other_Experimental_Properties.json",
+   "sha256": "9482e26ba7ede8abc5991e95c47e78f924c55dab24382e5d7d0b3b99895a1de7",
+   "bytes": 9417,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/oxygen__Surface_Tension.json",
+   "sha256": "93840f986e56b0e54fa6390a08f0c4cde0afe576e6d9fa2c0a0b78af60d2dc0c",
+   "bytes": 3514,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/oxygen__Viscosity.json",
+   "sha256": "9773c6d967ccab14551558a5b43c96bce9ff91007203a1ea4e81b34a3aa24be1",
+   "bytes": 3132,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/sulfur_hexafluoride__Other_Experimental_Properties.json",
+   "sha256": "786775ca4f3a916e1ea772a0ed450457ddd2a12a26ae7d15b232a2400ed32adc",
+   "bytes": 8603,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/sulfur_hexafluoride__Viscosity.json",
+   "sha256": "6d315a0607949035a6fb012f13b8d1f82de9e353cfcad6c027f8454cf0bb2cce",
+   "bytes": 3217,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/toluene__Other_Experimental_Properties.json",
+   "sha256": "0337cbc8b4f27d80ceb1b04fcdcc9d3f90707a0cea8677a54787d0aa6bd5a75a",
+   "bytes": 8473,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/toluene__Surface_Tension.json",
+   "sha256": "afb57f95c1e8d7357111948eb0b946355c9295fdfbb2ac35a13ff95bbd69cb9b",
+   "bytes": 3462,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/toluene__Viscosity.json",
+   "sha256": "cec0077821e7d2654848b783f3f83838a60675a03790d2cdf19886593f22daf1",
+   "bytes": 4432,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/water__Other_Experimental_Properties.json",
+   "sha256": "fc2162a4cad8de377ca72e69029b902723c049d17f89d7e225ed64a08d922073",
+   "bytes": 9179,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/water__Surface_Tension.json",
+   "sha256": "b1f38a904000dbbce343b71dc0b66f2f628a644071c6737386a1bc64c9523c27",
+   "bytes": 3402,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "pubchem-hsdb/water__Viscosity.json",
+   "sha256": "094d8756c377dc30645be73634cc3118332e2f9761ff6d2d3e6d5b0142ed7d7d",
+   "bytes": 3346,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "ri/acetone/Rheims.yml",
+   "sha256": "cc1acb5da73bca94607673be2daf82da494dc2286a518b4d2650a27c54d00261",
+   "bytes": 562,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/adipose/Yanina.yml",
+   "sha256": "4d3645b6a17a20a4bcfdb383c94776d57bc41ee43b079e3de00a3e9e27db62e3",
+   "bytes": 704,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/air/Ciddor.yml",
+   "sha256": "20646b8cff1a0d25a5b7f4f3d10f5a65a8479bec308548bea9afa625ff208fa3",
+   "bytes": 949,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/aluminium/Rakic.yml",
+   "sha256": "e93b31fe821551836e5b000949c67c633b8a1ca1f2c5549f4db0f1c03b24844d",
+   "bytes": 9164,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/ammonia/Cuthbertson.yml",
+   "sha256": "551d7345e75359eac33881999c06896d2e49aa762d28ba2ea7a639e0273415c1",
+   "bytes": 580,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/argon/Peck-15C.yml",
+   "sha256": "9dffe9e552384668e6074fb3213a22c055a2ea7d09dce77c751e166abbd7a387",
+   "bytes": 554,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/benzene/Moutzouris.yml",
+   "sha256": "c155d12a7ed82f6c74c17c9dd1406a5085277d86966e2ad2fd3e7dc3d91a4a13",
+   "bytes": 698,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/beryllium/Rakic-BB.yml",
+   "sha256": "5dba6181beb7071ff9c57ec0c02ea3d8eb566008e8cf41943edd7d7419a864e5",
+   "bytes": 8927,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/biodiesel/Wang-20C.yml",
+   "sha256": "d7557045048450e58fe123be12950a13f6788c81fbdd45c7b66cbc776a035f7e",
+   "bytes": 3320,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/bismuth/Werner.yml",
+   "sha256": "36ceb2932144b06297a29124e1fed0e4001c75a4da0988b5ab5dfba76122c96a",
+   "bytes": 5230,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/bk7/N-BK7.yml",
+   "sha256": "87da400af68251beaeb605a85fb949483fa082c609a5b1d78b4823cb9f4f65b8",
+   "bytes": 1949,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/blood/Liu.yml",
+   "sha256": "11ca69129afaded0ebe3f243b1cfd748c3769509c7d7faaa16678f082aa1c14a",
+   "bytes": 815,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/blood_plasma/Liu-plasma.yml",
+   "sha256": "fd5eba6705237fe7d8e00933a513fb8310765ad236a09460780883d6b7f5b67b",
+   "bytes": 610,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/brass/Querry-Cu70Zn30.yml",
+   "sha256": "43d00547dd1d9b1bbbf21e7dd887f59fec7325d8d7cbdd4ccc27d0668ae8b60b",
+   "bytes": 17615,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/cadmium_red/Ninomiya-cubic.yml",
+   "sha256": "52e221438a47ebbbe00c31ea97fd6aa046769bdf1ed67895172a966d51d41304",
+   "bytes": 21553,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/cadmium_yellow/Ninomiya-o.yml",
+   "sha256": "4b00f01bf0a42a5dbe133717537d918b1d01d1cae1c547a7f4811b959b7042c4",
+   "bytes": 21220,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/calcite/Ghosh-o.yml",
+   "sha256": "ddfcf1c8793522b5ddc2efaa2a92bcfb125db082c35ed2d52982a4f565ae4e7e",
+   "bytes": 620,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/carbon_dioxide/Bideau-Mehu.yml",
+   "sha256": "d3b52d2a0b667a2e95aec110f35a7fced0c2ab3f02583d2e604aeb58c204f55c",
+   "bytes": 752,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/carbon_disulfide/Chemnitz.yml",
+   "sha256": "5183df39f8860fb5fa595a4275adfa606ea5fbb673db06052f7d0a22e10e11c4",
+   "bytes": 637,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/carbon_tetrachloride/Kedenburg.yml",
+   "sha256": "5f5e2a471288345033ddd44a6984ed848c0510547695a48b5497c1878215366b",
+   "bytes": 26463,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/cellulose/Sultanova.yml",
+   "sha256": "2100346cba95aa70a21712c1f86f17b84501f60b0d92a34013cb0f70178c391e",
+   "bytes": 645,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/chromium/Johnson.yml",
+   "sha256": "756f5c6be6c19c46dc3fb1580db069aafef1bb3b914293e141d7fc4b738ee5e4",
+   "bytes": 1645,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/cobalt/Johnson.yml",
+   "sha256": "c6acdadfefb53e41ce5d648ef00fd8bea21fe1c7276e8326a8a2ea09d7ccc706",
+   "bytes": 1645,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/colon_mucosa/Giannios-mucosa.yml",
+   "sha256": "a6335f12f15b6c29dbd82bcc25c4e50fcebed2437c9aaecc1aa32b56b9a0230d",
+   "bytes": 9503,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/copper/Johnson.yml",
+   "sha256": "265ef243207866361daff0544b5d11fe7142bb2ec79681913546d4334f81a009",
+   "bytes": 1707,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/diamond/Phillip.yml",
+   "sha256": "9629e1b3b8a2121675e0e76de89d70db8e9b8759944f3a4b3d7af9096beaa689",
+   "bytes": 7817,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/diesel_soot/Querry-NMSU.yml",
+   "sha256": "e0202d21b81cd5d2d7c841eb3a8fd24d904c67268c3646e6aecea1a63fb40fd6",
+   "bytes": 8786,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/dna/Inagaki.yml",
+   "sha256": "204e90007b98b6a0758817f579cb0d120561e019d91912a0310e32ea6c1be965",
+   "bytes": 2233,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/ethanol/Sani.yml",
+   "sha256": "0c274a1694516d76a498f3ddd159fe5734bdefae96f25657a263987b14feeab4",
+   "bytes": 45524,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/ethylene_glycol/Sani.yml",
+   "sha256": "19b122dcdbbfaafe4f53434ea67baa68652235e7b33fad3e0287f28e96ae7146",
+   "bytes": 30895,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/fluorite/Li.yml",
+   "sha256": "66fd889e1874466f5ce78bf75d422337d0a99cfaf7a92a599f8dba40eec20751",
+   "bytes": 678,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/fused_silica/Malitson.yml",
+   "sha256": "c587670f397241ecb93a1af3279d6fe7ed67888e587e399074b0eab729c92b52",
+   "bytes": 973,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/gallium_arsenide/Aspnes.yml",
+   "sha256": "45565b33ad36fc8e65d3b0d63a1db6e8aed1e64177e7c6b0e53968c105b4fc9c",
+   "bytes": 1780,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/germanium/Aspnes.yml",
+   "sha256": "66faa4887d443a058ab53422db783bbf9090d22752036f0c826bbd073f7746bf",
+   "bytes": 1822,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/glycerol/Rheims.yml",
+   "sha256": "1963add17ea6dc207dbe95a2c7f72af21ba2558abcd7efe060aad1e41b2eda3f",
+   "bytes": 563,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/gold/Johnson.yml",
+   "sha256": "9f4bdab6bd49f7c6a1c48b5fb5482c7448caf4b6de39594a34ecd66dcf592774",
+   "bytes": 1707,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/graphite/Djurisic-o.yml",
+   "sha256": "afbb39ae73f32ad92eb0b39adec5ec789df38ca4d7dee20105c1442f8010c586",
+   "bytes": 41737,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/halite/Li.yml",
+   "sha256": "20e0b06e16a1abb3668487635430994c0046cef05cd68ee0878804ac5dceae89",
+   "bytes": 722,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/helium/Ermolov.yml",
+   "sha256": "2b7537796187df8464abc778575d2854166353091ac74575d3460e62a535b4ac",
+   "bytes": 816,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/hexane/Kozma.yml",
+   "sha256": "fa391b87f1070867154d9df4c4bb8624c8947e0ee679a15f86c792f8945622f0",
+   "bytes": 664,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/hydrogen/Peck.yml",
+   "sha256": "b5cc7075c70237fc7261f65d3507da2c3e0354e06b440532d710a94c205abee9",
+   "bytes": 625,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/ice/Warren-2008.yml",
+   "sha256": "a8577eaa1fabb9245957397344ce23efb20dd4c57cd7f442710d2d2373e0bbd6",
+   "bytes": 18675,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/iridium/Schmitt-ALD.yml",
+   "sha256": "83f594001d7e6c9fef0f010ca608aa53697bf15a17dba6d322e15325dc375482",
+   "bytes": 59231,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/iron/Johnson.yml",
+   "sha256": "8d774beaac808662370242790c18b9998a9856ba850d9f35c45f6db3da31a7cd",
+   "bytes": 1645,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/kapton/French.yml",
+   "sha256": "a214509469e0b372bb43145ac8fcbf7f57857ce6215926c6d51015335d582806",
+   "bytes": 8623,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/krypton/Borzsonyi.yml",
+   "sha256": "04ff0e7eecec19d24836ccc70133f089a5dc8e46def19d0cf58aefa56d8e92ca",
+   "bytes": 688,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/lamp_black/Dalzell.yml",
+   "sha256": "7e17021a54ab7d4832e40a741eec0d020089b75d2aee2944a4ba7bf4367d49ba",
+   "bytes": 768,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/lead/Werner.yml",
+   "sha256": "4bd6688c7fef081e97f6b50d93690eeb3cb9cb8c59300e6fed933aaa8360aa66",
+   "bytes": 5230,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/liver/Giannios.yml",
+   "sha256": "930689bd4222b3a89a484daae9f76527695525bf59e4877cb5b4e544c994da27",
+   "bytes": 9507,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/magnesium/Palm.yml",
+   "sha256": "f2dfe0ad7d54e4c7f826c90e76717ff7ec2a9485301ea782d97132de68d5f4bf",
+   "bytes": 25991,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/magnesium_fluoride/Li-o.yml",
+   "sha256": "d28536113b8841479452b13b8d8a4a03bcc3e351b46b987ff9b84de8e8ed24d6",
+   "bytes": 742,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/magnetite/Querry.yml",
+   "sha256": "c42e5a5007827fb3548df61daf222b164a7799206790fb2116c8488aefe9e802",
+   "bytes": 16992,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/manganese/Johnson.yml",
+   "sha256": "8699e71acd4bcd83e952682cf29cc360a87dc1ada3c7995e97a2c9de2c9f35e3",
+   "bytes": 1645,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/mercury/Inagaki.yml",
+   "sha256": "be585b9a15d93bc5b94ceb363ceb6540099c7a37ac5a51ac6b3e9c0c6cbb2c54",
+   "bytes": 2898,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/methane/Loria.yml",
+   "sha256": "73890e1ca7d5164e8f898fc10905ac1a82e2738f673e985b904ec117697f3f8c",
+   "bytes": 624,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/methanol/Moutzouris.yml",
+   "sha256": "f5aedae05eb5f787ee175bf9bd2d74ff0472c818e0663657496056947f3f3b82",
+   "bytes": 699,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/molybdenum/Werner.yml",
+   "sha256": "683385a14ca7bba7cb0c3a4d0182a872e1809ae2869a8ea4814316e8921fcf55",
+   "bytes": 5233,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/neon/Borzsonyi.yml",
+   "sha256": "7c53a2a734b1eb3a2b9533dac35f42e69209cf2c89d8d3925d1f4576111e482b",
+   "bytes": 684,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/nickel/Johnson.yml",
+   "sha256": "76423eb6a66de6eddb21214a862920356e31d1608a4098931c04cfed0019002c",
+   "bytes": 1645,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/nitrogen/Peck-15C.yml",
+   "sha256": "4fda5c3298cd8004343053cb9c5e7b1399e2f6c9621ec3bdd391f32e490f48f8",
+   "bytes": 554,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/oleic_acid/Jones.yml",
+   "sha256": "6aeebde965e1915796e92a22112d140544e6541a6cabae5a7b2ba09ab8319759",
+   "bytes": 595,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/oxygen/Zhang.yml",
+   "sha256": "f4b832f07487dbf5e1b66bab2975f365dc9c43cc7759c4b67c52097a0cb53b7c",
+   "bytes": 919,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/palladium/Johnson.yml",
+   "sha256": "e331ba7b55a0c119fcaa927e18e2927c8674ace4712cb4d36a2147bc14ab4ffc",
+   "bytes": 1645,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/pdms/Gupta.yml",
+   "sha256": "b3e159d36677a71e7bbccf90e404b57130bd6cd983d60f76d2e655ff80c64962",
+   "bytes": 24188,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/pedot_pss/Chen.yml",
+   "sha256": "737f03c247a1e2388341ded150f039a590e91cf94b489fddbeccfbd3b25472a3",
+   "bytes": 2984,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/periclase/Stephens.yml",
+   "sha256": "468127fb84d8f57d235bd6adad078a71b0346d5536a62e36e77b549edd71d8cb",
+   "bytes": 654,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/pet/Zhang.yml",
+   "sha256": "685cec3641a69cf04b6b0bca410b0e4440b23eda36663b455f45610957070497",
+   "bytes": 20265,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/platinum/Werner.yml",
+   "sha256": "c07deed7b737ad12c3f006eff89fd74db5262f5e5cec29370e8209f475d9e4ee",
+   "bytes": 5231,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/pmma/Sultanova.yml",
+   "sha256": "7ab2a92e75476c29702210d50be32b1c12840557f735d808c2d651153de953ea",
+   "bytes": 646,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/polycarbonate/Sultanova.yml",
+   "sha256": "61cc07f568cafb8f6150053b08c9a9f98d9ce2da2e938264994766e3577d80e3",
+   "bytes": 646,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/polystyrene/Sultanova.yml",
+   "sha256": "7e6c27475da34c102fe2a6c9a8b89a8781869c5804543998c68f6a68ed5eaf14",
+   "bytes": 646,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/potassium/Smith.yml",
+   "sha256": "ee6fb848bd15c27e87cee238195b315974f748c96379ef078189cf7c5fd914aa",
+   "bytes": 1197,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/propane_soot/Dalzell.yml",
+   "sha256": "3fb9dd0dfdb19eea4b0fa52c1076df5e9fa0be9473ad2f456c5114c572b7a256",
+   "bytes": 768,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/pvc/Zhang.yml",
+   "sha256": "e0fcb0871c21daa74e5cf75a6d19d0f8334ce99df61f95eccab317f8fbd8e4e4",
+   "bytes": 20262,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/quartz/Ghosh-o.yml",
+   "sha256": "c63dabfdfe9921c8c19264ff6126d68cd78abb1552e40f536c2ffaa083773e7d",
+   "bytes": 621,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/red_ochre/Querry-o.yml",
+   "sha256": "6952dc0d38a812d3b8d2cd200c8ab69096d8a25c05becc543a6603e3310bace7",
+   "bytes": 17281,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/rhodamine_6g/Seckin.yml",
+   "sha256": "bd4e128362aa455b426b325ef9e38780d2a638e2db5a69af03c56c156de76583",
+   "bytes": 36394,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/rhodium/Weaver.yml",
+   "sha256": "e240d76893d5bad371fe1a913fb142f9bc339d0d71e0984b23ad8bb741083661",
+   "bytes": 2276,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/sapphire/Malitson-o.yml",
+   "sha256": "459f0cb41f105b9a01dc96a7d2eab0a71c5d43f7355fba3c4d3d6969fc76a41b",
+   "bytes": 924,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/silicon/Aspnes.yml",
+   "sha256": "766489862d0d4dc6011e9f078e556a4a24fe79622bec0b1f1a80b297c84ce00d",
+   "bytes": 1824,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/silicon_carbide/Wang-6H-o.yml",
+   "sha256": "5d8bd21287c1a42eb9fcbd1acc25ec59f58bf5ee9b6aba5a39cf4aa5b43e533b",
+   "bytes": 662,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/silk_fibroin/Perotto.yml",
+   "sha256": "f5f02ae09f626e01ca61ab357796444d05d0fcac2a84aa6564684c9005615e0d",
+   "bytes": 4034,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/silver/Johnson.yml",
+   "sha256": "8c79d5e2529e4d3a51e1502b42f2e96e63b3cb49e1036c66b86eb9dbdd0c65a5",
+   "bytes": 1707,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/soda_lime_glass/Rubin-clear.yml",
+   "sha256": "73139b7cc4ed0af9d347d1ccaec2cc4719584f9e10dd7232d2f2bd8d97f62d73",
+   "bytes": 2879,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/sodium/Inagaki.yml",
+   "sha256": "8bbdbcd19cdd48b1e8ace252e57e73b0fa1e43748b21096bd3260727213f56f4",
+   "bytes": 1304,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/sphalerite/Ozaki.yml",
+   "sha256": "078334a3a47a1e539e5066d49b4e8c495c5112a8780f507e8b289aca170d96cb",
+   "bytes": 21170,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/spinel/Tropf.yml",
+   "sha256": "d7ccd5d6895e76d1bf39f27714140e35be8a3d127f030cc6183aa1f4b336a40c",
+   "bytes": 645,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/stainless_steel/Karlsson-austenitic.yml",
+   "sha256": "34eac3be29bae7cf517c1138312db2379f1c0762836e249d9aae047853e163b5",
+   "bytes": 3772,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/sulfur_hexafluoride/Vukovic.yml",
+   "sha256": "9a6752f3283472d310cbfbd69d37d10efca9bf2343465c783cad73774ea2151e",
+   "bytes": 1030,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/tantalum/Werner.yml",
+   "sha256": "b394369ad87873b3cbe99d4c5c8a48c5c36a7a7e85397cfe0261b00530f2af93",
+   "bytes": 5230,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/tenorite/Brimhall.yml",
+   "sha256": "f09e8ccde3e36b42767d3447e6e5a4872f00cdd46576723eb7778c15c6111f07",
+   "bytes": 1394,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/titanium/Johnson.yml",
+   "sha256": "99f8599b60e1dcd056ac6c18cd0c7fb401fd8218bfeaeba2be8c250580305328",
+   "bytes": 1645,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/titanium_white/Devore-o.yml",
+   "sha256": "0bd080dd5246e6d11e63ad35ef1f58154b2555b550c990f3808914cd84bc71bc",
+   "bytes": 537,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/toluene/Kedenburg.yml",
+   "sha256": "352e79e859a1f3511afd8c54ff41afa6b6844dc7e902899b683ed80ade5b107a",
+   "bytes": 31738,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/tungsten/Werner.yml",
+   "sha256": "7311082e9c342bea166a1a9a08725e6d4ea3c2eb5e6ac8db89b6d28df6b72dda",
+   "bytes": 5231,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/vanadium/Johnson.yml",
+   "sha256": "77d3af8515e2058aeaae71548505a288a5b94670ab316959982e0972395e561d",
+   "bytes": 1645,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/vermilion/Bond-o.yml",
+   "sha256": "0e6e54bad021a7217116970fdb1a55ac3c732f4d84bf0cec807cb883df6d7bd5",
+   "bytes": 814,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/water/Hale.yml",
+   "sha256": "df1af6b4352c3378cf81b149ac2280de30d80e2941d147786d5e7cd5044a8847",
+   "bytes": 4965,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/xenon/Borzsonyi.yml",
+   "sha256": "e8f1297e6337f4bdfa9ca0ababa70b2fe215fdf2491fef35bc7ada58970364fd",
+   "bytes": 813,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/yag/Hrabovsky.yml",
+   "sha256": "b3786f5f4d1302057a3a08a3a8813f28350caca7d03cd7e001186492a386793e",
+   "bytes": 601,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/zinc/Werner.yml",
+   "sha256": "c29023bed42520fbf3cec2272c9f31080429508073edf9124a0e76cbcaee6abf",
+   "bytes": 5230,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/zinc_white/Stelling.yml",
+   "sha256": "a5f5cba6323e2bcaa1dd4389b5722201717217c9012d990c8cb2bd39753e6ed5",
+   "bytes": 22412,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri/zircon_cubic/Wood.yml",
+   "sha256": "f15eb1b06567dc39ee950d0934b16989319eb6e16038801a8ab735a9d1ff07c6",
+   "bytes": 589,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-catalog/catalog-nk.yml",
+   "sha256": "d4df827ad10482a563794486d6bbd5057adca79df226e1aa4e729ebf221d6b0f",
+   "bytes": 483350,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-doc/Dispersion_formulas.pdf",
+   "sha256": "83c627bd5f4ee5d4c5e9ad1b3077bf0ab71277848586e6810193681e5c8e2e78",
+   "bytes": 178975,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-doc/legalcode.txt",
+   "sha256": "6d489af6292662d9e36d34ce49423784984a5f6e41d7b58f49b01264df59fa03",
+   "bytes": 7047,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-doc/permission.txt",
+   "sha256": "d985e0f5904224998fd52cefa7270361d5f3b03082310e1cd03198402b82a74b",
+   "bytes": 459,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-license/LICENSE",
+   "sha256": "36ffd9dc085d529a7e60e1276d73ae5a030b020313e6c5408593a6ae2af39673",
+   "bytes": 6555,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-rakic-ld/Ag-Rakic-LD.yml",
+   "sha256": "c79e3fa384a30cde7b4ef20a32e6a890c5dce31abc85b097db29737ce2b4049e",
+   "bytes": 8925,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-rakic-ld/Al-Rakic-LD.yml",
+   "sha256": "c4ba0221983da5bbbca18c62afc6cb209b9f8c16d9677231bdd3d0842c83c611",
+   "bytes": 41725,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-rakic-ld/Au-Rakic-LD.yml",
+   "sha256": "a91fca57ee99efc77354908fa11b9c4822e8852394042069caaac7610c52e602",
+   "bytes": 8925,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-rakic-ld/Cu-Rakic-LD.yml",
+   "sha256": "c3f41b5dd8901107bff9cab5538f7582cc8234491517af985c6769167ff6d5f3",
+   "bytes": 8929,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-rakic-ld/Ni-Rakic-LD.yml",
+   "sha256": "2bddf4c836bccba0469ca8e457e11e7c9fc695bcd291d6a4a952a3742d331f29",
+   "bytes": 41725,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-rakic-ld/Pt-Rakic-LD.yml",
+   "sha256": "8ed6dbdf31714e7ef0099855c1aaf9be0639db3b9db6bbffabafab5df28cee17",
+   "bytes": 41725,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "ri-scripts/LICENSE.txt",
+   "sha256": "d62f065830aa3739cc031156b9690805c7b2e811b4a178c8b4acd8725d561c94",
+   "bytes": 35142,
+   "licence": "GPL-3.0: read for the Rakic parameters' provenance, not shipped",
+   "shipped": false
+  },
+  {
+   "file": "ri-scripts/rakic-Ag.py.txt",
+   "sha256": "f6ab1fec79f19f5d28fa58938dfc21af04fb6bbfb48c6f2a3b8446030ec3420a",
+   "bytes": 2118,
+   "licence": "GPL-3.0: read for the Rakic parameters' provenance, not shipped",
+   "shipped": false
+  },
+  {
+   "file": "ri-scripts/rakic-Al.py.txt",
+   "sha256": "3a837bdc4bc69fcff489ee6635fcb4cc1439e9805918140f9f6597563232f50a",
+   "bytes": 2012,
+   "licence": "GPL-3.0: read for the Rakic parameters' provenance, not shipped",
+   "shipped": false
+  },
+  {
+   "file": "ri-scripts/rakic-Au.py.txt",
+   "sha256": "e3ed76957d2926f9f4ea54c691fb699868f68b64ebdaff23f8a68ee6c2fd2aa1",
+   "bytes": 2100,
+   "licence": "GPL-3.0: read for the Rakic parameters' provenance, not shipped",
+   "shipped": false
+  },
+  {
+   "file": "ri-scripts/rakic-Cu.py.txt",
+   "sha256": "5022fc265d00d779b7a70fe5b6a668b2c4c687e5f13dad2522794f41644966de",
+   "bytes": 2007,
+   "licence": "GPL-3.0: read for the Rakic parameters' provenance, not shipped",
+   "shipped": false
+  },
+  {
+   "file": "ri-scripts/rakic-Ni.py.txt",
+   "sha256": "a3d4d383c6798cff4e1c513359af38378786d8542c6d26c7df54d02c4b51c92f",
+   "bytes": 2008,
+   "licence": "GPL-3.0: read for the Rakic parameters' provenance, not shipped",
+   "shipped": false
+  },
+  {
+   "file": "ri-scripts/rakic-Pt.py.txt",
+   "sha256": "860e0783bed51e425ff36ade97456f96fb594dca7b60c3c9ba24a9bf3a7620de",
+   "bytes": 2008,
+   "licence": "GPL-3.0: read for the Rakic parameters' provenance, not shipped",
+   "shipped": false
+  },
+  {
+   "file": "ri-scripts/README.md",
+   "sha256": "c8052b31f75f798a7d47c79fb399fb43309a70f5ae45e49b006eb5a35bc1ebf2",
+   "bytes": 914,
+   "licence": "GPL-3.0: read for the Rakic parameters' provenance, not shipped",
+   "shipped": false
+  },
+  {
+   "file": "usda-wood-handbook/fplgtr282.pdf",
+   "sha256": "f0b488c5637614d8e69a07abf796f9e32d7a8df956ee75ab5cc5f64f3bd5ee6f",
+   "bytes": 103951597,
+   "licence": "US-Government-work (17 USC 105)",
+   "shipped": true
+  },
+  {
+   "file": "wikidata/labels.json",
+   "sha256": "7156fa09a7ed4c21a5b920c0338950d5a40bec41fad3bbe2749a14fd1e081130",
+   "bytes": 35134,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "wikidata/values_0.json",
+   "sha256": "e0d2de7311425f7a35d78635510d69d63626c8ed390ef2addae7b6d0b8e2a1f3",
+   "bytes": 294604,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "wikidata-2/labels.json",
+   "sha256": "575ff2eaab3e261f87625855190f9878a33081910700564df60c75dbed919045",
+   "bytes": 35137,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "wikidata-2/values_0.json",
+   "sha256": "dac2a87ea0e596f3800604b27046461e8866838d042ed7471a076e32cff67452",
+   "bytes": 641486,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "wikidata-3/labels.json",
+   "sha256": "575ff2eaab3e261f87625855190f9878a33081910700564df60c75dbed919045",
+   "bytes": 35137,
+   "licence": "CC0-1.0",
+   "shipped": true
+  },
+  {
+   "file": "wikidata-3/values_0.json",
+   "sha256": "27bdb861dd03294454d6d2490cc65b955daa2877f4e9b363aef4757e1f50897a",
+   "bytes": 687787,
+   "licence": "CC0-1.0",
+   "shipped": true
+  }
+ ]
+}

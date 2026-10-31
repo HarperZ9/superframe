@@ -1,0 +1,549 @@
+{
+ "model": "eps = eps_inf - Ep^2/(E^2 + iGE) + sum_j A_j/(E_j^2 - E^2 - iG_jE), E in eV",
+ "fit_range_nm": [
+  380.0,
+  1000.0
+ ],
+ "selection": "oscillator count with the lowest two-fold interleaved holdout RMS, parameters <= points",
+ "residual": "(N_model - N_measured)/|N_measured|, real and imaginary parts",
+ "metals": {
+  "gold": {
+   "source": "refractiveindex.info:main/Au/Johnson",
+   "source_name": "Johnson and Christy 1972: n,k 0.188\u20131.937 \u00b5m",
+   "n_points": 17,
+   "oscillators_chosen": 2,
+   "params_at_bound": [],
+   "rms_by_oscillator_count": {
+    "0": {
+     "holdout_rms": 0.20815,
+     "train_rms": 0.20754
+    },
+    "1": {
+     "holdout_rms": 0.02746
+    },
+    "2": {
+     "holdout_rms": 0.01412,
+     "train_rms": 0.01153
+    },
+    "3": {
+     "holdout_rms": 0.01824
+    },
+    "4": {
+     "holdout_rms": 0.0174
+    }
+   },
+   "params": {
+    "eps_inf": 5.89333,
+    "plasma_eV": 8.95407,
+    "gamma_eV": 0.03431,
+    "oscillators": [
+     {
+      "strength_eV2": 4.46635,
+      "centre_eV": 2.74291,
+      "width_eV": 0.58471
+     },
+     {
+      "strength_eV2": 19.70811,
+      "centre_eV": 3.36094,
+      "width_eV": 1.15579
+     }
+    ]
+   },
+   "drude_fit": {
+    "eps_inf": 7.00584,
+    "plasma_eV": 8.90354,
+    "gamma_eV": 0.75868,
+    "oscillators": []
+   },
+   "errors": {
+    "drude_lorentz": {
+     "k_rms_rel": 0.0119,
+     "k_max_rel_vis": 0.0232,
+     "k_mean_signed_rel_vis": -0.0022,
+     "R_rms": 0.00943,
+     "dE_ab": 0.65
+    },
+    "drude_fit": {
+     "k_rms_rel": 0.205,
+     "k_max_rel_vis": 0.5123,
+     "k_mean_signed_rel_vis": -0.0636,
+     "R_rms": 0.15547,
+     "dE_ab": 20.45
+    },
+    "drude_dc": {
+     "k_rms_rel": 0.4832,
+     "k_max_rel_vis": 0.8921,
+     "k_mean_signed_rel_vis": 0.5557,
+     "R_rms": 0.38814,
+     "dE_ab": 35.48
+    },
+    "rakic1998_ld": {
+     "k_rms_rel": 0.0863,
+     "k_max_rel_vis": 0.1236,
+     "k_mean_signed_rel_vis": -0.0748,
+     "R_rms": 0.04149,
+     "dE_ab": 3.42
+    }
+   }
+  },
+  "copper": {
+   "source": "refractiveindex.info:main/Cu/Johnson",
+   "source_name": "Johnson and Christy 1972: n,k 0.188\u20131.937 \u00b5m",
+   "n_points": 17,
+   "oscillators_chosen": 3,
+   "params_at_bound": [],
+   "rms_by_oscillator_count": {
+    "0": {
+     "holdout_rms": 0.17664,
+     "train_rms": 0.17633
+    },
+    "1": {
+     "holdout_rms": 0.03823
+    },
+    "2": {
+     "holdout_rms": 0.0214
+    },
+    "3": {
+     "holdout_rms": 0.01854,
+     "train_rms": 0.01422
+    },
+    "4": {
+     "holdout_rms": 0.02433
+    }
+   },
+   "params": {
+    "eps_inf": 5.04709,
+    "plasma_eV": 9.10304,
+    "gamma_eV": 0.05511,
+    "oscillators": [
+     {
+      "strength_eV2": 2.37571,
+      "centre_eV": 2.34623,
+      "width_eV": 0.35618
+     },
+     {
+      "strength_eV2": 6.16843,
+      "centre_eV": 2.69723,
+      "width_eV": 0.71345
+     },
+     {
+      "strength_eV2": 23.96661,
+      "centre_eV": 3.54115,
+      "width_eV": 1.35454
+     }
+    ]
+   },
+   "drude_fit": {
+    "eps_inf": 4.93347,
+    "plasma_eV": 8.90429,
+    "gamma_eV": 0.88275,
+    "oscillators": []
+   },
+   "errors": {
+    "drude_lorentz": {
+     "k_rms_rel": 0.0133,
+     "k_max_rel_vis": 0.028,
+     "k_mean_signed_rel_vis": 0.0006,
+     "R_rms": 0.01449,
+     "dE_ab": 0.55
+    },
+    "drude_fit": {
+     "k_rms_rel": 0.1224,
+     "k_max_rel_vis": 0.2379,
+     "k_mean_signed_rel_vis": -0.0129,
+     "R_rms": 0.13436,
+     "dE_ab": 14.18
+    },
+    "drude_dc": {
+     "k_rms_rel": 0.5758,
+     "k_max_rel_vis": 0.8397,
+     "k_mean_signed_rel_vis": 0.6444,
+     "R_rms": 0.34579,
+     "dE_ab": 22.35
+    },
+    "rakic1998_ld": {
+     "k_rms_rel": 0.0631,
+     "k_max_rel_vis": 0.1351,
+     "k_mean_signed_rel_vis": 0.0028,
+     "R_rms": 0.05914,
+     "dE_ab": 14.7
+    }
+   }
+  },
+  "silver": {
+   "source": "refractiveindex.info:main/Ag/Johnson",
+   "source_name": "Johnson and Christy 1972: n,k 0.188\u20131.94 \u00b5m",
+   "n_points": 17,
+   "oscillators_chosen": 2,
+   "params_at_bound": [
+    "eps_inf",
+    "gamma_eV"
+   ],
+   "rms_by_oscillator_count": {
+    "0": {
+     "holdout_rms": 0.01021,
+     "train_rms": 0.00971
+    },
+    "1": {
+     "holdout_rms": 0.00367
+    },
+    "2": {
+     "holdout_rms": 0.00297,
+     "train_rms": 0.0022
+    },
+    "3": {
+     "holdout_rms": 0.00358
+    },
+    "4": {
+     "holdout_rms": 0.00367
+    }
+   },
+   "params": {
+    "eps_inf": 1.0,
+    "plasma_eV": 9.15724,
+    "gamma_eV": 0.001,
+    "oscillators": [
+     {
+      "strength_eV2": 1.48415,
+      "centre_eV": 1.89526,
+      "width_eV": 1.8128
+     },
+     {
+      "strength_eV2": 69.05064,
+      "centre_eV": 5.45598,
+      "width_eV": 0.1409
+     }
+    ]
+   },
+   "drude_fit": {
+    "eps_inf": 4.6473,
+    "plasma_eV": 9.36082,
+    "gamma_eV": 0.04092,
+    "oscillators": []
+   },
+   "errors": {
+    "drude_lorentz": {
+     "k_rms_rel": 0.0027,
+     "k_max_rel_vis": 0.0049,
+     "k_mean_signed_rel_vis": -0.0003,
+     "R_rms": 0.00167,
+     "dE_ab": 0.14
+    },
+    "drude_fit": {
+     "k_rms_rel": 0.0117,
+     "k_max_rel_vis": 0.0247,
+     "k_mean_signed_rel_vis": -0.0052,
+     "R_rms": 0.00817,
+     "dE_ab": 0.22
+    },
+    "drude_dc": {
+     "k_rms_rel": 0.1582,
+     "k_max_rel_vis": 0.383,
+     "k_mean_signed_rel_vis": 0.1668,
+     "R_rms": 0.01725,
+     "dE_ab": 0.6
+    },
+    "rakic1998_ld": {
+     "k_rms_rel": 0.1157,
+     "k_max_rel_vis": 0.1366,
+     "k_mean_signed_rel_vis": -0.1227,
+     "R_rms": 0.05726,
+     "dE_ab": 2.3
+    }
+   }
+  },
+  "aluminium": {
+   "source": "refractiveindex.info:main/Al/Rakic",
+   "source_name": "Raki\u0107 1995: n,k 0.000124\u2013200 \u00b5m",
+   "n_points": 18,
+   "oscillators_chosen": 4,
+   "params_at_bound": [],
+   "rms_by_oscillator_count": {
+    "0": {
+     "holdout_rms": 0.08024,
+     "train_rms": 0.07948
+    },
+    "1": {
+     "holdout_rms": 0.0205
+    },
+    "2": {
+     "holdout_rms": 0.00541
+    },
+    "3": {
+     "holdout_rms": 0.00401
+    },
+    "4": {
+     "holdout_rms": 0.00245,
+     "train_rms": 0.00158
+    }
+   },
+   "params": {
+    "eps_inf": 1.22482,
+    "plasma_eV": 13.34252,
+    "gamma_eV": 0.15407,
+    "oscillators": [
+     {
+      "strength_eV2": 2.11979,
+      "centre_eV": 1.43825,
+      "width_eV": 0.16646
+     },
+     {
+      "strength_eV2": 8.96637,
+      "centre_eV": 1.56562,
+      "width_eV": 0.27654
+     },
+     {
+      "strength_eV2": 13.35202,
+      "centre_eV": 1.75943,
+      "width_eV": 0.60986
+     },
+     {
+      "strength_eV2": 29.26109,
+      "centre_eV": 2.16287,
+      "width_eV": 1.83414
+     }
+    ]
+   },
+   "drude_fit": {
+    "eps_inf": 1.0,
+    "plasma_eV": 14.35793,
+    "gamma_eV": 0.81178,
+    "oscillators": []
+   },
+   "errors": {
+    "drude_lorentz": {
+     "k_rms_rel": 0.0017,
+     "k_max_rel_vis": 0.0013,
+     "k_mean_signed_rel_vis": -0.0002,
+     "R_rms": 0.00065,
+     "dE_ab": 0.04
+    },
+    "drude_fit": {
+     "k_rms_rel": 0.0876,
+     "k_max_rel_vis": 0.0942,
+     "k_mean_signed_rel_vis": -0.0925,
+     "R_rms": 0.02443,
+     "dE_ab": 1.06
+    },
+    "drude_dc": {
+     "k_rms_rel": 0.2269,
+     "k_max_rel_vis": 0.0565,
+     "k_mean_signed_rel_vis": 0.0411,
+     "R_rms": 0.08787,
+     "dE_ab": 2.98
+    },
+    "rakic1998_ld": {
+     "k_rms_rel": 0.0202,
+     "k_max_rel_vis": 0.0313,
+     "k_mean_signed_rel_vis": -0.0269,
+     "R_rms": 0.00373,
+     "dE_ab": 0.09
+    }
+   }
+  },
+  "nickel": {
+   "source": "refractiveindex.info:main/Ni/Johnson",
+   "source_name": "Johnson and Christy 1974: n,k 0.188\u20131.937 \u00b5m",
+   "n_points": 17,
+   "oscillators_chosen": 2,
+   "params_at_bound": [
+    "gamma_eV",
+    "osc1.width_eV"
+   ],
+   "rms_by_oscillator_count": {
+    "0": {
+     "holdout_rms": 0.06832,
+     "train_rms": 0.06821
+    },
+    "1": {
+     "holdout_rms": 0.01607
+    },
+    "2": {
+     "holdout_rms": 0.00956,
+     "train_rms": 0.00766
+    },
+    "3": {
+     "holdout_rms": 0.01127
+    },
+    "4": {
+     "holdout_rms": 0.02487
+    }
+   },
+   "params": {
+    "eps_inf": 5.33173,
+    "plasma_eV": 8.12623,
+    "gamma_eV": 0.001,
+    "oscillators": [
+     {
+      "strength_eV2": 23.99377,
+      "centre_eV": 1.32607,
+      "width_eV": 1.22855
+     },
+     {
+      "strength_eV2": 190.70858,
+      "centre_eV": 3.14209,
+      "width_eV": 8.0
+     }
+    ]
+   },
+   "drude_fit": {
+    "eps_inf": 5.35739,
+    "plasma_eV": 11.87407,
+    "gamma_eV": 2.14962,
+    "oscillators": []
+   },
+   "errors": {
+    "drude_lorentz": {
+     "k_rms_rel": 0.0061,
+     "k_max_rel_vis": 0.0099,
+     "k_mean_signed_rel_vis": -0.0021,
+     "R_rms": 0.00373,
+     "dE_ab": 0.21
+    },
+    "drude_fit": {
+     "k_rms_rel": 0.0184,
+     "k_max_rel_vis": 0.0467,
+     "k_mean_signed_rel_vis": -0.0131,
+     "R_rms": 0.0303,
+     "dE_ab": 2.33
+    },
+    "rakic1998_ld": {
+     "k_rms_rel": 0.0985,
+     "k_max_rel_vis": 0.1027,
+     "k_mean_signed_rel_vis": -0.0935,
+     "R_rms": 0.04377,
+     "dE_ab": 2.07
+    }
+   }
+  },
+  "platinum": {
+   "source": "refractiveindex.info:main/Pt/Werner",
+   "source_name": "Werner et al. 2009: n,k 0.0176\u20132.48 \u00b5m",
+   "n_points": 9,
+   "oscillators_chosen": 2,
+   "params_at_bound": [
+    "eps_inf",
+    "osc1.width_eV"
+   ],
+   "rms_by_oscillator_count": {
+    "0": {
+     "holdout_rms": 0.0843,
+     "train_rms": 0.08215
+    },
+    "1": {
+     "holdout_rms": 0.00931
+    },
+    "2": {
+     "holdout_rms": 0.0055,
+     "train_rms": 6e-05
+    }
+   },
+   "params": {
+    "eps_inf": 1.0,
+    "plasma_eV": 13.3768,
+    "gamma_eV": 0.16799,
+    "oscillators": [
+     {
+      "strength_eV2": 16.2056,
+      "centre_eV": 3.53316,
+      "width_eV": 0.7786
+     },
+     {
+      "strength_eV2": 434.43572,
+      "centre_eV": 8.47017,
+      "width_eV": 8.0
+     }
+    ]
+   },
+   "drude_fit": {
+    "eps_inf": 11.19545,
+    "plasma_eV": 14.00339,
+    "gamma_eV": 0.42978,
+    "oscillators": []
+   },
+   "errors": {
+    "drude_lorentz": {
+     "k_rms_rel": 0.0,
+     "k_max_rel_vis": 0.0,
+     "k_mean_signed_rel_vis": -0.0,
+     "R_rms": 5e-05,
+     "dE_ab": 0.14
+    },
+    "drude_fit": {
+     "k_rms_rel": 0.0256,
+     "k_max_rel_vis": 0.074,
+     "k_mean_signed_rel_vis": -0.0063,
+     "R_rms": 0.07543,
+     "dE_ab": 4.17
+    },
+    "rakic1998_ld": {
+     "k_rms_rel": 0.2868,
+     "k_max_rel_vis": 0.3151,
+     "k_mean_signed_rel_vis": -0.1879,
+     "R_rms": 0.247,
+     "dE_ab": 13.4
+    }
+   }
+  },
+  "iron": {
+   "source": "refractiveindex.info:main/Fe/Johnson",
+   "source_name": "Johnson and Christy 1974: n,k 0.188\u20131.94 \u00b5m",
+   "n_points": 17,
+   "oscillators_chosen": 1,
+   "params_at_bound": [],
+   "rms_by_oscillator_count": {
+    "0": {
+     "holdout_rms": 0.11108,
+     "train_rms": 0.11029
+    },
+    "1": {
+     "holdout_rms": 0.01597,
+     "train_rms": 0.01481
+    },
+    "2": {
+     "holdout_rms": 0.01696
+    },
+    "3": {
+     "holdout_rms": 0.01648
+    },
+    "4": {
+     "holdout_rms": 0.03126
+    }
+   },
+   "params": {
+    "eps_inf": 4.60871,
+    "plasma_eV": 6.71181,
+    "gamma_eV": 0.36717,
+    "oscillators": [
+     {
+      "strength_eV2": 173.1417,
+      "centre_eV": 2.75081,
+      "width_eV": 4.79128
+     }
+    ]
+   },
+   "drude_fit": {
+    "eps_inf": 8.61121,
+    "plasma_eV": 12.45006,
+    "gamma_eV": 3.0,
+    "oscillators": []
+   },
+   "errors": {
+    "drude_lorentz": {
+     "k_rms_rel": 0.0113,
+     "k_max_rel_vis": 0.0185,
+     "k_mean_signed_rel_vis": -0.0015,
+     "R_rms": 0.00486,
+     "dE_ab": 0.21
+    },
+    "drude_fit": {
+     "k_rms_rel": 0.1627,
+     "k_max_rel_vis": 0.2718,
+     "k_mean_signed_rel_vis": -0.1109,
+     "R_rms": 0.05874,
+     "dE_ab": 6.53
+    }
+   }
+  }
+ }
+}

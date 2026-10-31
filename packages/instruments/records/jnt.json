@@ -1,0 +1,125 @@
+{
+ "schema": "superframe.instrument-record/1",
+ "id": "jnt",
+ "pipeline_id": "jnt",
+ "name": "Johnson-noise thermometer",
+ "atlas_id": "jnt-laptop",
+ "written": "2026-10-30",
+ "summary": "A primary thermometer from a resistor's own noise. Every stage is on paper; nothing is built or bought.",
+ "views": {
+  "pipeline_example": "examples/jnt.json",
+  "cad_model": "diagram/cad/instruments/jnt.js",
+  "cad_page": "cad-jnt.html"
+ },
+ "design": {
+  "R": {
+   "value": 10000,
+   "unit": "Ohm",
+   "label": "Sensing resistor"
+  },
+  "Cin": {
+   "value": 20,
+   "unit": "pF",
+   "label": "Input capacitance"
+  },
+  "T": {
+   "value": 300,
+   "unit": "K",
+   "label": "Resistor temperature"
+  },
+  "en": {
+   "value": 5.1,
+   "unit": "nV/rtHz",
+   "label": "Amplifier voltage noise"
+  },
+  "fHi": {
+   "value": 10000,
+   "unit": "Hz",
+   "label": "Band top"
+  },
+  "tAvg": {
+   "value": 60,
+   "unit": "s",
+   "label": "Averaging time"
+  },
+  "encW": {
+   "value": 130,
+   "unit": "mm",
+   "label": "Box width"
+  },
+  "encD": {
+   "value": 110,
+   "unit": "mm",
+   "label": "Box depth"
+  },
+  "encH": {
+   "value": 60,
+   "unit": "mm",
+   "label": "Box height"
+  },
+  "canD": {
+   "value": 16,
+   "unit": "mm",
+   "label": "Probe can diameter"
+  },
+  "canL": {
+   "value": 32,
+   "unit": "mm",
+   "label": "Probe can length"
+  }
+ },
+ "fixed": {
+  "inA": 1e-15,
+  "fLo": 1000,
+  "G1": 40,
+  "G2": 50,
+  "fHP": 300,
+  "RG": 100,
+  "adcVrms": 1e-06,
+  "adcBand": 24000
+ },
+ "assumptions": [
+  {
+   "assumption": "the resistor is in thermal equilibrium at one temperature",
+   "how_checked": "two readings 10 minutes apart agree within the statistical interval",
+   "if_broken": "the reading is a weighted average of gradients; flag UNCAL",
+   "optional": false,
+   "door": ""
+  },
+  {
+   "assumption": "Re Z is known across the band (pure R, or R with a known shunt C)",
+   "how_checked": "measure Re Z(f) with the injected-tone sweep before each run",
+   "if_broken": "band-edge bias; at 100 kOhm and 100 pF, Re Z falls 28 percent by 10 kHz",
+   "optional": true,
+   "door": "measure Re Z(f) in place with the injected sweep and divide it out, or lower R and C so the droop is negligible"
+  },
+  {
+   "assumption": "no excess (1/f or current) noise in the resistor",
+   "how_checked": "metal-film part, no DC bias, and the PSD is flat across 1 to 10 kHz within its interval",
+   "if_broken": "T reads high; drop the band or the part",
+   "optional": true,
+   "door": "fit a 1/f term, or raise the band floor"
+  },
+  {
+   "assumption": "classical limit, h f << kB T",
+   "how_checked": "kB T / h is 6.2 THz at 300 K, 9 orders above the band",
+   "if_broken": "not reachable in this design",
+   "optional": false,
+   "door": ""
+  },
+  {
+   "assumption": "the two amplifier chains' noises are uncorrelated",
+   "how_checked": "zero-correlation null: independent noise into each chain must cross-correlate to zero (new check zeronull)",
+   "if_broken": "correlated amplifier noise reads as temperature; shield, separate grounds and supplies",
+   "optional": true,
+   "door": "measure the correlated floor with the zero-correlation null and subtract it"
+  },
+  {
+   "assumption": "no interference couples into both chains",
+   "how_checked": "shorted-input cross spectrum (auto-zero) is flat and below 1e-4 of the signal",
+   "if_broken": "mains and radio lines read as heat; reject lines, improve the shield",
+   "optional": true,
+   "door": "subtract the shorted-input cross spectrum, or reject the lines"
+  }
+ ]
+}

@@ -1,0 +1,195 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://harperz9.local/hardware-pipeline/schemas/stage-10-manufacturing.schema.json",
+ "title": "Manufacturing readiness: design for test, fixture, yield, a capsule per build",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "stage",
+  "key",
+  "status",
+  "inputs",
+  "outputs",
+  "gate",
+  "tools",
+  "spec",
+  "does_not_prove"
+ ],
+ "properties": {
+  "stage": {
+   "const": 10
+  },
+  "key": {
+   "const": "manufacturing"
+  },
+  "status": {
+   "enum": [
+    "paper",
+    "built",
+    "run",
+    "passed",
+    "failed",
+    "blocked",
+    "existing-device"
+   ]
+  },
+  "inputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "outputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "gate": {
+   "type": "object",
+   "properties": {
+    "condition": {
+     "type": "string"
+    },
+    "metric": {
+     "type": "string"
+    },
+    "op": {
+     "enum": [
+      "<",
+      "<=",
+      ">",
+      ">=",
+      "==",
+      "in"
+     ]
+    },
+    "threshold": {},
+    "measured": {},
+    "verdict": {
+     "enum": [
+      "pass",
+      "fail",
+      "open",
+      "not-applicable"
+     ]
+    },
+    "evidence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "condition",
+    "metric",
+    "op",
+    "threshold",
+    "verdict"
+   ],
+   "additionalProperties": false
+  },
+  "tools": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "role": {
+      "type": "string"
+     },
+     "licence": {
+      "type": "string"
+     },
+     "ours": {
+      "type": "boolean"
+     },
+     "lineage": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "name",
+     "role",
+     "licence",
+     "ours"
+    ],
+    "additionalProperties": false
+   },
+   "minItems": 1
+  },
+  "spec": {
+   "type": "object",
+   "properties": {
+    "design_for_test": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1
+    },
+    "fixture": {
+     "type": "string"
+    },
+    "yield": {
+     "type": "object",
+     "properties": {
+      "metric": {
+       "type": "string"
+      },
+      "tracking": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "metric",
+      "tracking"
+     ],
+     "additionalProperties": false
+    },
+    "build_capsule": {
+     "type": "object",
+     "properties": {
+      "design_sha256": {
+       "type": "string"
+      },
+      "firmware_sha256": {
+       "type": "string"
+      },
+      "calibration_record_sha256": {
+       "type": "string"
+      },
+      "test_receipts": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "design_sha256",
+      "firmware_sha256",
+      "calibration_record_sha256",
+      "test_receipts"
+     ],
+     "additionalProperties": false
+    }
+   },
+   "required": [
+    "design_for_test",
+    "fixture",
+    "yield",
+    "build_capsule"
+   ],
+   "additionalProperties": false
+  },
+  "notes": {
+   "type": "string"
+  },
+  "does_not_prove": {
+   "type": "string"
+  }
+ }
+}
