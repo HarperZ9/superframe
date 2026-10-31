@@ -13,6 +13,8 @@
   },
   "scripts": {
     "test": "node --test superframe/tests/*.test.mjs creation/tests/*.test.mjs",
+    "test:packages": "node --test \"packages/**/*.test.js\" \"packages/**/*.test.mjs\"",
+    "test:py": "python -m pytest -q -p no:cacheprovider --import-mode=importlib packages",
     "make": "node superframe/cli/superframe.mjs make"
   },
   "author": "Zain Dana Harper <zaindharper@gmail.com>",
