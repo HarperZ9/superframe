@@ -13,6 +13,7 @@
   },
   "scripts": {
     "test": "node --test superframe/tests/*.test.mjs creation/tests/*.test.mjs",
+    "test:rooms": "node --test \"packages/rooms/tests/*.test.mjs\"",
     "make": "node superframe/cli/superframe.mjs make"
   },
   "author": "Zain Dana Harper <zaindharper@gmail.com>",
