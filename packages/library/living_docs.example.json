@@ -1,0 +1,12 @@
+{
+ "schema": "libcat.living-docs/1",
+ "_note": "Copy this file, list your own living documents, and point LIBRARY_LIVING_DOCS at it. A relative path resolves against this file's folder.",
+ "docs": [
+  {"name": "REFERENCE-INTAKE", "path": "intake/INTAKE.md", "state": "live",
+   "keywords": ["intake", "reference intake", "batch", "saves", "bookmarks"]},
+  {"name": "FINDINGS-LEDGER", "path": "FINDINGS.md", "state": "live",
+   "keywords": ["finding", "findings", "proven", "disproven"]},
+  {"name": "DECISIONS", "path": "DECISIONS.md", "state": "proposed",
+   "keywords": ["decision", "decisions", "ruling", "approval"]}
+ ]
+}
