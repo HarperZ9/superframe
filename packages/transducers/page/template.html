@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Every crossing</title>
+<!-- site-kit:begin --><!-- site-kit:end -->
+<style>
+.tr-hero{display:block;width:100%;margin:0}
+.tr-hero-wrap{margin:0 0 var(--sp-3);overflow:hidden}
+.tr-presets{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin:0 0 var(--sp-3)}
+.tr-presets button[aria-pressed="true"]{background:var(--ink);color:var(--wall)}
+#tr-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:var(--sp-2) var(--sp-4)}
+.tr-step{display:grid;grid-template-columns:84px 1fr auto;gap:var(--sp-3);align-items:center;padding:var(--sp-2) 0;border-top:1px solid var(--line);cursor:grab;touch-action:pan-y;min-height:100px}
+.tr-step.is-source{cursor:default}
+.tr-step:focus-visible{outline-offset:-3px}
+.tr-step.is-drag{opacity:.4}
+.tr-step.is-off canvas,.tr-step.is-off .tr-meta{opacity:.35}
+.tr-step canvas{display:block;background:var(--mat)}
+.tr-meta{min-width:0}
+.tr-meta b{display:block;font:700 var(--fs-2)/1.25 var(--face-text);overflow-wrap:anywhere}
+.tr-bar{height:6px;margin:6px 0;background:var(--wall-2)}
+.tr-bar i{display:block;height:100%;background:var(--ink);transition:width var(--dur-base) var(--ease-standard)}
+.tr-step.is-worst .tr-bar i{background:var(--red)}
+.tr-step.is-refused .tr-bar{display:none}
+.tr-step.is-refused .tr-num{color:var(--drift)}
+.tr-step.is-refused b{color:var(--drift)}
+.tr-step.is-over .tr-num{color:var(--drift)}
+.tr-num{display:block;font-size:var(--fs-1);line-height:1.35;color:var(--soft);overflow-wrap:anywhere}
+.tr-on{display:grid;place-items:center;width:44px;height:44px}
+#tr-sum{font:700 var(--fs-4)/1.25 var(--face-display);margin:var(--sp-3) 0 0}
+#tr-sum.is-refused{color:var(--drift)}
+.ax{display:grid;gap:var(--sp-5);grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);align-items:start}
+.ax > div{min-width:0}
+.ax canvas{display:block;background:var(--mat)}
+.ax-out{font:800 var(--fs-5)/1.1 var(--face-display);margin:var(--sp-2) 0 0}
+.ax-per{font:500 var(--fs-2)/1.3 var(--face-utility);color:var(--soft);margin:4px 0 0}
+.ax-f{display:grid;gap:var(--sp-3);margin:0;padding:0;border:0}
+.ax-f label{display:grid;grid-template-columns:5ch 1fr;column-gap:var(--sp-2);align-items:center;font:600 var(--fs-2)/1.2 var(--face-still)}
+.ax-f label output{grid-column:2;font:400 var(--fs-1)/1.2 var(--face-utility);color:var(--soft);font-weight:400}
+.ax-f input{width:100%}
+td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--face-utility)}
+tr.is-over th,tr.is-over td{color:var(--drift)}
+#axes{margin-top:var(--sp-6)}
+@media (max-width:860px){.ax{grid-template-columns:minmax(0,1fr)}.tr-hero-wrap{margin-left:0}}
+</style>
+</head>
+<body data-region="print" data-title="Every crossing">
+<main class="k-page">
+<header class="k-head">
+<div class="tr-hero-wrap"><canvas id="hero" class="tr-hero" data-alt="A live reaction-diffusion field drawn as a halftone"></canvas></div>
+<h1 data-living="material display">Every crossing</h1>
+<hr class="k-horizon">
+</header>
+<section class="k-layer" data-layer="toy" id="toy">
+<div class="k-layer-head"><h2>Chain</h2></div>
+<div class="tr-presets" role="group" aria-label="Which chain">
+<button type="button" data-preset="camera">Photon to pixel</button>
+<button type="button" data-preset="retina">Photon to spike</button>
+<button type="button" data-preset="text">Text to motif</button>
+<button type="button" data-preset="dna">DNA to alignment</button>
+</div>
+<ol id="tr-list" aria-label="Steps in order"></ol>
+<p id="tr-sum" aria-live="polite"></p>
+</section>
+<p class="k-message">A kernel takes a field, returns a field and pays in measured bits.</p>
+<section class="k-layer" data-layer="toy" id="axes">
+<div class="k-layer-head"><h2>Light, noise, time, space</h2></div>
+<div class="ax">
+<div><fieldset class="ax-f"><legend class="sr-only">The four axes</legend>
+<label>Light<input id="ax-light" type="range" min="0" max="100" value="55"><output id="ax-photons"></output></label>
+<label>Noise<input id="ax-noise" type="range" min="0" max="100" value="30"><output id="ax-floor"></output></label>
+<label>Time<input id="ax-time" type="range" min="0" max="100" value="50"><output id="ax-dt"></output></label>
+<label>Space<input id="ax-space" type="range" min="0" max="100" value="50"><output id="ax-dx"></output></label>
+</fieldset>
+<p class="ax-out" id="ax-bits"></p><p class="ax-per" id="ax-per"></p></div>
+<div><canvas id="ax-img" data-alt="The scene exposed at these settings"></canvas></div>
+<div><canvas id="ax-map" data-alt="Bits at every shutter and pixel size, with a mark at the current setting"></canvas></div>
+</div>
+</section>
+<section class="k-layer" data-layer="plain" id="plain">
+<div class="k-layer-head"><h2>In plain words</h2></div>
+<p>A lens, a mirror, a film, a retina, a neuron and a sequence aligner look unrelated. Each one takes something in and hands something on, and each keeps part of what came in. Here they share one interface, so the same ruler reads all of them.</p>
+<p>A mirror returns nearly all of it. A lens spreads it. A sensor turns it into counts. A spike train keeps a rough rate. Move a step and the sum changes, or the chain refuses, because each step can only read what the last one made.</p>
+<p>Light is how many photons arrive. Noise is what they arrive through. Time is how long you wait for them. Space is how finely you cut them up. Smaller cells share the same photons among more places, and they gain until read noise wins.</p>
+</section>
+<section class="k-layer" data-layer="pro" id="pro">
+<div class="k-layer-head"><h2>The working</h2></div>
+<p>Every kernel declares its input and output representation with units, a grade and its axes, and the field type measures the grade on the data. A kernel with unmeasured bits, a failed declared structure, a wrong unit or a false lossless claim is refused.</p>
+<p>Budget per step: I = (space modes)(time modes) log2(1 + SNR), with modes counted above the noise floor on the data. Kept is measured independently, from the coherence with the source: sum over modes of -0.5 log2(1 - gamma^2). This formula is not a bound. Across 218 swept steps it fails on 17: spikes, coarse ADCs and dim catches, where one SNR averaged over all modes reads near zero while low modes still carry bits. Counting every mode against the floor fixes those, and fails on 24 others at bright shot noise, where the noise follows the signal.</p>
+<div id="tr-ledgers"></div>
+<h3>Kernels</h3>
+<div class="k-scroll"><table><tbody id="tr-cat"></tbody></table></div>
+</section>
+</main>
+<!-- transducers:scripts -->
+</body>
+</html>
