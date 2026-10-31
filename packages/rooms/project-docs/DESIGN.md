@@ -32,6 +32,7 @@ core/            importable from Node and the browser; no DOM, no GL, no view st
   adapters/      read the virtual bench and lens pipeline file formats
   families.js    spherical-harmonic globes as a registered shape family
 solvers/         sound (wave field) and pcb (place, route, rules, fields, Gerber), importable with no browser
+tools/steer.js   choose between candidates to steer any registered parameter space, with a replayable record
 properties/      a property as a physical object: state space, operations, elements, instrument, route
 views/           pages generated from core (stage 2 onward)
 tests/           known answers, golden hashes from the source page, planted bad values
@@ -83,12 +84,18 @@ The plain label is a separate function from anything drawn. A passing verdict ne
 
 Two cases exist. Polarisation on the Poincare sphere: a waveplate is a rotation of the sphere, and a path compiles to quartz plates whose Jones product is checked against the path's end. Impedance on the Smith chart: a line is a rotation and a stub moves along a conductance circle, and a matched path compiles to microstrip on the PCB engine's stackup, with reflection checked by a transfer matrix and by the engine's time-domain line solver.
 
+## Steering
+
+`tools/steer.js` is Mind's Eye's proposal rule on any parameter space. Over its 26 genes it reproduces the source page's candidates exactly, by hash over 40 draws. `lensSpace()` is the first registered space. The test simulates a person with a planted target, and a random picker and a decoy target are the controls. Those figures describe a simulated chooser; how well a person steers is measured by the study behind Mind's Eye. Its renderer, perceptual distance and page have not moved.
+
+A program compiled cold on the view took 2.7 s (a harmonic shape new to the driver cache), within the few seconds the rule asks.
+
 ## Which size rules bend, and why
 
 The standing limits are 300 lines per file and 50 per function. The page's code came across as moved statements, so a formatter could show each one and an AST check could prove it unchanged. That proof is worth more than short functions during the move.
 
-- Files over 300 lines: `core/train.js` (378, mostly the prescription table), `views/lens-room/src/20-boot-extras.js` (375) and `43-tabs.js` (366), which are control wiring.
-- Functions over 50 lines: 26. The largest are `bootExtras` (374), `drawDiagram` (193), `runWave` (172), `lensFS` (148), `insideChecks` (138), `fParse` (130) and `measureLens` (130). Generators like `lensFS` are mostly template text.
+- Files over 300 lines: `core/train.js` (378, mostly the prescription table), `solvers/pcb/router.js` (500), `solvers/pcb/checks.js` (356), and three view files of wiring and drawing: `lens-room/src/20-boot-extras.js` (375), `lens-room/src/43-tabs.js` (366), `pcb-room/src/11-2d-drawings-a.js` (393).
+- Functions over 50 lines: 66. The largest are `bootExtras` (374), `bindInput` (299), `checksGen` (292), `drawDiagram` (193), `dcSolve` (183), `schematic` (183) and `runWave` (172). Generators like `lensFS` are mostly template text.
 - GLSL bodies stay dense strings. Their bytes are what the golden hashes hold, and reformatting them changes the hash.
 
 Now that parity is recorded, each long function can be split in its own change and rechecked with the same comparison.
