@@ -1,0 +1,37 @@
+<meta charset="utf-8">
+<title>Sound Room</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* Layout: the pressure field fills the room; one instrument column holds controls and measured values. Site kit port pending. */
+:root{--bg:#0a0c10;--panel:#11141a;--line:#262b35;--fg:#e8e6df;--dim:#9a9ca3;--accent:#ffc978;--ui:"Hanken Grotesk",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Consolas,monospace;color-scheme:dark}
+html,body{height:100%}body{background:var(--bg);color:var(--fg);font:14px/1.4 var(--ui)}
+#app{display:grid;grid-template-columns:minmax(0,1fr) 310px;height:100%}
+#view{position:relative;min-width:0;display:flex;align-items:center;justify-content:center;background:#000}
+#gl{max-width:100%;max-height:100%;aspect-ratio:1;height:100%;touch-action:none;cursor:crosshair;display:block}
+#panel{background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding-block:14px;padding-left:16px;padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+h1{font-size:18px;font-weight:600;margin:0}h2{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);font-weight:600;margin:0 0 6px}
+section{display:flex;flex-direction:column;gap:7px}
+select,button{font:inherit;color:var(--fg);background:#1a1e27;border:1px solid var(--line);border-radius:5px;padding:6px 8px}button{cursor:pointer}
+button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:grid;grid-template-columns:76px minmax(0,1fr) 62px;align-items:center;gap:8px}.row label{color:var(--dim)}.row output{font:12px var(--mono);text-align:right}
+input[type=range]{width:100%;min-width:0;accent-color:var(--accent)}.btns{display:flex;flex-wrap:wrap;gap:6px}
+canvas.scope{width:100%;height:70px;background:#000;border:1px solid var(--line);border-radius:5px}
+dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 12px;margin:0;font-size:13px}dt{color:var(--dim)}dd{margin:0;font:12px var(--mono);text-align:right}
+#err{position:absolute;inset:16px;white-space:pre-wrap;font:12px var(--mono)}
+@media (max-width:760px){#app{grid-template-columns:1fr;grid-template-rows:auto auto;height:auto}#gl{height:auto;width:100%}#panel{border-left:0;border-top:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px))}}
+</style>
+<div id="app"><div id="view"><canvas id="gl" width="768" height="768" aria-label="Sound pressure field. Click to place the source, shift-click to place the microphone."></canvas><div id="err" hidden></div></div>
+<div id="panel"><h1>Sound Room</h1>
+<section><select id="room" aria-label="Space"></select>
+<div class="btns" id="src"><button data-v="0" aria-pressed="true">Tone</button><button data-v="1" aria-pressed="false">Click</button><button data-v="2" aria-pressed="false">Sweep</button></div>
+<div class="btns" id="vw"><button data-v="0" aria-pressed="true">Pressure</button><button data-v="1" aria-pressed="false">Energy</button><button data-v="2" aria-pressed="false">Schlieren</button></div>
+<div class="btns"><button id="listen" aria-pressed="false">Listen at mic</button><button id="moveMic" aria-pressed="false">Move mic</button></div></section>
+<section><h2>Sound</h2><div id="sl"></div></section>
+<section><h2>Microphone</h2><canvas class="scope" id="wave" width="560" height="140"></canvas><canvas class="scope" id="spec" width="560" height="140"></canvas><dl id="read"></dl></section>
+</div></div>
+<script id="vs" type="x">{{vs}}</script>
+<script id="step" type="x">{{step}}</script>
+<script id="mic" type="x">{{mic}}</script>
+<script id="show" type="x">{{show}}</script>
+<!-- ROOM-SCRIPT -->

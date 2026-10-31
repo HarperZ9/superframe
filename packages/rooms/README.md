@@ -14,4 +14,6 @@ CONSTANTS.bk7Nd;                  // value, unit, source, and what it was checke
 CONSTANTS["mat.amber.V"].flag;    // "from memory, unverified"
 ```
 
+The room pages build from here: `node packages/rooms/views/lens-room/build.mjs`, and the same for `sound-room` and `pcb-room`. `solvers/` holds the wave field and the board engine, and `properties/` compiles a path on a Poincare sphere or Smith chart to plates or microstrip, checked, and marked potential until a part is measured.
+
 The design and the reasoning are in `project-docs/DESIGN.md`. Licence: FSL-1.1-MIT; `core/data/cie.js` is CC BY-SA 4.0.

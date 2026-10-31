@@ -20,15 +20,15 @@ export function classic(src) {
       return "";
     })
     .replace(/^export\s+\{[^}]*\};?[ \t]*\r?\n?/gm, "")
-    .replace(/^export\s+(?=const |let |function |class )/gm, "");
+    .replace(/^export\s+(?=const |let |function[ *]|class )/gm, "");
   return (aliases.length ? aliases.join("\n") + "\n" : "") + body;
 }
 const read = (p) => readFileSync(join(ROOT, p), "utf8");
 
-export function buildPage({ shell, core, sealed = {}, blocks }) {
+export function buildPage({ shell, core, sealed = {}, blocks, tokens = {} }) {
   const coreCode = core
     .map((f) => {
-      const code = classic(read(`core/${f}`));
+      const code = classic(read(f.includes("/solvers/") || f.startsWith("solvers/") ? f : `core/${f}`));
       const names = sealed[f];
       if (!names) return code;
       const list = names.join(", ");
@@ -39,7 +39,8 @@ export function buildPage({ shell, core, sealed = {}, blocks }) {
     const code = files.map((f) => read(f)).join("\n");
     return `<script>\n"use strict";\n${i === 0 ? coreCode + "\n" : ""}${code}</script>\n`;
   });
-  const page = read(shell);
+  let page = read(shell);
+  for (const [k, v] of Object.entries(tokens)) page = page.replace(`{{${k}}}`, () => v);
   if (!page.includes("<!-- ROOM-SCRIPT -->")) throw new Error("shell has no script marker");
   return page.replace("<!-- ROOM-SCRIPT -->\n", () => scripts.join("\n")).replace("<!-- ROOM-SCRIPT -->", () => scripts.join("\n"));
 }

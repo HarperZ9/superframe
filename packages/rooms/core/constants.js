@@ -72,6 +72,10 @@ const PHYSICS = {
     note: "SCHOTT lists N-SK16 at 1.62041, 60.32; SK16 itself is not in the 2025 table.",
   }),
   sk16Vd: c(60.33, "1", { source: "SK16 as entered with the Cooke triplet" }),
+  airSoundSpeed: c(343, "m/s", { source: "Dry air near 20 C, handbook value" }),
+  copperResistivity: c(1.724e-5, "ohm*mm", { source: "IACS annealed copper standard" }),
+  copperConductivity: c(390, "W/m/K", { source: "Handbook value, entered from memory" }),
+  fr4Conductivity: c(0.3, "W/m/K", { source: "Handbook value, entered from memory; in-plane is often higher" }),
   bk7Nd: c(1.5168, "1", { source: SCHOTT, verified: checked("SCHOTT overview, N-BK7", "equal") }),
   bk7Vd: c(64.17, "1", { source: SCHOTT, verified: checked("SCHOTT overview, N-BK7", "equal") }),
 };
