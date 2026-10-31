@@ -32,6 +32,7 @@ core/            importable from Node and the browser; no DOM, no GL, no view st
   adapters/      read the virtual bench and lens pipeline file formats
   families.js    spherical-harmonic globes as a registered shape family
 solvers/         sound (wave field) and pcb (place, route, rules, fields, Gerber), importable with no browser
+tools/steer.js   choose between candidates to steer any registered parameter space, with a replayable record
 properties/      a property as a physical object: state space, operations, elements, instrument, route
 views/           pages generated from core (stage 2 onward)
 tests/           known answers, golden hashes from the source page, planted bad values
@@ -82,6 +83,12 @@ A record in `properties/model.js` holds:
 The plain label is a separate function from anything drawn. A passing verdict never changes the state; only `recordMeasurement`, which requires a part, an instrument, a reading, a person and a date, can do that.
 
 Two cases exist. Polarisation on the Poincare sphere: a waveplate is a rotation of the sphere, and a path compiles to quartz plates whose Jones product is checked against the path's end. Impedance on the Smith chart: a line is a rotation and a stub moves along a conductance circle, and a matched path compiles to microstrip on the PCB engine's stackup, with reflection checked by a transfer matrix and by the engine's time-domain line solver.
+
+## Steering
+
+`tools/steer.js` is Mind's Eye's proposal rule on any parameter space. Over its 26 genes it reproduces the source page's candidates exactly, by hash over 40 draws. `lensSpace()` is the first registered space. The test simulates a person with a planted target, and a random picker and a decoy target are the controls. Those figures describe a simulated chooser; how well a person steers is measured by the study behind Mind's Eye. Its renderer, perceptual distance and page have not moved.
+
+A program compiled cold on the view took 2.7 s (a harmonic shape new to the driver cache), within the few seconds the rule asks.
 
 ## Which size rules bend, and why
 
