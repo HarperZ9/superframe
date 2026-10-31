@@ -52,6 +52,16 @@ tests/           known answers, golden hashes from the source page, planted bad 
 - `firstDark` places the ring by bin index, and one bin is about a tenth of the Airy radius at the page's grid. It reads 2.3 percent low on an ideal stop. The test states that resolution and allows 3 percent. The page's rule is kept so its readout does not change.
 - With mu 0.1 and b 4 the weak-field index gives 4.0 percent more deflection than 4GM/(b c^2), which is the second-order term and not a fault. The test uses mu 0.01, where the first-order form holds to 0.4 percent.
 
+## Which size rules bend, and why
+
+The standing limits are 300 lines per file and 50 per function. The page's code came across as moved statements, so a formatter could show each one and an AST check could prove it unchanged. That proof is worth more than short functions during the move.
+
+- Files over 300 lines: `core/train.js` (378, mostly the prescription table), `views/lens-room/src/20-boot-extras.js` (375) and `43-tabs.js` (366), which are control wiring.
+- Functions over 50 lines: 26. The largest are `bootExtras` (374), `drawDiagram` (193), `runWave` (172), `lensFS` (148), `insideChecks` (138), `fParse` (130) and `measureLens` (130). Generators like `lensFS` are mostly template text.
+- GLSL bodies stay dense strings. Their bytes are what the golden hashes hold, and reformatting them changes the hash.
+
+Now that parity is recorded, each long function can be split in its own change and rechecked with the same comparison.
+
 ## Licences
 
 Package code is FSL-1.1-MIT with the repo. `core/data/cie.js` is CC BY-SA 4.0, as the CIE publishes those tables, and stays in its own file. Hat and spectre tile rules from the lens-geometry bench are not in this package yet; when they come, their BSD and MIT notices come with them. Nothing here comes from an AGPL source.
