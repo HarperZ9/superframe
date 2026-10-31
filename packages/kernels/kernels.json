@@ -28,7 +28,7 @@
         "buildlang_note": "blend/SPEC.md#buildlang-port-note",
         "equivalence": {
           "pass": true,
-          "checked": "2026-10-30T23:00:14",
+          "checked": "2026-10-30T22:31:43",
           "vs_reference": {
             "cpu": {
               "pass": true,
@@ -75,13 +75,13 @@
               {
                 "name": "fused multiply-add accumulation (torch.addcmul)",
                 "caught": true,
-                "fraction_differing": 0.4827916666666667,
-                "max_abs": 4.76837158203125e-07
+                "fraction_differing": 0.4846979166666667,
+                "max_abs": 2.384185791015625e-07
               },
               {
                 "name": "library reduction order (torch.sum over sources)",
                 "caught": true,
-                "fraction_differing": 0.5203645833333334,
+                "fraction_differing": 0.5753645833333333,
                 "max_abs": 4.76837158203125e-07
               }
             ]
@@ -93,9 +93,9 @@
             "T": 48000
           },
           "output_hash": {
-            "y": "d041c3dcfb3a20d3fb490cda07206fcf8bfb86746ff19c4eae8b1c2d6fcab2c3"
+            "y": "ff9d0dac65a24c83f8d4f67d8432f29cb06d4f2fc37931d5fe231306b2883334"
           },
-          "seed": 1417426622,
+          "seed": 1249272797,
           "stress": {
             "base": true,
             "repeat": true,
@@ -135,7 +135,7 @@
         "buildlang_note": "advect_diffuse/SPEC.md#buildlang-port-note",
         "equivalence": {
           "pass": true,
-          "checked": "2026-10-30T23:00:15",
+          "checked": "2026-10-30T22:31:45",
           "vs_reference": {
             "cpu": {
               "pass": true,
@@ -168,7 +168,7 @@
               "pass": true
             },
             {
-              "name": "diffusion conserves the total (rel 5.2e-19 < 1e-12)",
+              "name": "diffusion conserves the total (rel 5.2e-18 < 1e-12)",
               "pass": true
             },
             {
@@ -185,15 +185,15 @@
             "open_builtin_max_ulp": {
               "cpu": {
                 "q": {
-                  "max_ulp": 9100643314672084992,
-                  "max_abs": 0.0008663728890845324,
+                  "max_ulp": 9092560306956805120,
+                  "max_abs": 0.00079756041683815,
                   "bitwise_equal": false
                 }
               },
               "cuda": {
                 "q": {
-                  "max_ulp": 9113402678493138944,
-                  "max_abs": 0.00391623870702696,
+                  "max_ulp": 9119629538414053376,
+                  "max_abs": 0.003733625480312419,
                   "bitwise_equal": false
                 }
               }
@@ -206,9 +206,9 @@
             "kappa": 0.0002
           },
           "output_hash": {
-            "q": "fd01efae0f88b1e9d97c96cc12617321b2f12ab5b07af7520e17b48148f87a69"
+            "q": "774340b8ad36e2b7d8038358f5eaace1215e72f437050690f7fd8775cec7754b"
           },
-          "seed": 1656221306,
+          "seed": 416777983,
           "stress": {
             "base": true,
             "repeat": true,
@@ -248,7 +248,7 @@
         "buildlang_note": "lattice_resample/SPEC.md#buildlang-port-note",
         "equivalence": {
           "pass": true,
-          "checked": "2026-10-30T23:00:17",
+          "checked": "2026-10-30T22:31:47",
           "vs_reference": {
             "cpu": {
               "pass": true,
@@ -290,15 +290,15 @@
             "open_builtin_max_ulp": {
               "cpu": {
                 "samples": {
-                  "max_ulp": 882,
-                  "max_abs": 1.1920928955078125e-07,
+                  "max_ulp": 8889,
+                  "max_abs": 2.384185791015625e-07,
                   "bitwise_equal": false
                 }
               },
               "cuda": {
                 "samples": {
-                  "max_ulp": 791067,
-                  "max_abs": 4.889443516731262e-06,
+                  "max_ulp": 2677385,
+                  "max_abs": 4.589557647705078e-06,
                   "bitwise_equal": false
                 }
               }
@@ -313,10 +313,10 @@
             "spacing": 1.5
           },
           "output_hash": {
-            "recon": "62faa88c59f9ac135e707f9c2c5d1e24dcc2e4cd53ad6fef0a59922f58419f24",
-            "samples": "a5c8165ec0b9e002463433488f7b440f8b0c29f0c4d796ee7d237a51c661624d"
+            "recon": "d47f737de1f092463b124a48b20bbf7b75be95160f971e8a67d4ab64b8cbda10",
+            "samples": "3181c17569e96fff14df6315aa589c71e72f30a2aee0c3df9854a45948dd3b94"
           },
-          "seed": 440790443,
+          "seed": 2952167199,
           "stress": {
             "base": true,
             "repeat": true,
@@ -356,7 +356,7 @@
         "buildlang_note": "spectral_shade/SPEC.md#buildlang-port-note",
         "equivalence": {
           "pass": true,
-          "checked": "2026-10-30T23:00:23",
+          "checked": "2026-10-30T22:31:53",
           "vs_reference": {
             "cpu": {
               "pass": true,
@@ -385,7 +385,7 @@
           },
           "known_answers": [
             {
-              "name": "Fresnel agrees with tools/materials optics.fresnel (max abs 1.2e-07 < 2e-6)",
+              "name": "Fresnel agrees with tools/materials optics.fresnel (max abs 1.8e-07 < 2e-6)",
               "pass": true
             },
             {
@@ -406,9 +406,9 @@
             "P": 65536
           },
           "output_hash": {
-            "xyz": "d45559b38bbabb0bd946bc07aa8a7dbcb78ff3ef4089e617e9f8416d5e5cb964"
+            "xyz": "f2d493b63a8f407eca514d3102a0974054db3ce1b6dfe05b58975a5a15185774"
           },
-          "seed": 2511209959,
+          "seed": 2653480166,
           "stress": {
             "base": true,
             "repeat": true,
@@ -507,8 +507,8 @@
     }
   ],
   "planted_controls": {
-    "checked": "2026-10-30T23:00:26",
-    "seed": 587357943,
+    "checked": "2026-10-30T22:31:56",
+    "seed": 3992202505,
     "stress": {
       "planted": "planted.clamp_fast_path",
       "caught": true

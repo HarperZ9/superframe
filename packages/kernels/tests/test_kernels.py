@@ -19,7 +19,7 @@ VECTORS = json.loads((ROOT.parent / "_vectors" / "canonical_vectors.json").read_
 def test_the_canonical_form_answers_every_vector():
     assert len(VECTORS["cases"]) >= 30, "the vector file moved or its shape changed"
     for case in VECTORS["cases"]:
-        assert canonical.sha256(case["input"]) == case["sha256"], case["id"]
+        assert canonical.sha256(json.loads(case["input"])) == case["sha256"], case["id"]
 
 
 @pytest.mark.skipif(bool(os.environ.get("CI")), reason="the check needs PyTorch with CUDA, which GitHub CI does not have")
@@ -27,6 +27,11 @@ def test_kernels_check_passes_on_a_cuda_machine():
     torch = pytest.importorskip("torch", reason="the check needs PyTorch")
     if not torch.cuda.is_available():
         pytest.skip("no CUDA device")
-    run = subprocess.run([sys.executable, "-B", str(ROOT / "kernels.py"), "check", "--no-receipts"],
-                         capture_output=True, text=True)
+    registry = ROOT / "kernels.json"  # check rewrites its dated results; a test leaves the tree as it found it
+    before = registry.read_bytes()
+    try:
+        run = subprocess.run([sys.executable, "-B", str(ROOT / "kernels.py"), "check", "--no-receipts"],
+                             capture_output=True, text=True)
+    finally:
+        registry.write_bytes(before)
     assert run.returncode == 0, run.stdout[-2000:] + run.stderr[-2000:]
