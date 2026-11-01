@@ -69,6 +69,7 @@ function readout() {
     spec = m.spec;
     rows = [["Time", m.t.toFixed(2)], ["Energy", m.E.toFixed(5)], ["Enstrophy", m.Z.toFixed(4)], ["Helicity, volume", (m.H * TAU ** 3).toFixed(3)], ["Divergence", m.div.toExponential(1)], ["Grid", m.n + " cubed"]];
     if (c.three === "linked") rows.push(["2 Lk Gamma^2", (2 * 9).toFixed(2)]);
+    showGate(c, { dim: 3, N: m.n, nu: State.nu, dt: 1.6 / m.n, umax: 0, spectrum: spec });
   } else {
     const g = State.g, m = g.measures();
     if (!Number.isFinite(m.E)) { State.running = false; fail("The step went unstable, so the numbers stopped meaning anything. Restart the case."); }
@@ -84,11 +85,22 @@ function readout() {
     for (let k = 4; k < spec.length; k++) if (k < g.N / 3 && spec[k] > 0) peak = k;
     rows.push(["Top resolved shell", String(peak)]);
     State.m = m;
+    showGate(c, { N: g.N, nu: g.nu, dt: g.dt, umax, spectrum: spec, wall: g.hasWall ? { eta: g.eta } : null });
   }
   const d = $("read");
   d.textContent = "";
   for (const [a, b] of rows) { const dt = document.createElement("dt"), dd = document.createElement("dd"); dt.textContent = a; dd.textContent = b; d.append(dt, dd); }
   drawSpectrum(spec);
+}
+/** The label the field must not appear without: inside its regime or not, from this run's own numbers. */
+function showGate(c, input) {
+  const r = regimeGate({ ...input, model: (c.limits || []).map((k) => MODEL_LIMITS[k]) });
+  const g = $("gate"), u = $("limits");
+  g.textContent = r.valid ? "Numerics inside their valid regime" : "Outside its valid regime: do not read these numbers as flow";
+  g.className = r.valid ? "in" : "out";
+  u.textContent = "";
+  for (const [list, cls] of [[r.outside, "out"], [r.model, ""]]) for (const x of list) { const li = document.createElement("li"); li.textContent = x.text; li.className = cls; u.append(li); }
+  State.gate = r;
 }
 function drawSpectrum(E) {
   const C = $("spec"), x = C.getContext("2d"), W = C.width, H = C.height;

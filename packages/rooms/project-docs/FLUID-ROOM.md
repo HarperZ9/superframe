@@ -44,6 +44,14 @@ The GPU tier, run in the built-in browser on this workstation through `window.fl
 
 Heavier cases and locked studies live in the working notes. A numpy twin there agrees with these classes to 1e-15 on 32 cubed and 64 squared.
 
+## Regime gate
+
+`regimeGate` reads a run's own numbers and states whether the numerics are inside their valid regime. It flags an unstable step, the advective limit, a spectrum still high at the cut-off, a wall with no viscosity, a wall layer under one cell, and viscosity that erases the penalty within a step, which a locked study met as a false return of 1.0. The view shows that label beside the field, with the model limits for the case listed under it, since no numerical check clears those.
+
+## Blasius
+
+The similarity solution is computed by shooting: wall shear constant 0.33206 and displacement constant 1.7208. The momentum residual of that field stays small with viscosity, and the inviscid mode fails it. That checks the solution, not the solver. The direct test is a null: a penalised plate on this torus does not reach Blasius. At Re_x 150 to 300 the layer has about a quarter to a half of the displacement thickness, with an overshoot outside the layer and a profile error near 0.25, across two box sizes and a gentler fringe. I did not find the cause. A test holds that failure in place so a later fix has to update the claim, and the bowl's validity note says it.
+
 ## Design rule gaps
 
 The page uses the same shell as the other rooms: Hanken Grotesk and JetBrains Mono, one instrument column. It does not use the shared site kit, the dynamic type engine or a generative field in its chrome, which the design rules ask of every page. The flow itself is the only motion. The port is pending for all the rooms together. Pointer stir has no keyboard equivalent yet. Reduced motion starts the page paused.

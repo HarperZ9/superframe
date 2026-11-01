@@ -128,6 +128,7 @@ class Gpu2 {
   setStatics(flow, wall) {
     const N = this.N, s = new Float32Array(4 * N * N), t = new Float32Array(4 * N * N);
     this.hasS = !!flow;
+    this.hasWall = !!wall;
     if (flow) {
       const dv = flow.div;
       for (let i = 0; i < N * N; i++) { s[4 * i] = flow.ux[i]; s[4 * i + 1] = flow.uy[i]; s[4 * i + 3] = dv ? dv[i] : 0; }
