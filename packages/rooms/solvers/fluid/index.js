@@ -5,3 +5,5 @@ export * from "./spectral3.js";
 export * from "./exact.js";
 export * from "./bowl.js";
 export * from "./tubes.js";
+export * from "./regime.js";
+export * from "./blasius.js";

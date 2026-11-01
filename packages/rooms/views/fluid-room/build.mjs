@@ -14,7 +14,7 @@ export const fluidRoomPage = () =>
   buildPage({
     shell: "views/fluid-room/shell.html",
     tokens: { vs: S.FLUID_VS, fft: S.FLUID_FFT, prep: S.FLUID_PREP, viewp: S.FLUID_VIEW, nl: S.FLUID_NL, rhs: S.FLUID_RHS, upd: S.FLUID_UPDATE, stir: S.FLUID_STIR, dye: S.FLUID_DYE, show: S.FLUID_SHOW, vol: S.FLUID_VOLUME, worker3: worker3() },
-    core: ["wave.js", "solvers/fluid/fftn.js", "solvers/fluid/spectral2.js", "solvers/fluid/bowl.js"],
+    core: ["wave.js", "solvers/fluid/fftn.js", "solvers/fluid/spectral2.js", "solvers/fluid/bowl.js", "solvers/fluid/regime.js"],
     blocks: [readdirSync(join(HERE, "src")).sort().map((f) => `views/fluid-room/src/${f}`)],
   });
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) console.log(writePage(fluidRoomPage(), process.argv[2] || "out/rooms/fluid-room.html"));
