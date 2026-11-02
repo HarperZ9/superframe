@@ -1,0 +1,281 @@
+{
+ "sourceSha256": "1be779a3acc625ca3e5eec5bae6b18d72af72651eb90ba9bc8a0d84eb008e5f2",
+ "checks": [
+  {
+   "id": "ohm",
+   "got": 24.240719910009982,
+   "want": 24.24071991001125,
+   "pass": true
+  },
+  {
+   "id": "ohmE",
+   "got": 0.999999999999972,
+   "want": 1,
+   "pass": true
+  },
+  {
+   "id": "z0_0.2_0.1999",
+   "got": 69.76628596868561,
+   "want": 70.14970342187358,
+   "pass": true
+  },
+  {
+   "id": "z0_0.35_0.1999",
+   "got": 53.31981456932026,
+   "want": 53.87541495557445,
+   "pass": true
+  },
+  {
+   "id": "z0_1_0.5",
+   "got": 46.32334200026217,
+   "want": 46.99140297111025,
+   "pass": true
+  },
+  {
+   "id": "z0_3_1.529",
+   "got": 47.56827112233365,
+   "want": 48.35546658698579,
+   "pass": true
+  },
+  {
+   "id": "z0_1.5_1.529",
+   "got": 68.44153670570142,
+   "want": 69.43371943832014,
+   "pass": true
+  },
+  {
+   "id": "z0_0.2_1.529",
+   "got": 134.6892678995318,
+   "want": 133.0753864235801,
+   "pass": true
+  },
+  {
+   "id": "rc",
+   "got": 0.6321216070715807,
+   "want": 0.6321205588285577,
+   "pass": true
+  },
+  {
+   "id": "gam100",
+   "got": 0.3334050071267208,
+   "want": 0.3333333333333333,
+   "pass": true
+  },
+  {
+   "id": "gam25",
+   "got": -0.3332969955526063,
+   "want": -0.3333333333333333,
+   "pass": true
+  },
+  {
+   "id": "gamOpen",
+   "got": 1.000102397703268,
+   "want": 1,
+   "pass": true
+  },
+  {
+   "id": "gam75",
+   "got": 1.1999254677780844,
+   "want": 1.2,
+   "pass": true
+  },
+  {
+   "id": "flight",
+   "got": 376.2691959388919,
+   "want": 375,
+   "pass": true
+  },
+  {
+   "id": "fin",
+   "got": 130.46161755094636,
+   "want": 130.50604998309004,
+   "pass": true
+  },
+  {
+   "id": "finE",
+   "got": 0.4999999940876039,
+   "want": 0.5,
+   "pass": true
+  },
+  {
+   "id": "clean_tia",
+   "got": 0,
+   "want": 0,
+   "pass": true
+  },
+  {
+   "id": "clean_piezo",
+   "got": 0,
+   "want": 0,
+   "pass": true
+  },
+  {
+   "id": "clean_honeycomb",
+   "got": 0,
+   "want": 0,
+   "pass": true
+  },
+  {
+   "id": "clean_sunflower",
+   "got": 0,
+   "want": 0,
+   "pass": true
+  },
+  {
+   "id": "plant_thin trace",
+   "got": 1,
+   "want": 1,
+   "pass": true
+  },
+  {
+   "id": "plant_tracks too close",
+   "got": 1,
+   "want": 1,
+   "pass": true
+  },
+  {
+   "id": "plant_small drill",
+   "got": 1,
+   "want": 1,
+   "pass": true
+  },
+  {
+   "id": "plant_thin annular ring",
+   "got": 1,
+   "want": 1,
+   "pass": true
+  },
+  {
+   "id": "plant_copper at the edge",
+   "got": 1,
+   "want": 1,
+   "pass": true
+  },
+  {
+   "id": "plant_cut track",
+   "got": 1,
+   "want": 1,
+   "pass": true
+  },
+  {
+   "id": "plant_short over a track",
+   "got": 1,
+   "want": 1,
+   "pass": true
+  },
+  {
+   "id": "gerber_tia",
+   "got": 0,
+   "want": 0,
+   "pass": true
+  },
+  {
+   "id": "drill_tia",
+   "got": 13,
+   "want": 13,
+   "pass": true
+  },
+  {
+   "id": "gerber_piezo",
+   "got": 0,
+   "want": 0,
+   "pass": true
+  },
+  {
+   "id": "drill_piezo",
+   "got": 14,
+   "want": 14,
+   "pass": true
+  },
+  {
+   "id": "gerber_honeycomb",
+   "got": 0,
+   "want": 0,
+   "pass": true
+  },
+  {
+   "id": "drill_honeycomb",
+   "got": 100,
+   "want": 100,
+   "pass": true
+  },
+  {
+   "id": "schem",
+   "got": 0,
+   "want": 0,
+   "pass": true
+  }
+ ],
+ "boards": {
+  "tia": {
+   "files": {
+    "F_Cu.gbr": "74017c237659f22a567cbef4",
+    "In1_Cu.gbr": "52da9cd07011659d0b59d957",
+    "In2_Cu.gbr": "30a383366b7322dceab09a90",
+    "B_Cu.gbr": "0e221f847ea3b7a3d395680e",
+    "F_Mask.gbr": "8c0ad94af896bdbe8b6fb9c1",
+    "B_Mask.gbr": "115bb6f2abb5759156e8ad8b",
+    "F_Silk.gbr": "c03535d818aff2d6b2fa205c",
+    "Edge.gbr": "21aa133edc32ad7ab7ce5675",
+    "PTH.drl": "ab3f1d82dcbf51a72dc643bd",
+    "NPTH.drl": "9b5d4983bc31abe97dd136ec",
+    "BOM.csv": "8d22cac711680831a4fe1426",
+    "PickPlace.csv": "acb88dcaf41c539acc3bd78a"
+   },
+   "drc": 0,
+   "fail": 0
+  },
+  "piezo": {
+   "files": {
+    "F_Cu.gbr": "ea38d5d6de5742129f3e95dc",
+    "B_Cu.gbr": "b31ab63780cb6f9d47a97ec7",
+    "F_Mask.gbr": "94e7b8ad4390c7fc57981b56",
+    "B_Mask.gbr": "f1bcfc56bd9a858d4a722cd7",
+    "F_Silk.gbr": "7e1c9157636bdcbe371c36bf",
+    "Edge.gbr": "f23e55272ca15192d85814d3",
+    "PTH.drl": "4fd47caaf1c8ba7519e6726f",
+    "NPTH.drl": "9944a3535707a9b4590cfcb7",
+    "BOM.csv": "1bd5d39b5db191185bc127bd",
+    "PickPlace.csv": "903222177176e64c8fee30ee"
+   },
+   "drc": 0,
+   "fail": 0
+  },
+  "honeycomb": {
+   "files": {
+    "F_Cu.gbr": "70e6d43ad1dc0bf6f887ce68",
+    "In1_Cu.gbr": "5e014baef996f1e21597e03c",
+    "In2_Cu.gbr": "99884955d406ab0d2b775e49",
+    "B_Cu.gbr": "c6dbba8c4c43e268084f832a",
+    "F_Mask.gbr": "61ee42501469ace7cff37bc1",
+    "B_Mask.gbr": "03856b25d17b85e3a3b7d597",
+    "F_Silk.gbr": "dcd9eede7390025e525775b2",
+    "Edge.gbr": "f00f47cf7d9c630c586a3d5f",
+    "PTH.drl": "458d8cbcb1d8289f0e8eb6f4",
+    "NPTH.drl": "8cd770740d25b4613e543067",
+    "BOM.csv": "47213fc52023bf0cf327f050",
+    "PickPlace.csv": "732ee52cedc74005583b7e52"
+   },
+   "drc": 0,
+   "fail": 0
+  },
+  "sunflower": {
+   "files": {
+    "F_Cu.gbr": "2ef4a52630468b7a6be1462f",
+    "In1_Cu.gbr": "1c792631933148d8d68dd2bb",
+    "In2_Cu.gbr": "63bc2dcd16e841a530e3a225",
+    "B_Cu.gbr": "522bf6a461b057cb95783a58",
+    "F_Mask.gbr": "f692f89248eb0b66670b16b0",
+    "B_Mask.gbr": "f5c22458d045b681082d5933",
+    "F_Silk.gbr": "6d3182da442c14dbb0539ea3",
+    "Edge.gbr": "cd91db5cd5cb581cca11524b",
+    "PTH.drl": "21951292605d51077ed23954",
+    "NPTH.drl": "f2bef51b82702f9023594d88",
+    "BOM.csv": "47213fc52023bf0cf327f050",
+    "PickPlace.csv": "15b877d288a9eea23eadcb4a"
+   },
+   "drc": 0,
+   "fail": 0
+  }
+ }
+}

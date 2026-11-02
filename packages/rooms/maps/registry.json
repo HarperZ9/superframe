@@ -1,0 +1,1629 @@
+{
+"schema": "rooms.maps/1",
+"as_of": "2026-10-31",
+"maps": [
+{
+"id": "mass_rlc_pipe",
+"domains": [
+"mass-spring",
+"RLC circuit and pipe with tank"
+],
+"family": "exact",
+"quantities": [
+{
+"role": "inertia",
+"a": "m",
+"a_unit": "M",
+"b": "L",
+"b_unit": "M L2 T-2 I-2"
+},
+{
+"role": "compliance",
+"a": "1/k",
+"a_unit": "M-1 T2",
+"b": "Cap",
+"b_unit": "M-1 L-2 T4 I2"
+},
+{
+"role": "resistance",
+"a": "c",
+"a_unit": "M T-1",
+"b": "R",
+"b_unit": "M L2 T-3 I-2"
+},
+{
+"role": "effort",
+"a": "F",
+"a_unit": "M L T-2",
+"b": "V",
+"b_unit": "M L2 T-3 I-1"
+},
+{
+"role": "flow",
+"a": "v",
+"a_unit": "L T-1",
+"b": "i",
+"b_unit": "I"
+}
+],
+"groups": [
+{
+"name": "zeta",
+"expr_a": {
+"c": 1.0,
+"1/k": 0.5,
+"m": -0.5
+},
+"expr_b": {
+"R": 1.0,
+"Cap": 0.5,
+"L": -0.5
+}
+}
+],
+"preserved": [
+"m x'' + c x' + k x = F; L q'' + R q' + q/C = V; I V'' + R V' + V/C = dp"
+],
+"invariants": [
+"effort times flow is power in watts in all three",
+"energy in the two stores"
+],
+"claimed_range": "linear elements, laminar pipe below Re 2000",
+"failure_condition": "held-out NRMSE over 0.03",
+"held_out": "chirp response in RLC and pipe from a free decay of the mass",
+"shared_mechanism": "same equations; no shared physical carrier",
+"prior_work": "Paynter bond graphs; Olson 1943; Baez and Fong 2015; Coya 2017",
+"memory_values": [],
+"title": "Mass, RLC, pipe with tank",
+"note": "Error 0.0041. The pipe leaves near Re 2400, when wall friction turns turbulent.",
+"status": "homology",
+"break_point": null,
+"failure": null,
+"range_found": "RLC all drive levels (linear); pipe up to Re about 2421, where wall friction turns turbulent",
+"metric": "NRMSE on a chirp never used in fitting, worst of RLC and laminar pipe",
+"value": 0.004050147855822123,
+"threshold": 0.03,
+"higher_is_better": false,
+"bits_lost": 0.0,
+"bits_note": null,
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": true,
+"perceptible": true,
+"applicable": true,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "string_line",
+"domains": [
+"ideal string",
+"lossless transmission line"
+],
+"family": "exact",
+"quantities": [
+{
+"role": "inertia per length",
+"a": "mu",
+"a_unit": "M L-1",
+"b": "Lp",
+"b_unit": "M L T-2 I-2"
+},
+{
+"role": "stiffness",
+"a": "T",
+"a_unit": "M L T-2",
+"b": "1/Cp",
+"b_unit": "M L3 T-4 I-2"
+},
+{
+"role": "displacement",
+"a": "y",
+"a_unit": "L",
+"b": "Qc",
+"b_unit": "T I"
+},
+{
+"role": "impedance ratio",
+"a": "Z1/Z2",
+"a_unit": "",
+"b": "Z1/Z2",
+"b_unit": ""
+}
+],
+"groups": [
+{
+"name": "impedance ratio",
+"expr_a": {
+"Z1/Z2": 1.0
+},
+"expr_b": {
+"Z1/Z2": 1.0
+}
+}
+],
+"preserved": [
+"mu y_tt = (T y_x)_x; L Q_tt = (Q_x / C)_x"
+],
+"invariants": [
+"wave speed",
+"reflection (Z1 - Z2)/(Z1 + Z2)",
+"energy"
+],
+"claimed_range": "ideal string, no stiffness or loss",
+"failure_condition": "held-out NRMSE over 0.05",
+"held_out": "pulse and echoes on a three-section line from one reflection on a string",
+"shared_mechanism": "same wave equation; different carriers",
+"prior_work": "d'Alembert; Heaviside; Smith digital waveguides",
+"memory_values": [],
+"title": "String, transmission line",
+"note": "Error 0.0065 on a held-out three-section line. Stiffness up to the sweep's end did not break it.",
+"status": "homology",
+"break_point": null,
+"failure": null,
+"range_found": "ideal string; stiffness breaks it at kappa2 beyond sweep",
+"metric": "NRMSE of mapped pulse and echoes on a held-out three-section line",
+"value": 0.006549474071813205,
+"threshold": 0.05,
+"higher_is_better": false,
+"bits_lost": 0.0,
+"bits_note": null,
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": true,
+"perceptible": true,
+"applicable": true,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "heat_bs",
+"domains": [
+"heat and diffusion",
+"Black-Scholes"
+],
+"family": "exact",
+"quantities": [
+{
+"role": "diffusivity",
+"a": "alpha",
+"a_unit": "L2 T-1",
+"b": "sigma^2/2",
+"b_unit": "T-1"
+},
+{
+"role": "coordinate",
+"a": "x",
+"a_unit": "L",
+"b": "ln S",
+"b_unit": ""
+},
+{
+"role": "clock",
+"a": "t",
+"a_unit": "T",
+"b": "T-t",
+"b_unit": "T"
+}
+],
+"groups": [
+{
+"name": "dimensionless clock",
+"expr_a": {
+"alpha": 1.0,
+"t": 1.0,
+"x": -2.0
+},
+"expr_b": {
+"sigma^2/2": 1.0,
+"T-t": 1.0
+}
+}
+],
+"preserved": [
+"u_tau = u_xx after x = ln(S/K), tau = sigma^2 (T - t)/2"
+],
+"invariants": [
+"put-call parity is linearity",
+"martingale under the map"
+],
+"claimed_range": "constant volatility and rate, no jumps",
+"failure_condition": "worst price error over strike above 0.002",
+"held_out": "27 call prices from a heat solver",
+"shared_mechanism": "same equation; no shared mechanism claimed",
+"prior_work": "Black and Scholes 1973; Wilmott",
+"memory_values": [],
+"title": "Heat, diffusion, Black-Scholes",
+"note": "Worst price error 0.003 percent of strike. Holds for constant volatility; jumps at 3 a year reach 2 percent.",
+"status": "homology",
+"break_point": null,
+"failure": null,
+"range_found": "constant volatility, no jumps; see the sweep for jump rates",
+"metric": "worst absolute price error over strike across 27 held-out (S, K, T), against the closed form; Monte Carlo as a second check",
+"value": 3.312040999599201e-05,
+"threshold": 0.002,
+"higher_is_better": false,
+"bits_lost": 0.0,
+"bits_note": null,
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": true,
+"perceptible": true,
+"applicable": true,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "fourier_filter",
+"domains": [
+"Fourier optics, 4f",
+"signal filter"
+],
+"family": "exact",
+"quantities": [
+{
+"role": "position in pupil",
+"a": "xi",
+"a_unit": "L",
+"b": "frequency",
+"b_unit": "T-1"
+},
+{
+"role": "wavelength focal product",
+"a": "lam f",
+"a_unit": "L2",
+"b": "scale",
+"b_unit": "L T-1"
+}
+],
+"groups": [
+{
+"name": "NA",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"image = IFT[pupil(lam f fx) FT[object]]"
+],
+"invariants": [
+"linearity",
+"shift invariance",
+"Parseval"
+],
+"claimed_range": "paraxial, NA up to 0.05",
+"failure_condition": "relative field error over 0.03",
+"held_out": "image of a random object through a filter in code",
+"shared_mechanism": "same linear operator; different carrier",
+"prior_work": "Abbe; Goodman; Duffieux 1946",
+"memory_values": [],
+"title": "Fourier optics, signal filter",
+"note": "Error 0.0033 to NA 0.05; over 3 percent at NA 0.1, where the thin lens stops being paraxial.",
+"status": "homology",
+"break_point": null,
+"failure": null,
+"range_found": "paraxial; first exceeds 0.03 at NA 0.1",
+"metric": "relative field error, 4f optics against a filter in code, held-out random object, NA up to 0.05 claimed",
+"value": 0.003261206177649098,
+"threshold": 0.03,
+"higher_is_better": false,
+"bits_lost": 0.0,
+"bits_note": null,
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": true,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "time_lens",
+"domains": [
+"thin lens in space",
+"time lens"
+],
+"family": "exact",
+"quantities": [
+{
+"role": "transverse",
+"a": "x",
+"a_unit": "L",
+"b": "t",
+"b_unit": "T"
+},
+{
+"role": "dispersion",
+"a": "z/k",
+"a_unit": "L2",
+"b": "D",
+"b_unit": "T2"
+},
+{
+"role": "focal",
+"a": "f/k",
+"a_unit": "L2",
+"b": "Df",
+"b_unit": "T2"
+}
+],
+"groups": [
+{
+"name": "distance over focal",
+"expr_a": {
+"z/k": 1.0,
+"f/k": -1.0
+},
+"expr_b": {
+"D": 1.0,
+"Df": -1.0
+}
+}
+],
+"preserved": [
+"paraxial wave equation: i u_z = -u_xx/(2k); i A_L = D A_tt/2"
+],
+"invariants": [
+"imaging law 1/a + 1/b = 1/f",
+"magnification"
+],
+"claimed_range": "no third-order dispersion",
+"failure_condition": "held-out NRMSE over 0.10",
+"held_out": "output of a three-bump pulse from a magnification measured on a spatial lens",
+"shared_mechanism": "same equation by space-time duality",
+"prior_work": "Kolner and Nazarathy 1989; Kolner 1994",
+"memory_values": [],
+"title": "Thin lens, time lens",
+"note": "Error 1e-4. Any third-order dispersion in the sweep already exceeds the threshold.",
+"status": "homology",
+"break_point": null,
+"failure": null,
+"range_found": "no third-order dispersion; exceeds 0.1 at beta3 L 0.001",
+"metric": "NRMSE of intensity for a held-out pulse, scaled by the magnification measured on the spatial lens",
+"value": 8.610578234817712e-05,
+"threshold": 0.1,
+"higher_is_better": false,
+"bits_lost": 0.0,
+"bits_note": null,
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": true,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "eaton_hydrogen",
+"domains": [
+"hydrogen",
+"Eaton lens, continued profile"
+],
+"family": "exact",
+"quantities": [
+{
+"role": "coupling",
+"a": "Z",
+"a_unit": "L-1",
+"b": "k^2 a",
+"b_unit": "L-1"
+},
+{
+"role": "energy",
+"a": "E",
+"a_unit": "L-2",
+"b": "-k^2/2",
+"b_unit": "L-2"
+},
+{
+"role": "quantum number",
+"a": "n",
+"a_unit": "",
+"b": "k a",
+"b_unit": ""
+}
+],
+"groups": [
+{
+"name": "k a",
+"expr_a": null,
+"expr_b": {
+"k^2 a": 1.0,
+"-k^2/2": -0.5
+}
+}
+],
+"preserved": [
+"-u''/2 - Z u/r = E u is Helmholtz in n^2 = 2a/r - 1"
+],
+"invariants": [
+"l degeneracy (SO(4))",
+"turning point at 2a for every level"
+],
+"claimed_range": "profile continued past r = 2a",
+"failure_condition": "worst k a error over 0.02",
+"held_out": "resonant k a for 10 (n, l) states from the hydrogen ladder",
+"shared_mechanism": "same operator; the carrier differs",
+"prior_work": "Kepler-ray correspondence, Luneburg; Leonhardt on absolute instruments",
+"memory_values": [],
+"title": "Hydrogen, Eaton lens",
+"note": "Ten states land on k a = n within 0.01 percent. A wall at R = 2a moves modes 5 percent: the profile has to continue where n squared is negative.",
+"status": "homology",
+"break_point": null,
+"failure": null,
+"range_found": "profile continued past r = 2a, where n^2 is negative; a wall at R/a = 2.0 or nearer moves modes by over 0.02",
+"metric": "worst relative error in resonant k a against n read from the hydrogen ladder, 10 (n, l) states",
+"value": 0.00012742296854138536,
+"threshold": 0.02,
+"higher_is_better": false,
+"bits_lost": 0.0,
+"bits_note": null,
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": true,
+"perceptible": true,
+"applicable": null,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "moniac",
+"domains": [
+"MONIAC tanks",
+"US macroeconomy"
+],
+"family": "should_break",
+"quantities": [
+{
+"role": "flow",
+"a": "water flow",
+"a_unit": "L3 T-1",
+"b": "income",
+"b_unit": "$ T-1"
+},
+{
+"role": "stock",
+"a": "tank level",
+"a_unit": "L3",
+"b": "balance",
+"b_unit": "$"
+}
+],
+"groups": [
+{
+"name": "propensity",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"stock change is inflow less outflow",
+"Y = C + I + G + rest"
+],
+"invariants": [
+"conservation of the fluid or of accounts"
+],
+"claimed_range": "US quarterly 1959 to 2009",
+"failure_condition": "tank forecast worse than AR(2) at 4 quarters",
+"held_out": "real GDP 1985 to 2009 from tanks fitted to 1959 to 1984",
+"shared_mechanism": "unknown; no power variable exists on the money side",
+"prior_work": "Phillips 1950; Barr 2000",
+"memory_values": [
+"Phillips's parameter form from memory"
+],
+"title": "MONIAC, US economy",
+"note": "Loses to AR(2) by 2.6 times at 4 quarters out of sample, 1.4 times in sample. Fails everywhere tried; no region to break from.",
+"status": "analogy",
+"break_point": null,
+"failure": "failed held-out: ",
+"range_found": null,
+"metric": "4 quarter RMSE ratio, tank forecast over AR(2), 1985 to 2009",
+"value": 2.598967035199804,
+"threshold": 1.0,
+"higher_is_better": false,
+"bits_lost": 12.319583613597201,
+"bits_note": null,
+"words": {
+"cross_applicable": false,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": false,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "acoustic_horizon",
+"domains": [
+"transcritical flow",
+"black hole"
+],
+"family": "should_break",
+"quantities": [
+{
+"role": "surface gravity",
+"a": "dv/dx",
+"a_unit": "T-1",
+"b": "c^3/4GM",
+"b_unit": "T-1"
+},
+{
+"role": "sound speed",
+"a": "c_s",
+"a_unit": "L T-1",
+"b": "c",
+"b_unit": "L T-1"
+},
+{
+"role": "dispersion scale",
+"a": "Lambda",
+"a_unit": "T-1",
+"b": "unknown UV",
+"b_unit": "T-1"
+}
+],
+"groups": [
+{
+"name": "kappa over Lambda",
+"expr_a": {
+"dv/dx": 1.0,
+"Lambda": -1.0
+},
+"expr_b": {
+"c^3/4GM": 1.0,
+"unknown UV": -1.0
+}
+}
+],
+"preserved": [
+"wave equation on an effective metric (kinematics)"
+],
+"invariants": [
+"T = kappa/2pi for wave packets at low kappa/Lambda"
+],
+"claimed_range": "low and high kappa/Lambda, and back-reaction",
+"failure_condition": "fitted T off by over 15 percent",
+"held_out": "thermal slope of mode conversion in a dispersive 1D flow",
+"shared_mechanism": "kinematics shared; dynamics not",
+"prior_work": "Unruh 1981; Barcelo Liberati Visser 2005; Macher and Parentani 2009; Steinhauer 2019",
+"memory_values": [],
+"title": "Acoustic horizon, black hole",
+"note": "Temperature within 6 to 13 percent of kappa/2pi to kappa/Lambda 0.5; 0.2 of it at 1. A pumped flow has no negative heat capacity.",
+"status": "broken",
+"break_point": "kinematics: fitted temperature leaves 30 percent at kappa/Lambda 1.00. Dynamics: Einstein's equations are not obeyed by the flow: a pumped flow keeps kappa fixed, while a Schwarzschild hole's T = 1/(8 pi M) rises as it loses mass. Negative heat capacity has no counterpart here.",
+"failure": null,
+"range_found": null,
+"metric": "fitted temperature over kappa/2pi at kappa/Lambda up to 0.1",
+"value": 0.11690914100797256,
+"threshold": 0.15,
+"higher_is_better": false,
+"bits_lost": 1.0,
+"bits_note": "one bit is a placeholder for the sign of heat capacity lost in the round trip; the wave sector loses none at low kappa/Lambda",
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": null,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "drums_graphs",
+"domains": [
+"drum, Dirichlet Laplacian",
+"graph Laplacian"
+],
+"family": "should_break",
+"quantities": [
+{
+"role": "eigenvalue",
+"a": "lambda",
+"a_unit": "L-2",
+"b": "mu h^-2",
+"b_unit": "L-2"
+},
+{
+"role": "shape",
+"a": "domain",
+"a_unit": "",
+"b": "graph",
+"b_unit": ""
+}
+],
+"groups": [
+{
+"name": "mode index",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"discrete Laplacian converges to continuous"
+],
+"invariants": [
+"Weyl count"
+],
+"claimed_range": "forward modes, and the inverse from spectrum to shape",
+"failure_condition": "median mode error over 1 percent",
+"held_out": "modes 6 to 15 of a disk from a graph, spacing set on modes 1 to 5",
+"shared_mechanism": "the graph is a discretisation, so yes by construction forward",
+"prior_work": "Kac 1966; Gordon Webb Wolpert 1992; Fiedler",
+"memory_values": [],
+"title": "Drums, graphs",
+"note": "Forward holds to mode 45. Inverse fails: 57 of 903 spectra at 6 and 7 nodes belong to more than one graph.",
+"status": "broken",
+"break_point": "forward: error passes 1 percent at mode beyond 45 on a 40 cell disk. Inverse: spectrum to graph is many to one; 57 of 903 spectra at 6 and 7 nodes have more than one graph",
+"failure": null,
+"range_found": null,
+"metric": "median relative eigenvalue error, modes 6 to 15, spacing calibrated on modes 1 to 5",
+"value": 0.0010321669564655402,
+"threshold": 0.01,
+"higher_is_better": false,
+"bits_lost": 0.13240874353452572,
+"bits_note": null,
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": null,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "hopfield_ising",
+"domains": [
+"Hopfield memory",
+"Ising spin glass"
+],
+"family": "should_break",
+"quantities": [
+{
+"role": "state",
+"a": "s",
+"a_unit": "",
+"b": "sigma",
+"b_unit": ""
+},
+{
+"role": "weight",
+"a": "J",
+"a_unit": "",
+"b": "J",
+"b_unit": ""
+},
+{
+"role": "load",
+"a": "alpha",
+"a_unit": "",
+"b": "P/N",
+"b_unit": ""
+}
+],
+"groups": [
+{
+"name": "load",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"E = -1/2 s J s"
+],
+"invariants": [
+"energy, up to float"
+],
+"claimed_range": "symmetric and asymmetric couplings",
+"failure_condition": "capacity off by over 0.025",
+"held_out": "capacity from retrieval against 0.138 through the replica theory",
+"shared_mechanism": "same energy function, by Hopfield's construction",
+"prior_work": "Hopfield 1982; Amit Gutfreund Sompolinsky 1985",
+"memory_values": [],
+"title": "Hopfield, Ising",
+"note": "Energy identical. Capacity 0.14 against 0.138. Boltzmann form leaves at asymmetry 0.2 to 0.4, by draw.",
+"status": "broken",
+"break_point": "asymmetric couplings: Boltzmann form leaves KL 0.01 nats at asymmetry 0.4; with no energy function the Ising map has nothing to preserve",
+"failure": null,
+"range_found": null,
+"metric": "capacity from retrieval simulation against 0.138 from the spin-glass theory through the map (Amit et al, from memory)",
+"value": 0.0020000000000000018,
+"threshold": 0.02,
+"higher_is_better": false,
+"bits_lost": 0.0,
+"bits_note": null,
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": true,
+"perceptible": true,
+"applicable": true,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "stress_term",
+"domains": [
+"logistic with stress term",
+"eight other base equations"
+],
+"family": "should_break",
+"quantities": [
+{
+"role": "rest time",
+"a": "tau",
+"a_unit": "T",
+"b": "tau",
+"b_unit": "T"
+},
+{
+"role": "base time",
+"a": "T0",
+"a_unit": "T",
+"b": "T0",
+"b_unit": "T"
+}
+],
+"groups": [
+{
+"name": "Pi_t",
+"expr_a": {
+"tau": 1.0,
+"T0": -1.0
+},
+"expr_b": {
+"tau": 1.0,
+"T0": -1.0
+}
+}
+],
+"preserved": [
+"ds/dt = load - s/tau, theta_eff = theta (1 + F)"
+],
+"invariants": [
+"none across the set"
+],
+"claimed_range": "all base equations, Pi_t 0.3 to 10",
+"failure_condition": "median curve RMS over 0.2",
+"held_out": "normalised step response from the logistic",
+"shared_mechanism": "unknown; term was written by us in each",
+"prior_work": "2026-10-31 stress terms; Selye; Calabrese hormesis",
+"memory_values": [],
+"title": "Stress term across systems",
+"note": "Two of eight systems follow the logistic curve: diffusion and string. Pi_t does not rescue the rest, against the forecast.",
+"status": "broken",
+"break_point": "share of systems passing by Pi_t: {0.3: 0.25, 1.0: 0.25, 3.0: 0.25, 10.0: 0.25}; at Pi_t 3 these miss: ['FHN', 'LV', 'Kuramoto', 'Beam', 'Hopfield', 'Ising']",
+"failure": null,
+"range_found": null,
+"metric": "median across base systems of normalised step-response RMS against Logistic through Pi_t, at Pi_t = 3",
+"value": 0.4873227539401329,
+"threshold": 0.2,
+"higher_is_better": false,
+"bits_lost": 3.169925001442312,
+"bits_note": "system identity is lost: the term's curve carries no record of the base equation",
+"words": {
+"cross_applicable": false,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": null,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": false
+},
+"render": "map-room registry row"
+},
+{
+"id": "tree_circulation",
+"domains": [
+"xylem",
+"arteries"
+],
+"family": "should_break",
+"quantities": [
+{
+"role": "radius",
+"a": "r",
+"a_unit": "L",
+"b": "r",
+"b_unit": "L"
+},
+{
+"role": "conductance",
+"a": "r^4",
+"a_unit": "L4",
+"b": "r^4",
+"b_unit": "L4"
+},
+{
+"role": "Womersley",
+"a": "alpha",
+"a_unit": "",
+"b": "alpha",
+"b_unit": ""
+}
+],
+"groups": [
+{
+"name": "Womersley",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"Hagen-Poiseuille at steady flow"
+],
+"invariants": [
+"Murray cost law with its assumptions"
+],
+"claimed_range": "steady and pulsatile, whole-branch and vessel",
+"failure_condition": "exponent off by over 0.3",
+"held_out": "Murray exponent carried to branches, against memory values",
+"shared_mechanism": "Poiseuille is shared physics; the costs differ",
+"prior_work": "Murray 1926; McCulloh Sperry Adler 2003; Eloy 2011",
+"memory_values": [
+"all exponents from memory"
+],
+"title": "Tree hydraulics, circulation",
+"note": "Poiseuille leaves 5 percent at Womersley 1.5. Murray's 3 misses branches at about 2.3, from memory. Tension and cavitation have no match.",
+"status": "broken",
+"break_point": "Poiseuille flow leaves 5 percent at Womersley 1.5; xylem sits at 4.3e-04 and aorta at 13 to 20 (memory). Whole-branch exponent 2.3 misses Murray's 3: wood also carries load. Water under tension cavitates, a state blood has no counterpart for",
+"failure": null,
+"range_found": null,
+"metric": "error in Murray exponent 3 carried to tree branches, memory value 2.3",
+"value": 0.7000000000000002,
+"threshold": 0.3,
+"higher_is_better": false,
+"bits_lost": 1.0,
+"bits_note": "one bit placeholder for pressure sign, which the map drops",
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": false,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "marbling_cipher",
+"domains": [
+"marbling, stretch and fold",
+"block cipher diffusion"
+],
+"family": "should_break",
+"quantities": [
+{
+"role": "stretch per fold",
+"a": "lam",
+"a_unit": "b",
+"b": "bits per round",
+"b_unit": "b"
+},
+{
+"role": "thickness",
+"a": "s",
+"a_unit": "L",
+"b": "active bits",
+"b_unit": "b"
+}
+],
+"groups": [
+{
+"name": "rounds to mix",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"bits spread as 2^(lam r)"
+],
+"invariants": [
+"bijectivity with no diffusion"
+],
+"claimed_range": "diffusion only, and whole-cipher security",
+"failure_condition": "factor over 1.5",
+"held_out": "rounds to avalanche in a toy SPN",
+"shared_mechanism": "shared bijection plus stretching; no shared key",
+"prior_work": "Shannon 1949; Fridrich 1998",
+"memory_values": [
+"S-box and layer from memory; toy only"
+],
+"title": "Marbling, cipher diffusion",
+"note": "Early diffusion rate carries (factor 1.28). The linear mix tops out at avalanche 0.28, and diffusion breaks the round trip.",
+"status": "broken",
+"break_point": "early diffusion carries over; the linear mix itself saturates at avalanche 0.28, under 0.5. Confusion does not carry: an area-preserving mix is linear, share 1.00 against 0.0000 for the SPN, so it gives no key security. Any molecular diffusion loses the round trip: 13.1 bits at sigma 0.1 cell against 0 for a cipher",
+"failure": null,
+"range_found": null,
+"metric": "factor between rounds to avalanche 0.45 and rounds read through the mixing law, toy 16 bit SPN",
+"value": 1.2777924466135215,
+"threshold": 1.5,
+"higher_is_better": false,
+"bits_lost": 13.087825398579918,
+"bits_note": null,
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": null,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "agents_flows",
+"domains": [
+"physical flow law",
+"agents"
+],
+"family": "should_break",
+"quantities": [
+{
+"role": "density",
+"a": "rho",
+"a_unit": "L-1",
+"b": "cars per cell",
+"b_unit": "L-1"
+},
+{
+"role": "flux",
+"a": "q",
+"a_unit": "T-1",
+"b": "q",
+"b_unit": "T-1"
+}
+],
+"groups": [
+{
+"name": "density over jam",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"continuity; a fixed flux law"
+],
+"invariants": [
+"vehicle count"
+],
+"claimed_range": "low density, all densities, and agents who read the forecast",
+"failure_condition": "over 30 percent at low density",
+"held_out": "stochastic drivers from a deterministic flow law",
+"shared_mechanism": "continuity holds; no shared reason for moving",
+"prior_work": "Lighthill Whitham 1955; Nagel Schreckenberg 1992; Lucas 1976",
+"memory_values": [],
+"title": "Agents, physical flows",
+"note": "Flow law within 7 percent to density 0.1, over 30 percent at 0.16. Agents who read a forecast double its error at a 10 percent share. Simulated.",
+"status": "broken",
+"break_point": "the law misses at density 0.16 by over 30 percent; a pipe's flow does not read its own forecast: forecast error doubles at agent share 0.1. No market or social data run: simulated agents only",
+"failure": null,
+"range_found": null,
+"metric": "largest relative flow error at density up to 0.1, flow law from deterministic drivers, stochastic drivers held out",
+"value": 0.0684568430452589,
+"threshold": 0.3,
+"higher_is_better": false,
+"bits_lost": 1.0,
+"bits_note": "each agent's reason for moving is dropped",
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": null,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "prediction_compression",
+"domains": [
+"predictor",
+"compressor, in neural tissue"
+],
+"family": "should_break",
+"quantities": [
+{
+"role": "log loss",
+"a": "ll",
+"a_unit": "b",
+"b": "code length",
+"b_unit": "b"
+}
+],
+"groups": [
+{
+"name": "bits per bin",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"-log2 p is code length"
+],
+"invariants": [
+"Kraft"
+],
+"claimed_range": "code length, and the claim that tissue does this",
+"failure_condition": "rank r under 0.5",
+"held_out": "LZMA bits from a held-out predictor across cells",
+"shared_mechanism": "identity in code; unknown in tissue",
+"prior_work": "Shannon 1948; Rao and Ballard 1999; Barlow 1961",
+"memory_values": [],
+"title": "Prediction, compression in brains",
+"note": "Across 18 cells predictor and compressor rank together, r 0.82. Single cells keep 0.69 of onset rate on a held step. Networks not reached.",
+"status": "broken",
+"break_point": "identity holds in code; on tissue, a pure prediction-error neuron should fall silent on a held step, and the median late over early rate is 0.69 in single cells in a dish. That leaves out networks and sensory prediction, which no data here reach",
+"failure": null,
+"range_found": null,
+"metric": "rank correlation across cells, held-out predictor bits per bin against LZMA bits per bin",
+"value": 0.8212814299749254,
+"threshold": 0.5,
+"higher_is_better": true,
+"bits_lost": 0.7945212312745321,
+"bits_note": "bits per bin the predictor leaves unexplained",
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": null,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "earth_galaxy",
+"domains": [
+"Earth core",
+"galactic centre"
+],
+"family": "candidate",
+"quantities": [
+{
+"role": "core mass over host",
+"a": "m/M",
+"a_unit": "",
+"b": "m/M",
+"b_unit": ""
+},
+{
+"role": "power over host",
+"a": "P/L",
+"a_unit": "",
+"b": "P/L",
+"b_unit": ""
+}
+],
+"groups": [
+{
+"name": "mass ratio",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"none shown"
+],
+"invariants": [
+"ray law holds, for every radial lens"
+],
+"claimed_range": "all scales",
+"failure_condition": "3 of 4 needed within 1 dex",
+"held_out": "four ratios (recorded)",
+"shared_mechanism": "none shown",
+"prior_work": "2026-10-31 galactic-centre",
+"memory_values": [
+"planet and Sgr A* values from memory"
+],
+"title": "Earth core, galactic centre",
+"note": "0 of 4 ratios within 1 dex, misses of 1.5 to 9. Ray law holds for every radial lens, so it gives nothing.",
+"status": "analogy",
+"break_point": null,
+"failure": "failed held-out: 0 of 4 within 1 dex; log ratios P1 -9.0, P2 4.5, P3 7.6, P4 1.5",
+"range_found": null,
+"metric": "predictions within 1 dex, of P1 to P4, recorded from the galactic-centre study; needs 3",
+"value": 0.0,
+"threshold": 3.0,
+"higher_is_better": true,
+"bits_lost": null,
+"bits_note": null,
+"words": {
+"cross_applicable": null,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": null,
+"testable": true,
+"measurable": false,
+"fallible": null,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "yield_synapse_net",
+"domains": [
+"metal yield",
+"synapse and network plasticity"
+],
+"family": "candidate",
+"quantities": [
+{
+"role": "stress",
+"a": "sigma",
+"a_unit": "M L-1 T-2",
+"b": "drive",
+"b_unit": ""
+},
+{
+"role": "yield",
+"a": "sigma_y",
+"a_unit": "M L-1 T-2",
+"b": "theta",
+"b_unit": ""
+}
+],
+"groups": [
+{
+"name": "over yield",
+"expr_a": {
+"sigma": 1.0,
+"sigma_y": -1.0
+},
+"expr_b": {
+"drive": 1.0,
+"theta": -1.0
+}
+}
+],
+"preserved": [
+"none proved"
+],
+"invariants": [
+"none"
+],
+"claimed_range": "all loads",
+"failure_condition": "form not better than a constant on later tasks",
+"held_out": "plasticity-left curve from a Voce form",
+"shared_mechanism": "unknown",
+"prior_work": "Dohare et al 2024; Bienenstock Cooper Munro 1982; Voce 1948",
+"memory_values": [],
+"title": "Yield, synapse, network plasticity",
+"note": "Network leg untested: this small net showed no loss of plasticity. A BCM threshold falls with rest and metal yield does not.",
+"status": "analogy",
+"break_point": null,
+"failure": "failed held-out: the network leg did not show the effect: at stable step sizes this 48 unit net lost no plasticity over 60 tasks, and larger steps diverge, so that leg stays untested. Change in plasticity left is +0.01; Voce q 0.00 b 0.001. Reverse-label gain -0.018. Rest ratio of a BCM threshold 0.010, where metal's yield stays put under unloading, with no test of a shared structure passing",
+"range_found": null,
+"metric": "RMS on later tasks, Voce form over constant, plasticity-left curve of a small network",
+"value": 1.2203121486274422,
+"threshold": 1.0,
+"higher_is_better": false,
+"bits_lost": null,
+"bits_note": null,
+"words": {
+"cross_applicable": null,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": null,
+"testable": true,
+"measurable": false,
+"fallible": false,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "relief",
+"domains": [
+"fault",
+"fire, stomata, protest"
+],
+"family": "candidate",
+"quantities": [
+{
+"role": "load",
+"a": "stress",
+"a_unit": "M L-1 T-2",
+"b": "pressure",
+"b_unit": "M L-1 T-2"
+},
+{
+"role": "release size",
+"a": "moment",
+"a_unit": "M L2 T-2",
+"b": "size",
+"b_unit": ""
+}
+],
+"groups": [
+{
+"name": "b-value",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"slow load, threshold, release"
+],
+"invariants": [
+"none"
+],
+"claimed_range": "after-release hazard, all four domains",
+"failure_condition": "ratio not under 1",
+"held_out": "rate after M 7+ against rate before, USGS",
+"shared_mechanism": "unknown; sizes alone cannot tell",
+"prior_work": "Bak Tang Wiesenfeld 1987; Olami Feder Christensen 1992; Drossel Schwabl 1992; Peak et al 2004; Omori 1894",
+"memory_values": [],
+"title": "Pressure relief: fault to protest",
+"note": "Sizes fit b = 1.02. Rate after a large quake is 3.0 times the rate before, where relief predicts a fall. Fire, stomata, protest: untested.",
+"status": "broken",
+"break_point": "sizes follow a power law, b = 1.02, which many mechanisms give. Hazard after release: 3.0 times the rate before, within 30 days, and 1.01 at one to five years; relief predicts a fall. Stress transferred and triggered: aftershocks. Fire, stomata and protest legs: no data run, untested",
+"failure": null,
+"range_found": null,
+"metric": "after over before rate near M 7+ events, 0 to 30 days; relief predicts under 1",
+"value": 3.03338898163606,
+"threshold": 1.0,
+"higher_is_better": false,
+"bits_lost": null,
+"bits_note": null,
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": null,
+"testable": true,
+"measurable": false,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "gene_symbol",
+"domains": [
+"genetic code",
+"arbitrary symbol system"
+],
+"family": "candidate",
+"quantities": [
+{
+"role": "codon",
+"a": "c",
+"a_unit": "b",
+"b": "sign",
+"b_unit": "b"
+},
+{
+"role": "amino acid",
+"a": "aa",
+"a_unit": "b",
+"b": "meaning",
+"b_unit": "b"
+}
+],
+"groups": [
+{
+"name": "bits per codon",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"a fixed table from 64 to 21"
+],
+"invariants": [
+"table is a function"
+],
+"claimed_range": "arbitrariness",
+"failure_condition": "percentile not near 0.5",
+"held_out": "block-shuffled codes on three properties",
+"shared_mechanism": "unknown",
+"prior_work": "Crick 1968; Woese 1965; Freeland and Hurst 1998; Saussure",
+"memory_values": [
+"table and scales from memory"
+],
+"title": "Gene code, symbol",
+"note": "Channel holds, 1.78 bits lost. Arbitrary assignment fails: percentile 0.0003 on polar requirement, 0.07 on volume.",
+"status": "broken",
+"break_point": "as a channel it behaves: 1.78 bits lost codon to amino acid, degenerate blocks. As an arbitrary symbol it breaks: polar requirement percentile 0.0003, hydropathy 0.0065, volume 0.0653, against about 0.5 for a free assignment. Reassignment still works in engineered organisms (Syn61, memory), so the assignment is movable and also not random",
+"failure": null,
+"range_found": null,
+"metric": "percentile of the real code among block-shuffled codes, held-out volume and hydropathy; the symbol map says about 0.5",
+"value": 0.06525,
+"threshold": 0.02,
+"higher_is_better": false,
+"bits_lost": 1.7818609377704335,
+"bits_note": null,
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": null,
+"perceptible": true,
+"applicable": null,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "tension_squeeze",
+"domains": [
+"string, modulated tension",
+"squeezed light, degenerate parametric amplifier"
+],
+"family": "candidate",
+"quantities": [
+{
+"role": "pump over threshold",
+"a": "x",
+"a_unit": "",
+"b": "x",
+"b_unit": ""
+},
+{
+"role": "quadrature variance",
+"a": "V",
+"a_unit": "",
+"b": "V",
+"b_unit": ""
+}
+],
+"groups": [
+{
+"name": "x",
+"expr_a": null,
+"expr_b": null
+}
+],
+"preserved": [
+"Mathieu in the rotating frame is the parametric Hamiltonian"
+],
+"invariants": [
+"area of the noise ellipse goes up off the Gaussian limit"
+],
+"claimed_range": "second moments below threshold",
+"failure_condition": "error over 0.10",
+"held_out": "low and high variance against 1/(1 +/- x)",
+"shared_mechanism": "same Hamiltonian classically; the commutator is not shared",
+"prior_work": "Rugar and Grutter 1991; Walls 1983",
+"memory_values": [
+"Rugar and Grutter limit from memory"
+],
+"title": "String tension, squeezed light",
+"note": "Quadrature variances within 3 percent of 1/(1 +/- x). Static tension gives none. Classical noise floor: no sub-vacuum reading.",
+"status": "broken",
+"break_point": "second moments carry over only for modulated tension; static tension gives quadrature split 0.020. Limit is 3 dB in the resonator, as in Rugar and Grutter (memory). Floor is thermal: reaching below vacuum needs k_B T much less than hbar omega, and Wigner negativity and entanglement have no reading in a classical string",
+"failure": null,
+"range_found": null,
+"metric": "worst relative error of low quadrature variance against 1/(1+x) from the degenerate parametric amplifier, x up to 0.8",
+"value": 0.025040387319683433,
+"threshold": 0.1,
+"higher_is_better": false,
+"bits_lost": 1.0,
+"bits_note": "commutator dropped",
+"words": {
+"cross_applicable": true,
+"renderable": true,
+"interpretable": true,
+"perceptible": true,
+"applicable": false,
+"testable": true,
+"measurable": true,
+"fallible": true,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "false_sigmoid",
+"domains": [
+"logistic growth",
+"magnetisation against field"
+],
+"family": "planted_false",
+"quantities": [
+{
+"role": "rate",
+"a": "r",
+"a_unit": "T-1",
+"b": "J/T",
+"b_unit": ""
+},
+{
+"role": "time",
+"a": "t",
+"a_unit": "T",
+"b": "h",
+"b_unit": ""
+}
+],
+"groups": [
+{
+"name": "r t",
+"expr_a": {
+"r": 1.0,
+"t": 1.0
+},
+"expr_b": {
+"J/T": 1.0,
+"h": 1.0
+}
+}
+],
+"preserved": [
+"curve shape only"
+],
+"invariants": [
+"none"
+],
+"claimed_range": "all temperatures",
+"failure_condition": "held-out NMSE over 0.25",
+"held_out": "response at temperatures never seen",
+"shared_mechanism": "none, by construction",
+"prior_work": "planted",
+"memory_values": [],
+"title": "Planted false: sigmoid",
+"note": "Fits training, NMSE 0.001; held out 0.21.",
+"status": "analogy",
+"break_point": null,
+"failure": "failed held-out: fits the training window, NMSE 0.001, and misses held out at 0.21",
+"range_found": null,
+"metric": "held-out NMSE through the planted map, with its training-window NMSE beside it",
+"value": 0.21093229027678148,
+"threshold": 0.1,
+"higher_is_better": false,
+"bits_lost": null,
+"bits_note": null,
+"words": {
+"cross_applicable": null,
+"renderable": true,
+"interpretable": true,
+"perceptible": true,
+"applicable": false,
+"testable": true,
+"measurable": false,
+"fallible": null,
+"disprovable": true
+},
+"render": "map-room registry row"
+},
+{
+"id": "false_beat",
+"domains": [
+"damped oscillator",
+"two beating modes"
+],
+"family": "planted_false",
+"quantities": [
+{
+"role": "rate",
+"a": "g",
+"a_unit": "T-1",
+"b": "beat",
+"b_unit": "T-1"
+},
+{
+"role": "frequency",
+"a": "w",
+"a_unit": "T-1",
+"b": "mean",
+"b_unit": "T-1"
+}
+],
+"groups": [
+{
+"name": "g over w",
+"expr_a": {
+"g": 1.0,
+"w": -1.0
+},
+"expr_b": {
+"beat": 1.0,
+"mean": -1.0
+}
+}
+],
+"preserved": [
+"curve shape in a short window"
+],
+"invariants": [
+"none"
+],
+"claimed_range": "all times",
+"failure_condition": "held-out NMSE over 0.25",
+"held_out": "signal after the training window",
+"shared_mechanism": "none, by construction",
+"prior_work": "planted",
+"memory_values": [],
+"title": "Planted false: beat",
+"note": "Fits training, NMSE 0.039; held out 1.05.",
+"status": "analogy",
+"break_point": null,
+"failure": "failed held-out: fits the training window, NMSE 0.039, and misses held out at 1.05",
+"range_found": null,
+"metric": "held-out NMSE through the planted map, with its training-window NMSE beside it",
+"value": 1.0484316419944821,
+"threshold": 0.1,
+"higher_is_better": false,
+"bits_lost": null,
+"bits_note": null,
+"words": {
+"cross_applicable": null,
+"renderable": true,
+"interpretable": true,
+"perceptible": true,
+"applicable": false,
+"testable": true,
+"measurable": false,
+"fallible": null,
+"disprovable": true
+},
+"render": "map-room registry row"
+}
+]
+}
