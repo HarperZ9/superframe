@@ -5692,14 +5692,14 @@
   {
    "path": "packages/PROVENANCE.json",
    "source": "repo",
-   "bytes": 143180,
-   "sourceSha256": "46b65396b2edd6d05ea5f4b835dbe34c9d0a8527864b141b079beb4659717f7d"
+   "bytes": 156575,
+   "sourceSha256": "4fa048a6d71ff783abd38c0abbb47f614b99db89a572cc227ac112e5f75f455e"
   },
   {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 5139,
-   "sourceSha256": "f8a7de7093f57c52b2d5dee6fed1061ce5614fa448b2b9e1bd6cd67e601ae605"
+   "bytes": 5435,
+   "sourceSha256": "5d127830d5d41147ed90e75119b55f8b9806b801300e2a9e360c46910f41bf54"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -7622,6 +7622,126 @@
    "sourceSha256": "ce0afda1e0faf8f2f308ae8ed7c4b57ce5d3dbe0bb2026792127f9449dcfcb25"
   },
   {
+   "path": "packages/lenspipe/README.md",
+   "source": "repo",
+   "bytes": 2618,
+   "sourceSha256": "6633ff2685937060f444ba2e597836d73c1810b1484ee042d69975c84d8a6af9"
+  },
+  {
+   "path": "packages/lenspipe/data/designs/comsol_dg.json",
+   "source": "repo",
+   "bytes": 1423,
+   "sourceSha256": "db3bb754e2f239151d53486b87915301d73c5fa234e9dbc3f8c0d4c5746a7193"
+  },
+  {
+   "path": "packages/lenspipe/data/designs/us2784643_ex1.json",
+   "source": "repo",
+   "bytes": 1836,
+   "sourceSha256": "2b943a91895980c857778394511d83eab7a50b74e325dcd3bdf11f6c5a60080a"
+  },
+  {
+   "path": "packages/lenspipe/data/designs/us2784643_ex2.json",
+   "source": "repo",
+   "bytes": 1737,
+   "sourceSha256": "d3a85c9e2934e126d1eaacaf1a966ff511876f12569c84bf3d8619978b712fb1"
+  },
+  {
+   "path": "packages/lenspipe/data/glass_catalog.json",
+   "source": "repo",
+   "bytes": 1329460,
+   "sourceSha256": "99660e64d84fc101a313dd5a74afcf0ab520ae5041f8a5e142a670d71bbd103d"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/__init__.py",
+   "source": "repo",
+   "bytes": 253,
+   "sourceSha256": "d1611c7cdb2368a426405d9af97d66c78ef314a3651a266732c55505020a98de"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/asbuilt.py",
+   "source": "repo",
+   "bytes": 12244,
+   "sourceSha256": "f0651a482539f89a1ec0bb6f249040f2e3a80cc2066c14600066618f993c4b9c"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/cadout.py",
+   "source": "repo",
+   "bytes": 14348,
+   "sourceSha256": "06e6095d5592dcd965417c3d1dd6f26e0b8b78efe578d17da810a6d25ad738de"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/design.py",
+   "source": "repo",
+   "bytes": 5466,
+   "sourceSha256": "f5682c86b937fd6f589c6c4d14fc33ad3f2840f253a4a6b257ef0f6460c62473"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/glass.py",
+   "source": "repo",
+   "bytes": 2592,
+   "sourceSha256": "62959d648d6b640ced2017be987174bceec83663c8830e1af42da66676ad4544"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/interchange.py",
+   "source": "repo",
+   "bytes": 11656,
+   "sourceSha256": "43ff5061f3e450bc8dbb5a929adf25df0b13dc14e1ea74c7a76d48e28fc02282"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/limits.py",
+   "source": "repo",
+   "bytes": 7933,
+   "sourceSha256": "78bf777d4be0057b4f85dec00bb2f23d09927fe70e18ee31f0f10723de5a4a4e"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/optics.py",
+   "source": "repo",
+   "bytes": 13018,
+   "sourceSha256": "8fb88a7f1e22c4dc32017c4c8ad592cebf9886501617fdf2c1224cbd21097c32"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/optimise.py",
+   "source": "repo",
+   "bytes": 10096,
+   "sourceSha256": "4cb4fcc62645d83cf2c6de2c4bd38367ce85b3f095b632ed755d37f512fd4267"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/pipeline.py",
+   "source": "repo",
+   "bytes": 5880,
+   "sourceSha256": "214b3ec50b07abcb56cdb50809995671379860f97b1a57bf039e227be09d2efb"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/rules.py",
+   "source": "repo",
+   "bytes": 11920,
+   "sourceSha256": "0b751afc5e0de8aae12f3d4937d899d7b272aa677882080542e1b0baa7e2e88a"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/rules_shop.py",
+   "source": "repo",
+   "bytes": 11471,
+   "sourceSha256": "58f4057bc64c0fde16266739442f6ed267058614052c520588778dd9b882663a"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/tolerance.py",
+   "source": "repo",
+   "bytes": 6112,
+   "sourceSha256": "69f6e85bdf85a82b129d507ffdcda174de3f6a8785cbe70cbf87aefb074f772e"
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/trace.py",
+   "source": "repo",
+   "bytes": 6328,
+   "sourceSha256": "28f5900c09da91632adfc592b94c23ba7764a87b11b0af97c9441866ded411ab"
+  },
+  {
+   "path": "packages/lenspipe/tests/test_ka.py",
+   "source": "repo",
+   "bytes": 10222,
+   "sourceSha256": "fc41347846cbd0589272f0f252380e2b20ba60d32acd82f72bd84a2107d29a4c"
+  },
+  {
    "path": "packages/library/README.md",
    "source": "repo",
    "bytes": 2604,
@@ -8454,6 +8574,138 @@
    "source": "repo",
    "bytes": 2462,
    "sourceSha256": "7fe10da7760d7361897303b682c13c6ed73accdf4d0aa87095b1ea0644e19250"
+  },
+  {
+   "path": "packages/quality/README.md",
+   "source": "repo",
+   "bytes": 1981,
+   "sourceSha256": "566fd0c16d7034fce03eacea0773774d2b77a8f8c5be2ef9dd00e2a6ead4287f"
+  },
+  {
+   "path": "packages/quality/quality/__init__.py",
+   "source": "repo",
+   "bytes": 151,
+   "sourceSha256": "ab7ef345c70cb3eb323c24c8f68fdad65b672903bc6cbfe92564c4355ac7eb93"
+  },
+  {
+   "path": "packages/quality/quality/banding.py",
+   "source": "repo",
+   "bytes": 6509,
+   "sourceSha256": "1d04068806ad1bc6d67647fcf291fb389a03d7d2c83f734e9c70478575d416f9"
+  },
+  {
+   "path": "packages/quality/quality/edges.py",
+   "source": "repo",
+   "bytes": 3655,
+   "sourceSha256": "c5ecc0de732676f431e08e1e11ae6688b843d652faef4d3f5551ebfb0561d45b"
+  },
+  {
+   "path": "packages/quality/quality/grain.py",
+   "source": "repo",
+   "bytes": 6885,
+   "sourceSha256": "8a8f9f8ece5418fc6ceb080c48f0e17684516a9003d67091690342032ecdfd39"
+  },
+  {
+   "path": "packages/quality/quality/imgio.py",
+   "source": "repo",
+   "bytes": 1718,
+   "sourceSha256": "fdf97a9d0ee9e9db5d5d5e48f0097b523d575168e146f67183784e466be39bda"
+  },
+  {
+   "path": "packages/quality/quality/pacing.js",
+   "source": "repo",
+   "bytes": 2021,
+   "sourceSha256": "9a9d92db3d03ac8df64e9d8ef6735f17320c52d039e0feebfb34471480846449"
+  },
+  {
+   "path": "packages/quality/quality/pacing.py",
+   "source": "repo",
+   "bytes": 5166,
+   "sourceSha256": "bc0a9fa6d57618148d6808756692962f5d6db0db38b27e48bba7be21482a2409"
+  },
+  {
+   "path": "packages/quality/quality/ssim.py",
+   "source": "repo",
+   "bytes": 3935,
+   "sourceSha256": "ba9eb1a4163211638167141142d399cadc77189a215d2184bb9a9921f9f1b17a"
+  },
+  {
+   "path": "packages/quality/quality/static_check.py",
+   "source": "repo",
+   "bytes": 3444,
+   "sourceSha256": "fc7bd959dce594d02602f348d17685e207d12a3136b47a6d4d13508b466b086e"
+  },
+  {
+   "path": "packages/quality/quality/typemetrics.js",
+   "source": "repo",
+   "bytes": 8659,
+   "sourceSha256": "50e3038535903e2a5ad402d4e6850ad6c2568acfdb1cae2cce69c7586ede65a0"
+  },
+  {
+   "path": "packages/quality/quality/typemetrics.py",
+   "source": "repo",
+   "bytes": 10524,
+   "sourceSha256": "fe2929c9a598cdd42bbec0a72a9b7f11d61e9c591d63f82f65f218d7787cd602"
+  },
+  {
+   "path": "packages/quality/tests/conftest.py",
+   "source": "repo",
+   "bytes": 291,
+   "sourceSha256": "9f34ab6c003a792db7307575ba2dfd7bab7e7a456acadc523f476f77e98d0105"
+  },
+  {
+   "path": "packages/quality/tests/fixtures/text-over-canvas.html",
+   "source": "repo",
+   "bytes": 1287,
+   "sourceSha256": "92e99455439d5296b1379ad041d15acaec5448677654c8abe8b4d86d82545789"
+  },
+  {
+   "path": "packages/quality/tests/fixtures/thin-text-over-fixed-canvas.html",
+   "source": "repo",
+   "bytes": 1899,
+   "sourceSha256": "34e7d2299a7d19c5fca532e55073e91660c2f4f2f1727e92cc023b08f53745f7"
+  },
+  {
+   "path": "packages/quality/tests/test_banding.py",
+   "source": "repo",
+   "bytes": 2167,
+   "sourceSha256": "3e9e26ddfa44c4386d1c1133a504620830fafb65515b79586c3b668e49d65384"
+  },
+  {
+   "path": "packages/quality/tests/test_edges.py",
+   "source": "repo",
+   "bytes": 1951,
+   "sourceSha256": "4308bbba2ee81ee3ab138bc81254ca399874d19161a906638469208923d43d2e"
+  },
+  {
+   "path": "packages/quality/tests/test_grain.py",
+   "source": "repo",
+   "bytes": 2049,
+   "sourceSha256": "2e9bb4532e5a88687ee6bcf20c3ff3d8d44f339a651acdc3bef77efc5fca3dbb"
+  },
+  {
+   "path": "packages/quality/tests/test_pacing.py",
+   "source": "repo",
+   "bytes": 2000,
+   "sourceSha256": "50802316b9173b34ef2406707ba8abff810a55df5a7e131104d3179f95c58f51"
+  },
+  {
+   "path": "packages/quality/tests/test_ssim.py",
+   "source": "repo",
+   "bytes": 2089,
+   "sourceSha256": "5b81b124811822bfb02396c8b4b3e8e35a50791e15ecc577f4b9ef58c7a0aaae"
+  },
+  {
+   "path": "packages/quality/tests/test_static_check.py",
+   "source": "repo",
+   "bytes": 964,
+   "sourceSha256": "246280a94c33d8d2864ad5943add5b8454023d737fd71520126ab5073af7e54b"
+  },
+  {
+   "path": "packages/quality/tests/test_typemetrics.py",
+   "source": "repo",
+   "bytes": 9426,
+   "sourceSha256": "f0531557eab2ae4c84f7553213884650e1f6f8a83d6657b3bdfafdb6e7620280"
   },
   {
    "path": "packages/requirements.txt",

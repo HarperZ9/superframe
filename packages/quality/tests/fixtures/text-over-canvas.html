@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Text over canvas</title>
+<!-- tests/fixtures/text-over-canvas.html: real DOM text, transparent, laid over a canvas that paints the word (the
+     living-type pattern). #good paints dark ink on paper; #faint paints a pale grey that should fail WCAG.
+     Computed colours alone see transparent text on white and report 1:1 for both: the bug this page shows. -->
+<style>
+  body { margin: 20px; background: #fff; font: 400 16px/1.5 sans-serif; }
+  .stage { position: relative; width: 600px; height: 160px; margin: 0 0 24px; }
+  .stage canvas { position: absolute; inset: 0; width: 600px; height: 160px; }
+  .stage p { position: absolute; left: 40px; top: 40px; margin: 0; font: 700 72px/1 sans-serif; color: transparent; }
+</style>
+<div class="stage"><canvas id="cg" width="600" height="160"></canvas><p id="good">Living</p></div>
+<div class="stage"><canvas id="cf" width="600" height="160"></canvas><p id="faint">Living</p></div>
+<script>
+  for (const [id, ink] of [['cg', '#1d2a3a'], ['cf', '#c9c3b6']]) {
+    const x = document.getElementById(id).getContext('2d');
+    x.fillStyle = '#ebe5d8'; x.fillRect(0, 0, 600, 160); x.fillStyle = ink; x.font = '700 72px sans-serif'; x.textBaseline = 'top'; x.fillText('Living', 40, 40);
+  }
+</script>

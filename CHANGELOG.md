@@ -6,6 +6,8 @@ Added:
 
 - `packages/`: the instruments under the engine, each with its known-answer tests. See `packages/README.md`.
 - `npm run test:packages` and `npm run test:py`, both run on CI.
+- `packages/quality`: SSIM, banding, edge, grain, frame-pacing and type checks with known answers; browser checks skip without Playwright.
+- `packages/lenspipe`: an open lens design in, checked performance, manufacturability, tolerance, limits, as-built fit and interchange out.
 
 ## 0.2.0 (2026-10-28)
 
