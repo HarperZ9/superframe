@@ -5690,10 +5690,16 @@
    "sourceSha256": "9358d26d62e6d53100ecc080892e105cf916f7aa89268eb4c506f611ce34e484"
   },
   {
+   "path": "packages/PROVENANCE.json",
+   "source": "repo",
+   "bytes": 143180,
+   "sourceSha256": "46b65396b2edd6d05ea5f4b835dbe34c9d0a8527864b141b079beb4659717f7d"
+  },
+  {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 4734,
-   "sourceSha256": "ff4422c1f2af44e030f63e166d06555a29fd49d66cc12680b436b90a3abbac14"
+   "bytes": 5139,
+   "sourceSha256": "f8a7de7093f57c52b2d5dee6fed1061ce5614fa448b2b9e1bd6cd67e601ae605"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -7400,12 +7406,6 @@
    "sourceSha256": "d3e6d05ee6239f04497579b41ab0312c656d630544332d96244863c4d628f3cd"
   },
   {
-   "path": "packages/kernels/tests_placeholder",
-   "source": "repo",
-   "bytes": 0,
-   "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-  },
-  {
    "path": "packages/lattice/README.md",
    "source": "repo",
    "bytes": 4275,
@@ -8146,8 +8146,8 @@
   {
    "path": "packages/measured/tests/test_constants.py",
    "source": "repo",
-   "bytes": 1826,
-   "sourceSha256": "5ca866726dc050b9eedfeeb4890784e6fd8e56e5a1fb6b78760e73a4f21c74f9"
+   "bytes": 3367,
+   "sourceSha256": "fd00a7cb123214c14da214835a3a64eea310cc75fc593a67f0771e549983f77a"
   },
   {
    "path": "packages/measured/tests/test_measured.py",
@@ -8460,6 +8460,1164 @@
    "source": "repo",
    "bytes": 247,
    "sourceSha256": "841faa1cc70778103d2686cb87b77de60b3ccde946852f45419eab78ab64743f"
+  },
+  {
+   "path": "packages/rooms/README.md",
+   "source": "repo",
+   "bytes": 1300,
+   "sourceSha256": "5b07e5b6fd3858c9e5ebee6d5e44b85a5fa48447a8dc554e5515950f76eef9bb"
+  },
+  {
+   "path": "packages/rooms/core/adapters/studies.js",
+   "source": "repo",
+   "bytes": 2038,
+   "sourceSha256": "7ee8f35e397f10f3ff7d1dbc0eb1da2b87da0dcd1a960406454f119c9284cdb0"
+  },
+  {
+   "path": "packages/rooms/core/constants.js",
+   "source": "repo",
+   "bytes": 10091,
+   "sourceSha256": "94060f8b3c9762035f667710ab03e9a34a6dcbd96636c8f7b2c36d9f44fc9e96"
+  },
+  {
+   "path": "packages/rooms/core/data/cie.js",
+   "source": "repo",
+   "bytes": 1642,
+   "sourceSha256": "850c7b072828d2c51f97d5989288422dff9181e502e8ac59ebe49cef6bcfbe67"
+  },
+  {
+   "path": "packages/rooms/core/families.js",
+   "source": "repo",
+   "bytes": 2504,
+   "sourceSha256": "f7e65ccdc8cbf33cd6b8291dd66eeb1e4f708d16d2b3d977ab73bb96c457c539"
+  },
+  {
+   "path": "packages/rooms/core/fields.js",
+   "source": "repo",
+   "bytes": 2551,
+   "sourceSha256": "44f98783ab56b99d31471a1bc95cab67bf3f3581a0df6e8e7965865ca75cff4b"
+  },
+  {
+   "path": "packages/rooms/core/film.js",
+   "source": "repo",
+   "bytes": 3843,
+   "sourceSha256": "70c451a26937ffc68fd63ba7cab25a37081a9efadfa24ccb784cfe915005c9a4"
+  },
+  {
+   "path": "packages/rooms/core/formula.js",
+   "source": "repo",
+   "bytes": 8278,
+   "sourceSha256": "b254104060854293ae0a61b80182ef2ab2b8e1500b8feb3df98d90837724db4d"
+  },
+  {
+   "path": "packages/rooms/core/frames.js",
+   "source": "repo",
+   "bytes": 3352,
+   "sourceSha256": "df40e7e422a559150cd2f0b6974d72fc31d8b1e24de14c46427774370500bf0d"
+  },
+  {
+   "path": "packages/rooms/core/index.js",
+   "source": "repo",
+   "bytes": 714,
+   "sourceSha256": "77cbc2852d6d1f0a57512e5aeba4af1906c4cf4d061233e83803a7aa7f2ece43"
+  },
+  {
+   "path": "packages/rooms/core/inner.js",
+   "source": "repo",
+   "bytes": 5611,
+   "sourceSha256": "b77069a0bcde5e5b02cf1097cc4aa13713478e8f0ff685b0d45152ab7d22fbe9"
+  },
+  {
+   "path": "packages/rooms/core/liquid.js",
+   "source": "repo",
+   "bytes": 2624,
+   "sourceSha256": "6981fda8cb241c2dd9551791705f0004f4d7d0fce6578cb68c7b36d0131cdae7"
+  },
+  {
+   "path": "packages/rooms/core/materials.js",
+   "source": "repo",
+   "bytes": 1179,
+   "sourceSha256": "1b22dafc5b8134cbc8b34e50d398c9f9d2a694927615419b3ef8f83503f3a595"
+  },
+  {
+   "path": "packages/rooms/core/matrix.js",
+   "source": "repo",
+   "bytes": 873,
+   "sourceSha256": "23ad2c118ab951d2e28288d45807d487b13f9957e7cb5705c74699acfd32595f"
+  },
+  {
+   "path": "packages/rooms/core/propagate.js",
+   "source": "repo",
+   "bytes": 3557,
+   "sourceSha256": "05aac06da983b1f7be8add0e86fe266c94874e6fdc7979fa7344f092452065f9"
+  },
+  {
+   "path": "packages/rooms/core/provenance.js",
+   "source": "repo",
+   "bytes": 1189,
+   "sourceSha256": "6217563b29af3c7241bbec2e2cd58077f4447d7da37d0ed6db78a506cc4d6a29"
+  },
+  {
+   "path": "packages/rooms/core/registry.js",
+   "source": "repo",
+   "bytes": 1779,
+   "sourceSha256": "fa4f6aa79c22e184c93f7077f9c2534a8fb6dd10e318ea232ca9882c4d17d029"
+  },
+  {
+   "path": "packages/rooms/core/sampler.js",
+   "source": "repo",
+   "bytes": 675,
+   "sourceSha256": "30bcf42709fd50db81b08ea7b917887f6eb84cbc7c2c4c7c0c4be786c3cdbf18"
+  },
+  {
+   "path": "packages/rooms/core/scatter.js",
+   "source": "repo",
+   "bytes": 2538,
+   "sourceSha256": "4965623217747b830e6ea9360098b5c2ab5783cfef3e1233cafe2985d2f4d0f6"
+  },
+  {
+   "path": "packages/rooms/core/scenes.js",
+   "source": "repo",
+   "bytes": 11097,
+   "sourceSha256": "2f96048dd276fcc26352b48a030a5b24a988feb00cdad3e4c7d02656679ac44a"
+  },
+  {
+   "path": "packages/rooms/core/shaders/common.js",
+   "source": "repo",
+   "bytes": 1663,
+   "sourceSha256": "e7dfac7b8aae5f1b353853f72638a02ac6afc2da9ee1dac3d232f66de02273e1"
+  },
+  {
+   "path": "packages/rooms/core/shaders/display.js",
+   "source": "repo",
+   "bytes": 2409,
+   "sourceSha256": "23a9a309bfa1a8fd1f4d896167aad338ddadd965e927273eb59062a43b8bae2f"
+  },
+  {
+   "path": "packages/rooms/core/shaders/lens.js",
+   "source": "repo",
+   "bytes": 15859,
+   "sourceSha256": "658f7ae41e0674f9a13203636c2a85a455b6c88318a878d9a152d54f50f9137c"
+  },
+  {
+   "path": "packages/rooms/core/shaders/train.js",
+   "source": "repo",
+   "bytes": 5525,
+   "sourceSha256": "89cd85d21e754174aec12a48d3e8b9e94d4ddf0f2572becde198d08cfad9d0a7"
+  },
+  {
+   "path": "packages/rooms/core/shaders/world.js",
+   "source": "repo",
+   "bytes": 3309,
+   "sourceSha256": "c3ad36ea8df0b779690467a2e6abd5f5cf260f3474d97fabb14a4a03df45580d"
+  },
+  {
+   "path": "packages/rooms/core/shapes.js",
+   "source": "repo",
+   "bytes": 10381,
+   "sourceSha256": "768f5bd3f3550e717d0a9fc0133779429ae9abec51b905221bf5aee0ca701c70"
+  },
+  {
+   "path": "packages/rooms/core/spectra.js",
+   "source": "repo",
+   "bytes": 4471,
+   "sourceSha256": "a2a95d296a52dd0b439c0c490df86c703d5219997a2769c8eb40ef2938f7c2b2"
+  },
+  {
+   "path": "packages/rooms/core/trace.js",
+   "source": "repo",
+   "bytes": 10046,
+   "sourceSha256": "6a3c23fcdafa6c14ab9a2a55c60ef57f0fec07309fa9f086abe4ada38dde33cf"
+  },
+  {
+   "path": "packages/rooms/core/train-trace.js",
+   "source": "repo",
+   "bytes": 4545,
+   "sourceSha256": "0b79a957f56de62be9cbb0707f4c75701b406ba0a9cf071e45c061d92a342001"
+  },
+  {
+   "path": "packages/rooms/core/train.js",
+   "source": "repo",
+   "bytes": 12962,
+   "sourceSha256": "be0e407cd4f5c168004ed457ed07734e02a55194252e6cb0e65979fdfffec130"
+  },
+  {
+   "path": "packages/rooms/core/units.js",
+   "source": "repo",
+   "bytes": 2278,
+   "sourceSha256": "66e32bbbf6925e717d153b98233304a3acce73a2cb4be110fc537b87dda83878"
+  },
+  {
+   "path": "packages/rooms/core/wave.js",
+   "source": "repo",
+   "bytes": 1416,
+   "sourceSha256": "280f2954ad2e80ff25085ec77ea3674dc8459ad72c50dac0fe3ee30d03b17880"
+  },
+  {
+   "path": "packages/rooms/maps/bond.js",
+   "source": "repo",
+   "bytes": 3408,
+   "sourceSha256": "c64084ed0c4c1b7b3d32c2e70cd4604555d1841fe64bf5db7f8b8fd3cb0e1c67"
+  },
+  {
+   "path": "packages/rooms/maps/map.js",
+   "source": "repo",
+   "bytes": 3517,
+   "sourceSha256": "f15f414734e9485626b7a9709587da71e09f3acb86ddefd84cb1b8b139b45786"
+  },
+  {
+   "path": "packages/rooms/maps/registry.json",
+   "source": "repo",
+   "bytes": 38305,
+   "sourceSha256": "cbc432065fec4799ec8273128a0bb25d85339aa5c95a9523816a00a0295df51a"
+  },
+  {
+   "path": "packages/rooms/package.json",
+   "source": "repo",
+   "bytes": 142,
+   "sourceSha256": "41e98faa3b123a83cd02c5728d8e52363f17e50bef2902e39773372c53baf338"
+  },
+  {
+   "path": "packages/rooms/project-docs/DESIGN.md",
+   "source": "repo",
+   "bytes": 10118,
+   "sourceSha256": "fbea37033a8c550cf2b1c3ec0e6d3fb326e170156a35578fb08e03b08444dd71"
+  },
+  {
+   "path": "packages/rooms/project-docs/FLUID-ROOM.md",
+   "source": "repo",
+   "bytes": 6586,
+   "sourceSha256": "ed37e732373682da13247237a5b2e309e556a81de4583f521125aafaba1d2fab"
+  },
+  {
+   "path": "packages/rooms/project-docs/LENS-ROOM-PARITY.md",
+   "source": "repo",
+   "bytes": 3387,
+   "sourceSha256": "a59ac5aeb288ed68f58d449dbc15e7c7bdf87ccede99f7150b29345baffbab2c"
+  },
+  {
+   "path": "packages/rooms/project-docs/MAP-ROOM.md",
+   "source": "repo",
+   "bytes": 2583,
+   "sourceSha256": "6a73a6a21b2955103aedb6421c9ca4a4205fd747a99e0c5c2f525607bb0fb032"
+  },
+  {
+   "path": "packages/rooms/project-docs/SOLVER-ROOMS-PARITY.md",
+   "source": "repo",
+   "bytes": 1958,
+   "sourceSha256": "231c30cef7a797e6476f5ee4b72219797a7668bbb4224b19cf16c6e5231e85f0"
+  },
+  {
+   "path": "packages/rooms/properties/impedance.js",
+   "source": "repo",
+   "bytes": 6874,
+   "sourceSha256": "410c3cfd76d6d3db4573fcb744fe80a68b85d07581c13f4d38ff6067d9540de1"
+  },
+  {
+   "path": "packages/rooms/properties/model.js",
+   "source": "repo",
+   "bytes": 2228,
+   "sourceSha256": "12cdd8801156b8d08d009e92982107668a576f45d91a2c10a3535b931626a918"
+  },
+  {
+   "path": "packages/rooms/properties/polarisation.js",
+   "source": "repo",
+   "bytes": 4967,
+   "sourceSha256": "1b7f2e4b8cb620c0fdecbea595a7eb60d7f0e2fb2eca97cb6a4d3c220ec911be"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/blasius.js",
+   "source": "repo",
+   "bytes": 3637,
+   "sourceSha256": "f3c73664f8829dd0e8b12f07a533ff68741ee2780120b5ec77efc20c304a92d7"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/bowl.js",
+   "source": "repo",
+   "bytes": 4324,
+   "sourceSha256": "008b38bbf3a58e50e93d1fc52f5a5eb0860974f5eaad70f4277887da60394663"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/exact.js",
+   "source": "repo",
+   "bytes": 6030,
+   "sourceSha256": "adf4ba116d1eead03272e88621ea3907b9cd3f5bc0db88d8eb6eb5dbed1d03fb"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/fftn.js",
+   "source": "repo",
+   "bytes": 1716,
+   "sourceSha256": "e91578e530a5d03a8820ef026d37d5fa4e027f3a242d51a77142409324bb6ae6"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/index.js",
+   "source": "repo",
+   "bytes": 273,
+   "sourceSha256": "e70826997bd3580fcd58960e0f8d6f95ea16c10928dd2a3e2bb0de23b00855d5"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/karman.js",
+   "source": "repo",
+   "bytes": 2398,
+   "sourceSha256": "800eebcd31842f6b095859d7a075988799a41116a1ce559f72ea12c7c1f581d2"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/regime.js",
+   "source": "repo",
+   "bytes": 3240,
+   "sourceSha256": "05db2c50df32c7c452ef74be20c0178f2945630bd6284aa11161107bd390e0fe"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/reversal.js",
+   "source": "repo",
+   "bytes": 2456,
+   "sourceSha256": "dc9963d8e1eeacfb06bab366de34441a5c1bf01a79585816ec3f425fb3ed633b"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/shaders.js",
+   "source": "repo",
+   "bytes": 7152,
+   "sourceSha256": "8d1f24f4ab986adc9072b3c73f46ecba2c8d8036325f47e89da33f3a2e83f1d9"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/spectral2.js",
+   "source": "repo",
+   "bytes": 10307,
+   "sourceSha256": "8b721950a1f16161eaa1f8622f804d49dc998b7bbca4905c5c8af3441118a417"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/spectral3.js",
+   "source": "repo",
+   "bytes": 7950,
+   "sourceSha256": "589abda49f24499e4bffb4d170815fc4bf59ffa28cedc9818773f686588d84fb"
+  },
+  {
+   "path": "packages/rooms/solvers/fluid/tubes.js",
+   "source": "repo",
+   "bytes": 3377,
+   "sourceSha256": "dbda0bddfde067fe87f583df5dd669e26c8f942600a87159ef86ee75d9a836ac"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/cg.js",
+   "source": "repo",
+   "bytes": 1645,
+   "sourceSha256": "71cc2b8a1eb8adfcca8566e75d5c971633346c33af27816a8fad83cb1ec4a236"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/checks.js",
+   "source": "repo",
+   "bytes": 9371,
+   "sourceSha256": "bf7d19ca331db4f1cd7a5d9c0356b4415f1420e0ff6a2f15406572586efff2c5"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/constants.js",
+   "source": "repo",
+   "bytes": 2025,
+   "sourceSha256": "9cbcf1ffc0096cd9f390bc1fad01fdadbc59732754577253ba714b3fa55a3278"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/copper.js",
+   "source": "repo",
+   "bytes": 3215,
+   "sourceSha256": "1c4827fba1c916f2072324a6d3b7d467b7026f9b480f6a700add3650603f559f"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/cut.js",
+   "source": "repo",
+   "bytes": 2402,
+   "sourceSha256": "f3061ca93d7716649e9c1054eb32b7fb73c352e7334d0fc665138b9e962bb036"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/dc.js",
+   "source": "repo",
+   "bytes": 5846,
+   "sourceSha256": "8746f25c0c4cfe18d05f73ba3913015049ceddc34ac20110af32abe9e2688fc8"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/drc.js",
+   "source": "repo",
+   "bytes": 8940,
+   "sourceSha256": "11fd1c41ffde5a95b6d3d3eaca248478b6ec634f1095b94c54af226ce87f1d04"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/examples.js",
+   "source": "repo",
+   "bytes": 3961,
+   "sourceSha256": "271d39b7bba4a56a557ed794ade811344ec0f8d0e14f6ad4257f31cb353fed5d"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/field-solve.js",
+   "source": "repo",
+   "bytes": 4096,
+   "sourceSha256": "d0becd56751be10ca5bbfc204f31ec6dee349e586de30bf640a0c180ddf97d31"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/footprints.js",
+   "source": "repo",
+   "bytes": 2039,
+   "sourceSha256": "c5f381edf6762a1ddc6f9d5f2671ef4cb47e25dcea0f7ddaa8aa3d37a515d386"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/formulas.js",
+   "source": "repo",
+   "bytes": 688,
+   "sourceSha256": "1369d75825ad294415ec2919eddb4b93eb3bd5e559f97e51afc4c53ad0ce3595"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/gerber.js",
+   "source": "repo",
+   "bytes": 8778,
+   "sourceSha256": "01438299a4a423201623568ce928c04c694758cf5e11d80667ea9594ca411aa8"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/heat.js",
+   "source": "repo",
+   "bytes": 3151,
+   "sourceSha256": "f4ab75590d92ecfb7dc6773a7b39a6433fe238683532f0c5db01d279ef520309"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/index.js",
+   "source": "repo",
+   "bytes": 625,
+   "sourceSha256": "b00ad68899317066252933f8ba38b4af1766ac1e0759d38512aa2b1898098b5b"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/netlist.js",
+   "source": "repo",
+   "bytes": 6370,
+   "sourceSha256": "d98b95b79421fc89d9abedf3caac94ac9f9a6a3feeec0b21af0dd5b74e03f5bc"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/placement.js",
+   "source": "repo",
+   "bytes": 3330,
+   "sourceSha256": "ba2044c7b7b000d1ae92a04dca7bc514e5a0d1b55234ad55453080fdfa2c017a"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/plane.js",
+   "source": "repo",
+   "bytes": 3134,
+   "sourceSha256": "a0724576079ec0ce87cc36efc8bf90eb827987f1d049c4c6e60fcf504c70d7f6"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/reader.js",
+   "source": "repo",
+   "bytes": 4304,
+   "sourceSha256": "f5a6d9dbdeb8bdf002f556068b16c8eac317e9c1df1b119ffb824d5cb6418e29"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/router.js",
+   "source": "repo",
+   "bytes": 14294,
+   "sourceSha256": "963d8cbdf54f2efa55f37e29f365e6546bb4a28cce0d0f6918c9713e6a1851c5"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/schematic.js",
+   "source": "repo",
+   "bytes": 7908,
+   "sourceSha256": "10e9753a5fdd3dbac97a3e8d889c93aa3eecb86189dda63d767252845b9f58b4"
+  },
+  {
+   "path": "packages/rooms/solvers/pcb/tline.js",
+   "source": "repo",
+   "bytes": 5727,
+   "sourceSha256": "202e834ea4b1dbfb9b0696c0b3bafcfe65362a0095a20451f47696dcf3f24d1d"
+  },
+  {
+   "path": "packages/rooms/solvers/sound/fdtd.js",
+   "source": "repo",
+   "bytes": 2308,
+   "sourceSha256": "238d721fb81058d82fc0f55673ff645c99a89a9ae4e233c1e8b052042389d994"
+  },
+  {
+   "path": "packages/rooms/solvers/sound/params.js",
+   "source": "repo",
+   "bytes": 304,
+   "sourceSha256": "23f3f76799de29c48c24cff32b251a3725a9b0ca1e9d23d2b7cfb3736fe83147"
+  },
+  {
+   "path": "packages/rooms/solvers/sound/rooms.js",
+   "source": "repo",
+   "bytes": 2780,
+   "sourceSha256": "af43dde882d34cfc3ed9cefedf94e31410feab839c15d36be8779fe542592bfa"
+  },
+  {
+   "path": "packages/rooms/solvers/sound/shaders.js",
+   "source": "repo",
+   "bytes": 2105,
+   "sourceSha256": "8ba0dc774d155973e798d312c273d2603ca4f1a088149ba6ee68edfa66860dc1"
+  },
+  {
+   "path": "packages/rooms/tests/adapters.test.mjs",
+   "source": "repo",
+   "bytes": 2360,
+   "sourceSha256": "674d13468825d65b64e6c2a20210307542b2db14129407a5cd628129c614baa6"
+  },
+  {
+   "path": "packages/rooms/tests/families.test.mjs",
+   "source": "repo",
+   "bytes": 2061,
+   "sourceSha256": "09710fcf89a8e9f856519b1c004c61fbc8f01962919c44bab64082799b9a1b79"
+  },
+  {
+   "path": "packages/rooms/tests/fluid-3d.test.mjs",
+   "source": "repo",
+   "bytes": 3797,
+   "sourceSha256": "e8bc7bd67f91b4548eb46bd3accb6c852e2ffbc98e2511ee2a57a1bd54afee33"
+  },
+  {
+   "path": "packages/rooms/tests/fluid-known.test.mjs",
+   "source": "repo",
+   "bytes": 13313,
+   "sourceSha256": "6dc0cbf26964b0cd4145585b40833bc6f039a8ec3a0ee1f58312c89d7a43d84c"
+  },
+  {
+   "path": "packages/rooms/tests/fluid-regime.test.mjs",
+   "source": "repo",
+   "bytes": 3456,
+   "sourceSha256": "bfd5fe96cc7553b074b6e6e2e10cdddd1338f40ad07ddf78ec80d8ae06fa96cd"
+  },
+  {
+   "path": "packages/rooms/tests/fluid-tubes.test.mjs",
+   "source": "repo",
+   "bytes": 934,
+   "sourceSha256": "1c77abc7b06b835f64b4492f4eec3120ac59bfbbaf6b6f1defd68dc51174aa1e"
+  },
+  {
+   "path": "packages/rooms/tests/formula.test.mjs",
+   "source": "repo",
+   "bytes": 2830,
+   "sourceSha256": "487b0746df157f3274eb053123b8cce50678e9e78b9e2cc031684d0df4b49306"
+  },
+  {
+   "path": "packages/rooms/tests/golden.test.mjs",
+   "source": "repo",
+   "bytes": 5247,
+   "sourceSha256": "2e5ee8c0c604deb7d7db6aad1b337be86e7d648ada20fb40c86aad28f364f961"
+  },
+  {
+   "path": "packages/rooms/tests/golden/lens-page.json",
+   "source": "repo",
+   "bytes": 6607,
+   "sourceSha256": "16b1582101552e9c56b1a73e9691297eb462aa59da5147189194e3930e4fc597"
+  },
+  {
+   "path": "packages/rooms/tests/golden/minds-eye-core.json",
+   "source": "repo",
+   "bytes": 2396,
+   "sourceSha256": "bf3c15a36b50333eeb56e190e92f315b6f6df4b671241bb441372b12f3a7aba9"
+  },
+  {
+   "path": "packages/rooms/tests/golden/pcb-page.json",
+   "source": "repo",
+   "bytes": 5502,
+   "sourceSha256": "6d9ba2cf804e0c5600fb4d0a691caad5593e206f44a9db837bfd2680a1f205ce"
+  },
+  {
+   "path": "packages/rooms/tests/h.mjs",
+   "source": "repo",
+   "bytes": 309,
+   "sourceSha256": "83bb676bb5554e3b613b4b00dd98b16b14664c751386f53cca611dad8e339c7c"
+  },
+  {
+   "path": "packages/rooms/tests/maps.test.mjs",
+   "source": "repo",
+   "bytes": 4103,
+   "sourceSha256": "d93c8e23a399dad0afda8d5a2478717814f384dcebb0b122f44bf857df297aed"
+  },
+  {
+   "path": "packages/rooms/tests/physics-cpu.test.mjs",
+   "source": "repo",
+   "bytes": 4916,
+   "sourceSha256": "56a3484c0789d065912291aab3a70fb6f4f7847c1b1adc5bd13d36e11061b994"
+  },
+  {
+   "path": "packages/rooms/tests/properties.test.mjs",
+   "source": "repo",
+   "bytes": 5577,
+   "sourceSha256": "a77ed6ca0dbdc967a1e46d76fef1f6bb3ab1cf9fa182021ea62871c65c110018"
+  },
+  {
+   "path": "packages/rooms/tests/registry.test.mjs",
+   "source": "repo",
+   "bytes": 2357,
+   "sourceSha256": "9d81488dbda02a39f387ab85b1515a3c980c8fa6c1b2de5398ef7b0eeef25c35"
+  },
+  {
+   "path": "packages/rooms/tests/sampler.test.mjs",
+   "source": "repo",
+   "bytes": 1202,
+   "sourceSha256": "1d400a0279f99de2e695aa6a3520e5637dfeda0cbe8039fd46a50d38daf614a8"
+  },
+  {
+   "path": "packages/rooms/tests/solvers.test.mjs",
+   "source": "repo",
+   "bytes": 3729,
+   "sourceSha256": "873bdea4038c8ec84d094c5840548e3ccd65b5ec265461a03462fb6d44b29549"
+  },
+  {
+   "path": "packages/rooms/tests/spectra.test.mjs",
+   "source": "repo",
+   "bytes": 2939,
+   "sourceSha256": "d6e2c9f33a373ba031de307c84bad86f67dac5c8105f7dbc0c7a87575f03c85e"
+  },
+  {
+   "path": "packages/rooms/tests/steer.test.mjs",
+   "source": "repo",
+   "bytes": 3431,
+   "sourceSha256": "533f21e9bd9056f543098cd8c09e712ce9e41ac50a6e1489608554b296edc64a"
+  },
+  {
+   "path": "packages/rooms/tests/train.test.mjs",
+   "source": "repo",
+   "bytes": 2181,
+   "sourceSha256": "e2ba7162494d2af8560f21a84f0ffa00dbc75c71deb550e973b18aba0b97b495"
+  },
+  {
+   "path": "packages/rooms/tests/units-field.test.mjs",
+   "source": "repo",
+   "bytes": 975,
+   "sourceSha256": "164fee0859d44cbd9b4defda2590d609e0a395977c776e8930148aa9adca534e"
+  },
+  {
+   "path": "packages/rooms/tests/units.test.mjs",
+   "source": "repo",
+   "bytes": 2066,
+   "sourceSha256": "9686fa8f1a2ab6082058953f1bfbedf040a230caf82bf082358770e548a86506"
+  },
+  {
+   "path": "packages/rooms/tests/view-lens.test.mjs",
+   "source": "repo",
+   "bytes": 2577,
+   "sourceSha256": "6a068c0d80ee5381e3bb26b94a0fc28eeb954ea31269c12b3e56068ce9b0876e"
+  },
+  {
+   "path": "packages/rooms/tests/view-solvers.test.mjs",
+   "source": "repo",
+   "bytes": 1742,
+   "sourceSha256": "36f25349767dfd0366a30d43abdc4211fae5caff7f83c9b7327e54ea9330df50"
+  },
+  {
+   "path": "packages/rooms/tests/wave.test.mjs",
+   "source": "repo",
+   "bytes": 3268,
+   "sourceSha256": "de3009f3f0713aaaacf1cd3d4f7c136a2261ae207c5adc689b86797f50406858"
+  },
+  {
+   "path": "packages/rooms/tools/steer.js",
+   "source": "repo",
+   "bytes": 4804,
+   "sourceSha256": "eba83fc73c34728367bcf3b22d595f28cf06d875ede8dc9bbf015860eeb046f5"
+  },
+  {
+   "path": "packages/rooms/views/build-view.mjs",
+   "source": "repo",
+   "bytes": 2295,
+   "sourceSha256": "1c0f8cc4fffdcf2b368696cbf0697e2a3abfbb02b2679e82c56ef7f1bd7a33ac"
+  },
+  {
+   "path": "packages/rooms/views/fluid-room/build.mjs",
+   "source": "repo",
+   "bytes": 1579,
+   "sourceSha256": "a8f26e99f2c85bca83fbffa9168c5bd342c9d68936cc25e2e04a53fbf1ea37f3"
+  },
+  {
+   "path": "packages/rooms/views/fluid-room/shell.html",
+   "source": "repo",
+   "bytes": 4321,
+   "sourceSha256": "49ade32484ec2a6fe6895f47e9100fdee78f967840605907c70223bccb329c00"
+  },
+  {
+   "path": "packages/rooms/views/fluid-room/src/01-gl.js",
+   "source": "repo",
+   "bytes": 8051,
+   "sourceSha256": "18a9adf85d1ec7a1df1d512be9dbb7b5ff55971a248a716441236dd079b7e6b5"
+  },
+  {
+   "path": "packages/rooms/views/fluid-room/src/02-cases.js",
+   "source": "repo",
+   "bytes": 4760,
+   "sourceSha256": "7f1f41e1f685cad94319bc914301855a155d5b705703cf2836ff45543b9d3d69"
+  },
+  {
+   "path": "packages/rooms/views/fluid-room/src/03-volume.js",
+   "source": "repo",
+   "bytes": 1645,
+   "sourceSha256": "59293f6f4eaaab21ff1fc7b70601ca916b618ea7663d3e2f59e8d164c139680e"
+  },
+  {
+   "path": "packages/rooms/views/fluid-room/src/04-frame.js",
+   "source": "repo",
+   "bytes": 11387,
+   "sourceSha256": "7dba5bc0cc80b6d379e06ff66ad2f4416c8136d621a2890fee749c397b11e154"
+  },
+  {
+   "path": "packages/rooms/views/fluid-room/worker3.js",
+   "source": "repo",
+   "bytes": 1153,
+   "sourceSha256": "d0810d7d7c9a8636ea22188f5fc6071e534b87e2eac8e5b77c68b64417a191e7"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/build.mjs",
+   "source": "repo",
+   "bytes": 1573,
+   "sourceSha256": "166af67f19b297238c42755ae3e2c6dc4d0350618c0f9e9242c66f1130d47850"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/shell.html",
+   "source": "repo",
+   "bytes": 13075,
+   "sourceSha256": "de992c27e1a47c7e2dff5f05a022db79e4262bc01992bb5e324dbf92a59c45d3"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/01-shape-menu.js",
+   "source": "repo",
+   "bytes": 404,
+   "sourceSha256": "c6a6a944538743aae6ae8ee0aa1fb29e7239ebefdd9dc7031e1de2124d970408"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/02-state.js",
+   "source": "repo",
+   "bytes": 4476,
+   "sourceSha256": "3add58837b4f4c614e3bbf8f108cfdda7eef1b3bab6ab0663058a2f82013f432"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/03-gl.js",
+   "source": "repo",
+   "bytes": 2025,
+   "sourceSha256": "32765eabf85b411a0ec7bcfb7aed9c2ef823f0635bddfdd761ba3b58a491bea5"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/04-targets.js",
+   "source": "repo",
+   "bytes": 1082,
+   "sourceSha256": "34a35d0bba54638c1a2888e6090a54ee754d6b23704bc28caec4585c350ecfa3"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/05-programs.js",
+   "source": "repo",
+   "bytes": 1421,
+   "sourceSha256": "5c0929cf97e450a91b08949527e1fc0cb6bb72604ce9843f461ced7cced3588a"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/06-uniforms-common.js",
+   "source": "repo",
+   "bytes": 499,
+   "sourceSha256": "b597e8ef800b410feef271cacdabc07009f659871adf725a643993b5c4bb98ff"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/07-uniforms-lens.js",
+   "source": "repo",
+   "bytes": 3262,
+   "sourceSha256": "51b29f1b7e1eb0ac9bf0bd81177bab6df948e99b8685e718631487818542fb6a"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/08-probe.js",
+   "source": "repo",
+   "bytes": 712,
+   "sourceSha256": "70c497ce1f88dcf1c3d55fc51b6a521b8fc56e2cdb767dea8691ea7527402dc2"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/09-material-controls.js",
+   "source": "repo",
+   "bytes": 677,
+   "sourceSha256": "54d8708a1df497236f92e48f076bf41c5142c29f6f3865e46e11ec827f861536"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/10-readout-extra.js",
+   "source": "repo",
+   "bytes": 3415,
+   "sourceSha256": "fc480fe9859615dcdcc68f0361be87995f126cd52094a2cdb4fa31e95140e84a"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/11-neural.js",
+   "source": "repo",
+   "bytes": 3449,
+   "sourceSha256": "13ee1a030813f28951eb2c93b3caddbecaec53ae5721056983c9f0c359ba1d6c"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/12-wave-view.js",
+   "source": "repo",
+   "bytes": 6139,
+   "sourceSha256": "25c8c12587f2ea206027a0f1c26589492049631974a134a584aa1692415972a0"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/13-caustic-view.js",
+   "source": "repo",
+   "bytes": 2065,
+   "sourceSha256": "ccc6976f54ce33090caf6cc053923749e73b2f5fb86945feb52e6e4fc629c76f"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/14-diagrams.js",
+   "source": "repo",
+   "bytes": 7004,
+   "sourceSha256": "0bb66872818cdd75d03878e3e3381133ebfed091513c9b41c51c10f9b07bfca0"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/15-diagrams-train.js",
+   "source": "repo",
+   "bytes": 1105,
+   "sourceSha256": "f099586c8226dfe221a2aa339b6c5f04571ae4519a9c3559f70ec02ccd0f7e8f"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/16-diagrams-section.js",
+   "source": "repo",
+   "bytes": 2727,
+   "sourceSha256": "88197cfff36aa30b4f7f2a35d37ab7534d53f9cde8ae4cc10d2bf7fc7de8ce15"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/17-diagrams-lens.js",
+   "source": "repo",
+   "bytes": 2562,
+   "sourceSha256": "10ae6a44a9516019947cc1da8abd8d39f4bf2f24990d2b8af256c0e5455efbbb"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/18-levels.js",
+   "source": "repo",
+   "bytes": 1765,
+   "sourceSha256": "bce86bbbb473559eed8a002daabef498651ddc82f9a313336f0599c281b54558"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/19-inside-focus.js",
+   "source": "repo",
+   "bytes": 3311,
+   "sourceSha256": "a44ad5bf498d4f5f597e4f95dcc2082b96fa77abe4c86fe351fc3f18c5654834"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/20-boot-extras.js",
+   "source": "repo",
+   "bytes": 11422,
+   "sourceSha256": "8e8e5ecf488037f6c953f6617f5272eab9b18f5c6a18630f5c464c755ce23d7f"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/21-voxels.js",
+   "source": "repo",
+   "bytes": 4049,
+   "sourceSha256": "5da93925ea826aa5636b5cb532c1edc94968993cfe5e6f56a18806602c5c3858"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/22-inner-uniforms.js",
+   "source": "repo",
+   "bytes": 678,
+   "sourceSha256": "41d82a584209ce7cf702ff2ec6acc2a9b8bcfd4a713a9045bcc6560049642975"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/23-walk.js",
+   "source": "repo",
+   "bytes": 3678,
+   "sourceSha256": "91c16870704a02b86dd6610b518f79eeea94d71196a360d0307bbf4fa9ec8548"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/24-boot-walk.js",
+   "source": "repo",
+   "bytes": 2564,
+   "sourceSha256": "3b762079bef1ff96beeb8fb4a4107c75bee05f31ea0881cd97ff9304a8142d30"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/25-checks-inside.js",
+   "source": "repo",
+   "bytes": 3978,
+   "sourceSha256": "3ad86ed77e5c52c1d69ff54f50c07da6956f25befe055fe98963516aefd0f23c"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/26-scatter-uniforms.js",
+   "source": "repo",
+   "bytes": 150,
+   "sourceSha256": "e1f39a88453188216f5e32c09e635426e07dc81c096aef6f66604b33c688f391"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/27-patterns.js",
+   "source": "repo",
+   "bytes": 2139,
+   "sourceSha256": "e2778d958a5f297a40cc6612f66246032cdcd885924d5ded09f7dfb6b8c3f79d"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/28-meta-uniforms.js",
+   "source": "repo",
+   "bytes": 701,
+   "sourceSha256": "0e05ab9b9bd357b43aec309b7d4c54f3e39558f901c807a00518da4bd2d389d0"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/29-checks-render.js",
+   "source": "repo",
+   "bytes": 1032,
+   "sourceSha256": "938596f6321cd9f6b0b909229f0c8083269af273e146362c2a61c6a71fa4e004"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/30-checks-meta.js",
+   "source": "repo",
+   "bytes": 2273,
+   "sourceSha256": "74921cb02d2bc54a16c8d47ff4a9eb00f70eb3a5fbfc501e898aaeb98d4b94ce"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/31-checks-moire.js",
+   "source": "repo",
+   "bytes": 1430,
+   "sourceSha256": "0b7114a4cc2c79259428d9e9fb1c7a2166533d2c31dc720fa117268809dbd6ec"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/32-checks-scatter.js",
+   "source": "repo",
+   "bytes": 3105,
+   "sourceSha256": "672ee24f5f6a1260af6c5dccf7ff139bf6fb40c5539c3ad88d2a69acf83ca3f6"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/33-boot-more.js",
+   "source": "repo",
+   "bytes": 2609,
+   "sourceSha256": "0ea977295f0e5a7e02ea87edffd0d21eac28415ee734a6ccb0633e0b253fbd7c"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/34-lens-readout.js",
+   "source": "repo",
+   "bytes": 3934,
+   "sourceSha256": "9c4a625508ea62c7a34ba8775de47fd9388358eead4e0639a2fd5215e5667073"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/35-lens-section.js",
+   "source": "repo",
+   "bytes": 2059,
+   "sourceSha256": "7becc52ae74daad0e5676a15a8ecfe86a97b1d27ebdfefa53847360a3f552f64"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/36-train-state.js",
+   "source": "repo",
+   "bytes": 3023,
+   "sourceSha256": "e7fe0cc1d98b67f919ca1037dd1d4a1540af38d0f21c4110c2781fdb5ca9fe5b"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/37-train-measure.js",
+   "source": "repo",
+   "bytes": 3396,
+   "sourceSha256": "b2a577117b3c4abddd3cab7637cdf6573df74ef3551664538c6f3245a50ba544"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/38-train-side.js",
+   "source": "repo",
+   "bytes": 2457,
+   "sourceSha256": "7549ed0dfa618f7fd34acae3f47e6a8a30f8f4766cbc4b549976583f04ec3fe6"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/39-world.js",
+   "source": "repo",
+   "bytes": 2948,
+   "sourceSha256": "c40ccfd2f3b182301df83b7f842105dcccf2d8a383f9e79a5b3552c8563df8ef"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/40-world-measure.js",
+   "source": "repo",
+   "bytes": 1327,
+   "sourceSha256": "a081b2c093340ec167b673b59f261703405c0966da56a7fb32d664bc403d4de1"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/41-world-gravity.js",
+   "source": "repo",
+   "bytes": 3243,
+   "sourceSha256": "26105df3aaf1cf6e3c506cc544a01dd92fe1a143ab4135fa9d0be3e77f98baad"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/42-frame-loop.js",
+   "source": "repo",
+   "bytes": 3941,
+   "sourceSha256": "19e36aba6a1ef3526d92c898827b4ccb7a31ac9b3b5543d042cbbe48122fb8df"
+  },
+  {
+   "path": "packages/rooms/views/lens-room/src/43-tabs.js",
+   "source": "repo",
+   "bytes": 9204,
+   "sourceSha256": "75ca6808a158d93488b414d5b39ff47d5076e76fadb00ce6b838905b7ab30c4e"
+  },
+  {
+   "path": "packages/rooms/views/map-room/build.mjs",
+   "source": "repo",
+   "bytes": 914,
+   "sourceSha256": "2a2ef0e0e01ca1de0bbaa3aba80b791c0a8359b21630f2ae0b6be3eed1b0603d"
+  },
+  {
+   "path": "packages/rooms/views/map-room/shell.html",
+   "source": "repo",
+   "bytes": 2849,
+   "sourceSha256": "68c5b077c974f31bc40ffb2ad35ffc722aa3ee09d4fe9478321023df8ac8d3c7"
+  },
+  {
+   "path": "packages/rooms/views/map-room/src/01-three.js",
+   "source": "repo",
+   "bytes": 6353,
+   "sourceSha256": "7059beefe7f71ee96f7a9e05db90371a6cf585187be53c4bb31da6e9d44ecbb4"
+  },
+  {
+   "path": "packages/rooms/views/map-room/src/02-registry.js",
+   "source": "repo",
+   "bytes": 2340,
+   "sourceSha256": "af704f326b68695b9211ecf3c0158f48ee64d7f8c834a0c871bc6e1265f831a4"
+  },
+  {
+   "path": "packages/rooms/views/map-room/src/03-frame.js",
+   "source": "repo",
+   "bytes": 2571,
+   "sourceSha256": "e86604e6e29b623ebe92409166d451c5a52f828f62c8e766744ad3e11b11c735"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/build.mjs",
+   "source": "repo",
+   "bytes": 1091,
+   "sourceSha256": "7b19cba054fa62f18dbfedc0477dfecb62b89ff3ceb100a9470841b909794c80"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/shell.html",
+   "source": "repo",
+   "bytes": 8075,
+   "sourceSha256": "2d100865473ce997d49ca999bcbd43d2d60e7174b11c1495b61c89126cf3abae"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/01-small-helpers.js",
+   "source": "repo",
+   "bytes": 1175,
+   "sourceSha256": "8943e058cad9241d760cd5a8c1413264f932bb30145a9346d0f0708402553872"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/02-vector-math.js",
+   "source": "repo",
+   "bytes": 1459,
+   "sourceSha256": "0d58f26e24adcf3ae12c860c91a9a8a8f452904ef401b71bef65b7c2c6e2e8a5"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/03-shaders-small-and-flat-compile.js",
+   "source": "repo",
+   "bytes": 9454,
+   "sourceSha256": "825e02f8e931d8c32b12eb6656cb16f3857fc1dbb14804f9bcf9772155343aca"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/04-layer-art-for-the-textures.js",
+   "source": "repo",
+   "bytes": 4137,
+   "sourceSha256": "b3d208fd0e9955624868625bde6ff7c05144b8e379df8e960bdebf60b44e1298"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/05-mesh-building.js",
+   "source": "repo",
+   "bytes": 10347,
+   "sourceSha256": "f529377de1629597f72da2598543b1abd059e9abae575c30c2cd6d0853898d17"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/06-one-progressive-frame-jittered.js",
+   "source": "repo",
+   "bytes": 5146,
+   "sourceSha256": "35e959b3bc7e67abedfec393873879404786893223054b2f96f222e8d6ad5a5a"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/07-app-state.js",
+   "source": "repo",
+   "bytes": 2757,
+   "sourceSha256": "043c4921e30faf5d87a1a7d776c801750e333781b614c0266fdf95bbd9cf98b8"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/08-building-a-design-without-bloc.js",
+   "source": "repo",
+   "bytes": 4735,
+   "sourceSha256": "16d09626e4284c79e274929a3ad7a4f0ab601229e18ce67ef3ad45d8248917b6"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/09-electrical-overlays-a.js",
+   "source": "repo",
+   "bytes": 7121,
+   "sourceSha256": "c3bd80906b58f82202b1662c170a82702f25895058de9de11464363c2da1d271"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/09-electrical-overlays-b.js",
+   "source": "repo",
+   "bytes": 7467,
+   "sourceSha256": "faac821e48315ce2556301ab8efc33395b18e44f78d2f374ae3bbefa2b08e16c"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/09-electrical-overlays-c.js",
+   "source": "repo",
+   "bytes": 933,
+   "sourceSha256": "275c5d6506176541259d6a75c6dd17aefb4a127c7db5cee15945e15cbbf43e77"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/10-design-rules-files-array.js",
+   "source": "repo",
+   "bytes": 4653,
+   "sourceSha256": "693eda76917024f5ce9db3a300e5af755acb32d20b6a93390725ecb14bcbbabf"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/11-2d-drawings-a.js",
+   "source": "repo",
+   "bytes": 10672,
+   "sourceSha256": "c4a8cf20a6e8b54583ae08b1f62c727b2e5fc82cb32dc7d8e6234b32af677b69"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/11-2d-drawings-b.js",
+   "source": "repo",
+   "bytes": 4351,
+   "sourceSha256": "e5dce07db55fddc3608bc0be2f890122958cb53a4df72a491843cfc13f576c46"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/12-interaction-a.js",
+   "source": "repo",
+   "bytes": 7707,
+   "sourceSha256": "18e1f355da28b2af63658017571fec477727c1dff2d5187e7dd460be62543928"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/12-interaction-b.js",
+   "source": "repo",
+   "bytes": 1847,
+   "sourceSha256": "3fbb269175440a8a3be2b6aafc817f15dbf7cb26cce0537bbf1ef6b43e3ece59"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/13-checks-in-the-page.js",
+   "source": "repo",
+   "bytes": 1990,
+   "sourceSha256": "39d6b6c620cf18e78a717d0dfe8c93776fa1ef156b3e9f2868ad6c4148dadad8"
+  },
+  {
+   "path": "packages/rooms/views/pcb-room/src/14-main-loop.js",
+   "source": "repo",
+   "bytes": 1229,
+   "sourceSha256": "055ee0d750605f0eb546434db0753816d893b5a7202b882fa151526e6d31c369"
+  },
+  {
+   "path": "packages/rooms/views/sound-room/build.mjs",
+   "source": "repo",
+   "bytes": 1125,
+   "sourceSha256": "39561de2388f955ac37c1e9dedf4c8d394ee44a8584d54b46a2eab1b88d16eca"
+  },
+  {
+   "path": "packages/rooms/views/sound-room/shell.html",
+   "source": "repo",
+   "bytes": 3871,
+   "sourceSha256": "8b23f2f3b44b9389f9186c8c368b90c70877fcc4122aa630158142e065ba2eb8"
+  },
+  {
+   "path": "packages/rooms/views/sound-room/src/01-setup.js",
+   "source": "repo",
+   "bytes": 3264,
+   "sourceSha256": "8e51a66bb216ab10358a3a5af35384486b6e8790d139a581d0d7071dee8450b6"
+  },
+  {
+   "path": "packages/rooms/views/sound-room/src/02-field.js",
+   "source": "repo",
+   "bytes": 3243,
+   "sourceSha256": "09c72b320860996979b794d00be32d99b5af496d5d7c894b309483369acc53d5"
+  },
+  {
+   "path": "packages/rooms/views/sound-room/src/03-analysis.js",
+   "source": "repo",
+   "bytes": 2834,
+   "sourceSha256": "20cf816077abd36105d434ae4d331f3b5fc83903204514b92ae15a5e8743faff"
+  },
+  {
+   "path": "packages/rooms/views/sound-room/src/04-frame.js",
+   "source": "repo",
+   "bytes": 812,
+   "sourceSha256": "8defba5952d60f92a5e639b2913679a1e89739b1b2b996be546b7e12751681cf"
+  },
+  {
+   "path": "packages/rooms/views/sound-room/src/05-controls.js",
+   "source": "repo",
+   "bytes": 4070,
+   "sourceSha256": "1bff5b0ded5ded9064c46a670853ab76e87887b1704ff1bcd778941435024a7d"
   }
  ]
 }

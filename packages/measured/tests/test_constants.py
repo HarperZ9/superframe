@@ -29,12 +29,52 @@ def test_generated_values_are_the_codata_rows():
     assert abs(k.ke * 4 * 3.141592653589793 * k.eps0 - 1) < 1e-15
 
 
-def test_no_package_keeps_a_hand_copy_of_a_constant():
-    hits = []
+# rooms builds classic-script pages by stripping imports, so it cannot import the generated module yet.
+# Its copies are held to the CODATA 2022 value instead, so a drifted digit still fails.
+CHECKED_COPIES = {"rooms"}
+NUMBER = re.compile(r"\d+(?:\.\d+)?(?:e[-+]?\d+)?", re.I)
+
+
+def scan():
     for path in PACKAGES.rglob("*"):
         if path.suffix not in {".py", ".js", ".mjs", ".cjs"} or SKIP_DIRS & set(path.relative_to(PACKAGES).parts):
             continue
         for n, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
             if pattern.search(line):
-                hits.append(f"{path.relative_to(PACKAGES).as_posix()}:{n}: {line.strip()[:90]}")
+                yield path.relative_to(PACKAGES), n, line
+
+
+def codata_values():
+    import json
+    doc = json.loads((PKG / "generated" / "constants.json").read_text(encoding="utf-8"))
+    return [row["value"] for row in doc["constants"].values()]
+
+
+def matches_codata(literal, values):
+    x = float(literal)
+    return any(abs(x * 10.0 ** k - v) <= 1e-12 * abs(v) for v in values for k in (-8, 0, 8))
+
+
+def test_no_package_keeps_a_hand_copy_of_a_constant():
+    hits = [f"{rel.as_posix()}:{n}: {line.strip()[:90]}" for rel, n, line in scan() if rel.parts[0] not in CHECKED_COPIES]
     assert not hits, "import packages/measured/generated/constants instead:\n" + "\n".join(hits)
+
+
+def test_checked_copies_equal_codata_2022():
+    values, bad, seen = codata_values(), [], 0
+    for rel, n, line in scan():
+        if rel.parts[0] not in CHECKED_COPIES:
+            continue
+        for lit in NUMBER.findall(line):
+            if pattern.search(lit):
+                seen += 1
+                if not matches_codata(lit, values):
+                    bad.append(f"{rel.as_posix()}:{n}: {lit}")
+    assert seen, "the scan found no checked copies; the pattern or the folder changed"
+    assert not bad, "these differ from CODATA 2022:\n" + "\n".join(bad)
+
+
+def test_checked_copy_rule_rejects_a_drifted_digit():
+    values = codata_values()
+    assert matches_codata("299792458", values) and matches_codata("8.8541878188e-12", values)
+    assert not matches_codata("8.8541878128e-12", values)  # the CODATA 2018 eps0

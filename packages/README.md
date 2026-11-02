@@ -26,6 +26,7 @@ npm run test:py                                      # the Python tests
 | `cleanroom` | internal-copy vault, blends, difference report, release gate; see `cleanroom/LEGAL-CHECK.md` | FSL-1.1-MIT |
 | `library` | a SQLite catalogue of every artifact, with an MCP server | FSL-1.1-MIT |
 | `instruments` | the instrument pipeline from a law to a reading with a receipt, and the room meter | FSL-1.1-MIT |
+| `rooms` | experimental rooms: lenses, optical trains, sound, PCB and fluid solvers, and a typed map registry; see `rooms/README.md` | FSL-1.1-MIT |
 | `_vectors` | CC0 golden vectors for canonical records and statistics, shared with Flywheel and CMMNS | CC0-1.0 |
 
 ## Dependencies
@@ -51,6 +52,10 @@ The JavaScript engine has none. The Python packages use the versions pinned in `
 Built pages, renders and receipts are never committed. Each page builder rebuilds its page; for example `SITE_KIT=<site>/system/kit python packages/ndim/page/build.py`.
 
 `instruments/examples/*.json` are the exception, kept as dated worked examples. The room example reads private study results, so it rebuilds only where they are present; `diagram/tests/cad.test.js` checks all three against one record per instrument in `instruments/records`.
+
+## Provenance
+
+`PROVENANCE.json` lists every file the packages migration added, with its source (`workstation-tools@d82f57f:<path>`, a named private study folder, or new) and both sha256 values. `MANIFEST.json` holds the current hash of every file here.
 
 ## Who writes this folder
 
