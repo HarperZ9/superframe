@@ -1,0 +1,235 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://harperz9.local/hardware-pipeline/schemas/stage-02-twin.schema.json",
+ "title": "Simulation and digital twin of the instrument and its signal chain",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "stage",
+  "key",
+  "status",
+  "inputs",
+  "outputs",
+  "gate",
+  "tools",
+  "spec",
+  "does_not_prove"
+ ],
+ "properties": {
+  "stage": {
+   "const": 2
+  },
+  "key": {
+   "const": "twin"
+  },
+  "status": {
+   "enum": [
+    "paper",
+    "built",
+    "run",
+    "passed",
+    "failed",
+    "blocked",
+    "existing-device"
+   ]
+  },
+  "inputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "outputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "gate": {
+   "type": "object",
+   "properties": {
+    "condition": {
+     "type": "string"
+    },
+    "metric": {
+     "type": "string"
+    },
+    "op": {
+     "enum": [
+      "<",
+      "<=",
+      ">",
+      ">=",
+      "==",
+      "in"
+     ]
+    },
+    "threshold": {},
+    "measured": {},
+    "verdict": {
+     "enum": [
+      "pass",
+      "fail",
+      "open",
+      "not-applicable"
+     ]
+    },
+    "evidence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "condition",
+    "metric",
+    "op",
+    "threshold",
+    "verdict"
+   ],
+   "additionalProperties": false
+  },
+  "tools": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "role": {
+      "type": "string"
+     },
+     "licence": {
+      "type": "string"
+     },
+     "ours": {
+      "type": "boolean"
+     },
+     "lineage": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "name",
+     "role",
+     "licence",
+     "ours"
+    ],
+    "additionalProperties": false
+   },
+   "minItems": 1
+  },
+  "spec": {
+   "type": "object",
+   "properties": {
+    "model": {
+     "type": "string"
+    },
+    "code": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 0
+    },
+    "noise_sources": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "formula": {
+        "type": "string"
+       },
+       "value": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "name",
+       "formula",
+       "value"
+      ],
+      "additionalProperties": false
+     },
+     "minItems": 1
+    },
+    "bounds": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "formula": {
+        "type": "string"
+       },
+       "value": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "name",
+       "formula",
+       "value"
+      ],
+      "additionalProperties": false
+     },
+     "minItems": 1
+    },
+    "known_answer_tests": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "truth": {
+        "type": "string"
+       },
+       "pass_condition": {
+        "type": "string"
+       },
+       "result": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      },
+      "required": [
+       "name",
+       "truth",
+       "pass_condition",
+       "result"
+      ],
+      "additionalProperties": false
+     },
+     "minItems": 1
+    }
+   },
+   "required": [
+    "model",
+    "code",
+    "noise_sources",
+    "bounds",
+    "known_answer_tests"
+   ],
+   "additionalProperties": false
+  },
+  "notes": {
+   "type": "string"
+  },
+  "does_not_prove": {
+   "type": "string"
+  }
+ }
+}

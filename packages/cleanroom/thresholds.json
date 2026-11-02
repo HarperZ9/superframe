@@ -1,0 +1,20 @@
+{
+  "_preregistered": "2026-10-29, written before the first demonstration run and before any test was tuned. Change by editing this file; every report records the file's sha256.",
+  "image": {
+    "patch_region_share_max": 0.03,
+    "phash_distance_min": 0.15,
+    "feature_distance_min": 0.02
+  },
+  "audio": {
+    "matching_segment_seconds_max": 3.0
+  },
+  "text": {
+    "longest_common_run_words_max": 7,
+    "ngram_n": 5,
+    "ngram_containment_max": 0.10
+  },
+  "blend": {
+    "dominance_share_max": 0.5
+  },
+  "neighbours": 5
+}

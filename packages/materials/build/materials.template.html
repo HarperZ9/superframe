@@ -1,0 +1,301 @@
+<!doctype html>
+<!-- SPDX-FileCopyrightText: 2026 Zain Dana Harper -->
+<!-- SPDX-License-Identifier: AGPL-3.0-only -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Materials Library</title>
+<!--
+  Materials Library. Built by build/page.py from data/materials.json and materials/spectral.py.
+  Data contract (inlined as const D): {grid: [nm], cmf: [[x,y,z]] per grid step, lights: {D65, A, sodium: [power]},
+  mats: [{id, name, cls, phase, cond, n, k, R: [per grid step] | null, layer, rgb, rgbm, rough,
+          props: [[key, [value, unit, source, licence, confidence] | null]]}]}. page.py documents compact().
+  Style and controls: the site's system/kit (kit.css, kit.js), inlined between the site-kit markers by page.py;
+  its fonts are referenced by relative path (../site-kit/fonts), so the page falls back to system faces if moved.
+-->
+<!-- site-kit:begin --><!-- site-kit:end -->
+<style>
+:root{--ground:var(--wall);--ground-2:var(--wall-2);--ink-2:var(--soft);--rule:var(--line);--signal:var(--tide-2);
+  --n:var(--s2);--k:var(--s1);--r:var(--s3);--plotbg:var(--mat);--high:var(--verified);--moderate:var(--ember-3);--low:var(--drift)}
+.k-page{max-width:1480px}
+.k-head .count{font:500 var(--fs-2)/1 var(--face-utility);color:var(--soft)}
+.controls{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.4fr) minmax(0,1fr);gap:var(--sp-4) var(--sp-5)}
+.controls fieldset > div{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.controls label{display:block;margin:0 0 4px}
+.controls select{width:100%;margin-bottom:var(--sp-2)}
+.lib{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:var(--sp-4);align-items:start}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:2px;align-content:start}
+.tile{background:none;border:0;padding:8px 4px;min-height:0;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink);box-shadow:none}
+.tile:hover{background:var(--wall-2)}
+.tile[aria-current="true"]{background:var(--mat);box-shadow:0 0 0 1.5px var(--ink),inset 0 3px 0 var(--red)}
+.tile canvas{width:112px;height:112px}
+.tile .nm{font:600 var(--fs-2)/1.25 var(--face-still);text-align:center}
+.tile .cl{font:400 var(--fs-1)/1.2 var(--face-utility);color:var(--soft)}
+aside.k-frame{position:sticky;top:var(--sp-3);max-height:calc(100vh - 32px);overflow:auto}
+aside h2{font-size:var(--fs-5);margin:0 0 var(--sp-1)}
+aside .meta{font:400 var(--fs-1)/1.4 var(--face-utility);color:var(--soft);margin-bottom:var(--sp-2)}
+#big{width:100%;aspect-ratio:1/1;max-width:300px;display:block;margin:6px auto 10px}
+#plot{width:100%;height:220px;display:block;background:var(--plotbg);box-shadow:0 0 0 1px var(--line)}
+.legend{display:flex;gap:14px;font:400 var(--fs-1)/1 var(--face-utility);margin:var(--sp-2) 0 var(--sp-3)}
+.legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px}
+#props{font-size:var(--fs-1)}#props td{padding:5px 6px 5px 0}
+td.v{font-family:var(--face-utility);white-space:nowrap}
+td.s{font-family:var(--face-utility);color:var(--soft);word-break:break-all}
+.c-high{color:var(--high)}.c-moderate{color:var(--moderate)}.c-low{color:var(--low)}
+.null{color:var(--soft)}
+.mtoy{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--sp-4);align-items:start}
+#toy{width:100%;max-width:520px;aspect-ratio:1;display:block;margin:0 auto;cursor:grab;touch-action:none}
+#toy:active{cursor:grabbing}
+#pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
+#pick button{display:flex;align-items:center;gap:8px;text-align:left}
+#pick i{width:18px;height:18px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1.5px var(--ink)}
+.mtoy .k-rack{margin:var(--sp-3) 0;align-items:center}
+#bands{display:grid;grid-template-columns:repeat(16,minmax(0,1fr));gap:3px;align-items:end;height:150px;margin-top:var(--sp-3)}
+#bands[hidden]{display:none}
+#bands button{position:relative;height:100%;min-height:0;padding:0;border:0;background:none;display:flex;align-items:flex-end;box-shadow:inset 0 -1.5px 0 var(--ink)}
+#bands button span{display:block;width:100%;background:var(--c);height:var(--h);transition:height var(--dur-slow) var(--ease-spring),opacity var(--dur-base);transition-delay:calc(var(--i) * 18ms)}
+#bands button[aria-pressed="false"] span{opacity:.18;outline:1.5px dashed var(--ink);outline-offset:-1.5px}
+#bands button b{position:absolute;bottom:-20px;left:50%;translate:-50% 0;font:400 11px/1 var(--face-utility);color:var(--soft)}
+.twins{display:flex;flex-wrap:wrap;gap:var(--sp-4);align-items:center}
+.twins figure{margin:0;text-align:center}.twins canvas{width:180px;height:180px;display:block}
+.twins figcaption{font:600 var(--fs-2)/1.3 var(--face-still);margin-top:6px}
+.twins .lights{display:flex;flex-wrap:wrap;gap:6px}
+#twin-read{font:400 var(--fs-2)/1.5 var(--face-utility)}
+@media (max-width:900px){.mtoy{grid-template-columns:minmax(0,1fr)}.twins canvas{width:140px;height:140px}}
+@media (max-width:900px){.controls,.lib{grid-template-columns:minmax(0,1fr)}aside.k-frame{position:static;max-height:none}
+  #props{table-layout:fixed}td.v{white-space:normal;word-break:break-word}
+  #grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}.tile canvas{width:88px;height:88px}}
+</style>
+</head>
+<body data-region="brut">
+<a class="skip" href="#toy">Skip to the toy</a>
+<main class="k-page">
+<header class="k-head"><p class="k-super" aria-hidden="true">Matter</p>
+<h1>Materials Library</h1>
+<p class="k-lede">Measured optics and properties, rendered under real light.</p>
+<hr class="k-horizon"></header>
+<section class="k-layer" data-layer="toy" aria-labelledby="h-toy"><div class="k-layer-head"><h2 id="h-toy">Play</h2><span class="k-depth">1x</span></div>
+<div class="mtoy">
+<figure class="k-frame" style="margin:0"><canvas id="toy" width="480" height="480" tabindex="0"></canvas></figure>
+<div class="k-toy">
+<p>Drag the ball to move the lamp. Arrow keys work too.</p>
+<fieldset><legend>Pick a metal</legend><div id="pick"></div></fieldset>
+<div class="k-rack"><input id="tlight" type="range" min="0" max="2" step="1" value="0" data-knob data-label="Lamp" data-labels="Daylight|Bulb|Street lamp">
+<button type="button" id="split" class="k-primary" aria-expanded="false" aria-controls="bands">Take the colour apart</button></div>
+<div id="bands" role="group" aria-label="The colour, band by band, from violet to red" hidden></div>
+</div></div>
+</section>
+<p class="k-message">A metal's colour is the light it hands back, band by band, so a different lamp or a missing band changes what you see.</p>
+<section class="k-layer k-plain" data-layer="plain" aria-labelledby="h-plain"><div class="k-layer-head"><h2 id="h-plain">In plain words</h2><span class="k-depth">10x</span></div>
+<p>White light is many colours at once. A metal hands some bands back strongly and swallows others; the bands it hands back are the colour you see.</p>
+<p>Your eye squeezes all those bands into three signals. So two metals with different bands can look alike under one lamp and come apart under another.</p>
+<div class="twins">
+<figure><canvas id="twin-a" width="240" height="240"></canvas><figcaption id="twin-a-name"></figcaption></figure>
+<figure><canvas id="twin-b" width="240" height="240"></canvas><figcaption id="twin-b-name"></figcaption></figure>
+<div><div class="lights" role="group" aria-label="Lamp for the pair"><button type="button" data-twin="D65" aria-pressed="true">Daylight</button><button type="button" data-twin="A" aria-pressed="false">Bulb</button><button type="button" data-twin="sodium" aria-pressed="false">Street lamp</button></div>
+<p id="twin-read" aria-live="polite"></p></div>
+</div>
+</section>
+<section class="k-layer" data-layer="pro" aria-labelledby="h-pro"><div class="k-layer-head"><h2 id="h-pro">The working</h2><span class="k-depth">100x</span></div>
+<p class="count" id="count" aria-live="polite"></p>
+<form class="controls" onsubmit="return false">
+  <fieldset><legend>Class</legend><div id="classes"></div></fieldset>
+  <fieldset><legend>Light</legend>
+    <label for="light">Source</label><select id="light"><option value="D65">D65 daylight</option><option value="A">Incandescent A</option><option value="sodium">Sodium lamp</option></select>
+    <label for="rough">Roughness</label><input id="rough" type="range" min="0.05" max="0.8" step="0.05" value="0.3"></fieldset>
+  <fieldset><legend>View</legend><div><button type="button" id="modeS" aria-pressed="true">Spheres</button><button type="button" id="modeX" aria-pressed="false">Cross-section</button></div></fieldset>
+</form>
+<div class="lib"><div id="grid" aria-label="Materials"></div>
+<aside class="k-frame" aria-labelledby="dname"><h2 id="dname"></h2><div class="meta" id="dmeta"></div><canvas id="big" width="600" height="600"></canvas>
+<canvas id="plot" width="760" height="440"></canvas>
+<div class="legend" aria-hidden="true"><span><i style="background:var(--n)"></i>n</span><span><i style="background:var(--k)"></i>k</span><span><i style="background:var(--r)"></i>R normal</span></div>
+<table id="props"></table></aside></div>
+</section>
+<footer class="k-foot">CIE 1931 colour-matching functions and D65 (embedded, resampled to 5 nm): CIE, CC BY-SA 4.0, <a href="https://doi.org/10.25039/CIE.DS.xvudnb9b">doi:10.25039/CIE.DS.xvudnb9b</a>. Data: refractiveindex.info, physicallybased.info, Wikidata (CC0 1.0); USDA FPL Wood Handbook and NLM HSDB (US Government works; Source: National Library of Medicine); water contact angles from CC BY 4.0 papers, cited per value. Code: AGPL-3.0-only. Type: Accession and Hanken Grotesk, SIL OFL 1.1.</footer>
+</main>
+<script>
+const D=/*__DATA__*/null;
+const G=D.grid, NG=G.length, CMF=D.cmf;
+const st={cls:"all",light:"D65",rough:0.3,mode:"S",sel:D.mats[0].id};
+const M2=[[3.2404542,-1.5371385,-0.4985314],[-0.9692660,1.8760108,0.0415560],[0.0556434,-0.2040259,1.0572252]];
+function fres(n,k,c){ // unpolarised Fresnel, complex index, from air
+  const s2=1-c*c, er=n*n-k*k-s2, ei=2*n*k; // w = sqrt(er + i ei)
+  const m=Math.hypot(er,ei), wr=Math.sqrt((m+er)/2), wi=Math.sign(ei||1)*Math.sqrt(Math.max(0,(m-er)/2));
+  const rs=((c-wr)**2+wi*wi)/((c+wr)**2+wi*wi);
+  const Nr=n*n-k*k, Ni=2*n*k, ar=Nr*c, ai=Ni*c;
+  const rp=((ar-wr)**2+(ai-wi)**2)/((ar+wr)**2+(ai+wi)**2);
+  return 0.5*(rs+rp);
+}
+function toRGB(spec,L){let x=0,y=0,z=0,w=0;for(let i=0;i<NG;i++){const e=L[i];x+=spec[i]*e*CMF[i][0];y+=spec[i]*e*CMF[i][1];z+=spec[i]*e*CMF[i][2];w+=e*CMF[i][1];}
+  x/=w;y/=w;z/=w;return M2.map(r=>r[0]*x+r[1]*y+r[2]*z);}
+const enc=c=>{c=Math.min(Math.max(c,0),1);return c<=0.0031308?12.92*c:1.055*Math.pow(c,1/2.4)-0.055;};
+const tone=c=>c<0.8?c:0.8+0.2*(1-Math.exp(-(c-0.8)/0.2));
+const cache={};
+function lut(m,light,mask){ // Fresnel colour at 64 incidence cosines, and the body colour; mask keeps or drops each grid band
+  const key=m.id+light+(mask?mask.join(""):""); if(cache[key])return cache[key];
+  const L=D.lights[light], F=[], on=i=>mask?mask[i]:1; let body=null;
+  if(m.n){const k=m.k||new Array(NG).fill(0);
+    for(let j=0;j<64;j++){const c=j/63, sp=new Array(NG);for(let i=0;i<NG;i++)sp[i]=fres(m.n[i],k[i],c)*on(i);F.push(toRGB(sp,L));}
+    if(!m.cond){const sp=new Array(NG);for(let i=0;i<NG;i++){const a=4*Math.PI*k[i]/(G[i]*1e-9);sp[i]=Math.exp(-2*a*m.layer)*on(i);}body=toRGB(sp,L);}
+    else body=[0,0,0];
+  }
+  return cache[key]={F,body};
+}
+function lightRGB(light){const L=D.lights[light];return toRGB(new Array(NG).fill(1),L);}
+function draw(cv,m,o={}){ // o: {l: lamp direction, mask: bands kept, light, rough}; defaults come from the library state
+  const W=cv.width,H=cv.height,ctx=cv.getContext("2d"),img=ctx.createImageData(W,H),px=img.data;
+  const light=o.light||st.light, rough=o.rough??st.rough;
+  const R=W/2-2, a=Math.max(rough*rough,1e-3), a2=a*a;
+  let l=o.l||[-0.45,0.6,0.66];const ln=Math.hypot(...l);l=l.map(x=>x/ln);
+  const tab=lut(m,light,o.mask), flat=!m.n&&m.rgb, white=lightRGB(light);
+  const lin=flat?m.rgb.map(c=>c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4)).map((c,i)=>c*white[i]):null;
+  for(let yy=0;yy<H;yy++)for(let xx=0;xx<W;xx++){
+    const X=(xx+0.5-W/2)/R, Y=(H/2-yy-0.5)/R, rr=X*X+Y*Y, o=(yy*W+xx)*4;
+    if(rr>1){px[o+3]=0;continue;}
+    const nz=Math.sqrt(1-rr), nl=Math.max(0,X*l[0]+Y*l[1]+nz*l[2]);
+    const ry=2*nz*Y, env=0.18+0.82*Math.min(1,Math.max(0,(ry+0.3)/1.1)); // studio sky above, dark floor below
+    let c=[0,0,0];
+    if(flat){for(let i=0;i<3;i++)c[i]=lin[i]*(0.15+0.85*nl);}
+    else if(tab.F.length){
+      const Fv=tab.F[Math.min(63,Math.round(nz*63))];
+      let hx=l[0],hy=l[1],hz=l[2]+1;const hn=Math.hypot(hx,hy,hz);hx/=hn;hy/=hn;hz/=hn;
+      const ch=Math.max(0,X*hx+Y*hy+nz*hz), vh=Math.max(0,hz), d=ch*ch*(a2-1)+1;
+      const Dg=a2/(Math.PI*d*d), g1=x=>2*x/(x+Math.sqrt(a2+(1-a2)*x*x));
+      const spec=nl>0?Dg*g1(nz)*g1(nl)/(4*Math.max(nz,1e-3)):0;
+      const Fh=tab.F[Math.min(63,Math.round(vh*63))];
+      const blur=1/(1+6*rough);
+      for(let i=0;i<3;i++)c[i]=Fv[i]*env*(0.35+0.65*blur)+Fh[i]*spec*1.6+(tab.body[i])*(1-Fv[1]/Math.max(white[1],1e-6))*(0.12+0.88*nl)*0.9;
+    } else {const g=0.25+0.2*nl;c=[g,g,g];}
+    px[o]=255*enc(tone(c[0]));px[o+1]=255*enc(tone(c[1]));px[o+2]=255*enc(tone(c[2]));px[o+3]=255;
+    if(!m.n&&!m.rgb&&((xx+yy)%10<2))px[o+3]=120;
+  }
+  ctx.putImageData(img,0,0);
+}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function plot(cv,m,small){
+  const ctx=cv.getContext("2d"),W=cv.width,H=cv.height,p=small?6:44;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=css("--plotbg");ctx.fillRect(0,0,W,H);
+  if(!m.n){ctx.fillStyle=css("--ink-2");ctx.font=(small?20:26)+"px "+css("--mono");ctx.fillText("no open spectral data",p+8,H/2);return;}
+  const nmax=Math.max(1,...m.n,...(m.k||[0]))*1.05;
+  const X=i=>p+(W-2*p)*i/(NG-1), Yn=v=>H-p-(H-2*p)*v/nmax, Yr=v=>H-p-(H-2*p)*v;
+  ctx.strokeStyle=css("--rule");ctx.lineWidth=1;ctx.strokeRect(p,p,W-2*p,H-2*p);
+  const line=(arr,f,col)=>{if(!arr)return;ctx.strokeStyle=col;ctx.lineWidth=small?3:3.5;ctx.beginPath();arr.forEach((v,i)=>i?ctx.lineTo(X(i),f(v)):ctx.moveTo(X(i),f(v)));ctx.stroke();};
+  line(m.n,Yn,css("--n"));line(m.k,Yn,css("--k"));line(m.R,Yr,css("--r"));
+  if(!small){ctx.fillStyle=css("--ink-2");ctx.font="20px "+css("--mono");
+    [400,500,600,700].forEach(w=>{const i=G.indexOf(w);ctx.fillText(w,X(i)-18,H-p+26);});
+    ctx.fillText("n,k 0-"+nmax.toFixed(1),p+6,p+24);ctx.fillText("R 0-1",W-p-80,p+24);ctx.fillText("nm",W-p-30,H-p+26);}
+}
+function fmt(v){if(Array.isArray(v))return v.map(fmt).join(", ");if(typeof v!=="number")return String(v);
+  const a=Math.abs(v);return (a!==0&&(a<1e-3||a>=1e5))?v.toExponential(3):(+v.toPrecision(4)).toString();}
+function detail(){
+  const m=D.mats.find(x=>x.id===st.sel);
+  document.getElementById("dname").textContent=m.name;
+  document.getElementById("dmeta").textContent=[m.cls,m.phase,m.cond?"conductor":"dielectric",m.rgbm||"no preview"].join(" · ");
+  const big=document.getElementById("big"),pl=document.getElementById("plot");
+  big.setAttribute("aria-label",`${m.name} rendered as a sphere under ${st.light}, roughness ${st.rough}`);
+  pl.setAttribute("aria-label",m.n?`${m.name}: refractive index n, extinction k and normal reflectance R from 380 to 780 nm`:`${m.name}: no open spectral data`);
+  draw(big,m);plot(pl,m,false);
+  const t=document.getElementById("props");t.innerHTML="";
+  for(const [k,f] of m.props){const tr=t.insertRow();
+    tr.insertCell().textContent=k.replace(/_/g," ");
+    const v=tr.insertCell();v.className="v";
+    const s=tr.insertCell();s.className="s";
+    if(!f){v.textContent="unknown";v.classList.add("null");continue;}
+    v.textContent=fmt(f[0])+" "+(f[1]==="1"?"":f[1]);
+    s.innerHTML="";const c=document.createElement("span");c.className="c-"+f[4];c.textContent=f[4]+" ";s.append(c,document.createTextNode(f[2]+" · "+f[3]));}
+  document.querySelectorAll(".tile").forEach(b=>b.setAttribute("aria-current",b.dataset.id===st.sel));
+}
+function render(){
+  const grid=document.getElementById("grid");grid.innerHTML="";
+  const list=D.mats.filter(m=>st.cls==="all"||m.cls===st.cls);
+  document.getElementById("count").textContent=list.length+" of "+D.mats.length;
+  for(const m of list){const b=document.createElement("button");b.className="tile";b.dataset.id=m.id;
+    const cv=document.createElement("canvas");cv.setAttribute("aria-hidden","true");cv.width=st.mode==="S"?224:300;cv.height=st.mode==="S"?224:224;
+    if(st.mode==="X"){cv.style.width="124px";cv.style.height="92px";}
+    const nm=document.createElement("span");nm.className="nm";nm.textContent=m.name;
+    const cl=document.createElement("span");cl.className="cl";cl.textContent=m.cls;
+    b.append(cv,nm,cl);b.onclick=()=>{st.sel=m.id;detail();};grid.append(b);
+    st.mode==="S"?draw(cv,m):plot(cv,m,true);}
+  detail();
+}
+const classes=["all",...new Set(D.mats.map(m=>m.cls))];
+const cb=document.getElementById("classes");
+for(const c of classes){const b=document.createElement("button");b.type="button";b.textContent=c;b.setAttribute("aria-pressed",c==="all");
+  b.onclick=()=>{st.cls=c;cb.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));render();};cb.append(b);}
+document.getElementById("light").onchange=e=>{st.light=e.target.value;render();};
+document.getElementById("rough").oninput=e=>{st.rough=+e.target.value;render();};
+for(const [id,mode] of [["modeS","S"],["modeX","X"]])document.getElementById(id).onclick=()=>{st.mode=mode;
+  document.getElementById("modeS").setAttribute("aria-pressed",mode==="S");document.getElementById("modeX").setAttribute("aria-pressed",mode==="X");render();};
+Kit.on(()=>{if(st.mode==="X")render();else detail();});
+const q=new URLSearchParams(location.search);
+if(q.get("light"))st.light=q.get("light"),document.getElementById("light").value=st.light;
+if(q.get("mode")==="X"){st.mode="X";document.getElementById("modeS").setAttribute("aria-pressed",false);document.getElementById("modeX").setAttribute("aria-pressed",true);}
+if(q.get("sel"))st.sel=q.get("sel");
+if(q.get("theme"))document.documentElement.dataset.theme=q.get("theme");
+render();
+/* ---------- the toy: drag the lamp, pick a metal, take the colour apart into bands and put it back ---------- */
+const TOY={size:480,rough:0.25,bands:16,pick:8,lights:["D65","A","sodium"],keyStep:0.12};
+const metals=D.mats.filter(m=>m.cond&&m.n&&m.k).slice(0,TOY.pick);
+const ts={m:metals[0],l:[-0.45,0.6,0.66],light:"D65",mask:null,raf:0};
+const toyCv=document.getElementById("toy");
+const NAME={D65:"daylight",A:"a bulb",sodium:"a street lamp"};
+function normalR(m,i){const n=m.n[i],k=m.k?m.k[i]:0;return((n-1)**2+k*k)/((n+1)**2+k*k);}
+function bandOf(i){return Math.min(TOY.bands-1,Math.floor(i*TOY.bands/NG));}
+function lambdaRGB(i){const[x,y,z]=CMF[i],c=M2.map(r=>Math.max(0,r[0]*x+r[1]*y+r[2]*z)),mx=Math.max(...c,1e-6);return`rgb(${c.map(v=>Math.round(255*enc(v/mx))).join(",")})`;}
+function toyDraw(){ts.raf=0;draw(toyCv,ts.m,{l:ts.l,mask:ts.mask,light:ts.light,rough:TOY.rough});
+  const off=ts.mask?[...Array(TOY.bands).keys()].filter(b=>ts.mask[Math.ceil(b*NG/TOY.bands)]===0).length:0;
+  toyCv.setAttribute("aria-label",`${ts.m.name} as a ball under ${NAME[ts.light]}, lamp from the ${ts.l[0]<0?"left":"right"} and ${ts.l[1]>0?"above":"below"}${off>0?`, with ${off} of ${TOY.bands} colour bands taken out`:""}`);}
+const toyKick=()=>{if(!ts.raf)ts.raf=requestAnimationFrame(toyDraw);};
+function bands(){const box=document.getElementById("bands");box.innerHTML="";
+  for(let b=0;b<TOY.bands;b++){const idx=[...Array(NG).keys()].filter(i=>bandOf(i)===b),r=idx.reduce((s,i)=>s+normalR(ts.m,i),0)/idx.length,mid=idx[idx.length>>1];
+    const on=!ts.mask||ts.mask[idx[0]]===1,btn=document.createElement("button");btn.type="button";btn.setAttribute("aria-pressed",on);
+    btn.setAttribute("aria-label",`${G[idx[0]]} to ${G[idx[idx.length-1]]} nm, hands back ${Math.round(r*100)}%`);btn.title=btn.getAttribute("aria-label");
+    btn.style.setProperty("--c",lambdaRGB(mid));btn.style.setProperty("--h",`${Math.max(4,r*100)}%`);btn.style.setProperty("--i",b);
+    btn.innerHTML=`<span></span>${b%4===0?`<b aria-hidden="true">${G[idx[0]]}</b>`:""}`;
+    btn.onclick=()=>{ts.mask=ts.mask||new Array(NG).fill(1);const v=ts.mask[idx[0]]?0:1;idx.forEach(i=>ts.mask[i]=v);btn.setAttribute("aria-pressed",!!v);Kit.tick(0.6+b/TOY.bands);toyKick();};
+    box.append(btn);}}
+const pick=document.getElementById("pick");
+for(const m of metals){const b=document.createElement("button");b.type="button";b.setAttribute("aria-pressed",m===ts.m);
+  const sw=document.createElement("i");sw.setAttribute("aria-hidden","true");sw.style.background=m.rgb?`rgb(${m.rgb.map(c=>Math.round(c*255)).join(",")})`:"var(--soft)";
+  b.append(sw,document.createTextNode(m.name));b.onclick=()=>{ts.m=m;pick.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));bands();toyKick();};pick.append(b);}
+document.getElementById("tlight").addEventListener("input",e=>{ts.light=TOY.lights[+e.target.value];toyKick();});
+const split=document.getElementById("split");
+split.onclick=()=>{const open=split.getAttribute("aria-expanded")!=="true";split.setAttribute("aria-expanded",open);
+  document.getElementById("bands").hidden=!open;split.textContent=open?"Put it back together":"Take the colour apart";
+  if(!open)ts.mask=null;bands();toyKick();};
+let tdrag=false;const aim=e=>{const b=toyCv.getBoundingClientRect(),x=((e.clientX-b.left)/b.width)*2-1,y=1-((e.clientY-b.top)/b.height)*2,r=Math.hypot(x,y);
+  const s=r>0.98?0.98/r:1;ts.l=[x*s,y*s,Math.sqrt(Math.max(0.02,1-(x*s)**2-(y*s)**2))];toyKick();};
+toyCv.addEventListener("pointerdown",e=>{tdrag=true;toyCv.setPointerCapture(e.pointerId);aim(e);});
+toyCv.addEventListener("pointermove",e=>{if(tdrag)aim(e);});
+toyCv.addEventListener("pointerup",()=>tdrag=false);toyCv.addEventListener("pointercancel",()=>tdrag=false);
+toyCv.addEventListener("keydown",e=>{const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,1],ArrowDown:[0,-1]}[e.key];if(!d)return;e.preventDefault();
+  let x=Math.max(-0.95,Math.min(0.95,ts.l[0]+d[0]*TOY.keyStep)),y=Math.max(-0.95,Math.min(0.95,ts.l[1]+d[1]*TOY.keyStep));ts.l=[x,y,Math.sqrt(Math.max(0.02,1-x*x-y*y))];toyKick();});
+bands();toyDraw();
+/* ---------- the twins: the pair of metals that differ most in daylight and least under the street lamp ---------- */
+function lab(m,light){const L=D.lights[light];let x=0,y=0,z=0,X=0,Y=0,Z=0;
+  for(let i=0;i<NG;i++){const r=normalR(m,i),e=L[i];x+=r*e*CMF[i][0];y+=r*e*CMF[i][1];z+=r*e*CMF[i][2];X+=e*CMF[i][0];Y+=e*CMF[i][1];Z+=e*CMF[i][2];}
+  const f=t=>t>0.008856?Math.cbrt(t):7.787*t+16/116,fx=f(x/X),fy=f(y/Y),fz=f(z/Z);return[116*fy-16,500*(fx-fy),200*(fy-fz)];}
+const dE=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1],p[2]-q[2]);
+const spectral=D.mats.filter(m=>m.cond&&m.n&&m.k);let twin=null;
+for(let i=0;i<spectral.length;i++)for(let j=i+1;j<spectral.length;j++){const a=spectral[i],b=spectral[j];
+  const day=dE(lab(a,"D65"),lab(b,"D65")),lamp=dE(lab(a,"sodium"),lab(b,"sodium")),score=day/(lamp+1);
+  if(!twin||score>twin.score)twin={a,b,day,lamp,bulb:dE(lab(a,"A"),lab(b,"A")),score};}
+let twinLight="D65";
+function twins(){if(!twin)return;draw(document.getElementById("twin-a"),twin.a,{light:twinLight,rough:TOY.rough});draw(document.getElementById("twin-b"),twin.b,{light:twinLight,rough:TOY.rough});
+  document.getElementById("twin-a-name").textContent=twin.a.name;document.getElementById("twin-b-name").textContent=twin.b.name;
+  for(const id of ["twin-a","twin-b"])document.getElementById(id).setAttribute("aria-label",`${(id==="twin-a"?twin.a:twin.b).name} under ${NAME[twinLight]}`);
+  const d={D65:twin.day,A:twin.bulb,sodium:twin.lamp}[twinLight];
+  document.getElementById("twin-read").textContent=`Under ${NAME[twinLight]} they differ by ${d.toFixed(1)} (CIELAB distance; about 2.3 is the smallest step most people notice). Daylight ${twin.day.toFixed(1)}, bulb ${twin.bulb.toFixed(1)}, street lamp ${twin.lamp.toFixed(1)}.`;}
+document.querySelectorAll("[data-twin]").forEach(b=>b.onclick=()=>{twinLight=b.dataset.twin;document.querySelectorAll("[data-twin]").forEach(x=>x.setAttribute("aria-pressed",x===b));twins();});
+twins();
+Kit.on(()=>{toyKick();twins();});
+// Self-test: the page's own spectral pipeline must reproduce the Python build's
+// normal-incidence sRGB preview for every conductor under D65.
+window.__selftest=(()=>{let worst=0,n=0;for(const m of D.mats){if(!m.cond||!m.rgb)continue;
+  const c=toRGB(m.R,D.lights.D65).map(enc);worst=Math.max(worst,...c.map((x,i)=>Math.abs(x-m.rgb[i])));n++;}
+  return {conductors:n,max_abs_diff:worst,pass:worst<0.005};})();
+document.documentElement.dataset.selftest=JSON.stringify(window.__selftest);
+</script>
+</body>
+</html>

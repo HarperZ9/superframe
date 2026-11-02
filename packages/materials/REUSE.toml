@@ -1,0 +1,40 @@
+version = 1
+SPDX-PackageName = "materials"
+SPDX-PackageSupplier = "Zain Dana Harper"
+SPDX-PackageDownloadLocation = "NOASSERTION"
+
+# Source files carry their own SPDX headers (AGPL-3.0-only). This file covers what
+# cannot hold a header. Licence texts are in LICENSES/; LICENSE is the AGPL text.
+
+[[annotations]]
+path = ["README.md", "REUSE.toml", "LICENSE"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Zain Dana Harper"
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# CIE tables: unmodified copies, share-alike. See data/cie/NOTICE.md.
+[[annotations]]
+path = ["data/cie/CIE_xyz_1931_2deg.csv", "data/cie/CIE_std_illum_D65.csv", "data/cie/NOTICE.md"]
+precedence = "override"
+SPDX-FileCopyrightText = "International Commission on Illumination (CIE)"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
+
+# The compiled records. Upstream values keep their own terms, recorded per field
+# (licence, source, attribution) and per file in data/sources.json:
+# refractiveindex.info, physicallybased.info and Wikidata are CC0-1.0; the USDA Wood
+# Handbook and NLM HSDB are US Government works; water contact angles come from
+# CC BY 4.0 papers, credited per value. The compilation and the derived values
+# (reflectance, previews, Drude and Drude-Lorentz fits) are AGPL-3.0-only.
+[[annotations]]
+path = ["data/materials.json", "data/sources.json", "data/rejections.json", "data/drude_lorentz.json",
+        "data/export/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Zain Dana Harper"
+SPDX-License-Identifier = "AGPL-3.0-only AND CC0-1.0 AND CC-BY-4.0"
+
+# The gallery page inlines the records and a 5 nm resampling of the CIE tables.
+[[annotations]]
+path = ["materials.html"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 Zain Dana Harper", "International Commission on Illumination (CIE)"]
+SPDX-License-Identifier = "AGPL-3.0-only AND CC-BY-SA-4.0 AND CC0-1.0 AND CC-BY-4.0"

@@ -1,0 +1,185 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://harperz9.local/hardware-pipeline/schemas/stage-09-data_return.schema.json",
+ "title": "Data return: every reading as a receipt on the measurement bus",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "stage",
+  "key",
+  "status",
+  "inputs",
+  "outputs",
+  "gate",
+  "tools",
+  "spec",
+  "does_not_prove"
+ ],
+ "properties": {
+  "stage": {
+   "const": 9
+  },
+  "key": {
+   "const": "data_return"
+  },
+  "status": {
+   "enum": [
+    "paper",
+    "built",
+    "run",
+    "passed",
+    "failed",
+    "blocked",
+    "existing-device"
+   ]
+  },
+  "inputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "outputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "gate": {
+   "type": "object",
+   "properties": {
+    "condition": {
+     "type": "string"
+    },
+    "metric": {
+     "type": "string"
+    },
+    "op": {
+     "enum": [
+      "<",
+      "<=",
+      ">",
+      ">=",
+      "==",
+      "in"
+     ]
+    },
+    "threshold": {},
+    "measured": {},
+    "verdict": {
+     "enum": [
+      "pass",
+      "fail",
+      "open",
+      "not-applicable"
+     ]
+    },
+    "evidence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "condition",
+    "metric",
+    "op",
+    "threshold",
+    "verdict"
+   ],
+   "additionalProperties": false
+  },
+  "tools": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "role": {
+      "type": "string"
+     },
+     "licence": {
+      "type": "string"
+     },
+     "ours": {
+      "type": "boolean"
+     },
+     "lineage": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "name",
+     "role",
+     "licence",
+     "ours"
+    ],
+    "additionalProperties": false
+   },
+   "minItems": 1
+  },
+  "spec": {
+   "type": "object",
+   "properties": {
+    "receipt_schema": {
+     "type": "string"
+    },
+    "value_fields": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1
+    },
+    "uncal_policy": {
+     "type": "string"
+    },
+    "feeds": {
+     "type": "object",
+     "properties": {
+      "measurement_bus": {
+       "type": "string"
+      },
+      "perceptual_bridge": {
+       "type": "string"
+      },
+      "findings": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "measurement_bus",
+      "perceptual_bridge",
+      "findings"
+     ],
+     "additionalProperties": false
+    },
+    "example": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "receipt_schema",
+    "value_fields",
+    "uncal_policy",
+    "feeds",
+    "example"
+   ],
+   "additionalProperties": false
+  },
+  "notes": {
+   "type": "string"
+  },
+  "does_not_prove": {
+   "type": "string"
+  }
+ }
+}

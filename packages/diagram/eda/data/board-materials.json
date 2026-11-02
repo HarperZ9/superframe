@@ -1,0 +1,105 @@
+{
+ "about": "Read through packages/materials (materials.get) on build; assumed entries have no record in that library.",
+ "copper": {
+  "role": "bare copper, traces and pour under the mask",
+  "material": "copper",
+  "srgb": [
+   0.9693,
+   0.811,
+   0.7499
+  ],
+  "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+  "method": "normal-incidence Fresnel reflectance",
+  "confidence": "high"
+ },
+ "enig": {
+  "role": "ENIG pad finish (gold over nickel)",
+  "material": "gold",
+  "srgb": [
+   1.0,
+   0.8695,
+   0.6379
+  ],
+  "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+  "method": "normal-incidence Fresnel reflectance",
+  "confidence": "high"
+ },
+ "silk": {
+  "role": "silkscreen ink (a titanium white pigment)",
+  "material": "titanium_white",
+  "srgb": [
+   0.9278,
+   0.9247,
+   0.9181
+  ],
+  "source": "derived:spectral to CIE 1931 XYZ to sRGB",
+  "method": "Fresnel reflectance plus a clear layer over a white ground (k unknown, taken as 0)",
+  "confidence": "moderate"
+ },
+ "fr4": {
+  "role": "FR-4 laminate",
+  "material": null,
+  "srgb": [
+   0.8,
+   0.74,
+   0.52
+  ],
+  "source": "assumed",
+  "confidence": "none",
+  "method": "no FR-4 or epoxy record in the materials library; a woven-glass epoxy tan is assumed"
+ },
+ "mask": {
+  "role": "solder mask, green",
+  "material": null,
+  "srgb": [
+   0.06,
+   0.36,
+   0.2
+  ],
+  "alpha": 0.62,
+  "source": "assumed",
+  "confidence": "none",
+  "method": "no solder-mask record; colour and translucency assumed"
+ },
+ "epoxy_black": {
+  "role": "IC and relay bodies",
+  "material": null,
+  "srgb": [
+   0.09,
+   0.09,
+   0.1
+  ],
+  "source": "assumed",
+  "confidence": "none",
+  "method": "no moulding-compound record"
+ },
+ "ceramic": {
+  "role": "C0G capacitor body",
+  "material": null,
+  "srgb": [
+   0.72,
+   0.62,
+   0.45
+  ],
+  "source": "assumed",
+  "confidence": "none",
+  "method": "no barium-titanate or C0G ceramic record"
+ },
+ "copper_sigma": {
+  "value": 58100000.0,
+  "unit": "S/m",
+  "source": "wikidata:Q753#P2055",
+  "confidence": "low"
+ },
+ "copper_thickness_m": {
+  "value": 3.5e-05,
+  "source": "assumed, 1 oz/ft^2 finished copper"
+ },
+ "absent": [
+  "FR-4 (glass-epoxy laminate): optics, permittivity, loss tangent",
+  "solder mask",
+  "IC moulding compound",
+  "C0G ceramic",
+  "tin and solder alloys"
+ ]
+}

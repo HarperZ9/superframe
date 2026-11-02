@@ -1,0 +1,237 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://harperz9.local/hardware-pipeline/schemas/receipt.schema.json",
+ "title": "Instrument reading receipt: a measurement-bus/v1 event with the every-dimension state block and one added `instrument` key",
+ "description": "Extends project-telos.measurement-bus/v1 (17 fields) and every-dimension.state/0.1 (state block). Rule: calibration.uncal is true whenever no calibration record exists, any self-test that ran failed, or the record has expired; then uncertainty.status must not be 'calibrated'.",
+ "type": "object",
+ "required": [
+  "schema",
+  "tool",
+  "generated_at",
+  "channels",
+  "events",
+  "receipt_hash"
+ ],
+ "properties": {
+  "schema": {
+   "type": "string"
+  },
+  "tool": {
+   "type": "string"
+  },
+  "generated_at": {
+   "type": "string"
+  },
+  "channels": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "events": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": true,
+    "required": [
+     "event_id",
+     "run_id",
+     "frame_id",
+     "actor",
+     "domain",
+     "subject_ref",
+     "timestamp",
+     "clock_domain",
+     "coordinate_space",
+     "units",
+     "value_shape",
+     "value",
+     "uncertainty",
+     "provenance",
+     "privacy",
+     "severity",
+     "event_hash",
+     "state",
+     "instrument"
+    ],
+    "properties": {
+     "uncertainty": {
+      "type": "object",
+      "required": [
+       "status"
+      ],
+      "properties": {
+       "status": {
+        "enum": [
+         "estimated",
+         "witnessed",
+         "calibrated",
+         "unverifiable"
+        ]
+       }
+      }
+     },
+     "provenance": {
+      "type": "object",
+      "required": [
+       "measurement_hash",
+       "source",
+       "generated_by"
+      ]
+     },
+     "state": {
+      "type": "object",
+      "required": [
+       "dimension",
+       "range"
+      ]
+     },
+     "event_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+     },
+     "instrument": {
+      "type": "object",
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "kind": {
+        "type": "string"
+       },
+       "build": {
+        "type": "object",
+        "properties": {
+         "design_sha256": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "firmware_sha256": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "code_sha256": {
+          "type": [
+           "string",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "design_sha256",
+         "firmware_sha256",
+         "code_sha256"
+        ],
+        "additionalProperties": false
+       },
+       "calibration": {
+        "type": "object",
+        "properties": {
+         "state": {
+          "enum": [
+           "PRIMARY",
+           "CALIBRATED",
+           "UNCAL"
+          ]
+         },
+         "uncal": {
+          "type": "boolean"
+         },
+         "record_sha256": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "reference": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "traceability": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "valid_until": {
+          "type": [
+           "string",
+           "null"
+          ]
+         },
+         "why": {
+          "type": [
+           "string",
+           "null"
+          ]
+         }
+        },
+        "required": [
+         "state",
+         "uncal",
+         "record_sha256",
+         "reference",
+         "traceability",
+         "valid_until",
+         "why"
+        ],
+        "additionalProperties": false
+       },
+       "conditions": {
+        "type": "object"
+       },
+       "self_test": {
+        "type": "object",
+        "additionalProperties": {
+         "type": "object",
+         "properties": {
+          "ran": {
+           "type": "boolean"
+          },
+          "pass": {
+           "type": [
+            "boolean",
+            "null"
+           ]
+          },
+          "value": {}
+         },
+         "required": [
+          "ran",
+          "pass"
+         ],
+         "additionalProperties": false
+        }
+       },
+       "sim": {
+        "type": "boolean"
+       }
+      },
+      "required": [
+       "id",
+       "kind",
+       "build",
+       "calibration",
+       "conditions",
+       "self_test",
+       "sim"
+      ],
+      "additionalProperties": false
+     }
+    }
+   },
+   "minItems": 1
+  },
+  "receipt_hash": {
+   "type": "string",
+   "pattern": "^sha256:[0-9a-f]{64}$"
+  }
+ }
+}

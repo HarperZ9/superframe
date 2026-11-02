@@ -1,0 +1,40 @@
+{
+ "schema": "measured-private/1",
+ "about": "Hash-only index of measured tables and fields that are not in the public tree. Each entry gives the file name, the sha256 of the full private file, its row count and the reason. Rows of a table without a rows list count the points of its digitised curves. The loader (measured.load) reads private files from MEASURED_PRIVATE or data/private/ and raises PrivateTable when one is absent.",
+ "entries": [
+  {
+   "file": "kodak_5219.json",
+   "sha256": "21486651871684516fc017dddf951986fe4051af6c0a3baee442d1c362f28861",
+   "rows": 2155,
+   "reason": "digitised sensitometry, spectral-sensitivity, MTF and dye-density curves sit close to the Kodak data sheet figures (author decision 2026-10-31)",
+   "source": "kodak-5219",
+   "citation": "Eastman Kodak, KODAK VISION3 500T 5219/7219 technical data H-1-5219t (2015)"
+  },
+  {
+   "file": "schott_glass.json",
+   "sha256": "53359e6c4049973712100acb61e4d64e8a3e9bbc763ca8be04e800715363b8ad",
+   "rows": 122,
+   "reason": "manufacturer data; no terms stated on the download page (author decision 2026-10-31)",
+   "source": "schott-optical-glass",
+   "citation": "SCHOTT optical glass overview (xlsx, 2025) and datasheet collection"
+  },
+  {
+   "file": "p22_kuhn2002.json",
+   "field": "fig3_digitised",
+   "private_file": "p22_kuhn2002.private.json",
+   "sha256": "bc673a3a7812ea73822c280b47b3a0e5cbe1f0b56f6edf35f995e64e70238868",
+   "rows": 508,
+   "sha256_full_file_before_split": "dd559c7828ff8653cc3b933f1c3c6e99c0286d92ce17863dbfc84d5aee63ce8d",
+   "reason": "digitised points of Kuhn 2002 Fig. 3 (IEEE copyright figure); the model equations stay public (author decision 2026-10-31)"
+  },
+  {
+   "file": "facts.json",
+   "field": "rows",
+   "private_file": "facts.private.json",
+   "sha256": "1f623fecaa6addd185a064ea64b34b9d77529a1c3a847c0871b48436e476446c",
+   "rows": 9,
+   "sha256_full_file_before_split": "de12f5960b0b95946f7115ef63a816cf2d19c14bea31fba6acf5ad7b8e2ec9c1",
+   "reason": "rows marked internal (ti-opa1642, rca-tpm1508a) and ITU-R BT rows under ITU free-download terms (author decision 2026-10-31)"
+  }
+ ]
+}

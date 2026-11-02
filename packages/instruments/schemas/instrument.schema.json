@@ -1,0 +1,74 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://harperz9.local/hardware-pipeline/schemas/instrument.schema.json",
+ "title": "An instrument carried through all ten stages",
+ "type": "object",
+ "required": [
+  "schema",
+  "id",
+  "name",
+  "written",
+  "stages"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "schema": {
+   "const": "hardware-pipeline.instrument/0.1"
+  },
+  "id": {
+   "type": "string"
+  },
+  "name": {
+   "type": "string"
+  },
+  "written": {
+   "type": "string"
+  },
+  "atlas_id": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "summary": {
+   "type": "string"
+  },
+  "stages": {
+   "type": "array",
+   "minItems": 10,
+   "maxItems": 10,
+   "prefixItems": [
+    {
+     "$ref": "stage-01-principle.schema.json"
+    },
+    {
+     "$ref": "stage-02-twin.schema.json"
+    },
+    {
+     "$ref": "stage-03-front_end.schema.json"
+    },
+    {
+     "$ref": "stage-04-schematic_pcb.schema.json"
+    },
+    {
+     "$ref": "stage-05-firmware.schema.json"
+    },
+    {
+     "$ref": "stage-06-calibration.schema.json"
+    },
+    {
+     "$ref": "stage-07-hil.schema.json"
+    },
+    {
+     "$ref": "stage-08-field.schema.json"
+    },
+    {
+     "$ref": "stage-09-data_return.schema.json"
+    },
+    {
+     "$ref": "stage-10-manufacturing.schema.json"
+    }
+   ]
+  }
+ }
+}

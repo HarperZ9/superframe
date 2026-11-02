@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Every dimension</title>
+<!-- Built by packages/ndim/page/build.py from src/*.js, page/*.js, data/laws.json and data/tests.json.
+     Style: the site's system/kit, inlined between the markers. -->
+<!-- site-kit:begin --><!-- site-kit:end -->
+<style>{{CSS}}</style>
+</head>
+<body data-region="print">
+<a class="skip" href="#toy">Skip to the toy</a>
+<main class="k-page">
+<header class="k-head"><p class="k-super" aria-hidden="true">nD</p>
+ <h1>Every dimension</h1>
+ <p class="k-lede">Shapes from 1D to 5D and beyond: turn them in every plane, cut them with a moving hyperplane, cast their shadows through different lenses, and read the diagrams that hold their structure.</p>
+ <hr class="k-horizon">
+</header>
+
+<section class="k-layer" data-layer="toy" id="toy" aria-labelledby="toy-h">
+<div class="k-layer-head"><h2 id="toy-h">Spin it, slice it, change the lens</h2><span class="k-depth">toy</span></div>
+<div class="stage">
+ <figure class="k-frame"><canvas id="cv-main" aria-label="A four-dimensional shape drawn in the chosen lens, with the cut through it in red"></canvas><figcaption id="cap-main" aria-live="polite">A tesseract, the 4D cube, drawn as a cube inside a cube.</figcaption></figure>
+ <figure class="k-frame"><canvas id="cv-slice" aria-label="The cross-section on its own: the solid where the cutting plane meets the shape"></canvas><figcaption id="cap-slice" aria-live="polite">The cut through the shape.</figcaption></figure>
+</div>
+<div class="k-controls toybar">
+ <fieldset><legend>Shape</legend>
+  <label for="shape">Which shape
+  <select id="shape">
+   <option value="tesseract">Tesseract (4D cube)</option><option value="5-cell">5-cell (4D triangle)</option><option value="16-cell">16-cell</option>
+   <option value="24-cell">24-cell</option><option value="600-cell">600-cell</option><option value="120-cell">120-cell</option>
+   <option value="penteract">Penteract (5D cube)</option><option value="5-simplex">5-simplex</option><option value="5-orthoplex">5-orthoplex</option>
+  </select></label>
+ </fieldset>
+ <fieldset><legend>Lens</legend>
+  <div class="lens-pick" role="group" aria-label="Lens">
+   <button type="button" data-lens="orthographic" aria-pressed="false">Shadow</button>
+   <button type="button" data-lens="perspective" aria-pressed="true">Perspective</button>
+   <button type="button" data-lens="stereographic" aria-pressed="false">Stereographic</button>
+   <button type="button" data-lens="schlegel" aria-pressed="false">Schlegel</button>
+  </div>
+ </fieldset>
+ <fieldset><legend>Slice</legend>
+  <label for="cut">Where the plane cuts</label>
+  <input id="cut" type="range" min="-200" max="200" step="1" value="0">
+  <button class="k-primary" id="sweep" type="button">Sweep the plane through</button>
+  <label class="check"><input id="cut-on" type="checkbox" checked> Show the slice</label>
+ </fieldset>
+</div>
+<fieldset class="turns"><legend>Turn: one knob for each plane of rotation (6 in 4D, 10 in 5D)</legend>
+<div class="k-rack" id="rack">{{KNOBS}}</div>
+</fieldset>
+<figure class="k-frame powers" aria-labelledby="pw-h">
+ <h3 id="pw-h">Powers of dimension</h3>
+ <div class="fam-pick" role="group" aria-label="Shape family">
+  <button type="button" data-fam="cube" aria-pressed="true">Cubes</button><button type="button" data-fam="simplex" aria-pressed="false">Triangles (simplices)</button><button type="button" data-fam="cross" aria-pressed="false">Diamonds (cross-polytopes)</button>
+ </div>
+ <div class="strip">{{STRIP}}</div>
+</figure>
+</section>
+
+<p class="k-message">A 4D or 5D shape can only be seen through a lens: a shadow, a slice or a diagram. Every view here says what its lens keeps and what it drops.</p>
+
+<section class="k-layer" data-layer="plain" id="plain" aria-labelledby="plain-h">
+<div class="k-layer-head"><h2 id="plain-h">In plain words</h2><span class="k-depth">plain</span></div>
+<div class="prose">
+<p>Picture a world as flat as a sheet of paper, with a square living in it. When a ball passes through that world, the square sees a dot that grows into a circle, shrinks back to a dot and vanishes. He never sees the ball. He sees one slice of it at a time.</p>
+<p>We stand where the square stands, one step up. A tesseract passing through our space would show up as a solid that appears, grows, changes and disappears. The slider in the toy moves that cutting plane. With the tesseract held straight, every slice is a cube of the same size; tilt it with the xw, yw or zw knobs and the slices turn into other solids that swell and shrink as the plane sweeps.</p>
+<p>Shadows are the other way in. A cube's shadow on a wall is flat: a square inside a square with the corners joined. The tesseract's shadow in our space is a cube inside a cube. A shadow keeps some facts and drops others. The plain shadow keeps parallel lines but stacks points on top of each other. Perspective keeps straight lines but shrinks the far side. Stereographic projection bends edges into arcs and keeps every angle. The Schlegel view looks into one cell, so that nothing overlaps.</p>
+<p>Turning works by planes. In 3D you think of turning about an axis, but the turn happens in a plane: xy, xz or yz. In 4D there are six such planes and in 5D ten, so the toy has a knob for each. The knobs that name w (or v) turn the shape through directions we cannot point to; that is when the inner and outer cubes trade places.</p>
+<p>The strip under the toy shows the same family in each dimension. Drag a point and you get a segment; drag the segment sideways and you get a square; drag the square and you get a cube. Each step doubles the corners: 2, 4, 8, 16, 32.</p>
+</div>
+<div class="gal">
+ <figure class="k-frame"><canvas id="cv-petrie" aria-label="Petrie polygon projection of the chosen polytope"></canvas>
+  <div class="ctl"><label for="pet-shape">Petrie projection of
+   <select id="pet-shape"><option value="5-cell">5-cell</option><option value="tesseract" selected>tesseract</option><option value="16-cell">16-cell</option><option value="24-cell">24-cell</option><option value="600-cell">600-cell</option><option value="120-cell">120-cell</option></select></label></div>
+  <figcaption id="cap-petrie" aria-live="polite"></figcaption></figure>
+ <figure class="k-frame"><canvas id="cv-schlegel" aria-label="Schlegel diagram of the chosen polytope"></canvas>
+  <div class="ctl"><label for="sch-shape">Schlegel diagram of
+   <select id="sch-shape"><option value="5-cell">5-cell</option><option value="tesseract" selected>tesseract</option><option value="16-cell">16-cell</option><option value="24-cell">24-cell</option><option value="600-cell">600-cell</option><option value="120-cell">120-cell</option></select></label>
+   <label for="sch-turn">Turn the view<input id="sch-turn" type="range" min="0" max="360" step="1" value="30"></label></div>
+  <figcaption id="cap-schlegel" aria-live="polite"></figcaption></figure>
+ <figure class="k-frame"><canvas id="cv-hopf" aria-label="Hopf fibration: linked circles of the 3-sphere, stereographically projected, over the Clifford torus"></canvas>
+  <div class="ctl"><label for="hopf-turn">Turn in the xw plane<input id="hopf-turn" type="range" min="0" max="360" step="1" value="20"></label>
+   <label for="hopf-n">Circles per latitude<input id="hopf-n" type="range" min="3" max="24" step="1" value="10"></label>
+   <button type="button" id="hopf-torus" aria-pressed="true">Clifford torus</button></div>
+  <figcaption id="cap-hopf" aria-live="polite"></figcaption></figure>
+ <figure class="k-frame"><canvas id="cv-sdf" aria-label="A 3D slice of a 4D distance field, ray-marched"></canvas>
+  <div class="ctl"><label for="sdf-shape">4D shape
+   <select id="sdf-shape"><option value="hypersphere">hypersphere</option><option value="hyperbox">tesseract (solid)</option><option value="duocylinder">duocylinder</option><option value="tiger" selected>tiger (a 4D torus)</option></select></label>
+   <label for="sdf-w">Cut at w<input id="sdf-w" type="range" min="-110" max="110" step="1" value="20"></label>
+   <div class="path-pick" role="group" aria-label="Render path"><button type="button" data-run="sdf" data-path="cpu" aria-pressed="true">CPU</button><button type="button" data-run="sdf" data-path="gpu" aria-pressed="false">GPU</button><button type="button" data-compare="sdf">Compare</button></div></div>
+  <figcaption id="cap-sdf" aria-live="polite"></figcaption></figure>
+ <figure class="k-frame"><canvas id="cv-julia" aria-label="A 3D slice of a 4D quaternion Julia set, ray-marched"></canvas>
+  <div class="ctl"><label for="jul-c">Julia constant
+   <select id="jul-c"><option value="a">(-0.2, 0.6, 0.2, 0)</option><option value="b">(-0.291, -0.399, 0.339, 0.437)</option><option value="c">(-1, 0.2, 0, 0)</option></select></label>
+   <label for="jul-w">Cut at the 4th coordinate<input id="jul-w" type="range" min="-60" max="60" step="1" value="0"></label>
+   <div class="path-pick" role="group" aria-label="Render path"><button type="button" data-run="julia" data-path="cpu" aria-pressed="true">CPU</button><button type="button" data-run="julia" data-path="gpu" aria-pressed="false">GPU</button><button type="button" data-compare="julia">Compare</button></div></div>
+  <figcaption id="cap-julia" aria-live="polite"></figcaption></figure>
+ <figure class="k-frame"><canvas id="cv-laws" aria-label="The law table's signatures as points in 8 dimensions, turned and sliced"></canvas>
+  <div class="ctl"><label for="law-plane">Turn plane
+   <select id="law-plane"><option value="0,3">axes 1 and 4</option><option value="1,4">axes 2 and 5</option><option value="2,5">axes 3 and 6</option><option value="0,6">axes 1 and 7</option><option value="1,7">axes 2 and 8</option><option value="3,7">axes 4 and 8</option></select></label>
+   <label for="law-turn">Angle<input id="law-turn" type="range" min="0" max="360" step="1" value="0"></label>
+   <label for="law-dom">Mark a domain<select id="law-dom"><option value="">none</option></select></label>
+   <label for="law-slab">Cut along the 8th axis<input id="law-slab" type="range" min="-100" max="100" step="1" value="0"></label>
+   <label class="check"><input id="law-slab-on" type="checkbox"> Cut</label></div>
+  <p class="read" id="law-read" aria-live="polite">Point at a dot to read its law.</p>
+  <figcaption id="cap-laws" aria-live="polite"></figcaption></figure>
+</div>
+</section>
+
+<section class="k-layer" data-layer="pro" id="pro" aria-labelledby="pro-h">
+<div class="k-layer-head"><h2 id="pro-h">The working</h2><span class="k-depth">pro</span></div>
+<div class="prose">{{PRO}}</div>
+<h3>Coxeter-Dynkin diagrams, from computed simple roots</h3>
+<div id="dynkin"></div>
+<h3>Face lattice</h3>
+<label for="hasse-shape">Hasse diagram of
+<select id="hasse-shape"><option value="simplex:2">triangle</option><option value="cube:2">square</option><option value="simplex:3">tetrahedron</option><option value="cube:3">cube</option><option value="cross:3">octahedron</option><option value="simplex:4">5-cell</option><option value="cube:4" selected>tesseract</option><option value="cross:4">16-cell</option><option value="24-cell">24-cell</option><option value="600-cell">600-cell</option><option value="120-cell">120-cell</option></select></label>
+<figure class="k-frame"><div id="hasse"></div><figcaption id="cap-hasse" aria-live="polite"></figcaption></figure>
+<h3>f-vectors, computed in this page</h3>
+<div class="k-scroll"><table id="ftable"><thead><tr><th scope="col">Polytope</th><th scope="col">Schläfli</th><th scope="col">Computed f-vector</th><th scope="col">Published</th><th scope="col">Euler</th><th scope="col">ms</th><th scope="col">Verdict</th></tr></thead><tbody></tbody></table></div>
+<h3>Lenses</h3>
+<div class="k-scroll"><table><thead><tr><th scope="col">Lens</th><th scope="col">Keeps</th><th scope="col">Loses</th></tr></thead><tbody id="lens-rows"></tbody></table></div>
+<h3>Known-answer tests</h3>
+<p id="test-sum"></p>
+<details><summary>Every check</summary><div class="k-scroll"><table><thead><tr><th scope="col">Check</th><th scope="col">Verdict</th><th scope="col">Detail</th></tr></thead><tbody id="test-rows"></tbody></table></div></details>
+<div class="prose">{{MISSING}}</div>
+</section>
+<p class="k-meta k-foot">Library: packages/ndim (dependency-free JavaScript). Built {{DATE}}.</p>
+</main>
+<script id="laws-data" type="application/json">{{LAWS}}</script>
+<script id="tests-data" type="application/json">{{TESTS}}</script>
+<script>{{JS}}</script>
+</body>
+</html>

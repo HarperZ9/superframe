@@ -1,0 +1,89 @@
+{
+ "schema": "superframe.instrument-record/1",
+ "id": "room",
+ "pipeline_id": "room-weyl",
+ "name": "Room-shape meter",
+ "atlas_id": "room-weyl",
+ "written": "2026-10-30",
+ "summary": "Hearing a room's volume from its mode count with a laptop's own speaker and mic. Stages 2, 5, 7 and 9 are built and run; the rest are on paper.",
+ "views": {
+  "pipeline_example": "examples/room-weyl.json",
+  "cad_model": "diagram/cad/instruments/room.js",
+  "cad_page": "cad-room.html"
+ },
+ "design": {
+  "L": {
+   "value": 5,
+   "unit": "m",
+   "label": "Room length"
+  },
+  "Wd": {
+   "value": 4,
+   "unit": "m",
+   "label": "Room width"
+  },
+  "H": {
+   "value": 2.5,
+   "unit": "m",
+   "label": "Room height"
+  },
+  "T60": {
+   "value": 0.5,
+   "unit": "s",
+   "label": "Reverberation time"
+  },
+  "fTop": {
+   "value": 150,
+   "unit": "Hz",
+   "label": "Band top"
+  },
+  "pad": {
+   "value": 21,
+   "unit": "dB",
+   "label": "Pad attenuation"
+  }
+ },
+ "fixed": {
+  "c0": 343
+ },
+ "assumptions": [
+  {
+   "assumption": "walls are rigid enough that modes are Neumann modes",
+   "how_checked": "measured mode decay times are long (T60 above 0.3 s at low frequency)",
+   "if_broken": "the surface term changes sign or vanishes; V biased",
+   "optional": true,
+   "door": "fit a wall-impedance term to the surface coefficient"
+  },
+  {
+   "assumption": "the source and the mic see every mode",
+   "how_checked": "corner to opposite-corner protocol; corners are antinodes of every mode",
+   "if_broken": "undercount; a mid-room mic misses about half",
+   "optional": true,
+   "door": "average several mic positions instead of one corner"
+  },
+  {
+   "assumption": "modes can be told apart",
+   "how_checked": "known-answer injection with two modes 1 Hz apart (R1)",
+   "if_broken": "undercount; this is the wall the matrix pencil attacks",
+   "optional": true,
+   "door": "the matrix pencil resolves modes closer than a modal bandwidth"
+  },
+  {
+   "assumption": "mode spacing is Poisson (a box is integrable; Berry and Tabor 1977)",
+   "how_checked": "the corrected count against the twin's truth",
+   "if_broken": "the resolving correction is wrong for chaotic (irregular) rooms, whose spacings repel",
+   "optional": true,
+   "door": "use a level-repulsion correction for irregular rooms"
+  },
+  {
+   "assumption": "the laptop records raw audio (no automatic gain, noise suppression or echo cancellation)",
+   "how_checked": "electrical or acoustic loopback reads a flat, linear response",
+   "if_broken": "the decay and the spectrum are rewritten by DSP; UNCAL",
+   "optional": true,
+   "door": "an external audio interface with no processing"
+  }
+ ],
+ "fixed_notes": {
+  "c0": "speed of sound in room air, m/s (about 20 C; from memory, moderate)"
+ }
+}

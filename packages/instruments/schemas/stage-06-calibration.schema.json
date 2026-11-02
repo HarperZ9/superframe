@@ -1,0 +1,192 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://harperz9.local/hardware-pipeline/schemas/stage-06-calibration.schema.json",
+ "title": "Calibration by substitution against references, with honest traceability",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "stage",
+  "key",
+  "status",
+  "inputs",
+  "outputs",
+  "gate",
+  "tools",
+  "spec",
+  "does_not_prove"
+ ],
+ "properties": {
+  "stage": {
+   "const": 6
+  },
+  "key": {
+   "const": "calibration"
+  },
+  "status": {
+   "enum": [
+    "paper",
+    "built",
+    "run",
+    "passed",
+    "failed",
+    "blocked",
+    "existing-device"
+   ]
+  },
+  "inputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "outputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "gate": {
+   "type": "object",
+   "properties": {
+    "condition": {
+     "type": "string"
+    },
+    "metric": {
+     "type": "string"
+    },
+    "op": {
+     "enum": [
+      "<",
+      "<=",
+      ">",
+      ">=",
+      "==",
+      "in"
+     ]
+    },
+    "threshold": {},
+    "measured": {},
+    "verdict": {
+     "enum": [
+      "pass",
+      "fail",
+      "open",
+      "not-applicable"
+     ]
+    },
+    "evidence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "condition",
+    "metric",
+    "op",
+    "threshold",
+    "verdict"
+   ],
+   "additionalProperties": false
+  },
+  "tools": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "role": {
+      "type": "string"
+     },
+     "licence": {
+      "type": "string"
+     },
+     "ours": {
+      "type": "boolean"
+     },
+     "lineage": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "name",
+     "role",
+     "licence",
+     "ours"
+    ],
+    "additionalProperties": false
+   },
+   "minItems": 1
+  },
+  "spec": {
+   "type": "object",
+   "properties": {
+    "method": {
+     "type": "string"
+    },
+    "references": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "kind": {
+        "enum": [
+         "primary",
+         "fixed-point",
+         "secondary",
+         "working",
+         "none"
+        ]
+       },
+       "traceability": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "name",
+       "kind",
+       "traceability"
+      ],
+      "additionalProperties": false
+     },
+     "minItems": 1
+    },
+    "record_fields": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1
+    },
+    "is_primary_standard": {
+     "type": "boolean"
+    },
+    "honest_traceability": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "method",
+    "references",
+    "record_fields",
+    "is_primary_standard",
+    "honest_traceability"
+   ],
+   "additionalProperties": false
+  },
+  "notes": {
+   "type": "string"
+  },
+  "does_not_prove": {
+   "type": "string"
+  }
+ }
+}

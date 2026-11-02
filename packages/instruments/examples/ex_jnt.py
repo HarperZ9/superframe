@@ -1,0 +1,165 @@
+# SPDX-FileCopyrightText: 2026 Zain Dana Harper
+# SPDX-License-Identifier: FSL-1.1-MIT
+"""Worked example 1: the Johnson-noise thermometer, the hardware instrument. Every stage on paper."""
+from common import BUS, CHECKS, KICAD, NGSPICE, PERCEIVE, PY, STUDYRUN, K, gate, record, stage, tool, walls
+
+PICO = tool("Raspberry Pi Pico SDK and arm-none-eabi-gcc", "firmware build", "BSD-3-Clause and GPL-3.0 (from memory, moderate)")
+NIX = tool("Nix flake with a locked input set", "pinned, reproducible toolchain", "LGPL-2.1 (from memory, moderate)", False,
+           "Dolstra, The Purely Functional Software Deployment Model (2006); reproducible-builds.org practice")
+
+REC = record("jnt")
+
+
+def build():
+    s = []
+    s.append(stage(1, "principle", "paper",
+        ["ATLAS.json top5 jnt-laptop", "wall audit: 'a thermometer must be calibrated against a reference temperature'"],
+        ["law, quantity, inversion and its assumptions, each with how it is checked"],
+        gate("every assumption names a check that can fail", "assumptions without a check", "==", 0, "pass", 0),
+        [tool("law catalogue and ATLAS.json", "source of the law", "ours", True, "2026-10-30-law-table, 2026-10-30-instruments"), CHECKS],
+        {"law": {"name": "Johnson-Nyquist noise (fluctuation-dissipation)", "form": "<V^2> = 4 kB T integral Re Z(f) df; for a pure resistor 4 kB T R B",
+                 "catalogue_id": "johnson_nyquist", "lineage": "Johnson, Phys. Rev. 32, 97 (1928); Nyquist, Phys. Rev. 32, 110 (1928); Callen and Welton (1951) for the general theorem"},
+         "quantity": "absolute thermodynamic temperature T of a resistor",
+         "signal": "the open-circuit noise voltage spectral density of that resistor",
+         "inversion": f"T = S_V / (4 kB Re Z); kB = {K.kB!r} J/K exactly since the 2019 SI redefinition",
+         "wall_assumptions": walls(REC),
+         "fundamental_bound": "statistical: dT/T about (1 + a) / sqrt(B t) for the cross-spectrum, with a the amplifier-to-resistor noise power ratio; 0.1 percent needs about 150 s at B = 9 kHz"},
+        "A primary thermometer still rests on Re Z, the band and the gain being known; it removes only the need for a reference temperature."))
+    s.append(stage(2, "twin", "paper",
+        ["stage 1 law and assumptions", "candidate parts' datasheet noise figures"],
+        ["a seeded twin of resistor, two chains, ADC and estimator", "known-answer tests the hardware will repeat"],
+        gate("the twin recovers a planted T within its own statistical interval at 250, 300 and 350 K",
+             "max |T_est - T_planted| / sigma", "<", 2.0),
+        [PY, NGSPICE, STUDYRUN],
+        {"model": "R = 10 kOhm metal film in a shielded can; two independent JFET-input chains, gain about 2000 each, band-pass 1 to 10 kHz; a stereo 24-bit ADC at 48 kHz; cross-spectral density averaged with Welch segments; T from the mean cross PSD over the flat band divided by 4 kB Re Z and the measured gain",
+         "code": ["planned: jnt/twin.py (not written; the room meter is the built example)"],
+         "noise_sources": [
+            {"name": "resistor thermal noise", "formula": "sqrt(4 kB T R)", "value": "12.9 nV/sqrt(Hz) at 10 kOhm, 300 K"},
+            {"name": "op-amp voltage noise (each chain)", "formula": "e_n", "value": "5.1 nV/sqrt(Hz) at 1 kHz, OPA1642 typical (TI OPA1642 data sheet, Electrical Characteristics, Noise, sha256 00c3e052...); power ratio a = 5.1^2 / 12.87^2 = 0.157"},
+            {"name": "op-amp current noise through R", "formula": "i_n R", "value": "0.008 nV/sqrt(Hz) (0.8 fA/sqrt(Hz) at 1 kHz, OPA1642 typical, same data sheet); correlated between chains, negligible"},
+            {"name": "ADC quantisation and input noise", "formula": "q / sqrt(12 fs/2) referred through the gain", "value": "below 0.1 nV/sqrt(Hz) at the input with gain 2000"},
+            {"name": "kT/C on the input node", "formula": "sqrt(kB T / C)", "value": "12 uV rms at 30 pF; it is the same noise seen through the RC, so it enters through Re Z, not on top of it"}],
+         "bounds": [
+            {"name": "statistical floor", "formula": "dT/T = (1 + a) / sqrt(B t)", "value": "0.39 percent at 10 s, 0.16 percent at 60 s, 0.05 percent at 600 s (B = 9 kHz)"},
+            {"name": "band-edge roll-off", "formula": "Re Z = R / (1 + (2 pi f R C)^2)", "value": "1.6e-4 at 10 kHz with 10 kOhm and 20 pF; the reason R is 10 kOhm, not 100 kOhm"}],
+         "known_answer_tests": [
+            {"name": "planted temperatures", "truth": "synthetic resistor noise at 250, 300 and 350 K through the twin chains", "pass_condition": "each within 2 sigma", "result": None},
+            {"name": "zero-correlation null", "truth": "independent noise into each chain, true cross power 0", "pass_condition": "|T_est| below 2 sigma of the null", "result": None},
+            {"name": "planted crosstalk", "truth": "-80 dB coupling between chains", "pass_condition": "the null test flags it", "result": None}]},
+        "A twin built from datasheet figures says what the design can reach; it says nothing about the parts on the bench."))
+    s.append(stage(3, "front_end", "paper",
+        ["stage 2 noise budget", "bound from stage 1"],
+        ["chain, part choices and a budget where the resistor's own noise dominates"],
+        gate("the resistor's noise is at least 80 percent of each chain's total input noise power", "resistor share", ">=", 0.8, "pass", 0.86,
+             "12.9^2 / (12.9^2 + 5.1^2) = 0.865 from the stage-2 figures"),
+        [NGSPICE, PY],
+        {"existing_device": False,
+         "chain": [
+            {"element": "sensor", "part_or_device": "10 kOhm metal-film or thin-film resistor, 25 ppm/K or better, in a copper can on a short guarded lead", "key_spec": "no DC current, no excess noise"},
+            {"element": "input switch matrix", "part_or_device": "low-leakage analog switches or reed relays", "key_spec": "selects resistor, short (auto-zero), reference resistor at the ice point (substitution), injected noise (known signal), DAC loopback"},
+            {"element": "preamp, two independent chains", "part_or_device": "JFET-input op-amp, gain about 40 then 50, each chain on its own battery and ground return", "key_spec": "e_n near 5.1 nV/sqrt(Hz) at 1 kHz, i_n near 1 fA/sqrt(Hz)"},
+            {"element": "band filter", "part_or_device": "2nd-order high-pass at 300 Hz, 4th-order low-pass at 20 kHz, then a digital flat-band window 1 to 10 kHz", "key_spec": "flatness measured by injection, not assumed"},
+            {"element": "ADC", "part_or_device": "stereo 24-bit audio ADC (USB interface with line inputs, or an ADC board on the microcontroller)", "key_spec": "channel crosstalk below -100 dB, measured by the null test"},
+            {"element": "pilot tone", "part_or_device": "a small tone at 12 kHz injected after the switch, outside the analysis band", "key_spec": "tracks gain drift in both chains continuously (pilotpath)"}],
+         "noise_budget": [
+            {"source": "resistor (signal)", "density": "12.9 nV/sqrt(Hz)", "share_of_total": "0.86 of input power per chain"},
+            {"source": "op-amp e_n", "density": "5.1 nV/sqrt(Hz)", "share_of_total": "0.14 per chain; removed on average by cross-correlation, still costs averaging time"},
+            {"source": "op-amp i_n R", "density": "0.008 nV/sqrt(Hz)", "share_of_total": "below 1e-6; the only correlated amplifier term"},
+            {"source": "ADC referred to input", "density": "below 0.1 nV/sqrt(Hz)", "share_of_total": "below 1e-4"}],
+         "adc": {"bits": 24, "fs_hz": 48000, "enob_or_floor": "the null test measures the true floor; datasheet ENOB not trusted"},
+         "margin_to_bound": "the chain sits at (1 + a) = 1.16 times the statistical bound; a noiseless amplifier would cut dT/T by at most 14 percent at fixed time, or averaging time by about 25 percent, since time scales as (1 + a)^2"},
+        "A paper budget ignores layout pickup, microphonics and part-to-part spread."))
+    s.append(stage(4, "schematic_pcb", "paper",
+        ["stage 3 chain"], ["KiCad project plan, BOM with lifecycle and alternates"],
+        gate("ERC and DRC clean; every BOM line has an alternate and a lifecycle source", "BOM lines without alternate or lifecycle source", "==", 0),
+        [KICAD, tool("InteractiveHtmlBom", "assembly view", "MIT (from memory, moderate)")],
+        {"existing_device": False,
+         "eda": {"tool": "KiCad", "version": "9.x (current at design time; check the release before starting)", "files": ["jnt.kicad_pro", "jnt.kicad_sch", "jnt.kicad_pcb", "jnt-bom.csv (planned, not drawn)"]},
+         "checks": ["ERC clean", "DRC clean", "two chains on separate ground islands joined at one point", "guard ring around the resistor input", "test points on every switch-matrix node and both chain outputs"],
+         "bom": [
+            {"ref": "R1", "part": "10 kOhm thin-film, 0.1 percent, 25 ppm/K", "function": "sensing resistor", "lifecycle": "unknown: check at order time", "lifecycle_source": "distributor lifecycle field at order time", "alternates": ["any 10 kOhm metal-film of equal tempco", "wirewound is excluded (inductance)"]},
+            {"ref": "R2", "part": "10 kOhm, same type, matched lot", "function": "reference resistor for the ice-point substitution", "lifecycle": "unknown: check at order time", "lifecycle_source": "distributor", "alternates": ["second unit of R1's lot"]},
+            {"ref": "U1, U2", "part": "OPA1642 dual JFET op-amp (TI data sheet)", "function": "chain A and chain B preamps", "lifecycle": "unknown: check at order time", "lifecycle_source": "manufacturer product page", "alternates": ["OPA2140 (from memory, moderate)", "ADA4625-2 (from memory, low)"]},
+            {"ref": "K1 to K5", "part": "reed relays or low-leakage analog switches", "function": "input switch matrix", "lifecycle": "unknown: check at order time", "lifecycle_source": "distributor", "alternates": ["ADG1219-class switch (from memory, low)"]},
+            {"ref": "ADC", "part": "stereo 24-bit audio ADC, existing USB interface first", "function": "conversion", "lifecycle": "existing device", "lifecycle_source": "n/a", "alternates": ["PCM1808-class ADC board (from memory, low)"]},
+            {"ref": "BT1, BT2", "part": "two separate battery packs", "function": "isolated supplies per chain", "lifecycle": "commodity", "lifecycle_source": "n/a", "alternates": ["any 2 x 9 V or Li-ion with LDOs"]},
+            {"ref": "ENC", "part": "die-cast aluminium box with a copper inner can", "function": "shield", "lifecycle": "commodity", "lifecycle_source": "n/a", "alternates": ["tin can"]}],
+         "spend": "gated: nothing ordered, priced or fabricated"},
+        "A clean DRC proves the board matches its rules, not that the rules keep pickup out."))
+    s.append(stage(5, "firmware", "paper",
+        ["stage 4 board", "CHECKS.json rows autozero, loopback, knowninject, pilotpath, uncal"],
+        ["firmware or host code with self-tests designed in", "a reproducible build hash"],
+        gate("two clean builds from the locked inputs produce the same image hash", "distinct image hashes from two builds", "==", 1),
+        [PICO, NIX, tool("sigrok and PulseView", "bring-up logic capture", "GPL-3.0", False, "sigrok project (Uwe Hermann and others)")],
+        {"platform": "host Python reading the USB ADC first; an RP2040-class microcontroller drives the switch matrix and pilot tone",
+         "toolchain": {"name": "Nix flake (Python, NumPy, pico-sdk, arm-none-eabi-gcc)", "pinned": "flake.lock commits; every receipt carries the code and image sha256"},
+         "reproducible_build": {"method": "fixed SOURCE_DATE_EPOCH, sorted inputs, no embedded paths or times", "check": "build twice on two machines, compare sha256"},
+         "self_tests": [
+            {"name": "auto-zero", "check_id": "autozero", "method": "switch to the shorted input each cycle; subtract its cross spectrum", "pass_condition": "shorted-input cross PSD below 1e-4 of the resistor's"},
+            {"name": "loopback", "check_id": "loopback", "method": "DAC output into both chains through a divider", "pass_condition": "gain matches the last calibration within 0.1 percent"},
+            {"name": "known noise injection", "check_id": "knowninject", "method": "pseudo-random noise of known digital PSD through the divider", "pass_condition": "PSD read back flat within 0.2 percent across the band"},
+            {"name": "zero-correlation null", "check_id": "zeronull", "method": "independent noise into each chain", "pass_condition": "cross power reads zero within 2 sigma"},
+            {"name": "pilot tone", "check_id": "pilotpath", "method": "12 kHz tone tracked in both chains every block", "pass_condition": "gain drift since calibration below 0.05 percent, else UNCAL"},
+            {"name": "UNCAL annunciator", "check_id": "uncal", "method": "any failed test or expired record sets the flag in every receipt", "pass_condition": "a planted failure sets the flag (tested)"}]},
+        "Identical hashes show the build is reproducible, not that the code is right."))
+    s.append(stage(6, "calibration", "paper",
+        ["stage 5 instrument", "an ice-point bath made locally"],
+        ["a calibration record: gain-bandwidth product, Re Z(f), R ratio, null floor, date, expiry"],
+        gate("the ice-point reading, after calibration, equals 273.15 K within the combined uncertainty", "|T_ice - 273.15 K| / u_c", "<", 2.0),
+        [PY, CHECKS],
+        {"method": "substitution and ratio: the same resistor and chains read at the ice point and at the unknown; T_x = 273.15 K x (S_x / Re Z_x) / (S_ice / Re Z_ice). The gain cancels in the ratio (the pilot tone shows it held), so only the R ratio, measured with one DMM in ratio mode, enters",
+         "references": [
+            {"name": "ice point (distilled water and crushed ice, stirred)", "kind": "fixed-point", "traceability": "a realisation we make ourselves; 273.15 K within a few mK when made with care (from memory, moderate); no certificate"},
+            {"name": "Boltzmann constant", "kind": "primary", "traceability": "exact by definition in the SI since 20 May 2019"},
+            {"name": "DMM in resistance-ratio mode", "kind": "working", "traceability": "none: the meter's own calibration is unknown; a ratio needs only linearity"},
+            {"name": "sample clock", "kind": "working", "traceability": "the ADC crystal, about 50 ppm (from memory); enters B linearly and cancels in the ratio"}],
+         "record_fields": ["date", "operator", "bath description and stirring", "R_ice / R_x ratio", "Re Z(f) sweep", "null floor", "pilot amplitude at calibration", "valid_until", "record sha256"],
+         "is_primary_standard": True,
+         "honest_traceability": "Primary in principle: the kelvin follows from kB, which is exact, so absolute T needs no reference temperature. In this build the gain and band are known only through our own injection, and the ice point is our own realisation, so receipts say PRIMARY only for the ratio method at stated uncertainty and UNCAL whenever the pilot or null test fails. Where it fits in our stack: once it passes stage 7, this instrument becomes the reference that the GPU timing thermometer and every thermistor in the field kits are calibrated against by substitution."},
+        "Agreement at one fixed point does not test linearity across the range."))
+    s.append(stage(7, "hil", "paper",
+        ["stage 6 calibrated instrument", "a DAC rig"],
+        ["readback of planted temperatures through the real front end, scored as bits lost and error against truth"],
+        gate("each planted T (250, 300, 350 K) read back within 2 sigma, and the null reads zero within 2 sigma", "max |T_est - T_planted| / sigma", "<", 2.0),
+        [PY, STUDYRUN],
+        {"rig": "a second audio interface's DAC synthesises Gaussian noise shaped to 4 kB T R for a planted T, through a precision divider into the switch matrix's injection port: digital to analog to digital",
+         "signals": [{"name": "planted 250, 300, 350 K", "truth": "the digital PSD times the measured divider ratio"},
+                     {"name": "independent noise per chain", "truth": "cross power 0"},
+                     {"name": "a stepped T (300 to 350 K mid-run)", "truth": "the step time and size"}],
+         "scoring": {"error_vs_truth": "|T_est - T_planted| in sigma units, per planted value", "bits_lost": "per frequency bin, 1/2 log2(1 + S / |S_est - S|^2 of the PSD), ideal digital path minus the real path, same estimator as room/roundtrip.py"},
+         "results": None},
+        "Synthesised noise tests the chain and estimator, not the resistor's own physics; only stage 6 and 8 test that."))
+    s.append(stage(8, "field", "paper",
+        ["stage 7 pass"],
+        ["readings in real, non-digital places under a preregistered protocol"],
+        gate("field readings agree with a co-located reference probe within the combined uncertainty in at least 9 of 10 runs", "agreement share", ">=", 0.9),
+        [STUDYRUN],
+        {"sites": ["a stirred ice bath and a stirred room-temperature water bath (known answers)", "room air beside a desk, shaded", "soil at 10 cm under one of the author's trees, against a thermistor probe", "the cambium side of a bark flap on a fallen limb (never a living cut)"],
+         "protocol": {"prereg": "a studyrun spec written and locked before the first field run (not written yet)", "known_answers": ["ice point", "the thermistor, itself calibrated against this instrument at the ice point and in a water bath"],
+                      "kill_condition": "if field agreement is worse than the bath agreement by more than a factor of 3, the instrument is lab-only",
+                      "controls": ["shorted-input reading at each site (pickup control)", "a site swap: the probe read at the wrong site's log time"]},
+         "conditions_logged": ["air temperature and humidity", "time of day and sun", "cable length and routing", "nearby mains equipment"]},
+        "Agreement with a thermistor that was calibrated against this instrument is circular for absolute T; it tests stability, not truth. The bath and ice point carry the truth."))
+    s.append(stage(9, "data_return", "paper",
+        ["every reading"], ["a receipt on the measurement bus"],
+        gate("every receipt validates against receipt.schema.json and a planted UNCAL condition appears in the receipt", "invalid or unflagged receipts", "==", 0),
+        [BUS, PERCEIVE],
+        {"receipt_schema": "schemas/receipt.schema.json (measurement-bus/v1 event + every-dimension state + instrument)",
+         "value_fields": ["temperature_K", "integration_s", "band_hz", "cross_psd_V2_per_Hz", "re_z_ohm"],
+         "uncal_policy": "UNCAL when the pilot drifts past 0.05 percent, the null fails, the record has expired, or no record exists; the value ships flagged, status 'estimated'",
+         "feeds": {"measurement_bus": "domain thermal, dimension heat, units K", "perceptual_bridge": "tools/perceive bridge 'heat'", "findings": "each preregistered run gets an F entry in 2026-10-27-plygrnd/FINDINGS.md"},
+         "example": None},
+        "A valid receipt certifies the record, not the temperature."))
+    s.append(stage(10, "manufacturing", "paper",
+        ["a design that passed stages 1 to 9"], ["a test fixture plan, yield metric and a capsule per unit"],
+        gate("the production test (the stage-5 self-tests plus an ice-point read) catches each of 5 planted faults", "planted faults missed", "==", 0),
+        [KICAD, STUDYRUN, CHECKS],
+        {"design_for_test": ["test points on every switch node", "the self-test path is the production test (simvectors)", "each chain's gain readable over USB", "serial number and capsule hash in flash"],
+         "fixture": "a bed-of-nails plate with pogo pins on the test points, a reference resistor pair at room temperature and a sealed ice-point flask; the stage-7 rig drives the injection port",
+         "yield": {"metric": "share of units passing all self-tests and the ice-point read on first test", "tracking": "one receipt per unit test; yield = passing receipts over all receipts, by lot"},
+         "build_capsule": {"design_sha256": "sha256 of the KiCad project and BOM at release", "firmware_sha256": "image hash from the reproducible build", "calibration_record_sha256": "sha256 of the unit's calibration record", "test_receipts": "sha256 list of the unit's production test receipts"}},
+        "A fixture that passes planted faults can still miss a fault class nobody planted."))
+    return {"schema": "hardware-pipeline.instrument/0.1", "id": REC["pipeline_id"], "name": REC["name"],
+            "atlas_id": REC["atlas_id"], "written": REC["written"],
+            "summary": REC["summary"],
+            "stages": s}

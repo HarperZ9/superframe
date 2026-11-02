@@ -1,0 +1,190 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://harperz9.local/hardware-pipeline/schemas/stage-07-hil.schema.json",
+ "title": "Hardware in the loop: digital to analog to digital round trip, scored against truth",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "stage",
+  "key",
+  "status",
+  "inputs",
+  "outputs",
+  "gate",
+  "tools",
+  "spec",
+  "does_not_prove"
+ ],
+ "properties": {
+  "stage": {
+   "const": 7
+  },
+  "key": {
+   "const": "hil"
+  },
+  "status": {
+   "enum": [
+    "paper",
+    "built",
+    "run",
+    "passed",
+    "failed",
+    "blocked",
+    "existing-device"
+   ]
+  },
+  "inputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "outputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "gate": {
+   "type": "object",
+   "properties": {
+    "condition": {
+     "type": "string"
+    },
+    "metric": {
+     "type": "string"
+    },
+    "op": {
+     "enum": [
+      "<",
+      "<=",
+      ">",
+      ">=",
+      "==",
+      "in"
+     ]
+    },
+    "threshold": {},
+    "measured": {},
+    "verdict": {
+     "enum": [
+      "pass",
+      "fail",
+      "open",
+      "not-applicable"
+     ]
+    },
+    "evidence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "condition",
+    "metric",
+    "op",
+    "threshold",
+    "verdict"
+   ],
+   "additionalProperties": false
+  },
+  "tools": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "role": {
+      "type": "string"
+     },
+     "licence": {
+      "type": "string"
+     },
+     "ours": {
+      "type": "boolean"
+     },
+     "lineage": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "name",
+     "role",
+     "licence",
+     "ours"
+    ],
+    "additionalProperties": false
+   },
+   "minItems": 1
+  },
+  "spec": {
+   "type": "object",
+   "properties": {
+    "rig": {
+     "type": "string"
+    },
+    "signals": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "truth": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "name",
+       "truth"
+      ],
+      "additionalProperties": false
+     },
+     "minItems": 1
+    },
+    "scoring": {
+     "type": "object",
+     "properties": {
+      "error_vs_truth": {
+       "type": "string"
+      },
+      "bits_lost": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "error_vs_truth",
+      "bits_lost"
+     ],
+     "additionalProperties": false
+    },
+    "results": {
+     "type": [
+      "object",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "rig",
+    "signals",
+    "scoring",
+    "results"
+   ],
+   "additionalProperties": false
+  },
+  "notes": {
+   "type": "string"
+  },
+  "does_not_prove": {
+   "type": "string"
+  }
+ }
+}

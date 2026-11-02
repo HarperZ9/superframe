@@ -1,0 +1,190 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://harperz9.local/hardware-pipeline/schemas/stage-08-field.schema.json",
+ "title": "Field testing in non-digital environments under a preregistered protocol",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "stage",
+  "key",
+  "status",
+  "inputs",
+  "outputs",
+  "gate",
+  "tools",
+  "spec",
+  "does_not_prove"
+ ],
+ "properties": {
+  "stage": {
+   "const": 8
+  },
+  "key": {
+   "const": "field"
+  },
+  "status": {
+   "enum": [
+    "paper",
+    "built",
+    "run",
+    "passed",
+    "failed",
+    "blocked",
+    "existing-device"
+   ]
+  },
+  "inputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "outputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "gate": {
+   "type": "object",
+   "properties": {
+    "condition": {
+     "type": "string"
+    },
+    "metric": {
+     "type": "string"
+    },
+    "op": {
+     "enum": [
+      "<",
+      "<=",
+      ">",
+      ">=",
+      "==",
+      "in"
+     ]
+    },
+    "threshold": {},
+    "measured": {},
+    "verdict": {
+     "enum": [
+      "pass",
+      "fail",
+      "open",
+      "not-applicable"
+     ]
+    },
+    "evidence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "condition",
+    "metric",
+    "op",
+    "threshold",
+    "verdict"
+   ],
+   "additionalProperties": false
+  },
+  "tools": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "role": {
+      "type": "string"
+     },
+     "licence": {
+      "type": "string"
+     },
+     "ours": {
+      "type": "boolean"
+     },
+     "lineage": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "name",
+     "role",
+     "licence",
+     "ours"
+    ],
+    "additionalProperties": false
+   },
+   "minItems": 1
+  },
+  "spec": {
+   "type": "object",
+   "properties": {
+    "sites": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1
+    },
+    "protocol": {
+     "type": "object",
+     "properties": {
+      "prereg": {
+       "type": "string"
+      },
+      "known_answers": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "minItems": 1
+      },
+      "kill_condition": {
+       "type": "string"
+      },
+      "controls": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "minItems": 1
+      }
+     },
+     "required": [
+      "prereg",
+      "known_answers",
+      "kill_condition",
+      "controls"
+     ],
+     "additionalProperties": false
+    },
+    "conditions_logged": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 1
+    }
+   },
+   "required": [
+    "sites",
+    "protocol",
+    "conditions_logged"
+   ],
+   "additionalProperties": false
+  },
+  "notes": {
+   "type": "string"
+  },
+  "does_not_prove": {
+   "type": "string"
+  }
+ }
+}

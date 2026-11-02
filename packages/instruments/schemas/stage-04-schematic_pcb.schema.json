@@ -1,0 +1,222 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://harperz9.local/hardware-pipeline/schemas/stage-04-schematic_pcb.schema.json",
+ "title": "Schematic and PCB in KiCad, BOM with lifecycle and alternates; nothing ordered",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "stage",
+  "key",
+  "status",
+  "inputs",
+  "outputs",
+  "gate",
+  "tools",
+  "spec",
+  "does_not_prove"
+ ],
+ "properties": {
+  "stage": {
+   "const": 4
+  },
+  "key": {
+   "const": "schematic_pcb"
+  },
+  "status": {
+   "enum": [
+    "paper",
+    "built",
+    "run",
+    "passed",
+    "failed",
+    "blocked",
+    "existing-device"
+   ]
+  },
+  "inputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "outputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "gate": {
+   "type": "object",
+   "properties": {
+    "condition": {
+     "type": "string"
+    },
+    "metric": {
+     "type": "string"
+    },
+    "op": {
+     "enum": [
+      "<",
+      "<=",
+      ">",
+      ">=",
+      "==",
+      "in"
+     ]
+    },
+    "threshold": {},
+    "measured": {},
+    "verdict": {
+     "enum": [
+      "pass",
+      "fail",
+      "open",
+      "not-applicable"
+     ]
+    },
+    "evidence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "condition",
+    "metric",
+    "op",
+    "threshold",
+    "verdict"
+   ],
+   "additionalProperties": false
+  },
+  "tools": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "role": {
+      "type": "string"
+     },
+     "licence": {
+      "type": "string"
+     },
+     "ours": {
+      "type": "boolean"
+     },
+     "lineage": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "name",
+     "role",
+     "licence",
+     "ours"
+    ],
+    "additionalProperties": false
+   },
+   "minItems": 1
+  },
+  "spec": {
+   "type": "object",
+   "properties": {
+    "existing_device": {
+     "type": "boolean"
+    },
+    "eda": {
+     "type": "object",
+     "properties": {
+      "tool": {
+       "type": "string"
+      },
+      "version": {
+       "type": "string"
+      },
+      "files": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "minItems": 0
+      }
+     },
+     "required": [
+      "tool",
+      "version",
+      "files"
+     ],
+     "additionalProperties": false
+    },
+    "checks": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     },
+     "minItems": 0
+    },
+    "bom": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "ref": {
+        "type": "string"
+       },
+       "part": {
+        "type": "string"
+       },
+       "function": {
+        "type": "string"
+       },
+       "lifecycle": {
+        "type": "string"
+       },
+       "lifecycle_source": {
+        "type": "string"
+       },
+       "alternates": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        },
+        "minItems": 0
+       }
+      },
+      "required": [
+       "ref",
+       "part",
+       "function",
+       "lifecycle",
+       "alternates"
+      ],
+      "additionalProperties": false
+     },
+     "minItems": 0
+    },
+    "spend": {
+     "const": "gated: nothing ordered, priced or fabricated"
+    }
+   },
+   "required": [
+    "existing_device",
+    "eda",
+    "checks",
+    "bom",
+    "spend"
+   ],
+   "additionalProperties": false
+  },
+  "notes": {
+   "type": "string"
+  },
+  "does_not_prove": {
+   "type": "string"
+  }
+ }
+}

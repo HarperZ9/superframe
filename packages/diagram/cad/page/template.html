@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}: model, drawing, schematic</title>
+<!-- Built by packages/diagram/cad/page/build.py from the diagram engine, the cad layer and cad/instruments/{{ID}}.js.
+     Style: the site's system/kit, inlined between the markers. -->
+<!-- site-kit:begin --><!-- site-kit:end -->
+<style>{{CSS}}</style>
+</head>
+<body data-region="{{REGION}}">
+<a class="skip" href="#toy">Skip to the model</a>
+<main class="k-page">
+<header class="k-head"><p class="k-super" aria-hidden="true">{{SUPER}}</p>
+ <h1>{{TITLE}}</h1>
+ <p class="k-lede">{{LEDE}}</p>
+ <hr class="k-horizon">
+</header>
+
+<section class="k-layer" data-layer="toy" id="toy" aria-labelledby="toy-h">
+<div class="k-layer-head"><h2 id="toy-h">Change it, turn it, cut it</h2><span class="k-depth">toy</span></div>
+<p id="problems" class="cad-problems" role="alert" hidden></p>
+<div class="cad-top">
+ <figure class="k-frame dg-stagewrap">
+  <div id="stage" class="dg-stage"><canvas class="cv-gl" aria-hidden="true"></canvas><canvas class="cv-cpu" aria-hidden="true" hidden></canvas><canvas class="cv-ov" tabindex="0" role="img" aria-label="{{TITLE}}: 3D model"></canvas></div>
+  <div class="k-controls cad-bar">
+   <fieldset><legend>Take it apart</legend><label for="explode">Tear down</label><input id="explode" type="range" min="0" max="100" step="1" value="0"></fieldset>
+   <fieldset><legend>Cut it open</legend>
+    <label class="check"><input id="cut-on" type="checkbox"> Cutting plane</label>
+    <label for="cut-axis">Facing<select id="cut-axis"><option value="x">x</option><option value="y" selected>y</option><option value="z">z</option></select></label>
+    <label for="cut-d">Where</label><input id="cut-d" type="range" min="0" max="1000" step="1" value="500">
+   </fieldset>
+   <fieldset><legend>Drag</legend><button type="button" id="drag-cut" aria-pressed="false">Drag moves the cut</button><button type="button" id="xray" aria-pressed="false">X-ray</button><button type="button" id="reset">Reset the view</button></fieldset>
+  </div>
+ </figure>
+ <div class="cad-side">
+  <fieldset class="cad-params"><legend>The model</legend><div id="params"></div></fieldset>
+  <div id="inspect" class="dg-inspect" aria-live="polite"></div>
+ </div>
+</div>
+<figure class="k-frame cad-sheet-wrap"><h3>Assembly drawing</h3>
+ <div class="pick" role="group" aria-label="Drawing size"><button type="button" data-zoom="1" aria-pressed="true">Fit</button><button type="button" data-zoom="2" aria-pressed="false">2x</button><button type="button" data-zoom="3.5" aria-pressed="false">3.5x</button></div>
+ <div id="bp" class="cad-bp"></div><figcaption id="bp-meta" class="lens"></figcaption></figure>
+<div class="cad-two">
+ <figure class="k-frame"><h3>Schematic</h3><div id="sch" class="cad-sch-wrap"></div><figcaption id="sch-meta" class="lens"></figcaption></figure>
+ <figure class="k-frame"><h3>Physics, solved from the model</h3><dl id="readouts" class="cad-read"></dl><canvas id="cv-phys" aria-label="Charts of the instrument's physics at the current parameters"></canvas></figure>
+</div>
+<h3>Parts list</h3>
+<div class="k-scroll"><table id="bom-top"><thead><tr><th scope="col">Item</th><th scope="col">Qty</th><th scope="col">Part number</th><th scope="col">Description</th><th scope="col">Material</th></tr></thead><tbody></tbody></table></div>
+<h3>Electrical and optical parts</h3>
+<div class="k-scroll"><table id="bom-el"><thead><tr><th scope="col">Ref</th><th scope="col">Value</th><th scope="col">Footprint</th><th scope="col">Part number</th><th scope="col">Description</th></tr></thead><tbody></tbody></table></div>
+<div class="k-controls cad-get"><fieldset><legend>Files from this model</legend>
+ <button type="button" data-get="svg">Drawing, SVG</button><button type="button" data-get="dxf">Drawing, DXF</button><button type="button" data-get="sch">Schematic, SVG</button><button type="button" data-get="kicad">KiCad schematic</button><button type="button" data-get="net">KiCad netlist</button><button type="button" data-get="spec">Spec sheet</button>
+</fieldset></div>
+</section>
+
+<p class="k-message">{{MESSAGE}}</p>
+
+<section class="k-layer" data-layer="plain" id="plain" aria-labelledby="plain-h">
+<div class="k-layer-head"><h2 id="plain-h">In plain words</h2><span class="k-depth">plain</span></div>
+<div class="prose">{{PLAIN}}</div>
+</section>
+
+<section class="k-layer" data-layer="pro" id="pro" aria-labelledby="pro-h">
+<div class="k-layer-head"><h2 id="pro-h">Spec sheet and the working</h2><span class="k-depth">pro</span></div>
+<div id="spec"></div>
+<h3>How the views stay in step</h3>
+<div class="prose">{{WORKING}}</div>
+<h3>Tests</h3>
+<p>{{TESTSUM}}</p>
+</section>
+<p class="k-meta k-foot"><a href="cad-index.html">All three instruments</a>. Engine: packages/diagram with its cad layer (dependency-free JavaScript). Built {{DATE}}.</p>
+</main>
+<script id="cad-data" type="application/json">{{DATA}}</script>
+<script>{{JS}}</script>
+</body>
+</html>

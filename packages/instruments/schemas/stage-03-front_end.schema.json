@@ -1,0 +1,226 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://harperz9.local/hardware-pipeline/schemas/stage-03-front_end.schema.json",
+ "title": "Analog front end: sensor, amplifier, filter, ADC, with a noise budget against the bound",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "stage",
+  "key",
+  "status",
+  "inputs",
+  "outputs",
+  "gate",
+  "tools",
+  "spec",
+  "does_not_prove"
+ ],
+ "properties": {
+  "stage": {
+   "const": 3
+  },
+  "key": {
+   "const": "front_end"
+  },
+  "status": {
+   "enum": [
+    "paper",
+    "built",
+    "run",
+    "passed",
+    "failed",
+    "blocked",
+    "existing-device"
+   ]
+  },
+  "inputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "outputs": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "minItems": 1
+  },
+  "gate": {
+   "type": "object",
+   "properties": {
+    "condition": {
+     "type": "string"
+    },
+    "metric": {
+     "type": "string"
+    },
+    "op": {
+     "enum": [
+      "<",
+      "<=",
+      ">",
+      ">=",
+      "==",
+      "in"
+     ]
+    },
+    "threshold": {},
+    "measured": {},
+    "verdict": {
+     "enum": [
+      "pass",
+      "fail",
+      "open",
+      "not-applicable"
+     ]
+    },
+    "evidence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "condition",
+    "metric",
+    "op",
+    "threshold",
+    "verdict"
+   ],
+   "additionalProperties": false
+  },
+  "tools": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "role": {
+      "type": "string"
+     },
+     "licence": {
+      "type": "string"
+     },
+     "ours": {
+      "type": "boolean"
+     },
+     "lineage": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "name",
+     "role",
+     "licence",
+     "ours"
+    ],
+    "additionalProperties": false
+   },
+   "minItems": 1
+  },
+  "spec": {
+   "type": "object",
+   "properties": {
+    "existing_device": {
+     "type": "boolean"
+    },
+    "chain": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "element": {
+        "type": "string"
+       },
+       "part_or_device": {
+        "type": "string"
+       },
+       "key_spec": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "element",
+       "part_or_device",
+       "key_spec"
+      ],
+      "additionalProperties": false
+     },
+     "minItems": 1
+    },
+    "noise_budget": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "source": {
+        "type": "string"
+       },
+       "density": {
+        "type": "string"
+       },
+       "share_of_total": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "source",
+       "density",
+       "share_of_total"
+      ],
+      "additionalProperties": false
+     },
+     "minItems": 1
+    },
+    "adc": {
+     "type": "object",
+     "properties": {
+      "bits": {
+       "type": [
+        "number",
+        "null"
+       ]
+      },
+      "fs_hz": {
+       "type": [
+        "number",
+        "null"
+       ]
+      },
+      "enob_or_floor": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "bits",
+      "fs_hz",
+      "enob_or_floor"
+     ],
+     "additionalProperties": false
+    },
+    "margin_to_bound": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "existing_device",
+    "chain",
+    "noise_budget",
+    "adc",
+    "margin_to_bound"
+   ],
+   "additionalProperties": false
+  },
+  "notes": {
+   "type": "string"
+  },
+  "does_not_prove": {
+   "type": "string"
+  }
+ }
+}

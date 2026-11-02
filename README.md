@@ -121,7 +121,7 @@ There are 461 tests. On a clean clone 446 pass and 15 skip: the skipped ones nee
 - golden hashes for every node;
 - each measured library's predictions, with a control beside each that must fail.
 
-Node 24 or later. There are no dependencies. Python 3 runs the study verifier, with the standard library only.
+Node 24 or later. The JavaScript engine has no dependencies. Python 3 runs the study verifier, with the standard library only. The instruments in `packages/` have their own tests and pinned Python dependencies: see `packages/README.md`.
 
 ## Limits
 
@@ -143,6 +143,7 @@ The engine was built as one workspace, and its folders keep their working names:
 | `creation/` | the creation engine's laws |
 | `typeengine/`, `typeface/` | living type and the Accession family |
 | `substrate/` | the seed and receipt contracts |
+| `packages/` | the instruments under the engine: measured data, materials, renderers, CAD and EDA, kernels, the CRT, the field type and the study tools |
 | other folders | the techniques the nodes wrap, each imported unchanged |
 
 `MANIFEST.json` lists every file with the SHA-256 of its source.

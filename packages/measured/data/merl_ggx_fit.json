@@ -1,0 +1,916 @@
+{
+ "provenance": {
+  "source": "merl-brdf",
+  "citation": "Matusik, Pfister, Brand, McMillan 2003, A data-driven reflectance model; MERL BRDF database, Zenodo 10.5281/zenodo.8101681",
+  "licence": "CC BY-SA 4.0 (share-alike reaches derived tables)",
+  "files": {
+   "BRDFDatabase.zip": "b98934c09176de29bba637b46ae808c79b9a396ec05dc910131a33481b3129ba"
+  },
+  "status": "fitted",
+  "method": "GGX + Lambert fit on the theta_d = 0 slice, luminance",
+  "built": "2026-10-30",
+  "limits": "one slice, G = 1, no Fresnel variation; isotropic; a fit quality rms_log_err above 0.3 means GGX does not describe that material well"
+ },
+ "rows": [
+  {
+   "alpha": 0.1319,
+   "roughness": 0.3632,
+   "kd": 0.006679,
+   "ks": 0.07852,
+   "rms_log_err": 0.388,
+   "material": "alum-bronze",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0076,
+   "roughness": 0.0871,
+   "kd": 0.09394,
+   "ks": 0.009073,
+   "rms_log_err": 0.162,
+   "material": "alumina-oxide",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0342,
+   "roughness": 0.1849,
+   "kd": 0.002251,
+   "ks": 0.1164,
+   "rms_log_err": 0.695,
+   "material": "aluminium",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0104,
+   "roughness": 0.1017,
+   "kd": 0.01928,
+   "ks": 0.003526,
+   "rms_log_err": 0.319,
+   "material": "aventurnine",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.5949,
+   "roughness": 0.7713,
+   "kd": 0.05186,
+   "ks": 0.06797,
+   "rms_log_err": 0.006,
+   "material": "beige-fabric",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.8266,
+   "roughness": 0.9092,
+   "kd": 0.003284,
+   "ks": 0.005052,
+   "rms_log_err": 0.027,
+   "material": "black-fabric",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0137,
+   "roughness": 0.1169,
+   "kd": 4.19e-05,
+   "ks": 0.007071,
+   "rms_log_err": 0.519,
+   "material": "black-obsidian",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.2976,
+   "roughness": 0.5456,
+   "kd": 0.003187,
+   "ks": 0.0213,
+   "rms_log_err": 0.042,
+   "material": "black-oxidized-steel",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0406,
+   "roughness": 0.2016,
+   "kd": 0.0002489,
+   "ks": 0.01499,
+   "rms_log_err": 0.462,
+   "material": "black-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.3664,
+   "roughness": 0.6053,
+   "kd": 0.001214,
+   "ks": 0.01476,
+   "rms_log_err": 0.059,
+   "material": "black-soft-plastic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0117,
+   "roughness": 0.1081,
+   "kd": 0.01171,
+   "ks": 0.004885,
+   "rms_log_err": 0.376,
+   "material": "blue-acrylic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.5949,
+   "roughness": 0.7713,
+   "kd": 0.007236,
+   "ks": 0.01772,
+   "rms_log_err": 0.029,
+   "material": "blue-fabric",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1865,
+   "roughness": 0.4319,
+   "kd": 0.0,
+   "ks": 0.05843,
+   "rms_log_err": 0.34,
+   "material": "blue-metallic-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0366,
+   "roughness": 0.1914,
+   "kd": 0.0005458,
+   "ks": 0.05626,
+   "rms_log_err": 0.897,
+   "material": "blue-metallic-paint2",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.3926,
+   "roughness": 0.6266,
+   "kd": 0.02175,
+   "ks": 0.02007,
+   "rms_log_err": 0.021,
+   "material": "blue-rubber",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0259,
+   "roughness": 0.161,
+   "kd": 0.001673,
+   "ks": 0.04995,
+   "rms_log_err": 1.09,
+   "material": "brass",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1542,
+   "roughness": 0.3926,
+   "kd": 0.007306,
+   "ks": 0.01638,
+   "rms_log_err": 0.074,
+   "material": "cherry-235",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0278,
+   "roughness": 0.1666,
+   "kd": 0.0002031,
+   "ks": 0.03293,
+   "rms_log_err": 1.531,
+   "material": "chrome-steel",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0098,
+   "roughness": 0.0991,
+   "kd": 0.0002626,
+   "ks": 0.0515,
+   "rms_log_err": 0.727,
+   "material": "chrome",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1802,
+   "roughness": 0.4244,
+   "kd": 0.01441,
+   "ks": 0.01293,
+   "rms_log_err": 0.099,
+   "material": "colonial-maple-223",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0616,
+   "roughness": 0.2482,
+   "kd": 0.0001043,
+   "ks": 0.03289,
+   "rms_log_err": 0.47,
+   "material": "color-changing-paint1",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0745,
+   "roughness": 0.273,
+   "kd": 0.001281,
+   "ks": 0.07291,
+   "rms_log_err": 0.092,
+   "material": "color-changing-paint2",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0672,
+   "roughness": 0.2591,
+   "kd": 0.0002822,
+   "ks": 0.03454,
+   "rms_log_err": 0.296,
+   "material": "color-changing-paint3",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.3859,
+   "roughness": 0.6212,
+   "kd": 0.003113,
+   "ks": 0.02088,
+   "rms_log_err": 0.019,
+   "material": "dark-blue-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.4136,
+   "roughness": 0.6431,
+   "kd": 0.02438,
+   "ks": 0.01621,
+   "rms_log_err": 0.021,
+   "material": "dark-red-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.3539,
+   "roughness": 0.5949,
+   "kd": 0.00296,
+   "ks": 0.01077,
+   "rms_log_err": 0.024,
+   "material": "dark-specular-fabric",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.2034,
+   "roughness": 0.451,
+   "kd": 0.08269,
+   "ks": 0.0316,
+   "rms_log_err": 0.055,
+   "material": "delrin",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0966,
+   "roughness": 0.3108,
+   "kd": 0.01393,
+   "ks": 0.01403,
+   "rms_log_err": 0.035,
+   "material": "fruitwood-241",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1771,
+   "roughness": 0.4208,
+   "kd": 0.0002713,
+   "ks": 0.1333,
+   "rms_log_err": 0.415,
+   "material": "gold-metallic-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1053,
+   "roughness": 0.3245,
+   "kd": 0.007344,
+   "ks": 0.1361,
+   "rms_log_err": 0.62,
+   "material": "gold-metallic-paint2",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0379,
+   "roughness": 0.1947,
+   "kd": 0.004314,
+   "ks": 0.1218,
+   "rms_log_err": 0.8,
+   "material": "gold-metallic-paint3",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.2256,
+   "roughness": 0.475,
+   "kd": 0.02428,
+   "ks": 0.1486,
+   "rms_log_err": 0.038,
+   "material": "gold-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0342,
+   "roughness": 0.1849,
+   "kd": 0.03329,
+   "ks": 0.007117,
+   "rms_log_err": 0.154,
+   "material": "gray-plastic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0354,
+   "roughness": 0.1881,
+   "kd": 0.0006698,
+   "ks": 0.1203,
+   "rms_log_err": 0.636,
+   "material": "grease-covered-steel",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0146,
+   "roughness": 0.121,
+   "kd": 0.01925,
+   "ks": 0.008041,
+   "rms_log_err": 0.257,
+   "material": "green-acrylic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.6266,
+   "roughness": 0.7916,
+   "kd": 0.0128,
+   "ks": 0.03053,
+   "rms_log_err": 0.031,
+   "material": "green-fabric",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.5362,
+   "roughness": 0.7323,
+   "kd": 0.02916,
+   "ks": 0.07921,
+   "rms_log_err": 0.026,
+   "material": "green-latex",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.2105,
+   "roughness": 0.4588,
+   "kd": 0.001382,
+   "ks": 0.08739,
+   "rms_log_err": 0.243,
+   "material": "green-metallic-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0399,
+   "roughness": 0.1999,
+   "kd": 0.0006339,
+   "ks": 0.03723,
+   "rms_log_err": 0.904,
+   "material": "green-metallic-paint2",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0098,
+   "roughness": 0.0991,
+   "kd": 0.02294,
+   "ks": 0.004074,
+   "rms_log_err": 0.331,
+   "material": "green-plastic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0379,
+   "roughness": 0.1947,
+   "kd": 0.0005119,
+   "ks": 0.02327,
+   "rms_log_err": 1.063,
+   "material": "hematite",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1297,
+   "roughness": 0.3601,
+   "kd": 0.008417,
+   "ks": 0.01348,
+   "rms_log_err": 0.125,
+   "material": "ipswich-pine-221",
+   "status": "fitted"
+  },
+  {
+   "alpha": 1.0,
+   "roughness": 1.0,
+   "kd": 0.008864,
+   "ks": 0.008478,
+   "rms_log_err": 0.03,
+   "material": "light-brown-fabric",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.3926,
+   "roughness": 0.6266,
+   "kd": 0.03725,
+   "ks": 0.02369,
+   "rms_log_err": 0.015,
+   "material": "light-red-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0095,
+   "roughness": 0.0974,
+   "kd": 0.02154,
+   "ks": 0.004039,
+   "rms_log_err": 0.322,
+   "material": "maroon-plastic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1252,
+   "roughness": 0.3539,
+   "kd": 0.01448,
+   "ks": 0.0116,
+   "rms_log_err": 0.135,
+   "material": "natural-209",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1931,
+   "roughness": 0.4394,
+   "kd": 0.07315,
+   "ks": 0.02162,
+   "rms_log_err": 0.053,
+   "material": "neoprene-rubber",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0649,
+   "roughness": 0.2547,
+   "kd": 0.000185,
+   "ks": 0.1794,
+   "rms_log_err": 0.168,
+   "material": "nickel",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0771,
+   "roughness": 0.2777,
+   "kd": 0.06779,
+   "ks": 0.005805,
+   "rms_log_err": 0.054,
+   "material": "nylon",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.475,
+   "roughness": 0.6892,
+   "kd": 0.05746,
+   "ks": 0.03398,
+   "rms_log_err": 0.01,
+   "material": "orange-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.2777,
+   "roughness": 0.527,
+   "kd": 0.04303,
+   "ks": 0.1774,
+   "rms_log_err": 0.023,
+   "material": "pearl-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1189,
+   "roughness": 0.3448,
+   "kd": 0.0446,
+   "ks": 0.01334,
+   "rms_log_err": 0.107,
+   "material": "pickled-oak-260",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.5949,
+   "roughness": 0.7713,
+   "kd": 0.06864,
+   "ks": 0.07466,
+   "rms_log_err": 0.015,
+   "material": "pink-fabric",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.4432,
+   "roughness": 0.6657,
+   "kd": 0.03055,
+   "ks": 0.04702,
+   "rms_log_err": 0.049,
+   "material": "pink-fabric2",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.4432,
+   "roughness": 0.6657,
+   "kd": 0.06485,
+   "ks": 0.05235,
+   "rms_log_err": 0.044,
+   "material": "pink-felt",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0162,
+   "roughness": 0.1274,
+   "kd": 0.04834,
+   "ks": 0.006605,
+   "rms_log_err": 0.262,
+   "material": "pink-jasper",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.5648,
+   "roughness": 0.7515,
+   "kd": 0.04282,
+   "ks": 0.02869,
+   "rms_log_err": 0.02,
+   "material": "pink-plastic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.527,
+   "roughness": 0.7259,
+   "kd": 0.06762,
+   "ks": 0.06154,
+   "rms_log_err": 0.01,
+   "material": "polyethylene",
+   "status": "fitted"
+  },
+  {
+   "alpha": 1.0,
+   "roughness": 1.0,
+   "kd": 0.01361,
+   "ks": 0.0108,
+   "rms_log_err": 0.06,
+   "material": "polyurethane-foam",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.4356,
+   "roughness": 0.66,
+   "kd": 0.0813,
+   "ks": 0.03496,
+   "rms_log_err": 0.025,
+   "material": "pure-rubber",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0771,
+   "roughness": 0.2777,
+   "kd": 0.02735,
+   "ks": 0.01248,
+   "rms_log_err": 0.076,
+   "material": "purple-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0509,
+   "roughness": 0.2256,
+   "kd": 0.01141,
+   "ks": 0.009633,
+   "rms_log_err": 0.121,
+   "material": "pvc",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.4208,
+   "roughness": 0.6487,
+   "kd": 0.01802,
+   "ks": 0.02742,
+   "rms_log_err": 0.039,
+   "material": "red-fabric",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.7713,
+   "roughness": 0.8782,
+   "kd": 0.01443,
+   "ks": 0.007695,
+   "rms_log_err": 0.016,
+   "material": "red-fabric2",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0379,
+   "roughness": 0.1947,
+   "kd": 0.0007464,
+   "ks": 0.03254,
+   "rms_log_err": 0.915,
+   "material": "red-metallic-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0288,
+   "roughness": 0.1696,
+   "kd": 0.0167,
+   "ks": 0.008748,
+   "rms_log_err": 0.253,
+   "material": "red-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.3081,
+   "roughness": 0.5551,
+   "kd": 0.028,
+   "ks": 0.02124,
+   "rms_log_err": 0.022,
+   "material": "red-plastic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.01,
+   "roughness": 0.1,
+   "kd": 0.02615,
+   "ks": 0.004922,
+   "rms_log_err": 0.265,
+   "material": "red-specular-plastic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0168,
+   "roughness": 0.1297,
+   "kd": 0.002133,
+   "ks": 0.01638,
+   "rms_log_err": 0.415,
+   "material": "silicon-nitrade",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1624,
+   "roughness": 0.403,
+   "kd": 0.0003705,
+   "ks": 0.2524,
+   "rms_log_err": 0.175,
+   "material": "silver-metallic-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1681,
+   "roughness": 0.41,
+   "kd": 0.01137,
+   "ks": 0.2473,
+   "rms_log_err": 0.103,
+   "material": "silver-metallic-paint2",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.2256,
+   "roughness": 0.475,
+   "kd": 0.03403,
+   "ks": 0.2225,
+   "rms_log_err": 0.041,
+   "material": "silver-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.2637,
+   "roughness": 0.5135,
+   "kd": 0.001605,
+   "ks": 0.01764,
+   "rms_log_err": 0.029,
+   "material": "special-walnut-224",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0149,
+   "roughness": 0.122,
+   "kd": 0.0005591,
+   "ks": 0.006119,
+   "rms_log_err": 0.644,
+   "material": "specular-black-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0104,
+   "roughness": 0.1017,
+   "kd": 0.004173,
+   "ks": 0.006434,
+   "rms_log_err": 0.399,
+   "material": "specular-blue-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0105,
+   "roughness": 0.1026,
+   "kd": 0.006908,
+   "ks": 0.006679,
+   "rms_log_err": 0.299,
+   "material": "specular-green-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0087,
+   "roughness": 0.0933,
+   "kd": 0.01635,
+   "ks": 0.006345,
+   "rms_log_err": 0.296,
+   "material": "specular-maroon-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0071,
+   "roughness": 0.0841,
+   "kd": 0.03502,
+   "ks": 0.003659,
+   "rms_log_err": 0.275,
+   "material": "specular-orange-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0087,
+   "roughness": 0.0933,
+   "kd": 0.02899,
+   "ks": 0.005209,
+   "rms_log_err": 0.273,
+   "material": "specular-red-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0093,
+   "roughness": 0.0966,
+   "kd": 0.009241,
+   "ks": 0.005457,
+   "rms_log_err": 0.32,
+   "material": "specular-violet-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0066,
+   "roughness": 0.0812,
+   "kd": 0.0757,
+   "ks": 0.00744,
+   "rms_log_err": 0.179,
+   "material": "specular-white-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0084,
+   "roughness": 0.0917,
+   "kd": 0.05259,
+   "ks": 0.005444,
+   "rms_log_err": 0.261,
+   "material": "specular-yellow-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0137,
+   "roughness": 0.1169,
+   "kd": 0.0004635,
+   "ks": 0.05506,
+   "rms_log_err": 0.947,
+   "material": "ss440",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0264,
+   "roughness": 0.1624,
+   "kd": 0.0002197,
+   "ks": 0.04709,
+   "rms_log_err": 1.354,
+   "material": "steel",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.3081,
+   "roughness": 0.5551,
+   "kd": 0.09226,
+   "ks": 0.04092,
+   "rms_log_err": 0.051,
+   "material": "teflon",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0093,
+   "roughness": 0.0966,
+   "kd": 0.0003426,
+   "ks": 0.06048,
+   "rms_log_err": 0.923,
+   "material": "tungsten-carbide",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1189,
+   "roughness": 0.3448,
+   "kd": 0.005373,
+   "ks": 0.1449,
+   "rms_log_err": 0.521,
+   "material": "two-layer-gold",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1129,
+   "roughness": 0.336,
+   "kd": 0.01083,
+   "ks": 0.1544,
+   "rms_log_err": 0.545,
+   "material": "two-layer-silver",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0649,
+   "roughness": 0.2547,
+   "kd": 0.006727,
+   "ks": 0.02438,
+   "rms_log_err": 0.772,
+   "material": "violet-acrylic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1624,
+   "roughness": 0.403,
+   "kd": 0.03235,
+   "ks": 0.008542,
+   "rms_log_err": 0.036,
+   "material": "violet-rubber",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0086,
+   "roughness": 0.0925,
+   "kd": 0.1001,
+   "ks": 0.001753,
+   "rms_log_err": 0.24,
+   "material": "white-acrylic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.2777,
+   "roughness": 0.527,
+   "kd": 0.08358,
+   "ks": 0.03907,
+   "rms_log_err": 0.073,
+   "material": "white-diffuse-bball",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.5648,
+   "roughness": 0.7515,
+   "kd": 0.06754,
+   "ks": 0.08073,
+   "rms_log_err": 0.022,
+   "material": "white-fabric",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.5949,
+   "roughness": 0.7713,
+   "kd": 0.02716,
+   "ks": 0.04705,
+   "rms_log_err": 0.025,
+   "material": "white-fabric2",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0171,
+   "roughness": 0.1308,
+   "kd": 0.07231,
+   "ks": 0.01093,
+   "rms_log_err": 0.195,
+   "material": "white-marble",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.1596,
+   "roughness": 0.3995,
+   "kd": 0.1054,
+   "ks": 0.01838,
+   "rms_log_err": 0.076,
+   "material": "white-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.072,
+   "roughness": 0.2683,
+   "kd": 0.04378,
+   "ks": 0.01057,
+   "rms_log_err": 0.118,
+   "material": "yellow-matte-plastic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.3995,
+   "roughness": 0.6321,
+   "kd": 0.06365,
+   "ks": 0.04237,
+   "rms_log_err": 0.034,
+   "material": "yellow-paint",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.0141,
+   "roughness": 0.1189,
+   "kd": 0.05896,
+   "ks": 0.006028,
+   "rms_log_err": 0.352,
+   "material": "yellow-phenolic",
+   "status": "fitted"
+  },
+  {
+   "alpha": 0.3859,
+   "roughness": 0.6212,
+   "kd": 0.05946,
+   "ks": 0.02226,
+   "rms_log_err": 0.019,
+   "material": "yellow-plastic",
+   "status": "fitted"
+  }
+ ]
+}
