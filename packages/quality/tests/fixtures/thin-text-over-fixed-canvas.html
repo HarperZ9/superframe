@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Thin text over a fixed canvas</title>
+<!-- tests/fixtures/thin-text-over-fixed-canvas.html (2026-10-26, the UI atlas dispute). A fixed, full-viewport canvas
+     paints the ground under the whole page, as the medium does. Three labels sit over it:
+       #thin   13 px mono, dark enough (about 7:1), alone in a wide box: its ink covers under 5% of the box, so the
+               first rendered measure (darkest 5% against lightest 5%) read about 1:1 whatever the text said
+       #far    the same label 1600 px down the page, to cover the scroll-into-view capture
+       #veil   the same label under a paper veil at 0.8 opacity (the atlas jacket): a real fault, it must still fail -->
+<style>
+  html, body { margin: 0; height: 2600px; background: transparent; font: 400 16px/1.5 sans-serif; }
+  canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+  .row { position: absolute; left: 40px; width: 900px; font: 400 13px/1.4 monospace; color: #4a4741; }
+  .veiled { position: absolute; left: 40px; top: 420px; width: 900px; height: 60px; }
+  .veiled .jacket { position: absolute; inset: 0; background: #efe9dd; opacity: .8; pointer-events: none; }
+</style>
+<canvas id="ground"></canvas>
+<p class="row" id="thin" style="top:200px">Plate 21</p>
+<p class="row" id="far" style="top:1800px">Plate 22</p>
+<div class="veiled"><p class="row" id="veil" style="top:10px;left:0">Plate 23</p><div class="jacket" aria-hidden="true"></div></div>
+<script>
+  const c = document.getElementById('ground'), x = c.getContext('2d');
+  const paint = () => { c.width = innerWidth; c.height = innerHeight; const g = x.createLinearGradient(0, 0, c.width, 0); g.addColorStop(0, '#efe9dd'); g.addColorStop(1, '#ebe4d6'); x.fillStyle = g; x.fillRect(0, 0, c.width, c.height); };
+  paint(); addEventListener('resize', paint);
+</script>

@@ -26,6 +26,8 @@ npm run test:py                                      # the Python tests
 | `cleanroom` | internal-copy vault, blends, difference report, release gate; see `cleanroom/LEGAL-CHECK.md` | FSL-1.1-MIT |
 | `library` | a SQLite catalogue of every artifact, with an MCP server | FSL-1.1-MIT |
 | `instruments` | the instrument pipeline from a law to a reading with a receipt, and the room meter | FSL-1.1-MIT |
+| `quality` | image, motion and type checks: SSIM, banding, edges, grain, frame pacing, type rules and source evidence | FSL-1.1-MIT |
+| `lenspipe` | an open lens design in, checked performance, manufacturability, tolerance, limits, as-built fit and interchange out | FSL-1.1-MIT, data CC0-1.0 |
 | `rooms` | experimental rooms: lenses, optical trains, sound, PCB and fluid solvers, and a typed map registry; see `rooms/README.md` | FSL-1.1-MIT |
 | `_vectors` | CC0 golden vectors for canonical records and statistics, shared with Flywheel and CMMNS | CC0-1.0 |
 

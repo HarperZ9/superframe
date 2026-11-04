@@ -1,5 +1,5 @@
 {
- "comment": "every file this change adds or edits, its source and sha256 (text hashed with LF line endings); MANIFEST.json is generated and left out",
+ "comment": "every file this change adds or edits, its source and sha256 (text hashed with LF line endings); MANIFEST.json is generated and left out; wave 2 rows (packages/quality, packages/lenspipe) hashed on 2026-11-02",
  "snapshot": "HarperZ9/workstation-tools@d82f57f",
  "base": "197b67bef369bbc4624f90098ce8476cfd80a4f2",
  "sourcesHashedOn": "2026-11-02",
@@ -27,11 +27,6 @@
   {
    "path": "package.json",
    "sha256": "2b6c2774d3efd51a1066952b15c16fc9165f554081d187aac235838f54a09583",
-   "source": "new in this change"
-  },
-  {
-   "path": "packages/README.md",
-   "sha256": "f8a7de7093f57c52b2d5dee6fed1061ce5614fa448b2b9e1bd6cd67e601ae605",
    "source": "new in this change"
   },
   {
@@ -2235,6 +2230,144 @@
    "identical": false
   },
   {
+   "path": "packages/lenspipe/README.md",
+   "sha256": "6633ff2685937060f444ba2e597836d73c1810b1484ee042d69975c84d8a6af9",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/lenspipe/data/designs/comsol_dg.json",
+   "sha256": "db3bb754e2f239151d53486b87915301d73c5fa234e9dbc3f8c0d4c5746a7193",
+   "source": "private workspace, 2026-10-31-lens-pipeline/data/designs/comsol_dg.json",
+   "sourceSha256": "db3bb754e2f239151d53486b87915301d73c5fa234e9dbc3f8c0d4c5746a7193",
+   "identical": true
+  },
+  {
+   "path": "packages/lenspipe/data/designs/us2784643_ex1.json",
+   "sha256": "2b943a91895980c857778394511d83eab7a50b74e325dcd3bdf11f6c5a60080a",
+   "source": "private workspace, 2026-10-31-lens-pipeline/data/designs/us2784643_ex1.json",
+   "sourceSha256": "2b943a91895980c857778394511d83eab7a50b74e325dcd3bdf11f6c5a60080a",
+   "identical": true
+  },
+  {
+   "path": "packages/lenspipe/data/designs/us2784643_ex2.json",
+   "sha256": "d3a85c9e2934e126d1eaacaf1a966ff511876f12569c84bf3d8619978b712fb1",
+   "source": "private workspace, 2026-10-31-lens-pipeline/data/designs/us2784643_ex2.json",
+   "sourceSha256": "d3a85c9e2934e126d1eaacaf1a966ff511876f12569c84bf3d8619978b712fb1",
+   "identical": true
+  },
+  {
+   "path": "packages/lenspipe/data/glass_catalog.json",
+   "sha256": "99660e64d84fc101a313dd5a74afcf0ab520ae5041f8a5e142a670d71bbd103d",
+   "source": "private workspace, 2026-10-31-lens-pipeline/data/glass_catalog.json",
+   "sourceSha256": "756378b4a49c4ba5775c5f82859464d0a2cf2bf308a3c4d07d588b1840c02dea",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/__init__.py",
+   "sha256": "d1611c7cdb2368a426405d9af97d66c78ef314a3651a266732c55505020a98de",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/__init__.py",
+   "sourceSha256": "79177458505df1e3e9de3b80a69c5ad95e013dee1a2520b70d21186387e0bd5a",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/asbuilt.py",
+   "sha256": "f0651a482539f89a1ec0bb6f249040f2e3a80cc2066c14600066618f993c4b9c",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/asbuilt.py",
+   "sourceSha256": "428759bbd06ad6e89eec5ec715dabc31e179ac5913f31793281a8c1a6c3227ed",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/cadout.py",
+   "sha256": "06e6095d5592dcd965417c3d1dd6f26e0b8b78efe578d17da810a6d25ad738de",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/cadout.py",
+   "sourceSha256": "b71c1811384f4eef037ab0383ebcc2d230e675f26ae847ab53e6cab2e80f7d71",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/design.py",
+   "sha256": "f5682c86b937fd6f589c6c4d14fc33ad3f2840f253a4a6b257ef0f6460c62473",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/design.py",
+   "sourceSha256": "f6e6ea4e37e5d619b88a5b0df666bfe8908acf7e32d53123b1d71d5fe79aed51",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/glass.py",
+   "sha256": "62959d648d6b640ced2017be987174bceec83663c8830e1af42da66676ad4544",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/glass.py",
+   "sourceSha256": "820d433148e912b1debb4977cb0b6defa586b7b89f88e8feb9be641136777035",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/interchange.py",
+   "sha256": "43ff5061f3e450bc8dbb5a929adf25df0b13dc14e1ea74c7a76d48e28fc02282",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/interchange.py",
+   "sourceSha256": "131946c963059ae25c9d4c4f55d72d4a974f7a0bab0897f44aa3771801835e59",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/limits.py",
+   "sha256": "78bf777d4be0057b4f85dec00bb2f23d09927fe70e18ee31f0f10723de5a4a4e",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/limits.py",
+   "sourceSha256": "83fc63f416dda4c315d64fa33d67bf40b57c9bbdd7ba4a21fc5a0e578e8c9de5",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/optics.py",
+   "sha256": "8fb88a7f1e22c4dc32017c4c8ad592cebf9886501617fdf2c1224cbd21097c32",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/optics.py",
+   "sourceSha256": "7d27feaa26df62ac857130d84fa3b4dbed08c2e15ab205005c974952439b77b6",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/optimise.py",
+   "sha256": "4cb4fcc62645d83cf2c6de2c4bd38367ce85b3f095b632ed755d37f512fd4267",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/optimise.py",
+   "sourceSha256": "f86fe16d17a4b8a8a20113647672df540e2606c7a3a8aa4c798f8d1c82ffbfb0",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/pipeline.py",
+   "sha256": "214b3ec50b07abcb56cdb50809995671379860f97b1a57bf039e227be09d2efb",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/pipeline.py",
+   "sourceSha256": "063399d6b0a1624d118aa004685f5d5e0ba5abf02820aea0f203ca7e1cfd1479",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/rules.py",
+   "sha256": "0b751afc5e0de8aae12f3d4937d899d7b272aa677882080542e1b0baa7e2e88a",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/rules.py",
+   "sourceSha256": "42dac260da5e77664c1bee874353c5427dae60264532844756cb7f1b1db6eeda",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/rules_shop.py",
+   "sha256": "58f4057bc64c0fde16266739442f6ed267058614052c520588778dd9b882663a",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/rules_shop.py",
+   "sourceSha256": "16a03a8ec9d3d3f03b3e407a69a4d2100f24c496c81971e0c4bce5d1e3df6fe4",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/tolerance.py",
+   "sha256": "69f6e85bdf85a82b129d507ffdcda174de3f6a8785cbe70cbf87aefb074f772e",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/tolerance.py",
+   "sourceSha256": "9df66d5cabe466a25768efb1e6acc32f89c33a2ebc535fc6a581e4d06c29b0bf",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/lenspipe/trace.py",
+   "sha256": "28f5900c09da91632adfc592b94c23ba7764a87b11b0af97c9441866ded411ab",
+   "source": "private workspace, 2026-10-31-lens-pipeline/lenspipe/trace.py",
+   "sourceSha256": "e42830eb4d87129f8c781e27a5f5a10cac6a9e4543ee9c46505785377516c811",
+   "identical": false
+  },
+  {
+   "path": "packages/lenspipe/tests/test_ka.py",
+   "sha256": "fc41347846cbd0589272f0f252380e2b20ba60d32acd82f72bd84a2107d29a4c",
+   "source": "private workspace, 2026-10-31-lens-pipeline/tests/test_ka.py",
+   "sourceSha256": "c5103a3773098a0b7fb59f9c7f0c335572731e7ac317fdd03e661b3d09d7c1fd",
+   "identical": false
+  },
+  {
    "path": "packages/library/README.md",
    "sha256": "8a63af1c259a5fba540b839accb591f8bb320235f1d5c26147b7f5e054f4b4ba",
    "source": "new in this change"
@@ -3171,6 +3304,156 @@
    "sha256": "7fe10da7760d7361897303b682c13c6ed73accdf4d0aa87095b1ea0644e19250",
    "source": "workstation-tools@d82f57f:perceive/tests/shots.py",
    "sourceSha256": "0dd906af514b534d4c275b77333e62e8a393275ddf3dc041efc17edbef4d2440",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/README.md",
+   "sha256": "566fd0c16d7034fce03eacea0773774d2b77a8f8c5be2ef9dd00e2a6ead4287f",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/quality/quality/__init__.py",
+   "sha256": "ab7ef345c70cb3eb323c24c8f68fdad65b672903bc6cbfe92564c4355ac7eb93",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/quality/quality/banding.py",
+   "sha256": "1d04068806ad1bc6d67647fcf291fb389a03d7d2c83f734e9c70478575d416f9",
+   "source": "private workspace, 2026-10-23-quality/tools/banding.py",
+   "sourceSha256": "8ebc4ae17c5451e177d7317df9d3ed99d7c17cddc08bad963750fd8fa8761f17",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/quality/edges.py",
+   "sha256": "c5ecc0de732676f431e08e1e11ae6688b843d652faef4d3f5551ebfb0561d45b",
+   "source": "private workspace, 2026-10-23-quality/tools/edges.py",
+   "sourceSha256": "788b2fa21ecf03691e25e8c2ac9e54dd19d1491c541bb9f34503aefbc17617d1",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/quality/grain.py",
+   "sha256": "8a8f9f8ece5418fc6ceb080c48f0e17684516a9003d67091690342032ecdfd39",
+   "source": "private workspace, 2026-10-23-quality/tools/grain.py",
+   "sourceSha256": "983de278ef9578b3cc13e13b68e54792a0a67dcea2d2b461b7dbb09fcbce329e",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/quality/imgio.py",
+   "sha256": "fdf97a9d0ee9e9db5d5d5e48f0097b523d575168e146f67183784e466be39bda",
+   "source": "private workspace, 2026-10-23-quality/tools/imgio.py",
+   "sourceSha256": "b0bfdafa96f5038d67d931b71d217332280387d22610142bb5c08f09f147e7c8",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/quality/pacing.js",
+   "sha256": "9a9d92db3d03ac8df64e9d8ef6735f17320c52d039e0feebfb34471480846449",
+   "source": "private workspace, 2026-10-23-quality/tools/pacing.js",
+   "sourceSha256": "d3131a0a997afe641536ac2eae122a790cce5c7d739af22056f68d3835e2934f",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/quality/pacing.py",
+   "sha256": "bc0a9fa6d57618148d6808756692962f5d6db0db38b27e48bba7be21482a2409",
+   "source": "private workspace, 2026-10-23-quality/tools/pacing.py",
+   "sourceSha256": "3ae1eff59c2a5643d2054ff96828cf2e7c16f0ec4a27a3277adcd136fc553bf6",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/quality/ssim.py",
+   "sha256": "ba9eb1a4163211638167141142d399cadc77189a215d2184bb9a9921f9f1b17a",
+   "source": "private workspace, 2026-10-23-quality/tools/ssim.py",
+   "sourceSha256": "a9149e0f191aff93192d4d1c2215368bdd849c35e6e8226db0cb21956e538f7e",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/quality/static_check.py",
+   "sha256": "fc7bd959dce594d02602f348d17685e207d12a3136b47a6d4d13508b466b086e",
+   "source": "private workspace, 2026-10-23-quality/tools/static_check.py",
+   "sourceSha256": "cc131c510a0f3726128a22b350d31377ffa9c0021ee3b79d16186168dc39f92c",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/quality/typemetrics.js",
+   "sha256": "50e3038535903e2a5ad402d4e6850ad6c2568acfdb1cae2cce69c7586ede65a0",
+   "source": "private workspace, 2026-10-23-quality/tools/typemetrics.js",
+   "sourceSha256": "11dc3fef4e4abf17e65d93646775cc89850f0e17f90837e24cb4a7dc97fe10d9",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/quality/typemetrics.py",
+   "sha256": "fe2929c9a598cdd42bbec0a72a9b7f11d61e9c591d63f82f65f218d7787cd602",
+   "source": "private workspace, 2026-10-23-quality/tools/typemetrics.py",
+   "sourceSha256": "8f1d8933a0e276a02704889d849c9128a80abdc13919d7dfba751022da205691",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/tests/conftest.py",
+   "sha256": "9f34ab6c003a792db7307575ba2dfd7bab7e7a456acadc523f476f77e98d0105",
+   "source": "private workspace, 2026-10-23-quality/tools/tests/conftest.py",
+   "sourceSha256": "a63c72551577694d7a2b3b1b31e540658b2ad3858aab2d8f7af19c50f91b3d8e",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/tests/fixtures/text-over-canvas.html",
+   "sha256": "92e99455439d5296b1379ad041d15acaec5448677654c8abe8b4d86d82545789",
+   "source": "private workspace, 2026-10-23-quality/tools/tests/fixtures/text-over-canvas.html",
+   "sourceSha256": "92e99455439d5296b1379ad041d15acaec5448677654c8abe8b4d86d82545789",
+   "identical": true
+  },
+  {
+   "path": "packages/quality/tests/fixtures/thin-text-over-fixed-canvas.html",
+   "sha256": "34e7d2299a7d19c5fca532e55073e91660c2f4f2f1727e92cc023b08f53745f7",
+   "source": "private workspace, 2026-10-23-quality/tools/tests/fixtures/thin-text-over-fixed-canvas.html",
+   "sourceSha256": "34e7d2299a7d19c5fca532e55073e91660c2f4f2f1727e92cc023b08f53745f7",
+   "identical": true
+  },
+  {
+   "path": "packages/quality/tests/test_banding.py",
+   "sha256": "3e9e26ddfa44c4386d1c1133a504620830fafb65515b79586c3b668e49d65384",
+   "source": "private workspace, 2026-10-23-quality/tools/tests/test_banding.py",
+   "sourceSha256": "de0b40876b986e22a7708eba84f827106a8eb502d974f4fb06333a3538cd5a95",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/tests/test_edges.py",
+   "sha256": "4308bbba2ee81ee3ab138bc81254ca399874d19161a906638469208923d43d2e",
+   "source": "private workspace, 2026-10-23-quality/tools/tests/test_edges.py",
+   "sourceSha256": "b47a983740f0bc4c0e04fae8c8bbf084458abfdc662d9a881ea4026d2e77e725",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/tests/test_grain.py",
+   "sha256": "2e9bb4532e5a88687ee6bcf20c3ff3d8d44f339a651acdc3bef77efc5fca3dbb",
+   "source": "private workspace, 2026-10-23-quality/tools/tests/test_grain.py",
+   "sourceSha256": "6578f2e0259d2567cb60e051a461c09034dde95c3f4d892546f065c1724f6daa",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/tests/test_pacing.py",
+   "sha256": "50802316b9173b34ef2406707ba8abff810a55df5a7e131104d3179f95c58f51",
+   "source": "private workspace, 2026-10-23-quality/tools/tests/test_pacing.py",
+   "sourceSha256": "82c4b50bfb9fc86a01472ca063310fafd9e7de97c44b02f52c4a70ea2e5edb41",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/tests/test_ssim.py",
+   "sha256": "5b81b124811822bfb02396c8b4b3e8e35a50791e15ecc577f4b9ef58c7a0aaae",
+   "source": "private workspace, 2026-10-23-quality/tools/tests/test_ssim.py",
+   "sourceSha256": "e561cc5123ed1f125876f31bd9f073dad6a84e7cf6222996c4a555caf6b60505",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/tests/test_static_check.py",
+   "sha256": "246280a94c33d8d2864ad5943add5b8454023d737fd71520126ab5073af7e54b",
+   "source": "private workspace, 2026-10-23-quality/tools/tests/test_static_check.py",
+   "sourceSha256": "85ec15da4adfad4414f58324f321a74a82f23ef75d20dc0577d1c0a494cd4cb2",
+   "identical": false
+  },
+  {
+   "path": "packages/quality/tests/test_typemetrics.py",
+   "sha256": "f0531557eab2ae4c84f7553213884650e1f6f8a83d6657b3bdfafdb6e7620280",
+   "source": "private workspace, 2026-10-23-quality/tools/tests/test_typemetrics.py",
+   "sourceSha256": "2beb2dc332fb72829e24cefe264f58d302188b1341a137ad6bbd39fbd0b17d32",
    "identical": false
   },
   {
