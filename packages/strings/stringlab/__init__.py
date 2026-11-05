@@ -13,5 +13,7 @@ Each module reproduces a known answer before it says anything new:
   cosmicstrings  the gravitational-wave background of cosmic strings and superstrings
   pta        spectra against pulsar-timing free spectra and the LVK O3 limit
   curvature  Chern classes and the Euler number from the curvature of a Kahler metric
+  stringbursts  cusps, kinks and kink-kink collisions: the LVK burst recipe on BOS loops
+  lvk        a spectrum against a published LIGO-Virgo cross-correlation spectrum
 """
-__all__ = ["zeropoint", "fock", "classical", "tduality", "hagedorn", "calabiyau", "extradim", "cosmicstrings", "pta", "curvature"]
+__all__ = ["zeropoint", "fock", "classical", "tduality", "hagedorn", "calabiyau", "extradim", "cosmicstrings", "pta", "curvature", "stringbursts", "lvk"]
