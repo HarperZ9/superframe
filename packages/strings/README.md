@@ -18,6 +18,7 @@
 | `curvature` | the Chern connection and curvature of a Kahler metric by finite differences, the top Chern form, and the Euler number by Monte Carlo; the quintic in fixed charts | chi(CP^1, CP^2, CP^3) = 2, 3, 4 to 1e-6; a sign-flipped curvature gives -4; chi(quintic) = -200 within Monte Carlo error from the Fubini-Study metric |
 | `stringbursts` | the LIGO-Virgo-KAGRA burst recipe: cusps, kinks and kink-kink collisions on BOS (model A) loops, the decay constant Gamma_d(N_k) and Omega_gw summed over bursts | in pure radiation the burst sum meets the energy bound (128 pi / 9) 0.18 sqrt(G mu / Gamma_d) to 2e-3 for N_k = 0, 1, 100 |
 | `lvk` | a spectrum against a published LIGO-Virgo cross-correlation spectrum C(f), sigma(f): Gaussian likelihood, log-log projection, power-law and G mu upper limits | zero signal gives ln L = 0; the noise-only power-law limit matches direct quadrature |
+| `kkcircle` | one periodic dimension: the Kaluza-Klein mass ladder, the charge ladder from seam changes, field-strength invariance, and the closed string's w = 0 sector via `tduality` | R = 2 l_P / sqrt(alpha) = 23.4 Planck lengths and first rung 5.21e17 GeV (Behiel's numbers, Bailin and Love); masses n / R with double rungs; charge n exactly; F unchanged by seam changes |
 
 ## Run it now
 

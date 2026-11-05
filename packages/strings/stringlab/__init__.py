@@ -15,5 +15,6 @@ Each module reproduces a known answer before it says anything new:
   curvature  Chern classes and the Euler number from the curvature of a Kahler metric
   stringbursts  cusps, kinks and kink-kink collisions: the LVK burst recipe on BOS loops
   lvk        a spectrum against a published LIGO-Virgo cross-correlation spectrum
+  kkcircle   one periodic dimension: Kaluza-Klein mass and charge ladders and string harmonics
 """
-__all__ = ["zeropoint", "fock", "classical", "tduality", "hagedorn", "calabiyau", "extradim", "cosmicstrings", "pta", "curvature", "stringbursts", "lvk"]
+__all__ = ["zeropoint", "fock", "classical", "tduality", "hagedorn", "calabiyau", "extradim", "cosmicstrings", "pta", "curvature", "stringbursts", "lvk", "kkcircle"]

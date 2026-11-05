@@ -62,8 +62,9 @@ def smooth_noise(L, rng, eps, modes=3):
     return out
 
 
-def wilson_dirac(th, m=0.0, r=1.0):
-    """Dense Wilson-Dirac matrix on 2 L^2 components; index = 2 * site + spin."""
+def wilson_dirac(th, m=0.0, r=1.0, bc=(1.0, 1.0)):
+    """Dense Wilson-Dirac matrix on 2 L^2 components; index = 2 * site + spin. bc: boundary phases per direction
+    (-1 for antiperiodic fermions), applied to hops that cross the boundary."""
     L = th.shape[1]
     n = L * L
     D = np.zeros((2 * n, 2 * n), dtype=complex)
@@ -76,9 +77,9 @@ def wilson_dirac(th, m=0.0, r=1.0):
             D[2 * s:2 * s + 2, 2 * s:2 * s + 2] += (m + 2 * r) * I2
             for mu, (da, db) in enumerate(((1, 0), (0, 1))):
                 f = idx(a + da, b + db)
-                Uf = np.exp(1j * th[mu, a, b])
+                Uf = np.exp(1j * th[mu, a, b]) * (bc[mu] if (a + da >= L or b + db >= L) else 1.0)
                 bk = idx(a - da, b - db)
-                Ub = np.exp(-1j * th[mu, (a - da) % L, (b - db) % L])
+                Ub = np.exp(-1j * th[mu, (a - da) % L, (b - db) % L]) * (bc[mu] if (a - da < 0 or b - db < 0) else 1.0)
                 D[2 * s:2 * s + 2, 2 * f:2 * f + 2] += -0.5 * (r * I2 - gam[mu]) * Uf
                 D[2 * s:2 * s + 2, 2 * bk:2 * bk + 2] += -0.5 * (r * I2 + gam[mu]) * Ub
     return D
