@@ -10,5 +10,8 @@ Each module reproduces a known answer before it says anything new:
   hagedorn   exact level degeneracies and the Hagedorn temperature
   calabiyau  Donaldson's balanced metrics on the Fermat quintic; Euler number and Hodge numbers
   extradim   Kaluza-Klein towers, Yukawa strengths, inverse-square-law exclusion arithmetic
+  cosmicstrings  the gravitational-wave background of cosmic strings and superstrings
+  pta        spectra against pulsar-timing free spectra and the LVK O3 limit
+  curvature  Chern classes and the Euler number from the curvature of a Kahler metric
 """
-__all__ = ["zeropoint", "fock", "classical", "tduality", "hagedorn", "calabiyau", "extradim"]
+__all__ = ["zeropoint", "fock", "classical", "tduality", "hagedorn", "calabiyau", "extradim", "cosmicstrings", "pta", "curvature"]

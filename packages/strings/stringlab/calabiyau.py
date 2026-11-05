@@ -98,6 +98,11 @@ def tangent_frame(z, psi=0.0):
 
 def metric_det(z, J, exps, H, k):
     """det of the pulled-back metric g = (1/(k pi)) d dbar log(s^dagger H s) on the tangent space."""
+    return np.linalg.det(metric_pullback(z, J, exps, H, k)).real
+
+
+def metric_pullback(z, J, exps, H, k):
+    """The pulled-back metric g_{a bbar} (n, 3, 3) on the tangent space spanned by the columns of J."""
     s, ds = sections(z, exps)
     Hs = s @ H.T                                    # (H s)_alpha per point
     K = np.einsum("na,na->n", s.conj(), Hs).real    # s^dagger H s
@@ -106,8 +111,7 @@ def metric_det(z, J, exps, H, k):
     v = (Hds @ s.conj()[:, :, None])[..., 0]        # d_i K
     g = A / K[:, None, None] - v[:, :, None] * v.conj()[:, None, :] / K[:, None, None] ** 2
     g = g / (k * np.pi)
-    gp = J.transpose(0, 2, 1) @ g @ J.conj()
-    return np.linalg.det(gp).real
+    return J.transpose(0, 2, 1) @ g @ J.conj()
 
 
 def fs_weights(z, J, omega2):
