@@ -59,18 +59,22 @@ def monomials(k):
     return np.array(out, dtype=int).reshape(-1, DIM)
 
 
-def sections(z, exps, derivatives=True):
-    """s (n, N) and ds/dz_a (n, 5, N); ds is None when derivatives=False."""
+def sections(z, exps, derivatives=True, chunk=5000):
+    """s (n, N) and ds/dz_a (n, 5, N), by table lookup of integer powers; ds is None when derivatives=False."""
+    if z.shape[0] > chunk:
+        parts = [sections(z[i:i + chunk], exps, derivatives, chunk) for i in range(0, z.shape[0], chunk)]
+        return (np.concatenate([p[0] for p in parts]),
+                np.concatenate([p[1] for p in parts]) if derivatives else None)
+    kmax = int(exps.max()) if exps.size else 0
+    P = z[:, :, None] ** np.arange(kmax + 1)[None, None, :]        # (n, 5, kmax+1)
+    F = np.stack([P[:, a, exps[:, a]] for a in range(DIM)], 1)     # (n, 5, N): z_a^{e_a}
+    s = F.prod(1)
     if not derivatives:
-        return np.concatenate([(z[i:i + 5000, None, :] ** exps[None, :, :]).prod(-1)
-                               for i in range(0, z.shape[0], 5000)]), None
-    s = (z[:, None, :] ** exps[None, :, :]).prod(-1)
+        return s, None
     ds = np.empty((z.shape[0], DIM, exps.shape[0]), dtype=complex)
     for a in range(DIM):
-        e = exps.copy()
-        fac = e[:, a].astype(float)
-        e[:, a] = np.maximum(e[:, a] - 1, 0)
-        ds[:, a, :] = fac[None, :] * (z[:, None, :] ** e[None, :, :]).prod(-1)
+        others = np.prod(np.delete(F, a, axis=1), axis=1)
+        ds[:, a, :] = exps[:, a][None, :] * P[:, a, np.maximum(exps[:, a] - 1, 0)] * others
     return s, ds
 
 
@@ -95,14 +99,14 @@ def tangent_frame(z, psi=0.0):
 def metric_det(z, J, exps, H, k):
     """det of the pulled-back metric g = (1/(k pi)) d dbar log(s^dagger H s) on the tangent space."""
     s, ds = sections(z, exps)
-    Hs = s @ H.T                                    # (H s)_alpha per point: sum_beta H[alpha,beta] s_beta
+    Hs = s @ H.T                                    # (H s)_alpha per point
     K = np.einsum("na,na->n", s.conj(), Hs).real    # s^dagger H s
-    Hds = np.einsum("ab,nib->nia", H, ds)            # H ds_i
-    A = np.einsum("nja,nia->nij", ds.conj(), Hds)    # A_ij = conj(ds_j) H ds_i  -> d_i dbar_j K
-    v = np.einsum("na,nia->ni", s.conj(), Hds)      # d_i K
+    Hds = ds @ H.T                                  # (H ds_i)_alpha, shape (n, 5, N)
+    A = Hds @ ds.conj().transpose(0, 2, 1)          # A_ij = conj(ds_j) H ds_i -> d_i dbar_j K
+    v = (Hds @ s.conj()[:, :, None])[..., 0]        # d_i K
     g = A / K[:, None, None] - v[:, :, None] * v.conj()[:, None, :] / K[:, None, None] ** 2
     g = g / (k * np.pi)
-    gp = np.einsum("nia,nij,njb->nab", J, g, J.conj())
+    gp = J.transpose(0, 2, 1) @ g @ J.conj()
     return np.linalg.det(gp).real
 
 
@@ -113,7 +117,7 @@ def fs_weights(z, J, omega2):
 
 
 def t_operator(s, w, H):
-    K = np.einsum("na,ab,nb->n", s.conj(), H, s).real
+    K = np.einsum("na,na->n", s.conj(), s @ H.T).real
     q = (w / K)[:, None] * s
     T = (q.T @ s.conj()) / w.sum() * s.shape[1]      # T_ab = N <s_a conj(s_b) / K>
     return T
