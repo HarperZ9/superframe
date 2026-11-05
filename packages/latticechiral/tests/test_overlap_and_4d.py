@@ -22,7 +22,8 @@ def test_4d_index_equals_flux_product(q):
 
 def test_overlap_determinant_is_one_at_zero_field_and_vectorlike_is_nearly_real():
     th = np.zeros((2, 8, 8))
-    assert abs(nn.chiral_det(th, 3, "L") - 1) < 1e-12
+    ph, lm = nn.chiral_det(th, 3, "L")
+    assert abs(ph) < 1e-12 and abs(lm) < 1e-12
     rng = np.random.default_rng(3)
     t2, _ = u1.metropolis_admissible(4, 4.0, rng, 10, 1.0)
     A1, A2 = ch.interpolate(t2, 32, coulomb=True)

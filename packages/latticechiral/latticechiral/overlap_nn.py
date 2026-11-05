@@ -49,23 +49,24 @@ def vacuum(th, q, m=1.0):
 
 
 def chiral_det(th, q, chirality, ref=None):
-    """Overlap chiral determinant of charge q, Wigner-Brillouin phase; ref: the free vacuum (cached by the caller)."""
+    """Overlap chiral determinant of charge q, Wigner-Brillouin phase; ref: the free vacuum (cached by the caller).
+    Returned as (phase, log modulus) via slogdet, so large lattices neither underflow nor overflow."""
     n = th.shape[1]
     V = vacuum(th, q)
     V0 = vacuum(np.zeros_like(th), q) if ref is None else ref
     if V.shape[1] != V0.shape[1]:
-        return 0j
-    wb = np.linalg.det(V0.conj().T @ V)
-    V = V * (np.conj(wb) / abs(wb)) ** (1.0 / V.shape[1])        # make <0(1)|0(U)> real and positive
+        return float("nan"), -math.inf
+    s_wb, _ = np.linalg.slogdet(V0.conj().T @ V)          # <0(1)|0(U)> = |.| exp(i arg s_wb)
     sel = np.arange(2 * n * n) % 2 == (1 if chirality == "L" else 0)   # gamma5 = -1 (spin 1) or +1 (spin 0)
-    B = np.eye(2 * n * n)[:, sel]
-    return np.linalg.det(B.T @ V) / np.linalg.det(B.T @ V0)
+    s1, l1 = np.linalg.slogdet(V[sel, :])
+    s0, l0 = np.linalg.slogdet(V0[sel, :])
+    ph = np.angle(s1) - np.angle(s_wb) - np.angle(s0)      # remove the vacuum phase so that <0(1)|0(U)> > 0
+    return float((ph + math.pi) % (2 * math.pi) - math.pi), float(l1 - l0)
 
 
 def phase(th, q, chirality, ref=None):
     """Phase of one factor in the orientation convention of `chiral` (right movers conjugated)."""
-    d = chiral_det(th, q, chirality, ref)
-    p = math.atan2(d.imag, d.real)
+    p, _ = chiral_det(th, q, chirality, ref)
     return p if chirality == "L" else -p
 
 
