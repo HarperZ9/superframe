@@ -3463,12 +3463,12 @@
   },
   {
    "path": "packages/strings/README.md",
-   "sha256": "02b8df318f5038ff1739672e9f73557a2e577f087ee436d1b16aa7c49d2c515b",
+   "sha256": "323b5e6351e6ee4ace0e5c8a9d6537971ed2d6fc490fbfecd378963640845914",
    "source": "new in this change"
   },
   {
    "path": "packages/strings/stringlab/__init__.py",
-   "sha256": "a74d90ce88f39cb9bdd3c7e89be66a9e89e587932cbfbe873c3cc8854b28d7e3",
+   "sha256": "a5287b93679ed36c5c99630bf9ddb6c812533e10bd9ceb21b176cba9597d792b",
    "source": "new in this change"
   },
   {
@@ -3507,6 +3507,11 @@
    "source": "new in this change"
   },
   {
+   "path": "packages/strings/stringlab/kkcircle.py",
+   "sha256": "2995c53f6c52293a1b44a1d149f7457ae5e6f873ed3f8ccfa4e4010f34ff19ac",
+   "source": "new in this change"
+  },
+  {
    "path": "packages/strings/stringlab/lvk.py",
    "sha256": "17c3616f2628916b13e669b049e898444256dc665ba15afc00403155c008f6c1",
    "source": "new in this change"
@@ -3542,18 +3547,23 @@
    "source": "new in this change"
   },
   {
+   "path": "packages/strings/tests/test_kkcircle.py",
+   "sha256": "920ec8c3ba7ca18ecd069b7b15601105667bef46f7143acac7e43c8af65e1202",
+   "source": "new in this change"
+  },
+  {
    "path": "packages/strings/tests/test_known_answers.py",
    "sha256": "34ce521348673c0083842078d248f03233bbfb8eefd2d8c8edb76a922128cad4",
    "source": "new in this change"
   },
   {
    "path": "packages/latticechiral/README.md",
-   "sha256": "e4eb3b2d2c5b89221b6536bc48482f1cec4ca89c5102d940109298bb8b96c990",
+   "sha256": "e87feeeb8fee38371ee38939007dd4e7777b6c0bc34fbeccca6173e0ae67c29d",
    "source": "new in this change"
   },
   {
    "path": "packages/latticechiral/latticechiral/__init__.py",
-   "sha256": "b2b707e947bbf326bca5eaa748ee7b9c1479c9421ab331aa73e07da6b6edafb2",
+   "sha256": "6c707fbb404acb184895c532b9c51a920d828277faac4c642532135ba5507912",
    "source": "new in this change"
   },
   {
@@ -3567,13 +3577,28 @@
    "source": "new in this change"
   },
   {
+   "path": "packages/latticechiral/latticechiral/overlap_nn.py",
+   "sha256": "c1c82ee3c68d5279ce2a62a4e18bc7849ac2ae221d40aa282ccc904f12842e57",
+   "source": "new in this change"
+  },
+  {
    "path": "packages/latticechiral/latticechiral/u1.py",
-   "sha256": "eb06e4027c09386824ab032233770c3fc7da1a4a32725f7c1d9a73f351dd7fee",
+   "sha256": "8be4f1acf3bb58ea1b32abb6b7530f02740869b7109f3407e600412368da9974",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/latticechiral/latticechiral/u1_4d.py",
+   "sha256": "45fa3a5f66970ca9b69c43f3a220ee67bb6b83afb297b274cfd5291e8c3e3778",
    "source": "new in this change"
   },
   {
    "path": "packages/latticechiral/tests/test_known_answers.py",
    "sha256": "b977171dcbbc29f5ff174cff05a24a43a8ec1341747f9cb0a0a4f96bcfb9367b",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/latticechiral/tests/test_overlap_and_4d.py",
+   "sha256": "586e00df1aede079861a452fa3913b92bd83ac502185cf84fd84190b9df84912",
    "source": "new in this change"
   }
  ]
