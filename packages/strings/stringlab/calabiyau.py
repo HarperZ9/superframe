@@ -59,10 +59,12 @@ def monomials(k):
     return np.array(out, dtype=int).reshape(-1, DIM)
 
 
-def sections(z, exps):
-    """s (n, N) and ds/dz_a (n, 5, N)."""
-    zp = z[:, None, :] ** exps[None, :, :]
-    s = zp.prod(-1)
+def sections(z, exps, derivatives=True):
+    """s (n, N) and ds/dz_a (n, 5, N); ds is None when derivatives=False."""
+    if not derivatives:
+        return np.concatenate([(z[i:i + 5000, None, :] ** exps[None, :, :]).prod(-1)
+                               for i in range(0, z.shape[0], 5000)]), None
+    s = (z[:, None, :] ** exps[None, :, :]).prod(-1)
     ds = np.empty((z.shape[0], DIM, exps.shape[0]), dtype=complex)
     for a in range(DIM):
         e = exps.copy()
@@ -120,7 +122,7 @@ def t_operator(s, w, H):
 def balanced(z, w, k, iters=12, H0=None):
     """Iterate H <- T(H)^-1 from the identity (or H0); returns H and the change per step."""
     exps = monomials(k)
-    s, _ = sections(z, exps)
+    s, _ = sections(z, exps, derivatives=False)
     H = np.eye(exps.shape[0], dtype=complex) if H0 is None else H0
     steps = []
     for _ in range(iters):
@@ -132,9 +134,10 @@ def balanced(z, w, k, iters=12, H0=None):
     return H, steps
 
 
-def sigma(z, J, omega2, w, exps, H, k):
+def sigma(z, J, omega2, w, exps, H, k, chunk=4000):
     """sigma = <|eta/<eta> - 1|>_Omega and the mean eta (the Kahler volume ratio) on a point set."""
-    eta = metric_det(z, J, exps, H, k) / omega2
+    eta = np.concatenate([metric_det(z[i:i + chunk], J[i:i + chunk], exps, H, k)
+                          for i in range(0, z.shape[0], chunk)]) / omega2
     mean = np.average(eta, weights=w)
     return float(np.average(np.abs(eta / mean - 1), weights=w)), float(mean)
 

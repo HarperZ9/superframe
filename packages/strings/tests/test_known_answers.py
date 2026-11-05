@@ -172,10 +172,10 @@ def test_kk_sum_equals_image_sum(n):
         assert extradim.kk_ratio(x, n) == pytest.approx(extradim.image_ratio(x, n), rel=1e-6)
 
 
-def test_constants_match_measured_table():
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "measured" / "generated"))
-    import constants as k
-    assert (extradim.HBAR, extradim.C, extradim.E) == (k.hbar, k.c, k.e)
+def test_derived_scales_from_measured_constants():
+    """hbar c and the Planck mass, against values computed by hand from CODATA 2022."""
+    assert extradim.HBARC_GEV_M == pytest.approx(1.97327e-16, rel=1e-5)
+    assert extradim.M_PLANCK_GEV == pytest.approx(1.22089e19, rel=1e-4)
 
 
 def test_ahn_2003_scale_reproduced():

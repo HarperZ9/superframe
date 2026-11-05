@@ -17,15 +17,30 @@ add_scale turns a radius bound into the unification scale M* by AHN eq. 6,
     G = (hbar c / M*^2) (hbar / M* c)^n / (2 pi R)^n,
 and radion_scale uses lambda_radion = hbar c M_Pl / M*^2 (Adelberger et al. 2007 eq. 8, about 2.4 mm at 1 TeV).
 """
+import importlib.util
 import math
+import sys
+from pathlib import Path
 
 import numpy as np
 
-# CODATA 2022 (the hbar, c and e values match packages/measured/generated/constants.py; G is CODATA 2022 too)
-HBAR = 1.054571817e-34
-C = 299792458.0
-E = 1.602176634e-19
-G = 6.67430e-11
+
+def _measured_constants():
+    """CODATA 2022 constants from packages/measured/generated/constants.py, loaded by file path under a
+    unique module name (the pattern materials/drude.py uses)."""
+    name = "measured_generated_constants"
+    if name not in sys.modules:
+        path = Path(__file__).resolve().parents[2] / "measured" / "generated" / "constants.py"
+        spec = importlib.util.spec_from_file_location(name, path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        sys.modules[name] = mod
+    return sys.modules[name]
+
+
+_K = _measured_constants()
+HBAR, C, E = _K.hbar, _K.c, _K.e
+G = 6.67430e-11   # CODATA 2022 Newtonian constant; the measured table does not carry G yet
 HBARC_GEV_M = HBAR * C / E / 1e9                 # 1.9733e-16 GeV m
 M_PLANCK_GEV = math.sqrt(HBAR * C / G) * C ** 2 / E / 1e9   # 1.2209e19 GeV (unreduced)
 
