@@ -69,8 +69,9 @@ def simulate(u, kind="chain", size=24, sites=1, k1=1.0, k2=0.0, k3=0.0, g=0.02, 
 
 def narma10(u):
     y = np.zeros(len(u))
-    for t in range(9, len(u) - 1):
-        y[t + 1] = 0.3 * y[t] + 0.05 * y[t] * y[t - 9: t + 1].sum() + 1.5 * u[t - 9] * u[t] + 0.1
+    with np.errstate(over="ignore", invalid="ignore"):
+        for t in range(9, len(u) - 1):
+            y[t + 1] = 0.3 * y[t] + 0.05 * y[t] * y[t - 9: t + 1].sum() + 1.5 * u[t - 9] * u[t] + 0.1
     return y
 
 
@@ -84,8 +85,16 @@ def split(T, washout=200, train=0.7):
     return idx[idx < cut], idx[idx >= cut]
 
 
+def narma_finite(y):
+    """NARMA-10 diverges for some input draws (the recursion has no global bound); such a target is unusable."""
+    return bool(np.all(np.isfinite(y)) and np.abs(y).max() < 1e6)
+
+
 def narma_score(X, y, shuffle_seed=None):
-    """Predict y(t + 1) from the state after input u(t), the usual alignment."""
+    """Predict y(t + 1) from the state after input u(t), the usual alignment. A diverged target raises
+    FloatingPointError, so the caller records the seed as dropped instead of averaging a NaN."""
+    if not narma_finite(y):
+        raise FloatingPointError("NARMA-10 target diverged for this input draw")
     X, y = X[:-1], y[1:]
     tr, te = split(len(y))
     yt = y.copy()

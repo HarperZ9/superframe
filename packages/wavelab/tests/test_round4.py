@@ -36,3 +36,13 @@ def test_patterns_and_weak_drive():
     t, q = R.simulate(1e-4, w=w, periods=150)
     a1 = R.harmonic_amplitude(t, q[:, 0], 1)
     assert R.harmonic_amplitude(t, q[:, 1], 2) == pytest.approx(R.second_mode_weak(a1, w2=w[1]), rel=5e-3)
+
+
+def test_diverging_narma_seed_is_refused_not_averaged():
+    from wavelab import media_graph as G
+    u = np.random.default_rng(301).uniform(0, 0.5, 3000)  # a draw known to diverge
+    y = G.narma10(u)
+    assert not G.narma_finite(y)
+    with pytest.raises(FloatingPointError):
+        G.narma_score(np.zeros((3000, 4)), y)
+    assert G.narma_finite(G.narma10(np.random.default_rng(101).uniform(0, 0.5, 3000)))
