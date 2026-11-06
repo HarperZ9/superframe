@@ -14,5 +14,6 @@
   resonator   resonant macrosonic synthesis in a modal model: harmonic against detuned overtones
   media_graph mass-spring graphs (chains, membranes) with several input sites, and the NARMA-10 task
   cavity      bubble shape stability (parametric, Rayleigh-Taylor) and a Saha ionisation energy sink
+  thermal     a bubble whose gas exchanges heat with the water (isothermal when slow, adiabatic when fast)
 """
-__all__ = ["consts", "burgers", "bubble", "earth", "atmosphere", "finesse", "timerev", "reservoir", "otherworld", "resonator", "media_graph", "cavity"]
+__all__ = ["consts", "burgers", "bubble", "earth", "atmosphere", "finesse", "timerev", "reservoir", "otherworld", "resonator", "media_graph", "cavity", "thermal"]

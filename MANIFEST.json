@@ -5692,8 +5692,8 @@
   {
    "path": "packages/PROVENANCE.json",
    "source": "repo",
-   "bytes": 168132,
-   "sourceSha256": "79422f2b977d2d3f563ea5beba8fd9b7b1b553efae5f2867edb9f5501e4a1684"
+   "bytes": 168485,
+   "sourceSha256": "36b21331bcdabdb8edd7c87248824426f064456f0105f628b531daa05876d4d2"
   },
   {
    "path": "packages/README.md",
@@ -8494,8 +8494,8 @@
   {
    "path": "packages/measured/build/b_wavemedia.py",
    "source": "repo",
-   "bytes": 10917,
-   "sourceSha256": "1e3e3f80ced401c2458fc8a75b9e7d51801d153ccff526c36a9eacc4be8fa926"
+   "bytes": 11938,
+   "sourceSha256": "c9fcaa84a07d49f3eb4211ed9724941b27a6af37d42e18b3de3c3a195f8f0963"
   },
   {
    "path": "packages/measured/build/common.py",
@@ -8608,8 +8608,8 @@
   {
    "path": "packages/measured/data/wave_media.json",
    "source": "repo",
-   "bytes": 89048,
-   "sourceSha256": "596e6b6efd28372a83e834869e8ec98a213eba5adefb47468f212df524a7a932"
+   "bytes": 92983,
+   "sourceSha256": "bc01b4fd171db46fbe4125e77ea6af8be0c7a98fccd71e7c60178b06d5fd77f1"
   },
   {
    "path": "packages/measured/generated/constants.js",
@@ -10420,8 +10420,8 @@
   {
    "path": "packages/wavelab/README.md",
    "source": "repo",
-   "bytes": 7113,
-   "sourceSha256": "783db95b465eafe26b188f5740d03dc3b52099672e247bf5a9755d6bf4cc3158"
+   "bytes": 8059,
+   "sourceSha256": "6f497989a63a6afbf3cf848a9e1d1cb66e87f2b621bdf7235ab0bcfe2d15a3ea"
   },
   {
    "path": "packages/wavelab/tests/test_brute.py",
@@ -10460,10 +10460,16 @@
    "sourceSha256": "459020100aad91f1b45c804145c59fc9fe50804bb773fcc71a0a39bdddb73e67"
   },
   {
+   "path": "packages/wavelab/tests/test_round4.py",
+   "source": "repo",
+   "bytes": 1710,
+   "sourceSha256": "08d4e783383fce5c02fbe573150790ebe6af5a92f73635efe5ef40e2aadcfb34"
+  },
+  {
    "path": "packages/wavelab/wavelab/__init__.py",
    "source": "repo",
-   "bytes": 1434,
-   "sourceSha256": "64e7d0fe8d6f4ce5f51885f98d791f4ce614644e9e7f448a05fb5bb1995ddfcd"
+   "bytes": 1552,
+   "sourceSha256": "df6d5b7e0a09c21bb281a7c808990319be31be65d3aca34d7fd894bc7aa5af11"
   },
   {
    "path": "packages/wavelab/wavelab/atmosphere.py",
@@ -10528,8 +10534,14 @@
   {
    "path": "packages/wavelab/wavelab/resonator.py",
    "source": "repo",
-   "bytes": 4542,
-   "sourceSha256": "55be55e7d21f9f20710df0b6c7af775deca1400d9a2b867a480c44e06df096c5"
+   "bytes": 5805,
+   "sourceSha256": "9eed7a4545b12d462ceeb3147d44b3dba15ee4c348899cef3b3411aacfef0ec1"
+  },
+  {
+   "path": "packages/wavelab/wavelab/thermal.py",
+   "source": "repo",
+   "bytes": 4124,
+   "sourceSha256": "2139ad13d12f651f4aa85e6b4edce1929a729578ebe8d8074a3a6518663fc620"
   },
   {
    "path": "packages/wavelab/wavelab/timerev.py",

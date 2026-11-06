@@ -31,9 +31,35 @@ def _interaction(q):
     return 0.5 * conv[1:] + corr[1: N + 1]
 
 
-def simulate(F, detune=0.0, n_modes=16, g1=0.01, eps=1.0, W=1.0, periods=120, dt=0.01, keep=4, nonlinear=True):
-    """RK4 from rest; returns the last `keep` periods of q (time, modes) and their times."""
-    w = frequencies(n_modes, detune)
+def pattern(name, n_modes=16, size=0.3, seed=0):
+    """Overtone frequencies for a named detuning pattern; mode 1 stays at 1 in every pattern.
+    uniform: n (1 + size) for n >= 2; second: only mode 2 moved, 2 (1 + size); stretched: n (1 + size (n - 1) / (N - 1))
+    (stiff-string inharmonicity, mode N moved by size); compressed: the same with -size / 2; alternating: n (1 + size (-1)^n);
+    random: n (1 + size u_n) with u_n uniform on [-1, 1] from the seed."""
+    n = np.arange(1, n_modes + 1, dtype=float)
+    if name == "harmonic":
+        f = np.zeros_like(n)
+    elif name == "uniform":
+        f = np.where(n >= 2, size, 0.0)
+    elif name == "second":
+        f = np.where(n == 2, size, 0.0)
+    elif name == "stretched":
+        f = size * (n - 1) / (n_modes - 1)
+    elif name == "compressed":
+        f = -0.5 * size * (n - 1) / (n_modes - 1)
+    elif name == "alternating":
+        f = np.where(n >= 2, size * (-1.0) ** n, 0.0)
+    elif name == "random":
+        f = np.where(n >= 2, size * np.random.default_rng(seed).uniform(-1, 1, n_modes), 0.0)
+    else:
+        raise ValueError(name)
+    return n * (1 + f)
+
+
+def simulate(F, detune=0.0, n_modes=16, g1=0.01, eps=1.0, W=1.0, periods=120, dt=0.01, keep=4, nonlinear=True, w=None):
+    """RK4 from rest; returns the last `keep` periods of q (time, modes) and their times. `w` overrides the
+    mode frequencies (see pattern)."""
+    w = frequencies(n_modes, detune) if w is None else np.asarray(w, float)
     g = g1 * np.arange(1, n_modes + 1, dtype=float) ** 2
     T = 2 * np.pi / W
     steps = int(round(periods * T / dt))
@@ -88,8 +114,8 @@ def linear_amplitude(F, g1=0.01, W=1.0):
     return F / (2 * g1 * W)
 
 
-def second_mode_weak(A, detune=0.0, g1=0.01, eps=1.0, W=1.0):
-    w2 = frequencies(2, detune)[1]
+def second_mode_weak(A, detune=0.0, g1=0.01, eps=1.0, W=1.0, w2=None):
+    w2 = frequencies(2, detune)[1] if w2 is None else w2
     g2 = 4 * g1
     return eps * w2 * w2 * A * A / 4 / abs(w2 * w2 - 4 * W * W + 4j * g2 * W)
 
