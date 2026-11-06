@@ -245,3 +245,225 @@ def anneal(drawing, rng, steps=4000, T0=1.0):
 
 def complete(n):
     return n, list(itertools.combinations(range(n), 2))
+
+
+# ---- a drawing built from a rotation system: voltages and a hyperbolic Tutte (harmonic) embedding ----
+
+def face_darts(n, edges, rot):
+    """Faces of an orientable rotation system as lists of darts (u, v)."""
+    pos = [{w: i for i, w in enumerate(r)} for r in rot]
+    seen, faces = set(), []
+    for u in range(n):
+        for v in rot[u]:
+            if (u, v) in seen:
+                continue
+            f, cur = [], (u, v)
+            while cur not in seen:
+                seen.add(cur)
+                f.append(cur)
+                a, b = cur
+                w = rot[b][(pos[b][a] + 1) % len(rot[b])]
+                cur = (b, w)
+            faces.append(f)
+    return faces
+
+
+def _winv(w):
+    return [(g, -e) for g, e in reversed(w)]
+
+
+def voltage_words(n, edges, rot):
+    """Tree-cotree voltages. Returns (words per edge as free-group words in the leftover generators, number of
+    generators, the root-face relation word). Tree edges get the empty word; leftover (non-tree, non-dual-tree)
+    edges get their own generator; dual-tree edges are solved from the face relations, leaves first."""
+    eid = {}
+    for k, (u, v) in enumerate(edges):
+        eid[(u, v)] = (k, 1)
+        eid[(v, u)] = (k, -1)
+    # spanning tree by BFS
+    adj = [[] for _ in range(n)]
+    for k, (u, v) in enumerate(edges):
+        adj[u].append((v, k))
+        adj[v].append((u, k))
+    tree, seen, stack = set(), {0}, [0]
+    while stack:
+        u = stack.pop(0)
+        for v, k in adj[u]:
+            if v not in seen:
+                seen.add(v)
+                tree.add(k)
+                stack.append(v)
+    faces = face_darts(n, edges, rot)
+    face_of = {}
+    for fi, f in enumerate(faces):
+        for d in f:
+            face_of[d] = fi
+    # dual spanning tree over non-tree edges
+    dual_adj = [[] for _ in faces]
+    for k, (u, v) in enumerate(edges):
+        if k in tree:
+            continue
+        a, b = face_of[(u, v)], face_of[(v, u)]
+        dual_adj[a].append((b, k))
+        dual_adj[b].append((a, k))
+    root = 0
+    parent = {root: None}
+    order, stack = [root], [root]
+    dtree = set()
+    while stack:
+        a = stack.pop(0)
+        for b, k in dual_adj[a]:
+            if b not in parent:
+                parent[b] = (a, k)
+                dtree.add(k)
+                order.append(b)
+                stack.append(b)
+    leftover = [k for k in range(len(edges)) if k not in tree and k not in dtree]
+    words = {k: [] for k in tree}
+    for i, k in enumerate(leftover):
+        words[k] = [(i, 1)]
+    # solve dual-tree edges from the leaves up: each face's dart product must be trivial
+
+    def dart_word(d):
+        k, s = eid[d]
+        w = words[k]
+        return w if s == 1 else _winv(w)
+    for fi in reversed(order[1:]):
+        pa, k = parent[fi]
+        f = faces[fi]
+        # rotate the face so the unknown dart comes last: product before it, then unknown
+        idx = [j for j, d in enumerate(f) if eid[d][0] == k][0]
+        f2 = f[idx + 1:] + f[:idx]
+        pre = []
+        for d in f2:
+            pre += dart_word(d)
+        # pre * x = 1 with x the unknown dart's word  =>  x = pre^-1
+        x = _winv(pre)
+        d = f[idx]
+        words[k] = x if eid[d][1] == 1 else _winv(x)
+    rel = []
+    for d in faces[root]:
+        rel += dart_word(d)
+    return [words[k] for k in range(len(edges))], len(leftover), rel
+
+
+def eval_word(w, mats):
+    m = np.eye(2, dtype=complex)
+    for g, e in w:
+        m = m @ (mats[g] if e == 1 else np.linalg.inv(mats[g]))
+    return m
+
+
+def _to_hyperboloid(z):
+    r2 = abs(z) ** 2
+    return np.array([(1 + r2), 2 * z.real, 2 * z.imag]) / (1 - r2)
+
+
+def _from_hyperboloid(x):
+    return complex(x[1], x[2]) / (1 + x[0])
+
+
+def tutte(n, edges, volt, iters=3000, rng=None):
+    """Hyperbolic Tutte embedding: each vertex moves to the hyperboloid centroid of its neighbours' lifts."""
+    rng = np.random.default_rng(0) if rng is None else rng
+    p = [complex(*rng.uniform(-0.1, 0.1, 2)) for _ in range(n)]
+    nb = [[] for _ in range(n)]
+    for k, (u, v) in enumerate(edges):
+        nb[u].append((v, volt[k]))
+        nb[v].append((u, np.linalg.inv(volt[k])))
+    for _ in range(iters):
+        new = []
+        for u in range(n):
+            s = sum(_to_hyperboloid(act(g, p[v])) for v, g in nb[u])
+            s = s / math.sqrt(s[0] ** 2 - s[1] ** 2 - s[2] ** 2)
+            new.append(_from_hyperboloid(s))
+        p = new
+    return p
+
+
+def reduce_to_domain(z, max_steps=50):
+    """A group element h with h(z) in the octagon (Dirichlet domain at 0): apply the generator that pulls z closest."""
+    gs = generators()
+    h = np.eye(2, dtype=complex)
+    for _ in range(max_steps):
+        if inside(act(h, z)):
+            return h
+        best = min(gs, key=lambda g: abs(act(g @ h, z)))
+        h = best @ h
+    return h
+
+
+def _key(m):
+    m = m / np.sqrt(np.linalg.det(m))
+    if m[0, 0].real < 0 or (abs(m[0, 0].real) < 1e-9 and m[0, 0].imag < 0):
+        m = -m
+    return tuple(np.round(np.concatenate([m.real.ravel(), m.imag.ravel()]), 6))
+
+
+def assignments(rel, word_len=2):
+    """Images of the 4 leftover generators (words up to word_len) that satisfy the root-face relation and use all
+    four octagon generators: a meet-in-the-middle search on rel = (x_a x_b ...)(...). Yields index tuples into words()."""
+    names, mats = words(word_len)
+    mats = [np.array(m) for m in mats]
+    inv = [np.linalg.inv(m) for m in mats]
+    W = len(mats)
+    half = len(rel) // 2
+    left, right = rel[:half], rel[half:]
+    import itertools
+    lv = {g for g, _ in left}
+    rv_ = {g for g, _ in right}
+    shared = sorted(lv & rv_)
+    lonly = sorted(lv - rv_)
+    ronly = sorted(rv_ - lv)
+
+    def prod(word, X):
+        m = np.eye(2, dtype=complex)
+        for g, e in word:
+            m = m @ (mats[X[g]] if e == 1 else inv[X[g]])
+        return m
+    for sh in itertools.product(range(1, W), repeat=len(shared)):
+        base = dict(zip(shared, sh))
+        table = {}
+        for lo in itertools.product(range(1, W), repeat=len(lonly)):
+            X = dict(base)
+            X.update(zip(lonly, lo))
+            table.setdefault(_key(prod(left, X)), []).append(X)
+        for ro in itertools.product(range(1, W), repeat=len(ronly)):
+            Y0 = dict(base)
+            Y0.update(zip(ronly, ro))
+            for X in table.get(_key(np.linalg.inv(prod(right, Y0))), []):
+                Y = dict(X)
+                Y.update(Y0)
+                sol = tuple(Y[i] for i in range(4))
+                if len({a % 4 for i in sol for a in names[i]}) == 4:
+                    yield sol
+
+
+def draw_from_rotation(graph, rot, word_len=2, iters=400, tries=60, image_len=4):
+    """A geodesic drawing on the octagon surface in the homotopy class fixed by the rotation system: tree-cotree
+    voltages, a generator assignment satisfying the surface relation, a hyperbolic Tutte embedding, then each vertex
+    moved into the octagon. Returns (crossings, positions, edge voltages, assignment) for the first crossing-free try,
+    or the best one."""
+    n, edges = graph
+    wds, ng, rel = voltage_words(n, edges, rot)
+    if ng != 4:
+        raise ValueError("needs a genus-2 rotation system")
+    names, mats = words(word_len)
+    dr = Drawing(graph, 1, image_len)
+    best = None
+    for t, sol in enumerate(assignments(rel, word_len)):
+        if t >= tries:
+            break
+        X = [np.array(mats[i]) for i in sol]
+        volt = [eval_word(w, X) for w in wds]
+        p = tutte(n, edges, volt, iters=iters)
+        hs = [reduce_to_domain(z) for z in p]
+        p2 = [act(h, z) for h, z in zip(hs, p)]
+        v2 = [hs[u] @ volt[k] @ np.linalg.inv(hs[v]) for k, (u, v) in enumerate(edges)]
+        dr.lifts = v2
+        c = dr.crossings(p2, list(range(len(edges))))
+        if best is None or c < best[0]:
+            best = (c, p2, v2, [names[i] for i in sol])
+        if c == 0:
+            break
+    return best

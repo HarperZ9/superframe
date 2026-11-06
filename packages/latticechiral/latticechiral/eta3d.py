@@ -117,3 +117,63 @@ def eta_field(q, B1, B2, L, beta, lam, N, nt, theta=0.5, tol=1e-12):
                             H[2 * j:2 * j + 2, 2 * i:2 * i + 2] += blk
     ev = np.linalg.eigvalsh(H)
     return float(np.sum(np.sign(ev) * np.exp(-(ev / lam) ** 2)))
+
+
+def _fprime(x, lam):
+    return -(2.0 / lam ** 2) * np.abs(x) * np.exp(-(x / lam) ** 2)
+
+
+def _fsecond(x, lam):
+    return -(2.0 / lam ** 2) * np.sign(x) * np.exp(-(x / lam) ** 2) * (1 - 2 * (x / lam) ** 2)
+
+
+def eta_field_pert(q, B1, B2, L, beta, lam, N, nt, theta=0.5, tol=1e-12):
+    """Second-order perturbation theory for the same regulated eta as `eta_field`, with no matrix diagonalised.
+
+    At A = 0 the operator is diagonal in plane waves, with eigenvalues +-sqrt(k^2 + omega^2) and known spinors, and
+    eta = 0. The loop field V couples (k, n) to (k + p, n +- 1) only, so the first-order term vanishes, and
+    eta = 1/2 sum_{a, b} |V_ba|^2 (f'(l_a) - f'(l_b)) / (l_a - l_b) + O(V^3), f(x) = sign(x) exp(-(x / lam)^2).
+    The cost is linear in the number of modes, so boxes of millions of modes are cheap. Same box as eta_field:
+    k = 2 pi (m + 1/2) / L, m in [-N, N); |n| <= nt."""
+    M = B1.shape[-1]
+    ms = np.arange(-N, N)
+    ns = np.arange(-nt, nt + 1)
+    K1, K2, NN = np.meshgrid(2 * math.pi * (ms + 0.5) / L, 2 * math.pi * (ms + 0.5) / L, 2 * math.pi * (ns + theta) / beta,
+                             indexing="ij")
+    E = np.sqrt(K1 ** 2 + K2 ** 2 + NN ** 2)
+    kc = K1 - 1j * K2
+
+    def spinor(lmb):
+        u = np.stack([kc, lmb - NN])                     # (2, ...) eigenvector of [[w, k1 - i k2], [k1 + i k2, -w]]
+        return u / np.sqrt(np.sum(np.abs(u) ** 2, axis=0))
+    bands = [(E, spinor(E)), (-E, spinor(-E))]
+    s1 = np.array([[0, 1], [1, 0]], dtype=complex)
+    s2 = np.array([[0, -1j], [1j, 0]])
+    c1 = [np.fft.fft2(B1[mu]) / M ** 2 for mu in range(2)]
+    c2 = [np.fft.fft2(B2[mu]) / M ** 2 for mu in range(2)]
+    freq = np.fft.fftfreq(M, d=1.0 / M).astype(int)
+    total = 0.0
+    n1, n3 = ms.size, ns.size
+    for dn, sgn in ((1, -1j), (-1, 1j)):
+        coef = [(c1[mu] + sgn * c2[mu]) / 2 for mu in range(2)]
+        for p1 in range(M):
+            for p2 in range(M):
+                a = (coef[0][p1, p2], coef[1][p1, p2])
+                if abs(a[0]) < tol and abs(a[1]) < tol:
+                    continue
+                d1, d2 = freq[p1], freq[p2]
+                Mx = q * (a[0] * s1 + a[1] * s2)
+                # source slice and target slice inside the box
+                src = (slice(max(0, -d1), n1 - max(0, d1)), slice(max(0, -d2), n1 - max(0, d2)), slice(max(0, -dn), n3 - max(0, dn)))
+                dst = (slice(max(0, d1), n1 - max(0, -d1)), slice(max(0, d2), n1 - max(0, -d2)), slice(max(0, dn), n3 - max(0, -dn)))
+                for la, ua in bands:
+                    for lb, ub in bands:
+                        ls, us = la[src], ua[(slice(None),) + src]
+                        lt, ut = lb[dst], ub[(slice(None),) + dst]
+                        Mu = np.einsum("ij,j...->i...", Mx, us)
+                        amp = np.abs(np.sum(np.conj(ut) * Mu, axis=0)) ** 2
+                        diff = ls - lt
+                        same = np.abs(diff) < 1e-12
+                        F = np.where(same, _fsecond(ls, lam), (_fprime(ls, lam) - _fprime(lt, lam)) / np.where(same, 1.0, diff))
+                        total += 0.5 * float(np.sum(amp * F))
+    return total
