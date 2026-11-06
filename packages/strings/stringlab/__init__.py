@@ -17,4 +17,4 @@ Each module reproduces a known answer before it says anything new:
   lvk        a spectrum against a published LIGO-Virgo cross-correlation spectrum
   kkcircle   one periodic dimension: Kaluza-Klein mass and charge ladders and string harmonics
 """
-__all__ = ["zeropoint", "fock", "classical", "tduality", "hagedorn", "calabiyau", "extradim", "cosmicstrings", "pta", "curvature", "stringbursts", "lvk", "kkcircle", "surfaces"]
+__all__ = ["zeropoint", "fock", "classical", "tduality", "hagedorn", "calabiyau", "extradim", "cosmicstrings", "pta", "curvature", "stringbursts", "lvk", "kkcircle", "surfaces", "genus"]
