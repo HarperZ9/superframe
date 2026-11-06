@@ -73,3 +73,21 @@ def phase(th, q, chirality, ref=None):
 def total_phase(th, left, right, ref=None):
     """Sum of the factor phases, in the convention of `chiral`; ref: the free vacuum for this lattice (shared)."""
     return sum(phase(th, q, "L", ref) for q in left if q) + sum(phase(th, q, "R", ref) for q in right if q)
+
+
+def adiabatic_phase(fields, q, chirality, ref=None):
+    """The chiral determinant phase with the vacuum carried along a path of link fields by parallel transport
+    (the Bismut-Freed connection), the adiabatic-limit form of exp(-i pi eta) on Y = W x [0, 1] with A(0) = 0.
+    fields: list of link arrays th(t_k), first zero. Returns (phase, Berry holonomy), right movers conjugated."""
+    n = fields[0].shape[1]
+    vacs = [vacuum(th, q) for th in fields]
+    berry = 0.0
+    for a, b in zip(vacs, vacs[1:]):
+        sg, _ = np.linalg.slogdet(a.conj().T @ b)
+        berry += np.angle(sg)
+    sel = np.arange(2 * n * n) % 2 == (1 if chirality == "L" else 0)
+    s1, _ = np.linalg.slogdet(vacs[-1][sel, :])
+    s0, _ = np.linalg.slogdet(vacs[0][sel, :])
+    ph = np.angle(s1) - np.angle(s0) - berry
+    ph = float((ph + math.pi) % (2 * math.pi) - math.pi)
+    return (ph if chirality == "L" else -ph), float(berry)
