@@ -4,9 +4,9 @@
 // The real-time host, in BuildLang: opens the audio device through the BuildLang binding (audio.bld),
 // renders banks of modal voices (dsp.bld) every period, and reports render time against the deadline.
 //   buildc run packages/daw/bld/main.bld            null device (any OS, no sound)
-//   buildc run packages/daw/bld/main.bld -- wasapi  the default Windows output, fed silence
-// Each load runs `periods` periods and prints one JSON line. With the device, a click is then timed through
-// the device's loopback and, when an input device exists, through the room.
+//   buildc run packages/daw/bld/main.bld -- wasapi  the default Windows output, fed silence (no sound)
+// Each load runs `periods` periods and prints one JSON line. The device is always fed silence (the binding's
+// silent flag), and the audio thread is pinned to the performance cores first.
 mod dsp;
 mod audio;
 
@@ -73,23 +73,99 @@ fn run_load(voices: usize, modes: usize, periods: i32) ~ Console + Foreign {
              voices, modes, bl_audio_periods() - p0, bl_audio_misses() - m0, bl_audio_render_ms_mean(), bl_audio_render_ms_max());
 }
 
+// One period of the live host: take every event waiting in the ring, give each the next voice of the pool
+// (free-bar modes from the engine's fundamental and loss factor), strike it at the start of this period,
+// and record how long the event waited. Returns -1 once the engine has closed its stream.
+fn live_period(st: &mut [f64], a1: *mut f64, a2: *mut f64, b: *mut f64, y1: *mut f64, y2: *mut f64, hits: *mut f64,
+               ev: *mut f64, voices: usize, modes: usize, fs: f64) -> i32 ~ Foreign {
+    let h = unsafe { slice::from_raw_parts_mut(hits, voices) };
+    let e = unsafe { slice::from_raw_parts_mut(ev, 6) };
+    let now = bl_audio_now();
+    let mut state = bl_events_pop(ev);
+    while state == 1 {
+        let v = (st[0] as usize) % voices;
+        daw_voice_set(a1, a2, b, y1, y2, v, modes, e[2], e[3], e[4], fs);
+        h[v] = 0.0;
+        let wait_ms = (now - e[5]) * 1000.0;
+        st[0] = st[0] + 1.0;
+        st[1] = st[1] + wait_ms;
+        if wait_ms > st[2] {
+            st[2] = wait_ms;
+        }
+        state = bl_events_pop(ev);
+    }
+    state
+}
+
+// The live host: events arrive on standard input from the engine (impacts.mjs), one line each:
+// engine time (s), kind, fundamental (Hz), loss factor, amplitude, and the engine's stamp on the shared clock.
+fn run_live(device: i32) ~ Console + Foreign {
+    let voices: usize = 64;
+    let modes: usize = 12;
+    let total = voices * modes;
+    let a1 = bl_audio_alloc(total);
+    let a2 = bl_audio_alloc(total);
+    let b = bl_audio_alloc(total);
+    let y1 = bl_audio_alloc(total);
+    let y2 = bl_audio_alloc(total);
+    let hits = bl_audio_alloc(voices);
+    let ev = bl_audio_alloc(6);
+    let stats = bl_audio_alloc(3);
+    let st = unsafe { slice::from_raw_parts_mut(stats, 3) };
+    let h = unsafe { slice::from_raw_parts_mut(hits, voices) };
+    let fs: f64 = bl_audio_rate() as f64;
+    let out = bl_audio_buffer();
+    bl_events_start();
+    let mut tail: i32 = 0;
+    while tail < 100 {
+        let n = bl_audio_wait() as usize;
+        let mut v: usize = 0;
+        while v < voices {
+            h[v] = -1.0;
+            v = v + 1;
+        }
+        if live_period(st, a1, a2, b, y1, y2, hits, ev, voices, modes, fs) < 0 {
+            tail = tail + 1;
+        }
+        daw_bank_live(a1 as *const f64, a2 as *const f64, b as *const f64, y1, y2, voices, modes, hits as *const f64,
+                      out, n);
+        bl_audio_write(out, n);
+    }
+    let count = st[0];
+    let mean = if count > 0.0 { st[1] / count } else { 0.0 };
+    println!("{{\"device\": {}, \"events\": {}, \"wait_ms_mean\": {}, \"wait_ms_max\": {}, \"periods\": {}, \"misses\": {}, \"render_ms_max\": {}, \"period\": {}, \"buffer_ms\": {}}}",
+             device, count, mean, st[2], bl_audio_periods(), bl_audio_misses(), bl_audio_render_ms_max(), bl_audio_period(),
+             bl_audio_buffer_ms());
+}
+
 fn main() ~ Console + Foreign + Environment {
-    let device: i32 = if args_count() > 1 { 1 } else { 0 };
-    let rc = bl_audio_open(device, 48000, 480, 1);
+    let live: bool = args_count() > 1 && args_get(args_count() - 1) == "live";
+    let device: i32 = if args_count() > 1 && args_get(1) == "wasapi" { 1 } else { 0 };
+    if live {
+        let pinned = bl_audio_pin_performance_cores();
+        let rc = bl_audio_open(device, 48000, 480, 1);
+        if rc != 0 {
+            println!("{{\"error\": \"open failed\", \"code\": {}, \"pinned\": {}}}", rc, pinned);
+            return;
+        }
+        run_live(device);
+        bl_audio_close();
+        return;
+    }
+    let pinned = bl_audio_pin_performance_cores();
+    let rc = bl_audio_open(device, 48000, 144, 1);
     if rc != 0 {
         println!("{{\"error\": \"open failed\", \"code\": {}}}", rc);
         return;
     }
-    println!("{{\"device\": {}, \"rate\": {}, \"period\": {}, \"buffer_ms\": {}, \"stream_latency_ms\": {}}}",
-             device, bl_audio_rate(), bl_audio_period(), bl_audio_buffer_ms(), bl_audio_stream_latency_ms());
+    println!("{{\"device\": {}, \"pinned_logical_processors\": {}, \"rate\": {}, \"period\": {}, \"buffer_ms\": {}}}",
+             device, pinned, bl_audio_rate(), bl_audio_period(), bl_audio_buffer_ms());
     run_load(8, 200, 300);
     run_load(32, 200, 300);
     run_load(32, 400, 6000);
-    run_load(40, 400, 6000);
     run_load(48, 400, 6000);
+    run_load(64, 400, 6000);
+    run_load(80, 400, 3000);
     run_load(128, 400, 300);
-    if device == 1 {
-        println!("{{\"loopback_ms\": {}, \"roundtrip_ms\": {}}}", bl_audio_loopback_ms(0.02), bl_audio_roundtrip_ms(0.2, 0.02));
-    }
     bl_audio_close();
 }

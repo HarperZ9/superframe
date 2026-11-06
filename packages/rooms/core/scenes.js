@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
+import { RAIN_RECORD } from "./data/rain-record.js";
 // ======================================================================= Far side scenes
 // Each is one vec3 shade(ro,rd), selected at compile time. gT is the hit distance, used by depth and time of flight.
 export const SKYFN = `uniform vec4 uMarkP;vec3 sun=normalize(vec3(.5,.9,-.35));float gT=1e3;
@@ -50,6 +51,15 @@ bool hitS(vec3 ro,vec3 rd,inout float t,inout vec3 n,inout vec3 al,inout vec3 em
  return h;}`,
   },
 };
+// Rain streaks: a sky cell lights when it holds a drop. Each cell stands for RAIN_CELL_M3 of air (a drawing
+// scale, chosen so the 2 mm/h record keeps the look the scene had before it read the record), so the chance a
+// cell is empty is exp(-n V) for n drops per cubic metre (Poisson), and that is the shader's threshold. The
+// drop density comes from the scene-physics record the workstation plays (data/rain-record.js).
+export const RAIN_CELL_M3 = 9.524e-5;
+export function rainThreshold(dropsPerM3) {
+  return Math.exp(-dropsPerM3 * RAIN_CELL_M3);
+}
+const glslNum = (x) => (Math.round(x * 100) / 100).toFixed(2).replace(/^0/, "");
 // Forest with rain: the grove, a dim sky and frozen streaks along the first ray.
 SCENES.rain = {
   name: "Forest in rain",
@@ -58,7 +68,7 @@ SCENES.rain = {
   glsl: SCENES.grove.glsl.replace(
     "DAY\n" + AIR0,
     `vec3 sky(vec3 rd){return mix(vec3(.42,.45,.48),vec3(.2,.23,.27),clamp(rd.y,0.,1.));}
-vec3 air(vec3 ro,vec3 rd,float t,vec3 c){c=mix(c,vec3(.33,.36,.38),1.-exp(-t*.05));for(int k=0;k<3;k++){float s=3.+float(k)*2.5;vec2 a=vec2(atan(rd.x,rd.z)*40./s,rd.y*5./s+rd.x*.2);vec2 id=floor(a);float h=h21(id+float(k)*9.);c+=vec3(.5)*step(.86,h)*smoothstep(.09,0.,abs(fract(a.x)-.5))*smoothstep(.5,.1,abs(fract(a.y)-.5));}return c;}`
+vec3 air(vec3 ro,vec3 rd,float t,vec3 c){c=mix(c,vec3(.33,.36,.38),1.-exp(-t*.05));for(int k=0;k<3;k++){float s=3.+float(k)*2.5;vec2 a=vec2(atan(rd.x,rd.z)*40./s,rd.y*5./s+rd.x*.2);vec2 id=floor(a);float h=h21(id+float(k)*9.);c+=vec3(.5)*step(${glslNum(rainThreshold(RAIN_RECORD.drops_per_m3))},h)*smoothstep(.09,0.,abs(fract(a.x)-.5))*smoothstep(.5,.1,abs(fract(a.y)-.5));}return c;}`
   ),
 };
 SCENES.water = {

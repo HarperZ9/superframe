@@ -5980,20 +5980,20 @@
   {
    "path": "packages/daw/ARCHITECTURE.md",
    "source": "repo",
-   "bytes": 6856,
-   "sourceSha256": "ea5d608ac4e53072d75aa9bdeb661d999635dd4fcf7a327fb86f9886480a0849"
+   "bytes": 7572,
+   "sourceSha256": "b8a5be0558d1ca889689da8b31bda6da6ffc4e61048470264bd4e07e04bce79c"
   },
   {
    "path": "packages/daw/DESIGN.md",
    "source": "repo",
-   "bytes": 28087,
-   "sourceSha256": "ec680776d3b250cbaf3838a9654803dbb705e9022d19e742820a39aefc5aad01"
+   "bytes": 29916,
+   "sourceSha256": "9a0988f8af37751ed89f5df17c973480168b48bb1f39727f4365d67b54694795"
   },
   {
    "path": "packages/daw/README.md",
    "source": "repo",
-   "bytes": 4661,
-   "sourceSha256": "26022deba2900ab434a782a5f1abea5d89964297e2beb8c4e8aa3064b78f11bf"
+   "bytes": 4777,
+   "sourceSha256": "cac8b75a0724bae1a610b872335a6959317c8a2f5c7891611c0d29a747fbd38d"
   },
   {
    "path": "packages/daw/bench/modal_bank.cpp",
@@ -6022,32 +6022,44 @@
   {
    "path": "packages/daw/bld/audio.bld",
    "source": "repo",
-   "bytes": 1125,
-   "sourceSha256": "6cad2045aaf67cc248635e8b39cc4df17cda1c258683f5db82df142a4d11b82c"
+   "bytes": 1280,
+   "sourceSha256": "04ef3a5d679b565abf7cbcc57a32c7925fc46d314b6b4be36b16b7326965a85f"
   },
   {
    "path": "packages/daw/bld/bl_audio.c",
    "source": "repo",
-   "bytes": 11104,
-   "sourceSha256": "f192909851b2a4d5bc85e502cb04cc47e04b0fa8116a8c36809500699fd6d054"
+   "bytes": 6418,
+   "sourceSha256": "57cfaf8721f6d19c9a2d2951197d52255e3d7ca7174748c0e612c95be3a6ab9e"
   },
   {
    "path": "packages/daw/bld/bl_audio.h",
    "source": "repo",
-   "bytes": 2872,
-   "sourceSha256": "107fa493d01d26f5893e3b47339d7b94e2681b8b6ad389861c0fd2ca1918d63f"
+   "bytes": 3793,
+   "sourceSha256": "ed46a6816bbbbba535cc724936d167cb5980e0cc5f2cfd795d97ecb4bc4a75cc"
+  },
+  {
+   "path": "packages/daw/bld/bl_audio_win.c",
+   "source": "repo",
+   "bytes": 7635,
+   "sourceSha256": "9f0eee25f23db4413448b75e10de4c5bffe43485724341f85368e14b5d3e0023"
+  },
+  {
+   "path": "packages/daw/bld/bl_events.c",
+   "source": "repo",
+   "bytes": 2609,
+   "sourceSha256": "26af3955624954c9b311a7b08784c7ed834342926fa823e0216572f3cef4090d"
   },
   {
    "path": "packages/daw/bld/dsp.bld",
    "source": "repo",
-   "bytes": 6214,
-   "sourceSha256": "cd2f1bcf1764bb22f98e74a567180e743fdbdfbafb947a2ae76a300a9dee2a86"
+   "bytes": 11199,
+   "sourceSha256": "209ee8ebdc2df6e2f56b2398efeeaf4b99d0948dde196e5756304f279534f5f0"
   },
   {
    "path": "packages/daw/bld/main.bld",
    "source": "repo",
-   "bytes": 4071,
-   "sourceSha256": "99c5ce7b277184f3ae192bb8473cb68c39cb2c6fc89b677b757700dc9c7c2050"
+   "bytes": 7332,
+   "sourceSha256": "f74145edb911ad6140e1c15228e69664d25446d8a9b3ab3fed49b3727c0ce626"
   },
   {
    "path": "packages/daw/daw/__init__.py",
@@ -6112,8 +6124,8 @@
   {
    "path": "packages/daw/daw/native.py",
    "source": "repo",
-   "bytes": 4682,
-   "sourceSha256": "63b3627373c2f4b6a8db2a1b0d09b2009490b88077de17de42eeb6c28c669473"
+   "bytes": 5498,
+   "sourceSha256": "5590da0ad3517664aed8476e7950e64694132c594ffdf7b1173204aa43120ce5"
   },
   {
    "path": "packages/daw/daw/nature.py",
@@ -6142,8 +6154,8 @@
   {
    "path": "packages/daw/daw/scene.py",
    "source": "repo",
-   "bytes": 6870,
-   "sourceSha256": "676f9ff418db5ef9f45089dbd7d2a85a49050eb408a966783e0304480b10ca96"
+   "bytes": 7827,
+   "sourceSha256": "59d709a2e3ca0960a0cf407981fe3bc19c5afa3905583eccdf15130ab926219d"
   },
   {
    "path": "packages/daw/daw/shapes_1d.py",
@@ -6178,8 +6190,8 @@
   {
    "path": "packages/daw/daw/tract.py",
    "source": "repo",
-   "bytes": 2575,
-   "sourceSha256": "32a7e0f57c4f6563f3f76d34d8c312c3fb0297f8a5376aeb002b1e44026efbc8"
+   "bytes": 3015,
+   "sourceSha256": "eae3dca4da2cca8dd4b5c07139c639f5b3298671bccf90abc84a316b1ae17a1a"
   },
   {
    "path": "packages/daw/daw/voice.py",
@@ -6194,6 +6206,12 @@
    "sourceSha256": "be47a093546da7d46756932203a077518133c1d29bff81d639a354785fcec72f"
   },
   {
+   "path": "packages/daw/engine/impacts.mjs",
+   "source": "repo",
+   "bytes": 3759,
+   "sourceSha256": "62842d9647429409ddde59ac2cd087fd49455ec5818c2a220703311c87bd763d"
+  },
+  {
    "path": "packages/daw/page/plate.py",
    "source": "repo",
    "bytes": 7568,
@@ -6202,8 +6220,14 @@
   {
    "path": "packages/daw/tests/test_daw.py",
    "source": "repo",
-   "bytes": 7358,
-   "sourceSha256": "655f14d24ff37a651ebd19473d5a31167171bcc83d3ed26e1c6efbdf682f244f"
+   "bytes": 7718,
+   "sourceSha256": "85f4f25f84c2e91b2c41d9cfd9529bd2dc72215655525147e8227a06ebaef63b"
+  },
+  {
+   "path": "packages/daw/tests/test_engine.py",
+   "source": "repo",
+   "bytes": 2041,
+   "sourceSha256": "c01dfa76fe2c37266f0340df3c50b46b6a70712e4345accbc812bd34d135ad6e"
   },
   {
    "path": "packages/daw/tests/test_harmony.py",
@@ -6220,14 +6244,14 @@
   {
    "path": "packages/daw/tests/test_native.py",
    "source": "repo",
-   "bytes": 3558,
-   "sourceSha256": "9406a99280316f8dad426e136e5151f2821ab13bf9b6c680e25cbef983c8643b"
+   "bytes": 4334,
+   "sourceSha256": "1271c1b8d71b442a1c704e20629eda2e68b964d95a14bf7fb414b6ba0d6d7938"
   },
   {
    "path": "packages/daw/tests/test_scene.py",
    "source": "repo",
-   "bytes": 2964,
-   "sourceSha256": "f6f012915471daa33bbd5ff347823f92d636a44850fe2ac939631b9ea7cad674"
+   "bytes": 3211,
+   "sourceSha256": "4ee4b62804b3358cdfccacdf8d1e1c360441988e5cc1590e77c2f2b7fe4baab4"
   },
   {
    "path": "packages/daw/tests/test_space.py",
@@ -6238,8 +6262,8 @@
   {
    "path": "packages/daw/tests/test_sustain_voice.py",
    "source": "repo",
-   "bytes": 4217,
-   "sourceSha256": "71f10dae02c0c8755a67cb3533db33a4c746813d0df468ef3c9d41610030f19b"
+   "bytes": 5202,
+   "sourceSha256": "daeb77a222c7f0496fd2853f5ff5c1ea1a5f4714abcb7afab16a1526c1594715"
   },
   {
    "path": "packages/daw/tests/test_voice_nature.py",
@@ -8450,6 +8474,12 @@
    "sourceSha256": "99d4c5089dc48d9fc266f8ace2806a0717ff6177864360ab4e79913f2473afd0"
   },
   {
+   "path": "packages/measured/build/b_dvtd_area.py",
+   "source": "repo",
+   "bytes": 5104,
+   "sourceSha256": "b0869ad54a3aab834f93211ce5449be6a86b567c07e64a913de2c0263c33e64c"
+  },
+  {
    "path": "packages/measured/build/b_facts.py",
    "source": "repo",
    "bytes": 6197,
@@ -8604,6 +8634,12 @@
    "source": "repo",
    "bytes": 44578,
    "sourceSha256": "132b3d23721947594b9204ed05e7a5a3b05527781329b047571bda71964b4d59"
+  },
+  {
+   "path": "packages/measured/data/vocal_tract_areas_dvtd.json",
+   "source": "repo",
+   "bytes": 87221,
+   "sourceSha256": "8df6358c22df852ed91c95773662e37400aa6fde5ffa42f786dd66130f295f7b"
   },
   {
    "path": "packages/measured/data/vocal_tracts_dvtd.json",
@@ -9152,6 +9188,12 @@
    "sourceSha256": "850c7b072828d2c51f97d5989288422dff9181e502e8ac59ebe49cef6bcfbe67"
   },
   {
+   "path": "packages/rooms/core/data/rain-record.js",
+   "source": "repo",
+   "bytes": 548,
+   "sourceSha256": "e81e499c2e114425643623ff45a5f6880c3c29f7e159c1fd55a3f7dc6fbabf54"
+  },
+  {
    "path": "packages/rooms/core/families.js",
    "source": "repo",
    "bytes": 2504,
@@ -9244,8 +9286,8 @@
   {
    "path": "packages/rooms/core/scenes.js",
    "source": "repo",
-   "bytes": 11097,
-   "sourceSha256": "2f96048dd276fcc26352b48a030a5b24a988feb00cdad3e4c7d02656679ac44a"
+   "bytes": 11836,
+   "sourceSha256": "5bdcfb8d224e5eeef1a7e99114fab17d2b3365d6a26c5b5d61fffeebbad0d216"
   },
   {
    "path": "packages/rooms/core/shaders/common.js",
@@ -9704,6 +9746,12 @@
    "sourceSha256": "a77ed6ca0dbdc967a1e46d76fef1f6bb3ab1cf9fa182021ea62871c65c110018"
   },
   {
+   "path": "packages/rooms/tests/rain-record.test.mjs",
+   "source": "repo",
+   "bytes": 1190,
+   "sourceSha256": "2adc3f6b087b8f446330c1c6a0053d1f7a05cc8b634002663210af5b76d17e7e"
+  },
+  {
    "path": "packages/rooms/tests/registry.test.mjs",
    "source": "repo",
    "bytes": 2357,
@@ -9826,8 +9874,8 @@
   {
    "path": "packages/rooms/views/lens-room/build.mjs",
    "source": "repo",
-   "bytes": 1573,
-   "sourceSha256": "166af67f19b297238c42755ae3e2c6dc4d0350618c0f9e9242c66f1130d47850"
+   "bytes": 1598,
+   "sourceSha256": "77969ea0160786ebe882d9db62d26c4aa39fd4a51fb20601e0d878851f47b8e5"
   },
   {
    "path": "packages/rooms/views/lens-room/shell.html",

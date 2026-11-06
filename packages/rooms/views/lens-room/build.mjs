@@ -12,6 +12,7 @@ export const CORE = [
   "constants.js",
   "shapes.js",
   "formula.js",
+  "data/rain-record.js",
   "scenes.js",
   "shaders/common.js",
   "scatter.js",

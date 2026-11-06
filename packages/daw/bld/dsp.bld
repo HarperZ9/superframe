@@ -107,7 +107,9 @@ extern "C" fn daw_path_linear(xp: *const f64, nx: usize, s0: *const f64, v: *con
 
 // A bank of `voices` modal voices of `modes` modes each, stored voice after voice in flat arrays, rendered
 // into one output. Voice v is struck (a unit impulse) whenever (sample + v * spacing) is a multiple of
-// `retrigger`, so the load stays the same from period to period. This is the real-time inner loop.
+// `retrigger`, so the load stays the same from period to period. This is the real-time inner loop. The strike
+// sample of each voice is found once per period, not tested per sample, and each voice runs its modes over the
+// whole period at once, so the inner loop is the two-pole recursion alone.
 extern "C" fn daw_bank_process(a1p: *const f64, a2p: *const f64, bp: *const f64, y1p: *mut f64, y2p: *mut f64,
                                voices: usize, modes: usize, start: i64, retrigger: i64, spacing: i64,
                                out: *mut f64, frames: usize) {
@@ -120,23 +122,159 @@ extern "C" fn daw_bank_process(a1p: *const f64, a2p: *const f64, bp: *const f64,
     let o = unsafe { slice::from_raw_parts_mut(out, frames) };
     let mut n: usize = 0;
     while n < frames {
-        let mut acc: f64 = 0.0;
-        let mut v: usize = 0;
-        while v < voices {
-            let t = start + (n as i64) + (v as i64) * spacing;
-            let x: f64 = if t % retrigger == 0 { 1.0 } else { 0.0 };
-            let base = v * modes;
-            let mut k: usize = base;
-            while k < base + modes {
-                let y = a1[k] * y1[k] - a2[k] * y2[k] + b[k] * x;
-                y2[k] = y1[k];
-                y1[k] = y;
-                acc = acc + y;
-                k = k + 1;
-            }
-            v = v + 1;
-        }
-        o[n] = acc;
+        o[n] = 0.0;
         n = n + 1;
+    }
+    let mut v: usize = 0;
+    while v < voices {
+        let phase = (start + (v as i64) * spacing) % retrigger;
+        let first = ((retrigger - phase) % retrigger) as usize;
+        let step = retrigger as usize;
+        let base = v * modes;
+        let mut k: usize = 0;
+        while k + 1 < modes {
+            bank_pair(a1, a2, b, y1, y2, base + k, o, frames, first, step);
+            k = k + 2;
+        }
+        if k < modes {
+            bank_one(a1, a2, b, y1, y2, base + k, o, frames, first, step);
+        }
+        v = v + 1;
+    }
+}
+
+// Two modes of one voice over a period, added into the output; struck at `first` and every `step` after.
+fn bank_pair(a1: &[f64], a2: &[f64], b: &[f64], y1: &mut [f64], y2: &mut [f64], k: usize, o: &mut [f64],
+             frames: usize, first: usize, step: usize) {
+    let c1 = a1[k];
+    let c2 = a2[k];
+    let d1 = a1[k + 1];
+    let d2 = a2[k + 1];
+    let mut p1 = y1[k];
+    let mut p2 = y2[k];
+    let mut q1 = y1[k + 1];
+    let mut q2 = y2[k + 1];
+    let mut next = first;
+    let mut m: usize = 0;
+    while m < frames {
+        let mut y = c1 * p1 - c2 * p2;
+        let mut z = d1 * q1 - d2 * q2;
+        if m == next {
+            y = y + b[k];
+            z = z + b[k + 1];
+            next = next + step;
+        }
+        p2 = p1;
+        p1 = y;
+        q2 = q1;
+        q1 = z;
+        o[m] = o[m] + (y + z);
+        m = m + 1;
+    }
+    y1[k] = p1;
+    y2[k] = p2;
+    y1[k + 1] = q1;
+    y2[k + 1] = q2;
+}
+
+// One mode over a period, for a voice with an odd number of modes.
+fn bank_one(a1: &[f64], a2: &[f64], b: &[f64], y1: &mut [f64], y2: &mut [f64], k: usize, o: &mut [f64],
+            frames: usize, first: usize, step: usize) {
+    let c1 = a1[k];
+    let c2 = a2[k];
+    let mut p1 = y1[k];
+    let mut p2 = y2[k];
+    let mut next = first;
+    let mut m: usize = 0;
+    while m < frames {
+        let mut y = c1 * p1 - c2 * p2;
+        if m == next {
+            y = y + b[k];
+            next = next + step;
+        }
+        p2 = p1;
+        p1 = y;
+        o[m] = o[m] + y;
+        m = m + 1;
+    }
+    y1[k] = p1;
+    y2[k] = p2;
+}
+
+// The live bank: voice v is struck at sample hits[v] of this period (or not at all when hits[v] is negative),
+// with no retrigger; the engine's events decide the strikes.
+extern "C" fn daw_bank_live(a1p: *const f64, a2p: *const f64, bp: *const f64, y1p: *mut f64, y2p: *mut f64,
+                            voices: usize, modes: usize, hitsp: *const f64, out: *mut f64, frames: usize) {
+    let total = voices * modes;
+    let a1 = unsafe { slice::from_raw_parts(a1p, total) };
+    let a2 = unsafe { slice::from_raw_parts(a2p, total) };
+    let b = unsafe { slice::from_raw_parts(bp, total) };
+    let y1 = unsafe { slice::from_raw_parts_mut(y1p, total) };
+    let y2 = unsafe { slice::from_raw_parts_mut(y2p, total) };
+    let hits = unsafe { slice::from_raw_parts(hitsp, voices) };
+    let o = unsafe { slice::from_raw_parts_mut(out, frames) };
+    let mut n: usize = 0;
+    while n < frames {
+        o[n] = 0.0;
+        n = n + 1;
+    }
+    let never = frames + 1;
+    let mut v: usize = 0;
+    while v < voices {
+        let first: usize = if hits[v] < 0.0 { never } else { hits[v] as usize };
+        let base = v * modes;
+        let mut k: usize = 0;
+        while k + 1 < modes {
+            bank_pair(a1, a2, b, y1, y2, base + k, o, frames, first, never);
+            k = k + 2;
+        }
+        if k < modes {
+            bank_one(a1, a2, b, y1, y2, base + k, o, frames, first, never);
+        }
+        v = v + 1;
+    }
+}
+
+// Give voice v the modes of a free bar with fundamental f1 (ratios (beta_k / beta_1)^2, the first four roots of
+// cos(x) cosh(x) = 1 to sixteen digits, then (k + 1/2) pi), loss factor eta and
+// strike amplitude amp, and silence what it was playing. Called between periods, before the strike.
+extern "C" fn daw_voice_set(a1p: *mut f64, a2p: *mut f64, bp: *mut f64, y1p: *mut f64, y2p: *mut f64,
+                            v: usize, modes: usize, f1: f64, eta: f64, amp: f64, fs: f64) {
+    let base = v * modes;
+    let a1 = unsafe { slice::from_raw_parts_mut(a1p, base + modes) };
+    let a2 = unsafe { slice::from_raw_parts_mut(a2p, base + modes) };
+    let b = unsafe { slice::from_raw_parts_mut(bp, base + modes) };
+    let y1 = unsafe { slice::from_raw_parts_mut(y1p, base + modes) };
+    let y2 = unsafe { slice::from_raw_parts_mut(y2p, base + modes) };
+    let pi: f64 = 3.141592653589793;
+    let b1: f64 = 4.730040744862704;
+    let mut k: usize = 0;
+    while k < modes {
+        let mut bk: f64 = ((k as f64) + 1.5) * pi;    // (k + 1/2) pi is the root to 1e-7 from the fifth on
+        if k == 0 {
+            bk = b1;
+        }
+        if k == 1 {
+            bk = 7.853204624095838;
+        }
+        if k == 2 {
+            bk = 10.995607838001671;
+        }
+        if k == 3 {
+            bk = 14.137165491257464;
+        }
+        let mut f: f64 = f1 * (bk / b1) * (bk / b1);
+        let mut g: f64 = amp / ((k as f64) + 1.0);
+        if f > 0.45 * fs {
+            f = 0.45 * fs;
+            g = 0.0;
+        }
+        let r: f64 = exp(0.0 - (pi * f * eta + 2.0) / fs);
+        a1[base + k] = 2.0 * r * cos(2.0 * pi * f / fs);
+        a2[base + k] = r * r;
+        b[base + k] = g;
+        y1[base + k] = 0.0;
+        y2[base + k] = 0.0;
+        k = k + 1;
     }
 }

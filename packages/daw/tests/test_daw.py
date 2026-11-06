@@ -20,7 +20,12 @@ from daw.synth import render  # noqa: E402
 
 FS = 48000
 SUPERSTACK_V020 = "d5f86b29354a43e676d3d2db7005150b100427137e7708be9841f1e7d5589353"
-BL_AUDIO_SHA256 = "f192909851b2a4d5bc85e502cb04cc47e04b0fa8116a8c36809500699fd6d054"   # buildlang runtime/audio
+BL_AUDIO_SHA256 = {   # runtime/audio in HarperZ9/buildlang, vendored unchanged
+    "bl_audio.c": "57cfaf8721f6d19c9a2d2951197d52255e3d7ca7174748c0e612c95be3a6ab9e",
+    "bl_audio_win.c": "9f0eee25f23db4413448b75e10de4c5bffe43485724341f85368e14b5d3e0023",
+    "bl_events.c": "26af3955624954c9b311a7b08784c7ed834342926fa823e0216572f3cef4090d",
+    "bl_audio.h": "ed46a6816bbbbba535cc724936d167cb5980e0cc5f2cfd795d97ecb4bc4a75cc",
+}
 
 
 def test_vendored_superstack_is_the_pinned_release():
@@ -29,8 +34,9 @@ def test_vendored_superstack_is_the_pinned_release():
 
 
 def test_vendored_audio_binding_is_buildlangs():
-    data = (Path(__file__).resolve().parents[1] / "bld" / "bl_audio.c").read_bytes().replace(bytes([13, 10]), bytes([10]))
-    assert hashlib.sha256(data).hexdigest() == BL_AUDIO_SHA256
+    for name, want in BL_AUDIO_SHA256.items():
+        data = (Path(__file__).resolve().parents[1] / "bld" / name).read_bytes().replace(bytes([13, 10]), bytes([10]))
+        assert hashlib.sha256(data).hexdigest() == want, name
 
 
 def test_strike_spectrum_peaks_at_the_modes_and_decays_at_t60():
