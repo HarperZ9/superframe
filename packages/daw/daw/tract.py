@@ -4,7 +4,9 @@
 
 Each section is a transmission line of area A and length l, followed by a shunt admittance for its wall:
 Y = (perimeter x l) / Z_w, perimeter 2 sqrt(pi A), with the wall impedance per unit area
-Z_w = R_w + j omega M_w. The wall values are those of Sondhi and Schroeter 1987, R_w = 16,000 kg m^-2 s^-1
+Z_w = R_w + j omega M_w. A nasal tract joins as a side branch at the velum: its input impedance (open at the
+nostrils) shunts the oral tract there, and where that impedance falls to zero, at c / 2L_n for a uniform branch
+of length L_n, the oral output has an antiresonance (Fant 1960). The wall values are those of Sondhi and Schroeter 1987, R_w = 16,000 kg m^-2 s^-1
 and M_w = 15 kg m^-2 (from memory, moderate confidence). The lips radiate as a piston in a baffle; for small
 ka the load is Z_r = (rho c / A)((ka)^2 / 2 + j 8 ka / (3 pi)), a = sqrt(A / pi) (Morse 1948), which adds
 an end correction of 8 a / (3 pi), about 0.85 a, and the radiation loss. With the glottis a volume-velocity
@@ -18,14 +20,27 @@ import numpy as np
 WALL_R, WALL_M = 16000.0, 15.0
 
 
-def transfer(freqs, areas, lengths, c, rho=1.14, lips=True, walls=False):
-    """Complex U_lips / U_glottis at each frequency."""
+def branch_impedance(f, areas, lengths, c, rho=1.14):
+    """Input impedance of a side branch (the nasal tract) open at its far end: B / D of its chain."""
+    k = 2 * math.pi * f / c
+    K = np.eye(2, dtype=complex)
+    for A, l in zip(areas, lengths):
+        z = rho * c / A
+        K = K @ np.array([[math.cos(k * l), 1j * z * math.sin(k * l)], [1j * math.sin(k * l) / z, math.cos(k * l)]])
+    return K[0, 1] / K[1, 1]
+
+
+def transfer(freqs, areas, lengths, c, rho=1.14, lips=True, walls=False, nasal=None):
+    """Complex U_lips / U_glottis at each frequency. nasal = (section index of the velum, branch areas, branch
+    lengths) couples a nasal tract as a side branch after that section; the oral flow is returned."""
     out = np.empty(len(freqs), complex)
     for i, f in enumerate(freqs):
         w = 2 * math.pi * f
         k = w / c
         K = np.eye(2, dtype=complex)
-        for A, l in zip(areas, lengths):
+        for j, (A, l) in enumerate(zip(areas, lengths)):
+            if nasal is not None and j == nasal[0]:
+                K = K @ np.array([[1, 0], [1 / branch_impedance(f, nasal[1], nasal[2], c, rho), 1]])
             z = rho * c / A
             K = K @ np.array([[math.cos(k * l), 1j * z * math.sin(k * l)], [1j * math.sin(k * l) / z, math.cos(k * l)]])
             if walls:

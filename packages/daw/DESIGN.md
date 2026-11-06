@@ -48,7 +48,7 @@ The host is BuildLang (`bld/main.bld`): it pins its audio thread to the performa
 
 So one core holds 19,200 modes (96 two-hundred-mode bars) with no miss in either 60 s run, which matches the earlier C host, and 25,600 modes in one run of two. Before pinning and the loop change the same host held 12,800. The period cannot go below 10 ms in shared mode on this machine: the binding asks for 3 ms through IAudioClient3, and the audio engine reports 480 frames as its default, fundamental, minimum and maximum period alike, so the request falls back. Exclusive mode would allow 3 ms but takes the device from every other program, and was not tried.
 
-SIMD is not in yet: buildc compiles at -O2 with a bounds check on every index, and the checks keep the C compiler from vectorising the loop. Hoisting the checks out of a loop whose bounds are known (or an unchecked index inside `unsafe`) and an f32 path are BuildLang changes, next on the list.
+The f32 bank (`daw_bank_f32`) is laid out for the vector unit: every mode advances one sample in one branch-free loop, the strikes are added after it, and the outputs are summed in eight fixed partial sums. BuildLang got what it needed: `get_unchecked` and `set_unchecked` on slices inside `unsafe` (each loop checks its range once, by hand, before it starts), and release builds that let gcc vectorise loops behind a runtime alias check, with DETMATH kept so no result changes. The f32 bank runs 0.41 ns per mode-sample for 400-mode voices (f64: 0.67) and 0.30 for 20-mode voices (f64: 0.69). In f32 the phase drifts from the f64 recursion (about -46 dB after 80 ms), so it serves short voices; sustains stay f64.
 
 Latency: an engine event (see ARCHITECTURE.md) waited 6.1 ms on average and 10.1 ms at most from the moment the engine made it to the start of the period that strikes it, measured on the shared clock over 26 live impacts with the device fed silence. The 22 ms device buffer follows, so an event sounds about 28 to 32 ms after it happens; the buffer part is derived from the device's sizes, not measured. Loopback timing and a round trip both need audible output (a click through the speakers) or an input device, and this machine has no input device; under the current no-sound rule neither was run.
 
@@ -113,7 +113,9 @@ Now also (`tract.py`, `folds.py`): lip radiation as a baffled piston, which lowe
 
 The 1D tract is now held to those 44 tracts. `packages/measured/build/b_dvtd_area.py` fills each closed surface mesh into 0.7 mm voxels and measures the geodesic distance of every voxel from the glottis on the 26-connected voxel graph; the area at each distance is the volume of a 3 mm shell over its thickness. The first attempt used a 6-connected graph, which measures city-block distance: it stretched the schwa tract from 192 to 237 mm and put F1 at 109 Hz against a measured 337 Hz. With the true distance the schwa's F1 is 336 Hz. The last shells, slivers of the cap that closes the mesh at the lips, are trimmed (`tract.trim_lip_cap`); left in, they close the mouth. With lip radiation, F1 is within 10 percent of the measured resonance for 41 of 44 tracts (median error 4.7 percent) and F2 for 32 of 44 (median 6.4 percent); without the trim the median F1 error more than doubles (planted). Side cavities fall into the shells at their distance, a known limit of distance-shell area functions, and the worst cases are rounded front vowels and the lateral.
 
-Next, in order: coupling the folds to the tract; nasal coupling; subglottal tract and lungs; the oesophagus as a source for oesophageal speech; then a 3D tract.
+Now coupled (`kl_tract.py`): the folds drive a Kelly-Lochbaum waveguide tract, whose formants match the chain matrix on the same sections within 2 percent, and the tract pushes back: the flow peak lags the glottal opening by about 6 percent of the period, where the unloaded source has no lag. A nasal tract joins at the velum as a side branch and puts an antiresonance at c / 2L_n, within 1 percent for a uniform branch. The oesophageal voice: the pharyngo-oesophageal segment (three times the folds' mass, half their stiffness, from memory) vibrates at 51 Hz against its linear mode of 49 Hz, and the voice stops when its air charge is spent, twice the air lasting about twice as long.
+
+Next: a nasal tract from MRI with its sinuses, the subglottal tract and lungs, then a 3D tract.
 
 Voice quality controls (pitch, open quotient, skew, breath, tract length and shape) are explicit numbers. A physical model can generate speech-like sound whose articulation is known exactly, which suits probing and training speech models: every sample comes with its true formants, area function and source settings. The workspace already holds a speech-model fine-tuning setup for the author's own consented voice; the physical model would add labelled synthetic data beside it, never a copy of any real person's voice.
 
@@ -174,13 +176,13 @@ Competitive table. Rows marked "memory" are from general knowledge of these prod
 
 Done from the previous three steps: the device binding is in BuildLang and the host is BuildLang; aluminium and steel damping are measured; bowing and a reed exist; the voice has lip radiation, wall loss and two-mass folds, with measured MRI tract resonances on file.
 
-Done from the last round: the audio thread on the performance cores and the strike test out of the inner loop (19,200 modes held in two 60 s runs); the live event path from the engine into the BuildLang host, with impacts from falling balls; the engine's rain scene reading its density from the record; and area functions from the Dresden meshes. Not done: SIMD and f32 (need BuildLang to hoist bounds checks), and a period under 10 ms (this driver's shared-mode engine period is fixed).
+Done this round: unchecked slice access and vectorised release builds in BuildLang, and an f32 vector bank (0.41 ns per mode-sample); impacts from the rooms' collision geometry with the landing point setting the modes; live raindrop bubbles (about 1,300 a second for light rain, no missed deadline); wind held to three measured storm recordings; folds coupled to a waveguide tract, a nasal branch and the oesophageal voice.
 
 Next three steps:
 
-1. BuildLang: hoist bounds checks out of loops with known bounds and add an f32 path, so the bank vectorises; then 3 ms on a device or driver that allows it, and a round trip once an input device exists and sound is allowed.
-2. Engine: impacts from the rooms' own collision geometry, rain drops as live events (bubbles through the same bank), and wind with its measured spectra.
-3. Voice: folds coupled to the tract (glottal flow loaded by the tract's input impedance), then nasal coupling and the oesophageal source.
+1. The f32 bank in the live host with voices allocated per kind, and the wasm build of the kernels for the browser rooms.
+2. Plates and spheres from the rooms' geometry as strike targets; thunder and surf held to the storm recordings.
+3. A nasal tract and sinuses from MRI, the subglottal tract and lungs, and a 3D tract.
 
 Folded in from manufacturer manuals read as local research copies (no text from them ships here):
 

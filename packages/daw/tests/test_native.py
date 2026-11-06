@@ -96,3 +96,44 @@ def test_live_voice_is_a_struck_free_bar_at_its_sample():
     x = np.zeros(480); x[100] = 1.0
     want = native.modal_process(a1, a2, 0.5 / np.arange(1, 7), (np.zeros(6), np.zeros(6)), x)
     assert np.max(np.abs(out - want)) < 1e-6 and np.all(out[:100] == 0)
+
+
+def test_strike_position_weights_the_bar_modes_by_their_shapes():
+    from daw.shapes_1d import free_free_shape
+    modes = 8
+    state = tuple(np.zeros(modes) for _ in range(5))
+    for x in (0.5, 0.224, 0.1):
+        native.voice_strike_at(state, 0, modes, 300.0, 2.3e-4, 1.0, x, FS)
+        roots = Bar(M.material("aluminium"), 0.3, 0.01).roots(modes)
+        want = np.array([free_free_shape(b, x) for b in roots]) / np.arange(1, modes + 1)
+        assert np.allclose(state[2], want, atol=1e-9)
+    native.voice_strike_at(state, 0, modes, 300.0, 2.3e-4, 1.0, 0.5, FS)
+    assert abs(state[2][1]) < 1e-9 and abs(state[2][3]) < 1e-9        # struck at the middle: odd modes silent
+
+
+def test_bubble_voice_rings_at_its_minnaert_frequency_and_decay():
+    state = tuple(np.zeros(1) for _ in range(5))
+    native.bubble_set(state, 0, 14000.0, 0.055, 1.0, FS)
+    r = np.exp(-np.pi * 14000.0 * 0.055 / FS)
+    assert abs(state[0][0] - 2 * r * np.cos(2 * np.pi * 14000.0 / FS)) < 1e-12 and abs(state[1][0] - r * r) < 1e-15
+    native.bubble_set(state, 0, 30000.0, 0.055, 1.0, FS)
+    assert state[2][0] == 0.0                                          # above 0.45 fs: silenced, not aliased
+
+
+
+def test_f32_vector_bank_tracks_the_f64_bank():
+    voices, modes = 8, 40
+    rng = np.random.default_rng(0)
+    f = rng.uniform(100.0, 16000.0, voices * modes)
+    a1, a2 = native.modal_coeffs(f, np.pi * f * 2.3e-4 + 2.0, FS)
+    b = rng.uniform(0.1, 1.0, voices * modes)
+    hits = np.full(voices, -1.0)
+    hits[::3] = 5.0
+    st64 = (a1.copy(), a2.copy(), b.copy(), np.zeros(voices * modes), np.zeros(voices * modes))
+    st32 = tuple(np.ascontiguousarray(x, np.float32) for x in (a1, a2, b, *([np.zeros(voices * modes)] * 3)))
+    run = lambda fn, st: np.concatenate([fn(st, voices, modes, hits if i == 0 else np.full(voices, -1.0), 480)
+                                         for i in range(8)])
+    o64, o32 = run(native.bank_live, st64), run(native.bank_f32, st32)
+    assert np.max(np.abs(o32 - o64)) / np.max(np.abs(o64)) < 5e-3          # f32 phase drift: -46 dB after 80 ms
+    st32b = tuple(np.ascontiguousarray(x, np.float32) for x in (a1, a2, b, *([np.zeros(voices * modes)] * 3)))
+    assert np.array_equal(run(native.bank_f32, st32b), o32)                   # same input, same bits

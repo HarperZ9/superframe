@@ -17,6 +17,11 @@ import math
 import numpy as np
 
 BASE = dict(m1=0.125e-3, m2=0.025e-3, k1=80.0, k2=8.0, kc=25.0, l=0.014, d1=0.0025, a0=5e-6)
+# The pharyngo-oesophageal segment that vibrates in oesophageal speech, after a laryngectomy: heavier and slacker
+# tissue than the vocal folds, here three times the mass and half the stiffness, so its modes sit near 0.41 of
+# the folds' (sqrt(0.5 / 3)) and its voice near 50 to 60 Hz (the scale factors are from memory, low confidence;
+# published oesophageal voices sit near 60 to 80 Hz, also from memory).
+PE_SEGMENT = dict(mass=3.0, stiffness=0.5)
 
 
 def _derivs(s, p, ps, rho):
@@ -79,3 +84,43 @@ def pitch_and_open_quotient(area, fs):
     up = np.flatnonzero((x[:-1] < 0) & (x[1:] >= 0))
     f0 = fs / np.mean(np.diff(up)) if len(up) > 2 else 0.0
     return f0, float((a > 0.02 * a.max()).mean())
+
+
+def pe_params(a0=None):
+    p = params(1.0, a0)
+    for k in ("m1", "m2"):
+        p[k] *= PE_SEGMENT["mass"]
+    for k in ("k1", "k2", "kc"):
+        p[k] *= PE_SEGMENT["stiffness"]
+    return p
+
+
+def oesophageal(ps, v0, seconds, fs, rho=1.14, sub=8):
+    """Oesophageal voice: the PE segment driven by an air charge of v0 cubic metres at pressure ps. It sounds
+    until the charge is spent (the integral of the flow reaches v0), then stops. Returns (area, flow, end time)."""
+    p, dt = pe_params(), 1.0 / (fs * sub)
+    s = np.array([1e-5, 0.0, 0.0, 0.0])
+    n = int(seconds * fs)
+    area, flow = np.zeros(n), np.zeros(n)
+    used, end = 0.0, None
+    for i in range(n):
+        drive = ps if used < v0 else 0.0
+        for _ in range(sub):
+            k1, _ = _derivs(s, p, drive, rho)
+            k2, _ = _derivs(s + 0.5 * dt * k1, p, drive, rho)
+            k3, _ = _derivs(s + 0.5 * dt * k2, p, drive, rho)
+            k4, _ = _derivs(s + dt * k3, p, drive, rho)
+            s = s + dt / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
+        area[i] = _derivs(s, p, drive, rho)[1]
+        flow[i] = area[i] * math.sqrt(2 * drive / rho)
+        used += flow[i] / fs
+        if end is None and used >= v0:
+            end = (i + 1) / fs
+    return area, flow, end
+
+
+def pe_linear_frequencies():
+    p = pe_params()
+    K = np.array([[p["k1"] + p["kc"], -p["kc"]], [-p["kc"], p["k2"] + p["kc"]]])
+    Mi = np.diag([1 / p["m1"], 1 / p["m2"]])
+    return np.sort(np.sqrt(np.linalg.eigvals(Mi @ K).real)) / (2 * math.pi)

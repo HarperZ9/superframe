@@ -1,0 +1,102 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The f32 voice bank (see daw_bank_f32), kept beside dsp.bld so each file stays short.
+
+// The f32 bank, laid out for the vector unit: every mode of every voice advances one sample in one loop with
+// no branch (a1, a2, the two past outputs, all f32), the strikes of this sample are added after it in a short
+// scalar loop, and the outputs are summed. With buildc's release flags gcc vectorises the mode loop (4 or 8
+// modes per instruction); it changes no result, since nothing is reassociated. In f32 the phase drifts from
+// the f64 recursion (about -46 dB after 80 ms in tests/test_native.py), so it suits short voices (impacts,
+// bubbles); long sustains stay in the f64 bank.
+extern "C" fn daw_bank_f32(a1p: *const f32, a2p: *const f32, bp: *const f32, y1p: *mut f32, y2p: *mut f32,
+                           ybp: *mut f32, voices: usize, modes: usize, hitsp: *const f64, out: *mut f64,
+                           frames: usize) {
+    let total = voices * modes;
+    let a1 = unsafe { slice::from_raw_parts(a1p, total) };
+    let a2 = unsafe { slice::from_raw_parts(a2p, total) };
+    let b = unsafe { slice::from_raw_parts(bp, total) };
+    let y1 = unsafe { slice::from_raw_parts_mut(y1p, total) };
+    let y2 = unsafe { slice::from_raw_parts_mut(y2p, total) };
+    let yb = unsafe { slice::from_raw_parts_mut(ybp, total) };
+    let hits = unsafe { slice::from_raw_parts(hitsp, voices) };
+    let o = unsafe { slice::from_raw_parts_mut(out, frames) };
+    let mut n: usize = 0;
+    while n < frames {
+        advance_f32(a1, a2, y1, y2, yb, total);
+        strike_f32(b, y1, yb, hits, n, modes);
+        o[n] = sum8(yb, total) as f64;
+        n = n + 1;
+    }
+}
+
+// One sample of every mode: y = a1 y1 - a2 y2. The range is checked once, then the loop reads and writes
+// without per-index checks, so it vectorises.
+fn advance_f32(a1: &[f32], a2: &[f32], y1: &mut [f32], y2: &mut [f32], yb: &mut [f32], total: usize) {
+    if a1.len() < total || a2.len() < total || y1.len() < total || y2.len() < total || yb.len() < total {
+        return;
+    }
+    let mut k: usize = 0;
+    while k < total {
+        unsafe {
+            let p1 = y1.get_unchecked(k);
+            let y = a1.get_unchecked(k) * p1 - a2.get_unchecked(k) * y2.get_unchecked(k);
+            y2.set_unchecked(k, p1);
+            y1.set_unchecked(k, y);
+            yb.set_unchecked(k, y);
+        }
+        k = k + 1;
+    }
+}
+
+// The voices struck at sample n of this period take their strike gains into this sample's output.
+fn strike_f32(b: &[f32], y1: &mut [f32], yb: &mut [f32], hits: &[f64], n: usize, modes: usize) {
+    let mut v: usize = 0;
+    while v < hits.len() {
+        if hits[v] >= 0.0 && (hits[v] as usize) == n {
+            let mut k: usize = v * modes;
+            while k < v * modes + modes {
+                y1[k] = y1[k] + b[k];
+                yb[k] = yb[k] + b[k];
+                k = k + 1;
+            }
+        }
+        v = v + 1;
+    }
+}
+
+// The sum of yb[0..total] in eight interleaved partial sums, added in a fixed order: the same bits every run,
+// and eight independent chains the vector unit can carry together (a single running sum is one long chain).
+fn sum8(yb: &[f32], total: usize) -> f32 {
+    if yb.len() < total {
+        return 0.0;
+    }
+    let mut s0: f32 = 0.0;
+    let mut s1: f32 = 0.0;
+    let mut s2: f32 = 0.0;
+    let mut s3: f32 = 0.0;
+    let mut s4: f32 = 0.0;
+    let mut s5: f32 = 0.0;
+    let mut s6: f32 = 0.0;
+    let mut s7: f32 = 0.0;
+    let mut k: usize = 0;
+    while k + 8 <= total {
+        unsafe {
+            s0 = s0 + yb.get_unchecked(k);
+            s1 = s1 + yb.get_unchecked(k + 1);
+            s2 = s2 + yb.get_unchecked(k + 2);
+            s3 = s3 + yb.get_unchecked(k + 3);
+            s4 = s4 + yb.get_unchecked(k + 4);
+            s5 = s5 + yb.get_unchecked(k + 5);
+            s6 = s6 + yb.get_unchecked(k + 6);
+            s7 = s7 + yb.get_unchecked(k + 7);
+        }
+        k = k + 8;
+    }
+    let mut tail: f32 = 0.0;
+    while k < total {
+        tail = tail + unsafe { yb.get_unchecked(k) };
+        k = k + 1;
+    }
+    ((s0 + s1) + (s2 + s3)) + ((s4 + s5) + (s6 + s7)) + tail
+}

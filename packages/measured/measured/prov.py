@@ -64,6 +64,8 @@ SOURCES = {
                      "NASA publication, US government work"),
     "dresden-vtd": ("Birkholz et al. 2020, Printable 3D vocal tract shapes from MRI data and their acoustic and aerodynamic properties, Sci. Data 7, 255; Dresden Vocal Tract Dataset, figshare 10.6084/m9.figshare.c.4869732",
                     "CC0 (figshare dataset); article CC BY 4.0"),
+    "storm-saves": ("Three storm field recordings (ocean storm, howling wind in spruce, rain and thunder), 180 s each, saved from public videos",
+                    "no licence stated; local research copies, never redistributed; only spectral statistics are used"),
     "iowa-mis": ("University of Iowa Musical Instrument Samples (Lawrence Fritts), theremin.music.uiowa.edu, vibraphone and bells",
                  "free for any project without restrictions (stated on the MIS page)"),
     "wikidata-materials": ("Wikidata entity data for Q11427, Q663, Q39782, Q753, Q11469 (properties P2054, P5480, P5593)",

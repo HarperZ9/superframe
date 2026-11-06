@@ -1,0 +1,84 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Voices for live engine events: a bar struck at a point along its length, and a bubble.
+
+fn bar_root(k: usize) -> f64 {
+    let pi: f64 = 3.141592653589793;
+    if k == 0 {
+        return 4.730040744862704;
+    }
+    if k == 1 {
+        return 7.853204624095838;
+    }
+    if k == 2 {
+        return 10.995607838001671;
+    }
+    if k == 3 {
+        return 14.137165491257464;
+    }
+    ((k as f64) + 1.5) * pi
+}
+
+// The free-free bar's mode shape for root bl at x in [0, 1], written with decaying exponentials so it does
+// not overflow (the same form as shapes_1d.free_free_shape in the Python reference).
+fn free_free_shape(bl: f64, x: f64) -> f64 {
+    let em: f64 = exp(0.0 - bl);
+    let s_scaled: f64 = 1.0 - em * em - 2.0 * sin(bl) * em;
+    let omse: f64 = (cos(bl) - sin(bl) - em) * 2.0 / s_scaled;
+    let sigma: f64 = 1.0 - omse * em;
+    let y: f64 = bl * x;
+    let hyper: f64 = 0.5 * (omse * exp(y - bl) + (1.0 + sigma) * exp(0.0 - y));
+    cos(y) - sigma * sin(y) + hyper
+}
+
+// Voice v becomes a free bar of fundamental f1 and loss factor eta, struck at position x (0 to 1 along it):
+// mode k's strike gain is amp times its shape at x over (k + 1). Silences what the voice was playing.
+extern "C" fn daw_voice_strike_at(a1p: *mut f64, a2p: *mut f64, bp: *mut f64, y1p: *mut f64, y2p: *mut f64,
+                                  v: usize, modes: usize, f1: f64, eta: f64, amp: f64, x: f64, fs: f64) {
+    let base = v * modes;
+    let a1 = unsafe { slice::from_raw_parts_mut(a1p, base + modes) };
+    let a2 = unsafe { slice::from_raw_parts_mut(a2p, base + modes) };
+    let b = unsafe { slice::from_raw_parts_mut(bp, base + modes) };
+    let y1 = unsafe { slice::from_raw_parts_mut(y1p, base + modes) };
+    let y2 = unsafe { slice::from_raw_parts_mut(y2p, base + modes) };
+    let pi: f64 = 3.141592653589793;
+    let b1 = bar_root(0);
+    let mut k: usize = 0;
+    while k < modes {
+        let bk = bar_root(k);
+        let f: f64 = f1 * (bk / b1) * (bk / b1);
+        let mut g: f64 = amp * free_free_shape(bk, x) / ((k as f64) + 1.0);
+        let mut fc: f64 = f;
+        if f > 0.45 * fs {
+            fc = 0.45 * fs;
+            g = 0.0;
+        }
+        let r: f64 = exp(0.0 - (pi * fc * eta + 2.0) / fs);
+        a1[base + k] = 2.0 * r * cos(2.0 * pi * fc / fs);
+        a2[base + k] = r * r;
+        b[base + k] = g;
+        y1[base + k] = 0.0;
+        y2[base + k] = 0.0;
+        k = k + 1;
+    }
+}
+
+// Voice v (one mode) becomes a bubble ringing at f with total damping constant delta: it decays at
+// pi f delta per second.
+extern "C" fn daw_bubble_set(a1p: *mut f64, a2p: *mut f64, bp: *mut f64, y1p: *mut f64, y2p: *mut f64, v: usize,
+                             f: f64, delta: f64, amp: f64, fs: f64) {
+    let a1 = unsafe { slice::from_raw_parts_mut(a1p, v + 1) };
+    let a2 = unsafe { slice::from_raw_parts_mut(a2p, v + 1) };
+    let b = unsafe { slice::from_raw_parts_mut(bp, v + 1) };
+    let y1 = unsafe { slice::from_raw_parts_mut(y1p, v + 1) };
+    let y2 = unsafe { slice::from_raw_parts_mut(y2p, v + 1) };
+    let pi: f64 = 3.141592653589793;
+    let fc: f64 = if f > 0.45 * fs { 0.45 * fs } else { f };
+    let r: f64 = exp(0.0 - pi * fc * delta / fs);
+    a1[v] = 2.0 * r * cos(2.0 * pi * fc / fs);
+    a2[v] = r * r;
+    b[v] = if f > 0.45 * fs { 0.0 } else { amp };
+    y1[v] = 0.0;
+    y2[v] = 0.0;
+}
