@@ -47,8 +47,9 @@ def smooth_su2(M, L, rng, amp=0.3, modes=2):
     return A
 
 
-def logdet(T, A, j, chirality):
-    """log det(D / D_free) for a spin-j Weyl fermion; A: (2, 3, M, M) components."""
+def logdet(T, A, j, chirality, Y=0.0, B=None):
+    """log det(D / D_free) for a spin-j Weyl fermion with hypercharge Y; A: (2, 3, M, M) su(2) components, B: (2, M, M)
+    a U(1) field entering as Y B on every colour (SU(2) x U(1)); j = 0 is an SU(2) singlet."""
     gens = generators(j)
     d = gens[0].shape[0]
     M = A.shape[-1]
@@ -64,6 +65,9 @@ def logdet(T, A, j, chirality):
             pot = np.fft.fft2(A[0, a] - 1j * A[1, a]) / M ** 2
         V = T.multiplier(1j * pot, M)
         D += np.kron(V, gens[a])
+    if B is not None and Y != 0:
+        pot = np.fft.fft2(B[0] + 1j * B[1]) / M ** 2 if chirality == "L" else np.fft.fft2(B[0] - 1j * B[1]) / M ** 2
+        D += np.kron(T.multiplier(1j * Y * pot, M), np.eye(d))
     kfull = np.repeat(kin, d)
     sgn, ld = np.linalg.slogdet(D / kfull[:, None])
     return ld + 1j * np.angle(sgn)

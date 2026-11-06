@@ -5692,8 +5692,8 @@
   {
    "path": "packages/PROVENANCE.json",
    "source": "repo",
-   "bytes": 168485,
-   "sourceSha256": "36b21331bcdabdb8edd7c87248824426f064456f0105f628b531daa05876d4d2"
+   "bytes": 169026,
+   "sourceSha256": "adb95042ce592f53265d7c9badfaa2958971d33b097c5c4effad71d19a04e021"
   },
   {
    "path": "packages/README.md",
@@ -7822,8 +7822,8 @@
   {
    "path": "packages/latticechiral/README.md",
    "source": "repo",
-   "bytes": 3690,
-   "sourceSha256": "d669f1844074eeebf55d45f1bfad4d60c6eb284bf6f1cd7b5bd292cc45ed7483"
+   "bytes": 4000,
+   "sourceSha256": "d87bfde49673d7d24082b1718cbba01b4de30c92af075f8f5cee27643118c597"
   },
   {
    "path": "packages/latticechiral/latticechiral/__init__.py",
@@ -7840,8 +7840,8 @@
   {
    "path": "packages/latticechiral/latticechiral/eta3d.py",
    "source": "repo",
-   "bytes": 3015,
-   "sourceSha256": "62f5c71cd6940ee7626a1e251d369af7598ec10137028f7590bc6f89eae9189b"
+   "bytes": 5883,
+   "sourceSha256": "b99ebd25d90d59aaf675f031cb8f916e186fb1ebe8033c91f2f776fea916b1f1"
   },
   {
    "path": "packages/latticechiral/latticechiral/free.py",
@@ -7852,8 +7852,8 @@
   {
    "path": "packages/latticechiral/latticechiral/nonabelian.py",
    "source": "repo",
-   "bytes": 3533,
-   "sourceSha256": "695114b20ee0824c44d40e80ec186bd170c8cc490671f15b6f4c1bf638ec2ad2"
+   "bytes": 3891,
+   "sourceSha256": "31c1892f125aab69175e04718a2a8eda4819097ef95d98b81d18a5e489cc001b"
   },
   {
    "path": "packages/latticechiral/latticechiral/overlap_nn.py",
@@ -7864,8 +7864,8 @@
   {
    "path": "packages/latticechiral/latticechiral/su2lattice.py",
    "source": "repo",
-   "bytes": 6943,
-   "sourceSha256": "87f0c9419bcd128442070b3e5b522356748b3ebf0b098eab0487eafe316e524e"
+   "bytes": 8306,
+   "sourceSha256": "7a87b8db35ca1a109a77a8156cdb671c27668efa2fa96bdba2ea2e3840630f66"
   },
   {
    "path": "packages/latticechiral/latticechiral/u1.py",
@@ -7896,6 +7896,12 @@
    "source": "repo",
    "bytes": 1461,
    "sourceSha256": "586e00df1aede079861a452fa3913b92bd83ac502185cf84fd84190b9df84912"
+  },
+  {
+   "path": "packages/latticechiral/tests/test_round5.py",
+   "source": "repo",
+   "bytes": 2574,
+   "sourceSha256": "e3862d567a966f395df136419d13a9b9c161bf6d0dfdd7f0365401113bf7ea54"
   },
   {
    "path": "packages/latticechiral/tests/test_su2_and_eta3d.py",
@@ -10282,14 +10288,14 @@
   {
    "path": "packages/strings/README.md",
    "source": "repo",
-   "bytes": 7757,
-   "sourceSha256": "584eb2d4217c92440fe50d278e6169c36b0adc6c52c3753a6e166a2f72e9ebf3"
+   "bytes": 8173,
+   "sourceSha256": "5cb4a37abb7e96510361c42c9ec70b9efac66f0ce1ee382ad097466c38079d1c"
   },
   {
    "path": "packages/strings/stringlab/__init__.py",
    "source": "repo",
-   "bytes": 1586,
-   "sourceSha256": "2aa49029235222962dc6b20acac6c70a9b5dd5836957582f7e17633a5039f6fe"
+   "bytes": 1600,
+   "sourceSha256": "d6919a1b2ffd1877007f8fbaf866303198cd3250ecbcd22130569b5e808b8fea"
   },
   {
    "path": "packages/strings/stringlab/calabiyau.py",
@@ -10340,6 +10346,12 @@
    "sourceSha256": "eaa66fcb5a66b5ef234c5ef73383a7409cc9ca6f42e8774671295f715d23c8ee"
   },
   {
+   "path": "packages/strings/stringlab/hyperbolic.py",
+   "source": "repo",
+   "bytes": 9494,
+   "sourceSha256": "f49871d7ab14f63e4dad44bf18c24a0242b52b2b68a8c7c8bd55c5aee37bfc59"
+  },
+  {
    "path": "packages/strings/stringlab/kkcircle.py",
    "source": "repo",
    "bytes": 4504,
@@ -10360,14 +10372,14 @@
   {
    "path": "packages/strings/stringlab/stringbursts.py",
    "source": "repo",
-   "bytes": 6382,
-   "sourceSha256": "7cf193e98a23cc1f56e5a7e3a7bc56fab8627eb93a1e97d74e405ed81a39b2e7"
+   "bytes": 6670,
+   "sourceSha256": "deca14c9b8639df78d17d70c6d690879cb5ce668986f906a634ef4b787ddca82"
   },
   {
    "path": "packages/strings/stringlab/surfaces.py",
    "source": "repo",
-   "bytes": 6346,
-   "sourceSha256": "9bfb308ebf93b418c25e4b613fc2a71bf2f1bb6280a3cdb25de5244f1dad37ec"
+   "bytes": 6491,
+   "sourceSha256": "cb019b260656e5129d2d82ea0e9666452b41565122cfd94c94b5b7c223fec8e7"
   },
   {
    "path": "packages/strings/stringlab/tduality.py",
@@ -10398,6 +10410,12 @@
    "source": "repo",
    "bytes": 1785,
    "sourceSha256": "523ff1e7acc38fd081873cdf91f2588cad716913aed016b24f6b32001ab51fae"
+  },
+  {
+   "path": "packages/strings/tests/test_hyperbolic.py",
+   "source": "repo",
+   "bytes": 1146,
+   "sourceSha256": "ae5a9402381222c92ed10b512dcedf37f8810e1adb5e199d9138ae25880a7044"
   },
   {
    "path": "packages/strings/tests/test_kkcircle.py",

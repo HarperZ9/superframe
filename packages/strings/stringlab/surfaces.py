@@ -67,10 +67,12 @@ def crossings(surface, pos, edges, lifts, reach=2):
     D = deck(surface, reach)
     count = 0
     for i in range(len(segs)):
-        for j in range(i + 1, len(segs)):
+        for j in range(i, len(segs)):                   # j = i: an edge can meet its own images (Moebius, Klein)
             a, b = segs[i]
             hit = False
             for mn in D:
+                if j == i and mn == (0, 0):
+                    continue
                 c, d = apply(surface, segs[j][0], mn), apply(surface, segs[j][1], mn)
                 if _cross(a, b, c, d):
                     hit = True

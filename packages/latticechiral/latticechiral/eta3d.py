@@ -59,3 +59,61 @@ def eta(q, L, a0, rho, beta, lam, nt=None, kmax_factor=4.0, theta=0.5):
             ev = np.linalg.eigvalsh(h_k((k1, k2), q, a0, rho, beta, nt, theta))
             total += float(np.sum(np.sign(ev) * np.exp(-(ev / lam) ** 2)))
     return total
+
+
+def holonomy_field(q, B1, B2, L):
+    """Closed form for the loop A(theta) = cos(theta) B1 + sin(theta) B2 of general (curved) U(1) fields: the determinant
+    bundle has curvature (q^2 / 2 pi) int dA1 ^ dA2, so the holonomy is (q^2 / 2) int (B1_x B2_y - B1_y B2_x) d^2x."""
+    M = B1.shape[-1]
+    return q * q / 2 * float(np.sum(B1[0] * B2[1] - B1[1] * B2[0]) * (L / M) ** 2)
+
+
+def eta_field(q, B1, B2, L, beta, lam, N, nt, theta=0.5, tol=1e-12):
+    """Regulated eta on T^2 x S^1_beta for A(x, t) = cos(2 pi t / beta) B1(x) + sin(2 pi t / beta) B2(x), B on an
+    M x M grid. Plane waves k = 2 pi (m + 1/2) / L, m in [-N, N), times frequencies 2 pi (n + theta) / beta, |n| <= nt.
+    Spatial modes of B are kept where the coefficient exceeds tol; the matrix is dense of size 2 (2N)^2 (2 nt + 1)."""
+    M = B1.shape[-1]
+    ms = np.arange(-N, N)
+    ns = np.arange(-nt, nt + 1)
+    nk, nw = ms.size, ns.size
+    dim = nk * nk * nw
+    idx = lambda a, b, c: ((a + N) * nk + (b + N)) * nw + (c + nt)  # noqa: E731
+    s1 = np.array([[0, 1], [1, 0]], dtype=complex)
+    s2 = np.array([[0, -1j], [1j, 0]])
+    s3 = np.diag([1.0, -1.0]).astype(complex)
+    H = np.zeros((2 * dim, 2 * dim), dtype=complex)
+    A, B, C = np.meshgrid(ms, ms, ns, indexing="ij")
+    k1 = 2 * math.pi * (A.ravel() + 0.5) / L
+    k2 = 2 * math.pi * (B.ravel() + 0.5) / L
+    w = 2 * math.pi * (C.ravel() + theta) / beta
+    for i in range(dim):
+        H[2 * i:2 * i + 2, 2 * i:2 * i + 2] = k1[i] * s1 + k2[i] * s2 + w[i] * s3
+    # time modes: A_{+1} = (B1 - i B2) / 2 multiplies e^{+i nu t}, A_{-1} = (B1 + i B2) / 2
+    c1 = [np.fft.fft2(B1[mu]) / M ** 2 for mu in range(2)]
+    c2 = [np.fft.fft2(B2[mu]) / M ** 2 for mu in range(2)]
+    freq = np.fft.fftfreq(M, d=1.0 / M).astype(int)
+    for dn, sgn in ((1, -1j), (-1, 1j)):
+        coef = [(c1[mu] + sgn * c2[mu]) / 2 for mu in range(2)]
+        for p1 in range(M):
+            for p2 in range(M):
+                a = (coef[0][p1, p2], coef[1][p1, p2])
+                if abs(a[0]) < tol and abs(a[1]) < tol:
+                    continue
+                d1, d2 = freq[p1], freq[p2]
+                blk = q * (a[0] * s1 + a[1] * s2)
+                for a1 in ms:
+                    b1 = a1 + d1
+                    if b1 < -N or b1 >= N:
+                        continue
+                    for a2 in ms:
+                        b2 = a2 + d2
+                        if b2 < -N or b2 >= N:
+                            continue
+                        for c in ns:
+                            c2_ = c + dn
+                            if c2_ < -nt or c2_ > nt:
+                                continue
+                            i, j = idx(a1, a2, c), idx(b1, b2, c2_)
+                            H[2 * j:2 * j + 2, 2 * i:2 * i + 2] += blk
+    ev = np.linalg.eigvalsh(H)
+    return float(np.sum(np.sign(ev) * np.exp(-(ev / lam) ** 2)))

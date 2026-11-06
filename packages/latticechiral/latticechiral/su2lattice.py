@@ -173,3 +173,38 @@ def smooth(U, alpha=0.5, steps=1):
 def noise(U, rng, amp):
     """Multiply each link by exp(i amp xi.sigma/2), xi standard normal: a rough lattice field near U."""
     return np.stack([qmul(U[mu], qexp(amp * rng.normal(size=(3,) + U.shape[2:]))) for mu in range(2)])
+
+
+def u1_links_from_continuum(B, L, n, sub=8):
+    """U(1) link angles (2, n, n): the line integral of B along each link (midpoint sums of sub steps)."""
+    a = L / n
+    x = np.arange(n) * a
+    X1, X2 = np.meshgrid(x, x, indexing="ij")
+    th = np.zeros((2, n, n))
+    for mu in range(2):
+        for s in range(sub):
+            off = (s + 0.5) * a / sub
+            P = np.stack([X1 + (off if mu == 0 else 0), X2 + (off if mu == 1 else 0)]).reshape(2, -1)
+            th[mu] += _spectral_eval(B[mu], L, P).reshape(n, n) * (a / sub)
+    return th
+
+
+def u1_interpolate(th, L, M):
+    """Continuum B on an M x M grid from link angles: principal angle over a at the midpoint, Fourier-interpolated."""
+    n = th.shape[-1]
+    v = (th + math.pi) % (2 * math.pi) - math.pi
+    q = np.zeros((2, 4, n, n))
+    q[:, 0] = 1.0
+    out = np.zeros((2, M, M))
+    # reuse the SU(2) machinery on the third component: exp(i v sigma3 / 2) has qlog third component v
+    for mu in range(2):
+        q[mu] = qexp(np.stack([np.zeros_like(v[mu]), np.zeros_like(v[mu]), v[mu]]))
+    full = interpolate(q, L, M)
+    for mu in range(2):
+        out[mu] = full[mu, 2]
+    return out
+
+
+def u1_gauge_lattice(th, alpha):
+    """exp(i th) -> g(x) exp(i th) g(x + mu)^*, g = exp(i alpha) on sites."""
+    return np.stack([th[mu] + alpha - np.roll(alpha, -1, axis=mu) for mu in range(2)])
