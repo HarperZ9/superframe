@@ -13,5 +13,6 @@
   otherworld  sound on Mars, Titan and Venus; the acoustic horizon; planetary frequency scaling
   resonator   resonant macrosonic synthesis in a modal model: harmonic against detuned overtones
   media_graph mass-spring graphs (chains, membranes) with several input sites, and the NARMA-10 task
+  cavity      bubble shape stability (parametric, Rayleigh-Taylor) and a Saha ionisation energy sink
 """
-__all__ = ["consts", "burgers", "bubble", "earth", "atmosphere", "finesse", "timerev", "reservoir", "otherworld", "resonator", "media_graph"]
+__all__ = ["consts", "burgers", "bubble", "earth", "atmosphere", "finesse", "timerev", "reservoir", "otherworld", "resonator", "media_graph", "cavity"]

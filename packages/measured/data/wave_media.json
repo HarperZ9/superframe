@@ -2212,8 +2212,92 @@
    "quote": "the propagation speed of 310 m/s",
    "status": "measured",
    "sha256": "ce40e2b7d1b21790edbf3232ca7c60c20d6d8591aa298efcb291e9a2de1ecbc4"
+  },
+  {
+   "id": "bhl.bjerknes_bar",
+   "value": 1.8,
+   "unit": "bar",
+   "quote": "already above the upper threshold where single-bubble sonoluminescence usually occurs",
+   "status": "measured",
+   "sha256": "8dc6a0be47fd2de3323445cc30ee640829928aca08396f278b08a771ad3a3fee"
+  },
+  {
+   "id": "bhl.rt_sets_upper",
+   "value": null,
+   "unit": "",
+   "quote": "the Rayleigh-Taylor instability sets the upper threshold of the SBSL regime towards large forcing pressures",
+   "status": "defined",
+   "sha256": "8dc6a0be47fd2de3323445cc30ee640829928aca08396f278b08a771ad3a3fee"
+  },
+  {
+   "id": "bhl.argon_ratio_low",
+   "value": 0.002,
+   "unit": "",
+   "quote": "c /c00.5, 0.02, and 0.002",
+   "status": "measured",
+   "sha256": "8dc6a0be47fd2de3323445cc30ee640829928aca08396f278b08a771ad3a3fee"
+  },
+  {
+   "id": "bhl.fig4_expansion",
+   "value": 10.0,
+   "unit": "Rmax / R0",
+   "quote": "The bubble expands to nearly ten times its ambient radius",
+   "status": "measured",
+   "sha256": "8dc6a0be47fd2de3323445cc30ee640829928aca08396f278b08a771ad3a3fee"
+  },
+  {
+   "id": "vs1996.ar_1.1",
+   "value": 20000.0,
+   "unit": "K",
+   "Pa_atm": 1.1,
+   "status": "measured",
+   "read_by_eye": true,
+   "note": "simulated (dissipative gas dynamics), centre temperature; from a page render of Table I",
+   "sha256": "8dc6a0be47fd2de3323445cc30ee640829928aca08396f278b08a771ad3a3fee"
+  },
+  {
+   "id": "vs1996.ar_1.2",
+   "value": 52000.0,
+   "unit": "K",
+   "Pa_atm": 1.2,
+   "status": "measured",
+   "read_by_eye": true,
+   "note": "simulated (dissipative gas dynamics), centre temperature; from a page render of Table I",
+   "sha256": "8dc6a0be47fd2de3323445cc30ee640829928aca08396f278b08a771ad3a3fee"
+  },
+  {
+   "id": "vs1996.ar_1.3",
+   "value": 118000.0,
+   "unit": "K",
+   "Pa_atm": 1.3,
+   "status": "measured",
+   "read_by_eye": true,
+   "note": "simulated (dissipative gas dynamics), centre temperature; from a page render of Table I",
+   "sha256": "8dc6a0be47fd2de3323445cc30ee640829928aca08396f278b08a771ad3a3fee"
   }
  ],
+ "argon": {
+  "ionization_eV": 15.7596119,
+  "uncertainty_eV": 5e-07,
+  "g_atom": 1,
+  "ion_levels": [
+   {
+    "term": "2P* J=3/2",
+    "g": 4,
+    "eV": 0.0
+   },
+   {
+    "term": "2P* J=1/2",
+    "g": 2,
+    "eV": 0.17749368
+   }
+  ],
+  "status": "measured",
+  "files": {
+   "ar_ie.csv": "aa25dc9ea601ef9c70fda10c961556d961d9462254e919627271649028f3e4b8",
+   "ar_ii_levels.csv": "3c7b90b69ec333c0df54cd5e9e800a13ec7db1a6745b716de629404f9ece326b"
+  }
+ },
  "ussa1976": {
   "T0_K": 288.15,
   "P0_Pa": 101325.0,

@@ -25,7 +25,33 @@ prov.SOURCES.update({
                             "US Government work; cite"),
     "nssdc-factsheets": ("NASA NSSDC planetary fact sheets (Venus, Mars, Earth)", "US Government work; cite"),
     "us-standard-atmosphere-1976": ("U.S. Standard Atmosphere, 1976 (NOAA-S/T 76-1562), Tables 2 to 4", "US Government work"),
+    "nist-asd-argon": ("NIST Atomic Spectra Database: Ar I ionization energy and Ar II levels", "US Government work; cite"),
+    "bhl2002-sbsl": ("Brenner, Hilgenfeldt and Lohse 2002, Single-bubble sonoluminescence, Rev. Mod. Phys. 74, 425",
+                     "APS copyright; equations and stated thresholds are facts; PDF kept internal"),
 })
+
+
+def argon():
+    """Ar I ionization energy and the Ar II ground-term levels with their statistical weights, from NIST ASD."""
+    def cells(line):
+        return [c.strip().strip('"').replace('=""', '').replace('""', '') for c in line.split(",")]
+    ie = cells((prov.RAW / "nist-asd-argon" / "ar_ie.csv").read_text(encoding="utf-8").splitlines()[1])
+    assert ie[1] == "Ar I" and ie[6] == "1S0", ie
+    lv = [cells(ln) for ln in (prov.RAW / "nist-asd-argon" / "ar_ii_levels.csv").read_text(encoding="utf-8").splitlines()[1:3]]
+    return {"ionization_eV": float(ie[9]), "uncertainty_eV": float(ie[11]), "g_atom": 1,
+            "ion_levels": [{"term": f"{r[1]} J={r[2]}", "g": int(r[3]), "eV": float(r[5])} for r in lv],
+            "status": "measured", "files": {f: prov.verify("nist-asd-argon", f) for f in ("ar_ie.csv", "ar_ii_levels.csv")}}
+
+
+BHL_QUOTES = [  # id, value, unit, quote in the text layer
+    ("bhl.bjerknes_bar", 1.8, "bar", "already above the upper threshold where single-bubble sonoluminescence usually occurs"),
+    ("bhl.rt_sets_upper", None, "", "the Rayleigh-Taylor instability sets the upper threshold of the SBSL regime towards large forcing pressures"),
+    ("bhl.argon_ratio_low", 0.002, "", "c /c00.5, 0.02, and 0.002"),
+    ("bhl.fig4_expansion", 10.0, "Rmax / R0", "The bubble expands to nearly ten times its ambient radius"),
+]
+VS1996_BY_EYE = [  # Table I of the review (Vuong and Szeri 1996): R0 4.5 um argon, 26.5 kHz; Pa in atm, Tmax in K
+    ("vs1996.ar_1.1", 1.1, 20000.0), ("vs1996.ar_1.2", 1.2, 52000.0), ("vs1996.ar_1.3", 1.3, 118000.0),
+]
 
 MODES_BY_EYE = [  # mode, f_obs uHz, error, f_PREM uHz (Table 1, page 108)
     ("0S2", 309.45, 0.15, 309.28), ("0T2", 377.30, 0.80, 379.17), ("0S3", 468.55, 0.15, 468.56),
@@ -95,6 +121,16 @@ def main():
         assert q in text("tonga-lamb", name), (fid, q)
         tonga.append({"id": fid, "value": val, "err": err, "unit": "m/s", "file": name, "quote": q, "status": "measured",
                       "sha256": prov.verify("tonga-lamb", name)})
+    bhl_t = text("bhl2002-sbsl", "bhl2002_rmp.pdf")
+    bhl = []
+    for fid, val, unit, q in BHL_QUOTES:
+        assert q.replace(" ", "") in bhl_t.replace(" ", ""), (fid, q)
+        bhl.append({"id": fid, "value": val, "unit": unit, "quote": q, "status": "measured" if val else "defined",
+                    "sha256": prov.verify("bhl2002-sbsl", "bhl2002_rmp.pdf")})
+    for fid, pa, tmax in VS1996_BY_EYE:
+        bhl.append({"id": fid, "value": tmax, "unit": "K", "Pa_atm": pa, "status": "measured", "read_by_eye": True,
+                    "note": "simulated (dissipative gas dynamics), centre temperature; from a page render of Table I",
+                    "sha256": prov.verify("bhl2002-sbsl", "bhl2002_rmp.pdf")})
     modes = [{"id": m, "f_obs_uHz": f, "err_uHz": e, "f_prem_uHz": fp, "status": "measured", "read_by_eye": True}
              for m, f, e, fp in MODES_BY_EYE]
     table = {
@@ -106,7 +142,8 @@ def main():
                        "citations": {k: prov.SOURCES[k][0] for k in ("masters-widmer-modes", "prem-mineos", "maurice2022-mars",
                                                                      "tonga-lamb", "nist-webbook-fluids", "us-standard-atmosphere-1976")}},
         "prem": prem(), "modes": {"rows": modes, "source": "masters-widmer-modes"},
-        "rows": mars + tonga,
+        "rows": mars + tonga + bhl,
+        "argon": argon(),
         "ussa1976": {**USSA, "status": "defined", "read_by_eye": True, "pages": "Table 2 p. 2, Tables 3 and 4 p. 3"},
         "nist": {"co2_mars": nist("co2_mars_0.00061MPa.tsv"), "n2_titan": nist("n2_titan_0.1467MPa.tsv"),
                  "co2_venus": nist("co2_venus_9.2MPa.tsv"), "water_1atm": nist("water_0.101325MPa.tsv"),
