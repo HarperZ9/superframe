@@ -48,6 +48,11 @@ BHL_QUOTES = [  # id, value, unit, quote in the text layer
     ("bhl.rt_sets_upper", None, "", "the Rayleigh-Taylor instability sets the upper threshold of the SBSL regime towards large forcing pressures"),
     ("bhl.argon_ratio_low", 0.002, "", "c /c00.5, 0.02, and 0.002"),
     ("bhl.fig4_expansion", 10.0, "Rmax / R0", "The bubble expands to nearly ten times its ambient radius"),
+    ("bhl.storey_szeri_T", 20900.0, "K", "(cf. Vuong and Szeri, 1996) to 9700 K"),
+]
+BHL_FIGS_BY_EYE = [  # Rmax read from page renders: Fig. 4 (R0 4.5 um, 1.2 atm) and Fig. 20 (R0 2 um), um, f = 26.5 kHz
+    ("bhl.fig4_rmax_um", 4.5, 1.2, 29.7), ("bhl.fig20_rmax_1.0", 2.0, 1.0, 3.1), ("bhl.fig20_rmax_1.1", 2.0, 1.1, 3.5),
+    ("bhl.fig20_rmax_1.2", 2.0, 1.2, 6.5), ("bhl.fig20_rmax_1.3", 2.0, 1.3, 22.0),
 ]
 VS1996_BY_EYE = [  # Table I of the review (Vuong and Szeri 1996): R0 4.5 um argon, 26.5 kHz; Pa in atm, Tmax in K
     ("vs1996.ar_1.1", 1.1, 20000.0), ("vs1996.ar_1.2", 1.2, 52000.0), ("vs1996.ar_1.3", 1.3, 118000.0),
@@ -131,6 +136,10 @@ def main():
         bhl.append({"id": fid, "value": tmax, "unit": "K", "Pa_atm": pa, "status": "measured", "read_by_eye": True,
                     "note": "simulated (dissipative gas dynamics), centre temperature; from a page render of Table I",
                     "sha256": prov.verify("bhl2002-sbsl", "bhl2002_rmp.pdf")})
+    for fid, r0, pa, rmax in BHL_FIGS_BY_EYE:
+        bhl.append({"id": fid, "value": rmax, "unit": "um", "R0_um": r0, "Pa_atm": pa, "status": "measured", "read_by_eye": True,
+                    "note": "computed curves in the review (modified Rayleigh-Plesset), Rmax read from a page render, about +-5 percent",
+                    "sha256": prov.verify("bhl2002-sbsl", "bhl2002_rmp.pdf")})
     modes = [{"id": m, "f_obs_uHz": f, "err_uHz": e, "f_prem_uHz": fp, "status": "measured", "read_by_eye": True}
              for m, f, e, fp in MODES_BY_EYE]
     table = {
@@ -147,6 +156,8 @@ def main():
         "ussa1976": {**USSA, "status": "defined", "read_by_eye": True, "pages": "Table 2 p. 2, Tables 3 and 4 p. 3"},
         "nist": {"co2_mars": nist("co2_mars_0.00061MPa.tsv"), "n2_titan": nist("n2_titan_0.1467MPa.tsv"),
                  "co2_venus": nist("co2_venus_9.2MPa.tsv"), "water_1atm": nist("water_0.101325MPa.tsv"),
+                 "argon_1atm": nist("argon_0.101325MPa.tsv", ("Temperature (K)", "Pressure (MPa)", "Density (kg/m3)", "Cp (J/g*K)",
+                                                              "Therm. Cond. (W/m*K)")),
                  "water_sat": nist("water_saturation_lowP.tsv", ("Temperature (K)", "Pressure (Pa)", "Surf. Tension (l, N/m)")),
                  "status": "derived", "note": "NIST reference equations of state; zero-frequency (relaxed) sound speed"},
         "planets": {"venus": {"p_bar": 92.0, "T_K": 737.0, "M": 43.45}, "mars": {"p_mbar": 6.36, "T_K": 214.0, "M": 43.49},

@@ -16,6 +16,7 @@
 | `resonator` | a resonator in 16 cos modes with quadratic coupling and thermoviscous damping; overtones harmonic or detuned | the linear steady amplitude F / (2 g), the weak-drive second-mode amplitude, the projection of u^2 | the nonlinearity switched off must not saturate |
 | `media_graph` | chains and square membranes of masses and springs with several input sites; NARMA-10 | odd spring laws cannot form XOR on any graph | shuffled training targets give NRMSE near 1 |
 | `cavity` | bubble shape modes 2 to 5 in the boundary-layer approximation (Floquet and Rayleigh-Taylor), and adiabatic collapse with Saha ionisation of argon (NIST ASD levels) | Lamb's capillary frequency for a static bubble; the no-ionisation limit equals the polytropic peak | dropping the ionisation energy while keeping the extra particles must run hotter |
+| `thermal` | a Keller-Miksis bubble whose gas temperature is a state, with a boundary-layer heat flux and NIST argon conductivity | heat flux off: the adiabatic polytrope to 2e-9; the review's Fig. 4 radius (29.7 um) to 0.3 percent | heat flux off misses Fig. 4 by 24 to 39 percent |
 | `otherworld` | relaxing-gas sound speeds, the acoustic horizon, octave scaling, Brune spectra | Perseverance's two Mars sound speeds; ray peel rate equals kappa; exact ratios under 2^n | none (NIST and Mars data are the checks) |
 
 Constants come from `packages/measured`: CODATA 2022 through `generated/constants.py` and `data/codata2022.json`, media through `data/wave_media.json` (PREM, Masters and Widmer Table 1, NIST fluid states, Perseverance and Hunga values, the 1976 standard atmosphere), each with its source and sha256.
@@ -43,14 +44,16 @@ The second line prints Earth's gravest mode, about 309.3 uHz; the third the Lamb
 | Acoustic saturation (alpha x = 0.1) | 1000 times the source, 71 times the received fundamental | Fay ceiling to 1.3e-4 |
 | Bubble with gas diffusion (argon, c_inf / c0 = 0.004) | stable only from 1.3 to 1.4 bar (26.5 and 40 kHz); peak 13,200 K | without diffusion the model reaches 2e5 K, pressed against its van der Waals core |
 | Detuned overtones on a 1.2x drive grid | saturation ceiling postponed 1.51, 2.10, 2.51, 2.80, 3.15 times for d = 0.05 to 0.3 | grid offset moves the harmonic ceiling by 0.02 percent |
-| Bubble against the SBSL literature (Brenner, Hilgenfeldt and Lohse 2002) | 4.6 R0 expansion at 1.2 atm; peaks 521, 5491, 13394 K at 1.1, 1.2, 1.3 atm; the 4.5 um, 1.2 atm bubble shape-unstable | nearly 10 R0; 20000, 52000, 118000 K (Vuong and Szeri 1996); that bubble is the standard stable case. The model does not reproduce SBSL dynamics |
+| Bubble with heat exchange (`thermal`) against the review's figures | Rmax 29.6 um (Fig. 4: 29.7); Fig. 20 radii within 2 to 17 percent at 1.0, 1.1, 1.3 atm; peak temperatures 2818, 10884, 20518 K | Vuong and Szeri's centre temperatures 20000, 52000, 118000 K: still a factor 5 to 7 apart, so temperatures stay model-relative |
+| Shaped overtone detuning (size 0.3) | uniform 3.15x; mode 2 alone 3.03x; alternating 3.24x; three random patterns 3.19x, 5.89x, 5.42x | the two best random patterns move mode 2 down, not up (not yet tested on its own) |
+| Bubble against the SBSL literature (Brenner, Hilgenfeldt and Lohse 2002), rounds 1 to 3 | 4.6 R0 expansion at 1.2 atm; peaks 521, 5491, 13394 K at 1.1, 1.2, 1.3 atm; the 4.5 um, 1.2 atm bubble shape-unstable | nearly 10 R0; 20000, 52000, 118000 K (Vuong and Szeri 1996); that bubble is the standard stable case. The model does not reproduce SBSL dynamics |
 | Detuned overtones (d = 0.2) at the top drive | peak 1.9 times the harmonic resonator's, steepness 0.70 times, fundamental 1.05 times | the ceiling moves by about one drive step (2.2 times), not 3 |
 | XOR from a vibrating chain (24 masses, linear readout) | r2 0.002 linear, 0.004 odd springs, 0.997 even springs at high damping | a linear medium cannot form products; odd springs keep the response odd |
 
 ## Limits
 
 - `burgers` is one-dimensional with thermoviscous loss only: no relaxation, no diffraction.
-- `bubble` does not reproduce the SBSL literature at its standard conditions (see Results): it expands about half as far, reaches peaks 4 to 40 times lower, and calls the standard stable bubble shape-unstable. Treat its temperatures and maps as model-relative.
+- `bubble` (adiabatic gas) does not reproduce the SBSL literature: it expands about two thirds as far, because its gas cools as it grows. `thermal` fixes the expansion (Fig. 4 to 0.3 percent). Neither reproduces the published peak temperatures, which come from full gas dynamics (centre temperature); treat every bubble temperature here as model-relative.
 - `bubble` has diffusion only as the quasi-static R^4-weighted balance, no shape instability and no chemistry; near the van der Waals core the peak temperature is set by the core model; its peak temperature is an adiabatic estimate and its light a black body, both approximate.
 - `earth` is spherical, non-rotating and isotropic: the anisotropic upper mantle enters as its Voigt average, which leaves toroidal modes about 0.15 percent low. No ocean layer.
 - `atmosphere` is flat and windless with a rigid lid; above 86 km the profile is isothermal.
