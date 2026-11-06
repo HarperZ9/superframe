@@ -75,8 +75,10 @@ def air_speed(celsius=20.0):
 
 
 def water_speed():
-    """Distilled water at 20 C (Kaye and Laby 2.4.1)."""
-    return row("water.c20")["value"]
+    """Water at 20 C and 1 atm from wavelab.consts.water (NIST reference equation). The Kaye and Laby row
+    water.c20 stays in the table as the cross-check (tests/test_voice_nature.py)."""
+    from wavelab import consts
+    return consts.water(293.15)["c"]
 
 
 MEDIA = {"air": air_speed, "water": lambda: water_speed()}
