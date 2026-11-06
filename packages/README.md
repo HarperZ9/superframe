@@ -30,6 +30,7 @@ npm run test:py                                      # the Python tests
 | `lenspipe` | an open lens design in, checked performance, manufacturability, tolerance, limits, as-built fit and interchange out | FSL-1.1-MIT, data CC0-1.0 |
 | `strings` | string theory as checkable computations: critical dimensions, Virasoro central charges, the classical string, T-duality, the Hagedorn temperature, balanced metrics on the quintic, and extra dimensions against inverse-square-law limits | FSL-1.1-MIT |
 | `latticechiral` | lattice fermions and their cures, the 2D index theorem, and continuum chiral fermions on interpolated lattice gauge fields (anomaly, 3-4-5 model, sign problem) | FSL-1.1-MIT |
+| `wavelab` | waves pushed hard and timed well: shocks and acoustic saturation, cavitation collapse, Earth's free oscillations from PREM, the Lamb wave, parametric pumping, phased focusing, time reversal, a vibrating chain as a reservoir computer, and sound on Mars | FSL-1.1-MIT |
 | `rooms` | experimental rooms: lenses, optical trains, sound, PCB and fluid solvers, and a typed map registry; see `rooms/README.md` | FSL-1.1-MIT |
 | `_vectors` | CC0 golden vectors for canonical records and statistics, shared with Flywheel and CMMNS | CC0-1.0 |
 
