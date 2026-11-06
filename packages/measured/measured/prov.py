@@ -62,6 +62,10 @@ SOURCES = {
                   "NPL copyright pages; values are facts and cited; pages kept internal"),
     "leissa-sp160": ("Leissa, A. W. 1969, Vibration of Plates, NASA SP-160 (NTRS 19700009156), Table 2.1",
                      "NASA publication, US government work"),
+    "dresden-vtd": ("Birkholz et al. 2020, Printable 3D vocal tract shapes from MRI data and their acoustic and aerodynamic properties, Sci. Data 7, 255; Dresden Vocal Tract Dataset, figshare 10.6084/m9.figshare.c.4869732",
+                    "CC0 (figshare dataset); article CC BY 4.0"),
+    "iowa-mis": ("University of Iowa Musical Instrument Samples (Lawrence Fritts), theremin.music.uiowa.edu, vibraphone and bells",
+                 "free for any project without restrictions (stated on the MIS page)"),
     "wikidata-materials": ("Wikidata entity data for Q11427, Q663, Q39782, Q753, Q11469 (properties P2054, P5480, P5593)",
                            "CC0 1.0"),
 }

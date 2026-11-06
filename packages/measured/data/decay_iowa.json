@@ -1,0 +1,405 @@
+{
+ "provenance": {
+  "method": "STFT partial tracks, linear fit of dB against time, eta = alpha / (pi f)",
+  "citation": "University of Iowa Musical Instrument Samples (Lawrence Fritts), theremin.music.uiowa.edu, vibraphone and bells",
+  "licence": "free for any project without restrictions (stated on the MIS page)",
+  "files": {
+   "Vibraphone.sustain.mf.C4B4.aif": "ca311594e031bb877c52190f59c3612889471c81e72f0afce20203ff1c0eaff4",
+   "bells.plastic.mf.C6B6.aif": "d14f1a0e0e4178d32338b44404ba0b99700523eaecee00cded7feef10a4722c2"
+  }
+ },
+ "rows": [
+  {
+   "id": "aluminium.eta_measured",
+   "value": 0.0002263,
+   "unit": "1",
+   "source": "iowa-mis",
+   "file": "Vibraphone.sustain.mf.C4B4.aif",
+   "sha256": "ca311594e031bb877c52190f59c3612889471c81e72f0afce20203ff1c0eaff4",
+   "status": "measured",
+   "iqr": [
+    0.0001405,
+    0.0002833
+   ],
+   "n": 29,
+   "note": "median loss factor of decaying partials below 5 kHz; mounted bars, so an upper bound on material loss"
+  },
+  {
+   "id": "steel_mild.eta_measured",
+   "value": 8.664e-05,
+   "unit": "1",
+   "source": "iowa-mis",
+   "file": "bells.plastic.mf.C6B6.aif",
+   "sha256": "d14f1a0e0e4178d32338b44404ba0b99700523eaecee00cded7feef10a4722c2",
+   "status": "measured",
+   "iqr": [
+    5.295e-05,
+    9.933e-05
+   ],
+   "n": 16,
+   "note": "median loss factor of decaying partials below 5 kHz; mounted bars, so an upper bound on material loss"
+  }
+ ],
+ "tracks": [
+  {
+   "material": "aluminium",
+   "note": 0,
+   "f_hz": 263.8,
+   "alpha": 0.3846,
+   "eta": 0.0004641,
+   "points": 142
+  },
+  {
+   "material": "aluminium",
+   "note": 2,
+   "f_hz": 279.9,
+   "alpha": 0.2818,
+   "eta": 0.0003204,
+   "points": 49
+  },
+  {
+   "material": "aluminium",
+   "note": 4,
+   "f_hz": 279.9,
+   "alpha": 0.2789,
+   "eta": 0.0003171,
+   "points": 65
+  },
+  {
+   "material": "aluminium",
+   "note": 6,
+   "f_hz": 296.1,
+   "alpha": 0.4112,
+   "eta": 0.0004421,
+   "points": 224
+  },
+  {
+   "material": "aluminium",
+   "note": 6,
+   "f_hz": 592.2,
+   "alpha": 0.3703,
+   "eta": 0.0001991,
+   "points": 142
+  },
+  {
+   "material": "aluminium",
+   "note": 6,
+   "f_hz": 882.9,
+   "alpha": 0.2286,
+   "eta": 8.241e-05,
+   "points": 97
+  },
+  {
+   "material": "aluminium",
+   "note": 7,
+   "f_hz": 296.1,
+   "alpha": 0.4169,
+   "eta": 0.0004482,
+   "points": 66
+  },
+  {
+   "material": "aluminium",
+   "note": 8,
+   "f_hz": 296.1,
+   "alpha": 0.1465,
+   "eta": 0.0001575,
+   "points": 70
+  },
+  {
+   "material": "aluminium",
+   "note": 10,
+   "f_hz": 333.8,
+   "alpha": 0.3316,
+   "eta": 0.0003163,
+   "points": 285
+  },
+  {
+   "material": "aluminium",
+   "note": 10,
+   "f_hz": 662.1,
+   "alpha": 0.2612,
+   "eta": 0.0001255,
+   "points": 130
+  },
+  {
+   "material": "aluminium",
+   "note": 10,
+   "f_hz": 995.9,
+   "alpha": 0.1221,
+   "eta": 3.901e-05,
+   "points": 81
+  },
+  {
+   "material": "aluminium",
+   "note": 11,
+   "f_hz": 333.8,
+   "alpha": 0.2971,
+   "eta": 0.0002833,
+   "points": 176
+  },
+  {
+   "material": "aluminium",
+   "note": 12,
+   "f_hz": 333.8,
+   "alpha": 0.2358,
+   "eta": 0.0002249,
+   "points": 148
+  },
+  {
+   "material": "aluminium",
+   "note": 13,
+   "f_hz": 349.9,
+   "alpha": 0.3527,
+   "eta": 0.0003208,
+   "points": 53
+  },
+  {
+   "material": "aluminium",
+   "note": 14,
+   "f_hz": 349.9,
+   "alpha": 0.2568,
+   "eta": 0.0002336,
+   "points": 150
+  },
+  {
+   "material": "aluminium",
+   "note": 15,
+   "f_hz": 349.9,
+   "alpha": 0.2487,
+   "eta": 0.0002263,
+   "points": 149
+  },
+  {
+   "material": "aluminium",
+   "note": 17,
+   "f_hz": 393.0,
+   "alpha": 0.3437,
+   "eta": 0.0002784,
+   "points": 158
+  },
+  {
+   "material": "aluminium",
+   "note": 19,
+   "f_hz": 419.9,
+   "alpha": 0.3694,
+   "eta": 0.00028,
+   "points": 249
+  },
+  {
+   "material": "aluminium",
+   "note": 19,
+   "f_hz": 834.4,
+   "alpha": 0.3622,
+   "eta": 0.0001382,
+   "points": 127
+  },
+  {
+   "material": "aluminium",
+   "note": 19,
+   "f_hz": 1254.3,
+   "alpha": 0.1829,
+   "eta": 4.642e-05,
+   "points": 88
+  },
+  {
+   "material": "aluminium",
+   "note": 21,
+   "f_hz": 441.4,
+   "alpha": 0.3825,
+   "eta": 0.0002758,
+   "points": 238
+  },
+  {
+   "material": "aluminium",
+   "note": 21,
+   "f_hz": 882.9,
+   "alpha": 0.4499,
+   "eta": 0.0001622,
+   "points": 120
+  },
+  {
+   "material": "aluminium",
+   "note": 21,
+   "f_hz": 1329.7,
+   "alpha": 0.2925,
+   "eta": 7.002e-05,
+   "points": 88
+  },
+  {
+   "material": "aluminium",
+   "note": 22,
+   "f_hz": 441.4,
+   "alpha": 0.2989,
+   "eta": 0.0002155,
+   "points": 203
+  },
+  {
+   "material": "aluminium",
+   "note": 23,
+   "f_hz": 468.3,
+   "alpha": 0.3492,
+   "eta": 0.0002374,
+   "points": 258
+  },
+  {
+   "material": "aluminium",
+   "note": 23,
+   "f_hz": 936.7,
+   "alpha": 0.4135,
+   "eta": 0.0001405,
+   "points": 130
+  },
+  {
+   "material": "aluminium",
+   "note": 23,
+   "f_hz": 1405.0,
+   "alpha": 0.3083,
+   "eta": 6.984e-05,
+   "points": 87
+  },
+  {
+   "material": "aluminium",
+   "note": 24,
+   "f_hz": 468.3,
+   "alpha": 0.3454,
+   "eta": 0.0002347,
+   "points": 216
+  },
+  {
+   "material": "aluminium",
+   "note": 26,
+   "f_hz": 495.3,
+   "alpha": 0.2876,
+   "eta": 0.0001849,
+   "points": 110
+  },
+  {
+   "material": "steel_mild",
+   "note": 0,
+   "f_hz": 1055.1,
+   "alpha": 0.6615,
+   "eta": 0.0001996,
+   "points": 110
+  },
+  {
+   "material": "steel_mild",
+   "note": 4,
+   "f_hz": 1329.7,
+   "alpha": 0.3638,
+   "eta": 8.709e-05,
+   "points": 236
+  },
+  {
+   "material": "steel_mild",
+   "note": 4,
+   "f_hz": 4812.7,
+   "alpha": 1.4089,
+   "eta": 9.318e-05,
+   "points": 64
+  },
+  {
+   "material": "steel_mild",
+   "note": 5,
+   "f_hz": 1329.7,
+   "alpha": 0.3195,
+   "eta": 7.649e-05,
+   "points": 84
+  },
+  {
+   "material": "steel_mild",
+   "note": 8,
+   "f_hz": 1254.3,
+   "alpha": 0.0812,
+   "eta": 2.06e-05,
+   "points": 81
+  },
+  {
+   "material": "steel_mild",
+   "note": 8,
+   "f_hz": 1491.2,
+   "alpha": 0.4038,
+   "eta": 8.619e-05,
+   "points": 228
+  },
+  {
+   "material": "steel_mild",
+   "note": 8,
+   "f_hz": 2987.7,
+   "alpha": 0.1561,
+   "eta": 1.663e-05,
+   "points": 83
+  },
+  {
+   "material": "steel_mild",
+   "note": 9,
+   "f_hz": 1491.2,
+   "alpha": 0.6781,
+   "eta": 0.0001448,
+   "points": 75
+  },
+  {
+   "material": "steel_mild",
+   "note": 10,
+   "f_hz": 1582.7,
+   "alpha": 0.3169,
+   "eta": 6.373e-05,
+   "points": 295
+  },
+  {
+   "material": "steel_mild",
+   "note": 12,
+   "f_hz": 1674.2,
+   "alpha": 0.5212,
+   "eta": 9.91e-05,
+   "points": 145
+  },
+  {
+   "material": "steel_mild",
+   "note": 13,
+   "f_hz": 1776.5,
+   "alpha": 0.5581,
+   "eta": 0.0001,
+   "points": 161
+  },
+  {
+   "material": "steel_mild",
+   "note": 14,
+   "f_hz": 1776.5,
+   "alpha": 0.5412,
+   "eta": 9.698e-05,
+   "points": 95
+  },
+  {
+   "material": "steel_mild",
+   "note": 15,
+   "f_hz": 1674.2,
+   "alpha": 0.0661,
+   "eta": 1.256e-05,
+   "points": 62
+  },
+  {
+   "material": "steel_mild",
+   "note": 15,
+   "f_hz": 1884.2,
+   "alpha": 0.5051,
+   "eta": 8.533e-05,
+   "points": 164
+  },
+  {
+   "material": "steel_mild",
+   "note": 15,
+   "f_hz": 3762.9,
+   "alpha": 0.1459,
+   "eta": 1.235e-05,
+   "points": 34
+  },
+  {
+   "material": "steel_mild",
+   "note": 17,
+   "f_hz": 1997.2,
+   "alpha": 0.6286,
+   "eta": 0.0001002,
+   "points": 101
+  }
+ ]
+}

@@ -67,3 +67,18 @@ def test_path_matches_the_reference_and_the_doppler_formula():
     ref, _ = P.moving_path(x, FS, traj, (0, 0, 0), c, FS)
     assert np.max(np.abs(y - ref)) < 1e-12
     assert abs(P.zero_cross_frequency(y[FS // 2:], FS) / (f0 * c / (c - v)) - 1) < 2e-4
+
+
+def test_bank_of_voices_equals_the_sum_of_single_voices():
+    f = np.array([220.0, 610.0, 1300.0, 330.0, 900.0, 2100.0])
+    a1, a2 = native.modal_coeffs(f, np.full(6, 4.0), FS)
+    b = np.full(6, 0.3)
+    out = native.bank_process(a1, a2, b, 2, 3, 0, 4800, 1000, 9600)
+    want = np.zeros(9600)
+    for v in range(2):
+        x = np.zeros(9600)
+        x[[t for t in range(9600) if (t + v * 1000) % 4800 == 0]] = 1.0
+        s = slice(3 * v, 3 * v + 3)
+        want += native.modal_process(a1[s], a2[s], b[s], (np.zeros(3), np.zeros(3)), x)
+    assert np.max(np.abs(out - want)) < 1e-12
+

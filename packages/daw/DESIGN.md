@@ -25,7 +25,7 @@ The choice was measured on one machine (Intel i7-13700KF, Windows 11, 48 kHz). T
 
 Reading: BuildLang matched hand-written C in this loop: it is C after buildc, and its bounds checks cost no measurable time here. The f32 rows are faster mostly from width; an f32 path in BuildLang is a roadmap item. The pure web path is about a third of native on the same loop. The benchmark processes ran at below-normal priority, where Windows may place them on efficiency cores; the real-time host below ran under the Pro Audio scheduling class and sustained about 41,700 f64 modes per core, so the table understates every native row by a similar factor (inferred, not separately measured).
 
-Why BuildLang and not Rust or C++: the author's direction (2026-11-05) puts the workstation in BuildLang, and the measurement shows no performance reason against it. BuildLang adds what the workstation needs from a language: effects and capabilities on every boundary, receipts for computed results, deterministic maths builtins (buildc emits DETMATH `exp` and `cos`), and the C ABI for hosts. What it lacked, it gets through BuildLang pull requests: the first, `slice::from_raw_parts_mut`, lets an export write into a host's buffer; without it a BuildLang function could read an audio buffer and never fill one.
+Why BuildLang and not Rust or C++: the author's direction (2026-11-05) puts the workstation in BuildLang, and the measurement shows no performance reason against it. BuildLang adds what the workstation needs from a language: effects and capabilities on every boundary, receipts for computed results, deterministic maths builtins (buildc emits DETMATH `exp` and `cos`), and the C ABI for hosts. What it lacked, it got through BuildLang pull requests. `slice::from_raw_parts_mut` lets an export write into a host's buffer; without it a BuildLang function could read an audio buffer and never fill one. An extern block's `source "file.c"` clause compiles a small C binding into the program's own translation unit, which carries BuildLang's audio device binding (`runtime/audio` in buildlang at 3698fcb, vendored here as `bld/bl_audio.c` and pinned by sha256). Two bugs found on the way were fixed: an unannotated `exp(x)` typed as i32 (it truncated silently), and writes through a read-only slice that passed the check.
 
 Why Python stays: the known answers (Bessel zeros, Leissa's tables, the ISO 9613-1 table, Fletcher's stiff string) are easiest to state and check with numpy and scipy, and the offline renderer there is the oracle the BuildLang core must equal. The existing JavaScript sound engine in this repository is reference material only.
 
@@ -36,19 +36,20 @@ Why Python stays: the known answers (Bessel zeros, Leissa's tables, the ISO 9613
 - A worker pool (one per core, below the audio thread's priority) solves modes for new shapes (the finite-difference eigenproblems take tens of milliseconds) and hands finished coefficient tables to the audio thread by pointer swap at a period boundary.
 - Deadline accounting is built in: every period records its render time against the period length, and a miss is counted, never hidden.
 
-Measured on the reference machine with the interim host `host/rt_host.c` (WASAPI shared mode, event driven, 48 kHz, 10 ms period, 1,056-frame device buffer, the device fed silence so the run makes no noise):
+The host is BuildLang (`bld/main.bld`): it opens the device through the binding, renders a bank of modal voices per period with `daw_bank_process`, and counts deadline misses. Measured on the reference machine (WASAPI shared mode, event driven, 48 kHz, 10 ms period, 22 ms device buffer, the device fed silence), with the render mean and maximum reported cumulatively across the run:
 
-| Load | Run | Render per 10 ms period: median, p99, max | Deadline misses |
+| Load | Periods | Missed deadlines | Render mean so far, max so far |
 |---|---|---|---|
-| 8 voices x 200 modes | 10 s | 0.40, 0.53, 0.76 ms | 0 of 1,000 |
-| 32 x 200 | 10 s | 1.56, 1.87, 2.38 ms | 0 of 1,000 |
-| 48 x 400 (19,200 modes) | 60 s | 4.60, 5.04, 8.66 ms | 0 of 6,000 |
-| 64 x 400 (25,600 modes) | 10 s | 6.14, 6.53, 9.92 ms | 0 of 1,000 |
-| 128 x 400 (51,200 modes) | 10 s | 12.05, 12.70, 15.66 ms | 1,000 of 1,000 |
+| 8 voices x 200 modes | 300 | 0 | 0.82, 1.15 ms |
+| 32 x 200 | 300 | 0 | 1.98, 4.15 ms |
+| 32 x 400 (12,800 modes) | 6,000 (60 s) | 0 | 5.67, 8.70 ms |
+| 40 x 400 (16,000 modes) | 6,000 | 390 (6.5 percent) | 6.51, 10.95 ms |
+| 48 x 400 (19,200 modes) | 6,000 | 260 in one run, 3,587 in the next | 7.49, 16.2 ms |
+| 128 x 400 | 300 | 300 | 7.73, 31.1 ms |
 
-Headroom per instrument: a 200-mode bar costs about 0.05 ms per 10 ms period, so one core holds about 200 such voices with half its time spare. Latency: the shared-mode stream adds one 10 ms period plus the 22 ms device buffer on output, about 32 ms; the driver reported no stream latency of its own. Acoustic round trip (output to input through a cable or the air) is not measured yet; it needs a loopback recording, listed in the roadmap. Shared mode on this device allows a 3 ms period (IAudioClient3), and exclusive mode lower still.
+So the BuildLang host holds 12,800 modes (64 two-hundred-mode bars) on one core with no miss over 60 s. The earlier C host (`host/rt_host.c`, now removed) held 19,200 modes with no miss over 60 s and a median render of 4.60 ms; the BuildLang bank costs more, from the per-sample retrigger test and bounds checks in the voice loop, and two runs of the same load differed by a factor of 14 in misses. Where the operating system places the audio thread on this hybrid CPU (performance or efficiency cores) is the likely cause of the spread; it was not measured. Pinning the thread to a performance core and moving the retrigger out of the inner loop come next.
 
-The host is C for now, and that is a gap against the direction: the device binding belongs in BuildLang's standard library. BuildLang today cannot compile a C source file alongside a program, and WASAPI is a COM interface, so the binding needs either a `source "..."` clause on extern blocks or a runtime module in buildc. That is roadmap step 1.
+Latency: the shared-mode stream adds one 10 ms period plus the 22 ms device buffer on output, about 32 ms; the driver reports no stream latency of its own. The binding times a click through the device's WASAPI loopback, which gave 0.002 to 16 ms across runs: loopback taps the mix inside Windows and is not an output latency. A true round trip needs an input device; this machine has none (the binding returns "no input" and plays nothing), so the round trip is still unmeasured.
 
 ### 1.3 Time, offline and real-time
 
@@ -67,7 +68,7 @@ Material rows live in `packages/measured/data/mechanical.json`, built by `packag
 - Wood stiffness along the grain: derived as rho c_E^2 from Kaye and Laby's rod speeds.
 - Speed of sound: dry air at 0 C (331.46 m/s, scaled by sqrt(T / T0)), distilled water at 20 C (1482.36 m/s), helium at 0 C (972.5 m/s).
 - Air absorption: the Kaye and Laby table computed from ISO 9613-1, 108 values over 1 to 12.5 kHz and 10 to 90 percent humidity.
-- Loss factors: from memory, low confidence, marked from_memory. They are the weakest numbers in the system and the first to replace with measured decay rates.
+- Loss factors: measured for aluminium and steel from the decay of recorded bars (University of Iowa Musical Instrument Samples, free for any use): vibraphone bars give eta = 2.26e-4 (interquartile 1.41e-4 to 2.83e-4, 29 partials) and orchestral bells 8.66e-5 (5.3e-5 to 9.9e-5, 16 partials). A mounted bar also loses energy to its cords, resonator and the air, so these are upper bounds on the materials' own loss. The earlier from-memory values were off by a factor of about 2, in opposite directions (aluminium 1e-4, steel 2e-4). `packages/measured/build/b_decay.py` makes the table; a planted decay of 0.8 /s is recovered within 2 percent. Brass, copper, glass and the woods are still from memory, marked so.
 - Wikidata values for the same materials are kept as a cross-check only. They disagree with Kaye and Laby on brass's modulus by 13 percent; the test keeps that disagreement visible.
 
 ### 2.2 Shapes to modes
@@ -89,7 +90,9 @@ Where modal synthesis fails (strong nonlinearity, contact, a bowed string's stic
 
 ### 2.3 Excitation
 
-Strike: a half-sine contact force whose duration sets the mallet's hardness. Pluck: a released displacement, modal amplitude phi_in / omega. Breath: seeded noise as the force on an air column. Bowing (Friedlander's friction curve on a modal string) and a reed or jet with its nonlinearity are next.
+Strike: a half-sine contact force whose duration sets the mallet's hardness. Pluck: a released displacement, modal amplitude phi_in / omega. Breath: seeded noise as the force on an air column. Bow: a waveguide string meeting a friction junction at the bow (McIntyre, Schumacher and Woodhouse 1983); above threshold it settles into Helmholtz motion at the string's own period (within 0.5 percent) and sticks for 1 - beta of each period (0.853 against 0.873 at beta = 0.127); with too much force it jumps to the octave, as bowed strings do. Reed: a closed-open bore with a pressure-controlled reed; it sounds c / 4L within 1 percent with odd harmonics over 10 dB above the even ones, and below a threshold breath no tone forms. A jet (flute) is next.
+
+Waveguides: a string as a delay loop with a fractional allpass sounds within 0.01 cent of its target at 110 and 262 Hz, decays with the requested T60 within 5 percent, and three detuned strings struck by one hammer make a piano note whose unison beats at the detuning. Piano string dispersion is next.
 
 ### 2.4 Space and media
 
@@ -105,7 +108,9 @@ Radiation: a mode with net volume velocity radiates as a monopole at low frequen
 
 The vocal tract is an area function, glottis to lips, solved as a chain of transmission-line sections; the glottis is a Rosenberg pulse train with explicit pitch, open quotient, pulse skew and breath noise. Known answers in the tests: a uniform 17.5 cm tube closed at the glottis rings at (2n - 1) c / 4L (503.6, 1511, 2518 Hz at 37 C); formants scale as 1 / L; narrowing the back and widening the front raises F1 and lowers F2 as for an open vowel; helium raises every formant by c_He / c_air exactly in this lossless model.
 
-Next, in order: lip radiation and wall loss; published MRI area functions with provenance (Story's vowel sets, from open copies); a self-oscillating two-mass vocal-fold model so modal, breathy, pressed and creaky voice come from fold physics; nasal coupling; subglottal tract and lungs; the oesophagus as a source for oesophageal speech; then a 3D tract.
+Now also (`tract.py`, `folds.py`): lip radiation as a baffled piston, which lowers F1 to c / 4(L + 0.85 a) within 0.5 percent and widens the higher formants more than the lower; yielding walls (Sondhi and Schroeter's mass and resistance), which raise F1 by over 2 percent and widen it by over 20 Hz while leaving F3 within 1 percent; and two-mass vocal folds (Steinecke and Herzel's form of Ishizaka and Flanagan), which oscillate at 125 Hz against a linear mode of 120 Hz above the phonation threshold and stay still below it, become breathier (open quotient up by over 0.2) as the folds open, and get louder with lung pressure. The measured resonances of 44 MRI vocal tracts printed in 3D (the Dresden Vocal Tract Dataset, CC0) are in `packages/measured` as known answers; their published finite-element resonances agree with the measured ones within 5 percent for at least 36 of the 44.
+
+Next, in order: the area functions of those 44 tracts from their surface meshes, so the 1D model can be held to the measured resonances (a first attempt by distance shells from the glottis gave an F1 of 109 Hz against a measured 337 Hz for the schwa, so the centre-line method needs real work); coupling the folds to the tract; nasal coupling; subglottal tract and lungs; the oesophagus as a source for oesophageal speech; then a 3D tract.
 
 Voice quality controls (pitch, open quotient, skew, breath, tract length and shape) are explicit numbers. A physical model can generate speech-like sound whose articulation is known exactly, which suits probing and training speech models: every sample comes with its true formants, area function and source settings. The workspace already holds a speech-model fine-tuning setup for the author's own consented voice; the physical model would add labelled synthetic data beside it, never a copy of any real person's voice.
 
@@ -138,6 +143,7 @@ Next: scales generated from each instrument's curve and used by the arrangement 
 - Timeline: tracks of notes in beats at one tempo; automation as piecewise-linear envelopes in seconds, sampled per sample. Next: tempo maps, clips and takes, comping, markers, time signature changes, groove.
 - Mixer: per-track gain and equal-power pan (left^2 + right^2 = 1 at every position), a room send and return, and a master peak limiter that no sample passes. Next: buses, sends, sidechains, groups, VCA faders, metering by BS.1770 with true peak.
 - Input: MIDI note numbers, fractional for microtones; MPE next, mapping per-note pressure to mallet force or breath, slide to strike position, and pitch bend to tension or length, so expression changes the physics rather than a filter.
+- Effects with an analyser that reads them back: volume swell, tremolo and feedback delay. From a piano phrase with planted settings the analyser recovers a 12 Hz tremolo within 0.5 percent, a 400 ms attack within 3 percent and a 375 ms delay within 1 ms, and reports no tremolo or echo on the dry take.
 - Export: WAV at 16 bits by the superstack quantiser with its canonical header; WAV 24-bit and 32-bit float; FLAC 16 and 24 bits. A 16-bit FLAC decodes to the same samples as the 16-bit WAV.
 - Receipt: superstack.receipt/1 with the scene hash, seed, seed rule, flick clock, PCM hash, the FLAC hash, and what the receipt does not prove.
 
@@ -163,17 +169,25 @@ Competitive table. Rows marked "memory" are from general knowledge of these prod
 | Plugins | VST3, AU, CLAP hosting (memory) | none | a BuildLang plugin ABI, then CLAP |
 | Export | WAV, FLAC, MP3, stems (memory) | WAV 16, 24, 32f; FLAC 16, 24 | stems, rates to 192 kHz, each with a receipt |
 
+Done from the previous three steps: the device binding is in BuildLang and the host is BuildLang; aluminium and steel damping are measured; bowing and a reed exist; the voice has lip radiation, wall loss and two-mass folds, with measured MRI tract resonances on file.
+
 Next three steps:
 
-1. Move the device binding into BuildLang: a buildlang change that lets an extern block carry a C source (or a runtime audio module), with WASAPI, a null device for CI and a deadline counter, tested in buildlang's CI. Then the host here becomes BuildLang, and the loopback round-trip measurement runs.
-2. Replace the from-memory loss factors with measured decay: ring sourced bars and plates (or published decay data), fit eta(f) per material, and add bowing and a reed so sustained instruments exist.
-3. Voice: lip radiation, wall loss, sourced MRI area functions with their published formants as known answers, and a two-mass fold model, so voice quality comes from physics.
+1. Real time: pin the audio thread to a performance core, take the retrigger test out of the inner loop, and add an f32 SIMD path, to bring the BuildLang host past the earlier C host's 19,200 modes; a 3 ms period through IAudioClient3; and a measured round trip with an input device or a loopback cable.
+2. Area functions from the Dresden surface meshes by a real centre line, so the 1D tract is held to 44 measured sets of resonances; then folds coupled to the tract, nasal coupling, and the oesophageal source.
+3. Measured damping for the remaining materials (brass, copper, glass, woods) from recordings with provenance, piano string dispersion, and a flute jet.
+
+Folded in from manufacturer manuals read as local research copies (no text from them ships here):
+
+- Tape echo as a physical tape loop: an erase head, a record head and several playback heads at fixed spacings on one loop, a motor speed that sets the repeat times (delay = head spacing / tape speed), feedback, wow and flutter from the motor, and the tape's own high-frequency loss, followed by a spring reverb. The engine's scene echo has the same delay-and-feedback structure, so one kernel and one parameter set will serve both. Known answers: repeat times scale exactly as 1 / tape speed, and head spacing ratios appear as the ratios of echo times.
+- Electric piano tine and tone bar as an asymmetric tuning fork: two coupled resonators of unequal mass tuned to one pitch. Two plates to measure: sustain against the detuning between tine and bar (the coupled-oscillator beat and energy exchange predict how sustain falls with detuning), and harmonic content against the tine's offset from the pickup centre (a pickup's nonlinear response to a displacement about an offset point makes even harmonics grow with the offset).
+- A classic five-voice analogue synthesizer's voice architecture as a reference for the workstation's own subtractive voice, built from the same filter and envelope physics as everything else.
 
 ## 7. Limits stated plainly
 
-- Damping uses loss factors from memory.
-- The BuildLang core covers the modal bank and the moving-source path; the arrangement, mixer and export are Python, offline only.
-- The real-time host is C, an interim gap against the BuildLang direction.
-- Round-trip latency is not measured; only render time against the period is.
+- Loss factors for brass, copper, glass and the woods are from memory; aluminium and steel are measured upper bounds from mounted bars.
+- The BuildLang host holds 12,800 modes without a miss; 16,000 and 19,200 miss, and the same load varied widely between runs.
+- Round-trip latency is not measured: this machine has no input device, and WASAPI loopback does not measure output latency.
+- The 1D vocal tract is not yet held to the measured MRI tracts; its known answers are the uniform tube, radiation and length scaling.
 - Arbitrary-outline plates are Navier plates, which equal simple support only on straight edges; free and clamped outlines need the full biharmonic stencil.
-- The CI here does not build BuildLang; the BuildLang tests skip there with the reason until a buildc with `slice::from_raw_parts_mut` is released.
+- CI builds buildc at a pinned buildlang commit in its own job and runs the BuildLang tests there with no skipping; the main test job still skips them, with the reason.
