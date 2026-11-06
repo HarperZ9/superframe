@@ -115,3 +115,18 @@ def bank_process(a1, a2, b, voices, modes, start, retrigger, spacing, frames):
                            ctypes.c_size_t(modes), ctypes.c_int64(start), ctypes.c_int64(retrigger),
                            ctypes.c_int64(spacing), _p(out), ctypes.c_size_t(frames))
     return out
+
+
+def voice_set(state, v, modes, f1, eta, amp, fs):
+    """daw_voice_set on flat arrays state = (a1, a2, b, y1, y2), each voices * modes long, changed in place."""
+    lib().daw_voice_set(*(_p(x) for x in state), ctypes.c_size_t(v), ctypes.c_size_t(modes), ctypes.c_double(f1),
+                        ctypes.c_double(eta), ctypes.c_double(amp), ctypes.c_double(fs))
+
+
+def bank_live(state, voices, modes, hits, frames):
+    """daw_bank_live over flat state (a1, a2, b, y1, y2); hits[v] is the strike sample this period or -1."""
+    out, h = np.zeros(frames), np.ascontiguousarray(hits, float)
+    a1, a2, b, y1, y2 = state
+    lib().daw_bank_live(_p(a1), _p(a2), _p(b), _p(y1), _p(y2), ctypes.c_size_t(voices), ctypes.c_size_t(modes),
+                        _p(h), _p(out), ctypes.c_size_t(frames))
+    return out

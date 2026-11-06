@@ -19,14 +19,14 @@ The engine's clock is the flick (705,600,000 per second, the superstack contract
 Two paths:
 
 - **Offline.** The record goes to the Python workstation, which renders a WAV and a receipt. The receipt holds the record's sha256 and the visual parameters the renderer reads from the record, so one receipt binds the picture's inputs to the sound. Proof: `scene.render_to_wav(scene.RAIN_SCENE, ...)`.
-- **Real time.** The engine sends time-stamped events (a source starts, a parameter changes, an impact happens, with material and position) through a single-producer single-consumer ring to the BuildLang host. The host turns each event into a voice in its bank at the event's sample, and the voice runs the same modal or bubble physics as offline. The ring and the event decoder are the next build. Today the BuildLang bank runs a fixed load, and the per-voice cost below is measured on it.
+- **Real time.** The engine writes one line per event to the BuildLang host's standard input: engine time, kind, the physical parameters, and the moment it made the event on the shared monotonic clock. A thread in BuildLang's audio binding (`bl_events.c`) parses each line into a lock-free single-producer single-consumer ring, and the audio thread pops every waiting event at the start of each period, gives it the next voice of the pool, and strikes it (`daw_voice_set`, `daw_bank_live`). Proof: `engine/impacts.mjs` drops balls onto steel and aluminium bars and sends each impact as it happens, at 60 frames a second, to `buildc run packages/daw/bld/main.bld -- wasapi live`. The bar's fundamental comes from the same free-bar physics and the same measured E, rho and loss factor as the workstation's, and a test holds the engine's value to the modal core's to 1e-9.
 
 ## 3. Sources by kind
 
 | Kind | Picture reads | Sound reads | Physics, source | Status |
 |---|---|---|---|---|
-| Rain | drops per m^3, mean size | drops landing per m^2 s, size, speed, bubbles | Marshall and Palmer 1948 (measured rows), Atlas 1973 speeds, Pumphrey and Crum 1989 entrainment, Minnaert through wavelab | built, offline |
-| Impact | contact point, material, shape | modes of the struck object, contact time | modal core, measured materials | modal core built; event path next |
+| Rain | drops per m^3, mean size (the forest-in-rain scene's streak threshold is now exp(-n V) from the record) | drops landing per m^2 s, size, speed, bubbles | Marshall and Palmer 1948 (measured rows), Atlas 1973 speeds, Pumphrey and Crum 1989 entrainment, Minnaert through wavelab | built, offline; the scene reads the record |
+| Impact | contact point, material, shape | modes of the struck object, strike strength from impact speed | modal core, measured materials and loss factors | built, live from the engine |
 | Bubbles, surf | foam and bubble fields | Minnaert rings with damping | wavelab bubble | rain bubbles built |
 | Wind | swaying geometry | aeolian tones f = St U / d, turbulent noise | Strouhal | tone built; noise spectra against the saved storm recordings next |
 | Thunder | flash, channel geometry | shock to acoustic, channel tortuosity | wavelab Burgers | next |
@@ -43,9 +43,9 @@ CPU per voice, BuildLang bank (`daw_bank_process`), one core of the i7-13700KF, 
 | An impact on a 20-mode object, 64 of them | 1.15 ms | 1.2 ns |
 | A 400-mode bar, 32 of them | 22 ms | 1.15 ns |
 
-A one-mode voice pays its overhead (the per-sample strike test) on one mode, so it costs four times as much per mode as a large one. At half a core, the bank holds about 2,200 bubble voices or 430 twenty-mode impacts at once. Light rain over 4 m^2 lands about 8,600 drops a second. About one in seven is in the bubble window, so about 1,300 bubbles start each second, and each rings for about 3 ms. That keeps about 4 bubble voices sounding at once, plus a click per drop. The offline Python renderer is slower than real time for rain (6.3 s to render 5 s, about 43,000 drops). The real-time path renders rain in BuildLang, not Python.
+Those figures are from before the bank found each strike once per period; it now costs 1.48 ns per mode-sample for one-mode voices and 0.78 ns for larger ones (0.071 ms and 0.75 ms per second of audio for a bubble and a 20-mode impact), so half a core holds about 7,000 bubble voices or 660 twenty-mode impacts at once. Light rain over 4 m^2 lands about 8,600 drops a second. About one in seven is in the bubble window, so about 1,300 bubbles start each second, and each rings for about 3 ms. That keeps about 4 bubble voices sounding at once, plus a click per drop. The offline Python renderer is slower than real time for rain (6.3 s to render 5 s, about 43,000 drops). The real-time path renders rain in BuildLang, not Python.
 
-Latency from an engine event to sound, on the reference machine's shared-mode output: the event waits for the next period (up to 10 ms), then passes through the 22 ms device buffer, so 22 to 32 ms. A 60 frame-per-second picture shows about two frames in that time. This figure is derived from the period and buffer sizes, not measured end to end. The round trip still needs an input device (DESIGN.md, section 1.2). A 3 ms period (IAudioClient3) would bring the event-to-sound delay under one frame.
+Latency from an engine event to sound, measured over 26 live impacts on the shared clock with the device fed silence: an event waited 6.1 ms on average and 10.1 ms at most from the moment the engine made it to the start of the period that strikes it, with no missed deadline. The 22 ms device buffer follows, so an event sounds 28 to 32 ms after it happens; the buffer part is derived, not measured. A 60 frame-per-second picture shows about two frames in that time. This driver's shared-mode period cannot go below 10 ms (the binding asks for 3 ms through IAudioClient3 and is refused), so less than a frame needs another device or exclusive mode.
 
 ## 5. Proof and checks
 
@@ -61,6 +61,6 @@ The 20 s rain render's PCM sha256 is `59fef510...`, with the scene-physics recor
 
 ## 6. Next
 
-1. The event ring and decoder in the BuildLang host. Engine scenes in `packages/rooms` (the forest-in-rain and underwater scenes) then read their streak and bubble densities from the record, not from constants in the shader.
-2. Impacts with material and contact from engine collisions, through the modal core, in real time.
-3. Wind noise, thunder and surf, each held to the measured slopes of the saved field recordings (1/f^1.8 to 1/f^2.5).
+1. Impacts from the rooms' own collision geometry, and rain drops as live events whose bubbles ring in the same bank.
+2. Wind, thunder and surf, each held to the measured slopes of the saved field recordings (1/f^1.8 to 1/f^2.5).
+3. A WebAssembly build of the BuildLang kernels for the browser rooms, if buildc's wasm target can be made to carry them, so a page can sound without the native host.

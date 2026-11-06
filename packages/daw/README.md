@@ -48,6 +48,7 @@ Swap `"aluminium"` for `"steel_mild"` and every mode moves by sqrt(E / rho), the
 ```
 buildc run packages/daw/bld/main.bld              # null device: timing only, no sound
 buildc run packages/daw/bld/main.bld -- wasapi    # the Windows default output, fed silence
+node packages/daw/engine/impacts.mjs | buildc run packages/daw/bld/main.bld -- wasapi live   # engine impacts, live
 ```
 
 Needs a buildc with `slice::from_raw_parts_mut` and extern `source` clauses (BuildLang main after 1.10.0). The tests in `tests/test_native.py` build the kernels themselves when `BUILDC` or `buildc` is found, and skip with the reason otherwise.

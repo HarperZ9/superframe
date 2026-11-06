@@ -36,20 +36,21 @@ Why Python stays: the known answers (Bessel zeros, Leissa's tables, the ISO 9613
 - A worker pool (one per core, below the audio thread's priority) solves modes for new shapes (the finite-difference eigenproblems take tens of milliseconds) and hands finished coefficient tables to the audio thread by pointer swap at a period boundary.
 - Deadline accounting is built in: every period records its render time against the period length, and a miss is counted, never hidden.
 
-The host is BuildLang (`bld/main.bld`): it opens the device through the binding, renders a bank of modal voices per period with `daw_bank_process`, and counts deadline misses. Measured on the reference machine (WASAPI shared mode, event driven, 48 kHz, 10 ms period, 22 ms device buffer, the device fed silence), with the render mean and maximum reported cumulatively across the run:
+The host is BuildLang (`bld/main.bld`): it pins its audio thread to the performance cores (the binding reads each core's efficiency class), opens the device through the binding, renders a bank of modal voices per period with `daw_bank_process`, and counts deadline misses. The bank finds each voice's strike sample once per period and runs two modes at a time over the whole period, so the inner loop is the two-pole recursion alone: 0.78 ns per mode-sample for large voices and 1.48 ns for one-mode voices, against 1.15 and 4.5 ns before. Measured on the reference machine (WASAPI shared mode, 48 kHz, 10 ms period, 22 ms device buffer, the device fed silence by the binding's silent flag, so no sound), render mean and maximum reported cumulatively:
 
-| Load | Periods | Missed deadlines | Render mean so far, max so far |
+| Load | Periods | Missed deadlines, two runs | Render mean so far, max so far (first run) |
 |---|---|---|---|
-| 8 voices x 200 modes | 300 | 0 | 0.82, 1.15 ms |
-| 32 x 200 | 300 | 0 | 1.98, 4.15 ms |
-| 32 x 400 (12,800 modes) | 6,000 (60 s) | 0 | 5.67, 8.70 ms |
-| 40 x 400 (16,000 modes) | 6,000 | 390 (6.5 percent) | 6.51, 10.95 ms |
-| 48 x 400 (19,200 modes) | 6,000 | 260 in one run, 3,587 in the next | 7.49, 16.2 ms |
-| 128 x 400 | 300 | 300 | 7.73, 31.1 ms |
+| 8 voices x 200 modes | 300 | 0, 0 | 0.61, 1.01 ms |
+| 32 x 400 (12,800 modes) | 6,000 (60 s) | 0, 0 | 3.97, 6.33 ms |
+| 48 x 400 (19,200 modes) | 6,000 | 0, 0 | 5.03, 7.24 ms |
+| 64 x 400 (25,600 modes) | 6,000 | 0, 139 (2.3 percent) | 6.08, 9.78 ms |
+| 80 x 400 (32,000 modes) | 3,000 | 3,000 (first run) | 6.67, 12.3 ms |
 
-So the BuildLang host holds 12,800 modes (64 two-hundred-mode bars) on one core with no miss over 60 s. The earlier C host (`host/rt_host.c`, now removed) held 19,200 modes with no miss over 60 s and a median render of 4.60 ms; the BuildLang bank costs more, from the per-sample retrigger test and bounds checks in the voice loop, and two runs of the same load differed by a factor of 14 in misses. Where the operating system places the audio thread on this hybrid CPU (performance or efficiency cores) is the likely cause of the spread; it was not measured. Pinning the thread to a performance core and moving the retrigger out of the inner loop come next.
+So one core holds 19,200 modes (96 two-hundred-mode bars) with no miss in either 60 s run, which matches the earlier C host, and 25,600 modes in one run of two. Before pinning and the loop change the same host held 12,800. The period cannot go below 10 ms in shared mode on this machine: the binding asks for 3 ms through IAudioClient3, and the audio engine reports 480 frames as its default, fundamental, minimum and maximum period alike, so the request falls back. Exclusive mode would allow 3 ms but takes the device from every other program, and was not tried.
 
-Latency: the shared-mode stream adds one 10 ms period plus the 22 ms device buffer on output, about 32 ms; the driver reports no stream latency of its own. The binding times a click through the device's WASAPI loopback, which gave 0.002 to 16 ms across runs: loopback taps the mix inside Windows and is not an output latency. A true round trip needs an input device; this machine has none (the binding returns "no input" and plays nothing), so the round trip is still unmeasured.
+SIMD is not in yet: buildc compiles at -O2 with a bounds check on every index, and the checks keep the C compiler from vectorising the loop. Hoisting the checks out of a loop whose bounds are known (or an unchecked index inside `unsafe`) and an f32 path are BuildLang changes, next on the list.
+
+Latency: an engine event (see ARCHITECTURE.md) waited 6.1 ms on average and 10.1 ms at most from the moment the engine made it to the start of the period that strikes it, measured on the shared clock over 26 live impacts with the device fed silence. The 22 ms device buffer follows, so an event sounds about 28 to 32 ms after it happens; the buffer part is derived from the device's sizes, not measured. Loopback timing and a round trip both need audible output (a click through the speakers) or an input device, and this machine has no input device; under the current no-sound rule neither was run.
 
 ### 1.3 Time, offline and real-time
 
@@ -110,7 +111,9 @@ The vocal tract is an area function, glottis to lips, solved as a chain of trans
 
 Now also (`tract.py`, `folds.py`): lip radiation as a baffled piston, which lowers F1 to c / 4(L + 0.85 a) within 0.5 percent and widens the higher formants more than the lower; yielding walls (Sondhi and Schroeter's mass and resistance), which raise F1 by over 2 percent and widen it by over 20 Hz while leaving F3 within 1 percent; and two-mass vocal folds (Steinecke and Herzel's form of Ishizaka and Flanagan), which oscillate at 125 Hz against a linear mode of 120 Hz above the phonation threshold and stay still below it, become breathier (open quotient up by over 0.2) as the folds open, and get louder with lung pressure. The measured resonances of 44 MRI vocal tracts printed in 3D (the Dresden Vocal Tract Dataset, CC0) are in `packages/measured` as known answers; their published finite-element resonances agree with the measured ones within 5 percent for at least 36 of the 44.
 
-Next, in order: the area functions of those 44 tracts from their surface meshes, so the 1D model can be held to the measured resonances (a first attempt by distance shells from the glottis gave an F1 of 109 Hz against a measured 337 Hz for the schwa, so the centre-line method needs real work); coupling the folds to the tract; nasal coupling; subglottal tract and lungs; the oesophagus as a source for oesophageal speech; then a 3D tract.
+The 1D tract is now held to those 44 tracts. `packages/measured/build/b_dvtd_area.py` fills each closed surface mesh into 0.7 mm voxels and measures the geodesic distance of every voxel from the glottis on the 26-connected voxel graph; the area at each distance is the volume of a 3 mm shell over its thickness. The first attempt used a 6-connected graph, which measures city-block distance: it stretched the schwa tract from 192 to 237 mm and put F1 at 109 Hz against a measured 337 Hz. With the true distance the schwa's F1 is 336 Hz. The last shells, slivers of the cap that closes the mesh at the lips, are trimmed (`tract.trim_lip_cap`); left in, they close the mouth. With lip radiation, F1 is within 10 percent of the measured resonance for 41 of 44 tracts (median error 4.7 percent) and F2 for 32 of 44 (median 6.4 percent); without the trim the median F1 error more than doubles (planted). Side cavities fall into the shells at their distance, a known limit of distance-shell area functions, and the worst cases are rounded front vowels and the lateral.
+
+Next, in order: coupling the folds to the tract; nasal coupling; subglottal tract and lungs; the oesophagus as a source for oesophageal speech; then a 3D tract.
 
 Voice quality controls (pitch, open quotient, skew, breath, tract length and shape) are explicit numbers. A physical model can generate speech-like sound whose articulation is known exactly, which suits probing and training speech models: every sample comes with its true formants, area function and source settings. The workspace already holds a speech-model fine-tuning setup for the author's own consented voice; the physical model would add labelled synthetic data beside it, never a copy of any real person's voice.
 
@@ -171,11 +174,13 @@ Competitive table. Rows marked "memory" are from general knowledge of these prod
 
 Done from the previous three steps: the device binding is in BuildLang and the host is BuildLang; aluminium and steel damping are measured; bowing and a reed exist; the voice has lip radiation, wall loss and two-mass folds, with measured MRI tract resonances on file.
 
+Done from the last round: the audio thread on the performance cores and the strike test out of the inner loop (19,200 modes held in two 60 s runs); the live event path from the engine into the BuildLang host, with impacts from falling balls; the engine's rain scene reading its density from the record; and area functions from the Dresden meshes. Not done: SIMD and f32 (need BuildLang to hoist bounds checks), and a period under 10 ms (this driver's shared-mode engine period is fixed).
+
 Next three steps:
 
-1. Real time: pin the audio thread to a performance core, take the retrigger test out of the inner loop, and add an f32 SIMD path, to bring the BuildLang host past the earlier C host's 19,200 modes; a 3 ms period through IAudioClient3; and a measured round trip with an input device or a loopback cable.
-2. Area functions from the Dresden surface meshes by a real centre line, so the 1D tract is held to 44 measured sets of resonances; then folds coupled to the tract, nasal coupling, and the oesophageal source.
-3. Measured damping for the remaining materials (brass, copper, glass, woods) from recordings with provenance, piano string dispersion, and a flute jet.
+1. BuildLang: hoist bounds checks out of loops with known bounds and add an f32 path, so the bank vectorises; then 3 ms on a device or driver that allows it, and a round trip once an input device exists and sound is allowed.
+2. Engine: impacts from the rooms' own collision geometry, rain drops as live events (bubbles through the same bank), and wind with its measured spectra.
+3. Voice: folds coupled to the tract (glottal flow loaded by the tract's input impedance), then nasal coupling and the oesophageal source.
 
 Folded in from manufacturer manuals read as local research copies (no text from them ships here):
 
@@ -186,8 +191,8 @@ Folded in from manufacturer manuals read as local research copies (no text from 
 ## 7. Limits stated plainly
 
 - Loss factors for brass, copper, glass and the woods are from memory; aluminium and steel are measured upper bounds from mounted bars.
-- The BuildLang host holds 12,800 modes without a miss; 16,000 and 19,200 miss, and the same load varied widely between runs.
-- Round-trip latency is not measured: this machine has no input device, and WASAPI loopback does not measure output latency.
-- The 1D vocal tract is not yet held to the measured MRI tracts; its known answers are the uniform tube, radiation and length scaling.
+- The BuildLang host holds 19,200 modes without a miss in two 60 s runs; 25,600 passed one run and missed 2.3 percent of periods in the next.
+- Round-trip latency is not measured: this machine has no input device, and no test may play sound for now.
+- The 1D vocal tract meets 41 of 44 measured MRI tracts on F1 within 10 percent; area functions from distance shells fold side cavities into the main tube.
 - Arbitrary-outline plates are Navier plates, which equal simple support only on straight edges; free and clamped outlines need the full biharmonic stencil.
 - CI builds buildc at a pinned buildlang commit in its own job and runs the BuildLang tests there with no skipping; the main test job still skips them, with the reason.

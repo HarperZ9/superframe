@@ -93,3 +93,24 @@ def test_printed_mri_tracts_measured_and_published_agree():
     for s in (1, 2):
         assert by[(s, "tense-a")][0] > by[(s, "tense-i")][0]             # /a/ opens F1, /i/ closes it
         assert by[(s, "tense-i")][1] > by[(s, "tense-u")][1]             # /i/ is front, /u/ back
+
+
+def _mri_errors(trim=True):
+    areas = {r["model"]: r for r in load("vocal_tract_areas_dvtd")["rows"]}
+    meas = {r["id"][len("dvtd."):]: r["measured_hz"] for r in load("vocal_tracts_dvtd")["rows"]}
+    e1, e2 = [], []
+    for model, r in areas.items():
+        a = T.trim_lip_cap(r["area_m2"]) if trim else np.asarray(r["area_m2"])
+        a = np.maximum(a, 1e-6)
+        f = [x for x, _ in T.formants_and_bandwidths(a, np.full(len(a), r["section_m"]), 345.0, fmax=4000)]
+        e1.append(abs(f[0] / meas[model][0] - 1))
+        e2.append(abs(f[1] / meas[model][1] - 1))
+    return np.array(e1), np.array(e2)
+
+
+def test_tract_model_meets_44_measured_mri_tracts():
+    e1, e2 = _mri_errors()
+    assert len(e1) == 44 and np.median(e1) < 0.06 and (e1 < 0.10).sum() >= 40
+    assert np.median(e2) < 0.08 and (e2 < 0.10).sum() >= 30
+    raw1, _ = _mri_errors(trim=False)                                   # planted: the lip cap left in
+    assert np.median(raw1) > 2 * np.median(e1)

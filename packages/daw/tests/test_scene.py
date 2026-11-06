@@ -59,3 +59,8 @@ def test_scene_render_is_seeded_and_on_the_flick_clock(tmp_path):
     assert a["content_sha256"] == b["content_sha256"] and ss.verify_receipt(a) == []
     assert S.sample_of_flicks(ss.flicks_per_sample(FS) * 24000, FS) == 24000
     assert S.sample_of_flicks(705_600_000, FS) == FS                  # one second of flicks is one second of samples
+
+
+def test_engine_rain_scene_reads_the_same_record():
+    js = Path(__file__).resolve().parents[2] / "rooms" / "core" / "data" / "rain-record.js"
+    assert js.read_bytes().replace(bytes([13, 10]), bytes([10])).decode("utf-8") == S.rooms_module()

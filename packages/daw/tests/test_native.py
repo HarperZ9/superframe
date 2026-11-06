@@ -82,3 +82,17 @@ def test_bank_of_voices_equals_the_sum_of_single_voices():
         want += native.modal_process(a1[s], a2[s], b[s], (np.zeros(3), np.zeros(3)), x)
     assert np.max(np.abs(out - want)) < 1e-12
 
+
+
+def test_live_voice_is_a_struck_free_bar_at_its_sample():
+    voices, modes = 3, 6
+    state = tuple(np.zeros(voices * modes) for _ in range(5))
+    native.voice_set(state, 1, modes, 523.0, 2.3e-4, 0.5, FS)
+    f = np.array([523.0 * r for r in Bar(M.material("aluminium"), 0.3, 0.012).modes(modes).ratios()])
+    alpha = np.pi * f * 2.3e-4 + 2.0
+    a1, a2 = native.modal_coeffs(f, alpha, FS)
+    assert np.allclose(state[0][6:12], a1, rtol=0, atol=1e-6) and np.allclose(state[1][6:12], a2, atol=1e-12)
+    out = native.bank_live(state, voices, modes, [-1, 100, -1], 480)
+    x = np.zeros(480); x[100] = 1.0
+    want = native.modal_process(a1, a2, 0.5 / np.arange(1, 7), (np.zeros(6), np.zeros(6)), x)
+    assert np.max(np.abs(out - want)) < 1e-6 and np.all(out[:100] == 0)

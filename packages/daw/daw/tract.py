@@ -54,3 +54,13 @@ def formants_and_bandwidths(areas, lengths, c, fmax=4000.0, step=2.0, **kw):
             hi += 1
         res.append((f[i] + p * step, (hi - lo) * step))
     return res
+
+
+def trim_lip_cap(areas):
+    """Drop the last shells of an area function measured from a closed surface mesh while each is under half
+    the median of the seven before it: they are slivers of the cap that closes the mesh at the lips, and left
+    in they turn the open mouth into a near-closed end."""
+    a = list(areas)
+    while len(a) > 5 and a[-1] < 0.5 * float(np.median(a[-8:-1])):
+        a.pop()
+    return np.asarray(a, float)
