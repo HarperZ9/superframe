@@ -67,7 +67,15 @@ def words(length):
         for w, m in nxt:
             out.append(m)
             names.append(w)
-    return names, out
+    # distinct group elements only (the surface relation makes some words equal): compare where they send 0 and 1/2
+    keep, seen = [], []
+    for i, m in enumerate(out):
+        key = (act(m, 0.0), act(m, 0.5))
+        if any(abs(key[0] - a) < 1e-9 and abs(key[1] - b) < 1e-9 for a, b in seen):
+            continue
+        seen.append(key)
+        keep.append(i)
+    return [names[i] for i in keep], [out[i] for i in keep]
 
 
 def vertex_classes():
@@ -122,7 +130,7 @@ def inside(z):
 class Drawing:
     """A graph drawn on the octagon surface: vertex positions in the octagon and, per edge, an index into a word list."""
 
-    def __init__(self, graph, lift_len=2, image_len=3):
+    def __init__(self, graph, lift_len=1, image_len=4):
         self.n, self.edges = graph
         self.lift_names, self.lifts = words(lift_len)
         self.img_names, self.imgs = words(image_len)
@@ -145,12 +153,13 @@ class Drawing:
         count = 0
         for i in range(E):
             p, q = P[i], Q[i]
-            c, d = C[:, i + 1:], D[:, i + 1:]
+            c, d = C[:, i:], D[:, i:]                        # column 0 is the edge itself: its own images can cross it
             o1 = _orient(p, q, c)
             o2 = _orient(p, q, d)
             o3 = _orient(c, d, p)
             o4 = _orient(c, d, q)
             hit = (o1 * o2 < -1e-12) & (o3 * o4 < -1e-12)
+            hit[0, 0] = False                                # the identity image of the edge itself
             count += int(np.any(hit, axis=0).sum())
         return count
 
