@@ -15,5 +15,6 @@
   media_graph mass-spring graphs (chains, membranes) with several input sites, and the NARMA-10 task
   cavity      bubble shape stability (parametric, Rayleigh-Taylor) and a Saha ionisation energy sink
   thermal     a bubble whose gas exchanges heat with the water (isothermal when slow, adiabatic when fast)
+  conduction  a bubble with a radially resolved gas temperature (homobaric, Lagrangian shells)
 """
-__all__ = ["consts", "burgers", "bubble", "earth", "atmosphere", "finesse", "timerev", "reservoir", "otherworld", "resonator", "media_graph", "cavity", "thermal"]
+__all__ = ["consts", "burgers", "bubble", "earth", "atmosphere", "finesse", "timerev", "reservoir", "otherworld", "resonator", "media_graph", "cavity", "thermal", "conduction"]
