@@ -5692,8 +5692,8 @@
   {
    "path": "packages/PROVENANCE.json",
    "source": "repo",
-   "bytes": 166483,
-   "sourceSha256": "7934ae8e541030fbb1b281a1f6f76233061c8cd1de16a6c94c9a310b5f04ff59"
+   "bytes": 167221,
+   "sourceSha256": "d146141cf2396d3c8985464df0b123ef9028c66366a6272718ed38185c1dbb56"
   },
   {
    "path": "packages/README.md",
@@ -7744,14 +7744,14 @@
   {
    "path": "packages/latticechiral/README.md",
    "source": "repo",
-   "bytes": 2684,
-   "sourceSha256": "e87feeeb8fee38371ee38939007dd4e7777b6c0bc34fbeccca6173e0ae67c29d"
+   "bytes": 3004,
+   "sourceSha256": "01086a5076d91593ec36d36325bb584224203fe45702936d017ede26002687b2"
   },
   {
    "path": "packages/latticechiral/latticechiral/__init__.py",
    "source": "repo",
-   "bytes": 781,
-   "sourceSha256": "6c707fbb404acb184895c532b9c51a920d828277faac4c642532135ba5507912"
+   "bytes": 795,
+   "sourceSha256": "ffd64a4279788aa040067a536be3f3f4245fcf689819523b0757fc38394f6f2a"
   },
   {
    "path": "packages/latticechiral/latticechiral/chiral.py",
@@ -7766,10 +7766,16 @@
    "sourceSha256": "f02b84ef224e678d8c595678054f1cb37397ef331a7e2d31f40cedd3e01f6587"
   },
   {
+   "path": "packages/latticechiral/latticechiral/nonabelian.py",
+   "source": "repo",
+   "bytes": 3533,
+   "sourceSha256": "695114b20ee0824c44d40e80ec186bd170c8cc490671f15b6f4c1bf638ec2ad2"
+  },
+  {
    "path": "packages/latticechiral/latticechiral/overlap_nn.py",
    "source": "repo",
-   "bytes": 3699,
-   "sourceSha256": "c1c82ee3c68d5279ce2a62a4e18bc7849ac2ae221d40aa282ccc904f12842e57"
+   "bytes": 4618,
+   "sourceSha256": "e162502ed1fdb1204657ec87f5d921b61322634f222ccf245b143f8e057fe42b"
   },
   {
    "path": "packages/latticechiral/latticechiral/u1.py",
@@ -7788,6 +7794,12 @@
    "source": "repo",
    "bytes": 4667,
    "sourceSha256": "b977171dcbbc29f5ff174cff05a24a43a8ec1341747f9cb0a0a4f96bcfb9367b"
+  },
+  {
+   "path": "packages/latticechiral/tests/test_nonabelian_and_eta.py",
+   "source": "repo",
+   "bytes": 1605,
+   "sourceSha256": "f617c777b2ab7017451e6a6b7e3cefc1c81c847f8fa291f4d64d844acade59ec"
   },
   {
    "path": "packages/latticechiral/tests/test_overlap_and_4d.py",
@@ -10150,14 +10162,14 @@
   {
    "path": "packages/strings/README.md",
    "source": "repo",
-   "bytes": 6923,
-   "sourceSha256": "323b5e6351e6ee4ace0e5c8a9d6537971ed2d6fc490fbfecd378963640845914"
+   "bytes": 7303,
+   "sourceSha256": "a99869a76dcc6951371c05dc313281fc9014b46deff371d10c7b143c8a13d076"
   },
   {
    "path": "packages/strings/stringlab/__init__.py",
    "source": "repo",
-   "bytes": 1565,
-   "sourceSha256": "a5287b93679ed36c5c99630bf9ddb6c812533e10bd9ceb21b176cba9597d792b"
+   "bytes": 1577,
+   "sourceSha256": "fddd6a56f1c67eaa08307313bd8d958376c91ed398e4546266742776a438ce76"
   },
   {
    "path": "packages/strings/stringlab/calabiyau.py",
@@ -10210,8 +10222,8 @@
   {
    "path": "packages/strings/stringlab/lvk.py",
    "source": "repo",
-   "bytes": 2540,
-   "sourceSha256": "17c3616f2628916b13e669b049e898444256dc665ba15afc00403155c008f6c1"
+   "bytes": 3171,
+   "sourceSha256": "3ed815cbf2657da0b6bc1acbf83837d6e38b2afe17b4678e0c7eea1a6aee57e1"
   },
   {
    "path": "packages/strings/stringlab/pta.py",
@@ -10224,6 +10236,12 @@
    "source": "repo",
    "bytes": 5821,
    "sourceSha256": "cc2b9eab02c84a3c6fce6fdd9242260705d1fa28a4af6f88f4ca24ff1500ba2d"
+  },
+  {
+   "path": "packages/strings/stringlab/surfaces.py",
+   "source": "repo",
+   "bytes": 6346,
+   "sourceSha256": "9bfb308ebf93b418c25e4b613fc2a71bf2f1bb6280a3cdb25de5244f1dad37ec"
   },
   {
    "path": "packages/strings/stringlab/tduality.py",
@@ -10260,6 +10278,12 @@
    "source": "repo",
    "bytes": 8161,
    "sourceSha256": "34ce521348673c0083842078d248f03233bbfb8eefd2d8c8edb76a922128cad4"
+  },
+  {
+   "path": "packages/strings/tests/test_surfaces.py",
+   "source": "repo",
+   "bytes": 1856,
+   "sourceSha256": "ef670b4a36ee49189cc783c6570573abf1e4c6412ca952617aef2a8fcd490e4a"
   },
   {
    "path": "packages/wavelab/README.md",

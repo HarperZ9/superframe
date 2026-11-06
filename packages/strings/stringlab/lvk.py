@@ -22,10 +22,18 @@ class CrossSpectrum:
         keep = (f >= band[0]) & (f <= band[1]) & np.isfinite(s) & (s > 0) & np.isfinite(C)
         self.f, self.C, self.w = f[keep], C[keep], 1.0 / s[keep] ** 2
 
-    def loglike(self, omega):
-        """omega: (..., nbins) model on self.f; returns ln L relative to Omega = 0 (so zero signal gives 0)."""
+    def loglike(self, omega, cal_sigma=0.0):
+        """omega: (..., nbins) model on self.f; returns ln L relative to Omega = 0 (so zero signal gives 0).
+        cal_sigma > 0 marginalises an overall amplitude calibration factor lam ~ N(1, cal_sigma^2) multiplying the
+        model, in closed form: with a = sum w C Om and b = sum w Om^2, int N(lam) exp(lam a - lam^2 b / 2) dlam."""
         om = np.asarray(omega)
-        return np.sum(self.w * (self.C * om - 0.5 * om * om), axis=-1)
+        a = np.sum(self.w * self.C * om, axis=-1)
+        b = np.sum(self.w * om * om, axis=-1)
+        if cal_sigma <= 0:
+            return a - 0.5 * b
+        s2 = cal_sigma ** 2
+        P = b + 1 / s2
+        return 0.5 * (a + 1 / s2) ** 2 / P - 0.5 / s2 - 0.5 * np.log(P * s2)
 
     def project(self, f_model, omega_model):
         """Interpolate a model tabulated on f_model (..., nm) to the data bins, log-log."""
@@ -34,14 +42,18 @@ class CrossSpectrum:
         xm = np.log(f_model)
         return np.exp(np.apply_along_axis(lambda r: np.interp(x, xm, r), -1, lo))
 
-    def powerlaw_upper(self, alpha=0.0, fref=25.0, lo=1e-13, hi=1e-5, n=40001, mass=0.95):
-        """95 percent upper limit on Omega_ref with a log-uniform prior on [lo, hi]."""
+    def powerlaw_upper(self, alpha=0.0, fref=25.0, lo=1e-13, hi=1e-5, n=40001, mass=0.95, cal_sigma=0.0):
+        """95 percent upper limit on Omega_ref with a log-uniform prior on [lo, hi], optionally calibration-marginalised."""
         lw = np.linspace(math.log10(lo), math.log10(hi), n)
         shape = (self.f / fref) ** alpha
-        # ln L for Omega_ref = A: A * sum(w C s) - A^2 / 2 sum(w s^2)
         a, b = np.sum(self.w * self.C * shape), np.sum(self.w * shape * shape)
         A = 10 ** lw
-        ll = A * a - 0.5 * A * A * b
+        if cal_sigma <= 0:
+            ll = A * a - 0.5 * A * A * b
+        else:
+            s2 = cal_sigma ** 2
+            P = A * A * b + 1 / s2
+            ll = 0.5 * (A * a + 1 / s2) ** 2 / P - 0.5 / s2 - 0.5 * np.log(P * s2)
         return upper_from_loglike(lw, ll, mass)
 
 
