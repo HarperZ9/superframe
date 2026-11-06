@@ -34,10 +34,14 @@ def counts(Nk, Nc=1.0):
     return {"c": Nc, "k": Nk, "kk": Nk ** 2 / 4}
 
 
-def gamma_d(Nk, Nc=1.0):
+def gamma_d(Nk, Nc=1.0, g1k=None, delta=None, g2=None):
+    """Decay constant; g1k, delta and g2 override the defaults inside Gamma_d only (for convention checks)."""
     N = counts(Nk, Nc)
-    return (N["c"] * 3 * math.pi ** 2 * G1["c"] ** 2 / ((2 * DELTA) ** (1 / 3) * G2 ** (2 / 3))
-            + N["k"] * 3 * math.pi ** 2 * G1["k"] ** 2 / ((2 * DELTA) ** (2 / 3) * G2 ** (1 / 3))
+    gk = G1["k"] if g1k is None else g1k
+    d = DELTA if delta is None else delta
+    g = G2 if g2 is None else g2
+    return (N["c"] * 3 * math.pi ** 2 * G1["c"] ** 2 / ((2 * d) ** (1 / 3) * g ** (2 / 3))
+            + N["k"] * 3 * math.pi ** 2 * gk ** 2 / ((2 * d) ** (2 / 3) * g ** (1 / 3))
             + N["kk"] * 2 * math.pi ** 2 * G1["kk"] ** 2)
 
 
@@ -72,16 +76,15 @@ def density_model_a(l, t, z, gmu, Gd, co, teq, form="t", rad_cut=0.18):
 
 
 def omega_components(co, f, gmu, Nk, Nc=1.0, n_gamma=240, hubble_ref=None, form="t", g1k=None, rad_cut=0.18,
-                     lmin_rule="theta", gd_g1k=False):
+                     lmin_rule="theta", gd_g1k=False, gd_delta=None, gd_g2=None):
     """Omega_i(f) for i in c, k, kk on the cosmology grid; returns dict of arrays over f.
     hubble_ref: report Omega normalised to this H0 (1/s) instead of the cosmology's (Omega scales as 1/H0^2).
     rad_cut: largest radiation-born loop in units of t (model A uses 0.18; the 2018 paper's eq. 8 uses 0.1).
     lmin_rule "theta" requires theta_m < 1 for cusps and kinks; "fundamental" only l > 2 / (f (1+z)).
-    gd_g1k: use g1k (when given) in the decay constant as well as in the amplitude."""
+    gd_g1k: use g1k (when given) in the decay constant as well as in the amplitude.
+    gd_delta, gd_g2: override delta and g2 inside Gamma_d only (convention checks against LVK's curves)."""
     f = np.atleast_1d(np.asarray(f, dtype=float))
-    Gd = gamma_d(Nk, Nc)
-    if gd_g1k and g1k is not None:
-        Gd += Nk * 3 * math.pi ** 2 * (g1k ** 2 - G1["k"] ** 2) / ((2 * DELTA) ** (2 / 3) * G2 ** (1 / 3))
+    Gd = gamma_d(Nk, Nc, g1k=g1k if gd_g1k else None, delta=gd_delta, g2=gd_g2)
     teq = t_equality(co)
     z = np.expm1(-co.N)
     t = co.t
