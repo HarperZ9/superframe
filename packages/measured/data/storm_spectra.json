@@ -1,0 +1,72 @@
+{
+ "provenance": {
+  "method": "ffmpeg decode to 16 kHz mono; Welch PSD, 8192-sample Hann, half overlap; slope fit 100 Hz to 4 kHz",
+  "citation": "Three storm field recordings (ocean storm, howling wind in spruce, rain and thunder), 180 s each, saved from public videos",
+  "licence": "no licence stated; local research copies, never redistributed; only spectral statistics are used",
+  "files": {
+   "hwsEjtlr9yw.audio-0-180.m4a": "b81be150111032b941a74f9b74c9c48b186539713b7326ab92e74ef1cb125ac2",
+   "sT5f1jBJHng.audio-15-195.m4a": "6513da999f6f137fa600d881ebd450cac3f1d9386b438dbe356375a69cc02638",
+   "y4h_4NIOxuY.audio-0-180.m4a": "a4e28d4d0003bba3758a559ce3566a4674dde3e9eb027ccc63b22e8ebbc06e17"
+  }
+ },
+ "rows": [
+  {
+   "id": "storm.ocean_storm",
+   "file": "hwsEjtlr9yw.audio-0-180.m4a",
+   "sha256": "b81be150111032b941a74f9b74c9c48b186539713b7326ab92e74ef1cb125ac2",
+   "source": "storm-saves",
+   "status": "measured",
+   "seconds": 180,
+   "beta": 1.735,
+   "band_fraction": {
+    "0-100": 0.3819,
+    "100-500": 0.3525,
+    "500-2000": 0.211,
+    "2000-8000": 0.0474
+   },
+   "peaks_hz": [
+    68.4,
+    396.5,
+    3187.5,
+    6193.4,
+    6449.2
+   ]
+  },
+  {
+   "id": "storm.howling_wind_spruce",
+   "file": "sT5f1jBJHng.audio-15-195.m4a",
+   "sha256": "6513da999f6f137fa600d881ebd450cac3f1d9386b438dbe356375a69cc02638",
+   "source": "storm-saves",
+   "status": "measured",
+   "seconds": 180,
+   "beta": 2.289,
+   "band_fraction": {
+    "0-100": 0.03,
+    "100-500": 0.8001,
+    "500-2000": 0.1469,
+    "2000-8000": 0.0199
+   },
+   "peaks_hz": [
+    187.5,
+    929.7,
+    1488.3
+   ]
+  },
+  {
+   "id": "storm.rain_thunder",
+   "file": "y4h_4NIOxuY.audio-0-180.m4a",
+   "sha256": "a4e28d4d0003bba3758a559ce3566a4674dde3e9eb027ccc63b22e8ebbc06e17",
+   "source": "storm-saves",
+   "status": "measured",
+   "seconds": 180,
+   "beta": 1.995,
+   "band_fraction": {
+    "0-100": 0.6858,
+    "100-500": 0.2568,
+    "500-2000": 0.0389,
+    "2000-8000": 0.0136
+   },
+   "peaks_hz": []
+  }
+ ]
+}

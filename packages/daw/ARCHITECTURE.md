@@ -26,9 +26,9 @@ Two paths:
 | Kind | Picture reads | Sound reads | Physics, source | Status |
 |---|---|---|---|---|
 | Rain | drops per m^3, mean size (the forest-in-rain scene's streak threshold is now exp(-n V) from the record) | drops landing per m^2 s, size, speed, bubbles | Marshall and Palmer 1948 (measured rows), Atlas 1973 speeds, Pumphrey and Crum 1989 entrainment, Minnaert through wavelab | built, offline; the scene reads the record |
-| Impact | contact point, material, shape | modes of the struck object, strike strength from impact speed | modal core, measured materials and loss factors | built, live from the engine |
-| Bubbles, surf | foam and bubble fields | Minnaert rings with damping | wavelab bubble | rain bubbles built |
-| Wind | swaying geometry | aeolian tones f = St U / d, turbulent noise | Strouhal | tone built; noise spectra against the saved storm recordings next |
+| Impact | contact point, material, shape (`rooms/core/data/impact-scene.js`) | modes of the struck object weighted by their shapes at the landing point, strike strength from impact speed, delay and 1/r to the listener | modal core, measured materials and loss factors | built, live from the engine's geometry |
+| Bubbles, surf | foam and bubble fields | Minnaert rings with damping | wavelab bubble | rain bubbles built, live (`daw.rain_stream`, one-mode voices) |
+| Wind | swaying geometry | f^-beta turbulence with beta from a measured storm recording, aeolian tones f = St U / d under gusts | Strouhal, `measured/storm_spectra.json` | built, offline; held to the recordings' slope within 0.1 and the howl's 187.5 Hz peak within 3 percent |
 | Thunder | flash, channel geometry | shock to acoustic, channel tortuosity | wavelab Burgers | next |
 | Ocean | surface spectrum | breaking-wave bubble populations | wavelab | next |
 | Rooms and media | the scene's geometry | room modes, path delay, air absorption | room modes, ISO 9613-1 | built |
@@ -59,8 +59,36 @@ Latency from an engine event to sound, measured over 26 live impacts on the shar
 
 The 20 s rain render's PCM sha256 is `59fef510...`, with the scene-physics record hash in its receipt.
 
-## 6. Next
+## 6. The DSP that other packages may import
 
-1. Impacts from the rooms' own collision geometry, and rain drops as live events whose bubbles ring in the same bank.
-2. Wind, thunder and surf, each held to the measured slopes of the saved field recordings (1/f^1.8 to 1/f^2.5).
-3. A WebAssembly build of the BuildLang kernels for the browser rooms, if buildc's wasm target can be made to carry them, so a page can sound without the native host.
+Other superframe packages (a stems, restoration and mastering package among them) may import this package's
+DSP. These names and signatures are stable; a change to any of them is recorded here with its date.
+
+Python (`packages/daw/daw`): `materials.material`, `materials.air_speed`, `materials.water_speed`;
+`modes.Modes`, `modes.tune`, `modes.midi_hz`; the resonators in `shapes_1d`, `shapes_2d` and `outline`;
+`synth.render`, `synth.mode_sum`; `propagate.iso9613_alpha`, `propagate.static_path`, `propagate.moving_path`;
+`mixer.place`, `mixer.pan_gains`, `mixer.limit`, `mixer.mix`; `export.write`, `export.pcm_s16`, `export.receipt`;
+`effects.swell`, `effects.tremolo`, `effects.delay` and the analyser (`tremolo_rate` returns the rate and its
+peak ratio, `attack_time`, `delay_time`); `waveguide.string`, `waveguide.piano`; `harmony.dissonance`,
+`harmony.minima`; `tract.transfer`, `tract.formants_and_bandwidths`, `tract.trim_lip_cap`; `wind.coloured_noise`,
+`wind.wind`; `scene.render`, `scene.visual_params`.
+
+BuildLang exports (`bld/dsp.bld`, `bld/dsp32.bld`, `bld/live.bld`, all `extern "C"`): `daw_modal_coeffs`,
+`daw_modal_process`, `daw_path_linear`, `daw_bank_process`, `daw_bank_live`, `daw_voice_set`, and since
+2026-11-06 `daw_bank_f32`, `daw_voice_strike_at` and `daw_bubble_set`. Build the kernels as one file (as
+`daw/native.py` does): buildc prefixes the C names of exports inside a module.
+
+Changes:
+
+- 2026-11-06: added `tract.transfer(..., nasal=...)` (an optional keyword; old calls unchanged), the f32 bank
+  and the live voices above, `kl_tract`, `folds.oesophageal`, `wind` and `rain_stream`. The live event's second
+  field now carries a bar's landing point (`1 + 0.999 x`); a plain `1` means a strike at the end of the bar,
+  where every mode moves (the free-end shape is 2 there, so it sounds twice as loud as the old equal weighting). Nothing was removed or renamed.
+
+## 7. Next
+
+1. The other collision shapes of the rooms (plates, spheres) as live strike targets, through the outline and
+   plate modes.
+2. Thunder and surf, each held to the saved storm recordings' spectra.
+3. A WebAssembly build of the BuildLang kernels for the browser rooms, if buildc's wasm target can be made to
+   carry them, so a page can sound without the native host.

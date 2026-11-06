@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: cargo install --git https://github.com/HarperZ9/buildlang --rev 3698fcbdcebb9601dcc956807a44d1bb3942676f --locked buildlang --bin buildc
+      - run: cargo install --git https://github.com/HarperZ9/buildlang --rev b80a93ca11764f9f840eac904e9f59e748556d88 --locked buildlang --bin buildc
       - run: python -m pip install -r packages/requirements.txt
       - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/daw/tests/test_native.py
         env:

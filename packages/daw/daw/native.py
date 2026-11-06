@@ -19,7 +19,7 @@ import numpy as np
 
 from . import PKG
 
-SOURCE = PKG / "bld" / "dsp.bld"          # the kernels; bld/main.bld is the real-time host program
+SOURCES = [PKG / "bld" / "dsp.bld", PKG / "bld" / "dsp32.bld", PKG / "bld" / "live.bld"]   # the kernels; bld/main.bld is the host program
 _LIB = None
 _WHY = None
 
@@ -33,14 +33,18 @@ def _cc():
 
 
 def _compile(work):
-    shutil.copy(SOURCE, work / "main.bld")
+    # One file, not modules: buildc prefixes the C names of exports inside a module (dsp_daw_...).
+    text = (chr(10) * 2).join(src.read_text(encoding="utf-8") for src in SOURCES)
+    (work / "main.bld").write_text(text, encoding="utf-8")
     r = subprocess.run([_buildc(), "build", "--emit", "c", "--release", str(work)], capture_output=True, text=True)
     c_file = work / "target" / "release" / "main.c"
     if r.returncode != 0 or not c_file.exists():
         tail = (r.stdout + r.stderr).strip().splitlines()[-3:]
-        raise RuntimeError("buildc could not compile bld/main.bld: " + " | ".join(tail))
+        raise RuntimeError("buildc could not compile the kernels: " + " | ".join(tail))
     lib = work / ("engine.dll" if sys.platform == "win32" else "libengine.so")
-    flags = ["-O2", "-shared"] + ([] if sys.platform == "win32" else ["-fPIC"])
+    # buildc's own release flags: DETMATH (no contraction, no fast maths) and vectorisation with alias checks
+    flags = ["-O2", "-ftree-vectorize", "-fvect-cost-model=dynamic", "-ffp-contract=off", "-fno-fast-math",
+             "-shared"] + ([] if sys.platform == "win32" else ["-fPIC"])
     libs = ["-lm"] + (["-lws2_32"] if sys.platform == "win32" else [])
     r = subprocess.run([_cc(), *flags, "-o", str(lib), str(c_file), *libs], capture_output=True, text=True)
     if r.returncode != 0:
@@ -130,3 +134,25 @@ def bank_live(state, voices, modes, hits, frames):
     lib().daw_bank_live(_p(a1), _p(a2), _p(b), _p(y1), _p(y2), ctypes.c_size_t(voices), ctypes.c_size_t(modes),
                         _p(h), _p(out), ctypes.c_size_t(frames))
     return out
+
+
+def bank_f32(state32, voices, modes, hits, frames):
+    """daw_bank_f32 over float32 state (a1, a2, b, y1, y2, yb), each voices * modes long, changed in place."""
+    f32p = lambda a: a.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
+    out, h = np.zeros(frames), np.ascontiguousarray(hits, float)
+    lib().daw_bank_f32(*(f32p(a) for a in state32), ctypes.c_size_t(voices), ctypes.c_size_t(modes), _p(h), _p(out),
+                       ctypes.c_size_t(frames))
+    return out
+
+
+def voice_strike_at(state, v, modes, f1, eta, amp, x, fs):
+    """daw_voice_strike_at: voice v becomes a free bar struck at position x (0 to 1)."""
+    lib().daw_voice_strike_at(*(_p(a) for a in state), ctypes.c_size_t(v), ctypes.c_size_t(modes),
+                              ctypes.c_double(f1), ctypes.c_double(eta), ctypes.c_double(amp), ctypes.c_double(x),
+                              ctypes.c_double(fs))
+
+
+def bubble_set(state, v, f, delta, amp, fs):
+    """daw_bubble_set: one-mode voice v rings at f, decaying at pi f delta per second."""
+    lib().daw_bubble_set(*(_p(a) for a in state), ctypes.c_size_t(v), ctypes.c_double(f), ctypes.c_double(delta),
+                         ctypes.c_double(amp), ctypes.c_double(fs))

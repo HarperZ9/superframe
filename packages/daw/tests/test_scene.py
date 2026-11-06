@@ -64,3 +64,16 @@ def test_scene_render_is_seeded_and_on_the_flick_clock(tmp_path):
 def test_engine_rain_scene_reads_the_same_record():
     js = Path(__file__).resolve().parents[2] / "rooms" / "core" / "data" / "rain-record.js"
     assert js.read_bytes().replace(bytes([13, 10]), bytes([10])).decode("utf-8") == S.rooms_module()
+
+
+def test_live_rain_is_the_offline_rain():
+    from daw import rain_stream
+    scene = S
+    ev = rain_stream.bubble_events(scene.RAIN_SCENE, 10.0, np.random.default_rng(4))
+    src = scene.RAIN_SCENE["sources"][0]
+    w = scene.number_density(scene.D_GRID, 2.0) * scene.terminal_speed(scene.D_GRID)
+    frac = np.trapezoid(w * ((scene.D_GRID >= 0.8) & (scene.D_GRID <= 1.1)), scene.D_GRID) / np.trapezoid(w, scene.D_GRID)
+    expect = scene.drop_flux(2.0) * src["area_m2"] * 10.0 * frac
+    assert abs(len(ev) - expect) < 5 * np.sqrt(expect) + 0.01 * expect
+    f = np.array([e[1] for e in ev])
+    assert 13000 < np.median(f) < 17000

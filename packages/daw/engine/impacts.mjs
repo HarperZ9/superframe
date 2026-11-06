@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
 // SPDX-License-Identifier: FSL-1.1-MIT
 //
-// impacts.mjs: an engine scene that makes its own sound. Balls fall onto bars of measured materials, bounce
-// and settle; every impact is sent, as it happens, to the BuildLang host as one line on standard output:
-//   engine time (s), kind (1 = impact), the bar's fundamental (Hz), its loss factor, amplitude, and the moment
-//   the engine made the event on the shared monotonic clock (s).
+// impacts.mjs: an engine scene that makes its own sound. Balls fall through the rooms' impact geometry
+// (rooms/core/data/impact-scene.js) onto bars of measured materials, bounce and settle; every impact is sent,
+// when its sound reaches the listener, to the BuildLang host as one line on standard output:
+//   engine time (s), kind (1 + 0.999 x, x the landing point along the bar), the bar's fundamental (Hz), its loss
+//   factor, amplitude (with 1/r spreading), and the moment the engine made the event on the shared clock (s).
 // The bar's fundamental comes from the same physics as the workstation's modal core (a free Euler-Bernoulli
 // bar, beta_1 L = 4.730), with Young's modulus and density from packages/measured/data/mechanical.json and the
 // loss factor from data/decay_iowa.json; gravity is the CODATA standard value. Restitution is from memory
@@ -13,6 +14,7 @@
 //   node packages/daw/engine/impacts.mjs --dry [seconds]      the events as JSON, without waiting
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { IMPACT_SCENE } from '../../rooms/core/data/impact-scene.js';
 
 const here = p => fileURLToPath(new URL(p, import.meta.url));
 const rows = name => JSON.parse(readFileSync(here(`../../measured/data/${name}.json`), 'utf8')).rows;
@@ -28,27 +30,43 @@ export function barFundamental(material, length, thickness) {
   return (BETA1 ** 2 / (2 * Math.PI * length ** 2)) * Math.sqrt((E * thickness ** 2) / (12 * rho));
 }
 
-export const SCENE = [
-  { material: 'steel_mild', length: 0.20, thickness: 0.008, drop: 0.8 },
-  { material: 'aluminium', length: 0.25, thickness: 0.012, drop: 1.1 },
-  { material: 'steel_mild', length: 0.16, thickness: 0.006, drop: 0.5 },
-  { material: 'aluminium', length: 0.32, thickness: 0.012, drop: 1.4 },
-];
+export { IMPACT_SCENE as SCENE };
 
-// Every impact of every ball until it settles (bounce height under 2 mm), in engine time.
-export function impacts(scene = SCENE) {
-  const out = [];
-  scene.forEach((bar, i) => {
+const speedOfSound = (celsius) => MECH['air.c0'] * Math.sqrt((celsius + 273.15) / 273.15);
+
+// The bar under a ball, if any: the one whose top it meets first on the way down, with the landing position
+// as a fraction of the bar's length.
+function barUnder(ball, scene) {
+  let best = null;
+  scene.bars.forEach((bar, i) => {
+    const x = (ball.x - bar.x0) / bar.length;
+    const top = bar.y + bar.thickness / 2 + ball.radius;
+    if (x > 0 && x < 1 && Math.abs(ball.z - bar.z) < 0.03 && top < ball.y && (!best || top > best.top)) best = { i, x, top };
+  });
+  return best;
+}
+
+// Every impact of every ball until it settles (bounce height under 2 mm), in engine time, as heard at the
+// listener: emitted after the sound's flight time, with 1/r spreading (re 1 m).
+export function impacts(scene = IMPACT_SCENE) {
+  const out = [], c = speedOfSound(scene.temperatureC);
+  scene.balls.forEach((ball, j) => {
+    const hit = barUnder(ball, scene);
+    if (!hit) return;
+    const bar = scene.bars[hit.i];
     const f1 = barFundamental(bar.material, bar.length, bar.thickness), eta = DECAY[`${bar.material}.eta_measured`];
-    let t = Math.sqrt((2 * bar.drop) / G) + 0.15 * i, v = Math.sqrt(2 * G * bar.drop);
+    const point = [ball.x, bar.y + bar.thickness / 2, bar.z];
+    const r = Math.hypot(...point.map((p, k) => p - scene.listener[k]));
+    const drop = ball.y - hit.top;
+    let t = Math.sqrt((2 * drop) / G) + 0.15 * j, v = Math.sqrt(2 * G * drop);
     const v0 = v;
     while ((v * v) / (2 * G) > 0.002) {
-      out.push({ t, kind: 1, f1, eta, amp: 0.5 * (v / v0), bar: i });
+      out.push({ t, heard: t + r / c, kind: 1 + 0.999 * hit.x, f1, eta, amp: (0.5 * (v / v0)) / r, bar: hit.i, ball: j, x: hit.x, r });
       v *= RESTITUTION;
       t += (2 * v) / G;
     }
   });
-  return out.sort((a, b) => a.t - b.t);
+  return out.sort((a, b) => a.heard - b.heard);
 }
 
 const nowS = () => Number(process.hrtime.bigint()) / 1e9;   // QueryPerformanceCounter on Windows, as the host
@@ -59,7 +77,7 @@ async function stream(seconds) {
   let frame = 0, k = 0;
   while (frame / FPS < seconds) {
     const tFrame = frame / FPS;
-    while (k < events.length && events[k].t <= tFrame) {
+    while (k < events.length && events[k].heard <= tFrame) {
       const e = events[k++];
       process.stdout.write(`${e.t.toFixed(6)} ${e.kind} ${e.f1.toFixed(4)} ${e.eta} ${e.amp.toFixed(5)} ${nowS().toFixed(7)}\n`);
     }

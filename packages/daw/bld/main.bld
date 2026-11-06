@@ -8,6 +8,8 @@
 // Each load runs `periods` periods and prints one JSON line. The device is always fed silence (the binding's
 // silent flag), and the audio thread is pinned to the performance cores first.
 mod dsp;
+mod dsp32;
+mod live;
 mod audio;
 
 // Modes of voice v: a free-bar series (ratios (beta_k / beta_1)^2, with beta_k L near (k + 1/2) pi) on a
@@ -73,19 +75,49 @@ fn run_load(voices: usize, modes: usize, periods: i32) ~ Console + Foreign {
              voices, modes, bl_audio_periods() - p0, bl_audio_misses() - m0, bl_audio_render_ms_mean(), bl_audio_render_ms_max());
 }
 
-// One period of the live host: take every event waiting in the ring, give each the next voice of the pool
-// (free-bar modes from the engine's fundamental and loss factor), strike it at the start of this period,
-// and record how long the event waited. Returns -1 once the engine has closed its stream.
-fn live_period(st: &mut [f64], a1: *mut f64, a2: *mut f64, b: *mut f64, y1: *mut f64, y2: *mut f64, hits: *mut f64,
-               ev: *mut f64, voices: usize, modes: usize, fs: f64) -> i32 ~ Foreign {
-    let h = unsafe { slice::from_raw_parts_mut(hits, voices) };
+// A pool of live voices: `voices` voices of `modes` modes in flat arrays from the binding's allocator, plus
+// each voice's strike sample this period (negative: none).
+struct Pool {
+    a1: *mut f64,
+    a2: *mut f64,
+    b: *mut f64,
+    y1: *mut f64,
+    y2: *mut f64,
+    hits: *mut f64,
+    voices: usize,
+    modes: usize,
+}
+
+fn pool(voices: usize, modes: usize) -> Pool ~ Foreign {
+    let t = voices * modes;
+    Pool { a1: bl_audio_alloc(t), a2: bl_audio_alloc(t), b: bl_audio_alloc(t), y1: bl_audio_alloc(t),
+           y2: bl_audio_alloc(t), hits: bl_audio_alloc(voices), voices: voices, modes: modes }
+}
+
+// One period of the live host: take every event waiting in the ring, give each the next voice of its pool,
+// strike it at the start of this period, and record how long the event waited. Event fields: engine time,
+// kind (1 + 0.999 x for a bar struck at position x along it; 2 for a bubble), then for a bar its fundamental,
+// loss factor and amplitude, for a bubble its frequency, damping constant and amplitude, then the engine's
+// stamp on the shared clock. Returns -1 once the engine has closed its stream.
+fn live_period(st: &mut [f64], bars: &Pool, bubbles: &Pool, ev: *mut f64, fs: f64) -> i32 ~ Foreign {
     let e = unsafe { slice::from_raw_parts_mut(ev, 6) };
     let now = bl_audio_now();
     let mut state = bl_events_pop(ev);
     while state == 1 {
-        let v = (st[0] as usize) % voices;
-        daw_voice_set(a1, a2, b, y1, y2, v, modes, e[2], e[3], e[4], fs);
-        h[v] = 0.0;
+        if e[1] >= 2.0 {
+            let v = (st[3] as usize) % bubbles.voices;
+            st[3] = st[3] + 1.0;
+            daw_bubble_set(bubbles.a1, bubbles.a2, bubbles.b, bubbles.y1, bubbles.y2, v, e[2], e[3], e[4], fs);
+            let h = unsafe { slice::from_raw_parts_mut(bubbles.hits, bubbles.voices) };
+            h[v] = 0.0;
+        } else {
+            let v = (st[4] as usize) % bars.voices;
+            st[4] = st[4] + 1.0;
+            daw_voice_strike_at(bars.a1, bars.a2, bars.b, bars.y1, bars.y2, v, bars.modes, e[2], e[3], e[4],
+                                (e[1] - 1.0) / 0.999, fs);
+            let h = unsafe { slice::from_raw_parts_mut(bars.hits, bars.voices) };
+            h[v] = 0.0;
+        }
         let wait_ms = (now - e[5]) * 1000.0;
         st[0] = st[0] + 1.0;
         st[1] = st[1] + wait_ms;
@@ -97,45 +129,60 @@ fn live_period(st: &mut [f64], a1: *mut f64, a2: *mut f64, b: *mut f64, y1: *mut
     state
 }
 
-// The live host: events arrive on standard input from the engine (impacts.mjs), one line each:
-// engine time (s), kind, fundamental (Hz), loss factor, amplitude, and the engine's stamp on the shared clock.
+// Render one period of a pool, add it into `out`, and clear the pool's strikes.
+fn render_pool(p: &Pool, out: *mut f64, tmp: *mut f64, n: usize) {
+    daw_bank_live(p.a1 as *const f64, p.a2 as *const f64, p.b as *const f64, p.y1, p.y2, p.voices, p.modes,
+                  p.hits as *const f64, tmp, n);
+    let o = unsafe { slice::from_raw_parts_mut(out, n) };
+    let x = unsafe { slice::from_raw_parts_mut(tmp, n) };
+    let h = unsafe { slice::from_raw_parts_mut(p.hits, p.voices) };
+    let mut i: usize = 0;
+    while i < n {
+        o[i] = o[i] + x[i];
+        i = i + 1;
+    }
+    let mut v: usize = 0;
+    while v < p.voices {
+        h[v] = -1.0;
+        v = v + 1;
+    }
+}
+
+// The live host: events from the engine (engine/impacts.mjs, daw.rain_stream) on standard input.
 fn run_live(device: i32) ~ Console + Foreign {
-    let voices: usize = 64;
-    let modes: usize = 12;
-    let total = voices * modes;
-    let a1 = bl_audio_alloc(total);
-    let a2 = bl_audio_alloc(total);
-    let b = bl_audio_alloc(total);
-    let y1 = bl_audio_alloc(total);
-    let y2 = bl_audio_alloc(total);
-    let hits = bl_audio_alloc(voices);
+    let nb: usize = 64;
+    let mb: usize = 12;
+    let nu: usize = 128;
+    let bars = pool(nb, mb);
+    let bubbles = pool(nu, 1);
     let ev = bl_audio_alloc(6);
-    let stats = bl_audio_alloc(3);
-    let st = unsafe { slice::from_raw_parts_mut(stats, 3) };
-    let h = unsafe { slice::from_raw_parts_mut(hits, voices) };
+    let tmp = bl_audio_alloc(16384);
+    let st = unsafe { slice::from_raw_parts_mut(bl_audio_alloc(5), 5) };
     let fs: f64 = bl_audio_rate() as f64;
     let out = bl_audio_buffer();
+    render_pool(&bars, out, tmp, 0);
+    render_pool(&bubbles, out, tmp, 0);
     bl_events_start();
     let mut tail: i32 = 0;
     while tail < 100 {
         let n = bl_audio_wait() as usize;
-        let mut v: usize = 0;
-        while v < voices {
-            h[v] = -1.0;
-            v = v + 1;
-        }
-        if live_period(st, a1, a2, b, y1, y2, hits, ev, voices, modes, fs) < 0 {
+        if live_period(st, &bars, &bubbles, ev, fs) < 0 {
             tail = tail + 1;
         }
-        daw_bank_live(a1 as *const f64, a2 as *const f64, b as *const f64, y1, y2, voices, modes, hits as *const f64,
-                      out, n);
+        let o = unsafe { slice::from_raw_parts_mut(out, n) };
+        let mut i: usize = 0;
+        while i < n {
+            o[i] = 0.0;
+            i = i + 1;
+        }
+        render_pool(&bars, out, tmp, n);
+        render_pool(&bubbles, out, tmp, n);
         bl_audio_write(out, n);
     }
-    let count = st[0];
-    let mean = if count > 0.0 { st[1] / count } else { 0.0 };
-    println!("{{\"device\": {}, \"events\": {}, \"wait_ms_mean\": {}, \"wait_ms_max\": {}, \"periods\": {}, \"misses\": {}, \"render_ms_max\": {}, \"period\": {}, \"buffer_ms\": {}}}",
-             device, count, mean, st[2], bl_audio_periods(), bl_audio_misses(), bl_audio_render_ms_max(), bl_audio_period(),
-             bl_audio_buffer_ms());
+    let mean = if st[0] > 0.0 { st[1] / st[0] } else { 0.0 };
+    println!("{{\"device\": {}, \"events\": {}, \"bar_strikes\": {}, \"bubbles\": {}, \"wait_ms_mean\": {}, \"wait_ms_max\": {}, \"periods\": {}, \"misses\": {}, \"render_ms_max\": {}, \"render_ms_mean\": {}}}",
+             device, st[0], st[4], st[3], mean, st[2], bl_audio_periods(), bl_audio_misses(), bl_audio_render_ms_max(),
+             bl_audio_render_ms_mean());
 }
 
 fn main() ~ Console + Foreign + Environment {
