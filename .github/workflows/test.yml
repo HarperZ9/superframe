@@ -21,3 +21,19 @@ jobs:
       - run: npm run test:packages
       - run: npm run test:py
       - run: python packages/build_manifest.py --check
+  buildlang-engine:
+    # The DAW's real-time engine is BuildLang: build buildc at a pinned buildlang commit and hold the
+    # BuildLang kernels to the Python reference, with no skipping (DAW_REQUIRE_NATIVE).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: cargo install --git https://github.com/HarperZ9/buildlang --rev 3698fcbdcebb9601dcc956807a44d1bb3942676f --locked buildlang --bin buildc
+      - run: python -m pip install -r packages/requirements.txt
+      - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/daw/tests/test_native.py
+        env:
+          DAW_REQUIRE_NATIVE: '1'
+          BUILDC: buildc
+      - run: buildc build --release packages/daw/bld

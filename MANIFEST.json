@@ -5978,16 +5978,22 @@
    "sourceSha256": "166cbcd7c414701da16f16d7f4c260f6a9a62efd149bb410b4f6e94114a3c3f6"
   },
   {
+   "path": "packages/daw/ARCHITECTURE.md",
+   "source": "repo",
+   "bytes": 6856,
+   "sourceSha256": "ea5d608ac4e53072d75aa9bdeb661d999635dd4fcf7a327fb86f9886480a0849"
+  },
+  {
    "path": "packages/daw/DESIGN.md",
    "source": "repo",
-   "bytes": 22862,
-   "sourceSha256": "9fa735fda643ca802e3d2005437413239e331e3e8628970fc032dc8552926597"
+   "bytes": 26767,
+   "sourceSha256": "2f8f3cf3eb283d211b81643b2187ab97df2929a700b7be63925381022fcd768d"
   },
   {
    "path": "packages/daw/README.md",
    "source": "repo",
-   "bytes": 3539,
-   "sourceSha256": "c7b450b00da669ab481435b18042806a31a13f567f2040ee2c466df3dfa07963"
+   "bytes": 4661,
+   "sourceSha256": "26022deba2900ab434a782a5f1abea5d89964297e2beb8c4e8aa3064b78f11bf"
   },
   {
    "path": "packages/daw/bench/modal_bank.cpp",
@@ -6014,10 +6020,34 @@
    "sourceSha256": "e6d9b6769612b59c39c679cf94f35608e713813abc19443086828b34c12acb1f"
   },
   {
+   "path": "packages/daw/bld/audio.bld",
+   "source": "repo",
+   "bytes": 1125,
+   "sourceSha256": "6cad2045aaf67cc248635e8b39cc4df17cda1c258683f5db82df142a4d11b82c"
+  },
+  {
+   "path": "packages/daw/bld/bl_audio.c",
+   "source": "repo",
+   "bytes": 11104,
+   "sourceSha256": "f192909851b2a4d5bc85e502cb04cc47e04b0fa8116a8c36809500699fd6d054"
+  },
+  {
+   "path": "packages/daw/bld/bl_audio.h",
+   "source": "repo",
+   "bytes": 2872,
+   "sourceSha256": "107fa493d01d26f5893e3b47339d7b94e2681b8b6ad389861c0fd2ca1918d63f"
+  },
+  {
+   "path": "packages/daw/bld/dsp.bld",
+   "source": "repo",
+   "bytes": 6214,
+   "sourceSha256": "cd2f1bcf1764bb22f98e74a567180e743fdbdfbafb947a2ae76a300a9dee2a86"
+  },
+  {
    "path": "packages/daw/bld/main.bld",
    "source": "repo",
-   "bytes": 4575,
-   "sourceSha256": "8e4840fa8806be5e57a18c67742573a40c3def417cc3480a82f0566f0513ee0b"
+   "bytes": 4071,
+   "sourceSha256": "99c5ce7b277184f3ae192bb8473cb68c39cb2c6fc89b677b757700dc9c7c2050"
   },
   {
    "path": "packages/daw/daw/__init__.py",
@@ -6038,10 +6068,22 @@
    "sourceSha256": "09c366c5a8d415772a3d779eb9b9ae804dedfa9fdc55f342e600bdc1e792ebcb"
   },
   {
+   "path": "packages/daw/daw/effects.py",
+   "source": "repo",
+   "bytes": 3048,
+   "sourceSha256": "800df8a133ecf04fd80ba61a37ae9b2eda6ccfd60eba4b85986d1e7f6563f2bf"
+  },
+  {
    "path": "packages/daw/daw/export.py",
    "source": "repo",
    "bytes": 2889,
    "sourceSha256": "7e5b6e3915fa78de8d2edfc0f3fdbd4dab913c4a67437620e5f2d82b4d6095ed"
+  },
+  {
+   "path": "packages/daw/daw/folds.py",
+   "source": "repo",
+   "bytes": 3568,
+   "sourceSha256": "651f5c7801cce96cd173a177319eeb164262c4f2bc8827d92ee132d407381d5c"
   },
   {
    "path": "packages/daw/daw/harmony.py",
@@ -6052,8 +6094,8 @@
   {
    "path": "packages/daw/daw/materials.py",
    "source": "repo",
-   "bytes": 3079,
-   "sourceSha256": "a6b31a34ea3d5625ba1010dbd657a529e462679b12b98b873593661eda724dcc"
+   "bytes": 3430,
+   "sourceSha256": "2e55552f4651235aa41363b591fee16645dc30c09c88441a9609d1bc13dd321e"
   },
   {
    "path": "packages/daw/daw/mixer.py",
@@ -6070,8 +6112,8 @@
   {
    "path": "packages/daw/daw/native.py",
    "source": "repo",
-   "bytes": 3964,
-   "sourceSha256": "3a00f39e75b6962e5f909e7d7cb5d865ca010666481939b65b61e622d7fc767f"
+   "bytes": 4682,
+   "sourceSha256": "63b3627373c2f4b6a8db2a1b0d09b2009490b88077de17de42eeb6c28c669473"
   },
   {
    "path": "packages/daw/daw/nature.py",
@@ -6098,6 +6140,12 @@
    "sourceSha256": "25641656d5c4891e4a3ddfa3dc1aec587b6c1d245c370c6e4ef6cd2a41849d15"
   },
   {
+   "path": "packages/daw/daw/scene.py",
+   "source": "repo",
+   "bytes": 6870,
+   "sourceSha256": "676f9ff418db5ef9f45089dbd7d2a85a49050eb408a966783e0304480b10ca96"
+  },
+  {
    "path": "packages/daw/daw/shapes_1d.py",
    "source": "repo",
    "bytes": 5546,
@@ -6116,10 +6164,22 @@
    "sourceSha256": "d5f86b29354a43e676d3d2db7005150b100427137e7708be9841f1e7d5589353"
   },
   {
+   "path": "packages/daw/daw/sustain.py",
+   "source": "repo",
+   "bytes": 3593,
+   "sourceSha256": "6fc7eacb2fdbed9c090fbd46553d38d9829e92d3fdf5cb5b5956b63cae86fbd7"
+  },
+  {
    "path": "packages/daw/daw/synth.py",
    "source": "repo",
    "bytes": 3335,
    "sourceSha256": "67857227e6c8c075e5c50c2f316144b641024e5e288ff95cb9b6715e833669fc"
+  },
+  {
+   "path": "packages/daw/daw/tract.py",
+   "source": "repo",
+   "bytes": 2575,
+   "sourceSha256": "32a7e0f57c4f6563f3f76d34d8c312c3fb0297f8a5376aeb002b1e44026efbc8"
   },
   {
    "path": "packages/daw/daw/voice.py",
@@ -6128,10 +6188,10 @@
    "sourceSha256": "4ed9cd5b21fb797c19ae261457916807168b11b602a491eb030f90694bcdc166"
   },
   {
-   "path": "packages/daw/host/rt_host.c",
+   "path": "packages/daw/daw/waveguide.py",
    "source": "repo",
-   "bytes": 6182,
-   "sourceSha256": "379f3a19052d5aabbed17885a8923d7349e118ef1072183004a12e1b0a60d0c3"
+   "bytes": 3088,
+   "sourceSha256": "be47a093546da7d46756932203a077518133c1d29bff81d639a354785fcec72f"
   },
   {
    "path": "packages/daw/page/plate.py",
@@ -6142,8 +6202,8 @@
   {
    "path": "packages/daw/tests/test_daw.py",
    "source": "repo",
-   "bytes": 6003,
-   "sourceSha256": "9d8f592dcd0abab4bfa3169a84f72bf4cdf40021301d36347c6fbc09751b7f56"
+   "bytes": 7358,
+   "sourceSha256": "655f14d24ff37a651ebd19473d5a31167171bcc83d3ed26e1c6efbdf682f244f"
   },
   {
    "path": "packages/daw/tests/test_harmony.py",
@@ -6160,8 +6220,14 @@
   {
    "path": "packages/daw/tests/test_native.py",
    "source": "repo",
-   "bytes": 2966,
-   "sourceSha256": "02484e4aa1f2cbbf8dd4c853a593207715d145f07185c2e3ad365c858a6a7669"
+   "bytes": 3558,
+   "sourceSha256": "9406a99280316f8dad426e136e5151f2821ab13bf9b6c680e25cbef983c8643b"
+  },
+  {
+   "path": "packages/daw/tests/test_scene.py",
+   "source": "repo",
+   "bytes": 2964,
+   "sourceSha256": "f6f012915471daa33bbd5ff347823f92d636a44850fe2ac939631b9ea7cad674"
   },
   {
    "path": "packages/daw/tests/test_space.py",
@@ -6170,10 +6236,22 @@
    "sourceSha256": "92be0e8c8156008496bee189f1f1d96cd529b98fb23f09a96a04975656b39c73"
   },
   {
+   "path": "packages/daw/tests/test_sustain_voice.py",
+   "source": "repo",
+   "bytes": 4217,
+   "sourceSha256": "71f10dae02c0c8755a67cb3533db33a4c746813d0df468ef3c9d41610030f19b"
+  },
+  {
    "path": "packages/daw/tests/test_voice_nature.py",
    "source": "repo",
    "bytes": 4288,
    "sourceSha256": "fd160b5db3310caa424309746d991ba50883984e130ded69dd0ab7e6ed51f6ab"
+  },
+  {
+   "path": "packages/daw/tests/test_waveguide.py",
+   "source": "repo",
+   "bytes": 3217,
+   "sourceSha256": "a56c5993332bb497f8c533ac4317a6d90f7bc7e731c6de0a735a60cbe0cf1cbf"
   },
   {
    "path": "packages/decompose/LICENSE",
@@ -8348,10 +8426,22 @@
    "sourceSha256": "4677c4a5a45235cb8e42f0c6353823a7d072a3177230c34f35c7e51c73764874"
   },
   {
+   "path": "packages/measured/build/b_decay.py",
+   "source": "repo",
+   "bytes": 4477,
+   "sourceSha256": "1827ad13790145124ee351783bd02fc2bbd6145b2bb1802511161430b2c4118d"
+  },
+  {
    "path": "packages/measured/build/b_desai.py",
    "source": "repo",
    "bytes": 2390,
    "sourceSha256": "312dbf27b3acade87a2213e3ff9cd7faa0bf9846049b1e068c0f9f200efd4b8d"
+  },
+  {
+   "path": "packages/measured/build/b_dresden.py",
+   "source": "repo",
+   "bytes": 2440,
+   "sourceSha256": "99d4c5089dc48d9fc266f8ace2806a0717ff6177864360ab4e79913f2473afd0"
   },
   {
    "path": "packages/measured/build/b_facts.py",
@@ -8438,6 +8528,12 @@
    "sourceSha256": "4485f1db76b013f80178858cb8437178c4f655ba66cc0ed335859d1fbf9ed3e3"
   },
   {
+   "path": "packages/measured/data/decay_iowa.json",
+   "source": "repo",
+   "bytes": 7191,
+   "sourceSha256": "a05acf609575af0b706968031707143a05f61b5e799fb5fb7d7bb113d1b363bc"
+  },
+  {
    "path": "packages/measured/data/facts.json",
    "source": "repo",
    "bytes": 5108,
@@ -8504,6 +8600,12 @@
    "sourceSha256": "132b3d23721947594b9204ed05e7a5a3b05527781329b047571bda71964b4d59"
   },
   {
+   "path": "packages/measured/data/vocal_tracts_dvtd.json",
+   "source": "repo",
+   "bytes": 20173,
+   "sourceSha256": "7991e8eacc4b6c19b3f36193dd6b3e4d5f7d690903915ba61c25e522d7572d6f"
+  },
+  {
    "path": "packages/measured/data/wave_media.json",
    "source": "repo",
    "bytes": 89048,
@@ -8548,8 +8650,8 @@
   {
    "path": "packages/measured/measured/prov.py",
    "source": "repo",
-   "bytes": 6204,
-   "sourceSha256": "01a12516013e98872fd19855760ea9d2203575a2d41d20e594270202db61e52c"
+   "bytes": 6714,
+   "sourceSha256": "c8fb7001f2f10e403bb2bc0dae683aef5a9a8ae98ff690a3acc8994b29b59005"
   },
   {
    "path": "packages/measured/measured/rayleigh.py",
