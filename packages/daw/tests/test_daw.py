@@ -20,11 +20,17 @@ from daw.synth import render  # noqa: E402
 
 FS = 48000
 SUPERSTACK_V020 = "d5f86b29354a43e676d3d2db7005150b100427137e7708be9841f1e7d5589353"
+BL_AUDIO_SHA256 = "f192909851b2a4d5bc85e502cb04cc47e04b0fa8116a8c36809500699fd6d054"   # buildlang runtime/audio
 
 
 def test_vendored_superstack_is_the_pinned_release():
     data = (Path(__file__).resolve().parents[1] / "daw" / "superstack.py").read_bytes().replace(b"\r\n", b"\n")
     assert hashlib.sha256(data).hexdigest() == SUPERSTACK_V020
+
+
+def test_vendored_audio_binding_is_buildlangs():
+    data = (Path(__file__).resolve().parents[1] / "bld" / "bl_audio.c").read_bytes().replace(bytes([13, 10]), bytes([10]))
+    assert hashlib.sha256(data).hexdigest() == BL_AUDIO_SHA256
 
 
 def test_strike_spectrum_peaks_at_the_modes_and_decays_at_t60():
@@ -114,7 +120,8 @@ def test_demo_is_deterministic(tmp_path):
 
 def test_materials_carry_provenance_and_agree_with_wikidata():
     al = M.material("aluminium")
-    assert al.status["E"] == "measured" and al.status["rho"] == "derived" and al.status["eta"] == "from_memory"
+    assert al.status["E"] == "measured" and al.status["rho"] == "derived" and al.status["eta"] == "measured"
+    assert M.material("brass").status["eta"] == "from_memory"            # no recording of a brass bar yet
     x = M.crosscheck()
     for key, mine in (("steel_mild.density", M.material("steel_mild").rho), ("aluminium.density", al.rho),
                       ("brass.density", M.material("brass").rho), ("copper.density", M.material("copper").rho)):
@@ -122,3 +129,18 @@ def test_materials_carry_provenance_and_agree_with_wikidata():
     assert abs(M.material("steel_mild").E / x["steel_mild.youngs_modulus"] - 1) < 0.02
     assert abs(M.material("brass").nu / x["brass.poisson_ratio"] - 1) < 0.06
     assert abs(M.material("brass").E / x["brass.youngs_modulus"] - 1) > 0.1   # a real 13 % disagreement, kept
+
+
+def test_measured_loss_factors_and_the_decay_fit():
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "measured" / "build"))
+    import b_decay
+    t = M.table()
+    al, st = t["aluminium.eta_measured"], t["steel_mild.eta_measured"]
+    assert al["iqr"][0] <= al["value"] <= al["iqr"][1] and al["n"] >= 10 and st["n"] >= 10
+    assert not al["iqr"][0] <= 1e-4 <= al["iqr"][1]                    # the old from-memory value is outside
+    fs, f0, a0 = 44100, 523.0, 0.8                                       # planted: one partial, alpha 0.8 /s
+    tt = np.arange(int(8 * fs)) / fs
+    x = np.exp(-a0 * tt) * np.sin(2 * np.pi * f0 * tt) + 1e-6 * np.random.default_rng(5).standard_normal(len(tt))
+    rows = b_decay.note_rows(x, fs, "planted", 0)
+    assert len(rows) == 1 and abs(rows[0]["alpha"] / a0 - 1) < 0.02
+    assert abs(rows[0]["eta"] - a0 / (np.pi * rows[0]["f_hz"])) < 1e-6

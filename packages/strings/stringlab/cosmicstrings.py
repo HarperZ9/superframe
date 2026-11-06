@@ -33,14 +33,19 @@ class Cosmology:
     """Expansion history on a grid of N = ln a from N_ini to 0."""
 
     def __init__(self, h=0.674, omega_m=0.3153, omega_r=9.2188e-5, gstar=None, z_max=1e20, n_grid=6000,
-                 omega_l=None):
+                 omega_l=None, g_model=None):
+        """g_model "lvk2017": the piecewise G(z) of Abbott et al. 2018 (O1/O2 strings), Appendix A: 1 below z = 1e9,
+        0.83 up to 2e12, 0.39 above; otherwise G(z) from the g*(T) table (or 1 without a table)."""
         self.h = h
         self.H0 = h * 100e3 / MPC                         # 1/s
         self.om, self.orad = omega_m, omega_r
         self.ol = 1.0 - omega_m - omega_r if omega_l is None else omega_l
         self.N = np.linspace(-math.log1p(z_max), 0.0, n_grid)
         z = np.expm1(-self.N)
-        self.gfac = self._gfactor(z, gstar)
+        if g_model == "lvk2017":
+            self.gfac = np.where(z < 1e9, 1.0, np.where(z < 2e12, 0.83, 0.39))
+        else:
+            self.gfac = self._gfactor(z, gstar)
         self.H = self.H0 * np.sqrt(self.orad * self.gfac * (1 + z) ** 4 + self.om * (1 + z) ** 3 + self.ol)
         # t(N): start with the radiation value 1/(2H), then integrate dt = dN / H (trapezoid)
         dt = 0.5 * (1 / self.H[1:] + 1 / self.H[:-1]) * np.diff(self.N)

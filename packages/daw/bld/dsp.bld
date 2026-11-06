@@ -1,0 +1,142 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The real-time core of the physical-model workstation, in BuildLang. The host owns the device, the
+// buffers and the clock; it calls these exports once per period. Every buffer is a pointer and a
+// length, read as a bounds-checked slice. Units are SI: hertz, seconds, metres, metres per second.
+// The Python package beside this folder is the reference these exports are tested against.
+
+// Two-pole coefficients for modes of frequency f and decay rate alpha (1/s) at sample rate fs:
+// r = exp(-alpha / fs), a1 = 2 r cos(2 pi f / fs), a2 = r^2. The impulse response of
+// y[n] = a1 y[n-1] - a2 y[n-2] + b x[n] is b r^n sin((n + 1) w) / sin(w), a decaying sinusoid.
+extern "C" fn daw_modal_coeffs(fp: *const f64, ap: *const f64, n: usize, fs: f64, a1p: *mut f64, a2p: *mut f64) {
+    let f = unsafe { slice::from_raw_parts(fp, n) };
+    let alpha = unsafe { slice::from_raw_parts(ap, n) };
+    let a1 = unsafe { slice::from_raw_parts_mut(a1p, n) };
+    let a2 = unsafe { slice::from_raw_parts_mut(a2p, n) };
+    let two_pi: f64 = 6.283185307179586;
+    let mut k: usize = 0;
+    while k < n {
+        let r: f64 = exp(0.0 - alpha[k] / fs);
+        a1[k] = 2.0 * r * cos(two_pi * f[k] / fs);
+        a2[k] = r * r;
+        k = k + 1;
+    }
+}
+
+// One period of a modal bank: every mode driven by the same input force, summed at the pickup.
+// State y1, y2 persists between periods; the gains b carry the excitation and pickup weights.
+extern "C" fn daw_modal_process(a1p: *const f64, a2p: *const f64, bp: *const f64, y1p: *mut f64, y2p: *mut f64,
+                                modes: usize, input: *const f64, out: *mut f64, frames: usize) {
+    let a1 = unsafe { slice::from_raw_parts(a1p, modes) };
+    let a2 = unsafe { slice::from_raw_parts(a2p, modes) };
+    let b = unsafe { slice::from_raw_parts(bp, modes) };
+    let y1 = unsafe { slice::from_raw_parts_mut(y1p, modes) };
+    let y2 = unsafe { slice::from_raw_parts_mut(y2p, modes) };
+    let x = unsafe { slice::from_raw_parts(input, frames) };
+    let o = unsafe { slice::from_raw_parts_mut(out, frames) };
+    let mut n: usize = 0;
+    while n < frames {
+        let mut acc: f64 = 0.0;
+        let mut k: usize = 0;
+        while k < modes {
+            let y = a1[k] * y1[k] - a2[k] * y2[k] + b[k] * x[n];
+            y2[k] = y1[k];
+            y1[k] = y;
+            acc = acc + y;
+            k = k + 1;
+        }
+        o[n] = acc;
+        n = n + 1;
+    }
+}
+
+fn dist(px: f64, py: f64, pz: f64, qx: f64, qy: f64, qz: f64) -> f64 {
+    sqrt((px - qx) * (px - qx) + (py - qy) * (py - qy) + (pz - qz) * (pz - qz))
+}
+
+// Signal sample at fractional index u by linear interpolation, with silence before and after the
+// buffer, so an impulse keeps its sum whatever its fractional position.
+fn sample_at(x: &[f64], u: f64) -> f64 {
+    if u <= -1.0 {
+        return 0.0;
+    }
+    if u < 0.0 {
+        return x[0] * (1.0 + u);
+    }
+    let i = floor(u) as usize;
+    if i >= x.len() {
+        return 0.0;
+    }
+    let frac = u - (i as f64);
+    if i + 1 >= x.len() {
+        return x[i] * (1.0 - frac);
+    }
+    x[i] * (1.0 - frac) + x[i + 1] * frac
+}
+
+// A source moving in a straight line, s(tau) = s0 + v tau, heard at a still listener L in a medium
+// of sound speed c. For each output sample at time t the emission time solves t = tau + |L - s(tau)| / c
+// (fixed-point iteration, eight passes); the output is the emitted signal at tau over the distance
+// then, so delay, 1/r spreading and the Doppler shift all come from the geometry.
+extern "C" fn daw_path_linear(xp: *const f64, nx: usize, s0: *const f64, v: *const f64, l: *const f64,
+                              c: f64, fs: f64, yp: *mut f64, ny: usize) {
+    let x = unsafe { slice::from_raw_parts(xp, nx) };
+    let s = unsafe { slice::from_raw_parts(s0, 3) };
+    let vel = unsafe { slice::from_raw_parts(v, 3) };
+    let lis = unsafe { slice::from_raw_parts(l, 3) };
+    let y = unsafe { slice::from_raw_parts_mut(yp, ny) };
+    let mut n: usize = 0;
+    while n < ny {
+        let t = (n as f64) / fs;
+        let mut tau = t;
+        let mut r: f64 = 1.0;
+        let mut it: i32 = 0;
+        while it < 9 {
+            r = dist(s[0] + vel[0] * tau, s[1] + vel[1] * tau, s[2] + vel[2] * tau, lis[0], lis[1], lis[2]);
+            if it < 8 {
+                tau = t - r / c;
+            }
+            it = it + 1;
+        }
+        let rr = if r < 0.001 { 0.001 } else { r };
+        y[n] = sample_at(x, tau * fs) / rr;
+        n = n + 1;
+    }
+}
+
+// A bank of `voices` modal voices of `modes` modes each, stored voice after voice in flat arrays, rendered
+// into one output. Voice v is struck (a unit impulse) whenever (sample + v * spacing) is a multiple of
+// `retrigger`, so the load stays the same from period to period. This is the real-time inner loop.
+extern "C" fn daw_bank_process(a1p: *const f64, a2p: *const f64, bp: *const f64, y1p: *mut f64, y2p: *mut f64,
+                               voices: usize, modes: usize, start: i64, retrigger: i64, spacing: i64,
+                               out: *mut f64, frames: usize) {
+    let total = voices * modes;
+    let a1 = unsafe { slice::from_raw_parts(a1p, total) };
+    let a2 = unsafe { slice::from_raw_parts(a2p, total) };
+    let b = unsafe { slice::from_raw_parts(bp, total) };
+    let y1 = unsafe { slice::from_raw_parts_mut(y1p, total) };
+    let y2 = unsafe { slice::from_raw_parts_mut(y2p, total) };
+    let o = unsafe { slice::from_raw_parts_mut(out, frames) };
+    let mut n: usize = 0;
+    while n < frames {
+        let mut acc: f64 = 0.0;
+        let mut v: usize = 0;
+        while v < voices {
+            let t = start + (n as i64) + (v as i64) * spacing;
+            let x: f64 = if t % retrigger == 0 { 1.0 } else { 0.0 };
+            let base = v * modes;
+            let mut k: usize = base;
+            while k < base + modes {
+                let y = a1[k] * y1[k] - a2[k] * y2[k] + b[k] * x;
+                y2[k] = y1[k];
+                y1[k] = y;
+                acc = acc + y;
+                k = k + 1;
+            }
+            v = v + 1;
+        }
+        o[n] = acc;
+        n = n + 1;
+    }
+}

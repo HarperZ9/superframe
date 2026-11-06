@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 # SPDX-License-Identifier: FSL-1.1-MIT
-"""Build the BuildLang real-time core (bld/main.bld) and call it from Python, for tests and offline use.
+"""Build the BuildLang real-time kernels (bld/dsp.bld) and call them from Python, for tests and offline use.
 
 buildc compiles the BuildLang source to C; the system C compiler makes a shared library; ctypes calls the
 exports. The compiler is the BUILDC environment variable, else `buildc` on PATH. unavailable() returns the
@@ -19,7 +19,7 @@ import numpy as np
 
 from . import PKG
 
-SOURCE = PKG / "bld" / "main.bld"
+SOURCE = PKG / "bld" / "dsp.bld"          # the kernels; bld/main.bld is the real-time host program
 _LIB = None
 _WHY = None
 
@@ -105,3 +105,13 @@ def path_linear(x, s0, v, lis, c, fs, n_out):
     lib().daw_path_linear(_p(xs), ctypes.c_size_t(len(xs)), _p(s0), _p(v), _p(lis), ctypes.c_double(c),
                           ctypes.c_double(fs), _p(y), ctypes.c_size_t(n_out))
     return y
+
+
+def bank_process(a1, a2, b, voices, modes, start, retrigger, spacing, frames):
+    """daw_bank_process over fresh state: `voices` voices of `modes` modes in flat arrays, one output."""
+    arrs = [np.ascontiguousarray(v, float) for v in (a1, a2, b)]
+    y1, y2, out = np.zeros(voices * modes), np.zeros(voices * modes), np.zeros(frames)
+    lib().daw_bank_process(_p(arrs[0]), _p(arrs[1]), _p(arrs[2]), _p(y1), _p(y2), ctypes.c_size_t(voices),
+                           ctypes.c_size_t(modes), ctypes.c_int64(start), ctypes.c_int64(retrigger),
+                           ctypes.c_int64(spacing), _p(out), ctypes.c_size_t(frames))
+    return out

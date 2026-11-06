@@ -1,0 +1,934 @@
+{
+ "provenance": {
+  "method": "first four peaks of the measured and FEM-calculated volume-velocity transfer functions",
+  "citation": "Birkholz et al. 2020, Printable 3D vocal tract shapes from MRI data and their acoustic and aerodynamic properties, Sci. Data 7, 255; Dresden Vocal Tract Dataset, figshare 10.6084/m9.figshare.c.4869732",
+  "licence": "CC0 (figshare dataset); article CC BY 4.0",
+  "files": {
+   "dvtd.zip": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0"
+  },
+  "conditions": "rigid 3D-printed models, air at 22 C"
+ },
+ "rows": [
+  {
+   "id": "dvtd.s1-01-bahn-tense-a",
+   "speaker": 1,
+   "sound": "tense-a",
+   "measured_hz": [
+    517.2,
+    1114.2,
+    2314.8,
+    3263.6
+   ],
+   "calculated_hz": [
+    514.3,
+    1104.5,
+    2304.2,
+    3256.9
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-01-bahn-tense-a/s1-01-bahn-tense-a-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-02-beet-tense-e",
+   "speaker": 1,
+   "sound": "tense-e",
+   "measured_hz": [
+    252.8,
+    1792.8,
+    2360.0,
+    2970.4
+   ],
+   "calculated_hz": [
+    255.7,
+    1793.8,
+    2312.9,
+    2947.4
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-02-beet-tense-e/s1-02-beet-tense-e-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-03-tiere-tense-i",
+   "speaker": 1,
+   "sound": "tense-i",
+   "measured_hz": [
+    187.5,
+    1803.4,
+    2615.7,
+    3183.8
+   ],
+   "calculated_hz": [
+    192.3,
+    1793.8,
+    3160.8,
+    4175.9
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-03-tiere-tense-i/s1-03-tiere-tense-i-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-04-boote-tense-o",
+   "speaker": 1,
+   "sound": "tense-o",
+   "measured_hz": [
+    263.4,
+    683.5,
+    2106.2,
+    2746.4
+   ],
+   "calculated_hz": [
+    260.5,
+    676.8,
+    2101.4,
+    2740.7
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-04-boote-tense-o/s1-04-boote-tense-o-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-05-bude-tense-u",
+   "speaker": 1,
+   "sound": "tense-u",
+   "measured_hz": [
+    194.2,
+    654.6,
+    1927.4,
+    2701.3
+   ],
+   "calculated_hz": [
+    197.1,
+    660.4,
+    1916.8,
+    2696.5
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-05-bude-tense-u/s1-05-bude-tense-u-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-06-laehmung-tense-ae",
+   "speaker": 1,
+   "sound": "tense-ae",
+   "measured_hz": [
+    436.4,
+    1595.8,
+    2239.8,
+    2932.9
+   ],
+   "calculated_hz": [
+    435.5,
+    1587.1,
+    2213.9,
+    3189.6
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-06-laehmung-tense-ae/s1-06-laehmung-tense-ae-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-07-hoehle-tense-oe",
+   "speaker": 1,
+   "sound": "tense-oe",
+   "measured_hz": [
+    235.5,
+    1282.4,
+    1809.2,
+    2780.1
+   ],
+   "calculated_hz": [
+    236.5,
+    1274.7,
+    1800.5,
+    2766.6
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-07-hoehle-tense-oe/s1-07-hoehle-tense-oe-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-08-guete-tense-y",
+   "speaker": 1,
+   "sound": "tense-y",
+   "measured_hz": [
+    153.8,
+    1323.7,
+    1773.6,
+    2760.9
+   ],
+   "calculated_hz": [
+    158.6,
+    1326.6,
+    1765.9,
+    2747.4
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-08-guete-tense-y/s1-08-guete-tense-y-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-09-los-l",
+   "speaker": 1,
+   "sound": "l",
+   "measured_hz": [
+    239.4,
+    1605.4,
+    2273.5,
+    3119.4
+   ],
+   "calculated_hz": [
+    244.2,
+    1598.6,
+    2266.8,
+    3117.5
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-09-los-l/s1-09-los-l-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-10-fahrt-f",
+   "speaker": 1,
+   "sound": "f",
+   "measured_hz": [
+    300.9,
+    1357.4,
+    2031.2,
+    2975.2
+   ],
+   "calculated_hz": [
+    305.7,
+    1359.3,
+    2034.1,
+    2981.0
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-10-fahrt-f/s1-10-fahrt-f-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-11-bass-s",
+   "speaker": 1,
+   "sound": "s",
+   "measured_hz": [
+    189.4,
+    1324.7,
+    2375.4,
+    3330.9
+   ],
+   "calculated_hz": [
+    190.3,
+    1321.8,
+    2370.6,
+    3326.1
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-11-bass-s/s1-11-bass-s-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-12-schoen-sh",
+   "speaker": 1,
+   "sound": "sh",
+   "measured_hz": [
+    159.6,
+    1822.6,
+    2726.3,
+    3520.3
+   ],
+   "calculated_hz": [
+    150.0,
+    1798.6,
+    2674.3,
+    3461.7
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-12-schoen-sh/s1-12-schoen-sh-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-13-ich-c",
+   "speaker": 1,
+   "sound": "c",
+   "measured_hz": [
+    151.9,
+    1692.9,
+    2635.9,
+    3462.6
+   ],
+   "calculated_hz": [
+    157.7,
+    1676.5,
+    2599.4,
+    3367.4
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-13-ich-c/s1-13-ich-c-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-14-ach-x",
+   "speaker": 1,
+   "sound": "x",
+   "measured_hz": [
+    545.1,
+    1113.2,
+    2385.0,
+    3339.6
+   ],
+   "calculated_hz": [
+    531.6,
+    1081.5,
+    2379.2,
+    3330.9
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-14-ach-x/s1-14-ach-x-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-15-bass-lax-a",
+   "speaker": 1,
+   "sound": "lax-a",
+   "measured_hz": [
+    522.9,
+    973.8,
+    2382.1,
+    3012.7
+   ],
+   "calculated_hz": [
+    525.8,
+    970.9,
+    2374.4,
+    2973.3
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-15-bass-lax-a/s1-15-bass-lax-a-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-16-bett-lax-ae",
+   "speaker": 1,
+   "sound": "lax-ae",
+   "measured_hz": [
+    432.6,
+    1537.1,
+    2246.6,
+    2951.2
+   ],
+   "calculated_hz": [
+    433.5,
+    1525.6,
+    2233.1,
+    2927.2
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-16-bett-lax-ae/s1-16-bett-lax-ae-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-17-mit-lax-i",
+   "speaker": 1,
+   "sound": "lax-i",
+   "measured_hz": [
+    296.1,
+    1461.2,
+    2055.3,
+    2952.2
+   ],
+   "calculated_hz": [
+    297.0,
+    1455.4,
+    2050.5,
+    2950.2
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-17-mit-lax-i/s1-17-mit-lax-i-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-18-offen-lax-o",
+   "speaker": 1,
+   "sound": "lax-o",
+   "measured_hz": [
+    360.5,
+    773.8,
+    2331.2,
+    3028.1
+   ],
+   "calculated_hz": [
+    360.5,
+    769.0,
+    2340.8,
+    3018.5
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-18-offen-lax-o/s1-18-offen-lax-o-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-19-butter-lax-u",
+   "speaker": 1,
+   "sound": "lax-u",
+   "measured_hz": [
+    251.9,
+    661.4,
+    2140.8,
+    2826.2
+   ],
+   "calculated_hz": [
+    252.8,
+    662.3,
+    2132.2,
+    2827.2
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-19-butter-lax-u/s1-19-butter-lax-u-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-20-muetter-lax-y",
+   "speaker": 1,
+   "sound": "lax-y",
+   "measured_hz": [
+    302.8,
+    1168.0,
+    2052.4,
+    2859.9
+   ],
+   "calculated_hz": [
+    305.7,
+    1167.0,
+    2050.5,
+    2858.0
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-20-muetter-lax-y/s1-20-muetter-lax-y-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-21-goetter-lax-oe",
+   "speaker": 1,
+   "sound": "lax-oe",
+   "measured_hz": [
+    393.2,
+    1215.1,
+    2073.5,
+    3181.9
+   ],
+   "calculated_hz": [
+    394.1,
+    1208.4,
+    2063.0,
+    3153.1
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-21-goetter-lax-oe/s1-21-goetter-lax-oe-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s1-22-ehe-schwa",
+   "speaker": 1,
+   "sound": "schwa",
+   "measured_hz": [
+    337.4,
+    1570.8,
+    2259.1,
+    3105.0
+   ],
+   "calculated_hz": [
+    328.8,
+    1561.2,
+    2223.5,
+    3064.6
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-1/s1-22-ehe-schwa/s1-22-ehe-schwa-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-01-bahn-tense-a",
+   "speaker": 2,
+   "sound": "tense-a",
+   "measured_hz": [
+    751.7,
+    1414.1,
+    3153.1,
+    4006.7
+   ],
+   "calculated_hz": [
+    758.5,
+    1392.9,
+    3149.2,
+    4434.5
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-01-bahn-tense-a/s2-01-bahn-tense-a-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-02-beet-tense-e",
+   "speaker": 2,
+   "sound": "tense-e",
+   "measured_hz": [
+    319.2,
+    2486.9,
+    4318.2
+   ],
+   "calculated_hz": [
+    325.9,
+    2482.1,
+    4251.8
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-02-beet-tense-e/s2-02-beet-tense-e-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-03-tiere-tense-i",
+   "speaker": 2,
+   "sound": "tense-i",
+   "measured_hz": [
+    217.3,
+    2502.3,
+    3505.9,
+    4183.6
+   ],
+   "calculated_hz": [
+    224.9,
+    2501.3,
+    4172.1
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-03-tiere-tense-i/s2-03-tiere-tense-i-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-04-boote-tense-o",
+   "speaker": 2,
+   "sound": "tense-o",
+   "measured_hz": [
+    415.3,
+    901.7,
+    3171.3,
+    4060.6
+   ],
+   "calculated_hz": [
+    419.1,
+    901.7,
+    3166.5,
+    4055.7
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-04-boote-tense-o/s2-04-boote-tense-o-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-05-bude-tense-u",
+   "speaker": 2,
+   "sound": "tense-u",
+   "measured_hz": [
+    335.5,
+    870.0,
+    2729.1,
+    3945.2
+   ],
+   "calculated_hz": [
+    333.6,
+    856.5,
+    2728.2,
+    3926.9
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-05-bude-tense-u/s2-05-bude-tense-u-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-06-laehmung-tense-ae",
+   "speaker": 2,
+   "sound": "tense-ae",
+   "measured_hz": [
+    678.7,
+    1899.5,
+    2844.5,
+    4063.4
+   ],
+   "calculated_hz": [
+    677.7,
+    1898.6,
+    2825.3,
+    4067.3
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-06-laehmung-tense-ae/s2-06-laehmung-tense-ae-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-07-hoehle-tense-oe",
+   "speaker": 2,
+   "sound": "tense-oe",
+   "measured_hz": [
+    387.4,
+    1599.6,
+    2324.4,
+    3647.2
+   ],
+   "calculated_hz": [
+    388.4,
+    1592.9,
+    2316.7,
+    3640.5
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-07-hoehle-tense-oe/s2-07-hoehle-tense-oe-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-08-guete-tense-y",
+   "speaker": 2,
+   "sound": "tense-y",
+   "measured_hz": [
+    299.9,
+    1711.1,
+    2261.9,
+    3801.0
+   ],
+   "calculated_hz": [
+    302.8,
+    1699.6,
+    2264.8,
+    3806.8
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-08-guete-tense-y/s2-08-guete-tense-y-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-09-los-l",
+   "speaker": 2,
+   "sound": "l",
+   "measured_hz": [
+    303.8,
+    1772.6,
+    2870.4,
+    4078.8
+   ],
+   "calculated_hz": [
+    318.2,
+    1771.7,
+    2858.9,
+    4009.6
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-09-los-l/s2-09-los-l-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-10-fahrt-f",
+   "speaker": 2,
+   "sound": "f",
+   "measured_hz": [
+    483.5,
+    1613.1,
+    2560.9,
+    4116.3
+   ],
+   "calculated_hz": [
+    488.3,
+    1613.1,
+    2559.0,
+    4098.0
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-10-fahrt-f/s2-10-fahrt-f-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-11-bass-s",
+   "speaker": 2,
+   "sound": "s",
+   "measured_hz": [
+    297.0,
+    1652.5,
+    2979.1,
+    4690.2
+   ],
+   "calculated_hz": [
+    303.8,
+    1645.8,
+    2970.4,
+    4309.5
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-11-bass-s/s2-11-bass-s-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-12-schoen-sh",
+   "speaker": 2,
+   "sound": "sh",
+   "measured_hz": [
+    299.0,
+    1781.3,
+    2994.5,
+    3903.8
+   ],
+   "calculated_hz": [
+    307.6,
+    1785.1,
+    2993.5,
+    3873.1
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-12-schoen-sh/s2-12-schoen-sh-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-13-ich-c",
+   "speaker": 2,
+   "sound": "c",
+   "measured_hz": [
+    325.9,
+    2370.6,
+    3128.1,
+    4592.1
+   ],
+   "calculated_hz": [
+    332.6,
+    2370.6,
+    3122.3,
+    4595.0
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-13-ich-c/s2-13-ich-c-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-14-ach-x",
+   "speaker": 2,
+   "sound": "x",
+   "measured_hz": [
+    730.6,
+    1544.8,
+    2859.9,
+    4319.1
+   ],
+   "calculated_hz": [
+    732.5,
+    1516.9,
+    2842.6,
+    4506.6
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-14-ach-x/s2-14-ach-x-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-15-bass-lax-a",
+   "speaker": 2,
+   "sound": "lax-a",
+   "measured_hz": [
+    693.1,
+    1208.4,
+    2998.3,
+    4328.8
+   ],
+   "calculated_hz": [
+    688.3,
+    1189.1,
+    2977.2,
+    3691.4
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-15-bass-lax-a/s2-15-bass-lax-a-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-16-bett-lax-ae",
+   "speaker": 2,
+   "sound": "lax-ae",
+   "measured_hz": [
+    577.7,
+    1717.8,
+    2704.2,
+    3943.3
+   ],
+   "calculated_hz": [
+    572.9,
+    1694.8,
+    2675.3,
+    4176.9
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-16-bett-lax-ae/s2-16-bett-lax-ae-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-17-mit-lax-i",
+   "speaker": 2,
+   "sound": "lax-i",
+   "measured_hz": [
+    363.4,
+    1980.3,
+    2632.1,
+    3739.5
+   ],
+   "calculated_hz": [
+    368.2,
+    1965.9,
+    2565.7,
+    3691.4
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-17-mit-lax-i/s2-17-mit-lax-i-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-18-offen-lax-o",
+   "speaker": 2,
+   "sound": "lax-o",
+   "measured_hz": [
+    468.2,
+    1074.7,
+    3079.1,
+    4045.2
+   ],
+   "calculated_hz": [
+    470.1,
+    1063.2,
+    3071.4,
+    3851.0
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-18-offen-lax-o/s2-18-offen-lax-o-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-19-butter-lax-u",
+   "speaker": 2,
+   "sound": "lax-u",
+   "measured_hz": [
+    378.8,
+    1093.0,
+    3004.1,
+    3839.4
+   ],
+   "calculated_hz": [
+    386.4,
+    1078.6,
+    2982.0,
+    3843.3
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-19-butter-lax-u/s2-19-butter-lax-u-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-20-muetter-lax-y",
+   "speaker": 2,
+   "sound": "lax-y",
+   "measured_hz": [
+    415.3,
+    1721.7,
+    2452.3,
+    3784.7
+   ],
+   "calculated_hz": [
+    417.2,
+    1712.1,
+    2455.2,
+    3793.3
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-20-muetter-lax-y/s2-20-muetter-lax-y-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-21-goetter-lax-oe",
+   "speaker": 2,
+   "sound": "lax-oe",
+   "measured_hz": [
+    533.5,
+    1476.6,
+    2423.4,
+    4059.6
+   ],
+   "calculated_hz": [
+    531.6,
+    1453.5,
+    2404.2,
+    3791.4
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-21-goetter-lax-oe/s2-21-goetter-lax-oe-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  },
+  {
+   "id": "dvtd.s2-22-ehe-schwa",
+   "speaker": 2,
+   "sound": "schwa",
+   "measured_hz": [
+    510.5,
+    1503.5,
+    2576.3,
+    3353.0
+   ],
+   "calculated_hz": [
+    512.4,
+    1499.6,
+    2574.4,
+    3413.6
+   ],
+   "source": "dresden-vtd",
+   "file": "dvtd.zip:subject-2/s2-22-ehe-schwa/s2-22-ehe-schwa-vvtf-measured.txt",
+   "sha256": "5d6868f2b84f59a1afb598f3e6981e7b406990365199f21058b3207a8f6bc6b0",
+   "status": "measured"
+  }
+ ]
+}

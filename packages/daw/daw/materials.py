@@ -4,7 +4,8 @@
 
 A Material carries density rho, Young's modulus E, Poisson's ratio nu and a loss factor eta, each with the
 status of its row (measured, derived or from_memory). Nothing here holds a hand-typed physical value except
-the 0 C reference temperature, which is a definition. Damping by frequency uses the loss-factor model
+the 0 C reference temperature, which is a definition. Loss factors come from measured decay of recorded bars where a recording exists (aluminium, steel), else
+from memory, marked so. Damping by frequency uses the loss-factor model
 alpha(f) = pi f eta + alpha0: a mode at f with loss factor eta decays as exp(-pi f eta t).
 """
 import math
@@ -18,10 +19,11 @@ _TABLE = None
 
 
 def table():
-    """The mechanical rows, indexed by id."""
+    """The mechanical rows and the measured decay rows (decay_iowa.json), indexed by id."""
     global _TABLE
     if _TABLE is None:
         _TABLE = {r["id"]: r for r in load("mechanical")["rows"]}
+        _TABLE.update({r["id"]: r for r in load("decay_iowa")["rows"]})
     return _TABLE
 
 
@@ -61,7 +63,8 @@ NAMES = ("steel_mild", "aluminium", "brass", "copper", "glass_crown", "oak", "pi
 def material(name):
     """Build a Material from its rows; Poisson's ratio is None where the table lists none (woods)."""
     t = table()
-    rid = {"rho": _RHO.get(name, f"{name}.rho"), "E": f"{name}.E", "nu": f"{name}.nu", "eta": f"{name}.eta"}
+    eta_id = f"{name}.eta_measured" if f"{name}.eta_measured" in t else f"{name}.eta"   # measured decay first
+    rid = {"rho": _RHO.get(name, f"{name}.rho"), "E": f"{name}.E", "nu": f"{name}.nu", "eta": eta_id}
     vals = {k: (t[v]["value"] if v in t else None) for k, v in rid.items()}
     status = {k: (t[v]["status"] if v in t else "missing") for k, v in rid.items()}
     if vals["rho"] is None or vals["E"] is None:
