@@ -177,6 +177,12 @@ Next three steps:
 2. Area functions from the Dresden surface meshes by a real centre line, so the 1D tract is held to 44 measured sets of resonances; then folds coupled to the tract, nasal coupling, and the oesophageal source.
 3. Measured damping for the remaining materials (brass, copper, glass, woods) from recordings with provenance, piano string dispersion, and a flute jet.
 
+Folded in from manufacturer manuals read as local research copies (no text from them ships here):
+
+- Tape echo as a physical tape loop: an erase head, a record head and several playback heads at fixed spacings on one loop, a motor speed that sets the repeat times (delay = head spacing / tape speed), feedback, wow and flutter from the motor, and the tape's own high-frequency loss, followed by a spring reverb. The engine's scene echo has the same delay-and-feedback structure, so one kernel and one parameter set will serve both. Known answers: repeat times scale exactly as 1 / tape speed, and head spacing ratios appear as the ratios of echo times.
+- Electric piano tine and tone bar as an asymmetric tuning fork: two coupled resonators of unequal mass tuned to one pitch. Two plates to measure: sustain against the detuning between tine and bar (the coupled-oscillator beat and energy exchange predict how sustain falls with detuning), and harmonic content against the tine's offset from the pickup centre (a pickup's nonlinear response to a displacement about an offset point makes even harmonics grow with the offset).
+- A classic five-voice analogue synthesizer's voice architecture as a reference for the workstation's own subtractive voice, built from the same filter and envelope physics as everything else.
+
 ## 7. Limits stated plainly
 
 - Loss factors for brass, copper, glass and the woods are from memory; aluminium and steel are measured upper bounds from mounted bars.
