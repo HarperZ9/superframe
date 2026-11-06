@@ -68,7 +68,7 @@ def test_aeolian_tone_strouhal():
 
 def test_minnaert_bubble():
     f = N.minnaert_frequency(1e-3)
-    assert abs(f - math.sqrt(3 * 1.4 * 101325 / 998.2) / (2 * math.pi * 1e-3)) < 1e-9 and 3200 < f < 3350
+    assert abs(f - math.sqrt(3 * 1.4 * 101325 / 998.2065) / (2 * math.pi * 1e-3)) < 1e-9 and 3200 < f < 3350
     assert abs(N.minnaert_frequency(2e-3) - f / 2) < 1e-9
     assert abs(N.minnaert_frequency(1e-3, gamma=1.0) - f) > 400     # planted: isothermal gas
 
@@ -79,3 +79,13 @@ def test_sonification_keeps_every_ratio():
     audio, k = N.sonify(nu, 220.0)
     assert np.allclose(audio / audio.min(), nu / nu.min(), rtol=1e-15) and abs(audio.min() - 220.0) < 1e-9
     assert abs(nu[0] - 5.3755e14) / 5.3755e14 < 1e-4
+
+
+def test_water_and_minnaert_come_from_wavelab_and_agree_with_kaye_laby():
+    from wavelab import bubble, consts
+    w = consts.water(293.15)
+    assert N.minnaert_frequency(1e-3) == bubble.minnaert(1e-3, kappa=1.4, sigma=0.0, rho=w["rho"])
+    assert M.water_speed() == w["c"]
+    assert abs(w["rho"] / M.row("water.rho20")["value"] - 1) < 1e-4     # NIST against Kaye and Laby
+    assert abs(w["c"] / M.row("water.c20")["value"] - 1) < 1e-3
+    assert N.P_STANDARD == consts.ATM == 101325.0 and N.GAMMA_AIR == 1.4

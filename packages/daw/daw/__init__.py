@@ -8,7 +8,7 @@ from pathlib import Path
 
 PKG = Path(__file__).resolve().parent.parent
 PACKAGES = PKG.parent
-for _p in (PACKAGES / "measured", PACKAGES / "instruments" / "room"):
+for _p in (PACKAGES / "measured", PACKAGES / "instruments" / "room", PACKAGES / "wavelab"):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 
