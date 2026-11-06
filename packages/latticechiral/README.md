@@ -12,6 +12,8 @@
 | `overlap_nn` | the Narayanan-Neuberger overlap chiral determinant (Wigner-Brillouin phase, or the vacuum carried by parallel transport along a path: the adiabatic form of the eta-invariant phase) on a fine lattice built from a continuum field; the eta-invariant side of Witten's formula, after Kaplan and Schmaltz | determinant 1 at zero field; equal-charge left and right movers multiply to a nearly real number; constant fields give exact links |
 | `u1_4d` | 4D U(1) with constant fluxes in two planes; Wilson and overlap operators; topological charge from plaquettes | overlap index = Q12 Q34 with a spectral gap |
 | `nonabelian` | continuum SU(2) Weyl fermions on smooth su(2) fields (no lattice interpolation yet); the non-abelian consistent anomaly | generators close; Dynkin indices 1/2, 2, 5; triplet / doublet anomaly = 4 |
+| `su2lattice` | SU(2) link fields on a 2D lattice (quaternions), path-ordered links from a continuum field, interpolation back to the continuum by link logarithms and Fourier interpolation, lattice and continuum gauge transformations, covariant smoothing, the largest plaquette angle as the admissibility measure | reconstruction and gauge covariance converge as a^2; triplet / doublet anomaly = 4 on interpolated fields |
+| `eta3d` | a direct spectral eta invariant on the mapping torus T^2 x S^1 for loops of flat U(1) connections, regulated by exp(-(lambda / Lambda)^2) | pi eta equals minus the Berry holonomy q^2 L^2 S / (2 pi) of the 2D Weyl determinant in the adiabatic limit |
 
 ## Run it now
 

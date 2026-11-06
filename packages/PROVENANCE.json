@@ -3598,17 +3598,22 @@
   },
   {
    "path": "packages/latticechiral/README.md",
-   "sha256": "01086a5076d91593ec36d36325bb584224203fe45702936d017ede26002687b2",
+   "sha256": "d669f1844074eeebf55d45f1bfad4d60c6eb284bf6f1cd7b5bd292cc45ed7483",
    "source": "new in this change"
   },
   {
    "path": "packages/latticechiral/latticechiral/__init__.py",
-   "sha256": "ffd64a4279788aa040067a536be3f3f4245fcf689819523b0757fc38394f6f2a",
+   "sha256": "83669dbc202ca756d4c64c3ffd469ff6706261c3885e5d43eec6034dde4873ea",
    "source": "new in this change"
   },
   {
    "path": "packages/latticechiral/latticechiral/chiral.py",
    "sha256": "16beef84e52ce4af30930d481a1a8a64787e6b68090f6aac98c1815bbd6a475c",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/latticechiral/latticechiral/eta3d.py",
+   "sha256": "62f5c71cd6940ee7626a1e251d369af7598ec10137028f7590bc6f89eae9189b",
    "source": "new in this change"
   },
   {
@@ -3624,6 +3629,11 @@
   {
    "path": "packages/latticechiral/latticechiral/overlap_nn.py",
    "sha256": "e162502ed1fdb1204657ec87f5d921b61322634f222ccf245b143f8e057fe42b",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/latticechiral/latticechiral/su2lattice.py",
+   "sha256": "87f0c9419bcd128442070b3e5b522356748b3ebf0b098eab0487eafe316e524e",
    "source": "new in this change"
   },
   {
@@ -3652,13 +3662,18 @@
    "source": "new in this change"
   },
   {
+   "path": "packages/latticechiral/tests/test_su2_and_eta3d.py",
+   "sha256": "621f87bd09bdea9f4c02e82313aa7e6ade4fa5ac738213c6d2f0bde6b0867d7d",
+   "source": "new in this change"
+  },
+  {
    "path": "packages/strings/README.md",
-   "sha256": "a99869a76dcc6951371c05dc313281fc9014b46deff371d10c7b143c8a13d076",
+   "sha256": "584eb2d4217c92440fe50d278e6169c36b0adc6c52c3753a6e166a2f72e9ebf3",
    "source": "new in this change"
   },
   {
    "path": "packages/strings/stringlab/__init__.py",
-   "sha256": "fddd6a56f1c67eaa08307313bd8d958376c91ed398e4546266742776a438ce76",
+   "sha256": "2aa49029235222962dc6b20acac6c70a9b5dd5836957582f7e17633a5039f6fe",
    "source": "new in this change"
   },
   {
@@ -3673,7 +3688,7 @@
   },
   {
    "path": "packages/strings/stringlab/cosmicstrings.py",
-   "sha256": "85929ba1015fcfe3f6c1049cee5850747958a9a0a6699d21823890a067faa030",
+   "sha256": "4b1876d1bdd05848c197db292c8ddc80bc883196afc428ee47c08e42fc36b2dc",
    "source": "new in this change"
   },
   {
@@ -3689,6 +3704,11 @@
   {
    "path": "packages/strings/stringlab/fock.py",
    "sha256": "7b281c477b2cb9909132aa4695bf1fdb710c0192e4e38d19fb4e61c208e5e081",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/strings/stringlab/genus.py",
+   "sha256": "20a33baed03e51d433d974bb37a1ff249454231ce25f90781de7bfac1e7ae1f7",
    "source": "new in this change"
   },
   {
@@ -3713,7 +3733,7 @@
   },
   {
    "path": "packages/strings/stringlab/stringbursts.py",
-   "sha256": "cc2b9eab02c84a3c6fce6fdd9242260705d1fa28a4af6f88f4ca24ff1500ba2d",
+   "sha256": "7cf193e98a23cc1f56e5a7e3a7bc56fab8627eb93a1e97d74e405ed81a39b2e7",
    "source": "new in this change"
   },
   {
@@ -3739,6 +3759,11 @@
   {
    "path": "packages/strings/tests/test_cosmic_and_curvature.py",
    "sha256": "114e67a5c1024ed4dfa3d865ad1b18daa0557e9103e8d6ce8746e0f3090d45c2",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/strings/tests/test_genus.py",
+   "sha256": "523ff1e7acc38fd081873cdf91f2588cad716913aed016b24f6b32001ab51fae",
    "source": "new in this change"
   },
   {
