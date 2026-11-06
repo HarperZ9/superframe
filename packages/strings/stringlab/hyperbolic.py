@@ -68,12 +68,13 @@ def words(length):
             out.append(m)
             names.append(w)
     # distinct group elements only (the surface relation makes some words equal): compare where they send 0 and 1/2
-    keep, seen = [], []
+    keep, seen = [], set()
     for i, m in enumerate(out):
-        key = (act(m, 0.0), act(m, 0.5))
-        if any(abs(key[0] - a) < 1e-9 and abs(key[1] - b) < 1e-9 for a, b in seen):
+        z0, z1 = act(m, 0.0), act(m, 0.5)
+        key = tuple(round(float(v), 7) for v in (z0.real, z0.imag, z1.real, z1.imag))
+        if key in seen:
             continue
-        seen.append(key)
+        seen.add(key)
         keep.append(i)
     return [names[i] for i in keep], [out[i] for i in keep]
 
