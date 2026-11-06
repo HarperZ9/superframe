@@ -13,6 +13,8 @@
 | `finesse` | Mathieu Floquet multipliers, pumped damped oscillators, phased point sources | first Mathieu tongue series, threshold h = 4 lambda / omega, Faraday half frequency, gain N^2 and N | pumping at omega instead of 2 omega; reversed phases |
 | `timerev` | 2D FDTD in a chaotic cavity, record and re-emit | refocusing at the source from one receiver, spot near half a wavelength | randomly delayed re-emission |
 | `reservoir` | a mass-spring chain as a reservoir computer | linear chain: no products, memory independent of drive | taps-only features; shuffled targets |
+| `resonator` | a resonator in 16 cos modes with quadratic coupling and thermoviscous damping; overtones harmonic or detuned | the linear steady amplitude F / (2 g), the weak-drive second-mode amplitude, the projection of u^2 | the nonlinearity switched off must not saturate |
+| `media_graph` | chains and square membranes of masses and springs with several input sites; NARMA-10 | odd spring laws cannot form XOR on any graph | shuffled training targets give NRMSE near 1 |
 | `otherworld` | relaxing-gas sound speeds, the acoustic horizon, octave scaling, Brune spectra | Perseverance's two Mars sound speeds; ray peel rate equals kappa; exact ratios under 2^n | none (NIST and Mars data are the checks) |
 
 Constants come from `packages/measured`: CODATA 2022 through `generated/constants.py` and `data/codata2022.json`, media through `data/wave_media.json` (PREM, Masters and Widmer Table 1, NIST fluid states, Perseverance and Hunga values, the 1976 standard atmosphere), each with its source and sha256.
@@ -38,12 +40,14 @@ The second line prints Earth's gravest mode, about 309.3 uHz; the third the Lamb
 | Mars, below and above 240 Hz at 236 K | 242.8 and 249.8 m/s | Ingenuity 237.7 +- 3; laser sparks 246 to 257 |
 | Single-bubble collapse (4.5 um, 1.35 bar, 26.5 kHz) | Rmax 37.8 um, Rmin 0.72 um, adiabatic peak 15400 K | sonoluminescence regime; temperature and light are model estimates |
 | Acoustic saturation (alpha x = 0.1) | 1000 times the source, 71 times the received fundamental | Fay ceiling to 1.3e-4 |
+| Bubble with gas diffusion (argon, c_inf / c0 = 0.004) | stable only from 1.3 to 1.4 bar (26.5 and 40 kHz); peak 13,200 K | without diffusion the model reaches 2e5 K, pressed against its van der Waals core |
+| Detuned overtones (d = 0.2) at the top drive | peak 1.9 times the harmonic resonator's, steepness 0.70 times, fundamental 1.05 times | the ceiling moves by about one drive step (2.2 times), not 3 |
 | XOR from a vibrating chain (24 masses, linear readout) | r2 0.002 linear, 0.004 odd springs, 0.997 even springs at high damping | a linear medium cannot form products; odd springs keep the response odd |
 
 ## Limits
 
 - `burgers` is one-dimensional with thermoviscous loss only: no relaxation, no diffraction.
-- `bubble` has no mass or heat diffusion and no chemistry; its peak temperature is an adiabatic estimate and its light a black body, both approximate.
+- `bubble` has diffusion only as the quasi-static R^4-weighted balance, no shape instability and no chemistry; near the van der Waals core the peak temperature is set by the core model; its peak temperature is an adiabatic estimate and its light a black body, both approximate.
 - `earth` is spherical, non-rotating and isotropic: the anisotropic upper mantle enters as its Voigt average, which leaves toroidal modes about 0.15 percent low. No ocean layer.
 - `atmosphere` is flat and windless with a rigid lid; above 86 km the profile is isothermal.
 - `reservoir` is one chain with one input site and a linear readout.
