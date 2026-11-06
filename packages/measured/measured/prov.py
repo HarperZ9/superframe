@@ -58,6 +58,12 @@ SOURCES = {
     "itu-r-bt": ("ITU-R BT.1700-0 (02/2005), BT.470-7 (02/2005), BT.1886-0 (03/2011)", "ITU free download terms"),
     "rca-tpm1508a": ("RCA TPM-1508A, Phosphors for cathode-ray tubes (Oct 1961), persistence table p. 6",
                      "1961 publication on a public archive; copyright unclear; internal"),
+    "kaye-laby": ("Kaye and Laby, Tables of Physical and Chemical Constants, NPL online edition v1.0 (archived 2017), sections 2.2.1, 2.2.2, 2.4.1; Internet Archive captures",
+                  "NPL copyright pages; values are facts and cited; pages kept internal"),
+    "leissa-sp160": ("Leissa, A. W. 1969, Vibration of Plates, NASA SP-160 (NTRS 19700009156), Table 2.1",
+                     "NASA publication, US government work"),
+    "wikidata-materials": ("Wikidata entity data for Q11427, Q663, Q39782, Q753, Q11469 (properties P2054, P5480, P5593)",
+                           "CC0 1.0"),
 }
 
 
