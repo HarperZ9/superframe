@@ -77,6 +77,8 @@ class Bubble:
         T = cycles / f
         sol = solve_ivp(self.rhs, [0, T], [R_init or self.R0, 0.0], args=(Pa, f), method="Radau", rtol=1e-10,
                         atol=[1e-15, 1e-10], dense_output=True, max_step=1 / (200 * f))
+        if sol.status != 0:
+            raise RuntimeError(f"bubble integration stopped at t = {sol.t[-1]:.3e} s: {sol.message}")
         t = np.linspace(0, T, pts)
         return t, sol.sol(t)[0], sol
 
@@ -137,3 +139,25 @@ def blackbody_flash(b, Pa, f, stats, window=None):
     photons = np.trapezoid(P / (2.70 * consts.KB * T), tt)
     half = tt[P >= P.max() / 2]
     return {"energy_J": float(np.trapezoid(P, tt)), "photons": float(photons), "fwhm_s": float(half[-1] - half[0])}
+
+
+def weighted_gas_pressure(b, Pa, f, cycles=10, last=4, pts=4000):
+    """<p_g>_4 / p0: the gas pressure averaged with weight R^4 over the last `last` cycles, the quantity whose
+    balance against the dissolved-gas ratio sets diffusive equilibrium (Brenner, Hilgenfeldt and Lohse 2002).
+    In the static limit (Pa = 0) it equals the equilibrium gas pressure (p0 + 2 sigma / R0 - pv) / p0."""
+    t, R, sol = b.run(Pa, f, cycles=cycles, pts=pts * cycles)
+    m = t >= (cycles - last) / f
+    w = R[m] ** 4
+    return float(np.trapezoid(b.gas(R[m]) * w, t[m]) / np.trapezoid(w, t[m]) / b.p0)
+
+
+def diffusive_equilibria(R0s, Pa, f, ratio, cycles=10, **kw):
+    """Ambient radii where <p_g>_4 / p0 equals the dissolved-gas ratio c_inf / c0, by linear interpolation
+    between scanned R0 values; stable where the balance rises through zero (a larger bubble then loses gas)."""
+    vals = [weighted_gas_pressure(Bubble(R0, **kw), Pa, f, cycles=cycles) - ratio for R0 in R0s]
+    out = []
+    for a, b2, va, vb in zip(R0s[:-1], R0s[1:], vals[:-1], vals[1:]):
+        if va == 0 or np.sign(va) != np.sign(vb):
+            r = a + (b2 - a) * va / (va - vb)
+            out.append({"R0": float(r), "stable": bool(vb > va)})
+    return out, [float(v) for v in vals]
