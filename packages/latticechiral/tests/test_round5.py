@@ -64,3 +64,18 @@ def test_su2_u1_hypercharge_anomaly():
     left = [(0.5, 1.0)] * 4
     assert abs(move(left, [(1.0, 1.0), (0.0, 1.0), (0.0, 2.0)])) < 0.02
     assert move(left, [(1.0, 1.0), (0.0, 1.0), (0.0, 1.0)]) == pytest.approx(3.0, rel=0.03)
+
+
+def test_second_order_eta_matches_dense_on_a_small_box():
+    rng = np.random.default_rng(3)
+    x = np.arange(24) * 3 / 24
+    X1, X2 = np.meshgrid(x, x, indexing="ij")
+    B = []
+    for _ in range(2):
+        b = np.zeros((2, 24, 24))
+        for mu in range(2):
+            b[mu] += 0.03 * rng.normal() + 0.06 * rng.normal() * np.cos(2 * math.pi * (X1 + mu * X2) / 3 + rng.uniform(0, 6))
+        B.append(b)
+    d = eta3d.eta_field(1, B[0], B[1], 3, 6.0, 1.5, 3, 6)
+    p = eta3d.eta_field_pert(1, B[0], B[1], 3, 6.0, 1.5, 3, 6)
+    assert p == pytest.approx(d, rel=0.01)
