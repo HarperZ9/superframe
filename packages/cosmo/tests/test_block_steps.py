@@ -141,3 +141,29 @@ def test_float32_ics_and_matched_phases():
     assert np.abs(a - b).max() < 1e-12 * np.abs(b).max()
     other = ic.linear_delta_k(pl, 64.0, 32, 5, True)                   # unmatched: different phases
     assert np.abs(a - other[np.ix_(f % 32, f % 32, np.arange(8))]).max() > 0.5 * np.abs(b).max()
+
+
+def test_lean_engine_split_scale_follows_rs_cells():
+    """The round-five split test (r_s = 1.875 cells): GPU mesh and pair kicks against the CPU P3M solver with
+    the same split, and the total force barely moves with the split (a larger r_s leaves more to the pairs)."""
+    ops = _cuda_ops()
+    from cosmolab import lean
+    n, box = 32, 32.0
+    eps = box / n / 30
+    pos, _, _ = ic.zeldovich(C, linear.LinearPower(C), box, n, 0.5, 7, fixed=True, order=2)
+    totals = {}
+    for rs in (1.25, 1.875):
+        cpu = stepping.NumpyEngine(pm.P3MSolver(C, box, 2 * n, n ** 3, OPS, eps=eps, gradient="ik", rs_cells=rs),
+                                   pos, 0 * pos)
+        gpu = lean.CudaEngine(C, box, 2 * n, n ** 3, pos, 0 * pos, ops, eps=eps, rs_cells=rs)
+        assert abs(gpu.rs - rs * box / (2 * n)) < 1e-12
+        for e in (cpu, gpu):
+            e.long_kick(1.0)
+            e.short_kick(0, np.zeros(4), np.ones(4), 0.0, 3)
+        p = np.stack([ops.to_numpy(c) for c in gpu.p], 1)
+        g = np.empty_like(p)
+        g[ops.to_numpy(gpu.ids)] = p
+        assert np.abs(cpu.mom - g).max() < 5e-4 * np.abs(cpu.mom).max()     # measured 5.6e-5 at both splits
+        totals[rs] = cpu.mom
+    d = np.linalg.norm(totals[1.875] - totals[1.25], axis=1) / np.linalg.norm(totals[1.25], axis=1).mean()
+    assert np.sqrt(np.mean(d ** 2)) < 0.01          # measured 0.0021: same total force up to the mesh error

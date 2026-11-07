@@ -6,12 +6,13 @@ fixed order (readback, pair force), so runs repeat bit for bit."""
 
 DEPOSIT = r"""
 extern "C" __global__ void cic_deposit_slab(const float* __restrict__ x, const float* __restrict__ y,
-    const float* __restrict__ z, int n, int ng, float cell, float q, int x0, int nx,
+    const float* __restrict__ z, int n, int ng, float cell, float q, int x0, int nx, float shift,
     unsigned long long* __restrict__ out)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= n) return;
-    float gx = x[i] / cell, gy = y[i] / cell, gz = z[i] / cell;
+    // shift (in cells) moves every particle before assignment; 0 for forces, 0.5 for an interlaced P(k)
+    float gx = x[i] / cell + shift, gy = y[i] / cell + shift, gz = z[i] / cell + shift;
     float fx = floorf(gx), fy = floorf(gy), fz = floorf(gz);
     float d[3] = {gx - fx, gy - fy, gz - fz};
     int c0[3] = {((int)fx % ng + ng) % ng, ((int)fy % ng + ng) % ng, ((int)fz % ng + ng) % ng};

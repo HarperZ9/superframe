@@ -5890,8 +5890,8 @@
   {
    "path": "packages/cosmo/README.md",
    "source": "repo",
-   "bytes": 26013,
-   "sourceSha256": "f30ff2198886e317c33ac5901240d70ae6572500c457f829a946745b67b60620"
+   "bytes": 32470,
+   "sourceSha256": "9a9ef23f0cdff700a569395f19c947a6c7a35059217cd3899a6a168d6b3112a7"
   },
   {
    "path": "packages/cosmo/cosmolab/__init__.py",
@@ -5938,14 +5938,14 @@
   {
    "path": "packages/cosmo/cosmolab/lean.py",
    "source": "repo",
-   "bytes": 10134,
-   "sourceSha256": "26aa57f6cb011a423d88867754956181d56978097b9c3b8c120ed9d1c20793ee"
+   "bytes": 10262,
+   "sourceSha256": "eae891efee9929b94537d88d772fb5cc95f01c09acd744be50e969a33e32c3a5"
   },
   {
    "path": "packages/cosmo/cosmolab/lean_kernels.py",
    "source": "repo",
-   "bytes": 5746,
-   "sourceSha256": "ba6765e60ab41e09651b807d0a40db38e8a042a0354d6034821d8458fcdf44f2"
+   "bytes": 5888,
+   "sourceSha256": "7703e718ec7e9055192d5474abdf38758ad8cb8669db6e69776c41f1477c0d06"
   },
   {
    "path": "packages/cosmo/cosmolab/linear.py",
@@ -5962,8 +5962,8 @@
   {
    "path": "packages/cosmo/cosmolab/power.py",
    "source": "repo",
-   "bytes": 2474,
-   "sourceSha256": "6c6ad258eba889db164d620e9ad241e4dd243d121015b1bccaeaf528de251f55"
+   "bytes": 5058,
+   "sourceSha256": "e30c2d9942626f01d86e90bb446b3001ff8abec585b7a444bd7c8c301aa57ca1"
   },
   {
    "path": "packages/cosmo/cosmolab/reference.py",
@@ -6050,10 +6050,16 @@
    "sourceSha256": "2adc0d0c30dd51575f5b2c8f268191d28d2c20586643c98ed55ca0611ba3b8f3"
   },
   {
+   "path": "packages/cosmo/study/plates_round5.py",
+   "source": "repo",
+   "bytes": 6948,
+   "sourceSha256": "6c450a4a31dc236664db1903c93334ec6886b6bc3872465fb324c8d19ffc9822"
+  },
+  {
    "path": "packages/cosmo/study/run_block.py",
    "source": "repo",
-   "bytes": 6640,
-   "sourceSha256": "c643907e1bfba6ecc859acd4819464efb8a05b0cc84489c69648e84bd09136c0"
+   "bytes": 7782,
+   "sourceSha256": "a2454705af19e9bd52a0d60dba7800ba8d25db060945d3d3f10244d5f298eebf"
   },
   {
    "path": "packages/cosmo/study/run_pk.py",
@@ -6066,6 +6072,12 @@
    "source": "repo",
    "bytes": 5262,
    "sourceSha256": "a10fc29869e049a29cc92a98187d057c3c829d346f80ec7f8c7a463c94b557b6"
+  },
+  {
+   "path": "packages/cosmo/study/score_factors.py",
+   "source": "repo",
+   "bytes": 2651,
+   "sourceSha256": "9a85771aa96749b70488df28dfc0fa915ae0964f996f6c273a5c994dea608c87"
   },
   {
    "path": "packages/cosmo/study/score_runs.py",
@@ -6082,8 +6094,14 @@
   {
    "path": "packages/cosmo/tests/test_block_steps.py",
    "source": "repo",
-   "bytes": 6775,
-   "sourceSha256": "a2dc494ef447bbadb05a2fb35bea9362c0a919ae306db8048e4f062367f5d313"
+   "bytes": 8196,
+   "sourceSha256": "9398a397d530523a234bea815f629d045e8b56007299b55dee51c1350015d43c"
+  },
+  {
+   "path": "packages/cosmo/tests/test_interlace.py",
+   "source": "repo",
+   "bytes": 4110,
+   "sourceSha256": "e8db805ef5c1f15b1d5884cd6e239b05da21968deda33fd8433c491a155b2f54"
   },
   {
    "path": "packages/cosmo/tests/test_linear_halofit.py",
