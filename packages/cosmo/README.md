@@ -279,3 +279,64 @@ A second deposit with every particle moved half a cell along each axis, phase-sh
 | 64^3 Zel'dovich particles at a = 1, a 64 mesh against a 256 mesh, 0.7-0.9 of the coarse Nyquist, no shot subtraction | interlaced 0.3 percent; plain CIC 9.4 percent high | second deposit shifted the wrong way: 54 percent low |
 | Shifted GPU deposit against moved particles on the CPU | 1e-4 (float32 cell coordinates); slab count does not change the integer sums | |
 | GPU engine with r_s = 1.875 cells against the CPU P3M solver | 5.6e-5 of the largest kick; total force within 0.21 percent rms of r_s = 1.25 | |
+
+## Round six: three seeds at the halved softening; particles out of core
+
+```
+python packages/cosmo/study/run_block.py --n 512 --box 256 --eps 0.0167 --eta 0.1 --match-n 256 --linear camb --steps-log 20 --steps-late 90 --levels 3 --seed 7
+python packages/cosmo/study/score_confirm.py --runs conf/*.npz --base r4/*.npz --planted planted/*.npz --json score_confirm.json
+python packages/cosmo/study/run_ooc_equiv.py --n 256 --box 256 --mesh 512 --levels 3 --slabs 4 --drift-max 2 --compare-skin
+python packages/cosmo/study/run_ooc_equiv.py ... --ghost 3 --skip-incore --ref e1.json        # planted narrow ghost
+python packages/cosmo/study/check_slicedfft.py --mesh 512
+python packages/cosmo/study/plates_round6.py --runs ... --base ... --score ... --equiv ... --scan ... --sliced ...
+```
+
+### Three seeds at the halved softening
+
+Round five halved the softening on one seed and found most of the z = 0, k 3-5 shortfall. This round ran the same configuration on round four's three seeds: 512^3 in 256 Mpc/h, eps 0.0167 Mpc/h, eta 0.1, 110 global steps, three levels, CAMB input, 2LPT from z = 49. The pass line, set before the runs: the seed mean of the interlaced P(k) over the Cosmic Emu inside 3 percent in every band to k = 5 at z = 0 and z = 1, fourteen cells. The prediction was that thirteen pass and z = 0, 3-5 fails near 0.965.
+
+| k (h/Mpc) | z = 0 | z = 1 | z = 0, round four (plain CIC) |
+|---|---|---|---|
+| < 0.1 | 0.994 (0.977-1.009) | 1.008 (0.997-1.021) | 0.994 |
+| 0.1-0.3 | 0.993 (0.983-1.000) | 0.999 (0.992-1.004) | 0.992 |
+| 0.3-0.5 | 1.005 (0.974-1.028) | 0.993 (0.987-1.002) | 1.004 |
+| 0.5-1 | 0.995 (0.965-1.013) | 0.984 (0.976-0.993) | 0.993 |
+| 1-2 | 0.996 (0.976-1.009) | 0.991 (0.978-1.003) | 0.990 |
+| 2-3 | 0.981 (0.971-0.991) | 0.992 (0.978-1.003) | 0.967 |
+| 3-5 | **0.967 (0.964-0.972)** | 0.982 (0.973-0.990) | 0.947 |
+
+- Result: fails the line in one cell, z = 0, k 3-5, 0.3 points outside, as predicted. The other thirteen pass. On the plain estimator the same cell reads 0.980.
+- Same phases against round four, plain estimator, per seed: z = 0, 3-5 +3.55 / +3.67 / +3.28 percent; 2-3 +1.56 / +1.60 / +1.49; every band below k = 1 under 0.15. z = 1, 3-5 +2.42 / +2.33 / +2.50. Every predicted range held. The softening gain carries across seeds within 0.4 points.
+- Controls: seed 20261106 rerun on this round's code gives round five's sha256 (900416af...) bit for bit. Planted softening x4 at the same steps (eps 0.0667, eta 0.025) reads 0.866 at z = 0, 3-5 and fails the line; round four's three seeds through the same scorer fail z = 0 at 2-3 and 3-5.
+- What is left at z = 0, 3-5 is 3.3 percent on the interlaced estimator. Round five's other factors (mass +0.6 per halving of the spacing, steps +0.5) were each measured alone on one seed and would close most of it if they add; that is not run.
+- Cost on a shared card: 16.0 to 17.0 min and 374 to 382 kJ (NVML, whole card) per seed, peak 5.3 GB.
+
+### Out-of-core slab stepping (`ooc`, `slabwindow`, tests/test_ooc.py)
+
+At 1024^3 the particles take 27 GB in the lean engine's layout, more than a 6 GB share of the card and more than the free host memory. `ooc.SlabRunner` keeps the particles in a store (host memory, or memory-mapped .npy files on disk) in the order of the chaining-cell sort, so the particles of a run of x cells are one contiguous range. Each global step runs the mesh kick chunk by chunk with the same kernels as the lean engine, then takes each x slab of chaining cells with ghost cells on both sides to the GPU, runs all 2^L sub-steps there and writes back only the particles whose cell lies in the slab.
+
+- Ghost width: a ghost particle at the outer edge misses neighbours, and the error moves inward by at most r_cut per pair evaluation plus the drift. `ooc.ghost_cells` gives ((2^L + 1) r_cut + 2 skin + 2 D) / cell, D the largest drift bound in a global step, which the runner checks every step.
+- Re-sorts: the lean engine re-sorts whenever its drift bound passes the skin, which needs the whole box's max |p| at every sub-step. With `sort_policy="plan"` the re-sorts of a global step are decided at its start from max |p| times 1.5 (`lean.sort_plan`), so a slab window re-sorts at the same sub-steps. The window sort breaks ties by the particles' previous global order, which is what the global stable sort does, so the slab particles come out in the same order with the same bits.
+- `stepping.BlockStepper.plan` computes the whole schedule once; `run` and the slab runner both follow it.
+
+256^3 in 256 Mpc/h, mesh 512, L = 3, eta 0.1, eps 0.0333, 110 global steps from z = 49, 4 slabs, CAMB input:
+
+| Check | Result | Planted |
+|---|---|---|
+| Slab stepping, ghost at the bound (19 cells, 30.8 Mpc/h) against the in-core engine | positions and momenta: one sha256 (2932413b...) | ghost of 3 cells: hashes differ |
+| Ghost scan, 3 / 5 / 9 / 13 / 17 cells | differs / equal / equal / equal / equal | |
+| Memory-mapped store on disk | the same sha256 | |
+| In-core plan rule against the skin rule (round five's), same ICs | every band to k = 5 within 0.07 percent | |
+| Sliced FFT force (2-D per x slab, 1-D per pencil block) against torch's 3-D FFT | 1.8e-7 of the largest force at mesh 256, 1.4e-7 at 512 | Green's function rolled one pencil: 3e-2 to 3e-1 |
+
+- The largest drift bound in a global step was 1.32 Mpc/h (the bound assumed 2). No sub-step evaluated a pair force past the skin, in either engine.
+- The 3-cell ghost changes P(k) by at most 0.06 percent in any band: a narrow ghost gives a small, silent error that only the hash catches. The ghost at 5 cells (8.1 Mpc/h, 2.9 r_cut) already gives the in-core bits on this run. The bound is a worst case, 7 hops of r_cut through active particles that this run did not reach; the runner keeps the bound.
+- Cost on a shared card: in-core 63 s; slabs at the bound 278 s (264 pair evaluations per particle against about 135 in core, the ghosts doubling the pair work), at 5 cells 243 s, from disk 293 s. GPU peak 2.8 GB against 3.2 GB in core. Joules from NVML count the whole card, which other jobs shared: in-core 23 kJ, slabs 77 to 107 kJ.
+
+### 1024^3: projection, not run
+
+The run needs every test above to pass (they do), a scratch disk (931 GB free, checked), and a projected cost under about 3 MJ. It does not fit:
+
+- At 1024^3 with a 1024 mesh in 256 Mpc/h: 316 chaining cells of 0.81 Mpc/h, r_cut 1.41, ghost bound 22 cells per side. One x layer of cells holds 3.4 million particles. The ghosts alone are 44 layers: 3.5 GB at the bare 25-byte record, 7.9 GB with the window's sort buffers, so a 6 GB share is gone before any slab is added. One-dimensional slabs at the bound do not fit.
+- Energy: the 512^3 run of the same physics costs 378 kJ on the shared card; 1024^3 has eight times the pair work; slab stepping cost 3.3 to 3.8 times the in-core energy at 256^3. That gives 10 to 11 MJ (inferred, whole-card NVML), over three times the limit, before disk traffic: a 1024^3 store is 27 GB per buffer, two buffers, more than the free host memory, so it streams from disk.
+- The two costs come from one place: the ghost covers all nine pair evaluations of a global step. Exchanging ghosts every sub-step would cut the bound to about 4 cells, at the price of streaming the store eight times per global step. Pencils (x and y) instead of slabs cut the memory per window. Neither is built.

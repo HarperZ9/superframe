@@ -5890,8 +5890,8 @@
   {
    "path": "packages/cosmo/README.md",
    "source": "repo",
-   "bytes": 32470,
-   "sourceSha256": "9a9ef23f0cdff700a569395f19c947a6c7a35059217cd3899a6a168d6b3112a7"
+   "bytes": 39840,
+   "sourceSha256": "e779f376a26f3bc7d4435229ba0313a096d802e4bbc2bc6cd89fc9cf47d4fe60"
   },
   {
    "path": "packages/cosmo/cosmolab/__init__.py",
@@ -5938,8 +5938,8 @@
   {
    "path": "packages/cosmo/cosmolab/lean.py",
    "source": "repo",
-   "bytes": 10262,
-   "sourceSha256": "eae891efee9929b94537d88d772fb5cc95f01c09acd744be50e969a33e32c3a5"
+   "bytes": 12170,
+   "sourceSha256": "f6a0ad97913cd892998c6262d2957da0908ae69cf1ce9bb39920f02d1a0a6976"
   },
   {
    "path": "packages/cosmo/cosmolab/lean_kernels.py",
@@ -5952,6 +5952,12 @@
    "source": "repo",
    "bytes": 6238,
    "sourceSha256": "baaeccb75992516d6074bc83467b93ed0cbc592b996cfc1dd48b01751361a667"
+  },
+  {
+   "path": "packages/cosmo/cosmolab/ooc.py",
+   "source": "repo",
+   "bytes": 11587,
+   "sourceSha256": "a0599cb8a3fa0dc289cd0ddad07660977861112733fa3a7422eef4666cb279d8"
   },
   {
    "path": "packages/cosmo/cosmolab/pm.py",
@@ -5978,10 +5984,22 @@
    "sourceSha256": "bc1df35eae38870da52a43ff48b9948d6a3c8a3bf5b04dc0d5551690e567d3ae"
   },
   {
+   "path": "packages/cosmo/cosmolab/slabwindow.py",
+   "source": "repo",
+   "bytes": 5658,
+   "sourceSha256": "d3bea85688de10b177ea0ff556de5cf6c0d9312fbbc1240fd2e64ab6092e4f69"
+  },
+  {
+   "path": "packages/cosmo/cosmolab/slicedfft.py",
+   "source": "repo",
+   "bytes": 3198,
+   "sourceSha256": "9d36c932194ce870587edd2a33cf48f179d7748abc57c343f4eef77d9215789e"
+  },
+  {
    "path": "packages/cosmo/cosmolab/stepping.py",
    "source": "repo",
-   "bytes": 7544,
-   "sourceSha256": "e9f2cebed3cb531728e733f7da9dd8d7855e6b0e05adcf2f09843a71131ee060"
+   "bytes": 8369,
+   "sourceSha256": "cfa85b31326470efcc420ca4de97e6db16e699f4a4cb530435dbf7e9ef58c95f"
   },
   {
    "path": "packages/cosmo/cosmolab/topology.py",
@@ -6012,6 +6030,12 @@
    "source": "repo",
    "bytes": 2284,
    "sourceSha256": "4db5a237204ae98bafc425f95a97e9c3b88d36305775e8e3a08169e469e2d909"
+  },
+  {
+   "path": "packages/cosmo/study/check_slicedfft.py",
+   "source": "repo",
+   "bytes": 3464,
+   "sourceSha256": "1e0e5fd8b99d9a5e0230eea7ff699bc8219c24a5e9380bd2d85a766e41bcb645"
   },
   {
    "path": "packages/cosmo/study/make_camb_reference.py",
@@ -6056,10 +6080,22 @@
    "sourceSha256": "6c450a4a31dc236664db1903c93334ec6886b6bc3872465fb324c8d19ffc9822"
   },
   {
+   "path": "packages/cosmo/study/plates_round6.py",
+   "source": "repo",
+   "bytes": 7126,
+   "sourceSha256": "395ff864c85829f5b35a9ac4bf13b0dc877c540c2426f71a455ebf502cce748d"
+  },
+  {
    "path": "packages/cosmo/study/run_block.py",
    "source": "repo",
    "bytes": 7782,
    "sourceSha256": "a2454705af19e9bd52a0d60dba7800ba8d25db060945d3d3f10244d5f298eebf"
+  },
+  {
+   "path": "packages/cosmo/study/run_ooc_equiv.py",
+   "source": "repo",
+   "bytes": 7609,
+   "sourceSha256": "2df1d7c791c7c49a33b88a44c55dc3b1867dbbea64226d042582537f883fe047"
   },
   {
    "path": "packages/cosmo/study/run_pk.py",
@@ -6072,6 +6108,12 @@
    "source": "repo",
    "bytes": 5262,
    "sourceSha256": "a10fc29869e049a29cc92a98187d057c3c829d346f80ec7f8c7a463c94b557b6"
+  },
+  {
+   "path": "packages/cosmo/study/score_confirm.py",
+   "source": "repo",
+   "bytes": 3853,
+   "sourceSha256": "65ceb2b5592a8b5567e147e995dd247f392948bf8d9111cb62a0ff561bf15c34"
   },
   {
    "path": "packages/cosmo/study/score_factors.py",
@@ -6114,6 +6156,12 @@
    "source": "repo",
    "bytes": 4150,
    "sourceSha256": "67ebaca1de607892d25bdd8c2b0ddb78980542d5ed34801a1b77bc9be5c6f25e"
+  },
+  {
+   "path": "packages/cosmo/tests/test_ooc.py",
+   "source": "repo",
+   "bytes": 4576,
+   "sourceSha256": "ed86e2e7ba4a0869828416b2512787544d0be0037057057c65daa53f1bf75381"
   },
   {
    "path": "packages/cosmo/tests/test_p3m.py",
