@@ -47,15 +47,12 @@ class PMSolver:
     def deposit(self, pos, mass=None):
         """Density contrast delta on the mesh by cloud in cell; mean particle mass 1 unless mass is given."""
         i0, d = self._cell_coords(pos)
-        size = self.ng ** 3
-        rho = None
-        for c in CORNERS:
-            idx, w = self._corner(i0, d, c)
-            if mass is not None:
-                w = w * mass
-            part = self.ops.scatter_add(size, idx, w)
-            rho = part if rho is None else rho + part
-        rho = rho.reshape(self.ng, self.ng, self.ng)
+
+        def corners():
+            for c in CORNERS:
+                idx, w = self._corner(i0, d, c)
+                yield idx, (w if mass is None else w * mass)
+        rho = self.ops.scatter_add_many(self.ng ** 3, corners()).reshape(self.ng, self.ng, self.ng)
         return rho * (self.ng ** 3 / self.np_) - 1.0
 
     def interpolate(self, mesh, pos):

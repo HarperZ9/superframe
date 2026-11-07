@@ -3,19 +3,26 @@
 """Array backends for the particle-mesh solver: numpy with scipy.fft on the CPU, torch on CUDA when present.
 
 Both expose the same few operations, so pm.py has one body. The CPU backend caps FFT threads at 3.
+
+Determinism: numpy's bincount adds in a fixed order, so CPU runs repeat bit for bit. CUDA's floating-point
+index_add uses atomics whose order varies between runs, so torch sums the cloud-in-cell weights as 64-bit
+integers in units of 2^-FIXED_BITS instead (deterministic=True, the default): integer addition is
+associative, so the mesh, and every step after it, is the same on every run.
 """
 import numpy as np
 from scipy import fft as sfft
 
 CPU_WORKERS = 3
+FIXED_BITS = 30          # weight quantum 2^-30 ~ 9e-10; int64 then holds 2^33 particles per cell
 
 
 class NumpyOps:
     name = "numpy"
 
-    def __init__(self, dtype=np.float64, workers=CPU_WORKERS):
+    def __init__(self, dtype=np.float64, workers=CPU_WORKERS, deterministic=True):
         self.dtype = dtype
         self.workers = workers
+        self.deterministic = True          # bincount is order-fixed whatever is asked
 
     def asarray(self, x):
         return np.asarray(x, dtype=self.dtype)
@@ -28,6 +35,14 @@ class NumpyOps:
 
     def scatter_add(self, size, idx, w):
         return np.bincount(idx, weights=w, minlength=size).astype(self.dtype)
+
+    def scatter_add_many(self, size, pairs):
+        """Sum of scatter_add over (idx, w) pairs; bincount is order-fixed, so this is deterministic."""
+        out = None
+        for idx, w in pairs:
+            part = self.scatter_add(size, idx, w)
+            out = part if out is None else out + part
+        return out
 
     def rfftn(self, a):
         return sfft.rfftn(a, workers=self.workers)
@@ -58,9 +73,10 @@ class NumpyOps:
 class TorchOps:
     """CUDA through torch; float32 by default to keep GPU memory modest."""
 
-    def __init__(self, device="cuda", dtype=None):
+    def __init__(self, device="cuda", dtype=None, deterministic=True):
         import torch
         self.torch = torch
+        self.deterministic = deterministic
         self.device = torch.device(device)
         self.dtype = dtype or torch.float32
         self.name = f"torch-{self.device.type}"
@@ -80,6 +96,21 @@ class TorchOps:
     def scatter_add(self, size, idx, w):
         out = self.torch.zeros(size, device=self.device, dtype=self.dtype)
         return out.index_add_(0, idx, w)
+
+    def scatter_add_many(self, size, pairs):
+        """Sum of scatter_add over (idx, w) pairs. deterministic: integer accumulation (see module notes);
+        otherwise float atomics, whose rounding depends on thread order."""
+        t = self.torch
+        if not self.deterministic:
+            out = t.zeros(size, device=self.device, dtype=self.dtype)
+            for idx, w in pairs:
+                out.index_add_(0, idx, w)
+            return out
+        q = float(2 ** FIXED_BITS)
+        acc = t.zeros(size, device=self.device, dtype=t.int64)
+        for idx, w in pairs:
+            acc.index_add_(0, idx, t.round(w.to(t.float64) * q).to(t.int64))
+        return (acc.to(t.float64) / q).to(self.dtype)
 
     def rfftn(self, a):
         return self.torch.fft.rfftn(a)
