@@ -33,6 +33,7 @@ npm run test:py                                      # the Python tests
 | `latticechiral` | lattice fermions and their cures, the 2D index theorem, and continuum chiral fermions on interpolated lattice gauge fields (anomaly, 3-4-5 model, sign problem) | FSL-1.1-MIT |
 | `wavelab` | waves pushed hard and timed well: shocks and acoustic saturation, cavitation collapse, Earth's free oscillations from PREM, the Lamb wave, parametric pumping, phased focusing, time reversal, a vibrating chain as a reservoir computer, and sound on Mars | FSL-1.1-MIT |
 | `daw` | a workstation whose instruments are physical models: measured materials and real shapes to modes, struck, plucked or blown, heard in space; arrangement, mixer, WAV and FLAC export with a receipt; the real-time core in BuildLang | FSL-1.1-MIT |
+| `remastering` | decode any audio file, read its condition, split it into stems and layers, restore, resynthesize and master it, with a receipt for every stage and a map of which regions are original, restored or made by the tool; see `remastering/README.md` | FSL-1.1-MIT |
 | `rooms` | experimental rooms: lenses, optical trains, sound, PCB and fluid solvers, and a typed map registry; see `rooms/README.md` | FSL-1.1-MIT |
 | `_vectors` | CC0 golden vectors for canonical records and statistics, shared with Flywheel and CMMNS | CC0-1.0 |
 

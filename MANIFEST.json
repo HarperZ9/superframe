@@ -5698,8 +5698,8 @@
   {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 6745,
-   "sourceSha256": "fbf37afb0802c62e16d1c085a73540b6b0dfc8eebb1b3a58a23b20fc59eaeb25"
+   "bytes": 7021,
+   "sourceSha256": "6d841a8db59f7d6b12f23746aa636945b6c3ce72c88c55e0a49b34fd89676d78"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -9438,6 +9438,198 @@
    "source": "repo",
    "bytes": 9426,
    "sourceSha256": "f0531557eab2ae4c84f7553213884650e1f6f8a83d6657b3bdfafdb6e7620280"
+  },
+  {
+   "path": "packages/remastering/README.md",
+   "source": "repo",
+   "bytes": 5466,
+   "sourceSha256": "a4b87b47bc99bc9b08889ddf5cb85edeb78b71a5ad6d147c9f1d961db66ee052"
+  },
+  {
+   "path": "packages/remastering/remastering/__init__.py",
+   "source": "repo",
+   "bytes": 614,
+   "sourceSha256": "2f2467fe65f3ffdc16b4bde09646c2730da584d9929337b82a86ba666ce08ec9"
+  },
+  {
+   "path": "packages/remastering/remastering/__main__.py",
+   "source": "repo",
+   "bytes": 2447,
+   "sourceSha256": "d2e0d85adc5657d011b81140d444ed547d153a0d1eeb2b91644fa5a2997ccb91"
+  },
+  {
+   "path": "packages/remastering/remastering/accel.py",
+   "source": "repo",
+   "bytes": 3037,
+   "sourceSha256": "d8f75660033c61ee32c98623e1fdca78da8f20cc4129c665116da0c4f06988e7"
+  },
+  {
+   "path": "packages/remastering/remastering/audio.py",
+   "source": "repo",
+   "bytes": 5378,
+   "sourceSha256": "143d550ca5c393b36595f67e3ce390dc9cd47791a2d721d3de7ed67be0a19395"
+  },
+  {
+   "path": "packages/remastering/remastering/chain.py",
+   "source": "repo",
+   "bytes": 8656,
+   "sourceSha256": "1e6736aea93561bc35afdc301525d663106285519057cfb9a9cf83d3ba2575a4"
+  },
+  {
+   "path": "packages/remastering/remastering/condition.py",
+   "source": "repo",
+   "bytes": 4834,
+   "sourceSha256": "94bd4cfbb7683b057ffe03eec47433ba9a530d42d95bfa1ea685c105d03d546e"
+  },
+  {
+   "path": "packages/remastering/remastering/dither.py",
+   "source": "repo",
+   "bytes": 1751,
+   "sourceSha256": "7330783ada3a65cdb7bbd73b2e9ed94d0eeb3ceee1b38e664220ad59cbb37351"
+  },
+  {
+   "path": "packages/remastering/remastering/dynamics.py",
+   "source": "repo",
+   "bytes": 6091,
+   "sourceSha256": "2a1c355171be594096c7a89282c06dd0d5cc247cacca7fc152be6ab0ed2652da"
+  },
+  {
+   "path": "packages/remastering/remastering/edition.py",
+   "source": "repo",
+   "bytes": 4180,
+   "sourceSha256": "2c0ea563fa36df74ac9b36e2b478a212e8c484d72225c938c77bf0626de4e999"
+  },
+  {
+   "path": "packages/remastering/remastering/eq.py",
+   "source": "repo",
+   "bytes": 3654,
+   "sourceSha256": "70077ed0f552a990ce42bc7611adfb37afd5ee8af1723c42b44d288ddb1f543e"
+  },
+  {
+   "path": "packages/remastering/remastering/kernels.py",
+   "source": "repo",
+   "bytes": 4287,
+   "sourceSha256": "c222ada8038fc2673d29e7160fa7b1e8e0f59b7a0a50e16492ba8a2e6f7983f5"
+  },
+  {
+   "path": "packages/remastering/remastering/layers.py",
+   "source": "repo",
+   "bytes": 6915,
+   "sourceSha256": "3fb821914c05a2b1ca3098b254a31424f606308aa52e63a97d18948a26bc7a04"
+  },
+  {
+   "path": "packages/remastering/remastering/loudness.py",
+   "source": "repo",
+   "bytes": 5936,
+   "sourceSha256": "f801cef85ae9601d3b08531acb42c994c81c340f786bc5e21497825ce2d2a1b0"
+  },
+  {
+   "path": "packages/remastering/remastering/master.py",
+   "source": "repo",
+   "bytes": 6965,
+   "sourceSha256": "6c7628f8f8a4db9476ebebb5db5d2336e975af4e25bf91bf63f84d2e1c24f6ee"
+  },
+  {
+   "path": "packages/remastering/remastering/provenance.py",
+   "source": "repo",
+   "bytes": 4308,
+   "sourceSha256": "66935114beac38b8b112e81c9c41b751fa602dafdb6e8fe0ceda8da8d26a409a"
+  },
+  {
+   "path": "packages/remastering/remastering/receipts.py",
+   "source": "repo",
+   "bytes": 2361,
+   "sourceSha256": "2ec67f3a03904583b9576ec1e5a44454269976c0d2b4df8bfb7a5436f0debdb8"
+  },
+  {
+   "path": "packages/remastering/remastering/refine.py",
+   "source": "repo",
+   "bytes": 2530,
+   "sourceSha256": "87e7dd085095fc0c5337117e1afa5c3af9b97a84a94581bf7cb52229efb73379"
+  },
+  {
+   "path": "packages/remastering/remastering/resample.py",
+   "source": "repo",
+   "bytes": 6705,
+   "sourceSha256": "586b5c7eb4108d1361ce9a4be40489855ee9485509774b3f4d3492da8132d566"
+  },
+  {
+   "path": "packages/remastering/remastering/restore/__init__.py",
+   "source": "repo",
+   "bytes": 197,
+   "sourceSha256": "15cf9946b76d86eb85166ab2dd73d85e182fc8dd45fa0d035ee9509f97d188b9"
+  },
+  {
+   "path": "packages/remastering/remastering/restore/ar.py",
+   "source": "repo",
+   "bytes": 3275,
+   "sourceSha256": "f5d7b97d1aff4a0880b148f0ecd99be3de79bf0e93929bd2a4daa00dfb59fe2f"
+  },
+  {
+   "path": "packages/remastering/remastering/restore/repair.py",
+   "source": "repo",
+   "bytes": 7375,
+   "sourceSha256": "dab6abe99e8d3706731b6c2e84712dd4785c16da00637334a21774282a823c8c"
+  },
+  {
+   "path": "packages/remastering/remastering/restore/spectral.py",
+   "source": "repo",
+   "bytes": 10251,
+   "sourceSha256": "eb151c7ae21e02f9f68f73bc497893806703ff7170ed74729a689767529d1e9c"
+  },
+  {
+   "path": "packages/remastering/remastering/resynth.py",
+   "source": "repo",
+   "bytes": 6804,
+   "sourceSha256": "c2a3711c48843971041d571baf1dd4698999429c1ea2f51a6a46fc83370df1c9"
+  },
+  {
+   "path": "packages/remastering/remastering/split.py",
+   "source": "repo",
+   "bytes": 10556,
+   "sourceSha256": "71b06b244bcb9f4901afafbc9b28ae42761ad2d76bf7c2f7c6fc61ec593164de"
+  },
+  {
+   "path": "packages/remastering/remastering/stereo.py",
+   "source": "repo",
+   "bytes": 1203,
+   "sourceSha256": "11e4e777c33157df8800f161c319970e0ba542f3d4d4630220493569b296d303"
+  },
+  {
+   "path": "packages/remastering/remastering/stft.py",
+   "source": "repo",
+   "bytes": 5122,
+   "sourceSha256": "5656badad0cabd0786230454dc0b5e064d35afc9ac9f81ca42c9271b05a735c3"
+  },
+  {
+   "path": "packages/remastering/remastering/transcribe.py",
+   "source": "repo",
+   "bytes": 6586,
+   "sourceSha256": "78c760cdf15451a3bdb3e3bf482c999a70d74c9fb337ab92686c14817dbd5e18"
+  },
+  {
+   "path": "packages/remastering/tests/test_loudness.py",
+   "source": "repo",
+   "bytes": 4266,
+   "sourceSha256": "dd32c2884910e8dee1abeab006769f36c5b180bd52b30f54280dc8fcff39896f"
+  },
+  {
+   "path": "packages/remastering/tests/test_master.py",
+   "source": "repo",
+   "bytes": 5974,
+   "sourceSha256": "1749393ade2e434dd8aa3a168abe4c56716e48353dcf32d7169d65fdc223655e"
+  },
+  {
+   "path": "packages/remastering/tests/test_records.py",
+   "source": "repo",
+   "bytes": 7555,
+   "sourceSha256": "e80dd09f06eda0870ac0bddf90c1ccd653fed768bb6056d3cc1538cd380922ae"
+  },
+  {
+   "path": "packages/remastering/tests/test_restore.py",
+   "source": "repo",
+   "bytes": 5126,
+   "sourceSha256": "3d7ed1b41684c7bdf166c3c22c3454e2112748b404ecce4342ec52f25f543abd"
   },
   {
    "path": "packages/requirements.txt",
