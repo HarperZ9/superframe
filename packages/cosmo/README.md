@@ -106,6 +106,7 @@ This is a capability test. Nothing here says which topology our universe has. Lu
 - The emulator and CAMB tables cover the default cosmology only. Topology runs on eigenmodes; the N-body box itself is still a cubic E1.
 - The linear spectrum is a fit, within 3.9 percent of CAMB. CAMB is used only to write `data/camb_reference.json` (study/make_camb_reference.py); nothing imports it at run time.
 - No halo finder, no hydrodynamics, no lightcone.
+- Block-step and 512^3 runs need CUDA; the CPU engine (`stepping.NumpyEngine`) is for tests at 16^3 to 32^3.
 
 ## Round three: short-range force, CAMB input, gravity in twisted boxes
 
@@ -162,3 +163,61 @@ Wall time per 420-step run on the RTX 4090 (shared GPU, peak 4.9 GB): 2.6 min an
 | E3 run of N particles against a plain PM run of all 4N images on the cover | equal to 1e-8 | E3 run without images: off by over 0.1 Mpc/h |
 
 E3 study run (`study/run_twisted.py`): sides 128 x 128 x 32 Mpc/h with a cubic 128 Mpc/h cover, 65536 particles of E3 (262144 images), 128^3 mesh, Zel'dovich ICs at z = 49 from a fixed-amplitude field averaged over G, 55 steps. At the start the images of E3's particles land on the cover's other particles to 5e-14 Mpc/h. The run matches the plain PM run of all images to 6.7e-12 Mpc/h in position and 2e-14 in P(k), in 30 s against 44 s for the cover run (CPU). This tests the machinery; it is no claim about the topology of our universe.
+
+## Round four: block time steps and 512^3 particles on one shared GPU
+
+```
+python packages/cosmo/study/run_block.py --n 256 --box 128 --steps-log 20 --steps-late 90 --levels 3 --eta 0.05
+python packages/cosmo/study/run_block.py --n 512 --box 256 --eps 0.0333 --match-n 256 --linear camb --steps-log 20 --steps-late 90 --levels 3 --eta 0.05
+python packages/cosmo/study/score_steps.py ref420.npz ref840.npz candidate.npz     # pass or fail by band
+```
+
+### Block time steps (`stepping`)
+
+The mesh force runs on global steps; the pair force runs on power-of-two sub-steps chosen per particle by Gadget's softening criterion, d tau = sqrt(2 eta eps / (a |g|)), with tau the drift time. A particle may shorten its step at any of its boundaries and lengthen it only where the longer step begins. Every particle drifts on every sub-step, so positions are always synchronised.
+
+Few global steps lose linear growth with plain kick and drift integrals: 55 global steps put k < 0.1 one percent low at z = 1. The mesh kicks and the summed drift of each global step therefore use the FastPM factors (Feng et al. 2016), which keep the linear growing mode exact for any step count. With them, 55 global steps read 1.0000 of the 420-step run below k = 0.1.
+
+| Check (tests/test_block_steps.py) | Result | Planted wrong input |
+|---|---|---|
+| Plane wave, a = 0.1 to 1, four global steps, against 64 | 0.7 percent | plain integrals: 6 percent low |
+| 16^3 particles: 40 global steps with three levels against 210 plain global steps, P(k) below k = 2 | within 0.25 percent, 89 pair sums per particle instead of 210 | step rule 64 times too lenient: 15 percent low at k = 1-2 |
+| Level rule; sum over active particles against the full pair sum | exact; 1e-16 | |
+| CUDA engine against the CPU engine; repeat runs | mesh kick 7e-7, pair kick 9e-5 (float32), the same levels; three runs, including one with slab deposit and offloaded momenta, give one sha256 | |
+
+Study test: 256^3 particles in 128 Mpc/h, 2LPT, the round-three initial conditions, scored band by band against the 420-step run (`score_steps.py`). A band passes when it sits within the change that doubling to 840 steps makes, plus 0.2 percent.
+
+| Scheme | Largest band difference from 420 steps | Pair sums per particle | Wall time | GPU energy |
+|---|---|---|---|---|
+| Round-three code, 420 global steps (rerun under the same load) | reference | 420 | 177 s | 53.9 kJ |
+| Lean engine, 420 global steps | 0.09 percent | 421 | 81 s | 30.6 kJ |
+| Block steps, 110 global, 3 levels, eta 0.05 | 0.34 percent (z = 1, k 3-5; 840 steps move it 0.86) | 198 | 58 s | 22.2 kJ |
+| Block steps, 110 global, 2 levels, eta 0.05 | 0.37 percent | 178 | 42 s | 16.7 kJ |
+| Planted: 3 levels, eta 3.2 | fails 8 of 14 bands; 12.5 percent low at z = 1, k 3-5 | 111 | 30 s | 11.3 kJ |
+
+Every band of both block runs passes. Against the round-three code the 3-level run takes a third of the time and saves 31.7 kJ (59 percent); against the lean engine on 420 steps it saves 23 s and 8.4 kJ (27 percent). The GPU was shared with other jobs throughout, so times carry that load. Two block runs give one sha256. In the 256 Mpc/h box no 840-step run exists; there the block runs sit 0.3 to 1.1 percent below the round-three 420-step runs at z = 0, k 2-5, in three seeds.
+
+### The lean CUDA engine (`lean`)
+
+Particles live in six float32 columns and a one-byte level: no (N, 3) force array exists, because each kernel adds its force to the momenta as it sums it. The deposit accumulates 64-bit integers one slab of the mesh at a time. During the mesh FFTs the momenta wait in pinned host memory. A chunked counting sort by chaining cell (cells of half the cut-off, searched two deep) keeps the pair kernel's memory reads local, and the list is rebuilt only when particles may have moved past the skin. 512^3 particles with a 512^3 mesh peak at 5.3 GB.
+
+### Mass resolution and the z = 1 deficit
+
+Three seeds of 512^3 particles in 256 Mpc/h against 256^3 in the same box: same phases on every mode both lattices hold (`ic.linear_delta_k(match_n=256)`), same mesh, same softening (0.0333 Mpc/h), CAMB linear input, the same block steps. So the runs differ in particle mass and in the initial modes between the two Nyquist frequencies.
+
+P / Cosmic Emu, mean of three seeds (range):
+
+| Run | z | 0.5-1 | 1-2 | 2-3 | 3-5 |
+|---|---|---|---|---|---|
+| 256^3 | 1 | 0.964 (0.956-0.974) | 0.948 (0.935-0.959) | 0.926 (0.913-0.937) | 0.909 (0.899-0.920) |
+| 512^3 | 1 | 0.983 (0.975-0.992) | 0.988 (0.974-0.999) | 0.983 (0.969-0.994) | 0.968 (0.959-0.978) |
+| 256^3 | 0 | 0.986 (0.958-1.004) | 0.978 (0.960-0.990) | 0.949 (0.940-0.959) | 0.919 (0.912-0.928) |
+| 512^3 | 0 | 0.993 (0.964-1.011) | 0.990 (0.971-1.003) | 0.967 (0.957-0.977) | 0.947 (0.942-0.954) |
+
+512^3 over 256^3 on the same phases: z = 1, 1.020 / 1.042 / 1.061 / 1.065 in the four bands, seed ranges under 0.004; z = 0, 1.007 / 1.013 / 1.019 / 1.031.
+
+- Mass resolution is most of the z = 1 high-k deficit. At 1-2 h/Mpc it falls from 5.2 to 1.2 percent, at 2-3 from 7.4 to 1.7 percent.
+- Inside the emulator's quoted 3 percent on the seed mean: z = 1 to k = 3, and z = 0 to k = 2. Still outside: z = 1, 3-5 (3.2 percent low); z = 0, 2-3 (3.3 percent) and 3-5 (5.3 percent).
+- What is left at z = 0 has three candidates, none tested here: more mass resolution (the 512/256 step is still 3 percent at 3-5), force resolution (fixed mesh split and softening), and the block-step deficit of up to 1.1 percent seen in the 256 Mpc/h box.
+
+Cost per 512^3 run on the shared RTX 4090: 9.6 to 9.9 minutes and 258 to 267 kJ GPU (NVML counter), 159 pair sums per particle, peak 5.3 GB; initial conditions 70 s on three CPU threads. A 256^3 run in the same box: 28 s and 10 kJ.

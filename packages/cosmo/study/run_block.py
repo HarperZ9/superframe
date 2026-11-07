@@ -28,9 +28,12 @@ from run_pk import step_grid  # noqa: E402
 
 
 def measure(engine, cosmo, plin, box, ng, n3, z):
+    engine.park_momenta()
     delta = lean.deposit(engine.ops, engine.x, box, ng, n3, engine.slabs)
     k, pk, nm = power.power_spectrum(None, box, ng, engine.ops, n3, delta=delta)
     del delta
+    engine.ops.torch.cuda.empty_cache()
+    engine.unpark_momenta()
     aa = 1.0 / (1.0 + z)
     lin = plin(k, aa)
     ref = halofit.halofit(k, lambda kk: plin(kk, aa), float(cosmo.omega_m_a(aa)))

@@ -136,10 +136,7 @@ class CudaEngine:
         if not k:
             return
         t, dev = self.t, self.ops.device
-        if self.offload:                        # momenta wait in pinned host memory during the FFTs
-            for h, a in zip(self._host, self.p):
-                h.copy_(a)
-            self.p = [None, None, None]
+        self.park_momenta()                     # offload engines: momenta wait in pinned host memory
         phi = self.ops.rfftn(deposit(self.ops, self.x, self.box, self.ng, self.np_, self.slabs))
         phi.mul_(self._g)
         n, ng = self.np_, self.ng
@@ -153,8 +150,7 @@ class CudaEngine:
                 self._host[c].copy_(pc)
                 del pc
         del phi
-        if self.offload:
-            self.p = [h.to(dev) for h in self._host]
+        self.unpark_momenta()
 
     def short_kick(self, thr, kclose, kopen, crit, lmax):
         t = self.t
@@ -185,6 +181,17 @@ class CudaEngine:
         self.moved += float(d) * vmax2 ** 0.5
         if self.moved > self.skin:
             self._sort()
+
+    def park_momenta(self):
+        """Move the momenta to pinned host memory (offload engines only) so a measurement can use the room."""
+        if self.offload and self.p[0] is not None:
+            for h, a in zip(self._host, self.p):
+                h.copy_(a)
+            self.p = [None, None, None]
+
+    def unpark_momenta(self):
+        if self.offload and self.p[0] is None:
+            self.p = [h.to(self.ops.device) for h in self._host]
 
     # ---- read-out --------------------------------------------------------------------------------
     def positions(self, original_order=True):

@@ -80,10 +80,10 @@ def mass_plate(groups, dest):
             r = np.array([d[f"pk_z{z}"] / reference.cosmicemu(k, float(z)) for d in runs])
             ax.semilogx(k, r.mean(axis=0), color=col, lw=3.5, label=f"{label} ({len(runs)} seeds)")
             ax.fill_between(k, r.min(axis=0), r.max(axis=0), color=col, alpha=0.18, lw=0)
-        for kn, s in ((np.pi, "256^3 Nyquist"), (2 * np.pi, "512^3 Nyquist")):
+        for kn, s in ((np.pi, "256^3 particle Nyquist"),):
             ax.axvline(kn, color=MUTED, lw=1.2, ls=":")
             ax.text(kn * 0.97, 0.865, s, rotation=90, ha="right", fontsize=20, color=MUTED)
-        ax.set_xlim(0.05, 6.3)
+        ax.set_xlim(0.05, 5.2)             # the measurement mesh's own aliasing turns up past k = 5.5
         ax.set_ylim(0.85, 1.08)
         ax.set_ylabel(f"P(k) / Cosmic Emu, z = {z}")
         ax.spines[["top", "right"]].set_visible(False)
