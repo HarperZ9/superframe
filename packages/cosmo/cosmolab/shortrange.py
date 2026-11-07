@@ -62,6 +62,27 @@ def short_range_cpu(pos, box, gm, rs, rcut, eps=0.0, with_potential=False):
     return (acc, pot) if with_potential else acc
 
 
+def short_range_subset(pos, act, box, gm, rs, rcut, eps=0.0):
+    """Short-range accelerations (len(act), 3) on the particles act from all particles: every pair with an
+    active end, from the same k-d tree pair list as short_range_cpu, summed in a fixed order."""
+    pos = np.asarray(pos, dtype=np.float64)
+    n = len(pos)
+    acc = np.zeros((n, 3))
+    if not len(act):
+        return acc[:0]
+    isact = np.zeros(n, dtype=bool)
+    isact[act] = True
+    ij = pairs_cpu(pos, box, rcut)
+    ij = ij[isact[ij[:, 0]] | isact[ij[:, 1]]]
+    ij = ij[np.lexsort((ij[:, 1], ij[:, 0]))]
+    if len(ij):
+        f = kernel(_min_image(pos[ij[:, 0]] - pos[ij[:, 1]], box), gm, rs, eps)
+        for ax in range(3):
+            acc[:, ax] = (np.bincount(ij[:, 0], weights=f[:, ax], minlength=n)
+                          - np.bincount(ij[:, 1], weights=f[:, ax], minlength=n))
+    return acc[act]
+
+
 _CUDA_SRC = r"""
 extern "C" __global__ void p3m_short(const float* __restrict__ pos, const int* __restrict__ cell,
     const int* __restrict__ start, const int* __restrict__ count, int n, int nc, float box,
