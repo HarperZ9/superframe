@@ -5890,20 +5890,20 @@
   {
    "path": "packages/cosmo/README.md",
    "source": "repo",
-   "bytes": 6232,
-   "sourceSha256": "fb267bf9926bcee8eb58345c13bd310deb294a79ebcd74a0b492d38fd4e3778c"
+   "bytes": 12778,
+   "sourceSha256": "bc23e5c5fa09db47e67a86ea73aa89f02c894b6875605753a810cf75f2b6271d"
   },
   {
    "path": "packages/cosmo/cosmolab/__init__.py",
    "source": "repo",
-   "bytes": 877,
-   "sourceSha256": "3248120573e0ae3c93563abe542be62486a372bcf76316625075df18f550b8c1"
+   "bytes": 1043,
+   "sourceSha256": "c82255f0984a829abaaba0536ce609f92edbf37d2092685ab4408bc79d862348"
   },
   {
    "path": "packages/cosmo/cosmolab/backend.py",
    "source": "repo",
-   "bytes": 3821,
-   "sourceSha256": "be0db53021fcebda862de5846bc499e57999d8ade8546e1a7881b3469bb94079"
+   "bytes": 5513,
+   "sourceSha256": "52d463cb4620a1dd8c13bd5da5e97904bf66e6bea51faa7f1934968062a0bbb5"
   },
   {
    "path": "packages/cosmo/cosmolab/background.py",
@@ -5926,8 +5926,8 @@
   {
    "path": "packages/cosmo/cosmolab/ic.py",
    "source": "repo",
-   "bytes": 3064,
-   "sourceSha256": "bb6e9ec0eff3f3747c52d3e89dab10a77717b9ef8ff4e4458de927b0a7617efe"
+   "bytes": 5384,
+   "sourceSha256": "e6f4b785ae1a514bd7a74c60a9f052e9e9332dfe59bea586f7f93dd95eb65cea"
   },
   {
    "path": "packages/cosmo/cosmolab/linear.py",
@@ -5938,8 +5938,8 @@
   {
    "path": "packages/cosmo/cosmolab/pm.py",
    "source": "repo",
-   "bytes": 5529,
-   "sourceSha256": "3f167deb86a1f47fdc35776f7d26d3421d5f42a5b2c1c893d22842f7c21a88df"
+   "bytes": 5452,
+   "sourceSha256": "dbd870c706912d658bd2699d5a967b8e7b0916efb951bab8a93525415a352735"
   },
   {
    "path": "packages/cosmo/cosmolab/power.py",
@@ -5948,10 +5948,34 @@
    "sourceSha256": "9a304a4472af3d1aa2b7cd9d703e3beae7fe09def58d21751f9547a3537c91a0"
   },
   {
+   "path": "packages/cosmo/cosmolab/reference.py",
+   "source": "repo",
+   "bytes": 1818,
+   "sourceSha256": "cecdf0a8f75b9d49089d90a3f27229fc54662c90f7df8631389502d66a2eb30b"
+  },
+  {
+   "path": "packages/cosmo/cosmolab/topology.py",
+   "source": "repo",
+   "bytes": 10941,
+   "sourceSha256": "7cf723797614c1a9e62c64a7c7f47f7b139e6ab98d5ef1274f182e491b46d5f9"
+  },
+  {
    "path": "packages/cosmo/data/camb_reference.json",
    "source": "repo",
    "bytes": 27726,
    "sourceSha256": "37c4afce6a739cd8c8d8a575727acd43811cc95d2b850360ee27c0366f72ae3d"
+  },
+  {
+   "path": "packages/cosmo/data/cosmicemu_reference.json",
+   "source": "repo",
+   "bytes": 31805,
+   "sourceSha256": "10f0cf315c148a83ff4b3c2eece4364e95c3129d62898d8abf830afe4b85fd02"
+  },
+  {
+   "path": "packages/cosmo/study/COSMICEMU-LICENSE.txt",
+   "source": "repo",
+   "bytes": 2284,
+   "sourceSha256": "4db5a237204ae98bafc425f95a97e9c3b88d36305775e8e3a08169e469e2d909"
   },
   {
    "path": "packages/cosmo/study/make_camb_reference.py",
@@ -5960,16 +5984,34 @@
    "sourceSha256": "37416914bde953273431c6fb58ac00e0fca1fa5b56d7b2e7966547da1cd0df17"
   },
   {
+   "path": "packages/cosmo/study/make_cosmicemu_reference.py",
+   "source": "repo",
+   "bytes": 4746,
+   "sourceSha256": "e4d789971b1bc403ea2e8317cd6d10cf993668c670547a06bb34828d94394aa5"
+  },
+  {
    "path": "packages/cosmo/study/plates.py",
    "source": "repo",
    "bytes": 5136,
    "sourceSha256": "9fe728dbd974673bafefdc81d0f0e863ad494a11e55aca1ac51799a29f6cdd9a"
   },
   {
+   "path": "packages/cosmo/study/plates_round2.py",
+   "source": "repo",
+   "bytes": 4695,
+   "sourceSha256": "8d94c48656d4a297e5f9d4375badad4174fa78e7c6a7e3e31589ae19b74b1190"
+  },
+  {
    "path": "packages/cosmo/study/run_pk.py",
    "source": "repo",
-   "bytes": 5390,
-   "sourceSha256": "b3afac0724f6601caae2c92227d685c09c09a9f5158b49245f0ad805579eef98"
+   "bytes": 6063,
+   "sourceSha256": "762600f7efaf77909a6bef6818764f9372e1d8c785df6991dd5145d7e396b5ab"
+  },
+  {
+   "path": "packages/cosmo/study/score_runs.py",
+   "source": "repo",
+   "bytes": 2133,
+   "sourceSha256": "6c4142132faa53b145e3f8426f12f8dbd7f54bc9be7bbc811066556b2fcb23a9"
   },
   {
    "path": "packages/cosmo/tests/test_linear_halofit.py",
@@ -5978,10 +6020,28 @@
    "sourceSha256": "263792f1047d581028d813ba09ae6f60bad322edbe34c56ea2e2c1254dbd694b"
   },
   {
+   "path": "packages/cosmo/tests/test_lpt2_determinism.py",
+   "source": "repo",
+   "bytes": 4150,
+   "sourceSha256": "67ebaca1de607892d25bdd8c2b0ddb78980542d5ed34801a1b77bc9be5c6f25e"
+  },
+  {
    "path": "packages/cosmo/tests/test_pm_known_answers.py",
    "source": "repo",
    "bytes": 6813,
    "sourceSha256": "0113d7bcf55a2aa0035db2e7dcba8ba7517299a3d7a6f0b2a048bc3687dff56b"
+  },
+  {
+   "path": "packages/cosmo/tests/test_reference.py",
+   "source": "repo",
+   "bytes": 996,
+   "sourceSha256": "29b1673f8f0b9d9620c33ce0196c990f6e676bb164080d3799692084040c36c0"
+  },
+  {
+   "path": "packages/cosmo/tests/test_topology.py",
+   "source": "repo",
+   "bytes": 2989,
+   "sourceSha256": "9cb6f69f35cc37b23858e2dd0d053b2a65a404cbd8d949e0027d0b6ce2119488"
   },
   {
    "path": "packages/crt/SPEC.md",
