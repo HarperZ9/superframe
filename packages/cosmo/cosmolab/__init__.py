@@ -12,5 +12,9 @@
   ewald       the periodic point-mass force by Ewald summation
   reference   the Cosmic Emu and CAMB tables and k-band scoring
   topology    Laplacian eigenmodes of the flat 3-manifolds E1 to E6
+  shortrange  the P3M pair force (CPU k-d tree, or a CUDA kernel compiled at run time)
+  cudajit     run-time CUDA compilation through the nvrtc that ships with torch
+  twisted     deposit, Poisson solve and particle-mesh runs on the twisted manifolds E2 to E6
 """
-__all__ = ["background", "linear", "halofit", "backend", "pm", "ic", "power", "ewald", "reference", "topology"]
+__all__ = ["background", "linear", "halofit", "backend", "pm", "ic", "power", "ewald", "reference", "topology",
+           "shortrange", "cudajit", "twisted"]

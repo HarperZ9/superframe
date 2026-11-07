@@ -13,6 +13,7 @@ import itertools
 
 import numpy as np
 
+from . import shortrange
 from .backend import get_backend
 
 CORNERS = list(itertools.product((0, 1), repeat=3))
@@ -20,8 +21,9 @@ CORNERS = list(itertools.product((0, 1), repeat=3))
 
 class PMSolver:
     def __init__(self, cosmo, box, ng, n_particles, ops=None, gradient="fd4", deconvolve=False,
-                 readback="cic"):
+                 readback="cic", split=None):
         self.cosmo, self.box, self.ng, self.np_ = cosmo, float(box), int(ng), int(n_particles)
+        self.split = split                     # r_s (Mpc/h): the mesh keeps only the long-range part
         self.ops = ops or get_backend("numpy")
         self.cell = self.box / self.ng
         self.gradient, self.deconvolve, self.readback = gradient, deconvolve, readback
@@ -91,7 +93,19 @@ class PMSolver:
             for k in self._k:
                 w = w * _sinc(self.ops, 0.5 * k * self.cell) ** 2
             phi = phi / w ** int(self.deconvolve)          # True or 2: both windows; 1: one
+        if self.split:
+            phi = phi * _exp(self.ops, -k2 * self.split ** 2)
         return phi
+
+    def potential_at(self, pos, mass=None):
+        """Phi at the particles, cloud in cell from the mesh (long-range part only when split is set)."""
+        phi = self.ops.irfftn(self.potential_k(self.deposit(pos, mass)), (self.ng,) * 3)
+        return self.interpolate(phi, pos)
+
+    @property
+    def gm(self):
+        """G times one particle's mass in these units: lap Phi = 1.5 Omega_m delta, delta per particle V / N."""
+        return 1.5 * self.cosmo.omega_m * self.box ** 3 / (4 * np.pi * self.np_)
 
     def force_meshes(self, delta):
         """g = -grad Phi on the mesh, one component at a time."""
@@ -124,8 +138,49 @@ def _sin(ops, x):
     return ops.torch.sin(x) if hasattr(ops, "torch") else np.sin(x)
 
 
+def _exp(ops, x):
+    return ops.torch.exp(x) if hasattr(ops, "torch") else np.exp(x)
+
+
 def _sinc(ops, x):
     """sin(x)/x with sinc(0) = 1."""
     if hasattr(ops, "torch"):
         return ops.torch.sinc(x / np.pi)
     return np.sinc(x / np.pi)
+
+
+class P3MSolver(PMSolver):
+    """Particle-particle particle-mesh: the mesh carries the Gaussian-smoothed long-range force and a direct
+    pair sum adds the rest inside r_cut (shortrange.py). r_s = rs_cells mesh cells; r_cut = rcut_rs r_s;
+    eps is the Plummer softening in Mpc/h. Defaults follow Gadget-2's split (r_s = 1.25 cells,
+    r_cut = 4.5 r_s). The mesh divides out both cloud-in-cell windows; the Gaussian keeps that finite."""
+
+    def __init__(self, cosmo, box, ng, n_particles, ops=None, rs_cells=1.25, rcut_rs=4.5, eps=0.0,
+                 gradient="fd4", short_rs=None, **kw):
+        kw.setdefault("deconvolve", 2)
+        super().__init__(cosmo, box, ng, n_particles, ops, gradient=gradient, split=rs_cells * box / ng, **kw)
+        self.rs = self.split
+        self.short_rs = short_rs or self.rs        # planted: a different scale on the pair side breaks the split
+        self.rcut = rcut_rs * self.rs
+        self.eps = float(eps)
+        self._cuda = None
+        if hasattr(self.ops, "torch") and self.ops.device.type == "cuda":
+            self._cuda = shortrange.ShortRangeCuda(self.box, self.rcut)
+
+    def short_accel(self, pos):
+        if self._cuda is not None:
+            return self._cuda(pos, self.gm, self.short_rs, self.eps)
+        acc = shortrange.short_range_cpu(self.ops.to_numpy(pos), self.box, self.gm, self.short_rs, self.rcut, self.eps)
+        return self.ops.asarray(acc)
+
+    def accel(self, pos, mass=None):
+        if mass is not None:
+            raise ValueError("P3M runs use equal masses")
+        return super().accel(pos) + self.short_accel(pos)
+
+    def potential_at(self, pos, mass=None):
+        """Long-range mesh potential plus the short-range pair potential (CPU pair sum)."""
+        long = self.ops.to_numpy(super().potential_at(pos))
+        _, pot = shortrange.short_range_cpu(self.ops.to_numpy(pos), self.box, self.gm, self.short_rs, self.rcut,
+                                            self.eps, with_potential=True)
+        return long + pot
