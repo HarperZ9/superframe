@@ -92,3 +92,49 @@ class LinearPower:
     def __call__(self, k, a=1.0):
         d = 1.0 if a == 1.0 else self.cosmo.growth(a)
         return self._shape(np.asarray(k, dtype=float)) * d * d
+
+
+class TabulatedPower:
+    """P_lin(k, a) from a table at a = 1, log-log interpolated, scaled by D(a)^2 from this package's growth.
+    Outside the table it extends as k^n_s below and as the last logarithmic slope above."""
+
+    def __init__(self, cosmo, k, pk, label="table"):
+        self.cosmo, self.label = cosmo, label
+        self._lk, self._lp = np.log(np.asarray(k, float)), np.log(np.asarray(pk, float))
+        self._hi = (self._lp[-1] - self._lp[-2]) / (self._lk[-1] - self._lk[-2])
+
+    def _shape(self, k):
+        lk = np.log(np.asarray(k, float))
+        lp = np.interp(lk, self._lk, self._lp)
+        lp = np.where(lk < self._lk[0], self._lp[0] + self.cosmo.n_s * (lk - self._lk[0]), lp)
+        lp = np.where(lk > self._lk[-1], self._lp[-1] + self._hi * (lk - self._lk[-1]), lp)
+        return np.exp(lp)
+
+    def __call__(self, k, a=1.0):
+        d = 1.0 if a == 1.0 else self.cosmo.growth(a)
+        return self._shape(k) * d * d
+
+
+def camb_power(cosmo, live=False):
+    """CAMB's linear P(k) at z = 0 as an IC input. Default: the table in data/camb_reference.json (CAMB 2.0.5,
+    A_s set so CAMB's sigma8 equals cosmo.sigma8), valid only for the default Cosmology. live=True runs CAMB
+    (pip install camb) for any cosmology with the same settings."""
+    if live:
+        import camb
+        pars = camb.CAMBparams()
+        pars.set_cosmology(H0=100 * cosmo.h, ombh2=cosmo.omega_b * cosmo.h ** 2,
+                           omch2=(cosmo.omega_m - cosmo.omega_b) * cosmo.h ** 2, mnu=0.0,
+                           num_massive_neutrinos=0, TCMB=cosmo.t_cmb)
+        pars.set_matter_power(redshifts=[0.0], kmax=200)
+        a_s = 2.1e-9
+        for _ in range(3):
+            pars.InitPower.set_params(ns=cosmo.n_s, As=a_s)
+            a_s *= (cosmo.sigma8 / camb.get_results(pars).get_sigma8_0()) ** 2
+        pars.InitPower.set_params(ns=cosmo.n_s, As=a_s)
+        kh, _, pk = camb.get_results(pars).get_matter_power_spectrum(minkh=1e-4, maxkh=100, npoints=400)
+        return TabulatedPower(cosmo, kh, pk[0], label=f"CAMB {camb.__version__} live")
+    from . import reference
+    t = reference._table("camb_reference.json")
+    if any(abs(t["cosmology"][key] - getattr(cosmo, key)) > 1e-12 for key in t["cosmology"]):
+        raise ValueError("the shipped CAMB table is for the default Cosmology; use live=True")
+    return TabulatedPower(cosmo, t["k"], t["linear"]["0"], label=t["generator"])

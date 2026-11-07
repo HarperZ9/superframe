@@ -106,3 +106,59 @@ This is a capability test. Nothing here says which topology our universe has. Lu
 - The emulator and CAMB tables cover the default cosmology only. Topology runs on eigenmodes; the N-body box itself is still a cubic E1.
 - The linear spectrum is a fit, within 3.9 percent of CAMB. CAMB is used only to write `data/camb_reference.json` (study/make_camb_reference.py); nothing imports it at run time.
 - No halo finder, no hydrodynamics, no lightcone.
+
+## Round three: short-range force, CAMB input, gravity in twisted boxes
+
+```
+python packages/cosmo/study/run_pk.py --n 256 --box 256 --backend torch --order 2 --p3m --steps-late 360 --steps-log 60
+python packages/cosmo/study/run_pk.py --n 256 --box 256 --backend torch --order 2 --p3m --steps-late 360 --steps-log 60 --linear camb
+python packages/cosmo/study/run_twisted.py --out out/cosmo/twisted
+python packages/cosmo/study/plates_round3.py --runs LABEL=a.npz,b.npz,c.npz --camb EH=a.npz,b.npz CAMB=c.npz,d.npz --twisted out/cosmo/twisted/twisted_e3.npz
+```
+
+### P3M
+
+`pm.P3MSolver` splits gravity with a Gaussian of scale r_s (Springel 2005, MNRAS 364, 1105). The mesh carries the long-range part, Phi_k times exp(-k^2 r_s^2), with both cloud-in-cell windows divided out and a spectral gradient. `shortrange` adds the pair force -G m d / r^3 [erfc(u) + 2u/sqrt(pi) exp(-u^2)], u = r / 2 r_s, inside r_cut. Defaults follow Gadget-2's split: r_s = 1.25 mesh cells, r_cut = 4.5 r_s. Plummer softening (1/30 of the particle spacing in the runs) enters potential and force through rho = sqrt(r^2 + eps^2), so the force stays the gradient of the potential.
+
+Why P3M and not a tree: the short-range sum is exact inside r_cut, with no opening-angle error, so the split can be scored against Ewald with nothing else in the way; and a chaining mesh maps onto one GPU thread per particle. Its cost grows with clustering. At 256^3 particles it stayed under 3 minutes per run.
+
+The CUDA pair kernel is our own CUDA C. It is compiled at run time by the nvrtc library that torch's CUDA wheels already ship and launched through the driver API with ctypes (`cudajit`), so no compiler or extra package is needed. Each thread owns one particle and adds its neighbours in a fixed order with no atomics, so runs repeat bit for bit. The CPU path uses scipy's periodic k-d tree, and the CI tests run it.
+
+| Check (tests/test_p3m.py) | Result | Planted wrong input |
+|---|---|---|
+| Two-body force, mesh plus pair, against Ewald, 64^3 mesh, rms by separation | 0.003 / 0.10 / 0.55 / 1.3 / 0.9 / 0.23 / 0.06 percent at 0-0.5 / 0.5-1 / 1-2 / 2-4 / 4-8 / 8-16 / 16+ cells; largest single error 2.7 percent | pair side with r_s 30 percent too large: 19 percent rms at 2-4 cells |
+| Layzer-Irvine: a(K + W) plus the integral of K da stays constant, 16^3 particles, z = 19 to 0, 160 steps | largest drift 1.9 percent of a W (24^3 prototype: 1.1 percent with 240 steps, 3.2 percent with 120) | dynamics without the pair force, energy with it: 37 percent |
+| Pair sum antisymmetry, 3000 particles | net force under 1e-13 of the summed magnitudes | |
+| CUDA kernel against the CPU sum, clumped particles | 6.5e-6 relative (float32); two calls bitwise equal | |
+
+Step count matters far more than for PM. For 128^3 particles in 128 Mpc/h at z = 0, the k = 3-5 band reads 0.61 of the emulator with 55 steps, 0.92 with 210, 0.937 with 420 and 0.939 with 840. Runs use 420 steps (60 in ln a to a = 0.1, then 360 linear in a). Doubling to 840 in a 256^3, 128 Mpc/h box moves no band by more than 0.8 percent.
+
+Mode-weighted P / Cosmic Emu at z = 0, 2LPT ICs, mean of three phase seeds (range):
+
+| Configuration | 0.1-0.3 | 0.3-0.5 | 0.5-1 | 1-2 | 2-3 | 3-5 |
+|---|---|---|---|---|---|---|
+| PM, round two, 256^3, 256 Mpc/h | 0.997 (0.990-1.003) | 1.007 (0.978-1.025) | 0.993 (0.966-1.010) | 0.951 (0.937-0.960) | 0.855 (0.846-0.860) | 0.674 (0.666-0.678) |
+| P3M, 256^3, 256 Mpc/h | 0.995 (0.985-1.002) | 1.002 (0.971-1.025) | 0.986 (0.957-1.004) | 0.975 (0.956-0.988) | 0.945 (0.935-0.956) | 0.916 (0.911-0.925) |
+| P3M, 256^3, 128 Mpc/h | 0.951 (0.920-0.970) | 0.912 (0.873-0.967) | 0.920 (0.857-0.992) | 0.937 (0.876-1.005) | 0.961 (0.902-1.022) | 0.954 (0.913-1.005) |
+
+- The short-range force lifts 1-2 h/Mpc from 4.9 to 2.5 percent low, inside the emulator's quoted 2-3 percent on the seed mean, and 2-3 h/Mpc from 14.5 to 5.5 percent low.
+- k = 3-5 lies past the particle Nyquist frequency (pi h/Mpc) of the 256 Mpc/h box. The 128 Mpc/h box has eight times the mass resolution (Nyquist 2 pi) and reads 4.6 percent low there, but every band of that box sits 4 to 9 percent low, the longest included, with seed ranges up to 13 percent. A 128 Mpc/h box lacks the long modes, and its few long modes set each seed's nonlinear power; round two's 128 Mpc/h PM boxes showed the same deficit. Above k = 3 this round has no measurement inside the emulator's accuracy.
+- z = 1 reads low at high k: P3M in 256 Mpc/h gives 0.954 at 0.5-1 and 0.935 at 1-2, where round two's PM gave 1.012 and 1.029 (full window deconvolution overshoots). The 128 Mpc/h box gives 0.957 and 0.955. Mass resolution is the candidate cause; not tested.
+
+Wall time per 420-step run on the RTX 4090 (shared GPU, peak 4.9 GB): 2.6 min and 42.6 kJ GPU (NVML counter) for 256 Mpc/h; 2.9 min and 52.9 kJ for 128 Mpc/h. Three 128^3 P3M runs give one sha256 of final positions.
+
+### CAMB linear P(k) as the IC input
+
+`linear.camb_power(cosmo)` reads CAMB 2.0.5's z = 0 linear spectrum from `data/camb_reference.json` (sigma8 normalised, default cosmology only; `live=True` runs CAMB for any cosmology) and scales it by this package's D(a). Same phases, P3M, 256 Mpc/h, measured P_CAMB / P_EH at z = 0 (input linear ratio in brackets): 0.986 below k = 0.1 (0.982); 0.996 to 1.002 from 0.1 to 1 (1.006 to 1.017); 1.006 at 1-2 (1.009); 1.012 at 3-5 (0.995). Nonlinear growth smears the fit's wiggle error, so its up-to-3.9 percent linear error shrinks to under 1.5 percent in every z = 0 band. Against the emulator the CAMB start reads 0.994 / 0.991 / 1.001 / 0.987 / 0.980 in bands below 0.1 / 0.1-0.3 / 0.3-0.5 / 0.5-1 / 1-2; at z = 1 below k = 0.1 it reads 1.007, where the fit gave 1.023.
+
+### Gravity on E2 to E6
+
+`twisted.TwistedPoisson` deposits each particle and its images under the group G = Gamma / T on the covering torus, with the mesh laid along the torus's own lattice vectors (hexagonal for E4 and E5), and solves Poisson there. `twisted.eigen_potential` is the independent route: the Green's function as a sum over the manifold's eigenmodes from COMPACT's selection rules, each eigenfunction the orbit sum of plane waves.
+
+| Check (tests/test_twisted.py) | Result | Planted wrong input |
+|---|---|---|
+| Potential of a smoothed point mass against the eigenmode sum, h = 0.015 | max error 0.10 / 0.33 / 0.11 / 0.09 / 0.29 / 0.22 percent of max abs(Phi) for E1 / E2 / E3 / E4 / E5 / E6; it falls 3 to 9 times when h halves | untwisted torus (no images): 69 to 125 percent |
+| Group order, and the force at an image equals the rotated force | E2, E3, E6 to rounding; E4, E5 within 1.5 percent at h = 0.02 (skewed cloud-in-cell cells are not turn symmetric) | |
+| E3 run of N particles against a plain PM run of all 4N images on the cover | equal to 1e-8 | E3 run without images: off by over 0.1 Mpc/h |
+
+E3 study run (`study/run_twisted.py`): sides 128 x 128 x 32 Mpc/h with a cubic 128 Mpc/h cover, 65536 particles of E3 (262144 images), 128^3 mesh, Zel'dovich ICs at z = 49 from a fixed-amplitude field averaged over G, 55 steps. At the start the images of E3's particles land on the cover's other particles to 5e-14 Mpc/h. The run matches the plain PM run of all images to 6.7e-12 Mpc/h in position and 2e-14 in P(k), in 30 s against 44 s for the cover run (CPU). This tests the machinery; it is no claim about the topology of our universe.

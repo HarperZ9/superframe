@@ -76,3 +76,16 @@ def test_halofit_against_camb_takahashi(z):
     # planted: a wrong Omega_m(z) moves the answer past the tolerance
     off = halofit.halofit(k[s], plin, 1.0 if z == "0" else 0.3, kmin=1e-4, kmax=100)
     assert np.max(np.abs(off / np.array(REF["halofit"][z])[s] - 1)) > 3e-3
+
+
+def test_camb_table_as_ic_input():
+    """The CAMB input spectrum reproduces the table, carries sigma8, and refuses another cosmology."""
+    p = linear.camb_power(C)
+    k = np.array(REF["k"])
+    s = (k > 1e-3) & (k < 50)
+    assert np.allclose(p(k[s]), np.array(REF["linear"]["0"])[s], rtol=1e-12)
+    assert linear.sigma_r(p, 8.0) == pytest.approx(C.sigma8, rel=1e-3)
+    d = C.growth(0.5)
+    assert p(0.2, 0.5) == pytest.approx(p(0.2) * d * d, rel=1e-12)
+    with pytest.raises(ValueError):
+        linear.camb_power(C.with_(sigma8=0.9))

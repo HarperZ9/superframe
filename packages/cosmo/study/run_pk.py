@@ -61,22 +61,39 @@ def main():
     ap.add_argument("--float-atomics", action="store_true", help="CUDA deposit by float atomics (not bitwise)")
     ap.add_argument("--tag", default="", help="suffix for output names")
     ap.add_argument("--random-amplitude", action="store_true", help="draw |delta_k| too (default: fixed)")
+    ap.add_argument("--p3m", action="store_true", help="add the short-range pair force (P3M)")
+    ap.add_argument("--rs-cells", type=float, default=1.25, help="P3M split scale in mesh cells")
+    ap.add_argument("--rcut-rs", type=float, default=4.5, help="P3M pair cut-off in units of the split scale")
+    ap.add_argument("--eps-frac", type=float, default=1 / 30, help="Plummer softening over the particle spacing")
+    ap.add_argument("--gradient", default=None, choices=("fd4", "ik"), help="mesh gradient (default fd4 PM, ik P3M)")
+    ap.add_argument("--steps-log", type=int, default=10, help="steps uniform in ln a up to a = 0.1")
+    ap.add_argument("--linear", default="eh", choices=("eh", "camb"), help="IC input spectrum")
     ap.add_argument("--out", default=os.environ.get("COSMO_OUT", "out/cosmo"))
     a = ap.parse_args()
 
     cosmo = background.Cosmology()
-    plin = linear.LinearPower(cosmo)
+    plin = linear.LinearPower(cosmo) if a.linear == "eh" else linear.camb_power(cosmo)
     ops = get_backend(a.backend, **({"deterministic": False} if a.float_atomics else {}))
     n, box, ng = a.n, a.box, a.n * a.mesh_factor
     t0 = time.perf_counter()
     pos, mom, _ = ic.zeldovich(cosmo, plin, box, n, a.a_init, a.seed, fixed=not a.random_amplitude,
                               order=a.order)
     t_ic = time.perf_counter() - t0
-    solver = pm.PMSolver(cosmo, box, ng, n ** 3, ops, deconvolve=a.deconvolve)
-    grid = step_grid(a.a_init, n_lin=a.steps_late)
+    if a.p3m:
+        eps = a.eps_frac * box / n
+        solver = pm.P3MSolver(cosmo, box, ng, n ** 3, ops, rs_cells=a.rs_cells, rcut_rs=a.rcut_rs, eps=eps,
+                              gradient=a.gradient or "ik")
+    else:
+        solver = pm.PMSolver(cosmo, box, ng, n ** 3, ops, deconvolve=a.deconvolve, gradient=a.gradient or "fd4")
+    grid = step_grid(a.a_init, n_log=a.steps_log, n_lin=a.steps_late)
     snaps = {}
 
+    t_start = [time.perf_counter(), 0]
+
     def keep(at, p, m):
+        t_start[1] += 1
+        if t_start[1] % 10 == 0:
+            print(f"step {t_start[1]} a = {at:.3f} {time.perf_counter() - t_start[0]:.1f} s", file=sys.stderr, flush=True)
         if abs(at - 0.5) < 1e-12:
             snaps[0.5] = ops.to_numpy(p).astype(np.float64)
 
@@ -98,10 +115,15 @@ def main():
     final32 = np.ascontiguousarray(ops.to_numpy(x))
     sha = hashlib.sha256(final32.tobytes()).hexdigest()
     final = final32.astype(np.float64)
+    p3m_info = {"rs": solver.rs, "rcut": solver.rcut, "eps": solver.eps} if a.p3m else None
     del x, p, solver
 
-    result = {"n": n, "box_mpc_h": box, "mesh": ng, "backend": ops.name, "steps": len(grid) - 1, "deconvolve": a.deconvolve,
-              "order": a.order, "deterministic": getattr(ops, "deterministic", True), "final_positions_sha256": sha,
+    peak = None
+    if hasattr(ops, "torch") and ops.device.type == "cuda":
+        peak = ops.torch.cuda.max_memory_allocated() / 2 ** 30
+    result = {"n": n, "peak_gpu_gib": peak, "box_mpc_h": box, "mesh": ng, "backend": ops.name, "steps": len(grid) - 1, "deconvolve": a.deconvolve,
+              "order": a.order, "linear": a.linear, "force": "p3m" if a.p3m else "pm",
+              "p3m": p3m_info, "deterministic": getattr(ops, "deterministic", True), "final_positions_sha256": sha,
               "a_init": a.a_init, "seed": a.seed, "fixed_amplitude": not a.random_amplitude,
               "cosmology": cosmo.__dict__, "ic_seconds": t_ic, "run_seconds": wall,
               "gpu_joules_nvml": window.joules if window else None, "pk": {}}
@@ -122,7 +144,9 @@ def main():
     arrays["slab"] = slab(final, box, 1024, box / 16)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
-    stem = out / f"pk_n{n}_L{box:g}_{ops.name}{f'_dc{a.deconvolve}' if a.deconvolve else ''}_s{len(grid) - 1}{'_2lpt' if a.order == 2 else ''}{a.tag}"
+    kind = "_p3m" if a.p3m else (f"_dc{a.deconvolve}" if a.deconvolve else "")
+    stem = out / (f"pk_n{n}_L{box:g}_{ops.name}{kind}_s{len(grid) - 1}{'_2lpt' if a.order == 2 else ''}"
+                  f"{'_camb' if a.linear == 'camb' else ''}{a.tag}")
     np.savez_compressed(f"{stem}.npz", **arrays)
     Path(f"{stem}.json").write_text(json.dumps(result, indent=1))
     print(json.dumps(result, indent=1))

@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 
 DATA = Path(__file__).resolve().parents[1] / "data"
-BANDS = ((0.0, 0.1), (0.1, 0.3), (0.3, 0.5), (0.5, 1.0), (1.0, 2.0))
+BANDS = ((0.0, 0.1), (0.1, 0.3), (0.3, 0.5), (0.5, 1.0), (1.0, 2.0), (2.0, 3.0), (3.0, 5.0))
 
 
 @lru_cache(maxsize=None)
