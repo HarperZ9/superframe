@@ -221,3 +221,61 @@ P / Cosmic Emu, mean of three seeds (range):
 - What is left at z = 0 has three candidates, none tested here: more mass resolution (the 512/256 step is still 3 percent at 3-5), force resolution (fixed mesh split and softening), and the block-step deficit of up to 1.1 percent seen in the 256 Mpc/h box.
 
 Cost per 512^3 run on the shared RTX 4090: 9.6 to 9.9 minutes and 258 to 267 kJ GPU (NVML counter), 159 pair sums per particle, peak 5.3 GB; initial conditions 70 s on three CPU threads. A 256^3 run in the same box: 28 s and 10 kJ.
+
+## Round five: what holds z = 0, k 2-5 down at 512^3
+
+```
+python packages/cosmo/study/run_block.py --n 512 --box 256 --eps 0.0167 --eta 0.1 --match-n 256 --linear camb --steps-log 20 --steps-late 90 --levels 3
+python packages/cosmo/study/run_block.py --n 512 --box 256 --eps 0.0333 --rs-cells 1.875 --match-n 256 --linear camb --steps-log 20 --steps-late 90 --levels 3 --eta 0.05
+python packages/cosmo/study/score_factors.py base.npz candidate.npz ...       # percent change by band, same phases
+python packages/cosmo/study/plates_round5.py --base base.npz --factors LABEL=run.npz ... --box LABEL=a.npz,b.npz --pairs LABEL=hi.npz,lo.npz
+```
+
+Round four left the 512^3 boxes (256 Mpc/h) 3.3 percent below the Cosmic Emu at z = 0, k 2-3, and 5.3 percent below at 3-5. This round changes one factor at a time on one seed, with the same phases, against the round-four run, and reads the change in each band. The factors, the predicted directions and what would count as an explanation were written down before the runs. Two runs were added after the first results and are marked as such.
+
+### Controls
+
+- The round-four baseline rerun on this round's code gives the same sha256 of the final positions (cde07b66...). So the new measurement code leaves the dynamics alone, and every change below comes from its one factor.
+- Planted: softening four times larger (0.133 Mpc/h) lowers 3-5 by 23 percent and 2-3 by 12 percent. The method sees a factor of that kind.
+
+### One factor at a time
+
+512^3 in 256 Mpc/h, seed 20261106, z = 0, percent change in P against the baseline (noise floor 0.5 percent):
+
+| Factor | 1-2 | 2-3 | 3-5 | Wall time, GPU energy |
+|---|---|---|---|---|
+| Baseline rerun (eta 0.05, eps 0.0333 Mpc/h, r_s 1.25 cells, 3 levels) | 0 | 0 | 0 | 13.3 min, 315 kJ |
+| (a) step rule eta 0.025 | +0.16 | +0.31 | +0.55 | 17.3 min, 417 kJ |
+| (a') eta 0.025 with a fourth level (added after (a)) | +0.14 | +0.28 | +0.51 | 19.0 min, 449 kJ |
+| (b) softening halved to 0.0167 at eta 0.05 (also tightens the steps) | +0.78 | +1.96 | +4.35 | 18.0 min, 440 kJ |
+| (b') softening halved, eta 0.1 (same steps as the baseline; added after the planted run) | +0.61 | +1.56 | +3.55 | 15.0 min, 357 kJ |
+| (b'') softening quartered, eta 0.2 (added after (b)) | +0.68 | +1.75 | +3.92 | 15.1 min, 360 kJ |
+| (c) split r_s 1.25 to 1.875 cells | -0.07 | -0.05 | -0.00 | 25.8 min, 648 kJ |
+| (e) interlaced over plain CIC estimator, same particles | -0.04 | -0.15 | -1.49 | none |
+
+The step criterion, d tau = sqrt(2 eta eps / (a |g|)), ties the sub-step to the softening, so (b) changes both; (b) minus (a) gives 1.65 and 3.80 at 2-3 and 3-5, within 0.25 of (b').
+
+### Box size and mass resolution at matched particle mass
+
+- Box: 256^3 particles in 128 Mpc/h with a 256 mesh have the baseline's particle mass, mesh cell, split, cut-off and softening. Eight seeds against the three round-four 512^3 seeds in 256 Mpc/h, P / Cosmic Emu at z = 0: 0.942 (0.872-1.005) / 0.945 (0.886-1.014) / 0.932 (0.878-0.985) at 1-2 / 2-3 / 3-5, against 0.990 / 0.967 / 0.947. The small box sits low in every band, most at 1-2 (4.8 points) and least at 3-5 (1.5). Box size moves k 2-5 at 128 Mpc/h; whether 256 Mpc/h is large enough for k 2-5 is not measured.
+- Mesh: the same 128 Mpc/h boxes with a 512 mesh (r_s follows the mesh, so it halves) move 3-5 by -0.44 / -0.50 / +0.35 percent in three seeds on the interlaced estimator, under the floor. On the plain estimator the change is -1.0 / -1.2 / +0.3: the measurement mesh's own aliasing.
+- Mass: 512^3 against 256^3 in 128 Mpc/h, mesh 512, the same phases: +0.24 / +0.50 / +0.61 percent at z = 0 (1-2 / 2-3 / 3-5) and +0.73 / +1.24 / +1.98 at z = 1. The previous doubling (256^3 to 512^3 in 256 Mpc/h, same seed) gave +1.34 / +1.86 / +2.84 at z = 0. One more halving of the particle spacing adds about a fifth of what the last one did.
+
+### What explains the shortfall
+
+- Softening explains most of it. Halving eps at fixed steps raises 3-5 by 3.55 percent, past the 2.65 set as "most" and the 2.3 needed to bring the three-seed mean inside the emulator's 3 percent, if the same change holds in the other two seeds (one seed was run). Quartering it adds only 0.37 more (3.92 in all), so the softening effect is close to converged at 0.0083 to 0.0167 Mpc/h.
+- Step rule, split scale and mesh size each sit at or under the 0.5 percent floor. The tighter step rule gives +0.55 at L = 3 and +0.51 with a fourth level, so the level clamp did not hide anything. More mass resolution adds 0.6 percent at 3-5 per halving of the spacing.
+- Added up on this seed (inferred, the factors were not run together): softening +3.9, mass +0.6, steps +0.5 at 3-5 against a plain-estimator shortfall of 4.6 percent on this seed, or 6.0 on the interlaced estimator. On the interlaced estimator the seed would sit near 0.99 at 3-5 and 1.00 at 2-3.
+- The interlaced estimator reads 1.49 percent lower at 3-5 (1.05 at z = 1) than the plain one the scores have used since round one. Plain CIC aliasing reads high there, so the shortfall on the better estimator is 1.4 points larger than reported. The interlaced shot-noise term is 0.23 percent of P at z = 0, 3-5, and 1.0 percent at z = 1.
+- Predictions that missed: (b) was predicted at +0.3 to +1.5 percent at 3-5 and came in at +4.35. (d), the box at matched mass, was predicted to agree within 2 percent at 2-3 and came in 2.2 points low.
+
+### Interlaced P(k) (`power`, tests/test_interlace.py)
+
+A second deposit with every particle moved half a cell along each axis, phase-shifted back and averaged with the first, cancels the aliased images whose index sum is odd (Hockney and Eastwood; Sefusatti et al. 2016). The shot-noise term then sums only the images that survive. The lean deposit takes the shift as a kernel argument; with shift 0 it is bit for bit the old deposit.
+
+| Check | Result | Planted wrong input |
+|---|---|---|
+| Alias sums against Jing's closed form | 1e-8 | |
+| 64^3 Zel'dovich particles at a = 1, a 64 mesh against a 256 mesh, 0.7-0.9 of the coarse Nyquist, no shot subtraction | interlaced 0.3 percent; plain CIC 9.4 percent high | second deposit shifted the wrong way: 54 percent low |
+| Shifted GPU deposit against moved particles on the CPU | 1e-4 (float32 cell coordinates); slab count does not change the integer sums | |
+| GPU engine with r_s = 1.875 cells against the CPU P3M solver | 5.6e-5 of the largest kick; total force within 0.21 percent rms of r_s = 1.25 | |

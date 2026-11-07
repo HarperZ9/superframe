@@ -32,8 +32,9 @@ def _kernel(name):
     return _K[name]
 
 
-def deposit(ops, xyz, box, ng, n_particles, slabs=4):
-    """Density contrast on an ng^3 float32 mesh from float32 x, y, z, summed as integers slab by slab."""
+def deposit(ops, xyz, box, ng, n_particles, slabs=4, shift=0.0):
+    """Density contrast on an ng^3 float32 mesh from float32 x, y, z, summed as integers slab by slab.
+    shift: every particle moved by this many cells along each axis first (0.5 for an interlaced P(k))."""
     t = ops.torch
     n = len(xyz[0])
     q = float(2 ** FIXED_BITS)
@@ -42,7 +43,7 @@ def deposit(ops, xyz, box, ng, n_particles, slabs=4):
     k = _kernel("cic_deposit_slab")
     for x0, x1 in zip(edges[:-1], edges[1:]):
         acc = t.zeros((x1 - x0) * ng * ng, device=ops.device, dtype=t.int64)
-        k(((n + 255) // 256,), (256,), *xyz, n, ng, float(box / ng), q, int(x0), int(x1 - x0), acc)
+        k(((n + 255) // 256,), (256,), *xyz, n, ng, float(box / ng), q, int(x0), int(x1 - x0), float(shift), acc)
         delta[x0:x1] = (acc.to(t.float64) * (ng ** 3 / (q * n_particles)) - 1.0).to(t.float32).view(x1 - x0, ng, ng)
         del acc
     return delta

@@ -4,8 +4,10 @@
 
     python packages/cosmo/study/run_block.py --n 256 --box 128 --eta 0.025 --levels 4
     python packages/cosmo/study/run_block.py --n 512 --box 256 --eps 0.0333 --match-n 256 --linear camb
+    python packages/cosmo/study/run_block.py --n 512 --box 256 --eps 0.0333 --match-n 256 --rs-cells 1.875
 
-Writes the same .json and .npz layout as run_pk.py (P(k) at z = 1 and 0 against halofit and the emulator),
+Writes the same .json and .npz layout as run_pk.py (P(k) at z = 1 and 0 against halofit and the emulator,
+plus the interlaced spectrum pk_il and its shot-noise term shot_il),
 plus pair-force evaluations per particle, the level histogram, the number of cell-list rebuilds and the
 peak GPU memory. GPU joules come from NVML's energy counter over the step loop.
 """
@@ -28,16 +30,23 @@ from run_pk import step_grid  # noqa: E402
 
 
 def measure(engine, cosmo, plin, box, ng, n3, z):
+    """P(k) three ways on the same particles: plain CIC with Jing's shot term subtracted (the scored one,
+    unchanged since round one), interlaced with its own shot term subtracted, and the interlaced shot term
+    itself (so the interlaced spectrum without subtraction is pk_il + shot_il)."""
     engine.park_momenta()
-    delta = lean.deposit(engine.ops, engine.x, box, ng, n3, engine.slabs)
-    k, pk, nm = power.power_spectrum(None, box, ng, engine.ops, n3, delta=delta)
-    del delta
-    engine.ops.torch.cuda.empty_cache()
+    ops = engine.ops
+    delta = lean.deposit(ops, engine.x, box, ng, n3, engine.slabs)
+    k, pk, nm = power.power_spectrum(None, box, ng, ops, n3, delta=delta)
+    half = lean.deposit(ops, engine.x, box, ng, n3, engine.slabs, shift=0.5)
+    _, pk_il, _, shot_il = power.power_spectrum(None, box, ng, ops, n3, delta=delta, delta_half=half, return_shot=True)
+    del delta, half
+    ops.torch.cuda.empty_cache()
     engine.unpark_momenta()
     aa = 1.0 / (1.0 + z)
     lin = plin(k, aa)
     ref = halofit.halofit(k, lambda kk: plin(kk, aa), float(cosmo.omega_m_a(aa)))
-    return {"k": k, "pk": pk, "nmodes": nm, "halofit": ref, "plin": lin, "emu": reference.cosmicemu(k, z)}
+    return {"k": k, "pk": pk, "pk_il": pk_il, "shot_il": shot_il, "nmodes": nm, "halofit": ref, "plin": lin,
+            "emu": reference.cosmicemu(k, z)}
 
 
 def main():
@@ -52,6 +61,7 @@ def main():
     ap.add_argument("--eta", type=float, default=0.025)
     ap.add_argument("--levels", type=int, default=4, help="sub-step levels under each global step")
     ap.add_argument("--eps", type=float, default=None, help="Plummer softening, Mpc/h (default 1/30 spacing)")
+    ap.add_argument("--rs-cells", type=float, default=1.25, help="Gaussian split scale in mesh cells")
     ap.add_argument("--order", type=int, default=2, choices=(1, 2))
     ap.add_argument("--linear", default="eh", choices=("eh", "camb"))
     ap.add_argument("--match-n", type=int, default=None, help="share this coarser lattice's phases")
@@ -74,7 +84,7 @@ def main():
     pos, mom = ic.from_delta_k_f32(cosmo, dk, box, n, a.a_init, a.order)
     del dk
     t_ic = time.perf_counter() - t0
-    eng = lean.CudaEngine(cosmo, box, ng, n ** 3, pos, mom, ops, eps=eps, track_ids=False)
+    eng = lean.CudaEngine(cosmo, box, ng, n ** 3, pos, mom, ops, eps=eps, rs_cells=a.rs_cells, track_ids=False)
     del pos, mom
     grid = step_grid(a.a_init, n_log=a.steps_log, n_lin=a.steps_late)
     stepper = stepping.BlockStepper(cosmo, eps, a.eta, a.levels, linear_exact=not a.plain_long)
@@ -103,13 +113,14 @@ def main():
     result = {"n": n, "box_mpc_h": box, "mesh": ng, "backend": ops.name, "force": "p3m-block",
               "global_steps": len(grid) - 1, "linear_exact": not a.plain_long, "levels": a.levels, "eta": a.eta, "eps": eps, "order": a.order,
               "linear": a.linear, "match_n": a.match_n, "seed": a.seed, "a_init": a.a_init,
-              "rs": eng.rs, "rcut": eng.rcut, "chaining_cells": eng.nc,
+              "rs_cells": a.rs_cells, "rs": eng.rs, "rcut": eng.rcut, "chaining_cells": eng.nc,
               "pair_evals_per_particle": float(acts.sum() / n ** 3),
               "clamped_level_requests": int(sum(s[1] for s in stepper.stats)), "cell_list_builds": eng.resorts,
               "ic_seconds": t_ic, "run_seconds": wall,
               "pk_seconds_inside_loop": t_meas[0], "gpu_joules_nvml": window.joules,
               "peak_gpu_gib": ops.torch.cuda.max_memory_allocated() / 2 ** 30,
-              "final_positions_sha256": sha, "cosmology": cosmo.__dict__, "pk_vs_emu": {}, "pk": {}}
+              "final_positions_sha256": sha, "cosmology": cosmo.__dict__, "pk_vs_emu": {}, "pk": {},
+              "pk_il_vs_emu": {}, "shot_il_over_emu": {}}
     arrays = {}
     for z, m in snaps.items():
         arrays.update({f"{key}_z{z:g}": v for key, v in m.items() if key != "nmodes"})
@@ -117,6 +128,8 @@ def main():
         arrays[f"halofit_z{z:g}"] = m["halofit"]
         result["pk"][f"z{z:g}"] = reference.bands(m["k"], m["pk"] / m["halofit"], m["nmodes"])
         result["pk_vs_emu"][f"z{z:g}"] = reference.bands(m["k"], m["pk"] / m["emu"], m["nmodes"])
+        result["pk_il_vs_emu"][f"z{z:g}"] = reference.bands(m["k"], m["pk_il"] / m["emu"], m["nmodes"])
+        result["shot_il_over_emu"][f"z{z:g}"] = reference.bands(m["k"], m["shot_il"] / m["emu"], m["nmodes"])
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     stem = out / f"blk_n{n}_L{box:g}_g{len(grid) - 1}_l{a.levels}_eta{a.eta:g}{'_camb' if a.linear == 'camb' else ''}{'_plain' if a.plain_long else ''}{a.tag}"
