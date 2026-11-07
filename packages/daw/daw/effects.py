@@ -71,3 +71,55 @@ def delay_time(y, fs, rate=None, lo=0.05, hi=1.0):
     a, b = int(lo * fs), int(hi * fs)
     k = a + int(np.argmax(ac[a:b]))
     return k / fs, float(ac[k] / ac[0])
+
+
+# Tape echo read-back (H185): echo spacing, echo gain and transport flutter, from the sound alone.
+
+def echo_spacing(y, fs, lo=0.03, hi=1.0):
+    """Echo period of a single-head echo train: the strongest peak of the signal's own autocorrelation
+    between lo and hi seconds, refined by a parabola through the peak and its neighbours."""
+    n = 1 << int(np.ceil(np.log2(2 * len(y))))
+    ac = np.fft.irfft(np.abs(np.fft.rfft(y, n)) ** 2)[:len(y)]
+    a, b = int(lo * fs), int(hi * fs)
+    k = a + int(np.argmax(ac[a:b]))
+    p, q, r = ac[k - 1:k + 2]
+    return (k + 0.5 * (p - r) / (p - 2 * q + r)) / fs
+
+
+def echo_gain(y, fs, period, width=0.012, count=4):
+    """Feedback gain of an echo train: the median ratio of successive echo amplitudes (root energy in a
+    window around each echo). The first echo is the reference, so the dry level does not enter."""
+    e = y ** 2
+    t0 = int(np.argmax(np.abs(y[:int(period * fs * 0.9)])))     # the dry event
+    w = int(width * fs)
+    amp = []
+    for k in range(1, count + 2):
+        c = t0 + int(round(k * period * fs))
+        if c + w >= len(y):
+            break
+        amp.append(math.sqrt(e[c - w:c + w].sum()))
+    return float(np.median([amp[i + 1] / amp[i] for i in range(len(amp) - 1)]))
+
+
+def flutter(y, fs, lo=0.2, hi=40.0, trim=0.25):
+    """Pitch modulation of a steady tone: instantaneous frequency from the analytic signal, as a
+    relative deviation from its median; the strongest rate between lo and hi Hz (zero-padded spectrum,
+    parabolic peak) and its depth from a least-squares sine fit at that rate. Returns (rate, depth,
+    prominence of the peak over the band median)."""
+    ph = np.unwrap(np.angle(hilbert(y)))
+    fi = np.diff(ph) * fs / (2 * math.pi)
+    c = int(trim * fs)
+    fi = fi[c:-c]
+    rel = fi / np.median(fi) - 1
+    rel = rel - rel.mean()
+    n = 1 << int(np.ceil(np.log2(16 * len(rel))))
+    sp = np.abs(np.fft.rfft(rel * np.hanning(len(rel)), n))
+    fr = np.fft.rfftfreq(n, 1 / fs)
+    band = (fr > lo) & (fr < hi)
+    k = int(np.argmax(np.where(band, sp, 0)))
+    a, b, cc = np.log(sp[k - 1:k + 2])
+    rate = (k + 0.5 * (a - cc) / (a - 2 * b + cc)) * fs / n
+    t = np.arange(len(rel)) / fs
+    A = np.stack([np.sin(2 * math.pi * rate * t), np.cos(2 * math.pi * rate * t)], 1)
+    coef = np.linalg.lstsq(A, rel, rcond=None)[0]
+    return float(rate), float(math.hypot(*coef)), float(sp[k] / np.median(sp[band]))

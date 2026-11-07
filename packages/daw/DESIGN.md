@@ -143,6 +143,23 @@ Harmony here starts from each instrument's own partials. `daw/harmony.py` comput
 
 Next: scales generated from each instrument's curve and used by the arrangement (a bar's scale for a bar ensemble); chord tension as total roughness, so a progression can be drawn as a tension path; voice leading in pitch-class space with octave equivalence; tension and pressure as MPE targets that move the physics.
 
+### 3.7 Tape echo and electric piano, from the service documents
+
+**Tape echo** (`tape_echo.py`). An endless loop passes an erase head, a record head and three playback heads. The tape position is the integral of the tape speed, and a sample written at time t_w reaches head k when the tape has moved that head's spacing past the record head, so every delay, wow and flutter included, comes from the transport. The capstan and the pinch roller each add a speed term at their rotation rate v / (pi d) with depth e / r from their eccentricity; a slow wow term covers the rest. The record path is the input plus the intensity times the selected heads, through a tanh anhysteretic curve; the read path applies the playback gap loss sinc(pi g f / v) and the head-to-tape spacing loss exp(-2 pi d f / v) once per pass, so slower tape gives darker repeats. Hiss sits at the documented 60 dB signal-to-noise ratio, and a tank of three dispersive springs (allpass chains in delay loops) follows. The twelve mode selector positions are the documented table: heads 1, 2, 3 and 2 + 3 alone; heads 1, 2, 3, 1 + 2, 2 + 3, 1 + 3 and 1 + 2 + 3 with the springs; the springs alone. The tape speed is held to the documented 0.12 to 0.40 m/s. Head spacing, roller diameters, eccentricities, gap length and spacing loss are not in the documents read; they are free parameters with labelled defaults.
+
+One finding comes from the physics: the same speed writes and reads, so a speed wobble at rate f reaches the read pitch scaled by 2 |sin(pi f D)|, where D is the head delay. A wobble whose period divides the delay cancels; reading the pitch depth as the speed depth is off by 17.6 percent at 0.8 Hz and 250 ms.
+
+The H180 analyser was extended to read a tape echo back from the sound alone: echo spacing from the signal's autocorrelation, the intensity from successive echo amplitudes, and flutter from the instantaneous frequency of a steady tone. On planted synthetic signals (an echo train at 375 ms and gain 0.62; a tone with 0.8 Hz, 0.3 percent pitch modulation) it recovers 375.0 ms, 0.620 and 0.8000 Hz at 0.2997 percent, and reads a steady tone as below 1e-6. On the model's own output: head delays 125, 250 and 375 ms within 1e-12 relative, intensity 0.6199 against 0.62, wow 0.80000 Hz against 0.8, the speed depth 0.29998 percent against 0.3 after the 2 |sin| term is divided out, and the capstan rate 15.9155 Hz against v / (pi d). Repeat times scale as 1 / speed within 0.2 percent across the documented range.
+
+**Electric piano** (`rhodes.py`). The tine is a steel cantilever of the documented 1.905 mm wire, its modes on the cantilever roots (first overtone 6.267 times the fundamental), with the tuning spring as a point mass that lowers each mode by the Rayleigh ratio, more the nearer it sits to the tip. The documented 111.1 mm replacement tine rings at 111.8 Hz bare, near A2. The fork: the tine and a heavier tone bar stand on one block held by a lossy mount; the decay of the tine mode comes from the eigenvalues of the three-mass system. The hammer is a neoprene tip in Hertz contact, its modulus from the documented Shore A grades (30, 50, 70, 90) by Gent's relation; the integrator matches the Hertz closed-form contact time within 1 percent for every grade, and harder tips make shorter contacts and stronger upper modes. The pickup flux is an even function of the tine tip's offset from the pole centre (point-dipole falloff, a model assumption), and the voltage is its time derivative.
+
+Results against the queue's planted truths (H186):
+
+- Sustain falls smoothly with detuning on both sides of the tuned point (checked in half-semitone steps over plus or minus 4). At the default free parameters (bar 12 times the tine's tip mass, mount Q 2) the T60 ratio is 0.48 at 2 semitones flat and 0.17 at 2 semitones sharp: the loss is asymmetric, faster when the tine is sharp. The manual's qualitative claim (F to A around G with no appreciable loss) holds in this model only for a bar about 40 or more times the tine's mass on a mount of Q 8 or more (ratios 0.95 to 1.09 flat, 0.49 to 0.66 sharp). Those are free parameters, so this is a constraint to measure, not a result.
+- Pickup: the queue's wording, a second harmonic of zero at dead centre, is wrong for this geometry. An even flux curve gives no fundamental at dead centre (below 1e-9 of the second harmonic): a centred tine sounds the octave. The fundamental-to-second ratio then rises monotonically with offset up to half the gap, where the second harmonic vanishes at the flux curve's inflection (found at 0.50 of the gap within 0.01). The manual's factory setting, slightly above centre, sits on the rising side. A smaller gap is louder, as the manual says.
+
+Limits: no measured electric piano recordings are used. The University of Iowa Musical Instrument Samples have no electric piano, and no openly licensed measured set was obtained, so partial frequencies and decay times are not checked against a real instrument. The tone bar, block, mount, hammer mass, tip radius and spring mass are free. The tine's coupling to its bar is left out during the few milliseconds of contact.
+
 ## 4. The workstation layers
 
 - Timeline: tracks of notes in beats at one tempo; automation as piecewise-linear envelopes in seconds, sampled per sample. Next: tempo maps, clips and takes, comping, markers, time signature changes, groove.
@@ -162,7 +179,7 @@ Competitive table. Rows marked "memory" are from general knowledge of these prod
 
 | Feature | Leaders offer (source) | Here now | Measured target |
 |---|---|---|---|
-| Physical-model instruments | Modartt Pianoteq (modal piano), AAS Chromaphone and String Studio, Ableton Collision and Tension, Arturia and Madrona Labs models (memory) | modal objects of measured materials, any plate outline, a vocal tract | every family with a published known answer reproduced; a listening panel cannot tell a measured real object from its model at matched pitch more than 60 percent of the time |
+| Physical-model instruments | Modartt Pianoteq (modal piano), AAS Chromaphone and String Studio, Ableton Collision and Tension, Arturia and Madrona Labs models (memory) | modal objects of measured materials, any plate outline, a vocal tract, a tape loop echo, an electric piano tine and tone bar | every family with a published known answer reproduced; a listening panel cannot tell a measured real object from its model at matched pitch more than 60 percent of the time |
 | Material and shape as controls | swap a material preset (memory) | sourced E, rho, nu; pitch moves by sqrt(E / rho) exactly | every material row measured, loss factors included |
 | Real-time voice count | hundreds of sampled voices per core (memory) | 19,200 f64 modes per core with no deadline miss in 60 s | 50,000 modes per core in f32 SIMD BuildLang; zero misses over 1 hour |
 | Latency | 2 to 5 ms output buffers on ASIO and Core Audio (memory) | 32 ms shared mode, round trip not measured | under 5 ms output, round trip measured by loopback |
@@ -184,10 +201,10 @@ Next three steps:
 2. Plates and spheres from the rooms' geometry as strike targets; thunder and surf held to the storm recordings.
 3. A nasal tract and sinuses from MRI, the subglottal tract and lungs, and a 3D tract.
 
-Folded in from manufacturer manuals read as local research copies (no text from them ships here):
+Folded in from manufacturer manuals read as local research copies (no text from them ships here). The first two are built (section 3.7):
 
-- Tape echo as a physical tape loop: an erase head, a record head and several playback heads at fixed spacings on one loop, a motor speed that sets the repeat times (delay = head spacing / tape speed), feedback, wow and flutter from the motor, and the tape's own high-frequency loss, followed by a spring reverb. The engine's scene echo has the same delay-and-feedback structure, so one kernel and one parameter set will serve both. Known answers: repeat times scale exactly as 1 / tape speed, and head spacing ratios appear as the ratios of echo times.
-- Electric piano tine and tone bar as an asymmetric tuning fork: two coupled resonators of unequal mass tuned to one pitch. Two plates to measure: sustain against the detuning between tine and bar (the coupled-oscillator beat and energy exchange predict how sustain falls with detuning), and harmonic content against the tine's offset from the pickup centre (a pickup's nonlinear response to a displacement about an offset point makes even harmonics grow with the offset).
+- Tape echo as a physical tape loop (`tape_echo.py`): built.
+- Electric piano tine and tone bar as an asymmetric tuning fork (`rhodes.py`): built.
 - A classic five-voice analogue synthesizer's voice architecture as a reference for the workstation's own subtractive voice, built from the same filter and envelope physics as everything else.
 
 ## 7. Limits stated plainly
