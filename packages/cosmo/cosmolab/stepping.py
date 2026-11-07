@@ -71,8 +71,10 @@ class BlockStepper:
         pts[0], pts[-1] = a0, a1
         return pts, tau[-1]
 
-    def run(self, engine, a_global, callback=None):
-        """Advance engine from a_global[0] to a_global[-1]. callback(a, engine) at each global boundary."""
+    def plan(self, a_global):
+        """The whole schedule, computed once: per global step n, the mesh kick weight klong[n] and the list of
+        sub-steps (thr, kclose, kopen, crit, drift); then the closing pair kick and the last mesh kick. Any
+        engine that follows it (run below, or ooc.SlabRunner slab by slab) takes the same steps."""
         cosmo, L = self.cosmo, self.L
         m = 2 ** (L + 1)
         pts, dtau_g = [], []
@@ -86,23 +88,37 @@ class BlockStepper:
         klong, dscale = self._long_factors(a_global, [a[n * m + m // 2] for n in range(len(a_global) - 1)])
         span = [2 ** (L - lv) for lv in range(L + 1)]          # half of a level-l step, in half sub-steps
         two_eta_eps = 2 * self.eta * self.eps
+        steps = []
         for n in range(len(a_global) - 1):
             base = n * m
-            engine.long_kick(klong[n])
+            subs = []
             for j in range(2 ** L):
                 t = base + 2 * j
                 thr = max(0, L - _v2(j))
                 kclose = np.array([kc[t] - kc[t - s] if t - s >= 0 else 0.0 for s in span])
                 kopen = np.array([kc[t + s] - kc[t] if lv >= thr else 0.0 for lv, s in enumerate(span)])
                 crit = dtau_g[n] ** 2 * a[t] / two_eta_eps
+                subs.append((thr, kclose, kopen, crit, dscale[n] * cosmo.drift_factor(a[t], a[t + 2])))
+            steps.append((klong[n], subs))
+        final_close = np.array([kc[last] - kc[last - s] for s in span])
+        return steps, final_close, klong[-1]
+
+    def run(self, engine, a_global, callback=None):
+        """Advance engine from a_global[0] to a_global[-1]. callback(a, engine) at each global boundary."""
+        L = self.L
+        steps, final_close, klast = self.plan(a_global)
+        for n, (klong, subs) in enumerate(steps):
+            engine.long_kick(klong)
+            if hasattr(engine, "begin_global"):
+                engine.begin_global([s[4] for s in subs])
+            for thr, kclose, kopen, crit, d in subs:
                 self.stats.append(engine.short_kick(thr, kclose, kopen, crit, L))
-                engine.drift(dscale[n] * cosmo.drift_factor(a[t], a[t + 2]))
+                engine.drift(d)
             if callback is not None:
                 callback(a_global[n + 1], engine)
         # close every particle's last step and the last mesh step
-        kclose = np.array([kc[last] - kc[last - s] for s in span])
-        self.stats.append(engine.short_kick(0, kclose, np.zeros(L + 1), 0.0, L))
-        engine.long_kick(klong[-1])
+        self.stats.append(engine.short_kick(0, final_close, np.zeros(L + 1), 0.0, L))
+        engine.long_kick(klast)
         return engine
 
 

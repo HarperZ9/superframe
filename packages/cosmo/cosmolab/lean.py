@@ -51,7 +51,7 @@ def deposit(ops, xyz, box, ng, n_particles, slabs=4, shift=0.0):
 
 class CudaEngine:
     def __init__(self, cosmo, box, ng, n_particles, pos, mom, ops, rs_cells=1.25, rcut_rs=4.5, eps=0.0,
-                 skin=0.15, offload=None, slabs=4, track_ids=True, reach=2):
+                 skin=0.15, offload=None, slabs=4, track_ids=True, reach=2, sort_policy="skin", margin=1.5):
         t = ops.torch
         self.t, self.ops = t, ops
         self.box, self.ng, self.np_ = float(box), int(ng), int(n_particles)
@@ -66,6 +66,12 @@ class CudaEngine:
         self.cs = self.box / self.nc
         self.skin = self.reach * self.cs - self.rcut
         self.slabs = slabs
+        # "skin": re-sort when the summed drift bound passes the skin (any time). "plan": decide the re-sorts of
+        # a global step at its start from max |p| times a margin (sort_plan), so an engine that steps slab by
+        # slab (ooc.SlabRunner) can take the same re-sorts; the true bound is still summed, and every pair
+        # evaluation made past the skin is counted in skin_violations.
+        self.sort_policy, self.margin = sort_policy, float(margin)
+        self.skin_violations, self._plan, self._sub, self.moved_plan = 0, [], 0, 0.0
         self.offload = (self.np_ >= 2 ** 26) if offload is None else offload
         # pos, mom: sequences of three float32 arrays (numpy or torch) or (N, 3) arrays
         self.x = [self._dev(_col(pos, c)) for c in range(3)]
@@ -170,6 +176,19 @@ class CudaEngine:
         self.pair_evals += nact
         return nact, int(self.nclamp.item()) if nact else 0
 
+    def vmax(self):
+        """sqrt of the sum over axes of max |p_c|^2: a bound on every particle's speed in drift time."""
+        v2 = 0.0
+        for pc in self.p:
+            lo, hi = self.t.aminmax(pc)
+            v2 += max(abs(float(lo)), abs(float(hi))) ** 2
+        return v2 ** 0.5
+
+    def begin_global(self, drifts):
+        if self.sort_policy == "plan":
+            self._plan, self.moved_plan = sort_plan(self.moved_plan, self.vmax(), drifts, self.margin, self.skin)
+            self._sub = 0
+
     def drift(self, d):
         t = self.t
         vmax2 = 0.0
@@ -180,7 +199,14 @@ class CudaEngine:
             t.remainder(xc, self.box, out=xc)
             xc.masked_fill_(xc >= self.box, 0.0)
         self.moved += float(d) * vmax2 ** 0.5
-        if self.moved > self.skin:
+        if self.sort_policy == "plan":
+            sort_now = self._plan[self._sub]
+            self._sub += 1
+            if sort_now:
+                self._sort()
+            elif self.moved > self.skin:
+                self.skin_violations += 1       # the next pair evaluation may miss a neighbour
+        elif self.moved > self.skin:
             self._sort()
 
     def park_momenta(self):
@@ -204,6 +230,19 @@ class CudaEngine:
             back[self.ops.to_numpy(self.ids)] = out
             return back
         return out
+
+
+def sort_plan(moved, vmax, drifts, margin, skin):
+    """Which sub-steps of a global step end in a re-sort: after the drift that takes the predicted bound
+    (margin vmax per unit drift time, vmax from the start of the step) past the skin. Returns the flags and
+    the predicted bound carried into the next global step."""
+    flags = []
+    for d in drifts:
+        moved += float(d) * margin * vmax
+        flags.append(moved > skin)
+        if flags[-1]:
+            moved = 0.0
+    return flags, moved
 
 
 def _col(a, c):
