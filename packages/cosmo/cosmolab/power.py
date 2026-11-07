@@ -7,10 +7,11 @@ import numpy as np
 from .pm import PMSolver
 
 
-def power_spectrum(pos, box, ng, ops, n_particles, cosmo=None, subtract_shot=True, dk=None, kmax=None):
-    """Returns (k_mean, P, n_modes) with k in h/Mpc and P in (Mpc/h)^3."""
-    pm = PMSolver(cosmo, box, ng, n_particles, ops)
-    delta = pm.deposit(pos)
+def power_spectrum(pos, box, ng, ops, n_particles, cosmo=None, subtract_shot=True, dk=None, kmax=None, delta=None):
+    """Returns (k_mean, P, n_modes) with k in h/Mpc and P in (Mpc/h)^3. delta: a cloud-in-cell density
+    contrast already deposited on the ng^3 mesh (pos is then not read)."""
+    if delta is None:
+        delta = PMSolver(cosmo, box, ng, n_particles, ops).deposit(pos)
     dkm = ops.rfftn(delta)
     p_raw = ops.to_numpy((dkm * dkm.conj()).real if hasattr(dkm, "conj") else abs(dkm) ** 2).astype(np.float64)
     del dkm, delta

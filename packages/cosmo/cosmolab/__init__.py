@@ -15,6 +15,9 @@
   shortrange  the P3M pair force (CPU k-d tree, or a CUDA kernel compiled at run time)
   cudajit     run-time CUDA compilation through the nvrtc that ships with torch
   twisted     deposit, Poisson solve and particle-mesh runs on the twisted manifolds E2 to E6
+  stepping    block time steps: the mesh force on global steps, the pair force on power-of-two sub-steps
+  lean        a memory-lean CUDA engine for stepping (512^3 particles in about 5 GB)
+  lean_kernels  its CUDA C: integer slab deposit, cloud-in-cell kick, pair kick with the level rule
 """
 __all__ = ["background", "linear", "halofit", "backend", "pm", "ic", "power", "ewald", "reference", "topology",
-           "shortrange", "cudajit", "twisted"]
+           "shortrange", "cudajit", "twisted", "stepping", "lean", "lean_kernels"]

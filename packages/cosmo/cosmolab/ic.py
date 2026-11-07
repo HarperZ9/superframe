@@ -19,10 +19,17 @@ def _kgrid(n, box):
     return k.reshape(-1, 1, 1), k.reshape(1, -1, 1), kz.reshape(1, 1, -1)
 
 
-def linear_delta_k(plin, box, n, seed, fixed=False):
-    """delta_k at a = 1 on an n^3 lattice (rfftn layout), from a real white-noise field."""
-    rng = np.random.default_rng(seed)
-    w = np.fft.rfftn(rng.standard_normal((n, n, n)))
+def linear_delta_k(plin, box, n, seed, fixed=False, match_n=None):
+    """delta_k at a = 1 on an n^3 lattice (rfftn layout), from a real white-noise field.
+
+    match_n: copy the noise modes of the match_n^3 lattice drawn with the same seed into this one (all
+    |k_i| below match_n's Nyquist), so a finer lattice carries the coarser one's field plus new small-scale
+    modes; the two runs then differ only in mass resolution. Modes beyond are drawn from a separate stream."""
+    if match_n and match_n < n:
+        w = np.fft.rfftn(np.random.default_rng([seed, n]).standard_normal((n, n, n)))
+        _embed(w, np.fft.rfftn(np.random.default_rng(seed).standard_normal((match_n,) * 3)), n, match_n)
+    else:
+        w = np.fft.rfftn(np.random.default_rng(seed).standard_normal((n, n, n)))
     kx, ky, kz = _kgrid(n, box)
     k = np.sqrt(kx * kx + ky * ky + kz * kz)
     p = np.zeros_like(k)
@@ -33,6 +40,13 @@ def linear_delta_k(plin, box, n, seed, fixed=False):
         amp = np.abs(w)
         w = w / np.where(amp > 0, amp, 1.0) * np.sqrt(n ** 3)
     return w * np.sqrt(p * n ** 3 / vol)
+
+
+def _embed(w, w_lo, n, m):
+    """Write w_lo's modes with |f_i| < m / 2 into w (both rfftn layouts), scaled to w's white-noise norm."""
+    f = np.r_[0:m // 2, -m // 2 + 1:0]
+    lo, hi, fz = f % m, f % n, np.arange(m // 2)
+    w[np.ix_(hi, hi, fz)] = w_lo[np.ix_(lo, lo, fz)] * (n / m) ** 1.5
 
 
 def displacement(delta_k, box, n):
@@ -99,6 +113,48 @@ def from_delta_k(cosmo, delta_k, box, n, a, order=1, d2_sign=1.0):
         pos += d2 * psi2
         mom += a ** 2 * e * f2 * d2 * psi2
     return np.mod(pos, box), mom, psi, psi2
+
+
+def from_delta_k_f32(cosmo, delta_k, box, n, a, order=1):
+    """from_delta_k for large lattices: one axis at a time, returning [x, y, z], [px, py, pz] as float32
+    arrays of n^3. The arithmetic is float64 as in from_delta_k; each stored value is rounded once."""
+    from scipy import fft as sfft
+    ks = _kgrid(n, box)
+    keep = _nyquist_keep(*ks, box, n)
+    k2 = ks[0] ** 2 + ks[1] ** 2 + ks[2] ** 2
+    k2[0, 0, 0] = 1.0
+    dk = delta_k * keep / k2
+    shape = (n, n, n)
+    phi2 = None
+    if order >= 2:
+        diag = [sfft.irfftn(ks[i] * ks[i] * dk, s=shape, workers=3) for i in range(3)]
+        src = np.zeros(shape)
+        for i, j in ((0, 1), (0, 2), (1, 2)):
+            src += diag[i] * diag[j]
+            src -= sfft.irfftn(ks[i] * ks[j] * dk, s=shape, workers=3) ** 2
+        del diag
+        phi2 = -sfft.rfftn(src, workers=3) / k2 * keep
+        phi2[0, 0, 0] = 0.0
+        del src
+    del k2, keep
+    d, f, e = cosmo.growth(a), cosmo.growth_rate(a), float(cosmo.E(a))
+    d2, f2 = growth2(cosmo, a)
+    g = np.arange(n) * box / n
+    pos, mom = [], []
+    for axis, kk in enumerate(ks):
+        psi = sfft.irfftn(1j * kk * dk, s=shape, workers=3)
+        x = np.broadcast_to(g.reshape([-1 if i == axis else 1 for i in range(3)]), shape) + d * psi
+        p = a ** 2 * e * f * d * psi
+        del psi
+        if phi2 is not None:
+            psi2 = sfft.irfftn(1j * kk * phi2, s=shape, workers=3)
+            x += d2 * psi2
+            p += a ** 2 * e * f2 * d2 * psi2
+            del psi2
+        pos.append(np.mod(x, box).astype(np.float32).reshape(-1))
+        mom.append(p.astype(np.float32).reshape(-1))
+        del x, p
+    return pos, mom
 
 
 def lattice(box, n):
