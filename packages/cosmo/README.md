@@ -429,3 +429,19 @@ R = band mean of P_fine / P_coarse - 1, interlaced estimator, percent, three-see
 - Absolute P / emu in the 64 Mpc/h box is 7 to 20 percent low at z = 0 (missing modes); not scored. The 128 Mpc/h box reads 0.96-0.97 in every band past k = 0.1.
 - Controls: round four's 256^3 null hash (d7ec3cf1...) on the code snapshot and on this branch; the scorer reproduces round five's recorded +0.61 percent; planted softening x4 in the fine arm reads -3.13 at z = 0, 3-5, 5.4 points under the real factor.
 - Cost: 1.79 MJ for the round (NVML, whole card, shared with a training job); 256^3 in 64 Mpc/h 7 to 11 min and 182-274 kJ per seed, peak 0.74 GB.
+
+## Round nine: pooled seeds and softening convergence
+
+```
+python packages/cosmo/study/run_block.py --n 256 --match-n 128 --box 64 --mesh 256 --eps 0.0042 --eta 0.025 --levels 6 --linear camb --steps-log 20 --steps-late 90 --seed 7
+python packages/cosmo/study/score_round9.py --r8 r8 --r9 r9 --base r7/conf --json score_round9.json
+python packages/cosmo/study/plates_round9.py --score score_round9.json --r8 r8 --r9 r9 --prereg prereg.json --out plates
+```
+
+Preregistered in `study/prereg/round9_pool_and_softening.json` (one amendment, committed before the runs it governs). Same 64 Mpc/h box and rules as round eight.
+
+- Pooled factor, spacing 0.5 to 0.25 Mpc/h, k 3-5: z = 0 +2.00 percent (95 percent t interval +1.10 to +2.89, n = 5); z = 1 +2.93 (+2.19 to +3.67). Five seed pairs, not the eight planned: the 3 MJ energy cap stopped the queue after seeds 9 and 11 on a shared card, and seed 10 failed on host memory and was not rerun.
+- Inferred 1024^3 in 256 Mpc/h, z = 0, k 3-5: 0.995 (0.987 to 1.004 on the factor interval; 0.980 to 1.011 with round seven's seed scatter added). The deficit closes on the mean only, not on the interval.
+- Softening at 0.25 Mpc/h spacing, eps 0.0083 to 0.0042 at eta 0.025, same particles, three seeds: z = 0, k 3-5 +0.49 percent (+0.38 to +0.61; seeds +0.47, +0.55, +0.46); z = 1 +0.42. The previous halving (0.0167 to 0.0083) gave +1.85. Under the preregistered 0.5 line on the mean, not on the interval.
+- Controls: round four's null hash on the code snapshot and on this branch; the scorer reproduces round eight's +2.24; planted softening x4 at matched steps reads -2.36 at z = 0, k 3-5 (line: -1.0 or lower).
+- Cost: 2.88 MJ (NVML, whole card, shared). eps 0.0042 runs 19 to 32 min and 382-601 kJ each, peak 0.74 GB.
