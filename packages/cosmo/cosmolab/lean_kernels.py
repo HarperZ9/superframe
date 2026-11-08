@@ -62,6 +62,39 @@ extern "C" __global__ void cic_kick(const float* __restrict__ x, const float* __
 }
 """
 
+READBACK_SLAB = r"""
+extern "C" __global__ void cic_kick_slab(const float* __restrict__ x, const float* __restrict__ y,
+    const float* __restrict__ z, int n, int ng, float cell, const float* __restrict__ g, int xlo, int ixa,
+    int ixb, float k, float* __restrict__ p)
+{
+    // cic_kick for a run of mesh x planes: g holds planes xlo, xlo + 1, ... (unwrapped, so the run may
+    // cross ng - 1 to 0), and only particles whose lower CIC plane lies in [ixa, ixb) are kicked. The
+    // weights and the order of the sum are cic_kick's, so each kicked particle gets the same bits.
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= n) return;
+    float gx = x[i] / cell, gy = y[i] / cell, gz = z[i] / cell;
+    float fx = floorf(gx), fy = floorf(gy), fz = floorf(gz);
+    float d[3] = {gx - fx, gy - fy, gz - fz};
+    int c0[3] = {((int)fx % ng + ng) % ng, ((int)fy % ng + ng) % ng, ((int)fz % ng + ng) % ng};
+    if (c0[0] < ixa || c0[0] >= ixb) return;
+    int r0 = ((c0[0] - xlo) % ng + ng) % ng;
+    float acc = 0.f;
+    for (int cx = 0; cx < 2; ++cx) {
+        int ix = r0 + cx;
+        float wx = cx ? d[0] : 1.f - d[0];
+        for (int cy = 0; cy < 2; ++cy) {
+            int iy = (c0[1] + cy) % ng;
+            float wy = cy ? d[1] : 1.f - d[1];
+            for (int cz = 0; cz < 2; ++cz) {
+                int iz = (c0[2] + cz) % ng;
+                acc += g[((long long)ix * ng + iy) * ng + iz] * ((wx * wy) * (cz ? d[2] : 1.f - d[2]));
+            }
+        }
+    }
+    p[i] += k * acc;
+}
+"""
+
 PAIR = r"""
 extern "C" __global__ void p3m_kick(const float* __restrict__ x, const float* __restrict__ y,
     const float* __restrict__ z, float* __restrict__ px, float* __restrict__ py, float* __restrict__ pz,

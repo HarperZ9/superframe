@@ -27,6 +27,7 @@ def _kernel(name):
     if name not in _K:
         from .cudajit import Kernel
         src = {"cic_deposit_slab": lean_kernels.DEPOSIT, "cic_kick": lean_kernels.READBACK,
+               "cic_kick_slab": lean_kernels.READBACK_SLAB,
                "p3m_kick": lean_kernels.PAIR}[name]
         _K[name] = Kernel(src, name)
     return _K[name]
@@ -51,7 +52,8 @@ def deposit(ops, xyz, box, ng, n_particles, slabs=4, shift=0.0):
 
 class CudaEngine:
     def __init__(self, cosmo, box, ng, n_particles, pos, mom, ops, rs_cells=1.25, rcut_rs=4.5, eps=0.0,
-                 skin=0.15, offload=None, slabs=4, track_ids=True, reach=2, sort_policy="skin", margin=1.5):
+                 skin=0.15, offload=None, slabs=4, track_ids=True, reach=2, sort_policy="skin", margin=1.5,
+                 fft="full", fft_slabs=8, fft_pencils=8):
         t = ops.torch
         self.t, self.ops = t, ops
         self.box, self.ng, self.np_ = float(box), int(ng), int(n_particles)
@@ -79,7 +81,10 @@ class CudaEngine:
         for c in self.x:
             t.remainder(c, self.box, out=c)
             c.masked_fill_(c >= self.box, 0.0)
-        self._g = self._green()
+        # "full": torch's 3-D FFT with the Green's function stored. "sliced": slicedfft.force_slabs, the
+        # transform ooc.SlabRunner uses, so the two engines can be compared bit for bit.
+        self.fft, self.fft_slabs, self.fft_pencils = fft, int(fft_slabs), int(fft_pencils)
+        self._g = self._green() if fft == "full" else None
         self.mesh._k2 = None                     # only the Green's function needs |k|^2
         self._host = ([t.empty(self.np_, dtype=t.float32, pin_memory=True) for _ in range(3)]
                       if self.offload else None)
@@ -99,6 +104,8 @@ class CudaEngine:
     # ---- cell list -------------------------------------------------------------------------------
     def _sort(self, chunks=8):
         t, nc = self.t, self.nc
+        if self.offload:                         # cached free blocks count against a capped share; a big
+            t.cuda.empty_cache()                 # re-sort after many small allocations can then OOM
         cid = None
         for c in self.x:
             ci = (c / self.cs).floor_().to(t.int32).clamp_(0, nc - 1)
@@ -144,6 +151,10 @@ class CudaEngine:
             return
         t, dev = self.t, self.ops.device
         self.park_momenta()                     # offload engines: momenta wait in pinned host memory
+        if self.fft == "sliced":
+            self._sliced_kick(k)
+            self.unpark_momenta()
+            return
         phi = self.ops.rfftn(deposit(self.ops, self.x, self.box, self.ng, self.np_, self.slabs))
         phi.mul_(self._g)
         n, ng = self.np_, self.ng
@@ -158,6 +169,26 @@ class CudaEngine:
                 del pc
         del phi
         self.unpark_momenta()
+
+    def _sliced_kick(self, k):
+        from . import slicedfft
+        t, dev, n, ng = self.t, self.ops.device, self.np_, self.ng
+        delta = deposit(self.ops, self.x, self.box, ng, n, self.slabs)
+        gb, db = slicedfft.blocks_for(self)
+        kick, g = _kernel("cic_kick"), None
+        for c, x0, x1, gs in slicedfft.force_slabs(self.ops, lambda a, b: delta[a:b], ng, gb, db,
+                                                   self.fft_slabs, self.fft_pencils):
+            if g is None:
+                del delta
+                g = t.empty((ng, ng, ng), device=dev, dtype=t.float32)
+            g[x0:x1] = gs
+            if x1 == ng:
+                pc = self.p[c] if not self.offload else self._host[c].to(dev)
+                kick(((n + 255) // 256,), (256,), *self.x, n, ng, float(self.box / ng), g, float(k), pc)
+                if self.offload:
+                    self._host[c].copy_(pc)
+                    del pc
+        del g
 
     def short_kick(self, thr, kclose, kopen, crit, lmax):
         t = self.t

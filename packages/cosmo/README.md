@@ -340,3 +340,64 @@ The run needs every test above to pass (they do), a scratch disk (931 GB free, c
 - At 1024^3 with a 1024 mesh in 256 Mpc/h: 316 chaining cells of 0.81 Mpc/h, r_cut 1.41, ghost bound 22 cells per side. One x layer of cells holds 3.4 million particles. The ghosts alone are 44 layers: 3.5 GB at the bare 25-byte record, 7.9 GB with the window's sort buffers, so a 6 GB share is gone before any slab is added. One-dimensional slabs at the bound do not fit.
 - Energy: the 512^3 run of the same physics costs 378 kJ on the shared card; 1024^3 has eight times the pair work; slab stepping cost 3.3 to 3.8 times the in-core energy at 256^3. That gives 10 to 11 MJ (inferred, whole-card NVML), over three times the limit, before disk traffic: a 1024^3 store is 27 GB per buffer, two buffers, more than the free host memory, so it streams from disk.
 - The two costs come from one place: the ghost covers all nine pair evaluations of a global step. Exchanging ghosts every sub-step would cut the bound to about 4 cells, at the price of streaming the store eight times per global step. Pencils (x and y) instead of slabs cut the memory per window. Neither is built.
+
+## Round seven: softening and step rule together; ghosts every sub-step
+
+```
+python packages/cosmo/study/run_block.py --n 512 --box 256 --eps 0.0167 --eta 0.025 --levels 4 --match-n 256 --linear camb --steps-log 20 --steps-late 90 --seed 7
+python packages/cosmo/study/score_confirm.py --runs conf/*.npz --base r6/conf/*.npz --planted planted/*.npz --json score_combined.json
+python packages/cosmo/study/run_ooc_equiv.py --n 256 --box 256 --mesh 512 --levels 3 --slabs 4 --exchange 1 --drift-max 0.25 --fft sliced
+python packages/cosmo/study/run_ooc_equiv.py ... --ghost 1 --skip-incore --ref e2.json        # planted narrow ghost
+python packages/cosmo/study/bench_store_io.py --dir /path/to/scratch --gib 24 --out io.json
+python packages/cosmo/study/project_1024.py --equiv e2.json --disk disk.json --io io_raw.json --io-mmap io.json --ref512 blk512.json --sliced512 sliced512.json --out proj.json
+python packages/cosmo/study/plates_round7.py ...
+```
+
+### Three seeds with the halved softening and the tighter step rule
+
+Round six left z = 0, k 3-5 at 0.967 on three seeds, 3.3 percent low. Round five had measured the tighter step rule alone at +0.5 percent there. This round ran both together: 512^3 in 256 Mpc/h, eps 0.0167 Mpc/h, eta 0.025, four sub-step levels (at three the rule would clamp more of its requests), 110 global steps, CAMB input, 2LPT from z = 49, round four's seeds. Same pass line as round six, set before the runs. Predicted: z = 0, 3-5 at 0.979 (0.974 to 0.984), every cell passing.
+
+| k (h/Mpc) | z = 0 | z = 1 | z = 0, round six |
+|---|---|---|---|
+| < 0.1 | 0.994 (0.977-1.009) | 1.008 (0.997-1.021) | 0.994 |
+| 0.1-0.3 | 0.993 (0.983-1.000) | 0.999 (0.992-1.004) | 0.993 |
+| 0.3-0.5 | 1.005 (0.974-1.028) | 0.993 (0.987-1.003) | 1.005 |
+| 0.5-1 | 0.995 (0.965-1.013) | 0.985 (0.976-0.994) | 0.995 |
+| 1-2 | 0.998 (0.979-1.011) | 0.993 (0.979-1.004) | 0.996 |
+| 2-3 | 0.986 (0.976-0.996) | 0.995 (0.981-1.005) | 0.981 |
+| 3-5 | **0.976 (0.972-0.982)** | 0.988 (0.979-0.997) | 0.967 |
+
+- Result: all fourteen cells inside 3 percent. z = 0, 3-5 reads 0.976, 0.6 points inside the line and 0.3 below the predicted centre.
+- Same phases against round six, interlaced, per seed: z = 0, 3-5 +0.96 / +0.92 / +0.89 percent; 2-3 +0.50 / +0.44 / +0.43; below k = 1 at most +0.06. z = 1, 3-5 +0.63 / +0.63 / +0.57. Every predicted range held, the 3-5 gain near the low end of its range.
+- Controls: round four's 256^3 block run on this round's code gives its sha256 (d7ec3cf1...) bit for bit. Planted softening x4 at the same eta eps (eps 0.0667, eta 0.00625) reads 0.871 at z = 0, 3-5 and fails. Round six's three seeds through the same scorer fail.
+- Cost on a shared card: 283 pair evaluations per particle; 18 to 24 min and 507 to 574 kJ per seed (NVML, whole card); peak 5.3 GB.
+- Limits: one box size (256 Mpc/h) and three seeds; mass resolution is the 512^3 one (round five measured +0.6 percent at 3-5 for the next halving of the spacing, not included here). The emulator's own error at k 3-5 is a few percent, so inside 3 percent is agreement within the reference.
+- `lean.CudaEngine` now frees cached GPU blocks before each re-sort on offload engines: the first launch of this round ran out of memory under a 6 GB cap with 1.2 GB cached but free.
+
+### Ghosts every sub-step, sliced FFT in the slab runner (`ooc`, `oocmesh`, tests/test_ooc.py)
+
+- `SlabRunner(exchange=m)` reloads the windows every m sub-steps. The ghost bound becomes ((m + 1) r_cut + 2 skin + 2 D) / cell with D the drift between loads: 5 cells at m = 1 here, 19 at a whole global step.
+- `fft="sliced"` runs the mesh kick through `slicedfft.force_slabs`: each slab of mesh planes is deposited from the store's index ranges that can reach it, and `cic_kick_slab` (cic_kick's arithmetic with a plane offset) kicks the particles over each run of force planes. No ng^3 array of density, Green's function or force sits on the GPU.
+- `lean.CudaEngine(fft="sliced")` takes the same transform in core, so the slab runner can be held to bits: the sliced and full transforms differ at float32 rounding.
+
+256^3 in 256 Mpc/h, mesh 512, L = 3, eta 0.1, eps 0.0333, 110 global steps, 4 slabs:
+
+| Check | Result |
+|---|---|
+| Every sub-step, sliced FFT, ghost 5 (the bound), against in-core sliced | positions and momenta: one sha256 (e0732a52... / 6d7d2271...) |
+| Every sub-step, full FFT, against round six's in-core hashes | equal (2932413b... / 3b862c11...) |
+| Planted ghost of 1 cell | ownership error |
+| Ghost 2 and 3 cells | equal, equal |
+| Memory-mapped store | equal |
+| In-core sliced against in-core full, P(k) bands to k = 5 | within 0.086 percent (0.032 at 2-3) |
+
+- Cost: 545 s and 125 kJ against 135 s and 33 kJ in core (sliced); peak GPU 0.49 GB against 2.8 GB for round six's ghost-19 windows; 169 pair evaluations per particle against round six's 264.
+- The full-vs-sliced P(k) change missed its preregistered 0.05 percent line: float32 rounding grows through the small-scale dynamics to the size of round six's re-sort-rule change (0.063). Ghost 2 also gave the in-core bits where 3 was predicted as the threshold. The runner keeps the bound.
+
+### 1024^3: projection, not run
+
+Store bandwidth on the scratch NVMe, 24 GiB past the free host memory: 0.64 GB/s read and 0.84 write memory-mapped, 1.50 and 0.88 with unbuffered file IO.
+
+- GPU: 80.7 bytes per window particle at 256^3 gives a 7-layer slab with 6-cell ghosts in a 5.6 GB window at the 1024 mesh. It fits.
+- Energy: pair and mesh work 8 x the 512^3 run at eps 0.0083 times the slab overhead measured at 256^3, 11.1 MJ; store traffic 88 TB over 880 exchanges, 19 h at the unbuffered bandwidth, 16 MJ of whole-card draw. Total 27 MJ, nine times the 3 MJ limit. Not run.
+- Traffic dominates. A host that holds the 27 GB store in memory, or a larger GPU share, is what makes 1024^3 practical; the compact 19-byte record (not built) would cut a quarter of the traffic.

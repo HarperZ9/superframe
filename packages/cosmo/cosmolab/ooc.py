@@ -31,10 +31,13 @@ class GhostTooNarrow(RuntimeError):
     """Neighbouring windows disagreed on which particles they own, so a slab particle saw a wrong ghost."""
 
 
-def ghost_cells(rcut, cs, skin, levels, drift_max):
-    """Ghost width in chaining cells: 2^L + 1 pair evaluations per global step (the last one closes the
-    run), r_cut each, plus the skin and the drift of both the error front and the slab particles."""
-    return int(math.ceil(((2 ** levels + 1) * rcut + 2 * skin + 2 * drift_max) / cs))
+def ghost_cells(rcut, cs, skin, levels, drift_max, exchange=None):
+    """Ghost width in chaining cells: the pair evaluations between two loads of a window (2^L sub-steps a
+    global step, or `exchange` sub-steps when the ghosts are refreshed more often) plus one (the closing
+    kick), r_cut each, plus the skin and the drift of both the error front and the slab particles between
+    loads (drift_max)."""
+    m = 2 ** levels if exchange is None else int(exchange)
+    return int(math.ceil(((m + 1) * rcut + 2 * skin + 2 * drift_max) / cs))
 
 
 def window_ranges(c0, c1, ghost, nc):
@@ -72,7 +75,7 @@ class Store:
 class SlabRunner:
     def __init__(self, cosmo, box, ng, n_particles, pos, mom, ops, eps, levels, rs_cells=1.25, rcut_rs=4.5,
                  skin=0.15, reach=2, nslabs=4, ghost=None, drift_max=1.0, margin=1.5, store_path=None,
-                 chunk=2 ** 22, mesh_slabs=4):
+                 chunk=2 ** 22, mesh_slabs=4, exchange=None, fft="full", fft_slabs=8, fft_pencils=8):
         t = ops.torch
         self.t, self.ops = t, ops
         self.box, self.ng, self.np_ = float(box), int(ng), int(n_particles)
@@ -85,12 +88,18 @@ class SlabRunner:
         self.cs = self.box / self.nc
         self.skin = self.reach * self.cs - self.rcut
         self.L, self.margin, self.drift_max, self.chunk, self.mesh_slabs = int(levels), float(margin), drift_max, chunk, mesh_slabs
-        self.ghost = ghost_cells(self.rcut, self.cs, self.skin, self.L, drift_max) if ghost is None else int(ghost)
+        # exchange: sub-steps a window runs between loads (None: a whole global step, round six's layout).
+        # Fewer sub-steps per load mean narrower ghosts and more host traffic.
+        self.exchange = None if exchange is None else int(exchange)
+        self.fft, self.fft_slabs, self.fft_pencils = fft, int(fft_slabs), int(fft_pencils)
+        self.ghost = (ghost_cells(self.rcut, self.cs, self.skin, self.L, drift_max, self.exchange)
+                      if ghost is None else int(ghost))
+        self.loads = 0
         edges = np.linspace(0, self.nc, nslabs + 1).astype(int)
         self.slabs = list(zip(edges[:-1], edges[1:]))
         for c0, c1 in self.slabs:
             window_ranges(c0, c1, self.ghost, self.nc)  # raises if the window would wrap onto itself
-        self._g = lean.CudaEngine._green(self)
+        self._g = lean.CudaEngine._green(self) if fft == "full" else None
         self.mesh._k2 = None
         self.store_path = store_path
         self.store, self.spare = Store(self.np_, store_path, "a"), Store(self.np_, store_path, "b")
@@ -154,8 +163,15 @@ class SlabRunner:
             del acc
         return delta
 
+    def start_index(self):
+        return np.concatenate([[0], np.cumsum(self.count)])
+
     def long_kick(self, k):
         if not k:
+            return
+        if self.fft == "sliced":
+            from .oocmesh import sliced_long_kick
+            sliced_long_kick(self, k, self.fft_slabs, self.fft_pencils)
             return
         ng = self.ng
         phi = self.ops.rfftn(self.deposit())
@@ -181,10 +197,18 @@ class SlabRunner:
 
     # ---- one global step ---------------------------------------------------------------------------
     def global_step(self, subs, flags, final_close=None):
-        """Every slab through the sub-steps subs (and the closing pair kick on the last step)."""
+        """Every slab through the sub-steps subs (and the closing pair kick on the last step), the windows
+        reloaded every `exchange` sub-steps."""
+        m = len(subs) if self.exchange is None else self.exchange
+        for j in range(0, len(subs), m):
+            last = j + m >= len(subs)
+            self._exchange(subs[j:j + m], flags[j:j + m], final_close if last else None)
+        self.resorts += int(any(flags))
+
+    def _exchange(self, subs, flags, final_close):
         from .slabwindow import Window
         nc2 = self.nc ** 2
-        start = np.concatenate([[0], np.cumsum(self.count)])
+        start = self.start_index()
         count_new = np.zeros_like(self.count)
         off, moved = 0, 0.0
         for c0, c1 in self.slabs:
@@ -203,13 +227,13 @@ class SlabRunner:
             self.max_step_drift = max(self.max_step_drift, w.moved_step)
             moved = max(moved, w.moved)
             self.drift_violations += int(w.moved_step > self.drift_max)
+            self.loads += 1
             del w
         if off != self.np_:
             raise GhostTooNarrow(f"slabs wrote back {off} particles of {self.np_}: the ghost zone is too narrow")
         self.store, self.spare = self.spare, self.store
         self.count = count_new
         self.moved_true = moved
-        self.resorts += int(any(flags))
 
     def run(self, stepper, a_global, callback=None):
         from .lean import sort_plan

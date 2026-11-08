@@ -49,6 +49,10 @@ def main():
     ap.add_argument("--slabs", type=int, default=4)
     ap.add_argument("--ghost", type=int, default=None, help="ghost cells (default: ooc.ghost_cells bound)")
     ap.add_argument("--drift-max", type=float, default=1.0)
+    ap.add_argument("--exchange", type=int, default=None, help="sub-steps between window loads (default: a global step)")
+    ap.add_argument("--fft", default="full", choices=("full", "sliced"), help="mesh transform of both engines")
+    ap.add_argument("--fft-slabs", type=int, default=8)
+    ap.add_argument("--fft-pencils", type=int, default=8)
     ap.add_argument("--store", default=None, help="directory for memory-mapped columns (default: host RAM)")
     ap.add_argument("--skip-incore", action="store_true")
     ap.add_argument("--compare-skin", action="store_true", help="also run in-core on the skin re-sort rule")
@@ -72,13 +76,15 @@ def main():
     mom = [ops.to_numpy(c) if isinstance(c, t.Tensor) else np.asarray(c) for c in mom]
     import nvml
     res = {"n": n, "box": box, "mesh": ng, "levels": a.levels, "eta": a.eta, "eps": eps, "seed": a.seed,
-           "slabs": a.slabs, "global_steps": len(grid) - 1}
+           "slabs": a.slabs, "global_steps": len(grid) - 1, "exchange": a.exchange, "fft": a.fft,
+           "fft_slabs": a.fft_slabs, "fft_pencils": a.fft_pencils}
     k_in = pk_in = None
     if not a.skip_incore:
         t.cuda.reset_peak_memory_stats()
         with nvml.Window() as win:
             t0 = time.perf_counter()
-            eng = lean.CudaEngine(cosmo, box, ng, n ** 3, pos, mom, ops, eps=eps, track_ids=False, sort_policy="plan")
+            eng = lean.CudaEngine(cosmo, box, ng, n ** 3, pos, mom, ops, eps=eps, track_ids=False, sort_policy="plan",
+                                  fft=a.fft, fft_slabs=a.fft_slabs, fft_pencils=a.fft_pencils)
             stepping.BlockStepper(cosmo, eps, a.eta, a.levels).run(eng, grid)
             ops.sync()
             res["incore_seconds"] = time.perf_counter() - t0
@@ -108,7 +114,8 @@ def main():
     with nvml.Window() as win:
         t0 = time.perf_counter()
         run = ooc.SlabRunner(cosmo, box, ng, n ** 3, pos, mom, ops, eps, a.levels, nslabs=a.slabs, ghost=a.ghost,
-                             drift_max=a.drift_max, store_path=a.store)
+                             drift_max=a.drift_max, store_path=a.store, exchange=a.exchange, fft=a.fft,
+                             fft_slabs=a.fft_slabs, fft_pencils=a.fft_pencils)
         try:
             run.run(stepping.BlockStepper(cosmo, eps, a.eta, a.levels), grid)
         except ooc.GhostTooNarrow as e:      # a planted narrow ghost may fail this way instead of by hash
@@ -120,7 +127,7 @@ def main():
     res.update({"ghost_cells": run.ghost, "chaining_cells": run.nc, "cell_mpc_h": run.cs, "rcut": run.rcut,
                 "skin": run.skin, "ooc_resorts": run.resorts, "ooc_skin_violations": run.skin_violations,
                 "max_step_drift": run.max_step_drift, "drift_violations": run.drift_violations,
-                "ooc_pair_evals_per_particle": run.pair_evals / n ** 3})
+                "ooc_pair_evals_per_particle": run.pair_evals / n ** 3, "window_loads": run.loads})
     res["ooc_pos_sha256"] = digest([run.store[c] for c in ooc.COLS[:3]])
     res["ooc_mom_sha256"] = digest([run.store[c] for c in ooc.COLS[3:6]])
     res["equal"] = res["ooc_pos_sha256"] == res.get("incore_pos_sha256") and res["ooc_mom_sha256"] == res.get("incore_mom_sha256")

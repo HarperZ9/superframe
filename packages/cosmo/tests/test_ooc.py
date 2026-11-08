@@ -31,6 +31,8 @@ def test_ghost_bound():
     # (2^L + 1) r_cut + 2 skin + 2 D over the cell: L = 3, r_cut 2.8125, skin 0.43, D 2, cell 1.62 -> 19
     assert ooc.ghost_cells(2.8125, 1.62, 0.43, 3, 2.0) == 19
     assert ooc.ghost_cells(2.8125, 1.62, 0.43, 1, 0.0) == 6
+    # ghosts refreshed every sub-step: 2 r_cut + 2 skin + 2 D -> (5.625 + 0.86 + 0.5) / 1.62 -> 5
+    assert ooc.ghost_cells(2.8125, 1.62, 0.43, 3, 0.25, exchange=1) == 5
 
 
 def test_sort_plan():
@@ -110,3 +112,32 @@ def test_sliced_fft_matches_3d_fft():
     for c, x0, x1, g in slicedfft.force_slabs(ops, lambda a, b: delta[a:b], ng, gb, db, slabs=4, pencils=4):
         worst = max(worst, float((g - full[c][x0:x1]).abs().max() / full[c].abs().max()))
     assert worst < 1e-5
+
+
+def test_exchange_and_sliced_mesh_equal_in_core_sliced():
+    """Ghosts refreshed every sub-step, mesh force through the sliced FFT: the in-core engine on the same
+    sliced transform gives the same bits; a ghost one cell wide does not; the full and sliced transforms
+    agree to float32 rounding (not bitwise, which is why the in-core reference is sliced too)."""
+    ops = _cuda()
+    from cosmolab import stepping
+    pos, mom, grid = _setup()
+    eps = 2.0 / 30
+    hashes = {}
+    for fft in ("full", "sliced"):
+        e = lean.CudaEngine(C, 64.0, 128, 32 ** 3, pos, mom, ops, eps=eps, track_ids=False, sort_policy="plan",
+                            fft=fft, fft_slabs=4, fft_pencils=4)
+        stepping.BlockStepper(C, eps, 0.1, 1).run(e, grid)
+        hashes[fft] = _sha([ops.to_numpy(c) for c in e.x + e.p])
+        if fft == "full":
+            x_full = [ops.to_numpy(c) for c in e.x]
+        else:
+            dx = max(float(np.abs(a - ops.to_numpy(b)).max()) for a, b in zip(x_full, e.x))
+    assert hashes["full"] != hashes["sliced"] and dx < 1e-2
+    kw = dict(exchange=1, drift_max=0.25, fft="sliced", fft_slabs=4, fft_pencils=4)
+    sha, r = _ooc(ops, pos, mom, grid, eps, **kw)
+    assert sha == hashes["sliced"] and r.ghost < 7 and r.loads > 3 * (len(grid) - 1)
+    try:                                                                       # planted: one-cell ghost
+        bad, _ = _ooc(ops, pos, mom, grid, eps, ghost=1, **kw)
+    except ooc.GhostTooNarrow:
+        bad = None
+    assert bad != hashes["sliced"]
