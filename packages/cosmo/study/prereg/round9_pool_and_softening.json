@@ -1,0 +1,85 @@
+{
+ "round": 9,
+ "written": "2026-11-07, before any round-9 run (the commit time is the record)",
+ "questions": {
+  "part1": "Pool five more same-phase seed pairs (256^3 against 128^3 in 64 Mpc/h, round eight's rules) with round eight's three. Report the z = 0 and z = 1 factor R with 95 percent t intervals over n = 8, re-derive the inferred 1024^3 figure 0.976 x (1 + R), and say whether the z = 0, k 3-5 deficit closes on the interval, not only on the mean.",
+  "part2": "Softening convergence at 0.25 Mpc/h spacing: eps 0.0042 against 0.0083 (256^3 in 64 Mpc/h, same particles and phases). If halving eps again moves z = 0, k 3-5 by less than the line below, softening has converged at 0.0083."
+ },
+ "rules_held_fixed": {
+  "box": "64 Mpc/h",
+  "eta": 0.025,
+  "mesh": 256,
+  "rs_cells": 1.25,
+  "rcut": "4.5 rs",
+  "ic": "2LPT from z = 49, CAMB linear input, fixed amplitude, the 256^3 arm on the 128^3 lattice's phases (match_n 128)",
+  "steps": "110 global (20 log + 90 linear), block sub-steps",
+  "eps": "spacing / 30 in part 1 (0.016666666667 for 128^3, 0.008333333333 for 256^3)",
+  "levels": "5 in part 1 (round eight); 6 for every eps 0.0042 run and the planted run (the criterion asks steps sqrt(2) finer than at 0.0083; round eight clamped up to 1.1e6 requests at L 5). Clamped requests are reported.",
+  "estimator": "interlaced CIC with its shot term subtracted (pk_il); plain recorded beside it",
+  "code": "the queue runs from a git archive of origin/main a03ffef in r9/code, so branch edits cannot reach it"
+ },
+ "seeds": {
+  "part1_new": [9, 10, 11, 12, 13],
+  "part1_pooled_with": "round eight's 20261106, 7, 8 (r8/mhi, r8/mlo, reused, not rerun)",
+  "part2": "20261106, 7, 8 (their eps 0.0083 arms are round eight's r8/mhi runs, reused as the baseline)"
+ },
+ "runs": {
+  "null": "run_block --n 256 --box 128 --steps-log 20 --steps-late 90 --levels 3 --eta 0.05 (round four EH config), on the snapshot first and on the final branch last",
+  "M_lo": "--n 128 --box 64 --mesh 256 --eps 0.016666666667 --levels 5, seeds 9 10 11 12 13",
+  "M_hi": "--n 256 --match-n 128 --box 64 --mesh 256 --eps 0.008333333333 --levels 5, seeds 9 10 11 12 13",
+  "S_half": "--n 256 --match-n 128 --box 64 --mesh 256 --eps 0.004166666667 --eta 0.025 --levels 6, seeds 20261106 7 8",
+  "planted": "S_half with eps x4 at S_half's eta*eps: --eps 0.016666666667 --eta 0.00625 --levels 6, seed 20261106. Same step sizes as S_half; only the softening differs.",
+  "S_pure (conditional, last, budget rule)": "--eps 0.004166666667 --eta 0.05 --levels 6, seed 20261106: eps halved at round eight's eta*eps, so the softening part of D is separated from the step part on one seed"
+ },
+ "measures": {
+  "R": "band mean of P_hi / P_lo - 1 per seed, mode-weighted, z = 0 and z = 1; seed mean, sample sd, 95 percent t interval (n = 8: t = 2.365). Also reported separately for the five new seeds (n = 5) and round eight's three.",
+  "D": "band mean of P_S_half / P_M_hi - 1 per seed (eps 0.0042 over 0.0083), same particles and phases; seed mean, sd, t interval (n = 3: t = 4.303).",
+  "planted": "P_planted / P_S_half - 1, seed 20261106.",
+  "closure_factor_only": "0.976 x (1 + R_z0,3-5) with the interval carried from R's t interval (round eight's method).",
+  "closure_with_base": "the same with the base's own uncertainty added: relative t half-widths of R (n = 8) and of round seven's three per-seed z = 0, 3-5 readings (n = 3, t = 4.303) added in quadrature. Reported beside the factor-only interval.",
+  "closure_words": "closes on the interval: lower bound >= 0.990; closes on the mean only: mean >= 0.990, lower bound < 0.990; partly: mean 0.980 to 0.990; does not: mean < 0.980. Applied to both intervals; the factor-only one is the preregistered verdict (round eight's method), the with-base one is reported."
+ },
+ "predictions": {
+  "units": "percent, [centre, low, high] on the seed mean, unless stated",
+  "R_pooled_n8_z0": {"3-5": [2.2, 1.5, 2.9], "2-3": [0.5, -0.1, 1.1], "1-2": [0.2, -0.3, 0.7], "0.5-1": "|R| < 0.4", "0.1-0.5": "|R| < 0.2"},
+  "R_pooled_n8_z1": {"3-5": [2.8, 2.3, 3.3], "2-3": [1.7, 1.3, 2.1], "1-2": [0.9, 0.6, 1.2]},
+  "R_pooled_sd_z0_3to5": "0.5 to 1.1 points; t half-width 0.4 to 0.9",
+  "R_new5_z0_3to5": "inside round eight's interval +0.17 to +4.30",
+  "closure_factor_only": "0.997 (lower bound 0.990 to 0.993, upper 1.002 to 1.006). Verdict: closes on the interval, low confidence (the lower bound sits near the 0.990 cut).",
+  "closure_with_base": "lower bound under 0.990: closes on the mean only (the base's three-seed interval is about +-1.3 points on its own).",
+  "D_z0": {"3-5": [0.9, 0.4, 1.6], "2-3": [0.3, 0.05, 0.7], "1-2": "under 0.3", "below 1": "|D| < 0.1"},
+  "D_z1": {"3-5": [0.4, 0.15, 0.9]},
+  "D_seed_spread_z0_3to5": "under 0.8 points (round eight's same-particle eps change, 0.0167 against 0.0083, spread 0.55)",
+  "D_basis": "z = 0, 3-5 at 0.25 Mpc/h spacing, fixed eta: eps 0.0333 to 0.0167 about +3.7, 0.0167 to 0.0083 +1.84 (round eight, mmass against mhi, inferred from records); ratio about 0.5 per halving, so the next is about +0.9",
+  "S_pure_z0_3to5": "D_pure +0.6 (0.2 to 1.3); D - D_pure is the step part, +0.1 to +0.5",
+  "planted_z0_3to5": "-2.1 (-1.3 to -3.5): pure softening 0.0042 to 0.0167 at fixed steps, from D_pure plus round eight's 0.0083 to 0.0167 (-1.81, of which about 0.3 is steps). Scaled to this round's absolute softening, the slip round eight recorded (its planted was scaled from round seven's eps 0.0667).",
+  "convergence_verdict": "NOT converged (D above 0.5), moderate confidence",
+  "cost_kJ": "M_lo 4-8, M_hi 180-280, S_half 230-420, planted 200-380 (whole card)"
+ },
+ "lines": {
+  "convergence": "softening has converged at eps 0.0083 if the three-seed mean D(z = 0, 3-5) is under 0.5 percent (round five's same-phase noise floor). Converged on the interval if the upper t bound is also under 0.5. Not converged if the mean is 0.5 or more.",
+  "if_not_converged": "round seven's 0.976 (eps 0.0167 at 0.5 spacing) and round eight's 0.998 (eps 0.0083 at 0.25) are both softening-limited readings, not converged values; the 0.998 inference becomes a lower bound in softening and the converged-softening 1024^3 figure is about 0.998 x (1 + D) plus later halvings (geometric tail D r / (1 - r), r = D / 1.84, inferred).",
+  "if_converged": "the 0.998 inference stands in softening; the remaining open factors are mass resolution past 1024^3, box and the emulator's own error at k 3-5."
+ },
+ "kill_lines": {
+  "null": "both null runs must give sha256 d7ec3cf1aa7102dce13c6251e9d061c128fbe45c5dd340ca5a14a8d671028e01; if not, stop: the code changed the dynamics.",
+  "planted": "P_planted / P_S_half - 1 at z = 0, 3-5 must be -1.0 percent or lower (twice the convergence line). If not, the ratio cannot see a softening change at this absolute softening and a converged reading of D is unreadable.",
+  "scorer": "the round-nine scorer on round eight's three seeds must reproduce R(z = 0, 3-5) = +2.2375 percent to 0.01.",
+  "runs": "a run killed or failed for any reason is rerun from scratch; no partial is scored. A run over 3 x its projected joules is recorded and the round's remaining queue is re-checked against the budget.",
+  "energy": "3.0 MJ for the round, NVML whole card (it counts the training job and other agents, so it overstates ours)."
+ },
+ "energy_projection_kJ": {
+  "null x2": 45,
+  "M_lo x5": 30,
+  "M_hi x5": 1120,
+  "S_half x3": 945,
+  "planted": 260,
+  "mandatory subtotal": 2400,
+  "S_pure (conditional)": 230,
+  "total": 2630,
+  "basis": "round eight measured: M_hi 182-274 kJ (mean 224), M_lo 4-6; S_half scaled by pair evaluations (391 to about 550, x1.4); planted by round eight's planted/mhi evaluation ratio (0.83)",
+  "budget_rule": "Before each launch: measured joules so far + (remaining mandatory projection x measured/projected ratio so far) must stay under 3.0 MJ, else skip in queue order and record the skip. S_pure runs only if measured + (230 + 25 held for the branch null) x ratio stays under 3.0 MJ. Queue: E:/wt/cosmo-out/r9/queue.sh, ledger budget.py (mandatory 2380 kJ queued plus the branch null)."
+ },
+ "limits": "RTX 4090 shared with a training job and two other agents: every process capped at 5.5 GB, one run at a time, 3 CPU threads at BelowNormal, empty_cache before re-sorts (in code since round seven). No Gadget-4 run. No process of anyone else's is touched.",
+ "amendments": []
+}
