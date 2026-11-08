@@ -401,3 +401,31 @@ Store bandwidth on the scratch NVMe, 24 GiB past the free host memory: 0.64 GB/s
 - GPU: 80.7 bytes per window particle at 256^3 gives a 7-layer slab with 6-cell ghosts in a 5.6 GB window at the 1024 mesh. It fits.
 - Energy: pair and mesh work 8 x the 512^3 run at eps 0.0083 times the slab overhead measured at 256^3, 11.1 MJ; store traffic 88 TB over 880 exchanges, 19 h at the unbuffered bandwidth, 16 MJ of whole-card draw. Total 27 MJ, nine times the 3 MJ limit. Not run.
 - Traffic dominates. A host that holds the 27 GB store in memory, or a larger GPU share, is what makes 1024^3 practical; the compact 19-byte record (not built) would cut a quarter of the traffic.
+
+## Round eight: the mass-resolution factor
+
+```
+python packages/cosmo/study/run_block.py --n 128 --box 64 --mesh 256 --eps 0.0167 --eta 0.025 --levels 5 --linear camb --steps-log 20 --steps-late 90 --seed 7
+python packages/cosmo/study/run_block.py --n 256 --match-n 128 --box 64 --mesh 256 --eps 0.0083 --eta 0.025 --levels 5 --linear camb --steps-log 20 --steps-late 90 --seed 7
+python packages/cosmo/study/score_massres.py --pair main "mhi/*.npz" "mlo/*.npz" --pair b64 "b64/blk_n128*.npz" "b64/blk_n64_*.npz" --closure 0.976 --json score.json
+python packages/cosmo/study/plates_round8.py ...
+```
+
+Question: how much does halving the particle spacing from 0.5 to 0.25 Mpc/h (round seven's 512^3 in 256 Mpc/h to 1024^3) raise P(k), on three seeds. Preregistered in `study/prereg/round8_mass_resolution.json` before any run. The route first proposed, 512^3 against 256^3 in 128 Mpc/h, projected to about 2.3 MJ per seed (round five's single 512^3 run in that box took 837 kJ at looser rules), over a 3 MJ cap for the round. The same halving ran in a 64 Mpc/h box instead (256^3 against 128^3, same spacing, cell and r_cut in Mpc/h), with a bridge at the coarser halving (spacing 1 to 0.5) in 64, 128 and 256 Mpc/h boxes to check that the factor does not depend on the box. Softening is spacing / 30 in each arm, eta 0.025, the finer arm shares the coarser lattice's phases.
+
+R = band mean of P_fine / P_coarse - 1, interlaced estimator, percent, three-seed mean (seed range):
+
+| k (h/Mpc) | z = 0, spacing and softening | z = 0, mass only | z = 1, spacing and softening |
+|---|---|---|---|
+| 0.5-1 | +0.12 (-0.09 to +0.38) | +0.07 | +0.37 |
+| 1-2 | +0.20 (-0.18 to +0.87) | -0.02 | +0.94 (+0.68 to +1.27) |
+| 2-3 | +0.41 (-0.13 to +0.86) | -0.23 | +1.70 (+1.44 to +2.19) |
+| 3-5 | **+2.24 (+1.31 to +2.92)** | +0.38 (-0.19 to +0.95) | +2.78 (+2.35 to +3.17) |
+
+- 95 percent t interval at z = 0, 3-5: +0.17 to +4.30. Three seeds is a small sample, and in a 64 Mpc/h box the seed scatter at z = 0 is half a point per band.
+- Mass alone (softening held at 0.0167) adds +0.38 at z = 0, 3-5, round five's +0.6 inside its range; most of the +2.24 comes from halving the softening with the spacing. At z = 1 mass alone gives +1.69, clean across seeds.
+- Bridge, spacing 1 to 0.5, z = 0, 3-5: +7.47 (64 Mpc/h), +7.08 (128), +6.92 (256). The 64 and 256 Mpc/h boxes differ by 0.56 points, under the preregistered 1.5, so the factor is carried to the 256 Mpc/h box.
+- Inferred, not run: round seven's z = 0, 3-5 reading 0.976 times 1.0224 gives 0.998 (0.978 to 1.018 on the t interval) for 1024^3 in 256 Mpc/h at eps 0.0083.
+- Absolute P / emu in the 64 Mpc/h box is 7 to 20 percent low at z = 0 (missing modes); not scored. The 128 Mpc/h box reads 0.96-0.97 in every band past k = 0.1.
+- Controls: round four's 256^3 null hash (d7ec3cf1...) on the code snapshot and on this branch; the scorer reproduces round five's recorded +0.61 percent; planted softening x4 in the fine arm reads -3.13 at z = 0, 3-5, 5.4 points under the real factor.
+- Cost: 1.79 MJ for the round (NVML, whole card, shared with a training job); 256^3 in 64 Mpc/h 7 to 11 min and 182-274 kJ per seed, peak 0.74 GB.
