@@ -1,0 +1,58 @@
+{
+ "round": 8,
+ "written": "2026-11-07T17:40-08:00, before any round-8 run",
+ "question": "The mass-resolution factor at k 1-5: how much does halving the particle spacing from 0.5 to 0.25 Mpc/h (the step from round seven's 512^3 in 256 Mpc/h to a 1024^3 run in that box) raise P(k), does round five's one-seed +0.6 percent at z = 0, k 3-5 hold across three seeds and bands, and would it close round seven's z = 0, k 3-5 reading of 0.976 against Cosmic Emu.",
+ "rules_held_fixed": {
+  "eps": "spacing / 30 in each arm (eps-per-spacing rule of rounds six and seven)",
+  "eta": 0.025,
+  "mesh": "mesh cell = the finer arm's particle spacing (round seven: mesh 512 for 512^3 in 256 Mpc/h)",
+  "rs_cells": 1.25, "rcut": "4.5 rs", "ic": "2LPT from z = 49, CAMB linear input, fixed amplitude, finer arm shares the coarser lattice's phases (match_n)",
+  "steps": "110 global (20 log + 90 linear), block sub-steps",
+  "estimator": "interlaced CIC with its shot term subtracted (pk_il); plain recorded beside it"
+ },
+ "projection_and_branch": {
+  "brief_route": "512^3 against 256^3 in 128 Mpc/h, three seeds",
+  "lower_bound_from_records": "round five (d2) ran 512^3 in 128 Mpc/h at looser rules (eps 0.0333, eta 0.05, L 3): 2078 s and 837 kJ (NVML, whole card). Three seeds at those looser rules alone are 2.51 MJ.",
+  "projection_at_round8_rules": "eta*eps 8x smaller than (d2). Round seven against round four (eta*eps 4x smaller) cost 1.97x the joules; another halving taken as 1.4x: about 2.3 MJ per seed, 6.9 MJ for three. Fails the 3 MJ cap.",
+  "branch_taken": "Same halving (spacing 0.5 to 0.25) in a 64 Mpc/h box: 256^3 against 128^3. Per-particle pair work matches 512^3 in 128 Mpc/h (same spacing, same cell, same rcut in Mpc/h), so about one eighth of the cost. Box dependence of the factor is checked by a cheap bridge at the spacing 1 to 0.5 halving in 64, 128 and 256 Mpc/h boxes.",
+  "projected_kJ": {"M_lo x3": 60, "M_hi x3": 870, "planted": 230, "bridge 64": 60, "bridge 128": 330, "bridge 256": 75, "null x2": 50, "subtotal": 1675, "M_mass x3 (conditional)": 630, "total": 2305},
+  "budget_rule": "Before each launch: measured joules so far + (remaining projection x measured/projected ratio so far) must stay under 3.0 MJ; otherwise skip the remaining runs in queue order and record the skip. M_mass runs last and only under this rule."
+ },
+ "runs": {
+  "null": "run_block --n 256 --box 128 --steps-log 20 --steps-late 90 --levels 3 --eta 0.05 (round four EH config), on the round-8 code snapshot and again on the final branch",
+  "M_lo": "--n 128 --box 64 --mesh 256 --eps 0.016666666667 --levels 5, seeds 20261106 7 8",
+  "M_hi": "--n 256 --match-n 128 --box 64 --mesh 256 --eps 0.008333333333 --levels 5, seeds 20261106 7 8",
+  "planted": "M_hi with eps x4 at fixed eta*eps: --eps 0.033333333333 --eta 0.00625, seed 20261106",
+  "B64": "--box 64 --mesh 128 --levels 4: n 64 eps 0.033333333333 against n 128 match 64 eps 0.016666666667, seeds 20261106 7 8",
+  "B128": "--box 128 --mesh 256 --levels 4: n 128 eps 0.033333333333 against n 256 match 128 eps 0.016666666667, seeds 20261106 7 8",
+  "B256": "--box 256 --mesh 512 --levels 4: n 256 eps 0.033333333333 (new) against round seven's conf runs (n 512 match 256 eps 0.0167 L 4, same seeds), reused",
+  "M_mass": "conditional: M_hi at eps 0.016666666667 (mass only, the M_lo softening), seeds 20261106 7 8",
+  "levels_note": "L 5 on the main pair: at eps 0.0083 and eta 0.025 the criterion asks steps sqrt(2) finer than round seven, which clamped 0.24 percent of requests at L 4. Clamped requests are reported."
+ },
+ "measure": "R = band mean of P_hi / P_lo - 1 over the same phases, per seed, z = 0 and z = 1, interlaced (plain beside it). Seed mean, sample sd, 95 percent t interval (n = 3, t = 4.303). Three seeds is small: the interval is wide by construction.",
+ "scorable_bands": {
+  "64 Mpc/h": "k_f = 0.098 h/Mpc. Band < 0.1 holds only the 3 fundamental modes: not scored. 0.1-0.3 about 58 modes, 0.3-0.5 about 218, more above. R is scored in 0.1-0.3 to 3-5. Absolute P / emu is reported but not scored against any line: a 64 Mpc/h box misses every mode past its side and round five showed the 128 Mpc/h box low in every band.",
+  "128 Mpc/h": "k_f = 0.049. Band < 0.1 about 17 modes. R scored from 0.1-0.3; absolute not scored.",
+  "256 Mpc/h": "as round seven."
+ },
+ "predictions": {
+  "main_ladder_z0": {"3-5": [1.3, 0.6, 2.5], "2-3": [0.8, 0.3, 1.6], "1-2": [0.35, 0.0, 0.8], "0.5-1": "|R| < 0.3", "0.1-0.5": "|R| < 0.2", "units": "percent, [centre, low, high] on the three-seed mean"},
+  "main_ladder_z1": {"3-5": [2.5, 1.2, 3.8], "2-3": [1.6, 0.7, 2.6]},
+  "seed_spread_z0_3to5": "max - min of R under 0.6 points",
+  "mass_only_z0_3to5": [0.6, 0.3, 1.0],
+  "softening_part_z0_3to5": "ladder minus mass only: +0.7 (0.2 to 1.5)",
+  "bridge_z0_3to5": "R about +6.5 (4.5 to 9) in the 256 Mpc/h box; |R_64 - R_256| under 1.5 points (moderate confidence)",
+  "closure": "inferred 1024^3 in 256 Mpc/h, z = 0, 3-5 = 0.976 x (1 + R_main): predicted 0.989 (0.982 to 1.000). Verdict words: closes at 0.990 or above, partly 0.980 to 0.990, does not below 0.980.",
+  "absolute_64": "P / emu low in most bands, 3 to 12 percent; not scored",
+  "cost": "M_hi 150 to 600 kJ per seed (whole card)"
+ },
+ "kill_lines": {
+  "null": "both null runs must give sha256 d7ec3cf1aa7102dce13c6251e9d061c128fbe45c5dd340ca5a14a8d671028e01; if not, stop: the code changed the dynamics.",
+  "planted": "R_planted (z = 0, 3-5) must sit at least 3 points below R_main; predicted about -9.6 (round seven's eps x4 cost 10.8 percent of P at 3-5). If not, the ratio cannot see softening and the decomposition is unreadable.",
+  "scorer": "the new scorer on round five's (d2) pair must reproduce its recorded plain z = 0, 3-5 delta 0.61 percent to 0.01.",
+  "bridge": "if |R_64 - R_256| at the spacing 1 to 0.5 halving exceeds 1.5 points, the 64 Mpc/h factor is reported as box dependent and not carried into the 256 Mpc/h closure figure.",
+  "runs": "a run killed for any reason is rerun from scratch or dropped; no partial is scored. A run over 3 x its projected joules is stopped and recorded.",
+  "energy": "3.0 MJ for the round, NVML whole-card (it counts the training job too, so it overstates ours)"
+ },
+ "limits": "GPU process cap 5.5 GB (card shared with a training job); 3 CPU threads at BelowNormal; empty_cache before re-sorts on offload engines (already in code). No Gadget-4 run."
+}
