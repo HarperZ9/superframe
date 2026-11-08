@@ -52,7 +52,7 @@ def score(paths, key, tol):
     return out, ok
 
 
-def same_phase(paths, base_paths):
+def same_phase(paths, base_paths, key="pk"):
     base = {seed_of(p): np.load(p) for p in base_paths}
     out = {}
     for p in paths:
@@ -63,7 +63,7 @@ def same_phase(paths, base_paths):
         out[s] = {}
         for z in ("0", "1"):
             k, w = run[f"k_z{z}"], run[f"nmodes_z{z}"]
-            b = reference.bands(k, run[f"pk_z{z}"] / base[s][f"pk_z{z}"], w)
+            b = reference.bands(k, run[f"{key}_z{z}"] / base[s][f"{key}_z{z}"], w)
             out[s][f"z{z}"] = {name: b[name]["mean_ratio"] - 1 for name in BANDS if name in b}
     return out
 
@@ -81,6 +81,8 @@ def main():
     res["plain"], res["pass_plain"] = score(a.runs, "pk", a.tol)
     if a.base:
         res["same_phase_plain_vs_base"] = same_phase(a.runs, a.base)
+        if all("pk_il_z0" in np.load(p) for p in a.base):
+            res["same_phase_interlaced_vs_base"] = same_phase(a.runs, a.base, "pk_il")
         res["base_plain"], res["base_pass"] = score(a.base, "pk", a.tol)
     if a.planted:
         res["planted"], res["planted_pass"] = score(a.planted, "pk_il", a.tol)
