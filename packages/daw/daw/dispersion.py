@@ -133,6 +133,14 @@ def stiff_string(f0, seconds, fs, excitation, t60=6.0, b=1e-4):
     a, m = design(f0, fs, b)
     n, t = _layout(f0, fs, a, m)
     g = min(10 ** (-3 / (t60 * f0)) / math.cos(math.pi * f0 / fs), 0.99999)
+    return stiff_loop((n, t, g, a, m), seconds, fs, excitation)
+
+
+def stiff_loop(loop, seconds, fs, excitation):
+    """The stiff string from its loop (n, t, g, a, m) as stiff_string derives it. The derivation (an optimiser,
+    a phase unwrap, the platform's cos) can differ in the last bits between machines; a stored loop, as the CLAP
+    piano's table holds, renders the same bytes everywhere."""
+    n, t, g, a, m = loop
     sos = [[g * t, g, 0.0, 1.0, t, 0.0], [0.5, 0.5, 0.0, 1.0, 0.0, 0.0]] + [[a, 1.0, 0.0, 1.0, a, 0.0]] * m
     sos = np.array(sos)
     zi = np.zeros((len(sos), 2))

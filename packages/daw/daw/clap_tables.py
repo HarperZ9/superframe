@@ -8,8 +8,9 @@ For each sample rate in RATES and each key from A0 (21) to C8 (108): the stiff s
 dispersion.stiff_string builds it (integer delay n, tuning allpass t, loop gain g, dispersion coefficient a and
 stage count m, from dispersion.design with B = dispersion.piano_b, the measured Steinway table), and the hammer
 force waveguide.hammer(fs, CONTACT). Doubles are written with 17 significant digits, which round-trip exactly,
-so the plugin's arithmetic starts from the same bits as the offline render. tests/test_clap.py re-derives
-rows and compares them with the header.
+so the plugin's arithmetic starts from the same bits as the offline render (dispersion.stiff_loop). Deriving a
+row again on another machine can differ in the last bits (the design optimiser, the phase unwrap and the
+platform's cos), which is why the rows are stored; tests/test_clap.py holds a fresh derivation within 1e-9.
 """
 import math
 import sys
@@ -57,6 +58,18 @@ def write(path=HEADER):
         lines.append(f"static const double piano_hammer_{fs}[{len(h)}] = {{" + ", ".join(repr(float(v)) for v in h) + "};")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return path
+
+
+def read(fs, path=HEADER):
+    """The header's rows for one rate, {key: (n, t, g, a, m)}, and its hammer, parsed back to the same doubles."""
+    text = path.read_text(encoding="utf-8")
+    block = text.split(f"piano_rows_{fs}[PIANO_KEYS] = {{")[1].split("};")[0]
+    rows = {}
+    for key, ln in zip(KEYS, block.strip().splitlines()):
+        r = ln.split("//")[0].strip().strip("{},").split(", ")
+        rows[key] = (int(r[0]), float(r[1]), float(r[2]), float(r[3]), int(r[4]))
+    ham = text.split(f"piano_hammer_{fs}[")[1].split("{")[1].split("}")[0]
+    return rows, [float(v) for v in ham.split(", ")]
 
 
 if __name__ == "__main__":

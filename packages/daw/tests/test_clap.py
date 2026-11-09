@@ -101,13 +101,14 @@ PIANO = [(50, 21, 0.9, 0), (700, 60, 0.7, 0), (2000, 64, 1.0, 1), (2001, 67, 0.5
 
 
 def piano_reference(notes, seconds, fs):
-    """dispersion.stiff_string for every note, placed at its sample and summed in voice order."""
+    """dispersion.stiff_loop with the table's loop and hammer for every note, placed and summed in voice order."""
     total = int(seconds * fs)
     out = np.zeros(total)
-    h = W.hammer(fs, clap_tables.CONTACT)
+    rows, ham = clap_tables.read(fs)
+    h = np.array(ham)
     for t, key, vel, midi in notes:                      # fewer than 16 notes: voice order is note order
         v = round(vel * 127) / 127 if midi else vel
-        y = D.stiff_string(clap_tables.f0_of(key), (total - t) / fs + 0.01, fs, h * v, clap_tables.T60, D.piano_b(key))
+        y = D.stiff_loop(rows[key], (total - t) / fs + 0.01, fs, h * v)
         out[t:] += y[:total - t]
     return (GAIN * out).astype(np.float32)
 
@@ -128,11 +129,19 @@ def test_piano_block_size_changes_no_bit(built):
 
 
 def test_piano_table_is_the_offline_design():
-    text = clap_tables.HEADER.read_text(encoding="utf-8")
     for fs in clap_tables.RATES:
-        block = text.split(f"piano_rows_{fs}[PIANO_KEYS] = {{")[1].split("};")[0]
-        rows = [ln.split("//")[0].strip().strip("{},").split(", ") for ln in block.strip().splitlines()]
+        rows, ham = clap_tables.read(fs)
+        assert np.max(np.abs(np.array(ham) - W.hammer(fs, clap_tables.CONTACT))) < 1e-12
         for key in (21, 60, 108):
             n, t, g, a, m = clap_tables.row(key, fs)
-            r = rows[key - 21]
-            assert (int(r[0]), float(r[1]), float(r[2]), float(r[3]), int(r[4])) == (n, t, g, a, m)
+            r = rows[key]
+            assert (r[0], r[4]) == (n, m)
+            assert np.max(np.abs(np.array(r[1:4]) - [t, g, a])) < 1e-9
+
+
+def test_stored_loop_is_the_stiff_string_here():
+    fs, key = 48000, 60
+    y = D.stiff_loop(clap_tables.row(key, fs), 0.2, fs, W.hammer(fs, clap_tables.CONTACT))
+    want = D.stiff_string(clap_tables.f0_of(key), 0.2, fs, W.hammer(fs, clap_tables.CONTACT), clap_tables.T60,
+                          D.piano_b(key))
+    assert np.array_equal(y, want)
