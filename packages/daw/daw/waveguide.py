@@ -8,7 +8,7 @@ fundamental. A per-period gain g sets the fundamental's decay: the level falls b
 period, so g = 10^(-3 / (T60 f0)) / cos(pi f0 / fs) gives the requested T60 at f0.
 A piano note is three such strings at slightly different tunings struck by one felt hammer, here a
 raised-cosine force pulse whose length sets the brightness; the strings beat at their frequency
-differences. String dispersion (the piano's stretched partials) is on the roadmap.
+differences. String dispersion (the piano's stretched partials) is in dispersion.py; piano(..., b=B) uses it.
 """
 import math
 
@@ -84,7 +84,11 @@ def hammer(fs, contact=2e-3):
     return 0.5 * (1 - np.cos(2 * math.pi * np.arange(m) / m))
 
 
-def piano(f0, seconds, fs, detune_cents=(-0.8, 0.0, 0.9), t60=6.0, contact=2e-3, fast=False):
-    """Three unison strings, one hammer; returns the sum."""
+def piano(f0, seconds, fs, detune_cents=(-0.8, 0.0, 0.9), t60=6.0, contact=2e-3, fast=False, b=0.0):
+    """Three unison strings, one hammer; returns the sum. b > 0 makes each string stiff, with inharmonicity
+    coefficient b (dispersion.stiff_string, gap G19)."""
     h = hammer(fs, contact)
+    if b > 0:
+        from .dispersion import stiff_string
+        return sum(stiff_string(f0 * 2 ** (c / 1200), seconds, fs, h, t60, b) for c in detune_cents) / len(detune_cents)
     return sum(string(f0 * 2 ** (c / 1200), seconds, fs, h, t60, fast) for c in detune_cents) / len(detune_cents)

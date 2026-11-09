@@ -12,6 +12,8 @@ Engines (what makes one note):
   pluck   one waveguide string, plucked at a position, from seeded noise.
   bowed   a bowed string in Helmholtz motion (sustain.bowed) with a bow attack and release.
   floor   coloured noise f^-beta (wind.coloured_noise): room tone, a noise floor.
+  pad     a subtractive unison pad (subtractive.pad, gap G14). piano takes "inharmonicity": a number B, or
+          "register" for dispersion.piano_b of the note (gap G19).
 Every engine but modal passes each note through a DC blocker (a one-pole high pass at DC_HZ): a pluck or a
 hammer pushes the string one way, so the waveguide output carries a slow offset that would otherwise take the
 peak and leave the audible part quiet after normalisation. Every engine but modal ends a note with a damper: after the held length the note falls with release_t60,
@@ -62,8 +64,19 @@ def _envelope(y, fs, hold, attack, release_t60):
 
 def _piano(p, f, seconds, fs, vel, rng):
     contact = p.get("contact", 3e-3) / (0.5 + vel)
+    b = p.get("inharmonicity", 0.0)
+    if b == "register":
+        from .dispersion import piano_b
+        b = piano_b(69 + 12 * math.log2(f / 440.0))
     return waveguide.piano(f, seconds, fs, tuple(p.get("detune_cents", (-0.8, 0.0, 0.9))), p.get("t60", 6.0),
-                           contact, fast=True)
+                           contact, fast=True, b=float(b))
+
+
+def _pad(p, f, seconds, fs, vel, rng):
+    from .subtractive import pad
+    keys = ("voices", "detune", "shape", "cutoff", "env_amount", "k", "attack", "decay", "sustain", "release",
+            "drift", "drift_rate")
+    return pad(f, seconds, fs, rng, seconds - p.get("tail", 2.0), **{k: p[k] for k in keys if k in p})
 
 
 def _rhodes(p, f, seconds, fs, vel, rng):
@@ -89,7 +102,7 @@ def _floor(p, f, seconds, fs, vel, rng):
 
 
 ENGINES = {"piano": (_piano, False), "rhodes": (_rhodes, False), "pluck": (_pluck, True),
-           "bowed": (_bowed, False), "floor": (_floor, True)}
+           "bowed": (_bowed, False), "floor": (_floor, True), "pad": (_pad, True)}
 
 
 @dataclass

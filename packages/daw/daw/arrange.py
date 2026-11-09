@@ -61,6 +61,8 @@ class Track:
     send: float = 0.3          # share sent to the room
     automation: dict = field(default_factory=dict)   # "gain_db" or "pan" -> Envelope
     inserts: list = field(default_factory=list)      # callables f(mono, fs) -> mono, run in order on the track
+    width: float = 0.0         # 0 mono-placed; up to 1: a decorrelated side signal widens the track (stems.widen)
+    sends: dict = field(default_factory=dict)        # space name -> send level, for Arrangement.spaces
 
     def control(self, key, n, fs):
         if key in self.automation:
@@ -77,6 +79,7 @@ class Arrangement:
     room: object = None
     room_return_db: float = -6.0
     ceiling: float = 0.98      # master limiter ceiling, linear
+    spaces: dict = field(default_factory=dict)       # name -> Room or Space: extra reverb buses fed by Track.sends
 
     @property
     def seconds_per_beat(self):

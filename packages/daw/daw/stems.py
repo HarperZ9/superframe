@@ -49,14 +49,26 @@ def render(arr, rng, target_lufs=None):
         raise ValueError("track names must be unique: each names one stem file")
     ir = arr.room.impulse_responses(fs, rng) if arr.room is not None else None
     g_room = room_gain(arr, *ir) if ir is not None else 0.0
+    buses = {}
+    for name in sorted(getattr(arr, "spaces", {}) or {}):           # extra spaces, in name order (seeded)
+        h = arr.spaces[name].impulse_responses(fs, rng)
+        buses[name] = (h, room_gain(arr, *h))
     stems = {}
     for tr in arr.tracks:
         mono = render_track(arr, tr, rng)
         gain = tr.control("gain_db", n, fs)
         st = place(mono, gain, tr.control("pan", n, fs))
-        send = mono * db(gain) * tr.send
+        dry = mono * db(gain)
+        if getattr(tr, "width", 0.0) > 0:
+            st = st + widen(dry, tr.width, tr.name, fs=fs)
+        send = dry * tr.send
         if ir is not None and np.any(send):
-            st = st + g_room * np.stack([oaconvolve(send, ir[0])[:n], oaconvolve(send, ir[1])[:n]], 1)
+            st = st + g_room * _wet(send, ir, n)
+        for name, level in (getattr(tr, "sends", {}) or {}).items():
+            if name not in buses:
+                raise KeyError(f"track {tr.name!r} sends to {name!r}, which is not in Arrangement.spaces")
+            if level > 0:
+                st = st + buses[name][1] * _wet(dry * level, buses[name][0], n)
         stems[tr.name] = st
     pre = sum(stems.values())
     g_loud = LD.gain_to_target(pre, fs, target_lufs) if target_lufs is not None else 1.0
@@ -67,6 +79,28 @@ def render(arr, rng, target_lufs=None):
     info = {"room_gain": g_room, "loudness_gain_db": 20 * math.log10(g_loud), "target_lufs": target_lufs,
             "limiter_min_gain_db": 20 * math.log10(max(float(curve.min()), 1e-12))}
     return stems, info
+
+
+def _wet(x, ir, n):
+    return np.stack([oaconvolve(x, ir[0])[:n], oaconvolve(x, ir[1])[:n]], 1)
+
+
+def widen(mono, width, name, ms=25.0, fs=48000):
+    """A side signal for stereo width: the track through two different sparse decorrelation filters (velvet
+    noise, Jarvelainen and Karjalainen 2007: +/-1 pulses about every 1.5 ms over `ms` milliseconds, unit energy),
+    left minus right, scaled by width / 2. Added to a mid-placed stem it leaves the mono sum (L + R) unchanged,
+    so the track is wider without being louder or thinner in mono."""
+    rng = np.random.default_rng(ss.xmur3("widen:" + name))
+    m = int(ms * fs / 1000)
+    taps = []
+    for _ in range(2):
+        v = np.zeros(m)
+        idx = np.arange(0, m, 72) + rng.integers(0, 72, len(range(0, m, 72)))
+        idx = idx[idx < m]
+        v[idx] = rng.choice((-1.0, 1.0), len(idx)) * np.exp(-3.0 * idx / m)
+        taps.append(v / np.sqrt(np.sum(v * v)))
+    side = (oaconvolve(mono, taps[0])[: len(mono)] - oaconvolve(mono, taps[1])[: len(mono)]) * width / 2
+    return np.stack([side, -side], 1)
 
 
 def quantise(stem, bits):
