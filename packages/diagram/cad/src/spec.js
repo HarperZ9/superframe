@@ -23,7 +23,7 @@
     });
     for (const a of I.assumptions || []) if (!walls.some((w) => w.assumption.toLowerCase().includes(a.match.toLowerCase()))) problems.push(`spec: flag "${a.match}" matches no pipeline assumption`);
     const rss = Math.sqrt(sp.budget.filter((b) => typeof b.value === "number" && b.combine !== false).reduce((s, b) => s + b.value * b.value, 0));
-    return { id: I.id, title: I.title, hash: R.hash, law: st1 && st1.spec.law ? st1.spec.law.form : "", ranges: sp.ranges, budget: sp.budget, combined: { value: rss, unit: sp.budgetUnit, note: sp.combinedNote || "root sum of squares of the numeric terms; terms marked unknown are not in it" }, assumptions, problems, params: R.p };
+    return { id: I.id, title: I.title, hash: R.hash, law: st1 && st1.spec.law ? st1.spec.law.form : "", ranges: sp.ranges, budget: sp.budget, combined: { value: rss, unit: sp.budgetUnit, note: sp.combinedNote || "root sum of squares of the numeric terms; terms marked unknown are not in it" }, assumptions, problems, params: R.p, units: Object.fromEntries((I.params || []).map((q) => [q.id, q.unit || ""])), labels: Object.fromEntries((I.params || []).map((q) => [q.id, q.label || ""])) };
   };
 
   const fmt = (v, u) => (typeof v === "number" ? +v.toPrecision(3) + (u ? " " + u : "") : v === null || v === undefined ? "unknown" : String(v));
@@ -42,7 +42,7 @@
     for (const b of S.budget) L.push(`| ${b.term} | ${fmt(b.value)} | ${b.basis} | ${b.note || ""} |`);
     L.push(`| Combined | ${fmt(S.combined.value)} | computed | ${S.combined.note} |`, "", "## Assumptions", "");
     S.assumptions.forEach((a, i) => L.push(`${i + 1}. ${a.optional ? "**Optional.**" : "**Required.**"} ${a.text}. Checked by: ${a.how_checked}.${a.optional && a.door ? " Door: " + a.door : ""}`));
-    L.push("", "## Parameters", "", "| Parameter | Value |", "|---|---|", ...Object.entries(S.params).map(([k, v]) => `| ${k} | ${v} |`), "");
+    L.push("", "## Parameters", "", "| Parameter | Value | Unit | Meaning |", "|---|---|---|---|", ...Object.entries(S.params).map(([k, v]) => `| ${k} | ${v} | ${(S.units || {})[k] || "-"} | ${(S.labels || {})[k] || ""} |`), "");
     return L.join("\n");
   };
 

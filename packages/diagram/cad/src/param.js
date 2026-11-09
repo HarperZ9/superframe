@@ -48,6 +48,9 @@
   C.PN_STATUS = ["unverified, from memory", "commodity", "ours", "existing device", "generic"];
   C.VIEW_NAMES = ["front", "top", "right", "iso", "section"];
 
+  /* Quantity of a parts-list item: one for a set of unlike parts, else the count of identical parts. */
+  C.itemQty = (it) => (it.set ? 1 : it.parts.length) * (it.qtyEach || 1);
+
   const blank = (s) => s === undefined || s === null || (typeof s === "string" && !s.trim());
 
   /* Every problem in a built record, as sentences. An empty list means it is fit to draw. */
@@ -69,6 +72,11 @@
       if (it.pn && !C.PN_STATUS.includes(it.pnStatus)) bad.push(`BOM item ${it.item}: part number ${it.pn} has no status`);
     }
     for (const id of ids) if (!inItem.has(id)) bad.push(`part ${id}: in no BOM item`);
+    /* quantity: an item counts its parts, so unlike parts in one item need set: true (one set, quantity 1) */
+    for (const it of B.items || []) {
+      const kinds = new Set((it.parts || []).map((pid) => { const p = B.parts.find((q) => q.id === pid); return p ? p.material + "/" + (p.geom && p.geom.t) : pid; }));
+      if (!it.set && kinds.size > 1) bad.push(`BOM item ${it.item}: unlike parts counted as ${it.parts.length} of one item; mark it set: true`);
+    }
     /* assembly tree: every part exactly once */
     const seen = new Map();
     const walk = (n, path) => {

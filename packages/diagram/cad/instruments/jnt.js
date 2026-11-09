@@ -84,14 +84,14 @@
     const items = [
       { item: 1, desc: "Enclosure body, die-cast, machined", material: "Aluminium", parts: ["enc"] },
       { item: 2, desc: "Lid", material: "Aluminium", parts: ["lid"] },
-      { item: 3, desc: "Main board assembly (see schematic)", material: "FR-4", parts: ["pcb", ...onBoard] },
+      { item: 3, desc: "Main board assembly (see schematic)", material: "FR-4", set: true, parts: ["pcb", ...onBoard] },
       { item: 4, desc: "Standoff M3 x 6", material: "Brass", pn: "M3 x 6 F-F", pnStatus: "commodity", parts: ["so1", "so2", "so3", "so4"] },
       { item: 5, desc: "Split 2 x 9 V pack in holder", material: "-", pnStatus: "commodity", parts: ["BT1", "BT2"] },
       { item: 6, desc: "3.5 mm stereo panel jack", material: "-", pn: "TRS 3.5 mm", pnStatus: "commodity", parts: ["J1"] },
       { item: 7, desc: "Probe socket, shielded, 2-pin", material: "-", pn: "LEMO 0B class", pnStatus: "unverified, from memory", parts: ["J2", "J3"] },
       { item: 8, desc: "Injection socket, BNC panel", material: "-", pn: "BNC 50 Ohm", pnStatus: "commodity", parts: ["J4"] },
-      { item: 9, desc: "Sense probe: can, R1, lead", material: "Copper", parts: ["can1", "R1", "lead1"] },
-      { item: 10, desc: "Reference probe: sheath, R2, lead", material: "Stainless", parts: ["tube2", "R2", "lead2"] },
+      { item: 9, desc: "Sense probe: can, R1, lead", material: "Copper", set: true, parts: ["can1", "R1", "lead1"] },
+      { item: 10, desc: "Reference probe: sheath, R2, lead", material: "Stainless", set: true, parts: ["tube2", "R2", "lead2"] },
     ];
     const assembly = { id: "jnt", label: "Johnson-noise thermometer", children: [
       { id: "box", label: "Enclosure", children: ["enc", "lid", "so1", "so2", "so3", "so4"] },

@@ -50,7 +50,7 @@
       zoom(ui.zoom);
     }
     function bom() {
-      const it = R.B.items.map((x) => `<tr data-part="${esc(x.parts[0])}" data-item="${x.item}" tabindex="0"><td class="num">${x.item}</td><td class="num">${x.parts.length}</td><td>${esc(x.pn || "-")}${x.pnStatus === "unverified, from memory" ? " <em>(unverified, from memory)</em>" : ""}</td><td>${esc(x.desc)}</td><td>${esc(x.material || "-")}</td></tr>`).join("");
+      const it = R.B.items.map((x) => `<tr data-part="${esc(x.parts[0])}" data-item="${x.item}" tabindex="0"><td class="num">${x.item}</td><td class="num">${C.itemQty(x)}</td><td>${esc(x.pn || "-")}${x.pnStatus === "unverified, from memory" ? " <em>(unverified, from memory)</em>" : ""}</td><td>${esc(x.desc)}</td><td>${esc(x.material || "-")}</td></tr>`).join("");
       $("#bom-top tbody").innerHTML = it;
       const el = R.B.netlist.components.map((c) => `<tr data-part="${esc(c.part)}" tabindex="0"><td>${esc(c.ref)}</td><td>${esc(c.value)}</td><td>${esc(c.fp || "-")}</td><td>${esc(c.pn || "-")}${c.pnStatus ? " <em>(" + esc(c.pnStatus) + ")</em>" : ""}</td><td>${esc(c.desc || C.SYM[c.sym].desc)}</td></tr>`).join("");
       $("#bom-el tbody").innerHTML = el;

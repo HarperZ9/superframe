@@ -62,7 +62,7 @@
       { item: 3, desc: "Wall (existing)", material: "-", parts: ["wallL", "wallR", "wallB", "wallF"] },
       { item: 4, desc: "Laptop, effects off", material: "-", pn: "existing", pnStatus: "existing device", parts: ["laptop"] },
       { item: 5, desc: "Phone as the microphone", material: "-", pn: "existing", pnStatus: "existing device", parts: ["phone"] },
-      { item: 6, desc: "Pad box with resistors, sockets", material: "ABS", parts: ["padbox", "R1", "R2", "R3", "R4", "J1", "J2"] },
+      { item: 6, desc: "Pad box with resistors, sockets", material: "ABS", set: true, parts: ["padbox", "R1", "R2", "R3", "R4", "J1", "J2"] },
     ];
     const assembly = { id: "room", label: "Room-shape meter set-up", children: [
       { id: "shell", label: "The room", children: ["floor", "ceil", "wallL", "wallR", "wallB", "wallF"] },

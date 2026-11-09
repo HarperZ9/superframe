@@ -192,6 +192,17 @@ def test_iso_codes_round_trip(tmp_path):
     assert "3/3(1/-)" in txt and "4/1'" in txt
 
 
+def test_drawing_names_a_flat_surface_plano_and_gives_units(tmp_path):
+    d = load("comsol_dg")
+    flat = next(i for i, s in enumerate(d["surfaces"][:-1]) if s["r"] is None and d["surfaces"][i - 1].get("material"))
+    cadout.drawing(d, flat - 1, flat, tmp_path / "e")
+    txt = (tmp_path / "e.txt").read_text()
+    assert "R plano" in txt and "None" not in txt
+    curved = d["surfaces"][flat - 1]["r"]
+    assert f"R {curved} mm" in txt and txt.count("clear dia") == 2 and all(ln.rstrip().endswith("mm") for ln in txt.splitlines() if "clear dia" in ln)
+    assert cadout._radius(None) == "R plano" and cadout._radius(25.65) == "R 25.65 mm"
+
+
 def test_rule_flags_the_published_thin_flint_and_blocks_nothing():
     rows = rules.check(load("comsol_dg"))
     assert not rules.blockers(rows)
