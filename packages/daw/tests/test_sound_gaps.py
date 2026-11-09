@@ -132,3 +132,27 @@ def test_space_send_adds_a_tail_in_its_own_stem_and_stems_still_sum(tmp_path):
     assert np.sqrt(np.mean(stems["p"][tail] ** 2)) > 3 * np.sqrt(np.mean(dry[tail] ** 2))
     S.write(tmp_path, stems, FS)
     assert S.check_sum(tmp_path)["equal"]
+
+
+@pytest.mark.parametrize("f0", [110.0, 587.33])
+def test_velocity_hammer_carries_no_offset_and_the_note_sustains(f0):
+    from scipy.signal import lfilter
+    c = W.contact_time(f0, 0.4)
+    y = W.piano(f0, 1.5, FS, (-1.2, 0.0, 1.3), 12.0, c, True, 2e-4, "velocity")
+    assert abs(float(np.mean(y))) < 2e-3 * float(np.max(np.abs(y)))
+    z = lfilter([1, -1], [1, -math.exp(-2 * math.pi * 20 / FS)], y)          # the voices' DC blocker
+    early, later = np.abs(z[:FS // 10]).max(), np.abs(z[FS // 2:FS // 2 + 4800]).max()
+    assert later > 0.3 * early                                               # the string rings on
+
+
+def test_control_a_long_force_pulse_in_the_treble_is_a_thump():
+    from scipy.signal import lfilter
+    force = W.piano(587.33, 1.5, FS, (-1.2, 0.0, 1.3), 12.0, 1.5e-2, True, 2e-4, "force")
+    zf = lfilter([1, -1], [1, -math.exp(-2 * math.pi * 20 / FS)], force)
+    assert np.abs(zf[FS // 2:FS // 2 + 4800]).max() < 0.1 * np.abs(zf[:FS // 10]).max()
+
+
+def test_contact_time_shortens_up_the_keyboard_and_with_force():
+    assert W.contact_time(65.41, 0.5) == pytest.approx(4e-3, rel=0.01)
+    assert W.contact_time(2093.0, 0.5) < 1.5e-3 < W.contact_time(65.41, 0.5)
+    assert W.contact_time(440.0, 0.9) < W.contact_time(440.0, 0.2)

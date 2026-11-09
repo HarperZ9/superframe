@@ -84,11 +84,27 @@ def hammer(fs, contact=2e-3):
     return 0.5 * (1 - np.cos(2 * math.pi * np.arange(m) / m))
 
 
-def piano(f0, seconds, fs, detune_cents=(-0.8, 0.0, 0.9), t60=6.0, contact=2e-3, fast=False, b=0.0):
+def piano(f0, seconds, fs, detune_cents=(-0.8, 0.0, 0.9), t60=6.0, contact=2e-3, fast=False, b=0.0,
+          excitation="force"):
     """Three unison strings, one hammer; returns the sum. b > 0 makes each string stiff, with inharmonicity
-    coefficient b (dispersion.stiff_string, gap G19)."""
+    coefficient b (dispersion.stiff_string, gap G19).
+    excitation "force" adds the raised-cosine pulse into the loop (the original model: a one-signed pulse, so the
+    loop also carries a slow offset that a DC blocker must remove, and a long contact puts most of its energy
+    there). "velocity" adds the pulse's time derivative instead, so the loop carries velocity waves: no offset,
+    and the partials get the energy a contact of that length really gives them."""
     h = hammer(fs, contact)
+    if excitation == "velocity":
+        h = np.diff(h, prepend=0.0) * (contact * fs / math.pi)
+    elif excitation != "force":
+        raise ValueError("excitation is 'force' or 'velocity'")
     if b > 0:
         from .dispersion import stiff_string
         return sum(stiff_string(f0 * 2 ** (c / 1200), seconds, fs, h, t60, b) for c in detune_cents) / len(detune_cents)
     return sum(string(f0 * 2 ** (c / 1200), seconds, fs, h, t60, fast) for c in detune_cents) / len(detune_cents)
+
+
+def contact_time(f0, velocity=0.5, bass_ms=4.0):
+    """Hammer contact time by register and velocity: about 4 ms at C2 falling as f^-0.4 toward 1 ms at C7, and
+    longer for a softer blow. After Askenfelt and Jansson's measurements (1990), from memory, moderate
+    confidence in the numbers; the trend (shorter in the treble and for harder blows) is the claim."""
+    return bass_ms * 1e-3 * (65.41 / f0) ** 0.4 * (1.3 - 0.6 * velocity)
