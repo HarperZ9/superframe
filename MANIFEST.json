@@ -6364,14 +6364,14 @@
   {
    "path": "packages/daw/DESIGN.md",
    "source": "repo",
-   "bytes": 36570,
-   "sourceSha256": "fa5092a1fbeaeea708f75ad2efcddca829d996ef3d8f372106c1787ddb371338"
+   "bytes": 37606,
+   "sourceSha256": "803b8958e59ab4bf4ae982ccbcdeddf50d5cdcdd4b50053d20965df524134bb5"
   },
   {
    "path": "packages/daw/README.md",
    "source": "repo",
-   "bytes": 9052,
-   "sourceSha256": "fa313f89e61b9be75d2fcad10eac4482fb3265ac664be56f591a7714cfb6339c"
+   "bytes": 9749,
+   "sourceSha256": "d65dc95fcfd2dcc41035a12fd073404d17fd5a1814f6fa995cd1a83983ea52aa"
   },
   {
    "path": "packages/daw/bench/modal_bank.cpp",
@@ -6452,6 +6452,432 @@
    "sourceSha256": "c1176fdc7cb251d640f9093d3aff0ce93bb9acca63b3e80f283f1e935ffe10d6"
   },
   {
+   "path": "packages/daw/clap/bars.c",
+   "source": "repo",
+   "bytes": 9764,
+   "sourceSha256": "93ddf863bbdc241be01d67f9e47dcca984d44150a650703e0ce5adc677fad2e7"
+  },
+  {
+   "path": "packages/daw/clap/host_check.c",
+   "source": "repo",
+   "bytes": 6844,
+   "sourceSha256": "1b6f84f7501421af2dd721275491be808909eacd8c0eaa8e17b39fc5e4255679"
+  },
+  {
+   "path": "packages/daw/clap/include/LICENSE-clap",
+   "source": "repo",
+   "bytes": 1072,
+   "sourceSha256": "ced49f9ef950277afdb56199369ea6e8165ebfdbfbb37ebfe1827e0de892088d"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/all.h",
+   "source": "repo",
+   "bytes": 832,
+   "sourceSha256": "0f2b5d5ec3007443fa35dd6e9b22f44986d5bb011ebb73849cd87776e5f8b22a"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/audio-buffer.h",
+   "source": "repo",
+   "bytes": 1083,
+   "sourceSha256": "efe1d90ba87499fc8f930d9c9c86157e023bede2c6ade01a20de6d2dfef3828e"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/clap.h",
+   "source": "repo",
+   "bytes": 2213,
+   "sourceSha256": "a92456f80610d3be34e0c037b448619cd10e18291d7ea82c9b4c0900c39b669c"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/color.h",
+   "source": "repo",
+   "bytes": 305,
+   "sourceSha256": "acc184298ff9987e90c214e7998110b4bdb4b7d8e56d6a7a6f5ef0832713f6ca"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/entry.h",
+   "source": "repo",
+   "bytes": 6476,
+   "sourceSha256": "ef6b40a61a5aaf3bf3c1473da43aba65d247c7cc1c4dd580d076b258d784a604"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/events.h",
+   "source": "repo",
+   "bytes": 14777,
+   "sourceSha256": "681c975f9b4fc1efd54988911d5520a18c29b79133993c54e3abb1b8fc488b9c"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/ambisonic.h",
+   "source": "repo",
+   "bytes": 1972,
+   "sourceSha256": "eabed521abc0677c750937c729c904e302576e7b3890e64a4b27831ea6be7b65"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/audio-ports-activation.h",
+   "source": "repo",
+   "bytes": 2578,
+   "sourceSha256": "44ccd8668bfb2badd6c9538dc7135ccdb69d000c0a1990bc580808b95567a8c2"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/audio-ports-config.h",
+   "source": "repo",
+   "bytes": 4019,
+   "sourceSha256": "4fea079dd1ac5e2638a697bf045af54a407190078914956dc1aec24796853c83"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/audio-ports.h",
+   "source": "repo",
+   "bytes": 4108,
+   "sourceSha256": "560d41cd2985772f1ef0c7720537ebd2b9b1298fa8e82bc8d0665b154cd6405a"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/configurable-audio-ports.h",
+   "source": "repo",
+   "bytes": 2349,
+   "sourceSha256": "32fd49778f25988bcd11c78cadd31cab032bb4ddcf0b6dd10c85129ef3cbda12"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/context-menu.h",
+   "source": "repo",
+   "bytes": 6034,
+   "sourceSha256": "9e235a77132a2eb3121a94d97b7fbc5924d52be6f1f67505d358764b32112223"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/background-activation.h",
+   "source": "repo",
+   "bytes": 1710,
+   "sourceSha256": "3a02cf4c9521ecf356e25848b721d76c456b953515fdbbe16300658e5f6ae493"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/background-progress.h",
+   "source": "repo",
+   "bytes": 1608,
+   "sourceSha256": "f9dd0f528461dedf48aaae34686e9b91264920e38b0c5cb3ec8ed87d4c8e5b1b"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/background-state-context.h",
+   "source": "repo",
+   "bytes": 1787,
+   "sourceSha256": "1765d5cd5f7586e640fef198fdb808094c9d8fed8a7e3eed07a5eb5aff611fe1"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/extensible-audio-ports.h",
+   "source": "repo",
+   "bytes": 1205,
+   "sourceSha256": "dcce635ec4c8202f82058f3682a6c8bfe78a7545092d3be88b247196eaeed918"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/flush-events.h",
+   "source": "repo",
+   "bytes": 1600,
+   "sourceSha256": "aab8a0cbde25dcd57143327e6c3675c7eaedd00cafe8b0c0eb48e2b7d5ac4944"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/gain-adjustment-metering.h",
+   "source": "repo",
+   "bytes": 1279,
+   "sourceSha256": "ea4177b7363bbf2ae87c7b30d8cb8aa14aa0febbfae6ddbaeec6ed42bc08ad51"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/mini-curve-display.h",
+   "source": "repo",
+   "bytes": 6311,
+   "sourceSha256": "e93371a0fdfa10eff539fe0efde1567ee3a8d5c0468e67f6269777d3ab5cdda6"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/octave-number.h",
+   "source": "repo",
+   "bytes": 1125,
+   "sourceSha256": "612ee7516034dd25338a983b5ef3d55ebc18ee9043dc1693442cf12fad71e292"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/param-hovered.h",
+   "source": "repo",
+   "bytes": 874,
+   "sourceSha256": "8eb4849cdbc9498d856d6c5da3232026e7ca28edac4b42ead24bfe5d46821b3d"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/params-origin.h",
+   "source": "repo",
+   "bytes": 2339,
+   "sourceSha256": "828be0657d52f6ec6264dd45f1d2fdfee62479c63c70809d0276827d676af34f"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/project-location.h",
+   "source": "repo",
+   "bytes": 3539,
+   "sourceSha256": "5f09ac2806fad93fbd40273d777f066ec2a4d2384e27b9d1ac4dd9e33396e3b1"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/resource-directory.h",
+   "source": "repo",
+   "bytes": 3874,
+   "sourceSha256": "7276929113825a3b23d97ddbd03ad2ba1e41d4332ccd97d9478e543652661150"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/scratch-memory.h",
+   "source": "repo",
+   "bytes": 3606,
+   "sourceSha256": "186f42db66fd4107fe4b84e25d0e37066efcf90aaa7eb099a8303305dd5867d1"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/transport-control.h",
+   "source": "repo",
+   "bytes": 2401,
+   "sourceSha256": "0e9861258818b51b37e576de6398601e567942a2e368e0c3b033f231dd50577d"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/triggers.h",
+   "source": "repo",
+   "bytes": 4317,
+   "sourceSha256": "5576da586a679c0b72eb87665b832d64f5d17940d347300c85edaaccab4c4dd1"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/tuning.h",
+   "source": "repo",
+   "bytes": 2685,
+   "sourceSha256": "7a7979f8abcd7875a6708189d35bb337253b42d350a52bc56c4a0cde285f2b9b"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/undo.h",
+   "source": "repo",
+   "bytes": 9304,
+   "sourceSha256": "6d88258bdbd1c42008b4c606490c24cf437db36db754ee0804f9ace1c1712308"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/draft/webview.h",
+   "source": "repo",
+   "bytes": 3586,
+   "sourceSha256": "c7d0a1d4ef8869b993d93512365b4fdf39a2b28451c8f0812f89d1ce4f26acb2"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/event-registry.h",
+   "source": "repo",
+   "bytes": 596,
+   "sourceSha256": "a673ac102f7af52a18886aa53f218d0fbe8381de745679efa6676eb55c81a9b6"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/gui.h",
+   "source": "repo",
+   "bytes": 10064,
+   "sourceSha256": "489c27e5147e3faa19046a86b50fc439ee1d08f45dcd803637f1c30c62dfbc1e"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/latency.h",
+   "source": "repo",
+   "bytes": 719,
+   "sourceSha256": "a6ab271c2287817bb5f35a010876c3344357da7d9c380e31ce627949f90e9746"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/log.h",
+   "source": "repo",
+   "bytes": 744,
+   "sourceSha256": "4c7a28368df3412a1b44b42188f7b4b25920c52a08fd4b525799a7e76f72263c"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/note-name.h",
+   "source": "repo",
+   "bytes": 984,
+   "sourceSha256": "fac02f93927b0e37d0d662d35233b9293a1aced5854d445c37cd11b1985d26d0"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/note-ports.h",
+   "source": "repo",
+   "bytes": 2659,
+   "sourceSha256": "0bc144d3b41d0495a2f007abba80bcdf31ad0d76b144245d4344386132463fcf"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/param-indication.h",
+   "source": "repo",
+   "bytes": 3098,
+   "sourceSha256": "b60023659350452c61f24017adba5507c9b182f63088ef28862ba0be224cc5a5"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/params.h",
+   "source": "repo",
+   "bytes": 16632,
+   "sourceSha256": "aeeb42ac04847f4664ffdea4dea88e637ff6ce1f687d70a44b9f254582a0d29e"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/posix-fd-support.h",
+   "source": "repo",
+   "bytes": 1586,
+   "sourceSha256": "713bff1fc10ad29b13c43dd800d92bf9f6aa3e5ee699498a722bd9a5332f42a6"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/preset-load.h",
+   "source": "repo",
+   "bytes": 2082,
+   "sourceSha256": "687437dd7eddd9294f625064beb16eb7fb06efab5bc6d26f6e1d262e0f7f106a"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/remote-controls.h",
+   "source": "repo",
+   "bytes": 2752,
+   "sourceSha256": "704cd78099ca5f773d0a35081881a5fbfc07ece820f6406eb47fe74c1264e8f1"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/render.h",
+   "source": "repo",
+   "bytes": 1152,
+   "sourceSha256": "04d36c03bdcc63fd79edb023e9afe3dd02e3e6d9360dd43bc24f33c9c7bb62ba"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/state-context.h",
+   "source": "repo",
+   "bytes": 2680,
+   "sourceSha256": "de392a8a7a7616c3e1016e2854578419c0ef6a0f3501a6536225185cb0a566f6"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/state.h",
+   "source": "repo",
+   "bytes": 1528,
+   "sourceSha256": "616450227a2e4fa7de0a0c7f8d2e6ef7f7f6ab4f346aca06ad927a391a9b0001"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/surround.h",
+   "source": "repo",
+   "bytes": 3582,
+   "sourceSha256": "5dc476e2a3eac9224b01e918840d091f829c3fa70144d4c40ca7ce5e24860739"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/tail.h",
+   "source": "repo",
+   "bytes": 599,
+   "sourceSha256": "5cd612fc32a292e0e5f0868cb34a1ca4f3a68336ec1d4b47c8b33190236cff06"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/thread-check.h",
+   "source": "repo",
+   "bytes": 4197,
+   "sourceSha256": "0b14e4ff86e4ab10ba46a4b3f644cfcacacede2122b5b4dc1a91b6e3855891d1"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/thread-pool.h",
+   "source": "repo",
+   "bytes": 2179,
+   "sourceSha256": "670f90d6a0da76fece9b3e0c1bbb8e1b03325da53f9a3fc1e5116afc414b89d5"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/timer-support.h",
+   "source": "repo",
+   "bytes": 851,
+   "sourceSha256": "f3a3cbf10495be51706efb81305e8b319860d2bcdca1fae0d8e42dc14320a26c"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/track-info.h",
+   "source": "repo",
+   "bytes": 2201,
+   "sourceSha256": "5ff9f735240b0d7ada1479b36daa961ded9cc892de56600039034053289f84d4"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/ext/voice-info.h",
+   "source": "repo",
+   "bytes": 1849,
+   "sourceSha256": "b7c1f6fe01007f582bdc360f66e44e64dbf1c7b90737f63abf08f50a27d92617"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/factory/draft/plugin-invalidation.h",
+   "source": "repo",
+   "bytes": 1771,
+   "sourceSha256": "aa6c6275a1cc5c4f66ae0c476c046e7397225fd1bcd2623e3f136e44184ee64c"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/factory/draft/plugin-state-converter.h",
+   "source": "repo",
+   "bytes": 4234,
+   "sourceSha256": "88cb6215d4e79f9ad0f1dc9a430ddd0ae8489280e5bfad17430720d934d36633"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/factory/plugin-factory.h",
+   "source": "repo",
+   "bytes": 1738,
+   "sourceSha256": "10024390809a13ed3f758ddd10ae1beded43dbee3ce1acc090ffa73730a98301"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/factory/preset-discovery.h",
+   "source": "repo",
+   "bytes": 15605,
+   "sourceSha256": "50fa2ade36f2ec1f0a19ded5708226114295bc96de45c2342a579cb6b4b9ab27"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/fixedpoint.h",
+   "source": "repo",
+   "bytes": 466,
+   "sourceSha256": "58f50936f9539e39b1cf01dfe70f9e95f179c9d730fa6686fbb490b6a7769e8a"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/host.h",
+   "source": "repo",
+   "bytes": 2152,
+   "sourceSha256": "2cfb8845f53f6f04cc69b7714afad7fd2c3b92728f268cbad9ebc2d7d055db7c"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/id.h",
+   "source": "repo",
+   "bytes": 161,
+   "sourceSha256": "7c8cdeea37bdcc4df1be83473fd42712e1b005c45cb64d5b1fde2f892a182ea4"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/plugin-features.h",
+   "source": "repo",
+   "bytes": 2883,
+   "sourceSha256": "99aff972b7d887ba1bb7370e776373f8500f5b5b9f8f698e60374fd4ce01cc23"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/plugin.h",
+   "source": "repo",
+   "bytes": 5128,
+   "sourceSha256": "d2a178137349749eb1dd9c1d6a437300309044626dcc14b0f6e31995f1c5f25b"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/private/macros.h",
+   "source": "repo",
+   "bytes": 1149,
+   "sourceSha256": "861b57a204da34542413c021110dc4740f3dd27bc7a1f6ba3619092c7fd90b17"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/private/std.h",
+   "source": "repo",
+   "bytes": 217,
+   "sourceSha256": "6e489536d32a059a7f27ccf3c2833e3e09f16336c1aa77d9101c714e70053011"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/process.h",
+   "source": "repo",
+   "bytes": 2194,
+   "sourceSha256": "93132a2dc8c3ce7073c652ae0c9fa386bebb5ce23408a95a77842d2d85bae0a2"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/stream.h",
+   "source": "repo",
+   "bytes": 1248,
+   "sourceSha256": "bec9b7c95007ec729a668697d9e0637d0cea57eb767504de5744dbce6741957f"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/string-sizes.h",
+   "source": "repo",
+   "bytes": 461,
+   "sourceSha256": "e8ebc287f05c3f068788f27b2db4bfd5727b252e8cc806064cb3dce7eb608b27"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/timestamp.h",
+   "source": "repo",
+   "bytes": 313,
+   "sourceSha256": "848e362e19c388dd088c0b2de682be08be628082079a77b2652722296c060acc"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/universal-plugin-id.h",
+   "source": "repo",
+   "bytes": 818,
+   "sourceSha256": "f25fd6e0479d9f0e0ec54a8e573bbba380d89db18322e51f0de91382624f45ad"
+  },
+  {
+   "path": "packages/daw/clap/include/clap/version.h",
+   "source": "repo",
+   "bytes": 1506,
+   "sourceSha256": "fb9f4863d4e636d07cfb16d661a3f54794347e5cb6952f3d402227ad306eb0a0"
+  },
+  {
    "path": "packages/daw/daw/__init__.py",
    "source": "repo",
    "bytes": 625,
@@ -6468,6 +6894,12 @@
    "source": "repo",
    "bytes": 3179,
    "sourceSha256": "a8cfc7e58f45f01c6ce30540c447090539aa75c7d7aa98afed976e2898af35dd"
+  },
+  {
+   "path": "packages/daw/daw/clap_build.py",
+   "source": "repo",
+   "bytes": 2927,
+   "sourceSha256": "d5a6dba20cafdfa214e7aa8a030af413c8456c9768cbd78ac30d53b238b87adc"
   },
   {
    "path": "packages/daw/daw/demo.py",
@@ -6738,6 +7170,12 @@
    "source": "repo",
    "bytes": 4074,
    "sourceSha256": "38837e7a45e2b2a2fca8d7e91f807ba34e408d99895b17d2663f553c4bd041a0"
+  },
+  {
+   "path": "packages/daw/tests/test_clap.py",
+   "source": "repo",
+   "bytes": 4090,
+   "sourceSha256": "f62b3382a5b061a64968c5d6db54fdd7b3c1fd26236302ae53c231997619ea69"
   },
   {
    "path": "packages/daw/tests/test_daw.py",

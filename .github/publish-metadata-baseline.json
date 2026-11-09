@@ -1,9 +1,12 @@
 {
  "schema": "flywheel.publish-metadata-baseline/1",
  "patterns": "generic only (check_publish_metadata GENERIC)",
- "total": 63,
+ "total": 64,
  "files": {
   "package.json": {
+   "personal-email": 1
+  },
+  "packages/daw/clap/include/clap/clap.h": {
    "personal-email": 1
   },
   "superframe/channels/b808-glyphcell-modulate-letters-setback.json": {
