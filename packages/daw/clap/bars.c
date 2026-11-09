@@ -28,6 +28,9 @@ void daw_voice_set(double *a1, double *a2, double *b, double *y1, double *y2, si
                    double eta, double amp, double fs);
 void daw_bank_live(const double *a1, const double *a2, const double *b, double *y1, double *y2, size_t voices,
                    size_t modes, const double *hits, double *out, size_t frames);
+void daw_voice_retune(double *a1, double *a2, size_t v, size_t modes, double key, double eta, double fs);   // bld/mpe.bld
+
+#define BARS_MPE_RANGE 48.0     // semitones for a full MIDI pitch bend on a member channel (the MPE default)
 
 typedef struct {
     clap_plugin_t plugin;
@@ -36,6 +39,8 @@ typedef struct {
     uint32_t max_frames;
     uint32_t next_voice;
     double *a1, *a2, *b, *y1, *y2, *hits, *scratch;
+    int key[BARS_VOICES], channel[BARS_VOICES], note_id[BARS_VOICES];   // who each voice is playing, for MPE
+    double bend[16];                                    // the last MIDI pitch bend per channel, in semitones
 } bars_t;
 
 static const char *const bars_features[] = {CLAP_PLUGIN_FEATURE_INSTRUMENT, CLAP_PLUGIN_FEATURE_SYNTHESIZER,
@@ -77,6 +82,8 @@ static bool bars_activate(const clap_plugin_t *p, double fs, uint32_t min_frames
     s->fs = fs;
     s->max_frames = max_frames;
     s->next_voice = 0;
+    for (int v = 0; v < BARS_VOICES; ++v) { s->key[v] = -1; s->channel[v] = -1; s->note_id[v] = -1; }
+    for (int c = 0; c < 16; ++c) s->bend[c] = 0.0;
     s->a1 = calloc(n, sizeof(double)); s->a2 = calloc(n, sizeof(double)); s->b = calloc(n, sizeof(double));
     s->y1 = calloc(n, sizeof(double)); s->y2 = calloc(n, sizeof(double));
     s->hits = calloc(BARS_VOICES, sizeof(double));
@@ -112,11 +119,33 @@ static void bars_run(bars_t *s, const clap_process_t *pr, uint32_t from, uint32_
     for (int v = 0; v < BARS_VOICES; ++v) s->hits[v] = -1.0;
 }
 
-static void bars_note(bars_t *s, double key, double velocity) {
+static void bars_note(bars_t *s, int key, int channel, int note_id, double velocity) {
     uint32_t v = s->next_voice;
     s->next_voice = (v + 1) % BARS_VOICES;
-    daw_voice_set(s->a1, s->a2, s->b, s->y1, s->y2, v, BARS_MODES, bars_midi_hz(key), BARS_ETA, velocity, s->fs);
+    s->key[v] = key; s->channel[v] = channel; s->note_id[v] = note_id;
+    daw_voice_set(s->a1, s->a2, s->b, s->y1, s->y2, v, BARS_MODES, bars_midi_hz((double)key), BARS_ETA, velocity, s->fs);
+    if (channel >= 0 && channel < 16 && s->bend[channel] != 0.0)
+        daw_voice_retune(s->a1, s->a2, v, BARS_MODES, (double)key + s->bend[channel], BARS_ETA, s->fs);
     s->hits[v] = 0.0;   // struck on the first sample of the next segment, which starts at the event
+}
+
+// Per-note tuning (CLAP note expression): the voices that match by note id, or else by key and channel (-1 is
+// a wildcard), move to key + semitones.
+static void bars_tune(bars_t *s, int note_id, int key, int channel, double semitones) {
+    for (int v = 0; v < BARS_VOICES; ++v) {
+        if (s->key[v] < 0) continue;
+        int hit = note_id >= 0 ? s->note_id[v] == note_id
+                               : (key < 0 || s->key[v] == key) && (channel < 0 || s->channel[v] == channel);
+        if (hit) daw_voice_retune(s->a1, s->a2, (size_t)v, BARS_MODES, (double)s->key[v] + semitones, BARS_ETA, s->fs);
+    }
+}
+
+// MPE: a pitch bend on a member channel bends the voices on that channel, by up to BARS_MPE_RANGE semitones.
+static void bars_bend(bars_t *s, int channel, int value14) {
+    s->bend[channel] = (double)(value14 - 8192) / 8192.0 * BARS_MPE_RANGE;
+    for (int v = 0; v < BARS_VOICES; ++v)
+        if (s->key[v] >= 0 && s->channel[v] == channel)
+            daw_voice_retune(s->a1, s->a2, (size_t)v, BARS_MODES, (double)s->key[v] + s->bend[channel], BARS_ETA, s->fs);
 }
 
 static clap_process_status bars_process(const clap_plugin_t *p, const clap_process_t *pr) {
@@ -132,12 +161,21 @@ static clap_process_status bars_process(const clap_plugin_t *p, const clap_proce
         if (h->type == CLAP_EVENT_NOTE_ON) {
             const clap_event_note_t *e = (const clap_event_note_t *)h;
             bars_run(s, pr, at, t); at = t;
-            bars_note(s, (double)e->key, e->velocity);
+            bars_note(s, e->key, e->channel, e->note_id, e->velocity);
+        } else if (h->type == CLAP_EVENT_NOTE_EXPRESSION) {
+            const clap_event_note_expression_t *e = (const clap_event_note_expression_t *)h;
+            if (e->expression_id != CLAP_NOTE_EXPRESSION_TUNING) continue;
+            bars_run(s, pr, at, t); at = t;
+            bars_tune(s, e->note_id, e->key, e->channel, e->value);
         } else if (h->type == CLAP_EVENT_MIDI) {
             const clap_event_midi_t *e = (const clap_event_midi_t *)h;
-            if ((e->data[0] & 0xF0) == 0x90 && e->data[2] > 0) {
+            int status = e->data[0] & 0xF0, ch = e->data[0] & 0x0F;
+            if (status == 0x90 && e->data[2] > 0) {
                 bars_run(s, pr, at, t); at = t;
-                bars_note(s, (double)e->data[1], e->data[2] / 127.0);
+                bars_note(s, e->data[1], ch, -1, e->data[2] / 127.0);
+            } else if (status == 0xE0) {
+                bars_run(s, pr, at, t); at = t;
+                bars_bend(s, ch, e->data[1] | (e->data[2] << 7));
             }
         }
     }

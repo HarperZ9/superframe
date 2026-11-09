@@ -20,7 +20,7 @@ import numpy as np
 from . import PKG
 
 SOURCES = [PKG / "bld" / "dsp.bld", PKG / "bld" / "dsp32.bld", PKG / "bld" / "live.bld",
-           PKG / "bld" / "string.bld"]   # the kernels; bld/main.bld is the host program
+           PKG / "bld" / "string.bld", PKG / "bld" / "mpe.bld"]   # the kernels; bld/main.bld is the host program
 _LIB = None
 _WHY = None
 
@@ -176,3 +176,12 @@ def string_block(state, sos, hammer, vel, n, frames, acc=None):
 
 def string_state(ring_len, sections):
     return np.zeros(ring_len), np.zeros(sections * 2), np.zeros(1, dtype=np.int64)
+
+
+def voice_retune(state, v, modes, key, eta, fs):
+    """bld/mpe.bld: move voice v's modes to a fractional key while it rings (state as voice_set takes it)."""
+    a1, a2 = state[0], state[1]
+    f = lib().daw_voice_retune
+    f.restype = None
+    f(_p(a1), _p(a2), ctypes.c_size_t(v), ctypes.c_size_t(modes), ctypes.c_double(key), ctypes.c_double(eta),
+      ctypes.c_double(fs))
