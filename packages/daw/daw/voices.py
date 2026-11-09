@@ -13,7 +13,8 @@ Engines (what makes one note):
   bowed   a bowed string in Helmholtz motion (sustain.bowed) with a bow attack and release.
   floor   coloured noise f^-beta (wind.coloured_noise): room tone, a noise floor.
   pad     a subtractive unison pad (subtractive.pad, gap G14). piano takes "inharmonicity": a number B, or
-          "register" for dispersion.piano_b of the note (gap G19).
+          "register" for dispersion.piano_b of the note (gap G19); "contact": "register" for
+          waveguide.contact_time; "hammer": "velocity" for a velocity-wave strike with no offset.
   kick    an 808-style bass drum with a pitch glide ending on the note (kit.bass_drum, G13); hat: kit.hat.
   sampler a slice of one of our renders, named by path and sha256, pitched from its root note (sampler.py, G10).
   grains  a grain cloud over such a source; freeze: its spectrum at one moment, held (granular.py, G11).
@@ -66,13 +67,16 @@ def _envelope(y, fs, hold, attack, release_t60):
 
 
 def _piano(p, f, seconds, fs, vel, rng):
-    contact = p.get("contact", 3e-3) / (0.5 + vel)
+    if p.get("contact") == "register":
+        contact = waveguide.contact_time(f, vel, p.get("bass_contact_ms", 4.0))
+    else:
+        contact = p.get("contact", 3e-3) / (0.5 + vel)
     b = p.get("inharmonicity", 0.0)
     if b == "register":
         from .dispersion import piano_b
         b = piano_b(69 + 12 * math.log2(f / 440.0))
     return waveguide.piano(f, seconds, fs, tuple(p.get("detune_cents", (-0.8, 0.0, 0.9))), p.get("t60", 6.0),
-                           contact, fast=True, b=float(b))
+                           contact, fast=True, b=float(b), excitation=p.get("hammer", "force"))
 
 
 def _pad(p, f, seconds, fs, vel, rng):
