@@ -100,6 +100,11 @@ for (const id of IDS) {
   planted("an unwired pin validates", C.validate(B5).length === 0);
   const B6 = clone(B0); B6.items.find((i) => i.item === 7).pnStatus = undefined;
   planted("a part number with no verification status validates", C.validate(B6).length === 0);
+  const B7 = clone(B0); delete B7.items.find((i) => i.item === 3).set;
+  planted("a board assembly counted as 19 of one item validates", C.validate(B7).length === 0);
+  check("unlike parts in one item are refused by item number", C.validate(B7).some((s) => /BOM item 3: unlike parts counted as 19/.test(s)));
+  const WANT = { jnt: [1, 1, 1, 4, 2, 1, 2, 1, 1, 1], polariscope: [1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1], room: [1, 1, 4, 1, 1, 1] };
+  for (const id of IDS) { const got = artefacts(id).R.B.items.map(C.itemQty); check(`${id}: parts-list quantities count sets once and identical parts each`, JSON.stringify(got) === JSON.stringify(WANT[id]), got.join(",")); }
   const A = artefacts("jnt"), S = C.parseKicadSch(A.kicadSch), w = S.wires.find((x) => Math.abs(x.a[1] - x.b[1]) < 1e-9);
   const lab = S.labels.find((l) => l.name !== "IN"); S.labels.push({ name: "IN", at: lab.at });
   planted("a schematic with two nets joined by a stray label passes the round trip", C.checkConnectivity(A.R, S).length === 0);

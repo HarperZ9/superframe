@@ -159,7 +159,7 @@
     for (let r = 0; r <= items.length; r++) {
       const y = 60 + r * rowH, it = items[r - 1];
       S.line([X, y + rowH], [X + 180, y + rowH], "TITLE");
-      const row = r === 0 ? heads : [String(it.item), String(it.parts.length * (it.qtyEach || 1)), it.pn ? it.pn + (it.pnStatus === "unverified, from memory" ? " *" : "") : "-", it.desc, it.material || "-"];
+      const row = r === 0 ? heads : [String(it.item), String(C.itemQty(it)), it.pn ? it.pn + (it.pnStatus === "unverified, from memory" ? " *" : "") : "-", it.desc, it.material || "-"];
       row.forEach((txt, k) => S.text([colsX[k] + 1.2, y + 1.8], clip(C.ascii(txt), colsX[k + 1] - colsX[k]), 2.5, "TEXT", r ? { item: it.item, bomCol: k } : { bomHead: k }));
     }
     for (const x of colsX) S.line([x, 60], [x, L.bomTop], "TITLE");

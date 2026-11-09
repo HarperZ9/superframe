@@ -18,7 +18,7 @@ for (const id of IDS) {
 ` + A.sch);
   if (A.kicadSch) { put(id + ".kicad_sch", A.kicadSch); put(id + ".net", A.kicadNet); }
   put("spec.md", C.specMD(A.spec)); put("spec.json", JSON.stringify(A.spec, null, 1));
-  const top = R.B.items.map((it) => [it.item, it.parts.length, it.pn || "", it.pnStatus || "", it.desc, it.material || ""]);
+  const top = R.B.items.map((it) => [it.item, C.itemQty(it), it.pn || "", it.pnStatus || "", it.desc, it.material || ""]);
   put("bom.csv", csv([["item", "qty", "part_number", "pn_status", "description", "material"], ...top]));
   const el = R.B.netlist.components.filter((c) => !C.SYM[c.sym].optical).map((c) => [c.ref, c.value, c.fp || "", c.pn || "", c.pnStatus || "", c.desc || "", c.offBoard ? "off board" : ""]);
   if (el.length) put("bom-electrical.csv", csv([["ref", "value", "footprint", "part_number", "pn_status", "description", "note"], ...el]));

@@ -54,7 +54,7 @@
       { item: 3, desc: "Crossbar, slotted", material: "Aluminium", parts: ["bar"] }, { item: 4, desc: "Platen", material: "Steel", parts: ["platB", "platT"] },
       { item: 5, desc: "Specimen disc, annealed", material: "Polycarbonate", pn: "PC sheet " + p.t + " mm", pnStatus: "commodity", parts: ["disc"] },
       { item: 6, desc: "Load rod M8", material: "Steel", pnStatus: "commodity", parts: ["rod"] }, { item: 7, desc: "Weight pan", material: "Aluminium", parts: ["pan"] },
-      { item: 8, desc: "Analyser: film and index", material: "Polariser film", pn: "linear polariser sheet", pnStatus: "commodity", parts: ["sheet", "tick"] },
+      { item: 8, desc: "Analyser: film and index", material: "Polariser film", pn: "linear polariser sheet", pnStatus: "commodity", set: true, parts: ["sheet", "tick"] },
       { item: 9, desc: "Analyser post", material: "Steel", parts: ["stand"] },
       { item: 10, desc: "Laptop screen (light source)", material: "-", pn: "existing", pnStatus: "existing device", parts: ["screen"] },
       { item: 11, desc: "Phone camera (detector)", material: "-", pn: "existing", pnStatus: "existing device", parts: ["phone"] },
