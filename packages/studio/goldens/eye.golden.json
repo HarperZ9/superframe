@@ -1,0 +1,254 @@
+{
+ "schema": "superframe.studio.golden/1",
+ "port": "eye",
+ "source": "HarperZ9/studio-engine@328a0ddf",
+ "sourceFiles": {
+  "showcase/eye.js": "a3d9db59ba29601e81c4a4d2000a6cb7fbf1a4ca1018d0a9e90ac29334faf06d"
+ },
+ "cases": [
+  {
+   "name": "rgba-64x48-s1",
+   "w": 64,
+   "h": 48,
+   "ch": 4,
+   "seed": 1,
+   "input_sha256": "41d87bc145d451c6c9fcaa6e54ba69e984b60cbca4187546235f4734fb8559ab",
+   "phash": "5252a5adada55252",
+   "features": {
+    "contrast": 0.9372549019607843,
+    "coverage": 0.5517578125,
+    "entropy": 0.9183732173228051,
+    "balance": 0.9973796042617961,
+    "hue": 0.5844300598431205,
+    "width": 64,
+    "height": 48
+   }
+  },
+  {
+   "name": "rgba-64x48-s2",
+   "w": 64,
+   "h": 48,
+   "ch": 4,
+   "seed": 2,
+   "input_sha256": "dc2ab6388fba347a287b410dc7bcf82f21fc7579335fa9a75955b854e61a9734",
+   "phash": "55aa5555aa9555aa",
+   "features": {
+    "contrast": 0.9450980392156862,
+    "coverage": 0.5494791666666666,
+    "entropy": 0.9258754344780212,
+    "balance": 0.9930618276363229,
+    "hue": 0.5855129066082303,
+    "width": 64,
+    "height": 48
+   }
+  },
+  {
+   "name": "rgb-37x23-s3",
+   "w": 37,
+   "h": 23,
+   "ch": 3,
+   "seed": 3,
+   "input_sha256": "267ec12dd53f0981856b2c50439d18f952c5ac8f548f5d82c6bd9e697c961340",
+   "phash": "5555aaaaaa555555",
+   "features": {
+    "contrast": 0.9333333333333333,
+    "coverage": 0.5393654524089306,
+    "entropy": 0.9233010618626538,
+    "balance": 0.9189427935408643,
+    "hue": 0.5764187360713149,
+    "width": 37,
+    "height": 23
+   }
+  },
+  {
+   "name": "gray-20x20-s4",
+   "w": 20,
+   "h": 20,
+   "ch": 1,
+   "seed": 4,
+   "input_sha256": "e17422d80176d4d9c10c10d8380acd826c05be72166257061852a1ba5802a624",
+   "phash": "9669a9966952b669",
+   "features": {
+    "contrast": 0.9294117647058824,
+    "coverage": 0.54,
+    "entropy": 0.9368784062985138,
+    "balance": 0.9942591843418289,
+    "hue": 0,
+    "width": 20,
+    "height": 20
+   }
+  },
+  {
+   "name": "graya-33x17-s5",
+   "w": 33,
+   "h": 17,
+   "ch": 2,
+   "seed": 5,
+   "input_sha256": "3d66ef63e77e18a2ef1b2dbc3039c7ac3d52d47a7275634576179553d984f50f",
+   "phash": "aa5555aa55aa5554",
+   "features": {
+    "contrast": 0.996078431372549,
+    "coverage": 0.49910873440285203,
+    "entropy": 0.9319926633729885,
+    "balance": 0.9068895000352585,
+    "hue": 0,
+    "width": 33,
+    "height": 17
+   }
+  },
+  {
+   "name": "rgba-9x8-s6",
+   "w": 9,
+   "h": 8,
+   "ch": 4,
+   "seed": 6,
+   "input_sha256": "82dd86c9dd352c3dde34c6022c21da901c52485ffe14e14570413e372f7707bd",
+   "phash": "6b6bad9494d4256b",
+   "features": {
+    "contrast": 0.8470588235294118,
+    "coverage": 0.5694444444444444,
+    "entropy": 0.8851128884061488,
+    "balance": 0.8592072667217177,
+    "hue": 0.558139534883721,
+    "width": 9,
+    "height": 8
+   }
+  },
+  {
+   "name": "rgba-640x400-s7",
+   "w": 640,
+   "h": 400,
+   "ch": 4,
+   "seed": 7,
+   "input_sha256": "418172acd9446731c4329d3a115fcfcb3d8a31917758d63cd8349b639fef41b0",
+   "phash": "3c3cc3c3c33c3c3c",
+   "features": {
+    "contrast": 0.9647058823529412,
+    "coverage": 0.561546875,
+    "entropy": 0.904783213076337,
+    "balance": 0.9484377320900848,
+    "hue": 0.5834607489553303,
+    "width": 640,
+    "height": 400
+   }
+  },
+  {
+   "name": "raked-concrete-s4",
+   "material": "raked-concrete",
+   "w": 160,
+   "h": 100,
+   "seed": 4,
+   "input_sha256": "00626b39fb50aaa040eb72e2cf7c759d0c963b62f6cb8ec18d1cf969da637f6c",
+   "phash": "8b0c5169ca498d21",
+   "features": {
+    "contrast": 0.3176470588235294,
+    "coverage": 0,
+    "entropy": 0.5141658996526579,
+    "balance": 0.9873068096101687,
+    "hue": 0.10725784068831512,
+    "width": 160,
+    "height": 100
+   }
+  },
+  {
+   "name": "raked-concrete-s5",
+   "material": "raked-concrete",
+   "w": 160,
+   "h": 100,
+   "seed": 5,
+   "input_sha256": "ef644b2dc39fda68395fe2130bad794360a649bf80a8fd350c8a5e9e893b02af",
+   "phash": "66ab45b6a8aac5b1",
+   "features": {
+    "contrast": 0.32941176470588235,
+    "coverage": 0,
+    "entropy": 0.5213957608160138,
+    "balance": 0.9921385906441524,
+    "hue": 0.10741027984747342,
+    "width": 160,
+    "height": 100
+   }
+  },
+  {
+   "name": "chladni-s4",
+   "material": "chladni",
+   "w": 160,
+   "h": 100,
+   "seed": 4,
+   "input_sha256": "da7e758c7a17cd0ab2930207a38380d503d86d29d3831fdd75d6402e928ff55e",
+   "phash": "b349c9dacb59698a",
+   "features": {
+    "contrast": 0.7372549019607844,
+    "coverage": 0.27675,
+    "entropy": 0.7254447670359154,
+    "balance": 0.9779878874253907,
+    "hue": 0.6212294757002903,
+    "width": 160,
+    "height": 100
+   }
+  }
+ ],
+ "drift": [
+  {
+   "a": "raked-concrete-s4",
+   "b": "raked-concrete-s5",
+   "hamming": 32,
+   "verdict": {
+    "verdict": "DRIFT",
+    "distance": 32,
+    "reason": "bytes differ; perceptual distance 32/64"
+   }
+  },
+  {
+   "a": "raked-concrete-s4",
+   "b": "chladni-s4",
+   "hamming": 25,
+   "verdict": {
+    "verdict": "DRIFT",
+    "distance": 25,
+    "reason": "bytes differ; perceptual distance 25/64"
+   }
+  },
+  {
+   "a": "rgba-64x48-s1",
+   "b": "rgba-64x48-s2",
+   "hamming": 30,
+   "verdict": {
+    "verdict": "DRIFT",
+    "distance": 30,
+    "reason": "bytes differ; perceptual distance 30/64"
+   }
+  },
+  {
+   "a": "rgba-64x48-s1",
+   "b": "rgba-64x48-s1",
+   "hamming": 0,
+   "verdict": {
+    "verdict": "MATCH",
+    "distance": 0,
+    "reason": "identical bytes (sha256 equal)"
+   }
+  },
+  {
+   "a": "rgba-64x48-s1",
+   "b": null,
+   "verdict": {
+    "verdict": "UNVERIFIABLE",
+    "distance": null,
+    "reason": "bytes differ but a perceptual hash is missing"
+   }
+  },
+  {
+   "a": null,
+   "b": null,
+   "verdict": {
+    "verdict": "UNVERIFIABLE",
+    "distance": null,
+    "reason": "a SHA-256 identity is missing on one side"
+   }
+  }
+ ],
+ "identity": {
+  "input": "rgba-64x48-s1",
+  "sha256": "41d87bc145d451c6c9fcaa6e54ba69e984b60cbca4187546235f4734fb8559ab"
+ }
+}

@@ -13,6 +13,7 @@ Added:
 - `packages/daw`, second slice: the real-time host is BuildLang (`bld/main.bld`, through BuildLang's audio binding); aluminium and steel loss factors measured from recorded bars; a bowed string and a reed; waveguide strings and piano; swell, tremolo and delay with an analyser; lip radiation, yielding walls and two-mass vocal folds; scenes that make their own sound from one physics record (`packages/daw/ARCHITECTURE.md`), with rain as the first source.
 - `packages/measured`: `decay_iowa.json` (loss factors from the University of Iowa samples) and `vocal_tracts_dvtd.json` (measured resonances of 44 printed MRI vocal tracts).
 - `packages/measured`: `mechanical.json`, elastic constants, densities, sound speeds and air absorption from Kaye and Laby, and Leissa's clamped-plate table.
+- `packages/studio`: the design studio documented as a package, with a command line (`node packages/studio/bin/studio.mjs`). Two ports held byte-identical to goldens from their source commits: the TrueType and variable-font writers from Flywheel (`harness/typeface_ttf.py`, `typeface_variable.py`), and the eye (difference hash, drift verdict, readings) from studio-engine. `packages/studio/docs/STUDIO-MATRIX.md` maps 103 older features to the studio with the check that would prove each port.
 - `packages/lenspipe`: an open lens design in, checked performance, manufacturability, tolerance, limits, as-built fit and interchange out.
 
 ## 0.2.0 (2026-10-28)
