@@ -215,12 +215,14 @@ static const clap_plugin_t *bars_create(const clap_host_t *host) {
 
 extern const clap_plugin_descriptor_t piano_desc;          // piano.c
 const clap_plugin_t *piano_create(const clap_host_t *host);
+extern const clap_plugin_descriptor_t organ_desc;          // organ.c
+const clap_plugin_t *organ_create(const clap_host_t *host);
 
-static uint32_t factory_count(const clap_plugin_factory_t *f) { (void)f; return 2; }
+static uint32_t factory_count(const clap_plugin_factory_t *f) { (void)f; return 3; }
 
 static const clap_plugin_descriptor_t *factory_desc(const clap_plugin_factory_t *f, uint32_t i) {
     (void)f;
-    return i == 0 ? &bars_desc : i == 1 ? &piano_desc : NULL;
+    return i == 0 ? &bars_desc : i == 1 ? &piano_desc : i == 2 ? &organ_desc : NULL;
 }
 
 static const clap_plugin_t *factory_create(const clap_plugin_factory_t *f, const clap_host_t *host, const char *id) {
@@ -228,6 +230,7 @@ static const clap_plugin_t *factory_create(const clap_plugin_factory_t *f, const
     if (!clap_version_is_compatible(host->clap_version)) return NULL;
     if (!strcmp(id, bars_desc.id)) return bars_create(host);
     if (!strcmp(id, piano_desc.id)) return piano_create(host);
+    if (!strcmp(id, organ_desc.id)) return organ_create(host);
     return NULL;
 }
 
