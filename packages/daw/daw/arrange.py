@@ -66,6 +66,7 @@ class Track:
     width: float = 0.0         # 0 mono-placed; up to 1: a decorrelated side signal widens the track (stems.widen)
     sends: dict = field(default_factory=dict)        # space name -> send level, for Arrangement.spaces
     bus: str = None            # a name in Arrangement.buses: the group bus this track feeds (buses.py)
+    width_floor: float = 0.0   # Hz: below this the width's side signal is filtered out, so the low end stays mono
 
     def control(self, key, n, fs):
         if key in self.automation:

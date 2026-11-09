@@ -23,7 +23,7 @@ from pathlib import Path
 
 import numpy as np
 import soundfile as sf
-from scipy.signal import oaconvolve
+from scipy.signal import butter, oaconvolve, sosfiltfilt
 
 from . import buses as BU
 from . import loudness as LD
@@ -63,7 +63,7 @@ def render(arr, rng, target_lufs=None):
         dry = mono * db(gain)
         drys[tr.name] = dry
         if getattr(tr, "width", 0.0) > 0:
-            st = st + widen(dry, tr.width, tr.name, fs=fs)
+            st = st + widen(dry, tr.width, tr.name, fs=fs, floor_hz=getattr(tr, "width_floor", 0.0))
         send = dry * tr.send
         if ir is not None and np.any(send):
             st = st + g_room * _wet(send, ir, n)
@@ -89,11 +89,15 @@ def _wet(x, ir, n):
     return np.stack([oaconvolve(x, ir[0])[:n], oaconvolve(x, ir[1])[:n]], 1)
 
 
-def widen(mono, width, name, ms=25.0, fs=48000):
+def widen(mono, width, name, ms=25.0, fs=48000, floor_hz=0.0):
     """A side signal for stereo width: the track through two different sparse decorrelation filters (velvet
     noise, Jarvelainen and Karjalainen 2007: +/-1 pulses about every 1.5 ms over `ms` milliseconds, unit energy),
     left minus right, scaled by width / 2. Added to a mid-placed stem it leaves the mono sum (L + R) unchanged,
-    so the track is wider without being louder or thinner in mono."""
+    so the track is wider without being louder or thinner in mono.
+
+    floor_hz > 0 keeps the low end in the middle: the side signal passes a zero-phase 4th-order high-pass at
+    floor_hz, so below it left and right stay the same signal (a wide pad's bass no longer loses level on one
+    speaker or a mono sum of unequal channels). 0 leaves the side signal as it was, sample for sample."""
     rng = np.random.default_rng(ss.xmur3("widen:" + name))
     m = int(ms * fs / 1000)
     taps = []
@@ -104,6 +108,8 @@ def widen(mono, width, name, ms=25.0, fs=48000):
         v[idx] = rng.choice((-1.0, 1.0), len(idx)) * np.exp(-3.0 * idx / m)
         taps.append(v / np.sqrt(np.sum(v * v)))
     side = (oaconvolve(mono, taps[0])[: len(mono)] - oaconvolve(mono, taps[1])[: len(mono)]) * width / 2
+    if floor_hz > 0:
+        side = sosfiltfilt(butter(2, floor_hz, "highpass", fs=fs, output="sos"), side)
     return np.stack([side, -side], 1)
 
 

@@ -139,3 +139,27 @@ def test_notes_carry_no_dc_offset():
         y = build(P.patch(engine, engine, {"t60": 2.0, "tail": 0.5})).play(Note(0, 2, 52, 0.5), FS, 0.5, None)
         assert abs(float(np.mean(y))) < 1e-3 * float(np.max(np.abs(y))), engine
         assert np.max(np.abs(y)) == pytest.approx(0.5, rel=0.05)
+
+
+def test_width_floor_keeps_the_low_end_in_the_middle():
+    """A wide low note: with no floor the channels decorrelate at 80 Hz; with a 200 Hz floor they stay one
+    signal there, the mono sum is unchanged either way, and floor 0 is the old side signal sample for sample."""
+    from daw import stems as S
+    fs = 48000
+    t = np.arange(fs * 2) / fs
+    mono = 0.3 * np.sin(2 * np.pi * 80 * t) + 0.1 * np.sin(2 * np.pi * 2000 * t)
+    mid = np.stack([mono, mono], 1)
+    old = S.widen(mono, 1.0, "pad", fs=fs)
+    assert np.array_equal(old, S.widen(mono, 1.0, "pad", fs=fs, floor_hz=0.0))
+    new = S.widen(mono, 1.0, "pad", fs=fs, floor_hz=200.0)
+
+    def low_corr(st):
+        from scipy.signal import butter, sosfiltfilt
+        lo = sosfiltfilt(butter(4, 150, "lowpass", fs=fs, output="sos"), st, axis=0)[fs // 2: -fs // 2]
+        return float(np.corrcoef(lo[:, 0], lo[:, 1])[0, 1])
+
+    assert low_corr(mid + old) < 0.9                       # the control: without the floor the bass is spread
+    assert low_corr(mid + new) > 0.995
+    assert np.allclose((mid + new).sum(1), 2 * mono, atol=1e-12)
+    hi = np.abs(np.fft.rfft(new[:, 0]))[2000 * 2]          # the 2 kHz side signal survives the floor
+    assert hi > 0.5 * np.abs(np.fft.rfft(old[:, 0]))[2000 * 2]
