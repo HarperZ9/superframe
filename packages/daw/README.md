@@ -55,6 +55,14 @@ Swap `"aluminium"` for `"steel_mild"` and every mode moves by sqrt(E / rho), the
 - **Loudness** (`loudness.py`): BS.1770 integrated, short-term, momentary, loudness range and 4x true peak from `packages/remastering`, a static gain to a target loudness, and the numbers in every stems receipt.
 - **Real-time engine** in BuildLang: kernels in `bld/dsp.bld` (modal bank, voice bank, moving-source path), checked against the Python reference; the host in `bld/main.bld` opens the audio device through BuildLang's own binding (`bld/audio.bld`, `bld/bl_audio.c` from buildlang's `runtime/audio`) and counts deadline misses.
 
+## Play it inside another DAW (CLAP)
+
+```
+python -I -m daw.clap_build out/clap      # from packages/daw: out/clap/superframe-bars.clap and a test host
+```
+
+Copy `superframe-bars.clap` into your CLAP folder (Windows `C:\Program Files\Common Files\CLAP`, macOS `~/Library/Audio/Plug-Ins/CLAP`, Linux `~/.clap`) and load "superframe bars" in a CLAP host such as Bitwig, REAPER or FL Studio. It is the BuildLang modal bank with measured aluminium loss: a note sets a voice's modes and strikes it on the note's own sample, with no added latency. Its output equals the offline render bit for bit at any host block size (`tests/test_clap.py`). Built here on Windows; not yet tried in a commercial host.
+
 ## Run the BuildLang engine
 
 ```

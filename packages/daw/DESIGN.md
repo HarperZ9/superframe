@@ -175,6 +175,8 @@ Limits: no measured electric piano recordings are used. The University of Iowa M
 
 An effect or instrument is a BuildLang module that exports a fixed C ABI: `init(rate, max_frames)`, `process(in, out, frames, events)`, `state_save`, `state_load`, and a parameter table with units. Plugins see only buffers and events, never the device, so the same module runs offline and in real time. Third-party formats (CLAP first, being open; VST3 and AU after) are wrappers that map their calls onto this ABI. Every plugin call is timed against the period, so a slow plugin is named in the deadline report.
 
+Built (2026-11-09): `clap/bars.c`, a CLAP instrument over the BuildLang kernels (`daw_voice_set`, `daw_bank_live`), linked by `daw/clap_build.py`, with the MIT CLAP 1.2.10 headers vendored in `clap/include`. A block is split at every note, so the output equals the offline kernels bit for bit at host blocks of 64, 256, 1000 and 4096 frames, and a note sounds on its own sample (latency 0). `clap/host_check.c` is a minimal CLAP host the tests drive. Measured on the reference machine (Windows 11, i7-13700KF, mingw gcc, 256-frame blocks): 16 voices of 12 modes ringing for 10 s took 0.079 to 0.087 s of process time over three runs, about 10 ns per voice-sample (0.86 ns per mode-sample), so one core would carry on the order of 1,900 such voices; that ceiling is extrapolated, not run. Not yet loaded in a commercial host; VST3 and AU wrappers are not built.
+
 ## 6. Road to the most capable workstation
 
 Competitive table. Rows marked "memory" are from general knowledge of these products and were not checked against current documentation in this slice; each needs a sourced check before any claim is published.
@@ -190,7 +192,7 @@ Competitive table. Rows marked "memory" are from general knowledge of these prod
 | Arrangement and editing | full clip, take and comping workflows (memory) | notes in beats, automation, sample-accurate placement | full editing with undo, every edit a replayable event |
 | Mixing and routing | unlimited buses, sidechain, groups (memory) | gain, pan, room send, limiter | buses, sends, sidechain, groups, BS.1770 meters |
 | MIDI and MPE | full MIDI 2.0 and MPE in leading hosts (memory) | MIDI note numbers | MPE driving physical parameters; MIDI 2.0 |
-| Plugins | VST3, AU, CLAP hosting (memory) | none | a BuildLang plugin ABI, then CLAP |
+| Plugins | VST3, AU, AAX everywhere; CLAP in Bitwig, FL Studio, REAPER (sourced in mission-control MAP 2026-11-09) | a CLAP instrument from the BuildLang kernels, equal to the offline render bit for bit | VST3 and AU wrappers; hosting third-party CLAP plugins |
 | Export | WAV, FLAC, MP3, stems (memory) | WAV 16, 24, 32f; FLAC 16, 24 | stems, rates to 192 kHz, each with a receipt |
 
 Done from the previous three steps: the device binding is in BuildLang and the host is BuildLang; aluminium and steel damping are measured; bowing and a reed exist; the voice has lip radiation, wall loss and two-mass folds, with measured MRI tract resonances on file.
