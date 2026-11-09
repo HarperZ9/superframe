@@ -5,7 +5,7 @@
    model's values, a changed parameter reaching every view, and planted errors that must be refused. Exit 1 if
    a check fails or a planted error is accepted. */
 "use strict";
-const fs = require("fs");
+const fs = require("fs"), os = require("os"), path = require("path"), { execFileSync } = require("child_process");
 const { D, C, IDS, artefacts, pipeline } = require("../cad/load.js");
 const out = { pass: 0, fail: 0, planted_rejected: 0, planted_accepted: 0, rows: [] };
 const check = (name, ok, detail) => { out[ok ? "pass" : "fail"]++; out.rows.push({ name, ok: !!ok, detail }); if (!ok) console.error("FAIL", name, detail || ""); };
@@ -142,6 +142,76 @@ for (const id of IDS) {
   planted("a record whose resistor differs from the CAD default agrees", agree("jnt", C.REG.jnt, rec, pipeline("jnt")).length === 0);
   const pipe = clone(pipeline("room")); pipe.stages[0].spec.wall_assumptions[0].how_checked += " (edited)";
   planted("a pipeline example with an edited assumption agrees with its record", agree("room", C.REG.room, record("room"), pipe).length === 0);
+}
+
+/* where the words sit: no text crossed by drawn work or by other text, no crossed balloon leaders */
+{
+  for (const id of IDS) { const L = C.textLint(artefacts(id).BP.sheet); check(`${id}: sheet lint: no words lie on drawn lines or on other words, and no balloon leaders cross`, !L.length, L.slice(0, 3).join("; ")); }
+  const S = artefacts("jnt").BP.sheet, sw = (f) => ({ w: S.w, h: S.h, E: S.E.map(f) });
+  const dim = S.E.find((e) => e.t === "text" && e.layer === "DIM"), edge = S.E.find((e) => e.t === "poly" && e.layer === "OUTLINE"), mid = [(edge.pts[0][0] + edge.pts[1][0]) / 2, (edge.pts[0][1] + edge.pts[1][1]) / 2 - 1.75];
+  const L1 = C.textLint(sw((e) => (e === dim ? Object.assign({}, e, { at: mid }) : e)));
+  planted("a dimension's words moved onto a part outline pass the sheet lint", L1.length === 0);
+  check("the lint names the words and what crosses them", L1.some((s) => s.includes(`text "${dim.s}" on DIM is crossed by a poly on OUTLINE`)), L1[0]);
+  const note = S.E.find((e) => e.t === "text" && e.layer === "TITLE" && e.s.length > 3);
+  planted("a dimension's words printed over a title-block entry pass the sheet lint", !C.textLint(sw((e) => (e === dim ? Object.assign({}, e, { at: [note.at[0] + C.textW(note.s, note.h) / 2, note.at[1]] }) : e))).some((s) => /overlaps text|is crossed by/.test(s)));
+  const [la, lb] = S.E.filter((e) => e.t === "line" && e.layer === "BALLOON"), m = [(la.a[0] + la.b[0]) / 2, (la.a[1] + la.b[1]) / 2], n = [la.b[1] - la.a[1], la.a[0] - la.b[0]], k = 4 / Math.hypot(n[0], n[1]);
+  const L3 = C.textLint(sw((e) => (e === lb ? Object.assign({}, e, { a: [m[0] + n[0] * k, m[1] + n[1] * k], b: [m[0] - n[0] * k, m[1] - n[1] * k] }) : e)));
+  planted("two balloon leaders that cross pass the sheet lint", !L3.some((s) => s === `balloon leader ${la.item} crosses leader ${lb.item}`));
+  planted("turned words pass the sheet lint unchecked and unnamed", !C.textLint(sw((e) => (e === dim ? Object.assign({}, e, { rot: 90 }) : e))).some((s) => /turned text is not checked/.test(s)));
+}
+
+/* parts someone buys: stocked values, a tolerance, a voltage rating */
+{
+  const inst = C.REG.jnt, B0 = inst.build(C.defaults(inst)), buy = (B) => B.netlist.components.filter((c) => (c.sym === "R" || c.sym === "C") && c.fp && !c.offBoard), rc = buy(B0);
+  check(`jnt: all ${rc.length} board resistors and capacitors are stocked series values with a tolerance; capacitors have a voltage rating`, rc.length > 0 && rc.every((c) => C.onSeries(c.si, c.series) && c.tol && (c.sym !== "C" || c.volt) && !C.lintPassive(c).length));
+  check("preferred values: 5 kOhm goes to 4.99 k on E96, 1.59 uF to 1.5 uF on E12, 9.9 to 10 on E24; 4.8 nF is not an E12 value", C.snapE(5000, "E96") === 4990 && C.snapE(1.59e-6, "E12") === 1.5e-6 && C.snapE(9.9, "E24") === 10 && C.onSeries(4.7e-9, "E12") && !C.onSeries(4.8e-9, "E12"));
+  const plant = (name, edit, re) => { const B = clone(B0), c = buy(B).find((q) => q.sym === (name.startsWith("a capacitor") ? "C" : "R")); edit(c); const V = C.validate(B); planted(name, V.length === 0); check("refused by name: " + name.replace(/ validates$/, ""), V.some((s) => re.test(s)), V[0]); };
+  plant("a resistor 3 % off its E96 value validates", (c) => { c.si *= 1.03; c.value = C.eng(c.si); }, /is not an E96 value \(nearest /);
+  plant("a resistor with no tolerance validates", (c) => { c.tol = ""; }, /: no tolerance$/);
+  plant("a capacitor with no voltage rating validates", (c) => { c.volt = ""; }, /: no voltage rating$/);
+  plant("a resistor with no preferred-value series validates", (c) => { delete c.series; }, /: no preferred-value series$/);
+  plant("a resistor whose printed value differs from its number validates", (c) => { c.value = "1"; }, /value text 1 is not its number/);
+  planted("a misspelt parameter name resolves with no problem", C.resolve(inst, { encWidth: 150 }).problems.length === 0);
+  planted("a parameter outside its range resolves with no problem", C.resolve(inst, { encW: 9999 }).problems.length === 0);
+}
+
+/* the exporter's files: units in the manifest, tolerance and voltage columns in the electrical BOM */
+{
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cad-export-"));
+  execFileSync(process.execPath, [path.join(__dirname, "..", "cad", "export.js"), dir], { stdio: "pipe" });
+  const unitsOk = (M) => M.units && M.units.drawing_length === "mm" && Object.keys(M.params).every((k) => typeof M.units[k] === "string" && M.units[k].length > 0);
+  for (const id of IDS) { const M = JSON.parse(fs.readFileSync(path.join(dir, id, "manifest.json"), "utf8")); check(`${id}: manifest gives a unit for every parameter and for drawing lengths`, unitsOk(M), JSON.stringify(M.units)); }
+  const M = JSON.parse(fs.readFileSync(path.join(dir, "jnt", "manifest.json"), "utf8")); delete M.units.R;
+  planted("a manifest with one parameter's unit missing passes the units check", unitsOk(M));
+  const [head, ...rows] = fs.readFileSync(path.join(dir, "jnt", "bom-electrical.csv"), "utf8").trim().split("\n").map((l) => { const o = []; l.replace(/("(?:[^"]|"")*"|[^,]*)(?:,|$)/g, (m, c) => (o.push(c), "")); return o; }), col = (n) => head.indexOf(n);
+  const rc = rows.filter((r) => /^[RC]\d/.test(r[0]) && r[col("footprint")]);
+  check(`jnt: electrical BOM has tolerance and voltage columns, filled for all ${rc.length} board resistors and capacitors`, col("tolerance") > 0 && col("voltage") > 0 && rc.length > 0 && rc.every((r) => r[col("tolerance")] && (r[0][0] !== "C" || r[col("voltage")])));
+  const pnOk = (r) => r[col("part_number")] || r[col("pn_status")];
+  check("jnt: electrical BOM leaves an unknown part number blank and says so in pn_status", rows.every(pnOk) && rows.some((r) => r[col("pn_status")] === "no part number"), JSON.stringify(rows.find((r) => !pnOk(r))));
+  planted("a BOM row with neither a part number nor a status passes", pnOk(rows[0].map((x, i) => (i === col("pn_status") ? "" : x))));
+  fs.rmSync(dir, { recursive: true, force: true });
+}
+
+/* fuzz, fixed seeds: random in-range parameters must give a model that validates, a drawing whose dimensions equal
+   the model and whose words sit clear, a schematic with no problems, and a DXF that reads back */
+{
+  const rng = (seed) => { let a = seed >>> 0; return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+  const faults = (A) => [...A.R.problems, ...A.SC.problems, ...C.textLint(A.BP.sheet), ...A.BP.dims.filter((d) => Math.abs(d.value - d.expect) > 1e-6 * Math.max(1, Math.abs(d.expect))).map((d) => `dimension ${d.id} drawn ${d.value}, model ${d.expect}`), ...dxfSame(A.BP.sheet, C.parseDXF(A.dxf))];
+  const N = 16; let keep = null;
+  for (const id of IDS) {
+    const inst = C.REG[id], bad = [];
+    for (let s = 1; s <= N; s++) {
+      const r = rng(s * 7919), over = {};
+      for (const q of inst.params) { const st = q.step || 1; over[q.id] = Math.min(q.max, +(q.min + Math.round((r() * (q.max - q.min)) / st) * st).toPrecision(10)); }
+      const A = artefacts(id, over), f = faults(A);
+      if (f.length) bad.push(`seed ${s} ${JSON.stringify(over)}: ${f[0]}`);
+      keep = keep || A;
+    }
+    check(`${id}: fuzz, ${N} seeded random parameter sets: every model validates, dimensions equal the model, words sit clear, the DXF reads back`, !bad.length, bad.slice(0, 2).join(" | "));
+  }
+  const d0 = keep.BP.dims[0], A1 = Object.assign({}, keep, { BP: Object.assign({}, keep.BP, { dims: [Object.assign({}, d0, { value: d0.value + 0.01 }), ...keep.BP.dims.slice(1)] }) });
+  planted("a fuzz drawing with one dimension 0.01 mm off the model passes the fuzz oracle", faults(A1).length === 0);
+  planted("a fuzz drawing whose DXF lost its last entity passes the fuzz oracle", faults(Object.assign({}, keep, { dxf: C.toDXF({ w: keep.BP.sheet.w, h: keep.BP.sheet.h, E: keep.BP.sheet.E.slice(0, -1) }) })).length === 0);
 }
 
 /* mesh: the open-top tray is one closed solid */

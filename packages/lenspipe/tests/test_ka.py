@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT))
 warnings.simplefilter("ignore")
 np.seterr(all="ignore")
 
-from lenspipe import asbuilt, cadout, design, glass, interchange, limits, optics, rules, tolerance, trace  # noqa: E402
+from lenspipe import asbuilt, cadout, design, glass, interchange, limits, optics, pipeline, rules, tolerance, trace  # noqa: E402
 
 D = ROOT / "data" / "designs"
 
@@ -214,3 +214,76 @@ def test_overclaim_refused():
         asbuilt.refuse_overclaim(dict(verdict="MEETS", note="a perfect part"))
     with pytest.raises(ValueError):
         asbuilt.refuse_overclaim(dict(verdict="PERFECT"))
+
+
+def with_rim(d, fraction):
+    """The same design with a mechanical semi-diameter on every glass piece: clear aperture = fraction of the outer diameter."""
+    d = json.loads(json.dumps(d))
+    for a, b, _, _ in cadout.pieces(d):
+        rm = max(d["surfaces"][a]["semi"], d["surfaces"][b]["semi"]) / fraction
+        d["surfaces"][a]["mech_semi"] = d["surfaces"][b]["mech_semi"] = rm
+    return design.validate(d)
+
+
+def test_aperture_margin_rule_and_its_planted_faults():
+    margin = lambda d: [r for r in rules.check(d) if r["rule"] == "aperture_margin"]  # noqa: E731
+    d = load("comsol_dg")
+    bare = margin(d)
+    assert len(bare) == 1 and bare[0]["severity"] == "FLAG" and bare[0]["where"] == "all" and bare[0]["origin"] == "judgement"
+    thick = singlet(50.0, -50.0, 8.0, {"nd": 1.5, "vd": 60}, semi=10.0, bfd=48.0)
+    assert margin(with_rim(thick, 0.85)) == [] and not rules.blockers(rules.check(with_rim(thick, 0.85)))
+    # planted: a rim that leaves the clear aperture at 95 percent of the outer diameter must be named piece by piece
+    tight = margin(with_rim(thick, 0.95))
+    assert len(tight) == 1 and tight[0]["where"] == "S2-S3" and all(r["value"] == pytest.approx(0.95) and "95 percent" in r["message"] for r in tight)
+    # planted: a mechanical diameter inside the clear aperture is refused at load
+    bad = json.loads(json.dumps(d))
+    bad["surfaces"][1]["mech_semi"] = bad["surfaces"][1]["semi"] - 0.5
+    with pytest.raises(design.DesignError, match="smaller than the clear semi-diameter"):
+        design.validate(bad)
+    # planted: an outer diameter where the two faces cross must block, where the clear-aperture check alone saw a sound edge
+    s = singlet(50.0, -50.0, 4.0, {"nd": 1.5, "vd": 60}, semi=10.0, bfd=48.0)
+    assert not any(r["rule"] == "edge_thickness" and r["severity"] == "BLOCK" for r in rules.check(s))
+    s["surfaces"][1]["mech_semi"] = s["surfaces"][2]["mech_semi"] = 30.0
+    assert any(r["rule"] == "edge_thickness" and r["severity"] == "BLOCK" and r["where"] == "S2-S3" for r in rules.check(s))
+
+
+def test_drawing_gives_radius_tolerance_plus_minus_and_the_aperture_share(tmp_path):
+    d = load("comsol_dg")
+    a, b = cadout.pieces(d)[0][:2]
+    A, fr = d["surfaces"][a], design.tolerances(d, a)["power_fringes"]
+    data = cadout.drawing(d, a, b, tmp_path / "e")
+    txt = (tmp_path / "e.txt").read_text(encoding="utf-8")
+    want = A["r"] ** 2 * fr * 632.8e-6 / A["semi"] ** 2  # sag change of fr half-waves at the edge, written out by hand
+    assert data["s1"]["R_tol"] == pytest.approx(want, rel=1e-9) and f"R {A['r']} mm ±{want:.2g} mm" in txt
+    assert "+-" not in txt and f"CT {A['t']} ±" in txt and f"OD {data['od']} ±" in txt and "±" in (tmp_path / "e.svg").read_text(encoding="utf-8")
+    assert "no mechanical diameter stated" in txt and data["od_stated"] is False and data["clear_over_od"] == 1.0
+    # planted: twice the power fringes must print twice the radius tolerance, so a fixed number cannot pass
+    d2 = json.loads(json.dumps(d))
+    d2.setdefault("tolerances", {}).setdefault("by_surface", {})[str(a)] = dict(power_fringes=2 * fr)
+    assert cadout.drawing(d2, a, b, tmp_path / "f")["s1"]["R_tol"] == pytest.approx(2 * want, rel=1e-9)
+    # planted: a stated rim must reach the drawing, and the old claim that OD equals the clear aperture must go
+    rim = cadout.drawing(with_rim(d, 0.8), a, b, tmp_path / "g")
+    t3 = (tmp_path / "g.txt").read_text(encoding="utf-8")
+    assert rim["od"] == pytest.approx(2 * max(A["semi"], d["surfaces"][b]["semi"]) / 0.8, abs=1e-3) and "Clear aperture is 80 percent of OD" in t3 and "no mechanical diameter" not in t3
+    assert cadout.radius_tol(None, 3, 10.0) is None and cadout._radius(None, None) == "R plano"
+
+
+def test_performance_class_is_printed_beside_the_manufacturability_status():
+    lim = dict(largest_gap=dict(cause="aberration", deg=0.0, bits=dict(total=1.0)))
+    good = stigmatic(semi=5.0, ct=2.0)
+    pg = optics.evaluate(design.to_lens(good), good["intent"], nmax=128)
+    assert pipeline.perf_class(pg, good["intent"])["perf_class"] == "DIFFRACTION-LIMITED"
+    # planted: a fast spherical singlet with no rule row against it is QUOTABLE, and must still print the poor class
+    poor = singlet(50.0, -50.0, 5.0, {"nd": 1.5, "vd": 60}, semi=10.0, bfd=48.0, fno=2.5)
+    pp = optics.evaluate(design.to_lens(poor), poor["intent"], nmax=128)
+    v = pipeline.verdict([], pp, None, lim, poor["intent"])
+    assert v["status"] == "QUOTABLE" and v["performance"]["perf_class"] == "ABERRATION-LIMITED" and v["performance"]["worst_strehl"] < 0.8
+    assert v["line"].startswith("Manufacturability: QUOTABLE. Optical performance: ABERRATION-LIMITED") and "Airy radii" in v["line"]
+    # planted: a status with no performance class cannot be printed
+    with pytest.raises(ValueError, match="performance class"):
+        pipeline.headline(dict(status="QUOTABLE"))
+    # planted: a missing or non-finite Strehl ratio is never read as a pass
+    nan = dict(pp, fields=[dict(pp["fields"][0], strehl=float("nan"))])
+    assert pipeline.perf_class(nan, poor["intent"])["perf_class"] == "NOT EVALUATED" and pipeline.perf_class(None, poor["intent"])["perf_class"] == "NOT EVALUATED"
+    blocked = pipeline.verdict([rules.row("edge_thickness", "BLOCK", "S2-S3", "planted", "ME")], None, None, None, poor["intent"])
+    assert blocked["line"].startswith("Manufacturability: DO NOT QUOTE. Optical performance: NOT EVALUATED")

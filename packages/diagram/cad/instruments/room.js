@@ -71,10 +71,10 @@
     const R0805 = "Resistor_SMD:R_0805_2012Metric", JK = "TRS 3.5 mm";
     const components = [
       { ref: "J1", sym: "JACK3R", value: "FROM LAPTOP", part: "J1", desc: "3.5 mm stereo socket", pn: JK, pnStatus: "commodity", pins: { T: "OUT_L", R: "OUT_R", S: "GND" } },
-      { ref: "R1", sym: "R", value: "10k", part: "R1", fp: R0805, desc: "Pad series, left", pins: { 1: "OUT_L", 2: "PAD_L" } },
-      { ref: "R2", sym: "R", value: C.eng(R2v), part: "R2", fp: R0805, desc: "Pad shunt, left", pins: { 1: "PAD_L", 2: "GND" } },
-      { ref: "R3", sym: "R", value: "10k", part: "R3", fp: R0805, desc: "Pad series, right", pins: { 1: "OUT_R", 2: "PAD_R" } },
-      { ref: "R4", sym: "R", value: C.eng(R2v), part: "R4", fp: R0805, desc: "Pad shunt, right", pins: { 1: "PAD_R", 2: "GND" } },
+      C.passive({ ref: "R1", sym: "R", part: "R1", fp: R0805, desc: "Pad series, left", pins: { 1: "OUT_L", 2: "PAD_L" } }, 10000, "E96", "1%"),
+      C.passive({ ref: "R2", sym: "R", part: "R2", fp: R0805, desc: "Pad shunt, left", pins: { 1: "PAD_L", 2: "GND" } }, R2v, "E96", "1%"),
+      C.passive({ ref: "R3", sym: "R", part: "R3", fp: R0805, desc: "Pad series, right", pins: { 1: "OUT_R", 2: "PAD_R" } }, 10000, "E96", "1%"),
+      C.passive({ ref: "R4", sym: "R", part: "R4", fp: R0805, desc: "Pad shunt, right", pins: { 1: "PAD_R", 2: "GND" } }, R2v, "E96", "1%"),
       { ref: "J2", sym: "JACK3", value: "TO LINE IN", part: "J2", desc: "3.5 mm stereo socket", pn: JK, pnStatus: "commodity", pins: { T: "PAD_L", R: "PAD_R", S: "GND" } },
     ];
     const G = 2.54, at = (x, y, r = 0) => [x * G, y * G, r];
@@ -108,7 +108,7 @@
       readouts: [
         ["Volume", V.toPrecision(3) + " m^3"], ["Modes below the band top, counted", String(n)], ["Weyl's law at the band top", nw.toPrecision(3)],
         ["Modal bandwidth 2.2 / T60", bw.toPrecision(3) + " Hz"], ["Mean spacing at the band top", sp.toPrecision(3) + " Hz"], ["Modes with a neighbour farther than a bandwidth", resolved + " of " + n],
-        ["Schroeder frequency", fS.toPrecision(3) + " Hz"], ["Pad attenuation", W_.pad(10000, R2v).toFixed(1) + " dB (R2 = " + C.eng(R2v, " Ohm") + ")"], ["Capture length, sweep plus two T60", (10 + 2 * p.T60).toFixed(1) + " s"],
+        ["Schroeder frequency", fS.toPrecision(3) + " Hz"], ["Pad attenuation", W_.pad(10000, C.snapE(R2v, "E96")).toFixed(2) + " dB (R2 = " + C.eng(C.snapE(R2v, "E96"), " Ohm") + ", stocked E96; asked " + (-p.pad) + ")"], ["Capture length, sweep plus two T60", (10 + 2 * p.T60).toFixed(1) + " s"],
       ],
       panels: [
         { title: "Mode count N(f): every rigid-wall mode against Weyl's law", x: { min: 20, max: p.fTop * 1.3, label: "Hz" }, y: { min: 0, max: Math.max(5, W_.weyl(p.fTop * 1.3, p.L, p.Wd, p.H) * 1.05), label: "N" }, cursor: p.fTop,

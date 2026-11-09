@@ -11,6 +11,7 @@
   const D = (g.Diagram = g.Diagram || {});
   const E = (D.EDA = D.EDA || {});
   E.TIE = "__tie__";
+  E.HOLE = "__hole__";
   const DX = [1, 1, 0, -1, -1, -1, 0, 1], DY = [0, 1, 1, 1, 0, -1, -1, -1], SQ2 = Math.SQRT2;
 
   E.grid = (B, p = 0.2) => {
@@ -20,6 +21,8 @@
     /* net-tie pads get a pseudo-net that only the tied nets may touch */
     const tieNets = new Set(B.parts.filter((P) => P.fp.tie).flatMap((P) => Object.values(P.comp.pins)).map((n) => id[n]));
     id[E.TIE] = ids.length; cl.push(B.rules.minClearance);
+    /* mounting-hole seats are a pseudo-net no net may touch */
+    id[E.HOLE] = ids.length + 1; cl.push(B.rules.holeClear);
     return { p, nx, ny, occ, ids, id, cl, B, tieId: ids.length, tieNets, slack: 0.71 * p + 0.05 };
   };
   const cc = (G, i, j) => [(i + 0.5) * G.p, (j + 0.5) * G.p];

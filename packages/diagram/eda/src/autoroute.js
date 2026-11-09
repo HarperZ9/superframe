@@ -64,6 +64,7 @@
     const G = E.grid(B, opt.pitch || 0.2), S = {}, pads = E.pads(B), NC = G.nx * G.ny, log = [];
     B.grid = { p: G.p, nx: G.nx, ny: G.ny };
     for (const q of pads) E.paint(G, E.padLayers(q.pad), q.shape, q.P.fp.tie ? E.TIE : q.net);
+    for (const h of B.holes || []) E.paint(G, [0, 1], { pts: [h.at], r: h.seat }, E.HOLE);
     for (const P of B.parts) if (P.fp.bridge) { const [a, b, w] = P.fp.bridge; P.bridge = { a: E.padAt(P, { at: a }), b: E.padAt(P, { at: b }), w }; }
     const sig = Object.values(B.nets).filter((n) => n.cls !== "gnd" && n.pins.length > 1);
     const span = (n) => { const ps = pads.filter((q) => q.net === n.name).map((q) => q.at); return Math.max(...ps.map((p) => p[0])) - Math.min(...ps.map((p) => p[0])) + Math.max(...ps.map((p) => p[1])) - Math.min(...ps.map((p) => p[1])); };

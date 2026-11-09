@@ -31,4 +31,10 @@ The ISO 10110 notation follows public tutorials, and no optical shop has reviewe
 
 ## Tests
 
-`tests/test_ka.py` runs 19 known-answer cases, each with its margin stated in the test: paraxial focal length and back focus of the patent design, energy and ray checks, tolerance and rules behaviour, drawing codes and interchange round trips.
+`tests/test_ka.py` runs 23 known-answer cases, each with its margin stated in the test: paraxial focal length and back focus of the patent design, energy and ray checks, tolerance and rules behaviour, drawing codes and interchange round trips. The newer rules each come with a planted fault they must refuse.
+
+## Reading the verdict
+
+The pipeline prints one line with two readings. `Manufacturability` is the rules, stated goals and tolerance yield: `QUOTABLE` means no rule fired, and says nothing on image quality. `Optical performance` is the class of the nominal design at best focus: `DIFFRACTION-LIMITED` needs a Strehl ratio of 0.8 or more at every field, and anything lower reads `ABERRATION-LIMITED` with the worst Strehl ratio and the worst spot beside it. The shipped double Gauss reads `QUOTABLE WITH NOTES` and `ABERRATION-LIMITED`.
+
+A surface may carry `mech_semi`, the mechanical semi-diameter. Without it each drawing sets the outer diameter equal to the clear aperture and the rules flag the missing rim. With it the rules flag a clear aperture over 90 percent of the outer diameter (my figure, no source read) and block a rim where the two faces cross. The drawing prints each radius with the tolerance its power fringes allow over the clear aperture.

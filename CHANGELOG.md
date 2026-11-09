@@ -15,6 +15,8 @@ Added:
 - `packages/measured`: `mechanical.json`, elastic constants, densities, sound speeds and air absorption from Kaye and Laby, and Leissa's clamped-plate table.
 - `packages/studio`: the design studio documented as a package, with a command line (`node packages/studio/bin/studio.mjs`). Two ports held byte-identical to goldens from their source commits: the TrueType and variable-font writers from Flywheel (`harness/typeface_ttf.py`, `typeface_variable.py`), and the eye (difference hash, drift verdict, readings) from studio-engine. `packages/studio/docs/STUDIO-MATRIX.md` maps 103 older features to the studio with the check that would prove each port.
 - `packages/lenspipe`: an open lens design in, checked performance, manufacturability, tolerance, limits, as-built fit and interchange out.
+- `packages/lenspipe`: the verdict line names the optical performance class beside the manufacturability status; drawings print a radius tolerance and say when no mechanical diameter is stated; a clear-aperture rule with `mech_semi`.
+- `packages/diagram`: a sheet lint for words crossed by drawn work and for crossed balloon leaders; resistors and capacitors on stocked E-series values with tolerance and voltage in both BOMs; units in the CAD manifest; board mounting holes taken from the model's standoffs, with a non-plated drill file; a silkscreen overlap rule; seeded fuzz tests for the CAD drawings and the Gerber and Excellon writers.
 
 ## 0.2.0 (2026-10-28)
 
