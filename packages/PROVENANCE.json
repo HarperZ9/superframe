@@ -3463,7 +3463,7 @@
   },
   {
    "path": "packages/README.md",
-   "sha256": "56574862d9c22498084076e2705920cbe828abe875dae8e63316a3eac2f02da5",
+   "sha256": "b910d87c75c6cd07b0ad59ca3e1b5547220102872e66aa197861b58608e83190",
    "source": "edited in this change"
   },
   {
@@ -3814,6 +3814,94 @@
   {
    "path": "packages/strings/tests/test_surfaces.py",
    "sha256": "ef670b4a36ee49189cc783c6570573abf1e4c6412ca952617aef2a8fcd490e4a",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/README.md",
+   "sha256": "c31e904d19031470db16a1670b30e68679995e2f4c4afb4b1ac02760cb7e12d4",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/bin/studio.mjs",
+   "sha256": "a2e8d76ea5e8be0f3a3acfe82aada372960fe1f79674f26c132997667c9905c5",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/docs/STUDIO-MATRIX.md",
+   "sha256": "b182833d78cd102eb8acbb66b44bf8ff08d4ca27feb8052207cd3e0b9c59b524",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/goldens/eye.golden.json",
+   "sha256": "64a81977b0194c865c6a584c02fd77ecb3abf95064837e3b9b15107a425e9b9e",
+   "source": "golden written by the source code at its pinned commit (see the generator beside it)"
+  },
+  {
+   "path": "packages/studio/goldens/eye_from_studio_engine.mjs",
+   "sha256": "debb362f37577a7b3972270af7bac8397adc87d1c3b7312d803ab69a286edb8f",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/goldens/font.golden.json",
+   "sha256": "554a70abf7e1490d35b5b2815645a33469ac521f42f502e32d34f5f7fc23238b",
+   "source": "golden written by the source code at its pinned commit (see the generator beside it)"
+  },
+  {
+   "path": "packages/studio/goldens/font_from_flywheel.py",
+   "sha256": "bc4887cafe95d06f31cd5e30f243b9bff29639a64271b921bcd70dd7ecc9214a",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/package.json",
+   "sha256": "1050beead9901ebb5eeae1c86c317ffd7812e5aeb3d9bfd4d1bf3e7e21a8ac21",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/src/eye.mjs",
+   "sha256": "2865ee76a406b551c551bcd8d7dfa270f0a64f2fd7db897698b7447f3f21e976",
+   "source": "ported from HarperZ9/studio-engine@328a0ddf:showcase/eye.js",
+   "sourceSha256": "a3d9db59ba29601e81c4a4d2000a6cb7fbf1a4ca1018d0a9e90ac29334faf06d"
+  },
+  {
+   "path": "packages/studio/src/font/struct.mjs",
+   "sha256": "a4815d20cf3467fd512a95789c320ee46a76f111ef9e1824eaaf1b995f62a980",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/src/font/ttf.mjs",
+   "sha256": "5b9ce881c112a2226796d779fd29ed476311a21266ed2f3fb4848365ed97d4f7",
+   "source": "ported from HarperZ9/flywheel@681810fe:harness/typeface_ttf.py",
+   "sourceSha256": "3f8c19755701c8ee91e25a0f9f11372ebe2d18daa9152892d89414e713547d64"
+  },
+  {
+   "path": "packages/studio/src/font/variable.mjs",
+   "sha256": "fc48818602b381e31d25baf2a7e69682d1d55606c737c78c90af134e3bca467a",
+   "source": "ported from HarperZ9/flywheel@681810fe:harness/typeface_variable.py and harness/typeface_family.py mint_variable_family",
+   "sourceSha256": "e57741e243d2fe30c82f70e21f3dde54973e929ec8dcd20307650f38fa193ec5"
+  },
+  {
+   "path": "packages/studio/src/index.mjs",
+   "sha256": "d54ba7829d6682bb51b96573a06d755a5c8756400c039620f8a68ec52e961b78",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/tests/eye.test.mjs",
+   "sha256": "b61149c4b219bea5d2b65b39a551bf8bc983aeed4987446fb172f41e4cc557b8",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/tests/font.test.mjs",
+   "sha256": "b2a57e16662bf5dca0f1e13a0898fc34dc8d30a8435625415bb1afb86b7329a5",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/tests/inputs.mjs",
+   "sha256": "240c46993ed464a9db22353f25e2dacfc223242d6bf15be16bc017524f471f21",
+   "source": "new in this change"
+  },
+  {
+   "path": "packages/studio/tests/studio.test.mjs",
+   "sha256": "e5b40a4e6056d272af81c856c883d195f9f58a3ccfcc3df4c76644a396c43615",
    "source": "new in this change"
   }
  ]

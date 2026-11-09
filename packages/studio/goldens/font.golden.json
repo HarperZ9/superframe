@@ -1,0 +1,141 @@
+{
+ "schema": "superframe.studio.golden/1",
+ "port": "font",
+ "source": "HarperZ9/flywheel@681810fe",
+ "sourceFiles": {
+  "typeface_family.py": "c0ef3a120e019103898a6acbc50c32180ee2d740045cc27dd1ee5c54e0b4d786",
+  "typeface_forge.py": "220af4d3de3e1113102ecd101e52e489761699119c445852b685e7efca21fbbc",
+  "typeface_skeletons.py": "c4b9876fc40864ca6f30cc61c1b0fe3b176cef6f14e5195290a68b9f4c2b99dd",
+  "typeface_ttf.py": "3f8c19755701c8ee91e25a0f9f11372ebe2d18daa9152892d89414e713547d64",
+  "typeface_variable.py": "e57741e243d2fe30c82f70e21f3dde54973e929ec8dcd20307650f38fa193ec5"
+ },
+ "static": [
+  {
+   "name": "regular-seed58",
+   "params": {},
+   "seed": 58,
+   "family": "Zain Mint",
+   "style": "Regular",
+   "ttf_sha256": "ac4f7f9fb27784a239e1769d34d27d403660598962f03976637785b1688c3558",
+   "bytes": 55632
+  },
+  {
+   "name": "medium-narrow",
+   "params": {
+    "weight": 0.112,
+    "width": 0.9,
+    "contrast": 0.7
+   },
+   "seed": 7,
+   "family": "Studio Test",
+   "style": "Medium",
+   "ttf_sha256": "0a73dad24440e5b887c27c1da0002c0ae385129d24c42c67e06e318bda5986a9",
+   "bytes": 55900
+  },
+  {
+   "name": "light-tall-round",
+   "params": {
+    "weight": 0.058,
+    "x_height": 0.52,
+    "roundness": 3.0,
+    "aperture": 0.4
+   },
+   "seed": 3,
+   "family": "Zain Mint",
+   "style": "Light",
+   "ttf_sha256": "5489292a3c135d4523aa91902451ecc7a19dc1ee7722555923524d1798d93382",
+   "bytes": 55316
+  }
+ ],
+ "variable": [
+  {
+   "name": "default-family",
+   "params": {},
+   "seed": 58,
+   "family": "Zain Mint",
+   "instances": null,
+   "refused": false,
+   "refusals": [],
+   "refused_styles": [],
+   "ttf_sha256": "bc1719fdc204884caf1ccd9f385d079a42f66771a5184433469d257985851680",
+   "bytes": 83836
+  },
+  {
+   "name": "three-masters",
+   "params": {
+    "width": 1.05
+   },
+   "seed": 11,
+   "family": "Studio Var",
+   "instances": [
+    [
+     "Thin",
+     0.05
+    ],
+    [
+     "Book",
+     0.09
+    ],
+    [
+     "Heavy",
+     0.13
+    ]
+   ],
+   "refused": false,
+   "refusals": [],
+   "refused_styles": [],
+   "ttf_sha256": "3fb8f449cd5f90980fb032e92ed327af644692860980cc655c9b48ce6142b04d",
+   "bytes": 69164
+  },
+  {
+   "name": "one-refused",
+   "params": {},
+   "seed": 58,
+   "family": "Zain Mint",
+   "instances": [
+    [
+     "Light",
+     0.058
+    ],
+    [
+     "Regular",
+     0.085
+    ],
+    [
+     "Black",
+     0.3
+    ]
+   ],
+   "refused": false,
+   "refusals": [],
+   "refused_styles": [
+    "Black"
+   ],
+   "ttf_sha256": "c120122c0befb70ba2d4982c874fe7e4cc6910c885ef95f3e14994fcadfa9d42",
+   "bytes": 54476
+  },
+  {
+   "name": "too-few-masters",
+   "params": {},
+   "seed": 58,
+   "family": "Zain Mint",
+   "instances": [
+    [
+     "Regular",
+     0.085
+    ],
+    [
+     "Black",
+     0.3
+    ]
+   ],
+   "refused": true,
+   "refusals": [
+    "a variable font needs at least two surviving masters"
+   ],
+   "refused_styles": [
+    "Black"
+   ]
+  }
+ ]
+}
