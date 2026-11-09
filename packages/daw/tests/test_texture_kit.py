@@ -136,3 +136,9 @@ def test_roll_onsets_land_within_1_ms(division):
         assert abs(sample / fs - want) < 1e-3
     assert notes[0].velocity == pytest.approx(0.2) and notes[-1].velocity == pytest.approx(0.5)
     assert len(notes) == int(2.0 / (4.0 / division))
+
+
+@pytest.mark.parametrize("seconds", [0.4, 0.5142857, 0.3333333])
+def test_hat_renders_any_length(seconds):
+    y = K.hat(FS, np.random.default_rng(1), seconds)
+    assert len(y) == int(seconds * FS) and np.all(np.isfinite(y))

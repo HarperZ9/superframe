@@ -43,7 +43,8 @@ def hat(fs, rng, seconds=0.4, decay=0.06, tone=8000.0, plate_mix=0.5):
     n = int(seconds * fs)
     plate = RectPlate(M.material("brass"), 0.05, 0.04, 0.0008)
     modes = plate.modes()
-    y = render(modes, fs, seconds, (0.31, 0.27), (0.7, 0.62), "strike", 2e-4)
+    y = render(modes, fs, seconds, (0.31, 0.27), (0.7, 0.62), "strike", 2e-4)[:n]
+    y = np.pad(y, (0, n - len(y)))                     # synth.render rounds the length; the noise uses int()
     sos = butter(2, (tone / 1.5, min(tone * 1.5, 0.45 * fs)), "bandpass", fs=fs, output="sos")
     noise = sosfilt(sos, rng.standard_normal(n))
     noise /= np.max(np.abs(noise))
