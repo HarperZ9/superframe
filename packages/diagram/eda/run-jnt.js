@@ -32,10 +32,10 @@ const main = async () => {
   const G = J.gain(R), Z = 1 - J.reZ(R, R.p.fHi), Bu = J.budget(R), St = J.settle(R);
   const Ron = J.ASSUMED.ron.value, x = 2 * Math.PI * R.p.fHi * (R.p.R + Ron) * R.p.Cin * 1e-12;
   res.sim = {
-    gain: { peak: G.peak, g1k: G.g1k, g3k: G.g3k, gTop: G.g10k, lo3: G.lo3, hi3: G.hi3, fHPfromNetlist: G.fHPnet, spec: { G: v.G, fHP: R.inst.fixed.fHP } },
+    gain: { peak: G.peak, g1k: G.g1k, g3k: G.g3k, gTop: G.g10k, lo3: G.lo3, hi3: G.hi3, fHPfromNetlist: G.fHPnet, spec: { G: v.G, fHP: R.inst.fixed.fHP }, built: { G: v.Gbuilt, fHP: v.fHPbuilt, tolG: v.tolG, tolF: v.tolF } },
     reZdroop: { sim: Z, spec: v.droop, withContact: 1 - ((R.p.R + Ron) / R.p.R) / (1 + x * x) },
     budget: Object.assign({}, Bu, { spec: { a: v.a, corr: v.corr, rel: v.rel, eR: v.eR, vout: v.vout } }),
-    settle: { sim: St.settle, spec: v.settle, peak: St.peak },
+    settle: { sim: St.settle, spec: v.settle, built: v.settleBuilt, peak: St.peak },
     curves: { fs: G.fs.filter((_, k) => k % 2 === 0), mag: G.mag.filter((_, k) => k % 2 === 0), settle: St.trace },
     assumed: J.ASSUMED,
   };
@@ -45,7 +45,7 @@ const main = async () => {
   const { B } = build();
   const meta = { hash: R.hash }, W = writeAll(B, meta), drc = E.drc(B);
   const tr = traceR(B), Bu2 = J.budget(R, { traceR: { IN: tr.IN || 0 } });
-  res.board = { w: B.w, h: B.h, parts: B.parts.length, nets: Object.keys(B.nets).length, traces: B.traces.length, vias: B.vias.length, pourRects: B.pourRects.length, routeLog: B.routeLog, drc: { errors: drc.errors.length, counts: drc.counts, objects: drc.objects, pairs: drc.pairs }, traceR: tr,
+  res.board = { w: B.w, h: B.h, parts: B.parts.length, nets: Object.keys(B.nets).length, traces: B.traces.length, vias: B.vias.length, pourRects: B.pourRects.length, mountHoles: B.holes, mountCheck: E.mountCheck(B, R), routeLog: B.routeLog, drc: { errors: drc.errors.length, counts: drc.counts, objects: drc.objects, pairs: drc.pairs }, traceR: tr,
     backAnnotated: { a: Bu2.a, aWithout: Bu.a, inTraceOhms: tr.IN || 0, rel: Bu2.relSpecForm } };
   res.fab = { trips: W.trips, files: {} };
   for (const [name, txt] of Object.entries(W.files)) { fs.writeFileSync(path.join(OUT, name), txt); res.fab.files[name] = { bytes: txt.length, hash: C.hashText(txt) }; }
@@ -75,7 +75,7 @@ const main = async () => {
 };
 
 /* the board as plain data for the page (footprints inlined by name) */
-const boardRecord = (B) => ({ id: B.id, hash: B.hash, w: B.w, h: B.h, rules: B.rules, classes: B.classes, nets: B.nets, traces: B.traces, vias: B.vias, pourRects: B.pourRects,
+const boardRecord = (B) => ({ id: B.id, hash: B.hash, w: B.w, h: B.h, rules: B.rules, classes: B.classes, nets: B.nets, traces: B.traces, vias: B.vias, pourRects: B.pourRects, holes: B.holes,
   parts: B.parts.map((P) => ({ ref: P.ref, value: P.value, at: P.at, rot: P.rot, side: P.side, fp: P.fp, comp: { pins: P.comp.pins, desc: P.comp.desc }, pn: P.pn, pnStatus: P.pnStatus, bridge: P.bridge })), fab: { F_Silk: B.fab.F_Silk } });
 
 if (require.main === module) main().catch((e) => { console.error(e); process.exit(1); });

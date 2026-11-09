@@ -21,7 +21,7 @@ const build = (over = {}, opt = {}) => {
   E.place(B, {
     zones: { A: [2, 2, mid - 3, B.h * 0.62], B: [mid + 3, 2, B.w - 2, B.h * 0.62], IN: [mid - 30, B.h * 0.62, mid + 30, B.h - 2] },
     zoneOf: ZONE,
-    anchors: { BT1: [9, 5, 0], BT2: [B.w - 9, 5, 0], J1: [10, B.h - 5, 0], NT1: [mid, B.h * 0.3, 0] },
+    anchors: { BT1: [12, 5, 0], BT2: [B.w - 12, 5, 0], J1: [12, B.h - 5, 0], NT1: [mid, B.h * 0.3, 0] },
   });
   if (opt.route !== false) E.autoroute(B, opt);
   return { R, B };

@@ -42,6 +42,7 @@
       prism(poly, top, yF + T.finish, S.enig);
       if (q.pad.side === "both") { prism(poly, -T.cu - T.mask - T.finish, 0, S.enig); prism(circ(q.at, q.pad.drill / 2, 16), yF + T.finish + 0.004, yF + T.finish + 0.012, S.hole); prism(circ(q.at, q.pad.drill / 2, 16), -T.cu - T.mask - T.finish - 0.012, -T.cu - T.mask - T.finish - 0.004, S.hole); }
     }
+    for (const h of B.holes || []) { prism(circ(h.at, h.d / 2, 24), yF + 0.004, yF + 0.02, S.hole); prism(circ(h.at, h.d / 2, 24), -T.cu - T.mask - 0.02, -T.cu - T.mask - 0.004, S.hole); }
     for (const P of B.parts) if (P.bridge) prism(capsule(P.bridge.a, P.bridge.b, P.bridge.w / 2, 6), top, yF + T.finish, S.enig);
     if (opt.silk !== false && B.fab) for (const p of B.fab.F_Silk) {
       if (p.type === "stroke") prism(capsule(p.a, p.b, p.ap.w / 2, 4), yF, yF + T.silk, S.silk);

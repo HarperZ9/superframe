@@ -15,6 +15,34 @@
     return pad.shape === "circle" ? { kind: "C", w: pad.w + 2 * grow, h: pad.w + 2 * grow } : pad.shape === "oval" ? { kind: "O", w, h } : { kind: "R", w, h };
   };
 
+  const hit = (a, b) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
+  const silkBox = (at, tw, h, sw) => [at[0] - sw / 2, at[1] - sw / 2, at[0] + tw + sw / 2, at[1] + h + sw / 2];
+  /* what a label lies over: the board edge, a pad's mask opening, a mounting-hole seat, another part, or one of
+     the labels in `placed`. An empty list means the label prints whole and readable. */
+  E.silkConflicts = (B, l, placed) => {
+    const sw = B.rules.silkWidth, m = B.rules.maskExpand, e = B.rules.silkEdge, b = l.box, out = [];
+    if (b[0] < e || b[1] < e || b[2] > B.w - e || b[3] > B.h - e) out.push("board edge");
+    for (const q of E.pads(B)) { const p = E.bbox(q.shape); if (hit(b, [p[0] - m, p[1] - m, p[2] + m, p[3] + m])) out.push("pad " + q.P.ref + "." + q.pad.num); }
+    for (const h of B.holes || []) if (hit(b, E.holeBox(h))) out.push("hole " + h.what);
+    for (const P of B.parts) if (P.ref !== l.ref && hit(b, E.courtyard(P.fp, P.at, P.rot, 0.15 + sw / 2))) out.push("part " + P.ref);
+    for (const k of placed) if (k.ref !== l.ref && hit(b, k.box)) out.push("label " + k.ref);
+    return out;
+  };
+  /* reference labels: tried above, below, right and left of the part outline, then those four slid along the side;
+     the first place with no conflict is taken. A label with no clear place keeps the first one and the DRC names
+     it under "silk overlap". B.labels, when set, is used as given. */
+  E.silkLabels = (B) => {
+    if (B.labels) return B.labels;
+    const h = 0.8, g = 0.3, sw = B.rules.silkWidth, out = [];
+    for (const P of B.parts) {
+      const c = E.courtyard(P.fp, P.at, P.rot, 0.15), tw = E.textWidth(P.ref, h), mx = (c[0] + c[2]) / 2 - tw / 2, my = (c[1] + c[3]) / 2 - h / 2, cand = [];
+      for (const s of [0, -1, 1]) cand.push([mx + s * ((c[2] - c[0]) / 2 + tw / 2), c[3] + g], [mx + s * ((c[2] - c[0]) / 2 + tw / 2), c[1] - g - h], [c[2] + g, my + s * ((c[3] - c[1]) / 2 + h / 2)], [c[0] - g - tw, my + s * ((c[3] - c[1]) / 2 + h / 2)]);
+      const L = cand.map((at) => ({ ref: P.ref, at, h, box: silkBox(at, tw, h, sw) }));
+      out.push(L.find((l) => !E.silkConflicts(B, l, out).length) || L[0]);
+    }
+    return out;
+  };
+
   E.fabLayers = (B) => {
     const L = { F_Cu: [], B_Cu: [], F_Mask: [], B_Mask: [], F_Paste: [], F_Silk: [], Edge_Cuts: [] }, e = B.rules.maskExpand;
     for (const q of E.pads(B)) {
@@ -30,10 +58,10 @@
     for (const P of B.parts) {
       const c = E.courtyard(P.fp, P.at, P.rot, 0.15), box = [[c[0], c[1]], [c[2], c[1]], [c[2], c[3]], [c[0], c[3]]];
       box.forEach((p, i) => L.F_Silk.push({ type: "stroke", ap, a: p, b: box[(i + 1) % 4] }));
-      const h = 0.8, tw = E.textWidth(P.ref, h), at = [Math.min(Math.max((c[0] + c[2]) / 2 - tw / 2, 0.5), B.w - tw - 0.5), c[3] + 0.3 + h > B.h - 0.5 ? c[1] - 0.3 - h : c[3] + 0.3];
-      for (const pl of E.textStrokes(P.ref, at, h)) for (let k = 0; k + 1 < pl.length; k++) L.F_Silk.push({ type: "stroke", ap, a: pl[k], b: pl[k + 1] });
       if (P.fp.pin1) { const p = E.padAt(P, { at: [P.fp.pin1[0] - 1.6, P.fp.pin1[1]] }); L.F_Silk.push({ type: "flash", ap: { kind: "C", w: 0.4, h: 0.4 }, at: p }); }
     }
+    for (const l of E.silkLabels(B)) for (const pl of E.textStrokes(l.ref, l.at, l.h)) for (let k = 0; k + 1 < pl.length; k++) L.F_Silk.push({ type: "stroke", ap, a: pl[k], b: pl[k + 1] });
+    for (const h of B.holes || []) for (const l of ["F_Mask", "B_Mask"]) L[l].push({ type: "flash", ap: { kind: "C", w: h.d + 2 * e, h: h.d + 2 * e }, at: h.at });
     const o = [[0, 0], [B.w, 0], [B.w, B.h], [0, B.h]];
     o.forEach((p, i) => L.Edge_Cuts.push({ type: "stroke", ap: { kind: "C", w: 0.1, h: 0.1 }, a: p, b: o[(i + 1) % 4] }));
     return L;

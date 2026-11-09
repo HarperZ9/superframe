@@ -179,8 +179,8 @@ def intent_rules(d, lens=None):
 
 def check(d, plates=None):
     """All rules on one design. Returns rows, and a verdict string naming the first thing to change."""
-    from .rules_shop import cement_rules, glass_rules, moulded_tolerance_rules, process_rules, test_plate_rule, tolerance_rules
-    rows = geometry_rules(d) + glass_rules(d) + process_rules(d) + tolerance_rules(d) + cement_rules(d) + moulded_tolerance_rules(d) + test_plate_rule(d, plates)
+    from .rules_shop import aperture_rules, cement_rules, glass_rules, moulded_tolerance_rules, process_rules, test_plate_rule, tolerance_rules
+    rows = geometry_rules(d) + aperture_rules(d) + glass_rules(d) + process_rules(d) + tolerance_rules(d) + cement_rules(d) + moulded_tolerance_rules(d) + test_plate_rule(d, plates)
     blocking_glass = any(r["rule"] == "glass_unknown" for r in rows)
     if not blocking_glass:
         try:

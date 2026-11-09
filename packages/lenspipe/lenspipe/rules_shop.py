@@ -1,10 +1,30 @@
 # SPDX-License-Identifier: FSL-1.1-MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Shop-side rules: glass catalogue, process limits, tolerance tiers, cement, moulded parts, test plates. Origins as in rules.SOURCES."""
+import math
+
 import numpy as np
 
 from . import design, glass
-from .rules import DT_MATERIALS, PROCESSES, TIERS, bfs_departure_um, row
+from .rules import DT_MATERIALS, PROCESSES, TIERS, bfs_departure_um, row, sag
+
+APERTURE_FRACTION = 0.9
+
+
+def aperture_rules(d):
+    """Clear aperture against the outer diameter of each glass piece. The 90 percent figure is my judgement: no source was read for it."""
+    from .cadout import mech_radius, pieces
+    s, out = d["surfaces"], []
+    if not any("mech_semi" in x for x in s):
+        return [row("aperture_margin", "FLAG", "all", "no mechanical diameter stated: each drawing sets the outer diameter equal to the clear aperture, which leaves no rim to hold or bevel", "ME", "judgement", 1.0, APERTURE_FRACTION)]
+    for a, b, _, _ in pieces(d):
+        rm, clear = mech_radius(d, a, b), max(s[a]["semi"], s[b]["semi"])
+        et = s[a]["t"] - sag(s[a], rm) + sag(s[b], rm)
+        if not math.isfinite(et) or et <= 0:
+            out.append(row("edge_thickness", "BLOCK", f"S{a+1}-S{b+1}", f"the surfaces cross or end inside the {2*rm:g} mm outer diameter", "ME", "sourced", et, 0))
+        elif clear > APERTURE_FRACTION * rm + 1e-9:
+            out.append(row("aperture_margin", "FLAG", f"S{a+1}-S{b+1}", f"clear aperture {2*clear:g} mm is {100*clear/rm:.0f} percent of the {2*rm:g} mm outer diameter, over {100*APERTURE_FRACTION:.0f} percent", "ME", "judgement", clear / rm, APERTURE_FRACTION))
+    return out
 
 
 def glass_rules(d):

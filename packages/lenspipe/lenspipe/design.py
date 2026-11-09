@@ -46,6 +46,8 @@ def validate(d):
             raise DesignError(f"surface {i}: radius must be finite and non-zero, or null for a plane")
         if not np.isfinite(s["t"]) or not np.isfinite(s["semi"]) or s["semi"] <= 0:
             raise DesignError(f"surface {i}: bad thickness or semi-diameter")
+        if "mech_semi" in s and not (np.isfinite(s["mech_semi"]) and s["mech_semi"] >= s["semi"]):
+            raise DesignError(f"surface {i}: mechanical semi-diameter {s['mech_semi']} is smaller than the clear semi-diameter {s['semi']}")
     last = d["surfaces"][-1].get("material")
     if last not in (None, "air"):
         raise DesignError("the medium after the last surface must be air")

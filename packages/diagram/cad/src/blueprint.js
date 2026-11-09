@@ -112,9 +112,12 @@
       dims.push({ id: dm.id, view: dm.view, value: m.value, expect: dm.expect, text, at: ent.at.slice(), param: dm.param });
     }
     for (const dt of Dw.datums || []) {
-      const b = V[dt.view].parts.get(dt.part).box, f = T[dt.view].f;
-      const p = dt.side === "bottom" ? f([b.lo[0] * 0.15 + b.hi[0] * 0.85, b.lo[1]]) : f([b.lo[0], b.lo[1] * 0.2 + b.hi[1] * 0.8]);
-      C.datum(S, p, dt.side === "bottom" ? [0, -1] : [-1, 0], dt.letter);
+      const b = V[dt.view].parts.get(dt.part).box, f = T[dt.view].f, bot = dt.side === "bottom", d = bot ? [0, -1] : [-1, 0];
+      /* the symbol slides along its feature, then takes a longer leader, to the first place where its frame lies on nothing else */
+      const ps = [7, 13, 19, 25].flatMap((len) => (bot ? [0.85, 0.7, 0.5, 0.3, 0.15] : [0.8, 0.65, 0.5, 0.35, 0.2]).map((k) => ({ len, p: bot ? f([b.lo[0] * (1 - k) + b.hi[0] * k, b.lo[1]]) : f([b.lo[0], b.lo[1] * (1 - k) + b.hi[1] * k]) })));
+      const free = ({ p, len }) => { const c = [p[0] + d[0] * (len + 3), p[1] + d[1] * (len + 3)]; return !C.boxHits(S, [c[0] - 3.4, c[1] - 3.4, c[0] + 3.4, c[1] + 3.4]).length; };
+      const pick = ps.find(free) || ps[0];
+      C.datum(S, pick.p, d, dt.letter, pick.len);
     }
     for (const fc of Dw.fcfs || []) {   /* the frame sits over the view, its leader on the feature */
       const b = V[fc.view].parts.get(fc.part).box, f = T[fc.view].f, p = f([(b.lo[0] + b.hi[0]) / 2, b.hi[1]]), top = T[fc.view].box[1][1];
@@ -123,6 +126,14 @@
       dims.push({ id: "fcf-" + fc.part, fcf: true, width: fw });
     }
     return dims;
+  };
+
+  /* A balloon whose circle would lie on drawn work slides round its view, then outward, to the first clear place. */
+  const clearSpot = (S, c, rx, ry, a, step, taken) => {
+    const at = (da, k) => [D.clamp(c[0] + k * rx * Math.cos(a + da), 26, S.w - 16), D.clamp(c[1] + k * ry * Math.sin(a + da), 14, S.h - 16)];
+    const ok = (p) => !C.boxHits(S, [p[0] - 4.6, p[1] - 4.6, p[0] + 4.6, p[1] + 4.6]).length && taken.every((q) => Math.hypot(q[0] - p[0], q[1] - p[1]) > 9.5);
+    for (const k of [1, 1.12, 1.25, 0.9]) for (const f of [0, 0.2, -0.2, 0.4, -0.4, 0.6, -0.6]) { const p = at(f * step, k); if (ok(p)) return p; }
+    return at(0, 1);
   };
 
   /* One balloon per parts-list item, on the first view where the item shows, spaced round that view. */
@@ -141,11 +152,10 @@
       const N = tg.length, step = (2 * Math.PI) / Math.max(N, 1);
       let best = 0, bestCost = Infinity;
       for (let k = 0; k < 72; k++) { const o = (k / 72) * step; let cost = 0; tg.forEach((q, i) => { let d = Math.abs(q.ang - (o + i * step - Math.PI)); d = Math.min(d, 2 * Math.PI - d); cost += d * d; }); if (cost < bestCost) { bestCost = cost; best = o; } }
-      tg.forEach((q, i) => {
-        const a = best + i * step - Math.PI, at = [D.clamp(c[0] + rx * Math.cos(a), 26, S.w - 16), D.clamp(c[1] + ry * Math.sin(a), 14, S.h - 16)];
-        C.balloon(S, at, q.p, q.item, { part: q.pid });
-        balloons.push({ item: q.item, view: n, part: q.pid, at });
-      });
+      const ats = []; tg.forEach((q, i) => ats.push(clearSpot(S, c, rx, ry, best + i * step - Math.PI, step, ats)));
+      /* two leaders that cross trade balloons; each trade shortens the leaders, so the passes end */
+      for (let pass = 0, moved = true; moved && pass < 40; pass++) { moved = false; for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) if (C.segCross([ats[i], tg[i].p], [ats[j], tg[j].p])) { [ats[i], ats[j]] = [ats[j], ats[i]]; moved = true; } }
+      tg.forEach((q, i) => { C.balloon(S, ats[i], q.p, q.item, { part: q.pid }); balloons.push({ item: q.item, view: n, part: q.pid, at: ats[i] }); });
     }
     return balloons;
   };
@@ -176,8 +186,8 @@
     C.frame(S, { owner: I.owner || "Zain Dana Harper", type: "ASSEMBLY DRAWING", title: Dw.title, number: Dw.number, rev: Dw.rev || "A", date: Dw.date || "2026-10-31", scale: C.scaleText(L.s), status: "PAPER DESIGN, NOT RELEASED", hash: R.hash });
     drawViews(S, V, T, Dw, below);
     if (V.section) drawSection(S, R, V, T, Dw.views.section);
-    const dims = drawDims(S, V, T, Dw), balloons = drawBalloons(S, V, T, items);
     drawBOM(S, items, notes, L);
+    const dims = drawDims(S, V, T, Dw), balloons = drawBalloons(S, V, T, items);
     return { sheet: S, scale: L.s, size: L.W === 594 ? "A2" : "A3", views: V, T, dims: dims.filter((d) => !d.fcf), fcfs: dims.filter((d) => d.fcf), balloons };
   };
 

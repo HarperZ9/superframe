@@ -64,7 +64,8 @@
     } else {              /* arrows outside pointing in, the words beyond the high end */
       S.line(P(lo - 6), P(hi + 6 + (H ? tw + 1 : 0)), "DIM", x);
       C.arrow(S, P(lo), u, "DIM", x); C.arrow(S, P(hi), [-u[0], -u[1]], "DIM", x);
-      at = H ? [hi + 7 + tw / 2, base + 0.8] : [base + (sgn > 0 ? tw / 2 + 1.5 : -tw / 2 - 1.5), hi + 3];
+      const k = sgn * (tw / 2 + 1.5), spots = H ? [[hi + 7 + tw / 2, base + 0.8]] : [[base + k, hi + 3], [base - k, hi + 3], [base - k, lo - 3 - h], [base + k, lo - 3 - h]];
+      at = spots.find((q) => C.textFree(S, text, h, q)) || spots[0];
     }
     const t = S.text(at, text, h, "DIM", Object.assign({ align: "center", dimtext: true }, x));
     if (meta && meta.tol && meta.tol.basic) { const bw = tw + 1.6; S.rect(t.at[0] - bw / 2, t.at[1] - 1, t.at[0] + bw / 2, t.at[1] + h + 1, "DIM", x); }
@@ -79,13 +80,53 @@
     S.arc(c, r, Math.min(a0, a1), Math.max(a0, a1), "DIM", x);
     const t0 = [-Math.sin(rad(a0)), Math.cos(rad(a0))], t1 = [Math.sin(rad(a1)), -Math.cos(rad(a1))];
     C.arrow(S, pt(a0, r), a1 > a0 ? [-t0[0], -t0[1]] : t0, "DIM", x); C.arrow(S, pt(a1, r), a1 > a0 ? [-t1[0], -t1[1]] : t1, "DIM", x);
-    const m = pt((a0 + a1) / 2, r + 3);
-    return S.text([m[0] + C.textW(text, 3.5) / 2 + 1, m[1]], text, 3.5, "DIM", Object.assign({ align: "center", dimtext: true }, x));
+    /* the words go beside the arc's middle when that place is clear, else just outside one end of the arc */
+    const tw = C.textW(text, 3.5), lo = Math.min(a0, a1), hi = Math.max(a0, a1);
+    const spots = [3, 10, 18, 30, 45].flatMap((dr) => [(a0 + a1) / 2, hi + 14, lo - 14, hi + 30, lo - 30, hi + 50, lo - 50, hi + 75, lo - 75].map((a) => { const m = pt(a, r + dr); return [m[0] + (Math.cos(rad(a)) < -1e-9 ? -1 : 1) * (tw / 2 + 1), m[1]]; }));
+    const at = spots.find((q) => C.textFree(S, text, 3.5, q)) || spots[0];
+    return S.text(at, text, 3.5, "DIM", Object.assign({ align: "center", dimtext: true }, x));
+  };
+
+  /* Lint for where a sheet's words sit. A text box is the estimated width by the height. C.boxHits lists what
+     lies in a box: any drawn stroke passing through it (hatching aside) and any other text. C.textLint names
+     every text crossed by a stroke or by other text, and every pair of balloon leaders that cross. */
+  C.textBox = (e, m = 0) => { const w = C.textW(e.s, e.h), x = e.align === "center" ? e.at[0] - w / 2 : e.align === "right" ? e.at[0] - w : e.at[0]; return [x + m, e.at[1] + m, x + w - m, e.at[1] + e.h - m]; };
+  C.strokes = (e) => {
+    const o = [];
+    if (e.t === "line") o.push([e.a, e.b]);
+    else if (e.t === "poly" || e.t === "solid") { for (let i = 0; i + 1 < e.pts.length; i++) o.push([e.pts[i], e.pts[i + 1]]); if (e.closed || e.t === "solid") o.push([e.pts[e.pts.length - 1], e.pts[0]]); }
+    else if (e.t === "circle" || e.t === "arc") {
+      const a0 = e.t === "arc" ? e.a0 : 0, a1 = e.t === "arc" ? e.a1 : 360, n = Math.max(8, Math.ceil((a1 - a0) / 6)), p = (a) => [e.c[0] + e.r * Math.cos((a * Math.PI) / 180), e.c[1] + e.r * Math.sin((a * Math.PI) / 180)];
+      for (let i = 0; i < n; i++) o.push([p(a0 + ((a1 - a0) * i) / n), p(a0 + ((a1 - a0) * (i + 1)) / n)]);
+    }
+    return o;
+  };
+  const segBox = ([a, b], B) => {   /* Liang-Barsky: does the segment pass through the box */
+    let t0 = 0, t1 = 1; const d = [b[0] - a[0], b[1] - a[1]];
+    for (const [p, q] of [[-d[0], a[0] - B[0]], [d[0], B[2] - a[0]], [-d[1], a[1] - B[1]], [d[1], B[3] - a[1]]]) { if (p === 0) { if (q < 0) return false; } else if (p < 0) t0 = Math.max(t0, q / p); else t1 = Math.min(t1, q / p); }
+    return t0 < t1;
+  };
+  C.segCross = ([a, b], [c, d]) => { const o = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]); return o(a, b, c) * o(a, b, d) < -1e-9 && o(c, d, a) * o(c, d, b) < -1e-9; };
+  const over = (a, b) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
+  C.boxHits = (S, B, skip) => S.E.filter((e) => e !== skip && e.layer !== "HATCH" && (e.t === "text" ? !!e.s && over(C.textBox(e, 0.15), B) : C.strokes(e).some((s) => segBox(s, B))));
+  /* centred words at `at`: inside the border and lying on nothing drawn so far */
+  C.textFree = (S, s, h, at) => { const b = C.textBox({ s, h, at, align: "center" }, -0.5); return b[0] > 21 && b[1] > 11 && b[2] < S.w - 11 && b[3] < S.h - 11 && !C.boxHits(S, b).length; };
+  C.textLint = (S) => {
+    const out = [], seen = new Set();
+    for (const a of S.E) {
+      if (a.t !== "text" || !a.s) continue;
+      if (a.rot) { out.push(`text "${a.s}": turned text is not checked`); continue; }
+      seen.add(a);
+      for (const e of C.boxHits(S, C.textBox(a, 0.15), a)) { if (e.t !== "text") out.push(`text "${a.s}" on ${a.layer} is crossed by a ${e.t} on ${e.layer}${e.part ? " (part " + e.part + ")" : ""}`); else if (!seen.has(e)) out.push(`text "${a.s}" overlaps text "${e.s}"`); }
+    }
+    const L = S.E.filter((e) => e.t === "line" && e.layer === "BALLOON");
+    L.forEach((a, i) => L.slice(i + 1).forEach((b) => { if (C.segCross([a.a, a.b], [b.a, b.b])) out.push(`balloon leader ${a.item} crosses leader ${b.item}`); }));
+    return out;
   };
 
   /* Datum feature symbol: a framed letter on a filled triangle sitting on the feature at p, leader along d. */
-  C.datum = (S, p, d, letter) => {
-    const q = [p[0] + d[0] * 7, p[1] + d[1] * 7];
+  C.datum = (S, p, d, letter, len = 7) => {
+    const q = [p[0] + d[0] * len, p[1] + d[1] * len];
     S.solid([p, [p[0] - d[1] * 1.5 + d[0] * 2.2, p[1] + d[0] * 1.5 + d[1] * 2.2], [p[0] + d[1] * 1.5 + d[0] * 2.2, p[1] - d[0] * 1.5 + d[1] * 2.2]], "DIM");
     S.line([p[0] + d[0] * 2.2, p[1] + d[1] * 2.2], q, "DIM");
     const c = [q[0] + d[0] * 3, q[1] + d[1] * 3];
@@ -153,7 +194,7 @@
     cell(x0, x0 + 70, 2, "DRAWING NUMBER", tb.number); cell(x0 + 70, x0 + 95, 2, "REV", tb.rev); cell(x0 + 95, x0 + 125, 2, "DATE OF ISSUE", tb.date, 2.8); cell(x0 + 125, x1, 2, "SHEET", tb.sheet || "1/1");
     cell(x0, x0 + 45, 1, "SCALE", tb.scale); cell(x0 + 45, x0 + 85, 1, "UNITS", "mm"); cell(x0 + 85, x0 + 125, 1, "PROJECTION", ""); cell(x0 + 125, x1, 1, "STATUS", tb.status, 2.5);
     cell(x0, x0 + 85, 0, "MODEL HASH", tb.hash, 2.8); cell(x0 + 85, x1, 0, "INTERPRET PER", "ASME Y14.5-2018", 2.8);
-    C.thirdAngle(S, [x0 + 105, y0 + 13.2]);
+    C.thirdAngle(S, [x0 + 110, y0 + 13]);
     return { x0, y0, x1, y1: y0 + 50 };
   };
 

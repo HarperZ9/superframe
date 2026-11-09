@@ -7,6 +7,7 @@ present and the design hash matches, so a killed run resumes where it stopped.
 """
 import hashlib
 import json
+import math
 import sys
 import warnings
 from pathlib import Path
@@ -21,13 +22,53 @@ def cost_class(d, rows, mc):
     n = len(cadout.pieces(d))
     asph = sum(1 for s in d["surfaces"] if s.get("aspheric") or s.get("conic"))
     tight = sum(1 for i in range(len(d["surfaces"])) if design.tolerances(d, i)["ct_mm"] < 0.05 or design.tolerances(d, i)["irreg_fringes"] < 0.5)
-    points = n + 3 * asph + tight + 2 * len(rules.flags(rows))
+    # a design that states no mechanical diameter has a gap in its paperwork, which is no cost driver
+    nflag = sum(1 for r in rules.flags(rows) if not (r["rule"] == "aperture_margin" and r["where"] == "all"))
+    points = n + 3 * asph + tight + 2 * nflag
     label = "A" if points <= 3 else "B" if points <= 8 else "C" if points <= 15 else "D"
-    return dict(cost_class=label, points=points, status="rough and unverified: no quote, no shop input", drivers=dict(pieces=n, aspheric_surfaces=asph, tight_tolerance_surfaces=tight, flags=len(rules.flags(rows))),
+    return dict(cost_class=label, points=points, status="rough and unverified: no quote, no shop input", drivers=dict(pieces=n, aspheric_surfaces=asph, tight_tolerance_surfaces=tight, flags=nflag),
                 basis="Optimax says price rises about 50 percent per tolerance tier; the point weights are my judgement")
 
 
+MARECHAL = 0.8
+
+
+def perf_class(perf, intent):
+    """Optical performance class from the traced wavefront of the nominal design at best focus, kept apart from the
+    manufacturability status. DIFFRACTION-LIMITED needs a Strehl ratio of 0.8 or more at every field (Marechal criterion)."""
+    fields = (perf or {}).get("fields") or []
+    if not fields or not all(math.isfinite(f.get("strehl", math.nan)) and math.isfinite(f.get("spot_rms_um", math.nan)) for f in fields):
+        return dict(perf_class="NOT EVALUATED", why="no finite Strehl ratio and spot size for every field")
+    w, sp = min(fields, key=lambda f: f["strehl"]), max(fields, key=lambda f: f["spot_rms_um"])
+    wl = intent["wavelengths_nm"]
+    airy = 1.22 * wl[int(intent.get("primary", len(wl) // 2))] * 1e-3 * intent["fno"]
+    goal = intent.get("mtf_targets", {})
+    met = "none stated" if not goal else "met" if all(perf["mtf_mean"].get(k, 0) >= v for k, v in goal.items()) else "missed"
+    return dict(perf_class="DIFFRACTION-LIMITED" if w["strehl"] >= MARECHAL else "ABERRATION-LIMITED", worst_strehl=w["strehl"], strehl_at_deg=w["deg"],
+                worst_spot_rms_um=sp["spot_rms_um"], spot_at_deg=sp["deg"], airy_radius_um=airy, spot_over_airy=sp["spot_rms_um"] / airy, mtf_goal=met,
+                basis="Strehl ratio of 0.8 or more at every field is the Marechal criterion; nominal design, best focus, no tolerances applied")
+
+
+def headline(v):
+    """One line that always names both readings. A line without the performance class is refused."""
+    p = v.get("performance")
+    if not p or "perf_class" not in p:
+        raise ValueError("a verdict line needs the optical performance class beside the manufacturability status")
+    if p["perf_class"] == "NOT EVALUATED":
+        return f"Manufacturability: {v['status']}. Optical performance: NOT EVALUATED ({p['why']})."
+    return (f"Manufacturability: {v['status']}. Optical performance: {p['perf_class']} (worst Strehl ratio {p['worst_strehl']:.3f} at {p['strehl_at_deg']:g} deg; "
+            f"worst spot RMS {p['worst_spot_rms_um']:.1f} um at {p['spot_at_deg']:g} deg, {p['spot_over_airy']:.1f} Airy radii; MTF goal {p['mtf_goal']}).")
+
+
 def verdict(rows, perf, mc, lim, intent):
+    """Manufacturability status plus the optical performance class, with one line that states both."""
+    v = _status(rows, perf, mc, lim, intent)
+    v.update(status_scope="manufacturability rules, stated goals and tolerance yield; says nothing on image quality", performance=perf_class(perf, intent))
+    v["line"] = headline(v)
+    return v
+
+
+def _status(rows, perf, mc, lim, intent):
     """Names the first thing to change, in fixed priority. Words: design check only, nothing here shows the part."""
     blocks = rules.blockers(rows)
     if blocks:
@@ -87,7 +128,7 @@ def run(path, outdir, trials=200, seed=1, plates=None, nmax=512):
         rt_s = interchange.compare(d, interchange.read_seq(out / f"{d['id']}.seq", d))
         files["round_trip"] = dict(zmx=dict(worst=rt_z[0], misses=rt_z[1]), seq=dict(worst=rt_s[0], misses=rt_s[1]))
         files["glb"] = cadout.read_glb(out / f"{d['id']}.glb")
-    summary = dict(design=d["id"], verdict=v, cost=cost, rules=dict(block=len(bad), flag=len(rules.flags(rows))), files=files,
+    summary = dict(design=d["id"], headline=v["line"], verdict=v, cost=cost, rules=dict(block=len(bad), flag=len(rules.flags(rows))), files=files,
                    notice="Simulation result on a stated model. Not a fabrication guarantee, not a shop review. Anything about patents or selling needs a lawyer.")
     (out / "summary.json").write_text(json.dumps(summary, indent=1, default=float), encoding="utf-8")
     return summary
@@ -96,4 +137,6 @@ def run(path, outdir, trials=200, seed=1, plates=None, nmax=512):
 if __name__ == "__main__":
     a = sys.argv[1:]
     tr = int(a[a.index("--trials") + 1]) if "--trials" in a else 200
-    print(json.dumps(run(a[0], a[1], trials=tr), indent=1, default=float)[:3000])
+    res = run(a[0], a[1], trials=tr)
+    print(res["headline"])
+    print(json.dumps(res, indent=1, default=float)[:3000])

@@ -16,7 +16,23 @@
     power: { width: 0.5, clearance: 0.25 },
     gnd: { width: 0.5, clearance: 0.25 },
   };
-  E.RULES = { minWidth: 0.2, minClearance: 0.2, minRing: 0.13, minDrill: 0.3, edge: 0.4, holeGap: 0.25, via: { dia: 0.6, drill: 0.3 }, pourClearance: 0.3, maskExpand: 0.05, silkWidth: 0.15 };
+  E.RULES = { minWidth: 0.2, minClearance: 0.2, minRing: 0.13, minDrill: 0.3, edge: 0.4, holeGap: 0.25, via: { dia: 0.6, drill: 0.3 }, pourClearance: 0.3, maskExpand: 0.05, silkWidth: 0.15, holeClear: 0.25, mountDrill: 3.2, silkEdge: 0.3 };
+
+  /* mounting holes: one under each of the model's standoffs (parts so1, so2, ...), in board coordinates, so the box
+     and the board cannot disagree about where the screws go. d is the M3 clearance drill; seat is the radius the
+     standoff's end covers, and copper and parts keep clear of it. */
+  E.mountHoles = (R) => {
+    const pcb = R.B.parts.find((p) => p.id === "pcb"), W = pcb.geom.size[0], H = pcb.geom.size[2];
+    return R.B.parts.filter((p) => /^so\d+$/.test(p.id)).map((p) => ({ what: p.id, d: E.RULES.mountDrill, seat: p.geom.r, at: [+(p.pos[0] - pcb.pos[0] + W / 2).toFixed(6), +(p.pos[2] - pcb.pos[2] + H / 2).toFixed(6)] }));
+  };
+  E.holeBox = (h, m = 0) => [h.at[0] - h.seat - m, h.at[1] - h.seat - m, h.at[0] + h.seat + m, h.at[1] + h.seat + m];
+  /* the board's holes against the model's standoffs: a list of differences, empty when they agree */
+  E.mountCheck = (B, R) => {
+    const want = E.mountHoles(R), bad = [];
+    if ((B.holes || []).length !== want.length) bad.push(`board has ${(B.holes || []).length} mounting holes, the model has ${want.length} standoffs`);
+    for (const w of want) { const h = (B.holes || []).find((q) => q.what === w.what); if (!h) bad.push(`no hole for ${w.what}`); else if (Math.hypot(h.at[0] - w.at[0], h.at[1] - w.at[1]) > 1e-6 || h.d !== w.d) bad.push(`hole for ${w.what} at ${h.at} d ${h.d}, standoff at ${w.at} needs d ${w.d}`); }
+    return bad;
+  };
 
   /* wirelength weight per class: the high-impedance input is kept short first, the supplies may run long */
   E.PLACE_WEIGHT = { input: 10, default: 1, power: 0.3 };
@@ -33,7 +49,7 @@
     }
     for (const P of parts) for (const pad of P.fp.pads) { const n = P.comp.pins[pad.num]; if (!n || n === "NC") continue; (nets[n] = nets[n] || { name: n, pins: [] }).pins.push({ ref: P.ref, num: pad.num }); }
     for (const n of Object.values(nets)) n.cls = E.classOf(n.name, opt.classMap);
-    return { id: R.inst.id, hash: R.hash, w: W, h: H, parts, nets, classes: E.CLASSES, rules: E.RULES, pours: opt.pours || [], traces: [], vias: [], pourRects: [] };
+    return { id: R.inst.id, hash: R.hash, w: W, h: H, parts, nets, classes: E.CLASSES, rules: E.RULES, pours: opt.pours || [], traces: [], vias: [], pourRects: [], holes: E.mountHoles(R) };
   };
 
   E.padAt = (P, pad) => { const r = E.rotPt(pad.at, P.rot); return [P.at[0] + r[0], P.at[1] + r[1]]; };
@@ -64,8 +80,13 @@
   /* zones: { name: [x0, y0, x1, y1] }; zoneOf(part) gives a zone name; anchors: { ref: [x, y, rot] } */
   E.place = (B, { zones, zoneOf, anchors = {}, pitch = 1.27, rots = [0, 90, 180, 270] }) => {
     B.byRef = Object.fromEntries(B.parts.map((P) => [P.ref, P]));
-    const placed = [], cy = [];
-    for (const [ref, a] of Object.entries(anchors)) { const P = B.byRef[ref]; P.at = [a[0], a[1]]; P.rot = a[2] || 0; placed.push(P); cy.push(E.courtyard(P.fp, P.at, P.rot)); }
+    const placed = [], keep = (B.holes || []).map((h) => E.holeBox(h, B.rules.holeClear)), cy = keep.slice();
+    for (const [ref, a] of Object.entries(anchors)) {
+      const P = B.byRef[ref]; P.at = [a[0], a[1]]; P.rot = a[2] || 0; placed.push(P);
+      const c = E.courtyard(P.fp, P.at, P.rot);
+      if (keep.some((q) => overlap(q, c))) throw new Error("eda: anchored part " + ref + " sits on a mounting hole");
+      cy.push(c);
+    }
     const netsOf = (P) => [...new Set(Object.values(P.comp.pins))].filter((n) => B.nets[n] && B.nets[n].cls !== "gnd");
     const share = (P) => netsOf(P).reduce((s, n) => s + B.nets[n].pins.filter((q) => B.byRef[q.ref].at).length, 0);
     let todo = B.parts.filter((P) => !P.at);

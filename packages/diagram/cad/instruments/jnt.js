@@ -41,6 +41,16 @@
     ],
   };
 
+  /* The chain as it can be bought: each ideal value moved to the nearest stocked one (E96 1 percent resistors,
+     E12 5 percent C0G), the capacitor first and the bias resistor chosen for it. G and fHP are what those parts
+     give; tolG and tolF are the worst-case stacks of the part tolerances. */
+  inst.builtChain = (F) => {
+    const RG = C.snapE(F.RG, "E96"), RF1 = C.snapE((F.G1 - 1) * F.RG, "E96"), RF2 = C.snapE((F.G2 - 1) * F.RG, "E96");
+    const idealC = 1 / (2 * Math.PI * F.fHP * 10000), CHP = C.snapE(idealC, "E12"), idealRB = 1 / (2 * Math.PI * F.fHP * CHP), RB = C.snapE(idealRB, "E96");
+    const G = (1 + RF1 / RG) * (1 + RF2 / RG), fHP = 1 / (2 * Math.PI * RB * CHP), tolG = 0.02 * (RF1 / (RG + RF1) + RF2 / (RG + RF2));
+    return { RG, RF1, RF2, CHP, RB, idealC, idealRB, G, fHP, tolG, tolF: 0.06, dG: G / (F.G1 * F.G2) - 1, dF: fHP / F.fHP - 1 };
+  };
+
   inst.build = (p) => {
     const F = inst.fixed, t = 3, w = p.encW, h = p.encH, d = p.encD, parts = [], fits = [];
     const bw = w - 2 * t - 8, bd = d - 2 * t - 4 - 32, pcbY = t + 6 + 0.8, top = pcbY + 0.8, zf = d / 2 - t - 3, zc = zf - bd / 2;
@@ -99,16 +109,16 @@
       { id: "power", label: "Supplies", children: ["BT1", "BT2"] },
       { id: "io", label: "Connectors", children: ["J1", "J2", "J3", "J4"] },
       { id: "probes", label: "Probes", children: [{ id: "p1", label: "Sense probe", children: ["can1", "R1", "lead1"] }, { id: "p2", label: "Reference probe", children: ["tube2", "R2", "lead2"] }] }] };
-    const RF1 = (F.G1 - 1) * F.RG, RF2 = (F.G2 - 1) * F.RG, RB = 10000, CHP = 1 / (2 * Math.PI * F.fHP * RB);
+    const BC = inst.builtChain(F), RF1 = (F.G1 - 1) * F.RG, RF2 = (F.G2 - 1) * F.RG, g1 = C.dec(1 + BC.RF1 / BC.RG, 1), g2 = C.dec(1 + BC.RF2 / BC.RG, 1);
     const R0805 = "Resistor_SMD:R_0805_2012Metric", C1206 = "Capacitor_SMD:C_1206_3216Metric";
-    const res = (ref, v, pins, desc) => ({ ref, sym: "R", value: C.eng(v), part: ref, fp: R0805, desc, pins });
+    const res = (ref, v, pins, desc) => C.passive({ ref, sym: "R", part: ref, fp: R0805, desc, pins }, v, "E96", "1%");
     const chain = (s, U, n, BT) => {
       const k = s === "A" ? ["RG1", "RF1", "C1", "RB1", "RG2", "RF2"] : ["RG3", "RF3", "C2", "RB2", "RG4", "RF4"], G = "GND_" + s;
       return [
         { ref: U, sym: "OPA2", value: "OPA1642", part: U, fp: "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm", pn: "OPA1642", pnStatus: "unverified, from memory", desc: "Dual JFET op-amp, about 5 nV/rtHz", pins: { 3: "IN", 2: s + "_FB1", 1: s + "_S1", 5: s + "_HP", 6: s + "_FB2", 7: "OUT_" + s, 8: "V" + s + "+", 4: "V" + s + "-" } },
-        res(k[0], F.RG, { 1: s + "_FB1", 2: G }, "Gain set, stage 1"), res(k[1], RF1, { 1: s + "_S1", 2: s + "_FB1" }, "Feedback, stage 1 (gain " + F.G1 + ")"),
-        { ref: k[2], sym: "C", value: C.eng(CHP), part: k[2], fp: C1206, desc: "C0G coupling, high-pass " + F.fHP + " Hz", pins: { 1: s + "_S1", 2: s + "_HP" } },
-        res(k[3], RB, { 1: s + "_HP", 2: G }, "Bias, sets the high-pass corner"), res(k[4], F.RG, { 1: s + "_FB2", 2: G }, "Gain set, stage 2"), res(k[5], RF2, { 1: "OUT_" + s, 2: s + "_FB2" }, "Feedback, stage 2 (gain " + F.G2 + ")"),
+        res(k[0], F.RG, { 1: s + "_FB1", 2: G }, "Gain set, stage 1"), res(k[1], RF1, { 1: s + "_S1", 2: s + "_FB1" }, "Feedback, stage 1 (gain " + g1 + ")"),
+        C.passive({ ref: k[2], sym: "C", part: k[2], fp: C1206, desc: "C0G coupling, high-pass " + C.dec(BC.fHP, 0) + " Hz", pins: { 1: s + "_S1", 2: s + "_HP" } }, BC.idealC, "E12", "5%", "50 V"),
+        res(k[3], BC.idealRB, { 1: s + "_HP", 2: G }, "Bias, sets the high-pass corner"), res(k[4], F.RG, { 1: s + "_FB2", 2: G }, "Gain set, stage 2"), res(k[5], RF2, { 1: "OUT_" + s, 2: s + "_FB2" }, "Feedback, stage 2 (gain " + g2 + ")"),
         { ref: BT, sym: "BAT3", value: "2 x 9 V", part: BT, desc: "Split supply for chain " + s, pins: { 1: "V" + s + "+", 2: G, 3: "V" + s + "-" } },
       ];
     };
@@ -159,15 +169,18 @@
   inst.physics = (p) => {
     const F = inst.fixed, en = p.en * 1e-9, Cin = p.Cin * 1e-12, B = p.fHi - F.fLo;
     const eR = J.eR(p.T, p.R), a = J.ratio(p.T, p.R, en, F.inA), rel = J.rel(a, B, p.tAvg), t01 = J.tFor(a, B, 1e-3), droop = J.droop(p.fHi, p.R, Cin);
-    const tauHP = 1 / (2 * Math.PI * F.fHP), settle = tauHP * Math.log(1000), G = F.G1 * F.G2, vout = Math.sqrt(eR * eR * (1 + a) * F.adcBand) * G;
-    const adcIn = F.adcVrms / Math.sqrt(F.adcBand) / G, corr = (F.inA * p.R) ** 2 / (eR * eR);
+    /* the spec's design values (G, 300 Hz) and beside them what the stocked parts give; the output figures use the built gain */
+    const BC = inst.builtChain(F), pct = (x) => (x >= 0 ? "+" : "") + (x * 100).toFixed(2) + " percent";
+    const tauHP = 1 / (2 * Math.PI * F.fHP), settle = tauHP * Math.log(1000), G = F.G1 * F.G2, settleBuilt = Math.log(1000) / (2 * Math.PI * BC.fHP), vout = Math.sqrt(eR * eR * (1 + a) * F.adcBand) * BC.G;
+    const adcIn = F.adcVrms / Math.sqrt(F.adcBand) / BC.G, corr = (F.inA * p.R) ** 2 / (eR * eR);
     const ts = Float32Array.from({ length: 120 }, (_, i) => 10 * Math.pow(100, i / 119)), fs = Float32Array.from({ length: 160 }, (_, i) => (i / 159) * 20000);
     return {
-      v: { eR, a, B, rel, t01, droop, tauHP, settle, G, vout, adcIn, corr },
+      v: { eR, a, B, rel, t01, droop, tauHP, settle, G, vout, adcIn, corr, Gbuilt: BC.G, fHPbuilt: BC.fHP, settleBuilt, tolG: BC.tolG, tolF: BC.tolF },
       readouts: [
         ["Resistor noise", C.eng(eR, "V/rtHz")], ["Amplifier to resistor power, a", (+a.toPrecision(3)).toString()], ["Noise bandwidth", C.eng(B, "Hz")],
         ["Uncertainty at " + p.tAvg + " s", (rel * 100).toPrecision(3) + " percent"], ["Time to 0.1 percent", C.eng(t01, "s")], ["Re Z droop at band top", (droop * 100).toPrecision(3) + " percent"],
-        ["High-pass settle to 0.1 percent", C.eng(settle, "s")], ["Total gain", String(G)], ["Output noise to the ADC", C.eng(vout, "V rms")],
+        ["High-pass settle to 0.1 percent", C.eng(settleBuilt, "s")], ["Total gain, stocked parts", BC.G.toFixed(1) + " (design " + G + ", " + pct(BC.dG) + ")"], ["Output noise to the ADC", C.eng(vout, "V rms")],
+        ["High-pass corner, stocked parts", BC.fHP.toFixed(1) + " Hz (design " + F.fHP + ", " + pct(BC.dF) + ")"],
       ],
       panels: [
         { title: "Noise densities at the input", y: { min: 1e-12, max: 1e-7, label: "V/rtHz", unit: "V" }, bars: [{ name: "resistor", value: eR, tok: "s2" }, { name: "amp e_n", value: en, tok: "s1" }, { name: "i_n R", value: F.inA * p.R, tok: "s3" }, { name: "ADC", value: adcIn, tok: "soft" }] },
@@ -184,6 +197,8 @@
       { quantity: "Sensing resistance", min: p.R, max: p.R, unit: "Ohm", limit: "a design choice; Re Z droop and amplifier noise set it" },
       { quantity: "Analysis band", min: inst.fixed.fLo, max: p.fHi, unit: "Hz", limit: "high-pass corner below; Re Z droop above" },
       { quantity: "Averaging time", min: 10, max: 1000, unit: "s", limit: "stationarity of the resistor's temperature" },
+      { quantity: "Chain gain with stocked parts", min: ph.v.Gbuilt * (1 - ph.v.tolG), max: ph.v.Gbuilt * (1 + ph.v.tolG), unit: "V/V", limit: "design " + ph.v.G + "; E96 values give " + ph.v.Gbuilt.toFixed(1) + "; four 1 percent resistors stack to the range shown, worst case" },
+      { quantity: "High-pass corner with stocked parts", min: ph.v.fHPbuilt * (1 - ph.v.tolF), max: ph.v.fHPbuilt * (1 + ph.v.tolF), unit: "Hz", limit: "design " + inst.fixed.fHP + "; 56 nF and 9.53 kOhm give " + ph.v.fHPbuilt.toFixed(1) + "; 5 percent C0G and 1 percent bias resistor, worst case" },
     ],
     budget: [
       { term: "Statistical, cross-correlation over " + p.tAvg + " s", value: ph.v.rel * 100, basis: "computed", note: "(1 + a) / sqrt(B t)" },
