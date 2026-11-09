@@ -3,7 +3,9 @@
 """The timeline: instruments, notes in beats, tracks with automation, and an arrangement at one tempo.
 
 Time is kept in beats and placed on the sample grid as round(beat * 60 * fs / bpm), so a note lands on
-one exact sample, and the same arrangement always lands on the same samples. Automation is a piecewise
+one exact sample, and the same arrangement always lands on the same samples. With `tempo` set to a
+tempo.TempoMap, beats are placed by the map instead (ramps, changes and metre), and each note is held for the
+map's own time over its length. Automation is a piecewise
 linear envelope in seconds, evaluated once per sample.
 """
 from dataclasses import dataclass, field
@@ -80,13 +82,22 @@ class Arrangement:
     room_return_db: float = -6.0
     ceiling: float = 0.98      # master limiter ceiling, linear
     spaces: dict = field(default_factory=dict)       # name -> Room or Space: extra reverb buses fed by Track.sends
+    tempo: object = None       # a tempo.TempoMap; None keeps the one tempo bpm (and the same samples as before)
 
     @property
     def seconds_per_beat(self):
         return 60.0 / self.bpm
 
     def sample_of(self, beat):
+        if self.tempo is not None:
+            return self.tempo.sample(beat, self.fs)
         return int(round(beat * 60.0 * self.fs / self.bpm))
+
+    def note_seconds_per_beat(self, note):
+        """Seconds per beat over this note's length: the map's own time for the note, divided by its beats."""
+        if self.tempo is None or note.beats <= 0:
+            return self.seconds_per_beat
+        return (self.tempo.seconds(note.beat + note.beats) - self.tempo.seconds(note.beat)) / note.beats
 
     def n(self):
         return int(round(self.seconds * self.fs))
@@ -100,7 +111,7 @@ def render_track(arr, track, rng):
         start = arr.sample_of(note.beat)
         if start >= n:
             continue
-        y = track.instrument.play(note, arr.fs, arr.seconds_per_beat, rng)
+        y = track.instrument.play(note, arr.fs, arr.note_seconds_per_beat(note), rng)
         end = min(n, start + len(y))
         buf[start:end] += y[:end - start]
     for fx in track.inserts:
