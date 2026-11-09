@@ -4,8 +4,10 @@
 
 These are the instruments the voice tests hold the processors to, so each is a standard method with a known
 failure mode. Pitch of a steady tone: the peak of a zero-padded Hann spectrum, refined by a parabola through
-the three log-magnitude bins at the top. Pitch track: the autocorrelation peak of 30 ms frames, refined the
-same way. Vibrato: rate from the spectrum of the cents track, depth (peak deviation in cents) from a least-
+the three log-magnitude bins at the top. Pitch track: YIN, the first dip
+of the cumulative-mean-normalised difference function, moved to a whole multiple of that lag when the multiple is
+clearly more periodic (a strong harmonic under a formant), refined the same way, with frames that jump a whole
+octave from their neighbours' median folded back. Vibrato: rate from the spectrum of the cents track, depth (peak deviation in cents) from a least-
 squares sinusoid at that rate. Formants: linear prediction (autocorrelation method, Levinson recursion) on the
 signal at 10 kHz after pre-emphasis; each pole pair with a bandwidth under 500 Hz is a formant (Markel and Gray
 1976). HNR: harmonic energy in narrow bands at multiples of f0 against the noise density between them, with the
@@ -36,23 +38,62 @@ def f0_peak(y, fs, lo, hi, pad=8):
     return float((k + _parabola(sp[k - 1], sp[k], sp[k + 1])) * fs / n)
 
 
-def f0_track(y, fs, lo=70.0, hi=1100.0, win=0.03, hop=0.005, voicing=0.5):
-    """Pitch every `hop` seconds (NaN where the frame is not periodic enough)."""
+def _yin(f, a, b, threshold):
+    """Lag of the first dip of the cumulative-mean-normalised difference under threshold (else the deepest)."""
+    W = len(f) // 2
+    x0 = f[:W]
+    e = np.concatenate([[0.0], np.cumsum(f * f)])
+    corr = np.fft.irfft(np.fft.rfft(f, 2 * len(f)) * np.conj(np.fft.rfft(x0, 2 * len(f))))[:W]
+    tau = np.arange(W)
+    d = e[W] + (e[tau + W] - e[tau]) - 2 * corr
+    cm = np.ones(W)
+    cm[1:] = d[1:] * tau[1:] / np.maximum(np.cumsum(d[1:]), 1e-30)
+    below = np.flatnonzero(cm[a:b] < threshold)
+    if len(below):
+        k = a + below[0]
+        while k + 1 < b and cm[k + 1] < cm[k]:
+            k += 1
+    else:
+        k = a + int(np.argmin(cm[a:b]))
+    best, kb = cm[k], k
+    for m in (2, 3, 4):
+        lo, hi = m * k - 2, min(m * k + 3, b)
+        if lo >= b:
+            break
+        j = lo + int(np.argmin(cm[lo:hi]))
+        if cm[j] < best - 0.02:          # a whole multiple of the lag is clearly more periodic: the true period
+            best, kb = cm[j], j
+    return kb, cm
+
+
+def f0_track(y, fs, lo=70.0, hi=1100.0, win=0.04, hop=0.005, threshold=0.15, voicing=0.35):
+    """Pitch every `hop` seconds by YIN (de Cheveigne and Kawahara 2002); NaN where the frame is not periodic."""
     n, h = int(win * fs), int(hop * fs)
-    a, b = int(fs / hi), int(fs / lo)
+    a, b = max(2, int(fs / hi)), min(int(fs / lo), n // 2 - 2)
     out = []
     for s in range(0, len(y) - n, h):
         f = y[s:s + n] - np.mean(y[s:s + n])
-        r = np.fft.irfft(np.abs(np.fft.rfft(f, 2 * n)) ** 2)[:n]
-        if r[0] <= 0 or b >= n - 1:
+        if not np.any(f):
             out.append(np.nan)
             continue
-        k = a + int(np.argmax(r[a:b]))
-        if r[k] < voicing * r[0]:
-            out.append(np.nan)
-            continue
-        out.append(fs / (k + _parabola(r[k - 1], r[k], r[k + 1])))
-    return np.array(out)
+        k, cm = _yin(f, a, b, threshold)
+        out.append(np.nan if cm[k] > voicing else fs / (k + _parabola(cm[k - 1], cm[k], cm[k + 1])))
+    return fold_octaves(np.array(out))
+
+
+def fold_octaves(track, span=41):
+    """Move a frame by whole octaves when it sits an octave or two from the median of its neighbours: a strong
+    second harmonic under a formant can make one stretch of frames read at twice the pitch."""
+    out = track.copy()
+    good = np.isfinite(track)
+    for i in np.flatnonzero(good):
+        nb = track[max(0, i - span // 2):i + span // 2 + 1]
+        nb = nb[np.isfinite(nb)]
+        r = math.log2(track[i] / np.median(nb))
+        m = round(r)
+        if m and abs(r - m) < 0.1:
+            out[i] = track[i] / 2.0 ** m
+    return out
 
 
 def vibrato(track, hop=0.005, lo=2.0, hi=12.0):
