@@ -14,6 +14,9 @@ Engines (what makes one note):
   floor   coloured noise f^-beta (wind.coloured_noise): room tone, a noise floor.
   pad     a subtractive unison pad (subtractive.pad, gap G14). piano takes "inharmonicity": a number B, or
           "register" for dispersion.piano_b of the note (gap G19).
+  kick    an 808-style bass drum with a pitch glide ending on the note (kit.bass_drum, G13); hat: kit.hat.
+  sampler a slice of one of our renders, named by path and sha256, pitched from its root note (sampler.py, G10).
+  grains  a grain cloud over such a source; freeze: its spectrum at one moment, held (granular.py, G11).
 Every engine but modal passes each note through a DC blocker (a one-pole high pass at DC_HZ): a pluck or a
 hammer pushes the string one way, so the waveguide output carries a slow offset that would otherwise take the
 peak and leave the audible part quiet after normalisation. Every engine but modal ends a note with a damper: after the held length the note falls with release_t60,
@@ -101,8 +104,72 @@ def _floor(p, f, seconds, fs, vel, rng):
     return wind.coloured_noise(int(seconds * fs), fs, p.get("beta", 2.0), rng, p.get("f_lo", 20.0))
 
 
+def _kick(p, f, seconds, fs, vel, rng):
+    from .kit import bass_drum
+    return bass_drum(fs, seconds, f * p.get("start_ratio", 2.5), f, p.get("glide_tau", 0.04), p.get("decay", 1.2),
+                     p.get("click_ms", 0.0), p.get("attack_ms", 3.0))
+
+
+def _hat(p, f, seconds, fs, vel, rng):
+    from .kit import hat
+    return hat(fs, rng, seconds, p.get("decay", 0.06), p.get("tone", 8000.0), p.get("plate_mix", 0.5))
+
+
+_SOURCES = {}
+
+
+def _source(p):
+    """A sampler source: our own render, named by path and sha256 (sampler.load refuses a mismatch)."""
+    from .sampler import load
+    key = (p["path"], p["sha256"])
+    if key not in _SOURCES:
+        _SOURCES[key] = load(p["path"], p["sha256"])
+    return _SOURCES[key]
+
+
+def _sampler(p, f, seconds, fs, vel, rng):
+    from . import sampler as SM
+    s = _source(p)
+    if s.fs != fs:
+        raise ValueError(f"source is {s.fs} Hz, the piece is {fs} Hz")
+    s = SM.slice_(s, p.get("start", 0.0), p.get("end", len(s.data) / fs))
+    if p.get("reverse"):
+        s = SM.reverse(s)
+    semis = 12 * math.log2(f / midi_hz(p.get("root", 60)))
+    y = SM.pitch(s, semis, keep_time=p.get("keep_time", False)).data if abs(semis) > 1e-6 else s.data
+    n = int(seconds * fs)
+    return y[:n] if len(y) >= n else np.pad(y, (0, n - len(y)))
+
+
+def _grains(p, f, seconds, fs, vel, rng):
+    from .granular import cloud
+    s = _source(p)
+    y = cloud(s.data, fs, seconds, rng, p.get("density", 30.0), p.get("size", 0.12), p.get("position", 0.0),
+              p.get("scan", 0.0), p.get("jitter", 0.2), p.get("spread", 0.0), 0.0)[:, 0]
+    semis = 12 * math.log2(f / midi_hz(p.get("root", 60)))
+    if abs(semis) > 1e-6:
+        from .spectral import varispeed
+        y = varispeed(y, 2 ** (semis / 12))
+    n = int(seconds * fs)
+    return y[:n] if len(y) >= n else np.pad(y, (0, n - len(y)))
+
+
+def _freeze(p, f, seconds, fs, vel, rng):
+    from .granular import freeze
+    s = _source(p)
+    y = freeze(s.data, fs, p.get("at", 0.0), seconds * 1.2 + 0.1, rng, p.get("nfft", 8192), p.get("blur", 0.15))
+    semis = 12 * math.log2(f / midi_hz(p.get("root", 60)))
+    if abs(semis) > 1e-6:
+        from .spectral import varispeed
+        y = varispeed(y, 2 ** (semis / 12))
+    n = int(seconds * fs)
+    return y[:n] if len(y) >= n else np.pad(y, (0, n - len(y)))
+
+
 ENGINES = {"piano": (_piano, False), "rhodes": (_rhodes, False), "pluck": (_pluck, True),
-           "bowed": (_bowed, False), "floor": (_floor, True), "pad": (_pad, True)}
+           "bowed": (_bowed, False), "floor": (_floor, True), "pad": (_pad, True),
+           "kick": (_kick, False), "hat": (_hat, True), "sampler": (_sampler, False), "grains": (_grains, True),
+           "freeze": (_freeze, True)}
 
 
 @dataclass
