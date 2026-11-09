@@ -6370,8 +6370,8 @@
   {
    "path": "packages/daw/README.md",
    "source": "repo",
-   "bytes": 5187,
-   "sourceSha256": "aca3d859cb91c6bc541f80ff8e4122d92739db0127ceb67afde2739ceb0c13be"
+   "bytes": 6123,
+   "sourceSha256": "72906cc03b4e05adeb04c740057118683c0097c821f33acde9c0758622b0c3fe"
   },
   {
    "path": "packages/daw/bench/modal_bank.cpp",
@@ -6460,8 +6460,8 @@
   {
    "path": "packages/daw/daw/arrange.py",
    "source": "repo",
-   "bytes": 3306,
-   "sourceSha256": "d297bf7e4bdaa8c31e88469a9c359661c6f9dcd90ee1b8aa90feb548fcbb2311"
+   "bytes": 3500,
+   "sourceSha256": "2a725ec6aeb91d30273a2f471ac81c4313cf867eac704ed59f6e81ee1d8e4bc1"
   },
   {
    "path": "packages/daw/daw/demo.py",
@@ -6500,6 +6500,12 @@
    "sourceSha256": "65fd64e9dfec02b4e33e065db520761677bae7e539fbc505513c5a658a0e04c1"
   },
   {
+   "path": "packages/daw/daw/loudness.py",
+   "source": "repo",
+   "bytes": 2482,
+   "sourceSha256": "a218621e69aedf87c0b3ed9f35c1b3295dbb3623e24392c92ed8ee4ff5749fd2"
+  },
+  {
    "path": "packages/daw/daw/materials.py",
    "source": "repo",
    "bytes": 3430,
@@ -6534,6 +6540,12 @@
    "source": "repo",
    "bytes": 5029,
    "sourceSha256": "6d61c80fa10b71518d06d21f879cd00be79dae4359ad198a7de2d2e4eb481fb6"
+  },
+  {
+   "path": "packages/daw/daw/patches.py",
+   "source": "repo",
+   "bytes": 3882,
+   "sourceSha256": "ecd5c796868cb6634675eb1a9a203c309cb6715695a1515952ede3daa4abc425"
   },
   {
    "path": "packages/daw/daw/propagate.py",
@@ -6578,6 +6590,12 @@
    "sourceSha256": "e3381b3966c94d04874b913222c1e6cfb584cd3eb01747c0fd26d55c328dbe58"
   },
   {
+   "path": "packages/daw/daw/stems.py",
+   "source": "repo",
+   "bytes": 7742,
+   "sourceSha256": "d55730050b7ad6ee95834ab7b129069dde5e6dcb3c4b053926aa18f5124ae3bd"
+  },
+  {
    "path": "packages/daw/daw/superstack.py",
    "source": "repo",
    "bytes": 27546,
@@ -6614,10 +6632,16 @@
    "sourceSha256": "4ed9cd5b21fb797c19ae261457916807168b11b602a491eb030f90694bcdc166"
   },
   {
+   "path": "packages/daw/daw/voices.py",
+   "source": "repo",
+   "bytes": 6062,
+   "sourceSha256": "001dd2440c380b7a61bb4ecd93319bfb5c056d0dbf47caf3fa12c3343bec9e09"
+  },
+  {
    "path": "packages/daw/daw/waveguide.py",
    "source": "repo",
-   "bytes": 3088,
-   "sourceSha256": "be47a093546da7d46756932203a077518133c1d29bff81d639a354785fcec72f"
+   "bytes": 4051,
+   "sourceSha256": "668f1ba54d7daaedb17d747dcecd12173fa8e4d175bcbffec034caa19129f944"
   },
   {
    "path": "packages/daw/daw/wind.py",
@@ -6690,6 +6714,12 @@
    "source": "repo",
    "bytes": 4285,
    "sourceSha256": "92be0e8c8156008496bee189f1f1d96cd529b98fb23f09a96a04975656b39c73"
+  },
+  {
+   "path": "packages/daw/tests/test_stems_patches.py",
+   "source": "repo",
+   "bytes": 6579,
+   "sourceSha256": "e6016a1e4306aa8cce669e2cc37896cafe842d47266e2f9b0a2be61f5fd461a6"
   },
   {
    "path": "packages/daw/tests/test_sustain_voice.py",
