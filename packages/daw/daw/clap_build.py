@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 # SPDX-License-Identifier: FSL-1.1-MIT
-"""Build the CLAP instrument (clap/bars.c over the BuildLang kernels) and the test host (clap/host_check.c).
+"""Build the CLAP instruments (clap/bars.c over the BuildLang kernels, clap/piano.c over clap/piano_table.h) and the test host (clap/host_check.c).
 
-    python -I -m daw.clap_build OUT_DIR        # writes superframe-bars.clap and host_check(.exe)
+    python -m daw.clap_build OUT_DIR           # writes superframe.clap and host_check(.exe)
 
 buildc compiles bld/*.bld to C exactly as daw.native does, with buildc's release flags (DETMATH: no
 contraction, no fast maths), and the system C compiler links that C with the CLAP wrapper into one shared
@@ -56,11 +56,11 @@ def build(out_dir=None):
     work = Path(tempfile.mkdtemp(prefix="daw-clap-bld-"))
     kernels = _kernels_c(work)
     win = sys.platform == "win32"
-    plugin = out / "superframe-bars.clap"
+    plugin = out / "superframe.clap"
     host = out / ("host_check.exe" if win else "host_check")
     inc = "-I" + str(CLAP / "include")
     _cc([*FLAGS, "-shared", *([] if win else ["-fPIC", "-fvisibility=hidden"]), inc, "-o", str(plugin),
-         str(CLAP / "bars.c"), str(kernels), "-lm", *(["-lws2_32"] if win else [])])
+         str(CLAP / "bars.c"), str(CLAP / "piano.c"), str(kernels), "-lm", *(["-lws2_32"] if win else [])])
     _cc(["-O2", inc, "-o", str(host), str(CLAP / "host_check.c"), *([] if win else ["-ldl"])])
     return plugin, host
 

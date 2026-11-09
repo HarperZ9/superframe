@@ -5,7 +5,7 @@
 // blocks of a given size, and write the stereo output as raw float32 (interleaved). Timing of the process
 // calls is printed with the descriptor as one JSON line on stdout.
 //
-//   host_check PLUGIN OUT.f32 BLOCK SECONDS FS [t:key:vel[:midi]] ...
+//   host_check PLUGIN[#INDEX] OUT.f32 BLOCK SECONDS FS [t:key:vel[:midi]] ...
 //
 // t is the absolute sample of the note; the host places it in the right block at the right offset.
 #include <stdio.h>
@@ -61,14 +61,19 @@ int main(int argc, char **argv) {
         if (sscanf(argv[i], "%u:%d:%lf:%d", &notes[nn].at, &notes[nn].key, &notes[nn].vel, &notes[nn].midi) < 3)
             return fail("bad note");
     }
-    void *lib = open_lib(argv[1]);
+    char path[4096];
+    unsigned index = 0;
+    strncpy(path, argv[1], sizeof path - 1); path[sizeof path - 1] = 0;
+    char *hash = strrchr(path, '#');
+    if (hash) { index = (unsigned)atoi(hash + 1); *hash = 0; }
+    void *lib = open_lib(path);
     if (!lib) return fail("cannot load plugin");
     const clap_plugin_entry_t *entry = (const clap_plugin_entry_t *)find_sym(lib, "clap_entry");
     if (!entry || !clap_version_is_compatible(entry->clap_version)) return fail("no compatible clap_entry");
-    if (!entry->init(argv[1])) return fail("entry init failed");
+    if (!entry->init(path)) return fail("entry init failed");
     const clap_plugin_factory_t *fac = (const clap_plugin_factory_t *)entry->get_factory(CLAP_PLUGIN_FACTORY_ID);
-    if (!fac || fac->get_plugin_count(fac) < 1) return fail("no factory or no plugin");
-    const clap_plugin_descriptor_t *d = fac->get_plugin_descriptor(fac, 0);
+    if (!fac || fac->get_plugin_count(fac) <= index) return fail("no factory or no such plugin");
+    const clap_plugin_descriptor_t *d = fac->get_plugin_descriptor(fac, index);
     clap_host_t host = {CLAP_VERSION_INIT, NULL, "host_check", "superframe", "", "0.1.0",
                         host_ext, host_nop, host_nop, host_nop};
     const clap_plugin_t *pl = fac->create_plugin(fac, &host, d->id);

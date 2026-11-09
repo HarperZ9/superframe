@@ -62,10 +62,10 @@ Swap `"aluminium"` for `"steel_mild"` and every mode moves by sqrt(E / rho), the
 ## Play it inside another DAW (CLAP)
 
 ```
-python -I -m daw.clap_build out/clap      # from packages/daw: out/clap/superframe-bars.clap and a test host
+python -m daw.clap_build out/clap         # from packages/daw: out/clap/superframe.clap and a test host
 ```
 
-Copy `superframe-bars.clap` into your CLAP folder (Windows `C:\Program Files\Common Files\CLAP`, macOS `~/Library/Audio/Plug-Ins/CLAP`, Linux `~/.clap`) and load "superframe bars" in a CLAP host such as Bitwig, REAPER or FL Studio. It is the BuildLang modal bank with measured aluminium loss: a note sets a voice's modes and strikes it on the note's own sample, with no added latency. Its output equals the offline render bit for bit at any host block size (`tests/test_clap.py`). Built here on Windows; not yet tried in a commercial host.
+Copy `superframe.clap` into your CLAP folder (Windows `C:\Program Files\Common Files\CLAP`, macOS `~/Library/Audio/Plug-Ins/CLAP`, Linux `~/.clap`) and load "superframe bars" or "superframe piano" in a CLAP host such as Bitwig, REAPER or FL Studio. "superframe bars" is the BuildLang modal bank with measured aluminium loss. "superframe piano" is the stiff waveguide string with inharmonicity measured on a Steinway model B, at 44.1 or 48 kHz; its per-key loop table (`clap/piano_table.h`) is written from the offline code by `daw/clap_tables.py`. Both strike on the note's own sample with no added latency, and both equal the offline render bit for bit at any host block size (`tests/test_clap.py`). Built and tested here on Windows and in Linux CI; not yet tried in a commercial host.
 
 ## Run the BuildLang engine
 

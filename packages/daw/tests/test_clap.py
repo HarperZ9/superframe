@@ -17,8 +17,10 @@ import numpy as np
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from daw import clap_build, native  # noqa: E402
+from daw import clap_build, clap_tables, native  # noqa: E402
+from daw import dispersion as D  # noqa: E402
 from daw import materials as M  # noqa: E402
+from daw import waveguide as W  # noqa: E402
 
 FS, VOICES, MODES, GAIN = 48000.0, 16, 12, 0.25
 NOTES = [(100, 69, 1.0, 0), (600, 81, 0.5, 1), (30000, 57, 0.8, 0)]   # sample, key, velocity, sent as MIDI
@@ -34,10 +36,10 @@ def built(tmp_path_factory):
     return clap_build.build(tmp_path_factory.mktemp("clap"))
 
 
-def play(built, notes, block, seconds=1.0):
+def play(built, notes, block, seconds=1.0, index=0, fs=FS):
     plugin, host = built
-    out = plugin.parent / f"out-{block}-{len(notes)}-{notes[0][0]}.f32"
-    args = [str(host), str(plugin), str(out), str(block), str(seconds), str(FS)]
+    out = plugin.parent / f"out-{index}-{fs}-{block}-{len(notes)}-{notes[0][0]}.f32"
+    args = [str(host), f"{plugin}#{index}", str(out), str(block), str(seconds), str(fs)]
     args += [f"{t}:{k}:{v}:{m}" for t, k, v, m in notes]
     r = subprocess.run(args, capture_output=True, text=True, check=True)
     y = np.fromfile(out, dtype=np.float32).reshape(-1, 2)
@@ -91,3 +93,46 @@ def test_note_sounds_on_its_sample_and_pitch(built):
     k = int(np.argmax(spec[: int(1000 * (1 << 19) / FS)]))
     f = k * FS / (1 << 19)
     assert abs(f / 440.0 - 1) < 1e-3                                            # A4 is 440 Hz
+
+
+# The piano (clap/piano.c): the offline stiff string, note for note.
+
+PIANO = [(50, 21, 0.9, 0), (700, 60, 0.7, 0), (2000, 64, 1.0, 1), (2001, 67, 0.5, 0), (9000, 108, 0.8, 0)]
+
+
+def piano_reference(notes, seconds, fs):
+    """dispersion.stiff_string for every note, placed at its sample and summed in voice order."""
+    total = int(seconds * fs)
+    out = np.zeros(total)
+    h = W.hammer(fs, clap_tables.CONTACT)
+    for t, key, vel, midi in notes:                      # fewer than 16 notes: voice order is note order
+        v = round(vel * 127) / 127 if midi else vel
+        y = D.stiff_string(clap_tables.f0_of(key), (total - t) / fs + 0.01, fs, h * v, clap_tables.T60, D.piano_b(key))
+        out[t:] += y[:total - t]
+    return (GAIN * out).astype(np.float32)
+
+
+@pytest.mark.parametrize("fs", [48000, 44100])
+def test_piano_equals_the_offline_stiff_string_bit_for_bit(built, fs):
+    y, info = play(built, PIANO, 256, 0.5, index=1, fs=fs)
+    assert info["id"] == "io.github.harperz9.superframe.piano" and info["latency"] == 0
+    want = piano_reference(PIANO, 0.5, fs)
+    assert np.array_equal(y[:, 0], want) and np.array_equal(y[:, 1], want)
+    late = [(t + 1, k, v, m) for t, k, v, m in PIANO]
+    assert not np.array_equal(y[:, 0], piano_reference(late, 0.5, fs))          # planted: one sample late
+
+
+def test_piano_block_size_changes_no_bit(built):
+    runs = [play(built, PIANO, b, 0.5, index=1)[0] for b in (64, 1000)]
+    assert runs[0].tobytes() == runs[1].tobytes()
+
+
+def test_piano_table_is_the_offline_design():
+    text = clap_tables.HEADER.read_text(encoding="utf-8")
+    for fs in clap_tables.RATES:
+        block = text.split(f"piano_rows_{fs}[PIANO_KEYS] = {{")[1].split("};")[0]
+        rows = [ln.split("//")[0].strip().strip("{},").split(", ") for ln in block.strip().splitlines()]
+        for key in (21, 60, 108):
+            n, t, g, a, m = clap_tables.row(key, fs)
+            r = rows[key - 21]
+            assert (int(r[0]), float(r[1]), float(r[2]), float(r[3]), int(r[4])) == (n, t, g, a, m)

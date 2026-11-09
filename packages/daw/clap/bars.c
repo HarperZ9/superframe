@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
 // SPDX-License-Identifier: FSL-1.1-MIT
 //
-// superframe bars: the DAW's modal bar bank as a CLAP instrument, so it plays inside any CLAP host.
+// superframe bars: the DAW's modal bar bank as a CLAP instrument, so it plays inside any CLAP host. This file
+// also holds the bundle's factory, which lists the bars and the piano (piano.c).
 //
 // The sound is the BuildLang kernels themselves (bld/dsp.bld: daw_voice_set, daw_bank_live), compiled by
 // buildc to C and linked into this file's shared library by daw/clap_build.py. This file only maps CLAP
@@ -178,12 +179,17 @@ static uint32_t latency_get(const clap_plugin_t *p) { (void)p; return 0; }   // 
 
 static const clap_plugin_latency_t bars_latency = {latency_get};
 
-static const void *bars_extension(const clap_plugin_t *p, const char *id) {
-    (void)p;
+// Shared by every instrument in this bundle: one stereo output, one note input, no latency.
+const void *superframe_shared_extension(const char *id) {
     if (!strcmp(id, CLAP_EXT_AUDIO_PORTS)) return &bars_audio_ports;
     if (!strcmp(id, CLAP_EXT_NOTE_PORTS)) return &bars_note_ports;
     if (!strcmp(id, CLAP_EXT_LATENCY)) return &bars_latency;
     return NULL;
+}
+
+static const void *bars_extension(const clap_plugin_t *p, const char *id) {
+    (void)p;
+    return superframe_shared_extension(id);
 }
 
 static void bars_main_thread(const clap_plugin_t *p) { (void)p; }
@@ -207,17 +213,22 @@ static const clap_plugin_t *bars_create(const clap_host_t *host) {
     return &s->plugin;
 }
 
-static uint32_t factory_count(const clap_plugin_factory_t *f) { (void)f; return 1; }
+extern const clap_plugin_descriptor_t piano_desc;          // piano.c
+const clap_plugin_t *piano_create(const clap_host_t *host);
+
+static uint32_t factory_count(const clap_plugin_factory_t *f) { (void)f; return 2; }
 
 static const clap_plugin_descriptor_t *factory_desc(const clap_plugin_factory_t *f, uint32_t i) {
     (void)f;
-    return i == 0 ? &bars_desc : NULL;
+    return i == 0 ? &bars_desc : i == 1 ? &piano_desc : NULL;
 }
 
 static const clap_plugin_t *factory_create(const clap_plugin_factory_t *f, const clap_host_t *host, const char *id) {
     (void)f;
-    if (!clap_version_is_compatible(host->clap_version) || strcmp(id, bars_desc.id)) return NULL;
-    return bars_create(host);
+    if (!clap_version_is_compatible(host->clap_version)) return NULL;
+    if (!strcmp(id, bars_desc.id)) return bars_create(host);
+    if (!strcmp(id, piano_desc.id)) return piano_create(host);
+    return NULL;
 }
 
 static const clap_plugin_factory_t bars_factory = {factory_count, factory_desc, factory_create};
