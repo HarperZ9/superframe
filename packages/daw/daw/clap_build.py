@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 # SPDX-License-Identifier: FSL-1.1-MIT
-"""Build the CLAP instruments (clap/bars.c over the BuildLang kernels, clap/piano.c over clap/piano_table.h) and the test host (clap/host_check.c).
+"""Build the CLAP instruments (clap/bars.c over the BuildLang kernels, clap/piano.c over clap/piano_table.h, clap/organ.c over clap/organ_table.h) and the test host (clap/host_check.c).
 
     python -m daw.clap_build OUT_DIR           # writes superframe.clap and host_check(.exe)
 
@@ -60,7 +60,7 @@ def build(out_dir=None):
     host = out / ("host_check.exe" if win else "host_check")
     inc = "-I" + str(CLAP / "include")
     _cc([*FLAGS, "-shared", *([] if win else ["-fPIC", "-fvisibility=hidden"]), inc, "-o", str(plugin),
-         str(CLAP / "bars.c"), str(CLAP / "piano.c"), str(kernels), "-lm", *(["-lws2_32"] if win else [])])
+         str(CLAP / "bars.c"), str(CLAP / "piano.c"), str(CLAP / "organ.c"), str(kernels), "-lm", *(["-lws2_32"] if win else [])])
     _cc(["-O2", inc, "-o", str(host), str(CLAP / "host_check.c"), *([] if win else ["-ldl"])])
     return plugin, host
 

@@ -5,9 +5,10 @@
 // blocks of a given size, and write the stereo output as raw float32 (interleaved). Timing of the process
 // calls is printed with the descriptor as one JSON line on stdout.
 //
-//   host_check PLUGIN[#INDEX] OUT.f32 BLOCK SECONDS FS [t:key:vel[:midi]] ...
+//   host_check PLUGIN[#INDEX] OUT.f32 BLOCK SECONDS FS [t:key:vel[:midi[:kind]]] ...
 //
-// t is the absolute sample of the note; the host places it in the right block at the right offset.
+// t is the absolute sample of the event; the host places it in the right block at the right offset. kind 0 is a
+// note-on, 1 a note-off, 2 a MIDI program change to program `key` (always sent as MIDI).
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,7 +38,7 @@ static double now_s(void) {
 
 #define MAX_EVENTS 256
 
-typedef struct { uint32_t at; int key; double vel; int midi; } note_t;
+typedef struct { uint32_t at; int key; double vel; int midi, kind; } note_t;
 typedef struct { clap_event_note_t note[MAX_EVENTS]; clap_event_midi_t midi[MAX_EVENTS]; const clap_event_header_t *h[MAX_EVENTS]; uint32_t n; } list_t;
 
 static uint32_t ev_size(const clap_input_events_t *l) { return ((const list_t *)l->ctx)->n; }
@@ -57,8 +58,8 @@ int main(int argc, char **argv) {
     note_t notes[MAX_EVENTS];
     int nn = 0;
     for (int i = 6; i < argc && nn < MAX_EVENTS; ++i, ++nn) {
-        notes[nn].midi = 0;
-        if (sscanf(argv[i], "%u:%d:%lf:%d", &notes[nn].at, &notes[nn].key, &notes[nn].vel, &notes[nn].midi) < 3)
+        notes[nn].midi = 0; notes[nn].kind = 0;
+        if (sscanf(argv[i], "%u:%d:%lf:%d:%d", &notes[nn].at, &notes[nn].key, &notes[nn].vel, &notes[nn].midi, &notes[nn].kind) < 3)
             return fail("bad note");
     }
     char path[4096];
@@ -103,15 +104,17 @@ int main(int argc, char **argv) {
         for (int i = 0; i < nn; ++i) {
             if (notes[i].at < start || notes[i].at >= start + n) continue;
             uint32_t k = list.n++;
-            if (notes[i].midi) {
+            if (notes[i].midi || notes[i].kind == 2) {
                 clap_event_midi_t *e = &list.midi[k];
                 e->header = (clap_event_header_t){sizeof(*e), notes[i].at - start, CLAP_CORE_EVENT_SPACE_ID, CLAP_EVENT_MIDI, 0};
                 e->port_index = 0;
-                e->data[0] = 0x90; e->data[1] = (uint8_t)notes[i].key; e->data[2] = (uint8_t)(notes[i].vel * 127.0 + 0.5);
+                e->data[0] = notes[i].kind == 2 ? 0xC0 : notes[i].kind == 1 ? 0x80 : 0x90;
+                e->data[1] = (uint8_t)notes[i].key; e->data[2] = notes[i].kind == 2 ? 0 : (uint8_t)(notes[i].vel * 127.0 + 0.5);
                 list.h[k] = &e->header;
             } else {
                 clap_event_note_t *e = &list.note[k];
-                e->header = (clap_event_header_t){sizeof(*e), notes[i].at - start, CLAP_CORE_EVENT_SPACE_ID, CLAP_EVENT_NOTE_ON, 0};
+                e->header = (clap_event_header_t){sizeof(*e), notes[i].at - start, CLAP_CORE_EVENT_SPACE_ID,
+                                                  notes[i].kind == 1 ? CLAP_EVENT_NOTE_OFF : CLAP_EVENT_NOTE_ON, 0};
                 e->note_id = -1; e->port_index = 0; e->channel = 0; e->key = (int16_t)notes[i].key; e->velocity = notes[i].vel;
                 list.h[k] = &e->header;
             }
