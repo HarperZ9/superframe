@@ -6370,8 +6370,8 @@
   {
    "path": "packages/daw/README.md",
    "source": "repo",
-   "bytes": 8388,
-   "sourceSha256": "19ee6d9f6f7ac86df507341db0cb1cbe1348275faa10ba8f847d1a573e451556"
+   "bytes": 9052,
+   "sourceSha256": "fa313f89e61b9be75d2fcad10eac4482fb3265ac664be56f591a7714cfb6339c"
   },
   {
    "path": "packages/daw/bench/modal_bank.cpp",
@@ -6500,10 +6500,22 @@
    "sourceSha256": "73fd2e9ad555c4c5ef7acaae0f1246e936cd6a64daed766b814fe634984dac1d"
   },
   {
+   "path": "packages/daw/daw/granular.py",
+   "source": "repo",
+   "bytes": 4059,
+   "sourceSha256": "f9bc7ba5f917d67ed6019a57804e01c20f2a30b4cdabdbff053ac93f38e49d04"
+  },
+  {
    "path": "packages/daw/daw/harmony.py",
    "source": "repo",
    "bytes": 2489,
    "sourceSha256": "df40f223ecdd1ebb401bf5bfcd0532bff550febbddfd1785f37368bbac095eb1"
+  },
+  {
+   "path": "packages/daw/daw/kit.py",
+   "source": "repo",
+   "bytes": 4058,
+   "sourceSha256": "3fc50b122acbcdc85bf458ae851d60582be2ebbb0a6f968b412f936598b53bde"
   },
   {
    "path": "packages/daw/daw/kl_tract.py",
@@ -6582,6 +6594,12 @@
    "source": "repo",
    "bytes": 3128,
    "sourceSha256": "25641656d5c4891e4a3ddfa3dc1aec587b6c1d245c370c6e4ef6cd2a41849d15"
+  },
+  {
+   "path": "packages/daw/daw/sampler.py",
+   "source": "repo",
+   "bytes": 4701,
+   "sourceSha256": "f85e072c5234964ebfa5afc8ba1248fa03fdec1058326ab763a09fe5b7981d68"
   },
   {
    "path": "packages/daw/daw/scene.py",
@@ -6682,8 +6700,8 @@
   {
    "path": "packages/daw/daw/voices.py",
    "source": "repo",
-   "bytes": 7138,
-   "sourceSha256": "17a14687717848fbe3b03e69cfc9f19a130f095477632849b4b0d7199dcf9c26"
+   "bytes": 9932,
+   "sourceSha256": "e879bdbea7fc45c62c845489d3a60c0034fcdbe2995badca07c36e4acf15659c"
   },
   {
    "path": "packages/daw/daw/waveguide.py",
@@ -6798,6 +6816,12 @@
    "source": "repo",
    "bytes": 5263,
    "sourceSha256": "4c08f78a40a5c46048c09fdd4db627405b23f54421ba2881fb586e883db7265c"
+  },
+  {
+   "path": "packages/daw/tests/test_texture_kit.py",
+   "source": "repo",
+   "bytes": 5583,
+   "sourceSha256": "0df6f6d5a4cbe7aaf0433c45266a4b01d6b5a6075371fb06768a7d5e641e32e2"
   },
   {
    "path": "packages/daw/tests/test_voice_coupled.py",
