@@ -12,7 +12,9 @@ Engines (what makes one note):
   pluck   one waveguide string, plucked at a position, from seeded noise.
   bowed   a bowed string in Helmholtz motion (sustain.bowed) with a bow attack and release.
   floor   coloured noise f^-beta (wind.coloured_noise): room tone, a noise floor.
-Every engine but modal ends a note with a damper: after the held length the note falls with release_t60,
+Every engine but modal passes each note through a DC blocker (a one-pole high pass at DC_HZ): a pluck or a
+hammer pushes the string one way, so the waveguide output carries a slow offset that would otherwise take the
+peak and leave the audible part quiet after normalisation. Every engine but modal ends a note with a damper: after the held length the note falls with release_t60,
 and starts with an optional raised-cosine attack (seconds). Deterministic engines cache their notes by
 (pitch, length, velocity); engines that draw noise seed each note from the patch hash and the note itself.
 """
@@ -20,7 +22,7 @@ import math
 from dataclasses import dataclass, field
 
 import numpy as np
-from scipy.signal import butter, sosfilt
+from scipy.signal import butter, lfilter, sosfilt
 
 from . import effects, rhodes, sustain, waveguide, wind
 from . import materials as M
@@ -29,6 +31,8 @@ from . import shapes_1d, shapes_2d
 from .arrange import Instrument
 from .modes import midi_hz
 from .tape_echo import TapeEcho, spring_tank
+
+DC_HZ = 20.0
 
 SHAPES = {"String": shapes_1d.String, "Bar": shapes_1d.Bar, "Tube": shapes_1d.Tube,
           "CircularMembrane": shapes_2d.CircularMembrane, "RectPlate": shapes_2d.RectPlate,
@@ -107,6 +111,8 @@ class Voice:
             return self.cache[ck]
         sub = np.random.default_rng(ss.xmur3(f"{self.key}:{ck}:{round(float(note.beat), 6)}")) if noisy else None
         y = np.asarray(fn(p, midi_hz(note.pitch), seconds, fs, float(note.velocity), sub), float)
+        r = math.exp(-2 * math.pi * DC_HZ / fs)
+        y = lfilter([1.0, -1.0], [1.0, -r], y)
         y = y / max(np.max(np.abs(y)), 1e-12) * float(note.velocity)
         y = _envelope(y.copy(), fs, hold, p.get("attack", 0.0), p.get("release_t60", 0.8))
         if not noisy:

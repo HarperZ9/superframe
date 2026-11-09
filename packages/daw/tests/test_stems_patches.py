@@ -132,3 +132,10 @@ def test_waveguide_filter_equals_the_sample_loop(f0):
     a = W.string(f0, 1.0, FS, h, 3.0)
     b = W.string(f0, 1.0, FS, h, 3.0, fast=True)
     assert np.max(np.abs(a - b)) <= 1e-9 * np.max(np.abs(a))
+
+
+def test_notes_carry_no_dc_offset():
+    for engine in ("pluck", "piano"):
+        y = build(P.patch(engine, engine, {"t60": 2.0, "tail": 0.5})).play(Note(0, 2, 52, 0.5), FS, 0.5, None)
+        assert abs(float(np.mean(y))) < 1e-3 * float(np.max(np.abs(y))), engine
+        assert np.max(np.abs(y)) == pytest.approx(0.5, rel=0.05)
