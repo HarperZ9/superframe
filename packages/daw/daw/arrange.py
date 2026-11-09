@@ -65,6 +65,7 @@ class Track:
     inserts: list = field(default_factory=list)      # callables f(mono, fs) -> mono, run in order on the track
     width: float = 0.0         # 0 mono-placed; up to 1: a decorrelated side signal widens the track (stems.widen)
     sends: dict = field(default_factory=dict)        # space name -> send level, for Arrangement.spaces
+    bus: str = None            # a name in Arrangement.buses: the group bus this track feeds (buses.py)
 
     def control(self, key, n, fs):
         if key in self.automation:
@@ -82,6 +83,7 @@ class Arrangement:
     room_return_db: float = -6.0
     ceiling: float = 0.98      # master limiter ceiling, linear
     spaces: dict = field(default_factory=dict)       # name -> Room or Space: extra reverb buses fed by Track.sends
+    buses: dict = field(default_factory=dict)        # name -> buses.Bus: group gain and (sidechain) compression
     tempo: object = None       # a tempo.TempoMap; None keeps the one tempo bpm (and the same samples as before)
 
     @property
