@@ -60,6 +60,7 @@ class Track:
     pan: float = 0.0           # -1 left to +1 right
     send: float = 0.3          # share sent to the room
     automation: dict = field(default_factory=dict)   # "gain_db" or "pan" -> Envelope
+    inserts: list = field(default_factory=list)      # callables f(mono, fs) -> mono, run in order on the track
 
     def control(self, key, n, fs):
         if key in self.automation:
@@ -99,4 +100,6 @@ def render_track(arr, track, rng):
         y = track.instrument.play(note, arr.fs, arr.seconds_per_beat, rng)
         end = min(n, start + len(y))
         buf[start:end] += y[:end - start]
+    for fx in track.inserts:
+        buf = np.asarray(fx(buf, arr.fs), float)[:n]
     return buf

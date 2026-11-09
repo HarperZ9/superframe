@@ -42,6 +42,9 @@ Swap `"aluminium"` for `"steel_mild"` and every mode moves by sqrt(E / rho), the
 - **Nature**: aeolian tones (f = St U / d) and bubbles (Minnaert).
 - **Scenes that sound**: one physics record read by the renderer and the DAW (`scene.py`, `ARCHITECTURE.md`); rain from Marshall and Palmer drop sizes, landing speeds and the bubbles they leave, peaking near 15 kHz under water.
 - **Workstation**: notes in beats on exact samples, automation, equal-power pan, a room send, a limiter, WAV 16, 24 and 32-bit float, FLAC, and a superstack receipt.
+- **Stems that add up** (`stems.py`): every track is written as its own file with its own room return, one static loudness gain and the master limiter's gain curve, so the stem files sum to the master file bit for bit (32-bit float by a fixed summing rule, 24-bit as an integer sum); `check_sum` proves it and fails when a stem is left out.
+- **Patch library** (`patches.py`, `voices.py`): an instrument as a JSON record (engine, parameters, insert chain, mixer defaults) with a content hash; save, recall by name and version, list. Engines: modal objects, the waveguide piano, the electric piano, a plucked string, a bowed string, a noise floor. A recalled patch renders the same bytes as the same instrument built inline.
+- **Loudness** (`loudness.py`): BS.1770 integrated, short-term, momentary, loudness range and 4x true peak from `packages/remastering`, a static gain to a target loudness, and the numbers in every stems receipt.
 - **Real-time engine** in BuildLang: kernels in `bld/dsp.bld` (modal bank, voice bank, moving-source path), checked against the Python reference; the host in `bld/main.bld` opens the audio device through BuildLang's own binding (`bld/audio.bld`, `bld/bl_audio.c` from buildlang's `runtime/audio`) and counts deadline misses.
 
 ## Run the BuildLang engine

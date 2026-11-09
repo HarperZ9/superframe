@@ -13,6 +13,7 @@ differences. String dispersion (the piano's stretched partials) is on the roadma
 import math
 
 import numpy as np
+from scipy.signal import lfilter
 
 
 def loop_params(f0, fs, t60):
@@ -29,9 +30,12 @@ def loop_params(f0, fs, t60):
     return n, a, min(g, 0.99999)
 
 
-def string(f0, seconds, fs, excitation, t60=2.0):
+def string(f0, seconds, fs, excitation, t60=2.0, fast=False):
     """Run a waveguide string for `seconds`, driven by `excitation` as an input added into the loop: one
-    period of shaped noise is a pluck, a short pulse is a hammer strike."""
+    period of shaped noise is a pluck, a short pulse is a hammer strike. fast=True runs the same loop as one
+    linear recursive filter (string_filter), equal to the sample loop to rounding."""
+    if fast:
+        return string_filter(f0, seconds, fs, excitation, t60)
     n, a, g = loop_params(f0, fs, t60)
     total = int(seconds * fs)
     buf = np.zeros(n)                          # the delay line: a value written at step i is read at i + n
@@ -51,6 +55,22 @@ def string(f0, seconds, fs, excitation, t60=2.0):
     return y
 
 
+def string_filter(f0, seconds, fs, excitation, t60=2.0):
+    """The loop in string() is linear and time-invariant: v = x + g A(z) (1 + z^-1) / 2 z^-n v, with the
+    allpass A(z) = (a + z^-1) / (1 + a z^-1). Clearing the allpass denominator gives one recursive filter,
+    V (1 + a z^-1 - g / 2 (a + z^-1)(1 + z^-1) z^-n) = X (1 + a z^-1), run here by scipy's lfilter."""
+    n, a, g = loop_params(f0, fs, t60)
+    total = int(seconds * fs)
+    x = np.zeros(total)
+    x[:min(total, len(excitation))] = excitation[:total]
+    den = np.zeros(n + 3)
+    den[0], den[1] = 1.0, a
+    den[n] -= 0.5 * g * a
+    den[n + 1] -= 0.5 * g * (a + 1.0)
+    den[n + 2] -= 0.5 * g
+    return lfilter([1.0, a], den, x)
+
+
 def pluck(f0, fs, rng, position=0.2):
     """A pluck: one period of seeded noise shaped by a triangle peaking at the plucking position."""
     m = int(fs / f0)
@@ -64,7 +84,7 @@ def hammer(fs, contact=2e-3):
     return 0.5 * (1 - np.cos(2 * math.pi * np.arange(m) / m))
 
 
-def piano(f0, seconds, fs, detune_cents=(-0.8, 0.0, 0.9), t60=6.0, contact=2e-3):
+def piano(f0, seconds, fs, detune_cents=(-0.8, 0.0, 0.9), t60=6.0, contact=2e-3, fast=False):
     """Three unison strings, one hammer; returns the sum."""
     h = hammer(fs, contact)
-    return sum(string(f0 * 2 ** (c / 1200), seconds, fs, h, t60) for c in detune_cents) / len(detune_cents)
+    return sum(string(f0 * 2 ** (c / 1200), seconds, fs, h, t60, fast) for c in detune_cents) / len(detune_cents)
