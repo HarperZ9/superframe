@@ -14,9 +14,10 @@ mixture looks like.
 ## Source
 
 Tobias Mayer, "De affinitate colorum commentatio", in *Opera inedita*, volume I, edited by Georg Christoph
-Lichtenberg, Göttingen, 1775. Copy: Zentralbibliothek Zürich, shelfmark NE 256, digitised on e-rara.
+Lichtenberg, Göttingen: Johann Christian Dieterich, 1775. Copy: ETH-Bibliothek Zürich, Rar 9106, digitised on
+e-rara.
 
-- Record: https://www.e-rara.ch/zut/content/titleinfo/2514966
+- Record: https://www.e-rara.ch/zut/content/titleinfo/2514966 (DOI https://doi.org/10.3931/e-rara-8854)
 - Plate Tab. III: https://www.e-rara.ch/i3f/v20/2515094/full/full/0/default.jpg (page 126 of the PDF)
 - Text: printed page 37 (page 50 of the PDF), sections 16 and 17
 - Rights: Public Domain Mark, as stated by e-rara
