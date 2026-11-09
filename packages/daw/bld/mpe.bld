@@ -1,0 +1,40 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Per-note expression for the bar voices (clap/bars.c): MPE pitch bend and CLAP note-expression tuning.
+
+// Retune voice v of the bank to a fractional key while it rings: each mode's pole moves to the new frequency
+// (a1 and a2 as daw_voice_set computes them, from f1 = 440 * 2^((key - 69) / 12)), and its state (y1, y2) and
+// strike gain b stay, so the bar bends without a click or a restrike. A mode pushed above 0.45 fs is held there.
+extern "C" fn daw_voice_retune(a1p: *mut f64, a2p: *mut f64, v: usize, modes: usize, key: f64, eta: f64, fs: f64) {
+    let base = v * modes;
+    let a1 = unsafe { slice::from_raw_parts_mut(a1p, base + modes) };
+    let a2 = unsafe { slice::from_raw_parts_mut(a2p, base + modes) };
+    let pi: f64 = 3.141592653589793;
+    let b1: f64 = 4.730040744862704;
+    let f1: f64 = 440.0 * exp(0.6931471805599453 * (key - 69.0) / 12.0);
+    let mut k: usize = 0;
+    while k < modes {
+        let mut bk: f64 = ((k as f64) + 1.5) * pi;
+        if k == 0 {
+            bk = b1;
+        }
+        if k == 1 {
+            bk = 7.853204624095838;
+        }
+        if k == 2 {
+            bk = 10.995607838001671;
+        }
+        if k == 3 {
+            bk = 14.137165491257464;
+        }
+        let mut f: f64 = f1 * (bk / b1) * (bk / b1);
+        if f > 0.45 * fs {
+            f = 0.45 * fs;
+        }
+        let r: f64 = exp(0.0 - (pi * f * eta + 2.0) / fs);
+        a1[base + k] = 2.0 * r * cos(2.0 * pi * f / fs);
+        a2[base + k] = r * r;
+        k = k + 1;
+    }
+}

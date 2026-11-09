@@ -8,7 +8,9 @@
 //   host_check PLUGIN[#INDEX] OUT.f32 BLOCK SECONDS FS [t:key:vel[:midi[:kind]]] ...
 //
 // t is the absolute sample of the event; the host places it in the right block at the right offset. kind 0 is a
-// note-on, 1 a note-off, 2 a MIDI program change to program `key` (always sent as MIDI).
+// note-on, 1 a note-off, 2 a MIDI program change to program `key` (always sent as MIDI), 3 a CLAP note expression
+// (tuning by `vel` semitones on key `key`, channel midi - 1, any channel when midi is 0), 4 a MIDI pitch bend on
+// channel `key` to the 14-bit value `vel`. For MIDI note events, midi = c + 1 sends them on channel c.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,7 +41,8 @@ static double now_s(void) {
 #define MAX_EVENTS 256
 
 typedef struct { uint32_t at; int key; double vel; int midi, kind; } note_t;
-typedef struct { clap_event_note_t note[MAX_EVENTS]; clap_event_midi_t midi[MAX_EVENTS]; const clap_event_header_t *h[MAX_EVENTS]; uint32_t n; } list_t;
+typedef struct { clap_event_note_t note[MAX_EVENTS]; clap_event_midi_t midi[MAX_EVENTS]; clap_event_note_expression_t ex[MAX_EVENTS];
+                 const clap_event_header_t *h[MAX_EVENTS]; uint32_t n; } list_t;
 
 static uint32_t ev_size(const clap_input_events_t *l) { return ((const list_t *)l->ctx)->n; }
 static const clap_event_header_t *ev_get(const clap_input_events_t *l, uint32_t i) { return ((const list_t *)l->ctx)->h[i]; }
@@ -104,11 +107,24 @@ int main(int argc, char **argv) {
         for (int i = 0; i < nn; ++i) {
             if (notes[i].at < start || notes[i].at >= start + n) continue;
             uint32_t k = list.n++;
-            if (notes[i].midi || notes[i].kind == 2) {
+            if (notes[i].kind == 3) {
+                clap_event_note_expression_t *e = &list.ex[k];
+                e->header = (clap_event_header_t){sizeof(*e), notes[i].at - start, CLAP_CORE_EVENT_SPACE_ID, CLAP_EVENT_NOTE_EXPRESSION, 0};
+                e->expression_id = CLAP_NOTE_EXPRESSION_TUNING; e->note_id = -1; e->port_index = 0;
+                e->channel = (int16_t)(notes[i].midi - 1); e->key = (int16_t)notes[i].key; e->value = notes[i].vel;
+                list.h[k] = &e->header;
+            } else if (notes[i].kind == 4) {
+                clap_event_midi_t *e = &list.midi[k];
+                int v = (int)notes[i].vel;
+                e->header = (clap_event_header_t){sizeof(*e), notes[i].at - start, CLAP_CORE_EVENT_SPACE_ID, CLAP_EVENT_MIDI, 0};
+                e->port_index = 0;
+                e->data[0] = (uint8_t)(0xE0 | (notes[i].key & 15)); e->data[1] = (uint8_t)(v & 127); e->data[2] = (uint8_t)(v >> 7 & 127);
+                list.h[k] = &e->header;
+            } else if (notes[i].midi || notes[i].kind == 2) {
                 clap_event_midi_t *e = &list.midi[k];
                 e->header = (clap_event_header_t){sizeof(*e), notes[i].at - start, CLAP_CORE_EVENT_SPACE_ID, CLAP_EVENT_MIDI, 0};
                 e->port_index = 0;
-                e->data[0] = notes[i].kind == 2 ? 0xC0 : notes[i].kind == 1 ? 0x80 : 0x90;
+                e->data[0] = (uint8_t)((notes[i].kind == 2 ? 0xC0 : notes[i].kind == 1 ? 0x80 : 0x90) | ((notes[i].midi > 0 ? notes[i].midi - 1 : 0) & 15));
                 e->data[1] = (uint8_t)notes[i].key; e->data[2] = notes[i].kind == 2 ? 0 : (uint8_t)(notes[i].vel * 127.0 + 0.5);
                 list.h[k] = &e->header;
             } else {
