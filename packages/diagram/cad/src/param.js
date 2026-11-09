@@ -117,10 +117,36 @@
         else if (net !== "NC") { if (!nets.has(net)) bad.push(`component ${c.ref}: pin ${pin.num} on undeclared net ${net}`); else nets.set(net, nets.get(net) + 1); }
       }
       for (const k of Object.keys(c.pins)) if (!C.symPins(S).some((q) => q.num === k)) bad.push(`component ${c.ref}: symbol ${c.sym} has no pin ${k}`);
+      bad.push(...C.lintPassive(c));
     }
     for (const [n, k] of nets) if (k < 2) bad.push(`net ${n}: dangling, ${k} pin${k === 1 ? "" : "s"}`);
     return bad;
   };
+
+  /* Preferred values (IEC 60063). E12 and E24 are the standard's tables; E96 is 10^(i/96) to three figures. */
+  C.ESERIES = { E12: [1, 1.2, 1.5, 1.8, 2.2, 2.7, 3.3, 3.9, 4.7, 5.6, 6.8, 8.2], E24: [1, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2, 2.2, 2.4, 2.7, 3, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1],
+    E96: Array.from({ length: 96 }, (_, i) => +Math.pow(10, i / 96).toPrecision(3)) };
+  /* The stocked value nearest x on a series, by ratio. */
+  C.snapE = (x, series) => {
+    const d = Math.pow(10, Math.floor(Math.log10(x))); let best = 0;
+    for (const k of [d / 10, d, d * 10]) for (const m of C.ESERIES[series]) { const v = +(m * k).toPrecision(3); if (!best || Math.abs(Math.log(v / x)) < Math.abs(Math.log(best / x))) best = v; }
+    return best;
+  };
+  C.onSeries = (x, series) => !!C.ESERIES[series] && x > 0 && Math.abs(C.snapE(x, series) / x - 1) < 1e-9;
+  /* A resistor or capacitor with a footprint is a part someone buys: it needs a stocked value, a tolerance and,
+     for a capacitor, a voltage rating. A value off its series is refused, because nobody stocks it. */
+  C.lintPassive = (c) => {
+    const bad = [];
+    if (!(c.sym === "R" || c.sym === "C") || !c.fp || c.offBoard) return bad;
+    if (blank(c.tol)) bad.push(`component ${c.ref}: no tolerance`);
+    if (c.sym === "C" && blank(c.volt)) bad.push(`component ${c.ref}: no voltage rating`);
+    if (!C.ESERIES[c.series]) bad.push(`component ${c.ref}: no preferred-value series`);
+    else if (!C.onSeries(c.si, c.series)) bad.push(`component ${c.ref}: ${c.value} is not an ${c.series} value (nearest ${C.eng(C.snapE(c.si > 0 ? c.si : 1, c.series))})`);
+    else if (C.eng(c.si) !== c.value) bad.push(`component ${c.ref}: value text ${c.value} is not its number ${C.eng(c.si)}`);
+    return bad;
+  };
+  /* A passive on a series: the stocked value nearest the ideal one, with the ideal kept beside it. */
+  C.passive = (c, ideal, series, tol, volt) => { const si = C.snapE(ideal, series); return Object.assign(c, { value: C.eng(si), si, nominal: ideal, series, tol, volt: volt || "" }); };
 
   /* All pins of a symbol, every unit. */
   C.symPins = (S) => S.units.flatMap((u, i) => u.pins.map((p) => Object.assign({ unit: i + 1 }, p)));
@@ -148,6 +174,7 @@
   C.resolve = (inst, over) => {
     const p = Object.assign(C.defaults(inst), over || {}), problems = [];
     for (const q of inst.params) if (!(p[q.id] >= q.min && p[q.id] <= q.max)) problems.push(`parameter ${q.id} = ${p[q.id]} is outside ${q.min} to ${q.max}`);
+    for (const k of Object.keys(over || {})) if (!inst.params.some((q) => q.id === k)) problems.push(`parameter ${k} is not one of this instrument's parameters`);
     const B = inst.build(p);
     problems.push(...C.validate(B));
     const phys = inst.physics(p, B);

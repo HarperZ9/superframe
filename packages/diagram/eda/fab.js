@@ -28,6 +28,7 @@ const boardDXF = (B, holes) => {
   const Ent = [], o = [[0, 0], [B.w, 0], [B.w, B.h], [0, B.h]];
   o.forEach((p, i) => Ent.push({ t: "line", layer: "OUTLINE", a: p, b: o[(i + 1) % 4] }));
   for (const h of holes) Ent.push({ t: "circle", layer: "CENTER", c: h.at, r: h.d / 2 });
+  for (const h of B.holes || []) Ent.push({ t: "circle", layer: "OUTLINE", c: h.at, r: h.d / 2 });
   for (const P of B.parts) { const c = E.courtyard(P.fp, P.at, P.rot, 0); Ent.push({ t: "poly", layer: "HIDDEN", closed: true, pts: [[c[0], c[1]], [c[2], c[1]], [c[2], c[3]], [c[0], c[3]]] }); Ent.push({ t: "text", layer: "TEXT", at: [c[0], c[3] + 0.4], h: 0.8, s: P.ref }); }
   return { w: B.w, h: B.h, E: Ent };
 };
@@ -43,6 +44,11 @@ const writeAll = (B, meta = {}) => {
   const holes = E.holes(B), drl = E.toExcellon(holes, meta), X = E.parseExcellon(drl);
   const hOk = X.holes.length === holes.length && holes.every((h) => X.holes.some((q) => near(q.at[0], h.at[0], 5e-4) && near(q.at[1], h.at[1], 5e-4) && near(q.d, h.d, 5e-4)));
   files[`${B.id}.drl`] = drl; trips.push({ file: `${B.id}.drl`, kind: "excellon", holes: holes.length, tools: Object.keys(X.tools).length, ok: hOk });
+  const np = E.npthHoles(B);
+  if (np.length) {
+    const txt = E.toExcellon(np, Object.assign({ npth: true }, meta)), N = E.parseExcellon(txt);
+    files[`${B.id}-NPTH.drl`] = txt; trips.push({ file: `${B.id}-NPTH.drl`, kind: "excellon", holes: np.length, tools: Object.keys(N.tools).length, ok: N.holes.length === np.length && np.every((h) => N.holes.some((q) => near(q.at[0], h.at[0], 5e-4) && near(q.at[1], h.at[1], 5e-4) && near(q.d, h.d, 5e-4))) });
+  }
   const pnp = E.toPnP(B), PP = E.parsePnP(pnp);
   const pOk = PP.length === B.parts.length && B.parts.every((P) => PP.some((r) => r.Designator === P.ref && near(+r["Mid X (mm)"], P.at[0], 5e-5) && near(+r["Mid Y (mm)"], P.at[1], 5e-5) && +r.Rotation === P.rot && r.Value === P.value));
   files[`${B.id}-pnp.csv`] = pnp; trips.push({ file: `${B.id}-pnp.csv`, kind: "pick-and-place", rows: PP.length, ok: pOk });

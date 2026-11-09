@@ -19,7 +19,7 @@
     }
     o.push(`<g class="b-fcu b-tr">` + B.traces.filter((s) => s.layer === 0).map((s) => `<line data-net="${s.net}" x1="${n3(s.a[0])}" y1="${Y(s.a[1])}" x2="${n3(s.b[0])}" y2="${Y(s.b[1])}" stroke-width="${s.w}"/>`).join("") + "</g>");
     o.push(`<g class="b-pad">` + E.pads(B).map((q) => `<path data-ref="${q.P.ref}" data-net="${q.net}" d="${path(q.shape)}"/>`).join("") + B.parts.filter((P) => P.bridge).map((P) => `<line x1="${n3(P.bridge.a[0])}" y1="${Y(P.bridge.a[1])}" x2="${n3(P.bridge.b[0])}" y2="${Y(P.bridge.b[1])}" stroke-width="${P.bridge.w}"/>`).join("") + "</g>");
-    o.push(`<g class="b-hole">` + E.pads(B).filter((q) => q.pad.drill).map((q) => `<circle cx="${n3(q.at[0])}" cy="${Y(q.at[1])}" r="${q.pad.drill / 2}"/>`).join("") + "</g>");
+    o.push(`<g class="b-hole">` + E.pads(B).filter((q) => q.pad.drill).map((q) => `<circle cx="${n3(q.at[0])}" cy="${Y(q.at[1])}" r="${q.pad.drill / 2}"/>`).join("") + (B.holes || []).map((h) => `<circle data-hole="${h.what}" cx="${n3(h.at[0])}" cy="${Y(h.at[1])}" r="${h.d / 2}"/>`).join("") + "</g>");
     o.push(`<g class="b-via">` + B.vias.map((v) => `<circle data-net="${v.net}" cx="${n3(v.at[0])}" cy="${Y(v.at[1])}" r="${v.dia / 2}"/><circle class="b-drill" cx="${n3(v.at[0])}" cy="${Y(v.at[1])}" r="${v.drill / 2}"/>`).join("") + "</g>");
     if (B.fab) o.push(`<g class="b-silk">` + B.fab.F_Silk.map((p) => (p.type === "stroke" ? `<line x1="${n3(p.a[0])}" y1="${Y(p.a[1])}" x2="${n3(p.b[0])}" y2="${Y(p.b[1])}" stroke-width="${p.ap.w}"/>` : `<circle cx="${n3(p.at[0])}" cy="${Y(p.at[1])}" r="${p.ap.w / 2}"/>`)).join("") + "</g>");
     for (const e of opt.marks || []) o.push(`<circle class="b-err" cx="${n3(e.at[0])}" cy="${Y(e.at[1])}" r="1.2"/>`);

@@ -13,9 +13,12 @@
     return H;
   };
 
+  /* mounting holes: drilled, not plated, so they go in a file of their own */
+  E.npthHoles = (B) => (B.holes || []).map((h) => ({ d: h.d, at: h.at, what: h.what }));
+
   const f3 = (v) => v.toFixed(3);
   E.toExcellon = (holes, meta = {}) => {
-    const sizes = [...new Set(holes.map((h) => f3(h.d)))].sort((a, b) => +a - +b), o = ["M48", "; diagram-eda drill file" + (meta.hash ? ", model " + meta.hash : ""), "; plated through holes", "FMAT,2", "METRIC,TZ"];
+    const sizes = [...new Set(holes.map((h) => f3(h.d)))].sort((a, b) => +a - +b), o = ["M48", "; diagram-eda drill file" + (meta.hash ? ", model " + meta.hash : ""), meta.npth ? "; non-plated through holes" : "; plated through holes", "FMAT,2", "METRIC,TZ"];
     sizes.forEach((s, i) => o.push(`T${i + 1}C${s}`));
     o.push("%", "G90", "G05");
     sizes.forEach((s, i) => { o.push(`T${i + 1}`); for (const h of holes) if (f3(h.d) === s) o.push(`X${f3(h.at[0])}Y${f3(h.at[1])}`); });

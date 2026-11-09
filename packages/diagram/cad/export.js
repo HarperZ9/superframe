@@ -20,8 +20,10 @@ for (const id of IDS) {
   put("spec.md", C.specMD(A.spec)); put("spec.json", JSON.stringify(A.spec, null, 1));
   const top = R.B.items.map((it) => [it.item, C.itemQty(it), it.pn || "", it.pnStatus || "", it.desc, it.material || ""]);
   put("bom.csv", csv([["item", "qty", "part_number", "pn_status", "description", "material"], ...top]));
-  const el = R.B.netlist.components.filter((c) => !C.SYM[c.sym].optical).map((c) => [c.ref, c.value, c.fp || "", c.pn || "", c.pnStatus || "", c.desc || "", c.offBoard ? "off board" : ""]);
-  if (el.length) put("bom-electrical.csv", csv([["ref", "value", "footprint", "part_number", "pn_status", "description", "note"], ...el]));
-  fs.writeFileSync(path.join(dir, "manifest.json"), JSON.stringify({ id, model_hash: R.hash, params: R.p, problems: R.problems, sheet: A.BP.size, scale: C.scaleText(A.BP.scale), files }, null, 1));
+  const el = R.B.netlist.components.filter((c) => !C.SYM[c.sym].optical).map((c) => [c.ref, c.value, c.tol || "", c.volt || "", c.fp || "", c.pn || "", c.pnStatus || (c.pn ? "" : "no part number"), c.desc || "", c.offBoard ? "off board" : ""]);
+  if (el.length) put("bom-electrical.csv", csv([["ref", "value", "tolerance", "voltage", "footprint", "part_number", "pn_status", "description", "note"], ...el]));
+  /* every parameter's unit beside its value; drawing lengths are millimetres (the title block's UNITS cell) */
+  const units = Object.assign({ drawing_length: "mm" }, A.spec.units);
+  fs.writeFileSync(path.join(dir, "manifest.json"), JSON.stringify({ id, model_hash: R.hash, params: R.p, units, problems: R.problems, sheet: A.BP.size, scale: C.scaleText(A.BP.scale), files }, null, 1));
   console.log(id, A.BP.size, C.scaleText(A.BP.scale), Object.keys(files).length, "files ->", dir);
 }

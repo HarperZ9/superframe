@@ -43,6 +43,21 @@
     return false;
   };
 
+  /* mounting holes: the drill clear of the board edge, and every copper object clear of the standoff seat */
+  const drcHoles = (B, O, errors) => {
+    const R = B.rules;
+    for (const h of B.holes || []) {
+      const e = Math.min(h.at[0], h.at[1], B.w - h.at[0], B.h - h.at[1]) - h.d / 2;
+      if (e < R.edge - 1e-6) errors.push({ rule: "hole clearance", what: h.what, kind: "edge", gap: +e.toFixed(4), need: R.edge, at: h.at });
+      for (const o of O) { const gap = E.ptDist(h.at, o) - h.seat; if (gap < R.holeClear - 1e-6) errors.push({ rule: "hole clearance", what: h.what, net: o.net, kind: o.kind, gap: +gap.toFixed(4), need: R.holeClear, at: h.at }); }
+    }
+  };
+  /* silkscreen: each reference label on the board and clear of pad openings, holes, other parts and other labels */
+  const drcSilk = (B, errors) => {
+    const L = E.silkLabels(B);
+    L.forEach((l, i) => { for (const over of E.silkConflicts(B, l, L.slice(0, i))) errors.push({ rule: "silk overlap", ref: l.ref, over, at: l.at }); });
+  };
+
   let B_TIE = new Map();
   E.drc = (B) => {
     B_TIE = new Map(B.parts.filter((P) => P.fp.tie).map((P) => [P.ref, Object.values(P.comp.pins)]));
@@ -72,6 +87,7 @@
       const gap = Math.hypot(holes[a].at[0] - holes[b].at[0], holes[a].at[1] - holes[b].at[1]) - holes[a].drill / 2 - holes[b].drill / 2;
       if (gap < R.holeGap - 1e-9 && !(holes[a].kind === "pad" && holes[b].kind === "pad" && holes[a].ref === holes[b].ref && gap > 0)) errors.push({ rule: "hole gap", nets: [holes[a].net, holes[b].net], gap: +gap.toFixed(4), need: R.holeGap, at: holes[a].at });
     }
+    drcHoles(B, O, errors); drcSilk(B, errors);
     /* connectivity, per net, over pads */
     const unrouted = [];
     for (const n of Object.keys(B.nets)) {

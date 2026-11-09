@@ -23,11 +23,11 @@
   E.toPnP = (B) => E.toCSV([E.PNP_HEAD, ...B.parts.map((P) => [P.ref, P.value, P.fp.name, P.at[0].toFixed(4), P.at[1].toFixed(4), P.rot, P.side === "F" ? "Top" : "Bottom", P.fp.smd ? "SMD" : "THT"])]);
   E.parsePnP = (txt) => { const [h, ...r] = E.parseCSV(txt); return r.map((x) => Object.fromEntries(h.map((k, i) => [k, x[i]]))); };
 
-  E.BOM_HEAD = ["Item", "Qty", "Designators", "Value", "Footprint", "Part number", "PN status", "Description"];
+  E.BOM_HEAD = ["Item", "Qty", "Designators", "Value", "Tolerance", "Voltage", "Footprint", "Part number", "PN status", "Description"];
   E.toBOM = (B) => {
     const groups = new Map();
     for (const P of B.parts) { const k = [P.value, P.fp.name, P.pn].join("|"); (groups.get(k) || groups.set(k, []).get(k)).push(P); }
-    const rows = [...groups.values()].map((ps, i) => [i + 1, ps.length, ps.map((p) => p.ref).join(" "), ps[0].value, ps[0].fp.name, ps[0].pn || "", ps[0].pnStatus || (ps[0].pn ? "" : "no part number"), ps[0].comp.desc || ""]);
+    const rows = [...groups.values()].map((ps, i) => [i + 1, ps.length, ps.map((p) => p.ref).join(" "), ps[0].value, ps[0].comp.tol || "", ps[0].comp.volt || "", ps[0].fp.name, ps[0].pn || "", ps[0].pnStatus || (ps[0].pn ? "" : "no part number"), ps[0].comp.desc || ""]);
     return E.toCSV([E.BOM_HEAD, ...rows]);
   };
   E.parseBOM = (txt) => { const [h, ...r] = E.parseCSV(txt); return r.map((x) => Object.fromEntries(h.map((k, i) => [k, x[i]]))); };
