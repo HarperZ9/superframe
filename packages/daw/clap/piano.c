@@ -10,7 +10,10 @@
 // one sample at a time, so the output equals dispersion.stiff_string bit for bit (tests/test_clap.py). Velocity
 // scales the hammer force. Note-off is ignored: the string rings out at its T60, as the offline note does.
 //
-// This kernel is C for now; the BuildLang port is the next step for it (DESIGN.md section 5).
+// The string itself is BuildLang (bld/string.bld, daw_string_block); this file is the CLAP glue. Each block is
+// run in chunks of up to 256 samples: every voice adds its chunk into one accumulator in voice order, which is
+// the same per-sample sum, in the same order, as the C kernel this replaced.
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -22,10 +25,11 @@
 #define PIANO_RING 2048
 #define PIANO_SECTIONS 18
 #define PIANO_GAIN 0.25
+#define PIANO_CHUNK 256
 
 typedef struct {
     int active, n, sections, hlen;
-    long long k;                         // samples since the strike
+    int64_t k;                           // samples since the strike
     double vel;
     double sos[PIANO_SECTIONS][6];
     double zi[PIANO_SECTIONS][2];
@@ -76,23 +80,9 @@ static void strike(piano_t *s, int key, double vel) {
     }
 }
 
-static double string_tick(string_t *v) {
-    long long k = v->k++;
-    int slot = (int)(k % v->n);
-    double x = k >= v->n ? v->ring[slot] : 0.0;           // v[k - n], the loop's input
-    for (int j = 0; j < v->sections; ++j) {
-        const double *c = v->sos[j];
-        double *z = v->zi[j];
-        double y = c[0] * x + z[0];
-        z[0] = c[1] * x - c[4] * y + z[1];
-        z[1] = c[2] * x - c[5] * y;
-        x = y;
-    }
-    double e = k < v->hlen ? v->hammer[k] * v->vel : 0.0;
-    double out = e + x;
-    v->ring[slot] = out;
-    return out;
-}
+// bld/string.bld, compiled by buildc into the same library: one string for `frames` samples, added into acc.
+void daw_string_block(double *ring, size_t ring_len, const double *sos, double *zi, size_t sections,
+                      const double *hammer, size_t hlen, double vel, size_t n, int64_t *k, double *acc, size_t frames);
 
 static bool p_init(const clap_plugin_t *p) { (void)p; return true; }
 static void p_destroy(const clap_plugin_t *p) { piano_t *s = p->plugin_data; free(s->v); free(s); }
@@ -120,12 +110,21 @@ static void p_reset(const clap_plugin_t *p) {
 }
 
 static void p_run(piano_t *s, const clap_process_t *pr, uint32_t from, uint32_t to) {
-    for (uint32_t i = from; i < to; ++i) {
-        double acc = 0.0;
-        for (int j = 0; j < PIANO_VOICES; ++j)
-            if (s->v[j].active) acc += string_tick(&s->v[j]);
-        float o = (float)(PIANO_GAIN * acc);
-        for (uint32_t c = 0; c < pr->audio_outputs[0].channel_count; ++c) pr->audio_outputs[0].data32[c][i] = o;
+    double acc[PIANO_CHUNK];
+    while (from < to) {
+        uint32_t n = to - from < PIANO_CHUNK ? to - from : PIANO_CHUNK;
+        memset(acc, 0, n * sizeof(double));
+        for (int j = 0; j < PIANO_VOICES; ++j) {           // voice order, as the per-sample sum was
+            string_t *v = &s->v[j];
+            if (v->active)
+                daw_string_block(v->ring, PIANO_RING, &v->sos[0][0], &v->zi[0][0], (size_t)v->sections, v->hammer,
+                                 (size_t)v->hlen, v->vel, (size_t)v->n, &v->k, acc, n);
+        }
+        for (uint32_t i = 0; i < n; ++i) {
+            float o = (float)(PIANO_GAIN * acc[i]);
+            for (uint32_t c = 0; c < pr->audio_outputs[0].channel_count; ++c) pr->audio_outputs[0].data32[c][from + i] = o;
+        }
+        from += n;
     }
 }
 

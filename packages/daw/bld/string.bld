@@ -1,0 +1,53 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The stiff piano string (daw/dispersion.py stiff_loop), the kernel of "superframe piano" (clap/piano.c).
+//
+// One string runs `frames` samples and adds each output sample into acc. Its loop input is v[k - n] from a ring
+// of ring_len samples (ring_len at least n); the loop filter is `sections` second-order sections in the order
+// scipy's sosfilt uses (y = b0 x + z0; z0 = b1 x - a1 y + z1; z1 = b2 x - a2 y), coefficients six to a row in sos
+// and state two to a row in zi; the hammer force (hlen samples, scaled by vel) is added to the loop's output. k
+// is the number of samples since the strike, kept in kp[0] between calls. Every step is one IEEE add, multiply
+// or subtract in a fixed order, so the output equals the offline loop bit for bit (tests/test_clap.py).
+extern "C" fn daw_string_block(ringp: *mut f64, ring_len: usize, sosp: *const f64, zip: *mut f64, sections: usize,
+                               hammerp: *const f64, hlen: usize, vel: f64, n: usize, kp: *mut i64,
+                               accp: *mut f64, frames: usize) {
+    let ring = unsafe { slice::from_raw_parts_mut(ringp, ring_len) };
+    let sos = unsafe { slice::from_raw_parts(sosp, sections * 6) };
+    let zi = unsafe { slice::from_raw_parts_mut(zip, sections * 2) };
+    let hammer = unsafe { slice::from_raw_parts(hammerp, hlen) };
+    let kk = unsafe { slice::from_raw_parts_mut(kp, 1) };
+    let acc = unsafe { slice::from_raw_parts_mut(accp, frames) };
+    let period = n as i64;
+    let rows = sections * 6;
+    let mut k: i64 = kk[0];
+    let mut i: usize = 0;
+    while i < frames {
+        let slot = (k % period) as usize;
+        let mut x: f64 = if k >= period { ring[slot] } else { 0.0 };
+        let mut c: usize = 0;
+        let mut z: usize = 0;
+        while c < rows {
+            let b0: f64 = sos[c];
+            let b1: f64 = sos[c + 1];
+            let b2: f64 = sos[c + 2];
+            let a1: f64 = sos[c + 4];
+            let a2: f64 = sos[c + 5];
+            let z0: f64 = zi[z];
+            let z1: f64 = zi[z + 1];
+            let y: f64 = b0 * x + z0;
+            zi[z] = b1 * x - a1 * y + z1;
+            zi[z + 1] = b2 * x - a2 * y;
+            x = y;
+            c = c + 6;
+            z = z + 2;
+        }
+        let e: f64 = if k < (hlen as i64) { hammer[k as usize] * vel } else { 0.0 };
+        let out: f64 = e + x;
+        ring[slot] = out;
+        acc[i] = acc[i] + out;
+        k = k + 1;
+        i = i + 1;
+    }
+    kk[0] = k;
+}
