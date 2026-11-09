@@ -19,7 +19,8 @@ import numpy as np
 
 from . import PKG
 
-SOURCES = [PKG / "bld" / "dsp.bld", PKG / "bld" / "dsp32.bld", PKG / "bld" / "live.bld"]   # the kernels; bld/main.bld is the host program
+SOURCES = [PKG / "bld" / "dsp.bld", PKG / "bld" / "dsp32.bld", PKG / "bld" / "live.bld",
+           PKG / "bld" / "string.bld"]   # the kernels; bld/main.bld is the host program
 _LIB = None
 _WHY = None
 
@@ -156,3 +157,22 @@ def bubble_set(state, v, f, delta, amp, fs):
     """daw_bubble_set: one-mode voice v rings at f, decaying at pi f delta per second."""
     lib().daw_bubble_set(*(_p(a) for a in state), ctypes.c_size_t(v), ctypes.c_double(f), ctypes.c_double(delta),
                          ctypes.c_double(amp), ctypes.c_double(fs))
+
+
+def string_block(state, sos, hammer, vel, n, frames, acc=None):
+    """bld/string.bld for one stiff string: state is (ring, zi, k) as made by string_state; sos is the
+    (sections, 6) loop filter. Adds `frames` samples into acc (zeros when None) and returns acc."""
+    ring, zi, k = state
+    sos = np.ascontiguousarray(sos, dtype=np.float64)
+    ham = np.ascontiguousarray(hammer, dtype=np.float64)
+    acc = np.zeros(frames) if acc is None else acc
+    f = lib().daw_string_block
+    f.restype = None
+    f(_p(ring), ctypes.c_size_t(len(ring)), _p(sos), _p(zi), ctypes.c_size_t(len(sos)), _p(ham),
+      ctypes.c_size_t(len(ham)), ctypes.c_double(vel), ctypes.c_size_t(n), k.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+      _p(acc), ctypes.c_size_t(frames))
+    return acc
+
+
+def string_state(ring_len, sections):
+    return np.zeros(ring_len), np.zeros(sections * 2), np.zeros(1, dtype=np.int64)

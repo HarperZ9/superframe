@@ -145,3 +145,25 @@ def test_stored_loop_is_the_stiff_string_here():
     want = D.stiff_string(clap_tables.f0_of(key), 0.2, fs, W.hammer(fs, clap_tables.CONTACT), clap_tables.T60,
                           D.piano_b(key))
     assert np.array_equal(y, want)
+
+
+def test_buildlang_string_equals_the_offline_loop():
+    """bld/string.bld called straight from Python, in two calls to carry its state, against dispersion.stiff_loop."""
+    why = native.unavailable()
+    if why and os.environ.get("DAW_REQUIRE_NATIVE"):
+        pytest.fail(why)
+    if why:
+        pytest.skip(why)
+    fs, key, vel = 48000, 60, 0.7
+    rows, ham = clap_tables.read(fs)
+    n, t, g, a, m = rows[key]
+    sos = [[g * t, g, 0.0, 1.0, t, 0.0], [0.5, 0.5, 0.0, 1.0, 0.0, 0.0]] + [[a, 1.0, 0.0, 1.0, a, 0.0]] * m
+
+    def run(v):
+        state = native.string_state(2048, len(sos))
+        return np.concatenate([native.string_block(state, sos, ham, v, n, 1000),
+                               native.string_block(state, sos, ham, v, n, 8600)])
+    y = run(vel)
+    want = D.stiff_loop(rows[key], 0.2, fs, np.array(ham) * vel)[:9600]
+    assert len(want) == 9600 and np.array_equal(y, want)
+    assert not np.array_equal(run(np.nextafter(vel, 1.0)), want)                # planted: velocity one ulp high
