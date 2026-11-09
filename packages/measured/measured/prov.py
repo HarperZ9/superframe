@@ -66,6 +66,8 @@ SOURCES = {
                     "CC0 (figshare dataset); article CC BY 4.0"),
     "storm-saves": ("Three storm field recordings (ocean storm, howling wind in spruce, rain and thunder), 180 s each, saved from public videos",
                     "no licence stated; local research copies, never redistributed; only spectral statistics are used"),
+    "iowa-mis-piano": ("University of Iowa Musical Instrument Samples, piano mf set (Steinway & Sons model B, recorded 2001), theremin.music.uiowa.edu/MISpiano.html",
+                       "free for any project without restrictions (stated on the MIS page); audio kept internal, only measured values published"),
     "iowa-mis": ("University of Iowa Musical Instrument Samples (Lawrence Fritts), theremin.music.uiowa.edu, vibraphone and bells",
                  "free for any project without restrictions (stated on the MIS page)"),
     "wikidata-materials": ("Wikidata entity data for Q11427, Q663, Q39782, Q753, Q11469 (properties P2054, P5480, P5593)",

@@ -14,9 +14,13 @@ own phase: partial k sits where the loop phase reaches -2 pi k. The a (and M fro
 match the target partials 1 to K in cents is chosen by a bounded scalar search. Nothing is tabled; the fit is
 checked in the tests by rendering a note and fitting B back from its measured partials.
 
-piano_b(midi): a smooth register curve for B, from about 1e-4 in the low tenor to about 1e-3 near C7, a common
-textbook shape (Fletcher 1964; Conklin 1996). From memory, low confidence in the exact values: the shape, a rise
-of about a decade over five octaves, is the claim.
+piano_b(midi): B per note measured from recordings of a Steinway model B (packages/measured
+data/piano_b_iowa.json, built by build/b_piano_b.py from the University of Iowa MIS piano, one fit of
+f_n = n f0 sqrt(1 + B n^2) per note). Notes whose fit has quality "good" are used as they are; between them B is
+interpolated in log B; above the last measured note (D flat 7) and where the table has no row, the treble is
+extended by a straight line in log B fitted to the measured notes from C4 up, and the bass is held at B0.
+piano_b_textbook(midi) is the earlier smooth curve (from memory, low confidence), kept so renders made with it
+can be repeated.
 """
 import math
 from functools import lru_cache
@@ -25,11 +29,31 @@ import numpy as np
 from scipy.optimize import minimize_scalar
 from scipy.signal import sosfilt
 
-STAGES = (2, 4, 8, 12, 16)
+STAGES = (1, 2, 3, 4, 5, 6, 8, 10, 12, 16)
+
+
+def piano_b_textbook(midi):
+    return float(np.clip(10 ** (-4.0 + (midi - 48) * 1.0 / 60.0), 2e-5, 3e-3))
+
+
+@lru_cache(maxsize=1)
+def _measured_b():
+    from . import PKG  # noqa: F401  (sets sys.path for measured)
+    from measured import load
+    rows = [r for r in load("piano_b_iowa")["rows"] if r["quality"] == "good"]
+    m = np.array([r["midi"] for r in rows], float)
+    lb = np.log10([r["B"] for r in rows])
+    top = m >= 60
+    slope, icept = np.polyfit(m[top], lb[top], 1)
+    return m, lb, slope, icept
 
 
 def piano_b(midi):
-    return float(np.clip(10 ** (-4.0 + (midi - 48) * 1.0 / 60.0), 2e-5, 3e-3))
+    """Measured B for a MIDI note (fractional notes interpolate); see the module notes for the edges."""
+    m, lb, slope, icept = _measured_b()
+    if midi > m[-1]:
+        return float(10 ** (icept + slope * midi))
+    return float(10 ** np.interp(midi, m, lb))
 
 
 def _ap_phase(c, w):
@@ -70,7 +94,8 @@ def partials(f0, fs, a, m, count=10, grid=1 << 15):
 @lru_cache(maxsize=512)
 def design(f0, fs, b, count=10):
     """(a, m) whose loop partials best match n f0 sqrt(1 + b n^2) / sqrt(1 + b), in cents, over partials below
-    0.4 fs. b = 0 gives no stages."""
+    0.4 fs, plus the error of the loop's own fitted B (one percent weighs as three cents), so treble notes
+    with few partials keep their B. b = 0 gives no stages."""
     if b <= 0:
         return 0.0, 0
     k = np.arange(1, count + 1)
@@ -86,8 +111,15 @@ def design(f0, fs, b, count=10):
                 return 1e9
             if len(p) < len(k):
                 return 1e9
-            return float(np.mean((1200 * np.log2(p / target)) ** 2))
-        r = minimize_scalar(err, bounds=(-0.95, -1e-4), method="bounded", options={"xatol": 1e-5})
+            cents = float(np.mean((1200 * np.log2(p / target)) ** 2))
+            if len(k) < 3:
+                return cents
+            slope, icept = np.polyfit(k ** 2.0, (p / k) ** 2, 1)      # the loop's own B, as fit_b reads it
+            return cents + (300.0 * (slope / icept / b - 1)) ** 2      # one percent of B weighs as three cents
+        grid = np.linspace(-0.95, -1e-4, 48)                       # coarse scan first: the error has local minima
+        j = int(np.argmin([err(a) for a in grid]))
+        lo, hi = grid[max(j - 1, 0)], grid[min(j + 1, len(grid) - 1)]
+        r = minimize_scalar(err, bounds=(lo, hi), method="bounded", options={"xatol": 1e-6})
         if best is None or r.fun < best[0]:
             best = (r.fun, r.x, m)
     return float(best[1]), int(best[2])
