@@ -8,6 +8,7 @@ gain curve, so its stems do not sum to its master. Here each part of the master 
 - each track's own room return: its send convolved with the room's impulse responses, times one fixed room
   gain for the piece, db(room_return_db) / sqrt(energy of the louder response), set from the room before any
   note is rendered and never from the output;
+- each bus's gain curve (buses.py), computed once and applied to each member's stem;
 - one static gain to the piece's target loudness (loudness.gain_to_target), the same for every stem;
 - the master limiter's gain curve, computed once on the summed signal and applied to every stem.
 Every operation after the per-track render is linear and shared, so sum(stems) equals the master.
@@ -24,6 +25,7 @@ import numpy as np
 import soundfile as sf
 from scipy.signal import oaconvolve
 
+from . import buses as BU
 from . import loudness as LD
 from . import superstack as ss
 from .arrange import render_track
@@ -53,12 +55,13 @@ def render(arr, rng, target_lufs=None):
     for name in sorted(getattr(arr, "spaces", {}) or {}):           # extra spaces, in name order (seeded)
         h = arr.spaces[name].impulse_responses(fs, rng)
         buses[name] = (h, room_gain(arr, *h))
-    stems = {}
+    stems, drys = {}, {}
     for tr in arr.tracks:
         mono = render_track(arr, tr, rng)
         gain = tr.control("gain_db", n, fs)
         st = place(mono, gain, tr.control("pan", n, fs))
         dry = mono * db(gain)
+        drys[tr.name] = dry
         if getattr(tr, "width", 0.0) > 0:
             st = st + widen(dry, tr.width, tr.name, fs=fs)
         send = dry * tr.send
@@ -70,6 +73,7 @@ def render(arr, rng, target_lufs=None):
             if level > 0:
                 st = st + buses[name][1] * _wet(dry * level, buses[name][0], n)
         stems[tr.name] = st
+    bus_db = BU.apply(arr, stems, drys, fs)                        # group buses and sidechains (buses.py)
     pre = sum(stems.values())
     g_loud = LD.gain_to_target(pre, fs, target_lufs) if target_lufs is not None else 1.0
     _, curve = limit(pre * g_loud, arr.ceiling, fs)
@@ -77,7 +81,7 @@ def render(arr, rng, target_lufs=None):
     for k in stems:
         stems[k] = stems[k] * total
     info = {"room_gain": g_room, "loudness_gain_db": 20 * math.log10(g_loud), "target_lufs": target_lufs,
-            "limiter_min_gain_db": 20 * math.log10(max(float(curve.min()), 1e-12))}
+            "limiter_min_gain_db": 20 * math.log10(max(float(curve.min()), 1e-12)), "bus_min_gain_db": bus_db}
     return stems, info
 
 

@@ -6364,8 +6364,8 @@
   {
    "path": "packages/daw/DESIGN.md",
    "source": "repo",
-   "bytes": 41326,
-   "sourceSha256": "85784fdb9ee3b82ee6d8df5454e1d2c4ee425ac5c97537a613f2d92e3f049ff7"
+   "bytes": 41823,
+   "sourceSha256": "17b6c23a00c436f4c6de00e0fdb3a547270f68219252e42b5f1ad429e91235b9"
   },
   {
    "path": "packages/daw/README.md",
@@ -6916,8 +6916,14 @@
   {
    "path": "packages/daw/daw/arrange.py",
    "source": "repo",
-   "bytes": 4561,
-   "sourceSha256": "512b57d9bdc911a9b05793c28bcf2868f7dcabb168d1c0dd4488c5b3c6b786cd"
+   "bytes": 4778,
+   "sourceSha256": "6de69fe7bd4c3bad588b88dda8b504c60012def2597223d8bffd6a846bc91358"
+  },
+  {
+   "path": "packages/daw/daw/buses.py",
+   "source": "repo",
+   "bytes": 4622,
+   "sourceSha256": "3b1484f512876736c9f92af13023696767529affe505616546e5b7879810b13c"
   },
   {
    "path": "packages/daw/daw/choir.py",
@@ -7132,8 +7138,8 @@
   {
    "path": "packages/daw/daw/stems.py",
    "source": "repo",
-   "bytes": 9421,
-   "sourceSha256": "f2b7a99a510c2a5af9b3419e0bc643be7524994de0d6949bfb8041b45b512922"
+   "bytes": 9704,
+   "sourceSha256": "9ef8096262d56ac797e787aba9c158ec88b2a0a3286d55e886c74bbdedcc4362"
   },
   {
    "path": "packages/daw/daw/subtractive.py",
@@ -7236,6 +7242,12 @@
    "source": "repo",
    "bytes": 7568,
    "sourceSha256": "21bf6dfdbf66e2030057e1825afc68219418da884cf2f8382fd29a6671e899ff"
+  },
+  {
+   "path": "packages/daw/tests/test_buses.py",
+   "source": "repo",
+   "bytes": 5157,
+   "sourceSha256": "e522e7acd6a2bc33fa48dca78f78597044dcec5ab513d3bc0dea334a49b0e2a2"
   },
   {
    "path": "packages/daw/tests/test_choir.py",
