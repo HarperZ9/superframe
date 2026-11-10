@@ -5,11 +5,15 @@
 //
 // Seven triangles stand one above another. Triangle 1 is the base. Each triangle divides the three pigments
 // blue, yellow and red into `side` equal parts; the sides are 8, 6, 4, 3, 2, 1 and 0, which gives 45, 28, 15,
-// 10, 6, 3 and 1 cells, 108 in all. A mixture is written in eighths: blue + yellow + red = side, and the
-// white share is 8 - side, so the four numbers always add up to 8. A cell is named by its row counted from
-// the blue corner (0 to side) and its column counted from the yellow side of that row (0 to row).
+// 10, 6, 3 and 1 cells, 108 in all. A mixture is blue + yellow + red = side. A cell is named by its row
+// counted from the blue corner (0 to side) and its column counted from the yellow side of that row (0 to row),
+// which is the layout of the tables printed in sections 80 to 85.
 //
-// Status codes: 0 accepted, 1 tier outside 1 to 7, 2 cell outside the triangle. A rejected call writes nothing.
+// White is kept apart from the pigment parts, because the book states it for some triangles only. Sections
+// 83 and 85 say triangles 4 and 6 are "applied lighter" and print no amount, so the kernel refuses to give one.
+//
+// Status codes: 0 accepted, 1 tier outside 1 to 7, 2 cell outside the triangle, 5 the source states no
+// amount. A rejected call writes nothing.
 
 // Parts per pigment in triangle `tier`, or -1 when the tier is rejected.
 extern "C" fn cm_lambert_side(tier: i64) -> i64 {
@@ -48,7 +52,7 @@ extern "C" fn cm_lambert_total() -> i64 {
     total
 }
 
-// Eighths of blue, yellow, red and white in the cell, written to out[0] to out[3].
+// Parts of blue, yellow and red in the cell, out of cm_lambert_side(tier), written to out[0] to out[2].
 extern "C" fn cm_lambert_mix(tier: i64, row: i64, col: i64, out: *mut i64) -> i32 {
     let s = cm_lambert_side(tier);
     if s < 0 {
@@ -57,10 +61,83 @@ extern "C" fn cm_lambert_mix(tier: i64, row: i64, col: i64, out: *mut i64) -> i3
     if row < 0 || row > s || col < 0 || col > row {
         return 2;
     }
-    let o = unsafe { slice::from_raw_parts_mut(out, 4) };
+    let o = unsafe { slice::from_raw_parts_mut(out, 3) };
     o[0] = s - row;
     o[1] = row - col;
     o[2] = col;
-    o[3] = 8 - s;
     0
+}
+
+// White in triangle `tier` as the book states it: out[0] portions of white in out[1] portions of the whole.
+// Triangle 1 has none, 2 has two of eight, 3 four of eight, 5 six of eight, and 7 is wholly white, written
+// as one of one because the book counts no portions there. Triangles 4 and 6 return 5 and write nothing.
+extern "C" fn cm_lambert_white(tier: i64, out: *mut i64) -> i32 {
+    if tier < 1 || tier > 7 {
+        return 1;
+    }
+    if tier == 4 || tier == 6 {
+        return 5;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 2) };
+    if tier == 7 {
+        o[0] = 1;
+        o[1] = 1;
+        return 0;
+    }
+    o[0] = 8 - cm_lambert_side(tier);
+    o[1] = 8;
+    0
+}
+
+// Number of a base cell on the numbered leaf: the base is counted column by column from the yellow side,
+// each column from the blue end, 1 to 45.
+fn cm_base_number(row: i64, col: i64) -> i64 {
+    9 * col - col * (col - 1) / 2 + (row - col) + 1
+}
+
+// A cell of triangle 2 is also a base mixture when its parts are all multiples of 3.
+fn cm_second_shared(row: i64, col: i64) -> bool {
+    row % 3 == 0 && col % 3 == 0
+}
+
+// Number of a cell of triangle 2: a mixture the base already holds keeps its base number, and the other 22
+// cells are counted 46 to 67 in the same column order.
+fn cm_second_number(row: i64, col: i64) -> i64 {
+    if cm_second_shared(row, col) {
+        return cm_base_number(row / 3 * 4, col / 3 * 4);
+    }
+    let mut count: i64 = 46;
+    let mut c: i64 = 0;
+    while c <= col {
+        let mut r: i64 = c;
+        while r <= 6 && (c < col || r < row) {
+            if !cm_second_shared(r, c) {
+                count = count + 1;
+            }
+            r = r + 1;
+        }
+        c = c + 1;
+    }
+    count
+}
+
+// The number printed in the cell on the numbered leaf (section 87): 1 to 67, the same number wherever the
+// same mixture returns in a higher triangle. 0 for the white cell of triangle 7, which carries no number.
+// -1 when the tier or the cell is rejected.
+extern "C" fn cm_lambert_number(tier: i64, row: i64, col: i64) -> i64 {
+    let s = cm_lambert_side(tier);
+    if s < 0 || row < 0 || row > s || col < 0 || col > row {
+        return -1;
+    }
+    if tier == 7 {
+        return 0;
+    }
+    if tier == 2 {
+        return cm_second_number(row, col);
+    }
+    if tier == 4 {
+        return cm_second_number(2 * row, 2 * col);
+    }
+    let scale = 8 / s;
+    cm_base_number(scale * row, scale * col)
 }
