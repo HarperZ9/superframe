@@ -19,7 +19,7 @@ def test_buildlang_equals_reference(kernels):
 def test_modern_mapping_equals_reference(kernels):
     tally = check.modern(kernels)
     assert tally.mismatches == 0, tally.first
-    assert tally.cases == 40064
+    assert tally.cases == 73964
 
 
 def test_nine_sections_of_nine_cover_the_cube(impl):

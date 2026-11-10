@@ -51,6 +51,9 @@ and a level is a fraction of full intensity in linear light. Linear light means 
 physical power, before any display encoding. The mapping names no particular set of display primaries and
 no white point. Each output is one IEEE 754 double division, so the bits are the same on every target.
 
+Named mappings build on it: sRGB, Display P3 and Rec. 2020, each with stated primaries, white point and
+transfer function, and CIE XYZ under D65 and D50. They are described in `MODERN.md`.
+
 ## Historical and inferred
 
 | Parameter | Value | Status | Where |

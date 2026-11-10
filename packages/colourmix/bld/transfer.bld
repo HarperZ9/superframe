@@ -1,0 +1,103 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Transfer functions for the named RGB spaces. See docs/MODERN.md.
+//
+// A transfer function turns linear light (a value in proportion to physical power, 0 to 1) into the encoded
+// value a file or a display signal stores, also 0 to 1. Spaces 0 (sRGB) and 1 (Display P3) share the sRGB
+// curve of IEC 61966-2-1: 12.92 v up to 0.0031308, above that 1.055 v^(1/2.4) - 0.055. Space 2 (Rec. 2020)
+// uses the curve of ITU-R BT.2020 with its 12-bit constants: 4.5 v below 0.0181, from there on
+// 1.0993 v^0.45 - 0.0993.
+//
+// The powers are rational (5/12, 12/5, 9/20, 20/9), so each is a whole-number root found by the method of
+// Newton in a fixed number of steps, then a whole-number power by repeated multiplication. Only +, -, * and /
+// are used, so the result has the same bits as the reference on every target. A test compares it with a
+// library pow.
+//
+// Status codes: 0 accepted, 2 value outside 0 to 1 (this includes a value that is not a number), 6 unknown
+// space.
+
+fn cm_ipow(y: f64, n: i64) -> f64 {
+    let mut p: f64 = 1.0;
+    let mut i: i64 = 0;
+    while i < n {
+        p = p * y;
+        i = i + 1;
+    }
+    p
+}
+
+// The q-th root of x for 0 < x <= 1: 48 Newton steps down from 1.
+fn cm_root(x: f64, q: i64) -> f64 {
+    let qf = q as f64;
+    let mut y: f64 = 1.0;
+    let mut i: i64 = 0;
+    while i < 48 {
+        y = ((qf - 1.0) * y + x / cm_ipow(y, q - 1)) / qf;
+        i = i + 1;
+    }
+    y
+}
+
+// x to the power num / den for 0 < x <= 1.
+fn cm_ratpow(x: f64, num: i64, den: i64) -> f64 {
+    cm_ipow(cm_root(x, den), num)
+}
+
+fn cm_unit(v: f64) -> bool {
+    v >= 0.0 && v <= 1.0
+}
+
+fn cm_frac(num: i64, den: i64) -> f64 {
+    (num as f64) / (den as f64)
+}
+
+// Linear light to the encoded value of the space, written to out[0].
+extern "C" fn cm_modern_encode(space: i64, v: f64, out: *mut f64) -> i32 {
+    if space < 0 || space > 2 {
+        return 6;
+    }
+    if !cm_unit(v) {
+        return 2;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 1) };
+    if space == 2 {
+        if v < cm_frac(181, 10000) {
+            o[0] = cm_frac(45, 10) * v;
+        } else {
+            o[0] = cm_frac(10993, 10000) * cm_ratpow(v, 9, 20) - cm_frac(993, 10000);
+        }
+        return 0;
+    }
+    if v <= cm_frac(31308, 10000000) {
+        o[0] = cm_frac(1292, 100) * v;
+    } else {
+        o[0] = cm_frac(1055, 1000) * cm_ratpow(v, 5, 12) - cm_frac(55, 1000);
+    }
+    0
+}
+
+// Encoded value of the space back to linear light, written to out[0].
+extern "C" fn cm_modern_decode(space: i64, e: f64, out: *mut f64) -> i32 {
+    if space < 0 || space > 2 {
+        return 6;
+    }
+    if !cm_unit(e) {
+        return 2;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 1) };
+    if space == 2 {
+        if e < cm_frac(45, 10) * cm_frac(181, 10000) {
+            o[0] = e / cm_frac(45, 10);
+        } else {
+            o[0] = cm_ratpow((e + cm_frac(993, 10000)) / cm_frac(10993, 10000), 20, 9);
+        }
+        return 0;
+    }
+    if e <= cm_frac(4045, 100000) {
+        o[0] = e / cm_frac(1292, 100);
+    } else {
+        o[0] = cm_ratpow((e + cm_frac(55, 1000)) / cm_frac(1055, 1000), 12, 5);
+    }
+    0
+}

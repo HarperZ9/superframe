@@ -7,8 +7,8 @@ from colourmix import controls
 
 
 def test_every_kernel_has_a_planted_defect():
-    assert {defect[1] for defect in controls.DEFECTS} == {"mayer", "lambert", "benson", "modern"}
-    assert len(controls.DEFECTS) == 12
+    assert {defect[1] for defect in controls.DEFECTS} == {"mayer", "lambert", "benson", "modern", "rgbspace", "transfer"}
+    assert len(controls.DEFECTS) == 25
 
 
 @pytest.mark.parametrize("defect", controls.DEFECTS, ids=[d[0] for d in controls.DEFECTS])

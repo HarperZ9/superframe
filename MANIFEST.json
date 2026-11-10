@@ -5698,8 +5698,8 @@
   {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 7554,
-   "sourceSha256": "ab151ee42ea7511fd4e166edab516a3a2fae543e487278f60a60c6c1e22106e4"
+   "bytes": 7630,
+   "sourceSha256": "b5afdb7ad223ac78eac82252987aa87dbe5dbd496aa97dbec3bdf778efb22ae2"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -5890,8 +5890,8 @@
   {
    "path": "packages/colourmix/README.md",
    "source": "repo",
-   "bytes": 5004,
-   "sourceSha256": "6bd8502ee9062470d6d431c4ff91fdd5060e19ecc0791af083b769d24edd07f7"
+   "bytes": 6489,
+   "sourceSha256": "1a8875ea6ba9022d9b5596cae0550f483491bd9caa6c449c474b3488b6de66ad"
   },
   {
    "path": "packages/colourmix/bld/benson.bld",
@@ -5902,20 +5902,32 @@
   {
    "path": "packages/colourmix/bld/lambert.bld",
    "source": "repo",
-   "bytes": 2115,
-   "sourceSha256": "7d843fe1385598fdb7a12a3961bca7c355d3526fd9aa10d2da1d52a976b2e343"
+   "bytes": 4799,
+   "sourceSha256": "8bdc6558263d29f2ee243dfdc5b675dddd4bfad9540a800a5150685de9bc3822"
   },
   {
    "path": "packages/colourmix/bld/mayer.bld",
    "source": "repo",
-   "bytes": 2404,
-   "sourceSha256": "ed6f0850e526d445492834802de29065a8aedeaca10926a9ed5a54d25f261a70"
+   "bytes": 3816,
+   "sourceSha256": "ceb89e0dbb074e3b52069dd9eaf85aaa4698b4487076b1ce81556c15675c0a14"
   },
   {
    "path": "packages/colourmix/bld/modern.bld",
    "source": "repo",
-   "bytes": 1116,
-   "sourceSha256": "e67a28b19da449c315f6ad9b601efbf8746a894585648837f003da63c68d5c98"
+   "bytes": 2556,
+   "sourceSha256": "93775c1ed71b0faed8f8400b3e6b713187c43e63b3ee98fb0fe62ecfa46fcd63"
+  },
+  {
+   "path": "packages/colourmix/bld/rgbspace.bld",
+   "source": "repo",
+   "bytes": 6897,
+   "sourceSha256": "3c00133565953e7f427c51a77e51efa1889087d56df5279828f8cfbb83a7dd24"
+  },
+  {
+   "path": "packages/colourmix/bld/transfer.bld",
+   "source": "repo",
+   "bytes": 3245,
+   "sourceSha256": "a97a65a41dcfde46bd7e2b9944739f343e378b9ad9923d472d13e3b17fab261e"
   },
   {
    "path": "packages/colourmix/colourmix/__init__.py",
@@ -5932,50 +5944,68 @@
   {
    "path": "packages/colourmix/colourmix/check.py",
    "source": "repo",
-   "bytes": 4943,
-   "sourceSha256": "03bebfe1d91c659be434c14dbeafb8bd3b6db4b3c7a5ca491bdc8342095c6bc9"
+   "bytes": 4940,
+   "sourceSha256": "8183c884fe9843b160580f88c94aa1be984751de38eebf1a5a5d7fc425e279e6"
+  },
+  {
+   "path": "packages/colourmix/colourmix/check_modern.py",
+   "source": "repo",
+   "bytes": 3610,
+   "sourceSha256": "c1f18c09b00eba1b7798882724501d3ca1d665c1436d93a41ccfb3f247e18be3"
   },
   {
    "path": "packages/colourmix/colourmix/controls.py",
    "source": "repo",
-   "bytes": 2341,
-   "sourceSha256": "16d8362d37a418848b18c0e2176268839a3329d85a1f66f3b3edd0a805f5b45e"
+   "bytes": 4154,
+   "sourceSha256": "2c44c2574dc8aca16769c051fcd308d5eca46c0290f6f6c47d05a3b3c5a9b310"
   },
   {
    "path": "packages/colourmix/colourmix/fuzz.py",
    "source": "repo",
-   "bytes": 4005,
-   "sourceSha256": "ae32bed1f720f010373c4cc6c2541ff6cf45a199b6527744232c6064ae757bc1"
+   "bytes": 5661,
+   "sourceSha256": "bf7f812e7c6c0efa8149d24fc1b7f6f419eb1a70cad7e8775cd1875a41e0b2ec"
   },
   {
    "path": "packages/colourmix/colourmix/native.py",
    "source": "repo",
-   "bytes": 6728,
-   "sourceSha256": "d3bd1e2259a2660738add45389b820d9320b6be87ea8c200394adeac3ad566b7"
+   "bytes": 9015,
+   "sourceSha256": "1f47c4a60fdd3dca3ee059bf68844b9d85086ed1d31a0882cf8148262288ebc0"
   },
   {
    "path": "packages/colourmix/colourmix/reference.py",
    "source": "repo",
-   "bytes": 5212,
-   "sourceSha256": "40e46ebf8dabbaa6bce47ab0169e4ae123d4fab1a9654c3bd4f31093249c65cf"
+   "bytes": 8960,
+   "sourceSha256": "371d37d0fbe83c7542a09be75e2e321984a3d55127ac029f508be91d568580a3"
+  },
+  {
+   "path": "packages/colourmix/colourmix/reference_modern.py",
+   "source": "repo",
+   "bytes": 5990,
+   "sourceSha256": "2220c637c019c3ee0f57f1d23e59dc512a596e96677e6a8c55fcd6ebdfabe967"
   },
   {
    "path": "packages/colourmix/docs/BENSON.md",
    "source": "repo",
-   "bytes": 5332,
-   "sourceSha256": "3822b8a5c8fe9fb90096a3fe53c277c34127abfa8d2e72b832e6b4fb85d94bec"
+   "bytes": 5522,
+   "sourceSha256": "7a7ec1d528ea0627b92483239beafee376408bc88ef9dea15f99cf1508faf99a"
   },
   {
    "path": "packages/colourmix/docs/LAMBERT.md",
    "source": "repo",
-   "bytes": 5254,
-   "sourceSha256": "021312738eca5614e1d716afeaba16e5e79b1bc149b59a359a451821bf88a9d7"
+   "bytes": 6265,
+   "sourceSha256": "76970edff29ee418d6bcc458d3e09e0e704b743b9be895e438b7bd8506d8bcd3"
   },
   {
    "path": "packages/colourmix/docs/MAYER.md",
    "source": "repo",
-   "bytes": 4263,
-   "sourceSha256": "c85652a0bffc6a44cbd4ad8dcb1c46ddb8b4e0f658b9743fbb08a027b76f7de7"
+   "bytes": 7219,
+   "sourceSha256": "2b684a3b9017d1570fdf058492784c815b3de6fbadba9a9d91650aa83b28c917"
+  },
+  {
+   "path": "packages/colourmix/docs/MODERN.md",
+   "source": "repo",
+   "bytes": 6544,
+   "sourceSha256": "a64606f51a0ae6e753df1d01ac3f7338ac718788d1183d07cbdeca02dd48b68e"
   },
   {
    "path": "packages/colourmix/tests/conftest.py",
@@ -5987,31 +6017,37 @@
    "path": "packages/colourmix/tests/test_benson.py",
    "source": "repo",
    "bytes": 3907,
-   "sourceSha256": "80ccc8596424a77e7bc18df8517f35a1ffdceee7a10a61a56f34e10c942b1276"
+   "sourceSha256": "778166cbb652fa2d1f22bf7e291a675aff3b7f12034d878effb8deb9887c71f3"
   },
   {
    "path": "packages/colourmix/tests/test_controls.py",
    "source": "repo",
-   "bytes": 819,
-   "sourceSha256": "81dc42af473767d5b02143304dadcf47a97b2263f1197110e90408f290329c99"
+   "bytes": 843,
+   "sourceSha256": "33974462ccac4980b5d2326d22aceb563c42700b124fcc9d8fa464835093f6ac"
   },
   {
    "path": "packages/colourmix/tests/test_fuzz.py",
    "source": "repo",
    "bytes": 1219,
-   "sourceSha256": "8f2fe47be69c3ec4228e14bf039893e4f593ae94b2f303498acd8ab7ce5ec4c2"
+   "sourceSha256": "993bfc8c5d9974051fb0b43b7a19bf7b5e804443ff182322b9e43459507d8abb"
   },
   {
    "path": "packages/colourmix/tests/test_lambert.py",
    "source": "repo",
-   "bytes": 3422,
-   "sourceSha256": "6da5b89c438d2356b442f0a0ba81c02f1f294df880b514147c3ea5c020d6413a"
+   "bytes": 5227,
+   "sourceSha256": "3a464a29a85dba3598ff366c98d7d9faaabe14ad900b392744c4f1163544dbd6"
   },
   {
    "path": "packages/colourmix/tests/test_mayer.py",
    "source": "repo",
-   "bytes": 3192,
-   "sourceSha256": "d037103a725657846784faeec3670728fb98505461952bdafe5bb64d62ee5e45"
+   "bytes": 4629,
+   "sourceSha256": "30a53d817be41b4986f1e0e2969ad133451204a29e0e05388198fcd278fc194d"
+  },
+  {
+   "path": "packages/colourmix/tests/test_modern.py",
+   "source": "repo",
+   "bytes": 4847,
+   "sourceSha256": "898e9a35e1f8bef2cf1fd7f720bb766162f27b77c523d5f3615223c1ee7900ad"
   },
   {
    "path": "packages/cosmo/README.md",

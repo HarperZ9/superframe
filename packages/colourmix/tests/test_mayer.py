@@ -3,7 +3,7 @@
 """Mayer 1775: equality with the reference, and the properties the source states."""
 from itertools import permutations
 
-from colourmix import check
+from colourmix import check, reference
 
 
 def cells(impl, n):
@@ -19,7 +19,7 @@ def cells(impl, n):
 def test_buildlang_equals_reference(kernels):
     tally = check.mayer(kernels)
     assert tally.mismatches == 0, tally.first
-    assert tally.cases == 28839
+    assert tally.cases == 39899
 
 
 def test_cell_counts_match_the_plate_and_the_text(impl):
@@ -77,3 +77,25 @@ def test_rejects_by_status_code(impl):
     assert impl.mayer_mix(6, 7, 0) == (2, None) and impl.mayer_mix(6, 3, 4) == (2, None)
     assert impl.mayer_count(0) == -1 and impl.mayer_index(6, -1, 0) == -1
     assert impl.mayer_cell(6, 28) == (2, None)
+
+
+def test_tab2_follows_the_engraved_plate(impl):
+    assert impl.mayer_tab2(12, 0, 0) == (0, (0, 12, 0))       # apex: G^12, yellow
+    assert impl.mayer_tab2(12, 12, 0) == (0, (12, 0, 0))      # bottom left: R^12
+    assert impl.mayer_tab2(12, 12, 12) == (0, (0, 0, 12))     # bottom right: B^12
+    assert [impl.mayer_tab2(12, 1, col)[1] for col in range(2)] == [(1, 11, 0), (0, 11, 1)]   # r1 g11 | g11 b1
+    assert impl.mayer_tab2(12, 12, 1)[1] == (11, 0, 1)        # bottom row, second cell: r11 b1
+    tab2 = {impl.mayer_tab2(12, row, col)[1] for row in range(13) for col in range(row + 1)}
+    assert tab2 == set(cells(impl, 12))                       # the same 91 mixtures in another order
+    assert impl.mayer_tab2(0, 0, 0) == (1, None) and impl.mayer_tab2(12, 13, 0) == (2, None)
+
+
+def test_editors_weights_follow_the_printed_table(impl):
+    for row in range(7):
+        for col in range(row + 1):
+            red, blue, yellow = reference.LICHTENBERG_TABLE[row][col]
+            assert impl.lichtenberg_mass(row, col) == (0, (red, yellow, blue))
+            parts = impl.mayer_mix(6, row, col)[1]            # p. 98: red 3, yellow 1, blue 6 per part
+            assert (red, yellow, blue) == (3 * parts[0], parts[1], 6 * parts[2])
+    assert impl.lichtenberg_mass(2, 1) == (0, (12, 1, 6))     # printed r12 b6 g1
+    assert impl.lichtenberg_mass(7, 0) == (2, None) and impl.lichtenberg_mass(3, 4) == (2, None)

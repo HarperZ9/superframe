@@ -20,11 +20,11 @@ def test_fuzz_run_is_clean(kernels):
     assert out["seed"] == fuzz.FUZZ_SEED and out["cases"] == 60000
     assert out["mismatches"] == 0 and out["accepted"] + out["rejected"] == 60000
     assert out["accepted"] > 1000 and out["rejected"] > 1000       # both paths are exercised
-    assert out["malformed_tried"] == out["malformed_refused"] == 448
+    assert out["malformed_tried"] == out["malformed_refused"] == 850
 
 
 def test_the_reference_refuses_malformed_values():
-    assert fuzz.malformed(reference) == (448, 448)
+    assert fuzz.malformed(reference) == (850, 850)
 
 
 def test_a_value_outside_64_bits_is_a_value_error():

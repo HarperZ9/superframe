@@ -6,8 +6,9 @@
 
 The contract under test: every export either accepts an input and agrees with the reference, or rejects it
 with a status code and writes nothing. No input may trap or crash the process, so a test runs this file in
-a child process and reads the exit code. Values that are not 64-bit integers never reach a kernel: the
-Python layer refuses them with TypeError or ValueError. Prints one JSON line with the counts.
+a child process and reads the exit code. A value of the wrong type never reaches a kernel: the Python layer
+refuses it with TypeError or ValueError. Float arguments include not-a-number and both infinities, which a
+kernel must reject by status code. Prints one JSON line with the counts.
 """
 import json
 import sys
@@ -21,7 +22,14 @@ EDGES = [I64_MIN, I64_MIN + 1, -(1 << 32), -(1 << 31), -MAX_PARTS, -2, -1, 0, 1,
 MALFORMED = [None, 1.5, float("nan"), float("inf"), "3", b"3", [1], (1,), {}, True, 1 << 63, -(1 << 63) - 1, 1 << 200]
 ARITY = {"mayer_count": 1, "mayer_mix": 3, "mayer_index": 3, "mayer_cell": 2, "lambert_side": 1,
          "lambert_count": 1, "lambert_mix": 3, "benson_count": 1, "benson_section": 5, "benson_complement": 4,
-         "benson_corner": 4, "modern_benson_linear_rgb": 4}
+         "benson_corner": 4, "modern_benson_linear_rgb": 4, "mayer_tab2": 3, "lichtenberg_mass": 2,
+         "lambert_white": 1, "lambert_number": 3, "modern_rgb_to_xyz": 5, "modern_xyz_to_rgb": 5,
+         "modern_encode": 2, "modern_decode": 2, "modern_benson_xyz": 6, "modern_benson_encoded": 5}
+FLOAT_SLOTS = {"modern_rgb_to_xyz": (2, 3, 4), "modern_xyz_to_rgb": (2, 3, 4), "modern_encode": (1,),
+               "modern_decode": (1,)}
+FLOAT_EDGES = [float("nan"), float("inf"), float("-inf"), -0.0, 0.0, 1.0, 5e-324, -1e-300, 1.0000000000000002,
+               0.0031308, 0.04045, 0.0181, 0.08145, -1.0, 2.0, 1e6, -1e6]
+MALFORMED_FLOAT = [None, "3", b"3", [1], (1,), {}, True, 1 << 200]
 
 
 def value(rng):
@@ -34,12 +42,31 @@ def value(rng):
     return rng.span(-3, 16) if kind == 2 else rng.span(-3, MAX_PARTS + 3)
 
 
+def real(rng):
+    """One float: an edge value, a value in 0 to 1, or a value in a wider bounded range."""
+    kind = rng.below(4)
+    if kind == 0:
+        return FLOAT_EDGES[rng.below(len(FLOAT_EDGES))]
+    unit = (rng.next() >> 11) / float(1 << 53)
+    return unit if kind < 3 else unit * 8.0 - 4.0
+
+
+def small(rng):
+    """A whole number for a slot that names a space or a white: mostly valid, sometimes any 64-bit value."""
+    return rng.span(-1, 3) if rng.below(8) else value(rng)
+
+
 def case(rng):
     """(function name, arguments) for one fuzz case."""
     names = sorted(ARITY) + ["benson_line"]
     name = names[rng.below(len(names))]
     if name == "benson_line":
         return name, (value(rng), [value(rng) for _ in range(3)], [value(rng) for _ in range(3)], value(rng), value(rng))
+    if name.startswith("modern_") and name != "modern_benson_linear_rgb":
+        named = 1 if name in ("modern_encode", "modern_decode", "modern_benson_encoded") else 2
+        floats = FLOAT_SLOTS.get(name, ())
+        rest = [real(rng) if slot in floats else rng.span(-1, 13) for slot in range(named, ARITY[name])]
+        return name, (*(small(rng) for _ in range(named)), *rest)
     return name, tuple(value(rng) for _ in range(ARITY[name]))
 
 
@@ -52,7 +79,7 @@ def malformed(impl):
     tried = refused = 0
     for name, arity in sorted(ARITY.items()):
         for slot in range(arity):
-            for bad in MALFORMED:
+            for bad in (MALFORMED_FLOAT if slot in FLOAT_SLOTS.get(name, ()) else MALFORMED):
                 args = [1] * arity
                 args[slot] = bad
                 tried += 1

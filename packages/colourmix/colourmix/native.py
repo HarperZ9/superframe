@@ -17,12 +17,13 @@ from pathlib import Path
 
 from . import PKG
 from .reference import i64, point
+from .reference_modern import _f64
 
-NAMES = ["mayer", "lambert", "benson", "modern"]
+NAMES = ["mayer", "lambert", "benson", "rgbspace", "transfer", "modern"]
 SENTINEL = -7777777
 _KERNELS = None
 _WHY = None
-I64, I32 = ctypes.c_int64, ctypes.c_int32
+I64, I32, F64 = ctypes.c_int64, ctypes.c_int32, ctypes.c_double
 PI64, PF64 = ctypes.POINTER(ctypes.c_int64), ctypes.POINTER(ctypes.c_double)
 SIGNATURES = {   # export name: (result type, argument types)
     "cm_mayer_count": (I64, [I64]), "cm_mayer_mix": (I32, [I64, I64, I64, PI64]),
@@ -33,6 +34,13 @@ SIGNATURES = {   # export name: (result type, argument types)
     "cm_benson_complement": (I32, [I64, I64, I64, I64, PI64]), "cm_benson_corner": (I64, [I64, I64, I64, I64]),
     "cm_benson_line": (I32, [I64, PI64, I64, I64, PI64]),
     "cm_modern_benson_linear_rgb": (I32, [I64, I64, I64, I64, PF64]),
+    "cm_mayer_tab2": (I32, [I64, I64, I64, PI64]), "cm_lichtenberg_mass": (I32, [I64, I64, PI64]),
+    "cm_lambert_white": (I32, [I64, PI64]), "cm_lambert_number": (I64, [I64, I64, I64]),
+    "cm_modern_rgb_to_xyz": (I32, [I64, I64, F64, F64, F64, PF64]),
+    "cm_modern_xyz_to_rgb": (I32, [I64, I64, F64, F64, F64, PF64]),
+    "cm_modern_encode": (I32, [I64, F64, PF64]), "cm_modern_decode": (I32, [I64, F64, PF64]),
+    "cm_modern_benson_xyz": (I32, [I64, I64, I64, I64, I64, I64, PF64]),
+    "cm_modern_benson_encoded": (I32, [I64, I64, I64, I64, I64, PF64]),
 }
 
 
@@ -77,17 +85,26 @@ class Kernels:
             fn = getattr(self.lib, name)
             fn.restype, fn.argtypes = restype, argtypes
 
+    def _args(self, name, args):
+        """Each argument checked against the type the export declares: whole number, float or end points."""
+        kinds = SIGNATURES[name][1]
+        return [a.buf if type(a) is _Ends else (_f64(a) if kind is F64 else i64(a)) for a, kind in zip(args, kinds)]
+
     def _fill(self, name, args, width, ctype=ctypes.c_int64):
         """Call an export that fills `width` outputs. A buffer changed by a rejected call is reported."""
         out = (ctype * width)(*([SENTINEL] * width))
-        status = getattr(self.lib, name)(*[i64(a) if type(a) is not _Ends else a.buf for a in args], out)
+        status = getattr(self.lib, name)(*self._args(name, args), out)
         values = tuple(out)
         if status != 0:
             return status, (None if all(v == SENTINEL for v in values) else "wrote on reject")
         return status, values
 
     def _scalar(self, name, *args):
-        return getattr(self.lib, name)(*[i64(a) for a in args])
+        return getattr(self.lib, name)(*self._args(name, args))
+
+    def _one(self, name, *args):
+        status, values = self._fill(name, args, 1, ctypes.c_double)
+        return status, (values[0] if status == 0 else values)
 
     def mayer_count(self, n):
         return self._scalar("cm_mayer_count", n)
@@ -111,7 +128,19 @@ class Kernels:
         return self._scalar("cm_lambert_total")
 
     def lambert_mix(self, tier, row, col):
-        return self._fill("cm_lambert_mix", (tier, row, col), 4)
+        return self._fill("cm_lambert_mix", (tier, row, col), 3)
+
+    def lambert_white(self, tier):
+        return self._fill("cm_lambert_white", (tier,), 2)
+
+    def lambert_number(self, tier, row, col):
+        return self._scalar("cm_lambert_number", tier, row, col)
+
+    def mayer_tab2(self, n, row, col):
+        return self._fill("cm_mayer_tab2", (n, row, col), 3)
+
+    def lichtenberg_mass(self, row, col):
+        return self._fill("cm_lichtenberg_mass", (row, col), 3)
 
     def benson_count(self, n):
         return self._scalar("cm_benson_count", n)
@@ -130,6 +159,24 @@ class Kernels:
 
     def modern_benson_linear_rgb(self, n, r, g, b):
         return self._fill("cm_modern_benson_linear_rgb", (n, r, g, b), 3, ctypes.c_double)
+
+    def modern_rgb_to_xyz(self, space, white, r, g, b):
+        return self._fill("cm_modern_rgb_to_xyz", (space, white, r, g, b), 3, ctypes.c_double)
+
+    def modern_xyz_to_rgb(self, space, white, x, y, z):
+        return self._fill("cm_modern_xyz_to_rgb", (space, white, x, y, z), 3, ctypes.c_double)
+
+    def modern_encode(self, space, v):
+        return self._one("cm_modern_encode", space, v)
+
+    def modern_decode(self, space, e):
+        return self._one("cm_modern_decode", space, e)
+
+    def modern_benson_xyz(self, space, white, n, r, g, b):
+        return self._fill("cm_modern_benson_xyz", (space, white, n, r, g, b), 3, ctypes.c_double)
+
+    def modern_benson_encoded(self, space, n, r, g, b):
+        return self._fill("cm_modern_benson_encoded", (space, n, r, g, b), 3, ctypes.c_double)
 
 
 class _Ends:

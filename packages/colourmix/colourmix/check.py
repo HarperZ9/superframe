@@ -66,14 +66,18 @@ def mayer(impl, sample=4000):
     for n in range(1, 25):                       # every cell for 1 to 24 parts, with a rejected border
         for row, col in product(range(-1, n + 2), repeat=2):
             t.call("mayer_mix", n, row, col)
+            t.call("mayer_tab2", n, row, col)
             t.call("mayer_index", n, row, col)
         for index in range(-1, (n + 1) * (n + 2) // 2 + 1):
             t.call("mayer_cell", n, index)
+    for row, col in product(range(-2, 10), repeat=2):   # the editor's table of weights, with a border
+        t.call("lichtenberg_mass", row, col)
     rng = Rng(SAMPLE_SEED)
     for _ in range(sample):
         n = rng.span(-1, MAX_PARTS + 1)
         row, col = rng.span(-2, max(n, 0) + 2), rng.span(-2, max(n, 0) + 2)
         t.call("mayer_mix", n, row, col)
+        t.call("mayer_tab2", n, row, col)
         t.call("mayer_index", n, row, col)
         t.call("mayer_cell", n, rng.span(-2, (max(n, 0) + 1) * (max(n, 0) + 2) // 2 + 1))
     return t
@@ -85,8 +89,10 @@ def lambert(impl):
     for tier in range(-3, 12):
         t.call("lambert_side", tier)
         t.call("lambert_count", tier)
+        t.call("lambert_white", tier)
     for tier, row, col in product(range(-1, 10), range(-1, 11), range(-1, 11)):   # all 108 cells and a border
         t.call("lambert_mix", tier, row, col)
+        t.call("lambert_number", tier, row, col)
     return t
 
 
@@ -122,16 +128,6 @@ def benson(impl, sample=4000):
     return t
 
 
-def modern(impl, sample=4000):
-    t = Tally(impl)
-    for n in range(1, 17):
-        for r, g, b in product(range(-1, n + 2), repeat=3):
-            t.call("modern_benson_linear_rgb", n, r, g, b)
-    rng = Rng(SAMPLE_SEED + 2)
-    for _ in range(sample):
-        n = rng.span(1, MAX_PARTS)
-        t.call("modern_benson_linear_rgb", n, rng.span(0, n), rng.span(0, n), rng.span(0, n))
-    return t
+from .check_modern import modern, spaces  # noqa: E402
 
-
-SUITES = {"mayer": mayer, "lambert": lambert, "benson": benson, "modern": modern}
+SUITES = {"mayer": mayer, "lambert": lambert, "benson": benson, "modern": modern, "spaces": spaces}

@@ -1,0 +1,174 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Named RGB colour spaces for the modern reading of the Benson cube. See docs/MODERN.md.
+//
+// An RGB colour space names three primaries and a white point by their CIE 1931 chromaticities (x, y): the
+// share of X and of Y in X + Y + Z. CIE XYZ is the device-independent description of a colour, with Y the
+// luminance (brightness as the standard observer weighs it). Space 0 is sRGB (IEC 61966-2-1), 1 is Display P3
+// (SMPTE EG 432-1 primaries with the D65 white), 2 is Rec. 2020 (ITU-R BT.2020). All three use the D65 white
+// x = 0.3127, y = 0.3290. White 0 gives XYZ under D65. White 1 gives XYZ under D50, the ICC profile connection
+// white X = 0.9642, Y = 1, Z = 0.8249 (ICC.1:2010), reached by the linear Bradford adaptation.
+//
+// Every number is derived from the published chromaticities with +, -, * and / in a fixed order, so the
+// result has the same bits as the reference. RGB values here are linear light; transfer.bld encodes them.
+//
+// Status codes: 0 accepted, 2 an input that is not a finite number, 6 unknown space or white.
+
+fn cm_tenk(k: i64) -> f64 {
+    (k as f64) / (10000 as f64)
+}
+
+// Chromaticity table in ten-thousandths: x and y of red, green, blue, then of the D65 white.
+fn cm_xy(space: i64, k: i64) -> f64 {
+    let s: [i64; 8] = [6400, 3300, 3000, 6000, 1500, 600, 3127, 3290];
+    let p: [i64; 8] = [6800, 3200, 2650, 6900, 1500, 600, 3127, 3290];
+    let u: [i64; 8] = [7080, 2920, 1700, 7970, 1310, 460, 3127, 3290];
+    if space == 0 {
+        return cm_tenk(s[k as usize]);
+    }
+    if space == 1 {
+        return cm_tenk(p[k as usize]);
+    }
+    cm_tenk(u[k as usize])
+}
+
+// Component c (0 X, 1 Y, 2 Z) of the colour with chromaticity number j (0 red, 1 green, 2 blue, 3 white)
+// at luminance 1.
+fn cm_col(space: i64, j: i64, c: i64) -> f64 {
+    let x = cm_xy(space, 2 * j);
+    let y = cm_xy(space, 2 * j + 1);
+    if c == 0 {
+        return x / y;
+    }
+    if c == 1 {
+        return 1.0;
+    }
+    (1.0 - x - y) / y
+}
+
+fn cm_det3(a: f64, b: f64, c: f64, d: f64, e: f64, f: f64, g: f64, h: f64, i: f64) -> f64 {
+    a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
+}
+
+// Unknown number k of the three equations whose rows are (a b c), (d e f), (g h i) and whose right side is
+// (x y z), by the rule of Cramer: a ratio of two determinants.
+fn cm_solve3(k: i64, a: f64, b: f64, c: f64, d: f64, e: f64, f: f64, g: f64, h: f64, i: f64,
+             x: f64, y: f64, z: f64) -> f64 {
+    let den = cm_det3(a, b, c, d, e, f, g, h, i);
+    if k == 0 {
+        return cm_det3(x, b, c, y, e, f, z, h, i) / den;
+    }
+    if k == 1 {
+        return cm_det3(a, x, c, d, y, f, g, z, i) / den;
+    }
+    cm_det3(a, b, x, d, e, y, g, h, z) / den
+}
+
+// How much of primary k, each taken at luminance 1, adds up to the colour (x y z).
+fn cm_amount(space: i64, k: i64, x: f64, y: f64, z: f64) -> f64 {
+    cm_solve3(k, cm_col(space, 0, 0), cm_col(space, 1, 0), cm_col(space, 2, 0),
+              cm_col(space, 0, 1), cm_col(space, 1, 1), cm_col(space, 2, 1),
+              cm_col(space, 0, 2), cm_col(space, 1, 2), cm_col(space, 2, 2), x, y, z)
+}
+
+// The amount of primary k in the white: full drive of all three primaries must give the white point.
+fn cm_scale(space: i64, k: i64) -> f64 {
+    cm_amount(space, k, cm_col(space, 3, 0), cm_col(space, 3, 1), cm_col(space, 3, 2))
+}
+
+// Entry number i of the Bradford matrix, row by row, in ten-thousandths. It turns XYZ into three sharpened
+// cone-like signals.
+fn cm_bfd(i: i64) -> f64 {
+    let m: [i64; 9] = [8951, 2664, 0 - 1614, 0 - 7502, 17135, 367, 389, 0 - 685, 10296];
+    cm_tenk(m[i as usize])
+}
+
+fn cm_cone(c: i64, x: f64, y: f64, z: f64) -> f64 {
+    cm_bfd(3 * c) * x + cm_bfd(3 * c + 1) * y + cm_bfd(3 * c + 2) * z
+}
+
+// Component c of white 0 (D65, from its chromaticity) or white 1 (D50, the ICC values).
+fn cm_white(w: i64, c: i64) -> f64 {
+    if w == 0 {
+        return cm_col(0, 3, c);
+    }
+    if c == 0 {
+        return cm_tenk(9642);
+    }
+    if c == 1 {
+        return 1.0;
+    }
+    cm_tenk(8249)
+}
+
+// Signal c of (x y z) after the move from white `from` to white `to`: each signal is scaled by the ratio of
+// the two whites in that signal.
+fn cm_moved(c: i64, from: i64, to: i64, x: f64, y: f64, z: f64) -> f64 {
+    let src = cm_cone(c, cm_white(from, 0), cm_white(from, 1), cm_white(from, 2));
+    let dst = cm_cone(c, cm_white(to, 0), cm_white(to, 1), cm_white(to, 2));
+    cm_cone(c, x, y, z) * (dst / src)
+}
+
+// Component k of (x y z) adapted from white `from` to white `to`.
+fn cm_adapt(k: i64, from: i64, to: i64, x: f64, y: f64, z: f64) -> f64 {
+    if from == to {
+        if k == 0 {
+            return x;
+        }
+        if k == 1 {
+            return y;
+        }
+        return z;
+    }
+    cm_solve3(k, cm_bfd(0), cm_bfd(1), cm_bfd(2), cm_bfd(3), cm_bfd(4), cm_bfd(5), cm_bfd(6), cm_bfd(7),
+              cm_bfd(8), cm_moved(0, from, to, x, y, z), cm_moved(1, from, to, x, y, z),
+              cm_moved(2, from, to, x, y, z))
+}
+
+fn cm_finite(v: f64) -> bool {
+    v - v == 0.0
+}
+
+fn cm_named(space: i64, white: i64) -> bool {
+    space >= 0 && space <= 2 && white >= 0 && white <= 1
+}
+
+// Linear RGB of a named space to CIE XYZ under the chosen white, written to out[0], out[1], out[2].
+extern "C" fn cm_modern_rgb_to_xyz(space: i64, white: i64, r: f64, g: f64, b: f64, out: *mut f64) -> i32 {
+    if !cm_named(space, white) {
+        return 6;
+    }
+    if !cm_finite(r) || !cm_finite(g) || !cm_finite(b) {
+        return 2;
+    }
+    let tr = cm_scale(space, 0) * r;
+    let tg = cm_scale(space, 1) * g;
+    let tb = cm_scale(space, 2) * b;
+    let x = cm_col(space, 0, 0) * tr + cm_col(space, 1, 0) * tg + cm_col(space, 2, 0) * tb;
+    let y = cm_col(space, 0, 1) * tr + cm_col(space, 1, 1) * tg + cm_col(space, 2, 1) * tb;
+    let z = cm_col(space, 0, 2) * tr + cm_col(space, 1, 2) * tg + cm_col(space, 2, 2) * tb;
+    let o = unsafe { slice::from_raw_parts_mut(out, 3) };
+    o[0] = cm_adapt(0, 0, white, x, y, z);
+    o[1] = cm_adapt(1, 0, white, x, y, z);
+    o[2] = cm_adapt(2, 0, white, x, y, z);
+    0
+}
+
+// CIE XYZ under the chosen white to linear RGB of a named space: the inverse of cm_modern_rgb_to_xyz.
+extern "C" fn cm_modern_xyz_to_rgb(space: i64, white: i64, x: f64, y: f64, z: f64, out: *mut f64) -> i32 {
+    if !cm_named(space, white) {
+        return 6;
+    }
+    if !cm_finite(x) || !cm_finite(y) || !cm_finite(z) {
+        return 2;
+    }
+    let ax = cm_adapt(0, white, 0, x, y, z);
+    let ay = cm_adapt(1, white, 0, x, y, z);
+    let az = cm_adapt(2, white, 0, x, y, z);
+    let o = unsafe { slice::from_raw_parts_mut(out, 3) };
+    o[0] = cm_amount(space, 0, ax, ay, az) / cm_scale(space, 0);
+    o[1] = cm_amount(space, 1, ax, ay, az) / cm_scale(space, 1);
+    o[2] = cm_amount(space, 2, ax, ay, az) / cm_scale(space, 2);
+    0
+}
