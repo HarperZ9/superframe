@@ -1,0 +1,73 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The colour triangle of Tobias Mayer (De affinitate colorum commentatio, printed 1775). See docs/MAYER.md.
+//
+// A mixture is a count of equal parts of three pigments: red, yellow, blue. The parts always add up to n. The
+// text divides each pigment into n = 12 parts (91 cells); the painted plate Tab. III shows n = 6 (28 cells).
+// A cell is named by its row counted from the red corner (0 to n) and its column counted from the blue side
+// of that row (0 to row), so row r holds r + 1 cells and the triangle holds (n + 1)(n + 2) / 2.
+//
+// Every export checks its inputs before any arithmetic, so no input can overflow or trap. Status codes:
+// 0 accepted, 1 parts outside 1 to 4096, 2 cell outside the triangle. A rejected call writes nothing.
+
+fn cm_parts_ok(n: i64) -> bool {
+    n >= 1 && n <= 4096
+}
+
+fn cm_tri(n: i64) -> i64 {
+    (n + 1) * (n + 2) / 2
+}
+
+fn cm_cell_ok(n: i64, row: i64, col: i64) -> bool {
+    row >= 0 && row <= n && col >= 0 && col <= row
+}
+
+// Number of cells for n parts, or -1 when n is rejected.
+extern "C" fn cm_mayer_count(n: i64) -> i64 {
+    if !cm_parts_ok(n) {
+        return -1;
+    }
+    cm_tri(n)
+}
+
+// Parts of red, yellow and blue in the cell, written to out[0], out[1], out[2].
+extern "C" fn cm_mayer_mix(n: i64, row: i64, col: i64, out: *mut i64) -> i32 {
+    if !cm_parts_ok(n) {
+        return 1;
+    }
+    if !cm_cell_ok(n, row, col) {
+        return 2;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 3) };
+    o[0] = n - row;
+    o[1] = col;
+    o[2] = row - col;
+    0
+}
+
+// Position of the cell when the plate is read row by row from the red corner, or -1 when rejected.
+extern "C" fn cm_mayer_index(n: i64, row: i64, col: i64) -> i64 {
+    if !cm_parts_ok(n) || !cm_cell_ok(n, row, col) {
+        return -1;
+    }
+    row * (row + 1) / 2 + col
+}
+
+// Inverse of cm_mayer_index: row and column of cell `index`, written to out[0], out[1].
+extern "C" fn cm_mayer_cell(n: i64, index: i64, out: *mut i64) -> i32 {
+    if !cm_parts_ok(n) {
+        return 1;
+    }
+    if index < 0 || index >= cm_tri(n) {
+        return 2;
+    }
+    let mut row: i64 = 0;
+    while (row + 1) * (row + 2) / 2 <= index {
+        row = row + 1;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 2) };
+    o[0] = row;
+    o[1] = index - row * (row + 1) / 2;
+    0
+}

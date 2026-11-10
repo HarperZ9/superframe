@@ -36,4 +36,9 @@ jobs:
         env:
           DAW_REQUIRE_NATIVE: '1'
           BUILDC: buildc
+      # The historical colour-mixing kernels: equality with the reference, planted defects and the fuzz run.
+      - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/colourmix
+        env:
+          COLOURMIX_REQUIRE_NATIVE: '1'
+          BUILDC: buildc
       - run: buildc build --release packages/daw/bld

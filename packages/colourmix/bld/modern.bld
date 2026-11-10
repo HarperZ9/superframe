@@ -1,0 +1,25 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// A modern reading of the Benson cube, kept apart from the historical kernel in benson.bld.
+//
+// Assumption, ours and absent from the 1872 book: the red, green and blue lights are taken to be the three
+// primaries of an additive display, and a level of k steps out of n is taken to be the fraction k / n of full
+// intensity in linear light (light measured in proportion to physical power, before any display encoding).
+// Each output is one IEEE 754 double division, so the result has the same bits on every target.
+//
+// Status codes as in benson.bld: 0 accepted, 1 steps outside 1 to 4096, 2 point outside the cube.
+extern "C" fn cm_modern_benson_linear_rgb(n: i64, r: i64, g: i64, b: i64, out: *mut f64) -> i32 {
+    if n < 1 || n > 4096 {
+        return 1;
+    }
+    if r < 0 || r > n || g < 0 || g > n || b < 0 || b > n {
+        return 2;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 3) };
+    let d = n as f64;
+    o[0] = (r as f64) / d;
+    o[1] = (g as f64) / d;
+    o[2] = (b as f64) / d;
+    0
+}

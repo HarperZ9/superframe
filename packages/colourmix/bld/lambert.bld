@@ -1,0 +1,66 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The colour pyramid of J. H. Lambert (Beschreibung einer ... Farbenpyramide, 1772). See docs/LAMBERT.md.
+//
+// Seven triangles stand one above another. Triangle 1 is the base. Each triangle divides the three pigments
+// blue, yellow and red into `side` equal parts; the sides are 8, 6, 4, 3, 2, 1 and 0, which gives 45, 28, 15,
+// 10, 6, 3 and 1 cells, 108 in all. A mixture is written in eighths: blue + yellow + red = side, and the
+// white share is 8 - side, so the four numbers always add up to 8. A cell is named by its row counted from
+// the blue corner (0 to side) and its column counted from the yellow side of that row (0 to row).
+//
+// Status codes: 0 accepted, 1 tier outside 1 to 7, 2 cell outside the triangle. A rejected call writes nothing.
+
+// Parts per pigment in triangle `tier`, or -1 when the tier is rejected.
+extern "C" fn cm_lambert_side(tier: i64) -> i64 {
+    if tier < 1 || tier > 7 {
+        return -1;
+    }
+    if tier == 1 {
+        return 8;
+    }
+    if tier == 2 {
+        return 6;
+    }
+    if tier == 3 {
+        return 4;
+    }
+    7 - tier
+}
+
+// Number of cells in triangle `tier`, or -1 when the tier is rejected.
+extern "C" fn cm_lambert_count(tier: i64) -> i64 {
+    let s = cm_lambert_side(tier);
+    if s < 0 {
+        return -1;
+    }
+    (s + 1) * (s + 2) / 2
+}
+
+// Number of cells in the whole pyramid.
+extern "C" fn cm_lambert_total() -> i64 {
+    let mut total: i64 = 0;
+    let mut tier: i64 = 1;
+    while tier <= 7 {
+        total = total + cm_lambert_count(tier);
+        tier = tier + 1;
+    }
+    total
+}
+
+// Eighths of blue, yellow, red and white in the cell, written to out[0] to out[3].
+extern "C" fn cm_lambert_mix(tier: i64, row: i64, col: i64, out: *mut i64) -> i32 {
+    let s = cm_lambert_side(tier);
+    if s < 0 {
+        return 1;
+    }
+    if row < 0 || row > s || col < 0 || col > row {
+        return 2;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 4) };
+    o[0] = s - row;
+    o[1] = row - col;
+    o[2] = col;
+    o[3] = 8 - s;
+    0
+}
