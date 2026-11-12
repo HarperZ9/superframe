@@ -17,12 +17,14 @@ if (!base || !head) {
 // The rule applies once the scheme exists on the base branch. The pull request that
 // introduces changelog.d/ moves the old list out of CHANGELOG.md, so it is exempt.
 try {
-  execFileSync('git', ['cat-file', '-e', `${base}:changelog.d/README.md`], { stdio: 'ignore' });
+  // `./` reads the path from the folder this runs in, so the rule holds when the renderer is a
+  // folder of a larger repository; --relative below keeps the diff to that folder for the same reason.
+  execFileSync('git', ['cat-file', '-e', `${base}:./changelog.d/README.md`], { stdio: 'ignore' });
 } catch {
   console.log('changelog: base has no changelog.d/ yet (this PR introduces it); rule not in force');
   process.exit(0);
 }
-const out = execFileSync('git', ['diff', '--name-status', '-M', `${base}...${head}`], { encoding: 'utf8' });
+const out = execFileSync('git', ['diff', '--name-status', '-M', '--relative', `${base}...${head}`], { encoding: 'utf8' });
 const problems = checkPr(parseNameStatus(out), { skip: process.env.SKIP_CHANGELOG === 'true' });
 if (problems.length) {
   console.error(problems.map((p) => `changelog: ${p}`).join('\n'));

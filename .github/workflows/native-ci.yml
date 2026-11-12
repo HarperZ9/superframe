@@ -41,6 +41,7 @@ jobs:
       # line-ending rewrite of a pinned file fails here instead of on a reader's machine.
       - name: Use the Git for Windows line-ending default
         if: runner.os == 'Windows'
+        working-directory: ${{ github.workspace }}
         run: git config --global core.autocrlf true
       - uses: actions/checkout@v4
       - name: The vendored superstack files match their pins
@@ -973,9 +974,7 @@ jobs:
         with: { python-version: "3.12" }
       - name: Download the build from media-build
         uses: actions/download-artifact@v4
-        with:
-          path: native
-        with: { name: media-build }
+        with: { name: media-build, path: native }
       - name: Unpack the build, keeping modes
         # The checkout above is newer than the tarball's objects, so give the whole build one
         # timestamp: make then sees every object as current and the build steps stay no-ops.
@@ -1018,9 +1017,7 @@ jobs:
         with: { python-version: "3.12" }
       - name: Download the build from media-build
         uses: actions/download-artifact@v4
-        with:
-          path: native
-        with: { name: media-build }
+        with: { name: media-build, path: native }
       - name: Unpack the build, keeping modes
         # The checkout above is newer than the tarball's objects, so give the whole build one
         # timestamp: make then sees every object as current and the build steps stay no-ops.
@@ -1044,6 +1041,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Every media job passed
+        working-directory: ${{ github.workspace }}
         env: { RESULTS: "${{ join(needs.*.result, ' ') }}" }
         run: |
           echo "results: $RESULTS"
