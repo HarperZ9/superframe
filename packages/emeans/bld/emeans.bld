@@ -1,0 +1,717 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// e-means: k-means where each centre forgets. See ../README.md for the study this file runs.
+//
+// One update rule covers three algorithms. A cluster keeps a sum S and a count N; its centre is S / N.
+// A batch contributes its own sum s and count n.
+//
+//   RULE_FORGET   S = (1 - a) S + a s,  N = (1 - a) N + a n     e-means (exponential moving average)
+//   RULE_KEEP     S = S + s,            N = N + n               MacQueen 1967, Sculley 2010
+//   RULE_REPLACE  S = s,                N = n                   Lloyd 1957 when the batch is the dataset
+//
+// The method is from the e-means paper as told in Jia-Bin Huang's explainer (2026-11-12). The four toy
+// problems and every setting below are ours; the paper's own toy configurations were not available, so
+// the stuck rates printed here are our measurements on our problems and are not a replication.
+//
+// Everything is deterministic: the random stream is a combined Lehmer generator written here in integer
+// arithmetic that cannot overflow, so the same seed gives the same run on any machine.
+
+// ---------------------------------------------------------------- random stream (L'Ecuyer 1988)
+
+fn rng_new(seed: i64) -> Vec<i64> {
+    let mut g: Vec<i64> = Vec::new();
+    g.push(1 + (seed * 7919 + 12345) % 2147483562);
+    g.push(1 + (seed * 104729 + 6789) % 2147483398);
+    let mut i: i32 = 0;
+    while i < 16 {
+        let warm: f64 = rnd(g);
+        i = i + 1;
+    }
+    g
+}
+
+// uniform in (0, 1)
+fn rnd(g: Vec<i64>) -> f64 {
+    g[0] = (g[0] * 40014) % 2147483563;
+    g[1] = (g[1] * 40692) % 2147483399;
+    let mut z: i64 = g[0] - g[1];
+    if z < 1 {
+        z = z + 2147483562;
+    }
+    (z as f64) / 2147483563.0
+}
+
+fn rnd_int(g: Vec<i64>, n: i32) -> i32 {
+    let x: i32 = (rnd(g) * (n as f64)) as i32;
+    if x >= n {
+        return n - 1;
+    }
+    x
+}
+
+// close to a unit normal: twelve uniforms summed, minus six. No logarithm, so it is exact to reproduce.
+fn rnd_normal(g: Vec<i64>) -> f64 {
+    let mut t: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < 12 {
+        t = t + rnd(g);
+        i = i + 1;
+    }
+    t - 6.0
+}
+
+// ---------------------------------------------------------------- small helpers
+
+fn zeros(n: i32) -> Vec<f64> {
+    let mut v: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < n {
+        v.push(0.0);
+        i = i + 1;
+    }
+    v
+}
+
+fn copy_of(a: Vec<f64>) -> Vec<f64> {
+    let mut v: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < a.len() as i32 {
+        v.push(a[i as usize]);
+        i = i + 1;
+    }
+    v
+}
+
+// index of the centre nearest to point i (squared Euclidean distance; the lowest index wins a tie)
+fn nearest(pts: Vec<f64>, i: i32, d: i32, c: Vec<f64>, k: i32) -> i32 {
+    let mut best: i32 = 0;
+    let mut best_d: f64 = 1.0e300;
+    let mut j: i32 = 0;
+    while j < k {
+        let mut s: f64 = 0.0;
+        let mut t: i32 = 0;
+        while t < d {
+            let diff: f64 = pts[(i * d + t) as usize] - c[(j * d + t) as usize];
+            s = s + diff * diff;
+            t = t + 1;
+        }
+        if s < best_d {
+            best_d = s;
+            best = j;
+        }
+        j = j + 1;
+    }
+    best
+}
+
+// mean squared distance from each point to its nearest centre: the quantity k-means minimises
+fn loss(pts: Vec<f64>, n: i32, d: i32, c: Vec<f64>, k: i32) -> f64 {
+    let mut total: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < n {
+        let j: i32 = nearest(pts, i, d, c, k);
+        let mut t: i32 = 0;
+        while t < d {
+            let diff: f64 = pts[(i * d + t) as usize] - c[(j * d + t) as usize];
+            total = total + diff * diff;
+            t = t + 1;
+        }
+        i = i + 1;
+    }
+    total / (n as f64)
+}
+
+// ---------------------------------------------------------------- Lloyd, run until no point changes cluster
+
+// Returns the number of passes used. An empty cluster keeps its centre.
+fn lloyd(pts: Vec<f64>, n: i32, d: i32, c: Vec<f64>, k: i32, max_passes: i32) -> i32 {
+    let mut asg: Vec<i32> = Vec::new();
+    let mut i: i32 = 0;
+    while i < n {
+        asg.push(0 - 1);
+        i = i + 1;
+    }
+    let mut passes: i32 = 0;
+    while passes < max_passes {
+        let sum: Vec<f64> = zeros(k * d);
+        let cnt: Vec<f64> = zeros(k);
+        let mut changed: i32 = 0;
+        i = 0;
+        while i < n {
+            let j: i32 = nearest(pts, i, d, c, k);
+            if j != asg[i as usize] {
+                changed = changed + 1;
+                asg[i as usize] = j;
+            }
+            cnt[j as usize] = cnt[j as usize] + 1.0;
+            let mut t: i32 = 0;
+            while t < d {
+                sum[(j * d + t) as usize] = sum[(j * d + t) as usize] + pts[(i * d + t) as usize];
+                t = t + 1;
+            }
+            i = i + 1;
+        }
+        passes = passes + 1;
+        if changed == 0 {
+            return passes;
+        }
+        let mut j2: i32 = 0;
+        while j2 < k {
+            if cnt[j2 as usize] > 0.0 {
+                let mut t2: i32 = 0;
+                while t2 < d {
+                    c[(j2 * d + t2) as usize] = sum[(j2 * d + t2) as usize] / cnt[j2 as usize];
+                    t2 = t2 + 1;
+                }
+            }
+            j2 = j2 + 1;
+        }
+    }
+    passes
+}
+
+// ---------------------------------------------------------------- the batch method, three rules
+
+// rule: 0 forget (e-means), 1 keep (MacQueen, Sculley), 2 replace (Lloyd's rule).
+// revive: split a large cluster onto any cluster whose count falls under a tenth of the mean, every 5 batches.
+// cosine: the forgetting rate falls from alpha0 to alpha0 / 10 along a cosine over all updates.
+// finish: after the last pass, each centre becomes the exact mean of the points it was given in that pass.
+// The points are read in a shuffled order unless the batch is the whole dataset.
+fn batch_kmeans(pts: Vec<f64>, n: i32, d: i32, c: Vec<f64>, k: i32, passes: i32, batch: i32, alpha0: f64,
+                g: Vec<i64>, rule: i32, revive: bool, cosine: bool, finish: bool) {
+    let sum: Vec<f64> = zeros(k * d);
+    let cnt: Vec<f64> = zeros(k);
+    let mut j: i32 = 0;
+    while j < k {
+        cnt[j as usize] = 1.0e-10;
+        let mut t: i32 = 0;
+        while t < d {
+            sum[(j * d + t) as usize] = c[(j * d + t) as usize] * 1.0e-10;
+            t = t + 1;
+        }
+        j = j + 1;
+    }
+    let mut order: Vec<i32> = Vec::new();
+    let mut i: i32 = 0;
+    while i < n {
+        order.push(i);
+        i = i + 1;
+    }
+    let mut per_pass: i32 = n / batch;
+    if per_pass * batch < n {
+        per_pass = per_pass + 1;
+    }
+    let updates: i32 = passes * per_pass;
+    let mut u: i32 = 0;
+    let last_sum: Vec<f64> = zeros(k * d);
+    let last_cnt: Vec<f64> = zeros(k);
+    let pi_val: f64 = 3.141592653589793;
+    let mut p: i32 = 0;
+    while p < passes {
+        if batch < n {
+            // Fisher-Yates shuffle
+            let mut a: i32 = n - 1;
+            while a > 0 {
+                let b: i32 = rnd_int(g, a + 1);
+                let tmp: i32 = order[a as usize];
+                order[a as usize] = order[b as usize];
+                order[b as usize] = tmp;
+                a = a - 1;
+            }
+        }
+        let mut start: i32 = 0;
+        while start < n {
+            let mut stop: i32 = start + batch;
+            if stop > n {
+                stop = n;
+            }
+            let bsum: Vec<f64> = zeros(k * d);
+            let bcnt: Vec<f64> = zeros(k);
+            let mut q: i32 = start;
+            while q < stop {
+                let idx: i32 = order[q as usize];
+                let near: i32 = nearest(pts, idx, d, c, k);
+                bcnt[near as usize] = bcnt[near as usize] + 1.0;
+                let mut t3: i32 = 0;
+                while t3 < d {
+                    bsum[(near * d + t3) as usize] = bsum[(near * d + t3) as usize] + pts[(idx * d + t3) as usize];
+                    t3 = t3 + 1;
+                }
+                q = q + 1;
+            }
+            if p == passes - 1 {
+                let mut m: i32 = 0;
+                while m < k {
+                    last_cnt[m as usize] = last_cnt[m as usize] + bcnt[m as usize];
+                    let mut t4: i32 = 0;
+                    while t4 < d {
+                        last_sum[(m * d + t4) as usize] = last_sum[(m * d + t4) as usize] + bsum[(m * d + t4) as usize];
+                        t4 = t4 + 1;
+                    }
+                    m = m + 1;
+                }
+            }
+            let mut alpha: f64 = alpha0;
+            if cosine && updates > 1 {
+                let low: f64 = alpha0 / 10.0;
+                alpha = low + 0.5 * (alpha0 - low) * (1.0 + cos(pi_val * (u as f64) / ((updates - 1) as f64)));
+            }
+            let mut m2: i32 = 0;
+            while m2 < k {
+                if rule == 0 {
+                    cnt[m2 as usize] = (1.0 - alpha) * cnt[m2 as usize] + alpha * bcnt[m2 as usize];
+                } else if rule == 1 {
+                    cnt[m2 as usize] = cnt[m2 as usize] + bcnt[m2 as usize];
+                } else if bcnt[m2 as usize] > 0.0 {
+                    cnt[m2 as usize] = bcnt[m2 as usize];
+                }
+                let mut t5: i32 = 0;
+                while t5 < d {
+                    let at: i32 = m2 * d + t5;
+                    if rule == 0 {
+                        sum[at as usize] = (1.0 - alpha) * sum[at as usize] + alpha * bsum[at as usize];
+                    } else if rule == 1 {
+                        sum[at as usize] = sum[at as usize] + bsum[at as usize];
+                    } else if bcnt[m2 as usize] > 0.0 {
+                        sum[at as usize] = bsum[at as usize];
+                    }
+                    if cnt[m2 as usize] > 1.0e-300 {
+                        c[at as usize] = sum[at as usize] / cnt[m2 as usize];
+                    }
+                    t5 = t5 + 1;
+                }
+                m2 = m2 + 1;
+            }
+            u = u + 1;
+            if revive && (u % 5) == 0 {
+                revive_dead(c, sum, cnt, k, d, g);
+            }
+            start = stop;
+        }
+        p = p + 1;
+    }
+    if finish {
+        let mut m3: i32 = 0;
+        while m3 < k {
+            if last_cnt[m3 as usize] > 0.0 {
+                let mut t6: i32 = 0;
+                while t6 < d {
+                    c[(m3 * d + t6) as usize] = last_sum[(m3 * d + t6) as usize] / last_cnt[m3 as usize];
+                    t6 = t6 + 1;
+                }
+            }
+            m3 = m3 + 1;
+        }
+    }
+}
+
+// A cluster whose count is under a tenth of the mean takes half of a donor. The donor is drawn with
+// probability proportional to its count, and the two halves are nudged apart.
+fn revive_dead(c: Vec<f64>, sum: Vec<f64>, cnt: Vec<f64>, k: i32, d: i32, g: Vec<i64>) {
+    let mut total: f64 = 0.0;
+    let mut j: i32 = 0;
+    while j < k {
+        total = total + cnt[j as usize];
+        j = j + 1;
+    }
+    let floor_count: f64 = 0.1 * total / (k as f64);
+    j = 0;
+    while j < k {
+        if cnt[j as usize] < floor_count {
+            let mut pick: f64 = rnd(g) * total;
+            let mut donor: i32 = 0;
+            let mut m: i32 = 0;
+            while m < k {
+                donor = m;
+                pick = pick - cnt[m as usize];
+                if pick <= 0.0 {
+                    m = k;
+                }
+                m = m + 1;
+            }
+            if donor != j {
+                let half: f64 = cnt[donor as usize] / 2.0;
+                total = total - cnt[j as usize];
+                cnt[donor as usize] = half;
+                cnt[j as usize] = half;
+                let mut t: i32 = 0;
+                while t < d {
+                    let nudge: f64 = 0.01 * (rnd(g) - 0.5);
+                    let base: f64 = c[(donor * d + t) as usize];
+                    c[(donor * d + t) as usize] = base - nudge;
+                    c[(j * d + t) as usize] = base + nudge;
+                    sum[(donor * d + t) as usize] = (base - nudge) * half;
+                    sum[(j * d + t) as usize] = (base + nudge) * half;
+                    t = t + 1;
+                }
+            }
+        }
+        j = j + 1;
+    }
+}
+
+// ---------------------------------------------------------------- toy problems and the stuck test
+
+fn add_clump(pts: Vec<f64>, truth: Vec<f64>, g: Vec<i64>, cx: f64, cy: f64, sd: f64, count: i32) {
+    truth.push(cx);
+    truth.push(cy);
+    let mut i: i32 = 0;
+    while i < count {
+        pts.push(cx + sd * rnd_normal(g));
+        pts.push(cy + sd * rnd_normal(g));
+        i = i + 1;
+    }
+}
+
+// A run is stuck when the clumps and the centres do not pair off one to one: some clump's nearest centre
+// is also the nearest centre of another clump, which leaves a centre sharing a clump elsewhere.
+fn stuck(c: Vec<f64>, k: i32, truth: Vec<f64>) -> bool {
+    let used: Vec<f64> = zeros(k);
+    let mut m: i32 = 0;
+    while m < k {
+        let j: i32 = nearest(truth, m, 2, c, k);
+        used[j as usize] = used[j as usize] + 1.0;
+        m = m + 1;
+    }
+    let mut j2: i32 = 0;
+    while j2 < k {
+        if used[j2 as usize] > 1.5 {
+            return true;
+        }
+        j2 = j2 + 1;
+    }
+    false
+}
+
+// k distinct data points as the starting centres
+fn random_start(pts: Vec<f64>, n: i32, d: i32, k: i32, g: Vec<i64>) -> Vec<f64> {
+    let mut chosen: Vec<i32> = Vec::new();
+    while (chosen.len() as i32) < k {
+        let idx: i32 = rnd_int(g, n);
+        let mut seen: bool = false;
+        let mut i: i32 = 0;
+        while i < chosen.len() as i32 {
+            if chosen[i as usize] == idx {
+                seen = true;
+            }
+            i = i + 1;
+        }
+        if !seen {
+            chosen.push(idx);
+        }
+    }
+    let mut c: Vec<f64> = Vec::new();
+    let mut j: i32 = 0;
+    while j < k {
+        let mut t: i32 = 0;
+        while t < d {
+            c.push(pts[(chosen[j as usize] * d + t) as usize]);
+            t = t + 1;
+        }
+        j = j + 1;
+    }
+    c
+}
+
+fn max_abs_diff(a: Vec<f64>, b: Vec<f64>) -> f64 {
+    let mut worst: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < a.len() as i32 {
+        let mut diff: f64 = a[i as usize] - b[i as usize];
+        if diff < 0.0 {
+            diff = 0.0 - diff;
+        }
+        if diff > worst {
+            worst = diff;
+        }
+        i = i + 1;
+    }
+    worst
+}
+
+fn micro(x: f64) -> i64 {
+    (x * 1000000.0 + 0.5) as i64
+}
+
+// One toy problem, `starts` random starts, every method from the same start.
+// Prints: stuck counts for Lloyd, e-means, e-means without revival, the keep rule; mean losses in millionths;
+// Lloyd's mean passes in thousandths; and how many starts the replace rule failed to reproduce Lloyd exactly.
+fn run_trap(id: i32, pts: Vec<f64>, truth: Vec<f64>, starts: i32, passes: i32, batch: i32, alpha0: f64) ~ Console {
+    let d: i32 = 2;
+    let n: i32 = (pts.len() as i32) / d;
+    let k: i32 = (truth.len() as i32) / d;
+    let mut s_lloyd: i32 = 0;
+    let mut s_em: i32 = 0;
+    let mut s_norev: i32 = 0;
+    let mut s_keep: i32 = 0;
+    let mut corner_bad: i32 = 0;
+    let mut l_lloyd: f64 = 0.0;
+    let mut l_em: f64 = 0.0;
+    let mut l_norev: f64 = 0.0;
+    let mut l_keep: f64 = 0.0;
+    let mut lloyd_passes: i32 = 0;
+    let mut s: i32 = 0;
+    while s < starts {
+        let c0: Vec<f64> = random_start(pts, n, d, k, rng_new((id * 100000 + s) as i64));
+
+        let ca: Vec<f64> = copy_of(c0);
+        let used: i32 = lloyd(pts, n, d, ca, k, 200);
+        lloyd_passes = lloyd_passes + used;
+        if stuck(ca, k, truth) { s_lloyd = s_lloyd + 1; }
+        l_lloyd = l_lloyd + loss(pts, n, d, ca, k);
+
+        let cb: Vec<f64> = copy_of(c0);
+        batch_kmeans(pts, n, d, cb, k, passes, batch, alpha0, rng_new((id * 100000 + s + 50000) as i64), 0, true, true, true);
+        if stuck(cb, k, truth) { s_em = s_em + 1; }
+        l_em = l_em + loss(pts, n, d, cb, k);
+
+        let cc: Vec<f64> = copy_of(c0);
+        batch_kmeans(pts, n, d, cc, k, passes, batch, alpha0, rng_new((id * 100000 + s + 50000) as i64), 0, false, true, true);
+        if stuck(cc, k, truth) { s_norev = s_norev + 1; }
+        l_norev = l_norev + loss(pts, n, d, cc, k);
+
+        let cd: Vec<f64> = copy_of(c0);
+        batch_kmeans(pts, n, d, cd, k, passes, batch, alpha0, rng_new((id * 100000 + s + 50000) as i64), 1, false, false, true);
+        if stuck(cd, k, truth) { s_keep = s_keep + 1; }
+        l_keep = l_keep + loss(pts, n, d, cd, k);
+
+        // The corner: the replace rule over the whole dataset, for the passes Lloyd took less the last
+        // (which only confirmed nothing moved), must land on Lloyd's centres to the last bit.
+        let ce: Vec<f64> = copy_of(c0);
+        if used > 1 {
+            batch_kmeans(pts, n, d, ce, k, used - 1, n, 1.0, rng_new(1), 2, false, false, false);
+        }
+        if max_abs_diff(ca, ce) != 0.0 { corner_bad = corner_bad + 1; }
+        s = s + 1;
+    }
+    let f: f64 = starts as f64;
+    println!("trap {} n {} k {} starts {} | stuck lloyd {} emeans {} emeans_no_revival {} keep_rule {} | loss_e6 lloyd {} emeans {} emeans_no_revival {} keep_rule {} | lloyd_passes_e3 {} | corner_mismatch {}",
+             id, n, k, starts, s_lloyd, s_em, s_norev, s_keep,
+             micro(l_lloyd / f), micro(l_em / f), micro(l_norev / f), micro(l_keep / f),
+             ((lloyd_passes as f64) * 1000.0 / f) as i64, corner_bad);
+}
+
+// stuck counts for e-means across batch sizes and forgetting rates, so the headline setting can be judged
+fn run_grid(id: i32, pts: Vec<f64>, truth: Vec<f64>, starts: i32, passes: i32) ~ Console {
+    let d: i32 = 2;
+    let n: i32 = (pts.len() as i32) / d;
+    let k: i32 = (truth.len() as i32) / d;
+    let mut bi: i32 = 0;
+    while bi < 4 {
+        let mut batch: i32 = 32;
+        if bi == 1 { batch = 64; }
+        if bi == 2 { batch = 128; }
+        if bi == 3 { batch = 256; }
+        let mut ai: i32 = 0;
+        while ai < 3 {
+            let mut alpha0: f64 = 0.1;
+            if ai == 1 { alpha0 = 0.3; }
+            if ai == 2 { alpha0 = 0.6; }
+            let mut count: i32 = 0;
+            let mut s: i32 = 0;
+            while s < starts {
+                let c: Vec<f64> = random_start(pts, n, d, k, rng_new((id * 100000 + s) as i64));
+                batch_kmeans(pts, n, d, c, k, passes, batch, alpha0, rng_new((id * 100000 + s + 50000) as i64), 0, true, true, true);
+                if stuck(c, k, truth) { count = count + 1; }
+                s = s + 1;
+            }
+            println!("grid trap {} batch {} alpha_e2 {} stuck {} of {}", id, batch, (alpha0 * 100.0 + 0.5) as i32, count, starts);
+            ai = ai + 1;
+        }
+        bi = bi + 1;
+    }
+}
+
+fn trap_points(id: i32, truth: Vec<f64>) -> Vec<f64> {
+    let pts: Vec<f64> = Vec::new();
+    let g: Vec<i64> = rng_new((900 + id) as i64);
+    if id == 1 {
+        // five clumps on a line
+        let mut i: i32 = 0;
+        while i < 5 {
+            add_clump(pts, truth, g, 10.0 * (i as f64), 0.0, 1.0, 200);
+            i = i + 1;
+        }
+    }
+    if id == 2 {
+        // one large clump and two small ones
+        add_clump(pts, truth, g, 0.0, 0.0, 1.0, 800);
+        add_clump(pts, truth, g, 12.0, 0.0, 1.0, 100);
+        add_clump(pts, truth, g, 0.0, 12.0, 1.0, 100);
+    }
+    if id == 3 {
+        // a three by three grid
+        let mut r: i32 = 0;
+        while r < 3 {
+            let mut q: i32 = 0;
+            while q < 3 {
+                add_clump(pts, truth, g, 10.0 * (q as f64), 10.0 * (r as f64), 1.0, 200);
+                q = q + 1;
+            }
+            r = r + 1;
+        }
+    }
+    if id == 4 {
+        // four clumps around a centre
+        add_clump(pts, truth, g, 10.0, 0.0, 1.0, 200);
+        add_clump(pts, truth, g, 0.0 - 10.0, 0.0, 1.0, 200);
+        add_clump(pts, truth, g, 0.0, 10.0, 1.0, 200);
+        add_clump(pts, truth, g, 0.0, 0.0 - 10.0, 1.0, 200);
+    }
+    pts
+}
+
+// ---------------------------------------------------------------- palette-sized problem: three dimensions
+
+// Eight colour clusters in the unit cube with unequal shares, as a stand-in for a picture's pixels.
+// Synthetic: no image is read.
+fn palette_points(g: Vec<i64>, n: i32) -> Vec<f64> {
+    let centres: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < 24 {
+        centres.push(0.1 + 0.8 * rnd(g));
+        i = i + 1;
+    }
+    let pts: Vec<f64> = Vec::new();
+    i = 0;
+    while i < n {
+        let r: f64 = rnd(g);
+        let mut which: i32 = 7;
+        if r < 0.40 { which = 0; }
+        else if r < 0.60 { which = 1; }
+        else if r < 0.75 { which = 2; }
+        else if r < 0.85 { which = 3; }
+        else if r < 0.91 { which = 4; }
+        else if r < 0.95 { which = 5; }
+        else if r < 0.98 { which = 6; }
+        let mut t: i32 = 0;
+        while t < 3 {
+            pts.push(centres[(which * 3 + t) as usize] + 0.04 * rnd_normal(g));
+            t = t + 1;
+        }
+        i = i + 1;
+    }
+    pts
+}
+
+fn run_palette(k: i32, passes: i32, starts: i32) ~ Console {
+    let d: i32 = 3;
+    let n: i32 = 8000;
+    let pts: Vec<f64> = palette_points(rng_new(777), n);
+    let mut l_lloyd: f64 = 0.0;
+    let mut l_em: f64 = 0.0;
+    let mut wins: i32 = 0;
+    let mut lloyd_passes: i32 = 0;
+    let mut s: i32 = 0;
+    while s < starts {
+        let c0: Vec<f64> = random_start(pts, n, d, k, rng_new((7000000 + k * 1000 + s) as i64));
+        let ca: Vec<f64> = copy_of(c0);
+        lloyd_passes = lloyd_passes + lloyd(pts, n, d, ca, k, 300);
+        let cb: Vec<f64> = copy_of(c0);
+        batch_kmeans(pts, n, d, cb, k, passes, 256, 0.3, rng_new((7500000 + k * 1000 + s) as i64), 0, true, true, true);
+        let la: f64 = loss(pts, n, d, ca, k);
+        let lb: f64 = loss(pts, n, d, cb, k);
+        l_lloyd = l_lloyd + la;
+        l_em = l_em + lb;
+        if lb < la { wins = wins + 1; }
+        s = s + 1;
+    }
+    let f: f64 = starts as f64;
+    println!("palette k {} emeans_passes {} starts {} | loss_e9 lloyd {} emeans {} | emeans_lower {} of {} | lloyd_passes_e3 {}",
+             k, passes, starts, (l_lloyd / f * 1000000000.0 + 0.5) as i64, (l_em / f * 1000000000.0 + 0.5) as i64,
+             wins, starts, ((lloyd_passes as f64) * 1000.0 / f) as i64);
+}
+
+// ---------------------------------------------------------------- controls
+
+// The stuck test must say stuck for a planted bad answer and not stuck for the true centres.
+fn run_controls() ~ Console {
+    let truth: Vec<f64> = Vec::new();
+    let pts: Vec<f64> = trap_points(1, truth);
+    let good: Vec<f64> = copy_of(truth);
+    let bad: Vec<f64> = copy_of(truth);
+    // plant: move the last centre into the first clump, so one clump has two centres and one has none
+    bad[8] = 0.5;
+    bad[9] = 0.5;
+    let mut ok: i32 = 0;
+    if !stuck(good, 5, truth) { ok = ok + 1; }
+    if stuck(bad, 5, truth) { ok = ok + 1; }
+    // the loss of the planted answer must be higher than the loss of the true centres
+    if loss(pts, 1000, 2, bad, 5) > loss(pts, 1000, 2, good, 5) { ok = ok + 1; }
+    // the same seed must give the same stream, and a different seed a different one
+    let a: f64 = rnd(rng_new(5));
+    let b: f64 = rnd(rng_new(5));
+    let c: f64 = rnd(rng_new(6));
+    if a == b && a != c { ok = ok + 1; }
+    println!("controls passed {} of 4", ok);
+}
+
+// ---------------------------------------------------------------- second stage: how far apart the clumps are
+
+// Added after the first results were read, to test one explanation for them: that our clumps, ten standard
+// deviations apart, are too far for batch noise to carry a centre across. Five clumps on a line again, with
+// the spacing varied. Two settings: the headline one, and the noisiest corner of the grid.
+fn run_spacing(tag: i32, spacing: f64, passes: i32, batch: i32, alpha0: f64) ~ Console {
+    let truth: Vec<f64> = Vec::new();
+    let pts: Vec<f64> = Vec::new();
+    let g: Vec<i64> = rng_new((950 + tag) as i64);
+    let mut i: i32 = 0;
+    while i < 5 {
+        add_clump(pts, truth, g, spacing * (i as f64), 0.0, 1.0, 200);
+        i = i + 1;
+    }
+    let mut s_lloyd: i32 = 0;
+    let mut s_em: i32 = 0;
+    let mut s: i32 = 0;
+    while s < 200 {
+        let c0: Vec<f64> = random_start(pts, 1000, 2, 5, rng_new((tag * 100000 + s) as i64));
+        let ca: Vec<f64> = copy_of(c0);
+        let used: i32 = lloyd(pts, 1000, 2, ca, 5, 200);
+        if stuck(ca, 5, truth) { s_lloyd = s_lloyd + 1; }
+        let cb: Vec<f64> = copy_of(c0);
+        batch_kmeans(pts, 1000, 2, cb, 5, passes, batch, alpha0, rng_new((tag * 100000 + s + 50000) as i64), 0, true, true, true);
+        if stuck(cb, 5, truth) { s_em = s_em + 1; }
+        s = s + 1;
+    }
+    println!("spacing_e1 {} passes {} batch {} alpha_e2 {} | stuck lloyd {} emeans {} of 200",
+             (spacing * 10.0 + 0.5) as i32, passes, batch, (alpha0 * 100.0 + 0.5) as i32, s_lloyd, s_em);
+}
+
+fn run_spacings() ~ Console {
+    let mut t: i32 = 0;
+    while t < 4 {
+        let mut spacing: f64 = 3.0;
+        if t == 1 { spacing = 4.0; }
+        if t == 2 { spacing = 6.0; }
+        if t == 3 { spacing = 10.0; }
+        run_spacing(20 + t, spacing, 5, 64, 0.3);
+        run_spacing(20 + t, spacing, 5, 32, 0.6);
+        run_spacing(20 + t, spacing, 20, 32, 0.6);
+        t = t + 1;
+    }
+}
+
+fn main() ~ Console {
+    run_controls();
+    // headline setting, fixed before the first run: 5 passes, batch 64, forgetting rate 0.3
+    let mut id: i32 = 1;
+    while id <= 4 {
+        let truth: Vec<f64> = Vec::new();
+        let pts: Vec<f64> = trap_points(id, truth);
+        run_trap(id, pts, truth, 200, 5, 64, 0.3);
+        id = id + 1;
+    }
+    id = 1;
+    while id <= 4 {
+        let truth2: Vec<f64> = Vec::new();
+        let pts2: Vec<f64> = trap_points(id, truth2);
+        run_grid(id, pts2, truth2, 200, 5);
+        id = id + 1;
+    }
+    run_palette(8, 2, 50);
+    run_palette(8, 5, 50);
+    run_palette(16, 2, 50);
+    run_palette(16, 5, 50);
+    run_spacings();
+}
