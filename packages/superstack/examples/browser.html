@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Superstack examples</title></head>
+<body>
+<canvas id="c" width="256" height="256" aria-label="Render of the reference scene"></canvas>
+<script type="module">
+// SPDX-License-Identifier: FSL-1.1-MIT
+// Runs the WebGL2 pixel backend and both browser sound paths, then exposes the
+// bytes on window.__examples for run_browser.py. Served from the repo root.
+import { rawSceneGL2 } from './pixels/raw-scene-gl2.mjs';
+import { render as exactSound, score } from './sound/sound_exact.mjs';
+import { canonicalSha256, sha256, xmur3, quantizeS16 } from '../superstack.mjs';
+
+const b64 = (u8) => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode(...u8.subarray(i, i + 0x8000)); return btoa(s); };
+
+async function pixels() {
+  const scene = await (await fetch('pixels/scene.json')).json();
+  const inst = rawSceneGL2.create({ canvas: document.getElementById('c'), params: { scene } });
+  const t0 = performance.now();
+  const frameRGBA = inst.readChannel('frame'), aoRGBA = inst.readChannel('ao'), maskRGBA = inst.readChannel('mask');
+  const ms = performance.now() - t0;
+  const n = scene.frame.width * scene.frame.height;
+  const rgb = new Uint8Array(n * 3), ao = new Float32Array(n), mask = new Uint8Array(n);
+  for (let i = 0; i < n; i++) {
+    rgb.set(frameRGBA.subarray(i * 4, i * 4 + 3), i * 3);
+    mask[i] = maskRGBA[i * 4] > 0 ? 1 : 0;
+    ao[i] = mask[i] ? aoRGBA[i * 4] / scene.ao.samples : 1;
+  }
+  const info = inst.info();
+  inst.dispose();
+  return { sceneSha256: canonicalSha256(scene), contentSha256: sha256(rgb), info, ms,
+    frame: b64(rgb), ao: b64(new Uint8Array(ao.buffer)), mask: b64(mask) };
+}
+
+async function webaudio(scene) {
+  const { rate, duration_samples: N, note_samples: L, attack_samples: A, release_samples: R, voice_gain: g } = scene;
+  const ctx = new OfflineAudioContext(1, N, rate);
+  const master = new GainNode(ctx, { gain: scene.master_gain });
+  master.connect(ctx.destination);
+  for (const note of score(scene)) {
+    const t0 = note.start / rate;
+    const osc = new OscillatorNode(ctx, { type: 'sine', frequency: note.freq });
+    const amp = new GainNode(ctx, { gain: 0 });
+    amp.gain.setValueAtTime(0, t0);
+    amp.gain.linearRampToValueAtTime(g, t0 + A / rate);
+    amp.gain.setValueAtTime(g, t0 + (L - R) / rate);
+    amp.gain.linearRampToValueAtTime(0, t0 + L / rate);
+    osc.connect(amp).connect(master);
+    osc.start(t0); osc.stop(t0 + L / rate);
+  }
+  return (await ctx.startRendering()).getChannelData(0);
+}
+
+async function audio() {
+  const scene = await (await fetch('sound/sound.json')).json();
+  const exact = quantizeS16(exactSound(scene));
+  const live = quantizeS16(await webaudio(scene));
+  return { sceneSha256: canonicalSha256(scene), seedU32: xmur3(scene.seed), score: score(scene),
+    exact: { sha256: sha256(exact), pcm: b64(exact) }, webaudio: { sha256: sha256(live), pcm: b64(live) } };
+}
+
+window.__examples = (async () => {
+  const out = {};
+  try { out.pixels = await pixels(); } catch (e) { out.pixels = { error: String(e && e.stack || e) }; }
+  try { out.audio = await audio(); } catch (e) { out.audio = { error: String(e && e.stack || e) }; }
+  return out;
+})();
+</script>
+</body></html>

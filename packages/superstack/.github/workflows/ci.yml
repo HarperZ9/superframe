@@ -1,0 +1,171 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: contract (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # Windows leg: check out the way a default Git for Windows install does, so a
+      # line-ending rewrite of a pinned file fails here instead of on a reader's machine.
+      - name: Use the Git for Windows line-ending default
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Vectors equal the generator
+        run: python tools/make_vectors.py --check
+      - name: SHA256SUMS pins the implementations
+        run: python tools/check_vendored.py superstack.py superstack.mjs superstack.hpp --sums SHA256SUMS
+      - name: Vendoring check self-test
+        run: python tests/test_check_vendored.py
+      - name: Python vectors
+        run: python tests/run_vectors.py --summary py.json
+      - name: JavaScript vectors
+        run: node tests/run_vectors.mjs --summary js.json
+      - name: Build the C++ runner
+        run: |
+          cmake -S tests -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+      - name: C++ vectors
+        run: |
+          exe=build/Release/run_vectors.exe
+          [ -f "$exe" ] || exe=build/run_vectors
+          "$exe" . --summary cpp.json
+      - name: Equal check counts in all three languages
+        run: |
+          python - <<'EOF'
+          import json, sys
+          c = {n: json.load(open(f"{n}.json")) for n in ("py", "js", "cpp")}
+          print(json.dumps(c, indent=1, sort_keys=True))
+          sys.exit(0 if c["py"] == c["js"] == c["cpp"] else 1)
+          EOF
+      - name: Paired mutations
+        run: python tests/mutate.py
+      - name: Sealed files are checked out byte for byte
+        if: ${{ !cancelled() }}
+        run: |
+          git ls-files -s -- ":(attr:-text)" | while read -r mode sha stage path; do
+            if [ "$(git hash-object --no-filters -- "$path")" != "$sha" ]; then
+              echo "checkout rewrote a sealed file: $path"
+              exit 1
+            fi
+          done
+          echo "every sealed file matches its committed blob"
+
+  wasm:
+    name: C++ header under Emscripten (wasm, run in Node)
+    runs-on: ubuntu-24.04
+    env:
+      EMSDK_VERSION: 6.0.11
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install emsdk ${{ env.EMSDK_VERSION }}
+        run: |
+          git clone https://github.com/emscripten-core/emsdk.git "$RUNNER_TEMP/emsdk"
+          cd "$RUNNER_TEMP/emsdk"
+          ./emsdk install "$EMSDK_VERSION"
+          ./emsdk activate "$EMSDK_VERSION"
+      - name: Build the C++ runner with em++
+        run: |
+          source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          em++ --version
+          emcmake cmake -S tests -B build-wasm -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-wasm
+      - name: C++ vectors in Node
+        run: node build-wasm/run_vectors.js . --summary wasm.json
+      - name: Python vectors for comparison
+        run: python tests/run_vectors.py --summary py.json
+      - name: Equal check counts in wasm and Python
+        run: |
+          python - <<'PY'
+          import json, sys
+          c = {n: json.load(open(f"{n}.json")) for n in ("py", "wasm")}
+          print(json.dumps(c, indent=1, sort_keys=True))
+          sys.exit(0 if c["py"] == c["wasm"] else 1)
+          PY
+
+  floor:
+    name: oldest supported runtimes (Python 3.11, Node 20)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: python tests/run_vectors.py
+      - run: node tests/run_vectors.mjs
+
+  examples:
+    name: examples (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      # Windows leg: check out the way a default Git for Windows install does, so a
+      # line-ending rewrite of a pinned file fails here instead of on a reader's machine.
+      - name: Use the Git for Windows line-ending default
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: python -m pip install "numpy>=2"
+      - name: Pixel and sound proof against the recorded reference
+        run: python examples/run_all.py --ci
+      - name: Recorded reference matches its SHA256SUMS
+        shell: bash
+        working-directory: examples/reference/raw-native-0.4.0
+        run: python ../../../tools/check_vendored.py frame.ppm mask.pgm ao_rt.pfm certificate.json --sums SHA256SUMS
+
+  docs:
+    name: docs (no em or en dashes)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: No em or en dashes in prose
+        run: python tools/check_dashes.py
+  art-receipts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify art receipt digests
+        run: python3 scripts/check_art_receipts.py

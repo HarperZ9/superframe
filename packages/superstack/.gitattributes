@@ -1,0 +1,20 @@
+# Engines pin these files by SHA-256 of their exact bytes, so every checkout,
+# on every platform, must keep LF line endings.
+* text=auto eol=lf
+*.ppm binary
+*.pgm binary
+*.pfm binary
+
+# Files pinned by a SHA-256 list: SHA256SUMS pins the three implementations,
+# examples/reference/raw-native-0.4.0/SHA256SUMS pins the recorded reference, and
+# vectors/MANIFEST.json pins every vector. `eol=lf` above writes LF on checkout, but
+# Git still converts these files on commit and checkout. `-text` turns conversion
+# off for exactly these paths, so the bytes on disk are the committed blob under any
+# core.autocrlf setting. Later lines win, so this overrides the rule above here only.
+/SHA256SUMS -text
+/superstack.py -text
+/superstack.mjs -text
+/superstack.hpp -text
+examples/reference/raw-native-0.4.0/SHA256SUMS -text
+examples/reference/raw-native-0.4.0/certificate.json -text
+vectors/*.json -text

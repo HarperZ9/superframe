@@ -1,0 +1,15 @@
+# secrets and local environment
+.env
+.env.*
+!.env.example
+.envrc
+.envrc.local
+CLAUDE.local.md
+
+# build and run outputs
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+examples/out/

@@ -1,0 +1,338 @@
+[
+ {
+  "id": "number-exponent",
+  "caught_by": "canonical.json",
+  "breaks": "large and tiny floats lose their exponent (C++) or keep exponent form (Python, JS)",
+  "py": {
+   "find": "return positional(sign, ip, fp, ex)",
+   "replace": "return repr(x)"
+  },
+  "js": {
+   "find": "return positional(m[1], m[2], m[3] || '', Number(m[4] || 0));",
+   "replace": "return String(x);"
+  },
+  "cpp": {
+   "find": "return positional(sign, ip, fp, exp);",
+   "replace": "return positional(sign, ip, fp, exp > 20 || exp < -6 ? 0 : exp);"
+  }
+ },
+ {
+  "id": "key-order",
+  "caught_by": "canonical.json",
+  "breaks": "keys sorted by UTF-16 units or reversed instead of code points",
+  "py": {
+   "find": "for k in sorted(v)) + \"}\"",
+   "replace": "for k in sorted(v, key=lambda k: k.encode('utf-16-be'))) + \"}\""
+  },
+  "js": {
+   "find": "Object.keys(v).sort(byCodePoint)",
+   "replace": "Object.keys(v).sort()"
+  },
+  "cpp": {
+   "find": "return a->key < b->key; });",
+   "replace": "return a->key > b->key; });"
+  }
+ },
+ {
+  "id": "escape-range",
+  "caught_by": "canonical.json",
+  "breaks": "U+001F written raw",
+  "py": {
+   "find": "elif o < 0x20:",
+   "replace": "elif o < 0x1f:"
+  },
+  "js": {
+   "find": "else if (c < 0x20) out +=",
+   "replace": "else if (c < 0x1f) out +="
+  },
+  "cpp": {
+   "find": "        if (c < 0x20) {",
+   "replace": "        if (c < 0x1f) {"
+  }
+ },
+ {
+  "id": "seed-code-units",
+  "caught_by": "seed.json",
+  "breaks": "xmur3 over code points instead of UTF-16 code units",
+  "py": {
+   "find": "units = utf16_units(s)",
+   "replace": "units = [ord(ch) for ch in s]"
+  },
+  "js": {
+   "find": "for (let i = 0; i < s.length; i++) {\n    h = Math.imul(h ^ s.charCodeAt(i), 3432918353);",
+   "replace": "for (const ch of s) {\n    h = Math.imul(h ^ ch.codePointAt(0), 3432918353);"
+  },
+  "cpp": {
+   "find": "if (cp < 0x10000) out.push_back(static_cast<std::uint16_t>(cp));",
+   "replace": "if (cp < 0x110000) out.push_back(static_cast<std::uint16_t>(cp));"
+  }
+ },
+ {
+  "id": "mulberry-constant",
+  "caught_by": "seed.json",
+  "breaks": "mulberry32 multiplier constant changed",
+  "py": {
+   "find": "t | 61))",
+   "replace": "t | 63))"
+  },
+  "js": {
+   "find": "t | 61)) ^ t;",
+   "replace": "t | 63)) ^ t;"
+  },
+  "cpp": {
+   "find": "(t | 61u);",
+   "replace": "(t | 63u);"
+  }
+ },
+ {
+  "id": "pixel-hash-constant",
+  "caught_by": "seed.json",
+  "breaks": "raw-pixel-hash/1 constant changed",
+  "py": {
+   "find": "h ^ (h >> 13), 1274126177)",
+   "replace": "h ^ (h >> 13), 1274126176)"
+  },
+  "js": {
+   "find": "h ^ (h >>> 13), 1274126177)",
+   "replace": "h ^ (h >>> 13), 1274126176)"
+  },
+  "cpp": {
+   "find": "* 1274126177u;",
+   "replace": "* 1274126176u;"
+  }
+ },
+ {
+  "id": "flick-constant",
+  "caught_by": "clock.json",
+  "breaks": "flicks per second halved",
+  "py": {
+   "find": "FLICKS_PER_SECOND = 705_600_000",
+   "replace": "FLICKS_PER_SECOND = 352_800_000"
+  },
+  "js": {
+   "find": "FLICKS_PER_SECOND = 705600000;",
+   "replace": "FLICKS_PER_SECOND = 352800000;"
+  },
+  "cpp": {
+   "find": "FLICKS_PER_SECOND = 705600000;",
+   "replace": "FLICKS_PER_SECOND = 352800000;"
+  }
+ },
+ {
+  "id": "quantize-rounding",
+  "caught_by": "sound.json",
+  "breaks": "s16 quantizer truncates instead of flooring",
+  "py": {
+   "find": "math.floor(v * 32767.0 + 0.5)",
+   "replace": "int(v * 32767.0 + 0.5)"
+  },
+  "js": {
+   "find": "Math.floor(v * 32767 + 0.5)",
+   "replace": "Math.trunc(v * 32767 + 0.5)"
+  },
+  "cpp": {
+   "find": "std::floor(v * 32767.0 + 0.5)",
+   "replace": "std::trunc(v * 32767.0 + 0.5)"
+  }
+ },
+ {
+  "id": "relative-gate",
+  "caught_by": "sound.json",
+  "breaks": "BS.1770 relative gate at -20 LU instead of -10",
+  "py": {
+   "find": "rel = _loud(acc / len(gated)) - 10.0",
+   "replace": "rel = _loud(acc / len(gated)) - 20.0"
+  },
+  "js": {
+   "find": "const rel = loud(acc / gated.length) - 10;",
+   "replace": "const rel = loud(acc / gated.length) - 20;"
+  },
+  "cpp": {
+   "find": "static_cast<double>(gated.size())) - 10.0;",
+   "replace": "static_cast<double>(gated.size())) - 20.0;"
+  }
+ },
+ {
+  "id": "k-weighting-table",
+  "caught_by": "sound.json",
+  "breaks": "K-weighting b0 truncated",
+  "py": {
+   "find": "_K48 = ((1.53512485958697,",
+   "replace": "_K48 = ((1.5351248595,"
+  },
+  "js": {
+   "find": "const K48 = [[1.53512485958697,",
+   "replace": "const K48 = [[1.5351248595,"
+  },
+  "cpp": {
+   "find": "Biquad{1.53512485958697,",
+   "replace": "Biquad{1.5351248595,"
+  }
+ },
+ {
+  "id": "speech-target",
+  "caught_by": "sound.json",
+  "breaks": "speech loudness target moved to -15 LUFS",
+  "py": {
+   "find": "\"speech\": {\"integrated_lufs\": -16.0,",
+   "replace": "\"speech\": {\"integrated_lufs\": -15.0,"
+  },
+  "js": {
+   "find": "speech: Object.freeze({ integrated_lufs: -16,",
+   "replace": "speech: Object.freeze({ integrated_lufs: -15,"
+  },
+  "cpp": {
+   "find": "LoudnessTarget{-16.0, 1.0, -1.5, false}",
+   "replace": "LoudnessTarget{-15.0, 1.0, -1.5, false}"
+  }
+ },
+ {
+  "id": "wav-byte-rate",
+  "caught_by": "export.json",
+  "breaks": "WAV byte rate ignores channels",
+  "py": {
+   "find": "(rate * channels * 2).to_bytes(4",
+   "replace": "(rate * 2).to_bytes(4"
+  },
+  "js": {
+   "find": "dv.setUint32(28, rate * channels * 2, true)",
+   "replace": "dv.setUint32(28, rate * 2, true)"
+  },
+  "cpp": {
+   "find": "detail::put_le(b, rate * channels * 2, 4);",
+   "replace": "detail::put_le(b, rate * 2, 4);"
+  }
+ },
+ {
+  "id": "oklab-matrix",
+  "caught_by": "colour.json",
+  "breaks": "OKLab M1 coefficient changed by 1e-6",
+  "py": {
+   "find": "math.cbrt(0.4122214708 * r",
+   "replace": "math.cbrt(0.4122224708 * r"
+  },
+  "js": {
+   "find": "Math.cbrt(0.4122214708 * r",
+   "replace": "Math.cbrt(0.4122224708 * r"
+  },
+  "cpp": {
+   "find": "std::cbrt(0.4122214708 * r",
+   "replace": "std::cbrt(0.4122224708 * r"
+  }
+ },
+ {
+  "id": "risk-token",
+  "caught_by": "colour.json",
+  "breaks": "high-liability light token changed",
+  "py": {
+   "find": "\"high\": \"#b3261e\"",
+   "replace": "\"high\": \"#b3261f\""
+  },
+  "js": {
+   "find": "high: '#b3261e'",
+   "replace": "high: '#b3261f'"
+  },
+  "cpp": {
+   "find": "\"#8f5200\", \"#b3261e\"",
+   "replace": "\"#8f5200\", \"#b3261f\""
+  }
+ },
+ {
+  "id": "identity-always-match",
+  "caught_by": "reconcile.json",
+  "breaks": "identity reports MATCH for different bytes",
+  "py": {
+   "find": "return \"MATCH\" if reference_sha256 == candidate_sha256 else \"DRIFT\"",
+   "replace": "return \"MATCH\" if len(reference_sha256) == len(candidate_sha256) else \"DRIFT\""
+  },
+  "js": {
+   "find": "(refSha === candSha ? 'MATCH' : 'DRIFT')",
+   "replace": "(refSha.length === candSha.length ? 'MATCH' : 'DRIFT')"
+  },
+  "cpp": {
+   "find": "return ref_sha == cand_sha ? \"MATCH\" : \"DRIFT\";",
+   "replace": "return ref_sha.size() == cand_sha.size() ? \"MATCH\" : \"DRIFT\";"
+  }
+ },
+ {
+  "id": "empty-does-not-prove",
+  "caught_by": "receipt.json",
+  "breaks": "an empty does_not_prove list accepted",
+  "py": {
+   "find": "or not dnp or not all(",
+   "replace": "or not all("
+  },
+  "js": {
+   "find": "!dnp.length || !dnp.every(",
+   "replace": "!dnp.every("
+  },
+  "cpp": {
+   "find": "bool dnp_ok = dnp.is_array() && !dnp.arr().empty();",
+   "replace": "bool dnp_ok = dnp.is_array();"
+  }
+ },
+ {
+  "id": "seal-unchecked",
+  "caught_by": "receipt.json",
+  "breaks": "receipt seal never recomputed",
+  "py": {
+   "find": "if canonical_sha256(body) != rec[\"receipt_sha256\"]:",
+   "replace": "if False:"
+  },
+  "js": {
+   "find": "if (canonicalSha256(body) !== rec.receipt_sha256) errs.push('seal');",
+   "replace": "if (body === null) errs.push('seal');"
+  },
+  "cpp": {
+   "find": "if (canonical_sha256(body) != rec.at(\"receipt_sha256\").str()) errs.push_back(\"seal\");",
+   "replace": "if (body.is_null()) errs.push_back(\"seal\");"
+  }
+ },
+ {
+  "id": "autoplay-allowed",
+  "caught_by": "receipt.json",
+  "breaks": "autoplay true accepted",
+  "py": {
+   "find": "access.get(\"autoplay\") is not False:",
+   "replace": "access.get(\"autoplay\") is None:"
+  },
+  "js": {
+   "find": "access.autoplay !== false) errs.push",
+   "replace": "access.autoplay === undefined) errs.push"
+  },
+  "cpp": {
+   "find": "!is_bool(access->find(\"autoplay\"), false)) errs.push_back",
+   "replace": "!access->find(\"autoplay\")) errs.push_back"
+  }
+ },
+ {
+  "id": "narration-as-reference",
+  "caught_by": "receipt.json",
+  "breaks": "narration accepted as a reference",
+  "py": {
+   "find": "if nar.get(\"reference\") is not False:",
+   "replace": "if nar.get(\"reference\") is None:"
+  },
+  "js": {
+   "find": "if (nar.reference !== false) errs.push",
+   "replace": "if (nar.reference === undefined) errs.push"
+  },
+  "cpp": {
+   "find": "if (!is_bool(nar->find(\"reference\"), false)) errs.push_back",
+   "replace": "if (!nar->find(\"reference\")) errs.push_back"
+  }
+ },
+ {
+  "id": "sha256-constant",
+  "caught_by": "hash.json",
+  "breaks": "first SHA-256 round constant changed (JS and C++ carry their own SHA-256)",
+  "js": {
+   "find": "  0x428a2f98, 0x71374491,",
+   "replace": "  0x428a2f99, 0x71374491,"
+  },
+  "cpp": {
+   "find": "      0x428a2f98, 0x71374491,",
+   "replace": "      0x428a2f99, 0x71374491,"
+  }
+ }
+]
