@@ -2,7 +2,7 @@
 
 Describe a piece in plain words and get it back in every medium at once: a painting, a page of living type, a line drawing, a carved material, a sound and a touch pattern. All of them come from one seeded recipe. You can then read the piece back as a study of its own parts, in whichever sense works for you.
 
-Superframe is one part of a larger creative and study platform. It is the engine part: the laws, media and measures that the other tools draw on. It ships here on its own, under its own name.
+This repository is The Playground: the engine. Superframe is its core, and the renderers, type, sound, material and study packages that used to live in separate repositories are moving into `packages/` here, each with its history.
 
 ```
 npm run make -- "heavy rust coral upper left, fine teal frost on the right, \"seeing sounds, hearing images\"" out/first --seed first
