@@ -13,9 +13,9 @@
 // 24 a second) into the folder it runs in, then prints its own checks. See README.md.
 
 extern "C" header "<stdio.h>" {
-    fn fopen(path: &str, mode: &str) -> *mut u8;
-    fn fputc(c: i32, f: *mut u8) -> i32;
-    fn fclose(f: *mut u8) -> i32;
+    fn fopen(path: &str, mode: &str) -> *mut ();
+    fn fputc(c: i32, f: *mut ()) -> i32;
+    fn fclose(f: *mut ()) -> i32;
 }
 
 // ---------------------------------------------------------------- numbers that never overflow
@@ -30,7 +30,7 @@ fn hash2(ix: i64, iy: i64) -> f64 {
     (h as f64) / 2147483399.0
 }
 
-fn fabs(x: f64) -> f64 {
+fn absf(x: f64) -> f64 {
     if x < 0.0 { return 0.0 - x; }
     x
 }
@@ -192,14 +192,14 @@ fn render_note(l: Vec<f64>, r: Vec<f64>, n: i32, voice: i32, start_s: f64, len_s
     }
 }
 
-fn put16(f: *mut u8, v: i32) ~ Foreign {
+fn put16(f: *mut (), v: i32) ~ Foreign {
     let mut u: i32 = v;
     if u < 0 { u = u + 65536; }
     let a: i32 = fputc(u % 256, f);
     let b: i32 = fputc(u / 256, f);
 }
 
-fn put32(f: *mut u8, v: i32) ~ Foreign {
+fn put32(f: *mut (), v: i32) ~ Foreign {
     put16(f, v % 65536);
     put16(f, v / 65536);
 }
@@ -221,8 +221,8 @@ fn write_wav(l: Vec<f64>, r: Vec<f64>, n: i32) ~ Foreign {
         if left < 1.5 { fade = left / 1.5; }
         let mut x: f64 = l[i as usize] * fade;
         let mut y: f64 = r[i as usize] * fade;
-        let ax: f64 = fabs(x);
-        let ay: f64 = fabs(y);
+        let ax: f64 = absf(x);
+        let ay: f64 = absf(y);
         x = x / (1.0 + 0.35 * ax);
         y = y / (1.0 + 0.35 * ay);
         let mut xi: i32 = (x * 30000.0) as i32;
@@ -497,7 +497,7 @@ fn shade(sc: Vec<f64>, t: f64, x: f64, y: f64, px: f64, out: Vec<f64>) {
         let strength: f64 = sc[(22 + i * 4) as usize];
         if rad < 0.0 {
             // a falling drop: a short pale stroke
-            let dx: f64 = fabs(x - rx);
+            let dx: f64 = absf(x - rx);
             let dy: f64 = y - ry;
             if dy > 0.0 - 0.035 && dy < 0.0 {
                 let a: f64 = cover(dx - 0.0016, px) * strength * 0.8 * chalk;
@@ -506,7 +506,7 @@ fn shade(sc: Vec<f64>, t: f64, x: f64, y: f64, px: f64, out: Vec<f64>) {
         } else {
             let ex: f64 = x - rx;
             let ey: f64 = (y - ry) / 0.30;
-            let dist: f64 = fabs(sqrt(ex * ex + ey * ey) - rad);
+            let dist: f64 = absf(sqrt(ex * ex + ey * ey) - rad);
             let a: f64 = cover(dist - 0.0016, px * 1.6) * strength * 1.30 * chalk;
             r = r + 0.74 * a; g = g + 0.82 * a; b = b + 0.80 * a;
         }
@@ -524,7 +524,7 @@ fn shade(sc: Vec<f64>, t: f64, x: f64, y: f64, px: f64, out: Vec<f64>) {
         let size: f64 = sc[(o + 4) as usize];
         let lit: f64 = sc[(o + 5) as usize];
         let landed: f64 = sc[(o + 6) as usize];
-        if fabs(x - cx) < size * 1.3 && fabs(y - cy) < size * 1.3 {
+        if absf(x - cx) < size * 1.3 && absf(y - cy) < size * 1.3 {
             // into the seed's own frame: undo the tilt, then the turn squeezes it sideways
             let ct: f64 = cos(tilt);
             let st: f64 = sin(tilt);
@@ -550,10 +550,10 @@ fn shade(sc: Vec<f64>, t: f64, x: f64, y: f64, px: f64, out: Vec<f64>) {
                 let mut side: f64 = 1.0;
                 if spin < 0.0 { side = 0.60; }
                 // veins: pale lines fanning from the nut
-                let fan: f64 = 0.5 + 0.5 * sin(30.0 * (ly - 0.16 * fabs(sx)) / (0.15 + fabs(sx)));
+                let fan: f64 = 0.5 + 0.5 * sin(30.0 * (ly - 0.16 * absf(sx)) / (0.15 + absf(sx)));
                 let vein: f64 = 0.86 + 0.14 * fan;
                 // brighter toward the leading edge
-                let edge: f64 = 0.80 + 0.30 * clamp01(0.0 - (ly - 0.16 * fabs(sx)) * 3.0 + 0.6);
+                let edge: f64 = 0.80 + 0.30 * clamp01(0.0 - (ly - 0.16 * absf(sx)) * 3.0 + 0.6);
                 let k: f64 = a * chalk * side * vein * edge * lit;
                 r = r * (1.0 - a) + wr * k;
                 g = g * (1.0 - a) + wg * k;
@@ -582,7 +582,7 @@ fn shade(sc: Vec<f64>, t: f64, x: f64, y: f64, px: f64, out: Vec<f64>) {
             let lx0: f64 = 0.0 - 0.30 + (0.35 + 0.55 * h1) * tg * 0.62 + 1.5 * h3;
             let ly0: f64 = 0.08 + 0.60 * h2 - 0.10 * tg * (h1 - 0.3) + 0.03 * sin(5.0 * tg + 6.0 * h3);
             let sz: f64 = 0.010 + 0.016 * h3;
-            if fabs(x - lx0) < sz * 2.0 && fabs(y - ly0) < sz * 2.0 {
+            if absf(x - lx0) < sz * 2.0 && absf(y - ly0) < sz * 2.0 {
                 let ang: f64 = 9.0 * tg * (0.4 + h2) + 6.0 * h1;
                 let ca: f64 = cos(ang);
                 let sa: f64 = sin(ang);
@@ -674,8 +674,8 @@ fn run_checks(s: Vec<f64>, n: i32) ~ Console {
             let mut after: f64 = 0.0;
             let mut k: i32 = 1;
             while k <= 96 {
-                if first - k >= 0 { before = before + fabs(l[(first - k) as usize]); }
-                after = after + fabs(l[(first + k) as usize]);
+                if first - k >= 0 { before = before + absf(l[(first - k) as usize]); }
+                after = after + absf(l[(first + k) as usize]);
                 k = k + 1;
             }
             if before == 0.0 && after > 0.0 { onset_ok = onset_ok + 1; }
