@@ -44,3 +44,5 @@ jobs:
       - run: buildc build --release packages/daw/bld
       # e-means: the study program is BuildLang end to end; its output must equal the stored results.
       - run: buildc run packages/emeans/bld/emeans.bld > emeans-out.txt && diff emeans-out.txt packages/emeans/results/emeans.txt
+      # Samara: the piece must compile to a native program. Rendering it takes minutes and is not run here.
+      - run: buildc build --release pieces/samara
