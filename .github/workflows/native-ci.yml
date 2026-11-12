@@ -851,7 +851,7 @@ jobs:
     # The quick GPU-against-CPU checks, the sound engine's live path, and the pixel and tile checks.
     # Baseline about 4.5 minutes; 10 at 2.2x; limit 25.
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 45  # the 3D cascades step alone took 15 min on one hosted runner (2026-11-12)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
