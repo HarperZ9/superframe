@@ -1,0 +1,1820 @@
+# Low Water, Act 1: The Gut. The fish-market lanes behind the quay (bible 4.2).
+# Places: gut, hall, smokehouse, loft, gutter. Opens at 00:40 (gut.open), or earlier over the
+# Guild's back wall (GRIP 7, ink). Beats from design/ACT1-PLAN.md section 6: 23, the wire lamps,
+# the Damp's hair (Merrow's side), the Guild's Read, the provisional cause, the Low Company's side
+# of the copper, and Marrow's last scene in the smokehouse. Fights: e.dogs; the hostile Gut; the
+# gutter's feint. Rework 2026-10-17: four ways in before 00:40, Spratt watched in the procession,
+# the second vote in the 02:50 dark (appt == vote), salt for the mole. Writer's file. Private.
+
+# ---- new ids
+@fact gut.page_soot
+@fact gut.wall_landed
+
+@fact gut.flake
+
+@fact gut.spratt_swap
+about: Agnes Spratt put a fish smoked over yesterday's alder on the strike's pan, so the strike would smell worse and lose. It carried anyway, by a nose.
+against: guild 5
+by: SMELL, Shadwell's soot and Spratt's own word
+
+@fact gut.spratt_saw
+about: Spratt saw Marrow come in from under the eave at ten to ten, look at the mole through the door, and go the colour of a gutted cod. He said nothing to anyone.
+against: guild 5
+by: testimony
+
+@fact gut.hale_rule
+about: Captain Hale Dunlin looked at the mole before he pulled the quay switch, every Low Night for twenty years, to see Mother burning on her own line. His son stopped looking.
+against: guild 5
+by: testimony
+
+@fact gut.dogs_done
+
+@fact gut.truce
+
+@fact gut.knife_taken
+
+@fact gut.move_feint
+
+@fact down.gut
+
+@fact gut.fought_once
+
+@fact gut.early_in
+
+@fact gut.spratt_seen
+about: As the pans passed her stall, Agnes Spratt dropped a paper parcel into the gutter: an alder-smoked herring, twin to the fish on the strike's pan.
+against: guild 5
+by: watching, from the smoke
+
+@item gut.twin_herring
+name: An alder-smoked herring, out of the gutter
+about: Red under the skin, the colour of yesterday's fire. Spratt dropped it as the pans went by.
+
+@var gut_vote2
+default: none
+values: none, spratt, marrow, void
+about: The Guild's second vote, in the 02:50 dark, on the provisional cause: Spratt's eel, the steward's herring, or no vote.
+
+@var gut_spratt
+default: none
+values: none, kept, told, exposed
+about: What Lamb did with Agnes Spratt's swapped fish: kept it, told Marrow, or told the hall.
+
+# ---------------------------------------------------------------- the hub
+@node gut.hub
+hub: yes
+place: gut
+alt: gut.lookouts ? !has(gut.open) & !has(gut.early_in)
+alt: gut.procession ? has(gut.open) & !seen(gut.procession) & !seen(gut.procession.late) & clock < 01:00
+alt: gut.procession.late ? has(gut.open) & !seen(gut.procession) & !seen(gut.procession.late)
+alt: gut.prov.first ? has(ev.prov_travels) & var.prov != none & !seen(gut.prov.first)
+alt: gut.appt.vote ? appt == vote & has(ev.blackout) & !has(ev.blackout_ends) & !seen(gut.appt.vote)
+alt: gut.appt.after ? appt == vote & has(ev.blackout_ends) & gut_vote2 == none & !seen(gut.appt.vote) & !seen(gut.appt.after)
+alt: gut.hostile ? (rep(guild) <= -3 | seenas_guild == informer) & has(gut.open) & !seen(gut.hostile) & !has(gut.truce)
+nar: The Gut. A lane the width of an argument, brine vats along both walls, eels hung over it in strings, and down its middle the gutter, running a colour that fish should not be.
+voice: smell: Oh. Oh, here it is. Oak smoke and tar and eel-slime and the brown sugar of fat letting go of a fish, and under all of it, faithful as a dog, the gutter. This lane is a library and every book in it is a fish. {dc: 4, once}
+voice: smell: Fish. It smells of fish, and it says so with its whole chest. {below: 4, once}
+voice: smell: The rain has put a wet sack over the Gut's face. Every smell in the lane is breathing through cloth. {when: rain > 0.5, once}
+voice: dark: The quay has gone out. The Gut burns paraffin and was never on anybody's board. Tonight it is the only lit room in Gullet. {when: has(ev.blackout) & !has(ev.blackout_ends), once}
+voice: salt: Frost. The vats are too salt to freeze. The eels on their strings have gone stiff as walking sticks. {when: has(ev.frost), once}
+voice: dark: Behind you, at the distance of a smell, two aprons. They stop when you stop. {when: seen(gut.hostile) & (rep(guild) <= -3 | seenas_guild == informer) & !has(gut.truce) & !has(gut.knife_taken)}
+voice: hearsay: Aprons are folding their blindfolds into their pockets tonight, and the eel stall has a queue that is not buying eels. When the quay next goes dark, the Guild means to vote again. {when: has(appt.known) & appt == vote, once}
+voice: hearsay: The Low Company bought rope at the chandler's back door at one, and Lugg's ladder has not stopped creaking. Somebody is going somewhere in the next dark. {when: has(appt.known) & appt == cells, once}
+voice: hearsay: Two brass poles stood at the lane mouth at one and said the Brine's name to each other, carefully. {when: has(appt.known) & appt == search, once}
+voice: hearsay: Shadwell sold the Brine a sack of kindling tonight. Bread night was yesterday. Somebody means to fire an oven in the next dark. {when: has(appt.known) & appt == oven, once}
+voice: hearsay: A clerk from the harbour office bought salt at the eel stall, a whole sack, for the mole steps. The Board is getting ready to climb early. {when: has(appt.known) & appt == keel, once}
+voice: chit: Word of the keeper has come down the lane ahead of you. Every price goes up a farthing as you pass, stall by stall. {when: var.prov == keeper & has(ev.prov_travels), once}
+voice: hearsay: The sea, named at midnight. Everybody you pass says good evening, which nobody in the Gut says after midnight. {when: var.prov == sea & has(ev.prov_travels), once}
+voice: chit: A woman at the first stall holds an old Shelf chit up to her lamp and looks through it. {when: var.prov == refused & has(ev.prov_travels), once}
+voice: smell: High water, and the harbour is pushing the Gut's drains back at it. Everything the lane threw away tonight is coming home. {when: has(ev.high_water), once}
+opt: "Walk up to the Guild hall." -> gut.hall +1
+opt: "Go in at Shadwell's fire-door." -> gut.smoke +1
+opt: "Go to Agnes Spratt's eel stall." -> gut.spratt ? clock >= 00:40 & clock < 06:10 +1
+opt: "Go down to the gutter." -> gut.gutter +1
+opt: "Climb the outside ladder to the net loft." -> gut.loft +1
+opt: "Look up at the wire lamps." -> gut.wires +1
+opt: "Pick over the middens behind the smokehouse." -> gut.dogs +1
+opt: "Take out the Kit." -> gut.kit
+opt: "Back down the lane to the quay." -> quay.hub ? has(gut.open) +2
+opt: "Slip back out to the quay." -> gut.wall.back ? !has(gut.open)
+opt: "Take the yard lane to the Brine." -> brine.hub ? has(gut.open) +2
+opt: "Cut through to the weigh-house." -> weigh.hub ? has(gut.open) +2
+
+@node gut.wall.back
+place: gut
+cost: 3
+nar: The assessor goes out the way the assessor came in. A lookout sniffs and tells the other, kindly, where the Shelf has been.
+go: quay.hub
+
+@node gut.kit
+place: gut
+cost: 1
+nar: The assessor opens the case in the lane. Five instruments, all of them already offended by the smell.
+read: vane
+read: candlemas
+inst: THE DAMP: Wet. Salt-wet, which is a different thing. Salt holds water the way a widow holds a grudge.
+go: ^hub
+
+# ---------------------------------------------------------------- the lane mouth before 00:40
+@node gut.lookouts
+place: gut
+cost: 2
+nar: Two Guild boys on fish boxes shut the lane mouth, blindfolds pushed up like a second pair of eyebrows, a bucket of whelks between them. Nobody in till the pans come down, says the larger. Twenty to one. Since the Captain.
+voice: grip: The back wall, left of the lane. Brick, nine feet, a slate coping, and a drainpipe somebody has been using as a ladder for years: look at the polish on the brackets. {dc: 5}
+voice: grip: There is a wall. Walls are for keeping out people like you. You are people like you. {below: 5}
+opt: "Ask who the Captain was." -> gut.lookouts.captain {once}
+check: "[HEARSAY] Buy a pennyworth of whelks and tell them what they are missing at the after-vote." -> gut.lookouts.whelks.ok / gut.lookouts.whelks.fail {skill: hearsay, dc: 6}
+check: "[FORM LETTER] Show the Guild blindfold round your neck. The steward sent you ahead to sweep the hall." -> gut.lookouts.blind.ok / gut.lookouts.blind ? worn(c.blindfold) {skill: formletter, dc: 5}
+opt: "Soak the greatcoat in the brine barrel and go round through Shadwell's smoke." -> gut.lookouts.smoke {verb: hide, noise: 0.1}
+opt: "Go down the quay steps to where the gutter comes out under the quay." -> gut.culvert ? tide < -0.2 {verb: wade, noise: 0.3}
+check: "[GRIP] Go round to the back wall and over it." -> gut.wall.ok / gut.wall.fail {skill: grip, dc: 7, red, verb: climb, noise: 0.4}
+opt: "Go round behind the smokehouses to the midden gate." -> gut.dogs
+opt: "Go back to the quay and wait for twenty to one." -> quay.hub
+
+@node gut.lookouts.captain
+place: gut
+cost: 2
+nar: The boys look at each other as if asked who the sea was. The steward's father, says the smaller. Started the vote, pulled the switch every year, never once got it wrong. His apron hangs in the hall.
+go: gut.lookouts
+
+@node gut.lookouts.blind
+place: gut
+cost: 2
+nar: The larger boy looks at the blindfold, then at the bowler. Swept, is it? If you voted, why aren't you at the after-vote? Go back up. You'll be missed.
+voice: pride: Sent back to a party by a child holding a whelk. Note the date.
+go: gut.lookouts
+
+@node gut.wall.ok
+place: gut
+cost: 3
+do: set(gut.wall_landed); set(gut.early_in); wet(0.2)
+nar: The brackets take a Shelf boot kindly. One knee over the coping, then the other, and the far side of the wall is not a lane.
+nar: It is Shadwell's gurry bin, brim full of the heads, frames and opinions of four hundred smoked herring. The assessor goes in to the second button.
+voice: smell: Oh, this is the bottom of the world and it is magnificent. Every herring in the vat is looking at you with the one eye it has left, and every eye smells of the morning it was caught.
+nar: A fire-door opens above the bin. A man with a face striped in soot looks down at the assessor, then at a smear on his own doorframe.
+line: SHADWELL: Quarter-oak past. You came over at quarter-oak past. I'll write it down. Nobody's come over that wall since the Whelk boy, and he was eleven.
+go: gut.smoke.first
+
+@node gut.wall.fail
+place: gut
+cost: 3
+do: wet(0.1)
+nar: The bracket under the third hand comes away from the brick with a small apologetic sound, and for one moment, chin on the coping, the assessor sees the Gut from above.
+nar: Item: the lane, empty. Item: two brass hooks over a bare table in the hall. Item: a light going up in the net loft, carried by somebody bent under his own rafters.
+nar: Then the assessor is in a barrel of eel skins at the lookouts' feet. The larger picks a skin off the assessor's shoulder and hands it back.
+voice: undertow: The light in the loft. The Low Company is inside the Gut before the Guild, and the Guild does not know. That is worth more than a dry coat. {dc: 5}
+go: quay.hub
+
+# ---------------------------------------------------------------- 00:40: the procession
+@node gut.procession
+place: gut
+cost: 6
+do: quest(a1.vote, pans)
+nar: At twenty to one the Guild comes down from the weigh-house.
+nar: Forty in aprons, two by two. On a pole between four of them, the voting pans, a smoked fish on each laid on salt like a saint on a bier. Marrow walks in front, singing, and every doorway sings back.
+nar: At the back, alone, with her own eels on a string over one shoulder, comes a narrow woman with her mouth shut tight. She does not sing.
+voice: smell: Two fish. Gold, oak, salt, and the tired breath of smoke that has worked since dawn. And one of them is singing a little flat. Stand closer. {dc: 8}
+opt: "Fall in behind the pans." -> gut.procession.join
+opt: "Stand aside and let it pass." -> gut.procession.watch
+check: "[UNDERTOW] Step into the smoke by Spratt's stall and watch her as the pans go by." -> gut.procession.spy.ok / gut.procession.spy.fail {skill: undertow, dc: 6, verb: hide, noise: 0.1}
+
+@node gut.procession.join
+place: gut
+cost: 3
+alt: gut.procession.join.informer ? seenas_guild == informer
+nar: The assessor falls in behind the pole. A woman in a scaled apron hands the assessor the tail of her blindfold to hold, as is apparently done.
+line: MARROW: The Shelf walks with the pans! Look at it, Gut! A flatfish, swimming upright, for the first time in its life!
+if: seenas_guild == nose => rep(guild, 1)
+nar: In the hall the pans go up on two brass hooks over the long table, and the fish turn slowly on their chains, like two medals nobody will admit to having won.
+go: gut.hall
+
+@node gut.procession.join.informer
+place: gut
+cost: 2
+nar: The two people nearest step out of the line and walk on in the gutter. The singing goes on a little further away.
+go: gut.hall
+
+@node gut.procession.watch
+place: gut
+cost: 2
+nar: The procession goes by at the pace of a funeral that has won something. Marrow touches the side of his nose as he passes.
+voice: undertow: Spratt looked too. Not at you: at the left-hand pan. Twice. {dc: 6}
+go: ^hub
+
+@node gut.procession.late
+place: gut
+cost: 2
+do: quest(a1.vote, pans)
+nar: The lookouts' boxes are kicked over. Salt lies down the lane in two lines where the pans went by.
+voice: smell: The lane remembers them: two lines of oak smoke down the cobbles like a bride's train, one a little older than the other. {dc: 7}
+go: ^hub
+
+# ---------------------------------------------------------------- after 00:20: the provisional cause comes to the Gut
+@node gut.prov.first
+place: gut
+alt: gut.prov.guild ? var.prov == guild
+alt: gut.prov.wreckers ? var.prov == wreckers
+alt: gut.prov.trust ? var.prov == trust
+go: ^hub
+
+@node gut.prov.guild
+place: gut
+cost: 3
+cmd: setLight gut 0.08 0
+if: seenas_guild == flatfish => seenas_guild = informer; rep(guild, -1)
+nar: Every second wire lamp is blown out, the rest down to a bead, the stalls covered. Only the gutter glows, and in its light the lane looks like the inside of a drowned church.
+nar: At the eel stall a narrow woman talks low to a knot of aprons, and the knot nods.
+voice: hearsay: Agnes Spratt is campaigning: the steward walked the Guild into the Shelf's tube with his switch and his father's song. She has waited nine years for a night this dark. {dc: 4}
+go: ^hub
+
+@node gut.prov.wreckers
+place: gut
+cost: 2
+nar: Wreckers, the Gut has been told, and it took the word as it takes most things the Board says, with a long look and a spit. Up the outside ladder the net loft is barred, a dead gull knotted in a net across the hatch, as the floor people mark a house the Lamplighters have visited.
+go: ^hub
+
+@node gut.prov.trust
+place: gut
+cost: 2
+nar: The wire lamps have been turned up a notch for the Trust's fall. A man the assessor has never seen hands over a hot smoked sprat and walks off.
+nar: At the lane mouth a brass pole stops: Gorm. The Guild boys stand up off their boxes and stand in front of her, and she writes something down, and does not come in.
+voice: undertow: There is one place in Gullet the Lamplighters do not walk. You are standing in it. {dc: 5}
+go: ^hub
+
+# ---------------------------------------------------------------- Agnes Spratt's eel stall (from 00:40)
+@node gut.spratt
+place: gut
+speaker: SPRATT
+alt: gut.spratt.exposed ? gut_spratt == exposed
+alt: gut.spratt.told ? gut_spratt == told & !seen(gut.spratt.told)
+alt: gut.spratt.campaign ? var.prov == guild & has(ev.prov_travels) & !seen(gut.spratt.campaign)
+alt: gut.spratt.first ? !seen(gut.spratt.first)
+alt: gut.spratt.frost ? has(ev.frost) & !seen(gut.spratt.frost)
+cost: 1
+nar: Agnes Spratt's stall. Eels on strings, eels in the tub, and Agnes Spratt behind them, her face shut.
+call: gut.knife.react.spratt
+go: gut.spratt.menu
+
+@node gut.spratt.first
+place: gut
+speaker: SPRATT
+cost: 3
+do: set(met.spratt)
+nar: The stall is a plank on two barrels under a smokehouse overhang, with smoked eels on a rail above it like a bead curtain in a bad hotel and live ones in a tub below.
+nar: Agnes Spratt kills an eel as the assessor arrives, with the flat of her hand, once, without looking. She is narrow and fifty, and her hands are the only quick thing about her.
+line: SPRATT: Eels. Smoked, a penny. Live, a ha'penny, and you kill it yourself. String of six, fivepence. If you want something else, the Brine is round the corner and it sells everything, including people.
+go: gut.spratt.menu
+
+@node gut.spratt.menu
+place: gut
+speaker: SPRATT
+opt: "How did you vote?" -> gut.spratt.vote ? !seen(gut.spratt.vote)
+opt: "What do you think of the steward?" -> gut.spratt.him ? !seen(gut.spratt.him)
+opt: "You would make a steward yourself." -> gut.spratt.ambition ? seen(gut.spratt.him) & !seen(gut.spratt.ambition)
+opt: "Who looked after the two fish before the vote?" -> gut.spratt.fish ? seen(gut.spratt.vote) & !seen(gut.spratt.fish)
+voice: smallprint: The weigh-house ledger, tonight, at the foot of the page: VOTING FISH, TWO. 21:04. Four ounces between the pans. Initialled A.S. in a small cramped hand. An eel-wife weighed the vote before it was smelled. {when: seen(weigh.office.ledger), dc: 5}
+claim: "The strike's fish was smoked yesterday, over alder. You bought a pair of alder-smoked from Shadwell. You swapped one onto the pan." -> gut.spratt.claim.ok / gut.spratt.claim.fail ? (has(vote.older) & seen(gut.smoke.soot)) | has(gut.spratt_seen) {show: (has(vote.older) | has(gut.spratt_seen)) & gut_spratt == none & !seen(gut.spratt.claim.ok)}
+opt: "About the fish. I have decided what to do with it." -> gut.spratt.secret ? seen(gut.spratt.claim.ok) & gut_spratt == none
+opt: "You said you saw something at the after-vote." -> gut.spratt.saw ? gut_spratt == kept & !has(gut.spratt_saw)
+opt: "The lamps on the wires are half out. Will you give your word for them?" -> gut.spratt.word ? !has(lamp.gut.leave)
+opt: "Buy a string of eels." -> gut.spratt.eels {once}
+opt: "Sell me a sack of salt off your barrels." -> gut.spratt.salt ? count(i.salt) == 0 & (count(i.chits) >= 1 | gut_spratt == kept) {verb: carry, noise: 0.1}
+opt: "Leave her to her eels." -> ^hub
+
+@node gut.spratt.vote
+place: gut
+speaker: SPRATT
+cost: 2
+line: SPRATT: Against. They chalk it on a board and sing at you, so it's not a secret ballot, whatever He says about the dark.
+line: SPRATT: A strike's a fine thing for a man with a smokehouse. He can hang his fish a month and sell it at Easter. An eel won't wait a week. The Trust buys from Hesk, and who starves first? Not the men with chimneys.
+go: gut.spratt.menu
+
+@node gut.spratt.him
+place: gut
+speaker: SPRATT
+cost: 2
+line: SPRATT: Him. He's a good steward. Ask anybody. He'll sing you the herring song and cry at the end of it, and then take the Guild out on strike in the worst month of the year because his father would have.
+line: SPRATT: Thirty years we've voted the Captain's way, in his dark, with his switch. Nobody asks if we want a lamp on.
+go: gut.spratt.menu
+
+@node gut.spratt.ambition
+place: gut
+speaker: SPRATT
+cost: 2
+nar: Agnes Spratt kills an eel that did not need killing yet.
+line: SPRATT: There's an election at the spring tide. Every nine years. Anybody with an apron can stand. I've an apron.
+line: SPRATT: A steward who'd talk to the Trust. One who'd vote with the lamps on. That's the whole of my wickedness.
+go: gut.spratt.menu
+
+@node gut.spratt.fish
+place: gut
+speaker: SPRATT
+cost: 2
+line: SPRATT: Shadwell smoked them at dawn over the Low Night oak, same as every year. They lay on the weigh-house bench under a cloth from eight till the vote. Anybody could have looked at them. Nobody would. It's bad luck.
+voice: smell: Her hands. Eel, brine, and very faint, under the fingernails where soap does not go, a smoke that is not oak. {dc: 9}
+voice: undertow: Anybody could have looked at them. Nobody asked her who. {below: 9}
+go: gut.spratt.menu
+
+@node gut.spratt.claim.ok
+place: gut
+speaker: SPRATT
+cost: 4
+do: set(gut.spratt_swap); quest(a1.vote, spratt)
+line: LAMB: The older fish on the strike's pan. Alder under its oak. A pair of alder-smoked Shadwell sold you yesterday noon, for your mother's birthday.
+call: gut.spratt.claim.twin
+nar: Agnes Spratt puts both hands flat on the plank and looks at them.
+line: SPRATT: My mother's been dead eleven years. Shadwell sends a card.
+line: SPRATT: Yes. I swapped it. Half past eight, when they were all out at the switch box arguing about the eave. One fish under the cloth for another. A day older. Not off. Just tired. I thought, they'll smell yesterday on the strike and stand by last year's price, and we'll have a lamp on by the spring.
+line: SPRATT: And they stood by it anyway. Forty noses. They smelled it was tired, and they smelled it was the strike, and they stood by it anyway.
+line: SPRATT: So. You've a book. What goes in it?
+go: gut.spratt.secret
+
+@node gut.spratt.claim.fail
+place: gut
+speaker: SPRATT
+cost: 2
+line: SPRATT: Older? A fish? On the pans? Get Shadwell to swear to it. Shadwell swears to nothing he hasn't burned.
+nar: She slaps an eel flat and looks past the assessor toward the smokehouse chimneys, very briefly.
+go: gut.spratt.menu
+
+@node gut.spratt.secret
+place: gut
+speaker: SPRATT
+cost: 1
+nar: The eels move in their tub. Agnes Spratt waits, with the patience of a woman who has sold things that were still alive.
+voice: undertow: Keep it. A woman who wants to be steward, owing you the whole of her chance. That is a key to the Gut. {dc: 5}
+voice: condolence: Or give it to him, quietly. The Guild deals with things in a corner, without the Shelf in the room. {dc: 5}
+voice: pride: Or stand on a bench in the hall and say it. They would carry you down the lane on the pole. {dc: 5}
+opt: "It stays between us." -> gut.spratt.kept {do: gut_spratt = kept; set(said.spratt_kept); set(heard.spratt.spratt_kept)}
+opt: "Marrow should know. I will tell him, and only him." -> gut.spratt.warn {do: set(said.spratt_tell); set(heard.spratt.spratt_tell)}
+opt: "Say nothing yet. Let her wait." -> gut.spratt.wait {do: silent_scene = 1}
+
+@node gut.spratt.kept
+place: gut
+speaker: SPRATT
+cost: 2
+line: SPRATT: Between us. Nobody in the Gut has ever kept anything between two people. It's a lane. It's got an echo.
+line: SPRATT: I'll remember it, though. When I'm steward I'll remember who kept a thing.
+line: SPRATT: And since you're keeping things, I saw something at the after-vote. Ask me for it when you want it. I sell eels one at a time.
+go: gut.spratt.menu
+
+@node gut.spratt.warn
+place: gut
+speaker: SPRATT
+cost: 2
+line: SPRATT: Go on, then. He's in the hall, or at Shadwell's with the fish of the year. He won't put it to the Guild. He'll take me in a corner and be very kind to me, and I'll never stand for anything again, and everybody will know why and nobody will say.
+line: SPRATT: That's how it's done here. Nobody hangs. Everybody knows.
+go: gut.spratt.menu
+
+@node gut.spratt.wait
+place: gut
+speaker: SPRATT
+cost: 2
+nar: The assessor says nothing. After eleven seconds Agnes Spratt lays a string of the fat eels on the assessor's side of the plank, without a price.
+line: SPRATT: For your supper. That's not a bribe. A bribe would be more eels.
+voice: undertow: Lie still. She will fill the silence herself. {when: trait(m.flatfish) != none}
+do: silent_scene = 0
+go: gut.spratt.secret
+
+@node gut.spratt.saw
+place: gut
+speaker: SPRATT
+cost: 3
+do: set(gut.spratt_saw)
+nar: Agnes Spratt leans across the eels and lowers her voice.
+line: SPRATT: Ten to ten. Vote done, lights coming back up, everyone singing. He went out under the eave. To piss, everybody thought.
+line: SPRATT: He came back and stood in the door and looked past us all, out toward the mole. And he went the colour of a gutted cod. Then he started the herring song, louder than anybody, and never said a word.
+line: SPRATT: I've known him forty years. He's never once sung that song first.
+go: gut.spratt.menu
+
+@node gut.spratt.word
+place: gut
+speaker: SPRATT
+alt: gut.spratt.word.yes ? gut_spratt == kept | (var.prov == guild & has(ev.prov_travels))
+cost: 2
+line: SPRATT: My word? I'm an eel-wife. My word buys a string of six. A steward's word lights lamps. Ask Him. He gives his word like his father gave it, loud, at the top of a song.
+go: gut.spratt.menu
+
+@node gut.spratt.word.yes
+place: gut
+speaker: SPRATT
+cost: 2
+do: project(l.gut_wires)
+line: SPRATT: The lamps? Put them all up. A Gut you can see your hand in. Tell them Agnes Spratt said so, and see who argues.
+nar: Three aprons at the next stall hear her say it, and look at each other, and nobody argues.
+go: gut.spratt.menu
+
+@node gut.spratt.eels
+place: gut
+speaker: SPRATT
+cost: 1
+nar: Six smoked eels, fivepence, rolled in last week's Hesk Courier. Agnes Spratt bites one of the coins, though nobody has bitten a coin in Gullet since the sodium.
+go: gut.spratt.menu
+
+@node gut.spratt.campaign
+place: gut
+speaker: SPRATT
+cost: 4
+nar: The eel stall has become a pulpit. Nine aprons stand round it, and Agnes Spratt stands on an eel box with a string of eels over one arm.
+line: SPRATT: Here's the Shelf. Ask it what it wrote.
+nar: Nine faces turn round in the violet light.
+line: SPRATT: It wrote the Guild. The steward and his switch and his father's song, and Mother out on the mole, and forty people on a boat. Say it again, Shelf. Say it here, where we can hear it.
+voice: hearsay: Your midnight word, said twice, in front of nine aprons, becomes her election. {dc: 4}
+opt: "I wrote what I could prove at midnight. The switch went down at twenty to ten. Mother went with it." -> gut.spratt.campaign.said {do: set(said.guild_again); set(heard.spratt.guild_again); rep(guild, -1); seenas_guild = informer; rumour(marrow.switch, gut, 0.4)}
+opt: "I wrote a provisional cause. Provisional. The night is not over." -> gut.spratt.campaign.hedge {do: set(said.provisional); set(heard.spratt.provisional)}
+opt: "Say nothing. Walk on." -> gut.spratt.campaign.walk
+
+@node gut.spratt.campaign.said
+place: gut
+speaker: SPRATT
+cost: 2
+nar: The assessor says it. Nobody shouts. Two of the nine take their blindfolds off their necks and put them in their pockets. Agnes Spratt does not smile, which on her is a smile.
+line: SPRATT: There. You heard it. That's the Shelf. Not me. I sell eels.
+go: ^hub
+
+@node gut.spratt.campaign.hedge
+place: gut
+speaker: SPRATT
+cost: 2
+nar: Provisional. An old man with a cleaver in his belt repeats it slowly, tasting it.
+line: SPRATT: Provisional. The Shelf hangs you provisionally. Then it comes back in the morning and finishes the job.
+nar: Two of the nine walk away from the stall afterwards, and do not come back.
+go: ^hub
+
+@node gut.spratt.campaign.walk
+place: gut
+speaker: SPRATT
+cost: 1
+do: silent_scene = 1
+nar: The assessor says nothing and walks on, and nine faces follow it, and then, one by one, turn back to the box.
+line: SPRATT: See? Nothing to say. It's said it already. Up the tube.
+do: silent_scene = 0
+go: ^hub
+
+@node gut.spratt.told
+place: gut
+speaker: SPRATT
+cost: 2
+nar: Agnes Spratt is selling eels exactly as before. She does not look up.
+line: SPRATT: He was very kind. He held my hand. He said the Guild would never hear of it from him.
+line: SPRATT: Eels? No? Then you've had your money's worth out of me.
+go: gut.spratt.menu
+
+@node gut.spratt.exposed
+place: gut
+speaker: SPRATT
+cost: 1
+nar: Agnes Spratt stands with her back to the lane, sorting live eels from dead in the tub by feel. People passing her stall take the other side of the gutter. They will keep to it for nine years.
+opt: "Say something to her." -> gut.spratt.exposed.speak {once}
+opt: "Leave her be." -> ^hub
+
+@node gut.spratt.exposed.speak
+place: gut
+speaker: SPRATT
+cost: 2
+line: SPRATT: Don't. You've a book and you wrote in it. That's what you're for.
+line: SPRATT: Funny thing. They'll still buy my eels. They'll send their children.
+go: ^hub
+
+@node gut.spratt.frost
+place: gut
+speaker: SPRATT
+cost: 2
+nar: Frost. Agnes Spratt has dragged her plank under Shadwell's fire-door, where the heat comes out. Her eels hang stiff on the rail.
+line: SPRATT: Cold drives the Gut indoors. Not me. An eel stall that goes indoors is a kitchen.
+go: gut.spratt.menu
+
+# ---------------------------------------------------------------- the Guild hall (Marrow 00:40 to 03:30)
+@node gut.hall
+place: hall
+alt: gut.appt.vote ? appt == vote & has(ev.blackout) & !has(ev.blackout_ends) & !seen(gut.appt.vote)
+alt: gut.hall.early ? clock < 00:40
+alt: gut.hall.late ? clock >= 03:30
+alt: gut.hall.dark ? var.prov == guild & has(ev.prov_travels) & !seen(gut.hall.dark)
+alt: gut.hall.first ? !seen(gut.hall.first) & !seen(gut.hall.dark)
+cost: 1
+nar: The Guild hall. The long table, the two pans turning on their hooks, and Marrow Dunlin at the head of it like a harbour at the head of a bay.
+call: gut.knife.react.marrow
+go: gut.hall.menu
+
+@node gut.hall.early
+place: hall
+cost: 2
+nar: The Guild hall, empty. Two brass hooks wait on chains over a scrubbed table.
+nar: On the end wall, under glass, a big man's apron, stiff with age, its scales gone the colour of old fingernails. A brass plate under it: H. DUNLIN, CAPTAIN. LIGHTS OUT FOR THE NOSE.
+voice: smell: Beeswax, sawdust, and from behind the glass a smell thirty years thin: herring, tar, and something of a wet dog that has been very loyal. {dc: 6}
+opt: "Read the plate under the apron again." -> gut.hall.apron {once}
+opt: "Go back out to the lane." -> ^hub
+
+@node gut.hall.apron
+place: hall
+cost: 1
+nar: Under the brass words, smaller, scratched in with the point of a gutting knife by somebody who did not have permission: AND NEVER FOR THE SEA.
+voice: smallprint: A different hand, the letters shallow and careful, as if the knife were held by someone frightened of the plate. {dc: 5}
+go: gut.hall.early
+
+@node gut.hall.first
+place: hall
+speaker: MARROW
+cost: 4
+do: set(met.marrow)
+nar: The hall is full and roaring: forty aprons, a barrel on a trestle, the two pans turning over the table.
+nar: Marrow Dunlin gets up, which takes some time, because there is a great deal of him and all of it is going in the same direction.
+alt: gut.hall.first.nose ? seenas_guild == nose
+alt: gut.hall.first.informer ? seenas_guild == informer
+line: MARROW: The Shelf! In the hall! A flatfish, with both its eyes on top, looking up at all of us, sweet as a sole.
+line: MARROW: Sit. Drink. We won. We won by a nose.
+voice: smell: Forty years of herring, one hour of beer, and at the back of it, cold iron. {dc: 7}
+go: gut.hall.first.gurry
+
+@node gut.hall.first.gurry
+place: hall
+speaker: MARROW
+cost: 1
+when: has(gut.wall_landed)
+else: gut.hall.menu
+nar: Marrow stops halfway round the table, lifts his head, and breathes in through a nose that has voted on thirty prices.
+line: MARROW: You came in over the back wall. You smell of Shadwell's gurry to the collar. Good. That's a better way in than the front. The front's for the Board.
+go: gut.hall.menu
+
+@node gut.hall.first.nose
+place: hall
+speaker: MARROW
+cost: 2
+line: MARROW: Here's the nose! The Shelf that smelled true with a cloth on its face! Make room on the bench, you herrings.
+nar: A woman puts a beer in front of the assessor without asking, and a man with no front teeth taps the side of his nose twice, gravely, the way men elsewhere touch their hats.
+go: gut.hall.menu
+
+@node gut.hall.first.informer
+place: hall
+speaker: MARROW
+cost: 2
+nar: The roar does not stop when the assessor comes in. It thins, and dies at the near end of the table, and the people there look into their beer.
+line: MARROW: The Shelf. Come in, then. Nobody's ever been put out of this hall for what they've said. Only for what they've smelled.
+go: gut.hall.menu
+
+@node gut.hall.dark
+place: hall
+speaker: MARROW
+cost: 4
+do: set(met.marrow)
+nar: The hall is dark, the benches empty, blindfolds left on the table in loops. Marrow sits alone under the two pans with his blindfold over his eyes.
+line: MARROW: I know your step, flatfish. You walk like paper.
+line: MARROW: You wrote us down. Up the tube, in your sticking letters. So they've all gone up the lane to hear what Agnes Spratt thinks a steward should be, and I'm sat in the dark with two fish.
+line: MARROW: It's all right. You wrote what you smelled. A man can't be angry at a nose.
+go: gut.hall.menu
+
+@node gut.hall.late
+place: hall
+cost: 2
+nar: Half the Guild is asleep on the benches, the barrel is dry, and one pan hangs alone. The fish of the year has gone to Shadwell's with the steward, to hang in the smoke till dawn.
+opt: "Go back out to the lane." -> ^hub
+
+@node gut.hall.menu
+place: hall
+speaker: MARROW
+opt: "Tell me about the two pans." -> gut.hall.pans ? !seen(gut.hall.pans)
+opt: "Put the blindfold over my eyes." -> gut.hall.blind ? var.blindfolded == 0
+opt: "Take the blindfold off." -> gut.hall.unblind ? var.blindfolded == 1
+check: "[SMELL] Lean in under the pans and smell the two fish." -> gut.hall.smell.ok / gut.hall.smell.fail ? !has(vote.older) {skill: smell, dc: 8, id: gut.hall.smell}
+check: "[CANDLEMAS] Hold Candlemas up to the two fish in the lamplight." -> gut.hall.candle.ok / gut.hall.candle.fail ? !has(vote.older) & var.blindfolded == 0 & var.prov != guild & light >= 0.2 {skill: candlemas, dc: 4, id: gut.hall.candle, verb: read, noise: 0}
+opt: "Smell me, steward. What have I been doing?" -> gut.hall.sniffed {once}
+opt: "Who pulled the quay switch at twenty to ten?" -> gut.hall.switch ? !has(marrow.switch) {once}
+opt: "You told me about the switch. Mother was on it." -> gut.hall.switch.known ? has(marrow.switch) {once}
+opt: "Tell me about your father." -> gut.hall.captain {once}
+opt: "One of the two fish is a day older than the other." -> gut.hall.older ? has(vote.older) & !seen(gut.hall.older)
+opt: "The lamps on the wires are half out. Will you give your word for them?" -> gut.hall.word ? !has(lamp.gut.leave)
+opt: "A word in private, about Agnes Spratt." -> gut.hall.tell ? has(gut.spratt_swap) & gut_spratt == none
+opt: "Stand up on the bench and tell the hall about Agnes Spratt." -> gut.hall.expose ? has(gut.spratt_swap) & gut_spratt == none & var.prov != guild & clock < 02:30
+opt: "Ask Marrow, in front of the hall, who pulled the quay switch." -> x1.marrow.start ? !has(marrow.switch)
+opt: "Go back out to the lane." -> gut.hall.out
+
+@node gut.hall.out
+place: hall
+cost: 1
+do: blindfolded = 0
+nar: The assessor goes out into the lane, and the hall's warmth stays in the doorway like a dog told to wait.
+go: ^hub
+
+@node gut.hall.pans
+place: hall
+speaker: MARROW
+cost: 3
+do: quest(a1.vote, pans)
+line: MARROW: Left pan, this year's price: the strike. Right pan, last year's: go back to work and be grateful. On each a herring, smoked by Shadwell at dawn over the Low Night oak, the same tree, the same fire, the same minute.
+line: MARROW: Lamps out, cloths on. Every apron comes up the line in the dark, noses both, and stands by the one it would sell its mother for. We count by touch. Nobody sees who stood where.
+line: MARROW: The one that wins hangs in Shadwell's smoke till dawn, and then over that door for a year.
+voice: undertow: The same tree, the same fire, the same minute. Said as a creed. A thing said that firmly has never been checked. {dc: 7}
+go: gut.hall.menu
+
+@node gut.hall.blind
+place: hall
+speaker: MARROW
+cost: 1
+alt: gut.hall.blind.lend ? count(c.blindfold) == 0
+do: blindfolded = 1
+nar: The assessor pulls the Guild blindfold over the eyes. The hall goes black, and in the black, very loud.
+voice: smell: Now we can talk. Up there on their chains, two fish, singing two different songs. {dc: 5}
+line: MARROW: There's the face of a voter. That's what the Shelf looks like with its eyes shut, Gut. It looks like one of us.
+go: gut.hall.menu
+
+@node gut.hall.blind.lend
+place: hall
+speaker: MARROW
+cost: 1
+do: give(c.blindfold); blindfolded = 1
+line: MARROW: No cloth? Take mine. Thirty years it's never once let a bit of light in, and it's never once been washed, and those two facts are related.
+nar: It is still warm from his neck. The assessor ties it on, and the hall goes black.
+go: gut.hall.menu
+
+@node gut.hall.unblind
+place: hall
+speaker: MARROW
+cost: 1
+do: blindfolded = 0
+nar: The assessor pushes the blindfold up onto the forehead, the way the Guild wears it. The hall comes back: lamps, faces, two fish turning.
+go: gut.hall.menu
+
+@node gut.hall.smell.ok
+place: hall
+speaker: MARROW
+cost: 3
+do: set(vote.older); set(gut.flake); quest(a1.vote, older); rep(guild, 1)
+nar: The assessor stands under the pans with a face up between the two fish, close enough to be kissed by either.
+voice: smell: Right: this morning's oak, a fish in the first hour of its glory. Left: oak too, lying on top of something. Under it, a reddish smoke, brisker, a little sour, and under that the fish itself, a day further from the sea than its brother. Not off. Not yet. A day nearer the cat. It smells of yesterday's weather.
+nar: The assessor's thumbnail takes a flake of the left fish's skin into an envelope marked EXHIBITS, which until tonight has held only a bus ticket.
+line: MARROW: Well? Don't keep us. Which would you sell your mother for?
+go: gut.hall.menu
+
+@node gut.hall.smell.fail
+place: hall
+speaker: MARROW
+cost: 3
+do: rep(guild, 1)
+nar: The assessor puts a face up between the two fish.
+voice: smell: Oak! Herring! Gold! Both of them! You would sell your mother for either and throw in an aunt!
+nar: The assessor says so, out loud. A man falls off a bench. Marrow takes the assessor's head in both hands and kisses it on the top.
+line: MARROW: Both! The Shelf would strike and not strike! Give it a job in the Guild, it'll never vote the same way twice!
+voice: undertow: One person did not laugh. An eel-wife by the door breathed out when you said both. {dc: 5}
+go: gut.hall.menu
+
+@node gut.hall.candle.ok
+place: hall
+speaker: MARROW
+cost: 2
+do: set(vote.older); set(gut.flake); quest(a1.vote, older)
+nar: The assessor holds Candlemas up between the two fish. The brass eye turns to each in turn, offended at being made to look at food.
+inst: CANDLEMAS: Paraffin. The right herring wears a brown with grey in it. The left wears the same brown on top, and at the belly, where the smoke is thinnest, a brown with red in it. I name colours. Ask a man who burns things what they mean.
+nar: A flake of the left fish's belly goes into an envelope marked EXHIBITS.
+line: MARROW: What's the Shelf doing with its little brass owl? Don't let it peck the fish, they're sacred.
+go: gut.hall.menu
+
+@node gut.hall.candle.fail
+place: hall
+speaker: MARROW
+cost: 2
+inst: CANDLEMAS: Brown. And brown. The lamp is swinging, the fish are turning, and I am asked to look at a herring as if it were a sunset. Possibly one brown has a little red in it, at the belly. I will not swear. Hold me still in steadier light.
+go: gut.hall.menu
+
+@node gut.hall.sniffed
+place: hall
+speaker: MARROW
+cost: 3
+nar: Marrow leans down over the assessor, eyes shut, and breathes in for a long time, the way another man might read a letter.
+line: MARROW: Train. Paper. Cheap ink, the Shelf buys it by the barrel. Sodium, which smells of nothing, and you've been standing in a lot of nothing.
+call: gut.hall.sniffed.brine
+call: gut.hall.sniffed.floor
+call: gut.hall.sniffed.church
+call: gut.hall.sniffed.keel
+line: MARROW: And fear. A thimble. Everybody's carrying a thimble of it tonight. You carry yours very neatly, like you'd been issued it.
+go: gut.hall.menu
+
+@node gut.hall.sniffed.brine
+when: has(met.wenna) | has(met.sabine)
+line: MARROW: The Brine. Pickle vinegar, stove smoke and an old woman's paraffin. You've sat near Wenna Tallow. Everybody who sits near her smells a bit of the lamp.
+return:
+
+@node gut.hall.sniffed.floor
+when: has(prints.read) | has(merrow.wet_thigh) | has(met.merrow)
+line: MARROW: Mud, the black kind from under the shingle. You've been on the floor, or close to a man who has.
+return:
+
+@node gut.hall.sniffed.church
+when: has(met.fennick)
+line: MARROW: Candle-wax and hot glass. The Deacon. He smells like a lamp that's been prayed at.
+return:
+
+@node gut.hall.sniffed.keel
+when: has(met.keel)
+line: MARROW: And somewhere on you, a drop of cold bathwater. You've shaken hands with the Board.
+return:
+
+@node gut.hall.switch
+place: hall
+speaker: MARROW
+cost: 2
+alt: gut.hall.switch.dark ? var.prov == guild & has(ev.prov_travels)
+line: MARROW: The Guild was at the vote all night, assessor! Nobody touched anything!
+nar: The hall drinks around the sentence a little more carefully. Then he bends, and says under the noise, so that only the assessor and the two fish can hear:
+line: MARROW: Half past three I go and sit with the fish of the year at Shadwell's. A man can say things to a fish he can't say in a hall.
+go: gut.hall.menu
+
+@node gut.hall.switch.dark
+place: hall
+speaker: MARROW
+cost: 2
+line: MARROW: You know who pulled it. You put it in the tube. I'll not say it twice in one night. Half past three, at Shadwell's, with the fish of the year. Ask me there.
+go: gut.hall.menu
+
+@node gut.hall.switch.known
+place: hall
+speaker: MARROW
+cost: 2
+nar: Marrow puts one hand, as heavy as a ham, on the assessor's shoulder, and leans close.
+line: MARROW: Not here, with the Captain's apron listening. Half past three, at Shadwell's. I'll tell you the rest there, if there is a rest.
+go: gut.hall.menu
+
+@node gut.hall.captain
+place: hall
+speaker: MARROW
+cost: 3
+line: MARROW: The Captain! Hale Dunlin, master of the Abundance, the best herring boat that ever went over the Spit in a fog. Which is how she ended, mind. On the Spit, in a fog. And he swam home, the whole bay, in the dark, in November. And when they asked how he found the way, what did he say?
+nar: The hall, which has heard this, answers as one: BY THE NOSE.
+line: MARROW: He smelled the Gut's chimneys from the Spit and swam to them. That's why we vote in the dark, flatfish. The nose got him home when the eyes had nothing.
+voice: condolence: He tells the beginning loud so that nobody notices he has never told the middle. {dc: 6}
+go: gut.hall.menu
+
+@node gut.hall.older
+place: hall
+speaker: MARROW
+cost: 3
+nar: Marrow's head comes round slowly, like a big boat answering a small helm.
+line: MARROW: Older. Don't say that word under those pans. Not in this hall.
+nar: He looks up at the left pan first, and his mouth moves a little.
+line: MARROW: Take it to Shadwell. He knows his own smoke. If he says it's older, it's older, and if not, you've a Board man's nose and I'll forgive you for it.
+go: gut.hall.menu
+
+@node gut.hall.word
+place: hall
+speaker: MARROW
+alt: gut.hall.word.no ? (var.prov == guild & has(ev.prov_travels)) | seenas_guild == informer
+cost: 2
+do: project(l.gut_wires)
+line: MARROW: The wires? Dark at every other hook since the spring. The Low Company had our copper for their boats, the bottom-feeders. Put them up. You have the steward's word. Tell anybody who argues that Marrow Dunlin wants to see their faces.
+go: gut.hall.menu
+
+@node gut.hall.word.no
+place: hall
+speaker: MARROW
+cost: 2
+line: MARROW: My word? Tonight it's not worth a candle-end in this lane. You saw to that. Ask the eel-wife. She's buying words up cheap, and paying in promises.
+go: gut.hall.menu
+
+@node gut.hall.tell
+place: hall
+speaker: MARROW
+cost: 4
+do: gut_spratt = told; set(said.spratt_swap); set(heard.marrow.spratt_swap); rep(guild, 1)
+nar: The assessor tells him low, under the noise: the alder, the pair sold yesterday, the cloth at half past eight, her own word. Marrow listens with his eyes shut.
+line: MARROW: So the strike carried with a stone in its shoe.
+line: MARROW: I'll speak to her. Me. The Guild doesn't hear of this, not from me and not from you. She was wrong, and she's an eel-wife thirty years, and she's still one of us.
+go: gut.hall.menu
+
+@node gut.hall.expose
+place: hall
+speaker: MARROW
+cost: 5
+do: gut_spratt = exposed; set(said.spratt_swap); set(heard.marrow.spratt_swap); rep(guild, 1); seenas_guild = nose; rumour(gut.spratt_swap, gut, 0.6)
+nar: The assessor climbs onto the bench. It takes two attempts. The hall notices on the first and is silent by the second.
+nar: The assessor tells it as a claim is told: two fires, a pair of herring, a cloth lifted at half past eight. Then the old man with the cleaver says, quietly, but it carried, and the hall makes a noise like a boiler coming up to pressure, and it is pride.
+line: MARROW: It carried! Forty noses smelled a tired herring with the strike on it and stood by it anyway! That's not a vote, Gut. That's a love!
+nar: They carry the assessor down off the bench. Carrying the assessor down the lane on the pole is discussed.
+go: gut.hall.menu
+
+# ---------------------------------------------------------------- Shadwell's smokehouse (all night; Marrow 03:30 to 05:30)
+@node gut.smoke
+place: smokehouse
+speaker: SHADWELL
+alt: gut.smoke.marrow ? clock >= 03:30 & clock < 05:30 & !seen(gut.smoke.marrow)
+alt: gut.smoke.marrow.again ? clock >= 03:30 & clock < 05:30 & seen(gut.smoke.marrow)
+alt: gut.smoke.first ? !seen(gut.smoke.first)
+cost: 1
+nar: Shadwell's smokehouse. Racks to the roof, the fire breathing in its pit, and Ned Shadwell at the whitewashed board by the door, reading the hour off it.
+go: gut.smoke.menu
+
+@node gut.smoke.first
+place: smokehouse
+speaker: SHADWELL
+cost: 3
+nar: Ten thousand herring hang on rods up into the dark over a fire of oak chips that does not flame. It breathes.
+nar: By the door, a whitewashed board, grey to a hard edge. Ned Shadwell is sixty, and soot lies in the creases of his face in strata, as if laid down a year at a time.
+line: SHADWELL: Whitewash it at sunset. The smoke lays itself on, so dark an hour. Now it's a quarter-oak past, give or take the draught. I'm never out by more than five minutes, and when I am, it's the wind's fault, and I tell the wind.
+voice: smell: Sit down. Sit down on the floor. Oak, and old alder, and the long brown hymn of fat letting go of ten thousand fish at once. If heaven is a kitchen this is the larder. {dc: 4}
+go: gut.smoke.menu
+
+@node gut.smoke.menu
+place: smokehouse
+speaker: SHADWELL
+opt: "What do you burn?" -> gut.smoke.woods ? !seen(gut.smoke.woods)
+opt: "Read this flake of fish skin for me." -> gut.smoke.soot ? has(gut.flake) & !seen(gut.smoke.soot)
+opt: "Can you read soot on a wall? How old a mark is?" -> gut.smoke.walls ? !seen(gut.smoke.walls)
+opt: "Did you know Captain Hale?" -> gut.smoke.hale ? !seen(gut.smoke.hale)
+opt: "Accept the snuffbox he holds out." -> gut.smoke.snuff ? seen(gut.smoke.woods) {once}
+opt: "Ask for a sack of curing salt." -> gut.smoke.salt ? count(i.salt) == 0 & (seen(gut.smoke.soot) | seen(gut.smoke.hale)) {verb: carry, noise: 0.1}
+opt: "Stand at the fire-door and dry out." -> gut.smoke.dry {verb: wait, noise: 0}
+opt: "Go back out to the lane." -> ^hub
+
+@node gut.smoke.woods
+place: smokehouse
+speaker: SHADWELL
+cost: 3
+line: SHADWELL: Beech of a Monday, it's cheap. Apple for the gentry's kippers. Alder the rest of the week, quick and red. And on Low Night a whole oak from the Chancel wood, for the two fish on the pans and the fish of the year. Oak's slow. Oak's sacred.
+line: SHADWELL: Every wood leaves its own soot. Alder is red. Oak is grey, like a churchwarden.
+go: gut.smoke.menu
+
+@node gut.smoke.soot
+place: smokehouse
+speaker: SHADWELL
+cost: 4
+do: quest(a1.vote, soot)
+if: !has(gut.page_soot) => set(gut.page_soot)
+nar: Shadwell holds the flake to the fire-door and turns it to the belly side, where the smoke goes in last.
+line: SHADWELL: Oak on top, this morning's, grey as a sermon. Under it, red. That's alder in the bone.
+line: SHADWELL: Alder I burned yesterday, dawn to noon, and not since; I let the pit go cold for the oak. So that fish was smoked yesterday and put in my oak this morning to dress it up. And the only fish in my oak this morning were the two for the pans and a dozen for the Guild's breakfast.
+nar: His face does not change under its strata. Something behind it does.
+line: SHADWELL: Yesterday noon I sold a pair of the alder to Agnes Spratt. For her mother's birthday, she said.
+voice: sum: A day-old fish on the strike's pan, and the strike carried. The column will not close. {dc: 4}
+go: gut.smoke.menu
+
+@node gut.smoke.walls
+place: smokehouse
+speaker: SHADWELL
+cost: 2
+line: SHADWELL: Walls are slow boards. Soot on brick goes black to brown to grey in so many hours, and rain takes it in so many more, and the wind lays it the way it was blowing. Find me a streak before the heavy rain and I'll tell you when its chimney was lit.
+line: SHADWELL: The Brine fired her bread oven at eight tonight. I smelled it go east over the weigh-house, wind still in the west. She burns bottles in it, I think. Smells like a chemist's on fire.
+inst: THE VANE: West till twenty to midnight, then south-west! Every chimney in Gullet has been writing it on the walls all night, and none of them can spell!
+go: gut.smoke.menu
+
+@node gut.smoke.hale
+place: smokehouse
+speaker: SHADWELL
+cost: 2
+line: SHADWELL: The Captain swam home on my grandfather's chimneys. My grandfather kept the fire lit three nights after, in case there were more of them out there. There weren't.
+line: SHADWELL: Every Low Night after, before he pulled the switch, he walked out under the weigh-house eave and looked at the mole. Ask his son why. His son knows.
+go: gut.smoke.menu
+
+@node gut.smoke.snuff
+place: smokehouse
+speaker: SHADWELL
+cost: 1
+do: give(i.snuff)
+nar: A black tin snuffbox, the lid worn to brass by a thumb. Inside, a powder that smells from a foot away like a forest that has been told bad news.
+line: SHADWELL: Oak dust off the top racks, pepper, and something of my grandfather's. Clears the nose. Nobody reads my smoke with a town nose. Take a pinch for the hall.
+go: gut.smoke.menu
+
+@node gut.smoke.dry
+place: smokehouse
+speaker: SHADWELL
+cost: 10
+do: damp_wet = 0
+nar: The assessor stands ten minutes in the heat at the fire-door, turning, as the herring do. Steam goes off the greatcoat and up the chimney.
+inst: THE DAMP: Dry. I had forgotten. This is what it was like to be on his head in summer. I will be useless again within the hour.
+go: gut.smoke.menu
+
+@node gut.smoke.wake
+place: smokehouse
+speaker: SHADWELL
+cost: 2
+nar: The assessor touches Shadwell's boot. He wakes all at once and looks at the board by the door before he looks at the assessor.
+line: SHADWELL: I've slept an oak and a half. What is it? Mind you don't wake the steward, he's with the fish.
+go: gut.smoke.menu
+
+# ---------------------------------------------------------------- the bottom of the night: Marrow and the fish of the year
+@node gut.smoke.marrow
+place: smokehouse
+speaker: MARROW
+cost: 4
+nar: At half past three Shadwell is asleep on a sack in the corner.
+nar: On a hook in the middle of the room hangs the fish of the year. Under it, on a fish box, Marrow sits with his blindfold in his hands. He is making himself small.
+line: MARROW: Sit, flatfish. Mind the drip. There's a box.
+nar: He does not say anything else. Nor does the fish.
+opt: "Say nothing. Sit with him." -> gut.smoke.marrow.silent {do: silent_scene = 1}
+check: "[CONDOLENCE] Tell me about your father. Not the version the hall shouts." -> gut.smoke.marrow.told / gut.smoke.marrow.short {skill: condolence, dc: 7}
+opt: "I need to know about the switch." -> gut.smoke.marrow.short
+
+@node gut.smoke.marrow.silent
+place: smokehouse
+speaker: MARROW
+cost: 4
+nar: The assessor sits. The fire ticks. High in the racks a herring slips its rod and lands in the dark like a dropped glove. Nobody gets up to find it.
+nar: After a long while Marrow begins, to the fish and not to the assessor, very low.
+voice: undertow: There. Lie on the bottom. Let the water bring it. {when: trait(m.flatfish) != none}
+go: gut.smoke.marrow.told
+
+@node gut.smoke.marrow.told
+place: smokehouse
+speaker: MARROW
+cost: 6
+do: silent_scene = 0
+do: set(heard.marrow.father)
+line: MARROW: Thirty-one years ago. November. The Abundance coming home over the Spit, a hold full of herring and a fog, and Mother up there burning about as bright as a cigarette, because the keeper then was a man called Pask who drank and let her paraffin run down. My father couldn't see her. He put the Abundance on the Spit doing four knots.
+line: MARROW: Two men drowned. My father swam. All night, in November, with no light anywhere. And off the shoal he smelled Shadwell's grandfather's chimneys, and swam up the smell like a rope.
+line: MARROW: They gave Pask's post to a girl from the quay called Wenna Tallow before the winter was out. My father went down to the lamp and shook her hand. He never went to sea again.
+nar: Marrow turns the blindfold over in his hands. The fish turns above him.
+line: MARROW: The next Low Night he started the vote. In the dark, by the nose, because the nose got him home. And he pulled the quay switch for it, because the quay was ours. Never Mother. She burned her own paraffin then, and later had her own line off the hill, and he had seen what a dim Mother cost.
+line: MARROW: And every year for twenty years, before he pulled it, he went out under the eave and looked down the mole. To see her burning, nothing to do with us. Then he came in and pulled it. Lights out for the nose. Never for the sea.
+voice: condolence: He has stopped calling you a fish. He has stopped calling anybody anything. {dc: 4}
+go: gut.smoke.marrow.look
+
+@node gut.smoke.marrow.look
+place: smokehouse
+speaker: MARROW
+cost: 4
+do: set(marrow.switch); set(gut.hale_rule); quest(a1.nose, admitted)
+line: MARROW: When he died I took the switch. I looked, the first year, and the second. You look at a thing every year and it's always there, and one year you're late and the hall's waiting, and you pull it and go out after, and she's still there. And the year after, you don't go out at all.
+line: MARROW: Seven years I haven't looked. You don't look at the sky to see if it's still on.
+nar: His voice has been so quiet for so long that it has nowhere lower to go.
+line: MARROW: Tonight I pulled it at twenty-two minutes to ten and put it back at eight minutes to. I went out under the eave to piss and looked down the mole for the first time in seven years, for no reason, and she wasn't there.
+line: MARROW: Nobody told the Guild they'd put her on our switch. I know that. But if I'd gone out first and looked, like he did, she'd have gone out in front of me, and I'd have known. I'd have put it straight back. I'd have run to the mole myself.
+line: MARROW: I didn't look. That's the whole of it. That's what the Guild did tonight. Its steward stopped looking.
+call: gut.smoke.marrow.older
+call: gut.smoke.marrow.spratt
+call: gut.smoke.marrow.vote2
+opt: "I will keep this. It stays yours." -> gut.smoke.marrow.kept {do: set(said.marrow_kept); set(heard.marrow.marrow_kept)}
+opt: "It goes in the Daybook. All of it, the look as well." -> gut.smoke.marrow.written {do: set(said.marrow_written); set(heard.marrow.marrow_written)}
+opt: "Say nothing. Stay till the fire goes down." -> gut.smoke.marrow.stay
+
+@node gut.smoke.marrow.older
+when: has(vote.older)
+line: MARROW: And this one's a day old. I could smell it at ten o'clock in the dark with the cloth on. I stood by it anyway. Forty of us did. We wanted it that much.
+return:
+
+@node gut.smoke.marrow.spratt
+when: gut_spratt == told | gut_spratt == exposed
+line: MARROW: Agnes swapped my father's fish to keep the lamps on. Everyone in this town is trying to keep a light on, and every one of them is doing it in the dark.
+return:
+
+@node gut.smoke.marrow.short
+place: smokehouse
+speaker: MARROW
+cost: 3
+do: set(marrow.switch); quest(a1.nose, admitted)
+line: MARROW: The switch. Twenty-two minutes to ten, down. Eight minutes to, up. Fourteen minutes. That's the Guild's whole crime, and you can have it.
+nar: He looks up at the fish of the year, and something comes up into his face, and he puts it back down again, carefully, the way a man puts down a full cup.
+line: MARROW: My father was a better steward than me. Leave it at that. Not tonight.
+voice: condolence: Come again before dawn, without a question in your mouth. {dc: 4}
+opt: "Sit a while anyway." -> gut.smoke.marrow.silent ? !seen(gut.smoke.marrow.silent) {do: silent_scene = 1}
+opt: "Leave him with the fish." -> ^hub
+
+@node gut.smoke.marrow.kept
+place: smokehouse
+speaker: MARROW
+cost: 2
+do: quest(a1.nose, kept); rep(guild, 1)
+line: MARROW: Keep it, then. You'll be the only one in Gullet who has. Even the fish doesn't know. It was asleep.
+nar: He ties the blindfold back round his neck.
+line: MARROW: You're not a flatfish. A bass, maybe. Something that comes in on the tide and goes out again and nobody nets it.
+go: gut.smoke.feint
+
+@node gut.smoke.marrow.written
+place: smokehouse
+speaker: MARROW
+cost: 2
+line: MARROW: Good. Write the look in. Everybody knows about the switch; the switch is thirty years of songs. Write that the steward stopped looking. Somebody in this town should have to read that.
+go: gut.smoke.feint
+
+@node gut.smoke.marrow.stay
+place: smokehouse
+speaker: MARROW
+cost: 15
+nar: The assessor stays. At some point Marrow puts one enormous hand on the assessor's shoulder and leaves it there, and the assessor does not move it.
+go: gut.smoke.feint
+
+@node gut.smoke.marrow.end
+place: smokehouse
+speaker: MARROW
+cost: 1
+line: MARROW: Half past five I take the fish of the year up to hang over the weigh-house door for the dawn. Whatever you write, it'll be written under a herring that won.
+go: ^hub
+
+@node gut.smoke.marrow.again
+place: smokehouse
+speaker: MARROW
+cost: 2
+line: MARROW: Still here. So's the fish. Neither of us is going anywhere till half past five.
+check: "[SMELL] Stand under the fish of the year and smell it." -> gut.smoke.smell.ok / gut.smoke.smell.fail ? !has(vote.older) {skill: smell, dc: 8, id: gut.smoke.smell}
+opt: "Sit with him a while." -> gut.smoke.marrow.silent ? !seen(gut.smoke.marrow.silent) {do: silent_scene = 1}
+opt: "Wake Shadwell." -> gut.smoke.wake
+opt: "Go back out to the lane." -> ^hub
+
+@node gut.smoke.smell.ok
+place: smokehouse
+speaker: MARROW
+cost: 3
+do: set(vote.older); set(gut.flake); quest(a1.vote, older)
+voice: smell: Oak, grey and holy. Under it, red: a brisk sour wood with no business at a sacrament. Under that, a fish a day nearer the cat. Yesterday's fish in today's coat.
+nar: A flake of the belly goes into the envelope marked EXHIBITS. Marrow watches it go and does not stop it.
+line: MARROW: I know. I've been sat under it two hours. I know.
+go: gut.smoke.marrow.again
+
+@node gut.smoke.smell.fail
+place: smokehouse
+speaker: MARROW
+cost: 2
+voice: smell: Smoke. Fish. Smoke. The room is shouting and the fish is whispering. Take a pinch of something. Shut your eyes. {dc: 3}
+line: MARROW: Don't strain. It's only a herring. It's only the year.
+go: gut.smoke.marrow.again
+
+# ---------------------------------------------------------------- the gutter's feint (Marrow, for a confession)
+@node gut.smoke.feint
+place: smokehouse
+speaker: MARROW
+cost: 2
+line: MARROW: I gave you mine. In the Gut a confession's paid for. Give me one of yours, and I'll give you the one thing my father taught me that wasn't about fish.
+opt: "I saw the low light from the ferry. I do not know what was burning, and I am supposed to know." -> gut.smoke.feint.teach {do: set(said.confess_light); set(heard.marrow.confess_light)}
+opt: "I am not sure the Shelf exists any more. I am sending my verdict up a tube to nobody." -> gut.smoke.feint.teach {do: set(said.confess_shelf); set(heard.marrow.confess_shelf)}
+opt: "I have been dry for eleven years and I was proud of it, and I think that was the whole of me." -> gut.smoke.feint.teach {do: set(said.confess_dry); set(heard.marrow.confess_dry)}
+opt: "Not tonight." -> gut.smoke.marrow.end
+
+@node gut.smoke.feint.teach
+place: smokehouse
+speaker: MARROW
+cost: 5
+do: set(gut.move_feint)
+nar: Marrow listens to it the way he listened to the fish. Then he gets up off the box, which takes a while, and stands in the middle of the smokehouse with an empty hand.
+line: MARROW: Watch the shoulder, not the hand. The hand goes up like it's coming down heavy, the big cut. Everybody watches the hand. Meanwhile the shoulder's gone the other way, and the little cut comes in from where nobody was looking.
+line: MARROW: My father used it on a drunk Board man the night they paid Pask off. Never hurt him. Put him on his back to think about it. Slow. Again. Shoulder first. There.
+go: gut.smoke.marrow.end
+
+# ---------------------------------------------------------------- the gutter: the Whelk twins (all night)
+@node gut.gutter
+place: gutter
+alt: gut.gutter.first ? !seen(gut.gutter.first)
+alt: gut.gutter.rain ? has(ev.heavy_rain) & !has(ev.rain_eases) & !seen(gut.gutter.rain)
+cost: 1
+nar: The Whelk twins sit over the gutter on their stools, the knives going like two clocks that disagree by a second.
+go: gut.gutter.menu
+
+@node gut.gutter.first
+place: gutter
+speaker: NOLL
+cost: 3
+nar: Where the lane dips the gutter widens into a stone trough. Two gutters sit over it, a board across their knees: fish in, fillets out, the rest into the trough.
+nar: The trough glows in slow violet bands. The twins are thirty, red-armed, identical, except that one has a moustache and the other has decided against it.
+line: NOLL: You'll be the Shelf. You'll be wanting to know what makes it
+line: MAB: glow. Scales. Fish oil. Phosphor off the guts.
+line: NOLL: That's not how it ends. It ends with the Captain.
+line: MAB: It does not end with the Captain. Don't tell the Shelf about the Captain.
+voice: smell: Violet has a smell. It smells like a coin held in the mouth by somebody about to lie, and under the coin, ten thousand herring saying goodbye. {dc: 5}
+go: gut.gutter.menu
+
+@node gut.gutter.menu
+place: gutter
+speaker: NOLL
+opt: "What about the Captain?" -> gut.gutter.captain ? !seen(gut.gutter.captain)
+opt: "Did you see Agnes Spratt yesterday?" -> gut.gutter.spratt ? (seen(gut.spratt.first) | has(vote.older)) & !passed(gut.gutter.agree) & !seen(gut.gutter.spratt)
+check: "[HEARSAY] Get the two of you to finish that one the same way." -> gut.gutter.agree.ok / gut.gutter.agree.fail ? seen(gut.gutter.spratt) {skill: hearsay, dc: 6, id: gut.gutter.agree}
+opt: "Leave them to their knives." -> ^hub
+
+@node gut.gutter.captain
+place: gutter
+speaker: MAB
+cost: 2
+line: NOLL: Some nights, late, when the bands go slow, you look down in it and you see
+line: MAB: your own face, Noll, because it's wet and you're leaning over it.
+line: NOLL: A cap. A captain's cap, going down the drain, the way he went down the bay.
+line: MAB: A herring head that looked like a cap. He was six, Shelf. He's never got over it.
+go: gut.gutter.menu
+
+@node gut.gutter.spratt
+place: gutter
+speaker: NOLL
+cost: 2
+line: NOLL: Yesterday noon Agnes came out of Shadwell's with two alder herring in a paper and went up the lane with them to
+line: MAB: her tea. She's a big eater for a narrow woman.
+line: NOLL: That's not how it ends. She went up toward the weigh-house.
+line: MAB: Her tea's at the weigh-house. Everybody knows that. She eats with the scales.
+go: gut.gutter.menu
+
+@node gut.gutter.agree.ok
+place: gutter
+speaker: MAB
+cost: 2
+line: LAMB: A shame. I'd heard the Whelks could finish anything.
+nar: The knives stop.
+line: NOLL: She went up to the weigh-house with them at eight, when the Guild was out at the switch box, and she came back down with
+line: MAB: one. She went up with two and came down with one.
+line: NOLL: That's how it ends.
+line: MAB: That's how it ends.
+nar: They look at each other and go back to gutting, slightly pink.
+go: gut.gutter.menu
+
+@node gut.gutter.agree.fail
+place: gutter
+speaker: NOLL
+cost: 2
+line: NOLL: She went up to the weigh-house and she put
+line: MAB: her feet up.
+line: NOLL: Her feet up! At the weigh-house! On Low Night!
+line: MAB: You don't know what she did. You were in here with your knife.
+line: NOLL: I know she didn't come back down with two.
+nar: Mab hits him with a fillet, a precise blow that must have been practised.
+voice: hearsay: Didn't come back down with two. Hold on to that. The rest was family. {dc: 3}
+go: gut.gutter.menu
+
+@node gut.gutter.rain
+place: gutter
+speaker: NOLL
+cost: 2
+nar: The rain has filled the trough over the lip, and the violet bands cross the lane in slow sheets over the twins' boots.
+line: NOLL: Gutter's out. Everything the Gut's thrown away tonight goes for a walk round the
+line: MAB: lane. Round our feet. You're standing in it, Shelf.
+go: gut.gutter.menu
+
+# ---------------------------------------------------------------- the middens' dogs (e.dogs, optional)
+@node gut.dogs
+place: gut
+alt: gut.midden ? has(gut.dogs_done)
+cost: 1
+nar: Three dogs own the middens and the gate: a brindled one with half an ear, a white one gone the colour of gurry, and a small black one in charge. They do not bark.
+voice: undertow: They want what is in the heaps, and they think you want it too. Give them a better idea. {dc: 5}
+opt: "Open Shadwell's snuffbox and throw a pinch at them." -> gut.dogs.snuff ? count(i.snuff) >= 1 {verb: throw, noise: 0.1}
+opt: "Throw them the string of eels." -> gut.dogs.fish ? seen(gut.spratt.eels) & !seen(gut.dogs.fish) {verb: throw, noise: 0.2}
+opt: "Throw them a pickled egg." -> gut.dogs.egg ? count(i.egg) >= 1 {verb: throw, noise: 0.1}
+opt: "Stand very still and wait for them to lose interest." -> gut.dogs.wait {verb: wait, noise: 0}
+opt: "Go through them." -> gut.dogs.fight
+opt: "Back away to the lane." -> ^hub
+
+@node gut.dogs.snuff
+place: gut
+cost: 2
+do: take(i.snuff); set(gut.dogs_done); set(gut.early_in)
+nar: A pinch goes up over the dogs and the wind does the rest. The small black one sneezes so hard he sits down. They retreat under the fish boxes, outraged. Nobody in the Gut looks round; Shadwell's snuff has been used on these dogs before.
+go: gut.midden
+
+@node gut.dogs.fish
+place: gut
+cost: 2
+do: set(gut.dogs_done); set(gut.early_in)
+nar: The eels go over the dogs' heads into the far corner. From behind the gurry bin comes the sound of a treaty being eaten.
+go: gut.midden
+
+@node gut.dogs.wait
+place: gut
+cost: 15
+do: set(gut.dogs_done); set(gut.early_in); meter(cold, 1)
+nar: For a quarter of an hour, in the cold, in a smell, the dogs walk round and round at the distance of a lunge. Then the small black one yawns and leads the others away under the boxes, as if the assessor were a post that had been there all along.
+go: gut.midden
+
+@node gut.dogs.fight
+place: gut
+cost: 1
+nar: The assessor steps toward the heaps. The small black dog steps toward the assessor. The other two go wide, one to each side, the way dogs do who have done this to bigger things than a claims assessor.
+do: fight(e.dogs)
+
+@node gut.fight.dogs.win
+place: gut
+cost: 3
+do: set(gut.dogs_done); set(gut.early_in)
+nar: It is over quickly and badly. The claims case took most of it. The small black dog stands at the far end of the yard on three legs, with an expression of great personal disappointment.
+voice: condolence: Three dogs guarding the only food they had. You have won a yard of rubbish from them. Write it down accurately. {dc: 5}
+call: gut.fight.first
+go: gut.midden
+
+@node gut.fight.dogs.yield
+place: gut
+cost: 2
+do: set(gut.dogs_done); set(gut.early_in)
+nar: The small black dog breaks off, sits, and scratches behind his half-ear as if none of it had been his idea, and the other two, seeing him sit, sit. The assessor is permitted the middens, and watched closely by three dogs who have made a note.
+voice: grip: The hands are shaking, a little. They would like it known that they did their part. {dc: 3}
+call: gut.fight.first
+go: gut.midden
+
+@node gut.fight.dogs.fled
+place: gut
+cost: 3
+nar: The assessor leaves the middens at a pace the Shelf's manual does not contemplate, the small black dog escorting as far as the lane and not one step further. The Gut watched all of it, says nothing, and will say it for weeks.
+voice: pride: Run off by a dog the size of a hat, in front of a fish market. {dc: 3}
+call: gut.fight.first
+go: ^hub
+
+@node gut.fight.dogs.down
+place: gutter
+speaker: MAB
+cost: 30
+do: set(gut.dogs_done); set(down.gut); wet(0.3); meter(cold, 2)
+nar: The assessor wakes with a cheek on cold moving stone: the gutter, its violet bands going past an inch from the eye. Above, two red-armed faces, one with a moustache.
+line: NOLL: Went down in the middens. The dogs had it on the ground and then walked off, because the black one
+line: MAB: got bored. It wasn't worth eating.
+line: NOLL: That's not how it ends. The Shelf caught him one with the case, right on the
+line: MAB: nose. It did not. It fell over a fish box.
+nar: Half an hour has gone somewhere. Somebody has put a fish on top of the scratched claims case, for the fallen, or as a joke, and the twins disagree about which.
+voice: pride: The Gut will know by morning where the Shelf was found, and how wet, and that a dog did it. {dc: 2}
+call: gut.fight.first
+go: ^hub
+
+@node gut.fight.first
+when: !has(gut.fought_once) & trait(m.body) == none
+do: set(gut.fought_once)
+nar: A bruise is forming on the forearm in the shape of a dog's opinion.
+do: offer(m.body)
+return:
+
+# ---------------------------------------------------------------- the middens: salvage, once each
+@node gut.midden
+place: gut
+cost: 2
+nar: Behind the smokehouses the Gut keeps its middens: broken fish boxes, old nets, tins, the bones of stalls, and Shadwell's gurry bin, which the assessor may know better than is comfortable.
+opt: "Prise the lid off a rusted sardine drum." -> gut.midden.tin {once, verb: salvage, noise: 0.2}
+opt: "Cut the cork floats off a rotten net." -> gut.midden.cork {once, verb: salvage, noise: 0.1}
+opt: "Unwind the copper from a fallen lamp pulley." -> gut.midden.wire {once, verb: salvage, noise: 0.1}
+opt: "Leave the middens." -> ^hub
+
+@node gut.midden.tin
+place: gut
+cost: 2
+do: give(s.tin)
+if: has(margin.copper) => give(s.tin)
+nar: A sardine drum, empty since before the assessor was born, its lid rusted to a flower. Under the rust the tin is bright.
+go: gut.midden
+
+@node gut.midden.cork
+place: gut
+cost: 2
+do: give(s.cork)
+if: has(margin.copper) => give(s.cork)
+nar: A herring net has gone to lace, its corks still on it, black with age and light as bread. The claims case's letter knife cuts one free; it has never been asked to do anything so useful.
+go: gut.midden
+
+@node gut.midden.wire
+place: gut
+cost: 3
+do: give(s.copper_wire)
+if: has(margin.copper) => give(s.copper_wire)
+nar: A lamp pulley lies where it fell from the wires, a tail of copper still wound round the wheel. It unwinds green outside and red underneath.
+go: gut.midden
+
+# ---------------------------------------------------------------- the wire lamps (l.gut_wires)
+@node gut.wires
+place: gut
+alt: gut.wires.lit ? has(lamp.gut.lit)
+cost: 1
+nar: Paraffin lamps on pulleys hang across the lane from the eaves, each behind its own colour of glass. Every other hook is dark.
+inst: CANDLEMAS: The Gut keeps a palette. Twelve colours of glass, the same twelve since they were hung. Half are dark. I can read what is under a lit one and nothing between. {when: light >= 0.1}
+voice: smallprint: A tin plate on the nearest post: GUILD LAMPS. HUNG AND MAINTAINED BY ORDER OF THE STEWARD. A steward's word, then. {dc: 4}
+opt: "Hang new copper on the dark hooks." -> gut.wires.fit ? has(lamp.gut.leave) & count(s.copper_wire) >= 2
+opt: "Leave the lamps." -> ^hub
+
+@node gut.wires.fit
+place: gut
+cost: 2
+nar: The assessor stands on a fish box under the first dark hook with two lengths of copper wire and the steward's word, which weighs nothing and is the heavier of the two.
+check: "[GRIP] Thread the copper through the pulleys and haul the lamps up." -> gut.wires.ok / gut.wires.fail {skill: grip, dc: 5, verb: rig, noise: 0.3}
+
+@node gut.wires.ok
+place: gut
+cost: 8
+do: project(l.gut_wires)
+nar: Six hooks, six turns of copper. The lamps go up one after another, lit from a taper: red, amber, green, a blue like a vein. Every face in the lane has a colour.
+call: gut.wires.ok.guild
+voice: condolence: A woman at the next stall sees her neighbour's face for the first time since the spring. It is a perfectly ordinary face, and she laughs. {dc: 5}
+go: ^hub
+
+@node gut.wires.ok.guild
+when: var.prov == guild & has(ev.prov_travels)
+nar: The protest goes up in light. At the eel stall Agnes Spratt stands on her box in the glow of six lamps she gave her word for, and the aprons round her can see her face, and she can see theirs, and she knows exactly how many of them there are.
+return:
+
+@node gut.wires.fail
+place: gut
+cost: 4
+nar: The third lamp slips its hook and drops, lit, into a brine vat, and settles on the bottom still burning. The whole vat glows green, like an aquarium in a house where somebody has died.
+nar: A small crowd gathers to look. One of the Whelk twins says it is the best thing to happen in the Gut since the herring caught fire.
+voice: grip: Cold hands, or wet ones. Change one of those and try again. {dc: 2}
+go: ^hub
+
+@node gut.wires.lit
+place: gut
+cost: 1
+nar: Twelve colours burn down the lane over the violet gutter. Shadwell's door is red, the eel stall green, the hall amber.
+inst: CANDLEMAS: The palette is full. Every colour of the Gut is where it was put. I am, briefly, content.
+opt: "Leave the lamps." -> ^hub
+
+# ---------------------------------------------------------------- the net loft of the Low Company (Lugg from 23:50; Merrow 00:40 to 04:00)
+@node gut.loft
+place: loft
+alt: gut.loft.shut ? (var.prov == wreckers & has(ev.prov_travels)) | var.copper == returned
+alt: gut.loft.empty ? clock < 23:50
+alt: gut.loft.first ? !seen(gut.loft.first)
+cost: 1
+nar: The net loft. Nets hung from the rafters like grey weather, and Lugg folded under the beams, whispering.
+call: gut.knife.react.lugg
+go: gut.loft.menu
+
+@node gut.loft.empty
+place: loft
+cost: 2
+nar: The hatch is open on an empty loft: nets in grey swags, a coil of rope, two pairs of waders standing up by themselves in the corner like men waiting to be told.
+opt: "Go back down the ladder." -> ^hub
+
+@node gut.loft.first
+place: loft
+speaker: LUGG
+cost: 3
+nar: A low room under the roof, nets hung from every rafter. Ferris Lugg sits folded in three under the lowest beam, mending a net by feel. Everything he says, he whispers.
+line: LUGG: Shelf. Come up, then. Mind the third rung. Mind the nets, they catch people.
+alt: gut.loft.first.merrow ? clock >= 00:40 & clock < 04:00 & !has(merrow.cells)
+go: gut.loft.menu
+
+@node gut.loft.first.merrow
+place: loft
+speaker: MERROW
+cost: 2
+do: set(met.merrow)
+nar: In the corner, on a coil of rope, Tub Merrow sits with his cold pipe and his trousers drying stiff, like a bollard someone has put a coat on.
+line: MERROW: Shelf. Tide's turned. Nobody comes up here on a flood unless they want something.
+call: gut.loft.wreckers.said
+go: gut.loft.menu
+
+@node gut.loft.wreckers.said
+when: has(said.wreckers)
+line: MERROW: You said wreckers on the quay. Wind brought it up the lane before you. Nets heard it.
+return:
+
+@node gut.loft.menu
+place: loft
+speaker: LUGG
+opt: "Why do you whisper?" -> gut.loft.whisper ? !seen(gut.loft.whisper)
+opt: "You were on the floor tonight. What did you see?" -> gut.loft.floor ? !seen(gut.loft.floor)
+opt: "Merrow's sack is up here." -> gut.loft.sack ? var.copper == none & clock >= 00:40 & clock < 04:00 & !has(merrow.cells)
+opt: "About the sack." -> gut.loft.sack.after ? var.copper != none & !seen(gut.loft.sack.after)
+opt: "The Gut needs copper for its wire lamps." -> gut.loft.wire ? clock >= 00:40 & clock < 04:00 & !has(merrow.cells) & (seenas_lowco != hangman | var.copper == hidden) {once}
+opt: "Merrow, the Damp would like a new hair." -> gut.loft.hair ? clock >= 00:40 & clock < 04:00 & !has(merrow.cells) & var.damp_hair == pollard {verb: rig, noise: 0}
+opt: "Go back down the ladder." -> ^hub
+
+@node gut.loft.whisper
+place: loft
+speaker: LUGG
+cost: 2
+line: LUGG: I shouted once. On the floor, at low water, nineteen years ago. Somebody's name. And the floor listened.
+line: LUGG: Since then I keep my voice where the mud can't reach it.
+voice: undertow: Nineteen years ago: the last tide this low. Somebody went out on the floor and did not come back. You might ask at the Brine whose name it was. {dc: 7}
+go: gut.loft.menu
+
+@node gut.loft.floor
+place: loft
+speaker: LUGG
+cost: 3
+line: LUGG: I was in the gully, holding the rope for Tub. He went up into the hole in the Old Light with his lantern. Quarter past ten.
+line: LUGG: Then the ferry, out on the black, coming for the Spit with no lamp to steer by, close enough to hear her engine knocking. And she turned. Hard over. A boat's length.
+line: LUGG: I was looking at the ship. Not at the hole. You look at forty people about to drown, Shelf. You don't look at a lantern.
+go: gut.loft.menu
+
+@node gut.loft.sack
+place: loft
+speaker: MERROW
+cost: 3
+nar: Under the lowest swag of net, a sack the shape of a sack holding more than a sack should. A loop of green copper pokes out of its neck.
+line: MERROW: Trust copper. Off the Old Light's lantern gear, where it's lain under the sea a hundred years doing nothing. Copper doesn't care who owns it.
+line: LUGG: Gorm will come for it. She's a nose for copper like the Guild's got a nose for herring.
+opt: "Help them bury it under the nets." -> gut.loft.sack.hide {verb: hide, noise: 0.2, do: copper = hidden; quest(a1.copper, hidden); rep(lowco, 1); set(said.copper_hide); set(heard.merrow.copper_hide); set(heard.lugg.copper_hide)}
+opt: "That copper goes back to the Trust. I will not hide it." -> gut.loft.sack.refuse {do: set(said.copper_back); set(heard.merrow.copper_back)}
+opt: "Leave the sack where it is and say nothing." -> gut.loft.menu
+
+@node gut.loft.sack.hide
+place: loft
+speaker: MERROW
+cost: 4
+if: seenas_lowco == hangman => seenas_lowco = witness
+nar: The assessor, the tallest man in Gullet and the widest bury a sack of Trust copper under tarred net. When it is done the heap is a heap of net, which is the whole of the Low Company's art.
+line: MERROW: First time the Shelf's ever lifted anything for us. Usually it's the other way.
+line: LUGG: He means thank you. He never says it. Nor do I. It's too loud.
+go: gut.loft.menu
+
+@node gut.loft.sack.refuse
+place: loft
+speaker: MERROW
+cost: 2
+line: MERROW: Then it goes back to the Trust when the Trust comes for it. Trust can climb a ladder same as you.
+nar: Merrow lights his cold pipe for the first time all night. It does not draw. He keeps it in his mouth anyway.
+line: LUGG: That's what he looks like not angry.
+go: gut.loft.menu
+
+@node gut.loft.sack.after
+place: loft
+speaker: LUGG
+alt: gut.loft.sack.after.reported ? var.copper == reported
+cost: 2
+line: LUGG: The heap's still a heap. If anybody asks, the Shelf was never in this loft, and the Low Company has never heard of copper.
+go: gut.loft.menu
+
+@node gut.loft.sack.after.reported
+place: loft
+speaker: MERROW
+cost: 2
+line: MERROW: You sent the copper up the tube. Paper drowns slower than men, but it drowns. We'll see which of us goes under first.
+go: gut.loft.menu
+
+@node gut.loft.wire
+place: loft
+speaker: MERROW
+cost: 2
+do: give(s.copper_wire)
+nar: Merrow reaches into a coil behind him without looking and holds out a length of copper wire, brighter than the midden's.
+line: MERROW: The Gut's own. We had it off their hooks in the spring. Give it back to them and tell them the Shelf found it. They'd spit at it off me.
+go: gut.loft.menu
+
+@node gut.loft.hair
+place: loft
+speaker: MERROW
+cost: 6
+do: quest(a1.hair, asked)
+nar: The assessor takes the Damp out of the case: the horn frame, the needle, and across it the one grey hair of Assessor Pollard, retired or deceased, the paperwork disagrees.
+inst: THE DAMP: I would like to be someone else. Somebody who has been wet on purpose, for once. Pollard was only ever wet by accident, and minded every time, and I have been minding on his behalf for twelve years.
+line: MERROW: Hair's hair.
+nar: He pulls a hair from behind his ear: grey, stiff as fishing line, white with salt at the tip. He unpicks Pollard's and ties his own on with a knot the assessor could not undo in a week.
+line: MERROW: Salvor's hitch. Holds wet. Holds better wet.
+nar: Pollard's hair goes into an envelope marked POLLARD. It is the first thing the assessor has filed that was once alive.
+do: damp_hair = merrow; quest(a1.hair, rehaired); give(i.hair)
+inst: THE DAMP: Wet. Mud under it. Tide's making.
+go: gut.loft.menu
+
+@node gut.loft.shut
+place: loft
+speaker: LUGG
+cost: 2
+nar: The hatch is barred from inside, a net across it with a dead gull knotted in the middle. Through the boards, very close, a big body folds itself down against the wood.
+check: "[THE DARK] Put your ear to the boards and listen." -> gut.loft.shut.ok / gut.loft.shut.fail {skill: dark, dc: 6, verb: eavesdrop, noise: 0}
+opt: "Go back down the ladder." -> ^hub
+
+@node gut.loft.shut.ok
+place: loft
+speaker: LUGG
+cost: 3
+nar: A whisper through the boards, very near.
+line: LUGG: They took Tub at half past twelve. Gorm and two poles, in the Brine, by the stove, with his trousers still wet. He went quiet. He always goes quiet.
+line: LUGG: I didn't see a wrecker tonight, Shelf. I saw a light. In the Old Light, low down, on the water. And the ship turned. You tell them somebody lit something.
+call: gut.loft.shut.copper
+line: LUGG: Now go down. They count who climbs this ladder.
+voice: dark: He was crying, very quietly, without stopping talking. You only heard it because you were listening for nothing else. {dc: 7}
+go: ^hub
+
+@node gut.loft.shut.copper
+when: var.copper == returned
+line: LUGG: And you gave the poles his sack. The wind brought your voice up the lane. Don't climb this ladder again.
+return:
+
+@node gut.loft.shut.fail
+place: loft
+speaker: LUGG
+cost: 2
+do: meter(dread, 1)
+nar: The whisper is too low for the rain and the nets. The assessor catches one word, and the word is hangman, and then the body on the far side of the hatch moves away from the wood, and there is nothing.
+go: ^hub
+
+# ---------------------------------------------------------------- the hostile Gut (Guild favour -3, or read as an informer)
+@node gut.hostile
+place: gut
+cost: 3
+nar: Two gutters get up from a board by the vats and fall in behind, four yards back. Stalls pull their shutters. The knives stay in their belts, where the assessor can see them.
+voice: smell: They are downwind of you, of course. In the Gut you are a smell walking, and they could follow you blindfolded. They have the blindfolds for exactly that. {dc: 4}
+do: offer(m.downwind)
+check: "[CONDOLENCE] Turn round and talk to them, plainly, about what you wrote and why." -> gut.hostile.talk.ok / gut.hostile.talk.fail {skill: condolence, dc: 7}
+opt: "Take a gutting knife off the board as you pass." -> gut.hostile.knife ? count(w.knife) == 0 {verb: carry, noise: 0.3}
+opt: "Walk faster, back to the quay." -> gut.hostile.flee
+opt: "Ignore them and go about your business." -> ^hub
+
+@node gut.hostile.talk.ok
+place: gut
+speaker: NOLL
+cost: 4
+do: set(gut.truce)
+line: LAMB: I wrote what could be shown at midnight. The Shelf writes again at dawn.
+nar: One gutter pulls off his blindfold. It is Noll Whelk.
+line: NOLL: Mab said you'd run. I said you'd talk. That's how it
+line: MAB: ends. Fine. Go on, then, Shelf. Nobody's following you.
+nar: They go back to the gutting board, and to gutting, and do not look up again.
+go: ^hub
+
+@node gut.hostile.talk.fail
+place: gut
+cost: 3
+nar: The explanation comes out in the passive voice, and in the Gut the passive voice is how charges are read. The gutters take one step forward. The assessor takes one back.
+voice: smell: Fear, now, on you. A thimble, then a cupful. They can smell it rising. {dc: 5}
+opt: "Walk away. Now." -> gut.hostile.flee
+opt: "Take a gutting knife off the board." -> gut.hostile.knife ? count(w.knife) == 0
+
+@node gut.hostile.knife
+place: gut
+cost: 2
+do: give(w.knife); set(gut.knife_taken); rep(guild, -1)
+nar: Three knives stand in a board by the vat. The assessor takes one, and the lane goes quiet. One gutter laughs, once, the way you laugh at a child who has picked up a sword.
+voice: grip: Light, quick, the handle polished by somebody else's palm for twenty years. The hands do not trust how much they like it. {dc: 4}
+voice: pride: The Shelf carries a pen. You are carrying both now, and only one of them is the Shelf's. {dc: 3}
+go: ^hub
+
+@node gut.hostile.flee
+place: gut
+cost: 2
+nar: The assessor walks back toward the quay at the pace of a person who would like it noted that they are not running. The gutters follow to the lane mouth and stop exactly on the line where the Gut ends.
+go: quay.hub
+
+# ---------------------------------------------------------------- reactions to the knife
+@node gut.knife.react.marrow
+when: count(w.knife) >= 1
+line: MARROW: That's a gutting knife in the Shelf's belt. Give it back before dawn, flatfish. In the Gut a knife's a word, and you don't know how to pronounce it.
+return:
+
+@node gut.knife.react.spratt
+when: count(w.knife) >= 1
+line: SPRATT: Knife. Good. Now you look like somebody. Don't point it at the eels, they've had a hard night.
+return:
+
+@node gut.knife.react.lugg
+when: count(w.knife) >= 1
+line: LUGG: Gutter's knife. Floor people read that as Guild. Guild people read it as stolen. Nobody reads it as Shelf.
+return:
+
+# ---------------------------------------------------------------- the lane mouth: the other ways in (row 9)
+@node gut.lookouts.whelks.ok
+place: gut
+cost: 3
+do: set(gut.early_in); set(said.after_vote_news)
+nar: A penny buys a twist of whelks and a place on the lookouts' side of the bucket. The assessor gives them the after-vote: who is drunk, who is crying, which verse the old man is stuck in.
+nar: The larger boy jerks his head at the lane behind him.
+nar: Go on, then, he says. Mind the gutter. And nobody came past them, because nobody did.
+go: gut.hub
+
+@node gut.lookouts.whelks.fail
+place: gut
+cost: 3
+nar: The assessor's news is that Marrow is singing the herring song. He always is. The boys eat the whelks and keep the penny.
+nar: But the smaller says nobody gets past them except the Whelk boy, years ago, who came up the drain.
+voice: undertow: Up the drain. The gutter runs to the harbour somewhere. Ask the tide when its mouth is open. {dc: 4}
+go: gut.lookouts
+
+@node gut.lookouts.blind.ok
+place: gut
+cost: 2
+do: set(gut.early_in)
+line: LAMB: The steward sent me ahead to see the hall swept.
+nar: The larger boy looks at the blindfold a long while. Then he takes his own off his forehead and puts it round his neck, the same way.
+voice: formletter: It was understood that authority had been conferred. By whom was not asked. {dc: 4}
+go: gut.hub
+
+@node gut.lookouts.smoke
+place: gut
+cost: 3
+do: wet(0.3)
+nar: A brine barrel stands by the vats for the eels. The assessor puts both arms into it to the shoulder, and then, with the face of a person doing a sum, the front of the greatcoat. Now the Shelf smells of what everything in the Gut smells of.
+nar: Shadwell's chimney smoke rolls down the wall behind the lookouts' backs.
+inst: THE VANE: The smoke goes where I point! Walk inside it and nobody upwind will know your name!
+check: "[THE DARK] Walk through the smoke at their backs." -> gut.smoke.walk.ok / gut.smoke.walk.fail {skill: dark, dc: 6, verb: hide, noise: 0.1}
+opt: "Think better of it, and drip back to the quay." -> quay.hub
+
+@node gut.smoke.walk.ok
+place: gut
+cost: 2
+do: set(gut.early_in)
+nar: The smoke takes the assessor in like a coat with somebody else already in it. The smaller lookout sniffs, says brine, and goes back to his whelks. Then the lane, and nobody in it.
+voice: smell: You are a barrel of brine walking through a kipper. In the Gut that is a disguise so perfect it is very nearly a citizenship. {dc: 4}
+go: gut.hub
+
+@node gut.smoke.walk.fail
+place: gut
+cost: 3
+do: meter(dread, 1)
+nar: Halfway through the smoke a gust thins it, and the assessor is standing in plain sight behind two boys, dripping brine. The smaller one does not even turn round.
+nar: Brine, he says, to his whelks. And under the brine, paper. You can't wash paper out, Shelf. Come round the front at twenty to one like everybody else.
+nar: The larger walks the assessor back to the lane mouth by the elbow, very politely, as if returning a library book that has been in the bath.
+go: quay.hub
+
+@node gut.culvert
+place: steps
+cost: 3
+nar: Under the quay the gutter comes out of the wall through a brick mouth the height of a crouching man, ankle-deep in violet water, behind a grating rusted to the strength of a biscuit.
+read: almanac
+voice: salt: The water at the mouth is going out, not in. Not for long. The legs know the turn before the dial does. {dc: 5}
+check: "[GRIP] Wrench the grating aside and crawl up the culvert." -> gut.culvert.ok / gut.culvert.fail {skill: grip, dc: 6, verb: pry, noise: 0.4}
+opt: "Leave the drain to the drain." -> quay.hub
+
+@node gut.culvert.ok
+place: gutter
+speaker: MAB
+cost: 6
+do: set(gut.early_in); wet(0.5); meter(cold, 1)
+nar: The grating gives at the third pull. Forty yards of brick pipe on hands and knees, in a warm violet stream, toward a square of paraffin light.
+nar: The assessor comes up through the bottom of the gutting trough between two pairs of boots. Two knives stop in the air.
+line: NOLL: That's the
+line: MAB: Shelf. Up the drain. Like you did, Noll, when you were eleven.
+line: NOLL: I was quicker.
+voice: pride: The coat glows. Faintly, in the dark, from the hem to the second button. Nobody will ever believe you were not in the gutter, because you were. {dc: 3}
+go: gut.gutter.menu
+
+@node gut.culvert.fail
+place: steps
+cost: 4
+do: wet(0.4); meter(cold, 1)
+nar: The grating moves an inch and stops, and the water in the culvert begins to come the other way.
+nar: Up the pipe, very clear, two voices argue about a woman who went up the lane with two herring and came down with one. Then the water reaches the assessor's ear.
+go: quay.hub
+
+# ---------------------------------------------------------------- the procession, watched from the smoke (row 13)
+@node gut.procession.spy.ok
+place: gut
+cost: 3
+do: set(gut.spratt_seen); give(gut.twin_herring)
+nar: The assessor stands in the smoke by the eel stall. Agnes Spratt falls out of the line there and goes behind her plank.
+nar: As the pans pass and every face turns up, she drops a paper parcel into the gutter without looking down.
+nar: The assessor fishes it out at the bend: a smoked herring, its belly split red.
+voice: smell: Alder. Yesterday's alder, under nothing at all. This one never got its coat of oak. {dc: 5}
+go: ^hub
+
+@node gut.procession.spy.fail
+place: gut
+speaker: SPRATT
+cost: 2
+nar: Agnes Spratt falls out of the line at her stall and looks straight at the smoke, which is thinner than the assessor thought.
+line: SPRATT: Eel, Shelf? Penny smoked. You'll be wanting one, standing in a chimney.
+nar: While she says it, her other hand pushes something in a paper under the live eels in the tub, where nobody's hand will go for it.
+voice: undertow: Under the live eels. She saw you see. {dc: 4}
+go: ^hub
+
+@node gut.spratt.claim.twin
+when: has(gut.spratt_seen)
+nar: On the plank, still damp from the gutter, the assessor lays its twin, the herring she dropped as the pans went by.
+return:
+
+# ---------------------------------------------------------------- salt for the mole
+@node gut.spratt.salt
+place: gut
+speaker: SPRATT
+alt: gut.spratt.salt.free ? gut_spratt == kept
+cost: 2
+do: take(i.chits, 1); give(i.salt)
+line: SPRATT: Salt's a chit a sack. It keeps an eel and it keeps a step. Ice on the mole by four, Shadwell's board says. Don't spill it in my tub.
+voice: salt: Coarse grey salt, heavy as a sleeping dog. On frozen stone it bites. {dc: 4}
+go: gut.spratt.menu
+
+@node gut.spratt.salt.free
+place: gut
+speaker: SPRATT
+cost: 2
+do: give(i.salt)
+line: SPRATT: Take it. You kept a thing for me. Salt keeps things too.
+go: gut.spratt.menu
+
+@node gut.smoke.salt
+place: smokehouse
+speaker: SHADWELL
+cost: 2
+do: give(i.salt)
+nar: Shadwell drags a sack of curing salt from under the racks and stands it by the assessor's feet.
+line: SHADWELL: The board says frost before half past four. Salt on a stair holds a boot. Bring the sack back. It's my grandfather's.
+go: gut.smoke.menu
+
+# ---------------------------------------------------------------- 02:50: the town's appointment in the Gut (appt == vote)
+@node gut.appt.vote
+place: hall
+speaker: SPRATT
+cost: 3
+nar: At ten to three the quay goes out. In the Gut the aprons lower every wire lamp and blow it out until only the gutter glows.
+nar: Two pans hang in the hall. On the left is an eel from Spratt's tub: the Shelf wrote true, and the steward goes. On the right is the fish of the year: the Shelf lied, and he stays. The cloths go on. Forty aprons stand in a line in the dark.
+line: SPRATT: Lights out for the nose. His father's words. Let's see whose nose.
+line: MARROW: Vote, then. Cloths on.
+voice: dark: Forty people breathing in a black room. Two of them are breathing faster than the rest. {dc: 5}
+opt: "Tie the blindfold on and stand in the line." -> gut.appt.vote.join {do: blindfolded = 1; set(appt.joined)}
+check: "[CONDOLENCE] Speak before the line moves: a cause written at midnight is not a verdict." -> gut.appt.vote.talk.ok / gut.appt.vote.talk.fail {skill: condolence, dc: 7}
+opt: "Strike a light from your lantern in the middle of the hall." -> gut.appt.vote.light ? count(i.lantern) >= 1 {verb: light, noise: 0.4}
+opt: "Pull the pans down off their hooks." -> gut.appt.vote.tip {verb: throw, noise: 0.8}
+check: "[THE DARK] Go round by Shadwell's back door and watch from the smoke." -> gut.appt.vote.watch.ok / gut.appt.vote.watch.fail {skill: dark, dc: 6, verb: hide, noise: 0.1}
+
+@node gut.appt.vote.join
+place: hall
+speaker: MARROW
+cost: 2
+nar: The cloth goes on. Hands put the Shelf in the line, between an apron that smells of mackerel and one that smells of mackerel and gin.
+check: "[SMELL] Find the pans by nose." -> gut.appt.vote.nose.ok / gut.appt.vote.nose.fail {skill: smell, dc: 6}
+
+@node gut.appt.vote.nose.ok
+place: hall
+cost: 2
+voice: smell: Left: eel, brine, a tub, a narrow woman's fingers. Right: oak, gold, and under the oak the faint red of yesterday's fire. You know exactly which is which. Now stand by one.
+opt: "Stand by the eel. The cause stands." -> gut.appt.vote.eel {do: gut_vote2 = spratt; set(said.vote_eel); set(heard.spratt.vote_eel); set(heard.marrow.vote_eel)}
+opt: "Stand by the herring, against your own word." -> gut.appt.vote.herring {do: gut_vote2 = marrow; set(said.vote_herring); set(heard.spratt.vote_herring); set(heard.marrow.vote_herring)}
+
+@node gut.appt.vote.nose.fail
+place: hall
+cost: 2
+do: gut_vote2 = spratt; set(said.vote_eel)
+nar: In the dark everything smells of everybody. A hand steers the Shelf to a pan, and the assessor's fingers find something cold on it that moves a little. An eel.
+nar: The count is by touch. It takes some time. Twenty-one for the eel, nineteen for the herring, and the Shelf's hand among the twenty-one, put there by somebody else's.
+go: gut.appt.vote.eel.after
+
+@node gut.appt.vote.eel
+place: hall
+cost: 2
+nar: The assessor stands by the eel. The count is by touch. Twenty-one for the eel, nineteen for the herring. By a nose, and the nose was the Shelf's.
+go: gut.appt.vote.eel.after
+
+@node gut.appt.vote.eel.after
+place: hall
+speaker: MARROW
+cost: 2
+do: rep(guild, -1)
+nar: When the cloths come off, Marrow is standing alone at the right-hand pan with his hand on the fish of the year.
+line: MARROW: By a nose. Same as I came in.
+line: SPRATT: Spring tide, it'll be counted proper. Till then the Guild has heard itself.
+go: ^hub
+
+@node gut.appt.vote.herring
+place: hall
+speaker: SPRATT
+cost: 2
+do: rep(guild, 1); seenas_guild = nose
+nar: The assessor stands by the herring. Twenty for the eel, twenty for the herring, and a tie goes to the steward.
+line: SPRATT: The Shelf voted against the Shelf. Write that up your tube.
+line: MARROW: It voted with its nose, Agnes. That's all we ever asked of anybody.
+voice: pride: You wrote one thing at midnight and stood by the other at three. Both are in the Record now. {dc: 4}
+go: ^hub
+
+@node gut.appt.vote.talk.ok
+place: hall
+speaker: MARROW
+cost: 4
+do: gut_vote2 = void; set(appt.stopped); set(said.vote_wait); set(heard.spratt.vote_wait); set(heard.marrow.vote_wait)
+line: LAMB: The word went up the tube at midnight because the tube asked for one. The Shelf writes again at dawn. A vote on a midnight word is a vote on a guess.
+nar: Nobody answers for a while. Then a cloth comes off somewhere down the line, and another, the small rustle of forty people taking their eyes back.
+line: SPRATT: Dawn, then. I've waited nine years. I can wait three hours.
+line: MARROW: Dawn. Under the fish of the year, with the lamps lit, where we can see who stands where.
+go: ^hub
+
+@node gut.appt.vote.talk.fail
+place: hall
+speaker: SPRATT
+cost: 3
+do: gut_vote2 = spratt; set(said.vote_wait)
+nar: The assessor speaks into the dark. In the dark the Shelf's voice has no face to go with it, and comes out sounding like a man apologising for a hanging.
+line: SPRATT: A guess, it says. It guessed us up the tube. Line moves, aprons.
+nar: The line moves. Twenty-one for the eel, nineteen for the herring. When the cloths come off, Marrow is standing alone at the right-hand pan, and does not look at the Shelf.
+go: ^hub
+
+@node gut.appt.vote.light
+place: hall
+speaker: MARROW
+cost: 2
+do: gut_vote2 = void; set(appt.stopped); rep(guild, -1)
+nar: The assessor's match finds the lantern wick, and the hall jumps out of the dark: forty aprons with cloths on, mid-step, like a photograph of a dance.
+nar: Thirty-nine of them pull the cloths off at once.
+line: SPRATT: Put it out.
+line: MARROW: Leave it. The Shelf wants to see our faces. Let it. Lamps on in the Gut, the vote's void. That's the rule.
+voice: hearsay: You have saved him and cost her, in one match, and the Gut will say the Shelf did it so it could see. {dc: 5}
+go: ^hub
+
+@node gut.appt.vote.tip
+place: hall
+speaker: MARROW
+cost: 3
+do: gut_vote2 = void; set(appt.stopped); rep(guild, -2); wet(0.3)
+nar: The assessor finds the left-hand chain and pulls. The pan comes down like a church bell dropped down a well, and forty people go looking for an eel.
+nar: Hands find the Shelf, a great many hands, and the Shelf goes out of the hall doors into the rain without its feet once touching the floor.
+line: MARROW: No vote tonight, then. The Shelf saw to that. Don't come back in till you're dry.
+voice: pride: Thrown out of a fish market, in the rain, by a vote of forty to nothing. {dc: 3}
+go: ^hub
+
+@node gut.appt.vote.watch.ok
+place: smokehouse
+cost: 4
+do: gut_vote2 = spratt; set(appt.watched)
+nar: The assessor stands in Shadwell's smoke at the hall's back wall and listens to forty people vote with their noses.
+nar: The old man with the cleaver goes to the eel. Both Whelk twins go to the eel. Shadwell goes to the herring without hesitating, the one man who could find his own fire in the dark. Twenty-one. Nineteen.
+go: ^hub
+
+@node gut.appt.vote.watch.fail
+place: smokehouse
+speaker: SPRATT
+cost: 2
+nar: The smoke is thinner than it was at midnight. Halfway through the door a hand closes on the greatcoat's collar.
+line: SPRATT: Kipper, and under the kipper, paper. The Shelf wants to watch? The Shelf can vote.
+nar: The assessor is brought into the line, a cloth already being tied on from behind.
+go: gut.appt.vote.join
+
+@node gut.appt.after
+place: gut
+cost: 2
+do: gut_vote2 = spratt
+nar: After twenty past three the lamps go back up. At the hall door Marrow stands alone with the fish of the year under his arm.
+voice: hearsay: They voted in the dark while you were elsewhere. The eel won, by a nose. {dc: 3}
+go: ^hub
+
+@node gut.smoke.marrow.vote2
+when: gut_vote2 == spratt
+line: MARROW: They voted me out in the dark at three. By a nose. Same as I came in.
+return:
+
+@node gut.dogs.egg
+place: gut
+cost: 2
+do: take(i.egg); set(gut.dogs_done); set(gut.early_in)
+nar: The assessor rolls one of Sabine's pickled eggs across the yard. The small black dog stops it with a paw, smells it for a long time, and decides. All three go behind the gurry bin to argue about vinegar.
+go: gut.midden

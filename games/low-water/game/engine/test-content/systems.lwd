@@ -1,0 +1,234 @@
+# Placeholder records for the director's requests R1 to R13 (design/NOTES-FOR-ENGINEER.md).
+# Stand-in names and lines only; not story content.
+
+@meter chill
+name: Test chill
+max: 10
+rise: 3 ? wet > 0.3 & !shelter
+rise: 1 ? wind.speed > 9 & !shelter
+rise: -12 ? stove
+full: t.chilled.$district
+
+@meter tired
+name: Test tiredness
+max: 10
+rise: 1
+full: t.nod.$trait
+after: 4
+wait: 30
+
+@meter tension
+name: Test tension
+max: 10
+rise: 2 ? light < 0.05
+full: t.small
+after: 4
+
+@skill gauge
+name: Test gauge
+base: 3
+train: no
+glyph: ◎
+about: Test instrument: never trained.
+
+@modifier m.gauge_wind
+skill: gauge
+mod: -1
+when: wind.speed > 12
+why: Wind
+
+@char t.speaker
+name: Test speaker
+speaker: SPEAKER
+faction: guild
+sched: 23:00-23:40 t.quay
+sched: 23:40-06:00 t.bar
+about: Placeholder character.
+
+@char t.watcher
+name: Test watcher
+speaker: WATCHER
+faction: board
+role: lamplighter
+
+@item t.oilskin
+name: Test oilskin coat
+slot: coat
+shed: 0.8
+warm: 1
+guise: floor
+about: Placeholder clothing in weather.
+
+@item t.bowler
+name: Test hat
+slot: hat
+shed: 0.3
+guise: clerk
+
+@place t.room
+name: Test room
+zone: room
+light: 0.6
+sodium: 0
+dark-light: 0.4
+district: d.gut
+stove: yes
+bench: yes
+
+@place t.yard
+name: Test yard
+zone: yard
+light: 0.02
+sodium: 0
+dark-light: 0.02
+district: d.gut
+
+@night t.night
+night: 1
+low: 22:58 -0.55
+high: 05:10 5.3
+at: 22:41 fog 0
+at: 23:20 fog 0
+at: 23:50 fog 0.05
+at: 22:41 rain 0
+at: 23:35 rain 0
+at: 23:41 rain 2
+at: 22:41 wind.speed 6
+at: 23:41 wind.speed 10
+at: 22:41 temp 8
+at: 04:10 temp 1
+at: 22:41 frost 0
+at: 04:10 frost 1
+
+@hazard h.spray
+name: Test spray
+when: inrun
+every: 2
+do: wet(0.05)
+warn: Test: spray over the wall.
+
+@run t.dash
+name: Test run
+area: t.quay
+hazard: h.spray
+goal: 4 0 0 0.6
+rate: 4
+limit: 20
+win: t.run.win
+lose: t.run.lose
+param: start 0 0
+param: rect -1 -1 5 1 0
+param: water -0.6 1
+param: frost 2 0 0.4 6
+param: slide 0 0.5
+param: light 4 0 2
+
+# --- nodes for the requests
+
+@node t.r.start
+speaker: SPEAKER
+line: Test line for the requests node.
+voice: eye: Test low voice: only below Eye 3. {below: 3}
+voice: eye: Test band voice: Eye 1 to 5. {dc: 1, below: 6}
+go: t.r.hub
+
+@node t.r.hub
+hub: yes
+speaker: SPEAKER
+line: Test hub for the requests.
+check: "[LEDGER] Test strained sum." -> t.r.ok / t.r.fail {skill: ledger, dc: 7}
+check: "[BRASS] Test favour push." -> t.r.ok / t.r.fail {skill: brass, dc: 9}
+check: "[GAUGE] Test instrument check." -> t.r.ok / t.r.fail {skill: gauge, dc: 2}
+check: "[EYE] Test no strain." -> t.r.ok / t.r.fail {skill: eye, dc: 4, nostrain}
+claim: "Test hidden claim." -> t.r.ok / t.r.fail ? has(t.switch) {show: has(t.read_tide)}
+opt: "Test run." -> t.run.go
+opt: "Test sneak." -> t.y.go
+opt: "Test fight." -> t.y.fight
+opt: "Test wide." -> t.y.wide
+opt: "Test leave." -> t.leave
+
+@node t.r.ok
+nar: Test: success.
+go: ^hub
+
+@node t.r.fail
+nar: Test: failure.
+go: ^hub
+
+@node t.run.go
+nar: Test: the run begins.
+alt: t.run.fallback ? !runs
+do: run(t.dash)
+nar: Test: this line never plays.
+
+@node t.run.fallback
+check: "[KNOTS] Test fallback for the run." -> t.run.win / t.run.lose {skill: knots, dc: 5}
+
+@node t.run.win
+nar: Test: the run was won.
+go: ^hub
+
+@node t.run.lose
+nar: Test: the run was lost.
+go: ^hub
+
+@node t.chilled.d.quay
+nar: Test: chilled on the quay.
+return:
+
+@node t.chilled
+nar: Test: chilled somewhere.
+return:
+
+@node t.nod.t.night_eyes
+nar: Test: a nodding page for the trait.
+return:
+
+@node t.nod.default
+nar: Test: the default nodding page.
+return:
+
+@node t.small
+nar: Test: the small thing.
+return:
+
+@event t.late
+when: has(t.switch) & clock >= 23:30
+nar: Test event on a condition.
+
+# --- hooks for real-time systems: animation timings and a course built from a run's data
+
+@anim t.walk
+actor: t.lamb
+length: 0.8
+loop: yes
+event: 0.2 step
+event: 0.6 step
+
+@anim t.swing
+actor: t.lamb
+frames: 18
+fps: 30
+rate: 1 + 0.1 * (skill.knots - 3)
+phase: 0.1 0.25 active
+event: 0.15 whoosh
+next: t.walk
+blend: 0.1
+
+@run t.built
+name: Test built course
+hazard: h.rising
+goal: test steps
+rate: 4
+limit: 12
+win: t.run.win
+lose: t.run.lose
+param: frost-ballast 6
+param: pursuer t.watcher
+param: climb 32
+
+@hazard h.rising
+name: Test rising water
+when: tide > -2 & inrun
+every: 5
+do: wet(0.01)

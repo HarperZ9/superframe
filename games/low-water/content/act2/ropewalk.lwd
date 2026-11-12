@@ -1,0 +1,1044 @@
+# Low Water, Act 2: the Ropewalk. A long straight street where rope was once walked, one paraffin
+# lamp, frost from 01:00 that keeps every print. Places: rope_lane, telegraph, gannet_house,
+# gannet_wall. Beats (design/ACT2-PLAN.md section 5): 6 the telegraph office and the 18:30 draft
+# (gate A1), 12 Mrs Pellow's errand (23:00 to 23:30), 15 the sticking e through the wall at 04:00
+# (gate A9). Hester Gannet is heard and never seen. Reads from brine2: brine2.rook_witness,
+# brine2.rook_kept, brine2.rook_gone; from weigh2: weigh2.followed_pipe, weigh2.ink_wet. Writer's
+# file, 2026-10-17. Private.
+
+# ---- new ids
+@fact ropewalk.recited
+@fact ropewalk.door_forced
+@fact ropewalk.caught_back
+@fact ropewalk.line_dead
+@fact ropewalk.rook_barred
+@fact ropewalk.draft_taken
+@fact ropewalk.lamp_doused
+@fact ropewalk.pip_met
+@fact ropewalk.pip_refused
+@fact ropewalk.front_room
+@fact ropewalk.hester_met
+@fact ropewalk.letter_delivered
+@fact ropewalk.letter_opened
+@fact ropewalk.pellow_caught
+@fact ropewalk.pellow_asked
+@fact ropewalk.door_line
+@fact ropewalk.envelope_read
+@fact ropewalk.seam_followed
+@fact ropewalk.grate_open
+@fact ropewalk.prints_passage
+@fact ropewalk.forced_back
+@fact ropewalk.wall_heard
+@fact ropewalk.coe_watch
+
+@fact ropewalk.wenna_wire
+about: Rook remembers the one telegram Wenna sent in thirty-one years: WAGES NOT RECEIVED SIX MONTHS. And the reply from the hill next morning: UNDER REVIEW. CRAKE.
+against: trust 5
+by: Rook's memory
+
+@fact ropewalk.yellow_time
+about: The 18:30 draft: the time of loss, 9.40, added in yellow ink and struck through by Keel.
+against: trust 20
+by: reading
+
+@fact ropewalk.notice_matched
+about: The Shelf's old agency card in the telegraph window, typed for the Gullet clerk: every R has lost the same foot as every R on the Shelf's strips. On the card, every e sits on the line.
+by: comparison
+
+@fact ropewalk.draft_misread
+about: In pencil: the 18:30 draft is all in Keel's hand, the struck time with the rest.
+by: a misreading of the pad
+
+@fact ropewalk.pencil_machine
+about: In pencil: the clerk's old machine and the Shelf's are not the same machine.
+by: a misreading of the card
+
+@fact ropewalk.pencil_office
+about: In pencil: the tube's pipe runs under the Ropewalk to the telegraph office.
+by: following the wrong line in the frost
+
+@var ropewalk_heard
+default: none
+values: none, fist, tongue, shadow, hands, eye
+about: How Lamb came to hear the machine at four (gate A9).
+
+@encounter ropewalk.e.door
+name: Poles on the Ropewalk
+area: ropewalk
+foe: f.lamplighter 2
+param: frost (after 01:00 the cobbles are glass)
+prop: lamp 0 0 ? has(ropewalk.lamp_doused)
+talk: ropewalk.fx.rook | Let Rook speak ? has(said.rook_witness)
+talk: ropewalk.fx.card | Hold up the Shelf's card ? (fight_struck >= 1 | fight_seconds >= 10)
+win: ropewalk.fight.door.win
+yield: ropewalk.fight.door.yield
+fled: ropewalk.fight.door.fled
+down: ropewalk.fight.door.down
+
+@encounter ropewalk.e.door4
+name: Four poles on the Ropewalk
+area: ropewalk
+foe: f.lamplighter 4
+param: frost (after 01:00 the cobbles are glass)
+prop: lamp 0 0 ? has(ropewalk.lamp_doused)
+talk: ropewalk.fx.rook | Let Rook speak ? has(said.rook_witness)
+win: ropewalk.fight.door.win
+yield: ropewalk.fight.door.yield
+fled: ropewalk.fight.door.fled
+down: ropewalk.fight.door.down
+
+# ---------------------------------------------------------------- the street
+@node ropewalk.rook.reset
+place: telegraph
+speaker: ROOK
+cost: 5
+do: set(ropewalk.move_reset)
+line: ROOK: Get out of one? You step back, assessor. A step, and you look at them as if they've just come in. They have to start again. People hate to start again.
+line: ROOK: I don't recall it. You say that on the step back. Nobody hits a woman who doesn't recall it.
+nar: She steps back from the counter, and looks at the assessor as if the assessor had just come in, and for a moment the assessor has to think why.
+go: ropewalk.hub
+
+@node ropewalk.hub
+hub: yes
+place: rope_lane
+cost: 0
+alt: ropewalk.pellow ? has(ev2.errand) & clock < 23:30 & !seen(ropewalk.pellow)
+alt: ropewalk.pip.early ? has(day.pip) & clock < 22:00 & !seen(ropewalk.pip.early)
+call: ropewalk.arrive
+nar: The Ropewalk: a quarter of a mile laid straight for rope, one paraffin lamp halfway. The telegraph office; four doors up, the Gannet house. {when: !has(ropewalk.lamp_doused)}
+nar: The Ropewalk with its lamp out: two lit blinds, and the dark. {when: has(ropewalk.lamp_doused)}
+nar: Down the middle of the walk a strand lies between the old rope posts, laid out for twisting and never twisted, and under the post by the telegraph office a coil of dead wire. {once}
+nar: Rook locks the green door, tries it twice, and goes off toward the quay. {when: has(ev2.rook_out) & !has(ev2.rook_back), once}
+voice: dark: Frost on every stone, and every step anybody takes now stays where it was put. Yours too. {when: clock >= 01:00, once}
+voice: hearsay: Two doors on this street have opened a crack since you came into it. They have not closed. {when: has(book.violence), once}
+voice: sum: The four o'clock ink was wet when it reached the weigh-house. Whoever typed it was minutes away, and the stripe in the frost is a few minutes long. {dc: 5, when: has(weigh2.ink_wet) & !has(typist.heard), once}
+opt: "Go to the telegraph office." -> ropewalk.office.door +1
+opt: "Read the card in the telegraph office window." -> ropewalk.notice +1
+opt: "Go round to the yard behind the telegraph office." -> ropewalk.back ? has(ropewalk.office_empty_now) {verb: hide, noise: 0.1}
+opt: "Knock at the Gannet house." -> ropewalk.gannet +1
+opt: "Go down the passage behind the Gannet house." -> ropewalk.passage +1 {verb: hide, noise: 0.1}
+opt: "Look up at the telegraph wire on the old rope posts." -> ropewalk.wire ? !has(ropewalk.line_dead) & (clock < 22:00 | (clock >= 23:00 & clock < 02:00)) +1
+opt: "Look at the dark stripe in the frost down the middle of the street." -> ropewalk.seam ? clock >= 01:00 & !has(ropewalk.seam_followed) +1
+opt: "Trim the Ropewalk lamp, as Lamplighters do." -> ropewalk.lamp ? guise == lamplighter & !has(ropewalk.lamp_doused) {verb: douse, noise: 0.2}
+opt: "Ask Rook how a telegraph clerk gets out of a question." -> ropewalk.rook.reset ? seen(ropewalk.back.ok) & !has(ropewalk.move_reset)
+opt: "Take out the Kit." -> ropewalk.kit
+opt: "Walk back down to the quay." -> quay2.hub +3
+opt: "Take the steps up to Chancel Hill." -> hill.hub +4
+opt: "Cut through the yards into the Gut." -> gut2.hub +3
+
+# ---- what the street says when Lamb comes into it (called from the hub)
+@node ropewalk.arrive
+cost: 0
+alt: ropewalk.arrive.first ? !seen(ropewalk.arrive.first)
+alt: ropewalk.arrive.pipe ? has(weigh2.followed_pipe) & !seen(ropewalk.arrive.pipe)
+alt: ropewalk.arrive.frost ? clock >= 01:00 & !seen(ropewalk.arrive.frost)
+alt: ropewalk.arrive.reply ? has(ev2.shelf_reply) & !seen(ropewalk.arrive.reply)
+call: ropewalk.empty.check
+return:
+
+@node ropewalk.arrive.first
+cost: 0
+inst: CANDLEMAS: Paraffin. A light with manners. That door is green, assessor, a municipal green, and I will say so in court.
+inst: THE VANE: Nothing! Not a breath! On a street this straight a cough at one end is a cough at the other!
+call: ropewalk.empty.check
+return:
+
+@node ropewalk.arrive.pipe
+cost: 0
+do: set(ropewalk.seam_followed)
+nar: The stripe in the frost runs up the Ropewalk and into the passage behind the Gannet house.
+call: ropewalk.empty.check
+return:
+
+@node ropewalk.arrive.frost
+cost: 0
+call: ropewalk.empty.check
+return:
+
+@node ropewalk.arrive.reply
+cost: 0
+voice: smallprint: THE CLERK IS THE CLERK, says the strip in your pocket. The card in the telegraph window has its own opinion of who that was. {dc: 4}
+call: ropewalk.empty.check
+return:
+
+# ---- whether Rook's office is empty now (she drinks at the Brine 22:00 to 23:00; brine2 can stretch or shorten it)
+@node ropewalk.empty.check
+cost: 0
+alt: ropewalk.empty.yes ? clock >= 22:00 & clock < 02:00 & ((has(brine2.rook_kept) & clock < 23:30) | (!has(brine2.rook_kept) & !has(brine2.rook_gone) & clock < 23:00) | (has(brine2.rook_gone) & !seen(brine2.rook.lamplighter) & clock < 22:40))
+do: clear(ropewalk.office_empty_now)
+return:
+
+@node ropewalk.empty.yes
+cost: 0
+do: set(ropewalk.office_empty_now)
+return:
+
+@fact ropewalk.office_empty_now
+
+@node ropewalk.kit
+place: rope_lane
+cost: 1
+read: candlemas
+read: vane
+read: damp
+inst: THE DAMP: Dry. The frost has taken all the water out of the air and is keeping it on the stones. {when: clock >= 01:00}
+inst: THE ALMANAC: Frost from one. Sunrise at nineteen minutes past seven. Nothing on this street will melt before then. {when: clock >= 01:00}
+go: ^hub
+
+@node ropewalk.lamp
+place: rope_lane
+cost: 3
+do: set(ropewalk.lamp_doused)
+cmd: setLight rope_lane 0.04 0
+nar: The wick turns down to nothing, and the Ropewalk goes out both ways at once.
+go: ^hub
+
+# ================================================================ BEAT 6: THE TELEGRAPH OFFICE (gate A1)
+@node ropewalk.office.door
+place: rope_lane
+cost: 0
+call: ropewalk.empty.check
+alt: ropewalk.office.shut ? clock >= 02:00 | has(ropewalk.office_empty_now)
+go: ropewalk.office
+
+@node ropewalk.office
+place: telegraph
+speaker: ROOK
+cost: 1
+alt: ropewalk.rook.first ? !seen(ropewalk.rook.first)
+alt: ropewalk.rook.wenna ? guise == keeper & !seen(ropewalk.rook.wenna)
+alt: ropewalk.rook.spike ? has(ropewalk.draft_taken) & !seen(ropewalk.rook.spike)
+nar: Rook, behind the grille.
+go: ropewalk.rook.menu
+
+@node ropewalk.rook.first
+place: telegraph
+speaker: ROOK
+cost: 3
+do: set(met.rook); quest(a2.wire, open)
+nar: Behind the grille, Euphemia Rook, about sixty, in mittens cut at the knuckle, so that her fingertips are the only part of her that looks awake.
+line: ROOK: The Shelf. SAINT CUTHWIN BERTHED GULLET 2241 STOP ALL SOULS SAFE STOP CLEARED SPIT ONE CABLE STOP LIGHT ON WRONG BEARING STOP PENHALLOW. Ten past eleven last night, to the owners at Hesk. I don't recall it.
+line: ROOK: And at ten past one this morning, from the harbour office: SHELF FINDS WRECKERS STOP BOARD GRATIFIED STOP KEEL. I don't recall that either. {when: var.prov == wreckers}
+line: ROOK: And at one this morning, from the Gut, to the fish buyers at Hesk: SHELF NAMES GUILD STOP STRIKE PRICE VOID STOP DO NOT BUY STOP SPRATT. I don't recall that either. {when: var.prov == guild}
+line: ROOK: And at one this morning, from the hill, to the Municipal's solicitors: SHELF HOSTILE STOP ATTEND FIRST BOAT STOP CRAKE. I don't recall that either. {when: var.prov == trust}
+line: ROOK: And at one this morning, from the Brine, to the glassworks at Hesk: CANCEL EMPTIES STOP BRINE. I don't recall that either. {when: var.prov == keeper}
+line: ROOK: And at one this morning, from the harbour office: ACT OF SEA STOP BOARD WILL APPEAL STOP KEEL. I don't recall that either. {when: var.prov == sea}
+voice: hearsay: Your word went up the tube at midnight. By one it was on the wire to Hesk under somebody else's name. {dc: 5, when: var.prov != none & var.prov != refused}
+go: ropewalk.rook.menu
+
+@node ropewalk.rook.menu
+place: telegraph
+speaker: ROOK
+cost: 0
+opt: "Knock twice on the counter, once low." -> ropewalk.rook.own ? has(brine2.rook_witness) & clock < 01:00 & !has(ropewalk.rook_barred) & !has(telegram.draft) {verb: wait, noise: 0}
+opt: "Ask about the half past six telegram." -> ropewalk.rook.1830 ? !seen(ropewalk.rook.1830)
+check: "[CONDOLENCE] Ask what she would say, if she did remember." -> ropewalk.rook.own / ropewalk.rook.own.fail ? seen(ropewalk.rook.1830) & !has(telegram.draft) & !has(ropewalk.rook_barred) & !has(ropewalk.line_dead) {skill: condolence, dc: 6}
+check: "[FORM LETTER] Require sight of the claim's original, in the Shelf's name." -> ropewalk.rook.form.ok / ropewalk.rook.form.fail ? seen(ropewalk.rook.1830) & !has(telegram.draft) & !has(ropewalk.rook_barred) {skill: formletter, dc: 8}
+opt: "Ask for a telegraph form." -> ropewalk.pad ? !has(telegram.draft)
+opt: "Ask her about the half past six draft, and whose hand is on it." -> x2.rook.start ? !has(ropewalk.yellow_time)
+opt: "Leave her to the sounder." -> ropewalk.hub
+
+@node ropewalk.rook.1830
+place: telegraph
+speaker: ROOK
+cost: 3
+do: quest(a2.wire, draft)
+line: ROOK: HARBOUR BOARD GULLET TO MUTUAL INDEMNITY LOWER SHELF STOP CLAIM UNDER POLICY HEAD LIGHT STOP ANTICIPATE MALICIOUS DARKENING BY WRECKERS LOW NIGHT STOP TIME OF LOSS SEE BELOW STOP KEEL.
+line: ROOK: Twenty-six words. He paid for twenty-seven. I don't recall it.
+line: LAMB: See below what?
+line: ROOK: That's how it was handed in. Everybody writes it out first. It goes on the spike after.
+nar: Her hand lies flat beside a book bound in oilcloth. It is not the office's book.
+go: ropewalk.rook.menu
+
+# ---- Tongue: Rook's witness
+@node ropewalk.rook.own
+place: telegraph
+speaker: ROOK
+cost: 6
+line: ROOK: Everything I've sent in thirty years, in my own hand. The regulations say burn it every quarter. You're from away, and you write things down. You'll sign under what I put.
+nar: She writes as she says it.
+line: ROOK: 4471/G. Handed in 18.25 by the harbourmaster. A second hand on the form. The time struck by him at the counter. Sent 18.30 as struck.
+opt: "Sign under it." -> ropewalk.rook.signed {do: set(said.rook_witness); set(heard.rook.rook_witness)}
+opt: "Ask whose the second hand was." -> ropewalk.rook.whose {once}
+opt: "Close the book for her." -> ropewalk.rook.menu
+
+@node ropewalk.rook.whose
+place: telegraph
+speaker: ROOK
+cost: 1
+line: ROOK: I don't recall it.
+nar: She looks at the assessor a little longer than the words need.
+go: ropewalk.rook.own
+
+@node ropewalk.rook.signed
+place: telegraph
+speaker: ROOK
+cost: 4
+nar: The assessor signs. Rook blots it.
+line: ROOK: H. Everybody's asked you. I shan't.
+nar: She takes one form off the spike without looking for it.
+go: ropewalk.draft.read
+
+@node ropewalk.rook.own.fail
+place: telegraph
+speaker: ROOK
+cost: 2
+line: ROOK: TELEGRAPH ACT, SECTION NINE: AN OPERATOR WHO DISCLOSES THE CONTENTS OF A MESSAGE SHALL BE LIABLE. I don't recall that either.
+nar: The grille comes down a hand's width.
+go: ropewalk.rook.menu
+
+@node ropewalk.rook.form.ok
+place: telegraph
+speaker: ROOK
+cost: 4
+do: set(said.shelf_inspect); set(heard.rook.shelf_inspect)
+line: ROOK: An insurer may inspect the original of a claim telegram at the counter, in the operator's presence, without copying. That's in the regulations too.
+line: ROOK: SHELF INSPECTED 4471/G ORIGINAL. With the time. The Board reads this book.
+go: ropewalk.draft.read
+
+@node ropewalk.rook.form.fail
+place: telegraph
+speaker: ROOK
+cost: 2
+do: set(ropewalk.rook_barred)
+line: ROOK: AN INSURER MAY APPLY IN WRITING TO THE SUPERINTENDENT AT HESK. Six to eight weeks. I'd write now.
+nar: She shuts the grille.
+go: ropewalk.hub
+
+# ---- the draft itself (Tongue, Shadow, Fist)
+@node ropewalk.draft.read
+cost: 3
+do: set(telegram.draft); set(ropewalk.yellow_time); quest(a2.wire, read)
+if: has(ropewalk.draft_misread) => clear(ropewalk.draft_misread)
+nar: Keel's hand, pressed through the paper at the stops, as far as TIME OF LOSS.
+nar: After it, smaller and rounder, in a pale ink: 9.40. Struck through in Keel's pencil. Then SEE BELOW. KEEL. Nothing below.
+inst: CANDLEMAS: Yellow. Under the sodium that ink would be nothing at all. In honest light it is yellow, and I will swear to it.
+voice: smallprint: The restrike clause was struck in yellow too. {dc: 7, when: has(clause.struck)}
+nar: The Daybook's pencil note says one hand. There are two. {when: has(ropewalk.draft_misread)}
+go: ^hub
+
+@node ropewalk.rook.wenna
+place: telegraph
+speaker: ROOK
+cost: 3
+do: set(ropewalk.wenna_wire); set(met.rook)
+nar: In paraffin the keeper's coat is oxblood. Rook looks up at it.
+line: ROOK: Wenna? No.
+line: ROOK: TALLOW KEEPER GULLET TO LAMP TRUST STOP WAGES NOT RECEIVED SIX MONTHS STOP PLEASE ADVISE STOP. The only one she ever sent. And next morning, from the hill: UNDER REVIEW STOP CRAKE. Six years in March. I don't recall it.
+go: ropewalk.office
+
+@node ropewalk.rook.spike
+place: telegraph
+speaker: ROOK
+cost: 2
+line: ROOK: There's a form gone off my spike. I don't recall which.
+nar: She writes something in the oilcloth book while she says it.
+go: ropewalk.rook.menu
+
+# ---- Eye: the impression on the pad
+@node ropewalk.pad
+place: telegraph
+speaker: ROOK
+cost: 2
+nar: Rook pushes the pad under the grille. Every form torn off since evening has left its pencil in the top sheet.
+inst: CANDLEMAS: Tilt it. Away from the lamp. Lower. There. Light lying down shows what light standing up hides.
+check: "[SMALL PRINT] Read what the pencils have left in it, deepest first." -> ropewalk.pad.ok / ropewalk.pad.fail {skill: smallprint, dc: 6, verb: read, noise: 0, do: meter(wear, 1)}
+opt: "Write nothing, and push it back." -> ropewalk.rook.menu
+
+@node ropewalk.pad.ok
+place: telegraph
+speaker: ROOK
+cost: 8
+do: set(telegram.draft); quest(a2.wire, read)
+if: has(ropewalk.draft_misread) => clear(ropewalk.draft_misread)
+nar: The deepest pencil: HARBOUR BOARD GULLET. ANTICIPATE MALICIOUS DARKENING BY WRECKERS. TIME OF LOSS.
+nar: Beside it, barely touching the paper: 9.40. A line across it pressed hard enough to cut. Then the deep hand: SEE BELOW.
+line: ROOK: Ninepence the first twelve words, if you're sending.
+go: ropewalk.rook.menu
+
+@node ropewalk.pad.fail
+place: telegraph
+speaker: ROOK
+cost: 6
+do: set(ropewalk.draft_misread); quest(a2.wire, draft)
+nar: A gale warning through a birthday through a price for herring. TIME OF LOSS, a time struck through, all one grey.
+line: ROOK: Ninepence the first twelve words, if you're sending.
+go: ropewalk.rook.menu
+
+# ---- Shadow: in at the back while she drinks at the Brine
+@node ropewalk.office.shut
+place: rope_lane
+cost: 1
+nar: Locked. Behind the blind the stove glows for nobody. {when: clock < 02:00}
+nar: Locked. Upstairs a candle goes out. {when: clock >= 02:00}
+opt: "Put a shoulder to the door." -> ropewalk.door.force ? !has(down.ropewalk) & !has(ropewalk.door_forced) {verb: pry, noise: 0.9}
+opt: "Go in through the broken door." -> ropewalk.draft.read ? has(ropewalk.door_forced) & !has(down.ropewalk) {verb: hide, noise: 0.3}
+opt: "Go round to the yard behind." -> ropewalk.back ? has(ropewalk.office_empty_now) {verb: hide, noise: 0.1}
+opt: "Knock twice, once low." -> ropewalk.knock.late ? clock >= 02:00 {verb: wait, noise: 0.2}
+opt: "Leave it." -> ropewalk.hub
+
+@node ropewalk.knock.late
+place: rope_lane
+speaker: ROOK
+cost: 2
+nar: The upstairs sash goes up an inch.
+line: ROOK: OFFICE CLOSED STOP TELEGRAMS AFTER SIX STOP. And it's past the frost.
+go: ropewalk.hub
+
+@node ropewalk.back
+place: telegraph
+cost: 2
+nar: The yard: a coal heap, a privy, a back door latched from inside.
+check: "[THE DARK] Lantern shut, across the yard and in by the back door." -> ropewalk.back.ok / ropewalk.back.fail ? !has(ropewalk.lamp_doused) {skill: dark, dc: 6, verb: hide, noise: 0.2}
+check: "[THE DARK] The street lamp is out. Across the yard and in by the back door." -> ropewalk.back.ok / ropewalk.back.fail ? has(ropewalk.lamp_doused) {skill: dark, dc: 4, verb: hide, noise: 0.2}
+opt: "Come away." -> ropewalk.hub
+
+@node ropewalk.back.ok
+place: telegraph
+cost: 4
+nar: The office is dark and smells of gum and paraffin. The half past six is eleventh down the spike, under ten others that nobody has read.
+opt: "Copy it into the Daybook and put it back on the spike." -> ropewalk.draft.read
+opt: "Take it." -> ropewalk.draft.read {do: set(ropewalk.draft_taken); give(i.draft)}
+
+@node ropewalk.back.fail
+place: telegraph
+speaker: ROOK
+cost: 6
+do: set(ropewalk.caught_back); rumour(ropewalk.caught_back, ropewalk, 1)
+nar: The coal heap slides from under a Shelf boot, loud the length of the street.
+nar: Five minutes later Rook comes in at her back door with a lantern.
+line: ROOK: TELEGRAPH ACT, SECTION ELEVEN: ANY PERSON WHO UNLAWFULLY ENTERS A TELEGRAPH OFFICE. I don't recall the rest. Out the front, please. Mind the step.
+nar: She holds the green door open with the lantern up, for the whole street to see.
+go: ropewalk.hub
+
+# ---- Fist: the front door at night
+@node ropewalk.door.force
+place: rope_lane
+cost: 2
+alt: ropewalk.door.force4 ? has(book.violence)
+do: set(ropewalk.door_forced); set(book.violence); set(book.telegraph_door); rep(trust, -1); seenas_trust = enemy; rumour(ropewalk.door_forced, quay, 1)
+nar: The door gives at the second shoulder. A whistle from the corner, and two poles at a run.
+alt: ropewalk.door.fallback ? var.runs == 0 | !runs
+do: fight(ropewalk.e.door)
+
+@node ropewalk.door.force4
+place: rope_lane
+cost: 2
+do: set(ropewalk.door_forced); set(book.telegraph_door); rep(trust, -1); seenas_trust = enemy; rumour(ropewalk.door_forced, quay, 1)
+nar: Whistles from both ends of the street: they walk in fours tonight.
+alt: ropewalk.door.fallback ? var.runs == 0 | !runs
+do: fight(ropewalk.e.door4)
+
+@node ropewalk.door.fallback
+place: rope_lane
+cost: 3
+nar: One pole low for the ankles, one level to pin.
+check: "[GRIP] Take the low pole by the brass and keep it." -> ropewalk.fight.door.win / ropewalk.fight.door.down {skill: grip, dc: 7, red}
+opt: "Put the case down and the hands up." -> ropewalk.fight.door.yield
+opt: "Run for the end of the street." -> ropewalk.fight.door.fled
+
+@node ropewalk.fx.rook
+place: rope_lane
+speaker: ROOK
+cost: 2
+nar: The upstairs sash goes up.
+line: ROOK: TELEGRAPH ACT, SECTION FOUR: THE OPERATOR MAY ADMIT ANY PERSON TO THE OFFICE ON THE BUSINESS OF THE OFFICE. I admitted this one. Go home.
+nar: The poles lower.
+go: ropewalk.fight.door.yield
+
+@node ropewalk.fx.card
+place: rope_lane
+cost: 1
+nar: The nearer pole reads the Shelf's card, which nobody has ever done, and stops fighting to finish.
+go: ropewalk.fight.door.yield
+
+@node ropewalk.fight.door.win
+place: telegraph
+cost: 3
+if: trait(m.body) == none => offer(m.body)
+nar: One Lamplighter sits on the frost holding his wrist; the other writes.
+nar: Rook at the foot of her stair with a candle, saying nothing. {when: clock >= 02:00}
+voice: pride: Item: one door, municipal green, broken by the Shelf. The Ropewalk has seen it, all quarter of a mile. {dc: 4}
+go: ropewalk.draft.read
+
+@node ropewalk.fight.door.yield
+place: telegraph
+cost: 3
+nar: The poles stand back and let the assessor through. One writes down the minutes at the spike.
+go: ropewalk.draft.read
+
+@node ropewalk.fight.door.fled
+place: rope_lane
+cost: 3
+do: meter(dread, 1)
+nar: The poles give up at the corner.
+nar: Behind, the assessor's prints in the frost, long and skidding. {when: clock >= 01:00}
+go: quay2.hub
+
+@node ropewalk.fight.door.down
+place: rope_lane
+speaker: ROOK
+cost: 30
+do: set(ropewalk.recited); set(down.ropewalk); meter(cold, 2); wet(0.1)
+if: trait(m.body) == none => offer(m.body)
+nar: The assessor comes round on the cobbles with a shawl under the head. Rook sits on her step with a candle in a jar.
+line: ROOK: HARBOUR BOARD GULLET TO MUTUAL INDEMNITY LOWER SHELF STOP TIME OF LOSS SEE BELOW STOP KEEL. You went to all that trouble for that.
+line: ROOK: There's nothing below. There was something above.
+nar: She takes the shawl back and bolts what is left of her door.
+go: ropewalk.hub
+
+# ---- Hands: the wire on the rope posts
+@node ropewalk.wire
+place: rope_lane
+cost: 2
+nar: The telegraph wire runs the street on the old rope posts, humming at the lamp.
+voice: carbon: Whatever comes down that wire to her sounder comes past this post first. {dc: 5}
+check: "[GRIP] Climb the rope post by the lamp and hang the Vane on a thread beside the wire." -> ropewalk.wire.ok / ropewalk.wire.fail ? guise != lamplighter {skill: grip, dc: 6, verb: rig, noise: 0.3}
+opt: "Fetch the lamp ladder, as a Lamplighter would, and hang the Vane on a thread beside the wire." -> ropewalk.wire.ok ? guise == lamplighter {verb: rig, noise: 0.2}
+opt: "Leave the wire to Hesk." -> ropewalk.hub
+
+@node ropewalk.wire.ok
+place: rope_lane
+cost: 20
+do: set(telegram.draft); set(ropewalk.yellow_time); quest(a2.wire, read); meter(cold, 1)
+if: has(ropewalk.draft_misread) => clear(ropewalk.draft_misread)
+nar: The Vane hangs a finger from the wire. Current comes down from Hesk, and it jerks, long and short.
+inst: THE VANE: North! No! There! Something is pulling me and it is not the wind!
+nar: The Vane spells out Rook's answer to Hesk: REPEAT 4471/G ORIGINAL STOP ERASURE AFTER TIME OF LOSS QUOTE 9.40 UNQUOTE IN SECOND HAND YELLOW INK STOP STRUCK BY SENDER STOP SEE BELOW STOP KEEL.
+go: ropewalk.hub
+
+@node ropewalk.wire.fail
+place: rope_lane
+speaker: ROOK
+cost: 6
+do: set(ropewalk.line_dead); meter(cold, 1)
+nar: The Vane swings onto the wire. Inside, the sounder buzzes and dies.
+nar: Rook comes out with a lamp and looks up at the Vane hanging from her line by its tail.
+line: ROOK: That's Hesk gone till the linesman comes. Thursday.
+nar: She goes back in without slamming the door. That is worse.
+go: ropewalk.hub
+
+# ================================================================ BEAT 12: MRS PELLOW'S ERRAND (23:00 to 23:30)
+@node ropewalk.pellow
+place: rope_lane
+speaker: PELLOW
+cost: 3
+do: set(met.pellow); quest(a2.errand, open)
+call: ropewalk.arrive
+nar: From the hill end comes a woman in housekeeper's black with a basket and, held out from her coat, a letter. Under the lamp she changes hands.
+line: PELLOW: Mind the step there. Everything on this street's a step.
+opt: "Wish her good evening and let her go by." -> ropewalk.pellow.pass
+check: "[THE DARK] Shut the lantern and follow her past the lamp, a doorway behind." -> ropewalk.pellow.follow.ok / ropewalk.pellow.follow.fail ? !has(ropewalk.lamp_doused) {skill: dark, dc: 6, verb: hide, noise: 0.1}
+check: "[THE DARK] The lamp is out. Follow her by her footsteps." -> ropewalk.pellow.follow.ok / ropewalk.pellow.follow.fail ? has(ropewalk.lamp_doused) {skill: dark, dc: 4, verb: hide, noise: 0.1}
+check: "[CONDOLENCE] Offer to carry the letter the rest of the way." -> ropewalk.pellow.carry.ok / ropewalk.pellow.carry.fail {skill: condolence, dc: 6}
+check: "[SMALL PRINT] Read the envelope while she changes hands under the lamp." -> ropewalk.pellow.read.ok / ropewalk.pellow.read.fail ? !has(ropewalk.lamp_doused) {skill: smallprint, dc: 6, verb: read, noise: 0}
+opt: "Light her way with the lantern, as the Municipal does." -> ropewalk.pellow.light ? guise == lamplighter
+
+@node ropewalk.pellow.pass
+place: rope_lane
+cost: 1
+nar: She goes past the lamp and the dark keeps her. Up the street a letter flap clicks.
+go: ropewalk.hub
+
+@node ropewalk.pellow.follow.ok
+place: rope_lane
+cost: 4
+do: set(ropewalk.door_line); quest(a2.errand, known)
+nar: At the Gannet house she pushes the letter through the flap. From inside, at once:
+line: HESTER: Thank you, Mrs Pellow. You're late. Frost makes you late.
+line: PELLOW: It does, Mrs Gannet.
+go: ropewalk.hub
+
+@node ropewalk.pellow.follow.fail
+place: rope_lane
+speaker: PELLOW
+cost: 6
+do: set(ropewalk.pellow_caught); quest(a2.errand, known); rumour(ropewalk.pellow_caught, hill, 1)
+nar: The case knocks a doorstep.
+line: PELLOW: If you're going my way, you can carry the basket.
+nar: At the Gannet door she takes the basket back and posts the letter herself.
+line: PELLOW: That part I do myself. I've been told twice. I'll be telling her who walked me down, mind. She'll ask.
+go: ropewalk.hub
+
+@node ropewalk.pellow.carry.ok
+place: rope_lane
+speaker: PELLOW
+cost: 3
+do: give(i.letter_pellow); quest(a2.errand, known); set(said.carry_letter); set(heard.pellow.carry_letter)
+line: PELLOW: Mrs Gannet. Four doors up. Into her hand, I'm told, but nobody's ever managed that. Through the flap does.
+nar: She goes back up the hill without it, walking more lightly.
+go: ropewalk.hub
+
+@node ropewalk.pellow.carry.fail
+place: rope_lane
+speaker: PELLOW
+cost: 2
+do: set(ropewalk.pellow_asked); rumour(ropewalk.pellow_asked, hill, 1)
+line: PELLOW: I'm to put it in at the door myself. She said twice.
+nar: She goes past the lamp. Somewhere up the street a flap clicks.
+go: ropewalk.hub
+
+@node ropewalk.pellow.read.ok
+place: rope_lane
+cost: 2
+do: set(ropewalk.envelope_read); quest(a2.errand, known); meter(wear, 1)
+nar: Mrs H. Gannet, The Ropewalk. By hand. Upright capitals; on the flap a blind-stamped lamp in a ring, the Trust's.
+nar: Through the paper, the shadow of a crossword grid.
+go: ropewalk.pellow.pass
+
+@node ropewalk.pellow.read.fail
+place: rope_lane
+speaker: PELLOW
+cost: 2
+nar: The assessor gets as far as "nnet".
+line: PELLOW: It isn't manners, reading other people's envelopes.
+nar: She puts it inside her coat and goes on.
+go: ropewalk.hub
+
+@node ropewalk.pellow.light
+place: rope_lane
+speaker: PELLOW
+cost: 4
+do: set(ropewalk.door_line); quest(a2.errand, known)
+line: PELLOW: Oh. You're one of hers. Then you'll know where.
+nar: The assessor lights her to the Gannet door. She posts the letter.
+line: HESTER: Thank you, Mrs Pellow. You've brought a Lamplighter. The Alderman's very good.
+nar: Mrs Pellow does not say whether the Alderman is very good.
+go: ropewalk.hub
+
+# ---- the letter, if Lamb carries it
+@node ropewalk.letter.open
+place: rope_lane
+cost: 3
+do: set(ropewalk.letter_opened)
+nar: Under the seal, nothing written: a crossword from the Hesk paper, every square filled in upright capitals.
+voice: pride: You have opened an old woman's post on a public street. The street is a quarter of a mile long and has windows. {dc: 4}
+go: ropewalk.gannet
+
+@node ropewalk.letter.deliver
+place: rope_lane
+speaker: HESTER
+cost: 2
+do: take(i.letter_pellow); set(ropewalk.letter_delivered); set(ropewalk.hester_met)
+nar: Behind the door, close, somebody has been standing.
+line: HESTER: That's not Mrs Pellow's step. {when: !has(ropewalk.letter_opened)}
+line: HESTER: Thank you, whoever you are. Mind the step that rocks. {when: !has(ropewalk.letter_opened)}
+line: HESTER: This has been opened. {when: has(ropewalk.letter_opened)}
+line: HESTER: Tell whoever opened it nine down is wrong. {when: has(ropewalk.letter_opened)}
+nar: Slow steps down a hall. A door at the back closes and locks.
+go: ropewalk.hub
+
+# ================================================================ THE GANNET HOUSE
+@node ropewalk.pip.early
+place: rope_lane
+speaker: PIP
+cost: 6
+do: set(ropewalk.pip_met); set(ropewalk.hester_met); set(ropewalk.front_room)
+call: ropewalk.arrive
+nar: A door opens halfway up the street and Pip comes out backwards, one arm in her coat.
+line: PIP: You came. I said to Nan you would.
+nar: Behind her: a stove, the crossword, a shut door with light under it.
+line: PIP: Nan. It's the assessor I said.
+line: HESTER: The Shelf writes, Pip. It doesn't call.
+line: PIP: She's like that till late. I'm on at the Brine, then the tube. Come at two. I'm home at two, and she's better at two.
+go: ropewalk.hub
+
+@node ropewalk.gannet
+place: rope_lane
+cost: 1
+alt: ropewalk.gannet.refuse ? has(ropewalk.forced_back) & clock >= 02:00 & clock < 04:30 & !has(ropewalk.pip_refused)
+alt: ropewalk.room ? has(ropewalk.front_room) & clock >= 02:00 & clock < 04:30 & !has(ropewalk.pip_refused)
+alt: ropewalk.gannet.pip ? clock >= 02:00 & clock < 03:50 & !has(ropewalk.front_room) & !has(ropewalk.pip_refused)
+nar: The brass letter flap is the only bright thing on the house.
+opt: "Knock." -> ropewalk.gannet.knock ? clock < 02:00 | clock >= 04:30
+opt: "Push Mrs Pellow's letter through the flap." -> ropewalk.letter.deliver ? count(i.letter_pellow) > 0
+opt: "Open Mrs Pellow's letter first." -> ropewalk.letter.open ? count(i.letter_pellow) > 0 & !has(ropewalk.letter_opened)
+opt: "Lift the letter flap and listen." -> ropewalk.flap ? has(ropewalk.notice_matched) & clock >= 03:00 & clock < 04:30 {verb: eavesdrop, noise: 0.1}
+opt: "Leave it." -> ropewalk.hub
+
+@node ropewalk.gannet.knock
+place: rope_lane
+speaker: HESTER
+cost: 2
+do: set(ropewalk.hester_met)
+nar: Nobody comes. A voice does.
+line: HESTER: Pip's at work. If you're the Shelf, you may write. {when: clock < 04:30}
+line: HESTER: Pip's at her tube. She'll be there till it's light. {when: clock >= 04:30}
+go: ropewalk.hub
+
+@node ropewalk.gannet.pip
+place: rope_lane
+speaker: PIP
+cost: 2
+alt: ropewalk.gannet.refuse ? var.seenas_brine == trouble | has(ropewalk.forced_back)
+nar: Pip opens the door with a cup in her hand.
+line: PIP: The Shelf. At this hour. Nan wakes me when it's time for the tube. She's never wrong. She says it's her knees.
+check: "[CONDOLENCE] Ask to sit by her stove a while. The street is cold." -> ropewalk.gannet.in / ropewalk.gannet.refuse {skill: condolence, dc: 6}
+opt: "Stand there dripping from the floor." -> ropewalk.gannet.in.floor ? guise == floor
+opt: "Remind her of last night." -> ropewalk.gannet.in ? var.tab_pip > 0
+opt: "Say goodnight." -> ropewalk.hub
+
+@node ropewalk.gannet.in.floor
+place: rope_lane
+speaker: PIP
+cost: 1
+line: PIP: You've been out on the floor. Come in before you freeze to my step.
+go: ropewalk.gannet.in
+
+@node ropewalk.gannet.in
+place: gannet_house
+cost: 1
+do: set(ropewalk.front_room); set(ropewalk.pip_met)
+go: ropewalk.room
+
+@node ropewalk.gannet.refuse
+place: rope_lane
+speaker: PIP
+cost: 1
+do: set(ropewalk.pip_refused)
+line: PIP: Not tonight. Nan's poorly.
+nar: Behind the door, two low voices, two words each.
+go: ropewalk.hub
+
+@node ropewalk.room
+place: gannet_house
+speaker: PIP
+cost: 1
+nar: Pip's front room. The shut door, light under it.
+nar: The crossword is done in capitals that sit dead on their lines. {once}
+opt: "Ask Pip to ask her nan about the Shelf." -> ropewalk.room.ask ? !seen(ropewalk.room.ask)
+opt: "Try the handle of the back room door." -> ropewalk.room.handle ? !seen(ropewalk.room.handle) {verb: pry, noise: 0.3}
+opt: "Sit by the stove and wait for the tube's hour." -> ropewalk.room.wait ? clock >= 03:00 & clock < 04:30
+opt: "Thank her and go." -> ropewalk.hub
+
+@node ropewalk.room.ask
+place: gannet_house
+speaker: PIP
+cost: 4
+do: set(ropewalk.hester_met)
+line: PIP: Nan. The assessor wants to know about the Shelf.
+line: HESTER: Local agent, Pip. Not clerk. The Shelf was very particular.
+line: PIP: Who's the clerk now, then?
+line: HESTER: Ask the Shelf. It answers everything. Is that kettle on?
+go: ropewalk.room
+
+@node ropewalk.room.handle
+place: gannet_house
+speaker: HESTER
+cost: 1
+do: rep(brine, -1)
+nar: The handle turns. The door does not.
+line: HESTER: Pip. Who's at my door?
+line: PIP: Nobody, Nan.
+nar: Pip keeps looking at the assessor.
+go: ropewalk.room
+
+@node ropewalk.room.wait
+place: gannet_house
+cost: 0
+alt: ropewalk.room.send ? clock >= 03:50 & !seen(ropewalk.room.send)
+nar: The stove ticks. Pip dozes with her knees up.
+opt: "Wait." -> ropewalk.room.wait ? clock < 03:30 +30
+opt: "Wait." -> ropewalk.room.wait ? clock >= 03:30 +10
+opt: "Get up and go." -> ropewalk.hub
+
+@node ropewalk.room.send
+place: gannet_house
+speaker: HESTER
+cost: 2
+line: HESTER: Pip. Ten to. Go and mind your tube.
+nar: Pip is in her coat before her eyes are open, waiting at the door.
+check: "[CONDOLENCE] Say you will mind her stove until she is back." -> ropewalk.room.alone / ropewalk.room.out ? !has(day.pip) & var.tab_pip == 0 {skill: condolence, dc: 6}
+check: "[CONDOLENCE] Say you will mind her stove until she is back." -> ropewalk.room.alone / ropewalk.room.out ? has(day.pip) | var.tab_pip > 0 {skill: condolence, dc: 4}
+opt: "Go out with her." -> ropewalk.room.out.go
+
+@node ropewalk.room.alone
+place: gannet_house
+speaker: PIP
+cost: 1
+do: set(said.pip_stove); set(heard.pip.pip_stove)
+line: PIP: Don't let it go out. And don't bother her.
+nar: Her boots go away down the Ropewalk at a run.
+go: ropewalk.room.keep
+
+@node ropewalk.room.keep
+place: gannet_house
+cost: 0
+alt: ropewalk.lead.room ? has(ev2.tube_thump) & clock < 04:30
+alt: ropewalk.e.late ? clock >= 04:30
+nar: The stove, and the shut door.
+opt: "Put a coal on." -> ropewalk.room.keep +5
+opt: "Leave." -> ropewalk.hub
+
+@node ropewalk.room.out
+place: rope_lane
+speaker: PIP
+cost: 1
+line: PIP: Nan doesn't like folk in when I'm out. Come on.
+go: ropewalk.room.out.go
+
+@node ropewalk.room.out.go
+place: rope_lane
+cost: 1
+nar: Pip is off toward the quay at a run.
+go: ropewalk.hub
+
+# ---- Eye, the first half: the card in the telegraph window
+@node ropewalk.notice
+place: rope_lane
+cost: 2
+nar: In the telegraph window, yellow and curled, a typed card: THE MUTUAL INDEMNITY OF THE LOWER SHELF. LOCAL AGENT, MRS H. GANNET. CLAIMS RECEIVED AT THIS OFFICE, TUESDAYS.
+check: "[SMALL PRINT] Lay the Shelf's strips against the glass, letter by letter." -> ropewalk.notice.ok / ropewalk.notice.fail ? (has(shelf.e) | has(day.pip) | has(ev2.shelf_reply)) & !has(ropewalk.notice_matched) & !has(ropewalk.pencil_machine) {skill: smallprint, dc: 6, verb: read, noise: 0, do: meter(wear, 1)}
+opt: "Leave the card to the window." -> ropewalk.hub
+
+@node ropewalk.notice.ok
+place: rope_lane
+cost: 8
+do: set(ropewalk.notice_matched)
+nar: Every R on the card has lost the end of its foot. So has every R on the strips. The y rides low on both.
+nar: On the card, every e sits on the line.
+go: ropewalk.hub
+
+@node ropewalk.notice.fail
+place: rope_lane
+cost: 6
+do: set(ropewalk.pencil_machine)
+nar: Through old glass and paraffin the R's look different. The assessor writes it down, in pencil.
+go: ropewalk.hub
+
+# ---- Hands, the first half: the stripe in the frost
+@node ropewalk.seam
+place: rope_lane
+cost: 2
+nar: Down the middle of the street, a dark stripe a hand wide where the frost will not settle. The old rope groove crosses it, white.
+check: "[SUM] Follow it, and keep to it where the rope groove crosses." -> ropewalk.seam.ok / ropewalk.seam.fail ? !has(ropewalk.pencil_office) {skill: sum, dc: 6, verb: read, noise: 0.1}
+opt: "Leave it." -> ropewalk.hub
+
+@node ropewalk.seam.ok
+place: gannet_wall
+cost: 5
+do: set(ropewalk.seam_followed); meter(cold, 1)
+nar: Past the telegraph office without turning, into the passage behind the Gannet house, to an iron grating.
+go: ropewalk.passage
+
+@node ropewalk.seam.fail
+place: rope_lane
+cost: 5
+do: set(ropewalk.pencil_office); meter(cold, 1)
+nar: Where the rope groove crosses, the dark stripe forks, and the assessor takes the straight fork to the telegraph office step. It ends there, at a door with a brass plate. The assessor writes it in the Daybook in pencil, because it may be wrong.
+go: ropewalk.hub
+
+# ================================================================ BEAT 15: THE PASSAGE (gate A9)
+@node ropewalk.passage
+place: gannet_wall
+cost: 1
+alt: ropewalk.passage.coe ? has(ropewalk.coe_watch) & clock < 04:30
+if: clock >= 01:00 => set(ropewalk.prints_passage)
+nar: A yard-wide passage: frost, a lit shutter, a back door, and an iron grating breathing warm air.
+nar: Behind, the assessor's prints, every one. {when: clock >= 01:00, once}
+check: "[THE DARK] Lantern shut, back to the wall under the shutter, and keep still." -> ropewalk.wall.wait / ropewalk.wall.fail ? clock >= 03:00 & clock < 04:30 & !has(ropewalk.wall_heard) {skill: dark, dc: 6, verb: hide, noise: 0}
+check: "[GRIP] Put a shoulder to the back room door." -> ropewalk.backdoor.ok / ropewalk.backdoor.fail ? clock < 04:30 {skill: grip, dc: 6, verb: pry, noise: 0.8}
+opt: "Wait by the door you have already shaken." -> ropewalk.wall.wait ? has(ropewalk.forced_back) & clock >= 03:00 & clock < 04:30
+opt: "Prise up the grating." -> ropewalk.grate ? has(ropewalk.seam_followed) & !has(ropewalk.grate_open) {verb: pry, noise: 0.3}
+opt: "Kneel with an ear at the open grating." -> ropewalk.grate.wait ? has(ropewalk.grate_open) & clock >= 03:00 & clock < 04:30 {verb: eavesdrop, noise: 0}
+opt: "Sweep your prints out with the coat hem on the way back." -> ropewalk.sweep ? has(ropewalk.prints_passage) {verb: hide, noise: 0.1}
+opt: "Back to the street." -> ropewalk.hub
+
+@node ropewalk.passage.coe
+place: rope_lane
+cost: 1
+nar: Lamplighter Coe stands at the passage mouth with his book open.
+go: ropewalk.hub
+
+@node ropewalk.sweep
+place: rope_lane
+cost: 6
+do: clear(ropewalk.prints_passage); wet(0.1); meter(cold, 1)
+nar: The assessor backs out sweeping the frost with the coat hem, which freezes stiff as a board.
+go: ropewalk.hub
+
+# ---- Shadow: listen through the wall
+@node ropewalk.wall.wait
+place: gannet_wall
+cost: 0
+alt: ropewalk.lead.fist ? has(ev2.tube_thump) & has(ropewalk.forced_back) & clock < 04:30
+alt: ropewalk.lead.wall ? has(ev2.tube_thump) & clock < 04:30
+alt: ropewalk.e.late ? clock >= 04:30
+do: meter(cold, 1)
+nar: The frost creaks. The light at the shutter's edge does not move.
+voice: ballast: Your feet have gone. You can stand on them a while yet. They will tell you about it later. {when: meter.cold >= 5, once}
+opt: "Keep still." -> ropewalk.wall.wait ? clock < 03:30 +30
+opt: "Keep still." -> ropewalk.wall.wait ? clock >= 03:30 +10
+opt: "Give it up and go back to the street." -> ropewalk.hub
+
+@node ropewalk.wall.fail
+place: gannet_wall
+speaker: HESTER
+cost: 2
+do: set(ropewalk.wall_heard)
+nar: The flag under the left boot rocks and knocks.
+nar: The shutter opens a finger's width. No face.
+line: HESTER: There's a flag in my passage that rocks. Whoever's on it can mind it going out.
+opt: "Go out, minding the flag." -> ropewalk.hub
+opt: "Stay where you are." -> ropewalk.wall.stay
+
+@node ropewalk.wall.stay
+place: gannet_wall
+cost: 1
+do: rep(brine, -1); set(ropewalk.forced_back)
+nar: The assessor stays. So does the light.
+go: ropewalk.wall.wait
+
+# ---- Fist: the back room door
+@node ropewalk.backdoor.ok
+place: gannet_wall
+speaker: HESTER
+cost: 3
+do: set(ropewalk.forced_back); rep(brine, -1); seenas_brine = trouble; rumour(ropewalk.forced_back, brine, 1)
+alt: ropewalk.lead.fist ? has(ev2.tube_thump) & clock < 04:30
+nar: The door bows. The bolt does not. Something heavy inside shifts an inch across a floor.
+line: HESTER: That door was hung by my husband. It's the one thing he did properly. You'll hurt your shoulder before you hurt it.
+go: ropewalk.passage
+
+@node ropewalk.backdoor.fail
+place: rope_lane
+cost: 6
+do: set(ropewalk.coe_watch); set(book.gannet_door); rep(trust, -1); meter(dread, 1); meter(cold, 1)
+nar: The boot slides on the frosted step, and the assessor sits down loud.
+nar: Lamplighter Coe walks the assessor out, writing, and stays at the passage mouth.
+go: ropewalk.hub
+
+# ---- Hands: the grating and the pipe
+@node ropewalk.grate
+place: gannet_wall
+cost: 4
+do: set(ropewalk.grate_open); meter(cold, 1)
+nar: Under the grating, a lead pipe goes up into the back room floor, breathing warm air that smells oily and sweet.
+go: ropewalk.passage
+
+@node ropewalk.grate.wait
+place: gannet_wall
+cost: 0
+alt: ropewalk.lead.grate ? has(ev2.tube_thump) & clock < 04:30
+alt: ropewalk.e.late ? clock >= 04:30
+do: meter(cold, 1)
+nar: Knees on the frost, an ear at the pipe.
+opt: "Stay down." -> ropewalk.grate.wait ? clock < 03:30 +30
+opt: "Stay down." -> ropewalk.grate.wait ? clock >= 03:30 +10
+opt: "Get up." -> ropewalk.passage
+
+# ---- Eye, the second half: the letter flap
+@node ropewalk.flap
+place: rope_lane
+cost: 0
+alt: ropewalk.lead.flap ? has(ev2.tube_thump) & clock < 04:30
+alt: ropewalk.e.late ? clock >= 04:30
+do: meter(cold, 1)
+nar: Behind the flap, a dark hall the length of the house, and light under the far door.
+opt: "Hold it." -> ropewalk.flap ? clock < 03:30 +30
+opt: "Hold it." -> ropewalk.flap ? clock >= 03:30 +10
+opt: "Let it down." -> ropewalk.hub
+
+# ---- the four o'clock: each route's last step, then the peak
+@node ropewalk.lead.room
+place: gannet_house
+cost: 1
+do: ropewalk_heard = tongue
+nar: Under the floor, toward the back, something draws a breath.
+go: ropewalk.e
+
+@node ropewalk.lead.wall
+place: gannet_wall
+cost: 1
+do: ropewalk_heard = shadow
+nar: The light at the shutter's edge brightens.
+go: ropewalk.e
+
+@node ropewalk.lead.fist
+place: gannet_wall
+cost: 1
+do: ropewalk_heard = fist
+nar: A shoulder still to the door that would not give.
+go: ropewalk.e
+
+@node ropewalk.lead.grate
+place: gannet_wall
+cost: 1
+do: ropewalk_heard = hands
+nar: The warm air in the pipe stops, and starts again, stronger.
+go: ropewalk.e
+
+@node ropewalk.lead.flap
+place: rope_lane
+cost: 1
+do: ropewalk_heard = eye
+nar: The line of light under the far door widens, and narrows, as somebody crosses it.
+go: ropewalk.e
+
+# ---- the protected moment (REWORK-PLAN 1.4, item 10; ACT2-PLAN 9.5): two lines, no voice
+@node ropewalk.e
+cost: 3
+do: set(typist.heard); quest(a2.typist, heard); clear(ropewalk.pencil_office); clear(ropewalk.pencil_machine)
+nar: In the back room of the Gannet house, someone is typing.
+nar: Every e comes down late.
+go: ropewalk.e.after
+
+@node ropewalk.e.after
+cost: 3
+nar: A bell. Under the street the pipe coughs once, going away toward the quay.
+inst: THE DAMP: Something went down that pipe wet. {when: has(ropewalk.grate_open) & at(gannet_wall)}
+opt: "Knock." -> ropewalk.e.knock {verb: wait, noise: 0.3}
+opt: "Say nothing." -> ropewalk.e.room ? at(gannet_house)
+opt: "Say nothing, and go." -> ropewalk.e.leave ? !at(gannet_house)
+
+@node ropewalk.e.knock
+speaker: HESTER
+cost: 2
+do: set(ropewalk.hester_met)
+nar: The typing stops.
+line: HESTER: It's late for callers. Or early. I never know which, at four.
+go: ropewalk.e.knock.next
+
+@node ropewalk.e.knock.next
+cost: 0
+alt: ropewalk.e.room ? at(gannet_house)
+go: ropewalk.e.leave
+
+@node ropewalk.e.leave
+place: rope_lane
+cost: 2
+nar: Out on the Ropewalk the frost holds everyone's prints, the assessor's among them.
+go: ropewalk.hub
+
+# ---- Pip comes back from the tube (only if Lamb kept her stove)
+@node ropewalk.e.room
+place: gannet_house
+speaker: PIP
+cost: 15
+nar: Pip comes in at twenty past, a strip rolled in her fist.
+line: PIP: It thumped. It's never said attend. Was she quiet?
+opt: "Tell her what you heard." -> ropewalk.e.told {do: set(said.told_pip); set(heard.pip.told_pip)}
+opt: "Say she was quiet." -> ropewalk.e.quiet {do: set(said.pip_quiet); set(lied.pip_quiet); set(heard.pip.pip_quiet)}
+
+@node ropewalk.e.told
+place: gannet_house
+speaker: PIP
+cost: 3
+nar: Pip looks at the back room door.
+line: PIP: Nan does the crossword.
+nar: She sits down by the stove in her coat.
+go: ropewalk.hub
+
+@node ropewalk.e.quiet
+place: gannet_house
+speaker: PIP
+cost: 2
+line: PIP: She always is.
+nar: She lays the strip on the table beside the crossword, and looks at the two of them.
+go: ropewalk.hub
+
+@node ropewalk.e.late
+place: rope_lane
+cost: 1
+nar: The light at the back room shutter is out.
+go: ropewalk.hub

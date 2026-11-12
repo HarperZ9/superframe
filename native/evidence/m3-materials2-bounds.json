@@ -1,0 +1,68 @@
+{
+ "schema": "raw-native.evidence/1",
+ "criterion": "M3 dated addition 6 (materials), second stage, by the author's decision of 2026-10-10: \"keep engine versions, and improve them.\" The 8-harmonic iridescence and the symmetric clearcoat and transmission weights stay the default; the specification's forms stay behind Material::specExact only as a comparison control. This file sets bounds on where the engine's forms still err, against references closer to the physics than the existing ones.",
+ "written": "2026-10-10, after exploration probes (recorded below as exploration, not results) and before any change to the material model",
+ "exploration": {
+  "iridescence": "Against an exact polarized Airy reference (dielectric base, real indices, s and p averaged, CIE 1931 by the Wyman-Sloan-Shirley fit, white-balanced), the fast path errs by up to 0.16 to 0.26 per channel at cos 0.1 to 0.3, and by 0.02 to 0.03 at normal incidence. The existing spectral reference shares the fast path's Schlick interfaces, so it agrees with the fast path to 0.03 and misses this.",
+  "clearcoat": "A white metal (isotropic or anisotropic) under a clear coat loses up to 23% of its energy with the default coat (0.13 with the specification's form): light the coat reflects back down is never returned. The worst case is at grazing view under a smooth coat.",
+  "volume": "Beer-Lambert attenuation is applied as exp(-thickness / distance * ln c) for every direction; the path through the medium is thickness / |cos theta_t|, so oblique and rough transmission is attenuated too little."
+ },
+ "checks": {
+  "iridescence_exact": {
+   "what": "the iridescent Fresnel against a float64 exact reference: polarized Airy summation of a film on a dielectric base (indices 1.33, 1.5 and 2.0), film ior 1.2 to 2.0 by 0.2, thickness 100 to 1000 nm by 50, cos theta 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7 and 1, 380 to 780 nm by 1 nm, the same colour matching fit, white-balanced so a constant spectrum stays grey",
+   "bound": "max |difference| per channel <= 0.04",
+   "control": "the present fast path (Schlick interfaces) and the specification's two-harmonic form must both fail it"
+  },
+  "clearcoat_energy": {
+   "what": "white metal, anisotropy 0, 0.3, 0.6 and 1.0, base roughness 0.2, 0.6 and 1.0, under clearcoat 0.5 and 1 with coat roughness 0.05, 0.3 and 1.0, view cosine 0.05, 0.2, 0.5 and 1, azimuth 0, 45 and 90 degrees from the anisotropy direction, albedo by the test_pbr_energy quadrature",
+   "bound": "|albedo - 1| <= 2e-2 (the anisotropic furnace's bound) and albedo <= 1 + 1e-3",
+   "control": "the specification's coat (specExact) must fail it"
+  },
+  "volume_path_length": {
+   "what": "energy transmitted into a volume and carried to the depth of its thickness: the rough dielectric interface's transmission (ior 1.5, roughness 0.05, 0.25, 0.5 and 1, view cosine 0.1 to 1 by 0.1) with Beer-Lambert attenuation along each refracted direction's own path, thickness / |cos theta_t|, integrated by quadrature over the refracted directions (the reference); attenuation colour 0.5 at distances giving thickness / distance = 0.25, 1 and 2",
+   "bound": "|model - reference| <= 5e-3 absolute, per channel, at every point",
+   "control": "attenuation applied without the path-length term (the present model) must fail it"
+  },
+  "no_regression": {
+   "what": "test_pbr_energy --full, test_pbr_reciprocity and the GPU material parity on WARP and SwiftShader after the changes",
+   "bound": "every existing bound still met"
+  }
+ },
+ "not_covered_yet": "Thin-walled transmission against a path-traced thin slab (two rough interfaces with internal bounces), and iridescence on metal bases against complex indices. Both are named here so they are not forgotten; each gets bounds before its own first run.",
+ "does_not_prove": "That the forms match other renderers or the Khronos sample viewer; perceptual differences; anything about textures or normal maps.",
+ "method_note_1_2026_10_11": {
+  "written": "2026-10-11, before the code below and its first run; the clearcoat_energy bound and its control are unchanged",
+  "table_axis": "The split-albedo tables A and B move from a theta axis to u = sqrt(mu), 128 columns, as the sheen table did. Run clearcoat-4 traced a 0.4% shortfall of E at view cosine 0.02 to the theta grid's coarseness at grazing. The means Aavg and Bavg are recomputed from the new tables. The anisotropic and dominant-direction tables keep their axes.",
+  "compensation": "The coat's weighting of the base, (1 - c E_c(mu_o))(1 - c E_c(mu_i)), stays. Light the coat reflects back down is returned by a reciprocal lobe added to the smooth class: f = D(mu_o) D(mu_i) / (pi Dbar), per channel, with D(mu) = c (1 - c E_c(mu)) Q(mu) and Dbar = 2 * integral of D(mu) mu dmu. Q(mu) is the base's reflectance weighted by the coat's albedo at the reflected direction: the integral of f_base(o, i) E_c(mu_i) cos over i. For a base of albedo E_b the layered albedo is then c E_c + (1 - c E_c) E_b, which is 1 for a white base and at most 1 otherwise.",
+  "how_Q_is_read": "E_c(mu_i) is represented by its values at 9 nodes on u = sqrt(mu) with piecewise-linear hats in u. New tables hold the white isotropic GGX lobe's energy in each hat, split by Schlick like A and B (32 view columns on u x 32 roughness rows x 9 hats x 2), and the hats' cosine moments against 1, A and B (32 roughness rows x 9). Q's specular part is read from the first, the multiple-scattering and diffuse parts from the second. The averages in Dbar come from the same tables (hat-by-hat products). An anisotropic base reads the isotropic tables at alpha = sqrt(alpha_x alpha_y); if the anisotropic points fail with that, the run is recorded and an anisotropic table is the next attempt.",
+  "gpu": "pbr.wgsl gets the same lobe and tables; the GPU material parity bound is unchanged.",
+  "image_lighting": "iblResponse adds D(mu_o) to the irradiance weight, which is the lobe's response to a uniform environment.",
+  "not_covered": "Sheen between coat and base, iridescence and transmission do not enter Q; the bound tests a white metal base only. Conservation (test_pbr_energy, albedo at most 1 + 1e-3 for every family) still applies to every family."
+ },
+ "method_note_2_2026_10_11": {
+  "written": "2026-10-11, after runs clearcoat-5 and clearcoat-6 (recorded in evidence/m3-materials2-runs.json) and before the change below runs",
+  "finding": "With the compensation lobe and projected hat coefficients, every isotropic point passes (albedo 0.9948 to 1.0001). The anisotropic points exceed 1 + 1e-3 by up to 3.1e-3. The same white anisotropic metal without a coat already reaches 1.0033: the coat passes the base's own furnace error through. A quadrature probe puts that error in the anisotropic split-albedo table A4 + B4 itself: -0.003 at normal view for anisotropy 0.6 (linear interpolation in k of a quantity that depends on k^2) and +0.018 at view cosine 0.05 across the anisotropy direction (the theta axis is coarse at grazing).",
+  "change": "The anisotropic tables (A4, B4 and the hat tables HA4, HB4 on the same grid) change two axes: view u = sqrt(mu) in place of theta, and anisotropy k^2 in place of k. Grid sizes, sample counts and every bound are unchanged. This departs from method note 1, which kept the anisotropic axes; recorded here before the run.",
+  "bounds": "Unchanged: clearcoat_energy |albedo - 1| <= 2e-2 and albedo <= 1 + 1e-3; the anisotropic furnace in test_pbr_energy keeps its 2e-2."
+ },
+ "method_note_3_2026_10_11": {
+  "written": "2026-10-11, after run clearcoat-7 and before the change below runs",
+  "finding": "After note 2 every point over 1 + 1e-3 (26 of 864, worst 1.00265) sits where the same base without a coat is already over it (worst 1.00269). The coat compensation adds nothing there. The base's excess is the A4 + B4 table: at grid nodes it reads about 5e-4 to 1.4e-3 low or high (1,024 samples), and between azimuth nodes up to 2.9e-3 low (a concave function of the azimuth read linearly).",
+  "change": "The azimuth axis of the anisotropic tables becomes v = sin^2(phi) (8 nodes), since the lobe depends on the azimuth through cos^2 and sin^2. Sample counts unchanged.",
+  "if_it_still_fails": "The excess part of clearcoat_energy stays an open failure, recorded with the uncoated base's own figure beside it; the next step would be more samples per anisotropic table entry, which costs table build time in every test."
+ },
+ "method_note_4_2026_10_12": {
+  "written": "2026-10-12, after exploration probes (listed below; none is a checked run) and before the committed table, the loader and the checked run exist. Coordinator decision of 2026-10-11, recorded in the M3 progress log: take the cost of a denser anisotropic table, generate it once, commit it with its hash and its generator, and check a sampled subset in CI against the generator. The bound is unchanged.",
+  "exploration": [
+   "Probes changed one table axis at a time and ran test_pbr_improve --strict (all 864 points). From the state of run clearcoat-final (mu 32, azimuth 8, roughness 24, k 12, 1,024 samples; excess 2.65e-3): 16,384 samples, excess 1.82e-3; then 16 azimuth nodes, 1.29e-3; then 48 roughness rows, 1.19e-3. 32 azimuth nodes, 24 k nodes and 128 mu columns each moved it by under 1e-4.",
+   "The remaining point (view cosine 0.05, azimuth 90 degrees, anisotropy 1, roughness 0.2) is the check's own quadrature, not the table. The white lobe's single scattering there reads 0.528169 with the 384 x 192 rule, 0.526347 with 384 x 768, 0.526350 with 768 x 384, and 0.526342 with 1536 x 768 and 3072 x 1536. The 192-node azimuth rule under-resolves a lobe with alpha_x = 1 and alpha_y = 0.04, by 1.8e-3. The table read there is 0.526443, within 1e-4 of the converged value.",
+   "With the 768 x 384 rule at anisotropic points, the old tables give an excess of 2.62e-3 (the rule alone does not pass the check), and the table with 16 azimuth nodes, 48 roughness rows and 16,384 samples gives 3.77e-4."
+  ],
+  "change_table": "The anisotropic split-albedo table (A4 and B4) moves to 32 view columns on u = sqrt(mu), 16 azimuth nodes, 48 roughness rows and 12 nodes on k^2, with 16,384 VNDF samples per entry (294,912 entries per table). tools/pbr_tables/aniso_gen.cpp generates it once, with the same splitAn code the library ran before. The result is committed as float32 little-endian, A4 then B4, in src/renderer/data/aniso_albedo.f32, with its SHA-256 in the matching .sha256 file. CMake embeds the file into the library, and the library reads it there instead of computing it. The means Aavg2 and Bavg2 are still computed from the table at load.",
+  "change_hats": "The coat compensation's anisotropic hat tables (HA4, HB4 and their means) stay on the old grid (32, 8, 24, 12, 1,024 samples), still built at load. They get their own grid constants in the library and in pbr.wgsl. Densifying them would cost 18 tables of the new size (about 21 MB as float32) for no measured gain. If the checked run fails, that choice is the first thing to revisit.",
+  "change_reference": "The clearcoat_energy check integrates anisotropic points with a 768 x 384 rule (radial x azimuth). Isotropic points keep 384 x 192. The convergence figures above are the justification. The 384 x 192 result is also recorded for the same table, so the effect of the rule change on the check stays visible.",
+  "ci_check": "test_pbr_aniso_table runs in ctest. It hashes the embedded bytes and compares the hash with the committed .sha256 file. It regenerates a seeded sample of 64 entries with the generator code and compares them with the embedded values within 1e-6 absolute (float32 rounding is under 6e-8; the tolerance allows libm differences between compilers). Control: one flipped bit in a copy of the data must fail the hash, and an entry generated at 1,024 samples must miss the tolerance.",
+  "bounds": "Unchanged: clearcoat_energy |albedo - 1| <= 2e-2 and albedo <= 1 + 1e-3; the anisotropic furnace in test_pbr_energy keeps its 2e-2; GPU material parity keeps |gpu - ref| <= 1e-3 |ref| + 1e-5.",
+  "does_not_prove": "That the 768 x 384 rule converges at every grid point (it is checked at the points above); that a coarser table built with a better interpolant would not do as well."
+ }
+}

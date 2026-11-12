@@ -4,6 +4,8 @@
 
 Added:
 
+- `native/`: the C++23 renderer, formerly the raw-native repository, with its history. Ten of its workflows run from here as `native-*`; they start only when `native/` changes.
+- `games/low-water/`: Low Water, formerly a private repository, with its history. The engine it reads is now the sibling `native/` folder, so no path points at a workstation. `npm run test:games` runs 256 tests; six that need a plate bake skip where the bake is absent.
 - `packages/studio-libs`: the Studio primitives now live here with their history. The parity test against the site skips when no site checkout sits beside it.
 - `packages/superstack` and `packages/reconcile`: the two engine repositories now live here with their full history. Their old repositories are archived and point at this one.
 - `packages/`: the instruments under the engine, each with its known-answer tests. See `packages/README.md`.

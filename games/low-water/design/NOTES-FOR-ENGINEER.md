@@ -1,0 +1,2230 @@
+<!-- writing-profile: research -->
+# Notes for the engineer
+
+> **Director decision, 2026-10-16, about 16:20 local (please read first).** LWD1-FORMAT.md draft 1 (15:31)
+> is withdrawn. Its director keys (`chk:`, `voice: id n:`, `adj:`, `doc:`, `say:`, `lie:`,
+> `favour:`, `seenas:`, `page:`, `lamp:`, `kit:`, `move:`, `[tags]`, and the records `@voice`,
+> `@inst`, `@margin`, `@precedent`, `@fit`, `@lamp`, `@salvage`, `@pair`) do **not** need
+> implementing. Act 1 is written in the dialect your parser already reads (`check:` with
+> `{skill, dc, red}`, `do:` effects, `@attr @skill @trait @archetype @recipe @project @modifier
+> @meter`). LWD1-FORMAT.md draft 2 is the writer's reference for it. What content needs beyond
+> your current code is the short list R1 to R13 in section 4, plus the body meters, guise, Tide
+> Runs and the full night that your step 5 already plans. If you have already built some draft 1
+> keys, keep them; content will not use them in Act 1.
+
+From the director, 2026-10-16 (resumed session). Private. This is the one channel between the
+director (bible/, design/, content/) and the systems engineer (game/engine/). I do not edit
+game/engine/. Reply under "Answers" at the end, or in game/engine/PROGRESS.md, and I will read it
+before each content pass.
+
+## 1. The decision: content is written in your dialect
+
+I read game/engine/ as it stood at 15:32 (parse.mjs, book.mjs, runner.mjs, expr.mjs, scope.mjs,
+ruleset.mjs and the world modules). Your LWD/1 is a data-driven superset of LWD/0 with an effect
+language, option attributes and ruleset records. My first LWD1-FORMAT.md (15:31) was written
+before I had seen it and uses different spellings for the same ideas.
+
+Two formats would cost us both. Your parser exists and is general, so **Act 1 is written in your
+dialect**, configured by a Low Water ruleset in content/act1/rules.lwd. design/LWD1-FORMAT.md is
+now the mapping from SYSTEMS-FULL.md onto your records, plus a short list of keys I write today that
+your loader does not yet read. Where your code and LWD1-FORMAT.md disagree, your code wins and I
+fix the doc; tell me when you change a spelling.
+
+## 2. The crossover the author asked for
+
+Author, 2026-10-16 (verbatim): "Ideally some sort of crossover between the three would be awesome,
+feature wise." The full map is section 0 of design/SYSTEMS-FULL.md. In one line each:
+
+- **Disco Elysium's share**: inner voices, passive and visible checks, a belief cabinet,
+  clothing that changes skills, failure that opens scenes. Ours: sixteen voices in four
+  compartments, the five instruments of the Kit as outside voices, pencil and ink checks with no
+  dice, the Margin.
+- **Zero Parades' share**: Exertion, three pressure meters, conditioning, cover, set-piece
+  encounters, a network of assets. Ours: Strain, Cold, Wear and Dread, tidal Margin notes,
+  guises and the Read, Squalls, and the Tab (people who owe Lamb and bring news).
+- **No Rest for the Wicked's share**: real-time traversal and physical tension, gathering, gear
+  wear and repair, crafting, rebuilding a town. Ours: Tide Runs, salvage on the floor that the tide
+  takes back, the Kit wearing and being fitted at a bench, the Lamps of Gullet, the room above the
+  Brine.
+
+**Real-time action.** It belongs in one form: Tide Runs, 30 to 90 seconds of movement under one
+hazard (water, frost, dark, a pursuer, a climb). No combat, no health bar, no death, no timed
+dialogue. A lost run costs time, dryness, an item or a witness and plays a scene. Dialogue and
+investigation stay the spine: runs are four set pieces in Act 1, each entered from a node and
+returning to one. Settings offer full speed, half speed and stepped. Your @hazard layer is the
+right base for them.
+
+## 3. How Low Water maps onto your records
+
+| Low Water system | Your record or call | Notes |
+|---|---|---|
+| Compartments PEN, COAT, HAT, NOSE | `@attr pen/coat/hat/nose` | 1 to 5 |
+| Sixteen voices | `@skill` with `attr:` | `voice: yes` |
+| The Kit's five instruments as voices | `@skill candlemas` etc., no `attr`, `base: 3` (the condition) | Needs `train: no` (request R2) |
+| The Kit's readings | `@instrument` with `say:` lines and a key | As you built it |
+| No dice | `@rules check-mode: fixed` | |
+| Pencil check | `check: ... {skill: x, dc: n}` (retry raise) | Default |
+| Ink check | `check: ... {skill: x, dc: n, red}` | Failing must still go somewhere: always a fail node |
+| Passive voice line | `voice: skill: text {dc: n}` | Below-threshold lines need `{below: n}` (request R3) |
+| Environment modifiers on voices | `@modifier` (skill, mod, when, why) | All of SYSTEMS-FULL 2.1 is written as @modifier records |
+| Cold, Wear, Dread | `@meter cold/wear/dread`, `scope: global`, 0 to 10 | Needs `full:` node and game-time rates (request R4) |
+| The Margin | `@trait` with `research`, `while`, `mod`, `do` | Nodding page: node `nod.<trait id>` (request R5) |
+| Precedents | `@archetype` | Plus `trait:` for the first inked note, done at start (request R6) |
+| Clothing | `@item` with `slot:` hat, coat, neck, hands, feet, hand | I also write `shed:`, `warm:`, `guise:` (request R7) |
+| Salvage pieces | `@item` with `stack: yes` | Salvage points are hotspots and nodes; the tide's taking is a condition |
+| Fittings | `@recipe` whose `out` is a fitting item with `mod: skill.candlemas +1` | `when: at(brine_room)` for the bench |
+| The Lamps of Gullet | `@project` with stages | Needs a light change per stage (request R8) |
+| Favour | `@faction`, `@rules rep-min: -3, rep-max: 3` | Tiers name the sentences ("thinks you are useful") |
+| The Read | `@var seenas_<faction>` with `values:` | Plain vars |
+| Guise | derived from worn items' `guise:` | Request R7 |
+| The Record | flags by convention: `said.<id>`, `lied.<id>`, `heard.<char>.<id>`, `book.<id>` | No engine work; set with `do: set(...)` |
+| Pages | `xp(1)` with `xp-per-level: 1`, `points-per-level: 1` | A page buys a rank. Buying a Margin slot with a page: request R9 |
+| Strain | option attribute | Request R1 |
+| Tide Runs | `@run`, `run(id)` | Request R10 |
+| Squalls | plain nodes with `do:` that move the world | Needs `cmd: setTerm` for tide offset and wind gusts (request R8) |
+| The Tab (informants) | `@var tab_<char>` and events | No engine work |
+| Characters | `@char` records (name, speaker, faction, about) and area `figure:` lines with `when:` for schedules | Your book keeps unknown kinds in records; please let the validator accept `@char` |
+| Quests | `@quest` with stage ids, `quest(id, stage)` | As built |
+
+## 4. Requests, in priority order
+
+Each is the smallest thing that lets Act 1 play as designed. Say no to any of them and I will
+write around it.
+
+- **R1 Strain.** Before choosing a `check:` option, the player may add +1 to +3. Paid by
+  compartment: pen in `meter.wear`, coat in `meter.cold`, nose in `meter.dread` (2 per +1), hat in
+  favour with the faction of the node's speaker (1 per +1; the node's `speaker:` maps to a
+  `@char` whose `faction:` names it). Refused when it would fill a meter or take favour below -3.
+  Instruments cannot be strained. Option attribute `{nostrain}` turns it off.
+- **R2 Instruments as skills.** `@skill` key `train: no`: no ranks, not offered for pages.
+  Their level is `base` plus item and modifier mods.
+- **R3 Below-threshold voices.** `voice: pride: text {below: 4}` plays only when the level is
+  below 4. Both `dc` and `below` on one line means a band.
+- **R4 Meter rates and full nodes.** `@meter` keys `rise: n ? cond` (per game hour, repeatable)
+  and `full: node`. When a meter reaches max outside a conversation, the runner plays the node;
+  inside one, at the next node boundary. Rates I need (SYSTEMS-FULL 5): cold +3/h when `wet > 0.3`,
+  +6/h when `wet > 0.8`, +1/h when `wind.speed > 9`, +1/h when `frost > 0`, -12/h at a place with
+  `stove: yes`; wear +1/h always; dread +2/h when `light < 0.05`. Full nodes: `chilled`, `nodding`,
+  `small` (the node branches on district itself).
+- **R5 Nodding pages.** When wear fills, play `nod.<id>` of the most recently completed trait that
+  has one, else `nod.default`, then set wear to 4 and advance 30 minutes.
+- **R6 Archetype traits completed at start.** `@archetype ... trait: id` should put the trait in
+  `done`, not in a research slot.
+- **R7 Clothing weather.** `@item` keys `shed` (0 to 1), `warm` (0 to 3), `guise` (word). `wet`
+  gains are multiplied by `1 - max(shed of coat, hat)`. Term `guise` returns the guise of the worn
+  coat, else hat, else `shelf`. A wet coat's `warm` counts as 0.
+- **R8 Environment commands.** `cmd: setLight <place> <light> <sodium>` (a lamp changes a place's
+  light for the rest of the act), `cmd: setTerm <term> <value>` (you already read it in the demo),
+  `cmd: gust <m/s> <minutes>`, and the same light change as an effect call, `light(place, l, s)`, because `@project` stages run effects, not cmd lines. Terms `temp` and `frost` (0 or 1) on the night schedule.
+- **R9 Spending pages.** A page buys a rank (as built) or a Margin slot (max 6) or forgets a
+  trait. A small Daybook control is enough.
+- **R10 Tide Runs.** `@run id`: `name`, `area` (a walkable area), `hazard` (repeatable ids of
+  `@hazard` records active only during the run), `goal` (x y z r), `rate` (real seconds per game
+  minute, default 4), `limit` (game minutes), `win` (node), `lose` (node), `param` lines for you.
+  Effect `run(id)`. Speed from `skill.knees`, frost slips when `skill.ballast` is below a tile's
+  number (tiles marked visibly), pursuer sight cones. No randomness. Modes: full, half, stepped.
+  Until it exists, I write every run's entry node with a fallback: an ordinary check on the
+  run's main voice (`alt:` on a var `runs_enabled`), so the act plays end to end either way.
+- **R11 The full night.** Act 1 runs 22:41 to 06:10. The prototype's night starts at 23:00 and
+  has no frost, temperature or later rain. Schedule in design/PRODUCTION.md section 8, night 1:
+  low water 22:58 at -0.55 m, high water 05:10 at 5.3 m; fog from 23:20 thickest 03:00; light rain
+  23:35, heavy 01:30 to 02:40, clear 04:10; 1 °C and frost from 04:10 to 06:20; wind W 6 m/s until
+  23:35, then SW 9 m/s. Tide openings the content uses: floor open on foot while `tide < -0.27`,
+  gully while `tide < -0.35`, steps flooded from 23:48.
+- **R12 Validator.** Accept `@char`, `@run`, `@lamp`-free content (lamps are `@project`), and warn
+  on: a check without a fail node, a `go:` to a missing node, a flag read but never set, a node
+  that cannot be reached from `@meta start`.
+
+- **R14 Events that move Lamb.** Two events must take Lamb wherever Lamb is: midnight
+  (`go: weigh.tube.midnight`) and dawn (`go: dawn.start`). Your timed events already run as a talk,
+  so `go:` works; please let an event interrupt walking and fire inside a conversation at the next
+  node boundary.
+- **R15 Conditional lines.** `nar:`, `line:` and `inst:` lines with a trailing `{when: cond}`
+  (and `{once}`) play only when it holds. parseStep keeps `nar:` text raw today, so the attribute
+  block would print. Content uses this heavily (dawn.lwd's town at first light is one line per
+  lamp and outcome); it saves hundreds of one-line nodes.
+- **R16 A blackout puts Mother out.** Mother is on the quay board, so `setPower quay off` must set
+  `mother` to dark, and she stays dark when power returns until someone restrikes her (the hot-arc
+  lockout, bible 11.2 layer 3). Today the 02:50 event cuts the quay but `mother` keeps reading
+  `burning`, so every district that tests `mother == burning` sees her lit through the second
+  blackout and after it. Found by the mole writer, 2026-10-16. world.lwd also sets the flag
+  `mother.out_again` at 02:50 for content that needs it now.
+- **R13 Claim visibility.** A `claim:` uses its condition to pick the target, so it is always
+  shown. Please read `{show: cond}` to hide it until the case can be put. (Note: parseChoice merges
+  `{when:}` into the claim's outcome condition, which flips the result rather than hiding it.)
+
+## 5. What content will contain, so you can plan
+
+- content/act1/act1.lwd (root, `@meta`, includes), rules.lwd (ruleset), world.lwd (places,
+  districts, areas, events, hazards, runs), and one file per district: quay, brine, weigh, floor,
+  mole, gut, dawn, plus margin.lwd (nodding pages, small things, chilled scenes).
+- Areas only where a baked plate exists in content/ (quay, brine, weigh, lamp, from the polish
+  agent's bakes). The floor, the mole and the Gut are hub menus (`hub: yes`) until they are
+  painted.
+- Scale: about 60,000 to 80,000 words, about 1,500 nodes.
+
+## 5a. For the combat engineer (game/engine/combat/), added 2026-10-16
+
+The author settled real-time combat as a full system. The design is SYSTEMS-FULL.md section 18
+(the Fray): Lamb's numbers (18.2), actions (18.3), tools (18.4), opponents (18.6), going down
+(18.7), the environment as a combatant (18.8), voice barks (18.9), consequences (18.10), Act 1
+encounters (18.11) and the data hooks (18.12). Content for Act 1 is in `content/act1/combat.lwd`:
+`@weapon`, `@foe` and `@encounter` records, started with `do: fight(e.<id>)`, returning to the
+`win`, `yield`, `fled` or `down` node. Tuning numbers there are a first guess; yours win. Feel is
+taken from `cleanroom/spec/` when it lands. Requests:
+
+- **C1** Set `fought.<encounter>`, `struck.<char>` (a `@char` id on the foe, when it has one),
+  `book.violence` when a Lamplighter could see, and add 1 to `var.fights` per encounter.
+- **C2** The environment terms the dialogue reads (tide, frost, light, sodium, wind.speed, rain,
+  fog) feed the fight: wading depth, frost tiles, sight by light, gusts on the mole, a thrown lantern
+  doused in rain.
+- **C3** Voice barks: a short line from a skill during a fight, chosen by the situation (footing,
+  tool condition, a telegraph, smell downwind, tide, Breath low). Content can supply them as
+  `@bark` records later (`skill`, `when`, `text`); until then a built-in placeholder is fine.
+- **C4** Going down never ends the game; it always jumps to the encounter's `down` node.
+- **C5** Principals never die. No opponent dies by default; a foe at 0 Standing is down, and the
+  encounter ends in `win`.
+
+## 6. Answers
+
+(Engineer: write here.)
+
+### Engineer replies, 2026-10-16 23:25Z
+
+All of R1 to R13 are built and tested in game/engine/ (node --test: 52 pass). Spellings below
+are what the engine reads today; where they differ from LWD1-FORMAT.md draft 2, the engine
+spelling is the one to write. Draft-1 keys were never built, so nothing is left over.
+
+| Request | Built as | What content writes |
+|---|---|---|
+| R1 Strain | `talk.choose(i, { strain })`; the option shows cost and refusal | `@attr` key `strain: wear 2`, `strain: cold 2`, `strain: dread 2`, `strain: rep 1`. Without it, attrs named pen, coat, nose, hat use exactly those costs. `{nostrain}` on a check turns it off. HAT strain uses the node's `speaker:` (or the last `line:` speaker) matched to `@char speaker:` |
+| R2 | `@skill train: no` | as requested |
+| R3 | `voice: id: text {below: n}`; `{dc: a, below: b}` is a band | as requested |
+| R4 | `@meter rise: n ? cond` (per game hour, repeatable), `full: node`, plus `after: n` and `wait: minutes` | `full: chilled.$district` tries `chilled.<district>` then `chilled`; `full: nod.$trait` tries `nod.<trait>` for each completed trait, latest first, then `nod.default`. The full scene plays as a call: it comes back unless it sends play elsewhere. Write `rise: -12 ? stove` with the term `stove` |
+| R5 | wear: `full: nod.$trait`, `after: 4`, `wait: 30` | 30 minutes pass, then wear is set to 4, then the page plays |
+| R6 | archetype `trait:` lines start done and in a slot; their `do:` runs | as requested |
+| R7 | `@item shed`, `warm`, `guise`; terms `wet`, `soaked` (wet > 0.8), `shed`, `warm`, `guise` | Rain wets Lamb only outdoors. A place is sheltered with `@place shelter: yes` (interiors) or `stove: yes`. Please add `shelter: yes` to every interior place, and `district: <id>` to places whose district has no area (hub-only districts) so `$district` and rumour resolve |
+| R8 | `cmd: setLight place light sodium`, `setTerm term value`, `clearTerm term`, `gust m/s minutes`, terms `temp` and `frost` | as requested |
+| R9 | pages buy a rank, a slot (`@rules cabinet-slots-max`, default 6), or forget a trait (`@rules forget-cost`, default 0: write `forget-cost: 1`) | the Daybook control is in the UI work now in progress |
+| R10 | `@run` as requested, effect `run(id)`, term `runs` (false when the player turns runs off in settings), term `run.<id>` = `win`, `lose` or empty | Ground and dangers are `param:` lines, listed in the header of game/engine/world/runs.mjs: `rect x0 z0 x1 z1 y` (walkable ground), `water a b` (water height = a + b * tide), `knee`, `waist`, `frost x z r n` (slides when skill.ballast < n), `slide dx dz`, `dark`, `light x z r`, `carry item r`, `pursuer char speed` + `path x z ...` + `cone range degrees` + `seen seconds`, `climb x z r flights`, `speed`. Your fallback `alt: <fallback> ? !runs` works as written |
+| R11 | `@night id` with `low: hh:mm h`, `high: hh:mm h`, `at: hh:mm term value` keyframes (numbers ease, words and frost switch). Without one, the engine uses night 1 from PRODUCTION.md section 8 | Tide check: with low 22:58 -0.55 and high 05:10 5.3, `tide < -0.35` holds 22:14 to 23:42 and `tide < -0.27` until 23:50. Your steps flood at 23:48 by your own condition |
+| R12 | `node tools/validate.mjs content/act1/act1.lwd` (follows include:) | Reports `file:line: level: message`. Also warns on an undefined name, a speaker with no `@char`, `read:` of an instrument with no `@instrument`, an unknown `cmd:`. `chilled.*`, `small.*`, `nod.*`, `bench`, `wall`, `@meta at-end`, events and area hotspots count as entry points |
+| R13 | `{show: cond}` hides any choice; on a claim, `{when: cond}` now also only hides it | as requested |
+
+Other things content can use now:
+- `@char sched: hh:mm-hh:mm place` (repeatable) and `do: move(char, place)` drive `here(char)`.
+- `@event` with `when:` only (no `at:`) plays at the first node boundary where it holds.
+- Tools: `node tools/quick.mjs <files> --archetype a.x --path "1,Ask about"` plays a path in the
+  terminal; `/engine/tools/graph.html?src=/content/act1/act1.lwd` (through game/serve.mjs) shows
+  the node graph with findings and a player.
+- The slice validates with 0 errors and 3 warnings: its three `read: damp` lines have no
+  `@instrument damp` record, so they play nothing in this engine.
+
+### Engineer replies, 2026-10-16 23:28Z: hooks for combat and characters
+
+Scope change from the author (relayed by the coordinator, 2026-10-16): real-time combat, and a
+character pipeline with full animation sets. The combat engineer owns game/engine/combat/ and the
+character lead owns characters/. I do not edit either. These hooks exist now in game/engine/,
+with tests (tests/hooks.test.mjs). Ask here for anything missing.
+
+| Hook | Where | Use |
+|---|---|---|
+| Fixed-timestep loop | `G.loop` (core/hooks.mjs) | `G.loop.add(name, (dt, G) => {}, { order })`. The shell calls `G.loop.frame(realSeconds)`; 60 Hz steps, at most 8 per frame. Built-in order: hazards 10, animation 30; combat should take 20. `G.loop.clockRate` = real seconds per game minute while real-time play runs (0 stops the night, as in conversation) |
+| Input | `G.input` | One action state for keyboard, mouse and gamepad: `set(name, value)` for held values (`move: {x, z}`), `press(name)` for presses, `pressed(name)` true for one step. The shell maps devices to action names; combat reads names only |
+| Environment hub | `G.envAt({ place, x, z, groundY, waterY })` (world/envhub.mjs) | `{ tide, waterY, depth, footing, grip, light, sodium, wind: {speed, dir, x, z}, fog, rain, temp, frost, wet }`. Footing comes from `@place footing:` (stone, mud, wood, sand, weed, shingle) and becomes `frost`, `wet <kind>` or `water` from the night. `grip` is 0 to 1 from `@rules footing-<kind>` (defaults in envhub.mjs) |
+| Save state | `G.register(name, api, { state, version, migrate, onLoad })` | State lives in `G.state.ext.<name>`, saved with every slot and in ink mode. On load, `migrate` upgrades old versions and `onLoad` gets the state back |
+| Animation timings | `@anim id` records, `G.anims.actor(id)` (world/anim.mjs) | Keys: `actor`, `length` or `frames` + `fps`, `loop`, `next`, `rate` (an expression, for example `1 + 0.1 * (skill.knees - 3)`), `event: t name`, `phase: from to name` (windup, active, recovery, iframes: any names), `blend`, `clip` (the rig's clip name). `a.play(id)`, `a.state()` gives clip, time, frame, active phases and blend for the renderer; events `anim.event`, `anim.phase`, `anim.start`, `anim.end` on `G.on` |
+| Checks and levels | `G.sheet.skill(id)`, `G.checks.breakdown(id)` | Effective levels including clothing, Margin notes and the weather, for any combat stat that should read the voices |
+| Meters | `G.pressure.addMeter("cold", n)` | Cold, Wear and Dread are the only bodily costs in the design so far; a hit or exertion can pay into them |
+
+The same night drives everything: the tide, light and wind a fight reads are the ones dialogue
+and Tide Runs read. Clean-room rule noted: behaviour knowledge comes only from cleanroom/spec/.
+
+Director, from the Act 1 draft as it stood at 23:26Z (`node tools/validate.mjs
+content/act1/act1.lwd`): 11 files, 300 nodes, 93 errors and 79 warnings, most of them missing
+files and nodes still to be written. Engine changes made from it:
+- `do: light(place, light, sodium)` is now an effect (your lamp projects use it).
+- `stage: ... | needs: | ...` with nothing needed now works.
+- `seenas_board = ally` style assignments no longer warn as undefined names.
+- A `@run` whose `goal:` is a name, with no `rect` params, now gets a course built from its
+  hazards and params: water when a hazard reads `tide` (the water front climbs the course in step
+  with the real tide over `limit`), frost patches from `frost-ballast n`, the dark when a hazard
+  reads `light <`, a patrolling pursuer with a lantern from `pursuer <char>` (`sight n` is the
+  seconds it takes to be seen), stairs from `climb <stairs>` (16 to a flight, Cold and Wear 0.5
+  each), and `depth-loses knee|waist`. `helpers dilly` is read and not used yet.
+- Hazards: all hazards tick in the open world by their `where`/`when`; a run's listed hazards also
+  tick during the run. They are not run-only, so your h.water, h.frost and h.dark work in both.
+
+### Director, 2026-10-16 (second reply): applied, and what is left
+
+Thank you; all of it is in content now. `world.lwd`: every place has `district:` and `footing:`,
+and interiors have `shelter: yes`. `rules.lwd`: `forget-cost: 1`, `cabinet-slots-max: 6`, cold
+`rise: -12 ? stove` and `full: chilled.$district`, wear `full: nod.$trait` with `after: 4` and
+`wait: 30`, dread `full: small.$district`. `margin.lwd`'s wake node no longer passes time or
+lowers Wear itself. Five `@instrument` records cover every `read:`; the walk-on speakers have
+`@char` records in floor.lwd.
+
+Validator on the act now: 13 files, 1,352 nodes, 10 errors, 52 warnings. All 10 errors are
+`unknown function fight()`; 13 of the dead ends and most of the 37 unreachable nodes are fight
+starts and their outcome nodes. Two asks, either of you:
+- **For the combat engineer:** add `fight(id)` to the calls (NOTES 5a).
+- **For the validator:** treat `fight(e.x)` as a jump to the `win`, `yield`, `fled` and `down`
+  nodes of `@encounter e.x`, so those count as reachable and the starts stop reading as dead ends.
+  `struck.<char>` is set by the combat layer (C1), so please do not warn when content reads it.
+
+### Combat engineer replies, 2026-10-16 about 00:20Z on 17 October
+
+From the combat engineer (game/engine/combat/, which I own; I edit nothing outside it). Built
+against SYSTEMS-FULL 18 and cleanroom/spec/COMBAT-FEEL.md v1. Values and their sources are in
+game/engine/combat/TUNING.md; progress in game/engine/combat/PROGRESS.md. 38 engineering tests
+pass (`node --test tests/*.test.mjs` from that folder), including a run on content/act1/combat.lwd.
+
+Note for the record: section 2 of this file and SYSTEMS-FULL section 0 still say "no combat, no
+health bar, no death". Section 18 supersedes that, as the coordinator relayed; Lamb still never
+dies (Down is a scene).
+
+**H1, to the systems engineer: the `fight(id)` hook.** Combat's side exists and mirrors Tide Runs,
+so the runner and shell can treat both alike. What I need in game/engine/ (yours to write):
+
+| Where | What | Calls |
+|---|---|---|
+| startup (game.mjs or the shell) | `installCombat(G)` from `combat/encounter.mjs`, once, after hooks | registers `G.ext.combat` and loop system `combat` at order 20 |
+| core/scope.mjs | effect `fight(id)` (ID_ARG_CALLS kind `encounter`) | `G.ext.combat.request(id)`; it sets `state.pendingFight` and emits `fight.request` |
+| dialogue/runner.mjs | end the beat with `beat.fight = id`, as `beat.run`; `talk.afterFight()` | `play(G.ext.combat.finish())` once `fight.end` has fired |
+| the shell | on `fight.request` (or `beat.fight`): `G.ext.combat.start(G.ext.combat.take())`, set `G.loop.clockRate` (I suggest 4 s per game minute, as runs), map devices to the input names below; on `fight.end`: `clockRate = 0`, then `talk.afterFight()` | |
+| tools/validate.mjs | treat `fight(e.x)` as a jump to the encounter's win, yield, fled, down and lose nodes; do not warn on reads of `struck.*`, `fought.*`, `book.violence` | the director asked for this too |
+
+Input names combat reads from `G.input`: `move` {x, z} (z north), presses `light`, `heavy`,
+`catch`, `step`, `roll`, `shove`, `grapple`, `use`, `lock`, `next`, `prev`; held `heavy` (charge)
+and `block`. Events on `G.on`: `fight.start`, `fight.end` {id, outcome, node}, and every
+simulation event as `fight.<type>` (hit, parry, block, stagger, knockdown, tell, shake, bark ...)
+for sound, rumble and camera.
+
+**H2, small asks (not blocking):** `G.envAt` taking a `footing` argument, so combat can ask the
+hub for a tile's surface instead of re-deriving grip from your exported FOOTING_GRIP (I read that
+table read-only and follow your rules for frost, wet and water). And an animator call that sets
+clip time directly (`a.at(clip, t)`), so combat can warp @anim clips to its frames (below).
+
+**Answers to C1 to C5 (director):**
+- C1 done: `fought.<encounter id>` (for example `fought.e.salvors`), `struck.<char>` for each
+  opponent Lamb hit whose @foe has a `char:` key, `book.violence` when an opponent of faction
+  `trust` could see Lamb strike, `vars.fights` + 1. Please add `char:` to @foe records of named
+  people (f.lugg: `char: lugg`, f.keel: `char: keel`); without it no struck flag is set.
+- C2 done: tide depth per tile (ankle, knee, waist slow everyone; a roll at the knee or in mud is a
+  lurch), frost and wet stone (less grip, more poise damage, both sides), sight by light and fog
+  for both sides, a lantern that lights its bearer and can be thrown (burns where it lands, 1.5 s
+  in rain, none in water), wind on thrown things, gusts over 20 m/s stagger a heavy wind-up,
+  blackout (`light: blackout` on an encounter), Guild noses that find Lamb downwind (`sight: smell`)
+  and Lamplighter eyes better under sodium (`sight: sodium`).
+- C3 done with placeholders: voices ballast, knees, salt, smell, undertow, dark and pride bark on
+  footing, breath, the tide, an opponent upwind behind, a grab telegraph, footsteps in the dark,
+  and being wet and losing. Write lines as `@bark id` with `key:` and `text:`; keys are
+  footing.frost, footing.wet, breath.low, tide.near, smell.behind, tell.grab, dark.near,
+  pride.losing. Passive-level gating (SMELL warns earlier, THE DARK outlines) is not built.
+- C4 done: Standing 0 is `down`; the fight ends and plays the `down` node. `lose` is the tide
+  ending a floor fight (`tideEnds`, water at Lamb's waist) and falls back to `down` when an
+  encounter has no `lose:` node.
+- C5 done: no opponent dies. At their `yields:` line they give in (`yield` when all gave in); at 0
+  they are down (`win`).
+
+**What content cannot use yet:** e.brawl (everyone against everyone) is not built; every @foe
+fights as one of two archetypes (holder: f.warden, f.keel, f.panbearer, f.lugg, f.conger,
+f.lamplighter; skirmisher: f.salvor, f.gutter, f.dog, f.gulls, f.eel), so named moves such as
+sweep, pin, call, eelstring_lash, pan_swing, lens_swing, bite, swarm, wrap and hold are not yet
+their own; the pole's sweep exists as the long tool's heavy. Tool condition and wear (18.4),
+fittings, moves learned from people (18.5), `param: lens-behind` and the Lamplighters' pair
+tactic are not built. Animals use human bodies.
+
+**To the character lead: combat drives the animation.** Your timing.json says combat owns the
+numbers; agreed. The interface:
+1. `node game/engine/combat/tools/export-timing.mjs` writes `game/engine/combat/out/timing.combat.json`
+   in your schema (30 fps; startup, active, recovery, iframes [from, to), cancel into recovery,
+   move, hit; plus `frames60`, `tell` and `charge`). Clip names: tool strikes as
+   `<class>.<strike>` (shield, light, long, short, heavy, bar, unarmed; strikes light_1 to
+   light_3, heavy, heavy_charged, catch), body moves (step, roll_dash, roll, roll_hop, lurch,
+   riposte, shove, grapple, use_lantern, use_bottle), reactions (stagger, parried, ducked,
+   knockdown then getup, fall, yield), opponent specials (holder.drag, holder.chain,
+   holder.braced, skirmisher.mud, skirmisher.rope, skirmisher.scuttle). Dodges play as
+   `<name>_f`, `_b`, `_l`, `_r` by the move's direction against the facing (under a lock Lamb keeps
+   facing the target). Locomotion: idle, walk, wade, guard.
+2. Each frame combat gives the renderer `poseOf(W, F)` (combat/anim/drive.mjs): actor, clip,
+   phase, the move frame, and `t`, the clip time in seconds. Please play combat clips at `t`
+   rather than on your actor's own clock: your runtime/actor.mjs cancel windows, iframes, hit
+   flags and root motion are combat's job in a fight, and doing them twice will drift.
+3. If your clip has phases named windup, active and recovery, combat warps time piecewise so
+   your windup ends on combat's last startup frame and your active span covers its active frames.
+   You can retime a clip freely without changing the fight; `checkClips()` lists clips that are
+   missing or far from the frames.
+4. Missing clips for Act 1's set fights, Lamb first: heavy_charged, catch, guard, riposte, shove,
+   grapple, a throw, roll_dash, roll_hop, lurch, parried, ducked, yield, plus the six opponent
+   specials. Actor ids: `lamb`, an @foe's `char:` if it has one, else the archetype.
+
+### Director, 2026-10-16 (third reply): R15 and R16 are still open, and R15 is now urgent
+
+Your answer table covers R1 to R13. **R15 (conditional lines)** is not built: the runner pushes
+`nar:` with its `{when: ...}` text printed raw, and `line:`/`inst:` strip the block but ignore the
+condition (runner.mjs lines 58 to 59). Act 1 has 107 conditioned lines (dawn.lwd 31, floor.lwd 75,
+gut.lwd 1), all of which play unconditionally today, so the dawn's "town at first light" shows
+every lamp and every fate of the fish at once. Please honour `{when: cond}` and `{once}` on
+`nar:`, `line:` and `inst:` exactly as on `voice:`. The director's lint warns on every such line
+until it lands (`ENGINE_R15=1` turns the warning off). Found by the weigh-house editor.
+**R16** (a blackout puts Mother out) also needs an answer.
+
+### Engineer replies, 2026-10-17 00:10Z: R14, R15, R16 landed; H1 and H2 for combat
+
+- **R15 conditional lines: built.** `nar:`, `line:` and `inst:` take `{when: cond}` and `{once}`
+  exactly as `voice:` does. The block is stripped from the text, so it never prints; `{{expr}}`
+  inside text still fills. Tests plant an always-true line, an always-false line, a flagged line
+  and a once line (tests/dialogue.test.mjs). Quick-play over content/act1 `dawn.town` shows only
+  the lines whose state holds: with defaults, "Mother, dark" and "Her lens, whole"; with
+  `lamp.porthole.lit`, `fish = gulls` and `lens = broken`, exactly those three lines. **You can set
+  ENGINE_R15=1 now, or delete the warning from content/tools/lwd1_lint.mjs.**
+- **R16 blackout puts Mother out: built.** `setPower quay off` sets `mother` to `dark`; power
+  back on leaves her dark until `restrike mother`. Another zone's power does not touch her. A
+  `@night` can name another board with `mother-zone: <zone>`. Tested.
+- **R14 events that move Lamb:** already in: a due event plays at the next node boundary inside a
+  conversation, and outside one the shell plays it from `G.nextScene()` before the next walk step.
+  Its `go:` takes Lamb wherever it points.
+- **H1 fight(id), for the combat engineer:** `do: fight(e.x)` ends the beat with `beat.fight`;
+  `talk.afterFight()` plays `G.ext.combat.finish()`. `createFullGame()` in game.mjs is the
+  engine plus `installCombat(G)`; the shell (ui/fight.mjs, drawn with combat/arena/draw.mjs),
+  tools/quick.mjs and the graph viewer use it. `createGame()` stays without combat so your own
+  tests can install it. The shell sets `G.loop.clockRate = 4` during a fight and 0 after. Keys
+  follow your arena page (F shoves, since E turns Daybook tabs). The validator treats
+  `fight(e.x)` as a jump to the encounter's win, yield, fled, down and lose nodes, and does not
+  warn on reads of `struck.*`, `fought.*` or `book.violence`.
+- **H2:** `G.envAt({ footing: "mud", ... })` weathers a tile's own surface by the same rules;
+  `G.anims.actor(id).at(clip, t)` sets a clip and its time directly (no events fire).
+
+Validator on content/act1 now: 13 files, 1,263 nodes, 1,262 reachable, **0 errors**, 4 warnings
+(`nodding` unreachable, three margin.lwd nodes that run out with no way on). A 41-choice
+quick-play from `quay.prologue` and the `e.salvors` fight path (to `floor.fight.salvors.down`)
+play without errors. node --test from game/engine: 100 pass (combat's tests included).
+
+### Combat engineer, 2026-10-17 about 00:50Z: fight length and the fight view
+
+Thank you for H1 and H2.
+
+- **The 35 game minutes.** Reproduced from `floor.salvors.fight` with tools/quick.mjs (22:42 to
+  23:16). The fight itself took 4 game minutes (18.5 real seconds); `floor.fight.salvors.down`
+  has `cost: 30` (the director's, inside 18.7's 20 to 60). I shortened fights anyway: pressure
+  now rises with time and against a Lamb who does not fight back, so idle Lamb is down in 6 to
+  15 real seconds across Act 1's fights (table in combat/TUNING.md). Director: if 30 minutes for
+  going down on the floor is more than you want, that number is the node's.
+- **Clock rate, to the systems engineer.** combat exports `FIGHT_CLOCK_RATE = 8` and
+  `G.ext.combat.clockRate`. ui/fight.mjs sets `CLOCK_RATE = 4`; please read
+  `G.ext.combat.clockRate` instead, so a typical 15 to 30 s fight costs 2 to 4 game minutes
+  rather than 4 to 8. I did not edit ui/.
+- **ui/fight.mjs in a browser.** The shell only loads its test content, so I opened your view
+  through a harness in combat/tools/ (fightview.html mounts `openFight` with ui/focus.mjs and
+  ui/styles.mjs on act1.lwd; capture_view.py drives it headless at Idle). Stills in
+  game/engine/combat/capture/view-idle, view-pilot and view-conger. No console errors; the side
+  card, the result card, Go on and the hand-back to the outcome node all work. Two notes for
+  you: the result card sits over the middle of the canvas, where Lamb usually falls, so the body
+  is hidden at the moment that matters (bottom or side placement would keep it in view); and the
+  side card lists F for shove nowhere (the keys line omits shove, grapple and use).
+
+### Character lead replies, 2026-10-17 about 00:30Z
+
+From the character art and animation lead (characters/, which I own; I edit nothing in
+game/engine/). Pipeline decision and evidence: characters/PIPELINE.md; audit of the old figures
+and the engine: characters/AUDIT.md; log: characters/PROGRESS.md.
+
+**To the combat engineer: agreed, combat is the clock.** What exists now:
+
+1. `createCast({ timing, combat, members })` in `characters/runtime/actor.mjs`. In a fight call
+   `actor.drive({ x, z, face, pose })` each frame with your `poseOf(W, F)`; the actor shows
+   `pose.clip` at `pose.t` and keeps no clock, cancel window or root motion of its own. Your face
+   (radians from +x toward +z) is converted inside (`faceToDeg`).
+2. `cast.clips(who)` returns the clip table your `warp()` and `checkClips()` read, keyed
+   `<actor>.<anim>`, phases named `windup`, `active`, `recovery` with `from` and `to` in seconds.
+   Actor ids: `lamb`; Fennick stands in as `holder`, Marrow as `skirmisher` until those archetypes
+   have bodies of their own (COMBAT_ACTOR in characters/anim/library.mjs).
+3. Your `out/timing.combat.json` is read (read only) by `characters/anim/library.mjs` and wins over
+   my numbers for every clip it names. A directional clip (`roll_l`) takes its move's numbers
+   (`roll`). Where your export gives a move one span (startup and active 0), my phase proportions
+   are scaled into that span so the keys keep their spacing.
+4. Art for every clip your export lists for Lamb (checked by `node characters/proto/actor_test.mjs`):
+   strikes per class (light, short, bar and unarmed share the one-handed set; long and heavy are
+   two-handed with the left hand put on the shaft by IK; shield is the claims case in the left
+   hand), `step`, `roll_dash`, `roll`, `roll_hop`, `lurch` each with `_f/_b/_l/_r`, `riposte`,
+   `shove`, `grapple`, `use_lantern` (the lantern is hidden from the release), `use_bottle`,
+   `stagger`, `parried`, `ducked`, `knockdown`, `getup`, `fall`, `yield` (the tool is dropped),
+   and `idle`, `walk`, `wade`, `guard` (one guard per tool style). The six opponent specials are
+   aliases of the nearest art for now (`holder.drag` plays `long.heavy` and so on); flagged.
+5. `actor.weapon()` gives the tool's striking segment in world space from the skeleton and
+   `actor.body()` a hurt capsule, if you want to check your volumes against the drawn figure.
+
+**Asks (C-ART):**
+- **A1** Put the fighter's tool id in `poseOf()` (for example `tool: "w.stick"`), so the drawn prop
+  is the one combat swings. Today the actor takes it from its own loadout.
+- **A2** When your arena is ready for real figures: `arena/figure.mjs` can call
+  `actor.render(view, w, h, rig, { tone })` (float RGBA plus the G-buffer) or, in a Canvas 2D page,
+  `drawActor()` from `characters/runtime/draw2d.mjs`. Rigs and the sodium ramp for the quay, the
+  Brine and the weigh-house are in `characters/render/rigs.mjs`.
+
+**To whoever owns the prototype shell (game/main.mjs, game/serve.mjs):** the figures can replace
+`figures.mjs` through `characters/runtime/draw2d.mjs` (`drawActor(g, scratch, actor, env)`, the same
+contract as `drawPerson`). It needs a `/characters/` mount in `game/serve.mjs`. Cost on the CPU:
+about 6 ms a figure at a gameplay scale of 110 px, 12 ms at room scale (PIPELINE.md section 3).
+I have not edited either file.
+
+**To the director and the systems engineer: camera.** At today's quay camera a person is about
+48 px tall at true scale; no figure pipeline makes that legible for a fight. PIPELINE.md section 6
+recommends a gameplay camera 2 to 2.5 times closer on the quay (figures about 96 to 110 px in the
+720-line plates, 13 to 15 % of the frame, matching the clean-room spec v2 target of 130 to 160 px at
+1080p), orthographic and snapped to whole plate pixels when it scrolls, over plates baked at a higher
+resolution, and rooms 1.5 to 2 times closer. characters/stills/ shows today's camera and 2.5x.
+Combat: COMBAT-FEEL v2 retuning flows through your export; the art reads it and keys nothing to it.
+
+**Design flag for the director (CHARACTERS-ART.md):** Lamb's starting tools are drawn as the
+design says: the claims case (shield) and the Vane's folding stick (light), with the tin cockerel
+on its tip; the storm lantern rides on the belt whenever the left hand is busy.
+
+### Engineer replies, 2026-10-17 00:18Z: the fight view, to the combat engineer
+
+All three done in ui/fight.mjs (and ui/panels.css):
+- The fight clock reads `G.ext.combat.clockRate` (8 when unset). A 12 s idle fight from 22:42 moved
+  the clock one minute.
+- The result card ("Fight over", the outcome sentence, Go on) now sits inside the side card, so the
+  whole arena, and Lamb where Lamb fell, stays in view.
+- The side card lists every key: WASD, J, K, L, Space, Shift, I, F shove, G grapple, Q use, Tab, [ ].
+Stills retaken with your harness (capture_view.py at Idle, no console messages) in
+game/engine/ui/shots/fight-idle and fight-pilot, and looked at. One note for your file: your HUD's
+centred "DOWN" banner sits just below Lamb's body in the salvors arena; the body stays visible.
+
+## 7. Stealth and interaction layers (director, 2026-10-17, for the rework)
+
+The author asked for different ways through the game: combat, talk, stealth, tools and craft (and
+investigation). The design is design/REWORK-PLAN.md: the five styles (section 2), the path matrix
+(3) and the verbs (4). Content needs the following from the stealth and interaction layers you are
+building. Spellings are proposals; yours win, and I will write to them.
+
+### Stealth (S1 to S6)
+
+- **S1 Sight.** A watcher (a Lamplighter, a warden, Keel, a gutter) sees Lamb by: the light at
+  Lamb's position (place light, carried lanterns within their radius, Mother's beam sweep when
+  she burns), sodium (under sodium Lamb is a shop window: bonus to being seen), fog (the term),
+  distance and a cone. Lamb carrying a lit lantern is always seen in its radius.
+- **S2 Sound.** Footing (stone, wood, mud, shingle, ice from `@place footing:`) and speed make
+  noise; wind carries it downwind (wind.dir) and rain masks it. A forced door, a thrown bottle or a
+  fight is a loud event that brings watchers within a radius.
+- **S3 Smell.** In the Gut only: the Guild's people find Lamb downwind by smell (blindfolded
+  gutters "see" by it). Shadwell's snuff, a brine barrel or the bell jar change Lamb's smell.
+- **S4 Cover and crowds.** Cover objects in areas (doorways, crates, the steps' underside, the
+  gallery); crowds (the Low Night walkers, the procession) let a Lamb in the right guise blend
+  (SYSTEMS-FULL 13.3).
+- **S5 Detection states.** unaware, suspicious, searching, seen, lost. Content reads them as terms
+  per watcher (`seenby.gorm == searching`) and as `seen` (any). Being **seen** while doing
+  something writes the Record (`book.<id>` when a Lamplighter sees it).
+- **S6 Voices.** THE DARK, SMELL and UNDERTOW speak during stealth like the Fray's barks:
+  a watcher turning, the wind changing, a lantern about to show.
+
+### Interaction (V1 to V8)
+
+- **V1 Spots.** A spot is a place in an area where a verb can be used:
+  `@spot id` with `area`, `at` (x y z r), `verb` (climb, wade, hide, douse, light, cutpower,
+  pry, rig, salvage, read, eavesdrop, throw, carry, weigh, mark, wait), `needs` (items, held
+  tool, skill threshold), `when` (condition), `noise` (0 to 1), `minutes`, `do` (effects),
+  `node` (a scene to play, optional), `fail` (node, optional), `once`.
+- **V2 Persistent world changes.** A barred door, a rigged line, an oilskin over a handle, a
+  doused lamp, a sunk sack with a cork float: flags the spot sets, and the area shows (a prop
+  appears; a light changes through `light()`). They persist across the act and into the next.
+- **V3 Light verbs.** `douse` and `light` change local light for sight (S1) and colour reading.
+- **V4 Power.** `cutpower` on the quay switch sets `power.quay` and Mother (R16) and the
+  Lamplighters' sight; in Act 2 a second zone (`power.hill`) for the substation.
+- **V5 Eavesdrop.** A spot that plays a scene the player hears but is not in (the after-vote
+  through the boards; Crake and Fisk through the white-lit window). Its availability reads wind,
+  fog and the scene's schedule.
+- **V6 Carry.** Lamb carrying a person or a heavy thing: slower, louder, no lantern hand, KNEES
+  and Cold costs. Content needs it for Wenna up the stairs and the copper sack.
+- **V7 Rig timing.** A rig can trigger later (a candle timer on the substation switch, Act 2): a
+  `@spot` effect that schedules an event in game minutes.
+- **V8 Wait.** Waiting at a spot passes time in steps until a condition (the tide, a round,
+  the lockout cooling), with the meters running.
+
+### Data content will add
+
+`@spot` records per area for every Hands, Shadow and Eye route in the path matrix; equivalent
+facts for the verdict (REWORK-PLAN 3.3); events for the town's appointment at 02:50
+(REWORK-PLAN 1.3); the var `act2_strippers` (hesk or town) for Act 2's opponents.
+
+### For the combat engineer: what makes fights matter
+
+REWORK-PLAN section 7: every encounter has a visible price and a non-fight route; fights pay in
+access and respect, never pages; set fights are few (three in Act 1, four in Act 2); the night
+fights on both sides; violence escalates through the Record (each `book.violence` raises Night 2's
+Lamplighter numbers); going down is a costed scene; nobody dies by default. Act 2's set fights:
+the strippers at the second low water (Hesk men or the town's own, identical structure), the
+Lamplighters' station (or its talk), the zealots round the Old Bulb if a relic is taken, the
+frozen gutter (a fight on ice).
+
+### Engineer replies, 2026-10-17 01:01Z: stealth, verbs and daylight (section 7, S1 to S6, V1 to V8)
+
+Built and tested in game/engine/ (node --test tests/*.test.mjs: 90 pass). Your section 7
+spellings are read as written where they fit; where the engine spells something differently,
+it says so below. Full key lists are in the headers of world/stealth.mjs, world/sneak.mjs and
+world/verbs.mjs; a test place using every verb and the stealth layer is
+game/engine/test-content/yard.lwd, and a day book is test-content/day.lwd.
+
+| Ask | Built as | What content writes |
+|---|---|---|
+| S1 sight | Light at Lamb (place light, fixed lights, carried lanterns), x fog transmittance, x cone and distance, x (1 + 0.5 x sodium). A lit lantern Lamb carries is always seen inside a cone | `@watcher id`: `char`, `place` or `area`, `path: x z x z ...` or `post: x z facing`, `cone: range degrees`, `speed`, `when` |
+| S2 sound | Footsteps by footing (shingle, water, frost, wood, stone, weed, mud, sand; wet ground louder) and pace (crouch, walk, run, carrying); masked by wind and rain; carried downwind by wind.dir. Thrown things and noisy verbs are loud events | `@place footing:`; `hearing: n` on a watcher; `noise:` on a verb |
+| S3 smell | `smell: range` on a watcher: finds Lamb downwind in any light. Lamb's smell is 1 plus mods on the target `smell` (snuff, a brine barrel, the bell jar as `mod: smell -1` on items) | `smell: 6` on Guild watchers |
+| S4 cover and crowds | `@hide id` (at x z, r, cover) and the verb `hide`; `@crowd id` (place or area, when, density, guise list). Outside sneak scenes the term `seen` also blends any guise but the default in fog over 0.05 or light under 0.1 | as written |
+| S5 states | unaware, suspicious, searching, seen (sound alone never reaches seen); lost is spoken when a search gives up. `seenby.<watcher>` reads the state; `seen` is any. Being seen sets `seen.<watcher>`, `book.<sneak>` for role lamplighter, and `rep:` favour | `say: suspicious text` (and searching, seen, lost) on a watcher; `alert: node`, `fight: encounter`, `ambush: encounter` |
+| S6 voices | `@cue id`: `on` (turning, lantern, close, wind), `skill`, `dc`, `when`, `text` | one per moment and voice |
+| V1 spots | `@spot id` is read exactly as you proposed: area or place, at (x y z r), verb, name, needs (items or conditions like `skill.grip >= 6`, comma separated), when, noise, minutes, do, node, fail, once, plus skill, dc, give, uses. The engine's own form, `@object` with several `verb:` lines, also works | as proposed |
+| V2 persistence | Every verb sets `done.<spot>.<verb>` on success; `did(spot, verb)` reads ok, fail or empty; light changes persist through `light()`. All of it is saved and carries over | read the flags in areas (`figure: ... {when: has(done.x.rig)}`) |
+| V3, V4 | `douse`, `light`; `cutpower` (or `power`, with `zone` and `to`). Cutting the quay also puts Mother out (R16) | as proposed |
+| V5 eavesdrop | The overhearing rule from SYSTEMS.md 5.2 with wind, rain noise and whether Lamb is seen: `who` (must be here by schedule), `range`, `dir` (bearing from speaker to Lamb), `node` and `fail` | as proposed |
+| V6 carry | `carry` (item: id) and `drop()`; carrying slows Lamb to 0.65 and makes footsteps 1.5x in sneaks, and leaves no hand for a lantern. Term `carrying`. Costs in KNEES and Cold are yours: `rise: 2 ? carrying != ""` on the cold meter, `@modifier` on knees | as described |
+| V7 rig timing | `after(minutes, "effects")` as an effect, from any verb, node or option; the validator checks the quoted effects | `do: after(20, "set(substation.dark); cmd(...)")` style, with effects only |
+| V8 wait | `wait` with `until:`, `step:` (5) and `max:` (60) minutes; the meters run | as proposed |
+| Daylight interlude | A day book: `@meta clock: 14:00` reads its times on a daytime clock (13:00 after 09:00). `@day id` (a @night by another name) with `at: hh:mm daylight 1` keyframes; place light blends artificial and daylight (`@place day-light:` factor, default 1 outdoors, 0.35 sheltered). Terms `day`, `daylight` and `phase` (dawn, day, dusk, dark at 04:00, 09:30, 15:30, 21:00, retunable in @rules). Schedules and crowds work by day. Full sun makes Lamb easy to see, as it should | the afternoon file as its own act-like book |
+| Sneak scenes | `@sneak id`: area, watcher and hide lines, goal (x z r), limit, win, alert, lose, `param: rect`, `start`, `light`, `carry`, `footing`, `throw` (what a distraction uses up). Content starts one with `do: sneak(s.x)` like a run | for each Shadow route that is played in real time |
+
+Not built yet, and why: smell outside sneak scenes (the menu world has no positions); Mother's
+beam sweep as a moving light (needs the beam's angle per minute from you or the look work); a
+persona credibility counter per guise (guise and the Read cover it today).
+
+### Engineer to the combat engineer, 2026-10-17 01:01Z: stealth hands into fights
+
+- A sneak scene ends `seen` with a watcher whose record names `fight: e.x`: the runner calls
+  `G.ext.combat.request("e.x")` and ends the beat with `beat.fight`, as `do: fight()` does.
+- A sneak attack (Lamb behind an unaware or suspicious watcher within 1.4 m, the press `ambush`)
+  whose watcher names `ambush: e.x` does the same, and first sets
+  `G.state.ambush = { encounter: "e.x", watcher: "w.id", advantage: "sneak" }`. Please read it at
+  `start()` (the opening you want: a free first strike, a stagger, the foe facing away) and
+  delete it when the fight starts. It is cleared at the start of every sneak.
+- `G.envAt({ footing })` and the stealth tuning in @rules are there if a fight wants to read
+  how loud or lit Lamb was.
+- game.mjs no longer imports combat/: `full.mjs` exports `createFullGame` (the engine plus
+  `installCombat`), so the engine and the validator keep working while your files are mid-edit.
+  Your harness imports `createFullGame` from `../../game.mjs`; please switch it to
+  `../../full.mjs`.
+
+### Combat engineer, 2026-10-17 about 02:10Z: four ways through a fight, and the v2 re-tune
+
+**To the systems engineer.**
+- Ambush wired: `start()` reads `G.state.ambush` when its `encounter` matches, begins in the
+  sneak opening with Lamb just behind the struck opponent (matched by the watcher's `char` to an
+  @foe `char`, else the first) and the takedown already under way, then deletes the flag. Event
+  `fight.ambush`. A fight that a sighting starts uses the encounter's own `opening:` (default
+  open); if you want it to begin searching from where Lamb was seen, pass
+  `request(id, { opening: "alerted", lastSeen: [x, z] })` with arena coordinates, or set
+  `G.state.pendingFightOpts` the same way.
+- Harness repointed to `../../full.mjs`; it loads (checked headless).
+- New input names for the shell and `ui/fight.mjs`: presses `interact` (work a prop in reach),
+  `lantern` (shutter or unshutter), `talk` (take an offered talk exit). Events to show:
+  `fight.talk.offer` { node, label } and `fight.talk.withdrawn`; while an offer stands the fight
+  view should show its label and the key. A taken exit ends the fight with outcome `talk` and
+  `finish()` returns the exit's node.
+- Please read `G.ext.combat.clockRate` (8) in ui/fight.mjs (still asked from 00:50Z).
+
+**To the director: what content can write now** (all in @encounter; tests in
+combat/tests/openings.test.mjs).
+- `opening: sneak | alerted | open`. Sneak: opponents unaware and facing away, Lamb's lantern
+  shut; a light press from behind within 1.5 m is a takedown (Standing 10 or less: down; more: 4
+  Standing and a knockdown); any first blow on an unaware body lands double.
+- `prop: <kind> <numbers> ? <condition>` for a tools build's setups, read when the fight starts:
+  `lamp x z` (a light that can be put out in the fight), `cut x z` (already out), `sluice x z x0 z0
+  x1 z1 rise` (a lever that floods a zone: everyone in it knocked down, a light opponent at
+  waist depth swept out), `flood x0 z0 x1 z1 rise` (already flooded), `snare x z` (a rigged rope:
+  the first opponent to step on it is held for 2.5 s). Coordinates are the arena's metres
+  (combat/data/arenas.mjs); I can place them for you if you name the setup and the spot.
+- `talk: <node> | <label> ? <condition>` for talk exits mid-fight. Names a condition can read:
+  fight_seconds, fight_lamb_standing, fight_foes_standing, fight_foes_down, fight_foes_yielding,
+  fight_struck. Example: `talk: floor.salvors.parley | Put the sack down ? fight_struck >= 1 &
+  fight_lamb_standing >= 4`.
+- `char:` on @foe records of named people (f.lugg, f.keel), still asked: it sets `struck.<char>`
+  and lets an ambush find its watcher.
+- What a fighting build buys, in numbers: TUNING.md, "The four ways through". Against the
+  salvors-style pair a middling Lamb head-on wins 0 of 10; the same Lamb with a sneak opening 3
+  of 6, with the sluice set 6 of 6; a Lamb with COAT 4 and KNEES, BALLAST, GRIP at 6 head-on 5
+  of 10 (scripted test player, not a person).
+
+**To the author, through the coordinator: provenance of COMBAT-FEEL v2.** v2 and
+ARCHITECTURE-NRFTW.md say their values come from the installed game's database and its
+decompiled class layout. cleanroom/PROGRESS.md set the rule "no extraction, decompiling or
+reading of game files", and my brief says the same for me. I opened no game files. I used v2 as a
+calibration target (proportions and ranges, adapted to our units and arenas; no table copied)
+and tagged every value it moved in TUNING.md, so it can be reverted in one pass if you rule
+it out of bounds.
+
+### Director, 2026-10-17: the four ways through a fight, written into content
+
+To the combat engineer: written into `content/act1/combat.lwd` and `content/act2/rules2.lwd`.
+- `char:` on f.lugg (lugg) and f.keel (keel); new named poles f.fewell and f.strand (the quay's
+  `struck.fewell` and `struck.strand`), now the foes of e.lamplighters.
+- `opening:` e.afterdark is `alerted` (blindfolded gutters hunting by smell). Shadow routes that
+  end in a fight use sneak variants: e.salvors.sneak (after watching Merrow unseen in the fog),
+  e.hammer.sneak (after hiding in the gallery), e.strippers.sneak (from under the tarpaulin).
+- `prop:` e.salvors `snare 12 7 ? has(floor.handline)` (the hand line Lamb rigged becomes a snare);
+  e.afterdark `cut 7 1` (the after-vote's lamp, out); e.lamplighters the quay's three lamps `cut`
+  when `power.quay == off`. Act 2 props are written at `0 0` for arenas that do not exist yet
+  (spit, hill, gasholder): the strippers' painter as a snare (`has(spit.painter_cut)`), the
+  station's white lamp cut when `has(hill.dark)`, the altar candles, the substation lamp. Please
+  place them when you build those arenas.
+- `talk:` exits on e.salvors, e.gulls, e.afterdark, e.lamplighters (two), e.wardens, e.brawl,
+  e.dogs (needs the egg), e.hammer (two: the green rings, and "sit down"), and all five Act 2
+  encounters. The exit scenes are short nodes `fx.*` (Act 1) and `fx2.*` (Act 2) that then go to
+  the encounter's own yield, win or down node.
+- Weigh's e.trial and e.officedoor (in weigh.lwd) are unchanged.
+
+To the systems engineer: the validator reports the `fx.*` talk exits as unreachable. Please treat
+an @encounter's `talk:` node as an edge from any `fight(that encounter)` call, as `win:` and the
+others already are.
+
+To the author, through the coordinator (relaying the combat engineer's flag): the combat engineer
+reports that cleanroom COMBAT-FEEL v2 and ARCHITECTURE-NRFTW.md state their values come from the
+installed game's database and decompiled class layout, against the clean-room rule. The director
+has not opened those specs or any game file and uses none of their numbers in content; the
+encounters above carry no tuning beyond first guesses in our own units. The decision on v2 is the
+author's.
+
+### Engineer to the combat engineer, 2026-10-17 01:09Z: the fight view
+
+- Clock: ui/fight.mjs has read `G.ext.combat.clockRate` since 00:18Z; the 4 you saw came from the
+  terminal quick-play path (tools/quick.mjs, which loads through full.mjs), now also on your rate.
+  Checked both: 16 real seconds moved the clock 2 game minutes; your harness on
+  floor.salvors.fight moved it 1 minute in 12 seconds.
+- New inputs pressed into `G.input` from the side card's keys, matching your arena page: F
+  `interact`, H `lantern`, T `talk` (and E shove, as your page has it; the shell's own E and F
+  are held back while a fight is open). Gamepad: d-pad right interact, up lantern, down talk.
+- `fight.talk.offer` shows its label in a framed "A way out" box with the key T until
+  `fight.talk.withdrawn` or the end; a `talk` outcome reads "You talked your way out."
+- Stills, looked at: game/engine/ui/shots/fight.png (the shell, test content, an offer standing)
+  and fight-idle/ (your harness on Act 1, no console messages).
+
+### Director, 2026-10-17: the clean-room flag is answered
+
+Settled by the coordinator, relaying the author. On 2026-10-16 the author authorized the study role
+to decompile and read the reference games (verbatim, as relayed: "take them apart and then
+understand how they were implemented in their original engines ... So you would find them out for
+yourself and you can touch the games", and "Download whatever tools you need that are free and do
+this efficiently and completely unpack"). The study role is the dirty team and may take numbers
+from the game data into its specs. The director, the writers and the engineers are the clean team:
+we never open the games or the quarantine folders, and we build only from the specs. COMBAT-FEEL
+v2 is therefore a valid source for the combat engineer, and the values tagged in TUNING.md can
+stay. The director may read cleanroom/spec/ for encounter design and has opened no game files.
+
+### Engineer replies, 2026-10-17 01:14Z: the validator follows talk exits and carries Act 1
+
+- A fight now leads, for the validator, to its encounter's outcome nodes and to every `talk:` exit
+  node; the `fight_*` names a talk condition reads are known. content/act1: 15 files, 1,575
+  nodes, all reachable, 0 errors, 0 warnings.
+- `node tools/validate.mjs content/act2/act2.lwd --carry content/act1/act1.lwd` validates Act 1
+  first and lets Act 2 read every flag Act 1 sets and every variable it declares or sets (487
+  flags, 69 variables), as your lint's --carry does. Act 2 then: 381 nodes, 377 reachable, 14
+  errors, 9 warnings, all content still to write: hubs hill.hub, ropewalk.hub, spit.hub; fight
+  outcome nodes spit.fight.strippers.yield, hill.fight.station.yield, gasholder.fight.zealots.yield,
+  hill.fight.substation.yield; five flags read and not yet set (hill.dark,
+  gasholder.procession_left, typist.heard, gasholder.procession_stopped, ink.crake); and four
+  talk-exit nodes in rules2.lwd whose fights no node starts yet.
+
+### Director, 2026-10-17: the camera decision (with the character lead)
+
+Decided and recorded in design/CAMERA.md: the quay camera 2.25 times closer (about 100 to 110 px
+per person at 1080p), rooms 1.75 times closer, orthographic, scrolling snapped to whole plate
+pixels, the camera sliding left by a third while a conversation is open, and three pull-backs to
+the whole plate (the arrival at 22:41, the blackouts, the dawn minute of colour). During Tide Runs
+the camera frames the course so the water front stays on screen. Requests for the systems
+engineer: the camera scale per area, the pixel snap, the talk slide, and a `camera: wide` key on an
+event or node for the pull-backs. The night's clock is unchanged (node and exit costs set minutes).
+The cast sheets the character lead asked for are in design/CAST-SHEETS.md.
+
+### Combat engineer, 2026-10-17 about 03:00Z: taught moves, and Act 2's fight areas and props
+
+**To the Hill writer and the director: taught moves.** Confirmed: `hill.move_sweep` is the right
+flag. Combat reads every flag of the form `<district>.move_<name>` when a fight starts and
+unlocks the move (SYSTEMS-FULL 18.5). Built:
+
+| Flag | Move | What it does in a fight |
+|---|---|---|
+| gut.move_feint | feint | a heavy press released within 8 frames becomes a quick strike out of the heavy's wind-up |
+| floor.move_mudstep | mudstep | no lurch in knee water or mud, and no water or mud penalty on Lamb's footwork |
+| floor.move_hookpull | hookpull | the boathook's heavy drags the target down (untaught: a plain heavy) |
+| hill.move_sweep | sweep | the pole's heavy sweeps the legs and knocks down (untaught: a plain heavy) |
+| brine.move_stool | stool | read, not yet used: the brawl it belongs to is not built |
+
+Opponents keep their own trade moves whatever Lamb knows (a warden's hook pulls, a Lamplighter's
+pole sweeps).
+
+**Act 2 fight areas** (combat/data/arenas2.mjs, placeholder geometry until the plates exist):
+`hill` (the Lamplighters' station: stone, three white trial lamps, a door), `spit` (two barges
+on their sides, mud between, a channel the tide fills first, `tideEnds`), `gasholder` (a shingle
+ring round the Old Bulb's altar, candles round the ring), `ropewalk` (a long cobbled lane, two
+paraffin lamps, exits at both ends; the night's frost glazes it).
+
+**Props at 0 0 are placed by the arena.** Rather than edit your files, a prop written at `0 0`
+now goes to the arena's anchor: `cut` puts out every light the anchor lists, the others go to its
+first point. So the lines you wrote work as they stand:
+
+| Encounter | Line | Placed as |
+|---|---|---|
+| e.station, hill.station_four | `prop: cut 0 0 ? has(hill.dark)` | all three white lamps out (3, 1), (7, 1), (11, 1) |
+| e.substation | `prop: lamp 0 0` | the station arena's middle lamp (7, 1), cuttable in the fight |
+| e.zealots, e.zealots.sneak | `prop: lamp 0 0` | the Old Bulb (10, 5), cuttable |
+| e.strippers | `prop: snare 0 0 ? has(spit.painter_cut)` | the painter line between the barges (14.5, 4.5) |
+| ropewalk.e.door, ropewalk.e.door4 | `prop: lamp 0 0 ? has(ropewalk.lamp_doused)` | the near paraffin lamp (6, 1), cuttable. If you meant "already out once doused", write `cut 0 0` instead |
+
+Explicit coordinates still win wherever you write them. Every Act 2 encounter loads, finds an
+arena and places its props (combat/tests/act2.test.mjs). A Lamb who stands still goes down in
+5.5 to 10.3 seconds in Act 2's fights.
+
+**Not built from Act 2's params yet:** `deck-tilt` (the barges' slope), `candles` (a knocked
+candle lighting the straw), `white-light` beyond the lamps themselves, `ice-floor` on the Gut
+(the night's frost gives it where the gut arena is outdoors), `steps` on quay2 (a shove into the
+harbour off the steps), and the brawl.
+
+**One fix that touches every fight:** an open fight now starts with the opponents knowing where
+Lamb stood (a confrontation), then losing or keeping Lamb by the sight rules. Before, in a big dark
+arena they could wait forever (the zealots did).
+
+### Director, 2026-10-17: a carry option for the validator (answered: it exists since 01:14Z; Act 2 with --carry shows 0 and 0)
+
+Act 2 validates with 0 errors over 723 nodes, but the validator reports 40 warnings that are all
+flags Act 1 sets and Act 2 reads as carried state. The director's lint takes
+`--carry content/act1/act1.lwd` and counts what the earlier act sets; please give
+`tools/validate.mjs` the same option, so Act 2 can show 0 and 0. Also still asked: treat an
+@encounter's `talk:` node as reachable from its `fight()`.
+
+### Engineer replies, 2026-10-17 01:33Z: the camera (design/CAMERA.md)
+
+Built in game/engine/world/camera.mjs (pure, tested in tests/camera.test.mjs) and used by the
+engine shell's plate view (ui/platecam.mjs):
+- **Scale per area:** `@area camera: n` or `@place camera: n`; otherwise 2.25 outdoors and 1.75
+  under shelter or by a stove (`@rules camera-outdoor`, `camera-room`). 1 is the whole plate.
+- **Orthographic, snapped:** the view's left and top are whole plate pixels, and the easing moves
+  in whole plate pixels and always arrives.
+- **Talk slide:** while a conversation is open the subject sits a third of the way across
+  (`@rules camera-talk-x`), clear of the talk panel; the subject is the midpoint of Lamb and the
+  person spoken to (the hotspot's `at`). In the engine shell the plate now fills the screen and
+  the talk panel covers its right third only while someone talks.
+- **Pull-backs:** a node or event line `camera: wide` eases out to the whole plate and holds until
+  `camera: near` or the end of that conversation; `camera: <n>` sets a scale for one
+  conversation. Write it on the 22:41 arrival, the 02:50 blackout event, and the dawn minute.
+- **Tide Runs:** `frame({ bounds })` fits a course and its water front, pulling back past the
+  area's scale when it has to. The engine shell's run and sneak charts already show the whole
+  course.
+- **Framing follows the plates' own bake cameras:** world points go to plate pixels with the same
+  maths as raw-native's paint-over camera (checked equal to two decimals on the quay plate).
+
+**A number to settle (director, character lead):** at 2.25 times, a 1.75 m figure at the quay
+spawn measures about 88 px in a 720-line view and about 132 px at 1080p (it is about 39 plate px
+today). CAMERA.md says "about 100 to 110 px per person at 1080p", which matches PIPELINE.md's "96
+to 110 px in the 720-line plates" rather than 1080p. The scale (2.25) is built as decided; if
+100 to 110 px at 1080p is the target, the quay scale would be about 1.8 instead. One `@rules
+camera-outdoor` line changes it.
+
+Also done: the `/characters/` mount in game/serve.mjs (the one line, at the coordinator's request).
+The engine shell does not draw figures; drawing them through characters/runtime/draw2d.mjs belongs
+in the prototype shell (game/main.mjs). Stills at the new framing, looked at:
+game/engine/ui/shots/cam-world.png, cam-talk.png, cam-wide.png, cam-bar.png and the two 1080p
+captures. The plates are 1280 x 720, so they are magnified 2.25 times until the look work re-bakes
+them larger, as CAMERA.md plans.
+
+### Character lead, 2026-10-17: figures in the prototype, enemy bodies, plates
+
+**Systems engineer:** thank you for the `/characters/` mount. The figures are wired into
+`game/main.mjs` (the coordinator gave me that shell): `characters/runtime/prototype.mjs` drives
+the built cast (Lamb, Fennick, Marrow) through `draw2d.mjs`; characters without bodies yet (Keel,
+Sabine, Wenna, Merrow) still draw as `figures.mjs` cutouts under the same camera. The shell now
+frames at CAMERA.md's scale (2.25 on the quay, 1.75 in rooms), eases toward Lamb, snaps the window
+to whole plate pixels, and while talking frames Lamb and the nearest speaker left of the panel.
+`?wide` shows the whole plate; `?cutouts` restores the old figures. Clicks map through the window.
+I have not used your `ui/platecam.mjs` in this shell (it is built for the engine's own page); the
+maths match CAMERA.md. If you want one camera module for both, say so and I will switch.
+
+**Combat engineer:** the six specials now have their own clips (`characters/anim/specials.mjs`),
+and the archetypes have bodies: `warden` (holder: sou'wester, pale oilskin cape, chest waders, the
+hook in the right hand, the chain in the left) and `salvor` (skirmisher: pale canvas smock, red
+knitted cap, rope coil, mud bag, crowbar). COMBAT_ACTOR now maps `warden` to `holder` and `salvor`
+to `skirmisher`; Fennick and Marrow are themselves again. The rope is hidden from the throw.
+The prototype shell runs no fights; when the engine's page draws them, `actor.drive()` per frame
+with your `poseOf()` is all it needs.
+
+**Environment art lead:** the gameplay camera is 2.25 times closer on the quay and 1.75 in rooms
+(design/CAMERA.md). Today the shell upscales the 1280 x 720 plates, so the painting goes soft at
+that zoom (see characters/stills/06 to 08). For a re-bake: plates at 2.25 and 1.75 times the
+resolution (2880 x 1620 for the quay, 2240 x 1260 for rooms), same bake cameras, with the world
+buffers (`geo-pos.f32`, `geo-id.u8`) at the same resolution, since the figures hide behind the
+painting through them. `characters/runtime/draw2d.mjs` reads the plate's camera from
+`place.json`; nothing else in the figures changes with the bake.
+
+### Director, 2026-10-17: two Act 3 questions for the systems engineer
+
+1. Act 3's hill file (content/act3/hill3.lwd) defines an `@event` with `when:`, `cmd:` and `do:` in a
+   district file rather than in the shared world file. Please confirm the engine runs events from
+   any included file (the book collects them from every record, as far as the director can see).
+2. Please run the Act 3 validator with both earlier acts carried when the districts are in:
+   `--carry` currently names one act; Act 3 reads state set in Acts 1 and 2. A second `--carry`
+   (or a list) would let Act 3 show 0 warnings. Content's carried3.lwd declares the ids meanwhile.
+
+### Engineer replies, 2026-10-17 03:55Z: events in district files
+
+Confirmed. The engine collects every `@event` from every file an act loads (the root and all its
+`include:` files) into one list; the file it sits in does not matter. Checked on the real Act 3
+(content/act3/act3.lwd): `hill3.ev.lost` in hill3.lwd (now at 03:30, as you edited it) reads as
+27:30 on Act 3's 13:00-start clock, is not due at 03:29, comes due at 03:30 while its `when:`
+holds, plays its narration, runs `cmd: setLight hill_lane 0.03 0` (hill_lane 0.7 to 0.03) and
+`do: set(lampout.hill)`, and plays once. Outside a conversation the shell gets it from
+`G.nextScene()`; inside one it plays at the next node boundary. New test with an event in an
+included district file: tests/dialogue.test.mjs (99 tests pass).
+
+One thing to know when writing them: when several events are due at the same minute they play in
+file order, one at a time, and an event that offers a choice holds the rest until it is answered.
+At 03:30 on Act 3, ten other events are already due before `hill3.ev.lost` when the earlier ones
+have not been played (for example after a long wait), so a later event's `when:` is tested after
+the earlier ones have changed the night.
+
+### Director, 2026-10-17: the 03:30 queue (answer to 03:55Z)
+
+Thank you for confirming events in district files. At 03:30 the lamp-out events (one per chosen
+gale lamp left untended) print one line each and offer no choices, so they should pass in file
+order without holding anything; ev3.wreckers_climb at the same minute only sets a flag. If a
+choice-offering event is ever added at 03:30, content will stagger it by a minute.
+
+### Engineer replies, 2026-10-17 04:14Z: three acts validated together, and played through
+
+**Validator.** `--carry` repeats, oldest first; each earlier act is checked carrying the ones
+before it, and Act 3 may read every flag, variable and visited scene of Acts 1 and 2:
+`node tools/validate.mjs content/act3/act3.lwd --carry content/act1/act1.lwd --carry
+content/act2/act2.lwd`. Results: Act 1 0 errors, 0 warnings; Act 2 (carrying Act 1) 0 and 0;
+Act 3 (carrying both) 568 nodes, all reachable, 0 errors, 0 warnings (29 warnings before; the last
+one was `seen(mole2.collar.ok)`, an Act 2 scene, now known through the carry).
+
+**Playthrough harness.** `node tools/playthrough.mjs --build all` plays Act 1, Act 2 (the first
+daylight page, then Night 2) and Act 3 (the second daylight page, then the gale) end to end as
+each build, carrying the state between acts; `--random N --seed S` plays seeded random choices.
+Builds choose their own route at every gate and fall back when it fails (tools/policy.mjs: Fist
+the Wader, Tongue the Condoler, Shadow the Night Clerk, Hands the Fitter, Eye the Ledger Hand);
+fights are played by combat's scripted player; Tide Runs and sneaks walk straight for the goal.
+Full output: game/engine/tools/out/playthrough-builds.txt and playthrough-random.txt (and .json).
+
+| Run | Finished | Mother | Lamb | Causes at the end |
+|---|---|---|---|---|
+| Fist | yes | automated | brine | wreckers; wreckers1, trust2 |
+| Tongue | yes | keeper | keeper | wreckers; wreckers1, trust2 |
+| Shadow | yes | automated | brine | wreckers, trust, keeper, divided; wreckers1, trust2 |
+| Hands | yes | dark | brine | guild, wreckers; wreckers1, wreckers2 |
+| Eye | yes | dark | brine | keeper, wreckers; wreckers1, wreckers2 |
+| Random 1 to 8 | 7 of 8 | dark 4, keeper 2, automated 1 | brine 5, boat 1, typist 1 | varied |
+
+Every finished run reached `game.end` with the verdict sent (quest a3.verdict at sent), a Mother
+fate and a Lamb fate. What needs you:
+1. **A dead end in Act 3:** `mole3.bulb.top` (random run 1, 04:06). Without the adaptor the fit
+   option is hidden; once both pencil checks have failed they lock ("Nothing has changed"), and
+   the scene has no other option, so play cannot leave it. It needs a way out (a leave option,
+   or the fail nodes not returning here).
+2. **Events that never fired in any of the 13 runs:** Act 1 `ev.lamps_three` (no run lit three
+   lamps); Act 3 `ev3.lamps_judged`, `ev3.wreck_steps`, `ev3.wreck_balance`, `ev3.wreck_hill`,
+   `ev3.wreck_bulb`, `gut3.ev.lampout`, and `ev3.dawn` (the Brine reaches the dawn first every
+   time, which may be as meant). These may be correct and rare, or their conditions may never
+   hold together; worth a look at the wreck_* conditions in particular.
+3. **Endings reached:** Mother was never crown or bulb, Lamb never post, in any run; Lamb was
+   brine in 10 of 12 finished runs.
+4. **Flags read but never set on a path:** 140 to 190 per run, as expected for exclusive routes;
+   the per-run lists are in the output files.
+
+**For the combat engineer:** `brine2.brawl` did not end in ten minutes of play with your
+scripted player in two runs (Fist, random 8); the harness closes it as down to go on and reports
+it. Most other fights end in down with the scripted player (e3.zealots down 8 of 8,
+e3.station.four 9 of 10); fine if that player is meant to be weak.
+
+**Engine fixes the playthroughs found:**
+- `@meta end-clock` and `at-end` were not acted on; now the act goes to `at-end` when the clock
+  reaches `end-clock` (as an event, at the next boundary). Act 1 uses it.
+- A bare word that is also a voice, compartment or term was read as that name in a variable
+  assignment or comparison: `fate_mother = dark` stored Lamb's DARK level (Mother's fate came out
+  as 1, 2 or 3), and `seenas_guild = nose` would store the NOSE attribute. Words a variable
+  declares in `values:` now mean the word. Eight variables across the acts had such collisions
+  (quay.cuffs, seenas_guild, day_calls, hill_in, spit_way, brine3.step, fate_mother,
+  mole3.target).
+
+### Combat engineer, 2026-10-17 about 05:00Z: the brawl, and the Fist build
+
+- **The brawl never ended** because `brine2.brawl` (and Act 1's `e.brawl`) names no foes, only
+  `param: brawl`: with nobody to beat, no rule could end it. A brawl now fills itself with five
+  brawlers, each on a side of their own, who go for whoever is nearest; it ends when Lamb is the
+  last standing (win), goes down, walks out by an exit (fled), or after a minute (yield: it breaks
+  up). Any encounter with no opponents at all now ends at once instead of hanging.
+- **The sheet reaches the fight.** `fight.start` now carries Lamb's numbers (`lamb: { standing,
+  breath, poise, grip, tool, load, learned, levels }`), and `COMBAT_TRACE=1` prints them. On the
+  Fist route Lamb fights with COAT 4, KNEES 7 to 9, BALLAST 5 to 8, GRIP 6 to 8, the claims case,
+  and no taught moves (the route never takes a lesson; the policy may want Merrow's hook-pull).
+- **The scripted player now plays like the build** (it reads Lamb's levels). The fighting build is
+  stronger in its own stats only; other builds are unchanged. Harness, fights won (yield counts):
+  Fist 6 of 7 (down only to the dogs); Tongue 1 of 2; Shadow 0 of 2; Hands 1 of 3; Eye 0 of 6.
+  Details in game/engine/combat/TUNING.md.
+- For your harness, if useful: the scripted player never takes a talk exit or a prop; a Tongue
+  run that pressed `talk` on `fight.talk.offer` would show whether talk exits carry that build.
+
+### Character lead (prototype shell owner), 2026-10-17: the v2 plates broke the prototype; a stopgap
+
+**Environment art lead:** your v2 bakes for the quay and the weigh-house (4800 x 2560 and
+3320 x 2400, orthographic, one-world coordinates, world buffers at `geoScale`) replaced the v1 files
+in `content/quay` and `content/weigh` in place. The prototype shell (`game/places.mjs`,
+`game/world.mjs`, `game/look.mjs`) reads plates at the canvas size, with world buffers at plate
+resolution, and its walk grids, hotspots and lamp positions are the old geometry, so the game stopped
+loading ("the source image cannot be decoded", then nothing). Stopgap, so it stays playable:
+- I am re-baking the v1 quay and weigh-house into `content-v1/` (my lane, Idle, one job), with the
+  old `render/bake_place.mjs`; your `content/` is untouched.
+- `game/places.mjs` loads a place from `/content-v1/` when its `content/` plate says `version: 2`
+  (a console warning says so); `game/serve.mjs` mounts `/content-v1/`.
+
+**Ask (A3):** when the harbour world settles, tell me here, and I will give the shell a v2 path: the
+window drawn from the big plate at CAMERA.md's density, world buffers read at `geoScale`, the look's
+water and fog computed only for the visible window, and walk grids, hotspots and lamps taken from
+`place.json` (`walk`, `marks.spots`, `marks.lamps`, `paths`) instead of `game/world.mjs`. If you can,
+write future bakes to `content/<place>/` only once the shell reads that version, or bake to a
+sibling folder until then.
+
+### Engineer replies, 2026-10-17 04:28Z: the harness chooses by intent; re-run with menus shuffled
+
+**What changed in the harness** (tools/policy.mjs, tools/playthrough.mjs): builds no longer read
+label words, no longer dock options that start with "Go", and no longer break ties by menu order.
+They choose by what an option does:
+- its `verb:` tag (548 of the 2,017 options carry one), mapped to a style (hide, wait,
+  eavesdrop, douse, throw: Shadow; rig, pry, cutpower, light, salvage, weigh, mark, wade: Hands;
+  climb, carry: Fist; read: Eye);
+- its kind (claim), a check's voice and compartment, and what its scenes start and set: a fight
+  (and whether the encounter opens from a sneak or has props), a sneak, a Tide Run, a lamp
+  project, salvage pieces, `said.*` (talk), `<district>.move_*` (a lesson);
+- the build's ending preference: Fist keeper/keeper, Tongue brine/automated, Shadow boat/dark,
+  Hands post/bulb, Eye typist/crown (second choices behind them). The flags each ending needs are
+  read from your own fate rules (the `if: ... => fate_mother = ...` lines), not written by hand.
+- ties break by a seeded hash of the option's key, and every menu is shuffled by a seeded
+  permutation before choosing. Each build was played under three different shuffles: identical
+  results each time, for all five.
+- In fights: Tongue takes a talk exit as soon as one is offered; Hands walks to a lit lamp or a
+  closed sluice and works it first; Fist holds the best weapon it carries (hammer, pole,
+  boathook, stick) and takes lessons on its route; Shadow prefers fights that open from a sneak.
+- Hands works every lamp-project stage it can pay for between beats.
+**Please do not reword options for the harness**; tag them instead (`{verb: ...}`) where the
+intent is not already visible in what the option does.
+
+**Results** (full output in game/engine/tools/out/: playthrough-summary.txt, -builds, -random):
+
+| Build | Finished | Fights won | Mother | Lamb | Most-taken routes at its gates |
+|---|---|---|---|---|---|
+| Fist | yes | 6 of 10 | automated | brine | verb:fist 35, talk 26, check:coat 15, fight 10 |
+| Tongue | yes | 1 of 1 | keeper | brine | talk 34, check:hat 21, verb:eye 17 |
+| Shadow | yes | 0 of 3 | automated | boat | verb:shadow 29, talk 22, verb:fist 14 |
+| Hands | yes | 1 of 5 | automated | post | verb:hands 22, verb:shadow 17, talk 15, check:coat 14 |
+| Eye | yes | 1 of 4 | automated | post | verb:eye 29, talk 21, verb:shadow 21, check:pen 12 |
+
+Random, 20 seeds with shuffled menus: 17 finished. Mother: dark 11, automated 6. Lamb: brine 9,
+boat 4, typist 4. Six distinct Mother and Lamb pairs. Act 3 causes: sea2 10, trust2 6, sea1 6,
+wreckers1 5, guild 4, trust 1, keeper 1, shelf2 1. Across all 35 runs Mother was never crown or
+bulb, and only once keeper; Lamb was never keeper.
+
+**For you:**
+1. **Act 1's dawn desk has no way to run out.** The three random runs that did not finish
+   circled `dawn.write`: "Write: the act of the sea" leads to `dawn.sea.weigh`, whose "Put the
+   pencil down" returns to the desk; with no cause written, the send option never appears and
+   nothing after 06:10 closes the act. A person would not circle for six hours, but a time limit
+   (the tube at 06:30, say) or a send from the sea line would close it. No build hit this.
+2. **Events that never fired in any of the 35 runs:** Act 1 `ev.hobb_runs`, `ev.lamps_three`;
+   Act 3 `ev3.lamps_judged`, `ev3.wreck_steps`, `ev3.wreck_balance`, `ev3.wreck_hill`,
+   `ev3.wreck_bulb`, `gut3.ev.lampout`. Even with Hands paying for every lamp stage it can, no
+   run lit three Act 1 lamps; the stages need pieces few paths pick up.
+3. The Act 3 dead end at `mole3.bulb.top` was not hit this time (fixed or not reached).
+
+**Engine fix found by this run:** a full meter's scene (or an event) that interrupts play and ends
+with `exit:` used to close the whole conversation underneath, so waking from a nod in the middle
+of Act 1's dawn lost the dawn and the act never ended (the Hands build circled for days). An
+interruption that ends with `exit:` now returns to what it interrupted. Tested.
+
+**For the combat engineer:** `e.switchroom` did not end in ten minutes once (random seed 8).
+**Camera, for the director:** the quay plate is now re-baked at 4800 x 2560 orthographic; at 2.25
+a figure there is about 115 px at 1080p (77 px in 720 lines), close to CAMERA.md's 100 to 110.
+
+### Engineer replies, 2026-10-17 04:30Z: final numbers (supersede the 04:28Z table)
+
+After the 04:28Z entry I found the builds were not reaching lessons: a lesson sits two choices
+past the option that starts its scene. Builds now value a lesson, a sneak-opened fight, a fight
+with props and a lamp project by how many choices away it is (computed once per act, decaying
+with distance). Re-run, each build under three menu shuffles (identical results), 20 random seeds:
+
+| Build | Finished | Fights won | Moves learned | Weapon | Mother | Lamb |
+|---|---|---|---|---|---|---|
+| Fist | yes | 6 of 7 | the stool (Brine) | boathook | automated | brine |
+| Tongue | yes | 0 of 0 (no fight on its path) | none | case | keeper | brine |
+| Shadow | yes | 0 of 2 | none | case | automated | boat |
+| Hands | yes | 2 of 6 | none | boathook | **bulb** | **post** (its preferred ending) |
+| Eye | yes | 0 of 3 | none | lantern in hand | automated | post |
+
+Random: 17 of 20 finished (the three others circle Act 1's dawn desk, as in 04:28Z item 1);
+Mother dark 11, automated 6; Lamb brine 9, boat 4, typist 4; 6 distinct pairs.
+Events that never fired in any of the 35 runs: Act 1 `ev.hobb_runs` (Hands now lights three
+lamps, so `ev.lamps_three` fires); Act 3 `ev3.lamps_judged`, `ev3.wreck_steps`,
+`ev3.wreck_balance`, `ev3.wreck_hill`, `ev3.wreck_bulb`, `ev3.collier_through`,
+`gut3.ev.lampout`. No dead ends hit; `e.switchroom` again failed to end once (combat).
+Not yet reached by any build: the feint, hook-pull and mud-step lessons (each behind a sincere
+answer in a scene the builds rarely enter), a talk exit taken mid-fight (Tongue met no fight),
+and a fight opened from a sneak.
+
+### Environment art lead, 2026-10-17: plates v2 for the closer camera (answers A3)
+
+**To the systems engineer and the character lead.** The plates are re-baked for CAMERA.md and the
+harbour world is settled (coordinates of the Phase 3 quay kept: x along the quay, y up, quay top
+y = 0, the edge at z = 0, the floor at about y = -3.2). Every v2 plate says `"version": 2` in its
+`place.json`. What changed, and what the shells need:
+
+1. **Density, not a zoom.** Plates are painted at 1080p display density: one plate pixel is one
+   screen pixel at 1920 x 1080. Outdoors 80 px a metre (a person about 132 px, CAMERA.md's
+   corrected figure); rooms 190 px a metre (1.75 times the v1 room framing). So the camera scale
+   for a v2 plate is `place.json` `near` (= plate width / 1920), which makes the zoom exactly 1.
+   With `camera-outdoor: 2.25` against the whole plate, the quay (4800 wide) shows at 0.9 and
+   figures measure about 118 px; please read `near` for v2 plates, and keep 2.25 and 1.75 for v1.
+   Every plate is at least 1920 x 1080. Pull-backs: scale 1 is still the whole plate; three
+   painted wide views are also baked (item 6).
+2. **Orthographic camera.** `camera` is the paint-over iso camera with `ortho: true` and `scale`
+   (the half-height in metres); `project()` from raw-native's paintover/camera.mjs gives plate
+   pixels. `draw2d.mjs` computes pixels per metre from `fovY`: for v2 use `pxPerMetre`.
+3. **World buffers.** `geo-id.u8` is full size; `geo-pos.f32` is half size (`geoScale: 0.5`,
+   sky y = 1000), to keep a 4800 x 2560 plate's buffer at 37 MB rather than 147 MB. Depth for
+   hiding figures can be read from it at half size (what render/v2/figs.mjs does for the stills).
+4. **Lens layers.** `flare` is now the starburst only, plus `streak`, `halo`, and `ca` (about the
+   plate centre, small; drop it if it looks wrong while scrolling). Ghosts are not baked: they
+   mirror about the screen centre and a scrolling plate has none. If you want them, draw them at
+   run time from the visible bright sources.
+5. **Marks for routes, stealth and fights** (`place.json` `marks`, world coordinates):
+   `spots` (id, verb, at, note: the switch box, the sluice, the hand line, the drowned lamp's nail,
+   the cells grating, the substation louvres and candle timer, the stopcock, the painters on the
+   Spit, and so on, with the script line they come from), `hides` (id, at, r, note), `exits`,
+   `lamps` (every sodium head, Mother's lens and pilot, the white arcs, the Old Bulb), `paths`
+   (the quay steps, the gully). `walk` lists walkable surface ids; `footing` maps ids to the
+   footing words of `@place footing:` (stone, mud, water, weed, shingle, wood, sand). These are
+   proposals for `@spot` and `@hide` records; spellings follow SYSTEMS section 7 where it had one.
+6. **Plates** (content/<name>/; variants in `variantInfo` with hour and weather):
+
+| Plate | Covers @place | Variants | Dither |
+|---|---|---|---|
+| quay | quay, steps, mole_steps, harbour (outside), weigh_out, roof (outside) | night 23:00, rain 02:00, frost 04:40 (and Night 2 after 01:00), dawn 06:10 | dark (blackout) |
+| quay_day | the interlude's day_quay | day 14:00, late 16:00 | |
+| floor | floor, gully, drowned, fish | night 22:50, rain 23:40 | fog (the Flats), dark |
+| mole, mole_day | mole, the KEEPER door, the ferry at the mole steps | night, frost; day | dark |
+| stairs | stairs (a tall plate that scrolls up) | dark, lit, frost | |
+| lamp | lamproom, gallery door | lit, dark, frost (e.hammer) | |
+| brine, brine_day | brine (bar) | night, wethour; day (chairs on tables) | dark (the stove) |
+| room, room_day | room (above the Brine), the interlude's day_room | night; day (stripes through the planking) | |
+| weigh, weigh_day | weigh_in, tube; the interlude's day_tube | night; day | dark (lights-out vote) |
+| office | harbour (inside) and the cells below, one section | night, late 05:30 | dark |
+| gut, gut_day | gut, gutter (lane); the interlude's day_smoke | night, rigged (l.gut_wires), frozen (Night 2), dark; day | palette-locked |
+| hill | hill_lane, substation, Crake's house outside | lit, frost, dark (switch thrown) | |
+| station | station | lit, dark | |
+| gasholder | gas_frame, gas_altar | candles, opening 00:45, bulb (lit), frost | |
+| ropewalk | rope_lane, telegraph and Gannet house outside, gannet_wall | night, frost, dark (doused) | |
+| spit | patience, ann_tull, the Old Light | stars, lanterns, frost | |
+| wide_arrival, wide_blackout, wide_dawn | the three pull-backs (1920 x 1080) | night 22:41; dither; dawn | |
+
+   Not built: crake_hall, crake_study, gas_vestry inside, telegraph and gannet_house inside, the
+   Guild hall, smokehouse and net loft insides, the oven and yard as their own rooms (the yard is
+   on the quay plate), the ferry deck.
+
+7. **Fight ground (to the combat engineer).** Act 2 plates are laid on your arenas: world x, z =
+   arena x, z, and y = the arena height minus its datum. `station` matches HILL (white lamps over
+   x 3, 7, 11 at z 1, door 6..8 at z 10); proposed: add the stove as cover at (1.6, 7.4), since
+   the script says "nothing to hide behind but the stove". `gasholder` matches GASHOLDER (dais,
+   the Old Bulb at 10, 5, the four standing lights). `ropewalk` keeps your two lamps at x 6 and 19
+   (the script has one lamp halfway; your two read better in a 26 m arena, so I kept them).
+   `spit` follows SPIT's height map (decks, channel, lantern at 18, 4, painter line at 14.5, 4.5).
+   Act 1's QUAY placeholder does not match the quay plate (its lamps at x 3.5, 10.5, 17.5 do match
+   three of the plate's sodium posts: x -24, -17, -10, 3.5, 10.5, 17.5, all at z -0.75, heads at
+   z -1.3). I propose QUAY's cells map to world x = arena x, z = arena z - 9.6 (the house fronts at
+   z -9.6 to the edge at 0), with the Brine, the weigh-house and the harbour office as solid cells;
+   I can write that grid from the plate's world buffer if you want it.
+8. **No raw-native change was needed.** The bake glue is in render/ (bake2.mjs and render/v2/);
+   it calls the engine's sodium shading, painter, lens plan, dither lighting and palette lighting.
+
+### Combat engineer, 2026-10-17 about 05:40Z: every fight ends
+
+- **e.switchroom.** It ended in every seeded test I ran (idle, fighting, taking the talk exit);
+  the run that hung was the fifth switchroom fight in a row of random run 8, a state I could not
+  rebuild. Two guarantees close the class instead: opponents who search three seconds without
+  finding Lamb now head for where Lamb is (they no longer forget and stand still), and every
+  encounter breaks off at 120 seconds (yield if Lamb has hurt them more than they hurt Lamb, else
+  fled; the brawl at 60). Random run 8 now finishes.
+- **The test you asked for:** combat/tests/every.test.mjs runs every encounter in Acts 1 to 3 with
+  Lamb standing still and with the scripted fighter, and fails if any has no outcome within 125
+  seconds. All pass; the only ones that reach the cap are sneak openings with an idle Lamb.
+- **New arena:** oldlight (Act 3's e3.oldlight and its sneak): it had none and fell back to the
+  floor, where the gale's tide drowned Lamb in seconds.
+- **For the director:** in random run 8 Lamb fights e.switchroom six times and e3.ice2 five times
+  running; the down scenes seem to lead back to the same fight. Worth a look at where
+  weigh2.fight.room.down and the ice fight's down node send play.
+
+### Director replies, 2026-10-17: down loops, the dawn desk, the Old Light
+- Down loops are fixed in content. After going down, a lost fight is never offered again on the same spot: either the encounter closes (a flag, listed in PROGRESS 83) or Lamb is moved. The switch room also closes after yield or fled (weigh2.door_held), since those two were looping as well. In 30 seeds plus 5 builds, no fight repeats more than twice in any run.
+- Act 1 dawn desk: `dawn.write` has `alt: dawn.late ? clock >= 06:15`. Pip takes the canister at quarter past. With no cause written, the claim goes up as filed (cause.wreckers).
+- e3.oldlight starts only from `oldlight.strippers` (clock >= 00:28) and its two fail branches. quay3.row.ok waits until 00:15 before going to `oldlight.hub`. Every other boat route already goes through quay3.eyewait.
+- New fate value `fate_lamb = road` (dawn3.road, the coast road on foot). Please add it to the ending preferences if the builds need it. G3: the collier now needs a leading mark. That is Mother burning, steps post plus balance, or hill (or hill3.bearing) plus the Old Bulb, as set in `ev3.collier_through` and `mole3.collier`.
+
+### Engineer replies, 2026-10-17 04:45Z: the attentive player and the collier
+
+**Harness:** `fate_lamb = road` is now an ending preference (Shadow's first, Fist's second).
+`--attentive` layers an attentive player on any build or random run: at Act 2's dawn lamp choice
+it keeps Mother and the leading-mark pair the menu can complete (steps post with balance, or hill
+with the Old Bulb), it takes options that keep Mother on (`mole3.mother = on`), it takes options
+that tend its lamps or restrike them, and it avoids any that put one out. Each run now records
+the collier's outcome and the rule's inputs at the end. (A harness bug found on the way: the
+reader of an option's effects skipped number assignments, so `light_mother = 1` was invisible to
+it; fixed before these numbers.) Output: game/engine/tools/out/collier-summary.txt and
+playthrough-att_* / -pl_*.
+
+| Players | Runs | Collier through | Spit |
+|---|---|---|---|
+| Builds, plain | 5 | 0 | 5 |
+| Builds, attentive | 5 | 1 | 4 |
+| Random, plain (seeds 1 to 20) | 20 | 2 | 18 |
+| Random, attentive (seeds 1 to 20) | 20 | 1 | 19 |
+
+So attentiveness as defined changes almost nothing: 2 of 25 attentive runs against 2 of 25 plain.
+The reason is that none of the three marks is usually available to choose:
+1. **Steps and balance: never offered in 50 runs.** The balance lamp was never lit in Act 1 in any
+   run (`lamp.balance.lit` comes only from `project(l.balance)` at weigh.lwd:565, which needs a
+   wick and a fill of paraffin carried up; three places in Act 1 give either). Without it
+   `dawn2.balance` never appears, so the pair cannot be kept however attentive the player is.
+2. **Hill and Old Bulb: rarely offered.** The bulb option needs the procession stopped or a
+   bulb ending in mole2; random play kept the bulb in 3 of 20. When offered, attentive players
+   take it.
+3. **Mother: lost in the gale in 17 to 18 of 20 random runs and 4 of 5 attentive builds.**
+   `loss3.mother` is set by the wrecker scenes in the lamp room (mole3.lwd lines 583, 639, 673,
+   687, 799): if Lamb does not stop the wreckers at Mother, she is off at 04:05 whatever was
+   kept at Act 2's dawn. Keeping her at dawn (all 20 attentive random runs did) does not carry
+   her through the gale on its own.
+The hill lamp also went out during the gale in 14 to 17 of 20 random runs (`lampout.hill`).
+
+If the rule is meant to reward players who act on Keel's hint, the gating is upstream of the
+hint: the balance lamp in Act 1, the bulb's availability in Act 2, and the wrecker scene at
+Mother in Act 3. Those are design calls for you; the harness reports them.
+
+Road: reached in 7 of 40 random runs (3 plain, 4 attentive), never by a build (it is offered only
+when the collier did not come through and Mother is neither crown nor bulb, among other terms).
+- Collier test (director, 2026-10-17): I ran my own scratch attentive policy, a copy of playthrough.mjs with an override on top of the random scorer. It is in my scratchpad and not in the repo. Results: attentive with the Old Light 12 saved of 12, Mother alone 1 of 12, random 7 of 30. Your attentive policy will be the one of record; please report its save rate against these numbers. Content change that affects you: every lamp-room action in mole3 now returns through `mole3.lamp`, so its 03:30 wreckers alt fires while Lamb is in the room. There is also a new `mole3.sit` (cost 10, verb wait). Hands now ends with Mother dark instead of bulb.
+- Collier round 2 (director): the content now offers the steps post and the balance at dawn2 whatever Act 1 did; Act 1 has two easier balance routes (weigh.roof.lantern, weigh.roof.hobb.ok); and mole3 has `mole3.wreck.blind.ok` (THE DARK). Your `--attentive` random run saved 0 of 20, because at dawn2 it takes "Let the town choose without the Shelf": `dawn2.abstain` assigns light_mother, light_steps and light_hill in one choice, so it collects +6 and two pair bonuses. Please score abstain as the town's choice, not the attentive player's. Also, the attentive player made the day2 promise to Wenna (said.day2_mother) and then was not on the mole after 21:20, so Mother went off. It should either keep the promise or not make it. My scratch driver, which acts on the same hints by hand, saved 10 of 12 without the Old Light and 12 of 12 with it; plain random saved 7 of 20.
+
+### Engineer replies, 2026-10-17 04:54Z: the collier, measured with the harness of record
+
+Both policy bugs you found were real and are fixed; two more surfaced while fixing them.
+- **The lamp choice is scored as a plan.** A set of kept lamps is worth 10 per leading-mark pair
+  (steps post with balance, hill with the Old Bulb) and 3 for Mother; an option is worth what it
+  adds to the best set still reachable with the slots left. "Let the town choose" is valued once,
+  for the set it makes (Mother, hill, steps: no pair), so it no longer wins.
+- **Found while fixing:** (a) the reader of "what the dawn options need" took the options' own
+  gates (`light_bulb == 0`) as goals, so wiping the board scored 8.5; gate terms are now
+  excluded; (b) a wipe after a pair is kept now counts as throwing the pair away.
+- **The promise to Wenna:** the attentive player does not make the day2 promise
+  (`said.day2_mother`) it may not keep.
+- **Defending Mother:** from 02:30 to 04:00 it heads for the wreckers' place by the fewest choices
+  (strong enough to beat the revisit penalty; before that it stayed in the Ropewalk), avoids any
+  option within reach of a scene that sets `loss3.mother`, and takes its build's own B6 option.
+- **The Old Light:** during the eye it heads for the scene that sets `oldlight.lanterns`.
+- The collier rule's inputs are now read at 04:05, when its outcome is set, not at the end.
+
+**Results** (content unchanged since 04:48:18Z for every run below):
+
+| Players | Collier through | What held at 04:05 in the saved runs |
+|---|---|---|
+| Builds, plain | 4 of 5 | the lantern 3, Mother 1 |
+| Builds, attentive | 4 of 5 | Mother 4, steps and balance 2 |
+| Random, plain (seeds 1 to 20) | 9 of 20 | Mother 4, steps and balance 3, the lantern 1 |
+| Random, attentive (seeds 1 to 20) | **20 of 20** | steps and balance 17, Mother 5, hill and bulb 2 |
+
+These replace your scratch numbers (attentive 10 to 12 of 12, random 7 of 20). The attentive
+player never hung the lantern in the Old Light: it either already had a pair or Mother, or did
+not reach the scene in the eye's window, so the lantern's own effect is not measured here. The
+attentive Eye build is the one loss: it kept Mother, the hill and the bulb, then lost Mother to
+the wreckers and both hill and bulb to lampout during the gale.
+All 50 runs finished the game. Output: game/engine/tools/out/collier-summary.txt,
+playthrough-att_* and -pl_*.
+- Attentive Eye loss (director): checked. In mole3.wreck.letter.fail the attentive Eye took "Stand aside" (mole3.wreck.let, which sets loss3.mother) instead of the fight. Avoiding the loss there should outweigh the Eye's fight penalty. Content addition: a claim at mole3.wreck.start, "Open the Daybook at their names", shown when has(strippers.named), which leads to mole3.wreck.waited. STATE.md has your numbers as the record.
+
+**Combat engineer (gear, 2026-10-17):** for the author's new direction the figures are the same in
+every mode; please draw fights on the plate through `characters/runtime/draw2d.mjs` and retire the
+arena placeholders when you can. Clip lookup is now weapon first: name a weapon special
+`<weapon>.special_<name>` (without `w.`) and it plays for that weapon only. When you add charge holds
+and running attacks, name them `<class>.heavy_charge` and `<class>.run_light` / `<class>.run_heavy` in
+your export and I will key them. Plan: characters/GEAR.md.
+
+### Engineer replies, 2026-10-17 05:01Z: one look (fights in the world) and the build layer
+
+Author direction relayed by the coordinator (2026-10-17): the look must not alternate between
+exploring, talking and fighting.
+
+**Done in game/engine/ (not combat/):**
+- The play screen no longer switches screens for a fight. `beat.fight` now plays in the plate
+  view under the game camera (ui/fightlayer.mjs over ui/platecam.mjs): the camera keeps the
+  area's closeness and pulls back only as far as it must to keep every fighter in view
+  (world/stage.mjs `fightBounds`, through `frame({ bounds })`). The HUD (Standing, Breath, each
+  opponent), the talk-exit offer and the result are overlays; the keys sit folded in a corner.
+  The talk panel and the "what is here" list step aside while a fight plays and come back after.
+  Still: game/engine/ui/shots/fight-inworld.png (and -1080).
+- ui/fight.mjs is now a three-line wrapper that mounts the same layer on whatever stage it is
+  given, so the combat engineer's harness (combat/tools/fightview.mjs) runs unchanged (checked
+  headless: outcome reached, no console messages). Keys are in ui/fightkeys.mjs.
+- LOOK-UNIFIED.md does not exist yet; the overlays use the talk panel's paper style for now and
+  will follow that document when it lands. The structure (where each overlay sits, what it
+  shows) does not depend on the style.
+
+**For the environment art lead (plates with fight ground):** an area line places a fight's arena
+on its plate: `@area ... arena: <arena id> x y z yaw` (the arena's (0, 0) in the area's world
+metres, turned yaw degrees about the vertical; repeatable, one per arena that plays there; an
+arena line without an id matches any). Without one, the arena is laid with its middle on Lamb's
+position, unturned, which is what the still shows. The arena ids are combat's (`floor`, `quay`,
+`lamp`, `hill`, `spit`, `gasholder`, `ropewalk`, `oldlight`); their sizes are in
+combat/data/arenas*.mjs.
+
+**For the character lead (figures):** `setFigureDrawer(fn)` in ui/fightlayer.mjs replaces the
+placeholder ink figures: `fn(g, F, { x, y, ppm, face, down, W })` with (x, y) the feet on screen,
+`ppm` screen pixels per metre at that spot, `F` combat's fighter (pose through combat's
+`poseOf(W, F)`). The plate camera also offers `toScreen(worldPoint)`, `scaleAt(worldPoint)` and
+`frameNow()` (left, top, zoom) for drawActor's `view`.
+
+**For the combat engineer:** nothing to change; fights still run through `G.ext.combat` and
+`G.loop` at your clock rate. If the fight wants the plate's true ground heights later, the stage
+can hand you the world point of any arena cell.
+
+**For the director (the action-RPG build layer, ready for your design):**
+- `@item requires: <condition>` gates wearing or wielding (`skill.grip >= 6 & level >= 2`).
+- `@item upgrade: n | needs: id n, id n | mod: target +n | about: text` (repeatable, stage by
+  stage); `G.inv.upgrade(id)`, `G.inv.upgradeWhy(id)`, `G.inv.level(id)`.
+- `G.inv.gear(slot)` gives combat the piece, its upgrade level and its modifiers now; targets such
+  as `weapon.reach` or `weapon.damage` are readable through `G.sheet.mods(target)`.
+- Levels already exist (`xp`, `level`, `points`, `@rules xp-per-level`, `points-per-level`).
+- Saves are version 4 (upgrade levels; older saves upgrade on load).
+Tests: 106 engine tests, 172 with combat's, all pass; five builds still finish; all three acts
+validate clean.
+
+### Environment art lead, 2026-10-17: one look (design/LOOK-UNIFIED.md) and fight ground on the plates
+
+**To all three.** The author's direction (fights and lighting liked; the style must not switch with
+what is happening) is answered in design/LOOK-UNIFIED.md: one plate, one camera, one light model,
+figures and effects in the plate's style, panels on the talk panel's paper. Rules R1 to R7 name
+what each of you builds. Stills of the same place walking, talking and fighting, before and after:
+render/stills/modes/ (before: ui/shots cam-world-1080, cam-talk-1080, fight, fight-inworld).
+
+**Fight ground (systems engineer, combat engineer).** Every plate with a set fight now carries
+`content/<plate>/arena-<id>.json`, sampled from the painted world on a 1 m grid in your arena
+format, with solid cells under the painting's walls, benches, barrels and stalls, lights and anchors
+from the place's own lamps and rig spots, spawns on open ground, exits, the light each cell stands
+in per variant (`light[variant]`, 0 to 1, shadows included, for the sight rule and the stealth
+layer), and the stage line. `place.json` lists them under `arenas` and carries `lights[variant]`.
+In fight-inworld.png a fighter stands on the Brine's roof because the quay had no stage line and
+the arena centred on Lamb; with these lines that stops.
+
+| Plate | Arena id (the encounters' `area:` key) | Stage line | Size | Arena height to world y |
+|---|---|---|---|---|
+| quay | quay | `arena: quay 7 0 -9.4 0` | 17 x 9 | y = -3.2 + (h + 0.3) / 1.72 |
+| floor | floor (e.salvors, e.gulls) | `arena: floor -20 0 4 0` | 15 x 13 | same |
+| floor | gully (e.eels) | `arena: gully -2 0 3 0` | 16 x 12 | same |
+| mole | mole | `arena: mole 22 0 -3.6 0` | 16 x 4 | same |
+| brine | brine (e.brawl) | `arena: brine -6 -6.5 -3.2 0` | 12 x 7 | y = h - 6.5 |
+| weigh | weigh (e.afterdark, e.trial) | `arena: weigh -6 -6.5 -5 0` | 12 x 10 | y = h - 6.5 |
+| lamp | lamp (e.hammer) | `arena: lamp -4 -30 -4 0` | 8 x 8 | y = h - 30 |
+| gut | gut, dogs (e.dogs) | `arena: gut -8 -6.2 -4 0`, `arena: dogs 1.8 -6.2 2.4 0` | 16 x 8, 4 x 4 | y = h - 6.2 |
+| station | hill (e.station) | `arena: hill 0 -40 0 0` | 14 x 10 | y = h - 40 |
+| gasholder | gasholder (e.zealots) | `arena: gasholder 0 -8 0 0` | 20 x 11 | y = h - 8 |
+| ropewalk | ropewalk | `arena: ropewalk 0 -9 0 0` | 26 x 6 | y = h - 9 |
+| spit | spit (e.strippers) | `arena: spit 0 0 0 0` | 22 x 12 | y = h |
+
+- The stage line's y is minus the arena's datum, so `o.y + h` lands on the painted floor. The
+  harbour plates compress the tide (the quay stands 3.2 m over the floor; the tide spans about 6 m),
+  so their arenas use `h = -0.3 + 1.72 (y + 3.2)`: the floor's mud at -0.3, the gully at -0.8, the
+  quay top at 5.2 (it floods only near the 05:10 high water, as the script says), the mole at 5.8.
+  The game draws the water on those plates at `y = -3.2 + (tide + 0.3) / 1.72`.
+- **Where the lines go.** No `@area` records exist in the content today, and `.lwd` files are not
+  mine to write. Two ways: the director adds `arena:` lines to the areas when they are written, or
+  `stageFor` reads `place.json` `arenas` of the plate in view by arena id (my suggestion: no content
+  change, and the art and the ground can never drift apart, because the file comes from the plate).
+- **Combat engineer:** these replace the placeholder Act 1 grids (QUAY, FLOOR, BRINE, WEIGH, GUT,
+  LAMP) if you accept them; the Act 2 ones match your HILL, GASHOLDER, ROPEWALK and SPIT by
+  construction (the station adds the stove as a solid cell at 1, 7; the gasholder's dais and Bulb
+  are where yours are). Legends use many symbols because heights are kept to 0.1 m; merge freely.
+  Regenerate any time with `node render/tools/arena_from_plate.mjs <plate> <id> x0 z0 cols rows --datum <harbour|metres>`.
+
+### Director to combat engineer and systems engineer, 2026-10-17: section 19 (character building) is approved; match the mechanics
+Read design/SYSTEMS-FULL.md section 19, especially 19.2 (one sheet, four pillars), 19.5 and 19.5a (21 tools, movesets, specials, fittings), 19.6 (load), 19.7 (bench) and 19.9 (teachers). Data is in content/act1/combat.lwd (the six Act 1 tools, now with needs/scale/special/fittings) and the new content/act1/gear.lwd (15 more tools, clothing, s.bronze, temper and fitting recipes), included by all three acts. Validator 0/0. Where your provisional combat/data/build.mjs differs:
+1. **Requirements and scaling keys** are compartments (coat, nose, pen, hat) and voices (grip, ballast, knees, pride, salt, dark, carbon, sum, undertow, formletter, condolence, smell). Grades are strong, fair and slight. Map them to your GRADES as you like (strong about "hard", fair about "fair", slight about half of fair). Please read them from the records rather than from WEAPONS.
+2. **The four pillars.** COAT gives Standing (10 + 2 x COAT), Poise from BALLAST, and the **load limit** (19.6 says COAT, where yours says KNEES; please move it). NOSE gives the evasion window (THE DARK, SALT). PEN gives the read window (UNDERTOW, CARBON), the weak point (CARBON, PRECEDENT) and a Breath discount from SUM, capped at 40 percent. HAT gives the yield threshold (sum of HAT voices) and the **Composure** maximum. Composure is your grit: keep grit's fill rules, and let HAT raise its maximum (4 + 2 x HAT in my units; scale to your 100 as needed). Learned moves and talk exits mid-fight spend it.
+3. **Specials** (`special:` on each record) are the tool arts. Each is a distinct behaviour, listed in 19.5a: brace (auto-catch, then the riposte opens a talk exit), weathercock, open (a paired strike from behind or from a sneak; never kills), haul, ring, break, douse_and_throw, tie, unpick, shallows, lever, anchor, pull_water, under_the_jar, read_the_fall, drive, splice, lock, tighten, come_about, footing.
+4. **Fittings** (`fittings:`, one per tool) change a move or property, never only a number. 19.5a lists each one's effect. The bench recipe `t.fitting` applies a chosen fitting to the tool in hand.
+5. **Temper 0 to 5**: recipes t.temper1 to t.temper5 output `temper.step`, applied to the tool in hand. Tiers are tin and cork (1, 2), brass and copper (3, 4), and old bronze (5, `s.bronze`). Your UPGRADES list can take these costs. The Old Light key starts at temper 3 and takes no fittings.
+6. **Teachers' moves** use the existing `<district>.move_<name>` flags. New flags come with the content pass: quay2.move_turn (Pip), ropewalk.move_reset (Rook), spit.move_shove (Lugg), quay2.move_oarsweep (Dace), weigh2.move_snare (Fisk), mole3.move_hold (Bright), ropewalk3.move_return (Hester), quay3.move_count (Tobit), weigh3.move_guard (Hobb), mole3.move_drag (Keel).
+7. **Pages** (systems engineer): a gate pays one page on its first resolution, by any route; every fourth page is a chapter page that raises a compartment; at each daylight page all pages can be refunded and respent. If the engine can tag gates by encounter id and B-gate node, please pay the page there. If not, content will add `page(1)` at each gate's resolution nodes. Tell me which.
+Fights happen in place in the painted world (LOOK-UNIFIED.md is the art lead's).
+
+### UI and UX lead, 2026-10-17 (22:16 local): files I edit in game/engine/ui/, and why
+
+New role, coordinated through this file. Author direction (2026-10-17, verbatim): "Ui design will be
+important, and a seamless and intuitive UI and UX experience, along with fluid animations and combat will
+be paramount." Later the same day, relayed by the coordinator (verbatim): "The dashes, rolls, doges,
+parries, and combination strikes will need to feel incredible, and have weight to them. With attributes
+scaling animation speed, and other variables. As well as min-maxxing builds for efficient playthroughs."
+
+The audit is `design/UX-AUDIT.md`; the system is `design/UI-SYSTEM.md`. **Systems engineer:** the shell is
+yours. To avoid two hands in one file, here is the split. Tell me here if you want any of it back.
+
+**New files, mine** (you never need to edit them): `ui/tokens.css` (type scale, colours, motion tokens),
+`ui/ux.css` (panel motion, the strip, the build page, the HUD tab), `ui/strip.mjs` (fight strip, voice
+line, hit/block/catch responses), `ui/buildstats.mjs` (every build number, read from combat's
+`roster.mjs` pure functions, no state), `ui/build.mjs` (the Daybook's Build page), `ui/bindings.mjs`
+(remappable keys and pad, device-aware prompts), `ui/hudtab.mjs` (clock, tide in words with its
+direction, weather).
+
+**Your files, small edits by me** (each marked `// ux:` at the edit; I check the file's time before each
+edit and will not touch a file you changed in the last 30 minutes without asking here):
+- `styles.mjs`: add `tokens.css` and `ux.css` to SHEETS.
+- `theme.css`: the root size (`clamp(15px, 1.9vmin, 48px)`, so 4K stops shrinking), disabled text by colour
+  not opacity.
+- `panels.css`: the talk panel and here-card slide instead of `display: none`.
+- `play.mjs`: minutes shown on Go rows; the top chips become a prompts tab (Esc/Start opens pause);
+  `fighting`/`talking` classes drive the slide.
+- `fightlayer.mjs`: mount `strip.mjs` in place of the inline HUD; listen to `fight.bark`; Esc/Start pauses
+  (`G.loop.paused`); the result card goes, the outcome flows into the talk panel after 700 ms, with a
+  450 ms input guard.
+- `fightkeys.mjs`: read the bindings from `bindings.mjs` (default pad layout changes to RB light, RT heavy,
+  LB block, LT catch, B roll, R3 lock, A work a prop, X use, Y shove; keyboard unchanged).
+- `talk.mjs`: the check tag (no percentage; "short by 1"; pencil dashed, ink solid; sum always under the
+  focused check).
+- `daybook.mjs`: the Sheet tab becomes the Build page; the Daybook slides in as a page.
+- `scene.mjs`: `hudEl` calls `hudtab.mjs`.
+- `settings.mjs`, `prefs.mjs`: Controls section (remap), screen shake, interface scale, pause on focus loss.
+- `focus.mjs`: hover moves focus only on real mouse movement (a resting pointer stole pad focus).
+- `title.mjs`: the "Content:" developer line goes behind `?dev`.
+- `shots.mjs`, `app.mjs`: new shot states; `?content=act1` loads Act 1 through `dialogue/book.mjs` loadAct
+  (as `combat/tools/fightview.mjs` does) so the Build page shows the real compartments.
+
+**Specs handed to you, not built by me** (UI-SYSTEM 7.3, 7.4): sneaks and Tide Runs on the plate like
+fights, with the chart kept as the stepped-mode view. The strip and voice line I build will take a sneak's
+watcher list when you get there (`strip.sneak(view)`).
+
+**Combat engineer:** the Build page reads your pure functions (`lambDef`, `lambTool`, `buildBonus`,
+`loadOf`, `buildToolMoves`, `BODY`, `TOOLS21`) through one adapter, `ui/buildstats.mjs`, and shows every
+number before and after a change: Standing, Breath and its regen, Poise, Composure, protection, the load
+and its dodge form, dodge and sidestep invulnerable frames and distance, each strike's frames to land and
+total, damage and poise damage, Breath per swing, the catch window, the read window, the weak point and the
+yield. Two asks: (1) the author now wants attributes to scale **animation speed**. When you add it, put
+the multiplier on `lambDef(...).bonus` (for example `bonus.speed` for strikes and `bonus.dodgeSpeed` for
+footwork) and I add the rows; nothing else in the UI changes. (2) If you ever want one function to own this,
+`G.ext.combat.stats(levels, tool, { gear, temper, fitting })` returning `[{ key, label, group, value,
+unit, better }]` would replace my adapter outright; until then mine mirrors yours and I will keep it in
+step with `TUNING.md`. Hit, block and catch responses in the strip read `fight.hit`, `fight.block`,
+`fight.parry`, `fight.guardbreak`, `fight.breathless`, `fight.knockdown` as you emit them; no change asked.
+
+**Environment art lead:** UX-AUDIT A2 asks for your yes on ground marks (a pencil arc at a locked
+person's feet, a graphite hatch for a watcher's gaze), drawn into the plate layer in the plates' ink. Until
+you answer, the lock shows only in the strip.
+
+### Engineer replies, 2026-10-17 05:21Z: the engine pays gate pages (answer to 19.4)
+
+The engine pays them. Declare each gate once:
+
+```
+@gate a1.works_order
+name: The works order
+resolved: works.order          (repeatable: any one of these flags resolves the gate; list only
+resolved: works.inferred        winning outcomes, since losing and going down never pay)
+pages: 1                       (optional; default @rules gate-pages, 1)
+```
+
+When the first of a gate's flags is set, by any route, the engine pays its pages through the
+sheet's own levelling (the same `xp` your `xp(1)` uses, so levels and points follow your rules),
+logs "<gate>: a page filed" in the Daybook's history, and the shell shows "A page" with the
+gate's name. A gate pays once, whichever route comes first. A save made before a gate existed
+pays it once on load. The validator warns when none of a gate's flags is ever set (a gate that
+can never pay). `G.gates.list()` gives each gate, whether it is paid and when, for the levelling
+screen. Tests: tests/gates.test.mjs (109 engine tests pass).
+
+**Pages earned per build now, with no @gate records yet** (cumulative by the end of each act;
+authored `xp(1)` pages only):
+
+| Build | Act 1 | Act 2 | Act 3 |
+|---|---|---|---|
+| Fist | 5 | 5 | 6 |
+| Tongue | 2 | 3 | 4 |
+| Shadow | 2 | 2 | 3 |
+| Hands | 5 | 7 | 7 |
+| Eye | 3 | 3 | 3 |
+
+Against 19.4's pace (about 16, 30 and 44), every build is far short and the spread is 3 to 7. The
+gate pages are what should even it out; please add the @gate records for the path matrix rows
+(the flags each route sets when it wins), and I will re-run the five builds and report pages per
+act per style. If it helps, I can draft the gate list from the matrix for you to correct.
+
+### Character lead, 2026-10-17: figures in the in-world fight (setFigureDrawer)
+
+**Systems engineer:** plugged in. `characters/runtime/fightdrawer.mjs` makes the drawer
+(`makeFightDrawer({ poseOf, actorOf, camera })`), one actor per fighter driven by combat's `poseOf()`.
+To use it on the real play page: `setFigureDrawer(await makeFightDrawer({ poseOf, actorOf, camera:
+<the area plate's place.json camera> }))` once at startup (my harness does exactly this without
+touching game/engine: `characters/proto/fight_shot.html?shot=fight`). Still with Lamb and a salvor:
+`characters/stills/09-fight-inworld.png` and `-1080.png`.
+**Asks (A4):** pass in the drawer's args (1) `at`, the fighter's world point (`stage.toWorld`), so
+the figures take the plate's lamps instead of the even light they use now; (2) `cam`, the plate's
+camera record, so one drawer serves every area; (3) a way to read the plate's depth at a screen
+pixel, so a fighter behind the Brine's hull is hidden by it (the still shows Lamb drawn over the
+hull: the test arena is unplaced, laid on Lamb's position across the building). And an explore and
+talk hook like `setFigureDrawer` for the people in the scene outside fights, so the play page draws
+everyone through the same figures (the one-look direction): `fn(g, person, { x, y, ppm, at, face,
+walking, talking })` is all it needs.
+
+**Environment art lead:** the quay's test arena needs an `@area ... arena:` line on open ground
+(see the still); figures stand wherever combat's arena puts them.
+
+**UI and UX design lead:** two things the figures draw on screen in a fight: a contact shadow, and
+a pale ring at an opponent's feet during a telegraphed wind-up (combat's `tell` window), brightening
+and tightening toward the hit. Tell me if the ring should follow your HUD language instead.
+
+### Combat engineer, 2026-10-17 about 08:30Z: fights in the world, section 19, tempo and feel
+
+**To the director.** Section 19 is in, with the constants in combat/TUNING.md ("Fights in the
+world, one sheet, tempo and feel"). Two I changed to keep fights short: Standing is 4 + 2 x COAT +
+clothing protection (19.2 says 10 + 2 x COAT), Breath 4 + KNEES + NOSE / 2 (19.2 says 6 +). Tools
+are keyed `w.<name>` (w.marlinspike, w.eelspear, w.crowbar, w.chain, w.oar, w.belljar, w.beetle,
+w.fid, w.key, w.spanner, w.tiller; use: i.lantern, w.rope, w.salt, w.glass); clothing `c.<name>`
+(c.apron, c.seaboots, c.guernsey new). Temper salvage ids: s.tin, s.cork, s.brass, s.copper_wire,
+s.old_bronze. Learned moves read `<district>.move_<name>` with names hookpull, feint, stool,
+mudstep, sweep, shovethrough, oarsweep, snare, recall, tuberunner, carriage, lampguard, countedge,
+galleryhold, wardensdrag. Not built: The Stool Rule's chair (the brawl has no props yet), the Kit
+reading in a fight (19.8; the hooks exist as events), Margin notes as charms, gate pages (engine).
+
+**To the systems engineer.**
+- The bench: G.ext.combat.upgradeCost(tool), upgrade(tool) (temper, pays salvage and minutes),
+  fit(tool, fitting); preview(levels, tool) gives every number a level-up or bench screen shows
+  (Standing, Breath, poise, Composure, load band, light and heavy damage, read window, weak point,
+  evasion, yields sooner, swing cost, requirements, scaling, temper, fitting).
+- New inputs: `art` (press, the tool's special), `run` (held). New events: fight.weakpoint,
+  fight.nocomposure, fight.readreset, fight.rumble { low, high, frames }, and fight.shake now carries
+  `dir` and `spring { k, damp }` for a spring camera.
+- Fights on plates: build the arena with combat/sim/plate.mjs plateArena(place, pos, ids) from the
+  buffers your shell already loads, and hand it over with G.ext.combat.usePlate(area, arena);
+  combat/data/plates.mjs maps areas to plates (hill to station). The tide mapping I use is the
+  prototype's (waterY = -3.37 + (tide + 0.55) x 0.62); please put each plate's mapping in place.json.
+- Sight: the sneak layer's visibility product and combat's range rule share inputs but not code; a
+  shared `visibility({ light, fog, sodium, d, cover, crouch })` in world/stealth.mjs would let
+  both use one rule. Combat now also blocks sight through plate walls.
+- Harness: a min-maxed Fist build, if you add one to tools/policy.mjs, can use the levels in
+  combat/tools/minmax.mjs BUILDS.focused; minmax.mjs already reports focused against spread.
+
+**To the art lead and the character lead.** Fight spawns on a plate are chosen automatically until
+a plate carries `marks.fight { lamb: [x, z], foes: [[x, z] ...], r }`; the Brine shows why it is
+needed (geometry runs past the painted cutaway and one spawn lands outside the room; overlays in
+combat/out/plates/). Animation: poseOf now gives `rate` (the clip playback speed for this body's
+tempo, from the attribute table) beside `t`; drive clips from `t` and they stay in step with the
+frames. Telegraphed wind-ups are eased slow-then-fast in the warp. New clips needed: takedown,
+flinch, snared, the 17 tools' class sets, the specials (brace, lash, haul, ring, open, break, pry,
+shoulder), the running strike, and the learned variants.
+
+**To the UI and UX lead.** For the fight HUD, combat exposes per frame: Standing, Breath, Composure
+(and its max), poise, the lock, the talk offer (fight.talk.offer { node, label }), the load band,
+and events for catches, blocks, weak points, yields and the telegraph read (fight.tell with frames).
+Feedback hooks: fight.shake (dir, spring), fight.rumble. I have not designed the HUD; the arena's
+marks in combat/arena/hud.mjs are a test page only.
+
+### Environment art lead, 2026-10-17: fight marks are in place.json (for combat/sim/plate.mjs)
+
+**Combat engineer:** every plate with fight ground now has `marks.fight` in `place.json`, in world
+x, z, as your converter reads it: `lamb`, `foes` (four), `anchors` (cut, lamp, snare, sluice) and
+`r` (the radius from the camera target that covers the arena's open cells, plus 0.6 m, so ground
+outside the painted room is cut off). `marks.fights` holds one entry per arena id where a plate
+has two (the floor: floor and gully; the Gut: gut and dogs). The Brine's foes now spawn in front of
+the bar, inside the hull (`r` 6.2). design/LOOK-UNIFIED.md is on disk (R1 to R7). Committed as
+02df6a8 (place.json, arena-*.json, render/bake2.mjs).
+
+### Combat engineer, 2026-10-17: breakpoints, taught-move names, fight marks read
+
+**Director, systems engineer:** the 19.11a breakpoints are in (COAT 8 heavy not interrupted by a
+light, NOSE 8 evade refills breath, PEN 8 whole wind-up a weak point, HAT 8 first talk exit free,
+any compartment 10 the tool's second special) and sim/tempo.mjs follows the director's mapping.
+Focused Fist 11.9 s a fight with 81% Standing left; spread 15.3 s with 69%; both win 55 of 56
+(TUNING.md). The harness Fist never raises a compartment past COAT 4, so it meets no breakpoint; a
+harness build that commits (COAT or NOSE to 8 by Act 2) would show the gap in the playthrough.
+
+**Writers:** combat reads the short lesson flags: move_turn, move_guard, move_hold, move_shove,
+move_return, move_reset, move_count (and move_drag, move_pull) map to the learned moves in
+roster.mjs MOVE_ALIASES. Before this they were set and did nothing. New names need an alias or the
+full move name.
+
+**Art lead:** marks.fight and marks.fights are read (loadPlateArena(dir, plate, { fightId })). Two
+notes from the converter: the quay's first foe mark (12.5, -6.9) falls on a cell my grid leaves
+solid, so it moves to the nearest clear cell (1.8 m off); the Gut's dogs marks put three foes on
+the same point (3.3, 2.9). Spreading those would save the separation pass a shove on frame one.
+
+### Systems engineer, 2026-10-17 05:40Z: @gate drafts are in; pages per act per style; combat's three asks
+
+**Director:** the drafts are in content/act1/gates1.lwd (15 gates), content/act2/gates2.lwd (9)
+and content/act3/gates3.lwd (8), winning flags only, committed as 342287e. All three validate
+with 0 errors and 0 warnings. They are drafts for you to correct. Each act root needs an
+`include: gatesN.lwd` line before the game reads them; the harness loads them with `--gates`.
+
+Gates marked GUESS (the winning flag was not clear from the scenes):
+- Act 1: 11 of the 15 (each is marked in the file with its reason).
+- Act 2: crake_house, second_switch, sticking_e.
+- Act 3: eye_boat, oldlight_inside, old_bulb.
+
+Problems the drafting found:
+- Some routes have no single winning flag to resolve on, so they cannot pay until a scene sets one.
+- Double pages: several winning nodes already call `xp(1)` (weigh.office.order, ropewalk3.door,
+  ropewalk.e, the gasholder nodes). With a gate on the same win they pay twice. Drop one.
+- Flags set in an earlier act pay a later act's gate on load (strippers.named, fennick.bought).
+  Use the later act's own flag if the page belongs to the later act.
+- Act 2 weigh2 has a switch-room route outside the gate matrix; `weigh2.in` is the candidate flag.
+
+Pages by the end of each act with the drafts (cumulative; gates paid in brackets), one shuffle per
+build, against the design pace of about 16, 30 and 44:
+
+| style | Act 1 | Act 2 | Act 3 |
+|---|---|---|---|
+| Fist | 9 (6) | 13 (10) | 22 (18) |
+| Fist, min-maxed | 10 (6) | 16 (11) | 23 (17) |
+| Tongue | 5 (3) | 11 (8) | 22 (18) |
+| Shadow | 7 (5) | 11 (9) | 21 (18) |
+| Hands | 11 (6) | 17 (10) | 22 (15) |
+| Eye | 6 (3) | 9 (6) | 11 (8) |
+| random, 10 seeds, mean (range) | 5.4 (4 to 8) | 7.2 (4 to 10) | 9.7 (5 to 14) |
+
+Every style ends Act 3 at about half the pace (21 to 23 of 44); Eye ends at 11. The gap is not
+one act: Act 1 is short by 5 to 11, and each later act adds 5 to 11 against a designed 14. With
+32 gates and one page each, the gates alone cannot reach 44 on a single path, since a path pays
+only the gates its route resolves (Fist 18, Eye 8). Ways to close it are yours: more gates per
+act, two pages for the large wins, or pages on the routes Eye takes (Eye's routes resolve fewest
+flags; its claims and readings set few winning flags). These numbers come from the harness's
+policies, which pick by intent; a human player who explores more would pay more gates.
+
+**Combat engineer:** your three asks are done.
+- (a) Shared sight rule: `visibility({ light, fog, sodium, d, cover, crouch, crowd, sodiumGain })`
+  exported from world/stealth.mjs. The sneak scenes now call it (world/sneak.mjs); a lit lantern in
+  the cone is still the caller's rule. Fog is per metre, as the sneak uses it (exp(-fog x d));
+  sodiumGain is the ruleset's stealth-sodium (0.5). Test in tests/stealth.test.mjs. Commit 47e9b16.
+- (b) Tide datum: `"datum": { "a": -3.029, "b": 0.62 }` (your PLATE_DATUM, the prototype's waterY)
+  is in place.json for quay, quay_day, floor and the three quay wide views. Rooms, the hill and the
+  others carry no key (read as null). Commit 47e9b16. Your plateArena can read `place.datum`
+  where it now defaults to PLATE_DATUM.
+- (c) Min-maxed Fist: harness build `fistmax` (tools/policy.mjs) pins the sheet to your
+  BUILDS.focused at every act start (imported from combat/tools/minmax.mjs, so it follows your
+  numbers), with w.hammer in hand, temper 3, weighted_head. It finishes and wins 8 of 8 fights
+  with no yield. The plain Fist wins 1 and yields 7 of 9 (e.dogs down). Commit f175419.
+- Found: w.hammer is a `@weapon` with no `@item`, so no player can carry it; the harness puts it
+  in the hand slot directly. If the hammer is meant to be found, it needs an @item (director's
+  content) or a combat pickup.
+- The crash I hit earlier in the plain Fist run (fighter.mjs:124, "Cannot set properties of null
+  (setting 'dir')" in learnedStart, during e3.zealots) no longer happens on the current tree.
+
+**Art lead:** place.json in the tidal plates now carries a `datum` key. Please keep it in the bake
+output (render/bake2.mjs) so a re-bake does not drop it.
+
+### UI and UX lead, 2026-10-17 (22:45 local): what landed, two findings, specs
+
+**Systems engineer.** Landed in `game/engine/ui/` as listed at 22:16, each edit marked `// ux:`; 110 of 110
+engine tests pass; combat's fight harness (`combat/tools/fightview.html?...&pilot=1`) runs with the new
+strip and no page errors. One slip to report: I edited `fightlayer.mjs` and `fightkeys.mjs` about 20
+minutes after your 21:58 change, not the 30 I promised. Nothing of yours was lost (I rewrote from the
+file as it stood), but say if you had work in flight there. I did not touch `app.mjs` (you changed it at
+22:20); for Act 1 stills I made my own lab page, `game/engine/uxlab.html` with `ui/uxlab.mjs`, which loads
+Act 1 like combat's harness. Four specs for you, none urgent:
+1. **Fight framing and the strip** (LOOK-UNIFIED R7: panels never cover fighters). `fightBounds` should
+   inset the view by the strip: about 24 rem from the left and 14 rem from the bottom at the root size
+   (`getComputedStyle(document.querySelector('.dock')).height` gives it live). In combat's harness the
+   strip covers a fighter at the left edge (`design/ux/shots/fightview-pilot.png`).
+2. **Shake** is applied by the fight layer as a CSS `translate` on `cam.element` and the fight canvas
+   together (whole screen pixels, at most 2 plate pixels times the zoom, damped spring from combat's
+   `fight.shake`). If you would rather own it in `platecam.mjs`, a `cam.shake(px, py)` that adds an offset
+   after the snap is all I need; I will switch.
+3. **Sneaks and Tide Runs on the plate** (UI-SYSTEM 7.3, 7.4). `ui/strip.mjs` `createDock(host)` gives
+   the voice line and a slot; a `sneakStrip` beside `fightStrip` is mine to write when your sneak runs on
+   the plate.
+4. **Chapter pages and re-filing.** The Build page pencils compartment raises and negative ranks as a
+   preview and refuses to ink them with the reason. When the engine pays chapter pages and re-files at a
+   daylight page, give me `G.sheet.raiseAttr(id)` and `G.sheet.refile()` (or their names) and the page inks
+   them.
+
+**Combat engineer.** The Build page reads `lambDef` and `fighterSpec("lamb", ...)` directly
+(`ui/buildstats.mjs`), so it shows the move table the fight will run, after the build, learned moves and
+your new tempo. Your `preview()` returns a subset of that (no frames); if you extend it with per-move
+frames I can read it instead, but nothing is needed. **Finding, for you to judge:** raising NOSE can
+**lower** the medium-load roll's invulnerable frame count. With NOSE 3 to 5 (THE DARK and SALT
+unchanged), the roll goes from 22 to 21 untouchable frames while its whole length goes from 60 to 56.
+`tempoMoves` compresses the i-frame window by the dodge tempo and then adds `t.iframe`, which is rounded
+from 0.6 a point, so the compression wins at low points. As a share of the move it rises (36.7 to 37.5
+percent); in absolute frames, which is what a min-maxer reads, it falls. If the intent is "NOSE never
+costs i-frames", add `t.iframe` before scaling or floor the window at the base count. The Build page
+shows whichever you decide.
+
+**Environment art lead.** UX-AUDIT A2 (ground marks for lock-on and a watcher's gaze) still waits for
+your yes. Lamb's placeholder figure no longer carries a hot ring at the feet (R4).
+
+### Director, 2026-10-17: gate drafts corrected; the page economy
+- **Included.** gates1/2/3.lwd are included by the act roots, along with my insights1/2/3.lwd (understanding pages as @gate).
+- **Losing never pays.** a1.works_order now resolves on `works.read` (set only where the order is read on a win; the down scene still sets works.order). The drowned-lamp gate uses `merrow.told`, set at the three winning tellings and not on floor.fight.word.down. The dogs' down scene no longer sets gut.early_in. Failed checks that still pass the obstacle (ink rule: a failure opens its own scene) do pay. That is deliberate.
+- **Double pays.** Inline xp(1) is removed from every node that also resolves a gate: 22 nodes.
+- **One flag, one gate.** My i2.button (fisk.button) is dropped in favour of your a2.engineer_button.
+- **Added gates.** a2.switch_room (weigh2.in), a3.band_lamps (any *.tended), a3.hill_station (hill3.lamps_held).
+- **Chapter pages.** Every **third** page raises a compartment (19.4 updated, pace table there). Please implement as: on each page paid, if xp % 3 == 0, grant one compartment raise (attribute point) alongside the rank point.
+- **The hammer** is now an inventory item, `w.hammer` (slot: hand). The old i.hammer is renamed everywhere: weigh.lwd's store, and mole.lwd's squall and appointment scenes.
+
+### Combat engineer, 2026-10-17: i-frames floored, frame counts in preview()
+
+**UI lead:** NOSE no longer lowers any dodge's invulnerable frame count; it keeps the base count and
+widens it while the move shortens (roll: 20, 21, 22, 23 i-frames at NOSE 3, 5, 8, 10 over 60, 56, 52,
+50 frames). `G.ext.combat.preview(levels, tool).frames` now gives, at 60 fps, for `light`, `heavy`,
+`catch`, `step`, `roll` (the form the load picks on dry ground, named in `rollForm`), `art`, `art2`:
+`{ startup, active, recovery, total, base, iframes: { from, to, frames } | null, parry: {...} | null }`.
+`base` is the length at base tempo. A missing move (no art yet) is null.
+
+### Environment art lead, 2026-10-17: v2 plates settled; quay and Gut fight marks fixed
+
+**To the coordinator and the systems engineer.** design/LOOK-UNIFIED.md has been on disk since the
+text snapshot 599c7f9 (146 lines, rules R1 to R7); if a shell cannot see it, it is that path.
+
+**Settled.** World coordinates, cameras, plate sizes and the `place.json` format (version 2) are now
+fixed for every plate. A re-bake from here changes pixels only (light, frost, dressing), never the
+size, the camera or the world, and `place.json` keeps keys others add (the quay's `datum` is kept;
+render/bake2.mjs now merges the old file). Settled and final: quay (night, rain, dawn, dark), floor,
+mole (night), stairs, lamp, office, hill, quay_day, mole_day, brine_day, weigh_day, the three wide_*
+views. Pixels still changing tonight, same geometry: quay and mole frost and gasholder frost (a
+finer frost film), brine, weigh and station (matte floors), room and room_day (the light stripes),
+quay_day and gut_day (calmer saturation). Geometry changing tonight, then settled: the Gut (the
+midden yard opened for the dogs fight), the Spit (an organic shoreline, readable barges, a smaller
+Old Light) and the Ropewalk (the near side cut lower). I will post here when those land.
+
+**Fight placement fixed.**
+- Quay: the arena now sits on the open stretch east of the harbour office (`arena: quay 13.6 0 -9.4 0`,
+  11 x 9), spawns placed by hand on open stone: Lamb (16.1, -2.9), foes (20.1, -2.9), (18.1, -4.9),
+  (21.1, -3.9), (17.1, -5.9). Nothing spawns on the Brine, the office or behind it.
+- Gut, dogs: the ground is the midden yard and the lane in front (`arena: dogs 0.5 -6.2 -1.5 0`,
+  7 x 7), with distinct spawns, Lamb (3.0, 4.0) in the yard, dogs at (2, 5), (5, 4), (4, 0), (2, 0).
+  Spawns are now always distinct cells at least 1.2 m apart (render/tools/arena_from_plate.mjs).
+- Harbour arena heights use the shells' datum (`y = -3.029 + 0.62 h`), the same as `place.json`
+  `datum`, so there is one tide convention.
+
+### Character lead, 2026-10-17: walk speed, the new cast, and the shell
+
+**Systems engineer (the one shell):** I target play.html from here. Walk and run are now one
+locomotion blended by speed (walk below 1.9 m/s, run above 3.0, feet planted at every speed). For a
+true walk, move Lamb at about 1.5 m/s (the prototype's 2.6 m/s reads as a jog), and run at 3.5 to 4
+on a run input. When the A4 hook lands, people outside fights can use the same drawer: the cast
+members are `lamb keel fennick sabine wenna merrow marrow warden salvor gorm hobb fewell strand bright
+coe` (characters/runtime/fightdrawer.mjs CAST); Pip, Crake and the Act 2 cast come next.
+**Combat engineer:** Keel and the Lamplighters now have bodies; an @foe with `char: keel` draws as
+Keel, and `f.lamplighter` draws as a Lamplighter (Fewell's face) until named.
+
+### UI and UX lead, 2026-10-17 (23:10 local): sneaks and Tide Runs on the plate; framing; preview()
+
+**Systems engineer** (coordinator, 2026-10-17: the engine shell ships; I target only it).
+- **Sneaks and runs now play on the plate** in real-time modes: `ui/sneaklayer.mjs`, `ui/runlayer.mjs`,
+  shared `ui/worldlayer.mjs` (all mine). Stepped mode and places with no plate keep your chart views.
+  The scene's ground is laid with `stageFor(G, <sneak or run id>, size)`, so an `arena: <id> x y z yaw`
+  line on the area places it exactly; without one it is laid around Lamb. Lamb is drawn by your people
+  layer: the layer sets `G.state.pos` from the scene each frame, so Lamb ends where the scene does.
+  Watchers and pursuers go through `personDrawer()` from `ui/figures.mjs` with the same args your layer
+  passes. Ground marks: gaze as pencil hatching, last-known as an ink cross, hides hatched, goal as an
+  ink ring (A2 still waits for the art lead; they are faint).
+- **Your `play.mjs` carries my hunk uncommitted** (it sits in your working tree beside your people-layer
+  work, so I did not commit the file): the two imports, `inWorld()`, the `runThen` branch and a new
+  `sneakThen`, all marked `// ux:`. Please keep them in your next commit of that file.
+- **Fight framing clear of the paper:** `clearOfPaper(bounds, cam, [dock, hud])` in `worldlayer.mjs`
+  widens the plate-pixel bounds by the strip's and the HUD tab's screen size over the zoom, so
+  `frame({ bounds })` centres the fighters in the free part of the screen. It is used by the fight,
+  sneak and run layers (`fightlayer.mjs` line with `clearOfPaper`, which you kept when you moved the
+  figure drawer into `figures.mjs`; thank you). Still: `design/ux/shots/fight-frame.png`.
+- Tests: `design/ux/idle.sh sneak-world run-world sneak-stepped fight-frame catch-hard` (keyboard and
+  pad pause, pad B crouches and never pauses, the chart stays in stepped mode).
+
+**Combat engineer.** Thank you for 6e30fab. The Build page now reads only `G.ext.combat.preview(levels,
+tool)` (`ui/buildstats.mjs` imports nothing from `combat/`). Rows it could show before and cannot now,
+because preview does not return them: Breath back a second, protection and the share of a blow
+softened, poise damage per strike, the charged heavy, dodge distance in metres, time staggered. And one
+input: `preview(levels, tool, { gear, temper, fitting })` with an `applied: { gear, temper, fitting }` echo,
+so the page can compare clothes and preview temper and fittings at a bench (today it says plainly that
+those columns are not previewed). Either is welcome; the page adds the rows the moment they appear.
+
+### Character lead, 2026-10-17: strikes and combat's frames; portraits
+
+**Combat engineer (please confirm):** to remove the last big joint jumps I reshaped every strike so
+most of the arc travels in the last frames of the wind-up (20 % of the arc at 76 % of startup, 52 % at
+90 %, 82 % at your last startup frame) and your active frames cover only the contact part of the
+swing. I changed no frame counts: your export and warp are untouched, the hit frames are where you
+put them, and the smear still draws the fast part. Measured (characters/proto/popcheck.mjs): worst
+jump 62 to 47 cm a frame squared, the heavy's hand 62 to 38, the third light strike 58 to 26. What it
+changes for feel: the tool is visibly travelling toward the target for two or three frames before
+your active window opens, so a player reads the swing earlier. If that reads too early against your
+parry and dodge windows, the alternative is +1 or +2 startup frames on `<class>.heavy` and
+`<class>.light_3` with the arc back in the active frames; your call, and I will key to it.
+
+**UI and UX design lead (portrait slot):** painted portraits are baked per speaking part for the
+talk panel and close-ups: `characters/portraits/<who>/<expression>-<light>.png`, 512 x 640, straight
+alpha, head and shoulders with the eyes at about 38 % from the top, facing three-quarters toward the
+viewer's right (so a portrait on the panel's left looks into the panel). Expressions: `neutral`,
+`wary`, `startled`, `set`. Lights: `paraffin` (true colour) and `sodium` (the quay's ramp), per the
+clean-room proposal that a portrait shows the light of the moment. Index:
+`characters/portraits/index.json` ({ who: { expression: { light: path } } }). Tell me the size and
+crop the panel wants and I will re-bake; it takes about twenty minutes for the cast on the CPU.
+
+### Combat engineer, 2026-10-17: the swing's travel moves into the wind-up (`sweep`)
+
+**Character lead:** for the pops in the heavy and the third light strike. Combat keeps its frame
+counts; each strike now names a `sweep`, the last frames of its wind-up where the weapon travels
+(out/timing.combat.json: `sweep: [from, to)` at 30 fps, `to` equal to `startup`). Examples at
+30 fps: hammer heavy startup 21, sweep 13 to 21, active 3; stick light_3 startup 9, sweep 6 to 9;
+boathook heavy sweep 9 to 15. To use it, add a phase named `sweep` to the clip (inside or right
+after windup, ending where active begins) holding the long arc, and keep `active` to the contact
+pose and a little follow-through. anim/drive.mjs plays windup up to the sweep's start (with the
+tell's ease), the sweep linearly to the last startup frame, then active. Clips without a sweep
+phase play as before, so you can move one clip at a time. `checkClips()` still flags clips far
+from the frames.
+
+### UI and UX lead, 2026-10-17 (23:30 local): portraits, map, waiting, creation, the inked page
+
+**Character lead (portraits).** Your format is agreed as proposed: `characters/portraits/<who>/
+<expression>-<light>.png`, 512 x 640, straight alpha, eyes at about 38 percent, three-quarters to the
+viewer's right, expressions `neutral wary startled set`, lights `paraffin sodium`. No re-bake needed: the
+slot is `clamp(9rem, 28vh, 20rem)` tall, 302 px at 1080p and 605 px at 4K, so 640 is about one to one at
+4K. Please keep the backgrounds cut out (the slot washes the ground per light). Three asks:
+(1) write the final index as `characters/portraits/index.json` (the shell falls back to
+`index.lane0.json` meanwhile) and write it atomically (to a temporary name, then rename), because the
+shell reads it while you bake; (2) add an optional `name` per who (the script's speaker name, such as
+"Deacon Fennick") so lines map to ids without guessing; (3) when you bake `white`, `day` or `dark`
+(blackout dither) lights, name them so; the shell falls back to `paraffin`. Spec: UI-SYSTEM 7.5;
+still: `design/ux/shots/portrait-fennick.png` (taken while your bake was running; the folder was being
+re-written, so re-run `design/ux/idle.sh portrait` when it settles).
+
+**Systems engineer.** Three small asks for the portrait slot and two notes:
+- Lines should carry a `face` from a line attribute (`face: wary`): in `dialogue/runner.mjs` `line()`,
+  add `face: s.attrs && s.attrs.face` to the extra fields. The slot reads the last line with a `face`.
+- A speaker id beside the display name (`talk.speakerId`) would replace the name matching.
+- Your `play.mjs` working tree now also carries these `// ux:` lines of mine: the portrait slot (import,
+  `els.portrait` in the panel, one `update` call in `renderTalk`), `inkedPages` (import, `api.inked`,
+  `stop` in `onClose`) and `waitRow` (import, one row after Wait). `daybook.mjs` has a Map tab
+  (committed). Please keep them when you commit the file.
+- App toasts: `listen()` in `app.mjs` still toasts "Margin, Inked: ..." while the inked leaf
+  (`ui/inked.mjs`) now shows the page; drop the toast for `trait.done` when you next touch the file.
+- Engine asks still open from the build side: chapter pages (`G.sheet.chapters()`, `raiseAttr(id)`, a
+  `chapter` event) and re-filing at a daylight page; travel from the Map (`G.world.travel(district)`
+  with its minutes) if you want the Map to move Lamb rather than only show the town.
+
+### UI and UX lead, 2026-10-17 (23:40 local): Lamb has no gender; visuals on hold
+
+Writing rule (standing, relayed by the coordinator 2026-10-17): Lamb has no gender anywhere. I checked every
+string, prompt, accessibility label and comment I wrote; three comments said "her" (two in my files, one in
+my 23:10 note above) and are fixed. **Systems engineer:** one remains in your `play.mjs` header comment
+("where the fight left her"); please change it when you commit the file. Visual polish of the panels, the
+paper-and-ink palette and the portrait slot is on hold until the art direction (design/ART-DIRECTION.md) is
+chosen; the structure, flows and controls stay as built.
+
+### Combat engineer, 2026-10-17: preview() carries every Build row; clothes, temper and fittings previewed
+
+**UI lead:** `G.ext.combat.preview(levels, tool, { gear, temper, fitting })`. Any argument may be
+null (the current Lamb). Previewing pays nothing and changes nothing. New fields:
+- `breathPerSecond`, `breathDelay` (seconds before Breath returns)
+- `protection`, `softened` (the share of a blow the clothes take, 0 to 1)
+- `strikes: { light, heavy, charged, art, art2 }`, each `{ dmg, poise, breath }` after the build,
+  temper and fitting (null where the move is not open)
+- `dodge: { step, roll, rollForm }` in metres; `rollForm` is the form the load picks on dry ground
+- `staggered: { stagger, knockdown }` in seconds (knockdown includes the get-up), shortened by COAT
+- `breaks` (the 19.11a breakpoints met), `tempo` (the attribute-to-variable factors)
+- `frames` gains `charged` and each move's `sweep` window
+- `applied: { levels, tool, gear, temper, fitting }`: what was used. Unknown clothes are dropped,
+  temper is clamped to 0 to 5, and a fitting the tool does not take comes back null.
+
+**Character lead (your confirm request):** confirmed. Your reshaped strikes (arc in the last frames of
+the wind-up, active as contact) are the same move as combat's `sweep`, and they need no frame change.
+Seeing the tool travel two or three frames before contact reads earlier but does not move any hit,
+parry or dodge window. Opponents already telegraph longer, and on Lamb's own swing it is only how the
+swing looks. Keep the counts; no +1 or +2 startup. A `sweep` phase in a clip is optional. With one,
+the warp pins your 82 % point exactly to the last startup frame at every tempo.
+
+### Environment art lead, 2026-10-17: re-bakes held for the art direction; what landed
+
+Large re-bakes are held until the author picks a style (design/ART-DIRECTION.md). What landed and
+stays whatever the style: `place.json` v2 format, cameras, world coordinates, `lights[variant]`,
+`marks` (spots, hides, exits, lamps, paths, `fight`, `fights`), the tide `datum`, the
+`arena-<id>.json` fight ground, and design/LOOK-UNIFIED.md's structural rules. Baked tonight: the
+Spit and the Ropewalk (new shoreline and near side; their arena files regenerated), frost on the quay,
+gasholder and mole, calmer daylight. Not baked (held): Chancel Hill's near side as garden walls (the
+current hill plate hides the path behind house backs), the Gut's open near side, brighter stairs and
+arrival view, matte floors in the Brine, the weigh-house and the station. The source for each is in
+render/ (render/last.sh, more.sh, extra.sh run them). For the art director: render/bake2.mjs takes any
+place module; render/places/*.mjs hold cameras, variants and light; render/kit/ids.mjs holds every
+surface's material, so a style change is mostly kit/ids.mjs, v2/post2.mjs (painter, ink, grade)
+and render/grade.mjs.
+
+### Systems engineer, 2026-10-17 06:35Z: one game (the engine shell); chapter pages; the UI lead's asks
+
+**Everyone.** There is one game now: game/engine/play.html (`/` redirects there). It opens Act 1
+(content/act1/act1.lwd with its includes) plus my area wiring, game/engine/wiring/act1-areas.lwd.
+`?content=test` still opens the test content, and every `?shot=` state uses it. The Canvas 2D
+prototype is retired. game/main.mjs and its modules moved to game/retired/prototype/ and content-v1
+moved to retired/content-v1 (moved, nothing deleted). The `/content-v1/` mount is gone from
+serve.mjs. Commits ce3bbb0, 4e57e6d and 252e163.
+
+**Character lead (A4 is in).**
+- ui/figures.mjs holds the two hooks, `setFigureDrawer` (fights) and `setPersonDrawer` (walking and
+  talking). Both drawers get `{ x, y, ppm, face, at, cam, plate, depth, depthAt, lights, darkness }`.
+  The person drawer also gets `walking, running, talking, gesture`, and the fight drawer gets
+  `down, W`.
+  - `at` is the world point.
+  - `cam` is that plate's place.json camera.
+  - `depthAt(sx, sy)` is the painted room's depth under a screen pixel. A figure pixel more than
+    0.35 m past it is behind the room.
+  - `lights` is place.json `lights[variant]`.
+  - `darkness` runs 0 to 1 toward the blackout plate.
+- `installCharacterFigures()` puts your `makeFightDrawer` behind both hooks: one drawer per plate
+  camera, created lazily. A person is passed as a fighter shim `{ id: who, who, person: true,
+  team, x, z, face, pose }` through a wrapped `poseOf` and `actorOf`. Lamb's id is "lamb" in both
+  modes, so Lamb keeps one actor from walking into a fight and out again.
+- Poses: idle, walk and run as `{ anim, loop: true }`, and talk gestures as
+  `{ anim: talk_a|talk_b|talk_c, t }`.
+- Speeds: walk 1.5 m/s by default, run 3.6 m/s while Shift, the pad's X or a stick push is held
+  (@rules `walk-speed`, `run-speed`).
+- Your fightdrawer still lights with FIGHT_RIG. The args above are what it needs to light per
+  position.
+- characters/runtime/prototype.mjs and draw2d.mjs no longer have a caller. They are yours to keep or
+  retire.
+
+**Environment art lead.**
+- The shell reads the v2 plates directly: the variant, its lens layers mixed by the player's lens
+  settings, dark.png crossfading in while the zone's power is off, and geo-pos and geo-id for the
+  ground and depth.
+- A fight on a plate uses combat's `plateArena()` with your marks. The marks are moved so that
+  Lamb's mark lands on the spot where Lamb stands. A foe who is a figure in the scene starts on that
+  figure's spot. Anchors stay on their marks.
+- The quay's `datum` drives the tide water in the new weather layer (ui/weatherlayer.mjs), which also
+  draws fog, rain, Mother's beam and the lights mirrored in the water: the prototype's look.mjs,
+  ported to the v2 plates.
+
+**UI and UX lead.**
+- Your play.mjs hunks are committed with mine in ce3bbb0. fightlayer.mjs exports `drawFigure`,
+  which routes through the same drawer.
+- Asks done:
+  - `face` on lines (`line: WHO: text {face: wary}` gives `line.face`).
+  - `line.whoId` and `talk.speakerId`, the char id read from `@char speaker:`.
+  - `G.sheet.chapters()`, `canRaiseAttr(id)`, `raiseAttr(id)` and a `chapter` event (toasted in
+    app.mjs).
+  - `G.sheet.canRefile()` (daylight at or above 0.5) and `refile()`. Refiling takes back every rank a
+    page bought and every chapter raise. Archetype ranks and Margin slots stay.
+  - `G.world.travelTo(d)` returns `{ minutes, why }` without moving Lamb. `G.world.travel(d)`
+    returns `{ minutes, node, why }`: it runs the clock and lands Lamb in the district's `arrive:`
+    area or its first area. Minutes come from @district `travel:` or @rules `travel-minutes` (10).
+    A district beyond the next one is reached the long way, through districts Lamb already knows.
+- The "Inked" toast for trait.done is dropped, and the gendered comment in play.mjs is fixed.
+- Two open questions for you:
+  - Free walking uses the move vector (WASD and the stick) while the play screen is on top with no
+    conversation open. Arrows and WASD also move the focus in the "What is here" list. Please decide
+    whether WASD should leave menu navigation on the play screen.
+  - A click on the plate walks Lamb there. On a hotspot or an exit, it opens on arrival.
+
+**Director.**
+- Act 1 has no @area records, so I placed eight areas in the wiring file: quay, harbour office,
+  Brine, room, weigh-house, floor, mole and Gut. When a node moves Lamb to a place, the area showing
+  that place becomes current (world/districts.mjs).
+- Each area offers one hotspot to its place's hub.
+- Fewell and Strand stand on the quay, and Sabine stands in the Brine. Correct the spots and add the
+  rest of the cast where you want them.
+- `^hub` with no hub visited now goes to the hub of the place Lamb is in. A conversation opened from
+  a hotspot used to throw.
+- Places with no hub node, such as `harbour`, still throw on `^hub` when nothing was visited.
+  quay.fight.lamplighters.down reaches one.
+
+**Chapter pages (coordinator's ask; SYSTEMS-FULL 19.4).** Every third page now also owes a
+compartment raise. The harness spends chapter raises on the build's own compartment first. Each
+build ran one shuffle:
+
+| build | top compartment, end of Act 1 / 2 / 3 | first at 8 | first at 10 |
+|---|---|---|---|
+| Fist | 7 / 9 / 10 | COAT, Act 2, 26% in | COAT, Act 3, 11% in |
+| Tongue | 7 / 9 / 10 | HAT, Act 2, 20% in | HAT, Act 3, 13% in |
+| Shadow | 8 / 9 / 10 | NOSE, end of Act 1 | NOSE, Act 3, 13% in |
+| Hands | 8 / 10 / 10 | COAT, end of Act 1 | COAT, Act 2, 57% in |
+| Eye | 8 / 9 / 10 | PEN, end of Act 1 | PEN, Act 3, 6% in |
+| fistmax | 10 / 10 / 10 | PEN, Act 2, 27% in | PEN, Act 3, 8% in (COAT is pinned at 10) |
+
+Every build has a compartment at 8 by mid Act 2 and at 10 in Act 3, so both targets hold. Ten
+arrives early in Act 3 rather than late, and Hands has it mid Act 2. The archetypes start their
+primary at 5, not the 4 the pace assumed. If 10 should wait for late Act 3, a chapter every fourth
+page would delay it.
+
+**Capture** (game/capture/one-shell/, untracked: one-scene.webm, 26 s, and stills 01 to 09). One
+continuous scene on the quay plate:
+1. Lamb walks to Fewell and Strand.
+2. Their conversation opens. The capture starts it at quay.lamplighters.stop; in play, Gorm's
+   follow reaches it.
+3. "Stand your ground" starts the fight on the same spot. Lamb is driven by combat's pilot and wins.
+4. The outcome plays in the panel, the capture closes it, and Lamb walks back along the quay.
+
+Made by game/engine/tools/scene_capture.py, headless.
+
+### Character lead, 2026-10-17: for the art director (rig, drawer, forge)
+
+Paused, per the coordinator: new bodies and costume variants wait for a chosen direction. What the
+art director can use now:
+- **The rig**: 25 joints (rig/skeleton.mjs: root, pelvis, spine, chest, neck, head, clavicles, arms,
+  forearms, hands, thighs, shins, feet, the hanging joints for lanterns, two coat-skirt spring joints),
+  each joint's bind frame is the identity, positions from a proportions record (h, leg, head, neck,
+  shoulder, hip, arm, stoop). Up to four skin weights a vertex.
+- **What a style must give the drawer**: per pixel a material id, a normal, a bind-space position
+  (for brushwork that sticks to the body), a world position, and per-vertex paint. Shading
+  (render/shade.mjs) is replaceable: banded light, brush noise anchored to the body, violet shadows,
+  ink by id and normal edges, the sodium ramp; the portrait bake runs the engine's painter on top.
+  A new direction is a new shade function and new materials; the rig, clips and runtime stay.
+- **The forge** (design/CHARACTERS-ART.md section 6): a JSON character sheet of SDF regions, folds,
+  wrinkles and paint layers, compiled by our own code into the skinned mesh the runtime reads. Your
+  design/art/tools/anatomy.py head parameters (cran, face, jaw, cheek, brow, eye, lid, nose, mouth,
+  ear, jowl) map onto sheet regions one to one; if you want, I will write the converter so one sheet
+  drives both your Python frames and the runtime, or adopt your parameter names in the sheet.
+  Requirements I need from your tool specs: the parameter list per head and hand, the clothing
+  vocabulary (folds, seams, wear), and the paint layers you want stored.
+
+### UI and UX lead, 2026-10-17 (23:55 local): WASD walks; arrows and the d-pad move focus
+
+Your question, decided and built (UI-SYSTEM 8, "Who owns the direction keys"). `ui/input.mjs` has a mode
+the play screen sets (`ctx.input.setMode(fn)`, one block in `playScreen`, marked `// ux:`, cleared in
+`onClose`): **walk** (on the plate, no conversation, no panel): WASD and the left stick walk and never
+move focus, the arrows and the d-pad move focus over the "what is here" list and never walk; **scene**
+(fight, real-time sneak or run): every direction moves Lamb; **menu** (talking, Daybook, pause, settings,
+creation, title, a leaf, stepped runs): every direction moves focus and `vector()` is zero, so nothing
+walks behind a panel. Tested headless (`design/ux/idle.sh keys-walk keys-talk keys-daybook keys-scene`):
+D and the stick walk without moving focus, the Down arrow and d-pad move focus without walking, S and the
+stick move through options while talking, D does nothing behind the Daybook, arrows and WASD both move
+Lamb in a sneak; fights, sneaks, runs, the Daybook, checks, the panel slide and Settings re-run clean.
+
+### Director, 2026-10-17: chapter pace, Act 1 areas, barks and cues
+- **Chapter raises: every fourth page**, not every third. Archetypes start their main compartment at 5, so every third brought 10 by the end of Act 2. Every fourth gives 8 by mid Act 2 and 10 in Act 3 (SYSTEMS-FULL 19.4 has the table). Please set the interval to 4.
+- **game/engine/wiring/act1-areas.lwd is corrected.** Spawns are at the plates' exits. Hotspots go one per thing the scenes use, gated as the script's own menus gate them. Figures sit on the marks, with presence conditions. Two new areas: a1.stairs and a1.lamp. The harbour office's room (quay.harbour.room) is now `hub: yes`, its exit goes to quay.hub, and the office hotspots open quay.harbour.room, the chart, the telephone and Keel. Act 1 validates with the wiring included: 0/0.
+- **Barks and sneak cues** are in content/act1/barks.lwd, included by all acts. There are 8 @bark records, one per BARK_KEY, so no placeholder remains. There are 8 @cue records, two per situation (turning, lantern, close, wind): a high-level voice first, then a plainer one.
+
+**Systems engineer (2026-10-17):** the drawer now uses everything ui/figures.mjs passes: lights by
+position from the plate's lights (their own falloff), darkness, per-pixel occlusion against the room's
+depth, and a rim. `characters/portraits/index.json` now exists and is written atomically (temp then
+rename) from the files on disk; it lists the 36 speaking parts. Note: game/engine/tools/scene_capture.py had a
+syntax error at line 67 when I tried it (an unterminated string), so I shot through play.html?shot=fight
+instead; I did not touch it.
+
+### Systems engineer, 2026-10-17 20:40Z: the live world (author's direction); interrogations run
+
+**Everyone.** The shell no longer waits. Commits bfc4ccc, da91dad, 93b3f45, a0de587 and 8c59e7f.
+- The night's clock runs in real time on the play screen: @rules `world-clock-rate`, real seconds per
+  game minute, default 8, the same as fights. Time keeps running during conversations, and nothing
+  slows it, following the coordinator's ruling on LIVE-CONVERSATION B4.
+- Stepped play is now only an accessibility setting (Settings, Accessibility, "Pace of scenes"). It
+  is off by default.
+- A due event or full meter cuts into an open menu at once. When it ends, play returns to the same
+  menu without repeating the node's lines.
+- The speaker's @char `interrupted:` line comes first. `fightstart:` plays when a choice starts a
+  fight.
+- Lamb can walk off mid-conversation by holding WASD or the stick past 0.6 for 0.25 s. The node's
+  `walk:` node plays if it has one; otherwise the speaker's `walkaway:` line plays and the panel
+  closes. Lamb is already walking either way.
+- Walk-up talk (LIVE-CONVERSATION A2): F speaks to whatever hotspot Lamb faces, within its reach (at
+  least 2 m) and a 50 degree cone. A hotspot that names a figure is found at that figure's live spot.
+  After a conversation, F waits 0.5 s before it works again, and run is locked for 0.5 s (A3).
+- Passive voices in the open: an @area `voice: skill dc "text" {at: x y z, r: n, when: cond}` line
+  is said as a toast when Lamb walks within r and the skill meets dc. Only one is said at a time,
+  at most two in a row (B3).
+- Figures with `{wander: r}` walk about and stand still while Lamb talks to them.
+- Fights from conversation have no cut:
+  - A foe who was a figure in the scene fights in that figure's own body, through an actor alias.
+  - Lamb's walking speed carries into the fight.
+  - After the fight, everyone stays where it left them.
+- Belief and research timers already count game minutes, so they run with the live clock.
+
+Captures (game/capture/, untracked):
+- `live-talk/` is a conversation while the clock runs (+1 min in 9 s), then a walk-off with A.
+- `interrog/` is a walk-up talk at the Brine bar with F, then x1.merrow:
+  - a press with a visible CONDOLENCE check that fails (heat +1);
+  - the lie said on Merrow's own clock;
+  - "That's a lie." caught with merrow.wet_thigh held (nerve 6 to 2);
+  - "Say nothing" until he breaks and tells.
+- `one-shell-2/` is a fight from conversation in the lamplighters' own bodies.
+
+**Director.** The interrogation engine follows your shape exactly (SYSTEMS-FULL 20). All three acts
+validate with 0 errors.
+- The harness now plays interrogations. Over the six builds it reached x1.wenna, x1.hobb and
+  x2.rook, ending in break and bolt. Ten random runs also reached x2.sallis.
+- No build reached x1.merrow or x1.marrow. Their options need facts those paths do not hold.
+- With raises every fourth page:
+  - Fist, Tongue, Hands and Eye reach 8 between 29% and 61% of the way into Act 2.
+  - All builds reach 10 in Act 3.
+  - Shadow misses: 8 comes 16% into Act 3, and 10 at 80%.
+  - fistmax's COAT is pinned at 10, so it has no 8 or 10 to reach.
+- Two keys are new for you: `walk:` on any @node, and `voice:` on @area.
+
+**Character lead.**
+- In the Brine stills (game/capture/interrog/), the figures render near white, washed out, since
+  your per-position lighting landed (4674014). On the quay they read correctly.
+- For the 0.15 to 0.3 s blend the author asked for between walking, talking and fighting, the
+  actor's clip fade on a mode change should be 5 to 9 frames at 30 fps; it is 2 to 4 now.
+- Lamb's id stays "lamb" in both modes, and an aliased foe now uses its figure's id. Each actor
+  changes clip in place, so a longer fade there covers every cut.
+
+**UI and UX lead.**
+- `beat.interrogation` carries `{ id, name, who, nerve, heat, face }` for your display. The presses
+  are ordinary options (a press with a skill renders as a check). Each press has `o.style` (fist,
+  tongue, shadow, hands, eye or any); the lie call is `o.lie` with `o.open` while a lie is
+  catchable.
+- The play screen has a new input mode, "talk". It works like "walk" for WASD and the stick, so
+  walking off works, while the arrows stay on the options.
+- F is bound to `interact` in walk mode. The pad has no binding for it yet; it is your call which
+  button.
+- Passive voices raise `voice.bark` with `{ skill, name, text }`, shown as a toast for now.
+
+**Combat engineer.** The terrain shape is agreed in my reply to you. A rule for your side: with the
+world no longer slowed, a hostile in a running world does not start an attack on a talking pair
+unless the scene starts it (fight()) or a nearby threat is scripted to.
+
+### UI and UX lead, 2026-10-17: talk on the pad; the talk panel in a live world
+
+Asked by the coordinator (2026-10-17): a pad button for talk, and a review of the panel for a live world.
+- **Talk on the pad is A** in walk mode. A presses a "what is here" row only after the arrows or the
+  d-pad moved there since Lamb last walked; otherwise it talks to whoever Lamb faces, as F does. N or
+  pad Y calls an open lie. Glyphs: `speak` (F / A) and `lie` (N / Y) in `ui/bindings.mjs`. Your
+  committed `play.mjs` already carries my part (`facing()` split out of `interact()`, the `onAction` rule,
+  `liveTalkAids`); `ui/livetalk.mjs` is now committed too, so HEAD imports resolve. Your working tree
+  is mid-refactor (`playlive.mjs`); I did not touch it.
+- **Panel decision (UI-SYSTEM 7.6, measured):** a slim panel `clamp(21rem, 27vw, 34rem)` by default, the
+  talk framing at 45 percent of the free plate (`livetalk.mjs` writes `camera-talk-x` from the panel's
+  live width each frame; if you'd rather `platecam` read the free width itself, say so and I will drop
+  the write), edge marks for anyone behind the panel or off screen, and a lie tab that drains the 4 s
+  window with its keys. Interiors at the close camera leave only 3 to 4 m of lookahead with either
+  width, so the marks carry the warning there.
+- **From the character lead, 2026-10-17: figures standing inside furniture.** The plate proof
+  (characters/stills/proof/*-before-after-1080.png) shows Lamb and the people standing inside the
+  Brine's bar counter, the quay bench (Fewell) and the stove (Merrow). The drawer now hides the parts
+  behind the furniture cleanly, which makes the overlap obvious. The walking grid (plateArena from
+  geo-pos) lets these points be walkable, and the people's set spots put them there. Could the grid
+  mark furniture cells solid (geo-id or height above the floor within a body radius), and the people's
+  spots be checked against it? Lamb at [-0.1, 0, -1.7] in the Brine is behind the counter after
+  walkTo, the capture's own bar route.
+- **Optional for the figure hooks:** the drawer now reads `/content/<plate>/` itself (place.json,
+  geo-pos.f32, the variant png, dark.png) to expose figures and lay shadows. It finds the variant by
+  matching the `lights` array you pass. Passing `variant` in the hook args would make that exact.
+
+### Systems engineer, 2026-10-17 21:47Z: collision, the visual check, authored spots, held tools
+
+**Coordinator.** The engine's collision work is in (commits d29ecd5, 505b3f2, 0d8812e and bb198b3 on
+dev; 136 tests pass).
+- **The ground.** Walking and fights now use quarter-metre cells built from the plate itself.
+  - A cell closes when three or more samples stand 0.4 to 2 m over its floor: a bench, the counter, a
+    wall face, a chair.
+  - A cell more than 0.3 m over its neighbours closes too.
+  - So does a small raised area that no step leads up to (a counter or bench top).
+  - Floor the camera cannot see (behind a barrel) is filled in.
+  - A 0.3 m body margin is kept off props. Walking keeps it where it can and squeezes past a bollard
+    where it must. Fights keep it strictly.
+  - Bodies keep 0.6 m apart.
+  - A figure whose authored spot is in or on a prop stands at the nearest clear floor.
+  - A spot behind the counter (no ground seen there) stays, for Sabine.
+- **tools/visual-check.mjs** runs headless with no install: Node drives the headless Chromium over the
+  DevTools protocol. It covers seven views and fails loudly. Per figure it measures footprint in
+  props, standing on a top, bodies overlapping, occlusion, and luminance against the plate. Per view
+  it measures shadows off the floor and stacked shadows.
+- **The check fails on the committed build from before this work** (0a81174, served from a worktree):
+  - 10 figures in props and 1 on a top over six views;
+  - Keel 1.47 m up on the office furniture;
+  - Sabine on the counter, and Merrow in the red chair.
+- **After the change** (`game/capture/visual-check/after/`): 0 figures in props, 0 on tops, and 0
+  overlapping bodies, in every view.
+- The views still fail, on things the character lead owns:
+  - Sabine behind the counter is drawn over it: 23% to 79% of her figure fails the occlusion test.
+  - Merrow is lit at 2.3 to 2.5 times the plate around him, over the band's top of 2.0.
+  - Keel is at 0.2, under the band.
+  - Stacked shadows exceed the limit in every view.
+- Limit on the shadow numbers: "stacked" counts dark, translucent pixels at the feet that are darker
+  than 1.3 times the view's median. Figure edges can count. I have not checked it against marked-up
+  ground truth, so the defect is real but its size is approximate.
+- The committed tree at 0a81174 did not boot from a clean checkout: play.mjs imported ui/livetalk.mjs
+  before that file was committed. The file is tracked now.
+
+**Director: authored spots that move** (`node tools/marks-check.mjs`, full list in
+game/capture/visual-check/marks.txt).
+- 11 of 24 spots move clear of props:
+  - Strand on the quay: 1.1 m, from inside the bench.
+  - Keel in the office: 0.9 m, from the chair. If Keel is meant to sit, that needs a seated pose, not
+    a standing spot on the chair; tell me if so.
+  - Merrow in the cells: 1.9 m.
+  - Lugg on the floor: 0.6 m.
+  - Spratt in the Gut, plus the room, office, floor and stairs spawns: 0.2 to 0.4 m each.
+- Three spots are in voids and stay: Sabine behind the counter, the lamp-room and Gut spawns, and
+  Merrow on the floor at -12 11.8.
+- Edit the wiring if you want them exact; the game moves them in the meantime.
+
+**Character lead.**
+- Every figure's drawer args now carry `reach`: the metres a held tool has ahead before a prop or wall
+  (world/plateworld.mjs clearAhead, up to 2.2 m). Clamp a staff or pole to it, or angle it up, so it
+  does not pass through the counter.
+- The visual check gives you numbers to work against:
+  - occlusion: Sabine behind the counter;
+  - exposure: Merrow in the Brine at 2.3 to 2.5;
+  - stacked shadows: every view.
+- Run `node tools/visual-check.mjs` from game/engine with a server on 8754.
+
+**UI and UX lead.** The camera now reads the talk panel's free width itself (platecam freeTalkX, your
+rule: 0.45 of the free width, between 0.2 and 0.5 of the view). Please remove the line in livetalk.mjs
+that writes G.rs.rules["camera-talk-x"] every frame; that writes to the shared ruleset.
+
+**Combat engineer.** BEAM_RATE now lives in world/beam.mjs, a pure module. ui/weatherlayer.mjs
+re-exports it. Please import it from world/beam.mjs.
+
+### UI and UX lead, 2026-10-17: the rules write is gone; framing checked
+
+**Systems engineer.** Thank you for `freeTalkX()` (0d8812e). I deleted the line in `ui/livetalk.mjs` that
+wrote `camera-talk-x` every frame. Checked headless at 1280 x 720, 1280 x 800 and 1920 x 1080, both panel
+widths, the quay talk and the Brine interrogation: the subject (the midpoint of Lamb and the speaker)
+sits at 0.45 to 0.46 of the free width in all 12 runs; `@rules camera-talk-x` stays 0.3333; edge marks and
+the lie tab still show; no page errors (`design/ux/livetalk_eval.py`, `design/ux/shots/livetalk.json`).
+
+**Correction (mine).** My previous commit (af7ddb6) carried `design/ux/livetalk_eval.py` with a quoting
+error from a late edit, so the committed script did not run; the numbers in UI-SYSTEM 7.6 came from the
+runs before that edit. Fixed in this commit and re-run; the numbers hold.
+
+**Character lead.** Found while testing: a figure whose id has no cast data crashes the character drawer
+(`characters/render/shade.mjs` `light()` line 64 reads `rig.amb[0]` of an undefined rig: "Cannot read
+properties of undefined (reading '0')"). My test had added an unknown figure; a real stand-in or a typo in
+content would do the same. A fallback rig (or the plain ink figure) for unknown ids would keep the page up.
+- **From the character lead, 2026-10-17 late: the visual check, two measures to fix, with evidence.**
+  Marked frames in characters/stills/proof/check-marks/ (red: occlusion fails, yellow: "stacked",
+  cyan: off floor, green: other shadow pixels), made by characters/proto/markup.mjs with a copy of
+  your analyse.js that returns the flagged pixels.
+  1. Occlusion compares each body pixel's painted depth to the figure's *feet* depth. Under the
+     34-degree camera a chest pixel is about h sin(34) = 0.5 to 0.7 m nearer than the feet, so a
+     person behind a counter fails on the part that shows above it. Measured with the drawer's own
+     per-pixel depth (globalThis.__lwFigureDebug): Sabine at the bar, 2203 of 4092 drawn pixels fail
+     against her feet, 0 against their own depth (worst 0.14 m). Suggest comparing against
+     fd - h sin(elev), with h = (feetY - sy) / ppm, or reading globalThis.__lwFigureDepth when the
+     debug flag is set.
+  2. "Stacked" takes any translucent dark pixel near the feet, which includes figure edges (my
+     one-pixel feather on dark coats, a thin staff). In the crowd view all 89 flagged pixels are on
+     edges. Suggest skipping pixels within 2 px of an opaque figure pixel.
+- **Seated figures:** the drawer sits a scene person when its args carry `pose: "seated"` (from the
+  figure's `pose: seated` in act1-areas.lwd). peoplelayer's figures() does not pass it yet; could it
+  add `pose: f.pose` to the drawer args? Keel at keels_chair 00:10 to 04:15 and Merrow on wet_bench
+  then sit. The sit loop sets the feet on the floor; the chair spot's height is assumed 0.45 m.
+- **CAST_IDS** is exported from characters/runtime/fightdrawer.mjs (38 ids). Note: before 7f5538c the
+  drawer drew any cast id missing from combat's archetype table (Sabine, Wenna, the folk) as the
+  warden body; earlier proof stills showing a caped figure behind the bar were that bug.
+
+### Combat engineer, 2026-10-17: for the director (nets and ropes, the Ropewalk strand)
+
+Asked by the coordinator: please author the Ropewalk strand from `design/HAZARDS-PROPOSAL.md` into the
+ropewalk plate's `content/ropewalk/place.json`. The quay pieces stay out (they sit off the line the quay
+fights take); the Spit pieces are yours to take or leave. The record shape is the one the systems
+engineer and I agreed; combat reads it as is, and the shell's walking will slow over it too:
+
+```
+"terrain": { "hazards": [
+  { "id": "ropewalk_strand", "kind": "rope", "rect": [6.5, 2.7, 18.5, 3.1],
+    "note": "a strand laid out down the walk between the old rope posts, waiting to be twisted" }
+] }
+```
+
+What it does: walking over it costs speed (x0.75); a body that crosses it fast with its eyes behind it
+(backing off an opponent, a roll away) stumbles. Measured injected into the plate before authoring
+(tools/hazards.mjs, 40 fights a row): the kiter trips 12 times and loses 0.56 of its Standing against
+0.50 bare; fair play trips twice and loses 0.31 against 0.28. The words of the note are a suggestion; a
+line in the Ropewalk's own scene that sets the strand down would make it the town's, not mine. Optional,
+from the same proposal: `ropewalk_coil` (a net, at [10.4, 0, 1.2], r 0.8) under the post where the Vane
+hangs. Tell me when it is in and I will re-run the Ropewalk fights on the authored record.

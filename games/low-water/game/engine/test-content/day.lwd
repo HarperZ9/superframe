@@ -1,0 +1,69 @@
+# Placeholder daytime book: the playable interlude between acts. Stand-in names only.
+@meta
+title: Engine test day
+format: lwd/1
+start: d.start
+clock: 09:00
+
+@day d.one
+low: 11:40 -0.3
+high: 17:52 5.0
+at: 07:00 daylight 0.6
+at: 09:00 daylight 1
+at: 17:00 daylight 0.8
+at: 19:30 daylight 0
+at: 07:00 fog 0.02
+at: 10:00 fog 0
+
+@place d.market
+name: Test market
+zone: market
+light: 0.1
+sodium: 0.9
+dark-light: 0.02
+
+@place d.shop
+name: Test shop
+zone: market
+light: 0.3
+sodium: 0
+shelter: yes
+
+@faction town
+name: Test town
+
+@char d.beadle
+name: Test beadle
+speaker: BEADLE
+faction: town
+sched: 09:00-13:00 d.market
+sched: 13:00-18:00 d.shop
+
+@crowd c.market
+place: d.market
+when: clock < 13:00
+density: 0.8
+
+@watcher w.beadle
+name: Test beadle watching
+char: d.beadle
+place: d.market
+post: 0 0 0
+
+@node d.start
+place: d.market
+nar: Test: morning in the market. {when: clock < 12:00}
+nar: Test: afternoon in the market. {when: clock >= 12:00}
+nar: Test: it is day. {when: day}
+opt: "Wait until the afternoon." -> d.later
+opt: "Go into the shop." -> d.shop
+
+@node d.later
+cost: 240
+go: d.start
+
+@node d.shop
+place: d.shop
+line: BEADLE: Test: you again. {when: here(d.beadle)}
+nar: Test: the shop is empty. {when: !here(d.beadle)}
+end: done

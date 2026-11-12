@@ -1,0 +1,237 @@
+# Low Water, Act 1: evidence and shared flags. Director's file.
+# Evidence has about (the Daybook line), against (who and weight) and by (how it was read).
+# against ids: keel, crake (the Trust and Board's side as trust), trust, guild, wenna, sabine,
+# fennick, merrow. The dawn verdict reads these weights.
+
+# ---------------------------------------------------------------- evidence: the bible's clues C1 to C16
+@fact prints.read
+about: Boot prints, size eleven, from the steps to the drowned lamp after the floor opened; deeper heels coming back.
+against: merrow 10
+by: eyes
+
+@fact scales.switch
+about: Fish scales on the handle of the quay switch box, under the eave.
+against: guild 20
+by: eyes, in light
+
+@fact works.order
+about: The works order: Mother moved from her own feeder onto the quay board seven months ago. Signed Keel, approved Crake.
+against: keel 25
+against: trust 30
+by: reading
+
+@fact panel.restrike
+about: The card on Mother's panel: RESTRIKE REQUIRED after any loss of supply. A keeper's job.
+against: trust 20
+against: wenna 10
+by: reading
+
+@fact log.ahead
+about: The lamp-room log is filled in to the end of the month, in ink all of one age.
+against: wenna 15
+by: reading and the Damp
+
+@fact coat.wenna_dry
+about: Wenna's oilskin is dry. Nobody who walked the mole tonight is dry.
+against: wenna 15
+by: the Damp
+
+@fact tab.wenna
+about: The Brine's tab: rounds in Wenna's mark at 21:45 and 22:10, by the Brine's own slow clock.
+against: wenna 10
+against: sabine 5
+by: reading
+
+@fact prism.green_oven
+about: A prism of green bottle glass, still warm, in the Brine's bread oven.
+against: wenna 20
+against: sabine 15
+by: Candlemas, out of the sodium
+
+@fact lens.green
+about: A third of Mother's prism rings are green bottle glass. Her beam is green and weak.
+against: wenna 20
+by: Candlemas, in the arc's light or by lantern
+
+@fact prism.numbered
+about: Fennick's relic: a sharp-edged crown glass prism, numbered 113 on its edge. Not sea glass. One of Mother's.
+against: wenna 10
+against: fennick 15
+by: Candlemas, in the dark
+
+@fact overheard.last_three
+about: Sabine to Wenna in the yard: that was the last three, and she would not fire the oven for glass again.
+against: wenna 10
+against: sabine 10
+by: overhearing
+
+@fact merrow.wet_thigh
+about: Merrow is wet to the thigh: he waded the gully late, when it was deep.
+against: merrow 5
+by: the Damp
+
+@fact memory.low_light
+about: From the ferry's deck: a low light in the drowned lamp, 22:24 by the ship's clock, and the helm going over.
+by: memory
+
+@fact claim.time
+about: The Board's claim was telegraphed at 18:30, three hours before the dark.
+against: keel 30
+by: reading
+
+@fact lamps.pink
+about: The quay lamps came back pink. Sodium restarts through red for about ten minutes, so the quay was dark until about 21:52.
+against: guild 10
+by: testimony and Candlemas
+
+@fact soot.east
+about: Soot streaked east across the weigh-house's east face: the Brine's oven ran while the wind was still west, before 23:35.
+against: sabine 10
+by: the Vane and the Damp
+
+# ---------------------------------------------------------------- further evidence
+@fact marrow.switch
+about: Marrow pulled the quay switch at 21:38 for the vote, as the Guild has for thirty years, and put it back at 21:52. He did not know Mother was on it.
+against: guild 25
+by: testimony
+
+@fact merrow.light
+about: Merrow hung a lantern in the drowned lamp's hole tonight. He says it went out at 22:18 and burned again from 22:25.
+by: testimony
+
+@fact spray.mole
+about: The mole has been spray-swept in a westerly since nine. Anyone who walked it is wet on the windward side.
+by: the Vane
+
+@fact key.office
+about: Keel's key to the weigh-house office.
+by: Keel
+
+@fact wenna.heard_motor
+about: Wenna heard Mother's motor stop at twenty to ten, from her seat by the Brine's stove, and did not go.
+against: wenna 25
+by: testimony
+
+@fact sabine.oven
+about: Sabine casts the green prisms in the bread oven from the Brine's empties, on bread nights. Six years of it.
+against: sabine 25
+against: wenna 15
+by: testimony
+
+@fact fennick.bought
+about: Fennick paid Wenna for the splinters of the Eye, in coin and silence, for six years.
+against: fennick 25
+against: wenna 15
+by: testimony
+
+@fact clause.struck
+about: The engineer's specification: the clause requiring a keeper to restrike Mother after any loss of supply, struck through in yellow ink. Readable only out of the sodium.
+against: trust 30
+by: reading, in honest light
+
+@fact frost.keel
+about: Frozen drips on the hundred and twelve stairs, one per step, going up and coming down. Keel climbed to Mother before dawn.
+against: keel 20
+by: the frost
+
+@fact hammer.keel
+about: Constant Hobb saw the harbourmaster take the lump hammer from the weigh-house store at a quarter past four.
+against: keel 15
+by: testimony
+
+@fact vote.older
+about: One of the two fish on the Guild's voting pans was smoked a day before the vote.
+against: guild 5
+by: SMELL and Shadwell's soot
+
+@fact ship.clock
+about: The Saint Cuthwin's clock runs four minutes fast. The ferry turned at 22:20 by the true time.
+by: Penhallow
+
+@fact brine.clock
+about: The Brine's clock is eleven minutes slow. Sabine corrects it for everyone but herself.
+against: sabine 5
+by: SUM
+
+@fact lens.keel_motive
+about: Keel wants a whole new lens at the Shelf's expense, so that nobody counts the green rings.
+against: keel 20
+by: testimony or inference
+
+@fact pollard.file
+about: The Shelf's own file on Mother's conversion, twelve years ago, assessed by H. Pollard. He passed the lens as whole.
+by: reading
+
+@fact shelf.e
+about: The Shelf's messages are typed on a machine with a sticking e.
+by: SMALL PRINT
+
+# ---------------------------------------------------------------- shared state flags (no about: these do not show in the Daybook)
+@fact met.wenna
+@fact met.keel
+@fact met.crake
+@fact met.marrow
+@fact met.fennick
+@fact met.sabine
+@fact met.merrow
+@fact met.pip
+@fact met.gorm
+@fact met.hobb
+@fact met.spratt
+@fact met.penhallow
+@fact met.cockle
+@fact met.dilly
+@fact wenna.climbs
+@fact mother.restruck
+@fact mother.out_again
+@fact gut.open
+@fact merrow.cells
+@fact frost.met
+@fact lens.broken
+@fact lens.saved
+@fact room.let
+@fact prov.done
+@fact gorm.warned
+@fact keel.rattled
+@fact runs.fallback
+
+# ---------------------------------------------------------------- equivalent facts (REWORK-PLAN 3.3)
+@fact switch.recreated
+about: Lamb pulled the quay switch and Mother went out with the quay. She is on the board, and whoever pulls it puts her out.
+against: guild 15
+against: trust 15
+by: Lamb's own hand
+
+@fact afterdark.told
+about: Marrow told it to someone who fought fair in the dark: the switch at 21:38, back at 21:52, as his father did.
+against: guild 25
+by: testimony, earned
+
+@fact works.inferred
+about: The weigh-house ledger closed for Trust works seven months ago, the blotter's backward signatures, and Crake's "seven months": Mother was moved onto the quay board, by the Board and the Trust.
+against: keel 20
+against: trust 25
+by: inference
+
+@fact oven.inferred
+about: Soot streaked east before the rain, bottle glass in the pool below the Brine, and the oven door dried in the shape of a hand: the green prisms are cast at the Brine.
+against: wenna 15
+against: sabine 15
+by: inference
+
+@fact wenna.told_landing
+about: On the landing of the hundred and twelve stairs, carried most of the way, Wenna said she has not climbed at night in three years and heard Mother stop.
+against: wenna 25
+by: testimony
+
+@fact scales.kept
+about: Lamb covered the switch handle before the rain and kept the scales on it: a Guild hand on the switch, preserved.
+against: guild 20
+by: Lamb's oilskin
+
+@fact appt.known
+about: Something is planned for the next time the lights go out. HEARSAY and the Glass agree.
+
+@fact appt.stopped
+@fact appt.joined
+@fact appt.watched

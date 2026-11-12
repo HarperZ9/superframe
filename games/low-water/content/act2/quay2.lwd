@@ -1,0 +1,493 @@
+# Low Water, Act 2: Lamp Quay on the second night. District file, prefix quay2.
+# Beats (design/ACT2-PLAN.md section 5): 1 the switch at 19:10, the cause as fact, the pinned fact
+# quoted; 9 the boat to the Spit (gate A4, five routes, hands off to spit.hub); 11 the procession
+# of the Old Bulb passing along the quay toward the mole (reads gasholder_carries, gasholder_walked,
+# gasholder.carrying, gasholder.bulb_lit, gasholder.procession_left / _stopped).
+# Opening node: quay2.start (from day.dusk).
+
+# ---- new ids
+@var quay2.boat
+default: none
+values: none, wardens, merrow, lugg, stowed, captive, copper, cockle, ebb
+about: How Lamb reached the Spit. The Spit reads it (captive arrives with the strippers; ebb arrives twenty minutes early).
+
+@fact quay2.ebb_timed
+about: The Almanac's ebb, read to the minute: the Coffin carried out to the Spit with no oars wanted, twenty minutes ahead of anyone rowing.
+by: the Almanac
+
+@fact quay2.wardens.fought
+@fact quay2.merrow.refused
+@fact quay2.cockle.mended
+@fact quay2.procession_seen
+@fact quay2.coffin.failed
+@fact quay2.bulb_out
+
+@encounter quay2.wardens
+name: The Board's boat
+area: quay
+foe: f.warden 2
+param: steps (wet green stone; a shove puts someone in the harbour)
+talk: quay2.fx.wardens | Put the oar down and say the Alderman wants eyes on the barges ? fight_seconds >= 6
+win: quay2.fight.wardens.win
+yield: quay2.fight.wardens.yield
+fled: quay2.fight.wardens.fled
+down: quay2.fight.wardens.down
+
+# ================================================================ BEAT 1: 19:10, THE SWITCH
+@node quay2.start
+place: quay
+cost: 0
+do: set(ev2.switch)
+nar: Ten past seven. In the weigh-house somebody puts the quay switch up, and the click carries the length of the quay in the frost.
+nar: The lamps wake red, then rose, then orange. Under a sky with every star in it, every face on the quay can be seen.
+call: quay2.pin
+call: quay2.cause
+go: quay2.hub
+
+# ---- the fact Lamb pinned at two o'clock (var day_pin)
+@node quay2.pin
+cost: 0
+nar: Above the Brine, under one pin: half past six. {when: day_pin == claim}
+nar: Above the Brine, under one pin: Keel's dry signature. The harbour office window is lit, and somebody inside is not sitting down. {when: day_pin == works}
+nar: Above the Brine, under one pin: down at 21:38, up at 21:52. Tonight's click is a minute early. {when: day_pin == switch}
+nar: Above the Brine, the green prism on its nail has turned the same orange as everything else. {when: day_pin == glass}
+nar: Above the Brine, in pencil: 22:20, a light, nothing of Merrow's burning. Out past the Spit nothing is burning now either. {when: day_pin == light}
+nar: Above the Brine, a drawing of a man standing in a puddle. At the top of the quay steps, a man stands in a puddle. {when: day_pin == keel}
+return:
+
+# ---- the cause, as fact on the quay
+@node quay2.cause
+cost: 0
+alt: quay2.cause.divided ? has(cause.divided)
+alt: quay2.cause.wreckers ? has(cause.wreckers)
+alt: quay2.cause.guild ? has(cause.guild)
+alt: quay2.cause.trust ? has(cause.trust)
+alt: quay2.cause.keeper ? has(cause.keeper)
+alt: quay2.cause.sea ? has(cause.sea)
+return:
+
+@node quay2.cause.wreckers
+cost: 0
+line: KEEL: The Board has chained the Low Company's boats at the mole steps, assessor, by order, for the Shelf. The Board thanks the Shelf.
+return:
+
+@node quay2.cause.guild
+cost: 0
+line: COE: The Alderman says the annual vote is prohibited. The Alderman says it was always a fire risk, voting in the dark.
+return:
+
+@node quay2.cause.trust
+cost: 0
+line: KEEL: The harbour office is under review, assessor. The Board is under review. The Board is standing outside its own door.
+return:
+
+@node quay2.cause.keeper
+cost: 0
+line: GORM: Who do you suppose they've sent up the mole tonight? A boy with a lantern? Do you think anyone told him how many stairs?
+return:
+
+@node quay2.cause.sea
+cost: 0
+line: BRIGHT: Lovely night! Nobody's fault! Lovely!
+return:
+
+@node quay2.cause.divided
+cost: 0
+line: STRAND: Two notices on the harbour office door, Shelf. One Board, one Municipal. One over the other. Neither reads whole.
+return:
+
+# ================================================================ THE QUAY, SECOND NIGHT
+@node quay2.hub
+place: quay
+hub: yes
+cost: 0
+alt: quay2.procession ? has(gasholder.procession_left) & clock < 02:00 & !has(quay2.procession_seen)
+nar: Lamp Quay under a clear sky: the steps, the Brine, the weigh-house, the harbour office, and the mole out to Mother.
+nar: At one o'clock the quay is quiet. Nothing comes down the hill road but the cold. {when: has(gasholder.procession_stopped) & clock >= 01:00 & clock < 02:00, once}
+nar: Far out past the Spit two lanterns move on the black, low, where the stranded barges lie. {when: clock >= 22:30 & clock < 23:40}
+call: quay2.hub.lamps
+opt: "Walk along to the mole steps, where the boats lie." -> quay2.boats +2
+opt: "Go into the Brine." -> brine2.hub +1
+opt: "Go to the weigh-house." -> weigh2.hub +1
+opt: "Walk out along the mole." -> mole2.hub +1
+opt: "Go up the lane into the Gut." -> gut2.hub +2
+opt: "Take the path up Chancel Hill." -> hill.hub +4
+opt: "Go along to the Ropewalk." -> ropewalk.hub +3
+opt: "Go along to the mole steps, where the Board's boat is loading." -> quay2.boats ? clock >= 22:30 & clock < 23:40 & !seen(quay2.muster)
+opt: "Go down the steps onto the harbour floor." -> floor2.hub ? clock >= 23:22 & clock < 00:10 +3
+
+@node quay2.hub.lamps
+cost: 0
+line: FEWELL: Fours, tonight, Shelf. Orders from the hill. They read last night's book up there. {when: has(book.violence), once}
+line: FEWELL: New pole. Nine foot six. Regulation. {when: has(struck.fewell), once}
+return:
+
+# ================================================================ BEAT 9: THE BOAT TO THE SPIT (gate A4)
+@node quay2.boats
+place: mole_steps
+cost: 1
+alt: quay2.boats.early ? clock < 23:00
+alt: quay2.boats.late ? clock >= 23:40
+alt: quay2.muster ? !seen(quay2.muster)
+nar: The mole steps. Out on the Spit two barges lie on their sides with lanterns moving over them.
+call: quay2.boats.who
+inst: THE ALMANAC: Ebb running hard until a quarter to twelve. Anything that floats and leaves before then goes where the water goes, and the water is going to the Spit.
+opt: "Take the Board's boat from the wardens." -> quay2.wardens.boat ? !has(quay2.wardens.fought)
+opt: "Ask Merrow for a place in his boat." -> quay2.merrow ? !has(merrow.cells) & !has(quay2.merrow.refused)
+opt: "Ask Lugg for Merrow's boat, with Merrow in the cells." -> quay2.lugg ? has(merrow.cells)
+opt: "Get under the tarpaulin in the strippers' boat before it goes." -> quay2.stow
+opt: "Offer the sunk copper for a boat." -> quay2.copper ? has(floor.copper_sunk) | count(i.copper_sack) > 0
+opt: "Look at Nan Cockle's boat, upside down on the steps with a hole in it." -> quay2.cockle ? !has(quay2.cockle.mended)
+opt: "Look at the punt nobody takes out." -> quay2.coffin ? !has(quay2.coffin.failed)
+opt: "Take a spare oar off the steps." -> quay2.oar ? count(w.oar) == 0 {verb: carry, noise: 0.1}
+opt: "Stop Sallis on the steps and ask who pays." -> x2.sallis.start ? seen(quay2.muster) & !has(quay2.sallis_told) & clock < 23:40
+opt: "Go back along to the quay." -> ^hub +2
+
+# ---- the muster: the claim's word makes wreckers of neighbours (decided 2026-10-17: the strippers are the town's)
+@node quay2.muster
+place: mole_steps
+speaker: SALLIS
+cost: 4
+do: set(quay2.muster_seen)
+nar: At the foot of the steps the Board's boat is loading by lantern: crowbars, sacks, a coil of rope, and six men the assessor has seen all evening doing other things. Pruett from the fish market. Boddy, who mends nets. Hask. Old Penrose and young Penrose, who sang at the Brine.
+nar: Sallis has a folded Courier in one hand and reads from it under the lantern, the way a man reads the banns.
+line: Nature of loss, darkness, malicious. Malicious, it says. By persons. It doesn't say which persons.
+line: So whoever's out on the Spit tonight is the persons. And the Shelf pays for what the persons take. That's what the claim's for.
+line: Then it might as well be us that takes it, and docket it, and hand it in. Salvage for the insurer. Nobody's a wrecker that hands it in.
+line: PENROSE: Who's the insurer, then, Mr Sallis?
+line: The Shelf. Stood right there, in the hat.
+line: The Shelf said wreckers herself, on the quay. You all heard. {when: has(said.wreckers) | has(cause.wreckers)}
+nar: Young Penrose looks at the assessor for a long moment, and then he picks up a crowbar, because his father has.
+voice: undertow: Say nothing, and they go out on your word. Say something, and they go out anyway, on the Board's. {dc: 5}
+check: "[FORM LETTER] Tell them the claim names no persons, and the Shelf pays no finder." -> quay2.muster.word.ok / quay2.muster.word {skill: formletter, dc: 6, do: set(said.muster_word)}
+opt: "Say nothing, and watch them load." -> quay2.boats
+
+@node quay2.muster.word.ok
+place: mole_steps
+speaker: SALLIS
+cost: 2
+do: set(quay2.penrose_stayed)
+line: Then the Board pays. Somebody's always paying, Shelf.
+nar: Old Penrose looks at the hat, and then at his son, and takes the crowbar out of the boy's hands and puts it in his own.
+nar: The boat goes out with five. Young Penrose stays on the bottom step with his father's hand still on his shoulder, and then without it, and watches it go.
+go: quay2.boats
+
+@node quay2.muster.word
+place: mole_steps
+speaker: SALLIS
+cost: 2
+line: Then the Board pays. Somebody's always paying, Shelf. We'd be fools to be the only ones in Gullet not collecting.
+nar: Nobody puts down a crowbar. Old Penrose puts his hand on his son's shoulder, and keeps it there.
+go: quay2.boats
+
+@node quay2.oar
+place: mole_steps
+cost: 1
+do: give(w.oar)
+nar: An oar, split along the loom and bound with wire, that nobody has missed since the summer. It floats. It will do.
+go: quay2.boats
+
+@node quay2.boats.early
+place: mole_steps
+cost: 1
+inst: THE ALMANAC: Come back at eleven. Leave on the ebb or row against it, and nobody rows against it.
+opt: "Go back along to the quay." -> ^hub +2
+
+@node quay2.boats.late
+place: mole_steps
+cost: 1
+nar: The ebb has turned. Every boat that was going has gone.
+opt: "Go back along to the quay." -> ^hub +2
+
+@node quay2.boats.who
+cost: 0
+line: SALLIS: Board's boat, salvage for the Shelf. Mind the crowbars.
+return:
+
+# ---- Fist: take the Board's boat from the wardens
+@node quay2.wardens.boat
+place: mole_steps
+speaker: SALLIS
+cost: 2
+alt: quay2.wardens.coat ? guise == lamplighter
+line: SALLIS: Board's boat, Shelf. Board's business. Step off.
+voice: ballast: Green stone, wet, and frost on the wet. One shove and you are in the harbour. {dc: 4}
+check: "[FORM LETTER] Tell him the Shelf requisitions the Board's boat for its inquiry." -> quay2.wardens.talk.ok / quay2.wardens.talk.fail {skill: formletter, dc: 7}
+opt: "Take the oars out of his hands." -> quay2.wardens.fight {verb: carry, noise: 0.8}
+opt: "Leave the Board its boat." -> quay2.boats
+
+@node quay2.wardens.coat
+place: mole_steps
+speaker: SALLIS
+cost: 2
+do: set(a2.afloat); quest(a2.boat, afloat); quay2.boat = wardens
+line: SALLIS: Municipal? About time. The Alderman wants eyes on the barges. Take the small one astern, it's bailed.
+go: quay2.row
+
+@node quay2.wardens.talk.ok
+place: mole_steps
+speaker: SALLIS
+cost: 3
+do: set(a2.afloat); quest(a2.boat, afloat); quay2.boat = wardens; rep(board, -1)
+line: SALLIS: Requisitions. Right. The Board'll hear of it.
+nar: He holds the small boat to the step, memorising a face.
+go: quay2.row
+
+@node quay2.wardens.talk.fail
+place: mole_steps
+speaker: SALLIS
+cost: 2
+line: SALLIS: The Shelf can requisition its own boat. Has it got one?
+opt: "Take the oars out of his hands." -> quay2.wardens.fight {verb: carry, noise: 0.8}
+opt: "Leave the Board its boat." -> quay2.boats
+
+@node quay2.wardens.fight
+place: mole_steps
+cost: 0
+do: set(quay2.wardens.fought); fight(quay2.wardens)
+nar: The assessor's hands close on the oar, and the boathook comes round low over the wet stone.
+
+@node quay2.fx.wardens
+place: mole_steps
+speaker: SALLIS
+cost: 1
+line: LAMB: The Alderman wants eyes on those barges. Mine will do.
+line: SALLIS: The Alderman. Should've said. Take the small one.
+go: quay2.fight.wardens.yield
+
+@node quay2.fight.wardens.win
+place: mole_steps
+cost: 3
+do: set(a2.afloat); quest(a2.boat, afloat); quay2.boat = wardens; set(book.violence); rep(board, -2); seenas_board = threat
+if: trait(m.body) == none => offer(m.body)
+nar: One warden sits in a foot of harbour on the bottom step. Up on the quay four pencils have started.
+nar: His chain lies on the step where it fell, and his sea boots beside it, which he took off to swim and will not be getting back.
+do: give(w.chain); give(c.seaboots)
+voice: grip: The oar is yours. Your hand will tell you about it tomorrow. {dc: 4}
+go: quay2.row
+
+@node quay2.fight.wardens.yield
+place: mole_steps
+speaker: SALLIS
+cost: 2
+do: set(a2.afloat); quest(a2.boat, afloat); quay2.boat = wardens; set(book.violence); rep(board, -1)
+line: SALLIS: All right. Take the small one. The Board's got the big one, and the Board'll be along.
+go: quay2.row
+
+@node quay2.fight.wardens.fled
+place: mole_steps
+speaker: SALLIS
+cost: 2
+do: rep(board, -1); meter(dread, 1)
+line: SALLIS: That's right, Shelf. Run along the mole. We'll tell the barges you called.
+go: quay2.boats
+
+@node quay2.fight.wardens.down
+place: mole_steps
+cost: 25
+do: wet(1); damp_wet = 1; meter(cold, 3); rep(board, -1)
+nar: A shove, and the harbour. Twenty-five minutes later, a borrowed blanket on the Brine's step, and the Board's boat a lantern going out toward the Spit.
+inst: THE DAMP: Saturated. I am no use to anyone until a fire has had me.
+go: quay2.boats
+
+# ---- Tongue: Merrow's boat, or Lugg's
+@node quay2.merrow
+place: mole_steps
+speaker: MERROW
+cost: 2
+line: MERROW: Those are my barges. Mine to strip, by the custom of the floor. Somebody's got there first.
+check: "[CONDOLENCE] Ask him to take you out, as the one who saw his light." -> quay2.merrow.ok / quay2.merrow.fail ? seenas_lowco == witness | seenas_lowco == ours | rep.lowco >= 1 {skill: condolence, dc: 6}
+opt: "Leave him watching." -> quay2.boats
+
+@node quay2.merrow.ok
+place: mole_steps
+speaker: MERROW
+cost: 3
+do: set(a2.afloat); quest(a2.boat, afloat); quay2.boat = merrow; rep(lowco, 1); set(said.quay2_merrow)
+line: MERROW: Get in. Sit in the middle. Don't help.
+line: MERROW: Hold that. If a rope fouls, that. If a man fouls, that.
+nar: He puts a marlinspike in the assessor's hand, iron gone smooth as soap, and does not say whose it was.
+do: give(w.marlinspike)
+go: quay2.row
+
+@node quay2.merrow.fail
+place: mole_steps
+speaker: MERROW
+cost: 2
+do: set(quay2.merrow.refused)
+line: MERROW: You wrote what you wrote. Row yourself.
+go: quay2.boats
+
+@node quay2.lugg
+place: mole_steps
+speaker: LUGG
+cost: 2
+line: LUGG: Tub's under the harbour office. His barges are out there with other hands on them. You want a ride, you carry something for him.
+check: "[THE CHIT] Promise him the Shelf will speak for Merrow at the inquiry." -> quay2.lugg.ok / quay2.lugg.fail {skill: chit, dc: 6}
+opt: "Leave him in the boat." -> quay2.boats
+
+@node quay2.lugg.ok
+place: mole_steps
+speaker: LUGG
+cost: 3
+do: set(a2.afloat); quest(a2.boat, afloat); quay2.boat = lugg; set(said.quay2_speak_for_merrow); rep(lowco, 1)
+line: LUGG: Said. I heard it. So did the water.
+go: quay2.row
+
+@node quay2.lugg.fail
+place: mole_steps
+speaker: LUGG
+cost: 2
+line: LUGG: The Shelf's word. On Tub's tab. No.
+go: quay2.boats
+
+# ---- Shadow: under the strippers' tarpaulin
+@node quay2.stow
+place: mole_steps
+cost: 1
+line: SALLIS: Who's carrying the lamp? I carried it last time.
+check: "[THE DARK] Get under the bow tarpaulin while they argue about the lamp, and lie still." -> quay2.stow.ok / quay2.stow.fail {skill: dark, dc: 6, verb: hide, noise: 0.2}
+opt: "Leave it." -> quay2.boats
+
+@node quay2.stow.ok
+place: mole_steps
+cost: 4
+do: set(a2.afloat); quest(a2.boat, afloat); quay2.boat = stowed
+nar: Tar, sacking, a crowbar under the cheek. Boots come aboard and the boat goes out on the ebb.
+line: SALLIS: The Shelf'll pay well for anything that floats.
+go: spit.hub
+
+@node quay2.stow.fail
+place: mole_steps
+cost: 4
+do: set(a2.afloat); quest(a2.boat, afloat); quay2.boat = captive; meter(dread, 2)
+nar: Halfway across, a boot finds the assessor under the tarpaulin. Somebody takes the bowler, looks at it, and puts it back, carefully, as if it were evidence.
+line: SALLIS: The Shelf. Then the Shelf can watch us collect for it.
+go: spit.hub
+
+# ---- Hands: the copper traded, or Cockle's boat mended
+@node quay2.copper
+place: mole_steps
+speaker: COCKLE
+cost: 3
+do: set(a2.afloat); quest(a2.boat, afloat); quay2.boat = copper; rep(lowco, 2); copper = returned
+line: COCKLE: Copper off the Old Light. You know where it lies, and you'd let it come back to us for a seat in a boat.
+line: COCKLE: Lugg's punt, then. He owes me since my fifth Low Night this low. Tell him I said.
+go: quay2.row
+
+@node quay2.cockle
+place: mole_steps
+speaker: COCKLE
+cost: 2
+alt: quay2.cockle.floor ? guise == floor
+line: COCKLE: She'd swim, with a patch. Hole the size of a hand. I've no hands for patches now.
+check: "[GRIP] Patch the strake with cork and a tin plate, in the cold, by her lantern." -> quay2.cockle.ok / quay2.cockle.fail ? count(s.cork) >= 1 & count(s.tin) >= 1 {skill: grip, dc: 6, verb: rig, noise: 0.2, do: take(s.cork); take(s.tin)}
+opt: "Leave her on her boat." -> quay2.boats
+
+@node quay2.cockle.floor
+place: mole_steps
+speaker: COCKLE
+cost: 2
+do: set(quay2.cockle.mended); set(a2.afloat); quest(a2.boat, afloat); quay2.boat = cockle
+line: COCKLE: Floor folk, by the mud on you. Take Lugg's punt, it's sound. Bring it back with the same number of holes.
+go: quay2.row
+
+@node quay2.cockle.ok
+place: mole_steps
+speaker: COCKLE
+cost: 20
+do: set(quay2.cockle.mended); set(a2.afloat); quest(a2.boat, afloat); quay2.boat = cockle; rep(lowco, 1)
+nar: Twenty minutes by her lantern: cork in the hole, tin over the cork, nails through the tin.
+line: COCKLE: There. Mind you bring her back.
+go: quay2.row
+
+@node quay2.cockle.fail
+place: mole_steps
+speaker: COCKLE
+cost: 20
+do: set(quay2.cockle.mended); set(a2.afloat); quest(a2.boat, afloat); quay2.boat = cockle; wet(0.6); meter(cold, 2)
+nar: The patch holds the length of the mole and then weeps. The assessor reaches the Spit wet to the waist, bailing with the bowler.
+line: COCKLE: She'll be on the bottom by morning. You owe me a boat, Shelf.
+go: spit.hub
+
+# ---- Eye: the Coffin, on the ebb exactly
+@node quay2.coffin
+place: mole_steps
+speaker: COCKLE
+cost: 2
+line: COCKLE: That's the Coffin. No oars. Can't be rowed against any tide. She goes out on the ebb and comes back on the flood, and nobody's been fool enough since my third.
+inst: THE ALMANAC: Ebb at its hardest between eleven and twenty past, setting straight for the Spit's elbow. After that it slackens and swings east.
+check: "[THE ALMANAC] Cast her off at the exact minute, and let the ebb do the rowing." -> quay2.coffin.ok / quay2.coffin.fail ? clock >= 23:00 & clock < 23:25 {skill: almanac, dc: 5, verb: read, noise: 0}
+opt: "Leave her tied." -> quay2.boats
+
+@node quay2.coffin.ok
+place: spit_water
+cost: 12
+do: set(a2.afloat); quest(a2.boat, afloat); quay2.boat = ebb; set(quay2.ebb_timed)
+nar: Fourteen minutes past eleven. The painter comes off and the Coffin turns once, then runs straight for the Spit with nobody rowing.
+go: spit.hub
+
+@node quay2.coffin.fail
+place: spit_water
+cost: 30
+do: set(quay2.coffin.failed); set(a2.afloat); quest(a2.boat, afloat); quay2.boat = ebb; wet(0.4); meter(cold, 2)
+nar: Four minutes late. The ebb swings and sets the Coffin on a mud bank two hundred yards short, and the assessor walks the rest at the bottom of the bay, to the knee.
+go: spit.hub
+
+# ---- on the water
+@node quay2.row
+place: spit_water
+cost: 15
+nar: The quay's orange falls behind. Ahead, two barges on their sides under the stars, and lanterns moving on them.
+go: spit.hub
+
+# ================================================================ BEAT 11: THE PROCESSION PASSES
+@node quay2.procession
+place: quay
+speaker: FENNICK
+cost: 3
+do: set(quay2.procession_seen)
+nar: Along the quay comes the Congregation, forty glass heads with a candle in each, and the Old Bulb on a ladder on four shoulders. Lamplighters line the route with their poles across their bodies. {when: gasholder_walked == none}
+nar: The column turns onto the quay with the assessor in it, and the sodium comes down on forty glass heads. {when: gasholder_walked != none}
+call: quay2.procession.gas
+line: GORM: And what is the Shelf carrying, under that surplice? And whose is it? {when: has(gasholder.carrying)}
+line: FENNICK: We are taking her eye back to her. By grace. {when: gasholder_carries == bulb_eye | gasholder_carries == lit_eye}
+line: FENNICK: We are taking her the bulb that was hers. By grace. {when: gasholder_carries == bulb | gasholder_carries == lit}
+opt: "Walk on with the column to the mole." -> mole2.hub ? gasholder_walked != none | guise == pilgrim {verb: hide, noise: 0}
+opt: "Hand the bundle to Tobit and step out of the line." -> quay2.procession.handover ? has(gasholder.carrying)
+opt: "Walk beside the ladder and talk to the deacon." -> quay2.procession.talk ? has(met.fennick) & !has(gasholder.carrying)
+opt: "Stand back and let the glass heads go by." -> ^hub
+
+@node quay2.procession.gas
+cost: 0
+alt: quay2.procession.out ? has(gasholder.bulb_lit) & !has(quay2.bulb_out)
+return:
+
+@node quay2.procession.out
+cost: 0
+do: set(quay2.bulb_out)
+nar: Between one sodium lamp and the next the gas bag under the ladder sighs flat, and the Old Bulb goes out. Nobody in the column stops walking.
+return:
+
+@node quay2.procession.handover
+place: quay
+speaker: TOBIT
+cost: 1
+do: clear(gasholder.carrying)
+line: TOBIT: Do I carry it all the way? To the end? Even past the sergeant?
+go: ^hub
+
+@node quay2.procession.talk
+place: quay
+speaker: FENNICK
+cost: 3
+alt: quay2.procession.talk.relic ? count(i.prism_113) > 0
+line: FENNICK: The Old Bulb was in her before the electric. Tonight it goes home, whatever the sergeant says at the foot of the mole.
+go: ^hub
+
+@node quay2.procession.talk.relic
+place: quay
+speaker: FENNICK
+cost: 3
+line: FENNICK: You have a hundred and thirteen in your case, assessor. Bring it to the foot of the mole. The Eye should be whole when she sees it.
+go: ^hub

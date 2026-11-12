@@ -1,0 +1,165 @@
+{
+ "place": "office",
+ "version": 2,
+ "width": 1120,
+ "height": 800,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 30,
+  "target": [
+   0.1,
+   -0.15,
+   -0.2
+  ],
+  "dist": 25,
+  "ortho": true,
+  "scale": 4.2105263157894735
+ },
+ "pxPerMetre": 95,
+ "near": 0.5833,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "variants": [
+  "night",
+  "late"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 0.5,
+   "weather": "00:10 to 04:15: the desk lamp, the stove, sodium through the grating below"
+  },
+  "late": {
+   "hour": 5.5,
+   "weather": "05:30: the stove gone to ash, frost on the window, the moon in it"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  26,
+  3,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "grating",
+    "verb": "pry",
+    "at": [
+     -2.4,
+     -2.6,
+     0.9
+    ],
+    "note": "the grating to the quay, two bolts and a padlock (Q:2462)"
+   },
+   {
+    "id": "gorms_book",
+    "verb": "read",
+    "at": [
+     -1.8,
+     0,
+     -1
+    ],
+    "note": "Gorm's book open on the warm iron (Q:1035)"
+   },
+   {
+    "id": "chart",
+    "verb": "read",
+    "at": [
+     0.2,
+     0,
+     -1.6
+    ],
+    "note": "the bay chart under glass; the Old Light on Hound Rock (Q:1030)"
+   },
+   {
+    "id": "telephone",
+    "verb": "eavesdrop",
+    "at": [
+     1.7,
+     0,
+     -1.6
+    ],
+    "note": "the telephone on the wall; Crake rings three times (Q:1087)"
+   },
+   {
+    "id": "keels_chair",
+    "verb": "wait",
+    "at": [
+     0.2,
+     0,
+     -0.1
+    ],
+    "note": "Keel's chair, the hole in its seat over the bucket (Q:1388)"
+   },
+   {
+    "id": "wet_bench",
+    "verb": "wait",
+    "at": [
+     -1.6,
+     -2.6,
+     -1.3
+    ],
+    "note": "the wet bench (Q:1898)"
+   }
+  ],
+  "hides": [
+   {
+    "id": "under_stair",
+    "at": [
+     1.8,
+     -2.6,
+     0.4
+    ],
+    "r": 0.5,
+    "note": "the dark under the six steps"
+   }
+  ],
+  "exits": [
+   {
+    "id": "quay",
+    "at": [
+     2.2,
+     0,
+     -1.35
+    ],
+    "note": "the office door to the quay"
+   },
+   {
+    "id": "cells_stair",
+    "at": [
+     1.75,
+     0,
+     -0.4
+    ],
+    "note": "the six steps down to the cells"
+   }
+  ],
+  "lamps": []
+ },
+ "notes": "Office above (y 0), cells below (y -2.6), joined by six steps on the right. Keel, Gorm and Merrow are drawn by the game."
+}

@@ -1,0 +1,557 @@
+# Low Water, Act 3: the Brine in the gale (brine3.lwd). Writer's draft, 2026-10-17. Private.
+# Places: brine, yard, room (Act 1 records). Plan: design/ACT3-PLAN.md beats 2, 5, 13 (gate B1
+# for the porthole lamp, if the town chose it) and 17 (gates B7 and B10 as one scene, 05:30 to
+# 06:20); the Brine as shelter through the gale. The scene ends with go: dawn3.start (director).
+
+# ---- new ids
+@var brine3.step
+default: 0
+about: How well the Brine's step is held against the surge. Two or more holds it.
+
+@var brine3.ayes
+default: 0
+about: The room's lean toward the assessor at the last vote.
+
+@var brine3.kept
+default: none
+values: none, mother, oldlight, hill, porthole
+about: The light the town votes to keep on its own oil after the gale.
+
+@var brine3.keeper
+default: none
+values: none, wenna, lamb
+about: Whom the town pays to keep Mother, if anyone.
+
+@var brine3.accept
+default: none
+values: whole, first, none
+about: What the town will accept of the assessor's final apportionment: both lines, the first only, or nothing.
+
+@var brine3.porthole
+default: 0
+about: How many of the three gale moments the porthole lamp has come through.
+
+@fact brine3.porthole_out
+@fact brine3.tended
+@fact brine3.door_told
+@fact brine3.porthole_shuttered
+@fact brine3.knew_step
+@fact brine3.slate_safe
+@fact brine3.slate_lost
+@fact brine3.ledger_read
+@fact brine3.lamb_offered
+@fact brine3.spoke_keeper
+@fact brine3.spoke_light
+
+# ---------------------------------------------------------------- the hub: shelter through the gale
+@node brine3.hub
+hub: yes
+place: brine
+cost: 0
+alt: brine3.open ? !seen(brine3.open)
+alt: brine3.porthole.m1 ? light_porthole == 1 & clock >= 21:10 & clock < 21:50 & !seen(brine3.porthole.m1) & !has(brine3.porthole_out) & !has(b1.band1)
+alt: brine3.porthole.m2 ? light_porthole == 1 & clock >= 22:30 & clock < 23:10 & !seen(brine3.porthole.m2) & !has(brine3.porthole_out) & !has(b1.band2)
+alt: brine3.porthole.m3 ? light_porthole == 1 & clock >= 03:20 & clock < 04:00 & !seen(brine3.porthole.m3) & !has(brine3.porthole_out) & !has(b1.band3)
+alt: brine3.porthole.missed ? light_porthole == 1 & clock >= 03:30 & !has(brine3.tended) & !has(brine3.porthole_shuttered) & !has(brine3.porthole_out) & !seen(brine3.porthole.missed)
+alt: brine3.surge.open ? has(ev3.surge) & !seen(brine3.surge.open)
+alt: brine3.surge ? has(ev3.surge)
+nar: The Brine with its shutters up, every lamp trimmed low, and the hull ticking in the wind the way it must have ticked at sea.
+nar: The eye is overhead, and the Brine's door stands open for the first time tonight. {when: has(ev3.eye) & !has(ev3.eye_ends)}
+voice: salt: The hull is taking the wind on its beam. It knows how. It has done this upside down for forty years. {dc: 5, once}
+opt: "Talk to Sabine." -> brine3.sabine
+opt: "Sit down by Wenna." -> brine3.wenna ? !has(ev3.surge)
+opt: "Sit down by Nan Cockle." -> brine3.cockle ? clock < 00:00 & !has(brine3.door_told)
+opt: "Dry the Damp at the stove." -> brine3.dry ? damp_wet == 1
+opt: "Stand at the stove until the cold lets go." -> brine3.stove {verb: wait}
+opt: "Go out to the quay." -> quay3.hub +1
+opt: "Take the yard lane to the Gut." -> gut3.hub +2
+
+@node brine3.open
+place: brine
+cost: 2
+nar: Half the town has come to the Brine to be somewhere that floats.
+line: SABINE: Shelter's free tonight, love. The rum isn't. I'm not a saint, I'm a hull.
+go: brine3.hub
+
+@node brine3.sabine
+speaker: SABINE
+cost: 2
+nar: Sabine fills paraffin lamps from a can between her knees, without spilling.
+line: SABINE: Three nights you've been on my slate. One more and I'll start charging you rent for the column.
+opt: "The rum, then." -> brine3.rum ? count(i.chits) >= 1
+opt: "Leave her to her lamps." -> brine3.hub
+
+@node brine3.rum
+speaker: SABINE
+cost: 2
+line: SABINE: A chit. They're fourpence on the quay tonight, so this is charity, and I'll want it back in a better year.
+do: take(i.chits, 1); give(i.rum)
+go: brine3.sabine
+
+@node brine3.wenna
+speaker: WENNA
+cost: 3
+alt: brine3.wenna.asked ? has(wenna.asked)
+line: WENNA: She's got the wind on her lantern side. She'll be swinging up there like a censer.
+nar: Wenna has her coat on and buttoned.
+go: brine3.hub
+
+@node brine3.wenna.asked
+speaker: WENNA
+cost: 2
+line: WENNA: You said you'd sit with her if I couldn't. I can, tonight. Knees are good in a gale. It's the dry they hate.
+go: brine3.hub
+
+@node brine3.stove
+cost: 10
+nar: The stove is the only thing in Gullet tonight that is not moving.
+do: meter(cold, -3)
+go: brine3.hub
+
+@node brine3.dry
+cost: 10
+nar: Ten minutes holding the Damp to the stove while the gale tries the shutters.
+do: damp_wet = 0
+go: brine3.hub
+
+# ---------------------------------------------------------------- B1: the porthole lamp, three moments (if chosen)
+@node brine3.porthole.m1
+do: set(b1.band1)
+speaker: SABINE
+cost: 2
+alt: brine3.porthole.auto ? has(brine3.porthole_shuttered)
+nar: Ten past nine. Through the back wall the porthole lamp is a green coin going small.
+line: SABINE: The first band's coming. That lamp's on the town's oil and my wick, and I'd as soon it didn't go out on either.
+go: brine3.porthole.routes
+
+@node brine3.porthole.m2
+do: set(b1.band2)
+speaker: PIP
+cost: 2
+alt: brine3.porthole.auto ? has(brine3.porthole_shuttered)
+line: PIP: The porthole's guttering. I can see it from the back step, green and then not, and then green.
+go: brine3.porthole.routes
+
+@node brine3.porthole.m3
+do: set(b1.band3)
+speaker: SABINE
+cost: 2
+alt: brine3.porthole.auto ? has(brine3.porthole_shuttered)
+nar: Twenty past three. The wind has gone round and found the yard. At the back table a warden from the harbour office is watching the porthole the way a man watches a candle he has bet on.
+line: SABINE: This is the band before the collier. If that lamp's going out, it'll go out now.
+go: brine3.porthole.routes
+
+@node brine3.porthole.auto
+cost: 1
+nar: The shutter holds, and the wind goes past it looking for something easier.
+do: set(brine3.tended); brine3.porthole += 1
+go: brine3.hub
+
+@node brine3.porthole.routes
+cost: 0
+check: "[BALLAST] Carry the oil out and hold the yard door while Pip trims the wick." -> brine3.porthole.fist / brine3.porthole.fist.fail {skill: ballast, dc: 6, verb: carry, noise: 0.3}
+check: "[THE CHIT] Get Sabine to send Pip out with the can." -> brine3.porthole.tongue / brine3.porthole.tongue.fail {skill: chit, dc: 6}
+check: "[THE DARK] Slip out of the yard door while the warden watches the front." -> brine3.porthole.shadow / brine3.porthole.shadow.fail ? clock >= 03:00 {skill: dark, dc: 6, verb: hide, noise: 0.1}
+opt: "Fit the storm shutter." -> brine3.porthole.hands ? count(i.storm_shutter) >= 1 {verb: rig, noise: 0.2}
+opt: "Read the Glass and the Vane, and go out in the lull." -> brine3.porthole.eye {verb: read, noise: 0}
+opt: "Leave it to Sabine." -> brine3.porthole.left
+
+@node brine3.porthole.fist
+cost: 6
+nar: The yard door wants to be a sail. The assessor holds it while Pip trims the wick, swearing in a whisper.
+do: set(brine3.tended); brine3.porthole += 1; meter(cold, 1)
+go: brine3.hub
+
+@node brine3.porthole.fist.fail
+cost: 8
+nar: The door takes the assessor off the step and into the bottles.
+line: PIP: You're meant to hold it, not ride it.
+do: set(brine3.tended); brine3.porthole += 1; wet(0.5); meter(cold, 2)
+go: brine3.hub
+
+@node brine3.porthole.tongue
+speaker: SABINE
+cost: 3
+line: SABINE: Pip. Can, wick, yard. And come straight back or I'll dock you a night.
+nar: Pip comes back wet to the eyebrows. The lamp is steady.
+do: set(brine3.tended); brine3.porthole += 1; take(i.chits, 1)
+go: brine3.hub
+
+@node brine3.porthole.tongue.fail
+speaker: SABINE
+cost: 2
+line: SABINE: I'm not sending a girl of nineteen into that for a chit that's worth fourpence. Go yourself.
+go: brine3.porthole.routes
+
+@node brine3.porthole.shadow
+cost: 5
+nar: The warden watches the porthole from inside. The assessor is in the yard with the can before he thinks to watch the door.
+do: set(brine3.tended); brine3.porthole += 1
+go: brine3.hub
+
+@node brine3.porthole.shadow.fail
+cost: 4
+nar: The warden is in the yard first. He reaches for the can, helpfully, and it goes over in the wind.
+line: SABINE: That's the town's oil on my flags. That lamp's done for the night.
+do: set(brine3.porthole_out); set(lampout.porthole); quest(a3.lamps, lost)
+go: brine3.hub
+
+@node brine3.porthole.hands
+cost: 8
+nar: The tin shutter goes over the porthole lamp on two wing nuts.
+do: set(brine3.tended); set(brine3.porthole_shuttered); take(i.storm_shutter); brine3.porthole += 1
+go: brine3.hub
+
+@node brine3.porthole.eye
+cost: 10
+inst: THE GLASS: Steady for eleven minutes, darling, then it falls off a table.
+inst: THE VANE: The yard is in the lee for a breath! A breath! Go!
+nar: The assessor fills the lamp with half a can in the lull and is back inside before the band hits the hull.
+do: set(brine3.tended); brine3.porthole += 1
+go: brine3.hub
+
+@node brine3.porthole.left
+speaker: SABINE
+cost: 1
+alt: brine3.porthole.left.out ? clock >= 03:00
+line: SABINE: I'll do it. I've done it in worse.
+do: brine3.porthole += 1
+go: brine3.hub
+
+@node brine3.porthole.left.out
+speaker: SABINE
+cost: 2
+nar: Sabine goes out with the can and the band arrives while she is in the yard.
+line: SABINE: It went out in my hands. First time in thirty years.
+do: set(brine3.porthole_out); set(lampout.porthole); quest(a3.lamps, lost)
+go: brine3.hub
+
+@node brine3.porthole.missed
+speaker: SABINE
+cost: 2
+line: SABINE: Nobody tended the porthole all night. It went out with the half past three band. I had a hand on the bottles and a hand on the door and none left for the lamp.
+do: set(brine3.porthole_out); set(lampout.porthole); quest(a3.lamps, lost)
+go: brine3.hub
+
+# ---------------------------------------------------------------- B7 + B10: the surge and the last vote (05:30 to 06:20)
+@node brine3.surge.open
+place: brine
+cost: 3
+do: quest(a3.surge, coming); quest(a3.vote, called)
+nar: Half past five. The wind is dropping, and the sea is coming up the quay anyway, with the whole gale behind it.
+nar: The whole town is in the Brine, and Sabine is on the bar with the slate held up like a hymn board.
+line: SABINE: Three things on the slate before the water's in. Who keeps which light. Whether a keeper gets paid. And what this town will take of the Shelf's word when it comes. Chalk's free. Hands up.
+inst: THE ALMANAC: Six metres twenty at a quarter to seven, with the surge. The quay floods to this step at half past six. Somebody should be standing on it.
+alt: brine3.surge.guild ? gut3_comes != none
+go: brine3.surge
+
+@node brine3.surge
+place: brine
+cost: 0
+alt: brine3.vote.call ? clock >= 06:00
+alt: brine3.lamps.out ? clock >= 05:50 & !seen(brine3.lamps.out)
+nar: The water is at the quay's edge. The room argues in three directions at once.
+voice: hearsay: The room is waiting to see which way the Shelf leans before it leans. {dc: 4, once}
+check: "[GRIP] Put your shoulder to the door and hold it while they fill sacks." -> brine3.step.fist / brine3.step.fist.fail ? !seen(brine3.step.fist) & !seen(brine3.step.fist.fail) {skill: grip, dc: 7, verb: carry, noise: 0.5}
+opt: "Sandbag the step with the Gut's salt sacks." -> brine3.step.salt ? (count(i.salt) >= 1 | has(gut3.salt_sent)) & !seen(brine3.step.salt) {verb: rig, noise: 0.3}
+check: "[GRIP] Sandbag the step with Sabine's flour sacks." -> brine3.step.flour / brine3.step.flour.fail ? count(i.salt) == 0 & !has(gut3.salt_sent) & !seen(brine3.step.flour) & !seen(brine3.step.flour.fail) {skill: grip, dc: 6, verb: rig, noise: 0.3}
+opt: "Read the Almanac for the exact step the water will reach." -> brine3.step.almanac ? !has(brine3.knew_step) {verb: read, noise: 0}
+check: "[CONDOLENCE] Ask the room to fill sacks before it votes on anything." -> brine3.step.tongue / brine3.step.tongue.fail ? !seen(brine3.step.tongue) & !seen(brine3.step.tongue.fail) {skill: condolence, dc: 7}
+opt: "Read the town balance's ledger aloud: six years of the keeper's oil." -> brine3.ledger.oil ? has(weigh3.ledger) & !has(brine3.ledger_read) {verb: read, noise: 0}
+opt: "Read the slate aloud: who owes whom in this town." -> brine3.ledger ? !has(brine3.ledger_read) & (has(tab.wenna) | has(brine.slate_wiped)) {verb: read, noise: 0}
+check: "[CONDOLENCE] Speak for paying a keeper." -> brine3.keeper.speak / brine3.keeper.speak.fail ? !has(brine3.spoke_keeper) {skill: condolence, dc: 7}
+opt: "Offer to keep Mother yourself." -> brine3.keeper.lamb ? has(wenna.asked) & !has(brine3.lamb_offered)
+opt: "Say which light the town should keep." -> brine3.light ? !has(brine3.spoke_light)
+opt: "Call the vote." -> brine3.vote.call
+
+# the step (B7)
+@node brine3.step.fist
+cost: 8
+nar: The door shudders against the assessor's shoulder. Behind, the sacks go down hand to hand, and the door holds.
+do: brine3.step += 1; meter(cold, 2)
+go: brine3.surge
+
+@node brine3.step.fist.fail
+cost: 8
+nar: The first push of water opens the door, and the assessor is sitting in the sea to the waist with a shoulder still against the wood.
+line: SABINE: The Shelf, sitting in my doorway in the harbour. That's a sight the town'll remember longer than the vote.
+do: wet(0.8); meter(cold, 3); brine3.ayes += 1
+go: brine3.surge
+
+@node brine3.step.salt
+cost: 6
+alt: brine3.step.salt.exact ? has(brine3.knew_step)
+nar: The Gut's salt sacks go down across the step, white at the seams.
+do: brine3.step += 1
+go: brine3.surge
+
+@node brine3.step.salt.exact
+cost: 4
+nar: The salt sacks go down at the second step, where the Almanac said, and the job takes half the hands.
+do: brine3.step += 2
+go: brine3.surge
+
+@node brine3.step.flour
+cost: 8
+alt: brine3.step.flour.exact ? has(brine3.knew_step)
+nar: Sabine's flour sacks go down across the step. They will be paste by seven.
+line: SABINE: That's a winter's bread on my doorstep. Put it on the Shelf.
+do: brine3.step += 1
+go: brine3.surge
+
+@node brine3.step.flour.exact
+cost: 6
+nar: The flour sacks go down at the second step, where the Almanac put the water, and stop a hand above it.
+do: brine3.step += 2
+go: brine3.surge
+
+@node brine3.step.flour.fail
+cost: 6
+nar: A sack splits on the way down, and the step is white, then grey, then the sea's.
+line: SABINE: Bread, for the fishes. That's a first.
+go: brine3.surge
+
+@node brine3.step.almanac
+cost: 4
+inst: THE ALMANAC: The second step from the top, with this wind. The sill stands a hand above it. Sandbag the second step and not the first, and half the sacks will do.
+do: set(brine3.knew_step)
+go: brine3.surge
+
+@node brine3.step.tongue
+cost: 5
+line: LAMB: Sacks first. You can't vote with your feet in the harbour.
+nar: Twenty people stand up at once, and the sacks go down in a chain from the yard to the step.
+do: brine3.step += 1; brine3.ayes += 1
+go: brine3.surge
+
+@node brine3.step.tongue.fail
+cost: 5
+line: LAMB: Sacks first.
+nar: The room hears the Shelf giving orders, and argues about that while the water comes up the quay.
+go: brine3.surge
+
+# the dark: the lamps blow out (Shadow)
+@node brine3.lamps.out
+place: brine
+cost: 2
+nar: Ten to six. A shutter goes, and the wind takes every lamp in the Brine at once.
+line: SABINE: The slate. Somebody get the slate up the stair before the water has the chalk.
+check: "[THE DARK] Get the slate, the clock and the moulds up the stair in the dark." -> brine3.slate.safe / brine3.slate.lost {skill: dark, dc: 6, verb: carry, noise: 0.2}
+opt: "Stay at the door." -> brine3.slate.left
+
+@node brine3.slate.safe
+cost: 5
+nar: In the dark the assessor finds the slate by its frame and the clock by its tick, and carries them up the ladder to the room.
+line: SABINE: Got it. Got all of it. Light the lamps.
+do: set(brine3.slate_safe); brine3.ayes += 1
+go: brine3.surge
+
+@node brine3.slate.lost
+cost: 5
+nar: The assessor's foot finds the water before the stair, and the clock goes under.
+nar: When the lamps are lit again the clock is on the bar, stopped at nine minutes to six, wrong by nobody's arithmetic.
+line: SABINE: Well. We'll vote by voice, then. Voice is cheaper.
+do: set(brine3.slate_lost); brine3.ayes -= 1
+go: brine3.surge
+
+@node brine3.slate.left
+cost: 2
+nar: Pip gets the slate up the stair, smudged by a wet thumb in two places nobody can agree on.
+do: set(brine3.slate_lost)
+go: brine3.surge
+
+# the vote (B10)
+@node brine3.ledger
+cost: 6
+alt: brine3.ledger.wiped ? has(brine.slate_wiped)
+line: LAMB: Here is who owes whom. The Board, settled in full on the night of the claim, for the first time in eleven years. The Guild, four pounds. The keeper's column, six years of pies, and six years of wages owed her by this town, which is not on any slate.
+line: COCKLE: Six years.
+do: set(brine3.ledger_read); brine3.ayes += 2
+go: brine3.surge
+
+@node brine3.ledger.wiped
+cost: 6
+line: LAMB: The keeper's column is clean. The Shelf paid it on Low Night. Six years of wages owed her are not on any slate in this town.
+nar: Sabine turns the slate round so the room can see the clean column under the little lighthouse.
+do: set(brine3.ledger_read); brine3.ayes += 2
+go: brine3.surge
+
+@node brine3.keeper.speak
+cost: 5
+alt: brine3.keeper.speak.keeper ? has(cause.keeper) | has(cause3.keeper)
+line: LAMB: Mother wants a hand at the panel. That's in the specification. The Trust struck it. The town can write it back in, and pay for the hand.
+line: PENHALLOW: Logged. Shelf's assessor speaks for a hand at the panel. Master concurs.
+do: set(brine3.spoke_keeper); brine3.ayes += 2; set(said.keeper_paid)
+go: brine3.surge
+
+@node brine3.keeper.speak.keeper
+cost: 5
+line: LAMB: I wrote her in on Low Night. She sat here while Mother was dark. Pay her anyway. Somebody has to be at the panel, and she's the only one who knows the note the motor makes.
+nar: Wenna does not look up. Her hands, on her knees, close.
+do: set(brine3.spoke_keeper); brine3.ayes += 1; set(said.keeper_paid)
+go: brine3.surge
+
+@node brine3.keeper.speak.fail
+cost: 5
+line: LAMB: The town should pay a keeper.
+nar: A warden at the back says the Shelf can pay her, since the Shelf is so fond of her. Half the room laughs.
+do: set(brine3.spoke_keeper)
+go: brine3.surge
+
+@node brine3.keeper.lamb
+speaker: WENNA
+cost: 3
+line: LAMB: If the town pays a keeper, I'll keep her. With Wenna, as long as she'll have me on the stairs.
+line: WENNA: You'll count them wrong for a year.
+nar: Somebody looks at the wet hem of the assessor's coat and says "well, then", in the voice people keep for weddings.
+do: set(brine3.lamb_offered); brine3.ayes += 1; set(said.keep_mother)
+go: brine3.surge
+
+@node brine3.light
+cost: 2
+line: SABINE: Which light, then? Chalk's waiting.
+opt: "Mother. Whatever's in her lens." -> brine3.light.mother {do: brine3.kept = mother}
+opt: "The Old Light. Lanterns in the hole, every Low Night." -> brine3.light.oldlight {do: brine3.kept = oldlight}
+opt: "The porthole lamp. The Brine's own." -> brine3.light.porthole ? light_porthole == 1 & !has(brine3.porthole_out) {do: brine3.kept = porthole}
+opt: "Say nothing. Let the Trust's white lamps stand." -> brine3.light.hill {do: brine3.kept = hill}
+
+@node brine3.light.mother
+cost: 3
+line: LAMB: Mother. Green or white or crowned. She's the only one the ships steer by.
+do: set(brine3.spoke_light)
+go: brine3.surge
+
+@node brine3.light.oldlight
+speaker: COCKLE
+cost: 3
+line: LAMB: The Old Light. A lantern in the hole every Low Night, on the town's oil.
+line: COCKLE: My first Low Night it had a door. My fifth, a lantern. I'll fill it.
+do: set(brine3.spoke_light); brine3.ayes += 1
+go: brine3.surge
+
+@node brine3.light.porthole
+speaker: SABINE
+cost: 3
+line: LAMB: The porthole. It came through the gale on the town's oil. Let it be the town's.
+line: SABINE: My riding light, on the rates. Jory'd have laughed himself sick.
+do: set(brine3.spoke_light)
+go: brine3.surge
+
+@node brine3.light.hill
+cost: 2
+nar: The white lamps on the hill stand by default, which is how most of the Trust's lamps have stood.
+do: set(brine3.spoke_light); brine3.ayes -= 1
+go: brine3.surge
+
+@node brine3.vote.call
+place: brine
+cost: 4
+if: rep(brine) >= 2 => brine3.ayes += 1
+if: has(brine.wenna_trusts) => brine3.ayes += 1
+if: has(masters.green) | has(brine2.masters_signed) => brine3.ayes += 1
+if: has(said.owned_cause) => brine3.ayes += 1
+if: has(book.violence) => brine3.ayes -= 1
+if: gut3_guild == keeper => brine3.ayes += 2
+if: gut3_guild == trust => brine3.ayes -= 1
+if: guise == keeper => brine3.ayes += 1
+if: guise == lamplighter => brine3.ayes -= 1
+if: brine3.ayes >= 3 => set(vote.keeper_paid)
+if: brine3.ayes >= 3 & has(brine3.lamb_offered) => brine3.keeper = lamb
+if: brine3.ayes >= 3 & !has(brine3.lamb_offered) => brine3.keeper = wenna
+if: brine3.kept == none => brine3.kept = hill
+if: brine3.ayes < 2 & brine3.kept != hill => brine3.kept = hill
+if: brine3.ayes >= 4 => brine3.accept = whole
+if: brine3.ayes >= 2 & brine3.ayes < 4 => brine3.accept = first
+if: brine3.step >= 2 => set(surge.held)
+do: quest(a3.vote, voted)
+line: SABINE: Hands up, then. And keep them up; I'm counting by paraffin.
+alt: brine3.vote.held ? brine3.step >= 2
+go: brine3.vote.in
+
+@node brine3.vote.held
+cost: 3
+do: quest(a3.surge, held)
+nar: The water comes up the quay, over the cobbles, up the first step, and stops a hand below the sill, as if it had been told.
+nar: Sabine counts the hands twice, and the chalk is the loudest thing in the Brine.
+go: brine3.vote.result
+
+@node brine3.vote.in
+cost: 3
+do: quest(a3.surge, in)
+nar: The water comes over the sill in one smooth sheet, and the town votes standing in it to the ankle, with its hands up.
+line: SABINE: Keep them up. The sea doesn't get a vote.
+go: brine3.vote.result
+
+@node brine3.vote.result
+speaker: SABINE
+cost: 2
+alt: brine3.vote.result.paid ? has(vote.keeper_paid)
+line: SABINE: No keeper. Not this year. The Trust's lamps and the Trust's money, and we'll see what the Shelf has to say about it.
+nar: Wenna goes to the door and stands in the water looking along the mole, and does not go out.
+go: brine3.vote.end
+
+@node brine3.vote.result.paid
+speaker: SABINE
+cost: 2
+line: SABINE: A keeper, paid. Carried. On the rates, God help the rates.
+nar: Wenna hangs her oilskin on the peg by the door, over Jory's, and sits down in the keeper's coat.
+go: brine3.vote.end
+
+@node brine3.vote.end
+place: brine
+cost: 0
+alt: brine3.vote.end.none ? brine3.accept == none
+line: SABINE: And the last thing. What the Shelf writes, this town reads. That's carried too, near enough.
+go: brine3.vote.wait
+
+@node brine3.vote.end.none
+speaker: SABINE
+cost: 1
+line: SABINE: And what the Shelf writes, this town will read, and do as it likes with. That's the count.
+go: brine3.vote.wait
+
+@node brine3.vote.wait
+place: brine
+cost: 0
+alt: brine3.vote.go ? clock >= 06:20
+nar: The form is on the bar, and the room has gone quiet to watch the assessor not write yet.
+opt: "Wait for twenty past six." -> brine3.vote.go {verb: wait, do: wait(5)}
+opt: "Write now." -> brine3.vote.go
+
+@node brine3.vote.go
+cost: 0
+go: dawn3.start
+
+# ---------------------------------------------------------------- the Guild comes to the vote (gut3_comes, gut3_guild, gut3.noll_fell)
+@node brine3.surge.guild
+speaker: MAB
+cost: 2
+alt: brine3.surge.guild.steward ? gut3_comes == steward
+nar: The Guild comes in from the yard lane with the voting pans on a pole between two aprons, and stands at the back, dripping, the way it stands at a funeral.
+line: MAB: Noll's arm's in a sling, so he votes with the other one. He wants that written. {when: has(gut3.noll_fell)}
+go: brine3.surge
+
+@node brine3.surge.guild.steward
+cost: 1
+nar: The Guild's steward comes in alone from the yard lane, with a blindfold round the neck, and stands at the back to vote for the Gut.
+go: brine3.surge
+
+@node brine3.ledger.oil
+cost: 6
+line: LAMB: The town balance. Every month for six years, the keeper's paraffin weighed out at the weigh-house. Paid for by the Brine.
+line: LAMB: The Trust stopped her wages and her oil. Mother was lit on Sabine's bottles and Sabine's money.
+nar: Sabine does not look up from the slate. The chalk in her hand has stopped.
+if: has(weigh3.ledger_oil) => brine3.ayes += 1
+do: set(brine3.ledger_read); brine3.ayes += 2
+go: brine3.surge
+
+# ---------------------------------------------------------------- Nan Cockle's door (before the eye; the Old Light's HEARSAY route)
+@node brine3.cockle
+speaker: COCKLE
+cost: 4
+nar: Nan Cockle has the second-best seat by the stove and her rake across her knees, and the gale outside is the fifth she has sat through in this hull.
+line: COCKLE: My first Low Night I was five, and my father carried me out to the Old Light on his shoulders, and my mother never knew.
+line: COCKLE: The door was iron, green with it, and it stuck at the bottom. A knee to the low corner, lift, then in. My father did it with me still up there, and I hit my head on the lintel, and I've remembered it since.
+voice: hearsay: The low corner, then lift. Somebody out there tonight will want to know that. {dc: 4}
+do: set(brine3.door_told); set(said.cockle_door)
+go: brine3.hub

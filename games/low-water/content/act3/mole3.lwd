@@ -1,0 +1,858 @@
+# Low Water, Act 3: The Mole and Mother in the gale (prefix mole3.). Private, 2026-10-17.
+# Places (Act 1 records): mole, stairs, lamproom, gallery. Beats (ACT3-PLAN section 3): 6 Keel's one
+# question (only with m.wet inked; never answered), B1's moment if Mother is a gale lamp
+# (light_mother), 14 the wreckers on Mother's gallery (gate B6; e3.gallery and its sneak variant),
+# 15 Mother's lens (gate B9) and the Old Bulb at the top of the stairs (gate B8, mole side),
+# 16 the collier at four.
+#
+# Mother tonight (var mole3.mother, set on Lamb's first visit; "auto" if Lamb never comes):
+#   light_mother 0: the town's hands went to other lamps; the first band trips her and nobody climbs.
+#   light_mother 1, and Lamb said yes to Wenna on the second daylight page (said.day2_mother): she
+#   trips at the first band (21:20) and waits for Lamb's hand. Lamb carries Wenna's brass key.
+#   light_mother 1, and Lamb did not say yes: Wenna did the stairs once and is in the lamp room.
+# Other files reading the state when it is "auto": Mother burns if light_mother is 1 and Lamb did
+# not promise, and is dark otherwise; the wreckers put her out at 03:30 unless Lamb stops them.
+# The channel lamp, if Mother is dark: the steps post, the balance, the hill or the Old Bulb, if chosen.
+# The crown is on hand if gasholder3.crown_up (brought to the foot of the mole), i.crown in Lamb's
+# hands, or mole2_eye == step (Wenna took it in off the step after Night 2).
+
+# ---- new ids
+@var mole3.mother
+default: auto
+values: auto, on, off
+about: Whether Mother burns in the gale, as this file last left her.
+
+@var mole3.target
+default: mother
+values: mother, lamp
+about: What the wreckers went for at half past three: Mother, or the channel lamp if she was dark.
+
+@fact mole3.crown_room
+@fact mole3.counted
+@fact mole3.barred
+@fact mole3.locked
+@fact mole3.jumpered
+@fact mole3.waiting
+@fact mole3.wreck_met
+@fact mole3.past_men
+@fact mole3.tended
+
+# ================================================================ the mole in the gale
+@node mole3.hub
+hub: yes
+place: mole
+cost: 1
+alt: mole3.arrive ? !seen(mole3.arrive)
+alt: mole3.keelq ? clock < 00:15 & (trait(m.wet) == done | has(margin.wet)) & !seen(mole3.keelq)
+alt: mole3.untended ? var.light_mother == 1 & has(said.day2_mother) & !has(mole3.tended) & clock >= 03:30 & !seen(mole3.untended)
+alt: mole3.trip ? var.light_mother == 1 & ((clock >= 21:20 & clock < 22:40 & !has(b1.band1)) | (clock >= 22:40 & clock < 03:30 & !has(b1.band2)))
+alt: mole3.wreck.foot ? clock >= 03:30 & clock < 04:00 & var.mole3.mother == on & !has(mole3.wreck_met)
+alt: mole3.wreck.lamp ? clock >= 03:30 & clock < 04:00 & var.mole3.mother != on & !has(mole3.wreck_met) & (var.light_steps == 1 | var.light_balance == 1 | var.light_hill == 1 | var.light_bulb == 1)
+alt: mole3.wreck.missed ? clock >= 04:00 & var.mole3.mother == on & !has(mole3.wreck_met)
+alt: mole3.collier ? clock >= 04:00 & !seen(mole3.collier) & !has(collier.through) & !has(collier.spit)
+go: mole3.desc
+
+@node mole3.arrive
+place: mole
+cost: 1
+if: var.light_mother == 0 => mole3.mother = off
+if: var.light_mother == 1 & !has(said.day2_mother) => mole3.mother = on
+if: var.light_mother == 1 & has(said.day2_mother) & clock < 21:20 => mole3.mother = on
+if: var.light_mother == 1 & has(said.day2_mother) & clock >= 21:20 => mole3.mother = off
+nar: Spray comes over the mole in green slabs, and the lee rail sings.
+nar: Mother is burning, LAMP FOR THE GALE chalked on her door. {when: var.light_mother == 1 & var.mole3.mother == on}
+nar: Mother is dark. The town chose three other lamps. {when: var.light_mother == 0}
+nar: Mother is dark, waiting for the hand that promised. {when: var.light_mother == 1 & var.mole3.mother == off}
+nar: Gorm's lantern swings in a tarpaulin hut at the root of the mole.
+line: GORM: And is the Shelf going up in this? And is the Shelf a fool, or a keeper?
+go: mole3.hub
+
+@node mole3.bright.hold
+place: mole
+speaker: BRIGHT
+cost: 5
+do: set(mole3.move_hold)
+line: BRIGHT: Stays on it? You don't stand. You hang. Hip on the rail, knee under it, and let the wind lean you onto the iron instead of off it.
+line: BRIGHT: Sergeant says it's not regulation. Sergeant's never been up there in a blow.
+nar: He shows it at the lee rail, and a green sea comes over the mole and goes past him as if he were part of the rail.
+go: mole3.menu
+
+@node mole3.desc
+place: mole
+cost: 1
+do: meter(cold, 1); wet(0.2)
+nar: The wind is building, and leans on the assessor's back like a stranger in a queue. {when: clock < 21:00}
+nar: Full gale from the south-west, with rain in bands. {when: clock >= 21:00 & clock < 00:15}
+nar: The wind has stopped. Stars, and the spray falling straight down. {when: clock >= 00:15 & clock < 01:00}
+nar: The wind is back from the north-west, and the spray comes over the other rail. {when: clock >= 01:00 & clock < 05:30}
+nar: The wind is dropping, and the surge stands a hand below the top. {when: clock >= 05:30}
+inst: THE VANE: South-west, eighteen, gusting twenty-six! Hold the rail! Hold me! {when: clock >= 21:00 & clock < 00:15}
+inst: THE VANE: North-west, twenty! Everything said on the quay now comes straight out here! {when: clock >= 01:10 & clock < 05:30}
+go: mole3.menu
+
+@node mole3.menu
+place: mole
+opt: "Climb the hundred and twelve stairs." -> mole3.stairs
+check: "[KNEES] Carry the Old Bulb up from Mother's step." -> mole3.bulb.carry.ok / mole3.bulb.carry.fail ? has(gasholder3.bulb_up) & var.gasholder3_bearer == lamb & !seen(mole3.bulb.top) {skill: knees, dc: 6, verb: carry, noise: 0.3}
+opt: "Walk up behind the bearers with the Old Bulb." -> mole3.bulb.top ? has(gasholder3.bulb_up) & var.gasholder3_bearer != lamb & !seen(mole3.bulb.top)
+opt: "Bring the crown of prisms up from the foot of the tower." -> mole3.crown.foot ? (has(gasholder3.crown_up) | count(i.crown) > 0) & !has(mole3.crown_room) & var.lens != broken
+opt: "Ask Bright how he stays on the gallery in this." -> mole3.bright.hold ? !has(mole3.move_hold) & clock >= 00:30 & clock < 03:20
+opt: "Walk back to the quay, holding the lee rail." -> quay3.hub +3
+
+@node mole3.stairs
+place: stairs
+cost: 5
+do: meter(wear, 1); var.stairs_at = clock
+nar: The hundred and twelve. The tower hums in the gusts.
+voice: knees: In a gale the stairs are only stairs. That is their one kindness. {dc: 4}
+go: mole3.lamp
+
+# ---- beat 6: Keel's one question (m.wet inked; never answered)
+@node mole3.keelq
+place: mole
+speaker: KEEL
+cost: 3
+do: quest(a3.keelq, asked); set(heard.keel.question)
+nar: The harbourmaster stands at the halfway bollard with his back to the spray, the one person on the mole it cannot make any wetter.
+line: Assessor. The Board went off this mole eleven years ago, in the dark, in a new coat. Under the water, going down, the Board saw a light. Low. In the wrong place. Where no light was.
+line: You saw a light from the ferry. Low, in the wrong place. Was it the same light?
+opt: "Yes." -> mole3.keelq.gust
+opt: "No." -> mole3.keelq.gust
+opt: "I don't know." -> mole3.keelq.gust
+opt: "Say nothing." -> mole3.keelq.gust
+
+@node mole3.keelq.gust
+place: mole
+speaker: KEEL
+cost: 1
+nar: The gust takes the word out of the assessor's mouth and puts it in the sea.
+line: Thank you. The Board will think about that.
+nar: He walks back toward the quay, and the wind does not seem to touch him.
+go: mole3.keelq.wind
+
+# ---- B1: the board trips with the band, and somebody must climb (light_mother)
+@node mole3.keelq.wind
+place: mole
+cost: 2
+nar: The wind comes back along the mole.
+go: mole3.menu
+
+@node mole3.trip
+place: mole
+speaker: BRIGHT
+cost: 2
+do: mole3.mother = off
+if: clock >= 21:20 & clock < 22:40 => set(b1.band1)
+if: clock >= 22:40 => set(b1.band2)
+line: Fewell was meant to go up. Fewell's in the hut with his eyes shut and his hands round the stove. You've her key, haven't you? Wenna said you had her key. {when: has(said.day2_mother)}
+line: Wenna's up there. She's been up there since dusk. But the gallery door's gone, Shelf, we heard it go, and she can't hold a door and press a button with one pair of hands. {when: !has(said.day2_mother)}
+check: "[KNEES] Climb in the gale, and hold the gallery door shut with your back while you press." -> mole3.trip.climb.ok / mole3.trip.climb.fail {skill: knees, dc: 6, verb: climb, noise: 0.2}
+check: "[CONDOLENCE] Fetch Fewell out of the hut and climb with him as far as the chair." -> mole3.trip.fewell.ok / mole3.trip.fewell.fail ? !seen(mole3.trip.fewell.fail) {skill: condolence, dc: 6}
+opt: "Run a rope between the door and the stair rail first, and climb on it." -> mole3.trip.rope ? count(i.rope) > 0 {verb: rig, noise: 0.2}
+check: "[THE GLASS] Wait for the lull before the next band, and go then." -> mole3.trip.lull / mole3.trip.lull.fail {skill: glass, dc: 4, verb: wait}
+opt: "Leave her dark for now." -> mole3.trip.leave
+
+@node mole3.trip.climb.ok
+place: lamproom
+cost: 6
+do: mole3.mother = on; set(mole3.tended); meter(cold, 2); var.stairs_at = clock
+nar: The gallery door slams on every gust. The assessor holds it with a back and presses. She catches.
+go: mole3.lamp
+
+@node mole3.trip.climb.fail
+place: lamproom
+cost: 10
+do: mole3.mother = on; set(mole3.tended); meter(cold, 3); wet(0.4); var.stairs_at = clock
+nar: The gust finds the gallery door first and fills the room with rain. The assessor crawls to the panel. She catches, late.
+go: mole3.lamp
+
+@node mole3.trip.fewell.ok
+place: lamproom
+speaker: FEWELL
+cost: 8
+do: mole3.mother = on; set(mole3.tended); var.stairs_at = clock
+line: It's not the dark. It's the up. If you go first and talk the whole way, I'll go.
+nar: The assessor talks all the way up. At the chair Fewell goes on alone, and counts five out loud.
+line: She's lit. I lit her. Don't tell the sergeant I shut my eyes.
+go: mole3.lamp
+
+@node mole3.trip.fewell.fail
+place: mole
+speaker: FEWELL
+cost: 2
+line: I can't. Not up there, not in this. I'm sorry. I'll hold the lantern at the bottom. I'll hold it very well.
+go: mole3.trip
+
+@node mole3.trip.rope
+place: lamproom
+cost: 7
+do: mole3.mother = on; set(mole3.tended); meter(cold, 1); var.stairs_at = clock
+nar: The assessor climbs the rope hand over hand and presses. She catches.
+go: mole3.lamp
+
+@node mole3.trip.lull
+place: lamproom
+cost: 12
+do: mole3.mother = on; set(mole3.tended); var.stairs_at = clock
+inst: THE GLASS: Steadying for twenty minutes, darling. Then it falls off a cliff.
+nar: The assessor goes up in the lull, and is back at the foot before the band.
+go: mole3.lamp
+
+@node mole3.trip.lull.fail
+place: mole
+cost: 10
+do: meter(cold, 2)
+inst: THE GLASS: Falling. Falling. I said falling, and you heard steadying. That is between you and your ears.
+nar: The lull does not come. The band does.
+go: mole3.trip
+
+# ================================================================ the lamp room
+@node mole3.lamp
+place: lamproom
+alt: mole3.wreck.start ? clock >= 03:30 & clock < 04:00 & var.mole3.mother == on & !has(mole3.wreck_met)
+alt: mole3.collier ? clock >= 04:00 & !seen(mole3.collier) & !has(collier.through) & !has(collier.spit)
+alt: mole3.bulb.top ? has(gasholder3.bulb_up) & var.gasholder3_bearer != lamb & !seen(mole3.bulb.top)
+cost: 1
+nar: The lens turns, humming against the wind. {when: var.mole3.mother == on}
+nar: The lamp room is dark, and the gale leans on the glass. {when: var.mole3.mother != on}
+line: WENNA: You came up. I did the stairs once. I'll not do them twice. {when: var.light_mother == 1 & !has(said.day2_mother) & !seen(mole3.lamp)}
+line: WENNA: She trips with every band. I press. That's all keeping is, in the end. Pressing. {when: var.light_mother == 1 & !has(said.day2_mother) & seen(mole3.lamp)}
+go: mole3.lamp.menu
+
+@node mole3.lamp.menu
+place: lamproom
+opt: "Press the red button, and hold it." -> mole3.restrike ? var.mole3.mother != on & var.lens != broken {verb: light}
+opt: "Press the red button, though the lens is broken." -> mole3.restrike.broken ? var.mole3.mother != on & var.lens == broken {verb: light}
+opt: "Lock the isolator with Wenna's brass key." -> mole3.lock ? has(said.day2_mother) & !has(mole3.locked) {verb: rig, noise: 0}
+opt: "Jumper the relay, so she relights by herself after a trip." -> mole3.jumper ? (has(button.tested) | has(mole2.wired)) & !has(mole3.jumpered) {verb: rig, noise: 0.1}
+opt: "Bar the stair door, and wait inside." -> mole3.bar ? clock >= 03:00 & clock < 03:30 & !has(mole3.barred) & count(i.rope) > 0 {verb: rig, noise: 0.3}
+check: "[THE GLASS] Read the Glass and the Vane, and sit down at the panel where they will have to come." -> mole3.wait.ok / mole3.wait.fail ? clock >= 03:00 & clock < 03:30 & !has(mole3.waiting) {skill: glass, dc: 4, verb: wait}
+opt: "Take the crown of prisms out of the cupboard where Wenna put it." -> mole3.crown.cupboard ? var.mole2_eye == step & !has(mole3.crown_room) & var.lens != broken
+check: "[SUM] Count each prism to its ring before fitting any." -> mole3.count.ok / mole3.count.fail ? has(mole3.crown_room) & !has(mole3.counted) & !has(mole3.crown_fitted) {skill: sum, dc: 6, verb: read}
+check: "[GRIP] Fit the prisms to their numbered seats." -> mole3.fit.ok / mole3.fit.fail ? has(mole3.crown_room) & !has(mole3.crown_fitted) {skill: grip, dc: 5, verb: rig}
+opt: "Sit by the panel and listen to the gale go round the glass." -> mole3.sit ? clock < 04:10 {verb: wait, noise: 0}
+opt: "Ask Wenna about the old collar under the Trust's bracket." -> mole3.collar ? !has(mole3.collar_taken) & var.light_mother == 1 & !has(said.day2_mother) & seen(mole3.restrike)
+opt: "Go out onto the gallery." -> mole3.gallery
+opt: "Go down." -> mole3.down
+
+@node mole3.down
+place: mole
+cost: 4
+go: mole3.desc
+
+@node mole3.restrike
+place: lamproom
+cost: 2
+do: mole3.mother = on
+nar: Five seconds. The arc catches, and the beam goes out into the gale.
+line: WENNA: Five. You counted five. Good. {when: var.light_mother == 1 & !has(said.day2_mother)}
+go: mole3.lamp
+
+@node mole3.restrike.broken
+place: lamproom
+cost: 2
+do: mole3.mother = on
+nar: She catches, and the broken lens throws her light out in splinters. From the sea it will look like a lighthouse having a bad night, which it is.
+line: WENNA: She'll do. Ugly, but she'll do. {when: var.light_mother == 1 & !has(said.day2_mother)}
+go: mole3.lamp
+
+@node mole3.lock
+place: lamproom
+cost: 1
+do: set(mole3.locked)
+nar: Wenna's key fits the brass hasp over the isolator. Nobody throws that switch tonight without the keeper.
+go: mole3.lamp
+
+@node mole3.jumper
+place: lamproom
+cost: 6
+do: set(mole3.jumpered)
+nar: Copper wire goes across the relay, the way Fisk drew it, and now she waits for nobody.
+line: FISK: You understand that defeats the entire purpose of the clause. {when: has(button.tested)}
+go: mole3.lamp
+
+# ================================================================ B9: Mother's lens
+@node mole3.crown.foot
+place: mole
+speaker: FENNICK
+cost: 2
+alt: mole3.crown.lamb ? count(i.crown) > 0
+line: The Eye is here. Fifty-six of her splinters in a surplice, and forty of us who carried it down a hill in a gale. We will not carry it up a tower.
+line: BRIGHT: Trust property, that, Deacon. Sergeant says it stops at the door.
+check: "[KNEES] Take the bundle and carry it up the hundred and twelve yourself." -> mole3.crown.carry.ok / mole3.crown.carry.fail {skill: knees, dc: 6, verb: carry, noise: 0.3}
+check: "[CONDOLENCE] Ask Fennick to carry it up himself, as he carried the old lamp down." -> mole3.crown.fennick.ok / mole3.crown.fennick.fail ? !seen(mole3.crown.fennick.fail) {skill: condolence, dc: 6}
+check: "[THE DARK] Wait for the next band, and take it past the poles inside the rain." -> mole3.crown.dark.ok / mole3.crown.dark.fail {skill: dark, dc: 6, verb: hide, noise: 0.2}
+opt: "Walk it past them in the Lamplighter's coat." -> mole3.crown.coat ? guise == lamplighter {verb: hide, noise: 0.1}
+opt: "Leave it at the foot." -> mole3.desc
+
+@node mole3.crown.lamb
+place: mole
+speaker: BRIGHT
+line: Trust property, that, Shelf. Sergeant says it stops at the door.
+check: "[KNEES] Hold it tight and walk through them and up." -> mole3.crown.carry.ok / mole3.crown.carry.fail {skill: knees, dc: 6, verb: carry, noise: 0.4}
+check: "[THE DARK] Wait for the next band, and take it past the poles inside the rain." -> mole3.crown.dark.ok / mole3.crown.dark.fail {skill: dark, dc: 6, verb: hide, noise: 0.2}
+opt: "Walk it past them in the Lamplighter's coat." -> mole3.crown.coat ? guise == lamplighter {verb: hide, noise: 0.1}
+opt: "Not now." -> mole3.desc
+
+@node mole3.crown.carry.ok
+place: lamproom
+cost: 8
+do: set(mole3.crown_room); set(mole3.past_men); meter(wear, 2); rep(trust, -1); var.stairs_at = clock
+nar: At the top the assessor sets the wet bundle on the desk, and the arms have forgotten how to be arms.
+line: BRIGHT: I'll put that you went past. I'll put it kindly.
+go: mole3.lamp
+
+@node mole3.crown.carry.fail
+place: stairs
+cost: 14
+do: set(mole3.crown_room); set(mole3.past_men); meter(wear, 3); meter(cold, 2); rep(trust, -1); var.stairs_at = clock
+nar: At the slit window a gust opens the surplice, and prisms go down the stairs, ringing. The assessor finds fifty-five by lantern.
+nar: The fifty-sixth will turn up at the bottom of a boot in a year.
+line: BRIGHT: Was that glass? Shelf? Was that the Trust's glass?
+go: mole3.lamp
+
+@node mole3.crown.fennick.ok
+place: lamproom
+speaker: FENNICK
+cost: 10
+do: set(mole3.crown_room); set(mole3.past_men); rep(congregation, 1); var.stairs_at = clock
+nar: Fennick climbs with the bundle in both arms and does not stop at the chair.
+line: I carried her eye down these stairs and it opened in my arms. I will carry it up and see if it shuts.
+go: mole3.lamp
+
+@node mole3.crown.fennick.fail
+place: mole
+speaker: FENNICK
+cost: 1
+line: No. If she wants it, she can come down for it. That is theology, assessor, and also my knees.
+go: mole3.crown.foot
+
+@node mole3.crown.dark.ok
+place: lamproom
+cost: 9
+do: set(mole3.crown_room); set(mole3.past_men); wet(0.3); var.stairs_at = clock
+nar: Inside the band nobody can see their own feet.
+line: BRIGHT: Was that somebody? No. Nobody goes out in this.
+go: mole3.lamp
+
+@node mole3.crown.dark.fail
+place: mole
+speaker: BRIGHT
+cost: 3
+do: set(book.mole3_crown); rep(trust, -1)
+nar: The band passes a breath too soon.
+line: Evening. That's not yours and it's not the Deacon's. Back to the foot with it.
+go: mole3.desc
+
+@node mole3.crown.coat
+place: lamproom
+speaker: BRIGHT
+cost: 7
+do: set(mole3.crown_room); set(mole3.past_men); var.stairs_at = clock
+line: Sergeant sent for it, did she? Go on, then. Mind the top flight.
+go: mole3.lamp
+
+@node mole3.crown.cupboard
+place: lamproom
+cost: 2
+do: set(mole3.crown_room)
+nar: The crown is in the cupboard, wrapped in Wenna's oxblood coat.
+line: WENNA: Left on my step like a basket. I took it in. What else do you do with a thing left on a step. {when: var.light_mother == 1 & !has(said.day2_mother)}
+go: mole3.lamp
+
+@node mole3.count.ok
+place: lamproom
+cost: 10
+do: set(mole3.counted)
+nar: The assessor lays the fifty-six out in ring order and pencils each one's seat beside it.
+line: WENNA: Ninety-one goes in the third ring, by the door. Everybody puts ninety-one in wrong. {when: var.light_mother == 1 & !has(said.day2_mother)}
+go: mole3.lamp
+
+@node mole3.count.fail
+place: lamproom
+cost: 6
+nar: The room sways, and the pencil gets lost in the second ring.
+go: mole3.lamp
+
+@node mole3.fit.ok
+place: lamproom
+speaker: WENNA
+cost: 60
+alt: mole3.fit.quick ? has(mole3.counted)
+do: set(mole3.crown_fitted); quest(a3.lens, fitted); rep(congregation, -1)
+if: count(i.crown) > 0 => take(i.crown)
+nar: An hour on the cold floor. The assessor taps out each green prism the way Keel would have, and the crown glass goes back where it came from.
+line: There. That's her. That's her as she was. {when: var.light_mother == 1 & !has(said.day2_mother)}
+go: mole3.lamp
+
+@node mole3.fit.quick
+place: lamproom
+speaker: WENNA
+cost: 30
+do: set(mole3.crown_fitted); quest(a3.lens, fitted); rep(congregation, -1)
+if: count(i.crown) > 0 => take(i.crown)
+nar: Half an hour, and the crown glass goes back where it came from.
+line: There. That's her. That's her as she was. {when: var.light_mother == 1 & !has(said.day2_mother)}
+go: mole3.lamp
+
+@node mole3.fit.fail
+place: lamproom
+cost: 20
+do: meter(cold, 1)
+nar: The first clip snaps back on the assessor's thumb, and the second will not open in the cold.
+line: WENNA: Warm the clip in your mouth first. Everybody knows that. Nobody does it. {when: var.light_mother == 1 & !has(said.day2_mother)}
+go: mole3.lamp
+
+# ================================================================ B8, the mole side: the Old Bulb at the top of the stairs
+@node mole3.bulb.top
+place: lamproom
+speaker: FENNICK
+cost: 3
+nar: Four bearers come up with the Old Bulb on a ladder, set it down, and lie down beside it.
+line: There. She can see it now. Can you put it in her, assessor? Fisk said a thing about a cap.
+opt: "Fit it with Fisk's brass adaptor." -> mole3.bulb.fit ? count(i.adaptor) > 0 | has(gasholder3.congregation_carries) {verb: rig, noise: 0.2}
+check: "[SMALL PRINT] Read the pedestal against the collar before anybody tries." -> mole3.bulb.read.ok / mole3.bulb.read.fail ? !has(gasholder3.bulb_measured) {skill: smallprint, dc: 6, verb: read}
+check: "[CONDOLENCE] Ask him to leave it where she can see it, in the window." -> mole3.bulb.leave.ok / mole3.bulb.leave.fail {skill: condolence, dc: 5}
+check: "[GRIP] Bridge the cap with copper wire from the salvage, the way Fisk drew it." -> mole3.bulb.fit / mole3.bulb.wire.fail ? count(i.adaptor) == 0 & !has(gasholder3.congregation_carries) & count(s.copper_wire) > 0 {skill: grip, dc: 7, verb: rig, noise: 0.2}
+opt: "Leave the Old Bulb on the lamp-room floor and go back down." -> mole3.bulb.left
+
+@node mole3.bulb.wire.fail
+place: lamproom
+speaker: FENNICK
+cost: 4
+do: take(s.copper_wire)
+nar: The wire takes the current for the length of a breath and goes white and parts. The smell of it hangs under the lens.
+line: Not like that. He drew it in brass for a reason.
+go: mole3.bulb.top
+
+@node mole3.bulb.left
+place: lamproom
+speaker: FENNICK
+cost: 2
+do: quest(a3.bulb, decided)
+nar: The Old Bulb stays on the lamp-room floor on its ladder, facing the lens, the way a visitor sits with someone who is ill.
+line: She can see it. That will have to do tonight.
+go: mole3.hub
+
+@node mole3.bulb.fit
+place: lamproom
+speaker: FENNICK
+alt: mole3.bulb.crack ? has(gasholder3.bulb_cracked)
+cost: 8
+if: count(i.adaptor) > 0 => take(i.adaptor)
+do: set(mole3.bulb_fitted); quest(a3.bulb, decided); mole3.mother = on; rep(congregation, 2)
+nar: The arc's rods come out, the Old Bulb goes in on its adaptor, and the assessor presses.
+nar: Fisk's brass bridge carries the current round the broken filament, and the bulb fills with a low yellow light.
+line: Opened. We always said opened.
+go: mole3.lamp
+
+@node mole3.bulb.read.ok
+place: lamproom
+speaker: FENNICK
+cost: 3
+do: quest(a3.bulb, decided)
+nar: The collar has a bayonet cap; the pedestal has clamps for carbon rods and no socket.
+line: Then she will have it near her and not in her. That is a kind of marriage, I am told.
+go: mole3.lamp
+
+@node mole3.bulb.read.fail
+place: lamproom
+speaker: FENNICK
+cost: 2
+nar: The collar is too worn to read by a lantern swinging in the draught.
+line: Try it. Try it, assessor. What is the worst a bulb can do?
+go: mole3.bulb.top
+
+@node mole3.bulb.leave.ok
+place: lamproom
+speaker: FENNICK
+cost: 3
+do: quest(a3.bulb, decided); rep(congregation, 1)
+nar: They set the Old Bulb on the landward sill, where Mother's beam fills it once a turn with somebody else's light.
+line: There. Lit, once a turn. That will do.
+go: mole3.lamp
+
+@node mole3.bulb.leave.fail
+place: lamproom
+speaker: FENNICK
+cost: 1
+line: Leave it? We carried it up a hundred and twelve stairs in a gale to leave it?
+go: mole3.bulb.top
+
+# ================================================================ the gallery
+@node mole3.sit
+place: lamproom
+cost: 10
+nar: The panel hums. The lens turns over the assessor's head, and every turn the room is white and then is not.
+go: mole3.lamp
+
+@node mole3.collar
+place: lamproom
+speaker: WENNA
+cost: 4
+do: set(mole3.collar_taken); give(s.bronze)
+nar: Under the Trust's sodium bracket, the old collar from Mother's first lamp, bronze, green, with the founder's name on it.
+line: WENNA: That was hers before any of them. Paraffin and a wick and that, for forty years.
+nar: She takes the four screws out herself, slowly, and holds the collar a moment in both hands before she gives it over.
+line: WENNA: Take it. It never fitted the arc anyway.
+go: mole3.lamp
+
+@node mole3.gallery
+place: gallery
+cost: 1
+do: meter(cold, 1); wet(0.3)
+nar: On the gallery the wind is a solid thing. {when: clock < 00:15 | clock >= 01:00}
+nar: The eye. Below, the whole town is out on the quay looking up. {when: clock >= 00:15 & clock < 01:00}
+nar: Far out in the bay's mouth, a masthead light, and a red, coming on. {when: clock >= 03:10 & clock < 04:00}
+inst: THE GLASS: A collier, darling, deep laden, and in a hurry to be somewhere it cannot see. {when: clock >= 03:10 & clock < 04:00}
+opt: "Go back in." -> mole3.lamp
+
+# ================================================================ beat 14: the wreckers the claim made (gate B6)
+@node mole3.wreck.start
+place: lamproom
+speaker: SALLIS
+cost: 2
+do: set(mole3.wreck_met); mole3.target = mother; quest(a3.wreckers, climb)
+alt: mole3.wreck.barred ? has(mole3.barred)
+alt: mole3.wreck.waited ? has(mole3.waiting)
+nar: Three pairs of boots under the band. Sallis first, with a crowbar, and the Board's wardens behind with a boathook.
+line: Stand off the lens, Shelf. This isn't your column.
+line: SALLIS: The Board pays for salvage. Nobody's hurt by a dark lamp but a ship, and the ship's insured.
+nar: One of them is the man in the sou'wester from the corner of the quay. {when: has(weigh3.marked)}
+check: "[FORM LETTER] Tell him what the Board filed on Low Night: wreckers, and no names. He has brought it some." -> mole3.wreck.letter.ok / mole3.wreck.letter.fail {skill: formletter, dc: 6}
+claim: "Open the Daybook at their names, and read them out." -> mole3.wreck.waited / mole3.wreck.waited ? has(strippers.named) {show: has(strippers.named), verb: read}
+check: "[THE DARK] Put out the room lamp and stand behind the lens, where every turn of the beam blinds the door." -> mole3.wreck.blind.ok / mole3.wreck.blind.fail {skill: dark, dc: 5, verb: hide, noise: 0}
+voice: undertow: Stand aside. The Board will be grateful, and you are so tired, and it is one lamp in a gale. {dc: 5}
+voice: condolence: A collier has a crew. Somebody on the quay will know their names by morning. {dc: 6}
+opt: "Let them throw the isolator. It is locked." -> mole3.wreck.relight ? has(mole3.locked) | has(mole3.jumpered) {verb: cutpower, noise: 0.3}
+opt: "Go out onto the gallery and meet them." -> mole3.wreck.fight {noise: 0.8}
+opt: "Stand aside." -> mole3.wreck.let
+
+@node mole3.wreck.fight
+place: gallery
+cost: 1
+line: SALLIS: Out here, then. Out here suits us. The Board's never been any good at heights.
+do: fight(e3.gallery)
+
+@node mole3.wreck.barred
+place: lamproom
+speaker: SALLIS
+nar: They come round by the outside ladder, three shapes against the glass.
+line: Open up, Shelf. We can wait out here longer than the glass can.
+opt: "Open the gallery door on them all at once." -> mole3.wreck.sneak {noise: 0.5}
+check: "[HEARSAY] Tell them, through the glass, who on the quay has already seen them climb." -> mole3.wreck.heard.ok / mole3.wreck.letter.fail {skill: hearsay, dc: 6}
+opt: "Hold the door and let the gale work on them." -> mole3.wreck.hold
+
+@node mole3.wreck.sneak
+place: gallery
+cost: 1
+do: fight(e3.gallery.sneak)
+
+@node mole3.wreck.hold
+place: lamproom
+speaker: SALLIS
+cost: 15
+do: set(wreckers.real); quest(a3.wreckers, stopped); meter(cold, 2)
+nar: They go down the outside ladder at last, slowly, the way men go down who have just been shown how high they are.
+line: We'll say it was the weather. Everybody does.
+go: mole3.lamp
+
+@node mole3.wreck.waited
+place: lamproom
+speaker: SALLIS
+cost: 3
+do: set(wreckers.real); quest(a3.wreckers, stopped); rep(board, 1)
+nar: They come up to find the Shelf sitting by the panel with the Daybook open, at the page with their names.
+line: LAMB: Sallis. The Patience, and the Ann Tull, and now the light. Sit down. The Board's names are in this book already. The only question is which page.
+line: You knew we'd come. You knew it'd be now.
+nar: They do not sit. But they go down.
+go: mole3.lamp
+
+@node mole3.wreck.letter.ok
+place: lamproom
+speaker: SALLIS
+cost: 3
+do: set(wreckers.real); quest(a3.wreckers, stopped)
+line: Names. That's what it wants of us.
+line: Then who pays? If the Board wants wreckers and the Shelf's a woman on the Ropewalk, who pays us?
+nar: Nobody answers him. He looks at the crowbar as if someone had handed it to him without saying what for, and goes down.
+go: mole3.lamp
+
+@node mole3.wreck.blind.ok
+place: lamproom
+speaker: SALLIS
+cost: 4
+do: set(wreckers.real); quest(a3.wreckers, stopped)
+nar: The lens comes round and the doorway goes white, and comes round and goes white. Each time, the men in it have their arms over their eyes. Each time, there is nobody in the room they can see.
+line: Where's the bloody switch? Where's the
+nar: The beam comes round again. When it has gone past, the doorway is empty and the stair is full of boots going down.
+go: mole3.lamp
+
+@node mole3.wreck.blind.fail
+place: lamproom
+speaker: SALLIS
+cost: 1
+nar: The beam comes round on the assessor, standing behind the lens like a coat on a peg.
+line: There you are.
+opt: "Go out onto the gallery and meet them." -> mole3.wreck.fight {noise: 0.8}
+opt: "Stand aside." -> mole3.wreck.let
+
+@node mole3.wreck.heard.ok
+place: lamproom
+speaker: SALLIS
+cost: 3
+do: set(wreckers.real); quest(a3.wreckers, stopped)
+nar: Below, along the quay, lamps are coming on in windows that were dark at three, one and then another, the way a street wakes when somebody has shouted.
+line: That's the Gut's windows. It'll be round the town by six.
+nar: They go down the outside ladder, and nobody on it looks up.
+go: mole3.lamp
+
+@node mole3.wreck.letter.fail
+place: lamproom
+speaker: SALLIS
+cost: 1
+line: Words. The Shelf's full of words. Out of the way.
+opt: "Go out onto the gallery and meet them." -> mole3.wreck.fight {noise: 0.8}
+opt: "Stand aside." -> mole3.wreck.let
+
+@node mole3.wreck.relight
+place: lamproom
+speaker: SALLIS
+cost: 4
+do: set(wreckers.real); quest(a3.wreckers, stopped)
+nar: Sallis goes for the isolator and finds a brass hasp locked over it. {when: has(mole3.locked)}
+nar: A warden cuts the supply cable. The arc dies, and comes back by itself. {when: has(mole3.jumpered) & !has(mole3.locked)}
+line: You can't put out a light that won't stay out. Come on. It's not worth the stairs.
+go: mole3.lamp
+
+@node mole3.wreck.let
+place: lamproom
+cost: 3
+do: mole3.mother = off; set(loss3.mother); quest(a3.wreckers, done); seenas_board = ally
+if: var.light_mother == 1 => set(lampout.mother)
+nar: The isolator goes over, and the gale has the bay to itself.
+line: SALLIS: Obliged, Shelf. The Board will be, too.
+go: mole3.lamp
+
+# ---- when Mother is dark: they go for the channel lamp, past the root of the mole
+@node mole3.wreck.lamp
+place: mole
+speaker: SALLIS
+cost: 2
+do: set(mole3.wreck_met); mole3.target = lamp; quest(a3.wreckers, climb)
+nar: Three men come along the quay with a hook pole and stop in the lee of the tower.
+line: Mother's dark already. Saves us the stairs. It's the other light now, the one the channel runs on.
+voice: undertow: Let them have it. It is not your lamp. Nothing tonight was ever your lamp. {dc: 5}
+check: "[CONDOLENCE] Ask which of them has somebody out tonight, coming home on that lamp." -> mole3.wreck.letter.lamp / mole3.wreck.letter.fail.lamp {skill: condolence, dc: 6}
+opt: "Stand in their way." -> mole3.wreck.fight {noise: 0.8}
+opt: "Let them go, and run up and light Mother." -> mole3.wreck.relight.mother ? var.lens != broken | var.light_mother == 1 {verb: light, noise: 0.3}
+opt: "Let them go." -> mole3.wreck.lamp.let
+
+@node mole3.wreck.letter.lamp
+place: mole
+speaker: SALLIS
+cost: 3
+do: set(wreckers.real); quest(a3.wreckers, stopped)
+nar: Nobody answers. The youngest of them looks out at the bay for a long time.
+line: My brother's on the Hesk run.
+nar: He lays the hook pole down along the mole, very carefully, as if it might go off.
+go: mole3.desc
+
+@node mole3.wreck.letter.fail.lamp
+place: mole
+speaker: SALLIS
+cost: 1
+line: Words. Out of the way, Shelf.
+opt: "Stand in their way." -> mole3.wreck.fight {noise: 0.8}
+opt: "Let them go." -> mole3.wreck.lamp.let
+
+@node mole3.wreck.relight.mother
+place: lamproom
+cost: 6
+do: mole3.mother = on; var.stairs_at = clock
+nar: The assessor runs up in the band and presses. Somewhere along the quay a lamp goes out under a hook pole.
+go: mole3.lamp
+
+@node mole3.wreck.lamp.let
+place: mole
+cost: 1
+do: set(loss3.lamp)
+nar: They go along the quay. A while later one of the town's lamps goes out.
+go: mole3.desc
+
+# ---- arriving after they have been
+@node mole3.wreck.missed
+place: mole
+cost: 1
+do: set(mole3.wreck_met); mole3.mother = off; set(loss3.mother); quest(a3.wreckers, done)
+if: var.light_mother == 1 => set(lampout.mother)
+nar: Mother is dark. A crowbar lies by the halfway bollard where somebody's hand gave up on it.
+line: BRIGHT: Three of them went past the hut. Sergeant said it was the weather. Sergeant said not to look.
+go: mole3.collier
+
+# ================================================================ e3.gallery outcomes (one voice each)
+@node mole3.fight.gallery.win
+place: gallery
+speaker: SALLIS
+cost: 3
+do: set(wreckers.real); quest(a3.wreckers, stopped)
+if: trait(m.body) == none => offer(m.body)
+if: var.mole3.target == mother => mole3.mother = on
+nar: The last of them goes down on the iron and holds the rail. Sallis's crowbar has gone to the sea.
+line: Names, then. Write them. Sallis. Pruett. Boddy. You'd have had them anyway.
+voice: grip: Both hands on the rail. Both. The fight is over; the gale is not. {dc: 3}
+go: mole3.lamp
+
+@node mole3.fight.gallery.yield
+place: gallery
+speaker: SALLIS
+cost: 3
+do: set(wreckers.real); quest(a3.wreckers, stopped)
+if: trait(m.body) == none => offer(m.body)
+if: var.mole3.target == mother => mole3.mother = on
+nar: A gust lays all of them against the glass at once, and when it lets go nobody lets go of the rail to swing.
+line: Enough. We'll go down. Write what you like. You will anyway.
+go: mole3.lamp
+
+@node mole3.fight.gallery.fled
+place: stairs
+cost: 4
+do: set(loss3.mother); mole3.mother = off; quest(a3.wreckers, done); meter(dread, 2)
+if: trait(m.body) == none => offer(m.body)
+if: var.mole3.target == lamp => clear(loss3.mother); set(loss3.lamp); mole3.mother = off
+if: var.mole3.target == mother & var.light_mother == 1 => set(lampout.mother)
+nar: The assessor is on the stairs, going down. Above, the beam stops. {when: var.mole3.target == mother}
+line: SALLIS: Obliged, Shelf. {when: var.mole3.target == mother}
+nar: They go along the quay with the hook pole, and a while later a lamp goes out. {when: var.mole3.target == lamp}
+voice: pride: You ran. Write it in the Daybook as running. {dc: 4}
+voice: undertow: Write it as the weather. Everybody does. {dc: 5}
+go: mole3.desc
+
+@node mole3.fight.gallery.down
+place: gallery
+cost: 30
+do: set(loss3.mother); mole3.mother = off; quest(a3.wreckers, done); set(down.mole3); meter(cold, 3); wet(0.5)
+if: trait(m.body) == none => offer(m.body)
+if: var.mole3.target == lamp => clear(loss3.mother); set(loss3.lamp)
+if: var.mole3.target == mother & var.light_mother == 1 => set(lampout.mother)
+nar: The assessor wakes on the gallery with an arm hooked through the rail. Mother is dark. {when: var.mole3.target == mother}
+nar: The assessor wakes in the lee of the tower with Bright's coat over the Shelf's. {when: var.mole3.target == lamp}
+voice: carbon: The rail, the gust, the boathook's shaft across the chest. Somebody hooked you to the rail before they left. {dc: 6}
+go: mole3.desc
+
+# ================================================================ beat 16: the collier at four
+@node mole3.collier
+place: gallery
+cost: 3
+do: set(met.varty)
+alt: mole3.collier.through ? var.mole3.mother == on | (var.light_steps == 1 & !has(lampout.steps) & var.light_balance == 1 & !has(lampout.balance)) | ((has(hill3.bearing) | var.light_hill == 1) & !has(lampout.hill) & var.light_bulb == 1 & !has(lampout.bulb)) | has(oldlight.lanterns)
+go: mole3.collier.spit
+
+@node mole3.collier.through
+place: gallery
+cost: 2
+do: set(collier.through)
+nar: The Ellen Varty comes up out of the rain, black and enormous. Mother's beam goes over her, and over her again, and on the third turn she puts her helm over. {when: var.mole3.mother == on}
+line: BRIGHT: She's turned! Shelf, she's turned!
+nar: The Ellen Varty finds two of the town's lamps laid one over the other where the channel runs, and takes the dog-leg on them with Mother dark above her. {when: var.mole3.mother != on & !has(oldlight.lanterns)}
+nar: The Ellen Varty sees a lantern burning low on the Spit, in the Old Light, and puts her helm over away from it, the way the Saint Cuthwin did on Low Night. {when: var.mole3.mother != on & has(oldlight.lanterns)}
+go: mole3.desc
+
+@node mole3.collier.spit
+place: gallery
+cost: 2
+do: set(collier.spit)
+nar: The Ellen Varty comes up out of the rain with nothing to steer by. At four minutes past four the Spit takes her, with a sound that comes all the way in against the wind.
+go: mole3.desc
+
+# ---- the Glass reading (Eye route for B6): be at the panel before them
+@node mole3.wait.ok
+place: lamproom
+cost: 3
+do: set(mole3.waiting)
+inst: THE GLASS: The next band at half past three, darling, and anybody who wants to climb unseen will climb inside it.
+inst: THE VANE: North-west! Every step on that mole comes up the stairwell like a drum!
+nar: The assessor opens the Daybook at the names and sits down to wait.
+go: mole3.lamp
+
+@node mole3.wait.fail
+place: lamproom
+cost: 3
+inst: THE GLASS: Falling. Everything is falling, darling. I could not tell you which part of it to sit and wait for.
+go: mole3.lamp
+
+@node mole3.bar
+place: lamproom
+cost: 2
+do: set(mole3.barred)
+nar: The rope goes through the stair door's handle and round the rail post, pulled until it sings.
+go: mole3.lamp
+
+# ---- B1: never tended (Lamb promised, and no band found Lamb at the panel)
+@node mole3.untended
+place: mole
+cost: 1
+do: mole3.mother = off; set(lampout.mother)
+nar: Mother has been dark since the first band. The key is still warm on its string.
+line: GORM: And did the Shelf promise somebody something, in the afternoon? And has the Shelf been anywhere near it since?
+go: mole3.desc
+
+@node mole3.trip.leave
+place: mole
+cost: 1
+do: set(lampout.mother)
+nar: The assessor leaves her dark.
+line: GORM: And is the Shelf leaving the keeper's lamp dark, then? And shall I write that the Shelf was asked?
+go: mole3.desc
+
+# ---- B8: the Old Bulb carried up from the step (Lamb the bearer)
+@node mole3.bulb.carry.ok
+place: lamproom
+cost: 9
+do: meter(wear, 2); meter(cold, 1); var.stairs_at = clock
+nar: The Old Bulb, the size of a curled child, in both arms. At the chair the assessor does not put it down, in case it is never picked up again.
+line: FENNICK: Gently. It has been opened once already.
+go: mole3.bulb.top
+
+@node mole3.bulb.carry.fail
+place: lamproom
+cost: 14
+do: meter(wear, 3); meter(cold, 2); var.stairs_at = clock
+nar: At the sixtieth step the knees give notice, and the assessor sits with the Old Bulb across them until they withdraw it.
+go: mole3.bulb.top
+
+@node mole3.bulb.crack
+place: lamproom
+speaker: FENNICK
+cost: 6
+if: count(i.adaptor) > 0 => take(i.adaptor)
+do: quest(a3.bulb, decided)
+nar: The Old Bulb fills with yellow for a breath. Then the crack in its side runs, with a small dry sound, and it is dark again.
+line: Opened. Twice now.
+go: mole3.lamp
+
+# ---- B6 from the foot of the mole: they go past the hut and up
+@node mole3.wreck.foot
+place: mole
+speaker: SALLIS
+cost: 1
+nar: Three men go in at Mother's door inside the band without stopping at the hut.
+line: GORM: And would those be the Board's men, going up the Trust's light? And would anybody like to stop them?
+check: "[KNEES] Go up after them, two at a time." -> mole3.wreck.start / mole3.wreck.foot.late {skill: knees, dc: 5, verb: climb, noise: 0.4}
+opt: "Let them go up." -> mole3.wreck.foot.let
+
+@node mole3.wreck.foot.late
+place: lamproom
+cost: 6
+do: set(mole3.wreck_met); mole3.mother = off; set(loss3.mother); quest(a3.wreckers, done); var.stairs_at = clock
+if: var.light_mother == 1 => set(lampout.mother)
+nar: The isolator goes over as the assessor reaches the top, and Sallis touches his cap on the way down.
+go: mole3.lamp
+
+@node mole3.wreck.foot.let
+place: mole
+cost: 3
+do: set(mole3.wreck_met); mole3.mother = off; set(loss3.mother); quest(a3.wreckers, done)
+if: var.light_mother == 1 => set(lampout.mother)
+nar: A while later the beam stops being anywhere, and the gale has the bay to itself.
+go: mole3.desc

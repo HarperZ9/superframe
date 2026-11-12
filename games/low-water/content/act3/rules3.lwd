@@ -1,0 +1,198 @@
+# Low Water, Act 3: ruleset additions. Director's file, 2026-10-17. Private.
+# Quests, people, items, opponents and encounters for the gale. Plan: design/ACT3-PLAN.md.
+
+# ---------------------------------------------------------------- people
+@char varty_master
+name: The master of the Ellen Varty
+speaker: VARTY
+faction: shelf
+about: A collier master in a gale, heard by speaking trumpet if at all.
+
+# ---------------------------------------------------------------- quests
+@quest a3.lamps
+name: The Lamps for the Gale
+about: The three lamps the town chose, kept alight through the gale.
+stage: open: Three lamps chosen at the second dawn. Each needs oil, a wick, and somebody in the wind.
+stage: kept: The chosen lamps burned through the gale.
+stage: lost: A chosen lamp went out in the gale.
+done: kept, lost
+
+@quest a3.shelf
+name: Who Types the Shelf
+about: The tube, the sticking e, and the back room on the Ropewalk.
+stage: door: The door on the Ropewalk.
+stage: hester: Hester Gannet types the Shelf.
+stage: why: Why she types it.
+done: why
+
+@quest a3.eye
+name: The Eye
+about: Forty minutes of calm, and a boat.
+stage: boat: A boat for the eye.
+stage: out: On the water in the eye.
+done: out
+
+@quest a3.oldlight
+name: Inside the Old Light
+about: Three rooms the tide floods and drains.
+stage: in: Inside the drowned door.
+stage: low: The low room.
+done: low
+
+@quest a3.wreckers
+name: The Real Wreckers
+about: Somebody goes up the mole in the gale to put Mother out for a ship.
+stage: warned: The collier Ellen Varty is in the bay's mouth by four.
+stage: climb: The wreckers are on the mole.
+stage: stopped: The wreckers were stopped.
+stage: done: Mother went out, and the collier came on.
+done: stopped, done
+
+@quest a3.vote
+name: The Town's Last Vote
+about: What the town will do with the verdict.
+stage: called: The town is called to the weigh-house.
+stage: voted: The town has voted.
+done: voted
+
+@quest a3.bulb
+name: The Old Bulb
+about: Its fate.
+stage: open: The Old Bulb, wherever the procession left it.
+stage: decided: The Old Bulb's fate is decided.
+done: decided
+
+@quest a3.lens
+name: Mother's Lens
+about: What Mother burns with through the gale.
+stage: open: Green, gapped, broken or crowned.
+stage: fitted: Mother's lens for the gale.
+done: fitted
+
+@quest a3.surge
+name: The Surge
+about: The morning high water, with the storm behind it.
+stage: coming: Six metres twenty at a quarter to seven, with the surge.
+stage: held: The water stopped at the Brine's step.
+stage: in: The water came in.
+done: held, in
+
+@quest a3.verdict
+name: Claim 4471/G, the final apportionment
+about: The last cause, written in the Brine at dawn.
+stage: open: The final verdict, by twenty past six.
+stage: sent: The verdict has gone down the tube.
+done: sent
+
+@quest a3.keelq
+name: Keel's Question
+about: The Board asks something nobody has asked it.
+stage: asked: The Board asked its question.
+done: asked
+
+# ---------------------------------------------------------------- items
+@item i.oilcan
+name: A can of lamp oil
+stack: yes
+about: For a gale lamp. A can is about an hour of a lamp in the wind.
+
+@item i.storm_shutter
+name: A storm shutter for a lamp
+about: Tin, with a slot. The wind cannot reach the wick through it.
+
+@item i.crown
+name: The crown of prisms
+about: Fifty-six of Mother's numbered prisms, out of the Gasholder.
+
+@item i.adaptor
+name: Fisk's bayonet adaptor
+about: Brass. It lets a carbon filament bulb seat in an arc pedestal, once.
+
+# ---------------------------------------------------------------- opponents and encounters
+@foe f.wrecker
+name: A wrecker on the gallery
+faction: board
+standing: 11
+breath: 6
+poise: 4
+moves: bar, shove_rail, hook_pull
+yields: standing <= 3
+
+@foe f.wrecker_lead
+name: The wreckers' leader
+faction: board
+standing: 17
+breath: 6
+poise: 6
+moves: bar, shove_rail, rally
+yields: standing <= 5
+
+@encounter e3.oldlight
+name: The strippers in the Old Light
+area: oldlight
+foe: f.stripper_lead 1
+foe: f.stripper 2
+param: eye-ends (the water rises when the eye passes)
+prop: snare 0 0 ? has(oldlight.line_rigged)
+talk: fx3.oldlight.claim | Read them the claim ? (fight_struck >= 1 | fight_seconds >= 10) & fight_lamb_standing >= 4
+win: oldlight.fight.win
+yield: oldlight.fight.yield
+fled: oldlight.fight.fled
+down: oldlight.fight.down
+
+@encounter e3.oldlight.sneak
+name: The strippers in the Old Light, from behind
+area: oldlight
+opening: sneak
+foe: f.stripper_lead 1
+foe: f.stripper 2
+param: eye-ends
+prop: snare 0 0 ? has(oldlight.line_rigged)
+talk: fx3.oldlight.claim | Read them the claim ? (fight_struck >= 1 | fight_seconds >= 10) & fight_lamb_standing >= 4
+win: oldlight.fight.win
+yield: oldlight.fight.yield
+fled: oldlight.fight.fled
+down: oldlight.fight.down
+
+@encounter e3.gallery
+name: The real wreckers on Mother's gallery
+area: lamp
+foe: f.wrecker_lead 1
+foe: f.wrecker 2
+param: gale (gusts over 20 m/s stagger mid-swing, both sides)
+param: lens-behind
+prop: cut 4 4 ? mother != burning
+talk: fx3.gallery.names | Say their names, and the Patience's ? (fight_struck >= 1 | fight_seconds >= 10) & has(strippers.named)
+win: mole3.fight.gallery.win
+yield: mole3.fight.gallery.yield
+fled: mole3.fight.gallery.fled
+down: mole3.fight.gallery.down
+
+@encounter e3.gallery.sneak
+name: The real wreckers, from the lamp room
+area: lamp
+opening: sneak
+foe: f.wrecker_lead 1
+foe: f.wrecker 2
+param: gale
+param: lens-behind
+talk: fx3.gallery.names | Say their names, and the Patience's ? (fight_struck >= 1 | fight_seconds >= 10) & has(strippers.named)
+win: mole3.fight.gallery.win
+yield: mole3.fight.gallery.yield
+fled: mole3.fight.gallery.fled
+down: mole3.fight.gallery.down
+
+# ---------------------------------------------------------------- talk exits
+@node fx3.oldlight.claim
+place: oldlight_mid
+cost: 2
+nar: The assessor reads the claim aloud in a drowned room, by lantern, to men with bars: Nature of loss, darkness, malicious.
+line: SALLIS: It said wreckers. It never said us.
+go: oldlight.fight.yield
+
+@node fx3.gallery.names
+place: lamproom
+cost: 2
+line: LAMB: The Patience. The Ann Tull. I watched you, I named you, and the Board has the names.
+nar: A gust takes the gallery and everybody on it holds the rail, and nobody lets go to swing.
+go: mole3.fight.gallery.yield

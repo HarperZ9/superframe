@@ -1,0 +1,339 @@
+# Low Water: the build layer's tools, clothing and bench work (design/SYSTEMS-FULL.md section 19).
+# Director's file, 2026-10-17. Included by all three acts. The six Act 1 tools first written in
+# combat.lwd keep their records there, with the build fields added; this file adds the fifteen
+# new tools. Movesets: SYSTEMS-FULL 19.5a.
+# needs: compartment or voice values; scale: voice strong|fair|slight; special: the tool's art,
+# paid from Composure (the engine's grit); fittings: the bench options, one per tool.
+
+@weapon w.lantern
+name: A storm lantern
+class: use
+weight: 1
+reach: 6
+condition: 3
+moves: throw, hold_up
+special: douse_and_throw
+needs: none
+scale: none
+fittings: shutter | spare_fill
+
+@weapon w.rope
+name: A coil of rope
+class: use
+weight: 1
+reach: 4
+condition: 4
+moves: throw_legs, lasso_tool
+special: tie
+needs: none
+scale: grip slight
+fittings: weighted_ends | tarred
+
+# ---------------------------------------------------------------- Act 2 tools
+@weapon w.marlinspike
+name: A marlinspike
+class: light
+weight: 1
+reach: 1
+condition: 5
+moves: light_chain, wedge
+special: unpick
+needs: pen 2
+scale: carbon fair, grip slight
+fittings: sharpened | lanyard
+guise: floor
+
+@weapon w.eelspear
+name: An eel spear
+class: long
+weight: 3
+reach: 3
+condition: 3
+moves: jab_chain, pin
+special: shallows
+needs: nose 3
+scale: salt strong, smell slight
+fittings: barbs | long_haft
+guise: guild
+
+@weapon w.crowbar
+name: A stripper's crowbar
+class: bar
+weight: 4
+reach: 1
+condition: 5
+moves: hook_chain, pry_guard
+special: lever
+needs: coat 4
+scale: grip fair, undertow slight
+fittings: claw_end | taped
+guise: board
+
+@weapon w.chain
+name: A tide-warden's chain
+class: long
+weight: 5
+reach: 3
+condition: 5
+moves: lash_chain, wrap_drag
+special: anchor
+needs: coat 4
+scale: ballast strong
+fittings: weighted_end | shackle
+guise: board
+
+@weapon w.oar
+name: An oar
+class: long
+weight: 4
+reach: 3
+condition: 3
+moves: wide_sweep, blade_slap
+special: pull_water
+needs: coat 3
+scale: knees fair, salt fair
+fittings: copper_sheath | leathered_grip
+guise: floor
+
+@weapon w.belljar
+name: A Congregation bell jar
+class: shield
+weight: 2
+reach: 1
+condition: 2
+moves: jar_bash, ring
+special: under_the_jar
+needs: coat 2
+scale: pride slight, condolence fair
+fittings: padding | cracked_glass
+guise: pilgrim
+
+@weapon w.glass
+name: The Glass, carried
+class: use
+weight: 1
+reach: 0
+condition: 3
+moves: none
+special: read_the_fall
+needs: pen 3
+scale: none
+fittings: resilvered | new_needle
+
+# ---------------------------------------------------------------- Act 3 tools
+@weapon w.beetle
+name: A cooper's beetle
+class: heavy
+weight: 8
+reach: 1
+condition: 5
+moves: heavy, charged_stamp
+special: drive
+needs: coat 6
+scale: grip strong, knees fair
+fittings: iron_band | long_handle
+guise: none
+
+@weapon w.fid
+name: Hester's fid
+class: light
+weight: 1
+reach: 1
+condition: 5
+moves: four_beat, twist
+special: splice
+needs: pen 3
+scale: sum fair, carbon fair
+fittings: polished | bone
+guise: none
+
+@weapon w.oldkey
+name: The Old Light's bronze key
+class: shield
+weight: 3
+reach: 1
+condition: 5
+moves: rap_chain, turn
+special: lock
+needs: coat 3
+scale: pride fair, salt fair
+fittings: none
+guise: none
+
+@weapon w.spanner
+name: A gasholder spanner
+class: heavy
+weight: 5
+reach: 1
+condition: 5
+moves: two_head, turn_foe
+special: tighten
+needs: coat 5
+scale: grip fair, sum fair
+fittings: adjustable_jaw | long_throw
+guise: none
+
+@weapon w.tiller
+name: A boat's tiller
+class: long
+weight: 3
+reach: 2
+condition: 3
+moves: low_swing, gale_swing
+special: come_about
+needs: coat 3
+scale: salt strong, ballast slight
+fittings: iron_cap | lanyard
+guise: floor
+
+@weapon w.salt
+name: A sack of salt
+class: use
+weight: 2
+reach: 4
+condition: 1
+moves: throw_blind, pour_line
+special: footing
+needs: none
+scale: none
+fittings: none
+guise: none
+
+# ---------------------------------------------------------------- items for the new tools
+@item temper.step
+name: A temper step
+about: Applied to the tool in hand at the bench: its temper rises by one.
+
+@item fitting.step
+name: A fitting
+about: Applied to the tool in hand at the bench: the fitting chosen from its list.
+
+@item w.lantern_tool
+name: A storm lantern, to throw
+slot: hand
+about: Thrown, it lights the ground and can fire spilled oil.
+
+@item w.marlinspike
+name: A marlinspike
+slot: hand
+about: Short iron for knots and rivets. Finds the gap in anything strapped.
+
+@item w.eelspear
+name: An eel spear
+slot: hand
+about: Three tines on an ash haft. Holds a person at reach in water.
+
+@item w.crowbar
+name: A stripper's crowbar
+slot: hand
+about: Pries and hooks. A heavy pulls a guard down.
+
+@item w.chain
+name: A tide-warden's chain
+slot: hand
+about: Board iron. Wraps a leg and drags toward water.
+
+@item w.oar
+name: An oar
+slot: hand
+about: A wide sweep in water, and it floats.
+
+@item w.belljar
+name: A Congregation bell jar, carried
+slot: hand
+about: A helmet you hold. It catches, and it rings.
+
+@item w.beetle
+name: A cooper's beetle
+slot: hand
+about: The heaviest thing in Gullet that is still a tool.
+
+@item w.fid
+name: Hester's fid
+slot: hand
+about: A splicing spike, worn smooth by one hand for forty years.
+
+@item w.oldkey
+name: The Old Light's bronze key
+slot: hand
+about: A hundred years of salt. It has never bent.
+
+@item w.spanner
+name: A gasholder spanner
+slot: hand
+about: Two heads; a heavy turns the person it lands on.
+
+@item w.tiller
+name: A boat's tiller
+slot: hand
+about: Swings low. Downwind, the gale makes it fly.
+
+@item w.salt
+name: A sack of salt
+slot: hand
+about: Thrown, it blinds. On ice, it is footing for one.
+
+@item c.apron
+name: A stripper's leather apron
+slot: coat
+about: Protection 3, weight 3. The Low Company reads it.
+
+@item c.seaboots
+name: A tide-warden's sea boots
+slot: feet
+about: Protection 2, weight 3. Poise +1 on wet stone.
+
+@item c.guernsey
+name: Hester's knitted guernsey
+slot: neck
+about: Protection 1, weight 1. Cold rises slower; warm even wet.
+
+@item s.bronze
+name: Old bronze
+about: Salvage of the last tier: a tool's fifth temper. Rare; every piece is a piece the town does not get.
+
+# ---------------------------------------------------------------- the bench: temper and fittings
+@recipe t.temper1
+name: Temper a tool, first step (tin and cork)
+in: s.tin 1
+in: s.cork 1
+out: temper.step 1
+when: at(room) | at(mole_steps) | at(weigh_in) | at(gas_vestry)
+cost: 10
+
+@recipe t.temper2
+name: Temper a tool, second step (tin)
+in: s.tin 2
+out: temper.step 1
+when: at(room) | at(mole_steps) | at(weigh_in) | at(gas_vestry)
+cost: 15
+
+@recipe t.temper3
+name: Temper a tool, third step (brass and copper)
+in: s.brass 1
+in: s.copper_wire 1
+out: temper.step 1
+when: at(room) | at(mole_steps) | at(weigh_in) | at(gas_vestry)
+cost: 20
+
+@recipe t.temper4
+name: Temper a tool, fourth step (brass)
+in: s.brass 2
+in: s.copper_wire 1
+out: temper.step 1
+when: at(room) | at(mole_steps) | at(weigh_in) | at(gas_vestry)
+cost: 25
+
+@recipe t.temper5
+name: Temper a tool, fifth step (old bronze)
+in: s.bronze 1
+out: temper.step 1
+when: at(room) | at(weigh_in) | at(gas_vestry)
+cost: 30
+
+@recipe t.fitting
+name: Fit a tool (its fitting list)
+in: s.brass 1
+out: fitting.step 1
+when: at(room) | at(mole_steps) | at(weigh_in) | at(gas_vestry)
+cost: 15

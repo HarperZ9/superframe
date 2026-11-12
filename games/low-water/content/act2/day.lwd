@@ -1,0 +1,261 @@
+# Low Water, the daylight interlude between Acts 1 and 2: "Two in the Afternoon". Director's file.
+# Plan: design/ACT2-PLAN.md section 2; design/REWORK-PLAN.md section 5. Playable, in colour,
+# no checks. Time for two calls before the light goes at 16:00, or sleep.
+
+# ---- new ids
+@fact day.wenna
+@fact day.pip
+@fact day.merrow
+@fact day.marrow
+@fact day.sleep
+@fact day.lantern
+@fact day.wrote
+@var day_calls
+default: 0
+@var day_pin
+default: none
+values: none, claim, works, switch, glass, light, keel
+
+@place day_room
+name: The room above the Brine, by day
+zone: brine
+district: brine
+footing: wood
+shelter: yes
+light: 0.9
+sodium: 0
+dark-light: 0.9
+
+@place day_quay
+name: Lamp Quay, by day
+zone: quay
+district: quay
+footing: stone
+light: 1
+sodium: 0
+dark-light: 1
+
+@place day_mole
+name: The mole, by day
+zone: mole
+district: mole
+footing: stone
+light: 1
+sodium: 0
+dark-light: 1
+
+@place day_tube
+name: The tube terminus, by day
+zone: weigh
+district: weigh
+footing: wood
+shelter: yes
+light: 0.7
+sodium: 0
+dark-light: 0.7
+
+@place day_smoke
+name: Shadwell's smokehouse, by day
+zone: gut
+district: gut
+footing: stone
+shelter: yes
+light: 0.5
+sodium: 0
+dark-light: 0.5
+
+# ---------------------------------------------------------------- waking
+@node day.start
+place: day_room
+cost: 0
+nar: Two in the afternoon. The assessor wakes to a light that comes in through the planking in stripes, white, without any orange in it at all.
+nar: The coat by the stove is dry. It has a tide mark at the hem.
+voice: pride: Dry. Do not get used to it. {dc: 3}
+voice: candlemas: Daylight. Every colour in the room, at once, for free. I hardly know where to look. {dc: 2}
+go: day.wall
+
+@node day.wall
+place: day_room
+cost: 2
+nar: On the wall there is room for one thing pinned in daylight. Whatever goes there, the assessor will see first at dusk.
+opt: "The claim, and its time: half past six." -> day.wall.pinned {do: day_pin = claim}
+opt: "The works order, Keel's dry signature." -> day.wall.pinned ? has(works.order) | has(works.inferred) {do: day_pin = works}
+opt: "A note of the switch: down at 21:38, up at 21:52." -> day.wall.pinned ? has(marrow.switch) | has(afterdark.told) | has(switch.recreated) | has(lamps.pink) {do: day_pin = switch}
+opt: "The green prism, on a nail." -> day.wall.pinned ? count(i.prism_green) > 0 {do: day_pin = glass}
+opt: "A line in pencil: 22:20, a light, nothing of Merrow's burning." -> day.wall.pinned ? quest(a1.lowlight) == gap {do: day_pin = light}
+opt: "A drawing of a man standing in a puddle." -> day.wall.pinned ? has(met.keel) {do: day_pin = keel}
+
+@node day.wall.pinned
+cost: 1
+nar: The pin goes in. The wall has an opinion now.
+go: day.stairs
+
+@node day.stairs
+place: day_quay
+cost: 2
+nar: Down through the bar, empty, the chairs on the tables with their legs up like dead beetles. Sabine is asleep behind the counter on a sack of flour with the slate held to her chest.
+nar: And out, into Gullet in colour.
+nar: The houses over Lamp Quay are oxblood, mustard, teal and bone, five storeys, leaning. Washing on lines across the lane, in reds the sodium has been lying about for two years. The harbour is a grey plain with pools in it that hold the sky. The tide is out again, ordinary as a chair.
+voice: hearsay: People are looking at you. In daylight they can see your face and you can see theirs. It is very nearly unbearable for everybody. {dc: 4}
+go: day.hub
+
+# ---------------------------------------------------------------- the afternoon: two calls
+@node day.hub
+hub: yes
+place: day_quay
+alt: day.dusk ? var.day_calls >= 2 | clock >= 16:00
+nar: The church clock on the hill says a quarter past two. It is the only clock in Gullet nobody argues with, because nobody can hear it at night. {when: var.day_calls == 0}
+nar: The light has moved along the terraces. One more call before it goes. {when: var.day_calls == 1}
+opt: "Walk out along the mole, where Wenna is." -> day.wenna.go ? !has(day.wenna) +10
+opt: "Go to the weigh-house, where Pip minds the tube." -> day.pip.go ? !has(day.pip) +5
+opt: "Go and find Merrow." -> day.merrow.go ? !has(day.merrow) +8
+opt: "Follow the smell of oak smoke into the Gut." -> day.marrow.go ? !has(day.marrow) +8
+opt: "Buy a second lantern from Sabine's back room, for the night." -> day.lantern.buy ? !has(day.lantern) & count(i.chits) > 0 +3
+opt: "Go back up and sleep until dark." -> day.sleep.go
+
+# ---------------------------------------------------------------- Wenna, on the mole
+@node day.wenna.go
+place: day_mole
+cost: 20
+do: set(day.wenna); day_calls += 1
+nar: Wenna is at the end of the mole, sitting on a bollard with her back to the town, looking up at Mother.
+nar: In daylight Mother is a white tower with a green-and-gold head, and the head is not quite the right green.
+alt: day.wenna.cold ? var.prov == keeper | has(cause.keeper)
+line: WENNA: Look at her.
+nar: She does not say anything else. She points.
+nar: The sun is behind the lens. Two rings in three throw white on the gallery floor. The third throws green, a soft bottle green, in a band across the boards.
+opt: "Sit on the next bollard and look at her too." -> day.wenna.sit
+opt: "Tell her what the assessor saw in the lamp room." -> day.wenna.tell ? has(lens.green)
+
+@node day.wenna.sit
+cost: 10
+nar: They sit. The green band moves across the gallery floor a hand's width while they sit, which is how fast the afternoon goes.
+line: WENNA: Tonight, then.
+nar: She gets up without help. It costs her. She does not let it show, so the assessor does not let it show either.
+go: day.hub
+
+@node day.wenna.tell
+cost: 6
+line: LAMB: I saw her by lantern. A third of the rings.
+line: WENNA: I know what you saw. I'm showing you what everybody else could see, any afternoon, if they looked up. Nobody looks up.
+go: day.wenna.sit
+
+@node day.wenna.cold
+cost: 4
+nar: She hears the assessor's boots on the stones and does not turn round.
+line: WENNA: You wrote me in. That's all right. Look at her while you're here. That's what she's for.
+nar: She points at the lens. The green band lies on the gallery floor like something spilled. She does not say anything else, and does not leave.
+go: day.hub
+
+# ---------------------------------------------------------------- Pip, at the tube
+@node day.pip.go
+place: day_tube
+cost: 10
+do: set(day.pip); day_calls += 1
+nar: The weigh-house by day: a barn of a room with the voting pans hung on the wall and the town balance's chains running up through the roof. Pip sits on an upturned crate by the brass mouth of the tube, eating bread and dripping.
+line: PIP: Afternoon canister's come. It's not for you.
+nar: She holds it out anyway. The form inside is typed, with a sticking e, and addressed to THE GULLET CLERK.
+nar: SHELF: CLERK TO CONFIRM RECEIPT OF ASSESSOR. CLERK TO CONTINUE AS BEFORE.
+voice: smallprint: "As before." Before what? A clerk who confirms receipt of an assessor is a clerk who knew one was coming. {dc: 5}
+line: PIP: There isn't a Gullet clerk. There's me, and I'm a shilling a week.
+opt: "Ask Pip to send a line back by the afternoon tube." -> day.pip.write
+opt: "Hand the canister back and say nothing." -> day.pip.quiet
+
+@node day.pip.write
+cost: 4
+do: set(day.wrote)
+nar: The assessor writes on the back of a chit, small: ASSESSOR CONFIRMS OWN RECEIPT. WHO IS THE CLERK.
+line: PIP: You'll get an answer tonight. You always get an answer. That's the funny thing.
+nar: The tube takes the canister with its swallowing noise.
+go: day.hub
+
+@node day.pip.quiet
+cost: 2
+nar: Pip puts the canister back on its hook and looks at it for a while.
+go: day.hub
+
+# ---------------------------------------------------------------- Merrow
+@node day.merrow.go
+cost: 15
+do: set(day.merrow); day_calls += 1
+alt: day.merrow.cells ? has(merrow.cells) & !has(appt.joined)
+place: day_quay
+nar: Merrow is on his boat at the mole steps, the tide out under it, so that the boat sits on the mud like a hat on a table. He is mending a net. He does not look up.
+line: MERROW: Second low water's at a quarter to midnight. Not as low. Two barges went on the Spit last night in the dark. The Patience and the Ann Tull.
+opt: "Take the other edge of the net and hold it taut." -> day.merrow.net
+opt: "Leave him to it." -> day.hub
+
+@node day.merrow.net
+cost: 10
+nar: The net comes up between them, wet and grey. He knots. The assessor holds. Neither of them says anything for a while.
+line: MERROW: There'll be people out to them tonight with bars. Not us.
+line: MERROW: You want a boat, there's a boat. You know where.
+do: rep(lowco, 1)
+go: day.hub
+
+@node day.merrow.cells
+place: day_quay
+nar: Through the grating at ankle height under the harbour office, Merrow's boots. They have dried. Somebody has put a plate of bread through the bars and he has not touched it.
+line: MERROW: Second low water. Two barges on the Spit. There'll be people out to them tonight with bars, and the Board'll say it was us, and we'll be in here.
+nar: The boots shift.
+line: MERROW: Lugg has the boat.
+opt: "Push the plate of bread back through the bars to him." -> day.merrow.bread
+opt: "Leave him." -> day.hub
+
+@node day.merrow.bread
+cost: 2
+nar: The boots shift. A hand comes down and takes the plate, and after a while there is the sound of somebody eating who did not mean to.
+go: day.hub
+
+# ---------------------------------------------------------------- Marrow, in the smokehouse
+@node day.marrow.go
+place: day_smoke
+cost: 15
+do: set(day.marrow); day_calls += 1
+nar: The Gut in daylight is a lane of tar-black doors with eels hung over it. Shadwell's smokehouse door is open. Inside, Marrow is hanging fish on the rails by himself, slowly, the way a man arranges flowers.
+alt: day.marrow.banned ? has(cause.guild)
+line: MARROW: The strike's fish. You smoke it in the morning after the vote. I've never once seen it done in daylight. It's a different colour.
+opt: "Take a fish from the basket and hang it on the rail." -> day.marrow.hang
+opt: "Watch him." -> day.marrow.watch
+
+@node day.marrow.hang
+cost: 4
+nar: The assessor hangs one fish. Marrow looks at it, takes it down, turns it a quarter, and hangs it again, a finger's width along.
+line: MARROW: Gills to the draught. You'd not know. Nobody knows, till they've been shown.
+do: rep(guild, 1)
+go: day.hub
+
+@node day.marrow.watch
+cost: 4
+nar: The fish go up one at a time, gold, with a blush under the gold.
+go: day.hub
+
+@node day.marrow.banned
+line: MARROW: Banned. Voting in the dark on municipal premises. So we'll vote in the dark on ours.
+nar: He hangs another fish and does not look round.
+line: MARROW: Agnes wants the stewardship. Tonight, on the ice, if the gutter freezes, and it will. You'll want to be there, flatfish. Or you'll want to be very far away.
+go: day.hub
+
+# ---------------------------------------------------------------- small choices
+@node day.lantern.buy
+cost: 3
+do: set(day.lantern); give(i.lantern); take(i.chits, 1)
+nar: Sabine wakes long enough to take a chit, look at it, and give the assessor a lantern with somebody else's initials scratched in the brass.
+line: SABINE: You'll want two. Everybody does, the second night. Nobody knows why.
+go: day.hub
+
+@node day.sleep.go
+place: day_room
+cost: 0
+do: set(day.sleep); meter(wear, -10)
+nar: The assessor goes back up the stairs, takes off the boots, and lies down in the striped light.
+voice: dark: I am off duty. Wake me at dusk. {dc: 2}
+go: day.dusk
+
+# ---------------------------------------------------------------- four o'clock
+@node day.dusk
+place: day_quay
+cost: 0
+nar: At four the sun goes behind Chancel Hill.
+nar: The colour goes out of the houses from the bottom of the terraces up, a floor at a time, like a tide coming in.
+go: quay2.start

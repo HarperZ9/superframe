@@ -1,0 +1,36 @@
+# Low Water, Act 3: The Gale, with the second daylight page first. Root file. Private, 2026-10-17.
+# Plan: design/ACT3-PLAN.md. Shared records from Acts 1 and 2 carry over by include.
+@meta
+title: Low Water. Act 3: The Gale
+format: lwd/1
+act: 3
+night: 3
+start: day2.start
+clock: 13:00
+end-clock: 06:44
+include: ../act1/rules.lwd
+include: ../act1/places.lwd
+include: ../act1/facts.lwd
+include: ../act1/combat.lwd
+include: ../act1/gear.lwd
+include: ../act2/rules2.lwd
+include: ../act2/places2.lwd
+include: ../act2/facts2.lwd
+include: carried3.lwd
+include: rules3.lwd
+include: world3.lwd
+include: facts3.lwd
+include: day2.lwd
+include: quay3.lwd
+include: brine3.lwd
+include: weigh3.lwd
+include: mole3.lwd
+include: gut3.lwd
+include: hill3.lwd
+include: gasholder3.lwd
+include: ropewalk3.lwd
+include: oldlight.lwd
+include: dawn3.lwd
+include: insights3.lwd
+include: gates3.lwd
+include: ../act1/barks.lwd

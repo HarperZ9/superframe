@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "description": "Marks this folder's .js files as CommonJS, as they were when the renderer was its own repository. The repository root is an ES module package; build outputs such as the Emscripten loader are not.",
+  "type": "commonjs"
+}

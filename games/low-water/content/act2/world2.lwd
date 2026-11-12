@@ -1,0 +1,72 @@
+# Low Water, Act 2: the second night, new places, events. Director's file, 2026-10-17. Private.
+# Calendar: design/PRODUCTION.md section 8, night 2. Plan: design/ACT2-PLAN.md.
+
+@night n2
+low: 23:46 -0.42
+high: 05:58 5.1
+at: 19:10 temp 3
+at: 19:10 fog 0
+at: 19:10 rain 0
+at: 19:10 wind.speed 2
+at: 23:00 temp 0
+at: 01:00 frost 1
+at: 01:00 temp -2
+at: 05:30 fog 0.04
+at: 06:02 temp -1
+
+# ---------------------------------------------------------------- the night's events
+@event ev2.switch
+at: 19:10
+do: set(ev2.switch)
+
+@event ev2.fisk
+at: 19:40
+do: set(ev2.fisk_here)
+
+@event ev2.rook_out
+at: 22:00
+do: set(ev2.rook_out)
+
+@event ev2.rook_back
+at: 23:00
+do: set(ev2.rook_back)
+
+@event ev2.errand
+at: 23:00
+do: set(ev2.errand)
+
+@event ev2.low
+at: 23:22
+do: set(ev2.low_open)
+
+@event ev2.procession
+at: 01:00
+do: set(ev2.procession); quest(a2.bulb, walking)
+
+@event ev2.shelf_reply
+at: 02:00
+when: has(day.wrote)
+nar: The tube thumps out of hours. Pip runs the canister to the assessor herself. Typed, with the e sticking: SHELF: THE CLERK IS THE CLERK. ASSESSOR TO CONFINE ENQUIRIES TO THE LOSS.
+do: set(ev2.shelf_reply)
+
+@event ev2.test
+at: 03:00
+do: set(ev2.test)
+
+@event ev2.tube
+at: 04:00
+do: set(ev2.tube_thump)
+
+@event ev2.smoke
+at: 05:30
+do: set(ev2.sea_smoke)
+
+@event ev2.dawn
+at: 06:02
+go: dawn2.start
+
+# ---------------------------------------------------------------- word comes to Lamb (signpost for the muster and Sallis, 2026-10-17)
+@event ev2.word_boat
+at: 23:05
+when: !seen(quay2.muster) & !has(a2.afloat)
+go: word.boat

@@ -1,0 +1,455 @@
+# Low Water, Act 3: The Weigh-house in the gale (prefix weigh3.). Writer's draft, 2026-10-17. Private.
+# Places (Act 1 records): weigh_out, weigh_in (the town's room in the gale), office, tube, roof.
+# What it holds (ACT3-PLAN 5): the balance lamp's moment in B1 if the town chose it (light_balance),
+# with the optional e3.lamp_balance at the 03:30 band; the tube, from which a message can be sent
+# down to the Ropewalk (B2 Hands: sets weigh3.sent, read by ropewalk3); the weigh-house as the town's
+# room in the gale from 22:30, until the weighbridge pit floods at 05:20 and the town carries the
+# pans to the Brine for the last vote (brine3). The town balance's ledger, carried, is B7's Eye route
+# (weigh3.ledger, weigh3.ledger_oil).
+# Reads: light_balance, lamp.balance.lit, gut2_steward, seenas_guild, tab_hobb, weigh.roof_ok,
+# weigh.feed_tag, weigh2.feeder, i.storm_shutter, i.oilcan, cause.*, act2_strippers, strippers.named.
+
+# ---- new ids
+@fact weigh3.sent
+
+@fact weigh3.sent_blank
+
+@fact weigh3.moment
+
+@fact weigh3.balance_kept
+
+@fact weigh3.balance_lost
+
+@fact weigh3.shuttered
+
+@fact weigh3.tended
+
+@fact weigh3.marked
+
+@fact weigh3.ledger
+
+@fact down.weigh3
+
+@fact weigh3.ledger_oil
+about: The town balance's ledger: every month for six years, the keeper's paraffin weighed out at the weigh-house, and paid for by the Brine. The Trust stopped her wages and her oil, and Sabine kept Mother lit.
+against: trust 10
+by: SUM, over the ledger
+
+@fact weigh3.wrecker
+about: In the gale a man went up the weigh-house drainpipe with a bar, to put out the lamp on the town balance. Lamb saw him close.
+by: Lamb's own eyes
+
+@encounter e3.lamp_balance
+name: A bar on the town balance
+area: weigh
+foe: f.wrecker 1
+param: gale (gusts over 20 m/s stagger mid-swing, both sides)
+param: roof (wet lead, the beam, the pans swinging on their chains)
+talk: weigh3.fx.letter | Tell him who gets the salvage ? fight_seconds >= 6
+talk: weigh3.fx.names | Say his name, and Sallis's ? (fight_struck >= 1 | fight_seconds >= 10) & has(strippers.named)
+win: weigh3.fight.lamp.win
+yield: weigh3.fight.lamp.yield
+fled: weigh3.fight.lamp.fled
+down: weigh3.fight.lamp.down
+
+# ---------------------------------------------------------------- the hub
+@node weigh3.hobb.guard
+place: weigh_out
+speaker: HOBB
+cost: 6
+do: set(weigh3.move_guard)
+line: HOBB: I'm not to teach the Shelf. I'm not to. Hold the lamp out on the left, high, away from you. They go for the lamp. Everybody goes for the lamp.
+line: HOBB: Then the pole comes across under it, and you've blocked with the thing they wanted. Two years. Nobody's had either of my lamps.
+nar: He shows it with his own lantern and an umbrella, in the weigh-house door, in the gale, very seriously.
+go: weigh3.hub
+
+@node weigh3.hub
+place: weigh_out
+hub: yes
+cost: 0
+alt: weigh3.arrive ? !seen(weigh3.arrive)
+alt: weigh3.move ? clock >= 05:20 & clock < 06:04 & !seen(weigh3.move)
+alt: weigh3.balance ? var.light_balance == 1 & !has(weigh3.moment) & !has(weigh3.balance_lost) & ((clock >= 21:20 & clock < 22:00 & !has(b1.band1)) | (clock >= 22:40 & clock < 23:20 & !has(b1.band2)) | (clock >= 03:30 & clock < 04:10 & !has(b1.band3)))
+alt: weigh3.untended ? var.light_balance == 1 & clock >= 03:30 & !has(weigh3.tended) & !has(weigh3.balance_lost) & !seen(weigh3.untended)
+alt: weigh3.wrecker ? var.light_balance == 1 & has(weigh3.balance_kept) & clock >= 03:30 & clock < 04:30 & !seen(weigh3.wrecker)
+alt: weigh3.room ? clock >= 22:30 & clock < 05:20 & !seen(weigh3.room)
+nar: The weigh-house in the gale, shutters nailed.
+nar: The rain comes along the quay in a grey wall. {when: rain > 0.6}
+nar: Stars, and no wind. The balance hangs dead level, which it has not done in a hundred years. {when: clock >= 00:15 & clock < 01:00}
+nar: On the balance, a small flame in a glass, ducking and standing up again. {when: var.light_balance == 1 & !has(weigh3.balance_lost)}
+opt: "Go in to the town." -> weigh3.room.again ? clock >= 22:30 & clock < 05:20 & seen(weigh3.room) +1
+opt: "Go into the weigh-house." -> weigh3.in ? clock < 22:30 +1
+opt: "Go through to the tube room." -> weigh3.tube +1
+opt: "Ask Hobb how a lamp-carrier keeps a light and his teeth." -> weigh3.hobb.guard ? !has(weigh3.move_guard)
+opt: "Go back to the quay." -> quay3.hub +1
+opt: "Cut through to the Gut." -> gut3.hub +2
+
+@node weigh3.arrive
+place: weigh_out
+cost: 2
+nar: Someone has roped the balance's pans to their own chains so they cannot swing. They swing anyway, groaning.
+nar: Inside, the Guild is laying out sacking for a town that means to sleep here. {when: clock >= 21:00}
+line: MARROW: Half past ten the town comes in. The Board's roof is the only one on the quay the Trust didn't put on. {when: clock >= 21:00 & var.gut2_steward != "spratt"}
+line: SPRATT: Half past ten the town comes in. Steward's orders. Mine. {when: clock >= 21:00 & var.gut2_steward == "spratt"}
+voice: salt: The knees say the water will come higher than the steps tonight. The knees have never been wrong about water. {dc: 4}
+go: weigh3.hub
+
+@node weigh3.in
+place: weigh_in
+speaker: MARROW
+cost: 2
+alt: weigh3.in.spratt ? var.gut2_steward == "spratt"
+line: MARROW: Sacking on the floor. Buckets under the three leaks. Cask by the door, and nobody touches it till ten.
+line: MARROW: The town's coming here at half past ten, Shelf. The Board's office is the only room on the quay with a roof the Trust didn't put on. Sit, if you like. Nobody will ask you anything till they've had a drink.
+go: weigh3.hub
+
+@node weigh3.in.spratt
+place: weigh_in
+speaker: SPRATT
+cost: 2
+line: SPRATT: The town's coming here at half past ten. Steward's orders, and I'm the steward. Sacking on the floor, buckets under the leaks, and nobody votes on anything in this room tonight. Tonight it's a roof.
+go: weigh3.hub
+
+# ---------------------------------------------------------------- B1: the balance lamp's moment (one of the town's three)
+@node weigh3.balance
+place: weigh_out
+cost: 2
+if: clock < 22:30 => set(b1.band1)
+if: clock >= 22:30 & clock < 03:00 => set(b1.band2)
+if: clock >= 03:00 & clock < 05:00 => set(b1.band3)
+alt: weigh3.balance.hobb ? var.gut2_steward == "none"
+nar: The rain band comes over the roof. On the balance the flame lies flat, and stands up a little less each time.
+line: MARROW: She'll not see the band out on that wick. Somebody's to go up, and it's not to be me, Shelf: I've the town to roof. {when: var.gut2_steward != "spratt"}
+line: SPRATT: That's your lamp, Shelf. You lit it Low Night. You keep it. {when: var.gut2_steward == "spratt"}
+go: weigh3.balance.menu
+
+@node weigh3.balance.hobb
+place: weigh_out
+speaker: HOBB
+cost: 2
+nar: Up on the balance the flame lies flat in the band. Hobb is at the foot of the drainpipe with both his lanterns, looking up.
+line: HOBB: Your lamp, the sergeant says. She says the Municipal doesn't climb for lamps it didn't light. I'm not to help. I'm standing here not helping.
+line: HOBB: I've been sent to say it's guttering. That's all. I've said it.
+go: weigh3.balance.menu
+
+@node weigh3.balance.menu
+check: "[GRIP] Take the oil up the drainpipe in the band, hand over hand." -> weigh3.balance.climb.ok / weigh3.balance.climb.fail {skill: grip, dc: 6, verb: carry, noise: 0.4}
+check: "[CONDOLENCE] Ask the steward to send a Guild boy up." -> weigh3.balance.ask.ok / weigh3.balance.ask.fail ? var.gut2_steward != "none" & var.seenas_guild != "nose" {skill: condolence, dc: 6}
+opt: "Ask the steward to send a Guild boy. A nose may ask." -> weigh3.balance.ask.ok ? var.gut2_steward != "none" & var.seenas_guild == "nose"
+opt: "Hobb, the Municipal has ladders." -> weigh3.balance.ask.hobb ? var.gut2_steward == "none" & var.tab_hobb == 1
+check: "[THE DARK] Go up over the back of the roof, where nobody watching the channel lamps can see." -> weigh3.balance.dark.ok / weigh3.balance.dark.fail {skill: dark, dc: 6, verb: hide, noise: 0.2}
+opt: "Fit the storm shutter over the lamp glass." -> weigh3.balance.shutter ? count(i.storm_shutter) > 0 {verb: rig, noise: 0.2}
+check: "[THE GLASS] Wait for the lull before the next band, and go up in that." -> weigh3.balance.lull.ok / weigh3.balance.lull.fail {skill: glass, dc: 3, verb: wait, noise: 0.1}
+opt: "Let it go out." -> weigh3.balance.let
+
+@node weigh3.balance.climb.ok
+place: roof
+cost: 6
+do: set(weigh3.moment); set(weigh3.balance_kept); set(weigh3.tended); wet(0.5); meter(cold, 2)
+if: count(i.oilcan) > 0 => take(i.oilcan)
+nar: Up the pipe with the can on two fingers, the gale leaning on the assessor like a large man in a crowd. The wick takes on the fourth match.
+voice: grip: The fingers are not going to work properly again until tomorrow. They did it. {dc: 5}
+go: weigh3.hub
+
+@node weigh3.balance.climb.fail
+place: weigh_out
+speaker: MARROW
+cost: 5
+do: set(weigh3.moment); set(weigh3.balance_kept); set(weigh3.tended); wet(0.7); meter(cold, 2)
+nar: A gust takes the assessor off the pipe and puts the assessor, with great precision, into the same rain-butt as Low Night.
+nar: Marrow goes up, slowly, the can in his teeth, and comes down with a cut hand he does not mention. {when: var.gut2_steward != "spratt"}
+nar: Spratt points at Davey Penn, and Davey Penn goes up. {when: var.gut2_steward == "spratt"}
+nar: Hobb goes up, crying a bit, and keeps it. {when: var.gut2_steward == "none"}
+go: weigh3.hub
+
+@node weigh3.balance.ask.ok
+place: weigh_out
+cost: 3
+do: set(weigh3.moment); set(weigh3.balance_kept); set(weigh3.tended); rep(guild, 1)
+nar: A Guild boy goes up the pipe with the can on a string, and the flame stands up. On the way down he spits for luck into the wind, and gets it back.
+go: weigh3.hub
+
+@node weigh3.balance.ask.fail
+place: weigh_out
+speaker: SPRATT
+cost: 2
+line: SPRATT: The Guild doesn't send its boys up drainpipes for the Shelf's lamp in a gale. Ask me in daylight. {when: var.gut2_steward == "spratt"}
+line: MARROW: Not my boys, not in this. You lit it. {when: var.gut2_steward == "marrow"}
+go: weigh3.balance.menu
+
+@node weigh3.balance.ask.hobb
+place: weigh_out
+speaker: HOBB
+cost: 4
+do: set(weigh3.moment); set(weigh3.balance_kept); set(weigh3.tended); tab_hobb = 0
+line: HOBB: It has. They're at the station. That's a mile. I'll go up the pipe.
+nar: He goes up counting under his breath, and keeps the lamp.
+line: HOBB: Four hundred and twelve. I counted. It's a different number up there.
+go: weigh3.hub
+
+@node weigh3.balance.dark.ok
+place: roof
+cost: 6
+do: set(weigh3.moment); set(weigh3.balance_kept); set(weigh3.tended); wet(0.4); meter(cold, 1)
+nar: Over the back of the roof, belly-down on the lead. At the corner of the quay a man in a sou'wester is watching Mother, and does not look up.
+go: weigh3.hub
+
+@node weigh3.balance.dark.fail
+place: roof
+cost: 5
+do: set(weigh3.moment); set(weigh3.balance_kept); set(weigh3.tended); set(weigh3.marked)
+nar: A slate goes. The man in the sou'wester at the corner of the quay looks up, and walks off toward the mole. The lamp is fed, and has been seen being fed.
+go: weigh3.hub
+
+@node weigh3.balance.shutter
+place: roof
+cost: 5
+do: set(weigh3.moment); set(weigh3.balance_kept); set(weigh3.tended); set(weigh3.shuttered); take(i.storm_shutter); wet(0.3)
+nar: The tin shutter goes on with its slot to the lee, and the flame burns small and upright, as if the gale were happening to some other lamp.
+go: weigh3.hub
+
+@node weigh3.balance.lull.ok
+place: roof
+cost: 4
+do: set(weigh3.moment); set(weigh3.balance_kept); set(weigh3.tended)
+inst: THE GLASS: Steady for four minutes, darling, then down like a dropped plate. Now.
+nar: The work takes half the oil and none of the wind. The band arrives as the assessor reaches the bottom of the pipe.
+go: weigh3.hub
+
+@node weigh3.balance.lull.fail
+place: roof
+cost: 5
+do: set(weigh3.moment); set(weigh3.balance_kept); set(weigh3.tended); wet(0.6); meter(cold, 2)
+inst: THE GLASS: I said four minutes. I meant two. I am a barometer. Saints are a different department.
+nar: The band arrives with the assessor on the beam. The lamp is fed by feel.
+go: weigh3.hub
+
+@node weigh3.balance.let
+place: weigh_out
+cost: 1
+do: set(weigh3.moment); set(weigh3.balance_lost); set(lampout.balance); quest(a3.lamps, lost)
+nar: The flame lies down and does not stand up. The glass on the balance is black.
+go: weigh3.hub
+
+# ---------------------------------------------------------------- 03:30: e3.lamp_balance, a bar on the town balance
+@node weigh3.wrecker
+place: weigh_out
+cost: 2
+alt: weigh3.wrecker.shut ? has(weigh3.shuttered) & !has(weigh3.marked)
+nar: A man in a sou'wester is going up the drainpipe with a bar through his belt, the way a man climbs a ladder he has been paid to climb.
+line: HOBB: Shelf. There's a man on your pipe. I'm not to say so. I've said so.
+check: "[GRIP] Go up after him." -> weigh3.wrecker.go / weigh3.fight.lamp.down {skill: grip, dc: 5, verb: climb, noise: 0.5}
+check: "[FORM LETTER] Shout up who owns what comes off a wreck in this harbour." -> weigh3.fx.letter / weigh3.wrecker.talk.fail {skill: formletter, dc: 6}
+opt: "Shake the rope line you rigged on the pipe." -> weigh3.wrecker.line ? has(weigh3.shuttered)
+opt: "Let him go up." -> weigh3.fight.lamp.fled
+
+@node weigh3.wrecker.shut
+place: weigh_out
+cost: 2
+do: set(weigh3.wrecker)
+nar: The man reaches the beam, finds the lamp in a tin box, and hits it twice. The box rings. The flame does not notice.
+go: weigh3.hub
+
+@node weigh3.wrecker.go
+place: roof
+cost: 1
+alt: weigh3.wrecker.fallback ? var.runs == 0 | !runs
+nar: On the lead, in the wind, the pans swinging on their chains.
+do: fight(e3.lamp_balance)
+
+@node weigh3.wrecker.fallback
+place: roof
+cost: 3
+check: "[BALLAST] Keep the roof under you and let the gust take him." -> weigh3.fight.lamp.win / weigh3.fight.lamp.down {skill: ballast, dc: 6}
+opt: "Hold on to the beam and shout that you yield." -> weigh3.fight.lamp.yield
+opt: "Drop back to the drainpipe." -> weigh3.fight.lamp.fled
+
+@node weigh3.wrecker.talk.fail
+place: weigh_out
+cost: 1
+nar: The band brings the words back down in pieces.
+go: weigh3.wrecker
+
+@node weigh3.wrecker.line
+place: weigh_out
+cost: 2
+do: set(weigh3.wrecker)
+nar: One good shake of the rope at the foot of the pipe, and he comes down the last eight feet without the bar.
+go: weigh3.hub
+
+@node weigh3.fx.letter
+place: weigh_out
+speaker: LAMB
+cost: 2
+do: set(weigh3.wrecker)
+line: LAMB: Anything off a wreck in this harbour is salvage for the insurer. You'll carry it to Keel's shed with a label on, and he'll pay you for the carrying.
+nar: The man stops on the beam with the bar half out, looks at the town's faces in the weigh-house door, and puts it back.
+go: weigh3.fight.lamp.yield
+
+@node weigh3.fx.names
+place: roof
+speaker: LAMB
+cost: 2
+do: set(weigh3.wrecker)
+line: LAMB: Boddy. You were on the Ann Tull with a hook. Sallis sent you. The Board has both names.
+nar: A gust takes the beam, and both of them hold on.
+go: weigh3.fight.lamp.yield
+
+@node weigh3.fight.lamp.win
+place: roof
+cost: 3
+do: set(weigh3.wrecker); set(weigh3.balance_kept); set(weigh3.tended); rep(board, -1)
+if: trait(m.body) == none => offer(m.body)
+nar: The gust comes and the assessor is lower, and the man is not. He goes off the roof into the rain-butt and climbs out without his bar.
+line: MARROW: That butt's seen more of the Shelf's business than the Board has. {when: var.gut2_steward == "marrow"}
+go: weigh3.hub
+
+@node weigh3.fight.lamp.yield
+place: roof
+cost: 2
+do: set(weigh3.wrecker); set(weigh3.balance_kept); set(weigh3.tended)
+if: trait(m.body) == none => offer(m.body)
+nar: He goes down without the bar. The flame stays in its glass.
+line: HOBB: He's gone, Shelf. I wrote him down. I don't know his name. I wrote "a man".
+go: weigh3.hub
+
+@node weigh3.fight.lamp.fled
+place: weigh_out
+cost: 3
+do: set(weigh3.balance_lost); clear(weigh3.balance_kept); set(loss3.lamp); set(lampout.balance); quest(a3.lamps, lost)
+nar: One blow, and the glass goes, and the flame with it.
+line: HOBB: He's going to the mole, Shelf. With the bar. I can't follow him. I've two lanterns and he's got the dark.
+go: weigh3.hub
+
+@node weigh3.fight.lamp.down
+place: weigh_out
+cost: 25
+do: set(down.weigh3); set(weigh3.balance_lost); clear(weigh3.balance_kept); set(loss3.lamp); set(lampout.balance); quest(a3.lamps, lost); wet(0.6); meter(cold, 2)
+nar: The assessor wakes under the balance in the rain, a sack over the legs. Overhead, no flame.
+go: weigh3.hub
+
+# ---------------------------------------------------------------- the town's room in the gale, 22:30 to 05:20
+@node weigh3.room
+place: weigh_in
+cost: 4
+do: quest(a3.vote, called)
+nar: The town has come in out of the gale with its bedding and its cats in baskets. Three buckets under three leaks, each a different note. When the balance groans overhead, everyone looks up.
+line: MARROW: Shelf. There's sacking by the cask. {when: var.gut2_steward != "spratt" & var.seenas_guild != "informer"}
+line: SPRATT: The Shelf can sit by the leak. It's used to water. {when: var.gut2_steward == "spratt"}
+line: TEAGUE: If the boat sails in the morning I'll be on it. I've said that for nine years. Tonight I mean it, a bit.
+line: COCKLE: Seven low ones in my life, three of them in a row, and three gales like this. Two of them the Old Light was lit by somebody. Nobody's ever said who.
+nar: Sister Gauze sits under her bell jar by the stove, where the rain is very quiet.
+line: GAUZE: In here it sounds like somebody else's weather. I recommend it.
+go: weigh3.room.menu
+
+@node weigh3.room.again
+place: weigh_in
+cost: 1
+nar: The town in its bedding. A child asleep in a voting pan.
+line: COCKLE: Seven low ones, and that's the first child I've seen sleep in a pan. It'll want weighing in the morning.
+go: weigh3.room.menu
+
+@node weigh3.room.menu
+place: weigh_in
+opt: "Listen to what the room says about the morning." -> weigh3.room.listen ? !seen(weigh3.room.listen) {verb: eavesdrop, noise: 0}
+opt: "Fetch the town balance's ledger from the office." -> weigh3.ledger.get ? !has(weigh3.ledger)
+opt: "Go through to the tube room." -> weigh3.tube +1
+opt: "Go back out into the gale." -> weigh3.hub
+
+@node weigh3.room.listen
+place: weigh_in
+cost: 4
+line: COCKLE: There'll be a town in the morning. There always is. It's which town.
+line: TEAGUE: The keeper wants paying. Somebody should pay her.
+line: COCKLE: Somebody always should. It's always somebody else.
+line: MARROW: Will the Shelf write the Trust down twice, Shelf? The room would like to know before it sleeps. {when: var.gut2_steward != "spratt"}
+voice: hearsay: The room has not decided what it thinks about a keeper. It is waiting to be told what it owes. {dc: 5}
+go: weigh3.room.menu
+
+@node weigh3.ledger.get
+place: office
+cost: 3
+do: set(weigh3.ledger)
+nar: The office: a Municipal padlock, and a split down the keeper from Low Night. The ledger is where it always is, dry.
+line: MARROW: Take it. Somebody should read that book aloud one day. Every fish in this town's in it, and every debt. {when: var.gut2_steward == "marrow"}
+line: SPRATT: Take it, then. Nobody's weighed anything honest on that balance since the sodium. {when: var.gut2_steward == "spratt"}
+check: "[SUM] Go back six years through the monthly weighings." -> weigh3.ledger.ok / weigh3.ledger.fail {skill: sum, dc: 5, verb: read, noise: 0}
+opt: "Take it under the coat for the morning." -> weigh3.room.menu
+
+@node weigh3.ledger.ok
+place: office
+cost: 6
+do: set(weigh3.ledger_oil)
+nar: Every month for six years, one line in a small square hand: KEEPER'S PARAFFIN, ONE CASK, WEIGHED. Beside it, where the Trust's initials used to be: S. BRINE. Seventy-two casks.
+voice: sum: Seventy-two casks at the Brine's price is a sum the Trust saved and Sabine never mentioned. Say it aloud in a room, and the room will know who owes whom. {dc: 5}
+go: weigh3.room.menu
+
+@node weigh3.ledger.fail
+place: office
+cost: 4
+nar: Six years of fish, coal and a piano. The ledger goes under the coat anyway.
+go: weigh3.room.menu
+
+# ---------------------------------------------------------------- the tube: B2, the Hands route (a message down to the Ropewalk)
+@node weigh3.tube
+place: tube
+cost: 1
+nar: The tube room. The brass mouth breathes in and out with the gale.
+opt: "Write a message on a Shelf chit and send it down the tube." -> weigh3.tube.write ? !has(weigh3.sent) & !has(weigh3.sent_blank) {verb: rig, noise: 0.2}
+opt: "Go back out." -> weigh3.hub
+
+@node weigh3.tube.write
+place: tube
+cost: 2
+nar: The canisters on their hook. The send lever is a brass bellows, worked by a girl who is not here.
+voice: precedent: Every tube runs both ways. Nobody in eleven years has sent anything down this one. {dc: 4}
+opt: "Write: THE SHELF'S ASSESSOR IS ON THE WAY. OPEN THE BACK DOOR." -> weigh3.tube.send {do: weigh3_msg = door}
+opt: "Write: WHO TYPES THE SHELF?" -> weigh3.tube.send {do: weigh3_msg = who}
+opt: "Write nothing. Roll a blank chit and send that." -> weigh3.tube.send {do: weigh3_msg = blank}
+
+@node weigh3.tube.send
+place: tube
+cost: 3
+check: "[GRIP] Work the bellows against the gale's pressure in the pipe until the canister takes." -> weigh3.tube.sent / weigh3.tube.jam {skill: grip, dc: 6, verb: rig, noise: 0.3}
+
+@node weigh3.tube.sent
+place: tube
+cost: 2
+do: set(weigh3.sent)
+nar: The mouth swallows the canister.
+voice: sum: Six minutes to the Ropewalk, by the gale's breathing. Four, if you run. {dc: 4}
+opt: "Run for the Ropewalk, to be at the other end when it lands." -> ropewalk3.hub +6 {verb: wait, noise: 0.3, do: wet(0.4); meter(cold, 1)}
+opt: "Let it go alone." -> weigh3.hub
+
+@node weigh3.tube.jam
+place: tube
+cost: 4
+do: set(weigh3.sent_blank)
+nar: The canister sticks a yard up the pipe, then goes all at once with a bang that wakes a child next door.
+nar: Ten minutes later a canister comes back up. One strip: WAIT.
+go: weigh3.tube
+
+# ---------------------------------------------------------------- 05:20: the pit floods; the town carries the pans to the Brine
+@node weigh3.move
+place: weigh_in
+cost: 8
+nar: At twenty past five the weighbridge pit brims over its plate, the colour of tea. The town gets up without being told.
+line: MARROW: The Brine. It's a hull. Hulls float. Bring the pans. {when: var.gut2_steward != "spratt"}
+line: SPRATT: Brine. Pans. Children first, then the cask. {when: var.gut2_steward == "spratt"}
+nar: The voting pans go out into the wind on four pairs of shoulders, and the town follows them along the flooded quay with its bedding and its cats.
+line: TEAGUE: Nine years I've waited for the boat in that hull. Now we're all going to wait in it.
+line: COCKLE: Mind the step. It'll be under by half past six.
+nar: Under the assessor's coat, dry, the town balance's ledger. {when: has(weigh3.ledger)}
+opt: "Follow the pans to the Brine." -> brine3.hub +3
+
+@var weigh3_msg
+default: none
+values: none, door, who, blank
+about: What Lamb sent down the tube to the Ropewalk (ropewalk3 reads it with weigh3.sent).
+
+@node weigh3.untended
+place: weigh_out
+cost: 1
+do: set(weigh3.balance_lost); set(lampout.balance); quest(a3.lamps, lost)
+nar: Up on the balance the flame nobody fed lies down in the 03:30 band, and does not get up.
+go: weigh3.hub

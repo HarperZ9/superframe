@@ -1,0 +1,2064 @@
+{
+ "place": "gasholder",
+ "version": 2,
+ "width": 2880,
+ "height": 1980,
+ "camera": {
+  "yawDeg": 22,
+  "elevDeg": 42,
+  "target": [
+   10,
+   2.6,
+   5.5
+  ],
+  "dist": 60,
+  "ortho": true,
+  "scale": 12.375
+ },
+ "pxPerMetre": 80,
+ "near": 1.5,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "candles",
+  "opening",
+  "bulb",
+  "frost"
+ ],
+ "variantInfo": {
+  "candles": {
+   "hour": 23.5,
+   "weather": "23:00 to 00:45: candles in jam jars, cut to burn until 00:45"
+  },
+  "opening": {
+   "hour": 0.8,
+   "weather": "the Opening, 00:45: all candles out but the four standing lights"
+  },
+  "bulb": {
+   "hour": 0.9,
+   "weather": "the Old Bulb lit with the gas bag: a white mantle in violet glass"
+  },
+  "frost": {
+   "hour": 2.2,
+   "weather": "from 02:00: frost on the shingle and the lattice; the procession gone"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  9,
+  3,
+  2,
+  56
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "old_bulb",
+    "verb": "light",
+    "at": [
+     10,
+     0.3,
+     6.2
+    ],
+    "note": "the Old Bulb on its chains; light it with the gas bag (G:557)"
+   },
+   {
+    "id": "the_eye",
+    "verb": "carry",
+    "at": [
+     10,
+     0.3,
+     6.2
+    ],
+    "note": "the Eye: a crown of prisms in three rings; wire 113 empty (G:140)"
+   },
+   {
+    "id": "stopcock",
+    "verb": "rig",
+    "at": [
+     -0.6,
+     0,
+     6.1
+    ],
+    "note": "the stopcock, MUNICIPAL LIGHT AND COKE CO. HOLDER No 2 (G:554)"
+   },
+   {
+    "id": "frame_climb",
+    "verb": "climb",
+    "at": [
+     10,
+     0,
+     -5.4
+    ],
+    "note": "the frame is climbable; the top ring looks over the town (G:756)"
+   }
+  ],
+  "hides": [
+   {
+    "id": "kneelers",
+    "at": [
+     4.5,
+     0,
+     5.5
+    ],
+    "r": 2,
+    "note": "among the kneelers, under a borrowed jar (Q:761)"
+   }
+  ],
+  "exits": [
+   {
+    "id": "west_gate",
+    "at": [
+     0,
+     0,
+     5.5
+    ],
+    "note": "the gate; when it creaks every jar turns (G:114)"
+   },
+   {
+    "id": "east",
+    "at": [
+     20,
+     0,
+     5.5
+    ],
+    "note": "to the vestry"
+   }
+  ],
+  "lamps": [
+   {
+    "id": "old_bulb",
+    "kind": "bulb",
+    "at": [
+     10,
+     3.1,
+     5
+    ],
+    "arena": [
+     10,
+     5
+    ]
+   }
+  ],
+  "fight": {
+   "lamb": [
+    9.5,
+    7.5
+   ],
+   "foes": [
+    [
+     5.5,
+     2.5
+    ],
+    [
+     13.5,
+     2.5
+    ],
+    [
+     9.5,
+     1.5
+    ],
+    [
+     2.5,
+     5.5
+    ]
+   ],
+   "anchors": {
+    "cut": [
+     [
+      3,
+      2
+     ],
+     [
+      17,
+      2
+     ],
+     [
+      3,
+      8.5
+     ],
+     [
+      17,
+      8.5
+     ]
+    ],
+    "lamp": [
+     [
+      3,
+      2
+     ]
+    ],
+    "snare": [],
+    "sluice": []
+   },
+   "r": 11.34,
+   "arena": "arena-gasholder.json",
+   "stage": "arena: gasholder 0 -8 0 0"
+  },
+  "fights": {
+   "gasholder": {
+    "lamb": [
+     9.5,
+     7.5
+    ],
+    "foes": [
+     [
+      5.5,
+      2.5
+     ],
+     [
+      13.5,
+      2.5
+     ],
+     [
+      9.5,
+      1.5
+     ],
+     [
+      2.5,
+      5.5
+     ]
+    ],
+    "anchors": {
+     "cut": [
+      [
+       3,
+       2
+      ],
+      [
+       17,
+       2
+      ],
+      [
+       3,
+       8.5
+      ],
+      [
+       17,
+       8.5
+      ]
+     ],
+     "lamp": [
+      [
+       3,
+       2
+      ]
+     ],
+     "snare": [],
+     "sluice": []
+    },
+    "r": 11.34,
+    "arena": "arena-gasholder.json",
+    "stage": "arena: gasholder 0 -8 0 0"
+   }
+  }
+ },
+ "lights": {
+  "candles": [
+   {
+    "at": [
+     3,
+     1.58,
+     2
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     17,
+     1.58,
+     2
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     3,
+     1.58,
+     8.5
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     17,
+     1.58,
+     8.5
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     20.07,
+     0.22,
+     5.5
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19.98,
+     0.26,
+     7.08
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19.52,
+     0.22,
+     8.59
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     18.95,
+     0.25,
+     10.06
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     18.12,
+     0.22,
+     11.4
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     17.19,
+     0.24,
+     12.69
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     16.04,
+     0.3,
+     13.81
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     14.64,
+     0.25,
+     14.6
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     13.11,
+     0.25,
+     15.06
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     11.61,
+     0.27,
+     15.65
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10,
+     0.26,
+     15.63
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     8.4,
+     0.28,
+     15.62
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     6.87,
+     0.29,
+     15.14
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     5.38,
+     0.29,
+     14.58
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     3.96,
+     0.3,
+     13.81
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     2.84,
+     0.24,
+     12.66
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     1.77,
+     0.22,
+     11.48
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.97,
+     0.24,
+     10.1
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.22,
+     0.24,
+     8.68
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -0.07,
+     0.3,
+     7.09
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -0.29,
+     0.23,
+     5.5
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -0.02,
+     0.29,
+     3.91
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.21,
+     0.28,
+     2.32
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.9,
+     0.26,
+     0.86
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     1.74,
+     0.23,
+     -0.5
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     2.74,
+     0.26,
+     -1.76
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     3.95,
+     0.29,
+     -2.82
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     5.35,
+     0.27,
+     -3.63
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     6.84,
+     0.29,
+     -4.22
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     8.41,
+     0.26,
+     -4.55
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10,
+     0.29,
+     -4.52
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     11.61,
+     0.24,
+     -4.66
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     13.14,
+     0.25,
+     -4.15
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     14.65,
+     0.23,
+     -3.63
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     16,
+     0.26,
+     -2.76
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     17.08,
+     0.26,
+     -1.58
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     18.25,
+     0.26,
+     -0.5
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19,
+     0.3,
+     0.92
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19.65,
+     0.24,
+     2.36
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     20.1,
+     0.26,
+     3.9
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     8.6,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     9.15,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     9.7,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10.25,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10.8,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     11.35,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     20.7,
+     1.6,
+     7
+    ],
+    "kind": "paraffin",
+    "I": 1.8,
+    "reach": 5,
+    "group": "window"
+   }
+  ],
+  "opening": [
+   {
+    "at": [
+     3,
+     1.58,
+     2
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     17,
+     1.58,
+     2
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     3,
+     1.58,
+     8.5
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     17,
+     1.58,
+     8.5
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     20.7,
+     1.6,
+     7
+    ],
+    "kind": "paraffin",
+    "I": 1.8,
+    "reach": 5,
+    "group": "window"
+   }
+  ],
+  "bulb": [
+   {
+    "at": [
+     3,
+     1.58,
+     2
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     17,
+     1.58,
+     2
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     3,
+     1.58,
+     8.5
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     17,
+     1.58,
+     8.5
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     20.07,
+     0.22,
+     5.5
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19.98,
+     0.26,
+     7.08
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19.52,
+     0.22,
+     8.59
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     18.95,
+     0.25,
+     10.06
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     18.12,
+     0.22,
+     11.4
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     17.19,
+     0.24,
+     12.69
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     16.04,
+     0.3,
+     13.81
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     14.64,
+     0.25,
+     14.6
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     13.11,
+     0.25,
+     15.06
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     11.61,
+     0.27,
+     15.65
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10,
+     0.26,
+     15.63
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     8.4,
+     0.28,
+     15.62
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     6.87,
+     0.29,
+     15.14
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     5.38,
+     0.29,
+     14.58
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     3.96,
+     0.3,
+     13.81
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     2.84,
+     0.24,
+     12.66
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     1.77,
+     0.22,
+     11.48
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.97,
+     0.24,
+     10.1
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.22,
+     0.24,
+     8.68
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -0.07,
+     0.3,
+     7.09
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -0.29,
+     0.23,
+     5.5
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -0.02,
+     0.29,
+     3.91
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.21,
+     0.28,
+     2.32
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.9,
+     0.26,
+     0.86
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     1.74,
+     0.23,
+     -0.5
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     2.74,
+     0.26,
+     -1.76
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     3.95,
+     0.29,
+     -2.82
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     5.35,
+     0.27,
+     -3.63
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     6.84,
+     0.29,
+     -4.22
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     8.41,
+     0.26,
+     -4.55
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10,
+     0.29,
+     -4.52
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     11.61,
+     0.24,
+     -4.66
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     13.14,
+     0.25,
+     -4.15
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     14.65,
+     0.23,
+     -3.63
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     16,
+     0.26,
+     -2.76
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     17.08,
+     0.26,
+     -1.58
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     18.25,
+     0.26,
+     -0.5
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19,
+     0.3,
+     0.92
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19.65,
+     0.24,
+     2.36
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     20.1,
+     0.26,
+     3.9
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     8.6,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     9.15,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     9.7,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10.25,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10.8,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     11.35,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     20.7,
+     1.6,
+     7
+    ],
+    "kind": "paraffin",
+    "I": 1.8,
+    "reach": 5,
+    "group": "window"
+   },
+   {
+    "at": [
+     10,
+     3.1,
+     5
+    ],
+    "kind": "white",
+    "I": 30,
+    "reach": 24,
+    "group": ""
+   }
+  ],
+  "frost": [
+   {
+    "at": [
+     3,
+     1.58,
+     2
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     17,
+     1.58,
+     2
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     3,
+     1.58,
+     8.5
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     17,
+     1.58,
+     8.5
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 5,
+    "group": "standing"
+   },
+   {
+    "at": [
+     20.07,
+     0.22,
+     5.5
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19.98,
+     0.26,
+     7.08
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19.52,
+     0.22,
+     8.59
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     18.95,
+     0.25,
+     10.06
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     18.12,
+     0.22,
+     11.4
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     17.19,
+     0.24,
+     12.69
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     16.04,
+     0.3,
+     13.81
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     14.64,
+     0.25,
+     14.6
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     13.11,
+     0.25,
+     15.06
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     11.61,
+     0.27,
+     15.65
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10,
+     0.26,
+     15.63
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     8.4,
+     0.28,
+     15.62
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     6.87,
+     0.29,
+     15.14
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     5.38,
+     0.29,
+     14.58
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     3.96,
+     0.3,
+     13.81
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     2.84,
+     0.24,
+     12.66
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     1.77,
+     0.22,
+     11.48
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.97,
+     0.24,
+     10.1
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.22,
+     0.24,
+     8.68
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -0.07,
+     0.3,
+     7.09
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -0.29,
+     0.23,
+     5.5
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -0.02,
+     0.29,
+     3.91
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.21,
+     0.28,
+     2.32
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.9,
+     0.26,
+     0.86
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     1.74,
+     0.23,
+     -0.5
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     2.74,
+     0.26,
+     -1.76
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     3.95,
+     0.29,
+     -2.82
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     5.35,
+     0.27,
+     -3.63
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     6.84,
+     0.29,
+     -4.22
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     8.41,
+     0.26,
+     -4.55
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10,
+     0.29,
+     -4.52
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     11.61,
+     0.24,
+     -4.66
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     13.14,
+     0.25,
+     -4.15
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     14.65,
+     0.23,
+     -3.63
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     16,
+     0.26,
+     -2.76
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     17.08,
+     0.26,
+     -1.58
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     18.25,
+     0.26,
+     -0.5
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19,
+     0.3,
+     0.92
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     19.65,
+     0.24,
+     2.36
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     20.1,
+     0.26,
+     3.9
+    ],
+    "kind": "paraffin",
+    "I": 1.28,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     8.6,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 1.4,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     9.15,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 1.4,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     9.7,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 1.4,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10.25,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 1.4,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10.8,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 1.4,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     11.35,
+     1.34,
+     5.85
+    ],
+    "kind": "paraffin",
+    "I": 1.4,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     20.7,
+     1.6,
+     7
+    ],
+    "kind": "paraffin",
+    "I": 1.8,
+    "reach": 5,
+    "group": "window"
+   }
+  ]
+ },
+ "arenas": [
+  {
+   "id": "gasholder",
+   "file": "arena-gasholder.json",
+   "stage": "arena: gasholder 0 -8 0 0",
+   "heightToWorld": "y = h - 8",
+   "size": [
+    20,
+    11
+   ]
+  }
+ ],
+ "arena": {
+  "name": "gasholder",
+  "worldOfArena": "x = arena x, z = arena z, y = 0 (arena h 8)",
+  "cell": 1,
+  "origin": [
+   0,
+   0
+  ],
+  "note": "dais x 7..13, z 4..7; the Old Bulb at (10, 5); standing lights (3, 2) (17, 2) (3, 8.5) (17, 8.5); exits west and east"
+ },
+ "notes": "The Gasholder frame, matched to the combat arena GASHOLDER. The crown's colour bars when the Bulb is lit are a run-time effect (the pass has no coloured lights)."
+}

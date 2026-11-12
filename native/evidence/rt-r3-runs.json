@@ -1,0 +1,138 @@
+{
+ "schema": "raw-native.evidence/1",
+ "criterion": "RT stage R3: every run, failures included (bounds: evidence/rt-r3-bounds.json, committed 2cc583d before any R3 code)",
+ "runs": [
+  {
+   "run": 1,
+   "when": "2026-10-10 19:03Z",
+   "backend": "CPU (MSVC, Release)",
+   "checks": "M1",
+   "result": "fail: hit/miss agree on all 65,536 rays a primitive (exempt grazing 44, 26, 49), but t over the bound on 4,269 (sphere), 3,681 (box) and 2,994 (torus) hits; worst ratios 12.7, 2.6, 16.8; the control (eps 1e-2) is far outside (worst 251, 242, 227)",
+   "diagnosis": "See method note 1: the stop rule's error grows as 1 / cos(theta); confirmed with the sphere's analytic normal (max ratio x cos 0.5003)."
+  },
+  {
+   "run": 2,
+   "when": "2026-10-10 19:05Z",
+   "backend": "CPU (MSVC, Release)",
+   "checks": "M1 (method note 1)",
+   "result": "fail: sphere passes (worst t ratio 0.041); box 4 hits over the bound (worst 2.38), torus 2 (worst 16.2); hit/miss agree everywhere; controls fail",
+   "diagnosis": "See method note 2: near-tangent hits whose inside chord the doubling bracket skipped."
+  },
+  {
+   "run": 3,
+   "when": "2026-10-10 19:07Z",
+   "backend": "CPU (MSVC, Release)",
+   "checks": "M1 (method notes 1 and 2)",
+   "result": "not a pass: t within the bound on all three primitives (worst 0.041, 0.523, 0.000), hit/miss agree; but the sphere's control passed (worst 0.0), so the check did not discriminate there",
+   "diagnosis": "See method note 3."
+  },
+  {
+   "run": 4,
+   "when": "2026-10-10 19:08Z",
+   "backend": "CPU (MSVC, Release)",
+   "checks": "M1 (method notes 1 to 3)",
+   "result": "pass: hit/miss agree on all 65,536 rays a primitive (grazing exempt 44, 26, 49); t within the bound on every hit (worst ratios 0.041 sphere, 0.523 box, 0.000 torus); the control (d < 1e-2, no refinement) exceeds the bound on all three (251, 242, 227)",
+   "evidence": "evidence/rt-r3-m1-cpu.json"
+  },
+  {
+   "run": 5,
+   "when": "2026-10-10 19:15Z",
+   "backend": "D3D12 WARP",
+   "checks": "M2 to M7",
+   "result": "fail: M2 passes on garden (t 39,024 of 39,024), menger_tower (29,239 of 29,240) and arcade (55,468 of 55,468) and FAILS on bulb (t within on 93.3% of hits against 99.5%, normals 57.3% against 99%); M3 passes on all four (worst mean 5.5e-4, p99 8.4e-3 on the bulb's shadow); M4 FAILS (height fog worst relative 1.0); M5 passes (2 and 1 pixels outside 1e-3, each with a differing shadow sample count); M6 passes (0 disagreements); M7 bit-identical. Controls: smooth k halved breaks M2; k = 3 breaks M3; visibility 1 breaks M5 (65,536 and 1,447 pixels over 5%); SDF in front breaks M6 (107 unexplained)",
+   "diagnosis_m2_bulb": "Float32 precision in the Mandelbulb's iteration, inferred: the same estimator evaluated in float32 on the CPU, with no GPU involved, agrees with float64 on only 67.9% of hits. The bound is not loosened and the scene is not changed; this stays an open failure.",
+   "diagnosis_m4": "See method note 4: 113 cases underflow float32."
+  },
+  {
+   "run": 6,
+   "when": "2026-10-10 19:17Z",
+   "backend": "D3D12 WARP (debug layer)",
+   "checks": "M2 to M7 (method note 4)",
+   "result": "open failures in M2 (bulb, as in run 5) and M4: M4's closed forms pass (homogeneous 3.4e-7, height 2.7e-5; 113 cases excluded below 1e-30), but the 256-sample march reaches 1.33e-3 against 1e-3; everything else as in run 5",
+   "diagnosis_m4_march": "Midpoint-rule discretization, confirmed: the same 256-sample march in float64 reaches 1.324e-3 (13 cases over 1e-3, the worst at optical depth 64). The bound did not allow for optical depths this large. Not loosened; an open failure.",
+   "evidence": "evidence/rt-r3-sdf-gpu-d3d12-warp.json"
+  },
+  {
+   "run": 7,
+   "when": "2026-10-10 19:18Z to 19:26Z",
+   "backend": "WebGPU SwiftShader (Chrome, local wasm build)",
+   "checks": "M2 to M7",
+   "result": "no result: first attempt, WebGPU's automatic bind-group layout dropped binding 1 (the program) in sdf_fog and sdf_composite, which never read it (the error text also broke the JSON, now escaped); second attempt, the page hit its 300 s limit because the CPU references run single-threaded in WebAssembly",
+   "change": "The two passes read the program statically (N[0] * 0, no numeric effect); error text is JSON-escaped; a --quick mode runs M2 to M5 at 128 x 128 in the browser. No bound changed."
+  },
+  {
+   "run": 8,
+   "when": "2026-10-10 19:26Z",
+   "backend": "WebGPU SwiftShader, --quick",
+   "checks": "M2 to M7",
+   "result": "as on WARP (the same two open failures), but M6's control did not discriminate at 128 x 128 (all 128 disagreements fell in the edge and silhouette exemption), so M6 was not a pass there",
+   "change": "M6 always runs at 256 x 256 (its CPU reference is cheap); only M2 to M5 shrink in --quick."
+  },
+  {
+   "run": 9,
+   "when": "2026-10-10 19:39Z",
+   "backend": "D3D12 WARP (debug layer, 256 x 256) and WebGPU SwiftShader (--quick: M2 to M5 at 128 x 128, M6 at 256 x 256)",
+   "checks": "M2 to M7",
+   "result": "pass except two open failures on both backends. M2: garden, menger_tower, arcade within (t, material and normal on every or all but one hit); bulb OPEN FAILURE (t within on 93.3% of hits on WARP against 99.5%, normals 57%). M3 within on all four. M4: closed forms within (113 cases excluded below 1e-30), the 256-sample march OPEN FAILURE (1.33e-3 against 1e-3, midpoint-rule error at optical depth 64). M5 within (WARP: 2 and 1 pixels outside 1e-3, each with a differing shadow-sample count; SwiftShader quick: 0). M6 0 disagreements. M7 bit-identical. Every control fails as required: smooth k halved (M2), k = 3 (M3), 4 samples (M4: 165x), visibility 1 (M5), SDF in front (M6: 107 unexplained).",
+   "evidence": [
+    "evidence/rt-r3-m1-cpu.json",
+    "evidence/rt-r3-sdf-gpu-d3d12-warp.json",
+    "evidence/rt-r3-sdf-gpu-webgpu-swiftshader.json"
+   ]
+  },
+  {
+   "run": 10,
+   "when": "2026-10-10 19:56Z (lock held 19:56:21Z to 19:56:41Z)",
+   "backend": "D3D12 on the RTX 4090 (driver 610.88), under D:/gpu.lock.d, binaries at 669db8c",
+   "checks": "M2 to M7",
+   "result": "as on WARP, with the same two open failures; the Mandelbulb comes much closer on the RTX (t within on 52,667 of 52,951 hits, 99.46% against 99.5%; normals 98.2% against 99%) than on WARP (93.3%, 57%), consistent with float32 precision being the limit; the fog march 1.326e-3; M5 2 pixels outside, each explained by a differing shadow sample; M6 0 disagreements; M7 bit-identical; controls fail",
+   "evidence": "evidence/rt-r3-sdf-gpu-d3d12-rtx4090.json"
+  },
+  {
+   "run": 11,
+   "when": "2026-10-11 08:04Z",
+   "backend": "D3D12 WARP, commit bf7d31c (tag evidence/rt-bf7d31c; d01fdb2 after the restack)",
+   "checks": "M2 to M7 after method notes 5 and 6",
+   "result": "M4 passes: march 2.92e-5 (bound 1e-3; predicted 2.8e-5), 4-interval control 0.691. M2 bulb still fails, narrowed: t within 52,673 of 52,951 (99.475%, bound 99.5%), normals 51,997 (98.2%, bound 99%); was 93.3% and 57.3%. All other checks and controls as in run 9.",
+   "evidence": "evidence/rt-r3-note56-d3d12-warp.json"
+  },
+  {
+   "run": 12,
+   "when": "2026-10-11 08:05Z (lock held 08:05:53Z to 08:06:02Z)",
+   "backend": "D3D12 on the RTX 4090 under D:/gpu.lock.d, binary at bf7d31c",
+   "checks": "M2 to M7",
+   "result": "M4 passes (2.41e-5). M2 bulb t within 52,679 (99.49%), normals 52,003 (98.21%): still open, now within a few pixels of WARP.",
+   "evidence": "evidence/rt-r3-note56-d3d12-rtx4090.json"
+  },
+  {
+   "run": 13,
+   "when": "2026-10-11 08:15Z",
+   "backend": "WebGPU in Chrome on SwiftShader, --quick (M2 to M5 at 128 x 128), commit a5f8cb3",
+   "checks": "M2 to M7",
+   "result": "M4 passes (2.40e-5). M2 bulb t within 13,180 of 13,240 (99.55%), normals 13,008 (98.25%): fails on normals. A first SwiftShader attempt straddled a branch switch in the worktree and was discarded unread.",
+   "evidence": "evidence/rt-r3-note56-webgpu-swiftshader.json"
+  },
+  {
+   "run": "diagnosis-1",
+   "when": "2026-10-11 08:08Z",
+   "backend": "CPU, float32 replica of the GPU bulb march (scratch harness bulbf.cpp, kept in the engine-rt mission-control folder, gpu/offline)",
+   "result": "With correctly rounded float32 arithmetic the replica gives exactly WARP's run 11 counts (t within 52,673, normals 51,997). The trigonometric estimator in correctly rounded float32 gives 99.475% and 98.18%, so WARP's transcendental functions caused run 9's 93.3% and 57.3%. A float64 estimator inside the float32 march gives 99.49% and 98.25%. The remaining gap is the float32 march (t accumulation, stop test, refinement), not the estimator. M2 on the bulb stays an open failure; a fix would need the march's t and position in higher precision."
+  },
+  {
+   "run": 14,
+   "when": "2026-10-14 05:50Z (WARP) and 11:16Z (SwiftShader)",
+   "backend": "D3D12 WARP (256 px) and WebGPU SwiftShader (--quick, 128 px), branch feat/rt-r3-df-refine",
+   "checks": "M2 to M7 (method note 7)",
+   "result": "M2 on the bulb passes on both: WARP t within 52,884 of 52,951 hits (99.873%, bound 99.5%), normals 52,705 (99.535%, bound 99%); SwiftShader 13,224 of 13,240 (99.879%), normals 13,177 (99.524%). Garden, menger_tower and arcade unchanged and within; the smooth-k control still fails; M4 and the rest pass. The WARP numbers match the CPU float32 replica with a float64 refinement (99.873%, 52,707 normals) to 2 pixels. tests/gpu/sdf_gate.py now gates the bulb; it fails the earlier evidence (rt-r3-note56-d3d12-warp.json, rt-r3-sdf-gpu-d3d12-warp.json) as a control. No RTX run (the GPU is held by MMBU).",
+   "evidence": "evidence/rt-r3-note7-d3d12-warp.json; evidence/rt-r3-note7-webgpu-swiftshader.json"
+  },
+  {
+   "run": 15,
+   "when": "2026-10-15 00:41Z to 00:49Z, D:/gpu.lock.d taken by token engine-open-failures-36852-1792024871 and released",
+   "backend": "D3D12 on the RTX 4090, raw_native_cli built at ced7f44 (PR #118, merged as d99b639)",
+   "checks": "M2 to M7, method note 7",
+   "result": "PASS. Bulb t within 52,888 of 52,951 hits (99.881%, bound 99.5%), normals 52,702 (99.530%, bound 99%); garden, menger_tower and arcade within; the smooth-k control fails. The bulb now passes on WARP, SwiftShader and the RTX 4090.",
+   "evidence": "evidence/rt-r3-note7-d3d12-rtx4090.json"
+  }
+ ]
+}

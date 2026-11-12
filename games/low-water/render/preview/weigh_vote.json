@@ -1,0 +1,27 @@
+{
+ "kf": "weigh_vote",
+ "kind": "dither",
+ "w": 640,
+ "h": 360,
+ "up": 2,
+ "preset": "ink",
+ "over": {
+  "ink": [
+   0.006,
+   0.003,
+   0.012
+  ],
+  "paper": [
+   0.95,
+   0.9,
+   0.8
+  ],
+  "dark": 0.01,
+  "fogDist": 400,
+  "fogMax": 0,
+  "source": "bayer8",
+  "anchor": "screen"
+ },
+ "seconds": 6.294,
+ "engine": "raw-native origin/main 92934a8 (git archive)"
+}

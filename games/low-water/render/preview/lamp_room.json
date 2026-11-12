@@ -1,0 +1,35 @@
+{
+ "kf": "lamp_room",
+ "w": 960,
+ "h": 540,
+ "hour": 4.2,
+ "plan": {
+  "ambient": 0.02,
+  "mist": 0.0025,
+  "extinct": 0.002,
+  "impurity": 0.02
+ },
+ "gain": 1.3,
+ "paint": {
+  "seed": 5,
+  "radii": [
+   8,
+   4.5,
+   2.6,
+   1.6
+  ],
+  "relief": 0.3
+ },
+ "lens": {
+  "squeeze": 1,
+  "streakGain": 0.02,
+  "streakLenPx": 70,
+  "ghostGain": 40,
+  "coating": {
+   "quarterAt": 520
+  }
+ },
+ "lensSources": 24,
+ "seconds": 86.808,
+ "engine": "raw-native origin/main 92934a8 (git archive)"
+}

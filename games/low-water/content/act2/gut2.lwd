@@ -1,0 +1,600 @@
+# Low Water, Act 2: The Gut on Night 2 (gut2). The lanes under hard frost; Spratt's bid for
+# steward; the frozen gutter 02:00 to 03:00 (gate A8: the fight on the ice e.ice, a candidate's
+# speaker, under the ice's noise, salt or ash, what froze in on Night 1). Reads Act 1: cause.*,
+# gut_vote2, gut_spratt, gut.spratt_seen, gut.spratt_swap, seenas_guild, lamp.gut.lit, day.marrow,
+# i.salt, w.knife, gut.move_feint. Writer's file, 2026-10-17. Private.
+
+# ---- new ids
+@fact gut2.on_ice
+
+@fact gut2.path
+
+@fact gut2.ash
+
+@fact gut2.flooded
+
+@fact gut2.ice_read
+
+@fact gut2.ice_wrong
+
+@fact gut2.spoke
+
+@fact gut2.backed_spratt
+
+@fact gut2.backed_marrow
+
+@fact gut2.broke_keep
+
+@fact gut2.spratt_deal
+about: Behind the Guild hall, under the noise of the ice, a Lamplighter promised Agnes Spratt the workhouse fish contract if, as steward, she ends the vote in the dark and lets the switch be the Guild's fault alone.
+against: trust 15
+against: guild 5
+by: overhearing
+
+@fact gut2.ice_herring
+about: Frozen in the gutter below Spratt's stall since Low Night: a herring smoked over alder, the twin of the strike's fish.
+against: guild 5
+by: reading the ice
+
+@fact gut2.ice_scales
+about: Frozen in the gutter where the weigh-house drain comes in: a thin silver line of fish scales, washed off the switch handle by the rain at ten to midnight on Low Night.
+against: guild 15
+by: reading the ice
+
+@var gut2_steward
+default: none
+values: none, spratt, marrow
+about: Who holds the Guild's stewardship after the vote on the ice.
+
+# ---------------------------------------------------------------- the hub
+@node gut2.hub
+hub: yes
+place: gut
+alt: gut2.ice ? clock >= 02:00 & clock < 03:00 & !seen(gut2.ice) & !seen(gut2.ice.after)
+alt: gut2.ice.after ? clock >= 03:00 & !seen(gut2.ice) & !seen(gut2.ice.after)
+alt: gut2.first ? !seen(gut2.first)
+nar: The Gut under a clear sky, every lamp lit, every breath visible.
+voice: salt: The frost is coming up out of the cobbles. The gutter has a skin on it already, thin as a fingernail, and the violet moves underneath. {when: clock >= 01:00 & clock < 02:00, once}
+voice: hearsay: Two o'clock, on the ice. Everybody in the lane has said it to you without saying it. {when: clock >= 00:00 & clock < 02:00, once}
+voice: smell: Frost has put the Gut's smell in a cold box. Eel, oak and tar arrive one at a time. {once}
+opt: "Agnes Spratt's stall." -> gut2.spratt +1
+opt: "The Guild hall." -> gut2.hall ? clock < 02:00 +1
+opt: "Shadwell's fire-door." -> gut2.smoke +1
+opt: "The Whelk twins, at the trough." -> gut2.twins ? clock < 02:00 +1
+opt: "Ask Agnes Spratt for the eel spear off her wall." -> gut2.spear ? !has(gut2.spear_given) & count(i.chits) > 0
+opt: "Back down the lane to the quay." -> quay2.hub +2
+opt: "The yard lane to the Brine." -> brine2.hub +2
+opt: "Through to the weigh-house." -> weigh2.hub +2
+opt: "Up the back steps to the Ropewalk." -> ropewalk.hub +3
+
+@node gut2.first
+place: gut
+cost: 2
+alt: gut2.first.informer ? seenas_guild == informer
+nar: Item: the lamps, all lit. Item: a queue at the eel stall that is not buying eels.
+call: gut2.first.guild
+call: gut2.first.trust
+call: gut2.first.keeper
+call: gut2.first.wreckers
+call: gut2.first.lamps
+go: gut2.hub
+
+@node gut2.first.informer
+place: gut
+cost: 2
+nar: Two gutters fall in behind the assessor at the lane mouth, as on Low Night.
+voice: dark: Behind you. Four yards. They stop when you stop. {dc: 4}
+go: gut2.hub
+
+@node gut2.first.guild
+when: has(cause.guild)
+nar: On the hall door, printed and signed in yellow: VOTING IN DARKNESS ON MUNICIPAL PREMISES IS PROHIBITED. Somebody has drawn a fish on it, in a very small hat.
+return:
+
+@node gut2.first.trust
+when: has(cause.trust)
+nar: A sprat hangs on a string from the weigh-house drainpipe, facing the hill. An old Guild custom, the assessor is told, invented this morning.
+return:
+
+@node gut2.first.keeper
+when: has(cause.keeper)
+nar: Shadwell's door has a sign in chalk: NO KIPPERS FRIDAY. Wenna Tallow buys her kippers on Friday.
+return:
+
+@node gut2.first.wreckers
+when: has(cause.wreckers)
+nar: Up the ladder, the net loft is barred, the dead gull still in the net across it.
+return:
+
+@node gut2.first.lamps
+when: has(lamp.gut.lit)
+nar: Under the lamps the assessor rehung, people nod to the Shelf in twelve colours.
+return:
+
+# ---------------------------------------------------------------- Spratt's bid (19:10 to 02:00)
+@node gut2.spear
+place: gut
+speaker: SPRATT
+cost: 3
+do: set(gut2.spear_given); give(w.eelspear); take(i.chits, 1)
+line: SPRATT: My husband's. He took eels with it out of the gully for thirty years and never once fell in. Then he fell in.
+line: SPRATT: A chit. And you bring it back with the tines on, or you bring me the eels.
+go: gut2.hub
+
+@node gut2.spratt
+place: gut
+speaker: SPRATT
+alt: gut2.spratt.after ? clock >= 03:00 | seen(gut2.ice.spratt) | seen(gut2.ice.marrow)
+alt: gut2.spratt.first ? !seen(gut2.spratt.first)
+cost: 1
+nar: The eel stall. Agnes Spratt is selling eels and promises at the same price.
+go: gut2.spratt.menu
+
+@node gut2.spratt.first
+place: gut
+speaker: SPRATT
+cost: 3
+do: quest(a2.steward, open)
+alt: gut2.spratt.first.exposed ? gut_spratt == exposed
+alt: gut2.spratt.first.told ? gut_spratt == told
+alt: gut2.spratt.first.kept ? gut_spratt == kept
+line: SPRATT: Two o'clock, on the ice. I'm standing. You'll have heard.
+call: gut2.spratt.vote2
+line: SPRATT: The Guild wants a steward who'll talk to the hill. I'll talk to anybody. I've been talking to eels for thirty years and they never once agreed with me.
+go: gut2.spratt.menu
+
+@node gut2.spratt.vote2
+when: gut_vote2 == spratt | gut_vote2 == void
+line: SPRATT: Last night in the dark they gave it me by a nose, or they would have. Tonight they say it out loud, on the ice, where a nose can be seen.
+return:
+
+@node gut2.spratt.first.kept
+place: gut
+speaker: SPRATT
+cost: 3
+line: SPRATT: There's the Shelf. The one that keeps things.
+nar: She lays an eel on the assessor's side of the plank without a price.
+line: SPRATT: Two o'clock, on the ice. A candidate can bring somebody to speak for her. I'm asking. I don't ask twice.
+go: gut2.spratt.menu
+
+@node gut2.spratt.first.told
+place: gut
+speaker: SPRATT
+cost: 2
+line: SPRATT: He held my hand and said I'd never stand for anything again. Well. I'm standing on ice, so it doesn't count.
+go: gut2.spratt.menu
+
+@node gut2.spratt.first.exposed
+place: gut
+speaker: SPRATT
+cost: 2
+nar: No queue. Agnes Spratt is selling to children.
+line: SPRATT: I'm standing anyway. Somebody should, who isn't Him. Nine people will cross the ice to me, and I know every one of their names.
+go: gut2.spratt.menu
+
+@node gut2.spratt.menu
+place: gut
+speaker: SPRATT
+voice: hearsay: A Lamplighter bought six eels at this stall at eleven and did not take them away. {when: !has(gut2.spratt_deal), dc: 6}
+opt: "I'll speak for you on the ice." -> gut2.spratt.back ? !has(gut2.backed_spratt) & !has(gut2.backed_marrow) & clock < 02:00 & gut_spratt != told {do: set(said.backs_spratt); set(heard.spratt.backs_spratt)}
+opt: "What do you promise the Guild?" -> gut2.spratt.promise ? !seen(gut2.spratt.promise)
+opt: "A sack of salt, if you have one." -> gut2.spratt.salt ? count(i.salt) == 0 & count(i.chits) >= 1 {verb: carry, noise: 0.1}
+opt: "Leave her to her queue." -> ^hub
+
+@node gut2.spratt.back
+place: gut
+speaker: SPRATT
+cost: 2
+do: set(gut2.backed_spratt); rep(guild, -1)
+line: SPRATT: Good. Stand by me on the ice when it's time. Don't say much. You've a voice like a summons.
+nar: Two of the queue leave it.
+go: gut2.spratt.menu
+
+@node gut2.spratt.promise
+place: gut
+speaker: SPRATT
+cost: 2
+line: SPRATT: Lamps on for the vote. A steward who goes up the hill with her hat in her hand and comes back with the workhouse buying our fish again. No more switch.
+voice: undertow: Comes back with. She said it as if the hill had already handed it over. {dc: 6}
+go: gut2.spratt.menu
+
+@node gut2.spratt.salt
+place: gut
+speaker: SPRATT
+cost: 2
+do: take(i.chits, 1); give(i.salt)
+line: SPRATT: Salt's a chit tonight. Everybody wants salt. The mole steps, the hill path, the ice. You'd think nobody had seen frost.
+go: gut2.spratt.menu
+
+@node gut2.spratt.after
+place: gut
+speaker: SPRATT
+alt: gut2.spratt.after.won ? gut2_steward == spratt
+cost: 2
+nar: The eel stall is shut, a string of eels frozen stiff on the rail.
+go: ^hub
+
+@node gut2.spratt.after.won
+place: gut
+speaker: SPRATT
+cost: 2
+line: SPRATT: Steward. Till the spring tide, and then they'll count it properly, with the lamps on. You'll find I don't hold the Shelf to anything. I'm not Him.
+go: ^hub
+
+# ---------------------------------------------------------------- Marrow in the hall (to 02:00)
+@node gut2.hall
+place: hall
+speaker: MARROW
+alt: gut2.hall.lost ? gut_vote2 == spratt
+cost: 2
+nar: Under the fish of the year, Marrow mends a blindfold with a needle very small in his hand.
+line: MARROW: The ice at two. Agnes wants it. Let her ask for it out loud, then.
+call: gut2.hall.banned
+opt: "Will you stand?" -> gut2.hall.stand
+opt: "I'll speak for you on the ice." -> gut2.hall.back ? !has(gut2.backed_spratt) & !has(gut2.backed_marrow) {do: set(said.backs_marrow); set(heard.marrow.backs_marrow)}
+opt: "Leave him to his needle." -> ^hub
+
+@node gut2.hall.banned
+when: has(cause.guild)
+line: MARROW: Voting in the dark on municipal premises. So the hill banned the hall. The gutter isn't anybody's premises. The gutter is the gutter.
+return:
+
+@node gut2.hall.lost
+place: hall
+speaker: MARROW
+cost: 2
+nar: The steward's chair is empty. Marrow sits halfway down the bench, mending a blindfold.
+line: MARROW: They voted me out in the dark by a nose. Tonight it's on the ice, with lamps. A thing done in the dark ought to be done again where people can see it.
+opt: "Will you stand?" -> gut2.hall.stand
+opt: "I'll speak for you on the ice." -> gut2.hall.back ? !has(gut2.backed_spratt) & !has(gut2.backed_marrow) {do: set(said.backs_marrow); set(heard.marrow.backs_marrow)}
+opt: "Leave him to his needle." -> ^hub
+
+@node gut2.hall.stand
+place: hall
+speaker: MARROW
+cost: 2
+line: MARROW: I'll stand on my side of the gutter like I always have. Whoever wants me can walk across. I'll not ask anybody to.
+go: ^hub
+
+@node gut2.hall.back
+place: hall
+speaker: MARROW
+cost: 2
+do: set(gut2.backed_marrow); rep(guild, 1)
+line: MARROW: Speak if you want. I didn't ask. Don't tell them anything about me that's kind. They'll know you're lying.
+go: ^hub
+
+# ---------------------------------------------------------------- Shadwell (all night): the clock, the ash
+@node gut2.smoke
+place: smokehouse
+speaker: SHADWELL
+cost: 2
+nar: The board by the door is grey to the halfway mark.
+line: SHADWELL: Oak and a half past midnight, near enough. Frost makes the smoke lie down. The board reads slow on a clear night.
+opt: "A bucket of ash from the pit." -> gut2.smoke.ash ? !has(gut2.ash) {verb: carry, noise: 0.2}
+opt: "Who will you cross to, on the ice?" -> gut2.smoke.who ? !seen(gut2.smoke.who)
+opt: "Go back out." -> ^hub
+
+@node gut2.smoke.ash
+place: smokehouse
+speaker: SHADWELL
+cost: 10
+do: set(gut2.ash); meter(cold, -1)
+line: SHADWELL: Ash on ice holds a boot. It won't melt anything. Salt melts. Ash only helps. Mind, it's hot underneath for an hour.
+nar: A zinc bucket, grey on top, red at the bottom, ticking as it cools.
+go: gut2.smoke
+
+@node gut2.smoke.who
+place: smokehouse
+speaker: SHADWELL
+cost: 2
+line: SHADWELL: I've crossed to a Dunlin every vote since my grandfather. My knees don't cross ice any more. Nor do the old man's with the cleaver, nor half the bench. We'll stand on the bank and be counted for nothing.
+voice: sum: Half the bench, uncounted, and every one of them the Captain's age. {dc: 5}
+go: gut2.smoke
+
+# ---------------------------------------------------------------- the twins keep the ice (before 02:00)
+@node gut2.twins
+place: gutter
+speaker: NOLL
+cost: 2
+nar: The trough is freezing from the edges in. The twins sit over it with nothing to gut.
+line: NOLL: The gutters keep the gutter. Nobody stands on the ice at a vote who
+line: MAB: hasn't got an apron. Or a reason.
+line: NOLL: Or got past us.
+line: MAB: Nobody's got past us. Noll came up the drain, once, when he was eleven. That's different.
+go: ^hub
+
+# ---------------------------------------------------------------- 02:00 to 03:00: the frozen gutter (gate A8)
+@node gut2.ice
+place: gutter
+cost: 4
+do: quest(a2.ice, open)
+nar: Two o'clock. The trough has frozen black and glassy under twelve colours of lamp. Marrow on the hall bank, Spratt on the stall bank, the Guild behind them, and the Whelk twins on the ice in the middle with their arms folded.
+line: NOLL: You cross to the one you want. You speak from the ice or you don't
+line: MAB: speak. And you get past us first.
+call: gut2.ice.banned
+voice: ballast: Black ice over a moving drain. Every boot on it will be a negotiation. {dc: 4}
+opt: "Step onto the ice." -> gut2.ice.step
+opt: "Spratt brought a speaker. Take the place she offered." -> gut2.ice.on.spratt ? has(gut2.backed_spratt)
+opt: "Marrow did not ask. Go and stand by him anyway." -> gut2.ice.on.marrow ? has(gut2.backed_marrow)
+check: "[HEARSAY] Ask the twins, from the bank, who will tell this at the Brine if the Shelf was kept off the ice." -> gut2.ice.talk.ok / gut2.ice.talk.fail {skill: hearsay, dc: 6}
+opt: "In the Lamplighter coat, walk round to the hall's back door as one of them." -> gut2.ice.sneak.ok ? guise == lamplighter & !has(gut2.spratt_deal) {verb: hide, noise: 0.2}
+check: "[THE DARK] Go round behind the hall under the noise of the ice." -> gut2.ice.sneak.ok / gut2.ice.sneak.fail {skill: dark, dc: 6, verb: eavesdrop, noise: 0.1}
+opt: "Lay a path across the ice for the old ones on the bank." -> gut2.ice.path ? count(i.salt) >= 1 | has(gut2.ash) {verb: rig, noise: 0.3}
+check: "[CARBON] Read what froze into the ice on Low Night." -> gut2.ice.read.ok / gut2.ice.read.fail ? !has(gut2.ice_read) & !has(gut2.ice_wrong) {skill: carbon, dc: 6, verb: read, noise: 0}
+opt: "Watch from the bank and let them cross." -> gut2.ice.vote
+
+@node gut2.ice.banned
+when: has(cause.guild)
+nar: At the lane mouth two brass poles have stopped, not sure the gutter is municipal premises.
+return:
+
+@node gut2.ice.step
+place: gutter
+speaker: MAB
+alt: gut2.ice.step.guise ? guise == guild | seenas_guild == nose
+cost: 1
+line: NOLL: No apron, no reason, and you didn't get past us.
+line: MAB: Yet.
+voice: grip: Shoulder first. The hand goes up; the little cut comes in from where nobody was looking. {when: has(gut.move_feint)}
+opt: "Go through them." -> gut2.ice.fight {verb: climb, noise: 0.6}
+opt: "Step back onto the bank." -> gut2.ice
+
+@node gut2.ice.step.guise
+place: gutter
+speaker: NOLL
+cost: 1
+do: set(gut2.on_ice)
+line: NOLL: Blindfold round the neck. Or a nose. Either
+line: MAB: will do. Go on. Mind the middle, it's thin over the drain.
+go: gut2.ice.on
+
+@node gut2.ice.fight
+place: gutter
+cost: 1
+nar: The ice says something underfoot. The twins unfold their arms.
+do: fight(e.ice)
+
+@node gut2.fight.ice.win
+place: gutter
+speaker: MAB
+cost: 3
+do: set(gut2.on_ice); rep(guild, -1)
+if: seenas_guild != informer => seenas_guild = nose
+nar: The twins go down, the second over the first, and slide toward the drain on their backs like skaters too proud to stop.
+line: NOLL: I let it win.
+line: MAB: You did not. You sat down.
+voice: pride: Two gutters, on their own ice, and you are standing. The Guild saw it. {dc: 3}
+go: gut2.ice.on
+
+@node gut2.fight.ice.yield
+place: gutter
+speaker: NOLL
+cost: 2
+do: set(gut2.on_ice)
+nar: Mab steps back first, then Noll, so neither can say it was the other.
+line: NOLL: Fair. On ice that's
+line: MAB: fair. Go on, then.
+go: gut2.ice.on
+
+@node gut2.fight.ice.fled
+place: gutter
+cost: 2
+nar: The assessor comes off the ice backwards, on hands and knees.
+voice: knees: The bank is not the ice. The knees consider this a victory. {dc: 3}
+go: gut2.ice.vote
+
+@node gut2.fight.ice.down
+place: gutter
+speaker: MAB
+cost: 20
+do: wet(0.2); meter(cold, 3)
+nar: The assessor wakes frozen to the ice at the hem. Aprons step over the Shelf on their way across.
+line: MAB: Leave it. It's warmer down there than it looks.
+go: gut2.ice.vote
+
+@node gut2.ice.talk.ok
+place: gutter
+speaker: NOLL
+cost: 2
+do: set(gut2.on_ice)
+line: NOLL: Come on, then. You'll say we let you. We'll
+line: MAB: say you asked nicely. Both true.
+go: gut2.ice.on
+
+@node gut2.ice.talk.fail
+place: gutter
+speaker: MAB
+cost: 2
+line: MAB: Whoever tells it, Shelf, they'll say you stood on the bank like a customer.
+go: gut2.ice
+
+@node gut2.ice.on.spratt
+place: gutter
+speaker: SPRATT
+cost: 1
+do: set(gut2.on_ice)
+nar: Spratt raises one hand. The twins step aside for a candidate's speaker, and do not like it.
+go: gut2.ice.on
+
+@node gut2.ice.on.marrow
+place: gutter
+speaker: MARROW
+cost: 1
+do: set(gut2.on_ice)
+nar: Marrow looks at the twins, once. They step aside.
+go: gut2.ice.on
+
+# ---- Shadow: under the noise of the ice
+@node gut2.ice.sneak.ok
+place: hall
+speaker: SPRATT
+cost: 4
+do: set(gut2.spratt_deal)
+nar: Under the boom and creak of the ice, behind the hall: Agnes Spratt, and a Lamplighter with his pole against the wall.
+line: SPRATT: Say it again so I know you mean it.
+line: FEWELL: Workhouse buys the Guild's fish from the first of the month. The new steward ends the voting in the dark. And Low Night's switch stays the Guild's doing. Nobody else's.
+line: SPRATT: Nobody else's. Yes.
+go: gut2.ice
+
+@node gut2.ice.sneak.fail
+place: hall
+cost: 3
+do: set(book.gut2_ice)
+nar: The ice goes quiet at the wrong moment, and the assessor's boot finds a frozen puddle.
+nar: A Lamplighter lifts a lantern, looks at the Shelf a long time, and writes in a small book. Agnes Spratt is gone.
+go: gut2.ice
+
+# ---- Hands: salt or ash
+@node gut2.ice.path
+place: gutter
+cost: 3
+nar: On the hall bank: Shadwell, the old man with the cleaver, half the bench. Knees that will not cross ice.
+check: "[BALLAST] Walk the ice and lay the path." -> gut2.ice.path.ok / gut2.ice.path.fail {skill: ballast, dc: 6, verb: rig, noise: 0.3}
+
+@node gut2.ice.path.ok
+place: gutter
+cost: 5
+do: set(gut2.path)
+call: gut2.ice.path.salt
+call: gut2.ice.path.ash
+nar: A grey stripe a boot wide crosses the ice. The old man with the cleaver puts one foot on it, then the other.
+go: gut2.ice
+
+@node gut2.ice.path.salt
+when: count(i.salt) >= 1 & !has(gut2.ash)
+do: take(i.salt)
+nar: Under the salt the ice begins, very quietly, to sweat.
+return:
+
+@node gut2.ice.path.ash
+when: has(gut2.ash)
+do: clear(gut2.ash)
+nar: The ash hisses where it lands.
+return:
+
+@node gut2.ice.path.fail
+place: gutter
+cost: 4
+do: set(gut2.flooded); wet(0.3)
+nar: Over the drain the assessor's boots go out. The sack lands first, the ice gives, and violet water spreads across the black like a bruise rising.
+line: MARROW: In the hall, then. With the lamps on. As the hill would like.
+go: gut2.ice.vote
+
+# ---- Eye: what froze in on Low Night
+@node gut2.ice.read.ok
+place: gutter
+cost: 4
+do: set(gut2.ice_read); set(gut2.ice_scales); quest(a2.ice, read)
+inst: CANDLEMAS: Paraffin, twelve colours, and black glass under it. Where the weigh-house drain comes in: a thin silver line, flat, many small pieces. A band of soot above it. Below the eel stall: something long and gold, with a red split at the belly.
+call: gut2.ice.read.herring
+voice: carbon: Ten to midnight on Low Night, rain under the eave, the handle washed, the scales down the drain. Then the soot at half past one. Then the frost laid a lid on all of it. {dc: 5}
+go: gut2.ice
+
+@node gut2.ice.read.herring
+when: !has(gut.spratt_seen)
+do: set(gut2.ice_herring)
+nar: Below Spratt's stall, under the ice: a smoked herring on its side, its split belly red.
+return:
+
+@node gut2.ice.read.fail
+place: gutter
+cost: 3
+do: set(gut2.ice_wrong)
+nar: Twelve colours deep, the ice reads as a picture: a silver line running down from the Brine's yard lane. The assessor writes, in pencil, that the Brine's empties went down the drain.
+voice: sum: In pencil. Pencil can be wrong. Somebody who knows this gutter could tell you. {dc: 3}
+go: gut2.ice
+
+# ---- the vote
+@node gut2.ice.on
+place: gutter
+cost: 1
+nar: The middle of the ice. Every face on both banks can be seen.
+opt: "Speak for Agnes Spratt." -> gut2.ice.spratt {do: set(gut2.spoke); set(said.ice_spratt); set(heard.spratt.ice_spratt); set(heard.marrow.ice_spratt)}
+opt: "Speak for Marrow." -> gut2.ice.say.marrow {do: set(gut2.spoke); set(said.ice_marrow); set(heard.spratt.ice_marrow); set(heard.marrow.ice_marrow)}
+opt: "Tell them what the Lamplighter promised her behind the hall." -> gut2.ice.deal ? has(gut2.spratt_deal) {do: set(gut2.spoke); set(said.ice_deal)}
+opt: "Point down at what froze under her stall." -> gut2.ice.herring ? has(gut2.ice_herring) | (has(gut.spratt_swap) & gut_spratt != exposed) {do: set(gut2.spoke); set(said.ice_herring)}
+opt: "Say nothing. Stand on the ice and let them cross." -> gut2.ice.vote {do: silent_scene = 1}
+
+@node gut2.ice.say.marrow
+place: gutter
+speaker: MARROW
+alt: gut2.ice.marrow ? gut_vote2 != spratt | has(gut2.path) | has(cause.trust)
+cost: 2
+nar: The stall bank listens politely. Nobody crosses who would not have crossed.
+voice: sum: Count the banks. The ones who would cross to him are standing on the hall bank already, with knees that will not take the ice. {dc: 5}
+go: gut2.ice.vote
+
+@node gut2.ice.deal
+place: gutter
+speaker: SPRATT
+cost: 3
+do: rep(trust, -1); rep(guild, 1)
+nar: The assessor says it plainly: the back door, the pole, the workhouse contract, and the price.
+nar: Nobody else's, somebody on the stall bank repeats. Then the stall bank begins to cross.
+line: SPRATT: I'd have got us the contract. That's all. I'd have got us fed.
+go: gut2.ice.marrow
+
+@node gut2.ice.herring
+place: gutter
+speaker: SPRATT
+cost: 3
+do: rep(guild, 1)
+call: gut2.ice.herring.broke
+nar: The assessor points down at the red-bellied herring under the ice. Both banks look at it a long time.
+line: SPRATT: Yesterday's fish. It carried anyway. Nobody remembers that part.
+go: gut2.ice.marrow
+
+@node gut2.ice.herring.broke
+when: gut_spratt == kept
+do: set(gut2.broke_keep); set(lied.spratt_kept)
+voice: undertow: Between us, you said, at her stall, on Low Night. She heard you say it. {dc: 3}
+return:
+
+@node gut2.ice.vote
+place: gutter
+alt: gut2.ice.vote.hall ? has(gut2.flooded)
+alt: gut2.ice.marrow ? has(gut2.path) & gut_vote2 != spratt
+alt: gut2.ice.marrow ? has(gut2.path) & !has(gut2.backed_spratt)
+alt: gut2.ice.marrow ? gut_vote2 == marrow & !has(gut2.backed_spratt)
+go: gut2.ice.spratt
+
+@node gut2.ice.vote.hall
+place: hall
+cost: 5
+nar: In the hall, with the lamps on, the Guild votes by standing on one side of the table or the other. Four minutes. Most go to the side nearer the door, where Agnes Spratt is standing.
+go: gut2.ice.spratt
+
+@node gut2.ice.spratt
+place: gutter
+speaker: SPRATT
+cost: 3
+do: gut2_steward = spratt; quest(a2.steward, decided); rep(guild, -1)
+nar: The aprons cross, one step and a pause. When it is done the hall bank holds Marrow, Shadwell, the old man with the cleaver, and the knees that do not cross ice.
+line: SPRATT: Steward. With the lamps on.
+nar: Marrow takes the blindfold off his neck and holds it out across the ice to her, at arm's length, until she comes and takes it.
+go: gut2.hub
+
+@node gut2.ice.marrow
+place: gutter
+speaker: MARROW
+cost: 3
+do: gut2_steward = marrow; quest(a2.steward, decided); rep(guild, 1)
+nar: The old ones cross last, on the grey stripe, holding each other by the elbow.
+nar: Marrow does not cross anywhere. He walks out to the middle of the ice and stands there, and the Guild comes to him.
+line: MARROW: Lamps stay on. We'll vote in the dark again when we've earned it.
+go: gut2.hub
+
+@node gut2.ice.after
+place: gut
+cost: 2
+alt: gut2.ice.after.vote ? gut2_steward == none
+nar: Past three. The ice is scuffed in a hundred places, all one way.
+go: gut2.hub
+
+@node gut2.ice.after.vote
+place: gut
+cost: 2
+do: gut2_steward = spratt; quest(a2.steward, decided)
+nar: Past three. The Guild voted while the assessor was elsewhere. The scuffs on the ice all run toward the eel stall.
+go: gut2.hub

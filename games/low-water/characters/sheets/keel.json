@@ -1,0 +1,509 @@
+{
+ "_about": "Absalom Keel, forged: the costume script's body (cast/keel.mjs) with a sculpted head and a sculpted, folded, wet greatcoat skirt. A test of the forge's sheet format (characters/forge/compile.mjs), not a style decision: the art direction is open.",
+ "name": "keel",
+ "base": "keel",
+ "drop": [
+  "head",
+  "skirt",
+  "hat"
+ ],
+ "regions": [
+  {
+   "name": "head",
+   "part": "head",
+   "mat": "skin",
+   "anatomy": {
+    "s": 1.45,
+    "cran": [
+     0.08,
+     0.135,
+     0.098
+    ],
+    "cran_c": [
+     0,
+     0.045,
+     -0.015
+    ],
+    "face": [
+     0.06,
+     0.11,
+     0.066
+    ],
+    "face_c": [
+     0,
+     -0.055,
+     0.032
+    ],
+    "jaw_w": 0.052,
+    "jaw_y": -0.07,
+    "jaw_len": 0.19,
+    "chin_z": 0.064,
+    "chin_r": 0.025,
+    "jaw_r": 0.02,
+    "cheek": [
+     0.045,
+     -0.03,
+     0.062,
+     0.018
+    ],
+    "brow": [
+     0.04,
+     0.04,
+     0.082,
+     0.01
+    ],
+    "eye_x": 0.031,
+    "eye_y": 0.016,
+    "eye_z": 0.076,
+    "eye_r": 0.0155,
+    "iris": 0.6,
+    "lid_up": 0.32,
+    "lid_lo": -0.25,
+    "lid_tilt": -0.35,
+    "nose_bridge": [
+     0.025,
+     0.088
+    ],
+    "nose_tip": [
+     -0.06,
+     0.104
+    ],
+    "nose_r": [
+     0.007,
+     0.01
+    ],
+    "nose_wing": 0.01,
+    "mouth_y": -0.118,
+    "mouth_z": 0.074,
+    "mouth_w": 0.013,
+    "lip_t": 0.004,
+    "lip_full": 0.8,
+    "smile": -0.6,
+    "ear": [
+     0.024,
+     -0.008
+    ],
+    "neck_r": 0.048,
+    "gaze": [
+     0.0,
+     -0.05,
+     1.0
+    ]
+   },
+   "cell": 0.0042,
+   "neckInto": 0.08,
+   "_about": "Keel's head from the art director's parameters (design/art/tools/cast.py keel_head), names unchanged; s scales it to the game's grotesque heads. Eyes a little larger and the iris wider so they read at a distance.",
+   "shapes": [
+    {
+     "t": "ell",
+     "c": [
+      -0.10439999999999999,
+      -0.0435,
+      0.0319
+     ],
+     "r": [
+      0.0116,
+      0.06525,
+      0.0203
+     ],
+     "mat": "grey",
+     "k": 0.006
+    },
+    {
+     "t": "ell",
+     "c": [
+      0.10439999999999999,
+      -0.0435,
+      0.0319
+     ],
+     "r": [
+      0.0116,
+      0.06525,
+      0.0203
+     ],
+     "mat": "grey",
+     "k": 0.006
+    }
+   ],
+   "disp": [
+    {
+     "t": "noise",
+     "scale": 0.012,
+     "amp": 0.0011
+    },
+    {
+     "t": "wrinkles",
+     "c": [
+      0,
+      0.07,
+      0.11
+     ],
+     "r": 0.08,
+     "freq": 55,
+     "amp": 0.0014
+    }
+   ],
+   "paint": [
+    {
+     "t": "noise",
+     "scale": 0.03,
+     "amount": 0.1
+    },
+    {
+     "t": "spots",
+     "scale": 0.006,
+     "density": 0.16,
+     "color": [
+      0.75,
+      0.6,
+      0.62
+     ]
+    },
+    {
+     "t": "near",
+     "at": [
+      [
+       -0.04495,
+       0.0232,
+       0.1015
+      ],
+      [
+       0.04495,
+       0.0232,
+       0.1015
+      ]
+     ],
+     "r": 0.04,
+     "amount": 0.6,
+     "color": [
+      0.45,
+      0.38,
+      0.42
+     ]
+    }
+   ]
+  },
+  {
+   "name": "skirt",
+   "part": "skirt",
+   "mat": "navy",
+   "bones": [
+    "pelvis",
+    "thighL",
+    "thighR",
+    "skirtL",
+    "skirtR"
+   ],
+   "cell": 0.016,
+   "k": 0.03,
+   "shapes": [
+    {
+     "t": "cap",
+     "a": [
+      0,
+      0.06,
+      0
+     ],
+     "b": [
+      0,
+      -0.88,
+      0.0
+     ],
+     "r": [
+      0.15,
+      0.27
+     ]
+    },
+    {
+     "t": "cap",
+     "a": [
+      0,
+      0.1,
+      0
+     ],
+     "b": [
+      0,
+      -0.95,
+      0
+     ],
+     "r": [
+      0.1,
+      0.215
+     ],
+     "op": "sub",
+     "k": 0.0
+    },
+    {
+     "t": "box",
+     "c": [
+      0,
+      -0.45,
+      0.32
+     ],
+     "r": [
+      0.025,
+      0.6,
+      0.2
+     ],
+     "op": "sub",
+     "k": 0.01
+    },
+    {
+     "t": "box",
+     "c": [
+      0,
+      -0.98,
+      0
+     ],
+     "r": [
+      0.5,
+      0.06,
+      0.5
+     ],
+     "op": "sub",
+     "k": 0.0
+    }
+   ],
+   "disp": [
+    {
+     "t": "folds",
+     "axis": [
+      0,
+      -1,
+      0
+     ],
+     "across": [
+      1,
+      0,
+      0.6
+     ],
+     "freq": 9,
+     "amp": 0.01,
+     "from": 0.0,
+     "to": -0.92
+    },
+    {
+     "t": "noise",
+     "scale": 0.05,
+     "amp": 0.002
+    }
+   ],
+   "paint": [
+    {
+     "t": "noise",
+     "scale": 0.06,
+     "amount": 0.18
+    },
+    {
+     "t": "grad",
+     "axis": [
+      0,
+      -1,
+      0
+     ],
+     "from": 0.3,
+     "to": 0.85,
+     "color": [
+      0.55,
+      0.55,
+      0.62
+     ]
+    },
+    {
+     "t": "dirt",
+     "amount": 120,
+     "color": [
+      0.55,
+      0.5,
+      0.5
+     ]
+    }
+   ]
+  },
+  {
+   "name": "collar",
+   "part": "collar",
+   "mat": "navy",
+   "bones": [
+    "chest",
+    "neck"
+   ],
+   "cell": 0.008,
+   "k": 0.02,
+   "_about": "The head, neck and collar join: a turned-up collar from the shoulders to under the jaw; the neck runs down inside it.",
+   "shapes": [
+    {
+     "t": "cap",
+     "a": [
+      0,
+      0.14,
+      -0.01
+     ],
+     "b": [
+      0,
+      0.3,
+      0.0
+     ],
+     "r": [
+      0.115,
+      0.088
+     ]
+    },
+    {
+     "t": "cap",
+     "a": [
+      0,
+      0.1,
+      -0.01
+     ],
+     "b": [
+      0,
+      0.34,
+      0.0
+     ],
+     "r": [
+      0.09,
+      0.066
+     ],
+     "op": "sub",
+     "k": 0.004
+    },
+    {
+     "t": "box",
+     "c": [
+      0,
+      0.22,
+      0.12
+     ],
+     "r": [
+      0.012,
+      0.1,
+      0.05
+     ],
+     "op": "sub",
+     "k": 0.004
+    }
+   ],
+   "disp": [
+    {
+     "t": "noise",
+     "scale": 0.04,
+     "amp": 0.0015
+    }
+   ],
+   "paint": [
+    {
+     "t": "noise",
+     "scale": 0.05,
+     "amount": 0.15
+    },
+    {
+     "t": "grad",
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "from": 0.22,
+     "to": 0.3,
+     "color": [
+      0.7,
+      0.72,
+      0.8
+     ]
+    }
+   ]
+  },
+  {
+   "name": "cap",
+   "part": "hat",
+   "mat": "navy",
+   "bones": [
+    "head"
+   ],
+   "cell": 0.007,
+   "k": 0.006,
+   "_about": "The harbourmaster's peaked cap, fitted to the anatomy head's tall cranium: an elliptical drum centred on the cranium, wide and deep enough at the band to cover the back of the skull, flat-topped; the badge pale, the peak dark.",
+   "shapes": [
+    {
+     "t": "ell",
+     "c": [
+      0,
+      0.31,
+      0.015
+     ],
+     "r": [
+      0.135,
+      0.16,
+      0.162
+     ]
+    },
+    {
+     "t": "box",
+     "c": [
+      0,
+      0.52,
+      0
+     ],
+     "r": [
+      0.3,
+      0.15,
+      0.3
+     ],
+     "op": "sub",
+     "k": 0.0
+    },
+    {
+     "t": "box",
+     "c": [
+      0,
+      0.1,
+      0
+     ],
+     "r": [
+      0.3,
+      0.15,
+      0.3
+     ],
+     "op": "sub",
+     "k": 0.0
+    },
+    {
+     "t": "ell",
+     "c": [
+      0,
+      0.256,
+      0.16
+     ],
+     "r": [
+      0.11,
+      0.011,
+      0.08
+     ],
+     "mat": "boot"
+    },
+    {
+     "t": "ell",
+     "c": [
+      0,
+      0.31,
+      0.172
+     ],
+     "r": [
+      0.026,
+      0.02,
+      0.01
+     ],
+     "mat": "paper"
+    }
+   ],
+   "paint": [
+    {
+     "t": "noise",
+     "scale": 0.04,
+     "amount": 0.12
+    }
+   ]
+  }
+ ]
+}

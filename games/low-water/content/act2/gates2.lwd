@@ -1,0 +1,167 @@
+# Low Water, Act 2: path-matrix gates as @gate records (SYSTEMS-FULL 19.4; engine
+# game/engine/world/gates.mjs). One record per obstacle row of REWORK-PLAN 3.2 (A1 to A9). Each
+# pays one page the first time any of its resolved: flags is set, by whichever route.
+# Drafted by the systems engineer on 2026-10-17 for the director to correct. Private.
+# NOT YET INCLUDED: act2.lwd does not list this file. The director adds `include: gates2.lwd`.
+#
+# Rules used: only flags set in a winning node (a check's ok node, a fight's win or yield node, the
+# node after a successful verb). No fought.* flags. Every flag below was checked by grep for its
+# set(...) lines in content/act2/*.lwd. Flags that are also set on a failure, a down or a capture
+# were left out, and the comment says so.
+#
+# Engine note: the engine also pays on load for any flag already set (gates.mjs settle). For that
+# reason fennick.bought is not used: Act 1 (act1/quay.lwd) sets it too.
+#
+# Double pay: some winning nodes already pay a page inline with xp(1): ropewalk.e (A9),
+# gasholder.count.ok, gasholder.fennick.paid, gasholder.row.ok (A6). Once this file is included,
+# those xp(1) lines pay a second page for the same obstacle. The director picks one.
+#
+# Daylight page (day.lwd): no gates. Its header says "no checks"; the afternoon calls (Wenna, Pip,
+# Merrow, Marrow, the lantern, sleep) are visits with no obstacle and no winning outcome.
+#
+# Row A10 (which lamps for the gale) is skipped: it is a choice at dawn that every style reaches,
+# decided by the lamps Lamb lit on Nights 1 and 2. Nothing is resolved, so there is nothing to pay.
+#
+# Out of scope, for the director: weigh2.lwd owns a five-route gate of its own (the switch room)
+# that is not a row of 3.2. A clean candidate flag is weigh2.in (set only on entry by guise, Hobb,
+# FORM LETTER ok, the fight's win, the roof drop ok, the padlock ok). No record is drafted for it.
+
+# Row A1 of REWORK-PLAN 3.2. One flag covers all five routes, because every route ends in a node
+# that sets telegram.draft:
+#   Fist: ropewalk.fight.door.win / .yield go to ropewalk.draft.read (down goes to the hub).
+#   Tongue: Rook's witness (ropewalk.rook.signed) or FORM LETTER ok (ropewalk.rook.form.ok) go to
+#     ropewalk.draft.read.
+#   Shadow: THE DARK ok (ropewalk.back.ok) goes to ropewalk.draft.read.
+#   Hands: GRIP ok on the wire (ropewalk.wire.ok) sets it.
+#   Eye: SMALL PRINT ok on the pad (ropewalk.pad.ok) sets it.
+# Not used: ropewalk.door_forced (set before the fight, on any outcome).
+@gate a2.telegram
+name: The 18:30 telegram's draft
+resolved: telegram.draft
+
+# GUESS: the matrix names the house, but entry is free (Lamb can knock and be shown in), so the
+# obstacle is read as the Trust's ledger page. wages.stopped is also set in hill.dark.caught, the
+# fail node of the red THE DARK check in the dark house: Lamb still leaves with the page, but is
+# found. If that must not pay, the director adds a route flag to the clean nodes below.
+# Row A2 of REWORK-PLAN 3.2. All routes set wages.stopped:
+#   Fist: the station fight's win or yield gives the key (hill.key_side), then the side door and
+#     hill.ledger.taken.
+#   Tongue: Mrs Pellow's errand into the study (hill.ledger.alone), or FORM LETTER ok with Crake
+#     (hill.ledger.given).
+#   Shadow: the switch thrown, THE DARK ok, then hill.dark.out.
+#   Hands: the candle timer (hill.rig.ok, hill.rig.wait), then hill.dark.out.
+#   Eye: SMALL PRINT ok on the blind (hill.window.ok).
+@gate a2.crake_house
+name: Crake's house on the hill
+resolved: wages.stopped
+
+# Row A3 of REWORK-PLAN 3.2. Fist: n/a in the matrix.
+#   fisk.button: Tongue (brine2.fisk.why after FORM LETTER or CONDOLENCE ok, or the keeper's coat;
+#     mole2.fisk.talk.ok; mole2.fisk.clause.ok), Eye (brine2.fisk.read, brine2.fisk.compare: his
+#     specification against the struck copy), Shadow (hill.overhear.first, Fisk with Crake), and
+#     the GRIP ok at the stove (brine2.fisk.dry). Every setter is a winning node.
+#   mole2.wired: Hands (mole2.wire.ok, GRIP ok on the panel plate: the button's wiring).
+# Not used: button.tested, the proof of the clause. It is also set on hill.fight.substation.down,
+# hill.duct.fail and mole2.test.bright (after the door is lost).
+@gate a2.engineer_button
+name: The engineer's button
+resolved: fisk.button
+resolved: mole2.wired
+
+# Row A4 of REWORK-PLAN 3.2. Only two styles have a clean flag:
+#   said.quay2_merrow: Tongue (quay2.merrow.ok, CONDOLENCE ok).
+#   said.quay2_speak_for_merrow: Tongue (quay2.lugg.ok, THE CHIT ok, Merrow in the cells).
+#   quay2.ebb_timed: Eye (quay2.coffin.ok, THE ALMANAC ok, the ebb rowed exactly).
+# No clean flag: Fist (quay2.fight.wardens.win / .yield, quay2.wardens.talk.ok,
+# quay2.wardens.coat), Shadow (quay2.stow.ok) and Hands (quay2.copper, quay2.cockle.ok,
+# quay2.cockle.floor) set only a2.afloat. a2.afloat is also set on quay2.stow.fail (captive),
+# quay2.cockle.fail and quay2.coffin.fail, so it is not used. quay2.cockle.mended is also set on
+# quay2.cockle.fail. Suggest one new flag set in quay2.row and quay2.stow.ok (both reached only on
+# success), listed here once it exists.
+@gate a2.spit_boat
+name: The boat to the Spit at the second low water
+resolved: said.quay2_merrow
+resolved: said.quay2_speak_for_merrow
+resolved: quay2.ebb_timed
+
+# Row A5 of REWORK-PLAN 3.2. spit.done is set only where the stripping ends in Lamb's favour:
+#   Fist: spit.fight.strippers.win / .yield (e.strippers and e.strippers.sneak).
+#   Tongue: spit.turn.ok (FORM LETTER ok, the claim read to them).
+#   Hands: spit.cut.ok / spit.cut.ride (GRIP ok, the painter cut at the turn).
+#   Eye: spit.cargo.told (the claim after SMALL PRINT ok on the stencils; the claim's condition
+#     has(spit.cargo) picks this node).
+#   Also spit.coat.names (the Lamplighter guise).
+# No clean flag for Shadow: spit.watch.ok sets only strippers.named, which is also set in
+# spit.captive.hold (Lamb caught and held at the rail). Shadow still earns the i2.names page in
+# insights2.lwd from strippers.named.
+@gate a2.stripping
+name: The stripping of the stranded ships
+resolved: spit.done
+
+# Row A6 of REWORK-PLAN 3.2.
+#   relics.counted: Fist (gasholder.fight.zealots.win / .yield) and Eye (gasholder.count.ok, SUM ok
+#     or the Candlemas eyepiece).
+#   gasholder.eye_sealed: Tongue (Ash's accounts, then gasholder.fennick.paid) and Shadow
+#     (gasholder.row.ok, UNDERTOW ok under the jar at the Opening).
+#   gasholder.bulb_lit: Hands (gasholder.gas.ok, GRIP ok, the Old Bulb on the gasholder's own gas).
+# Not used: fennick.bought (Act 1 sets it, so the gate would pay on load for those players). The
+# fled and down nodes set only gasholder.zealots_done.
+@gate a2.old_bulb
+name: The Old Bulb's procession
+resolved: relics.counted
+resolved: gasholder.eye_sealed
+resolved: gasholder.bulb_lit
+
+# GUESS: Tongue, Fist (yield) and Hands converge on hill.test.press, which sets only button.tested
+# and hill.test_done; both are also set on hill.fight.substation.down and hill.duct.fail, and
+# hill.test_done on hill.fuse.fail. hill.lamb_pressed and hill.crake_pressed are option effects in
+# hill.test.dark, reached only on success, but the third option ("Leave it to the engineer") sets
+# neither. A new flag in hill.test.press would be cleaner.
+# Row A7 of REWORK-PLAN 3.2.
+#   struck.subguards: Fist (hill.fight.substation.win). The yield node sets no clean flag.
+#   hill.lamb_pressed, hill.crake_pressed: Tongue (hill.sub.fisk, Fisk's authority; hill.sub.form.ok;
+#     the Lamplighter guise), Fist (win or yield) and Hands (hill.fuse.ok, hill.fuse.rig: throw it
+#     or rig it), all through hill.test.dark.
+#   hill.crake_offer: Shadow (hill.duct.ok, BALLAST ok, in by the cable duct).
+#   hill.order_restrike: Eye (hill.sub.board, CANDLEMAS ok: the load board through the louvres).
+# Not used: hill.watch.write (Eye from the lane) sets only button.tested.
+@gate a2.second_switch
+name: The substation's second switch
+resolved: struck.subguards
+resolved: hill.lamb_pressed
+resolved: hill.crake_pressed
+resolved: hill.crake_offer
+resolved: hill.order_restrike
+
+# Row A8 of REWORK-PLAN 3.2.
+#   gut2.on_ice: Fist (gut2.fight.ice.win / .yield) and Tongue (gut2.ice.talk.ok, a candidate's
+#     speaker in gut2.ice.on.spratt or gut2.ice.on.marrow; also the guild guise).
+#   gut2.spratt_deal: Shadow (gut2.ice.sneak.ok, under the ice's noise).
+#   gut2.path: Hands (gut2.ice.path.ok, BALLAST ok, salt or ash).
+#   gut2.ice_read: Eye (gut2.ice.read.ok, CARBON ok, what froze in on Night 1).
+@gate a2.frozen_gutter
+name: The frozen gutter
+resolved: gut2.on_ice
+resolved: gut2.spratt_deal
+resolved: gut2.path
+resolved: gut2.ice_read
+
+# GUESS: typist.heard is also reached after a failed Shadow check: ropewalk.wall.fail (Hester hears
+# the rocking flag), then "Stay where you are" (ropewalk.wall.stay) and the wait. The typing is
+# still heard, so the obstacle is resolved, but Lamb was noticed. ropewalk.e also pays xp(1)
+# inline (see the header).
+# Row A9 of REWORK-PLAN 3.2. One flag, set in the protected moment ropewalk.e, which every route
+# reaches through its own lead node:
+#   Fist: ropewalk.lead.fist (the back room door, ropewalk.backdoor.ok).
+#   Tongue: ropewalk.lead.room (Hester Gannet's front room, through Pip).
+#   Shadow: ropewalk.lead.wall (THE DARK ok, through the wall).
+#   Hands: ropewalk.lead.grate (the tube's pipe by its frost line, then the grating).
+#   Eye: ropewalk.lead.flap (the letter flap, after ropewalk.notice_matched).
+@gate a2.sticking_e
+name: The sticking e
+resolved: typist.heard
+
+# Director, 2026-10-17: the switch room (weigh2), off the matrix, resolved by any way in.
+@gate a2.switch_room
+name: The Trust's switch room
+resolved: weigh2.in

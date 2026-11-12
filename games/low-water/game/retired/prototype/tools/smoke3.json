@@ -1,0 +1,5 @@
+[
+ {"press": "ArrowDown", "frames": 20}, {"press": "Space", "frames": 10, "still": "s-settings"},
+ {"press": "Escape", "frames": 10}, {"press": "ArrowUp", "frames": 10}, {"press": "Space", "frames": 4},
+ {"eval": "for (let k=0;k<8;k++) window.__lw.reveal()", "frames": 4, "still": "s-arrive"}
+]

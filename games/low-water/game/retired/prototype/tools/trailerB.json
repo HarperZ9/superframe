@@ -1,0 +1,246 @@
+[
+{
+"rec": false,
+"press": "Space",
+"frames": 4
+},
+{
+"read": 1
+},
+{
+"go": "brine",
+"until": "!window.__lw.walking && window.__lw.talking",
+"max": 900,
+"say": "go:brine"
+},
+{
+"read": 1
+},
+{
+"choose": "Ask about the bread oven",
+"frames": 2,
+"say": "choose:Ask about the bread oven"
+},
+{
+"eval": "window.__lw.reveal(); window.__lw.reveal()",
+"frames": 2
+},
+{
+"rec": true,
+"frames": 80,
+"still": "t01-oven",
+"say": "still:t01-oven"
+},
+{
+"rec": false,
+"read": 1
+},
+{
+"choose": "Talk to the woman by the stove",
+"frames": 2,
+"say": "choose:Talk to the woman by the stove"
+},
+{
+"read": 1
+},
+{
+"choose": "Read her coat",
+"frames": 2,
+"say": "choose:Read her coat"
+},
+{
+"read": 1
+},
+{
+"choose": "Your coat is dry",
+"frames": 2,
+"say": "choose:Your coat is dry"
+},
+{
+"eval": "window.__lw.reveal(); window.__lw.reveal(); window.__lw.reveal()",
+"frames": 2
+},
+{
+"rec": true,
+"frames": 80
+},
+{
+"rec": false,
+"read": 1
+},
+{
+"choose": "Come with me to the lamp room",
+"frames": 2,
+"say": "choose:Come with me to the lamp room"
+},
+{
+"read": 1
+},
+{
+"choose": "Read the panel",
+"frames": 2,
+"say": "choose:Read the panel"
+},
+{
+"read": 1
+},
+{
+"choose": "Restrike the arc",
+"frames": 2,
+"say": "choose:Restrike the arc"
+},
+{
+"eval": "window.__lw.reveal()",
+"frames": 2
+},
+{
+"rec": true,
+"frames": 30
+},
+{
+"eval": "window.__lw.reveal()",
+"frames": 60,
+"still": "t02-arc",
+"say": "still:t02-arc"
+},
+{
+"rec": false,
+"read": 1
+},
+{
+"choose": "Go back down",
+"frames": 2,
+"say": "choose:Go back down"
+},
+{
+"read": 1
+},
+{
+"rec": true,
+"frames": 90,
+"still": "t03-beam",
+"say": "still:t03-beam"
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+53) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"eval": "window.__lw.skip(Math.max(0, 23*60+51 - window.__lw.night.clock))",
+"frames": 30
+},
+{
+"rec": true,
+"frames": 110,
+"still": "t05-flood",
+"say": "still:t05-flood"
+},
+{
+"rec": false,
+"eval": "window.__lw.skip(Math.max(0, 24*60 - window.__lw.night.clock))",
+"frames": 4
+},
+{
+"read": 1
+},
+{
+"choose": "the keeper's absence",
+"frames": 2,
+"say": "choose:the keeper's absence"
+},
+{
+"read": 1
+},
+{
+"rec": true,
+"frames": 140,
+"still": "t06-end",
+"say": "still:t06-end"
+}
+]

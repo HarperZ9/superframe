@@ -1,0 +1,29 @@
+{
+ "schema": "raw-native.evidence/1",
+ "criterion": "M3 criterion 1, dated amendment 2026-10-10 (author: \"No test models, only full owned assets.\"): the M3 scenes are assets raw-native authors and owns outright",
+ "written": "2026-10-10, before the generators and their first run",
+ "assets": {
+  "raw-hero": "A helmet-class hero asset, built procedurally in C++ inside raw-native: a shell, a visor, padding, seals, trims, vents and indicator lights. Every glTF material extension the engine models appears on it: KHR_materials_ior, _specular, _clearcoat, _sheen, _transmission, _volume, _anisotropy, _iridescence and _emissive_strength, plus plain metal and plain dielectric parts.",
+  "raw-hall": "An interior hall at Sponza scale, built procedurally in C++: a two-storey arcade of columns with bases and capitals, round arches, an upper gallery, an open atrium roof, tiled floor, drapery hung from the gallery, and emissive lanterns.",
+  "raw-spheres": "The material gallery's 49 spheres (raw/renderer/gallery.hpp), already owned, in place of MetalRoughSpheres."
+ },
+ "source_of_truth": "The generator code is the asset. raw_native_cli export-assets writes each asset as glTF 2.0 (JSON plus binary buffer) with its material extensions; the files are reproduced byte for byte from the code, and their SHA-256 hashes are committed in evidence/m3-assets.json.",
+ "licence": "The engine's licence (FSL-1.1-MIT, see LICENSE). No third-party geometry, texture or reference image is used; assets/PROVENANCE.md states this per asset.",
+ "checks": {
+  "determinism": {"what": "the exported files regenerated on MSVC and GCC", "bound": "byte-identical to the committed SHA-256 on both"},
+  "geometry": {"what": "every triangle of both assets", "bound": "no triangle with area below 1e-10 square units; every normal of unit length within 1e-5; every vertex normal within 90 degrees of its triangle's face normal"},
+  "scale": {"what": "triangle counts and bounds", "bound": "raw-hero at least 40,000 triangles; raw-hall at least 250,000 triangles with an axis-aligned extent of at least 30 x 14 x 12 units (metres)"},
+  "hero_materials": {"what": "surface area per material extension on raw-hero", "bound": "each of the nine extensions on parts covering at least 2% of the hero's surface area, and plain metal and plain dielectric parts at least 2% each"},
+  "hall_content": {"what": "parts of raw-hall", "bound": "at least 24 columns, 16 arches, 6 drapery panels with at least 10,000 triangles between them, and 8 emissive lanterns"},
+  "round_trip": {"what": "the exported glTF reloaded by raw/assets/gltf.hpp", "bound": "the same triangle count and bounds within 1e-6 relative; every extension named in extensionsUsed and present on at least one material"},
+  "external_paths": {"what": "M3 tests and CI steps", "bound": "no path into a glTF-Sample-Assets checkout and no fetch of Khronos models in any M3 test or CI step; the model manifest names only owned assets"},
+  "controls": {"what": "a mutated export (one byte changed) and a hero without its transmission part", "bound": "the first fails determinism; the second fails hero_materials"}
+ },
+ "does_not_prove": "That the assets look good or match any art direction; that they cover every shading case of a production level; anything about the M2 corpus, which keeps its Khronos models in the explainers session's lane.",
+ "method_note_1_2026_10_11": {
+  "written": "2026-10-11, after the diagnosis of the RTX and WARP shadow runs and before any change to the code or the asset",
+  "defect": "raw-hall's upper arcade walls (x -18.3 to 18.3) run 0.1 m into the end walls (x -18.6 to -18.2 and mirrored), and both tops sit at 14.0 m: coplanar overlapping faces, which z-fight in any renderer. The shadow-map identity found it (triangles 385781 against 385109, and 385794 against 385265, at equal depth).",
+  "change": "The outer and end walls rise to 14.3 m, the top of the aisle roof slabs. The arcade walls' ends then sit inside the end walls' volume and no top face is shared. Asset run 5; new hashes in evidence/m3-assets.json and the model manifest; the asset checks are rerun with the same bounds.",
+  "audit": "A coplanar-overlap scan is added to the asset checks: for every pair of axis-aligned faces in raw-hall's boxes, overlapping area on one plane with opposite or equal normals is counted, excluding faces hidden inside another box. Bound: 0 exposed coplanar overlaps."
+ }
+}

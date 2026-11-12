@@ -1,0 +1,478 @@
+# Low Water, Act 2: The Weigh-house on Night 2 (prefix weigh2.). Writer's draft, 2026-10-17. Private.
+# Places (Act 1 records): weigh_out, weigh_in (the switch room, behind the Trust's new partition),
+# tube, roof. What it holds (ACT2-RETURNING): the Trust holds the switch room; the tube thumps at
+# 04:00 (ev2.tube_thump); from 05:30 the town gathers here for the dawn meeting about the gale, and
+# the night ends in this file (dawn2.start at 06:02, by the event or the last option).
+# The gate this file owns: the switch room, five routes (Fist e.switchroom, Tongue, Shadow the roof,
+# Hands the padlocked handle, Eye the card through the window).
+# Reads from Act 1: cause.*, book.violence, seenas_trust, tab_hobb, weigh.roof_ok, mother, var.lens,
+# frost.met, merrow.cells, seenas_guild, lamp.balance.lit, day.pip. From Act 2: fisk.button,
+# i.fisk_spec, a2.masters, a2.relics, met.fisk.
+
+# ---- new ids
+@fact weigh2.in
+
+@fact weigh2.feeder
+
+@fact weigh2.fetched_wenna
+
+@fact weigh2.tube_read
+
+@fact weigh2.pulled
+
+@fact weigh2.followed_pipe
+
+@fact down.weigh2
+@fact weigh2.door_held
+
+@fact weigh2.board_card
+about: On the quay board, a card in yellow ink: HEAD LIGHT TO REMAIN ON QUAY BOARD. NOT TO BE RESTORED TO OWN FEEDER WITHOUT THE ALDERMAN. O.C. Dated this morning.
+against: trust 15
+by: reading, out of the sodium
+
+@fact weigh2.log_delay
+about: The Lamplighters' board log for Low Night: 02:50, board drowned. 02:51, Alderman by telephone: no hurry. 03:20, reset.
+against: trust 10
+by: reading
+
+@fact weigh2.ink_wet
+about: The Shelf's four o'clock strip came down the tube with its ink still wet.
+by: the Damp
+
+@encounter e.switchroom
+name: The Trust's switch room
+area: weigh
+foe: f.guard 2
+param: white-light (the guards' lanterns are Municipal white)
+win: weigh2.fight.room.win
+yield: weigh2.fight.room.yield
+fled: weigh2.fight.room.fled
+down: weigh2.fight.room.down
+
+talk: weigh2.fx.card | Read them the card over the board ? fight_seconds >= 8
+talk: weigh2.fx.gorm | Ask whether the sergeant knows what they're guarding ? (fight_struck >= 1 | fight_seconds >= 10)
+
+@node weigh2.fx.card
+place: weigh_in
+speaker: STRAND
+cost: 2
+line: LAMB: "Not to be restored to her own feeder without the Alderman." That's what you're standing on. Mother's off her own wire so the Alderman can keep a hand on her, and you two are the hand.
+line: STRAND: Coe. Put it down.
+line: COE: I've written it. I'm putting it down.
+go: weigh2.fight.room.yield
+
+@node weigh2.fx.gorm
+place: weigh_in
+speaker: STRAND
+cost: 2
+line: LAMB: Does the sergeant know what's on that card? Ask her. Ask her about the telephone at nine minutes to three last night.
+line: STRAND: The sergeant knows what she's told.
+line: COE: Strand. She asked me what the log said. This morning. Twice.
+nar: Strand grounds her pole.
+go: weigh2.fight.room.yield
+
+# ---------------------------------------------------------------- the hub
+@node weigh2.hub
+place: weigh_out
+hub: yes
+cost: 0
+alt: weigh2.arrive ? !seen(weigh2.arrive)
+alt: weigh2.tube.thump ? clock >= 04:00 & clock < 04:20 & !seen(weigh2.tube.thump)
+alt: weigh2.gather ? clock >= 05:30 & !seen(weigh2.gather)
+nar: The weigh-house under a clear sky, frost on the brick, a white lantern in the window.
+nar: Up on the balance, last night's small yellow flame. {when: has(lamp.balance.lit)}
+nar: Sea smoke off the harbour. The town is arriving. {when: clock >= 05:30}
+opt: "Go to the switch-room door." -> weigh2.door ? !has(weigh2.in) +1
+opt: "Go back into the switch room." -> weigh2.room ? has(weigh2.in) +1
+opt: "Look in at the switch-room window." -> weigh2.window ? !has(weigh2.board_card) +1 {verb: hide, noise: 0.1}
+opt: "Look at the switch box under the eave." -> weigh2.box +1
+check: "[GRIP] Climb to the balance and lift the slates over the board." -> weigh2.roof.ok / weigh2.roof.fail ? !has(weigh2.in) & !has(weigh.roof_ok) {skill: grip, dc: 6, verb: climb, noise: 0.3}
+opt: "Climb to the balance, the way you know, and lift the slates over the board." -> weigh2.roof.ok ? !has(weigh2.in) & has(weigh.roof_ok) {verb: climb, noise: 0.2}
+opt: "Go through to the tube room." -> weigh2.tube +1
+opt: "Go back to the quay." -> quay2.hub +1
+opt: "Cut through to the Gut." -> gut2.hub +2
+
+@node weigh2.arrive
+place: weigh_out
+speaker: STRAND
+cost: 2
+nar: A new partition across the after-vote hall, a locked door in it, and two Lamplighters with white lanterns: Strand, and Coe, who writes everything twice.
+nar: On the outer door, printed: BY ORDER. THE QUAY SWITCH IS MUNICIPAL PROPERTY. THE GUILD'S VOTE IS SUSPENDED PENDING REVIEW. {when: has(cause.guild)}
+nar: Two more poles lean by the door. {when: has(book.violence)}
+line: STRAND: Evening, assessor. Municipal. You'll want to keep walking.
+line: COE: Assessor, evening, nineteen-twelve. Written.
+line: STRAND: The Trust's guarding its own board against your verdict, if you're wondering. It's very good at that. {when: has(cause.trust) & !has(cause.guild)}
+go: weigh2.hub
+
+# ---------------------------------------------------------------- the switch room: the gate (five routes)
+@node weigh2.door
+place: weigh_in
+speaker: STRAND
+cost: 2
+line: STRAND: Nobody past. The Alderman's own instruction, in her own ink.
+line: COE: Nobody past. I've written it on the door as well, in case.
+opt: "Let me past." -> weigh2.door.relief ? guise == lamplighter {verb: hide, noise: 0.1}
+opt: "Hobb, let me through." -> weigh2.door.hobb ? var.tab_hobb == 1
+check: "[FORM LETTER] The insurer inspects the insured's equipment. Now, please." -> weigh2.door.talk.ok / weigh2.door.talk.fail ? !seen(weigh2.door.talk.fail) {skill: formletter, dc: 7}
+opt: "Go through them." -> weigh2.door.fight ? !has(down.weigh2) & !has(weigh2.door_held) {verb: pry, noise: 0.9}
+opt: "Leave them to their door." -> weigh2.hub
+
+@node weigh2.door.relief
+place: weigh_in
+speaker: COE
+cost: 2
+do: set(weigh2.in); set(book.weigh2_guise)
+line: COE: You're early. I've written you early. Key's on the nail inside.
+nar: He looks at the dark coat and nowhere else.
+go: weigh2.room
+
+@node weigh2.door.hobb
+place: weigh_in
+speaker: HOBB
+cost: 3
+do: set(weigh2.in); tab_hobb = 0; set(book.weigh2_hobb)
+line: HOBB: Strand. Sergeant wants you both at the step. Something about a cart. I'll mind the door.
+nar: Strand and Coe go. Hobb opens the partition with his eyes on the floor.
+line: HOBB: That's us square, Shelf. I'll be on nights in the cells after this. I don't mind the cells. They've a lamp.
+go: weigh2.room
+
+@node weigh2.door.talk.ok
+place: weigh_in
+speaker: STRAND
+cost: 3
+do: set(weigh2.in); set(said.inspect2); set(book.inspect2)
+line: LAMB: That board carries an insured light. The insurer inspects the insured's equipment on demand. Refusal goes in my report, and the Alderman reads my report aloud to the Board.
+line: STRAND: Five minutes. Coe watches you.
+line: COE: I write what you touch.
+go: weigh2.room
+
+@node weigh2.door.talk.fail
+place: weigh_in
+speaker: COE
+cost: 2
+do: set(book.inspect2_refused)
+line: COE: The Shelf's paper isn't honoured at the Municipal. That came down from the hill at six. I've written that you asked. Twice.
+go: weigh2.hub
+
+@node weigh2.door.fight
+place: weigh_in
+speaker: STRAND
+cost: 1
+do: rep(trust, -1); set(book.violence)
+line: STRAND: Coe. Book away.
+nar: Coe closes his book, which is how the assessor knows he means it.
+alt: weigh2.door.fight.fallback ? var.runs == 0 | !runs
+do: fight(e.switchroom)
+
+@node weigh2.door.fight.fallback
+place: weigh_in
+cost: 3
+check: "[GRIP] Take Strand's pole by the brass and turn her on it." -> weigh2.fight.room.win / weigh2.fight.room.down {skill: grip, dc: 7}
+check: "[FORM LETTER] Read them the card over the board, through the open door." -> weigh2.fx.card / weigh2.fight.room.down ? has(weigh2.board_card) {skill: formletter, dc: 6}
+opt: "Hands up. You yield." -> weigh2.fight.room.yield
+opt: "Back out of the door into the frost." -> weigh2.fight.room.fled
+
+@node weigh2.fight.room.win
+place: weigh_in
+speaker: STRAND
+cost: 3
+do: set(weigh2.in); set(weigh2.board_card)
+if: trait(m.body) == none => offer(m.body)
+if: trait(m.poles) == none => offer(m.poles)
+nar: Coe is under the trestle after his pencil. Over the board, a card in yellow ink: HEAD LIGHT TO REMAIN ON QUAY BOARD. NOT TO BE RESTORED TO OWN FEEDER WITHOUT THE ALDERMAN. O.C.
+line: STRAND: Go on, then. It's not as if we could stop you writing it down.
+go: weigh2.room
+
+@node weigh2.fight.room.yield
+place: weigh_in
+speaker: STRAND
+cost: 2
+line: STRAND: That's enough of that. You've been told no, assessor, and now you've been shown it.
+do: set(weigh2.door_held)
+nar: They walk the Shelf to the outer door and leave it on the step, and a third lantern comes to stand with them.
+go: weigh2.hub
+
+@node weigh2.fight.room.fled
+place: weigh_out
+speaker: COE
+cost: 2
+do: meter(dread, 1)
+do: set(weigh2.door_held)
+line: COE: Assessor, departing, at speed. Written.
+go: weigh2.hub
+
+@node weigh2.fight.room.down
+place: weigh_out
+speaker: HOBB
+cost: 30
+do: set(down.weigh2); meter(cold, 2)
+nar: The step, the frost, and Hobb's spare lantern lit beside the assessor's head.
+line: HOBB: They've gone for the sergeant. The slates are loose over the board, Shelf. By the balance post. I only say it because they are.
+go: weigh2.hub
+
+# Shadow: through the roof by the balance
+@node weigh2.roof.ok
+place: roof
+cost: 4
+nar: By the balance post three slates lift. Below, a lit well: the board, the lantern, two heads facing the wrong way.
+check: "[THE DARK] Lower yourself down the post between their backs." -> weigh2.drop.ok / weigh2.drop.fail {skill: dark, dc: 6, verb: hide, noise: 0.3}
+opt: "Put the slates back and climb down." -> weigh2.hub
+
+@node weigh2.roof.fail
+place: weigh_out
+speaker: COE
+cost: 3
+do: wet(0.2); meter(cold, 1)
+nar: The drainpipe is frozen. Halfway up, the hands lose the argument.
+line: COE: Somebody fell off the weigh-house. Writing it.
+go: weigh2.hub
+
+@node weigh2.drop.ok
+place: weigh_in
+speaker: STRAND
+cost: 3
+do: set(weigh2.in)
+nar: Down the post into the warm air.
+line: STRAND: My feet have stopped, Coe. Both of them.
+line: COE: I'll write it.
+nar: Neither turns round.
+go: weigh2.room
+
+@node weigh2.drop.fail
+place: weigh_in
+speaker: COE
+cost: 3
+do: set(book.weigh2_roof)
+nar: A slate slides and stops half over the edge. Coe's lantern comes up into the roof.
+line: COE: Strand. There's a Shelf in the roof.
+line: STRAND: Then it can come down the front like a Christian. Down the front, please, assessor.
+go: weigh2.hub
+
+# Hands: the padlocked handle
+@node weigh2.box
+place: weigh_out
+cost: 1
+nar: A new Municipal padlock hangs on the switch handle so it cannot come down.
+check: "[GRIP] Work the padlock's hasp off with the Vane's stick, and pull the quay switch." -> weigh2.box.ok / weigh2.box.fail ? power.quay == on & !has(weigh2.pulled) {skill: grip, dc: 6, verb: cutpower, noise: 0.6}
+opt: "Leave it." -> weigh2.hub
+
+@node weigh2.box.ok
+place: weigh_in
+speaker: STRAND
+cost: 4
+do: set(weigh2.pulled); set(weigh2.in); set(book.weigh2_switch); rep(trust, -1)
+if: mother == burning & !has(weigh2.feeder) => set(mother.out_again)
+cmd: setPower quay off
+nar: The hasp gives, the handle comes down, and Lamp Quay goes out under the stars.
+line: STRAND: Coe! The quay!
+nar: They run out with their lanterns high. The assessor goes in by the door they left open.
+nar: At the end of the mole, Mother's beam goes out. {when: has(mother.out_again)}
+go: weigh2.room
+
+@node weigh2.box.fail
+place: weigh_out
+speaker: STRAND
+cost: 2
+do: set(book.weigh2_box)
+nar: The stick slips off the hasp with a clang the length of the quay. The door opens.
+line: STRAND: That's Municipal brass, assessor. Leave it be, or I'll leave you be in the cells.
+go: weigh2.hub
+
+# Eye: the card through the window
+@node weigh2.window
+place: weigh_out
+cost: 3
+nar: Through the glass: the board, a white lantern, and over the main switch a card that, under the quay's sodium, has nothing written on it.
+check: "[SMALL PRINT] Wait for Coe to open the stove door, and read the card by its glow." -> weigh2.window.ok / weigh2.window.fail {skill: smallprint, dc: 7, verb: wait, noise: 0}
+opt: "Leave the window." -> weigh2.hub
+
+@node weigh2.window.ok
+place: weigh_out
+cost: 6
+do: set(weigh2.board_card)
+nar: Coe opens the stove. For a moment the blank card has yellow writing on it: HEAD LIGHT TO REMAIN ON QUAY BOARD. NOT TO BE RESTORED TO OWN FEEDER WITHOUT THE ALDERMAN. O.C.
+go: weigh2.hub
+
+@node weigh2.window.fail
+place: weigh_out
+cost: 5
+do: journal("Pencil: the card on the quay board says HEAD LIGHT TO BE RESTORED. The Trust means to put her back. Check.")
+nar: The stove flares, and the assessor reads, through glass and frost, what a tired assessor hopes to read. It goes in pencil.
+go: weigh2.hub
+
+# ---------------------------------------------------------------- inside the switch room
+@node weigh2.room
+place: weigh_in
+cost: 1
+nar: The quay board: a slate face as big as a door, knife switches, and two new brass links joining HEAD LIGHT to QUAY.
+opt: "Read the card over the main switch." -> weigh2.card ? !has(weigh2.board_card) {verb: read}
+opt: "Read the board log on its nail." -> weigh2.log ? !has(weigh2.log_delay) {verb: read}
+opt: "Unbolt the two brass links and give Mother back her own feeder." -> weigh2.feeder.fisk ? !has(weigh2.feeder) & (has(fisk.button) | count(i.fisk_spec) > 0) {verb: rig, noise: 0.4}
+check: "[GRIP] Unbolt the two brass links and give Mother back her own feeder." -> weigh2.feeder.ok / weigh2.feeder.fail ? !has(weigh2.feeder) & !has(fisk.button) & count(i.fisk_spec) == 0 {skill: grip, dc: 7, verb: rig, noise: 0.4}
+opt: "Leave." -> weigh2.hub
+
+@node weigh2.card
+place: weigh_in
+cost: 2
+do: set(weigh2.board_card)
+nar: HEAD LIGHT TO REMAIN ON QUAY BOARD. NOT TO BE RESTORED TO OWN FEEDER WITHOUT THE ALDERMAN. O.C. Dated this morning, in the hand that struck the clause.
+go: weigh2.room
+
+@node weigh2.log
+place: weigh_in
+cost: 2
+do: set(weigh2.log_delay)
+nar: The board log, a school exercise book on a nail. Low Night, in Hobb's round hand: 02:50, board drowned, rain. 02:51, ALDERMAN BY TELEPHONE: NO HURRY. 03:20, reset.
+voice: sum: Thirty minutes of dark, twenty-nine of them by instruction. {dc: 6}
+go: weigh2.room
+
+@node weigh2.feeder.fisk
+place: weigh_in
+cost: 5
+do: set(weigh2.feeder); rep(trust, -1); set(book.feeder)
+nar: Fisk's drawing shows the four bolts, drawn by a man who expected someone to need them undone. The links come off warm, and HEAD LIGHT drops back onto its own feeder with a small dry click.
+go: weigh2.room
+
+@node weigh2.feeder.ok
+place: weigh_in
+cost: 6
+do: set(weigh2.feeder); rep(trust, -1); set(book.feeder)
+nar: Four frozen bolts and a Shelf penknife. The last gives like a knuckle. HEAD LIGHT drops back onto its own feeder with a small dry click.
+go: weigh2.room
+
+@node weigh2.feeder.fail
+place: weigh_in
+cost: 4
+do: set(book.feeder); rep(trust, -1); meter(cold, 1)
+cmd: setPower quay off
+nar: The penknife slips across the main. The quay blinks pink, and every face on it turns to the window where the Shelf stands at the Trust's board with a knife.
+cmd: setPower quay on
+go: weigh2.hub
+
+# ---------------------------------------------------------------- the tube, and the four o'clock thump
+@node weigh2.pip.turn
+place: tube
+speaker: PIP
+cost: 6
+do: set(quay2.move_turn); rep(shelf, 1)
+line: PIP: You don't get past. You let them come at you, and when they lean, you turn on the ball of the foot, and you're behind them, and they're still leaning.
+line: PIP: Grandad taught me on the quay with a broom. He was the broom.
+nar: She shows it in the tube room, twice, round the assessor, and the second time the assessor feels nothing go by at all.
+voice: knees: The ball of the foot. Not the heel. Never the heel on frost. {dc: 4}
+go: weigh2.tube
+
+@node weigh2.tube
+place: tube
+cost: 1
+alt: weigh2.tube.later ? clock >= 04:20 & !has(weigh2.tube_read)
+nar: The tube room, the brass mouth frosted round its rim, the basket empty.
+nar: Under Pip's card, in another hand: AND HER GRANDMOTHER. {when: has(day.pip)}
+opt: "Put your ear to the brass." -> weigh2.tube.ear ? !seen(weigh2.tube.ear) {verb: eavesdrop, noise: 0}
+check: "[THE DAMP] Follow the pipe out of the wall by the frost along its line." -> weigh2.pipe.ok / weigh2.pipe.fail ? clock >= 01:00 {skill: damp, dc: 3, verb: read, noise: 0.1}
+opt: "Ask Pip how she gets past the Lamplighters with the canister." -> weigh2.pip.turn ? !has(quay2.move_turn)
+opt: "Go back out." -> weigh2.hub
+
+@node weigh2.tube.ear
+place: tube
+cost: 2
+nar: A long dry breath, very far up. Then, once, a cough: small, old, and nearer than the Shelf has any right to be.
+go: weigh2.tube
+
+@node weigh2.pipe.ok
+place: tube
+cost: 3
+nar: Where the pipe goes under the cobbles the frost has not settled: a dark stripe the width of a hand, up the quay toward the Ropewalk.
+inst: THE DAMP: Warm air in the pipe, all night. A fire at the other end.
+opt: "Follow the stripe." -> ropewalk.hub +6 {verb: wait, noise: 0.1, do: set(weigh2.followed_pipe)}
+opt: "Not yet." -> weigh2.hub
+
+@node weigh2.pipe.fail
+place: tube
+cost: 2
+inst: THE DAMP: Frost. Everywhere frost. I am a hair. Ask a dog.
+go: weigh2.tube
+
+@node weigh2.tube.thump
+place: tube
+speaker: PIP
+cost: 3
+do: set(weigh2.tube_read); quest(a2.typist, heard)
+nar: At four the brass mouth coughs. Pip unscrews the canister with numb fingers and holds the strip to the lamp. Every e sits half a line high.
+line: PIP: SHELF TO ASSESSOR LAMB. GALE FORECAST FROM HESK FOR TONIGHT. THE TOWN WILL MEET AT SIX. THE SHELF WILL ATTEND.
+line: PIP: It's never said that. Attend. It's never been anywhere.
+check: "[THE DAMP] Lay the Damp across the ink." -> weigh2.ink.ok / weigh2.ink.fail ? var.damp_wet != 1 {skill: damp, dc: 3, verb: read, noise: 0}
+opt: "Fold it into the Daybook." -> weigh2.hub
+
+@node weigh2.ink.ok
+place: tube
+cost: 1
+do: set(weigh2.ink_wet)
+inst: THE DAMP: Wet. Wet as a lip. Five minutes, not more, since a ribbon touched this.
+go: weigh2.hub
+
+@node weigh2.ink.fail
+place: tube
+cost: 1
+inst: THE DAMP: The paper is cold and the air is colder and I cannot tell you which of them is lying.
+go: weigh2.hub
+
+@node weigh2.tube.later
+place: tube
+cost: 2
+do: set(weigh2.tube_read)
+nar: Rolled in the basket where Pip left it: SHELF TO ASSESSOR LAMB. GALE FORECAST FROM HESK FOR TONIGHT. THE TOWN WILL MEET AT SIX. THE SHELF WILL ATTEND. Every e half a line high.
+go: weigh2.tube
+
+# ---------------------------------------------------------------- 05:30: the town gathers (beat 16)
+@node weigh2.gather
+place: weigh_in
+cost: 6
+nar: Sea smoke comes in at the door at knee height, and the town arrives wading in it. The partition stands open.
+line: MARROW: Gale, the Glass says. Then we'll need a light, won't we, and not the Trust's. {when: var.seenas_guild != "informer"}
+line: SPRATT: The steward's not coming. I'm in his chair. Get used to it. {when: var.seenas_guild == "informer"}
+line: KEEL: The Board is present. The Board is always present. {when: !has(frost.met) | var.lens != "broken"}
+nar: The harbourmaster stands with his hat in his hands. There is glass in the seams of his coat. {when: has(frost.met) & var.lens == "broken"}
+line: SABINE: She's not coming, and I'll not tell you twice what it costs to ask her. {when: has(cause.keeper)}
+line: WENNA: I'll sit. Somebody give me the trestle. {when: !has(cause.keeper)}
+line: LUGG: Tub's behind a grating. I'm the Low Company tonight. {when: has(merrow.cells)}
+line: MERROW: Gale by dark. I'll stand by the door. {when: !has(merrow.cells)}
+line: PENHALLOW: Three logs, assessor. Thirty-one nights of green between them. {when: quest(a2.masters) == signed}
+line: FISK: I have the specification, if anyone, at any point, wishes to see it. {when: has(met.fisk)}
+line: FENNICK: We have come to listen, assessor. Only to listen. {when: quest(a2.relics) != counted}
+line: GAUZE: The deacon sends his regrets. I'm to hear everything twice. {when: quest(a2.relics) == counted}
+line: GORM: And would the Shelf like to know that the Alderman is not coming? And that she has sent a letter? And that I am not to open it until six?
+line: PIP: Four o'clock strip, assessor. I kept it dry. {when: has(weigh2.tube_read)}
+opt: "Go and fetch Wenna from the Brine." -> weigh2.fetch ? has(cause.keeper) & clock < 05:50 {verb: carry, noise: 0.2}
+opt: "Take a place by the pans and wait for six." -> dawn2.start
+
+@node weigh2.fetch
+place: brine
+speaker: WENNA
+cost: 10
+nar: Wenna by the cold stove with her coat on.
+line: WENNA: You put me up the tube. Now you want me in a room with them.
+check: "[CONDOLENCE] Tell her the gale does not care whose fault the lamp is." -> weigh2.fetch.ok / weigh2.fetch.fail {skill: condolence, dc: 7}
+opt: "Leave her." -> weigh2.gather.back
+
+@node weigh2.fetch.ok
+place: weigh_in
+speaker: WENNA
+cost: 8
+do: set(weigh2.fetched_wenna)
+line: WENNA: She doesn't. She's the only one in Gullet who doesn't.
+nar: They walk back in the sea smoke. The weigh-house goes quiet when she comes in, and Sabine moves along the trestle to make room.
+opt: "Take a place by the pans and wait for six." -> dawn2.start
+
+@node weigh2.fetch.fail
+place: brine
+speaker: WENNA
+cost: 2
+line: WENNA: Go and stand in your room, assessor. I've a lamp to think about.
+go: weigh2.gather.back
+
+@node weigh2.gather.back
+place: weigh_in
+speaker: MARROW
+cost: 8
+line: MARROW: Kept your place by the pans, Shelf. Nobody's decided about you yet.
+opt: "Take the place and wait for six." -> dawn2.start

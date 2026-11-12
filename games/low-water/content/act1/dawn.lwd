@@ -1,0 +1,284 @@
+# Low Water, Act 1: Dawn. The verdict, the six endings and the Shelf's reply. Director's file.
+# Reworked 2026-10-17 (REWORK-PLAN 1.3 item 5: endings show, they do not report).
+# Entered from the dawn event (06:00) wherever Lamb is, or from @meta at-end at 06:10.
+# Causes: wreckers, guild, trust, keeper, sea, and divided (two or three of guild, trust, keeper).
+# Each sets cause.<id> for Act 2. The verdict accepts equivalent facts (REWORK-PLAN 3.3).
+
+# ---- new ids
+@fact dawn.sent
+@fact dawn.colour_seen
+
+# ---------------------------------------------------------------- dawn comes
+@node dawn.start
+cost: 3
+alt: dawn.start.sent ? has(dawn.sent)
+nar: Dawn is let into Gullet a little at a time, by the sea, which has kept it under the bay all night like a cat with a bird.
+nar: The sodium lamps do not notice. They will burn until the quay switch tells them otherwise.
+alt: dawn.start.pip ? !at(tube) & !at(weigh_in) & !at(weigh_out)
+go: dawn.tube
+
+@node dawn.start.pip
+cost: 4
+line: PIP: There you are. Ten past, it goes. Whatever's in the canister goes to the Shelf, and if there's nothing in it, the nothing goes.
+nar: The frost takes their footprints along the quay and keeps them, two lines, one small and wet at the toe.
+go: dawn.tube
+
+@node dawn.start.sent
+nar: The canister has gone. The assessor stands in the weigh-house with nothing in either hand, which is the professional position after a verdict.
+go: dawn.after
+
+@node dawn.tube
+place: tube
+cost: 2
+nar: A brass mouth in the weigh-house wall, with a brass lid. On a hook, the canister. In the canister, the form: CLAIM 4471/G. CAUSE OF LOSS. The space under it is the size of a hand.
+voice: precedent: In eleven years that space has held a lightning strike, a careless pipe, a cow, and once, on appeal, the will of God, struck through. {dc: 4}
+voice: condolence: Whoever you write in that space wakes up in it. {dc: 6}
+voice: undertow: They wrote the claim for you. It would be rude not to use it. {below: 6}
+do: quest(a1.claim, open)
+go: dawn.write
+
+# ---------------------------------------------------------------- the verdict
+@node dawn.write
+hub: yes
+place: tube
+alt: dawn.late ? clock >= 06:15
+nar: The pencil is the length of a thumb. {when: !has(cause.guild) & !has(cause.trust) & !has(cause.keeper)}
+nar: In the space, in pencil: {when: has(cause.guild) | has(cause.trust) | has(cause.keeper)}
+nar: The Guild of the Gut, which pulled the switch for its vote. {when: has(cause.guild)}
+nar: The Trust and the Board, which put Mother on the quay board, struck the clause and filed in advance. {when: has(cause.trust)}
+nar: The keeper, who was not there, and a lens a third of which is bottle glass. {when: has(cause.keeper)}
+opt: "Write it as the Board filed it: malice by wreckers." -> dawn.wreckers.weigh
+opt: "Add the Guild: they pulled the switch." -> dawn.add.guild ? !has(cause.guild) & (has(marrow.switch) | has(afterdark.told) | has(switch.recreated) | ((has(scales.switch) | has(scales.kept)) & has(lamps.pink)))
+opt: "Add the Trust and the Board: the wiring, the clause, the claim." -> dawn.add.trust ? !has(cause.trust) & (has(works.order) | has(works.inferred)) & (has(panel.restrike) | has(clause.struck))
+opt: "Add the keeper: her absence, and the green glass." -> dawn.add.keeper ? !has(cause.keeper) & (has(prism.green_oven) | has(lens.green) | has(oven.inferred)) & (has(coat.wenna_dry) | has(log.ahead) | has(wenna.heard_motor) | has(wenna.told_landing))
+opt: "Rub out the Guild." -> dawn.rub ? has(cause.guild) {do: clear(cause.guild)}
+opt: "Rub out the Trust and the Board." -> dawn.rub ? has(cause.trust) {do: clear(cause.trust)}
+opt: "Rub out the keeper." -> dawn.rub ? has(cause.keeper) {do: clear(cause.keeper)}
+opt: "Write: the act of the sea." -> dawn.sea.weigh ? !has(cause.guild) & !has(cause.trust) & !has(cause.keeper)
+opt: "Ink it and put it in the canister." -> dawn.send ? has(cause.guild) | has(cause.trust) | has(cause.keeper)
+opt: "Read back what the Daybook holds." -> dawn.ledger
+opt: "Wait for the last of the ten minutes." -> dawn.wait ? clock < 06:09 +1
+
+@node dawn.late
+place: tube
+speaker: PIP
+cost: 1
+line: Quarter past, Shelf. The tube goes at quarter past, whatever's in it.
+alt: dawn.send ? has(cause.guild) | has(cause.trust) | has(cause.keeper)
+do: set(cause.wreckers)
+nar: The space goes up empty. Above it the claim stands as the Board filed it, malice by wreckers, in a dry hand, and nobody has written anything to say otherwise.
+go: dawn.canister
+
+@node dawn.rub
+cost: 1
+nar: The rubber leaves a grey place the shape of a party who will now sleep well.
+go: ^hub
+
+@node dawn.wait
+cost: 1
+nar: Outside, a gull says the one word gulls say about everything, and is right.
+go: ^hub
+
+@node dawn.add.guild
+cost: 2
+do: set(cause.guild)
+nar: The Guild goes into the space, small, in pencil.
+voice: condolence: Thirty years that switch went down and nothing went with it. {when: has(marrow.switch) | has(afterdark.told), dc: 5}
+voice: smell: They will smell it on you before you finish the sentence. {dc: 6}
+go: ^hub
+
+@node dawn.add.trust
+cost: 2
+do: set(cause.trust)
+nar: The Trust and the Board go into the space. The entry does not fit and goes round the corner of the box.
+voice: smallprint: A clause struck through in yellow. Under the quay's lamps it was the colour of nothing. Out here it is very yellow. {when: has(clause.struck), dc: 5}
+voice: sum: Filed at 18:30. Dark at 21:40. Three hours and ten minutes of foresight. {when: has(claim.time), dc: 4}
+go: ^hub
+
+@node dawn.add.keeper
+cost: 2
+do: set(cause.keeper)
+nar: The keeper goes into the space. The pencil does it neatly. The pencil has never met her.
+voice: condolence: Sixty-four. Six years unpaid. You know exactly why she stayed by the stove, and you are writing it anyway. {dc: 4}
+voice: carbon: 21:40. A woman by a stove lifts her head the way a dog does at a car it knows, and puts it down again. {when: has(wenna.heard_motor) | has(wenna.told_landing), dc: 6}
+go: ^hub
+
+@node dawn.ledger
+cost: 3
+nar: Against the Low Company: prints to the drowned lamp, a man wet to the thigh. Against that, a ferry not on the Spit. {when: has(prints.read) | has(merrow.wet_thigh)}
+nar: Against the Guild: scales on a handle, lamps that came back pink, a steward's word, a switch Lamb pulled to see what went out. {when: has(scales.switch) | has(scales.kept) | has(marrow.switch) | has(afterdark.told) | has(switch.recreated) | has(lamps.pink)}
+nar: Against the Trust and the Board: a works order, a card that says RESTRIKE REQUIRED, a clause in yellow, a telegram three hours early. {when: has(works.order) | has(works.inferred) | has(panel.restrike) | has(clause.struck) | has(claim.time)}
+nar: Against the keeper: a dry coat, a log written ahead, green glass from an oven, a lens a third bottle. {when: has(coat.wenna_dry) | has(log.ahead) | has(prism.green_oven) | has(oven.inferred) | has(lens.green) | has(wenna.told_landing)}
+nar: Against the harbourmaster: a hammer, and a staircase of ice. {when: has(hammer.keel) | has(frost.keel)}
+nar: Against the sea: nothing. The sea has never once been found against.
+voice: precedent: A case is what you can put in front of a man and watch him not answer. The rest is weather. {dc: 5}
+go: ^hub
+
+# ---------------------------------------------------------------- the single causes
+@node dawn.wreckers.weigh
+cost: 2
+nar: The words are already written, in the claim, in a dry hand. The assessor would only have to copy them.
+voice: undertow: The Shelf pays, the lens is new, the green goes into the sea in a sack. Everybody sleeps. {dc: 4}
+voice: carbon: 22:20. A low light in the drowned lamp. The helm over. Forty people in their good coats, not drowning. {when: has(memory.low_light), dc: 4}
+voice: condolence: There is a man in the cells who hung a lantern in a hole tonight. {when: has(merrow.cells), dc: 5}
+voice: pride: It would be something to be dry again. {below: 5}
+opt: "Copy the claim into the space." -> dawn.send.wreckers {do: set(cause.wreckers)}
+opt: "Put the pencil down." -> ^hub
+
+@node dawn.sea.weigh
+cost: 2
+nar: The act of the sea: the only cause in the book that cannot be asked a question.
+voice: almanac: Low water at two minutes to eleven, the lowest in nineteen years. The sea was certainly present. {dc: 4}
+voice: hearsay: Write it, and by half past six the whole quay will be grateful, and will tell you nothing ever again. {dc: 6}
+opt: "Write it: the act of the sea." -> dawn.send.sea {do: set(cause.sea)}
+opt: "Put the pencil down." -> ^hub
+
+# ---------------------------------------------------------------- the canister
+@node dawn.send
+cost: 2
+alt: dawn.send.divided ? (has(cause.guild) & has(cause.trust)) | (has(cause.guild) & has(cause.keeper)) | (has(cause.trust) & has(cause.keeper))
+nar: The assessor inks the pencil over and rolls the form. The canister fits the hand. It was made to.
+go: dawn.canister
+
+@node dawn.send.divided
+do: set(cause.divided)
+nar: Apportioned. The form has a column for it that nobody in Gullet has used in living memory, ruled for percentages. They come to a hundred, which is the only thing about the night that does.
+go: dawn.canister
+
+@node dawn.send.wreckers
+nar: The claim goes into the space in a clean hand. It goes into the canister without any trouble. That is the thing about the claim. It was made to fit.
+go: dawn.canister
+
+@node dawn.send.sea
+nar: Four words, rolled. For once the sea will be the one to hear about it.
+go: dawn.canister
+
+@node dawn.canister
+place: tube
+cost: 2
+do: set(dawn.sent); quest(a1.claim, cause)
+nar: The tube draws a breath the length of the weigh-house and swallows.
+nar: The bell beside the mouth rings once. Pip, who has minded the tube for two years, puts her hand over her own mouth.
+alt: dawn.end.wreckers ? has(cause.wreckers)
+alt: dawn.end.sea ? has(cause.sea)
+alt: dawn.end.divided ? has(cause.divided)
+alt: dawn.end.guild ? has(cause.guild)
+alt: dawn.end.trust ? has(cause.trust)
+alt: dawn.end.keeper ? has(cause.keeper)
+go: dawn.after
+
+# ---------------------------------------------------------------- the six endings: one person, one image
+@node dawn.end.wreckers
+cost: 5
+do: rep(board, 2); rep(lowco, -3); seenas_lowco = hangman; seenas_board = ally
+nar: On the harbour office step, where the Board can see it, a storm lantern with a cracked chimney, labelled EXHIBIT in Keel's dry hand. The wick is black. It was out for five minutes once, and it is out now.
+line: KEEL: The Board is obliged to the Shelf. The Board has never felt so dry.
+nar: He drips onto the frost as he says it, and the drips freeze where they fall, so that by the end of the sentence he is standing on a small round rink of his own making.
+nar: Through the grating at ankle height under the harbour office, Merrow's boots, still wet to the thigh. {when: has(merrow.cells) & !has(appt.joined)}
+nar: The cells under the harbour office are empty, and the grating has been bent outward by someone who knew which bar was soft. {when: has(merrow.cells) & has(appt.joined)}
+nar: At twenty to seven the Lamplighters take Merrow off his boat. He goes without a word, which is how he does most things. {when: !has(merrow.cells)}
+go: dawn.colour
+
+@node dawn.end.sea
+cost: 5
+do: rep(board, -1); rep(guild, 1); rep(lowco, 1); rep(trust, 1); rep(shelf, -1)
+line: SABINE: The sea. Well. The sea's never paid its tab either. Have an egg. On the house. The house is wondering why.
+nar: Nobody has fallen. The green glass is still in Mother, and nobody is going to count it.
+go: dawn.colour
+
+@node dawn.end.guild
+cost: 5
+do: rep(guild, -3); rep(board, 1); rep(trust, 1); seenas_guild = informer
+nar: A notice on the weigh-house door, printed in the night by someone who knew it would be needed: VOTING BY SMELL OR IN DARKNESS ON MUNICIPAL PREMISES IS PROHIBITED.
+nar: Down the lane every fire-door in the Gut shuts at once. The gutter goes on moving in the dark, violet, because nobody can tell a gutter what to do.
+line: SPRATT: Acting steward. You can write that down too, if you've any pencil left. {when: !has(gut.spratt_swap)}
+go: dawn.colour
+
+@node dawn.end.trust
+cost: 5
+do: rep(trust, -3); rep(board, -3); rep(guild, 2); rep(lowco, 1); seenas_trust = enemy; seenas_board = threat
+nar: Void for the negligence of the insured. The town gets nothing.
+nar: In the harbour office the telephone lies off its hook on the desk, and a small voice comes out of it at intervals, saying the town's name.
+line: KEEL: The Board signed. The Board. Signed it.
+go: dawn.colour
+
+@node dawn.end.keeper
+cost: 5
+do: rep(brine, -3); rep(congregation, -2); rep(board, 1); seenas_brine = trouble; seenas_congregation = thief
+line: WENNA: She's not dark. She's got her eye shut. I told you the difference. You learned the other one.
+nar: Sabine wipes the slate, every name on it, and hangs the cloth on the pump. It is the first time the assessor has heard the Brine quiet.
+go: dawn.colour
+
+@node dawn.end.divided
+cost: 5
+if: has(cause.guild) => rep(guild, -2); seenas_guild = informer
+if: has(cause.trust) => rep(trust, -2); rep(board, -2); seenas_trust = enemy
+if: has(cause.keeper) => rep(brine, -2); rep(congregation, -1)
+line: SABINE: Shares. Like a pie. Everyone gets a slice and nobody gets fed. I keep a slate, love. I know the arithmetic.
+nar: On the weigh-house door, a notice about voting in the dark. {when: has(cause.guild)}
+nar: In the harbour office, a telephone off its hook, saying the town's name to the desk. {when: has(cause.trust)}
+nar: In the Brine, a slate wiped clean and a woman by the stove in a dry coat. {when: has(cause.keeper)}
+go: dawn.colour
+
+# ---------------------------------------------------------------- the one colour of the night
+@node dawn.colour
+camera: wide
+cost: 3
+do: set(dawn.colour_seen)
+nar: Then, for a minute, the sun is up behind the Spit and the sodium has not been told, and both lights are on the quay at once.
+nar: The houses over Lamp Quay are oxblood, mustard, teal and bone. In the Brine's doorway a woman stands in an oxblood coat she was never paid to wear.
+voice: candlemas: Oxblood. Mustard. Teal. Bone. I said I would tell you in honest light. {dc: 3}
+nar: The quay switch clicks on its timer. The sodium goes out. The colours stay, and that is only morning.
+go: dawn.town
+
+# ---------------------------------------------------------------- what Lamb did to the town
+@node dawn.town
+camera: near
+cost: 3
+nar: Item, at first light:
+nar: Mother, burning green and weak into a sky that no longer needs her. {when: mother == burning}
+nar: Mother, dark. In daylight she is only a building. {when: mother != burning}
+nar: Her lens whole, a third of it bottle, catching the sun in two colours. {when: var.lens == whole | var.lens == saved}
+nar: Her lens in pieces on the lamp-room floor, the frost keeping each where it fell. {when: var.lens == broken}
+nar: Her lens with the green rings knocked out and the true ones left: honest as a mouth with teeth missing. {when: var.lens == green_broken}
+nar: The paraffin post at the top of the steps, still burning, foolish and gold. {when: has(lamp.steps_post.lit)}
+nar: The porthole lamp in the Brine's yard, a round of bottle glass glowing over the bins. {when: has(lamp.porthole.lit)}
+nar: The Gut's wire lamps all lit, which at this hour is a kind of argument. {when: has(lamp.gut.lit)}
+nar: On the town balance, a lamp nobody owns. {when: has(lamp.balance.lit)}
+nar: Five metres down at the drowned lamp, the assessor's lantern, still full, a light nobody will see until the sea allows. {when: has(lamp.drowned.lit)}
+nar: A long smooth trough in the mud where the fish went back to the channel. The children will show it to visitors for a year. {when: var.fish == turned}
+nar: Gulls standing about on the floor where the fish was, satisfied, like aldermen. {when: var.fish == gulls}
+nar: The fish, in portions, on Agnes Spratt's stall, labelled by part in a hand of real tenderness. {when: var.fish == eaten}
+nar: On the quay, Constant Hobb with both lanterns lit in full daylight looking at the assessor. {when: has(book.violence)}
+go: dawn.after
+
+# ---------------------------------------------------------------- the Shelf replies
+@node dawn.after
+place: tube
+cost: 4
+nar: At twenty past six the tube thumps.
+line: PIP: It's typed. The e's sticking. Listen.
+nar: SHELF: RECEIVED 4471/G. CAUSE NOTED. ASSESSOR WILL REMAIN AT GULLET WHILE THE SPRING TIDES RUN. FURTHER LOSS ANTICIPATED. CHITS WILL BE HONOURED AT THE USUAL RATE.
+nar: SHELF: COMPLAINT RECEIVED FROM MUNICIPAL CONCERNING CONDUCT OF ASSESSOR. NOTED. {when: has(book.violence)}
+voice: chit: "The usual rate." There is no usual rate. There has never been a usual rate. That sentence is a man holding a door with his foot. {dc: 6}
+line: PIP: Remain. That's you staying, then.
+go: dawn.ferry
+
+@node dawn.ferry
+place: quay
+cost: 4
+nar: At the top of the mole steps the master of the Saint Cuthwin stands with her ship behind her, white and ordinary and not on the Spit.
+line: PENHALLOW: I'll not take her past the Spit until that lamp burns true. White. Full. The way it's written on my chart.
+nar: In the Brine's window Orrin Teague takes his hat off to the ferry, as he does every morning, and puts it back on.
+opt: "Climb up to the room above the Brine and sleep." -> dawn.sleep
+
+@node dawn.sleep
+place: room
+cost: 10
+nar: The assessor hangs the coat by the stove, where it steams like a horse. It has been wet since a quarter to eleven.
+nar: On the wall, what the night left, pinned. {when: quest(a1.room) == wall}
+nar: Through the planking, someone setting a clock. {when: quest(a1.minutes) == set}
+nar: Through the planking, the Brine's clock, eleven minutes behind the world and in no hurry. {when: quest(a1.minutes) != set}
+voice: dark: It is day. I am off duty. I will see you at dusk. {dc: 3}
+nar: LOW NIGHT ENDS.
+end: act1.end

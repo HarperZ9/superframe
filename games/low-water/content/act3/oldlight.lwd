@@ -1,0 +1,344 @@
+# The Old Light, Act 3: inside the drowned lighthouse in the eye of the gale. District file
+# oldlight.lwd. Writing helper, 2026-10-17. Private. Beats 9 to 11 (ACT3-PLAN section 3): gate B4
+# (inside, five routes), the low room (protected moment 3: soot that is not old; the Damp with
+# Keel's hair reads dry; neither explained), gate B5 (the strippers, set fight e3.oldlight or its
+# sneak variant, and four other ways). By boat from quay3 (var quay3.boat: who rowed, or stowed with
+# the strippers) in the eye, 00:15 to 01:00; the sea comes back in at the door at one.
+# Geography, from Act 1: the hole Merrow climbed through is the old doorway (the hinge-pins beside
+# it, the green paint round it). Inside, the green door Nan Cockle knocked on as a child lies fallen
+# across the passage under a foot of water. Beyond it the middle room (the bronze turning gear), the
+# low room, and the broken stair. Nan stays on the quay (quay3); her memory of the door comes in
+# with Lamb, or with Merrow or Lugg, who had it from her.
+
+# ---- new ids
+@fact oldlight.in
+@fact oldlight.behind
+@fact oldlight.loud
+@fact oldlight.timed
+@fact oldlight.strippers_gone
+@fact oldlight.gear_saved
+@fact oldlight.gear_lost
+@fact oldlight.flooded
+@fact down.oldlight
+
+# ---------------------------------------------------------------- the hub: the boat at the base
+@node oldlight.hub
+place: eye_water
+hub: yes
+alt: oldlight.late ? clock >= 00:58
+alt: oldlight.arrive ? !seen(oldlight.arrive)
+nar: The boat lies at the Old Light's base on flat black water, under every star there is.
+nar: The strippers' boat is tied on the seaward side. {when: clock >= 00:28 & !has(oldlight.strippers_gone)}
+opt: "Go in at the old doorway." -> oldlight.door ? !has(oldlight.in) +1
+opt: "Go through to the middle room." -> oldlight.mid ? has(oldlight.in) +1
+opt: "Go down to the low room." -> oldlight.low ? has(oldlight.in) +2 {verb: climb, noise: 0.1}
+opt: "Climb the broken stair." -> oldlight.stair ? has(oldlight.in) +2 {verb: climb, noise: 0.2}
+opt: "Hang a lantern on the old nail by the doorway, for the gale." -> oldlight.lantern ? count(i.lantern) > 0 & !has(oldlight.lanterns) {verb: light, noise: 0.1}
+opt: "Knock a tooth of bronze off the turning gear for yourself." -> oldlight.bronze ? has(oldlight.in) & !has(oldlight.gear_lost) & !has(oldlight.flooded) & !has(oldlight.bronze_taken) {verb: salvage, noise: 0.5}
+opt: "Row back to the quay." -> quay3.hub +12
+
+@node oldlight.bronze
+place: oldlight_mid
+cost: 4
+do: set(oldlight.bronze_taken); give(s.bronze); rep(lowco, -1)
+nar: One tooth of the gear, green and heavy, comes away under the bar with a sound like a bell struck once under water.
+voice: precedent: Salvage, under any law you like. And still the town's. {dc: 5}
+go: oldlight.hub
+
+@node oldlight.arrive
+place: eye_water
+cost: 1
+if: has(quay3.stowed) | var.quay3.boat == stowed => set(oldlight.behind)
+line: MERROW: Doorway's the hole. Always was. Door's inside, on its face. {when: var.quay3.boat == merrow}
+line: LUGG: Nan's door. She'll want to know you went in by it. {when: var.quay3.boat == lugg}
+nar: Under the strippers' tarpaulin the assessor counts to a hundred after they go in, and comes out. {when: has(quay3.stowed)}
+nar: On the nail by the doorway hangs the Shelf's storm lantern from Low Night, full of sea. {when: has(lamp.drowned.lit)}
+go: oldlight.hub
+
+# ---------------------------------------------------------------- gate B4: inside
+@node oldlight.door
+place: oldlight_door
+cost: 1
+nar: Three steps down inside the doorway, a door lies across the passage under a foot of water, its green gone grey.
+check: "[GRIP] Wrench the door up out of the silt." -> oldlight.door.forced / oldlight.door.forced.fail {skill: grip, dc: 6, verb: pry, noise: 0.7}
+opt: "Ask how Nan's father opened it." -> oldlight.door.told ? var.quay3.boat == merrow | var.quay3.boat == lugg {verb: read, noise: 0}
+check: "[HEARSAY] Remember what Nan Cockle said about her father and this door." -> oldlight.door.told / oldlight.door.nan.fail ? has(brine3.door_told) & var.quay3.boat != merrow & var.quay3.boat != lugg {skill: hearsay, dc: 6, verb: read, noise: 0}
+check: "[THE DARK] Douse the lantern and go in behind the strippers, the way they cleared." -> oldlight.follow / oldlight.follow.fail ? clock >= 00:28 & !has(oldlight.strippers_gone) & !has(oldlight.behind) & !has(quay3.stow_caught) {skill: dark, dc: 6, verb: hide, noise: 0.1}
+opt: "Go in behind the strippers, the way they cleared." -> oldlight.follow ? has(oldlight.behind) {verb: hide, noise: 0.1}
+check: "[GRIP] Rig the painter through the stair breach and lower yourself in past the door." -> oldlight.rig / oldlight.rig.fail {skill: grip, dc: 5, verb: rig, noise: 0.2}
+check: "[SUM] Read the weed lines on the passage walls: which room drains first, and when." -> oldlight.marks / oldlight.marks.fail {skill: sum, dc: 5, verb: read, noise: 0}
+opt: "Back to the boat." -> oldlight.hub
+
+# Fist
+@node oldlight.door.forced
+place: oldlight_door
+cost: 4
+do: set(oldlight.in); set(oldlight.loud); quest(a3.oldlight, in); wet(0.4); meter(cold, 1)
+nar: The door comes up out of the silt with a sound that goes all through the tower.
+line: MERROW: That's told anybody inside. {when: var.quay3.boat == merrow}
+go: oldlight.hub
+
+@node oldlight.door.forced.fail
+place: oldlight_door
+cost: 3
+do: wet(0.5); meter(cold, 1)
+nar: The door lifts a hand's breadth and settles back on the assessor's forearm. It lets go eventually.
+line: LUGG: Other corner. {when: var.quay3.boat == lugg}
+line: MERROW: Low corner. Nan's always said. {when: var.quay3.boat == merrow}
+go: oldlight.door
+
+# Tongue: Nan's memory, carried
+@node oldlight.door.told
+place: oldlight_door
+cost: 3
+do: set(oldlight.in); quest(a3.oldlight, in)
+line: MERROW: Nan says her father put a knee to the low corner where the hinge sagged. Lift, then in. Said a word to it every time. {when: var.quay3.boat == merrow}
+line: LUGG: Low corner. Knee. Lift, then in. He called it an old cow, she says. Fondly. {when: var.quay3.boat == lugg}
+nar: Nan Cockle, by the stove in the Brine: a knee to the low corner, lift, then in. {when: var.quay3.boat != merrow & var.quay3.boat != lugg}
+line: LAMB: Come on, you old cow. {when: var.quay3.boat != merrow & var.quay3.boat != lugg} {when: var.quay3.boat != merrow & var.quay3.boat != lugg}
+nar: The door pivots on its top pin and swings in under the water without a sound.
+go: oldlight.hub
+
+@node oldlight.door.nan.fail
+place: oldlight_door
+cost: 3
+nar: The assessor has Nan's voice, and the green paint, and nothing about how the door opened.
+go: oldlight.door
+
+# Shadow
+@node oldlight.follow
+place: oldlight_door
+cost: 3
+do: set(oldlight.in); set(oldlight.behind); quest(a3.oldlight, in)
+nar: Lantern out. The strippers have left a bar in the gap. Their light goes on ahead, a turn of the passage away.
+go: oldlight.hub
+
+@node oldlight.follow.fail
+place: oldlight_door
+cost: 2
+do: set(oldlight.in); quest(a3.oldlight, in)
+nar: A bar left in the gap rings underfoot. A lantern comes back up the passage.
+line: SALLIS: That's the Shelf. Course it is. Come down, assessor.
+go: oldlight.strippers
+
+# Hands
+@node oldlight.rig
+place: oldlight_stair
+cost: 5
+do: set(oldlight.in); set(oldlight.line_rigged); quest(a3.oldlight, in)
+nar: The painter goes round a stair-post and down into the middle room. The assessor follows it hand over hand, past the door, and leaves it rigged across the passage at shin height.
+line: MERROW: That'll hold an hour. You've less. {when: var.quay3.boat == merrow}
+go: oldlight.hub
+
+@node oldlight.rig.fail
+place: oldlight_stair
+cost: 4
+do: wet(0.8); meter(cold, 2)
+nar: The stair-post comes away in the hand, all rust, and the assessor goes in to the chest.
+line: LUGG: Rust. Try the iron ring. {when: var.quay3.boat == lugg}
+go: oldlight.door
+
+# Eye
+@node oldlight.marks
+place: oldlight_door
+cost: 3
+do: set(oldlight.in); set(oldlight.timed); quest(a3.oldlight, in)
+nar: The weed lines say the middle room drains first, and its way in is over the fallen door.
+line: LAMB: Middle room first, then, and out by one.
+inst: THE ALMANAC: Low water at thirty-four minutes past midnight. The eye closes at one, and the sea will be back at that door at one, and not a minute after.
+go: oldlight.hub
+
+@node oldlight.marks.fail
+place: oldlight_door
+cost: 6
+do: meter(cold, 1)
+nar: The passage does not drain, and six minutes of the eye go by.
+go: oldlight.door
+
+# ---------------------------------------------------------------- the middle room and the strippers (gate B5)
+@node oldlight.mid
+place: oldlight_mid
+cost: 1
+alt: oldlight.strippers ? clock >= 00:28 & !has(oldlight.strippers_gone)
+nar: In a round draining room stands the Old Light's turning gear, a ring of bronze teeth as wide as a cartwheel, green and whole. {when: !has(oldlight.gear_lost) & !has(oldlight.flooded)}
+nar: The gear's bed is empty and scraped. {when: has(oldlight.gear_lost)}
+nar: The middle room is a fathom under the sea. {when: has(oldlight.flooded)}
+line: MERROW: I left that. Too heavy for one man, and I'd only the one. {when: var.quay3.boat == merrow & !has(oldlight.gear_lost) & !has(oldlight.flooded)}
+line: LUGG: Tub left that. Couldn't lift it alone. Said it was the only honest thing in here. {when: var.quay3.boat == lugg & !has(oldlight.gear_lost) & !has(oldlight.flooded)}
+opt: "Back." -> oldlight.hub
+
+@node oldlight.strippers
+place: oldlight_mid
+cost: 2
+nar: Three men with bars round the bronze gear, two lanterns on the floor, the first bolts out.
+line: SALLIS: Nobody's hurt by a dark lamp but a ship, and the ship's insured.
+line: SALLIS: The Board pays by the hundredweight. Ask it.
+line: SALLIS: We had you under the sacks on the quay. Thought you'd find another way out. {when: has(quay3.stow_caught)}
+voice: undertow: The water comes back at one. They don't know that to the minute. You do. {dc: 5, when: has(oldlight.timed)}
+opt: "Put the bars down." -> oldlight.fight.start {verb: carry, noise: 0.8}
+check: "[FORM LETTER] The Trust's men are on their way out for this gear. You'll want to be gone." -> oldlight.bluff.ok / oldlight.bluff.fail {skill: formletter, dc: 6}
+opt: "Say nothing. Leave them the bronze and go down to the low room first." -> oldlight.leave_them ? has(oldlight.behind) & !has(quay3.stow_caught) {verb: hide, noise: 0.1}
+check: "[GRIP] Knock the wedge out from under the fallen door so the sea comes in on them early." -> oldlight.flood.ok / oldlight.flood.fail ? clock >= 00:40 {skill: grip, dc: 6, verb: rig, noise: 0.6}
+opt: "Go and wait on the broken stair for one o'clock." -> oldlight.stair.wait ? has(oldlight.timed) {verb: wait, noise: 0}
+
+# Fist (set fight; the sneak opening if Lamb came in unseen behind them)
+@node oldlight.fight.start
+place: oldlight_mid
+cost: 1
+alt: oldlight.fight.sneak ? (has(oldlight.behind) | has(quay3.stowed)) & !has(quay3.stow_caught)
+line: SALLIS: Not for the Shelf. Not any more.
+do: fight(e3.oldlight)
+
+@node oldlight.fight.sneak
+place: oldlight_mid
+cost: 1
+do: fight(e3.oldlight.sneak)
+
+@node oldlight.fight.win
+if: trait(m.body) == none => offer(m.body)
+place: oldlight_mid
+cost: 3
+do: set(strippers.named); set(oldlight.strippers_gone); set(oldlight.gear_saved); give(w.oldkey)
+nar: It ends with two of them in the water and the third against the gear, a hand on his ribs.
+line: LAMB: Names.
+line: SALLIS: Sallis. You know it already. You wrote it on the Spit. Write that we never came for a ship.
+voice: undertow: Not for anybody's ship. Tonight. Ask them about four o'clock. {dc: 6}
+go: oldlight.hub
+
+@node oldlight.fight.yield
+if: trait(m.body) == none => offer(m.body)
+place: oldlight_mid
+cost: 2
+do: set(strippers.named); set(oldlight.strippers_gone); set(oldlight.gear_saved); give(w.oldkey)
+nar: The bars go down on the stone one after another.
+line: SALLIS: It said wreckers. We thought that meant somebody would pay for some.
+line: LAMB: Names, before you go.
+line: SALLIS: Sallis. Boddy. Hask. You'll have had the Penroses on the Spit.
+go: oldlight.hub
+
+@node oldlight.fight.fled
+if: trait(m.body) == none => offer(m.body)
+place: eye_water
+cost: 2
+do: set(oldlight.strippers_gone); set(oldlight.gear_lost)
+nar: Out to the boat. Later the strippers' boat goes past, low in the water with the bronze.
+line: MERROW: Let them have it. It never turned for anybody in my time. {when: var.quay3.boat == merrow}
+go: oldlight.hub
+
+@node oldlight.fight.down
+if: trait(m.body) == none => offer(m.body)
+place: eye_water
+cost: 15
+do: set(oldlight.strippers_gone); set(oldlight.gear_lost); set(down.oldlight); wet(1); damp_wet = 1; meter(cold, 3)
+nar: The bottom of the boat, stars going round.
+line: MERROW: They put you in the boat themselves. Gentle as eggs. Then they took the bronze. {when: var.quay3.boat == merrow}
+line: LUGG: They carried you out. Then the bronze. In that order, at least. {when: var.quay3.boat == lugg}
+nar: Somebody has put the assessor in the boat with care, and taken the bronze with less. {when: var.quay3.boat != merrow & var.quay3.boat != lugg}
+go: oldlight.hub
+
+# Tongue: the bluff
+@node oldlight.bluff.ok
+place: oldlight_mid
+cost: 2
+do: set(oldlight.strippers_gone); set(oldlight.gear_saved); give(w.oldkey)
+nar: They look at the Lamplighter's coat and do not look any further. {when: guise == lamplighter}
+line: SALLIS: The Trust. Out here. In the eye. They would, too.
+go: oldlight.hub
+
+@node oldlight.bluff.fail
+place: oldlight_mid
+cost: 1
+line: SALLIS: The Trust doesn't row, assessor. The Trust sends a letter.
+go: oldlight.fight.start
+
+# Shadow: leave them the bronze, take the low room first
+@node oldlight.leave_them
+place: oldlight_low
+cost: 2
+do: set(oldlight.gear_lost); set(oldlight.strippers_gone)
+nar: Down past the middle room, with the bolts coming out overhead.
+go: oldlight.low
+
+# Hands: flood the room on them
+@node oldlight.flood.ok
+place: oldlight_door
+cost: 4
+do: set(oldlight.strippers_gone); set(oldlight.gear_saved); set(oldlight.flooded); wet(0.6); meter(cold, 1)
+nar: The wedge comes out, and the sea that has waited at the doorway all through the eye walks in down the three steps. The strippers run.
+go: oldlight.hub
+
+@node oldlight.flood.fail
+place: oldlight_door
+cost: 3
+do: set(oldlight.flooded); wet(1); damp_wet = 1; meter(cold, 2)
+nar: The wedge comes out early, and the sea comes in on everybody.
+line: SALLIS: You've drowned us all for a lump of bronze, you fool.
+go: oldlight.fight.start
+
+# Eye: on the stair at one
+@node oldlight.stair.wait
+place: oldlight_stair
+cost: 1
+nar: Four steps up the broken stair.
+go: oldlight.cutoff
+
+@node oldlight.cutoff
+place: oldlight_stair
+cost: 4
+do: set(strippers.named); set(oldlight.strippers_gone); set(oldlight.gear_saved); give(w.oldkey)
+nar: At one the sea comes back in and fills the passage in a minute. The only rope is on the assessor's shoulder.
+line: LAMB: Names first. Then the rope. The bronze stays.
+line: SALLIS: Sallis, and you know the others. Throw it, for God's sake.
+nar: The assessor throws it.
+go: oldlight.late
+
+# ---------------------------------------------------------------- the low room (protected moment 3)
+@node oldlight.low
+place: oldlight_low
+cost: 2
+alt: oldlight.low.flooded ? has(oldlight.flooded)
+do: set(lowroom.soot); quest(a3.oldlight, low)
+if: var.damp_hair == keel => set(damp.dry)
+nar: The low room is small and round, out of the water for these few minutes, and empty.
+line: MERROW: I never came down this far. {when: var.quay3.boat == merrow}
+line: LUGG: Tub never came down here. {when: var.quay3.boat == lugg}
+nar: On the wall an iron bracket, and above it soot, black and soft, that comes off on the glove. No lantern, no wick, no oil anywhere in the room.
+inst: THE DAMP: Dry. {when: var.damp_hair == keel}
+inst: THE DAMP: Wet. It is the bottom of the sea. {when: var.damp_hair != keel & var.damp_wet != 1}
+voice: dark: Put the glove flat on the soot. It is cold. {dc: 5}
+opt: "Back up." -> oldlight.hub
+
+@node oldlight.low.flooded
+place: oldlight_door
+cost: 1
+nar: The low room is under a fathom of the sea.
+go: oldlight.hub
+
+# ---------------------------------------------------------------- the stair, the lantern, the end of the eye
+@node oldlight.stair
+place: oldlight_stair
+cost: 2
+nar: The broken stair stops in the air where the gallery was.
+nar: Through the gap, stars. {when: mother != burning}
+nar: Mother's beam goes over the gap, and the tower is lit top to bottom for an instant. {when: mother == burning}
+opt: "Wait here for one o'clock." -> oldlight.stair.wait ? has(oldlight.timed) & !has(oldlight.strippers_gone) & clock >= 00:28 {verb: wait, noise: 0}
+opt: "Back down." -> oldlight.hub
+
+@node oldlight.lantern
+place: oldlight_door
+cost: 2
+do: set(oldlight.lanterns); take(i.lantern); rep(lowco, 1)
+nar: The assessor hangs a lit lantern on the old nail, high, where the gale will have to work for it.
+line: LAMB: For the gale. Somebody might be looking.
+line: MERROW: Two nights you've lit her. People will talk. {when: var.quay3.boat == merrow & has(lamp.drowned.lit)}
+line: LUGG: Nan'll see that from the quay. She'll say she told you to. {when: var.quay3.boat == lugg}
+go: oldlight.hub
+
+@node oldlight.late
+place: eye_water
+cost: 2
+nar: The sea comes back in at the doorway. The first gust comes off the north-west, and the stars go out one side of the sky at a time.
+nar: The Coffin's scrap sail fills on the north-west wind and runs the boat home faster than any oar brought it out. {when: has(quay3.coffin_sail)}
+line: MERROW: Row. The eye's shut. {when: var.quay3.boat == merrow}
+line: LUGG: Row. {when: var.quay3.boat == lugg}
+go: quay3.hub

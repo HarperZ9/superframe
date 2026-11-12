@@ -1,0 +1,222 @@
+# ---------------------------------------------------------------- tools
+@weapon w.case
+name: The claims case
+class: shield
+weight: 3
+reach: 1
+condition: 4
+moves: block, catch, bash, heavy_bash
+guise: shelf
+needs: coat 1
+scale: pride strong, formletter slight
+special: brace
+fittings: brass_corners | oilcloth | arm_strap
+
+@weapon w.stick
+name: The Vane's folding stick
+class: light
+weight: 1
+reach: 1
+condition: 2
+moves: light_chain, flick
+needs: none
+scale: sum fair, dark slight
+special: weathercock
+fittings: tin_tip | weighted_knob | cord_loop
+
+@weapon w.boathook
+name: A boathook
+class: long
+weight: 4
+reach: 3
+condition: 3
+moves: thrust, heavy_pull
+guise: floor
+needs: coat 2
+scale: grip fair, salt fair
+special: haul
+fittings: barbed_hook | cork_float | short_haft
+
+@weapon w.pole
+name: A Lamplighter's brass pole
+class: long
+weight: 4
+reach: 3
+condition: 4
+moves: thrust, sweep
+guise: lamplighter
+needs: coat 3
+scale: ballast fair, formletter slight
+special: ring
+fittings: tin_cap | lantern_hook | split_end
+
+@weapon w.knife
+name: A gutting knife
+class: short
+weight: 1
+reach: 1
+condition: 3
+moves: light_chain, slash
+guise: guild
+needs: nose 3
+scale: dark strong, grip slight
+special: open
+fittings: oiled_edge | eelskin_grip | hooked_blade
+
+@weapon w.hammer
+name: The weigh-house lump hammer
+class: heavy
+weight: 6
+reach: 1
+condition: 5
+moves: heavy, charged_heavy
+needs: coat 5
+scale: grip strong, ballast fair
+special: break
+fittings: weighted_head | short_haft | tarred_grip
+
+@item w.boathook
+name: A boathook
+slot: hand
+about: Reach and a hook. A heavy pulls a person off their feet.
+
+@item w.pole
+name: A Lamplighter's brass pole
+slot: hand
+about: Municipal property. The Trust notices it in other hands.
+
+@item w.knife
+name: A gutting knife
+slot: hand
+about: Quick and cruel. Carrying it changes how every faction reads Lamb.
+
+@item w.stick
+name: The Vane's folding stick
+slot: hand
+about: The Vane complains at every blow.
+
+# ---------------------------------------------------------------- opponents
+@foe f.lamplighter
+name: A Lamplighter
+faction: trust
+standing: 8
+breath: 6
+poise: 3
+tool: w.pole
+moves: sweep, pin, call
+sight: sodium
+yields: standing <= 3
+
+@foe f.warden
+name: A tide-warden from Hesk
+faction: board
+standing: 12
+breath: 5
+poise: 5
+tool: w.boathook
+moves: heavy_pull, chain
+yields: standing <= 2
+
+@foe f.gutter
+name: A gutter, blindfolded
+faction: guild
+standing: 7
+breath: 8
+poise: 2
+tool: w.knife
+moves: light_chain, eelstring_lash
+sight: smell
+yields: standing <= 2
+
+@foe f.panbearer
+name: The Pan-Bearer
+faction: guild
+standing: 16
+breath: 6
+poise: 6
+moves: pan_swing, pan_block
+sight: smell
+yields: standing <= 4
+
+@foe f.salvor
+name: A salvor
+faction: lowco
+standing: 9
+breath: 7
+poise: 3
+moves: crowbar, mud_throw, rope_legs
+yields: standing <= 3
+
+@foe f.lugg
+name: Ferris Lugg
+char: lugg
+faction: lowco
+standing: 14
+breath: 6
+poise: 6
+moves: long_reach, lift, whisper
+yields: standing <= 4
+
+@foe f.keel
+name: Absalom Keel, with the hammer
+char: keel
+faction: board
+standing: 14
+breath: 4
+poise: 4
+tool: w.hammer
+moves: heavy, lens_swing, slip
+yields: standing <= 6
+
+@foe f.dog
+name: A Gut dog
+standing: 4
+breath: 9
+poise: 1
+moves: bite, circle
+
+@foe f.gulls
+name: Gulls
+standing: 6
+breath: 10
+poise: 0
+moves: swarm, steal
+
+@foe f.eel
+name: An eel in the gully
+standing: 3
+breath: 6
+poise: 0
+moves: wrap
+
+@foe f.conger
+name: The conger in the drowned lamp
+standing: 18
+breath: 5
+poise: 8
+moves: lunge, hold, retreat
+
+# ---------------------------------------------------------------- named Lamplighters (struck.<char>)
+@foe f.fewell
+name: Lamplighter Fewell
+char: fewell
+faction: trust
+standing: 8
+breath: 6
+poise: 3
+tool: w.pole
+moves: sweep, pin, call
+sight: sodium
+yields: standing <= 3
+
+@foe f.strand
+name: Lamplighter Strand
+char: strand
+faction: trust
+standing: 8
+breath: 6
+poise: 3
+tool: w.pole
+moves: sweep, pin, call
+sight: sodium
+yields: standing <= 3

@@ -1,0 +1,431 @@
+# Low Water, Act 3: Lamp Quay in the gale. District file, prefix quay3.
+# Beats (design/ACT3-PLAN.md section 3): 1 the quay at sunset, the gale coming, the three gale lamps;
+# 7 a boat for the eye (gate B3, five routes, to oldlight.hub); 8 the eye, the town looks up;
+# 16 the collier seen from the quay; 18 Keel at high water. Also gate B1's moment for the steps post
+# when the town chose it (var light_steps), at the 21:20, 22:40 and 03:30 rain bands.
+# Opening node: quay3.start (from day2.dusk).
+
+# ---- new ids
+@fact quay3.oil_taken
+@fact quay3.post.out
+@fact quay3.post.shuttered
+@fact quay3.tended
+@fact quay3.row.failed
+@fact quay3.stowed
+@fact quay3.stow_caught
+@fact quay3.coffin_sail
+@fact quay3.eye_seen
+@fact quay3.collier_seen
+@fact quay3.keel_seen
+
+@var quay3.boat
+default: none
+values: none, rowed, merrow, lugg, cockle, stowed, coffin, eye
+about: How Lamb went out to the Old Light in the eye. stowed opens the sneak variant of e3.oldlight; eye arrives in the calm, dry, at the eye's first minute.
+
+# ================================================================ BEAT 1: 19:08, SUNSET, THE GALE COMING
+@node quay3.start
+place: quay
+cost: 0
+do: set(ev3.dusk)
+nar: Eight minutes past seven. The wind has come round the Spit ahead of itself, and every shutter on the quay is up.
+inst: THE GLASS: Nine hundred and seventy-one, darling, and dropping. I adore it.
+voice: salt: The knees had it at noon. Nobody asks the knees. {dc: 3}
+call: quay3.lamps
+call: quay3.state
+go: quay3.hub
+
+# ---- the three lamps the town chose at the second dawn
+@node quay3.lamps
+cost: 0
+line: COCKLE: Mother's lit for the gale, on the town's oil. {when: var.light_mother == 1}
+line: COCKLE: They've lit your post at the top of the steps. It's leaning away from the wind already. {when: var.light_steps == 1}
+line: COCKLE: Sabine's porthole's lit behind the shutter. {when: var.light_porthole == 1}
+line: COCKLE: The Gut's wires are lit, swinging. {when: var.light_gut == 1}
+line: COCKLE: There's a lamp on the town balance, and the balance moving in every gust. {when: var.light_balance == 1}
+line: COCKLE: The hill's white lamps are on, cold as you like. {when: var.light_hill == 1}
+line: COCKLE: The Old Bulb's glowing in the Gasholder. {when: var.light_bulb == 1}
+return:
+
+# ---- who is fallen and who is lit, after two nights
+@node quay3.state
+cost: 0
+line: FEWELL: Fours, still. The book's gone up the hill twice now. {when: has(book.violence)}
+line: KEEL: The Board's office is open again, assessor. The Board is open. The Board has nothing in it. {when: has(cause.trust) & has(ink.crake)}
+line: COCKLE: Tub's boat's on the steps and Tub's in it, doubling his lines. He says whoever wants the eye can have it. {when: !has(merrow.cells)}
+line: COCKLE: Tub's still under the harbour office. Lugg's got his boat on the steps, doubling his lines. {when: has(merrow.cells)}
+nar: The broken lens has a tarpaulin over it, lashed down, and the tarpaulin is filling and emptying with the wind like a lung. {when: var.lens == broken}
+return:
+
+# ================================================================ THE QUAY IN THE GALE
+@node quay3.hub
+place: quay
+hub: yes
+cost: 0
+alt: quay3.keel ? clock >= 05:30 & !has(quay3.keel_seen)
+alt: quay3.collier ? has(ev3.collier_turn) & !has(quay3.collier_seen)
+alt: quay3.eye ? has(ev3.eye) & !has(ev3.eye_ends) & !has(quay3.eye_seen)
+alt: quay3.post.dies ? var.light_steps == 1 & clock >= 03:30 & (has(b1.band3) | clock >= 04:10) & !has(quay3.tended) & !has(quay3.post.shuttered) & !has(lampout.steps)
+alt: quay3.post.band ? var.light_steps == 1 & !has(quay3.post.out) & !has(quay3.post.shuttered) & ((clock >= 21:20 & clock < 22:00 & !has(b1.band1)) | (clock >= 22:40 & clock < 23:20 & !has(b1.band2)) | (clock >= 03:30 & clock < 04:10 & !has(b1.band3)))
+nar: Lamp Quay in the gale, shuttered, with the mole running out into spray.
+nar: A rain band comes across the quay sideways, and the sodium lamps go dim and bright as it passes. {when: rain > 0.5}
+nar: The wind is from the north-west now. {when: has(ev3.backed) & !has(ev3.surge)}
+nar: The sea is over the quay's lip, coming toward the Brine's step. {when: has(ev3.surge)}
+opt: "Go along to the mole steps, where the boats are." -> quay3.boats ? !has(ev3.eye_ends) +2
+opt: "Get oil and a storm shutter from the harbour office store." -> quay3.oil ? !has(quay3.oil_taken) {verb: carry, noise: 0.1}
+opt: "Go into the Brine." -> brine3.hub +1
+opt: "Go to the weigh-house." -> weigh3.hub +1
+opt: "Walk out along the mole." -> mole3.hub +2
+opt: "Go up the lane into the Gut." -> gut3.hub +2
+opt: "Climb the hill path in the wind." -> hill3.hub +6
+opt: "Go along to the Ropewalk." -> ropewalk3.hub +3
+
+@node quay3.oil
+place: harbour
+speaker: KEEL
+cost: 3
+do: set(quay3.oil_taken); give(i.oilcan); give(i.storm_shutter)
+line: KEEL: The Board's oil, and a storm shutter off the Board's own lamp. For the town's lamps. Take them. The Board finds, tonight, that it is not sure the difference matters.
+go: ^hub
+
+# ================================================================ GATE B1: THE STEPS POST IN A RAIN BAND
+@node quay3.post.band
+place: steps
+speaker: GAUZE
+cost: 2
+if: clock >= 21:20 & clock < 22:00 => set(b1.band1)
+if: clock >= 22:40 & clock < 23:20 => set(b1.band2)
+if: clock >= 03:30 => set(b1.band3)
+nar: The rain band comes up the steps. In the cage the flame lies flat and blue and does not get up.
+line: GAUZE: It's going. Oh, it's going. I can hear it go in here, a little cough.
+voice: undertow: Let it. A paraffin lamp on a pole, and you soaked to the ribs for it. Nobody would write it down. {dc: 5}
+voice: pride: You would. {dc: 4}
+check: "[GRIP] Put your back to the wind at the cage door and trim the wick." -> quay3.post.hold / quay3.post.hold.fail ? count(i.oilcan) >= 1 {skill: grip, dc: 6, verb: light, noise: 0.2, do: take(i.oilcan)}
+check: "[CONDOLENCE] Ask Sister Gauze to tend it under her jar, where the wind can't get." -> quay3.post.gauze / quay3.post.gauze.fail {skill: condolence, dc: 6}
+check: "[THE DARK] Get down under the cage in the lee of the steps and feed it from below, unseen from the quay." -> quay3.post.lee / quay3.post.lee.fail ? count(i.oilcan) >= 1 {skill: dark, dc: 6, verb: hide, noise: 0, do: take(i.oilcan)}
+opt: "Fit the storm shutter to the cage." -> quay3.post.shutter ? count(i.storm_shutter) >= 1 {verb: rig, noise: 0.2, do: take(i.storm_shutter)}
+check: "[THE GLASS] Wait for the lull before the next band and fill it then, out of the wind." -> quay3.post.lull / quay3.post.lull.fail {skill: glass, dc: 5, verb: wait, noise: 0}
+opt: "Let it go out." -> quay3.post.let
+
+@node quay3.post.hold
+place: steps
+cost: 4
+do: set(quay3.tended)
+do: meter(cold, 2)
+nar: The wick, trimmed short, takes, and the flame stands up inside the cage and stays.
+line: GAUZE: Oh, well done. I heard it come back.
+go: ^hub
+
+@node quay3.post.hold.fail
+place: steps
+cost: 4
+do: quest(a3.lamps, lost); set(quay3.post.out); set(lampout.steps); meter(cold, 2); wet(0.3)
+nar: The cage door bangs open in a gust and takes the flame with it.
+line: GAUZE: There. Gone. It always sounds smaller than you think, going.
+go: ^hub
+
+@node quay3.post.gauze
+place: steps
+speaker: GAUZE
+cost: 3
+do: set(quay3.tended)
+line: GAUZE: In here? Yes. Nothing gets in here. Eleven years and nothing has.
+nar: She lifts her jar over the cage, and kneels bareheaded beside the flame in the rain for the first time in eleven years.
+go: ^hub
+
+@node quay3.post.gauze.fail
+place: steps
+speaker: GAUZE
+cost: 2
+do: quest(a3.lamps, lost); set(quay3.post.out); set(lampout.steps)
+line: GAUZE: I can't. I can't take it off. I'm sorry. Ask me something else. Ask me anything else.
+go: ^hub
+
+@node quay3.post.lee
+place: steps
+cost: 4
+do: set(quay3.tended)
+nar: Under the cage, in the lee of the top step, the oil goes in from below, and nobody on the quay sees who keeps the light.
+go: ^hub
+
+@node quay3.post.lee.fail
+place: steps
+cost: 4
+do: quest(a3.lamps, lost); set(quay3.post.out); set(lampout.steps); wet(0.5)
+nar: The lee of the step is full of water, and the post goes dark over the assessor's head.
+go: ^hub
+
+@node quay3.post.shutter
+place: steps
+cost: 5
+do: set(quay3.post.shuttered); set(quay3.tended)
+nar: The flame behind the tin stops dancing and burns like a lamp in a kitchen. It will hold now, whatever comes up the steps.
+go: ^hub
+
+@node quay3.post.lull
+place: steps
+cost: 6
+do: set(quay3.tended)
+inst: THE GLASS: Now, darling. Forty seconds. Go.
+nar: The assessor fills the post in the lull, and the next band arrives on a lit lamp.
+go: ^hub
+
+@node quay3.post.lull.fail
+place: steps
+cost: 6
+do: quest(a3.lamps, lost); set(quay3.post.out); set(lampout.steps); wet(0.4)
+inst: THE GLASS: Oh. Not that one. The one after. Sorry, darling.
+nar: The band arrives on an open cage, and the post goes out under it.
+go: ^hub
+
+@node quay3.post.let
+place: steps
+cost: 1
+do: set(quay3.post.out); set(lampout.steps); quest(a3.lamps, lost)
+line: GAUZE: Somebody ought to have stayed with it. Somebody always ought.
+go: ^hub
+
+# ================================================================ GATE B3: A BOAT FOR THE EYE (before 00:15, or in its first minute)
+@node quay3.tiller
+place: mole_steps
+cost: 2
+do: give(w.tiller)
+nar: The gale has put a crabber up on the steps on her side, stove in. Her tiller comes out of its socket in one pull, ash, with a rope lanyard still on it.
+go: quay3.boats
+
+@node quay3.boats
+place: mole_steps
+cost: 1
+alt: quay3.boats.eye ? has(ev3.eye)
+nar: Every boat in the harbour is doubled to the rings and snatching at its lines.
+line: MERROW: Eye's at a quarter past. Forty minutes of nothing. Then it all comes back from the other side. {when: !has(merrow.cells)}
+line: LUGG: Eye's at a quarter past. Tub would go. {when: has(merrow.cells)}
+inst: THE ALMANAC: Low water at twenty-six minutes to one, held up by the surge. The Old Light's base shows from a quarter past midnight to six minutes to one, and not a minute either side.
+opt: "Take Merrow's heavy boat and row it out through the last of the gale." -> quay3.row ? !has(quay3.row.failed) {verb: carry, noise: 0.6}
+check: "[CONDOLENCE] Ask Merrow to take you out." -> quay3.merrow.ok / quay3.merrow.fail ? !has(merrow.cells) & (rep.lowco >= 1 | has(day2.boats) | has(said.quay2_merrow)) {skill: condolence, dc: 6}
+check: "[THE CHIT] Ask Lugg, on what the Shelf said it would do for Merrow." -> quay3.lugg.ok / quay3.lugg.fail ? has(merrow.cells) {skill: chit, dc: 6}
+opt: "Ask Nan Cockle for her boat." -> quay3.cockle
+check: "[THE DARK] Get into the strippers' boat under the sacks before they go out for the eye." -> quay3.stow.ok / quay3.stow.fail ? !has(quay3.stow_caught) {skill: dark, dc: 6, verb: hide, noise: 0.2}
+check: "[GRIP] Rig the Coffin with a scrap sail and a steering oar, for the run home on the north-west wind." -> quay3.coffin.ok / quay3.coffin.fail ? count(i.rope) >= 1 {skill: grip, dc: 6, verb: rig, noise: 0.2}
+check: "[THE GLASS] Sit on the steps with the Glass in your hand and go at the eye's first minute." -> quay3.glass.ok / quay3.glass.fail ? clock < 00:15 {skill: glass, dc: 5, verb: wait, noise: 0}
+opt: "Pull the tiller out of the wrecked boat on the steps." -> quay3.tiller ? count(w.tiller) == 0 {verb: pry, noise: 0.3}
+opt: "Go back along to the quay." -> ^hub +2
+
+# ---- Fist: row through the last of the gale
+@node quay3.row
+place: mole_steps
+cost: 2
+check: "[KNEES] Row her out of the harbour mouth against the last of it." -> quay3.row.ok / quay3.row.fail {skill: knees, dc: 7, red}
+opt: "Not yet." -> quay3.boats
+
+@node quay3.row.ok
+place: eye_water
+cost: 25
+do: quay3.boat = rowed; quest(a3.eye, boat); quest(a3.eye, out); meter(cold, 3); wet(0.6)
+if: clock < 00:15 => wait(00:15 - clock + 1)
+nar: Oars and spray, and then oars and spray, holding her off the Spit. Then, between strokes, the wind stops, and the boat sits on flat black water under the stars.
+go: oldlight.hub
+
+@node quay3.row.fail
+place: mole_steps
+cost: 20
+do: set(quay3.row.failed); meter(cold, 3); wet(0.8)
+nar: The harbour mouth throws the boat back onto the weed of the mole steps.
+line: MERROW: Told you. Forty minutes of nothing. You don't row the something. {when: !has(merrow.cells)}
+go: quay3.boats
+
+# ---- Tongue: Merrow, Lugg, Cockle
+@node quay3.merrow.ok
+place: mole_steps
+speaker: MERROW
+cost: 3
+do: quay3.boat = merrow; quest(a3.eye, boat)
+line: MERROW: Sit in the middle. We go at the first minute, not before. I'm not rowing the gale for the Shelf.
+go: quay3.eyewait
+
+@node quay3.merrow.fail
+place: mole_steps
+speaker: MERROW
+cost: 2
+line: MERROW: You've had two nights of my boats. Find your own sea.
+go: quay3.boats
+
+@node quay3.lugg.ok
+place: mole_steps
+speaker: LUGG
+cost: 3
+do: quay3.boat = lugg; quest(a3.eye, boat)
+line: LUGG: You said you'd speak for him. You did, or you will. Either way I heard it. First minute of the eye.
+go: quay3.eyewait
+
+@node quay3.lugg.fail
+place: mole_steps
+speaker: LUGG
+cost: 2
+line: LUGG: Words don't float, Shelf.
+go: quay3.boats
+
+@node quay3.cockle
+place: mole_steps
+speaker: COCKLE
+cost: 2
+line: COCKLE: My boat's sound. I'll not take her out at my age. She'll go if you tell her nicely.
+check: "[FORM LETTER] Tell her the Shelf will be responsible for the boat." -> quay3.cockle.ok / quay3.cockle.fail {skill: formletter, dc: 5}
+opt: "Leave her be." -> quay3.boats
+
+@node quay3.cockle.ok
+place: mole_steps
+speaker: COCKLE
+cost: 2
+do: quay3.boat = cockle; quest(a3.eye, boat)
+line: COCKLE: The Shelf. Responsible. I'll have that written on the oars.
+go: quay3.eyewait
+
+@node quay3.cockle.fail
+place: mole_steps
+speaker: COCKLE
+cost: 1
+line: COCKLE: The Shelf's been responsible for a good deal this week, by my count.
+go: quay3.boats
+
+# ---- Shadow: under the strippers' sacks
+@node quay3.stow.ok
+place: mole_steps
+cost: 4
+do: quay3.boat = stowed; set(quay3.stowed); quest(a3.eye, boat)
+nar: Under the sacks it smells of tar and somebody's tea. Boots come aboard, and wait for the calm.
+line: SALLIS: First minute of the eye. Bronze gear in the lantern room, and nobody to say whose.
+go: quay3.eyewait
+
+@node quay3.stow.fail
+place: mole_steps
+cost: 3
+do: set(quay3.stow_caught); meter(dread, 1)
+nar: A hand lifts the sacks and the assessor's face is under the lantern.
+line: SALLIS: The Shelf, again. Off. And if we see you out there, we'll know who to thank.
+go: quay3.boats
+
+# ---- Hands: the Coffin with a scrap sail
+@node quay3.coffin.ok
+place: mole_steps
+cost: 15
+do: quay3.boat = coffin; set(quay3.coffin_sail); quest(a3.eye, boat); take(i.rope)
+nar: A spar, a square of the Brine's old awning and an oar over the stern: now she can come home on a north-west wind.
+go: quay3.eyewait
+
+@node quay3.coffin.fail
+place: mole_steps
+cost: 15
+do: wet(0.3)
+nar: The first gust takes the awning off the spar and away over the mole like a bird with somewhere to be.
+go: quay3.boats
+
+# ---- Eye: the eye's first minute, by the Glass
+@node quay3.glass.ok
+place: mole_steps
+cost: 2
+do: quay3.boat = eye; quest(a3.eye, boat)
+inst: THE GLASS: Watch the needle, darling. When it stops falling, the wind stops. Not before. Not a breath before.
+go: quay3.eyewait
+
+@node quay3.glass.fail
+place: mole_steps
+cost: 10
+do: meter(cold, 2); wet(0.5)
+inst: THE GLASS: That was a lull, darling. That was not the eye. I did say. I think I said.
+go: quay3.boats
+
+# ---- every boat waits for the eye
+@node quay3.eyewait
+place: mole_steps
+cost: 0
+alt: quay3.eye.go ? has(ev3.eye)
+nar: The assessor sits in the boat at the foot of the mole steps and waits for the needle to stop.
+opt: "Wait a little longer." -> quay3.eyewait +5 {verb: wait, noise: 0}
+opt: "Wait it out, however long it is." -> quay3.eyewait.long {verb: wait, noise: 0}
+
+@node quay3.eyewait.long
+place: mole_steps
+cost: 0
+if: clock < 00:15 => wait(00:15 - clock + 1)
+go: quay3.eyewait
+
+@node quay3.eye.go
+place: eye_water
+cost: 20
+alt: quay3.eye.late ? has(ev3.eye_ends)
+do: quest(a3.eye, out)
+nar: The wind stops. The oars go into flat black water, and the Old Light's stump comes up out of the dark ahead, wet to its shoulders.
+go: oldlight.hub
+
+@node quay3.eye.late
+place: mole_steps
+cost: 0
+nar: The wind comes back from the north-west before the boat is off the steps.
+go: ^hub
+
+@node quay3.boats.eye
+place: mole_steps
+cost: 1
+nar: The boats lie still on their lines for the first time tonight.
+opt: "Take a boat now, in the calm." -> quay3.eye.go ? !has(ev3.eye_ends) {verb: carry, noise: 0.1, do: quay3.boat = eye; quest(a3.eye, boat)}
+opt: "Go back along to the quay." -> ^hub +2
+
+# ================================================================ BEAT 8: THE EYE, 00:15
+@node quay3.eye
+place: quay
+cost: 3
+do: set(quay3.eye_seen)
+nar: The doors along the quay open one after another, and the town comes out in its nightclothes and stands on the wet stones.
+nar: Nobody says anything. A child laughs, and is hushed, and the hush carries the length of the quay.
+opt: "Go along to the mole steps while the calm lasts." -> quay3.boats.eye +2
+opt: "Stand with them and look up." -> quay3.eye.look
+
+@node quay3.eye.look
+place: quay
+cost: 5
+line: TOBIT: That's all of them. I counted the edge, and that's all of them.
+go: ^hub
+
+# ================================================================ BEAT 16: THE COLLIER, 04:00
+@node quay3.collier
+place: quay
+cost: 2
+do: set(quay3.collier_seen)
+nar: Out in the bay's mouth, a ship's lights: the collier Ellen Varty, coming in on the north-west wind.
+voice: sum: Twelve hundred tons, deep laden. A crew of twenty, say. Do not count the crew. {dc: 5}
+call: quay3.collier.end
+go: ^hub
+
+@node quay3.collier.end
+cost: 0
+alt: quay3.collier.through ? has(collier.through)
+alt: quay3.collier.spit ? has(collier.spit)
+nar: Mother's beam goes out across the water and lies on the collier for the length of a breath, and the ship's lights begin, slowly, to turn. {when: mother == burning}
+nar: Where Mother's beam should be there is nothing, and the ship's lights come on toward the Spit. {when: mother != burning}
+return:
+
+@node quay3.collier.through
+cost: 0
+nar: The ship's lights find the dog-leg, swing, and come on up the channel between the town's lamps.
+return:
+
+@node quay3.collier.spit
+cost: 0
+nar: The ship's lights stop moving. They stay where they are, out on the Spit, and tilt a little, and stay.
+return:
+
+# ================================================================ BEAT 18: KEEL AT HIGH WATER
+@node quay3.keel
+place: quay
+cost: 1
+do: set(quay3.keel_seen)
+nar: At the quay's edge the harbourmaster stands in the surge to the knee with half the town, and nobody looks at him, because everybody is as wet as he is.
+go: ^hub
+
+@node quay3.post.dies
+place: quay
+cost: 1
+do: set(lampout.steps); set(quay3.post.out); quest(a3.lamps, lost)
+nar: At half past three the band comes up the steps, and the untended post goes out under it.
+go: ^hub

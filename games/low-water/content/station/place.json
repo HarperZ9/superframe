@@ -1,0 +1,362 @@
+{
+ "place": "station",
+ "version": 2,
+ "width": 3440,
+ "height": 2560,
+ "camera": {
+  "yawDeg": 40,
+  "elevDeg": 36,
+  "target": [
+   6.6,
+   1.6,
+   4.6
+  ],
+  "dist": 30,
+  "ortho": true,
+  "scale": 6.7368421052631575
+ },
+ "pxPerMetre": 190,
+ "near": 1.7917,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "lit",
+  "dark"
+ ],
+ "variantInfo": {
+  "lit": {
+   "hour": 21,
+   "weather": "the three white lamps: lit so hard the whitewash hums"
+  },
+  "dark": {
+   "hour": 3,
+   "weather": "the lamps cut: the stove a red line"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "pole_rack",
+    "verb": "salvage",
+    "at": [
+     0.8,
+     0,
+     3.5
+    ],
+    "note": "the rack of poles (H:541)"
+   },
+   {
+    "id": "key_board",
+    "verb": "salvage",
+    "at": [
+     9,
+     0,
+     0.7
+    ],
+    "note": "the board of keys; one hook labelled CRAKE, SIDE (H:655)"
+   },
+   {
+    "id": "black_books",
+    "verb": "read",
+    "at": [
+     5.1,
+     0,
+     1.1
+    ],
+    "note": "the shelf of black books (H:541)"
+   },
+   {
+    "id": "gorms_desk",
+    "verb": "read",
+    "at": [
+     10.6,
+     0,
+     4
+    ],
+    "note": "Gorm's desk"
+   }
+  ],
+  "hides": [
+   {
+    "id": "stove",
+    "at": [
+     1.6,
+     0,
+     6.6
+    ],
+    "r": 0.5,
+    "note": "nothing to hide behind but the stove (H:682); proposed arena cover at 1.6, 7.4"
+   }
+  ],
+  "exits": [
+   {
+    "id": "lane",
+    "at": [
+     7,
+     0,
+     10
+    ],
+    "note": "the door to the hill path (arena exit 6..8, 9.3..10)"
+   }
+  ],
+  "lamps": [
+   {
+    "id": "white_3",
+    "kind": "white",
+    "at": [
+     3,
+     3.05,
+     1
+    ],
+    "arena": [
+     3,
+     1
+    ]
+   },
+   {
+    "id": "white_7",
+    "kind": "white",
+    "at": [
+     7,
+     3.05,
+     1
+    ],
+    "arena": [
+     7,
+     1
+    ]
+   },
+   {
+    "id": "white_11",
+    "kind": "white",
+    "at": [
+     11,
+     3.05,
+     1
+    ],
+    "arena": [
+     11,
+     1
+    ]
+   }
+  ],
+  "fight": {
+   "lamb": [
+    6.5,
+    7.5
+   ],
+   "foes": [
+    [
+     4.5,
+     2.5
+    ],
+    [
+     9.5,
+     2.5
+    ],
+    [
+     6.5,
+     1.5
+    ],
+    [
+     2.5,
+     4.5
+    ]
+   ],
+   "anchors": {
+    "cut": [
+     [
+      3,
+      1
+     ],
+     [
+      7,
+      1
+     ],
+     [
+      11,
+      1
+     ]
+    ],
+    "lamp": [
+     [
+      3,
+      1
+     ]
+    ],
+    "snare": [],
+    "sluice": []
+   },
+   "r": 9.06,
+   "arena": "arena-hill.json",
+   "stage": "arena: hill 0 -40 0 0"
+  },
+  "fights": {
+   "hill": {
+    "lamb": [
+     6.5,
+     7.5
+    ],
+    "foes": [
+     [
+      4.5,
+      2.5
+     ],
+     [
+      9.5,
+      2.5
+     ],
+     [
+      6.5,
+      1.5
+     ],
+     [
+      2.5,
+      4.5
+     ]
+    ],
+    "anchors": {
+     "cut": [
+      [
+       3,
+       1
+      ],
+      [
+       7,
+       1
+      ],
+      [
+       11,
+       1
+      ]
+     ],
+     "lamp": [
+      [
+       3,
+       1
+      ]
+     ],
+     "snare": [],
+     "sluice": []
+    },
+    "r": 9.06,
+    "arena": "arena-hill.json",
+    "stage": "arena: hill 0 -40 0 0"
+   }
+  }
+ },
+ "lights": {
+  "lit": [
+   {
+    "at": [
+     3,
+     3,
+     1
+    ],
+    "kind": "sky",
+    "I": 70,
+    "reach": 22,
+    "group": "white"
+   },
+   {
+    "at": [
+     7,
+     3,
+     1
+    ],
+    "kind": "sky",
+    "I": 70,
+    "reach": 22,
+    "group": "white"
+   },
+   {
+    "at": [
+     11,
+     3,
+     1
+    ],
+    "kind": "sky",
+    "I": 70,
+    "reach": 22,
+    "group": "white"
+   },
+   {
+    "at": [
+     1.6,
+     0.42,
+     8
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 4,
+    "group": "fire"
+   }
+  ],
+  "dark": [
+   {
+    "at": [
+     1.6,
+     0.42,
+     8
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 4,
+    "group": "fire"
+   }
+  ]
+ },
+ "arenas": [
+  {
+   "id": "hill",
+   "file": "arena-hill.json",
+   "stage": "arena: hill 0 -40 0 0",
+   "heightToWorld": "y = h - 40",
+   "size": [
+    14,
+    10
+   ]
+  }
+ ],
+ "arena": {
+  "name": "hill",
+  "worldOfArena": "x = arena x, z = arena z, y = 0 (arena h 40)",
+  "cell": 1,
+  "origin": [
+   0,
+   0
+  ],
+  "note": "white lamps over x 3, 7, 11 at z 1; door 6..8 at z 10; stove proposed as cover at 1.6, 7.4"
+ },
+ "notes": "The station interior, matched to the combat arena HILL."
+}

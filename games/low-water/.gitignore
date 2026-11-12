@@ -1,0 +1,14 @@
+# Local safety net for text sources. Bakes, captures and media are reproducible and stay untracked.
+*.f32
+*.u8
+*.png
+*.jpg
+*.mp4
+*.wav
+*.pma
+node_modules/
+**/out/
+**/capture/
+.orig*/
+.pre-*/
+

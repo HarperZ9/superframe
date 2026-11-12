@@ -1,0 +1,1470 @@
+{
+ "place": "hill",
+ "version": 2,
+ "width": 3840,
+ "height": 2160,
+ "camera": {
+  "yawDeg": 24,
+  "elevDeg": 32,
+  "target": [
+   0,
+   6.5,
+   0
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 13.5
+ },
+ "pxPerMetre": 80,
+ "near": 2,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "lit",
+  "frost",
+  "dark"
+ ],
+ "variantInfo": {
+  "lit": {
+   "hour": 21,
+   "weather": "Night 2, 19:10 to 01:00: clear and still, the white arcs, nothing casts a shadow"
+  },
+  "frost": {
+   "hour": 2,
+   "weather": "from 01:00: hard frost, the guards stamping at the substation"
+  },
+  "dark": {
+   "hour": 3,
+   "weather": "03:00, the switch thrown: the stars come down to the roofs; candles and windows only"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  3,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "station_door",
+    "verb": "enter",
+    "at": [
+     3.2,
+     0.13,
+     -1.9000000000000004
+    ],
+    "note": "the Lamplighters' station door"
+   },
+   {
+    "id": "substation_louvres",
+    "verb": "cutpower",
+    "at": [
+     -9,
+     2.0500000000000003,
+     2.0000000000000004
+    ],
+    "note": "the second switch, hooked through the louvres with the Vane's stick (H:743)"
+   },
+   {
+    "id": "outside_fuse",
+    "verb": "cutpower",
+    "at": [
+     -7,
+     2.0500000000000003,
+     1.9000000000000004
+    ],
+    "note": "the outside fuse on the cable pole (H:873)"
+   },
+   {
+    "id": "candle_timer",
+    "verb": "rig",
+    "at": [
+     -9,
+     2.0500000000000003,
+     2.0000000000000004
+    ],
+    "note": "the candle timer on the switch handle (H:744)"
+   },
+   {
+    "id": "duct_grating",
+    "verb": "pry",
+    "at": [
+     -11.3,
+     2.0500000000000003,
+     1.9000000000000004
+    ],
+    "note": "the cable duct's grating (H:958)"
+   },
+   {
+    "id": "study_window",
+    "verb": "eavesdrop",
+    "at": [
+     -17,
+     3.49,
+     -1.7000000000000002
+    ],
+    "note": "the study window and its blind (H:159)"
+   },
+   {
+    "id": "crake_side",
+    "verb": "enter",
+    "at": [
+     -22.9,
+     3.49,
+     -4
+    ],
+    "note": "Crake's side door, on the latch (H:818)"
+   }
+  ],
+  "hides": [
+   {
+    "id": "sill_strip",
+    "at": [
+     -17,
+     3.49,
+     -2
+    ],
+    "r": 0.3,
+    "note": "the only shadow on the lane: a foot wide, under the study sill (H:523)"
+   }
+  ],
+  "exits": [
+   {
+    "id": "station",
+    "at": [
+     3.2,
+     0.13,
+     -1.9000000000000004
+    ],
+    "note": "into the station (plate: station)"
+   },
+   {
+    "id": "quay",
+    "at": [
+     21,
+     -3.36,
+     0
+    ],
+    "note": "down to the quay: the white ends and the sodium begins"
+   },
+   {
+    "id": "gasholder",
+    "at": [
+     -22,
+     3.52,
+     0
+    ],
+    "note": "on to the Gasholder gate"
+   }
+  ],
+  "lamps": [
+   {
+    "id": "white_arcs",
+    "kind": "white",
+    "note": "every 3.6 m both sides, x 18 to -18, z +-2.05"
+   }
+  ]
+ },
+ "lights": {
+  "lit": [
+   {
+    "at": [
+     18,
+     1.54,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     18.25,
+     -2.4,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     16.2,
+     1.83,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     16.45,
+     -2.11,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     14.4,
+     2.12,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     14.65,
+     -1.82,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     12.6,
+     2.4,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     12.85,
+     -1.54,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10.8,
+     2.69,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     11.05,
+     -1.25,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     9,
+     2.98,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     9.25,
+     -0.96,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     7.2,
+     3.27,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     7.45,
+     -0.67,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     5.4,
+     3.56,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     5.65,
+     -0.38,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     3.6,
+     3.84,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     3.85,
+     -0.1,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     1.8,
+     4.13,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     2.05,
+     0.19,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0,
+     4.42,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     0.25,
+     0.48,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -1.8,
+     4.71,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -1.55,
+     0.77,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -3.6,
+     5,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -3.35,
+     1.06,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -5.4,
+     5.28,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -5.15,
+     1.34,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -7.2,
+     5.57,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -6.95,
+     1.63,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -9,
+     5.86,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -8.75,
+     1.92,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -10.8,
+     6.15,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -10.55,
+     2.21,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -12.6,
+     6.44,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -12.35,
+     2.5,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -14.4,
+     6.72,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -14.15,
+     2.78,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -16.2,
+     7.01,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -15.95,
+     3.07,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.4,
+     1.83,
+     -1.9
+    ],
+    "kind": "white",
+    "I": 3,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     4.6,
+     1.83,
+     -1.9
+    ],
+    "kind": "white",
+    "I": 3,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -9,
+     3.95,
+     2.2
+    ],
+    "kind": "white",
+    "I": 0.8,
+    "reach": 4,
+    "group": "window"
+   },
+   {
+    "at": [
+     -17,
+     5.09,
+     -1.8
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "window"
+   },
+   {
+    "at": [
+     21.5,
+     1.13,
+     1.45
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   }
+  ],
+  "frost": [
+   {
+    "at": [
+     18,
+     1.54,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     18.25,
+     -2.4,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     16.2,
+     1.83,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     16.45,
+     -2.11,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     14.4,
+     2.12,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     14.65,
+     -1.82,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     12.6,
+     2.4,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     12.85,
+     -1.54,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     10.8,
+     2.69,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     11.05,
+     -1.25,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     9,
+     2.98,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     9.25,
+     -0.96,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     7.2,
+     3.27,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     7.45,
+     -0.67,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     5.4,
+     3.56,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     5.65,
+     -0.38,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     3.6,
+     3.84,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     3.85,
+     -0.1,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     1.8,
+     4.13,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     2.05,
+     0.19,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0,
+     4.42,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     0.25,
+     0.48,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -1.8,
+     4.71,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -1.55,
+     0.77,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -3.6,
+     5,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -3.35,
+     1.06,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -5.4,
+     5.28,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -5.15,
+     1.34,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -7.2,
+     5.57,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -6.95,
+     1.63,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -9,
+     5.86,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -8.75,
+     1.92,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -10.8,
+     6.15,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -10.55,
+     2.21,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -12.6,
+     6.44,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -12.35,
+     2.5,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -14.4,
+     6.72,
+     -1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -14.15,
+     2.78,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -16.2,
+     7.01,
+     1.65
+    ],
+    "kind": "sky",
+    "I": 46,
+    "reach": 26,
+    "group": "white"
+   },
+   {
+    "at": [
+     -15.95,
+     3.07,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.4,
+     1.83,
+     -1.9
+    ],
+    "kind": "white",
+    "I": 3,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     4.6,
+     1.83,
+     -1.9
+    ],
+    "kind": "white",
+    "I": 3,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -9,
+     3.95,
+     2.2
+    ],
+    "kind": "white",
+    "I": 0.8,
+    "reach": 4,
+    "group": "window"
+   },
+   {
+    "at": [
+     -17,
+     5.09,
+     -1.8
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "window"
+   },
+   {
+    "at": [
+     21.5,
+     1.13,
+     1.45
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   }
+  ],
+  "dark": [
+   {
+    "at": [
+     18.25,
+     -2.4,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     16.45,
+     -2.11,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     14.65,
+     -1.82,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     12.85,
+     -1.54,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     11.05,
+     -1.25,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     9.25,
+     -0.96,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     7.45,
+     -0.67,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     5.65,
+     -0.38,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     3.85,
+     -0.1,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     2.05,
+     0.19,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.25,
+     0.48,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -1.55,
+     0.77,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -3.35,
+     1.06,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -5.15,
+     1.34,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -6.95,
+     1.63,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -8.75,
+     1.92,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -10.55,
+     2.21,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -12.35,
+     2.5,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -14.15,
+     2.78,
+     -1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -15.95,
+     3.07,
+     1.85
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     0.4,
+     1.83,
+     -1.9
+    ],
+    "kind": "white",
+    "I": 3,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     4.6,
+     1.83,
+     -1.9
+    ],
+    "kind": "white",
+    "I": 3,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -9,
+     3.95,
+     2.2
+    ],
+    "kind": "white",
+    "I": 0.8,
+    "reach": 4,
+    "group": "window"
+   },
+   {
+    "at": [
+     -17,
+     5.09,
+     -1.8
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "window"
+   },
+   {
+    "at": [
+     21.5,
+     1.13,
+     1.45
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "Chancel Hill path. The station interior is its own plate (station)."
+}

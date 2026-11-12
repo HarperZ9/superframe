@@ -1,0 +1,38 @@
+{
+ "criterion": "M1 exit criterion 3, HDR signal (amended 2026-10-10)",
+ "bounds": "evidence/m1-hdr-signal-bounds.json (commit 01c9f15, before any run)",
+ "runs": [
+  {
+   "what": "run 1, SwiftShader, CPU and GPU halves",
+   "date": "2026-10-10",
+   "result": "CPU: a1 to a5 within bounds (PQ encode and decode and the extended sRGB curve bit-identical to the float64 reference; tone-mapped PQ at 0.0023 of its bound; tone-mapped extended sRGB at 0.018). Controls exceed their bounds (6.3e11 and 6.3e3 times). GPU: rec2100-pq at 0.29 of the bound; srgb-extended FAILS, 185 of 110,361 channels over, worst 6.3 times the bound (6.2e-3 at input (0.292, 0.093, 8.95), a channel the CPU puts at -0.0071 and the GPU at -0.0010). GPU control exceeds its bound 641 times."
+  },
+  {
+   "what": "run 2, SwiftShader, the same code plus a breakdown of where the over-bound values sit",
+   "date": "2026-10-10",
+   "result": "identical numbers to run 1; srgb-extended over-bound values: 92 with |signal| < 0.05, 93 between 0.05 and 1, none at 1 or above"
+  },
+  {
+   "what": "run 3, SwiftShader, the same code plus the list of failing channels",
+   "date": "2026-10-10",
+   "result": "the same 185 channels (183 inputs), all saturated blues: blue high, red and green small; 109 in red, 76 in green"
+  },
+  {
+   "what": "CPU diagnosis in float32",
+   "date": "2026-10-10",
+   "result": "reproduced at the WGSL precision limits; cause: the hue's atan2 and the cos and sin round trip. See evidence/m1-hdr-f32-diagnosis.json"
+  },
+  {
+   "what": "run 4, SwiftShader, after the fix (hue_atan2; cos and sin as a / M and b / M), bounds unchanged",
+   "date": "2026-10-10",
+   "result": "CPU half within bounds as before; controls exceed their bounds (6.3e11, 6.3e3, GPU 641). GPU: rec2100-pq max 1.17e-05, 0.012 of the bound; srgb-extended max 6.24e-05, 0.0639 of the bound; 0 over, 0 non-finite. Criterion 2 on SwiftShader still passes, with the committed ACES tables matching."
+  },
+  {
+   "what": "run 5, RTX 4090 (WebGPU, nvidia lovelace), commit e593861 (the head of #90), bounds unchanged",
+   "date": "2026-10-10",
+   "result": "CPU half within bounds; controls exceed their bounds (6.3e11, 6.3e3, GPU 641). GPU: rec2100-pq max 1.16e-05, 0.0118 of the bound; srgb-extended max 9.26e-05, 0.0947 of the bound; 0 over, 0 non-finite. Evidence: evidence/m1-hdr-signal-rtx.json."
+  }
+ ],
+ "status": "met (2026-10-10): SwiftShader on Windows (run 4) and in Linux CI, and the RTX 4090 (run 5), with the bounds written before the first run. This checks the signal, not the light a panel emits.",
+ "reading": "Tested, not read: see evidence/m1-hdr-f32-diagnosis.json. The earlier reading (the P3 to Rec.709 step and the sRGB slope near zero) described where the error showed, not where it came from."
+}

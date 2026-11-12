@@ -1,0 +1,440 @@
+[
+{
+"rec": true,
+"frames": 130,
+"still": "t00-title",
+"say": "still:t00-title"
+},
+{
+"rec": false,
+"press": "ArrowDown",
+"frames": 15
+},
+{
+"press": "Space",
+"frames": 4
+},
+{
+"rec": true,
+"frames": 30
+},
+{
+"press": "ArrowRight",
+"frames": 30
+},
+{
+"press": "ArrowRight",
+"frames": 30
+},
+{
+"rec": false,
+"press": "ArrowRight",
+"frames": 10
+},
+{
+"press": "Escape",
+"frames": 4
+},
+{
+"press": "ArrowUp",
+"frames": 10
+},
+{
+"press": "Space",
+"frames": 4
+},
+{
+"rec": true,
+"frames": 70
+},
+{
+"eval": "window.__lw.reveal()",
+"frames": 60
+},
+{
+"eval": "window.__lw.reveal()",
+"frames": 40
+},
+{
+"rec": false,
+"read": 1
+},
+{
+"rec": true,
+"go": "keel",
+"until": "!window.__lw.walking && window.__lw.talking",
+"max": 600,
+"say": "go:keel"
+},
+{
+"rec": false,
+"read": 1
+},
+{
+"choose": "What happened to the lamp",
+"frames": 2,
+"say": "choose:What happened to the lamp"
+},
+{
+"eval": "window.__lw.reveal()",
+"frames": 2
+},
+{
+"rec": true,
+"frames": 75
+},
+{
+"rec": false,
+"read": 1
+},
+{
+"choose": "Leave him dripping",
+"frames": 2,
+"say": "choose:Leave him dripping"
+},
+{
+"read": 1
+},
+{
+"rec": true,
+"go": "fennick",
+"until": "!window.__lw.walking && window.__lw.talking",
+"max": 600,
+"say": "go:fennick"
+},
+{
+"eval": "window.__lw.reveal()",
+"frames": 60
+},
+{
+"eval": "window.__lw.reveal()",
+"frames": 70,
+"still": "t-deacon",
+"say": "still:t-deacon"
+},
+{
+"rec": false,
+"eval": "window.__lw.closeTalk()",
+"frames": 2
+},
+{
+"rec": true,
+"go": "prints",
+"until": "!window.__lw.walking && window.__lw.talking",
+"max": 700,
+"say": "go:prints"
+},
+{
+"eval": "window.__lw.reveal()",
+"frames": 70,
+"still": "t-floor",
+"say": "still:t-floor"
+},
+{
+"rec": false,
+"eval": "window.__lw.closeTalk()",
+"frames": 2
+},
+{
+"go": "brine",
+"until": "!window.__lw.walking && window.__lw.talking",
+"max": 900,
+"say": "go:brine"
+},
+{
+"read": 1
+},
+{
+"choose": "Ask about the bread oven",
+"frames": 2,
+"say": "choose:Ask about the bread oven"
+},
+{
+"eval": "window.__lw.reveal(); window.__lw.reveal()",
+"frames": 2
+},
+{
+"rec": true,
+"frames": 80,
+"still": "t01-oven",
+"say": "still:t01-oven"
+},
+{
+"rec": false,
+"read": 1
+},
+{
+"choose": "Talk to the woman by the stove",
+"frames": 2,
+"say": "choose:Talk to the woman by the stove"
+},
+{
+"read": 1
+},
+{
+"choose": "Read her coat",
+"frames": 2,
+"say": "choose:Read her coat"
+},
+{
+"read": 1
+},
+{
+"choose": "Your coat is dry",
+"frames": 2,
+"say": "choose:Your coat is dry"
+},
+{
+"eval": "window.__lw.reveal(); window.__lw.reveal(); window.__lw.reveal()",
+"frames": 2
+},
+{
+"rec": true,
+"frames": 80
+},
+{
+"rec": false,
+"read": 1
+},
+{
+"choose": "Come with me to the lamp room",
+"frames": 2,
+"say": "choose:Come with me to the lamp room"
+},
+{
+"read": 1
+},
+{
+"choose": "Read the panel",
+"frames": 2,
+"say": "choose:Read the panel"
+},
+{
+"read": 1
+},
+{
+"choose": "Restrike the arc",
+"frames": 2,
+"say": "choose:Restrike the arc"
+},
+{
+"eval": "window.__lw.reveal()",
+"frames": 2
+},
+{
+"rec": true,
+"frames": 30
+},
+{
+"eval": "window.__lw.reveal()",
+"frames": 60,
+"still": "t02-arc",
+"say": "still:t02-arc"
+},
+{
+"rec": false,
+"read": 1
+},
+{
+"choose": "Go back down",
+"frames": 2,
+"say": "choose:Go back down"
+},
+{
+"read": 1
+},
+{
+"rec": true,
+"frames": 90,
+"still": "t03-beam",
+"say": "still:t03-beam"
+},
+{
+"rec": false,
+"go": "weigh",
+"until": "!window.__lw.walking && window.__lw.talking",
+"max": 1500,
+"say": "go:weigh"
+},
+{
+"read": 1
+},
+{
+"choose": "Go in to the after-vote",
+"frames": 2,
+"say": "choose:Go in to the after-vote"
+},
+{
+"read": 1
+},
+{
+"rec": true,
+"frames": 50
+},
+{
+"rec": false,
+"choose": "Go back outside",
+"frames": 2,
+"say": "choose:Go back outside"
+},
+{
+"read": 1
+},
+{
+"choose": "Pull the quay switch",
+"frames": 2,
+"say": "choose:Pull the quay switch"
+},
+{
+"eval": "window.__lw.reveal(); window.__lw.reveal()",
+"frames": 2
+},
+{
+"rec": true,
+"frames": 100,
+"still": "t04-blackout",
+"say": "still:t04-blackout"
+},
+{
+"rec": false,
+"read": 1
+},
+{
+"choose": "Put the quay switch back",
+"frames": 2,
+"say": "choose:Put the quay switch back"
+},
+{
+"read": 1
+},
+{
+"choose": "Go back to the quay",
+"frames": 2,
+"say": "choose:Go back to the quay"
+},
+{
+"read": 1
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"rec": true,
+"eval": "if (window.__lw.night.clock < 23*60+52) window.__lw.skip(1)",
+"frames": 7
+},
+{
+"eval": "window.__lw.skip(Math.max(0, 23*60+51 - window.__lw.night.clock))",
+"frames": 30
+},
+{
+"rec": true,
+"frames": 110,
+"still": "t05-flood",
+"say": "still:t05-flood"
+},
+{
+"rec": false,
+"eval": "window.__lw.skip(Math.max(0, 24*60 - window.__lw.night.clock))",
+"frames": 4
+},
+{
+"read": 1
+},
+{
+"choose": "the keeper's absence",
+"frames": 2,
+"say": "choose:the keeper's absence"
+},
+{
+"read": 1
+},
+{
+"rec": true,
+"frames": 140,
+"still": "t06-end",
+"say": "still:t06-end"
+}
+]

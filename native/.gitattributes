@@ -1,0 +1,37 @@
+third_party/superstack/** text eol=lf
+
+# SUPERSTACK.sha256 pins superstack.hpp, tests/run_vectors.cpp and vectors/MANIFEST.json
+# by the SHA-256 of their exact bytes, and MANIFEST.json pins every vector. The rule
+# above writes LF on checkout, but Git still converts these files on commit and
+# checkout. `-text` turns conversion off for exactly the pinned files and their lists,
+# so the bytes on disk are the committed blob under any core.autocrlf setting.
+# Later lines win, so this overrides the rule above for these paths only.
+third_party/superstack/SUPERSTACK.sha256 -text
+third_party/superstack/superstack.hpp -text
+third_party/superstack/tests/run_vectors.cpp -text
+third_party/superstack/vectors/*.json -text
+third_party/superstack/superstack.mjs -text
+third_party/superstack/examples/sound/* -text
+
+# third_party/MANIFEST.md pins these by the SHA-256 of their exact bytes (ROADMAP M2 criterion 6),
+# so they too check out as the committed blob under any core.autocrlf setting.
+third_party/** -text
+src/renderer/aces2.hpp -text
+src/renderer/aces2_cam.cpp -text
+src/renderer/aces2_gamut.cpp -text
+src/renderer/aces2_tables.cpp -text
+web/colour/colour.wgsl -text
+docs/motion/hanken-grotesk-500.atlas.json -text
+
+# The committed anisotropic table (cmake/embed.cmake) is hashed by its exact bytes.
+src/renderer/data/aniso_albedo.f32 binary
+
+# Hashed data the explainer kit shows or checks: keep the committed bytes on every checkout.
+docs/explainer/attention/data.json -text
+web/explainer/fonts/*.atlas.json -text
+
+# The skinning fixture is read by tests/test_skin.cpp and compared byte for byte by a node test.
+tests/data/skin-fixture.txt text eol=lf
+tests/data/story/* -text
+# The action-timeline fixtures (tests/data/action/SOURCE.md) are compared byte for byte.
+tests/data/action/** -text

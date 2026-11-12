@@ -1,0 +1,177 @@
+# Low Water, Act 2: the second dawn. The town meets about the gale; which lamps it can light.
+# Director's file, 2026-10-17. Plan: design/ACT2-PLAN.md beat 17. Entered from ev2.dawn at 06:02.
+# The choice sets Act 3's map of light (var light_* = 1 for each lamp kept for the gale).
+
+# ---- new ids
+@fact dawn2.met
+@var gale_lamps
+default: 0
+@var light_mother
+default: 0
+@var light_steps
+default: 0
+@var light_porthole
+default: 0
+@var light_gut
+default: 0
+@var light_balance
+default: 0
+@var light_hill
+default: 0
+@var light_bulb
+default: 0
+
+# ---------------------------------------------------------------- the meeting
+@node dawn2.start
+place: weigh_in
+cost: 4
+do: set(dawn2.met)
+nar: Sea smoke on the harbour, a white fur on black water, and the weigh-house full of people standing in their coats.
+nar: The masters Dace and Orme stand together by the door with their hats on. Their barges are whole, and so is the Patience's paraffin. {when: var.spit_cargo == saved}
+nar: The masters Dace and Orme stand apart. The Patience's paraffin is in the Board's shed, labelled SALVAGE FOR THE INSURER. {when: var.spit_cargo == taken}
+nar: A strippers' boat lies at the bottom of the quay steps where the flood left it, deep with casks, and nobody in the room will say whose it is. {when: var.spit_cargo == adrift}
+nar: Somebody near the door says the Shelf's name, low, to somebody else. They were on the Spit, and they know who saw them. {when: has(spit.named_back)}
+nar: Two Lamplighters at the back are telling a third about a coat on the Spit that was not where it should have been. {when: has(book.spit_coat)}
+nar: The Glass has been passed from hand to hand since half past five. It reads lower than anyone in the room has seen it read.
+inst: THE GLASS: Nine hundred and seventy-one, and going down a step at a time like somebody leaving a house. Wind tonight, darling. From the south-west, and all of it.
+line: KEEL: The Board has called the town. The Board has oil for three lamps through a gale, and men for three, and not one more.
+line: KEEL: The Board would remind the room that a ship takes the dog-leg on Mother, or on two lamps in a line: the steps post over the balance, or the hill lamps over the Gasholder. Or on a light on the Spit itself, in the Old Light, if anybody could get one out there. The Board would add that any other lamp by itself is only somewhere to steer at.
+nar: The Alderman is not here. Mrs Pellow stands in her place at the back, holding her employer's gloves. {when: has(ink.crake)}
+nar: The Alderman stands at the back in her grey, which reads the same in this light as in every other. {when: !has(ink.crake)}
+voice: smallprint: The hill keeps a hand at its own panel, by standing order, within six minutes. Mother never had one. {when: has(hill.order_restrike), dc: 5}
+nar: He drips on the weighbridge. Nobody moves away from him. In a room this full there is nowhere to move.
+go: dawn2.room
+
+@node dawn2.room
+hub: yes
+place: weigh_in
+nar: Three lamps. The town looks at the Shelf, because the Shelf has a column for everything. {when: var.gale_lamps == 0}
+nar: Chalked on the weigh-house board under LAMPS FOR THE GALE: {when: var.gale_lamps > 0}
+nar: MOTHER. {when: var.light_mother == 1}
+nar: THE STEPS POST. {when: var.light_steps == 1}
+nar: THE BRINE'S PORTHOLE. {when: var.light_porthole == 1}
+nar: THE GUT'S WIRES. {when: var.light_gut == 1}
+nar: THE BALANCE. {when: var.light_balance == 1}
+nar: THE HILL. {when: var.light_hill == 1}
+nar: THE OLD BULB. {when: var.light_bulb == 1}
+opt: "Mother." -> dawn2.mother ? var.light_mother == 0 & var.gale_lamps < 3 & var.lens != broken
+opt: "Mother, though she is broken." -> dawn2.mother.broken ? var.light_mother == 0 & var.gale_lamps < 3 & var.lens == broken
+opt: "The post at the top of the steps." -> dawn2.steps ? var.light_steps == 0 & var.gale_lamps < 3
+opt: "The Brine's porthole lamp." -> dawn2.porthole ? var.light_porthole == 0 & var.gale_lamps < 3 & has(lamp.porthole.lit)
+opt: "The Gut's wire lamps." -> dawn2.gut ? var.light_gut == 0 & var.gale_lamps < 3 & has(lamp.gut.lit)
+opt: "The lamp on the balance." -> dawn2.balance ? var.light_balance == 0 & var.gale_lamps < 3
+opt: "The white lamps on the hill." -> dawn2.hill ? var.light_hill == 0 & var.gale_lamps < 3 & !has(hill.dark)
+opt: "The Old Bulb, back in the Gasholder." -> dawn2.bulb ? var.light_bulb == 0 & var.gale_lamps < 3 & (has(gasholder.procession_stopped) | var.mole2.bulb_end == vigil | var.mole2.bulb_end == knelt | var.mole2.bulb_end == measured | var.mole2.bulb_end == cold)
+opt: "Rub the board clean and start again." -> dawn2.clear ? var.gale_lamps > 0
+opt: "Let the town choose without the Shelf." -> dawn2.abstain ? var.gale_lamps == 0
+opt: "That's three. Chalk it." -> dawn2.decided ? var.gale_lamps == 3
+opt: "Fewer than three. Keep the oil." -> dawn2.decided ? var.gale_lamps > 0 & var.gale_lamps < 3
+
+@node dawn2.clear
+cost: 1
+do: gale_lamps = 0; light_mother = 0; light_steps = 0; light_porthole = 0; light_gut = 0; light_balance = 0; light_hill = 0; light_bulb = 0
+nar: Sabine wipes the board with her sleeve. She does not say what it costs.
+go: ^hub
+
+# ---------------------------------------------------------------- each lamp, and who speaks for it
+@node dawn2.mother
+cost: 2
+do: light_mother = 1; gale_lamps += 1
+line: WENNA: She'll want a hand at the panel all night. Mine, then. {when: !has(cause.keeper)}
+line: WENNA: Somebody will have to sit with her. They'll not want it to be me. {when: has(cause.keeper)}
+line: PENHALLOW: Bearing of the Spit, two-forty by Mother. Without her, no bearing. Log it. {when: has(met.penhallow)}
+nar: Green, a third of her; honest, if the green rings went. The town would rather a green light than none. {when: var.lens == whole | var.lens == saved}
+nar: With her green rings gone she will burn with gaps in her, white where she is whole and dark where she lied. {when: var.lens == green_broken}
+nar: Her own feeder is back on its brass links. When the quay goes dark in the gale, she will not go with it. {when: has(weigh2.feeder)}
+nar: She is still on the quay board. When the gale takes the quay, it takes her. {when: !has(weigh2.feeder)}
+go: ^hub
+
+@node dawn2.mother.broken
+cost: 2
+do: light_mother = 1; gale_lamps += 1
+line: KEEL: The Board did not break her for her to be lit like that.
+nar: The arc behind a shattered lens throws light in pieces, every way at once. It will be seen. It will not be read.
+voice: precedent: A light that cannot be steered by is not a light under the Shelf's terms. It is weather. {dc: 6}
+go: ^hub
+
+@node dawn2.steps
+cost: 1
+do: light_steps = 1; gale_lamps += 1
+line: FENNICK: The steps are ours. We will keep it. {when: !has(quay.relic.taken) & has(lamp.steps_post.lit)}
+line: FENNICK: That post has been dark since the Trust came. Give us the Board's oil and a new wick, and we will keep it. {when: !has(quay.relic.taken) & !has(lamp.steps_post.lit)}
+line: FENNICK: Light it, then. We have kept nothing else of ours tonight. {when: has(quay.relic.taken)}
+go: ^hub
+
+@node dawn2.porthole
+cost: 1
+do: light_porthole = 1; gale_lamps += 1
+line: SABINE: Our yard. Our oil. The town's eyes on our bins all night. A shilling a gust, love, and I'll not charge you.
+go: ^hub
+
+@node dawn2.gut
+cost: 1
+do: light_gut = 1; gale_lamps += 1
+line: MARROW: The Gut lit in a gale. The Captain never saw it. {when: var.gut_vote2 != spratt}
+line: SPRATT: The steward will see to the wires. That's me, if you were wondering. {when: var.gut_vote2 == spratt}
+go: ^hub
+
+@node dawn2.balance
+cost: 1
+do: light_balance = 1; gale_lamps += 1
+nar: The lamp on the town balance: a light nobody owns, on a thing that weighs everybody. Nobody speaks for it, so nobody speaks against it.
+line: HOBB: I'll fill it. I'm not to. I'll fill it. {when: !has(lamp.balance.lit)}
+go: ^hub
+
+@node dawn2.hill
+cost: 1
+do: light_hill = 1; gale_lamps += 1
+line: PELLOW: The Alderman would want the hill lit. She would want me to say so. I have said so.
+nar: White lamps on the hill: the hill will see the harbour, and the harbour will see the hill seeing it.
+go: ^hub
+
+@node dawn2.bulb
+cost: 2
+do: light_bulb = 1; gale_lamps += 1
+line: FENNICK: Low light, low water, high wind. It has waited twelve years to be asked.
+voice: undertow: An old bulb in a gasholder, lit for a storm by the Shelf. Write that up the tube and see what comes back. {dc: 5}
+go: ^hub
+
+@node dawn2.abstain
+cost: 3
+do: gale_lamps = 3; light_mother = 1; light_hill = 1; light_steps = 1
+nar: The assessor puts the chalk down. The town chooses without the Shelf, as towns do: Mother, because she is Mother; the hill, because the Alderman's housekeeper is standing nearest the board; the steps post, because the deacon is standing next to her.
+go: dawn2.decided
+
+# ---------------------------------------------------------------- decided
+@node dawn2.decided
+cost: 3
+nar: The board is read out, and the room hears who goes dark.
+line: SABINE: The steps lit and my yard dark, then. The bins can drown. {when: var.light_steps == 1 & var.light_porthole == 0}
+line: FENNICK: The Brine's bins before the Congregation's steps. We will kneel in the dark, then. {when: var.light_porthole == 1 & var.light_steps == 0}
+line: PELLOW: The Gut lit and the hill not. The Alderman will look down at fish all night. {when: var.light_gut == 1 & var.light_hill == 0}
+line: KEEL: A lamp on the balance and the Board's own office dark. The Board notes it. {when: var.light_balance == 1 & var.light_mother == 0}
+line: MARROW: The hill lit, and the Gut can find its own way home. {when: var.light_hill == 1 & var.light_gut == 0}
+line: WENNA: An old bulb on a hill, and her not. {when: var.light_bulb == 1 & var.light_mother == 0}
+line: KEEL: Mother takes the most oil of any of them. Whatever else is chalked will burn short. {when: var.light_mother == 1 & var.gale_lamps == 3}
+nar: The chalk squeaks on the last word. Somebody opens the weigh-house doors, and the sea smoke comes in round everybody's ankles like a dog that wants to be in the meeting.
+nar: Out on the mole, nobody is lighting anything yet. It is morning. The gale is eleven hours off, coming up the coast like a rumour.
+go: dawn2.shelf
+
+@node dawn2.shelf
+place: tube
+cost: 3
+nar: At twenty past six the tube thumps.
+nar: SHELF: GALE ANTICIPATED. ASSESSOR WILL ATTEND. CLAIM 4471/G REMAINS OPEN.
+nar: SHELF: CLERK REPORTS ASSESSOR LISTENING AT WALLS. NOTED. {when: has(typist.heard)}
+nar: SHELF: COMPLAINT RECEIVED FROM THE ALDERMAN. NOTED. {when: has(ink.crake)}
+line: PIP: The e's worse. It's sticking on every one now. Somebody's been typing all night. {when: !has(typist.heard)}
+line: PIP: The e's worse. You heard it too, didn't you. Through the wall. {when: has(typist.heard)}
+nar: She looks at the canister and not at the assessor, and puts it back on its hook very carefully, as if it were somebody's.
+go: dawn2.sleep
+
+@node dawn2.sleep
+place: room
+cost: 10
+nar: The coat goes by the stove again. It steams. It has been wet two nights now, and the tide mark at its hem has a second line above the first.
+nar: SECOND WATER ENDS.
+end: act2.end

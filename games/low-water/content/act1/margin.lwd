@@ -1,0 +1,739 @@
+# Low Water, Act 1: the Margin. Everywhere. Writer's file, 2026-10-16. Private.
+# The scenes the three meters play when they fill (design/SYSTEMS-FULL.md section 5) and the
+# Margin's nodding pages (section 6). Convention nodes: nodding, nod.default, nod.m.<id>, small,
+# small.<district>, chilled, chilled.<district>. Helper nodes carry the prefix margin.
+
+# ---- new ids
+@fact margin.hale_seen
+# Pencil facts: what a nodding page asserts, partly wrong, for someone to correct (story editor S9).
+@fact margin.pencil.clocks
+about: In pencil, in a hand Lamb does not remember: the landlady adds her eleven minutes to every time she gives, the keeper's too.
+by: a nodding page
+@fact margin.pencil.mother
+about: In pencil, in a hand Lamb does not remember: Mother went out first, and the quay after.
+by: a nodding page
+@fact margin.pencil.wet
+about: In pencil, in a hand Lamb does not remember: the harbourmaster is wet because he is lying.
+by: a nodding page
+
+# ================================================================ WEAR FULL: NODDING
+# The engine picks the page itself (wear meter, full: nod.$trait): nod.<id> for the most
+# recently inked note that has one, else nod.default.
+
+@node margin.nod.fall
+nar: The assessor sits down on the nearest thing that will take a sitting, to write one line in the Daybook. The line goes on without the assessor.
+
+@node margin.nod.wake
+# The engine passes the thirty minutes and sets Wear to 4 (wear meter: after 4, wait 30).
+nar: The assessor wakes with the pencil in hand and the print of the Daybook's spine across one cheek. Half an hour has gone somewhere without leave.
+voice: sum: Thirty minutes. Exactly thirty. Nothing in Gullet is exactly anything. Somebody rounded. {dc: 5}
+voice: sum: Some minutes are missing. We had them, and now we have a page. {below: 5}
+voice: salt: The floor is wetter under you than it was. Up. Up now, before the sea takes the chair. {when: indistrict(floor)}
+voice: pride: Asleep in public, under the sodium. Nobody saw. Very probably nobody saw. {when: sodium > 0.6 & light >= 0.2}
+exit: walk
+
+# ---------------------------------------------------------------- nod.default: no note inked
+@node nod.default
+call: margin.nod.fall
+nar: Item: one page in the assessor's own hand, the bad one, the hand of the last hour of a long claim. It is the claim, copied out eleven times down the page, each copy a little worse. "CLAIM 4471/G. Nature of loss: darkness, malicious. Time of claim: three hours before the time of loss."
+nar: By the seventh copy the word malicious has gone. By the ninth: "Nature of loss: darkness. Time of loss: see below." The eleventh is only "see below, see below, see below", in a hand that has given up joining its letters.
+nar: At the foot of the page, one word, very small and very neat, as if the hand had woken up for it: "Whose?"
+voice: smallprint: Our hand at its worst. The eighth copy spells indemnity with one m, which is a dismissing offence in Hesk. {dc: 5}
+voice: smallprint: Eleven copies of a thing we could already recite. Somebody in us wanted to be sure it had not changed. {below: 5}
+voice: pride: Eleven years, and never once asleep on a claim. Do not mention it to the Shelf. {dc: 4}
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.clocks: Every Clock in Gullet Is Lying
+@node nod.m.clocks
+call: margin.nod.fall
+nar: Item: one page in a hand the assessor does not remember owning, small and upright, that puts a full stop after every numeral.
+nar: "The Brine's clock. Slow. Eleven. The ship's clock. Fast. Four. The Board's clock. Whatever the Board needs. The assessor's watch. Set by the ferry office at Hesk, which nobody has ever checked."
+nar: "Mother. Dark at twenty to ten. It is the only time in Gullet everyone agrees on, and it is the one time nobody needs to lie about. Look at the times people argue over. That is where to dig."
+nar: Ruled off twice underneath: "Remainder: eleven minutes. She carries them for everybody. Even the keeper."
+do: set(margin.pencil.clocks)
+voice: sum: Our sums, done without us, and correct. Nobody should tell the Shelf we work better unsupervised. {dc: 6}
+voice: sum: Somebody has been at our sums. They carried the one. We never carry the one. {below: 6}
+inst: THE ALMANAC: The sea keeps the only honest time in this town, and nobody has ever put a face on it.
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.level: Water Finds Its Level
+@node nod.m.level
+call: margin.nod.fall
+nar: Item: one page in pencil that has been wet and has dried. The lines run downhill, all of them, toward the bottom right-hand corner, where the paper has cockled into a small soft valley.
+nar: "Water does not hurry. It does not argue. It goes down until it cannot go any further down, and then it lies there, being correct."
+nar: "Everything in Gullet is going to the same place tonight. The tide. The rain. The harbourmaster's cuffs. The keeper's last six years. Stand still long enough and you will be at the bottom with the rest of the evidence, looking at the underneath of everybody."
+nar: The last line has run into the valley in the corner and stopped: "the bottom is where the"
+voice: salt: Wet to the knee. The knee has stopped complaining. The knee is in the sea's confidence now. {dc: 5}
+voice: salt: Something in the joints is trying to tell you the hour. It is mumbling. It has water in its mouth. {below: 5}
+voice: pride: That is not our hand. Our hand was dry for eleven years. We had the coat to prove it.
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.owed: Everyone in Gullet Owes Somebody
+@node nod.m.owed
+call: margin.nod.fall
+nar: Item: one page ruled into columns, a slate copied into a book: a stroke for a penny, a cross for a shilling, a little drawing for anyone whose name is too much bother.
+nar: "The ferry owes the light. The light owes the keeper. The keeper is owed six years and has stopped sending the bill. The Board owes the Shelf an honest claim. The assessor owes the Brine, at the time of writing, nothing, which in the Brine is a kind of rudeness."
+nar: "The whole quay owes the landlady, and the landlady owes nobody. That is the debt to look at. Who keeps the slate on the woman who keeps the slate?"
+nar: At the foot of the last column, a little drawing of a lighthouse, and beside it a row of strokes so long it goes off the edge of the page.
+voice: chit: Whoever wrote that knows the price of everything in the Brine. So do we. It was us, then. Good. We were working. {dc: 5}
+voice: chit: A page of debts and not one payable to us. We would have written it differently. {below: 5}
+voice: hearsay: Chalk is how a town gossips with its hands. Read the strokes. The names lie.
+voice: condolence: The lighthouse is drawn carefully, its windows gone over twice. Whoever drew it minded drawing it. {dc: 6}
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.flatfish: The Flatfish Position
+@node nod.m.flatfish
+call: margin.nod.fall
+nar: Item: one page, written sideways. Every line is crowded onto one side of a fold down the middle, so that the page looks like a face with both its eyes on the same side.
+nar: In the empty half, a flatfish, drawn accurately, with labels. "Eye. Eye. Both up. Mouth: shut. Underneath: sand, and whatever the sand is keeping."
+nar: "Things that swim over a flatfish tonight. The harbourmaster, in his own puddle. The Alderman, down a wire. Lamplighters, in pairs, writing. Not one of them looks down. That is the whole of the position."
+nar: "The flatfish is not hiding. The flatfish is listening with its entire back."
+voice: undertow: Say nothing next time. People pour into a quiet like water into a footprint, and take its shape. {dc: 6}
+voice: undertow: Lie there. Lie still. Something always comes down to look at a thing that lies still long enough. {below: 6}
+voice: smell: The page smells of the weigh-house. Gut, wet rope, beer, and a big man's hands.
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.dark: The Town Is Honest in the Dark
+@node nod.m.dark
+call: margin.nod.fall
+nar: Item: one page written with no light at all. Words have been written on top of words until the middle of the page is grey with graphite.
+nar: Across the top, clean, in a hand that could plainly see what it was doing: "Under the lamps they perform. The harbourmaster performs wet. The Alderman performs warm. The landlady performs prices. Put the lamps out and they lower their voices, and a lowered voice has nothing left to do but tell the truth or keep quiet. Watch who goes quiet when the lamps come back."
+nar: Below it, a heading, "Things said tonight in no light". Under the heading the page is full, and none of it can be read.
+voice: dark: We wrote that. We did not need the light. You would be surprised what we do not need. {dc: 5}
+voice: dark: Someone wrote in the dark and the letters ran into each other. We think it was us. {below: 5}
+inst: CANDLEMAS: Illegible. I accept no responsibility for anything set down without me.
+voice: hearsay: The best page in the book and none of it readable. That is how the best things are heard. {dc: 6}
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.colour: The Colour of a Thing
+@node nod.m.colour
+call: margin.nod.fall
+nar: Item: one page in copperplate, a schoolroom hand with the loops kept up. The nib has gone through the paper on four words.
+nar: "The houses on Lamp Quay, as nobody has seen them after dark for two years. Oxblood. Mustard. Teal. Bone. A fifth, which may be green or may be a bruise."
+nar: "Under the sodium. The harbourmaster, grey. The Alderman, grey, by intention. The assessor, grey. Blood, grey. Bile, grey. A blush, grey. A quarrel under the sodium cannot be won, because nobody can tell whose face went red."
+nar: "A thing does not lose its colour because nobody can see it. Write the colour down in honest light and carry it out with you."
+voice: candlemas: My hand, I suspect. A little florid. I would never have said teal so loudly in company. {dc: 4}
+voice: smallprint: The nib went through on teal. Strong feeling, or a cheap page. The Shelf buys cheap pages.
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.wet: Why Is He Wet
+@node nod.m.wet
+call: margin.nod.fall
+nar: Item: one page with one question on it, many times over. "Why is he wet", without its question mark, large across the middle, very small along the spine.
+nar: Under it, a list, each line struck through the way the Shelf strikes a withdrawn estimate.
+nar: "He fell from the mole eleven years ago. (Everybody falls from something.) He sweats. (No.) A leak in the Board. Grief. Rain that missed him once and has been catching up ever since. A chair somewhere with no drain hole, that he is afraid of."
+nar: One line has no stroke through it. It is in a firmer hand: "Wet because he is lying."
+do: set(margin.pencil.wet)
+voice: dark: We keep asking. Nobody else in this town asks. That is either the question or the answer.
+inst: THE DAMP: Full. He reads full, always, to the last hair. I cannot judge him. I would so like to judge him.
+voice: pride: He is wetter than us. Write that down as well. We will want it later. {below: 5}
+voice: pride: He is wetter than us, and he does not mind. We mind enormously. Consider which of us is winning. {dc: 5}
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.stairs: A Hundred and Twelve
+@node nod.m.stairs
+call: margin.nod.fall
+nar: Item: one page of numbers, one to a hundred and twelve, in a spiral winding inward. Every tenth is larger, as a landing. Every one is shakier than the one before.
+nar: Somewhere past sixty the numbers stop being numbers and become the words "one more", round and round.
+nar: At the centre of the spiral, where a hundred and twelve should be, the hand has written "her".
+nar: Underneath, steady again: "Going up for twenty-eight years is one number. Looking up from the bottom is another."
+voice: knees: We felt every one of those. Now we have done them again in our sleep, which nobody asked of us.
+voice: sum: A hundred and twelve, checked twice round the spiral. There is no hundred and thirteenth stair. Whatever in this town is numbered a hundred and thirteen, it was never stone. {when: has(prism.numbered)}
+voice: sum: A hundred and twelve, checked twice round the spiral. The middle one is a name. We disapprove of that, as a policy. {when: !has(prism.numbered)}
+voice: ballast: The spiral leans. Or we do. Hold the edge of the page. {below: 5}
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.copper: Copper Is a Better Citizen
+@node nod.m.copper
+call: margin.nod.fall
+nar: Item: one page with no handwriting on its top half. Someone has laid it on metal and gone over it with the side of the pencil, the way children take the faces off gravestones. The rubbing shows a small brass plate, letters raised, the corners eaten: OLD LIGHT. HOUND ROCK. KEEPER'S DOOR. RING AND WAIT. The assessor has never seen this plate. Nobody has gone in at the Old Light's door for seventy years, because the door is under the mud.
+nar: Below the rubbing, in pencil: "Copper goes where it is useful. It has no Board, no Trust, no oath. Wire it to a lamp and it carries the light. Drop it in the sea and it waits. The worst thing a man can do to copper is own it."
+nar: "Copper in Gullet tonight. The Gut's lamp wires, half out. The Old Light's gear, leaving in a sack. The Brine's pennies, leaving one egg at a time."
+voice: chit: Four shillings a sack, more for old wire. The salvor knows it to the farthing and does not care. Admirable. {dc: 5}
+voice: precedent: Shelf practice note eleven: what the sea takes, the owner keeps title to for a year and a day. Nobody has ever enforced it on a Low Night.
+voice: formletter: It is felt that this page does not represent the views of the Shelf, and should be removed. {below: 6}
+voice: formletter: It is felt that this page should be kept, and not shown to anyone at Hesk. {dc: 6}
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.watched: Somebody Is Always Writing It Down
+@node nod.m.watched
+call: margin.nod.fall
+nar: Item: one page in a hand that is not the assessor's in any mood. It slopes forward, written standing up against a brass pole.
+nar: Every line is a question. "And what time was it when the assessor sat down? And who was near enough to see? And did the assessor know they were there? And does the assessor know now?"
+nar: "And what did the assessor say tonight that the assessor would like back? And under which lamp? And does the assessor think the wind was blowing the other way?"
+nar: The last line is set a little apart from the others. "And who wrote this page, if the assessor was asleep?"
+voice: dark: Someone watched you sleep and wrote it in your own book. No. You wrote it. No. Leave it there.
+voice: hearsay: So this is what being written about feels like from the inside. Useful, to know what we do to people. {dc: 5}
+voice: hearsay: Questions, all questions. Somebody has been learning our trade off a sergeant. {below: 5}
+voice: glass: Rising, darling. Rumour, not weather. While you snored, your name went once round the quay and came back with extra on it. {dc: 4}
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.pink: Pink Like a Cut
+@node nod.m.pink
+call: margin.nod.fall
+nar: Item: one page in the assessor's own pencil, every colour word gone over until the graphite shines. It is in the present tense, about the past, which is how CARBON writes when nobody stops it.
+nar: "It is twenty to ten, or near it. Mother goes out first. Then the quay. The town stands in the dark with its hands in its pockets."
+nar: "It is later. The quay comes back. The sodium does not come on; it comes back, the way a cut comes back after you have pressed on it: red, then pink, then the orange that hides everything. About ten minutes of pink. Anybody who saw the lamps go pink saw the end of the dark."
+voice: carbon: We were not there. We are there now. That is how we work, and it works. {dc: 5}
+voice: carbon: Something happened in the pink and we cannot put it back together. The pieces keep blushing. {below: 5}
+voice: dark: Pink is the colour the dark goes when it is leaving a place.
+do: set(margin.pencil.mother)
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.grace: Grace Is a Receipt
+@node nod.m.grace
+call: margin.nod.fall
+nar: Item: one page set out as a receipt book, the kind with a counterfoil, in a clerk's round hand.
+nar: "RECEIVED, by grace, of the sea, one splinter of the Eye. Paid: [blank]."
+nar: The line runs on down the page. Each splinter has a number in the left-hand column, and the numbers jump. Every space for the price is blank, and every blank is ruled through, so that nothing could be added later.
+nar: At the foot, printed, as on every receipt the Shelf has ever issued: "Thank you for your custom."
+voice: precedent: Shelf practice note four: a gift with no giver is a sale with no receipt. There is always a counterfoil. {dc: 5}
+voice: chit: Blank where the price goes, every time. That is not a man who never paid. That is a man who kept the real book elsewhere. {dc: 6}
+voice: chit: No prices. Nobody in this town does anything for nothing. We would like that noted. {below: 6}
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.pollard: Assessor Pollard's Hair
+@node nod.m.pollard
+call: margin.nod.fall
+nar: Item: one page in a hand the assessor has seen once before, on the file in the weigh-house office. Sloped hard to the right, with the tight loops of a man trained to write on a ferry in a swell. It is signed "H. Pollard".
+nar: "Gullet Head Light. Conversion to electric arc. Lens assessed. Whole. One hundred and sixty-eight prisms, numbered, sound. I counted them twice, by candle. I was damp the whole time and nobody once offered to dry me."
+nar: "If you are reading this you have my hair in your instrument, and you wonder whether I am retired or deceased. The paperwork disagrees. So do I, most days."
+nar: "I passed it whole. It was whole. Whatever it is now, it was whole when I left it, and I should like that on the file."
+inst: THE DAMP: That was him. Damp, particular, and sure he was right. He usually was. It never made him happier.
+voice: precedent: Pollard. Before our time. A name in the case books, known for counting things twice and drying nothing. {dc: 5}
+voice: sum: A hundred and sixty-eight, whole, twelve years ago. If a third of them are green now, fifty-six went somewhere after Pollard turned his back. {when: has(lens.green)}
+voice: sum: A hundred and sixty-eight, whole, twelve years ago. A count is only true on the day it is taken. {when: !has(lens.green)}
+opt: "Wake." -> margin.nod.wake
+
+# ---------------------------------------------------------------- nod.m.small: The Small Thing
+@node nod.m.small
+call: margin.nod.fall
+nar: Item: one page left almost blank. In the bottom corner, in writing so small it might be a crease:
+nar: "It was there. It did nothing. I am writing it down so that it does not have to be remembered."
+nar: Beside it, smaller than a thumbnail, a drawing of the place where the assessor stood when the small thing came, every stone and post in it. The assessor is not in the drawing. Where the assessor stood there is only the ground.
+voice: dark: We saw it. We are fine. We are fine about it. We have written it down, so we are fine.
+voice: undertow: Go back and look again. You want to. That is all I ever say. {dc: 5}
+voice: undertow: Something on the page wants you to turn it over. There is nothing on the back. Turn it over. {below: 5}
+opt: "Turn the page over." -> margin.nod.small.back
+opt: "Wake." -> margin.nod.wake
+
+@node margin.nod.small.back
+cost: 1
+nar: The back of the page is blank in the ordinary way, with a thumbprint of the assessor's own in one corner, grey with graphite. The assessor looks at it longer than a blank page warrants, and turns it back. The drawing is still there. The assessor is still not in it.
+opt: "Wake." -> margin.nod.wake
+
+# ================================================================ DREAD FULL: THE SMALL THING
+# Quiet, short, never explained, never violent, never a monster. A thing a little wrong that does
+# nothing. A second small thing in the same district is a different, briefer one (.again).
+
+@node small
+alt: small.gut ? indistrict(gut)
+alt: small.floor ? indistrict(floor)
+alt: small.mole ? indistrict(mole)
+alt: small.weigh ? indistrict(weigh)
+alt: small.brine ? indistrict(brine)
+go: small.quay
+
+@node margin.small.after
+do: offer(m.small); meter(dread, -6)
+exit: walk
+
+# ---------------------------------------------------------------- small.quay: the fourth shadow
+@node small.quay
+alt: small.quay.again ? visits(small.quay) > 1
+alt: margin.small.quay.dark ? light < 0.05
+cost: 2
+nar: There are three sodium lamps on Lamp Quay, on three swan-neck posts. Three lamps give a person three shadows, thin and grey, laid out round the boots like the hands of a clock that cannot agree with itself.
+nar: The assessor has four.
+nar: The fourth is a little shorter than the others and lies toward the sea, where no lamp could put it. It wears a hat lower in the crown than the assessor's, and older.
+voice: sum: Three lamps. Four shadows. Count the lamps again. We will wait. {dc: 4}
+voice: sum: Three. Four. Something here is one too many and we have lost track of which. {below: 4}
+voice: dark: Do not turn round. There is nothing behind you. That is not why.
+opt: "Count the lamps again." -> margin.small.quay.count
+opt: "Step out of it." -> margin.small.quay.step
+
+@node margin.small.quay.count
+cost: 1
+nar: One post. Two. Three. Three shadows round the boots, and beyond them toward the sea only wet stones with nothing lying on them.
+nar: At the far post a Lamplighter lifts a hand, in case the assessor wanted something, and then writes down that the assessor did not.
+go: margin.small.after
+
+@node margin.small.quay.step
+cost: 1
+nar: The assessor takes one step toward the harbour office. Three shadows come along. The fourth stays where it is for exactly as long as it takes to notice that it has stayed. Then there are three.
+voice: pride: We were not frightened. We stepped aside, as one does on a pavement. That is all anyone saw. {dc: 5}
+voice: pride: Somebody saw us jump. Somebody always does, under the sodium. {below: 5}
+go: margin.small.after
+
+@node margin.small.quay.dark
+cost: 2
+nar: The quay is out. In the dark, not near and not far, somebody is whistling a hymn, one note to a breath, the way a person whistles who is busy with their hands.
+nar: The assessor stands still. The whistling does not come nearer, and it does not go away. It finishes the verse, the high note at the end too, which is a note nobody reaches, and then it is the sound of the tide on the steps.
+voice: dark: Nobody on the quay. We can hear the tide on the third step down. We would know. {dc: 5}
+voice: dark: Somebody on the quay. Somebody on the quay. Stand still. {below: 5}
+voice: undertow: You could call out. You want to know whether it would stop. {dc: 6}
+opt: "Call out." -> margin.small.quay.call
+opt: "Stand still until it ends." -> margin.small.after
+
+@node margin.small.quay.call
+cost: 1
+line: LAMB: Hello?
+nar: The word goes out over the quay and nothing answers it. In the weigh-house somebody drops a bucket. The assessor's voice sounded, for a moment, like somebody else's on a telephone.
+go: margin.small.after
+
+@node small.quay.again
+cost: 1
+nar: A coin lies on the top step, heads up, dry, though the step around it is wet. The assessor bends for it. It is a penny of a reign two kings ago, worn smooth, and warm, as if it has just come out of a pocket.
+nar: When the assessor straightens, the step is wet all over, and the penny is in the assessor's glove, and it is cold.
+voice: chit: The old king's father on it. Worth exactly what somebody will give you for it, which is a penny. {dc: 4}
+go: margin.small.after
+
+# ---------------------------------------------------------------- small.brine: the pint
+@node small.brine
+alt: small.brine.again ? visits(small.brine) > 1
+cost: 2
+nar: At the end of the bar, under the slow clock, stands a pint nobody is drinking. Its head is as white as a new collar, and the head does not go down. The assessor watches it through a whole argument at the next table about whether eels are fish.
+nar: Sabine wipes the bar. She wipes up to the pint, lifts nothing, goes round it, and carries on. She does not look at it, the way a person does not look at a thing that is there every night.
+voice: chit: Nobody has paid for it. There is no mark for it on the slate. In the Brine. Think about that. {dc: 4}
+voice: condolence: Leave it. Some things on a bar are not for asking about. {dc: 6}
+voice: hearsay: Ask. Ask the pot girl. Somebody in here knows whose it is and is longing to be asked. {below: 6}
+opt: "Ask Sabine whose it is." -> margin.small.brine.ask
+opt: "Leave it be." -> margin.small.brine.leave
+
+@node margin.small.brine.ask
+cost: 1
+line: SABINE: Whose what, love?
+nar: She looks where the assessor is looking. The end of the bar is wet wood and a ring where a glass has stood a long while. Sabine wipes the ring. It has not come off in years, by the look of the cloth.
+line: SABINE: Egg's a penny. Questions about my bar are free, and worth what you paid.
+go: margin.small.after
+
+@node margin.small.brine.leave
+cost: 1
+nar: The assessor leaves it. When the slow clock next strikes, late, the glass is empty, and nobody saw it drunk. At the next table the eels have been agreed to be fish, by a narrow margin.
+go: margin.small.after
+
+@node small.brine.again
+cost: 1
+nar: The porthole beside the stove holds the room the way glass does, stove, settle, drinkers. In the glass the settle has one more person on it than the settle has. The assessor counts both twice. The person in the glass has their back to the room and their face to the fire, as people sit who are waiting.
+nar: Somebody opens the door. The draught makes the paraffin jump, and the porthole is black, with the quay's orange behind it.
+voice: dark: You knew that shape. You have seen that shape tonight. Do not say so. {dc: 5}
+go: margin.small.after
+
+# ---------------------------------------------------------------- small.weigh: the balance
+@node small.weigh
+alt: small.weigh.again ? visits(small.weigh) > 1
+alt: margin.small.weigh.in ? at(weigh_in) | at(office) | at(tube)
+cost: 2
+nar: On the weigh-house roof the town balance stands against the sky, two great pans on a beam, older than Mother. A balance is the stillest thing a town owns.
+nar: The left-hand pan sinks. Slowly, a hand's breadth, as if something the weight of a gull, or a cat, or a sleeping child had been set in it. Nothing is in it. The beam stays at its new angle, patient, the way a scale waits for the rest of the purchase.
+voice: sum: A pound and a quarter, perhaps. Perhaps less. There is nothing in the pan, so it is a precise weight of nothing. {dc: 5}
+voice: carbon: Somebody sets something down, to see what it weighs. There is nobody on the roof. {dc: 6}
+voice: grip: Cold rungs up the side to the roof. We could climb. The hands say no. The hands have opinions. {below: 6}
+opt: "Watch the pan." -> margin.small.weigh.watch
+opt: "Look away from it." -> margin.small.weigh.away
+
+@node margin.small.weigh.in
+cost: 2
+nar: The weigh-house beam hangs from its hook in the rafters, where the town weighs its fish, its coal and, once, for a bet, a curate. Both pans are empty and level.
+nar: The nearer pan goes down. Slowly, a hand's breadth, the way it goes down for a small fish set in it with care. Nothing is in it. The chains creak once and the beam stays at its new angle, waiting, as a scale waits for the rest of the purchase.
+voice: sum: A pound and a quarter, perhaps. Perhaps less. There is nothing in the pan, so it is a precise weight of nothing. {dc: 5}
+voice: smell: Fish, fish, wet rope, beer. Nothing new. Nothing at all that weighs a pound. {dc: 5}
+voice: dark: If anyone else saw that, they are not saying so either. {below: 6}
+opt: "Watch the pan." -> margin.small.weigh.watch
+opt: "Look away from it." -> margin.small.weigh.away
+
+@node margin.small.weigh.watch
+cost: 2
+nar: The pan does not move. Whatever is in it is in no hurry to be weighed. When at last the assessor blinks, the beam is level and the pans hang even, and the chains are still swinging, a little, as chains do when something has just been lifted off.
+go: margin.small.after
+
+@node margin.small.weigh.away
+cost: 1
+nar: The assessor looks at a fish scale stuck to a board, at a nail. When the assessor looks back the beam is level. The assessor writes "balance: level" in the Daybook and underlines it, which the Shelf has never asked for.
+go: margin.small.after
+
+@node small.weigh.again
+cost: 1
+nar: On the weigh-house door somebody has chalked the price of herring, as the Guild does each morning: a farthing a dozen, which nobody has asked in sixty years. The chalk is fresh enough to come off on a finger. The assessor's finger comes away clean.
+voice: precedent: A farthing a dozen. The price in the old case books, the year of the first Low Night anyone wrote down. We read it once and forgot it. Something did not. {dc: 6}
+go: margin.small.after
+
+# ---------------------------------------------------------------- small.floor: the drowned lamp winds
+@node small.floor
+alt: small.floor.again ? visits(small.floor) > 1
+cost: 2
+nar: Out on the floor the drowned lamp leans in the dark, a broken tooth of a tower with a hole in its side, and from it, across the mud, comes a sound.
+nar: A tick. Then another. The slow tick of a clockwork weight let down a chain one link at a time: the sound a lighthouse made, in the old days, turning its lens. Nobody has wound the Old Light in a hundred and twelve years.
+call: margin.small.floor.merrow
+nar: It ticks fourteen times, and stops.
+voice: carbon: The keeper climbs, winds the weight, comes down. It is a hundred and twelve years ago. It is now. Both. {dc: 6}
+voice: salt: The mud has gone quiet under the boots. The pools have stopped trembling. The sea is listening, and the sea does not listen. {dc: 5}
+voice: salt: Cold in the feet. Colder than the water. Go back up the steps. Go. {below: 5}
+opt: "Go nearer to the Old Light." -> margin.small.floor.near
+opt: "Stay where the lanterns are." -> margin.small.floor.stay
+
+@node margin.small.floor.merrow
+when: clock < 23:40 & !has(merrow.cells)
+nar: Inside the tower someone has been chipping at metal. The chipping stops while the ticks go on. When they stop, there is a long moment, and then the chipping starts again, a little faster than before.
+
+@node margin.small.floor.near
+cost: 2
+nar: The assessor walks out toward it. The ticking does not start again. At the foot of the leaning tower the mud bears no prints but the ones it already had. In the hole in its side nothing turns.
+nar: For a moment there is a smell of warm fish oil, the yellow oil they burned in the Old Light before Gullet had heard of paraffin. Then the wind moves and it is only mud.
+voice: smell: Train oil, rendered, warm, a hundred years out of fashion. Nobody alive burns it. {dc: 6}
+voice: smell: Mud. Mud, and weed, and something that was warm a moment ago. {below: 6}
+go: margin.small.after
+
+@node margin.small.floor.stay
+cost: 1
+nar: The Low Night lanterns go on bobbing over the mud, politely. Nobody else has turned toward the Old Light. Nearby a child explains to a smaller child how to tell a dead crab from a sleeping one, and gets it wrong, and is believed.
+go: margin.small.after
+
+@node small.floor.again
+cost: 1
+nar: In a pool by the assessor's boot the sky is reflected, and in it Mother is burning, white, full, the beam going round over the reflected town. The assessor looks up. Over the mole, Mother is as she is. In the pool the beam comes round once more, and a ripple from nowhere takes it.
+voice: dark: Look up. Look down. Pick one. Do not keep doing both. {dc: 5}
+go: margin.small.after
+
+# ---------------------------------------------------------------- small.mole: the warm rail
+@node small.mole
+alt: small.mole.again ? visits(small.mole) > 1
+cost: 2
+nar: The iron rail is cold enough to take skin. Under the assessor's hand, for the width of one hand, it is warm.
+nar: The warm place is lower than the assessor would hold a rail. It is the height a small, round-backed person would hold it, going slowly. It is warm as a cup just put down. An inch to either side the iron is the cold of iron at night by the sea.
+call: margin.small.mole.frost
+voice: grip: Warm. Cold, warm, cold. The hand knows a hand when it touches where one was. {dc: 4}
+voice: dark: There is nobody on the mole. You can see the whole length of it. {dc: 5}
+opt: "Put your hand over the warm place." -> margin.small.mole.hold
+opt: "Walk on." -> margin.small.mole.walk
+
+@node margin.small.mole.frost
+when: frost > 0
+nar: The frost has the whole rail white and furred, end to end, except one place: a bare black print of a palm and four fingers, low down, as clean as if the hand had only just lifted.
+
+@node margin.small.mole.hold
+cost: 1
+nar: The assessor's hand covers the warm place exactly, and is too big for it. For the space of a breath the warmth comes up through the glove, steady, unhurried. Then the iron is the temperature of iron, and the assessor is a person with a hand on a rail, which is all anyone watching from the quay would see.
+go: margin.small.after
+
+@node margin.small.mole.walk
+cost: 1
+nar: Ten steps on, the assessor looks back. Spray has come over the rail, and the place is wet like the rest. It steams very slightly. Then it does not.
+voice: knees: Keep walking. We are good at walking away. It is going up we complain about. {dc: 4}
+go: margin.small.after
+
+@node small.mole.again
+cost: 1
+nar: Somewhere above, in the tower, a door closes, softly. Mother's door is shut, and has been, and nobody has gone in or come out.
+voice: sum: One door in that tower. We can see it. One door, shut. The arithmetic is not comforting. {dc: 4}
+go: margin.small.after
+
+# ---------------------------------------------------------------- small.gut: Captain Hale Dunlin
+@node small.gut
+alt: small.gut.again ? visits(small.gut) > 1
+place: gutter
+cost: 2
+do: set(margin.hale_seen)
+nar: Between one door and the next, the assessor comes out by the gutter. The glow moves in it the way it always moves: a band of violet coming slowly downhill over the scales and the oil, then a band of something darker, then violet again.
+nar: In the violet band, for as long as it takes to pass, a man stands on the far side of the gutter. He is the size of a door, in a captain's coat with the buttons gone green, a blindfold slack round his neck. He is filling a pipe. He tamps it with his thumb, and looks at the thumb, and smells it, the way a fishmonger smells his hands after washing to see whether he has.
+nar: The band moves on downhill. The far side of the gutter is the wall of a smokehouse, with a string of eels on a nail, and nobody.
+voice: smell: Shag. Black shag with tar in it. Nobody in the Gut smokes shag. Nobody has for twenty years. {dc: 5}
+voice: smell: Fish, smoke, fish, and under it something old and brown that goes before we can name it. {below: 5}
+voice: dark: He did not look at you. That was kind of him.
+opt: "Wait for the next band of violet." -> margin.small.gut.wait
+opt: "Ask the Whelk twins who that was." -> margin.small.gut.ask
+
+@node margin.small.gut.wait
+cost: 2
+nar: The next violet band comes down the gutter in its own time. It shows scales, oil, a fish head facing uphill, the wall, the eels. So does the third.
+nar: Up the lane a smokehouse door opens. Oak smoke comes out into the lane, and with it, very faint and gone at once, shag.
+go: margin.small.after
+
+@node margin.small.gut.ask
+cost: 2
+nar: The Whelk twins are gutting at their trestle ten yards down, knives going like two clocks.
+line: NOLL: Over the gutter? There's nobody over the gutter but
+line: MAB: but the old captain, and he's been dead since the vote was a boy. Which there isn't.
+line: NOLL: Which there isn't.
+nar: They go back to their knives. Neither looks across the gutter. Both of them, the assessor notices, have moved their buckets a little further from it.
+go: margin.small.after
+
+@node small.gut.again
+place: gutter
+cost: 1
+nar: On the near edge of the gutter a short clay pipe has been set down, the bowl blackened, the stem bitten flat. It is warm when the assessor's hand comes near it. The hand does not quite arrive.
+nar: When the next violet band has passed, the edge of the gutter is wet stone, and the Whelk twins are arguing about whose turn it is to empty the bucket, which neither of them has looked up from.
+voice: undertow: Pick it up. Put it in your pocket. Take it to the big man. See his face. {dc: 5}
+go: margin.small.after
+
+# ================================================================ COLD FULL: CHILLED
+# Lamb must shelter at the nearest stove: the Brine for the quay, the Brine, the floor and the
+# mole; Shadwell's smokehouse for the Gut; the after-vote's brazier for the weigh-house. Who is
+# there follows the cast schedule (ACT1-PLAN section 3).
+
+@node chilled
+alt: chilled.gut ? indistrict(gut)
+alt: chilled.weigh ? indistrict(weigh)
+alt: chilled.floor ? indistrict(floor)
+alt: chilled.mole ? indistrict(mole)
+alt: chilled.brine ? indistrict(brine)
+go: chilled.quay
+
+@node chilled.quay
+cost: 1
+nar: The cold has got into the pen hand and then into the rest. The fingers will not close on the pencil, and the coat has stopped being a coat and become a wet thing the assessor is carrying about.
+voice: grip: Nothing. The hands report nothing. They have resigned and are waiting for their notice to run out.
+voice: knees: The Brine is forty yards. We can do forty yards. We have done worse. Not much worse.
+opt: "Make for the Brine's stove." -> margin.stove.brine
+
+@node chilled.floor
+cost: 3
+nar: The cold comes up out of the mud through boots full of the sea. Some way short of the steps the assessor's feet stop being feet and become two cold facts at the ends of the legs.
+voice: salt: The body has had enough of the floor of the sea. The body would like to be a body on a settle, by a fire, with soup.
+opt: "Make for the Brine's stove." -> margin.stove.brine
+
+@node chilled.mole
+cost: 2
+nar: The mole is a long way back with the spray coming over the rail. The assessor walks it with the shoulders up round the ears, which does nothing, and the head down, which does less. Behind, Mother watches like an aunt seeing a child home.
+voice: ballast: Wet stone and no feeling in the feet. Slow. Slow is how a ship comes in. {dc: 5}
+voice: ballast: The stones tilt. They do not. We do. Hold the rail. {below: 5}
+opt: "Make for the Brine's stove." -> margin.stove.brine
+
+@node chilled.brine
+cost: 0
+nar: The cold arrives in the assessor all at once, here, in a warm room, as cold does: it waits until there is a stove in reach and then presents its account.
+go: margin.stove.brine
+
+# ---------------------------------------------------------------- the Brine's stove, by the hour
+@node margin.stove.brine
+alt: margin.stove.brine.frost ? clock >= 04:10
+alt: margin.stove.brine.late ? clock >= 02:40
+alt: margin.stove.brine.wet ? clock >= 01:30
+alt: margin.stove.brine.midnight ? clock >= 23:50
+go: margin.stove.brine.early
+
+@node margin.stove.brine.early
+place: brine
+cost: 20
+nar: The Brine takes the assessor in the way a dog takes in a wet visitor: a look, a sniff, and room made by the stove.
+line: SABINE: Stove's free. Standing by it's free. Sitting by it is a drink, and the drink's the price of the chair, and the chair's taken.
+nar: The chair is taken by a small woman in an oilskin, who moves her boots two inches to the left, which in the Brine is an embrace.
+line: WENNA: Hands flat. Not fists. You'll warm the knuckles and leave the rest.
+line: PIP: You've gone the colour of the floor at slack water. Grey with a bit of green round the mouth. Sit nearer, she won't bite. She bit the last one.
+line: TEAGUE: Is that the morning boat's weather out there? It isn't. It never is.
+call: margin.stove.common
+nar: Twenty minutes. The coat steams like a pudding. The fingers come back one at a time, the little ones last.
+do: meter(cold, -6)
+exit: walk
+
+@node margin.stove.brine.midnight
+place: brine
+cost: 20
+nar: The stove is ringed. The assessor finds a place behind Deacon Fennick, who holds his bell jar mouth-down to the fire to drive the fog out of it.
+line: FENNICK: Come into the warmth, assessor. Heat is only light that has given up pretending. I trust it.
+line: GAUZE: Mind the jar. Everyone minds the jar. I'm not cold, you know. I've not been cold in eleven years. I've not been much of anything.
+call: margin.stove.merrow
+line: PENHALLOW: Move up, Shelf. You stood on my deck tonight and never once got in the way. Do the same here and you can have the corner.
+call: margin.stove.common
+nar: Twenty minutes in the corner, hot on one side and a draught on the other.
+do: meter(cold, -6)
+exit: walk
+
+@node margin.stove.wenna.frost
+when: var.prov != keeper
+nar: Wenna, by the stove, does not look round. She moves the poker so that the assessor's boots fit.
+line: WENNA: Frost. She'll be white all over by now. The rail, the gallery, the glass. She looks her best white. Nobody goes up to see.
+
+@node margin.stove.merrow
+when: clock < 00:40 & !has(merrow.cells)
+nar: Steam rises off Tub Merrow's trousers in two columns, boot to thigh, as if he were standing in his own small weather.
+line: MERROW: Stove's big enough. Mud's warmer than you'd think. Stays with you after.
+
+@node margin.stove.brine.wet
+place: brine
+cost: 20
+nar: The Wet Hour. The Brine is full to the ribs of its hull, and every one of the full is wet, and the stove has a queue.
+line: SABINE: Ten minutes at the stove, a penny. Twenty, tuppence. Thirty and you're family, and I'll expect you at Christmas with a goose.
+nar: Tobit Quill is asleep under a table with his bare feet stuck out toward the fire, and nobody has the heart to move them. Nan Cockle, at the front of the queue, gives up her place without being asked and without getting up.
+line: COCKLE: When I was a girl the Old Light had a door, and a stove inside it, and the keeper let you warm your feet on his dog. Good dog. Very flat by the end.
+call: margin.stove.common
+nar: Twenty minutes. Tuppence. The assessor's coat now smells of the Brine, which is to say of paraffin, vinegar, wet wool and everyone.
+do: meter(cold, -6)
+exit: walk
+
+@node margin.stove.brine.late
+place: brine
+cost: 20
+nar: The small hours. The Brine has gone quiet. Nan Cockle snores on the settle, regular and seaworthy. Penhallow sits by a porthole with her cap on her knee, watching the mole.
+call: margin.stove.blackout
+line: PIP: Here. Give us your hands. No, give them here.
+nar: Pip Gannet takes the assessor's hands in hers, which are hot from the washing-up, and rubs them hard.
+line: PIP: High water's ten past five. I can feel it coming up the backs of my legs like a cat wanting in. Everything's colder at high water. Even Mrs Brine.
+line: SABINE: I heard that. That's a ha'penny.
+call: margin.stove.common
+nar: Twenty minutes. Pip goes back to the glasses. The assessor's hands smell of soda, and work.
+do: meter(cold, -6)
+exit: walk
+
+@node margin.stove.blackout
+when: clock >= 02:50 & clock < 03:20
+nar: Outside the portholes the quay has gone out again, every lamp. The Brine has not. It burns paraffin, and never needed anybody's switch.
+line: PENHALLOW: Second time tonight. I'd not bring a coal barge in on this, never mind forty souls.
+
+@node margin.stove.brine.frost
+place: brine
+cost: 20
+nar: Frost has grown on the inside of the portholes in ferns. The Brine smells of bread: the oven is going, and the heat comes out of the wall behind the bar as well as the stove, so that the whole room leans toward it.
+line: SABINE: Here. The heel. It's free, which is what the heel's worth to anyone but me. Best bit. Don't tell them.
+call: margin.stove.wenna.frost
+call: margin.stove.common
+nar: Twenty minutes, and a heel of bread, and a corner of a stove that two women have kept warm since before the assessor was born.
+do: meter(cold, -6)
+exit: walk
+
+# ---------------------------------------------------------------- what any stove does, and what the town thinks of Lamb tonight
+@node margin.stove.common
+call: margin.stove.damp
+call: margin.stove.keeper
+call: margin.stove.wreckers
+voice: condolence: Nobody here asked what you were doing out there. That is the Brine's courtesy. It is not small. {dc: 5, when: at(brine)}
+voice: pride: Steaming. In public. Like a horse. {below: 5}
+
+@node margin.stove.damp
+when: var.damp_wet == 1
+do: damp_wet = 0
+nar: The assessor holds the Damp to the heat until the hair in it stops weeping.
+inst: THE DAMP: Thank you. He used to sit like this, Pollard, with his feet on the fender. He never got dry either. He got warm, and called it the same thing.
+
+@node margin.stove.keeper
+when: var.prov == keeper & clock >= 00:20 & at(brine)
+nar: Since midnight the chair by the stove has been turned to face the wall, with the small woman in it. Sabine watches the assessor take the heat, and counts.
+line: SABINE: Stove's tuppence. It was a penny before midnight. Prices went up at midnight. You'll know why.
+
+@node margin.stove.wreckers
+when: var.prov == wreckers & clock >= 00:30 & at(brine)
+nar: Nan Cockle gets up from the settle when the assessor comes near, carries her stool to the far side of the room, and sits on it facing the assessor, so as to be seen not to be near.
+
+# ---------------------------------------------------------------- the Gut: Shadwell's smokehouse
+@node chilled.gut
+alt: margin.stove.smoke.marrow ? clock >= 03:30 & clock < 05:30
+place: smokehouse
+cost: 20
+nar: The nearest door with heat behind it is Shadwell's: a tall black room hung to the roof with herring in their hundreds, all looking down, all gold, over a bed of oak dust that smoulders and does not flame.
+line: SHADWELL: In. Shut it. Every time that door opens the herring lose ten minutes.
+nar: Ned Shadwell does not turn round. He is looking up at the third beam, where the soot has a sheen on it.
+line: SHADWELL: Twenty past something, by the soot. The beam doesn't do hours. Clocks do hours, and clocks have faces, and a face will lie. Soot's got nothing to be vain about.
+line: SHADWELL: Snuff? Warms the inside of the nose. Nothing else will, in here.
+call: margin.stove.damp
+voice: smell: Oak. Herring. Tar. Gold. Gold has a smell in here, and we have it now, in the coat, for life. {dc: 5}
+voice: smell: Smoke. Smoke in the eyes, the throat, the brain. We are being cured. {below: 5}
+opt: "Take a pinch of snuff." -> margin.smoke.snuff
+opt: "Just stand by the fire." -> margin.smoke.stand
+
+@node margin.smoke.snuff
+do: give(i.snuff); meter(cold, -6)
+nar: The snuff is black and smells of the beam. The assessor sneezes twice, so hard the herring sway. Shadwell nods, and twists a second pinch into a paper for later.
+line: SHADWELL: That's you kippered. Twenty minutes and you'll keep a fortnight.
+exit: walk
+
+@node margin.smoke.stand
+do: meter(cold, -6)
+nar: Twenty minutes in the smoke. Afterwards the coat smells of oak, and the lane outside, for the first time all night, of nothing in particular.
+exit: walk
+
+@node margin.stove.smoke.marrow
+place: smokehouse
+cost: 20
+nar: Shadwell's smokehouse is a tall black room hung to the roof with gold herring. By the fire, on an upturned crate that is not equal to him, sits Marrow Dunlin, his blindfold still round his neck, eating a kipper whole from the tail up.
+line: SHADWELL: In. Shut it. You're letting the time out.
+call: margin.smoke.marrow.read
+line: SHADWELL: He's been here since the soot was on the second beam. He's eaten eleven.
+line: MARROW: Twelve. You weren't counting the one I was sorry about.
+call: margin.stove.damp
+do: meter(cold, -6)
+nar: Twenty minutes between a man the size of a door and a fire the size of a hearthrug. The assessor comes out very slightly smoked, holding a kipper nobody remembers handing over.
+exit: walk
+
+@node margin.smoke.marrow.read
+alt: margin.smoke.marrow.nose ? var.seenas_guild == nose
+alt: margin.smoke.marrow.informer ? var.seenas_guild == informer
+line: MARROW: The flatfish! Up off the bottom and into the smoke. Both eyes on the one side, Ned, and both of them watering.
+line: MARROW: Sit by me. A cold fish goes stiff, and a stiff fish cannot be filleted, and then what use is it to anybody? Warm. Bend. Be of use.
+
+@node margin.smoke.marrow.nose
+line: MARROW: Here's a nose. Make room, Ned. A nose is family in this house, wet or dry.
+return:
+
+@node margin.smoke.marrow.informer
+nar: Marrow does not look up. He moves his crate a foot from the fire, which leaves room, and a foot from the assessor, which leaves more.
+line: MARROW: The Guild doesn't let a thing freeze. Not even a thing that's named it. Warm yourself and go.
+
+# ---------------------------------------------------------------- the weigh-house: the after-vote's brazier
+return:
+
+@node chilled.weigh
+alt: margin.brazier.hobb ? clock >= 04:15
+alt: margin.brazier.gorm ? clock >= 02:50 & clock < 03:20
+alt: margin.brazier.empty ? clock >= 00:40
+place: weigh_in
+cost: 20
+nar: The after-vote's brazier is a cut-down oil drum of coals and fish skins in the middle of the weigh-house floor. The Guild stands round it with blindfolds pushed up on their foreheads like a row of drowsy pirates.
+call: margin.brazier.guild
+line: SPRATT: It's dripping on the pans.
+line: MARROW: Everything drips on the pans, Agnes. The pans have known worse than the Shelf.
+call: margin.stove.damp
+voice: smell: Burnt fish skin. It should be disgusting. It is, and it is also the warmest smell we have ever met. {dc: 4}
+do: meter(cold, -6)
+nar: Twenty minutes. Somebody puts a tin cup of something in the assessor's hand. It is not tea. Nobody claims it.
+exit: walk
+
+@node margin.brazier.guild
+alt: margin.brazier.guild.cold ? var.prov == guild & clock >= 00:20
+line: MARROW: Make room for the flatfish! Off the cold bottom of the sea and up to the fire. Look at it steam, brothers. That's a fish with something on its mind.
+
+@node margin.brazier.guild.cold
+nar: The Guild's ring opens to let the assessor in, because the Guild does not let a thing freeze, and closes behind, because it has heard what went up the tube at midnight. Nobody speaks to the assessor. Several people speak about the assessor, to the coals.
+line: MARROW: Warm it. Then send it out. A cold fish tells no lies, they say. They have never met this one.
+return:
+
+@node margin.brazier.empty
+place: weigh_in
+cost: 20
+nar: The Guild has gone up to its hall with the pans, and left the brazier behind, banked, a red eye in the dark of the weigh-house. The assessor crouches by it alone, with the Kit, which is not the same as being alone.
+inst: THE VANE: Nothing! In here, nothing! Not a breath! I am a weathercock in a cupboard and I hate it!
+inst: THE GLASS: Hush, dear. Nobody's listening. That is what's so restful.
+call: margin.stove.damp
+do: meter(cold, -6)
+nar: Twenty minutes among instruments. They fall quiet one by one, the Vane last, still muttering about the north. Candlemas says nothing at all, which is how Candlemas sulks at a red light it cannot fault.
+exit: walk
+
+@node margin.brazier.gorm
+place: weigh_in
+cost: 20
+nar: The brazier is the only light left on this side of the quay, and the assessor is not the only one to have found it. A figure in a dark coat comes in out of the blackout, a brass pole over one shoulder, and holds two hands to the coals.
+line: GORM: And is there room at this fire for the Municipal? And would the Shelf mind, very much, if the Municipal did not write anything down, for once, as the Municipal cannot see its page?
+line: GORM: And are your hands as cold as mine, assessor? And shall we not say anything, then, the two of us, for twenty minutes?
+voice: undertow: She is off duty for as long as the dark lasts. People off duty say things. {dc: 6}
+voice: dark: Her pencil is in her pocket. You can hear her not using it. {below: 6}
+call: margin.stove.damp
+do: meter(cold, -6)
+nar: Twenty minutes. Neither says anything. When the quay lamps come back, red, then pink, Sergeant Gorm is already at the door with her book open.
+exit: walk
+
+@node margin.brazier.hobb
+place: weigh_in
+cost: 20
+nar: The brazier has been fed again by somebody who did not trust the dark. Constant Hobb crouches at it with his two lanterns set either side of him.
+line: HOBB: Sorry. Sir. Madam. Assessor. Sorry, I'll move. It's not the dark out there. It's that it's so clear. You can see all the way to where you can't see.
+line: HOBB: Two lanterns. In case one goes. Sergeant says it's a waste of oil. Sergeant's never had one go.
+call: margin.brazier.marrow
+call: margin.stove.damp
+do: meter(cold, -6)
+nar: Twenty minutes with the youngest Lamplighter, who offers the assessor the better lantern, twice, and then a boiled sweet that is warm from his pocket and tastes of brass.
+exit: walk
+
+@node margin.brazier.marrow
+when: clock >= 05:30
+nar: The door bangs. Marrow Dunlin fills it, comes in out of the frost, and stands over the brazier with his scaled forearms held out to it like two fish on a slab.
+line: MARROW: The vote's gone out of the Guild, assessor. There's a coal in it yet. Mind you don't sit on it.
+

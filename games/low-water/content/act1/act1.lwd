@@ -1,0 +1,30 @@
+# Low Water, Act 1: Low Night. Root file. Private, 2026-10-16.
+# Plan: design/ACT1-PLAN.md. Format: design/LWD1-FORMAT.md. Lint: node content/tools/lwd1_lint.mjs
+@meta
+title: Low Water. Act 1: Low Night
+format: lwd/1
+act: 1
+night: 1
+start: quay.prologue
+clock: 22:41
+end-clock: 06:10
+at-end: dawn.start
+include: rules.lwd
+include: places.lwd
+include: world.lwd
+include: facts.lwd
+include: combat.lwd
+include: gear.lwd
+include: encounters1.lwd
+include: quay.lwd
+include: brine.lwd
+include: weigh.lwd
+include: floor.lwd
+include: mole.lwd
+include: gut.lwd
+include: margin.lwd
+include: dawn.lwd
+include: gates1.lwd
+include: insights1.lwd
+include: barks.lwd
+include: interrog1.lwd
