@@ -4,6 +4,7 @@
 
 Added:
 
+- `packages/superstack` and `packages/reconcile`: the two engine repositories now live here with their full history. Their old repositories are archived and point at this one.
 - `packages/`: the instruments under the engine, each with its known-answer tests. See `packages/README.md`.
 - `npm run test:packages` and `npm run test:py`, both run on CI.
 - `packages/quality`: SSIM, banding, edge, grain, frame-pacing and type checks with known answers; browser checks skip without Playwright.
