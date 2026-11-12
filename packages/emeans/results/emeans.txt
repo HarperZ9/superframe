@@ -1,0 +1,69 @@
+controls passed 4 of 4
+trap 1 n 1000 k 5 starts 200 | stuck lloyd 110 emeans 110 emeans_no_revival 112 keep_rule 129 | loss_e6 lloyd 7508512 emeans 7505721 emeans_no_revival 7604271 keep_rule 8582690 | lloyd_passes_e3 8350 | corner_mismatch 0
+trap 2 n 1000 k 3 starts 200 | stuck lloyd 39 emeans 31 emeans_no_revival 35 keep_rule 37 | loss_e6 lloyd 4561057 emeans 4036550 emeans_no_revival 4289216 keep_rule 4437909 | lloyd_passes_e3 7155 | corner_mismatch 0
+trap 3 n 1800 k 9 starts 200 | stuck lloyd 166 emeans 155 emeans_no_revival 157 keep_rule 169 | loss_e6 lloyd 7960110 emeans 7289930 emeans_no_revival 7492630 keep_rule 8598452 | lloyd_passes_e3 10530 | corner_mismatch 0
+trap 4 n 800 k 4 starts 200 | stuck lloyd 59 emeans 59 emeans_no_revival 60 keep_rule 60 | loss_e6 lloyd 9772511 emeans 9519907 emeans_no_revival 9644686 keep_rule 9646236 | lloyd_passes_e3 5425 | corner_mismatch 0
+grid trap 1 batch 32 alpha_e2 10 stuck 114 of 200
+grid trap 1 batch 32 alpha_e2 30 stuck 101 of 200
+grid trap 1 batch 32 alpha_e2 60 stuck 89 of 200
+grid trap 1 batch 64 alpha_e2 10 stuck 120 of 200
+grid trap 1 batch 64 alpha_e2 30 stuck 110 of 200
+grid trap 1 batch 64 alpha_e2 60 stuck 103 of 200
+grid trap 1 batch 128 alpha_e2 10 stuck 124 of 200
+grid trap 1 batch 128 alpha_e2 30 stuck 120 of 200
+grid trap 1 batch 128 alpha_e2 60 stuck 111 of 200
+grid trap 1 batch 256 alpha_e2 10 stuck 131 of 200
+grid trap 1 batch 256 alpha_e2 30 stuck 127 of 200
+grid trap 1 batch 256 alpha_e2 60 stuck 124 of 200
+grid trap 2 batch 32 alpha_e2 10 stuck 24 of 200
+grid trap 2 batch 32 alpha_e2 30 stuck 1 of 200
+grid trap 2 batch 32 alpha_e2 60 stuck 0 of 200
+grid trap 2 batch 64 alpha_e2 10 stuck 34 of 200
+grid trap 2 batch 64 alpha_e2 30 stuck 31 of 200
+grid trap 2 batch 64 alpha_e2 60 stuck 5 of 200
+grid trap 2 batch 128 alpha_e2 10 stuck 34 of 200
+grid trap 2 batch 128 alpha_e2 30 stuck 34 of 200
+grid trap 2 batch 128 alpha_e2 60 stuck 32 of 200
+grid trap 2 batch 256 alpha_e2 10 stuck 34 of 200
+grid trap 2 batch 256 alpha_e2 30 stuck 34 of 200
+grid trap 2 batch 256 alpha_e2 60 stuck 34 of 200
+grid trap 3 batch 32 alpha_e2 10 stuck 157 of 200
+grid trap 3 batch 32 alpha_e2 30 stuck 142 of 200
+grid trap 3 batch 32 alpha_e2 60 stuck 52 of 200
+grid trap 3 batch 64 alpha_e2 10 stuck 166 of 200
+grid trap 3 batch 64 alpha_e2 30 stuck 155 of 200
+grid trap 3 batch 64 alpha_e2 60 stuck 134 of 200
+grid trap 3 batch 128 alpha_e2 10 stuck 166 of 200
+grid trap 3 batch 128 alpha_e2 30 stuck 159 of 200
+grid trap 3 batch 128 alpha_e2 60 stuck 153 of 200
+grid trap 3 batch 256 alpha_e2 10 stuck 166 of 200
+grid trap 3 batch 256 alpha_e2 30 stuck 164 of 200
+grid trap 3 batch 256 alpha_e2 60 stuck 160 of 200
+grid trap 4 batch 32 alpha_e2 10 stuck 60 of 200
+grid trap 4 batch 32 alpha_e2 30 stuck 60 of 200
+grid trap 4 batch 32 alpha_e2 60 stuck 59 of 200
+grid trap 4 batch 64 alpha_e2 10 stuck 59 of 200
+grid trap 4 batch 64 alpha_e2 30 stuck 59 of 200
+grid trap 4 batch 64 alpha_e2 60 stuck 59 of 200
+grid trap 4 batch 128 alpha_e2 10 stuck 59 of 200
+grid trap 4 batch 128 alpha_e2 30 stuck 60 of 200
+grid trap 4 batch 128 alpha_e2 60 stuck 59 of 200
+grid trap 4 batch 256 alpha_e2 10 stuck 58 of 200
+grid trap 4 batch 256 alpha_e2 30 stuck 58 of 200
+grid trap 4 batch 256 alpha_e2 60 stuck 58 of 200
+palette k 8 emeans_passes 2 starts 50 | loss_e9 lloyd 8889339 emeans 9061360 | emeans_lower 6 of 50 | lloyd_passes_e3 38860
+palette k 8 emeans_passes 5 starts 50 | loss_e9 lloyd 8889339 emeans 8823717 | emeans_lower 18 of 50 | lloyd_passes_e3 38860
+palette k 16 emeans_passes 2 starts 50 | loss_e9 lloyd 4224770 emeans 4063862 | emeans_lower 10 of 50 | lloyd_passes_e3 52660
+palette k 16 emeans_passes 5 starts 50 | loss_e9 lloyd 4224770 emeans 4051894 | emeans_lower 25 of 50 | lloyd_passes_e3 52660
+spacing_e1 30 passes 5 batch 64 alpha_e2 30 | stuck lloyd 0 emeans 12 of 200
+spacing_e1 30 passes 5 batch 32 alpha_e2 60 | stuck lloyd 0 emeans 0 of 200
+spacing_e1 30 passes 20 batch 32 alpha_e2 60 | stuck lloyd 0 emeans 0 of 200
+spacing_e1 40 passes 5 batch 64 alpha_e2 30 | stuck lloyd 37 emeans 54 of 200
+spacing_e1 40 passes 5 batch 32 alpha_e2 60 | stuck lloyd 37 emeans 3 of 200
+spacing_e1 40 passes 20 batch 32 alpha_e2 60 | stuck lloyd 37 emeans 0 of 200
+spacing_e1 60 passes 5 batch 64 alpha_e2 30 | stuck lloyd 86 emeans 90 of 200
+spacing_e1 60 passes 5 batch 32 alpha_e2 60 | stuck lloyd 86 emeans 50 of 200
+spacing_e1 60 passes 20 batch 32 alpha_e2 60 | stuck lloyd 86 emeans 5 of 200
+spacing_e1 100 passes 5 batch 64 alpha_e2 30 | stuck lloyd 112 emeans 105 of 200
+spacing_e1 100 passes 5 batch 32 alpha_e2 60 | stuck lloyd 112 emeans 86 of 200
+spacing_e1 100 passes 20 batch 32 alpha_e2 60 | stuck lloyd 112 emeans 60 of 200

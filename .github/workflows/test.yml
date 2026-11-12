@@ -42,3 +42,5 @@ jobs:
           COLOURMIX_REQUIRE_NATIVE: '1'
           BUILDC: buildc
       - run: buildc build --release packages/daw/bld
+      # e-means: the study program is BuildLang end to end; its output must equal the stored results.
+      - run: buildc run packages/emeans/bld/emeans.bld > emeans-out.txt && diff emeans-out.txt packages/emeans/results/emeans.txt
