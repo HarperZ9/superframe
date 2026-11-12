@@ -1,0 +1,125 @@
+{
+ "schema": "raw-native.evidence/1",
+ "criterion": "RT stage R1: every run of the rasterizer checks, failures included (bounds: evidence/rt-r1-bounds.json, committed e9351b1 before any run)",
+ "runs": [
+  {
+   "run": 1,
+   "when": "2026-10-10 17:36Z",
+   "backend": "CPU (MSVC, Release)",
+   "checks": "C1, C2, C3",
+   "result": "fail: C1 on tie_grid_jittered, 3 double hits; every other C1 mesh, C2 and C3 within bounds, every control failing as required",
+   "diagnosis": "The jittered grid moved inner vertices up to 3 px on a 9 px grid. An independent Python mirror of the generator found one triangle (cell 9, 18) wound opposite to the other 1,151: the quad folded, so the input was not a planar triangulation and any fill rule covers its neighbours twice. The fault is the test mesh, not the rasterizer.",
+   "change": "Jitter reduced to 2 px on each axis (the mirror's smallest doubled area is then 1,390,886 fixed-point units, positive). A precondition check was added: every input triangle of a C1 mesh must have the same winding; on the 3 px mesh it reports 1 folded triangle. The bound is unchanged."
+  },
+  {
+   "run": 2,
+   "when": "2026-10-10 17:37Z",
+   "backend": "CPU (MSVC, Release)",
+   "checks": "C1, C2, C3",
+   "result": "pass: C1 0 doubles, 0 holes, 0 outside on all three meshes (controls: inclusive 14,063 / 110 / 605 doubles, exclusive 13,969 / 16 / 605 holes); C2 0 mismatches on retro_room, iso_street, clip_stress (exempt edge pixels 8, 7, 0; controls 3,350 / 9,840 / 62,664 mismatches); C3 max |uv err| 1.60e-4, median 3.1e-6 (control affine 0.635)",
+   "evidence": "evidence/rt-r1-cpu.json"
+  },
+  {
+   "run": 3,
+   "when": "2026-10-10 17:44Z",
+   "backend": "D3D12 WARP, debug layer on",
+   "checks": "C4, C5",
+   "result": "pass: 36 cases, 0 triangle-id, depth-bit, UV, texel or colour differences in any case; C5 0 setup slots differing; controls: flipped fill rule 14,831 pixels differ, moved vertex 1 pixel, guard band 8 w 5 valid-slot differences",
+   "note": "The moved-vertex control met its bound (at least one pixel) with a single pixel: z/w changes below one float32 step for a 1/256 px move on far surfaces, so it discriminates weakly. A reported, ungated count of UV components that change was added (177)."
+  },
+  {
+   "run": 4,
+   "when": "2026-10-10 17:45Z",
+   "backend": "WebGPU SwiftShader (Chrome, local wasm build)",
+   "checks": "C4, C5",
+   "result": "pass: every C4 case bit-identical; C5 4 of 635 retro_room setup slots differ (float rounding in the GPU's own setup), with no pixel effect and depth within bound"
+  },
+  {
+   "run": 5,
+   "when": "2026-10-10 17:48Z",
+   "backend": "CPU, D3D12 WARP (debug layer), WebGPU SwiftShader",
+   "checks": "C1 to C5, full rerun",
+   "reason": "Scene defect found by looking at the showcase image, not by a check: clip_stress's block covered the whole view, so its pixel checks exercised one box face, and its side walls never entered the frame. The block now passes beside the camera and is cut by the near plane in view; one wall runs from behind the camera to the horizon (16 triangles, 23 valid slots after clipping). No bound changed.",
+   "result": "pass on all three backends. clip_stress: C2 0 mismatches, 57,552 of 65,536 pixels covered, control 15,046; C4 and C5 0 differences on WARP and SwiftShader; guard band control 2 valid-slot differences. Other scenes as in runs 2 to 4.",
+   "evidence": [
+    "evidence/rt-r1-cpu.json",
+    "evidence/rt-r1-gpu-d3d12-warp.json",
+    "evidence/rt-r1-gpu-webgpu-swiftshader.json"
+   ]
+  },
+  {
+   "run": 6,
+   "when": "2026-10-10 19:51Z (lock held 19:51:31Z to 19:51:42Z)",
+   "backend": "D3D12 on the RTX 4090 (driver 610.88), under D:/gpu.lock.d, binaries at 5d00b3f",
+   "checks": "C4, C5",
+   "result": "fail on the RTX: C4 passes on every case but one, clip_stress affine (1 pixel's UV at 1.14x the bound); C5 fails on every scene: 335 of 635 (retro_room), 518 of 1,436 (iso_street) and 10 of 23 (clip_stress) valid slots differ from the CPU's (bound 1%); coordinates stay within one grid step except 8 on clip_stress; pixel triangle ids agree or are explained by a differing slot on every pixel; clip_stress also exceeds the depth bound (13,303 pixels over 1e-6, worst 8.3e-6) and, in affine and whole-pixel modes, the UV bound (worst 59x and 122x). Controls fail as required (14,831; 1; 2).",
+   "diagnosis": "Inferred, not yet confirmed: D3D12 allows fp32 division to be approximate (2.5 ulp) and the NVIDIA driver compiles 1/w and the affine w/sum that way, while WARP and SwiftShader divide exactly. 1/w feeds every snapped coordinate and every z, which explains near-tie snaps one unit apart and the depth drift; on clip_stress the UVs reach 300, so a 2-ulp weight error is large in UV. A follow-up would move the reciprocals to the host-side setup data or test a correctly rounded division; the bounds stay as committed.",
+   "evidence": "evidence/rt-r1-gpu-d3d12-rtx4090.json"
+  },
+  {
+   "run": 7,
+   "when": "2026-10-11 07:45Z",
+   "backend": "CPU and D3D12 WARP, commit ce4976d (snap correction on, method note 1)",
+   "checks": "C1 to C5",
+   "result": "pass. C1 0 doubles and 0 holes; C2 0 mismatches on the three scenes; C3 max |uv error| 5.4e-6 (was 1.6e-4; bound 1e-3), median 5.4e-8 (bound 1e-4); C4 bit-identical on every case; C5 0 differing slots on every scene and mode. Controls fail as required (fill rule 14,831 px; moved vertex 1 px, weak as before; guard band 2 slots).",
+   "evidence": "evidence/rt-r1-note1-d3d12-warp.json"
+  },
+  {
+   "run": 8,
+   "when": "2026-10-11 07:52Z",
+   "backend": "WebGPU in Chrome on SwiftShader, the same commit",
+   "checks": "C4, C5",
+   "result": "fail. C4 passes on every case. C5 fails in modern and dithered modes: 223 of 635 (retro_room), 587 of 1,436 (iso_street) and 4 of 23 (clip_stress) valid slots differ (bound 1%; before the change 4 of 635), and retro_room has 4 pixels with UV at 1.15x its bound. Affine and whole-pixel modes, where the correction is off, still pass.",
+   "diagnosis": "Inferred: SwiftShader contracts or reassociates the correction's multiply-adds (as it refactored the SAH area in R2's failure 2), so the corrected setup floats differ from the CPU's in the last bits, and the division by a sliver's small unsnapped area magnifies that. WARP is bit-exact.",
+   "evidence": "evidence/rt-r1-note1-webgpu-swiftshader.json"
+  },
+  {
+   "run": 9,
+   "when": "2026-10-11 07:47Z (lock held 07:47:10Z to 07:47:14Z)",
+   "backend": "D3D12 on the RTX 4090 under D:/gpu.lock.d, the same commit",
+   "checks": "C4, C5",
+   "result": "fail, as in run 6, and worse in one place: C5 modern differs on 625 of 635 slots (run 6: 335) and clip_stress modern now has 17 pixels with UV over the bound (worst 2.98x; it passed in run 6). Coordinates stay within one step and every triangle id difference is explained. The inferred cause is run 6's approximate division, now applied to the correction's divisions too.",
+   "evidence": "evidence/rt-r1-note1-d3d12-rtx4090.json"
+  },
+  {
+   "run": 10,
+   "when": "2026-10-11 08:03Z",
+   "backend": "CPU and D3D12 WARP, commit 7591baa (method note 2: snapCorrect off by default)",
+   "checks": "C1 to C5, plus the reported fifth mode",
+   "result": "pass, as runs 1 to 6 on WARP: C3 max 1.6e-4, median 3.1e-6; C4 bit-identical; C5 0 differing slots. Fifth mode (modern_snap_corrected, not gated): C4 and C5 pass. Controls fail as required.",
+   "evidence": "evidence/rt-r1-note2-d3d12-warp.json"
+  },
+  {
+   "run": 11,
+   "when": "2026-10-11 08:10Z",
+   "backend": "WebGPU in Chrome on SwiftShader, the same commit",
+   "checks": "C4, C5, plus the reported fifth mode",
+   "result": "pass on the four gated modes (as before method note 1). Fifth mode, not gated: C4 passes; C5 fails (223 of 635, 587 of 1,436 and 4 of 23 slots differ; retro_room UV 1.15x on 4 pixels).",
+   "evidence": "evidence/rt-r1-note2-webgpu-swiftshader.json"
+  },
+  {
+   "run": 12,
+   "when": "2026-10-11 08:50Z (lock held 08:50:00Z to 08:50:03Z)",
+   "backend": "D3D12 on the RTX 4090 under D:/gpu.lock.d, binaries at 20e0b89 (method note 2)",
+   "checks": "C4, C5, plus the reported fifth mode",
+   "result": "fail, as run 6 and no worse: gated modes give run 6's counts (335 of 635, 518 of 1,436, 10 of 23 slots differ; clip_stress affine and whole-pixel UV at 59x and 122x; clip_stress affine C4 1 pixel at 1.14x). Fifth mode (not gated) as run 9. The open RTX failure is unchanged; its inferred cause is still approximate fp32 division.",
+   "evidence": "evidence/rt-r1-note2-d3d12-rtx4090.json"
+  },
+  {
+   "run": 13,
+   "when": "2026-10-14 11:50Z",
+   "backend": "CPU mirror; D3D12 WARP; WebGPU SwiftShader; branch feat/rt-r1-div",
+   "checks": "method note 3: div_rn; C4 and C5",
+   "result": "The C++ mirror of div_rn equals C++ division on 67,108,864 random and 2,704 edge operand pairs (0 differing); the no-sticky control differs on 51,995. WARP: gpu_swr_parity JSON byte-identical to the run before the change, swr-render 0 differing pixels on 6 frames, hybrid parity passes. SwiftShader: swr parity identical to a control build without div_rn, hybrid parity passes. Finding on the way: the first form of div_rn (early returns, constant loop counts) made SwiftShader's setup pipeline compile time grow faster than the number of call sites (1 call 0.17 s, 2 calls 3.4 s, 4 calls over 240 s); a single-exit form with select and loop counts from the uniform compiles in 0.4 s with all 8 calls. The RTX 4090 run, the actual test of the inferred cause of run 6, is queued behind D:/gpu.lock.d.",
+   "evidence": "evidence/rt-r1-note3-div-mirror.json; evidence/rt-r1-note3-d3d12-warp.json; evidence/rt-r1-note3-webgpu-swiftshader.json"
+  },
+  {
+   "run": 14,
+   "when": "2026-10-15 00:41Z to 00:49Z, D:/gpu.lock.d taken by token engine-open-failures-36852-1792024871 and released",
+   "backend": "D3D12 on the RTX 4090, gpu_swr_parity built at 97eff44 (PR #120, merged as 2942857)",
+   "checks": "C4 and C5, method note 3 (div_rn)",
+   "result": "PASS. Every one of 45 cases has 0 differing setup slots, 0 depth values over 1e-6 and 0 UV values outside the bound: retro_room 0 of 635 valid slots differ in every mode (run 6: 335), iso_street 0 of 1,436 (run 6: 518), clip_stress 0 of 23 (run 6: 10), and clip_stress affine passes C4 (run 6: 1.14x the UV bound). Controls fail as required (14,831; 1; 2). The prediction of method note 3 holds: approximate fp32 division was the cause of run 6's failure.",
+   "evidence": "evidence/rt-r1-note3-d3d12-rtx4090.json"
+  }
+ ]
+}

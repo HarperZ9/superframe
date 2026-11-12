@@ -1,0 +1,62 @@
+{
+ "schema": "raw-native.models/1",
+ "purpose": "The scenes of ROADMAP M3 criterion 1, by role. Each role names the candidate in use; changing one 'use' field swaps a model everywhere a role is read. Since the author's decision of 2026-10-10 (\"No test models, only full owned assets.\") every candidate is an asset raw-native generates itself; the material gallery's spheres are built in code (raw/renderer/gallery.hpp) and need no file.",
+ "source": {
+  "generator": "raw_native_cli export-assets --out DIR (src/tools/owned_*.cpp)",
+  "licence": "FSL-1.1-MIT, the engine's licence",
+  "verification": "each file's SHA-256 equals the hash here; test_owned_assets checks the generator against evidence/m3-assets.json on every compiler",
+  "provenance": "assets/PROVENANCE.md"
+ },
+ "roles": [
+  {
+   "role": "helmet",
+   "criterion": "M3 criterion 1 (amended 2026-10-10): the helmet-class hero asset",
+   "use": "raw-hero",
+   "candidates": [
+    {
+     "name": "raw-hero",
+     "licence": "FSL-1.1-MIT",
+     "notes": "generated; every material extension",
+     "main": "raw-hero.gltf",
+     "files": [
+      {
+       "path": "raw-hero.gltf",
+       "sha256": "aa9c9bc290705706922fb698b58fa20af9ee046d00435321a8bf67d424b2f7af",
+       "bytes": 7436
+      },
+      {
+       "path": "raw-hero.bin",
+       "sha256": "9765de597e308c8ff0c68ec6baeeeb229deee7cf7530ad36b048ace6ab1cc358",
+       "bytes": 2706072
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "interior",
+   "criterion": "M3 criterion 1 (amended 2026-10-10): the interior hall at Sponza scale",
+   "use": "raw-hall",
+   "candidates": [
+    {
+     "name": "raw-hall",
+     "licence": "FSL-1.1-MIT",
+     "notes": "generated; see evidence/m3-assets-runs.json for counts",
+     "main": "raw-hall.gltf",
+     "files": [
+      {
+       "path": "raw-hall.gltf",
+       "sha256": "bdaec612f3adfc30fd9a75ee497fdd2b7d9c63194a3e7c065738f0ef474c61f5",
+       "bytes": 7339
+      },
+      {
+       "path": "raw-hall.bin",
+       "sha256": "017b0d276ac2f2a09358e1c24ef36c9aeb2d3807c9d562440d6d6f8e2077c9f6",
+       "bytes": 15027264
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

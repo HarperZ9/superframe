@@ -1,0 +1,337 @@
+# Roadmap to a media-grade, professional-grade engine
+
+Milestones in order, each with exit criteria a stranger can check. There are no
+dates: a milestone is done when its criteria pass and their evidence is committed
+under `evidence/`. Every milestone keeps the four properties in
+[ARCHITECTURE.md](ARCHITECTURE.md#what-stays-true-at-every-scale): a CPU reference
+for every verified feature, certificates on every run, byte-identical determinism
+where the platform allows it, and visible dependencies. Creative modules (Threads,
+Worlds, Motion) keep their ruling: no certificate.
+
+This plan replaced the earlier milestone list on 9 October 2026, when the author
+accepted the capability roadmap and its five decisions (ADR 0013). The ranking puts
+the customers first: the explainer films, the Studio, and the media every release
+renders. So the colour pipeline, vector and text fidelity and dependable media output
+come before a second native backend, and Vulkan and the native window move to M4.
+The comparison behind the order, with where raw-native leads and trails each
+measured reference, is [COMPARISON.md](COMPARISON.md).
+
+"Reference machine" means the author's RTX 4090 workstation. "Mid-tier GPU" means
+the class one generation behind the current mainstream, named in the evidence file
+when measured. A6 holds 0.x semantics until M3, where the renderer and scene APIs get
+a versioned snapshot; the full freeze waits for a complete engine (ADR 0015).
+
+**Revision of 9 October 2026 (ADRs 0014 to 0016).**
+- **Styles and genres pillar.** The author's direction for raw-native is "an upgraded
+  modern engine with retro features": scanlines, CRT, phosphors, film, halation, grain,
+  pixel art, and painted and illustrated looks. The named references are Disco Elysium,
+  Zero Parades, Half-Life, Kingdom Hearts and isometric RPGs.
+- **Style passes.** Each is a first-class pass with a CPU reference where one exists.
+  The display chain and the palette and dither join M1 as criteria 9 and 10.
+- **The original shader library.** A separate shader agent owns it (CRT, film, retro
+  3D, pixel art, painterly). Its passes plug into the M1 post stack; nothing here
+  writes a parallel version.
+- **Game runtime.** It is in scope, staged G0 (M2) to G4 (M6), with M1 untouched
+  (ADR 0014).
+- **New milestone.** M6, Authoring, is added.
+- **Templates.** The three starter templates are M2's style acceptance corpus
+  (ADR 0016).
+
+## M0: Foundation (landed with the architecture change)
+
+- Layered source tree with include rules checked in CI.
+- RHI over D3D12, WebGPU and null, extracted from the duplicated backends.
+- Frame graph for the GPU renderer and the CPU reference.
+- Golden identity matrix in CI; D3D12 debug layer as a failing check.
+
+**Exit criteria**
+
+1. Every certificate, receipt and image is byte-identical before and after, on
+   MSVC, GCC, WebAssembly, D3D12 on WARP, WebGPU on SwiftShader, and D3D12 and
+   WebGPU on the reference machine.
+2. `check_layers.py` passes with its self-test in CI.
+
+
+## M1: A media-grade host
+
+Scope: gaps 1, 2, 3, 4 and 10, web first (A1).
+
+Exit criteria:
+1. **Studio host.** `web/raw-gpu.mjs` exposes textures, samplers, canvas-as-texture compositing and `host.share()` (the Studio's C0 pull request). A browser test composites a 2D canvas and matches a CPU composite within 1/255 on SwiftShader and on the RTX 4090. The count of `requestDevice` calls is 1 with two consumers. The no-WebGPU fallback draws.
+2. **Colour.** The tone mappers and output transforms have a C++ reference and WGSL implementations. Over a committed grid of 33 x 33 x 33 RGB values plus grey and saturation ramps, the GPU result is within 1/255 of the C++ reference at 8-bit output, and the C++ reference is within a colour-difference bound (stated in `evidence/m1-colour-bounds.json` before the first run) of an OCIO 2.6.0 result produced offline. The default build keeps no new dependency.
+3. **HDR signal** (amended 2026-10-10; it replaced a measured 1,000-nit patch, by the author's decision). Checked in software only. It checks the encoded signal, not the light leaving a panel. Bounds are in `evidence/m1-hdr-signal-bounds.json`, written before the first run. (a) The PQ (SMPTE ST 2084) encode and decode, the extended sRGB curve and the ACES 2.0 HDR tone map on the neutral axis match a float64 reference of the published formulas (`tools/colour/hdr_signal_ref.py`). (b) The WGSL HDR pipelines, read back from the GPU as float32 over the criterion 2 grid, match the C++ encode: PQ within one 10-bit code, extended sRGB within max(1/1023, 0.5%). This holds on SwiftShader and the RTX 4090. (c) A control with a wrong PQ exponent fails both. The extended-range canvas path keeps its own test (`tests/web/hdr_output.py`).
+4. **Vector.** Stroke dashes, joins and caps, gradients, clip paths and image fills pass a corpus listed in `evidence/m1-vector-corpus.json` before the first run, each within the stated coverage error of the CPU reference. Node tests cover flattening, dash and join geometry.
+5. **Text and maths.** Every equation in films 1 to 5 renders from the engine's TeX subset or the documented MathJax path with no manual patch, checked by a script that lists the unsupported macros (expected: none).
+6. **Media output.** The manifest of each scene records an encoder probe for the machine. Two runs of `ao-check` on the same device class produce identical frame hashes for every frame. An offline audio mix matches the `superstack.sound/1` vectors sample for sample. The CPU-adapter smoke job stays inside a wall-clock budget stated in `media.json`.
+7. **Budgets.** Media stats files hold per-pass GPU ms where the adapter has timestamps, and a budget gate fails a local run that exceeds its file. A baseline of joules per frame exists for both media scenes, or the evidence file says the telemetry was unavailable.
+8. **Records.** ADR 0013 records this roadmap (if the author accepts it), and `GAP-ANALYSIS.md` cites it.
+
+9. **Display chain.** The CRT pass (scanlines, phosphor masks and persistence, halation, curvature, bezel, colour separation, vignette), film grain and chromatic aberration run as WGSL passes in the Motion finish and as a Studio layer, each with a CPU reference. The site's `retro-crt.js` and the shader agent's references serve. On a committed frame set at 960 x 600 with fixed seeds, GPU output is within 1/255 at 8-bit of the reference. The set and the script are committed before the first run. A showcase scene uses them.
+10. **Palette and dither.** Bayer 2, 4 and 8, interleaved gradient noise and a blue-noise mode quantise to a palette in OKLab. The ordered modes are bit-equal to `retro-dither.js`. The blue-noise texture comes from the MIT Atrix256 generator, vendored with its hash and a manifest entry.
+
+Likely failure points: browser encoders that refuse 4K; hardware encoders that are not bit-exact (frame hashes come from raw readback, not from the encoded file); CI runners without timestamps.
+
+Status of the M1 criteria (2026-10-14). **M1 is closed: every row passes.** A row passes only when every check behind it passes on every backend it names. The RTX 4090 runs are of 2026-10-10 at commit 9dcd099.
+
+| Criterion | Status | Evidence |
+|---|---|---|
+| 1. Studio host | Passes. Host and shared consumer within 1/255 of the CPU composite on SwiftShader (CI) and the RTX 4090 (half-float accumulation rounded once, amended 2026-10-10); one `requestDevice` for two consumers; the no-WebGPU fallback draws | `tests/web/host_textures.py`, `evidence/m1-host-textures-rtx4090.json` |
+| 2. Colour | Passes on SwiftShader and the RTX 4090; the C++ reference within its bound of OCIO 2.6.0; no new dependency in the default build | `evidence/m1-colour-bounds.json`, `m1-colour-ocio.json`, `m1-colour-gpu-swiftshader.json`, `m1-colour-gpu-rtx4090.json` |
+| 3. HDR signal (amended 2026-10-10) | Passes in software on SwiftShader and the RTX 4090; the wrong-exponent control fails. It checks the signal, not the light a panel emits | `evidence/m1-hdr-signal-bounds.json`, `m1-hdr-signal-swiftshader.json`, `m1-hdr-signal-rtx.json` |
+| 4. Vector | Passes the committed corpus on SwiftShader and the RTX 4090 | `evidence/m1-vector-corpus.json`, `m1-vector-swiftshader.json`, `m1-vector-rtx4090.json` |
+| 5. Text and maths | Passes: 0 unsupported commands, 0 missing glyphs; a `\sum` control is reported and exits 1 | `evidence/m1-tex-coverage.json` |
+| 6. Media output | Passes: each scene's manifest records the machine's encoder probe; two runs of ao-check at 1920 x 1080 on the RTX 4090 give identical hashes for all 1,456 frames (and on SwiftShader in CI); the offline audio mix matches the `superstack.sound/1` vectors; the smoke job stays inside its wall-clock budget | `evidence/m1-frame-determinism-swiftshader.json`, `m1-frame-determinism-rtx4090.json`, `tools/media/audio_mix.py` with `tools/media/test_media.py`, CI `media-determinism` and `media-smoke` |
+| 7. Budgets | Passes (2026-10-14). Per-pass GPU ms are in the media stats where the adapter has timestamps. Frame and pass budgets were added to `docs/media/media.json` on 2026-10-14; before that the gate had no frame or pass budget to fail. The RTX 4090 record is within them and an over-budget control fails, in CI. Joules per frame for both scenes are board-reported, not metered | `tools/media/budget.py`, `tests/media/`, `evidence/m1-energy-ao-check-rtx4090.json`, `m1-energy-what-it-draws-rtx4090.json` |
+| 8. Records | Passes: ADR 0013 records this roadmap; `GAP-ANALYSIS.md` cites it | `docs/architecture/adr/0013-media-grade-roadmap.md` |
+| 9. Display chain | Passes. Engine side: every pass within one code of its CPU reference on SwiftShader and the RTX 4090. Studio layer (live 2026-10-15): the Finish layer on harperz9.github.io/studio.html runs the CRT (classic and PVM-20), the film print with grain and halation, the classic tube's chromatic aberration and the PICO-8 dither from raw-native 0.8.0. On the committed frame set, the layer's own frame function draws into a texture of the canvas format; read back, every channel is within one code of the CPU references for all four looks, and a shifted-reference control fails for each. Checked against the live site on SwiftShader at desktop and phone widths | `evidence/m1-post-passes-swiftshader.json`, `m1-post-passes-rtx4090.json`, `m1-studio-layer-swiftshader.json` |
+| 10. Palette and dither | Passes: the ordered modes bit-equal to `retro-dither.js`; the blue-noise generator vendored with its hash | `evidence/m1-post-passes-swiftshader.json`, `m1-post-passes-rtx4090.json` |
+
+## M2: Assets and materials
+
+Scope: gaps 5, 6, 7 (base model, IBL, punctual lights) and the texture half of gap 8.
+
+Exit criteria:
+1. Ten named glTF models, listed before the first run, import and render on the CPU reference, D3D12 and WebGPU; GPU verdicts `verified`; CPU outputs in the golden manifest, byte-identical on MSVC, GCC and WebAssembly.
+2. One million fuzzed glTF inputs: no crash, hang or sanitizer report.
+3. The RHI has textures, samplers, graphics pipelines and render passes on D3D12 and WebGPU; a sampled-texture identity test passes against the CPU sampler reference.
+4. The A5 spike report exists with measurements, and the author has decided.
+5. White furnace passes within 1e-3 for every roughness in 0.05 steps.
+6. `third_party/MANIFEST.md` lists every vendored library with upstream, version, SPDX licence, adapter file and hash; CI verifies the hashes.
+7. **Pixel-perfect scaling.** Integer upscale is bit-equal to a nearest-neighbour reference. A camera pan in 0.1-pixel steps moves no edge by more than one output pixel beyond a continuous-pan reference; the metric is written first.
+8. **Retro 3D flags.** Vertex snap and affine UVs match their CPU references within a stated bound on a committed mesh set.
+9. **Isometric camera and picking.** Picking round-trips every grid cell of a test map. The occlusion fade mask matches its CPU reference.
+10. **Sprites and tiles.** 100,000 tiles draw at a recorded frame time, in identical order across runs. The LDtk and TMX loaders survive one million fuzzed inputs.
+11. **Outlines and toon ramps.** Depth, normal and ID edge outlines and inverted-hull outlines each have a test scene with an image-difference bound set first.
+12. **Style templates (ADR 0016).** Three templates build and pass their checks on D3D12 and WebGPU, ship in the Studio, and pass the author's contact-sheet review:
+    - a painted isometric RPG ("more Disco Elysium and less Rogue Trader", abstract, grotesque, very indie);
+    - pixel art in 2.5D;
+    - a retro-look thriller (scary, not built on jump scares).
+13. **G0.** The scene hierarchy round-trips through `superstack.scene/1`.
+
+## M3: Lit scenes, an API snapshot, a verified viewer
+
+Scope: shadows, TAA and SMAA, frame-graph aliasing and history, the validating layer, the Studio viewer (A4), and runtime stage G1 (main loop, input, camera controllers, picking). The renderer and scene APIs get a versioned snapshot here; they keep maturing (ADR 0015).
+
+Exit criteria:
+1. `MetalRoughSpheres`, `DamagedHelmet` and a Sponza-class scene render with GPU verdict `verified` at committed tolerances; the rasterised frame's error against a path-traced reference is recorded per scene with its bound stated first.
+2. TAA meets its ghosting and RMSE bounds against the supersampled reference.
+3. Transient aliasing lowers peak GPU memory on the corpus by a recorded amount with byte-identical output; the validation layer catches every injected error in its negative-control suite.
+4. The Studio opens a glTF file, renders it, and shows the CPU reference, the error map and the certificate (A4).
+5. The renderer and scene APIs and the plugin C ABI are tagged as a numbered snapshot, documented, with an API dump checked in CI and a compatibility test suite that runs against the snapshot. A later break moves to the next snapshot with a migration note (ADR 0015).
+
+Dated additions (2026-10-10). They add checks and never loosen the five above:
+
+6. **Materials.** The glTF 2.0 material model with KHR_materials_ior, _specular, _clearcoat, _sheen,
+   _transmission, _volume, _anisotropy, _iridescence and _emissive_strength has a float64 CPU reference
+   (`raw/renderer/pbr.hpp`) that passes white furnaces, conservation and reciprocity, and the WGSL
+   path (`pbr.wgsl`) matches it on D3D12 and WebGPU within the bounds in
+   `evidence/m3-materials-bounds.json`, with a control that must fail.
+7. **Lighting.** Punctual and area lights in physical units, clustered light assignment against a
+   brute-force list, and image-based lighting against importance-sampled integration, each with
+   bounds committed before its first run.
+8. **Shadows, AO, reflections, TAA.** Cascaded and contact shadows against CPU ray-cast visibility;
+   GTAO and SSR each against a CPU reference; TAA as in criterion 2, with no binary upscaler.
+9. **Baked lighting.** Source-style directional lightmaps (radiosity normal mapping) and ambient cubes
+   (Mitchell, McTaggart and Green 2006) as an optional path, baked by the CPU ray tracer, with the
+   bake's error against a converged path trace recorded.
+
+Status of the M3 criteria (2026-10-12). A row passes only when every check behind it passes on
+every backend it names.
+
+| Criterion | Status | Evidence |
+|---|---|---|
+| 1. Scenes verified, path-traced error recorded | Recorded on WARP and lavapipe (2026-10-18). raw-hero and the raw-hall nave render verified at 512 x 320 with ray-traced AO on both adapters. The gallery passes on WARP and lavapipe (2026-10-21): the lavapipe max_abs miss was llvmpipe's acos in the material tables' theta axis, now a polynomial; worst exposed error 0.0012 on both (bound 0.05, `evidence/gold-highlight-acos-runs.json`). Path-traced error, with its units checked on a control sphere: raw-hero 0.079 (bound 0.6); raw-hall 4.10 under lighting model 1, over its bound of 2.0, because the raster's ambient and unshadowed sun were about four times too bright indoors. Under lighting model 2 (shadowed sun, sky visibility at any distance; 2026-10-18, WARP and lavapipe agree): raw-hall 0.43 against 8 bounces (bound 0.6, bias -0.32, no interreflection), 0.29 against 1 bounce (bound 0.2, a recorded miss); raw-hero 0.043. Gallery (2026-10-21, path tracer v3): 0.683, over the bound; with the visibility pass (`--occlusion`) 0.566, under it (`evidence/gallery-occlusion-runs.json`) | `evidence/m3-verified-scenes-runs.json`, `evidence/m3-lighting-v2-runs.json` |
+| 2. TAA ghosting and RMSE | Passes on the CPU: pan RMSE 0.442 of single-sample (bound 0.5), ghosting 0.0056 (bound 0.03), controls fail. GPU parity passes on WARP, SwiftShader and the RTX 4090 (0 pixels, bound 16) | `evidence/m3-post-runs.json` |
+| 3. Aliasing and the validation layer | Passes on WARP and lavapipe (2026-10-17): with aliasing on, every corpus output is identical and transient bytes fall 2.80% (all of it in the GPU renderer graph). The validation layer catches all 26 injected errors across its 13 rules and reports nothing on the corpus after it found one real missing barrier, now fixed. Aliasing is off by default | `evidence/m3-aliasing-validation-runs.json` |
+| 4. The Studio viewer (A4) | The viewer is built in the engine (`web/viewer/`): it opens a glTF or GLB file, renders it through WebGPU and on the CPU reference, and shows both frames, the error map and the GPU certificate; checked headless in CI on raw-hero and raw-hall (both verified on SwiftShader) with a broken-file control. Since 2026-10-12 it ships as `raw-native-0.7.0-viewer.zip` and runs unchanged as the Studio's Verified viewer source on harperz9.github.io (raw-hero and raw-hall `verified` in Chrome on an RTX 4090, desktop and phone) | `tests/web/viewer.py`, the site's `tests/studio-viewer.cjs` |
+| 5. API snapshot | C++ part passes: snapshot 2 (2026-10-12; snapshot 1 was 2026-10-11), 25 renderer and scene headers, dump checked in CI, compatibility suite (`tests/test_api_snapshot.cpp`), migration note `api/snapshot-2/MIGRATION.md`. **Deferred by dated note (2026-10-11 decision, recorded 2026-10-12):** the plugin C ABI part waits for a real plugin consumer; ADR 0007 is not accepted to close the criterion | `api/README.md` |
+| 6. Materials | First stage passes on WARP, SwiftShader and the RTX 4090. Second stage passes on the CPU: iridescence against an exact reference, volume path length, and clearcoat energy over white metal (|albedo - 1| worst 0.0112, bound 0.02; excess worst 5.9e-4, ceiling 1e-3) since the anisotropic table became denser and embedded (2026-10-12). GPU material parity passes on WARP and the RTX 4090 | `evidence/m3-materials-*.json`, `evidence/m3-materials2-*.json` |
+| 7. Lighting | Passes on WARP, SwiftShader and the RTX 4090 | `evidence/m3-lighting-*.json` |
+| 8. Shadows: CPU checks against ray casts | Passes | `evidence/m3-shadows-cpu-run.json` |
+| 8. Shadows: GPU lookups and contact march | Passes on WARP and SwiftShader | `evidence/m3-shadows-gpu-*.json` |
+| 8. Shadows: GPU shadow map against the CPU rasterizer | Passes on WARP and the RTX 4090 since the cascade depth range encloses the scene and raw-hall's coplanar wall tops were removed (2026-10-11). Thin margin: one raw-hall flute sliver sits at 9.9e-6 against 1e-5. **Open failure** on SwiftShader (4-bit edges; recorded, not gated) | `evidence/m3-shadows-runs.json` |
+| 8. GTAO and SSR against ray casts | GTAO passes on the near test scene and raw-hall nave; SSR passes on both test-scene views. **Open failure**: GTAO in raw-hall gallery (mean 0.073, p95 0.634); SSR in raw-hall nave and gallery (68% and 65% correct). The two named SSR candidates were probed on 2026-10-12 and neither meets both bounds (method note 12) | `evidence/m3-post-cpu-run.json` |
+| 8. GTAO and SSR GPU parity | Passes on WARP and SwiftShader | `evidence/m3-post-gpu-*.json` |
+| 9. Baked lighting | Passes |
+| RHI v3 G-buffer identity (the base of 6 to 8) | Passes on the test scene and raw-hero. **Open failure** on raw-hall nave: normal ratio 1.26 on the RTX 4090 (one pixel) and 14.4 on WARP (four), bound 1, all on column-flute slivers whose normal turns tens of degrees within one snap step. SwiftShader fails on 4-bit edges | `evidence/m3-rhi3-runs.json` | `evidence/m3-bake-*.json` |
+
+Licence note on criterion 1 (2026-10-10). `DamagedHelmet` derives from a CC-BY-NC-4.0 model and the
+Khronos `Sponza` is under the CRYENGINE agreement, so neither can ship in this repository's evidence
+or media. The proposal, for the author's decision, keeps the criterion's difficulty: `FlightHelmet`
+(CC0-1.0) in place of `DamagedHelmet`, and an interior scene of Sponza's size under CC0 or CC-BY in
+place of `Sponza`, named before its first run.
+Until the author decides, `evidence/m3-scene-models.json` lists the candidates by role. Each role's
+`use` field picks one (`FlightHelmet` and the `ABeautifulGame` stand-in today), so the decision is a
+one-field change. `--model-role` renders by role, and `tools/assets/fetch_gltf.py --manifest` fetches
+and verifies by role.
+
+Amendment to criterion 1 (2026-10-10, the author's decision: "No test models, only full owned
+assets."). The decision supersedes the note above. Criterion 1 now reads: the material gallery's
+spheres, `raw-hero` (a helmet-class asset carrying every material extension) and `raw-hall` (an
+interior hall at Sponza scale) render with GPU verdict `verified` at committed tolerances, and the
+rasterised frame's error against a path-traced reference is recorded per scene with its bound stated
+first. All three are generated by code in this repository under its licence. Every other M3 scene
+and check uses them too. No M3 test or CI step reads a third-party model. The model manifest stays and
+names the owned assets. The asset checks are in `evidence/m3-assets-bounds.json`, and the provenance
+is in `assets/PROVENANCE.md`. The difficulty is kept: the hero carries all nine extensions, and the
+hall is at least 250,000 triangles and 30 x 14 x 12 metres.
+
+## M4: Scale and reach
+
+Scope: Vulkan (A1), native window, swapchain and HDR output, clustered lighting, GPU culling, LOD and meshlets by compute, skeletal and morph animation, general particles, Tracy zones, and runtime stage G2 (audio playback, animation state machines, event timelines).
+
+Exit criteria:
+1. The identity matrix and the M2 and M3 corpora pass on D3D12, Vulkan and WebGPU, with a golden per device class.
+2. 60 fps at 2560 x 1440 on a mid-tier GPU for a Sponza-class scene with PBR, shadows and 64 point lights: p95 at most 16.7 ms over 10,000 frames, on D3D12 and Vulkan (carried from the repository roadmap).
+3. Skinned and morphed glTF models match a CPU skinning reference within a stated RMSE.
+4. One million particles at a frame time recorded on the reference machine, with seed-determinism across runs.
+5. Frames per joule are published for the M1 scenes and the M4 scene.
+
+Status of M4 criterion 3 (2026-10-21). Step 1, the C++ CPU skinning and morph reference
+(`raw/scene/skin.hpp`), passes: parity with the JavaScript oracle is exact (0 on positions and
+normals, bound 2e-7) on MSVC and GCC, and both false controls miss by 3.07 and 1.49
+(`evidence/m4-skinning-cpu-runs.json`). GPU skinning, the glTF skin and morph import and the RMSE
+against a skinned model are the next steps.
+
+Dated note (2026-10-17) on the scope's HDR output. Through the D3D12 swapchain, the HDR10 signal read back
+before present is within one 10-bit code of the C++ PQ encode on WARP (RELEASE-PLAN N2,
+`evidence/n2-presentation-runs.json`). Through a Vulkan swapchain it is untestable on available hardware:
+the workstation's only display is an SDR panel, so the surface offers no HDR10 colour space
+(`evidence/n3-vulkan-timing-runs.json`). The software Vulkan drivers in CI offer only sRGB. The check
+needs an HDR-capable display.
+
+## M5: Light transport and breadth
+
+Scope: global illumination, screen-space reflections, an own temporal upscaler, Metal (A1), USD import if asked, packaging and crash reporting (sentry-native, MIT), and runtime stage G3 (the `world` layer, physics behind an interface, save and load; the entity model chosen by an ADR at M4).
+
+Exit criteria:
+1. A GI technique, written from its paper, matches a converged path-traced reference on a small scene within a bound stated first, and its cost is recorded.
+2. Metal passes the identity matrix.
+3. Installers, an SBOM and licence texts ship in the release archive; a crash produces a minidump with a build ID.
+4. An ADR records the entity model chosen for `world`, with the templates' evidence.
+
+## M6: Authoring
+
+Scope: runtime stage G4 (ADR 0014): `scripting` through the C ABI, an editor on the Studio viewer, and a template gallery.
+
+Exit criteria (proposed; fixed before M6 starts):
+1. A script written against the C ABI drives a template's gameplay with no engine rebuild.
+2. The editor opens, edits and saves each M2 template, and the saved scene round-trips through `superstack.scene/1`.
+3. The template gallery in the Studio builds every template from a clean checkout.
+
+## Dated proposals (2026-10-21)
+
+From the research harvest of 21 October 2026 (items 2 to 8; item 1, the split-sum error table,
+was absorbed by the gold-highlight diagnosis, `evidence/gold-highlight-acos-bounds.json`). Each is a
+proposal, not a criterion: it joins a milestone only when its bounds file is committed before code.
+The targets are the ones a proposal must meet to be kept. Timings from the papers come from other
+GPUs; only a run on the reference machine sets raw-native's numbers.
+
+| # | Proposal | Milestone | Target (must meet) | Fails if | Depends on |
+|---|---|---|---|---|---|
+| P1 | ReSTIR DI on the compute path tracer (Lin, Kettunen, Wyman, I3D 2026) | M5 (light transport); stage 1 in M3's path tracer | Stage 1, CPU: at equal samples a pixel, direct-light RMSE against a converged reference at least 30% below uniform light sampling on a scene with at least 64 emitters, and the unbiased mode's mean within the reference's interval. Stage 2, RTX 4090 at 1080p: equal-time HDR FLIP at least 30% below uniform | the unbiased mode's long-run mean leaves the reference interval | path tracer interface v3 (punctual lights; `docs/rt-interface-v3.md`) |
+| P2 | H2 redesign: a pyramid of small gather kernels plus adaptive sampling (Balint et al. 2026) | M5 (own temporal reconstruction) | The existing H2 bounds (`evidence/rr-bounds*.json`): at most 2.0 ms at 1080p on the RTX 4090, FLIP below SVGF plus TAA with a bootstrap interval excluding zero, temporal instability no worse | the existing gate fails; measured tensor throughput below 30% of peak means the kernels, not the network, are the problem | the reference machine's GPU |
+| P3 | Agent surface with receipts (MCP: list, describe, call) | M6 (authoring) | render, verify and bounds-check exposed through three meta-tools; every changing call returns its output hashes and certificate verdict | a session changes a scene and leaves no hash diff, or a call writes outside its output folder | none |
+| P4 | Sprite normals for the 2D and dither-lit layers, written fresh from a description | M4 (reach) | on owned assets rendered as sprites from their meshes: mean angular error under 20 degrees, lit-sprite RMSE against the lit mesh at least 30% below a flat-normal baseline | error matches or exceeds the flat (0, 0, 1) baseline on more than one asset | none |
+| P5 | World-anchored strokes against the screen-space advected canvas | M5 (styles) | on a camera orbit, temporal instability (the rr-bounds warp metric) at least 40% below the advected canvas, at most 2 ms extra at 1080p | the bootstrap interval does not separate the two | none |
+| P6 | Split radiance cascades for diffuse GI (Freeman, Sannikov, Pitt-Francis 2026) | M5 criterion 1 | raw-hall diffuse indirect at 1080p on the RTX 4090 under 6 ms; RMSE against the 8-bounce path trace at least 30% below lighting model 2's 0.43; a thin-wall leak scene included | leak-scene RMSE exceeds the no-GI baseline | GPU BVH (landed), path tracer v3 for the reference |
+| P7 | Mesh and Gaussian-splat compositor with a CPU oracle (UniMGS, Xiao et al. 2026) | M5 (breadth; COMPARISON.md row 19) | a float64 CPU compositor and a WebGPU pass within the parity bounds; 1M Gaussians plus 100K triangles at 1080p under 8 ms on the RTX 4090 | any pixel of the straddle scene (a Gaussian crossing a triangle) differs from the CPU result above tolerance | none |
+| P8 | One tested noise module (author's rendering inspiration, 2026-10-21, section 3): value, Perlin, simplex, Worley/Voronoi, fBm, ridged, billow, domain warp and hybrid, plus white noise and the engine's own void-and-cluster blue noise (today a 64 x 64 table in `src/renderer/data/bluenoise64.hpp`, used only by the dither passes) | M4 (reach), feeding terrain, weather, film grain and tile variation | a float64 CPU reference and a WGSL pass per function, each with a golden image (hash per compiler family, like the path tracer's v2 hashes) and GPU parity within 1e-5 on WARP and lavapipe; statistical checks: white noise passes a chi-square uniformity test, blue noise's power spectrum below 1/8 of Nyquist at most 10% of white noise's, Perlin and simplex gradients continuous across lattice cells (seam test), fBm octaves band-limited as stated; terrain, weather, film grain and tile variation each call it, with no private noise copy left (a grep check in CI); the layered recipes are golden examples too: fBm + ridged + blue-noise islands, 3D simplex + domain warp + ridged planets, warp + ridged + white, ridged + fBm + billow | any golden drifts without a dated note, a seam test finds a discontinuity, or a consumer keeps its own noise | none |
+| P8b | A dither module beside P8 (inspiration section 5): ordered Bayer, error diffusion (Floyd-Steinberg, Atkinson, Stucki), line and contour fills, and blue-noise thresholding on P8's void-and-cluster mask; one module the style passes and the glyph pipeline call, in place of today's per-pass copies (`web/shaders/reference/retro-dither.mjs`, the dither style passes) | M4 (reach), styles | a CPU reference per algorithm with a golden image (hash per compiler family) on a fixed gradient and a fixed photograph-free test card; GPU parity bit-exact for ordered and threshold methods, within one level for error diffusion (serial on the CPU, a documented parallel scheme on the GPU); mean preserved: the dithered image's mean within 1/255 of the input's on a ramp; Bayer and blue-noise patterns pass their own spectrum check | a golden drifts without a dated note, the mean check fails, or a consumer keeps a private copy | P8 (blue noise) |
+| P9 | Wet-surface material layer (inspiration section 4): wetness, puddle masks, ripple normals, streak anisotropy for headlights and windows, and a showcase scene of warm emissives on calm dark water (Low Water's harbour) | M3/M4 materials, on the v3 material model | a layer over `pbr::Material` with a float64 reference: wetness lowers roughness and darkens porous albedo by a stated model (Lekner and Dorf 1988 water film), puddles are a water interface over the base; white furnace and reciprocity hold as for criterion 6; GPU parity within the materials bounds; the showcase's raster frame against path tracer v3 recorded with a bound stated first; ripple normals from P8 with a golden | the furnace or reciprocity check fails, or the showcase's path-traced error exceeds its bound | P8 (ripples), path tracer v3 (landed) |
+| P10 | Sphere field: a showcase and regression scene of spheres covering the whole material set (author's path-tracing references, 2026-10-21, section 7). Thin-film iridescence is already a material term (KHR_materials_iridescence in `pbr.hpp`, path tracer v3), so this scene exercises it rather than adding it | M3/M4 showcase | the raster frame against path tracer v3 recorded with a bound stated first; reference image and path-traced image committed; CPU frame time recorded, and GPU frame time on the reference machine and a laptop-class GPU when one is available | the error exceeds its bound, or a material family is missing from the field | path tracer v3 (landed) |
+| P11 | Sunlit arched colonnade: a physical sky model (Preetham or Hosek-Wilkie, written from the paper) with sunset, soft sun shadows through arches, mirror and rough spheres, an emissive sphere, and a live settings panel (sun angle, turbidity, exposure) in the Studio | M5 (light transport), showcase | the sky model against its paper's published values at stated angles; the raster frame against path tracer v3 (soft shadows, colour bleed from the emissive sphere) recorded with a bound first; frame times recorded | the sky misses its reference values, or the path-traced error exceeds its bound | path tracer v3; an emissive-sphere light in the tracer (emissive triangles exist) |
+| P12 | Motion room: a closed room with a moving glossy (metal and refractive) object, the regression for ReSTIR and the denoiser under motion | M5, after P1 stage 2 and P2 | per-frame error against a converged path trace along the animation; temporal instability (the rr-bounds warp metric) no worse than a static camera's; no ghost trail above a stated luminance behind the moving object | a trail or shadow flicker above its bound | P1 temporal reuse, P2 denoiser, RTX 4090 |
+| P13 | Relighting gallery page: each owned asset under four HDR environments with its G-buffer channels (albedo, normal, roughness, depth) beside the lit frame | M4 (reach), Studio | HDR environments only with a clear licence (CC0 from Poly Haven or equal), each recorded in a lockfile with URL, licence, size and SHA-256, downloaded with no personal data in the request; the CPU reference and GPU frame per environment verified at the M3 tolerances | an environment without a recorded licence, or a frame not verified | each download approved by the author first; image lighting (landed) |
+| P14 | Volumetric clouds and smoke, one module (author's references, section 8; ideas only, no code taken): density as a union of soft-sphere lobes eroded by P8's billow and Worley noise under a height gradient (flat base, rounded top); lighting by raymarched sun transmittance (Beer), a dual-lobe Henyey-Greenstein phase for the silver lining, a Beer-powder term for dark edges, ambient from sky and ground, blue-noise jitter with temporal reprojection; the same module for smoke, steam and exhaust plumes | M5 (light transport, styles) | a float64 CPU reference raymarcher and a GPU pass within stated parity bounds; golden images for a single cumulus, a towering cumulus, a cloud deck from above and a smoke plume at sunset; the reference against a brute-force volumetric path trace of the same density (single and multiple scattering recorded separately) within a bound stated first; energy check: with absorption 0, transmittance plus scattered energy equals 1 in a furnace; a review image for the common failure (fuzzy noise blobs that do not read as puffy) judged beside the goldens, with the lobe-silhouette coverage measured | a golden drifts without a dated note, the furnace fails, or the review image shows the blob failure | P8 (billow, Worley, blue noise), P10 and P11 first |
+| P15 | A greenhouse walk showcase at the bar of NVIDIA's Zorah demo (author's reference, section 9): our own palace-greenhouse interior at night, every plant moving in the wind, a skinned character walking through, globe lamps lighting it, and a path-traced against raster split view. Built from our own assets: Zorah's licence could not be verified on NVIDIA's page (2026-10-21: the RTX Kit page links an Unreal Engine 5 source archive and states no licence; the MIT claim found is a forum reply), so nothing of it is downloaded | M5 showcase | foliage wind as vertex animation driven by P8 noise, with a CPU reference and GPU parity; the walk on M4 criterion 3's skinning reference with GPU skinning and the glTF import; the night interior with the globe lamps through ReSTIR DI (P1) and the denoiser (P2); the split view needs the GPU tracer's v3 stage; frame time on the RTX 4090 at 1080p recorded against a target stated first | any part falls back to an asset we cannot license, or the split view's raster error is unrecorded | P1 stage 2, P2, P8, M4 criterion 3 steps 2 and 3, GPU tracer v3 |
+| P16 | Oil-paint stroke pass (author's references, sections 4 and 10, ideas only): strokes placed on a jittered grid and oriented by the smoothed structure tensor of the lit image, or by the surface frame where the image is flat; stroke light from the light buffer: loaded, opaque, directional strokes on lit planes and thin glazes on shadow sides; impasto height lit by the scene's key light; lost-and-found edges (an object edge kept where the value contrast across it is high and lost where it is low) | M5 (styles) | a float64 CPU reference and a WGSL pass in the art module, GPU parity on WARP and lavapipe within bounds stated first; goldens hashed per compiler family; temporal instability (the rr-bounds warp metric) on the P5 orbit no worse than the painterly shader with the advected canvas; stroke opacity on sunlit pixels against shadowed ones, impasto light against the key direction and kept and lost edge fractions each meet a bound stated first; at most 4 ms at 1080p on the RTX 4090 | a golden drifts without a dated note, the warp metric is worse than the baseline, or any stroke-light check misses | P5 (the orbit, the art scene, the world anchor) |
+| P17 | Pen and glaze (section 10, ideas only): a pen hierarchy (construction line, contour, ruling), construction lines that overshoot the silhouette, contours from object, depth and normal edges weighted by depth, 45-degree ruled hatching in shadow by luminance, then watercolour glazes per material with granulation and edge darkening on paper | M5 (styles) | float64 reference and WGSL pass with parity on WARP and lavapipe; goldens per compiler family; ruling world-anchored through P5's chart with instability at least 30% below screen-fixed ruling on the orbit; contour recall against the G-buffer's object edges and the glaze's mean against its flat wash each within a stated bound; at most 3 ms at 1080p | a golden drifts, the anchored ruling misses its stability target, or contour recall misses | P5 |
+| P18 | Glyph pass (sections 1, 5, 6 and 11, ideas only): a tone map per cell as the explicit intermediate, shape-aware glyph matching on sub-cell coverage and edge direction against the engine's own drawn glyph set (no third-party font), charsets by material id, material-letter lighting from neighbours toward the key, temporal hysteresis on the glyph choice, and colour by the design canon's verdict rule (ink, ground and one hot mark) | M5 (styles), Low Water's glyph mode | float64 reference and WGSL pass with parity on WARP and lavapipe (glyph choice equal except at recorded ties); goldens per compiler family; shape-aware matching lowers the cell reconstruction error at least 20% below brightness-only matching; hysteresis lowers instability at least 25% on the orbit; the measured ink-coverage ramp is monotone; at most 2 ms at 1080p | a golden drifts, the shape-aware gain or the hysteresis gain misses, or the ramp is not monotone | P5 (orbit), P8 (blue noise) |
+| P19 | Halftone, mezzotint and 1-bit (sections 2, 5, 6 and 12, ideas only): amplitude-modulated halftone (rotated round-dot screen, dot area from tone), frequency-modulated halftone on P8's blue-noise mask, mezzotint scraped from black (a rocked burr ground removed where light falls, scraping following the form), and 1-bit thresholding on P8's mask, world-anchored through P5's chart, with pattern scale keyed by object id | M5 (styles) | float64 reference and WGSL passes with parity on WARP and lavapipe (bit-exact for the threshold methods except at recorded ties); goldens per compiler family; each method's local mean tone within a stated bound of its input on a ramp; anchored 1-bit instability at least 40% below screen-anchored on the orbit; at most 1.5 ms each at 1080p | a golden drifts, a tone check misses, or the anchored 1-bit misses its target | P5, P8 |
+| P20 | Multiplane plates (section 10, ideas only): depth plates exported from a 3D scene (bands cut at depth gaps between objects), each an RGBA layer with premultiplied alpha and its plate depth; recomposed with per-plate parallax for a camera move, plate edges extended under the plate in front, and motion bands between plates where a moving element passes behind a foreground mask | M5 (styles), Low Water's crowd cards | float64 reference and WGSL compositor with parity on WARP and lavapipe; goldens per compiler family; at zero camera offset the composite equals the frame within 1/255; for lateral offsets up to a stated size its error against the true 3D render stays within a bound stated first and below a single-plate (no parallax) baseline; temporal instability of the recomposed pan recorded; at most 1 ms at 1080p for the composite | the zero-offset identity fails, or the plate composite is no better than the single plate | P5 (art scene) |
+| P21 | Era window (section 11, ideas only): one region of the frame (a window or portal in the scene) rendered in a different style or time of day than the frame around it, composited through a world-anchored mask with a stated soft edge | M5 (styles), Low Water's old-town scenes | float64 reference and WGSL composite with parity on WARP and lavapipe; goldens per compiler family; outside the mask the frame equals the base style and inside it equals the other, both exactly, with the seam band within its stated width; the mask follows the scene on the orbit (warp-metric instability of the mask no worse than the scene's own edges); at most 0.5 ms at 1080p beyond the two styles' own cost | either side differs from its source, or the mask swims | P5, any two style passes |
+| P23 | Tilt-shift lens (Low Water's camera, author's direction 2026-10-22): the plane of focus tilted in the world (Scheimpflug), CoC per pixel from depth against it, defocus painted as a coarser anisotropic Kuwahara over pigment latents, a focus director by story intent with an observer's drift that never leaves a speaker or a fight, and an optional lens and print effect stack under the care limits | M5 (styles), Low Water | `evidence/tiltshift-bounds.json`: people in the wedge keep their ink within 5%, the screen band fails; ink falls off out of focus; painted not blurred (the gaussian control fails); temporal instability on the orbit and a rack no worse than the base paint; director and care checks; parity on WARP and lavapipe; at most 1.0 ms at 1080p | a control passes, parity fails, or the cost misses | P5 (art scene, orbit, metric) |
+
+P6 status (2026-11-06). The flatland stage is built: `web/shaders/cascades`, measured in
+`docs/radiance-cascades.md` and `evidence/cascades-rtx4090.json`. At 3840 x 2160 on the RTX 4090,
+branch 4 reaches relative RMSE 0.038 on a thin-wall room in 70 ms (49 ms in an earlier run) and branch 2 0.125 in 12 ms; the
+per-neighbour continuation removes the leak (dark room 1.00 of its reference against 1.65 at branch 2)
+at 2.5 to 4.5 times the cost. Error within 2 px of a glass interface is 2.7 to 5.4 times the image's
+(H150). The raw-hall criteria above are open: the 3D cascades are not built. The raw-hall stage followed the same day
+(`web/shaders/cascades3d`, `docs/radiance-cascades-3d.md`, `evidence/cascades3d-rtx4090.json`): world-space
+cascades with screen probes every 8 pixels read relative RMSE 0.104 (0.097 to 0.111) against the
+8-bounce path trace at 1080p in 3.6 to 4.0 ms of GI passes (three runs; 5.3 ms with the probe flags
+recomputed every frame), so both criteria are met. On the thin-wall leak scene the per-pair
+visibility fix keeps the closed room under 0.1% of the lit room and beats the no-GI baseline; the
+flatland full fix leaks in 3D (0.44). H150's traced segment cuts the glass interface error by 34 to
+58% at a cost that grows with its length.
+
+Order. P1 goes first: it is the only one the current work can absorb, because M3 criterion 1's last
+piece (the gallery's path-traced error) already needs path tracer interface v3, and v3's punctual
+lights are what ReSTIR DI resamples. P1 stage 1 runs on the CPU; stage 2, P2, P6 and P7's timings
+need the reference machine. P2 waits for that; its gate is the one H2 failed (11.8 ms against 2 ms).
+P8 and P9 were added on 2026-10-21 from the author's rendering inspiration
+(the author's notes of 2026-10-21, ideas only; nothing is
+copied from the sources). P8b, the dither module, was added the same day and ranks with P8, built right after it. P8 ranks second, after P1: it is small, CPU-checkable, and several
+consumers (terrain, weather, film grain, tile variation, and P9's ripples) wait on it. P9 ranks
+third: Low Water's rainy harbour makes it core for the game, and path tracer v3 already gives it a
+reference to be checked against.
+Status of P13 and P11's sky (2026-10-21): built without downloads, as the author decided. The sky model (Preetham, checked against the CIE clear sky) and our own baked environments (clear noon, overcast, golden hour, night, an interior probe) are in `evidence/envmaps.lock.json` with recipes and hashes; `relight` renders the gallery and the sphere field under each with their G-buffer channels (`evidence/sky-envmaps-runs.json`). The colonnade scene itself is next.
+
+Status of P8 and P8b (2026-10-21): stage 1 built. The CPU modules pass their goldens (the same hashes on GCC and MSVC) and their statistical checks (`evidence/p8-noise-dither-runs.json`). Stage 2 (WGSL passes and GPU parity) and stage 3 (moving the engine's private copies onto the modules) remain.
+
+Status of P10 (2026-10-21): built. The sphere field's raster frame is pinned per compiler, its GPU shading holds the gallery's bounds on the RTX 4090 and WARP, and its error against path tracer v3 is 0.23 (bound 0.6; `evidence/p10-sphere-field-runs.json`). A dispatch-only GPU timer is still open, so its frame times are wall times.
+
+Status of P5 (2026-10-22): measured and dropped by its kill criterion. World-anchored canvas coordinates fed to the painterly shader hold GPU parity on WARP, lavapipe and the RTX 4090 and cost 0.11 ms at 1080p, but on the 48-frame orbit the warp metric is no better than the advected canvas: oil 14% worse, watercolour 19% better, and neither paired interval excludes zero (`evidence/p5-world-strokes-runs.json`). The likely cause, untested, is aliasing of the anchored noise on foreshortened surfaces; a footprint-filtered anchor would be its own proposal. The art scene, the warp metric and the art module it built stay as the base of P16 to P21.
+
+Status of P23 (2026-10-22): CPU and GPU stages built (`evidence/tiltshift-runs.json`). Met: ink in the wedge (5 people, every ratio 1.000; the band fails 4 of 5), orbit stability (24% steadier than the base paint), the director and care checks, goldens equal on GCC and MSVC, parity on WARP, lavapipe and the RTX 4090. Missed: the ink does not fall off out of focus (1.32), the painted-versus-gaussian metric does not separate on the town, the rack bound is ill-posed for a held camera, and the chain costs 2.85 ms at 1080p (the defocus pass 2.12 ms).
+
+P10 to P13 were added on 2026-10-21 from the author's path-tracing references, when the author made
+the engine and the game the priority. Revised order: P1 (stage 1 in review), then P10 (the scene,
+materials and tracer all exist, so it is mostly a scene and its records), then P8 and P8b, then P11
+(it needs a sky model), then P9, then P13 (its downloads wait for approval), then P12 with P2 (both
+need the RTX 4090 and P1's temporal stage), then P3 to P7.
+P15 was proposed on 2026-10-21. What exists today towards it: the noise module (P8), the CPU skinning reference (M4 c3 step 1), path tracer v3 with punctual lights and full materials, ReSTIR DI stage 1, the sky and baked environments, and the shading-pass timer. What it still needs, in order: GPU skinning and the glTF skin import, wind animation on P8, the GPU tracer's v3 stage, ReSTIR DI stage 2 and the denoiser. It ranks after P12, since it reuses everything P12 builds.
+P14 (volumetric clouds and smoke) was added on 2026-10-21 and ranks after P8, which it draws its
+noise from, and after the showcase scenes (P10, P11): it follows P11 in the order.
+
+P16 to P21 were added on 2026-10-22 for the stylised track, with P5 built first, by the author's direction that day: "Keep working on the engine, and rendering/shaders ~ lets really spend time supporting many visual features and techniques." They are built in order P5, P16, P17, P18, P19, P20, P21, each with its bounds file committed before its code; they share one owned analytic scene (the art scene), the P5 camera orbit and its warp metric, and one WGSL module (the art module). Light transport, GI, denoising, fog and grading stay with their own tracks.
+
+## Dated proposals (2026-11-02): hardware ray tracing, measured optics, engineering
+
+Landed with this entry (`docs/hw-rt.md`): HW H2.0, the path tracer on DXR inline ray queries, and
+effect C1, spectral caustics through catalogue glass. Both are checked against their CPU references by
+a tolerance contract with planted bugs. The rows below follow the rule of the 2026-10-21 table: a row
+joins a milestone only when its bounds file is committed before its code, and only a run on the
+reference machine (RTX 4090) sets raw-native's numbers. Paper codes (R1, L1, C3, G1 to G16, E1 to E5)
+refer to the 2026-11-02 rendering survey; a code marked "gap" means no 2024 to 2026 paper was found.
+
+Rendering track:
+
+| # | Proposal | Target (must meet) | Fails if | Measured data it needs |
+|---|---|---|---|---|
+| HR1 | Interactive spectral caustics (gap G1): four wavelengths a path, reservoir reuse across wavelength, a denoised 1080p frame | the prism's spectrum spread on the floor within 0.1 degree of the closed-form minimum deviation of N-SF11 between 450 and 650 nm; under 8 ms a frame at 1080p on the RTX 4090; C1's contract still met | the spread error or the time misses | have: the catalogue glasses (refractiveindex.info, CC0) |
+| HR2 | Glass absorption and coatings in C1: the maker's internal transmittance and a quarter-wave MgF2 coating | the transmitted fraction through a 10 mm N-SF11 slab within 0.5% of the catalogue's internal transmittance at 400, 500 and 700 nm; the coated surface's reflectance against the thin-film closed form within 1e-4 | either check misses | SCHOTT internal transmittance tables (catalogue, measured); MgF2 dispersion (refractiveindex.info) |
+| HR3 | Thin-film interference in the spectral tracer: soap films and oil on water as an Airy layer on a glass interface (the raster model already has KHR iridescence) | film colour against the Airy closed form within ΔE00 1 at 0 to 60 degrees for thicknesses 100 to 1000 nm; a draining soap film's band spacing against the wedge formula within 5% | either bound misses | water dispersion (Hale and Querry 1973 via refractiveindex.info) |
+| HR4 | Polarisation: Mueller transport through glass reflections, a polariser on the camera | the dark reflection of a horizontal N-BK7 plate through a crossed polariser at Brewster's angle within 0.5 degree of atan(n); unpolarised renders unchanged within C1's contract | the angle misses or the contract fails | hyperspectral polarimetric BRDFs (S1, 68 bands) for the diffuse materials |
+| HR5 | GI from hardware rays with a surfel or probe cache (MAP row 549, held P6 split cascades) | raw-hall diffuse indirect at 1080p under 6 ms; RMSE against the 8-bounce path trace at least 30% below lighting model 2; the thin-wall leak scene included | the leak scene's RMSE exceeds the no-GI baseline | none |
+| HR6 | Shader execution reordering on the light pass (R1; gap G4), DXR 1.2 | the light pass's GPU time with reordering against without, at C1's still settings, recorded with an interval; a divergence metric from one pass predicts the gain within 25% on at least 4 of 5 kernels | the prediction misses on 2 of 5 kernels | none; needs an Agility SDK and driver that expose reordering (unknown on the reference machine today) |
+| HR7 | Joules per converged frame as a ranking (gap G6), from the joules package | for 5 techniques at equal FLIP, the energy ranking and the time ranking, each with a bootstrap interval over 300 frames, both published | no interval is reported | none |
+| HR8 | Per-pixel error bars with tested coverage (gap G10), from the contract's batch statistics | 90% per-pixel intervals contain the 16k-sample reference at a rate between 85% and 95% on 3 scenes | the rate falls outside 85 to 95% | none |
+
+Engineering track:
+
+| # | Proposal | Target (must meet) | Fails if | Measured data it needs |
+|---|---|---|---|---|
+| EN1 | Lens PSF and MTF from a lens prescription on RayCaster (L1 for later speed) | the polychromatic MTF of 3 lenspipe designs at 3 field points within 2% of lenspipe's exact trace at 10, 30 and 50 lp/mm; within the maker's published curve's line width where one exists | any point misses | lens prescriptions (lenspipe, maker patents); the catalogue glasses (have) |
+| EN2 | Ghost and stray-light prediction from a prescription (gap G3, E1.1) | the 5 brightest ghosts of a real lens we hold located within 2% of the frame diagonal at 3 field angles, against one photograph of a point source each | any of the 5 misses | a real lens, its prescription and the photographs |
+| EN3 | Lidar and depth-camera ray casting on RayCaster (E2.1) | range images of the owned scenes equal the CPU BVH within H1.1's tolerances; 1 million rays under 1 ms on the RTX 4090; a fitted sensor model's recall within 10 points across two rooms with no refit (gap G12) | a range off tolerance, the time misses, or recall drops more than 10 points | the sensor's datasheet (beam divergence, wavelength); NIR reflectance at 905 nm (USGS and ASTER spectral libraries) |
+| EN4 | Camera sensor simulation: a measured quantum-efficiency curve in place of the CIE observer in C1 | a rendered ColorChecker under illuminant A against the chart's measured spectra through the same curve within ΔE00 1 on 24 patches | any patch misses | sensor QE curves (maker datasheets); ColorChecker reflectance spectra (measured, licence to check) |
+| EN5 | CAD precision: exact quadrics and trimmed patches as procedural candidates in the ray query, against tessellation (gap G14) | C1's lens with analytic sphere caps against today's 48 x 128 tessellation: the focal spot's centroid and radius differences recorded; 20 STEP parts render crack-free at under 3x the time of a tessellated render at equal pixel error | any crack, or above 3x | STEP parts with a clear licence |
+| EN6 | Inspection rendering with measured BRDFs (gap G13) | synthetic scratch data rendered with the materials package's measured BRDFs halves the synthetic-only to real-only mAP gap of randomised BRDFs | the gap shrinks by less than half | measured BRDFs (MERL fits in the measured package); a real scratch set |
+| EN7 | Hardware rays for non-graphics queries (E5, gap G16): containment and nearest-surface checks for tolerance and collision | at least 2x the compute BVH's throughput at equal answers on 1 million queries | below 2x or any wrong answer | none |
+
+Order: HR1 first (it extends C1 directly and answers the survey's first gap), then EN1 (lens design
+with the same glass and the same contract), then HR2 and EN5 (both sharpen C1 as an instrument), then
+HR7 and HR8 (measurement), then the rest.

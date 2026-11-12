@@ -1,0 +1,43 @@
+{
+ "schema": "raw-native.evidence/1",
+ "criterion": "M3 (dated addition, 2026-10-10): RHI version 3 and the hardware G-buffer, the base of M3 criteria 1 and 3",
+ "written": "2026-10-10, before the implementation and the first run",
+ "scope": {
+  "formats": "RGBA8Unorm, RGBA16Float, RGBA32Float, R32Float and Depth32Float textures, render targets and read-back on D3D12 and WebGPU",
+  "pipelines": "raster pipelines with up to four colour targets, an optional Depth32Float target with a compare function and write mask, back, front or no culling (counter-clockwise front faces), and read-only storage buffers in the vertex and fragment stages (vertex pulling)",
+  "translator": "scripts/wgsl_to_hlsl.py gains vertex-output structs with @builtin(position), @location and @interpolate(flat) fields, fragment outputs as a struct of @location targets, and storage bindings in raster passes",
+  "gbuffer": "a raster G-buffer pass draws a scene's triangles from storage buffers into world position (RGBA32F), normal (RGBA32F), albedo and coverage (RGBA8), triangle id and view distance (RGBA32F) and depth (Depth32F)"
+ },
+ "checks": {
+  "format_roundtrip": {
+   "what": "each colour format: a pass writes a committed pattern of values exactly representable in the format; read back",
+   "bound": "bit-equal to the pattern, every texel, every format, on D3D12 WARP and WebGPU SwiftShader"
+  },
+  "depth_order": {
+   "what": "64 overlapping, non-intersecting triangles at distinct depths drawn in forward and in reverse order with depth test Less",
+   "bound": "the two images are bit-equal; the control (depth test off) differs"
+  },
+  "gbuffer_identity": {
+   "what": "the built-in test scene and the M2 models Suzanne and SciFiHelmet at 256 x 256, the hardware G-buffer against the CPU rasterizer (src/renderer/raster.cpp) at the same pixel centres",
+   "bound": "on pixels both cover with the same triangle: |position difference| <= 1e-3 (1 + |p|), normals dot >= 1 - 1e-5, albedo equal, view distance relative difference <= 1e-4; every pixel covered by one side only, or by different triangles, lies within 0.01 px of an edge of a triangle involved or at a depth tie (relative depth difference <= 1e-4); the counts are reported"
+  },
+  "gbuffer_control": {
+   "what": "the same comparison with one triangle of the scene moved by 1% of the scene's size on the GPU side",
+   "bound": "fails the identity bound"
+  }
+ },
+ "does_not_prove": "Frame times; anti-aliasing or sub-pixel coverage (one sample a pixel); that the RTX 4090 rasterizes identically (measured separately under the GPU lock); textured materials (a later slice).",
+ "method_note": "Added 2026-10-10 before the first run: src/renderer/raster.cpp interpolates view distance linearly in screen space and depth-tests on that (its own comment says it is exact only where triangles do not overlap), while hardware depth tests are exact. The identity check therefore runs raster.cpp with a perspective-correct depth option (1 / interpolated 1/w), the default staying as it is so no committed golden changes. The GPU writes the perspective-correct view distance.",
+ "method_note_2_2026_10_10": {
+  "written": "2026-10-10, before any run on the new scenes",
+  "decision": "The author decided on 2026-10-10: \"No test models, only full owned assets.\" Suzanne and SciFiHelmet leave the G-buffer check.",
+  "scenes": "The built-in test scene, raw-hero in the test scene in place of its box, and raw-hall from its nave camera, at 256 x 256. The first scene stays the control's scene.",
+  "bounds": "Unchanged. Earlier runs on Suzanne and SciFiHelmet stay in evidence/m3-rhi3-runs.json as history."
+ },
+ "method_note_3_2026_10_11": {
+  "written": "2026-10-11, after the diagnosis of the RTX and WARP shadow runs and before any change to the code or the asset",
+  "finding": "raw-hall nave fails the normal bound (ratio 14.36 on WARP) on four pixels in the top two rows, all on column-flute slivers of 0.40 to 0.56 px^2 with one vertex just above the screen, where neighbouring vertex normals differ by about 47 degrees. The CPU equals the snapped float64 perspective-correct interpolation to five digits; WARP differs by about 0.01, which a positional difference under one 1/256-px snap step produces on such slivers. Only triangles that cross the top edge show it.",
+  "next_runs": "The same check on the RTX 4090 under the GPU lock, with RAW_NATIVE_RASTER_DUMP=1, which now also prints the float64 interpolation, unsnapped and snapped, for every pixel over the normal bound. If the RTX passes, WARP's handling of triangles that cross the viewport edge is the inferred cause; if it fails on the same pixels, the cause is the conditioning of slivers on any backend.",
+  "not_changed": "The bound. No condition-scaled exemption is added; that would be a change of the bound's form and is the author's call. The failure stays open until a fix makes it pass."
+ }
+}
