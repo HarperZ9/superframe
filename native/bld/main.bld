@@ -1,0 +1,27 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The parity runner. One line for every renderer module that has moved to BuildLang, each checked
+// against a hash the C++ tests pin. The last line counts them, and CI requires the two numbers on
+// it to be equal.
+//
+//   buildc build --release native/bld && native/bld/target/release/main
+
+mod kit;
+mod art_scene;
+
+fn main() ~ Console {
+    let mut same: i32 = 0;
+    let mut all: i32 = 0;
+
+    // tests/test_art_strokes.cpp: renderFrame(orbitView(0, 256, 144), daylight(), 4).lit
+    same = same + kit::report("art scene, still life, daylight, 256 x 144, lit buffer", art_scene::lit_hash(0, 256, 144), 0x8e70a9159d2007bf);
+    all = all + 1;
+
+    // A control: a different frame must not produce the pinned hash, or the check proves nothing.
+    let mut control: i32 = 0;
+    if art_scene::lit_hash(1, 256, 144) != 0x8e70a9159d2007bf { control = 1; }
+    println!("control: frame 1 differs from the frame 0 pin: {} of 1", control);
+
+    println!("modules identical to the C++: {} of {}", same, all);
+}

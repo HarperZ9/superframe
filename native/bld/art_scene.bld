@@ -1,0 +1,205 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The art scene's ray caster and daylight shading, ported from src/renderer/art_scene.cpp,
+// art_scene_trace.cpp and art_scene_prims.hpp: a still life of a ground plane, a wall, a plinth,
+// two spheres and a column, with a shadowed sun, a sky gradient and a hemispherical ambient term,
+// four samples a pixel. Every expression keeps the C++'s order of operations.
+
+use kit::V3;
+use kit::v3;
+use kit::dot;
+use kit::sub;
+use kit::cross;
+use kit::norm;
+use kit::along;
+use kit::axis;
+use kit::absd;
+use kit::clampd;
+
+// The nearest hit along a ray. t < 0 means nothing was hit.
+struct Hit { t: f64, n: V3, obj: i32, mat: i32, albedo: V3 }
+
+fn no_hit() -> Hit {
+    Hit { t: -1.0, n: v3(0.0, 0.0, 0.0), obj: 0, mat: 0, albedo: v3(0.0, 0.0, 0.0) }
+}
+
+fn consider(best: Hit, t: f64, n: V3, obj: i32, mat: i32, albedo: V3) -> Hit {
+    if t > 0.000000001 && (best.t < 0.0 || t < best.t) {
+        return Hit { t: t, n: n, obj: obj, mat: mat, albedo: albedo };
+    }
+    best
+}
+
+fn hit_ground(o: V3, d: V3, best: Hit) -> Hit {
+    if absd(d.y) < 0.000000000000001 { return best; }
+    let t: f64 = -o.y / d.y;
+    let x: f64 = o.x + t * d.x;
+    let z: f64 = o.z + t * d.z;
+    if absd(x) <= 30.0 && absd(z) <= 30.0 {
+        return consider(best, t, v3(0.0, 1.0, 0.0), 1, 1, v3(0.34, 0.32, 0.26));
+    }
+    best
+}
+
+fn hit_box(lo: V3, hi: V3, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best: Hit) -> Hit {
+    let mut t0: f64 = -1.0e300;
+    let mut t1: f64 = 1.0e300;
+    let mut ax: i32 = -1;
+    let mut sign: f64 = 0.0;
+    let mut k: i32 = 0;
+    while k < 3 {
+        let dk: f64 = axis(d, k);
+        let ok: f64 = axis(o, k);
+        if absd(dk) < 0.000000000000001 {
+            if ok < axis(lo, k) || ok > axis(hi, k) { return best; }
+        } else {
+            let inv: f64 = 1.0 / dk;
+            let mut ta: f64 = (axis(lo, k) - ok) * inv;
+            let mut tb: f64 = (axis(hi, k) - ok) * inv;
+            let mut s: f64 = -1.0;
+            if ta > tb {
+                let swap: f64 = ta;
+                ta = tb;
+                tb = swap;
+                s = 1.0;
+            }
+            if ta > t0 { t0 = ta; ax = k; sign = s; }
+            if tb < t1 { t1 = tb; }
+            if t0 > t1 { return best; }
+        }
+        k = k + 1;
+    }
+    if ax < 0 || t0 <= 0.000000001 { return best; }
+    let mut n: V3 = v3(0.0, 0.0, sign);
+    if ax == 0 { n = v3(sign, 0.0, 0.0); }
+    if ax == 1 { n = v3(0.0, sign, 0.0); }
+    consider(best, t0, n, obj, mat, albedo)
+}
+
+fn hit_sphere(c: V3, r: f64, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best: Hit) -> Hit {
+    let q: V3 = sub(o, c);
+    let b: f64 = dot(q, d);
+    let cc: f64 = dot(q, q) - r * r;
+    let disc: f64 = b * b - cc;
+    if disc < 0.0 { return best; }
+    let sq: f64 = sqrt(disc);
+    let mut t: f64 = -b - sq;
+    if t <= 0.000000001 { t = -b + sq; }
+    if t <= 0.000000001 { return best; }
+    consider(best, t, v3((q.x + t * d.x) / r, (q.y + t * d.y) / r, (q.z + t * d.z) / r), obj, mat, albedo)
+}
+
+fn hit_cylinder(x: f64, z: f64, r: f64, y0: f64, y1: f64, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best0: Hit) -> Hit {
+    let mut best: Hit = best0;
+    let qx: f64 = o.x - x;
+    let qz: f64 = o.z - z;
+    let a: f64 = d.x * d.x + d.z * d.z;
+    let b: f64 = qx * d.x + qz * d.z;
+    let cc: f64 = qx * qx + qz * qz - r * r;
+    if a > 0.000000000000001 {
+        let disc: f64 = b * b - a * cc;
+        if disc >= 0.0 {
+            let sq: f64 = sqrt(disc);
+            // the nearer root first; the first one on the side wall is taken
+            let ta: f64 = (-b - sq) / a;
+            let ya: f64 = o.y + ta * d.y;
+            if ta > 0.000000001 && ya >= y0 && ya <= y1 {
+                best = consider(best, ta, v3((qx + ta * d.x) / r, 0.0, (qz + ta * d.z) / r), obj, mat, albedo);
+            } else {
+                let tb: f64 = (-b + sq) / a;
+                let yb: f64 = o.y + tb * d.y;
+                if tb > 0.000000001 && yb >= y0 && yb <= y1 {
+                    best = consider(best, tb, v3((qx + tb * d.x) / r, 0.0, (qz + tb * d.z) / r), obj, mat, albedo);
+                }
+            }
+        }
+    }
+    if absd(d.y) > 0.000000000000001 {
+        let t: f64 = (y1 - o.y) / d.y;
+        let px: f64 = qx + t * d.x;
+        let pz: f64 = qz + t * d.z;
+        if px * px + pz * pz <= r * r { best = consider(best, t, v3(0.0, 1.0, 0.0), obj, mat, albedo); }
+    }
+    best
+}
+
+// the still life: ground, wall, plinth, two spheres, a column, in that order
+fn trace(o: V3, d: V3) -> Hit {
+    let mut best: Hit = no_hit();
+    best = hit_ground(o, d, best);
+    best = hit_box(v3(-6.0, 0.0, -4.6), v3(6.0, 4.0, -4.0), 2, 4, v3(0.58, 0.36, 0.27), o, d, best);
+    best = hit_box(v3(-1.6, 0.0, -1.2), v3(1.6, 0.9, 1.2), 3, 2, v3(0.72, 0.70, 0.65), o, d, best);
+    best = hit_sphere(v3(0.0, 1.75, 0.0), 0.85, 4, 3, v3(0.86, 0.83, 0.77), o, d, best);
+    best = hit_sphere(v3(2.6, 0.6, 1.0), 0.6, 5, 5, v3(0.28, 0.40, 0.62), o, d, best);
+    hit_cylinder(-2.8, -1.4, 0.45, 0.0, 3.2, 6, 2, v3(0.66, 0.64, 0.60), o, d, best)
+}
+
+// the colour seen along a ray from the eye in daylight
+fn shade(sun_dir: V3, o: V3, d: V3, h: Hit) -> V3 {
+    let top: V3 = v3(0.42, 0.55, 0.80);
+    let horizon: V3 = v3(0.80, 0.82, 0.85);
+    let ground: V3 = v3(0.24, 0.21, 0.17);
+    let sun_c: V3 = v3(2.6, 2.45, 2.2);
+    if h.t < 0.0 {
+        let t: f64 = clampd(d.y * 1.6 + 0.1, 0.0, 1.0);
+        return v3(horizon.x + (top.x - horizon.x) * t, horizon.y + (top.y - horizon.y) * t, horizon.z + (top.z - horizon.z) * t);
+    }
+    let p: V3 = along(o, h.t, d);
+    let lifted: V3 = v3(p.x + h.n.x * 0.000001, p.y + h.n.y * 0.000001, p.z + h.n.z * 0.000001);
+    let nl: f64 = dot(h.n, sun_dir);
+    let mut sun: f64 = 0.0;
+    if nl > 0.0 {
+        let s: Hit = trace(lifted, sun_dir);
+        if !(s.t > 0.0 && s.t < 1.0e30) { sun = nl; }
+    }
+    // no lamp in daylight and no emission in this scene: both terms are exact zeros in the C++
+    let amb_t: f64 = 0.5 + 0.5 * h.n.y;
+    let ar: f64 = ground.x + (top.x - ground.x) * amb_t;
+    let ag: f64 = ground.y + (top.y - ground.y) * amb_t;
+    let ab: f64 = ground.z + (top.z - ground.z) * amb_t;
+    v3(h.albedo.x * (sun_c.x * sun + 0.0 * 0.0 + ar) + 0.0 * 1.0,
+       h.albedo.y * (sun_c.y * sun + 0.0 * 0.0 + ag) + 0.0 * 1.0,
+       h.albedo.z * (sun_c.z * sun + 0.0 * 0.0 + ab) + 0.0 * 1.0)
+}
+
+// Frame `frame` of the orbit at w x h in daylight; returns the hash of the lit buffer's floats.
+pub fn lit_hash(frame: i32, w: i32, h: i32) -> u64 {
+    let a: f64 = (20.0 + 1.0 * (frame as f64)) * 3.141592653589793 / 180.0;
+    let eye: V3 = v3(8.5 * sin(a), 4.2, 8.5 * cos(a));
+    let f: V3 = norm(sub(v3(0.0, 1.0, 0.0), eye));
+    let r: V3 = norm(cross(f, v3(0.0, 1.0, 0.0)));
+    let u: V3 = cross(r, f);
+    let focal: f64 = 0.5 * (h as f64) / tan(0.5 * 0.75);
+    let sun_dir: V3 = norm(v3(-0.45, 0.78, 0.42));
+    let mut hash: u64 = kit::fnv_start();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut cr: f64 = 0.0;
+            let mut cg: f64 = 0.0;
+            let mut cb: f64 = 0.0;
+            let mut s: i32 = 0;
+            while s < 4 {
+                let px: f64 = (x as f64) + 0.25 + 0.5 * ((s % 2) as f64);
+                let py: f64 = (y as f64) + 0.25 + 0.5 * ((s / 2) as f64);
+                let dx: f64 = (px - 0.5 * (w as f64)) / focal;
+                let dy: f64 = -(py - 0.5 * (h as f64)) / focal;
+                let d: V3 = norm(v3(f.x + dx * r.x + dy * u.x, f.y + dx * r.y + dy * u.y, f.z + dx * r.z + dy * u.z));
+                let c: V3 = shade(sun_dir, eye, d, trace(eye, d));
+                cr = cr + c.x / 4.0;
+                cg = cg + c.y / 4.0;
+                cb = cb + c.z / 4.0;
+                s = s + 1;
+            }
+            hash = kit::fnv_f32(hash, cr);
+            hash = kit::fnv_f32(hash, cg);
+            hash = kit::fnv_f32(hash, cb);
+            hash = kit::fnv_f32(hash, 1.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}

@@ -1,0 +1,80 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The parity kit: what every ported renderer module shares.
+//
+// Three numbers at a time, in the exact order of operations the C++ uses, and the hash the C++
+// pins its buffers with. A ported module renders into the hash and hands the result to `report`,
+// which prints one line and says whether the BuildLang output is the C++ output, bit for bit.
+
+pub struct V3 { x: f64, y: f64, z: f64 }
+
+pub fn v3(x: f64, y: f64, z: f64) -> V3 { V3 { x: x, y: y, z: z } }
+
+pub fn dot(a: V3, b: V3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
+
+pub fn sub(a: V3, b: V3) -> V3 { v3(a.x - b.x, a.y - b.y, a.z - b.z) }
+
+pub fn cross(a: V3, b: V3) -> V3 {
+    v3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
+}
+
+pub fn norm(a: V3) -> V3 {
+    let l: f64 = sqrt(dot(a, a));
+    v3(a.x / l, a.y / l, a.z / l)
+}
+
+// o + t * d, each axis as one multiply then one add
+pub fn along(o: V3, t: f64, d: V3) -> V3 { v3(o.x + t * d.x, o.y + t * d.y, o.z + t * d.z) }
+
+pub fn axis(a: V3, k: i32) -> f64 {
+    if k == 0 { return a.x; }
+    if k == 1 { return a.y; }
+    a.z
+}
+
+pub fn absd(x: f64) -> f64 {
+    if x < 0.0 { return -x; }
+    x
+}
+
+pub fn clampd(x: f64, lo: f64, hi: f64) -> f64 {
+    if x < lo { return lo; }
+    if x > hi { return hi; }
+    x
+}
+
+// ---------------------------------------------------------------- the hash the C++ pins
+
+// The renderer's FNV-1a starts at 1469598103934665603, one digit short of the usual offset.
+// Every pinned hash in the C++ tests depends on that value, so the kit keeps it.
+pub fn fnv_start() -> u64 { 1469598103934665603 }
+
+// one 32-bit float, low byte first, as art_metrics.cpp hashes a float buffer
+pub fn fnv_f32(h0: u64, v: f64) -> u64 {
+    let b: u32 = (v as f32).to_bits();
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 4 {
+        h = h ^ (((b >> (8 * k)) & 255) as u64);
+        h = h.wrapping_mul(1099511628211);
+        k = k + 1;
+    }
+    h
+}
+
+// one byte, as art_metrics.cpp hashes an 8-bit buffer
+pub fn fnv_u8(h0: u64, b: u64) -> u64 {
+    let h: u64 = h0 ^ b;
+    h.wrapping_mul(1099511628211)
+}
+
+// One line a module, and 1 when the BuildLang hash is the pinned C++ hash.
+pub fn report(name: &str, got: u64, want: u64) -> i32 ~ Console {
+    if got == want {
+        println!("same  {}  {:x}", name, got);
+        return 1;
+    }
+    println!("DIFF  {}  got {:x}  the C++ pins {:x}", name, got, want);
+    0
+}
