@@ -1,0 +1,251 @@
+[
+{
+"say": "title",
+"frames": 90,
+"still": "q00-title"
+},
+{
+"press": "ArrowDown",
+"frames": 20
+},
+{
+"press": "Space",
+"frames": 60,
+"still": "q01-settings"
+},
+{
+"press": "ArrowRight",
+"frames": 30
+},
+{
+"press": "ArrowRight",
+"frames": 40,
+"still": "q01b-settings-off"
+},
+{
+"press": "ArrowLeft",
+"frames": 10
+},
+{
+"press": "ArrowLeft",
+"frames": 20
+},
+{
+"press": "Escape",
+"frames": 10
+},
+{
+"press": "ArrowUp",
+"frames": 10
+},
+{
+"press": "Space",
+"frames": 10
+},
+{
+"say": "arrival",
+"read": 30
+},
+{
+"frames": 40,
+"still": "q02-quay"
+},
+{
+"say": "keel",
+"go": "keel",
+"until": "!window.__lw.walking && window.__lw.talking",
+"max": 600
+},
+{
+"read": 30
+},
+{
+"choose": "What happened to the lamp",
+"frames": 2
+},
+{
+"read": 30,
+"still": "q03-keel"
+},
+{
+"choose": "Leave him dripping",
+"frames": 2
+},
+{
+"read": 15
+},
+{
+"press": "KeyT",
+"frames": 90,
+"still": "q04-almanac"
+},
+{
+"say": "deacon",
+"go": "fennick",
+"until": "!window.__lw.walking && window.__lw.talking",
+"max": 600
+},
+{
+"read": 30,
+"still": "q05-deacon"
+},
+{
+"choose": "What did you see when the lamps went out",
+"frames": 2
+},
+{
+"read": 30
+},
+{
+"eval": "window.__lw.closeTalk()",
+"frames": 20
+},
+{
+"say": "floor",
+"go": "prints",
+"until": "!window.__lw.walking && window.__lw.talking",
+"max": 700
+},
+{
+"read": 30,
+"still": "q06-floor"
+},
+{
+"press": "KeyC",
+"frames": 90,
+"still": "q07-candlemas"
+},
+{
+"say": "weigh-house",
+"go": "weigh",
+"until": "!window.__lw.walking && window.__lw.talking",
+"max": 1500
+},
+{
+"read": 24,
+"still": "q15-weigh-outside"
+},
+{
+"choose": "Go in to the after-vote",
+"frames": 2
+},
+{
+"read": 28,
+"still": "q16-weigh"
+},
+{
+"choose": "Go back outside",
+"frames": 2
+},
+{
+"read": 20
+},
+{
+"choose": "Go back to the quay",
+"frames": 2
+},
+{
+"read": 10
+},
+{
+"press": "Tab",
+"frames": 90,
+"still": "q14-daybook"
+},
+{
+"press": "Tab",
+"frames": 4
+},
+{
+"say": "the brine",
+"go": "brine",
+"until": "!window.__lw.walking && window.__lw.talking",
+"max": 900
+},
+{
+"read": 28,
+"still": "q08-brine"
+},
+{
+"choose": "Ask about the bread oven",
+"frames": 2
+},
+{
+"read": 28,
+"still": "q09-oven"
+},
+{
+"choose": "Talk to the woman by the stove",
+"frames": 2
+},
+{
+"read": 28
+},
+{
+"choose": "Read her coat",
+"frames": 2
+},
+{
+"read": 28
+},
+{
+"choose": "Your coat is dry",
+"frames": 2
+},
+{
+"read": 28,
+"still": "q10-wenna"
+},
+{
+"say": "lamp room",
+"choose": "Come with me to the lamp room",
+"frames": 2
+},
+{
+"read": 28,
+"still": "q11-lamproom"
+},
+{
+"choose": "Read the panel",
+"frames": 2
+},
+{
+"read": 26
+},
+{
+"choose": "Restrike the arc",
+"frames": 2
+},
+{
+"read": 28,
+"still": "q12-arc"
+},
+{
+"choose": "Go back down",
+"frames": 2
+},
+{
+"read": 20
+},
+{
+"say": "midnight",
+"frames": 60,
+"until": "window.__lw.talking",
+"max": 60
+},
+{
+"read": 30,
+"still": "q17-midnight-beam"
+},
+{
+"choose": "the keeper's absence",
+"frames": 2
+},
+{
+"read": 40
+},
+{
+"frames": 150,
+"still": "q18-ending"
+}
+]

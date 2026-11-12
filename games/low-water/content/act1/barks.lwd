@@ -1,0 +1,211 @@
+# Low Water: the voices in a fight and in a sneak (SYSTEMS-FULL 18.9, 17.1). Director, 2026-10-17.
+# @bark: one line per situation key (combat/sim/barks.mjs BARK_KEYS); the voice is the rule's.
+# @cue: an inner voice during a sneak (world/stealth.mjs); the first cue whose level holds speaks,
+# so each situation has a high-level line first and a plainer one after it.
+# Barks are one breath long and never explain the system; they say what the body or the nose knows.
+
+@bark b.footing_frost
+key: footing.frost
+text: Frost under the left boot.
+
+@bark b.footing_wet
+key: footing.wet
+text: Wet stone. The whole foot down, not the toe.
+
+@bark b.breath_low
+key: breath.low
+text: Nothing left in the bellows. Step back and let them fill.
+
+@bark b.tide_near
+key: tide.near
+text: Water at the ankle in twenty seconds.
+
+@bark b.smell_behind
+key: smell.behind
+text: Eel-oil and fear. Behind you.
+
+@bark b.tell_grab
+key: tell.grab
+text: He wants you to block.
+
+@bark b.dark_near
+key: dark.near
+text: Breathing, close, where the light isn't.
+
+@bark b.pride_losing
+key: pride.losing
+text: Wet to the knee and losing, and the whole quay can see the hat.
+
+@bark b.footing_frost2
+key: footing.frost
+text: Ice. Short steps.
+
+@bark b.footing_frost3
+key: footing.frost
+text: The stone has a skin of frost. Don't trust it.
+
+@bark b.footing_wet2
+key: footing.wet
+text: Weed underfoot. It moves when you do.
+
+@bark b.footing_wet3
+key: footing.wet
+text: Wet stone. It will take the feet first.
+
+@bark b.breath_low2
+key: breath.low
+text: The chest is empty. Back off and breathe.
+
+@bark b.breath_low3
+key: breath.low
+text: Two more swings and the knees will sit down by themselves.
+
+@bark b.tide_near2
+key: tide.near
+text: The water's on the move. Feel it at the heel.
+
+@bark b.tide_near3
+key: tide.near
+text: Sea's coming up the stones behind you.
+
+@bark b.smell_behind2
+key: smell.behind
+text: Tar and pipe smoke. Behind, and close.
+
+@bark b.smell_behind3
+key: smell.behind
+text: Somebody downwind of you who hasn't washed since the vote.
+
+@bark b.tell_grab2
+key: tell.grab
+text: The weight's gone forward. They mean to take hold.
+
+@bark b.tell_grab3
+key: tell.grab
+text: Never mind the face. The hands want your coat.
+
+@bark b.dark_near2
+key: dark.near
+text: A boot on stone, an arm's length off.
+
+@bark b.dark_near3
+key: dark.near
+text: Something in the dark has stopped moving. That's worse.
+
+@bark b.pride_losing2
+key: pride.losing
+text: The hat is in the water. So, nearly, is the dignity.
+
+@bark b.pride_losing3
+key: pride.losing
+text: Losing, and wet, and watched from the windows.
+
+# ---------------------------------------------------------------- the manner voices in a fight (they fill Composure)
+@bark b.words_condolence
+key: words.condolence
+text: Hurt, and not saying so. They'd stop if somebody let them.
+
+@bark b.words_formletter
+key: words.formletter
+text: The assessor has not struck. Note it. They will have to note it too.
+
+@bark b.words_chit
+key: words.chit
+text: Every second you don't strike, they owe you one.
+
+@bark b.words_hearsay
+key: words.hearsay
+text: Two of them, and both wondering who'll be blamed first.
+
+@bark b.words_condolence2
+key: words.condolence
+text: Bleeding into a collar and calling it rain.
+
+@bark b.words_condolence3
+key: words.condolence
+text: Nobody came out tonight wanting this. Say so.
+
+@bark b.words_formletter2
+key: words.formletter
+text: Hands open, feet set. The Shelf is on record as declining to strike.
+
+@bark b.words_formletter3
+key: words.formletter
+text: Let the minute pass in writing. Then speak.
+
+@bark b.words_chit2
+key: words.chit
+text: Keep the guard up. The debt is running in your favour.
+
+@bark b.words_chit3
+key: words.chit
+text: Restraint costs nothing now and buys a sentence later.
+
+@bark b.words_hearsay2
+key: words.hearsay
+text: They're both looking at the quay. Somebody up there is watching.
+
+@bark b.words_hearsay3
+key: words.hearsay
+text: The tall one wants to go home. The other one knows it.
+
+@bark b.words_condolence4
+key: words.condolence
+text: Somebody at home is waiting up for that one.
+
+@bark b.words_formletter4
+key: words.formletter
+text: Hold. Every second held is a line in the Shelf's favour.
+
+@bark b.words_chit4
+key: words.chit
+text: Let them spend. You're the one with credit.
+
+@bark b.words_hearsay4
+key: words.hearsay
+text: By morning the Gut will say the Shelf never raised a hand. Make it true.
+
+# ---------------------------------------------------------------- sneak voices
+@cue c.turning.dark
+on: turning
+skill: dark
+dc: 5
+text: He's turning. Be a post. Posts don't breathe.
+
+@cue c.turning
+on: turning
+skill: undertow
+text: Don't move. Moving is what eyes are for.
+
+@cue c.lantern.candlemas
+on: lantern
+skill: candlemas
+dc: 3
+text: You are holding the only yellow on this quay, darling. Everyone can read it.
+
+@cue c.lantern
+on: lantern
+skill: dark
+text: The lantern. Every eye out there just found you.
+
+@cue c.close.smell
+on: close
+skill: smell
+dc: 4
+text: Tar and pipe smoke, an arm's length off. He hasn't seen you. He will if you swallow.
+
+@cue c.close
+on: close
+skill: dark
+text: Close enough to touch. Don't.
+
+@cue c.wind.salt
+on: wind
+skill: salt
+dc: 4
+text: Wind's come round on the cheek. Your smell is going to him now.
+
+@cue c.wind
+on: wind
+skill: smell
+text: The wind has changed sides, and so has your smell.

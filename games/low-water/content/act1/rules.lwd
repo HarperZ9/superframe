@@ -1,0 +1,1471 @@
+# Low Water, Act 1: the ruleset. Director's file. Private, 2026-10-16.
+# Systems: design/SYSTEMS-FULL.md. Format: design/LWD1-FORMAT.md (draft 2, the engine's dialect).
+# Keys the engine does not read yet are marked (R n) in design/NOTES-FOR-ENGINEER.md.
+
+@rules
+check-mode: fixed
+xp-per-level: 1
+points-per-level: 1
+skill-cap: 4
+creation-points: 11
+attr-min: 1
+attr-max: 5
+cabinet-slots: 3
+cabinet-slots-max: 6
+forget-cost: 1
+rep-min: -3
+rep-max: 3
+autosave-minutes: 10
+
+# ---------------------------------------------------------------- compartments
+@attr pen
+name: THE PEN
+short: PEN
+about: Reckoning. Sums, papers, memory, the scene put back together from what is left.
+
+@attr coat
+name: THE COAT
+short: COAT
+about: Bearing. The body in weather, on stairs, on wet stone; and the dignity of a dry coat.
+
+@attr hat
+name: THE HAT
+short: HAT
+about: Manner. What Lamb does with people, and what people do with Lamb.
+
+@attr nose
+name: THE NOSE
+short: NOSE
+about: Instinct. Smell, the dark, the hidden thing, and the sea in the joints.
+
+# ---------------------------------------------------------------- the sixteen voices
+@skill sum
+name: SUM
+attr: pen
+about: Times, distances, clocks, money, counting. Distrusts every clock. Enjoys a remainder.
+
+@skill precedent
+name: PRECEDENT
+attr: pen
+about: Eleven years of claims, salvage law and the Shelf's practice. Always has a case number.
+
+@skill smallprint
+name: SMALL PRINT
+attr: pen
+about: Documents, signatures, clauses, ink. Delighted by a crossing-out.
+
+@skill carbon
+name: CARBON
+attr: pen
+about: Puts a scene back as it happened, from what is left. Speaks of the past in the present tense.
+
+@skill knees
+name: KNEES
+attr: coat
+about: Stairs, wading, distance. Complains, then does it.
+
+@skill ballast
+name: BALLAST
+attr: coat
+about: Footing and balance; steadiness when the ground or a person moves. Low, slow, nautical.
+
+@skill pride
+name: PRIDE
+attr: coat
+about: Composure, the dry coat, being taken seriously. Counts the years dry.
+
+@skill grip
+name: GRIP
+attr: coat
+about: Hands. Climbing, forcing, carrying, switches. Talks about what the hands feel.
+
+@skill condolence
+name: CONDOLENCE
+attr: hat
+about: Reading grief and pain, and letting people say what they lost. A little too sure it understands.
+
+@skill formletter
+name: FORM LETTER
+attr: hat
+about: Official manner, bluff, the guise kept up. Speaks in the passive voice, as letters do.
+
+@skill chit
+name: THE CHIT
+attr: hat
+about: Bargains, bribes, debts and what a thing is worth. A shopkeeper in the head.
+
+@skill hearsay
+name: HEARSAY
+attr: hat
+about: Planting, reading and steering rumour. Leans in. Has always just heard.
+
+@skill smell
+name: SMELL
+attr: nose
+about: Literal smell, and the Gut's language. Ecstatic and disgusting in equal measure.
+
+@skill dark
+name: THE DARK
+attr: nose
+about: Sight and hearing without light; what fear knows. Speaks more as Dread rises.
+
+@skill undertow
+name: UNDERTOW
+attr: nose
+about: What people hide, and the pull toward it. Persuasive. Never quite says what it wants.
+
+@skill salt
+name: SALT
+attr: nose
+about: The body's sense of tide and weather. Speaks as joints and skin.
+
+# ---------------------------------------------------------------- the Kit (instruments as voices; condition is the base)
+@skill candlemas
+name: CANDLEMAS
+base: 3
+train: no
+about: A brass photometer. Light, the kind of light, and the colour of a thing in it. Vain. Will not name a colour under sodium.
+
+@skill glass
+name: THE GLASS
+base: 3
+train: no
+about: A pocket barometer. The weather an hour ahead, and how much the town knows of what Lamb has said. A gossip.
+
+@skill almanac
+name: THE ALMANAC
+base: 4
+train: no
+about: A tide table with a brass dial. The tide now and for six hours. Precise, with a grudge against the moon.
+
+@skill damp
+name: THE DAMP
+base: 2
+train: no
+about: A hair hygrometer, strung with the hair of Assessor Pollard, retired or deceased. Wetness, and how long ago. Melancholy.
+
+@skill vane
+name: THE VANE
+base: 3
+train: no
+about: A tin cockerel on a folding stick. Wind, and where sound, smell, smoke and spray are carried. Excitable.
+
+# ---------------------------------------------------------------- environment and condition modifiers (SYSTEMS-FULL 2.1)
+@modifier mod.sum.wear
+skill: sum
+mod: -1
+when: meter.wear >= 6
+why: Tired
+
+@modifier mod.sum.desk
+skill: sum, precedent
+mod: 1
+when: (at(office) | at(harbour) | at(room)) & light >= 0.3
+why: A lit desk
+
+@modifier mod.smallprint.dark
+skill: smallprint
+mod: -3
+when: light < 0.15
+why: Too dark to read
+
+@modifier mod.carbon.place
+skill: carbon
+mod: 2
+when: at(weigh_out) | at(lamproom) | at(drowned)
+why: Where it happened
+
+@modifier mod.carbon.washed
+skill: carbon
+mod: -2
+when: clock >= 01:30 & (at(weigh_out) | at(drowned))
+why: Rain and tide have been over it
+
+@modifier mod.knees.cold
+skill: knees
+mod: -1
+when: meter.cold >= 4
+why: Cold
+
+@modifier mod.knees.stairs
+skill: knees
+mod: -1
+when: var.stairs_at > 0 & clock < var.stairs_at + 60
+why: The 112 stairs, lately
+
+@modifier mod.ballast.frost
+skill: ballast
+mod: -2
+when: frost > 0 & (at(mole) | at(stairs) | at(quay) | at(steps))
+why: Frost underfoot
+
+@modifier mod.ballast.wet
+skill: ballast
+mod: -1
+when: rain > 0.2 & !(at(brine) | at(room) | at(weigh_in) | at(harbour) | at(office))
+why: Wet stone
+
+@modifier mod.ballast.dark
+skill: ballast
+mod: -2
+when: light < 0.05 & item.i.lantern == 0
+why: Dark, no lantern
+
+@modifier mod.pride.dry
+skill: pride
+mod: 1
+when: wet < 0.1
+why: Dry
+
+@modifier mod.pride.wet
+skill: pride
+mod: -1
+when: wet >= 0.3 & wet < 0.8
+why: Wet
+
+@modifier mod.pride.soaked
+skill: pride
+mod: -2
+when: wet >= 0.8
+why: Soaked
+
+@modifier mod.grip.cold
+skill: grip
+mod: -2
+when: meter.cold >= 6
+why: Numb hands
+
+@modifier mod.grip.rain
+skill: grip
+mod: -1
+when: rain > 0.2 & !(at(brine) | at(room) | at(weigh_in) | at(harbour) | at(office) | at(hall) | at(smokehouse) | at(loft))
+why: Rain on the hands
+
+@modifier mod.condolence.fire
+skill: condolence
+mod: 1
+when: at(brine) | at(room) | at(smokehouse)
+why: By a fire
+
+@modifier mod.condolence.sodium
+skill: condolence
+mod: -1
+when: sodium > 0.6 & light >= 0.2
+why: Faces will not read under sodium
+
+@modifier mod.formletter.pride
+skill: formletter
+mod: 1
+when: wet < 0.1
+why: A dry coat speaks first
+
+@modifier mod.chit.shelf
+skill: chit
+mod: -1
+when: rumour(shelf.failed) > 0.5
+why: The Shelf's name is worth less here
+
+@modifier mod.hearsay.brine
+skill: hearsay
+mod: 1
+when: at(brine)
+why: The Brine
+
+@modifier mod.smell.gut
+skill: smell
+mod: 2
+when: indistrict(gut)
+why: The Gut
+
+@modifier mod.smell.rain
+skill: smell
+mod: -2
+when: rain > 0.5 & !(at(brine) | at(room) | at(weigh_in) | at(harbour) | at(office) | at(hall) | at(smokehouse) | at(loft))
+why: Rain
+
+@modifier mod.smell.jar
+skill: smell
+mod: -3
+when: worn(c.belljar)
+why: A bell jar
+
+@modifier mod.smell.blind
+skill: smell
+mod: 3
+when: var.blindfolded == 1
+why: Blindfolded
+
+@modifier mod.dark.blackout
+skill: dark
+mod: 2
+when: light < 0.05
+why: Dark
+
+@modifier mod.dark.lamp
+skill: dark
+mod: -1
+when: light >= 0.3
+why: Under a lamp
+
+@modifier mod.dark.blind
+skill: dark
+mod: 2
+when: var.blindfolded == 1
+why: Blindfolded
+
+@modifier mod.undertow.low
+skill: undertow
+mod: 1
+when: tide < -0.2
+why: Near low water
+
+@modifier mod.undertow.high
+skill: undertow
+mod: -1
+when: tide > 4.6
+why: Near high water
+
+@modifier mod.salt.soaked
+skill: salt
+mod: 1
+when: wet >= 0.8
+why: Soaked
+
+@modifier mod.salt.floor
+skill: salt
+mod: 1
+when: indistrict(floor)
+why: On the floor of the sea
+
+@modifier mod.candlemas.wind
+skill: candlemas
+mod: -2
+when: wind.speed > 12 & item.fit.candlemas_shutter == 0
+why: The wick gutters
+
+@modifier mod.damp.saturated
+skill: damp
+mod: -9
+when: var.damp_wet == 1
+why: Saturated
+
+@modifier mod.damp.keel
+skill: damp
+mod: -9
+when: var.damp_hair == keel
+why: Keel's hair reads everything as wet
+
+@modifier mod.damp.wenna
+skill: damp
+mod: 2
+when: var.damp_hair == wenna & (indistrict(mole))
+why: Wenna's hair, on her stone
+
+@modifier mod.damp.merrow
+skill: damp
+mod: 2
+when: var.damp_hair == merrow & indistrict(floor)
+why: Merrow's hair, on the mud
+
+@modifier mod.damp.pip
+skill: damp, salt
+mod: 1
+when: var.damp_hair == pip
+why: Pip's hair feels the tide
+
+@modifier mod.damp.lamb
+skill: damp
+mod: 2
+when: var.damp_hair == lamb
+why: Lamb's own hair
+
+# ---------------------------------------------------------------- meters (R4: rise, full)
+@meter cold
+name: Cold
+about: Wetness, wind and frost in the bones. Full: Lamb must shelter.
+scope: global
+min: 0
+max: 10
+start: 0
+decay: 0
+rise: 3 ? wet > 0.3
+rise: 3 ? wet > 0.8
+rise: 1 ? wind.speed > 9 & !(at(brine) | at(room) | at(weigh_in) | at(harbour) | at(office) | at(hall) | at(smokehouse) | at(loft))
+rise: 1 ? frost > 0
+rise: -12 ? stove
+warn: 7 The cold has got into the pen hand.
+full: chilled.$district
+
+@meter wear
+name: Wear
+about: The hours of the night, bad light, stairs, strain. Full: Lamb nods off.
+scope: global
+min: 0
+max: 10
+start: 1
+decay: 0
+rise: 1 ? true
+warn: 7 The Daybook's lines have begun to move about.
+full: nod.$trait
+after: 4
+wait: 30
+
+@meter dread
+name: Dread
+about: Blackout, being watched, the floor in fog. Full: the small thing.
+scope: global
+min: 0
+max: 10
+start: 0
+decay: 1
+rise: 2 ? light < 0.05
+rise: 1 ? fog > 0.08 & indistrict(floor)
+warn: 7 Something at the edge of the lamp has been patient for a while.
+full: small.$district
+
+# ---------------------------------------------------------------- the Margin (inked notes are traits; their tide is the condition on each mod)
+@trait m.clocks
+name: Every Clock in Gullet Is Lying
+about: The Brine's clock is slow, the ship's is fast, and the Board's is whatever the Board needs. Lamb keeps the true time in the margin.
+research: 60
+while: skill.sum -1
+mod: skill.sum +2
+do: set(margin.clocks)
+
+@trait m.level
+name: Water Finds Its Level
+about: Once the water is over the boot it stops being an enemy and becomes a fact.
+research: 45
+while: skill.pride -1
+mod: skill.knees +1 ? wet >= 0.3
+mod: skill.salt +1 ? wet >= 0.3
+mod: skill.pride -1
+
+@trait m.owed
+name: Everyone in Gullet Owes Somebody
+about: The town runs on a slate. Find the chalk and you find the town.
+research: 60
+while: skill.hearsay -1
+mod: skill.chit +2 ? at(brine) | indistrict(gut)
+
+@trait m.flatfish
+name: The Flatfish Position
+about: Lie on the bottom, both eyes up, and say nothing. The water tells you more than the fish.
+research: 30
+while: skill.formletter -1
+mod: skill.undertow +2 ? var.silent_scene == 1
+
+@trait m.dark
+name: The Town Is Honest in the Dark
+about: Under the lamps Gullet performs. In the dark it only talks.
+research: 90
+while: skill.condolence -1
+mod: skill.condolence +2 ? light < 0.1
+mod: skill.formletter +2 ? light < 0.1
+mod: skill.chit +2 ? light < 0.1
+mod: skill.hearsay +2 ? light < 0.1
+
+@trait m.colour
+name: The Colour of a Thing
+about: What a thing was in honest light it still is under the sodium. Lamb carries the colour in the margin.
+research: 45
+while: skill.condolence -1
+mod: skill.candlemas +1
+do: set(margin.colour)
+
+@trait m.wet
+name: Why Is He Wet
+about: Nobody asks any more. Lamb asks, in pencil, every few minutes.
+research: 180
+mod: skill.dark +1
+do: set(margin.wet)
+
+@trait m.stairs
+name: A Hundred and Twelve
+about: Count them going up, and the counting carries you.
+research: 30
+while: skill.knees -1
+mod: skill.knees +2 ? at(stairs) | at(lamproom) | at(gallery)
+mod: skill.sum +1 ? at(stairs)
+
+@trait m.copper
+name: Copper Is a Better Citizen
+about: Metal goes where it is useful and asks nobody's leave.
+research: 60
+while: skill.formletter -1
+mod: skill.formletter -1
+do: set(margin.copper)
+
+@trait m.watched
+name: Somebody Is Always Writing It Down
+about: The brass poles, the open books. Lamb learns the feeling of a pencil moving in the next lamp.
+research: 60
+while: skill.dark -1
+mod: skill.hearsay +1
+do: set(margin.watched)
+
+@trait m.pink
+name: Pink Like a Cut
+about: The lamps came back pink. Sodium does that for ten minutes when it starts cold. The pink is a clock.
+research: 30
+mod: skill.carbon +2 ? clock < 01:30
+mod: skill.dark +1
+
+@trait m.grace
+name: Grace Is a Receipt
+about: Somewhere behind every relic there is a sum, and someone who was paid it.
+research: 60
+while: skill.condolence -1
+mod: skill.precedent +1
+
+@trait m.pollard
+name: Assessor Pollard's Hair
+about: The Damp was a man once, and that man assessed this lamp twelve years ago.
+research: 120
+mod: skill.damp +1 ? var.damp_hair == pollard
+mod: skill.precedent +1 ? var.damp_hair == pollard
+
+@trait m.small
+name: The Small Thing
+about: Lamb saw it. It did nothing. That was the worst part, and also it was fine.
+research: 60
+while: skill.dark -1
+mod: skill.dark +2
+mod: skill.undertow +1
+
+# ---------------------------------------------------------------- precedents (character creation)
+@archetype p.ledger
+name: The Ledger Hand
+about: 1180/P, the granary at Pell, where a clock stopped at the hour of the fire. 0441/R, the Rendle bank, whose ledger balanced too well. 2003/S, the Sallow ferry, and its timetable.
+attr: pen 4
+attr: coat 2
+attr: hat 3
+attr: nose 2
+skill: sum 2
+skill: precedent 2
+skill: smallprint 2
+skill: carbon 2
+skill: condolence 1
+skill: chit 1
+trait: m.clocks
+item: c.shelf_coat 1
+item: c.shelf_hat 1
+item: i.lantern 1
+item: i.chits 6
+
+@archetype p.wader
+name: The Wader
+about: 0907/M, the drowned choir at Mudlow. 1312/K, the Kettle Reach dyke. 1766/T, the tannery at Tull, assessed by smell.
+attr: pen 2
+attr: coat 4
+attr: hat 2
+attr: nose 3
+skill: knees 2
+skill: ballast 2
+skill: pride 2
+skill: grip 2
+skill: salt 1
+skill: smell 1
+trait: m.level
+item: c.shelf_coat 1
+item: c.shelf_hat 1
+item: i.lantern 1
+item: i.chits 6
+
+@archetype p.condoler
+name: The Condoler
+about: 2216/H, the glasshouses on Orrery Lane, hailed out. 0519/W, the Widow Arbery's roof, which she paid for twice. 1655/B, the bell at Brack, which fell on the man who rang it.
+attr: pen 3
+attr: coat 2
+attr: hat 4
+attr: nose 2
+skill: condolence 2
+skill: formletter 2
+skill: chit 2
+skill: hearsay 2
+skill: precedent 1
+skill: sum 1
+trait: m.owed
+item: c.shelf_coat 1
+item: c.shelf_hat 1
+item: i.lantern 1
+item: i.chits 6
+
+@archetype p.nightclerk
+name: The Night Clerk
+about: 2410/N, the bonded warehouse at Corve, watched from its own roof for three nights. 0388/L, the lighterman who was never on the manifest. 1907/E, the eel weir at Esk, assessed by ear.
+attr: pen 2
+attr: coat 2
+attr: hat 2
+attr: nose 5
+skill: dark 2
+skill: undertow 2
+skill: smell 2
+skill: salt 2
+skill: hearsay 1
+skill: formletter 1
+trait: m.dark
+item: c.shelf_coat 1
+item: c.shelf_hat 1
+item: i.lantern 1
+item: i.chits 6
+
+@archetype p.fitter
+name: The Fitter
+about: 1544/C, the clockwork crane at Coldharbour, mended to prove it had not been sabotaged. 2290/V, the Vellen sluice, opened with a spanner at three in the morning. 0612/D, the diving bell at Drem.
+attr: pen 3
+attr: coat 3
+attr: hat 2
+attr: nose 3
+skill: grip 2
+skill: sum 2
+skill: carbon 2
+skill: knees 2
+skill: salt 1
+skill: smallprint 1
+trait: m.copper
+item: c.shelf_coat 1
+item: c.shelf_hat 1
+item: i.lantern 1
+item: i.chits 6
+item: s.tin 1
+item: s.cork 1
+
+@var precedent
+default: custom
+values: ledger, wader, condoler, nightclerk, fitter, custom
+about: Set by creation.
+
+# ---------------------------------------------------------------- clothing (R7: shed, warm, guise)
+@item c.shelf_coat
+name: The Shelf greatcoat
+slot: coat
+shed: 0.5
+warm: 2
+guise: shelf
+mod: skill.pride +1 ? wet < 0.1
+about: Shelf issue, eleven years dry until tonight.
+
+@item c.shelf_hat
+name: The Shelf bowler
+slot: hat
+shed: 0.3
+guise: shelf
+mod: skill.formletter +1
+about: Hard, black, and taken seriously by people who have been sent letters.
+
+@item c.oilskin
+name: A borrowed oilskin
+slot: coat
+shed: 0.9
+warm: 1
+guise: floor
+mod: skill.pride -1
+about: From the Brine's peg. It smells of someone's uncle.
+
+@item c.keeper_coat
+name: Wenna's oxblood keeper's coat
+slot: coat
+shed: 0.6
+warm: 2
+guise: keeper
+mod: skill.knees +1 ? at(stairs)
+mod: skill.condolence +1 ? at(brine) | indistrict(mole)
+about: Oxblood, which nobody on the quay has seen as oxblood for two years. She was never paid to wear it.
+
+@item c.waders
+name: Merrow's spare waders
+slot: feet
+guise: floor
+mod: skill.ballast -1 ? !indistrict(floor)
+about: Wading does not wet Lamb below the waist. On stone they slap.
+
+@item c.blindfold
+name: A Guild blindfold
+slot: neck
+guise: guild
+about: Worn round the neck it says you have voted. Worn over the eyes it makes the nose an orator.
+
+@item c.belljar
+name: A Congregation bell jar
+slot: hat
+guise: pilgrim
+mod: skill.smell -3
+about: The breath fogs it. The world goes quiet and round.
+
+@item c.lamplighter_coat
+name: A Lamplighter's dark coat
+slot: coat
+shed: 0.6
+warm: 2
+guise: lamplighter
+mod: skill.formletter +2 ? !indistrict(gut)
+about: Constant Hobb's spare. The cuffs are polished by a brass pole.
+
+@item c.mittens
+name: Sabine's fingerless mittens
+slot: hands
+warm: 1
+mod: skill.grip +1 ? meter.cold >= 4
+about: Knitted from three colours of wool, which under sodium are one.
+
+@item c.socks
+name: Dry socks
+stack: yes
+about: Put on in the room above the Brine: wet feet reset, Cold falls by two.
+
+@item c.keel_hat
+name: The harbourmaster's hat
+slot: hat
+shed: 0
+guise: board
+mod: skill.pride -2
+mod: skill.formletter +2 ? at(harbour) | at(quay)
+about: It funnels water down the back of the neck by design, or by long habit.
+
+# ---------------------------------------------------------------- things carried and used
+@item i.lantern
+name: A storm lantern
+slot: hand
+mod: skill.ballast +1 ? light < 0.1
+about: Light within its radius; reads colour; makes Lamb seen. A fill burns about half an hour.
+
+@item i.paraffin
+name: A fill of paraffin
+stack: yes
+
+@item i.egg
+name: A pickled egg
+stack: yes
+about: Sabine's. A penny. Cold falls by one.
+
+@item i.rum
+name: Brine rum
+stack: yes
+about: Dread falls by three; the pen hand wanders for half an hour.
+
+@item i.tea
+name: Strong tea
+stack: yes
+about: Wear falls by two.
+
+@item i.snuff
+name: Shadwell's snuff
+stack: yes
+about: SMELL rises by two for half an hour, and so does everything else.
+
+@item i.chits
+name: Shelf chits
+stack: yes
+about: Expense vouchers. The town takes them at a rate that falls with the Shelf's name.
+
+@item i.key_office
+name: Keel's key
+about: The weigh-house office. It is wet.
+
+@item i.harbour_table
+name: The Gullet harbour table
+about: Printed for this harbour, this year. Exact heights for every step and gate.
+
+@item i.prism_green
+name: A green prism
+about: Bottle glass, cast to the shape of one of Mother's prisms. Still warm, or was.
+
+@item i.prism_113
+name: Relic 113
+about: A crown glass prism, sharp on every edge, numbered 113. Fennick wants it back.
+
+@item i.copper_sack
+name: Merrow's sack
+about: Trust copper from the Old Light's lantern gear. Heavy as a verdict.
+
+@item w.hammer
+name: The weigh-house store hammer
+slot: hand
+about: A lump hammer, the head bound with wire.
+
+@item i.orrin_letter
+name: Orrin Teague's letter
+about: Nine years old, addressed to someone in Hesk, never posted because the morning boat never suited.
+
+@item i.hair
+name: A hair in an envelope
+stack: yes
+about: Whose it is is written on the envelope.
+
+# ---------------------------------------------------------------- salvage pieces
+@item s.brass
+name: Brass
+stack: yes
+
+@item s.copper_wire
+name: Copper wire
+stack: yes
+
+@item s.crown_glass
+name: Crown glass
+stack: yes
+
+@item s.bottle_glass
+name: Bottle glass
+stack: yes
+
+@item s.tin
+name: Tin
+stack: yes
+
+@item s.wick
+name: Wick
+stack: yes
+
+@item s.cork
+name: Cork
+stack: yes
+
+@item s.mercury
+name: A bead of mercury in a twist of paper
+stack: yes
+
+# ---------------------------------------------------------------- fittings (the Kit, fitted at the bench in the room above the Brine)
+@item fit.candlemas_shutter
+name: Candlemas: a smoked tin shutter
+mod: skill.candlemas +1
+about: The wick no longer gutters in wind.
+
+@item fit.candlemas_eye
+name: Candlemas: a crown glass eyepiece
+mod: skill.candlemas +1
+about: Reads a prism's number by the way it bends a light.
+
+@item fit.glass_needle
+name: The Glass: a new brass needle
+mod: skill.glass +1
+
+@item fit.almanac_table
+name: The Almanac: the Gullet harbour table
+mod: skill.almanac +1
+about: Exact gate times in the Daybook.
+
+@item fit.vane_tail
+name: The Vane: a re-tinned tail
+mod: skill.vane +1
+about: No longer bends in a gust.
+
+@recipe f.candlemas_shutter
+name: Fit Candlemas with a shutter
+in: s.tin 1
+in: s.cork 1
+out: fit.candlemas_shutter 1
+when: at(room)
+cost: 15
+
+@recipe f.candlemas_eye
+name: Fit Candlemas with a crown glass eyepiece
+in: s.crown_glass 1
+out: fit.candlemas_eye 1
+when: at(room)
+cost: 20
+
+@recipe f.glass_needle
+name: Give the Glass a new needle
+in: s.brass 1
+out: fit.glass_needle 1
+when: at(room)
+cost: 15
+
+@recipe f.almanac_table
+name: Paste the harbour table into the Almanac
+in: i.harbour_table 1
+out: fit.almanac_table 1
+when: at(room)
+cost: 10
+
+@recipe f.vane_tail
+name: Re-tin the Vane's tail
+in: s.tin 1
+out: fit.vane_tail 1
+when: at(room)
+cost: 10
+
+# The Damp's hair is a scene, not a recipe: brine.lwd plays it (var damp_hair).
+@var damp_hair
+default: pollard
+values: pollard, wenna, pip, merrow, keel, lamb
+
+@var damp_wet
+default: 0
+about: 1 while the Damp is saturated (rain, wading); dried at a stove.
+
+# ---------------------------------------------------------------- the Lamps of Gullet
+@project l.steps_post
+name: The paraffin post at the top of the steps
+district: quay
+stage: Leave from the Congregation | needs: | do: set(lamp.steps_post.leave) | about: It stands on the Congregation's steps. Fennick must allow it.
+stage: Wick and fill | needs: s.wick 1, i.paraffin 1 | do: light(steps, 0.4, 0.3); set(lamp.steps_post.lit); quest(a1.lamps, first) | about: Colour reads at the top of the steps. The Lamplighters see the steps.
+
+@project l.brine_porthole
+name: The Brine's porthole lamp
+district: brine
+stage: Glass and collar | needs: s.bottle_glass 1, s.brass 1 | do: light(yard, 0.35, 0); set(lamp.porthole.lit); quest(a1.lamps, first) | about: The yard is lit. Nobody overhears in the yard except in fog.
+
+@project l.gut_wires
+name: The Gut's wire lamps
+district: gut
+stage: A steward's word | needs: | do: set(lamp.gut.leave) | about: Marrow's word, or Spratt's.
+stage: Copper on the wires | needs: s.copper_wire 2 | do: light(gut, 0.45, 0); rep(guild, 1); set(lamp.gut.lit); quest(a1.lamps, first) | about: The Gut's lamps full; the gutter's colour shows.
+
+@project l.balance
+name: The lamp on the town balance
+district: weigh
+stage: Wick and fill, carried up | needs: s.wick 1, i.paraffin 1 | do: set(lamp.balance.lit); rep(board, -1); rep(guild, 1); quest(a1.lamps, first) | about: A light the whole quay can see that is nobody's but the town's.
+
+@project l.drowned
+name: A lantern in the drowned lamp
+district: floor
+stage: Leave a lantern | needs: i.lantern 1 | do: set(lamp.drowned.lit); rep(lowco, 2); quest(a1.lamps, first) | about: Hung in the hole of the Old Light before the water covers it.
+
+# ---------------------------------------------------------------- factions (favour -3 to +3) and the Read
+@faction board
+name: The Harbour Board
+about: Harbourmaster Keel, who is the Board.
+start: 0
+tier: -3 thinks you are a threat to the Board
+tier: -1 thinks you are a nuisance
+tier: 0 thinks you are a cheque in a coat
+tier: 2 thinks you are an ally of the Board
+
+@faction trust
+name: The Trust, the Municipal and the Lamplighters
+about: Alderman Crake's three hats, one address, one ledger.
+start: 0
+tier: -3 thinks you are an enemy of the town
+tier: -1 is watching you
+tier: 0 thinks you are an auditor
+tier: 2 thinks you are useful
+
+@faction guild
+name: The Worshipful Guild of the Gut
+about: Marrow Dunlin, steward; the vote in the dark.
+start: 0
+tier: -3 thinks you are an informer
+tier: -1 does not like your smell
+tier: 0 thinks you are a flatfish
+tier: 2 thinks you are a nose, one of us
+
+@faction congregation
+name: The Congregation of the Filament
+about: Deacon Fennick and forty in bell jars.
+start: 0
+tier: -3 thinks you are a thief of relics
+tier: 0 thinks you are a pilgrim who has not yet seen
+tier: 2 thinks you are a seer
+
+@faction lowco
+name: The Low Company
+about: The salvors. Tub Merrow, Ferris Lugg, Nan Cockle.
+start: -1
+tier: -3 thinks you are the hangman
+tier: -1 thinks you are the next person to hang them
+tier: 1 thinks you are a witness
+tier: 3 thinks you are one of them
+
+@faction brine
+name: The Brine
+about: Sabine's neutral ground.
+start: 0
+tier: -3 thinks you are trouble
+tier: 0 thinks you are a customer
+tier: 2 thinks you are a regular
+
+@faction shelf
+name: The Mutual Indemnity of the Lower Shelf
+about: By pneumatic tube, at intervals.
+start: 0
+tier: -2 thinks you are insubordinate
+tier: -1 thinks you are delayed
+tier: 0 thinks you are diligent
+
+@var seenas_board
+default: cheque
+values: cheque, nuisance, threat, ally
+
+@var seenas_trust
+default: auditor
+values: auditor, useful, enemy
+
+@var seenas_guild
+default: flatfish
+values: flatfish, nose, informer
+
+@var seenas_congregation
+default: pilgrim
+values: pilgrim, seer, thief
+
+@var seenas_lowco
+default: hangman
+values: hangman, witness, ours
+
+@var seenas_brine
+default: customer
+values: customer, regular, trouble
+
+# ---------------------------------------------------------------- script state shared across districts
+@var prov
+default: none
+values: none, wreckers, guild, trust, keeper, sea, refused
+about: The provisional cause sent up the tube at midnight.
+
+@var blindfolded
+default: 0
+
+@var silent_scene
+default: 0
+about: 1 for a scene in which Lamb has chosen silence (the Flatfish Position).
+
+@var stairs_at
+default: 0
+about: Clock minute when Lamb last climbed the 112 stairs.
+
+@var runs
+default: 1
+about: 1 when the engine plays Tide Runs; 0 plays each run's fallback check instead.
+
+@var lens
+default: whole
+values: whole, saved, broken, green_broken
+
+@var fish
+default: stranded
+values: stranded, turned, gulls, eaten
+
+@var copper
+default: none
+values: none, hidden, returned, reported
+
+@var tab_dilly
+default: 0
+@var tab_orrin
+default: 0
+@var tab_hobb
+default: 0
+@var tab_pip
+default: 0
+@var tab_cockle
+default: 0
+
+# ---------------------------------------------------------------- quests
+@quest a1.claim
+name: Claim 4471/G
+about: The Board's claim: darkness, malicious, telegraphed three hours before the dark.
+stage: open: Find the cause of the loss before the tube takes it at ten past six.
+stage: mechanism: The quay switch went down at 21:38 and Mother went with it. Why was she on it?
+stage: wiring: Seven months ago Mother was moved onto the quay board. Signed Keel, approved Crake.
+stage: restrike: She needs a hand at the panel after any loss of supply. Nobody's hand was there.
+stage: foreknown: The claim was sent at 18:30. Someone knew the vote would darken her.
+stage: glass: A third of the lens is green bottle glass. The Board wants a new lens. Why?
+stage: light: The ferry was turned by a light in the drowned lamp.
+stage: provisional: A provisional cause has gone up the tube. The town has heard it.
+stage: cause: The cause has gone up the tube at dawn.
+done: cause
+
+@quest a1.lowlight
+name: The Low Light
+about: What burned in the drowned lamp at 22:20.
+stage: seen: From the deck: a low light in the Old Light, and the helm going over. The ship's clock said 22:24.
+stage: merrow: Merrow hung his lantern in the hole. He says it was out from 22:18 to 22:25.
+stage: gap: The ferry turned at 22:20. For five minutes nothing of Merrow's was burning.
+
+@quest a1.stairs
+name: A Hundred and Twelve Stairs
+about: Mother is dark. Somebody must climb.
+stage: asked: Asked Wenna to climb to Mother.
+stage: refused: Wenna will not climb.
+stage: climbing: Wenna is climbing.
+stage: burning: Mother is burning again, by Wenna's hand.
+stage: alone: Mother is burning again, by Lamb's hand.
+stage: dark: The second blackout put her out again.
+done: burning, alone
+
+@quest a1.nose
+name: Lights Out for the Nose
+about: The Guild's switch, and Marrow's guess.
+stage: heard: The Guild votes in the dark. Someone must make it dark.
+stage: scales: Fish scales on the switch handle.
+stage: admitted: Marrow pulled the switch at 21:38 and put it back at 21:52.
+stage: kept: Marrow's secret is kept.
+done: admitted, kept
+
+@quest a1.splinters
+name: Splinters of the Eye
+about: The Congregation's relics.
+stage: relic: Fennick keeps splinters of the Eye.
+stage: numbered: Relic 113 is a numbered crown glass prism, sharp on every edge. One of Mother's.
+stage: bought: Fennick paid for them.
+
+@quest a1.slate
+name: The Slate
+about: Sabine's chalk, the slow clock and the oven.
+stage: tab: Wenna's mark on the tab at 21:45 and 22:10.
+stage: oven: Green glass in the bread oven.
+stage: wiped: Sabine wiped Lamb's slate.
+done: oven
+
+@quest a1.copper
+name: Copper Doesn't Care
+about: Merrow's sack of Trust copper.
+stage: sack: Merrow's sack is under the settle by the Brine's stove.
+stage: hidden: Lamb hid the sack.
+stage: returned: Lamb gave the sack to the Lamplighters.
+stage: reported: Lamb reported the sack to the Shelf.
+done: hidden, returned, reported
+
+@quest a1.tube
+name: Tube Minded
+about: Pip, the tube and a typewriter with a sticking e.
+stage: tube: The Shelf answers by pneumatic tube, in the weigh-house.
+stage: e: The Shelf's machine has a sticking e.
+
+@quest a1.fish
+name: Claim on a Fish
+about: A fish the size of a cart on the harbour floor, claimed three ways.
+stage: met: A fish, stranded, the size of a cart.
+stage: claims: The Guild, the Low Company and the Congregation each claim it.
+stage: turned: The fish is back in the channel.
+stage: gulls: The gulls have the fish.
+stage: eaten: The Guild has the fish.
+done: turned, gulls, eaten
+
+@quest a1.hair
+name: The Damp's Hair
+about: The Damp would like to be someone else.
+stage: asked: The Damp asked for a new hair.
+stage: rehaired: The Damp has a new hair.
+done: rehaired
+
+@quest a1.book
+name: Gorm's Book
+about: What the Lamplighters write about Lamb.
+stage: noticed: Sergeant Gorm writes down who Lamb talks to.
+stage: page: Lamb has seen a page of Gorm's book.
+
+@quest a1.minutes
+name: Eleven Minutes
+about: The Brine's clock is eleven minutes slow.
+stage: slow: The Brine's clock is eleven minutes slow. Sabine knows.
+stage: jory: Jory Brine went out on the floor nineteen Low Nights ago, eleven minutes late.
+stage: set: Lamb set the clock right.
+stage: left: Lamb left the clock as it is.
+done: set, left
+
+@quest a1.vote
+name: The Fish of the Year
+about: The Guild's vote by smell.
+stage: pans: Two fish on the voting pans. The strike carried by a nose.
+stage: older: One of the fish was a day older than it should be.
+stage: soot: Shadwell's soot dates its smoking: yesterday.
+stage: spratt: Agnes Spratt swapped it, to lose the strike. It carried anyway.
+done: spratt
+
+@quest a1.frost
+name: Frost
+about: Who climbs to Mother before dawn, and what the frost keeps.
+stage: hammer: Keel took the store hammer at a quarter past four.
+stage: prints: Frozen drips on the 112 stairs, one per step, up and down.
+stage: met: Lamb met Keel in the lamp room.
+stage: saved: The lens is whole.
+stage: broken: The lens is broken.
+stage: green: Keel broke only the green rings. The evidence is gone; the light is honest.
+done: saved, broken, green
+
+@quest a1.room
+name: The Room Above the Brine
+about: Lamb's lodging.
+stage: let: Sabine has let Lamb the room above the bar.
+stage: wall: Something is pinned to the wall.
+
+@quest a1.lamps
+name: The Lamps of Gullet
+about: The town's lights, which can be lit, mended or left.
+stage: first: A lamp of Gullet burns because of Lamb.
+stage: three: Three lamps of Gullet burn because of Lamb.
+
+# ---------------------------------------------------------------- the Kit's readings (instrument keys as in the prototype: T G V C H)
+@instrument almanac
+name: THE ALMANAC
+key: KeyT
+about: The tide now, and the gates.
+say: {{tide}} metres and falling. The floor is open to the gully. Low water at two minutes to eleven; the moon is responsible and absent. {when: clock < 22:58 & tide < -0.27}
+say: {{tide}} metres. Slack. The sea is deciding, and it has decided. {when: clock >= 22:58 & clock < 23:12}
+say: {{tide}} metres and rising. The gully shuts at 23:42, the lowest steps at 23:48, the drowned lamp at 23:52. I do not negotiate. {when: clock >= 23:12 & clock < 23:52}
+say: {{tide}} metres and rising. The floor is closed. High water ten past five, five metres thirty. {when: clock >= 23:52 & clock < 05:10}
+say: {{tide}} metres. High water. The quay's edge is the sea's edge. {when: clock >= 05:10 & clock < 05:30}
+say: {{tide}} metres and falling. Nothing opens before dawn. {when: clock >= 05:30}
+
+@instrument glass
+name: THE GLASS
+key: KeyG
+about: Pressure and its trend; and what the town has heard.
+say: Steady, darling. Falling a hair. Fog within the hour, if I know anything, and I know everything. {when: clock < 23:20}
+say: Falling. Rain by twenty to midnight and the wind round to the south-west. Somebody is about to say something they can't take back. {when: clock >= 23:20 & clock < 23:35}
+say: Low and falling. Heavier rain after one. The town is talking about you, a little. {when: clock >= 23:35 & clock < 01:30 & !(var.prov != none)}
+say: Low. The whole quay has your midnight word in its mouth, darling, and is chewing. {when: clock >= 00:00 & clock < 04:10 & var.prov != none}
+say: Rising, fast. Clear by ten past four, and cold behind it. Frost. Everything will hold its shape. {when: clock >= 01:30 & clock < 04:10}
+say: High and rising. Clear, still, cold. Dawn will be pitiless. {when: clock >= 04:10}
+
+@instrument vane
+name: THE VANE
+key: KeyV
+about: The wind, and where it carries.
+say: West! West, six metres! Everything said on this quay goes east. Mind your mouth on the windward side! {when: clock < 23:35}
+say: South-west! Round she comes, nine metres, wet! Rain under every eave on the north-east faces! {when: clock >= 23:35 & clock < 04:10}
+say: Nothing! Barely nothing! North-west and faint! Every word carries straight up and freezes! {when: clock >= 04:10}
+
+@instrument candlemas
+name: CANDLEMAS
+key: KeyC
+about: The light, its kind and the colour of a thing in it.
+say: Nothing. You are standing in nothing. I am a photometer, not a medium. {when: light < 0.03}
+say: Sodium. One line of the spectrum, the orange one. I will not be party to that orange. Ask me again in honest light. {when: sodium > 0.6 & light >= 0.03}
+say: Paraffin. Warm, smoky, true. Colours read here. Show me a thing and I will tell you what it is wearing. {when: sodium <= 0.6 & light >= 0.2}
+say: Carried light, or very little. Hold your lantern nearer, and nearer, and that is enough. {when: sodium <= 0.6 & light < 0.2 & light >= 0.03}
+
+@instrument damp
+name: THE DAMP
+key: KeyH
+about: Wetness, and how long ago.
+say: Saturated. I can read nothing. I was a man's hair once and he was never dry either. Dry me at a stove. {when: var.damp_wet == 1}
+say: Wet. Everything here is wet. You are {{wet}} parts in one wet, which is a fact, not a judgement. {when: var.damp_wet != 1 & wet >= 0.3}
+say: Damp, at worst. The air is ninety parts in a hundred water. You are holding up, for now. {when: var.damp_wet != 1 & wet < 0.3}
+
+# ---------------------------------------------------------------- characters
+@char wenna
+name: Wenna Tallow
+speaker: WENNA
+faction: brine
+about: Keeper of Mother, thirty-one years, the last six unpaid.
+walkaway: That's right. Go and count something.
+walkaway: I'll be on the stairs, if anybody wants me. Nobody does.
+interrupted: Later. She's tripping.
+fightstart: Not in my lamp room.
+
+@char keel
+name: Absalom Keel
+speaker: KEEL
+faction: board
+about: Harbourmaster. Wet for eleven years.
+walkaway: The Board will note the assessor's departure.
+interrupted: The Board will finish that sentence another time.
+fightstart: The Board did not want this.
+
+@char crake
+name: Ottilie Crake
+speaker: CRAKE
+faction: trust
+about: Alderman; the Trust and the Municipal.
+walkaway: Go, then. You know the way out; you knew the way in.
+interrupted: Forgive me. Another time.
+fightstart: Mrs Pellow. The constable, please.
+
+@char marrow
+name: Marrow Dunlin
+speaker: MARROW
+faction: guild
+about: Shop steward of the Guild of the Gut.
+walkaway: Swim off, flatfish.
+interrupted: Hold your tongue a minute.
+fightstart: Out of my hall, then, the hard way.
+
+@char fennick
+name: Ambrose Fennick
+speaker: FENNICK
+faction: congregation
+about: Deacon of the Congregation of the Filament.
+walkaway: Go with whatever grace you have.
+interrupted: Wait. Listen. No. Go on.
+fightstart: The jars, brothers. Mind the jars.
+
+@char sabine
+name: Sabine Brine
+speaker: SABINE
+faction: brine
+about: Landlady of the Brine.
+walkaway: Tab's open, love. It's always open.
+interrupted: Hold that thought. Hold it, I said.
+fightstart: Not on my floor. Out in the yard with it.
+
+@char merrow
+name: Tobias "Tub" Merrow
+speaker: MERROW
+faction: lowco
+about: Master of the Low Company.
+walkaway: Go on, then.
+interrupted: Later.
+fightstart: That's done it.
+
+@char pip
+name: Pip Gannet
+speaker: PIP
+faction: brine
+about: Pot girl; minds the tube.
+walkaway: Fine. I'll tell the tube you said goodbye.
+interrupted: Hang on. Hang on, it's ringing.
+fightstart: Shelf! Behind you!
+
+@char gorm
+name: Ida Gorm
+speaker: GORM
+faction: trust
+about: Sergeant of the Lamplighters. Speaks only in questions.
+walkaway: Written down: the assessor left. Would you like a copy?
+interrupted: Would you hold that? Would you?
+fightstart: Poles. Both ends. Would you mind?
+
+@char hobb
+name: Constant Hobb
+speaker: HOBB
+faction: trust
+about: The youngest Lamplighter. Afraid of the dark. Carries two lanterns.
+walkaway: Right. I'll put you down as going.
+interrupted: Sorry. I've to see to the board.
+fightstart: I'm not to fight the Shelf. I'm not to.
+
+@char spratt
+name: Agnes Spratt
+speaker: SPRATT
+faction: guild
+about: Eel-wife. Voted against the strike. Wants to be steward.
+walkaway: Off you go. The eels won't miss you.
+interrupted: Wait. Something's burning.
+fightstart: Knives, girls. The Shelf's asked for it.
+
+@char mab
+name: Mab Whelk
+speaker: MAB
+faction: guild
+about: Gutter. Twin of Noll. Finishes his sentences, and disagrees with the ending.
+
+@char noll
+name: Noll Whelk
+speaker: NOLL
+faction: guild
+about: Gutter. Twin of Mab.
+
+@char shadwell
+name: Ned Shadwell
+speaker: SHADWELL
+faction: guild
+about: Smokehouse master. Reads time by soot.
+
+@char gauze
+name: Sister Gauze
+speaker: GAUZE
+faction: congregation
+about: Has worn her bell jar for eleven years.
+
+@char tobit
+name: Tobit Quill
+speaker: TOBIT
+faction: congregation
+about: Choirboy, nine. Sings the sodium restart as a hymn.
+
+@char lugg
+name: Ferris Lugg
+speaker: LUGG
+faction: lowco
+about: Merrow's partner. Very tall. Never speaks above a whisper.
+walkaway: Gone, then.
+interrupted: Later.
+fightstart: Right.
+
+@char cockle
+name: Nan Cockle
+speaker: COCKLE
+faction: lowco
+about: Eighty-one. Walked to the Old Light as a girl, when it still had a door.
+walkaway: Mind the tide on your way, it doesn't mind you.
+interrupted: Shush. Listen to the water.
+fightstart: I've still a good arm, mind.
+
+@char penhallow
+name: Ysolde Penhallow
+speaker: PENHALLOW
+faction: shelf
+about: Master of the ferry Saint Cuthwin. Put the helm over at 22:20.
+
+@char teague
+name: Orrin Teague
+speaker: TEAGUE
+faction: brine
+about: Has waited at the Brine for the morning boat for nine years.
+
+@char dilly
+name: Dilly Rudd
+speaker: DILLY
+faction: lowco
+about: Floor child. Runs a book on whether the fish lives.
+
+@char fewell
+name: Lamplighter Fewell
+speaker: FEWELL
+faction: trust
+
+@char bright
+name: Lamplighter Bright
+speaker: BRIGHT
+faction: trust
+
+@char strand
+name: Lamplighter Strand
+speaker: STRAND
+faction: trust
+
+@char coe
+name: Lamplighter Coe
+speaker: COE
+faction: trust
+
+# ---------------------------------------------------------------- Margin notes earned by fighting (SYSTEMS-FULL 18.10)
+@trait m.body
+name: A Body Is Also Evidence
+about: A bruise has a time on it, like ink. Lamb reads a fight afterwards the way Lamb reads a room.
+research: 45
+while: skill.condolence -1
+mod: skill.carbon +2 ? var.fights > 0
+
+@trait m.poles
+name: The Pole Has Two Ends
+about: Whoever holds the brass end is holding the other end too.
+research: 45
+while: skill.formletter -1
+mod: skill.ballast +1 ? indistrict(quay) | indistrict(weigh)
+
+@trait m.downwind
+name: Downwind
+about: In the Gut they find you by your smell. Keep the wind in your face and you are nobody.
+research: 30
+while: skill.hearsay -1
+mod: skill.smell +2 ? indistrict(gut)
+
+@var fights
+default: 0
+about: How many fights Lamb has been in tonight. The combat layer adds one per encounter.
+
+
+# ---------------------------------------------------------------- the rework (REWORK-PLAN.md)
+@var act2_strippers
+default: town
+values: town
+about: Who strips the stranded ships at the second low water: the town's own people (decided 2026-10-17; the Hesk branch was removed).
+
+@var appt
+default: none
+values: none, cells, vote, search, oven, keel
+about: What the town has planned for the 02:50 blackout, set from the provisional cause (REWORK-PLAN 1.3).
+
+@item i.rope
+name: A coil of rope
+about: For a hand line on the gully, a bar on a door, or the legs of someone running.
+
+@item i.salt
+name: A sack of salt from the Gut
+about: For a frozen step, or a fish.

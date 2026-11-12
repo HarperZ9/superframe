@@ -1,0 +1,147 @@
+{
+ "place": "lamp",
+ "version": 2,
+ "width": 1080,
+ "height": 864,
+ "camera": {
+  "yawDeg": 40,
+  "elevDeg": 38,
+  "target": [
+   0,
+   1.4,
+   0
+  ],
+  "dist": 30,
+  "ortho": true,
+  "scale": 5.052631578947368
+ },
+ "pxPerMetre": 85.5,
+ "near": 0.5625,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "variants": [
+  "lit",
+  "dark",
+  "frost"
+ ],
+ "variantInfo": {
+  "lit": {
+   "hour": 4.2,
+   "weather": "relit: the arc, a third of the rings bottle green"
+  },
+  "dark": {
+   "hour": 4.2,
+   "weather": "before the restrike: the town in sodium far below, the cold sky"
+  },
+  "frost": {
+   "hour": 4.6,
+   "weather": "lit, 04:25 to 05:05: Keel's drips frozen on the floor (e.hammer)"
+  }
+ },
+ "dark": false,
+ "walk": [
+  31
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "log",
+    "verb": "read",
+    "at": [
+     -2.6,
+     0,
+     1.6
+    ],
+    "note": "the log on its desk (M:567)"
+   },
+   {
+    "id": "restrike",
+    "verb": "light",
+    "at": [
+     -3,
+     0,
+     -2.2
+    ],
+    "note": "the red restrike button under glass and its card (M:526)"
+   },
+   {
+    "id": "cupboard",
+    "verb": "salvage",
+    "at": [
+     -0.4,
+     0,
+     -3.5
+    ],
+    "note": "the stores cupboard: standby lamp, prism 151 in its felt tray (M:707)"
+   }
+  ],
+  "hides": [
+   {
+    "id": "behind_lens",
+    "at": [
+     -1.6,
+     0,
+     -1.6
+    ],
+    "r": 0.6,
+    "note": "the far side of the lens"
+   }
+  ],
+  "exits": [
+   {
+    "id": "gallery",
+    "at": [
+     3.7,
+     0,
+     -3.2
+    ],
+    "note": "the rattling gallery door (M:439)"
+   },
+   {
+    "id": "stairs",
+    "at": [
+     0.9,
+     0,
+     1
+    ],
+    "note": "the stair hatch in the floor"
+   }
+  ],
+  "lamps": [
+   {
+    "id": "arc",
+    "kind": "arc",
+    "at": [
+     0,
+     2.6,
+     0
+    ]
+   }
+  ]
+ },
+ "notes": "The lamp room. Mother's beam outside is the game's (look.mjs)."
+}

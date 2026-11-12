@@ -1,0 +1,299 @@
+# Low Water: places and districts, shared by every act. Director's file.
+
+# ---------------------------------------------------------------- places
+# Lamp Quay
+@place quay
+district: quay
+footing: stone
+name: Lamp Quay, under the lamps
+zone: quay
+light: 0.6
+sodium: 0.95
+dark-light: 0.03
+
+@place steps
+district: quay
+footing: stone
+name: The quay steps
+zone: quay
+light: 0.45
+sodium: 0.85
+dark-light: 0.02
+
+@place harbour
+district: quay
+footing: wood
+shelter: yes
+name: The harbour office
+zone: quay
+light: 0.4
+sodium: 0.2
+dark-light: 0.4
+stove: yes
+
+@place mole_steps
+district: quay
+footing: stone
+name: The mole steps, where the ferry lies
+zone: mole
+light: 0.15
+sodium: 0.3
+dark-light: 0.1
+
+@place ferry
+district: quay
+footing: wood
+name: The deck of the Saint Cuthwin
+zone: ferry
+light: 0.12
+sodium: 0
+dark-light: 0.12
+
+# The Brine
+@place brine
+district: brine
+footing: wood
+shelter: yes
+name: The Brine, the bar
+zone: brine
+light: 0.5
+sodium: 0.05
+dark-light: 0.5
+stove: yes
+
+@place yard
+district: brine
+footing: stone
+name: The Brine's back yard
+zone: quay
+light: 0.12
+sodium: 0.5
+dark-light: 0.04
+
+@place oven
+district: brine
+footing: stone
+shelter: yes
+name: The Brine's bread oven
+zone: brine
+light: 0.3
+sodium: 0
+dark-light: 0.3
+
+@place room
+district: brine
+footing: wood
+shelter: yes
+name: The room above the Brine
+zone: brine
+light: 0.35
+sodium: 0.1
+dark-light: 0.35
+stove: yes
+
+# The Weigh-house
+@place weigh_out
+district: weigh
+footing: stone
+name: The weigh-house, outside
+zone: quay
+light: 0.5
+sodium: 0.95
+dark-light: 0.02
+
+@place weigh_in
+district: weigh
+footing: wood
+shelter: yes
+name: The weigh-house, the after-vote
+zone: weigh
+light: 0.3
+sodium: 0
+dark-light: 0.3
+
+@place office
+district: weigh
+footing: wood
+shelter: yes
+name: The weigh-house office
+zone: weigh
+light: 0.08
+sodium: 0.3
+dark-light: 0.02
+
+@place tube
+district: weigh
+footing: wood
+shelter: yes
+name: The tube terminus
+zone: weigh
+light: 0.25
+sodium: 0
+dark-light: 0.25
+
+@place roof
+district: weigh
+footing: stone
+name: The weigh-house roof, by the town balance
+zone: quay
+light: 0.2
+sodium: 0.8
+dark-light: 0.02
+
+# The Floor
+@place floor
+district: floor
+footing: mud
+name: The harbour floor
+zone: floor
+light: 0.08
+sodium: 0.4
+dark-light: 0.06
+
+@place gully
+district: floor
+footing: mud
+name: The gully
+zone: floor
+light: 0.05
+sodium: 0.1
+dark-light: 0.05
+
+@place drowned
+district: floor
+footing: weed
+name: The drowned lamp
+zone: floor
+light: 0.06
+sodium: 0
+dark-light: 0.06
+
+@place fish
+district: floor
+footing: mud
+name: By the fish
+zone: floor
+light: 0.15
+sodium: 0.2
+dark-light: 0.12
+
+# The Mole and Mother
+@place mole
+district: mole
+footing: stone
+name: The mole
+zone: mole
+light: 0.08
+sodium: 0.3
+dark-light: 0.05
+
+@place stairs
+district: mole
+footing: stone
+shelter: yes
+name: The hundred and twelve stairs
+zone: mother
+light: 0.04
+sodium: 0
+dark-light: 0.04
+
+@place lamproom
+district: mole
+footing: stone
+shelter: yes
+name: Mother's lamp room
+zone: mother
+light: 0.05
+sodium: 0
+dark-light: 0.05
+
+@place gallery
+district: mole
+footing: stone
+name: The gallery round the lamp
+zone: mother
+light: 0.06
+sodium: 0.2
+dark-light: 0.05
+
+# The Gut
+@place gut
+district: gut
+footing: stone
+name: The Gut, the lanes
+zone: gut
+light: 0.3
+sodium: 0
+dark-light: 0.3
+
+@place hall
+district: gut
+footing: wood
+shelter: yes
+name: The Guild hall
+zone: gut
+light: 0.35
+sodium: 0
+dark-light: 0.35
+
+@place smokehouse
+district: gut
+footing: stone
+shelter: yes
+name: Shadwell's smokehouse
+zone: gut
+light: 0.4
+sodium: 0
+dark-light: 0.4
+stove: yes
+
+@place loft
+district: gut
+footing: wood
+shelter: yes
+name: The Low Company's net loft
+zone: gut
+light: 0.15
+sodium: 0
+dark-light: 0.15
+
+@place gutter
+district: gut
+footing: stone
+name: By the gutter
+zone: gut
+light: 0.2
+sodium: 0
+dark-light: 0.2
+
+# ---------------------------------------------------------------- districts
+@district quay
+name: Lamp Quay
+next: brine, weigh, floor, mole, gut
+map: 0.45 0.6
+
+@district brine
+name: The Brine
+next: quay, gut
+map: 0.3 0.62
+
+@district weigh
+name: The Weigh-house
+next: quay, gut
+map: 0.55 0.55
+
+@district floor
+name: The Floor
+next: quay
+map: 0.5 0.85
+
+@district mole
+name: The Mole and Mother
+next: quay
+map: 0.85 0.7
+
+@district gut
+name: The Gut
+next: quay, brine, weigh
+map: 0.4 0.35
+

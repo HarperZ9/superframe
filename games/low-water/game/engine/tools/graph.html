@@ -1,0 +1,43 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Low Water graph</title>
+<link rel="icon" href="data:,">
+<style>
+  @font-face { font-family: "LW Hanken"; src: url(/fonts/hanken-grotesk.woff2); }
+  @font-face { font-family: "LW Conso"; src: url(/fonts/conso-regular.woff2); }
+  :root { --paper: #e9e3d4; --paper2: #ddd5c2; --ink: #1d1418; --ink2: #5a4c4a; --hot: #9a3b1f; --line: rgba(29,20,24,0.28); }
+  html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font: 14px "LW Hanken", "Segoe UI", sans-serif; }
+  body { display: grid; grid-template-columns: 1fr 380px; grid-template-rows: auto 1fr; height: 100vh; }
+  header { grid-column: 1 / 3; display: flex; gap: 16px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 16px; font-weight: 600; margin: 0; }
+  header .stats, .mono { font-family: "LW Conso", Consolas, monospace; font-size: 12px; color: var(--ink2); }
+  input { font: inherit; padding: 4px 8px; border: 1px solid var(--line); background: #f3eee2; color: var(--ink); width: 220px; }
+  #view { overflow: hidden; position: relative; cursor: grab; background: repeating-linear-gradient(var(--paper) 0 25px, rgba(29,20,24,0.06) 25px 26px); }
+  #view.drag { cursor: grabbing; }
+  svg text { font-family: "LW Conso", Consolas, monospace; font-size: 11px; fill: var(--ink); }
+  .n rect { fill: #f3eee2; stroke: var(--ink2); stroke-width: 1; }
+  .n.hub rect { stroke-width: 2.5; }
+  .n.sel rect { fill: #fff8e8; stroke: var(--hot); stroke-width: 2.5; }
+  .n.dim { opacity: 0.25; }
+  .e { stroke: var(--line); fill: none; }
+  .e.hot { stroke: var(--hot); stroke-width: 1.6; }
+  aside { border-left: 1px solid var(--line); overflow: auto; padding: 12px 16px; background: var(--paper2); }
+  aside h2 { font: 600 15px "LW Hanken", sans-serif; margin: 0 0 4px; }
+  .step { margin: 4px 0; line-height: 1.35; }
+  .step b { font: 11px "LW Conso", monospace; color: var(--ink2); margin-right: 6px; }
+  .issue { margin: 4px 0; } .issue.error::before { content: "ERROR "; color: var(--hot); font: 11px "LW Conso", monospace; } .issue.warn::before { content: "WARN "; color: var(--ink2); font: 11px "LW Conso", monospace; }
+  a { color: var(--hot); cursor: pointer; text-decoration: underline; }
+  button { font: inherit; border: 1px solid var(--ink2); background: #f3eee2; padding: 3px 10px; cursor: pointer; }
+  .player { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
+  .player .opt { display: block; text-align: left; width: 100%; margin: 3px 0; }
+</style>
+<header>
+  <h1>Low Water graph</h1>
+  <input id="q" placeholder="find a node or text" aria-label="Find">
+  <span class="stats" id="stats">loading</span>
+  <span class="mono">drag to pan, wheel to zoom, click a node</span>
+</header>
+<div id="view"><svg id="svg" width="100%" height="100%"><g id="g"></g></svg></div>
+<aside id="side"><p class="mono">?src=/slice/lamp_quay_2300.lwd (comma-separated; a root's include: lines are followed)</p></aside>
+<script type="module" src="./graph.mjs"></script>

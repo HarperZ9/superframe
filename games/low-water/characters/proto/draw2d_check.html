@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8"><title>draw2d check</title>
+<canvas id="c" width="1280" height="720"></canvas><pre id="out"></pre>
+<script type="module">
+// Browser check of the runtime: the quay plate, two actors drawn through drawActor, timings.
+import { createCast } from "../runtime/actor.mjs";
+import { drawActor } from "../runtime/draw2d.mjs";
+import * as lamb from "../cast/lamb.mjs";
+import * as marrow from "../cast/marrow.mjs";
+import { RIGS } from "../render/rigs.mjs";
+const timing = await (await fetch("../anim/timing.json")).json();
+let combat = null; try { combat = await (await fetch("../../game/engine/combat/out/timing.combat.json")).json(); } catch (e) { console.warn("no combat timing", e); }
+const cam0 = { yawDeg: 36, elevDeg: 26, target: [5, 1.5, 1.5], dist: 72, fovY: 0.37 };
+const norm = (a) => { const l = Math.hypot(...a); return a.map((x) => x / l); }, cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const y = cam0.yawDeg * Math.PI / 180, e = cam0.elevDeg * Math.PI / 180, fwd = [-Math.sin(y) * Math.cos(e), -Math.sin(e), -Math.cos(y) * Math.cos(e)];
+const camera = { pos: cam0.target.map((t, i) => t - fwd[i] * cam0.dist), fwd: norm(fwd) }; camera.right = norm(cross(camera.fwd, [0, 1, 0])); camera.up = norm(cross(camera.right, camera.fwd));
+const project = (cam, W, H, P) => { const r = [P[0] - cam.pos[0], P[1] - cam.pos[1], P[2] - cam.pos[2]], z = dot(r, cam.fwd), t = Math.tan(cam0.fovY / 2), u = dot(r, cam.right) / (z * t * W / H), v = dot(r, cam.up) / (z * t); return [((u + 1) / 2) * W - 0.5, ((1 - v) / 2) * H - 0.5, z]; };
+const W = 1280, H = 720, world = { camera, project, depth: new Float32Array(W * H).fill(1e9) };
+const g = document.getElementById("c").getContext("2d"), img = new Image(); img.src = "../../content/quay/night.png"; await img.decode();
+const cast = createCast({ timing, combat, members: { lamb, marrow } }), A = cast.actor("lamb", { pos: [-1.2, 0, -2.6], facing: -10 }), B = cast.actor("marrow", { pos: [-2.2, 0, -2.3], facing: 120 });
+A.play("walk"); B.play("talk_c", { force: true }); const scratch = document.createElement("canvas"), times = [];
+for (let f = 0; f < 20; f++) {
+  g.drawImage(img, 0, 0);
+  const t0 = performance.now();
+  for (const a of [B, A]) drawActor(g, scratch, a, { world, W, H, cam: cam0, rig: RIGS.quay.rig, tone: RIGS.quay.tone, zoom: 1 });
+  times.push(performance.now() - t0); A.update(1 / 30); B.update(1 / 30);
+}
+const s = times.slice(2).sort((a, b) => a - b);
+document.getElementById("out").textContent = `two actors at today's quay scale: median ${s[s.length >> 1].toFixed(1)} ms, max ${s[s.length - 1].toFixed(1)} ms per frame (${navigator.userAgent.includes("Headless") ? "headless" : "browser"})`;
+document.title = "done";
+</script>

@@ -1,0 +1,349 @@
+{
+ "name": "weigh",
+ "place": "weigh",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "ABBCDDBBCDDD",
+  "BBBCBBBBCBBE",
+  "FBBCBBBBCGGB",
+  "AAAAAAAAAAAA",
+  "DBBBBBBHHBBB",
+  "BBBIIBBBBBBB",
+  "JBBBBBBBBBBB",
+  "JBKKBBBBKKBB",
+  "DBBBBBBBBBBB",
+  "DBBBBBBBLBBB"
+ ],
+ "legend": {
+  "A": {
+   "surface": "stone",
+   "h": 12,
+   "solid": true
+  },
+  "B": {
+   "surface": "wood",
+   "h": 6.5
+  },
+  "C": {
+   "surface": "stone",
+   "h": 11.8,
+   "solid": true
+  },
+  "D": {
+   "surface": "stone",
+   "h": 7,
+   "solid": true
+  },
+  "E": {
+   "surface": "stone",
+   "h": 7.4,
+   "solid": true
+  },
+  "F": {
+   "surface": "stone",
+   "h": 6.5,
+   "solid": true
+  },
+  "G": {
+   "surface": "stone",
+   "h": 6.5
+  },
+  "H": {
+   "surface": "stone",
+   "h": 7.9,
+   "solid": true
+  },
+  "I": {
+   "surface": "stone",
+   "h": 8.1,
+   "solid": true
+  },
+  "J": {
+   "surface": "stone",
+   "h": 7.1,
+   "solid": true
+  },
+  "K": {
+   "surface": "stone",
+   "h": 7.3,
+   "solid": true
+  },
+  "L": {
+   "surface": "stone",
+   "h": 6.8,
+   "solid": true
+  }
+ },
+ "water": null,
+ "lights": [
+  {
+   "x": 3.4,
+   "z": 3.8,
+   "r": 4.4,
+   "k": 0.43,
+   "group": "lantern"
+  },
+  {
+   "x": 8.6,
+   "z": 3.4,
+   "r": 4.4,
+   "k": 0.43,
+   "group": "lantern"
+  },
+  {
+   "x": 2.8,
+   "z": 7.6,
+   "r": 4.4,
+   "k": 0.43,
+   "group": "lantern"
+  },
+  {
+   "x": 9,
+   "z": 7.8,
+   "r": 4.4,
+   "k": 0.43,
+   "group": "lantern"
+  },
+  {
+   "x": 1.2,
+   "z": 1.1,
+   "r": 2.7,
+   "k": 0.35,
+   "group": "lantern"
+  }
+ ],
+ "exits": [
+  [
+   0,
+   1,
+   0.8,
+   6
+  ],
+  [
+   11.2,
+   2,
+   12,
+   10
+  ]
+ ],
+ "tideEnds": false,
+ "anchors": {
+  "cut": [
+   [
+    3.4,
+    3.8
+   ],
+   [
+    8.6,
+    3.4
+   ],
+   [
+    2.8,
+    7.6
+   ],
+   [
+    9,
+    7.8
+   ],
+   [
+    1.2,
+    1.1
+   ]
+  ],
+  "lamp": [
+   [
+    3.4,
+    3.8
+   ]
+  ],
+  "snare": [],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   5.5,
+   7.5
+  ],
+  "foes": [
+   [
+    4.5,
+    2.5
+   ],
+   [
+    7.5,
+    2.5
+   ],
+   [
+    5.5,
+    1.5
+   ],
+   [
+    1.5,
+    4.5
+   ]
+  ]
+ },
+ "light": {
+  "night": [
+   [
+    0.25,
+    0.91,
+    0.61,
+    0.07,
+    0.34,
+    0.34,
+    0.34,
+    0.38,
+    0.03,
+    0.34,
+    0.26,
+    0.15
+   ],
+   [
+    0.87,
+    0.96,
+    0.75,
+    0.1,
+    0.54,
+    0.5,
+    0.45,
+    0.58,
+    0.04,
+    0.56,
+    0.43,
+    0.24
+   ],
+   [
+    0.63,
+    0.76,
+    0.79,
+    0.07,
+    0.74,
+    0.63,
+    0.64,
+    0.76,
+    0.04,
+    0.78,
+    0.55,
+    0.36
+   ],
+   [
+    0.38,
+    0.04,
+    0.17,
+    0.13,
+    0.09,
+    0.06,
+    0.04,
+    0.05,
+    0.05,
+    0.03,
+    0.03,
+    0.03
+   ],
+   [
+    0.43,
+    0.64,
+    0.86,
+    0.88,
+    0.72,
+    0.67,
+    0.69,
+    0.79,
+    0.96,
+    0.78,
+    0.61,
+    0.41
+   ],
+   [
+    0.52,
+    0.7,
+    0.82,
+    0.72,
+    0.6,
+    0.53,
+    0.66,
+    0.37,
+    0.34,
+    0.74,
+    0.62,
+    0.42
+   ],
+   [
+    0.52,
+    0.75,
+    0.74,
+    0.77,
+    0.65,
+    0.62,
+    0.63,
+    0.63,
+    0.79,
+    0.8,
+    0.68,
+    0.49
+   ],
+   [
+    0.55,
+    0.78,
+    1,
+    0.99,
+    0.72,
+    0.52,
+    0.53,
+    0.74,
+    0.99,
+    0.99,
+    0.73,
+    0.5
+   ],
+   [
+    0.48,
+    0.72,
+    0.84,
+    0.81,
+    0.64,
+    0.48,
+    0.51,
+    0.69,
+    0.85,
+    0.85,
+    0.69,
+    0.43
+   ],
+   [
+    0.35,
+    0.52,
+    0.62,
+    0.6,
+    0.48,
+    0.41,
+    0.45,
+    0.54,
+    0.68,
+    0.65,
+    0.52,
+    0.36
+   ]
+  ]
+ },
+ "stage": {
+  "line": "arena: weigh -6 -6.5 -5 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = h - 6.5"
+ },
+ "source": {
+  "plate": "content/weigh",
+  "rect": [
+   -6,
+   -5,
+   12,
+   10
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

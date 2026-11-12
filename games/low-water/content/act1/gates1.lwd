@@ -1,0 +1,212 @@
+# Low Water, Act 1: gate records (@gate). One gate per obstacle in the Act 1 path matrix,
+# design/REWORK-PLAN.md section 3.1. Engine: game/engine/world/gates.mjs; design: SYSTEMS-FULL 19.4.
+# A gate pays its page when the FIRST of its resolved: flags is set, by any route.
+# Drafted by the systems engineer on 2026-10-17 for the director to correct.
+# Not yet included by act1.lwd: the director adds `include: gates1.lwd` there.
+#
+# Notes for the director:
+# - Every flag below was checked with grep for set(<flag>) in content/act1/*.lwd. A route that
+#   sets no usable flag is named in the comment above its record. No flag was invented.
+# - fought.* is never used; combat sets it on every outcome, losing included.
+# - Several winning nodes already pay xp(1) inline (weigh.office.order, weigh.infer.ok,
+#   quay.fennick.relic.dark and the other prism.numbered nodes, mole.lamp.panel, mole.lamp.lens.lit,
+#   the mole.page10 nodes). With these gates included, those moments would pay twice.
+# - Row 16 (the provisional cause and the dawn verdict) is skipped: it is the act's ending, the
+#   verdict assembled from the other rows, and not an obstacle a player resolves.
+
+# Row 1 of REWORK-PLAN 3.1: the works order. Fist (weigh.fight.door.win to weigh.office.enter),
+# Tongue (Keel's key, FORM LETTER to Hobb), Shadow (the window) and Hands (cut the quay switch,
+# lift the latch) all reach the office and set works.order on reading it (weigh.office.order, or
+# weigh.office.carry to Pip's lamp). Eye: works.inferred (weigh.infer.ok, CARBON check success).
+# GUESS: works.order is also set in weigh.fight.door.down (Lamb goes down and Hobb shows the order
+# through the bars; the plan says "win or go down, both end with the order read"). Going down pays.
+@gate a1.works_order
+name: The works order
+resolved: works.read
+resolved: works.inferred
+
+# Row 2: scales on the switch handle. Tongue: scales.switch (weigh.switch.hobb, Hobb holds the
+# lantern). Shadow: scales.switch (weigh.switch.shutter). Hands: scales.kept (weigh.switch.kept,
+# weigh.switch.kept.dark, after the oilskin or coat cover; the cover alone, weigh.handle_covered,
+# is not used because it resolves nothing). Eye: scales.switch (weigh.switch.lantern, Candlemas;
+# weigh.switch.smell, NOSE). Fist: no route in the plan.
+# GUESS: scales.switch is also set in weigh.switch.shutter.fail, where the shutter flies open and
+# Lamb is seen at the switch. Being seen pays.
+@gate a1.switch_scales
+name: Scales on the switch handle
+resolved: scales.switch
+resolved: scales.kept
+
+# Row 3: Marrow's admission. Fist: afterdark.told (weigh.fight.trial.told after the trial of the pans
+# is won; weigh.fight.afterdark.told after the blindfold win). Tongue: marrow.switch
+# (gut.smoke.marrow.look; weigh.marrow.admit after the claim). Shadow: marrow.switch
+# (weigh.roof.listen.ok, eavesdrop from the roof). Hands: marrow.switch (pull the switch and stand
+# in the dark; reaches weigh.marrow.admit). Eye: marrow.switch (the pink-lamps-and-scales claim to
+# weigh.marrow.admit). switch.recreated is not used: pulling the handle is an action, not the
+# admission, and weigh.office.cutpower (row 1 Hands) sets it too.
+# GUESS: marrow.switch is also set in gut.smoke.marrow.short, the fail branch of the CONDOLENCE
+# check "Tell me about your father" (he still gives the switch times, in short).
+@gate a1.marrow_admits
+name: Marrow's admission
+resolved: marrow.switch
+resolved: afterdark.told
+
+# Row 4: the green prism in the oven. prism.green_oven is set in brine.oven.open, reached only on
+# success: Tongue (brine.oven.bought, THE CHIT check ok), Shadow (brine.oven.sneak, UNDERTOW ok, or
+# the fog alt), and on later visits once Sabine allows it. Fist lifts it hot from that same node.
+# Hands: brine.yard.rake.ok (the peel) only gives the item and sets no flag; it pays when the
+# prism is held to the paraffin (brine.prism.read sets prism.green_oven). Eye: oven.inferred
+# (soot.east with floor.cullet, or the Damp on the oven door with soot.east).
+@gate a1.green_prism
+name: The green prism
+resolved: prism.green_oven
+resolved: oven.inferred
+
+# Row 5: Wenna's absence. Fist: wenna.told_landing (carry her up, mole.wenna.landing). Tongue:
+# wenna.heard_motor (brine.wenna.motor.ok, CONDOLENCE ok; brine.blackout.wenna). Shadow:
+# overheard.last_three (brine.yard.overhear, the yard quarrel in fog). Hands: coat.wenna_dry
+# (brine.wenna.coat.read, the Damp) and log.ahead (mole.lamp.log, mole.lamp.log.feel). Eye: the dry
+# coat against the spray; spray.mole is ambient (set on every walk of the mole), so the Eye route
+# pays through coat.wenna_dry.
+# GUESS: wenna.told_landing is also reached after mole.wenna.carry.fail (KNEES check failed, the last
+# twenty steps on the knees). The fail still ends on the landing, which matches editor note P1.
+@gate a1.wenna_absence
+name: Wenna's absence
+resolved: wenna.told_landing
+resolved: wenna.heard_motor
+resolved: overheard.last_three
+resolved: coat.wenna_dry
+resolved: log.ahead
+
+# Row 6: Relic 113. prism.numbered covers every route. Fist: quay.relic.take.ok (GRIP ok; the fail
+# node sets only quay.relic.taken, which is not used). Tongue: quay.fennick.relic.dark after
+# stepping down (the loan, quay.relic.lend.ok, comes after the number is read). Shadow:
+# quay.fennick.dark.relic (in the blackout). Hands: quay.relic.douse.ok to quay.fennick.relic.dark,
+# or quay.relic.vigil.douse. Eye: quay.relic.eye (Candlemas eyepiece). Also quay.relic.kneel.ok
+# (pilgrim guise, UNDERTOW ok).
+@gate a1.relic_113
+name: Relic 113
+resolved: prism.numbered
+
+# Row 7: the drowned lamp (reach it, talk to Merrow, get back). Fist: merrow.light
+# (floor.fight.word.win); the salvors fight win sets only floor.copper_taken (row 12), and the gully
+# run win (floor.run.gully.win) sets no flag. Tongue: floor.cockle_guided (floor.cockle.cross, Nan
+# Cockle guides) and merrow.light (floor.merrow.where.true once trusted; brine.merrow.light at the
+# Brine). Shadow: merrow.wet_thigh (floor.drowned.watch, THE DARK check ok). Hands: floor.handline
+# (floor.rig.line.ok, GRIP ok). Eye: floor.walk_timed (floor.prints.timed, SUM ok).
+# GUESS: merrow.light is also set in floor.fight.word.down (Lamb down on the rubble; Merrow tells it
+# anyway), so going down pays. merrow.wet_thigh is also set by Damp reads of Merrow at the Brine and
+# on the floor (brine.merrow.damp, floor.merrow.damp, floor.merrow.cloth.ok,
+# floor.merrow.returns.damp), which are wins but not this obstacle.
+@gate a1.drowned_lamp
+name: The drowned lamp
+resolved: merrow.told
+resolved: floor.cockle_guided
+resolved: merrow.wet_thigh
+resolved: floor.handline
+resolved: floor.walk_timed
+
+# Row 8: Mother relit. mother.restruck is set only on a successful restrike: Fist
+# (mole.lamp.hold.ok, hold the panel), Tongue (mole.lamp.restrike.wenna), Shadow and Hands
+# (mole.lamp.restrike after reaching the lamp room or restoring power), Eye (mole.lamp.time.ok).
+# The failed presses set mole.hot_tried, which is not used.
+@gate a1.mother_relit
+name: Mother relit
+resolved: mother.restruck
+
+# Row 9: the Gut before 00:40. gut.early_in. Fist: gut.wall.ok (GRIP ok), gut.fight.dogs.win and
+# .yield. Tongue: gut.lookouts.whelks.ok, gut.lookouts.blind.ok. Shadow: gut.smoke.walk.ok.
+# Hands: gut.culvert.ok. Also the dog tricks (gut.dogs.snuff, .fish, .wait, .egg). Eye: waits for
+# 00:40; gut.open is a world event at 00:40, not a resolution, and is not used.
+# GUESS: gut.early_in is also set in gut.fight.dogs.down (Lamb wakes in the gutter, inside). Going
+# down pays.
+@gate a1.gut_early
+name: Into the Gut before 00:40
+resolved: gut.early_in
+
+# Row 10: Gorm's book and the Lamplighters' eyes. Fist: struck.strand (quay.fight.lamplighters.win
+# and .yield; the down and fled nodes do not set it). Tongue: book.obstruction
+# (quay.lamplighters.talk.ok, FORM LETTER ok) and quay.hobb.favour (quay.hobb.fill,
+# quay.hobb.dark.walk). Eye: quay.round.known (quay.gorm.page.ok, quay.round.watch,
+# quay.harbour.gormbook). Shadow: quay.gorm.shake.ok only clears quay.gorm.follows and sets no flag.
+# Hands: cutting the quay switch (weigh.pulled) and lighting the steps post (lamp.steps_post.lit)
+# are shared with other rows, so they are not used.
+# GUESS: quay.hobb.favour is a small kindness to Hobb (a fill of paraffin, a walk), with no fail
+# branch, and may happen with no Lamplighter involved.
+@gate a1.lamplighters
+name: The Lamplighters' eyes
+resolved: struck.strand
+resolved: book.obstruction
+resolved: quay.hobb.favour
+resolved: quay.round.known
+
+# Row 11: the fish. Fist: floor.gulls_off (floor.fight.gulls.win and .yield; also
+# floor.gulls.lanterns, the children's lanterns). Tongue: said.fish_guild, said.fish_lowco,
+# said.fish_congregation (floor.fish.claim, the adjudication). said.fish_itself is not used: it is
+# set on the PRECEDENT check attempt, before the ok or fail branch. Hands (lever with the boathook,
+# dig the channel) and Eye (the channel fills at 23:40) end in floor.run.fish.win, which sets only
+# the variable fish = turned and no flag; floor.channel_dug is preparation. The fish's real win
+# pays nothing until a flag is added there.
+# GUESS: the gulls are only part of the obstacle (the plan says they decide whether the fish
+# survives), and an adjudication for the Guild or Low Company ends with the fish eaten.
+@gate a1.fish
+name: The fish
+resolved: floor.gulls_off
+resolved: said.fish_guild
+resolved: said.fish_lowco
+resolved: said.fish_congregation
+
+# Row 12: Merrow's copper. Fist: floor.copper_taken (floor.fight.salvors.win and .yield). Tongue:
+# keep it quiet, said.sack_hidden (brine.sack.hide) and said.copper_hide (gut.loft.sack, bury it);
+# report it, said.sack_returned (brine.sack.return) and said.copper_back (gut.loft.sack, refuse).
+# Hands: floor.copper_sunk (floor.copper.sink.ok). Shadow: no route found that sets a flag.
+# GUESS: floor.copper_sunk is also set in floor.copper.sink.fail (the cork line is short, but the
+# copper is still sunk and hidden).
+@gate a1.merrow_copper
+name: Merrow's copper
+resolved: floor.copper_taken
+resolved: said.sack_hidden
+resolved: said.copper_hide
+resolved: said.sack_returned
+resolved: said.copper_back
+resolved: floor.copper_sunk
+
+# Row 13: Spratt's swap. Fist: vote.older (floor.runner.shake.ok, GRIP ok on Gill). Tongue:
+# gut.spratt_swap (gut.spratt.claim.ok). Shadow: gut.spratt_seen (gut.procession.spy.ok, UNDERTOW
+# ok). Hands: vote.older (weigh.balance.weigh, the town balance). Eye: vote.older (weigh.vote.older,
+# SMELL passive; gut.hall.smell.ok; gut.hall.candle.ok; gut.smoke.smell.ok) and gut.page_soot
+# (gut.smoke.soot, Shadwell's soot).
+@gate a1.spratt_swap
+name: Spratt's swap
+resolved: vote.older
+resolved: gut.spratt_swap
+resolved: gut.spratt_seen
+resolved: gut.page_soot
+
+# Row 14: the second blackout (the town's appointment). appt.stopped. Fist: weigh.appt.fist.ok,
+# brine.appt.oven.grab, mole.appt.grab.ok, quay.appt.cells.hold. Tongue: weigh.appt.talk.ok,
+# brine.cells.talked, quay.appt.search.talk.ok, quay.appt.keel.talk.ok, mole.appt.talk.ok,
+# gut.appt.vote.talk.ok. Hands: weigh.appt.reset.ok, weigh.appt.lit, quay.appt.search.rig,
+# quay.appt.keel.light, mole.appt.bar. Shadow and Eye: appt.watched is not used, because the fail
+# nodes set it too (weigh.appt.reset.fail, weigh.appt.fist.fail, quay.appt.search.talk.fail,
+# brine.appt.oven.grab.fail and others). No separate Eye flag found; appt.known is a world event.
+# appt.joined is not used: joining the plan is not resolving it.
+# GUESS: in quay.appt.search the option "Stand in the Brine's doorway with the claims case" sets
+# appt.stopped on the choice, before the Lamplighters fight, so it pays whatever the fight's outcome.
+@gate a1.second_blackout
+name: The second blackout
+resolved: appt.stopped
+
+# Row 15: Keel and the hammer. lens.saved. Fist: mole.fight.hammer.win and .yield go to mole.sq.saved
+# (fled and down set lens.broken instead). Tongue: mole.door.yield (CONDOLENCE through the door).
+# Shadow: mole.hide.take.ok to mole.sq.saved; mole.hide.empty.leave. Hands: taking the hammer
+# (weigh.hammer_taken), salting (mole.salted) and barring the door (mole.door_barred) are
+# preparation; they pay when the lens is saved (mole.sq.hook.ok, mole.door.yield). Eye: the frost
+# claim to mole.door.yield or mole.sq.empty.sit. The Tongue green-rings route (mole.sq.green,
+# fx.hammer.green) sets only lens.keel_motive, which 15 nodes set, so it is not used and that route
+# pays nothing here. hammer.keel and frost.keel are evidence, also set by world events, not used.
+# GUESS: lens.saved is also reached from failures: mole.sq.hook.fail (GRIP check failed) goes to
+# mole.sq.saved, and the claim at mole.lwd line 2059 sends both its ok and fail to mole.sq.empty.sit.
+@gate a1.keel_hammer
+name: Keel and the hammer
+resolved: lens.saved

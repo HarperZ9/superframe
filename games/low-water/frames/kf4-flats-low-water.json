@@ -1,0 +1,27 @@
+{
+ "kf": "flats",
+ "kind": "dither",
+ "w": 640,
+ "h": 360,
+ "up": 2,
+ "preset": "tones4",
+ "over": {
+  "ink": [
+   0.008,
+   0.006,
+   0.014
+  ],
+  "paper": [
+   0.93,
+   0.9,
+   0.82
+  ],
+  "dark": 0.04,
+  "fogDist": 46,
+  "fogMax": 1,
+  "source": "bayer8",
+  "anchor": "screen"
+ },
+ "seconds": 4.813,
+ "engine": "raw-native origin/main 92934a8 (git archive)"
+}

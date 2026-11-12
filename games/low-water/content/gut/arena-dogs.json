@@ -1,0 +1,168 @@
+{
+ "name": "dogs",
+ "place": "gut",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "ABCCDEE",
+  "AFFEDCC",
+  "GFHIDEE",
+  "FFCCCEE",
+  "FCCCCHE",
+  "FJCICHE",
+  "FCIKKHE"
+ ],
+ "legend": {
+  "A": {
+   "surface": "stone",
+   "h": 10.3,
+   "solid": true
+  },
+  "B": {
+   "surface": "stone",
+   "h": 6.5,
+   "solid": true
+  },
+  "C": {
+   "surface": "stone",
+   "h": 5.9
+  },
+  "D": {
+   "surface": "stone",
+   "h": 10.4,
+   "solid": true
+  },
+  "E": {
+   "surface": "stone",
+   "h": 6
+  },
+  "F": {
+   "surface": "stone",
+   "h": 5.8
+  },
+  "G": {
+   "surface": "stone",
+   "h": 10.2,
+   "solid": true
+  },
+  "H": {
+   "surface": "stone",
+   "h": 6.8,
+   "solid": true
+  },
+  "I": {
+   "surface": "stone",
+   "h": 5.9,
+   "solid": true
+  },
+  "J": {
+   "surface": "stone",
+   "h": 5.8,
+   "solid": true
+  },
+  "K": {
+   "surface": "weed",
+   "h": 6.2
+  }
+ },
+ "water": null,
+ "lights": [
+  {
+   "x": 4.5,
+   "z": 1.5,
+   "r": 5,
+   "k": 0.47,
+   "group": "lamp"
+  },
+  {
+   "x": 5.7,
+   "z": 3,
+   "r": 4,
+   "k": 0.41,
+   "group": "lamp"
+  }
+ ],
+ "exits": [
+  [
+   0,
+   3,
+   0.8,
+   7
+  ],
+  [
+   6.2,
+   0,
+   7,
+   7
+  ]
+ ],
+ "tideEnds": false,
+ "anchors": {
+  "cut": [
+   [
+    4.5,
+    1.5
+   ],
+   [
+    5.7,
+    3
+   ]
+  ],
+  "lamp": [
+   [
+    4.5,
+    1.5
+   ]
+  ],
+  "snare": [
+   [
+    0.5,
+    1.5
+   ]
+  ],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   2.5,
+   5.5
+  ],
+  "foes": [
+   [
+    1.5,
+    6.5
+   ],
+   [
+    4.5,
+    5.5
+   ],
+   [
+    3.5,
+    1.5
+   ],
+   [
+    1.5,
+    1.5
+   ]
+  ]
+ },
+ "light": {},
+ "stage": {
+  "line": "arena: dogs 0.5 -6.2 -1.5 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = h - 6.2"
+ },
+ "source": {
+  "plate": "content/gut",
+  "rect": [
+   0.5,
+   -1.5,
+   7,
+   7
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

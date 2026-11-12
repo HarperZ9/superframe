@@ -1,0 +1,42 @@
+/* Low Water interface tokens (design/UI-SYSTEM.md sections 2, 3, 5). Owned by the UI and UX lead.
+   Loaded after theme.css so these values win; theme.css keeps its names for compatibility.
+   Two faces: Hanken Grotesk for words and every number (its digits are tabular), Conso for names
+   in small capitals. Colour is value; the one hot mark is focus. */
+:root {
+  /* paper and ink */
+  --paper: rgba(233, 227, 212, 0.96); --paper-solid: #e9e3d4; --paper-shade: #ddd5c2; --paper-2: #ddd5c2;
+  --ink: #1d1418; --ink-2: #54463f; --ink2: #54463f; --graphite: #6b625c; --ink3: #6b625c;
+  --hot: #9a3b1f; --night: #070509;
+  --rule: rgba(29, 20, 24, 0.16); --rule-ink: rgba(29, 20, 24, 0.55);
+  --scrim: rgba(12, 7, 14, 0.32);
+  --shadow: 0 0.5rem 1.6rem rgba(4, 2, 6, 0.5);
+
+  /* faces */
+  --body: "LW Hanken", "Segoe UI", sans-serif;
+  --name: "LW Conso", Georgia, serif;
+  --mono: "LW Hanken", "Segoe UI", sans-serif; /* numbers: Hanken's tabular digits */
+
+  /* scale, ratio 1.2; nothing smaller than --fs-xs */
+  --fs-xs: 0.83rem; --fs-s: 0.9rem; --fs-m: 1rem; --fs-l: 1.2rem; --fs-xl: 1.44rem; --fs-xxl: 2.07rem;
+  --line: 1.6rem;
+  --safe: 4vmin;
+  --hit: 2.4rem; /* the smallest press target */
+
+  /* motion */
+  --t-press: 90ms; --t-in: 220ms; --t-out: 150ms; --t-morph: 280ms; --t-line: 160ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0, 0.75, 0.2);
+  --ui: 1; /* interface scale setting */
+  --deck: 1;
+}
+/* Steam Deck class screens: 16:10 at 800 lines or fewer */
+@media (max-height: 800px) and (min-aspect-ratio: 159/100) and (max-aspect-ratio: 161/100) { :root { --deck: 1.08; } }
+
+/* The Gut is palette-locked (LOOK-UNIFIED R2): the paper and ink swap as a set. */
+:root[data-palette="gut"] { --paper: rgba(222, 214, 226, 0.96); --paper-solid: #ded6e2; --ink: #1a1424; --ink-2: #4a3f5c; --graphite: #615877; --hot: #7b2f6a; }
+
+/* High contrast: solid paper, darker quiet inks */
+:root.contrast { --paper: #f4efe2; --paper-solid: #f4efe2; --ink-2: #2e2420; --ink2: #2e2420; --graphite: #463c37; --ink3: #463c37; }
+
+@media (prefers-reduced-motion: reduce) { :root { --t-in: 80ms; --t-out: 80ms; --t-morph: 80ms; --t-line: 0ms; } }
+:root.calm { --t-in: 80ms; --t-out: 80ms; --t-morph: 80ms; --t-line: 0ms; }

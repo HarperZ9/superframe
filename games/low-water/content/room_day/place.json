@@ -1,0 +1,135 @@
+{
+ "place": "room_day",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 30,
+  "elevDeg": 36,
+  "target": [
+   0,
+   0.9,
+   0
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 3.4210526315789473
+ },
+ "pxPerMetre": 190,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "day"
+ ],
+ "variantInfo": {
+  "day": {
+   "hour": 14.1,
+   "weather": "14:00: stripes of white light through the planking"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "round_window",
+    "verb": "read",
+    "at": [
+     2.8,
+     0,
+     0
+    ],
+    "note": "the round window, along the quay to the mole (B:1377)"
+   },
+   {
+    "id": "coat",
+    "verb": "carry",
+    "at": [
+     1.1,
+     0,
+     -1
+    ],
+    "note": "Lamb's coat drying by the stove, a tide mark at the hem (D:71)"
+   },
+   {
+    "id": "bench",
+    "verb": "read",
+    "at": [
+     1.3,
+     0,
+     1.3
+    ],
+    "note": "the bench: a door on two barrels (B:1467)"
+   },
+   {
+    "id": "plank_wall",
+    "verb": "read",
+    "at": [
+     -1,
+     0,
+     -1.3
+    ],
+    "note": "the plank wall: what Lamb pinned (D:81)"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "bar",
+    "at": [
+     -0.4,
+     0,
+     1.1
+    ],
+    "note": "the hatch and the ship's ladder down to the bar"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "day": [
+   {
+    "at": [
+     4.2,
+     1.35,
+     0
+    ],
+    "kind": "sky",
+    "I": 30,
+    "reach": 8,
+    "group": ""
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "Daylight room for the interlude."
+}

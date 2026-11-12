@@ -1,0 +1,133 @@
+/* Play screen, dialogue panel, creation, saves and the Tide Run view. */
+.dim { background: rgba(7, 5, 9, 0.72); }
+.menu.wide { width: min(46rem, 92vw); max-height: 92vh; overflow: auto; }
+.menu.tall { top: 4vh; transform: none; max-height: 92vh; }
+.menu .foot { margin-top: 1rem; }
+.menu .note { min-height: 1.2rem; color: var(--ink2); }
+
+/* play: scene left, dialogue right */
+/* the plate fills the screen; the talk panel covers its right third only while someone talks,
+   and the camera slides the speakers left of it (design/CAMERA.md) */
+.play { position: relative; height: 100vh; overflow: hidden; }
+.scene { position: absolute; inset: 0; overflow: hidden; background: #0d0a0d; }
+.play > .talk { position: absolute; top: 0; right: 0; width: 33.4vw; }
+.play:not(.talking) > .talk { display: none; }
+.platecam { position: absolute; inset: 0; overflow: hidden; }
+.platecam-img { position: absolute; left: 0; top: 0; transform-origin: 0 0; max-width: none; user-select: none; }
+.platebox, .plate { position: absolute; inset: 0; }
+.plate { background-size: cover; background-position: center; }
+.placecard { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); width: min(26rem, 80%); padding: 1.6rem 1.8rem; text-align: center; }
+.placecard .pname { font-size: 2rem; font-weight: 600; margin: 0.2rem 0; }
+.hud { position: absolute; left: 1.2rem; top: 1rem; color: var(--paper-solid); text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9); }
+.hud .clock { font-size: 1.6rem; }
+.hud .place { margin-top: 0.15rem; font-weight: 600; }
+.topbar { position: absolute; right: 0.8rem; top: 0.8rem; display: flex; gap: 0.4rem; }
+.chip { background: var(--paper); padding: 0.3rem 0.65rem; font-size: 0.82rem; font-weight: 600; box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.45); }
+.chip .k { font-family: var(--mono); font-weight: 400; color: var(--ink2); margin-left: 0.45rem; font-size: 0.7rem; }
+.here { position: absolute; left: 1.2rem; bottom: 1.2rem; width: min(24rem, 60%); padding: 0.8rem 0.9rem; }
+.acts { display: grid; gap: 0.1rem; margin-top: 0.4rem; }
+.act { display: flex; gap: 0.7rem; align-items: baseline; padding: 0.4rem 0.5rem; font-weight: 600; }
+.act:hover { background: rgba(29, 20, 24, 0.06); }
+.act .kind { min-width: 5.6rem; flex: none; color: var(--ink2); font-weight: 400; }
+.act .why { margin-left: auto; padding-left: 0.6rem; white-space: nowrap; }
+.edge { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: grid; gap: 0.3rem; }
+
+/* meters as marks */
+.meter { background: var(--paper); padding: 0.3rem 0.6rem; display: grid; grid-template-columns: auto; gap: 0.15rem; }
+.meter .mname { color: var(--ink2); }
+.meter .mval { font-size: 0.7rem; color: var(--ink2); }
+.notches { display: inline-flex; gap: 2px; align-items: center; }
+.notches i { display: inline-block; width: 0.42rem; height: 0.8rem; border: 1px solid var(--ink); }
+.notches i.on { background: var(--ink); }
+.notches.wide i { width: 0.7rem; height: 0.5rem; }
+
+/* dialogue panel */
+.talk { background: var(--paper-solid); display: grid; grid-template-rows: auto 1fr auto auto; min-height: 0; height: 100vh; box-shadow: -0.6rem 0 2rem rgba(0, 0, 0, 0.5); }
+.ttitle { padding: 1rem 1.3rem 0.5rem; color: var(--ink2); border-bottom: 1px solid var(--rule); background: var(--paper-solid); }
+.log { overflow-y: auto; padding: var(--line) 1.3rem 0.4rem; min-height: 0; scrollbar-width: thin; line-height: var(--line);
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--line) - 1px), var(--rule) calc(var(--line) - 1px), var(--rule) var(--line)); background-attachment: local; }
+.ln { margin: 0; line-height: var(--line); }
+.ln .who { margin-right: 0.35rem; color: var(--ink2); }
+.ln.nar { font-style: italic; color: #3b2e2e; }
+.ln.voice .who { color: var(--ink); font-size: 0.7rem; }
+.ln.you { color: var(--ink2); padding-left: 1rem; border-left: 2px solid var(--rule); }
+.ln.check, .ln.hidden { color: var(--ink2); font-size: 0.68rem; }
+.ln.hidden { opacity: 0.75; }
+.ln.past { opacity: 0.55; }
+.ln.idle { color: var(--ink2); font-style: italic; margin-top: var(--line); }
+.opts { padding: 0.4rem 0.8rem 0.4rem; border-top: 1px solid rgba(29, 20, 24, 0.35); background: var(--paper-solid); max-height: 62vh; overflow-y: auto; scrollbar-width: thin; }
+.opts:empty { display: none; }
+.optwrap { margin: 0; }
+.opt { display: flex; gap: 0.5rem; width: 100%; padding: 0.25rem 0.5rem; font-weight: 600; line-height: 1.35; }
+.opt:hover { background: rgba(29, 20, 24, 0.06); }
+.opt .num { color: var(--ink2); font-weight: 400; min-width: 1.3rem; }
+.opt .tags { display: block; font-weight: 400; }
+.tag { font-size: 0.72rem; color: var(--ink); margin-right: 0.5rem; }
+.tag .lvl { color: var(--ink2); }
+.opt .said { color: var(--ink2); font-weight: 400; }
+.opt.k-check[aria-disabled="true"] .lab { text-decoration: line-through; text-decoration-color: var(--ink3); }
+.lock { padding: 0 0.5rem 0.2rem 2.3rem; color: var(--ink2); font-style: italic; }
+.terms { padding: 0.1rem 0.5rem 0.2rem 2.3rem; color: var(--ink2); font-size: 0.72rem; }
+.terms.on-focus { display: none; }
+.optwrap:hover .terms.on-focus, .optwrap:focus-within .terms.on-focus { display: block; }
+.strain { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; padding: 0.1rem 0.5rem 0.3rem 2.3rem; }
+.strain .caps { color: var(--ink2); margin-right: 0.2rem; }
+.sbtn { font-family: var(--mono); font-size: 0.75rem; padding: 0.1rem 0.4rem; border: 1px solid rgba(29, 20, 24, 0.4); }
+.sbtn[aria-pressed="true"] { background: var(--ink); color: var(--paper-solid); }
+.sbtn[aria-disabled="true"] { border-style: dashed; }
+.cost { color: var(--ink2); margin-left: 0.3rem; }
+.tfoot { padding: 0.3rem 0.8rem 0.9rem; }
+.tfoot:empty { display: none; }
+.btn.go { text-align: left; }
+.endnote { margin: 0.3rem 0.5rem; }
+
+/* high-contrast dialogue: solid paper, darker ink, no rules */
+:root.contrast .talk { background: #f4efe2; background-image: none; }
+:root.contrast .talk, :root.contrast .ln.nar, :root.contrast .ln.you, :root.contrast .ln .who, :root.contrast .tag .lvl, :root.contrast .terms, :root.contrast .lock, :root.contrast .opt .num { color: #000; }
+:root.contrast .opt { font-weight: 700; }
+
+/* creation */
+.createbox { position: absolute; inset: 4vh 5vw; padding: 1.6rem 2rem; display: grid; grid-template-rows: auto 1fr auto; min-height: 0; }
+.createbox h2 { font-size: 1.6rem; margin: 0 0 0.8rem; font-weight: 600; }
+.ccols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; min-height: 0; overflow: auto; }
+.cards { display: grid; gap: 0.6rem; margin-top: 0.4rem; }
+.card { display: block; width: 100%; padding: 0.7rem 0.9rem; border: 1px solid rgba(29, 20, 24, 0.3); line-height: 1.45; }
+.card.on { border: 2px solid var(--ink); padding: calc(0.7rem - 1px) calc(0.9rem - 1px); }
+.card .cname { font-weight: 600; font-size: 1.1rem; }
+.detail .rows { margin-bottom: 1rem; }
+.errs p { margin: 0.2rem 0; }
+.errs .caps { margin-top: 0.6rem; }
+
+/* saves */
+.slots { display: grid; gap: 0.15rem; }
+.slot { display: grid; grid-template-columns: 7rem 1fr; gap: 0.8rem; width: 100%; padding: 0.3rem 0.6rem; align-items: baseline; }
+.slot:hover { background: rgba(29, 20, 24, 0.06); }
+.slotname { color: var(--ink2); font-size: 0.85rem; }
+
+/* Tide Run */
+.runview { background: var(--night); display: grid; grid-template-columns: 1fr 16rem; }
+.chart { width: 100%; height: 100%; display: block; }
+.runside { margin: 1rem; padding: 1rem 1.1rem; align-self: start; }
+.rname { font-weight: 600; font-size: 1.2rem; margin: 0.2rem 0 0.8rem; }
+.irow { display: grid; grid-template-columns: 5.5rem 1fr; gap: 0.2rem 0.5rem; margin: 0.25rem 0; align-items: baseline; }
+.irow .mono { grid-column: 2; }
+.keys { margin-top: 1rem; line-height: 1.5; }
+.runresult { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(24rem, 80vw); padding: 1.2rem 1.4rem; }
+.runresult p { font-size: 1.1rem; margin: 0.4rem 0 0.8rem; }
+/* the fight's result card lives in the side card, so the arena stays in view */
+.runresult.inside { position: static; transform: none; width: auto; margin-top: 1rem; padding: 0.8rem 0 0; border-top: 1px solid var(--line, rgba(29,20,24,0.28)); }
+.talkoffer { margin: 0.8rem 0 0.2rem; padding: 0.6rem 0.7rem; border: 2px solid var(--hot, #9a3b1f); }
+.talkoffer p { margin: 0.2rem 0 0.4rem; font-size: 1.05rem; }
+.talkoffer .k { display: inline-block; min-width: 1.6rem; font-family: var(--mono, "LW Conso", monospace); }
+.fightkeys { display: grid; gap: 0.15rem; margin-top: 0.6rem; font-size: 0.82rem; color: var(--ink2); }
+.fightkeys .k { display: inline-block; min-width: 3.2rem; font-family: var(--mono, "LW Conso", monospace); color: var(--ink); }
+
+/* a fight in the world (ui/fightlayer.mjs): overlays on the plate view, nothing else changes */
+.fightlayer { position: absolute; inset: 0; pointer-events: none; }
+.fightlayer > * { pointer-events: auto; }
+.fightcanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.fighthud { position: absolute; left: 1rem; bottom: 1rem; min-width: 14rem; padding: 0.6rem 0.8rem; }
+.fightlayer .talkoffer { position: absolute; right: 1rem; top: 4rem; max-width: 18rem; margin: 0; }
+.fightkeys { position: absolute; right: 1rem; bottom: 1rem; padding: 0.4rem 0.7rem; font-size: 0.8rem; max-height: 60vh; overflow: auto; }
+.fightresult { position: absolute; left: 50%; bottom: 1rem; transform: translateX(-50%); padding: 0.8rem 1.1rem; min-width: 16rem; }
+.play.fighting .here, .play.fighting > .talk { display: none; }

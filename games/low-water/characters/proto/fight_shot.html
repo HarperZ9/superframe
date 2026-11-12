@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Low Water: fight with the figures</title>
+<style>html, body { margin: 0; height: 100%; background: #070509; }</style></head>
+<body><main id="stage"></main><div id="toasts"></div>
+<script type="module">
+// The engine's play screen (game/engine/play.html) with the character pipeline's figures plugged
+// into the in-world fight layer. Opened as /characters/proto/fight_shot.html?shot=fight. Reads the
+// engine read only; edits nothing in game/engine.
+import { setFigureDrawer } from "/engine/ui/fightlayer.mjs";
+import { poseOf, actorOf } from "/engine/combat/anim/drive.mjs";
+import { makeFightDrawer } from "/characters/runtime/fightdrawer.mjs";
+import { boot } from "/engine/ui/app.mjs";
+const place = await (await fetch("/content/quay/place.json")).json();
+setFigureDrawer(await makeFightDrawer({ poseOf, actorOf, camera: { yawDeg: place.camera.yawDeg, elevDeg: place.camera.elevDeg } }));
+window.__figures = true;
+boot().catch((e) => { console.error("boot failed:", e); document.getElementById("stage").textContent = String(e && e.stack || e); });
+</script></body></html>

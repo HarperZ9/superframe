@@ -1,0 +1,590 @@
+# Low Water, Act 2: the Brine on Night 2 (brine2.lwd). Writer's draft, 2026-10-17. Private.
+# Places: brine, yard, oven, room (Act 1 records). Plan: design/ACT2-PLAN.md beats 2 and 3;
+# design/ACT2-RETURNING.md. Fisk off the coast road at 19:40 (gate A3, Tongue, Eye and a Hands
+# route); the masters' complaint at 20:30; Rook drinks here 22:00 to 23:00; the room and its wall;
+# an optional brawl over the Act 1 cause; Wenna's Night 2 state by the cause.
+
+# ---- new ids
+@fact brine2.spec_read
+@fact brine2.spec_torn
+@fact brine2.fisk_promise
+@fact brine2.fisk_closed
+@fact brine2.masters_signed
+@fact brine2.masters_refused
+@fact brine2.masters_spit
+@fact brine2.rook_witness
+@fact brine2.rook_kept
+@fact brine2.rook_gone
+@fact brine2.brawled
+
+@char brine2.dace
+name: Hal Dace, master of the Patience
+speaker: DACE
+faction: shelf
+about: His barge lies on her side on the Spit. Reads his log aloud as if it were scripture.
+
+@char brine2.orme
+name: Bet Orme, master of the Ann Tull
+speaker: ORME
+faction: shelf
+about: Her barge lies beside his. Counts money on her fingers while she talks.
+
+@encounter brine2.brawl
+name: The cause, argued with benches
+area: brine
+param: brawl (everyone fights everyone; Lamb may join, stop it, or keep out of it)
+win: brine2.fight.brawl.win
+yield: brine2.fight.brawl.yield
+fled: brine2.fight.brawl.fled
+down: brine2.fight.brawl.down
+talk: brine2.fx.fork | Shout for Sabine's fork ? fight_seconds >= 6
+talk: brine2.fx.word | Say what you wrote, and why, to the whole room ? fight_struck == 0
+
+# ---------------------------------------------------------------- the hub
+@node brine2.hub
+hub: yes
+place: brine
+cost: 0
+alt: brine2.open ? !seen(brine2.open)
+alt: brine2.fisk.arrive ? has(ev2.fisk_here) & clock < 20:30 & !seen(brine2.fisk.arrive)
+alt: brine2.masters.arrive ? clock >= 20:30 & clock < 22:30 & !seen(brine2.masters.arrive)
+alt: brine2.brawl ? clock >= 21:15 & clock < 22:00 & seen(brine2.masters.arrive) & !seen(brine2.brawl)
+alt: brine2.rook.arrive ? has(ev2.rook_out) & !has(ev2.rook_back) & !seen(brine2.rook.arrive)
+alt: brine2.spit.lights ? clock >= 23:20 & clock < 00:40 & seen(brine2.masters.arrive) & !seen(brine2.spit.lights)
+nar: The Brine, second night. Sodium at every porthole; paraffin inside.
+voice: hearsay: The Low Company's corner is empty, and the bench by the door is full of men who have never sat there before. {dc: 4, when: has(cause.wreckers), once}
+voice: hearsay: No Lamplighter has come in tonight. They drink on the hill now, at the station, where the lamps are white. {dc: 4, when: has(cause.trust), once}
+voice: hearsay: Fish-men in the Brine, which never happens, because the weigh-house is shut to them. {dc: 4, when: has(cause.guild), once}
+opt: "Ask Dace how a bargeman clears a deck." -> brine2.dace ? seen(brine2.masters.round) & !has(quay2.move_oarsweep)
+opt: "Talk to Sabine." -> brine2.sabine
+opt: "Sit down by Wenna." -> brine2.wenna
+opt: "Talk to the engineer drying at the stove." -> brine2.fisk ? seen(brine2.fisk.arrive) & clock < 20:30
+opt: "Go over to the masters' table." -> brine2.masters ? seen(brine2.masters.arrive) & clock < 23:30 & !has(a2.afloat)
+opt: "Sit down beside the telegraphist." -> brine2.rook ? seen(brine2.rook.arrive) & !has(ev2.rook_back) & !has(brine2.rook_gone)
+opt: "Talk to Orrin Teague." -> brine2.teague ? !seen(brine2.teague)
+opt: "Go up to the room." -> brine2.room +1
+opt: "Go out to the quay." -> quay2.hub +1
+opt: "Take the yard lane to the Gut." -> gut2.hub +2
+
+# ---------------------------------------------------------------- first entry: the cause as fact in the Brine
+@node brine2.open
+place: brine
+cost: 2
+alt: brine2.open.keeper ? has(cause.keeper)
+nar: The clock is wrong by the amount it is wrong by.
+alt: brine2.open.setclock ? has(brine.clock_set)
+go: brine2.hub
+
+@node brine2.open.setclock
+cost: 1
+nar: The clock over the bar is right. Customers keep checking it against their watches.
+go: brine2.hub
+
+@node brine2.open.keeper
+speaker: SABINE
+cost: 3
+nar: On the bar, a Municipal notice: the licence of these premises to be reviewed, Thursday, in the matter of the green glass.
+line: SABINE: Reviewed. Wenna's had six years of reviewed. My turn.
+nar: By the stove, Wenna, with a packed bag at her feet.
+go: brine2.hub
+
+# ---------------------------------------------------------------- Sabine
+@node brine2.sabine
+speaker: SABINE
+cost: 1
+nar: Sabine wipes the bar in long strokes, as if it might need to be handed over clean.
+opt: "How has the town taken it?" -> brine2.sabine.cause ? !seen(brine2.sabine.cause)
+opt: "An egg and a tea." -> brine2.sabine.supper ? count(i.chits) >= 1
+opt: "Leave her to the bar." -> brine2.hub
+
+@node brine2.sabine.cause
+speaker: SABINE
+cost: 3
+alt: brine2.sabine.cause.stone ? has(said.stone) & has(cause.keeper)
+line: SABINE: The town reads what you wrote the way it reads the tide table. Somebody's always out on the floor when it turns.
+voice: chit: She has not named a price yet tonight. Count the lines. {dc: 6}
+go: brine2.sabine
+
+@node brine2.sabine.cause.stone
+speaker: SABINE
+cost: 3
+line: SABINE: You told me it was a stone. In my own bar, in front of my own oven. Then you wrote her in.
+nar: She sets the glass down and leaves it there.
+do: rep(brine, -1); seenas_brine = trouble
+go: brine2.sabine
+
+@node brine2.sabine.supper
+speaker: SABINE
+cost: 2
+line: SABINE: A chit. They're ninepence on the quay today, so it's a chit and the change is the pleasure of my company.
+do: take(i.chits, 1); give(i.egg); give(i.tea)
+go: brine2.sabine
+
+# ---------------------------------------------------------------- Wenna on Night 2
+@node brine2.wenna
+speaker: WENNA
+cost: 2
+alt: brine2.wenna.keeper ? has(cause.keeper)
+alt: brine2.wenna.lens ? var.lens == broken | var.lens == green_broken
+line: WENNA: She's still there. I looked this afternoon. Somebody has to.
+opt: "Leave her to the fire." -> brine2.hub
+
+@node brine2.wenna.keeper
+speaker: WENNA
+cost: 3
+line: WENNA: They're coming for me at nine in the morning. Ida Gorm told me herself, polite as a doctor.
+line: WENNA: I've asked for one thing. To light her once more tonight. They said they'd see.
+opt: "I'll ask for you." -> brine2.wenna.ask
+opt: "Say nothing, and sit." -> brine2.hub {verb: wait}
+
+@node brine2.wenna.ask
+speaker: WENNA
+cost: 2
+line: WENNA: You'll ask the Shelf. That's who wrote me in.
+nar: She nods once.
+do: set(said.ask_for_wenna); set(heard.wenna.ask_for_wenna)
+go: brine2.hub
+
+@node brine2.wenna.lens
+speaker: WENNA
+cost: 3
+alt: brine2.wenna.lens.green ? var.lens == green_broken
+line: WENNA: Her eye's out. I went up this morning and swept it into a bucket. Three buckets.
+nar: Her knuckles are cut in a fine pattern.
+opt: "Leave her to the fire." -> brine2.hub
+
+@node brine2.wenna.lens.green
+speaker: WENNA
+cost: 3
+line: WENNA: Two rings of her. Two out of three. She's white now. Thin, but white.
+line: WENNA: Ships can see a thin light. They can't see a lie.
+opt: "Leave her to the fire." -> brine2.hub
+
+# ---------------------------------------------------------------- Fisk off the coast road (beat 2, gate A3)
+@node brine2.fisk.arrive
+speaker: FISK
+cost: 3
+do: set(met.fisk); quest(a2.button, met)
+nar: A small neat man in a city coat, black with mud to the knee, a satchel that has been in a ditch.
+line: FISK: Fisk. Dorran Fisk. Engineer, Hesk. The ferry would not sail, so I walked the coast road, which is eleven miles and was described to me as a road.
+go: brine2.hub
+
+@node brine2.fisk
+speaker: FISK
+cost: 1
+alt: brine2.fisk.closed ? has(brine2.fisk_closed)
+nar: Fisk lays sodden papers along the stove rail, each with an apologetic pat.
+opt: "Let him see the keeper's coat." -> brine2.fisk.keeper ? guise == keeper & !has(fisk.button)
+check: "[FORM LETTER] Talk to him as one professional to another." -> brine2.fisk.talk / brine2.fisk.talk.fail ? !has(fisk.button) {skill: formletter, dc: 6}
+check: "[CONDOLENCE] Ask what he is afraid the Alderman will say." -> brine2.fisk.talk / brine2.fisk.talk.fail ? !has(fisk.button) {skill: condolence, dc: 7}
+check: "[GRIP] Offer to part the stuck pages with a knife, at the stove." -> brine2.fisk.dry / brine2.fisk.dry.fail ? !has(brine2.spec_read) & !has(brine2.spec_torn) {skill: grip, dc: 5, verb: salvage, noise: 0}
+check: "[SMALL PRINT] Read the page drying on the rail while he talks." -> brine2.fisk.read / brine2.fisk.read.fail ? !has(brine2.spec_read) {skill: smallprint, dc: 6, verb: read, noise: 0}
+opt: "Ask him how an engineer ties a thing that must not come loose." -> brine2.fisk.snare ? !has(weigh2.move_snare) & count(i.rope) > 0
+opt: "Leave him to his papers." -> brine2.hub
+
+@node brine2.fisk.closed
+speaker: FISK
+cost: 1
+line: FISK: I have an appointment on the hill at half past eight. I would prefer, if you will forgive the adjective, to arrive dry.
+opt: "Leave him be." -> brine2.hub
+
+@node brine2.fisk.keeper
+speaker: FISK
+cost: 3
+line: FISK: That coat. The keeper's coat. I specified that coat. Section nine: the keeper shall be readily distinguished at the panel.
+go: brine2.fisk.why
+
+@node brine2.fisk.snare
+speaker: FISK
+cost: 5
+do: set(weigh2.move_snare)
+line: FISK: A rolling hitch, and then a second over the first, so the pull tightens it. Cable men use it on a slope. Here. No. Here.
+nar: He ties it round the stove rail with wet fingers, and pulls, and the rail creaks before the knot does.
+line: FISK: It is meant for cable. I would not like to think what else it is good for.
+go: brine2.fisk
+
+@node brine2.fisk.talk
+speaker: FISK
+cost: 3
+line: FISK: You will have read the specification, assessor. Clause fourteen. Restrike after any loss of supply, by hand, at the panel, by a keeper on duty.
+go: brine2.fisk.why
+
+@node brine2.fisk.why
+speaker: FISK
+cost: 4
+line: FISK: I wrote it so that nobody could ever say no one was at the panel.
+nar: He looks at the satchel on his knees.
+line: FISK: The Alderman asked me this morning, by wire, to come and explain that the button is automatic. I have come to explain that it is not.
+do: set(fisk.button); quest(a2.button, why)
+opt: "Say his name will stay out of the Daybook until he says otherwise." -> brine2.fisk.promise {do: set(said.fisk_unnamed); set(heard.fisk.fisk_unnamed)}
+opt: "Say the Shelf will need it in his hand, signed." -> brine2.fisk.signed
+
+@node brine2.fisk.promise
+speaker: FISK
+cost: 2
+line: FISK: Thank you. That is a kindness, and I have not had one since Hesk.
+nar: He hands over his own copy of the specification, the clause unstruck, and does not watch it go.
+do: set(brine2.fisk_promise); give(i.fisk_spec); rep(trust, 1)
+go: brine2.hub
+
+@node brine2.fisk.signed
+speaker: FISK
+cost: 2
+line: FISK: Signed. Yes. Of course. That is what signatures are for, is it not.
+nar: His signature is steadier than his voice.
+do: give(i.fisk_spec); set(brine2.fisk_closed)
+go: brine2.hub
+
+@node brine2.fisk.talk.fail
+speaker: FISK
+cost: 3
+line: FISK: The lockout is ninety seconds at full arc temperature, assessor. The button is brass. I am not, if you will forgive me, going to talk about the Alderman in a public house.
+do: set(brine2.fisk_closed)
+go: brine2.hub
+
+@node brine2.fisk.dry
+speaker: FISK
+cost: 8
+line: FISK: You have done that before.
+nar: Clause fourteen: a keeper on duty to restrike, by hand, at the panel, after any loss of supply.
+alt: brine2.fisk.compare ? has(clause.struck)
+do: set(brine2.spec_read); set(fisk.button); quest(a2.button, why)
+go: brine2.hub
+
+@node brine2.fisk.dry.fail
+speaker: FISK
+cost: 4
+nar: Clause fourteen tears down the middle. Half of it stays on the knife.
+line: FISK: That was the one I came for.
+do: set(brine2.spec_torn); set(brine2.fisk_closed); rep(trust, -1)
+go: brine2.hub
+
+@node brine2.fisk.read
+cost: 4
+nar: Upside down on the rail, steaming: a keeper on duty to restrike, by hand, at the panel, after any loss of supply.
+alt: brine2.fisk.compare ? has(clause.struck)
+do: set(brine2.spec_read); set(fisk.button); quest(a2.button, why)
+go: brine2.hub
+
+@node brine2.fisk.read.fail
+speaker: FISK
+cost: 2
+line: FISK: It reads better the right way up. It reads better still in Hesk.
+nar: He puts the page inside his coat, wet.
+do: set(brine2.fisk_closed)
+go: brine2.hub
+
+@node brine2.fisk.compare
+cost: 4
+nar: The struck copy goes on the rail beside it. The same words, to the comma, and on the copy a line of yellow ink through all of them.
+voice: smallprint: One clause written. One clause struck. Two hands. {dc: 5}
+do: set(brine2.spec_read); set(fisk.button); quest(a2.button, why); quest(a2.ink, seen)
+go: brine2.hub
+
+# ---------------------------------------------------------------- the masters' complaint (beat 3)
+@node brine2.masters.arrive
+speaker: PENHALLOW
+cost: 3
+do: quest(a2.masters, open)
+nar: Penhallow, two more masters, and a bundle of logbooks tied with a reef point.
+line: PENHALLOW: Log of the Saint Cuthwin. Log of the Patience, Master Dace. Log of the Ann Tull, Master Orme. Both barges on the Spit since Low Night. We want the Shelf's name on a complaint.
+go: brine2.hub
+
+@node brine2.masters
+speaker: DACE
+cost: 1
+line: ORME: Twelve months of it, assessor. Two barges. That's not weather, that's a light.
+opt: "Read the three logs side by side." -> brine2.masters.read ? !has(masters.green) {verb: read, noise: 0}
+check: "[THE CHIT] Buy the table a round and let them tell it." -> brine2.masters.round / brine2.masters.round.fail ? !has(masters.green) & count(i.chits) >= 1 {skill: chit, dc: 6}
+opt: "Sign their complaint for the Shelf." -> brine2.masters.sign ? !has(brine2.masters_signed) & !has(brine2.masters_refused)
+check: "[FORM LETTER] Refuse to sign, in a form they will accept." -> brine2.masters.refuse / brine2.masters.refuse.fail ? !has(brine2.masters_signed) & !has(brine2.masters_refused) {skill: formletter, dc: 6}
+opt: "Leave the masters to their logs." -> brine2.hub
+
+@node brine2.masters.read
+cost: 12
+nar: Saint Cuthwin: Mother green, est. half power. Patience: Head Light poor, greenish. Ann Tull: lamp very green, master's opinion a disgrace. The same thirteen months.
+voice: sum: Thirteen months, three logs, the same entries in the same weeks. {dc: 5}
+do: set(masters.green); meter(wear, 1)
+go: brine2.masters
+
+@node brine2.dace
+speaker: DACE
+cost: 6
+do: set(quay2.move_oarsweep)
+line: DACE: Clears a deck? With a sweep. Wide, from the hip, the whole length of it. You don't hit a man. You hit the place he's standing, and he goes.
+nar: He shows it with the poker, across the Brine's floor, and Orme moves his feet without being asked.
+voice: ballast: The weight goes through the back foot. The arms only steer. {dc: 4}
+go: brine2.hub
+
+@node brine2.masters.round
+speaker: DACE
+cost: 6
+line: DACE: Fourteenth of March. Head Light green, est. half power. Altered course to keep the Spit to starboard by eye. Master's prayer offered.
+line: ORME: Mine says disgrace. Every week since the spring. I've the stub of every complaint I sent the Board.
+do: take(i.chits, 1); set(masters.green); rep(shelf, 1)
+go: brine2.masters
+
+@node brine2.masters.round.fail
+speaker: ORME
+cost: 3
+line: ORME: We'll buy our own, thank you. You can buy us a signature.
+do: take(i.chits, 1)
+go: brine2.masters
+
+@node brine2.masters.sign
+speaker: PENHALLOW
+cost: 3
+nar: The assessor signs below three masters, for the Mutual Indemnity of the Lower Shelf.
+line: PENHALLOW: Logged. Shelf's assessor signed, twenty-forty or thereabouts. Thank you, passenger.
+voice: formletter: The Shelf has signed a complaint against a lamp it insures. The form for that is a resignation. {dc: 6}
+do: set(brine2.masters_signed); set(masters.green); quest(a2.masters, signed); rep(shelf, -1); set(said.masters_signed)
+go: brine2.masters
+
+@node brine2.masters.refuse
+speaker: PENHALLOW
+cost: 3
+line: LAMB: The Shelf cannot sign against its own policy. It can receive your logs as evidence, and it will.
+line: PENHALLOW: Received. That's a word for a ship's log, too. Logged: Shelf received, did not sign.
+do: set(brine2.masters_refused); quest(a2.masters, signed); set(said.masters_received)
+go: brine2.masters
+
+@node brine2.masters.refuse.fail
+speaker: ORME
+cost: 3
+line: ORME: Can't, won't, may not. I've a barge on her side and a crew being paid in promises. Say no in English.
+do: set(brine2.masters_refused); quest(a2.masters, signed); rep(shelf, -1)
+go: brine2.masters
+
+@node brine2.spit.lights
+speaker: ORME
+cost: 3
+nar: Past the end of the mole, three lanterns move along the line of the Spit.
+line: ORME: Those are on my barge.
+line: DACE: And mine.
+opt: "Tell them you'll go out." -> brine2.spit.go {do: set(brine2.masters_spit)}
+opt: "Say nothing." -> brine2.hub {verb: wait}
+
+@node brine2.spit.go
+speaker: PENHALLOW
+cost: 2
+line: PENHALLOW: Then you'll want a boat that's not at the mole steps. Wardens on the steps tonight. Bearing from the yard lane, then the quay, then whatever you can steal.
+go: brine2.hub
+
+# ---------------------------------------------------------------- Rook (22:00 to 23:00)
+@node brine2.rook.arrive
+speaker: ROOK
+cost: 2
+do: set(met.rook)
+alt: brine2.rook.lamplighter ? guise == lamplighter
+nar: At ten Euphemia Rook takes the stool at the end of the bar where the light is worst.
+line: ROOK: A small port, Sabine. And nobody's business.
+go: brine2.hub
+
+@node brine2.rook.lamplighter
+speaker: ROOK
+cost: 2
+nar: At ten Euphemia Rook comes in, sees a dark coat at the bar, and goes out again.
+do: set(brine2.rook_gone)
+go: brine2.hub
+
+@node brine2.rook
+speaker: ROOK
+cost: 1
+nar: Rook drinks her port in very small sips, the way someone counts.
+opt: "You sent the Board's telegram at half past six last night." -> brine2.rook.wire ? !seen(brine2.rook.wire)
+check: "[HEARSAY] Keep her talking past eleven." -> brine2.rook.kept / brine2.rook.kept.fail ? !has(brine2.rook_kept) {skill: hearsay, dc: 6}
+opt: "Leave her to her port." -> brine2.hub
+
+@node brine2.rook.wire
+speaker: ROOK
+cost: 3
+line: ROOK: I send what I'm handed. I don't remember any of it. That's what a telegraphist is for.
+line: ROOK: If I did remember, I'd want somebody beside me who wasn't the Board when I said so. Somebody with a book of their own.
+opt: "Stand beside her. Tell her when." -> brine2.rook.witness {do: set(said.rook_witness); set(heard.rook.rook_witness)}
+opt: "Say nothing." -> brine2.rook
+
+@node brine2.rook.witness
+speaker: ROOK
+cost: 2
+line: ROOK: The office. Before the frost. Knock twice, once low.
+do: set(brine2.rook_witness)
+go: brine2.rook
+
+@node brine2.rook.kept
+speaker: ROOK
+cost: 8
+line: LAMB: The wire to Hesk. The price of ink. Does the Board ever tip?
+voice: undertow: Her office is dark on the Ropewalk, with nobody in it, for as long as this lasts. {dc: 5}
+do: set(brine2.rook_kept)
+go: brine2.hub
+
+@node brine2.rook.kept.fail
+speaker: ROOK
+cost: 2
+line: ROOK: You're keeping me. People only keep me when they want my office empty.
+do: set(brine2.rook_gone)
+go: brine2.hub
+
+# ---------------------------------------------------------------- Teague
+@node brine2.teague
+speaker: TEAGUE
+cost: 2
+alt: brine2.teague.letter ? has(brine.letter_given) | tab_orrin == 1
+line: TEAGUE: No boat this morning. I was ready. I'd my hand on the belt.
+go: brine2.hub
+
+@node brine2.teague.letter
+speaker: TEAGUE
+cost: 2
+line: TEAGUE: My letter's on a ship, the captain says. Not moving. On a ship.
+nar: He has taken the belt off his luggage and folded it.
+go: brine2.hub
+
+# ---------------------------------------------------------------- the room and its wall
+@node brine2.room
+place: room
+cost: 1
+nar: The room above the Brine, and the wall.
+alt: brine2.wall.claim ? var.day_pin == claim
+alt: brine2.wall.works ? var.day_pin == works
+alt: brine2.wall.switch ? var.day_pin == switch
+alt: brine2.wall.glass ? var.day_pin == glass
+alt: brine2.wall.light ? var.day_pin == light
+alt: brine2.wall.keel ? var.day_pin == keel
+go: brine2.room.menu
+
+@node brine2.room.menu
+place: room
+cost: 0
+opt: "Sit by the stove." -> brine2.room.stove
+opt: "Go down to the bar." -> brine2.hub
+
+@node brine2.wall.claim
+cost: 1
+nar: CLAIM 4471/G, time of claim 18:30, on a tack.
+go: brine2.room.menu
+
+@node brine2.wall.works
+cost: 1
+nar: The works order on a tack, Keel's signature dry for once.
+go: brine2.room.menu
+
+@node brine2.wall.switch
+cost: 1
+nar: A slip on a tack: 21:38 down, 21:52 up.
+go: brine2.room.menu
+
+@node brine2.wall.glass
+cost: 1
+nar: The green prism on its nail throws a green coin on the planking when the stove door opens.
+go: brine2.room.menu
+
+@node brine2.wall.light
+cost: 1
+nar: In pencil: 22:20, a light, nothing of Merrow's burning. Under it, in a different pencil: "so?"
+go: brine2.room.menu
+
+@node brine2.wall.keel
+cost: 1
+nar: The drawing of a man standing in a puddle has cockled in the night, in a dry room.
+go: brine2.room.menu
+
+@node brine2.room.stove
+place: room
+cost: 20
+nar: Frost ferns on the round window.
+do: meter(cold, -3); meter(wear, -1)
+go: brine2.room.menu
+
+# ---------------------------------------------------------------- the brawl over the cause (optional)
+@node brine2.brawl
+cost: 2
+alt: brine2.brawl.none ? has(cause.sea)
+nar: Somebody says the cause out loud, and somebody says what it cost them, and a bench goes over.
+voice: undertow: They are fighting about your word, in front of you. Pick a side and they will stop pretending you haven't one. {dc: 5}
+opt: "Wade in." -> brine2.brawl.join
+opt: "Hand Sabine her pickling fork." -> brine2.brawl.fork
+check: "[HEARSAY] Shout that the Lamplighters are on the step." -> brine2.brawl.turned / brine2.brawl.turned.fail {skill: hearsay, dc: 6}
+opt: "Get behind the stove with Wenna." -> brine2.brawl.watch {verb: hide, noise: 0}
+
+@node brine2.brawl.none
+cost: 1
+nar: Nobody argues about an act of the sea.
+go: brine2.hub
+
+@node brine2.brawl.join
+cost: 1
+nar: The assessor goes in, case first.
+do: set(brine2.brawled); fight(brine2.brawl)
+
+@node brine2.brawl.fork
+speaker: SABINE
+cost: 3
+nar: Sabine walks into the fight with her pickling fork at shoulder height. People get out of her way the way water gets out of the way of a keel.
+line: SABINE: I've the chalk in my other hand. I know all your drawings.
+do: rep(brine, 1)
+go: brine2.hub
+
+@node brine2.brawl.turned
+cost: 2
+nar: The fight stops mid-swing and is drinking quietly before anyone checks the door.
+do: rep(brine, 1)
+go: brine2.hub
+
+@node brine2.brawl.turned.fail
+cost: 2
+nar: Everyone looks at the door. The door does nothing. Everyone looks at the assessor.
+opt: "Then wade in." -> brine2.brawl.join
+opt: "Out the back, fast." -> brine2.fight.brawl.fled {verb: hide, noise: 0.3}
+
+@node brine2.brawl.watch
+cost: 3
+nar: A pie goes past at head height.
+line: WENNA: Second night of it. They'll want a third.
+go: brine2.hub
+
+@node brine2.fight.brawl.win
+cost: 3
+nar: Two men from the long table are on the floor. The door opens on four brass poles.
+line: STRAND: Written down.
+do: set(brine2.brawled); set(book.violence); rep(trust, -1); rep(brine, -1)
+if: has(book.violence) => rep(trust, -1)
+if: trait(m.body) == none => offer(m.body)
+go: brine2.hub
+
+@node brine2.fight.brawl.yield
+cost: 3
+nar: The man who started it holds up both hands, then a pie, as a flag.
+do: set(brine2.brawled); rep(brine, -1)
+if: trait(m.body) == none => offer(m.body)
+go: brine2.hub
+
+@node brine2.fight.brawl.fled
+place: yard
+cost: 4
+nar: The yard, the frost, the empties white with it.
+do: set(brine2.brawled); meter(cold, 2)
+go: brine2.hub
+
+@node brine2.fight.brawl.down
+cost: 30
+nar: The settle, a wet cloth, and Sabine's chalk.
+line: SABINE: Two nights, two floors. I've drawn you lying down again. It's the same drawing.
+do: set(brine2.brawled); set(down.brine2); meter(dread, 1); take(i.chits, 1)
+go: brine2.hub
+
+# ---------------------------------------------------------------- talk exits from the brawl
+@node brine2.fx.fork
+speaker: SABINE
+cost: 2
+line: SABINE: Every bench that's over is a shilling. I've the chalk in my other hand and I know all your drawings.
+nar: The fight stops from the middle outward.
+do: set(brine2.brawled); rep(brine, 1)
+go: brine2.fight.brawl.yield
+
+@node brine2.fx.word
+cost: 3
+line: LAMB: I wrote it. Me. If you want to hit the word, here it is.
+nar: The bench in the air comes down slowly onto its feet.
+do: set(brine2.brawled); set(said.owned_cause); set(heard.sabine.owned_cause)
+go: brine2.fight.brawl.yield

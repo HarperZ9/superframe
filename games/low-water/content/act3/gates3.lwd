@@ -1,0 +1,168 @@
+# Low Water, Act 3: gate records (@gate), one per obstacle in the Act 3 path matrix
+# (design/ACT3-PLAN.md section 6, rows B1 to B10; engine game/engine/world/gates.mjs; design
+# design/SYSTEMS-FULL.md section 19.4). Each gate pays its pages once, when the first of its
+# resolved: flags is set. Only flags set on winning outcomes are listed.
+# Drafted by the systems engineer on 2026-10-17 for the director to correct. Private.
+# Not yet included by act3.lwd: the director adds `include: gates3.lwd` to the root.
+#
+# Every flag below was checked with a grep for set(<flag>) in content/act3 and content/act1,
+# content/act2. None is set in Act 1 or Act 2, so none pays on load through settle().
+#
+# Rows not made into gates:
+# B1, the gale lamps. Skipped. Editor note A10 recast B1 as three moments, each a person and a
+#   choice, to avoid a chore loop, and the content spreads it over up to six lamps in six districts
+#   (quay3, brine3, weigh3, mole3, gut3, hill3, gasholder3). The per-lamp *.tended flags are not
+#   clean wins: brine3.tended is set on brine3.porthole.fist.fail, mole3.tended on
+#   mole3.trip.climb.fail, hill3.tended on the node that also sets lampout.hill, and gut3.tended on
+#   entering the band. If the director wants one B1 gate anyway, the clean candidates are
+#   quay3.tended, weigh3.balance_kept, hill3.lamps_held and gasholder3.tended.
+# Daylight page (day2.lwd). No gates. It has no checks, no fights and no obstacle with a winning
+#   outcome: four calls, each a choice (day2.wenna.yes or .look, day2.pip.answer, day2.boats.*,
+#   day2.fisk.help).
+
+# Row B2 of ACT3-PLAN. All five routes end at ropewalk3.door, which sets hester.seen_typing.
+# Fist: ropewalk3.door_broken (ropewalk3.fist.ok, then straight to the door).
+# Tongue: ropewalk3.letter_given (the Alderman's letter handed over unopened); through Pip,
+#   said.pip_spared (Pip spared, then she knocks). Pip telling (pip.told) is left out because it
+#   is also set after a Fist entry, in ropewalk3.fist.pip.
+# Shadow: ropewalk3.tube_room (ropewalk3.shadow.ok; every way out of it leads to the door).
+# Hands: no flag of its own (ropewalk3.hands.land sets none); pays on hester.seen_typing.
+# Eye: said.hester_case (ropewalk3.eye.door). e.matched is not used: it is set in the telegraph
+#   office before the door is reached and does not by itself open it.
+# Note for the director: ropewalk3.door already pays xp(1) on first arrival
+#   (`if: !has(hester.seen_typing) => xp(1)`). With this gate the door pays twice. Remove one.
+@gate a3.ropewalk_door
+name: The door on the Ropewalk
+resolved: hester.seen_typing
+resolved: ropewalk3.door_broken
+resolved: ropewalk3.letter_given
+resolved: said.pip_spared
+resolved: ropewalk3.tube_room
+resolved: said.hester_case
+
+# Row B3 of ACT3-PLAN. A boat for the eye (quay3).
+# Shadow: quay3.stowed (quay3.stow.ok, under the strippers' sacks).
+# Hands: quay3.coffin_sail (quay3.coffin.ok, the Coffin rigged with a scrap sail).
+# Fist (quay3.row.ok), Tongue (quay3.merrow.ok, quay3.lugg.ok, quay3.cockle.ok) and Eye
+#   (quay3.glass.ok, and the calm option in quay3.boats.eye) set no flag. They set only the var
+#   quay3.boat and quest stages, so these three routes never pay this gate as written. The
+#   director may add one flag (for example quay3.boat_ok) to those nodes and list it here.
+# GUESS: three of five routes have no flag; oldlight.in was not borrowed as a fallback because
+#   oldlight.follow.fail (a seen Shadow failure in B4) also sets it.
+@gate a3.eye_boat
+name: A boat for the eye
+resolved: quay3.stowed
+resolved: quay3.coffin_sail
+
+# Row B4 of ACT3-PLAN. Inside the Old Light (oldlight).
+# Fist: oldlight.loud (oldlight.door.forced).
+# Tongue: no flag of its own. oldlight.door.told sets only oldlight.in, and oldlight.in is also
+#   set by oldlight.follow.fail, where Lamb is seen and caught, so it is not listed.
+# Shadow: oldlight.behind (oldlight.follow).
+# Hands: oldlight.line_rigged (oldlight.rig).
+# Eye: oldlight.timed (oldlight.marks).
+# GUESS: oldlight.behind is also set in oldlight.arrive when Lamb stowed away in B3, so a stowaway
+#   is paid B4 on arrival, before the door; their only way in is then the unchecked follow.
+@gate a3.oldlight_inside
+name: Inside the Old Light
+resolved: oldlight.loud
+resolved: oldlight.behind
+resolved: oldlight.line_rigged
+resolved: oldlight.timed
+
+# Row B5 of ACT3-PLAN. The strippers in the Old Light, set fight e3.oldlight and e3.oldlight.sneak
+# (rules3.lwd: win oldlight.fight.win, yield oldlight.fight.yield; fled and down excluded).
+# oldlight.gear_saved is set on every winning outcome:
+# Fist: oldlight.fight.win and oldlight.fight.yield.
+# Tongue: oldlight.bluff.ok, and the talk exit fx3.oldlight.claim, which goes to the yield node.
+# Hands: oldlight.flood.ok (oldlight.flood.fail is excluded; it sets only oldlight.flooded).
+# Eye: oldlight.cutoff (on the stair at one).
+# Shadow: no flag of its own. oldlight.leave_them sets oldlight.gear_lost and
+#   oldlight.strippers_gone, and both are also set on oldlight.fight.fled and oldlight.fight.down.
+# strippers.named is not used although every Fist and Eye win sets it: Act 2 (spit.lwd) sets it
+#   too, so it would pay this gate on load.
+@gate a3.oldlight_strippers
+name: The strippers in the Old Light
+resolved: oldlight.gear_saved
+
+# Row B6 of ACT3-PLAN. The wreckers on Mother's gallery, set fight e3.gallery and e3.gallery.sneak
+# (rules3.lwd: win mole3.fight.gallery.win, yield mole3.fight.gallery.yield).
+# wreckers.real is set on every winning branch and on no losing one:
+# Fist: mole3.fight.gallery.win and .yield.
+# Tongue: mole3.wreck.letter.ok, mole3.wreck.letter.lamp, mole3.wreck.heard.ok, and the talk exit
+#   fx3.gallery.names (to the yield node).
+# Shadow: mole3.wreck.hold (the barred lamp room), mole3.wreck.blind.ok.
+# Hands: mole3.wreck.relight (isolator locked or relay jumpered).
+# Eye: mole3.wreck.waited (after mole3.wait.ok; also the Daybook claim of their names).
+# Excluded: mole3.wreck_met, set when the wreckers arrive (mole3.wreck.start, mole3.wreck.lamp)
+#   and on the losing nodes mole3.wreck.missed, .foot.late, .foot.let. loss3.mother and loss3.lamp
+#   mark losses (mole3.wreck.let, .lamp.let, .fight.gallery.fled, .fight.gallery.down).
+@gate a3.gallery_wreckers
+name: The wreckers on Mother's gallery
+resolved: wreckers.real
+
+# Row B7 + B10 of ACT3-PLAN. The surge and the last vote, in the Brine (brine3).
+# surge.held: set at brine3.vote.call when brine3.step >= 2. Fist (brine3.step.fist), Hands
+#   (brine3.step.salt, brine3.step.flour) and Eye (brine3.step.almanac, then the .exact sandbag
+#   nodes) all raise brine3.step; so does Tongue's brine3.step.tongue.
+# Shadow: brine3.slate_safe (brine3.slate.safe, the slate, clock and moulds got upstairs).
+# Eye: brine3.ledger_read (brine3.ledger, brine3.ledger.wiped, brine3.ledger.oil, the ledger
+#   read aloud; these are plain options with no failure branch).
+# Tongue: said.keeper_paid (brine3.keeper.speak and .keeper; brine3.keeper.speak.fail does not
+#   set it).
+# vote.keeper_paid is left out: it is the town's vote, and the plan marks no vote result right.
+@gate a3.surge_vote
+name: The surge and the last vote
+resolved: surge.held
+resolved: brine3.slate_safe
+resolved: brine3.ledger_read
+resolved: said.keeper_paid
+
+# Row B8 of ACT3-PLAN. The Old Bulb's fate (gasholder3, mole3).
+# Fist: book.gasholder3_carry (gasholder3.carry.road.ok, carried down the hill unbroken). The
+#   stair carry (mole3.bulb.carry.ok) sets no flag.
+# Tongue: said.gasholder3.amendment (gasholder3.council.fit.ok). The leave route
+#   (gasholder3.council.leave.ok) sets only gasholder3.bulb_home, which is also set by
+#   gasholder3.carry.cracked.home after a failed carry, so it is not listed.
+# Shadow: gasholder3.fetched (gasholder3.fetch.ok, brought home unseen of the Trust). The lanes
+#   route (gasholder3.lanes.ok) sets only gasholder3.bulb_up, which gasholder3.carry.cracked.on
+#   also sets after a failed carry.
+# Hands: mole3.bulb_fitted (mole3.bulb.fit, with Fisk's adaptor or the copper bridge; the cracked
+#   bulb goes to mole3.bulb.crack and does not set it).
+# Eye: gasholder3.bulb_measured (gasholder3.measure.ok) and gasholder3.bulb_cannot
+#   (gasholder3.measure.cannot, the success branch that finds it will not light).
+# GUESS: gasholder3.bulb_cannot counts as a win because the Eye route's point is that the climb
+#   is made only if it can light; the director may disagree.
+@gate a3.old_bulb
+name: The Old Bulb's fate
+resolved: book.gasholder3_carry
+resolved: said.gasholder3.amendment
+resolved: gasholder3.fetched
+resolved: mole3.bulb_fitted
+resolved: gasholder3.bulb_measured
+resolved: gasholder3.bulb_cannot
+
+# Row B9 of ACT3-PLAN. Mother's lens (mole3).
+# mole3.crown_fitted: set by mole3.fit.ok (Hands) and mole3.fit.quick (Eye, after mole3.count.ok).
+# Fist (mole3.crown.carry.ok), Tongue (mole3.crown.fennick.ok) and Shadow (mole3.crown.dark.ok,
+#   mole3.crown.coat) set mole3.crown_room and mole3.past_men, which mole3.crown.carry.fail also
+#   sets, so they are not listed. Those routes pay when the crown is fitted.
+@gate a3.mother_lens
+name: Mother's lens
+resolved: mole3.crown_fitted
+
+# Director, 2026-10-17: two rows of the Act 3 matrix the draft did not carry.
+# B1, the gale lamps in the band: tending any one chosen lamp through a band resolves it.
+@gate a3.band_lamps
+name: A lamp kept through the band
+resolved: quay3.tended
+resolved: gut3.tended
+resolved: hill3.tended
+resolved: gasholder3.tended
+resolved: mole3.tended
+
+# B4, the hill substation in the gale: the white lamps held (every route sets hill3.lamps_held).
+@gate a3.hill_station
+name: The hill's lamps held in the gale
+resolved: hill3.lamps_held
+

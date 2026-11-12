@@ -1,0 +1,1142 @@
+# Low Water, vertical slice: Lamp Quay, 23:00 to 00:00.
+# Format: LWD/0, a draft for the BuildLang track (see LWD-FORMAT.md). Private draft, 2026-10-16.
+# Narration (nar) is the assessor's report, in the house voice. Speakers are in capitals.
+
+@meta
+title: Low Water: Lamp Quay, 23:00 to 00:00
+format: lwd/0
+start: arrive
+clock: 23:00
+end-clock: 00:00
+at-end: midnight
+
+# ---------------------------------------------------------------- places
+@place quay
+name: Lamp Quay, under the lamps
+zone: quay
+light: 0.6
+sodium: 0.95
+dark-light: 0.03
+
+@place steps
+name: The quay steps
+zone: quay
+light: 0.45
+sodium: 0.85
+dark-light: 0.02
+
+@place floor
+name: The harbour floor
+zone: floor
+light: 0.08
+sodium: 0.4
+dark-light: 0.06
+
+@place drowned
+name: The drowned lamp
+zone: floor
+light: 0.06
+sodium: 0
+dark-light: 0.06
+
+@place brine
+name: The Brine, the bar
+zone: brine
+light: 0.5
+sodium: 0.05
+dark-light: 0.5
+
+@place yard
+name: The Brine's back yard
+zone: quay
+light: 0.12
+sodium: 0.5
+dark-light: 0.04
+
+@place weigh_out
+name: The weigh-house, outside
+zone: quay
+light: 0.5
+sodium: 0.95
+dark-light: 0.02
+
+@place weigh_in
+name: The weigh-house, the after-vote
+zone: weigh
+light: 0.3
+sodium: 0
+dark-light: 0.3
+
+@place office
+name: The weigh-house office
+zone: weigh
+light: 0.08
+sodium: 0.3
+dark-light: 0.02
+
+@place harbour
+name: The harbour office
+zone: quay
+light: 0.4
+sodium: 0.2
+dark-light: 0.4
+
+@place mole
+name: The mole
+zone: mole
+light: 0.08
+sodium: 0.3
+dark-light: 0.05
+
+@place lamproom
+name: Mother's lamp room
+zone: mother
+light: 0.05
+sodium: 0
+dark-light: 0.05
+
+# ---------------------------------------------------------------- facts
+@fact claim.time
+about: The Board's claim was telegraphed at 18:30, three hours before the dark.
+against: keel 30
+by: reading
+
+@fact memory.low_light
+about: From the ferry's deck: a low light in the drowned lamp, 22:24 by the ship's clock, and the helm going over.
+by: memory
+
+@fact spray.mole
+about: The mole has been spray-swept in a westerly since nine; anyone who walked it is wet on the windward side.
+by: the Vane
+
+@fact lamps.pink
+about: Witnesses saw the quay lamps come back pink. Sodium lamps restart through red for about ten minutes, so the quay was dark until about 21:52.
+against: guild 10
+by: testimony and Candlemas
+
+@fact prints.read
+about: Boot prints, size eleven, from the steps to the drowned lamp after the floor opened; deeper heels coming back.
+against: merrow 10
+by: eyes
+
+@fact merrow.wet_thigh
+about: Merrow is wet to the thigh: he waded the gully late, when it was deep.
+against: merrow 5
+by: the Damp
+
+@fact merrow.light
+about: Merrow hung a lantern in the drowned lamp's hole tonight. He says it went out at 22:18 and burned again from 22:25.
+by: testimony
+
+@fact scales.switch
+about: Fish scales on the handle of the quay switch box.
+against: guild 20
+by: eyes, in light
+
+@fact marrow.switch
+about: Marrow pulled the quay switch at 21:38 for the vote, as the Guild has for thirty years, and put it back at 21:52.
+against: guild 25
+by: testimony
+
+@fact works.order
+about: The works order: Mother moved onto the quay board seven months ago. Signed Keel, approved Crake.
+against: keel 25
+against: trust 30
+by: reading
+
+@fact panel.restrike
+about: The card on Mother's panel: RESTRIKE REQUIRED after any loss of supply. A keeper's job.
+against: trust 20
+against: wenna 10
+by: reading
+
+@fact log.ahead
+about: The lamp-room log is filled in to the end of the month, in ink of one age.
+against: wenna 15
+by: reading and the Damp
+
+@fact coat.wenna_dry
+about: Wenna's oilskin is dry. Nobody who walked the mole tonight is dry.
+against: wenna 15
+by: the Damp
+
+@fact tab.wenna
+about: The Brine's tab: rounds in Wenna's mark at 21:45 and 22:10.
+against: wenna 10
+by: reading
+
+@fact prism.green_oven
+about: A prism of green bottle glass, still warm, in the Brine's bread oven.
+against: wenna 20
+by: Candlemas, out of the sodium
+
+@fact lens.green
+about: A third of Mother's prism rings are green bottle glass.
+against: wenna 20
+by: Candlemas, in the arc's light
+
+@fact prism.numbered
+about: Fennick's relic: a sharp-edged prism, numbered 113 on its edge. Not sea glass. One of Mother's.
+against: wenna 10
+by: Candlemas, in the dark
+
+@fact overheard.last_three
+about: Sabine to Wenna in the yard: "That's the last three. I'm not firing that oven for glass again."
+against: wenna 10
+by: overhearing
+
+@fact key.office
+about: Keel's key to the weigh-house office.
+by: Keel
+
+# state flags
+@fact arrived
+about: The night has begun.
+
+@fact met.keel
+about: Spoke with the harbourmaster.
+
+@fact met.fennick
+about: Spoke with the deacon.
+
+@fact met.merrow
+about: Spoke with the salvor.
+
+@fact met.sabine
+about: Spoke with the landlady.
+
+@fact met.wenna
+about: Spoke with the keeper.
+
+@fact met.marrow
+about: Spoke with the steward.
+
+@fact blackout
+about: The assessor pulled the quay switch. Lamp Quay is dark.
+
+@fact mother.relit
+about: The assessor restruck Mother. She burns.
+
+@fact damp.saturated
+about: The Damp is saturated and reads nothing until dried at a stove.
+
+@fact keel.rattled
+about: The harbourmaster lost his place in his own story.
+
+@fact gorm.warned
+about: A Lamplighter has written the assessor's name in her book.
+
+@fact wenna.confessed
+about: Wenna said she was in the Brine all night.
+
+@fact merrow.trust
+about: Merrow believes the assessor saw his light.
+
+@fact floor.closed
+about: The tide has taken the floor back.
+
+@fact crake.call
+about: Spoke with the Alderman by telephone.
+
+@fact walked.mole
+about: The assessor has walked the mole tonight.
+
+# ---------------------------------------------------------------- events
+@event ev.slack
+at: 23:12
+nar: The tide stops going out. For a minute the harbour floor is as large as it will be this year. Then the far pools begin, without any fuss, to fill.
+inst: THE ALMANAC: Slack water ends. The flood begins. I would apologise for the moon, but it never apologises for itself.
+
+@event ev.fog
+at: 23:20
+nar: Fog comes off the Flats. It takes the far things first: the stranded boat, the line of the Spit, Mother's head. The near lamps stay, and are lonelier.
+
+@event ev.rain
+at: 23:35
+nar: Rain, fine and sideways. The wind has gone round to the south-west and found the quay's soft side.
+inst: THE VANE: South-west! South-west! The weigh-house eave is wet now. Everything under it is going to be clean, whether it wants to be or not.
+inst: THE GLASS: Told you, darling.
+
+@event ev.gully
+at: 23:42
+nar: The gully between the steps and the drowned lamp fills. Whoever is out there is out there now.
+
+@event ev.steps
+at: 23:48
+nar: The sea comes up the lowest three steps, one at a time, like someone climbing to knock.
+set: floor.closed
+
+@event ev.base
+at: 23:52
+nar: The drowned lamp's base goes under. The hole in its side drinks and is quiet.
+
+# ---------------------------------------------------------------- arrival
+@node arrive
+place: quay
+cost: 2
+set: arrived
+set: claim.time
+set: memory.low_light
+set: spray.mole
+set: walked.mole
+nar: Lamp Quay, a little after eleven. The tide is out further than the town has seen in nineteen years, and the town has gone down onto the floor of the harbour with lanterns to look at what the sea forgot.
+nar: Three sodium lamps hang over the quay on bent necks. Under them the houses are five storeys of the same colour, which is the colour of a lamp. At the end of the mole, Mother stands with her great head dark.
+nar: The assessor's coat is wet on the left side from the mole. It had been dry for eleven years.
+inst: THE VANE: West, six metres a second. The mole's been spitting since nine. You walked through it. So did anyone else who came this way.
+inst: CANDLEMAS: Sodium. I see one colour and I will not call it a colour.
+inst: THE ALMANAC: Low water at two minutes to eleven. The floor will be the floor until about twenty to twelve. After that it will be the sea again, and nobody's footprints.
+go: arrive.claim
+
+@node arrive.claim
+cost: 1
+nar: CLAIM 4471/G. Harbour Board of Gullet against the Mutual Indemnity of the Lower Shelf. Nature of loss: darkness, malicious. Time of claim: 18:30. Time of loss, according to the Board's own telegram, unknown at the time of writing.
+nar: The assessor reads the line again under the lamp. It does not improve.
+nar: And on the ferry, at twenty-four minutes past ten by the ship's clock, a light low on the water where no light should be, and the deck tilting as the helm went over. The assessor has filed that too.
+go: hub
+
+@node hub
+place: quay
+cost: 0
+nar: The quay. The steps go down to the floor at its middle. The Brine squats on the left in its upturned hull. The weigh-house wears the town balance on its roof. The mole runs out to Mother.
+opt: "Go to the top of the steps, where the harbourmaster is dripping." -> keel.start ? !has(met.keel) +1
+opt: "Go back to the harbourmaster." -> keel.again ? has(met.keel) +1
+opt: "Go down the steps to the floor." -> steps.down ? tide < -0.27 +2
+opt: "Look down at the floor from the top of the steps." -> steps.flooded ? tide >= -0.27 +1
+opt: "Go into the Brine." -> brine.enter +2
+opt: "Go round the back of the Brine." -> yard.enter +2
+opt: "Go to the weigh-house." -> weigh.outside +2
+opt: "Walk the mole to Mother." -> mole.walk +5
+opt: "Go into the harbour office." -> harbour.enter ? has(met.keel) +2
+
+# ---------------------------------------------------------------- the harbourmaster
+@node keel.start
+place: steps
+cost: 4
+set: met.keel
+nar: At the top of the steps stands the harbourmaster, very tall, very straight, in a greatcoat that has given up being blue. Water runs from his cuffs and from the brim of his hat. He is standing in a puddle that he has brought with him.
+nar: Item: one harbourmaster, wet. The assessor declines to estimate how wet. The estimate would be challenged.
+line: KEEL: You will be the Shelf. The Board telegraphed. The Board is gratified.
+line: KEEL: Absalom Keel, harbourmaster. Do not stand there; that is where the Board stands. You will find it is already wet.
+inst: THE DAMP: Saturated. Completely. I can't read him. I've never been able to read him. Nobody can.
+go: keel.menu
+
+@node keel.again
+place: steps
+cost: 1
+nar: The harbourmaster has not moved. The puddle has grown by the width of a hand.
+line: KEEL: The Shelf returns.
+go: keel.menu
+
+@node keel.menu
+opt: "What happened to the lamp?" -> keel.story
+opt: "Your claim was sent at half past six. She went dark at twenty to ten." -> keel.time ? has(claim.time)
+opt: "I saw a light in the drowned lamp from the ferry. It turned us off the Spit." -> keel.light ? has(memory.low_light)
+opt: "Who keeps the weigh-house office?" -> keel.key ? !has(key.office)
+claim: "You signed the works order that put Mother on the quay board." -> keel.order.ok / keel.order.fail ? has(works.order) & has(claim.time)
+opt: "Leave him dripping." -> hub
+
+@node keel.story
+cost: 4
+alt: keel.story.dark ? power.quay == off
+line: KEEL: Wreckers. The word is old and so is the crime. A light goes out, a ship goes in, and in the morning there is copper on the mud and nobody's footprints.
+line: KEEL: The Low Company has wanted Mother dark since the Trust closed the Old Light to salvage. Their master, Merrow, said in the Brine before witnesses that he would "see her blind". The Board has the witnesses' names.
+line: KEEL: Tonight she went dark, and tonight Merrow is on the floor with a sack. The Board does not believe in coincidence. The Board believes in tides.
+nar: Under the lamp he is fluent. He has said this before, or practised it, and the water running off him keeps time.
+go: keel.menu
+
+@node keel.story.dark
+cost: 4
+set: keel.rattled
+nar: In the dark the harbourmaster is a tall noise.
+line: KEEL: Wreckers. The word is old and. The crime is old. A light goes out and a ship. The Board.
+line: KEEL: The Board would like the lamps back on before it continues.
+nar: Without the lamp he has lost his place, the way a man reading aloud loses it when someone takes the page.
+go: keel.menu
+
+@node keel.time
+cost: 3
+line: KEEL: The Board anticipated. That is the Board's function. Merrow's threat was made on Tuesday; the Board's duty was to the policy, and the policy rewards the prudent.
+line: KEEL: You would have preferred the Board to wait until she was dark? Until the ferry was on the Spit?
+nar: He says "until she was dark" as if it were a date he had written down.
+inst: THE GLASS: Oh, he knew. He knew the hour. Pressure in the Board is very low, darling.
+go: keel.menu
+
+@node keel.light
+cost: 3
+line: KEEL: A light. In the Old Light. Then he was there, the wrecker, with his lantern, signalling.
+line: KEEL: You understand that a false light is the oldest trick of the trade. A ship sees a lamp where no lamp should be, and steers for it, and is lost.
+nar: The ferry did not steer for it. The ferry steered away from it, and was not lost. The assessor does not say so yet.
+go: keel.menu
+
+@node keel.key
+cost: 2
+alt: keel.key.give ? has(met.marrow) | hour >= 23:30
+line: KEEL: The Board keeps the office. The Board's papers are the Board's.
+nar: His hand goes to a pocket and stays there, the way a hand guards a thing that weighs more than a key should.
+go: keel.menu
+
+@node keel.key.give
+cost: 2
+set: key.office
+line: KEEL: The Guild are in the weigh-house drinking to their strike, and the Shelf will want the scales' book for the claim. Take it. Bring it back. The Board will know if anything is moved; the Board is very sensitive to damp.
+nar: The key is wet. Of course it is.
+go: keel.menu
+
+@node keel.order.ok
+cost: 5
+set: keel.rattled
+cmd: addRumour keel_knew quay 0.3
+nar: The assessor holds up the works order. The harbourmaster's signature is on it in a neat, dry hand: the only dry thing about him.
+line: KEEL: The Trust required. The Alderman required. The Board signs what it is required to sign.
+line: KEEL: The Guild's vote is a fishmongers' superstition. The Board could not be expected to rewire the town for a superstition.
+line: LAMB: But you knew it would happen on Low Night. You filed at half past six.
+nar: For a moment the water stops running from his cuffs. Then it starts again, faster.
+line: KEEL: The Board. Would ask the Shelf. To consider the town. A new lens, assessor. A whole new lens. You have not seen what is in that lamp.
+alt: keel.gorm ? light >= 0.3 & !has(gorm.warned)
+go: keel.menu
+
+@node keel.order.fail
+cost: 2
+line: KEEL: The Board signs a great many things. The Board does not recall them individually. Do you have something in writing, or only a feeling?
+nar: The assessor has only a feeling and a time. A time is not enough, yet.
+go: keel.menu
+
+@node keel.gorm
+cost: 3
+set: gorm.warned
+nar: A woman in a dark coat with a brass pole longer than she is has been standing under the next lamp. She has a book open. She writes in it.
+line: GORM: And who might you be, at this hour? And would the Alderman like to hear what you have been asking the harbourmaster? Or shall I tell her myself?
+nar: She does not wait for an answer. She walks to the harbour office, and the door closes behind her, and the telephone in it rings once.
+go: keel.menu
+
+# ---------------------------------------------------------------- the harbour office and the Alderman
+@node harbour.enter
+place: harbour
+cost: 2
+nar: The harbour office: a stove, a chart of the bay under glass, a chair with a hole drilled in its seat. The telephone is on the wall, and it is ringing.
+opt: "Answer it." -> crake.call
+opt: "Leave it ringing." -> hub
+
+@node crake.call
+cost: 6
+set: crake.call
+line: CRAKE: Absalom? No. You are the Shelf. Good evening. This is Ottilie Crake, for the Trust and for the Municipal. I gather you've been asking about wiring.
+line: CRAKE: Let me save you an evening. Mother is automatic now. She comes on with the quay and goes off with the quay. It's modern, it's cheap, and it has worked every night for seven months.
+line: LAMB: Except tonight.
+line: CRAKE: Tonight a fishmongers' club interfered with municipal equipment. I've asked Sergeant Gorm to write it down.
+opt: "Who restrikes the arc when the power comes back?" -> crake.restrike
+opt: "Why does the keeper sit in the Brine every night?" -> crake.keeper
+opt: "Goodnight, Alderman." -> crake.bye
+
+@node crake.restrike
+cost: 3
+line: CRAKE: The arc restrikes itself.
+nar: A pause on the line, of the length it takes to read something you wrote seven months ago.
+line: CRAKE: When cool. When cool, it restrikes itself. If it's hot there's a lockout, and a button. The engineer was very attached to his button. Colour is a daytime extravagance, assessor, and so are keepers.
+opt: "Why does the keeper sit in the Brine every night?" -> crake.keeper
+opt: "Goodnight, Alderman." -> crake.bye
+
+@node crake.keeper
+cost: 2
+line: CRAKE: Nobody was dismissed. A post was reviewed. The review is ongoing. I am sure it will be favourable.
+line: CRAKE: Mrs Tallow is very attached to that lamp. People are very attached to things in Gullet. It is a town that cannot let go of a fish.
+go: crake.bye
+
+@node crake.bye
+cost: 1
+line: CRAKE: I've told the Shelf's office I'll expect your verdict by dawn. They agreed. They always agree. Goodnight.
+nar: The line goes dead, and then, very faintly, does something a dead line should not do, which is click twice.
+go: hub
+
+# ---------------------------------------------------------------- the steps and the deacon
+@node steps.down
+place: steps
+cost: 2
+nar: The steps go down further than steps should. Each one is wetter than the one above it. Halfway down, the sodium gives up and the light comes from the floor instead: lanterns, a dozen of them, moving slowly among the pools.
+alt: fennick.start ? !has(met.fennick)
+go: steps.bottom
+
+@node fennick.start
+cost: 4
+set: met.fennick
+nar: On the lowest dry step a man in a white surplice over oilskins is blessing the mud. He has a glass bell jar under one arm, carried the way another man carries a hat. Behind him a dozen of the Congregation of the Filament kneel on the steps with jars over their heads, and their breath clouds the glass.
+line: FENNICK: Low water, low light. You've come at the right hour. The sea is showing us its floor, and the floor is a kind of altar.
+line: FENNICK: Ambrose Fennick. Deacon. You will have heard that we pray to a broken bulb. We do not say it broke. We say it was opened.
+go: fennick.menu
+
+@node fennick.menu
+opt: "What did you see when the lamps went out?" -> fennick.pink
+opt: "The Congregation keeps relics. Splinters of the Eye." -> fennick.relic.lit ? light >= 0.1
+opt: "Show me the splinter. Here, in the dark." -> fennick.relic.dark ? light < 0.1
+opt: "Step down with me, off the steps, out of the lamp." -> fennick.stepdown ? light >= 0.1 & tide < -0.27 +1
+opt: "Go on down to the floor." -> steps.bottom ? tide < -0.27
+opt: "Go back up to the quay." -> hub +1
+
+@node fennick.pink
+cost: 3
+set: lamps.pink
+line: FENNICK: We were at prayer in the Brine's lee. At twenty to ten the quay went out, and Mother with it, all at once, as if someone had taken a breath. We sang. It is what you do.
+line: FENNICK: Then the lamps came back, pink. Pink, assessor, like a cut. They go pink when they wake; the Municipal will tell you it is the neon in them, and the Congregation will tell you it is something else. Both are true.
+line: FENNICK: Mother did not wake. We waited for her for half an hour. That was the first time I was afraid tonight.
+inst: CANDLEMAS: He is right about the neon. A low-pressure sodium lamp starts in the red and takes ten minutes to come to its orange. If they were pink when he looked, they had been dark until a few minutes before ten.
+go: fennick.menu
+
+@node fennick.relic.lit
+cost: 3
+line: FENNICK: The splinters come to us by grace, washed up at low water. The sea returns what the Eye lets fall. Every Low Night, a splinter or two.
+nar: He says it in the voice of a man reading a notice he has nailed up himself. The lamp above them hums.
+line: FENNICK: Under the lamp is not the place, assessor. The Lamplighters read lips. Low light, low voices.
+go: fennick.menu
+
+@node fennick.stepdown
+place: floor
+cost: 2
+nar: They step down off the last stair into mud that takes the assessor's boots to the ankle. The sodium is behind them now, a smear on the fog.
+go: fennick.menu
+
+@node fennick.relic.dark
+cost: 5
+set: prism.numbered
+nar: In the dark he opens the bell jar's base. Inside, on velvet, is a wedge of glass the length of a finger, sharp along every edge, with a number cut into its spine.
+line: FENNICK: One hundred and thirteen. Every splinter of the Eye is numbered. The Lord is an engineer, assessor. He leaves a schedule.
+inst: CANDLEMAS: Hold it to the lantern. There. Look how it splits the light: clean, red to violet, not a fringe out of place. That is crown glass from a lens-maker's mould. The sea did not make this. The sea frosts everything it keeps.
+line: FENNICK: I did not say the sea made it. I said the sea returned it.
+line: LAMB: Who sold it to you, deacon?
+line: FENNICK: Speak to me in the dark and I will tell you something true. That is not the same as telling you everything.
+go: fennick.menu
+
+@node steps.flooded
+place: steps
+cost: 1
+nar: The lowest steps are under water. Out on the floor, lanterns are coming back toward the quay in a hurry, and the pools between them have joined hands.
+go: hub
+
+@node steps.bottom
+place: floor
+cost: 1
+nar: The harbour floor. Grey mud, black pools with lamps in them, ribs of an old hull, a fish the size of a cart lying on its side while children walk round it in respectful circles.
+opt: "Look at the prints leading out toward the drowned lamp." -> floor.prints ? !has(prints.read)
+opt: "Cross the gully to the drowned lamp." -> floor.gully ? tide < -0.35 +5
+opt: "The gully has closed. Look across it." -> floor.gully.closed ? tide >= -0.35
+opt: "Go back up the steps." -> hub +2
+
+@node floor.prints
+cost: 3
+alt: floor.prints.gone ? rain > 0.5
+set: prints.read
+nar: A line of prints goes out from the foot of the steps toward the drowned lamp. Big boots. Size eleven, if the assessor is a judge, which professionally the assessor is.
+nar: Going out, the heels are shallow. Coming back, which they have not yet done, there are none. Beside the outgoing line, a second set, smaller and older, half filled with water: a Low Night walker who turned back at the gully.
+inst: THE ALMANAC: The floor opened past these steps at eight minutes past ten. Whoever this is went out after that. The gully opened at sixteen minutes past. They waited for it, or they knew.
+inst: THE GLASS: Rain in twenty minutes or so. These won't keep.
+go: steps.bottom
+
+@node floor.prints.gone
+cost: 2
+nar: The rain has been at the floor. Where there were prints there are soft dents with water in them, like a sentence someone has rubbed out with a wet thumb. The assessor can tell that someone walked here. Not who, or how heavily.
+go: steps.bottom
+
+@node floor.gully
+place: drowned
+cost: 2
+nar: The gully is a ditch of moving water between the floor and the rock where the Old Light stands. It is knee-deep and colder than knees should be asked to bear.
+nar: The drowned lamp leans out of the mud like a tooth. There is a hole in its base, and in the hole, a lantern.
+cmd: wet lamb 0.5
+alt: merrow.start ? hour < 23:40 & !has(met.merrow)
+alt: merrow.again ? hour < 23:40
+go: drowned.empty
+
+@node drowned.empty
+cost: 2
+nar: The lantern is still there, burning low. The man who hung it has gone. A coil of rope has gone with him, and the hole is lighter by a great deal of copper.
+inst: THE ALMANAC: Back across now, or swim later.
+opt: "Go back across the gully." -> steps.bottom ? tide < -0.35 +5
+opt: "Go back across. It is deep now." -> floor.wade.late ? tide >= -0.35 +8
+
+@node floor.wade.late
+place: floor
+cost: 4
+set: damp.saturated
+cmd: wet lamb 1
+nar: The gully is at the assessor's thighs and then, briefly and memorably, at the assessor's ribs. The Damp in its case makes a sound like a man drowning politely.
+inst: THE DAMP: Saturated. I'm no use to you until a fire has had me.
+go: steps.bottom
+
+@node merrow.start
+cost: 4
+set: met.merrow
+nar: A short, wide man is inside the base of the tower, or as much of him as fits. He backs out with a sack that clanks. He looks at the assessor. He does not ask a question. He never asks questions.
+line: MERROW: The Board sent you.
+line: LAMB: The Shelf sent me. The Board sent for me.
+line: MERROW: Same tide.
+go: merrow.menu
+
+@node merrow.again
+cost: 1
+nar: Merrow is sitting on the rubble at the foot of the tower with his sack between his boots, as if it were a dog that might run.
+go: merrow.menu
+
+@node merrow.menu
+opt: "Keel says you darkened Mother to wreck the ferry." -> merrow.wreck
+opt: "I was on the ferry. I saw your light. It turned us." -> merrow.saved ? has(memory.low_light) & !has(merrow.trust)
+opt: "Where were you when the lamps went out?" -> merrow.where
+opt: "Read his trousers." -> merrow.damp ? !has(damp.saturated) & !has(merrow.wet_thigh)
+opt: "Leave him to his copper." -> drowned.leave
+
+@node merrow.wreck
+cost: 3
+line: MERROW: If I wanted a ship on the Spit I'd wait for fog. Not for the Board's lamp. The Board's lamp's been half blind for years. Ask any master on the run. Green, they say. She's gone green.
+line: MERROW: I said I'd see her blind. In the Brine. I'd had four. She is blind. I didn't do it.
+go: merrow.menu
+
+@node merrow.where
+cost: 2
+line: MERROW: Asleep on my boat.
+nar: His boat is on its side on the floor, a long way from here, and it is a long way from asleep.
+alt: merrow.where.true ? has(merrow.trust)
+go: merrow.menu
+
+@node merrow.where.true
+cost: 3
+set: merrow.light
+line: MERROW: All right. On the floor from just after ten. Waited for the gully. Over at sixteen past. Knocked the lantern out climbing in, at the hole, there. Lit it again at twenty-five past and hung it up so I could see what I was stealing.
+line: MERROW: That's the truth and it hangs me either way. Copper off Trust property, or a false light on the rock.
+nar: Twenty-five past. The ferry turned at twenty past by the true clock. The assessor does the sum twice, as a matter of professional habit, and then does it a third time, as a matter of something else.
+go: merrow.menu
+
+@node merrow.saved
+cost: 4
+set: merrow.trust
+nar: The assessor tells him: the deck, the light low on the water on the wrong bearing, the master swearing and the wheel going over, the Spit going by close enough to read.
+nar: Merrow listens with his pipe in his teeth, cold. When the assessor finishes he takes the pipe out and looks at it.
+line: MERROW: Nobody honest sleeps at low water. That's when the sea shows you what it took.
+line: MERROW: I didn't see a ship. I saw a light on the water going the wrong way. Then it went the right way. I thought that was the sea's business.
+go: merrow.menu
+
+@node merrow.damp
+cost: 2
+set: merrow.wet_thigh
+read: damp merrow.trousers
+inst: THE DAMP: Wet to the thigh, and the top of it fresher than the bottom. He crossed when it was shallow and he's been in it again since, deeper. He hasn't been near a boat. Boats are dry on the inside. Usually.
+go: merrow.menu
+
+@node drowned.leave
+cost: 1
+opt: "Go back across the gully." -> steps.bottom ? tide < -0.35 +5
+opt: "Go back across. It is deep now." -> floor.wade.late ? tide >= -0.35 +8
+
+@node floor.gully.closed
+cost: 1
+nar: The gully is full and moving. On the far side the drowned lamp's lantern still burns in its hole, very small, as if it had been left on for someone.
+go: steps.bottom
+
+# ---------------------------------------------------------------- the Brine
+@node brine.enter
+place: brine
+cost: 2
+nar: The Brine is a boat that gave up and lay down on the quay with its keel to the sky. Inside it is warm, and smells of paraffin, vinegar, wet wool and bread. The light is yellow and honest, and the assessor's coat is suddenly the colour it is.
+inst: CANDLEMAS: Paraffin. At last. Ask me anything about anything's colour.
+alt: brine.sabine.start ? !has(met.sabine)
+go: brine.menu
+
+@node brine.sabine.start
+cost: 3
+set: met.sabine
+nar: Behind the bar a wide, quick woman is fishing an egg out of a jar with a fork she then puts behind her ear like a pencil.
+line: SABINE: Pickled egg, a penny. A straight answer, tuppence. I'm out of straight answers. The egg's very good.
+line: SABINE: Sabine Brine. You'll be the Shelf. Your chits are good here tonight. Tomorrow I'll see.
+go: brine.menu
+
+@node brine.menu
+nar: By the stove, a small woman in an oilskin sits with her back to the room and her face to the fire, the way people sit who are waiting for something to stop being true.
+opt: "Talk to the woman by the stove." -> wenna.start ? !has(met.wenna)
+opt: "Talk to Wenna again." -> wenna.menu ? has(met.wenna)
+opt: "Ask Sabine when the keeper left tonight." -> sabine.alibi
+opt: "Look at the slate behind the bar." -> sabine.tab ? !has(tab.wenna)
+opt: "Ask about the bread oven." -> sabine.oven ? !has(prism.green_oven)
+opt: "Dry the Damp at the stove." -> brine.dry ? has(damp.saturated) +10
+opt: "Talk to Merrow, steaming by the door." -> merrow.brine ? hour >= 23:45
+opt: "Go back out to the quay." -> hub +1
+
+@node brine.dry
+cost: 0
+clear: damp.saturated
+nar: The assessor holds the Damp to the stove until the hair in it stops weeping. It takes ten minutes. Nobody in the Brine finds this strange.
+inst: THE DAMP: Thank you. I was a man's hair once. He used to sit like this.
+go: brine.menu
+
+@node sabine.alibi
+cost: 3
+line: SABINE: Wenna? Left at nine to light up. I remember because the clock struck and she didn't.
+inst: CANDLEMAS: Look at the clock.
+nar: The Brine's clock says nine minutes to eleven. The assessor's watch says two minutes past.
+line: SABINE: It's slow. Eleven minutes. Has been since my husband dropped it. Everyone knows. I add it on without thinking.
+nar: So the clock struck nine at eleven minutes past. Wenna, if she left at all, left at eleven minutes past nine. Sabine has added eleven minutes to everything tonight except that.
+go: brine.menu
+
+@node sabine.tab
+cost: 4
+alt: sabine.tab.read ? fog > 0.03 | has(overheard.last_three)
+nar: The slate is behind Sabine, and Sabine is in front of it, and Sabine is wider than the slate.
+line: SABINE: Customers' accounts are customers' business, love.
+go: brine.menu
+
+@node sabine.tab.read
+cost: 3
+set: tab.wenna
+nar: Sabine has gone to the back door; someone in the yard is calling her about the fog and the bread. The slate is unguarded.
+nar: Chalk marks, a column to a customer. In the column marked with a little drawing of a lighthouse: a round at a quarter to ten. A round at ten past ten. A pie.
+nar: Wenna did not leave at nine. Wenna did not leave.
+go: brine.menu
+
+@node sabine.oven
+cost: 4
+set: prism.green_oven
+nar: The bread oven is in the wall behind the bar, iron-doored, still ticking with heat. Sabine does not stop the assessor opening it. She watches with her arms folded, which is a kind of stopping.
+nar: On the oven's floor, among the loaves, a wedge of glass in a clay mould, still warm. In the Brine's paraffin light it is green. Bottle green. The green of the Brine's own empties, stacked to the ceiling in the corner.
+inst: CANDLEMAS: Green. Unarguably, vulgarly green. That's no lens-maker's glass. It bends the light like a drunk turning a corner.
+line: SABINE: Bottles? I sell what's in them. What's left is between me and the oven.
+go: brine.menu
+
+@node wenna.start
+cost: 3
+set: met.wenna
+nar: Up close she is small and round-backed, with a head too large for her collar and white hair cropped short with something that was not scissors. Her hands, folded on her knee, are shiny with old burns.
+line: LAMB: Mrs Tallow. The keeper.
+line: WENNA: That's me. You've come about her.
+line: WENNA: She's not dark. She's got her eye shut. There's a difference, and you'll learn it or you'll go home on the morning boat.
+go: wenna.menu
+
+@node wenna.menu
+opt: "Where were you when she went out?" -> wenna.where ? !has(wenna.confessed)
+opt: "Read her coat." -> wenna.coat.read ? !has(damp.saturated) & !has(coat.wenna_dry)
+claim: "Your coat is dry, Mrs Tallow." -> wenna.coat.ok / wenna.coat.fail ? has(coat.wenna_dry) & has(spray.mole) & !has(wenna.confessed)
+claim: "You were here all night. The slate says so." -> wenna.tab.ok / wenna.tab.fail ? has(tab.wenna) & !has(wenna.confessed)
+opt: "Tell me about the green glass." -> wenna.glass ? has(wenna.confessed) & (has(prism.green_oven) | has(lens.green) | has(prism.numbered))
+opt: "Come with me to the lamp room." -> wenna.come ? has(wenna.confessed) & !has(mother.relit)
+opt: "Leave her to the fire." -> brine.menu
+
+@node wenna.where
+cost: 3
+line: WENNA: In the lamp room. Where I always am. She went out, quick, the way they do. She's old. I came down for a man to look at her.
+line: WENNA: A hundred and twelve stairs. You count them, after a while.
+nar: She does not turn from the fire while she says it.
+go: wenna.menu
+
+@node wenna.coat.read
+cost: 2
+set: coat.wenna_dry
+read: damp wenna.coat
+inst: THE DAMP: Dry. Bone dry, apart from a drop of beer on the left cuff. Nobody's walked that mole in this coat tonight. I would know. I'm from there.
+go: wenna.menu
+
+@node wenna.coat.ok
+cost: 5
+set: wenna.confessed
+nar: The assessor says it plainly: the mole has been spray-swept since nine; anyone who walked it from the lamp house is wet on the windward side, as the assessor is; her coat, by the Damp, is dry.
+nar: She looks at the coat for a long time. She smooths it over her knee as if it were a cat.
+line: WENNA: It's a good coat.
+line: WENNA: All right. I was here. I've been here every night for three years. The stairs, and the money. They stopped the money, you know. Six years. Pending a review.
+line: WENNA: She comes on by herself now. With the quay. I sit here and I see her through the window, over the mole, and I know she's lit, and I have my pie.
+line: WENNA: Tonight I heard her motor stop. Twenty to ten. You can hear it, if you've heard it for thirty years. And I sat. I sat with my pie, and I thought, she'll come back with the quay, and the quay came back, pink, and she didn't.
+go: wenna.menu
+
+@node wenna.coat.fail
+cost: 2
+line: WENNA: It's an oilskin. It's what they're for. Water runs off.
+nar: She has a point, and the assessor has no reading to answer it with.
+go: wenna.menu
+
+@node wenna.tab.ok
+cost: 4
+set: wenna.confessed
+nar: A round at a quarter to ten. A round at ten past. A pie. The slate does not lie because the slate does not care.
+line: WENNA: Sabine and her chalk. She'll put me in the ground with a bill.
+line: WENNA: All right. I was here. I heard her stop at twenty to ten and I didn't go. I'm sixty-four and I've a hundred and twelve stairs and a fire and nobody's paid me since the sodium came. I didn't go.
+go: wenna.menu
+
+@node wenna.tab.fail
+cost: 2
+line: WENNA: You've not seen any slate. You've seen Sabine's back.
+go: wenna.menu
+
+@node wenna.glass
+cost: 6
+line: WENNA: Glass is glass. She doesn't know the difference. Ships might. Ships are fussy.
+line: WENNA: The deacon pays in coin and he doesn't ask. Sabine fires the oven on bread nights and I bring her the moulds. One prism a month, for six years. Seventy-two, near enough. A third of her.
+line: WENNA: She's dimmer. I know she's dimmer. Nobody in town can tell, because of the sodium. You can't see her from under it. You can't see anything from under it.
+line: WENNA: I kept her lit. That's my job. Nobody said I had to keep her honest.
+cmd: addRumour green_lens brine 0.2
+go: wenna.menu
+
+@node wenna.come
+cost: 2
+line: WENNA: My knees.
+line: WENNA: All right. All right. Somebody ought to see her before they take her eye out and sell it to the Shelf.
+nar: She stands, in stages, like a ladder being put up.
+go: mole.walk.wenna
+
+@node merrow.brine
+cost: 4
+nar: Merrow is standing by the Brine's door, steaming. His sack is under the bench with Sabine's boot on it.
+line: MERROW: The sea came for the gully. I came for the stove. Neither of us waited to be asked.
+alt: merrow.brine.trust ? has(merrow.trust)
+line: MERROW: Asleep on my boat.
+go: brine.menu
+
+@node merrow.brine.trust
+cost: 2
+line: MERROW: You told me about the ferry. I'll tell you about the lantern. Knocked it out climbing in at eighteen past. Lit it at twenty-five past. In between, it was dark in there. I'd know. I was in it.
+set: merrow.light
+nar: Twenty past, the ferry turned. Twenty-five past, the lantern was lit. The assessor writes both times down and draws no line between them.
+go: brine.menu
+
+# ---------------------------------------------------------------- the yard
+@node yard.enter
+place: yard
+cost: 2
+nar: Behind the Brine: barrels, a mangle, a stack of empty bottles taller than a man, all green. The back door is propped open and lets out heat and the smell of bread.
+alt: yard.overhear ? fog > 0.03 & !has(overheard.last_three) & hour < 23:45
+alt: yard.seen ? !has(overheard.last_three)
+go: yard.quiet
+
+@node yard.overhear
+cost: 5
+set: overheard.last_three
+nar: The fog has the yard. The assessor is a shape among barrels and nobody looks for shapes. Through the door, two women's voices, low, carried by the wind straight from the oven to the stack of bottles where the assessor stands.
+line: SABINE: That's the last three. I'm not firing that oven for glass again, Wenna. Not with the Shelf on the quay.
+line: WENNA: She needs three more for the bottom ring. The bottom ring's the one the ships see.
+line: SABINE: The ships can see the Spit, then. Eat your pie.
+inst: THE VANE: Straight from the door to your ear. Lucky. Or I'm good.
+go: yard.quiet
+
+@node yard.seen
+cost: 2
+nar: The yard is open to the quay lamps and the assessor is lit like a shop window. Inside, two voices stop at once. Sabine's face appears in the door, looks, and smiles.
+line: SABINE: Bottles are a penny a dozen, love. The fog's a penny for nothing.
+go: yard.quiet
+
+@node yard.quiet
+cost: 1
+opt: "Look at the bottles." -> yard.bottles
+opt: "Go back to the quay." -> hub +1
+
+@node yard.bottles
+cost: 2
+nar: Some of the bottles have their bottoms knocked out, neatly, all the same way. A glass punt, a ring of thick green glass. Exactly the weight of glass that would go into a mould the length of a finger.
+go: yard.quiet
+
+# ---------------------------------------------------------------- the weigh-house
+@node weigh.outside
+place: weigh_out
+cost: 2
+nar: The weigh-house: brick, squat, the town balance on its roof with a pan at each end of the beam, the pans tilted toward the harbour as if weighing it. Inside, men are singing. On the wall under the eave, an iron box with a handle and a painted word: QUAY.
+opt: "Look at the switch box." -> weigh.switch ? !has(scales.switch)
+opt: "Go in to the after-vote." -> weigh.in
+opt: "Try the office door." -> office.door
+opt: "Pull the quay switch." -> blackout.pull ? power.quay == on
+opt: "Put the quay switch back." -> blackout.restore ? power.quay == off
+opt: "Go back to the quay." -> hub +1
+
+@node weigh.switch
+cost: 2
+alt: weigh.switch.gone ? rain > 0.5 & hour >= 23:50
+alt: weigh.switch.dark ? light < 0.1
+set: scales.switch
+nar: The handle of the switch box is smeared and bright. Fish scales, a dozen of them, stuck flat to the iron, catching the lamp like sequins on a widow.
+inst: THE VANE: West wind, and the eave keeps this side dry. When the wind goes round, the rain gets in under there. Read it while you can.
+go: weigh.outside
+
+@node weigh.switch.gone
+cost: 2
+nar: The rain is driving in under the eave from the south-west. The handle of the switch box is clean, wet iron. Whatever was on it has gone into the gutter with everything else.
+inst: THE VANE: Told you. South-west. Everything under that eave has been washed.
+go: weigh.outside
+
+@node weigh.switch.dark
+cost: 1
+nar: In the dark the switch box is a box. The assessor's fingers find iron, and something slick, and nothing they can swear to.
+go: weigh.outside
+
+@node weigh.in
+place: weigh_in
+cost: 2
+nar: Inside, the Guild of the Gut is drinking to its strike. Forty men and women in aprons, blindfolds pushed up on their foreheads like a second pair of eyebrows. On a board on the far wall, chalk tallies: FOR, and a column of little fish; AGAINST, and fewer.
+alt: marrow.start ? !has(met.marrow)
+go: marrow.menu
+
+@node marrow.start
+cost: 4
+set: met.marrow
+nar: The largest man in the room comes through it the way a boat comes through a crowd of smaller boats. His forearms shine with scales that will never wash off.
+line: MARROW: The Shelf. You smell of train and paper. A flatfish. Both eyes on one side of your head, lying on the bottom, looking up at everyone.
+line: MARROW: Marrow Dunlin, steward. We've won, assessor. By a nose. You've come on a good night.
+go: marrow.menu
+
+@node marrow.menu
+opt: "How does the Guild vote?" -> marrow.vote
+opt: "Who pulled the quay switch at twenty to ten?" -> marrow.switch.ask ? !has(marrow.switch)
+claim: "There are scales on the switch handle, and the lamps came back pink at ten." -> marrow.switch.ok / marrow.switch.fail ? has(scales.switch) & has(lamps.pink) & !has(marrow.switch)
+opt: "Mother was on that switch. Did you know?" -> marrow.knew ? has(marrow.switch)
+opt: "Go back outside." -> weigh.outside
+
+@node marrow.vote
+cost: 3
+line: MARROW: In the dark, by the nose, blindfolded. Two fish on the pans: this year's price and last year's. You smell them both and you stand by the one you'd sell your mother for.
+line: MARROW: We vote in the dark because in the light a man votes with his face.
+go: marrow.menu
+
+@node marrow.switch.ask
+cost: 2
+line: MARROW: The Guild was at the vote all night, assessor. Nobody touched anything.
+nar: He says it loudly. He says everything loudly. The room goes on singing around the sentence, a little more carefully.
+go: marrow.menu
+
+@node marrow.switch.ok
+cost: 5
+set: marrow.switch
+cmd: addRumour guild_switch quay 0.3
+nar: The scales on the handle. The lamps coming back pink at ten. The assessor lays them down one beside the other, like two fish on a slab.
+nar: Marrow is quiet. When Marrow is quiet the whole room hears it.
+line: MARROW: Thirty years that switch has gone down and come up. My father pulled it. Lights out for the nose. Thirty years nothing went with it.
+line: MARROW: Twenty-two minutes to ten I pulled it. Eight minutes to I put it back. Fourteen minutes. The quay came back, pink, like it does. I came out to piss and looked at the mole and she wasn't there.
+go: marrow.menu
+
+@node marrow.switch.fail
+cost: 2
+line: MARROW: Scales? On the quay? In Gullet? You'll find scales on the Alderman's teacups, flatfish.
+go: marrow.menu
+
+@node marrow.knew
+cost: 4
+line: MARROW: Know? Who'd tell us? The Trust doesn't tell the Guild what time it is. If they put her on our switch, they put her there quiet.
+line: MARROW: I guessed. Ten o'clock, out in the rain, looking at the mole. I guessed and I said nothing, because a guess is what they hang a Guild for.
+alt: marrow.office ? !has(key.office) & !has(works.order)
+go: marrow.menu
+
+@node marrow.office
+cost: 2
+line: MARROW: If there's paper, it's in that office. The Board keeps it locked. The window's got no catch, mind, if you were small and nobody could see you. We smell a lot of things in this town. We don't see much.
+go: marrow.menu
+
+@node office.door
+cost: 1
+alt: office.enter ? has(key.office)
+alt: office.window ? fog > 0.05 | power.quay == off
+nar: The office door is locked. Its window faces the quay, under the lamp, and a Lamplighter is leaning on the next post, writing in her book.
+go: weigh.outside
+
+@node office.window
+cost: 4
+nar: The fog has come up to the window sill, or the lamps have gone, and nobody on the quay can see a shape at a window. The window has no catch. The assessor goes in the way an assessor should never go anywhere.
+go: office.enter
+
+@node office.enter
+place: office
+cost: 2
+nar: The office: ledgers of the town balance, a desk, a pneumatic tube that ends in a brass mouth on the wall, and a cabinet with a drawer marked BOARD, WORKS.
+opt: "Read the drawer marked WORKS." -> office.order ? !has(works.order)
+opt: "Look at the pneumatic tube." -> office.tube
+opt: "Leave." -> weigh.outside
+
+@node office.order
+cost: 5
+set: works.order
+nar: A works order, seven months old. Gullet Head Light: supply to be transferred from the Light's own feeder to the Lamp Quay board, weigh-house, for economy and automatic operation at dusk. Approved: O. Crake, for the Trust. Signed: A. Keel, for the Board.
+nar: Pinned behind it, the engineer's specification. One clause is crossed out in yellow ink: "After any interruption of supply the arc shall be restruck by the keeper on duty at the lamp-room panel." In the margin, in the same yellow: "No keeper. Saving."
+inst: CANDLEMAS: Yellow ink. She writes in the one colour that disappears under her own lamps.
+go: office.enter
+
+@node office.tube
+cost: 2
+nar: The tube's brass mouth is cold. A card is tucked behind it in a child's careful hand: TUBE MINDED BY P. GANNET, 1s A WEEK. Underneath, a strip of paper from the Shelf, typed, the letter e sticking all through it.
+nar: "Shelf requires provisional cause by midnight. Chits honoured till dawn. Shelf regrets nothing."
+go: office.enter
+
+# ---------------------------------------------------------------- the blackout
+@node blackout.pull
+place: weigh_out
+cost: 2
+set: blackout
+cmd: setPower quay off
+nar: The assessor pulls the handle down. It goes with a sound like a drawer of knives.
+nar: Lamp Quay goes out. The three lamps die to embers and then to nothing, and the houses that were one colour become no colour, and the fog is suddenly white instead of orange, and everyone on the quay stops talking at once and then starts again much more quietly.
+nar: Inside the weigh-house the singing stops. A man's voice says, "Was that us?"
+inst: CANDLEMAS: Dark. Two parts in a hundred. You are invisible now, and so is everyone else, and so is the edge of the quay.
+go: weigh.outside
+
+@node blackout.restore
+place: weigh_out
+cost: 2
+clear: blackout
+cmd: setPower quay on
+nar: The handle goes up. The quay lamps wake pink, as Fennick said, a raw pink like a cut, and begin the ten minutes it takes them to forget the colour of anything.
+go: weigh.outside
+
+# ---------------------------------------------------------------- the mole and Mother
+@node mole.walk
+place: mole
+cost: 3
+cmd: wet lamb 0.3
+nar: The mole runs out into the dark with the sea on both hands, a little lower than usual and a great deal louder. Spray comes over the windward side in sheets. The assessor's left side, which had begun to dry, gives up.
+alt: mole.walk.rain ? rain > 0.5 & !has(damp.saturated)
+alt: mole.walk.fog ? fog > 0.05
+go: lamp.door
+
+@node mole.walk.rain
+cost: 1
+set: damp.saturated
+nar: Spray from the left, rain from the right, and the assessor in the middle like a letter in a puddle.
+inst: THE DAMP: Saturated. I can't tell you a wet thing from a dry one until a fire's had me.
+alt: mole.walk.fog ? fog > 0.05
+go: lamp.door
+
+@node mole.walk.fog
+cost: 1
+nar: In the fog the mole has no end. Mother is a shape above the fog, a great swollen head on a stalk, looking at nothing.
+go: lamp.door
+
+@node mole.walk.wenna
+place: mole
+cost: 5
+cmd: wet lamb 0.3
+nar: They walk the mole together. Wenna is slow and does not take the assessor's arm. Spray comes over and soaks her oilskin on the windward side in the first twenty yards. Now it is a coat that has walked the mole.
+line: WENNA: There. Now I've been.
+go: lamp.door
+
+@node lamp.door
+place: lamproom
+cost: 6
+nar: A hundred and twelve stairs. The assessor counts them going up, and understands something about the keeper by the ninetieth.
+nar: The lamp room is a glass drum with the night all round it. In the middle, on a brass pedestal, stands the lens: a beehive of glass rings taller than a man, every ring a prism, and in its heart the arc, dead.
+alt: lamp.wenna ? has(wenna.confessed) & at(lamproom)
+go: lamp.menu
+
+@node lamp.wenna
+cost: 2
+line: WENNA: There she is. Don't touch her. I'll touch her.
+nar: Wenna puts her hand flat on the bottom ring, the way you put a hand on a horse.
+go: lamp.menu
+
+@node lamp.menu
+opt: "Read the panel on the wall." -> lamp.panel ? !has(panel.restrike)
+opt: "Read the log on the desk." -> lamp.log ? !has(log.ahead)
+opt: "Restrike the arc." -> lamp.restrike ? has(panel.restrike) & mother == dark & power.quay == on
+opt: "The quay switch is down. Nothing here will light." -> lamp.nopower ? power.quay == off
+opt: "Look at the lens." -> lamp.lens ? !has(lens.green)
+opt: "Go back down to the quay." -> lamp.down
+
+@node lamp.panel
+cost: 3
+set: panel.restrike
+nar: A brass panel, a red button the size of a coin, and a card under glass, typed by an engineer who believed in buttons: RESTRIKE REQUIRED. If the arc is hot when supply returns, the lamp will not relight of itself. Press and hold for five seconds. KEEPER TO ATTEND AFTER ANY LOSS OF SUPPLY.
+inst: CANDLEMAS: The arc has been cold for an hour. Press it now and she will light. Press it at ten o'clock and she would have lit then.
+go: lamp.menu
+
+@node lamp.log
+cost: 4
+set: log.ahead
+nar: The log lies open on the desk. Every night a line in a round hand: lit at dusk, all well, extinguished at dawn. Tonight's line is there: "Lit 19.12. All well." So is tomorrow's. So is every night to the end of the month.
+read: damp log.ink
+inst: THE DAMP: Same ink, same day. Somebody sat down once and wrote a month of nights.
+go: lamp.menu
+
+@node lamp.nopower
+cost: 1
+nar: The panel's pilot light is out. The quay switch takes Mother with it; the assessor knows that now in the hands as well as on paper.
+go: lamp.menu
+
+@node lamp.lens
+cost: 3
+alt: lamp.lens.lit ? mother == burning
+nar: In the dark the lens is a hive of grey glass. Candlemas will not commit.
+inst: CANDLEMAS: Give me light inside it and I will tell you what it's made of. Glass keeps its secrets in the dark like everyone else in this town.
+go: lamp.menu
+
+@node lamp.lens.lit
+cost: 3
+set: lens.green
+nar: Lit from inside, the lens is a beehive of light, ring above ring. And a third of the rings are green. Not tinted. Green: the green of a bottle in a hedge, the green of the Brine's corner, the green of the thing in the oven.
+inst: CANDLEMAS: Crown glass, crown glass, bottle, crown, bottle, bottle, crown. I could weep. I won't. Someone has to keep counting.
+go: lamp.menu
+
+@node lamp.restrike
+cost: 3
+set: mother.relit
+cmd: restrike mother
+cmd: addRumour mother_lit quay 0.5
+nar: The assessor presses the red button and holds it, and counts five, as the card says, in the voice the assessor uses for counting money.
+nar: Something in the pedestal ticks. Then the arc catches, with a sound like a breath taken in through teeth, and the lens fills from the inside, and the lamp room is suddenly too bright to stand in.
+nar: The beam goes out over the fog and lies on it. It turns, slowly, a great blade the fog cannot decide whether to hold or to let pass. Below, on the quay, people come out of doors to look, and the assessor can hear, very faintly, a Guild cheer.
+alt: lamp.restrike.wenna ? has(wenna.confessed)
+go: lamp.menu
+
+@node lamp.restrike.wenna
+cost: 2
+line: WENNA: There she is. Look at her. She's green. You can see it now, from in here. Every ship from here to Hesk can see it.
+line: WENNA: I kept her lit. Nobody said I had to keep her honest.
+go: lamp.menu
+
+@node lamp.down
+place: quay
+cost: 6
+nar: A hundred and twelve stairs, counted the other way. The quay at the bottom is where the assessor left it, slightly wetter.
+go: hub
+
+# ---------------------------------------------------------------- midnight: the provisional cause
+@node midnight
+place: weigh_out
+cost: 0
+nar: Midnight. Somewhere in the weigh-house a brass mouth coughs, and a cylinder drops into its basket with the sound of a cork. The Shelf requires a provisional cause.
+nar: The assessor opens the Daybook under whatever light there is, and reads back what the night has given.
+alt: midnight.relit ? mother == burning
+go: midnight.choose
+
+@node midnight.relit
+cost: 0
+nar: Over the quay, Mother's beam turns, green at its edges if anyone knows to look, and some do now.
+go: midnight.choose
+
+@node midnight.choose
+opt: "Provisional cause: malicious darkening by wreckers, as claimed." -> end.wreckers
+opt: "Provisional cause: the Guild's interference with the quay switch." -> end.guild ? has(marrow.switch) | (has(scales.switch) & has(lamps.pink))
+opt: "Provisional cause: the Trust's rewiring, without the keeper the specification required; the Board's foreknowledge." -> end.trust ? has(works.order) & has(panel.restrike)
+opt: "Provisional cause: the keeper's absence, and a lens that is not the lens insured." -> end.keeper ? (has(coat.wenna_dry) | has(tab.wenna) | has(wenna.confessed)) & (has(prism.green_oven) | has(lens.green) | has(prism.numbered))
+opt: "Provisional cause: none yet. The Shelf may wait for dawn." -> end.wait
+
+@node end.wreckers
+cost: 0
+cmd: addRumour verdict_wreckers quay 0.6
+nar: The assessor writes: malicious darkening, by persons of the Low Company. The pen does not hesitate. The assessor's hand does, a little, at the end of the word "malicious", where the ink pools.
+nar: The cylinder goes back up the tube. On the quay, Keel stands in his puddle and does not smile, because the Board does not smile. Out on the floor, under water now, the drowned lamp's lantern goes out.
+end: wreckers
+
+@node end.guild
+cost: 0
+cmd: addRumour verdict_guild quay 0.6
+nar: The assessor writes: interference with municipal supply by members of the Worshipful Guild of the Gut, on the occasion of their annual vote.
+nar: In the weigh-house the singing does not stop at once. It runs down, like a clock nobody has wound, and then a single voice keeps on for a line by itself, and then that stops too.
+end: guild
+
+@node end.trust
+cost: 0
+cmd: addRumour verdict_trust quay 0.6
+nar: The assessor writes: loss caused by the transfer of the Light's supply to the quay board without notice to its users, and by the removal of the keeper whom the specification required; aggravated by the Board's knowledge of the hour, filed in advance as a claim.
+nar: The cylinder goes up the tube. Within a minute the telephone in the harbour office begins to ring, and does not stop, and the harbourmaster stands in the doorway and does not answer it, and drips.
+end: trust
+
+@node end.keeper
+cost: 0
+cmd: addRumour verdict_keeper quay 0.6
+nar: The assessor writes: the keeper absent from her post, and the lens of the Light not the lens insured, its prisms replaced over years with cast bottle glass.
+nar: In the Brine, Sabine takes the slate down and wipes it with her sleeve, the whole thing, every column, and hangs it back up clean, and pours two drinks, and does not charge for either.
+end: keeper
+
+@node end.wait
+cost: 0
+set: chits.refused
+nar: The assessor writes: cause under investigation; verdict to follow at dawn. It is the truth, and it is the least useful thing a person can send up a tube.
+nar: Ten minutes later a cylinder comes back. Typed, the e sticking: "Shelf notes delay. Chits suspended until verdict." At the Brine, Sabine reads a copy that somebody has already carried over, and looks at the assessor, and adds the eleven minutes on without thinking.
+end: wait
+
+@fact chits.refused
+about: The Shelf has suspended the assessor's chits until a verdict is sent.

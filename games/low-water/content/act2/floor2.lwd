@@ -1,0 +1,274 @@
+# The Floor, Night 2: Second Water. District file floor2.lwd. Writing helper, 2026-10-17. Private.
+# On foot 23:22 to 00:10 (low water 23:46, -0.42); the gully behind the Old Light wadeable about
+# 23:30 to 00:02. The gate: raising the copper Lamb sank on Low Night (floor.copper_sunk,
+# floor.cork_short), five routes, then its sale (a2.copper). Also: the fish's fate, the Spit's
+# lanterns far out, the drowned lamp dark, the Low Company by the cause.
+
+# ---- new ids
+@fact floor2.found
+@fact floor2.slack
+@fact floor2.raised
+@fact floor2.parted
+@fact floor2.unseen
+@fact floor2.cockle_cold
+
+@var floor2.sale
+default: none
+values: none, lowco, wires, trust, boat, sea
+about: Where Merrow's copper went on Night 2 (a2.copper).
+
+# ---------------------------------------------------------------- the hub
+@node floor2.hub
+place: floor
+hub: yes
+alt: floor2.notyet ? clock < 23:22
+alt: floor2.closed ? clock >= 00:10
+alt: floor2.first ? !seen(floor2.first)
+nar: Stars. Far out, lanterns move on two barges lying on the Spit.
+nar: Two boys are working a gaff in the gully, for the Company. {when: var.quay2.boat == copper}
+nar: Two Lamplighters watch from the steps. {when: !has(book.violence)}
+nar: Four Lamplighters watch from the steps. {when: has(book.violence)}
+opt: "Go out to the gully behind the Old Light." -> floor2.gully ? has(floor.copper_sunk) & !has(floor2.raised) & var.floor2.sale == none & var.quay2.boat != copper +3 {verb: wade, noise: 0.1}
+opt: "Go to Nan Cockle on her bucket." -> floor2.cockle +1
+opt: "Go to where the fish was." -> floor2.fish ? !seen(floor2.fish) +1
+opt: "Go back up the steps." -> quay2.hub +3
+
+@node floor2.notyet
+place: steps
+cost: 1
+nar: The lowest steps are still under water.
+go: quay2.hub
+
+@node floor2.closed
+place: steps
+cost: 1
+nar: The water is back over the floor. {when: !has(floor2.raised) & has(floor.copper_sunk) & var.floor2.sale == none & var.quay2.boat != copper}
+nar: Somewhere under it, a sack on a line. {when: !has(floor2.raised) & has(floor.copper_sunk) & var.floor2.sale == none & var.quay2.boat != copper}
+nar: The water is back over the floor. {when: has(floor2.raised) | !has(floor.copper_sunk) | var.floor2.sale != none | var.quay2.boat == copper}
+go: quay2.hub
+
+@node floor2.first
+place: floor
+cost: 2
+if: has(floor.copper_sunk) => quest(a2.copper, open)
+nar: The Old Light's base stands clear of the water. Nothing burns in the hole.
+nar: Fewer families tonight. All of them look at the Shelf's coat.
+go: floor2.hub
+
+# ---------------------------------------------------------------- the fish, by Act 1
+@node floor2.fish
+place: fish
+cost: 2
+nar: The fish's trough runs to the channel, smooth as a sledge track. Dilly Rudd stands at the end of it with her slate. {when: var.fish == turned}
+line: DILLY: Not you. You stand free. {when: var.fish == turned & var.tab_dilly == 1}
+line: DILLY: Farthing. Children half. Guild double. {when: var.fish == turned & var.tab_dilly != 1}
+nar: The fish's bones in the scour, picked white. {when: var.fish == gulls}
+nar: Where the fish lay: a scraped patch, and a Guild mark on a stone. {when: var.fish == eaten}
+go: floor2.hub
+
+# ---------------------------------------------------------------- Nan Cockle, and the Low Company by the cause
+@node floor2.cockle
+place: fish
+cost: 2
+alt: floor2.cockle.cold ? has(cause.wreckers) & var.tab_cockle != 1 & guise != floor
+nar: Nan Cockle on her bucket, in two coats.
+line: COCKLE: Six low ones in my life, and two of them in a row. Never had that.
+line: COCKLE: Tub sank something here, he says, with the Shelf's help. The Company knows where everything on the floor is, child. {when: has(floor.copper_sunk) & !has(floor2.raised) & var.quay2.boat != copper}
+line: COCKLE: You've the floor on you again. Good. {when: guise == floor}
+opt: "Can the Company raise it?" -> floor2.cockle.raise ? has(floor.copper_sunk) & !has(floor2.raised) & var.floor2.sale == none & var.quay2.boat != copper & clock >= 23:30 & clock < 00:02
+opt: "Leave her be." -> floor2.hub
+
+@node floor2.cockle.cold
+place: fish
+cost: 1
+do: set(floor2.cockle_cold)
+nar: Nan Cockle turns her bucket round, her back to the Shelf.
+line: COCKLE: Tub's in the Board's cells on your word. The floor's not speaking to you tonight.
+go: floor2.hub
+
+# Tongue route: the Company raises it, for terms.
+@node floor2.cockle.raise
+place: fish
+cost: 2
+line: COCKLE: The Company can raise anything the Company sank. Tub sank it. So the Company sells it. Those are the terms.
+line: COCKLE: You'll want to argue. Everybody does, the first few low ones.
+opt: "The Company's terms. Raise it." -> floor2.cockle.lift {do: floor2.sale = lowco}
+check: "[THE CHIT] Agree the terms, less two lengths of wire for the Gut's dark lamps." -> floor2.cockle.lift.wires / floor2.cockle.raise.fail {skill: chit, dc: 6}
+opt: "Not on those terms." -> floor2.cockle
+
+@node floor2.cockle.raise.fail
+place: fish
+cost: 1
+line: COCKLE: Wire for the Guild's lamps. Out of Tub's sack. You've a nerve, child, and it's not worth two lengths. The terms stand.
+go: floor2.cockle.raise
+
+@node floor2.cockle.lift.wires
+place: fish
+cost: 1
+do: floor2.sale = wires
+line: COCKLE: Two lengths. And you tell Marrow Dunlin where they came from.
+go: floor2.cockle.lift
+
+@node floor2.cockle.lift
+place: gully
+cost: 6
+do: set(floor2.raised); quest(a2.copper, gone); rep(lowco, 1)
+if: var.floor2.sale == wires => give(s.copper_wire, 2)
+nar: She puts the gaff into the gully without a lantern and brings up the line first try. Two boys haul, and the sack goes away on a handcart.
+go: floor2.hub
+
+# ---------------------------------------------------------------- the gate: the copper under the gully
+@node floor2.gully
+place: gully
+cost: 1
+alt: floor2.gully.early ? clock < 23:30
+alt: floor2.gully.late ? clock >= 00:02
+nar: The gully behind the Old Light, slow and black. The cork sits where it was left. {when: !has(floor.cork_short) | has(floor2.found)}
+nar: The gully behind the Old Light, slow and black. No cork. {when: has(floor.cork_short) & !has(floor2.found)}
+voice: salt: The water will be at its lowest at a quarter to midnight, and still for a minute either side. {dc: 5}
+check: "[SUM] Reckon where the cork lies: the line you cut, tonight's low, the hinge-pin as a mark." -> floor2.reckon / floor2.reckon.fail ? has(floor.cork_short) & !has(floor2.found) {skill: sum, dc: 5, verb: read, noise: 0}
+opt: "Wait for slack water, when the line hangs straight." -> floor2.slack ? (!has(floor.cork_short) | has(floor2.found)) & !has(floor2.slack) & clock < 23:46 {verb: wait, noise: 0}
+opt: "Haul it hand over hand at slack water." -> floor2.haul ? has(floor2.slack) & clock >= 23:41 & clock < 23:52 {verb: salvage, noise: 0.2}
+check: "[GRIP] Hook the line under the cork with the boathook and haul." -> floor2.hook / floor2.hook.fail ? count(w.boathook) > 0 & (!has(floor.cork_short) | has(floor2.found)) & !has(floor2.parted) {skill: grip, dc: 5, verb: salvage, noise: 0.2}
+check: "[KNEES] Wade in to the chest, find the sack and lift it." -> floor2.lift / floor2.lift.fail ? !has(floor.cork_short) | has(floor2.found) | has(floor2.parted) {skill: knees, dc: 6, verb: carry, noise: 0.4}
+check: "[KNEES] Wade in and feel for the line with your feet." -> floor2.lift / floor2.lift.fail ? has(floor.cork_short) & !has(floor2.found) & !has(floor2.parted) {skill: knees, dc: 7, verb: carry, noise: 0.4}
+check: "[THE DARK] Douse the lantern and haul in the tower's shadow, out of the Lamplighters' sight." -> floor2.dark / floor2.dark.fail ? (!has(floor.cork_short) | has(floor2.found)) & !has(floor2.parted) {skill: dark, dc: 6, verb: douse, noise: 0.1}
+opt: "Leave it on the bottom." -> floor2.hub
+
+@node floor2.gully.early
+place: gully
+cost: 1
+nar: Still too deep behind the tower. The water is going out like a debt paid in farthings.
+go: floor2.hub
+
+@node floor2.gully.late
+place: gully
+cost: 1
+nar: The gully is filling again.
+go: floor2.hub
+
+# Eye
+@node floor2.reckon
+place: gully
+cost: 4
+do: set(floor2.found)
+nar: From the hinge-pin, along the tower's lean: the cork, a hand under, where the sum said.
+go: floor2.gully
+
+@node floor2.reckon.fail
+place: gully
+cost: 8
+do: meter(cold, 1)
+nar: The wrong pin. Eight minutes along black water with nothing in it.
+line: COCKLE: Other pin, child. The one with the green paint. {when: !has(floor2.cockle_cold)}
+go: floor2.gully
+
+@node floor2.slack
+place: gully
+cost: 6
+do: set(floor2.slack); meter(cold, 1)
+nar: The cork stops. The line under it goes straight down.
+go: floor2.gully
+
+@node floor2.haul
+place: gully
+cost: 5
+do: set(floor2.raised); give(i.copper_sack); wet(0.3); meter(cold, 1)
+nar: Hand over hand. The sack comes up streaming.
+go: floor2.raised
+
+# Hands
+@node floor2.hook
+place: gully
+cost: 4
+do: set(floor2.raised); give(i.copper_sack); wet(0.2); meter(cold, 1)
+nar: The hook takes the line. The assessor walks backward up the mud, and the sack comes after.
+go: floor2.raised
+
+@node floor2.hook.fail
+place: gully
+cost: 3
+do: set(floor2.parted); meter(cold, 1)
+nar: The line parts at the knot. The cork goes away down the gully.
+go: floor2.gully
+
+# Fist
+@node floor2.lift
+place: gully
+cost: 5
+do: set(floor2.raised); give(i.copper_sack); wet(1); damp_wet = 1; meter(cold, 3)
+nar: Into the gully to the chest. Both hands on the neck of the sack, and out, with a hundredweight of copper.
+go: floor2.raised
+
+@node floor2.lift.fail
+place: gully
+cost: 5
+do: wet(1); damp_wet = 1; meter(cold, 3)
+nar: The sack gets to the shallows and no further.
+line: COCKLE: Sit there before you drown in a foot of water, child. I'll send the boys. Company terms. {when: !has(floor2.cockle_cold)}
+opt: "Call to Nan Cockle for a hand." -> floor2.cockle.raise ? !has(floor2.cockle_cold)
+opt: "Try again when your breath comes back." -> floor2.gully
+
+# Shadow
+@node floor2.dark
+place: gully
+cost: 6
+do: set(floor2.raised); set(floor2.unseen); give(i.copper_sack); wet(0.4); meter(cold, 1); meter(dread, 1)
+nar: Lantern out. A yard at a time in the tower's shadow. Nobody on the steps sees.
+go: floor2.raised
+
+@node floor2.dark.fail
+place: gully
+cost: 3
+do: set(floor2.raised); set(book.copper); floor2.sale = trust; copper = returned; quest(a2.copper, gone); rep(lowco, -1)
+nar: A bull's-eye opens on the steps and holds the assessor and the sack.
+line: STRAND: Trust property, that. Thank you, assessor. We'll carry it.
+go: floor2.hub
+
+# ---------------------------------------------------------------- the sale
+@node floor2.raised
+place: gully
+cost: 1
+nar: The sack on the mud, frosting.
+opt: "Take it to Nan Cockle for the Company." -> floor2.sale.lowco ? !has(floor2.cockle_cold) {verb: carry, noise: 0.3}
+opt: "Keep two lengths for the Gut's dark lamps, and give the Company the rest." -> floor2.sale.wires ? !has(floor2.cockle_cold) {verb: carry, noise: 0.3}
+opt: "Carry it up the steps to the Lamplighters. It is the Trust's property." -> floor2.sale.trust {verb: carry, noise: 0.6}
+opt: "Keep it. A sack of copper buys a boat." -> floor2.sale.boat
+opt: "Put it back in the gully and let the sea keep it." -> floor2.sale.sea {verb: throw, noise: 0.3}
+
+@node floor2.sale.lowco
+place: fish
+cost: 4
+do: floor2.sale = lowco; take(i.copper_sack); quest(a2.copper, gone); rep(lowco, 2)
+if: !has(cause.wreckers) => seenas_lowco = ours
+line: COCKLE: Tub said you'd do one of two things. He didn't say which.
+line: COCKLE: The Company'll not forget it. Nor will I, and I'm the one that counts.
+go: floor2.hub
+
+@node floor2.sale.wires
+place: fish
+cost: 4
+do: floor2.sale = wires; take(i.copper_sack); give(s.copper_wire, 2); quest(a2.copper, gone); rep(lowco, 1)
+line: COCKLE: Two lengths for the Guild's lamps. Out of Tub's sack. You tell Marrow Dunlin where they came from.
+go: floor2.hub
+
+@node floor2.sale.trust
+place: steps
+cost: 5
+do: floor2.sale = trust; copper = returned; take(i.copper_sack); quest(a2.copper, gone); rep(trust, 1); rep(lowco, -2); set(book.copper)
+line: STRAND: Trust property. Writes itself down, this does.
+go: quay2.hub
+
+@node floor2.sale.boat
+place: gully
+cost: 1
+do: floor2.sale = boat; quest(a2.copper, gone)
+line: LAMB: A hundredweight of copper. On the quay tonight that's a boat.
+go: floor2.hub
+
+@node floor2.sale.sea
+place: gully
+cost: 2
+do: floor2.sale = sea; take(i.copper_sack); quest(a2.copper, gone)
+nar: The sack goes back into the gully.
+go: floor2.hub

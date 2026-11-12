@@ -1,0 +1,149 @@
+{
+ "place": "weigh",
+ "version": 2,
+ "width": 1328,
+ "height": 960,
+ "camera": {
+  "yawDeg": 42,
+  "elevDeg": 33,
+  "target": [
+   -0.3,
+   1.9,
+   -0.6
+  ],
+  "dist": 30,
+  "ortho": true,
+  "scale": 6.315789473684211
+ },
+ "pxPerMetre": 76,
+ "near": 0.6917,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 23.4,
+   "weather": "the after-vote, 23:30: four lamps, the quay's sodium through the louvre"
+  }
+ },
+ "dark": true,
+ "walk": [
+  26,
+  31
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "pans",
+    "verb": "weigh",
+    "at": [
+     0,
+     0,
+     1.2
+    ],
+    "note": "the voting pans; weigh the vote fish (W:612)"
+   },
+   {
+    "id": "weighbridge_book",
+    "verb": "read",
+    "at": [
+     4.4,
+     0,
+     -1.3
+    ],
+    "note": "the weighbridge book on its chain (W:613)"
+   },
+   {
+    "id": "store",
+    "verb": "pry",
+    "at": [
+     -3.6,
+     0,
+     -4.1
+    ],
+    "note": "the Board's store, padlocked: weights, chain, the hammer, a boathook (W:942)"
+   },
+   {
+    "id": "quay_board",
+    "verb": "cutpower",
+    "at": [
+     2.05,
+     0,
+     -4.4
+    ],
+    "note": "the quay board, a slate face with a fuse (W:2166)"
+   },
+   {
+    "id": "tube",
+    "verb": "read",
+    "at": [
+     -4.9,
+     0,
+     -3.4
+    ],
+    "note": "the tube terminus: brass mouth, wire basket, stool, lamp (W:1228)"
+   }
+  ],
+  "hides": [
+   {
+    "id": "store_corner",
+    "at": [
+     -4.6,
+     0,
+     -3
+    ],
+    "r": 0.6,
+    "note": "the dark corner by the store"
+   },
+   {
+    "id": "under_trestle",
+    "at": [
+     -3.2,
+     0,
+     2.2
+    ],
+    "r": 0.7,
+    "note": "under a trestle"
+   }
+  ],
+  "exits": [
+   {
+    "id": "quay",
+    "at": [
+     3.4,
+     0,
+     -4.2
+    ],
+    "note": "the door to the quay"
+   }
+  ],
+  "lamps": []
+ },
+ "notes": "The after-vote. The Guild are drawn by the game (no baked crowd). The blackout keeps Pip's lamp at the tube, the louvre and the door crack."
+}

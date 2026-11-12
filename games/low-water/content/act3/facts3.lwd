@@ -1,0 +1,108 @@
+# Low Water, Act 3: evidence and shared flags. Director's file, 2026-10-17. Private.
+# The Shelf's equivalents (ACT3-PLAN section 4): any two of typist.heard (Act 2),
+# ropewalk.notice_matched (Act 2), hester.seen_typing, hester.told, crake.drafts, pip.told.
+
+@fact hester.seen_typing
+about: Hester Gannet at the Shelf's machine in the back room on the Ropewalk, typing, the e coming down late.
+by: Lamb's own eyes
+
+@fact hester.told
+about: Hester Gannet has typed the Shelf's Gullet replies since the Shelf failed, eleven years ago, and paid its small claims at the usual rate.
+by: testimony
+
+@fact crake.drafts
+about: Inside the Alderman's crossword letters to Hester Gannet, banker's drafts: the Trust has paid to keep the Shelf alive.
+against: trust 20
+by: reading
+
+@fact pip.told
+about: Pip knows who types the Shelf, and has known for some time.
+by: testimony
+
+@fact e.matched
+about: The Shelf's strips and the engineer's specification were typed on the same machine: the same bent e. The Trust's old office typewriter is on the Ropewalk.
+against: trust 15
+by: SMALL PRINT
+
+@fact wreckers.real
+about: On the night of the gale, people went up the mole to put Mother out so that a collier would come onto the Spit. Lamb saw them and knows them.
+by: Lamb's own eyes
+
+@fact lowroom.soot
+about: In the low room of the Old Light, a lamp bracket with soot on it that is not old. No lantern, no wick, no oil.
+by: Lamb's own eyes
+
+@fact damp.dry
+about: In the low room of the Old Light, under the sea, the Damp strung with Keel's hair read dry.
+by: the Damp
+
+@fact collier.through
+about: The Ellen Varty came through the dog-leg in the gale on the lights the town kept.
+by: the night
+
+@fact collier.spit
+about: The Ellen Varty came onto the Spit in the gale.
+by: the night
+
+@fact surge.held
+about: The surge stopped at the Brine's step.
+by: the Almanac
+
+@fact wenna.asked
+about: Wenna asked Lamb to sit with Mother through the gale if she cannot.
+by: testimony
+
+@fact vote.keeper_paid
+about: The town voted to pay a keeper for Mother.
+by: the town
+
+# state flags
+@fact ev3.dusk
+@fact ev3.gale
+@fact ev3.vote_called
+@fact ev3.boats_last
+@fact ev3.eye
+@fact ev3.eye_seen
+@fact ev3.eye_ends
+@fact ev3.backed
+@fact ev3.collier_seen
+@fact ev3.wreckers_climb
+@fact ev3.collier_turn
+@fact ev3.surge
+@fact oldlight.line_rigged
+@fact met.hester
+@fact met.varty
+
+# ids dawn3 reads (set by the districts)
+@fact letter.kept_open
+about: The Alderman's letter to Hester Gannet, after Low Night: keep 4471/G open; further loss is expected in the gale, and one open claim is cheaper than two.
+against: trust 20
+by: reading
+
+@fact loss3.mother
+about: In the gale, Mother was put out.
+by: the night
+
+@fact loss3.lamp
+about: In the gale, a lamp the town had chosen to keep alight was put out by hand.
+by: the night
+
+@fact mole3.crown_fitted
+@fact mole3.bulb_fitted
+@fact oldlight.lanterns
+@fact ropewalk3.offered
+@fact gale.lamps_held
+
+# B1, the gale lamps (ACT3-PLAN 6, editor A10): three moments act-wide, one per rain band, each for
+# one chosen lamp. A district's lamp moment plays only if its band flag is unset, and sets it.
+@fact b1.band1
+@fact b1.band2
+@fact b1.band3
+# A chosen gale lamp that went out sets its flag (dawn3's epilogue reads them).
+@fact lampout.steps
+@fact lampout.porthole
+@fact lampout.gut
+@fact lampout.balance
+@fact lampout.hill
+@fact lampout.bulb
+@fact lampout.mother

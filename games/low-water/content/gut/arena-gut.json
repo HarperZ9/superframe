@@ -1,0 +1,253 @@
+{
+ "name": "gut",
+ "place": "gut",
+ "cell": 1,
+ "origin": [
+  0,
+  0
+ ],
+ "rows": [
+  "AABBBBAAAACCCCCD",
+  "EEFFFFEEEEGGGGGH",
+  "IJIIIKKLLMNOOOPI",
+  "QQQJJJJRRROPOPPP",
+  "QJJSSSSRRSRRROOO",
+  "KJJJSSTRRRUOOMPV",
+  "WWWWWWWRRRXOOXPP",
+  "WWWWWWWRRRNOOOPP"
+ ],
+ "legend": {
+  "A": {
+   "surface": "stone",
+   "h": 11.5,
+   "solid": true
+  },
+  "B": {
+   "surface": "stone",
+   "h": 11.8,
+   "solid": true
+  },
+  "C": {
+   "surface": "stone",
+   "h": 12.2,
+   "solid": true
+  },
+  "D": {
+   "surface": "stone",
+   "h": 11.2,
+   "solid": true
+  },
+  "E": {
+   "surface": "stone",
+   "h": 11,
+   "solid": true
+  },
+  "F": {
+   "surface": "stone",
+   "h": 11.3,
+   "solid": true
+  },
+  "G": {
+   "surface": "stone",
+   "h": 11.7,
+   "solid": true
+  },
+  "H": {
+   "surface": "stone",
+   "h": 10.7,
+   "solid": true
+  },
+  "I": {
+   "surface": "stone",
+   "h": 8.8,
+   "solid": true
+  },
+  "J": {
+   "surface": "stone",
+   "h": 5.6
+  },
+  "K": {
+   "surface": "stone",
+   "h": 5.7,
+   "solid": true
+  },
+  "L": {
+   "surface": "stone",
+   "h": 6.6,
+   "solid": true
+  },
+  "M": {
+   "surface": "stone",
+   "h": 6.5,
+   "solid": true
+  },
+  "N": {
+   "surface": "stone",
+   "h": 5.9,
+   "solid": true
+  },
+  "O": {
+   "surface": "stone",
+   "h": 5.9
+  },
+  "P": {
+   "surface": "stone",
+   "h": 6
+  },
+  "Q": {
+   "surface": "stone",
+   "h": 5.5
+  },
+  "R": {
+   "surface": "stone",
+   "h": 5.8
+  },
+  "S": {
+   "surface": "stone",
+   "h": 5.7
+  },
+  "T": {
+   "surface": "stone",
+   "h": 8.9,
+   "solid": true
+  },
+  "U": {
+   "surface": "stone",
+   "h": 6.6
+  },
+  "V": {
+   "surface": "stone",
+   "h": 8.5,
+   "solid": true
+  },
+  "W": {
+   "surface": "stone",
+   "h": 6.2,
+   "solid": true
+  },
+  "X": {
+   "surface": "stone",
+   "h": 6.8,
+   "solid": true
+  }
+ },
+ "water": null,
+ "lights": [
+  {
+   "x": 5,
+   "z": 4,
+   "r": 5,
+   "k": 0.47,
+   "group": "lamp"
+  },
+  {
+   "x": 13,
+   "z": 4,
+   "r": 5,
+   "k": 0.47,
+   "group": "lamp"
+  },
+  {
+   "x": 4.4,
+   "z": 2.5,
+   "r": 4,
+   "k": 0.41,
+   "group": "lamp"
+  },
+  {
+   "x": 14.2,
+   "z": 5.5,
+   "r": 4,
+   "k": 0.41,
+   "group": "lamp"
+  }
+ ],
+ "exits": [
+  [
+   0,
+   3,
+   0.8,
+   5
+  ],
+  [
+   15.2,
+   3,
+   16,
+   8
+  ]
+ ],
+ "tideEnds": false,
+ "anchors": {
+  "cut": [
+   [
+    5,
+    4
+   ],
+   [
+    13,
+    4
+   ],
+   [
+    4.4,
+    2.5
+   ],
+   [
+    14.2,
+    5.5
+   ]
+  ],
+  "lamp": [
+   [
+    5,
+    4
+   ]
+  ],
+  "snare": [
+   [
+    9,
+    4
+   ]
+  ],
+  "sluice": []
+ },
+ "spawns": {
+  "lamb": [
+   7.5,
+   5.5
+  ],
+  "foes": [
+   [
+    4.5,
+    3.5
+   ],
+   [
+    11.5,
+    2.5
+   ],
+   [
+    7.5,
+    3.5
+   ],
+   [
+    2.5,
+    3.5
+   ]
+  ]
+ },
+ "light": {},
+ "stage": {
+  "line": "arena: gut -8 -6.2 -4 0",
+  "note": "the arena's (0, 0) at world (x0, z0); y is world y = 0 because stage.toWorld adds the arena height, so the game should pass the world height for each cell (inverse of h)",
+  "heightToWorld": "y = h - 6.2"
+ },
+ "source": {
+  "plate": "content/gut",
+  "rect": [
+   -8,
+   -4,
+   16,
+   8
+  ],
+  "made": "render/tools/arena_from_plate.mjs"
+ }
+}

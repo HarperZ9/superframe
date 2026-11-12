@@ -1,0 +1,1564 @@
+{
+ "place": "floor",
+ "version": 2,
+ "width": 4000,
+ "height": 2400,
+ "camera": {
+  "yawDeg": 26,
+  "elevDeg": 40,
+  "target": [
+   -2.5,
+   -3,
+   6
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 15
+ },
+ "pxPerMetre": 80,
+ "near": 2.0833,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night",
+  "rain"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 22.9,
+   "weather": "Night 1, 22:20 to 23:20: clear, low water -0.55 m, the walkers' lanterns"
+  },
+  "rain": {
+   "hour": 23.7,
+   "weather": "23:35 to 23:50: light rain on the prints, the gully filling"
+  }
+ },
+ "dark": true,
+ "dithers": [
+  "fog"
+ ],
+ "walk": [
+  6,
+  7,
+  10,
+  65,
+  9,
+  11,
+  3,
+  2
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "steps_post",
+    "verb": "light",
+    "at": [
+     -1.6,
+     0,
+     -0.45
+    ],
+    "note": "iron post, empty cage, wick door at its foot (Q:891)"
+   },
+   {
+    "id": "brine_door",
+    "verb": "enter",
+    "at": [
+     -6.6,
+     0,
+     -1.8000000000000003
+    ],
+    "note": "the Brine's front door"
+   },
+   {
+    "id": "brine_backdoor",
+    "verb": "bar",
+    "at": [
+     -12,
+     0,
+     -5
+    ],
+    "note": "the Brine's back door and the mangle (Q:2181)"
+   },
+   {
+    "id": "rain_butt_yard",
+    "verb": "douse",
+    "at": [
+     -12.4,
+     0,
+     -3.2
+    ],
+    "note": "the yard's rain butt (B:2034)"
+   },
+   {
+    "id": "quay_switch",
+    "verb": "cutpower",
+    "at": [
+     1.45,
+     0,
+     -2.5000000000000004
+    ],
+    "note": "QUAY: the switch box under the eave (W:366)"
+   },
+   {
+    "id": "weigh_office_window",
+    "verb": "pry",
+    "at": [
+     4.9,
+     0,
+     -2.5000000000000004
+    ],
+    "note": "the office window, no catch (W:987)"
+   },
+   {
+    "id": "weigh_door",
+    "verb": "enter",
+    "at": [
+     3.3,
+     0,
+     -2.5000000000000004
+    ],
+    "note": "the Board's door, brass padlock (W:252)"
+   },
+   {
+    "id": "weigh_drainpipe",
+    "verb": "climb",
+    "at": [
+     6.35,
+     0,
+     -2.6000000000000005
+    ],
+    "note": "the drainpipe to the roof (W:135)"
+   },
+   {
+    "id": "balance_lamp",
+    "verb": "light",
+    "at": [
+     3.4,
+     7.9,
+     -5.2
+    ],
+    "note": "l.balance: the balance lamp (W:558)"
+   },
+   {
+    "id": "cells_grating",
+    "verb": "pry",
+    "at": [
+     10.5,
+     0,
+     -2.3
+    ],
+    "note": "the cellar grating, two bolts and a padlock (Q:2462)"
+   },
+   {
+    "id": "office_door",
+    "verb": "enter",
+    "at": [
+     12.5,
+     0,
+     -2.3
+    ],
+    "note": "the harbour office door"
+   },
+   {
+    "id": "herring_barrel",
+    "verb": "climb",
+    "at": [
+     -1.5,
+     0,
+     -8.6
+    ],
+    "note": "drainpipe over a herring barrel under a window (Q:418)"
+   },
+   {
+    "id": "lantern_crate",
+    "verb": "salvage",
+    "at": [
+     9,
+     0,
+     -1.6
+    ],
+    "note": "five shuttered lanterns in a crate (Q:2158)"
+   },
+   {
+    "id": "mole_steps",
+    "verb": "enter",
+    "at": [
+     26.5,
+     0.35,
+     -3
+    ],
+    "note": "the mole steps under their caged lamp, the ferry's gangway (Q:1775)"
+   },
+   {
+    "id": "keeper_door",
+    "verb": "pry",
+    "at": [
+     34.1,
+     0.35,
+     -1.1
+    ],
+    "note": "the scab-coloured KEEPER door (M:238)"
+   },
+   {
+    "id": "hand_line",
+    "verb": "rig",
+    "at": [
+     -16,
+     -3.2,
+     6.5
+    ],
+    "note": "floor.handline: rib to rib, a bannister for the sea (F:309)"
+   },
+   {
+    "id": "tin_box",
+    "verb": "salvage",
+    "at": [
+     -15.2,
+     -3.2,
+     7.8
+    ],
+    "note": "the tin box between the ribs (F:284)"
+   },
+   {
+    "id": "drowned_nail",
+    "verb": "light",
+    "at": [
+     -12.4,
+     -3.244185477099967,
+     12.8
+    ],
+    "note": "l.drowned: the nail for a lantern (F:629)"
+   },
+   {
+    "id": "drowned_hole",
+    "verb": "climb",
+    "at": [
+     -13,
+     -3.244185477099967,
+     12.6
+    ],
+    "note": "the hole, a stone throat (F:886)"
+   },
+   {
+    "id": "lugg_rope",
+    "verb": "wade",
+    "at": [
+     4.6,
+     -3.2,
+     8.1
+    ],
+    "note": "Lugg's rope across the gully (F:428)"
+   }
+  ],
+  "hides": [
+   {
+    "id": "under_steps",
+    "at": [
+     -1.9,
+     -3.2,
+     3.2
+    ],
+    "r": 1,
+    "note": "the arch under the quay steps (Q:2467)"
+   },
+   {
+    "id": "yard_stack",
+    "at": [
+     -14.9,
+     0,
+     -5.800000000000001
+    ],
+    "r": 0.7,
+    "note": "behind the bottle stack"
+   },
+   {
+    "id": "eave_shadow",
+    "at": [
+     1.45,
+     0,
+     -2.4000000000000004
+    ],
+    "r": 0.6,
+    "note": "the eave's shadow at the switch box (W:990)"
+   },
+   {
+    "id": "office_doorway",
+    "at": [
+     12.5,
+     0,
+     -2.4999999999999996
+    ],
+    "r": 0.5,
+    "note": "the harbour office doorway (Q:1922)"
+   },
+   {
+    "id": "crates_east",
+    "at": [
+     18.6,
+     0,
+     -5.4
+    ],
+    "r": 0.6,
+    "note": "a nook behind the crates by the mole root"
+   },
+   {
+    "id": "crates_weigh",
+    "at": [
+     7.3,
+     0,
+     -6.8
+    ],
+    "r": 0.6,
+    "note": "between the weigh-house and the office"
+   },
+   {
+    "id": "mole_lee",
+    "at": [
+     30,
+     -0.050000000000000044,
+     0.8
+    ],
+    "r": 1,
+    "note": "the lee side, under the rail, on the weed ledge (M:201)"
+   },
+   {
+    "id": "fish_lee",
+    "at": [
+     -7.1,
+     -3.225357719336431,
+     5.799999999999999
+    ],
+    "r": 0.9,
+    "note": "the lee of the fish"
+   },
+   {
+    "id": "boat_lee",
+    "at": [
+     8.2,
+     -3.167873487208147,
+     5
+    ],
+    "r": 0.8,
+    "note": "the lee of the stranded boat"
+   }
+  ],
+  "exits": [
+   {
+    "id": "gut",
+    "at": [
+     -20.5,
+     0,
+     -10.6
+    ],
+    "note": "the mouth of the Gut"
+   }
+  ],
+  "lamps": [
+   {
+    "id": "gasholder",
+    "kind": "landmark",
+    "at": [
+     20,
+     16,
+     -37
+    ]
+   },
+   {
+    "id": "sodium_-24",
+    "kind": "sodium",
+    "at": [
+     -24,
+     4.45,
+     -1.3
+    ]
+   },
+   {
+    "id": "sodium_-17",
+    "kind": "sodium",
+    "at": [
+     -17,
+     4.45,
+     -1.3
+    ]
+   },
+   {
+    "id": "sodium_-10",
+    "kind": "sodium",
+    "at": [
+     -10,
+     4.45,
+     -1.3
+    ]
+   },
+   {
+    "id": "sodium_3.5",
+    "kind": "sodium",
+    "at": [
+     3.5,
+     4.45,
+     -1.3
+    ]
+   },
+   {
+    "id": "sodium_10.5",
+    "kind": "sodium",
+    "at": [
+     10.5,
+     4.45,
+     -1.3
+    ]
+   },
+   {
+    "id": "sodium_17.5",
+    "kind": "sodium",
+    "at": [
+     17.5,
+     4.45,
+     -1.3
+    ]
+   },
+   {
+    "id": "mother_lens",
+    "kind": "beam",
+    "at": [
+     36.15,
+     11.549999999999999,
+     -1.6
+    ]
+   },
+   {
+    "id": "mother_pilot",
+    "kind": "pilot",
+    "at": [
+     34.45,
+     2.6,
+     -1.1
+    ]
+   }
+  ],
+  "paths": [
+   {
+    "id": "steps",
+    "pts": [
+     [
+      -2.7,
+      0,
+      -0.2
+     ],
+     [
+      -2.7,
+      -3.2,
+      6.2
+     ]
+    ],
+    "note": "the quay steps down to the floor"
+   },
+   {
+    "id": "gully",
+    "pts": [
+     [
+      -2.2,
+      -3.7505987100419294,
+      2.5
+     ],
+     [
+      1,
+      -3.7484723298166402,
+      6
+     ],
+     [
+      5,
+      -3.7640477556356737,
+      9
+     ],
+     [
+      9.5,
+      -3.7863916637863317,
+      11.5
+     ],
+     [
+      15,
+      -3.8257381740686327,
+      13.5
+     ],
+     [
+      21,
+      -3.864032266847831,
+      17
+     ],
+     [
+      28,
+      -3.8686388682218498,
+      22
+     ]
+    ],
+    "note": "the gully, ankle-deep at low water, knee by 23:50"
+   }
+  ],
+  "fight": {
+   "lamb": [
+    -12.5,
+    13.5
+   ],
+   "foes": [
+    [
+     -15.5,
+     7.5
+    ],
+    [
+     -9.5,
+     7.5
+    ],
+    [
+     -12.5,
+     5.5
+    ],
+    [
+     -17.5,
+     10.5
+    ]
+   ],
+   "anchors": {
+    "cut": [
+     [
+      -5.5,
+      5
+     ],
+     [
+      -10.2,
+      4.8
+     ]
+    ],
+    "lamp": [
+     [
+      -5.5,
+      5
+     ]
+    ],
+    "snare": [
+     [
+      -16,
+      6.5
+     ]
+    ],
+    "sluice": []
+   },
+   "r": 20.58,
+   "arena": "arena-floor.json",
+   "stage": "arena: floor -20 0 4 0"
+  },
+  "fights": {
+   "floor": {
+    "lamb": [
+     -12.5,
+     13.5
+    ],
+    "foes": [
+     [
+      -15.5,
+      7.5
+     ],
+     [
+      -9.5,
+      7.5
+     ],
+     [
+      -12.5,
+      5.5
+     ],
+     [
+      -17.5,
+      10.5
+     ]
+    ],
+    "anchors": {
+     "cut": [
+      [
+       -5.5,
+       5
+      ],
+      [
+       -10.2,
+       4.8
+      ]
+     ],
+     "lamp": [
+      [
+       -5.5,
+       5
+      ]
+     ],
+     "snare": [
+      [
+       -16,
+       6.5
+      ]
+     ],
+     "sluice": []
+    },
+    "r": 20.58,
+    "arena": "arena-floor.json",
+    "stage": "arena: floor -20 0 4 0"
+   },
+   "gully": {
+    "lamb": [
+     5.5,
+     11.5
+    ],
+    "foes": [
+     [
+      2.5,
+      5.5
+     ],
+     [
+      9.5,
+      5.5
+     ],
+     [
+      5.5,
+      4.5
+     ],
+     [
+      0.5,
+      8.5
+     ]
+    ],
+    "anchors": {
+     "cut": [
+      [
+       2.4,
+       4.6
+      ],
+      [
+       12.4,
+       9.6
+      ]
+     ],
+     "lamp": [
+      [
+       2.4,
+       4.6
+      ]
+     ],
+     "snare": [],
+     "sluice": []
+    },
+    "r": 18.72,
+    "arena": "arena-gully.json",
+    "stage": "arena: gully -2 0 3 0"
+   }
+  }
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -14.11,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -14.11,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -12.02,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -7.99,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -12.02,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -1.85,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     16.19,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     20.25,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -20.5,
+     3.2,
+     -14
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 7,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -20.5,
+     3.2,
+     -19
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 7,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -3.6,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -2.65,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -1.8,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -3.57,
+     -0.22,
+     0.63
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -2.7,
+     -0.22,
+     0.63
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -1.77,
+     -0.45,
+     1.05
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -3.5,
+     -0.45,
+     1.05
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -6.6,
+     1.4,
+     -1.8
+    ],
+    "kind": "paraffin",
+    "I": 26,
+    "reach": 12,
+    "group": "window"
+   },
+   {
+    "at": [
+     -10.2,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -8.8,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -5.1,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -3.7,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     14.4,
+     1.6,
+     -4.6
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 9,
+    "group": "window"
+   },
+   {
+    "at": [
+     11,
+     1.7,
+     -2.3
+    ],
+    "kind": "paraffin",
+    "I": 2.4,
+    "reach": 7,
+    "group": "window"
+   },
+   {
+    "at": [
+     -24,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -17,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -10,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     3.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     10.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     17.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     27.6,
+     3.3,
+     -3.35
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 14,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     31.5,
+     2,
+     -5.6
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 8,
+    "group": "window"
+   },
+   {
+    "at": [
+     -11.7,
+     -2.97,
+     6.4
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -5.5,
+     -2.88,
+     5
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -2.6,
+     -2.91,
+     10.2
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     2.4,
+     -3.02,
+     4.6
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -10.2,
+     -2.88,
+     4.8
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     12.4,
+     -2.88,
+     9.6
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -20.5,
+     -2.87,
+     11.5
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   }
+  ],
+  "rain": [
+   {
+    "at": [
+     -14.11,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -14.11,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -12.02,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -7.99,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -12.02,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -1.85,
+     1.5,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     16.19,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     20.25,
+     3.6,
+     -9.15
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -20.5,
+     3.2,
+     -14
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 7,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -20.5,
+     3.2,
+     -19
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 7,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -3.6,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -2.65,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -1.8,
+     0.01,
+     0.21
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -3.57,
+     -0.22,
+     0.63
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -2.7,
+     -0.22,
+     0.63
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -1.77,
+     -0.45,
+     1.05
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -3.5,
+     -0.45,
+     1.05
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -6.6,
+     1.4,
+     -1.8
+    ],
+    "kind": "paraffin",
+    "I": 26,
+    "reach": 12,
+    "group": "window"
+   },
+   {
+    "at": [
+     -10.2,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -8.8,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -5.1,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -3.7,
+     1.55,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     14.4,
+     1.6,
+     -4.6
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 9,
+    "group": "window"
+   },
+   {
+    "at": [
+     11,
+     1.7,
+     -2.3
+    ],
+    "kind": "paraffin",
+    "I": 2.4,
+    "reach": 7,
+    "group": "window"
+   },
+   {
+    "at": [
+     -24,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -17,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -10,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     3.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     10.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     17.5,
+     4.45,
+     -1.3
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     27.6,
+     3.3,
+     -3.35
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 14,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     31.5,
+     2,
+     -5.6
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 8,
+    "group": "window"
+   },
+   {
+    "at": [
+     -11.7,
+     -2.97,
+     6.4
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -5.5,
+     -2.88,
+     5
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -2.6,
+     -2.91,
+     10.2
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     2.4,
+     -3.02,
+     4.6
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -10.2,
+     -2.88,
+     4.8
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     12.4,
+     -2.88,
+     9.6
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -20.5,
+     -2.87,
+     11.5
+    ],
+    "kind": "paraffin",
+    "I": 5.5,
+    "reach": 10,
+    "group": "lantern"
+   }
+  ]
+ },
+ "arenas": [
+  {
+   "id": "floor",
+   "file": "arena-floor.json",
+   "stage": "arena: floor -20 0 4 0",
+   "heightToWorld": "y = -3.029 + 0.62 h (the plate datum in place.json)",
+   "size": [
+    15,
+    13
+   ]
+  },
+  {
+   "id": "gully",
+   "file": "arena-gully.json",
+   "stage": "arena: gully -2 0 3 0",
+   "heightToWorld": "y = -3.029 + 0.62 h (the plate datum in place.json)",
+   "size": [
+    16,
+    12
+   ]
+  }
+ ],
+ "notes": "The Floor. The game draws the tide (water at the tide's height), rain streaks and people. Fog dither: the Flats look (look bible frame 4)."
+}

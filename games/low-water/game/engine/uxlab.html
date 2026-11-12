@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Low Water: UI lab</title><link rel="icon" href="data:,">
+<style>html, body { margin: 0; height: 100%; background: #070509; }</style></head>
+<body>
+<!-- The UI and UX lead's lab: the shell's screens on Act 1 content, for stills and input tests. Not part of the game. -->
+<main id="stage"></main><div id="toasts"></div>
+<script type="module">
+import { lab } from "./ui/uxlab.mjs";
+lab().catch((e) => { console.error("uxlab failed:", e); document.getElementById("stage").textContent = String(e.stack || e); });
+</script>
+</body>
+</html>
