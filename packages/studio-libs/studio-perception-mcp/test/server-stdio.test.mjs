@@ -1,9 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 test("server.mjs stdio handshake: initialize + tools/list + resources/list", async () => {
-  const proc = spawn("node", ["c:/dev/public/studio-libs/studio-perception-mcp/server.mjs"]);
+  const proc = spawn(process.execPath, [fileURLToPath(new URL("../server.mjs", import.meta.url))]);
   const responses = [];
   let buf = "";
   proc.stdout.on("data", (d) => {

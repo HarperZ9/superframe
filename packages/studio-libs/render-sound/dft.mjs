@@ -1,7 +1,7 @@
 /**
  * dft.mjs — zero-dependency DFT for render-sound.
  *
- * Promoted from C:/dev/scratch/viable-viz-sim/E10-waveform/dft.mjs
+ * Promoted from the viable-viz waveform study (E10)
  * after E10 confirmed zero-leakage at N=512 (bin-aligned) regime.
  *
  * Self-test cases (originally from prototype, inline as comments below each function):
