@@ -135,7 +135,9 @@ def write_script(out: Path, scene: dict, vtt: str) -> None:
 def render(args) -> int:
     spec_path = Path(args.spec).resolve()
     spec = media_spec.load(spec_path)
-    root = media_spec.repo_root(spec_path.parent)
+    # A spec inside the engine folder builds the engine, wherever that folder sits in its repository.
+    # A spec from another project still resolves to that project's repository root.
+    root = ENGINE if ENGINE in spec_path.parents else media_spec.repo_root(spec_path.parent)
     if args.setup:
         media_spec.setup(spec, root)
     scenes = [s for s in spec["scenes"] if not args.scenes or s["id"] in args.scenes]
