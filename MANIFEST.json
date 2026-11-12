@@ -5698,8 +5698,8 @@
   {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 7630,
-   "sourceSha256": "b5afdb7ad223ac78eac82252987aa87dbe5dbd496aa97dbec3bdf778efb22ae2"
+   "bytes": 8107,
+   "sourceSha256": "b70b8b6320e60a96e7effe963048ee60444c24d1dacedf79a4d0371c67db88e0"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -10508,6 +10508,366 @@
    "sourceSha256": "f0531557eab2ae4c84f7553213884650e1f6f8a83d6657b3bdfafdb6e7620280"
   },
   {
+   "path": "packages/reconcile/.gitattributes",
+   "source": "repo",
+   "bytes": 244,
+   "sourceSha256": "78f0d74e7a170d45a05960f16010b0f7e38bc6dbbcf49e65cef0020fba07ca93"
+  },
+  {
+   "path": "packages/reconcile/.github/FUNDING.yml",
+   "source": "repo",
+   "bytes": 103,
+   "sourceSha256": "74577467de85ca0cf4965117467ba8fad87923c77636d5d5b7d357e9302508a9"
+  },
+  {
+   "path": "packages/reconcile/.github/assets/banner.png",
+   "source": "repo",
+   "bytes": 316931,
+   "sourceSha256": "a1b71ce951224572064974eb2495adf238cca6b1aa6bedfb1ade9f5aa0b33fc6"
+  },
+  {
+   "path": "packages/reconcile/.github/workflows/ci.yml",
+   "source": "repo",
+   "bytes": 563,
+   "sourceSha256": "439791c6bb6f6df0463093424386fd066c68b36ba205790a38735e70e666f4c3"
+  },
+  {
+   "path": "packages/reconcile/.gitignore",
+   "source": "repo",
+   "bytes": 412,
+   "sourceSha256": "e37519d7a8b39e28ebdae9c04df4a3e73542d840d44a759e45c8335c269abfbf"
+  },
+  {
+   "path": "packages/reconcile/AGENTS.md",
+   "source": "repo",
+   "bytes": 1020,
+   "sourceSha256": "005f343b39ff4d0680eeae57bbe1c8c2346fee7b317f7b6f6e935a124f0ae516"
+  },
+  {
+   "path": "packages/reconcile/AUTHORS.md",
+   "source": "repo",
+   "bytes": 29,
+   "sourceSha256": "bb858270b5ab1b5d54dd7f9925f20d7e656c66e4dc0ec2a2fce1e6b7bd7eda6f"
+  },
+  {
+   "path": "packages/reconcile/CHANGELOG.md",
+   "source": "repo",
+   "bytes": 1217,
+   "sourceSha256": "cca3609d1fd796bc02e45dc030397c8b4975c0ccaf8e7100c938f568aea3b308"
+  },
+  {
+   "path": "packages/reconcile/CONTRIBUTING.md",
+   "source": "repo",
+   "bytes": 484,
+   "sourceSha256": "549e23bf4231df384a073b982071d01a338b565b08c6905e4d76a0decf3cf5fd"
+  },
+  {
+   "path": "packages/reconcile/LICENSE",
+   "source": "repo",
+   "bytes": 4216,
+   "sourceSha256": "5d4abfef8a42cb0b1762662ae9745b01cd729991e60c2fee83d6ea8ee752cb6d"
+  },
+  {
+   "path": "packages/reconcile/README.md",
+   "source": "repo",
+   "bytes": 8765,
+   "sourceSha256": "a74692c8df5883008cf4d81f10037f3feacb4ae69820092c0d2643870270134d"
+  },
+  {
+   "path": "packages/reconcile/USAGE.md",
+   "source": "repo",
+   "bytes": 897,
+   "sourceSha256": "a07681ff68e5eea07d947c05190759919c8dfd00b48cf5a4838fdf18a6621ac6"
+  },
+  {
+   "path": "packages/reconcile/cli.js",
+   "source": "repo",
+   "bytes": 3077,
+   "sourceSha256": "f54cbd116b6090a1969548aba683e38089185e8daee531447b0843bd83ec70ff"
+  },
+  {
+   "path": "packages/reconcile/docs/art/hero-dark.svg",
+   "source": "repo",
+   "bytes": 91515,
+   "sourceSha256": "f3ae76e75213624396c1f4a540e72a893b121d02af277b67aedf5d2aa91e91aa"
+  },
+  {
+   "path": "packages/reconcile/docs/art/hero-light.svg",
+   "source": "repo",
+   "bytes": 91515,
+   "sourceSha256": "095ba3747c2133433979d8093e4cd0423a190cb3d0024f3f22fef2c3d1154699"
+  },
+  {
+   "path": "packages/reconcile/docs/art/receipts.json",
+   "source": "repo",
+   "bytes": 17807,
+   "sourceSha256": "d8886e30ed0c8873afce3f554078fb8055aa11850e3fb9d39dfb0932f35b70c2"
+  },
+  {
+   "path": "packages/reconcile/docs/art/social.png",
+   "source": "repo",
+   "bytes": 316931,
+   "sourceSha256": "a1b71ce951224572064974eb2495adf238cca6b1aa6bedfb1ade9f5aa0b33fc6"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/README.md",
+   "source": "repo",
+   "bytes": 2593,
+   "sourceSha256": "6d322db2100dadfab394a1da3efac42f3237d26dc3db0e20d8b6fab47dfa0308"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/lockup-horizontal-dark.svg",
+   "source": "repo",
+   "bytes": 6936,
+   "sourceSha256": "2e69bfa7261c259527cb9aae388da6d978680a80b873e48d852f43837fcc1eb0"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/lockup-horizontal-light.svg",
+   "source": "repo",
+   "bytes": 6936,
+   "sourceSha256": "42d4c50b3ea7b1fd01cd2c2fc91fa58383b80d9445752afe3ef94449968cc153"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/lockup-stacked-dark.svg",
+   "source": "repo",
+   "bytes": 7071,
+   "sourceSha256": "634541e6b52d56969d811f2fea37ae513c6f0727ca52251d18d77a62287a2832"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/lockup-stacked-light.svg",
+   "source": "repo",
+   "bytes": 7071,
+   "sourceSha256": "23655cdcb10f245933c0bf69c4c3963adab9dad19c06da6fef714afa58fbf885"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/mark-16.png",
+   "source": "repo",
+   "bytes": 739,
+   "sourceSha256": "49cccbbdfc6cad370a4e6a0e92e79b1d880c1ea86647652c020e48a9475df419"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/mark-16.svg",
+   "source": "repo",
+   "bytes": 2233,
+   "sourceSha256": "12ddce07862fd4e1a2fbbf38f063a4eb6a9d95bbe4494b8a1531bc340b87a351"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/mark-32.png",
+   "source": "repo",
+   "bytes": 1787,
+   "sourceSha256": "fb4aae0be7f56c02cc44202e451e7307b070595b3d3eb3da4b3ef55a120ab9e3"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/mark-512.png",
+   "source": "repo",
+   "bytes": 56291,
+   "sourceSha256": "cd96704b4ef81507a281416d11c862c7af5aa444036f25dcefcfbd4fd21bd351"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/mark-64.png",
+   "source": "repo",
+   "bytes": 4047,
+   "sourceSha256": "543b41b72b16b77105f5902b93b0cbbb2663cbc47f66d99f2aff8b31b8dfa091"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/mark-dark.svg",
+   "source": "repo",
+   "bytes": 2260,
+   "sourceSha256": "67feed096c22b0419dda8cd2ab91198fd880d8347a690de8475891ec19169335"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/mark-light.svg",
+   "source": "repo",
+   "bytes": 2260,
+   "sourceSha256": "80fce878b1047d9d9e1fa8e0712ba328260498d8942aa67ebf1b946e920f1863"
+  },
+  {
+   "path": "packages/reconcile/docs/brand/mark-tile.svg",
+   "source": "repo",
+   "bytes": 2315,
+   "sourceSha256": "cc7368bb472886c9faa72395f91cd3a1ec7a67a0298235425508463a7a1baae1"
+  },
+  {
+   "path": "packages/reconcile/docs/explainer/README.md",
+   "source": "repo",
+   "bytes": 619,
+   "sourceSha256": "256a86a32747e6073f9527f68004c06f6de2340337eb3a47fabb27b8c62c1bf9"
+  },
+  {
+   "path": "packages/reconcile/docs/explainer/index.html",
+   "source": "repo",
+   "bytes": 35240,
+   "sourceSha256": "b5b6db11974d65881ab96e39fc176292143b9b38f475d0433e9fd135024f60d6"
+  },
+  {
+   "path": "packages/reconcile/package.json",
+   "source": "repo",
+   "bytes": 900,
+   "sourceSha256": "08020613463aa6cbfbdec5aab589ba39d5ebaa4e17f0482d61f7f592270f0a55"
+  },
+  {
+   "path": "packages/reconcile/project-docs/specs/SPEC-reconcile-forward-delivery.md",
+   "source": "repo",
+   "bytes": 1542,
+   "sourceSha256": "49bfe0a2c736a4161fc2a02ef00e2398da6ac094369655273fe8e7f99b4c2c89"
+  },
+  {
+   "path": "packages/reconcile/scripts/check_art_receipts.py",
+   "source": "repo",
+   "bytes": 1835,
+   "sourceSha256": "af3b993479184c93b8b2c18babdce5efbce5a87052c79ecb4654ba6668da82c8"
+  },
+  {
+   "path": "packages/reconcile/src/compose.js",
+   "source": "repo",
+   "bytes": 2041,
+   "sourceSha256": "e99f79e561d223e3885a2cf0a1356983b02c5c89ab25d42135132bb0fceca7ed"
+  },
+  {
+   "path": "packages/reconcile/src/corpus.js",
+   "source": "repo",
+   "bytes": 1211,
+   "sourceSha256": "eaf60bfaa457478e17feb1681cde31c215264aef5b4957d94518c4152edf721d"
+  },
+  {
+   "path": "packages/reconcile/src/criteria.js",
+   "source": "repo",
+   "bytes": 1810,
+   "sourceSha256": "3aa0b51cf9caae8577f5afa218d4d0e666637824486764d65d629c48a458039a"
+  },
+  {
+   "path": "packages/reconcile/src/expr.js",
+   "source": "repo",
+   "bytes": 5358,
+   "sourceSha256": "b3f87a0b994bcf0a6bedb09b297c2df83be327a9a526c0c4b1ad73ca0eadf5f9"
+  },
+  {
+   "path": "packages/reconcile/src/features.js",
+   "source": "repo",
+   "bytes": 2721,
+   "sourceSha256": "528b464d1b7f9c68f1486c358296feefb92373c2abe31c92a73c66186a2ae0c3"
+  },
+  {
+   "path": "packages/reconcile/src/hash.js",
+   "source": "repo",
+   "bytes": 812,
+   "sourceSha256": "7cee3ca93e57087c330be2f7ae6d58ccce7561bd2962cd7201c8e75ecbc758f1"
+  },
+  {
+   "path": "packages/reconcile/src/index.js",
+   "source": "repo",
+   "bytes": 814,
+   "sourceSha256": "b9fb2038b383e85b412e0297e100d1300b4d80423222c12de8265a410bef3660"
+  },
+  {
+   "path": "packages/reconcile/src/organ.js",
+   "source": "repo",
+   "bytes": 1731,
+   "sourceSha256": "c52bb791c1622e67dfd0eccbfe6cb379360530b034714bd3f5d17f40a296abcb"
+  },
+  {
+   "path": "packages/reconcile/src/organs/fields.js",
+   "source": "repo",
+   "bytes": 4834,
+   "sourceSha256": "a9b1f376eef545c1e21c0005009d05e31455e22fab93c9d272867b6f6b18a350"
+  },
+  {
+   "path": "packages/reconcile/src/organs/forms.js",
+   "source": "repo",
+   "bytes": 2829,
+   "sourceSha256": "34c13f49636b551b6f9508adf1a96b191ed3497de753d20927e7113219108008"
+  },
+  {
+   "path": "packages/reconcile/src/organs/index.js",
+   "source": "repo",
+   "bytes": 349,
+   "sourceSha256": "fecfacdfba5c641d4b1cbda3dd5c9b8ca2390b11d6fd24981b7cc73d9bc12d37"
+  },
+  {
+   "path": "packages/reconcile/src/palette.js",
+   "source": "repo",
+   "bytes": 896,
+   "sourceSha256": "914916f86a31a82d067a66dfb30d30c943ac33863b4e3176051528a460023ea2"
+  },
+  {
+   "path": "packages/reconcile/src/preview.js",
+   "source": "repo",
+   "bytes": 2415,
+   "sourceSha256": "86b936d36d5fa8e221b4e1f7232efef8bec9a2a62f5a0b38227b4ad22fddd88d"
+  },
+  {
+   "path": "packages/reconcile/src/reconcile.js",
+   "source": "repo",
+   "bytes": 2303,
+   "sourceSha256": "397277ec3585d8e0b104e0929589b5872031fbfd5c1f75441772f175dcd253a0"
+  },
+  {
+   "path": "packages/reconcile/src/refine.js",
+   "source": "repo",
+   "bytes": 2594,
+   "sourceSha256": "e45d91f6eb9576cbdc1340a01a0114b5d1b0523365eebbbbe47c3ee209361b55"
+  },
+  {
+   "path": "packages/reconcile/src/temporal.js",
+   "source": "repo",
+   "bytes": 1596,
+   "sourceSha256": "096398f75e795b1be19b5d211a0bb6204d87270cfccb3e588f2e920c6ece5b05"
+  },
+  {
+   "path": "packages/reconcile/src/world.js",
+   "source": "repo",
+   "bytes": 3063,
+   "sourceSha256": "954d9f4c35377887f03434615ac1cd16d0d84c37808706e38fabfe9831def520"
+  },
+  {
+   "path": "packages/reconcile/test/critique.test.js",
+   "source": "repo",
+   "bytes": 1842,
+   "sourceSha256": "2ee1a2f3af53e52cd8227bb4f94007a0aea27edc8cbf67eedb437ca544d8b940"
+  },
+  {
+   "path": "packages/reconcile/test/engine.test.js",
+   "source": "repo",
+   "bytes": 1904,
+   "sourceSha256": "5ec136baca32169c6034f705fc59494ce9d3497e7132e014e5aeb8cd2fdc919a"
+  },
+  {
+   "path": "packages/reconcile/test/expr.test.js",
+   "source": "repo",
+   "bytes": 1655,
+   "sourceSha256": "31cfdd28013396753daf13e48b26f3f4e07844d07fa9ff0bb141695eacb30c07"
+  },
+  {
+   "path": "packages/reconcile/test/forward-delivery.test.js",
+   "source": "repo",
+   "bytes": 2227,
+   "sourceSha256": "6f5db0551645e0e894b7bea81096fca77a2522aa4c5e90dc6e91009c3e122234"
+  },
+  {
+   "path": "packages/reconcile/test/organs.test.js",
+   "source": "repo",
+   "bytes": 1509,
+   "sourceSha256": "a7f8ccefdc54ff808436b51107aceb393a326ca536712e0585dab6210415d625"
+  },
+  {
+   "path": "packages/reconcile/test/refine.test.js",
+   "source": "repo",
+   "bytes": 1608,
+   "sourceSha256": "1ddb86c208fad5597e8cd76ae9833e5a620054e40abe1ecad7ee8538f547a438"
+  },
+  {
+   "path": "packages/reconcile/web/app.js",
+   "source": "repo",
+   "bytes": 6253,
+   "sourceSha256": "0fab6654c5b76cccf642566d20472d521102960021ef4fe2592cfadb6976955a"
+  },
+  {
+   "path": "packages/reconcile/web/index.html",
+   "source": "repo",
+   "bytes": 4445,
+   "sourceSha256": "5e5b7d1356ba8c8ba8222af6b5c6757921d9cf89cc12b2798d97622de857355d"
+  },
+  {
    "path": "packages/remastering/README.md",
    "source": "repo",
    "bytes": 5466,
@@ -12132,6 +12492,462 @@
    "source": "repo",
    "bytes": 1872,
    "sourceSha256": "e5b40a4e6056d272af81c856c883d195f9f58a3ccfcc3df4c76644a396c43615"
+  },
+  {
+   "path": "packages/superstack/.gitattributes",
+   "source": "repo",
+   "bytes": 898,
+   "sourceSha256": "3b21cf93d33d426c85d2eb8b4a6719d9e603b82183dd1d7b4dca1d94e06c3e6d"
+  },
+  {
+   "path": "packages/superstack/.github/workflows/ci.yml",
+   "source": "repo",
+   "bytes": 5899,
+   "sourceSha256": "d8017fb24012aa74eca6bf32d98203ee1944e7a4718d3ebc45d39da3fb2b7ee0"
+  },
+  {
+   "path": "packages/superstack/.gitignore",
+   "source": "repo",
+   "bytes": 179,
+   "sourceSha256": "e923a637996a7a47a1fbca69113014dddcd3b9ee86da1079fb1a6ccc79d47d33"
+  },
+  {
+   "path": "packages/superstack/CHANGELOG.md",
+   "source": "repo",
+   "bytes": 1319,
+   "sourceSha256": "2d1326d91dcf80b925940d737a64e80f8c4e69cabadb917ead51971debdf9639"
+  },
+  {
+   "path": "packages/superstack/CLAUDE.md",
+   "source": "repo",
+   "bytes": 815,
+   "sourceSha256": "bd44f7e36bf9c457195a7eb0c56d0b946b4191fc69ec67841166f18d690ebb53"
+  },
+  {
+   "path": "packages/superstack/LICENSE",
+   "source": "repo",
+   "bytes": 4216,
+   "sourceSha256": "5d4abfef8a42cb0b1762662ae9745b01cd729991e60c2fee83d6ea8ee752cb6d"
+  },
+  {
+   "path": "packages/superstack/LICENSE-TEXT",
+   "source": "repo",
+   "bytes": 787,
+   "sourceSha256": "3c921324d387df69c355e7282cea4632f45fd7678e7a496f8b2f9bc1e5dd0cec"
+  },
+  {
+   "path": "packages/superstack/README.md",
+   "source": "repo",
+   "bytes": 9449,
+   "sourceSha256": "92ab50d20e3b41dea6107722973779d2cfec2081f8814735ab07d70eafb59480"
+  },
+  {
+   "path": "packages/superstack/SHA256SUMS",
+   "source": "repo",
+   "bytes": 242,
+   "sourceSha256": "322d67fd3945d2b3afe9ec5a25c968c102ccaf116678fa782c8fde078a7ead4a"
+  },
+  {
+   "path": "packages/superstack/SPEC.md",
+   "source": "repo",
+   "bytes": 26603,
+   "sourceSha256": "40902ea507170e5e65f0d058460cb1a96109c662862991f2e09da3efd0607e63"
+  },
+  {
+   "path": "packages/superstack/VENDORING.md",
+   "source": "repo",
+   "bytes": 4001,
+   "sourceSha256": "be6201b3c618ea8006f8780a6abcc9fcc4971e00dd7ceda27930b9f4ce81535d"
+  },
+  {
+   "path": "packages/superstack/docs/LICENSING.md",
+   "source": "repo",
+   "bytes": 12491,
+   "sourceSha256": "3eb6eec87dafb63a06987911266cbe54ae15f066f883a8a4ed29bc14c7ebf130"
+  },
+  {
+   "path": "packages/superstack/docs/art/hero-dark.svg",
+   "source": "repo",
+   "bytes": 69007,
+   "sourceSha256": "d2b3bd5213256efe955ad24833da95c7463b6d265118836a28e42f9626792517"
+  },
+  {
+   "path": "packages/superstack/docs/art/hero-light.svg",
+   "source": "repo",
+   "bytes": 69007,
+   "sourceSha256": "d887215a25a49af2560003ae9dd935f395efe884470325111f06abd7d8833181"
+  },
+  {
+   "path": "packages/superstack/docs/art/receipts.json",
+   "source": "repo",
+   "bytes": 17820,
+   "sourceSha256": "51a6df228fcf1e0674b835187740fa5e97191c03cba292189ddecdb554f674f7"
+  },
+  {
+   "path": "packages/superstack/docs/art/social.png",
+   "source": "repo",
+   "bytes": 274692,
+   "sourceSha256": "9c09e6c0adaa184a350b7eef5e5a1eba7bdf1158a536fdd5f5e9dfae451edaac"
+  },
+  {
+   "path": "packages/superstack/docs/brand/README.md",
+   "source": "repo",
+   "bytes": 1054,
+   "sourceSha256": "19040a9ade02ff7638a390cd8b8f81940e91823b337f2d7f158530340058ba5e"
+  },
+  {
+   "path": "packages/superstack/docs/brand/lockup-horizontal-dark.svg",
+   "source": "repo",
+   "bytes": 7438,
+   "sourceSha256": "1c6ad684f11a61d4c16d2f6a32a538918c752fee60643a79bd552cc58a53c255"
+  },
+  {
+   "path": "packages/superstack/docs/brand/lockup-horizontal-light.svg",
+   "source": "repo",
+   "bytes": 7438,
+   "sourceSha256": "be6bdade643df3ca35d878875a3c26bda45ffac66144995944b6e47ce0f2a00c"
+  },
+  {
+   "path": "packages/superstack/docs/brand/lockup-stacked-dark.svg",
+   "source": "repo",
+   "bytes": 7657,
+   "sourceSha256": "d3a25b324c44b00e3b41e78ae4a80aaa85d337e42aecda6554a9398017d1c735"
+  },
+  {
+   "path": "packages/superstack/docs/brand/lockup-stacked-light.svg",
+   "source": "repo",
+   "bytes": 7657,
+   "sourceSha256": "ef8647b8511cfcce51fc9d8c024a6ba88f1aaa95064043bbdd5c3738c75bc371"
+  },
+  {
+   "path": "packages/superstack/docs/brand/mark-16.png",
+   "source": "repo",
+   "bytes": 677,
+   "sourceSha256": "bdf43153645e0d18199d2c6909205fc622c7da01ae2b41ad5ed189da4bdc0108"
+  },
+  {
+   "path": "packages/superstack/docs/brand/mark-16.svg",
+   "source": "repo",
+   "bytes": 1410,
+   "sourceSha256": "5283902327ba9647c7b910ce9cb200158621b0bb76f20888921d4a94362ceb24"
+  },
+  {
+   "path": "packages/superstack/docs/brand/mark-32.png",
+   "source": "repo",
+   "bytes": 1383,
+   "sourceSha256": "1316f3582a3c049ec5fd08bb6a097c102a918d681f274333a5570a4c14fd6646"
+  },
+  {
+   "path": "packages/superstack/docs/brand/mark-512.png",
+   "source": "repo",
+   "bytes": 42849,
+   "sourceSha256": "dfe34f19114ee17be3c4ae4f99bf311c7cc81395bc93515836ac42b18f382f27"
+  },
+  {
+   "path": "packages/superstack/docs/brand/mark-64.png",
+   "source": "repo",
+   "bytes": 3158,
+   "sourceSha256": "1001cf0803080098abc0b8186385cb317daa53afdf6acf1104e8fb82be454491"
+  },
+  {
+   "path": "packages/superstack/docs/brand/mark-dark.svg",
+   "source": "repo",
+   "bytes": 1425,
+   "sourceSha256": "d53ae812a1bd42ce4b3737e02d2bb66aa53e172097961dc0458c536d266cecdb"
+  },
+  {
+   "path": "packages/superstack/docs/brand/mark-light.svg",
+   "source": "repo",
+   "bytes": 1425,
+   "sourceSha256": "8a42e09e67a3886d9b623e03e0ea9afc5786ed09f306549c5166d00537e61e9b"
+  },
+  {
+   "path": "packages/superstack/docs/brand/mark-tile.svg",
+   "source": "repo",
+   "bytes": 1492,
+   "sourceSha256": "7c3af99b74fc7c24eed402981a7ea0a2306bd0a8066e13dd05f95ccc8ae19f8c"
+  },
+  {
+   "path": "packages/superstack/docs/explainer/README.md",
+   "source": "repo",
+   "bytes": 621,
+   "sourceSha256": "8d64a48ea2d15fece0f8fec75f060edc789026a324d6d685c6e18ab6ef1c6fa1"
+  },
+  {
+   "path": "packages/superstack/docs/explainer/index.html",
+   "source": "repo",
+   "bytes": 36683,
+   "sourceSha256": "186bfb85715013cfddff0414ed465925c48fa54abdcaa0242da1898820f702ae"
+  },
+  {
+   "path": "packages/superstack/examples/README.md",
+   "source": "repo",
+   "bytes": 3892,
+   "sourceSha256": "e0dcd8e6916514822293a53a9d14962a9921b5e8277b07396980da176ecf53d6"
+  },
+  {
+   "path": "packages/superstack/examples/browser.html",
+   "source": "repo",
+   "bytes": 3259,
+   "sourceSha256": "b47f1ec1517c5de2a285b71f72c9ad198d99dea780f1171a045db9072f0d3261"
+  },
+  {
+   "path": "packages/superstack/examples/check.py",
+   "source": "repo",
+   "bytes": 5123,
+   "sourceSha256": "44405467d990bfd9edb199a3233d9b0a464db50ffd685462a47ec7f2d370e92b"
+  },
+  {
+   "path": "packages/superstack/examples/controls.py",
+   "source": "repo",
+   "bytes": 2477,
+   "sourceSha256": "d26e7d32254aecdf4d6475615afd256bc0a09b56534089570b446a03594f338b"
+  },
+  {
+   "path": "packages/superstack/examples/pixels/gl2.mjs",
+   "source": "repo",
+   "bytes": 2295,
+   "sourceSha256": "3cd57595e499a28877022dfc8fb5c347aca1b10a74431b11e40a9e967e65b74a"
+  },
+  {
+   "path": "packages/superstack/examples/pixels/py_backend.py",
+   "source": "repo",
+   "bytes": 8534,
+   "sourceSha256": "ca4a53b0d5d810192c123a7ffd7f4b03a3260fa4bbcd67f5eadbe0a25a592c32"
+  },
+  {
+   "path": "packages/superstack/examples/pixels/raw-scene-gl2.mjs",
+   "source": "repo",
+   "bytes": 5618,
+   "sourceSha256": "043c56d3328e0bdfd21d4f69f29e6b602f48a392a9a7f85727c78836163c973c"
+  },
+  {
+   "path": "packages/superstack/examples/pixels/scene.json",
+   "source": "repo",
+   "bytes": 884,
+   "sourceSha256": "0059ffa3370d2824fda31c7b933a313c950afd92ce76d55feb9549b486a159b2"
+  },
+  {
+   "path": "packages/superstack/examples/pixels/scene_ir.mjs",
+   "source": "repo",
+   "bytes": 1414,
+   "sourceSha256": "1a81d013d54b9fc534fe58c63218aa0970032b127fd809a4657fdb19408ccf9e"
+  },
+  {
+   "path": "packages/superstack/examples/pixels/scene_ir.py",
+   "source": "repo",
+   "bytes": 3090,
+   "sourceSha256": "cda7bf18504af5d8b40d61c310f882593432afcfff2858204646a57f3d5e9cd8"
+  },
+  {
+   "path": "packages/superstack/examples/reference/raw-native-0.4.0/SHA256SUMS",
+   "source": "repo",
+   "bytes": 310,
+   "sourceSha256": "e4d08c9a74b3dfd434de777668afed94df5dac0c653db3d6165fe9df4fc26fc6"
+  },
+  {
+   "path": "packages/superstack/examples/reference/raw-native-0.4.0/ao_rt.pfm",
+   "source": "repo",
+   "bytes": 262160,
+   "sourceSha256": "3bd5cce0f7424363c04d17b7bf644b82a9f51338297b4666329d398e9fb886ee"
+  },
+  {
+   "path": "packages/superstack/examples/reference/raw-native-0.4.0/certificate.json",
+   "source": "repo",
+   "bytes": 1297,
+   "sourceSha256": "302c4ec95a40625904cb523cd169af3dcd43208bbaa3e354f7a59df623b1b34b"
+  },
+  {
+   "path": "packages/superstack/examples/reference/raw-native-0.4.0/frame.ppm",
+   "source": "repo",
+   "bytes": 196623,
+   "sourceSha256": "e276f24f4a2a23e7b43b61d2e45147446468bf8d99a75809675f2cea91edb06d"
+  },
+  {
+   "path": "packages/superstack/examples/reference/raw-native-0.4.0/mask.pgm",
+   "source": "repo",
+   "bytes": 65551,
+   "sourceSha256": "413410cd6f8755f3b234272f0c100125a38ddd89c6a8bc302fe7463170f96108"
+  },
+  {
+   "path": "packages/superstack/examples/run_all.py",
+   "source": "repo",
+   "bytes": 3262,
+   "sourceSha256": "288eeba3c64fedd34b96cbd283342593649eba7bbf20f250391d500cd45c5383"
+  },
+  {
+   "path": "packages/superstack/examples/run_browser.py",
+   "source": "repo",
+   "bytes": 5183,
+   "sourceSha256": "bfcdcff7fdefb1b70bedc8384c92b2f4648b1feee3a9899a36ee5eb2d45dc654"
+  },
+  {
+   "path": "packages/superstack/examples/sound/sound.json",
+   "source": "repo",
+   "bytes": 357,
+   "sourceSha256": "ff9c7b11c0cc1e6a324fc58e0e91a0a627533538ccfa97e9341a439919261ec9"
+  },
+  {
+   "path": "packages/superstack/examples/sound/sound_exact.mjs",
+   "source": "repo",
+   "bytes": 2802,
+   "sourceSha256": "8c553e7db8f89fae128b6d9dac2012a17191c74d14022332a3c395b3a961a3b2"
+  },
+  {
+   "path": "packages/superstack/examples/sound/sound_ir.py",
+   "source": "repo",
+   "bytes": 3887,
+   "sourceSha256": "04bae79708331ec6c8523268810e71332353d3daa0b39f4a7c610ab6cf57dc83"
+  },
+  {
+   "path": "packages/superstack/scripts/check_art_receipts.py",
+   "source": "repo",
+   "bytes": 1835,
+   "sourceSha256": "af3b993479184c93b8b2c18babdce5efbce5a87052c79ecb4654ba6668da82c8"
+  },
+  {
+   "path": "packages/superstack/superstack.hpp",
+   "source": "repo",
+   "bytes": 50063,
+   "sourceSha256": "a0d223c0567c883b73ed74b19d93cb087e213dc14b950ab0f6f04206cb72c590"
+  },
+  {
+   "path": "packages/superstack/superstack.mjs",
+   "source": "repo",
+   "bytes": 26932,
+   "sourceSha256": "b972095e4eadb007fb892e48027fe6d970328eb2256749e046b296f500208878"
+  },
+  {
+   "path": "packages/superstack/superstack.py",
+   "source": "repo",
+   "bytes": 27546,
+   "sourceSha256": "d5f86b29354a43e676d3d2db7005150b100427137e7708be9841f1e7d5589353"
+  },
+  {
+   "path": "packages/superstack/tests/CMakeLists.txt",
+   "source": "repo",
+   "bytes": 1170,
+   "sourceSha256": "4320167a32c720c1152d2f7ce455fd8e29902a1c305eb7c8256fefb98f45a615"
+  },
+  {
+   "path": "packages/superstack/tests/mutate.py",
+   "source": "repo",
+   "bytes": 5757,
+   "sourceSha256": "d752308f90615b16c4103c131fafe97fff15310176136cc13faf69901dee112e"
+  },
+  {
+   "path": "packages/superstack/tests/mutations.json",
+   "source": "repo",
+   "bytes": 9160,
+   "sourceSha256": "ca69f87a61707c156a4f0c662d412e84ec7a05bcf6a0f0bfb70fcdb9ef04ea82"
+  },
+  {
+   "path": "packages/superstack/tests/run_vectors.cpp",
+   "source": "repo",
+   "bytes": 16820,
+   "sourceSha256": "693400f92d1396a036535bb1bcf057b691a973c3a5f3b1fa365d54fa9c58d8d2"
+  },
+  {
+   "path": "packages/superstack/tests/run_vectors.mjs",
+   "source": "repo",
+   "bytes": 9501,
+   "sourceSha256": "ff10d37777c22997798d6184b65666e6394c30fd7a9a62f1853e4cba61a04eca"
+  },
+  {
+   "path": "packages/superstack/tests/run_vectors.py",
+   "source": "repo",
+   "bytes": 10434,
+   "sourceSha256": "23c343d80a841881a8697783f89b0c614a4f0a628ef791dd7496e38320174393"
+  },
+  {
+   "path": "packages/superstack/tests/test_check_vendored.py",
+   "source": "repo",
+   "bytes": 2136,
+   "sourceSha256": "54f61c0f287f5ae3c854338673c0bb1ad77a6c7aad112f016cfeae08fc8dd3c6"
+  },
+  {
+   "path": "packages/superstack/tools/check_dashes.py",
+   "source": "repo",
+   "bytes": 568,
+   "sourceSha256": "f71e124cfb2adabd213f67c396b4b3388e86408648f280fe3f5c073c43e74c93"
+  },
+  {
+   "path": "packages/superstack/tools/check_vendored.py",
+   "source": "repo",
+   "bytes": 2599,
+   "sourceSha256": "6c04bcb8792e5c33dca3d0457fe755b30d931f49295ce46d76562a6492b23507"
+  },
+  {
+   "path": "packages/superstack/tools/make_vectors.py",
+   "source": "repo",
+   "bytes": 26098,
+   "sourceSha256": "06ca9a630c5bb62f84f48f03ee4aa33c7b909aa38ed86bfb626c8d92c8010d07"
+  },
+  {
+   "path": "packages/superstack/vectors/MANIFEST.json",
+   "source": "repo",
+   "bytes": 897,
+   "sourceSha256": "a4672aad9c14e0de9733bd6af8462504e91783acf1caaf43640e4fd3abaae4ed"
+  },
+  {
+   "path": "packages/superstack/vectors/canonical.json",
+   "source": "repo",
+   "bytes": 6673,
+   "sourceSha256": "395112b48140f455f80793e289491dc76333607734099c3995f095312320a8f1"
+  },
+  {
+   "path": "packages/superstack/vectors/clock.json",
+   "source": "repo",
+   "bytes": 1802,
+   "sourceSha256": "96fc2e066e9e32af4a76dbfa8c6af7d4fbd73e3378d7ca58433e78f9cc9e3bba"
+  },
+  {
+   "path": "packages/superstack/vectors/colour.json",
+   "source": "repo",
+   "bytes": 7656,
+   "sourceSha256": "5a956f0dda3cc21cce6e9d9308a6470f2a4a72ed7822d999f0dad10595db76da"
+  },
+  {
+   "path": "packages/superstack/vectors/export.json",
+   "source": "repo",
+   "bytes": 1033,
+   "sourceSha256": "b3607b0a84dd91cffb870497d4199363991f4ed12e7257776ec9019b2ce3d003"
+  },
+  {
+   "path": "packages/superstack/vectors/hash.json",
+   "source": "repo",
+   "bytes": 4312,
+   "sourceSha256": "7bc56833582b968ca826ee4c1e5cba4f9841c702f2441053679c2d45be777dcf"
+  },
+  {
+   "path": "packages/superstack/vectors/receipt.json",
+   "source": "repo",
+   "bytes": 69370,
+   "sourceSha256": "bbdb40c25e46afad5e651278d6065d834fd4bad3e8a3d38bc7e7052e46687a95"
+  },
+  {
+   "path": "packages/superstack/vectors/reconcile.json",
+   "source": "repo",
+   "bytes": 6934,
+   "sourceSha256": "883971c3f3533f578a99fbe883457b16293150262d1420fb4ab8673af689d71a"
+  },
+  {
+   "path": "packages/superstack/vectors/scene.json",
+   "source": "repo",
+   "bytes": 17005,
+   "sourceSha256": "d34238647d294c609b1b94eaed9e55f444801367681be825b533efd616c97ac7"
+  },
+  {
+   "path": "packages/superstack/vectors/seed.json",
+   "source": "repo",
+   "bytes": 5064,
+   "sourceSha256": "e87d3f28143d8d900de896318233a942fb356c9afe00946bda357d894a5cf7b4"
+  },
+  {
+   "path": "packages/superstack/vectors/sound.json",
+   "source": "repo",
+   "bytes": 5560,
+   "sourceSha256": "e59115d5ca45df9389ccdc03c9a5e65e33086da3f4e0814e0e20dde7a35d11fc"
   },
   {
    "path": "packages/wavelab/README.md",

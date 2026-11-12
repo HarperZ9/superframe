@@ -28,6 +28,8 @@ npm run test:py                                      # the Python tests
 | `instruments` | the instrument pipeline from a law to a reading with a receipt, and the room meter | FSL-1.1-MIT |
 | `quality` | image, motion and type checks: SSIM, banding, edges, grain, frame pacing, type rules and source evidence | FSL-1.1-MIT |
 | `lenspipe` | an open lens design in, checked performance, manufacturability, tolerance, limits, as-built fit and interchange out | FSL-1.1-MIT, data CC0-1.0 |
+| `superstack` | one contract for renderers and sound engines: canonical bytes, seed rule and vectors in JavaScript, Python and C++; moved here from its own repository with its history | FSL-1.1-MIT, text CC BY 4.0 |
+| `reconcile` | creative generators as replayable browser worlds: expression algebra, refine loop, compositor and timeline (`node packages/reconcile/cli.js create gyroid --seed 7 --out out`); moved here from its own repository with its history | FSL-1.1-MIT |
 | `strings` | string theory as checkable computations: critical dimensions, Virasoro central charges, the classical string, T-duality, the Hagedorn temperature, balanced metrics on the quintic, and extra dimensions against inverse-square-law limits | FSL-1.1-MIT |
 | `cosmo` | the universe simulator's core: a particle-mesh cosmological N-body solver (Zel'dovich initial conditions, FFT gravity, kick-drift-kick in the scale factor) on CPU or CUDA, with the Eisenstein-Hu spectrum, halofit and an Ewald force reference | FSL-1.1-MIT, `data/camb_reference.json` is CAMB output |
 | `latticechiral` | lattice fermions and their cures, the 2D index theorem, and continuum chiral fermions on interpolated lattice gauge fields (anomaly, 3-4-5 model, sign problem) | FSL-1.1-MIT |
