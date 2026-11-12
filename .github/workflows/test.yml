@@ -43,3 +43,5 @@ jobs:
           COLOURMIX_REQUIRE_NATIVE: '1'
           BUILDC: buildc
       - run: buildc build --release packages/daw/bld
+      # The renderer in BuildLang: the art scene must reproduce the lit-buffer hash the C++ pins.
+      - run: buildc build --release native/bld/art_scene && ./native/bld/art_scene/target/release/main | tee art-scene-out.txt && grep -q "byte-identical to the C++ lit buffer: 1 of 1" art-scene-out.txt

@@ -12,6 +12,7 @@ __pycache__/
 # native build output: build it with buildc and gcc (see superframe/tests/native-lightlut.test.mjs)
 superframe/native/**/target/
 packages/daw/bld/target/
+native/bld/**/target/
 *.exe
 # packages/ built pages and test records: rebuild them (packages/README.md)
 packages/diagram/pages/
