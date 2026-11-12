@@ -3,7 +3,7 @@
 # SwiftShader adapter, in 3-second chunks at Idle priority (a long single run hit intermittent POST
 # timeouts from the capture page to the local server), then join the chunks without re-encoding.
 # R is a scratch root holding an export of raw-native web/, the scene, its stills and the font atlas.
-R="${R:-C:/Users/Zain/AppData/Local/Temp/claude/C--dev/5e0e8e49-9793-4939-8b2d-7e7312d7c32d/scratchpad/filmroot}"
+R="${R:-${TMPDIR:-/tmp}/low-water-filmroot}"
 OUT="$(cd "$(dirname "$0")" && pwd)"
 FF=$(python -c "import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())")
 cd "$R" && mkdir -p chunks && : > chunks/list.txt

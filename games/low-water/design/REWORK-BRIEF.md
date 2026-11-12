@@ -1,7 +1,7 @@
 <!-- writing-profile: procedure -->
 # Rework brief: one district of Act 1
 
-From the director, 2026-10-17. Private. Working folder `C:/dev/mission-control/2026-10-16-low-water/`.
+From the director, 2026-10-17. Private. Working folder `games/low-water/`.
 The author asked for more ways through the game, more impact and more brevity (quoted in full at
 the top of `design/REWORK-PLAN.md`). Word count is no longer a target. The measure is what a line
 does; of two lines that do the same thing, the shorter wins.

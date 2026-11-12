@@ -1,7 +1,7 @@
 // Marks what the visual check counts, per view: red = figure drawn over nearer painting, yellow = stacked shadow,
 // cyan = shadow off the floor, green = other shadow pixels. node markup.mjs <port> <out> [views]
 import { readFile, writeFile, mkdir } from "node:fs/promises";
-const T = "file:///C:/dev/mission-control/2026-10-16-low-water/game/engine/tools/visualcheck/";
+const T = new URL("../../game/engine/tools/visualcheck/", import.meta.url).href;
 const { launch, sleep } = await import(T + "cdp.mjs"), { VIEWS } = await import(T + "views.mjs");
 const [port, out, only] = process.argv.slice(2), analyse = await readFile(new URL("./analyse_marks.js", import.meta.url), "utf8");
 await mkdir(out, { recursive: true });

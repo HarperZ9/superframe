@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Chancel Hill with its near side cut to garden walls, after the extra pass; then its stills.
-cd /c/dev/mission-control/2026-10-16-low-water
+cd "$(dirname "$0")/.."
 until grep -q "EXTRA DONE" content/logs/extra.txt 2>/dev/null; do sleep 30; done
 LW_PLATE=1 node render/bake2.mjs --place hill > content/logs/last-hill.log 2>&1
 node render/tools/arena_from_plate.mjs station hill 0 0 14 10 --datum 40 > /dev/null

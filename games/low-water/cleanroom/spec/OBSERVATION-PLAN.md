@@ -9,7 +9,7 @@ then ZERO PARADES. Target: four sessions, each under 45 minutes of game time.
 
 ### 0.1 Before any session
 
-1. Confirm `D:/gpu.lock.d` does not exist. If it exists and names another owner, stop.
+1. Confirm the GPU lock does not exist. If it exists and names another owner, stop.
 2. Take the lock with this role's own token (`cleanroom-study-<pid>-<unix>`), following the lock protocol the coordinator names. Record the token in `cleanroom/PROGRESS.md`.
 3. Hold the lock only while a game runs. Release it the moment the game closes. The explainer 4K render waits on 30 free minutes.
 4. Never delete, overwrite or load over the author's saves. Start a new character or a new game in a new slot. Back up the save folder (for example `%USERPROFILE%/AppData/LocalLow/Moon Studios/`) to `E:/cleanroom-dirty/low-water/<game>/save-backup-<date>/` first, read-only copy.

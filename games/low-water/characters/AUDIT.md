@@ -3,7 +3,7 @@
 
 2026-10-16. How the people of Low Water are drawn today, what the raw-native engine offers a
 character pipeline, and what is missing. Read from the prototype (`game/`), the playthrough and
-trailer stills, the Low Water worktree of raw-native (`C:/dev/worktrees/raw-native-lowwater`,
+trailer stills, the Low Water worktree of raw-native (`native/`,
 branch `feat/low-water-host`) and raw-native `origin/main` at `abe2c93`.
 
 ## 1. How characters are drawn now

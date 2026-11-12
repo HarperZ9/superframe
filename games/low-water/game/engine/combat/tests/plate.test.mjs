@@ -2,7 +2,7 @@
 // stop bodies and sight, and an encounter played there reaches an outcome.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { createGame } from "../../game.mjs";
 import { installCombat } from "../encounter.mjs";
@@ -11,10 +11,13 @@ import { createPilot } from "../tools/pilot.mjs";
 import { HERE, ARENA_LWD } from "./helpers.mjs";
 
 const CONTENT = join(HERE, "..", "..", "..", "..", "content");
+// Plate bakes (geo-pos.f32, geo-id.u8) are reproducible and stay out of the repository. A test that reads one
+// runs where the bake exists and reports as skipped elsewhere.
+const BAKED = existsSync(join(CONTENT, "quay", "geo-pos.f32")) ? false : "plate bake not present; bake the plates to run this";
 const fights = () => [{ file: "arena.lwd", text: ARENA_LWD }, { file: "combat.lwd", text: readFileSync(join(CONTENT, "act1", "combat.lwd"), "utf8") }, { file: "encounters1.lwd", text: readFileSync(join(CONTENT, "act1", "encounters1.lwd"), "utf8") }];
 
 for (const [plate, area, enc] of [["quay", "quay", "e.wardens"], ["brine", "brine", "e.brawl"], ["weigh", "weigh", "e.afterdark"]]) {
-  test(`${enc} on the ${plate} plate: walkable spawns, walls hold, an outcome`, { timeout: 120000 }, async () => {
+  test(`${enc} on the ${plate} plate: walkable spawns, walls hold, an outcome`, { timeout: 120000, skip: BAKED }, async () => {
     const A = await loadPlateArena(CONTENT, plate);
     assert.ok(A.grid.cells.some(Boolean), "the plate has walkable ground");
     const G = createGame({ sources: fights(), seed: 5 }), C = installCombat(G);
@@ -29,7 +32,7 @@ for (const [plate, area, enc] of [["quay", "quay", "e.wardens"], ["brine", "brin
   });
 }
 
-test("solid ground blocks sight for both sides", async () => {
+test("solid ground blocks sight for both sides", { skip: BAKED }, async () => {
   const A = await loadPlateArena(CONTENT, "weigh");
   const { createField } = await import("../sim/field.mjs");
   const G = createGame({ sources: [{ file: "arena.lwd", text: ARENA_LWD }], seed: 5 });
@@ -46,7 +49,7 @@ test("solid ground blocks sight for both sides", async () => {
   assert.ok(found, "the plate has a wall between two walkable cells");
 });
 
-test("a plate with two fight grounds gives each its own marks (the Gut: gut and dogs)", async () => {
+test("a plate with two fight grounds gives each its own marks (the Gut: gut and dogs)", { skip: BAKED }, async () => {
   const gut = await loadPlateArena(CONTENT, "gut"), dogs = await loadPlateArena(CONTENT, "gut", { fightId: "dogs" });
   assert.notDeepEqual(gut.spawns.lamb, dogs.spawns.lamb);
   for (const A of [gut, dogs]) for (const p of [A.spawns.lamb, ...A.spawns.foes]) {

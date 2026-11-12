@@ -1,0 +1,1050 @@
+name: native ci
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'native/**'
+      - '.github/workflows/native-ci.yml'
+  pull_request:
+    paths:
+      - 'native/**'
+      - '.github/workflows/native-ci.yml'
+permissions:
+  contents: read
+defaults:
+  run:
+    working-directory: native
+
+jobs:
+  changelog:
+    # Each change adds changelog.d/<date>-<slug>.md; CHANGELOG.md changes only at release.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Every changelog entry is well formed
+        run: node tools/changelog/assemble.mjs --check
+      - name: The PR adds an entry and does not edit CHANGELOG.md directly
+        env:
+          SKIP_CHANGELOG: ${{ contains(github.event.pull_request.labels.*.name, 'no-changelog') }}
+        run: node tools/ci/changelog_entries.mjs "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
+  build-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      # Windows leg: check out the way a default Git for Windows install does, so a
+      # line-ending rewrite of a pinned file fails here instead of on a reader's machine.
+      - name: Use the Git for Windows line-ending default
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf true
+      - uses: actions/checkout@v4
+      - name: The vendored superstack files match their pins
+        shell: bash
+        run: cd third_party/superstack && sha256sum -c SUPERSTACK.sha256
+      - name: Sealed files are checked out byte for byte
+        shell: bash
+        run: |
+          git ls-files -s -- ":(attr:-text)" | while read -r mode sha stage path; do
+            if [ "$(git hash-object --no-filters -- "$path")" != "$sha" ]; then
+              echo "checkout rewrote a sealed file: $path"
+              exit 1
+            fi
+          done
+          echo "every sealed file matches its committed blob"
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: M3 checks read no third-party model (author, 2026-10-10)
+        shell: bash
+        run: python scripts/check_owned_assets.py
+      - name: The material furnaces and the lighting checks on their full committed grids (M3)
+        shell: bash
+        run: |
+          if [ -x build/test_pbr_energy ]; then d=build; else d=build/Release; fi
+          "$d/test_pbr_energy" --full
+          "$d/test_lighting" --full
+          "$d/test_bake" --full
+          "$d/test_shadows" --full
+      - name: Render and check the default certificate
+        shell: bash
+        run: |
+          mkdir -p out
+          if [ -x build/raw_native_cli ]; then cli=build/raw_native_cli; else cli=build/Release/raw_native_cli.exe; fi
+          "$cli" --out out
+          grep -q '"oracle":"raw-rt-ao-v1"' out/certificate.json
+          grep -q '"schema":"superstack.receipt/1"' out/receipt.json
+          grep -q '"verdict":"verified"' out/arena_certificate.json
+          sha256sum out/frame.ppm out/certificate.json
+      - name: Recheck the certificate from its files
+        shell: bash
+        run: |
+          if [ -x build/raw_native_cli ]; then cli=build/raw_native_cli; else cli=build/Release/raw_native_cli.exe; fi
+          "$cli" verify out
+          if command -v python3 >/dev/null && python3 --version >/dev/null 2>&1; then py=python3; else py=python; fi
+          "$py" scripts/recheck.py out
+      - name: Keep the default render for the cross-platform identity check
+        uses: actions/upload-artifact@v4
+        with:
+          name: default-render-${{ matrix.os }}
+          path: |
+            native/out/certificate.json
+            native/out/receipt.json
+            native/out/channels.json
+            native/out/frame.ppm
+            native/out/ao_rt.pfm
+            native/out/ao_ss.pfm
+      - name: The default build has no GPU backend and says so
+        shell: bash
+        run: |
+          if [ -x build/raw_native_cli ]; then cli=build/raw_native_cli; else cli=build/Release/raw_native_cli.exe; fi
+          ! grep -qi "d3d12.dll" "$cli"
+          set +e; "$cli" --gpu --out gpu-none --width 64 --height 64 >/dev/null; rc=$?; set -e
+          test "$rc" = 4
+          grep -q '"verdict":"unverifiable"' gpu-none/gpu_certificate.json
+          grep -q '"backend":"none"' gpu-none/gpu_certificate.json
+      - name: No third-party shader source, licence header or package import under web/shaders or the core's shaders (author rule, 2026-10-15)
+        shell: bash
+        run: |
+          node tools/ci/no_third_party_shaders.mjs
+          node tools/ci/no_third_party_shaders.mjs --root src/renderer/gpu/shaders
+          node tools/ci/no_third_party_shaders.mjs --root src/renderer --cpp --prefix style_
+          node tools/ci/no_third_party_shaders.mjs --root raw/renderer --cpp --prefix style_
+      - name: The C++ core's style references match the JavaScript references on the same fixtures (ADR 0019, CPU link)
+        shell: bash
+        run: |
+          node tools/port/gen_bluenoise.mjs --check
+          node tools/port/gen_pigments.mjs --check
+          node tools/port/gen_cie.mjs --check
+          node tools/port/export_style_fixtures.mjs style-fixtures
+          if [ -x build/raw_native_cli ]; then cli=build/raw_native_cli; else cli=build/Release/raw_native_cli.exe; fi
+          "$cli" style-parity --fixtures style-fixtures --cpu-only --out style-cpu.json > /dev/null
+      - name: Every node test file (frame graph golden, Motion, world, sound, shaders, templates, tools)
+        shell: bash
+        # Every *.test.mjs under web/, templates/ and tools/, so a new test file needs no edit here.
+        run: node --test $(find web templates tools -name '*.test.mjs' | sort)
+      - name: Without a GPU backend, threads exits 4
+        shell: bash
+        run: |
+          if [ -x build/raw_native_cli ]; then cli=build/raw_native_cli; else cli=build/Release/raw_native_cli.exe; fi
+          set +e; "$cli" threads --out threads-none; rc=$?; set -e
+          test "$rc" = 4
+      - name: The generated HLSL and pass layout match the WGSL
+        shell: bash
+        run: |
+          if command -v python3 >/dev/null && python3 --version >/dev/null 2>&1; then py=python3; else py=python; fi
+          "$py" scripts/wgsl_to_hlsl.py --selftest
+          "$py" scripts/wgsl_to_hlsl.py --check
+          "$py" scripts/hw_pt_hlsl.py --check
+      - name: Every include follows the layer rules (docs/architecture/ARCHITECTURE.md)
+        shell: bash
+        run: |
+          if command -v python3 >/dev/null && python3 --version >/dev/null 2>&1; then py=python3; else py=python; fi
+          "$py" scripts/check_layers.py --selftest
+          "$py" scripts/check_layers.py
+      - name: The renderer and scene APIs keep API snapshot 1 (ADR 0015, M3 criterion 5)
+        shell: bash
+        run: |
+          if command -v python3 >/dev/null && python3 --version >/dev/null 2>&1; then py=python3; else py=python; fi
+          "$py" scripts/api_dump.py --selftest
+          "$py" scripts/api_dump.py --check
+      - name: Every third-party file matches third_party/MANIFEST.md (M2 criterion 6)
+        shell: bash
+        run: |
+          if command -v python3 >/dev/null && python3 --version >/dev/null 2>&1; then py=python3; else py=python; fi
+          "$py" scripts/check_third_party.py --selftest
+          "$py" scripts/check_third_party.py
+      - name: Every case of the identity matrix matches the committed golden hashes
+        # Ten renders (views, sizes, motion, no ray-traced pass, four threads)
+        # and the no-GPU answer: every file each one writes, hashed. The golden
+        # manifest is GCC's; MSVC must give the same bytes. arena_certificate.json
+        # is left out because MSVC and libstdc++ allocate differently.
+        shell: bash
+        run: |
+          if [ -x build/raw_native_cli ]; then cli=build/raw_native_cli; else cli=build/Release/raw_native_cli.exe; fi
+          if command -v python3 >/dev/null && python3 --version >/dev/null 2>&1; then py=python3; else py=python; fi
+          "$py" scripts/identity_matrix.py run "$cli" identity.json identity-out --no-gpu-build
+          "$py" scripts/identity_matrix.py compare evidence/identity-golden.json identity.json --except arena_certificate.json
+      - name: Fetch the glTF models of M2 criterion 1 (pinned commit, verified by git blob hash)
+        shell: bash
+        run: |
+          if command -v python3 >/dev/null && python3 --version >/dev/null 2>&1; then py=python3; else py=python; fi
+          "$py" tools/assets/fetch_gltf.py gltf-models
+      - name: The ten glTF models render byte-identically to the golden (M2 criterion 1)
+        shell: bash
+        run: |
+          if [ -x build/raw_native_cli ]; then cli=build/raw_native_cli; else cli=build/Release/raw_native_cli.exe; fi
+          if command -v python3 >/dev/null && python3 --version >/dev/null 2>&1; then py=python3; else py=python; fi
+          "$py" scripts/identity_matrix.py run "$cli" gltf.json gltf-out --models gltf-models
+          "$py" scripts/identity_matrix.py compare evidence/m2-gltf-golden.json gltf.json --except arena_certificate.json
+      - name: Lighting model 1, the test-only oracle, renders every byte of the model 1 goldens (evidence/m3-lighting-v2-bounds.json l1)
+        shell: bash
+        env:
+          RAW_NATIVE_LIGHTING: v1
+        run: |
+          if [ -x build/raw_native_cli ]; then cli=build/raw_native_cli; else cli=build/Release/raw_native_cli.exe; fi
+          if command -v python3 >/dev/null && python3 --version >/dev/null 2>&1; then py=python3; else py=python; fi
+          "$py" scripts/identity_matrix.py run "$cli" identity-v1.json identity-v1-out --no-gpu-build
+          "$py" scripts/identity_matrix.py compare evidence/identity-golden-v1.json identity-v1.json --except arena_certificate.json
+          "$py" scripts/identity_matrix.py run "$cli" gltf-v1.json gltf-v1-out --models gltf-models
+          "$py" scripts/identity_matrix.py compare evidence/m2-gltf-golden-v1.json gltf-v1.json --except arena_certificate.json
+          mkdir -p out-v1 && "$cli" --out out-v1 > /dev/null
+      - name: Keep the model 1 default render for the v0.5.0 check
+        uses: actions/upload-artifact@v4
+        with:
+          name: default-render-v1-${{ matrix.os }}
+          path: |
+            native/out-v1/certificate.json
+            native/out-v1/receipt.json
+            native/out-v1/channels.json
+            native/out-v1/frame.ppm
+            native/out-v1/ao_rt.pfm
+            native/out-v1/ao_ss.pfm
+  d3d12:
+    # Builds the native D3D12 backend with the Windows SDK's DXC. The runner has
+    # no GPU: the hardware runtime test must report itself skipped with its
+    # reason (exit 77), and --gpu must exit 4 with an unverifiable certificate.
+    # WARP, the Windows software rasterizer, then runs the same D3D12 code path
+    # on the CPU; it is not a GPU and its results are not GPU evidence.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure with RAW_NATIVE_GPU_D3D12=ON
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DRAW_NATIVE_GPU_D3D12=ON
+      - name: Build (compiles every HLSL pass to DXIL)
+        run: cmake --build build --config Release
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: The hardware runtime test is skipped, with its reason, and never passes without a GPU
+        shell: bash
+        run: |
+          set +e; build/Release/gpu_d3d12_runtime.exe | tee runtime.txt; rc=${PIPESTATUS[0]}; set -e
+          if [ "$rc" = 77 ]; then
+            reason=$(grep '^SKIP:' runtime.txt)
+            test -n "$reason"
+            echo "::notice title=D3D12 runtime test skipped::$reason"
+          elif [ "$rc" = 0 ]; then
+            grep -q '^adapter: ' runtime.txt
+            ! grep -qi '^adapter: microsoft' runtime.txt
+            echo "::notice title=D3D12 runtime test ran::$(grep '^adapter: ' runtime.txt)"
+          else
+            exit 1
+          fi
+      - name: Without an adapter, --gpu exits 4 with an unverifiable certificate
+        shell: bash
+        run: |
+          set +e; build/Release/raw_native_cli.exe --gpu --out gpu-hw --width 64 --height 64; rc=$?; set -e
+          if [ "$rc" = 4 ]; then
+            grep -q '"verdict":"unverifiable"' gpu-hw/gpu_certificate.json
+            grep -q '"backend":"d3d12"' gpu-hw/gpu_certificate.json
+          else
+            test "$rc" = 0 && grep -q '"verdict":"verified"' gpu-hw/gpu_certificate.json
+            ! grep -q '"vendor":"microsoft"' gpu-hw/gpu_certificate.json
+          fi
+      - name: Threads compiles to DXIL and answers without an adapter
+        # The Threads passes are compiled by DXC in the build step above. WARP
+        # did not finish a 160 x 90 Threads frame in ten minutes, so the run
+        # here only checks the no-adapter answer; hardware runs are in README.
+        shell: bash
+        run: |
+          set +e; build/Release/raw_native_cli.exe threads --out threads-hw --width 64 --height 36 --particles 1024 --frames 1; rc=$?; set -e
+          test "$rc" = 4 -o "$rc" = 0
+      - name: The D3D12 code path on WARP (software, not a GPU) matches the CPU reference
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          build/Release/gpu_d3d12_runtime.exe
+          build/Release/raw_native_cli.exe --gpu --out gpu-warp --width 128 --height 128 --prev-eye 4.3,4,5.7 >/dev/null
+          grep -q '"verdict":"verified"' gpu-warp/gpu_certificate.json
+          grep -q '"description":"Microsoft Basic Render Driver"' gpu-warp/gpu_certificate.json
+      - name: The glTF material model on WARP matches its float64 reference within the committed bound (M3 materials)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          build/Release/gpu_pbr_parity.exe pbr-warp.json
+          build/Release/raw_native_cli.exe pbr-parity | grep -q '"pass": true'
+      - name: RHI version 3 on WARP with the debug layer; formats, depth and the G-buffer gate, raw-hall's G-buffer is a recorded open failure (evidence/m3-rhi3-runs.json) (M3)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+          RAW_NATIVE_D3D12_DEBUG: "1"
+        run: |
+          build/Release/raw_native_cli.exe raster-identity --out rhi3-warp.json || true
+          python -c "import json,sys; d=json.load(open('rhi3-warp.json')); ok=not d['error'] and all(f['mismatches']==0 for f in d['formats']) and d['depth_order_equal'] and d['depth_control_differs'] and d['control_moved_triangle_fails'] and d['subpixel_bits']==8 and all(g['pass'] for g in d['gbuffer'] if g['scene']!='raw-hall nave'); print(json.dumps(d['gbuffer'])); sys.exit(0 if ok else 1)"
+      - name: Cascaded shadow maps on WARP with the debug layer; lookups, contact shadows and controls gate, the map identity is a recorded failure (evidence/m3-shadows-runs.json)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+          RAW_NATIVE_D3D12_DEBUG: "1"
+        run: |
+          build/Release/raw_native_cli.exe shadow-parity --out shadow-warp.json > /dev/null || true
+          python tests/gpu/shadow_gate.py shadow-warp.json --min-scenes 4 --gate-maps
+      - name: GTAO, SSR and the TAA resolve on WARP with the debug layer; TAA parity is a recorded open failure (evidence/m3-post-runs.json)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+          RAW_NATIVE_D3D12_DEBUG: "1"
+        run: |
+          build/Release/raw_native_cli.exe post-parity --out post-warp.json > /dev/null || true
+          python tests/gpu/post_gate.py post-warp.json --min-scenes 5
+      - name: The core's style passes and post-stack driver on WARP match the C++ float64 reference, which matches the JavaScript one (ADR 0019)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+          RAW_NATIVE_D3D12_DEBUG: "1"
+        run: |
+          node tools/port/export_style_fixtures.mjs style-fixtures
+          build/Release/raw_native_cli.exe style-parity --fixtures style-fixtures --out style-warp.json
+          # A 4K frame through the style passes' dispatch (129,600 groups, folded into two dimensions).
+          build/Release/raw_native_cli.exe style-4k --out style-4k-warp.json
+      - name: Clusters, the environment prefilter and lit shading on WARP match the float64 reference (M3 lighting)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          build/Release/gpu_lighting_parity.exe lighting-warp.json
+          build/Release/raw_native_cli.exe material-gallery --out gallery-warp --size 64 --spp 1
+          grep -q '"backend": "d3d12"' gallery-warp/gallery.json
+          test -s gallery-warp/gallery-gpu.png && test -s gallery-warp/gallery-cpu.pfm
+      - name: The hardware probe on WARP agrees with functional checks, timestamps scale with work, and every feature can be forced off (HW H1.0)
+        shell: bash
+        run: |
+          RAW_NATIVE_D3D12_WARP=1 RAW_NATIVE_D3D12_DEBUG=1 build/Release/gpu_hw_probe.exe hw-warp.json
+          RAW_NATIVE_D3D12_WARP=1 RAW_NATIVE_D3D12_DEBUG=1 python scripts/hw_forced_off.py build/Release/gpu_hw_probe.exe hw-forced-off.json
+      - name: raw-native's own rasterizer on WARP with the debug layer matches its CPU reference bit for bit, every scene and mode (RT stage R1, C4 and C5)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+          RAW_NATIVE_D3D12_DEBUG: "1"
+        run: |
+          build/Release/gpu_swr_parity.exe swr-warp.json
+          build/Release/raw_native_cli.exe swr-render --out swr-warp
+          python -c "import json,sys; d=json.load(open('swr-warp/swr.json')); f=d['frames']; print(json.dumps(f)); sys.exit(0 if len(f)==6 and all(x['pixels_differing']==0 for x in f) else 1)"
+      - name: The compute PLOC BVH on WARP equals its CPU reference node for node, and its traversal gives the brute-force answer (RT stage R2, B1 to B3)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          build/Release/gpu_rt_bvh_parity.exe rt-bvh-warp.json > /dev/null
+          grep -q '"pass": true' rt-bvh-warp.json
+      - name: The compute path tracer on WARP against its CPU reference and the R1 rasterizer; P4's albedo and depth are a recorded open failure (evidence/rt-r2-runs.json)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          build/Release/gpu_rt_pt_parity.exe rt-pt-warp.json > /dev/null || true
+          python tests/gpu/pt_gate.py rt-pt-warp.json
+      - name: Hybrid ray-traced sun shadows and reflections over the R1 visibility buffer on WARP match CPU rays (RT stage R2, H1 and H2)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          build/Release/gpu_rt_hybrid_parity.exe rt-hybrid-warp.json > /dev/null
+          grep -q '"pass": true' rt-hybrid-warp.json
+      - name: The GPU ray marcher on WARP against its float64 reference; the Mandelbulb and the fog march are recorded open failures (RT stage R3, M2 to M7)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          build/Release/gpu_sdf_parity.exe sdf-warp.json > /dev/null || true
+          python tests/gpu/sdf_gate.py sdf-warp.json
+      - name: Inline ray query on WARP against the CPU BVH; the main bound is a recorded WARP failure (evidence/hw-h1-1-runs.json), so this step gates on both controls and the fallback (HW H1.1)
+        shell: bash
+        run: |
+          set +e; RAW_NATIVE_D3D12_WARP=1 build/Release/raw_native_cli.exe hw-rayquery --warmup 0 --repeats 1 --out hw-rq.json > /dev/null; set -e
+          RAW_NATIVE_D3D12_WARP=1 RAW_NATIVE_HW_DISABLE=ray_query build/Release/raw_native_cli.exe hw-rayquery --out hw-rq-off.json > /dev/null
+          python scripts/hw_rayquery_gate.py hw-rq.json hw-rq-off.json
+      - name: Inline ray query H1.1b on WARP (hall without coincident faces, conditioned tolerances); WARP's TMin defect is recorded, so this gates the controls, the coplanar control and the fallback (HW H1.1b)
+        shell: bash
+        run: |
+          set +e; RAW_NATIVE_D3D12_WARP=1 build/Release/raw_native_cli.exe hw-rayquery --criterion b --warmup 0 --repeats 1 --out hw-rqb.json > /dev/null; set -e
+          RAW_NATIVE_D3D12_WARP=1 RAW_NATIVE_HW_DISABLE=ray_query build/Release/raw_native_cli.exe hw-rayquery --criterion b --out hw-rqb-off.json > /dev/null
+          python scripts/hw_rayquery_gate.py hw-rqb.json hw-rqb-off.json
+      - name: Ray reconstruction dataset tools on the CPU path tracer are deterministic, and the TAA baseline runs over their frames (HW H2)
+        shell: bash
+        run: |
+          for o in rr-a rr-b; do build/Release/raw_native_cli.exe rr-render --cpu --scene builtin --path 1 --frames 3 --width 32 --height 18 --spp 8 --chunk 4 --out $o > /dev/null; done
+          for f in rr-a/f00*_in.f32 rr-a/f00*_ref.f32 rr-a/f00*_tri.i32; do cmp "$f" "rr-b/$(basename $f)"; done
+          mkdir -p rr-c && python -c "import array; [array.array('f', [v for i, v in enumerate(array.array('f', open(f'rr-a/f{k:03d}_ref.f32', 'rb').read())) if i % 7 < 3]).tofile(open(f'rr-c/f{k:03d}.f32', 'wb')) for k in range(3)]"
+          build/Release/raw_native_cli.exe rr-taa --seq rr-a --in rr-c --out rr-t | grep -q '"frames": 3'
+      - name: Async compute on WARP matches the serial order and the CPU, a wrong fence wait is caught, and the feature can be forced off (HW H1.4)
+        shell: bash
+        run: |
+          RAW_NATIVE_D3D12_WARP=1 RAW_NATIVE_D3D12_DEBUG=1 build/Release/raw_native_cli.exe hw-async --warmup 0 --repeats 2 --out hw-async.json
+          RAW_NATIVE_D3D12_WARP=1 RAW_NATIVE_HW_DISABLE=async_compute build/Release/raw_native_cli.exe hw-async --warmup 0 --repeats 1 --out hw-async-off.json
+      - name: A wave-intrinsic prefix sum and an fp16 bilateral filter on WARP match their portable forms, with controls (HW H1.2)
+        shell: bash
+        run: |
+          RAW_NATIVE_D3D12_WARP=1 RAW_NATIVE_D3D12_DEBUG=1 build/Release/raw_native_cli.exe hw-wave16 --warmup 0 --repeats 1 --out hw-wave16.json > /dev/null
+          RAW_NATIVE_D3D12_WARP=1 RAW_NATIVE_HW_DISABLE=wave_ops,native_16bit build/Release/raw_native_cli.exe hw-wave16 --warmup 0 --repeats 1 --out hw-wave16-off.json > /dev/null
+      - name: Mesh and amplification shaders on WARP draw the same visibility buffer as vertex pulling; the cone control is a recorded miss on one view (evidence/hw-h1-3-runs.json) (HW H1.3)
+        shell: bash
+        run: |
+          set +e; RAW_NATIVE_D3D12_WARP=1 RAW_NATIVE_D3D12_DEBUG=1 build/Release/raw_native_cli.exe hw-mesh --warmup 0 --repeats 1 --out hw-mesh.json > /dev/null; set -e
+          RAW_NATIVE_D3D12_WARP=1 RAW_NATIVE_HW_DISABLE=mesh_shader build/Release/raw_native_cli.exe hw-mesh --warmup 0 --repeats 1 --out hw-mesh-off.json > /dev/null
+          python scripts/hw_mesh_gate.py hw-mesh.json hw-mesh-off.json
+      - name: Textures, samplers and raster passes on WARP match the CPU sampler reference (M2 criterion 3)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          build/Release/gpu_texture_identity.exe texture-warp.json
+          build/Release/raw_native_cli.exe texture-identity | grep -q '"pass": true'
+          build/Release/raw_native_cli.exe verify gpu-warp
+          build/Release/raw_native_cli.exe verify gpu-warp/cpu
+          grep -q '"schema":"superstack.receipt/1"' gpu-warp/gpu_receipt.json
+          grep -q '"identity":"MATCH"' gpu-warp/gpu_certificate.json
+          cat gpu-warp/gpu_receipt.json
+          cat gpu-warp/gpu_certificate.json
+      - name: The frame graph on WARP verifies across the quick identity matrix
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          python scripts/identity_matrix.py run build/Release/raw_native_cli.exe warp.json warp-out --gpu --quick
+          n=$(grep -l '"verdict":"verified"' warp-out/*/gpu_certificate.json | wc -l)
+          echo "verified GPU certificates: $n of 4"
+          test "$n" = 4
+      - name: The ten glTF models render on D3D12 (WARP) with verified GPU certificates (M2 criterion 1)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          python tools/assets/fetch_gltf.py gltf-models
+          python scripts/identity_matrix.py run build/Release/raw_native_cli.exe gltf-warp.json gltf-warp --models gltf-models --gpu
+          n=$(grep -l '"verdict":"verified"' gltf-warp/*/gpu_certificate.json | wc -l)
+          echo "verified GPU certificates: $n of 10"
+          test "$n" = 10
+      - name: Native presentation on WARP with the debug layer; 600 presented frames twice equal each other and the offscreen render, the control fails, resize, minimise, fullscreen and device removal recover, HDR10 within one code (N2, evidence/n2-presentation-bounds.json)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+          RAW_NATIVE_D3D12_DEBUG: "1"
+        run: |
+          p=build/Release/raw_native_present.exe; g=tests/gpu/present_gate.py
+          $p run --frames 600 --out n2-run1.json
+          $p run --frames 600 --out n2-run2.json
+          $p run --frames 600 --offscreen --out n2-offscreen.json
+          python $g same n2-run1.json n2-run2.json n2-offscreen.json
+          $p run --frames 600 --control --out n2-control.json
+          python $g control n2-offscreen.json n2-control.json
+          $p run --frames 600 --lifecycle --out n2-lifecycle.json
+          $p run --frames 600 --lifecycle --offscreen --out n2-lifecycle-offscreen.json
+          python $g lifecycle n2-lifecycle.json n2-lifecycle-offscreen.json
+          $p run --frames 60 --vsync off --fullscreen-check --out n2-fullscreen.json
+          python -c "import json,sys; d=json.load(open('n2-fullscreen.json')); print(d['events']); sys.exit(0 if d['fullscreen_ok'] else 1)"
+          $p hdr --out n2-hdr.json
+          python $g hdr n2-hdr.json
+          $p pacing --frames 600 --warmup 30 --out n2-pacing-warp.json
+          python $g pacing n2-pacing-warp.json --warp
+      - name: Keep the N2 records
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: n2-presentation-warp
+          path: native/n2-*.json
+  vulkan-linux:
+    # N3 (evidence/n3-vulkan-raster-bounds.json): the RHI on Vulkan with lavapipe, Mesa's software
+    # driver, presenting on X11 (Xvfb) and on Wayland (a headless Weston), with the Khronos validation
+    # layer on: any error it reports fails the run. lavapipe is not a GPU; these are not GPU results.
+    runs-on: ubuntu-24.04
+    env:
+      VK_DRIVER_FILES: /usr/share/vulkan/icd.d/lvp_icd.json
+      RAW_NATIVE_VK_VALIDATION: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the Vulkan loader and headers, lavapipe, glslang, the validation layer and the window systems' client libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libvulkan-dev glslang-tools mesa-vulkan-drivers vulkan-validationlayers \
+            libxcb1-dev libwayland-dev wayland-protocols xvfb weston
+      - name: Configure with RAW_NATIVE_VULKAN_RHI=ON
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DRAW_NATIVE_VULKAN_RHI=ON
+      - name: Build
+        run: cmake --build build -j 4 --target raw_native_present_vk raw_native_cli_vk
+      - name: Start Xvfb and a headless Weston
+        run: |
+          Xvfb :99 -screen 0 1280x720x24 > xvfb.log 2>&1 &
+          mkdir -p /tmp/xdg && chmod 700 /tmp/xdg
+          XDG_RUNTIME_DIR=/tmp/xdg weston --backend=headless --renderer=pixman --socket=wayland-n3 --width=1280 --height=720 --idle-time=0 > weston.log 2>&1 &
+          sleep 3
+          test -S /tmp/xdg/wayland-n3 || { cat weston.log; exit 1; }
+          echo "DISPLAY=:99" >> "$GITHUB_ENV"
+          echo "XDG_RUNTIME_DIR=/tmp/xdg" >> "$GITHUB_ENV"
+      - name: N3 on X11 with lavapipe; 600 presented frames twice equal the offscreen render and the D3D12 WARP render of N2, the control fails, resize, minimise, fullscreen and device loss recover
+        env:
+          RAW_NATIVE_WINDOW: x11
+        run: |
+          p=build/raw_native_present_vk; g=tests/gpu/present_gate.py
+          $p selftest
+          $p run --frames 600 --out n3-x11-run1.json
+          $p run --frames 600 --out n3-x11-run2.json
+          $p run --frames 600 --offscreen --out n3-offscreen.json
+          python3 $g same n3-x11-run1.json n3-x11-run2.json n3-offscreen.json
+          python3 $g same evidence/n2-warp/offscreen.json n3-offscreen.json
+          $p run --frames 600 --control --out n3-x11-control.json
+          python3 $g control n3-offscreen.json n3-x11-control.json
+          $p run --frames 600 --lifecycle --out n3-x11-lifecycle.json
+          $p run --frames 600 --lifecycle --offscreen --out n3-lifecycle-offscreen.json
+          python3 $g lifecycle n3-x11-lifecycle.json n3-lifecycle-offscreen.json
+          $p run --frames 60 --fullscreen-check --out n3-x11-fullscreen.json
+          python3 -c "import json,sys; d=json.load(open('n3-x11-fullscreen.json')); print(d['events']); sys.exit(0 if d['fullscreen_ok'] else 1)"
+          $p pacing --frames 600 --warmup 30 --width 320 --height 180 --out n3-x11-pacing.json
+          python3 $g pacing n3-x11-pacing.json --harness
+      - name: N3 on Wayland with lavapipe; the same frames, lifecycle without the minimise step (xdg-shell does not report it), fullscreen
+        env:
+          RAW_NATIVE_WINDOW: wayland
+          WAYLAND_DISPLAY: wayland-n3
+        run: |
+          p=build/raw_native_present_vk; g=tests/gpu/present_gate.py
+          $p run --frames 600 --out n3-wayland-run1.json
+          $p run --frames 600 --out n3-wayland-run2.json
+          python3 $g same n3-wayland-run1.json n3-wayland-run2.json n3-offscreen.json
+          $p run --frames 600 --lifecycle --out n3-wayland-lifecycle.json
+          python3 $g lifecycle n3-wayland-lifecycle.json n3-lifecycle-offscreen.json --no-minimise
+          $p run --frames 60 --fullscreen-check --out n3-wayland-fullscreen.json
+          python3 -c "import json,sys; d=json.load(open('n3-wayland-fullscreen.json')); print(d['events']); sys.exit(0 if d['fullscreen_ok'] else 1)"
+      - name: N3 criteria 2 and 3 on lavapipe; the renderer's passes in SPIR-V against the same references and gates as WARP; the swap control fails; lighting shading and the shadow-map identity are recorded misses (evidence/n3-vulkan-compute-runs.json)
+        run: |
+          c=build/raw_native_cli_vk
+          # The Vulkan build's CPU outputs, byte for byte against the committed CPU golden. The golden's
+          # no-gpu-64 case checks that a build without a GPU answers --gpu with exit 4; this build has one,
+          # so that case is left out (dated addendum in evidence/n3-vulkan-compute-bounds.json).
+          python3 scripts/identity_matrix.py run $c n3c-cpu.json n3c-cpu-out
+          python3 -c "import json; g=json.load(open('evidence/identity-golden.json')); g['cases'].pop('no-gpu-64'); json.dump(g, open('golden-cpu-only.json', 'w'))"
+          python3 scripts/identity_matrix.py compare golden-cpu-only.json n3c-cpu.json --except arena_certificate.json
+          $c --gpu --out n3c-gpu --width 128 --height 128 > /dev/null
+          grep -q '"verdict":"verified"' n3c-gpu/gpu_certificate.json
+          python3 scripts/identity_matrix.py run $c n3c-quick.json n3c-quick-out --gpu --quick
+          n=$(grep -l '"verdict":"verified"' n3c-quick-out/*/gpu_certificate.json | wc -l); echo "verified: $n of 4"; test "$n" = 4
+          if [ -f evidence/n3-identity-golden-vulkan-lavapipe.json ]; then
+            python3 scripts/identity_matrix.py compare evidence/n3-identity-golden-vulkan-lavapipe.json n3c-quick.json --except arena_certificate.json
+          fi
+          # Lighting model 1, the test-only oracle, against the model 1 GPU golden of this device class.
+          RAW_NATIVE_LIGHTING=v1 python3 scripts/identity_matrix.py run $c n3c-quick-v1.json n3c-quick-v1-out --gpu --quick
+          python3 scripts/identity_matrix.py compare evidence/n3-identity-golden-vulkan-lavapipe-v1.json n3c-quick-v1.json --except arena_certificate.json
+          RAW_NATIVE_SPIRV_CONTROL=swap python3 scripts/identity_matrix.py run $c n3c-control.json n3c-control-out --gpu --quick
+          n=$(grep -l '"verdict":"verified"' n3c-control-out/*/gpu_certificate.json | wc -l); echo "control verified: $n of 4 (must be fewer)"; test "$n" -lt 4
+          $c texture-identity > n3c-texture.json; grep -q '"pass": true' n3c-texture.json
+          $c pbr-parity > n3c-pbr.json; grep -q '"pass": true' n3c-pbr.json
+          $c lighting-parity > n3c-lighting.json || echo "lighting-parity: recorded miss, see the runs file"
+          $c raster-identity --out n3c-rhi3.json > /dev/null || true
+          python3 -c "import json,sys; d=json.load(open('n3c-rhi3.json')); ok=not d['error'] and all(f['mismatches']==0 for f in d['formats']) and d['depth_order_equal'] and d['depth_control_differs'] and d['control_moved_triangle_fails'] and all(g['pass'] for g in d['gbuffer'] if g['scene']!='raw-hall nave'); print(json.dumps(d['gbuffer'])); sys.exit(0 if ok else 1)"
+          $c shadow-parity --out n3c-shadow.json > /dev/null || true
+          python3 tests/gpu/shadow_gate.py n3c-shadow.json --min-scenes 4
+          $c post-parity --out n3c-post.json > /dev/null || true
+          python3 tests/gpu/post_gate.py n3c-post.json --min-scenes 5
+          $c swr-render --out n3c-swr > /dev/null
+          python3 -c "import json,sys; f=json.load(open('n3c-swr/swr.json'))['frames']; print([x['pixels_differing'] for x in f]); sys.exit(0 if len(f)==6 and all(x['pixels_differing']==0 for x in f) else 1)"
+          $c swr-parity > n3c-swr-parity.json; grep -q '"pass": true' n3c-swr-parity.json
+          $c rt-bvh-parity --quick > n3c-bvh.json; grep -q '"pass": true' n3c-bvh.json
+          $c rt-pt-parity --quick > n3c-pt.json || true
+          python3 tests/gpu/pt_gate.py n3c-pt.json
+          $c rt-hybrid-parity > n3c-hybrid.json; grep -q '"pass": true' n3c-hybrid.json
+          $c sdf-parity --quick > n3c-sdf.json || true
+          python3 tests/gpu/sdf_gate.py n3c-sdf.json
+          node tools/port/export_style_fixtures.mjs style-fixtures
+          $c style-parity --fixtures style-fixtures --out n3c-style.json
+          $c style-4k --out n3c-style-4k.json
+      - name: The ten glTF models on the Vulkan build; CPU outputs byte-identical to the M2 golden and GPU certificates verified on lavapipe (N3 criterion 2, M2 criterion 1)
+        run: |
+          python3 tools/assets/fetch_gltf.py gltf-models
+          python3 scripts/identity_matrix.py run build/raw_native_cli_vk n3c-gltf-cpu.json n3c-gltf-cpu --models gltf-models
+          python3 scripts/identity_matrix.py compare evidence/m2-gltf-golden.json n3c-gltf-cpu.json --except arena_certificate.json
+          python3 scripts/identity_matrix.py run build/raw_native_cli_vk n3c-gltf.json n3c-gltf --models gltf-models --gpu
+          n=$(grep -l '"verdict":"verified"' n3c-gltf/*/gpu_certificate.json | wc -l)
+          echo "verified GPU certificates: $n of 10"
+          test "$n" = 10
+      - name: Keep the N3 records
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: n3-vulkan-lavapipe
+          path: |
+            native/n3-*.json
+            native/n3c-*.json
+            native/n3c-quick-out/*/gpu_certificate.json
+            native/weston.log
+  fuzz-sanitizers:
+    # ROADMAP M2 criterion 2: one million fuzzed glTF inputs under AddressSanitizer and
+    # UndefinedBehaviorSanitizer; any report, other exception or slow input fails the job.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the glTF fuzzer with the sanitizers
+        run: |
+          cmake -S . -B build-san -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer"
+          cmake --build build-san --target fuzz_gltf -j 4
+      - name: One million inputs
+        run: build-san/fuzz_gltf 1000000 1 1000 gltf-fuzz.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: gltf-fuzz, path: native/gltf-fuzz.json, retention-days: 30 }
+  wasm:
+    runs-on: ubuntu-24.04
+    env:
+      EMSDK_VERSION: 6.0.11
+      # The release wasm is built with CMake 4.2.0 (cmake/wasm.cmake). 4.2
+      # adds -fPIC to Emscripten compiles, so another CMake changes the bytes.
+      CMAKE_VERSION_PIN: 4.2.0
+      CMAKE_SHA256: bbcebd4c433eab3af03a8c80bb5d84e8dfc3ff8a4ab9d01547b21240c23f7c2c
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the pinned CMake
+        run: |
+          cd "$RUNNER_TEMP"
+          f="cmake-$CMAKE_VERSION_PIN-linux-x86_64"
+          curl -fsSLO "https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION_PIN/$f.tar.gz"
+          echo "$CMAKE_SHA256  $f.tar.gz" | sha256sum -c -
+          tar -xzf "$f.tar.gz"
+          echo "$RUNNER_TEMP/$f/bin" >> "$GITHUB_PATH"
+      - name: CMake is the pinned version
+        run: |
+          cmake --version
+          test "$(cmake --version | head -n1)" = "cmake version $CMAKE_VERSION_PIN"
+      - name: Install emsdk
+        run: |
+          git clone https://github.com/emscripten-core/emsdk.git "$RUNNER_TEMP/emsdk"
+          cd "$RUNNER_TEMP/emsdk"
+          ./emsdk install "$EMSDK_VERSION"
+          ./emsdk activate "$EMSDK_VERSION"
+      - name: Build native and wasm
+        run: |
+          source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DRAW_NATIVE_BUILD_TESTS=OFF
+          cmake --build build
+          cmake --preset wasm
+          cmake --build --preset wasm
+          grep -qx 'CMAKE_CACHE_MAJOR_VERSION:INTERNAL=4' build-wasm/CMakeCache.txt
+          grep -qx 'CMAKE_CACHE_MINOR_VERSION:INTERNAL=2' build-wasm/CMakeCache.txt
+          grep -qx 'CMAKE_CACHE_PATCH_VERSION:INTERNAL=0' build-wasm/CMakeCache.txt
+          grep -qx 'RAW_NATIVE_SUPERSTACK_COMPILES:INTERNAL=1' build-wasm/CMakeCache.txt
+          sha256sum build-wasm/raw-native.wasm build-wasm/raw-native.mjs
+      - name: The superstack vectors pass under Emscripten
+        run: |
+          source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          mkdir -p build-vectors
+          em++ -std=c++23 -O1 -fexceptions -sNODERAWFS=1 -sALLOW_MEMORY_GROWTH=1             -I third_party/superstack third_party/superstack/tests/run_vectors.cpp             -o build-vectors/run_vectors.js
+          node build-vectors/run_vectors.js third_party/superstack
+      - name: Keep the wasm build for comparison
+        uses: actions/upload-artifact@v4
+        with:
+          name: raw-native-wasm-linux
+          path: |
+            native/build-wasm/raw-native.wasm
+            native/build-wasm/raw-native.mjs
+      - name: Build the WebGPU module (compiles WGSL into the binary; no GPU on the runner)
+        run: |
+          source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          cmake --preset wasm-gpu
+          cmake --build --preset wasm-gpu
+          test -s build-wasm-gpu/raw-native-gpu.wasm
+          sha256sum build-wasm-gpu/raw-native-gpu.wasm build-wasm-gpu/raw-native-gpu.mjs
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: The WebGPU build's textures, samplers and raster passes match the CPU sampler reference in Chrome on SwiftShader (M2 criterion 3)
+        run: |
+          python -m pip install playwright==1.58.0
+          python tests/web/rhi_texture.py --dir build-wasm-gpu --adapter swiftshader --out texture-webgpu.json
+      - name: The ten glTF models render on the WebGPU build in Chrome on SwiftShader with verified GPU certificates (M2 criterion 1)
+        run: |
+          python tools/assets/fetch_gltf.py gltf-models
+          python tests/web/gpu_models.py gltf-models --dir build-wasm-gpu --adapter swiftshader --out gltf-webgpu.json
+      - name: The WebGPU build's clusters, prefilter and lit shading match the float64 reference in Chrome on SwiftShader (M3 lighting)
+        run: python tests/web/rhi_texture.py --command lighting-parity --dir build-wasm-gpu --adapter swiftshader --out lighting-webgpu.json
+      - name: RHI version 3 in Chrome on SwiftShader; the G-buffer part is a recorded failure (evidence/m3-rhi3-runs.json), so this step gates on formats, depth and the control
+        run: |
+          python tests/web/rhi_texture.py --command raster-identity --dir build-wasm-gpu --adapter swiftshader --out rhi3-webgpu.json || true
+          python -c "import json,sys; d=json.load(open('rhi3-webgpu.json')); ok=not d['error'] and all(f['mismatches']==0 for f in d['formats']) and d['depth_order_equal'] and d['depth_control_differs'] and d['control_moved_triangle_fails'] and d['subpixel_bits']==4; print(json.dumps(d['gbuffer'])); sys.exit(0 if ok else 1)"
+      - name: Cascaded shadow maps in Chrome on SwiftShader; lookups, contact shadows and controls gate, the map identity is a recorded failure (evidence/m3-shadows-runs.json)
+        run: |
+          python tests/web/rhi_texture.py --command shadow-parity --dir build-wasm-gpu --adapter swiftshader --out shadow-webgpu.json || true
+          python tests/gpu/shadow_gate.py shadow-webgpu.json --min-scenes 4
+      - name: GTAO, SSR and the TAA resolve in Chrome on SwiftShader; TAA parity is a recorded open failure (evidence/m3-post-runs.json)
+        run: |
+          python tests/web/rhi_texture.py --command post-parity --dir build-wasm-gpu --adapter swiftshader --out post-webgpu.json || true
+          python tests/gpu/post_gate.py post-webgpu.json --min-scenes 5
+      - name: raw-native's own rasterizer in Chrome on SwiftShader matches its CPU reference (RT stage R1, C4 and C5)
+        run: python tests/web/rhi_texture.py --command swr-parity --dir build-wasm-gpu --adapter swiftshader --out swr-webgpu.json
+      - name: The compute PLOC BVH and its traversal in Chrome on SwiftShader, quick (20,000 rays a scene; RT stage R2, B1 to B3)
+        run: python tests/web/rhi_texture.py --command rt-bvh-parity --args=--quick --dir build-wasm-gpu --adapter swiftshader --out rt-bvh-webgpu.json
+      - name: The compute path tracer in Chrome on SwiftShader, quick; P4's albedo and depth are a recorded open failure
+        run: |
+          python tests/web/rhi_texture.py --command rt-pt-parity --args=--quick --dir build-wasm-gpu --adapter swiftshader --timeout 480 --out rt-pt-webgpu.json || true
+          python tests/gpu/pt_gate.py rt-pt-webgpu.json
+      - name: Hybrid ray-traced shadows and reflections in Chrome on SwiftShader match CPU rays (RT stage R2, H1 and H2)
+        run: python tests/web/rhi_texture.py --command rt-hybrid-parity --dir build-wasm-gpu --adapter swiftshader --out rt-hybrid-webgpu.json
+      - name: The GPU ray marcher in Chrome on SwiftShader, quick (M2 to M5 at 128 x 128); open failures as on WARP
+        # Page budget 4000 s (2026-10-11): the step took 776 s on run 38180641157 and up to 1968 s on
+        # run 38182324719, so 2400 left 18 percent headroom; 4000 leaves 51 percent at 1968 s.
+        run: |
+          python tests/web/rhi_texture.py --command sdf-parity --args=--quick --dir build-wasm-gpu --adapter swiftshader --timeout 4000 --out sdf-webgpu.json || true
+          python tests/gpu/sdf_gate.py sdf-webgpu.json
+      - name: The WebGPU build's material model matches its float64 reference in Chrome on SwiftShader (M3 materials)
+        run: python tests/web/rhi_texture.py --command pbr-parity --dir build-wasm-gpu --adapter swiftshader --out pbr-webgpu.json
+      - name: The core's style passes in the WebGPU build in Chrome on SwiftShader match the C++ float64 reference (ADR 0019)
+        run: |
+          node tools/port/export_style_fixtures.mjs build-wasm-gpu/style-fixtures
+          python tests/web/rhi_texture.py --command style-parity --fixtures build-wasm-gpu/style-fixtures --dir build-wasm-gpu --adapter swiftshader --timeout 4000 --out style-webgpu.json
+      - name: The verified viewer renders the owned assets with a certificate and refuses a broken file (M3 criterion 4)
+        run: python tests/web/viewer.py --dir build-wasm-gpu --adapter swiftshader --out viewer-webgpu.json
+      - name: The colonnade's live settings panel renders, echoes its settings and changes with the sun (P11 stage 2)
+        run: python tests/web/colonnade_panel.py --dir build-wasm --out colonnade-panel.json
+      - name: Keep the colonnade panel's record and screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: colonnade-panel
+          path: |
+            native/colonnade-panel.json
+            native/colonnade-panel.png
+      - name: The default native build carries no GPU code
+        run: |
+          ! grep -q "emdawnwebgpu\|wgpu" build/raw_native_cli
+          ! nm -C build/raw_native_cli 2>/dev/null | grep -q "wgpu"
+      - name: Render both and compare certificates
+        run: |
+          source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          build/raw_native_cli --out native >/dev/null
+          node wasm/run-node.mjs build-wasm/raw-native.mjs wasm-out | tee wasm-run.txt >/dev/null
+          ! grep -q '^receipt: not written' wasm-run.txt
+          grep -q '"schema":"superstack.receipt/1"' wasm-out/receipt.json
+          build/raw_native_cli verify wasm-out
+          python3 scripts/recheck.py wasm-out
+          python3 scripts/compare_renders.py native wasm-out
+      - name: The ten glTF models render under WebAssembly byte-identically to the golden (M2 criterion 1)
+        run: |
+          source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          python3 tools/assets/fetch_gltf.py gltf-models
+          python3 scripts/identity_matrix.py run build-wasm/raw-native.mjs gltf-wasm.json gltf-wasm --models gltf-models
+          python3 scripts/identity_matrix.py compare evidence/m2-gltf-golden.json gltf-wasm.json --except arena_certificate.json
+      - name: Keep the wasm default render for the cross-platform identity check
+        uses: actions/upload-artifact@v4
+        with:
+          name: default-render-wasm
+          path: |
+            native/wasm-out/certificate.json
+            native/wasm-out/receipt.json
+            native/wasm-out/channels.json
+            native/wasm-out/frame.ppm
+            native/wasm-out/ao_rt.pfm
+            native/wasm-out/ao_ss.pfm
+  identity:
+    # The default render's certificate, superstack receipt and pixels must be
+    # the same bytes from MSVC on Windows, GCC on Linux and the WebAssembly build.
+    needs: [build-test, wasm]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: native
+          pattern: default-render-*
+      - name: Byte-identical across Windows, Linux and wasm
+        run: |
+          set -e
+          for f in certificate.json receipt.json channels.json frame.ppm ao_rt.pfm ao_ss.pfm; do
+            a=$(sha256sum "default-render-windows-latest/$f" | cut -d' ' -f1)
+            b=$(sha256sum "default-render-ubuntu-24.04/$f" | cut -d' ' -f1)
+            c=$(sha256sum "default-render-wasm/$f" | cut -d' ' -f1)
+            echo "$f windows $a linux $b wasm $c"
+            test "$a" = "$b" && test "$b" = "$c"
+          done
+          # receipt.json is in the loop above: from superstack v0.2.0 the wasm
+          # build writes one too, and it must be the native receipt's bytes.
+          # The scene is unchanged; the frame hash below is lighting model 1's, so it reads the model 1 render
+          # (RAW_NATIVE_LIGHTING=v1, evidence/m3-lighting-v2-bounds.json l1).
+          grep -q '"scene_sha256":"84aa884f71fc47bf3fcc0a35eb795ac59cbf679f5f398263a27fc7dcca835b36"' default-render-ubuntu-24.04/receipt.json
+          grep -q '"scene_sha256":"84aa884f71fc47bf3fcc0a35eb795ac59cbf679f5f398263a27fc7dcca835b36"' default-render-v1-ubuntu-24.04/receipt.json
+          grep -q '"frame.rgb8":"0282ef9cc07a0012da9da3217c164f44d00a3e9f7704ff719770e832c9ca6d44"' default-render-v1-ubuntu-24.04/receipt.json
+      - name: Pixels, AO and certificate unchanged from v0.5.0 (lighting model 1, the test-only oracle)
+        # The hashes the v0.5.0 release wrote for the default render. The
+        # certificate is compared with its renderer version string removed,
+        # because that string is the one field a version bump changes. Since
+        # lighting model 2 became the default, v0.5.0's bytes come from model 1.
+        run: |
+          set -e
+          d=default-render-v1-ubuntu-24.04
+          cat > v050.sha256 <<'SUMS'
+          e276f24f4a2a23e7b43b61d2e45147446468bf8d99a75809675f2cea91edb06d  frame.ppm
+          3bd5cce0f7424363c04d17b7bf644b82a9f51338297b4666329d398e9fb886ee  ao_rt.pfm
+          66c99812f843fe487eabb77e397fbe05e08864f981fd0b1179eba6fb78f86fb3  ao_ss.pfm
+          33aaaabdbcf4e819f23e720584544ed21cb94d525cc2bce5d6a6faac12117eb3  channels.json
+          SUMS
+          sed 's/^ *//' v050.sha256 > "$d/v050.sha256"
+          (cd "$d" && sha256sum -c v050.sha256)
+          c=$(sed 's/"renderer":"raw-native [^"]*"/"renderer":"raw-native"/' "$d/certificate.json" | sha256sum | cut -d' ' -f1)
+          echo "certificate.json without its version string: $c"
+          test "$c" = fd0f81417e7d6ce807e409292fe5b5a40a581e56ba9d80156420b77d6f87e5a3
+  shader-lab-2:
+    # Shader lab 2 techniques, GPU against their float64 CPU references on Chrome's CPU WebGPU
+    # adapter. Its own job, apart from the media jobs.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Tools (Playwright drives the installed Chrome)
+        run: python -m pip install playwright==1.58.0
+      - name: Shader lab 2, development adjacency, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader adjacency --adapter swiftshader --out media-out/shaders-adjacency-parity.json
+      - name: Shader lab 2, scan-causal EHT sag, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader sag --adapter swiftshader --out media-out/shaders-sag-parity.json
+      - name: Shader lab 2, pigment-space lighting, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader lightpaint --adapter swiftshader --out media-out/shaders-lightpaint-parity.json
+      - name: Shader lab 2, interference glazes, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader glaze --adapter swiftshader --out media-out/shaders-glaze-parity.json
+      - name: Shader lab 2, hysteresis quantisation, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader hysteresis --adapter swiftshader --out media-out/shaders-hysteresis-parity.json
+      - name: Shader lab 2, CRT purity and degauss, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader purity --adapter swiftshader --out media-out/shaders-purity-parity.json
+      - name: Shader lab 2, fibre-network watercolour, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader fibre --adapter swiftshader --out media-out/shaders-fibre-parity.json
+      - name: Shader lab 2, curvature hatching, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader hatch --adapter swiftshader --out media-out/shaders-hatch-parity.json
+      - name: Shader lab 2, salience caricature warp, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader caricature --adapter swiftshader --out media-out/shaders-caricature-parity.json
+      - name: The painterly shader keeps colour on flat regions in every preset (evidence/shaders-paint-colour-bounds.json)
+        run: node tools/shaders/paint_colour_check.mjs --out media-out/shaders-paint-colour.json
+      - name: The mix dither is closer to the source than bayer4 and a per-channel Bayer dither on every committed frame (evidence/shaders-dither-mix-bounds.json)
+        run: node tools/shaders/dither_quality.mjs --out media-out/shaders-dither-quality.json
+      - name: Frame times on the CPU adapter, for the record (not a gate)
+        run: python tests/web/lab2_timing.py --adapter swiftshader --width 480 --height 300 --frames 5 --out media-out/shaders-lab2-timing.json
+  # media-smoke used to be one job (31 minutes on 88b1999, cancelled at its 45-minute limit on
+  # every branch from 2026-10-11 once the hosted runners ran about 1.7x slower). It is now
+  # seven jobs that run in parallel on the same free runners, plus media-smoke, which fails
+  # unless all seven pass. Every step that ran before still runs and gates, unchanged.
+  # Limits: each job's time at 2.2x its 88b1999 duration (the slowest runner seen was 1.74x)
+  # stays under 50 percent of its timeout-minutes, so a slow runner has more than 50 percent
+  # headroom. The build is made once and shared as a tarball (a zip artifact would drop the
+  # executable bit). The determinism job renders both runs on one runner against one build.
+  media-build:
+    # cmake configure and build, once. Baseline 1 minute, about 2 on a slow runner.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: The budget gate passes the RTX 4090 record and refuses an over-budget run (M1 criterion 7, control)
+        run: |
+          python tools/media/budget.py tests/media/budget-rtx4090
+          if python tools/media/budget.py tests/media/budget-over; then echo "the gate accepted an over-budget run"; exit 1; fi
+      - name: Configure and build (the same commands as the media spec's setup)
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release -j 4
+      - name: Pack the build, keeping modes and times
+        run: tar -czf media-build.tar.gz build
+      - uses: actions/upload-artifact@v4
+        with: { name: media-build, path: native/media-build.tar.gz, retention-days: 1, compression-level: 0 }
+  media-shaders:
+    # The quick GPU-against-CPU checks, the sound engine's live path, and the pixel and tile checks.
+    # Baseline about 4.5 minutes; 10 at 2.2x; limit 25.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Tools (Playwright drives the installed Chrome; ffmpeg from imageio-ffmpeg)
+        run: python -m pip install playwright==1.58.0 imageio-ffmpeg==0.6.0
+      - name: Media spec tests
+        run: python tools/media/test_media.py
+      - name: Host textures, compositing and one shared device (M1 criterion 1), on the CPU adapter
+        run: python tests/web/host_textures.py --adapter swiftshader
+      - name: Shader library, physical CRT, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader crt --adapter swiftshader --out media-out/shaders-crt-parity.json
+      - name: Shader library, spectral film, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader film --adapter swiftshader --out media-out/shaders-film-parity.json
+      - name: Shader library, palette and dither, GPU palette indices equal the f64 reference's (M1 criterion 10), on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader dither --adapter swiftshader --out media-out/shaders-dither-parity.json
+      - name: Dither-quantised lighting, GPU levels equal the f64 reference's on the Salt Road G-buffers (evidence/shaders-ditherlight-parity-bounds.json), on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader ditherlight --adapter swiftshader --out media-out/shaders-ditherlight-parity.json
+      - name: Paint-over projection, GPU coverage and colour equal the f64 reference's on Lamp Quay views (evidence/shaders-paintover-parity-bounds.json), on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader paintover --adapter swiftshader --out media-out/shaders-paintover-parity.json
+      - name: Palette-locked lighting, GPU palette indices equal the f64 reference's on Chapel Yard views (evidence/shaders-palettelight-parity-bounds.json), on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader palettelight --adapter swiftshader --out media-out/shaders-palettelight-parity.json
+      - name: Lens suite, GPU ghosts, streaks, starburst, halation and dispersion equal the f64 reference's (evidence/shaders-lens-parity-bounds.json), on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader lens --adapter swiftshader --out media-out/shaders-lens-parity.json
+      - name: Spectral sodium shading, GPU equals the f64 reference on Sodium Quay G-buffers (evidence/shaders-sodium-parity-bounds.json), on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader sodium --adapter swiftshader --out media-out/shaders-sodium-parity.json
+      - name: Radiance cascades, GPU cascades and brute force equal the f64 reference's (evidence/shaders-cascades-parity-bounds.json), on the CPU adapter
+        run: python tests/web/cascades.py parity --adapter swiftshader --out media-out/cascades-parity.json
+      - name: 3D radiance cascades, GPU frames equal the f64 reference's (evidence/shaders-cascades3d-parity-bounds.json), on the CPU adapter
+        run: python tests/web/cascades3d.py parity --adapter swiftshader --out media-out/cascades3d-parity.json
+      - name: Shader library, pixel art and scaling, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader pixel --adapter swiftshader --out media-out/shaders-pixel-parity.json
+      - name: Shader library, VHS, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader vhs --adapter swiftshader --out media-out/shaders-vhs-parity.json
+      - name: The sound engine's live path (AudioWorklet in Chrome) matches its offline render within the PCM tolerance
+        run: |
+          node web/sound/smoke.mjs build/sound-smoke
+          python scripts/sound_live_check.py build/sound-smoke
+      - name: Every equation in raw-native's scenes renders from the TeX subset (M1 criterion 5)
+        run: node tools/media/tex_coverage.mjs --scenes docs/motion --atlas docs/motion/hanken-grotesk-500.atlas.json --scenes docs/media/scenes --atlas docs/motion/hanken-grotesk-500.atlas.json
+      - name: The vector corpus on the GPU matches the CPU reference within its bounds (M1 criterion 4)
+        run: python tests/web/vector_corpus.py --adapter swiftshader
+      - name: The Canvas 2D fallback draws the vector corpus within its bounds of the CPU reference (no WebGPU)
+        run: python tests/web/canvas2d_corpus.py --out media-out/canvas2d-corpus.json
+      - name: Tile loaders survive 50,000 fuzzed inputs (the full million is in evidence/), and the tile pass matches its CPU twin (M2 criterion 10)
+        run: |
+          node tools/fuzz/tiles_fuzz.mjs --n 50000 > /dev/null
+          python tests/web/tiles_check.py --adapter swiftshader
+      - name: Vertex snap and affine UVs match their CPU twin on the committed mesh set (M2 criterion 8)
+        run: python tests/web/retro3d_check.py --adapter swiftshader
+      - name: The explainer kit's WGSL matches its float64 reference, points land where projected, and a 1,048,576-point cloud keeps the reference LOD count
+        run: python tests/web/explainer_parity.py --adapter swiftshader --out media-out/explainer-parity.json
+      - name: The isometric fade on the GPU matches its CPU twin and changes only the faded cells (M2 criterion 9)
+        run: python tests/web/iso_fade.py --adapter swiftshader
+      - name: Low-resolution frames scale to the output exactly, and a slow pan moves edges smoothly (M2 criterion 7)
+        run: python tests/web/pixel_scaling.py --adapter swiftshader
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: media-smoke-shaders, path: native/media-out, retention-days: 7, if-no-files-found: ignore }
+  media-paint:
+    # The painterly parity check, the longest single step. Baseline 6.6 minutes; 14.7 at 2.2x; limit 30.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Tools (Playwright drives the installed Chrome; ffmpeg from imageio-ffmpeg)
+        run: python -m pip install playwright==1.58.0 imageio-ffmpeg==0.6.0
+      - name: Shader library, crt-classic within 1/255 of retro-crt.js (M1 criterion 9), on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader classic --adapter swiftshader --out media-out/shaders-classic-parity.json
+      - name: Shader library, painterly, GPU against the CPU reference within the committed bounds, on the CPU adapter
+        run: python tests/web/shaders_parity.py --shader paint --adapter swiftshader --out media-out/shaders-paint-parity.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: media-smoke-paint, path: native/media-out, retention-days: 7, if-no-files-found: ignore }
+  media-post:
+    # Post passes against their CPU references. Baseline 5.6 minutes; 12.4 at 2.2x; limit 25.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Tools (Playwright drives the installed Chrome; ffmpeg from imageio-ffmpeg)
+        run: python -m pip install playwright==1.58.0 imageio-ffmpeg==0.6.0
+      - name: Post passes match their CPU references; the stack runs inside Motion (M1 criteria 9 and 10)
+        run: python tests/web/post_passes.py --adapter swiftshader --modules web/shaders/post.mjs
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: media-smoke-post, path: native/media-out, retention-days: 7, if-no-files-found: ignore }
+  media-templates:
+    # The three style templates, each rendered twice. Baseline 4.7 minutes; 10.3 at 2.2x; limit 25.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Tools (Playwright drives the installed Chrome; ffmpeg from imageio-ffmpeg)
+        run: python -m pip install playwright==1.58.0 imageio-ffmpeg==0.6.0
+      - name: The style template scaffolds render, the same twice (ADR 0016)
+        run: python tests/web/templates_check.py --adapter swiftshader --seconds 1
+      - name: One frame of a template renders to a lossless still at its size, not blank (scripts/motion_still.py)
+        run: |
+          python scripts/motion_still.py --scene ../../templates/retro-thriller/scene.mjs --out media-out/still/retro-thriller.png --t 0.5 --width 480 --height 270
+          node -e "import('./tools/shaders/png.mjs').then(({readPng})=>{const r=readPng('media-out/still/retro-thriller.png');if(r.width!==480||r.height!==270)throw new Error('size '+r.width+'x'+r.height);const s=new Set();for(let i=0;i<r.data.length;i+=4)s.add(r.data[i]<<16|r.data[i+1]<<8|r.data[i+2]);if(s.size<16)throw new Error('only '+s.size+' colours');console.log('still 480x270,',s.size,'colours')})"
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: media-smoke-templates, path: native/media-out, retention-days: 7, if-no-files-found: ignore }
+  media-render:
+    # Four seconds of each scene, the colour and HDR checks that need the C++ CLI, and the checks on
+    # what the renders wrote. Baseline 5 minutes; 11.2 at 2.2x; limit 25.
+    needs: media-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Download the build from media-build
+        uses: actions/download-artifact@v4
+        with:
+          path: native
+        with: { name: media-build }
+      - name: Unpack the build, keeping modes
+        # The checkout above is newer than the tarball's objects, so give the whole build one
+        # timestamp: make then sees every object as current and the build steps stay no-ops.
+        run: |
+          tar -xzf media-build.tar.gz
+          find build -exec touch -d @"$(date +%s)" {} +
+      - name: Tools (Playwright drives the installed Chrome; ffmpeg from imageio-ffmpeg)
+        run: python -m pip install playwright==1.58.0 imageio-ffmpeg==0.6.0
+      - name: Render four seconds of each scene on the CPU WebGPU adapter
+        run: python tools/media/raw_native_media.py render --setup --out media-out --adapter swiftshader --width 960 --height 540 --max-seconds 4
+      - name: Colour pipelines in WGSL match the C++ reference within one 8-bit code (M1 criterion 2)
+        run: python tests/web/colour_grid.py --cli build/raw_native_cli --adapter swiftshader
+      - name: Extended-range output reaches the canvas and matches the C++ reference (M1 criterion 3, canvas path)
+        run: python tests/web/hdr_output.py --cli build/raw_native_cli --adapter swiftshader
+      - name: The HDR signal matches a float64 reference of the published PQ, sRGB and tone-map formulas, and the GPU encode matches the CPU, with failing controls (M1 criterion 3)
+        run: python tests/web/hdr_signal.py --cli build/raw_native_cli --adapter swiftshader
+      - name: Every scene wrote a video, a poster, captions and a manifest, from this commit
+        shell: bash
+        run: |
+          for id in ao-check first-run; do
+            d="media-out/$id"
+            test -s "$d/$id-540p.mp4" && test -s "$d/poster.jpg" && test -s "$d/$id.vtt" && test -s "$d/index.html"
+            python -c "import json,sys; m=json.load(open('$d/media.json')); assert m['commit']=='$GITHUB_SHA', m['commit']; assert m['adapter_kind']=='swiftshader'; assert m['frames']>=100; print('$id', m['frames'], 'frames', m['frame_ms_median'], 'ms median')"
+          done
+          python -c "import json; f=json.load(open('media-out/ao-check/facts.json'))['facts']; print({k: f[k]['value'] for k in ('version','verdict','rmse','tolerance','pixels')})"
+      - name: Each smoke render stays inside its wall-clock budget
+        run: python tools/media/budget.py media-out --smoke
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: media-smoke-render, path: native/media-out, retention-days: 7, if-no-files-found: ignore }
+  media-determinism:
+    # Two renders of one scene on this runner, against one build, then compared frame by frame.
+    # Baseline 4.1 minutes; 9.1 at 2.2x; limit 25.
+    needs: media-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Download the build from media-build
+        uses: actions/download-artifact@v4
+        with:
+          path: native
+        with: { name: media-build }
+      - name: Unpack the build, keeping modes
+        # The checkout above is newer than the tarball's objects, so give the whole build one
+        # timestamp: make then sees every object as current and the build steps stay no-ops.
+        run: |
+          tar -xzf media-build.tar.gz
+          find build -exec touch -d @"$(date +%s)" {} +
+      - name: Tools (Playwright drives the installed Chrome; ffmpeg from imageio-ffmpeg)
+        run: python -m pip install playwright==1.58.0 imageio-ffmpeg==0.6.0
+      - name: Output directory for the result file
+        run: mkdir -p media-out
+      - name: Two renders of the same seconds draw identical frames
+        run: python tools/media/determinism.py first-run --adapter swiftshader --width 640 --height 360 --max-seconds 2 --out media-out/determinism.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: media-smoke-determinism, path: native/media-out, retention-days: 7, if-no-files-found: ignore }
+  media-smoke:
+    # The one check name for the whole media path: red unless every media job above passed.
+    if: ${{ always() }}
+    needs: [media-build, media-shaders, media-paint, media-post, media-templates, media-render, media-determinism]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Every media job passed
+        env: { RESULTS: "${{ join(needs.*.result, ' ') }}" }
+        run: |
+          echo "results: $RESULTS"
+          for r in $RESULTS; do test "$r" = success || { echo "a media job did not pass: $r"; exit 1; }; done

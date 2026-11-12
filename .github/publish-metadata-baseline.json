@@ -1,8 +1,41 @@
 {
  "schema": "flywheel.publish-metadata-baseline/1",
  "patterns": "generic only (check_publish_metadata GENERIC)",
- "total": 64,
+ "total": 1068,
  "files": {
+  "native/docs/explainer/attention/LOOK.md": {
+   "local-path": 1
+  },
+  "native/evidence/hw-rtx4090-20261012/gpu-snapshots.txt": {
+   "local-path": 260
+  },
+  "native/evidence/hw-rtx4090-snapshots-run2.txt": {
+   "local-path": 90
+  },
+  "native/evidence/hw-rtx4090-snapshots-run3.txt": {
+   "local-path": 54
+  },
+  "native/evidence/n2-rtx4090/gpu-snapshots.txt": {
+   "local-path": 140
+  },
+  "native/evidence/rr-aux-slim-2026-10-15/rtx4090/gpu-snapshots.txt": {
+   "local-path": 380
+  },
+  "native/evidence/rr-h2-20261014/rtx4090/gpu-snapshots.txt": {
+   "local-path": 72
+  },
+  "native/evidence/rr-h2-20261014/rtx4090/job.log": {
+   "local-path": 2
+  },
+  "native/evidence/rr-h2-v5/v5_driver.reconstructed.py": {
+   "local-path": 2
+  },
+  "native/evidence/rr-h2-v5b/v5b_driver.py": {
+   "local-path": 2
+  },
+  "native/evidence/rr-runs.json": {
+   "local-path": 1
+  },
   "package.json": {
    "personal-email": 1
   },

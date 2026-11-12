@@ -1,7 +1,7 @@
 <!-- writing-profile: procedure -->
 # Writer's brief: one district of Act 2
 
-From the director, 2026-10-17. Private. Working folder `C:/dev/mission-control/2026-10-16-low-water/`.
+From the director, 2026-10-17. Private. Working folder `games/low-water/`.
 
 ## Read, in this order
 

@@ -1,14 +1,14 @@
 // Local server for Low Water. Serves the game shell (/engine/play.html; / redirects there), the
 // raw-native checkout (/rn/), the private content (plates and script) and the character pipeline
 // from their own folders. Localhost only.
-//   node game/serve.mjs [--port 8731] [--rn C:/dev/worktrees/raw-native-lowwater]
+//   node game/serve.mjs [--port 8731] [--rn native/]
 import http from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url)), root = join(here, "..");
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
-const MOUNTS = { "/rn/": opt("--rn", "C:/dev/worktrees/raw-native-lowwater"), "/content/": join(root, "content"), "/slice/": join(root, "slice"), "/characters/": join(root, "characters"), "/": here };
+const MOUNTS = { "/rn/": opt("--rn", join(root, "..", "..", "native")), "/content/": join(root, "content"), "/slice/": join(root, "slice"), "/characters/": join(root, "characters"), "/": here };
 const TYPES = { ".html": "text/html; charset=utf-8", ".mjs": "text/javascript", ".js": "text/javascript", ".json": "application/json", ".css": "text/css; charset=utf-8", ".png": "image/png", ".woff2": "font/woff2", ".lwd": "text/plain; charset=utf-8", ".wgsl": "text/plain" };
 const server = http.createServer(async (req, res) => {
   const url = decodeURIComponent(new URL(req.url, "http://x").pathname);

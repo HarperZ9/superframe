@@ -3,6 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { join } from "node:path";
+import { existsSync } from "node:fs";
 import { makeG, makeWorld, run, HERE } from "./helpers.mjs";
 import { terrainAt, stepDrop, ledgeClear } from "../sim/terrain.mjs";
 import { createField } from "../sim/field.mjs";
@@ -11,6 +12,9 @@ import { loadPlateArena } from "../data/plates.mjs";
 import { WORLD } from "../data/world.mjs";
 
 const CONTENT = join(HERE, "..", "..", "..", "..", "content");
+// Plate bakes (geo-pos.f32, geo-id.u8) are reproducible and stay out of the repository. A test that reads one
+// runs where the bake exists and reports as skipped elsewhere.
+const BAKED = existsSync(join(CONTENT, "quay", "geo-pos.f32")) ? false : "plate bake not present; bake the plates to run this";
 
 // Two levels: a quay top (h 0) on the west, the floor 2.5 m down on the east; a net on the top.
 function twoLevels({ water = null, hazards = [] } = {}) {
@@ -29,7 +33,7 @@ test("terrain: a 2.5 m step is a ledge one way and a climb the other; stairs are
   assert.equal(terrainAt({ rows: ["SS"] }, 0, 0).ledge, false, "row arenas have no derived ledges");
 });
 
-test("the painted quay has ledges where the wall drops to the floor", async () => {
+test("the painted quay has ledges where the wall drops to the floor", { skip: BAKED }, async () => {
   const A = await loadPlateArena(CONTENT, "quay");
   const lips = A.grid.cells.filter((c, i) => c && terrainAt(A, A.origin[0] + ((i % A.grid.w) + 0.5) * A.cell, A.origin[1] + (Math.floor(i / A.grid.w) + 0.5) * A.cell).ledge).length;
   assert.ok(lips > 20, `quay lip cells: ${lips}`);

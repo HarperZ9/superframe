@@ -2,7 +2,7 @@
 
 Working folder for the Low Water content and look work (private; content licence D5 undecided).
 Brief: 2026-10-16, from the coordinating session. Engine source is read from origin/main of
-C:/dev/public/raw-native through `git archive` into the session scratchpad; the raw-native checkout
+native through `git archive` into the session scratchpad; the raw-native checkout
 is never switched or edited.
 
 ## Steps
@@ -19,13 +19,13 @@ is never switched or edited.
 ## Phase 2 (2026-10-16, author direction relayed by the coordinator)
 Direction (verbatim): "just continue improving, extending, and building ~ the game does not need to be tied to verification in any way whatsoever." Judge the game by play and look; no verification apparatus in game work.
 10. DONE Review and rewrite design docs where the verification mission leaks into the fiction or UI; note changes (design/CHANGES-PHASE2.md).
-11. DONE Worktree off origin/main (e74587a) (C:/dev/worktrees/raw-native-lowwater, branch feat/low-water-host) with feat/env-e0 merged in.
+11. DONE Worktree off origin/main (e74587a) (native/, branch feat/low-water-host) with feat/env-e0 merged in.
 12. DONE Bake plates (render/bake_quay.mjs with LW_PLATE=1 -> content/quay/) for the quay (night painted, blackout dither, world buffers) from the engine passes.
 13. DONE Playable prototype in game/ (private, repo-ready): walking, weather timeline, LWD dialogue, midnight, the look.
 14. DONE Gameplay video game/capture/final/low-water-prototype.mp4 (101 s) and stills p1..p12 there.
 
 Run: `node game/serve.mjs` then open http://127.0.0.1:8731/ (click or WASD walk, E talk, 1-9 answer, TAB daybook, T G V C H instruments). Capture: `python game/tools/drive.py --script game/tools/demo.json --out game/capture/final --video` (headless Chromium, GPU disabled; run at Idle).
-Engine: served from C:/dev/worktrees/raw-native-lowwater (branch feat/low-water-host = origin/main e74587a + feat/env-e0 merge, local only). No engine-side changes were needed, so no PR.
+Engine: served from native/ (branch feat/low-water-host = origin/main e74587a + feat/env-e0 merge, local only). No engine-side changes were needed, so no PR.
 
 ## Phase 3 (coordinator, 2026-10-16)
 15. DONE Brine, weigh-house and lamp room as painted walkable rooms: render/bake_place.mjs (generalised from bake_quay.mjs), render/bake_all.sh (two Idle lanes) -> content/{quay,brine,weigh,lamp}/ (plate, flare, streak, halo, ca layers, world buffers, place.json). Lamp room has lit and dark variants. Rooms, grids and hotspots in game/world.mjs; loading in game/places.mjs.
@@ -41,7 +41,7 @@ What is built: a playable hour of Low Water in the browser. Lamp Quay plus three
 Where:
 - game/: main.mjs (loop, input, rooms, title and settings), world.mjs (walk grids, paths, hotspots, rooms), places.mjs (plate loading, lens mix), look.mjs (water, fog, rain, beam), figures.mjs (people), night.mjs (clock, tide, weather through web/env), ui.mjs (talk panel, cards, daybook, ending), lwd.mjs (LWD/0 runner), serve.mjs (local server).
 - Plates: content/{quay,brine,weigh,lamp}/, baked by render/bake_place.mjs through render/bake_all.sh (Idle, two lanes, about 15 minutes per place on the CPU). The script: slice/lamp_quay_2300.lwd.
-- Engine: served from C:/dev/worktrees/raw-native-lowwater (branch feat/low-water-host, local only). No engine-side changes.
+- Engine: served from native/ (branch feat/low-water-host, local only). No engine-side changes.
 How to run:
 - Play: `node game/serve.mjs`, then http://127.0.0.1:8731/ . Click or WASD to walk, E or SPACE to talk and read on, 1-9 to answer, TAB the daybook, T G V C H the instruments, ESC back.
 - Rebake: `bash render/bake_all.sh`.

@@ -1,8 +1,9 @@
+import { fileURLToPath as _f } from "node:url";
 // Where the raw-native engine modules come from: the Low Water worktree (feat/low-water-host, which
 // serves the game), never the canonical checkout. Override with RN_ROOT (a directory holding web/ and tools/).
-//   git -C C:/dev/public/raw-native archive -o rn.tar origin/main web tools docs/images project-docs
+//   git -C native archive -o rn.tar origin/main web tools docs/images project-docs
 import { pathToFileURL } from "node:url";
-const DEFAULT = "C:/dev/worktrees/raw-native-lowwater";
+const DEFAULT = _f(new URL("../../../native", import.meta.url));
 export const RN_ROOT = process.env.RN_ROOT || DEFAULT;
 export const rn = (rel) => pathToFileURL(`${RN_ROOT}/${rel}`).href;
 export const engine = async () => {

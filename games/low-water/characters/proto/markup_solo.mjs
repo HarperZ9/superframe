@@ -1,7 +1,7 @@
 // Runs the systems engineer's visual check analysis (read in place) with the drawer's debug flag on, so each
 // solo draw stays in globalThis.__lwSolo, then evaluates PROBE (page code) and saves it. node proto/markup_solo.mjs <port> <out> [views]
 import { readFile, writeFile, mkdir } from "node:fs/promises";
-const T = "file:///C:/dev/mission-control/2026-10-16-low-water/game/engine/tools/visualcheck/";
+const T = new URL("../../game/engine/tools/visualcheck/", import.meta.url).href;
 const { launch, sleep } = await import(T + "cdp.mjs"), { VIEWS } = await import(T + "views.mjs");
 const [port, out, only] = process.argv.slice(2), analyse = await readFile(new URL("../../game/engine/tools/visualcheck/analyse.js", import.meta.url), "utf8");
 await mkdir(out, { recursive: true });

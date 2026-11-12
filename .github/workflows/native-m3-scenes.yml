@@ -1,0 +1,104 @@
+name: native m3-scenes
+# ROADMAP M3 criterion 1 (evidence/m3-verified-scenes-bounds.json): raw-hero and raw-hall render
+# verified with ray-traced AO at 512 x 320, the gallery's GPU shading is within its committed limits,
+# and the rasterised frame's error against a path-traced reference is recorded per scene with its
+# controls. WARP and lavapipe; the path tracer runs on the CPU against each adapter's frame.
+on:
+  pull_request:
+    paths:
+      - 'native/src/renderer/rt_pt_convert.cpp'
+      - 'native/raw/renderer/rt_pt_convert.hpp'
+      - 'native/src/tools/pt_error_cmd.cpp'
+      - 'native/src/tools/model_scene.cpp'
+      - 'native/src/tools/cli_params.cpp'
+      - 'native/tests/gpu/m3_scenes_gate.py'
+      - 'native/src/renderer/gpu/shaders/pbr.wgsl'
+      - 'native/src/renderer/gallery_field.cpp'
+      - 'native/src/renderer/gpu/shaders/noise.wgsl'
+      - 'native/src/renderer/gpu/noise_gpu.cpp'
+      - 'native/evidence/p8-noise-gpu-*'
+      - 'native/src/tools/timestamps_cmd.cpp'
+      - 'native/src/rhi/d3d12/d3d12_timestamps.cpp'
+      - 'native/src/rhi/vulkan/vk_rhi_timestamps.cpp'
+      - 'native/evidence/gpu-timestamps-*'
+      - 'native/src/renderer/gallery_occlusion.cpp'
+      - 'native/evidence/gallery-occlusion-*'
+      - 'native/evidence/p10-sphere-field-*'
+      - 'native/evidence/m3-verified-scenes-*'
+      - '.github/workflows/native-m3-scenes.yml'
+permissions:
+  contents: read
+defaults:
+  run:
+    working-directory: native
+
+jobs:
+  scenes:
+    strategy:
+      fail-fast: false
+      matrix:
+        adapter: [warp, lavapipe]
+    runs-on: ${{ matrix.adapter == 'warp' && 'windows-latest' || 'ubuntu-24.04' }}
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install lavapipe and the Vulkan build tools
+        if: matrix.adapter == 'lavapipe'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libvulkan-dev glslang-tools mesa-vulkan-drivers libxcb1-dev libwayland-dev wayland-protocols
+      - name: Build the GPU CLI
+        shell: bash
+        run: |
+          if [ "${{ matrix.adapter }}" = warp ]; then
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DRAW_NATIVE_GPU_D3D12=ON
+            cmake --build build --config Release --target raw_native_cli
+            echo "CLI=build/Release/raw_native_cli.exe" >> "$GITHUB_ENV"; echo "RAW_NATIVE_D3D12_WARP=1" >> "$GITHUB_ENV"; echo "PY=python" >> "$GITHUB_ENV"
+          else
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DRAW_NATIVE_VULKAN_RHI=ON
+            cmake --build build -j 4 --target raw_native_cli_vk
+            echo "CLI=build/raw_native_cli_vk" >> "$GITHUB_ENV"; echo "PY=python3" >> "$GITHUB_ENV"
+          fi
+      - name: v1 v2 the verified renders at 512 x 320 with ray-traced AO; the control sphere
+        shell: bash
+        run: |
+          mkdir -p m3s
+          $CLI export-assets --out assets > /dev/null
+          $CLI --model assets/raw-hero.gltf --gpu --width 512 --height 320 --threads 4 --out m3s/hero | grep "^gpu:"
+          $CLI --owned-scene raw-hall-nave --gpu --width 512 --height 320 --threads 4 --out m3s/hall | grep "^gpu:"
+          $CLI --owned-scene control-sphere --gpu --width 256 --height 160 --threads 4 --out m3s/control | grep "^gpu:"
+      - name: v3 the material gallery, 256 px, 2 x 2 samples a pixel
+        shell: bash
+        run: $CLI material-gallery --out m3s/gallery --size 256 --spp 2
+      - name: p0 to p3 the path-traced error (CPU, 128 spp, 8 bounces; and 1 bounce, recorded)
+        shell: bash
+        run: |
+          pe() { $CLI pt-error --threads 4 --spp 128 "$@" | tail -4; }
+          pe --raster m3s/control --owned-scene control-sphere --width 256 --height 160 --json m3s/pt-control.json
+          pe --raster m3s/control --owned-scene control-sphere --width 256 --height 160 --no-sun-pi --json m3s/pt-control-nopi.json
+          pe --raster m3s/hero --model assets/raw-hero.gltf --width 512 --height 320 --json m3s/pt-hero.json
+          pe --raster m3s/hall --owned-scene raw-hall-nave --width 512 --height 320 --json m3s/pt-hall.json
+          pe --raster m3s/hero --model assets/raw-hero.gltf --width 512 --height 320 --bounces 1 --json m3s/pt-hero-direct.json
+          pe --raster m3s/hall --owned-scene raw-hall-nave --width 512 --height 320 --bounces 1 --json m3s/pt-hall-direct.json
+      - name: The gate (p3 recorded, the rest gated)
+        shell: bash
+        run: $PY tests/gpu/m3_scenes_gate.py m3s --out m3s/summary.json
+      - name: g1 to g3 the noise module on the GPU (evidence/p8-noise-gpu-bounds.json)
+        shell: bash
+        run: $CLI noise-parity | tee m3s/noise-parity.json
+      - name: t1 GPU timestamps (evidence/gpu-timestamps-bounds.json)
+        shell: bash
+        run: $CLI gpu-timestamps | tee m3s/timestamps.json
+      - name: f3 the sphere field's GPU shading (evidence/p10-sphere-field-bounds.json), 256 x 160
+        shell: bash
+        run: |
+          $CLI material-gallery --field --out m3s/field --size 256 --spp 2
+          $PY -c "import json,sys; g=json.load(open('m3s/field/gallery.json'))['gpu']; print(g); sys.exit(0 if g.get('rmse_exposed',9) <= 5e-4 and g.get('max_abs_exposed',9) <= 0.05 else 1)"
+      - name: o5 the gallery's GPU shading with occlusion (evidence/gallery-occlusion-bounds.json), 256 px
+        shell: bash
+        run: |
+          $CLI material-gallery --occlusion --out m3s/occl --size 256 --spp 2
+          $PY -c "import json,sys; g=json.load(open('m3s/occl/gallery.json'))['gpu']; print(g); sys.exit(0 if g.get('rmse_exposed',9) <= 5e-4 and g.get('max_abs_exposed',9) <= 0.05 else 1)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: "m3-scenes-${{ matrix.adapter }}", path: "native/m3s/*.json\nm3s/*/gpu_certificate.json\nm3s/gallery/gallery.json\nm3s/field/gallery.json\nm3s/occl/gallery.json\nm3s/timestamps.json\nm3s/hero/frame.png\nm3s/hall/frame.png\nm3s/*/frame.ppm", retention-days: 30 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Weak plates found by looking at the stills: the Gut's near side, the stairs' light, the arrival pull-back.
-cd /c/dev/mission-control/2026-10-16-low-water
+cd "$(dirname "$0")/.."
 until grep -q "LAST DONE" content/logs/last.txt 2>/dev/null; do sleep 30; done
 export LW_PLATE=1
 node render/bake2.mjs --place gut > content/logs/more-gut.log 2>&1 & node render/bake2.mjs --place wide_arrival > content/logs/more-wa.log 2>&1 & wait

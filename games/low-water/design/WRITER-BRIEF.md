@@ -3,7 +3,7 @@
 
 From the director and lead writer, 2026-10-16. Private. Every writing helper reads this first, then
 the documents it names, then writes one file. Working folder:
-`C:/dev/mission-control/2026-10-16-low-water/` (all paths below are relative to it).
+`games/low-water/` (all paths below are relative to it).
 
 ## Read, in this order
 

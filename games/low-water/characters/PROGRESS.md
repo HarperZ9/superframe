@@ -62,7 +62,7 @@ reaches me only through cleanroom/spec/. I own characters/ and the character art
     prototype hook through draw2d.mjs needing a /characters/ mount). design/CHARACTERS-ART.md
     written (rules, the three, what the rest of the cast needs).
 14. DONE Engine PR HarperZ9/raw-native#171 (branch feat/web-anim-skinning, worktree
-    C:/dev/worktrees/raw-native-anim off origin/main e46ff48): web/anim skeleton, skinning,
+    a raw-native worktree off origin/main e46ff48): web/anim skeleton, skinning,
     phase-timed clips, warp, two-bone IK, 11 node tests, changelog.d entry. Nothing under
     src/renderer/gpu/shaders. All CI checks green; merged 2026-10-17 01:25Z with --match-head-commit
     4ed7058 as aeb1538. The Low Water worktree (feat/low-water-host) does not carry it yet.

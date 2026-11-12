@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
-const rn = (p) => pathToFileURL("C:/dev/worktrees/raw-native-lowwater/" + p).href;
+const rn = (p) => new URL("../../../../../../native/" + p, import.meta.url).href;
 const { isoCamera, project } = await import(rn("web/shaders/paintover/camera.mjs"));
 const { makeWorld, findPath, passable, GRID, ROOMS, HOTSPOTS, ROOM_HOTSPOTS } = await import("../world.mjs");
 for (const name of ["quay", "brine", "weigh", "lamp"]) {

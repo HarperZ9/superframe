@@ -1,7 +1,7 @@
 <!-- writing-profile: procedure -->
 # Edit brief: cutting one district of Act 1 to length, in one voice
 
-From the director, 2026-10-16. Private. Working folder `C:/dev/mission-control/2026-10-16-low-water/`.
+From the director, 2026-10-16. Private. Working folder `games/low-water/`.
 
 Act 1 came in at about 133,600 words against a target of 60,000 to 80,000. With the fights the
 author added after the target was set, the revised Act 1 target is **85,000 to 95,000 words**. Each
