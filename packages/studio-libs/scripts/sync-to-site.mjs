@@ -2,9 +2,13 @@
 // Zero external deps: uses only node:fs and node:path.
 import { readdirSync, mkdirSync, copyFileSync, statSync } from "node:fs";
 import { join, relative, extname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const LIBS_ROOT = "c:/dev/public/studio-libs";
-const SITE_LIB  = "c:/dev/public/portfolio-site/system/lib";
+// Usage: node scripts/sync-to-site.mjs <site checkout>   (or set SITE_ROOT)
+const LIBS_ROOT = fileURLToPath(new URL("..", import.meta.url));
+const SITE_ROOT = process.argv[2] || process.env.SITE_ROOT;
+if (!SITE_ROOT) { console.error("give the site checkout as the first argument, or set SITE_ROOT"); process.exit(2); }
+const SITE_LIB  = join(SITE_ROOT, "system", "lib");
 
 const sources = [
   { lib: "sense-core", src: join(LIBS_ROOT, "sense-core"), dst: join(SITE_LIB, "sense-core") },

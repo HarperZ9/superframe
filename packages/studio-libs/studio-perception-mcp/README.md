@@ -5,7 +5,7 @@ A zero-dependency Node.js MCP server providing native perception and nD renderin
 ## Run
 
 ```
-node c:/dev/public/studio-libs/studio-perception-mcp/server.mjs
+node packages/studio-libs/studio-perception-mcp/server.mjs
 ```
 
 ## Honest Disclosure
@@ -26,5 +26,5 @@ The server exposes `perception://live` — a resource a client may subscribe to.
 ## Claude Desktop Config
 
 ```json
-{ "mcpServers": { "studio-perception": { "command": "node", "args": ["c:/dev/public/studio-libs/studio-perception-mcp/server.mjs"] } } }
+{ "mcpServers": { "studio-perception": { "command": "node", "args": ["packages/studio-libs/studio-perception-mcp/server.mjs"] } } }
 ```
