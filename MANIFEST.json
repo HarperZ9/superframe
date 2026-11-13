@@ -10888,14 +10888,128 @@
   {
    "path": "packages/registry/README.md",
    "source": "repo",
-   "bytes": 5638,
-   "sourceSha256": "dd00a0e0a95222ca49d056d69bbcc741ada8473ebff1f427748e99a444d578d2"
+   "bytes": 6996,
+   "sourceSha256": "21e454e2f4edafe973afebb7f6b3b8d29587f3875901864d4fd3c8742092423f"
+  },
+  {
+   "path": "packages/registry/bld/GAPS.md",
+   "source": "repo",
+   "bytes": 844,
+   "sourceSha256": "1578b38daab11969585d8b545f4bf4057875aa555e6ea53207c16341169bb78a"
+  },
+  {
+   "path": "packages/registry/bld/check.bld",
+   "source": "repo",
+   "bytes": 4240,
+   "sourceSha256": "cb6012023fd3059939bd28ba2aae4a8ce59d636e3e673b582cadbe001f62d647"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/affine.json",
+   "source": "repo",
+   "bytes": 1055,
+   "sourceSha256": "431a84f6d8d8f49ad24a77b69274757341126e3669d4f6fd46c1637094243586"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/count.json",
+   "source": "repo",
+   "bytes": 1048,
+   "sourceSha256": "bf0b8bbd92454053ac2b6a50a9b449932af1fecd074c631389b117a0e99e32fa"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/dim.json",
+   "source": "repo",
+   "bytes": 1088,
+   "sourceSha256": "07711447e087112d4852f73770993c1c377202c0c1c1f23999b4e47c0b9fea90"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/family.json",
+   "source": "repo",
+   "bytes": 1051,
+   "sourceSha256": "50ac5d73e44e761ebd2e00869170d876f4d1426941967749abc85acc95de8de2"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/good.json",
+   "source": "repo",
+   "bytes": 1073,
+   "sourceSha256": "3dab2f3479442dbfbb395e1875109ff0314a1184f76af006b1b3bf8d20748be2"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/id-slug.json",
+   "source": "repo",
+   "bytes": 1077,
+   "sourceSha256": "ac39fc24fedbfb0c9dd704100b8ca2ee10bd5691128b6dffe007d32e894229b8"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/id-unique.json",
+   "source": "repo",
+   "bytes": 1072,
+   "sourceSha256": "af3e087d3a3bd1920eb0b21f6a408576a891b56bc77ef9619ab103b422809105"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/linear.json",
+   "source": "repo",
+   "bytes": 1079,
+   "sourceSha256": "5f0431c85268a3e460940603438a720e2a074f0d77c40273cbb79ff98f80cca5"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/logarithmic.json",
+   "source": "repo",
+   "bytes": 1085,
+   "sourceSha256": "f6ff8f04e5300628c3abad70f807cec6b4a942226a70f7aa7e0b3a20c6f514bb"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/name.json",
+   "source": "repo",
+   "bytes": 1056,
+   "sourceSha256": "d806744568a57832d7ee7096f8ebd5b5b00fefb9aeb5da59b0dca21e5510d096"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/nominal.json",
+   "source": "repo",
+   "bytes": 1085,
+   "sourceSha256": "eb3e406726151d46fd0aad6a7f6d41f84831107bafb41dc24dfcc6d9f64e94d5"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/ordinal.json",
+   "source": "repo",
+   "bytes": 1040,
+   "sourceSha256": "f9056b9d1afbb37f89e6370e7c8bdf605bd31dbda739b06b8083b7fdad803bd6"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/scale.json",
+   "source": "repo",
+   "bytes": 1074,
+   "sourceSha256": "f5106ec9792bb0ca9da0296c082122096bf1ff69a44f21fe143b20e845f26a26"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/symbol-unique.json",
+   "source": "repo",
+   "bytes": 1070,
+   "sourceSha256": "e7ddce5d02d6366ebdf7194fc7d4d1eb50a0c245ca50a361dbba958387bc46b6"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/symbol.json",
+   "source": "repo",
+   "bytes": 1068,
+   "sourceSha256": "6972b33ca1bdee092ab4604788ceb50402e50c9cb87e1c0b4ec228c80dc17e00"
+  },
+  {
+   "path": "packages/registry/bld/json.bld",
+   "source": "repo",
+   "bytes": 6356,
+   "sourceSha256": "616895359cf4bbe086deea1e5c96bfd3e77e6ea536f50aa3843e48e21bfb1900"
+  },
+  {
+   "path": "packages/registry/bld/rules.bld",
+   "source": "repo",
+   "bytes": 6881,
+   "sourceSha256": "f1d6e18cde0fa491d6ccc7c478aa0070986ffc4466afbaf8d8706783d0236f16"
   },
   {
    "path": "packages/registry/data/units.json",
    "source": "repo",
-   "bytes": 23325,
-   "sourceSha256": "bf1dff8f301683c08ee070cc0f93def922eae0473c008bec68747bcd3369b006"
+   "bytes": 23414,
+   "sourceSha256": "2271a17f7a659c73aea980f37298073e88cd73c5c1dd88aa7236ff4ac6f2fe38"
   },
   {
    "path": "packages/remastering/README.md",
