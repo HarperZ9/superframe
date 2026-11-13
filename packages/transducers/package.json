@@ -1,0 +1,12 @@
+{
+  "name": "@superframe/transducers",
+  "private": true,
+  "type": "commonjs",
+  "license": "FSL-1.1-MIT",
+  "description": "Every kernel takes a field and returns a field, and states what it lost in measured bits.",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "demos": "node demos/run.js",
+    "page": "node page/build.js"
+  }
+}
