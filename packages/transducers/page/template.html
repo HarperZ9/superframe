@@ -87,7 +87,7 @@ tr.is-over th,tr.is-over td{color:var(--drift)}
 <section class="k-layer" data-layer="pro" id="pro">
 <div class="k-layer-head"><h2>The working</h2></div>
 <p>Every kernel declares its input and output representation with units, a grade and its axes, and the field type measures the grade on the data. A kernel with unmeasured bits, a failed declared structure, a wrong unit or a false lossless claim is refused.</p>
-<p>Budget per step: I = (space modes)(time modes) log2(1 + SNR), with modes counted above the noise floor on the data. Kept is measured independently, from the coherence with the source: sum over modes of -0.5 log2(1 - gamma^2). This formula is not a bound. Across 218 swept steps it fails on 17: spikes, coarse ADCs and dim catches, where one SNR averaged over all modes reads near zero while low modes still carry bits. Counting every mode against the floor fixes those, and fails on 24 others at bright shot noise, where the noise follows the signal.</p>
+<p>Budget per step: I = (space modes)(time modes) log2(1 + SNR), with modes counted above the noise floor on the data. Kept is measured independently, from the coherence with the source: sum over modes of -0.5 log2(1 - gamma^2). This formula is not a bound. Across 218 swept steps it fails on 17: spikes, coarse ADCs and dim catches, where one SNR averaged over all modes reads near zero while low modes still carry bits. Counting every mode against the floor fixes those, and fails on others at bright shot noise, where the noise follows the signal: 24 with the measured lens table bound, 33 in a build without it.</p>
 <div id="tr-ledgers"></div>
 <h3>Kernels</h3>
 <div class="k-scroll"><table><tbody id="tr-cat"></tbody></table></div>
