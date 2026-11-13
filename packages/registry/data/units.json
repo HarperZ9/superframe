@@ -1,0 +1,1726 @@
+{
+ "schema": "registry.units/3",
+ "bases": [
+  "m",
+  "kg",
+  "s",
+  "A",
+  "K",
+  "mol",
+  "cd",
+  "bit"
+ ],
+ "note": "One unit table. to_si is the factor to the coherent SI unit of the same dimension (or to bit). dim is the exponent of each base in order. Built on 2026-11-13 as the union of field/src/units.js, rooms/core/units.js and the BuildLang compiler table (compiler/src/units.rs). Version 2 (2026-11-13) adds a scale field: linear (multiply by to_si), affine (multiply, then add offset), logarithmic (value = k * log_base(quantity / reference); no to_si), and count (a number of named things; two counts of different things do not add). Version 3 (2026-11-13) adds two scale kinds after Stevens (1946, Science 103:677): ordinal (order only; no sums, differences or ratios) and nominal (equal or different only). It also adds ten units the optics and sensor tables use.",
+ "present_in": {
+  "field": "packages/field/src/units.js",
+  "rooms": "packages/rooms/core/units.js",
+  "buildlang": "HarperZ9/buildlang compiler/src/units.rs",
+  "articulate": "HarperZ9/articulate src/articulate/quantities.py (spellings only, not merged here yet)"
+ },
+ "units": [
+  {
+   "id": "unit.1",
+   "symbol": "1",
+   "name": "one",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "dimensionless",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.count",
+   "symbol": "count",
+   "name": "count",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "count",
+   "scale": "count"
+  },
+  {
+   "id": "unit.rad",
+   "symbol": "rad",
+   "name": "radian",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "dimensionless",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.deg",
+   "symbol": "deg",
+   "name": "degree",
+   "to_si": "pi/180",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "dimensionless",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.sr",
+   "symbol": "sr",
+   "name": "steradian",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "dimensionless",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.px",
+   "symbol": "px",
+   "name": "pixel",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "count",
+   "scale": "count",
+   "of": "picture element",
+   "note": "not a length: a device pixel, a CSS pixel (1/96 inch by definition) and a texel differ; convert through a stated density"
+  },
+  {
+   "id": "unit.char",
+   "symbol": "char",
+   "name": "character",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "count",
+   "scale": "count"
+  },
+  {
+   "id": "unit.word",
+   "symbol": "word",
+   "name": "word",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "count",
+   "scale": "count"
+  },
+  {
+   "id": "unit.symbol",
+   "symbol": "symbol",
+   "name": "symbol",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "count",
+   "scale": "count"
+  },
+  {
+   "id": "unit.ulp",
+   "symbol": "ulp",
+   "name": "unit in the last place",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "dimensionless",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.m",
+   "symbol": "m",
+   "name": "metre",
+   "to_si": 1,
+   "dim": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "length",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.km",
+   "symbol": "km",
+   "name": "kilometre",
+   "to_si": 1000.0,
+   "dim": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "length",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.cm",
+   "symbol": "cm",
+   "name": "centimetre",
+   "to_si": 0.01,
+   "dim": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "length",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.mm",
+   "symbol": "mm",
+   "name": "millimetre",
+   "to_si": 0.001,
+   "dim": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "length",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.um",
+   "symbol": "um",
+   "name": "micrometre",
+   "to_si": 1e-06,
+   "dim": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "length",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.nm",
+   "symbol": "nm",
+   "name": "nanometre",
+   "to_si": 1e-09,
+   "dim": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "length",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.s",
+   "symbol": "s",
+   "name": "second",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "time",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.ms",
+   "symbol": "ms",
+   "name": "millisecond",
+   "to_si": 0.001,
+   "dim": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "time",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.us",
+   "symbol": "us",
+   "name": "microsecond",
+   "to_si": 1e-06,
+   "dim": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "time",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.ns",
+   "symbol": "ns",
+   "name": "nanosecond",
+   "to_si": 1e-09,
+   "dim": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "time",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.Hz",
+   "symbol": "Hz",
+   "name": "hertz",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    -1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "frequency",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.kg",
+   "symbol": "kg",
+   "name": "kilogram",
+   "to_si": 1,
+   "dim": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "mass",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.g",
+   "symbol": "g",
+   "name": "gram",
+   "to_si": 0.001,
+   "dim": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "mass",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.A",
+   "symbol": "A",
+   "name": "ampere",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "electric current",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.K",
+   "symbol": "K",
+   "name": "kelvin",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "family": "temperature",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.mol",
+   "symbol": "mol",
+   "name": "mole",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0
+   ],
+   "family": "amount of substance",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.cd",
+   "symbol": "cd",
+   "name": "candela",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "family": "luminous intensity",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.N",
+   "symbol": "N",
+   "name": "newton",
+   "to_si": 1,
+   "dim": [
+    1,
+    1,
+    -2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "force",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.Pa",
+   "symbol": "Pa",
+   "name": "pascal",
+   "to_si": 1,
+   "dim": [
+    -1,
+    1,
+    -2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "pressure",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.J",
+   "symbol": "J",
+   "name": "joule",
+   "to_si": 1,
+   "dim": [
+    2,
+    1,
+    -2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "energy",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.pJ",
+   "symbol": "pJ",
+   "name": "picojoule",
+   "to_si": 1e-12,
+   "dim": [
+    2,
+    1,
+    -2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "energy",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.W",
+   "symbol": "W",
+   "name": "watt",
+   "to_si": 1,
+   "dim": [
+    2,
+    1,
+    -3,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "power",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.C",
+   "symbol": "C",
+   "name": "coulomb",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "electric charge",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.V",
+   "symbol": "V",
+   "name": "volt",
+   "to_si": 1,
+   "dim": [
+    2,
+    1,
+    -3,
+    -1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "electric potential",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.ohm",
+   "symbol": "ohm",
+   "name": "ohm",
+   "to_si": 1,
+   "dim": [
+    2,
+    1,
+    -3,
+    -2,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "electric resistance",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.S",
+   "symbol": "S",
+   "name": "siemens",
+   "to_si": 1,
+   "dim": [
+    -2,
+    -1,
+    3,
+    2,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "electric conductance",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.F",
+   "symbol": "F",
+   "name": "farad",
+   "to_si": 1,
+   "dim": [
+    -2,
+    -1,
+    4,
+    2,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "capacitance",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.H",
+   "symbol": "H",
+   "name": "henry",
+   "to_si": 1,
+   "dim": [
+    2,
+    1,
+    -2,
+    -2,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "inductance",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.T",
+   "symbol": "T",
+   "name": "tesla",
+   "to_si": 1,
+   "dim": [
+    0,
+    1,
+    -2,
+    -1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "family": "magnetic flux density",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.bit",
+   "symbol": "bit",
+   "name": "bit",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   "family": "information",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.byte",
+   "symbol": "byte",
+   "name": "byte",
+   "to_si": 8,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   "family": "information",
+   "scale": "linear"
+  },
+  {
+   "id": "unit.nat",
+   "symbol": "nat",
+   "name": "nat",
+   "family": "information",
+   "scale": "linear",
+   "to_si": "1/ln(2)",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   "note": "natural unit of information; about 1.4427 bit"
+  },
+  {
+   "id": "unit.digit",
+   "symbol": "digit",
+   "name": "decimal digit",
+   "family": "information",
+   "scale": "linear",
+   "to_si": "log2(10)",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   "note": "also called the hartley or ban; about 3.3219 bit"
+  },
+  {
+   "id": "unit.trit",
+   "symbol": "trit",
+   "name": "ternary digit",
+   "family": "information",
+   "scale": "linear",
+   "to_si": "log2(3)",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   "note": "about 1.5850 bit"
+  },
+  {
+   "id": "unit.kB",
+   "symbol": "kB",
+   "name": "kilobyte",
+   "family": "information",
+   "scale": "linear",
+   "to_si": 8000,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "unit.KiB",
+   "symbol": "KiB",
+   "name": "kibibyte",
+   "family": "information",
+   "scale": "linear",
+   "to_si": 8192,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "unit.MiB",
+   "symbol": "MiB",
+   "name": "mebibyte",
+   "family": "information",
+   "scale": "linear",
+   "to_si": 8388608,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "unit.GiB",
+   "symbol": "GiB",
+   "name": "gibibyte",
+   "family": "information",
+   "scale": "linear",
+   "to_si": 8589934592,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "id": "unit.stop",
+   "symbol": "stop",
+   "name": "stop",
+   "family": "exposure",
+   "scale": "logarithmic",
+   "log": {
+    "k": 1,
+    "base": 2,
+    "of": "light admitted",
+    "reference": "the setting before"
+   },
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "one stop doubles or halves the light; f-numbers step by the square root of 2"
+  },
+  {
+   "id": "unit.EV",
+   "symbol": "EV",
+   "name": "exposure value",
+   "family": "exposure",
+   "scale": "logarithmic",
+   "log": {
+    "k": 1,
+    "base": 2,
+    "of": "N^2 / t",
+    "reference": "f/1 at 1 s"
+   },
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "N is the f-number and t the shutter time in seconds"
+  },
+  {
+   "id": "unit.dB",
+   "symbol": "dB",
+   "name": "decibel",
+   "family": "level",
+   "scale": "logarithmic",
+   "log": {
+    "k": 10,
+    "base": 10,
+    "of": "power ratio",
+    "reference": "stated per use"
+   },
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "20 log10 for field quantities such as pressure or voltage"
+  },
+  {
+   "id": "unit.Np",
+   "symbol": "Np",
+   "name": "neper",
+   "family": "level",
+   "scale": "logarithmic",
+   "log": {
+    "k": 1,
+    "base": "e",
+    "of": "field ratio",
+    "reference": "stated per use"
+   },
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": ""
+  },
+  {
+   "id": "unit.oct",
+   "symbol": "oct",
+   "name": "octave",
+   "family": "pitch interval",
+   "scale": "logarithmic",
+   "log": {
+    "k": 1,
+    "base": 2,
+    "of": "frequency ratio",
+    "reference": "the lower tone"
+   },
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": ""
+  },
+  {
+   "id": "unit.cent",
+   "symbol": "cent",
+   "name": "cent",
+   "family": "pitch interval",
+   "scale": "logarithmic",
+   "log": {
+    "k": 1200,
+    "base": 2,
+    "of": "frequency ratio",
+    "reference": "the lower tone"
+   },
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "100 cents to an equal-tempered semitone"
+  },
+  {
+   "id": "unit.mag",
+   "symbol": "mag",
+   "name": "astronomical magnitude",
+   "family": "brightness",
+   "scale": "logarithmic",
+   "log": {
+    "k": -2.5,
+    "base": 10,
+    "of": "flux ratio",
+    "reference": "a reference star or zero point"
+   },
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "larger numbers are fainter; 5 magnitudes is a factor of 100"
+  },
+  {
+   "id": "unit.pH",
+   "symbol": "pH",
+   "name": "pH",
+   "family": "acidity",
+   "scale": "logarithmic",
+   "log": {
+    "k": -1,
+    "base": 10,
+    "of": "hydrogen ion activity",
+    "reference": "unit activity"
+   },
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": ""
+  },
+  {
+   "id": "unit.dec",
+   "symbol": "dec",
+   "name": "decade",
+   "family": "ratio",
+   "scale": "logarithmic",
+   "log": {
+    "k": 1,
+    "base": 10,
+    "of": "ratio",
+    "reference": "stated per use"
+   },
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": ""
+  },
+  {
+   "id": "unit.texel",
+   "symbol": "texel",
+   "name": "texel",
+   "family": "count",
+   "scale": "count",
+   "of": "texture element",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": ""
+  },
+  {
+   "id": "unit.voxel",
+   "symbol": "voxel",
+   "name": "voxel",
+   "family": "count",
+   "scale": "count",
+   "of": "volume element",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": ""
+  },
+  {
+   "id": "unit.sample",
+   "symbol": "sample",
+   "name": "sample",
+   "family": "count",
+   "scale": "count",
+   "of": "signal sample",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "a rate in samples per second is a frequency"
+  },
+  {
+   "id": "unit.frame",
+   "symbol": "frame",
+   "name": "frame",
+   "family": "count",
+   "scale": "count",
+   "of": "picture frame",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": ""
+  },
+  {
+   "id": "unit.glyph",
+   "symbol": "glyph",
+   "name": "glyph",
+   "family": "count",
+   "scale": "count",
+   "of": "drawn letterform",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": ""
+  },
+  {
+   "id": "unit.token",
+   "symbol": "token",
+   "name": "token",
+   "family": "count",
+   "scale": "count",
+   "of": "model token",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "a tokenizer-specific count; not comparable across tokenizers"
+  },
+  {
+   "id": "unit.photon",
+   "symbol": "photon",
+   "name": "photon",
+   "family": "count",
+   "scale": "count",
+   "of": "detected light quantum",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "a count of detection events"
+  },
+  {
+   "id": "unit.line",
+   "symbol": "line",
+   "name": "line",
+   "family": "count",
+   "scale": "count",
+   "of": "line of text or code",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": ""
+  },
+  {
+   "id": "unit.in",
+   "symbol": "in",
+   "name": "inch",
+   "family": "length",
+   "scale": "linear",
+   "to_si": 0.0254,
+   "dim": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.pt",
+   "symbol": "pt",
+   "name": "point",
+   "family": "length",
+   "scale": "linear",
+   "to_si": 0.00035277777777777776,
+   "dim": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "the desktop publishing point, 1/72 inch"
+  },
+  {
+   "id": "unit.pc",
+   "symbol": "pc",
+   "name": "pica",
+   "family": "length",
+   "scale": "linear",
+   "to_si": 0.004233333333333333,
+   "dim": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.csspx",
+   "symbol": "csspx",
+   "name": "CSS pixel",
+   "family": "length",
+   "scale": "linear",
+   "to_si": 0.0002645833333333333,
+   "dim": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "a reference length, 1/96 inch; a device may map it to any number of device pixels"
+  },
+  {
+   "id": "unit.arcmin",
+   "symbol": "arcmin",
+   "name": "arcminute",
+   "family": "dimensionless",
+   "scale": "linear",
+   "to_si": "pi/10800",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.arcsec",
+   "symbol": "arcsec",
+   "name": "arcsecond",
+   "family": "dimensionless",
+   "scale": "linear",
+   "to_si": "pi/648000",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.min",
+   "symbol": "min",
+   "name": "minute",
+   "family": "time",
+   "scale": "linear",
+   "to_si": 60,
+   "dim": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.h",
+   "symbol": "h",
+   "name": "hour",
+   "family": "time",
+   "scale": "linear",
+   "to_si": 3600,
+   "dim": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.d",
+   "symbol": "d",
+   "name": "day",
+   "family": "time",
+   "scale": "linear",
+   "to_si": 86400,
+   "dim": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.degC",
+   "symbol": "degC",
+   "name": "degree Celsius",
+   "family": "temperature",
+   "scale": "affine",
+   "to_si": 1,
+   "offset": 273.15,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "note": "K = degC + 273.15; an interval of 1 degC equals 1 K"
+  },
+  {
+   "id": "unit.lm",
+   "symbol": "lm",
+   "name": "lumen",
+   "family": "luminous flux",
+   "scale": "linear",
+   "to_si": 1,
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "note": "candela times steradian; weighted by the eye response curve"
+  },
+  {
+   "id": "unit.lx",
+   "symbol": "lx",
+   "name": "lux",
+   "family": "illuminance",
+   "scale": "linear",
+   "to_si": 1,
+   "dim": [
+    -2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  {
+   "id": "unit.eV",
+   "symbol": "eV",
+   "name": "electronvolt",
+   "family": "energy",
+   "scale": "linear",
+   "to_si": 1.602176634e-19,
+   "dim": [
+    2,
+    1,
+    -2,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "exact since 2019"
+  },
+  {
+   "id": "unit.D",
+   "symbol": "D",
+   "name": "dioptre",
+   "family": "optical power",
+   "scale": "linear",
+   "to_si": 1,
+   "dim": [
+    -1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "the reciprocal of a focal length in metres"
+  },
+  {
+   "id": "unit.mm_per_s",
+   "symbol": "mm/s",
+   "name": "millimetre per second",
+   "family": "speed",
+   "scale": "linear",
+   "to_si": 0.001,
+   "dim": [
+    1,
+    0,
+    -1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.per_mm2",
+   "symbol": "mm^-2",
+   "name": "per square millimetre",
+   "family": "areal density",
+   "scale": "linear",
+   "to_si": 1000000,
+   "dim": [
+    -2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "the count it divides is named by the value that uses it, for example cones per square millimetre"
+  },
+  {
+   "id": "unit.mm2",
+   "symbol": "mm^2",
+   "name": "square millimetre",
+   "family": "area",
+   "scale": "linear",
+   "to_si": 1e-06,
+   "dim": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.cy_per_mm",
+   "symbol": "cy/mm",
+   "name": "cycle per millimetre",
+   "family": "spatial frequency",
+   "scale": "linear",
+   "to_si": 1000,
+   "dim": [
+    -1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "on a surface such as film or a sensor; equal to line pairs per millimetre"
+  },
+  {
+   "id": "unit.cpd",
+   "symbol": "cpd",
+   "name": "cycle per degree",
+   "family": "angular spatial frequency",
+   "scale": "linear",
+   "to_si": "180/pi",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "cycles per degree of visual angle; to_si is cycles per radian"
+  },
+  {
+   "id": "unit.uas",
+   "symbol": "uas",
+   "name": "microarcsecond",
+   "family": "dimensionless",
+   "scale": "linear",
+   "to_si": "pi/648000000000",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.per_min",
+   "symbol": "min^-1",
+   "name": "per minute",
+   "family": "frequency",
+   "scale": "linear",
+   "to_si": "1/60",
+   "dim": [
+    0,
+    0,
+    -1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "a rate of named events, such as beats or breaths; the event is named by the value that uses it"
+  },
+  {
+   "id": "unit.cd_per_m2",
+   "symbol": "cd/m^2",
+   "name": "candela per square metre",
+   "family": "luminance",
+   "scale": "linear",
+   "to_si": 1,
+   "dim": [
+    -2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  {
+   "id": "unit.electron",
+   "symbol": "e-",
+   "name": "electron",
+   "family": "count",
+   "scale": "count",
+   "of": "charge carrier collected in a sensor well",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "a count of carriers, not the charge in coulombs"
+  },
+  {
+   "id": "unit.mohs",
+   "symbol": "Mohs",
+   "name": "Mohs hardness",
+   "family": "hardness",
+   "scale": "ordinal",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "order": {
+    "low": 1,
+    "high": 10,
+    "of": "scratch resistance against ten reference minerals"
+   },
+   "note": "order only: steps are unequal, so differences and ratios of Mohs numbers carry no meaning"
+  },
+  {
+   "id": "unit.label",
+   "symbol": "label",
+   "name": "label",
+   "family": "category",
+   "scale": "nominal",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "a name from a stated set, such as a spectral class or a film stock; two labels are equal or different and nothing more"
+  }
+ ]
+}
