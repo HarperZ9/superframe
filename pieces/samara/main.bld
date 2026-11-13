@@ -1,0 +1,735 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// SAMARA: a thirty-second piece of visual music, written in BuildLang.
+//
+// Two maple seeds, each a pair of triangles, spin down through shafts of light to dark water.
+// One table of notes drives everything: the sound is synthesised from it and the picture is
+// drawn from it, so a note and the motion it causes cannot drift apart.
+//
+//   buildc build --release pieces/samara
+//
+// The program writes samara.wav (48 kHz, 16-bit stereo) and samara.rgb (raw 24-bit frames,
+// 24 a second) into the folder it runs in, then prints its own checks. See README.md.
+
+extern "C" header "<stdio.h>" {
+    fn fopen(path: &str, mode: &str) -> *mut ();
+    fn fputc(c: i32, f: *mut ()) -> i32;
+    fn fclose(f: *mut ()) -> i32;
+}
+
+// ---------------------------------------------------------------- numbers that never overflow
+
+fn hash2(ix: i64, iy: i64) -> f64 {
+    let a: i64 = ((ix + 100000) * 73856093) % 2147483563;
+    let b: i64 = ((iy + 100000) * 19349663) % 2147483399;
+    let mut h: i64 = (a + b) % 2147483563;
+    h = (h * h + 12345) % 2147483563;
+    h = (h + (ix + 100000) * 31 + (iy + 100000) * 17) % 2147483399;
+    h = (h * h + 6789) % 2147483399;
+    (h as f64) / 2147483399.0
+}
+
+fn absf(x: f64) -> f64 {
+    if x < 0.0 { return 0.0 - x; }
+    x
+}
+
+fn smooth(t: f64) -> f64 {
+    t * t * (3.0 - 2.0 * t)
+}
+
+fn clamp01(x: f64) -> f64 {
+    if x < 0.0 { return 0.0; }
+    if x > 1.0 { return 1.0; }
+    x
+}
+
+// value noise on an integer lattice, smooth between lattice points
+fn vnoise(x: f64, y: f64) -> f64 {
+    let fx: f64 = floor(x);
+    let fy: f64 = floor(y);
+    let ix: i64 = fx as i64;
+    let iy: i64 = fy as i64;
+    let u: f64 = smooth(x - fx);
+    let v: f64 = smooth(y - fy);
+    let a: f64 = hash2(ix, iy);
+    let b: f64 = hash2(ix + 1, iy);
+    let c: f64 = hash2(ix, iy + 1);
+    let d: f64 = hash2(ix + 1, iy + 1);
+    (a + (b - a) * u) + ((c + (d - c) * u) - (a + (b - a) * u)) * v
+}
+
+fn zeros(n: i32) -> Vec<f64> {
+    let mut v: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < n {
+        v.push(0.0);
+        i = i + 1;
+    }
+    v
+}
+
+// ---------------------------------------------------------------- the one schedule
+
+// Tempo: 90 beats a minute. The piece is 45 beats, 30 seconds, 720 frames.
+fn beat_seconds() -> f64 { 2.0 / 3.0 }
+
+// A note is five numbers: voice, start beat, length in beats, MIDI pitch, loudness.
+// Voices: 0 the gold seed, 1 the green seed, 2 a drop falling to the water, 3 the pad, 4 the gust.
+fn note(s: Vec<f64>, voice: f64, start: f64, len: f64, pitch: f64, vel: f64) {
+    s.push(voice); s.push(start); s.push(len); s.push(pitch); s.push(vel);
+}
+
+fn score() -> Vec<f64> {
+    let s: Vec<f64> = Vec::new();
+    // pad: D minor ninth, B flat, F, A minor, then an open fifth on D
+    note(s, 3.0, 0.0, 8.0, 50.0, 0.50); note(s, 3.0, 0.0, 8.0, 57.0, 0.40); note(s, 3.0, 0.0, 8.0, 65.0, 0.34); note(s, 3.0, 0.0, 8.0, 64.0, 0.22);
+    note(s, 3.0, 8.0, 8.0, 46.0, 0.50); note(s, 3.0, 8.0, 8.0, 58.0, 0.38); note(s, 3.0, 8.0, 8.0, 62.0, 0.34); note(s, 3.0, 8.0, 8.0, 65.0, 0.28);
+    note(s, 3.0, 16.0, 8.0, 53.0, 0.50); note(s, 3.0, 16.0, 8.0, 60.0, 0.38); note(s, 3.0, 16.0, 8.0, 64.0, 0.30); note(s, 3.0, 16.0, 8.0, 69.0, 0.28);
+    note(s, 3.0, 24.0, 8.0, 45.0, 0.56); note(s, 3.0, 24.0, 8.0, 57.0, 0.44); note(s, 3.0, 24.0, 8.0, 64.0, 0.36); note(s, 3.0, 24.0, 8.0, 67.0, 0.32);
+    note(s, 3.0, 32.0, 12.0, 50.0, 0.60); note(s, 3.0, 32.0, 12.0, 57.0, 0.50); note(s, 3.0, 32.0, 12.0, 62.0, 0.36); note(s, 3.0, 32.0, 12.0, 69.0, 0.26);
+    // drops: one at the head of each chord and one between
+    note(s, 2.0, 0.0, 3.0, 38.0, 0.80); note(s, 2.0, 4.0, 3.0, 45.0, 0.55);
+    note(s, 2.0, 8.0, 3.0, 34.0, 0.80); note(s, 2.0, 12.0, 3.0, 41.0, 0.55);
+    note(s, 2.0, 16.0, 3.0, 41.0, 0.80); note(s, 2.0, 20.0, 3.0, 36.0, 0.60);
+    note(s, 2.0, 24.0, 3.0, 33.0, 0.85); note(s, 2.0, 28.0, 3.0, 40.0, 0.70);
+    // the gold seed
+    note(s, 0.0, 2.0, 1.0, 74.0, 0.70); note(s, 0.0, 3.0, 0.5, 77.0, 0.60); note(s, 0.0, 3.5, 1.5, 79.0, 0.72);
+    note(s, 0.0, 5.0, 1.0, 81.0, 0.70); note(s, 0.0, 6.0, 1.0, 79.0, 0.60); note(s, 0.0, 7.0, 1.0, 77.0, 0.66);
+    note(s, 0.0, 16.0, 1.0, 77.0, 0.70); note(s, 0.0, 17.5, 0.5, 81.0, 0.62); note(s, 0.0, 18.0, 1.0, 84.0, 0.76);
+    note(s, 0.0, 20.0, 1.0, 79.0, 0.66); note(s, 0.0, 22.0, 0.5, 81.0, 0.60); note(s, 0.0, 22.5, 1.5, 76.0, 0.70);
+    note(s, 0.0, 24.0, 0.5, 76.0, 0.70); note(s, 0.0, 25.0, 0.5, 79.0, 0.72); note(s, 0.0, 26.0, 0.5, 81.0, 0.76);
+    note(s, 0.0, 27.0, 0.5, 84.0, 0.80); note(s, 0.0, 28.0, 0.5, 81.0, 0.80); note(s, 0.0, 29.0, 0.5, 84.0, 0.84);
+    note(s, 0.0, 30.0, 0.5, 86.0, 0.88); note(s, 0.0, 31.0, 0.5, 88.0, 0.92);
+    note(s, 0.0, 32.0, 2.0, 86.0, 1.00);
+    note(s, 0.0, 36.0, 4.0, 74.0, 0.66);
+    // the green seed, a fourth or so lower, answering
+    note(s, 1.0, 8.5, 1.0, 69.0, 0.66); note(s, 1.0, 9.5, 0.5, 72.0, 0.60); note(s, 1.0, 10.0, 1.0, 74.0, 0.70);
+    note(s, 1.0, 11.0, 1.5, 70.0, 0.62); note(s, 1.0, 12.5, 0.5, 72.0, 0.60); note(s, 1.0, 13.0, 1.0, 77.0, 0.72);
+    note(s, 1.0, 14.0, 1.0, 74.0, 0.62); note(s, 1.0, 15.0, 1.0, 72.0, 0.62);
+    note(s, 1.0, 17.0, 0.5, 72.0, 0.62); note(s, 1.0, 19.0, 1.0, 76.0, 0.68); note(s, 1.0, 21.0, 1.0, 72.0, 0.64);
+    note(s, 1.0, 23.5, 0.5, 69.0, 0.62);
+    note(s, 1.0, 24.5, 0.5, 72.0, 0.68); note(s, 1.0, 25.5, 0.5, 76.0, 0.72); note(s, 1.0, 26.5, 0.5, 79.0, 0.76);
+    note(s, 1.0, 27.5, 0.5, 76.0, 0.78); note(s, 1.0, 28.5, 0.5, 79.0, 0.80); note(s, 1.0, 29.5, 0.5, 81.0, 0.84);
+    note(s, 1.0, 30.5, 0.5, 84.0, 0.88); note(s, 1.0, 31.5, 0.5, 81.0, 0.90);
+    note(s, 1.0, 32.0, 2.0, 81.0, 1.00);
+    note(s, 1.0, 38.0, 4.0, 69.0, 0.62);
+    // the gust
+    note(s, 4.0, 32.0, 4.0, 0.0, 1.00);
+    // the two landings sound as drops as well
+    note(s, 2.0, 36.0, 4.0, 38.0, 0.90); note(s, 2.0, 38.0, 4.0, 50.0, 0.70);
+    s
+}
+
+fn midi_hz(p: f64) -> f64 {
+    440.0 * pow(2.0, (p - 69.0) / 12.0)
+}
+
+// ---------------------------------------------------------------- sound
+
+fn rate() -> f64 { 48000.0 }
+
+// adds one note into the left and right buffers
+fn render_note(l: Vec<f64>, r: Vec<f64>, n: i32, voice: i32, start_s: f64, len_s: f64, pitch: f64, vel: f64) {
+    let two_pi: f64 = 6.283185307179586;
+    let f: f64 = midi_hz(pitch);
+    let mut pan: f64 = 0.5;
+    if voice == 0 { pan = 0.30; }
+    if voice == 1 { pan = 0.70; }
+    let gl: f64 = cos(pan * 1.5707963267948966);
+    let gr: f64 = sin(pan * 1.5707963267948966);
+    let first: i32 = (start_s * rate()) as i32;
+    let mut tail: f64 = 2.5;
+    if voice == 3 { tail = len_s + 2.0; }
+    if voice == 4 { tail = len_s; }
+    let mut last: i32 = first + (tail * rate()) as i32;
+    if last > n { last = n; }
+    let mut seed: i64 = 1234567;
+    let mut low: f64 = 0.0;
+    let mut i: i32 = first;
+    while i < last {
+        let t: f64 = ((i - first) as f64) / rate();
+        let mut v: f64 = 0.0;
+        if voice == 0 || voice == 1 {
+            // a struck bar: six partials, the higher ones dying sooner
+            let attack: f64 = clamp01(t / 0.004);
+            let mut k: i32 = 1;
+            while k <= 6 {
+                let kf: f64 = k as f64;
+                let amp: f64 = 1.0 / pow(kf, 1.3);
+                let die: f64 = exp(0.0 - t * 2.6 * pow(kf, 0.8));
+                v = v + amp * die * sin(two_pi * f * kf * t);
+                k = k + 1;
+            }
+            v = v * attack * 0.30;
+        } else if voice == 2 {
+            // a drop: the pitch falls onto the note in the first thirty milliseconds
+            let bend: f64 = 1.0 + 0.5 * exp(0.0 - t / 0.012);
+            let ph: f64 = two_pi * f * (t + 0.5 * 0.012 * (1.0 - exp(0.0 - t / 0.012)));
+            v = (sin(ph) + 0.35 * sin(2.0 * ph)) * exp(0.0 - t * 2.0) * clamp01(t / 0.003) * 0.55 * bend / bend;
+        } else if voice == 3 {
+            // the pad: three slightly detuned sines and two soft overtones, slow in and slow out
+            let mut env: f64 = clamp01(t / 1.6);
+            if t > len_s { env = env * clamp01(1.0 - (t - len_s) / 2.0); }
+            let trem: f64 = 1.0 + 0.06 * sin(two_pi * 0.31 * t);
+            v = sin(two_pi * f * t) + sin(two_pi * f * 1.003 * t) + sin(two_pi * f * 0.997 * t);
+            v = v / 3.0 + 0.22 * sin(two_pi * 2.0 * f * t) + 0.10 * sin(two_pi * 3.0 * f * t);
+            v = v * env * trem * 0.16;
+        } else {
+            // the gust: noise through a moving low-pass filter
+            seed = (seed * 40014) % 2147483563;
+            let white: f64 = (seed as f64) / 1073741781.5 - 1.0;
+            let swell: f64 = clamp01(t / 0.25) * exp(0.0 - t * 1.1);
+            let open: f64 = 0.02 + 0.22 * swell;
+            low = low + open * (white - low);
+            v = low * swell * 1.6;
+        }
+        v = v * vel;
+        l[i as usize] = l[i as usize] + v * gl;
+        r[i as usize] = r[i as usize] + v * gr;
+        i = i + 1;
+    }
+}
+
+fn put16(f: *mut (), v: i32) ~ Foreign {
+    let mut u: i32 = v;
+    if u < 0 { u = u + 65536; }
+    let a: i32 = fputc(u % 256, f);
+    let b: i32 = fputc(u / 256, f);
+}
+
+fn put32(f: *mut (), v: i32) ~ Foreign {
+    put16(f, v % 65536);
+    put16(f, v / 65536);
+}
+
+fn write_wav(l: Vec<f64>, r: Vec<f64>, n: i32) ~ Foreign {
+    let f = fopen("samara.wav", "wb");
+    let a: i32 = fputc(82, f); let b: i32 = fputc(73, f); let c: i32 = fputc(70, f); let d: i32 = fputc(70, f);
+    put32(f, 36 + n * 4);
+    let e: i32 = fputc(87, f); let g: i32 = fputc(65, f); let h: i32 = fputc(86, f); let j: i32 = fputc(69, f);
+    let k: i32 = fputc(102, f); let m: i32 = fputc(109, f); let o: i32 = fputc(116, f); let p: i32 = fputc(32, f);
+    put32(f, 16); put16(f, 1); put16(f, 2); put32(f, 48000); put32(f, 192000); put16(f, 4); put16(f, 16);
+    let q: i32 = fputc(100, f); let s: i32 = fputc(97, f); let t: i32 = fputc(116, f); let u: i32 = fputc(97, f);
+    put32(f, n * 4);
+    let mut i: i32 = 0;
+    while i < n {
+        // fade the last second and a half, and limit softly
+        let mut fade: f64 = 1.0;
+        let left: f64 = ((n - i) as f64) / rate();
+        if left < 1.5 { fade = left / 1.5; }
+        let mut x: f64 = l[i as usize] * fade;
+        let mut y: f64 = r[i as usize] * fade;
+        let ax: f64 = absf(x);
+        let ay: f64 = absf(y);
+        x = x / (1.0 + 0.35 * ax);
+        y = y / (1.0 + 0.35 * ay);
+        let mut xi: i32 = (x * 30000.0) as i32;
+        let mut yi: i32 = (y * 30000.0) as i32;
+        if xi > 32767 { xi = 32767; }
+        if xi < 0 - 32767 { xi = 0 - 32767; }
+        if yi > 32767 { yi = 32767; }
+        if yi < 0 - 32767 { yi = 0 - 32767; }
+        put16(f, xi);
+        put16(f, yi);
+        i = i + 1;
+    }
+    let z: i32 = fclose(f);
+}
+
+// power of one frequency in a stretch of a buffer (Goertzel)
+fn tone_power(buf: Vec<f64>, first: i32, count: i32, hz: f64) -> f64 {
+    let w: f64 = 6.283185307179586 * hz / rate();
+    let coeff: f64 = 2.0 * cos(w);
+    let mut s1: f64 = 0.0;
+    let mut s2: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < count {
+        let s0: f64 = buf[(first + i) as usize] + coeff * s1 - s2;
+        s2 = s1;
+        s1 = s0;
+        i = i + 1;
+    }
+    s1 * s1 + s2 * s2 - coeff * s1 * s2
+}
+
+// ---------------------------------------------------------------- motion, read from the same schedule
+
+// sum over one seed's notes that have started: each note gives a push that dies away
+fn pushes(s: Vec<f64>, voice: i32, t: f64, decay: f64) -> f64 {
+    let mut total: f64 = 0.0;
+    let count: i32 = (s.len() as i32) / 5;
+    let mut i: i32 = 0;
+    while i < count {
+        if (s[(i * 5) as usize] as i32) == voice {
+            let t0: f64 = s[(i * 5 + 1) as usize] * beat_seconds();
+            if t >= t0 {
+                total = total + s[(i * 5 + 4) as usize] * exp(0.0 - (t - t0) / decay);
+            }
+        }
+        i = i + 1;
+    }
+    total
+}
+
+// like pushes, but each note adds a turn that stays
+fn turns(s: Vec<f64>, voice: i32, t: f64) -> f64 {
+    let mut total: f64 = 0.0;
+    let count: i32 = (s.len() as i32) / 5;
+    let mut i: i32 = 0;
+    while i < count {
+        if (s[(i * 5) as usize] as i32) == voice {
+            let t0: f64 = s[(i * 5 + 1) as usize] * beat_seconds();
+            if t >= t0 {
+                total = total + s[(i * 5 + 4) as usize] * (1.0 - exp(0.0 - (t - t0) / 0.22));
+            }
+        }
+        i = i + 1;
+    }
+    total
+}
+
+fn pad_level(s: Vec<f64>, t: f64) -> f64 {
+    let mut total: f64 = 0.0;
+    let count: i32 = (s.len() as i32) / 5;
+    let mut i: i32 = 0;
+    while i < count {
+        if (s[(i * 5) as usize] as i32) == 3 {
+            let t0: f64 = s[(i * 5 + 1) as usize] * beat_seconds();
+            let len: f64 = s[(i * 5 + 2) as usize] * beat_seconds();
+            if t >= t0 {
+                let mut env: f64 = clamp01((t - t0) / 1.6);
+                if t > t0 + len { env = env * clamp01(1.0 - (t - t0 - len) / 2.0); }
+                total = total + env * s[(i * 5 + 4) as usize];
+            }
+        }
+        i = i + 1;
+    }
+    total
+}
+
+fn spline(p0: f64, p1: f64, p2: f64, p3: f64, u: f64) -> f64 {
+    0.5 * ((2.0 * p1) + (p2 - p0) * u + (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * u * u + (3.0 * p1 - p0 - 3.0 * p2 + p3) * u * u * u)
+}
+
+// keys are triples: beat, x, y. which is 1 for x and 2 for y.
+fn along(keys: Vec<f64>, beat: f64, which: i32) -> f64 {
+    let n: i32 = (keys.len() as i32) / 3;
+    if beat <= keys[0] { return keys[which as usize]; }
+    if beat >= keys[((n - 1) * 3) as usize] { return keys[((n - 1) * 3 + which) as usize]; }
+    let mut i: i32 = 0;
+    while i < n - 2 && beat >= keys[((i + 1) * 3) as usize] {
+        i = i + 1;
+    }
+    let mut a: i32 = i - 1;
+    if a < 0 { a = 0; }
+    let mut d: i32 = i + 2;
+    if d > n - 1 { d = n - 1; }
+    let b0: f64 = keys[(i * 3) as usize];
+    let b1: f64 = keys[((i + 1) * 3) as usize];
+    let u: f64 = (beat - b0) / (b1 - b0);
+    spline(keys[(a * 3 + which) as usize], keys[(i * 3 + which) as usize], keys[((i + 1) * 3 + which) as usize], keys[(d * 3 + which) as usize], u)
+}
+
+fn key(k: Vec<f64>, beat: f64, x: f64, y: f64) { k.push(beat); k.push(x); k.push(y); }
+
+// the path of each seed, in units of the frame height: x runs 0 to 1.778, y runs 0 at the top to 1
+fn gold_path() -> Vec<f64> {
+    let k: Vec<f64> = Vec::new();
+    key(k, 0.0, 0.34, 0.0 - 0.10); key(k, 2.0, 0.36, 0.02); key(k, 8.0, 0.60, 0.24); key(k, 16.0, 0.98, 0.31);
+    key(k, 24.0, 0.66, 0.44); key(k, 32.0, 0.84, 0.40); key(k, 34.0, 1.16, 0.17); key(k, 36.0, 0.72, 0.800);
+    k
+}
+
+fn green_path() -> Vec<f64> {
+    let k: Vec<f64> = Vec::new();
+    key(k, 6.0, 1.52, 0.0 - 0.10); key(k, 8.5, 1.46, 0.04); key(k, 16.0, 1.08, 0.26); key(k, 24.0, 1.22, 0.47);
+    key(k, 32.0, 1.00, 0.43); key(k, 34.5, 0.52, 0.21); key(k, 38.0, 1.14, 0.845);
+    k
+}
+
+// ---------------------------------------------------------------- picture
+
+// signed distance to a triangle given counter-clockwise or clockwise corners: negative inside
+fn tri(px: f64, py: f64, ax: f64, ay: f64, bx: f64, by: f64, cx: f64, cy: f64) -> f64 {
+    let mut area: f64 = (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
+    let mut sgn: f64 = 1.0;
+    if area < 0.0 { sgn = 0.0 - 1.0; area = 0.0 - area; }
+    let l1: f64 = sqrt((bx - ax) * (bx - ax) + (by - ay) * (by - ay)) + 0.0000001;
+    let l2: f64 = sqrt((cx - bx) * (cx - bx) + (cy - by) * (cy - by)) + 0.0000001;
+    let l3: f64 = sqrt((ax - cx) * (ax - cx) + (ay - cy) * (ay - cy)) + 0.0000001;
+    let d1: f64 = sgn * ((py - ay) * (bx - ax) - (px - ax) * (by - ay)) / l1;
+    let d2: f64 = sgn * ((py - by) * (cx - bx) - (px - bx) * (cy - by)) / l2;
+    let d3: f64 = sgn * ((py - cy) * (ax - cx) - (px - cx) * (ay - cy)) / l3;
+    let mut m: f64 = d1;
+    if d2 < m { m = d2; }
+    if d3 < m { m = d3; }
+    0.0 - m
+}
+
+// how much of the pixel a shape covers, from its signed distance (negative inside) and the pixel size
+fn cover(dist: f64, px_size: f64) -> f64 {
+    clamp01(0.5 - dist / px_size)
+}
+
+// The scene for one frame is a flat list the pixel loop reads:
+//   0 pad  1 gust
+//   2..9   gold seed:  x, y, spin cosine, tilt, size, lit, landed, unused
+//   10..17 green seed: the same
+//   18     number of rings; then per ring: x, y, radius, strength
+fn build_scene(s: Vec<f64>, gold: Vec<f64>, green: Vec<f64>, t: f64) -> Vec<f64> {
+    let sc: Vec<f64> = Vec::new();
+    let beat: f64 = t / beat_seconds();
+    let two_pi: f64 = 6.283185307179586;
+    sc.push(pad_level(s, t));
+    let mut gust: f64 = 0.0;
+    let tg: f64 = t - 32.0 * beat_seconds();
+    if tg >= 0.0 { gust = clamp01(tg / 0.25) * exp(0.0 - tg * 1.1); }
+    sc.push(gust);
+    let mut v: i32 = 0;
+    while v < 2 {
+        let mut land: f64 = 36.0;
+        if v == 1 { land = 38.0; }
+        let mut x: f64 = 0.0;
+        let mut y: f64 = 0.0;
+        if v == 0 { x = along(gold, beat, 1); y = along(gold, beat, 2); }
+        else { x = along(green, beat, 1); y = along(green, beat, 2); }
+        let landed: f64 = clamp01((beat - land) * 4.0);
+        // each note lifts the seed a little and gives it a turn
+        y = y - 0.030 * pushes(s, v, t, 0.30) * (1.0 - landed);
+        let angle: f64 = two_pi * (0.55 * t) + 2.4 * turns(s, v, t) + 6.0 * gust * tg;
+        let mut spin: f64 = cos(angle);
+        // on the water it lies open and rocks slowly
+        spin = spin * (1.0 - landed) + landed * (0.92 + 0.06 * sin(two_pi * 0.2 * t + (v as f64)));
+        let tilt: f64 = (0.35 * sin(two_pi * 0.23 * t + 1.7 * (v as f64)) + 0.9 * gust) * (1.0 - landed) + 0.12 * landed;
+        let mut size: f64 = 0.135;
+        if v == 1 { size = 0.105; }
+        sc.push(x); sc.push(y); sc.push(spin); sc.push(tilt); sc.push(size);
+        sc.push(0.75 + 0.5 * clamp01(pushes(s, v, t, 0.18)));
+        sc.push(landed); sc.push(0.0);
+        v = v + 1;
+    }
+    // rings: every drop makes three, spreading and fading
+    let rings: Vec<f64> = Vec::new();
+    let count: i32 = (s.len() as i32) / 5;
+    let mut i: i32 = 0;
+    let mut which: i32 = 0;
+    while i < count {
+        if (s[(i * 5) as usize] as i32) == 2 {
+            let b0: f64 = s[(i * 5 + 1) as usize];
+            let t0: f64 = b0 * beat_seconds();
+            // where it lands: the two last drops are the seeds themselves
+            let mut rx: f64 = 0.22 + 1.34 * hash2((which * 7 + 3) as i64, 11);
+            let mut ry: f64 = 0.80 + 0.13 * hash2((which * 5 + 1) as i64, 23);
+            if b0 == 36.0 { rx = 0.72; ry = 0.800; }
+            if b0 == 38.0 { rx = 1.14; ry = 0.845; }
+            let mut j: i32 = 0;
+            while j < 3 {
+                let age: f64 = t - t0 - 0.28 * (j as f64);
+                if age > 0.0 && age < 6.0 {
+                    rings.push(rx); rings.push(ry);
+                    rings.push(0.012 + 0.085 * age);
+                    rings.push(s[(i * 5 + 4) as usize] * exp(0.0 - age / 1.7) * (1.0 - 0.22 * (j as f64)));
+                }
+                j = j + 1;
+            }
+            // the falling drop itself, for the half second before it lands
+            let fall: f64 = t0 - t;
+            if fall > 0.0 && fall < 0.5 && b0 < 36.0 {
+                rings.push(rx); rings.push(ry - fall * 1.7);
+                rings.push(0.0 - 1.0);
+                rings.push(s[(i * 5 + 4) as usize]);
+            }
+            which = which + 1;
+        }
+        i = i + 1;
+    }
+    sc.push(((rings.len() as i32) / 4) as f64);
+    let mut q: i32 = 0;
+    while q < rings.len() as i32 {
+        sc.push(rings[q as usize]);
+        q = q + 1;
+    }
+    sc
+}
+
+// one pixel. x and y are in units of the frame height; px is the size of a pixel in those units.
+// The colour comes back through out[0..2].
+fn shade(sc: Vec<f64>, t: f64, x: f64, y: f64, px: f64, out: Vec<f64>) {
+    let pad: f64 = sc[0];
+    let gust: f64 = sc[1];
+    // chalk on black paper: every lit thing is broken by the tooth of the paper
+    let gx: f64 = x * 1080.0;
+    let gy: f64 = y * 1080.0;
+    let tooth: f64 = 0.58 + 0.42 * vnoise(gx / 2.3, gy / 2.3);
+    let mut speck: f64 = 1.0;
+    if hash2((gx / 1.5) as i64, (gy / 1.5) as i64) > 0.90 { speck = 0.45; }
+    let chalk: f64 = tooth * speck;
+
+    // ground: blue-black, a little lighter low in the frame where the water is
+    let water: f64 = smooth(clamp01((y - 0.64) / 0.22));
+    let mut r: f64 = 0.016 + 0.012 * water;
+    let mut g: f64 = 0.024 + 0.040 * water;
+    let mut b: f64 = 0.032 + 0.052 * water;
+    let patch: f64 = vnoise(x * 3.1 + 0.05 * t, y * 14.0) * water;
+    g = g + 0.030 * patch;
+    b = b + 0.034 * patch;
+
+    // shafts of light falling from the upper right, as bright as the pad is loud
+    let u: f64 = x * 0.80 + y * 0.60;
+    let across: f64 = y * 0.80 - x * 0.60;
+    let band: f64 = vnoise(u * 5.0 + 3.0, 0.5 + 0.03 * t);
+    let streak: f64 = vnoise(u * 46.0, across * 2.2 - 0.25 * t);
+    let mut shaft: f64 = band * band * band * 1.5 * (0.35 + 0.65 * streak) * (1.0 - 0.55 * water);
+    shaft = shaft * clamp01(1.25 - 0.9 * y) * (0.022 + 0.12 * pad + 0.55 * gust);
+    r = r + 0.66 * shaft * chalk;
+    g = g + 0.64 * shaft * chalk;
+    b = b + 0.54 * shaft * chalk;
+
+    // rings on the water and the drops that make them
+    let nr: i32 = sc[18] as i32;
+    let mut i: i32 = 0;
+    while i < nr {
+        let rx: f64 = sc[(19 + i * 4) as usize];
+        let ry: f64 = sc[(20 + i * 4) as usize];
+        let rad: f64 = sc[(21 + i * 4) as usize];
+        let strength: f64 = sc[(22 + i * 4) as usize];
+        if rad < 0.0 {
+            // a falling drop: a short pale stroke
+            let dx: f64 = absf(x - rx);
+            let dy: f64 = y - ry;
+            if dy > 0.0 - 0.035 && dy < 0.0 {
+                let a: f64 = cover(dx - 0.0016, px) * strength * 0.8 * chalk;
+                r = r + 0.72 * a; g = g + 0.80 * a; b = b + 0.78 * a;
+            }
+        } else {
+            let ex: f64 = x - rx;
+            let ey: f64 = (y - ry) / 0.30;
+            let dist: f64 = absf(sqrt(ex * ex + ey * ey) - rad);
+            let a: f64 = cover(dist - 0.0016, px * 1.6) * strength * 1.30 * chalk;
+            r = r + 0.74 * a; g = g + 0.82 * a; b = b + 0.80 * a;
+        }
+        i = i + 1;
+    }
+
+    // the two seeds: two triangles each, hinged at a rust-red nut
+    let mut v: i32 = 0;
+    while v < 2 {
+        let o: i32 = 2 + v * 8;
+        let cx: f64 = sc[o as usize];
+        let cy: f64 = sc[(o + 1) as usize];
+        let spin: f64 = sc[(o + 2) as usize];
+        let tilt: f64 = sc[(o + 3) as usize];
+        let size: f64 = sc[(o + 4) as usize];
+        let lit: f64 = sc[(o + 5) as usize];
+        let landed: f64 = sc[(o + 6) as usize];
+        if absf(x - cx) < size * 1.3 && absf(y - cy) < size * 1.3 {
+            // into the seed's own frame: undo the tilt, then the turn squeezes it sideways
+            let ct: f64 = cos(tilt);
+            let st: f64 = sin(tilt);
+            let lx: f64 = ((x - cx) * ct + (y - cy) * st) / size;
+            let mut ly: f64 = ((y - cy) * ct - (x - cx) * st) / size;
+            // lying on the water it is seen at a low angle
+            ly = ly / (1.0 - 0.62 * landed);
+            let mut face: f64 = spin;
+            if face < 0.0 { face = 0.0 - face; }
+            let w: f64 = 0.10 + 0.90 * face;
+            let sx: f64 = lx / w;
+            let scale: f64 = size * w;
+            // a wing: from the nut out to a tip, with a broad trailing corner
+            let d1: f64 = tri(sx, ly, 0.02, 0.0 - 0.05, 1.0, 0.16, 0.42, 0.40);
+            let d2: f64 = tri(sx, ly, 0.0 - 0.02, 0.0 - 0.05, 0.0 - 1.0, 0.16, 0.0 - 0.42, 0.40);
+            let mut d: f64 = d1;
+            if d2 < d { d = d2; }
+            let a: f64 = cover(d * scale, px);
+            if a > 0.0 {
+                // gold for the first seed, green for the second; the underside is darker
+                let mut wr: f64 = 0.90; let mut wg: f64 = 0.67; let mut wb: f64 = 0.22;
+                if v == 1 { wr = 0.64; wg = 0.82; wb = 0.69; }
+                let mut side: f64 = 1.0;
+                if spin < 0.0 { side = 0.60; }
+                // veins: pale lines fanning from the nut
+                let fan: f64 = 0.5 + 0.5 * sin(30.0 * (ly - 0.16 * absf(sx)) / (0.15 + absf(sx)));
+                let vein: f64 = 0.86 + 0.14 * fan;
+                // brighter toward the leading edge
+                let edge: f64 = 0.80 + 0.30 * clamp01(0.0 - (ly - 0.16 * absf(sx)) * 3.0 + 0.6);
+                let k: f64 = a * chalk * side * vein * edge * lit;
+                r = r * (1.0 - a) + wr * k;
+                g = g * (1.0 - a) + wg * k;
+                b = b * (1.0 - a) + wb * k;
+            }
+            // the nut: the one warm accent in the piece
+            let nd: f64 = sqrt(lx * lx + ly * ly) * size - 0.085 * size;
+            let na: f64 = cover(nd, px);
+            if na > 0.0 {
+                r = r * (1.0 - na) + 0.80 * na * (0.7 + 0.3 * chalk);
+                g = g * (1.0 - na) + 0.27 * na * (0.7 + 0.3 * chalk);
+                b = b * (1.0 - na) + 0.15 * na * (0.7 + 0.3 * chalk);
+            }
+        }
+        v = v + 1;
+    }
+
+    // the gust carries leaves across: small pale triangles, turning
+    if gust > 0.02 {
+        let tg: f64 = t - 32.0 * beat_seconds();
+        let mut q: i32 = 0;
+        while q < 26 {
+            let h1: f64 = hash2((q * 3 + 1) as i64, 5);
+            let h2: f64 = hash2((q * 3 + 2) as i64, 9);
+            let h3: f64 = hash2((q * 3 + 3) as i64, 13);
+            let lx0: f64 = 0.0 - 0.30 + (0.35 + 0.55 * h1) * tg * 0.62 + 1.5 * h3;
+            let ly0: f64 = 0.08 + 0.60 * h2 - 0.10 * tg * (h1 - 0.3) + 0.03 * sin(5.0 * tg + 6.0 * h3);
+            let sz: f64 = 0.010 + 0.016 * h3;
+            if absf(x - lx0) < sz * 2.0 && absf(y - ly0) < sz * 2.0 {
+                let ang: f64 = 9.0 * tg * (0.4 + h2) + 6.0 * h1;
+                let ca: f64 = cos(ang);
+                let sa: f64 = sin(ang);
+                let qx: f64 = ((x - lx0) * ca + (y - ly0) * sa) / sz;
+                let qy: f64 = ((y - ly0) * ca - (x - lx0) * sa) / sz;
+                let dl: f64 = tri(qx, qy, 0.0 - 1.0, 0.0, 1.0, 0.0 - 0.45, 0.5, 0.6);
+                let al: f64 = cover(dl * sz, px) * clamp01(gust * 3.0) * chalk;
+                let mut cr: f64 = 0.70; let mut cg: f64 = 0.62; let mut cb: f64 = 0.36;
+                if h3 > 0.5 { cr = 0.50; cg = 0.66; cb = 0.56; }
+                r = r * (1.0 - al) + cr * al;
+                g = g * (1.0 - al) + cg * al;
+                b = b * (1.0 - al) + cb * al;
+            }
+            q = q + 1;
+        }
+    }
+
+    // fade in over the first second and out over the last
+    let mut fade: f64 = clamp01(t / 1.0);
+    if t > 28.8 { fade = fade * clamp01((30.0 - t) / 1.2); }
+    out[0] = clamp01(r * fade);
+    out[1] = clamp01(g * fade);
+    out[2] = clamp01(b * fade);
+}
+
+// display encoding: the numbers above are light, the file wants a gamma curve
+fn encode(v: f64) -> i32 {
+    let e: f64 = pow(v, 0.4545454545);
+    let mut i: i32 = (e * 255.0 + 0.5) as i32;
+    if i > 255 { i = 255; }
+    if i < 0 { i = 0; }
+    i
+}
+
+fn render_frames(s: Vec<f64>, width: i32, height: i32, first: i32, last: i32, step: i32) ~ Foreign {
+    let f = fopen("samara.rgb", "wb");
+    let gold: Vec<f64> = gold_path();
+    let green: Vec<f64> = green_path();
+    let out: Vec<f64> = zeros(3);
+    let px: f64 = 1.0 / (height as f64);
+    let mut frame: i32 = first;
+    while frame < last {
+        let t: f64 = (frame as f64) / 24.0;
+        let sc: Vec<f64> = build_scene(s, gold, green, t);
+        let mut yy: i32 = 0;
+        while yy < height {
+            let y: f64 = ((yy as f64) + 0.5) * px;
+            let mut xx: i32 = 0;
+            while xx < width {
+                let x: f64 = ((xx as f64) + 0.5) * px;
+                shade(sc, t, x, y, px, out);
+                let a: i32 = fputc(encode(out[0]), f);
+                let b: i32 = fputc(encode(out[1]), f);
+                let c: i32 = fputc(encode(out[2]), f);
+                xx = xx + 1;
+            }
+            yy = yy + 1;
+        }
+        frame = frame + step;
+    }
+    let z: i32 = fclose(f);
+}
+
+// ---------------------------------------------------------------- checks the program runs on itself
+
+fn run_checks(s: Vec<f64>, n: i32) ~ Console {
+    // 1. every seed note sounds at its written pitch: in a buffer holding only that note, the
+    //    written frequency carries more power than a semitone above or below.
+    // 2. every seed note starts on its written sample: silence before, sound just after.
+    let count: i32 = (s.len() as i32) / 5;
+    let mut notes: i32 = 0;
+    let mut pitch_ok: i32 = 0;
+    let mut onset_ok: i32 = 0;
+    let mut i: i32 = 0;
+    while i < count {
+        let voice: i32 = s[(i * 5) as usize] as i32;
+        if voice == 0 || voice == 1 {
+            let l: Vec<f64> = zeros(n);
+            let r: Vec<f64> = zeros(n);
+            let start: f64 = s[(i * 5 + 1) as usize] * beat_seconds();
+            let pitch: f64 = s[(i * 5 + 3) as usize];
+            render_note(l, r, n, voice, start, s[(i * 5 + 2) as usize] * beat_seconds(), pitch, s[(i * 5 + 4) as usize]);
+            let first: i32 = (start * rate()) as i32;
+            let here: f64 = tone_power(l, first + 480, 4800, midi_hz(pitch));
+            let above: f64 = tone_power(l, first + 480, 4800, midi_hz(pitch + 1.0));
+            let below: f64 = tone_power(l, first + 480, 4800, midi_hz(pitch - 1.0));
+            if here > above * 4.0 && here > below * 4.0 { pitch_ok = pitch_ok + 1; }
+            let mut before: f64 = 0.0;
+            let mut after: f64 = 0.0;
+            let mut k: i32 = 1;
+            while k <= 96 {
+                if first - k >= 0 { before = before + absf(l[(first - k) as usize]); }
+                after = after + absf(l[(first + k) as usize]);
+                k = k + 1;
+            }
+            if before == 0.0 && after > 0.0 { onset_ok = onset_ok + 1; }
+            notes = notes + 1;
+        }
+        i = i + 1;
+    }
+    println!("seed notes {} | at written pitch {} | starting on the written sample {}", notes, pitch_ok, onset_ok);
+
+    // 3. planted fault: a note rendered a semitone sharp must fail the pitch check
+    let l2: Vec<f64> = zeros(n);
+    let r2: Vec<f64> = zeros(n);
+    render_note(l2, r2, n, 0, 1.0, 0.5, 75.0, 0.7);
+    let h: f64 = tone_power(l2, 48480, 4800, midi_hz(74.0));
+    let a2: f64 = tone_power(l2, 48480, 4800, midi_hz(75.0));
+    let mut caught: i32 = 0;
+    if !(h > a2 * 4.0) { caught = 1; }
+    println!("planted sharp note caught {} of 1", caught);
+
+    // 4. picture and sound share the schedule: at the frame after each gold note, the push that
+    //    turns the seed is higher than at the frame before it.
+    let mut moves: i32 = 0;
+    let mut gold_notes: i32 = 0;
+    i = 0;
+    while i < count {
+        if (s[(i * 5) as usize] as i32) == 0 {
+            let start2: f64 = s[(i * 5 + 1) as usize] * beat_seconds();
+            let fb: f64 = floor(start2 * 24.0);
+            let before2: f64 = turns(s, 0, (fb - 1.0) / 24.0);
+            let after2: f64 = turns(s, 0, (fb + 2.0) / 24.0);
+            if after2 > before2 + 0.05 { moves = moves + 1; }
+            gold_notes = gold_notes + 1;
+        }
+        i = i + 1;
+    }
+    println!("gold notes {} | seed turns within two frames of the note {}", gold_notes, moves);
+}
+
+fn main() ~ Console + Foreign {
+    let s: Vec<f64> = score();
+    let n: i32 = 1440000;
+    let l: Vec<f64> = zeros(n);
+    let r: Vec<f64> = zeros(n);
+    let count: i32 = (s.len() as i32) / 5;
+    let mut i: i32 = 0;
+    while i < count {
+        render_note(l, r, n, s[(i * 5) as usize] as i32, s[(i * 5 + 1) as usize] * beat_seconds(),
+                    s[(i * 5 + 2) as usize] * beat_seconds(), s[(i * 5 + 3) as usize], s[(i * 5 + 4) as usize]);
+        i = i + 1;
+    }
+    write_wav(l, r, n);
+    println!("samara.wav written: {} notes, 30 seconds", count);
+    run_checks(s, n);
+    // frame size and range: width, height, first frame, one past the last, step
+    render_frames(s, 960, 540, 0, 720, 1);
+    println!("samara.rgb written: 960 x 540, 720 frames at 24 a second");
+}

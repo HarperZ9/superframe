@@ -47,3 +47,5 @@ jobs:
       - run: buildc build --release native/bld && ./native/bld/target/release/main | tee native-bld-out.txt && grep -q "^modules identical to the C++: 1 of 1$" native-bld-out.txt && grep -q "differs from the frame 0 pin: 1 of 1$" native-bld-out.txt
       # e-means: the study program is BuildLang end to end; its output must equal the stored results.
       - run: buildc run packages/emeans/bld/emeans.bld > emeans-out.txt && diff emeans-out.txt packages/emeans/results/emeans.txt
+      # Samara: the piece must compile to a native program. Rendering it takes minutes and is not run here.
+      - run: buildc build --release pieces/samara
