@@ -1,0 +1,193 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// A small JSON reader for the registry checker: objects, arrays, strings, numbers, true, false and null.
+//
+// The document becomes a flat arena of nodes in source order. Node i has a kind (K_* below), a text
+// (the decoded string, the number as written, or "true"/"false"), a parent index (-1 for the root) and
+// the member key it sits under in its parent object ("" inside an array). The reader reports the first
+// syntax error through err[0] (the byte offset, or -1 when the document parsed).
+
+fn K_NULL() -> i32 { 0 }
+fn K_BOOL() -> i32 { 1 }
+fn K_NUM() -> i32 { 2 }
+fn K_STR() -> i32 { 3 }
+fn K_ARR() -> i32 { 4 }
+fn K_OBJ() -> i32 { 5 }
+
+fn is_ws(c: String) -> bool {
+    c == " " || c == "\n" || c == "\r" || c == "\t"
+}
+
+fn skip_ws(src: String, p: Vec<i32>) {
+    let n: i32 = src.len() as i32;
+    while p[0] < n && is_ws(src.char_at(p[0] as i64)) {
+        p[0] = p[0] + 1;
+    }
+}
+
+fn add_node(kind: Vec<i32>, parent: Vec<i32>, text: Vec<String>, key: Vec<String>,
+            k: i32, t: String, par: i32, name: String) -> i32 {
+    kind.push(k);
+    text.push(t);
+    parent.push(par);
+    key.push(name);
+    (kind.len() as i32) - 1
+}
+
+// Reads a string literal starting at the opening quote; leaves p after the closing quote.
+// Escapes other than \uXXXX are decoded; \uXXXX is kept as written, which is enough for comparing ids.
+fn read_string(src: String, p: Vec<i32>, err: Vec<i32>) -> String {
+    let n: i32 = src.len() as i32;
+    let mut out: String = String::new();
+    p[0] = p[0] + 1;
+    while p[0] < n {
+        let c: String = src.char_at(p[0] as i64);
+        if c == "\"" {
+            p[0] = p[0] + 1;
+            return out;
+        }
+        if c == "\\" && p[0] + 1 < n {
+            let e: String = src.char_at((p[0] + 1) as i64);
+            if e == "n" { out = out + "\n"; }
+            else if e == "t" { out = out + "\t"; }
+            else if e == "r" { out = out + "\r"; }
+            else if e == "u" { out = out + "\\" + "u"; }
+            else { out = out + e; }
+            p[0] = p[0] + 2;
+        } else {
+            out = out + c;
+            p[0] = p[0] + 1;
+        }
+    }
+    err[0] = p[0];
+    out
+}
+
+fn is_num_char(c: String) -> bool {
+    c == "-" || c == "+" || c == "." || c == "e" || c == "E" || c == "0" || c == "1" || c == "2"
+        || c == "3" || c == "4" || c == "5" || c == "6" || c == "7" || c == "8" || c == "9"
+}
+
+fn expect_word(src: String, p: Vec<i32>, err: Vec<i32>, w: String) {
+    let mut i: i32 = 0;
+    let m: i32 = w.len() as i32;
+    let n: i32 = src.len() as i32;
+    while i < m {
+        if p[0] + i >= n || src.char_at((p[0] + i) as i64) != w.char_at(i as i64) {
+            err[0] = p[0];
+            return;
+        }
+        i = i + 1;
+    }
+    p[0] = p[0] + m;
+}
+
+// Parses one value at p (after white space) as a child of par under the member key name.
+fn parse_value(src: String, p: Vec<i32>, err: Vec<i32>, kind: Vec<i32>, parent: Vec<i32>,
+               text: Vec<String>, key: Vec<String>, par: i32, name: String) -> i32 {
+    skip_ws(src, p);
+    let n: i32 = src.len() as i32;
+    if p[0] >= n {
+        err[0] = p[0];
+        return -1;
+    }
+    let c: String = src.char_at(p[0] as i64);
+    if c == "\"" {
+        let s: String = read_string(src, p, err);
+        return add_node(kind, parent, text, key, K_STR(), s, par, name);
+    }
+    if c == "{" || c == "[" {
+        let is_obj: bool = c == "{";
+        let close: String = if is_obj { "}" } else { "]" };
+        let me: i32 = add_node(kind, parent, text, key, if is_obj { K_OBJ() } else { K_ARR() }, "", par, name);
+        p[0] = p[0] + 1;
+        skip_ws(src, p);
+        if p[0] < n && src.char_at(p[0] as i64) == close {
+            p[0] = p[0] + 1;
+            return me;
+        }
+        while err[0] < 0 {
+            let mut member: String = "";
+            if is_obj {
+                skip_ws(src, p);
+                if p[0] >= n || src.char_at(p[0] as i64) != "\"" {
+                    err[0] = p[0];
+                    return -1;
+                }
+                member = read_string(src, p, err);
+                skip_ws(src, p);
+                if p[0] >= n || src.char_at(p[0] as i64) != ":" {
+                    err[0] = p[0];
+                    return -1;
+                }
+                p[0] = p[0] + 1;
+            }
+            let child: i32 = parse_value(src, p, err, kind, parent, text, key, me, member);
+            if child < 0 {
+                return -1;
+            }
+            skip_ws(src, p);
+            if p[0] >= n {
+                err[0] = p[0];
+                return -1;
+            }
+            let d: String = src.char_at(p[0] as i64);
+            p[0] = p[0] + 1;
+            if d == close {
+                return me;
+            }
+            if d != "," {
+                err[0] = p[0] - 1;
+                return -1;
+            }
+        }
+        return -1;
+    }
+    if c == "t" || c == "f" {
+        let w: String = if c == "t" { "true" } else { "false" };
+        expect_word(src, p, err, w);
+        return add_node(kind, parent, text, key, K_BOOL(), w, par, name);
+    }
+    if c == "n" {
+        expect_word(src, p, err, "null");
+        return add_node(kind, parent, text, key, K_NULL(), "null", par, name);
+    }
+    let mut num: String = String::new();
+    while p[0] < n && is_num_char(src.char_at(p[0] as i64)) {
+        num = num + src.char_at(p[0] as i64);
+        p[0] = p[0] + 1;
+    }
+    if num.len() == 0 {
+        err[0] = p[0];
+        return -1;
+    }
+    add_node(kind, parent, text, key, K_NUM(), num, par, name)
+}
+
+// The child of node under member key name, or -1.
+fn member(parent: Vec<i32>, key: Vec<String>, node: i32, name: String) -> i32 {
+    let mut i: i32 = node + 1;
+    let n: i32 = parent.len() as i32;
+    while i < n {
+        if parent[i as i64] == node && key[i as i64] == name {
+            return i;
+        }
+        i = i + 1;
+    }
+    -1
+}
+
+// The elements of an array node (or the members of an object), in order.
+fn elements(parent: Vec<i32>, node: i32) -> Vec<i32> {
+    let out: Vec<i32> = Vec::new();
+    let mut i: i32 = node + 1;
+    let n: i32 = parent.len() as i32;
+    while i < n {
+        if parent[i as i64] == node {
+            out.push(i);
+        }
+        i = i + 1;
+    }
+    out
+}

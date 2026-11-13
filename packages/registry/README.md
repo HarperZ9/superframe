@@ -68,7 +68,11 @@ A conversion between two mediums is an entry in the `conversion` table. Its refe
 4. Every measured value has a source and a licence.
 5. Any generated copy of a table equals what its generator produces from the source table.
 
-The checker is a BuildLang program and is the next change. Until it lands, this package is data and specification only, and nothing here has been checked by a program.
+The checker is a BuildLang program, `bld/check.bld`, and CI runs it on `data/units.json` (the units table only). Run it from the repository root with `buildc run packages/registry/bld/check.bld -- packages/registry/data/units.json`. It prints one line per check with PASS or FAIL and a count, and exits 1 on any failure.
+
+Of the five checks above it covers check 1 (ids unique and `unit.<slug>`) and the family part of check 3 (a non-empty `family` string). It does not yet cover check 2 (the units table has no `links`, `grid` or `neighbours`, so there is nothing to resolve until a second table lands), check 4 (no measured values with sources and licences are in the table yet) or check 5 (no generated copies exist yet). It adds checks the units table needs: a name and a symbol, unique symbols, a `dim` with one integer per base, a `scale` of one of the six kinds, and the per-scale rules (linear and affine carry `to_si`, affine also `offset`; logarithmic carries `log` with `k`, `base`, `of` and `reference` and no `to_si`; count carries `of`, except the bare `unit.count`; ordinal carries `order`; nominal carries neither `to_si` nor `log`). A `to_si` may be a number or an exact expression string such as `"pi/180"`; the expression is not evaluated.
+
+`bld/fixtures/` holds one small broken table per check and one unbroken table. `check --expect <check> <table>` succeeds only when that check is the one and only check that fails, and CI runs it on every fixture, so a checker that passes everything fails the build.
 
 ## Tables
 

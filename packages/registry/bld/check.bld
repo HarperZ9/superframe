@@ -1,0 +1,118 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The registry unit-table checker. Usage:
+//
+//   check [table.json]                    check a table (default packages/registry/data/units.json)
+//   check --expect <check> <table.json>   a broken-table control: succeeds only when <check> is the one
+//                                         and only check that fails on this table
+//
+// One line per check: PASS or FAIL, the name of the check, and how many units passed out of the units
+// it applies to. Each failing unit id follows on its own indented line. Exit 1 on any failure.
+
+mod json;
+mod rules;
+
+use json::parse_value;
+use json::member;
+use json::elements;
+use rules::judge;
+use rules::NCHECKS;
+use rules::check_name;
+use rules::text_of;
+
+fn main() ~ Console + FileSystem + Process + Environment {
+    let mut expect: String = "";
+    let mut path: String = "packages/registry/data/units.json";
+    let nargs: i32 = args_count() as i32;
+    // A leading "--" (the separator some buildc versions pass through) is skipped.
+    let a: i32 = if nargs > 1 && args_get(1) == "--" { 2 } else { 1 };
+    if nargs > a + 1 && args_get(a) == "--expect" {
+        expect = args_get(a + 1);
+        if nargs > a + 2 {
+            path = args_get(a + 2);
+        }
+    } else if nargs > a {
+        path = args_get(a);
+    }
+    let src: String = read_file(path);
+    let p: Vec<i32> = Vec::new();
+    p.push(0);
+    let err: Vec<i32> = Vec::new();
+    err.push(-1);
+    let kind: Vec<i32> = Vec::new();
+    let parent: Vec<i32> = Vec::new();
+    let text: Vec<String> = Vec::new();
+    let key: Vec<String> = Vec::new();
+    let root: i32 = parse_value(src, p, err, kind, parent, text, key, -1, "");
+    if root < 0 || err[0] >= 0 || src.len() == 0 {
+        println("FAIL parse {} at byte {}", path, err[0]);
+        process_exit(1);
+    }
+    let bases: i32 = member(parent, key, root, "bases");
+    let table: i32 = member(parent, key, root, "units");
+    if bases < 0 || table < 0 {
+        println("FAIL parse {} has no bases or no units array", path);
+        process_exit(1);
+    }
+    let nbases: i32 = elements(parent, bases).len() as i32;
+    let units: Vec<i32> = elements(parent, table);
+    let ids: Vec<String> = Vec::new();
+    let syms: Vec<String> = Vec::new();
+    let mut i: i64 = 0;
+    while i < units.len() as i64 {
+        ids.push(text_of(kind, parent, text, key, units[i], "id"));
+        syms.push(text_of(kind, parent, text, key, units[i], "symbol"));
+        i = i + 1;
+    }
+    println("table {} with {} units over {} bases", path, units.len(), nbases);
+    let mut failed: i32 = 0;
+    let mut expected_failed: bool = false;
+    let mut c: i32 = 0;
+    while c < NCHECKS() {
+        let mut applies: i32 = 0;
+        let mut ok: i32 = 0;
+        let bad: Vec<String> = Vec::new();
+        let mut u: i64 = 0;
+        while u < units.len() as i64 {
+            let r: i32 = judge(c, kind, parent, text, key, units[u], u as i32, ids, syms, nbases);
+            if r >= 0 {
+                applies = applies + 1;
+            }
+            if r == 1 {
+                ok = ok + 1;
+            }
+            if r == 0 {
+                bad.push(ids[u]);
+            }
+            u = u + 1;
+        }
+        let verdict: String = if ok == applies { "PASS" } else { "FAIL" };
+        println("{} {} {} of {}", verdict, check_name(c), ok, applies);
+        let mut b: i64 = 0;
+        while b < bad.len() as i64 {
+            println("    {}", bad[b]);
+            b = b + 1;
+        }
+        if ok != applies {
+            failed = failed + 1;
+            if check_name(c) == expect {
+                expected_failed = true;
+            }
+        }
+        c = c + 1;
+    }
+    if expect.len() > 0 {
+        if expected_failed && failed == 1 {
+            println("CONTROL PASS {} fails on {} and nothing else does", expect, path);
+            process_exit(0);
+        }
+        println("CONTROL FAIL expected {} alone to fail on {}; {} checks failed", expect, path, failed);
+        process_exit(1);
+    }
+    if failed > 0 {
+        println("{} of {} checks failed", failed, NCHECKS());
+        process_exit(1);
+    }
+    println("all {} checks passed", NCHECKS());
+}

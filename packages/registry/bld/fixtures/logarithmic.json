@@ -1,0 +1,9 @@
+{"schema": "registry.units/3", "bases": ["m", "K"], "units": [
+ {"id": "unit.m", "symbol": "m", "name": "metre", "family": "length", "scale": "linear", "to_si": 1, "dim": [1, 0]},
+ {"id": "unit.deg", "symbol": "deg", "name": "degree", "family": "angle", "scale": "linear", "to_si": "pi/180", "dim": [0, 0]},
+ {"id": "unit.degC", "symbol": "degC", "name": "degree Celsius", "family": "temperature", "scale": "affine", "to_si": 1, "offset": 273.15, "dim": [0, 1]},
+ {"id": "unit.dB", "symbol": "dB", "name": "decibel", "family": "level", "scale": "logarithmic", "to_si": 1, "log": {"k": 10, "base": 10, "of": "power ratio", "reference": "stated per use"}, "dim": [0, 0]},
+ {"id": "unit.px", "symbol": "px", "name": "pixel", "family": "count", "scale": "count", "to_si": 1, "of": "picture element", "dim": [0, 0]},
+ {"id": "unit.mohs", "symbol": "Mohs", "name": "Mohs hardness", "family": "hardness", "scale": "ordinal", "order": {"low": 1, "high": 10}, "dim": [0, 0]},
+ {"id": "unit.label", "symbol": "label", "name": "label", "family": "category", "scale": "nominal", "dim": [0, 0]}
+]}
