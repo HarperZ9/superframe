@@ -1,5 +1,5 @@
 {
- "schema": "registry.units/2",
+ "schema": "registry.units/3",
  "bases": [
   "m",
   "kg",
@@ -10,7 +10,7 @@
   "cd",
   "bit"
  ],
- "note": "One unit table. to_si is the factor to the coherent SI unit of the same dimension (or to bit). dim is the exponent of each base in order. Built on 2026-11-13 as the union of field/src/units.js, rooms/core/units.js and the BuildLang compiler table (compiler/src/units.rs). Version 2 (2026-11-13) adds a scale field: linear (multiply by to_si), affine (multiply, then add offset), logarithmic (value = k * log_base(quantity / reference); no to_si), and count (a number of named things; two counts of different things do not add).",
+ "note": "One unit table. to_si is the factor to the coherent SI unit of the same dimension (or to bit). dim is the exponent of each base in order. Built on 2026-11-13 as the union of field/src/units.js, rooms/core/units.js and the BuildLang compiler table (compiler/src/units.rs). Version 2 (2026-11-13) adds a scale field: linear (multiply by to_si), affine (multiply, then add offset), logarithmic (value = k * log_base(quantity / reference); no to_si), and count (a number of named things; two counts of different things do not add). Version 3 (2026-11-13) adds two scale kinds after Stevens (1946, Science 103:677): ordinal (order only; no sums, differences or ratios) and nominal (equal or different only). It also adds ten units the optics and sensor tables use.",
  "present_in": {
   "field": "packages/field/src/units.js",
   "rooms": "packages/rooms/core/units.js",
@@ -1494,6 +1494,233 @@
     0
    ],
    "note": "exact since 2019"
+  },
+  {
+   "id": "unit.D",
+   "symbol": "D",
+   "name": "dioptre",
+   "family": "optical power",
+   "scale": "linear",
+   "to_si": 1,
+   "dim": [
+    -1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "the reciprocal of a focal length in metres"
+  },
+  {
+   "id": "unit.mm_per_s",
+   "symbol": "mm/s",
+   "name": "millimetre per second",
+   "family": "speed",
+   "scale": "linear",
+   "to_si": 0.001,
+   "dim": [
+    1,
+    0,
+    -1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.per_mm2",
+   "symbol": "mm^-2",
+   "name": "per square millimetre",
+   "family": "areal density",
+   "scale": "linear",
+   "to_si": 1000000,
+   "dim": [
+    -2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "the count it divides is named by the value that uses it, for example cones per square millimetre"
+  },
+  {
+   "id": "unit.mm2",
+   "symbol": "mm^2",
+   "name": "square millimetre",
+   "family": "area",
+   "scale": "linear",
+   "to_si": 1e-06,
+   "dim": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.cy_per_mm",
+   "symbol": "cy/mm",
+   "name": "cycle per millimetre",
+   "family": "spatial frequency",
+   "scale": "linear",
+   "to_si": 1000,
+   "dim": [
+    -1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "on a surface such as film or a sensor; equal to line pairs per millimetre"
+  },
+  {
+   "id": "unit.cpd",
+   "symbol": "cpd",
+   "name": "cycle per degree",
+   "family": "angular spatial frequency",
+   "scale": "linear",
+   "to_si": "180/pi",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "cycles per degree of visual angle; to_si is cycles per radian"
+  },
+  {
+   "id": "unit.uas",
+   "symbol": "uas",
+   "name": "microarcsecond",
+   "family": "dimensionless",
+   "scale": "linear",
+   "to_si": "pi/648000000000",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "unit.per_min",
+   "symbol": "min^-1",
+   "name": "per minute",
+   "family": "frequency",
+   "scale": "linear",
+   "to_si": "1/60",
+   "dim": [
+    0,
+    0,
+    -1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "a rate of named events, such as beats or breaths; the event is named by the value that uses it"
+  },
+  {
+   "id": "unit.cd_per_m2",
+   "symbol": "cd/m^2",
+   "name": "candela per square metre",
+   "family": "luminance",
+   "scale": "linear",
+   "to_si": 1,
+   "dim": [
+    -2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  {
+   "id": "unit.electron",
+   "symbol": "e-",
+   "name": "electron",
+   "family": "count",
+   "scale": "count",
+   "of": "charge carrier collected in a sensor well",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "a count of carriers, not the charge in coulombs"
+  },
+  {
+   "id": "unit.mohs",
+   "symbol": "Mohs",
+   "name": "Mohs hardness",
+   "family": "hardness",
+   "scale": "ordinal",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "order": {
+    "low": 1,
+    "high": 10,
+    "of": "scratch resistance against ten reference minerals"
+   },
+   "note": "order only: steps are unequal, so differences and ratios of Mohs numbers carry no meaning"
+  },
+  {
+   "id": "unit.label",
+   "symbol": "label",
+   "name": "label",
+   "family": "category",
+   "scale": "nominal",
+   "dim": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "note": "a name from a stated set, such as a spectral class or a film stock; two labels are equal or different and nothing more"
   }
  ]
 }

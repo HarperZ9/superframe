@@ -41,6 +41,21 @@ This package holds the schema and the first table, `data/units.json`. The other 
 
 A proof or a physical calculation may depend on measured, defined and derived entries. It may cite an attested entry and may not compute from one.
 
+## Six kinds of scale
+
+Every unit states its scale, and the scale says which arithmetic is allowed on values in that unit.
+
+| Scale | Allowed | Example |
+|---|---|---|
+| `linear` | Sums, differences and ratios. Multiply by `to_si` to convert. | metre, joule |
+| `affine` | Sums of differences. Multiply, then add `offset`. A ratio of two readings means nothing. | degree Celsius |
+| `logarithmic` | Differences, which are ratios of the quantity underneath. | stop, decibel, magnitude |
+| `count` | Sums of the same named thing. Two counts of different things do not add. | photon, pixel |
+| `ordinal` | Order only. No sums, differences or ratios. | Mohs hardness |
+| `nominal` | Equal or different only. | a film stock name |
+
+Ordinal and nominal follow Stevens (1946), "On the Theory of Scales of Measurement", Science 103, 677 to 680.
+
 ## Conversions are entries
 
 A conversion between two mediums is an entry in the `conversion` table. Its reference is a grade (isomorphism, embedding or homomorphism, as in `packages/field`) and a measured loss on stated test signals.
@@ -59,7 +74,7 @@ The checker is a BuildLang program and is the next change. Until it lands, this 
 
 | Table | Source today | State |
 |---|---|---|
-| `unit` | `data/units.json` | Written 2026-11-13 as the union of `packages/field/src/units.js`, `packages/rooms/core/units.js` and the BuildLang compiler table. 41 units over 8 bases (the 7 SI bases and the bit). The three code tables are not generated from it yet. |
+| `unit` | `data/units.json` | Written 2026-11-13 as the union of `packages/field/src/units.js`, `packages/rooms/core/units.js` and the BuildLang compiler table, then extended. 90 units over 8 bases (the 7 SI bases and the bit), each with a scale kind. The three code tables are not generated from it yet. |
 | `material` | `packages/materials/data/materials.json` | 111 entries, already carrying value, unit, source, licence and confidence per field. Ids need the `material.` prefix; `law_links` point at ids that do not exist. |
 | `quantity` | `packages/measured/data/codata2022.json` | 355 quantities with uncertainty. They have names and no slugs. |
 | `glass`, `film`, `phosphor`, `sensor` | `packages/lenspipe`, `native/web/shaders` | Ids and sources present. |
