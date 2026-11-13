@@ -51,3 +51,15 @@ jobs:
           grep -q "differs from the frame 0 pin: 1 of 1$" native-bld-out.txt
       # e-means: the study program is BuildLang end to end; its output must equal the stored results.
       - run: buildc run packages/emeans/bld/emeans.bld > emeans-out.txt && diff emeans-out.txt packages/emeans/results/emeans.txt
+      # The registry unit table: every check must pass on the real table, the unbroken control table must
+      # pass, and each broken table must fail on its own check and no other.
+      - run: |
+          buildc run packages/registry/bld/check.bld -- packages/registry/data/units.json | tee registry-out.txt
+          grep -q "^all 14 checks passed$" registry-out.txt
+          buildc run packages/registry/bld/check.bld -- packages/registry/bld/fixtures/good.json
+          for f in packages/registry/bld/fixtures/*.json; do
+            n=$(basename "$f" .json)
+            if [ "$n" != good ]; then
+              buildc run packages/registry/bld/check.bld -- --expect "$n" "$f"
+            fi
+          done
