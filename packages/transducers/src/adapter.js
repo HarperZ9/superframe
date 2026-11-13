@@ -18,9 +18,18 @@
   class Unbound extends Error { constructor(m) { super(m); this.name = "Unbound"; } }
   T.Unbound = Unbound;
 
+  /* Tables the measured package holds out of the public tree (measured/data/PRIVATE.json). They are read where its
+     loader reads them: the folder named by MEASURED_PRIVATE, else measured/data/private/, else the public folder. */
+  const PRIVATE = { kodak5219: 1, schott: 1 };
+  const places = (k) => {
+    const pub = path.join(root(), SUBPATH[k]);
+    if (!PRIVATE[k]) return [pub];
+    const name = path.basename(pub), env = process.env.MEASURED_PRIVATE;
+    return [env ? path.join(env, name) : path.join(path.dirname(pub), "private", name), pub];
+  };
   const file = (k) => {
-    const p = path.join(root(), SUBPATH[k]);
-    if (!fs.existsSync(p)) throw new Unbound(`${k} not found at ${SUBPATH[k]} under the root; set TRANSDUCERS_ROOT`);
+    const p = places(k).find((x) => fs.existsSync(x));
+    if (!p) throw new Unbound(PRIVATE[k] ? `${k} is a private measured table and is not bound; set MEASURED_PRIVATE` : `${k} not found at ${SUBPATH[k]} under the root; set TRANSDUCERS_ROOT`);
     return p;
   };
   const cache = {};
@@ -36,6 +45,7 @@
   T.data = json;
   T.hasData = (k) => { try { json(k); return true; } catch (e) { if (e instanceof Unbound) return false; throw e; } };
   T.rootPath = (rel) => path.join(root(), rel);
+  T.hasPath = (rel) => inNode && fs.existsSync(path.join(root(), rel));
 
   /* Measured records, read and never copied. Each returns its provenance with it. */
   const prov = (d) => ({ status: d.provenance.status || "measured", source: d.provenance.source, citation: d.provenance.citation });

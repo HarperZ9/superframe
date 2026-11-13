@@ -38,7 +38,7 @@ test("Varadhan: distance from the heat kernel is close to true distance inside d
   for (let y = 7; y < 14; y++) for (let x = 7; x < 14; x++) { const d = Math.hypot(y - 10, x - 10); if (d > 2) { e += Math.abs(o.values[y * N + x] - d) / d; cnt++; } }
   assert.ok(e / cnt < 0.3, "mean relative error " + e / cnt);
 });
-test("the study's Python basis and this one agree on the L room", { skip: (() => { if (!T.hasData("schott")) return "field package not at the root"; try { cp.execFileSync("python", ["-c", "import scipy"]); return false; } catch { return "no scipy for the reference"; } })() }, () => {
+test("the study's Python basis and this one agree on the L room", { skip: (() => { if (!T.hasPath("field/py/modal_basis.py")) return "field package not at the root"; try { cp.execFileSync("python", ["-c", "import scipy"]); return false; } catch { return "no scipy for the reference"; } })() }, () => {
   const n = 16, P = `import sys,json\nsys.path.insert(0,sys.argv[1])\nimport modal_basis as M\nL,P,h=M.room(${n})\nlam,phi,_=M.eigbasis(L,12)\nprint(json.dumps({'lam':list(map(float,lam)),'h':float(h),'n':L.shape[0]}))`;
   const r = JSON.parse(cp.execFileSync("python", ["-B", "-c", P, T.rootPath("field/py")], { encoding: "utf8" })), mask = T.lShape(n);
   const m = T.modes(mask, n, n, r.h);

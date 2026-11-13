@@ -46,7 +46,7 @@ Each chain row reports signal, noise floor, time and space resolution, and `I = 
 
 ## Binding
 
-The package reads its neighbours through `src/adapter.js`. `TRANSDUCERS_ROOT` points at the folder holding `field`, `perceive`, `measured`, `materials`, `diagram` and `kernels`, and defaults to the sibling packages. Tests that need measured tables skip and say why when those tables are absent. `TRANSDUCERS_TYPESET` adds the agreement check against the BuildLang line breaker. See `RECONCILE.md`.
+The package reads its neighbours through `src/adapter.js`. `TRANSDUCERS_ROOT` points at the folder holding `field`, `perceive`, `measured`, `materials`, `diagram` and `kernels`, and defaults to the sibling packages. Two tables are private in `measured` (`schott_glass.json`, `kodak_5219.json`; see `measured/data/PRIVATE.json`). The adapter reads them from the folder named by `MEASURED_PRIVATE`, or from `measured/data/private/`, as the measured loader does. Tests that need them skip and say why when they are absent, the camera chain uses a Gaussian lens, and the page builds with no glass row. `TRANSDUCERS_TYPESET` adds the agreement check against the BuildLang line breaker. See `RECONCILE.md`.
 
 ## Limits
 

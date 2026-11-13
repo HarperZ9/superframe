@@ -3,6 +3,10 @@
 
 For the agent moving `tools/*` into `packages/*`. This package touches neighbours only through `src/adapter.js`, and its subpaths under the root match both layouts, so once `packages/field`, `perceive`, `measured`, `materials`, `diagram` and `kernels` land, it binds with no edit and with `TRANSDUCERS_ROOT` unset.
 
+## State on main, 2026-11-13
+
+The package is on main's layout. All six neighbours sit at the subpaths the adapter expects, so `TRANSDUCERS_ROOT` stays unset. Item 1 below was decided on 2026-10-31: the Schott and Kodak 5219 tables are private, and the adapter now reads them from `MEASURED_PRIVATE` or `measured/data/private/`. The page builds without them. Root `npm run test:packages` runs these tests on CI, `MANIFEST.json` has the rows, and `CHANGELOG.md` and `packages/README.md` list the package. Everything else below is still open.
+
 ## Must decide or change
 
 1. **Measured data that may stay private.** `schott_glass.json` and `kodak_5219.json` are marked internal or undecided in PLACEMENT.md. The demos, the lens and film tests and the built page read them. If they stay private, public CI skips those tests with the stated reason, and `demoCamera` falls back to a Gaussian PSF. `p22_kuhn2002.json` carries the same question for its digitised figure; only the `model` block is used here.

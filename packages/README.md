@@ -22,6 +22,7 @@ npm run test:py                                      # the Python tests
 | `evolve` | a genetic-algorithm engine that must reproduce Eigen and Kimura first | FSL-1.1-MIT |
 | `lawspace` | a law as a knob, with the wall where behaviour changes | FSL-1.1-MIT |
 | `decompose` | `design_parts` takes a picture into palette, shape, geometry and rhythm; `textphase` reads a symbol stream as gas, liquid, crystal or critical | AGPL-3.0-only |
+| `transducers` | kernels on one field interface: a lens, a mirror, a photosite, a retina, a neuron and a sequence aligner each take a field, return a field and state what they lost in measured bits; chains name the step that lost most; see `transducers/README.md` | FSL-1.1-MIT |
 | `field` | the core type: unit, uncertainty, provenance, representation; graded transducers; a chain ledger | FSL-1.1-MIT |
 | `cleanroom` | internal-copy vault, blends, difference report, release gate; see `cleanroom/LEGAL-CHECK.md` | FSL-1.1-MIT |
 | `library` | a SQLite catalogue of every artifact, with an MCP server | FSL-1.1-MIT |

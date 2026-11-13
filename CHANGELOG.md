@@ -4,6 +4,7 @@
 
 Added:
 
+- `packages/transducers`: 60 named kernels in 11 groups on one field interface, each stating what it lost in measured bits, with four demo chains (photon to pixel, photon to spike, text to motif spectrum, DNA to alignment) and a budget sweep. `npm run test:packages` runs its 112 tests; seven skip in the public tree, five because the Schott and Kodak 5219 tables are private and two because no BuildLang line breaker is bound. It was written on 2026-10-30 against 0.2.0 and brought onto main with its commit.
 - `native/`: the C++23 renderer, formerly the raw-native repository, with its history. Ten of its workflows run from here as `native-*`; they start only when `native/` changes.
 - `games/low-water/`: Low Water, formerly a private repository, with its history. The engine it reads is now the sibling `native/` folder, so no path points at a workstation. `npm run test:games` runs 256 tests; six that need a plate bake skip where the bake is absent.
 - `packages/studio-libs`: the Studio primitives now live here with their history. The parity test against the site skips when no site checkout sits beside it.
