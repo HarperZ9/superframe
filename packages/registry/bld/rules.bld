@@ -1,0 +1,218 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The checks on one unit entry. judge returns 1 when the unit passes check c, 0 when it fails, and -1
+// when the check does not apply to the unit (a scale rule on a unit of another scale).
+
+mod json;
+
+use json::member;
+use json::elements;
+use json::K_NUM;
+use json::K_STR;
+use json::K_OBJ;
+use json::K_ARR;
+
+fn NCHECKS() -> i32 { 14 }
+
+fn check_name(c: i32) -> String {
+    if c == 0 { return "id-unique"; }
+    if c == 1 { return "id-slug"; }
+    if c == 2 { return "name"; }
+    if c == 3 { return "symbol"; }
+    if c == 4 { return "family"; }
+    if c == 5 { return "dim"; }
+    if c == 6 { return "scale"; }
+    if c == 7 { return "linear"; }
+    if c == 8 { return "affine"; }
+    if c == 9 { return "logarithmic"; }
+    if c == 10 { return "count"; }
+    if c == 11 { return "ordinal"; }
+    if c == 12 { return "nominal"; }
+    "symbol-unique"
+}
+
+// The string under member name, or "" when it is absent or not a string.
+fn text_of(kind: Vec<i32>, parent: Vec<i32>, text: Vec<String>, key: Vec<String>, node: i32,
+           name: String) -> String {
+    let m: i32 = member(parent, key, node, name);
+    if m < 0 || kind[m] != K_STR() {
+        return "";
+    }
+    text[m]
+}
+
+fn has_kind(kind: Vec<i32>, parent: Vec<i32>, key: Vec<String>, node: i32, name: String, k: i32) -> bool {
+    let m: i32 = member(parent, key, node, name);
+    m >= 0 && kind[m] == k
+}
+
+fn has(parent: Vec<i32>, key: Vec<String>, node: i32, name: String) -> bool {
+    member(parent, key, node, name) >= 0
+}
+
+fn contains(set: String, c: String) -> bool {
+    let mut i: i32 = 0;
+    while i < set.len() as i32 {
+        if set.char_at(i as i64) == c {
+            return true;
+        }
+        i = i + 1;
+    }
+    false
+}
+
+// unit.<slug>, the slug one or more of A-Z a-z 0-9 _ (the ids in units.json use no other characters).
+fn good_slug(id: String) -> bool {
+    let prefix: String = "unit.";
+    if id.len() <= prefix.len() {
+        return false;
+    }
+    let mut i: i32 = 0;
+    while i < prefix.len() as i32 {
+        if id.char_at(i as i64) != prefix.char_at(i as i64) {
+            return false;
+        }
+        i = i + 1;
+    }
+    let ok: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+    while i < id.len() as i32 {
+        if !contains(ok, id.char_at(i as i64)) {
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+// An integer as JSON writes it: an optional minus sign and digits only.
+fn is_integer(t: String) -> bool {
+    let mut i: i32 = 0;
+    if t.len() > 0 && t.char_at(0) == "-" {
+        i = 1;
+    }
+    if i >= t.len() as i32 {
+        return false;
+    }
+    while i < t.len() as i32 {
+        if !contains("0123456789", t.char_at(i as i64)) {
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+fn occurrences(v: Vec<String>, s: String) -> i32 {
+    let mut n: i32 = 0;
+    let mut i: i64 = 0;
+    while i < v.len() as i64 {
+        if v[i] == s {
+            n = n + 1;
+        }
+        i = i + 1;
+    }
+    n
+}
+
+fn good_dim(kind: Vec<i32>, parent: Vec<i32>, text: Vec<String>, key: Vec<String>, u: i32, nbases: i32) -> bool {
+    let d: i32 = member(parent, key, u, "dim");
+    if d < 0 || kind[d] != K_ARR() {
+        return false;
+    }
+    let xs: Vec<i32> = elements(parent, d);
+    if xs.len() as i32 != nbases {
+        return false;
+    }
+    let mut i: i64 = 0;
+    while i < xs.len() as i64 {
+        if kind[xs[i]] != K_NUM() || !is_integer(text[xs[i]]) {
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+fn good_log(kind: Vec<i32>, parent: Vec<i32>, key: Vec<String>, u: i32) -> bool {
+    let g: i32 = member(parent, key, u, "log");
+    if g < 0 || kind[g] != K_OBJ() || has(parent, key, u, "to_si") {
+        return false;
+    }
+    has(parent, key, g, "k") && has(parent, key, g, "base") && has(parent, key, g, "of")
+        && has(parent, key, g, "reference")
+}
+
+// to_si is a number, or an exact expression written as a string such as "pi/180" or "1/ln(2)": not empty,
+// and made only of digits, lower-case letters, spaces and . + - * / ^ ( ). The expression is not evaluated.
+fn good_factor(kind: Vec<i32>, parent: Vec<i32>, text: Vec<String>, key: Vec<String>, u: i32) -> bool {
+    let m: i32 = member(parent, key, u, "to_si");
+    if m < 0 {
+        return false;
+    }
+    if kind[m] == K_NUM() {
+        return true;
+    }
+    if kind[m] != K_STR() || text[m].len() == 0 {
+        return false;
+    }
+    let ok: String = "0123456789abcdefghijklmnopqrstuvwxyz .+-*/^()";
+    let mut i: i32 = 0;
+    while i < text[m].len() as i32 {
+        if !contains(ok, text[m].char_at(i as i64)) {
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+fn b(x: bool) -> i32 {
+    if x { 1 } else { 0 }
+}
+
+fn one_of_six(scale: String) -> bool {
+    scale == "linear" || scale == "affine" || scale == "logarithmic" || scale == "count"
+        || scale == "ordinal" || scale == "nominal"
+}
+
+// Scale rules: -1 when the unit has another scale.
+fn judge_scale(c: i32, kind: Vec<i32>, parent: Vec<i32>, text: Vec<String>, key: Vec<String>, u: i32,
+               id: String, scale: String) -> i32 {
+    if c == 7 {
+        if scale != "linear" { return -1; }
+        return b(good_factor(kind, parent, text, key, u));
+    }
+    if c == 8 {
+        if scale != "affine" { return -1; }
+        return b(good_factor(kind, parent, text, key, u) && has_kind(kind, parent, key, u, "offset", K_NUM()));
+    }
+    if c == 9 {
+        if scale != "logarithmic" { return -1; }
+        return b(good_log(kind, parent, key, u));
+    }
+    if c == 10 {
+        if scale != "count" { return -1; }
+        return b(id == "unit.count" || text_of(kind, parent, text, key, u, "of").len() > 0);
+    }
+    if c == 11 {
+        if scale != "ordinal" { return -1; }
+        return b(has_kind(kind, parent, key, u, "order", K_OBJ()));
+    }
+    if scale != "nominal" { return -1; }
+    b(!has(parent, key, u, "to_si") && !has(parent, key, u, "log"))
+}
+
+fn judge(c: i32, kind: Vec<i32>, parent: Vec<i32>, text: Vec<String>, key: Vec<String>, u: i32, ui: i32,
+         ids: Vec<String>, syms: Vec<String>, nbases: i32) -> i32 {
+    if c == 0 { return b(occurrences(ids, ids[ui]) == 1); }
+    if c == 1 { return b(good_slug(ids[ui])); }
+    if c == 2 { return b(text_of(kind, parent, text, key, u, "name").len() > 0); }
+    if c == 3 { return b(syms[ui].len() > 0); }
+    if c == 4 { return b(text_of(kind, parent, text, key, u, "family").len() > 0); }
+    if c == 5 { return b(good_dim(kind, parent, text, key, u, nbases)); }
+    let scale: String = text_of(kind, parent, text, key, u, "scale");
+    if c == 6 { return b(one_of_six(scale)); }
+    if c == 13 { return b(occurrences(syms, syms[ui]) == 1); }
+    judge_scale(c, kind, parent, text, key, u, ids[ui], scale)
+}
