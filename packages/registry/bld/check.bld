@@ -25,13 +25,15 @@ fn main() ~ Console + FileSystem + Process + Environment {
     let mut expect: String = "";
     let mut path: String = "packages/registry/data/units.json";
     let nargs: i32 = args_count() as i32;
-    if nargs > 2 && args_get(1) == "--expect" {
-        expect = args_get(2);
-        if nargs > 3 {
-            path = args_get(3);
+    // A leading "--" (the separator some buildc versions pass through) is skipped.
+    let a: i32 = if nargs > 1 && args_get(1) == "--" { 2 } else { 1 };
+    if nargs > a + 1 && args_get(a) == "--expect" {
+        expect = args_get(a + 1);
+        if nargs > a + 2 {
+            path = args_get(a + 2);
         }
-    } else if nargs > 1 {
-        path = args_get(1);
+    } else if nargs > a {
+        path = args_get(a);
     }
     let src: String = read_file(path);
     let p: Vec<i32> = Vec::new();
