@@ -1,0 +1,199 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The three records every stage shares.
+//
+// Paths: polylines in one flat store. Path i owns points start[i] .. start[i + 1]. A closed path
+// repeats its first point at the end. pen is the pen index the caller chose, or -1 to let the
+// colour clustering choose. rgb is the stroke colour, three numbers a path, 0..255. fill is a
+// hatch group: 0 for none; closed paths that share a group are hatched together, even-odd, so a
+// path inside another path of the same group is a hole.
+//
+// Spec: the plot specification. Numbers sit in opt and text in text, both addressed by the
+// functions below, so a stage can change one value without rebuilding the record.
+//
+// Plot: the finished sheet. order lists path indices in draw order, rev says which are drawn end
+// to start, and layer j owns order[layer_start[j] .. layer_start[j + 1]] and draws with pen
+// layer_pen[j]. measure holds six numbers a pen (M_* below) and note the sheet-wide ones (N_*).
+
+pub struct Paths { xs: Vec<f64>, ys: Vec<f64>, start: Vec<i32>, pen: Vec<i32>, rgb: Vec<f64>, fill: Vec<i32> }
+
+pub struct Spec { opt: Vec<f64>, text: Vec<String>, pen_name: Vec<String>, pen_id: Vec<String>, pen_tip: Vec<f64>, pen_rgb: Vec<f64>, pen_speed: Vec<f64> }
+
+pub struct Plot { p: Paths, order: Vec<i32>, rev: Vec<i32>, layer_start: Vec<i32>, layer_pen: Vec<i32>, measure: Vec<f64>, note: Vec<f64> }
+
+// ---- Spec numbers
+pub fn O_PAPER_W() -> i32 { 0 }       // mm
+pub fn O_PAPER_H() -> i32 { 1 }       // mm
+pub fn O_MARGIN_T() -> i32 { 2 }      // mm
+pub fn O_MARGIN_R() -> i32 { 3 }
+pub fn O_MARGIN_B() -> i32 { 4 }
+pub fn O_MARGIN_L() -> i32 { 5 }
+pub fn O_SCALE() -> i32 { 6 }         // mm for one source unit; 0 fits the source to the printable area
+pub fn O_SRC_W() -> i32 { 7 }         // source extent in source units; 0 takes the bounding box of the paths
+pub fn O_SRC_H() -> i32 { 8 }
+pub fn O_ORDER() -> i32 { 9 }         // 0 light pens first, 1 pens in the order listed
+pub fn O_JOIN() -> i32 { 10 }         // mm; ends closer than this are joined; 0 turns joining off
+pub fn O_MINLEN() -> i32 { 11 }       // mm; shorter paths are dropped; negative means half the pen tip
+pub fn O_SIMPLIFY() -> i32 { 12 }     // mm; largest distance a removed point may sit from the kept line
+pub fn O_OPT_MS() -> i32 { 13 }       // wall-clock limit of the 2-opt pass, a whole sheet
+pub fn O_OPT_EVALS() -> i32 { 14 }    // move evaluations allowed in the 2-opt pass, a whole sheet
+pub fn O_OPT_WINDOW() -> i32 { 15 }   // how many places ahead in the tour a 2-opt move may reach
+pub fn O_HATCH() -> i32 { 16 }        // mm between hatch lines; 0 leaves filled regions as outlines
+pub fn O_HATCH_ANGLE() -> i32 { 17 }  // degrees
+pub fn O_MARKS() -> i32 { 18 }        // 1 draws registration crosses in the corner margins
+pub fn O_LEGEND() -> i32 { 19 }       // 1 draws a tally and a test line for each pen in the bottom margin
+pub fn O_TRAVEL() -> i32 { 20 }       // mm/s with the pen up
+pub fn O_LIFT() -> i32 { 21 }         // seconds for one pen lift and drop
+pub fn O_HPGL_UNITS() -> i32 { 22 }   // plotter units in one millimetre
+pub fn O_HPGL_X() -> i32 { 23 }       // mm added to every HPGL x
+pub fn O_HPGL_Y() -> i32 { 24 }       // mm added to every HPGL y
+pub fn O_COUNT() -> i32 { 25 }
+
+// ---- Spec text
+pub fn T_TITLE() -> i32 { 0 }
+pub fn T_SEED() -> i32 { 1 }
+pub fn T_GCODE_UP() -> i32 { 2 }
+pub fn T_GCODE_DOWN() -> i32 { 3 }
+pub fn T_GCODE_CHANGE() -> i32 { 4 }
+pub fn T_COUNT() -> i32 { 5 }
+
+// ---- Plot measures, six a pen in the order the pens are listed
+pub fn M_PATHS() -> i32 { 0 }
+pub fn M_DRAWN() -> i32 { 1 }         // mm of ink
+pub fn M_TRAVEL_IN() -> i32 { 2 }     // mm of pen-up travel in the order the paths arrived
+pub fn M_TRAVEL_OUT() -> i32 { 3 }    // mm of pen-up travel in the order written
+pub fn M_LIFTS() -> i32 { 4 }
+pub fn M_SECONDS() -> i32 { 5 }
+pub fn M_STRIDE() -> i32 { 6 }
+
+// ---- Plot notes
+pub fn N_X0() -> i32 { 0 }            // bounding box of the ink, mm
+pub fn N_Y0() -> i32 { 1 }
+pub fn N_X1() -> i32 { 2 }
+pub fn N_Y1() -> i32 { 3 }
+pub fn N_SCALE() -> i32 { 4 }         // mm for one source unit, as used
+pub fn N_PATHS_IN() -> i32 { 5 }
+pub fn N_CLIPPED() -> i32 { 6 }       // paths that lay wholly outside the printable area
+pub fn N_JOINS() -> i32 { 7 }
+pub fn N_SHORT() -> i32 { 8 }         // paths dropped for being shorter than the pen can draw
+pub fn N_HATCH() -> i32 { 9 }         // hatch lines added
+pub fn N_POINTS_CUT() -> i32 { 10 }   // points removed by simplifying
+pub fn N_EVALS() -> i32 { 11 }        // 2-opt move evaluations used
+pub fn N_STOP() -> i32 { 12 }         // why 2-opt stopped: 0 no better move left, 1 evaluations spent, 2 time spent
+pub fn N_MARKS() -> i32 { 13 }        // 1 when registration marks were drawn
+pub fn N_LEGEND() -> i32 { 14 }       // 1 when the legend was drawn
+pub fn N_KEPT_INPUT() -> i32 { 15 }   // layers where the arriving order was already the shorter one
+pub fn N_COUNT() -> i32 { 16 }
+
+pub fn paths_new() -> Paths {
+    let s: Vec<i32> = Vec::new();
+    s.push(0);
+    Paths { xs: Vec::new(), ys: Vec::new(), start: s, pen: Vec::new(), rgb: Vec::new(), fill: Vec::new() }
+}
+
+pub fn path_count(p: Paths) -> i32 {
+    p.pen.len() as i32
+}
+
+pub fn add_point(p: Paths, x: f64, y: f64) {
+    p.xs.push(x);
+    p.ys.push(y);
+}
+
+// Ends the path begun since the last end_path. A path of fewer than two points is discarded.
+pub fn end_path(p: Paths, pen: i32, r: f64, g: f64, b: f64, fill: i32) {
+    let first: i32 = p.start[p.start.len() as i32 - 1];
+    let n: i32 = p.xs.len() as i32 - first;
+    if n < 2 {
+        let mut k: i32 = 0;
+        while k < n {
+            p.xs.pop();
+            p.ys.pop();
+            k = k + 1;
+        }
+        return;
+    }
+    p.start.push(p.xs.len() as i32);
+    p.pen.push(pen);
+    p.rgb.push(r);
+    p.rgb.push(g);
+    p.rgb.push(b);
+    p.fill.push(fill);
+}
+
+// Copies the points of path i of src onto the path being built in dst, end to start when rev is 1,
+// leaving out the first `skip` of them.
+pub fn copy_points(dst: Paths, src: Paths, i: i32, rev: i32, skip: i32) {
+    let a: i32 = src.start[i];
+    let b: i32 = src.start[i + 1];
+    let mut k: i32 = skip;
+    while k < b - a {
+        let j: i32 = if rev == 1 { b - 1 - k } else { a + k };
+        add_point(dst, src.xs[j], src.ys[j]);
+        k = k + 1;
+    }
+}
+
+// Ends the path being built in dst with the pen, colour and fill group of path i of src.
+pub fn end_like(dst: Paths, src: Paths, i: i32) {
+    end_path(dst, src.pen[i], src.rgb[3 * i], src.rgb[3 * i + 1], src.rgb[3 * i + 2], src.fill[i]);
+}
+
+pub fn path_length(p: Paths, i: i32) -> f64 {
+    let mut t: f64 = 0.0;
+    let mut k: i32 = p.start[i] + 1;
+    while k < p.start[i + 1] {
+        let dx: f64 = p.xs[k] - p.xs[k - 1];
+        let dy: f64 = p.ys[k] - p.ys[k - 1];
+        t = t + sqrt(dx * dx + dy * dy);
+        k = k + 1;
+    }
+    t
+}
+
+pub fn spec_new(paper_w: f64, paper_h: f64, margin: f64) -> Spec {
+    let o: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < O_COUNT() {
+        o.push(0.0);
+        i = i + 1;
+    }
+    o[O_PAPER_W()] = paper_w;
+    o[O_PAPER_H()] = paper_h;
+    o[O_MARGIN_T()] = margin;
+    o[O_MARGIN_R()] = margin;
+    o[O_MARGIN_B()] = margin;
+    o[O_MARGIN_L()] = margin;
+    o[O_JOIN()] = 0.1;
+    o[O_MINLEN()] = 0.0 - 1.0;
+    o[O_SIMPLIFY()] = 0.02;
+    o[O_OPT_MS()] = 400.0;
+    o[O_OPT_EVALS()] = 20000000.0;
+    o[O_OPT_WINDOW()] = 400.0;
+    o[O_HATCH_ANGLE()] = 45.0;
+    o[O_TRAVEL()] = 200.0;
+    o[O_LIFT()] = 0.2;
+    o[O_HPGL_UNITS()] = 40.0;
+    let t: Vec<String> = Vec::new();
+    t.push("");
+    t.push("");
+    t.push("M3 S40");
+    t.push("M3 S90");
+    t.push("M0");
+    Spec { opt: o, text: t, pen_name: Vec::new(), pen_id: Vec::new(), pen_tip: Vec::new(), pen_rgb: Vec::new(), pen_speed: Vec::new() }
+}
+
+pub fn add_pen(s: Spec, name: String, tip_mm: f64, r: f64, g: f64, b: f64, speed: f64, id: String) {
+    s.pen_name.push(name);
+    s.pen_id.push(id);
+    s.pen_tip.push(tip_mm);
+    s.pen_rgb.push(r);
+    s.pen_rgb.push(g);
+    s.pen_rgb.push(b);
+    s.pen_speed.push(speed);
+}
+
+pub fn pen_count(s: Spec) -> i32 {
+    s.pen_name.len() as i32
+}

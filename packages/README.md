@@ -29,6 +29,7 @@ npm run test:py                                      # the Python tests
 | `instruments` | the instrument pipeline from a law to a reading with a receipt, and the room meter | FSL-1.1-MIT |
 | `quality` | image, motion and type checks: SSIM, banding, edges, grain, frame pacing, type rules and source evidence | FSL-1.1-MIT |
 | `lenspipe` | an open lens design in, checked performance, manufacturability, tolerance, limits, as-built fit and interchange out | FSL-1.1-MIT, data CC0-1.0 |
+| `plot-sheet` | plotter output for any line drawing, in BuildLang: an SVG in millimetres with a layer for each pen, HPGL and G-code, with paths clipped, joined, simplified and ordered to cut pen-up travel, and the measures of every sheet (metres drawn, travel, lifts, time) as JSON; see `plot-sheet/README.md` | FSL-1.1-MIT |
 | `emeans` | k-means where each centre forgets, in BuildLang, with a study of when it escapes the traps Lloyd cannot; includes the negative result at the setting fixed in advance | FSL-1.1-MIT |
 | `superstack` | one contract for renderers and sound engines: canonical bytes, seed rule and vectors in JavaScript, Python and C++; moved here from its own repository with its history | FSL-1.1-MIT, text CC BY 4.0 |
 | `reconcile` | creative generators as replayable browser worlds: expression algebra, refine loop, compositor and timeline (`node packages/reconcile/cli.js create gyroid --seed 7 --out out`); moved here from its own repository with its history | FSL-1.1-MIT |

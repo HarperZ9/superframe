@@ -1,0 +1,270 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Geometry: source units to millimetres, clipping to the printable area, and simplifying.
+//
+// Sheet coordinates are millimetres from the top left corner of the paper, x to the right and y
+// down, the way the engine's vectors and SVG both run. The HPGL and G-code writers turn y over.
+
+use num::empty_f;
+use num::empty_i;
+use num::minf;
+use num::maxf;
+use num::snap;
+use sheet::Paths;
+use sheet::Spec;
+use sheet::paths_new;
+use sheet::path_count;
+use sheet::add_point;
+use sheet::end_like;
+use sheet::O_PAPER_W;
+use sheet::O_PAPER_H;
+use sheet::O_MARGIN_T;
+use sheet::O_MARGIN_R;
+use sheet::O_MARGIN_B;
+use sheet::O_MARGIN_L;
+use sheet::O_SCALE;
+use sheet::O_SRC_W;
+use sheet::O_SRC_H;
+use sheet::N_SCALE;
+use sheet::N_CLIPPED;
+use sheet::N_POINTS_CUT;
+
+// The printable rectangle as x0, y0, x1, y1 in mm.
+pub fn printable(s: Spec) -> Vec<f64> {
+    let r: Vec<f64> = Vec::new();
+    r.push(s.opt[O_MARGIN_L()]);
+    r.push(s.opt[O_MARGIN_T()]);
+    r.push(s.opt[O_PAPER_W()] - s.opt[O_MARGIN_R()]);
+    r.push(s.opt[O_PAPER_H()] - s.opt[O_MARGIN_B()]);
+    r
+}
+
+// The source extent as x0, y0, width, height: the stated one, or the bounding box of the points.
+fn source_extent(p: Paths, s: Spec) -> Vec<f64> {
+    let e: Vec<f64> = Vec::new();
+    if s.opt[O_SRC_W()] > 0.0 && s.opt[O_SRC_H()] > 0.0 {
+        e.push(0.0);
+        e.push(0.0);
+        e.push(s.opt[O_SRC_W()]);
+        e.push(s.opt[O_SRC_H()]);
+        return e;
+    }
+    let mut x0: f64 = 1.0e300;
+    let mut y0: f64 = 1.0e300;
+    let mut x1: f64 = 0.0 - 1.0e300;
+    let mut y1: f64 = 0.0 - 1.0e300;
+    let mut k: i32 = 0;
+    while k < p.xs.len() as i32 {
+        x0 = minf(x0, p.xs[k]);
+        y0 = minf(y0, p.ys[k]);
+        x1 = maxf(x1, p.xs[k]);
+        y1 = maxf(y1, p.ys[k]);
+        k = k + 1;
+    }
+    if p.xs.len() == 0 {
+        x0 = 0.0;
+        y0 = 0.0;
+        x1 = 1.0;
+        y1 = 1.0;
+    }
+    e.push(x0);
+    e.push(y0);
+    e.push(maxf(x1 - x0, 1.0e-9));
+    e.push(maxf(y1 - y0, 1.0e-9));
+    e
+}
+
+// Moves every point from source units to sheet millimetres, in place. With no stated scale the
+// source is fitted to the printable area; either way it is centred there.
+pub fn to_mm(p: Paths, s: Spec, note: Vec<f64>) {
+    let r: Vec<f64> = printable(s);
+    let e: Vec<f64> = source_extent(p, s);
+    let pw: f64 = r[2] - r[0];
+    let ph: f64 = r[3] - r[1];
+    let mut k: f64 = s.opt[O_SCALE()];
+    if k <= 0.0 {
+        k = minf(pw / e[2], ph / e[3]);
+    }
+    let ox: f64 = r[0] + (pw - e[2] * k) / 2.0;
+    let oy: f64 = r[1] + (ph - e[3] * k) / 2.0;
+    let mut i: i32 = 0;
+    while i < p.xs.len() as i32 {
+        p.xs[i] = ox + (p.xs[i] - e[0]) * k;
+        p.ys[i] = oy + (p.ys[i] - e[1]) * k;
+        i = i + 1;
+    }
+    note[N_SCALE()] = k;
+}
+
+// Liang-Barsky: the part of segment a-b inside rectangle r, as parameters t[0] <= t[1] along it.
+fn clip_segment(ax: f64, ay: f64, bx: f64, by: f64, r: Vec<f64>, t: Vec<f64>) -> bool {
+    let dx: f64 = bx - ax;
+    let dy: f64 = by - ay;
+    let mut t0: f64 = 0.0;
+    let mut t1: f64 = 1.0;
+    let mut e: i32 = 0;
+    while e < 4 {
+        let mut pp: f64 = 0.0;
+        let mut q: f64 = 0.0;
+        if e == 0 { pp = 0.0 - dx; q = ax - r[0]; }
+        if e == 1 { pp = dx; q = r[2] - ax; }
+        if e == 2 { pp = 0.0 - dy; q = ay - r[1]; }
+        if e == 3 { pp = dy; q = r[3] - ay; }
+        if pp == 0.0 {
+            if q < 0.0 { return false; }
+        } else {
+            let u: f64 = q / pp;
+            if pp < 0.0 {
+                if u > t1 { return false; }
+                if u > t0 { t0 = u; }
+            } else {
+                if u < t0 { return false; }
+                if u < t1 { t1 = u; }
+            }
+        }
+        e = e + 1;
+    }
+    t[0] = t0;
+    t[1] = t1;
+    true
+}
+
+// Cuts every path to rectangle r. A path that leaves and comes back becomes two paths.
+pub fn clip(p: Paths, r: Vec<f64>, note: Vec<f64>) -> Paths {
+    let out: Paths = paths_new();
+    let t: Vec<f64> = Vec::new();
+    t.push(0.0);
+    t.push(1.0);
+    let mut i: i32 = 0;
+    while i < path_count(p) {
+        let before: i32 = path_count(out);
+        let mut open: bool = false;
+        let mut k: i32 = p.start[i] + 1;
+        while k < p.start[i + 1] {
+            let ax: f64 = p.xs[k - 1];
+            let ay: f64 = p.ys[k - 1];
+            let dx: f64 = p.xs[k] - ax;
+            let dy: f64 = p.ys[k] - ay;
+            if clip_segment(ax, ay, p.xs[k], p.ys[k], r, t) {
+                if !open {
+                    add_point(out, ax + t[0] * dx, ay + t[0] * dy);
+                    open = true;
+                }
+                add_point(out, ax + t[1] * dx, ay + t[1] * dy);
+                if t[1] < 1.0 {
+                    end_like(out, p, i);
+                    open = false;
+                }
+            } else if open {
+                end_like(out, p, i);
+                open = false;
+            }
+            k = k + 1;
+        }
+        if open {
+            end_like(out, p, i);
+        }
+        if path_count(out) == before {
+            note[N_CLIPPED()] = note[N_CLIPPED()] + 1.0;
+        }
+        i = i + 1;
+    }
+    out
+}
+
+// squared distance from point c to segment a-b
+fn seg_d2(ax: f64, ay: f64, bx: f64, by: f64, cx: f64, cy: f64) -> f64 {
+    let dx: f64 = bx - ax;
+    let dy: f64 = by - ay;
+    let l2: f64 = dx * dx + dy * dy;
+    let mut u: f64 = 0.0;
+    if l2 > 0.0 {
+        u = ((cx - ax) * dx + (cy - ay) * dy) / l2;
+        if u < 0.0 { u = 0.0; }
+        if u > 1.0 { u = 1.0; }
+    }
+    let ex: f64 = cx - (ax + u * dx);
+    let ey: f64 = cy - (ay + u * dy);
+    ex * ex + ey * ey
+}
+
+// Ramer-Douglas-Peucker on points x[0..n), y[0..n): keep[k] becomes 1 for every point kept. No
+// removed point sits farther than tol from the kept line. Written with a stack, so a long path
+// cannot overflow the call stack.
+fn rdp(x: Vec<f64>, y: Vec<f64>, n: i32, tol: f64, keep: Vec<i32>, stack: Vec<i32>) {
+    keep[0] = 1;
+    keep[n - 1] = 1;
+    stack.push(0);
+    stack.push(n - 1);
+    while stack.len() > 0 {
+        let hi: i32 = stack.pop();
+        let lo: i32 = stack.pop();
+        let mut far: i32 = 0 - 1;
+        let mut far_d: f64 = tol * tol;
+        let mut k: i32 = lo + 1;
+        while k < hi {
+            let d: f64 = seg_d2(x[lo], y[lo], x[hi], y[hi], x[k], y[k]);
+            if d > far_d {
+                far_d = d;
+                far = k;
+            }
+            k = k + 1;
+        }
+        if far >= 0 {
+            keep[far] = 1;
+            stack.push(lo);
+            stack.push(far);
+            stack.push(far);
+            stack.push(hi);
+        }
+    }
+}
+
+// Rounds every point to a whole micrometre, drops repeats, then removes points that sit within tol
+// of the line through their kept neighbours. A path that shrinks to one point stays as a dot.
+pub fn simplify(p: Paths, tol: f64, note: Vec<f64>) -> Paths {
+    let out: Paths = paths_new();
+    let x: Vec<f64> = Vec::new();
+    let y: Vec<f64> = Vec::new();
+    let keep: Vec<i32> = Vec::new();
+    let stack: Vec<i32> = Vec::new();
+    let mut i: i32 = 0;
+    while i < path_count(p) {
+        empty_f(x);
+        empty_f(y);
+        empty_i(keep);
+        let mut k: i32 = p.start[i];
+        while k < p.start[i + 1] {
+            let sx: f64 = snap(p.xs[k]);
+            let sy: f64 = snap(p.ys[k]);
+            let n: i32 = x.len() as i32;
+            if n == 0 || x[n - 1] != sx || y[n - 1] != sy {
+                x.push(sx);
+                y.push(sy);
+                keep.push(0);
+            }
+            k = k + 1;
+        }
+        let n: i32 = x.len() as i32;
+        if n == 1 {
+            add_point(out, x[0], y[0]);
+            add_point(out, x[0], y[0]);
+        } else {
+            if tol > 0.0 {
+                rdp(x, y, n, tol, keep, stack);
+            }
+            let mut j: i32 = 0;
+            while j < n {
+                if tol <= 0.0 || keep[j] == 1 {
+                    add_point(out, x[j], y[j]);
+                }
+                j = j + 1;
+            }
+        }
+        end_like(out, p, i);
+        i = i + 1;
+    }
+    note[N_POINTS_CUT()] = (p.xs.len() as f64) - (out.xs.len() as f64);
+    out
+}

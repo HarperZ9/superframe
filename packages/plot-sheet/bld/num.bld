@@ -1,0 +1,170 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Numbers and text for the plot sheet. Every coordinate that reaches a file is an integer count of
+// micrometres, printed by integer arithmetic, so a file never depends on how a C library prints a
+// float.
+
+// Empties a vector by popping. `clear()` followed by `push` corrupts the heap on buildc 1.10 and
+// 1.11 (BUILDLANG-PORT.md), so nothing here calls it.
+pub fn empty_f(v: Vec<f64>) {
+    while v.len() > 0 {
+        v.pop();
+    }
+}
+
+pub fn empty_i(v: Vec<i32>) {
+    while v.len() > 0 {
+        v.pop();
+    }
+}
+
+pub fn absf(x: f64) -> f64 {
+    if x < 0.0 { return 0.0 - x; }
+    x
+}
+
+pub fn minf(a: f64, b: f64) -> f64 {
+    if a < b { return a; }
+    b
+}
+
+pub fn maxf(a: f64, b: f64) -> f64 {
+    if a > b { return a; }
+    b
+}
+
+pub fn dist(ax: f64, ay: f64, bx: f64, by: f64) -> f64 {
+    let dx: f64 = bx - ax;
+    let dy: f64 = by - ay;
+    sqrt(dx * dx + dy * dy)
+}
+
+// nearest integer, halves away from zero
+pub fn round_i(x: f64) -> i64 {
+    if x < 0.0 { return 0 - (floor(0.0 - x + 0.5) as i64); }
+    floor(x + 0.5) as i64
+}
+
+// millimetres rounded to whole micrometres
+pub fn snap(x: f64) -> f64 {
+    (round_i(x * 1000.0) as f64) / 1000.0
+}
+
+// an integer count of thousandths printed with three decimals: 12345 -> "12.345"
+pub fn fix3(v: i64) -> String {
+    let neg: bool = v < 0;
+    let a: i64 = if neg { 0 - v } else { v };
+    let whole: i64 = a / 1000;
+    let frac: i64 = a % 1000;
+    let mut s: String = if neg { "-" } else { "" };
+    s = s + whole.to_string() + ".";
+    if frac < 100 { s = s + "0"; }
+    if frac < 10 { s = s + "0"; }
+    s + frac.to_string()
+}
+
+// millimetres printed with three decimals
+pub fn mm3(x: f64) -> String {
+    fix3(round_i(x * 1000.0))
+}
+
+// a count of thousandths with trailing zeros cut: 300 -> "0.3", 2000 -> "2"
+pub fn trim3(v: i64) -> String {
+    let neg: bool = v < 0;
+    let a: i64 = if neg { 0 - v } else { v };
+    let whole: i64 = a / 1000;
+    let frac: i64 = a % 1000;
+    let mut s: String = if neg { "-" } else { "" };
+    s = s + whole.to_string();
+    if frac == 0 { return s; }
+    s = s + ".";
+    if frac % 100 == 0 { return s + (frac / 100).to_string(); }
+    if frac < 100 { s = s + "0"; }
+    if frac % 10 == 0 { return s + (frac / 10).to_string(); }
+    if frac < 10 { s = s + "0"; }
+    s + frac.to_string()
+}
+
+pub fn mmt(x: f64) -> String {
+    trim3(round_i(x * 1000.0))
+}
+
+// Joins parts[a..b) by halves, so the copying is n log n whatever the runtime does on `+`.
+pub fn cat(parts: Vec<String>, a: i64, b: i64) -> String {
+    if b - a <= 0 { return ""; }
+    if b - a == 1 { return parts[a]; }
+    if b - a <= 8 {
+        let mut s: String = parts[a];
+        let mut i: i64 = a + 1;
+        while i < b {
+            s = s + parts[i];
+            i = i + 1;
+        }
+        return s;
+    }
+    let m: i64 = (a + b) / 2;
+    cat(parts, a, m) + cat(parts, m, b)
+}
+
+pub fn cat_all(parts: Vec<String>) -> String {
+    cat(parts, 0, parts.len() as i64)
+}
+
+fn hex_digit(c: String) -> i32 {
+    let digits: String = "0123456789abcdef";
+    let upper: String = "0123456789ABCDEF";
+    let mut i: i32 = 0;
+    while i < 16 {
+        if digits.char_at(i as i64) == c || upper.char_at(i as i64) == c { return i; }
+        i = i + 1;
+    }
+    0 - 1
+}
+
+// channel k (0 red, 1 green, 2 blue) of "#rrggbb" as 0..255, or -1 when the text is not a colour
+pub fn hex_channel(hex: String, k: i32) -> f64 {
+    if hex.len() != 7 || hex.char_at(0) != "#" { return 0.0 - 1.0; }
+    let hi: i32 = hex_digit(hex.char_at((1 + 2 * k) as i64));
+    let lo: i32 = hex_digit(hex.char_at((2 + 2 * k) as i64));
+    if hi < 0 || lo < 0 { return 0.0 - 1.0; }
+    (hi * 16 + lo) as f64
+}
+
+pub fn hex_of(r: f64, g: f64, b: f64) -> String {
+    let digits: String = "0123456789abcdef";
+    let v: Vec<i64> = Vec::new();
+    v.push(round_i(r));
+    v.push(round_i(g));
+    v.push(round_i(b));
+    let mut s: String = "#";
+    let mut i: i32 = 0;
+    while i < 3 {
+        let mut c: i64 = v[i];
+        if c < 0 { c = 0; }
+        if c > 255 { c = 255; }
+        s = s + digits.char_at(c / 16) + digits.char_at(c % 16);
+        i = i + 1;
+    }
+    s
+}
+
+// Rec. 601 luma of an sRGB colour, 0 dark to 255 light: the weights the site plotter sorts by
+pub fn luma(r: f64, g: f64, b: f64) -> f64 {
+    (r * 299.0 + g * 587.0 + b * 114.0) / 1000.0
+}
+
+// text safe inside XML, JSON and a G-code comment: quotes, angle brackets, ampersands,
+// backslashes, semicolons and line ends removed
+pub fn plain(s: String) -> String {
+    let parts: Vec<String> = Vec::new();
+    let mut i: i64 = 0;
+    while i < s.len() as i64 {
+        let c: String = s.char_at(i);
+        if c != "\"" && c != "<" && c != ">" && c != "&" && c != "\\" && c != "\n" && c != "\r" && c != ";" {
+            parts.push(c);
+        }
+        i = i + 1;
+    }
+    cat_all(parts)
+}

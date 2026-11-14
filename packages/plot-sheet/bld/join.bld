@@ -1,0 +1,148 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Joining and dropping. Two paths of one pen whose ends meet within the tolerance become one path,
+// which saves a pen lift and the blot a pen leaves each time it lands. A path shorter than the pen
+// can draw is dropped and counted.
+
+use num::empty_i;
+use grid::Grid;
+use grid::grid_build;
+use grid::grid_remove;
+use grid::grid_nearest;
+use sheet::Paths;
+use sheet::Spec;
+use sheet::paths_new;
+use sheet::path_count;
+use sheet::copy_points;
+use sheet::end_like;
+use sheet::path_length;
+use sheet::O_MINLEN;
+use sheet::N_JOINS;
+use sheet::N_SHORT;
+
+// Follows the chain from point (x, y): while a live path end lies within tol, takes that path
+// and moves to its other end. at_head is 1 when the chain grows backwards from a path's start.
+fn grow(g: Grid, px: Vec<f64>, py: Vec<f64>, used: Vec<i32>, x0: f64, y0: f64, tol: f64, at_head: i32, piece: Vec<i32>, turned: Vec<i32>) {
+    let mut x: f64 = x0;
+    let mut y: f64 = y0;
+    while true {
+        let e: i32 = grid_nearest(g, px, py, x, y, tol);
+        if e < 0 { break; }
+        let j: i32 = e / 2;
+        let met_end: i32 = e % 2;
+        used[j] = 1;
+        grid_remove(g, 2 * j);
+        grid_remove(g, 2 * j + 1);
+        piece.push(j);
+        // Growing forward, a path met at its end is drawn end to start. Growing backward, a path
+        // met at its start is.
+        let rev: i32 = if at_head == 1 { 1 - met_end } else { met_end };
+        turned.push(rev);
+        let other: i32 = 2 * j + (1 - met_end);
+        x = px[other];
+        y = py[other];
+    }
+}
+
+// Joins the paths ids of p (all one pen) and appends the result to out.
+fn join_layer(p: Paths, ids: Vec<i32>, tol: f64, out: Paths, note: Vec<f64>) {
+    let m: i32 = ids.len() as i32;
+    let px: Vec<f64> = Vec::new();
+    let py: Vec<f64> = Vec::new();
+    let used: Vec<i32> = Vec::new();
+    let mut i: i32 = 0;
+    while i < m {
+        let a: i32 = p.start[ids[i]];
+        let b: i32 = p.start[ids[i] + 1] - 1;
+        px.push(p.xs[a]);
+        py.push(p.ys[a]);
+        px.push(p.xs[b]);
+        py.push(p.ys[b]);
+        used.push(0);
+        i = i + 1;
+    }
+    let g: Grid = grid_build(px, py, tol);
+    let tail: Vec<i32> = Vec::new();
+    let tail_rev: Vec<i32> = Vec::new();
+    let head: Vec<i32> = Vec::new();
+    let head_rev: Vec<i32> = Vec::new();
+    i = 0;
+    while i < m {
+        if used[i] == 0 {
+            used[i] = 1;
+            grid_remove(g, 2 * i);
+            grid_remove(g, 2 * i + 1);
+            empty_i(tail);
+            empty_i(tail_rev);
+            empty_i(head);
+            empty_i(head_rev);
+            grow(g, px, py, used, px[2 * i + 1], py[2 * i + 1], tol, 0, tail, tail_rev);
+            grow(g, px, py, used, px[2 * i], py[2 * i], tol, 1, head, head_rev);
+            let mut first: i32 = 1;
+            let mut k: i32 = head.len() as i32 - 1;
+            while k >= 0 {
+                copy_points(out, p, ids[head[k]], head_rev[k], 1 - first);
+                first = 0;
+                k = k - 1;
+            }
+            copy_points(out, p, ids[i], 0, 1 - first);
+            k = 0;
+            while k < tail.len() as i32 {
+                copy_points(out, p, ids[tail[k]], tail_rev[k], 1);
+                k = k + 1;
+            }
+            end_like(out, p, ids[i]);
+            note[N_JOINS()] = note[N_JOINS()] + ((head.len() + tail.len()) as f64);
+        }
+        i = i + 1;
+    }
+}
+
+// Joins within each pen. The output lists pen 0's paths first, then pen 1's, and so on.
+pub fn join(p: Paths, pens: i32, tol: f64, note: Vec<f64>) -> Paths {
+    let out: Paths = paths_new();
+    let ids: Vec<i32> = Vec::new();
+    let mut pen: i32 = 0;
+    while pen < pens {
+        empty_i(ids);
+        let mut i: i32 = 0;
+        while i < path_count(p) {
+            if p.pen[i] == pen { ids.push(i); }
+            i = i + 1;
+        }
+        if tol > 0.0 {
+            join_layer(p, ids, tol, out, note);
+        } else {
+            i = 0;
+            while i < ids.len() as i32 {
+                copy_points(out, p, ids[i], 0, 0);
+                end_like(out, p, ids[i]);
+                i = i + 1;
+            }
+        }
+        pen = pen + 1;
+    }
+    out
+}
+
+// The shortest path pen k is asked to draw: the stated length, or half its tip when none is stated.
+pub fn min_length(s: Spec, k: i32) -> f64 {
+    if s.opt[O_MINLEN()] >= 0.0 { return s.opt[O_MINLEN()]; }
+    s.pen_tip[k] / 2.0
+}
+
+pub fn drop_short(p: Paths, s: Spec, note: Vec<f64>) -> Paths {
+    let out: Paths = paths_new();
+    let mut i: i32 = 0;
+    while i < path_count(p) {
+        if path_length(p, i) >= min_length(s, p.pen[i]) {
+            copy_points(out, p, i, 0, 0);
+            end_like(out, p, i);
+        } else {
+            note[N_SHORT()] = note[N_SHORT()] + 1.0;
+        }
+        i = i + 1;
+    }
+    out
+}

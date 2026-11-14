@@ -1,0 +1,184 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The three files a plotter workflow reads. Each is written from the finished Plot alone, layer
+// by layer in draw order, and every number in them is printed by integer arithmetic.
+//
+// SVG      millimetre units, one group a pen layer, one stroke width a pen, no fills. The layer
+//          label starts with the pen number, the convention Inkscape and vpype read.
+// HPGL     pen select, pen up, pen down and absolute moves in plotter units from the bottom left
+//          corner of the sheet. See hpgl_text for the unit and the manual it comes from.
+// G-code   millimetres, absolute, y up from the bottom left corner. Pen up, pen down and pen
+//          change are text the caller sets. The form follows the site plotter's toGcode
+//          (upstream/site-3ca6529/system/plotter.js), with a feed rate for each layer.
+
+use num::round_i;
+use num::fix3;
+use num::mmt;
+use num::plain;
+use num::cat_all;
+use sheet::Paths;
+use sheet::Spec;
+use sheet::Plot;
+use sheet::O_PAPER_W;
+use sheet::O_PAPER_H;
+use sheet::O_HPGL_UNITS;
+use sheet::O_HPGL_X;
+use sheet::O_HPGL_Y;
+use sheet::T_TITLE;
+use sheet::T_SEED;
+use sheet::T_GCODE_UP;
+use sheet::T_GCODE_DOWN;
+use sheet::T_GCODE_CHANGE;
+use stats::pen_colour;
+use stats::describe;
+
+// The index of the k-th point drawn of path i.
+pub fn point_at(p: Paths, i: i32, rev: i32, k: i32) -> i32 {
+    if rev == 1 { return p.start[i + 1] - 1 - k; }
+    p.start[i] + k
+}
+
+pub fn points_in(p: Paths, i: i32) -> i32 {
+    p.start[i + 1] - p.start[i]
+}
+
+fn um(x: f64) -> String {
+    fix3(round_i(x * 1000.0))
+}
+
+pub fn svg_text(s: Spec, plot: Plot) -> String {
+    let p: Paths = plot.p;
+    let o: Vec<String> = Vec::new();
+    let w: String = mmt(s.opt[O_PAPER_W()]);
+    let h: String = mmt(s.opt[O_PAPER_H()]);
+    o.push("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    o.push("<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:inkscape=\"http://www.inkscape.org/namespaces/inkscape\" width=\"" + w + "mm\" height=\"" + h + "mm\" viewBox=\"0 0 " + w + " " + h + "\">\n");
+    o.push("<title>" + plain(s.text[T_TITLE()]) + "</title>\n<desc>" + describe(s, plot) + "</desc>\n");
+    let mut j: i32 = 0;
+    while j < plot.layer_pen.len() as i32 {
+        let k: i32 = plot.layer_pen[j];
+        let n: String = (k + 1).to_string();
+        o.push("<g id=\"pen-" + n + "\" inkscape:groupmode=\"layer\" inkscape:label=\"" + n + " " + plain(s.pen_name[k]) + "\" fill=\"none\" stroke=\"" + pen_colour(s, k) + "\" stroke-width=\"" + mmt(s.pen_tip[k]) + "\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n");
+        let mut q: i32 = plot.layer_start[j];
+        while q < plot.layer_start[j + 1] {
+            let i: i32 = plot.order[q];
+            o.push("<path d=\"M");
+            let mut c: i32 = 0;
+            while c < points_in(p, i) {
+                let at: i32 = point_at(p, i, plot.rev[q], c);
+                o.push(if c == 0 { " " } else { " L " });
+                o.push(um(p.xs[at]) + " " + um(p.ys[at]));
+                c = c + 1;
+            }
+            o.push(" \"/>\n");
+            q = q + 1;
+        }
+        o.push("</g>\n");
+        j = j + 1;
+    }
+    o.push("</svg>\n");
+    cat_all(o)
+}
+
+// HPGL.
+//
+// Source for the instructions and the unit: Hewlett-Packard, "HP 7475A Graphics Plotter
+// Interfacing and Programming Manual", read 2026-11-14 from the Internet Archive text at
+// https://archive.org/stream/HP7475AInterfacingandProgrammingManual/HP7475AInterfacingandProgrammingManual_djvu.txt
+// What that manual states, and what this writer does with it:
+//   - An instruction is a two-letter mnemonic, its parameters, and a terminator; a semicolon
+//     terminates. A line feed terminates only over HP-IB and is not valid over RS-232-C, so this
+//     file holds no line ends at all.
+//   - IN initialises. SP n selects pen n; SP 0 stores the pen. On the 7475A n is 1 to 6.
+//   - PU and PD raise and lower the pen and take absolute X,Y pairs once PA has been sent.
+//   - Plot parameters are integers from -32768 to 32767; fractions are truncated. This writer
+//     rounds to the nearest unit itself.
+//   - VS sets pen-down speed in cm/s, 0 to 127.9999; on the 7475A anything above 38.1 means 38.1.
+//   - The unit: the manual gives two figures. Its introduction and its OF instruction say
+//     0.025 mm (40 units a millimetre). Its section "The Plotter Unit" says 0.02488 mm (about
+//     40.2 a millimetre, about 1021 an inch). The default here is 40 a millimetre; a caller with
+//     a 7475A sets `hpgl-units 40.2` and should measure a plotted 100 mm line before trusting
+//     either figure.
+// The origin of plotter units on a real machine depends on the model and the paper size switch.
+// Coordinates here count from the bottom left corner of the sheet; `hpgl-offset` shifts them.
+pub fn hpgl_text(s: Spec, plot: Plot) -> String {
+    let p: Paths = plot.p;
+    let o: Vec<String> = Vec::new();
+    let u: f64 = s.opt[O_HPGL_UNITS()];
+    let ox: f64 = s.opt[O_HPGL_X()];
+    let oy: f64 = s.opt[O_HPGL_Y()] + s.opt[O_PAPER_H()];
+    o.push("IN;PA;");
+    let mut j: i32 = 0;
+    while j < plot.layer_pen.len() as i32 {
+        let k: i32 = plot.layer_pen[j];
+        let mut cm_s: i64 = round_i(s.pen_speed[k] / 10.0);
+        if cm_s < 1 { cm_s = 1; }
+        if cm_s > 127 { cm_s = 127; }
+        o.push("SP" + (k + 1).to_string() + ";VS" + cm_s.to_string() + ";");
+        let mut q: i32 = plot.layer_start[j];
+        while q < plot.layer_start[j + 1] {
+            let i: i32 = plot.order[q];
+            let mut c: i32 = 0;
+            while c < points_in(p, i) {
+                let at: i32 = point_at(p, i, plot.rev[q], c);
+                let x: String = round_i((p.xs[at] + ox) * u).to_string();
+                let y: String = round_i((oy - p.ys[at]) * u).to_string();
+                if c == 0 { o.push("PU" + x + "," + y + ";PD"); }
+                if c == 1 { o.push(x + "," + y); }
+                if c > 1 { o.push("," + x + "," + y); }
+                c = c + 1;
+            }
+            o.push(";");
+            q = q + 1;
+        }
+        o.push("PU;");
+        j = j + 1;
+    }
+    o.push("SP0;");
+    cat_all(o)
+}
+
+// The largest HPGL coordinate the sheet needs. The manual's limit is 32767.
+pub fn hpgl_reach(s: Spec) -> f64 {
+    let x: f64 = (s.opt[O_PAPER_W()] + s.opt[O_HPGL_X()]) * s.opt[O_HPGL_UNITS()];
+    let y: f64 = (s.opt[O_PAPER_H()] + s.opt[O_HPGL_Y()]) * s.opt[O_HPGL_UNITS()];
+    if x > y { return x; }
+    y
+}
+
+pub fn gcode_text(s: Spec, plot: Plot) -> String {
+    let p: Paths = plot.p;
+    let o: Vec<String> = Vec::new();
+    let h: f64 = s.opt[O_PAPER_H()];
+    let up: String = s.text[T_GCODE_UP()] + "\n";
+    let down: String = s.text[T_GCODE_DOWN()] + "\n";
+    o.push("; plot sheet: " + plain(s.text[T_TITLE()]) + "\n; seed " + plain(s.text[T_SEED()]) + "\n");
+    o.push("; sheet " + mmt(s.opt[O_PAPER_W()]) + " x " + mmt(h) + " mm, origin bottom left, y up\n");
+    o.push("G21\nG90\n" + up);
+    let mut j: i32 = 0;
+    while j < plot.layer_pen.len() as i32 {
+        let k: i32 = plot.layer_pen[j];
+        let feed: String = round_i(s.pen_speed[k] * 60.0).to_string();
+        o.push("; pen " + (k + 1).to_string() + " " + plain(s.pen_name[k]) + " " + mmt(s.pen_tip[k]) + " mm " + pen_colour(s, k) + "\n");
+        if s.text[T_GCODE_CHANGE()].len() > 0 { o.push(s.text[T_GCODE_CHANGE()] + "\n"); }
+        let mut q: i32 = plot.layer_start[j];
+        while q < plot.layer_start[j + 1] {
+            let i: i32 = plot.order[q];
+            let mut c: i32 = 0;
+            while c < points_in(p, i) {
+                let at: i32 = point_at(p, i, plot.rev[q], c);
+                let xy: String = "X" + um(p.xs[at]) + " Y" + um(h - p.ys[at]);
+                if c == 0 { o.push("G0 " + xy + "\n" + down); }
+                if c == 1 { o.push("G1 " + xy + " F" + feed + "\n"); }
+                if c > 1 { o.push("G1 " + xy + "\n"); }
+                c = c + 1;
+            }
+            o.push(up);
+            q = q + 1;
+        }
+        j = j + 1;
+    }
+    o.push("G0 X0.000 Y0.000\n");
+    cat_all(o)
+}

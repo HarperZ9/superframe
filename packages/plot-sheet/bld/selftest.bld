@@ -1,0 +1,55 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The plot sheet's tests. One line a check, PASS or FAIL, then a count. Exit 1 on any failure.
+//
+//   buildc run --release packages/plot-sheet/bld/selftest.bld
+//
+// t_geom.bld   scaling, clipping, simplifying, joining, dropping, hatching, pens, extras
+// t_order.bld  ordering against the arriving order, the time limit, the speed budget
+// t_files.bld  known answers, round trips, controls that must fail, identical reruns, measures, input
+
+mod num;
+mod sheet;
+mod grid;
+mod geom;
+mod pens;
+mod join;
+mod hatch;
+mod order;
+mod build;
+mod stats;
+mod write;
+mod input;
+mod read;
+mod tkit;
+mod t_geom;
+mod t_order;
+mod t_files;
+
+fn main() ~ Console + Process + Clock + Environment {
+    let t: Vec<i32> = Vec::new();
+    t.push(0);
+    t.push(0);
+    t_geom::test_scale(t);
+    t_geom::test_clip(t);
+    t_geom::test_simplify(t);
+    t_geom::test_join(t);
+    t_geom::test_drop(t);
+    t_geom::test_hatch(t);
+    t_geom::test_pens(t);
+    t_geom::test_extras(t);
+    t_order::test_grid(t);
+    t_order::test_never_worse(t);
+    t_order::test_speed(t);
+    t_files::test_known(t);
+    t_files::test_round_trip(t);
+    t_files::test_controls(t);
+    t_files::test_identical(t);
+    t_files::test_measures(t);
+    t_files::test_input(t);
+    println("plot sheet tests passed: {} of {}", t[1], t[0]);
+    if t[1] != t[0] {
+        process_exit(1);
+    }
+}

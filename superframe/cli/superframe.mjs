@@ -19,6 +19,8 @@
 //   superframe call <tool> '<json args>'        call one tool with JSON args; prints JSON
 //   superframe make "<intent>" [out-dir]        describe an artifact in words; render paint, type, lines, material,
 //        --seed s --size 3840x2160                sound, touch and the study from one seeded recipe (lib/artifact)
+//        --plot a4|a3|letter|<spec file>          also write the lines as a plot sheet: plot.svg in millimetres,
+//                                                 plot.hpgl, plot.gcode and plot.json (packages/plot-sheet)
 //   superframe artifact <recipe.json> [out-dir]  render an artifact recipe; any of these recombine it first:
 //        --seed s --isomer permute|mirror --metamer <id> --route <id>:<medium>:<weight> --edit <path>=<json>
 import { readFileSync, readdirSync, existsSync, createReadStream } from 'node:fs';
@@ -91,8 +93,8 @@ async function artifactCmd() {
   if (flag('edit')) { const [p, v] = flag('edit').split('='); recipe = ops.edit(recipe, p, JSON.parse(v)); }
   if (size && !recipe.sim) delete recipe.sim;
   const out = compute(recipe); out.report = report;
-  const dir = resolve(pos[2] ?? `out/artifact/${recipe.seed}`), m = write(out, dir, { intent, title: recipe.seed });
-  console.log(JSON.stringify({ dir, recipe_hash: m.recipe_hash, size: m.size, times_ms: m.times_ms, unused_words: report?.unused ?? [], files: Object.keys(m.files) }, null, 1));
+  const dir = resolve(pos[2] ?? `out/artifact/${recipe.seed}`), m = write(out, dir, { intent, title: recipe.seed, plot: flag('plot', null) });
+  console.log(JSON.stringify({ dir, recipe_hash: m.recipe_hash, size: m.size, times_ms: m.times_ms, unused_words: report?.unused ?? [], files: Object.keys(m.files), ...(m.plot ? { plot: m.plot } : {}) }, null, 1));
 }
 
 function gallery(dir, port) {

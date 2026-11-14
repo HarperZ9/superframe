@@ -1,0 +1,177 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The pipeline: source paths and a plot specification in, a finished sheet out. The stages run in
+// this order, and each is one function in its own file:
+//
+//   to_mm      source units to sheet millimetres                    geom.bld
+//   hatch      filled regions to hatch lines                        hatch.bld
+//   clip       cut to the printable area                            geom.bld
+//   simplify   snap to micrometres, drop points within tolerance    geom.bld
+//   pens       give every path a pen                                pens.bld
+//   join       merge paths whose ends meet                          join.bld
+//   drop       remove paths shorter than the pen can draw           join.bld
+//   extras     registration marks and legend                        hatch.bld
+//   order      draw order and direction for each pen                order.bld
+//
+// A writer reads only the Plot this returns.
+
+use num::minf;
+use num::maxf;
+use sheet::Paths;
+use sheet::Spec;
+use sheet::Plot;
+use sheet::path_count;
+use sheet::pen_count;
+use sheet::path_length;
+use sheet::O_PAPER_H;
+use sheet::O_JOIN;
+use sheet::O_SIMPLIFY;
+use sheet::O_OPT_MS;
+use sheet::O_OPT_EVALS;
+use sheet::O_OPT_WINDOW;
+use sheet::O_HATCH;
+use sheet::O_HATCH_ANGLE;
+use sheet::O_MARKS;
+use sheet::O_LEGEND;
+use sheet::O_TRAVEL;
+use sheet::O_LIFT;
+use sheet::M_PATHS;
+use sheet::M_DRAWN;
+use sheet::M_TRAVEL_IN;
+use sheet::M_TRAVEL_OUT;
+use sheet::M_LIFTS;
+use sheet::M_SECONDS;
+use sheet::M_STRIDE;
+use sheet::N_X0;
+use sheet::N_Y0;
+use sheet::N_X1;
+use sheet::N_Y1;
+use sheet::N_PATHS_IN;
+use sheet::N_EVALS;
+use sheet::N_STOP;
+use sheet::N_KEPT_INPUT;
+use sheet::N_COUNT;
+use geom::printable;
+use geom::to_mm;
+use geom::clip;
+use geom::simplify;
+use pens::assign_pens;
+use pens::layer_pens;
+use join::join;
+use join::drop_short;
+use hatch::hatch_fills;
+use hatch::add_marks;
+use hatch::add_legend;
+use order::order_layer;
+use order::travel_as_given;
+use order::B_STOP;
+use order::B_USED;
+
+fn zeros(n: i32) -> Vec<f64> {
+    let v: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < n {
+        v.push(0.0);
+        i = i + 1;
+    }
+    v
+}
+
+// The bounding box of the ink, taken before marks and legend are added.
+fn bounds(p: Paths, note: Vec<f64>) {
+    if p.xs.len() == 0 { return; }
+    note[N_X0()] = p.xs[0];
+    note[N_X1()] = p.xs[0];
+    note[N_Y0()] = p.ys[0];
+    note[N_Y1()] = p.ys[0];
+    let mut i: i32 = 1;
+    while i < p.xs.len() as i32 {
+        note[N_X0()] = minf(note[N_X0()], p.xs[i]);
+        note[N_X1()] = maxf(note[N_X1()], p.xs[i]);
+        note[N_Y0()] = minf(note[N_Y0()], p.ys[i]);
+        note[N_Y1()] = maxf(note[N_Y1()], p.ys[i]);
+        i = i + 1;
+    }
+}
+
+// Geometry stages: everything before ordering. Changes src in place (its points become mm).
+fn prepare(s: Spec, src: Paths, note: Vec<f64>) -> Paths {
+    note[N_PATHS_IN()] = path_count(src) as f64;
+    to_mm(src, s, note);
+    hatch_fills(src, s.opt[O_HATCH()], s.opt[O_HATCH_ANGLE()], note);
+    let cut: Paths = clip(src, printable(s), note);
+    let simple: Paths = simplify(cut, s.opt[O_SIMPLIFY()], note);
+    assign_pens(simple, s);
+    let joined: Paths = join(simple, pen_count(s), s.opt[O_JOIN()], note);
+    let kept: Paths = drop_short(joined, s, note);
+    let in_use: Vec<i32> = Vec::new();
+    let mut k: i32 = 0;
+    while k < pen_count(s) {
+        in_use.push(0);
+        k = k + 1;
+    }
+    k = 0;
+    while k < path_count(kept) {
+        in_use[kept.pen[k]] = 1;
+        k = k + 1;
+    }
+    bounds(kept, note);
+    if s.opt[O_MARKS()] == 1.0 { add_marks(kept, s, in_use, note); }
+    if s.opt[O_LEGEND()] == 1.0 { add_legend(kept, s, in_use, note); }
+    kept
+}
+
+// Orders pen k's paths and records its six measures.
+fn order_pen(s: Spec, p: Paths, k: i32, budget: Vec<f64>, plot: Plot, kept: Vec<f64>) ~ Clock {
+    let ids: Vec<i32> = Vec::new();
+    let mut drawn: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < path_count(p) {
+        if p.pen[i] == k {
+            ids.push(i);
+            drawn = drawn + path_length(p, i);
+        }
+        i = i + 1;
+    }
+    if ids.len() == 0 { return; }
+    let hy: f64 = s.opt[O_PAPER_H()];
+    let given: f64 = travel_as_given(p, ids, 0.0, hy);
+    let found: f64 = order_layer(p, ids, 0.0, hy, budget, plot.order, plot.rev, kept);
+    plot.layer_pen.push(k);
+    plot.layer_start.push(plot.order.len() as i32);
+    let m: i32 = M_STRIDE() * k;
+    let n: f64 = ids.len() as f64;
+    plot.measure[m + M_PATHS()] = n;
+    plot.measure[m + M_DRAWN()] = drawn;
+    plot.measure[m + M_TRAVEL_IN()] = given;
+    plot.measure[m + M_TRAVEL_OUT()] = found;
+    plot.measure[m + M_LIFTS()] = n;
+    plot.measure[m + M_SECONDS()] = drawn / s.pen_speed[k] + found / s.opt[O_TRAVEL()] + n * s.opt[O_LIFT()];
+}
+
+// Builds the sheet. src is consumed: its points are moved to millimetres in place.
+pub fn build(s: Spec, src: Paths) -> Plot ~ Clock {
+    let note: Vec<f64> = zeros(N_COUNT());
+    let p: Paths = prepare(s, src, note);
+    let first: Vec<i32> = Vec::new();
+    first.push(0);
+    let plot: Plot = Plot { p: p, order: Vec::new(), rev: Vec::new(), layer_start: first, layer_pen: Vec::new(), measure: zeros(M_STRIDE() * pen_count(s)), note: note };
+    let budget: Vec<f64> = Vec::new();
+    budget.push(s.opt[O_OPT_EVALS()]);
+    budget.push((clock_ms() as f64) + s.opt[O_OPT_MS()]);
+    budget.push(0.0);
+    budget.push(0.0);
+    budget.push(s.opt[O_OPT_WINDOW()]);
+    let kept: Vec<f64> = zeros(1);
+    let layers: Vec<i32> = layer_pens(s);
+    let mut j: i32 = 0;
+    while j < layers.len() as i32 {
+        order_pen(s, p, layers[j], budget, plot, kept);
+        j = j + 1;
+    }
+    note[N_EVALS()] = budget[B_USED()];
+    note[N_STOP()] = budget[B_STOP()];
+    note[N_KEPT_INPUT()] = kept[0];
+    plot
+}

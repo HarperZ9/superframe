@@ -54,6 +54,7 @@ Each one reads the per-element layers with weight `transparency[m] x media[m]`.
 | Material | `material.mjs` | height, roughness and normals; neutral clay under a raking light, Blinn-Phong sheen falling with roughness | height, roughness | hue |
 | Type | `type.mjs` | Accession Mono from the house forge, three masters (300, 550, 800); the field picks the weight at every pixel; ink tinted by the paint | tone as letter weight | hue except as tint |
 | Lines | `lines.mjs`, `hatch.mjs` | marching squares at evenly spaced levels, plus tone hatching that runs along the least-curvature direction of the field (Hessian, after the Krbn comparison save); `lines.hatch: 'flat'` is the control; SVG through `lib/export.mjs`, raster as order-independent max coverage | level sets, tone as hatch density, form as stroke direction | hue |
+| Plot sheet (with `--plot`) | `plotsheet.mjs`, `packages/plot-sheet` | the same contours and hatching for a pen plotter: millimetres, contours and hatching as two pen layers, joined, simplified and ordered to cut pen-up travel; SVG, HPGL, G-code and the measures as JSON | what the lines keep, plus what the sheet costs to draw | line weight (a pen has one width) |
 | Sound | `sound.mjs` | x is time, y is pitch over 72 log bands from 70 Hz to 7 kHz, additive partials with seeded phases, fixed gain, tanh limiter | position as time and pitch, tone as loudness | hue, detail below one band |
 | Touch | `sound.mjs` `tactile()` | on and off milliseconds per 100 ms step from the loudness | loudness over time | everything spatial |
 
