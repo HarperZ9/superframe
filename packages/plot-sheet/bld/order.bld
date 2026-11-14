@@ -1,0 +1,209 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Path ordering: the order and direction each pen draws its paths in, chosen to cut the distance
+// the pen travels lifted. Travel is counted from the machine origin (the bottom left corner of the
+// sheet) to the first path, between paths, and back to the origin.
+//
+// Two steps. First nearest neighbour: from where the pen is, go to the closest end of any path
+// not yet drawn, and draw that path from that end. This is the site plotter's orderPaths with a
+// grid in place of the all-pairs search. Then 2-opt: take a run of consecutive paths, draw the run
+// backwards, and keep the change when the two jumps at its ends get shorter. The 2-opt pass has
+// two limits, a count of evaluated moves and a wall-clock time. The count is the one meant to
+// bind: it gives the same answer on every run. The clock is the guard for a slow machine, and a
+// sheet that stopped on the clock says so in its measures.
+//
+// The result never has more travel than the order the paths arrived in. When it would, the
+// arriving order is kept.
+
+use num::dist;
+use grid::Grid;
+use grid::grid_build;
+use grid::grid_remove;
+use grid::grid_nearest;
+use sheet::Paths;
+
+// budget slots
+pub fn B_EVALS_LEFT() -> i32 { 0 }
+pub fn B_DEADLINE() -> i32 { 1 }
+pub fn B_STOP() -> i32 { 2 }
+pub fn B_USED() -> i32 { 3 }
+pub fn B_WINDOW() -> i32 { 4 }
+
+// Pen-up travel of a tour given as start points (ax, ay) and end points (bx, by) in draw order.
+pub fn travel(ax: Vec<f64>, ay: Vec<f64>, bx: Vec<f64>, by: Vec<f64>, hx: f64, hy: f64) -> f64 {
+    let n: i32 = ax.len() as i32;
+    if n == 0 { return 0.0; }
+    let mut t: f64 = dist(hx, hy, ax[0], ay[0]) + dist(bx[n - 1], by[n - 1], hx, hy);
+    let mut i: i32 = 1;
+    while i < n {
+        t = t + dist(bx[i - 1], by[i - 1], ax[i], ay[i]);
+        i = i + 1;
+    }
+    t
+}
+
+// Draws tour places i..j in the opposite order, each path end to start.
+fn reverse_run(ax: Vec<f64>, ay: Vec<f64>, bx: Vec<f64>, by: Vec<f64>, ord: Vec<i32>, rev: Vec<i32>, i: i32, j: i32) {
+    let mut lo: i32 = i;
+    let mut hi: i32 = j;
+    while lo <= hi {
+        let lax: f64 = ax[lo];
+        let lay: f64 = ay[lo];
+        let lbx: f64 = bx[lo];
+        let lby: f64 = by[lo];
+        let lo_ord: i32 = ord[lo];
+        let lo_rev: i32 = rev[lo];
+        ax[lo] = bx[hi];
+        ay[lo] = by[hi];
+        bx[lo] = ax[hi];
+        by[lo] = ay[hi];
+        ord[lo] = ord[hi];
+        rev[lo] = 1 - rev[hi];
+        if lo != hi {
+            ax[hi] = lbx;
+            ay[hi] = lby;
+            bx[hi] = lax;
+            by[hi] = lay;
+            ord[hi] = lo_ord;
+            rev[hi] = 1 - lo_rev;
+        } else {
+            bx[lo] = lax;
+            by[lo] = lay;
+        }
+        lo = lo + 1;
+        hi = hi - 1;
+    }
+}
+
+// One sweep of 2-opt over the tour. Returns 1 when a move was kept, 0 when none was, and -1 when
+// a limit stopped the sweep.
+fn sweep(ax: Vec<f64>, ay: Vec<f64>, bx: Vec<f64>, by: Vec<f64>, ord: Vec<i32>, rev: Vec<i32>, hx: f64, hy: f64, budget: Vec<f64>) -> i32 ~ Clock {
+    let n: i32 = ax.len() as i32;
+    let window: i32 = budget[B_WINDOW()] as i32;
+    let mut kept: i32 = 0;
+    let mut i: i32 = 0;
+    while i < n {
+        let px: f64 = if i == 0 { hx } else { bx[i - 1] };
+        let py: f64 = if i == 0 { hy } else { by[i - 1] };
+        let last: i32 = if i + window < n - 1 { i + window } else { n - 1 };
+        let mut j: i32 = i;
+        while j <= last {
+            let nx: f64 = if j == n - 1 { hx } else { ax[j + 1] };
+            let ny: f64 = if j == n - 1 { hy } else { ay[j + 1] };
+            let now: f64 = dist(px, py, ax[i], ay[i]) + dist(bx[j], by[j], nx, ny);
+            let then: f64 = dist(px, py, bx[j], by[j]) + dist(ax[i], ay[i], nx, ny);
+            if then < now - 1.0e-9 {
+                reverse_run(ax, ay, bx, by, ord, rev, i, j);
+                kept = 1;
+            }
+            j = j + 1;
+        }
+        let spent: f64 = (last - i + 1) as f64;
+        budget[B_EVALS_LEFT()] = budget[B_EVALS_LEFT()] - spent;
+        budget[B_USED()] = budget[B_USED()] + spent;
+        if budget[B_EVALS_LEFT()] <= 0.0 {
+            if budget[B_STOP()] < 1.0 { budget[B_STOP()] = 1.0; }
+            return 0 - 1;
+        }
+        if i % 16 == 0 && (clock_ms() as f64) >= budget[B_DEADLINE()] {
+            budget[B_STOP()] = 2.0;
+            return 0 - 1;
+        }
+        i = i + 1;
+    }
+    kept
+}
+
+// Nearest-neighbour tour of the paths ids of p, starting from (hx, hy). Fills ord with indices
+// into ids, rev with the draw direction, and the tour's start and end points.
+fn nearest_tour(p: Paths, ids: Vec<i32>, hx: f64, hy: f64, ord: Vec<i32>, rev: Vec<i32>, ax: Vec<f64>, ay: Vec<f64>, bx: Vec<f64>, by: Vec<f64>) {
+    let m: i32 = ids.len() as i32;
+    let px: Vec<f64> = Vec::new();
+    let py: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < m {
+        let a: i32 = p.start[ids[i]];
+        let b: i32 = p.start[ids[i] + 1] - 1;
+        px.push(p.xs[a]);
+        py.push(p.ys[a]);
+        px.push(p.xs[b]);
+        py.push(p.ys[b]);
+        i = i + 1;
+    }
+    let g: Grid = grid_build(px, py, 0.0);
+    let mut x: f64 = hx;
+    let mut y: f64 = hy;
+    i = 0;
+    while i < m {
+        let e: i32 = grid_nearest(g, px, py, x, y, 1.0e150);
+        let j: i32 = e / 2;
+        let from_end: i32 = e % 2;
+        grid_remove(g, 2 * j);
+        grid_remove(g, 2 * j + 1);
+        ord.push(j);
+        rev.push(from_end);
+        let other: i32 = 2 * j + (1 - from_end);
+        ax.push(px[e]);
+        ay.push(py[e]);
+        bx.push(px[other]);
+        by.push(py[other]);
+        x = px[other];
+        y = py[other];
+        i = i + 1;
+    }
+}
+
+// Travel of the paths ids in the order and direction they arrived.
+pub fn travel_as_given(p: Paths, ids: Vec<i32>, hx: f64, hy: f64) -> f64 {
+    let ax: Vec<f64> = Vec::new();
+    let ay: Vec<f64> = Vec::new();
+    let bx: Vec<f64> = Vec::new();
+    let by: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < ids.len() as i32 {
+        let a: i32 = p.start[ids[i]];
+        let b: i32 = p.start[ids[i] + 1] - 1;
+        ax.push(p.xs[a]);
+        ay.push(p.ys[a]);
+        bx.push(p.xs[b]);
+        by.push(p.ys[b]);
+        i = i + 1;
+    }
+    travel(ax, ay, bx, by, hx, hy)
+}
+
+// Orders one pen's paths. Appends the draw order (path indices of p) to out_ord and the
+// directions to out_rev, and returns the pen-up travel of that order. kept[0] is raised by one
+// when the arriving order was kept.
+pub fn order_layer(p: Paths, ids: Vec<i32>, hx: f64, hy: f64, budget: Vec<f64>, out_ord: Vec<i32>, out_rev: Vec<i32>, kept: Vec<f64>) -> f64 ~ Clock {
+    let ord: Vec<i32> = Vec::new();
+    let rev: Vec<i32> = Vec::new();
+    let ax: Vec<f64> = Vec::new();
+    let ay: Vec<f64> = Vec::new();
+    let bx: Vec<f64> = Vec::new();
+    let by: Vec<f64> = Vec::new();
+    nearest_tour(p, ids, hx, hy, ord, rev, ax, ay, bx, by);
+    let mut state: i32 = 1;
+    while state == 1 {
+        state = sweep(ax, ay, bx, by, ord, rev, hx, hy, budget);
+    }
+    let found: f64 = travel(ax, ay, bx, by, hx, hy);
+    let given: f64 = travel_as_given(p, ids, hx, hy);
+    let mut i: i32 = 0;
+    if found > given {
+        kept[0] = kept[0] + 1.0;
+        while i < ids.len() as i32 {
+            out_ord.push(ids[i]);
+            out_rev.push(0);
+            i = i + 1;
+        }
+        return given;
+    }
+    while i < ord.len() as i32 {
+        out_ord.push(ids[ord[i]]);
+        out_rev.push(rev[i]);
+        i = i + 1;
+    }
+    found
+}

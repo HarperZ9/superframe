@@ -1,0 +1,218 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The plot input file: a plot specification and the paths to draw, one statement a line. Any
+// program that can write text can ask for a plot sheet; the engine's make command is one caller.
+//
+//   plotsheet 1                          the format version; must be the first statement
+//   title <words>                        carried into every file
+//   seed <words>                         the seed of the piece, carried into the G-code and JSON
+//   paper <width> <height>               millimetres
+//   margin <all>  |  margin <top> <right> <bottom> <left>
+//   source <width> <height>              extent of the path coordinates; left out, the bounding box
+//   scale fit  |  scale <mm>             millimetres for one source unit; fit is the default
+//   order light-first  |  order listed   which pen layer is drawn first
+//   join <mm>                            ends closer than this are joined; 0 is off
+//   minlen auto  |  minlen <mm>          shorter paths are dropped; auto is half the pen tip
+//   simplify <mm>                        tolerance; 0 only removes repeated points
+//   optimise <ms> <evaluations> [window] limits of the 2-opt pass
+//   hatch <mm> [degrees]                 hatch filled regions at this spacing; 0 is off
+//   marks on|off    legend on|off        registration crosses, pen legend
+//   travel <mm/s>   lift <seconds>       pen-up speed and the time of one lift, for the estimate
+//   hpgl-units <per mm>   hpgl-offset <x mm> <y mm>
+//   gcode-up <text>   gcode-down <text>   gcode-change <text>
+//   pen <tip mm> <#rrggbb> <mm/s> <registry id or -> <name words>
+//   path <pen> <#rrggbb> <fill group> <x> <y> <x> <y> ...
+//   loop <pen> <#rrggbb> <fill group> <x> <y> ...      a closed path
+//
+// <pen> counts from one in the order the pens are listed; 0 lets the colour clustering choose.
+// A line starting with # is a comment. The first error is returned as text; "" means the file read.
+
+use num::hex_channel;
+use num::cat_all;
+use sheet::Paths;
+use sheet::Spec;
+use sheet::add_point;
+use sheet::end_path;
+use sheet::add_pen;
+use sheet::pen_count;
+use sheet::O_PAPER_W;
+use sheet::O_PAPER_H;
+use sheet::O_MARGIN_T;
+use sheet::O_MARGIN_R;
+use sheet::O_MARGIN_B;
+use sheet::O_MARGIN_L;
+use sheet::O_SCALE;
+use sheet::O_SRC_W;
+use sheet::O_SRC_H;
+use sheet::O_ORDER;
+use sheet::O_JOIN;
+use sheet::O_MINLEN;
+use sheet::O_SIMPLIFY;
+use sheet::O_OPT_MS;
+use sheet::O_OPT_EVALS;
+use sheet::O_OPT_WINDOW;
+use sheet::O_HATCH;
+use sheet::O_HATCH_ANGLE;
+use sheet::O_MARKS;
+use sheet::O_LEGEND;
+use sheet::O_TRAVEL;
+use sheet::O_LIFT;
+use sheet::O_HPGL_UNITS;
+use sheet::O_HPGL_X;
+use sheet::O_HPGL_Y;
+use sheet::T_TITLE;
+use sheet::T_SEED;
+use sheet::T_GCODE_UP;
+use sheet::T_GCODE_DOWN;
+use sheet::T_GCODE_CHANGE;
+
+// words[from..] put back together with single spaces
+fn rest(w: Vec<String>, from: i32) -> String {
+    let o: Vec<String> = Vec::new();
+    let mut i: i32 = from;
+    while i < w.len() as i32 {
+        if i > from { o.push(" "); }
+        o.push(w[i]);
+        i = i + 1;
+    }
+    cat_all(o)
+}
+
+fn num_at(w: Vec<String>, i: i32) -> f64 {
+    w[i].parse_float()
+}
+
+fn on(word: String) -> f64 {
+    if word == "on" { return 1.0; }
+    0.0
+}
+
+// One number or word after the keyword. Returns "" when the keyword was one of these.
+fn set_number(s: Spec, w: Vec<String>) -> String {
+    let key: String = w[0];
+    let n: i32 = w.len() as i32;
+    if n < 2 { return "missing value after " + key; }
+    if key == "join" { s.opt[O_JOIN()] = num_at(w, 1); return ""; }
+    if key == "simplify" { s.opt[O_SIMPLIFY()] = num_at(w, 1); return ""; }
+    if key == "travel" { s.opt[O_TRAVEL()] = num_at(w, 1); return ""; }
+    if key == "lift" { s.opt[O_LIFT()] = num_at(w, 1); return ""; }
+    if key == "hpgl-units" { s.opt[O_HPGL_UNITS()] = num_at(w, 1); return ""; }
+    if key == "marks" { s.opt[O_MARKS()] = on(w[1]); return ""; }
+    if key == "legend" { s.opt[O_LEGEND()] = on(w[1]); return ""; }
+    if key == "title" { s.text[T_TITLE()] = rest(w, 1); return ""; }
+    if key == "seed" { s.text[T_SEED()] = rest(w, 1); return ""; }
+    if key == "gcode-up" { s.text[T_GCODE_UP()] = rest(w, 1); return ""; }
+    if key == "gcode-down" { s.text[T_GCODE_DOWN()] = rest(w, 1); return ""; }
+    if key == "gcode-change" { s.text[T_GCODE_CHANGE()] = rest(w, 1); return ""; }
+    if key == "scale" { s.opt[O_SCALE()] = if w[1] == "fit" { 0.0 } else { num_at(w, 1) }; return ""; }
+    if key == "minlen" { s.opt[O_MINLEN()] = if w[1] == "auto" { 0.0 - 1.0 } else { num_at(w, 1) }; return ""; }
+    if key == "order" { s.opt[O_ORDER()] = if w[1] == "listed" { 1.0 } else { 0.0 }; return ""; }
+    "?"
+}
+
+// Statements with several values.
+fn set_several(s: Spec, w: Vec<String>) -> String {
+    let key: String = w[0];
+    let n: i32 = w.len() as i32;
+    if key == "paper" && n >= 3 {
+        s.opt[O_PAPER_W()] = num_at(w, 1);
+        s.opt[O_PAPER_H()] = num_at(w, 2);
+        return "";
+    }
+    if key == "source" && n >= 3 {
+        s.opt[O_SRC_W()] = num_at(w, 1);
+        s.opt[O_SRC_H()] = num_at(w, 2);
+        return "";
+    }
+    if key == "margin" && (n == 2 || n == 5) {
+        s.opt[O_MARGIN_T()] = num_at(w, 1);
+        s.opt[O_MARGIN_R()] = num_at(w, if n == 5 { 2 } else { 1 });
+        s.opt[O_MARGIN_B()] = num_at(w, if n == 5 { 3 } else { 1 });
+        s.opt[O_MARGIN_L()] = num_at(w, if n == 5 { 4 } else { 1 });
+        return "";
+    }
+    if key == "optimise" && n >= 3 {
+        s.opt[O_OPT_MS()] = num_at(w, 1);
+        s.opt[O_OPT_EVALS()] = num_at(w, 2);
+        if n >= 4 { s.opt[O_OPT_WINDOW()] = num_at(w, 3); }
+        return "";
+    }
+    if key == "hatch" && n >= 2 {
+        s.opt[O_HATCH()] = num_at(w, 1);
+        if n >= 3 { s.opt[O_HATCH_ANGLE()] = num_at(w, 2); }
+        return "";
+    }
+    if key == "hpgl-offset" && n >= 3 {
+        s.opt[O_HPGL_X()] = num_at(w, 1);
+        s.opt[O_HPGL_Y()] = num_at(w, 2);
+        return "";
+    }
+    if key == "pen" && n >= 5 {
+        if hex_channel(w[2], 0) < 0.0 { return "pen colour must be #rrggbb, got " + w[2]; }
+        let id: String = if w[4] == "-" { "" } else { w[4] };
+        let name: String = if n > 5 { rest(w, 5) } else { "pen " + (pen_count(s) + 1).to_string() };
+        add_pen(s, name, num_at(w, 1), hex_channel(w[2], 0), hex_channel(w[2], 1), hex_channel(w[2], 2), num_at(w, 3), id);
+        return "";
+    }
+    "?"
+}
+
+// A path or loop statement.
+fn read_path(p: Paths, w: Vec<String>) -> String {
+    let n: i32 = w.len() as i32;
+    if n < 8 || (n - 4) % 2 != 0 { return w[0] + " needs a pen, a colour, a fill group and at least two x y pairs"; }
+    if hex_channel(w[2], 0) < 0.0 { return "path colour must be #rrggbb, got " + w[2]; }
+    let mut i: i32 = 4;
+    while i < n {
+        add_point(p, num_at(w, i), num_at(w, i + 1));
+        i = i + 2;
+    }
+    if w[0] == "loop" {
+        add_point(p, num_at(w, 4), num_at(w, 5));
+    }
+    end_path(p, (w[1].parse_int() as i32) - 1, hex_channel(w[2], 0), hex_channel(w[2], 1), hex_channel(w[2], 2), w[3].parse_int() as i32);
+    ""
+}
+
+// What is wrong with the specification as a whole, or "".
+pub fn check_spec(s: Spec) -> String {
+    if pen_count(s) == 0 { return "no pen listed"; }
+    if s.opt[O_PAPER_W()] <= 0.0 || s.opt[O_PAPER_H()] <= 0.0 { return "paper size missing"; }
+    if s.opt[O_PAPER_W()] - s.opt[O_MARGIN_L()] - s.opt[O_MARGIN_R()] <= 0.0 { return "margins leave no width"; }
+    if s.opt[O_PAPER_H()] - s.opt[O_MARGIN_T()] - s.opt[O_MARGIN_B()] <= 0.0 { return "margins leave no height"; }
+    if s.opt[O_TRAVEL()] <= 0.0 || s.opt[O_HPGL_UNITS()] <= 0.0 { return "travel speed and hpgl-units must be above 0"; }
+    let mut k: i32 = 0;
+    while k < pen_count(s) {
+        if s.pen_tip[k] <= 0.0 || s.pen_speed[k] <= 0.0 { return "pen " + (k + 1).to_string() + " needs a tip width and a speed above 0"; }
+        k = k + 1;
+    }
+    ""
+}
+
+// Reads the input text into s and p. Returns "" or the first error with its line number.
+pub fn read_input(text: String, s: Spec, p: Paths) -> String {
+    let lines: Vec<String> = text.lines();
+    let mut seen_header: bool = false;
+    let mut i: i32 = 0;
+    while i < lines.len() as i32 {
+        let w: Vec<String> = lines[i].split_whitespace();
+        if w.len() > 0 && !w[0].starts_with("#") {
+            let mut err: String = "";
+            if !seen_header {
+                if w[0] != "plotsheet" || w.len() < 2 || w[1] != "1" { err = "the first statement must be: plotsheet 1"; }
+                seen_header = true;
+            } else if w[0] == "path" || w[0] == "loop" {
+                err = read_path(p, w);
+            } else {
+                err = set_number(s, w);
+                if err == "?" { err = set_several(s, w); }
+                if err == "?" { err = "unknown or incomplete statement: " + w[0]; }
+            }
+            if err.len() > 0 { return "line " + (i + 1).to_string() + ": " + err; }
+        }
+        i = i + 1;
+    }
+    if !seen_header { return "empty input"; }
+    check_spec(s)
+}

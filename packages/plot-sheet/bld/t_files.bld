@@ -1,0 +1,181 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Tests of the files: known answers, round trips, controls that must fail, identical reruns, the
+// measures and the input reader.
+//
+// HPGL facts used below come from Hewlett-Packard's "HP 7475A Graphics Plotter Interfacing and
+// Programming Manual", read 2026-11-14 from the Internet Archive text at
+// https://archive.org/stream/HP7475AInterfacingandProgrammingManual/HP7475AInterfacingandProgrammingManual_djvu.txt
+// (SHA-256 of the fetched text f2ff9a5ebe6e38322918743c95750225cc715f8ff26fae0d56f7fe3f6c69963d).
+// The manual gives the plotter unit twice: 0.025 mm in its introduction and under the OF
+// instruction (40 units a millimetre), and 0.02488 mm under "The Plotter Unit" (about 40.2 a
+// millimetre). The default is 40; test_known checks both settings. It also states: instructions
+// end at a semicolon; SP selects a pen and SP0 stores it; PU and PD take absolute X,Y pairs after
+// PA; parameters are integers within -32768..32767; VS is in cm/s. No real plotter has drawn
+// these files: the round trips prove the files say what the sheet says, in the stated units.
+
+use num::absf;
+use sheet::Paths;
+use sheet::Spec;
+use sheet::Plot;
+use sheet::paths_new;
+use sheet::spec_new;
+use sheet::path_count;
+use sheet::pen_count;
+use sheet::O_HATCH;
+use sheet::O_MARKS;
+use sheet::O_LEGEND;
+use sheet::O_HPGL_UNITS;
+use sheet::O_JOIN;
+use sheet::O_PAPER_W;
+use sheet::O_MARGIN_L;
+use sheet::O_SIMPLIFY;
+use sheet::T_TITLE;
+use sheet::T_GCODE_UP;
+use sheet::T_GCODE_DOWN;
+use sheet::M_SECONDS;
+use sheet::M_TRAVEL_OUT;
+use sheet::M_LIFTS;
+use build::build;
+use stats::total;
+use stats::stats_json;
+use stats::describe;
+use write::svg_text;
+use write::hpgl_text;
+use write::gcode_text;
+use input::read_input;
+use read::read_hpgl;
+use read::read_gcode;
+use read::read_svg;
+use read::same_drawing;
+use tkit::check;
+use tkit::two_pens;
+use tkit::seg;
+use tkit::square;
+use tkit::rng;
+use tkit::scatter;
+
+// A 100 mm square whose corner sits 50 mm in from the sheet corner, drawn by pen 1 at 50 mm/s.
+fn known_square(units: f64) -> Spec {
+    let s: Spec = two_pens(200.0, 200.0, 50.0);
+    s.opt[O_HPGL_UNITS()] = units;
+    s.text[T_TITLE()] = "square";
+    s
+}
+
+// The files for the known square, character for character where they are short enough to state.
+pub fn test_known(t: Vec<i32>) ~ Console + Clock {
+    let s: Spec = known_square(40.0);
+    let p: Paths = paths_new();
+    square(p, 0, 0.0, 0.0, 100.0, 0);
+    let a: Plot = build(s, p);
+    let hpgl: String = hpgl_text(s, a);
+    check(t, "hpgl: the square at 40 units a mm, y measured up from the sheet's bottom edge", hpgl == "IN;PA;SP1;VS5;PU2000,6000;PD6000,6000,6000,2000,2000,2000,2000,6000;PU;SP0;", hpgl);
+    let s2: Spec = known_square(40.2);
+    let p2: Paths = paths_new();
+    square(p2, 0, 0.0, 0.0, 100.0, 0);
+    let b: Plot = build(s2, p2);
+    check(t, "hpgl: the same square at 40.2 units a mm", hpgl_text(s2, b) == "IN;PA;SP1;VS5;PU2010,6030;PD6030,6030,6030,2010,2010,2010,2010,6030;PU;SP0;", hpgl_text(s2, b));
+    let g: String = gcode_text(s, a);
+    check(t, "gcode: millimetres, absolute, pen down between the two pen lines, feed 3000 mm/min", g.contains("G21\nG90\nM3 S40\n") && g.contains("G0 X50.000 Y150.000\nM3 S90\nG1 X150.000 Y150.000 F3000\nG1 X150.000 Y50.000\n") && g.contains("G1 X50.000 Y150.000\nM3 S40\nG0 X0.000 Y0.000\n"), g);
+    let v: String = svg_text(s, a);
+    check(t, "svg: millimetre size, one layer group, the pen's own stroke width, no fill", v.contains("width=\"200mm\" height=\"200mm\" viewBox=\"0 0 200 200\"") && v.contains("<g id=\"pen-1\" inkscape:groupmode=\"layer\" inkscape:label=\"1 black\" fill=\"none\" stroke=\"#111111\" stroke-width=\"0.3\"") && !v.contains("fill=\"#"), v);
+    check(t, "svg: the square's path in millimetres", v.contains("<path d=\"M 50.000 50.000 L 150.000 50.000 L 150.000 150.000 L 50.000 150.000 L 50.000 50.000 \"/>"), v);
+}
+
+// A sheet that uses every feature: two pens, a hatched region with a hole, marks and legend.
+fn mixed_spec() -> Spec {
+    let s: Spec = two_pens(300.0, 225.0, 50.0);
+    s.opt[O_HATCH()] = 1.5;
+    s.opt[O_MARKS()] = 1.0;
+    s.opt[O_LEGEND()] = 1.0;
+    s
+}
+
+fn mixed_paths(seed: i64) -> Paths {
+    let p: Paths = paths_new();
+    scatter(p, rng(seed), 60, 6, 200.0, 125.0);
+    square(p, 1, 120.0, 20.0, 40.0, 2);
+    square(p, 1, 130.0, 30.0, 12.0, 2);
+    p
+}
+
+// Each file, read back by a reader that shares no code with its writer, draws the sheet.
+pub fn test_round_trip(t: Vec<i32>) ~ Console + Clock {
+    let s: Spec = mixed_spec();
+    let a: Plot = build(s, mixed_paths(3));
+    let n: i32 = a.order.len() as i32;
+    let h: Paths = read_hpgl(hpgl_text(s, a), s);
+    check(t, "round trip: HPGL read back is the sheet, within 0.015 mm", n > 100 && path_count(h) == n && same_drawing(a, h, 0.015) == 0, "hpgl");
+    let g: Paths = read_gcode(gcode_text(s, a), s);
+    check(t, "round trip: G-code read back is the sheet, within 0.0006 mm", path_count(g) == n && same_drawing(a, g, 0.0006) == 0, "gcode");
+    let v: Paths = read_svg(svg_text(s, a));
+    check(t, "round trip: SVG read back is the sheet, within 0.0006 mm", path_count(v) == n && same_drawing(a, v, 0.0006) == 0, "svg");
+    s.text[T_GCODE_UP()] = "G0 Z5.000";
+    s.text[T_GCODE_DOWN()] = "G1 Z0.000 F600";
+    let z: String = gcode_text(s, a);
+    check(t, "round trip: G-code with Z moves for the pen reads back the same", z.contains("G0 Z5.000\n") && same_drawing(a, read_gcode(z, s), 0.0006) == 0, "z mode");
+}
+
+// Controls. Each is a way a writer could be wrong, and each must be caught.
+pub fn test_controls(t: Vec<i32>) ~ Console + Clock {
+    let s: Spec = mixed_spec();
+    let full: Plot = build(s, mixed_paths(3));
+    let cut: Plot = build(s, mixed_paths(3));
+    // drop the last path of the last layer on purpose
+    cut.order.pop();
+    cut.rev.pop();
+    let last: i32 = cut.layer_start.len() as i32 - 1;
+    cut.layer_start[last] = cut.layer_start[last] - 1;
+    check(t, "control: an HPGL file with one path dropped is caught", same_drawing(full, read_hpgl(hpgl_text(s, cut), s), 0.015) > 0, "missed");
+    check(t, "control: a G-code file with one path dropped is caught", same_drawing(full, read_gcode(gcode_text(s, cut), s), 0.0006) > 0, "missed");
+    check(t, "control: an SVG file with one path dropped is caught", same_drawing(full, read_svg(svg_text(s, cut)), 0.0006) > 0, "missed");
+    check(t, "control: an HPGL file that draws nothing is caught", same_drawing(full, read_hpgl("IN;PA;SP0;", s), 0.015) > 0, "missed");
+    let text: String = hpgl_text(s, full);
+    s.opt[O_HPGL_UNITS()] = 40.2;
+    check(t, "control: HPGL written at 40 units a mm and read at 40.2 is caught", same_drawing(full, read_hpgl(text, s), 0.015) > 0, "missed");
+    s.opt[O_HPGL_UNITS()] = 40.0;
+    let other: Plot = build(s, mixed_paths(4));
+    check(t, "control: another sheet's file is caught", same_drawing(full, read_hpgl(hpgl_text(s, other), s), 0.015) > 0, "missed");
+}
+
+// The same input gives the same bytes; a different input does not.
+pub fn test_identical(t: Vec<i32>) ~ Console + Clock {
+    let s: Spec = mixed_spec();
+    let a: Plot = build(s, mixed_paths(3));
+    let b: Plot = build(s, mixed_paths(3));
+    let c: Plot = build(s, mixed_paths(4));
+    let same: bool = svg_text(s, a) == svg_text(s, b) && hpgl_text(s, a) == hpgl_text(s, b) && gcode_text(s, a) == gcode_text(s, b) && stats_json(s, a) == stats_json(s, b);
+    check(t, "identical: two builds of one input give the same four files, byte for byte", same && svg_text(s, a).len() > 10000, "differ");
+    check(t, "identical: a different seed gives different files", svg_text(s, a) != svg_text(s, c) && stats_json(s, a) != stats_json(s, c), "same");
+}
+
+// The measures of the known square: 400 mm of line, one lift, travel from the machine origin to
+// the corner and back (2 x 158.114 mm), and 400 / 50 + 316.228 / 200 + 0.2 = 9.781 s.
+pub fn test_measures(t: Vec<i32>) ~ Console + Clock {
+    let s: Spec = known_square(40.0);
+    let p: Paths = paths_new();
+    square(p, 0, 0.0, 0.0, 100.0, 0);
+    let a: Plot = build(s, p);
+    check(t, "measures: travel 316.228 mm, one lift, 9.781 s", absf(total(a, M_TRAVEL_OUT()) - 316.228) < 0.001 && total(a, M_LIFTS()) == 1.0 && absf(total(a, M_SECONDS()) - 9.781) < 0.001, "numbers");
+    let j: String = stats_json(s, a);
+    check(t, "measures: the JSON states them", j.contains("\"paper_mm\": [200, 200]") && j.contains("\"drawn_m\": 0.400") && j.contains("\"pen_up_travel_m_after\": 0.316") && j.contains("\"pen_lifts\": 1, \"estimated_seconds\": 10") && j.contains("\"bounding_box_mm\": [50.000, 50.000, 150.000, 150.000]"), j);
+    let d: String = describe(s, a);
+    check(t, "measures: and so does the sentence", d.contains("square. A pen plot on a sheet 200 by 200 mm.") && d.contains("1 pen layer,") && d.contains("pen 1 (black, 0.3 mm, #111111): 1 path, 0.400 m of line"), d);
+}
+
+// The input reader: a full file, and the errors a caller is most likely to make.
+pub fn test_input(t: Vec<i32>) ~ Console {
+    let s: Spec = spec_new(0.0, 0.0, 0.0);
+    let p: Paths = paths_new();
+    let text: String = "plotsheet 1\n# a comment\ntitle two words\npaper 297 210\nmargin 10 20 30 40\njoin 0.25\npen 0.3 #102030 55 ink.a fine black\npen 0.7 #ffffff 20 -\npath 2 #ff0000 0 1 2 3 4\nloop 0 #00ff00 3 0 0 10 0 10 10\n";
+    let err: String = read_input(text, s, p);
+    check(t, "input: a full file reads", err == "" && s.text[T_TITLE()] == "two words" && s.opt[O_PAPER_W()] == 297.0 && s.opt[O_MARGIN_L()] == 40.0 && s.opt[O_JOIN()] == 0.25, err);
+    check(t, "input: pens keep tip, colour, speed, id and name", pen_count(s) == 2 && s.pen_tip[0] == 0.3 && s.pen_rgb[2] == 48.0 && s.pen_speed[0] == 55.0 && s.pen_id[0] == "ink.a" && s.pen_name[0] == "fine black" && s.pen_name[1] == "pen 2" && s.pen_id[1] == "", "pens");
+    check(t, "input: path pens count from one, 0 is unassigned, a loop repeats its first point", path_count(p) == 2 && p.pen[0] == 1 && p.pen[1] == 0 - 1 && p.fill[1] == 3 && p.xs.len() == 6 && p.rgb[0] == 255.0, "paths");
+    check(t, "input: a wrong version is refused", read_input("plotsheet 2\n", spec_new(0.0, 0.0, 0.0), paths_new()) == "line 1: the first statement must be: plotsheet 1", "version");
+    check(t, "input: an unknown statement is refused with its line", read_input("plotsheet 1\npaper 10 10\nfold 3\n", spec_new(0.0, 0.0, 0.0), paths_new()) == "line 3: unknown or incomplete statement: fold", "unknown");
+    check(t, "input: a file with no pen is refused", read_input("plotsheet 1\npaper 10 10\n", spec_new(0.0, 0.0, 0.0), paths_new()) == "no pen listed", "no pen");
+    check(t, "input: an odd number of coordinates is refused", read_input("plotsheet 1\npath 1 #000000 0 1 2 3\n", spec_new(0.0, 0.0, 0.0), paths_new()).starts_with("line 2: path needs"), "odd");
+}

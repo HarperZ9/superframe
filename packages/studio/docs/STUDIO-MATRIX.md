@@ -114,7 +114,7 @@ Site code is all rights reserved, held by the same author. The engine side moves
 | ST6 | Poster: seeded field, type and layers | `poster-panel.js`, `poster.js`, `generative-field.js` | partial: `adapters/poster.mjs`, image lane | PNG byte-identical per seed on the CPU path | with FW1 |
 | ST7 | Living neural field | `studio-neural.js`, `neural*.js` | partial: `creation/lib/gen/automata.mjs` | CPU frames byte-identical per seed | planned |
 | ST8 | Seed sound: a seed as a melody, loudness, PCM receipt | `studio-sound.js`, `media-engine/sound.mjs` | yes: `site.seedsound`, `studio/lib/loudness.mjs`, `wav.mjs` | 16-bit PCM hash equal | done |
-| ST9 | Plot maps: field, plate or picture to a plotter sheet, SVG and G-code | `plot-maps.js`, `plot-compose.js`, `plotter.js` | partial: `site.terrain`, `site.ridgelines` | SVG and G-code byte-identical per seed | planned |
+| ST9 | Plot maps: field, plate or picture to a plotter sheet, SVG and G-code | `plot-maps.js`, `plot-compose.js`, `plotter.js` | partial: `site.terrain`, `site.ridgelines`; the plotter output is `packages/plot-sheet` (SVG in mm, HPGL, G-code, ordering, measures), reached by `make --plot` | SVG and G-code byte-identical per seed: met by `packages/plot-sheet/fixtures/mixed.sha256`; the composed map studies are not ported | partial |
 | ST10 | Voxels: build, carve, paint; .vox and OBJ | `voxel.js`, `voxel-forge.js` | no | .vox and OBJ byte-identical per seed | planned |
 | ST11 | Sketch to plotter sheet | `sketch.js` | no | SVG equal for a recorded stroke list | front end only |
 | ST12 | Threads: particles through 15 fields | `studio-threads.js`, raw-native `threads.mjs` | partial: `visualizer/lib/flow.mjs`, `studio/lib/fluid.mjs` | SSIM 0.995 on fixed frames | raw-native |

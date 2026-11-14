@@ -1,0 +1,103 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Plot Sheet: a plot input file in, plotter files out.
+//
+//   main <input.plot> <out-base> [--verify]
+//
+// Writes <out-base>.svg, <out-base>.hpgl, <out-base>.gcode and <out-base>.json, and prints one
+// line of measures and one line of timings. With --verify it then reads the three plotter files
+// back and exits 1 unless each draws the sheet it was written from.
+//
+//   buildc build --release packages/plot-sheet/bld
+//   packages/plot-sheet/bld/target/release/main piece.plot out/piece
+
+mod num;
+mod sheet;
+mod grid;
+mod geom;
+mod pens;
+mod join;
+mod hatch;
+mod order;
+mod build;
+mod stats;
+mod write;
+mod input;
+mod read;
+
+use sheet::Paths;
+use sheet::Spec;
+use sheet::Plot;
+use sheet::paths_new;
+use sheet::spec_new;
+use sheet::O_HPGL_UNITS;
+use build::build;
+use stats::stats_json;
+use stats::summary;
+use write::svg_text;
+use write::hpgl_text;
+use write::gcode_text;
+use write::hpgl_reach;
+use input::read_input;
+use read::read_hpgl;
+use read::read_gcode;
+use read::read_svg;
+use read::same_drawing;
+
+fn fail(why: String) ~ Console + Process {
+    println("plot sheet: {}", why);
+    process_exit(2);
+}
+
+// Reads the three files back from disk. Returns how many of them do not draw the plot.
+fn verify(base: String, s: Spec, plot: Plot) -> i32 ~ Console + FileSystem {
+    let hpgl: i32 = same_drawing(plot, read_hpgl(read_file(base + ".hpgl"), s), 0.6 / s.opt[O_HPGL_UNITS()]);
+    let gcode: i32 = same_drawing(plot, read_gcode(read_file(base + ".gcode"), s), 0.0006);
+    let svg: i32 = same_drawing(plot, read_svg(read_file(base + ".svg")), 0.0006);
+    println("read back: svg {} hpgl {} gcode {} paths differ", svg, hpgl, gcode);
+    let mut bad: i32 = 0;
+    if svg > 0 { bad = bad + 1; }
+    if hpgl > 0 { bad = bad + 1; }
+    if gcode > 0 { bad = bad + 1; }
+    bad
+}
+
+fn main() ~ Console + FileSystem + Process + Environment + Clock {
+    let nargs: i32 = args_count() as i32;
+    // A leading "--" (the separator some buildc versions pass through) is skipped.
+    let a: i32 = if nargs > 1 && args_get(1) == "--" { 2 } else { 1 };
+    if nargs < a + 2 {
+        fail("usage: main <input.plot> <out-base> [--verify]");
+    }
+    let base: String = args_get(a + 1);
+    let t0: i64 = clock_ms();
+    let s: Spec = spec_new(0.0, 0.0, 0.0);
+    let src: Paths = paths_new();
+    let text: String = read_file(args_get(a));
+    if text.len() == 0 {
+        fail("cannot read " + args_get(a));
+    }
+    let err: String = read_input(text, s, src);
+    if err.len() > 0 {
+        fail(err);
+    }
+    let t1: i64 = clock_ms();
+    let plot: Plot = build(s, src);
+    let t2: i64 = clock_ms();
+    let ok: bool = write_file(base + ".svg", svg_text(s, plot)) && write_file(base + ".hpgl", hpgl_text(s, plot)) && write_file(base + ".gcode", gcode_text(s, plot)) && write_file(base + ".json", stats_json(s, plot));
+    if !ok {
+        fail("cannot write " + base + ".*");
+    }
+    let t3: i64 = clock_ms();
+    println("{}", summary(s, plot));
+    if hpgl_reach(s) > 32767.0 {
+        println("note: this sheet needs HPGL coordinates above 32767, the limit the HP manual states");
+    }
+    println("time: read {} ms, build {} ms, write {} ms, total {} ms", t1 - t0, t2 - t1, t3 - t2, t3 - t0);
+    if nargs > a + 2 && args_get(a + 2) == "--verify" {
+        if verify(base, s, plot) > 0 {
+            process_exit(1);
+        }
+    }
+}

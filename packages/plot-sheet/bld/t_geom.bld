@@ -1,0 +1,241 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Tests of the geometry stages, each against an answer worked out by hand. The sheet is 200 mm
+// square with 50 mm margins, so source point (x, y) lands at (50 + x, 50 + y) mm.
+
+use num::absf;
+use sheet::Paths;
+use sheet::Spec;
+use sheet::Plot;
+use sheet::paths_new;
+use sheet::path_count;
+use sheet::add_point;
+use sheet::end_path;
+use sheet::O_SCALE;
+use sheet::O_SRC_W;
+use sheet::O_SRC_H;
+use sheet::O_ORDER;
+use sheet::O_JOIN;
+use sheet::O_MINLEN;
+use sheet::O_SIMPLIFY;
+use sheet::O_HATCH;
+use sheet::O_HATCH_ANGLE;
+use sheet::O_MARKS;
+use sheet::O_LEGEND;
+use sheet::M_PATHS;
+use sheet::M_DRAWN;
+use sheet::M_STRIDE;
+use sheet::N_X0;
+use sheet::N_Y0;
+use sheet::N_X1;
+use sheet::N_Y1;
+use sheet::N_SCALE;
+use sheet::N_CLIPPED;
+use sheet::N_JOINS;
+use sheet::N_SHORT;
+use sheet::N_HATCH;
+use sheet::N_POINTS_CUT;
+use sheet::N_MARKS;
+use sheet::N_LEGEND;
+use build::build;
+use stats::total;
+use tkit::check;
+use tkit::two_pens;
+use tkit::seg;
+use tkit::square;
+
+fn near(a: f64, b: f64) -> bool {
+    absf(a - b) < 0.0005
+}
+
+fn box_is(plot: Plot, x0: f64, y0: f64, x1: f64, y1: f64) -> bool {
+    near(plot.note[N_X0()], x0) && near(plot.note[N_Y0()], y0) && near(plot.note[N_X1()], x1) && near(plot.note[N_Y1()], y1)
+}
+
+// A 100 unit square at 1 mm a unit is 100 mm on the sheet; fitted from 50 units it is the same
+// square at 2 mm a unit; at 0.5 mm a unit it is 50 mm and centred.
+pub fn test_scale(t: Vec<i32>) ~ Console + Clock {
+    let s: Spec = two_pens(200.0, 200.0, 50.0);
+    let p: Paths = paths_new();
+    square(p, 0, 0.0, 0.0, 100.0, 0);
+    let a: Plot = build(s, p);
+    check(t, "scale: a 100 unit square at 1 mm a unit spans 50 to 150 mm", box_is(a, 50.0, 50.0, 150.0, 150.0), "box");
+    check(t, "scale: its line is 400 mm long", near(total(a, M_DRAWN()), 400.0), "drawn");
+    check(t, "scale: it is one path of five points", path_count(a.p) == 1 && a.p.xs.len() == 5, "points");
+
+    let s2: Spec = two_pens(200.0, 200.0, 50.0);
+    s2.opt[O_SRC_W()] = 50.0;
+    s2.opt[O_SRC_H()] = 50.0;
+    s2.opt[O_SCALE()] = 0.0;
+    let p2: Paths = paths_new();
+    square(p2, 0, 0.0, 0.0, 50.0, 0);
+    let b: Plot = build(s2, p2);
+    check(t, "scale: fit turns 50 units into 100 mm, 2 mm a unit", box_is(b, 50.0, 50.0, 150.0, 150.0) && near(b.note[N_SCALE()], 2.0), "fit");
+
+    let s3: Spec = two_pens(200.0, 200.0, 50.0);
+    s3.opt[O_SCALE()] = 0.5;
+    let p3: Paths = paths_new();
+    square(p3, 0, 0.0, 0.0, 100.0, 0);
+    let c: Plot = build(s3, p3);
+    check(t, "scale: 0.5 mm a unit gives a centred 50 mm square", box_is(c, 75.0, 75.0, 125.0, 125.0) && near(total(c, M_DRAWN()), 200.0), "half");
+}
+
+// A line across the whole sheet is cut to the printable area, a path outside it is counted and
+// gone, and a path that leaves and returns becomes two.
+pub fn test_clip(t: Vec<i32>) ~ Console + Clock {
+    let s: Spec = two_pens(200.0, 200.0, 50.0);
+    s.opt[O_JOIN()] = 0.0;
+    s.opt[O_MINLEN()] = 0.0;
+    let p: Paths = paths_new();
+    seg(p, 0, 0.0 - 50.0, 50.0, 150.0, 50.0);
+    seg(p, 0, 0.0 - 30.0, 0.0 - 30.0, 0.0 - 10.0, 0.0 - 10.0);
+    add_point(p, 10.0, 10.0);
+    add_point(p, 10.0, 0.0 - 20.0);
+    add_point(p, 30.0, 0.0 - 20.0);
+    add_point(p, 30.0, 10.0);
+    end_path(p, 0, 0.0, 0.0, 0.0, 0);
+    let a: Plot = build(s, p);
+    check(t, "clip: three paths in become three paths, one of them split in two and one gone", path_count(a.p) == 3 && a.note[N_CLIPPED()] == 1.0, "count");
+    check(t, "clip: nothing is left outside the printable area", box_is(a, 50.0, 50.0, 150.0, 100.0), "box");
+    check(t, "clip: the kept line is 100 + 10 + 10 mm", near(total(a, M_DRAWN()), 120.0), "drawn");
+}
+
+// A point 0.05 mm off the line survives a 0.02 mm tolerance and goes at 0.1 mm.
+pub fn test_simplify(t: Vec<i32>) ~ Console + Clock {
+    let mut pass: i32 = 0;
+    while pass < 2 {
+        let s: Spec = two_pens(200.0, 200.0, 50.0);
+        s.opt[O_SIMPLIFY()] = if pass == 0 { 0.02 } else { 0.1 };
+        let p: Paths = paths_new();
+        add_point(p, 0.0, 10.0);
+        add_point(p, 10.0, 10.05);
+        add_point(p, 20.0, 10.0);
+        add_point(p, 30.0, 10.0);
+        add_point(p, 40.0, 10.0);
+        end_path(p, 0, 0.0, 0.0, 0.0, 0);
+        let a: Plot = build(s, p);
+        if pass == 0 {
+            check(t, "simplify: at 0.02 mm the 0.05 mm bump stays and the collinear point goes", a.p.xs.len() == 4 && a.note[N_POINTS_CUT()] == 1.0, "tight");
+        } else {
+            check(t, "simplify: at 0.1 mm only the two ends stay", a.p.xs.len() == 2 && a.note[N_POINTS_CUT()] == 3.0, "loose");
+        }
+        pass = pass + 1;
+    }
+}
+
+// Three pieces of one line, given out of order with the middle one backwards and 0.05 mm gaps,
+// come back as one path. A 0.5 mm gap stays a gap.
+pub fn test_join(t: Vec<i32>) ~ Console + Clock {
+    let mut pass: i32 = 0;
+    while pass < 2 {
+        let s: Spec = two_pens(200.0, 200.0, 50.0);
+        s.opt[O_JOIN()] = if pass == 0 { 0.1 } else { 0.0 };
+        let p: Paths = paths_new();
+        seg(p, 0, 20.1, 10.0, 30.0, 10.0);
+        seg(p, 0, 0.0, 10.0, 10.0, 10.0);
+        seg(p, 0, 20.05, 10.0, 10.05, 10.0);
+        seg(p, 0, 40.0, 10.0, 50.0, 10.0);
+        seg(p, 0, 50.5, 10.0, 60.0, 10.0);
+        let a: Plot = build(s, p);
+        if pass == 0 {
+            check(t, "join: three pieces within 0.1 mm become one path; a 0.5 mm gap is left", path_count(a.p) == 3 && a.note[N_JOINS()] == 2.0, "count");
+            check(t, "join: the joined path runs the full 30 mm", near(total(a, M_DRAWN()), 30.0 + 10.0 + 9.5), "length");
+        } else {
+            check(t, "join: with the tolerance at 0 nothing is joined", path_count(a.p) == 5 && a.note[N_JOINS()] == 0.0, "off");
+        }
+        pass = pass + 1;
+    }
+}
+
+// A 0.05 mm mark is under half the 0.3 mm tip and is dropped; with the limit at 0 it is kept.
+pub fn test_drop(t: Vec<i32>) ~ Console + Clock {
+    let mut pass: i32 = 0;
+    while pass < 2 {
+        let s: Spec = two_pens(200.0, 200.0, 50.0);
+        if pass == 1 { s.opt[O_MINLEN()] = 0.0; }
+        let p: Paths = paths_new();
+        seg(p, 0, 10.0, 10.0, 10.05, 10.0);
+        seg(p, 0, 20.0, 20.0, 60.0, 20.0);
+        let a: Plot = build(s, p);
+        if pass == 0 {
+            check(t, "drop: a 0.05 mm path is dropped for a 0.3 mm pen and counted", path_count(a.p) == 1 && a.note[N_SHORT()] == 1.0, "auto");
+        } else {
+            check(t, "drop: with the limit at 0 it is kept", path_count(a.p) == 2 && a.note[N_SHORT()] == 0.0, "kept");
+        }
+        pass = pass + 1;
+    }
+}
+
+// A 40 mm square with a 20 mm square hole, hatched every 2 mm: 20 rows, the 10 that cross the
+// hole split in two. Line laid: 10 x 40 + 10 x 20 = 600 mm, which is the area over the spacing.
+pub fn test_hatch(t: Vec<i32>) ~ Console + Clock {
+    let s: Spec = two_pens(200.0, 200.0, 50.0);
+    s.opt[O_HATCH()] = 2.0;
+    s.opt[O_HATCH_ANGLE()] = 0.0;
+    s.opt[O_JOIN()] = 0.0;
+    let p: Paths = paths_new();
+    square(p, 0, 10.0, 10.0, 40.0, 1);
+    square(p, 0, 20.0, 20.0, 20.0, 1);
+    let a: Plot = build(s, p);
+    check(t, "hatch: 30 lines fill a square with a hole", a.note[N_HATCH()] == 30.0, "lines");
+    check(t, "hatch: 600 mm of hatch plus 240 mm of outline", near(total(a, M_DRAWN()), 840.0), "length");
+    let s2: Spec = two_pens(200.0, 200.0, 50.0);
+    let p2: Paths = paths_new();
+    square(p2, 0, 10.0, 10.0, 40.0, 1);
+    let b: Plot = build(s2, p2);
+    check(t, "hatch: with no spacing set a filled region is its outline only", b.note[N_HATCH()] == 0.0 && near(total(b, M_DRAWN()), 160.0), "off");
+}
+
+fn coloured(p: Paths, pen: i32, r: f64, g: f64, b: f64, y: f64) {
+    add_point(p, 10.0, y);
+    add_point(p, 60.0, y);
+    end_path(p, pen, r, g, b, 0);
+}
+
+// Red strokes go to the red pen and dark ones to the black pen; a stroke given a pen keeps it
+// whatever its colour; the lighter pen draws first unless the caller says otherwise.
+pub fn test_pens(t: Vec<i32>) ~ Console + Clock {
+    let mut pass: i32 = 0;
+    while pass < 2 {
+        let s: Spec = two_pens(200.0, 200.0, 50.0);
+        s.opt[O_JOIN()] = 0.0;
+        s.opt[O_ORDER()] = pass as f64;
+        let p: Paths = paths_new();
+        coloured(p, 0 - 1, 220.0, 30.0, 30.0, 10.0);
+        coloured(p, 0 - 1, 10.0, 10.0, 10.0, 20.0);
+        coloured(p, 0 - 1, 230.0, 40.0, 20.0, 30.0);
+        coloured(p, 0 - 1, 0.0, 0.0, 0.0, 40.0);
+        coloured(p, 0 - 1, 20.0, 20.0, 30.0, 50.0);
+        coloured(p, 1, 0.0, 0.0, 0.0, 60.0);
+        let a: Plot = build(s, p);
+        if pass == 0 {
+            check(t, "pens: three dark strokes to black, two red and one assigned to red", a.measure[M_PATHS()] == 3.0 && a.measure[M_STRIDE() + M_PATHS()] == 3.0, "split");
+            check(t, "pens: the lighter pen is the first layer", a.layer_pen[0] == 1 && a.layer_pen[1] == 0, "order");
+        } else {
+            check(t, "pens: order listed draws pen 1 first", a.layer_pen[0] == 0 && a.layer_pen[1] == 1, "listed");
+        }
+        pass = pass + 1;
+    }
+}
+
+// Marks: four crosses of two strokes for each pen in use. Legend: pen 1 one tick and a line,
+// pen 2 two ticks and a line. Neither moves the bounding box of the drawing.
+pub fn test_extras(t: Vec<i32>) ~ Console + Clock {
+    let s: Spec = two_pens(200.0, 200.0, 50.0);
+    s.opt[O_MARKS()] = 1.0;
+    s.opt[O_LEGEND()] = 1.0;
+    let p: Paths = paths_new();
+    seg(p, 0, 10.0, 10.0, 60.0, 10.0);
+    seg(p, 1, 10.0, 20.0, 60.0, 20.0);
+    let a: Plot = build(s, p);
+    check(t, "extras: 16 mark strokes and 5 legend strokes join the 2 paths", path_count(a.p) == 2 + 16 + 5 && a.note[N_MARKS()] == 1.0 && a.note[N_LEGEND()] == 1.0, "count");
+    check(t, "extras: the bounding box is the drawing's alone", box_is(a, 60.0, 60.0, 110.0, 70.0), "box");
+    let s2: Spec = two_pens(200.0, 200.0, 3.0);
+    s2.opt[O_MARKS()] = 1.0;
+    s2.opt[O_LEGEND()] = 1.0;
+    let p2: Paths = paths_new();
+    seg(p2, 0, 10.0, 10.0, 60.0, 10.0);
+    let b: Plot = build(s2, p2);
+    check(t, "extras: a 3 mm margin has no room, so none are drawn and the record says so", path_count(b.p) == 1 && b.note[N_MARKS()] == 0.0 && b.note[N_LEGEND()] == 0.0, "no room");
+}

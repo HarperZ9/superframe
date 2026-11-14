@@ -42,6 +42,23 @@ Each render writes a study of its own parts:
 
 The engine never asks you to use one sense. Pick the readout that works for you, or layer two. The `room` command opens a local, private space for this kind of work, with words, numbers, pictures and sound converting into one another. It is a creative tool, and it makes no claims about therapy or outcomes.
 
+## Plot it
+
+Add `--plot a4` (or `a3`, `letter`, or a specification file) and the lines are also written for a pen plotter:
+
+```
+npm run make -- "heavy rust coral upper left, fine teal frost on the right" out/first --seed first --plot a4
+```
+
+```
+out/first/plot.svg     millimetres, one layer for each pen, stroke width = pen tip
+out/first/plot.hpgl    for HP and Roland plotters
+out/first/plot.gcode   for G-code machines
+out/first/plot.json    metres drawn, pen-up travel, pen lifts and estimated time for each pen
+```
+
+The paths are joined, simplified and ordered to cut the distance the pen travels lifted, and the same recipe gives the same bytes. It needs BuildLang's `buildc` on the PATH the first time, to build the program. `packages/plot-sheet/README.md` has the specification, the measures and the tests. No real plotter has drawn these files yet.
+
 ## Change it freely
 
 A piece is a recipe you can edit by hand or recombine:

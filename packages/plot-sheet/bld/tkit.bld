@@ -1,0 +1,95 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// What the tests share: the pass and fail lines, a fixed random stream, and small sheets.
+
+use sheet::Paths;
+use sheet::Spec;
+use sheet::spec_new;
+use sheet::add_pen;
+use sheet::add_point;
+use sheet::end_path;
+use sheet::O_SRC_W;
+use sheet::O_SRC_H;
+use sheet::O_SCALE;
+
+// tally[0] counts checks and tally[1] the ones that passed.
+pub fn check(tally: Vec<i32>, name: String, ok: bool, detail: String) ~ Console {
+    tally[0] = tally[0] + 1;
+    if ok {
+        tally[1] = tally[1] + 1;
+        println("PASS {}", name);
+    } else {
+        println("FAIL {} | {}", name, detail);
+    }
+}
+
+// The combined Lehmer generator of packages/emeans (L'Ecuyer 1988): integer arithmetic that
+// cannot overflow, so a seed gives the same stream on every machine.
+pub fn rng(seed: i64) -> Vec<i64> {
+    let g: Vec<i64> = Vec::new();
+    g.push(1 + (seed * 7919 + 12345) % 2147483562);
+    g.push(1 + (seed * 104729 + 6789) % 2147483398);
+    g
+}
+
+// uniform in (0, 1)
+pub fn rnd(g: Vec<i64>) -> f64 {
+    g[0] = (g[0] * 40014) % 2147483563;
+    g[1] = (g[1] * 40692) % 2147483399;
+    let mut z: i64 = g[0] - g[1];
+    if z < 1 {
+        z = z + 2147483562;
+    }
+    (z as f64) / 2147483563.0
+}
+
+// A sheet w by h mm with the given margin and two pens: 1 black 0.3 mm, 2 red 0.5 mm, both at
+// 50 mm/s. Source units are millimetres of the printable area, so a test states its geometry in
+// millimetres from the printable corner.
+pub fn two_pens(w: f64, h: f64, margin: f64) -> Spec {
+    let s: Spec = spec_new(w, h, margin);
+    add_pen(s, "black", 0.3, 17.0, 17.0, 17.0, 50.0, "");
+    add_pen(s, "red", 0.5, 200.0, 40.0, 30.0, 50.0, "ink.test-red");
+    s.opt[O_SRC_W()] = w - 2.0 * margin;
+    s.opt[O_SRC_H()] = h - 2.0 * margin;
+    s.opt[O_SCALE()] = 1.0;
+    s
+}
+
+// One black two-point path with pen index `pen` (-1 lets the clustering choose).
+pub fn seg(p: Paths, pen: i32, x0: f64, y0: f64, x1: f64, y1: f64) {
+    add_point(p, x0, y0);
+    add_point(p, x1, y1);
+    end_path(p, pen, 0.0, 0.0, 0.0, 0);
+}
+
+// A closed square with its top left corner at (x, y), in fill group `fill`.
+pub fn square(p: Paths, pen: i32, x: f64, y: f64, side: f64, fill: i32) {
+    add_point(p, x, y);
+    add_point(p, x + side, y);
+    add_point(p, x + side, y + side);
+    add_point(p, x, y + side);
+    add_point(p, x, y);
+    end_path(p, pen, 0.0, 0.0, 0.0, fill);
+}
+
+// n wandering paths of `points` points on a field w by h, pens alternating.
+pub fn scatter(p: Paths, g: Vec<i64>, n: i32, points: i32, w: f64, h: f64) {
+    let mut i: i32 = 0;
+    while i < n {
+        let mut x: f64 = rnd(g) * w;
+        let mut y: f64 = rnd(g) * h;
+        let mut a: f64 = rnd(g) * 6.28;
+        let mut k: i32 = 0;
+        while k < points {
+            add_point(p, x, y);
+            a = a + rnd(g) - 0.5;
+            x = x + 4.0 * cos(a);
+            y = y + 4.0 * sin(a);
+            k = k + 1;
+        }
+        end_path(p, i % 2, 0.0, 0.0, 0.0, 0);
+        i = i + 1;
+    }
+}

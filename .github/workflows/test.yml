@@ -63,3 +63,20 @@ jobs:
               buildc run packages/registry/bld/check.bld -- --expect "$n" "$f"
             fi
           done
+      # Plot Sheet: the package's own checks, the release build, the fixture's pinned bytes, and the make hook.
+      - run: |
+          buildc run packages/plot-sheet/bld/selftest.bld | tee plot-sheet-out.txt
+          grep -q "^plot sheet tests passed: 57 of 57$" plot-sheet-out.txt
+        env:
+          PLOT_SHEET_BUDGET_MS: '4000'
+      - run: |
+          buildc build --release packages/plot-sheet/bld
+          mkdir -p out/plot-fixture
+          ./packages/plot-sheet/bld/target/release/main packages/plot-sheet/fixtures/mixed.plot out/plot-fixture/mixed --verify
+          cd out/plot-fixture && sha256sum -c ../../packages/plot-sheet/fixtures/mixed.sha256
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node --test superframe/tests/plotsheet.test.mjs
+        env:
+          PLOT_SHEET_REQUIRE: '1'
