@@ -79,7 +79,7 @@ node superframe/cli/superframe.mjs artifact out/first/recipe.json out/e --edit e
 
 ## Beyond the artifact engine
 
-The rest of the tree is the engine the recipes run on. It has 177 technique nodes and 31 converters behind one typed interface: lettering, Chladni plates, marbling, optics, instruments, retro display models and more. The graph inserts converters between media by itself.
+The rest of the tree is the engine the recipes run on. It has 181 technique nodes and 31 converters behind one typed interface: lettering, Chladni plates, marbling, optics, instruments, retro display models and more. The graph inserts converters between media by itself.
 
 ```
 node superframe/cli/superframe.mjs list
@@ -136,7 +136,7 @@ Each library below was written against a pre-registration: the predictions, thre
 npm test
 ```
 
-There are 498 tests. On a clean clone 480 pass and 18 skip: the skipped ones need a render, a light table, the reference library or a native build that this repository does not carry. They cover these properties:
+There are 567 tests. On a clean clone 549 pass and 18 skip: the skipped ones need a render, a light table, the reference library or a native build that this repository does not carry. They cover these properties:
 
 - the same recipe gives the same bytes;
 - an edit changes nothing outside its element's region or its time window, with a control that proves the check can fail;
