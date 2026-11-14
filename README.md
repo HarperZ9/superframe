@@ -79,7 +79,7 @@ node superframe/cli/superframe.mjs artifact out/first/recipe.json out/e --edit e
 
 ## Beyond the artifact engine
 
-The rest of the tree is the engine the recipes run on. It has 171 technique nodes and 31 converters behind one typed interface: lettering, Chladni plates, marbling, optics, instruments, retro display models and more. The graph inserts converters between media by itself.
+The rest of the tree is the engine the recipes run on. It has 177 technique nodes and 31 converters behind one typed interface: lettering, Chladni plates, marbling, optics, instruments, retro display models and more. The graph inserts converters between media by itself.
 
 ```
 node superframe/cli/superframe.mjs list
