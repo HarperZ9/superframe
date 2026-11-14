@@ -1,0 +1,216 @@
+{
+ "schema": "typeengine.brief/1",
+ "id": "pane",
+ "name": "Pane",
+ "seed": 1,
+ "n": 40,
+ "keep": 3,
+ "slots": {
+  "fill": [
+   "glass"
+  ],
+  "edge": [
+   "glow",
+   null,
+   null
+  ],
+  "shadow": [
+   null,
+   null,
+   "offset"
+  ]
+ },
+ "skeleton": {
+  "style": [
+   "display",
+   "super"
+  ],
+  "weight": [
+   620,
+   900
+  ],
+  "cut": [
+   null,
+   null,
+   "stencil",
+   "slab"
+  ],
+  "extra": {
+   "n": [
+    2.4,
+    3.6
+   ],
+   "wd": [
+    0.94,
+    1.12
+   ]
+  }
+ },
+ "params": {
+  "glass": {
+   "glass": [
+    "crown",
+    "flint",
+    "dense"
+   ],
+   "spread": [
+    0.8,
+    3
+   ],
+   "bevel": [
+    0.02,
+    0.06
+   ],
+   "thickness": [
+    0.08,
+    0.28
+   ],
+   "gap": [
+    4,
+    22
+   ],
+   "caustic": [
+    0,
+    0.25
+   ],
+   "rules": [
+    0,
+    1
+   ],
+   "tint": [
+    "#87a49c",
+    "#cfcea6",
+    "#eef4f1"
+   ],
+   "paper": [
+    "#cfcea6",
+    "#2f2a1d",
+    "#505e54"
+   ],
+   "film": [
+    0,
+    0.6
+   ]
+  },
+  "crt": {
+   "phosphor": [
+    "#cfcea6",
+    "#deb250",
+    "#87a49c"
+   ],
+   "lines": [
+    160,
+    320
+   ],
+   "snow": [
+    0,
+    0.05
+   ],
+   "bloom": [
+    0.3,
+    1
+   ],
+   "mask": [
+    0.1,
+    0.4
+   ],
+   "content": [
+    "source"
+   ]
+  },
+  "glow": {
+   "color": [
+    "#deb250",
+    "#87a49c"
+   ],
+   "reach": [
+    0.02,
+    0.07
+   ],
+   "power": [
+    0.6,
+    1.6
+   ]
+  },
+  "offset": {
+   "color": [
+    "#a55f18",
+    "#507586"
+   ],
+   "dx": [
+    0.01,
+    0.03
+   ],
+   "dy": [
+    0.01,
+    0.03
+   ]
+  }
+ },
+ "feeds": {
+  "glass": {
+   "surface.albedo": [
+    {
+     "material": "crt",
+     "params": {
+      "content": [
+       "source",
+       "source",
+       "card"
+      ],
+      "phosphor": [
+       "#cfcea6",
+       "#deb250",
+       "#87a49c"
+      ],
+      "lines": [
+       140,
+       300
+      ],
+      "bloom": [
+       0.3,
+       0.9
+      ],
+      "snow": [
+       0,
+       0.04
+      ],
+      "mask": [
+       0.1,
+       0.35
+      ]
+     }
+    }
+   ]
+  }
+ },
+ "ground": [
+  "#2f2a1d",
+  "#cfcea6",
+  "#505e54"
+ ],
+ "reference": {
+  "image": "feed-27/frames/9061_f1.png",
+  "descriptor": "out/ref-9061/9061_f1/palette.json",
+  "licence": "unknown: descriptors only",
+  "used": "the eight palette clusters as colour options"
+ },
+ "axes": [
+  {
+   "tag": "wght",
+   "name": "Weight",
+   "min": 600,
+   "max": 900,
+   "default": "@skeleton.weight",
+   "target": "skeleton.weight"
+  },
+  {
+   "tag": "SQUR",
+   "name": "Squareness",
+   "min": 2.4,
+   "max": 3.6,
+   "default": "@skeleton.extra.n",
+   "target": "skeleton.extra.n"
+  }
+ ]
+}
