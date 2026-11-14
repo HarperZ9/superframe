@@ -17,7 +17,8 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm test
-      # the name-art mosaic tests take about 100 s, so they run here and stay out of the default npm test
+      # the name-art mosaic tests (about 100 s), the site-music composer tests (about 80 s) and the ear's eighteen planted
+      # defects (several minutes) run here and stay out of the default tests
       - run: npm run test:slow
       - run: python -m pip install -r packages/requirements.txt
       - run: npm run test:packages
