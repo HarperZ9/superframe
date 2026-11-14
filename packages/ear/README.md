@@ -11,7 +11,7 @@ From a clone of this repo, with Node 24 or later:
 ```
 node --test packages/ear/tests/*.test.mjs                 # 26 tests, about 20 seconds
 node packages/ear/tools/listen.mjs FILE.wav --bpm 92      # the report for any 16-bit PCM WAV file
-npm run test:slow                                         # includes the eighteen planted defects (several minutes)
+npm run test:slow                                         # includes the eighteen planted defects (19 minutes on one thread, less on four)
 ```
 
 ## What the ear reports on the engine's own sound

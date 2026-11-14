@@ -6502,8 +6502,8 @@
   {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 10422,
-   "sourceSha256": "32b40d76cea92d5d47950cd86539a7a045ae675618311eb764c9ad62893c2142"
+   "bytes": 10888,
+   "sourceSha256": "25e1f6131d447221b97637d8648655f904cde178077cfb44ab7c3ac3bb8cfd4e"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -9130,8 +9130,26 @@
   {
    "path": "packages/ear/README.md",
    "source": "repo",
-   "bytes": 19702,
-   "sourceSha256": "2c448ea5155a68b082ec6da4fda6d6e1664dece612b3da9b23d95f7facde4ed9"
+   "bytes": 19725,
+   "sourceSha256": "7725f0791213d7e3558e3d57e4982175e29f8e46d3e512084110d9692e612a18"
+  },
+  {
+   "path": "packages/ear/controls/controls.mjs",
+   "source": "repo",
+   "bytes": 6583,
+   "sourceSha256": "200bf5feff3ab4495c22c31f8422eadb72ede75740e1294f0c2dabf9c66f0db5"
+  },
+  {
+   "path": "packages/ear/controls/controls.slow.mjs",
+   "source": "repo",
+   "bytes": 4375,
+   "sourceSha256": "1f8841a40440f02747d1a6cf62bd4ea5f1fb1da9c6f60da080abd21818bb05fc"
+  },
+  {
+   "path": "packages/ear/controls/controls.worker.mjs",
+   "source": "repo",
+   "bytes": 572,
+   "sourceSha256": "50d1c29c004f6c257711b85978e70af58d2492275bd2dcfe6821c447f59bde80"
   },
   {
    "path": "packages/ear/package.json",
@@ -13602,6 +13620,216 @@
    "source": "repo",
    "bytes": 4070,
    "sourceSha256": "1bff5b0ded5ded9064c46a670853ab76e87887b1704ff1bcd778941435024a7d"
+  },
+  {
+   "path": "packages/site-music/README.md",
+   "source": "repo",
+   "bytes": 7618,
+   "sourceSha256": "c1624cc5cecfc0d65f5530a666537141aa6aafae179ce4e11578f7ad93beecad"
+  },
+  {
+   "path": "packages/site-music/package.json",
+   "source": "repo",
+   "bytes": 132,
+   "sourceSha256": "0dab84ff03a7a60aa722272919463a826e0e568eeabb6a0bddd006eb8325e11e"
+  },
+  {
+   "path": "packages/site-music/src/ambience.js",
+   "source": "repo",
+   "bytes": 7655,
+   "sourceSha256": "9955aa4fb5b201e66c5a0fd9eeadc36388869d05b9d3b6ff915328f091d6ff7f"
+  },
+  {
+   "path": "packages/site-music/src/bassguitar.js",
+   "source": "repo",
+   "bytes": 7633,
+   "sourceSha256": "3f3762c151763921b5a0005c8a3ea8def7968755fca7434eda2f78bbd28aa4c8"
+  },
+  {
+   "path": "packages/site-music/src/blown.js",
+   "source": "repo",
+   "bytes": 8521,
+   "sourceSha256": "e0495cd7805ad06552c4636434458e5334205e50f478bf38562ab33a70c64180"
+  },
+  {
+   "path": "packages/site-music/src/chords.js",
+   "source": "repo",
+   "bytes": 2788,
+   "sourceSha256": "371d7eb8bdad65bfbeb416daf4df6c5e1121757f59d1c1f3a778f001c2e55ba9"
+  },
+  {
+   "path": "packages/site-music/src/index.js",
+   "source": "repo",
+   "bytes": 7495,
+   "sourceSha256": "bdebb7958b69b96cc534cd0a0098a199e25e8426917d17637bfd96672d87f7a5"
+  },
+  {
+   "path": "packages/site-music/src/lead.js",
+   "source": "repo",
+   "bytes": 6008,
+   "sourceSha256": "623e9fa5b797643ba62357f774df4e2b28614cf3a5ac3edc18a07d85d3aab9b7"
+  },
+  {
+   "path": "packages/site-music/src/measured-data.js",
+   "source": "repo",
+   "bytes": 237725,
+   "sourceSha256": "2c6ff9051f27aed9a6578ea5a48c215e170e9ee16dbb86ed4be035aa2cdb4253"
+  },
+  {
+   "path": "packages/site-music/src/measured.js",
+   "source": "repo",
+   "bytes": 4721,
+   "sourceSha256": "8db1ad005b55874d2be9095dd32b859759fe6f80a2c50e3f6d18cbb20dc122bc"
+  },
+  {
+   "path": "packages/site-music/src/parts.js",
+   "source": "repo",
+   "bytes": 15759,
+   "sourceSha256": "723691a1499c9f8704653d8507d9d29873c1e69c2c27bc638b87b73a9048cca6"
+  },
+  {
+   "path": "packages/site-music/src/piece.js",
+   "source": "repo",
+   "bytes": 4872,
+   "sourceSha256": "a2ddb0c2fba81c29e2c1504629205f8deeb51d5a86bbc662512a9b25c1be012d"
+  },
+  {
+   "path": "packages/site-music/src/pieces.js",
+   "source": "repo",
+   "bytes": 10492,
+   "sourceSha256": "c6c2a6f986897d512201493a0843cebd15b4c5d3e52104d7f1b4b5f0883b781f"
+  },
+  {
+   "path": "packages/site-music/src/plucked.js",
+   "source": "repo",
+   "bytes": 5509,
+   "sourceSha256": "2d59c0aee15046c640b04c3608fe7a7cf90709b889acfae9876761a5c40d18f4"
+  },
+  {
+   "path": "packages/site-music/src/render.js",
+   "source": "repo",
+   "bytes": 12970,
+   "sourceSha256": "ea8ef5f5d29524f5534ce551a9a2dc16a5a803a0a510e5ddcca38a39733f295d"
+  },
+  {
+   "path": "packages/site-music/src/sax.js",
+   "source": "repo",
+   "bytes": 1758,
+   "sourceSha256": "92de6aea44b24baf2f99feda42080be331766dd8f808357d410d9889ec40bb74"
+  },
+  {
+   "path": "packages/site-music/src/score.js",
+   "source": "repo",
+   "bytes": 11936,
+   "sourceSha256": "25d49545621cffd614ad41004919c02a1791633412a960d4613628f7b5358551"
+  },
+  {
+   "path": "packages/site-music/src/struck.js",
+   "source": "repo",
+   "bytes": 3789,
+   "sourceSha256": "dc1ff726e4dee2cacbae465a626f1974ad84d1f125254e874aac64c83dd5eb6f"
+  },
+  {
+   "path": "packages/site-music/src/synths.js",
+   "source": "repo",
+   "bytes": 13527,
+   "sourceSha256": "76d984b8ec53ce937c86fb8aa27e08756fed6395f0af60340c69a72bd5c1c2b6"
+  },
+  {
+   "path": "packages/site-music/src/upright.js",
+   "source": "repo",
+   "bytes": 5426,
+   "sourceSha256": "e5193b1fc5ebf45bd96b33edb190f3533b04275cb8456ebee2bcb1011f7cedd9"
+  },
+  {
+   "path": "packages/site-music/src/variants.js",
+   "source": "repo",
+   "bytes": 8205,
+   "sourceSha256": "c37382c9e496ca9d99f5cc9cd992cbfe593e282c95664ee6ce9dca8b083fe878"
+  },
+  {
+   "path": "packages/site-music/src/voices.js",
+   "source": "repo",
+   "bytes": 6930,
+   "sourceSha256": "56ea75b1feeb6e0a59430da88dc07848c1691b2234d9155b7065240fa9fa0e4d"
+  },
+  {
+   "path": "packages/site-music/src/worker.js",
+   "source": "repo",
+   "bytes": 5610,
+   "sourceSha256": "961cc3d0a8ced094b48314823dcdab85d0548261b728214fec3d945407ef08a0"
+  },
+  {
+   "path": "packages/site-music/tests/music.test.mjs",
+   "source": "repo",
+   "bytes": 20357,
+   "sourceSha256": "0b98d913fdfd80815db36d087e7d5be19641d5e8cda34ecec7d2bff3afabc55f"
+  },
+  {
+   "path": "packages/site-music/tests/voices.test.mjs",
+   "source": "repo",
+   "bytes": 13185,
+   "sourceSha256": "932ec221348cf4bdb1f85250ef234449ae3e4aad2563b1c5b1fe714dcd6d9da5"
+  },
+  {
+   "path": "packages/site-music/tools/fit.mjs",
+   "source": "repo",
+   "bytes": 13398,
+   "sourceSha256": "8a45cc3e92fc64a0165da7e4a418f07931b68691dff02e3a9439af3cfe950071"
+  },
+  {
+   "path": "packages/site-music/tools/mp3.py",
+   "source": "repo",
+   "bytes": 1054,
+   "sourceSha256": "6b7d27fc1c002d6cabfa9fedde016ae97ec7f3cf5e4a674820d402161dea6659"
+  },
+  {
+   "path": "packages/site-music/tools/render.mjs",
+   "source": "repo",
+   "bytes": 5660,
+   "sourceSha256": "04db3271baea09a8f24243eceb97a0540fcfab66a331e3dd38023c3907d1b741"
+  },
+  {
+   "path": "packages/site-music/tools/segcheck.mjs",
+   "source": "repo",
+   "bytes": 4128,
+   "sourceSha256": "eac7c9f77165f016ae3b2f5b55b2ac416e3685c979d84de1455ba748d6503ba3"
+  },
+  {
+   "path": "packages/site-music/tools/synthbench.mjs",
+   "source": "repo",
+   "bytes": 4161,
+   "sourceSha256": "121e5168c804967e47336a7abe6f9443a8efa6331651224753abd8baed3ab68f"
+  },
+  {
+   "path": "packages/site-music/tools/voicebench.mjs",
+   "source": "repo",
+   "bytes": 4843,
+   "sourceSha256": "c581adaef9c1b3c143415bafd3a295d976a49314e2644245b0f9cc6e87e1f3c5"
+  },
+  {
+   "path": "packages/site-music/tools/voicejudge.mjs",
+   "source": "repo",
+   "bytes": 9206,
+   "sourceSha256": "c59fe838bb16bdb412778a936b204a6df066a965c82c20e3fe00223d2f45a090"
+  },
+  {
+   "path": "packages/site-music/tools/voiceset.mjs",
+   "source": "repo",
+   "bytes": 3500,
+   "sourceSha256": "18c58c9ea5bef6fe7ee857af87671251e9770f69d103036ab4d9d6d27de9be02"
+  },
+  {
+   "path": "packages/site-music/tools/voicesheet.mjs",
+   "source": "repo",
+   "bytes": 5177,
+   "sourceSha256": "0b5e71684079769de78525ed5e1cfa3186ba854a636aa72e7e6aced7880ba548"
+  },
+  {
+   "path": "packages/site-music/tools/voicetable.mjs",
+   "source": "repo",
+   "bytes": 3099,
+   "sourceSha256": "830ff834fefa69fb11ec5fc22492fdfb07e98a1d5d0272bb83756ee151ff9dc6"
   },
   {
    "path": "packages/strings/README.md",
