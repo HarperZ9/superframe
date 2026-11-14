@@ -2,8 +2,23 @@
 
 ## Unreleased
 
+## 0.3.0 (2026-11-14)
+
+This repository is now The Playground, the engine: the C++23 renderer, Low Water, the Studio primitives and the two engine repositories moved in with their history, and `packages/` holds the instruments under the engine, each with known-answer tests. The first renderer module and several kernels are now BuildLang, held bit for bit to their references in CI. The package is not on npm; clone the repository at the tag.
+
+Tests: `npm test`, `npm run test:packages`, `npm run test:py`, `npm run test:games` and the manifest check ran on CI on the release head, with the BuildLang jobs. Tests that need a plate bake, a private table or a site checkout report as skipped.
+
 Added:
 
+- `packages/registry`: one entry shape for every named thing the stack uses, with a stable id, a reference, families and neighbours. The first table is `data/units.json`, 90 units in six scale kinds. A checker written in BuildLang runs 14 checks on the table; each broken control table must fail on its own check and no other.
+- `native/bld`: the renderer is moving from C++ to BuildLang one module at a time. The art scene renderer is the first module moved; its output equals the hash the C++ tests pin, and CI fails unless the runner reports it identical.
+- `packages/colourmix`: three historical colour-mixing systems as BuildLang kernels, Mayer's triangle (1775), Lambert's pyramid (1772) and Benson's cube (1872), with named mappings of the cube to sRGB, Display P3, Rec. 2020 and CIE XYZ. Each is held to a Python reference with planted defects and a fuzz run.
+- `packages/emeans`: k-means where each centre forgets, in BuildLang, with a study of when it escapes the traps Lloyd's algorithm cannot. The negative result at the setting fixed in advance is kept.
+- `packages/remastering`: decode an audio file, read its condition, split it into stems, restore and master it, with a receipt for every stage and a map of which regions are original, restored or made by the tool. The Demucs weights are not in this repository; the README says how to fetch and check them.
+- `packages/cosmo`: a particle-mesh cosmological N-body solver on CPU or CUDA, with the Eisenstein-Hu spectrum, halofit and an Ewald force reference.
+- `packages/wavelab`: shocks and acoustic saturation, cavitation collapse, Earth's free oscillations from PREM, the Lamb wave, phased focusing, time reversal, and sound on Mars, as checked computations.
+- `packages/strings` and `packages/latticechiral`: string theory and lattice fermions as checkable computations, among them critical dimensions, T-duality, cosmic-string backgrounds, the 2D index theorem and continuum chiral fermions on interpolated lattice gauge fields.
+- `packages/rooms`: the Fluid Room (a Navier-Stokes solver with a regime gate and the Blasius known answer) and the Map Room, a typed registry of maps between fields. `npm run test:rooms` runs their tests.
 - `packages/transducers`: 60 named kernels in 11 groups on one field interface, each stating what it lost in measured bits, with four demo chains (photon to pixel, photon to spike, text to motif spectrum, DNA to alignment) and a budget sweep. `npm run test:packages` runs its 112 tests; seven skip in the public tree, five because the Schott and Kodak 5219 tables are private and two because no BuildLang line breaker is bound. It was written on 2026-10-30 against 0.2.0 and brought onto main with its commit.
 - `native/`: the C++23 renderer, formerly the raw-native repository, with its history. Ten of its workflows run from here as `native-*`; they start only when `native/` changes.
 - `games/low-water/`: Low Water, formerly a private repository, with its history. The engine it reads is now the sibling `native/` folder, so no path points at a workstation. `npm run test:games` runs 256 tests; six that need a plate bake skip where the bake is absent.
