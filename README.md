@@ -136,7 +136,7 @@ Each library below was written against a pre-registration: the predictions, thre
 npm test
 ```
 
-There are 567 tests. On a clean clone 549 pass and 18 skip: the skipped ones need a render, a light table, the reference library or a native build that this repository does not carry. They cover these properties:
+There are 717 tests. On a clean clone 699 pass and 18 skip: the skipped ones need a render, a light table, the reference library or a native build that this repository does not carry. `npm run test:slow` runs the seven name-art mosaic tests, which take about 100 seconds. The tests cover these properties:
 
 - the same recipe gives the same bytes;
 - an edit changes nothing outside its element's region or its time window, with a control that proves the check can fail;

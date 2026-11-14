@@ -884,6 +884,36 @@
    "sourceSha256": "bb6bce965ee02a3d6e4225fde7753929f92528a769b76304f8bebeafeae8714d"
   },
   {
+   "path": "glass/tests/body.test.js",
+   "source": "2026-10-23-glass/tests/body.test.js",
+   "bytes": 2321,
+   "sourceSha256": "8f4e2eb7dd4b111dea84110104ad9fec2e7e3b3e8641943673d0d33ea2c9f4ce"
+  },
+  {
+   "path": "glass/tests/crt.test.js",
+   "source": "2026-10-23-glass/tests/crt.test.js",
+   "bytes": 2885,
+   "sourceSha256": "e4d0daa937a82eefa6b7bdaceab874bd0f89492ff690cbf19444c34184e95791"
+  },
+  {
+   "path": "glass/tests/glass.test.js",
+   "source": "2026-10-23-glass/tests/glass.test.js",
+   "bytes": 2439,
+   "sourceSha256": "f791cc3ccaefb573cfc292f0865ea498257eba50c8ee2bd151128863627bfbca"
+  },
+  {
+   "path": "glass/tests/liquid.test.js",
+   "source": "2026-10-23-glass/tests/liquid.test.js",
+   "bytes": 3308,
+   "sourceSha256": "9a285e1c5286cfe8a164b91602c309a5f56e4532372b4be530528afc474b4d81"
+  },
+  {
+   "path": "glass/tests/optics.test.js",
+   "source": "2026-10-23-glass/tests/optics.test.js",
+   "bytes": 2395,
+   "sourceSha256": "54c3db9242e7b656d0dc6c75281e31231b3d4681889571ca3ea3272f4d313cc4"
+  },
+  {
    "path": "lettering/fonts/hanken-grotesk.woff2",
    "source": "2026-10-23-lettering/fonts/hanken-grotesk.woff2",
    "bytes": 34704,
@@ -1010,10 +1040,46 @@
    "sourceSha256": "2f1d93ae1800dcd01406f18cad71c5aa5576744e989d8428500316430c1ba0f0"
   },
   {
+   "path": "lettering/tests/core.test.mjs",
+   "source": "2026-10-23-lettering/tests/core.test.mjs",
+   "bytes": 4193,
+   "sourceSha256": "bb95e414d8e512d20aed0d5139e9151615535775879674ca18e64e8fb62eda13"
+  },
+  {
+   "path": "lettering/tests/golden.test.mjs",
+   "source": "2026-10-23-lettering/tests/golden.test.mjs",
+   "bytes": 3325,
+   "sourceSha256": "892c4423ab784f9ecc429e3d64b12c1c565ad96c6ef209b65b863be8e132918f"
+  },
+  {
+   "path": "lettering/tests/golden/browser.json",
+   "source": "2026-10-23-lettering/tests/golden/browser.json",
+   "bytes": 120366,
+   "sourceSha256": "c9c64e34584f732e5adf2bd8d50c7d2584a78409890c9ad6b65399c30eae5e0e"
+  },
+  {
+   "path": "lettering/tests/golden/node.json",
+   "source": "2026-10-23-lettering/tests/golden/node.json",
+   "bytes": 29717,
+   "sourceSha256": "7c35f6caaa1f0660c4e9ea9e7eb77bf19a6a38d192ff7c4847e2cbe39b297dd6"
+  },
+  {
    "path": "lettering/tests/shapes.mjs",
    "source": "2026-10-23-lettering/tests/shapes.mjs",
    "bytes": 1203,
    "sourceSha256": "fe1a3d1bae3de3fd46042d6c07c3a79785592a2b6dc880e064f78ef957ae67fa"
+  },
+  {
+   "path": "lettering/tests/teardown.test.mjs",
+   "source": "2026-10-23-lettering/tests/teardown.test.mjs",
+   "bytes": 1274,
+   "sourceSha256": "02266f7aca77e7c233e6947af1309d1108791752617b359052a937e77a08f5a3"
+  },
+  {
+   "path": "lettering/tests/techniques.test.mjs",
+   "source": "2026-10-23-lettering/tests/techniques.test.mjs",
+   "bytes": 6784,
+   "sourceSha256": "2b0e0ebf7788f6c794549d4d6ccc005c4cf68e80619defc70bc821d87cb9af32"
   },
   {
    "path": "playbook/cadence.js",
@@ -1386,6 +1452,18 @@
    "source": "2026-10-23-studio/lib/wav.mjs",
    "bytes": 2468,
    "sourceSha256": "b05dd4d39743c9848933acd100629d2236ec9b483d1c238b432b116d2a7c2ca3"
+  },
+  {
+   "path": "studio/tests/loudness.test.mjs",
+   "source": "2026-10-23-studio/tests/loudness.test.mjs",
+   "bytes": 2747,
+   "sourceSha256": "b1c74d0eb8573f9e9a410114080325f811632d5c53e6126c5faa3a60042c459c"
+  },
+  {
+   "path": "studio/tests/schema.test.mjs",
+   "source": "2026-10-23-studio/tests/schema.test.mjs",
+   "bytes": 3030,
+   "sourceSha256": "fbb85315ee6cbe2d4057141a671f60883eee76a9dfed158d28663d2e56420d78"
   },
   {
    "path": "substrate/lib/demo/demo.css",
@@ -4430,10 +4508,34 @@
    "sourceSha256": "710fa29bb3a46b470937fb1dea9846c42fed4f4515add660904551a3a65506f6"
   },
   {
+   "path": "techniques/tests/techniques.test.mjs",
+   "source": "2026-10-23-techniques/tests/techniques.test.mjs",
+   "bytes": 8790,
+   "sourceSha256": "c0a9bad15fa1f6f2d8bf4cb416b0fa5546de8834357e51a33d7e6b44319bbfaa"
+  },
+  {
    "path": "typeengine/adapters/superframe.mjs",
    "source": "2026-10-23-typeengine/adapters/superframe.mjs",
    "bytes": 5393,
    "sourceSha256": "536c1b018ae741c0a60f3ad157ab643046fd3cf8f8311bdb732b0236cb869485"
+  },
+  {
+   "path": "typeengine/briefs/ledger.json",
+   "source": "2026-10-23-typeengine/briefs/ledger.json",
+   "bytes": 3111,
+   "sourceSha256": "37b644ed461f30c7769f05c418199e477443476d06111cb8cfe5f683e8289196"
+  },
+  {
+   "path": "typeengine/briefs/pane.json",
+   "source": "2026-10-23-typeengine/briefs/pane.json",
+   "bytes": 2536,
+   "sourceSha256": "3ba029b56116b3d798bc2855ebcb16d78ba5cdacf7b6fd32451ce813dd06a444"
+  },
+  {
+   "path": "typeengine/families/current-1.json",
+   "source": "2026-10-23-typeengine/families/current-1.json",
+   "bytes": 1089,
+   "sourceSha256": "c71a39b293a385d1f38743d30072573fcbc78b527cc3d0f537faeca7e9e55232"
   },
   {
    "path": "typeengine/lib/adapters.mjs",
@@ -4626,6 +4728,42 @@
    "source": "2026-10-23-typeengine/out/ramps/ink.json",
    "bytes": 2820,
    "sourceSha256": "841f12e28039e16333f8ace488830ec3727c75bf149191e98038f1e122900205"
+  },
+  {
+   "path": "typeengine/tests/adapter.test.mjs",
+   "source": "2026-10-23-typeengine/tests/adapter.test.mjs",
+   "bytes": 2117,
+   "sourceSha256": "bf5da64ed8f93ac87fba56820e7fc67d6a948cc805c7c69008ccf3370cfc3fc6"
+  },
+  {
+   "path": "typeengine/tests/fields.test.mjs",
+   "source": "2026-10-23-typeengine/tests/fields.test.mjs",
+   "bytes": 2266,
+   "sourceSha256": "1bd5789d073d40197f8fe0d276955d458599946ffaf36cde3f0626ece07d7d49"
+  },
+  {
+   "path": "typeengine/tests/golden/render.json",
+   "source": "2026-10-23-typeengine/tests/golden/render.json",
+   "bytes": 461,
+   "sourceSha256": "0bf1307d6cc69ed21e799610dd989fd0120ad9c9a15bc5052af392e31aadcb57"
+  },
+  {
+   "path": "typeengine/tests/props.test.mjs",
+   "source": "2026-10-23-typeengine/tests/props.test.mjs",
+   "bytes": 4706,
+   "sourceSha256": "584ce8f2056864a5b0ab771cf241e59a9c865f3b24071dfd06882258e5ad33ac"
+  },
+  {
+   "path": "typeengine/tests/render.test.mjs",
+   "source": "2026-10-23-typeengine/tests/render.test.mjs",
+   "bytes": 3582,
+   "sourceSha256": "9063ae9fd5dc1fb135b1b4156c4f7f0e879dc44b816ad4582ec4e7c12aa45062"
+  },
+  {
+   "path": "typeengine/tests/shape.test.mjs",
+   "source": "2026-10-23-typeengine/tests/shape.test.mjs",
+   "bytes": 3196,
+   "sourceSha256": "e1cd730b7481e3f8b2f112a6485697cc73fe990fb19e83ff40752b787a20bf48"
   },
   {
    "path": "typeface/dist/static/AccessionDisplay-Black.woff2",
@@ -5660,6 +5798,24 @@
    "sourceSha256": "604befa8232719603e0dfc5565d01e0cadd1e0bdce430e694537d376d7394c88"
   },
   {
+   "path": "name-art/tests/golden/node.json",
+   "source": "2026-10-24-name-art/tests/golden/node.json",
+   "bytes": 994,
+   "sourceSha256": "7a4a7a3c0446be8d851f6b522f19ae5c573f5a5dcfb438f0d5783a44e0b5fa28"
+  },
+  {
+   "path": "name-art/tests/mosaic.test.mjs",
+   "source": "2026-10-24-name-art/tests/mosaic.test.mjs",
+   "bytes": 2448,
+   "sourceSha256": "6f8c0a075c12d70fb3ca2e9ff5772c288d35f15261565b1be60f05342f568442"
+  },
+  {
+   "path": "name-art/tests/node.test.mjs",
+   "source": "2026-10-24-name-art/tests/node.test.mjs",
+   "bytes": 3088,
+   "sourceSha256": "15df80d9b637e68e203eb4bb7492a6cdc28a13a7850769ac715daa801d67a377"
+  },
+  {
    "path": "visualizer/lib/draw.mjs",
    "source": "2026-10-24-visualizer/lib/draw.mjs",
    "bytes": 4574,
@@ -5760,6 +5916,18 @@
    "source": "2026-10-24-visualizer/render/water.mjs",
    "bytes": 2533,
    "sourceSha256": "18e1c6a014a152b047e627ad32e89a341c6bc66508d252b98f12ea7317849901"
+  },
+  {
+   "path": "visualizer/tests/flow.test.mjs",
+   "source": "2026-10-24-visualizer/tests/flow.test.mjs",
+   "bytes": 2822,
+   "sourceSha256": "b115c73c4a1785f094fa393563dcac17be38f4606beaaa9ca254beeecdb370cb"
+  },
+  {
+   "path": "visualizer/tests/grid.test.mjs",
+   "source": "2026-10-24-visualizer/tests/grid.test.mjs",
+   "bytes": 9161,
+   "sourceSha256": "b767df8c42a3d0e8f1903482d7c0d22ce83df6425a6ba42f3e9106ee18e44226"
   },
   {
    "path": "library/measures/albers-xx1.json",
