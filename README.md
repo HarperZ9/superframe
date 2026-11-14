@@ -136,7 +136,7 @@ Each library below was written against a pre-registration: the predictions, thre
 npm test
 ```
 
-There are 493 tests. On a clean clone 478 pass and 15 skip: the skipped ones need a render, a light table, the reference library or a native build that this repository does not carry. They cover these properties:
+There are 498 tests. On a clean clone 480 pass and 18 skip: the skipped ones need a render, a light table, the reference library or a native build that this repository does not carry. They cover these properties:
 
 - the same recipe gives the same bytes;
 - an edit changes nothing outside its element's region or its time window, with a control that proves the check can fail;
