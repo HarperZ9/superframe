@@ -7,7 +7,7 @@
 //   wear       every point moves along its normal by smooth seeded noise: a worn, torn or bitten edge
 // Both act on contour points only; composites inherit them through their components.
 
-import { mulberry32 } from "../upstream/media-engine/seed.mjs";
+import { mulberry32 } from "../../../superframe/lib/seed-streams.mjs";
 
 export function subdivide(glyphs, parts = 5) {
   for (const g of Object.values(glyphs)) {

@@ -10,8 +10,8 @@
 import { mintMaster } from '../../typeface/forge/family/family.mjs';
 import { flatten } from '../../typeface/forge/family/svg.mjs';
 import { STYLES } from '../../typeface/forge/family/styles.mjs';
-import { mint as zainMint, DEFAULTS as ZAIN_DEFAULTS } from '../../typeface/forge/upstream/type-forge/forge.mjs';
-import { build as zainSkeletons } from '../../typeface/forge/upstream/type-forge/skeletons.mjs';
+import { mint as zainMint, DEFAULTS as ZAIN_DEFAULTS } from '../../typeface/forge/lib/forge.mjs';
+import { build as zainSkeletons } from '../../typeface/forge/lib/skeletons.mjs';
 
 export const FACE_SOURCES = Object.freeze(['accession', 'zain-mint']);
 export { ZAIN_DEFAULTS };

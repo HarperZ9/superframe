@@ -10,8 +10,8 @@ import { decimateHold } from '../../sound/sound/motifs/thought.js';
 import { partials } from '../../sound/sound/motifs/shepard.js';
 import { climb } from '../../sound/sound/motifs/false-scale.js';
 import { stft } from '../../sound/sound/dsp.js';
-import { seedScene, figureScene, renderReference } from '../upstream/site-3ca6529/system/media-engine/sound.mjs';
-import { s16ToFloats } from '../upstream/site-3ca6529/system/media-engine/contracts.mjs';
+import { seedScene, figureScene, renderReference } from '../../sound/reference/sound.mjs';
+import { s16ToFloats } from '../../packages/superstack/superstack.mjs';
 
 const M = 'sound/sound/motifs', SITE = 'HarperZ9.github.io system/media-engine/sound.mjs';
 const mono = (rate, x) => make.audio(rate, [x instanceof Float32Array ? x : Float32Array.from(x)]);

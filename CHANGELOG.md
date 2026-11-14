@@ -6,6 +6,10 @@ Added:
 
 - `packages/plot-sheet`: plotter output for any line drawing, written in BuildLang. `npm run make -- "<intent>" out/dir --plot a4` writes `plot.svg` in millimetres with one layer for each pen, `plot.hpgl`, `plot.gcode` and `plot.json` beside `lines.svg`; without `--plot` the make command writes what it wrote before. Paths are clipped to the printable area, joined where their ends meet, simplified, and ordered to cut pen-up travel (nearest end, then 2-opt inside a time and evaluation limit), and each sheet states metres drawn, pen-up travel before and after, pen lifts and estimated time for every pen. Each file is read back by an independent reader in the tests, with controls that must fail, and a fixture pins the bytes across machines. No real plotter has drawn the files yet. `node superframe/tools/plot-strata.mjs` writes the demonstration sheet, ridgelines of a terrain in two pens.
 
+Changed:
+
+- Six capabilities the engine loaded from a vendored snapshot of site code are engine code now, moved with their history and with the tests the site held for them: `packages/weave` (loom drafts and WIF 1.1), `packages/retro` (palettes, dither, tube stage), `packages/fractal` (formula language and CPU renders), `sound/reference/` (the reference sound renderer), `superframe/lib/formats/` (MIDI and relief STL writers) and `typeface/forge/lib/` (the type forge). The seed helpers they share are `superframe/lib/seed-streams.mjs`. The moved code is JavaScript and unchanged apart from import paths; each README lists its modules as BuildLang port candidates. `npm test` now also runs `sound/reference/tests` and `typeface/forge/tests`. Plot maps and the plotter still load from `superframe/upstream/`.
+
 ## 0.3.0 (2026-11-14)
 
 This repository is now The Playground, the engine: the C++23 renderer, Low Water, the Studio primitives and the two engine repositories moved in with their history, and `packages/` holds the instruments under the engine, each with known-answer tests. The first renderer module and several kernels are now BuildLang, held bit for bit to their references in CI. The package is not on npm; clone the repository at the tag.
