@@ -1,0 +1,146 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// A uniform grid over a set of points, for "which point is nearest" without comparing every pair.
+// Joining and ordering both ask that question once a path, and with every pair compared a sheet of
+// 20,000 paths costs 800 million distance checks. Points can be removed as they are used, so a
+// search never walks over points that are gone.
+//
+// The points are path ends: point 2 * i is the start of path i and point 2 * i + 1 its end.
+
+use num::minf;
+use num::maxf;
+
+pub struct Grid { x0: f64, y0: f64, cell: f64, cols: i32, rows: i32, head: Vec<i32>, item: Vec<i32>, live: Vec<i32>, slot: Vec<i32>, home: Vec<i32> }
+
+fn clampi(v: i32, lo: i32, hi: i32) -> i32 {
+    if v < lo { return lo; }
+    if v > hi { return hi; }
+    v
+}
+
+pub fn col_of(g: Grid, x: f64) -> i32 {
+    clampi(floor((x - g.x0) / g.cell) as i32, 0, g.cols - 1)
+}
+
+pub fn row_of(g: Grid, y: f64) -> i32 {
+    clampi(floor((y - g.y0) / g.cell) as i32, 0, g.rows - 1)
+}
+
+// Builds the grid over points px, py. cell_min is the smallest cell side allowed; the side grows
+// until the grid holds about one cell a point.
+pub fn grid_build(px: Vec<f64>, py: Vec<f64>, cell_min: f64) -> Grid {
+    let n: i32 = px.len() as i32;
+    let mut x0: f64 = 0.0;
+    let mut y0: f64 = 0.0;
+    let mut x1: f64 = 1.0;
+    let mut y1: f64 = 1.0;
+    if n > 0 {
+        x0 = px[0];
+        x1 = px[0];
+        y0 = py[0];
+        y1 = py[0];
+    }
+    let mut i: i32 = 1;
+    while i < n {
+        x0 = minf(x0, px[i]);
+        x1 = maxf(x1, px[i]);
+        y0 = minf(y0, py[i]);
+        y1 = maxf(y1, py[i]);
+        i = i + 1;
+    }
+    let w: f64 = maxf(x1 - x0, 1.0e-6);
+    let h: f64 = maxf(y1 - y0, 1.0e-6);
+    let cell: f64 = maxf(maxf(cell_min, sqrt(w * h / (maxf(n as f64, 1.0)))), 1.0e-6);
+    let cols: i32 = clampi(floor(w / cell) as i32 + 1, 1, 4096);
+    let rows: i32 = clampi(floor(h / cell) as i32 + 1, 1, 4096);
+    let g: Grid = Grid { x0: x0, y0: y0, cell: cell, cols: cols, rows: rows, head: Vec::new(), item: Vec::new(), live: Vec::new(), slot: Vec::new(), home: Vec::new() };
+    let cells: i32 = cols * rows;
+    i = 0;
+    while i <= cells {
+        g.head.push(0);
+        if i < cells { g.live.push(0); }
+        i = i + 1;
+    }
+    i = 0;
+    while i < n {
+        let c: i32 = row_of(g, py[i]) * cols + col_of(g, px[i]);
+        g.home.push(c);
+        g.head[c + 1] = g.head[c + 1] + 1;
+        g.item.push(0);
+        g.slot.push(0);
+        i = i + 1;
+    }
+    i = 0;
+    while i < cells {
+        g.head[i + 1] = g.head[i + 1] + g.head[i];
+        i = i + 1;
+    }
+    i = 0;
+    while i < n {
+        let c: i32 = g.home[i];
+        let at: i32 = g.head[c] + g.live[c];
+        g.item[at] = i;
+        g.slot[i] = at;
+        g.live[c] = g.live[c] + 1;
+        i = i + 1;
+    }
+    g
+}
+
+// Takes point e out of the grid.
+pub fn grid_remove(g: Grid, e: i32) {
+    let c: i32 = g.home[e];
+    let at: i32 = g.slot[e];
+    let last: i32 = g.head[c] + g.live[c] - 1;
+    let moved: i32 = g.item[last];
+    g.item[at] = moved;
+    g.slot[moved] = at;
+    g.live[c] = g.live[c] - 1;
+}
+
+// The nearest live point to (x, y) no farther than reach, or -1. Equal distances go to the lowest
+// point index, so the answer does not depend on removal order.
+pub fn grid_nearest(g: Grid, px: Vec<f64>, py: Vec<f64>, x: f64, y: f64, reach: f64) -> i32 {
+    let cx: i32 = col_of(g, x);
+    let cy: i32 = row_of(g, y);
+    let mut best: i32 = 0 - 1;
+    let mut best_d: f64 = reach * reach;
+    let far: i32 = if g.cols > g.rows { g.cols } else { g.rows };
+    let mut ring: i32 = 0;
+    while ring <= far {
+        let mut ry: i32 = cy - ring;
+        while ry <= cy + ring {
+            if ry >= 0 && ry < g.rows {
+                let edge: bool = ry == cy - ring || ry == cy + ring;
+                let step: i32 = if edge || ring == 0 { 1 } else { 2 * ring };
+                let mut rx: i32 = cx - ring;
+                while rx <= cx + ring {
+                    if rx >= 0 && rx < g.cols {
+                        let c: i32 = ry * g.cols + rx;
+                        let mut k: i32 = g.head[c];
+                        let end: i32 = g.head[c] + g.live[c];
+                        while k < end {
+                            let e: i32 = g.item[k];
+                            let dx: f64 = px[e] - x;
+                            let dy: f64 = py[e] - y;
+                            let d: f64 = dx * dx + dy * dy;
+                            if d < best_d || (d == best_d && best >= 0 && e < best) || (d == best_d && best < 0) {
+                                best_d = d;
+                                best = e;
+                            }
+                            k = k + 1;
+                        }
+                    }
+                    rx = rx + step;
+                }
+            }
+            ry = ry + 1;
+        }
+        // Every point in a farther ring is at least ring * cell away.
+        let safe: f64 = (ring as f64) * g.cell;
+        if safe * safe >= best_d { break; }
+        ring = ring + 1;
+    }
+    best
+}

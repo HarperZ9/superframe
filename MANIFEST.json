@@ -5698,8 +5698,8 @@
   {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 8872,
-   "sourceSha256": "f4f7e2e83afa5525889aa7932a6d7d656b5e7b15f2dae1a23e69c3f136885aac"
+   "bytes": 9199,
+   "sourceSha256": "2462264f459a8cbd12b3418f61914dff5f960161e2e870124485ab86a70879a9"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -10394,6 +10394,144 @@
    "sourceSha256": "7fe10da7760d7361897303b682c13c6ed73accdf4d0aa87095b1ea0644e19250"
   },
   {
+   "path": "packages/plot-sheet/BUILDLANG-PORT.md",
+   "source": "repo",
+   "bytes": 6732,
+   "sourceSha256": "090b17ecacff3e44baff0d312be85dd9f5a0169939ddd9eaa55043eb909b8ac4"
+  },
+  {
+   "path": "packages/plot-sheet/README.md",
+   "source": "repo",
+   "bytes": 11803,
+   "sourceSha256": "144c5bf2122fd34bc91ee8ea7d0da16e972948afe24ea466bb87c1804491d6cd"
+  },
+  {
+   "path": "packages/plot-sheet/bld/build.bld",
+   "source": "repo",
+   "bytes": 5860,
+   "sourceSha256": "c8421ea34ee056ec5aa681d4a0fd471e81ae8ae16acfe0863ae5b1db6effc425"
+  },
+  {
+   "path": "packages/plot-sheet/bld/geom.bld",
+   "source": "repo",
+   "bytes": 8249,
+   "sourceSha256": "6485aa23a75b87ea5da17456a2b035f1db864990190ad0effafba45d1b6261fc"
+  },
+  {
+   "path": "packages/plot-sheet/bld/grid.bld",
+   "source": "repo",
+   "bytes": 5117,
+   "sourceSha256": "8e7a6c8773f4465050b92b2bd459d55994e04b706c480ff637973a3359809525"
+  },
+  {
+   "path": "packages/plot-sheet/bld/hatch.bld",
+   "source": "repo",
+   "bytes": 6718,
+   "sourceSha256": "7af736d464be523cefe0ea5abdb2c5708c4845ef60269050c3a9586c2ae4ffdc"
+  },
+  {
+   "path": "packages/plot-sheet/bld/input.bld",
+   "source": "repo",
+   "bytes": 9086,
+   "sourceSha256": "ac204b00ada199a90bd32c892a88566f3c866ac5112402901d0d83d7e498595d"
+  },
+  {
+   "path": "packages/plot-sheet/bld/join.bld",
+   "source": "repo",
+   "bytes": 4890,
+   "sourceSha256": "a4b5afb2f1e3b574e42b1c16bdfcd02fa3340cc18b32878dc908afb6ca2dd249"
+  },
+  {
+   "path": "packages/plot-sheet/bld/main.bld",
+   "source": "repo",
+   "bytes": 3442,
+   "sourceSha256": "d705e3541f9389dc02d2b7a11f485e65d34761c40f5613c844b8c56fd8cb1944"
+  },
+  {
+   "path": "packages/plot-sheet/bld/num.bld",
+   "source": "repo",
+   "bytes": 4904,
+   "sourceSha256": "afd80d05bc2aa37cb9ceee76415904ee9a6dcb995f70e39d7da3eea30ef3bafe"
+  },
+  {
+   "path": "packages/plot-sheet/bld/order.bld",
+   "source": "repo",
+   "bytes": 7586,
+   "sourceSha256": "563f4a5424df8cd1197190c9e19f9d8571bc353f19bf70500d6494e8f760ab0b"
+  },
+  {
+   "path": "packages/plot-sheet/bld/pens.bld",
+   "source": "repo",
+   "bytes": 6753,
+   "sourceSha256": "88b9883ed584ff15f61cab1e988ff9d08d6bf512af85831f694ac1b3f1ecd521"
+  },
+  {
+   "path": "packages/plot-sheet/bld/read.bld",
+   "source": "repo",
+   "bytes": 5744,
+   "sourceSha256": "d9a54a7e682c0cfe951d6c7bfe6b1f8b4a61f35d2292f9f5f586caaf05d80f78"
+  },
+  {
+   "path": "packages/plot-sheet/bld/selftest.bld",
+   "source": "repo",
+   "bytes": 1445,
+   "sourceSha256": "e2f9fe4a5215596137a8c5dac19840769b8fce9c3e5f1d8f7ecc8de65d928b85"
+  },
+  {
+   "path": "packages/plot-sheet/bld/sheet.bld",
+   "source": "repo",
+   "bytes": 8281,
+   "sourceSha256": "9b7a298b8ff0096ae2014a84bf88d0d3ef712cb718da43da3c1f505aa3701d3c"
+  },
+  {
+   "path": "packages/plot-sheet/bld/stats.bld",
+   "source": "repo",
+   "bytes": 8998,
+   "sourceSha256": "0d12e3a5e5b85a0ad82a249ca88c90bbde30b4bc0260937d5e962066b7444595"
+  },
+  {
+   "path": "packages/plot-sheet/bld/t_files.bld",
+   "source": "repo",
+   "bytes": 10911,
+   "sourceSha256": "a473aae6305601c250844cb62e475e960b7169028f0f116dbbd79ea658058a82"
+  },
+  {
+   "path": "packages/plot-sheet/bld/t_geom.bld",
+   "source": "repo",
+   "bytes": 10246,
+   "sourceSha256": "86ed098f65ce28e1b44dac18bd9d61baf5043270f70290144482e30c764b5a2f"
+  },
+  {
+   "path": "packages/plot-sheet/bld/t_order.bld",
+   "source": "repo",
+   "bytes": 6182,
+   "sourceSha256": "00aaf7f770dc5d998261ca377075fe559e45714ddb39fc2462992e53cb61a556"
+  },
+  {
+   "path": "packages/plot-sheet/bld/tkit.bld",
+   "source": "repo",
+   "bytes": 3054,
+   "sourceSha256": "22f740a218c44333be30c8511b9db44291459c1dffc2135749494d6723c25a61"
+  },
+  {
+   "path": "packages/plot-sheet/bld/write.bld",
+   "source": "repo",
+   "bytes": 8156,
+   "sourceSha256": "6f5e3b8dbaec0bf7628f7d6ae7a31ef28f8ecb18f2397710da9881f46b332caf"
+  },
+  {
+   "path": "packages/plot-sheet/fixtures/mixed.plot",
+   "source": "repo",
+   "bytes": 9531,
+   "sourceSha256": "c4980c5a4c26593971c113593516d0fdf657162961ba8b3fc550c23ba86e9c62"
+  },
+  {
+   "path": "packages/plot-sheet/fixtures/mixed.sha256",
+   "source": "repo",
+   "bytes": 308,
+   "sourceSha256": "68304eefc5a8fb21d02a22675d729214602d74c667124ed60b92c3fe4cb83b72"
+  },
+  {
    "path": "packages/quality/README.md",
    "source": "repo",
    "bytes": 1981,
@@ -13240,8 +13378,8 @@
   {
    "path": "packages/studio/docs/STUDIO-MATRIX.md",
    "source": "repo",
-   "bytes": 21113,
-   "sourceSha256": "b182833d78cd102eb8acbb66b44bf8ff08d4ca27feb8052207cd3e0b9c59b524"
+   "bytes": 21323,
+   "sourceSha256": "34a1fe92b2c51fb8e477164d723ced2b9bdabb1f1ee0d89edf7ce7220084fe65"
   },
   {
    "path": "packages/studio/goldens/eye.golden.json",

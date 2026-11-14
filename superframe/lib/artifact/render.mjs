@@ -4,7 +4,7 @@
 // render.mjs: one recipe, every medium. compute() returns the raw outputs (tests read these); write() puts them on
 // disk with a manifest of SHA-256 hashes, so the same recipe and seed can be checked byte for byte.
 import { createHash } from 'node:crypto';
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { normalise, recipeHash } from './ir.mjs';
 import { simulate } from './simulate.mjs';
@@ -15,6 +15,7 @@ import { type, textOf } from './type.mjs';
 import { lines } from './lines.mjs';
 import { sound, tactile } from './sound.mjs';
 import { study, studyText } from './study.mjs';
+import { plotSheet } from './plotsheet.mjs';
 
 export function compute(recipe, { only = null } = {}) {
   const r = normalise(recipe), t0 = Date.now(), layers = simulate(r), times = { simulate: Date.now() - t0 };
@@ -32,7 +33,8 @@ export function compute(recipe, { only = null } = {}) {
 
 const sha = b => createHash('sha256').update(b).digest('hex');
 
-export function write(out, dir, { intent = '', title = '' } = {}) {
+// plot: a sheet name or a specification file (plotsheet.mjs); when given, the lines are also written as a plot sheet.
+export function write(out, dir, { intent = '', title = '', plot = null } = {}) {
   mkdirSync(dir, { recursive: true });
   const { r } = out, [W, H] = r.size, files = {}, put = (name, bytes) => { writeFileSync(join(dir, name), bytes); files[name] = { sha256: sha(bytes), bytes: bytes.length }; };
   const png = (name, rgb, w = W, h = H) => { files[name] = { sha256: sha(writePNG(join(dir, name), rgb, w, h)) }; };
@@ -49,7 +51,9 @@ export function write(out, dir, { intent = '', title = '' } = {}) {
   put('study.json', Buffer.from(JSON.stringify(out.study, null, 1)));
   put('study.md', Buffer.from(studyText(r, out.study, { intent, title, text: textOf(r), levels: out.lines.levels })));
   put('recipe.json', Buffer.from(JSON.stringify({ ...r, intent, report: out.report }, null, 1)));
-  const manifest = { schema: 'superframe.artifact.manifest/1', recipe_hash: out.hash, seed: r.seed, size: r.size, times_ms: out.times, files };
+  let sheet = null;
+  if (plot) { sheet = plotSheet(out.lines.V, plot, dir, { title: title || r.seed, seed: r.seed }); for (const n of sheet.files) { const b = readFileSync(join(dir, n)); files[n] = { sha256: sha(b), bytes: b.length }; } }
+  const manifest = { schema: 'superframe.artifact.manifest/1', recipe_hash: out.hash, seed: r.seed, size: r.size, times_ms: out.times, files, ...(sheet ? { plot: sheet.summary } : {}) };
   writeFileSync(join(dir, 'manifest.json'), JSON.stringify(manifest, null, 1));
   return manifest;
 }

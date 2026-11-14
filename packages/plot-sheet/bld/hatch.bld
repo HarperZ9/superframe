@@ -1,0 +1,181 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Hatch fill and the optional sheet furniture (registration marks and the pen legend).
+//
+// A pen cannot fill, so a filled region becomes parallel lines. The law is the engine's own flat
+// hatch (substrate/lib/vector.mjs hatch), ported: turn the region by the hatch angle, cut it with
+// rows one spacing apart starting half a spacing in, pair the crossings on each row, and draw
+// alternate rows in opposite directions so the pen does not fly back. What is added here is the
+// group: every closed path of one fill group is cut together, even-odd, so holes stay open.
+
+use num::empty_f;
+use num::minf;
+use num::maxf;
+use sheet::Paths;
+use sheet::Spec;
+use sheet::path_count;
+use sheet::add_point;
+use sheet::end_path;
+use sheet::pen_count;
+use sheet::O_PAPER_W;
+use sheet::O_PAPER_H;
+use sheet::O_MARGIN_T;
+use sheet::O_MARGIN_R;
+use sheet::O_MARGIN_B;
+use sheet::O_MARGIN_L;
+use sheet::N_HATCH;
+use sheet::N_MARKS;
+use sheet::N_LEGEND;
+
+fn sort_small(v: Vec<f64>) {
+    let mut i: i32 = 1;
+    while i < v.len() as i32 {
+        let mut j: i32 = i;
+        while j > 0 && v[j] < v[j - 1] {
+            let t: f64 = v[j];
+            v[j] = v[j - 1];
+            v[j - 1] = t;
+            j = j - 1;
+        }
+        i = i + 1;
+    }
+}
+
+// Hatches fill group `group` of p. The lines take the pen and colour of path `like`.
+fn hatch_group(p: Paths, group: i32, like: i32, last: i32, spacing: f64, c: f64, s: f64, note: Vec<f64>) {
+    // the group's edges, turned so that hatch lines run along x
+    let ex: Vec<f64> = Vec::new();
+    let ey: Vec<f64> = Vec::new();
+    let mut lo: f64 = 1.0e300;
+    let mut hi: f64 = 0.0 - 1.0e300;
+    let mut i: i32 = 0;
+    while i < last {
+        if p.fill[i] == group {
+            let mut k: i32 = p.start[i] + 1;
+            while k < p.start[i + 1] {
+                ex.push(p.xs[k - 1] * c + p.ys[k - 1] * s);
+                ey.push(p.ys[k - 1] * c - p.xs[k - 1] * s);
+                ex.push(p.xs[k] * c + p.ys[k] * s);
+                ey.push(p.ys[k] * c - p.xs[k] * s);
+                lo = minf(lo, minf(ey[ey.len() as i32 - 1], ey[ey.len() as i32 - 2]));
+                hi = maxf(hi, maxf(ey[ey.len() as i32 - 1], ey[ey.len() as i32 - 2]));
+                k = k + 1;
+            }
+        }
+        i = i + 1;
+    }
+    let cross: Vec<f64> = Vec::new();
+    let mut row: i32 = 0;
+    let mut v: f64 = lo + spacing / 2.0;
+    while v < hi {
+        empty_f(cross);
+        let mut e: i32 = 0;
+        while e < ex.len() as i32 {
+            if (ey[e] <= v) != (ey[e + 1] <= v) {
+                cross.push(ex[e] + ((v - ey[e]) / (ey[e + 1] - ey[e])) * (ex[e + 1] - ex[e]));
+            }
+            e = e + 2;
+        }
+        sort_small(cross);
+        let mut q: i32 = 0;
+        while q + 1 < cross.len() as i32 {
+            let a: f64 = if row % 2 == 1 { cross[q + 1] } else { cross[q] };
+            let b: f64 = if row % 2 == 1 { cross[q] } else { cross[q + 1] };
+            add_point(p, a * c - v * s, a * s + v * c);
+            add_point(p, b * c - v * s, b * s + v * c);
+            end_path(p, p.pen[like], p.rgb[3 * like], p.rgb[3 * like + 1], p.rgb[3 * like + 2], 0);
+            note[N_HATCH()] = note[N_HATCH()] + 1.0;
+            q = q + 2;
+        }
+        row = row + 1;
+        v = lo + spacing / 2.0 + (row as f64) * spacing;
+    }
+}
+
+// Adds hatch lines for every fill group of p. Coordinates are sheet millimetres.
+pub fn hatch_fills(p: Paths, spacing: f64, angle_deg: f64, note: Vec<f64>) {
+    if spacing <= 0.0 { return; }
+    let a: f64 = angle_deg * 3.141592653589793 / 180.0;
+    let c: f64 = cos(a);
+    let s: f64 = sin(a);
+    let last: i32 = path_count(p);
+    let done: Vec<i32> = Vec::new();
+    let mut i: i32 = 0;
+    while i < last {
+        let g: i32 = p.fill[i];
+        let mut seen: bool = g <= 0;
+        let mut d: i32 = 0;
+        while d < done.len() as i32 {
+            if done[d] == g { seen = true; }
+            d = d + 1;
+        }
+        if !seen {
+            done.push(g);
+            hatch_group(p, g, i, last, spacing, c, s, note);
+        }
+        i = i + 1;
+    }
+}
+
+fn stroke(p: Paths, pen: i32, s: Spec, x0: f64, y0: f64, x1: f64, y1: f64) {
+    add_point(p, x0, y0);
+    add_point(p, x1, y1);
+    end_path(p, pen, s.pen_rgb[3 * pen], s.pen_rgb[3 * pen + 1], s.pen_rgb[3 * pen + 2], 0);
+}
+
+// Registration crosses: one in the middle of each corner margin, drawn by every pen in use, so a
+// layer that has shifted between pen changes shows as a doubled cross. Needs 4 mm of margin.
+pub fn add_marks(p: Paths, s: Spec, in_use: Vec<i32>, note: Vec<f64>) {
+    let l: f64 = s.opt[O_MARGIN_L()];
+    let r: f64 = s.opt[O_MARGIN_R()];
+    let t: f64 = s.opt[O_MARGIN_T()];
+    let b: f64 = s.opt[O_MARGIN_B()];
+    let least: f64 = minf(minf(l, r), minf(t, b));
+    if least < 4.0 { return; }
+    let arm: f64 = minf(3.0, 0.4 * least);
+    let w: f64 = s.opt[O_PAPER_W()];
+    let h: f64 = s.opt[O_PAPER_H()];
+    let mut k: i32 = 0;
+    while k < pen_count(s) {
+        if in_use[k] == 1 {
+            let mut corner: i32 = 0;
+            while corner < 4 {
+                let cx: f64 = if corner % 2 == 0 { l / 2.0 } else { w - r / 2.0 };
+                let cy: f64 = if corner < 2 { t / 2.0 } else { h - b / 2.0 };
+                stroke(p, k, s, cx - arm, cy, cx + arm, cy);
+                stroke(p, k, s, cx, cy - arm, cx, cy + arm);
+                corner = corner + 1;
+            }
+        }
+        k = k + 1;
+    }
+    note[N_MARKS()] = 1.0;
+}
+
+// The legend: in the bottom margin, pen k (counting from one) draws k short ticks and then a
+// 10 mm line. The tick count says which pen drew a layer, and the line shows its stroke on this
+// paper. Needs 4 mm of bottom margin.
+pub fn add_legend(p: Paths, s: Spec, in_use: Vec<i32>, note: Vec<f64>) {
+    let b: f64 = s.opt[O_MARGIN_B()];
+    if b < 4.0 { return; }
+    let y: f64 = s.opt[O_PAPER_H()] - b / 2.0;
+    let tick: f64 = minf(1.0, 0.25 * b);
+    let x0: f64 = s.opt[O_MARGIN_L()] + 12.0;
+    let room: f64 = s.opt[O_PAPER_W()] - s.opt[O_MARGIN_R()] - 12.0;
+    let mut k: i32 = 0;
+    while k < pen_count(s) {
+        let x: f64 = x0 + (k as f64) * (14.0 + 1.5 * (pen_count(s) as f64));
+        if in_use[k] == 1 && x + 1.5 * ((k + 1) as f64) + 11.0 <= room {
+            let mut n: i32 = 0;
+            while n <= k {
+                stroke(p, k, s, x + 1.5 * (n as f64), y - tick, x + 1.5 * (n as f64), y + tick);
+                n = n + 1;
+            }
+            let lx: f64 = x + 1.5 * ((k + 1) as f64);
+            stroke(p, k, s, lx, y, lx + 10.0, y);
+            note[N_LEGEND()] = 1.0;
+        }
+        k = k + 1;
+    }
+}

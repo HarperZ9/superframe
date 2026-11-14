@@ -1,0 +1,161 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Readers for the three files the writers make, and the comparison that says whether a file
+// draws the sheet it was written from. They exist so the writers can be checked: a file is read
+// back into paths in sheet millimetres, and same_drawing counts every way it differs from the
+// plot. The readers share no code with the writers. They read this package's own output and are
+// not general parsers of HPGL, G-code or SVG.
+
+use num::absf;
+use sheet::Paths;
+use sheet::Spec;
+use sheet::Plot;
+use sheet::paths_new;
+use sheet::path_count;
+use sheet::add_point;
+use sheet::end_path;
+use sheet::O_PAPER_H;
+use sheet::O_HPGL_UNITS;
+use sheet::O_HPGL_X;
+use sheet::O_HPGL_Y;
+use sheet::T_GCODE_UP;
+use sheet::T_GCODE_DOWN;
+
+fn after(word: String, skip: i32) -> String {
+    word.substring(skip as i64, (word.len() as i64) - (skip as i64))
+}
+
+// HPGL: tracks SP for the pen, PU x,y for the start of a path and PD pairs for the rest.
+pub fn read_hpgl(text: String, s: Spec) -> Paths {
+    let out: Paths = paths_new();
+    let u: f64 = s.opt[O_HPGL_UNITS()];
+    let h: f64 = s.opt[O_PAPER_H()] + s.opt[O_HPGL_Y()];
+    let cmds: Vec<String> = text.split(";");
+    let mut pen: i32 = 0 - 1;
+    let mut i: i32 = 0;
+    while i < cmds.len() as i32 {
+        let c: String = cmds[i];
+        if c.starts_with("SP") && c.len() > 2 {
+            pen = (after(c, 2).parse_int() as i32) - 1;
+        }
+        if (c.starts_with("PU") || c.starts_with("PD")) && c.len() > 2 {
+            let v: Vec<String> = after(c, 2).split(",");
+            let mut k: i32 = 0;
+            while k + 1 < v.len() as i32 {
+                add_point(out, v[k].parse_float() / u - s.opt[O_HPGL_X()], h - v[k + 1].parse_float() / u);
+                k = k + 2;
+            }
+            if c.starts_with("PD") {
+                end_path(out, pen, 0.0, 0.0, 0.0, 0);
+            }
+        }
+        i = i + 1;
+    }
+    out
+}
+
+// The value after letter `axis` on a G-code line, or `fallback` when the line has none.
+fn word_value(w: Vec<String>, axis: String, fallback: f64) -> f64 {
+    let mut i: i32 = 1;
+    while i < w.len() as i32 {
+        if w[i].starts_with(axis) { return after(w[i], 1).parse_float(); }
+        i = i + 1;
+    }
+    fallback
+}
+
+// G-code: the pen is down between the caller's pen-down and pen-up lines; "; pen N" names the pen.
+pub fn read_gcode(text: String, s: Spec) -> Paths {
+    let out: Paths = paths_new();
+    let h: f64 = s.opt[O_PAPER_H()];
+    let lines: Vec<String> = text.lines();
+    let mut pen: i32 = 0 - 1;
+    let mut down: bool = false;
+    let mut x: f64 = 0.0;
+    let mut y: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < lines.len() as i32 {
+        let line: String = lines[i];
+        let w: Vec<String> = line.split_whitespace();
+        if line == s.text[T_GCODE_DOWN()] {
+            down = true;
+            add_point(out, x, h - y);
+        } else if line == s.text[T_GCODE_UP()] {
+            if down { end_path(out, pen, 0.0, 0.0, 0.0, 0); }
+            down = false;
+        } else if w.len() >= 3 && w[0] == ";" && w[1] == "pen" {
+            pen = (w[2].parse_int() as i32) - 1;
+        } else if w.len() >= 2 && (w[0] == "G0" || w[0] == "G1") {
+            x = word_value(w, "X", x);
+            y = word_value(w, "Y", y);
+            if down { add_point(out, x, h - y); }
+        }
+        i = i + 1;
+    }
+    out
+}
+
+// SVG: a group line names the pen, and each path line holds "M x y L x y ...".
+pub fn read_svg(text: String) -> Paths {
+    let out: Paths = paths_new();
+    let lines: Vec<String> = text.lines();
+    let mut pen: i32 = 0 - 1;
+    let mut i: i32 = 0;
+    while i < lines.len() as i32 {
+        let w: Vec<String> = lines[i].split_whitespace();
+        if w.len() >= 2 && w[0] == "<g" && w[1].starts_with("id=\"pen-") {
+            let id: String = after(w[1], 8);
+            pen = (id.substring(0, (id.len() as i64) - 1).parse_int() as i32) - 1;
+        }
+        if w.len() >= 5 && w[0] == "<path" {
+            let mut k: i32 = 2;
+            while k + 1 < w.len() as i32 {
+                if w[k] == "L" {
+                    k = k + 1;
+                } else {
+                    add_point(out, w[k].parse_float(), w[k + 1].parse_float());
+                    k = k + 2;
+                }
+            }
+            end_path(out, pen, 0.0, 0.0, 0.0, 0);
+        }
+        i = i + 1;
+    }
+    out
+}
+
+// How many ways `got` differs from the plot: a different number of paths, and for each path in
+// draw order a different pen, a different number of points, or a point farther than tol mm off.
+pub fn same_drawing(plot: Plot, got: Paths, tol: f64) -> i32 {
+    let p: Paths = plot.p;
+    let mut wrong: i32 = 0;
+    let want: i32 = plot.order.len() as i32;
+    if path_count(got) != want {
+        wrong = wrong + 1;
+    }
+    let mut j: i32 = 0;
+    let mut q: i32 = 0;
+    while q < want && q < path_count(got) {
+        while q >= plot.layer_start[j + 1] {
+            j = j + 1;
+        }
+        let i: i32 = plot.order[q];
+        let n: i32 = p.start[i + 1] - p.start[i];
+        if got.pen[q] != plot.layer_pen[j] || got.start[q + 1] - got.start[q] != n {
+            wrong = wrong + 1;
+        } else {
+            let mut c: i32 = 0;
+            let mut off: bool = false;
+            while c < n {
+                let at: i32 = if plot.rev[q] == 1 { p.start[i + 1] - 1 - c } else { p.start[i] + c };
+                let g: i32 = got.start[q] + c;
+                if absf(got.xs[g] - p.xs[at]) > tol || absf(got.ys[g] - p.ys[at]) > tol { off = true; }
+                c = c + 1;
+            }
+            if off { wrong = wrong + 1; }
+        }
+        q = q + 1;
+    }
+    wrong
+}

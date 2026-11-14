@@ -1,0 +1,149 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Tests of path ordering and of speed.
+//
+// Speed budget. Measured on the development machine on 2026-11-14 (release build, one core): a
+// sheet of 20,000 ten-point paths is built in about 0.3 s and its four files are written in about
+// 0.5 s. The budget is 2000 ms for build plus write, a little over twice the measurement. A slower
+// machine can raise it through PLOT_SHEET_BUDGET_MS; the test prints the figure it used.
+
+use sheet::Paths;
+use sheet::Spec;
+use sheet::Plot;
+use sheet::paths_new;
+use sheet::path_count;
+use sheet::O_JOIN;
+use sheet::O_MINLEN;
+use sheet::O_OPT_MS;
+use sheet::O_OPT_EVALS;
+use sheet::O_OPT_WINDOW;
+use sheet::M_TRAVEL_IN;
+use sheet::M_TRAVEL_OUT;
+use sheet::N_STOP;
+use build::build;
+use stats::total;
+use stats::stats_json;
+use write::svg_text;
+use write::hpgl_text;
+use write::gcode_text;
+use tkit::check;
+use tkit::two_pens;
+use tkit::seg;
+use tkit::rng;
+use tkit::rnd;
+use tkit::scatter;
+
+// A 40 by 25 grid of 2 mm strokes at 5 mm pitch, handed over in shuffled order.
+fn shuffled_grid(p: Paths, g: Vec<i64>) {
+    let cell: Vec<i32> = Vec::new();
+    let mut i: i32 = 0;
+    while i < 1000 {
+        cell.push(i);
+        i = i + 1;
+    }
+    i = 999;
+    while i > 0 {
+        let j: i32 = (rnd(g) * ((i + 1) as f64)) as i32;
+        let tmp: i32 = cell[i];
+        cell[i] = cell[j];
+        cell[j] = tmp;
+        i = i - 1;
+    }
+    i = 0;
+    while i < 1000 {
+        let x: f64 = 5.0 * ((cell[i] % 40) as f64);
+        let y: f64 = 5.0 * ((cell[i] / 40) as f64);
+        seg(p, 0, x, y, x + 2.0, y);
+        i = i + 1;
+    }
+}
+
+// On the shuffled grid the written order has under a tenth of the arriving order's pen-up travel.
+pub fn test_grid(t: Vec<i32>) ~ Console + Clock {
+    let s: Spec = two_pens(300.0, 225.0, 50.0);
+    s.opt[O_JOIN()] = 0.0;
+    let p: Paths = paths_new();
+    shuffled_grid(p, rng(11));
+    let a: Plot = build(s, p);
+    let before: f64 = total(a, M_TRAVEL_IN());
+    let after: f64 = total(a, M_TRAVEL_OUT());
+    println("     shuffled grid of 1000 strokes: pen-up {} mm arriving, {} mm written, {} times less", before as i64, after as i64, (before / after) as i64);
+    check(t, "order: a shuffled grid loses at least nine tenths of its pen-up travel", after * 10.0 <= before, "factor under 10");
+    check(t, "order: every stroke is still drawn once", path_count(a.p) == 1000 && a.order.len() == 1000, "count");
+}
+
+// Forty random sheets and one that arrives already in a good order: the written order never has
+// more pen-up travel than the arriving one.
+pub fn test_never_worse(t: Vec<i32>) ~ Console + Clock {
+    let mut worse: i32 = 0;
+    let mut sheet: i32 = 0;
+    while sheet < 40 {
+        let s: Spec = two_pens(300.0, 225.0, 50.0);
+        s.opt[O_JOIN()] = 0.0;
+        s.opt[O_MINLEN()] = 0.0;
+        // odd sheets get a starved 2-opt, so the rule is checked on a tour cut short too
+        if sheet % 2 == 1 { s.opt[O_OPT_EVALS()] = 50.0; }
+        let p: Paths = paths_new();
+        scatter(p, rng(100 + (sheet as i64)), 3 + 7 * sheet, 2 + sheet % 3, 200.0, 125.0);
+        let a: Plot = build(s, p);
+        if total(a, M_TRAVEL_OUT()) > total(a, M_TRAVEL_IN()) + 0.000001 { worse = worse + 1; }
+        sheet = sheet + 1;
+    }
+    let s: Spec = two_pens(300.0, 225.0, 50.0);
+    s.opt[O_JOIN()] = 0.0;
+    let p: Paths = paths_new();
+    let mut i: i32 = 0;
+    while i < 30 {
+        // a boustrophedon column up the left edge, starting beside the machine origin
+        let y: f64 = 125.0 - 4.0 * (i as f64);
+        if i % 2 == 0 { seg(p, 0, 0.0, y, 20.0, y); } else { seg(p, 0, 20.0, y, 0.0, y); }
+        i = i + 1;
+    }
+    let b: Plot = build(s, p);
+    if total(b, M_TRAVEL_OUT()) > total(b, M_TRAVEL_IN()) + 0.000001 { worse = worse + 1; }
+    check(t, "order: 41 sheets, none with more pen-up travel than it arrived with", worse == 0, "worse on some sheet");
+}
+
+fn budget_ms() -> f64 ~ Environment {
+    let v: String = getenv("PLOT_SHEET_BUDGET_MS");
+    if v.len() > 0 { return v.parse_float(); }
+    2000.0
+}
+
+// 20,000 paths: built and written inside the budget, and a 2-opt pass given 100 ms stops on it.
+pub fn test_speed(t: Vec<i32>) ~ Console + Clock + Environment {
+    let s: Spec = two_pens(420.0, 297.0, 10.0);
+    let p: Paths = paths_new();
+    scatter(p, rng(5), 20000, 10, 400.0, 277.0);
+    let t0: i64 = clock_ms();
+    let a: Plot = build(s, p);
+    let t1: i64 = clock_ms();
+    let bytes: i64 = (svg_text(s, a).len() + hpgl_text(s, a).len() + gcode_text(s, a).len() + stats_json(s, a).len()) as i64;
+    let t2: i64 = clock_ms();
+    let limit: f64 = budget_ms();
+    println("     20,000 paths: build {} ms, write {} ms ({} bytes), budget {} ms", t1 - t0, t2 - t1, bytes, limit as i64);
+    check(t, "speed: a 20,000 path sheet is built and written inside the budget", ((t2 - t0) as f64) <= limit && bytes > 5000000, "over budget");
+
+    let s2: Spec = two_pens(420.0, 297.0, 10.0);
+    s2.opt[O_OPT_MS()] = 100.0;
+    s2.opt[O_OPT_EVALS()] = 1.0e15;
+    s2.opt[O_OPT_WINDOW()] = 4000.0;
+    let p2: Paths = paths_new();
+    scatter(p2, rng(5), 20000, 10, 400.0, 277.0);
+    let t3: i64 = clock_ms();
+    let b: Plot = build(s2, p2);
+    let t4: i64 = clock_ms();
+    // The same sheet with 2-opt all but off, to time everything that is not 2-opt.
+    let s3: Spec = two_pens(420.0, 297.0, 10.0);
+    s3.opt[O_OPT_EVALS()] = 1.0;
+    let p3: Paths = paths_new();
+    scatter(p3, rng(5), 20000, 10, 400.0, 277.0);
+    let t5: i64 = clock_ms();
+    let c: Plot = build(s3, p3);
+    let t6: i64 = clock_ms();
+    let in_opt: i64 = (t4 - t3) - (t6 - t5);
+    println("     2-opt given 100 ms and no other limit ran {} ms and stopped on: {}", in_opt, if b.note[N_STOP()] == 2.0 { "time" } else { "something else" });
+    check(t, "speed: 2-opt stops on its time limit, within 100 ms of it", b.note[N_STOP()] == 2.0 && in_opt <= 200, "ran past the limit");
+    check(t, "speed: the time-limited sheet is still no worse than it arrived", total(b, M_TRAVEL_OUT()) <= total(b, M_TRAVEL_IN()) && total(c, M_TRAVEL_OUT()) <= total(c, M_TRAVEL_IN()), "worse");
+}

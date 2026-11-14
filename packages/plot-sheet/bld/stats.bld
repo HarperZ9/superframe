@@ -1,0 +1,199 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// What the sheet costs to draw, as numbers and as a sentence. The same record is the sheet's
+// accessibility text: someone who cannot see the drawing can still learn its size, how many
+// pens it takes, how much line each pen lays and how long the plot runs.
+//
+// Nothing here reads a clock, so the JSON is the same on every run of the same input.
+
+use num::round_i;
+use num::fix3;
+use num::mmt;
+use num::mm3;
+use num::hex_of;
+use num::plain;
+use num::cat_all;
+use sheet::Spec;
+use sheet::Plot;
+use sheet::path_count;
+use sheet::pen_count;
+use sheet::O_PAPER_W;
+use sheet::O_PAPER_H;
+use sheet::O_MARGIN_T;
+use sheet::O_MARGIN_R;
+use sheet::O_MARGIN_B;
+use sheet::O_MARGIN_L;
+use sheet::O_ORDER;
+use sheet::T_TITLE;
+use sheet::T_SEED;
+use sheet::M_PATHS;
+use sheet::M_DRAWN;
+use sheet::M_TRAVEL_IN;
+use sheet::M_TRAVEL_OUT;
+use sheet::M_LIFTS;
+use sheet::M_SECONDS;
+use sheet::M_STRIDE;
+use sheet::N_X0;
+use sheet::N_Y0;
+use sheet::N_X1;
+use sheet::N_Y1;
+use sheet::N_SCALE;
+use sheet::N_PATHS_IN;
+use sheet::N_CLIPPED;
+use sheet::N_JOINS;
+use sheet::N_SHORT;
+use sheet::N_HATCH;
+use sheet::N_POINTS_CUT;
+use sheet::N_EVALS;
+use sheet::N_STOP;
+use sheet::N_MARKS;
+use sheet::N_LEGEND;
+use sheet::N_KEPT_INPUT;
+
+// millimetres printed as metres with three decimals
+pub fn metres(mm: f64) -> String {
+    fix3(round_i(mm))
+}
+
+fn whole(x: f64) -> String {
+    round_i(x).to_string()
+}
+
+// seconds printed as minutes with one decimal
+pub fn minutes(seconds: f64) -> String {
+    let tenths: i64 = round_i(seconds / 6.0);
+    (tenths / 10).to_string() + "." + (tenths % 10).to_string()
+}
+
+// a scale printed with six decimals
+fn fix6(x: f64) -> String {
+    let v: i64 = round_i(x * 1000000.0);
+    let mut frac: String = (v % 1000000).to_string();
+    while frac.len() < 6 {
+        frac = "0" + frac;
+    }
+    (v / 1000000).to_string() + "." + frac
+}
+
+pub fn pen_colour(s: Spec, k: i32) -> String {
+    hex_of(s.pen_rgb[3 * k], s.pen_rgb[3 * k + 1], s.pen_rgb[3 * k + 2])
+}
+
+// Sum of measure slot over all pens.
+pub fn total(plot: Plot, slot: i32) -> f64 {
+    let mut t: f64 = 0.0;
+    let mut k: i32 = 0;
+    while k * M_STRIDE() < plot.measure.len() as i32 {
+        t = t + plot.measure[k * M_STRIDE() + slot];
+        k = k + 1;
+    }
+    t
+}
+
+pub fn stop_reason(plot: Plot) -> String {
+    if plot.note[N_STOP()] == 2.0 { return "time limit"; }
+    if plot.note[N_STOP()] == 1.0 { return "evaluation limit"; }
+    "no better move left"
+}
+
+// The place of pen k in the draw order, counting from one, or 0 when it draws nothing.
+fn layer_of(plot: Plot, k: i32) -> i32 {
+    let mut j: i32 = 0;
+    while j < plot.layer_pen.len() as i32 {
+        if plot.layer_pen[j] == k { return j + 1; }
+        j = j + 1;
+    }
+    0
+}
+
+// The sheet in plain words.
+pub fn describe(s: Spec, plot: Plot) -> String {
+    let o: Vec<String> = Vec::new();
+    let title: String = plain(s.text[T_TITLE()]);
+    if title.len() > 0 { o.push(title + ". "); }
+    o.push("A pen plot on a sheet " + mmt(s.opt[O_PAPER_W()]) + " by " + mmt(s.opt[O_PAPER_H()]) + " mm. ");
+    o.push("The drawing spans " + mmt(plot.note[N_X1()] - plot.note[N_X0()]) + " by " + mmt(plot.note[N_Y1()] - plot.note[N_Y0()]) + " mm. ");
+    let layers: i32 = plot.layer_pen.len() as i32;
+    o.push(layers.to_string() + (if layers == 1 { " pen layer" } else { " pen layers" }));
+    o.push(if s.opt[O_ORDER()] == 1.0 { ", drawn in the order listed. " } else { ", drawn lightest first. " });
+    let mut j: i32 = 0;
+    while j < layers {
+        let k: i32 = plot.layer_pen[j];
+        let m: i32 = k * M_STRIDE();
+        o.push("Layer " + (j + 1).to_string() + ", pen " + (k + 1).to_string() + " (" + plain(s.pen_name[k]) + ", " + mmt(s.pen_tip[k]) + " mm, " + pen_colour(s, k) + "): ");
+        o.push(whole(plot.measure[m + M_PATHS()]) + (if plot.measure[m + M_PATHS()] == 1.0 { " path, " } else { " paths, " }) + metres(plot.measure[m + M_DRAWN()]) + " m of line, about " + minutes(plot.measure[m + M_SECONDS()]) + " minutes. ");
+        j = j + 1;
+    }
+    o.push("Whole sheet: " + whole(total(plot, M_PATHS())) + " paths, " + metres(total(plot, M_DRAWN())) + " m of line, ");
+    o.push(metres(total(plot, M_TRAVEL_OUT())) + " m of travel with the pen lifted, about " + minutes(total(plot, M_SECONDS())) + " minutes at the stated speeds.");
+    cat_all(o)
+}
+
+fn pen_json(s: Spec, plot: Plot, k: i32) -> String {
+    let m: i32 = k * M_STRIDE();
+    let o: Vec<String> = Vec::new();
+    o.push("  {\"pen\": " + (k + 1).to_string() + ", \"name\": \"" + plain(s.pen_name[k]) + "\", \"registry_id\": \"" + plain(s.pen_id[k]) + "\", ");
+    o.push("\"colour\": \"" + pen_colour(s, k) + "\", \"tip_mm\": " + mmt(s.pen_tip[k]) + ", \"speed_mm_s\": " + mmt(s.pen_speed[k]) + ", ");
+    o.push("\"layer\": " + layer_of(plot, k).to_string() + ", \"paths\": " + whole(plot.measure[m + M_PATHS()]) + ", ");
+    o.push("\"drawn_m\": " + metres(plot.measure[m + M_DRAWN()]) + ", ");
+    o.push("\"pen_up_travel_m_before\": " + metres(plot.measure[m + M_TRAVEL_IN()]) + ", ");
+    o.push("\"pen_up_travel_m_after\": " + metres(plot.measure[m + M_TRAVEL_OUT()]) + ", ");
+    o.push("\"pen_lifts\": " + whole(plot.measure[m + M_LIFTS()]) + ", \"estimated_seconds\": " + whole(plot.measure[m + M_SECONDS()]) + "}");
+    cat_all(o)
+}
+
+fn head_json(s: Spec, plot: Plot, o: Vec<String>) {
+    let n: Vec<f64> = plot.note;
+    o.push("{\n \"schema\": \"playground.plot-sheet.stats/1\",\n");
+    o.push(" \"title\": \"" + plain(s.text[T_TITLE()]) + "\",\n \"seed\": \"" + plain(s.text[T_SEED()]) + "\",\n");
+    o.push(" \"paper_mm\": [" + mmt(s.opt[O_PAPER_W()]) + ", " + mmt(s.opt[O_PAPER_H()]) + "],\n");
+    o.push(" \"margins_mm\": {\"top\": " + mmt(s.opt[O_MARGIN_T()]) + ", \"right\": " + mmt(s.opt[O_MARGIN_R()]) + ", \"bottom\": " + mmt(s.opt[O_MARGIN_B()]) + ", \"left\": " + mmt(s.opt[O_MARGIN_L()]) + "},\n");
+    o.push(" \"scale_mm_per_source_unit\": " + fix6(n[N_SCALE()]) + ",\n");
+    o.push(" \"bounding_box_mm\": [" + mm3(n[N_X0()]) + ", " + mm3(n[N_Y0()]) + ", " + mm3(n[N_X1()]) + ", " + mm3(n[N_Y1()]) + "],\n");
+    o.push(" \"paths_in\": " + whole(n[N_PATHS_IN()]) + ",\n \"paths_out\": " + path_count(plot.p).to_string() + ",\n");
+    o.push(" \"paths_outside_printable_area\": " + whole(n[N_CLIPPED()]) + ",\n \"joins\": " + whole(n[N_JOINS()]) + ",\n");
+    o.push(" \"paths_too_short_to_draw\": " + whole(n[N_SHORT()]) + ",\n \"hatch_lines_added\": " + whole(n[N_HATCH()]) + ",\n");
+    o.push(" \"points_removed_by_simplifying\": " + whole(n[N_POINTS_CUT()]) + ",\n");
+}
+
+// The measures as JSON.
+pub fn stats_json(s: Spec, plot: Plot) -> String {
+    let n: Vec<f64> = plot.note;
+    let o: Vec<String> = Vec::new();
+    head_json(s, plot, o);
+    o.push(" \"pens\": [\n");
+    let mut k: i32 = 0;
+    while k < pen_count(s) {
+        o.push(pen_json(s, plot, k));
+        o.push(if k + 1 < pen_count(s) { ",\n" } else { "\n" });
+        k = k + 1;
+    }
+    o.push(" ],\n \"totals\": {\"paths\": " + whole(total(plot, M_PATHS())) + ", \"drawn_m\": " + metres(total(plot, M_DRAWN())) + ", ");
+    o.push("\"pen_up_travel_m_before\": " + metres(total(plot, M_TRAVEL_IN())) + ", \"pen_up_travel_m_after\": " + metres(total(plot, M_TRAVEL_OUT())) + ", ");
+    o.push("\"pen_lifts\": " + whole(total(plot, M_LIFTS())) + ", \"estimated_seconds\": " + whole(total(plot, M_SECONDS())) + "},\n");
+    o.push(" \"ordering\": {\"two_opt_evaluations\": " + whole(n[N_EVALS()]) + ", \"stopped_by\": \"" + stop_reason(plot) + "\", ");
+    o.push("\"layers_kept_in_arriving_order\": " + whole(n[N_KEPT_INPUT()]) + "},\n");
+    o.push(" \"registration_marks\": " + (if n[N_MARKS()] == 1.0 { "true" } else { "false" }) + ",\n");
+    o.push(" \"legend\": " + (if n[N_LEGEND()] == 1.0 { "true" } else { "false" }) + ",\n");
+    o.push(" \"description\": \"" + describe(s, plot) + "\"\n}\n");
+    cat_all(o)
+}
+
+// One line for the terminal.
+pub fn summary(s: Spec, plot: Plot) -> String {
+    let n: Vec<f64> = plot.note;
+    let o: Vec<String> = Vec::new();
+    o.push("plot sheet: " + whole(total(plot, M_PATHS())) + " paths, " + (plot.layer_pen.len() as i32).to_string() + " pens | drawn");
+    let mut j: i32 = 0;
+    while j < plot.layer_pen.len() as i32 {
+        let k: i32 = plot.layer_pen[j];
+        o.push((if j > 0 { ", " } else { " " }) + plain(s.pen_name[k]) + " " + metres(plot.measure[k * M_STRIDE() + M_DRAWN()]) + " m in " + minutes(plot.measure[k * M_STRIDE() + M_SECONDS()]) + " min");
+        j = j + 1;
+    }
+    o.push(" | pen-up " + metres(total(plot, M_TRAVEL_OUT())) + " m, was " + metres(total(plot, M_TRAVEL_IN())) + " m");
+    o.push(" | lifts " + whole(total(plot, M_LIFTS())) + " | about " + minutes(total(plot, M_SECONDS())) + " min");
+    o.push(" | box " + mmt(n[N_X0()]) + "," + mmt(n[N_Y0()]) + " to " + mmt(n[N_X1()]) + "," + mmt(n[N_Y1()]) + " mm");
+    o.push(" | 2-opt: " + stop_reason(plot));
+    cat_all(o)
+}
