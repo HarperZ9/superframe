@@ -23,13 +23,14 @@ export const SHEETS = {
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const exe = join(root, 'packages/plot-sheet/bld/target/release', process.platform === 'win32' ? 'main.exe' : 'main');
 
-// The program: PLOT_SHEET_BIN, or the release build in the package, built on first use with BUILDC (default buildc).
+// The program: PLOT_SHEET_BIN, or the release build in the package, built on first use with BUILDC (default buildc,
+// 1.10 or newer).
 export function plotSheetProgram({ build = true } = {}) {
   if (process.env.PLOT_SHEET_BIN) return process.env.PLOT_SHEET_BIN;
   if (existsSync(exe)) return exe;
   if (!build) return null;
   const r = spawnSync(process.env.BUILDC ?? 'buildc', ['build', '--release', join(root, 'packages/plot-sheet/bld')], { encoding: 'utf8' });
-  if (r.error || r.status !== 0 || !existsSync(exe)) throw new Error(`plot sheet: could not build packages/plot-sheet/bld with buildc (${r.error?.message ?? (r.stderr || r.stdout || '').trim().slice(-300)}). Install BuildLang, or set PLOT_SHEET_BIN.`);
+  if (r.error || r.status !== 0 || !existsSync(exe)) throw new Error(`plot sheet: could not build packages/plot-sheet/bld with buildc (${r.error?.message ?? (r.stderr || r.stdout || '').trim().slice(-300)}). It needs BuildLang's buildc 1.10 or newer on the PATH or named by BUILDC; or set PLOT_SHEET_BIN to a built program.`);
   return exe;
 }
 
