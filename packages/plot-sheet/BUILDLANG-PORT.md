@@ -10,9 +10,9 @@ It was written and run on 2026-11-14 with three compiler builds: 1.10.0, 1.11.0 
 
 The make command, the graph and the nodes that produce line drawings are JavaScript today, so the caller side is too:
 
-| File | Lines | What it does | What moves it to BuildLang |
+| File | Lines on 2026-11-14 | What it does | What moves it to BuildLang |
 |---|---|---|---|
-| `superframe/lib/artifact/plotsheet.mjs` | 55 | turns the engine's vector shape into the plot input text, finds or builds the program, runs it | the make command in BuildLang; this file then goes away unchanged |
+| `superframe/lib/artifact/plotsheet.mjs` | 56 | turns the engine's vector shape into the plot input text, finds or builds the program, runs it | the make command in BuildLang; this file then goes away unchanged |
 | `superframe/lib/artifact/render.mjs`, `superframe/cli/superframe.mjs` | 11 added, 5 removed | the `--plot` option | same |
 | `superframe/tools/plot-strata.mjs` | 44 | the demonstration: evaluates two engine nodes and assigns pens by height | the terrain and ridgeline nodes in BuildLang |
 | `superframe/tests/plotsheet.test.mjs` | 66 | tests of the hand-off only | same |
