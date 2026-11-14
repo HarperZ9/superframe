@@ -10,6 +10,9 @@ import { encodePNG, decodePNG } from '../../playbook/lib/png.js';
 import { encodePNG16 } from '../../feed-24/build/png16.js';
 import { boxBlur } from '../../glass/lib/raster.js';
 import { rng, xmur3, srgbToLinear, linearToSrgb } from '../../substrate/lib/vendor/superstack.mjs';
+import { filmGrain } from '../../superframe/lib/look/grain.mjs';
+import { bloom as scatter } from '../../superframe/lib/look/bloom.mjs';
+import { shoulder as shoulder1, displayPixel } from '../../superframe/lib/look/tone.mjs';
 
 export { srgbToLinear, linearToSrgb, boxBlur };
 export const img = (w, h) => ({ w, h, px: new Float32Array(w * h * 3) });
@@ -52,33 +55,28 @@ export function vnoise3(x, y, z, s = 0) {
   return mix(vnoise(x + zi * 31.7, y + zi * 17.3, s), vnoise(x + (zi + 1) * 31.7, y + (zi + 1) * 17.3, s), uz);
 }
 
-// Film grain, clumped (QUALITY-SPEC R4: correlation width 1.9 to 3.1 px, monochrome, surface SD 0.3 to 6 codes).
-// amount is the SD in sRGB code values at mid grey; it scales with sqrt of the local tone so shadows stay clean.
+// Film grain (QUALITY-SPEC R4), from the shared finishing core: three dye layers sharing a common field, coarse
+// crystals in the shadows and fine ones in the highlights, amplitude on the print's density envelope. amount is the
+// SD in sRGB code values at the peak; radius is the fine grain's size in px; chroma is the share of per-layer grain.
+// (Effects pass 2026-10-28: the old field was one box-blurred white noise at 1 px, which measured 1.1 to 1.4 px
+// correlation, under the R4 floor, and was masked by the per-channel dither, so it read as colour noise.)
 export function grain(I, { amount = 3, seed = 'grain', radius = 1, chroma = 0.12 } = {}) {
-  const { w, h, px } = I, n = w * h, R = random(seed);
-  const g = new Float32Array(n * 3);
-  for (let i = 0; i < n; i++) { const m = gauss(R); g[i * 3] = m + chroma * gauss(R); g[i * 3 + 1] = m + chroma * gauss(R); g[i * 3 + 2] = m + chroma * gauss(R); }
-  const b = boxBlur(g, w, h, radius, { stride: 3, passes: 2 });
-  let sd = 0; for (let i = 0; i < n; i++) sd += b[i * 3 + 1] ** 2; sd = Math.sqrt(sd / n) || 1;
-  const k = amount / 255 / sd;
-  for (let i = 0; i < n * 3; i++) {
-    const v = px[i], s = linearToSrgb(clamp(v)), t = Math.sqrt(clamp(s * (1 - s) * 4, 0.05, 1));
-    px[i] = srgbToLinear(clamp(s + b[i] * k * t)) + (v > 1 ? v - 1 : 0);
-  }
-  return I;
+  return filmGrain(I, { amount, seed, size: Math.max(0.8, 0.9 * radius), mono: Math.sqrt(1 - Math.min(0.9, 2.5 * chroma) ** 2) });
 }
 
-// Highlight shoulder (linear to 0.85, smooth roll above), so nothing clips (R6) unless the ground is white.
-export const shoulder = v => (v <= 0.85 ? v : 0.85 + 0.15 * (1 - Math.exp(-(v - 0.85) / 0.15)));
+// Highlight shoulder, hue-preserving (lib/look/tone.mjs): linear to 0.85 on the largest channel, smooth roll above,
+// all three channels scaled together, light past 1.0 going to white. The old per-channel shoulder rolled each channel
+// on its own, which pushed hot amber toward lemon and flattened every glow core into one plateau.
+export const shoulder = v => shoulder1(v);
 
+// A picture flagged toned (already through AgX or another display transform) skips the shoulder.
+// 8-bit sRGB with a seeded TPDF dither of one code peak. One dither value per pixel, shared by the three channels,
+// so the dither adds no chroma noise (R4 chroma_ratio; the per-channel dither had out-measured the grain itself).
 export function toRGBA8(I, seed = 'dither') {
   const { w, h, px } = I, out = new Uint8ClampedArray(w * h * 4), s = xmur3(String(seed));
   for (let i = 0; i < w * h; i++) {
-    for (let c = 0; c < 3; c++) {
-      const v = linearToSrgb(clamp(shoulder(Math.max(0, px[i * 3 + c])))) * 255;
-      const d = hash2(i, c, s) - hash2(i, c + 7, s);   // TPDF, 1 code peak
-      out[i * 4 + c] = Math.round(v + d);
-    }
+    const o = I.toned ? [px[i * 3], px[i * 3 + 1], px[i * 3 + 2]] : displayPixel(px[i * 3], px[i * 3 + 1], px[i * 3 + 2]), d = hash2(i, 0, s) - hash2(i, 7, s);
+    for (let c = 0; c < 3; c++) out[i * 4 + c] = Math.round(linearToSrgb(clamp(o[c])) * 255 + d);
     out[i * 4 + 3] = 255;
   }
   return out;
@@ -86,7 +84,7 @@ export function toRGBA8(I, seed = 'dither') {
 export function savePNG(I, path, seed) { writeFileSync(path, encodePNG(I.w, I.h, toRGBA8(I, seed))); }
 export async function savePNG16(I, path) {
   const n = I.w * I.h, out = new Uint16Array(n * 3);
-  for (let i = 0; i < n * 3; i++) out[i] = Math.round(linearToSrgb(clamp(shoulder(Math.max(0, I.px[i])))) * 65535);
+  for (let i = 0; i < n; i++) { const o = I.toned ? [I.px[i * 3], I.px[i * 3 + 1], I.px[i * 3 + 2]] : displayPixel(I.px[i * 3], I.px[i * 3 + 1], I.px[i * 3 + 2]); for (let c = 0; c < 3; c++) out[i * 3 + c] = Math.round(linearToSrgb(clamp(o[c])) * 65535); }
   writeFileSync(path, await encodePNG16(out, I.w, I.h, b => deflateSync(b, { level: 6 })));
 }
 export function loadPNG(path) {
@@ -116,13 +114,11 @@ export function down(I, k) {
   }
   return O;
 }
-// Bloom: add a blurred copy of what exceeds a threshold (light that spills, never a CSS glow).
-export function bloom(I, { threshold = 0.8, radius = 12, strength = 0.35, tint = [1, 1, 1] } = {}) {
-  const { w, h, px } = I, b = new Float32Array(px.length);
-  for (let i = 0; i < px.length; i++) b[i] = Math.max(0, px[i] - threshold);
-  const B1 = boxBlur(b, w, h, Math.max(1, Math.round(radius / 3)), { stride: 3 }), B2 = boxBlur(b, w, h, Math.round(radius), { stride: 3 });
-  for (let i = 0; i < px.length; i++) px[i] += (B1[i] * 0.5 + B2[i] * 0.5) * strength * tint[i % 3];
-  return I;
+// Bloom: light above the threshold scatters through a multi-scale Gaussian spread that conserves energy
+// (lib/look/bloom.mjs). radius is the widest sigma in px; strength is the share of the hot light that moves. The old
+// version added two box blurs on top: energy grew with strength and every hot spot drew a rectangle on a dark ground.
+export function bloom(I, { threshold = 0.8, radius = 12, strength = 0.35, tint = [1, 1, 1], tail = 0.65 } = {}) {
+  return scatter(I, { threshold, radius: Math.max(2, radius), strength, tint, tail });
 }
 // Vignette and lens falloff (cos^4-ish), in linear light.
 export function vignette(I, k = 0.25) {

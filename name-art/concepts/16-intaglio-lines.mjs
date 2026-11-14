@@ -11,6 +11,7 @@ import { setName, NAME, breakLines } from '../lib/name.mjs';
 import { img, lin, clamp, smooth, fbm, hash2, grain, TAU, random } from '../lib/img.mjs';
 import { polyline, ring } from '../lib/draw.mjs';
 import { strokesOf, rods } from '../lib/strokes.mjs';
+import { press as pressFinish, dotRule } from '../lib/press.mjs';
 
 export const meta = {
   id: 'intaglio-lines', title: 'Letters cut as engraving', loop: null, v1: 'banknote',
@@ -31,7 +32,9 @@ function rosette(cx, cy, R, r, d, turns, steps, rot = 0) {
   return pts;
 }
 
-export function render(W, H, { text = NAME, noGrain = false } = {}) {
+// coarse: line pitch multiplier, so the engraving still reads where the piece is shown small (1 = the R&D finals).
+// press: the BuildTeX press finish (deboss of the cuts, emboss of the medallion, foil seal, dot rule, laid paper).
+export function render(W, H, { text = NAME, noGrain = false, seal: sealText = 'ZDH', coarse = 1, press = false } = {}) {
   const u = W / 1280, I = img(W, H), paper = lin(PAPER), ink = lin(INK), ink2 = lin(INK2), spot = lin(SPOT);
   // paper: warm stock with fibres and a faint watermark-like cloud
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -41,8 +44,8 @@ export function render(W, H, { text = NAME, noGrain = false } = {}) {
   const cov2 = new Float32Array(W * H), cov1 = new Float32Array(W * H), covS = new Float32Array(W * H);
   // line tint: horizontal hairlines that swell into a wave band (anti-copy moire base)
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const ph = y / (3.2 * u) + 2.2 * Math.sin(x / (110 * u)) + 1.3 * Math.sin(x / (37 * u) + y / (300 * u));
-    const d = Math.abs((ph % 1 + 1) % 1 - 0.5) * 3.2 * u, wdt = 0.22 * u + 0.25 * u * (0.5 + 0.5 * Math.sin(x / (240 * u)));
+    const ph = y / (3.2 * u * coarse) + 2.2 * Math.sin(x / (110 * u)) + 1.3 * Math.sin(x / (37 * u) + y / (300 * u));
+    const d = Math.abs((ph % 1 + 1) % 1 - 0.5) * 3.2 * u * coarse, wdt = (0.22 * u + 0.25 * u * (0.5 + 0.5 * Math.sin(x / (240 * u)))) * coarse;
     cov2[y * W + x] = clamp(wdt + 0.5 - d) * 0.55;
   }
   // guilloche: a border band and a medallion
@@ -64,7 +67,7 @@ export function render(W, H, { text = NAME, noGrain = false } = {}) {
   // the name: cuts along each centre line, at even distances from it, ending where the letter ends
   const N = setName(breakLines(text, 2), W, H, { box: [0.045, 0.1, 0.77, 0.84], weight: 900, tracking: 10, leading: 1.2, align: 'left' });
   const S = strokesOf(N, Math.max(1, N.capPx / 150)), half = N.capPx * 0.13, { dist } = rods(W, H, S, half * 1.6);
-  const pitch = Math.max(2.2 * u, N.capPx / 52), L = [-0.7, -0.71];
+  const pitch = Math.max(2.2 * u * coarse, N.capPx / (52 / coarse)), L = [-0.7, -0.71];
   // the tint stops short of the letters, so the letter is read by where the line direction changes
   const keep = new Float32Array(W * H);
   for (let i = 0; i < W * H; i++) keep[i] = N.mask[i];
@@ -86,7 +89,7 @@ export function render(W, H, { text = NAME, noGrain = false } = {}) {
   const micro = setName(Array(9).fill(text).join('  '), W, H, { box: [0.045, 0.865, 0.79, 0.879], style: 'mono', weight: 500, fit: 'width', sub: 2 });
   for (let i = 0; i < W * H; i++) cov1[i] = Math.max(cov1[i], micro.mask[i] * 0.95);
   // denomination-style numerals replaced by the monogram letters in a spot-colour seal
-  const seal = setName('ZDH', W, H, { box: [0.86, 0.462, 0.93, 0.538], weight: 900, tracking: -10 });
+  const seal = setName(sealText, W, H, { box: [0.86, 0.462, 0.93, 0.538], weight: 900, tracking: -10 });
   for (let i = 0; i < W * H; i++) {
     const p = I.px, k = i * 3, a = cov2[i] * 0.55, b = cov1[i] * 0.92, s = covS[i] * 0.95, e = seal.mask[i] * 0.9;
     for (let c = 0; c < 3; c++) {
@@ -97,6 +100,18 @@ export function render(W, H, { text = NAME, noGrain = false } = {}) {
       v *= 1 - e * (1 - spot[c]);
       p[k + c] = v;
     }
+  }
+  if (press) {
+    // the cuts and the letters sink, the medallion's guilloche rises, the seal is foil, and a dot rule runs above the microprint
+    const down = new Float32Array(W * H), up = new Float32Array(W * H), foil = new Float32Array(W * H);
+    for (let i = 0; i < W * H; i++) {
+      down[i] = Math.max(N.mask[i] * 0.6, covS[i]);
+      const x = i % W, y = (i / W) | 0, inMed = Math.hypot(x - med.x, y - med.y) < med.r * 1.08;
+      up[i] = inMed ? Math.max(cov1[i], 0.35) : 0;
+      foil[i] = seal.mask[i];
+    }
+    pressFinish(I, { up, down, foil, u });
+    dotRule(I, { x0: 0.045 * W, y0: 0.835 * H, x1: 0.79 * W, y1: 0.85 * H, cell: 4.2 * u * coarse * 1.4, alpha: 0.55 });
   }
   // intaglio ink sits slightly proud: a dark rim pooled where the cut ends (micro shading by coverage gradient)
   return { image: noGrain ? I : grain(I, { amount: 2.4, seed: 'note', radius: Math.max(1, Math.round(u * 1.2)) }), text: N.text, N };

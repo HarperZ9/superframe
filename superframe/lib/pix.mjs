@@ -5,6 +5,7 @@ import { surface, line as rline, disc as rdisc, toLin, toSrgb, hexLin } from '..
 import { fillShape, insidePoly } from '../../feed-25/build/hud.mjs';
 import { Layer } from '../../feed-25/build/compose.mjs';
 import { make } from './types.mjs';
+import { displayPixel } from './look/tone.mjs';
 
 export { toLin, toSrgb, hexLin };
 // NaN clamps to the low end, so a degenerate upstream field (an empty mask) renders as ground instead of throwing
@@ -36,16 +37,16 @@ export function toLayer(R, { seed = 1, ground = [0, 0, 0] } = {}) {
   return L;
 }
 
-// Export: linear float to 8-bit sRGB with a TPDF dither of one code value (QUALITY-SPEC R2). rng is seeded.
+// Export: linear float to 8-bit sRGB through the hue-preserving display shoulder (lib/look/tone.mjs; values past 1 roll
+// toward white instead of clipping per channel), with a TPDF dither of one code value shared by the three channels
+// (QUALITY-SPEC R2 and R4). rng is seeded.
 export function toSRGB8(R, rng, { ground = null } = {}) {
   const n = R.w * R.h, o = new Uint8ClampedArray(n * 4), d = R.data, G = ground ? hexLin(ground) : null;
   for (let i = 0; i < n; i++) {
-    const a = clamp(d[4 * i + 3]);
-    for (let c = 0; c < 3; c++) {
-      let v = clamp(d[4 * i + c]);
-      if (G) v = v * a + G[c] * (1 - a);
-      o[4 * i + c] = Math.round(toSrgb(v) * 255 + (rng() - rng()));
-    }
+    const a = clamp(d[4 * i + 3]), dv = rng() - rng();
+    let v = displayPixel(d[4 * i], d[4 * i + 1], d[4 * i + 2]);
+    if (G) v = v.map((x, c) => x * a + G[c] * (1 - a));
+    for (let c = 0; c < 3; c++) o[4 * i + c] = Math.round(toSrgb(clamp(v[c])) * 255 + dv);
     o[4 * i + 3] = G ? 255 : Math.round(a * 255);
   }
   return o;

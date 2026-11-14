@@ -29,7 +29,9 @@ function sampler(T) {
   };
 }
 
-export function render(W, H, { t = 0, text = NAME } = {}) {
+// stillGrain: the grain holds still across a loop's frames, so a video encoder's first (intra) frame and its
+// predicted frames carry the same grain and the loop does not flick where it wraps (2026-11-09).
+export function render(W, H, { t = 0, text = NAME, stillGrain = false } = {}) {
   const u = W / 1280, I = img(W, H), ink = lin('#08080a'), jade = lin('#1f4a43');
   // flat type, high resolution, tall (the sunburst wants a condensed deco proportion)
   const TW = Math.round(5 * W), TH = Math.round(0.34 * W);
@@ -77,5 +79,5 @@ export function render(W, H, { t = 0, text = NAME } = {}) {
     I.px.set(c, i * 3);
   }
   bloom(I, { threshold: 0.55, radius: 10 * u, strength: 0.35, tint: [1, 0.85, 0.6] });
-  return { image: grain(I, { amount: 1.8, seed: `decoarc/${t}`, radius: Math.max(1, Math.round(u)) }), text: T.text };
+  return { image: grain(I, { amount: 1.8, seed: stillGrain ? 'decoarc' : `decoarc/${t}`, radius: Math.max(1, Math.round(u)) }), text: T.text };
 }

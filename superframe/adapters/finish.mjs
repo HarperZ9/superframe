@@ -9,12 +9,12 @@
 //   2. a soft shadow of the subject, offset down and right, which lifts it off the ground
 //   3. the subject, placed on the grid at a share of the short side, cut out from its own ground (or kept as a plate
 //      with a feathered edge when it has no separable figure), tone-mapped to the palette ramp
-//   4. grain, clumped 1.9 to 3.1 px, a few code values (QUALITY-SPEC R4), added in display space
+//   4. film grain (lib/look/grain.mjs), correlation 1.9 to 3.1 px, a few code values at the peak (QUALITY-SPEC R4)
 import { defineNode } from '../lib/node.mjs';
 import { make } from '../lib/types.mjs';
 import * as px from '../lib/pix.mjs';
 import { boxBlur } from '../../techniques/lib/util.js';
-import { grainField } from '../../substrate/lib/raster.mjs';
+import { filmGrain } from '../lib/look/grain.mjs';
 
 const clamp = (x, a = 0, b = 1) => (x < a ? a : x > b ? b : x);
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
@@ -94,9 +94,13 @@ export const NODES = [
           d[4 * i + c] += (v - d[4 * i + c]) * m;
         }
       }
-      // 4. grain as the finish pass, in display space
-      const gr = grainField(w, h, { sd: p.grain, clump: p.grainPx, dither: 0, seed: seedInt % 100000 });
-      for (let i = 0; i < w * h; i++) for (let c = 0; c < 3; c++) d[4 * i + c] = px.toLin(clamp(px.toSrgb(clamp(d[4 * i + c])) + gr[i] / 255));
+      // 4. film grain as the finish pass (lib/look/grain.mjs): dye layers sharing one field, coarse crystals in the
+      // shadows, fine in the highlights, on the print's density envelope. grainPx is the correlation width; the fine
+      // field's sigma is half of it. (Effects pass 2026-10-28: was one display-space noise at a single size.)
+      const pic = { w, h, px: new Float32Array(w * h * 3) };
+      for (let i = 0; i < w * h; i++) for (let c = 0; c < 3; c++) pic.px[3 * i + c] = d[4 * i + c];
+      filmGrain(pic, { amount: p.grain, size: 0.5 * p.grainPx, mono: 0.88, seed: seedInt % 100000 });
+      for (let i = 0; i < w * h; i++) for (let c = 0; c < 3; c++) d[4 * i + c] = pic.px[3 * i + c];
       return { raster: out };
     },
   }),

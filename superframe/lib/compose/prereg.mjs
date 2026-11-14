@@ -6,7 +6,7 @@ import { wideAngle } from './wide.mjs';
 import { compositionAxis, contrastMap, grid } from './axis.mjs';
 import { cafeWall, lineAngles } from './cafewall.mjs';
 import { vpSet, lensSet, axisScene } from './plant.mjs';
-import { rng, twoSigma } from './stats.mjs';
+import { rng, twoSigma, exactInterval } from './stats.mjs';
 
 const r4 = v => (v === null || v === undefined ? null : Math.round(v * 1e4) / 1e4);
 const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
@@ -47,6 +47,7 @@ export function p4({ w = 1280, h = 720, n = 40, hit = 0.1 } = {}) {
   const rate = key => rows.filter(r => r[key] <= hit).length / rows.length, N = rows.length;
   const out = { n: N, placementFailures: failed, anchor: rate('anchor'), shuffled: rate('shuffled'), contrastOnly: rate('contrastOnly'), lineOnly: rate('lineOnly'), uniform: rate('uniform'), rows };
   out.twoSigmaAt20 = r4(twoSigma(0.2, N));
+  out.exactAt20 = exactInterval(Math.round(0.2 * N), N).map(r4); // F91: exact interval beside the legacy Wald figure
   out.held = out.anchor >= 0.9; out.controlHeld = out.shuffled <= 0.3;
   return out;
 }

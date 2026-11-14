@@ -904,8 +904,8 @@
   {
    "path": "lettering/lib/letter.mjs",
    "source": "2026-10-23-lettering/lib/letter.mjs",
-   "bytes": 13474,
-   "sourceSha256": "b2cfdee7570a4ef32472ea9fbf715e13f4751e469f55696c0f4eb6312617b5c4"
+   "bytes": 13326,
+   "sourceSha256": "d01733cc8ed047102850343363ed610fd8cd2556a177d2ff47abe8a4f3ad28a9"
   },
   {
    "path": "lettering/lib/paint.mjs",
@@ -1252,8 +1252,8 @@
   {
    "path": "sound/sound/v3/instruments/reed.js",
    "source": "2026-10-23-sound/sound/v3/instruments/reed.js",
-   "bytes": 4962,
-   "sourceSha256": "1c74a7f64881309739a4753fb412204cbc2880d06a84a5607a7e3f9ce8563d7f"
+   "bytes": 5397,
+   "sourceSha256": "b198e400a3f35610d48c403506972087642daca364d59a0d318a30253ffae374"
   },
   {
    "path": "sound/sound/v3/instruments/space.js",
@@ -1528,8 +1528,8 @@
   {
    "path": "superframe/adapters/finish.mjs",
    "source": "2026-10-23-superframe/adapters/finish.mjs",
-   "bytes": 7956,
-   "sourceSha256": "fe308c1747b9fc773ebb8d37b07ab811bce47e36e1a8a7ad5efe3e2b9f22519c"
+   "bytes": 8266,
+   "sourceSha256": "8c8ed1b4859393b53962f96169a98b8145c8a4c96c1057b272f26a7a1634ae19"
   },
   {
    "path": "superframe/adapters/image.mjs",
@@ -1610,6 +1610,12 @@
    "sourceSha256": "33096b58eb79a24dc2e2048eda4651d01469606f6fe91306d6ea7a38d0b7ff1e"
   },
   {
+   "path": "superframe/adapters/seattle.mjs",
+   "source": "2026-10-23-superframe/adapters/seattle.mjs",
+   "bytes": 9267,
+   "sourceSha256": "ff6a157d18b239fadd1ed5aef604f08bd04c10460c6a3b0814136e4ba53f459b"
+  },
+  {
    "path": "superframe/adapters/site.mjs",
    "source": "repo",
    "bytes": 9875,
@@ -1644,6 +1650,12 @@
    "source": "2026-10-23-superframe/adapters/study.mjs",
    "bytes": 2991,
    "sourceSha256": "4b2ef53779b8f57ab7fd5a321b5978d2177089ca679f2cf7f38ebeddf58bbc94"
+  },
+  {
+   "path": "superframe/adapters/toon.mjs",
+   "source": "2026-10-23-superframe/adapters/toon.mjs",
+   "bytes": 5495,
+   "sourceSha256": "4e6623e8f06e58c7bc80a996f8cc01110095d41115ce462277eefaf782fbbdda"
   },
   {
    "path": "superframe/adapters/type.mjs",
@@ -2061,9 +2073,9 @@
   },
   {
    "path": "superframe/docs/NODES.md",
-   "source": "2026-10-23-superframe/docs/NODES.md",
-   "bytes": 96106,
-   "sourceSha256": "d260911a6f9bd7f67873745f6de29d9ee687a5f54e37acdc4b15bff7a14581c3"
+   "source": "repo",
+   "bytes": 100352,
+   "sourceSha256": "fd64f332a8e62831e052b219c678b315c25d1bceed174392d74ffbbbf8a113ac"
   },
   {
    "path": "superframe/docs/prereg/FLUID-INK-PREREG.md",
@@ -2314,8 +2326,8 @@
   {
    "path": "superframe/lib/compose/prereg.mjs",
    "source": "2026-10-23-superframe/lib/compose/prereg.mjs",
-   "bytes": 5160,
-   "sourceSha256": "cb56b48c7a5b6d34a7454c02befaf12e7743c245e126d43daa7f2a2fe34b48ad"
+   "bytes": 5293,
+   "sourceSha256": "11dc71a0140673b45c8a3657b40d17ee8a7c2a4cbd25a6ec68c2d37e7d389985"
   },
   {
    "path": "superframe/lib/compose/scene.mjs",
@@ -2326,8 +2338,8 @@
   {
    "path": "superframe/lib/compose/stats.mjs",
    "source": "2026-10-23-superframe/lib/compose/stats.mjs",
-   "bytes": 2422,
-   "sourceSha256": "5e2bfa9ea06ca8394af8debd66f8bd8fc020ac1b73b7f657fb4f04bf2edd0916"
+   "bytes": 3890,
+   "sourceSha256": "0fc07d039b4876ae77d4eba3b258baaf481f1a698c8a822102ee914f0b1cb1c9"
   },
   {
    "path": "superframe/lib/compose/vp.mjs",
@@ -2388,6 +2400,78 @@
    "source": "2026-10-23-superframe/lib/graph.mjs",
    "bytes": 7886,
    "sourceSha256": "baa1548170913356f72959b8a5b815856cd239257c0b907b15f18036a878a863"
+  },
+  {
+   "path": "superframe/lib/look/README.md",
+   "source": "repo",
+   "bytes": 2747,
+   "sourceSha256": "1fafd6fff27ce4f5135dfab0699350149870d20578ecea24368e3722cc21935d"
+  },
+  {
+   "path": "superframe/lib/look/bloom.mjs",
+   "source": "2026-10-23-superframe/lib/look/bloom.mjs",
+   "bytes": 2621,
+   "sourceSha256": "3e92bafaf3935592a9bbf3349f361b42f7679f8ca15b5887accd771f95c1c11a"
+  },
+  {
+   "path": "superframe/lib/look/blur.mjs",
+   "source": "2026-10-23-superframe/lib/look/blur.mjs",
+   "bytes": 3097,
+   "sourceSha256": "73294925769bf6c94dfbf7c81d34b6acc8bf737733f49ac598aef7b77321f460"
+  },
+  {
+   "path": "superframe/lib/look/colour.mjs",
+   "source": "2026-10-23-superframe/lib/look/colour.mjs",
+   "bytes": 2330,
+   "sourceSha256": "3b440cfe1b3b1bcad114922ff30499f9303aca5719c49e40c4308d40bcdc4d87"
+  },
+  {
+   "path": "superframe/lib/look/comic.mjs",
+   "source": "2026-10-23-superframe/lib/look/comic.mjs",
+   "bytes": 4760,
+   "sourceSha256": "2840acce28c60b2b8762c3ea26e49f6ed8fa105fe7edb94556e1d12c1b7a2efd"
+  },
+  {
+   "path": "superframe/lib/look/dither.mjs",
+   "source": "2026-10-23-superframe/lib/look/dither.mjs",
+   "bytes": 1200,
+   "sourceSha256": "ff6f4863cf4e27a594eca895133fafea33b2ee1884109c1bc45cee8b101a6ddc"
+  },
+  {
+   "path": "superframe/lib/look/grain.mjs",
+   "source": "2026-10-23-superframe/lib/look/grain.mjs",
+   "bytes": 3515,
+   "sourceSha256": "98da843296c62f496421a043c4a73d35767cd79cbc2f2b094950de3f9c0e5da1"
+  },
+  {
+   "path": "superframe/lib/look/index.mjs",
+   "source": "2026-10-23-superframe/lib/look/index.mjs",
+   "bytes": 845,
+   "sourceSha256": "9f560a5703569423c7b6d526e8e5cb02beb3243cfd8634168cb6641a0eeea395"
+  },
+  {
+   "path": "superframe/lib/look/ink.mjs",
+   "source": "2026-10-23-superframe/lib/look/ink.mjs",
+   "bytes": 5504,
+   "sourceSha256": "3969da62a73ae5fa0ae75f761142d639b8c4fa3de9587222352d2ff515d6dd1c"
+  },
+  {
+   "path": "superframe/lib/look/print.mjs",
+   "source": "2026-10-23-superframe/lib/look/print.mjs",
+   "bytes": 6264,
+   "sourceSha256": "60aed437239e088669a1f386e7cf839c17a25b38cee226f2a5a9c5686198e6ab"
+  },
+  {
+   "path": "superframe/lib/look/tone.mjs",
+   "source": "2026-10-23-superframe/lib/look/tone.mjs",
+   "bytes": 4063,
+   "sourceSha256": "6c6291bb736db9dd852781358ec440870d287da03e03923afa2467872e656504"
+  },
+  {
+   "path": "superframe/lib/look/warp.mjs",
+   "source": "2026-10-23-superframe/lib/look/warp.mjs",
+   "bytes": 2674,
+   "sourceSha256": "0ef2e498f850eb35ad28e1068596cadbf913aee56f87c8d4bd6e373f83c99aef"
   },
   {
    "path": "superframe/lib/marble/bath.mjs",
@@ -2722,8 +2806,8 @@
   {
    "path": "superframe/lib/pix.mjs",
    "source": "2026-10-23-superframe/lib/pix.mjs",
-   "bytes": 9057,
-   "sourceSha256": "7891265cd84fdab107896185473e9d1f92bfdbc26b728b1df1ddd8e64e429ff0"
+   "bytes": 9324,
+   "sourceSha256": "52c4c3c09222a313b68366ccc71c672bd5517c9755e3930f99f52ec3268aa75b"
   },
   {
    "path": "superframe/lib/props.mjs",
@@ -2802,6 +2886,162 @@
    "source": "2026-10-23-superframe/lib/registry.mjs",
    "bytes": 2835,
    "sourceSha256": "a45e32e8af48aca9e46583a8dec56a283cfb52371cb6c302b7d1dc839dfaf17c"
+  },
+  {
+   "path": "superframe/lib/seattle/README.md",
+   "source": "repo",
+   "bytes": 5022,
+   "sourceSha256": "e4527291262423e10ef3d4a139d318ca8432e2167d45cf16e100735b1c9cd731"
+  },
+  {
+   "path": "superframe/lib/seattle/bokeh.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/bokeh.mjs",
+   "bytes": 3431,
+   "sourceSha256": "636babfb31506fff0b65aed97f96117dffdfedab35a25f6049fe7497084d599c"
+  },
+  {
+   "path": "superframe/lib/seattle/carframe.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/carframe.mjs",
+   "bytes": 2606,
+   "sourceSha256": "a89d92f50ab1b6a7208d554bf34e442f135b4b823a8c448b484865e1d15c2233"
+  },
+  {
+   "path": "superframe/lib/seattle/carscene.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/carscene.mjs",
+   "bytes": 8970,
+   "sourceSha256": "73f64dcc89ddeaef46fd1b0962a051d15add4e277fe9b3f2f2d0c3665b980822"
+  },
+  {
+   "path": "superframe/lib/seattle/carworld.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/carworld.mjs",
+   "bytes": 11577,
+   "sourceSha256": "dd8d6ae636ff1264705e61e8a58ab1641e46bd3e06e6a00966053095454d4a37"
+  },
+  {
+   "path": "superframe/lib/seattle/droplens.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/droplens.mjs",
+   "bytes": 4527,
+   "sourceSha256": "0634c6a9e373110a59ca1d877416c158db0b89eb326d785c844eb2e24de0a4e6"
+  },
+  {
+   "path": "superframe/lib/seattle/drops.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/drops.mjs",
+   "bytes": 5889,
+   "sourceSha256": "0e419ca5c57f110533e06e619e6e5db65e34c6ad5e4d66ae4c23ac5417f197be"
+  },
+  {
+   "path": "superframe/lib/seattle/film.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/film.mjs",
+   "bytes": 3166,
+   "sourceSha256": "ec72acd98fd1b0ab175cfdaa65713e332eca6f5fd4f956600094e89f11034aaf"
+  },
+  {
+   "path": "superframe/lib/seattle/floaters.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/floaters.mjs",
+   "bytes": 5382,
+   "sourceSha256": "a956dd4618cdb2dfeab52c6dd25ccb170f0b5ece35e4f59d9d435d9f6e885eea"
+  },
+  {
+   "path": "superframe/lib/seattle/gif.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/gif.mjs",
+   "bytes": 4271,
+   "sourceSha256": "90a6a6b05f7fd1ae243b06cbec03c5b758a96cd545e39bcdf28da7278f564172"
+  },
+  {
+   "path": "superframe/lib/seattle/lash.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/lash.mjs",
+   "bytes": 3489,
+   "sourceSha256": "a91add5c9fd96cc8502f7bf8a0d6568ecd9a3e1da01626a8a8febf512c6698f0"
+  },
+  {
+   "path": "superframe/lib/seattle/lights.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/lights.mjs",
+   "bytes": 3294,
+   "sourceSha256": "feefd0e1e173a5bb0fe74addccc576ebc47f47090faf0bf5ebe679cb35642b4f"
+  },
+  {
+   "path": "superframe/lib/seattle/outdoor.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/outdoor.mjs",
+   "bytes": 7903,
+   "sourceSha256": "a3ee652ba94d7bad47fbd9a17c9135beb304f095f0e69e5278e9ab1fd79be559"
+  },
+  {
+   "path": "superframe/lib/seattle/palette.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/palette.mjs",
+   "bytes": 3783,
+   "sourceSha256": "bc610e562183638b531ea435bb4456da66e3405ec66170f1390c1fd0e42529ab"
+  },
+  {
+   "path": "superframe/lib/seattle/pixq.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/pixq.mjs",
+   "bytes": 4873,
+   "sourceSha256": "6f9194a264c44fa6c1820aa00c9f00d4c8f0110f90c496ea206e8d6ccc93eeff"
+  },
+  {
+   "path": "superframe/lib/seattle/pnwtrees.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/pnwtrees.mjs",
+   "bytes": 4985,
+   "sourceSha256": "ceb73875a328b56508a872f81c1cacbeb5e1c3a75b53190b4a905a02225d4e49"
+  },
+  {
+   "path": "superframe/lib/seattle/porch.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/porch.mjs",
+   "bytes": 13455,
+   "sourceSha256": "4af39aaa4e847b8e26ea7bcda979a61023c4f049cf356da33b3e08671157b680"
+  },
+  {
+   "path": "superframe/lib/seattle/precip.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/precip.mjs",
+   "bytes": 4431,
+   "sourceSha256": "a74d0024ed9ae2515dff5c1b0af572805ef0537e801830c8bde1e36a2361dab2"
+  },
+  {
+   "path": "superframe/lib/seattle/raster.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/raster.mjs",
+   "bytes": 5162,
+   "sourceSha256": "508f087a68ba132a58b1a6108d7fc176e810b15e04ffa0f82e4487dff8479296"
+  },
+  {
+   "path": "superframe/lib/seattle/scenes.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/scenes.mjs",
+   "bytes": 1508,
+   "sourceSha256": "16329247f478ae645970b358392fc14c11cb44aa072f1ee94fa18ed21fb76e9f"
+  },
+  {
+   "path": "superframe/lib/seattle/spd.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/spd.mjs",
+   "bytes": 6841,
+   "sourceSha256": "9d8adafbf14864032f6125d33e5d94ca77fe159eab2390e7f8cf7d33b6be40ca"
+  },
+  {
+   "path": "superframe/lib/seattle/sprites.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/sprites.mjs",
+   "bytes": 5342,
+   "sourceSha256": "b5c3f9422f32ff5f642528227055fda4e75414a30d263edb4dadccdba17de3be"
+  },
+  {
+   "path": "superframe/lib/seattle/street.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/street.mjs",
+   "bytes": 3616,
+   "sourceSha256": "3de33aed404ebe06f68196e389fd4c87a8ef584ad2151699b838f2749e156b3d"
+  },
+  {
+   "path": "superframe/lib/seattle/treedraw.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/treedraw.mjs",
+   "bytes": 5111,
+   "sourceSha256": "64d995cdc5236a562a07780d465e4fe9c7032edde056075e088c7beed988b18d"
+  },
+  {
+   "path": "superframe/lib/seattle/trees.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/trees.mjs",
+   "bytes": 11044,
+   "sourceSha256": "475aec20bef4ea179ebad97c3bc4e74ce9f2b689ae682680101ab29ce95c16f7"
+  },
+  {
+   "path": "superframe/lib/seattle/wind.mjs",
+   "source": "2026-10-23-superframe/lib/seattle/wind.mjs",
+   "bytes": 2978,
+   "sourceSha256": "33de2b379ec5cf21040922cf21bae6f88e76792e94f0ef725e94a7845bd7a242"
   },
   {
    "path": "superframe/lib/seed.mjs",
@@ -2990,6 +3230,150 @@
    "sourceSha256": "ca45ea3fb92672735699f0354a8e9c4445866d5c5f411444c15faa0a89e8a30d"
   },
   {
+   "path": "superframe/lib/toon/README.md",
+   "source": "2026-10-23-superframe/lib/toon/README.md",
+   "bytes": 6230,
+   "sourceSha256": "facff879eea4c21bacb409a56ef45fe73456aa21047ee7df99fb07f6684647d6"
+  },
+  {
+   "path": "superframe/lib/toon/cast/darlene.mjs",
+   "source": "2026-10-23-superframe/lib/toon/cast/darlene.mjs",
+   "bytes": 6099,
+   "sourceSha256": "a37f8eaef34ca1cd31ebf2204813083771a0422ce740c7e3d3fc741efc72479a"
+  },
+  {
+   "path": "superframe/lib/toon/cast/gladhand.mjs",
+   "source": "2026-10-23-superframe/lib/toon/cast/gladhand.mjs",
+   "bytes": 8594,
+   "sourceSha256": "8931efe5754f12ab9253dcb4cb25cfc2d68179a369fa0e65aa059d25037c77cb"
+  },
+  {
+   "path": "superframe/lib/toon/cast/gulp.mjs",
+   "source": "2026-10-23-superframe/lib/toon/cast/gulp.mjs",
+   "bytes": 7105,
+   "sourceSha256": "d60f51b40ce8e1317de65ab4d132429ed6b3d391c3514ec42301b36d418ea10e"
+  },
+  {
+   "path": "superframe/lib/toon/cast/human.mjs",
+   "source": "2026-10-23-superframe/lib/toon/cast/human.mjs",
+   "bytes": 3833,
+   "sourceSha256": "8faedc9079447cfd5b132bd6d3eb89b393bed5e5aeeafb13d1b7e611beb588fc"
+  },
+  {
+   "path": "superframe/lib/toon/cast/index.mjs",
+   "source": "2026-10-23-superframe/lib/toon/cast/index.mjs",
+   "bytes": 4101,
+   "sourceSha256": "a9f3f24256d1c7293f1dd4e0b1008dac9cc938fc5ed1a7c956a709e546106501"
+  },
+  {
+   "path": "superframe/lib/toon/cast/mulch.mjs",
+   "source": "2026-10-23-superframe/lib/toon/cast/mulch.mjs",
+   "bytes": 7227,
+   "sourceSha256": "cf595da06ecc0966f6c0304064bbf7e1fcc81371032e74733e2c8a0741d68389"
+  },
+  {
+   "path": "superframe/lib/toon/cast/patterns.mjs",
+   "source": "2026-10-23-superframe/lib/toon/cast/patterns.mjs",
+   "bytes": 1753,
+   "sourceSha256": "80c2067d97be4b9eb63ff1de1fd95cf3dca28d43f445561810fc82a80662c170"
+  },
+  {
+   "path": "superframe/lib/toon/cast/peep.mjs",
+   "source": "2026-10-23-superframe/lib/toon/cast/peep.mjs",
+   "bytes": 7718,
+   "sourceSha256": "66ee03b5f53f67a3811f597ed4db99b0256f51264a533d5648a6d8df31c29980"
+  },
+  {
+   "path": "superframe/lib/toon/cast/ray.mjs",
+   "source": "2026-10-23-superframe/lib/toon/cast/ray.mjs",
+   "bytes": 6031,
+   "sourceSha256": "f547275e6d1e4c316b9f912eacb364b34865c7db70cbd9520a0debdf0564390d"
+  },
+  {
+   "path": "superframe/lib/toon/face.mjs",
+   "source": "2026-10-23-superframe/lib/toon/face.mjs",
+   "bytes": 5603,
+   "sourceSha256": "bb5c8c5e67521d6e5b79d6c793146d31615e9bef13cbe0808a16a1b53533c78c"
+  },
+  {
+   "path": "superframe/lib/toon/geom.mjs",
+   "source": "2026-10-23-superframe/lib/toon/geom.mjs",
+   "bytes": 6082,
+   "sourceSha256": "10c9c3f8ada8bec05cff5963eee5fc1fb371d0ccec74bcc747b67f3841561268"
+  },
+  {
+   "path": "superframe/lib/toon/ink.mjs",
+   "source": "2026-10-23-superframe/lib/toon/ink.mjs",
+   "bytes": 4843,
+   "sourceSha256": "5636b831882f8baea6f085bb61a65b1077cefcba2501c381bad6ba182b3699d3"
+  },
+  {
+   "path": "superframe/lib/toon/layer.mjs",
+   "source": "2026-10-23-superframe/lib/toon/layer.mjs",
+   "bytes": 2018,
+   "sourceSha256": "d1cf21a2a05832490867ff72c5908848b0276e4c901ce312f6b30f783c625c2b"
+  },
+  {
+   "path": "superframe/lib/toon/letter.mjs",
+   "source": "2026-10-23-superframe/lib/toon/letter.mjs",
+   "bytes": 2403,
+   "sourceSha256": "b274ae0434be1cccc5195c6a103be88e8b25d2e3d1949fd6dae3781793ad13e1"
+  },
+  {
+   "path": "superframe/lib/toon/out.mjs",
+   "source": "2026-10-23-superframe/lib/toon/out.mjs",
+   "bytes": 2072,
+   "sourceSha256": "23b882d7ece62f66ce02f86e521aec2324f8b5a4b87c2b34b60a13334a9604e2"
+  },
+  {
+   "path": "superframe/lib/toon/print.mjs",
+   "source": "2026-10-23-superframe/lib/toon/print.mjs",
+   "bytes": 2687,
+   "sourceSha256": "4daf66a3de2585be940dcb9a7ab98416ea1b5c753ed86b08ab35763609e390d3"
+  },
+  {
+   "path": "superframe/lib/toon/puppet.mjs",
+   "source": "2026-10-23-superframe/lib/toon/puppet.mjs",
+   "bytes": 6570,
+   "sourceSha256": "7c0d02744391a5b3b893b42123f5d84abc162c14e36082b4ef4adddfa2200ca9"
+  },
+  {
+   "path": "superframe/lib/toon/raster.mjs",
+   "source": "2026-10-23-superframe/lib/toon/raster.mjs",
+   "bytes": 7383,
+   "sourceSha256": "af8a1e66ff71e07b908b2f075e9fbf429834ada9b3738a40c01088e6ca3f6439"
+  },
+  {
+   "path": "superframe/lib/toon/rig.mjs",
+   "source": "2026-10-23-superframe/lib/toon/rig.mjs",
+   "bytes": 2934,
+   "sourceSha256": "148ee4ff264e29c4b26fb3c3bbfd44005def4f8706064e23555e0a51e536a77f"
+  },
+  {
+   "path": "superframe/lib/toon/scene.mjs",
+   "source": "2026-10-23-superframe/lib/toon/scene.mjs",
+   "bytes": 2722,
+   "sourceSha256": "9c581f511a7f57ef4090214008be251e4193a5987a877eb81f1a5f240c158bdf"
+  },
+  {
+   "path": "superframe/lib/toon/sheet.mjs",
+   "source": "2026-10-23-superframe/lib/toon/sheet.mjs",
+   "bytes": 4552,
+   "sourceSha256": "ebf63fe82a44b6b0fb641c3650d7b98f9c2256f343939cc1fe960c19701a71b8"
+  },
+  {
+   "path": "superframe/lib/toon/stopmo.mjs",
+   "source": "2026-10-23-superframe/lib/toon/stopmo.mjs",
+   "bytes": 6317,
+   "sourceSha256": "86f9a74fafdaf26cb182de18eeaba3ee96d3810913d2ccb62bdf57071134a065"
+  },
+  {
+   "path": "superframe/lib/toon/voice.mjs",
+   "source": "2026-10-23-superframe/lib/toon/voice.mjs",
+   "bytes": 6186,
+   "sourceSha256": "aeff3778283cdf71eea5252ba5494b53f9001f1fa90e8cfde5daecb58905f756"
+  },
+  {
    "path": "superframe/lib/transform.mjs",
    "source": "2026-10-23-superframe/lib/transform.mjs",
    "bytes": 8087,
@@ -3096,6 +3480,90 @@
    "source": "2026-10-23-superframe/lib/voices.mjs",
    "bytes": 3160,
    "sourceSha256": "809f7077cfcd36c2e7635b78e37eb931500543a205df8eec5d935adc2238bc90"
+  },
+  {
+   "path": "superframe/lib/wordmark/README.md",
+   "source": "repo",
+   "bytes": 3991,
+   "sourceSha256": "fb84c76ac74f14887ef902991248707664e42937c54af63d67c15b80d71898ab"
+  },
+  {
+   "path": "superframe/lib/wordmark/apertures.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/apertures.mjs",
+   "bytes": 10131,
+   "sourceSha256": "4f2205d87820fe43bf986351ee57f83158721a5804cd7acfe25a1c7c4268587b"
+  },
+  {
+   "path": "superframe/lib/wordmark/icon.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/icon.mjs",
+   "bytes": 4105,
+   "sourceSha256": "bc49bafcd5f8b23a9173600af881436889ae8ca53c3bd76aa2aa07c6723900e7"
+  },
+  {
+   "path": "superframe/lib/wordmark/index.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/index.mjs",
+   "bytes": 2646,
+   "sourceSha256": "2342a4d19f94c7c7326bdd5a723c6dcc2de6a5f40d19d15ef4d745988dbe48b9"
+  },
+  {
+   "path": "superframe/lib/wordmark/intaglio.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/intaglio.mjs",
+   "bytes": 7945,
+   "sourceSha256": "3e462f32c3ca2d3bb45861aba3c6a049633d5f497c489ef96823e96a8cada7d1"
+  },
+  {
+   "path": "superframe/lib/wordmark/looks.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/looks.mjs",
+   "bytes": 2676,
+   "sourceSha256": "ab5801b2074553a50197b29a8a995ccc1d7d4645bb23e4cb5c1831d063a671ac"
+  },
+  {
+   "path": "superframe/lib/wordmark/marbling.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/marbling.mjs",
+   "bytes": 6109,
+   "sourceSha256": "ada4d58140e54a6e686663890a4cb5663f4ce6eb8498c9aacf5477ca2602fd32"
+  },
+  {
+   "path": "superframe/lib/wordmark/palette.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/palette.mjs",
+   "bytes": 3637,
+   "sourceSha256": "f72e5162b8910a155b1a4f04baa567b0b9de2dc2e1b8932a28c3cc8489ed18a9"
+  },
+  {
+   "path": "superframe/lib/wordmark/sheet.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/sheet.mjs",
+   "bytes": 4023,
+   "sourceSha256": "2c41e46b96787afa2cf370fda79f000eca0891d14adae7203c02cfe8938a8b55"
+  },
+  {
+   "path": "superframe/lib/wordmark/smalti.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/smalti.mjs",
+   "bytes": 5423,
+   "sourceSha256": "3d06f0acf7355a0170ee1afb8ac8dd9958a6c680af36578059f1c54103aba341"
+  },
+  {
+   "path": "superframe/lib/wordmark/stencil.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/stencil.mjs",
+   "bytes": 5646,
+   "sourceSha256": "4c7da6c14006ee50e369c7d1215f7eb4cf1e89659d10e023e0f381fc7ebe0eb0"
+  },
+  {
+   "path": "superframe/lib/wordmark/strata-plates.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/strata-plates.mjs",
+   "bytes": 2312,
+   "sourceSha256": "6e0c81be12233d96f5b708b76663e3cd8be9edb53c037e9bf91b475042946e2b"
+  },
+  {
+   "path": "superframe/lib/wordmark/strata.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/strata.mjs",
+   "bytes": 5821,
+   "sourceSha256": "694bdfaa32f5d59861c9888f2ff68d97fcb60acca9a8cfd9c6811bb76ddd73d7"
+  },
+  {
+   "path": "superframe/lib/wordmark/word.mjs",
+   "source": "2026-10-23-superframe/lib/wordmark/word.mjs",
+   "bytes": 2409,
+   "sourceSha256": "df40fc991aced8312e0b58ea777b405074b3bb66a6f47499e776d736435bd30c"
   },
   {
    "path": "superframe/native/lightlut/driver.c",
@@ -3206,6 +3674,12 @@
    "sourceSha256": "0081f040a846822a4179ad56bf9eeba5cda6e908d785b760e2a80f31a23631b5"
   },
   {
+   "path": "superframe/tests/compose-stats.test.mjs",
+   "source": "2026-10-23-superframe/tests/compose-stats.test.mjs",
+   "bytes": 1695,
+   "sourceSha256": "002515954a9ebe6ce709c94f0bf63883a4c556629068479fad9c0c208ec0a2ca"
+  },
+  {
    "path": "superframe/tests/compose.test.mjs",
    "source": "2026-10-23-superframe/tests/compose.test.mjs",
    "bytes": 4910,
@@ -3267,9 +3741,9 @@
   },
   {
    "path": "superframe/tests/golden/nodes.json",
-   "source": "2026-10-23-superframe/tests/golden/nodes.json",
-   "bytes": 6691,
-   "sourceSha256": "145d431517aea8708ddecbc714d422c481edb23435e13472043f4bb34a1e00eb"
+   "source": "repo",
+   "bytes": 7075,
+   "sourceSha256": "d0a80ea825303be096f65e74d57eeaaff8ba09966192c78878855ab2181c633d"
   },
   {
    "path": "superframe/tests/graph.test.mjs",
@@ -3288,6 +3762,12 @@
    "source": "2026-10-23-superframe/tests/lightlut.test.mjs",
    "bytes": 3851,
    "sourceSha256": "2a021208fd2369a3a6e6ddbb8342b4299a457485b4c6ede0ecca20fbad80cdb8"
+  },
+  {
+   "path": "superframe/tests/look.test.mjs",
+   "source": "2026-10-23-superframe/tests/look.test.mjs",
+   "bytes": 6935,
+   "sourceSha256": "800486f1cbade518ff215cdd92c7c6be7a774297571c44f8c4a1f88e38fc50b9"
   },
   {
    "path": "superframe/tests/marble.test.mjs",
@@ -3362,6 +3842,24 @@
    "sourceSha256": "75f4099f7cddbdd2737cc4fb6d9e8b15d4ad8f1edf1f48a5892dbea4c11387c4"
   },
   {
+   "path": "superframe/tests/seattle-motion.test.mjs",
+   "source": "2026-10-23-superframe/tests/seattle-motion.test.mjs",
+   "bytes": 5552,
+   "sourceSha256": "1b965362480cd462aea3393ca4f9d5f96845fa728ea48dfdd1b7f9986a548bc1"
+  },
+  {
+   "path": "superframe/tests/seattle-optics.test.mjs",
+   "source": "2026-10-23-superframe/tests/seattle-optics.test.mjs",
+   "bytes": 5051,
+   "sourceSha256": "5bd4e59a4346539a81104d1327f33b31ba92cbc94ecdddff08181006e0ea655a"
+  },
+  {
+   "path": "superframe/tests/seattle-spd.test.mjs",
+   "source": "2026-10-23-superframe/tests/seattle-spd.test.mjs",
+   "bytes": 3497,
+   "sourceSha256": "c85a5fed69a081bdcbdf2df0b3d43dc78cdd97f62dc23a438238d697a70f3b26"
+  },
+  {
    "path": "superframe/tests/spectral.test.mjs",
    "source": "2026-10-23-superframe/tests/spectral.test.mjs",
    "bytes": 8428,
@@ -3416,6 +3914,12 @@
    "sourceSha256": "3d1223d763e2068c0698902413d7d5438e9105ddb3899a58f05d7b75edcbdb47"
   },
   {
+   "path": "superframe/tests/toon.test.mjs",
+   "source": "2026-10-23-superframe/tests/toon.test.mjs",
+   "bytes": 8772,
+   "sourceSha256": "09a892b2511a59cafbea901eebb7840ad7a7d9d0a4c5accc7a8d51bc6d6772a6"
+  },
+  {
    "path": "superframe/tests/transfer.test.mjs",
    "source": "2026-10-23-superframe/tests/transfer.test.mjs",
    "bytes": 4255,
@@ -3444,6 +3948,12 @@
    "source": "2026-10-23-superframe/tests/value.test.mjs",
    "bytes": 5338,
    "sourceSha256": "183c292718fd46641b8902736744f36ffef7231c30e385954f4cdc6dc04eb19d"
+  },
+  {
+   "path": "superframe/tests/wordmark.test.mjs",
+   "source": "2026-10-23-superframe/tests/wordmark.test.mjs",
+   "bytes": 7864,
+   "sourceSha256": "f61e9a6fb98e82c29e38cf37c5689c10c7f9c3652b63fec7a11aa9aeb86b1b91"
   },
   {
    "path": "superframe/tools/bact-plate.mjs",
@@ -3510,6 +4020,12 @@
    "source": "2026-10-23-superframe/tools/compose-spec.mjs",
    "bytes": 2800,
    "sourceSha256": "4554a818a9f08d2d62dc660f336d37c1962b5ae0f8f58e2c82c8d016bd9a32f9"
+  },
+  {
+   "path": "superframe/tools/effects-render.mjs",
+   "source": "2026-10-23-superframe/tools/effects-render.mjs",
+   "bytes": 1027,
+   "sourceSha256": "6cd75b432c530859392eca1eb7d50de61a1a983728af29de3bff834a4c296b84"
   },
   {
    "path": "superframe/tools/flow-map.mjs",
@@ -3608,6 +4124,12 @@
    "sourceSha256": "82b3533c38788f0aed9a38bddaa5d38f09d7183c573e0542c04daba7d2d52bba"
   },
   {
+   "path": "superframe/tools/seattle-render.mjs",
+   "source": "2026-10-23-superframe/tools/seattle-render.mjs",
+   "bytes": 4453,
+   "sourceSha256": "b7f721ffe466336e00b814017a1908de142023e9bbb5ad6b4b5eb2a00820af32"
+  },
+  {
    "path": "superframe/tools/site-modules.mjs",
    "source": "2026-10-23-superframe/tools/site-modules.mjs",
    "bytes": 4258,
@@ -3692,6 +4214,30 @@
    "sourceSha256": "647d06229fd99983345267f1a3785805ff1c651532a41795174f41f125331c27"
   },
   {
+   "path": "superframe/tools/toon-dialogue.mjs",
+   "source": "2026-10-23-superframe/tools/toon-dialogue.mjs",
+   "bytes": 6406,
+   "sourceSha256": "e8a4384d34ee11f430f1f525c698d6da1a17dd44041b2e6b2a99aa43c50e92bc"
+  },
+  {
+   "path": "superframe/tools/toon-psa.mjs",
+   "source": "2026-10-23-superframe/tools/toon-psa.mjs",
+   "bytes": 6569,
+   "sourceSha256": "d6637b3abaf8209bfd2a093ca84252c6333b4f9b69ec3b98df77f35807b47560"
+  },
+  {
+   "path": "superframe/tools/toon-sheets.mjs",
+   "source": "2026-10-23-superframe/tools/toon-sheets.mjs",
+   "bytes": 701,
+   "sourceSha256": "5923f1b6cd159b1ac7f61cfb2126dac03e35d5d7911df98a257c7caf068694f0"
+  },
+  {
+   "path": "superframe/tools/toon-stopmo.mjs",
+   "source": "2026-10-23-superframe/tools/toon-stopmo.mjs",
+   "bytes": 6510,
+   "sourceSha256": "da125b276231c2fab18076635554e27552197fa8df7c0f96337c5c57d4e5039b"
+  },
+  {
    "path": "superframe/tools/value-demo.mjs",
    "source": "2026-10-23-superframe/tools/value-demo.mjs",
    "bytes": 4796,
@@ -3714,6 +4260,24 @@
    "source": "2026-10-23-superframe/tools/vessel-plate.mjs",
    "bytes": 1760,
    "sourceSha256": "45838617b14c993d3bcffe884079fc48620a6948c3df377d67e3e5882977f012"
+  },
+  {
+   "path": "superframe/tools/wordmark-metamer.mjs",
+   "source": "2026-10-23-superframe/tools/wordmark-metamer.mjs",
+   "bytes": 2659,
+   "sourceSha256": "18082f4b1cb129a84b39559149cd816e3379f1cea80132ced8b80309d9112d58"
+  },
+  {
+   "path": "superframe/tools/wordmark-plates.mjs",
+   "source": "2026-10-23-superframe/tools/wordmark-plates.mjs",
+   "bytes": 2344,
+   "sourceSha256": "21abd5b22f398451611a19f2ca279147e7ad748c295264a737a569bb426ebb3b"
+  },
+  {
+   "path": "superframe/tools/wordmark.mjs",
+   "source": "2026-10-23-superframe/tools/wordmark.mjs",
+   "bytes": 8267,
+   "sourceSha256": "735639eba34a0dcc926f15bd450e5cd38f37a3298612d1a00267562581339722"
   },
   {
    "path": "superframe/upstream/site-3ca6529/media/raw-native/wasm-0.4.0/LICENSE-NOTE.md",
@@ -4876,8 +5440,8 @@
   {
    "path": "name-art/concepts/11-pearls.mjs",
    "source": "2026-10-24-name-art/concepts/11-pearls.mjs",
-   "bytes": 5253,
-   "sourceSha256": "5846b37cc49e3f017c820ba6f7c5c51002abf60f33c177936f242710f3c284f6"
+   "bytes": 5436,
+   "sourceSha256": "1c39d6cabe753db3904e0348a52e77f6bd02a463790f8bd76731ae2a514ae10c"
   },
   {
    "path": "name-art/concepts/12-riso.mjs",
@@ -4900,14 +5464,14 @@
   {
    "path": "name-art/concepts/15-deco-arc.mjs",
    "source": "2026-10-24-name-art/concepts/15-deco-arc.mjs",
-   "bytes": 5908,
-   "sourceSha256": "3bf6769c7e4b6625c1be546eb7d1c5943f36e67311cf28ad46979ca24287ec74"
+   "bytes": 6161,
+   "sourceSha256": "2cc38eb73c76b5d14ffdb01202248b50f7485e724c800e6ffa10b23959a693b8"
   },
   {
    "path": "name-art/concepts/16-intaglio-lines.mjs",
    "source": "2026-10-24-name-art/concepts/16-intaglio-lines.mjs",
-   "bytes": 7186,
-   "sourceSha256": "ce96f98e20ce562ab6a20ca3c221263b149da293599b43953e584425baa9bb1d"
+   "bytes": 8175,
+   "sourceSha256": "15516f5c4525655e59072b070ccd1a417384aa86f1c446e500c0ab65f282dcb7"
   },
   {
    "path": "name-art/concepts/17-pearls-large.mjs",
@@ -5000,6 +5564,12 @@
    "sourceSha256": "040bbb0d0272d7560924c118f7bbf6e591a40c42c798233d916fef8c9c8f7b41"
   },
   {
+   "path": "name-art/lib/README.md",
+   "source": "repo",
+   "bytes": 885,
+   "sourceSha256": "9ad1dff57cdadbe3cc897c6dea69b78575b5238304987e7e635374958c07fc08"
+  },
+  {
    "path": "name-art/lib/crystal.mjs",
    "source": "2026-10-24-name-art/lib/crystal.mjs",
    "bytes": 12339,
@@ -5020,8 +5590,8 @@
   {
    "path": "name-art/lib/img.mjs",
    "source": "2026-10-24-name-art/lib/img.mjs",
-   "bytes": 7997,
-   "sourceSha256": "bd1e55888c703a540de9f0380ebafe428e402ea1e6137f9d7314fa9f2f40b7bd"
+   "bytes": 8643,
+   "sourceSha256": "f4e90ab55df6a4e59dff76ec3c0ce818dc4277bf403ac42a493f891e002a40d5"
   },
   {
    "path": "name-art/lib/mosaic/andamento.mjs",
@@ -5066,6 +5636,12 @@
    "sourceSha256": "b58061a435cb0137cb7a037cb5bfcf29691d4e8f7feef6c7d60c4493eff2c53e"
   },
   {
+   "path": "name-art/lib/press.mjs",
+   "source": "2026-10-24-name-art/lib/press.mjs",
+   "bytes": 4027,
+   "sourceSha256": "d87e4367f68fe33945d37c0d19afeade220f4328911075f2e30e8e8dc98e76a6"
+  },
+  {
    "path": "name-art/lib/strokes.mjs",
    "source": "2026-10-24-name-art/lib/strokes.mjs",
    "bytes": 8914,
@@ -5074,14 +5650,14 @@
   {
    "path": "name-art/superframe/mosaic-node.mjs",
    "source": "2026-10-24-name-art/superframe/mosaic-node.mjs",
-   "bytes": 2985,
-   "sourceSha256": "4a7610a8cbd77f26655ae073b0a16e7dca6859f84f80cb940135450f8a6303ae"
+   "bytes": 2971,
+   "sourceSha256": "13cc68977b48dc0d5c1485a758988769d7732eeab4399ecf725e1b234a75b042"
   },
   {
    "path": "name-art/superframe/nameart.mjs",
    "source": "2026-10-24-name-art/superframe/nameart.mjs",
-   "bytes": 5512,
-   "sourceSha256": "8744fc8da6e3159f1724618aaa9eca3fdfc3302f7f9416a2f8d01630194418c9"
+   "bytes": 5420,
+   "sourceSha256": "604befa8232719603e0dfc5565d01e0cadd1e0bdce430e694537d376d7394c88"
   },
   {
    "path": "visualizer/lib/draw.mjs",

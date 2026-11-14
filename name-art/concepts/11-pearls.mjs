@@ -14,7 +14,9 @@ export const meta = {
   refs: ['feed set 27 iridescent strips (thin film)', 'feed set 20 light material'],
 };
 
-export function render(W, H, { t = 0, text = NAME } = {}) {
+// stillGrain: the grain holds still across a loop's frames, so a video encoder's first (intra) frame and its
+// predicted frames carry the same grain and the loop does not flick where it wraps (2026-11-09).
+export function render(W, H, { t = 0, text = NAME, stillGrain = false } = {}) {
   const u = W / 1280, I = img(W, H), R = random('pearls');
   const N = setName(breakLines(text, 2), W, H, { box: [0.08, 0.13, 0.92, 0.85], weight: 900, tracking: 40, leading: 1.18, sdf: true });
   const rMax = N.capPx * 0.075, rMin = Math.max(1.6 * u, N.capPx * 0.012), cell = rMax * 2, gw = Math.ceil(W / cell), grid = new Map(), balls = [];
@@ -65,5 +67,5 @@ export function render(W, H, { t = 0, text = NAME } = {}) {
       const i = (y * W + x) * 3; for (let c = 0; c < 3; c++) I.px[i + c] += (col[c] - I.px[i + c]) * a;
     }
   }
-  return { image: grain(I, { amount: 2, seed: `pearls/${t}`, radius: Math.max(1, Math.round(u)) }), text: N.text, count: balls.length };
+  return { image: grain(I, { amount: 2, seed: stillGrain ? 'pearls' : `pearls/${t}`, radius: Math.max(1, Math.round(u)) }), text: N.text, count: balls.length };
 }
