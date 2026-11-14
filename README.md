@@ -167,7 +167,7 @@ The engine was built as one workspace, and its folders keep their working names:
 | `creation/` | the creation engine's laws |
 | `typeengine/`, `typeface/` | living type, the Accession family and the type forge (`typeface/forge/lib/`) |
 | `substrate/` | the seed and receipt contracts |
-| `sound/` | the sound engine, with the reference renderer in `sound/reference/` |
+| `sound/` | the sound engine: instruments, sequencer, sampler and players in `sound/sound/`, the reference renderer in `sound/reference/` |
 | `packages/` | the instruments under the engine: measured data, materials, renderers, CAD and EDA, kernels, the CRT, the field type, the study tools, the weave, retro and fractal generators, and the ear that measures rendered audio |
 | other folders | the techniques the nodes wrap, each imported unchanged |
 
