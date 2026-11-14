@@ -1,15 +1,16 @@
-// adapters/site.mjs: generators from the site (HarperZ9.github.io system/, pinned at origin/main 3ca6529 in
-// ../upstream/site-3ca6529) and raw-native through its vendored 0.4.0 CPU wasm build. Retro quantise and dither,
-// loom drafts, plot-map terrain and hidden-line ridges, CPU fractals, and the raw-native path-traced test scene.
+// adapters/site.mjs: generators that began on the site (HarperZ9.github.io system/ at commit 3ca6529). Retro quantise
+// and dither, loom drafts and CPU fractals are engine packages now (packages/retro, packages/weave, packages/fractal).
+// Plot-map terrain and hidden-line ridges still load from ../upstream/site-3ca6529, and the path-traced test scene
+// runs raw-native through its vendored 0.4.0 CPU wasm build.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { defineNode } from '../lib/node.mjs';
 import { make } from '../lib/types.mjs';
 import * as px from '../lib/pix.mjs';
-import { quantizeGrid, RETRO_DEFAULT_OPTS, paletteNames } from '../upstream/site-3ca6529/system/retro-engine.js';
-import { computeDraft, STRUCTURES } from '../upstream/site-3ca6529/system/weave-engine.js';
+import { quantizeGrid, RETRO_DEFAULT_OPTS, paletteNames } from '../../packages/retro/src/retro-engine.js';
+import { computeDraft, STRUCTURES } from '../../packages/weave/src/weave-engine.js';
 import { elevationField, ridgelines } from '../upstream/site-3ca6529/system/plot-maps.js';
-import { renderFormulaCPU } from '../upstream/site-3ca6529/system/fractal-formula-cpu.js';
+import { renderFormulaCPU } from '../../packages/fractal/src/fractal-formula-cpu.js';
 import { toSrgb } from '../../feed-24/build/raster.js';
 
 const SYS = 'HarperZ9.github.io system';

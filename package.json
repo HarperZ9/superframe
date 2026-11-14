@@ -12,7 +12,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "test": "node --test superframe/tests/*.test.mjs creation/tests/*.test.mjs",
+    "test": "node --test superframe/tests/*.test.mjs creation/tests/*.test.mjs sound/reference/tests/*.test.mjs typeface/forge/tests/*.test.mjs",
     "test:packages": "node --test \"packages/**/*.test.js\" \"packages/**/*.test.mjs\" && node packages/superstack/tests/run_vectors.mjs && python packages/superstack/tests/run_vectors.py",
     "test:py": "python -m pytest -q -p no:cacheprovider --import-mode=importlib packages",
     "test:games": "node --test \"games/low-water/game/engine/tests/*.test.mjs\" \"games/low-water/game/engine/combat/tests/*.test.mjs\"",

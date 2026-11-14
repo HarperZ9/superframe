@@ -1,12 +1,12 @@
 // export.mjs: offline export of graph outputs to files. Node only (fs, zlib); the formats themselves come from
-// existing modules: PNG from the feed-23 encoder, WAV and PCM from superstack, MIDI and STL from the site.
+// existing modules: PNG from the feed-23 encoder, WAV and PCM from superstack, MIDI and STL from ./formats.
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { deflateSync } from 'node:zlib';
 import { encodePNG } from '../../feed-23/build/brush/png.js';
 import { quantizeS16, wavS16 } from '../../substrate/lib/vendor/superstack.mjs';
-import { writeMIDI } from '../upstream/site-3ca6529/system/midi-writer.js';
-import { heightmapToSTL } from '../upstream/site-3ca6529/system/relief-stl.js';
+import { writeMIDI } from './formats/midi-writer.js';
+import { heightmapToSTL } from './formats/relief-stl.js';
 import { toSRGB8, resampleRaster } from './pix.mjs';
 import { rngFrom } from './seed.mjs';
 

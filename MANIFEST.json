@@ -1611,15 +1611,15 @@
   },
   {
    "path": "superframe/adapters/site.mjs",
-   "source": "2026-10-23-superframe/adapters/site.mjs",
-   "bytes": 9814,
-   "sourceSha256": "a700683ab2823f619bcc1a24cd64f82794372a043a8786d91fce2be3a058e7ef"
+   "source": "repo",
+   "bytes": 9875,
+   "sourceSha256": "9e082191889f2eaa36ad768855068d97a4d86be6709780f0329259a1365c1f46"
   },
   {
    "path": "superframe/adapters/sound.mjs",
-   "source": "2026-10-23-superframe/adapters/sound.mjs",
-   "bytes": 11019,
-   "sourceSha256": "0fb41aea6310d62322b1b7356ef0de3cf1d707b475704ff90ea5498302445420"
+   "source": "repo",
+   "bytes": 10978,
+   "sourceSha256": "b7b0ffd8503bec46501854cd5cc1be1e3c9299e9a2261e25c0a6ab989b816f26"
   },
   {
    "path": "superframe/adapters/spectral.mjs",
@@ -2343,9 +2343,9 @@
   },
   {
    "path": "superframe/lib/convert.mjs",
-   "source": "2026-10-23-superframe/lib/convert.mjs",
-   "bytes": 13490,
-   "sourceSha256": "9239f7555768289898cadd5cce9b2e87969e56ef58aa70610845b22590d6aca0"
+   "source": "repo",
+   "bytes": 13318,
+   "sourceSha256": "e3d11e418ac0ffda6ed37f9ebfea46c61a63d6b3b8742c5dca23002c3b7c54d8"
   },
   {
    "path": "superframe/lib/dist.mjs",
@@ -2361,9 +2361,9 @@
   },
   {
    "path": "superframe/lib/export.mjs",
-   "source": "2026-10-23-superframe/lib/export.mjs",
-   "bytes": 5148,
-   "sourceSha256": "650967d80c22230a29c6983b0faaf0491b4b70c46cecc1a4d62650e3750d4a12"
+   "source": "repo",
+   "bytes": 5028,
+   "sourceSha256": "5332257572e95c786d1a902e639183a2addd187f5eb9c71f9f391d612e241c04"
   },
   {
    "path": "superframe/lib/fill.mjs",
@@ -3758,60 +3758,6 @@
    "sourceSha256": "45e25940368d664e21088708ba1c515b0e5d9ef60a2bea4b8b93f8f31113a470"
   },
   {
-   "path": "superframe/upstream/site-3ca6529/system/audio.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/audio.js",
-   "bytes": 7175,
-   "sourceSha256": "3b74e6f166e6ef47adbe0943cc8be2d74f1544883fa6dd334d2d632d2bd19835"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/fractal-color.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-color.js",
-   "bytes": 11038,
-   "sourceSha256": "60670847f8fe336e5418161dabef3a47169e0fb0e8f2a3c25cd89c2404c8afa2"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/fractal-colouring.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-colouring.js",
-   "bytes": 8529,
-   "sourceSha256": "7dcb1ce8b338b8afbcfa1648796c96c11523ecc9e87ac88be7dc885953dbbeb1"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/fractal-formula-cpu.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-formula-cpu.js",
-   "bytes": 4331,
-   "sourceSha256": "7fc7cda3220f1b765719d34216bd42dbf33904797ed3cf50e065c7a4012c52e4"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/fractal-formula.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-formula.js",
-   "bytes": 23338,
-   "sourceSha256": "53634d3e8fbe83f84d8afd55b0f4066ce3c670a7c6e089d9f40bcd24cafd7cbe"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/fractal-formulas.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-formulas.js",
-   "bytes": 7474,
-   "sourceSha256": "2d321b083b916213870d398e8e36c41e21d38c372c1f14a2501a501af359eff9"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/fractal-glsl-formula.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-glsl-formula.js",
-   "bytes": 7382,
-   "sourceSha256": "2933aea1338f5825b3cf15d0b419b1eeb8cd6f1fa244fdc124646a012d643a99"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/fractal-glsl-lib.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-glsl-lib.js",
-   "bytes": 15891,
-   "sourceSha256": "d30f5243a473e9cc8a423bbe51195102abe443107697610bf9dfdaca17278e27"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/fractal-glsl-lyapunov.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/fractal-glsl-lyapunov.js",
-   "bytes": 3803,
-   "sourceSha256": "c8e5f766e400f9f91d35be1e0c02f56ccc50ab570aaf2ac767bc3c4727109fb5"
-  },
-  {
    "path": "superframe/upstream/site-3ca6529/system/media-engine/contracts.mjs",
    "source": "2026-10-23-superframe/upstream/site-3ca6529/system/media-engine/contracts.mjs",
    "bytes": 26932,
@@ -3824,18 +3770,6 @@
    "sourceSha256": "2cc355d90663ba427330519642a6e1e07576498384de0db7540d870725df01f2"
   },
   {
-   "path": "superframe/upstream/site-3ca6529/system/media-engine/sound.mjs",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/media-engine/sound.mjs",
-   "bytes": 17060,
-   "sourceSha256": "64b49ab250b9dfeb5ea26005a4fbce88d69221844f2b945ad65b3d6843446adc"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/midi-writer.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/midi-writer.js",
-   "bytes": 2461,
-   "sourceSha256": "91ebbcc1498ed581c3140340b3ece2ab6c34ed65c7e8c1a66182dac600771831"
-  },
-  {
    "path": "superframe/upstream/site-3ca6529/system/plot-maps.js",
    "source": "2026-10-23-superframe/upstream/site-3ca6529/system/plot-maps.js",
    "bytes": 19657,
@@ -3846,42 +3780,6 @@
    "source": "2026-10-23-superframe/upstream/site-3ca6529/system/plotter.js",
    "bytes": 22969,
    "sourceSha256": "33701d7a8adadd164b907015366fd51ae4dee4a7c8e8acc8a5f111c8699f40ea"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/relief-stl.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/relief-stl.js",
-   "bytes": 5071,
-   "sourceSha256": "206bc305416f91e23012122522f7d0bd1749ee53603e17ff57be635fab0e1a46"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/retro-crt.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/retro-crt.js",
-   "bytes": 13260,
-   "sourceSha256": "413b7924645a5102489c9358bd0e242781ea210ec2712646acb3a8f7079e7a65"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/retro-dither.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/retro-dither.js",
-   "bytes": 6100,
-   "sourceSha256": "faad1855c7cc6be230a89321a82044ab5b4d5c0d9f4cd185e7e2e0e8b27032ec"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/retro-engine.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/retro-engine.js",
-   "bytes": 8577,
-   "sourceSha256": "1a9a4a8c3c7aba3535b9394df4d578e45e27266b7d9f7435d09135a6f0387873"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/retro-palettes.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/retro-palettes.js",
-   "bytes": 6312,
-   "sourceSha256": "2e3d6ba82d1a867f544c5526b04240ff659bef68b765604a1ead8de048a5a9e3"
-  },
-  {
-   "path": "superframe/upstream/site-3ca6529/system/weave-engine.js",
-   "source": "2026-10-23-superframe/upstream/site-3ca6529/system/weave-engine.js",
-   "bytes": 12990,
-   "sourceSha256": "64ee2b2f774bcbe3045c9400242204f7fa08403d79230014eb2cd52a3e724f09"
   },
   {
    "path": "techniques/fonts/hanken-grotesk-italic.woff2",
@@ -3981,9 +3879,9 @@
   },
   {
    "path": "typeengine/lib/faces.mjs",
-   "source": "2026-10-23-typeengine/lib/faces.mjs",
-   "bytes": 5171,
-   "sourceSha256": "5d7761e309b0e889dd7352a974895b76a7692aeb04fe2d7ae26905cf62fe7b25"
+   "source": "repo",
+   "bytes": 5139,
+   "sourceSha256": "970336dc837a7f3ea88779cc6f957b24f0b9bce2abf61ef10b6eedbcb563f8c0"
   },
   {
    "path": "typeengine/lib/fields.mjs",
@@ -4251,9 +4149,9 @@
   },
   {
    "path": "typeface/forge/family/materials.mjs",
-   "source": "2026-10-23-typeface/forge/family/materials.mjs",
-   "bytes": 3105,
-   "sourceSha256": "9913f4bc88d3cf50f898d92587bfe97216bba6c2d4285fe1eac972b9cfdf9c7d"
+   "source": "repo",
+   "bytes": 3112,
+   "sourceSha256": "129a39b42d54acae1a7f02ce647c83ce9fe5beb9895edc3aec278f167e57766b"
   },
   {
    "path": "typeface/forge/family/mono.mjs",
@@ -4320,42 +4218,6 @@
    "source": "2026-10-23-typeface/forge/upstream/media-engine/contracts.mjs",
    "bytes": 26932,
    "sourceSha256": "b972095e4eadb007fb892e48027fe6d970328eb2256749e046b296f500208878"
-  },
-  {
-   "path": "typeface/forge/upstream/media-engine/seed.mjs",
-   "source": "2026-10-23-typeface/forge/upstream/media-engine/seed.mjs",
-   "bytes": 3085,
-   "sourceSha256": "2cc355d90663ba427330519642a6e1e07576498384de0db7540d870725df01f2"
-  },
-  {
-   "path": "typeface/forge/upstream/type-forge/forge.mjs",
-   "source": "2026-10-23-typeface/forge/upstream/type-forge/forge.mjs",
-   "bytes": 7826,
-   "sourceSha256": "0d127a0b3c318f266c5c89c6375912a0e5a8d226cdf9550acb225f47c29f3445"
-  },
-  {
-   "path": "typeface/forge/upstream/type-forge/geometry.mjs",
-   "source": "2026-10-23-typeface/forge/upstream/type-forge/geometry.mjs",
-   "bytes": 1222,
-   "sourceSha256": "cbb387e5d9875a824af74b0fcf1995334c6150d62639c3215318949529f63684"
-  },
-  {
-   "path": "typeface/forge/upstream/type-forge/pyround.mjs",
-   "source": "2026-10-23-typeface/forge/upstream/type-forge/pyround.mjs",
-   "bytes": 1510,
-   "sourceSha256": "ea4d57b5307cdfbb14395c2aefe5e32a2ee8b0ba5dfa1973553f6d4a658db6db"
-  },
-  {
-   "path": "typeface/forge/upstream/type-forge/skeletons-caps.mjs",
-   "source": "2026-10-23-typeface/forge/upstream/type-forge/skeletons-caps.mjs",
-   "bytes": 6253,
-   "sourceSha256": "5981efdab61e84ba33718a110cb878b8f9aeabe0b44ba40082daae694b9b266e"
-  },
-  {
-   "path": "typeface/forge/upstream/type-forge/skeletons.mjs",
-   "source": "2026-10-23-typeface/forge/upstream/type-forge/skeletons.mjs",
-   "bytes": 8032,
-   "sourceSha256": "72fbbcb2ff5bf04e1a21f93600f36463bc88ad77c00e287ea7d3267f7ec7c2fe"
   },
   {
    "path": "ui/assets/columbia-disc-720.webp",
@@ -5690,6 +5552,120 @@
    "sourceSha256": "9358d26d62e6d53100ecc080892e105cf916f7aa89268eb4c506f611ce34e484"
   },
   {
+   "path": "sound/reference/audio.js",
+   "source": "repo",
+   "bytes": 7334,
+   "sourceSha256": "4916d1cf975043cb17a01d79b7abebe6f68d12f68a3ef129cb9f9cfc8b2213fe"
+  },
+  {
+   "path": "sound/reference/sound.mjs",
+   "source": "repo",
+   "bytes": 17243,
+   "sourceSha256": "0141fdae71dc593d6f674215a21844df6426095109f81e0345eefcc11433a1ad"
+  },
+  {
+   "path": "superframe/lib/formats/midi-writer.js",
+   "source": "repo",
+   "bytes": 2612,
+   "sourceSha256": "d8a6142b11895d887e23307a12ab9575dc3b50068aa7147b827a912b81d52281"
+  },
+  {
+   "path": "superframe/lib/formats/relief-stl.js",
+   "source": "repo",
+   "bytes": 5221,
+   "sourceSha256": "97ad623bf28beb7754af2a260b9a78a160bfb87e2c7e40a3b4dd86d04e3a6b8b"
+  },
+  {
+   "path": "superframe/lib/seed-streams.mjs",
+   "source": "repo",
+   "bytes": 3268,
+   "sourceSha256": "89c9754a8d52afd6e18538991ef475525148fd637cf9a81c87b9c097480d2093"
+  },
+  {
+   "path": "typeface/forge/lib/forge.mjs",
+   "source": "repo",
+   "bytes": 7999,
+   "sourceSha256": "021e6d9badb87a889bdcb095b54212e8d26901cfae68731e55c9998d3ee42f44"
+  },
+  {
+   "path": "typeface/forge/lib/geometry.mjs",
+   "source": "repo",
+   "bytes": 1382,
+   "sourceSha256": "40ff2eea9bcf5a099e20b1dcb4add6b44e6ba253959af7961ba9adebe8abb5e0"
+  },
+  {
+   "path": "typeface/forge/lib/pyround.mjs",
+   "source": "repo",
+   "bytes": 1669,
+   "sourceSha256": "f09f2896bda379072e3c25067161163d51010ce8f6ec5032def7072f8bd1258f"
+  },
+  {
+   "path": "typeface/forge/lib/skeletons-caps.mjs",
+   "source": "repo",
+   "bytes": 6419,
+   "sourceSha256": "a1e5b3f90fd607b0ab6a36258e065f00037190aa3515b0dde488c4a5681340c7"
+  },
+  {
+   "path": "typeface/forge/lib/skeletons.mjs",
+   "source": "repo",
+   "bytes": 8193,
+   "sourceSha256": "0d72d0acc5f3a58b8ddc5386f5c0b85a5c739beb510197a2dec6724680532992"
+  },
+  {
+   "path": "sound/reference/README.md",
+   "source": "repo",
+   "bytes": 2237,
+   "sourceSha256": "a9fc735536fe65f63f6b7cbef2884121db3fcf68658035935444ecdcd1d15307"
+  },
+  {
+   "path": "sound/reference/tests/audio.test.mjs",
+   "source": "repo",
+   "bytes": 3279,
+   "sourceSha256": "7f1201a3d79c8476e8dd74c6c52329b14bca4847567c1f7c4c9093955604b05e"
+  },
+  {
+   "path": "sound/reference/tests/sound.test.mjs",
+   "source": "repo",
+   "bytes": 4477,
+   "sourceSha256": "6650be606faf68f35dd601cfd7730fb7db929a5e31abfe88bf280a87df5cbe41"
+  },
+  {
+   "path": "superframe/lib/formats/README.md",
+   "source": "repo",
+   "bytes": 1714,
+   "sourceSha256": "90dc50f941649cd4248faa298d52b0f9c5a7be547d6464d8e31f731d55f57a80"
+  },
+  {
+   "path": "superframe/tests/formats-midi-writer.test.mjs",
+   "source": "repo",
+   "bytes": 3978,
+   "sourceSha256": "e6e5a83677d747dbbd986022c2615ecd2e08eee0573feceb727c18b7692e45bf"
+  },
+  {
+   "path": "superframe/tests/formats-relief-stl.test.mjs",
+   "source": "repo",
+   "bytes": 3840,
+   "sourceSha256": "7d8e7ab33d6e429ea97e9b952ea5dd961829239b0a1ab7f842ce3de602bfaa33"
+  },
+  {
+   "path": "superframe/tests/seed-streams.test.mjs",
+   "source": "repo",
+   "bytes": 2752,
+   "sourceSha256": "67634123afce78801b4976aa9d519fadb13f581b475323b8a5273cb8e31826e6"
+  },
+  {
+   "path": "typeface/forge/lib/README.md",
+   "source": "repo",
+   "bytes": 2033,
+   "sourceSha256": "58f44d0833f23c96e9f05586c95b7bb103966cc5239abceeff6289299c2e2913"
+  },
+  {
+   "path": "typeface/forge/tests/forge.test.mjs",
+   "source": "repo",
+   "bytes": 3126,
+   "sourceSha256": "6627f1163aad595120ec3c7e9dd123edc995aa27bd2c333008a38d0536e30a75"
+  },
+  {
    "path": "packages/PROVENANCE.json",
    "source": "repo",
    "bytes": 172919,
@@ -5698,8 +5674,8 @@
   {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 8872,
-   "sourceSha256": "f4f7e2e83afa5525889aa7932a6d7d656b5e7b15f2dae1a23e69c3f136885aac"
+   "bytes": 9651,
+   "sourceSha256": "fd64a67edc0998c49e2d3381250da71f0620a687fb584f718d7fed923710eade"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -8552,6 +8528,78 @@
    "sourceSha256": "6d37b5e739758aa51b6a9708cd27e130877256dc040f381a15bd18a238e4a386"
   },
   {
+   "path": "packages/fractal/README.md",
+   "source": "repo",
+   "bytes": 3385,
+   "sourceSha256": "1864d006433b9b59a39b6a2e1b8c411c7dcbcd575d6012ab38cb75fa4d2b9809"
+  },
+  {
+   "path": "packages/fractal/package.json",
+   "source": "repo",
+   "bytes": 143,
+   "sourceSha256": "90b997416e7ca42ff28af0ae885051416006821ad61754ca0445b495dde8bb1e"
+  },
+  {
+   "path": "packages/fractal/src/fractal-color.js",
+   "source": "repo",
+   "bytes": 11194,
+   "sourceSha256": "ab2f5f82bb32797c06d03b692dd5b2eba5c8601f35bf45c89ae55662cf766020"
+  },
+  {
+   "path": "packages/fractal/src/fractal-colouring.js",
+   "source": "repo",
+   "bytes": 8686,
+   "sourceSha256": "f49775482135552ebd9a0590c97b1b46a83598a14121617f64a8a5a6edfcfec1"
+  },
+  {
+   "path": "packages/fractal/src/fractal-formula-cpu.js",
+   "source": "repo",
+   "bytes": 4490,
+   "sourceSha256": "257982fe9a2f90dbe78d523abac58d8a3b94165ff60b28ce50eaab8935ef1c1d"
+  },
+  {
+   "path": "packages/fractal/src/fractal-formula.js",
+   "source": "repo",
+   "bytes": 23493,
+   "sourceSha256": "fed291f1932468176b6df79a7d3106ea3c0b7187a5fb087255e125823d07d3cf"
+  },
+  {
+   "path": "packages/fractal/src/fractal-formulas.js",
+   "source": "repo",
+   "bytes": 7630,
+   "sourceSha256": "53affe298ed9e54d8d8a65003a498e3f7566fcc555f391b654c225cd4b7ef9d7"
+  },
+  {
+   "path": "packages/fractal/src/fractal-glsl-formula.js",
+   "source": "repo",
+   "bytes": 7542,
+   "sourceSha256": "22b7205d2b29819c45b6bc6fd1008eaad054db650e7c35307fe54f12add22d16"
+  },
+  {
+   "path": "packages/fractal/src/fractal-glsl-lib.js",
+   "source": "repo",
+   "bytes": 16047,
+   "sourceSha256": "099f2d81e0a2df076f7c7cb4165f47dc67026a4d02c86f52310c83aa72407123"
+  },
+  {
+   "path": "packages/fractal/src/fractal-glsl-lyapunov.js",
+   "source": "repo",
+   "bytes": 3964,
+   "sourceSha256": "14040a7ab56fa7e4152e522b309acf12789774d1e9f9e9ae2a524d5616989af8"
+  },
+  {
+   "path": "packages/fractal/tests/fractal-color.test.mjs",
+   "source": "repo",
+   "bytes": 6095,
+   "sourceSha256": "ca35636d45cc042eb31484c9971dd14c8081b1e5b742f1ce1eb5ad9074e17f67"
+  },
+  {
+   "path": "packages/fractal/tests/fractal-formula.test.mjs",
+   "source": "repo",
+   "bytes": 5447,
+   "sourceSha256": "e8ba6f7ad02ea2c029b6ad2b80f6adff6a39a1d738f2856721013155a13995d3"
+  },
+  {
    "path": "packages/instruments/PIPELINE.md",
    "source": "repo",
    "bytes": 18040,
@@ -11210,6 +11258,54 @@
    "sourceSha256": "841faa1cc70778103d2686cb87b77de60b3ccde946852f45419eab78ab64743f"
   },
   {
+   "path": "packages/retro/README.md",
+   "source": "repo",
+   "bytes": 2910,
+   "sourceSha256": "84ea73a1fd35f973f9110b954a288978d9400fa169a32b7b6e14e78d0ccf437a"
+  },
+  {
+   "path": "packages/retro/package.json",
+   "source": "repo",
+   "bytes": 134,
+   "sourceSha256": "be805053d22746db5ed46de13f296c776f2b85a4361c3c4585252b6f19367898"
+  },
+  {
+   "path": "packages/retro/src/retro-crt.js",
+   "source": "repo",
+   "bytes": 13409,
+   "sourceSha256": "7228cff46922bb05457dd7adb0a05e81e56355e193faa9d4390885ca452a5c88"
+  },
+  {
+   "path": "packages/retro/src/retro-dither.js",
+   "source": "repo",
+   "bytes": 6252,
+   "sourceSha256": "12d3da65268511c6b60ff6ec4d8df5a0d946f9eaaeb373e700756ee0cea09127"
+  },
+  {
+   "path": "packages/retro/src/retro-engine.js",
+   "source": "repo",
+   "bytes": 8729,
+   "sourceSha256": "f50d287ae38734919a875ab6d7594ff114f92075c3c5ccef7a3a615ff5f551d4"
+  },
+  {
+   "path": "packages/retro/src/retro-palettes.js",
+   "source": "repo",
+   "bytes": 6469,
+   "sourceSha256": "56535657245a9146be3e03f12034cf2905843ce8c74d9fa62fdb83359ac252c3"
+  },
+  {
+   "path": "packages/retro/tests/retro-crt.test.mjs",
+   "source": "repo",
+   "bytes": 1578,
+   "sourceSha256": "ec3bffa6674ef58d777578bd2a860c0a6a408bc662d2fd2bf59111f60b3ed40b"
+  },
+  {
+   "path": "packages/retro/tests/retro-engine.test.mjs",
+   "source": "repo",
+   "bytes": 4973,
+   "sourceSha256": "c2abf9154c30f3cb5626bef6c9c37ee599ebb578738a579a1bd0d3c72422e33a"
+  },
+  {
    "path": "packages/rooms/README.md",
    "source": "repo",
    "bytes": 1300,
@@ -13234,14 +13330,14 @@
   {
    "path": "packages/studio/bin/studio.mjs",
    "source": "repo",
-   "bytes": 5142,
-   "sourceSha256": "a2e8d76ea5e8be0f3a3acfe82aada372960fe1f79674f26c132997667c9905c5"
+   "bytes": 5126,
+   "sourceSha256": "67a73182edd1363ae894bcf9a56e14e588b9d1d457557b974a6d4144da748650"
   },
   {
    "path": "packages/studio/docs/STUDIO-MATRIX.md",
    "source": "repo",
-   "bytes": 21113,
-   "sourceSha256": "b182833d78cd102eb8acbb66b44bf8ff08d4ca27feb8052207cd3e0b9c59b524"
+   "bytes": 21065,
+   "sourceSha256": "10e9965d6b39bc0e5eb21e3343ca32b18320de150069a970a2d7cb5bdc235aef"
   },
   {
    "path": "packages/studio/goldens/eye.golden.json",
@@ -13288,14 +13384,14 @@
   {
    "path": "packages/studio/src/font/ttf.mjs",
    "source": "repo",
-   "bytes": 9189,
-   "sourceSha256": "5b9ce881c112a2226796d779fd29ed476311a21266ed2f3fb4848365ed97d4f7"
+   "bytes": 9157,
+   "sourceSha256": "17bfd4d0a98e15d06c73c661191e5565131613af02cc1718289c945d34126b4f"
   },
   {
    "path": "packages/studio/src/font/variable.mjs",
    "source": "repo",
-   "bytes": 9579,
-   "sourceSha256": "fc48818602b381e31d25baf2a7e69682d1d55606c737c78c90af134e3bca467a"
+   "bytes": 9547,
+   "sourceSha256": "81034f1908e2914dcda9ea91c09994a7bf6893d8a43a8a119387f318ef4f495d"
   },
   {
    "path": "packages/studio/src/index.mjs",
@@ -13312,8 +13408,8 @@
   {
    "path": "packages/studio/tests/font.test.mjs",
    "source": "repo",
-   "bytes": 4326,
-   "sourceSha256": "b2a57e16662bf5dca0f1e13a0898fc34dc8d30a8435625415bb1afb86b7329a5"
+   "bytes": 4310,
+   "sourceSha256": "dc6b433c6d6b84daa1f936febb3cd2758992beb06fcde0c006493fc26f856bee"
   },
   {
    "path": "packages/studio/tests/inputs.mjs",
@@ -14148,6 +14244,30 @@
    "source": "repo",
    "bytes": 3818,
    "sourceSha256": "7ba2d020375d525ae08997545e6a81d1ee8529d56f069b6e27e5bd45bef747ff"
+  },
+  {
+   "path": "packages/weave/README.md",
+   "source": "repo",
+   "bytes": 1403,
+   "sourceSha256": "fa1ce02e764bc6c9d0934d5f9c6be11838cf14229dc6705853d6e04ff6c73f05"
+  },
+  {
+   "path": "packages/weave/package.json",
+   "source": "repo",
+   "bytes": 134,
+   "sourceSha256": "274a4ab2db211f2fee8c8fd625468420afc9f3d71fd1347d5413ba221a094d45"
+  },
+  {
+   "path": "packages/weave/src/weave-engine.js",
+   "source": "repo",
+   "bytes": 13142,
+   "sourceSha256": "2285234e4ade7f66c0163f936c2ea26310f7404544c25945db3e557ee3353024"
+  },
+  {
+   "path": "packages/weave/tests/weave-engine.test.mjs",
+   "source": "repo",
+   "bytes": 5400,
+   "sourceSha256": "6da96d406b0d585114c9ed1642232ed3a680b7322fe22cb797a0fe77fa336fec"
   }
  ]
 }

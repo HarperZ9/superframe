@@ -6,9 +6,9 @@
 // fitting. Timestamps are pinned, so the same face gives the same font bytes; tests/font.test.mjs holds this
 // port to the font bytes Flywheel wrote at that commit (goldens/font.golden.json).
 //
-//   import { mint, DEFAULTS } from '../../../../typeface/forge/upstream/type-forge/forge.mjs';
+//   import { mint, DEFAULTS } from '../../../../typeface/forge/lib/forge.mjs';
 //   const ttf = toTtf(mint({ ...DEFAULTS }, 58), 'Zain Mint', 'Regular');   // Uint8Array
-import { pyRound } from '../../../../typeface/forge/upstream/type-forge/pyround.mjs';
+import { pyRound } from '../../../../typeface/forge/lib/pyround.mjs';
 import { pack, concat, Bytes } from './struct.mjs';
 
 export const EM = 1000;

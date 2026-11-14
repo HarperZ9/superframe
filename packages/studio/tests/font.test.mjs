@@ -7,7 +7,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { mint, DEFAULTS } from '../../../typeface/forge/upstream/type-forge/forge.mjs';
+import { mint, DEFAULTS } from '../../../typeface/forge/lib/forge.mjs';
 import { toTtf } from '../src/font/ttf.mjs';
 import { mintVariableFamily, toVariableTtf, INSTANCES } from '../src/font/variable.mjs';
 import { mulberry32 } from './inputs.mjs';

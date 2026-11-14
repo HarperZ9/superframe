@@ -11,9 +11,9 @@
 // instance per master.
 //
 //   const out = mintVariableFamily({}, { seed: 58 });      // { refused, refusals, ttf, masters, refusedInstances }
-import { mint, DEFAULTS } from '../../../../typeface/forge/upstream/type-forge/forge.mjs';
+import { mint, DEFAULTS } from '../../../../typeface/forge/lib/forge.mjs';
 import { pack, concat, Bytes } from './struct.mjs';
-import { pyRound } from '../../../../typeface/forge/upstream/type-forge/pyround.mjs';
+import { pyRound } from '../../../../typeface/forge/lib/pyround.mjs';
 import { glyfEntry, cmap, name, sfnt, pad4, round, sortedKeys, glyphContours, tableHead, tableHhea, tableMaxp, tablePost, tableHmtx } from './ttf.mjs';
 
 const EPOCH = 3849984000n;   // fixed timestamp, so the same masters hash the same font

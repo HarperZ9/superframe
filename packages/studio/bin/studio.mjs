@@ -11,7 +11,7 @@
 import { writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { deflateSync } from 'node:zlib';
-import { mint, DEFAULTS } from '../../../typeface/forge/upstream/type-forge/forge.mjs';
+import { mint, DEFAULTS } from '../../../typeface/forge/lib/forge.mjs';
 import { STUDIO, byId, renderImage, toRGBA, toTtf, mintVariableFamily, eyeOf, compareDrift } from '../src/index.mjs';
 
 const argv = process.argv.slice(2), cmd = argv[0];
