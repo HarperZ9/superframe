@@ -2390,6 +2390,78 @@
    "sourceSha256": "baa1548170913356f72959b8a5b815856cd239257c0b907b15f18036a878a863"
   },
   {
+   "path": "superframe/lib/look/README.md",
+   "source": "repo",
+   "bytes": 2747,
+   "sourceSha256": "1fafd6fff27ce4f5135dfab0699350149870d20578ecea24368e3722cc21935d"
+  },
+  {
+   "path": "superframe/lib/look/bloom.mjs",
+   "source": "2026-10-23-superframe/lib/look/bloom.mjs",
+   "bytes": 2621,
+   "sourceSha256": "3e92bafaf3935592a9bbf3349f361b42f7679f8ca15b5887accd771f95c1c11a"
+  },
+  {
+   "path": "superframe/lib/look/blur.mjs",
+   "source": "2026-10-23-superframe/lib/look/blur.mjs",
+   "bytes": 3097,
+   "sourceSha256": "73294925769bf6c94dfbf7c81d34b6acc8bf737733f49ac598aef7b77321f460"
+  },
+  {
+   "path": "superframe/lib/look/colour.mjs",
+   "source": "2026-10-23-superframe/lib/look/colour.mjs",
+   "bytes": 2330,
+   "sourceSha256": "3b440cfe1b3b1bcad114922ff30499f9303aca5719c49e40c4308d40bcdc4d87"
+  },
+  {
+   "path": "superframe/lib/look/comic.mjs",
+   "source": "2026-10-23-superframe/lib/look/comic.mjs",
+   "bytes": 4760,
+   "sourceSha256": "2840acce28c60b2b8762c3ea26e49f6ed8fa105fe7edb94556e1d12c1b7a2efd"
+  },
+  {
+   "path": "superframe/lib/look/dither.mjs",
+   "source": "2026-10-23-superframe/lib/look/dither.mjs",
+   "bytes": 1200,
+   "sourceSha256": "ff6f4863cf4e27a594eca895133fafea33b2ee1884109c1bc45cee8b101a6ddc"
+  },
+  {
+   "path": "superframe/lib/look/grain.mjs",
+   "source": "2026-10-23-superframe/lib/look/grain.mjs",
+   "bytes": 3515,
+   "sourceSha256": "98da843296c62f496421a043c4a73d35767cd79cbc2f2b094950de3f9c0e5da1"
+  },
+  {
+   "path": "superframe/lib/look/index.mjs",
+   "source": "2026-10-23-superframe/lib/look/index.mjs",
+   "bytes": 845,
+   "sourceSha256": "9f560a5703569423c7b6d526e8e5cb02beb3243cfd8634168cb6641a0eeea395"
+  },
+  {
+   "path": "superframe/lib/look/ink.mjs",
+   "source": "2026-10-23-superframe/lib/look/ink.mjs",
+   "bytes": 5504,
+   "sourceSha256": "3969da62a73ae5fa0ae75f761142d639b8c4fa3de9587222352d2ff515d6dd1c"
+  },
+  {
+   "path": "superframe/lib/look/print.mjs",
+   "source": "2026-10-23-superframe/lib/look/print.mjs",
+   "bytes": 6264,
+   "sourceSha256": "60aed437239e088669a1f386e7cf839c17a25b38cee226f2a5a9c5686198e6ab"
+  },
+  {
+   "path": "superframe/lib/look/tone.mjs",
+   "source": "2026-10-23-superframe/lib/look/tone.mjs",
+   "bytes": 4063,
+   "sourceSha256": "6c6291bb736db9dd852781358ec440870d287da03e03923afa2467872e656504"
+  },
+  {
+   "path": "superframe/lib/look/warp.mjs",
+   "source": "2026-10-23-superframe/lib/look/warp.mjs",
+   "bytes": 2674,
+   "sourceSha256": "0ef2e498f850eb35ad28e1068596cadbf913aee56f87c8d4bd6e373f83c99aef"
+  },
+  {
    "path": "superframe/lib/marble/bath.mjs",
    "source": "2026-10-23-superframe/lib/marble/bath.mjs",
    "bytes": 13350,
@@ -2722,8 +2794,8 @@
   {
    "path": "superframe/lib/pix.mjs",
    "source": "2026-10-23-superframe/lib/pix.mjs",
-   "bytes": 9057,
-   "sourceSha256": "7891265cd84fdab107896185473e9d1f92bfdbc26b728b1df1ddd8e64e429ff0"
+   "bytes": 9324,
+   "sourceSha256": "52c4c3c09222a313b68366ccc71c672bd5517c9755e3930f99f52ec3268aa75b"
   },
   {
    "path": "superframe/lib/props.mjs",
@@ -3269,7 +3341,7 @@
    "path": "superframe/tests/golden/nodes.json",
    "source": "2026-10-23-superframe/tests/golden/nodes.json",
    "bytes": 6691,
-   "sourceSha256": "145d431517aea8708ddecbc714d422c481edb23435e13472043f4bb34a1e00eb"
+   "sourceSha256": "e7a8cf3c8454179869552160d41d746783982bcdeb9e1807fd71a83e6a6f5bac"
   },
   {
    "path": "superframe/tests/graph.test.mjs",
@@ -3288,6 +3360,12 @@
    "source": "2026-10-23-superframe/tests/lightlut.test.mjs",
    "bytes": 3851,
    "sourceSha256": "2a021208fd2369a3a6e6ddbb8342b4299a457485b4c6ede0ecca20fbad80cdb8"
+  },
+  {
+   "path": "superframe/tests/look.test.mjs",
+   "source": "2026-10-23-superframe/tests/look.test.mjs",
+   "bytes": 6935,
+   "sourceSha256": "800486f1cbade518ff215cdd92c7c6be7a774297571c44f8c4a1f88e38fc50b9"
   },
   {
    "path": "superframe/tests/marble.test.mjs",

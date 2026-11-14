@@ -163,7 +163,7 @@ The engine was built as one workspace, and its folders keep their working names:
 
 | Folder | What it holds |
 |---|---|
-| `superframe/` | the node interface, graph, converters, CLI, the artifact engine (`lib/artifact/`), the file writers (`lib/formats/`) and the measured libraries |
+| `superframe/` | the node interface, graph, converters, CLI, the artifact engine (`lib/artifact/`), the file writers (`lib/formats/`), the finishing core (`lib/look/`) and the measured libraries |
 | `creation/` | the creation engine's laws |
 | `typeengine/`, `typeface/` | living type, the Accession family and the type forge (`typeface/forge/lib/`) |
 | `substrate/` | the seed and receipt contracts |
