@@ -1,0 +1,2674 @@
+{
+ "format": "lw-voice-profiles/1",
+ "about": "Machine form of design/VOICE-BIBLE.md sections 3 and 4. The renderer (tools/voice/render_scene.py) reads synth; the direction lint (game/engine/tools/dirlint.mjs) reads never; the portrait reads face. synth values are offsets applied to the source voice (semitones, contour range exponent, rate multiplier, formant scale below 600 Hz and above 1200 Hz). status: rendered = used in the 2026-10-21 prototype (Merrow at the stove), not yet heard by the author; planned = a starting point nobody has listened to.",
+ "peoples": {
+  "gullet": "The old families of Gullet: quay, Gut, floor, the Brine. Short vowels, dropped final g, sentences that end low and flat, numbers said as tides and prices.",
+  "kell": "The far shore across the open sea: colliers' crews and the Saint Cuthwin's stokehold. A sung, rising contour on statements, kin words (cousin, slack), careful second-language Gullet with full forms (it is, I do not).",
+  "hesk": "Up the line: the railhead, the Board's offices, the Shelf, the Trust's money. Clipped, written English said aloud, long Latinate words, no dialect words.",
+  "hill": "Chancel Hill: Gullet born, Hesk schooled. The old vowels sanded off; you hear them when the speaker is tired or angry.",
+  "congregation": "The Congregation of the Filament: Gullet speech with a liturgy of wiring. Soft onsets, held vowels, technical words said like prayer.",
+  "inner": "Lamb's head: no region. Every inner voice is derived from Lamb's own timbre."
+ },
+ "speakers": {
+  "NARRATOR": {
+   "role": "the report, the house voice",
+   "people": "hesk",
+   "age": "none stated",
+   "timbre": "dry, close, unhurried, a clerk reading back",
+   "pace_sps": 3.9,
+   "status": "rendered",
+   "synth": {
+    "shift": -1.5,
+    "range": 0.85,
+    "rate": 0.95,
+    "beta": [
+     0.97,
+     0.95
+    ],
+    "colour": "narrator",
+    "space": "page"
+   },
+   "face": null,
+   "never": [],
+   "setting": "gullet"
+  },
+  "LAMB": {
+   "role": "the assessor, the player's mouth",
+   "people": "hesk",
+   "age": "late thirties to forties, unstated",
+   "timbre": "mid, neither high nor low, held back; gender left open",
+   "pace_sps": 4.2,
+   "status": "rendered",
+   "synth": {
+    "shift": 2,
+    "range": 0.9,
+    "rate": 1,
+    "beta": [
+     1.04,
+     1.06
+    ],
+    "colour": "lamb",
+    "space": "near"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.1,
+    "lids": 0.15,
+    "corners": -0.05
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "KEEL": {
+   "role": "harbourmaster",
+   "people": "hesk",
+   "age": "58",
+   "timbre": "low, long, wet; a bass that drips at the commas",
+   "pace_sps": 3.3,
+   "status": "planned",
+   "synth": {
+    "shift": -4.5,
+    "range": 0.7,
+    "rate": 0.86,
+    "beta": [
+     0.9,
+     0.86
+    ],
+    "colour": "keel",
+    "space": "quay",
+    "comma_s": 0.32,
+    "drip": true
+   },
+   "face": {
+    "brow": -0.1,
+    "browInner": 0,
+    "lids": 0.45,
+    "corners": -0.2
+   },
+   "never": [
+    {
+     "re": "\\b(I|me|my|mine|I'm|I'll|I've)\\b",
+     "case": true,
+     "msg": "Keel speaks as the Board, never as I (VOICE-BIBLE 3.2)"
+    }
+   ],
+   "setting": "gullet"
+  },
+  "WENNA": {
+   "role": "keeper of Mother",
+   "people": "gullet",
+   "age": "64",
+   "timbre": "small, dry, a smoker's top with a hard edge",
+   "pace_sps": 4.4,
+   "status": "planned",
+   "synth": {
+    "shift": 9,
+    "range": 0.8,
+    "rate": 1.02,
+    "beta": [
+     1.14,
+     1.18
+    ],
+    "colour": "dry",
+    "space": "room"
+   },
+   "face": {
+    "brow": -0.2,
+    "browInner": -0.2,
+    "lids": 0.35,
+    "corners": -0.3
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "CRAKE": {
+   "role": "Alderman",
+   "people": "hill",
+   "age": "60",
+   "timbre": "even, warm by rehearsal, every consonant finished",
+   "pace_sps": 4.6,
+   "status": "planned",
+   "synth": {
+    "shift": 8,
+    "range": 0.65,
+    "rate": 1.04,
+    "beta": [
+     1.12,
+     1.16
+    ],
+    "colour": "bright",
+    "space": "telephone"
+   },
+   "face": {
+    "brow": 0.05,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0.15
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "MARROW": {
+   "role": "shop steward of the Guild",
+   "people": "gullet",
+   "age": "45",
+   "timbre": "big chest, a preacher's swell, then a near whisper for true things",
+   "pace_sps": 4,
+   "status": "planned",
+   "synth": {
+    "shift": -3,
+    "range": 1.35,
+    "rate": 0.95,
+    "beta": [
+     0.9,
+     0.9
+    ],
+    "colour": "chest",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0.2,
+    "browInner": 0.2,
+    "lids": 0,
+    "corners": 0.25
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "FENNICK": {
+   "role": "deacon of the Congregation",
+   "people": "congregation",
+   "age": "50",
+   "timbre": "soft, high in the chest, vowels held like a hymn",
+   "pace_sps": 3.6,
+   "status": "planned",
+   "synth": {
+    "shift": 3,
+    "range": 1.2,
+    "rate": 0.9,
+    "beta": [
+     1.04,
+     1.08
+    ],
+    "colour": "soft",
+    "space": "steps"
+   },
+   "face": {
+    "brow": 0.35,
+    "browInner": 0.4,
+    "lids": -0.2,
+    "corners": 0.3
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "SABINE": {
+   "role": "landlady of the Brine",
+   "people": "gullet",
+   "age": "52",
+   "timbre": "quick, warm, laughing under the price",
+   "pace_sps": 5.2,
+   "status": "rendered",
+   "synth": {
+    "shift": 8.5,
+    "range": 1.15,
+    "rate": 1.12,
+    "beta": [
+     1.12,
+     1.16
+    ],
+    "colour": "warm",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0.15,
+    "browInner": 0,
+    "lids": -0.1,
+    "corners": 0.4
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "MERROW": {
+   "role": "master of the Low Company",
+   "people": "gullet",
+   "age": "40",
+   "timbre": "low, short, outdoor; falls at every line end",
+   "pace_sps": 3.6,
+   "status": "rendered",
+   "synth": {
+    "shift": -2,
+    "range": 0.6,
+    "rate": 0.92,
+    "beta": [
+     0.94,
+     0.92
+    ],
+    "colour": "outdoor",
+    "space": "floor"
+   },
+   "face": {
+    "brow": -0.15,
+    "browInner": 0,
+    "lids": 0.25,
+    "corners": -0.1
+   },
+   "never": [
+    {
+     "re": "\\?",
+     "msg": "Merrow never asks a question (WORLD-BIBLE 7.7)"
+    }
+   ],
+   "setting": "gullet"
+  },
+  "PIP": {
+   "role": "pot girl",
+   "people": "gullet",
+   "age": "19",
+   "timbre": "bright, quick, breath at odd places",
+   "pace_sps": 5.4,
+   "status": "planned",
+   "synth": {
+    "shift": 11,
+    "range": 1.3,
+    "rate": 1.14,
+    "beta": [
+     1.18,
+     1.22
+    ],
+    "colour": "bright",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0.25,
+    "browInner": 0.1,
+    "lids": -0.25,
+    "corners": 0.3
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "GORM": {
+   "role": "Lamplighter sergeant",
+   "people": "hill",
+   "age": "about 45",
+   "timbre": "level, quiet, every line rising at the end",
+   "pace_sps": 4,
+   "status": "planned",
+   "synth": {
+    "shift": 7,
+    "range": 0.75,
+    "rate": 0.98,
+    "beta": [
+     1.1,
+     1.12
+    ],
+    "colour": "dry",
+    "space": "quay"
+   },
+   "face": {
+    "brow": 0.4,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [
+    {
+     "re": "[.!]\\s*$",
+     "msg": "Gorm speaks only in questions; a line that ends on a statement (WORLD-BIBLE 8)"
+    }
+   ],
+   "setting": "gullet"
+  },
+  "SORLE": {
+   "role": "stoker from Kell",
+   "people": "kell",
+   "age": "about 30",
+   "timbre": "warm baritone, a sung lift on statements, full forms",
+   "pace_sps": 3.8,
+   "status": "planned",
+   "synth": {
+    "shift": -1,
+    "range": 1.3,
+    "rate": 0.94,
+    "beta": [
+     0.98,
+     1
+    ],
+    "colour": "warm",
+    "space": "room",
+    "contour": "rise"
+   },
+   "face": {
+    "brow": 0.05,
+    "browInner": 0.1,
+    "lids": 0.1,
+    "corners": 0.1
+   },
+   "never": [
+    {
+     "re": "\\b(don't|can't|won't|isn't|it's|I'm)\\b",
+     "case": false,
+     "msg": "Sorle uses full forms in Gullet speech (VOICE-BIBLE 2.2)"
+    }
+   ],
+   "setting": "gullet"
+  },
+  "TEAGUE": {
+   "role": "nine years waiting for the morning boat",
+   "people": "hesk",
+   "age": "about 55",
+   "timbre": "a good voice gone soft; rum at the edges",
+   "pace_sps": 3.7,
+   "status": "planned",
+   "synth": {
+    "shift": -0.5,
+    "range": 1.1,
+    "rate": 0.9,
+    "beta": [
+     0.98,
+     0.96
+    ],
+    "colour": "soft",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0.1,
+    "browInner": 0.35,
+    "lids": 0.35,
+    "corners": -0.1
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "SPRATT": {
+   "role": "eel-wife and reformer",
+   "people": "gullet",
+   "age": "about 50",
+   "timbre": "hard, carrying, a market caller",
+   "pace_sps": 4.8,
+   "status": "planned",
+   "synth": {
+    "shift": 7.5,
+    "range": 1.2,
+    "rate": 1.08,
+    "beta": [
+     1.12,
+     1.14
+    ],
+    "colour": "bright",
+    "space": "quay"
+   },
+   "face": {
+    "brow": -0.25,
+    "browInner": -0.3,
+    "lids": -0.1,
+    "corners": -0.1
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "HESTER": {
+   "role": "the Shelf's typist",
+   "people": "hesk",
+   "age": "about 60",
+   "timbre": "precise, tired, kind; the clack of the keys in the rhythm",
+   "pace_sps": 4,
+   "status": "planned",
+   "synth": {
+    "shift": 8,
+    "range": 0.8,
+    "rate": 0.98,
+    "beta": [
+     1.12,
+     1.15
+    ],
+    "colour": "dry",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.2,
+    "lids": 0.3,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "GAUZE": {
+   "role": "sister under the bell jar",
+   "people": "congregation",
+   "age": "about 40",
+   "timbre": "a voice heard through glass: hollow, close, very calm",
+   "pace_sps": 3.4,
+   "status": "planned",
+   "synth": {
+    "shift": 8,
+    "range": 0.7,
+    "rate": 0.9,
+    "beta": [
+     1.12,
+     1.14
+    ],
+    "colour": "jar",
+    "space": "jar"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.1,
+    "lids": 0.2,
+    "corners": 0.05
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "LUGG": {
+   "role": "salvor",
+   "people": "gullet",
+   "age": "about 50",
+   "timbre": "a whisper from a tall man",
+   "pace_sps": 3.5,
+   "status": "planned",
+   "synth": {
+    "shift": -2.5,
+    "range": 0.8,
+    "rate": 0.9,
+    "beta": [
+     0.92,
+     0.9
+    ],
+    "colour": "outdoor",
+    "space": "floor",
+    "vol": "low"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.15,
+    "lids": 0.3,
+    "corners": 0.05
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "COCKLE": {
+   "role": "the oldest woman on the bar",
+   "people": "gullet",
+   "age": "about 85",
+   "timbre": "toothless, wavering, sharp",
+   "pace_sps": 3.2,
+   "status": "planned",
+   "synth": {
+    "shift": 7,
+    "range": 1.1,
+    "rate": 0.85,
+    "beta": [
+     1.1,
+     1.1
+    ],
+    "colour": "old",
+    "space": "floor",
+    "tremor": 0.3
+   },
+   "face": {
+    "brow": 0.2,
+    "browInner": 0.1,
+    "lids": 0.2,
+    "corners": 0.3
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "SALLIS": {
+   "role": "warden, the grievance",
+   "people": "gullet",
+   "age": "about 40",
+   "timbre": "tight, held anger, short breaths",
+   "pace_sps": 4.6,
+   "status": "planned",
+   "synth": {
+    "shift": -1,
+    "range": 0.9,
+    "rate": 1.05,
+    "beta": [
+     0.96,
+     0.96
+    ],
+    "colour": "outdoor",
+    "space": "quay"
+   },
+   "face": {
+    "brow": -0.3,
+    "browInner": -0.35,
+    "lids": -0.1,
+    "corners": -0.3
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "PENHALLOW": {
+   "role": "master of the Saint Cuthwin",
+   "people": "gullet",
+   "age": "about 55",
+   "timbre": "a helm voice: low for a woman, every bearing exact",
+   "pace_sps": 3.9,
+   "status": "planned",
+   "synth": {
+    "shift": 5.5,
+    "range": 0.8,
+    "rate": 0.95,
+    "beta": [
+     1.08,
+     1.1
+    ],
+    "colour": "outdoor",
+    "space": "quay"
+   },
+   "face": {
+    "brow": -0.05,
+    "browInner": 0,
+    "lids": 0.15,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "HOBB": {
+   "role": "youngest Lamplighter",
+   "people": "hill",
+   "age": "about 20",
+   "timbre": "light, anxious, swallows before hard words",
+   "pace_sps": 4.8,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "quay",
+    "shift": 3.5,
+    "range": 1.2,
+    "rate": 1.08,
+    "beta": [
+     1.05,
+     1.08
+    ]
+   },
+   "face": {
+    "brow": 0.3,
+    "browInner": 0.45,
+    "lids": -0.2,
+    "corners": -0.1
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "FEWELL": {
+   "role": "Lamplighter, the pole pair",
+   "people": "hill",
+   "age": "about 40",
+   "timbre": "heavy, slow under the moustache",
+   "pace_sps": 3.8,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "quay",
+    "shift": -2.5,
+    "range": 0.8,
+    "rate": 0.94,
+    "beta": [
+     0.93,
+     0.92
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "STRAND": {
+   "role": "Lamplighter, counts under his breath",
+   "people": "hill",
+   "age": "about 35",
+   "timbre": "mid, rhythmic, numbers half voiced",
+   "pace_sps": 4.4,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "quay",
+    "shift": 0.5,
+    "range": 0.7,
+    "rate": 1.04,
+    "beta": [
+     1,
+     1
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "BRIGHT": {
+   "role": "Lamplighter, the mole guard",
+   "people": "hill",
+   "age": "about 30",
+   "timbre": "clear, careful, behind spectacles",
+   "pace_sps": 4.3,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "quay",
+    "shift": 1.5,
+    "range": 0.9,
+    "rate": 1,
+    "beta": [
+     1.02,
+     1.04
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "COE": {
+   "role": "Lamplighter, the switch-room guard",
+   "people": "hill",
+   "age": "about 45",
+   "timbre": "thick, muffled, short",
+   "pace_sps": 3.9,
+   "status": "planned",
+   "synth": {
+    "colour": "muffled",
+    "space": "room",
+    "shift": -3,
+    "range": 0.7,
+    "rate": 0.95,
+    "beta": [
+     0.92,
+     0.9
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "MAB": {
+   "role": "gutter, the pale apron",
+   "people": "gullet",
+   "age": "about 40",
+   "timbre": "quick, high, finishes her sister's sentences",
+   "pace_sps": 5.4,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": 9,
+    "range": 1.25,
+    "rate": 1.12,
+    "beta": [
+     1.14,
+     1.18
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "NOLL": {
+   "role": "gutter, the dark apron",
+   "people": "gullet",
+   "age": "about 40",
+   "timbre": "the same family, lower and slower than Mab",
+   "pace_sps": 4.6,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": 7,
+    "range": 1,
+    "rate": 1,
+    "beta": [
+     1.12,
+     1.14
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "SHADWELL": {
+   "role": "smokehouse man",
+   "people": "gullet",
+   "age": "about 55",
+   "timbre": "smoked, rasping, coughs mid-word",
+   "pace_sps": 3.6,
+   "status": "planned",
+   "synth": {
+    "colour": "smoke",
+    "space": "room",
+    "shift": -3.5,
+    "range": 0.8,
+    "rate": 0.9,
+    "beta": [
+     0.92,
+     0.9
+    ],
+    "creak": 0.4
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "DILLY": {
+   "role": "a floor child",
+   "people": "gullet",
+   "age": "about 9",
+   "timbre": "small, fast, certain",
+   "pace_sps": 5.5,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": 12,
+    "range": 1.4,
+    "rate": 1.15,
+    "beta": [
+     1.25,
+     1.3
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "TOBIT": {
+   "role": "choirboy",
+   "people": "congregation",
+   "age": "about 11",
+   "timbre": "a boy's sung speech",
+   "pace_sps": 4.6,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "steps",
+    "shift": 12,
+    "range": 1.3,
+    "rate": 1.05,
+    "beta": [
+     1.24,
+     1.28
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "GILL": {
+   "role": "Spratt's runner",
+   "people": "gullet",
+   "age": "about 12",
+   "timbre": "breathless, cheeky",
+   "pace_sps": 5.6,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": 11,
+    "range": 1.3,
+    "rate": 1.18,
+    "beta": [
+     1.22,
+     1.26
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "FISK": {
+   "role": "the Board's man from Hesk",
+   "people": "hesk",
+   "age": "about 35",
+   "timbre": "neat, fast, unravelling",
+   "pace_sps": 5,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": 1,
+    "range": 1,
+    "rate": 1.1,
+    "beta": [
+     1,
+     1.02
+    ]
+   },
+   "face": {
+    "brow": 0.2,
+    "browInner": 0.3,
+    "lids": -0.1,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "ROOK": {
+   "role": "telegraphist",
+   "people": "hesk",
+   "age": "about 35",
+   "timbre": "dry, quick, every word costed like a telegram",
+   "pace_sps": 4.9,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": 8.5,
+    "range": 0.8,
+    "rate": 1.08,
+    "beta": [
+     1.13,
+     1.16
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "ASH": {
+   "role": "the Congregation's treasurer",
+   "people": "congregation",
+   "age": "about 50",
+   "timbre": "low, gentle, a bookkeeper who believes",
+   "pace_sps": 3.8,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "steps",
+    "shift": -1,
+    "range": 0.9,
+    "rate": 0.94,
+    "beta": [
+     0.98,
+     0.97
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "PELLOW": {
+   "role": "Crake's housekeeper",
+   "people": "hill",
+   "age": "about 55",
+   "timbre": "plain, firm, below stairs",
+   "pace_sps": 4.2,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": 7.5,
+    "range": 0.9,
+    "rate": 1,
+    "beta": [
+     1.12,
+     1.14
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "CAPTAIN": {
+   "role": "Hale Dunlin, the small thing in the gutter",
+   "people": "gullet",
+   "age": "old",
+   "timbre": "Marrow's chest, older and thinner, as if from under water",
+   "pace_sps": 3.4,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "gutter",
+    "shift": -3.5,
+    "range": 1.1,
+    "rate": 0.88,
+    "beta": [
+     0.9,
+     0.9
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "ORME": {
+   "role": "barge master",
+   "people": "gullet",
+   "age": "about 60",
+   "timbre": "weathered, few words",
+   "pace_sps": 3.6,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "quay",
+    "shift": -2,
+    "range": 0.7,
+    "rate": 0.92,
+    "beta": [
+     0.95,
+     0.94
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "DACE": {
+   "role": "barge master",
+   "people": "gullet",
+   "age": "about 55",
+   "timbre": "louder than Orme, the same water",
+   "pace_sps": 4,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "quay",
+    "shift": -1,
+    "range": 1,
+    "rate": 0.98,
+    "beta": [
+     0.97,
+     0.96
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "GUARD": {
+   "role": "a Board guard (generic)",
+   "people": "hesk",
+   "age": "any",
+   "timbre": "crowd voice, varies by seed",
+   "pace_sps": 4.2,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "quay",
+    "shift": 0,
+    "range": 0.9,
+    "rate": 1,
+    "beta": [
+     1,
+     1
+    ],
+    "crowd": true
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "BODDY": {
+   "role": "town stripper",
+   "people": "gullet",
+   "age": "about 40",
+   "timbre": "crowd voice",
+   "pace_sps": 4.2,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "quay",
+    "shift": -1.5,
+    "range": 0.9,
+    "rate": 1,
+    "beta": [
+     0.97,
+     0.96
+    ],
+    "crowd": true
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "PENROSE": {
+   "role": "old Penrose, who stayed off the Spit",
+   "people": "gullet",
+   "age": "about 70",
+   "timbre": "slow, proud, a little deaf",
+   "pace_sps": 3.4,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": -2,
+    "range": 0.9,
+    "rate": 0.88,
+    "beta": [
+     0.95,
+     0.94
+    ]
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "MRS RUDDLE": {
+   "role": "a Gut householder",
+   "people": "gullet",
+   "age": "about 50",
+   "timbre": "crowd voice",
+   "pace_sps": 4.4,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": 7.5,
+    "range": 1,
+    "rate": 1.02,
+    "beta": [
+     1.12,
+     1.14
+    ],
+    "crowd": true
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "MR RUDDLE": {
+   "role": "a Gut householder",
+   "people": "gullet",
+   "age": "about 55",
+   "timbre": "crowd voice",
+   "pace_sps": 4,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": -1.5,
+    "range": 0.9,
+    "rate": 0.98,
+    "beta": [
+     0.97,
+     0.96
+    ],
+    "crowd": true
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "TUNNOCK": {
+   "role": "walk-on",
+   "people": "gullet",
+   "age": "any",
+   "timbre": "crowd voice",
+   "pace_sps": 4.2,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": 0,
+    "range": 1,
+    "rate": 1,
+    "beta": [
+     1,
+     1
+    ],
+    "crowd": true
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "THE GIRL": {
+   "role": "walk-on child",
+   "people": "gullet",
+   "age": "about 10",
+   "timbre": "crowd voice",
+   "pace_sps": 5.2,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": 12,
+    "range": 1.3,
+    "rate": 1.12,
+    "beta": [
+     1.24,
+     1.28
+    ],
+    "crowd": true
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "THE APPRENTICE": {
+   "role": "walk-on",
+   "people": "gullet",
+   "age": "about 16",
+   "timbre": "crowd voice",
+   "pace_sps": 4.8,
+   "status": "planned",
+   "synth": {
+    "colour": "plain",
+    "space": "room",
+    "shift": 4,
+    "range": 1.1,
+    "rate": 1.06,
+    "beta": [
+     1.06,
+     1.08
+    ],
+    "crowd": true
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "PROTHERO": {
+   "role": "new in opening.lwd (story lead, 2026-10-21); profile to be written from the sheet",
+   "people": "unknown",
+   "age": "",
+   "timbre": "",
+   "pace_sps": 4,
+   "status": "planned",
+   "synth": {
+    "shift": 0,
+    "range": 1,
+    "rate": 1,
+    "beta": [
+     1,
+     1
+    ],
+    "colour": "plain",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": [],
+   "setting": "gullet"
+  },
+  "NED": {
+   "setting": "quota",
+   "role": "district inspector (Furrowe)",
+   "people": "tarn-town",
+   "age": "about 45",
+   "timbre": "a tired middle voice that says less than it knows; flat at the table, careful at the office",
+   "pace_sps": 3.8,
+   "wound": "the hill: he went up with Tomas Haldane and there was no hole under the goats",
+   "lie": "We only reported what the villages sent.",
+   "tics": [
+    "answers a question with the smallest true fact",
+    "puts down his fork before he speaks"
+   ],
+   "never_performance": [
+    "the number he knows is false, said aloud at home",
+    "'I'm hungry'"
+   ],
+   "under_stress": "fewer words, then none; a pen gets put down hard",
+   "range": {
+    "calm": "short and dry",
+    "angry": "quiet, every word separate",
+    "grieving": "cannot finish the sentence",
+    "lying": "the same flat voice as the truth, a beat quicker"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": -1.5,
+    "range": 0.65,
+    "rate": 0.92,
+    "beta": [
+     0.97,
+     0.96
+    ],
+    "colour": "plain",
+    "space": "room"
+   },
+   "face": {
+    "brow": -0.1,
+    "browInner": 0.2,
+    "lids": 0.35,
+    "corners": -0.15
+   },
+   "never": []
+  },
+  "MARY": {
+   "setting": "quota",
+   "role": "keeps the house; feeds everyone (Furrowe)",
+   "people": "tarn-town",
+   "age": "about 40",
+   "timbre": "warm, quick, running the table; 'love' and 'go on' as punctuation",
+   "pace_sps": 4.6,
+   "wound": "Day 41: she put the heel of the relief loaf on Abel's plate, set Ned's untouched plate in front of Pell, and told the boy there were people up the hill who would kill for it.",
+   "lie": "Somebody's got to eat it.",
+   "tics": [
+    "gives orders as kindnesses",
+    "answers for other people ('He can't reach')"
+   ],
+   "never_performance": [
+    "asks Ned what he saw up the hill",
+    "says the word hunger about anyone she knows"
+   ],
+   "under_stress": "faster and brighter, more food offered",
+   "range": {
+    "calm": "warm and busy",
+    "angry": "the warmth stays and the words get short",
+    "grieving": "keeps serving",
+    "lying": "warmest of all"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 8,
+    "range": 1.15,
+    "rate": 1.08,
+    "beta": [
+     1.12,
+     1.16
+    ],
+    "colour": "warm",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0.1,
+    "browInner": 0.1,
+    "lids": -0.1,
+    "corners": 0.3
+   },
+   "never": []
+  },
+  "PELL": {
+   "setting": "quota",
+   "role": "a schoolboy (Furrowe)",
+   "people": "tarn-town",
+   "age": "about 11",
+   "timbre": "a boy's voice, eager, a teacher's words in a child's mouth",
+   "pace_sps": 5,
+   "wound": "He ate his father's plate fast with his head down and did not look at anybody.",
+   "lie": "Mr Tamm says.",
+   "tics": [
+    "quotes Mr Tamm",
+    "says facts about the Hesh he learned at school"
+   ],
+   "never_performance": [
+    "the slurs (he has not learned them yet in era 2)"
+   ],
+   "under_stress": "very quiet, then a question",
+   "range": {
+    "calm": "eager",
+    "angry": "sulks",
+    "grieving": "asks where",
+    "lying": "says he is not hungry"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 12,
+    "range": 1.3,
+    "rate": 1.1,
+    "beta": [
+     1.22,
+     1.26
+    ],
+    "colour": "plain",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0.3,
+    "browInner": 0.15,
+    "lids": -0.3,
+    "corners": 0.2
+   },
+   "never": []
+  },
+  "ABEL": {
+   "setting": "quota",
+   "role": "retired exchange inspector (Furrowe)",
+   "people": "tarn-plain",
+   "age": "about 72",
+   "timbre": "a big old voice gone thin at the top, warm, certain, an anecdote always loaded",
+   "pace_sps": 3.6,
+   "wound": "Two summers he had Ilo in the barns, paid him by the sack and was fond of him; at his son's table on day 41 he tells the joke about nine words for rain and none for thank you, and when Ilo's boy is taken he says 'There you are.'",
+   "lie": "I'm fond of them. I'm only saying.",
+   "tics": [
+    "'I'm only saying'",
+    "'That's the thing you have to understand about them'",
+    "touches the good hat"
+   ],
+   "never_performance": [
+    "admits he was wrong",
+    "raises his voice at family; he does not need to"
+   ],
+   "under_stress": "slower and fonder, which is worse",
+   "range": {
+    "calm": "fond and certain",
+    "angry": "wounded pride, quiet",
+    "grieving": "tells the Ilo story",
+    "lying": "fondest of all"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": -2,
+    "range": 1.15,
+    "rate": 0.88,
+    "beta": [
+     0.95,
+     0.94
+    ],
+    "colour": "old",
+    "space": "room",
+    "tremor": 0.15
+   },
+   "face": {
+    "brow": 0.15,
+    "browInner": 0.1,
+    "lids": 0.25,
+    "corners": 0.25
+   },
+   "never": []
+  },
+  "WILL": {
+   "setting": "quota",
+   "role": "militia sergeant, the cells and the road post (Brack)",
+   "people": "tarn-plain",
+   "age": "about 38",
+   "timbre": "a parade voice, chest and throat; orders in two words; drunk, he goes soft and generous and that is the dangerous voice",
+   "pace_sps": 4.2,
+   "wound": "the cell: Tomas Haldane died in his cells",
+   "lie": "Somebody had to keep order.",
+   "tics": [
+    "'right'",
+    "counts things aloud (men, carts, sacks)",
+    "calls every man 'lad'"
+   ],
+   "never_performance": [
+    "says he hit anyone",
+    "names the cell as where Tomas died"
+   ],
+   "under_stress": "louder at work, quieter at home; the quiet is the warning",
+   "range": {
+    "calm": "plain orders",
+    "angry": "very quiet, then not",
+    "grieving": "drunk, grateful, telling what he should not",
+    "lying": "a self-lie in his own reasonable voice: 'She bruises easy.'"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": -2.5,
+    "range": 0.9,
+    "rate": 1,
+    "beta": [
+     0.94,
+     0.93
+    ],
+    "colour": "chest",
+    "space": "room"
+   },
+   "face": {
+    "brow": -0.25,
+    "browInner": -0.2,
+    "lids": 0.1,
+    "corners": -0.2
+   },
+   "never": []
+  },
+  "TOMAS": {
+   "setting": "quota",
+   "role": "a boy who works the Haldane barns (Haldane)",
+   "people": "half-hesh",
+   "age": "11",
+   "timbre": "a boy's voice, even and polite, trying to sound older; the Hesh rise comes in when he asks",
+   "pace_sps": 4.4,
+   "wound": "he is the family's wound: arrested for hoarding, dies in Brack's cell",
+   "lie": "none of his own; the family's lie is told about him ('He went to the hills')",
+   "tics": [
+    "asks once, plainly, and waits",
+    "a Heshen word for the hill when he means home"
+   ],
+   "never_performance": [
+    "begs",
+    "uses the slurs, even back"
+   ],
+   "under_stress": "slower and more polite, the rise stronger",
+   "range": {
+    "calm": "plain and polite",
+    "angry": "very still",
+    "grieving": "about Ilo, two words",
+    "lying": "badly: 'We have enough'"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 11,
+    "range": 1.15,
+    "rate": 1.02,
+    "beta": [
+     1.2,
+     1.24
+    ],
+    "colour": "plain",
+    "space": "room",
+    "contour": "rise-on-ask"
+   },
+   "face": {
+    "brow": 0.05,
+    "browInner": 0.15,
+    "lids": 0,
+    "corners": 0
+   },
+   "never": []
+  },
+  "AARON": {
+   "setting": "quota",
+   "role": "a boy who walks at the horse's head (Haldane)",
+   "people": "half-hesh",
+   "age": "9",
+   "timbre": "a small boy's voice, fast and hot, swallowing the ends",
+   "pace_sps": 5,
+   "wound": "Tomas (derived: the brother he could not follow)",
+   "lie": "He went to the hills.",
+   "tics": [
+    "starts with 'They'",
+    "turns the slur back on whoever used it"
+   ],
+   "never_performance": [
+    "cries where anyone can see"
+   ],
+   "under_stress": "louder and faster, then he runs out",
+   "range": {
+    "calm": "short and sour",
+    "angry": "shouts, the Hesh rise breaking through",
+    "grieving": "the lie, said hard",
+    "lying": "'He went to the hills', every time the same"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 12.5,
+    "range": 1.3,
+    "rate": 1.1,
+    "beta": [
+     1.24,
+     1.28
+    ],
+    "colour": "plain",
+    "space": "room"
+   },
+   "face": {
+    "brow": -0.2,
+    "browInner": -0.3,
+    "lids": -0.1,
+    "corners": -0.3
+   },
+   "never": []
+  },
+  "ANNI": {
+   "setting": "quota",
+   "role": "counts the sacks on the cart (Haldane)",
+   "people": "half-hesh",
+   "age": "14",
+   "timbre": "a girl's level voice, numbers said carefully, as if the count could be kept",
+   "pace_sps": 4,
+   "wound": "Tomas, carried longest: the lie becomes hers to keep",
+   "lie": "He went to the hills.",
+   "tics": [
+    "counts aloud, sacks then bowls",
+    "a Heshen counting word when Tarnish fails her"
+   ],
+   "never_performance": [
+    "says Tomas is dead"
+   ],
+   "under_stress": "she counts",
+   "range": {
+    "calm": "counting",
+    "angry": "a wrong number said on purpose",
+    "grieving": "counts the bowls: five, then four",
+    "lying": "flat and exact: 'He went to the hills'"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 10.5,
+    "range": 0.8,
+    "rate": 0.95,
+    "beta": [
+     1.18,
+     1.22
+    ],
+    "colour": "plain",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.2,
+    "lids": 0.1,
+    "corners": -0.05
+   },
+   "never": []
+  },
+  "KRALL": {
+   "setting": "quota",
+   "role": "chairman of Krall's End, made district chairman (Krall)",
+   "people": "tarn-plain",
+   "age": "about 55",
+   "timbre": "a meeting voice, big and glad, built for the back of a hall; laughs before his own joke",
+   "pace_sps": 4.4,
+   "wound": "340",
+   "lie": "The plain fed the country.",
+   "tics": [
+    "says his figure as a round number and then says it again",
+    "thanks the Directorate by name"
+   ],
+   "never_performance": [
+    "says what Krall's End ate that winter"
+   ],
+   "under_stress": "louder and gladder",
+   "range": {
+    "calm": "hearty",
+    "angry": "a hurt joke",
+    "grieving": "none shown",
+    "lying": "proud: 'The plain fed the country'"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": -1,
+    "range": 1.3,
+    "rate": 1.04,
+    "beta": [
+     0.96,
+     0.95
+    ],
+    "colour": "chest",
+    "space": "hall"
+   },
+   "face": {
+    "brow": 0.25,
+    "browInner": 0,
+    "lids": -0.1,
+    "corners": 0.4
+   },
+   "never": []
+  },
+  "READBACK": {
+   "setting": "quota",
+   "role": "reads the record (none)",
+   "people": "none",
+   "age": "none",
+   "timbre": "one flat, even, unhurried voice reading a typed record into the minutes; no character, no warmth, no irony; the player's own words read in the same flat voice, never imitated",
+   "pace_sps": 3.4,
+   "wound": "none",
+   "lie": "none",
+   "tics": [],
+   "never_performance": [
+    "any emotion but flat",
+    "stress",
+    "a laugh, sigh or breath cue",
+    "music under it"
+   ],
+   "under_stress": "none",
+   "range": {
+    "calm": "flat",
+    "angry": "flat",
+    "grieving": "flat",
+    "lying": "flat"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": -0.5,
+    "range": 0.35,
+    "rate": 0.88,
+    "beta": [
+     1,
+     1
+    ],
+    "colour": "plain",
+    "space": "dry"
+   },
+   "face": null,
+   "never": []
+  },
+  "HOLT": {
+   "setting": "quota",
+   "role": "commands the requisition squad; the granary door's boss (a cottar's family at Tilney (content/quota/q_granary.lwd); now a Directorate officer)",
+   "people": "directorate (born tarn-plain)",
+   "age": "about 45",
+   "timbre": "a reading voice learned in Arlen over a Tilney cottar's vowels; never loud, never hurried, with a hook in his hand; the plain comes back when he talks about the hungry",
+   "pace_sps": 3.7,
+   "wound": "his mother was a mud-hand: he knows what the hungry have, which is nothing (q_granary.lwd)",
+   "lie": "The quota is the harvest. (derived)",
+   "tics": [
+    "reads figures from a paper",
+    "'comrade' as a full stop",
+    "repeats the figure the other side says, as a question"
+   ],
+   "never_performance": [
+    "shouts",
+    "argues with a feeling; only a figure read aloud moves him (the talk-out)"
+   ],
+   "under_stress": "slower and more formal",
+   "range": {
+    "calm": "the minute being read",
+    "angry": "a figure said twice",
+    "grieving": "none shown",
+    "lying": "identical to the truth"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": -1,
+    "range": 0.55,
+    "rate": 0.9,
+    "beta": [
+     0.98,
+     0.97
+    ],
+    "colour": "dry",
+    "space": "granary"
+   },
+   "face": {
+    "brow": -0.05,
+    "browInner": 0,
+    "lids": 0.3,
+    "corners": -0.1
+   },
+   "never": []
+  },
+  "MOTT": {
+   "setting": "quota",
+   "role": "brigade clerk for Krall's End and the Haldane barns (Mott)",
+   "people": "tarn-town",
+   "age": "about 40",
+   "timbre": "a clerk's apologetic tenor, quick, sorry before and after",
+   "pace_sps": 4.8,
+   "wound": "the ledger: he overwrites 190 to 310",
+   "lie": "Everyone was writing three hundred.",
+   "tics": [
+    "'Sorry'",
+    "says the figure, then what it says on the paper"
+   ],
+   "never_performance": [
+    "says the true figure without a reason after it"
+   ],
+   "under_stress": "more sorry, more figures",
+   "range": {
+    "calm": "apologetic",
+    "angry": "never at a superior",
+    "grieving": "his children's names",
+    "lying": "'That's what it says'"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 2,
+    "range": 0.9,
+    "rate": 1.1,
+    "beta": [
+     1.03,
+     1.05
+    ],
+    "colour": "plain",
+    "space": "office"
+   },
+   "face": {
+    "brow": 0.2,
+    "browInner": 0.35,
+    "lids": -0.1,
+    "corners": -0.1
+   },
+   "never": []
+  },
+  "BET": {
+   "setting": "quota",
+   "role": "a Tarn cottar's daughter, Ilo's widow, keeps the Haldane house (Haldane)",
+   "people": "tarn-plain",
+   "age": "about 45",
+   "timbre": "a tired low voice that gives orders to her children and facts to officials",
+   "pace_sps": 3.8,
+   "wound": "Tomas",
+   "lie": "He went to the hills.",
+   "tics": [
+    "names her children to stop them"
+   ],
+   "never_performance": [
+    "pleads with the sergeant"
+   ],
+   "under_stress": "fewer words, all of them facts",
+   "range": {
+    "calm": "plain",
+    "angry": "one word, a name",
+    "grieving": "sets the table",
+    "lying": "'He went to the hills', to a neighbour"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 7,
+    "range": 0.75,
+    "rate": 0.95,
+    "beta": [
+     1.1,
+     1.12
+    ],
+    "colour": "plain",
+    "space": "room"
+   },
+   "face": {
+    "brow": -0.05,
+    "browInner": 0.25,
+    "lids": 0.3,
+    "corners": -0.2
+   },
+   "never": []
+  },
+  "TESK": {
+   "setting": "quota",
+   "role": "a Hesh herder from the hill above Krall's End; in the cells since Tuesday for two sacks of oats (Tesk)",
+   "people": "hesh",
+   "age": "about 65",
+   "timbre": "an old hill voice, slow and even, the Hesh rise on statements; Tarnish learned late, full forms; no anger in it at all, which is what the cell hears",
+   "pace_sps": 3.2,
+   "wound": "six children on the hill that are not his, and the goats they need (q_will.lwd)",
+   "lie": "none he tells; he says the prayer for the water and the count of the oats",
+   "tics": [
+    "names the goats and the children before himself",
+    "remembers the other man's father"
+   ],
+   "never_performance": [
+    "raises his voice",
+    "contracts in Tarnish",
+    "answers a slur with a slur"
+   ],
+   "under_stress": "slower, and more Heshen",
+   "range": {
+    "calm": "slow and sure",
+    "angry": "a long look, no words",
+    "grieving": "the prayer for the water",
+    "lying": "does not"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": -1,
+    "range": 1,
+    "rate": 0.85,
+    "beta": [
+     0.96,
+     0.95
+    ],
+    "colour": "old",
+    "space": "cells",
+    "contour": "rise",
+    "tremor": 0.1
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.1,
+    "lids": 0.35,
+    "corners": 0
+   },
+   "never": []
+  },
+  "GEDGE": {
+   "setting": "quota",
+   "role": "militia constable at the cells (none (Will Brack's constable))",
+   "people": "tarn-plain",
+   "age": "about 30",
+   "timbre": "a bored night voice with a sneer that thinks it is a joke",
+   "pace_sps": 4.4,
+   "wound": "He says the slur loudest to the old Hesh man in the end cell, and when Tesk remembers his father giving the horse-boy a sweet, he goes out into the yard and kicks something until it breaks.",
+   "lie": "They took our work.",
+   "tics": [
+    "the slur as a word for a man",
+    "his pipe"
+   ],
+   "never_performance": [
+    "says his father's name"
+   ],
+   "under_stress": "louder and funnier to himself",
+   "range": {
+    "calm": "bored",
+    "angry": "the slur, said slowly",
+    "grieving": "none shown",
+    "lying": "'Only a joke'"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": -0.5,
+    "range": 1.1,
+    "rate": 1.02,
+    "beta": [
+     0.98,
+     0.97
+    ],
+    "colour": "plain",
+    "space": "cells"
+   },
+   "face": {
+    "brow": -0.1,
+    "browInner": -0.1,
+    "lids": 0.3,
+    "corners": 0.15
+   },
+   "never": []
+  },
+  "EDIE": {
+   "setting": "quota",
+   "role": "keeps the house; takes in mending (Brack)",
+   "people": "tarn-plain",
+   "age": "about 34",
+   "timbre": "low, careful, pitched not to carry through a wall",
+   "pace_sps": 4,
+   "wound": "She pulls her sleeve down over her wrist when Will reaches across the table, though it is already down, and gets up to see to a fire that does not need it.",
+   "lie": "He's tired, that's all.",
+   "tics": [
+    "finishes Will's sentences in his favour",
+    "talks to the children while watching him"
+   ],
+   "never_performance": [
+    "raises her voice",
+    "says what he did"
+   ],
+   "under_stress": "quieter, quicker, more ordinary",
+   "range": {
+    "calm": "plain and low",
+    "angry": "only in a whisper to the children",
+    "grieving": "silent",
+    "lying": "bright, for the neighbour"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 7,
+    "range": 0.7,
+    "rate": 1,
+    "beta": [
+     1.12,
+     1.14
+    ],
+    "colour": "plain",
+    "space": "room",
+    "vol": "low"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.3,
+    "lids": 0.2,
+    "corners": -0.1
+   },
+   "never": []
+  },
+  "DAVEY": {
+   "setting": "quota",
+   "role": "a child (Brack)",
+   "people": "tarn-plain",
+   "age": "about 9",
+   "timbre": "a small voice that has learned to whisper",
+   "pace_sps": 4.2,
+   "wound": "His shoulders come up round his ears when his father's hand crosses the table; he tries out the slur from school to see whether his father will let him.",
+   "lie": "I fell.",
+   "tics": [
+    "counts the stairs",
+    "answers 'nothing'"
+   ],
+   "never_performance": [
+    "speaks above low in the house"
+   ],
+   "under_stress": "silence",
+   "range": {
+    "calm": "a whisper with a smile in it",
+    "angry": "none shown",
+    "grieving": "none shown",
+    "lying": "'I fell'"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 12,
+    "range": 0.9,
+    "rate": 1,
+    "beta": [
+     1.24,
+     1.28
+    ],
+    "colour": "plain",
+    "space": "room",
+    "vol": "low"
+   },
+   "face": {
+    "brow": 0.1,
+    "browInner": 0.4,
+    "lids": -0.2,
+    "corners": -0.2
+   },
+   "never": []
+  },
+  "PASK": {
+   "setting": "quota",
+   "role": "district commissioner; takes the figures at the district office (none in Edrin (the Directorate's district commissioner))",
+   "people": "directorate",
+   "age": "about 50",
+   "timbre": "a tired chairman's voice, plain on purpose, quick to praise the useful answer",
+   "pace_sps": 4.4,
+   "wound": "He brought the district's figures from Arlen in October before he had seen the plain, and on day 41 eats biscuits at the head of the table in front of eleven hungry chairmen without offering them.",
+   "lie": "I don't hear weather. I hear somebody's got grain somewhere.",
+   "tics": [
+    "'Good'",
+    "'I'll be plain'",
+    "names a man before an order"
+   ],
+   "never_performance": [
+    "raises his voice; he signs"
+   ],
+   "under_stress": "plainer and quicker",
+   "range": {
+    "calm": "tired and plain",
+    "angry": "praise withheld",
+    "grieving": "none shown",
+    "lying": "the reasonable voice of the plan"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": -1.5,
+    "range": 0.8,
+    "rate": 1.02,
+    "beta": [
+     0.97,
+     0.96
+    ],
+    "colour": "dry",
+    "space": "office"
+   },
+   "face": {
+    "brow": -0.05,
+    "browInner": 0.05,
+    "lids": 0.35,
+    "corners": 0.05
+   },
+   "never": []
+  },
+  "DORRAH": {
+   "setting": "quota",
+   "role": "keeps the Well on the hill; herds (Tesk)",
+   "people": "hesh",
+   "age": "about 55",
+   "timbre": "a hill voice, slow, the Hesh rise on every statement; Tarnish learned late, full forms",
+   "pace_sps": 3.4,
+   "wound": "the Haldane children she had to send back down when the food ran out",
+   "lie": "The Well looks after its own.",
+   "tics": [
+    "a Heshen word for water or rain",
+    "answers with the hill"
+   ],
+   "never_performance": [
+    "contracts in Tarnish",
+    "raises her voice to a Tarn official"
+   ],
+   "under_stress": "slower, more Heshen",
+   "range": {
+    "calm": "slow and sure",
+    "angry": "Heshen, quietly",
+    "grieving": "the prayer for the water",
+    "lying": "'The Well looks after its own'"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 6,
+    "range": 1.1,
+    "rate": 0.88,
+    "beta": [
+     1.08,
+     1.1
+    ],
+    "colour": "plain",
+    "space": "room",
+    "contour": "rise"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.1,
+    "lids": 0.3,
+    "corners": 0
+   },
+   "never": []
+  },
+  "ILO": {
+   "setting": "quota",
+   "role": "a Hesh hand who came down to the Haldane barns; did two summers for Abel Furrowe; now works the barns (Haldane)",
+   "people": "hesh",
+   "age": "about 45",
+   "timbre": "a quiet Hesh voice that sang all day once; Tarnish learned in the barns, full forms; says little now, and says it to the bowls",
+   "pace_sps": 3.4,
+   "wound": "Tomas; and the name Haldane, given him at the census table because the register needed a Tarn name",
+   "lie": "He went to the hills.",
+   "tics": [
+    "passes on what Bet or Dorrah says rather than saying it himself",
+    "still talks about old Mr Furrowe's good hat"
+   ],
+   "never_performance": [
+    "says Tomas's name at the table",
+    "sings in the slice"
+   ],
+   "under_stress": "silence, then one plain order",
+   "range": {
+    "calm": "few words, kind",
+    "angry": "puts the paper in the stove",
+    "grieving": "looks at the bowl",
+    "lying": "'He went to the hills', in his wife's words"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": -1.5,
+    "range": 0.8,
+    "rate": 0.9,
+    "beta": [
+     0.97,
+     0.96
+    ],
+    "colour": "plain",
+    "space": "room",
+    "contour": "rise"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.3,
+    "lids": 0.35,
+    "corners": -0.15
+   },
+   "never": []
+  },
+  "LIL": {
+   "setting": "quota",
+   "role": "a widow at Tarn Hollow with one boy; at the blacklisted Furrowe table after the squads came (Furrowe (Mary's family, from Tarn Hollow))",
+   "people": "tarn-plain",
+   "age": "about 38",
+   "timbre": "Mary's family voice from further down the plain: the same warmth gone dry, quick and level, every fact said as if it were small talk",
+   "pace_sps": 4.4,
+   "wound": "her boy, going without bread at her sister's table (ba43c27)",
+   "lie": "Lovely manners. (derived: she praises the man who did it, because praise is safe)",
+   "tics": [
+    "names the man and his manners before what he did",
+    "a day of the week for every blow ('The squads came Friday')"
+   ],
+   "never_performance": [
+    "blames Ned to his face",
+    "asks for the bread for her boy"
+   ],
+   "under_stress": "flatter and more polite",
+   "range": {
+    "calm": "level small talk",
+    "angry": "politer",
+    "grieving": "holds the boy and says the day",
+    "lying": "'Lovely manners'"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 7.5,
+    "range": 0.8,
+    "rate": 1.04,
+    "beta": [
+     1.11,
+     1.14
+    ],
+    "colour": "dry",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0.05,
+    "browInner": 0.25,
+    "lids": 0.2,
+    "corners": 0.1
+   },
+   "never": []
+  },
+  "SALLOW": {
+   "setting": "quota",
+   "role": "district inspector after Ned's post is stopped; wrote 320 for Tarn Hollow from his car on his first day (none in Edrin (sent from the district office))",
+   "people": "tarn-town",
+   "age": "about 35",
+   "timbre": "lovely manners: a light, pleasant, unhurried town voice, every courtesy finished, nothing behind it; the danger is how agreeable he is",
+   "pace_sps": 4.6,
+   "wound": "none he feels (derived)",
+   "lie": "The figure stands. (derived: the figure he wrote without leaving the car is the harvest)",
+   "tics": [
+    "thanks people for what he takes",
+    "says a figure as if it were good news",
+    "remarks on the weather from inside the car"
+   ],
+   "never_performance": [
+    "raises his voice",
+    "gets out of the car if he can help it",
+    "says the word hunger"
+   ],
+   "under_stress": "more courteous",
+   "range": {
+    "calm": "pleasant",
+    "angry": "a regret, politely expressed",
+    "grieving": "none shown",
+    "lying": "the same pleasant voice: there is no other"
+   },
+   "status": "planned",
+   "synth": {
+    "shift": 1,
+    "range": 1,
+    "rate": 1.04,
+    "beta": [
+     1.02,
+     1.03
+    ],
+    "colour": "plain",
+    "space": "car"
+   },
+   "face": {
+    "brow": 0.1,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0.35
+   },
+   "never": []
+  },
+  "DAUGHTER": {
+   "setting": "quota",
+   "role": "Anni's daughter, years after the winter; found the tin (q_witness.lwd)",
+   "people": "hesh",
+   "age": "twelve",
+   "timbre": "a plain town girl's voice, quick, not yet careful",
+   "pace_sps": 4.6,
+   "wound": "none yet; the tin is a school project to her",
+   "lie": "none; she asks the next question",
+   "tics": [
+    "asks 'of what, though'",
+    "holds a paper up to the light"
+   ],
+   "never_performance": [
+    "sounds wise",
+    "comforts her mother"
+   ],
+   "under_stress": "asks again, more plainly",
+   "range": {
+    "calm": "quick and curious",
+    "angry": "flat, a child's 'that's not what I asked'",
+    "grieving": "does not grieve; she wasn't there"
+   }
+  },
+  "SISTER": {
+   "setting": "quota",
+   "role": "Sister Agnes at the gate of the Furrow Church's home on Tilney Road (q_week.lwd)",
+   "people": "tarn-town",
+   "age": "about 50",
+   "timbre": "a kind, tired, institutional voice; every sentence a rule said gently",
+   "pace_sps": 3.8,
+   "wound": "a home with the fever in it and a queue at the railings",
+   "lie": "that taking the thread off is a kindness",
+   "tics": [
+    "'mind'",
+    "answers the question beside the one asked"
+   ],
+   "never_performance": [
+    "shouts",
+    "explains the rule"
+   ],
+   "under_stress": "politer",
+   "range": {
+    "calm": "kind and final",
+    "angry": "politer still",
+    "grieving": "does not show it"
+   }
+  },
+  "LIND": {
+   "setting": "quota",
+   "role": "Dr Clara Lind, the district's doctor for the cells and the fever (q_cells.lwd)",
+   "people": "tarn-town",
+   "age": "about 45",
+   "timbre": "a fast, clear, educated voice; accurate and cold with tiredness",
+   "pace_sps": 4.4,
+   "wound": "four hundred certificates this winter",
+   "lie": "that an accurate record is an honest one",
+   "tics": [
+    "names the cause exactly",
+    "'I'm not writing anything that isn't so'"
+   ],
+   "never_performance": [
+    "says sorry",
+    "guesses"
+   ],
+   "under_stress": "more exact",
+   "range": {
+    "calm": "exact",
+    "angry": "exact, and shorter",
+    "grieving": "writes faster"
+   }
+  },
+  "FENN": {
+   "setting": "quota",
+   "role": "Corporal Fenn, one of Holt's corporals at the granary; nineteen, from Tilney (q_granary.lwd)",
+   "people": "tarn-plain",
+   "age": "nineteen",
+   "timbre": "a young country voice, polite by habit, ears out under the cap",
+   "pace_sps": 4.0,
+   "wound": "does what he is told",
+   "lie": "that saying sorry makes it a different thing",
+   "tics": [
+    "says sorry to the wrong person",
+    "'sir'"
+   ],
+   "never_performance": [
+    "refuses",
+    "explains himself"
+   ],
+   "under_stress": "sorry again",
+   "range": {
+    "calm": "polite",
+    "angry": "quiet",
+    "grieving": "says sorry"
+   }
+  },
+  "IRIS": {
+   "setting": "quota",
+   "role": "Iris Krall, Jonah Krall's wife, at the pump on Mill Street (q_sheaf.lwd)",
+   "people": "tarn-town",
+   "age": "about 40",
+   "timbre": "a bright, carrying, neighbourly voice; gossip as public service",
+   "pace_sps": 4.6,
+   "wound": "none she would name",
+   "lie": "that she only repeats what everybody knows",
+   "tics": [
+    "'everybody knows'",
+    "asks a question she has answered"
+   ],
+   "never_performance": [
+    "whispers",
+    "doubts"
+   ],
+   "under_stress": "louder, kinder-sounding",
+   "range": {
+    "calm": "bright",
+    "angry": "pitying",
+    "grieving": "brings an onion"
+   }
+  },
+  "ROSE": {
+   "setting": "quota",
+   "role": "Rose Brack, six, on Edie's knee (q_coda.lwd)",
+   "people": "tarn-town",
+   "age": "six",
+   "timbre": "a small, sleepy child's voice",
+   "pace_sps": 4.0,
+   "wound": "hunger she has no word for",
+   "lie": "none",
+   "tics": [
+    "asks about cows"
+   ],
+   "never_performance": [
+    "understands"
+   ],
+   "under_stress": "quieter",
+   "range": {
+    "calm": "small",
+    "angry": "silent",
+    "grieving": "silent"
+   }
+  }
+ },
+ "voices": {
+  "about": "Lamb's inner voices (SYSTEMS-FULL 2.1). Every one is LAMB's synth plus the offset here, so they are related by construction. pan is the position inside the head, -1 left to 1 right; depth 0 at the ear to 1 at the centre of the head.",
+  "pen": {
+   "shift": 0.5,
+   "beta": [
+    1,
+    1.02
+   ],
+   "texture": "paper"
+  },
+  "coat": {
+   "shift": -1.5,
+   "beta": [
+    0.97,
+    0.97
+   ],
+   "texture": "cloth"
+  },
+  "hat": {
+   "shift": 1,
+   "beta": [
+    1.02,
+    1.04
+   ],
+   "texture": "felt"
+  },
+  "nose": {
+   "shift": -0.5,
+   "beta": [
+    0.99,
+    0.98
+   ],
+   "texture": "breath"
+  },
+  "skills": {
+   "sum": {
+    "group": "pen",
+    "pan": -0.55,
+    "depth": 0.3,
+    "rate": 1.15,
+    "range": 0.6,
+    "vol": null,
+    "status": "rendered"
+   },
+   "precedent": {
+    "group": "pen",
+    "pan": -0.7,
+    "depth": 0.5,
+    "rate": 0.9,
+    "range": 1,
+    "shift": -1,
+    "status": "rendered"
+   },
+   "smallprint": {
+    "group": "pen",
+    "pan": -0.4,
+    "depth": 0.2,
+    "rate": 1.1,
+    "range": 1.2,
+    "shift": 1.5,
+    "status": "planned"
+   },
+   "carbon": {
+    "group": "pen",
+    "pan": -0.25,
+    "depth": 0.6,
+    "rate": 0.92,
+    "range": 0.55,
+    "status": "planned"
+   },
+   "knees": {
+    "group": "coat",
+    "pan": 0.3,
+    "depth": 0.7,
+    "rate": 0.95,
+    "range": 1.1,
+    "status": "planned"
+   },
+   "ballast": {
+    "group": "coat",
+    "pan": 0.1,
+    "depth": 0.9,
+    "rate": 0.82,
+    "range": 0.6,
+    "shift": -2,
+    "status": "planned"
+   },
+   "pride": {
+    "group": "coat",
+    "pan": 0.45,
+    "depth": 0.3,
+    "rate": 1.08,
+    "range": 1.3,
+    "shift": 1.5,
+    "status": "planned"
+   },
+   "grip": {
+    "group": "coat",
+    "pan": 0.6,
+    "depth": 0.4,
+    "rate": 1,
+    "range": 0.8,
+    "status": "planned"
+   },
+   "condolence": {
+    "group": "hat",
+    "pan": 0.2,
+    "depth": 0.4,
+    "rate": 0.9,
+    "range": 1,
+    "vol": "low",
+    "status": "rendered"
+   },
+   "formletter": {
+    "group": "hat",
+    "pan": 0.75,
+    "depth": 0.3,
+    "rate": 1,
+    "range": 0.5,
+    "status": "rendered"
+   },
+   "chit": {
+    "group": "hat",
+    "pan": 0.5,
+    "depth": 0.25,
+    "rate": 1.12,
+    "range": 1.2,
+    "status": "planned"
+   },
+   "hearsay": {
+    "group": "hat",
+    "pan": 0.85,
+    "depth": 0.1,
+    "rate": 1.1,
+    "range": 1.1,
+    "vol": "low",
+    "status": "planned"
+   },
+   "smell": {
+    "group": "nose",
+    "pan": -0.1,
+    "depth": 0.5,
+    "rate": 1.05,
+    "range": 1.5,
+    "status": "planned"
+   },
+   "dark": {
+    "group": "nose",
+    "pan": 0,
+    "depth": 1,
+    "rate": 0.85,
+    "range": 0.5,
+    "vol": "whisper",
+    "status": "planned"
+   },
+   "undertow": {
+    "group": "nose",
+    "pan": -0.85,
+    "depth": 0.05,
+    "rate": 0.9,
+    "range": 0.8,
+    "vol": "low",
+    "status": "planned"
+   },
+   "salt": {
+    "group": "nose",
+    "pan": 0,
+    "depth": 0.85,
+    "rate": 0.88,
+    "range": 0.7,
+    "shift": -2.5,
+    "creak": 0.5,
+    "status": "planned"
+   }
+  }
+ },
+ "instruments": {
+  "about": "The Kit are objects. Designed timbres: Lamb's source voice through a resonator built for each object, so no person's likeness is involved. Placed outside the head, in the case at Lamb's hip.",
+  "THE DAMP": {
+   "resonator": "hair",
+   "shift": -3,
+   "rate": 0.88,
+   "range": 0.5,
+   "pan": 0.25,
+   "status": "rendered"
+  },
+  "CANDLEMAS": {
+   "resonator": "brass",
+   "shift": 2,
+   "rate": 1,
+   "range": 0.9,
+   "pan": 0.25,
+   "status": "planned"
+  },
+  "THE GLASS": {
+   "resonator": "glass",
+   "shift": 3,
+   "rate": 1.1,
+   "range": 1.3,
+   "pan": 0.25,
+   "status": "planned"
+  },
+  "THE ALMANAC": {
+   "resonator": "paper",
+   "shift": -1,
+   "rate": 0.95,
+   "range": 0.4,
+   "pan": 0.25,
+   "status": "planned"
+  },
+  "THE VANE": {
+   "resonator": "tin",
+   "shift": 4,
+   "rate": 1.2,
+   "range": 1.5,
+   "pan": 0.25,
+   "status": "planned"
+  }
+ },
+ "setting_note": "Speakers marked setting gullet belong to the cut first setting (QUOTA-DESIGN decision 3); setting quota is the current game.",
+ "peoples_quota": {
+  "tarn-town": "The Upper Town's Tarn: clerks, inspectors, merchants. Finished consonants, a level tune, sentences that close on the verb; Directorate words at work and plain words at home.",
+  "tarn-plain": "The plain's Tarn: farmers, cottars, the militia's men. Dropped final g, 'you've not' and 'I'll not', short sentences that fall at the end; field, weather and sack words.",
+  "hesh": "The Hesh, Heshen first: a rise at the end of a statement that a Tarn ear hears as a question; Tarnish learned in the barns, full forms ('I do not'); Heshen words for water, rain, the Well and kin when the speaker is moved or afraid.",
+  "half-hesh": "Raised in the Upper Town by a Hesh father and a Tarn mother: Tarnish first, the Hesh rise only under stress, Heshen words only at home.",
+  "directorate": "The People's Directorate's officers: written Arlen said aloud: passives, figures, titles, the word 'comrade' used as a stop."
+ },
+ "slurs": {
+  "about": "The invented slurs of 01-WORLD.md. Spoken in full by a character with a history and someone who hears it; never by the narrator, the interface or the read-back's own voice (VOICE-BIBLE 11.5).",
+  "words": [
+   "mud-hands",
+   "mud-hand",
+   "tallowmen",
+   "tallowman",
+   "chaffers",
+   "chaffer",
+   "goat-Hesh",
+   "tallow-brats",
+   "tallow-brat"
+  ]
+ },
+ "readback": {
+  "speaker": "READBACK",
+  "direction": "flat 1 steady",
+  "allowed_cues": [
+   "beat",
+   "pause"
+  ],
+  "row_gap_s": 0.6,
+  "hinge_gap_s": 1.4,
+  "about": "The read-back's flat voice (VOICE-BIBLE 11.4): one voice, flat, no stress, no breath, no room, no music; the dirlint holds READBACK lines to it."
+ }
+}

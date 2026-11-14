@@ -53,16 +53,31 @@ export function side(F) {
   return Math.abs(d) <= q ? "f" : Math.abs(d) >= 3 * q ? "b" : d > 0 ? "r" : "l";
 }
 
+// Upper-body layering (pose.upper: { anim, t }, characters/runtime/actor.mjs layerPose; engine PROGRESS 37, the
+// character lead's ask): the legs keep walking while the arms do something else.
+//   - a guard raised while walking: walk (or wade) on the legs, the guard above;
+//   - a strike started on the move: while the walk's momentum still carries it (sim/fighter.mjs: 60% of walking
+//     speed, fading over 12 frames) and the body moves at UPPER_MIN m/s or more, the legs walk it out and the
+//     strike plays above; once the momentum is spent the strike takes the whole body.
+export const UPPER_MIN = 0.6;
+const LAYERED = new Set(["attack", "riposte", "item"]);
 // What to draw for this fighter this frame.
 export function poseOf(W, F, clips = {}) {
   const actor = actorOf(W, F);
-  if (!F.act) { const name = locomotion(W, F); return { actor, anim: name, clip: `${actor}.${name}`, loop: true, phase: "free", f: 0, u: 0, t: null }; }
+  if (!F.act) {
+    const name = locomotion(W, F);
+    if (name === LOCO.guard && Math.hypot(F.vx, F.vz) >= 0.2) { const foot = W.field.footing(F.x, F.z), legs = foot.band === "knee" || foot.band === "waist" ? LOCO.wade : LOCO.walk; return { actor, anim: legs, clip: `${actor}.${legs}`, loop: true, phase: "free", f: 0, u: 0, t: null, upper: { anim: LOCO.guard, t: Math.min(F.guardT, 12) / FPS } }; }
+    return { actor, anim: name, clip: `${actor}.${name}`, loop: true, phase: "free", f: 0, u: 0, t: null };
+  }
   const m = W.moves[F.act.id], anim = m.kind === "dodge" ? `${m.anim}_${side(F)}` : m.anim, id = `${actor}.${anim}`, clip = clips[id] || clips[`${actor}.${m.anim}`] || null;
   const f = F.act.charging ? m.charge.at : F.act.f;
   // the clip's playback rate: how fast this body plays the clip, from its tempo (sim/tempo.mjs);
   // with t driven from the frames the two never drift, and rate tells the renderer the speed
   const len = clip ? clip.length : (m.baseTotal || m.total) / FPS, rate = len / Math.max(1 / FPS, F.act.end / FPS);
-  return { actor, anim, clip: id, loop: false, phase: phaseOf(m, f), f, u: f / m.total, t: warp(m, f, clip), rate: +rate.toFixed(3), charging: !!F.act.charging, have: !!clip, kind: m.kind };
+  const pose = { actor, anim, clip: id, loop: false, phase: phaseOf(m, f), f, u: f / m.total, t: warp(m, f, clip), rate: +rate.toFixed(3), charging: !!F.act.charging, have: !!clip, kind: m.kind };
+  const A = F.act, carry = A.carry && A.f < 12 ? Math.hypot(A.carry[0], A.carry[1]) * (1 - A.f / 12) : 0;
+  if (LAYERED.has(m.kind) && carry >= UPPER_MIN && Math.hypot(F.vx, F.vz) >= UPPER_MIN) return { ...pose, anim: LOCO.walk, clip: `${actor}.${LOCO.walk}`, loop: true, upper: { anim, t: pose.t } };
+  return pose;
 }
 
 // Every move a fighter can make, checked against the clips: missing clips, and clips whose

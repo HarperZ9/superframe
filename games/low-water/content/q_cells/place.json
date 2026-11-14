@@ -1,0 +1,214 @@
+{
+ "place": "q_cells",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   0.9,
+   -0.4
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 3.5135135135135136
+ },
+ "pxPerMetre": 185,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "morning",
+  "night"
+ ],
+ "variantInfo": {
+  "morning": {
+   "hour": 7.2,
+   "weather": "the cells by day: grey light down the grating, the lamp on its hook, the stove"
+  },
+  "night": {
+   "hour": 2,
+   "weather": "the night shift: the lamp, the stove down to its last"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "end_cell",
+    "verb": "look",
+    "at": [
+     -2.4,
+     0,
+     0.1
+    ],
+    "note": "the end cell: the bench, the bucket, the straw"
+   },
+   {
+    "id": "womens_cell",
+    "verb": "look",
+    "at": [
+     2.4,
+     0,
+     0.1
+    ],
+    "note": "the women's cell"
+   },
+   {
+    "id": "log",
+    "verb": "read",
+    "at": [
+     1.6,
+     0,
+     0.9
+    ],
+    "note": "the cell log, open: the day's names and what each was given"
+   },
+   {
+    "verb": "look",
+    "id": "goat",
+    "at": [
+     -2,
+     0,
+     0.25
+    ],
+    "note": "low on the end cell's wall, at the height of somebody sitting: a goat scratched in the limewash"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "stairs",
+    "at": [
+     3,
+     0,
+     2.2
+    ],
+    "note": "the stairs up to the brigade office"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "morning": [
+   {
+    "at": [
+     2.7,
+     0.35,
+     1
+    ],
+    "kind": "paraffin",
+    "I": 2.2,
+    "reach": 5,
+    "group": "fire"
+   },
+   {
+    "at": [
+     3.1,
+     1.85,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 8,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -0.4,
+     2.2,
+     -2.25
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 7,
+    "group": ""
+   }
+  ],
+  "night": [
+   {
+    "at": [
+     2.7,
+     0.35,
+     1
+    ],
+    "kind": "paraffin",
+    "I": 1.1,
+    "reach": 5,
+    "group": "fire"
+   },
+   {
+    "at": [
+     3.1,
+     1.85,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 8,
+    "group": "lantern"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the cells under the district office.",
+ "figureLights": {
+  "morning": [
+   {
+    "at": [
+     1.4,
+     2,
+     2.2
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 7,
+    "figure": true
+   }
+  ],
+  "night": [
+   {
+    "at": [
+     1.4,
+     2,
+     2.2
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 7,
+    "figure": true
+   }
+  ]
+ }
+}

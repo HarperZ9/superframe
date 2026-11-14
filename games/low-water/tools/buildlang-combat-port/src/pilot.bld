@@ -1,0 +1,427 @@
+// tools/pilot.mjs: the scripted Lamb the corpus is recorded with. It uses JS
+// Math (jsmath.bld) where the JS does, and DETMATH where it calls the sim.
+
+fn plive(f: Fighter) -> bool {
+    !f.out && !f.fallen && !f.yielded && f.hp > 0.0
+}
+
+fn pr01(w: &World, k: str) -> f64 {
+    let seed = ((w.seed as i64) ^ 0x5151) as u32;
+    rand01(seed, format!("{}:{}", k, w.tick))
+}
+
+fn pilot_out() -> Inp {
+    let mut o = mk_move(0.0, 0.0);
+    o.has_press = true;
+    o.has_hold = true;
+    o
+}
+
+fn pilot_decide(w: &mut World) -> Inp {
+    let lx = lamb_index(w);
+    if lx < 0 {
+        return empty_inp();
+    }
+    let li = lx as usize;
+    let l = w.fighters[li];
+    if l.fallen {
+        return empty_inp();
+    }
+    if w.pilot.style == "" {
+        let d = w.defs[li];
+        let g = level_of(d, "grip");
+        let b = level_of(d, "ballast");
+        let grip = if g.0 { g.1 } else { 3.0 };
+        let ballast = if b.0 { b.1 } else { 3.0 };
+        let fighter = grip >= 5.0 || ballast >= 5.0;
+        w.pilot.style = if fighter { "fighter" } else { "careful" };
+        w.pilot.catch_share = if fighter { 0.8 } else { 0.6 };
+    }
+    let style = w.pilot.style;
+    let catch_share = w.pilot.catch_share;
+    // openings: no unaware opponent and no sluice lever in a corpus fight
+    let mut ids: Vec<usize> = Vec::new();
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        if f.team != "lamb" && plive(f) {
+            ids.push(i);
+        }
+        i += 1;
+    }
+    let foes = sort_by_dist(w, ids, l.x, l.z);
+    if foes.len() == 0 {
+        return empty_inp();
+    }
+    let mut near: Vec<usize> = Vec::new();
+    i = 0;
+    while i < foes.len() {
+        let f = w.fighters[foes[i]];
+        if dist_xy(l.x, l.z, f.x, f.z) < 3.0 {
+            near.push(foes[i]);
+        }
+        i += 1;
+    }
+    let mut ti = foes[0];
+    if style == "fighter" && near.len() > 1 {
+        ti = sort_by_hp(w, near)[0];
+    }
+    let mut out = pilot_out();
+    if l.has_act && l.act.id == "getup" && l.act.f >= 30.0 && l.st >= 2.0 {
+        let f0 = w.fighters[foes[0]];
+        let a = angle_to(f0.x, f0.z, l.x, l.z);
+        let mut o = mk_move(js_cos(a), js_sin(a));
+        o.has_press = true;
+        o.press.push("roll");
+        return o;
+    }
+    let lk = by_id(w, l.lock);
+    if l.lock == "" || lk < 0 || !plive(w.fighters[lk as usize]) {
+        out.press.push("lock");
+    }
+    if w.pilot.hold > 0.0 {
+        w.pilot.hold = w.pilot.hold - 1.0;
+        out.hold_heavy = 1;
+        return out;
+    }
+    let busy = l.has_act && mv(w, l.act.id).kind != "dodge";
+    if !busy {
+        let cut = interrupt(w, li, foes);
+        if cut >= 0 {
+            let c = w.fighters[cut as usize];
+            let a = angle_to(l.x, l.z, c.x, c.z);
+            out.mx = js_cos(a);
+            out.mz = js_sin(a);
+            out.press.push("light");
+            return out;
+        }
+        let th = incoming(w, li, foes);
+        if th.has {
+            return defend(w, li, th, out, catch_share);
+        }
+    }
+    if riposte_target(w, li) >= 0 {
+        out.press.push("light");
+        return out;
+    }
+    if l.has_act {
+        let lm = mv(w, l.act.id);
+        if next_of(lm, "light") != "" && l.act.f > lm.startup && pr01(w, "chain") < 0.08 {
+            out.press.push("light");
+            return out;
+        }
+    }
+    offend(w, li, ti, out, style)
+}
+
+fn sort_by_hp(w: &World, ids: Vec<usize>) -> Vec<usize> {
+    let mut out: Vec<usize> = Vec::new();
+    let mut i = 0;
+    while i < ids.len() {
+        let h = w.fighters[ids[i]].hp;
+        let mut j = out.len();
+        while j > 0 && w.fighters[out[j - 1]].hp - h > 0.0 {
+            j -= 1;
+        }
+        let mut no: Vec<usize> = Vec::new();
+        let mut q = 0;
+        while q < out.len() {
+            if q == j {
+                no.push(ids[i]);
+            }
+            no.push(out[q]);
+            q += 1;
+        }
+        if j == out.len() {
+            no.push(ids[i]);
+        }
+        out = no;
+        i += 1;
+    }
+    out
+}
+
+fn lamb_move_id(w: &World, li: usize, key: str) -> str {
+    let l = w.fighters[li];
+    format!("lamb:{}{}", if l.tool != "" { "" } else { "hands:" }, key)
+}
+
+fn interrupt(w: &World, li: usize, foes: Vec<usize>) -> i64 {
+    let id = lamb_move_id(w, li, "light_1");
+    let l = w.fighters[li];
+    if !has_move(w, id) || l.st < 1.0 {
+        return -1;
+    }
+    let lm = mv(w, id);
+    let reach = lm.hits[0].r1 + 0.3;
+    let mut i = 0;
+    while i < foes.len() {
+        let f = w.fighters[foes[i]];
+        if f.has_act && !(dist_xy(l.x, l.z, f.x, f.z) > reach + w.defs[foes[i]].radius) {
+            let m = mv(w, f.act.id);
+            let left = m.startup - f.act.f;
+            if m.kind == "attack" && !m.armor.has && left > lm.startup + 2.0 {
+                return foes[i] as i64;
+            }
+        }
+        i += 1;
+    }
+    -1
+}
+
+struct Threat {
+    has: bool,
+    throw: bool,
+    angle: f64,
+    left: f64,
+    parry: bool,
+    from: str,
+}
+
+fn incoming(w: &World, li: usize, foes: Vec<usize>) -> Threat {
+    let l = w.fighters[li];
+    let mut i = 0;
+    while i < w.projectiles.len() {
+        let p = w.projectiles[i];
+        if p.team != "lamb" {
+            let d = js_hypot(p.x - l.x, p.z - l.z);
+            let closing = (l.x - p.x) * p.vx + (l.z - p.z) * p.vz > 0.0;
+            if closing && d < 3.2 {
+                return Threat { has: true, throw: true, angle: js_atan2(p.vz, p.vx), left: 2.0, parry: p.mv.parryable, from: "" };
+            }
+        }
+        i += 1;
+    }
+    i = 0;
+    while i < foes.len() {
+        let f = w.fighters[foes[i]];
+        if f.has_act {
+            let m = mv(w, f.act.id);
+            let left = m.startup - f.act.f;
+            if !(m.hits.len() == 0 || left < 0.0 || left > 14.0) {
+                let reach = max_reach(m);
+                if dist_xy(l.x, l.z, f.x, f.z) <= reach + 0.8 {
+                    return Threat { has: true, throw: false, angle: angle_to(f.x, f.z, l.x, l.z), left: left, parry: m.parryable, from: f.id };
+                }
+            }
+        }
+        i += 1;
+    }
+    Threat { has: false, throw: false, angle: 0.0, left: 0.0, parry: false, from: "" }
+}
+
+fn defend(w: &World, li: usize, th: Threat, o: Inp, catch_share: f64) -> Inp {
+    let mut out = o;
+    let l = w.fighters[li];
+    let side = th.angle + ((if pr01(w, "side") < 0.5 { 1.0 } else { -1.0 }) * JS_PI) / 2.0;
+    if th.throw {
+        out.mx = js_cos(side);
+        out.mz = js_sin(side);
+        if l.st >= 1.0 && !l.has_act {
+            out.press.push("step");
+        }
+        return out;
+    }
+    let cid = lamb_move_id(w, li, "catch");
+    let d = w.defs[lamb_index(w) as usize];
+    let rid = roll_form(d, d.load);
+    let rm = if has_move(w, rid) { mv(w, rid) } else { mv(w, "roll") };
+    let catch_at = if has_move(w, cid) { mv(w, cid).parry.a + 2.0 } else { 3.0 };
+    let roll_at = rm.iframes.a + 3.0;
+    if th.parry && l.st >= 1.0 && th.left == catch_at && pr01(w, format!("c{}", th.from)) < catch_share {
+        out.press.push("catch");
+        return out;
+    }
+    if th.left == roll_at && l.st >= 2.0 {
+        out.mx = js_cos(side);
+        out.mz = js_sin(side);
+        out.press.push("roll");
+        return out;
+    }
+    if th.left < roll_at {
+        out.hold_block = 1;
+    }
+    out
+}
+
+fn offend(w: &mut World, li: usize, ti: usize, o: Inp, style: str) -> Inp {
+    let mut out = o;
+    let l = w.fighters[li];
+    let t = w.fighters[ti];
+    let d = dist_xy(l.x, l.z, t.x, t.z);
+    let a = angle_to(l.x, l.z, t.x, t.z);
+    let mut open = false;
+    let mut t_kind = "";
+    if t.has_act {
+        let tm = mv(w, t.act.id);
+        t_kind = tm.kind;
+        open = tm.kind == "stagger" || tm.kind == "down" || t.act.f > tm.startup + tm.active;
+    }
+    if l.st < 2.0 {
+        out.mx = -js_cos(a) * 0.8;
+        out.mz = -js_sin(a) * 0.8;
+        out.hold_block = if d < 3.0 { 1 } else { 0 };
+        return out;
+    }
+    if d > 1.7 {
+        out.mx = js_cos(a);
+        out.mz = js_sin(a);
+        w.pilot.has_goal = true;
+        w.pilot.goal_x = t.x;
+        w.pilot.goal_z = t.z;
+        return out;
+    }
+    if (w.tick as f64) < w.pilot.cool && !open {
+        let s = a + JS_PI / 2.0;
+        out.mx = js_cos(s) * 0.5;
+        out.mz = js_sin(s) * 0.5;
+        return out;
+    }
+    let pick = pr01(w, "atk");
+    let fighter = style == "fighter";
+    w.pilot.cool = (w.tick as f64) + (if fighter { 18.0 } else { 40.0 }) + (pr01(w, "cool") * (if fighter { 18.0 } else { 30.0 })).floor();
+    if fighter {
+        let crowd = count_near(w, li, 2.6);
+        let d0 = w.defs[li];
+        let art2 = set_get(d0, l.tool, "art2");
+        if art2 != "" && l.composure >= mv(w, art2).composure && (crowd >= 2.0 || d < 2.0) {
+            out.press.push("art2");
+            return out;
+        }
+        let art = set_get(d0, l.tool, "art");
+        if art != "" && l.composure >= mv(w, art).composure && d < 2.2 && mv(w, art).kind != "parry" {
+            out.press.push("art");
+            return out;
+        }
+        if crowd >= 2.0 && l.st >= 3.0 {
+            w.pilot.hold = 30.0;
+            out.press.push("heavy");
+            out.hold_heavy = 1;
+            return out;
+        }
+        let foot = footing(w, t.x, t.z);
+        let behind = depth_at(w, t.x + js_cos(a) * 1.2, t.z + js_sin(a) * 1.2);
+        if (foot.frost || foot.kind.starts_with("wet ") || behind >= 0.4) && l.st >= 1.0 && d < 1.4 {
+            out.press.push("shove");
+            return out;
+        }
+    }
+    if open && t_kind != "stagger" && pick < 0.35 && l.st >= 3.0 {
+        w.pilot.hold = 36.0;
+        out.press.push("heavy");
+        out.hold_heavy = 1;
+        return out;
+    }
+    if pick < 0.12 && style != "careful" {
+        out.press.push("shove");
+        return out;
+    }
+    out.press.push("light");
+    out
+}
+
+fn count_near(w: &World, li: usize, r: f64) -> f64 {
+    let l = w.fighters[li];
+    let mut n = 0.0;
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        if f.team != "lamb" && plive(f) && dist_xy(l.x, l.z, f.x, f.z) < r {
+            n += 1.0;
+        }
+        i += 1;
+    }
+    n
+}
+
+// The pilot's input for this frame (createPilot's returned function).
+fn pilot_input(w: &mut World) -> Inp {
+    w.pilot.has_goal = false;
+    let out = pilot_decide(w);
+    let lx = lamb_index(w);
+    if lx >= 0 && w.pilot.has_goal && w.tick % 30 == 0 {
+        let l = w.fighters[lx as usize];
+        let mut stuck = 0.0;
+        if w.pilot.has_at && js_hypot(l.x - w.pilot.at_x, l.z - w.pilot.at_z) < 0.3 {
+            stuck = w.pilot.stuck + 1.0;
+        }
+        w.pilot.stuck = stuck;
+        w.pilot.has_at = true;
+        w.pilot.at_x = l.x;
+        w.pilot.at_z = l.z;
+    }
+    steer(w, out)
+}
+
+fn steer(w: &World, o: Inp) -> Inp {
+    let mut out = o;
+    let lx = lamb_index(w);
+    let mx = if out.has_mx && out.mx == out.mx { out.mx } else { 0.0 };
+    let mz = if out.has_mz && out.mz == out.mz { out.mz } else { 0.0 };
+    let s = js_hypot(mx, mz);
+    if lx < 0 || s < 0.2 {
+        return out;
+    }
+    let l = w.fighters[lx as usize];
+    if w.pilot.has_goal && !l.has_act && w.pilot.stuck > 0.0 {
+        let g = go_to(l, w.pilot.goal_x, w.pilot.goal_z, s);
+        out.has_mx = true;
+        out.mx = g.mx;
+        out.has_mz = true;
+        out.mz = g.mz;
+    }
+    let base = js_atan2(out.mz, out.mx);
+    let ks: Vec<f64> = vec![0.0, 1.0, -1.0, 2.0, -2.0, 3.0, -3.0];
+    let mut k = 0;
+    while k < ks.len() {
+        let a = base + (ks[k] * JS_PI) / 4.0;
+        let x = l.x + js_cos(a);
+        let z = l.z + js_sin(a);
+        if !solid(w, x, z) && depth_at(w, x, z) < 0.85 {
+            if ks[k] != 0.0 {
+                out.mx = js_cos(a) * s;
+                out.mz = js_sin(a) * s;
+            }
+            return out;
+        }
+        k += 1;
+    }
+    out
+}
+
+// clean(input.lamb) as JSON: keys sorted, absent keys left out
+fn inp_json(i: Inp) -> str {
+    let mut keys: Vec<str> = Vec::new();
+    let mut vals: Vec<str> = Vec::new();
+    if i.has_hold {
+        let mut hk: Vec<str> = Vec::new();
+        let mut hv: Vec<str> = Vec::new();
+        if i.hold_block >= 0 {
+            hk.push("block");
+            hv.push(jb(i.hold_block == 1));
+        }
+        if i.hold_heavy >= 0 {
+            hk.push("heavy");
+            hv.push(jb(i.hold_heavy == 1));
+        }
+        if i.hold_run >= 0 {
+            hk.push("run");
+            hv.push(jb(i.hold_run == 1));
+        }
+        keys.push("hold");
+        vals.push(json_obj(hk, hv));
+    }
+    if i.has_mx {
+        keys.push("mx");
+        vals.push(i.mx.to_json());
+    }
+    if i.has_mz {
+        keys.push("mz");
+        vals.push(i.mz.to_json());
+    }
+    if i.has_press {
+        keys.push("press");
+        vals.push(jstrs(i.press));
+    }
+    json_obj(keys, vals)
+}

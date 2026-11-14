@@ -1,0 +1,55 @@
+# The voice prototype's scene (design/VOICE-BIBLE.md section 7): Merrow at the Brine's stove, one
+# path through content/act1/brine.lwd as it stood on 2026-10-21 (arrive, the Damp, where, the light,
+# the rope). Chosen for plain, spoken, concrete talk (coordinator, 2026-10-21: the author rejected the
+# recent aphoristic lines). The words are the story lead's and are not changed; only the [blocks],
+# <cues> and *stress* are new. A recording script and a renderer input; no act includes it.
+#   node game/engine/tools/dirlint.mjs design/voice/merrow-stove.lwd
+
+@node vo.merrow.arrive
+speaker: MERROW
+dir: MERROW: flat 1 slow
+nar: [dry 1] Merrow is steaming at the stove, wet to the thigh. <beat> Under the settle a sack, and on the sack, by chance, Sabine's boot.
+line: MERROW: [tired 1] The sea came for the gully. <beat> I came for the stove. <breath> Neither of us waited to be asked.
+voice: damp: [calm 1] Wet to the thigh, and drying from the top down. <beat> Give me five minutes near him and I will tell you when.
+nar: [dry 1] Merrow turns at the stove like a joint on a spit. His pipe is cold.
+
+@node vo.merrow.damp
+speaker: MERROW
+voice: damp: [calm 2] Wet to here, and here is the thigh. <beat> Salt, mud, weed. <beat> Before ten past eleven that gully was shin-deep. <breath> He waded it late. He waded it *full*.
+line: MERROW: [wry 1] That's a hair in a box. <beat> I had an uncle kept a toe.
+
+@node vo.merrow.where
+speaker: MERROW
+line: LAMB: [flat 1] Where were you tonight?
+line: MERROW: [calm 1 lie] Asleep on my boat.
+nar: [dry 1] He says it to the stove, which is steaming him like a pudding.
+
+@node vo.merrow.light
+speaker: MERROW
+line: LAMB: [anxious 1] I was on the ferry. <beat> I saw a light low on the water, in the drowned lamp, as she turned off the Spit.
+nar: [dry 1] Merrow takes the cold pipe out and looks into the bowl.
+line: MERROW: [ashamed 1 slow] Knocked the lantern out climbing in, at eighteen past. <beat> Lit it again at twenty-five past. <pause 0.7> In between, it was dark in there. <beat> I'd know. <beat> I was in it.
+line: MERROW: [ashamed 2 slow held] I'm not saying I saved anybody. <breath> I'm saying I was there with a light that was *out*.
+nar: [dry 1] The assessor writes both times down and draws no line between them.
+voice: sum: [flat 1 fast] Twenty-four by the ship's clock, less four. <beat> Eighteen to twenty-five, the lantern. {dc: 6}
+
+@node vo.merrow.rope
+speaker: MERROW
+line: LAMB: [flat 1] Keel says wreckers.
+line: MERROW: [cold 1] Wreckers. <beat> Gullet's not hanged anybody in sixty years. <breath> Keel says it like he's reading the tide table.
+line: MERROW: [afraid 1 low] Copper doesn't care who owns it. <beat> Copper's a better citizen than most. <pause 0.8> The rope cares. <cut> That's the difference.
+voice: condolence: [over low 1 slow] He is afraid, and it has gone into his hands. <beat> Look at his hands on the pipe. {dc: 6}
+
+@node vo.merrow.sack
+speaker: MERROW
+nar: [dry 1] Under the settle lies a sack. <beat> Through a split in the weave show copper wire, gear teeth, and a brass plate stamped TRUST.
+line: MERROW: [flat 1] That's mine. <beat> It wasn't, at ten. <beat> It is now.
+voice: precedent: [dry 1] Salvage from Trust property without leave. <beat> The law calls it theft and the floor calls it Tuesday. {dc: 6}
+
+@node vo.merrow.hide
+place: yard
+speaker: SABINE
+nar: [dry 1] Twenty green empties come off the stack, the sack goes in, and the empties go back in an order only Sabine would know was new.
+line: SABINE: [amused 2] That's twenty bottles disarranged, <beat> and I never saw it.
+voice: formletter: [flat 1] The assessor has concealed stolen property belonging to a party to the claim. <beat> The sentence is accurate. <beat> Try not to read it twice. {dc: 6}
+exit: walk

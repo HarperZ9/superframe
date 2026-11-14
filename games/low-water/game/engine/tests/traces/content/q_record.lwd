@@ -1,0 +1,24 @@
+# The Quota slice: what a finished run leaves in the world record for the next (engine: save/worldrecord.mjs).
+# Gameplay engineer, 2026-10-22. The lore facts a run finds are kept as well (q_lore.lwd gives:). The next run,
+# whatever its class, reads them with prior(...), and the last character's line and the stones as variables.
+
+@worldfact world.dead.tomas
+when: has(q.tomas_held)
+about: Tomas Haldane died in the cells on day 45; certified intestinal illness; place of burial not recorded.
+
+@worldfact world.anni_home
+when: has(q.anni_sent)
+about: Anni Haldane went to the Furrow Church's home on Tilney Road.
+
+@worldfact world.will_down
+when: has(q.will_down)
+about: Will Brack went down under the granary door.
+
+@var prior_line
+default: 
+@var prior_who
+default: 
+@var prior_stones
+default: 
+@var prior_runs
+default: 0

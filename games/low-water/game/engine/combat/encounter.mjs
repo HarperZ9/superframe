@@ -37,12 +37,14 @@ import { styleFor } from "./data/foes.mjs";
 import { TOOLS, TOOL_CLASSES, profileOf } from "./data/tools.mjs";
 import { TOOLS21, TEMPER, CLOTHING } from "./data/build.mjs";
 import { lambDef, foeDef, fighterSpec, learnedFromFlags } from "./roster.mjs";
+import { bossSpec, summoner } from "./arena/spawn.mjs";
 import { createWorld } from "./sim/world.mjs";
 import { parseProp } from "./sim/props.mjs";
 import { startMove } from "./sim/fighter.mjs";
 import { rootSpeed } from "./sim/moves.mjs";
 import { compile, evaluate } from "../core/expr.mjs";
 import { BARK_TEXT, BARK_KEYS } from "./sim/barks.mjs";
+import { dcos, dhypot, dsin } from "./sim/math.mjs";
 
 const one = (r, k) => { const x = r.kv.find((e) => e.key === k); return x ? x.value.trim() : undefined; };
 const all = (r, k) => r.kv.filter((e) => e.key === k).map((e) => e.value.trim());
@@ -62,7 +64,7 @@ export function loadEncounters(book) {
     const props = all(r, "prop").map(cond).filter(Boolean).map((p) => ({ ...p, prop: parseProp(p.body.split(/\s+/)) }));
     for (const p of props) if (!p.prop) errors.push({ file: r.file, line: r.line, msg: `encounter ${r.id}: unknown prop "${p.body}"` });
     const talks = all(r, "talk").map(cond).filter(Boolean).map((t) => { const [node, label] = t.body.split("|").map((x) => x.trim()); return { node, label: label || "Talk", when: t.when }; });
-    out[r.id] = { id: r.id, name: one(r, "name") || r.id, area: one(r, "area"), light: one(r, "light") || null, foes, params: all(r, "param"),
+    out[r.id] = { id: r.id, name: one(r, "name") || r.id, area: one(r, "area"), light: one(r, "light") || null, foes, params: all(r, "param"), boss: one(r, "boss") || null, // boss: a combat/data/bosses.mjs id (The Quota's granary door)
       opening: one(r, "opening") || "open", props: props.filter((p) => p.prop), talks,
       nodes: Object.fromEntries(["win", "yield", "fled", "down", "lose"].map((k) => [k, one(r, k) || null])) };
   }
@@ -142,16 +144,26 @@ function buildWorld(G, enc, arenas, barkText, opts = {}, plates = null) {
     const off = [at[0] + Math.floor(i / spawns.length), at[1]], spot = Math.floor(i / spawns.length) && !onGround(A, off) ? at : off;
     fighters.push(fighterSpec(`${f.id}#${k}`, "foe", foeDef(f.rec, style), spot, { face: -Math.PI / 2, brain: true }));
   }
+  if (enc.boss) fighters.push(bossSpec("boss", enc.boss, spawns[0])); // a story fight on a boss's pattern
+  // where the player's class stands when it starts (arena.stands, The Quota), read from the class variable
+  const cls = G.scope.get(`var.${arena.standsBy || "class"}`); if (arena.stands && arena.stands[cls]) fighters[0].x = arena.stands[cls][0], fighters[0].z = arena.stands[cls][1];
   const props = enc.props.filter((p) => holds(G, p.when)).map((p) => p.prop);
   const end = L.def.bonus.end || 0;
   for (const f of fighters) if (f.team !== "lamb" && f.def.yields != null && end) f.def = { ...f.def, yields: Math.min(f.def.hp - 1, f.def.yields + end) };
-  return createWorld({ G, arena: A, fighters, seed: G.state.seed ^ (G.env.clock() * 131), barkText, props, opening: opts.opening || enc.opening, lastSeen: opts.lastSeen || null, endEmpty: true, limitFrames: FIGHT_LIMIT * 60 });
+  const W = createWorld({ G, arena: A, fighters, seed: G.state.seed ^ (G.env.clock() * 131), barkText, props, opening: opts.opening || enc.opening, lastSeen: opts.lastSeen || null, endEmpty: true, limitFrames: FIGHT_LIMIT * 60 });
+  W.summon = summoner(W); // a boss's whistle brings hands in (combat/arena/spawn.mjs)
+  return W;
 }
 
 export function inputFromG(G) {
   const I = G.input, mv = I.get("move") || { x: 0, z: 0 };
   const names = ["light", "heavy", "catch", "step", "roll", "shove", "grapple", "use", "lock", "next", "prev", "lantern", "interact", "talk", "art", "art2"];
-  return { mx: +mv.x || 0, mz: -(+mv.z || 0), press: names.filter((n) => I.pressed(n)), hold: { heavy: !!I.get("heavy"), block: !!I.get("block"), run: !!I.get("run") } };
+  // the move vector is screen-relative (x right, z down the screen); with the plate camera's basis
+  // (G.fightBasis, set by the shell's fight layer) it becomes world x and z as walking does
+  let mx = +mv.x || 0, mz = -(+mv.z || 0);
+  const B = G.fightBasis;
+  if (B && (mx || mz)) { const fl = dhypot(B.f[0], B.f[2]) || 1, vx = +mv.x || 0, vz = +mv.z || 0; mx = B.right[0] * vx - (B.f[0] / fl) * vz; mz = B.right[2] * vx - (B.f[2] / fl) * vz; const L = dhypot(mx, mz), want = Math.min(1, dhypot(vx, vz)); if (L > 0) { mx = (mx / L) * want; mz = (mz / L) * want; } }
+  return { mx, mz, press: names.filter((n) => I.pressed(n)), hold: { heavy: !!I.get("heavy"), block: !!I.get("block"), run: !!I.get("run") } };
 }
 
 // Real seconds per game minute while a fight runs. A typical fight is 15 to 30 real seconds, so
@@ -215,7 +227,7 @@ function ambushOpening(G, W, amb) {
   const T = (w && w.char && foes.find((F) => W.defs[F.id].char === w.char)) || foes[0];
   if (!T) return;
   T.aware = false; T.notice = 0;
-  L.x = T.x - Math.cos(T.face) * 1.1; L.z = T.z - Math.sin(T.face) * 1.1; L.face = T.face; L.lantern = 0;
+  L.x = T.x - dcos(T.face) * 1.1; L.z = T.z - dsin(T.face) * 1.1; L.face = T.face; L.lantern = 0;
   startMove(W, L, "takedown");
   W.emit({ type: "ambush", id: T.id, watcher: amb.watcher, advantage: amb.advantage || "sneak" });
 }

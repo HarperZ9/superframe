@@ -1,0 +1,210 @@
+// sim/target.mjs: lamps, sight, soft targeting, the riposte check and lock-on.
+
+fn alive_f(f: Fighter) -> bool {
+    !f.out && !f.fallen && !f.yielded && f.hp > 0.0
+}
+
+// Carried lanterns and lanterns burning on the ground.
+fn lamps(w: &mut World) -> Vec<GroundLight> {
+    let mut kept: Vec<GroundLight> = Vec::new();
+    let mut i = 0;
+    while i < w.ground_lights.len() {
+        let l = w.ground_lights[i];
+        if l.until > (w.tick as f64) {
+            kept.push(l);
+        }
+        i += 1;
+    }
+    w.ground_lights = kept;
+    let mut out: Vec<GroundLight> = Vec::new();
+    i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        if f.lantern > 0.0 && alive_f(f) {
+            out.push(GroundLight { x: f.x, z: f.z, r: f.lantern, k: 0.45, until: 0.0 });
+        }
+        i += 1;
+    }
+    i = 0;
+    while i < w.ground_lights.len() {
+        out.push(w.ground_lights[i]);
+        i += 1;
+    }
+    out
+}
+
+fn visible(w: &World, ai: usize, bi: usize) -> bool {
+    let d = w.defs[ai];
+    let a = w.fighters[ai];
+    let b = w.fighters[bi];
+    let dd = dhypot(b.x - a.x, b.z - a.z);
+    if !sight_clear(w, a.x, a.z, b.x, b.z) {
+        return dd <= 1.2 && d.sight == "smell";
+    }
+    if d.sight == "smell" {
+        let near = if w.terms.wind_speed < 1.0 { 5.0 } else { 2.5 };
+        return dd <= near || downwind(w, a, b, dd);
+    }
+    // Mother's beam: no corpus arena has one
+    let mut range = seen_range(w, light_at(w, b.x, b.z, w.lamps_now)) * d.view;
+    if d.sight == "sodium" {
+        range = range * (if sodium_at(w, b.x, b.z) { 1.4 } else { 0.6 });
+    }
+    if a.blind > 0.0 {
+        range = range * 0.35;
+    }
+    dd <= maxf(1.2, range)
+}
+
+fn downwind(w: &World, a: Fighter, b: Fighter, d: f64) -> bool {
+    let wv = dhypot(w.terms.wind_x, w.terms.wind_z);
+    if wv < 1.0 || d > 12.0 {
+        return false;
+    }
+    ((a.x - b.x) * w.terms.wind_x + (a.z - b.z) * w.terms.wind_z) / (d * wv) > 0.7
+}
+
+fn foes_of(w: &World, fi: usize) -> Vec<usize> {
+    let me = w.fighters[fi];
+    let mut out: Vec<usize> = Vec::new();
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let t = w.fighters[i];
+        if t.team != me.team && alive_f(t) && visible(w, fi, i) {
+            out.push(i);
+        }
+        i += 1;
+    }
+    out
+}
+
+fn soft_target(w: &World, fi: usize, angle: f64) -> i64 {
+    let f = w.fighters[fi];
+    let foes = foes_of(w, fi);
+    let mut best: i64 = -1;
+    let mut score = 1.0 / 0.0;
+    let mut i = 0;
+    while i < foes.len() {
+        let t = w.fighters[foes[i]];
+        let d = dist_xy(f.x, f.z, t.x, t.z);
+        let off = wrap_angle(angle_to(f.x, f.z, t.x, t.z) - angle).abs() * deg();
+        if !(d > 5.0 || off > 50.0) {
+            let s = d + off / 30.0;
+            if s < score {
+                score = s;
+                best = foes[i] as i64;
+            }
+        }
+        i += 1;
+    }
+    best
+}
+
+fn riposte_target(w: &World, fi: usize) -> i64 {
+    let f = w.fighters[fi];
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let t = w.fighters[i];
+        if !(t.team == f.team || !alive_f(t) || !t.has_act || t.act.id != "parried" || t.act.f > 52.0) {
+            if !(dist_xy(f.x, f.z, t.x, t.z) > 2.4) {
+                if wrap_angle(angle_to(f.x, f.z, t.x, t.z) - f.face).abs() * deg() <= 70.0 {
+                    return i as i64;
+                }
+            }
+        }
+        i += 1;
+    }
+    -1
+}
+
+fn emit_lock(w: &mut World, fi: usize) {
+    let f = w.fighters[fi];
+    let mut ev = new_ev(w, "lock");
+    ev_str(&mut ev, "id", f.id);
+    ev_strn(&mut ev, "target", f.lock);
+    ev.id = f.id;
+    emit(w, ev);
+}
+
+fn toggle_lock(w: &mut World, fi: usize) -> i64 {
+    if w.fighters[fi].lock != "" {
+        w.fighters[fi].lock = "";
+        emit_lock(w, fi);
+        return -1;
+    }
+    let f = w.fighters[fi];
+    let foes = foes_of(w, fi);
+    let mut best: i64 = -1;
+    let mut score = 1.0 / 0.0;
+    let mut i = 0;
+    while i < foes.len() {
+        let t = w.fighters[foes[i]];
+        let d = dist_xy(f.x, f.z, t.x, t.z);
+        if !(d > 14.0) {
+            let s = wrap_angle(angle_to(f.x, f.z, t.x, t.z) - f.face).abs() * deg() / 20.0 + d;
+            if s < score {
+                score = s;
+                best = foes[i] as i64;
+            }
+        }
+        i += 1;
+    }
+    w.fighters[fi].lock = if best >= 0 { w.fighters[best as usize].id } else { "" };
+    w.fighters[fi].lock_lost = 0.0;
+    emit_lock(w, fi);
+    best
+}
+
+fn switch_lock(w: &mut World, fi: usize, sign: f64) -> i64 {
+    let cur = by_id(w, w.fighters[fi].lock);
+    if cur < 0 {
+        return toggle_lock(w, fi);
+    }
+    let f = w.fighters[fi];
+    let c = w.fighters[cur as usize];
+    let base = angle_to(f.x, f.z, c.x, c.z);
+    let foes = foes_of(w, fi);
+    let mut best: i64 = -1;
+    let mut gap = 1.0 / 0.0;
+    let mut i = 0;
+    while i < foes.len() {
+        let t = w.fighters[foes[i]];
+        if !(t.id == c.id || dist_xy(f.x, f.z, t.x, t.z) > 14.0) {
+            let mut d = wrap_angle(angle_to(f.x, f.z, t.x, t.z) - base) * sign;
+            if d <= 0.0 {
+                d = d + JS_PI * 2.0;
+            }
+            if d < gap {
+                gap = d;
+                best = foes[i] as i64;
+            }
+        }
+        i += 1;
+    }
+    if best >= 0 {
+        w.fighters[fi].lock = w.fighters[best as usize].id;
+        w.fighters[fi].lock_lost = 0.0;
+        emit_lock(w, fi);
+    }
+    best
+}
+
+fn keep_lock(w: &mut World, fi: usize) {
+    if w.fighters[fi].lock == "" {
+        return;
+    }
+    let ti = by_id(w, w.fighters[fi].lock);
+    if ti < 0 || !alive_f(w.fighters[ti as usize]) {
+        w.fighters[fi].lock = "";
+        emit_lock(w, fi);
+        return;
+    }
+    let seen = visible(w, fi, ti as usize);
+    w.fighters[fi].lock_lost = if seen { 0.0 } else { w.fighters[fi].lock_lost + 1.0 };
+    let f = w.fighters[fi];
+    let t = w.fighters[ti as usize];
+    if f.lock_lost > 90.0 || dist_xy(f.x, f.z, t.x, t.z) > 14.0 * 1.4 {
+        w.fighters[fi].lock = "";
+        emit_lock(w, fi);
+    }
+}

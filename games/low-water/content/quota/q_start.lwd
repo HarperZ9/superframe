@@ -1,0 +1,68 @@
+# The Quota slice: the start, the class, the wide lens at dawn. Story lead, 2026-10-21.
+
+# The cold open (design/spine-plan/02-WITNESS.md section 1, revision 12): forty seconds of Anni's kitchen years
+# later, before the day. The player plays the day not knowing which of the children is missing from her life.
+# Game director, 2026-10-22.
+@node q.start
+place: q_anni_room
+cost: 0
+camera: near
+nar: A kitchen, a long time after. A tin on the oilcloth with the lid off, and a girl of about twelve taking lengths of grey wool out of it one at a time and laying them in a row. Every length is knotted all the way along, small hard knots, close together.
+line: DAUGHTER: What's all these?
+line: ANNI: Put them back the way they were. They go in order.
+nar: The woman at the stove has a long careful face, and a blue thread round her wrist so old it has gone the colour of string.
+line: DAUGHTER: Of what, though?
+nar: The girl reaches for the thread on her mother's wrist, the way she has since she was small. Anni lets her hold it a moment, and then takes her wrist back. {sense: thread.hold}
+nar: Anni comes over and puts the lid on the tin, and keeps her hand flat on it.
+line: ANNI: Ask me when you're older.
+go: q.start.class
+
+@node q.start.class
+place: q_tower
+cost: 0
+# the class carries over from era 1 (coordinator, under the blanket approval, 2026-10-23): Abel's line is Ned's, Josh's is Will's
+alt: e1.carry.ned ? q_class == inspector
+alt: e1.carry.will ? q_class == militia
+nar: Winter. Edrin, the Upper Town.
+nar: Whose day is it?
+opt: "Ned Furrowe. District inspector. He stands at the scale when the villages bring their grain in." -> q.wide {do: q_class = inspector; become(q.ned)}
+opt: "Will Brack. Sergeant of militia. He keeps the cells and the road post." -> q.wide {do: q_class = militia; become(q.will)}
+
+@node q.wide
+place: q_tower
+cost: 10
+do: record(export.train, haldane, haldane_yard); shift(export, 1)
+camera: wide
+nar: From the bell tower, before it is light. Frost on the slates of Exchange Street, and smoke from about one chimney in four.
+nar: The relief queue starts at the office door and goes round three sides of the square. People stand close for the warmth. Nobody talks. A woman near the back is holding a child who is too big to be held, and every so often she shifts him to the other hip.
+nar: On the fourth side, under the lamps of the goods yard, the export train. Soldiers stand along it with their rifles slung while men load sacks stencilled with the Halvard company's black sheaf and an arrow for Arlen. In the queue, heads turn to watch every sack go up, and turn back.
+nar: Past the church, on the hill's shoulder, the burial ground. The new rows are on the left, where the ground was soft enough to dig in October. Since the frost they have been leaving the coffins in the church porch.
+go: q.wide.man
+
+# the same view, as the man the player chose; the player steps down from it by choice
+@node q.wide.man
+cost: 0
+alt: q.wide.ned ? q_class == inspector
+go: q.wide.will
+
+@node q.wide.ned
+place: q_tower
+cost: 3
+camera: wide
+nar: On the far side of the square, the exchange scale under its iron roof, black, with its arm up, and two carts already drawn up at it in the dark. The queue starts right beside it. Ned Furrowe has stood at that scale most mornings this winter with his collar up and has never once turned round to look at the queue.
+voice: sum: There's more of them than yesterday. You can tell from up here without trying. You go down the stairs. {dc: 3}
+opt: "Go down to the scale." -> q.morning
+
+@node q.wide.will
+place: q_tower
+cost: 3
+camera: wide
+nar: West, the post road going out across the plain in a straight line, white, to the district line and the hut. You can see the brazier's smoke from here if you know where to look.
+nar: And under the office, at the height of the queue's boots, the barred lights of the cells. People stand on the gratings because they're warmer.
+voice: grip: Your hand's in your pocket, on the bread. {dc: 2}
+opt: "Go down to the cells." -> q.morning
+
+@node q.morning
+cost: 0
+alt: q.ned.morning ? q_class == inspector
+go: q.will.morning

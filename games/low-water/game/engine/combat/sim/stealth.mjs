@@ -14,6 +14,7 @@
 // Lamb can shutter or unshutter the lantern at any time (action "lantern"): a lit lantern helps
 // Lamb see and lets everyone see Lamb.
 import { wrapAngle, angleTo, dist } from "./fighter.mjs";
+import { dhypot } from "./math.mjs";
 
 export const STEALTH = { cone: 70, noticeFrames: 36, noise: 5, fightNoise: 10, call: 8, callDelay: 30, decay: 0.01, behind: 110, takedownRange: 1.5, smallStanding: 10 };
 const DEG = 180 / Math.PI;
@@ -45,7 +46,7 @@ export function stepAwareness(W) {
     const d = dist(F, L), inCone = Math.abs(wrapAngle(angleTo(F, L) - F.face)) * DEG <= STEALTH.cone;
     const sees = inCone && W.visible(F, L), near = Math.max(0.2, 1 - d / Math.max(2, W.field.seenRange(W.field.lightAt(L.x, L.z, W.lampsNow))));
     if (sees) F.notice += near / STEALTH.noticeFrames; else F.notice = Math.max(0, F.notice - STEALTH.decay);
-    if (loud.some(([x, z, r]) => Math.hypot(F.x - x, F.z - z) <= r)) F.notice = 1;
+    if (loud.some(([x, z, r]) => dhypot(F.x - x, F.z - z) <= r)) F.notice = 1;
     if (F.notice >= 1) alert(W, F, sees ? "sight" : "noise");
   }
   for (const F of W.fighters) if (unaware(F) && F.calledAt != null && W.tick >= F.calledAt) alert(W, F, "called");

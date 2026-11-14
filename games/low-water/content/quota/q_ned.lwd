@@ -1,0 +1,334 @@
+# The Quota slice: the Inspector line (Ned Furrowe). The morning at the exchange scale, Tomas Haldane at the
+# inspector's door, the road post from the cart's side, and the hill. Story lead, 2026-10-21.
+# Weighted-devices pass, era 2, 2026-10-23 (design/DEVICE-AUDIT.md 3.1 to 3.3, design/device-audit/era2.md): the
+# returns sheets, the pencil, the signature and the tally board are gone. The lie is Walter Mott's iron wedge under
+# the sack pan, found with the hands; what Ned knows is what his body has met. Flags keep their ids: q.pencil_kept
+# is the wedge taken into his coat, q.pencil_rubbed the wedge knocked back in, q.cart_counted the sacks lifted down
+# with the girl's count said back to her.
+
+# ---------------------------------------------------------------- the morning in his trade
+@node q.ned.morning
+place: q_tower
+cost: 3
+do: cut(max(0, 07:10 - clock))
+nar: The exchange scale on Exchange Square, at first light. An iron arm as long as a man, a pan for the sacks on one side and the brass weights on the other, under a roof of corrugated iron that rings when the frost comes off it.
+nar: Walter Mott is working it, the brigade's clerk, in his good hat with the brim coming away at the back. Two of the brigade's men lift the sacks on and off for him. The carts queue behind them in the dark, and the relief queue stands beside the carts, close enough to put a hand on the wheels. Nobody does.
+nar: Ned Furrowe has his coat buttoned to the chin and his father's blackthorn stick under his arm, which he has carried on the hill roads since Abel's knees went.
+line: MOTT: Morning, Mr Furrowe. Krall's End and the barns. Sorry they're late. My lad's got the cough. I was up with him.
+nar: Krall's End first. The carts are heaped to the rails, every sack fat and tied at the neck. Each one goes on the pan and the arm drops hard on its stop, and the roof rings. {sense: scale.drop}
+nar: Then the barns' cart. The Orme estate's old sacks, every one with a square of blue ticking sewn over a hole in the corner. That's Bet Haldane's patching. The arm drops for those too, just as hard.
+voice: smallprint: The barns' sacks are thin at the neck. They're tied with half the string the Krall's End ones are. {dc: 4}
+line: NED: It's the dry cough, is it, or the wet?
+line: MOTT: Coughing. They're all coughing. He'll be all right. They've chalked the Pruetts' door, next but one. That's the fever, that is. That's not a cough.
+nar: Mott scratches at his wrist under the cuff, and catches himself doing it, and puts the hand in his pocket.
+opt: "Lift one of the barns' sacks yourself." -> q.ned.three
+opt: "Ask him what the barns brought in." -> q.ned.ask
+opt: "Wave the barns' cart on to the train." -> q.ned.sign
+
+@node q.ned.ask
+place: q_tower
+speaker: MOTT
+cost: 2
+line: MOTT: What the arm says, Mr Furrowe.
+line: MOTT: You saw it go down. That's what they brought in.
+nar: He isn't looking at the arm. He's looking at the sack pan, and then at his own boots.
+go: q.ned.three
+
+@node q.ned.three
+place: q_tower
+speaker: MOTT
+cost: 4
+do: shoulder(q.load.sack_light)
+nar: Ned takes a sack off the barns' cart himself, the way he'd take one in September, knees bent, ready for the weight. It comes up too easily. His arms were ready for twice it, and the sack comes up into his chest and nearly over his shoulder.
+nar: Chaff. You can feel it through the hessian, dry and shifting, and a little hard grain at the bottom like gravel in a shoe.
+nar: He puts it on the pan, and the arm drops as if it were full. {sense: scale.drop}
+nar: He crouches. Under the sack pan, where only a man on his knees would look, jammed between the pan and the frame, there's a flat wedge of iron the size of a hand. {sense: q.wedge.find}
+line: MOTT: That's the frame. It's always been loose, that frame.
+line: NED: That's your wedge, Walter. That's off your own doorstep.
+nar: Mott takes his hat off and holds it in both hands.
+line: MOTT: Everyone's sending heavy carts. Moor Holt's sacks go on with stones in the bottom. If the barns weigh light, they'll have me stood here in front of the Commissioner, and they'll ask me where the rest went, and what do I say? Jonah Krall's had his photograph in the paper.
+line: MOTT: I've three at home. Mrs Mott's been giving hers to the little one since November. I can see her collarbones through her dress.
+line: MOTT: Sorry. That's not your business. Sorry.
+voice: sum: Light. You knew it was light before it touched the pan. You stood in that barn in September with the girl calling the sacks off the cart. {dc: 3}
+opt: "Work the wedge loose and put it in your coat." -> q.ned.pencil {do: set(q.pencil_kept); set(q.true_in_hand); set(said.ned_pencil); setdown(q.load.sack_light); shoulder(q.load.wedge)}
+opt: "Push it back in tight, so it doesn't rattle." -> q.ned.rub {do: set(q.pencil_rubbed); setdown(q.load.sack_light)}
+opt: "Give him back the sack and say nothing." -> q.ned.sign {do: setdown(q.load.sack_light)}
+
+@node q.ned.pencil
+place: q_tower
+cost: 2
+nar: It takes both hands and his knee against the frame. It comes out all at once, and the sack pan rises off its stop and hangs there, light, with the barns' sack on it. {sense: q.wedge.out}
+nar: The wedge goes inside his coat, against his ribs. It's heavy for its size, and cold, and he can feel it every time he breathes in.
+line: MOTT: Will that go anywhere?
+line: NED: It's in my coat, Walter.
+nar: Mott nods a long time, as if that were an answer.
+go: q.ned.sign
+
+@node q.ned.rub
+place: q_tower
+cost: 2
+nar: He puts the heel of his hand to the wedge and knocks it home, twice, till the pan sits hard on it and doesn't rattle. Mott winces at the noise, both times. {sense: q.wedge.in}
+line: MOTT: Thank you, Mr Furrowe.
+line: NED: It's a bit of iron, Walter. That's all it is.
+go: q.ned.sign
+
+@node q.ned.sign
+place: q_tower
+cost: 2
+nar: The brigade's men lift the barns' sacks on, one after another, and carry them off to the train when the arm has spoken. Ned stands by the pan with his stick under his arm and watches the arm.
+nar: It goes down for every one of them. {when: !has(q.pencil_kept)}
+nar: Without the wedge it barely moves. Mott calls the weights anyway, the same as before, in the same voice, and nobody at the train asks. {when: has(q.pencil_kept)}
+voice: sum: The arm went down. You stood there and watched it go down. Nobody can say you didn't. {dc: 2, self: q.sl.signed}
+voice: condolence: Mott's going home now to a house where somebody isn't eating. {dc: 6, when: has(q.pencil_rubbed)}
+nar: Mott puts his hat back on and goes to fetch the next cart. On the way he coughs, and it isn't the cold.
+go: q.ned.door
+
+# ---------------------------------------------------------------- Tomas Haldane at the inspector's door
+@node q.ned.door
+place: q_returns
+speaker: TOMAS
+cost: 3
+do: cut(max(0, 08:40 - clock))
+nar: Ned goes up to his room over the relief office to get the feeling back in his hands. A knock, a quiet one, the kind you make when you don't want to be heard knocking.
+nar: A boy in the corridor with his cap in both hands, in a brown coat with a patch on the front, made for somebody bigger. The cuffs are turned back twice. His hair is braided and tucked into the back of his collar. There's a blue thread round his left wrist, and he keeps his right hand over it. {sense: thread.hold}
+line: TOMAS: Mr Furrowe? Sorry. They said downstairs you'd be in. Tomas Haldane. From the barns. Mum doesn't know I've come.
+line: TOMAS: You knew my dad. Ilo. He did two summers for your father when he first came down, before I was born. He still talks about your father's hat.
+nar: He laughs, a short one, and stops it.
+line: NED: Tomas. What is it?
+line: TOMAS: They came Monday with the brigade. A man stood in our yard and said we owe them sacks. We haven't got any sacks. They took all ours in October.
+nar: He takes a length of grey wool out of his coat and holds it out. It's knotted all the way along, small hard knots close together, and it goes on and on, out of his fist and down past his knee.
+line: TOMAS: That's my sister. She tied a knot for every sack they put on the cart in October. Every one. She counts everything, she drives Mum mad.
+line: TOMAS: And the crier's saying it's under the goats. The Hesh have got it in holes up on Tesk's hill. That's Mrs Tesk's place. My mum's friend. They're sending the squad up there next, everybody says.
+line: TOMAS: If you came up and looked. If you came and stood in it and saw there's no hole. They'd listen to you. People listen to a man in a hat.
+voice: undertow: He's practised that last bit on the walk over. You can hear where he took a breath. {dc: 5}
+opt: "After the weighing. Wait for me at the post road at two." -> q.ned.door.promise {do: set(q.promised_hill); set(said.ned_promise_hill); set(heard.tomas.ned_promise_hill)}
+opt: "Leave the knots with me." -> q.ned.door.tally {do: set(said.ned_keep_tally)}
+opt: "I can't go walking up hills on your say-so, Tomas. Go home." -> q.ned.door.send {do: set(q.tomas_sent); set(said.ned_send_tomas); set(heard.tomas.ned_send_tomas)}
+
+@node q.ned.door.promise
+place: q_returns
+speaker: TOMAS
+cost: 2
+line: TOMAS: Two. At the post road. Yes. Thank you. Sorry. Thank you.
+nar: He goes down the stairs too fast and has to stop at the bottom to put his cap on.
+go: q.office
+
+@node q.ned.door.tally
+place: q_returns
+speaker: TOMAS
+cost: 2
+line: TOMAS: You'll want it back to her, though. She'll want it back. She keeps them all in a tin.
+line: NED: It'll be in my inside pocket. I'll bring it back myself.
+nar: The wool goes into the inside pocket of his coat, coiled. All day he can feel the knots through the lining when he breathes in. {sense: q.knots}
+go: q.office
+
+@node q.ned.door.send
+place: q_returns
+speaker: TOMAS
+cost: 1
+line: TOMAS: Right. Anni said you'd say that.
+nar: He stands in the corridor a moment longer than he needs to, then puts his cap on and goes. He has left the door open behind him, and the cold comes in.
+go: q.office
+
+# ---------------------------------------------------------------- the road post, from the cart's side
+@node q.ned.road
+place: q_post
+cost: 5
+do: cut(max(0, 14:00 - clock))
+alt: q.ned.road.alone ? !has(q.promised_hill)
+nar: The post road at two. Tomas is there before him, stamping his feet. He doesn't say anything about the time.
+nar: They walk the mile out to the district line together. Where the road dips, before the post, Tomas stops.
+line: TOMAS: That's our cart.
+go: q.ned.cart
+
+@node q.ned.road.alone
+place: q_post
+cost: 5
+nar: The Captain wants a district man at the post when the carts come down, so it's seen done. A mile of frozen road. He walks it with his collar up.
+nar: At the barrier there's a cart, and he knows it before he can see the faces, because of the girl standing up in the back.
+go: q.ned.cart
+
+@node q.ned.cart
+place: q_post
+speaker: ANNI
+cost: 6
+nar: A barrier pole across the road, a whole young larch with a stone hung on the short end, a brazier, a hut. Sergeant Brack with his hands in his armpits, and a constable going through the Haldanes' cart with a bayonet, pushing it into the sacks. {sense: q.bayonet}
+nar: Aaron at the horse's head, looking at nothing. The mother, Bet, on the bench. The girl stands in the back between the sacks, counting them out loud as the constable lifts each one down.
+line: ANNI: Four. That's four. You've had four.
+line: BET: Anni. Sit down.
+line: ANNI: He's had four, Mum. I can count.
+nar: Two sacks are left on the cart. Seed, Bet says, to the sergeant, to nobody. The barley for the spring. Brack doesn't look at her. He looks at his boots, then at Ned, and something in his face goes careful.
+line: WILL: Inspector.
+line: WILL: Nothing goes over the line unless the post knows whose it is. Grain going out of the district, that's hoarding, by the Captain's order. You'll want to see it done.
+line: BET: We were taking it to my sister's at Osby. For the mill there. Ours is shut.
+line: WILL: Then she can come for it herself, missus, and I'll know her face.
+line: NED: It's only for the review, Mrs Haldane. It's only so it's done proper. It's only four, and it's only till the review, and the review's only, it's only, Aaron, hold the horse, will you, he's going to go.
+nar: A trap comes up the road behind them from the town, a good pony and a rug over the knees. Mary Furrowe, on her way to her sister's at Tarn Hollow, with a basket.
+line: MARY: Is that Bet's girl?
+line: NED: Go on to Lil's. You'll lose the light.
+line: MARY: She'll be fourteen.
+line: NED: I wouldn't know.
+line: MARY: March. She was fourteen in March.
+nar: Brack lifts the pole for the trap without a word. He knows her face, and the hat on her husband. The Haldanes wait in the road while she goes through, and Mary doesn't look back at them, and the girl doesn't stop counting. {sense: q.pole.lift}
+go: q.ned.cart.look
+
+@node q.ned.cart.look
+place: q_post
+cost: 0
+opt: "Look at the girl." -> q.ned.cart.girl {do: set(q.ned_looked)}
+opt: "Look at the sacks by the hut." -> q.ned.cart.board
+
+@node q.ned.cart.girl
+place: q_post
+cost: 2
+camera: near
+nar: She's standing in the back of the cart between the sacks with her lips moving. A long face, careful, too old for it. The thread at her wrist has gone grey with handling.
+voice: dark: Fourteen in March. {dc: 2}
+nar: When he looks away, the Captain's car is nearer than it was. {when: has(said.ned_report_blamed) | has(q.promised_hill)}
+go: q.ned.cart.menu
+
+@node q.ned.cart.board
+place: q_post
+cost: 1
+nar: The four sacks against the hut wall, where Gedge stacked them. They've gone over sideways the way light sacks do, and the frost is already on the hessian. There's blue ticking sewn over a hole on the corner of one.
+go: q.ned.cart.menu
+
+@node q.ned.cart.menu
+place: q_post
+cost: 0
+# Holt comes because somebody told him: he heard Ned name the hill on the square, or Walter Mott told him who knocked
+# at Ned's room (witnesses, not the figure; author 2026-10-23, "Bookkeeping should not be a part of the plot").
+alt: q.ned.cart.held ? has(said.ned_report_blamed) | has(q.promised_hill)
+voice: condolence: She's looking at you every time she says a number. You're the one in the good coat. {dc: 4}
+opt: "Vouch for them. Tell him they're going to the mill at Osby with your knowledge." -> q.ned.cart.vouch {do: q_cart = through; set(said.ned_vouch_cart); set(heard.will.ned_vouch_cart)}
+opt: "Tell the constable to take the four." -> q.ned.cart.sign {do: q_cart = taken; set(said.ned_sign_cart)}
+opt: "Climb up and lift every sack down yourself, and say her count back to her." -> q.ned.cart.count {do: q_cart = taken; set(q.cart_counted); set(q.true_in_hand); shoulder(q.load.sack_light, 4)}
+
+@node q.ned.cart.held
+place: q_post
+speaker: HOLT
+cost: 4
+nar: Behind the hut a motor car with its engine running. Captain Holt gets out of it buttoning his coat.
+line: HOLT: Furrowe. You've walked him down for me. That's thoughtful of you. {when: has(q.promised_hill)}
+line: NED: He's come to show me the hill. {when: has(q.promised_hill)}
+line: HOLT: Has he. Then he knows the way up it. {when: has(q.promised_hill)}
+line: HOLT: Walter Mott tells me a Hesh lad came knocking at your room this morning. Walter tells me everything, in the end. He can't help it. I like to know who calls. {when: has(q.promised_hill)}
+line: HOLT: Furrowe. Good. You told the Commissioner where the rest of it is, this morning, in front of the whole square. Up the hill. I heard you. {when: has(said.ned_report_blamed)}
+nar: He shakes Ned's hand, there in the road, in front of the cart. Bet sees it. The girl sees it. Tomas sees it first, and understands it before Ned does.
+nar: Then Holt looks at Tomas's wrist, at the blue thread, and Tomas puts his hand over it again.
+line: HOLT: So we'll start with the ones who can walk to the hills. Sergeant.
+line: TOMAS: You said two. I was here at two. {when: has(q.promised_hill)}
+line: TOMAS: I haven't been up the hill since harvest. Ask anybody. Ask him.
+nar: He's looking at Ned. Everybody is.
+opt: "He hasn't been up the hill. I've seen the barns. Let him go." -> q.ned.cart.hold.no {do: q_cart = taken; set(q.cart_stripped); set(said.ned_free_tomas); set(heard.holt.ned_free_tomas)}
+opt: "Say nothing." -> q.ned.cart.hold.yes {do: q_cart = arrested; set(q.tomas_held); fate(f.tomas_held, tomas); var.lean_dry += 1}
+
+@node q.ned.cart.hold.no
+place: q_post
+speaker: HOLT
+cost: 3
+line: HOLT: Seen the barns. You saw the barns and you told the Commissioner the rest is in the hills. {when: has(said.ned_report_blamed)}
+line: HOLT: You've seen the barns. Have you. {when: !has(said.ned_report_blamed)}
+line: HOLT: Which is it, inspector?
+nar: Nobody moves. Holt looks at him a long time, the way a man looks at a horse he was thinking of buying, and then he nods to himself, as if something had been settled.
+line: HOLT: Take your Hesh, then. The cart stays. All of it. Constable.
+nar: Gedge strips the cart, the four and the seed, and stacks them by the hut. Bet watches the seed go. Aaron holds the horse's head, and the horse, with the weight off, stands easier than it has all day.
+line: HOLT: Mrs Haldane. You'll want to thank the inspector. He walked your boy down to me himself. {when: has(q.promised_hill)}
+nar: Bet gets down off the bench and takes Tomas by the back of the coat and walks him past Ned without looking at him. She doesn't look at him again, that day or any day after.
+line: HOLT: I'll see you on the square.
+go: q.ned.after
+
+@node q.ned.cart.hold.yes
+place: q_post
+cost: 3
+nar: Brack stoops to take Tomas by the arm, not roughly. Tomas lets him. He keeps looking at Ned all the way to the motor car, and then he's in it, and the window is dirty.
+nar: The girl has stopped counting.
+line: ANNI: He wasn't up the hill. He was with me. He was with me all the time.
+go: q.ned.after
+
+@node q.ned.cart.vouch
+place: q_post
+speaker: WILL
+cost: 3
+line: WILL: With your knowledge.
+line: NED: With my knowledge.
+nar: Brack looks at him a while. Then he puts his shoulder under the short end of the pole and lifts it himself. The constable puts the four sacks back on the cart, one at a time, very slowly, so everyone can see him do it. {sense: q.pole.lift}
+line: WILL: The Captain'll hear this from me, inspector. With your name.
+line: NED: Tell him. Furrowe, with an e on the end.
+go: q.ned.after
+
+@node q.ned.cart.sign
+place: q_post
+cost: 2
+line: NED: Take the four, constable.
+nar: Gedge lifts them down and carries them to the hut one under each arm, as if they were nothing. Ned stands by the brazier with his hands in his coat and watches him do it.
+nar: The cart turns round in the road. It takes a while, because the horse is weak and Bet won't use the whip, and Aaron has to walk it round by the bridle. Nobody on it looks back.
+go: q.ned.after
+
+@node q.ned.cart.count
+place: q_post
+cost: 3
+do: setdown(q.load.sack_light)
+nar: He climbs up into the back beside the girl, in his good coat, and takes the sacks down himself, one at a time, and says each one as it comes.
+line: NED: One.
+line: ANNI: One.
+nar: They're light. Every one of them comes up into his chest too easily, the same as the barns' sack at the scale this morning. It's all the Haldanes have left, and he could carry it with one arm.
+line: ANNI: Six. Not five. There were six.
+line: NED: Six.
+nar: Then he carries the four to the hut and stacks them against the wall, because that's the order, and the girl watches him do it. His back knows what they weigh. He'll know it on the stairs tonight.
+go: q.ned.after
+
+@node q.ned.after
+place: q_post
+cost: 1
+alt: q.ned.hill ? has(q.promised_hill) & !has(q.tomas_held)
+go: q.dinner
+
+# ---------------------------------------------------------------- the hill (the inspector's route)
+@node q.ned.hill
+place: q_hill
+speaker: TOMAS
+cost: 30
+do: set(q.hill_seen); set(q.true_in_hand)
+nar: An hour up the hill in the frost, Ned going ahead with his father's stick to try the ruts before he puts his weight on them. Tomas walks it with his hands up his sleeves and doesn't once ask the way. {when: !has(q.cart_stripped)}
+nar: An hour up the hill in the frost. Bet took the empty cart home without a word to either of them, and Tomas came anyway, because Ned said he'd come and see. He walks it with his hands up his sleeves and doesn't once ask the way. {when: has(q.cart_stripped)}
+nar: Tesk's place is a stone house and a fold. Mrs Tesk comes out in a felt coat with a stick and doesn't ask why the inspector is here. She brings Tomas a cup of goat's milk without asking if he wants it. It's sour, and he drinks all of it, and wipes his mouth on the Orme lad's cuff.
+nar: The goats are in the fold. Tomas kicks the straw back with his boot, all the way down to the rock.
+line: TOMAS: There. That's the hole. That's the Hesh hole.
+nar: Rock, with frost on it. Tomas takes Ned by the wrist, the way you'd take a child's, and pulls his glove off for him, and puts his hand flat on it.
+nar: It's so cold it bites. There's no seam in it, no slab, no give anywhere. It's the hill. {sense: q.rock.cold}
+nar: A goat comes straight across the fold and pushes her nose at the glove in his other hand, hard, twice. {sense: q.goat.push}
+line: TOMAS: That's Sal. She's soft. Don't let her have your glove, she eats them.
+voice: dark: It knows him. It came straight to him. {dc: 3}
+line: TOMAS: You'll tell them, though? You'll tell them you put your hand on it?
+nar: Mrs Tesk watches him take his hand off the rock and work his glove back on, and says nothing.
+voice: dark: Your hand's still cold from it. It'll be cold all the way down. {dc: 4}
+go: q.ned.hill.ilo
+
+@node q.ned.hill.ilo
+place: q_hill
+speaker: DORRAH
+cost: 6
+nar: Ilo Haldane comes up the last of the track with a sack on his shoulder and two children behind him in coats too big for them. He sees Tomas, and then he sees Ned, and he puts the sack down.
+line: ILO: Your mother thinks you're at Sallis's.
+line: TOMAS: I came with him. He's seen it. He put his hand on it.
+nar: Ilo looks at Ned's hand, red from the rock, and says nothing about it.
+nar: The two children go straight past everybody to the hut, where four more are watching from the door in a row.
+line: DORRAH: Those two are from over the ridge.
+line: ILO: They were on the Wether road with their mother. She's in the cart shed at the post. She can't walk.
+line: DORRAH: The town ones can stop the week. I said so and I'll keep to it. The ridge ones go back.
+line: ILO: They're children, Dorrah.
+line: DORRAH: They're goat-Hesh. Feed one and the whole ridge is up here by Sunday, and the squad after them.
+line: ILO: You sound like the crier.
+line: DORRAH: Then you take them. Go on. Take them down the Yard and feed them. Show Bet.
+nar: The smaller one has sat down in the doorway to take her boot off. There's no sock in it, and the foot is grey to the ankle.
+voice: dark: You've seen that colour on the relief queue. On the ones they carry. {dc: 3}
+nar: Dorrah looks at the foot for a long time. Then she says something to the children in Heshen, short, and they go in.
+line: DORRAH: Till the mother can walk. Then back over.
+line: ILO: Thank you.
+line: DORRAH: You'll bring the sack up every week, Ilo Haldane, and you'll carry it yourself, so they see you do it.
+nar: Ilo picks the sack up again. On the way past Ned he stops.
+line: ILO: You'll keep them out of your mouth, Mr Furrowe. The children. Whatever you tell them down there.
+nar: Ned pulls his glove the rest of the way on and doesn't answer, and Ilo seems to take that for a yes.
+line: ILO: Tomas. Home. Your mother's on her own with the shed.
+go: q.dinner

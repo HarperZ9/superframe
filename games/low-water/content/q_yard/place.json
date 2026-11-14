@@ -1,0 +1,113 @@
+{
+ "place": "q_yard",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   0.6,
+   1.2,
+   -0.6
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 4.753521126760564
+ },
+ "pxPerMetre": 113.6,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "morning"
+ ],
+ "variantInfo": {
+  "morning": {
+   "hour": 9,
+   "weather": "Monday, 09:00: snow on the yard, the butt iced, the barn barred"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  6,
+  2
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "barn_door",
+    "verb": "look",
+    "at": [
+     -0.5,
+     0,
+     -1.8000000000000003
+    ],
+    "note": "the barn's doors, barred; the wicket in the right leaf"
+   },
+   {
+    "id": "cart",
+    "verb": "look",
+    "at": [
+     2.8,
+     0,
+     2
+    ],
+    "note": "the handcart, empty now"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "lane",
+    "at": [
+     4.5,
+     0,
+     4
+    ],
+    "note": "the gate to the lane"
+   },
+   {
+    "id": "kitchen",
+    "at": [
+     7.2,
+     0,
+     -2.4000000000000004
+    ],
+    "note": "the kitchen door"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "morning": []
+ },
+ "arenas": [],
+ "notes": "The Quota slice: Haldane Yard at the barn door."
+}

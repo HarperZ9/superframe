@@ -1194,12 +1194,14 @@ stage: three: Three lamps of Gullet burn because of Lamb.
 name: THE ALMANAC
 key: KeyT
 about: The tide now, and the gates.
-say: {{tide}} metres and falling. The floor is open to the gully. Low water at two minutes to eleven; the moon is responsible and absent. {when: clock < 22:58 & tide < -0.27}
-say: {{tide}} metres. Slack. The sea is deciding, and it has decided. {when: clock >= 22:58 & clock < 23:12}
-say: {{tide}} metres and rising. The gully shuts at 23:42, the lowest steps at 23:48, the drowned lamp at 23:52. I do not negotiate. {when: clock >= 23:12 & clock < 23:52}
-say: {{tide}} metres and rising. The floor is closed. High water ten past five, five metres thirty. {when: clock >= 23:52 & clock < 05:10}
-say: {{tide}} metres. High water. The quay's edge is the sea's edge. {when: clock >= 05:10 & clock < 05:30}
-say: {{tide}} metres and falling. Nothing opens before dawn. {when: clock >= 05:30}
+say: {{tide}} metres and falling. The floor is open to the gully. Low water at two minutes to eleven; the moon is responsible and absent. {when: night <= 1 & clock < 22:58 & tide < -0.27}
+say: {{tide}} metres. Slack. The sea is deciding, and it has decided. {when: night <= 1 & clock >= 22:58 & clock < 23:12}
+say: {{tide}} metres and rising. The gully shuts at 23:42, the lowest steps at 23:48, the drowned lamp at 23:52. I do not negotiate. {when: night <= 1 & clock >= 23:12 & clock < 23:52}
+say: {{tide}} metres and rising. The floor is closed. High water ten past five, five metres thirty. {when: night <= 1 & clock >= 23:52 & clock < 05:10}
+say: {{tide}} metres. High water. The quay's edge is the sea's edge. {when: night <= 1 & clock >= 05:10 & clock < 05:30}
+say: {{tide}} metres and falling. Nothing opens before dawn. {when: night <= 1 & clock >= 05:30}
+say: {{tide}} metres. Slack. The sea is deciding again. {when: tide.dir == "slack"}
+say: {{tide}} metres and {{tide.dir}}. Next {{tide.next}} water at {{tide.next.at}}, {{tide.next.h}} metres. I do not negotiate.
 
 @instrument glass
 name: THE GLASS

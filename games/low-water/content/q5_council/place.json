@@ -1,0 +1,173 @@
+{
+ "place": "q5_council",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0.4,
+   1.1,
+   -0.2
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.869047619047619
+ },
+ "pxPerMetre": 168,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 16.2,
+   "weather": "year 115, April, 16:10: the tall windows' afternoon, the CCTV still on the wall screen"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  116
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "screen",
+    "verb": "look",
+    "at": [
+     0.6,
+     0,
+     0
+    ],
+    "note": "the wall screen: the CCTV stills of Mill Street, frame by frame, the time in the corner"
+   },
+   {
+    "id": "gallery",
+    "verb": "talk",
+    "at": [
+     0.6,
+     0,
+     1.95
+    ],
+    "note": "the public gallery: the Vell families on the benches, the residents' group behind them"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "lobby",
+    "at": [
+     3.1,
+     0,
+     2.3
+    ],
+    "note": "the lobby and the town hall steps"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": [
+   {
+    "at": [
+     0.6,
+     2.8,
+     -2.36
+    ],
+    "kind": "white",
+    "I": 0.12,
+    "reach": 3.5,
+    "group": "screen"
+   },
+   {
+    "at": [
+     -3.2,
+     2.6,
+     -0.1
+    ],
+    "kind": "paraffin",
+    "I": 2,
+    "reach": 12,
+    "group": "window"
+   },
+   {
+    "at": [
+     0.4,
+     2.67,
+     -0.9
+    ],
+    "kind": "paraffin",
+    "I": 0.4,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     0.4,
+     2.67,
+     -0.9
+    ],
+    "kind": "white",
+    "I": 48,
+    "reach": 14,
+    "group": "window"
+   }
+  ]
+ },
+ "figureLights": {
+  "afternoon": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: the tall windows' afternoon, the CCTV still on the wall screen."
+}

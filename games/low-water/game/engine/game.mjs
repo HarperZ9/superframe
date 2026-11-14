@@ -42,6 +42,9 @@ import { loadSneaks, createSneaks } from "./world/sneak.mjs";
 import { loadObjects, createVerbs } from "./world/verbs.mjs";
 import { loadGates, createGates } from "./world/gates.mjs";
 import { loadInterrogations, createInterrogations } from "./world/interrogation.mjs";
+import { loadCommunity, installCommunity } from "./world/community.mjs";
+import { loadLenses, installLens } from "./world/lens.mjs";
+import { loadStorySystems, installStorySystems } from "./world/storysystems.mjs";
 import { createScope } from "./core/scope.mjs";
 import { evaluate, compileEffects, runEffects, toMin } from "./core/expr.mjs";
 
@@ -51,13 +54,17 @@ export function loadContent(sources) {
   const map = loadDistricts(book), meters = loadMeters(book), hz = loadHazards(book), pj = loadProjects(book), ins = loadInstruments(book);
   const runs = loadRuns(book), nights = loadNights(book), people = loadSchedules(book), anims = loadAnims(book);
   const stealth = loadStealth(book), sneaks = loadSneaks(book), objects = loadObjects(book), gates = loadGates(book), interrogs = loadInterrogations(book);
+  const community = loadCommunity(book); // The Quota's streets, households, rules and carriers (world/community.mjs)
+  const lenses = loadLenses(book); // the wide and narrow lenses (world/lens.mjs)
+  const story = loadStorySystems(book); // props, lore, the record across runs, discourse, dreams (world/storysystems.mjs)
+  Object.assign(objects.objects, story.objects); // each @prop is an object with the examine verb
   // LWD/0 @meta end-clock and at-end: when the clock reaches the end, the act goes to at-end.
   // It is an event like any other, so it plays at the next node boundary or from nextScene().
   if (book.meta["end-clock"] && book.meta["at-end"] && !book.events.some((e) => e.id === "meta.at-end"))
     book.events.push({ id: "meta.at-end", at: toMin(book.meta["end-clock"].trim()), when: null, steps: [{ kind: "go", value: book.meta["at-end"].trim() }], file: book.files[0], line: 0 });
   for (const e of book.events) book.nodes[`@event.${e.id}`] = { id: `@event.${e.id}`, steps: e.steps, hub: false, speaker: "", file: e.file, line: e.line, event: true };
-  const errors = [...book.errors, ...rs.errors, ...map.errors, ...hz.errors, ...pj.errors, ...ins.errors, ...runs.errors, ...nights.errors, ...people.errors, ...anims.errors, ...stealth.errors, ...sneaks.errors, ...objects.errors, ...gates.errors, ...interrogs.errors];
-  return { interrogations: interrogs.interrogations, book, rs, map, meters, hazards: hz.hazards, projects: pj.projects, instruments: ins.instruments, runs: runs.runs, nights: nights.nights, schedules: people.schedules, anims: anims.anims, stealth, sneaks: sneaks.sneaks, objects: objects.objects, gates, errors, ok: !errors.some((e) => e.level !== "warn") };
+  const errors = [...book.errors, ...rs.errors, ...map.errors, ...hz.errors, ...pj.errors, ...ins.errors, ...runs.errors, ...nights.errors, ...people.errors, ...anims.errors, ...stealth.errors, ...sneaks.errors, ...objects.errors, ...gates.errors, ...interrogs.errors, ...community.errors, ...lenses.errors, ...story.errors];
+  return { story, community, interrogations: interrogs.interrogations, book, rs, map, meters, hazards: hz.hazards, projects: pj.projects, instruments: ins.instruments, runs: runs.runs, nights: nights.nights, schedules: people.schedules, anims: anims.anims, stealth, sneaks: sneaks.sneaks, objects: objects.objects, gates, errors, ok: !errors.some((e) => e.level !== "warn") };
 }
 
 export function newState(content, seed) {
@@ -67,6 +74,14 @@ export function newState(content, seed) {
 export function defaultEnv(C) {
   const night = Object.values(C.nights)[0] || NIGHT_ONE;
   return scheduleEnv({ night, places: C.book.places, clock: C.book.clock0 });
+}
+
+// What one act hands the next: the whole state but where Lamb stands and what was in progress; each act
+// has its own events (tools/playthrough.mjs and the shell's "on to the next night" both use this).
+export const CARRY_DROP = ["place", "area", "pos", "pendingRun", "pendingFight", "pendingSneak", "pendingInner", "hazards", "timers", "full", "fullQueue", "camera", "stealth", "rumourAt", "sceneHud"];
+export function carryState(state) {
+  const out = JSON.parse(JSON.stringify(state)); for (const k of CARRY_DROP) delete out[k];
+  out.fired = []; return out;
 }
 
 export function createGame({ sources = null, content = null, env = null, seed = 1, state = null } = {}) {
@@ -101,6 +116,13 @@ export function createGame({ sources = null, content = null, env = null, seed = 
   G.sneaks = createSneaks(G, C.sneaks);
   G.verbs = createVerbs(G, C.objects);
   G.interrog = createInterrogations(G, C.interrogations || {}); // live interrogations (SYSTEMS-FULL 20)
+  installCommunity(G); // The Quota's community model, when the content has streets (world/community.mjs)
+  installLens(G); // and its two lenses, when the content has @lens records (world/lens.mjs)
+  installStorySystems(G, C.story || { props: {} }); // props, lore and the rest (world/storysystems.mjs)
+  // the player's figure (ui/figures.mjs): @meta player-figure: <var> <value>=<figure> ... (The Quota: q_class
+  // inspector=ned militia=will); "lamb" when the book names none or the variable has no figure yet
+  { const pf = String(C.book.meta["player-figure"] || "").trim().split(/\s+/), by = pf[0], map = Object.fromEntries(pf.slice(1).map((x) => x.split("=")));
+    G.playerFigure = () => (G.povFigure && G.povFigure()) || (by && map[G.scope.get(`var.${by}`)]) || "lamb"; } // a perspective chapter's figure first (world/perspective.mjs)
   G.gates = createGates(G, C.gates); // pays a page on each gate's first resolution (SYSTEMS-FULL 19.4)
   G.modSources = () => [...G.inv.mods(), ...G.cabinet.mods(), ...trustedMods(G)];
   G.fill = (text) => fill(text, G.scope);
@@ -114,6 +136,7 @@ export function createGame({ sources = null, content = null, env = null, seed = 
   G.loop.add("interrogation", (dt) => G.interrog.step(dt), { order: 15 });
   G.on("place", () => G.stealth.unhide()); // moving on leaves a hiding spot
   G.loop.add("animation", (dt) => G.anims.update(dt), { order: 30 });
+  if (globalThis.__lwCrash) globalThis.__lwCrash.watchGame(G); // the crash report's last 200 events (save/nativehook.mjs)
   return G;
 }
 
@@ -126,15 +149,23 @@ function installActions(G) {
     if (on && !has) {
       G.state.flags.push(id);
       const f = G.book.facts[id];
-      if (f && f.about && f.journal) G.quests.write("fact", id, f.about);
+      if (f && f.about && f.journal && String((G.book.meta || {}).journal || "on") !== "off") G.quests.write("fact", id, f.about); // @meta journal: off (the device rule, 2026-10-23): nothing is written down for the player
       G.emit("flag", { id, on: true, fact: f || null });
     } else if (!on && has) { G.state.flags = G.state.flags.filter((x) => x !== id); G.emit("flag", { id, on: false }); }
   };
-  G.setPlace = (p) => { if (G.state.place !== p) { G.state.place = p; G.emit("place", { id: p }); } };
+  G.setPlace = (p) => { if (G.state.place !== p) { G.state.place = p; delete G.state.sceneHud; G.emit("place", { id: p }); } }; // a scene's HUD hour stays in its place (dialogue/runner.mjs hud-clock)
   // LWD cmd lines: Lamb's wetness is the body's; the rest go to the environment.
   G.command = (args, source = "") => {
     const [c, a, b, w] = args;
     if (c === "wet") { G.body.addWet(+(a === "lamb" || isNaN(+a) ? b : a) || 0); G.emit("cmd", { args, source }); return; }
+    // the dream look between nights (design/THEMES.md 9a): "dream 0.8" eases the view into it, "dream 0" out,
+    // "dream cue" is the one-frame recognition when a foreseen scene arrives (paint/dream.mjs answers in a browser)
+    if (c === "dream") {
+      const cue = a === "cue", k = cue ? (G.state.dream || 0) : Math.max(0, Math.min(1, +a || 0));
+      if (!cue) G.state.dream = k;
+      const D = globalThis.__lwDream; if (D) { if (cue) D.cue(); else D.set(k); }
+      G.emit("dream", { k, cue }); G.emit("cmd", { args, source }); return;
+    }
     if (G.env.command(args)) { G.emit("cmd", { args, source }); return; }
     if (c === "addRumour") { G.pressure.addRumour(a, b, +w || 0.2); return; }
     if (c === "give") { G.inv.give(a, +b || 1); return; }

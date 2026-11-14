@@ -6,6 +6,8 @@
 //   const P = plateCtx(args)   args: the figure hook's { x, y, ppm, at, cam, plate, lights, darkness }
 //   P.toPlate(sx, sy) -> [px, py]    P.pointAt(sx, sy) -> [x, y, z] | null
 //   P.lumaStats(boxes, n, ground) -> { mid, hi, lit, n }   linear luminance of the painting over screen boxes
+// each geo cell's validity as pointAt tests it (made once per plate: in the luminance worker when there is one)
+export function validOf(pos, n) { const v = new Uint8Array(n); for (let i = 0; i < n; i++) { const px = pos[i * 3], py = pos[i * 3 + 1], pz = pos[i * 3 + 2]; v[i] = Number.isFinite(px) && Number.isFinite(py) && Number.isFinite(pz) && !(px === 0 && py === 0 && pz === 0) ? 1 : 0; } return v; }
 const cache = new Map();   // plate -> { pj, pos, luma: { variant -> Float32Array }, dark, loading }
 const D2R = Math.PI / 180;
 const lin = (v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
@@ -23,7 +25,27 @@ function project(cam, W, H, P) {   // as world/camera.mjs projectPlate (the plat
   return [((u + 1) / 2) * W - 0.5, ((1 - v) / 2) * H - 0.5];
 }
 
-async function lumaOf(url, gw, gh) {   // the painting's linear luminance at the geo buffer's resolution
+// the painting's linear luminance at the geo buffer's resolution: in a worker where there is one (the decode
+// and the readback cost a move to a new plate about 100 ms of main thread), here otherwise; ?luma=main for
+// measuring
+let LW = null, lwId = 0; const lwWait = new Map();
+function lumaWorker() {
+  if (LW !== null) return LW;
+  try {
+    if (typeof Worker === "undefined" || typeof OffscreenCanvas === "undefined" || (globalThis.location && /[?&]luma=main(&|$)/.test(globalThis.location.search || ""))) return (LW = false);
+    LW = new Worker(new URL("./lumaworker.mjs", import.meta.url), { type: "module" });
+    LW.onmessage = (e) => { const w = lwWait.get(e.data.id); if (!w) return; lwWait.delete(e.data.id); if (e.data.error) w.no(new Error(e.data.error)); else w.ok(e.data); };
+    LW.onerror = (e) => { console.warn(`figures: luminance worker failed (${e.message}); reading here`); LW = false; for (const w of lwWait.values()) w.no(new Error("worker failed")); lwWait.clear(); };
+  } catch (err) { console.warn(`figures: no luminance worker (${err.message})`); LW = false; }
+  return LW;
+}
+const askLuma = (m) => new Promise((ok, no) => { const id = ++lwId; lwWait.set(id, { ok, no }); LW.postMessage({ ...m, id }); });
+export async function lumaOf(url, gw, gh) {
+  const W = lumaWorker();
+  if (W) { try { return (await askLuma({ url: new URL(url, globalThis.location ? globalThis.location.href : undefined).href, gw, gh })).L; } catch (err) { console.warn(`figures: luminance in the worker failed (${err.message}); reading here`); } }
+  return lumaHere(url, gw, gh);
+}
+export async function lumaHere(url, gw, gh) {
   const im = new Image(); im.src = url; await im.decode();
   const c = new OffscreenCanvas(gw, gh), g = c.getContext("2d"); g.drawImage(im, 0, 0, gw, gh);
   const d = g.getImageData(0, 0, gw, gh).data, L = new Float32Array(gw * gh);
@@ -38,8 +60,10 @@ function load(plate) {
     const base = `/content/${plate}/`;
     const r = await fetch(base + "place.json"); if (!r.ok) throw new Error(`place.json ${r.status}`);
     const pj = await r.json(), s = pj.geoScale || 1, gw = Math.round(pj.width * s), gh = Math.round(pj.height * s);
-    const g = await fetch(base + "geo-pos.f32"); if (!g.ok) throw new Error(`geo-pos ${g.status}`);
-    e.pos = new Float32Array(await g.arrayBuffer()); e.gw = gw; e.gh = gh; e.s = s;
+    const W = lumaWorker(), got = W ? await askLuma({ type: "geo", url: new URL(base + "geo-pos.f32", globalThis.location ? globalThis.location.href : undefined).href, n: gw * gh }).catch((err) => { console.warn(`figures: geo in the worker failed (${err.message}); reading it here`); return null; }) : null;
+    if (got) { e.pos = got.pos; e.valid = got.valid; }
+    else { const g = await fetch(base + "geo-pos.f32"); if (!g.ok) throw new Error(`geo-pos ${g.status}`); e.pos = new Float32Array(await g.arrayBuffer()); }
+    e.gw = gw; e.gh = gh; e.s = s;
     await Promise.all((pj.variants || []).map(async (v) => { e.luma[v] = await lumaOf(`${base}${v}.png`, gw, gh); }));
     if (pj.dark) e.dark = await lumaOf(`${base}dark.png`, gw, gh).catch((err) => { console.warn(`figures: no dark plate luminance for ${plate}: ${err.message}`); return null; });
     e.pj = pj;
@@ -64,6 +88,13 @@ export function plateCtx(args) {
     const px = e.pos[i * 3], py = e.pos[i * 3 + 1], pz = e.pos[i * 3 + 2];
     return Number.isFinite(px) && Number.isFinite(py) && Number.isFinite(pz) && !(px === 0 && py === 0 && pz === 0) ? [px, py, pz] : null;
   }
+  // the same test as pointAt without the array: the offset of the point in P.pos (x, y, z at k, k + 1,
+  // k + 2), or -1 where pointAt gives null
+  function pointIndex(sx, sy) {
+    const i = gidx(sx, sy); if (i < 0) return -1;
+    const px = e.pos[i * 3], py = e.pos[i * 3 + 1], pz = e.pos[i * 3 + 2];
+    return Number.isFinite(px) && Number.isFinite(py) && Number.isFinite(pz) && !(px === 0 && py === 0 && pz === 0) ? i * 3 : -1;
+  }
   // linear luminance of the painting (blended toward the dark plate as the plate goes dark) over
   // screen boxes [x0, y0, x1, y1], sampled on a grid: the median and the 90th percentile
   // ground: { at, r } keeps only samples whose painted point is ground near the feet' height within r
@@ -71,15 +102,20 @@ export function plateCtx(args) {
   // the median, the 90th percentile and the median of the brightest third (lit)
   function lumaStats(boxes, n = 20, ground = null) {
     if (!L) return null;
-    const v = [];
+    // (the point read from the cell gidx found, as pointAt reads it; a typed array sorted numerically: the same order)
+    const v = new Float64Array(boxes.length * n * n); let nv = 0;
     for (const [x0, y0, x1, y1] of boxes) for (let j = 0; j < n; j++) for (let k = 0; k < n; k++) {
       const sx = x0 + ((k + 0.5) / n) * (x1 - x0), sy = y0 + ((j + 0.5) / n) * (y1 - y0), i = gidx(sx, sy); if (i < 0) continue;
-      if (ground) { const p = pointAt(sx, sy); if (!p || Math.abs(p[1] - ground.at[1]) > 0.2 || Math.hypot(p[0] - ground.at[0], p[2] - ground.at[2]) > ground.r) continue; }
-      v.push(Ld && darkness > 0 ? L[i] * (1 - darkness) + Ld[i] * darkness : L[i]);
+      if (ground) { const px = e.pos[i * 3], py = e.pos[i * 3 + 1], pz = e.pos[i * 3 + 2]; if (!(Number.isFinite(px) && Number.isFinite(py) && Number.isFinite(pz) && !(px === 0 && py === 0 && pz === 0)) || Math.abs(py - ground.at[1]) > 0.2 || Math.hypot(px - ground.at[0], pz - ground.at[2]) > ground.r) continue; }
+      v[nv++] = Ld && darkness > 0 ? L[i] * (1 - darkness) + Ld[i] * darkness : L[i];
     }
-    if (v.length < 8) return null;
-    v.sort((a, b) => a - b);
-    return { mid: v[Math.floor(v.length * 0.5)], hi: v[Math.floor(v.length * 0.9)], lit: v[Math.floor(v.length * 0.833)], n: v.length };
+    if (nv < 8) return null;
+    const q = v.subarray(0, nv).sort();
+    return { mid: q[Math.floor(nv * 0.5)], hi: q[Math.floor(nv * 0.9)], lit: q[Math.floor(nv * 0.833)], n: nv };
   }
-  return { toPlate, pointAt, lumaStats, zoom };
+  // the geo column of a screen x and row of a screen y (gidx's two halves, for a caller that walks a
+  // box), and each geo cell's validity as pointAt tests it (computed once per plate)
+  const colOf = (sx) => Math.floor((left + sx / zoom) * e.s), rowOf = (sy) => Math.floor((top + sy / zoom) * e.s);
+  const valid = e.valid || (e.valid = validOf(e.pos, e.gw * e.gh));
+  return { toPlate, pointAt, pointIndex, pos: e.pos, lumaStats, zoom, grid: { colOf, rowOf, gw: e.gw, gh: e.gh, valid, pos: e.pos, left, top, zoom, s: e.s } };
 }

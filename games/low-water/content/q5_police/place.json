@@ -1,0 +1,173 @@
+{
+ "place": "q5_police",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   1.1,
+   -0.2
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.282828282828283
+ },
+ "pxPerMetre": 198,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "day"
+ ],
+ "variantInfo": {
+  "day": {
+   "hour": 11.2,
+   "weather": "year 115, April, 11:10: the corridor tubes in a line, the bench outside Professional Standards"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  108
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "bench",
+    "verb": "talk",
+    "at": [
+     -1.1,
+     0,
+     0.4
+    ],
+    "note": "the bench outside Professional Standards: the federation rep's leaflet on it"
+   },
+   {
+    "id": "door",
+    "verb": "look",
+    "at": [
+     0,
+     0,
+     -0.6
+    ],
+    "note": "the door with the glass panel: two shapes inside, one of them writing"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "lift",
+    "at": [
+     3,
+     0,
+     0.6
+    ],
+    "note": "the lifts"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "day": [
+   {
+    "at": [
+     -2.2,
+     2.4,
+     0
+    ],
+    "kind": "white",
+    "I": 0.7,
+    "reach": 8,
+    "group": "white"
+   },
+   {
+    "at": [
+     0,
+     2.4,
+     0
+    ],
+    "kind": "white",
+    "I": 0.7,
+    "reach": 8,
+    "group": "white"
+   },
+   {
+    "at": [
+     2.2,
+     2.4,
+     0
+    ],
+    "kind": "white",
+    "I": 0.3,
+    "reach": 8,
+    "group": "white"
+   },
+   {
+    "at": [
+     -0.4,
+     2.38,
+     0
+    ],
+    "kind": "white",
+    "I": 16,
+    "reach": 10,
+    "group": "white"
+   }
+  ]
+ },
+ "figureLights": {
+  "day": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: the corridor tubes in a line, the bench outside Professional Standards."
+}

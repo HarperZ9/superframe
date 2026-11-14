@@ -44,17 +44,27 @@ function mcubic(ts, vs, t, smooth = false) {
 }
 
 // Sample a clip at frame f (may be fractional). base fills channels a key leaves out.
-export function sample(clip, T, f, base = {}) {
-  const L = layout(clip, T), keys = clip.keys.map((k) => ({ t: keyFrame(k, L), pose: merge(base, k.pose) }));
-  if (clip.loop) { f = ((f % L.length) + L.length) % L.length; keys.push({ t: L.length, pose: keys[0].pose }); }
+// Without a base, a clip's keys, times and channels are prepared once per layout (they depend on nothing
+// else) and kept: the same numbers, worked out once instead of every frame for every figure.
+const NOBASE = {}, PREP = new WeakMap();
+function prepare(clip, L, base) {
+  const keys = clip.keys.map((k) => ({ t: keyFrame(k, L), pose: merge(base, k.pose) }));
+  if (clip.loop) keys.push({ t: L.length, pose: keys[0].pose });
   const chans = new Set(); for (const k of keys) for (const [j, c] of Object.entries(k.pose)) if (!Array.isArray(c)) for (const ch of Object.keys(c)) chans.add(j + "." + ch);
-  const ts = keys.map((k) => k.t), out = {};
-  for (const jc of chans) {
-    const [j, ch] = jc.split("."), vs = keys.map((k) => k.pose[j]?.[ch] ?? base[j]?.[ch] ?? 0);
-    (out[j] = out[j] || {})[ch] = mcubic(ts, vs, f, !!clip.smooth);
-  }
+  const ts = keys.map((k) => k.t), list = [];
+  for (const jc of chans) { const [j, ch] = jc.split("."); list.push([j, ch, keys.map((k) => k.pose[j]?.[ch] ?? base[j]?.[ch] ?? 0)]); }
+  return { keys, ts, list };
+}
+export function sample(clip, T, f, base = NOBASE) {
+  const L = layout(clip, T);
+  let P;
+  if (base === NOBASE) { let byL = PREP.get(clip); if (!byL) PREP.set(clip, (byL = new Map())); const sig = `${L.length}|${Object.values(L.starts).map((s) => s.join(",")).join("|")}`; P = byL.get(sig); if (!P) byL.set(sig, (P = prepare(clip, L, base))); }
+  else P = prepare(clip, L, base);
+  if (clip.loop) f = ((f % L.length) + L.length) % L.length;
+  const { keys, ts, list } = P, out = {};
+  for (const [j, ch, vs] of list) (out[j] = out[j] || {})[ch] = mcubic(ts, vs, f, !!clip.smooth);
   let shown = keys[0]; for (const k of keys) if (k.t <= f + 1e-6) shown = k;
-  for (const k of ["hide", "hands"]) if (shown.pose[k]) out[k] = shown.pose[k];   // stepped, not interpolated
+  for (const k of ["hide", "hands"]) if (shown.pose[k]) { const v = shown.pose[k]; out[k] = Array.isArray(v) ? v : { ...v }; }   // stepped, not interpolated (a copy, as merge made one)
   return out;
 }
 

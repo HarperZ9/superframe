@@ -1,0 +1,105 @@
+{
+ "place": "q_furrowe_door",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   -0.6,
+   2.2,
+   -2.4
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 4.337349397590361
+ },
+ "pxPerMetre": 124.5,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 14.6,
+   "weather": "a week on, 14:35: snow lying, the sky low, the queue's rope along the kerb"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  3,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "door",
+    "verb": "knock",
+    "at": [
+     0,
+     0,
+     -1.4
+    ],
+    "note": "the Furrowes' door: the brass knocker Mary keeps bright"
+   },
+   {
+    "id": "notice",
+    "verb": "read",
+    "at": [
+     -2.9,
+     0,
+     -1.6
+    ],
+    "note": "the district's notice under the street sign, at the height of the queue's faces"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "square",
+    "at": [
+     -8,
+     0,
+     0.5
+    ],
+    "note": "down to Exchange Square"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": []
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the Furrowes' front step."
+}

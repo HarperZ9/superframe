@@ -1,0 +1,73 @@
+# Low Water: the reckoning, shared by all three acts. Game director, 2026-10-21. Private.
+# Design: design/DIRECTOR.md, pillar 4 (the lie Lamb lives). The engine side is
+# game/engine/rules/reckoning.mjs: it adds to `gap` whenever Lamb acts against a conviction Lamb
+# has inked, tells a lie that matters (lied.*), or breaks a promise (broke.<id> while said.<id>
+# or promise.<id> is held), and sets the flags below so the script can quote the exact betrayal.
+# Writers: never show these numbers. Gate lines on the flags and on `gap - owned`.
+#   owning a gap in a confrontation:   {do: owned += 1; ...the cost, paid there and then}
+#   denying it:                        {do: denied += 1}
+# The open gap is `gap - owned`. Honesty about a bad belief costs nothing here; only the distance
+# between what Lamb said and what Lamb did is counted.
+
+@var gap
+default: 0
+about: How far Lamb's acts have gone from Lamb's professions (convictions inked, lies, promises). Counted by the engine.
+
+@var owned
+default: 0
+about: How much of the gap Lamb has owned aloud, at a cost, in a confrontation.
+
+@var denied
+default: 0
+about: How many times Lamb, faced with the gap, denied it.
+
+@fact gap.fire
+about: Lamb said some lamps have to go out, and then kept one lit for the people who own it.
+@fact gap.wall
+about: Lamb said Gullet looks after Gullet, and then took the stranger's side.
+@fact gap.sea
+about: Lamb said the sea belongs to nobody, and then stood on the wall.
+@fact gap.jars
+about: Lamb said leave the jars alone, and then lifted one.
+@fact gap.ledger
+about: Lamb said follow the money, and then hanged a man for his character.
+@fact gap.checked
+about: Lamb said nobody owns the truth, and then repeated the Lantern Man.
+@fact gap.dry
+about: Lamb said the assessor takes no side, and then took one, and called it the middle.
+@fact gap.lied
+about: Lamb has told a lie that somebody acted on.
+@fact gap.promise
+about: Lamb has broken a promise somebody heard.
+
+# The costs are felt, never shown. Each modifier names its reason in the check's sum the way every
+# other modifier does, in the town's words, never the system's.
+@modifier mod.gap.heard
+skill: condolence, chit
+mod: -1
+when: var.gap - var.owned >= 3
+why: They have heard you say it both ways
+
+@modifier mod.gap.easy
+skill: pride
+mod: 1
+when: var.gap - var.owned >= 3
+why: The story you tell about yourself is very comfortable
+
+@modifier mod.gap.loud
+skill: dark, undertow
+mod: 1
+when: var.gap - var.owned >= 5
+why: The voices that know are louder now
+
+@modifier mod.gap.denied
+skill: condolence, formletter, hearsay
+mod: -1
+when: var.denied >= 2 & var.gap - var.owned >= 4
+why: Nobody believes a man who will not look at himself
+
+@modifier mod.gap.owned
+skill: condolence
+mod: 1
+when: var.owned >= 2
+why: You said it was yours. People remember that

@@ -57,6 +57,12 @@ by: a misreading of the card
 about: In pencil: the tube's pipe runs under the Ropewalk to the telegraph office.
 by: following the wrong line in the frost
 
+# ---- new ids (thematic pass, 2026-10-21: the wire and the paper)
+@fact ropewalk.green_wire
+about: On Rook's spike since March, never sent: GULLET LIGHT GREEN SHIPS STEERING BY EYE COME AND SEE. A Brine customer to his brother at Hesk. Rook judged that Hesk would panic, and held it.
+by: Rook's own admission
+@fact ropewalk.courier_asked
+
 @var ropewalk_heard
 default: none
 values: none, fist, tongue, shadow, hands, eye
@@ -236,6 +242,7 @@ check: "[CONDOLENCE] Ask what she would say, if she did remember." -> ropewalk.r
 check: "[FORM LETTER] Require sight of the claim's original, in the Shelf's name." -> ropewalk.rook.form.ok / ropewalk.rook.form.fail ? seen(ropewalk.rook.1830) & !has(telegram.draft) & !has(ropewalk.rook_barred) {skill: formletter, dc: 8}
 opt: "Ask for a telegraph form." -> ropewalk.pad ? !has(telegram.draft)
 opt: "Ask her about the half past six draft, and whose hand is on it." -> x2.rook.start ? !has(ropewalk.yellow_time)
+opt: "The Courier printed WRECKERS this morning. Where did it get the word?" -> ropewalk.rook.courier ? !has(ropewalk.courier_asked)
 opt: "Leave her to the sounder." -> ropewalk.hub
 
 @node ropewalk.rook.1830
@@ -248,6 +255,40 @@ line: ROOK: Twenty-six words. He paid for twenty-seven. I don't recall it.
 line: LAMB: See below what?
 line: ROOK: That's how it was handed in. Everybody writes it out first. It goes on the spike after.
 nar: Her hand lies flat beside a book bound in oilcloth. It is not the office's book.
+go: ropewalk.rook.menu
+
+# ---- the wire and the paper (THEMES 8: who profits from fear; who decides what Hesk can bear)
+@node ropewalk.rook.courier
+place: telegraph
+speaker: ROOK
+cost: 4
+do: set(ropewalk.courier_asked)
+line: ROOK: From me. Ninepence the first twelve words. The Courier's man at Hesk takes every wire with Gullet in it and prints the ones that frighten. WRECKERS is one word and it was on every stall in Hesk by eight. ALL SOULS SAFE is three, and it went on page four, under the coal prices.
+line: ROOK: I'm the wire. I'm not the paper. But I've watched thirty years what the paper wants, and it's whatever makes a man buy a second copy for his brother.
+line: ROOK: You'll write a correction, I suppose. I send corrections. The Courier prints them under the shipping, where three people read them, and one of them is the man who wrote it. {when: trait(cv.checked) == done}
+voice: undertow: She said "I'm not the paper" as if somebody had once told her she was. {dc: 6}
+opt: "'Then don't send it the frightening ones.'" -> ropewalk.rook.held {do: var.lean_rise += 1}
+opt: "'A wire sends what it's handed. That's what keeps it honest.'" -> ropewalk.rook.handed {do: var.lean_rise -= 1}
+opt: "Say nothing, and let her go back to the sounder." -> ropewalk.rook.menu {do: var.lean_dry += 1}
+
+@node ropewalk.rook.held
+place: telegraph
+speaker: ROOK
+cost: 4
+do: set(ropewalk.green_wire)
+line: ROOK: I don't. Not all of them.
+nar: She takes a form off the bottom of the spike, where the paper has gone brown round the hole, and lays it on the counter face up.
+line: ROOK: Last March. A man in the Brine, to his brother at Hesk: GULLET LIGHT GREEN STOP SHIPS STEERING BY EYE STOP COME AND SEE.
+line: ROOK: Hesk would have had a panic by the Friday and an inquiry by the spring, and the Courier would have sold it twice. I decided Hesk could do without. I don't recall it.
+voice: sum: March. The works order that put her on the quay board was signed seven months ago. An inquiry by the spring would have been in the room when he signed it. {dc: 5}
+voice: condolence: She is waiting for you to say she was right. She has been waiting since March. {dc: 6}
+go: ropewalk.rook.menu
+
+@node ropewalk.rook.handed
+place: telegraph
+speaker: ROOK
+cost: 2
+line: ROOK: Honest. Yes. The wire's honest. It's the only honest thing on the Ropewalk, and it carried WRECKERS to Hesk at half past six for the Board, at ninepence, and I struck the time.
 go: ropewalk.rook.menu
 
 # ---- Tongue: Rook's witness
@@ -527,6 +568,7 @@ do: set(met.pellow); quest(a2.errand, open)
 call: ropewalk.arrive
 nar: From the hill end comes a woman in housekeeper's black with a basket and, held out from her coat, a letter. Under the lamp she changes hands.
 line: PELLOW: Mind the step there. Everything on this street's a step.
+line: PELLOW: You'll be the one that's worked out who pays for everything. I'm on her books too, assessor. Thirty shillings a month and my dinner. Am I up the hill? {when: trait(cv.ledger) == done, once}
 opt: "Wish her good evening and let her go by." -> ropewalk.pellow.pass
 check: "[THE DARK] Shut the lantern and follow her past the lamp, a doorway behind." -> ropewalk.pellow.follow.ok / ropewalk.pellow.follow.fail ? !has(ropewalk.lamp_doused) {skill: dark, dc: 6, verb: hide, noise: 0.1}
 check: "[THE DARK] The lamp is out. Follow her by her footsteps." -> ropewalk.pellow.follow.ok / ropewalk.pellow.follow.fail ? has(ropewalk.lamp_doused) {skill: dark, dc: 4, verb: hide, noise: 0.1}

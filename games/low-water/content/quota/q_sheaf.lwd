@@ -1,0 +1,147 @@
+# The Quota slice: the Sheaf at dinner time (joy before the hinge), the pump on Mill Street (the fever and the
+# Well), and the Haldanes walking home from the post (the Hesh-only scene). Game director, 2026-10-22, from
+# design/spine-plan/05-STRUCTURE.md sections 5 to 7, 04-PERSECUTION.md section 4 and the plague direction
+# (DECISIONS-2026-10-22.md). Heshen words: design/literary/10-HESHEN.md. Never glossed on screen.
+
+# ---------------------------------------------------------------- the Sheaf, Mill Street, after the meeting
+@node q.sheaf
+place: q_sheaf
+speaker: ILO
+cost: 25
+do: cut(max(0, 12:40 - clock))
+nar: The Sheaf on Mill Street, at dinner time. Ned goes in for a brandy, which he never does in the day, and stands at the end of the bar with his hat on so as not to stop. {when: q_class == inspector}
+nar: The Sheaf on Mill Street, at dinner time. Holt wants Gedge fetched out of it before the post, so Will goes in, and the warm gets hold of him, and he stands at the end of the bar a minute with his hands round nothing. {when: q_class == militia}
+nar: There's no beer worth the name. There's a jug of something brown and thin on the back table, and six men round it who have had no work since the mill shut, making one half-pint last an hour. A pickled egg on a saucer, cut in four, and nobody has had their quarter yet.
+nar: Ilo Haldane is at the back table with his cap pushed up. He's telling it again, the one they all know, and they let him, because he tells it well.
+line: ILO: So he says, name. I say, Ilo. He says no, your name. I say, that is my name. He writes Haldane.
+nar: The door goes, and the cold comes in with a boy in a brown coat too big for him. Tomas, sent to fetch his dad, with the cuffs turned back twice. He sits down on the bench by the door like he always does and waits to be noticed.
+line: TOMAS: Because of the farm.
+line: ILO: Because of the farm. I was named after a barn, lads.
+line: TOMAS: You were named after a barn and you've been trying to live up to it ever since.
+nar: It goes round the table. A man called Sallis laughs so hard he has to put his head down on his arms, and then the whole table's gone, and the landlord's laughing behind the bar without knowing why. Tomas sits there looking pleased with himself, and then he laughs as well, and his laugh sets them off again.
+line: ILO: Come here. Come here, you.
+nar: Ilo gets him by the back of the neck and pulls him in and gives him the quarter of egg, his own quarter, and Tomas eats it in one go and makes a face, because it's mostly vinegar.
+line: TOMAS: That's horrible.
+line: ILO: That's an egg. Your grandmother would have walked to Osby for that.
+line: TOMAS: Mum says come now. The cart's going at one. You're to mind the yard.
+line: ILO: I'm to mind the yard.
+line: TOMAS: She says a Hesh man on a cart at the post is a reason.
+nar: The table goes quiet, not unkindly. It's what they all know too. Ilo finishes the thin brown stuff in the jug and puts his cap straight.
+line: ILO: Sul ve ama. Off we go.
+voice: undertow: A table of men with nothing laughing at a boy. You'd forgotten what it sounds like. {dc: 3}
+nar: On his way past the bar Tomas sees who's standing there, and stops, and touches his cap. {when: q_class == inspector & has(q.promised_hill)}
+line: TOMAS: Two. I've not forgotten. {when: q_class == inspector & has(q.promised_hill)}
+nar: On his way past the bar Tomas sees the sergeant from the post, and his face shuts like a door, and he goes out sideways with his hand over his wrist. {when: q_class == militia}
+go: q.pump
+
+# ---------------------------------------------------------------- the pump on Mill Street: the fever, and the Well
+@node q.pump
+place: q_pump
+cost: 4
+nar: Outside, the pump at the end of Mill Street, with women in a line for it holding buckets. A council man in a grey coat stands by the handle saying the same thing to each of them as they come up, boil it, boil all of it, and nobody looks at him. On the pump's iron somebody has chalked a well the way the Hesh draw one, a circle with a line down through it, and a cross over the top of it, hard, so the chalk broke.
+nar: Two doors down, a white cross chalked on a door, and a ribbon tied to the knocker. The fever. Somebody has left a loaf on the step for them, and nobody will go near enough to knock.
+line: IRIS: They wash their dead in it up there. In the Well. Everybody knows. And where do you think it comes down to.
+nar: Iris Krall, in good gloves, in the line for water she doesn't need, because the pump is where you hear things.
+voice: smell: Under the cold, from the chalked door, the sweet smell. It's in the street now, not just the house. {dc: 3}
+voice: hearsay: The Pruetts' little one went Sunday. Mott's lad's got the cough. It'll be the Well by Friday, whatever it is. {dc: 4}
+go: q.afternoon
+
+# ---------------------------------------------------------------- the Haldanes walking home from the post
+# The only scene in the slice with no Tarn listener and no player: the player's man is somewhere else, so the
+# inner voices are silent. Written for Bet's ear, in Tarnish with Heshen where it comes. Per route: turned back,
+# held, through to Osby, or the cart stripped.
+@node q.hesh.walk
+cost: 0
+alt: q.hesh.walk.held ? has(q.tomas_held)
+alt: q.hesh.walk.hill ? has(q.hill_seen)
+alt: q.hesh.walk.through ? q_cart == through
+alt: q.hesh.walk.empty ? has(q.cart_stripped) | has(said.will_take_six) | has(said.will_refuse_holt)
+go: q.hesh.walk.back
+
+@node q.hesh.walk.back
+place: q_road_home
+speaker: TOMAS
+cost: 12
+nar: The post road, walking back. Two sacks on the cart, the seed, and the horse pulling like it's six. Aaron at its head. Bet on the bench. Anni in the back, sitting now. Tomas walking alongside with his hand on the tailboard.
+line: TOMAS: He had a bayonet and he was scared of Anni. Did you see him? He was scared of a girl with a sum.
+line: AARON: He went red.
+line: TOMAS: He went red as a brick. Don't you get clever, he says. I'll get clever if I want.
+line: ANNI: Four. They had four. I'm telling Dad four.
+line: BET: You'll tell your dad nothing till he's had his tea.
+line: TOMAS: Kesh, ahna. Look at the horse. He knows he's going home.
+line: BET: Tarnish on the road.
+line: TOMAS: There's nobody on the road.
+line: BET: There's always somebody on the road.
+nar: There isn't. There's the plain, white both ways, and the hut behind them getting smaller. Aaron stops to fix his boot. His ankles have come up over the tops of them again, and when Bet gets down and presses her thumb into his shin the dent stays there after she takes it away.
+line: AARON: It doesn't hurt.
+line: BET: I know it doesn't.
+line: TOMAS: And you said thank you to him. For the seed. He'd had four sacks off us. {when: has(said.will_take_four)}
+line: BET: You say thank you. You always say thank you. That's how you get home. {when: has(said.will_take_four)}
+line: TOMAS: Nine words for rain, and the Tarn have got one, and it's wet.
+line: AARON: That's Dad's.
+line: TOMAS: It's mine now. He's had it long enough.
+nar: Aaron laughs, and then Anni does, and Bet says Kesh, the both of you, and she's laughing too, under it, with her hand still round Aaron's ankle.
+go: q.dinner
+
+@node q.hesh.walk.held
+place: q_road_home
+speaker: BET
+cost: 12
+nar: The post road, walking back. Bet on the bench with the reins. Anni in the back with the sacks that are left. Aaron at the horse's head. Nobody is walking alongside.
+line: AARON: He's lame on the near fore. He was lame before the dip.
+line: BET: He's not lame.
+line: AARON: He's favouring it. Look at him.
+line: BET: Then walk him slower.
+nar: Aaron walks him slower. For a long time that's all, the horse, and the wheels, and the wind coming over from Osby.
+line: ANNI: What do we tell Dad?
+line: BET: I'll tell him.
+line: ANNI: What will you tell him, though?
+nar: Bet doesn't answer. After a while she starts the prayer for the water, under her breath, in Heshen, the way Ilo says it at night. Sul ve ama, sul ve tarre. Aaron says it with her from the horse's head without turning round. Anni doesn't. Anni is looking back down the road at the hut.
+line: ANNI: Mum. You've stopped. You've not done the end.
+line: BET: I know the end.
+nar: She doesn't say it. The horse goes on favouring the near fore all the way to the yard.
+go: q.dinner
+
+@node q.hesh.walk.through
+place: q_road_home
+speaker: TOMAS
+cost: 12
+nar: The Osby road, past the post, with all six sacks on, and none of them saying a word until the hut is out of sight behind the dip, in case.
+line: TOMAS: Furrowe. With an e on the end. {when: has(said.ned_vouch_cart)}
+line: TOMAS: Put 'em back, lad. Put 'em back. {when: !has(said.ned_vouch_cart)}
+nar: He does the voice. He does the hat, with his hand, and the way of standing. Aaron makes a noise like a kettle trying not to laugh.
+line: BET: Stop it.
+line: TOMAS: With an e, Mrs Haldane. In case you were going to spell it with an a. {when: has(said.ned_vouch_cart)}
+line: TOMAS: Put 'em back, lad, slow, so the Hesh can watch. {when: !has(said.ned_vouch_cart)}
+nar: Then Bet laughs, once, out loud, on the open road, and puts her hand over her mouth as if somebody might hear it from the hut.
+line: ANNI: That's six, still. Six, all the way to Osby.
+line: BET: Don't count them, Anni. You'll wear them out.
+go: q.dinner
+
+@node q.hesh.walk.empty
+place: q_road_home
+speaker: BET
+cost: 12
+nar: The post road, walking back, with the cart empty and the horse not knowing what to do with itself. Anni sits in the back on the bare boards with her knees up.
+line: TOMAS: There's no spring, then.
+line: BET: There's always a spring. There's no barley.
+line: TOMAS: I could go up Dorrah's. She's got oats. She'd give us oats.
+line: BET: You'll not go near that hill. You hear me. You'll not go near it.
+line: ANNI: He shook his hand. In the road. Mr Furrowe shook the Captain's hand. {when: has(said.ned_free_tomas)}
+line: BET: Don't say that name on this road. {when: has(said.ned_free_tomas)}
+nar: Nobody says anything after that. Aaron walks the horse, and his ankles are up over his boots, and he doesn't say so.
+go: q.dinner
+
+@node q.hesh.walk.hill
+place: q_road_home
+speaker: BET
+cost: 12
+nar: The post road, walking back. Tomas went off up the hill with the inspector, because the inspector said he'd come and see for himself. So it's the three of them and the cart, empty or not, and the horse.
+line: ANNI: He shook his hand. In the road. Mr Furrowe shook the Captain's hand. {when: has(said.ned_free_tomas)}
+line: BET: Don't say that name on this road. {when: has(said.ned_free_tomas)}
+line: AARON: Tomas knows the way up. He didn't even have to look.
+line: BET: He's not been up since harvest. He told the Captain.
+line: AARON: He knows Sal by her name.
+nar: Bet looks at Aaron for a long moment, and then up at the hill, where the light's going.
+line: BET: Walk the horse.
+go: q.dinner

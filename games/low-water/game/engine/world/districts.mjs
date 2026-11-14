@@ -3,7 +3,7 @@
 //                  travel (minutes to walk there from a neighbouring district; @rules
 //                  travel-minutes, default 10), arrive (the area travel lands in; else the
 //                  district's first area)
-//   @area id       name, district, plate (content folder), variant, place (LWD place id),
+//   @area id       name, district, plate (content folder), variant (default: the plate's first), place (LWD place id),
 //                  spawn (x y z), grid (x0 z0 cell nx nz), walk (surface ids), enter (node, played
 //                  on the first visit; enter-every: yes plays it on every visit), footing,
 //                  arena: <arena id> x y z yaw (where a fight's arena lies on this plate: world/stage.mjs)
@@ -42,15 +42,27 @@ export function loadDistricts(book) {
   return { districts, areas, errors };
 }
 
+// variant: lines: a plain one is the area's look; "name ? cond" lines are tried in order and the first
+// that holds wins (the hall dark for the vote, the roof white after the frost).
+// plate: lines work the same way (2026-10-22): a plain one is the area's plate, and "name ? cond" lines give an era
+// its own plate of a shared place (era 1's harvest post and hill on their own harvest worlds, var.era == 1).
+function variantsOf(r, key = "variant") {
+  const list = [], all = r.kv.filter((e) => e.key === key); let base = null;
+  for (const e of all) { const m = e.value.match(/^\s*(\S+)\s*(?:\?\s*(.+))?$/); if (!m) continue; if (m[2]) list.push({ v: m[1], cond: compile(m[2]), src: m[2].trim() }); else base = m[1]; }
+  return { base, list };
+}
+
 function loadArea(r) {
   const g = (k) => { const x = r.kv.find((e) => e.key === k); return x ? x.value.trim() : undefined; };
   const at = (kv) => ({ file: r.file, line: kv.line, node: r.id });
   const spot = (s) => ({ ...s, at: vec(s.attrs.at) || [0, 0, 0], r: s.attrs.r ?? 1.2 });
   const grid = vec(g("grid"));
   return {
-    id: r.id, name: g("name") || r.id, district: g("district") || null, plate: g("plate") || null, variant: g("variant") || "night", place: g("place") || r.id, places: (g("places") || "").split(/[\s,]+/).filter(Boolean),
+    id: r.id, name: g("name") || r.id, district: g("district") || null, plate: variantsOf(r, "plate").base, plates: variantsOf(r, "plate").list, variant: variantsOf(r).base, variants: variantsOf(r).list, place: g("place") || r.id, places: (g("places") || "").split(/[\s,]+/).filter(Boolean),
     spawn: vec(g("spawn")) || [0, 0, 0], enter: g("enter") || null, enterEvery: /^(yes|true)$/i.test(g("enter-every") || ""), camera: g("camera") != null ? +g("camera") : null,
     arenas: parseArenaLines(r.kv.filter((e) => e.key === "arena").map((e) => e.value)), about: g("about") || "",
+    lens: g("lens") || null,
+    hudClock: g("hud-clock") || null, hudWeather: g("hud-weather") ?? null, // the HUD's hour and weather while @meta hud-held holds (ui/hudtab.mjs) // wide (the district) or narrow (a household), The Quota (world/lens.mjs)
     grid: grid ? { x0: grid[0], z0: grid[1], cell: grid[2], nx: grid[3], nz: grid[4] } : null,
     walk: g("walk") ? g("walk").split(/[\s,]+/).map(Number) : null,
     hotspots: r.kv.filter((e) => e.key === "hotspot").map((e) => spot(parseChoice("hotspot", e.value, at(e)))),
@@ -63,6 +75,20 @@ function loadArea(r) {
 
 export function createWorldMap(G, data) {
   const st = () => G.state;
+  // an area's variant follows the hour where it has conditional variant lines
+  // (area records are shared by every game made from the same content: the getter reads the newest game)
+  for (const a of Object.values(data.areas)) {
+    for (const [key, list] of [["variant", a.variants], ["plate", a.plates]]) {
+      if (!list || !list.length) continue;
+      Object.defineProperty(a, "_game", { value: G, writable: true, configurable: true, enumerable: false });
+      if (Object.getOwnPropertyDescriptor(a, key).get) continue;
+      const base = a[key];
+      Object.defineProperty(a, key, { enumerable: true, configurable: true, get() {
+        for (const x of list) { try { if (evaluate(x.cond, a._game.scope)) return x.v; } catch (e) { console.warn(`area ${a.id}: ${key} ${x.v} ? ${x.src}: ${e.message}`); } }
+        return base;
+      } });
+    }
+  }
   const shows = (a, p) => !!a && (a.place === p || (a.places || []).includes(p));
   G.on("place", ({ id }) => {
     if (shows(data.areas[st().area], id)) return;

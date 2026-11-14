@@ -1,0 +1,161 @@
+{
+ "place": "q5_archive",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0.3,
+   1,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.009259259259259
+ },
+ "pxPerMetre": 216,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 15.4,
+   "weather": "year 115, April, 15:25: the reading lamp on the Tesk book, the high window grey"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "tesk_book",
+    "verb": "read",
+    "at": [
+     0.4,
+     0,
+     0.8
+    ],
+    "note": "the Tesk book in its archive box, scorched along the bottom edge"
+   },
+   {
+    "id": "register",
+    "verb": "read",
+    "at": [
+     1,
+     0,
+     0.8
+    ],
+    "note": "the district register open at year 0, Walter's sevens without a bar"
+   },
+   {
+    "id": "sign",
+    "verb": "look",
+    "at": [
+     1.8,
+     0,
+     -0.6
+    ],
+    "note": "the old sign, painted over in heritage green, EXCHANGE STREET showing through"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     2.4,
+     0,
+     1.6
+    ],
+    "note": "the door to Exchange Street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": [
+   {
+    "at": [
+     0.9,
+     1.17,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 4.5,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1.6,
+     2.4,
+     -1.9
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 7,
+    "group": "window"
+   }
+  ]
+ },
+ "figureLights": {
+  "afternoon": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: the reading lamp on the Tesk book, the high window grey."
+}

@@ -1,0 +1,217 @@
+{
+ "place": "crakestudy",
+ "version": 2,
+ "width": 2000,
+ "height": 1500,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 32,
+  "target": [
+   -0.1,
+   0.9,
+   -0.4
+  ],
+  "dist": 25,
+  "ortho": true,
+  "scale": 3.125
+ },
+ "pxPerMetre": 240,
+ "near": 1.0417,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "lit",
+  "switched"
+ ],
+ "variantInfo": {
+  "lit": {
+   "hour": 21,
+   "weather": "the yellow shade, the stove, the lane's white arc at the window"
+  },
+  "switched": {
+   "hour": 21.5,
+   "weather": "the second switch thrown: the arc out; the stove and the yellow lamp"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  26,
+  50
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "ledger",
+    "verb": "read",
+    "at": [
+     0.35,
+     0,
+     -0.45
+    ],
+    "note": "the Trust's ledger under the yellow lamp"
+   },
+   {
+    "id": "lamp",
+    "verb": "look",
+    "at": [
+     1.2,
+     0,
+     -0.5
+    ],
+    "note": "the yellow shade (CANDLEMAS: where did the yellow pencil go?)"
+   },
+   {
+    "id": "telephone",
+    "verb": "use",
+    "at": [
+     0,
+     0,
+     -0.35
+    ],
+    "note": "the telephone, off its hook"
+   },
+   {
+    "id": "stove_chair",
+    "verb": "wait",
+    "at": [
+     -1,
+     0,
+     0.1
+    ],
+    "note": "the chair by the stove: warm"
+   },
+   {
+    "id": "window",
+    "verb": "look",
+    "at": [
+     0.6,
+     0,
+     -1.2
+    ],
+    "note": "the lane's white lamp close at the glass"
+   }
+  ],
+  "hides": [
+   {
+    "id": "behind_desk",
+    "at": [
+     1.5,
+     0,
+     -1.3
+    ],
+    "r": 0.35,
+    "note": "low behind the desk"
+   }
+  ],
+  "exits": [
+   {
+    "id": "hall",
+    "at": [
+     1.6,
+     0,
+     1.4
+    ],
+    "note": "the door back to the hall"
+   },
+   {
+    "id": "side_door",
+    "at": [
+     -1.9,
+     0,
+     0.7
+    ],
+    "note": "the side door the station's key opens"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "lit": [
+   {
+    "at": [
+     -1.75,
+     0.4,
+     -0.85
+    ],
+    "kind": "paraffin",
+    "I": 5,
+    "reach": 4,
+    "group": "fire"
+   },
+   {
+    "at": [
+     1.05,
+     1,
+     -1.15
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 4,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     0.6,
+     2.2,
+     -3.15
+    ],
+    "kind": "sky",
+    "I": 12,
+    "reach": 7,
+    "group": "white"
+   }
+  ],
+  "switched": [
+   {
+    "at": [
+     -1.75,
+     0.4,
+     -0.85
+    ],
+    "kind": "paraffin",
+    "I": 5,
+    "reach": 4,
+    "group": "fire"
+   },
+   {
+    "at": [
+     1.05,
+     1,
+     -1.15
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 4,
+    "group": "lantern"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "Act 2, place crake_study. Window at -z over the desk, the side door at -x, the stove in the back corner. The Alderman and Fisk are drawn by the game."
+}

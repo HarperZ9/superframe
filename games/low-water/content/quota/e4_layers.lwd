@@ -1,0 +1,51 @@
+# World layers, era 4 (The Closure, year 70; Mira's flat at year 103): the Saro flat, Pell's kitchen, Davey's flat and the
+# police desk (design/WORLD-LAYERS.md). Joss's spoon rack is the spoons' era 4 state (e1_layers.lwd). World-layers pass,
+# 2026-10-23. DRAFT: every prop text in this file waits for the author's line approval (ledger row S14). Geometry:
+# render/places/layers/era4.mjs; the marks are its spots.
+
+# DRAFT
+@prop q.meter_card
+from: 4
+name: The biscuit tin
+place: q4w_saro_flat
+mark: tin
+macro: 2.4 2.6
+tells: household e4_saro
+carries: touch
+touch: turn "Push the torch's switch" | It won't move. It was pushed on the night the lights went off on the Row and the battery went to rust in it with the switch on, and it has stayed on ever since. {sense: e4.torch.stuck}
+state: 4 torch | A biscuit tin on the sideboard, buttons and string and a child's red torch with a dent in it. The torch's switch is pushed forward, on. The glass is dark.
+
+# DRAFT
+@prop q.survey_book
+from: 4
+name: Pell's steel tape
+place: q4_furrowe_house
+mark: survey_book
+macro: 2.4 2.6
+tells: person q.pell
+carries: sound
+touch: open "Pull the tape out" | It comes out stiff and cold, with a rattle, and at a short length there's a nick filed into its edge, the width of a narrow bed. Let go and it runs back into the case with a snap that stings your fingers. {sense: e4.tape.snap}
+state: 4 open | Pell's steel tape from the allocation office, on the table where he leaves it. The case is worn to the brass where his thumb goes.
+
+# DRAFT
+@prop q.crown_flood
+from: 4
+name: The Crown in the water
+place: q4_brack_flat
+mark: flood_photo
+macro: 2.4 2.6
+tells: era
+carries: sight
+state: 4 framed | A photograph of the Crown from across Mill Street, the water up to its window sills and a rowing boat tied to the door knocker. A man in the boat is holding up a pint. On the mount somebody has drawn a wavy pencil line at the height of the sills.
+
+# DRAFT
+@prop q.goat_stencil
+from: 4
+name: The stencil in the bag
+place: q4_police
+mark: stencil
+macro: 2.4 2.6
+tells: era
+carries: smell
+touch: hold "Hold the stencil" | The card is stiff with paint, and through the bag it still smells of it, fresh. A kitchen knife cut it, and not well: the goat's legs are ragged where the blade slipped.
+state: 4 bagged | A cardboard stencil in a police bag on the desk, a goat cut out of it, white paint dried thick round the edges. The goat's head is down and facing forward. Nobody has filled in the bag's tag.

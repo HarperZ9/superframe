@@ -20,6 +20,7 @@
 @fact oldlight.gear_lost
 @fact oldlight.flooded
 @fact down.oldlight
+@fact oldlight.low_corner
 
 # ---------------------------------------------------------------- the hub: the boat at the base
 @node oldlight.hub
@@ -67,6 +68,7 @@ check: "[THE DARK] Douse the lantern and go in behind the strippers, the way the
 opt: "Go in behind the strippers, the way they cleared." -> oldlight.follow ? has(oldlight.behind) {verb: hide, noise: 0.1}
 check: "[GRIP] Rig the painter through the stair breach and lower yourself in past the door." -> oldlight.rig / oldlight.rig.fail {skill: grip, dc: 5, verb: rig, noise: 0.2}
 check: "[SUM] Read the weed lines on the passage walls: which room drains first, and when." -> oldlight.marks / oldlight.marks.fail {skill: sum, dc: 5, verb: read, noise: 0}
+opt: "Put a knee to the low corner where the hinge sags, and lift." -> oldlight.door.knee ? has(oldlight.low_corner) & var.quay3.boat != merrow & var.quay3.boat != lugg {verb: pry, noise: 0.2}
 opt: "Back to the boat." -> oldlight.hub
 
 # Fist
@@ -81,11 +83,21 @@ go: oldlight.hub
 @node oldlight.door.forced.fail
 place: oldlight_door
 cost: 3
-do: wet(0.5); meter(cold, 1)
+do: wet(0.5); meter(cold, 1); set(oldlight.low_corner)
 nar: The door lifts a hand's breadth and settles back on the assessor's forearm. It lets go eventually.
+nar: The low corner, where the hinge sags, came up further than the rest. {when: var.quay3.boat != merrow & var.quay3.boat != lugg}
 line: LUGG: Other corner. {when: var.quay3.boat == lugg}
 line: MERROW: Low corner. Nan's always said. {when: var.quay3.boat == merrow}
 go: oldlight.door
+
+# Anyone who has tried the wrench once: the corner it gave at (2026-10-21, a new Wader alone in Nan's boat had
+# no way past the door, and the eye went in failed checks)
+@node oldlight.door.knee
+place: oldlight_door
+cost: 3
+do: set(oldlight.in); quest(a3.oldlight, in); wet(0.3)
+nar: A knee to the low corner, and lift. The door pivots on its top pin and swings in under the water.
+go: oldlight.hub
 
 # Tongue: Nan's memory, carried
 @node oldlight.door.told

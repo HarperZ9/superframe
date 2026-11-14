@@ -20,7 +20,7 @@ area: hill
 foe: f.lamplighter 3
 param: white-light (no dark anywhere in the room)
 prop: cut 0 0 ? has(hill.dark)
-talk: fx2.station.tea | Put the pole down and ask for tea ? fight_struck == 0 & fight_seconds >= 5
+talk: fx2.station.tea | Put the pole down and ask for tea ? fight_struck == 0 & fight_seconds >= 3
 win: hill.fight.station.win
 yield: hill.fight.station.yield
 fled: hill.fight.station.fled
@@ -43,7 +43,7 @@ name: On the ice
 area: gut
 foe: f.gutter 2
 param: ice-floor (both sides slide)
-talk: fx2.ice.steward | Call for the steward ? fight_seconds >= 10
+talk: fx2.ice.steward | Call for the steward ? fight_seconds >= 6
 win: gut2.fight.ice.win
 yield: gut2.fight.ice.yield
 fled: gut2.fight.ice.fled

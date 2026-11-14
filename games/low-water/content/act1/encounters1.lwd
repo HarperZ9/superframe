@@ -35,7 +35,7 @@ down: floor.fight.conger.down
 name: Gulls at the fish
 area: floor
 foe: f.gulls 3
-talk: fx.gulls.children | Wave the children in with their lanterns ? fight_seconds >= 15
+talk: fx.gulls.children | Wave the children in with their lanterns ? fight_seconds >= 8
 win: floor.fight.gulls.win
 yield: floor.fight.gulls.yield
 fled: floor.fight.gulls.fled
@@ -58,7 +58,7 @@ opening: alerted
 prop: cut 7 1
 foe: f.panbearer 1
 foe: f.gutter 2
-talk: fx.afterdark.nose | Name the switch yourself, aloud ? fight_seconds >= 15 & (has(scales.switch) | has(scales.kept) | has(lamps.pink))
+talk: fx.afterdark.nose | Name the switch yourself, aloud ? fight_seconds >= 3 & (has(scales.switch) | has(scales.kept) | has(lamps.pink))
 win: weigh.fight.afterdark.win
 yield: weigh.fight.afterdark.yield
 fled: weigh.fight.afterdark.fled

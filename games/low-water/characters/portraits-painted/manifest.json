@@ -1,0 +1,574 @@
+{
+ "portraits": {
+  "ned@e2/neutral-paraffin": {
+   "id": "ned@e2",
+   "plain": "ned",
+   "mood": "neutral",
+   "light": "paraffin",
+   "file": "characters/portraits-painted/ned@e2/neutral-paraffin.png",
+   "heads": "old",
+   "eyes": [
+    {
+     "cx": 368,
+     "cy": 320,
+     "wd": 50.8,
+     "ht": 45.8,
+     "opened": false
+    },
+    {
+     "cx": 476,
+     "cy": 315,
+     "wd": 43.3,
+     "ht": 35,
+     "opened": false
+    }
+   ],
+   "mouth": {
+    "x0": 373,
+    "x1": 457,
+    "y": 431
+   },
+   "made": {
+    "who": "ned",
+    "age": null,
+    "era": 2,
+    "cam": {
+     "yaw": 34,
+     "elev": 4,
+     "height": 0.7,
+     "turn": -32
+    },
+    "key": {
+     "az": 80,
+     "el": 25
+    },
+    "seed": 317478,
+    "work": [
+     768,
+     960
+    ]
+   },
+   "layers": [
+    {
+     "name": "underpainting",
+     "kind": "paint",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "ground",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "ground mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "cloth",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "cloth mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "skin",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "skin mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "light glaze",
+     "kind": "glaze",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "light glaze mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "light strokes",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "light strokes mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "features",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "shade",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "shade mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "eyes",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "paint",
+     "kind": "paint",
+     "author": "human",
+     "mood": null
+    }
+   ],
+   "authorship": {
+    "pixels": {
+     "procedural": 0.7965,
+     "script": 0.2035
+    },
+    "glazed": 0.143,
+    "strokes": {
+     "script": 296
+    }
+   }
+  },
+  "will@e2/neutral-paraffin": {
+   "id": "will@e2",
+   "plain": "will",
+   "mood": "neutral",
+   "light": "paraffin",
+   "file": "characters/portraits-painted/will@e2/neutral-paraffin.png",
+   "heads": "old",
+   "eyes": [
+    {
+     "cx": 380,
+     "cy": 320,
+     "wd": 40,
+     "ht": 26.7,
+     "opened": false
+    },
+    {
+     "cx": 485,
+     "cy": 316,
+     "wd": 21.7,
+     "ht": 29.2,
+     "opened": false
+    }
+   ],
+   "mouth": {
+    "x0": 357,
+    "x1": 501,
+    "y": 438
+   },
+   "made": {
+    "who": "will",
+    "age": null,
+    "era": 2,
+    "cam": {
+     "yaw": 34,
+     "elev": 4,
+     "height": 0.7,
+     "turn": -32
+    },
+    "key": {
+     "az": 80,
+     "el": 25
+    },
+    "seed": 10114137,
+    "work": [
+     768,
+     960
+    ]
+   },
+   "layers": [
+    {
+     "name": "underpainting",
+     "kind": "paint",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "ground",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "ground mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "cloth",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "cloth mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "skin",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "form",
+     "kind": "form",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "form mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "form light",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "form light mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "skin mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "light glaze",
+     "kind": "glaze",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "light glaze mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "light strokes",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "light strokes mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "features",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "shade",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "shade mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "eyes",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "paint",
+     "kind": "paint",
+     "author": "human",
+     "mood": null
+    },
+    {
+     "name": "mood: angry",
+     "kind": "paint",
+     "author": "procedural",
+     "mood": "angry"
+    },
+    {
+     "name": "mood: angry paint",
+     "kind": "paint",
+     "author": "human",
+     "mood": "angry"
+    },
+    {
+     "name": "mood: angry mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": "angry"
+    },
+    {
+     "name": "mood: angry paint mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": "angry"
+    }
+   ],
+   "authorship": {
+    "pixels": {
+     "procedural": 0.7503,
+     "script": 0.2497
+    },
+    "glazed": 0.0789,
+    "strokes": {
+     "script": 3103,
+     "script liquify": 9
+    }
+   }
+  },
+  "will@e2/angry-paraffin": {
+   "id": "will@e2",
+   "plain": "will",
+   "mood": "angry",
+   "light": "paraffin",
+   "file": "characters/portraits-painted/will@e2/angry-paraffin.png",
+   "heads": "old",
+   "eyes": [
+    {
+     "cx": 380,
+     "cy": 320,
+     "wd": 37.5,
+     "ht": 29.2,
+     "opened": false
+    },
+    {
+     "cx": 485,
+     "cy": 314,
+     "wd": 18.3,
+     "ht": 31.7,
+     "opened": false
+    }
+   ],
+   "mouth": {
+    "x0": 372,
+    "x1": 493,
+    "y": 438
+   },
+   "made": {
+    "who": "will",
+    "age": null,
+    "era": 2,
+    "cam": {
+     "yaw": 34,
+     "elev": 4,
+     "height": 0.7,
+     "turn": -32
+    },
+    "key": {
+     "az": 80,
+     "el": 25
+    },
+    "seed": 10114137,
+    "work": [
+     768,
+     960
+    ]
+   },
+   "layers": [
+    {
+     "name": "underpainting",
+     "kind": "paint",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "ground",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "ground mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "cloth",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "cloth mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "skin",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "form",
+     "kind": "form",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "form mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "form light",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "form light mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "skin mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "light glaze",
+     "kind": "glaze",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "light glaze mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "light strokes",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "light strokes mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "features",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "shade",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "shade mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": null
+    },
+    {
+     "name": "eyes",
+     "kind": "paint",
+     "author": "script",
+     "mood": null
+    },
+    {
+     "name": "paint",
+     "kind": "paint",
+     "author": "human",
+     "mood": null
+    },
+    {
+     "name": "mood: angry",
+     "kind": "paint",
+     "author": "procedural",
+     "mood": "angry"
+    },
+    {
+     "name": "mood: angry paint",
+     "kind": "paint",
+     "author": "human",
+     "mood": "angry"
+    },
+    {
+     "name": "mood: angry mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": "angry"
+    },
+    {
+     "name": "mood: angry paint mask",
+     "kind": "mask",
+     "author": "procedural",
+     "mood": "angry"
+    }
+   ],
+   "authorship": {
+    "pixels": {
+     "procedural": 0.8274,
+     "script": 0.153,
+     "human": 0.0196
+    },
+    "glazed": 0.0323,
+    "strokes": {
+     "script": 3103,
+     "script liquify": 9
+    }
+   }
+  }
+ }
+}

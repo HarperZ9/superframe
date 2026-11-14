@@ -134,12 +134,16 @@ The calm turns take the spec's numbers (section 7.2, halved to 30 fps): `turn` 3
 
 ## 7. Known limits of what is built
 
-- Up close the figures still lean toward stylised CG. Banded light with brush-edged planes and the
-  painter for portraits (fed the banded light) move them toward the plates; a hand sculpting pass on
-  heads would help most.
-- Coats swing on spring joints driven by the body's motion; there is no cloth simulation or collision.
-- Feet hold because loop speed is measured from the planted foot; there is no IK foot lock, so
-  steps and slopes can still show a slip.
+- Up close the figures still lean toward stylised CG. The Quota's heads are sculpted from planes since
+  2026-10-22 (cast/sculpt.mjs, notes/HEAD-BOUNDS.md); in banded light their sockets and under-cheek planes
+  still go too dark, and the cast's faces are too alike.
+- Coats swing on spring joints driven by the body's motion; there is no cloth simulation. After skinning,
+  coat and dress vertices are pushed outside cones on the leg bones (rig/body.mjs clothPush), so legs no
+  longer pass through (at most 3.2 vertices a frame over the cast).
+- Feet: contact-phase foot locks with two-bone IK, catch-up steps and slope fitting (2026-10-22,
+  notes/ANIM-BOUNDS.md): at most 0.77 cm of slide per planted step over the locomotion set. Feet stay
+  flat to the leg: no toe or sole alignment to a slope.
 - Two hand shapes (open and fist), no fingers that move.
-- No layered blending (upper body attacking while legs walk); clips cross-fade whole-body.
+- Upper and lower body layering (`playUpper`, combat's `pose.upper`), smootherstep fades, an additive
+  lean. Combat does not yet send `pose.upper`; the mechanics lead decides when a strike may play over legs.
 - The sodium look is a value ramp, not the engine's spectral pass.

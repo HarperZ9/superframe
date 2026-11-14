@@ -1,0 +1,159 @@
+{
+ "place": "q4_row",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   4,
+   2,
+   -2.5
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 5.869565217391305
+ },
+ "pxPerMetre": 92,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 23.2,
+   "weather": "year 70, 23:10: the Row under its sodium, windows lit, the race loud below the rail"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  3,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "poster",
+    "verb": "read",
+    "at": [
+     12,
+     0,
+     -3
+    ],
+    "note": "the poster on the end wall: a face in coarse halftone over EDRIN FOR EDRINERS"
+   },
+   {
+    "id": "row",
+    "verb": "look",
+    "at": [
+     0,
+     0,
+     0.4
+    ],
+    "note": "the Row: Vell names on the doors, washing out late, the race loud under the rail"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "mill",
+    "at": [
+     -11,
+     0,
+     0.5
+    ],
+    "note": "along the race to the mill"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     13.2,
+     4.4,
+     -2.6
+    ],
+    "kind": "sodium",
+    "I": 26,
+    "reach": 9,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     6.05,
+     4.35,
+     -1.8
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -9,
+     4.35,
+     1.85
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "night": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: the Row, the Vell terrace by the race."
+}

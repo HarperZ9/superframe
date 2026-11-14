@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Propaganda kit proof</title>
+<link rel="icon" href="data:,">
+<style>
+  html, body { margin: 0; background: #0b090c; color: #ddd; font: 13px "Segoe UI", sans-serif; }
+  .row { display: flex; gap: 16px; padding: 14px; align-items: flex-start; flex-wrap: wrap; }
+  figure { margin: 0; width: 260px; }
+  figure canvas, figure img { width: 260px; height: auto; display: block; }
+  figcaption { margin-top: 6px; color: #bbb; line-height: 1.35; }
+  .pair { display: flex; gap: 12px; padding: 10px; background: #2a2622; }
+  h2 { margin: 6px 14px 0; font: 600 12px "Segoe UI", sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; }
+</style>
+</head>
+<body>
+<!-- The propaganda kit, one notice per era, a torn one, a pasted one, and a notice beside the person it lies
+     about (the UI art lead's, 2026-10-22). The figure is a placeholder for the painted lead's drawing; era 2's
+     words are the story's claim (cl.hesh_hoard); the others are the world bible's myths standing in until the
+     story lead writes the notices. -->
+<h2>One notice per era: engraving, woodcut, lithograph, collage, meme</h2>
+<div class="row" id="eras"></div>
+<h2>Era 2 torn, era 2 with the true figure pasted over it in Ned's hand, and the notice beside Anni Haldane</h2>
+<div class="row" id="acts"></div>
+<script type="module">
+  import { renderNotice } from "./poster.mjs";
+  const fig = (parent, cap) => { const f = document.createElement("figure"), c = document.createElement("canvas"), t = document.createElement("figcaption"); t.textContent = cap; f.append(c, t); parent.append(f); return c; };
+  const E = document.getElementById("eras"), A = document.getElementById("acts");
+  const HOARD = "THE HESH HAVE THE GRAIN UNDER THE GOATS. REPORT HOARDING TO THE DISTRICT OFFICE.";
+  for (const [era, o, cap] of [
+    [1, { words: "A Hesh will smile and steal", carrier: "The professor's lecture, printed", people: "hesh", myth: "tallow" }, "Era 1: an engraved cartoon (words: the bible's myth, a placeholder)"],
+    [2, { words: HOARD, carrier: "The district office", people: "hesh", myth: "hoard" }, "Era 2: a woodcut district notice (words: cl.hesh_hoard)"],
+    [3, { words: "They hoard while you queue", carrier: "Allocation office", people: "hesh", myth: "hoard" }, "Era 3: a lithograph poster (placeholder words)"],
+    [4, { words: "THEY GET THE FLATS FIRST", carrier: "Vote Furrow League", people: "vell", myth: "money" }, "Era 4: a collage leaflet (the bible's myth)"],
+    [5, { words: "they are replacing us", carrier: "", people: "vell", myth: "tide" }, "Era 5: a meme, screenshotted (the bible's myth)"],
+  ]) await renderNotice(fig(E, cap), { era, seed: 5 + era, ...o });
+  await renderNotice(fig(A, "Torn: a piece gone, the wall behind"), { era: 2, words: HOARD, carrier: "The district office", people: "hesh", myth: "hoard", torn: true, seed: 7 });
+  await renderNotice(fig(A, "Pasted over in the player's hand (cl.true_figure)"), { era: 2, words: HOARD, carrier: "The district office", people: "hesh", myth: "hoard", seed: 7, pasted: { words: "THE HALDANE BARNS GREW 190. THE RETURN SAYS 310.", hand: "ned" } });
+  const pair = document.createElement("div"); pair.className = "pair"; A.append(pair);
+  await renderNotice(fig(pair, "The notice"), { era: 2, words: HOARD, carrier: "The district office", people: "hesh", myth: "hoard", seed: 7 });
+  const f = document.createElement("figure"), img = document.createElement("img"), t = document.createElement("figcaption"); img.src = "/characters/portraits-quota/anni/neutral-paraffin.png"; t.textContent = "Anni Haldane, fourteen; she counts the sacks"; f.append(img, t); pair.append(f);
+  await new Promise((r) => (img.complete ? r() : (img.onload = img.onerror = r)));
+  document.documentElement.dataset.ready = "1";
+</script>
+</body>
+</html>

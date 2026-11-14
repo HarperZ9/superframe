@@ -1,0 +1,310 @@
+// The world hash (sim/world.mjs hashWorld: hashStr over JSON.stringify of the
+// state) and the trace records (tools/trace.mjs).
+
+fn seen_json(s: Seen) -> str {
+    format!("{{\"x\":{},\"z\":{},\"t\":{}}}", s.x.to_json(), s.z.to_json(), s.t.to_json())
+}
+
+fn mem_json(m: Mem) -> str {
+    let mut keys: Vec<str> = Vec::new();
+    let mut vals: Vec<str> = Vec::new();
+    if !m.inited {
+        keys.push("seen");
+        vals.push(if m.has_seen { seen_json(m.seen) } else { "null" });
+        return json_obj(keys, vals);
+    }
+    keys.push("next");
+    vals.push(m.next.to_json());
+    keys.push("seen");
+    vals.push(if m.has_seen { seen_json(m.seen) } else { "null" });
+    keys.push("move");
+    vals.push(format!("{{\"mx\":{},\"mz\":{}}}", m.move_mx.to_json(), m.move_mz.to_json()));
+    keys.push("cool");
+    vals.push(m.cool.to_json());
+    keys.push("stag");
+    vals.push(jb(m.stag));
+    keys.push("retreat");
+    vals.push(m.retreat.to_json());
+    keys.push("retreated");
+    vals.push(jb(m.retreated));
+    keys.push("side");
+    vals.push(m.side.to_json());
+    keys.push("searched");
+    vals.push(m.searched.to_json());
+    let mut i = 0;
+    while i < m.extra.len() {
+        let k = m.extra[i];
+        keys.push(k);
+        if k == "lost" {
+            vals.push(m.lost.to_json());
+        } else if k == "called" {
+            vals.push(jb(m.called));
+        } else if k == "pur" {
+            let p = m.pur;
+            vals.push(format!(
+                "{{\"clock\":{},\"cut\":{},\"thrown\":{},\"lunged\":{},\"chase\":{},\"rest\":{},\"away\":{}}}",
+                p.clock.to_json(), p.cut.to_json(), p.thrown.to_json(), p.lunged.to_json(),
+                p.chase.to_json(), p.rest.to_json(), jb(p.away)
+            ));
+        } else if k == "chain" {
+            vals.push(m.chain.to_json());
+        } else {
+            vals.push(format!("{{\"x\":{},\"z\":{},\"face\":{}}}", m.home_x.to_json(), m.home_z.to_json(), m.home_face.to_json()));
+        }
+        i += 1;
+    }
+    json_obj(keys, vals)
+}
+
+fn act_json(a: Act) -> str {
+    let mut keys: Vec<str> = vec!["id", "f", "end", "hit", "charge", "charging", "dir", "seq", "carry"];
+    let carry = if a.has_carry { format!("[{},{}]", a.carry0.to_json(), a.carry1.to_json()) } else { "null" };
+    let mut vals: Vec<str> = vec![
+        json_quote(a.id), a.f.to_json(), a.end.to_json(), jstrs(a.hit), a.charge.to_json(),
+        jb(a.charging), a.dir.to_json(), a.seq.to_json(), carry
+    ];
+    if a.has_charged {
+        keys.push("charged");
+        vals.push(a.charged.to_json());
+    }
+    let mut i = 0;
+    while i < a.extra.len() {
+        let k = a.extra[i];
+        keys.push(k);
+        if k == "gusted" {
+            vals.push(jb(a.gusted));
+        } else {
+            vals.push(jstrs(a.evaded));
+        }
+        i += 1;
+    }
+    json_obj(keys, vals)
+}
+
+fn buf_json(b: Vec<BufEntry>) -> str {
+    let mut parts: Vec<str> = Vec::new();
+    let mut i = 0;
+    while i < b.len() {
+        let e = b[i];
+        if e.held {
+            parts.push(format!("{{\"a\":{},\"t\":{},\"held\":true,\"seq\":{}}}", json_quote(e.a), e.t.to_json(), e.seq.to_json()));
+        } else {
+            parts.push(format!("{{\"a\":{},\"t\":{}}}", json_quote(e.a), e.t.to_json()));
+        }
+        i += 1;
+    }
+    json_arr(parts)
+}
+
+fn items_json(f: Fighter) -> str {
+    let mut vals: Vec<str> = Vec::new();
+    let mut i = 0;
+    while i < f.item_vals.len() {
+        vals.push(f.item_vals[i].to_json());
+        i += 1;
+    }
+    json_obj(f.item_keys, vals)
+}
+
+fn tokens_json(t: Vec<Token>) -> str {
+    let mut parts: Vec<str> = Vec::new();
+    let mut i = 0;
+    while i < t.len() {
+        parts.push(format!("{{\"id\":{},\"until\":{}}}", json_quote(t[i].id), t[i].until.to_json()));
+        i += 1;
+    }
+    json_arr(parts)
+}
+
+fn fighter_json(f: Fighter) -> str {
+    let keys: Vec<str> = vec![
+        "id", "team", "kind", "x", "z", "face", "vx", "vz", "kx", "kz", "hp", "hpMax", "st", "stMax",
+        "stWait", "winded", "poise", "poiseMax", "poiseWait", "guardT", "blind", "act", "hitstop",
+        "flash", "lock", "lockLost", "buf", "items", "out", "fallen", "yielded", "lastOffense",
+        "aware", "notice", "composure", "composureMax", "running", "lantern", "lastHitBy", "tool"
+    ];
+    let mut k2: Vec<str> = keys;
+    let mut vals: Vec<str> = vec![
+        json_quote(f.id), json_quote(f.team), json_quote(f.kind), f.x.to_json(), f.z.to_json(),
+        f.face.to_json(), f.vx.to_json(), f.vz.to_json(), f.kx.to_json(), f.kz.to_json(),
+        f.hp.to_json(), f.hp_max.to_json(), f.st.to_json(), f.st_max.to_json(), f.st_wait.to_json(),
+        jb(f.winded), f.poise.to_json(), f.poise_max.to_json(), f.poise_wait.to_json(),
+        f.guard_t.to_json(), f.blind.to_json(), if f.has_act { act_json(f.act) } else { "null" },
+        f.hitstop.to_json(), f.flash.to_json(), jsn(f.lock), f.lock_lost.to_json(), buf_json(f.buf),
+        items_json(f), jb(f.out), jb(f.fallen), jb(f.yielded), f.last_offense.to_json(),
+        jb(f.aware), f.notice.to_json(), f.composure.to_json(), f.composure_max.to_json(),
+        jb(f.running), f.lantern.to_json(), jsn(f.last_hit_by), jsn(f.tool)
+    ];
+    let mut i = 0;
+    while i < f.extra.len() {
+        let k = f.extra[i];
+        k2.push(k);
+        if k == "mem" {
+            vals.push(mem_json(f.mem));
+        } else if k == "engaged" {
+            vals.push(jb(f.engaged));
+        } else if k == "seq" {
+            vals.push(f.seq.to_json());
+        } else if k == "catchMiss" {
+            vals.push(if f.catch_miss_null { "null" } else { f.catch_miss.to_json() });
+        } else if k == "tokens" {
+            vals.push(tokens_json(f.tokens));
+        } else if k == "struckAt" {
+            vals.push(f.struck_at.to_json());
+        } else if k == "kitedBy" {
+            vals.push(f.kited_by.to_json());
+        } else if k == "flinchAt" {
+            vals.push(f.flinch_at.to_json());
+        } else if k == "carriage" {
+            vals.push(jb(f.carriage));
+        } else if k == "disarmed" {
+            vals.push(jb(f.disarmed));
+        } else if k == "dropped" {
+            vals.push(f.dropped.to_json());
+        } else if k == "tripAt" {
+            vals.push(f.trip_at.to_json());
+        } else {
+            vals.push(f.called_at.to_json());
+        }
+        i += 1;
+    }
+    json_obj(k2, vals)
+}
+
+fn proj_json(p: Projectile) -> str {
+    let light = if p.has_light {
+        format!("{{\"r\":{},\"k\":{},\"frames\":{}}}", p.light_r.to_json(), p.light_k.to_json(), p.light_frames.to_json())
+    } else {
+        "null"
+    };
+    let mut keys: Vec<str> = vec!["n", "owner", "team", "use", "x", "z", "y", "vx", "vz", "vy", "mass", "r", "light", "move"];
+    let mut vals: Vec<str> = vec![
+        p.n.to_json(), json_quote(p.owner), json_quote(p.team), json_quote(p.use_), p.x.to_json(),
+        p.z.to_json(), p.y.to_json(), p.vx.to_json(), p.vz.to_json(), p.vy.to_json(),
+        p.mass.to_json(), p.r.to_json(), light, thrown_move_json(p.mv)
+    ];
+    let mut i = 0;
+    while i < p.extra.len() {
+        let k = p.extra[i];
+        keys.push(k);
+        if k == "gh" {
+            vals.push(p.gh.to_json());
+        } else {
+            vals.push(jstrs(p.evaded));
+        }
+        i += 1;
+    }
+    json_obj(keys, vals)
+}
+
+fn prop_json(p: Prop) -> str {
+    let x = if p.has_x { p.x.to_json() } else { "null" };
+    let z = if p.has_x { p.z.to_json() } else { "null" };
+    if p.kind == "lamp" {
+        return format!(
+            "{{\"kind\":\"lamp\",\"x\":{},\"z\":{},\"on\":{},\"n\":{},\"light\":{}}}",
+            x, z, jb(p.on), p.n.to_json(), p.light.to_json()
+        );
+    }
+    if p.kind == "snare" {
+        return format!("{{\"kind\":\"snare\",\"x\":{},\"z\":{},\"armed\":{},\"n\":{}}}", x, z, jb(p.armed), p.n.to_json());
+    }
+    let mut zone: Vec<str> = Vec::new();
+    let mut i = 0;
+    while i < p.zone.len() {
+        zone.push(p.zone[i].to_json());
+        i += 1;
+    }
+    format!(
+        "{{\"kind\":\"sluice\",\"x\":{},\"z\":{},\"zone\":{},\"rise\":{},\"open\":{},\"at\":{},\"n\":{}}}",
+        x, z, json_arr(zone), p.rise.to_json(), jb(p.open),
+        if p.has_at { p.at.to_json() } else { "null" }, p.n.to_json()
+    )
+}
+
+fn world_hash(w: &World, clock: f64) -> u32 {
+    let mut fs: Vec<str> = Vec::new();
+    let mut i = 0;
+    while i < w.fighters.len() {
+        fs.push(fighter_json(w.fighters[i]));
+        i += 1;
+    }
+    let mut ps: Vec<str> = Vec::new();
+    i = 0;
+    while i < w.projectiles.len() {
+        ps.push(proj_json(w.projectiles[i]));
+        i += 1;
+    }
+    let mut ls: Vec<str> = Vec::new();
+    i = 0;
+    while i < w.ground_lights.len() {
+        let l = w.ground_lights[i];
+        ls.push(format!("{{\"x\":{},\"z\":{},\"r\":{},\"k\":{},\"until\":{}}}", l.x.to_json(), l.z.to_json(), l.r.to_json(), l.k.to_json(), l.until.to_json()));
+        i += 1;
+    }
+    let mut qs: Vec<str> = Vec::new();
+    i = 0;
+    while i < w.props.len() {
+        qs.push(prop_json(w.props[i]));
+        i += 1;
+    }
+    let mut fl: Vec<str> = Vec::new();
+    i = 0;
+    while i < w.floods.len() {
+        let f = w.floods[i];
+        fl.push(format!("{{\"zone\":[{},{},{},{}],\"add\":{}}}", f.z0.to_json(), f.z1.to_json(), f.z2.to_json(), f.z3.to_json(), f.add.to_json()));
+        i += 1;
+    }
+    let text = format!(
+        "{{\"t\":{},\"f\":{},\"p\":{},\"l\":{},\"q\":{},\"w\":{},\"c\":{}}}",
+        w.tick, json_arr(fs), json_arr(ps), json_arr(ls), json_arr(qs), json_arr(fl), clock.to_json()
+    );
+    hash_str(text, w.seed)
+}
+
+// tools/trace.mjs records
+fn rec_cbegin(w: &World) -> str {
+    let mut fs: Vec<str> = Vec::new();
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        let kind = if w.defs[i].kind != "" { json_quote(w.defs[i].kind) } else { "null" };
+        fs.push(format!(
+            "{{\"id\":{},\"team\":{},\"kind\":{},\"x\":{},\"z\":{},\"face\":{}}}",
+            json_quote(f.id), json_quote(f.team), kind, f.x.to_json(), f.z.to_json(), f.face.to_json()
+        ));
+        i += 1;
+    }
+    format!(
+        "{{\"t\":\"cbegin\",\"v\":1,\"seed\":{},\"arena\":{},\"fighters\":{},\"s\":\"h\"}}",
+        w.seed, json_quote(w.arena_name), json_arr(fs)
+    )
+}
+
+fn rec_cin(tick: i64, lamb: Inp) -> str {
+    format!("{{\"t\":\"cin\",\"tick\":{},\"lamb\":{},\"s\":\"h\"}}", tick, inp_json(lamb))
+}
+
+fn rec_cev(e: Ev) -> str {
+    format!("{{\"t\":\"cev\",\"tick\":{},\"n\":{},\"d\":{},\"s\":\"h\"}}", e.t, json_quote(e.typ), ev_d(e))
+}
+
+fn rec_cstate(w: &World, clock: f64) -> str {
+    let mut fs: Vec<str> = Vec::new();
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        fs.push(format!("[{},{},{},{},{}]", json_quote(f.id), f.x.to_json(), f.z.to_json(), f.hp.to_json(), f.st.to_json()));
+        i += 1;
+    }
+    format!("{{\"t\":\"cstate\",\"tick\":{},\"hash\":{},\"f\":{},\"s\":\"h\"}}", w.tick, world_hash(w, clock), json_arr(fs))
+}
+
+fn rec_cend(w: &World, clock: f64) -> str {
+    let outcome = if w.has_result { w.outcome } else { "running" };
+    let reason = if w.has_result { jsn(w.reason) } else { "null" };
+    format!(
+        "{{\"t\":\"cend\",\"tick\":{},\"outcome\":{},\"reason\":{},\"hash\":{},\"s\":\"h\"}}",
+        w.tick, json_quote(outcome), reason, world_hash(w, clock)
+    )
+}

@@ -21,14 +21,14 @@ test("gear: a requirement gates wielding; upgrade stages take materials and add 
 });
 
 test("save v4: gear levels round-trip; a v3 save gains them on load", async () => {
-  assert.equal(SAVE_VERSION, 4);
+  assert.equal(SAVE_VERSION, 5); // 5: the witness scene (save/save.mjs)
   const G = game(), store = memoryStorage(), saves = createSaves(G, store, { newSheet });
   G.state.sheet.attrs.hands = 3; G.inv.give("t.hook"); G.inv.give("nails"); G.inv.upgrade("t.hook"); saves.save("1");
   const H = game(); await createSaves(H, store, { newSheet }).load("1");
   assert.equal(H.inv.level("t.hook"), 1);
   const v3 = { format: "low-water.save", version: 3, state: { version: 3, flags: [], vars: {}, sheet: { attrs: {} }, inv: { items: { coat: 1 }, equipped: {} } }, env: { clock: 1380 } };
   const { save, upgraded } = migrate(v3);
-  assert.deepEqual(upgraded, [4]); assert.deepEqual(save.state.inv.upgrades, {}); assert.equal(save.state.sheet.level, 1);
+  assert.deepEqual(upgraded, [4, 5]); assert.deepEqual(save.state.inv.upgrades, {}); assert.equal(save.state.sheet.level, 1);
 });
 
 test("the fight's stage: an area's arena line places the arena; else it is laid on Lamb", () => {

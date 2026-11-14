@@ -1,0 +1,136 @@
+{
+ "place": "q4_well_floor",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   0.9,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.7142857142857144
+ },
+ "pxPerMetre": 175,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "prayer"
+ ],
+ "variantInfo": {
+  "prayer": {
+   "hour": 19,
+   "weather": "year 70, 19:00: evening prayer, brass lamps low over the rugs"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  90
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "desk",
+    "verb": "read",
+    "at": [
+     -0.2,
+     0,
+     -0.8
+    ],
+    "note": "the reading desk: the book open at the evening prayer, new wood under old brass"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "yard",
+    "at": [
+     2.6,
+     0,
+     1.8
+    ],
+    "note": "the door out to Pask's yard"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "prayer": [
+   {
+    "at": [
+     -1,
+     1.9,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1,
+     1.9,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 3.5,
+    "reach": 6,
+    "group": "lantern"
+   }
+  ]
+ },
+ "figureLights": {
+  "prayer": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: the Well House floor, rebuilt."
+}

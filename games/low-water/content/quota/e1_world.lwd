@@ -1,0 +1,357 @@
+# Era 1, The Exchange (year 0, harvest to the first frost): places, people, households and fates. Story lead,
+# package W2-F, 2026-10-22. DRAFT: written under the blanket approval; every spoken line waits for the author's
+# approval (ledger row S14). Design: design/eras/era1.md (commit 0008ccc), decisions in commit e519930.
+# Era 1 plays in the same act as era 2, before it: var.era is 1 while it plays and 2 from the witness on, so
+# the props show their era 1 states. Every era 1 node costs 0 minutes, so era 2's clock starts where it always
+# did (05:50). Era 1 writes no record event, so the community model reaches era 2 as it always did.
+# Plates: the q1_* places are areas on their own plates (package W3-C, game/engine/wiring/era1-areas.lwd); the post,
+# the hill road, the Haldane kitchen and the Sheaf show their harvest variant while var.era is 1; the tower is era 2's.
+
+@var era
+default: 2
+
+# ---------------------------------------------------------------- places new in era 1
+@place q1_exchange
+name: The exchange hall, Exchange Street
+zone: upper
+district: upper
+footing: stone
+shelter: yes
+light: 0.6
+sodium: 0
+dark-light: 0.02
+
+@place q1_backstore
+name: Orme's back store, the mill
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.3
+sodium: 0
+dark-light: 0.01
+
+@place q1_board
+name: The registrar's upstairs room
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+@place q1_census
+name: The registrar's front counter
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.4
+sodium: 0
+dark-light: 0.02
+
+@place q1_loft
+name: Abel Furrowe's hayloft, over the horse
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.2
+sodium: 0
+dark-light: 0.01
+
+@place q1_supper
+name: Orme's barn, the harvest supper
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+@place q1_supper_yard
+name: The yard outside Orme's barn
+zone: upper
+district: upper
+footing: cobble
+light: 0.2
+sodium: 0
+dark-light: 0.01
+
+@place q1_barns
+name: The barns at Haldane's
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.3
+sodium: 0
+dark-light: 0.01
+
+@place q1_osby
+name: Osby fair
+zone: upper
+district: upper
+footing: grass
+light: 0.7
+sodium: 0
+dark-light: 0.02
+
+# ---------------------------------------------------------------- people new in era 1
+@char e1.edwin
+name: Edwin Mott, census clerk
+speaker: EDWIN
+faction: district
+about: Fifty-eight. Words the board's rules and walks the census round himself, door to door, with his son holding the lantern. Walter's father.
+
+@char e1.walter
+name: Walter Mott, junior clerk
+speaker: WALTER
+faction: district
+about: Twenty-eight. Edwin's son. Carries the lantern on the census round and chalks a goat on every door they shut, head down, facing forward.
+
+@char e1.josh
+name: Josh Brack, the road post
+speaker: JOSH
+faction: district
+about: Fifty-two. Keeps the post road and knows every face that comes down it. Will's father, who hits him on Fridays.
+
+@char e1.george
+name: George Orme, the mill
+speaker: GEORGE
+faction: millstreet
+about: Fifty-two. Owns the mill and buys more off the exchange floor than anyone. Pays the hands by the sack.
+
+@char e1.oskar
+name: Dr Oskar Lind, the exchange's doctor
+speaker: OSKAR
+faction: chairmen
+about: Fifty. Does rounds in the hands' barns because the exchange pays him to say who is fit.
+
+@char e1.clara
+name: Clara Lind
+speaker: CLARA
+faction: chairmen
+about: Fourteen. Carries her father's bag, holds the reins of his gig, and watches who he passes.
+
+@char e1.ashby
+name: Clement Ashby, the Gazette
+speaker: ASHBY
+faction: chairmen
+about: Forty-five. Sits in the gallery over the floor and wires the prices to Arlen.
+
+@char e1.calley
+name: Professor Edmund Calley, of Arlen
+speaker: CALLEY
+faction: chairmen
+about: Sixty. The board's guest for the harvest. Has written a book about the hill people and met two of them.
+
+@char e1.arn
+name: Arn Sallis
+speaker: ARN
+faction: hesh
+about: Thirty-four. A Hesh hand, down from the hill every harvest for eleven years.
+
+@char e1.ketti
+name: Ketti Sallis
+speaker: KETTI
+faction: hesh
+about: Thirty. Arn's wife. Ties sheaves faster than any man on Orme's ground and is paid by the sack like them.
+
+@char e1.davin
+name: Davin Sallis
+speaker: DAVIN
+faction: hesh
+about: Eight. Has a cough he has had since the barley.
+
+@char e1.kel
+name: Kel Tesk
+speaker: KEL
+faction: hesh
+about: Fourteen. Old Tesk's son. Sweeps the mill floor at night for a penny.
+
+@char e1.carrow
+name: Old Carrow
+speaker: CARROW
+faction: millstreet
+about: Fifty. A Tarn cottar on the Osby road. Bet's father. Plays the fiddle badly and knows every tune.
+
+@char e1.lad
+name: Furrowe's stable lad
+speaker: LAD
+faction: chairmen
+about: Twelve or so. Sleeps over Abel's harness room. Sent with the key on census night, with what to say learned by heart on the walk down.
+
+@char e1.corley
+name: Corley, a hand
+speaker: CORLEY
+faction: hesh
+about: A Hesh hand who ran off over Orme's ground on the morning of the frost and was fetched back by the collar. A wife and two little ones.
+
+@char e1.haig
+name: Haig, Orme's foreman
+speaker: HAIG
+faction: millstreet
+about: Keeps the back store and the strap on the nail by the door.
+
+# ---------------------------------------------------------------- what era 1 leaves in the world
+@fact e1.rule_passed
+@fact e1.tenant_asked
+@fact e1.loft_taken
+@fact e1.toast_heard
+@fact e1.glass_raised
+@fact e1.glass_left
+@fact e1.sallis_sent
+@fact e1.sallis_kept
+@fact e1.kel_kept
+@fact e1.kel_walked
+@fact e1.per_af
+@fact e1.per_letter
+@fact e1.named
+@fact e1.door_down
+@fact said.e1_abel_sweepings
+@fact said.e1_josh_tip
+@fact said.e1_abel_tenant
+@fact said.e1_josh_words
+@fact said.e1_abel_loft
+@fact said.e1_josh_carter
+@fact said.e1_raise
+@fact said.e1_leave_glass
+
+# ---------------------------------------------------------------- the two households the rule presses
+# Hesh hands in the barns at Haldane's for the harvest. The rule (the residency rule, passed by a show of hands at e1.board) is the
+# pressure; Josh Brack and George Orme decide, in written scenes.
+@household e1_sallis
+name: The Sallises, in the barns
+street: haldane_yard
+people: hesh
+hesh: 1
+place: q_yard
+members: Arn, Ketti, Davin
+taken: 0
+portion: 1
+
+@household e1_tesk
+name: The Tesks, on the hill
+street: haldane_yard
+people: hesh
+hesh: 1
+place: q_hill
+members: Tesk, Kel
+taken: 0
+portion: 1
+
+@fate f.e1_sallis
+pressure: has(e1.rule_passed)
+subject: household e1_sallis
+decider: JOSH
+scene: e1.frost.decide, e1.frost.sent, e1.frost.kept
+window: 7
+who: Ketti
+because: the board's rule, passed by a show of hands, says seasonal hands are not residents; at the first frost Josh Brack stands at the pole and says, face by face, who goes up the hill road and who stands on the verge, kept
+
+@fate f.e1_kel
+pressure: has(e1.rule_passed)
+subject: household e1_tesk
+decider: GEORGE
+scene: e1.kel.decide, e1.kel.kept, e1.kel.walked
+window: 7
+taken: yes
+who: Kel
+because: under the rule any charge is a reason to send a hand up the hill; George Orme says whether the boy is docked and strapped and kept, or walked to the post and sent up barefoot with his boots hung on the nail
+
+# ---------------------------------------------------------------- what the fates leave in the world (the device rule, 2026-10-23)
+# A fate is met as a changed place or person, never as a line in a record (world/echo.mjs, tools/echocheck.mjs).
+@echo e1.e.kel_stalk
+place: q1_barns
+when: has(e1.kel_walked)
+from: 1
+to: 1
+tells: fate f.e1_kel
+show: absent e1.kel
+line: By the fire, Davin Sallis has Kel's split barley stalk and is blowing at it. It makes a noise like a door. Nobody tells him to breathe at it.
+sense: e1.stalk
+
+@echo e1.e.kel_boots
+place: q_post
+when: has(e1.kel_walked)
+from: 1
+to: 1
+tells: fate f.e1_kel
+line: Kel Tesk's boots still hang by their laces from the nail on the post, stiff with frost. The barley's gone out of them. The birds had it, or somebody did.
+sense: e1.boots
+
+@echo e1.e.sallis_straw
+place: q1_barns
+when: has(e1.sallis_sent)
+from: 1
+to: 1
+tells: fate f.e1_sallis
+show: absent e1.ketti
+line: In the end barn the straw is still pressed in the shape of the three of them, a long one and one curled against it and a small one. Ketti's patch cloth hangs on the nail where she left it.
+sense: room.cold
+
+@echo e1.e.sallis_stool
+place: q_sheaf
+when: has(e1.sallis_sent)
+from: 2
+to: 2
+tells: fate f.e1_sallis
+show: person e1.arn slump
+line: At the far end of the bar Arn Sallis sits with his lad, Davin, grown broad now. There's a third stool beside them with Arn's coat on it, and he moves the coat for nobody.
+sense: chair.empty
+
+# ---------------------------------------------------------------- era 1's own senses and loads (shared ones: senses.lwd)
+@sense e1.stalk
+sound: breath 0.3 near 1.2
+caption: a boy blowing at a barley stalk, and no note coming
+hold: 0.8
+
+@sense e1.boots
+sound: wind 0.3 far 2
+caption: wind across the post road
+screen: tint #c8d8e8 0.12 2
+
+@sense e1.pole
+sound: creak 0.6 near 1.4
+sound: thud 0.4 near
+caption: the post pole going up on its weight, and the weight hitting the ground
+rumble: 0.45 0.1 300
+
+@sense e1.key
+sound: latch 0.7 near
+caption: a big key turning in an old lock
+rumble: 0.3 0.4 260
+screen: vignette 0.3 1.6
+hold: 1
+
+@sense e1.coin
+sound: spoon 0.3 near
+caption: a coin dropped into a palm
+rumble: 0.05 0.2 80
+
+@sense e1.strap
+sound: thud 0.7 near
+caption: the strap coming down on a bare back
+screen: shake 0.15 0.2
+rumble: 0.5 0.3 140
+
+@sense e1.doorpins
+sound: creak 0.8 near 1.6
+sound: thud 0.7 near
+caption: the barn door shrieking off its pins and coming down
+rumble: 0.8 0.3 380
+screen: shake 0.2 0.3
+
+@load e1.load.bundle
+name: The Corleys' bundle
+weight: 18
+line: Bedding rolled round a pot and a kettle, tied with cord. It's warm from the woman's back and it smells of her children.
+
+@load e1.load.weights
+name: The scale's brass weights
+weight: 32

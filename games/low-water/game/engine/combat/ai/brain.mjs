@@ -21,10 +21,11 @@ import { tokensAllowed, coolScale, passive } from "./pressure.mjs";
 import { pursue, chasing, cutOffPoint, leash } from "./pursuit.mjs";
 import { ledgeClear } from "../sim/terrain.mjs";
 import { go } from "../sim/paths.mjs";
+import { datan2, dcos, dhypot, dsin } from "../sim/math.mjs";
 
 const alive = (F) => F && !F.out && !F.fallen && F.hp > 0;
 const r01 = (W, F, k) => rand01(W.seed, `${F.id}:${k}:${W.tick}`);
-const toward = (F, x, z, s = 1) => { const d = Math.hypot(x - F.x, z - F.z) || 1; return { mx: ((x - F.x) / d) * s, mz: ((z - F.z) / d) * s }; };
+const toward = (F, x, z, s = 1) => { const d = dhypot(x - F.x, z - F.z) || 1; return { mx: ((x - F.x) / d) * s, mz: ((z - F.z) / d) * s }; };
 
 export function createBrain(cfg) {
   return (W, F) => think(W, F, cfg);
@@ -37,6 +38,7 @@ function think(W, F, cfg) {
   const T = pickTarget(W, F);
   if (!T) return { mx: 0, mz: 0 };
   if (F.aware === false) return idleWatch(W, F, M);
+  if (F.engageAt && W.tick < F.engageAt) return { mx: 0, mz: 0 }; // a staggered entry (set by tools/fightbench.mjs --variant stagger; no content uses it yet): it holds its post until then
   const see = W.visible(F, T);
   if (see) { M.seen = { x: T.x, z: T.z, t: W.tick }; F.lock = T.id; M.lost = 0; M.called = false; } else if (F.lock === T.id && !see) F.lock = null;
   const cur = F.act && W.moves[F.act.id];
@@ -76,7 +78,7 @@ function commit(W, F, cfg, M, cur) {
 function seek(W, F, M) {
   const held = leash(W, F, M); // seven seconds without sight: call the others, hold the way out
   if (held) return avoidDeep(W, F, held);
-  const d = Math.hypot(M.seen.x - F.x, M.seen.z - F.z);
+  const d = dhypot(M.seen.x - F.x, M.seen.z - F.z);
   if (d > 0.8) return avoidDeep(W, F, go(W, F, M.seen.x, M.seen.z, 0.7));
   // a fight is loud: after three seconds of finding nothing they go toward where Lamb is now
   if (++M.searched > 180) { const L = W.lamb(); M.seen = { x: L.x, z: L.z, t: W.tick }; M.searched = 0; }
@@ -135,7 +137,7 @@ const resolved = (W, F, cfg) => cfg.attacks.map((a) => ({ ...a, id: moveId(W, F,
 
 function choose(W, F, cfg, d, quick) {
   const T = pickTarget(W, F), press = T && passive(W, T);
-  const list = resolved(W, F, cfg).filter((a) => d >= a.min && d <= a.max && F.st >= 1 && usable(W, F, a.id) && (!quick || W.moves[a.id].startup <= QUICK))
+  const list = resolved(W, F, cfg).filter((a) => d >= a.min && d <= a.max && F.st >= 1 && usable(W, F, a.id) && (!quick || W.moves[a.id].startup <= QUICK) && (!a.allies || alliesOf(W, F) >= a.allies))
     // against a Lamb who does not fight back: quick strikes, and not the ones that put Lamb down (a body on the ground cannot be hit)
     .map((a) => ({ ...a, w: !press ? a.w : W.moves[a.id].knockdown ? a.w * 0.3 : W.moves[a.id].startup <= QUICK && !W.moves[a.id].item ? a.w * 3 : a.w }));
   if (!list.length) return null;
@@ -145,6 +147,8 @@ function choose(W, F, cfg, d, quick) {
   return { ...pick, ranged: !!W.moves[pick.id].item };
 }
 
+// a call is for the others: only with that many on their feet within 10 m (archetypes' allies: n)
+const alliesOf = (W, F) => W.fighters.filter((O) => O !== F && O.team === F.team && alive(O) && dhypot(O.x - F.x, O.z - F.z) <= 10).length;
 // a "quick" strike for punishing and pressing: the opponents' tool strikes wind up 23 to 30 frames
 const QUICK = 30;
 const usable = (W, F, id) => { const m = W.moves[id]; return !(m.item && !(F.items[m.item.use] > 0)); };
@@ -170,23 +174,23 @@ function space(W, F, cfg, T, M, d) {
   if (cut) return avoidDeep(W, F, go(W, F, cut.x, cut.z, 1));
   const [r0, r1] = cfg.range, r = holder || passive(W, T) ? Math.max(1.2, Math.min(r0, 2.2) - 0.6) : (r0 + r1) / 2;
   const slot = cfg.flankSlot === 0 ? 0 : (M.side ||= r01(W, F, "side") < 0.5 ? -1 : 1) * 1.9;
-  const a = T.face + slot, px = T.x + Math.cos(a) * r, pz = T.z + Math.sin(a) * r;
-  const gap = Math.hypot(px - F.x, pz - F.z);
+  const a = T.face + slot, px = T.x + dcos(a) * r, pz = T.z + dsin(a) * r;
+  const gap = dhypot(px - F.x, pz - F.z);
   if (gap > 0.6) return avoidDeep(W, F, go(W, F, px, pz, d > r1 + 1 ? 1 : 0.6));
   return strafe(W, F, T, M, 0.35);
 }
 
 function strafe(W, F, T, M, s) {
   const a = angleTo(F, T) + (M.side || 1) * Math.PI / 2;
-  return avoidDeep(W, F, { mx: Math.cos(a) * s, mz: Math.sin(a) * s });
+  return avoidDeep(W, F, { mx: dcos(a) * s, mz: dsin(a) * s });
 }
 
 // Do not walk into waist-deep water, a wall or off a ledge: try the step turned by 45, 90 and 135 degrees
 // either way (the side of the fighter's strafe first), and take the first that is clear.
 function avoidDeep(W, F, mv) {
-  const s = Math.hypot(mv.mx, mv.mz); if (s < 1e-3) return mv;
-  const base = Math.atan2(mv.mz, mv.mx), side = (F.mem && F.mem.side) || 1;
-  const clear = (a) => { const x = F.x + Math.cos(a) * 1.0, z = F.z + Math.sin(a) * 1.0; return !W.field.solid(x, z) && W.field.depthAt(x, z) < 0.85 && ledgeClear(W.field.arena, F.x, F.z, x, z); };
-  for (const d of [0, 1, -1, 2, -2, 3, -3]) { const a = wrapAngle(base + side * d * Math.PI / 4); if (clear(a)) return d ? { mx: Math.cos(a) * s, mz: Math.sin(a) * s } : mv; }
+  const s = dhypot(mv.mx, mv.mz); if (s < 1e-3) return mv;
+  const base = datan2(mv.mz, mv.mx), side = (F.mem && F.mem.side) || 1;
+  const clear = (a) => { const x = F.x + dcos(a) * 1.0, z = F.z + dsin(a) * 1.0; return !W.field.solid(x, z) && W.field.depthAt(x, z) < 0.85 && ledgeClear(W.field.arena, F.x, F.z, x, z); };
+  for (const d of [0, 1, -1, 2, -2, 3, -3]) { const a = wrapAngle(base + side * d * Math.PI / 4); if (clear(a)) return d ? { mx: dcos(a) * s, mz: dsin(a) * s } : mv; }
   return mv;
 }

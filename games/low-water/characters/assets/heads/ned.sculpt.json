@@ -1,0 +1,835 @@
+{
+ "format": "rnsculpt/1",
+ "name": "ned",
+ "frame": "metres; origin at the cranium centre; +y up, +z forward; symmetric about x=0",
+ "eyes": [
+  {
+   "c": [
+    0.031,
+    -0.005,
+    0.067
+   ],
+   "r": 0.011,
+   "iris": 0.0055,
+   "gaze": [
+    -0.03,
+    0,
+    1
+   ],
+   "irisColor": [
+    0.36,
+    0.42,
+    0.48
+   ],
+   "mirror": true,
+   "seat": {
+    "stroke": "lid.ball",
+    "gap": 0.0016
+   }
+  }
+ ],
+ "strokes": [
+  {
+   "id": "cranium",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0,
+    0.014,
+    -0.02
+   ],
+   "r": [
+    0.074,
+    0.1,
+    0.098
+   ],
+   "blend": "cubic",
+   "mods": [
+    {
+     "kind": "displace",
+     "amp": 0.0005,
+     "src": {
+      "kind": "ridge",
+      "dir": [
+       0,
+       1,
+       0
+      ],
+      "freq": 140,
+      "warp": 1.4,
+      "warpFreq": 45,
+      "seed": 4
+     },
+     "mask": {
+      "c": [
+       0,
+       0.052,
+       0.088
+      ],
+      "r0": 0.012,
+      "r1": 0.034
+     }
+    }
+   ],
+   "k": 0.025,
+   "note": "block 1: the skull ball, forehead wrinkles as a masked ridge displacement"
+  },
+  {
+   "id": "midface",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0,
+    -0.052,
+    0.04
+   ],
+   "r": [
+    0.034,
+    0.047,
+    0.04
+   ],
+   "blend": "cubic",
+   "k": 0.05,
+   "note": "block 1: maxilla, lean for a long face"
+  },
+  {
+   "id": "brow.mass",
+   "op": "add",
+   "shape": "cap",
+   "a": [
+    -0.046,
+    0.019,
+    0.079
+   ],
+   "b": [
+    0.046,
+    0.019,
+    0.079
+   ],
+   "r": 0.0092,
+   "blend": "cubic",
+   "k": 0.025,
+   "note": "block 1: the brow ridge as one mass"
+  },
+  {
+   "id": "brow.wing",
+   "op": "add",
+   "shape": "cap",
+   "a": [
+    0.046,
+    0.019,
+    0.079
+   ],
+   "b": [
+    0.062,
+    0.012,
+    0.052
+   ],
+   "r": [
+    0.007,
+    0.008
+   ],
+   "blend": "cubic",
+   "k": 0.0375,
+   "mirror": true,
+   "note": "block 1: ridge running back into the skull side, no shelf"
+  },
+  {
+   "id": "cheekbone",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0.046,
+    -0.03,
+    0.048
+   ],
+   "r": [
+    0.013,
+    0.01,
+    0.013
+   ],
+   "blend": "cubic",
+   "k": 0.05,
+   "mirror": true
+  },
+  {
+   "id": "zygomatic.arch",
+   "op": "add",
+   "shape": "cap",
+   "a": [
+    0.052,
+    -0.026,
+    0.05
+   ],
+   "b": [
+    0.071,
+    -0.016,
+    -0.004
+   ],
+   "r": [
+    0.0075,
+    0.0055
+   ],
+   "blend": "cubic",
+   "k": 0.05,
+   "mirror": true,
+   "note": "block 1: cheekbone arch into the ear"
+  },
+  {
+   "id": "jaw.ramus",
+   "op": "add",
+   "shape": "cap",
+   "a": [
+    0.04752,
+    -0.035,
+    -0.012
+   ],
+   "b": [
+    0.03784,
+    -0.088,
+    0.002
+   ],
+   "r": 0.0095,
+   "blend": "cubic",
+   "k": 0.05,
+   "mirror": true
+  },
+  {
+   "id": "jaw.body",
+   "op": "add",
+   "shape": "cap",
+   "a": [
+    0.03784,
+    -0.088,
+    0.002
+   ],
+   "b": [
+    0.01232,
+    -0.12,
+    0.05
+   ],
+   "r": [
+    0.0115,
+    0.0098
+   ],
+   "blend": "cubic",
+   "k": 0.05,
+   "mirror": true,
+   "note": "block 1: jaw and chin box"
+  },
+  {
+   "id": "chin",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0,
+    -0.114,
+    0.057
+   ],
+   "r": [
+    0.017,
+    0.02,
+    0.021
+   ],
+   "blend": "cubic",
+   "k": 0.025
+  },
+  {
+   "id": "nose.bridge",
+   "op": "add",
+   "shape": "cap",
+   "a": [
+    0,
+    0.004,
+    0.085
+   ],
+   "b": [
+    0,
+    -0.044,
+    0.1
+   ],
+   "r": [
+    0.0058,
+    0.0078
+   ],
+   "blend": "cubic",
+   "k": 0.014,
+   "note": "block 1: the nose wedge, long and straight"
+  },
+  {
+   "id": "nose.tip",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0,
+    -0.046,
+    0.1
+   ],
+   "r": [
+    0.0105,
+    0.0105,
+    0.0105
+   ],
+   "blend": "cubic",
+   "k": 0.01
+  },
+  {
+   "id": "orbit",
+   "op": "sub",
+   "shape": "ell",
+   "c": [
+    0.031,
+    -0.006,
+    0.084
+   ],
+   "r": [
+    0.0165,
+    0.0125,
+    0.0125
+   ],
+   "blend": "cubic",
+   "k": 0.012,
+   "mirror": true,
+   "note": "block 1: sockets as recesses under the brow, shallow"
+  },
+  {
+   "id": "lid.ball",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0.031,
+    -0.004,
+    0.067
+   ],
+   "r": [
+    0.0128,
+    0.0128,
+    0.0128
+   ],
+   "blend": "cubic",
+   "k": 0.004,
+   "mirror": true,
+   "note": "block 2: lid skin over the eye"
+  },
+  {
+   "id": "lid.slot",
+   "op": "sub",
+   "shape": "ell",
+   "c": [
+    0.031,
+    -0.0064,
+    0.082
+   ],
+   "r": [
+    0.0165,
+    0.0039,
+    0.0105
+   ],
+   "rot": [
+    0,
+    0,
+    6
+   ],
+   "k": 0.003,
+   "mirror": true,
+   "note": "block 2: the opening"
+  },
+  {
+   "id": "nose.ala",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0.0125,
+    -0.052,
+    0.09
+   ],
+   "r": [
+    0.0075,
+    0.0085,
+    0.0085
+   ],
+   "blend": "cubic",
+   "k": 0.012,
+   "mirror": true
+  },
+  {
+   "id": "nose.columella",
+   "op": "add",
+   "shape": "cap",
+   "a": [
+    0,
+    -0.05,
+    0.1
+   ],
+   "b": [
+    0,
+    -0.058,
+    0.09
+   ],
+   "r": 0.0045,
+   "blend": "cubic",
+   "k": 0.006
+  },
+  {
+   "id": "nose.nostril",
+   "op": "sub",
+   "shape": "ell",
+   "c": [
+    0.0075,
+    -0.0585,
+    0.093
+   ],
+   "r": [
+    0.0033,
+    0.0033,
+    0.006
+   ],
+   "k": 0.002,
+   "mirror": true
+  },
+  {
+   "id": "cheek.plane",
+   "op": "sub",
+   "shape": "rbox",
+   "c": [
+    0.046,
+    -0.064,
+    0.04
+   ],
+   "r": [
+    0.005,
+    0.017,
+    0.013
+   ],
+   "rot": [
+    0,
+    -6,
+    -2
+   ],
+   "round": 0.004,
+   "blend": "cubic",
+   "mods": [
+    {
+     "kind": "displace",
+     "amp": 0.0004,
+     "src": {
+      "kind": "fbm",
+      "freq": 60,
+      "octaves": 2,
+      "seed": 9
+     }
+    }
+   ],
+   "k": 0.09,
+   "mirror": true,
+   "note": "pass 8: a shallow plane under the cheekbone, not a bowl"
+  },
+  {
+   "id": "masseter.plane",
+   "op": "add",
+   "shape": "rbox",
+   "c": [
+    0.044,
+    -0.07,
+    0.002
+   ],
+   "r": [
+    0.0035,
+    0.012,
+    0.011
+   ],
+   "rot": [
+    0,
+    0,
+    4
+   ],
+   "round": 0.0035,
+   "blend": "cubic",
+   "k": 0.07,
+   "mirror": true,
+   "note": "pass 8: masseter as a rounded plane"
+  },
+  {
+   "id": "muzzle",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0,
+    -0.078,
+    0.058
+   ],
+   "r": [
+    0.026,
+    0.016,
+    0.028
+   ],
+   "blend": "cubic",
+   "k": 0.025
+  },
+  {
+   "id": "philtrum",
+   "op": "sub",
+   "shape": "cap",
+   "a": [
+    0,
+    -0.063,
+    0.092
+   ],
+   "b": [
+    0,
+    -0.072,
+    0.088
+   ],
+   "r": 0.0022,
+   "k": 0.002
+  },
+  {
+   "id": "lip.upper",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0,
+    -0.077,
+    0.081
+   ],
+   "r": [
+    0.0185,
+    0.0065,
+    0.0078
+   ],
+   "blend": "cubic",
+   "k": 0.006
+  },
+  {
+   "id": "lip.lower",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0,
+    -0.0925,
+    0.0795
+   ],
+   "r": [
+    0.0205,
+    0.0068,
+    0.0084
+   ],
+   "blend": "cubic",
+   "k": 0.007
+  },
+  {
+   "id": "mouth.line",
+   "op": "sub",
+   "shape": "cap",
+   "a": [
+    -0.0205,
+    -0.0845,
+    0.082
+   ],
+   "b": [
+    0.0205,
+    -0.0845,
+    0.082
+   ],
+   "r": 0.0006,
+   "k": 0.0006
+  },
+  {
+   "id": "mentolabial",
+   "op": "sub",
+   "shape": "ell",
+   "c": [
+    0,
+    -0.1,
+    0.0775
+   ],
+   "r": [
+    0.015,
+    0.0035,
+    0.006
+   ],
+   "blend": "cubic",
+   "k": 0.006
+  },
+  {
+   "id": "ear",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0.076,
+    -0.022,
+    -0.02
+   ],
+   "r": [
+    0.0075,
+    0.03,
+    0.017
+   ],
+   "rot": [
+    0,
+    -12,
+    0
+   ],
+   "blend": "cubic",
+   "k": 0.008,
+   "mirror": true,
+   "note": "block 2: ear, tilted out"
+  },
+  {
+   "id": "ear.concha",
+   "op": "sub",
+   "shape": "ell",
+   "c": [
+    0.0815,
+    -0.02,
+    -0.012
+   ],
+   "r": [
+    0.006,
+    0.015,
+    0.008
+   ],
+   "blend": "cubic",
+   "k": 0.004,
+   "mirror": true
+  },
+  {
+   "id": "neck",
+   "op": "add",
+   "shape": "cap",
+   "a": [
+    0,
+    -0.1,
+    -0.03
+   ],
+   "b": [
+    0,
+    -0.17,
+    -0.034
+   ],
+   "r": [
+    0.046,
+    0.048
+   ],
+   "blend": "cubic",
+   "k": 0.0313
+  },
+  {
+   "id": "neck.scm",
+   "op": "add",
+   "shape": "cap",
+   "a": [
+    0.05,
+    -0.075,
+    -0.025
+   ],
+   "b": [
+    0.015,
+    -0.18,
+    0.012
+   ],
+   "r": 0.01,
+   "blend": "cubic",
+   "k": 0.0313,
+   "mirror": true
+  },
+  {
+   "id": "neck.adam",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0,
+    -0.165,
+    0.03
+   ],
+   "r": [
+    0.007,
+    0.011,
+    0.009
+   ],
+   "blend": "cubic",
+   "k": 0.008
+  },
+  {
+   "id": "neck.under",
+   "op": "sub",
+   "shape": "ell",
+   "c": [
+    0,
+    -0.158,
+    0.06
+   ],
+   "r": [
+    0.04,
+    0.022,
+    0.045
+   ],
+   "blend": "cubic",
+   "k": 0.0375
+  },
+  {
+   "id": "neck.cut",
+   "op": "and",
+   "shape": "box",
+   "c": [
+    0,
+    0.31,
+    0
+   ],
+   "r": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "k": 0.001,
+   "note": "flat cut at y = -0.19"
+  },
+  {
+   "id": "stache",
+   "op": "add",
+   "shape": "cap",
+   "a": [
+    -0.019,
+    -0.0725,
+    0.0865
+   ],
+   "b": [
+    0.019,
+    -0.0725,
+    0.0865
+   ],
+   "r": [
+    0.0042,
+    0.0042
+   ],
+   "blend": "cubic",
+   "k": 0.006,
+   "tag": "stache",
+   "note": "Ned's moustache, a clipped bar over the lip"
+  },
+  {
+   "id": "stache.wing",
+   "op": "add",
+   "shape": "cap",
+   "a": [
+    0.019,
+    -0.0725,
+    0.0865
+   ],
+   "b": [
+    0.026,
+    -0.08,
+    0.081
+   ],
+   "r": [
+    0.0042,
+    0.0032
+   ],
+   "blend": "cubic",
+   "k": 0.006,
+   "mirror": true,
+   "tag": "stache"
+  },
+  {
+   "id": "hair.cap",
+   "op": "add",
+   "shape": "ell",
+   "c": [
+    0,
+    0.018,
+    -0.02
+   ],
+   "r": [
+    0.0792,
+    0.1038,
+    0.1018
+   ],
+   "blend": "cubic",
+   "mods": [
+    {
+     "kind": "relief",
+     "amp": 0.0014,
+     "freq": 110,
+     "octaves": 3,
+     "seed": 12
+    }
+   ],
+   "k": 0.004,
+   "tag": "hair"
+  },
+  {
+   "id": "hair.face",
+   "op": "sub",
+   "shape": "ell",
+   "c": [
+    0,
+    -0.01,
+    0.088
+   ],
+   "r": [
+    0.098,
+    0.082,
+    0.078
+   ],
+   "blend": "cubic",
+   "mods": [
+    {
+     "kind": "relief",
+     "amp": 0.002,
+     "freq": 60,
+     "octaves": 3,
+     "seed": 21
+    }
+   ],
+   "k": 0.0438,
+   "tag": "hair",
+   "note": "soft hairline: a wide blend, high forehead"
+  },
+  {
+   "id": "hair.temple",
+   "op": "sub",
+   "shape": "ellb",
+   "c": [
+    0.056,
+    0.03,
+    0.068
+   ],
+   "r": [
+    0.012,
+    0.02,
+    0.02
+   ],
+   "blend": "cubic",
+   "mods": [
+    {
+     "kind": "relief",
+     "amp": 0.0015,
+     "freq": 80,
+     "octaves": 2,
+     "seed": 5
+    }
+   ],
+   "k": 0.02,
+   "mirror": true,
+   "tag": "hair",
+   "note": "pass 9: receding temples"
+  },
+  {
+   "id": "hair.nape",
+   "op": "and",
+   "shape": "box",
+   "c": [
+    0,
+    0.44,
+    0
+   ],
+   "r": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "k": 0.006,
+   "tag": "hair"
+  }
+ ]
+}

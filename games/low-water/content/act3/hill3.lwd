@@ -230,6 +230,7 @@ opt: "Take the counterfoil book from under her elbow." -> hill3.stubs.take ? !ha
 opt: "Did you know there would be a second loss?" -> hill3.crake.knew ? !seen(hill3.crake.knew) & !seen(hill3.crake.knew.told)
 check: "[SMALL PRINT] Read last night's letter off her blotter, backwards, in yellow." -> hill3.blotter.ok / hill3.blotter.fail ? !has(letter.kept_open) & (var.light_hill == 1 & !has(lampout.hill) | count(i.lantern) > 0) {skill: smallprint, dc: 6, verb: read, noise: 0}
 opt: "What do you want from the Shelf tonight, Alderman?" -> hill3.offer ? var.hill3_offer == none & (has(crake.drafts) | seen(hill3.crake.knew.told))
+opt: "Why should one woman's money keep a town, Alderman?" -> hill3.crake.case ? !seen(hill3.crake.case)
 opt: "Goodnight, Alderman." -> hill3.crake.bye
 
 @node hill3.crake.deflect
@@ -300,6 +301,47 @@ speaker: CRAKE
 cost: 2
 nar: The blotter is a year of letters on top of one another, in yellow, backwards, and they say everything at once.
 line: CRAKE: It's very restful, a blotter. Nothing on it can be read.
+go: hill3.crake.menu
+
+# ---------------------------------------------------------------- her case (design/THEMES.md 6, 8.1)
+@node hill3.crake.case
+speaker: CRAKE
+cost: 4
+line: CRAKE: Because it does. Open the shutter, if you like. Every lamp you can see by tonight, I bought.
+line: CRAKE: The commons had this town for a hundred years, assessor. It lit one thing: a switch, pulled in the dark once a year by men in blindfolds. The Board drips. The Congregation steals glass and calls it grace, and the Brine bakes the glass. I paid.
+line: CRAKE: You keep a column for me in that book. I keep one for you. Seven shillings in the pound, six years. You are in mine. {when: trait(cv.ledger) == done}
+opt: "You struck the clause, and you stopped her wages. That isn't arithmetic. That's you." -> hill3.crake.case.her {do: var.lean_hang += 1; set(said.crake_wicked); set(heard.crake.wicked)}
+opt: "Then the arithmetic is wrong. One open claim cheaper than two, and a man heard a price in it." -> hill3.crake.case.sum {do: var.lean_hang -= 1; set(said.crake_arithmetic); set(heard.crake.arithmetic)}
+opt: "The town could light its own lamps." -> hill3.crake.case.town {do: var.lean_rise += 1; set(said.crake_town); set(heard.crake.town)}
+opt: "Let her go on." -> hill3.crake.case.on {do: var.lean_dry += 1}
+
+@node hill3.crake.case.her
+speaker: CRAKE
+cost: 3
+line: CRAKE: You want me wicked. Wicked is cheap; you could hang it. I am arithmetic. Hang the arithmetic, and see who climbs those stairs for nothing.
+voice: undertow: Arithmetic stops nobody's wages. A hand did that, with a pen, in yellow. {dc: 5}
+voice: precedent: Eleven years of claims, and every one had a signature on it. Not one had a villain. {dc: 6}
+go: hill3.crake.menu
+
+@node hill3.crake.case.sum
+speaker: CRAKE
+cost: 3
+line: CRAKE: Yes. It is wrong. I can mend arithmetic, assessor. I cannot mend a character, not at sixty. Which would you rather I had?
+nar: She caps the pen.
+go: hill3.crake.menu
+
+@node hill3.crake.case.town
+speaker: CRAKE
+cost: 3
+line: CRAKE: On what? Mrs Brine's empties? Mr Merrow's copper? It has three lamps lit tonight on its own oil, and you are in my study because one of them may go out.
+line: CRAKE: Take them, then. All of them. I shall send the bills to the Guild hall, and we will see how long the commons enjoys being an alderman.
+line: CRAKE: You would put mine out to prove it. Somebody is already up the mole with that idea and a lantern. {when: trait(cv.fire) == done}
+go: hill3.crake.menu
+
+@node hill3.crake.case.on
+speaker: CRAKE
+cost: 1
+line: CRAKE: You came up a hill in a gale to listen. Most people only come up to be paid.
 go: hill3.crake.menu
 
 # ---------------------------------------------------------------- her offer
@@ -618,4 +660,5 @@ nar: Her lights stop going up and down. They stay where they are, out on the Spi
 nar: Mother's beam goes out across the water and lies on her for the length of a breath. {when: !has(collier.through) & !has(collier.spit) & mother == burning}
 nar: Where Mother's beam should be there is nothing, and the lights come on toward the Spit. {when: !has(collier.through) & !has(collier.spit) & mother != burning}
 line: PELLOW: She's at the window. Watching. I've never once seen her watch anything. {when: has(ink.crake) & var.hill3_offer != none}
+call: theme.cue.running
 go: ^hub

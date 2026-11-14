@@ -1,0 +1,145 @@
+{
+ "place": "q4_joss_flat",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   -0.1,
+   0.9,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.1707317073170733
+ },
+ "pxPerMetre": 205,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "evening"
+ ],
+ "variantInfo": {
+  "evening": {
+   "hour": 19.5,
+   "weather": "year 70, 19:30: the bulb over the door table, the yard dark in the window"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  108
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "table",
+    "verb": "read",
+    "at": [
+     -0.35,
+     0,
+     1.5
+    ],
+    "note": "the door table: initials cut all round the edge, A.H. the oldest with a line through it"
+   },
+   {
+    "id": "chair",
+    "verb": "talk",
+    "at": [
+     1.2,
+     0,
+     -0.1
+    ],
+    "note": "Anni's chair: the blanket on it, turned to the stove"
+   },
+   {
+    "verb": "look",
+    "id": "spoon_rack",
+    "at": [
+     0.5,
+     0,
+     -0.9
+    ],
+    "note": "a spoon rack with six notches and nothing in them"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "yard",
+    "at": [
+     2,
+     0,
+     1.4
+    ],
+    "note": "the door down to Haldane Yard"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "evening": [
+   {
+    "at": [
+     -0.35,
+     1.72,
+     0.17
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 7,
+    "group": "lantern"
+   }
+  ]
+ },
+ "figureLights": {
+  "evening": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: Joss Haldane's flat in Haldane Yard."
+}

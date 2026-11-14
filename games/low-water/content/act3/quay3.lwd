@@ -27,7 +27,7 @@ about: How Lamb went out to the Old Light in the eye. stowed opens the sneak var
 @node quay3.start
 place: quay
 cost: 0
-do: set(ev3.dusk)
+do: cut(max(0, 19:08 - clock)); set(ev3.dusk)
 nar: Eight minutes past seven. The wind has come round the Spit ahead of itself, and every shutter on the quay is up.
 inst: THE GLASS: Nine hundred and seventy-one, darling, and dropping. I adore it.
 voice: salt: The knees had it at noon. Nobody asks the knees. {dc: 3}
@@ -356,6 +356,7 @@ cost: 20
 alt: quay3.eye.late ? has(ev3.eye_ends)
 do: quest(a3.eye, out)
 nar: The wind stops. The oars go into flat black water, and the Old Light's stump comes up out of the dark ahead, wet to its shoulders.
+call: theme.cue.eye
 go: oldlight.hub
 
 @node quay3.eye.late
@@ -385,6 +386,7 @@ opt: "Stand with them and look up." -> quay3.eye.look
 place: quay
 cost: 5
 line: TOBIT: That's all of them. I counted the edge, and that's all of them.
+call: theme.cue.eye
 go: ^hub
 
 # ================================================================ BEAT 16: THE COLLIER, 04:00

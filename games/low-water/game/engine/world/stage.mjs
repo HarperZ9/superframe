@@ -25,11 +25,13 @@ export function stageFor(G, arenaId = null, size = [16, 10]) {
   return { placed: !!at, origin: o, toWorld: ([ax, az], h = 0) => [o.x + ax * c + az * s, o.y + h, o.z - ax * s + az * c] };
 }
 
-export function fightBounds(project, stage, fighters, margin = 1.2) {
+export function fightBounds(project, stage, fighters, margin = 1.2, { ownFloor = true } = {}) {
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-  for (const F of fighters) for (const [dx, dz, h] of [[-margin, -margin, 0], [margin, margin, 0], [0, 0, 2.2]]) {
-    const [px, py] = project(stage.toWorld([F.x + dx, F.z + dz], h));
+  // every point at the fighter's own floor height: on a plate, the ground a margin away can be the water below a
+  // quay's edge, metres lower, and framing it dragged the view down over open water (engine PROGRESS 37)
+  for (const F of fighters) { const base = stage.toWorld([F.x, F.z], 0); for (const [dx, dz, h] of [[-margin, -margin, 0], [margin, margin, 0], [0, 0, 2.2]]) {
+    const at = stage.toWorld([F.x + dx, F.z + dz], ownFloor ? 0 : h), [px, py] = project(ownFloor ? [at[0], base[1] + h, at[2]] : at);
     x0 = Math.min(x0, px); y0 = Math.min(y0, py); x1 = Math.max(x1, px); y1 = Math.max(y1, py);
-  }
+  } }
   return Number.isFinite(x0) ? [x0, y0, x1, y1] : null;
 }

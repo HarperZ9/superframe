@@ -167,6 +167,62 @@ nar: SHELF: COMPLAINT RECEIVED FROM THE ALDERMAN. NOTED. {when: has(ink.crake)}
 line: PIP: The e's worse. It's sticking on every one now. Somebody's been typing all night. {when: !has(typist.heard)}
 line: PIP: The e's worse. You heard it too, didn't you. Through the wall. {when: has(typist.heard)}
 nar: She looks at the canister and not at the assessor, and puts it back on its hook very carefully, as if it were somebody's.
+go: dawn2.wall
+
+# ---------------------------------------------------------------- the wall at dawn: the first reckoning
+# Director, 2026-10-21 (design/DIRECTOR.md pillar 4). The first set beat where Lamb faces the gap
+# between what Lamb professed and what Lamb did, in Lamb's own words on Lamb's own wall. Plays only
+# when there is a gap to face, or nothing professed at all. Owning it costs the night's sleep now
+# (Wear and Dread carry into the gale); denying it costs nothing tonight. Story lead: rewrite freely,
+# keep the gates and the costs.
+@node dawn2.wall
+place: room
+cost: 2
+alt: dawn2.sleep ? var.gap - var.owned < 1 & !(var.lean_dry >= 3 & !has(conviction.fire) & !has(conviction.wall) & !has(conviction.sea) & !has(conviction.jars) & !has(conviction.ledger) & !has(conviction.checked) & !has(conviction.dry))
+nar: The room above the Brine. The wall, and on it the things the assessor pinned up in two nights, and under each one, in the assessor's own hand, what the assessor said about it.
+nar: Some lamps have to go out, in pencil, under the switch box. And tonight a lamp was kept lit for the people who own it. {when: has(gap.fire)}
+nar: Gullet looks after Gullet, under the harbour wall. And tonight the assessor took the stranger's side, out loud, on the quay. {when: has(gap.wall)}
+nar: The sea belongs to nobody, under the ferry's bearing. And tonight the assessor stood on the wall with the Guild. {when: has(gap.sea)}
+nar: Leave the jars alone, under a sketch of a bell jar. And tonight the assessor lifted one. {when: has(gap.jars)}
+nar: Follow the money, under the works order. And tonight the assessor named a man and not the money that moved him. {when: has(gap.ledger)}
+nar: Nobody owns the truth, under the claim. And tonight the assessor said the Lantern Man aloud, to people who will say it again. {when: has(gap.checked)}
+nar: The assessor takes no side, under nothing. And tonight the assessor took one, and called it the middle. {when: has(gap.dry)}
+nar: And a line the assessor said to somebody's face that was not true. Somebody acted on it. {when: has(gap.lied)}
+nar: And a promise, made where somebody heard it, and not kept. {when: has(gap.promise)}
+nar: The wall has nothing of the assessor's on it. Two nights of other people's words, pinned in rows, and not one line underneath in the assessor's hand. {when: var.gap - var.owned < 1}
+voice: pride: You were tired. Everybody says things on a quay at two in the morning. Take it down and sleep. {when: var.gap - var.owned >= 1}
+voice: carbon: You are standing at the wall. You are reading your own hand. You will read it again, in a room full of water. {dc: 5}
+voice: salt: Nothing pinned, nothing owed, nothing held. A coat on a peg is also nothing pinned. {when: var.gap - var.owned < 1}
+opt: "Leave it up. Write under it, in ink: mine." -> dawn2.wall.own ? var.gap - var.owned >= 1
+opt: "Take it down. You were tired." -> dawn2.wall.deny ? var.gap - var.owned >= 1
+opt: "Pin something of your own up, and write under it what you think." -> dawn2.wall.empty ? var.gap - var.owned < 1
+opt: "Leave the wall as it is." -> dawn2.sleep ? var.gap - var.owned < 1 {do: var.lean_dry += 1}
+
+@node dawn2.wall.own
+place: room
+cost: 40
+do: owned += 1; meter(wear, 3); meter(dread, 2); set(reck2.owned)
+nar: The ink goes on slowly. The assessor does not sleep after that. The coat steams by the stove, and the light comes up the planking in stripes, and the word stays on the wall.
+voice: pride: Ink. On a wall. Where anybody who comes up the stairs can read it. {dc: 2}
+voice: condolence: Yes. That is what it is for. {dc: 4}
+go: dawn2.sleep
+
+@node dawn2.wall.deny
+place: room
+cost: 2
+do: denied += 1; set(reck2.denied)
+nar: The pins come out easily. The papers go in the case, face down, under the claim.
+voice: pride: There. Dry. {dc: 2}
+voice: dark: The pinholes are still in the plaster. Five of them, in a row. {dc: 6}
+go: dawn2.sleep
+
+@node dawn2.wall.empty
+place: room
+cost: 20
+do: set(reck2.pinned); meter(wear, 1)
+nar: It takes a long time to find something the assessor thinks. The pencil goes on, and comes off, and goes on.
+nar: In the end it is one line, under the claim, and it is not the Shelf's.
+voice: pride: An opinion. In your own hand. On a wall in a public house. {dc: 2}
 go: dawn2.sleep
 
 @node dawn2.sleep

@@ -1,0 +1,741 @@
+// ai/brain.mjs, ai/pursuit.mjs and ai/pressure.mjs: an opponent's input for
+// one frame. Row arenas only (sim/paths.mjs go() walks straight there).
+
+fn mk_move(mx: f64, mz: f64) -> Inp {
+    let mut i = empty_inp();
+    i.has_mx = true;
+    i.mx = mx;
+    i.has_mz = true;
+    i.mz = mz;
+    i
+}
+
+fn mk_press(id: str) -> Inp {
+    let mut i = empty_inp();
+    i.has_press = true;
+    i.press.push(id);
+    i
+}
+
+fn mk_press_move(id: str, mx: f64, mz: f64) -> Inp {
+    let mut i = mk_move(mx, mz);
+    i.has_press = true;
+    i.press.push(id);
+    i
+}
+
+fn brain_alive(f: Fighter) -> bool {
+    !f.out && !f.fallen && f.hp > 0.0
+}
+
+fn r01_f(w: &World, fid: str, k: str) -> f64 {
+    rand01(w.seed, format!("{}:{}:{}", fid, k, w.tick))
+}
+
+fn brain_cfg(w: &World, fid: str) -> BrainCfg {
+    w.brains[index_of(w.brain_ids, fid) as usize]
+}
+
+fn mem_extra(w: &mut World, fi: usize, key: str) {
+    if !contains(w.fighters[fi].mem.extra, key) {
+        w.fighters[fi].mem.extra.push(key);
+    }
+}
+
+fn toward_v(f: Fighter, x: f64, z: f64, s: f64) -> (f64, f64) {
+    let d0 = dhypot(x - f.x, z - f.z);
+    let d = if d0 != 0.0 && d0 == d0 { d0 } else { 1.0 };
+    (((x - f.x) / d) * s, ((z - f.z) / d) * s)
+}
+
+fn away_inp(f: Fighter, t: Fighter, s: f64) -> Inp {
+    let m = toward_v(f, t.x, t.z, s);
+    mk_move(-m.0, -m.1)
+}
+
+// sim/paths.mjs go() on a row arena: straight toward (x, z)
+fn go_to(f: Fighter, x: f64, z: f64, s: f64) -> Inp {
+    let m = toward_v(f, x, z, s);
+    mk_move(m.0, m.1)
+}
+
+fn think(w: &mut World, fi: usize) -> Inp {
+    if !w.fighters[fi].has_mem || !w.fighters[fi].mem.inited {
+        if !w.fighters[fi].has_mem {
+            w.fighters[fi].has_mem = true;
+            add_extra(w, fi, "mem");
+        }
+        let old = w.fighters[fi].mem;
+        let mut m = empty_mem();
+        m.inited = true;
+        m.has_seen = old.has_seen;
+        m.seen = old.seen;
+        w.fighters[fi].mem = m;
+    }
+    let cfg = brain_cfg(w, w.fighters[fi].id);
+    let ti = pick_target(w, fi);
+    if ti < 0 {
+        return mk_move(0.0, 0.0);
+    }
+    let t_ix = ti as usize;
+    if !w.fighters[fi].aware {
+        return idle_watch(w, fi);
+    }
+    let see = visible(w, fi, t_ix);
+    let t = w.fighters[t_ix];
+    if see {
+        w.fighters[fi].mem.has_seen = true;
+        w.fighters[fi].mem.seen = Seen { x: t.x, z: t.z, t: w.tick as f64 };
+        w.fighters[fi].lock = t.id;
+        mem_extra(w, fi, "lost");
+        w.fighters[fi].mem.lost = 0.0;
+        mem_extra(w, fi, "called");
+        w.fighters[fi].mem.called = false;
+    } else if w.fighters[fi].lock == t.id {
+        w.fighters[fi].lock = "";
+    }
+    let f = w.fighters[fi];
+    if f.has_act {
+        let cur = mv(w, f.act.id);
+        if cur.kind == "stagger" || cur.kind == "down" {
+            w.fighters[fi].mem.stag = true;
+            return empty_inp();
+        }
+    }
+    if f.mem.stag && !f.has_act {
+        w.fighters[fi].mem.stag = false;
+        return reel(w, fi, cfg, t_ix);
+    }
+    if f.has_act {
+        return commit(w, fi, mv(w, f.act.id));
+    }
+    if !f.mem.has_seen {
+        return empty_inp();
+    }
+    if !see {
+        return seek(w, fi);
+    }
+    engage(w, fi, cfg, t_ix)
+}
+
+fn idle_watch(w: &mut World, fi: usize) -> Inp {
+    if !contains(w.fighters[fi].mem.extra, "home") {
+        mem_extra(w, fi, "home");
+        let f = w.fighters[fi];
+        w.fighters[fi].mem.home_x = f.x;
+        w.fighters[fi].mem.home_z = f.z;
+        w.fighters[fi].mem.home_face = f.face;
+    }
+    let f = w.fighters[fi];
+    let t = ((w.tick as f64) / 240.0).floor();
+    let turn = (rand01(w.seed, format!("{}:w{}", f.id, t.to_json())) - 0.5) * 0.9;
+    w.fighters[fi].face = f.mem.home_face + turn * minf(1.0, ((w.tick % 240) as f64) / 60.0);
+    mk_move(0.0, 0.0)
+}
+
+fn pick_target(w: &World, fi: usize) -> i64 {
+    let f = w.fighters[fi];
+    let mut best: i64 = -1;
+    let mut bd = 1.0 / 0.0;
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let t = w.fighters[i];
+        if t.team != f.team && brain_alive(t) {
+            let d = dist_xy(f.x, f.z, t.x, t.z);
+            if d < bd {
+                bd = d;
+                best = i as i64;
+            }
+        }
+        i += 1;
+    }
+    best
+}
+
+fn reel(w: &mut World, fi: usize, cfg: BrainCfg, ti: usize) -> Inp {
+    let f = w.fighters[fi];
+    if cfg.on_stagger == "brace" && f.st >= 1.0 {
+        return mk_press(cfg.braced);
+    }
+    if cfg.on_stagger == "scramble" {
+        w.fighters[fi].mem.retreat = (w.tick as f64) + 70.0;
+        let mut i = away_inp(f, w.fighters[ti], 1.0);
+        i.has_press = true;
+        i.press.push(cfg.dodge);
+        return i;
+    }
+    empty_inp()
+}
+
+fn commit(w: &mut World, fi: usize, cur: Move) -> Inp {
+    let f = w.fighters[fi];
+    let chain = if contains(f.mem.extra, "chain") { f.mem.chain } else { 0.0 };
+    if next_of(cur, "light") != "" && chain > 0.0 && phase_of(cur, f.act.f) == "recovery" {
+        w.fighters[fi].mem.chain = chain - 1.0;
+        return mk_press("light");
+    }
+    empty_inp()
+}
+
+fn seek(w: &mut World, fi: usize) -> Inp {
+    let held = leash(w, fi);
+    if held.0 {
+        return avoid_deep(w, fi, held.1);
+    }
+    let f = w.fighters[fi];
+    let d = dhypot(f.mem.seen.x - f.x, f.mem.seen.z - f.z);
+    if d > 0.8 {
+        let g = go_to(f, f.mem.seen.x, f.mem.seen.z, 0.7);
+        return avoid_deep(w, fi, g);
+    }
+    let s = f.mem.searched + 1.0;
+    w.fighters[fi].mem.searched = s;
+    if s > 180.0 {
+        let l = w.fighters[lamb_index(w) as usize];
+        w.fighters[fi].mem.seen = Seen { x: l.x, z: l.z, t: w.tick as f64 };
+        w.fighters[fi].mem.searched = 0.0;
+    }
+    mk_move(0.0, 0.0)
+}
+
+fn leash(w: &mut World, fi: usize) -> (bool, Inp) {
+    mem_extra(w, fi, "lost");
+    w.fighters[fi].mem.lost = w.fighters[fi].mem.lost + 1.0;
+    let f = w.fighters[fi];
+    if f.mem.lost < 420.0 || !f.mem.has_seen {
+        return (false, empty_inp());
+    }
+    if !(contains(f.mem.extra, "called") && f.mem.called) {
+        mem_extra(w, fi, "called");
+        w.fighters[fi].mem.called = true;
+        let mut i = 0;
+        while i < w.fighters.len() {
+            let o = w.fighters[i];
+            if i != fi && o.team == f.team && o.has_mem && !o.out {
+                w.fighters[i].mem.has_seen = true;
+                w.fighters[i].mem.seen = f.mem.seen;
+            }
+            i += 1;
+        }
+        let mut ev = new_ev(w, "call");
+        ev_str(&mut ev, "id", f.id);
+        ev.id = f.id;
+        emit(w, ev);
+    }
+    let n = w.arena.exits.len();
+    if n == 0 {
+        return (false, empty_inp());
+    }
+    // the exit centre nearest the last-seen point (a stable sort's first)
+    let mut bx = 0.0;
+    let mut bz = 0.0;
+    let mut bd = 1.0 / 0.0;
+    let mut i = 0;
+    while i < n {
+        let e = w.arena.exits[i];
+        let cx = (e[0] + e[2]) / 2.0;
+        let cz = (e[1] + e[3]) / 2.0;
+        let d = dhypot(cx - f.mem.seen.x, cz - f.mem.seen.z);
+        if d < bd {
+            bd = d;
+            bx = cx;
+            bz = cz;
+        }
+        i += 1;
+    }
+    let d = dhypot(bx - f.x, bz - f.z);
+    if d < 0.8 {
+        return (true, mk_move(0.0, 0.0));
+    }
+    let mut g = go_to(f, bx, bz, 0.8);
+    g.choke = true;
+    (true, g)
+}
+
+fn avoid_deep(w: &World, fi: usize, m: Inp) -> Inp {
+    let s = dhypot(m.mx, m.mz);
+    if s < 0.001 {
+        return m;
+    }
+    let f = w.fighters[fi];
+    let base = datan2(m.mz, m.mx);
+    let side = if f.has_mem && f.mem.side != 0.0 { f.mem.side } else { 1.0 };
+    let ds: Vec<f64> = vec![0.0, 1.0, -1.0, 2.0, -2.0, 3.0, -3.0];
+    let mut k = 0;
+    while k < ds.len() {
+        let a = wrap_angle(base + (side * ds[k] * JS_PI) / 4.0);
+        let x = f.x + dcos(a) * 1.0;
+        let z = f.z + dsin(a) * 1.0;
+        if !solid(w, x, z) && depth_at(w, x, z) < 0.85 {
+            if ds[k] != 0.0 {
+                let mut out = mk_move(dcos(a) * s, dsin(a) * s);
+                out.choke = false;
+                return out;
+            }
+            return m;
+        }
+        k += 1;
+    }
+    m
+}
+
+fn move_id_for(w: &World, fi: usize, key: str) -> str {
+    let f = w.fighters[fi];
+    if has_move(w, key) && contains(w.defs[fi].moves, key) {
+        return key;
+    }
+    let id = format!("{}:{}{}", f.id, if f.tool != "" { "" } else { "hands:" }, key);
+    if has_move(w, id) {
+        id
+    } else {
+        ""
+    }
+}
+
+fn engage(w: &mut World, fi: usize, cfg: BrainCfg, ti: usize) -> Inp {
+    w.fighters[fi].mem.searched = 0.0;
+    let f = w.fighters[fi];
+    let t = w.fighters[ti];
+    let d = dist_xy(f.x, f.z, t.x, t.z);
+    let dodge = react(w, fi, cfg, ti, d);
+    if dodge.0 {
+        return dodge.1;
+    }
+    let answer = pursue(w, fi, ti);
+    if answer.0 {
+        return answer.1;
+    }
+    let f1 = w.fighters[fi];
+    if !f1.mem.retreated && f1.hp < f1.hp_max * cfg.retreat_hp {
+        w.fighters[fi].mem.retreated = true;
+        w.fighters[fi].mem.retreat = (w.tick as f64) + 120.0;
+    }
+    let f2 = w.fighters[fi];
+    let tick = w.tick as f64;
+    if tick < f2.mem.retreat || f2.st < cfg.low_stamina {
+        return retreat(w, fi, cfg, ti, d);
+    }
+    let t2 = w.fighters[ti];
+    let mut open = false;
+    if t2.has_act {
+        let tm = mv(w, t2.act.id);
+        open = phase_of(tm, t2.act.f) == "recovery" || tm.kind == "item";
+    }
+    if open {
+        let a = choose(w, fi, cfg, d, true);
+        if a.0 != "" && take_token(w, fi, ti, mv(w, a.0).total + 24.0) {
+            return fire(w, fi, cfg, ti, a.0, a.1);
+        }
+    }
+    if tick >= w.fighters[fi].mem.next {
+        let fid = w.fighters[fi].id;
+        w.fighters[fi].mem.next = tick + cfg.think + (r01_f(w, fid, "think") * cfg.think).floor();
+        let mut a: (str, f64, bool) = ("", 0.0, false);
+        if tick >= w.fighters[fi].mem.cool {
+            a = choose(w, fi, cfg, d, false);
+        }
+        if a.0 != "" {
+            let extra = if a.2 { 6.0 } else { 24.0 };
+            if take_token(w, fi, ti, mv(w, a.0).total + extra) {
+                return fire(w, fi, cfg, ti, a.0, a.1);
+            }
+        }
+        let sp = space(w, fi, cfg, ti, d);
+        w.fighters[fi].mem.move_mx = sp.mx;
+        w.fighters[fi].mem.move_mz = sp.mz;
+    }
+    let mut out = mk_move(w.fighters[fi].mem.move_mx, w.fighters[fi].mem.move_mz);
+    if chasing(w, fi) {
+        out.has_hold = true;
+        out.hold_run = 1;
+    }
+    out
+}
+
+fn react(w: &World, fi: usize, cfg: BrainCfg, ti: usize, d: f64) -> (bool, Inp) {
+    let f = w.fighters[fi];
+    let t = w.fighters[ti];
+    if cfg.dodge == "" || !t.has_act || f.st < 1.0 {
+        return (false, empty_inp());
+    }
+    let m = mv(w, t.act.id);
+    let left = m.startup - t.act.f;
+    if m.kind != "attack" && m.kind != "riposte" {
+        return (false, empty_inp());
+    }
+    if left < 2.0 || left > 6.0 || d > 3.0 {
+        return (false, empty_inp());
+    }
+    if r01_f(w, f.id, "dodge") > 0.4 {
+        return (false, empty_inp());
+    }
+    let mut i = away_inp(f, t, 1.0);
+    i.has_press = true;
+    i.press.push(cfg.dodge);
+    (true, i)
+}
+
+fn usable_move(w: &World, fi: usize, id: str) -> bool {
+    let m = mv(w, id);
+    !(m.has_item && !(item_count(w.fighters[fi], m.item_use) > 0.0))
+}
+
+fn retreat(w: &mut World, fi: usize, cfg: BrainCfg, ti: usize, d: f64) -> Inp {
+    let far = cfg.range1;
+    let mut k = 0;
+    while k < cfg.attacks.len() {
+        let a = cfg.attacks[k];
+        let id = move_id_for(w, fi, a.mv);
+        if id != "" && mv(w, id).has_item && d >= a.min && d <= a.max && usable_move(w, fi, id) {
+            if (w.tick as f64) >= w.fighters[fi].mem.cool && take_token(w, fi, ti, mv(w, id).total + 6.0) {
+                return fire(w, fi, cfg, ti, id, a.chain);
+            }
+            break;
+        }
+        k += 1;
+    }
+    let f = w.fighters[fi];
+    let t = w.fighters[ti];
+    if d < far {
+        return away_inp(f, t, 1.0);
+    }
+    strafe(w, fi, ti, 0.5)
+}
+
+fn allies_of(w: &World, fi: usize) -> f64 {
+    let f = w.fighters[fi];
+    let mut n = 0.0;
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let o = w.fighters[i];
+        if i != fi && o.team == f.team && brain_alive(o) && dhypot(o.x - f.x, o.z - f.z) <= 10.0 {
+            n += 1.0;
+        }
+        i += 1;
+    }
+    n
+}
+
+fn passive(w: &World, ti: usize) -> bool {
+    (w.tick as f64) - w.fighters[ti].last_offense > 150.0
+}
+
+fn cool_scale(w: &World, ti: usize) -> f64 {
+    if passive(w, ti) {
+        0.2
+    } else {
+        1.0
+    }
+}
+
+fn tokens_allowed(w: &World, ti: usize) -> f64 {
+    let mut n = 1.0;
+    if w.tick > 1200 {
+        n += 1.0;
+    }
+    if passive(w, ti) {
+        n += 1.0;
+    }
+    minf(3.0, n)
+}
+
+// (move id, chain, ranged); "" for none
+fn choose(w: &World, fi: usize, cfg: BrainCfg, d: f64, quick: bool) -> (str, f64, bool) {
+    let pt = pick_target(w, fi);
+    let press = pt >= 0 && passive(w, pt as usize);
+    let f = w.fighters[fi];
+    let mut ids: Vec<str> = Vec::new();
+    let mut chains: Vec<f64> = Vec::new();
+    let mut ws: Vec<f64> = Vec::new();
+    let mut k = 0;
+    while k < cfg.attacks.len() {
+        let a = cfg.attacks[k];
+        let id = move_id_for(w, fi, a.mv);
+        if id != "" {
+            let m = mv(w, id);
+            let ok = d >= a.min && d <= a.max && f.st >= 1.0 && usable_move(w, fi, id)
+                && (!quick || m.startup <= 30.0) && (a.allies == 0.0 || allies_of(w, fi) >= a.allies);
+            if ok {
+                let wt = if !press {
+                    a.w
+                } else if m.knockdown {
+                    a.w * 0.3
+                } else if m.startup <= 30.0 && !m.has_item {
+                    a.w * 3.0
+                } else {
+                    a.w
+                };
+                ids.push(id);
+                chains.push(a.chain);
+                ws.push(wt);
+            }
+        }
+        k += 1;
+    }
+    if ids.len() == 0 {
+        return ("", 0.0, false);
+    }
+    let mut sum = 0.0;
+    k = 0;
+    while k < ws.len() {
+        sum = sum + ws[k];
+        k += 1;
+    }
+    let mut x = r01_f(w, f.id, "pick") * sum;
+    let mut pick = ids.len() - 1;
+    k = 0;
+    while k < ids.len() {
+        x = x - ws[k];
+        if x <= 0.0 {
+            pick = k;
+            break;
+        }
+        k += 1;
+    }
+    (ids[pick], chains[pick], mv(w, ids[pick]).has_item)
+}
+
+fn take_token(w: &mut World, fi: usize, ti: usize, frames: f64) -> bool {
+    let fid = w.fighters[fi].id;
+    let old = w.fighters[ti].tokens;
+    let mut kept: Vec<Token> = Vec::new();
+    let mut i = 0;
+    while i < old.len() {
+        let t = old[i];
+        let oi = by_id(w, t.id);
+        if t.until > (w.tick as f64) && t.id != fid && oi >= 0 && brain_alive(w.fighters[oi as usize]) {
+            kept.push(t);
+        }
+        i += 1;
+    }
+    add_extra(w, ti, "tokens");
+    w.fighters[ti].tokens = kept;
+    if (w.fighters[ti].tokens.len() as f64) >= tokens_allowed(w, ti) {
+        return false;
+    }
+    w.fighters[ti].tokens.push(Token { id: fid, until: (w.tick as f64) + frames });
+    true
+}
+
+fn fire(w: &mut World, fi: usize, cfg: BrainCfg, ti: usize, id: str, chain: f64) -> Inp {
+    let fid = w.fighters[fi].id;
+    let base = cfg.cool0 + (r01_f(w, fid, "cool") * (cfg.cool1 - cfg.cool0)).floor();
+    w.fighters[fi].mem.cool = (w.tick as f64) + js_round(base * cool_scale(w, ti));
+    let mut c = 0.0;
+    if chain != 0.0 {
+        if passive(w, ti) || r01_f(w, fid, "chain") < 0.6 {
+            c = chain;
+        }
+    }
+    mem_extra(w, fi, "chain");
+    w.fighters[fi].mem.chain = c;
+    mk_press_move(id, 0.0, 0.0)
+}
+
+fn space(w: &mut World, fi: usize, cfg: BrainCfg, ti: usize, d: f64) -> Inp {
+    let fid = w.fighters[fi].id;
+    let t = w.fighters[ti];
+    let mut holder = false;
+    let mut i = 0;
+    while i < t.tokens.len() {
+        if t.tokens[i].until > (w.tick as f64) && t.tokens[i].id == fid {
+            holder = true;
+        }
+        i += 1;
+    }
+    if !holder {
+        let cut = cut_off_point(w, fi, ti);
+        if cut.0 {
+            let g = go_to(w.fighters[fi], cut.1, cut.2, 1.0);
+            return avoid_deep(w, fi, g);
+        }
+    }
+    let r0 = cfg.range0;
+    let r1 = cfg.range1;
+    let r = if holder || passive(w, ti) { maxf(1.2, minf(r0, 2.2) - 0.6) } else { (r0 + r1) / 2.0 };
+    let mut slot = 0.0;
+    if cfg.flank_slot != 0.0 {
+        if w.fighters[fi].mem.side == 0.0 {
+            w.fighters[fi].mem.side = if r01_f(w, fid, "side") < 0.5 { -1.0 } else { 1.0 };
+        }
+        slot = w.fighters[fi].mem.side * 1.9;
+    }
+    let a = t.face + slot;
+    let px = t.x + dcos(a) * r;
+    let pz = t.z + dsin(a) * r;
+    let f = w.fighters[fi];
+    let gap = dhypot(px - f.x, pz - f.z);
+    if gap > 0.6 {
+        let g = go_to(f, px, pz, if d > r1 + 1.0 { 1.0 } else { 0.6 });
+        return avoid_deep(w, fi, g);
+    }
+    strafe(w, fi, ti, 0.35)
+}
+
+fn strafe(w: &World, fi: usize, ti: usize, s: f64) -> Inp {
+    let f = w.fighters[fi];
+    let t = w.fighters[ti];
+    let side = if f.has_mem && f.mem.side != 0.0 { f.mem.side } else { 1.0 };
+    let a = angle_to(f.x, f.z, t.x, t.z) + (side * JS_PI) / 2.0;
+    avoid_deep(w, fi, mk_move(dcos(a) * s, dsin(a) * s))
+}
+
+// ai/pursuit.mjs
+fn reach_of(w: &World, fi: usize) -> f64 {
+    let f = w.fighters[fi];
+    let id = format!("{}:{}light_1", f.id, if f.tool != "" { "" } else { "hands:" });
+    if has_move(w, id) {
+        let m = mv(w, id);
+        if m.hits.len() > 0 {
+            return max_reach(m);
+        }
+    }
+    1.5
+}
+
+fn away_from(f: Fighter, t: Fighter) -> f64 {
+    let d0 = dist_xy(f.x, f.z, t.x, t.z);
+    let d = if d0 != 0.0 && d0 == d0 { d0 } else { 1.0 };
+    (t.vx * (t.x - f.x) + t.vz * (t.z - f.z)) / d
+}
+
+fn apart(w: &World, ti: usize) -> bool {
+    let t = w.fighters[ti];
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let o = w.fighters[i];
+        if o.team != t.team && !o.out && !o.fallen && !o.yielded && o.aware && dist_xy(o.x, o.z, t.x, t.z) <= reach_of(w, i) + 0.6 {
+            return false;
+        }
+        i += 1;
+    }
+    true
+}
+
+fn kiting_now(w: &World, fi: usize, ti: usize) -> bool {
+    let f = w.fighters[fi];
+    let t = w.fighters[ti];
+    let d = dist_xy(f.x, f.z, t.x, t.z);
+    let reach = reach_of(w, fi) + 0.6;
+    if d <= reach || !apart(w, ti) || t.guard_t > 0.0 {
+        return false;
+    }
+    let ux = (t.x - f.x) / d;
+    let uz = (t.z - f.z) / d;
+    let away = t.vx * ux + t.vz * uz;
+    away > 0.8 || d > reach + 2.5
+}
+
+fn reachable(w: &World, ti: usize) -> bool {
+    let t = w.fighters[ti];
+    !(depth_at(w, t.x, t.z) >= 0.85)
+}
+
+fn pursue(w: &mut World, fi: usize, ti: usize) -> (bool, Inp) {
+    if !contains(w.fighters[fi].mem.extra, "pur") {
+        mem_extra(w, fi, "pur");
+        w.fighters[fi].mem.pur = empty_pur();
+    }
+    let kiting = kiting_now(w, fi, ti);
+    let p0 = w.fighters[fi].mem.pur;
+    let clock = if kiting { p0.clock + 1.0 } else { maxf(0.0, p0.clock - 2.0) };
+    w.fighters[fi].mem.pur.clock = clock;
+    let away = away_from(w.fighters[fi], w.fighters[ti]) > 0.8;
+    w.fighters[fi].mem.pur.away = away;
+    let cut = if reachable(w, ti) { 0.0 } else { p0.cut + 1.0 };
+    w.fighters[fi].mem.pur.cut = cut;
+    let kb = if contains(w.fighters[ti].extra, "kitedBy") { w.fighters[ti].kited_by } else { 0.0 };
+    add_extra(w, ti, "kitedBy");
+    w.fighters[ti].kited_by = maxf(kb, clock);
+    let due = clock >= 210.0 || cut >= 60.0;
+    let f = w.fighters[fi];
+    let t = w.fighters[ti];
+    let d = dist_xy(f.x, f.z, t.x, t.z);
+    if f.has_act || f.st < 1.0 {
+        return (false, empty_inp());
+    }
+    if f.mem.pur.chase > 0.0 && d <= reach_of(w, fi) + 0.3 {
+        let id = format!("{}:{}light_1", f.id, if f.tool != "" { "" } else { "hands:" });
+        if has_move(w, id) {
+            w.fighters[fi].mem.pur.chase = 0.0;
+            w.fighters[fi].mem.pur.rest = (w.tick as f64) + 300.0;
+            w.fighters[fi].face = angle_to(f.x, f.z, t.x, t.z);
+            punish_ev(w, f.id, "chase", clock);
+            return (true, mk_press_move(id, 0.0, 0.0));
+        }
+    }
+    if !due {
+        return (false, empty_inp());
+    }
+    let has_lunge = has_move(w, "world.lunge") && contains(w.defs[fi].moves, "world.lunge");
+    let tick = w.tick as f64;
+    if has_lunge && cut == 0.0 && line_clear(w, f.x, f.z, t.x, t.z) && d >= 4.0 && d <= 8.5 && tick >= f.mem.pur.lunged {
+        w.fighters[fi].mem.pur.lunged = tick + 300.0 + (r01_f(w, f.id, "lc") * (420.0 - 300.0)).floor();
+        w.fighters[fi].face = angle_to(f.x, f.z, t.x, t.z);
+        punish_ev(w, f.id, "lunge", clock);
+        return (true, mk_press_move("world.lunge", 0.0, 0.0));
+    }
+    let has_throw = has_move(w, "world.throw") && contains(w.defs[fi].moves, "world.throw");
+    if has_throw && item_count(f, "stone") > 0.0 && d >= 3.0 && d <= 14.0 && tick >= f.mem.pur.thrown && sight_clear(w, f.x, f.z, t.x, t.z) {
+        w.fighters[fi].mem.pur.thrown = tick + 360.0 + (r01_f(w, f.id, "tc") * (600.0 - 360.0)).floor();
+        w.fighters[fi].face = angle_to(f.x, f.z, t.x, t.z);
+        w.fighters[fi].lock = t.id;
+        punish_ev(w, f.id, "throw", clock);
+        return (true, mk_press_move("world.throw", 0.0, 0.0));
+    }
+    (false, empty_inp())
+}
+
+fn punish_ev(w: &mut World, fid: str, how: str, clock: f64) {
+    let mut ev = new_ev(w, "punish");
+    ev_str(&mut ev, "id", fid);
+    ev_str(&mut ev, "how", how);
+    ev_num(&mut ev, "clock", clock);
+    ev.id = fid;
+    emit(w, ev);
+}
+
+fn chasing(w: &mut World, fi: usize) -> bool {
+    if !contains(w.fighters[fi].mem.extra, "pur") {
+        return false;
+    }
+    let p0 = w.fighters[fi].mem.pur;
+    let st = w.fighters[fi].st;
+    let tick = w.tick as f64;
+    if p0.chase > 0.0 {
+        if st <= 2.0 {
+            w.fighters[fi].mem.pur.chase = 0.0;
+            w.fighters[fi].mem.pur.rest = tick + 300.0;
+            return false;
+        }
+        let c = p0.chase - 1.0;
+        w.fighters[fi].mem.pur.chase = c;
+        if c == 0.0 {
+            w.fighters[fi].mem.pur.rest = tick + 300.0;
+        }
+        return true;
+    }
+    if p0.clock >= 60.0 && p0.away && st > 2.0 && tick >= p0.rest && p0.cut == 0.0 {
+        w.fighters[fi].mem.pur.chase = 240.0;
+        return true;
+    }
+    false
+}
+
+fn cut_off_point(w: &World, fi: usize, ti: usize) -> (bool, f64, f64) {
+    let f = w.fighters[fi];
+    if !contains(f.mem.extra, "pur") || f.mem.pur.clock < 60.0 {
+        return (false, 0.0, 0.0);
+    }
+    let t = w.fighters[ti];
+    let v = dhypot(t.vx, t.vz);
+    if v < 0.8 {
+        return (false, 0.0, 0.0);
+    }
+    let x = t.x + (t.vx / v) * 3.0;
+    let z = t.z + (t.vz / v) * 3.0;
+    if solid(w, x, z) {
+        return (false, 0.0, 0.0);
+    }
+    (true, x, z)
+}

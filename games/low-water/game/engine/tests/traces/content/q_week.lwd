@@ -1,0 +1,293 @@
+# The Quota slice: the week between the granary door and the table, on the Inspector line, and the scenes both
+# lines share: Ilo's mark (critic P4), Gedge at the yard (H2) and the gate on Tilney Road (H1). The model only
+# presses (q_community.lwd, @fate); in each scene a named person decides, and the scene's node calls fate().
+# design/spine-plan/03-FATES.md; 09-ANNI.md section 6 (the claim at the gate). Game director, 2026-10-22.
+# Days: 41 Wednesday, 42 Thursday, 43 Friday, 44 Saturday, 45 Sunday, 46 Monday, 48 Wednesday.
+
+# ---------------------------------------------------------------- Thursday, the returns room
+@node q.ned.week
+place: q_returns
+speaker: MOTT
+cost: 6
+do: cut(max(0, 1440 + 08:30 - clock))
+nar: Thursday. The returns room. The stove's lit for once, because the Commissioner is coming up later. {when: q_figure != true}
+nar: Thursday. The returns room, for the last week it will be his. There's a typed slip on the desk from Arlen about the review, and his name on it spelled right. {when: q_figure == true}
+nar: Walter Mott isn't at his desk. A boy from the brigade office brings the sheets up instead, and says Mr Mott's got the fever in the house, and they've chalked the door.
+voice: smell: The boy has it on his coat from somewhere. Sweet, and wet straw. {dc: 3}
+alt: q.week.mark ? has(q.tomas_held)
+go: q.fates
+
+# ---------------------------------------------------------------- Friday: the paper (both lines)
+@node q.week.mark
+place: q_cells
+speaker: HOLT
+cost: 10
+do: cut(max(0, 2 * 1440 + 11:00 - clock))
+nar: Friday. Holt sends for the father. Ilo comes to the guardroom with his good cap in both hands, the way he'd go into a church, and stands where he's put.
+nar: Ned has been sent for too, as district inspector, to witness a mark. They give him the chair by the stove. {when: q_class == inspector}
+nar: Will is on the guardroom door. {when: q_class == militia}
+nar: The paper is typed. The man in the chair can read it upside down from where he sits: that the boy Haldane, T. carried oats from the family's seed to Tesk's fold on the hill above Krall's End, twice in December, at the asking of the woman Dorrah Tesk, for the feeding of persons not resident; and that the father, Haldane, I., knew of it.
+line: HOLT: Your mark there, Mr Haldane. Then he's home for his tea.
+line: HOLT: Two sacks off the hill. It's in your log, Sergeant, in your own hand. {when: q_class == militia & has(said.will_log_two)}
+line: HOLT: One and a half sacks off the hill. They've the sense to hide a whole one and not a half, have they? {when: q_class == militia & has(said.will_log_true)}
+line: ILO: What's it say?
+line: HOLT: It says you're his father.
+line: ILO: I am his father.
+line: HOLT: Then that's all it says.
+alt: q.week.mark.will ? q_class == militia
+opt: "Sign as witness." -> q.week.mark.made {do: set(said.ned_witness_mark)}
+opt: "Refuse to witness it." -> q.week.mark.refuse {do: set(said.ned_refuse_mark)}
+opt: "Tell Ilo what it says." -> q.week.mark.tell {do: set(said.ned_told_ilo)}
+
+@node q.week.mark.will
+place: q_cells
+cost: 0
+opt: "Say nothing." -> q.week.mark.made
+opt: "Tell Ilo what it says." -> q.week.mark.tell {do: set(said.will_told_ilo)}
+
+@node q.week.mark.refuse
+place: q_cells
+speaker: HOLT
+cost: 4
+line: NED: I'll not witness that.
+line: HOLT: No. Course not.
+nar: Holt sends the corporal down the stairs to the brigade office for the clerk, and they wait. Nobody sits. Walter Mott comes up with his collar turned up, and his eyes red with the house he's come from, and signs as witness in his careful hand, sevens without a bar.
+nar: Holt writes on his cuff while Mott signs.
+go: q.week.mark.made
+
+@node q.week.mark.tell
+place: q_cells
+speaker: HOLT
+cost: 4
+line: NED: It says Dorrah Tesk, Ilo. It says the hill. {when: q_class == inspector}
+line: WILL: It's got the Tesks on it, Ilo. It's got the hill on it. {when: q_class == militia}
+line: HOLT: The inspector reads too much. It's a long week for everybody. {when: q_class == inspector}
+line: HOLT: The sergeant's tired. It's a long week for everybody. {when: q_class == militia}
+nar: Ilo looks at the one who spoke, and at Holt, and at the pen held out to him. You can't tell what he heard.
+line: ILO: He comes home?
+line: HOLT: For his tea.
+go: q.week.mark.made
+
+@node q.week.mark.made
+place: q_cells
+cost: 4
+do: set(q.ilo_mark)
+nar: Ilo makes his mark. Not a cross. A circle with a line down through it, the way the Hesh mark a well on a map.
+line: ILO: You'll bring him to the door. Not the yard. The door.
+nar: Holt folds a carbon copy in three and gives it to him. Ilo puts it in his inside pocket and holds his hand flat over it, and goes down the stairs past the cells without looking along the row, because they've told him the boy is asleep.
+alt: q.cells.d44 ? q_class == militia
+go: q.ned.week.after
+
+@node q.ned.week.after
+place: q_returns
+speaker: MOTT
+cost: 4
+do: cut(max(0, 5 * 1440 + 08:30 - clock))
+nar: Monday. Mott is back at his desk with his collar up and a black band on his sleeve, sewn on crooked.
+line: MOTT: The little one. Saturday. They had the cart for her Sunday morning.
+line: MOTT: And they found the Haldane boy Sunday, in the end cell. I saw the paper go up. Doctor's hand. Intestinal.
+nar: He puts the sheets on the desk and stands back from them, the way he always does.
+line: MOTT: They took the Tesk woman off the hill Saturday. On the strength of the father's mark. I thought you'd want to know that, Mr Furrowe, since you witnessed it. {when: has(said.ned_witness_mark)}
+line: MOTT: They took the Tesk woman off the hill Saturday, on the strength of the father's mark. I witnessed it for them, with my own pen, because you wouldn't. {when: has(said.ned_refuse_mark)}
+line: MOTT: They took the Tesk woman off the hill Saturday, on the strength of the father's mark. You read it him first, he says. He made it anyway. {when: has(said.ned_told_ilo)}
+go: q.fates
+
+# ---------------------------------------------------------------- the fates (both lines)
+@node q.fates
+cost: 0
+do: cut(max(0, 5 * 1440 + 08:00 - clock))
+alt: q.fate.yard ? pressure(f.aaron_taken) & !seen(q.fate.yard)
+go: q.fates.wed
+
+# Wednesday, a week: the requisition has been for what the barns owed, and Bet decides
+@node q.fates.wed
+cost: 0
+do: cut(max(0, 7 * 1440 + 07:30 - clock))
+alt: q.fate.ask ? pressure(f.anni_home) & q_class == inspector & !seen(q.fate.ask)
+alt: q.fate.gate ? pressure(f.anni_home) & !seen(q.fate.gate)
+go: q.coda
+
+# ---------------------------------------------------------------- H2: Gedge at the yard
+@node q.fate.yard
+place: q_yard
+speaker: GEDGE
+cost: 8
+do: cut(max(0, 5 * 1440 + 09:00 - clock))
+nar: Haldane Yard, in the morning. Constable Gedge at the barn door with two corporals and a list in Jonah Krall's hand, from the meeting, with the Hesh houses on the Krall's End side written down it in order.
+nar: Ned is at the top of the yard, because he's bringing Anni's tally back, as he said he would. It's in his inside pocket with the pen. {when: q_class == inspector & has(said.ned_keep_tally)}
+nar: Ned is at the top of the yard on his way to the office, because it's the short way. {when: q_class == inspector & !has(said.ned_keep_tally)}
+nar: Will is with them. Gedge is his constable, and the list came down from the Captain at seven with Will's name on the order. {when: q_class == militia}
+line: GEDGE: Whoever's on the list, Ilo. That's who I've come for. The list says Haldane.
+line: ILO: That's me. Your lot wrote it.
+line: GEDGE: And him.
+nar: Aaron is in the barn door behind his father's legs, with his ankles swollen over the tops of his boots.
+line: ILO: He's nine.
+line: GEDGE: Then he'll be quick. In and out. Get his coat.
+alt: q.fate.yard.will ? q_class == militia
+opt: "Vouch for the boy. Give Gedge your name." -> q.fate.yard.vouch {do: set(said.ned_vouch_yard)}
+opt: "Keep walking." -> q.fate.yard.taken {do: set(said.ned_walked_on)}
+
+@node q.fate.yard.will
+place: q_yard
+cost: 0
+opt: "Leave it, Gedge. Next door." -> q.fate.yard.next {do: set(said.will_next_door)}
+opt: "Take the boy yourself, so he's with you." -> q.fate.yard.taken {do: set(said.will_takes_aaron)}
+opt: "Say nothing." -> q.fate.yard.taken
+
+@node q.fate.yard.vouch
+place: q_yard
+speaker: GEDGE
+cost: 4
+line: NED: The boy's nine and he's been at home all week. Furrowe. District inspector.
+line: GEDGE: Furrowe. I know how it's spelt.
+nar: Gedge writes it on the back of the list with a stub of pencil, taking care, and looks at it.
+line: GEDGE: That'll be for the Captain, then. Your name.
+nar: He folds the list and goes next door with the corporals, to Sallis's, where the man who laughed so hard at the Sheaf lives with his two boys. Ilo stands in his own doorway and listens to them knock.
+go: q.fates
+
+@node q.fate.yard.next
+place: q_yard
+speaker: GEDGE
+cost: 4
+line: WILL: Leave it, Gedge. Next door.
+line: GEDGE: That's the Captain, then, Sergeant. That's you and the Captain.
+line: WILL: Next door, I said.
+nar: Gedge folds the list and goes next door with the corporals, to Sallis's, where the man who laughed so hard at the Sheaf lives with his two boys. Ilo stands in his own doorway and listens to them knock.
+go: q.fates
+
+@node q.fate.yard.taken
+place: q_yard
+speaker: GEDGE
+cost: 4
+do: set(q.aaron_taken); fate(f.aaron_taken, aaron)
+nar: Ilo goes in for the coat. The camera stays in the yard, with Gedge, who whistles, and the corporals, who look at the sky.
+nar: Bet is at the window. She sees Ilo go to the hook and take the coat down and bring it out, and hold it open the way you hold a coat for a child. She sees him do it.
+nar: Will takes the boy by the hand, not the arm, and walks him up the yard himself, so he's with him. {when: has(said.will_takes_aaron)}
+go: q.fates
+
+# ---------------------------------------------------------------- H1: the line for the home (the Inspector line)
+@node q.fate.ask
+place: q_returns
+speaker: BET
+cost: 6
+do: cut(max(0, 7 * 1440 + 08:00 - clock))
+nar: Wednesday, a week. Bet Haldane comes up the stairs to the returns room before the clerks are in, in her good shawl, with a form from the Furrow Church folded small in her hand. She stands in the door the way her boy did.
+line: BET: The brigade came for what the barns owed. They had the floor up. There's nothing under it now.
+line: BET: The home on Tilney Road will take her. They feed them once a day. They want a line for her people, because her father's ruled off in the book. It wants a district man to write it.
+nar: She puts the form on the desk. The father's line on the copy from the register has a ruled stroke through it, and in the margin, in pencil, very old, per A.F.
+line: BET: Of Tarn parentage. That's what they want to read. You can write that. You're the inspector.
+opt: "Write it: of Tarn parentage." -> q.fate.ask.write {do: set(q.ned_parentage); record(certify.parentage, haldane, haldane_yard)}
+opt: "Send food from your own table instead." -> q.fate.ask.food {do: set(q.ned_food); shift(food, 0.08, haldane); shift(portion, -0.2, furrowe)}
+opt: "I can't write that, Bet." -> q.fate.ask.refuse
+
+@node q.fate.ask.write
+place: q_returns
+speaker: BET
+cost: 3
+nar: He writes it, in the inspector's hand, under the ruled line: Of Tarn parentage. N. Furrowe. It's true, and he writes it as if he were guessing.
+line: BET: This afternoon. At the gate. They want the man who wrote it there.
+go: q.fate.gate
+
+@node q.fate.ask.food
+place: q_furrowe_kitchen
+speaker: MARY
+cost: 4
+nar: He takes a sack from the Furrowes' own larder down to Haldane Yard in the trap himself, flour and the last of the bacon, and leaves it with Ilo, who doesn't thank him.
+nar: That night Mary stands at the larder door with the lamp, counting the shelves, and then she looks at him, and she knows where it went, and she shuts the door.
+line: MARY: Pell's growing.
+go: q.fate.gate
+
+@node q.fate.ask.refuse
+place: q_returns
+speaker: BET
+cost: 2
+line: NED: I can't write that, Bet.
+line: BET: You can. You won't.
+nar: She folds the form back up small and goes down the stairs. This afternoon, she says from the bottom, without turning round. At the gate. If you change your mind.
+go: q.fate.gate
+
+# ---------------------------------------------------------------- H1: the gate on Tilney Road (Bet decides)
+@node q.fate.gate
+place: q_tilney
+speaker: SISTER
+cost: 8
+do: cut(max(0, 7 * 1440 + 14:00 - clock))
+nar: The gate of the Furrow Church's home on Tilney Road. A brass plate, polished. A row of mothers along the railings with children by the hand, and a cart at the side door with a sheet over it that the sexton's lad is waiting with. The fever's in the home as well. Everybody can see the cart and nobody looks at it.
+nar: Ned is there, because she asked, with his hat in his hand. {when: q_class == inspector}
+nar: Will, coming back along Tilney Road from the post, slows at the railings, because he knows the woman at the front. {when: q_class == militia}
+line: SISTER: She can come in today. The thread comes off at the door, mind. We don't have that in here.
+line: BET: It's a bit of wool.
+line: SISTER: Then she'll not miss it.
+line: ANNI: I'll take it off, Mum. It's fine. I'll take it off.
+line: BET: If she comes in today, does she get her dinner today?
+line: SISTER: She gets what they all get.
+line: BET: That's not what I asked you.
+line: SISTER: The father's line. It's ruled through on her copy. We'll need something put. For the spelling.
+alt: q.fate.gate.bet ? q_class == militia
+opt: "Put your own name to her." -> q.fate.gate.claim {do: set(q.ned_claimed); record(certify.father, haldane, haldane_yard)}
+opt: "Say nothing." -> q.fate.gate.bet
+
+@node q.fate.gate.claim
+place: q_tilney
+speaker: SISTER
+cost: 4
+nar: Ned takes the form off her and writes in the father's line, under the ruled stroke, in the hand everybody in the building knows. The sister reads it. She looks at him, and at the girl, and at the mother.
+line: SISTER: Then she's for your house, is she.
+line: BET: She's for her own house.
+line: ANNI: Mum. What's he put?
+nar: Nobody answers her.
+go: q.fate.gate.bet
+
+# Bet decides. What she weighs: the home's meal against the thread; whether Tomas is gone; whether Aaron is ill;
+# whether anyone brought food this week; and, after the claim, a Furrowe door.
+@node q.fate.gate.bet
+place: q_tilney
+speaker: BET
+cost: 2
+alt: q.fate.gate.furrowe ? has(q.ned_claimed) & has(q.tomas_held)
+alt: q.fate.gate.claimhome ? has(q.ned_claimed)
+alt: q.fate.gate.keep ? has(q.ned_food) | has(q.will_bread)
+go: q.fate.gate.in
+
+@node q.fate.gate.in
+place: q_tilney
+speaker: BET
+cost: 6
+do: set(q.anni_sent); fate(f.anni_home, anni)
+line: BET: I'm not burying two. {when: has(q.tomas_held)}
+line: BET: Go on, then. Go in. {when: !has(q.tomas_held)}
+nar: Anni takes the thread off herself at the door, because her mother's fingers won't do it, and gives it to Bet, and Bet puts it in her mouth to keep it safe, the way you'd hold a pin.
+nar: Anni goes in with her tin of tallies under her arm. She counts the stairs going in, out loud, and the sister at the door says she'll soon stop that.
+nar: Will doesn't stop. He goes on along Tilney Road to the station with his hands in his armpits. {when: q_class == militia}
+go: q.coda
+
+@node q.fate.gate.keep
+place: q_tilney
+speaker: BET
+cost: 4
+line: BET: No. Somebody left us bread. We'll manage the week. {when: has(q.will_bread)}
+line: BET: No. We've flour, this week. We'll manage. {when: has(q.ned_food) & !has(q.will_bread)}
+line: SISTER: There's a lot will manage the week, Mrs Haldane. And then they're back here and we're full.
+line: BET: Then we'll be back.
+nar: She takes Anni by the wrist and walks her away down Tilney Road, past the cart with the sheet on it, and Anni counts the railings all the way to the corner.
+go: q.coda
+
+@node q.fate.gate.claimhome
+place: q_tilney
+speaker: BET
+cost: 4
+nar: Bet takes the form back off the sister, folds it with the new name inside, and puts it in her shawl.
+line: BET: She's coming home.
+nar: She takes Anni home hungry. The sister writes the name in the home's own book anyway, from memory, because she has a good memory for names, and by Friday the whole of Tilney Road has it in Ned's version.
+go: q.coda
+
+@node q.fate.gate.furrowe
+place: q_furrowe_door
+speaker: MARY
+cost: 6
+do: set(q.anni_furrowe); fate(f.anni_home, anni)
+nar: Bet doesn't take her home. She walks her up Exchange Street, past the queue, to the Furrowes' front door, and knocks on it herself, because she's not losing two.
+nar: Mary opens it. She looks at Bet, and at the girl, and at the form in Bet's hand with her husband's name on it, and at Ned coming up the street behind them with his hat still in his hand.
+line: MARY: You'd better come in, then. Wipe your feet.
+nar: Bet doesn't come in. Anni does.
+go: q.coda

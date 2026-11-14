@@ -1,32 +1,36 @@
 // Character building on one sheet (design/SYSTEMS-FULL.md section 19, approved 2026-10-17). The
 // four compartments are the four attributes and each owns a combat pillar; voices scale tools.
+// Since the traits pass (2026-10-23, design/TRAITS.md; names in combat/data/traits.mjs) every compartment and voice is a
+// trait the character carries and a being he fights inside: raising one helps his tools here and makes its being bigger
+// there (combat/arena/innerspawn.mjs embody). The ids below are the old ones, kept for saves, content and traces.
 // Names and structure are the director's; constants are the combat engineer's (TUNING.md), to be
 // re-set against cleanroom/spec/CHARACTER-BUILDING.md when it lands. Content can override any
 // tool, piece or move with @weapon, @item and @move records (encounter.mjs reads them).
 //
-//   COAT  endure   Standing, poise from clothing, the load limit, heavy tools' requirements
-//   NOSE  evade    dodge windows lengthen with THE DARK and SALT; footing; sneak openings
-//   PEN   read     telegraphs shown earlier (UNDERTOW, CARBON); a blow in the read window finds a
-//                  weak point (CARBON, PRECEDENT); swings cost less Breath with SUM
-//   HAT   end      opponents yield sooner (CONDOLENCE, FORM LETTER, HEARSAY); Composure 4 + 2 x HAT
-//                  pays for learned moves and talk exits; PRIDE scales the case's catch
+//   coat  HARDNESS   endure   Standing, poise from clothing, the load limit, heavy tools' requirements
+//   nose  FEAR       evade    dodge windows lengthen with DREAD (dark) and NERVE (salt); footing; sneak openings
+//   pen   SUSPICION  read     telegraphs shown earlier (SHAME undertow, GUILT carbon); a blow in the read window
+//                             finds a weak point (GUILT, LOYALTY precedent); swings cost less Breath with PRUDENCE (sum)
+//   hat   AUTHORITY  end      opponents yield sooner (TENDERNESS condolence, CONTEMPT formletter, SPITE hearsay);
+//                             Composure 4 + 2 x AUTHORITY pays for learned moves and talk exits; VANITY (pride)
+//                             scales the case's catch; APPETITE (grip) breaks poise; WEARINESS (knees) gives Breath
 // Soft cap: above 6, a compartment or voice counts half (19.2).
 export const soft = (v) => (v <= 6 ? v : 6 + (v - 6) / 2);
 
 export const DERIVED = {
   standing: { base: 4, perCoat: 2 },          // section 19 says 10 + 2 x COAT; 4 + protection keeps a middling Lamb at 10 and fights short (TUNING.md)
-  breath: { base: 4, nose: 0.5 },             // + KNEES + NOSE / 2 (19.2 says 6 +; tuned to 4 for the same reason)
-  sumOff: { per: 0.06, max: 0.4 },            // Breath per swing falls 6% a SUM point above 3, at most 40%
+  breath: { base: 4, nose: 0.5 },             // + WEARINESS (knees) + FEAR (nose) / 2 (19.2 says 6 +; tuned to 4 for the same reason)
+  sumOff: { per: 0.06, max: 0.4 },            // Breath per swing falls 6% a PRUDENCE (sum) point above 3, at most 40%
   composure: { base: 4, perHat: 2 },
-  read: { per: 1.5, max: 14 },                // frames earlier a telegraph shows, per UNDERTOW + CARBON point above 6
-  weak: { per: 0.05, max: 0.5 },              // weak point: +5% a CARBON + PRECEDENT point above 6, at most +50%
-  evade: { per: 1 / 3, max: 6, heavy: -2 },   // dodge window frames per THE DARK + SALT point above 6; heavy load -2
-  end: { per: 0.15, max: 3 },                 // yield line raised per HAT-voice point above 9 (three voices), at most +3 Standing
-  pride: { perCatch: 0.5 },                   // the case's catch: +1 frame per 2 PRIDE above 3
+  read: { per: 1.5, max: 14 },                // frames earlier a telegraph shows, per SHAME (undertow) + GUILT (carbon) point above 6
+  weak: { per: 0.05, max: 0.5 },              // weak point: +5% a GUILT (carbon) + LOYALTY (precedent) point above 6, at most +50%
+  evade: { per: 1 / 3, max: 6, heavy: -2 },   // dodge window frames per DREAD (dark) + NERVE (salt) point above 6; heavy load -2
+  end: { per: 0.15, max: 3 },                 // yield line raised per AUTHORITY-trait point above 9 (three traits), at most +3 Standing
+  pride: { perCatch: 0.5 },                   // the case's catch: +1 frame per 2 VANITY (pride) above 3
   protectionK: 18,                            // protection p softens a blow by p / (p + 18): 10% at 2, 25% at 6 (diminishing, CHARACTER-BUILDING 5)
 };
 
-// Scaling grades (19.3): the share of a tool's base added per voice point above 3 (soft-capped).
+// Scaling grades (19.3): the share of a tool's base added per trait (voice) point above 3 (soft-capped).
 export const GRADES = { strongly: 0.12, fairly: 0.07, slightly: 0.03 };
 
 // The 21 tools (19.5). cls: the moveset family (data/tools.mjs class profiles); over: what makes
@@ -71,6 +75,9 @@ export const CLOTHING = {
   "c.mittens": { protection: 0, weight: 0, soaked: 0.5 }, "c.apron": { protection: 3, weight: 3, soaked: 4 },
   "c.seaboots": { protection: 2, weight: 3, soaked: 3 }, "c.guernsey": { protection: 1, weight: 1, soaked: 1 },
   "c.shelf_hat": { protection: 0, weight: 0.5, soaked: 0.5 },
+  // The Quota (content/quota/q_rules.lwd): the inspector's overcoat and the militia greatcoat, worn as the Shelf coat is
+  "c.q_overcoat": { protection: 2, weight: 3, soaked: 6 }, "c.q_greatcoat": { protection: 2, weight: 3, soaked: 6 },
+  "c.q_hat": { protection: 0, weight: 0.5, soaked: 0.5 }, "c.q_cap": { protection: 0, weight: 0.5, soaked: 0.5 },
 };
 export const START_GEAR = ["c.shelf_coat", "c.shelf_hat"];
 
@@ -89,8 +96,8 @@ export const TEMPER_STEP = { dmg: 0.08, poise: 0.06 };
 // Composure (19.2): filled by landing blows, catching and ripostes; spent on learned moves, tool
 // specials and talk exits.
 // Composure (19.2): filled by blows, catches, ripostes; and (director, 2026-10-17) by held ground and
-// words: each blow Lamb blocks or slips while not striking back (block, evade), each HAT-voice bark
-// (words). A talk exit costs talk, or talkHat when HAT is HAT_TALK or more. Fill amounts chosen so a
+// words: each blow Lamb blocks or slips while not striking back (block, evade), each AUTHORITY-trait bark
+// (words). A talk exit costs talk, or talkHat when AUTHORITY (hat) is HAT_TALK or more. Fill amounts chosen so a
 // Tongue or Hands Lamb holding its ground about ten seconds can pay one exit (design/COMBAT-WORLD.md).
 export const COMPOSURE = { hit: 0.5, catch: 1.5, riposte: 1, art: 3, talk: 2, talkHat: 1, block: 0.35, evade: 0.35, words: 0.5 };
 export const HAT_TALK = 4;

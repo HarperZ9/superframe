@@ -1,0 +1,995 @@
+{
+ "tasks": {
+  "P": {
+   "k": 14,
+   "n": 24,
+   "share_wilson": [
+    0.583,
+    0.388,
+    0.755
+   ]
+  },
+  "S1": {
+   "k": 20,
+   "n": 36,
+   "share_wilson": [
+    0.556,
+    0.396,
+    0.705
+   ]
+  },
+  "S2": {
+   "k": 21,
+   "n": 36,
+   "share_wilson": [
+    0.583,
+    0.422,
+    0.729
+   ]
+  }
+ },
+ "decision": "P failed: task S decides nothing; the box keeps the old heads",
+ "note": "S shares are for the sculpted portrait; P for the second-pass painter",
+ "items": [
+  {
+   "seed": 611,
+   "id": "P01",
+   "q": "S1",
+   "who": "fennick",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P02",
+   "q": "P",
+   "who": "fennick",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P03",
+   "q": "S1",
+   "who": "lugg",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P04",
+   "q": "S2",
+   "who": "orme",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 611,
+   "id": "P05",
+   "q": "S2",
+   "who": "pip",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P06",
+   "q": "S1",
+   "who": "marrow",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 611,
+   "id": "P07",
+   "q": "P",
+   "who": "bright",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P08",
+   "q": "S2",
+   "who": "merrow",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 611,
+   "id": "P09",
+   "q": "P",
+   "who": "fisk",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 611,
+   "id": "P10",
+   "q": "S1",
+   "who": "dilly",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P11",
+   "q": "S1",
+   "who": "keel",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P12",
+   "q": "S2",
+   "who": "cockle",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P13",
+   "q": "S2",
+   "who": "lugg",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P14",
+   "q": "S2",
+   "who": "dilly",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P15",
+   "q": "S1",
+   "who": "pip",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P16",
+   "q": "S1",
+   "who": "hobb",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 611,
+   "id": "P17",
+   "q": "P",
+   "who": "pip",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P18",
+   "q": "P",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 611,
+   "id": "P19",
+   "q": "S2",
+   "who": "hobb",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 611,
+   "id": "P20",
+   "q": "S2",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P21",
+   "q": "S2",
+   "who": "fennick",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P22",
+   "q": "S2",
+   "who": "marrow",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 611,
+   "id": "P23",
+   "q": "S2",
+   "who": "noll",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P24",
+   "q": "S1",
+   "who": "orme",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P25",
+   "q": "S1",
+   "who": "merrow",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 611,
+   "id": "P26",
+   "q": "S1",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P27",
+   "q": "P",
+   "who": "dunlin",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 611,
+   "id": "P28",
+   "q": "S1",
+   "who": "noll",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P29",
+   "q": "S2",
+   "who": "keel",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P30",
+   "q": "P",
+   "who": "gorm",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P31",
+   "q": "S1",
+   "who": "cockle",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 611,
+   "id": "P32",
+   "q": "P",
+   "who": "hobb",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P01",
+   "q": "P",
+   "who": "orme",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P02",
+   "q": "S1",
+   "who": "ash",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P03",
+   "q": "S1",
+   "who": "gorm",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P04",
+   "q": "S2",
+   "who": "cockle",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P05",
+   "q": "S1",
+   "who": "dilly",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P06",
+   "q": "S1",
+   "who": "hobb",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P07",
+   "q": "S2",
+   "who": "dilly",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P08",
+   "q": "S2",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P09",
+   "q": "S1",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P10",
+   "q": "S2",
+   "who": "ash",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P11",
+   "q": "P",
+   "who": "merrow",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P12",
+   "q": "P",
+   "who": "strand",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P13",
+   "q": "P",
+   "who": "teague",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P14",
+   "q": "S2",
+   "who": "wenna",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P15",
+   "q": "S1",
+   "who": "spratt",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P16",
+   "q": "S1",
+   "who": "dace",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P17",
+   "q": "S2",
+   "who": "spratt",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P18",
+   "q": "S2",
+   "who": "hobb",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P19",
+   "q": "S2",
+   "who": "orme",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P20",
+   "q": "S2",
+   "who": "gorm",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P21",
+   "q": "S1",
+   "who": "wenna",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P22",
+   "q": "P",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P23",
+   "q": "S2",
+   "who": "penhallow",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P24",
+   "q": "P",
+   "who": "dace",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P25",
+   "q": "S2",
+   "who": "dace",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P26",
+   "q": "P",
+   "who": "noll",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P27",
+   "q": "S2",
+   "who": "fewell",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P28",
+   "q": "S1",
+   "who": "fewell",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P29",
+   "q": "S1",
+   "who": "orme",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P30",
+   "q": "P",
+   "who": "dilly",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 612,
+   "id": "P31",
+   "q": "S1",
+   "who": "penhallow",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 612,
+   "id": "P32",
+   "q": "S1",
+   "who": "cockle",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 613,
+   "id": "P01",
+   "q": "P",
+   "who": "sabine",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P02",
+   "q": "S2",
+   "who": "dunlin",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P03",
+   "q": "P",
+   "who": "rook",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P04",
+   "q": "S1",
+   "who": "mab",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P05",
+   "q": "P",
+   "who": "pip",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P06",
+   "q": "S2",
+   "who": "keel",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 613,
+   "id": "P07",
+   "q": "S1",
+   "who": "keel",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 613,
+   "id": "P08",
+   "q": "S1",
+   "who": "strand",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P09",
+   "q": "P",
+   "who": "ash",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P10",
+   "q": "S1",
+   "who": "pellow",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P11",
+   "q": "S2",
+   "who": "coe",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P12",
+   "q": "S1",
+   "who": "fennick",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 613,
+   "id": "P13",
+   "q": "P",
+   "who": "pellow",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P14",
+   "q": "S2",
+   "who": "mab",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P15",
+   "q": "S2",
+   "who": "pip",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P16",
+   "q": "S1",
+   "who": "ash",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P17",
+   "q": "S2",
+   "who": "sallis",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P18",
+   "q": "P",
+   "who": "strand",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P19",
+   "q": "S2",
+   "who": "strand",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P20",
+   "q": "S1",
+   "who": "lugg",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 613,
+   "id": "P21",
+   "q": "S1",
+   "who": "coe",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P22",
+   "q": "S2",
+   "who": "lugg",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 613,
+   "id": "P23",
+   "q": "S2",
+   "who": "ash",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P24",
+   "q": "S2",
+   "who": "pellow",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P25",
+   "q": "S2",
+   "who": "fennick",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 613,
+   "id": "P26",
+   "q": "S1",
+   "who": "pardew",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P27",
+   "q": "P",
+   "who": "shadwell",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P28",
+   "q": "S1",
+   "who": "sallis",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P29",
+   "q": "S1",
+   "who": "dunlin",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P30",
+   "q": "S1",
+   "who": "pip",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P31",
+   "q": "P",
+   "who": "gauze",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 613,
+   "id": "P32",
+   "q": "S2",
+   "who": "pardew",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  }
+ ]
+}

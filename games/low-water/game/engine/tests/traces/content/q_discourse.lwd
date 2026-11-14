@@ -1,0 +1,98 @@
+# The Quota slice: rumour and discourse (design/DISCOURSE-SYSTEM.md; engine: world/discourse.mjs and the model's
+# carriers in world/community.mjs; check: tools/discoursecheck.mjs). Gameplay engineer, 2026-10-22.
+# Three carriers of the hoarding claim: the district notices (q_community.lwd), the Crown on Mill Street, and the
+# Furrow Church's pulpit. Each one's volume moves the Hesh's standing street by street through a rule like R17,
+# at its own speed: talk is quick and fades, a sermon is slow and stays. The player can read a notice out, argue
+# with it, tear it down, or paste the true figure over it; every one of those is a record event.
+
+@carrier pub
+name: The Crown, Mill Street
+target: hesh
+volume: 0.15
+reach: mill, square
+
+@carrier pulpit
+name: The Furrow Church
+target: hesh
+volume: 0.2
+reach: all
+
+# ---------------------------------------------------------------- the claims
+@claim cl.hesh_hoard
+words: THE HESH HAVE THE GRAIN UNDER THE GOATS. REPORT HOARDING TO THE DISTRICT OFFICE.
+target: hesh
+victim: haldane
+carriers: notices, pub, pulpit
+step: 0.1
+first: Typed in Arlen and posted by the district office on day 39; the same words in the Commissioner's circular
+challenge-cost: shift(portion, -0.05, {self})
+about: The district's notice. Saying it louder costs the Hesh; saying it is not true costs the one who says it (the office stamps the troublemaker's ration card short).
+
+@claim cl.true_figure
+words: THE HALDANE BARNS GREW 190. THE RETURN SAYS 310.
+target: hesh
+victim: haldane
+carriers: notices
+step: 0.1
+first: The player's own hand, pasted over the district's notice
+about: The true figure, put up by the player who has it.
+
+# ---------------------------------------------------------------- the carriers' rules (beside R17, the notices)
+@rule R17p
+name: rhetoric in the pub
+per: street
+when: volume.pub > 0.2 & pub > 0
+do: standing.hesh -= 0.02 * volume.pub * pub / (1 + mixed)
+delay: 3
+because: it is said over the bar by people who were in the queue; talk travels faster than paper
+
+@rule R17c
+name: rhetoric from the pulpit
+per: street
+when: volume.pulpit > 0.2 & pews > 0
+do: standing.hesh -= 0.015 * volume.pulpit * pews / (1 + mixed)
+delay: 7
+because: the minister says thrift and honesty and who has not got them; it lands slowly and it stays
+
+@rule Rvp
+name: the pub forgets
+per: district
+when: volume.pub > 0.1
+do: volume.pub -= 0.01
+delay: 0
+because: talk fades unless somebody says it again
+
+@rule Rvc
+name: the pulpit keeps it
+per: district
+when: volume.pulpit > 0.1
+do: volume.pulpit -= 0.002
+delay: 0
+because: a sermon goes round for weeks
+
+@rule Rr
+name: the office reposts
+per: district
+when: torn.hesh_hoard > 0
+do: volume.notices += 0.05; torn.hesh_hoard -= 1
+delay: 2
+because: a torn notice is posted again within two days, and the clerk puts up a second beside it
+
+# ---------------------------------------------------------------- the notices the player can act on
+@object q.notice_post
+name: The district's notice
+place: q_post
+about: Pinned to the board at the post, beside the passes.
+verb: mark "Read it out to the carts" {do: discourse(repeat, cl.hesh_hoard, hollow), cost: 2}
+verb: mark "Tell the carts it isn't true" {do: discourse(challenge, cl.hesh_hoard, hollow), cost: 2}
+verb: mark "Tear it down" {do: discourse(tear, cl.hesh_hoard, hollow), cost: 1}
+verb: mark "Paste the true figure over it" ? has(q.true_in_hand) {do: discourse(paste, cl.hesh_hoard, hollow, cl.true_figure), cost: 3}
+
+@object q.notice_exchange
+name: The district's notice
+place: q_furrowe_door
+about: Pasted to the wall under the street sign, at the height of the queue's faces.
+verb: mark "Read it out to the queue" {do: discourse(repeat, cl.hesh_hoard, square), cost: 2}
+verb: mark "Tell the queue it isn't true" {do: discourse(challenge, cl.hesh_hoard, square), cost: 2}
+verb: mark "Tear it down" {do: discourse(tear, cl.hesh_hoard, square), cost: 1}
+verb: mark "Paste the true figure over it" ? has(q.true_in_hand) {do: discourse(paste, cl.hesh_hoard, square, cl.true_figure), cost: 3}

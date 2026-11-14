@@ -1,0 +1,117 @@
+# Era 1, The Exchange: Josh hits Will at the post after the hands go up, and the hill that winter. On the sent
+# route Ketti Sallis dies on screen in the hut at the top in January (fate f.e1_sallis, decided by Josh at the frost
+# list); a pleasure comes first, the hare. On the kept route the winter is shown below, and what keeping Arn cost.
+# Story lead, deepening pass, 2026-10-23. DRAFT: every line waits for the author's line approval (ledger row S14).
+# The author's question "Ketti's death is told, not shown" is answered 2026-10-23: shown.
+
+# ---------------------------------------------------------------- the post, after the hands have gone up
+@node e1.post.will
+place: q_post
+hud-weather: frost in the ruts
+speaker: JOSH
+cost: 0
+nar: The road post, after. The frost is off the road now except in the ruts. The ones who were kept, if there were any, have gone off to wherever they're kept. Josh has the post lantern in his hand still from before light, not lit any more, and he's kicking the frost off the pole's weight with his boot.
+nar: Will is at the pole. He hasn't let it down. He's looking up the hill road at the shoulder where they went over.
+line: WILL: Dad.
+line: JOSH: Let the pole down.
+line: WILL: The Sallis lad was coughing blood. On the frost, by the pole. There's some there. I saw it. {when: has(e1.sallis_sent)}
+line: WILL: The Pruett grandmother couldn't walk it. They were carrying her between two of them like a sack. {when: has(e1.sallis_kept)}
+line: JOSH: Let the pole down, Will.
+line: WILL: I'm only saying we could've had Lind look at him.
+nar: Josh turns round with the lantern in his hand, the iron cage of it, and hits Will across the face with it. Not the flat of his hand. The cage, the corner of it. {sense: blow.taken}
+nar: Will's head goes round and his hat goes in the road again and he takes two steps sideways to keep his feet.
+nar: When he straightens up his top lip's split against his teeth and his nose is going, two lines of it down into his mouth and off his chin, onto the front of the coat that was bought big for him. It drips on the frost in the rut, beside the other.
+line: JOSH: Lind passed them. Every one. You saw him lift his whip. Fit to travel. You want to go down the road and tell Dr Lind his business?
+line: WILL: No, Dad.
+line: JOSH: When I say let the pole down, you let the pole down. When I say go on, they go on. Now wipe your face.
+nar: Will lets the pole down. He holds his sleeve under his nose. He doesn't wipe it, he just holds it there, and stands at the pole the way his father stands at it, with his feet apart, looking at the road.
+nar: Josh sits down on his bucket and sets the lantern on the ground between his boots, and there's blood on the cage of it, and a hair, and he wipes it off with his thumb, and looks at his thumb, and wipes his thumb on his knee.
+voice: ballast: They come down with the harvest and they go up with the frost. You're only saying it out loud. {dc: 2, self: e1.sl.lantern, when: q_class == militia}
+voice: grip: He'll stand at that pole for forty years. You've just shown him how. {dc: 3, when: q_class == militia}
+nar: Abel's trap goes back along the road toward the town. He'd seen it. He touches his hat to Josh going past, and Josh touches his. {when: q_class == inspector}
+go: e1.census
+
+# ---------------------------------------------------------------- the hill that winter
+@node e1.hill
+cost: 0
+alt: e1.hill.hare ? has(e1.sallis_sent)
+go: e1.hill.kept
+
+@node e1.hill.hare
+place: q_hill
+hud-weather: December, frost
+speaker: KETTI
+cost: 0
+camera: near
+nar: That winter. The hut at the top of the hill road, in the lee of the long wall, December. One room of stone with a turf roof and a door made of three planks and a sack, and snow on the turf, and snow on the wall, and snow on the door where it blows in under the sack.
+nar: Davin's snare has a hare in it. He brings it in by the back legs, stiff, frozen, with snow in its fur, and holds it up with both arms like a thing he made himself.
+line: DAVIN: Mam. Mam. Look.
+line: KETTI: Oh, look at that. Look at him. Arn, look what he's got.
+line: ARN: He never.
+line: DAVIN: I did. In the gap by the thorn. Where you said.
+line: KETTI: Where your dad said and you said it was daft.
+nar: Ketti skins it on the doorstep with Arn's knife, quick, the way you'd take off a glove, and the steam comes off the meat in the cold. Her fingers are raw and split at every knuckle and the cracks open when she bends them and she doesn't notice.
+nar: They stew it with the last of the oats and a bit of the dripping, and it takes all afternoon because the fire's peat and wet, and they sit round it in their coats and blankets watching the pot. When it's done they eat it with their fingers out of the one tin, the three of them, burning their mouths.
+line: KETTI: That's the best thing I've ever had. That is. I'm not having it said it isn't.
+line: ARN: You said that about Ilo's potato.
+line: KETTI: That was the best potato. This is the best thing.
+nar: Davin falls asleep with a bone in his hand. Ketti takes it out of his fingers and sucks it, and puts it on the fire.
+nar: She coughs in the night, the first time. Arn hears it and lies still and counts it.
+go: e1.hill.ketti
+
+@node e1.hill.ketti
+place: q_hill
+hud-weather: January, deep snow
+speaker: ARN
+cost: 0
+camera: near
+nar: January. The snow is up to the eaves on the wall side and the door won't shut on it any more. They burn the stool. They burn the snare pegs. Arn goes down the hill road as far as the shoulder every morning to look at the plain and comes back.
+nar: Ketti has had Davin's cough for three weeks and it's gone down into her. She lies on the bed of bracken by the fire under every coat they have, and she's hot, though there's ice on the inside of the walls, so hot that the snow melts where her hand hangs down onto it.
+nar: When she coughs it comes up red. Not a speck. A mouthful, dark and frothy, and she turns her head to the wall to do it so the boy won't see, and Arn wipes the wall with snow after, and the snow goes pink and he throws it out of the door.
+nar: Her lips are split in three places and gone a grey colour at the edges. Her feet are the worst. The toes on the left have gone black at the ends, hard and black like burnt wood, and they smell, and she can't feel them. Arn has her feet inside his shirt, against his belly, both of them, and he sits like that all day with his back against the wall.
+line: KETTI: Arn.
+line: ARN: I'm here.
+line: KETTI: Is it the sun.
+line: ARN: It's the middle of the night, love.
+line: KETTI: You owe me a penny.
+line: ARN: I owe you a penny.
+nar: Davin is asleep against her side, under the coats, the way she used to sleep against her mother. Every time she coughs he wakes and puts his hand on her the way she used to put hers on him, and goes back to sleep.
+line: KETTI: Did you make the wall.
+line: ARN: I'll make it in the spring.
+line: KETTI: For the potatoes.
+line: ARN: For the potatoes. In the hot stones.
+line: KETTI: You'll burn them.
+line: ARN: I'll burn them.
+line: KETTI: It's never the stones.
+nar: She goes quiet after that. Her breathing goes on a long time, a wet rattle like stirring gravel, slower, and then there's a gap in it that goes on, and then one more breath, and then there isn't one.
+nar: Arn sits with her feet in his shirt till the fire goes down. He knows. He doesn't move. When the fire goes down to red he can see her face, and her mouth's open a bit, and there's frost coming on her eyelashes already because she's not warm any more to stop it.
+line: ARN: He said he didn't set the frost. Brack. He said that.
+nar: In the morning Davin wakes up because his mother is cold. He lies there a while with his hand on her before he says anything.
+line: DAVIN: Dad. Mam's gone cold.
+line: ARN: I know, son. Come here. Come here to me.
+nar: The ground is iron. Arn can't dig it. He carries her out in the blanket and lays her in the lee of the long wall, and he takes the stones off the top of the wall, one at a time, and lays them over her, all day, till you can't see the blanket. He doesn't stop to eat. Davin carries the small ones.
+nar: It's a wall, when it's done. A short wall, against the long wall, the length of a woman.
+voice: undertow: Josh Brack said her name at the pole on a Tuesday, and went home for his tea. {dc: 2}
+go: e1.w.start
+
+@node e1.hill.kept
+place: q1_backstore
+hud-clock: 06:30
+hud-weather: dark, snow off the plain
+speaker: GEDGE
+cost: 0
+nar: That winter, below. January, the mill yard, half past six, dark, snow coming sideways off the plain. The carts going out to the station with the flour.
+nar: Arn Sallis is with them, driving Orme's second cart, with his collar up and his hands wrapped in rag. He's carted every day since the frost at two-thirds of a carter's rate, which is still more than a hand's rate, and Ketti's alive, and Davin's alive, and the cough has gone out of the boy with the warm. {when: has(said.e1_josh_carter)}
+nar: Arn Sallis is with Abel's horse in the snow in Furrowe's yard, breaking the ice on the trough with a hammer. They've wintered over the horse, the three of them, in the warm. Ketti's alive. Davin's alive. The cough has gone out of the boy. {when: has(said.e1_abel_loft)}
+nar: At the mill gate, Gedge's father, Hob Gedge, is standing in the snow with his hands in his armpits. He carted for Orme twenty years at the full rate. He comes to the gate every morning in case. Gedge, eighteen, stands beside him because he can't think what else to do with him. {when: has(said.e1_josh_carter)}
+line: GEDGE: Come home, Dad. He's not going to.
+line: HOB: I'm only looking.
+line: GEDGE: You looked yesterday.
+line: HOB: That's my cart. That one. I put that wheel on.
+nar: Arn drives the cart out through the gate past them, and doesn't look, and Hob Gedge doesn't look at him either, and the snow fills in the wheel ruts behind it. {when: has(said.e1_josh_carter)}
+nar: Up in the loft over Abel's horse, Ketti has put a hill pattern in chalk along the beam over where they sleep, goats, very small, with their heads turned back. Abel sees it when he comes up for the hay, and stands looking at it, and doesn't say anything about it, and doesn't rub it off. {when: has(said.e1_abel_loft)}
+line: KETTI: Say good morning to Mr Furrowe, Davin. {when: has(said.e1_abel_loft)}
+line: DAVIN: Morning, Mr Furrowe. {when: has(said.e1_abel_loft)}
+line: ABEL: Morning, son. Keep that door shut, you're letting the heat out of my horse. {when: has(said.e1_abel_loft)}
+nar: On the hill that winter the Pruett grandmother dies in the hut at the top, and two of the Tesk sheep, and a child of the Marrens nobody below had learned the name of. Nobody comes down to say. Josh said Sallis at the pole, and Sallis was kept.
+go: e1.w.start

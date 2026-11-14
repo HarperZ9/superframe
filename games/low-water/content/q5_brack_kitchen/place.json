@@ -1,0 +1,173 @@
+{
+ "place": "q5_brack_kitchen",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   0.9,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 2.7083333333333335
+ },
+ "pxPerMetre": 240,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 1.7,
+   "weather": "year 115, April, 01:40: the hood light only, the estate's sodium in the window"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  118
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "bar",
+    "verb": "read",
+    "at": [
+     -0.1,
+     0,
+     1
+    ],
+    "note": "the breakfast bar: the statement draft, his phone face down, then face up"
+   },
+   {
+    "id": "photo",
+    "verb": "look",
+    "at": [
+     0.95,
+     0,
+     -0.9
+    ],
+    "note": "the windowsill: the wedding photograph, the glass cracked from one corner"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "landing",
+    "at": [
+     1.9,
+     0,
+     0.4
+    ],
+    "note": "the landing, the lift that doesn't work"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     0.55,
+     1.09,
+     0.3
+    ],
+    "kind": "white",
+    "I": 0.35,
+    "reach": 1.4,
+    "group": "screen"
+   },
+   {
+    "at": [
+     -1.2,
+     1.52,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 1.2,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -1.2,
+     1.52,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 4.5,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     0.6,
+     2,
+     -3.5
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 8,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "night": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: the hood light only, the estate's sodium in the window."
+}

@@ -1,0 +1,146 @@
+{
+ "place": "q4_board",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   -0.2,
+   1.1,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.9393939393939394
+ },
+ "pxPerMetre": 165,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 15.5,
+   "weather": "year 70, 15:30: the low autumn sun across the table from the tall window, the pendant lit and weak against it"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  116
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "map",
+    "verb": "read",
+    "at": [
+     -1,
+     0,
+     -0.1
+    ],
+    "note": "the map on the easel: the streets by the race shaded in grey wash, a key in a clerk's hand"
+   },
+   {
+    "id": "table",
+    "verb": "read",
+    "at": [
+     0.6,
+     0,
+     1.2
+    ],
+    "note": "the board table: papers squared at every place, the vote already counted"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "door",
+    "at": [
+     2.8000000000000003,
+     0,
+     1.6
+    ],
+    "note": "the door to the bank's stair"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": [
+   {
+    "at": [
+     0.6,
+     2.57,
+     0.1
+    ],
+    "kind": "paraffin",
+    "I": 2.5,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -2.85,
+     2.3,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 30,
+    "reach": 12,
+    "group": "window"
+   }
+  ]
+ },
+ "figureLights": {
+  "afternoon": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: the bank's boardroom, the map on the easel."
+}

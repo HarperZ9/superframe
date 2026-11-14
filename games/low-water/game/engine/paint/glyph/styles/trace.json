@@ -1,0 +1,14 @@
+{
+ "name": "trace",
+ "label": "trace",
+ "palette": "full",
+ "crt": false,
+ "bloom": 0.3,
+ "halation": 0.12,
+ "floor": 1,
+ "glow": true,
+ "ramp": "measured",
+ "charset": " .`'-,:_;~\"^!|/\\<>+=*?ilr()1{}[]vcxzunoaeswkhbdpqgmyftjOQ0ZXYUCLJVHNKAGDBRPESW8%&$#@M",
+ "note": "One ramp for every surface, chosen by measured ink coverage in the game's own font (paint/tools/density.mjs), with the layered glow on: the scene read as density alone, colour from the light. Tones dithered by world-anchored blue noise (glyph/bluenoise.mjs).",
+ "dither": 1.0
+}

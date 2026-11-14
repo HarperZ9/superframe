@@ -1,0 +1,253 @@
+# Era 1, The Exchange (year 0, harvest to the first frost): places, people, households and fates. Story lead,
+# package W2-F, 2026-10-22. DRAFT: written under the blanket approval; every spoken line waits for the author's
+# approval (ledger row S14). Design: design/eras/era1.md (commit 0008ccc), decisions in commit e519930.
+# Era 1 plays in the same act as era 2, before it: var.era is 1 while it plays and 2 from the witness on, so
+# the props show their era 1 states. Every era 1 node costs 0 minutes, so era 2's clock starts where it always
+# did (05:50). Era 1 writes no record event, so the community model reaches era 2 as it always did.
+# Plates: the q1_* places have no plates yet (package W3-C); the scenes that happen in a place era 2 already
+# paints (the tower, the post, the hill road, the Haldane kitchen, the Sheaf) use it.
+
+@var era
+default: 2
+
+# ---------------------------------------------------------------- places new in era 1
+@place q1_exchange
+name: The exchange hall, Exchange Street
+zone: upper
+district: upper
+footing: stone
+shelter: yes
+light: 0.6
+sodium: 0
+dark-light: 0.02
+
+@place q1_backstore
+name: Orme's back store, the mill
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.3
+sodium: 0
+dark-light: 0.01
+
+@place q1_board
+name: The registrar's upstairs room
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+@place q1_census
+name: The registrar's front counter
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.4
+sodium: 0
+dark-light: 0.02
+
+@place q1_loft
+name: Abel Furrowe's hayloft, over the horse
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.2
+sodium: 0
+dark-light: 0.01
+
+@place q1_supper
+name: Orme's barn, the harvest supper
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+@place q1_supper_yard
+name: The yard outside Orme's barn
+zone: upper
+district: upper
+footing: cobble
+light: 0.2
+sodium: 0
+dark-light: 0.01
+
+@place q1_barns
+name: The barns at Haldane's
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.3
+sodium: 0
+dark-light: 0.01
+
+@place q1_osby
+name: Osby fair
+zone: upper
+district: upper
+footing: grass
+light: 0.7
+sodium: 0
+dark-light: 0.02
+
+# ---------------------------------------------------------------- people new in era 1
+@char e1.edwin
+name: Edwin Mott, census clerk
+speaker: EDWIN
+faction: district
+about: Fifty-eight. Writes the board's minutes and the census in the same hand. Walter's father.
+
+@char e1.walter
+name: Walter Mott, junior clerk
+speaker: WALTER
+faction: district
+about: Twenty-eight. Edwin's son. Already writes his sevens without a bar.
+
+@char e1.josh
+name: Josh Brack, the road post
+speaker: JOSH
+faction: district
+about: Fifty-two. Keeps the post road and the list. Will's father, who hits him on Fridays.
+
+@char e1.george
+name: George Orme, the mill
+speaker: GEORGE
+faction: millstreet
+about: Fifty-two. Owns the mill and buys more off the exchange floor than anyone. Pays the hands by the sack.
+
+@char e1.oskar
+name: Dr Oskar Lind, the exchange's doctor
+speaker: OSKAR
+faction: chairmen
+about: Fifty. Does rounds in the hands' barns because the exchange pays him to say who is fit.
+
+@char e1.clara
+name: Clara Lind
+speaker: CLARA
+faction: chairmen
+about: Fourteen. Carries her father's bag and watches what he writes.
+
+@char e1.ashby
+name: Clement Ashby, the Gazette
+speaker: ASHBY
+faction: chairmen
+about: Forty-five. Sits in the gallery over the floor and wires the prices to Arlen.
+
+@char e1.calley
+name: Professor Edmund Calley, of Arlen
+speaker: CALLEY
+faction: chairmen
+about: Sixty. The board's guest for the harvest. Has written a book about the hill people and met two of them.
+
+@char e1.arn
+name: Arn Sallis
+speaker: ARN
+faction: hesh
+about: Thirty-four. A Hesh hand, down from the hill every harvest for eleven years.
+
+@char e1.ketti
+name: Ketti Sallis
+speaker: KETTI
+faction: hesh
+about: Thirty. Arn's wife. Ties sheaves faster than any man on Orme's ground and is paid by the sack like them.
+
+@char e1.davin
+name: Davin Sallis
+speaker: DAVIN
+faction: hesh
+about: Eight. Has a cough he has had since the barley.
+
+@char e1.kel
+name: Kel Tesk
+speaker: KEL
+faction: hesh
+about: Fourteen. Old Tesk's son. Sweeps the mill floor at night for a penny.
+
+@char e1.carrow
+name: Old Carrow
+speaker: CARROW
+faction: millstreet
+about: Fifty. A Tarn cottar on the Osby road. Bet's father. Name new in era 1, for the author to confirm.
+
+@char e1.haig
+name: Haig, Orme's foreman
+speaker: HAIG
+faction: millstreet
+about: Keeps the back store and the strap on the nail by the door.
+
+# ---------------------------------------------------------------- what era 1 leaves in the world
+@fact e1.rule_passed
+@fact e1.tenant_asked
+@fact e1.loft_taken
+@fact e1.toast_heard
+@fact e1.glass_raised
+@fact e1.glass_left
+@fact e1.sallis_sent
+@fact e1.sallis_kept
+@fact e1.kel_kept
+@fact e1.kel_walked
+@fact e1.per_af
+@fact e1.per_letter
+@fact e1.named
+@fact e1.door_down
+@fact said.e1_abel_sweepings
+@fact said.e1_josh_tip
+@fact said.e1_abel_tenant
+@fact said.e1_josh_words
+@fact said.e1_abel_loft
+@fact said.e1_josh_carter
+@fact said.e1_raise
+@fact said.e1_leave_glass
+
+# ---------------------------------------------------------------- the two households the rule presses
+# Hesh hands in the barns at Haldane's for the harvest. The rule (the board's residency minute, e1.board) is the
+# pressure; Josh Brack and George Orme decide, in written scenes.
+@household e1_sallis
+name: The Sallises, in the barns
+street: haldane_yard
+people: hesh
+hesh: 1
+place: q_yard
+members: Arn, Ketti, Davin
+taken: 0
+portion: 1
+
+@household e1_tesk
+name: The Tesks, on the hill
+street: haldane_yard
+people: hesh
+hesh: 1
+place: q_hill
+members: Tesk, Kel
+taken: 0
+portion: 1
+
+@fate f.e1_sallis
+pressure: has(e1.rule_passed)
+subject: household e1_sallis
+decider: JOSH
+scene: e1.frost.decide, e1.frost.sent, e1.frost.kept
+window: 7
+who: Ketti
+because: the board's minute says seasonal hands are not residents; Josh Brack reads the frost list at the post and says who goes up the hill road and who is written down as kept
+
+@fate f.e1_kel
+pressure: has(e1.rule_passed)
+subject: household e1_tesk
+decider: GEORGE
+scene: e1.kel.decide, e1.kel.kept, e1.kel.walked
+window: 7
+taken: yes
+who: Kel
+because: under the minute any charge is a reason to send a hand up the hill; George Orme says whether the boy is docked and kept or walked to the post with the sweepings in his boots

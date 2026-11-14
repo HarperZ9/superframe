@@ -84,9 +84,13 @@ export function surfOf(id, P, N, V = {}) {
   if (out && V.wet && k.flags.includes("r") && N[1] > 0.9 && fbm(P[0] * 0.55 + 3, P[2] * 0.55 - 7) < 0.36 + 0.12 * V.wet) { mat = "lw water"; scale = 1; wet = 1; }
   // rime on cold tops: thin where wet stone drains, thick on wood and rails
   if (out && V.frost && k.flags.includes("f") && N[1] > 0.55) {
-    // a fine film that lifts the value everywhere, with sparse full rime where it gathers
-    const thin = k.mat === "stone" ? 0.6 : 1, r = sat((V.frost * thin * (0.45 + 0.6 * fbm(P[0] * 9 + P[1], P[2] * 9 + 5)) - 0.62) * 4);
-    if (r > 0.55) { mat = "lw rime"; scale = 0.55 + 0.35 * r; wet = 0.35; } else { scale *= 1 + 0.8 * V.frost * thin; wet = Math.max(wet, 0.25 * V.frost); }
+    // hoar as a fine even film: every top lifts in value, and rime crystals speckle it at grain scale
+    // (a hash per 2.5 cm cell, densest on the flattest tops), so the brush averages them into a pale
+    // bloom. The earlier rule (rime wherever a 9-per-metre noise crossed a threshold) made 10 to 30 cm
+    // blotches in white that took every lamp's colour, and read as camouflage, not frost (the Spit, 2026-10-21).
+    const thin = k.mat === "stone" ? 0.6 : 1, flat = sat((N[1] - 0.55) / 0.4), p = V.frost * thin * (0.18 + 0.32 * flat) * (0.85 + 0.3 * vnoise(P[0] * 1.3, P[2] * 1.3));
+    scale *= 1 + 0.55 * V.frost * thin * flat; wet = Math.max(wet, 0.25 * V.frost);
+    if (H2(Math.floor(P[0] * 40 + P[1] * 17), Math.floor(P[2] * 40 - P[1] * 23)) < p) { mat = "lw rime"; scale = 0.6; wet = 0.35; }
   }
   if (V.indoor && name !== "pool") wet = 0;
   if (V.day) wet *= 0.4;

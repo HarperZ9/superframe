@@ -1,0 +1,186 @@
+{
+ "place": "q5_square",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   0.5,
+   1.8,
+   0
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 6.75
+ },
+ "pxPerMetre": 80,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "evening"
+ ],
+ "variantInfo": {
+  "evening": {
+   "hour": 20.6,
+   "weather": "year 115, April, 20:35: the car park under sodium, the sheaf under its tarpaulin"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  111,
+  3,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "memorial",
+    "verb": "look",
+    "at": [
+     3,
+     0,
+     2.6
+    ],
+    "note": "the bronze sheaf under its tarpaulin, roped; the villages' names at the foot where the rope slipped"
+   },
+   {
+    "id": "bench",
+    "verb": "look",
+    "at": [
+     -2,
+     0,
+     4
+    ],
+    "note": "the council bench on the scale's base; the plaque gives the wrong year"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     -11,
+     0,
+     1
+    ],
+    "note": "to Exchange Street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "evening": [
+   {
+    "at": [
+     -1.8,
+     3.6,
+     -3.35
+    ],
+    "kind": "paraffin",
+    "I": 0.8,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     1.8,
+     3.6,
+     -3.35
+    ],
+    "kind": "paraffin",
+    "I": 0.8,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     8,
+     5.75,
+     2.85
+    ],
+    "kind": "sodium",
+    "I": 12,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     8,
+     5.75,
+     2.85
+    ],
+    "kind": "sodium",
+    "I": 90,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -0.5,
+     5.75,
+     -2.25
+    ],
+    "kind": "sodium",
+    "I": 16,
+    "reach": 24,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "evening": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: the car park under sodium, the sheaf under its tarpaulin."
+}

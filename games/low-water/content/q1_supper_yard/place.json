@@ -1,0 +1,119 @@
+{
+ "place": "q1_supper_yard",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   0,
+   2.4,
+   -2
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 8.114856429463172
+ },
+ "pxPerMetre": 80.1,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 21,
+   "weather": "harvest supper, 21:00: the lantern and the full moon low over the stubble, a warm night, no frost"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  6,
+  3,
+  8,
+  85
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [],
+  "hides": [],
+  "exits": [
+   {
+    "id": "barn",
+    "at": [
+     -1,
+     0,
+     -2.8
+    ],
+    "note": "the big doors, ajar on the supper and the light"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     2.6,
+     3.4,
+     -2.8
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 12,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -1,
+     1.4,
+     -3
+    ],
+    "kind": "paraffin",
+    "I": 8,
+    "reach": 9,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -3.4,
+     2.5,
+     0.6
+    ],
+    "kind": "paraffin",
+    "I": 14,
+    "reach": 12,
+    "group": "lantern"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 1: the yard outside Orme's barn on the supper night."
+}

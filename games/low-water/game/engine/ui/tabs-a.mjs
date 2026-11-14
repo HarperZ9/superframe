@@ -58,10 +58,14 @@ export function marginTab(ctx, rerender) {
   const G = ctx.G, C = G.cabinet, list = C.list(), why = C.canBuySlot();
   const slots = h("div.slotline", h("span.mono", `${C.slots() - C.free()} of ${C.slots()} slots used`),
     btn("Buy a slot (1 page)", () => { C.buySlot(); rerender(); }, { cls: "mini", disabled: !!why, title: why || "" }), why ? h("span.why.small", why) : null);
-  const group = (st, title) => { const xs = list.filter((t) => t.status === st); return xs.length ? section(title, ...xs.map((t) => traitRow(ctx, t, rerender))) : null; };
+  // Convictions (cv.*, design/THEMES.md 5) are positions, not deductions: they share the slots and get their own section.
+  const isCv = (t) => String(t.id).startsWith("cv."), notes = list.filter((t) => !isCv(t)), convs = list.filter(isCv);
+  const group = (st, title) => { const xs = notes.filter((t) => t.status === st); return xs.length ? section(title, ...xs.map((t) => traitRow(ctx, t, rerender))) : null; };
+  const order = { researching: 0, done: 1, found: 2, forgotten: 3 };
+  const convSec = convs.length ? section("Convictions", ...convs.slice().sort((a, b) => (order[a.status] ?? 4) - (order[b.status] ?? 4)).map((t) => traitRow(ctx, t, rerender))) : null;
   const any = list.length;
   return h("div", slots, any ? null : empty("No thoughts found yet. They turn up in conversation."),
-    group("researching", "Pencilled"), group("found", "Found"), group("done", "Inked"), group("forgotten", "Forgotten"));
+    group("researching", "Pencilled"), group("found", "Found"), group("done", "Inked"), convSec, group("forgotten", "Forgotten"));
 }
 
 function skillRow(ctx, sk, rerender) {

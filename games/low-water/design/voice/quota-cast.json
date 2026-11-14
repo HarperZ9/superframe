@@ -1,0 +1,2185 @@
+{
+ "format": "lw-voice-cast/1",
+ "about": "The Quota's slice cast (era 2, day 41 of the famine winter): one record per speaker, the single source for both design/voice/profiles.json (sound, synth, face, lint rules) and Articulate's design/voice-sheets/quota/*.json (register, region, length, never-words, knowledge). Regenerate both with: node tools/voice/sheets.mjs. Wound, lie and trade are from design/quota/02-HOUSEHOLDS.md; fields marked derived are this director's reading of the design, for the story lead to correct. Speaker keys are a proposal: first names in capitals, as the drafts are expected to use; the 4.1 sample's MOTHER, FATHER and GRANDAD are not aliases, because the Brack table has a mother and a father too. Each writer's `hand` (UI art lead, 2026-10-22) sets how they write; the game reads it through game/engine/ui/lettering/hands.json (node game/engine/tools/handsync.mjs).",
+ "peoples": {
+  "tarn-town": "The Upper Town's Tarn: clerks, inspectors, merchants. Finished consonants, a level tune, sentences that close on the verb; Directorate words at work and plain words at home.",
+  "tarn-plain": "The plain's Tarn: farmers, cottars, the militia's men. Dropped final g, 'you've not' and 'I'll not', short sentences that fall at the end; field, weather and sack words.",
+  "hesh": "The Hesh, Heshen first: a rise at the end of a statement that a Tarn ear hears as a question; Tarnish learned in the barns, full forms ('I do not'); Heshen words for water, rain, the Well and kin when the speaker is moved or afraid.",
+  "half-hesh": "Raised in the Upper Town by a Hesh father and a Tarn mother: Tarnish first, the Hesh rise only under stress, Heshen words only at home.",
+  "directorate": "The People's Directorate's officers: written Arlen said aloud: passives, figures, titles, the word 'comrade' used as a stop."
+ },
+ "slurs": {
+  "about": "The invented slurs of 01-WORLD.md. Spoken in full by a character with a history and someone who hears it; never by the narrator, the interface or the read-back's own voice (VOICE-BIBLE 11.5).",
+  "words": [
+   "mud-hands",
+   "mud-hand",
+   "tallowmen",
+   "tallowman",
+   "chaffers",
+   "chaffer",
+   "goat-Hesh",
+   "tallow-brats",
+   "tallow-brat"
+  ]
+ },
+ "theme_words": [
+  "hunger",
+  "famine",
+  "starving",
+  "quota",
+  "truth",
+  "lie",
+  "lies",
+  "blame",
+  "guilt",
+  "justice",
+  "history",
+  "nation",
+  "people",
+  "regime",
+  "genocide",
+  "sacrifice"
+ ],
+ "speakers": {
+  "NED": {
+   "name": "Ned Furrowe",
+   "household": "Furrowe",
+   "line": "the Inspectors",
+   "trade": "district inspector",
+   "age": "about 45",
+   "people": "tarn-town",
+   "class": "middle",
+   "wound": "the hill: he went up with Tomas Haldane and there was no hole under the goats",
+   "lie": "We only reported what the villages sent.",
+   "timbre": "a tired middle voice that says less than it knows; flat at the table, careful at the office",
+   "pace_sps": 3.8,
+   "tics": [
+    "answers a question with the smallest true fact",
+    "puts down his fork before he speaks"
+   ],
+   "never": [
+    "the number he knows is false, said aloud at home",
+    "'I'm hungry'"
+   ],
+   "stress": "fewer words, then none; a pen gets put down hard",
+   "range": {
+    "calm": "short and dry",
+    "angry": "quiet, every word separate",
+    "grieving": "cannot finish the sentence",
+    "lying": "the same flat voice as the truth, a beat quicker"
+   },
+   "register": {
+    "level": "middle",
+    "education": "the district school and the inspectors' course in Arlen",
+    "words": [
+     "district",
+     "return",
+     "yield",
+     "figure",
+     "inspection",
+     "the office"
+    ]
+   },
+   "region": {
+    "markers": [
+     "you've not"
+    ],
+    "idioms": [
+     "what they sent in",
+     "reported as found"
+    ]
+   },
+   "sentence_length": [
+    1,
+    16
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "teenager",
+    "famine"
+   ],
+   "knows": [
+    "the true figure for his district",
+    "the hill",
+    "Krall's 340"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "cell",
+      "cells"
+     ],
+     "why": "Ned does not know where Tomas is held until Brack's people tell someone (02-HOUSEHOLDS, Brack era 2)",
+     "unless_gate": [
+      "tomas.held",
+      "cells"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": -1.5,
+    "range": 0.65,
+    "rate": 0.92,
+    "beta": [
+     0.97,
+     0.96
+    ],
+    "colour": "plain",
+    "space": "room"
+   },
+   "face": {
+    "brow": -0.1,
+    "browInner": 0.2,
+    "lids": 0.35,
+    "corners": -0.15
+   },
+   "hand": {
+    "about": "a neat civil hand that goes tight when he lies",
+    "tool": "pen",
+    "ink": "#23202a",
+    "slant": 0.12,
+    "pressure": 0.9,
+    "width": 0.95,
+    "loops": 0,
+    "joins": 0.55,
+    "tremor": 0.05,
+    "variance": 0.15,
+    "lie": {
+     "width": 0.8,
+     "spacing": 0.82,
+     "size": 0.9,
+     "slant": 0.2
+    }
+   }
+  },
+  "MARY": {
+   "name": "Mary Furrowe",
+   "household": "Furrowe",
+   "line": "the Inspectors (married in)",
+   "trade": "keeps the house; feeds everyone",
+   "age": "about 40",
+   "people": "tarn-town",
+   "class": "middle",
+   "wound": "Day 41: she put the heel of the relief loaf on Abel's plate, set Ned's untouched plate in front of Pell, and told the boy there were people up the hill who would kill for it.",
+   "lie": "Somebody's got to eat it.",
+   "timbre": "warm, quick, running the table; 'love' and 'go on' as punctuation",
+   "pace_sps": 4.6,
+   "tics": [
+    "gives orders as kindnesses",
+    "answers for other people ('He can't reach')"
+   ],
+   "never": [
+    "asks Ned what he saw up the hill",
+    "says the word hunger about anyone she knows"
+   ],
+   "stress": "faster and brighter, more food offered",
+   "range": {
+    "calm": "warm and busy",
+    "angry": "the warmth stays and the words get short",
+    "grieving": "keeps serving",
+    "lying": "warmest of all"
+   },
+   "register": {
+    "level": "plain",
+    "education": "the Furrow Church school",
+    "words": [
+     "plate",
+     "salt",
+     "love",
+     "dripping",
+     "bread"
+    ]
+   },
+   "region": {
+    "markers": [
+     "you've not",
+     "go on"
+    ],
+    "idioms": [
+     "somebody's got to eat it",
+     "he's growing"
+    ]
+   },
+   "sentence_length": [
+    1,
+    18
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "starving"
+   ],
+   "knows": [
+    "Ned signed the district",
+    "the price of bread this week"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "no hole",
+      "the hill was empty"
+     ],
+     "why": "only Ned saw the hill (02-HOUSEHOLDS, Furrowe era 2)",
+     "unless_gate": [
+      "ned.told_mary"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": 8,
+    "range": 1.15,
+    "rate": 1.08,
+    "beta": [
+     1.12,
+     1.16
+    ],
+    "colour": "warm",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0.1,
+    "browInner": 0.1,
+    "lids": -0.1,
+    "corners": 0.3
+   }
+  },
+  "PELL": {
+   "sheet": {
+    "status": "draft 2026-10-23 by the story lead for era 5 (design/eras/era5.md); habits strengthened 2026-10-23 (he measures out loud, Near enough, Right); generated from design/voice/quota-cast.json (speakers.PELL.sheet), edit that file",
+    "role": "Pell Furrowe: Ned's son; a schoolboy in era 2, a district surveyor in era 3, a widower of seventy in era 4",
+    "age": "12, 20 and 70",
+    "register": {
+     "education": "Mr Tamm's class, then the district office",
+     "trade": "schoolboy, then surveyor of houses",
+     "words": [
+      "tape",
+      "measure",
+      "doors",
+      "floors",
+      "foot",
+      "inch",
+      "column",
+      "pencil",
+      "clock",
+      "Mr Tamm"
+     ]
+    },
+    "region": {
+     "idioms": [
+      "Near enough",
+      "Right",
+      "Mr Tamm says",
+      "Do it yourself"
+     ]
+    },
+    "sentence_length": {
+     "min": 1,
+     "max": 22
+    },
+    "never": [
+     "okay",
+     "radio",
+     "television",
+     "requisition",
+     "trauma"
+    ],
+    "knowledge": {
+     "knows": [
+      "how big a room is by eye",
+      "nine words for rain",
+      "his father signed things"
+     ],
+     "unknown": [
+      {
+       "terms": [
+        "340",
+        "three hundred and forty"
+       ],
+       "why": "a child at the table does not know the figures until Abel says them",
+       "unless_gate": [
+        "abel.said_340"
+       ]
+      }
+     ]
+    },
+    "trade": "schoolboy, then surveyor of houses",
+    "lie": "Near enough is right enough.",
+    "fears": "That his father's signature is in every book he opens.",
+    "hides": "The stone in his shoe from the night of the Well House fire.",
+    "tics": [
+     "Near enough",
+     "measures things out loud: feet, rows, rooms, by eye",
+     "Right.",
+     "Do it yourself",
+     "Near enough's right enough, on a form"
+    ]
+   },
+   "name": "Pell Furrowe",
+   "household": "Furrowe",
+   "line": "the Inspectors (era 3's surveyor)",
+   "trade": "a schoolboy",
+   "age": "about 11",
+   "people": "tarn-town",
+   "class": "middle",
+   "wound": "He ate his father's plate fast with his head down and did not look at anybody.",
+   "lie": "Mr Tamm says.",
+   "timbre": "a boy's voice, eager, a teacher's words in a child's mouth",
+   "pace_sps": 5,
+   "tics": [
+    "quotes Mr Tamm",
+    "says facts about the Hesh he learned at school"
+   ],
+   "never": [
+    "the slurs (he has not learned them yet in era 2)"
+   ],
+   "stress": "very quiet, then a question",
+   "range": {
+    "calm": "eager",
+    "angry": "sulks",
+    "grieving": "asks where",
+    "lying": "says he is not hungry"
+   },
+   "register": {
+    "level": "plain",
+    "education": "the Upper Town school, Mr Tamm's class",
+    "words": [
+     "Mr Tamm",
+     "words",
+     "school",
+     "Heshen"
+    ]
+   },
+   "region": {
+    "markers": [],
+    "idioms": [
+     "Mr Tamm says"
+    ]
+   },
+   "sentence_length": [
+    1,
+    20
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "requisition",
+    "mud-hands",
+    "tallowmen"
+   ],
+   "knows": [
+    "nine words for rain",
+    "his father is the inspector"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "340",
+      "three hundred and forty"
+     ],
+     "why": "a child at the table does not know the figures until Abel says them",
+     "unless_gate": [
+      "abel.said_340"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": 12,
+    "range": 1.3,
+    "rate": 1.1,
+    "beta": [
+     1.22,
+     1.26
+    ],
+    "colour": "plain",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0.3,
+    "browInner": 0.15,
+    "lids": -0.3,
+    "corners": 0.2
+   }
+  },
+  "ABEL": {
+   "name": "Abel Furrowe",
+   "household": "Furrowe",
+   "line": "the Inspectors (era 1's exchange inspector)",
+   "trade": "retired exchange inspector",
+   "age": "about 72",
+   "people": "tarn-plain",
+   "class": "middle by his own effort",
+   "wound": "Two summers he had Ilo in the barns, paid him by the sack and was fond of him; at his son's table on day 41 he tells the joke about nine words for rain and none for thank you, and when Ilo's boy is taken he says 'There you are.'",
+   "lie": "I'm fond of them. I'm only saying.",
+   "timbre": "a big old voice gone thin at the top, warm, certain, an anecdote always loaded",
+   "pace_sps": 3.6,
+   "tics": [
+    "'I'm only saying'",
+    "'That's the thing you have to understand about them'",
+    "touches the good hat"
+   ],
+   "never": [
+    "admits he was wrong",
+    "raises his voice at family; he does not need to"
+   ],
+   "stress": "slower and fonder, which is worse",
+   "range": {
+    "calm": "fond and certain",
+    "angry": "wounded pride, quiet",
+    "grieving": "tells the Ilo story",
+    "lying": "fondest of all"
+   },
+   "register": {
+    "level": "plain",
+    "education": "the exchange, from fourteen",
+    "words": [
+     "exchange",
+     "sack",
+     "yield",
+     "the Hesh",
+     "my father's time"
+    ]
+   },
+   "region": {
+    "markers": [
+     "I'll not",
+     "you've not",
+     "'em"
+    ],
+    "idioms": [
+     "in my father's time",
+     "I'm only saying",
+     "hat in his hands"
+    ]
+   },
+   "sentence_length": [
+    1,
+    34
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "racist",
+    "prejudice"
+   ],
+   "knows": [
+    "Krall's 340",
+    "Ned's 290",
+    "Ilo"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "no hole",
+      "nothing under the goats"
+     ],
+     "why": "Abel believes the hole is there; only Ned saw the hill",
+     "unless_gate": [
+      "ned.told_abel"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": -2,
+    "range": 1.15,
+    "rate": 0.88,
+    "beta": [
+     0.95,
+     0.94
+    ],
+    "colour": "old",
+    "space": "room",
+    "tremor": 0.15
+   },
+   "face": {
+    "brow": 0.15,
+    "browInner": 0.1,
+    "lids": 0.25,
+    "corners": 0.25
+   },
+   "hand": {
+    "about": "an old man's copperplate, shaky but proud: big capitals, full shades, looped",
+    "tool": "pen",
+    "ink": "#2b1c12",
+    "slant": 0.4,
+    "pressure": 1.35,
+    "width": 1.05,
+    "loops": 1,
+    "joins": 0.8,
+    "tremor": 1.0,
+    "variance": 0.35,
+    "caps": 1.3,
+    "blots": 0.05
+   }
+  },
+  "WILL": {
+   "name": "Sergeant Will Brack",
+   "household": "Brack",
+   "line": "the Militia and the police",
+   "trade": "militia sergeant, the cells and the road post",
+   "age": "about 38",
+   "people": "tarn-plain",
+   "class": "working, promoted",
+   "wound": "the cell: Tomas Haldane died in his cells",
+   "lie": "Somebody had to keep order.",
+   "timbre": "a parade voice, chest and throat; orders in two words; drunk, he goes soft and generous and that is the dangerous voice",
+   "pace_sps": 4.2,
+   "tics": [
+    "'right'",
+    "counts things aloud (men, carts, sacks)",
+    "calls every man 'lad'"
+   ],
+   "never": [
+    "says he hit anyone",
+    "names the cell as where Tomas died"
+   ],
+   "stress": "louder at work, quieter at home; the quiet is the warning",
+   "range": {
+    "calm": "plain orders",
+    "angry": "very quiet, then not",
+    "grieving": "drunk, grateful, telling what he should not",
+    "lying": "a self-lie in his own reasonable voice: 'She bruises easy.'"
+   },
+   "register": {
+    "level": "plain",
+    "education": "the militia school",
+    "words": [
+     "post",
+     "cells",
+     "cart",
+     "pass",
+     "order",
+     "lad",
+     "the line"
+    ]
+   },
+   "region": {
+    "markers": [
+     "you'll not",
+     "'em",
+     "right"
+    ],
+    "idioms": [
+     "keep order",
+     "on the line",
+     "papers"
+    ]
+   },
+   "sentence_length": [
+    1,
+    18
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "sorry"
+   ],
+   "knows": [
+    "where Tomas is held",
+    "where the hoarder was put",
+    "there is no hole on Tesk's hill: his squad searched it (content/quota/q_granary.lwd)"
+   ],
+   "unknown": [],
+   "synth": {
+    "shift": -2.5,
+    "range": 0.9,
+    "rate": 1,
+    "beta": [
+     0.94,
+     0.93
+    ],
+    "colour": "chest",
+    "space": "room"
+   },
+   "face": {
+    "brow": -0.25,
+    "browInner": -0.2,
+    "lids": 0.1,
+    "corners": -0.2
+   },
+   "hand": {
+    "about": "a militia sergeant's blunt print in pencil: pressed hard, each stroke stopped dead and dug in, uneven",
+    "tool": "pencil",
+    "ink": "#3e3b39",
+    "slant": 0.05,
+    "pressure": 1.5,
+    "width": 1.0,
+    "print": true,
+    "joins": 0,
+    "variance": 0.4,
+    "walk": 0.4,
+    "lean": 0.1,
+    "pressureVar": 0.5,
+    "stops": 1,
+    "grain": 0.5,
+    "rough": 2.4
+   }
+  },
+  "TOMAS": {
+   "name": "Tomas Haldane",
+   "household": "Haldane",
+   "line": "the narrow lens",
+   "trade": "a boy who works the Haldane barns",
+   "age": "11",
+   "people": "half-hesh",
+   "class": "poor",
+   "wound": "he is the family's wound: arrested for hoarding, dies in Brack's cell",
+   "lie": "none of his own; the family's lie is told about him ('He went to the hills')",
+   "timbre": "a boy's voice, even and polite, trying to sound older; the Hesh rise comes in when he asks",
+   "pace_sps": 4.4,
+   "tics": [
+    "asks once, plainly, and waits",
+    "a Heshen word for the hill when he means home"
+   ],
+   "never": [
+    "begs",
+    "uses the slurs, even back"
+   ],
+   "stress": "slower and more polite, the rise stronger",
+   "range": {
+    "calm": "plain and polite",
+    "angry": "very still",
+    "grieving": "about Ilo, two words",
+    "lying": "badly: 'We have enough'"
+   },
+   "register": {
+    "level": "plain",
+    "education": "the Upper Town school, kept home since the autumn",
+    "words": [
+     "the hill",
+     "barns",
+     "sacks",
+     "my father",
+     "Ilo"
+    ]
+   },
+   "region": {
+    "markers": [],
+    "idioms": [
+     "come and see"
+    ]
+   },
+   "sentence_length": [
+    1,
+    16
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "tallowmen",
+    "mud-hands",
+    "please, please"
+   ],
+   "knows": [
+    "there is no hole under the goats",
+    "the hill path",
+    "what the barns held"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "340",
+      "Krall"
+     ],
+     "why": "the district meeting is closed to a child (derived)",
+     "unless_gate": [
+      "tomas.heard_meeting"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": 11,
+    "range": 1.15,
+    "rate": 1.02,
+    "beta": [
+     1.2,
+     1.24
+    ],
+    "colour": "plain",
+    "space": "room",
+    "contour": "rise-on-ask"
+   },
+   "face": {
+    "brow": 0.05,
+    "browInner": 0.15,
+    "lids": 0,
+    "corners": 0
+   },
+   "hand": {
+    "about": "a hurried hand: wide, leaning, joined, dots dashed, the line climbing",
+    "tool": "pencil",
+    "ink": "#45423f",
+    "slant": 0.38,
+    "pressure": 1.0,
+    "width": 1.25,
+    "joins": 0.9,
+    "tremor": 0.2,
+    "variance": 0.6,
+    "drift": 0.5,
+    "speed": 1,
+    "rough": 1.3
+   }
+  },
+  "AARON": {
+   "name": "Aaron Haldane",
+   "household": "Haldane",
+   "line": "the narrow lens",
+   "trade": "a boy who walks at the horse's head",
+   "age": "9",
+   "people": "half-hesh",
+   "class": "poor",
+   "wound": "Tomas (derived: the brother he could not follow)",
+   "lie": "He went to the hills.",
+   "timbre": "a small boy's voice, fast and hot, swallowing the ends",
+   "pace_sps": 5,
+   "tics": [
+    "starts with 'They'",
+    "turns the slur back on whoever used it"
+   ],
+   "never": [
+    "cries where anyone can see"
+   ],
+   "stress": "louder and faster, then he runs out",
+   "range": {
+    "calm": "short and sour",
+    "angry": "shouts, the Hesh rise breaking through",
+    "grieving": "the lie, said hard",
+    "lying": "'He went to the hills', every time the same"
+   },
+   "register": {
+    "level": "plain",
+    "education": "the Upper Town school",
+    "words": [
+     "the cart",
+     "the post",
+     "them",
+     "Tomas"
+    ]
+   },
+   "region": {
+    "markers": [
+     "you've not",
+     "they've"
+    ],
+    "idioms": [
+     "went to the hills"
+    ]
+   },
+   "sentence_length": [
+    1,
+    14
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television"
+   ],
+   "knows": [
+    "the cart was turned back",
+    "Tomas was taken"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "died",
+      "dead",
+      "the cell"
+     ],
+     "why": "the family is not told how Tomas died (02-HOUSEHOLDS, Haldane)",
+     "unless_gate": [
+      "haldane.told"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": 12.5,
+    "range": 1.3,
+    "rate": 1.1,
+    "beta": [
+     1.24,
+     1.28
+    ],
+    "colour": "plain",
+    "space": "room"
+   },
+   "face": {
+    "brow": -0.2,
+    "browInner": -0.3,
+    "lids": -0.1,
+    "corners": -0.3
+   }
+  },
+  "ANNI": {
+   "name": "Anni Haldane",
+   "household": "Haldane",
+   "line": "the narrow lens (era 3's mother of the line)",
+   "trade": "counts the sacks on the cart",
+   "age": "14",
+   "people": "half-hesh",
+   "class": "poor",
+   "wound": "Tomas, carried longest: the lie becomes hers to keep",
+   "lie": "He went to the hills.",
+   "timbre": "a girl's level voice, numbers said carefully, as if the count could be kept",
+   "pace_sps": 4,
+   "tics": [
+    "counts aloud, sacks then bowls",
+    "a Heshen counting word when Tarnish fails her"
+   ],
+   "never": [
+    "says Tomas is dead"
+   ],
+   "stress": "she counts",
+   "range": {
+    "calm": "counting",
+    "angry": "a wrong number said on purpose",
+    "grieving": "counts the bowls: five, then four",
+    "lying": "flat and exact: 'He went to the hills'"
+   },
+   "register": {
+    "level": "plain",
+    "education": "the Upper Town school",
+    "words": [
+     "sacks",
+     "bowls",
+     "the cart",
+     "the hills"
+    ]
+   },
+   "region": {
+    "markers": [],
+    "idioms": [
+     "went to the hills"
+    ]
+   },
+   "sentence_length": [
+    1,
+    12
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television"
+   ],
+   "knows": [
+    "how many sacks were on the cart",
+    "how many bowls"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "died",
+      "dead",
+      "the cell"
+     ],
+     "why": "the family is not told how Tomas died",
+     "unless_gate": [
+      "haldane.told"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": 10.5,
+    "range": 0.8,
+    "rate": 0.95,
+    "beta": [
+     1.18,
+     1.22
+    ],
+    "colour": "plain",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.2,
+    "lids": 0.1,
+    "corners": -0.05
+   },
+   "hand": {
+    "about": "a careful fourteen-year-old's print in pencil: letters pressed hard then light, the line wandering, the grain of the pencil in every stroke; her tally fives drawn square",
+    "tool": "pencil",
+    "ink": "#4a4744",
+    "slant": -0.03,
+    "pressure": 1.1,
+    "width": 1.05,
+    "print": true,
+    "joins": 0,
+    "tremor": 0.1,
+    "variance": 0.4,
+    "spacing": 1.1,
+    "tally": "square",
+    "walk": 0.45,
+    "lean": 0.12,
+    "pressureVar": 0.45,
+    "grain": 0.75,
+    "rough": 2.2
+   }
+  },
+  "KRALL": {
+   "name": "Jonah Krall",
+   "aliases": [
+    "JONAH"
+   ],
+   "household": "Krall",
+   "line": "the chairmen of Krall's End",
+   "trade": "chairman of Krall's End, made district chairman",
+   "age": "about 55",
+   "people": "tarn-plain",
+   "class": "village big man, rising",
+   "wound": "340",
+   "lie": "The plain fed the country.",
+   "timbre": "a meeting voice, big and glad, built for the back of a hall; laughs before his own joke",
+   "pace_sps": 4.4,
+   "tics": [
+    "says his figure as a round number and then says it again",
+    "thanks the Directorate by name"
+   ],
+   "never": [
+    "says what Krall's End ate that winter"
+   ],
+   "stress": "louder and gladder",
+   "range": {
+    "calm": "hearty",
+    "angry": "a hurt joke",
+    "grieving": "none shown",
+    "lying": "proud: 'The plain fed the country'"
+   },
+   "register": {
+    "level": "plain",
+    "education": "the village school; the Directorate's speeches",
+    "words": [
+     "yield",
+     "record",
+     "the plain",
+     "the Directorate",
+     "Krall's End"
+    ]
+   },
+   "region": {
+    "markers": [
+     "we've",
+     "'em"
+    ],
+    "idioms": [
+     "fed the country",
+     "three hundred and forty"
+    ]
+   },
+   "sentence_length": [
+    1,
+    24
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "hungry",
+    "starving"
+   ],
+   "knows": [
+    "what Krall's End really grew (derived: he inflated it)",
+    "the reward for 340"
+   ],
+   "unknown": [],
+   "synth": {
+    "shift": -1,
+    "range": 1.3,
+    "rate": 1.04,
+    "beta": [
+     0.96,
+     0.95
+    ],
+    "colour": "chest",
+    "space": "hall"
+   },
+   "face": {
+    "brow": 0.25,
+    "browInner": 0,
+    "lids": -0.1,
+    "corners": 0.4
+   }
+  },
+  "READBACK": {
+   "name": "The read-back",
+   "household": "none",
+   "line": "none",
+   "trade": "reads the record",
+   "age": "none",
+   "people": "none",
+   "class": "none",
+   "wound": "none",
+   "lie": "none",
+   "timbre": "one flat, even, unhurried voice reading a typed record into the minutes; no character, no warmth, no irony; the player's own words read in the same flat voice, never imitated",
+   "pace_sps": 3.4,
+   "tics": [],
+   "never": [
+    "any emotion but flat",
+    "stress",
+    "a laugh, sigh or breath cue",
+    "music under it"
+   ],
+   "stress": "none",
+   "range": {
+    "calm": "flat",
+    "angry": "flat",
+    "grieving": "flat",
+    "lying": "flat"
+   },
+   "register": {
+    "level": "formal",
+    "education": "none",
+    "words": []
+   },
+   "region": {
+    "markers": [],
+    "idioms": []
+   },
+   "sentence_length": [
+    1,
+    40
+   ],
+   "questions": null,
+   "never_words": [],
+   "knows": [],
+   "unknown": [],
+   "synth": {
+    "shift": -0.5,
+    "range": 0.35,
+    "rate": 0.88,
+    "beta": [
+     1,
+     1
+    ],
+    "colour": "plain",
+    "space": "dry"
+   },
+   "face": null
+  },
+  "HOLT": {
+   "name": "Captain Holt, the Requisition Captain (named in content/quota/q_ned.lwd)",
+   "aliases": [
+    "THE CAPTAIN",
+    "CAPTAIN",
+    "REQUISITION CAPTAIN"
+   ],
+   "household": "a cottar's family at Tilney (content/quota/q_granary.lwd); now a Directorate officer",
+   "line": "the Directorate",
+   "trade": "commands the requisition squad; the granary door's boss",
+   "age": "about 45",
+   "people": "directorate (born tarn-plain)",
+   "class": "officer, from the cottars",
+   "wound": "his mother was a mud-hand: he knows what the hungry have, which is nothing (q_granary.lwd)",
+   "lie": "The quota is the harvest. (derived)",
+   "timbre": "a reading voice learned in Arlen over a Tilney cottar's vowels; never loud, never hurried, with a hook in his hand; the plain comes back when he talks about the hungry",
+   "pace_sps": 3.7,
+   "tics": [
+    "reads figures from a paper",
+    "'comrade' as a full stop",
+    "repeats the figure the other side says, as a question"
+   ],
+   "never": [
+    "shouts",
+    "argues with a feeling; only a figure read aloud moves him (the talk-out)"
+   ],
+   "stress": "slower and more formal",
+   "range": {
+    "calm": "the minute being read",
+    "angry": "a figure said twice",
+    "grieving": "none shown",
+    "lying": "identical to the truth"
+   },
+   "register": {
+    "level": "formal",
+    "education": "a Tilney cottar's son, schooled in Arlen (the Directorate's officers' school)",
+    "words": [
+     "quota",
+     "return",
+     "comrade",
+     "district",
+     "requisition",
+     "figure",
+     "the plan",
+     "the door"
+    ]
+   },
+   "region": {
+    "markers": [
+     "eleven mile",
+     "they've"
+    ],
+    "idioms": [
+     "by order of",
+     "the figure stands"
+    ]
+   },
+   "sentence_length": [
+    1,
+    24
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "starving",
+    "sorry"
+   ],
+   "knows": [
+    "the district's reported figure",
+    "the quota for each village"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "no hole",
+      "the true figure"
+     ],
+     "why": "he learns the true figure only when it is read aloud at the door (03-STORY era 2 beat 10)",
+     "unless_gate": [
+      "door.true_figure_read"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": -1,
+    "range": 0.55,
+    "rate": 0.9,
+    "beta": [
+     0.98,
+     0.97
+    ],
+    "colour": "dry",
+    "space": "granary"
+   },
+   "face": {
+    "brow": -0.05,
+    "browInner": 0,
+    "lids": 0.3,
+    "corners": -0.1
+   },
+   "hand": {
+    "about": "the Arlen school hand over a cottar's grip: taught loops, upright, pressed hard and stiff",
+    "tool": "pen",
+    "ink": "#1f1d22",
+    "slant": 0.0,
+    "pressure": 1.6,
+    "width": 0.95,
+    "loops": 1,
+    "joins": 0.45,
+    "tremor": 0.3,
+    "variance": 0.45
+   }
+  },
+  "MOTT": {
+   "register": {
+    "level": "middle",
+    "education": "the district school",
+    "words": [
+     "ledger",
+     "return",
+     "figure",
+     "the office",
+     "the Commissioner"
+    ]
+   },
+   "region": {
+    "markers": [
+     "I've"
+    ],
+    "idioms": [
+     "that's what it says"
+    ]
+   },
+   "sentence_length": [
+    1,
+    26
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television"
+   ],
+   "knows": [
+    "the true figure, 190",
+    "what he wrote, 310"
+   ],
+   "unknown": [],
+   "tics": [
+    "'Sorry'",
+    "says the figure, then what it says on the paper"
+   ],
+   "never": [
+    "says the true figure without a reason after it"
+   ],
+   "range": {
+    "calm": "apologetic",
+    "angry": "never at a superior",
+    "grieving": "his children's names",
+    "lying": "'That's what it says'"
+   },
+   "name": "Walter Mott",
+   "household": "Mott",
+   "line": "the Clerks",
+   "trade": "brigade clerk for Krall's End and the Haldane barns",
+   "age": "about 40",
+   "people": "tarn-town",
+   "class": "lower middle",
+   "wound": "the ledger: he overwrites 190 to 310",
+   "lie": "Everyone was writing three hundred.",
+   "timbre": "a clerk's apologetic tenor, quick, sorry before and after",
+   "pace_sps": 4.8,
+   "stress": "more sorry, more figures",
+   "synth": {
+    "shift": 2,
+    "range": 0.9,
+    "rate": 1.1,
+    "beta": [
+     1.03,
+     1.05
+    ],
+    "colour": "plain",
+    "space": "office"
+   },
+   "face": {
+    "brow": 0.2,
+    "browInner": 0.35,
+    "lids": -0.1,
+    "corners": -0.1
+   },
+   "hand": {
+    "about": "a trained clerk's ledger hand: a small broad nib, an even slope, looped ascenders, every letter joined",
+    "tool": "clerk",
+    "ink": "#2a1d14",
+    "slant": 0.22,
+    "pressure": 1.0,
+    "width": 0.95,
+    "size": 0.95,
+    "loops": 0.8,
+    "joins": 0.85,
+    "tremor": 0.05,
+    "variance": 0.12,
+    "spacing": 0.95
+   }
+  },
+  "BET": {
+   "register": {
+    "level": "plain",
+    "education": "the village school",
+    "words": [
+     "seed",
+     "barley",
+     "the cart",
+     "Osby",
+     "the mill"
+    ]
+   },
+   "region": {
+    "markers": [
+     "you've not"
+    ],
+    "idioms": []
+   },
+   "sentence_length": [
+    1,
+    16
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television"
+   ],
+   "knows": [
+    "what was on the cart",
+    "the seed for the spring"
+   ],
+   "unknown": [],
+   "tics": [
+    "names her children to stop them"
+   ],
+   "never": [
+    "pleads with the sergeant"
+   ],
+   "range": {
+    "calm": "plain",
+    "angry": "one word, a name",
+    "grieving": "sets the table",
+    "lying": "'He went to the hills', to a neighbour"
+   },
+   "name": "Bet Haldane",
+   "household": "Haldane",
+   "line": "the narrow lens",
+   "trade": "a Tarn cottar's daughter, Ilo's widow, keeps the Haldane house",
+   "age": "about 45",
+   "people": "tarn-plain",
+   "class": "poor",
+   "wound": "Tomas",
+   "lie": "He went to the hills.",
+   "timbre": "a tired low voice that gives orders to her children and facts to officials",
+   "pace_sps": 3.8,
+   "stress": "fewer words, all of them facts",
+   "synth": {
+    "shift": 7,
+    "range": 0.75,
+    "rate": 0.95,
+    "beta": [
+     1.1,
+     1.12
+    ],
+    "colour": "plain",
+    "space": "room"
+   },
+   "face": {
+    "brow": -0.05,
+    "browInner": 0.25,
+    "lids": 0.3,
+    "corners": -0.2
+   },
+   "hand": {
+    "about": "a slow, uncertain hand: wobbling strokes, some gone over twice, heavy where the pen rests, the line sinking, phonetic spelling",
+    "tool": "pen",
+    "ink": "#2a2622",
+    "slant": 0.05,
+    "pressure": 1.45,
+    "width": 1.1,
+    "joins": 0.15,
+    "tremor": 0.9,
+    "variance": 0.7,
+    "drift": -0.6,
+    "spelling": "phonetic",
+    "blots": 0.08,
+    "retrace": 0.35,
+    "walk": 0.5,
+    "lean": 0.1,
+    "pressureVar": 0.4,
+    "rough": 1.4
+   }
+  },
+  "TESK": {
+   "name": "Old Tesk (content/quota/q_world.lwd q.tesk)",
+   "household": "Tesk",
+   "line": "the Hesh hill family",
+   "trade": "a Hesh herder from the hill above Krall's End; in the cells since Tuesday for two sacks of oats",
+   "age": "about 65",
+   "people": "hesh",
+   "class": "poor",
+   "wound": "six children on the hill that are not his, and the goats they need (q_will.lwd)",
+   "lie": "none he tells; he says the prayer for the water and the count of the oats",
+   "timbre": "an old hill voice, slow and even, the Hesh rise on statements; Tarnish learned late, full forms; no anger in it at all, which is what the cell hears",
+   "pace_sps": 3.2,
+   "tics": [
+    "names the goats and the children before himself",
+    "remembers the other man's father"
+   ],
+   "never": [
+    "raises his voice",
+    "contracts in Tarnish",
+    "answers a slur with a slur"
+   ],
+   "stress": "slower, and more Heshen",
+   "range": {
+    "calm": "slow and sure",
+    "angry": "a long look, no words",
+    "grieving": "the prayer for the water",
+    "lying": "does not"
+   },
+   "register": {
+    "level": "plain",
+    "education": "none in Tarnish",
+    "words": [
+     "goats",
+     "milk",
+     "the hill",
+     "oats",
+     "the prayer for the water",
+     "children"
+    ]
+   },
+   "region": {
+    "markers": [
+     "I was not",
+     "it is",
+     "there is"
+    ],
+    "idioms": [
+     "the prayer for the water"
+    ]
+   },
+   "sentence_length": [
+    1,
+    20
+   ],
+   "questions": null,
+   "contractions": false,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "tallowmen",
+    "mud-hands"
+   ],
+   "knows": [
+    "there is no grain on the hill",
+    "six town children are on the hill",
+    "Gedge's father drove Mr Orme's carts"
+   ],
+   "unknown": [],
+   "synth": {
+    "shift": -1,
+    "range": 1,
+    "rate": 0.85,
+    "beta": [
+     0.96,
+     0.95
+    ],
+    "colour": "old",
+    "space": "cells",
+    "contour": "rise",
+    "tremor": 0.1
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.1,
+    "lids": 0.35,
+    "corners": 0
+   }
+  },
+  "GEDGE": {
+   "register": {
+    "level": "plain",
+    "education": "the village school",
+    "words": [
+     "cells",
+     "sergeant",
+     "shift",
+     "pipe"
+    ]
+   },
+   "region": {
+    "markers": [
+     "'em",
+     "your"
+    ],
+    "idioms": []
+   },
+   "sentence_length": [
+    1,
+    20
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television"
+   ],
+   "knows": [
+    "who is in the end cell"
+   ],
+   "unknown": [],
+   "tics": [
+    "the slur as a word for a man",
+    "his pipe"
+   ],
+   "never": [
+    "says his father's name"
+   ],
+   "range": {
+    "calm": "bored",
+    "angry": "the slur, said slowly",
+    "grieving": "none shown",
+    "lying": "'Only a joke'"
+   },
+   "name": "Constable Gedge",
+   "household": "none (Will Brack's constable)",
+   "line": "the Militia",
+   "trade": "militia constable at the cells",
+   "age": "about 30",
+   "people": "tarn-plain",
+   "class": "working",
+   "wound": "He says the slur loudest to the old Hesh man in the end cell, and when Tesk remembers his father giving the horse-boy a sweet, he goes out into the yard and kicks something until it breaks.",
+   "lie": "They took our work.",
+   "timbre": "a bored night voice with a sneer that thinks it is a joke",
+   "pace_sps": 4.4,
+   "stress": "louder and funnier to himself",
+   "synth": {
+    "shift": -0.5,
+    "range": 1.1,
+    "rate": 1.02,
+    "beta": [
+     0.98,
+     0.97
+    ],
+    "colour": "plain",
+    "space": "cells"
+   },
+   "face": {
+    "brow": -0.1,
+    "browInner": -0.1,
+    "lids": 0.3,
+    "corners": 0.15
+   }
+  },
+  "EDIE": {
+   "name": "Edie Brack (named by the story lead in content/quota/q_dinner.lwd)",
+   "household": "Brack",
+   "line": "the Militia (married in)",
+   "trade": "keeps the house; takes in mending",
+   "age": "about 34",
+   "people": "tarn-plain",
+   "class": "working",
+   "wound": "She pulls her sleeve down over her wrist when Will reaches across the table, though it is already down, and gets up to see to a fire that does not need it.",
+   "lie": "He's tired, that's all.",
+   "timbre": "low, careful, pitched not to carry through a wall",
+   "pace_sps": 4,
+   "tics": [
+    "finishes Will's sentences in his favour",
+    "talks to the children while watching him"
+   ],
+   "never": [
+    "raises her voice",
+    "says what he did"
+   ],
+   "stress": "quieter, quicker, more ordinary",
+   "range": {
+    "calm": "plain and low",
+    "angry": "only in a whisper to the children",
+    "grieving": "silent",
+    "lying": "bright, for the neighbour"
+   },
+   "register": {
+    "level": "plain",
+    "education": "the village school",
+    "words": [
+     "mending",
+     "the stairs",
+     "tea",
+     "your father"
+    ]
+   },
+   "region": {
+    "markers": [
+     "you'll not",
+     "'em"
+    ],
+    "idioms": [
+     "he's tired",
+     "mind your father"
+    ]
+   },
+   "sentence_length": [
+    1,
+    14
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "abuse",
+    "violent"
+   ],
+   "knows": [
+    "what happens at the table",
+    "the price of bread"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "cell",
+      "cells"
+     ],
+     "why": "Will does not bring the cells home (derived); she knows the Haldanes from the dame school",
+     "unless_gate": [
+      "will.drunk_told"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": 7,
+    "range": 0.7,
+    "rate": 1,
+    "beta": [
+     1.12,
+     1.14
+    ],
+    "colour": "plain",
+    "space": "room",
+    "vol": "low"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.3,
+    "lids": 0.2,
+    "corners": -0.1
+   }
+  },
+  "DAVEY": {
+   "name": "Davey Brack (named by the story lead; the son under the stairs)",
+   "household": "Brack",
+   "line": "the Militia (the era-3 militiaman's son line)",
+   "trade": "a child",
+   "age": "about 9",
+   "people": "tarn-plain",
+   "class": "working",
+   "wound": "His shoulders come up round his ears when his father's hand crosses the table; he tries out the slur from school to see whether his father will let him.",
+   "lie": "I fell.",
+   "timbre": "a small voice that has learned to whisper",
+   "pace_sps": 4.2,
+   "tics": [
+    "counts the stairs",
+    "answers 'nothing'"
+   ],
+   "never": [
+    "speaks above low in the house"
+   ],
+   "stress": "silence",
+   "range": {
+    "calm": "a whisper with a smile in it",
+    "angry": "none shown",
+    "grieving": "none shown",
+    "lying": "'I fell'"
+   },
+   "register": {
+    "level": "plain",
+    "education": "the village school",
+    "words": [
+     "stairs",
+     "Dad",
+     "nothing"
+    ]
+   },
+   "region": {
+    "markers": [],
+    "idioms": []
+   },
+   "sentence_length": [
+    1,
+    10
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television"
+   ],
+   "knows": [
+    "the stairs"
+   ],
+   "unknown": [],
+   "synth": {
+    "shift": 12,
+    "range": 0.9,
+    "rate": 1,
+    "beta": [
+     1.24,
+     1.28
+    ],
+    "colour": "plain",
+    "space": "room",
+    "vol": "low"
+   },
+   "face": {
+    "brow": 0.1,
+    "browInner": 0.4,
+    "lids": -0.2,
+    "corners": -0.2
+   }
+  },
+  "PASK": {
+   "name": "Commissioner Pask",
+   "household": "none in Edrin (the Directorate's district commissioner)",
+   "line": "the Directorate",
+   "trade": "district commissioner; takes the figures at the district office",
+   "age": "about 50",
+   "people": "directorate",
+   "class": "officer",
+   "wound": "He brought the district's figures from Arlen in October before he had seen the plain, and on day 41 eats biscuits at the head of the table in front of eleven hungry chairmen without offering them.",
+   "lie": "I don't hear weather. I hear somebody's got grain somewhere.",
+   "timbre": "a tired chairman's voice, plain on purpose, quick to praise the useful answer",
+   "pace_sps": 4.4,
+   "tics": [
+    "'Good'",
+    "'I'll be plain'",
+    "names a man before an order"
+   ],
+   "never": [
+    "raises his voice; he signs"
+   ],
+   "stress": "plainer and quicker",
+   "range": {
+    "calm": "tired and plain",
+    "angry": "praise withheld",
+    "grieving": "none shown",
+    "lying": "the reasonable voice of the plan"
+   },
+   "register": {
+    "level": "middle",
+    "education": "the Directorate's schools",
+    "words": [
+     "figure",
+     "plan",
+     "factory",
+     "Arlen",
+     "shortfall",
+     "sign"
+    ]
+   },
+   "region": {
+    "markers": [],
+    "idioms": [
+     "a known thing",
+     "sign there"
+    ]
+   },
+   "sentence_length": [
+    1,
+    28
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "famine",
+    "starving"
+   ],
+   "knows": [
+    "every district's figure"
+   ],
+   "unknown": [],
+   "synth": {
+    "shift": -1.5,
+    "range": 0.8,
+    "rate": 1.02,
+    "beta": [
+     0.97,
+     0.96
+    ],
+    "colour": "dry",
+    "space": "office"
+   },
+   "face": {
+    "brow": -0.05,
+    "browInner": 0.05,
+    "lids": 0.35,
+    "corners": 0.05
+   },
+   "hand": {
+    "about": "a soft official round hand: wide round letters, light pressure, gently looped",
+    "tool": "pen",
+    "ink": "#2a2730",
+    "slant": 0.1,
+    "pressure": 0.75,
+    "width": 1.15,
+    "loops": 0.6,
+    "joins": 0.7,
+    "tremor": 0.05,
+    "variance": 0.15
+   }
+  },
+  "DORRAH": {
+   "register": {
+    "level": "plain",
+    "education": "none in Tarnish",
+    "words": [
+     "the Well",
+     "the hill",
+     "goats",
+     "water",
+     "the cup"
+    ]
+   },
+   "region": {
+    "markers": [
+     "I do not",
+     "it is"
+    ],
+    "idioms": [
+     "the Well looks after its own"
+    ]
+   },
+   "sentence_length": [
+    1,
+    18
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television"
+   ],
+   "knows": [
+    "there is no hole under the goats"
+   ],
+   "unknown": [],
+   "tics": [
+    "a Heshen word for water or rain",
+    "answers with the hill"
+   ],
+   "never": [
+    "contracts in Tarnish",
+    "raises her voice to a Tarn official"
+   ],
+   "range": {
+    "calm": "slow and sure",
+    "angry": "Heshen, quietly",
+    "grieving": "the prayer for the water",
+    "lying": "'The Well looks after its own'"
+   },
+   "name": "Dorrah Tesk (named in content/quota/q_coda.lwd; not yet a speaker in the slice)",
+   "household": "Tesk",
+   "line": "the Hesh hill family, keepers of the Well",
+   "trade": "keeps the Well on the hill; herds",
+   "age": "about 55",
+   "people": "hesh",
+   "class": "poor",
+   "wound": "the Haldane children she had to send back down when the food ran out",
+   "lie": "The Well looks after its own.",
+   "timbre": "a hill voice, slow, the Hesh rise on every statement; Tarnish learned late, full forms",
+   "pace_sps": 3.4,
+   "stress": "slower, more Heshen",
+   "contractions": false,
+   "synth": {
+    "shift": 6,
+    "range": 1.1,
+    "rate": 0.88,
+    "beta": [
+     1.08,
+     1.1
+    ],
+    "colour": "plain",
+    "space": "room",
+    "contour": "rise"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.1,
+    "lids": 0.3,
+    "corners": 0
+   }
+  },
+  "ILO": {
+   "name": "Ilo Haldane (content/quota/q_world.lwd q.ilo)",
+   "household": "Haldane",
+   "line": "the narrow lens",
+   "trade": "a Hesh hand who came down to the Haldane barns; did two summers for Abel Furrowe; now works the barns",
+   "age": "about 45",
+   "people": "hesh",
+   "class": "poor",
+   "wound": "Tomas; and the name Haldane, given him at the census table because the register needed a Tarn name",
+   "lie": "He went to the hills.",
+   "timbre": "a quiet Hesh voice that sang all day once; Tarnish learned in the barns, full forms; says little now, and says it to the bowls",
+   "pace_sps": 3.4,
+   "tics": [
+    "passes on what Bet or Dorrah says rather than saying it himself",
+    "still talks about old Mr Furrowe's good hat"
+   ],
+   "never": [
+    "says Tomas's name at the table",
+    "sings in the slice"
+   ],
+   "stress": "silence, then one plain order",
+   "range": {
+    "calm": "few words, kind",
+    "angry": "puts the paper in the stove",
+    "grieving": "looks at the bowl",
+    "lying": "'He went to the hills', in his wife's words"
+   },
+   "register": {
+    "level": "plain",
+    "education": "none in Tarnish; the barns",
+    "words": [
+     "the bowl",
+     "the barns",
+     "goats",
+     "Dorrah",
+     "the hat"
+    ]
+   },
+   "region": {
+    "markers": [
+     "it is",
+     "I do not"
+    ],
+    "idioms": [
+     "your mother says",
+     "Dorrah says"
+    ]
+   },
+   "sentence_length": [
+    1,
+    16
+   ],
+   "questions": null,
+   "contractions": false,
+   "never_words": [
+    "okay",
+    "radio",
+    "television"
+   ],
+   "knows": [
+    "what the paper from the office said",
+    "Abel Furrowe's hat"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "died",
+      "the cell"
+     ],
+     "why": "the family is not told how Tomas died",
+     "unless_gate": [
+      "haldane.told"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": -1.5,
+    "range": 0.8,
+    "rate": 0.9,
+    "beta": [
+     0.97,
+     0.96
+    ],
+    "colour": "plain",
+    "space": "room",
+    "contour": "rise"
+   },
+   "face": {
+    "brow": 0,
+    "browInner": 0.3,
+    "lids": 0.35,
+    "corners": -0.15
+   },
+   "hand": {
+    "about": "Hesh letters, fluent and quick (the Hesh script is provisional until the author approves it); Tarnish written as a learned second hand, careful but laboured, each letter built on its own, the Hesh headline kept over each word",
+    "tool": "pen",
+    "ink": "#27222c",
+    "script": "hesh",
+    "slant": -0.04,
+    "pressure": 1.0,
+    "variance": 0.2,
+    "spacing": 1.0,
+    "second": {
+     "slant": 0.0,
+     "print": true,
+     "joins": 0,
+     "width": 1.0,
+     "spacing": 1.3,
+     "variance": 0.35,
+     "headline": true,
+     "tremor": 0.35,
+     "lean": 0.08,
+     "walk": 0.35,
+     "pressureVar": 0.4,
+     "rough": 1.8
+    }
+   }
+  },
+  "LIL": {
+   "name": "Lil, Mary Furrowe's sister (content/quota/q_world.lwd q.lil)",
+   "household": "Furrowe (Mary's family, from Tarn Hollow)",
+   "line": "the Inspectors (by marriage)",
+   "trade": "a widow at Tarn Hollow with one boy; at the blacklisted Furrowe table after the squads came",
+   "age": "about 38",
+   "people": "tarn-plain",
+   "class": "poor",
+   "wound": "her boy, going without bread at her sister's table (ba43c27)",
+   "lie": "Lovely manners. (derived: she praises the man who did it, because praise is safe)",
+   "timbre": "Mary's family voice from further down the plain: the same warmth gone dry, quick and level, every fact said as if it were small talk",
+   "pace_sps": 4.4,
+   "tics": [
+    "names the man and his manners before what he did",
+    "a day of the week for every blow ('The squads came Friday')"
+   ],
+   "never": [
+    "blames Ned to his face",
+    "asks for the bread for her boy"
+   ],
+   "stress": "flatter and more polite",
+   "range": {
+    "calm": "level small talk",
+    "angry": "politer",
+    "grieving": "holds the boy and says the day",
+    "lying": "'Lovely manners'"
+   },
+   "register": {
+    "level": "plain",
+    "education": "the village school",
+    "words": [
+     "the Hollow",
+     "the squads",
+     "the car",
+     "Friday",
+     "my boy"
+    ]
+   },
+   "region": {
+    "markers": [
+     "he'd not",
+     "you've not"
+    ],
+    "idioms": [
+     "the Hollow",
+     "lovely manners"
+    ]
+   },
+   "sentence_length": [
+    1,
+    18
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "starving",
+    "famine"
+   ],
+   "knows": [
+    "Sallow wrote 320 for Tarn Hollow without leaving the car",
+    "the squads came Friday"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "two hundred and five",
+      "what Ned said",
+      "the district office"
+     ],
+     "why": "nobody at the table says what Ned wrote (q_coda.lwd)",
+     "unless_gate": [
+      "lil.told"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": 7.5,
+    "range": 0.8,
+    "rate": 1.04,
+    "beta": [
+     1.11,
+     1.14
+    ],
+    "colour": "dry",
+    "space": "room"
+   },
+   "face": {
+    "brow": 0.05,
+    "browInner": 0.25,
+    "lids": 0.2,
+    "corners": 0.1
+   }
+  },
+  "SALLOW": {
+   "name": "Mr Sallow, the replacement inspector (named in content/quota/q_coda.lwd; not yet a speaker)",
+   "household": "none in Edrin (sent from the district office)",
+   "line": "the Inspectors' replacement",
+   "trade": "district inspector after Ned's post is stopped; wrote 320 for Tarn Hollow from his car on his first day",
+   "age": "about 35",
+   "people": "tarn-town",
+   "class": "middle, ambitious",
+   "wound": "none he feels (derived)",
+   "lie": "The figure stands. (derived: the figure he wrote without leaving the car is the harvest)",
+   "timbre": "lovely manners: a light, pleasant, unhurried town voice, every courtesy finished, nothing behind it; the danger is how agreeable he is",
+   "pace_sps": 4.6,
+   "tics": [
+    "thanks people for what he takes",
+    "says a figure as if it were good news",
+    "remarks on the weather from inside the car"
+   ],
+   "never": [
+    "raises his voice",
+    "gets out of the car if he can help it",
+    "says the word hunger"
+   ],
+   "stress": "more courteous",
+   "range": {
+    "calm": "pleasant",
+    "angry": "a regret, politely expressed",
+    "grieving": "none shown",
+    "lying": "the same pleasant voice: there is no other"
+   },
+   "register": {
+    "level": "middle",
+    "education": "the inspectors' course in Arlen",
+    "words": [
+     "figure",
+     "return",
+     "the district",
+     "the review",
+     "most kind"
+    ]
+   },
+   "region": {
+    "markers": [],
+    "idioms": [
+     "most kind",
+     "the figure stands"
+    ]
+   },
+   "sentence_length": [
+    1,
+    22
+   ],
+   "questions": null,
+   "never_words": [
+    "okay",
+    "radio",
+    "television",
+    "hungry",
+    "starving",
+    "famine",
+    "sorry"
+   ],
+   "knows": [
+    "the figure he wrote: 320 for Tarn Hollow",
+    "that Ned's post was stopped"
+   ],
+   "unknown": [
+    {
+     "terms": [
+      "no hole",
+      "the hill"
+     ],
+     "why": "he has not left the car (q_coda.lwd)",
+     "unless_gate": [
+      "sallow.hill"
+     ]
+    }
+   ],
+   "synth": {
+    "shift": 1,
+    "range": 1,
+    "rate": 1.04,
+    "beta": [
+     1.02,
+     1.03
+    ],
+    "colour": "plain",
+    "space": "car"
+   },
+   "face": {
+    "brow": 0.1,
+    "browInner": 0,
+    "lids": 0,
+    "corners": 0.35
+   }
+  }
+ }
+}

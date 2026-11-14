@@ -1,0 +1,177 @@
+# The Quota slice: the Militia line (Will Brack). The morning in the cells, and the road post from the
+# post's side: the perpetrator's half of the pair "the requisition". Story lead, 2026-10-21.
+# Slurs here are the invented ones (07-PRODUCTION decision 2 is open), each with a speaker who has a
+# history (Gedge, see q_world.lwd) and someone who hears it.
+
+# ---------------------------------------------------------------- the morning in his trade
+@node q.will.morning
+place: q_cells
+cost: 3
+do: cut(max(0, 06:30 - clock))
+nar: The cells, at the end of the night shift. Two lamps, one of them smoking. The smell of the bucket in the end cell and of Gedge's pipe.
+nar: Will Brack has been awake since four. He has a heel of the post's bread in his pocket, from a cart yesterday, and he keeps putting his hand on it to see if it's still there.
+line: GEDGE: Your tallowman's been singing again, sergeant. Half the night. That warbling they do. Like a sheep with its leg caught.
+nar: In the end cell an old man in a felt coat sits on the bench with his hands between his knees. He looks up when he hears the word, and then down again.
+nar: He's hot. You can smell it from the door, the fever smell, like wet straw left in a heap. There are lice in the seam of his blanket, grey, moving when the lamp moves, and Gedge won't go in to him.
+line: TESK: I was not singing. I was saying the prayer for the water. We say it at night.
+line: GEDGE: He says it was the prayer for the water.
+line: WILL: Right. I heard him, lad.
+voice: smell: The bucket, the pipe, and under both of them the fever, sweet and wet. It'll be in your coat by dinner. {dc: 3}
+voice: grip: Your hand's on the bread again. {dc: 2}
+nar: The log is open on the table at Tuesday.
+nar: TUES. TESK, HILL OF KRALL'S END. FOUND IN POSSESSION: {hand: will}
+nar: The number after it hasn't been written yet. The squad brought in two sacks of oats from his fold, and one of them was half full.
+opt: "Write: two sacks." -> q.will.log.two {do: set(q.log_two); set(said.will_log_two)}
+opt: "Write: one and a half sacks, oats." -> q.will.log.true {do: set(q.log_true); set(q.true_in_hand); set(said.will_log_true)}
+opt: "Ask Tesk what the oats were for." -> q.will.tesk
+
+@node q.will.tesk
+place: q_cells
+speaker: TESK
+cost: 3
+line: TESK: For the goats, sergeant.
+line: TESK: If the goats die, there is no milk, and then it is the children. We have six on the hill now that are not ours. Their people sent them up to us from the town. You know this. Your squad counted them.
+line: GEDGE: Six little tallow-brats in one hut, and he wants us to believe there's no grain.
+nar: Tesk looks at Gedge for a while, with no expression at all.
+line: TESK: Your father drove Mr Orme's carts. I remember him. He would give the boy holding the horse a sweet.
+line: GEDGE: Shut it.
+nar: Gedge goes out into the yard. Through the door you can hear him kicking something until it breaks.
+opt: "Write: two sacks." -> q.will.log.two {do: set(q.log_two); set(said.will_log_two)}
+opt: "Write: one and a half sacks, oats." -> q.will.log.true {do: set(q.log_true); set(q.true_in_hand); set(said.will_log_true)}
+
+@node q.will.log.two
+place: q_cells
+cost: 2
+nar: TWO SACKS. W.B. {hand: will}
+nar: The Captain likes round numbers, and two is rounder.
+voice: ballast: Half a sack. Nobody hangs for half a sack, either way. {dc: 3}
+go: q.will.orders
+
+@node q.will.log.true
+place: q_cells
+cost: 2
+nar: ONE AND A HALF SACKS, OATS. W.B. {hand: will}
+nar: It looks small written down. It looks like what it was.
+voice: pride: The Captain'll send that back. He sent the last one back. {dc: 3}
+go: q.will.orders
+
+@node q.will.orders
+place: q_cells
+speaker: WILL
+cost: 2
+nar: On the nail by the door, today's order, typed in Arlen and signed in the Captain's green ink: NO GRAIN TO PASS THE DISTRICT LINE WITHOUT A PASS. GRAIN FOUND IS HOARDING. REQUISITION AT THE POST.
+nar: Holt, Capt., Requisition. {hand: holt}
+nar: Will reads it, though he read it yesterday, and the day before.
+voice: ballast: If one cart goes through without a pass, forty go tomorrow, and then there's no post. There's just you on a road. {dc: 2, self: q.sl.forty_carts}
+go: q.office
+
+# ---------------------------------------------------------------- the road post, from the post's side
+@node q.will.post
+place: q_post
+cost: 5
+do: cut(max(0, 14:00 - clock))
+nar: The road post at the district line. A pole across the road, a brazier, a hut with the tally board on its wall. The wind comes over the plain from Osby with nothing to stop it.
+nar: Will stands with his hands in his armpits. Gedge has been through every cart since noon and found one sack, in a child's cot, under the child.
+line: WILL: All afternoon. And one sack. Holt'll love that.
+nar: A cart comes down the dip. A thin horse, a boy at its head. A woman on the bench, a girl standing in the back among the sacks. An older boy walking beside it with his cap pulled down, in a brown coat that comes to his shins.
+line: GEDGE: Haldanes. From the barns.
+line: GEDGE: That's the half-tallow one. Look at the wrist on him.
+go: q.will.post.cart
+
+@node q.will.post.cart
+place: q_post
+speaker: BET
+cost: 5
+line: WILL: Pass.
+line: BET: We're going to my sister's at Osby. For the mill there. Ours is shut, Sergeant, you know it's shut.
+line: WILL: Pass, missus. Right. Off the cart, lad. Let the constable see.
+nar: She hasn't got one. Nobody has one. The office gives them to the chairmen's carts.
+nar: Gedge climbs up and starts pushing his bayonet into the sacks. The girl counts him.
+line: ANNI: One.
+line: ANNI: Two.
+line: GEDGE: Will you shut her up?
+line: ANNI: Three. Four. You've had four.
+line: GEDGE: What's in that one?
+line: TOMAS: Barley. Seed. Same as the last time you asked.
+line: GEDGE: Don't you get clever.
+line: TOMAS: If I was clever I'd be in Osby.
+nar: Gedge goes red from the collar up. Aaron, at the horse's head, laughs once through his nose and then looks at the ground.
+line: TOMAS: The other two's seed, Sergeant. Barley. For the spring. Dad says if you take that there's no spring.
+nar: Will knows the boy a little. He's seen him at the Sheaf, sent to fetch his dad home, sitting on the bench by the door till Ilo's ready. He has a laugh that makes other people laugh. He was laughing in there at dinner time.
+voice: hearsay: Edie let Bet's dresses out for her that spring. The same spring young Furrowe got married in a hurry. {dc: 4}
+voice: undertow: Two sacks of seed. You could take them, and Gedge would think more of you. You could leave them, and nobody at all would know. {dc: 4}
+go: q.will.post.choice
+
+@node q.will.post.choice
+place: q_post
+cost: 0
+alt: q.will.post.holt ? q_figure == blamed
+opt: "Take the four. Leave the seed. Turn them round." -> q.will.post.take {do: q_cart = taken; set(said.will_take_four)}
+opt: "Put the four back. Lift the pole. Let them through to Osby." -> q.will.post.through {do: q_cart = through; set(said.will_let_through)}
+opt: "Take all six. The order says grain found is hoarding." -> q.will.post.six {do: q_cart = taken; set(said.will_take_six)}
+
+@node q.will.post.holt
+place: q_post
+speaker: HOLT
+cost: 4
+nar: The Captain's motor car comes up behind the hut with its engine knocking. Holt gets out, buttoning his coat.
+line: HOLT: Brack. You said it this morning, in front of the Commissioner. The shortfall's gone up the hill with the Hesh.
+nar: He looks the boy up and down, the cap, the big coat, the wrist.
+line: HOLT: Well. Here's one with his hill on him. And a mouth on him, I heard. Hold that one, Sergeant. We'll see who he's been carrying for.
+line: TOMAS: I've not been up the hill since harvest. Ask anybody. Ask my sister. She'll tell you.
+line: ANNI: He was with me. He was with me all the time.
+voice: ballast: You said it. In front of all of them. This is just the rest of what you said. {dc: 2}
+opt: "Take him by the arm." -> q.will.post.arrest {do: q_cart = arrested; set(q.tomas_held); fate(f.tomas_held, tomas); set(said.will_arrest_tomas)}
+opt: "He's not been up the hill, Captain. I've had my eye on that road all month." -> q.will.post.refuse {do: q_cart = taken; set(said.will_refuse_holt); set(heard.holt.will_refuse_holt)}
+
+@node q.will.post.arrest
+place: q_post
+cost: 3
+do: record(refuse.pass, haldane, haldane_yard)
+nar: Will takes him by the arm. Not hard. Tomas lets him. There's hardly anything inside the sleeve, the coat's that much too big, and Will lets go a little and then holds on again.
+nar: The mother says the boy's name, just the once.
+nar: Tomas climbs into the back of the Captain's car on his own. The step's high, and he needs both hands. The girl doesn't say anything. She's stopped counting.
+line: GEDGE: That's one, sergeant.
+go: q.dinner
+
+@node q.will.post.refuse
+place: q_post
+speaker: HOLT
+cost: 3
+do: record(refuse.pass, haldane, haldane_yard)
+line: HOLT: All month.
+line: HOLT: Then take the cart, Sergeant. All of it. Somebody has to have been carrying for somebody.
+nar: Gedge strips the cart, seed and all. The Captain watches it done, then gets back in the car and writes on his cuff.
+nar: Tomas walks back up the road beside the empty cart. He doesn't look round.
+go: q.dinner
+
+@node q.will.post.take
+place: q_post
+cost: 3
+do: record(refuse.pass, haldane, haldane_yard)
+nar: Four sacks on the tally board: HALDANE, BARNS. FOUR SACKS. HOARDING. Gedge chalks it and Will signs.
+nar: The cart turns in the road. It takes a long time. The horse is weak, and the little one at its head won't let his mother use the whip.
+line: AARON: Thank you for the seed.
+nar: He says it the way he's been taught to say it, to anybody who gives him anything. Tomas cuffs him round the back of the head, not hard. Aaron doesn't cry, and Bet doesn't say anything to either of them.
+go: q.dinner
+
+@node q.will.post.through
+place: q_post
+speaker: GEDGE
+cost: 3
+line: GEDGE: You what?
+line: WILL: Put 'em back, lad.
+nar: Gedge puts the sacks back one at a time, slow, so the Haldanes can see him do it. Will lifts the pole himself. The cart goes through toward Osby and nobody on it says anything, in case he changes his mind.
+line: GEDGE: That goes in the log, Sergeant. Or it goes to the Captain. You pick.
+voice: grip: Your hand's on the bread again. {dc: 2}
+go: q.dinner
+
+@node q.will.post.six
+place: q_post
+cost: 3
+do: record(refuse.pass, haldane, haldane_yard)
+nar: Six sacks on the tally board. Gedge whistles while he chalks it.
+nar: The mother gets down off the bench and walks to the hut and stands in front of Will, very close, and doesn't say anything at all, and after a while she gets back up on the cart.
+line: TOMAS: Then there's no spring.
+line: WILL: Order's the order.
+go: q.dinner

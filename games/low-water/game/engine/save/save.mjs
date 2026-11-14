@@ -10,8 +10,13 @@
 // overrides, lights, gusts) and Lamb's wetness moved into state.body.
 // Version 4 (2026-10-17): the action-RPG build layer: gear upgrade levels (state.inv.upgrades),
 // and the sheet's level, xp and points made explicit for every save.
+// Version 5 (2026-10-22): the read-back became a witness scene (world/witness.mjs). An open read-back
+// (state.readback) becomes state.witness on the witness that replaced it, and resumes from its first beat;
+// the self-lies, the words said and the community model pass through untouched.
 export const SAVE_FORMAT = "low-water.save";
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
+// which witness scene replaced each read-back document
+export const WITNESS_OF = { "q.record": "q.w.anni" };
 export const SLOTS = ["auto", "quick", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 export const MIGRATIONS = {
@@ -32,6 +37,15 @@ export const MIGRATIONS = {
     inv.upgrades = inv.upgrades || {}; st.inv = inv;
     if (st.sheet) st.sheet = { level: 1, xp: 0, points: 0, ...st.sheet };
     return { ...s, version: 4, state: st };
+  },
+  4: (s) => {
+    const st = { ...s.state, version: 5 };
+    if (st.readback) {
+      const rb = st.readback;
+      st.witness = { id: WITNESS_OF[rb.id] || rb.id, beats: [], i: -1, shown: [], closed: !!rb.closed, ui: { shown: 0, lastAt: null }, from: rb.id };
+      delete st.readback;
+    }
+    return { ...s, version: 5, state: st };
   },
 };
 

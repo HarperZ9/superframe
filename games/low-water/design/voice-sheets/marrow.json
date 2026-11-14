@@ -1,0 +1,108 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "MARROW",
+ "setting": "gullet",
+ "setting_note": "Gullet (Low Water's first setting). Lamb, Gullet and the harbour are cut as setting and protagonist (QUOTA-DESIGN.md decision 3, 2026-10-21); kept for the archived acts and for VOICE-AUDIT.md re-runs. The Quota's sheets are in design/voice-sheets/quota/.",
+ "status": "draft 2026-10-21, derived from bible/WORLD-BIBLE.md and design/voice/profiles.json; the voice director owns corrections",
+ "role": "shop steward of the Guild",
+ "age": "45",
+ "register": {
+  "level": "plain",
+  "education": "a fishmonger and a chapel orator",
+  "class": "working, Guild",
+  "trade": "fishmonger, shop steward",
+  "words": [
+   "flatfish",
+   "herring",
+   "mackerel",
+   "conger",
+   "scales",
+   "brine",
+   "steward",
+   "Guild",
+   "blindfold"
+  ]
+ },
+ "region": {
+  "name": "gullet",
+  "markers": [
+   "I'll not",
+   "you'd not",
+   "it'll not",
+   "'em",
+   "slack"
+  ],
+  "idioms": [
+   "on the turn",
+   "low water",
+   "the floor",
+   "the Shelf"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 30
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television",
+  "email",
+  "computer",
+  "teenager"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "the vote",
+   "the switch",
+   "the price"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "bread oven",
+     "bottle glass"
+    ],
+    "why": "the prism casting is Wenna's, Sabine's and Fennick's secret (bible 7.1, 7.6)",
+    "unless_gate": [
+     "prism",
+     "glass",
+     "oven",
+     "bottle"
+    ]
+   },
+   {
+    "terms": [
+     "specification",
+     "keeper on duty",
+     "restrike"
+    ],
+    "why": "the struck clause is in Crake's papers (bible 7.3); others learn it only if shown",
+    "unless_gate": [
+     "clause",
+     "spec",
+     "restrike"
+    ]
+   },
+   {
+    "terms": [
+     "works order"
+    ],
+    "why": "only Keel and Crake know the works order exists (bible 7.2)",
+    "unless_gate": [
+     "works.order",
+     "order"
+    ]
+   }
+  ]
+ },
+ "wants": "the strike won; the vote kept sacred",
+ "fears": "that the vote will be blamed and the tradition ended",
+ "hides": "at 21:38 he pulled the quay switch, as his father did",
+ "tics": [
+  "fish",
+  "flatfish",
+  "smell"
+ ]
+}

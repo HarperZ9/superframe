@@ -3,6 +3,7 @@
 .dbook { position: absolute; inset: 3vh 3.5vw; display: grid; grid-template-rows: auto auto 1fr auto; min-height: 0; background: var(--paper-solid); }
 .dhead { display: flex; align-items: baseline; gap: 1.4rem; padding: 1rem 1.6rem 0.4rem; }
 .dtitle { font-size: 1.5rem; font-weight: 600; }
+.dplace { font-weight: 600; }   /* the plain menu's header: the place in the house face, no book title */
 .tabs { display: flex; flex-wrap: wrap; gap: 0.1rem; padding: 0 1.2rem; border-bottom: 1px solid rgba(29, 20, 24, 0.35); }
 .tab { padding: 0.45rem 0.8rem 0.4rem; font-weight: 600; color: var(--ink2); border-bottom: 3px solid transparent; margin-bottom: -1px; }
 .tab.on { color: var(--ink); border-bottom-color: var(--ink); }
@@ -53,3 +54,8 @@
 .history .hrow { display: grid; grid-template-columns: 3.6rem 1fr; gap: 0.6rem; }
 .history .t { color: var(--ink2); font-size: 0.8rem; padding-top: 0.2rem; }
 .history .ln { margin-bottom: 0.4rem; }
+
+/* A story with a plain pause menu (@meta menu, body[data-menu="plain"], the Quota; 2026-10-23): no Daybook
+   chip on screen. Tab and View still open the menu, and the Pause page names its pages. The chip is found by its
+   glyph (ui/bindings.mjs data-act); the chip itself is drawn in ui/play.mjs drawBar. */
+body[data-menu="plain"] .topbar > .chip:has([data-act="daybook"]) { display: none; }
