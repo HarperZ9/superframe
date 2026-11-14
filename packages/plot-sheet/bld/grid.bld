@@ -51,7 +51,9 @@ pub fn grid_build(px: Vec<f64>, py: Vec<f64>, cell_min: f64) -> Grid {
     }
     let w: f64 = maxf(x1 - x0, 1.0e-6);
     let h: f64 = maxf(y1 - y0, 1.0e-6);
-    let cell: f64 = maxf(maxf(cell_min, sqrt(w * h / (maxf(n as f64, 1.0)))), 1.0e-6);
+    // about one cell a point, never under cell_min, and never so small that a side needs over 4000 cells
+    let fit: f64 = maxf(cell_min, sqrt(w * h / (maxf(n as f64, 1.0))));
+    let cell: f64 = maxf(maxf(fit, maxf(w, h) / 4000.0), 1.0e-6);
     let cols: i32 = clampi(floor(w / cell) as i32 + 1, 1, 4096);
     let rows: i32 = clampi(floor(h / cell) as i32 + 1, 1, 4096);
     let g: Grid = Grid { x0: x0, y0: y0, cell: cell, cols: cols, rows: rows, head: Vec::new(), item: Vec::new(), live: Vec::new(), slot: Vec::new(), home: Vec::new() };

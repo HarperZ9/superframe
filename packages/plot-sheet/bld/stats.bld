@@ -184,7 +184,7 @@ pub fn stats_json(s: Spec, plot: Plot) -> String {
 pub fn summary(s: Spec, plot: Plot) -> String {
     let n: Vec<f64> = plot.note;
     let o: Vec<String> = Vec::new();
-    o.push("plot sheet: " + whole(total(plot, M_PATHS())) + " paths, " + (plot.layer_pen.len() as i32).to_string() + " pens | drawn");
+    o.push("plot sheet: " + whole(total(plot, M_PATHS())) + " paths, " + (plot.layer_pen.len() as i32).to_string() + (if plot.layer_pen.len() == 1 { " pen | drawn" } else { " pens | drawn" }));
     let mut j: i32 = 0;
     while j < plot.layer_pen.len() as i32 {
         let k: i32 = plot.layer_pen[j];

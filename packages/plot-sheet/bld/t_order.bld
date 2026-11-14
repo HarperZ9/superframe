@@ -144,6 +144,8 @@ pub fn test_speed(t: Vec<i32>) ~ Console + Clock + Environment {
     let t6: i64 = clock_ms();
     let in_opt: i64 = (t4 - t3) - (t6 - t5);
     println("     2-opt given 100 ms and no other limit ran {} ms and stopped on: {}", in_opt, if b.note[N_STOP()] == 2.0 { "time" } else { "something else" });
-    check(t, "speed: 2-opt stops on its time limit, within 100 ms of it", b.note[N_STOP()] == 2.0 && in_opt <= 200, "ran past the limit");
+    // in_opt is a difference of two timed builds, so it carries their noise: a tenth of the budget is allowed for it
+    let slack: i64 = (limit / 10.0) as i64;
+    check(t, "speed: 2-opt stops on its 100 ms limit, give or take the timing noise of two builds", b.note[N_STOP()] == 2.0 && in_opt <= 100 + slack, "ran past the limit");
     check(t, "speed: the time-limited sheet is still no worse than it arrived", total(b, M_TRAVEL_OUT()) <= total(b, M_TRAVEL_IN()) && total(c, M_TRAVEL_OUT()) <= total(c, M_TRAVEL_IN()), "worse");
 }
