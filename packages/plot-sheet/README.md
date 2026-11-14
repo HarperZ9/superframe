@@ -105,7 +105,7 @@ One case is outside that promise. The 2-opt pass has two limits, a count of eval
 
 ## Speed
 
-Measured on the development machine on 2026-11-14, release build, one core: a sheet of 20,000 ten-point paths is read in 0.12 s, built in 0.30 s and written in 0.52 s, 0.95 s in all, and pen-up travel falls from 3520 m to 41.7 m. The test budget is 2 s for build and write, and the test runs unoptimised, where the same work takes 1.3 s. The make command's own lines at 3840 x 2160, 23,701 paths after joining, take 1.5 s.
+Measured on the development machine on 2026-11-14, release build, one core: a sheet of 20,000 ten-point paths is read in 0.12 s, built in 0.30 s and written in 0.52 s, 0.95 s in all, and pen-up travel falls from 3520 m to 41.7 m. The test budget is 2 s for build and write, and the test runs unoptimised, where the same work takes 1.3 s. CI allows 4 s on its shared Linux runner, which measured 1.2 s. The make command's own lines at 3840 x 2160, 23,701 paths after joining, take 1.5 s.
 
 On that sheet nearly all of the gain is the nearest-end pass (3520 m to 43.3 m). The 2-opt pass takes it to 41.7 m at the default limits and to 39.2 m when left to finish, which takes 1.2 s. On a shuffled grid of 1000 strokes the two together cut travel 25 times.
 

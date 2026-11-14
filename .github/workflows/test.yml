@@ -68,7 +68,7 @@ jobs:
           buildc run packages/plot-sheet/bld/selftest.bld | tee plot-sheet-out.txt
           grep -q "^plot sheet tests passed: 57 of 57$" plot-sheet-out.txt
         env:
-          PLOT_SHEET_BUDGET_MS: '6000'
+          PLOT_SHEET_BUDGET_MS: '4000'
       - run: |
           buildc build --release packages/plot-sheet/bld
           mkdir -p out/plot-fixture
