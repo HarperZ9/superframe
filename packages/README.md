@@ -46,6 +46,7 @@ npm run test:py                                      # the Python tests
 | `weave` | loom drafts as arithmetic: threading, tie-up and treadling to a drawdown, the named structures, and WIF 1.1 in and out; moved in from the vendored site snapshot; see `weave/README.md` | FSL-1.1-MIT |
 | `retro` | a picture reduced the way old hardware reduced it: retro palettes in OKLab, median cut, Bayer, noise and error-diffusion dither, and a tube stage; moved in from the vendored site snapshot; see `retro/README.md` for the other retro and CRT implementations in this repo | FSL-1.1-MIT |
 | `fractal` | a formula language for fractals compiled to JavaScript and GLSL with a symbolic derivative, CPU renders of formula and Markus-Lyapunov fractals, and the shared colour recipe; moved in from the vendored site snapshot; see `fractal/README.md` | FSL-1.1-MIT |
+| `ear` | measurement that stands in for listening: BS.1770 loudness, spectral balance, pitch and chords, tempo, roughness, stereo, dropouts, masking, repetition and instrument identity over PCM samples, with a flag for each number outside its target and eighteen planted defects the flags must catch; carried from the site; see `ear/README.md` | FSL-1.1-MIT, `src/identity-refs.json` measured from CC0 and free sample sets named in the file |
 | `_vectors` | CC0 golden vectors for canonical records and statistics, shared with Flywheel and CMMNS | CC0-1.0 |
 
 ## Dependencies
