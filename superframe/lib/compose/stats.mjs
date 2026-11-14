@@ -38,5 +38,32 @@ export function rng(seed) {
   return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
 
-// Two-sided binomial interval half-width at about 2 sigma, for stating the power beside a hit rate.
+// Two-sided binomial interval half-width at about 2 sigma (a Wald form). Superseded 2026-10-30 by
+// exactInterval below (prior update PU30-04, F91 C5): F91 showed the per-test Wald rule fails its error
+// rate near bounds and at small n. Kept only so recorded prereg outputs (twoSigmaAt20) replay unchanged.
 export const twoSigma = (p, n) => 2 * Math.sqrt(Math.max(p * (1 - p), 1e-9) / n);
+
+// P[X <= k] for X ~ Binomial(n, p), from the exact upper tail.
+const lowerTail = (n, k, p) => (k >= n ? 1 : 1 - Math.pow(10, log10BinomTail(n, k + 1, p)));
+
+function bisect(f, lo, hi) {
+  for (let i = 0; i < 100; i++) { const m = (lo + hi) / 2; if (f(m)) hi = m; else lo = m; }
+  return (lo + hi) / 2;
+}
+
+// Exact (Clopper-Pearson) two-sided interval for k hits in n trials. Never narrower than the nominal level.
+export function exactInterval(k, n, alpha = 0.05) {
+  if (!(n > 0)) return [0, 1];
+  const lo = k <= 0 ? 0 : bisect(p => Math.pow(10, log10BinomTail(n, k, p)) >= alpha / 2, 0, 1);
+  const hi = k >= n ? 1 : bisect(p => lowerTail(n, k, p) <= alpha / 2, 0, 1);
+  return [lo, hi];
+}
+
+// Bound-violation rule from F91 C5: exact one-sided binomial p at each bound, Holm across the family.
+// tests: [[k, n, bound], ...]. Returns { flags, p } in input order.
+export function boundViolations(tests, alpha = 0.05) {
+  const p = tests.map(([k, n, b]) => (b >= 1 ? 1 : Math.min(1, Math.pow(10, log10BinomTail(n, k, b)))));
+  const order = p.map((_, i) => i).sort((a, b) => p[a] - p[b]), flags = p.map(() => false), m = p.length;
+  for (let r = 0; r < m; r++) { if (p[order[r]] * (m - r) > alpha) break; flags[order[r]] = true; }
+  return { flags, p };
+}

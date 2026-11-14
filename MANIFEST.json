@@ -904,8 +904,8 @@
   {
    "path": "lettering/lib/letter.mjs",
    "source": "2026-10-23-lettering/lib/letter.mjs",
-   "bytes": 13474,
-   "sourceSha256": "b2cfdee7570a4ef32472ea9fbf715e13f4751e469f55696c0f4eb6312617b5c4"
+   "bytes": 13326,
+   "sourceSha256": "d01733cc8ed047102850343363ed610fd8cd2556a177d2ff47abe8a4f3ad28a9"
   },
   {
    "path": "lettering/lib/paint.mjs",
@@ -1252,8 +1252,8 @@
   {
    "path": "sound/sound/v3/instruments/reed.js",
    "source": "2026-10-23-sound/sound/v3/instruments/reed.js",
-   "bytes": 4962,
-   "sourceSha256": "1c74a7f64881309739a4753fb412204cbc2880d06a84a5607a7e3f9ce8563d7f"
+   "bytes": 5397,
+   "sourceSha256": "b198e400a3f35610d48c403506972087642daca364d59a0d318a30253ffae374"
   },
   {
    "path": "sound/sound/v3/instruments/space.js",
@@ -1528,8 +1528,8 @@
   {
    "path": "superframe/adapters/finish.mjs",
    "source": "2026-10-23-superframe/adapters/finish.mjs",
-   "bytes": 7956,
-   "sourceSha256": "fe308c1747b9fc773ebb8d37b07ab811bce47e36e1a8a7ad5efe3e2b9f22519c"
+   "bytes": 8266,
+   "sourceSha256": "8c8ed1b4859393b53962f96169a98b8145c8a4c96c1057b272f26a7a1634ae19"
   },
   {
    "path": "superframe/adapters/image.mjs",
@@ -2314,8 +2314,8 @@
   {
    "path": "superframe/lib/compose/prereg.mjs",
    "source": "2026-10-23-superframe/lib/compose/prereg.mjs",
-   "bytes": 5160,
-   "sourceSha256": "cb56b48c7a5b6d34a7454c02befaf12e7743c245e126d43daa7f2a2fe34b48ad"
+   "bytes": 5293,
+   "sourceSha256": "11dc71a0140673b45c8a3657b40d17ee8a7c2a4cbd25a6ec68c2d37e7d389985"
   },
   {
    "path": "superframe/lib/compose/scene.mjs",
@@ -2326,8 +2326,8 @@
   {
    "path": "superframe/lib/compose/stats.mjs",
    "source": "2026-10-23-superframe/lib/compose/stats.mjs",
-   "bytes": 2422,
-   "sourceSha256": "5e2bfa9ea06ca8394af8debd66f8bd8fc020ac1b73b7f657fb4f04bf2edd0916"
+   "bytes": 3890,
+   "sourceSha256": "0fc07d039b4876ae77d4eba3b258baaf481f1a698c8a822102ee914f0b1cb1c9"
   },
   {
    "path": "superframe/lib/compose/vp.mjs",
@@ -3276,6 +3276,12 @@
    "source": "2026-10-23-superframe/tests/compose-axis.test.mjs",
    "bytes": 2462,
    "sourceSha256": "0081f040a846822a4179ad56bf9eeba5cda6e908d785b760e2a80f31a23631b5"
+  },
+  {
+   "path": "superframe/tests/compose-stats.test.mjs",
+   "source": "2026-10-23-superframe/tests/compose-stats.test.mjs",
+   "bytes": 1695,
+   "sourceSha256": "002515954a9ebe6ce709c94f0bf63883a4c556629068479fad9c0c208ec0a2ca"
   },
   {
    "path": "superframe/tests/compose.test.mjs",
@@ -4954,8 +4960,8 @@
   {
    "path": "name-art/concepts/11-pearls.mjs",
    "source": "2026-10-24-name-art/concepts/11-pearls.mjs",
-   "bytes": 5253,
-   "sourceSha256": "5846b37cc49e3f017c820ba6f7c5c51002abf60f33c177936f242710f3c284f6"
+   "bytes": 5436,
+   "sourceSha256": "1c39d6cabe753db3904e0348a52e77f6bd02a463790f8bd76731ae2a514ae10c"
   },
   {
    "path": "name-art/concepts/12-riso.mjs",
@@ -4978,14 +4984,14 @@
   {
    "path": "name-art/concepts/15-deco-arc.mjs",
    "source": "2026-10-24-name-art/concepts/15-deco-arc.mjs",
-   "bytes": 5908,
-   "sourceSha256": "3bf6769c7e4b6625c1be546eb7d1c5943f36e67311cf28ad46979ca24287ec74"
+   "bytes": 6161,
+   "sourceSha256": "2cc38eb73c76b5d14ffdb01202248b50f7485e724c800e6ffa10b23959a693b8"
   },
   {
    "path": "name-art/concepts/16-intaglio-lines.mjs",
    "source": "2026-10-24-name-art/concepts/16-intaglio-lines.mjs",
-   "bytes": 7186,
-   "sourceSha256": "ce96f98e20ce562ab6a20ca3c221263b149da293599b43953e584425baa9bb1d"
+   "bytes": 8175,
+   "sourceSha256": "15516f5c4525655e59072b070ccd1a417384aa86f1c446e500c0ab65f282dcb7"
   },
   {
    "path": "name-art/concepts/17-pearls-large.mjs",
@@ -5078,6 +5084,12 @@
    "sourceSha256": "040bbb0d0272d7560924c118f7bbf6e591a40c42c798233d916fef8c9c8f7b41"
   },
   {
+   "path": "name-art/lib/README.md",
+   "source": "repo",
+   "bytes": 885,
+   "sourceSha256": "9ad1dff57cdadbe3cc897c6dea69b78575b5238304987e7e635374958c07fc08"
+  },
+  {
    "path": "name-art/lib/crystal.mjs",
    "source": "2026-10-24-name-art/lib/crystal.mjs",
    "bytes": 12339,
@@ -5098,8 +5110,8 @@
   {
    "path": "name-art/lib/img.mjs",
    "source": "2026-10-24-name-art/lib/img.mjs",
-   "bytes": 7997,
-   "sourceSha256": "bd1e55888c703a540de9f0380ebafe428e402ea1e6137f9d7314fa9f2f40b7bd"
+   "bytes": 8643,
+   "sourceSha256": "f4e90ab55df6a4e59dff76ec3c0ce818dc4277bf403ac42a493f891e002a40d5"
   },
   {
    "path": "name-art/lib/mosaic/andamento.mjs",
@@ -5144,6 +5156,12 @@
    "sourceSha256": "b58061a435cb0137cb7a037cb5bfcf29691d4e8f7feef6c7d60c4493eff2c53e"
   },
   {
+   "path": "name-art/lib/press.mjs",
+   "source": "2026-10-24-name-art/lib/press.mjs",
+   "bytes": 4027,
+   "sourceSha256": "d87e4367f68fe33945d37c0d19afeade220f4328911075f2e30e8e8dc98e76a6"
+  },
+  {
    "path": "name-art/lib/strokes.mjs",
    "source": "2026-10-24-name-art/lib/strokes.mjs",
    "bytes": 8914,
@@ -5152,14 +5170,14 @@
   {
    "path": "name-art/superframe/mosaic-node.mjs",
    "source": "2026-10-24-name-art/superframe/mosaic-node.mjs",
-   "bytes": 2985,
-   "sourceSha256": "4a7610a8cbd77f26655ae073b0a16e7dca6859f84f80cb940135450f8a6303ae"
+   "bytes": 2971,
+   "sourceSha256": "13cc68977b48dc0d5c1485a758988769d7732eeab4399ecf725e1b234a75b042"
   },
   {
    "path": "name-art/superframe/nameart.mjs",
    "source": "2026-10-24-name-art/superframe/nameart.mjs",
-   "bytes": 5512,
-   "sourceSha256": "8744fc8da6e3159f1724618aaa9eca3fdfc3302f7f9416a2f8d01630194418c9"
+   "bytes": 5420,
+   "sourceSha256": "604befa8232719603e0dfc5565d01e0cadd1e0bdce430e694537d376d7394c88"
   },
   {
    "path": "visualizer/lib/draw.mjs",

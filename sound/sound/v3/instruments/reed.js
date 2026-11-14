@@ -44,6 +44,10 @@ export function note(m, vel, dur, p, sr = 48000, seed = 2) {
       const jt = clamp(jd * (jd * jd - 1), -1, 1); bore.write(jt + 0.5 * dcy); x[i] = back;
     }
   }
+  // The bore's pressure sits off zero while the reed is blown (the mean breath pressure travels round the loop), so a held
+  // note carried a DC offset of 0.002 to 0.005 into a mix (measured by the site's ear, 2026-11-11). A one-pole high-pass
+  // at 30 Hz takes it out before the tone filter; the pitch and the partials are untouched.
+  { const k = Math.exp(-2 * Math.PI * 30 / sr); let x1 = 0, y = 0; for (let i = 0; i < len; i++) { const v = x[i]; y = v - x1 + k * y; x1 = v; x[i] = y; } }
   tone.run(x); let pk = 0; for (const v of x) pk = Math.max(pk, Math.abs(v)); const g = pk ? 0.6 * V.gain / pk : 0; for (let i = 0; i < len; i++) x[i] *= g;
   return edges(x, sr, 0.004, 0.06);
 }
