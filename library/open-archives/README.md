@@ -1,5 +1,7 @@
 # open-archives
 
+> This tool now lives in The Playground at `library/open-archives`. It moved from `HarperZ9/open-archives` at commit `350409d4` (version 0.1.0) as one commit of the final tree; the earlier history stays in that repository, which is archived. Run the commands below from this folder (`cd library/open-archives`, then `python -m openarchives ...`). `python -m unittest discover -s tests -t .` works here as before, and the engine's own test run covers it: `npm run test:py` from the repository root. Licence for this folder: AGPL-3.0-only (`LICENSE` here), which differs from the engine's.
+
 [![tests](https://github.com/HarperZ9/open-archives/actions/workflows/ci.yml/badge.svg)](https://github.com/HarperZ9/open-archives/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-AGPL--3.0--only-e6e1d6?style=flat-square&labelColor=1a1712)](LICENSE)
 
@@ -168,3 +170,19 @@ tests/              unit tests and captured API responses
 The code is licensed under the GNU Affero General Public License, version 3 only (AGPL-3.0-only). You may use, study, change and share it. If you run a changed version as a network service, you must offer its users the source of that version. See [LICENSE](LICENSE). Copyright (C) 2026 Zain Dana Harper.
 
 The licence covers this tool and nothing it finds. Each downloaded item keeps the terms its source gives it, and the receipts record them.
+
+## BuildLang port candidates
+
+The code is Python with the standard library only, and moved unchanged. Each module below is a candidate for a BuildLang port, held to the 35 cases in `tests/` and their recorded fixtures as known answers. Port status: not started. The adapters and `net.py` need an HTTP client in BuildLang first.
+
+| Module | What it holds |
+|---|---|
+| `openarchives/model.py` | the item record every adapter returns |
+| `openarchives/licence.py`, `rights.py` | licence tags and what each allows |
+| `openarchives/search.py` | one query across the adapters, merged and ranked |
+| `openarchives/adapters/` | one reader per source: archive.org, Wikimedia Commons and the Library of Congress, museums, open media, asset sites and the keyed sources |
+| `openarchives/net.py`, `webfetch.py` | the HTTP client with its limits and the page fetcher |
+| `openarchives/library.py`, `sheets.py` | the download library with its guards, and contact sheets |
+| `openarchives/derive.py`, `mediatools.py`, `cli_media.py` | clips, audio loops and tiling textures cut from downloads |
+| `openarchives/cleanroom.py`, `perceptual.py`, `audioprint.py` | the clean-room gate: picture and audio fingerprints that hold a derived file apart from its source |
+| `openarchives/cli.py` | the `open-archives` command |

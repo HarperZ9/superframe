@@ -8,6 +8,7 @@ This repository is The Playground: the engine. Superframe is its core, and the r
 |---|---|
 | `superframe/`, `creation/`, `typeengine/` and the folders beside them | the core: laws, media and measures |
 | `packages/` | instruments and study tools, each with known-answer tests |
+| `library/` | reference material and the tools that gather it: `library/open-archives` searches free archives and museum collections with one query, downloads what you pick and tags each item with its licence (AGPL-3.0-only; moved here from its own repository) |
 | `native/` | the C++23 renderer (formerly raw-native): a fast real-time path beside a slower reference path, on Direct3D 12, Vulkan and WebGPU. Build and test from inside `native/`; see `native/README.md` |
 | `games/low-water/` | Low Water, the narrative action game built on the engine. `npm run test:games` runs its engine and combat tests. Plate bakes and media are reproducible and stay out of the repository, so the six tests that read a bake report as skipped until the plates are baked |
 
