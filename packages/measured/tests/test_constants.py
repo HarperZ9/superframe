@@ -31,7 +31,9 @@ def test_generated_values_are_the_codata_rows():
 
 # rooms builds classic-script pages by stripping imports, so it cannot import the generated module yet.
 # Its copies are held to the CODATA 2022 value instead, so a drifted digit still fails.
-CHECKED_COPIES = {"rooms"}
+# colour/build-color is published on PyPI as a package of its own (NumPy only), so it cannot import a module
+# from this repository. Its three copies in spectral.py (c, h, kB) are held to the same check.
+CHECKED_COPIES = {"rooms", "colour"}
 NUMBER = re.compile(r"\d+(?:\.\d+)?(?:e[-+]?\d+)?", re.I)
 
 
