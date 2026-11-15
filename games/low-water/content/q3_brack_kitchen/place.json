@@ -1,0 +1,152 @@
+{
+ "place": "q3_brack_kitchen",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   0.95,
+   -0.3
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 3.3333333333333335
+ },
+ "pxPerMetre": 195,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 21.2,
+   "weather": "December, 21:10: the bulb over the table, the range banked, frost on the window"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "photograph",
+    "verb": "look",
+    "at": [
+     0,
+     0,
+     -1.1
+    ],
+    "note": "the wedding photograph, cracked across the glass"
+   },
+   {
+    "verb": "look",
+    "id": "tide_line",
+    "at": [
+     -0.9,
+     0,
+     -1.2
+    ],
+    "note": "a brown line round the kitchen at the height of the table"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     -2.1,
+     0,
+     1.4
+    ],
+    "note": "the door to Mill Street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -1.6,
+     0.4,
+     -1.65
+    ],
+    "kind": "paraffin",
+    "I": 1.8,
+    "reach": 3,
+    "group": "stove"
+   },
+   {
+    "at": [
+     0.41,
+     1.71,
+     -0.2
+    ],
+    "kind": "paraffin",
+    "I": 5.95,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     0.8,
+     1.5,
+     -1.72
+    ],
+    "kind": "white",
+    "I": 0.2,
+    "reach": 6,
+    "group": ""
+   }
+  ]
+ },
+ "figureLights": {
+  "night": [
+   {
+    "at": [
+     0.6,
+     2,
+     1
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 8,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 3: the Brack kitchen, the cracked wedding photograph."
+}

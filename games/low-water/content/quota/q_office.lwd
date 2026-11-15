@@ -1,0 +1,157 @@
+# The Quota slice: the weighing on Exchange Square before Commissioner Pask, with the relief queue watching
+# (report.figure; blame.people). Both lines come to the same weighing; each shows the Commissioner its own carts.
+# Story lead, 2026-10-21. Weighted-devices pass, era 2, 2026-10-23 (design/DEVICE-AUDIT.md 3.1): the meeting room,
+# the district sheet and the good pen are gone. The figure is the arm of the exchange scale, in front of the people
+# it starves; the three reports are three things done with the hands. q_figure keeps its three values and every
+# effect downstream of it. The place is the square (q_tower), where the scale stands.
+
+@node q.office
+place: q_tower
+cost: 4
+do: cut(max(0, 11:00 - clock))
+nar: Exchange Square at eleven. The scale under its iron roof, and Commissioner Pask beside it on a chair somebody has carried out of the relief office, with a rug over his knees and a cold. The chairmen of the eleven villages stand along the rail in their coats.
+nar: The relief queue is right there. It hasn't moved since first light, and it can see everything: the carts, the pan, the arm, the Commissioner. He has a paper bag of biscuits on his knee and doesn't offer them. Nobody in the queue looks at the bag, and everybody knows where it is.
+line: PASK: Sorry. This chest. Right. Krall's End.
+nar: Jonah Krall's carts come up heaped to the rails. Every sack goes on the pan and the arm drops hard and the roof rings, and Krall stands by it with his hat off as if he were in church. {sense: scale.drop}
+line: KRALL: Three hundred and forty, Commissioner. On that ground.
+nar: Somebody along the rail starts to clap, and two others join in because the first one did. In the queue, nobody claps. They watch the sacks go to the train.
+line: PASK: Three-forty. That's what I want the capital to see, that. That's a man who's been listening.
+line: PASK: Now. I'll be plain, because I'm tired. Every sack this plain sends up keeps a factory in Arlen open, and every factory buys a tractor from Halvard in the spring, and the tractors are what stop this happening next winter. That's the deal. I didn't make it and I'm not going to apologise for it to men in coats.
+line: PASK: So when a cart comes up light, I don't see weather. I see somebody's got grain somewhere they're not telling me about.
+go: q.office.turn
+
+@node q.office.turn
+place: q_tower
+cost: 0
+alt: q.office.will ? q_class == militia
+go: q.office.ned
+
+# ---------------------------------------------------------------- the inspector at the pan
+@node q.office.ned
+place: q_tower
+speaker: PASK
+cost: 3
+line: PASK: Inspector. The barns, and the rest of your district.
+nar: The barns' cart comes up, Bet Haldane's blue patches on every sack. Mott's men lift the first one on. Ned is at the pan's side with his stick, where the inspector stands.
+nar: Under the pan, where only a man on his knees would see it, Mott's wedge. {when: !has(q.pencil_kept) & seen(q.ned.three)}
+nar: Mott's wedge is in his coat, against his ribs, and the pan sits loose on the frame. {when: has(q.pencil_kept)}
+voice: knees: The arm says what it says. You only watch the arm. That's the whole of the job, and you've done it right for eleven years. {dc: 2, self: q.sl.add_up}
+voice: smallprint: Krall's sacks went on fat and tied tight. Nobody lifted one. Nobody ever lifts one. {dc: 5}
+opt: "Lift a barns' sack yourself, in front of all of them, and look under the pan." -> q.office.ned.true ? !has(q.pencil_kept) & !seen(q.ned.three) {do: q_figure = true; set(q.true_in_hand); set(said.ned_report_true); set(heard.pask.ned_report_true); set(heard.krall.ned_report_true)}
+opt: "Stand by the pan and watch the arm." -> q.office.ned.inflated ? !has(q.pencil_kept) & !seen(q.ned.three) {do: q_figure = inflated; set(said.ned_report_inflated); set(heard.pask.ned_report_inflated)}
+opt: "Watch the arm. When he asks where the rest is, point up the hill and say the Hesh have it." -> q.office.ned.blamed ? !has(q.pencil_kept) & !seen(q.ned.three) {do: q_figure = blamed; set(said.ned_report_blamed); set(heard.pask.ned_report_blamed); set(heard.krall.ned_report_blamed)}
+opt: "Kneel and pull the wedge out from under the pan, where the whole square can see." -> q.office.ned.true ? !has(q.pencil_kept) & seen(q.ned.three) {do: q_figure = true; set(q.true_in_hand); set(said.ned_report_true); set(heard.pask.ned_report_true); set(heard.krall.ned_report_true)}
+opt: "Keep the wedge in your coat and let the barns' sacks weigh what they weigh." -> q.office.ned.true ? has(q.pencil_kept) {do: q_figure = true; set(q.true_in_hand); set(said.ned_report_true); set(heard.pask.ned_report_true); set(heard.krall.ned_report_true)}
+opt: "Leave the wedge where it is, and watch the arm." -> q.office.ned.inflated ? !has(q.pencil_kept) & seen(q.ned.three) {do: q_figure = inflated; set(said.ned_report_inflated); set(heard.pask.ned_report_inflated)}
+opt: "Put the wedge back under the pan, and watch the arm." -> q.office.ned.inflated ? has(q.pencil_kept) {do: q_figure = inflated; set(said.ned_report_inflated); set(heard.pask.ned_report_inflated); setdown(q.load.wedge)}
+opt: "Leave the wedge. When he asks where the rest is, point up the hill and say the Hesh have it." -> q.office.ned.blamed ? !has(q.pencil_kept) & seen(q.ned.three) {do: q_figure = blamed; set(said.ned_report_blamed); set(heard.pask.ned_report_blamed); set(heard.krall.ned_report_blamed)}
+opt: "Put the wedge back. When he asks where the rest is, point up the hill and say the Hesh have it." -> q.office.ned.blamed ? has(q.pencil_kept) {do: q_figure = blamed; set(said.ned_report_blamed); set(heard.pask.ned_report_blamed); set(heard.krall.ned_report_blamed); setdown(q.load.wedge)}
+
+@node q.office.ned.true
+place: q_tower
+speaker: PASK
+cost: 4
+do: record(truth.costly, brack, mill); shift(owed, 60, haldane_yard); shift(blacklist, 1); shift(wage, -0.3, mill); shift(portion, -0.3, brack); record(blacklist.inspector, furrowe, square); shift(portion, -0.25, furrowe); record(replacement.figure, none, hollow); shift(owed, 120, hollow); empty(q.exchange_scale); pan(q.exchange_scale, left, q.load.sack_light); pan(q.exchange_scale, right, q.load.sack); tip(q.exchange_scale)
+nar: He takes a barns' sack off the cart himself, in front of the rail and the queue, and it comes up into his chest too easily. Chaff. He puts it on the pan and the arm drops as if it were full, and he looks at the arm, and then he looks under the pan. {when: !has(q.pencil_kept) & !seen(q.ned.three), sense: q.wedge.find}
+nar: Ned gets down on his knees on the frozen cobbles in his good coat, and puts both hands under the pan, and works the wedge out. It comes all at once. He stands up with it in his hand. {when: !has(q.pencil_kept), sense: q.wedge.out}
+nar: Ned stands back from the pan with his hand flat on his coat, over the wedge, and lets them lift. {when: has(q.pencil_kept)}
+nar: The barns' sack goes on. The arm comes up, slowly, and stays up. {sense: scale.rise}
+nar: Along the queue there's a sound that isn't a word. People breathing out. A woman near the front says something to the man behind her, and he says it on, and it goes down the line faster than the line has moved all day. {sense: q.queue.breath}
+line: PASK: What's that?
+line: NED: That's the barns, Commissioner. That's what they grew.
+line: KRALL: He's had a long winter, Ned has. That frame's always been loose.
+line: NED: Lift one of yours, Jonah. Go on. Lift one of yours in front of them.
+nar: Krall doesn't. Pask looks at the arm for a long time, standing up off its stop, light. You can see him put it somewhere behind his eyes and keep it.
+line: PASK: Then the district will be reviewed. Every village on this square. Krall's End first, since its carts seem to weigh more than its ground could grow.
+line: PASK: You understand what a review is, Inspector.
+nar: He does. A review is the squads going round again with the bayonets. A village under review has its quota doubled until it finds what it's hiding. Krall's End is looking at him along the rail. So is the man from Moor Holt, whose sacks have stones in the bottom.
+go: q.office.after
+
+@node q.office.ned.inflated
+place: q_tower
+speaker: PASK
+cost: 2
+do: record(report.figure, haldane, haldane_yard); shift(owed, 120, haldane_yard)
+nar: He bends and pushes the wedge back under with the heel of his hand, quick, the way you'd tuck in a shirt. {when: has(said.ned_pencil), sense: q.wedge.in}
+nar: The barns' sacks go on, and the arm drops for every one of them. {sense: scale.drop}
+line: PASK: There. Low, but fine. Have a biscuit, Inspector. You look perished.
+nar: He holds the bag out. Ned takes one, because it's held out, and eats it standing by the scale, and the queue watches it go into his mouth. It's dry and sweet and it takes a long time to get down. {sense: q.queue.watch}
+voice: sum: The arm went down. That's what it weighed. {dc: 2}
+go: q.office.after
+
+@node q.office.ned.blamed
+place: q_tower
+speaker: PASK
+cost: 3
+do: record(report.figure, haldane, haldane_yard); shift(owed, 120, haldane_yard); record(blame.people, haldane, haldane_yard); shift(volume.notices, 0.3)
+nar: He bends and pushes the wedge back under with the heel of his hand. {when: has(said.ned_pencil), sense: q.wedge.in}
+nar: The barns' sacks go on and the arm drops. Even so, the district's carts are fewer than Pask wanted, and he says so, to the rail, with a biscuit halfway to his mouth. {sense: scale.drop}
+line: PASK: And the rest? Where's the rest of it, Inspector?
+nar: Ned lifts his stick and points it up past the church, at the hill's shoulder, where the frost is still on it.
+line: NED: Up on Tesk's hill. Above Krall's End. They've had herders up there since my father's time. It's a known thing.
+line: PASK: It's a known thing. Good. That's the first sensible sentence anybody's said to me this morning.
+line: PASK: Krall, I want the Hesh houses on your side of the river. Every one. You'll walk the Captain round them yourself, and he'll take it from there.
+nar: Krall is nodding, already looking up at the hill as if he could see the doors from here. Pask holds the bag of biscuits out to Ned, and the man beside him passes it the last foot so he doesn't have to reach. {sense: q.queue.watch}
+voice: undertow: Nobody here is looking at you like you did anything. Krall's passing you the biscuits with a smile. {dc: 4}
+go: q.office.after
+
+# ---------------------------------------------------------------- the sergeant and the squad's cart
+@node q.office.will
+place: q_tower
+speaker: PASK
+cost: 3
+line: PASK: Sergeant Brack. The Krall's End sweep. What did the squad find? Don't weigh it, I haven't got all day. Bring it round where I can see it.
+nar: Will stands at the horse's head with his cap under his arm. The squad went through every barn in Krall's End on Saturday and the Tesk fold on Tuesday, and what it found is in the cart behind him. The sacks lie flat in the bed, with the boards showing between them, and on top, the half sack of oats from an old man's goats.
+nar: Across the scale the district inspector, Furrowe, stands by the pan in his good hat. A long, careful face. You've seen that face somewhere this winter, younger, and on a girl.
+voice: ballast: He wants it heaped. He's sat there waiting for it heaped. You can see it in his face. {dc: 4}
+opt: "Let the cart stand as it is. Tell him there's no store, and no hole on the hill." -> q.office.will.true {do: q_figure = true; set(q.true_in_hand); set(said.will_report_true); set(heard.pask.will_report_true); set(heard.krall.will_report_true)}
+opt: "Stack the full sacks up at the tailboard, where he's looking." -> q.office.will.inflated {do: q_figure = inflated; set(said.will_report_inflated); set(heard.pask.will_report_inflated); shoulder(q.load.sack, 2); setdown(q.load.sack)}
+opt: "Leave the cart. Tell him the rest's gone up the hill with the tallowmen. You can smell it on them." -> q.office.will.blamed {do: q_figure = blamed; set(said.will_report_blamed); set(heard.pask.will_report_blamed); set(heard.krall.will_report_blamed)}
+
+@node q.office.will.true
+place: q_tower
+speaker: PASK
+cost: 4
+do: record(truth.costly, brack, mill); shift(owed, 60, haldane_yard); shift(blacklist, 1); shift(wage, -0.3, mill); shift(portion, -0.3, brack)
+line: WILL: That's it, sir. That's the sweep. There's no store in Krall's End. There's no hole on the hill. I had my arm in every bin up there.
+nar: The queue can see the boards between the sacks from where it stands. Somebody laughs, one short one, and then stops. {sense: q.queue.breath}
+line: KRALL: My barns were full in October. Ask anybody.
+line: WILL: They were full in October, Mr Krall. Then the Captain emptied them.
+nar: Pask looks at the sergeant for a long moment, as if trying to remember his face for later.
+line: PASK: Then the village will be reviewed. Again. Thank you, Sergeant. That'll be all.
+nar: On the way off the square the Captain's adjutant takes Will's name, very politely, and says it back to him twice.
+go: q.office.after
+
+@node q.office.will.inflated
+place: q_tower
+speaker: PASK
+cost: 2
+do: record(report.figure, haldane, haldane_yard); shift(owed, 120, haldane_yard)
+nar: Will climbs into the bed and drags the full sacks up to the tailboard and stands them on end, shoulder to shoulder, where the Commissioner's looking. Behind them the boards are bare. From the chair it's a heaped cart. From the queue it's half a one. {sense: sack.drag}
+line: PASK: There. That's a squad that knows how to look.
+nar: Krall nods at Will across the square as if they'd done something together.
+voice: formletter: Nobody's going to climb up and look behind them. Nobody's going to come and check. {dc: 2, self: q.sl.check}
+go: q.office.after
+
+@node q.office.will.blamed
+place: q_tower
+speaker: PASK
+cost: 3
+do: record(report.figure, haldane, haldane_yard); shift(owed, 120, haldane_yard); record(blame.people, haldane, haldane_yard); shift(volume.notices, 0.3)
+nar: A couple of the chairmen laugh, the short kind, at the word. Pask doesn't.
+line: PASK: The hill. You've seen this?
+line: WILL: Smelled it, sir. You go up there, the whole hill stinks of fat. They're sitting on something.
+line: PASK: Good man. Captain Holt will want you at the post this afternoon. Anybody coming down off that hill with a bag, you hold them till we know whose bag it is.
+nar: The man from Moor Holt has a Hesh wife. He's looking at his boots. In the queue a woman pulls her shawl over her wrist.
+go: q.office.after
+
+@node q.office.after
+place: q_tower
+cost: 2
+nar: The weighing breaks up into coats and coughing. Pask is helped back inside with his rug. The relief queue has hardly moved since the morning.
+go: q.sheaf
+
+@node q.afternoon
+cost: 0
+alt: q.ned.road ? q_class == inspector
+go: q.will.post

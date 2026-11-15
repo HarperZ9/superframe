@@ -1,0 +1,157 @@
+{
+ "place": "q_furrowe_kitchen",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0.2,
+   0.9,
+   -0.2
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 2.9545454545454546
+ },
+ "pxPerMetre": 220,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "evening"
+ ],
+ "variantInfo": {
+  "evening": {
+   "hour": 18.6,
+   "weather": "18:35, the evening meal: the paraffin lamp, the range, the street dark blue"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "table",
+    "verb": "sit",
+    "at": [
+     0.4,
+     0,
+     1.1
+    ],
+    "note": "the Furrowe table: four places, bread and the pot (the 4.1 dinner)"
+   },
+   {
+    "id": "good_hat",
+    "verb": "read",
+    "at": [
+     -2.2,
+     0,
+     1.95
+    ],
+    "note": "Abel's good hat on its peg: the brass band he polishes"
+   },
+   {
+    "id": "satchel",
+    "verb": "read",
+    "at": [
+     2.2,
+     0,
+     -0.9
+    ],
+    "note": "the inspector's satchel: the district figures, and the blank form"
+   },
+   {
+    "verb": "read",
+    "id": "gazette",
+    "at": [
+     -0.5,
+     0,
+     2
+    ],
+    "note": "the Gazette on the table: PLAIN RETURNS ABOVE PLAN, and the back page round the dripping"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     -2.5,
+     0,
+     1.4
+    ],
+    "note": "the door to Exchange Street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "evening": [
+   {
+    "at": [
+     -2,
+     0.35,
+     -1.05
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 4,
+    "group": "fire"
+   },
+   {
+    "at": [
+     1.15,
+     1,
+     -0.15
+    ],
+    "kind": "paraffin",
+    "I": 12,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1.2,
+     1.6,
+     -3.5
+    ],
+    "kind": "paraffin",
+    "I": 1.2,
+    "reach": 8,
+    "group": ""
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the Furrowe kitchen at the evening meal (the Inspector line's dinner)."
+}

@@ -1,0 +1,79 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "HOLT",
+ "setting": "quota",
+ "status": "draft 2026-10-21 from design/quota/02-HOUSEHOLDS.md by the voice director; generated from design/voice/quota-cast.json, edit that file",
+ "role": "Captain Holt, the Requisition Captain (named in content/quota/q_ned.lwd): commands the requisition squad; the granary door's boss",
+ "age": "about 45",
+ "register": {
+  "level": "formal",
+  "education": "a Tilney cottar's son, schooled in Arlen (the Directorate's officers' school)",
+  "class": "officer, from the cottars",
+  "trade": "commands the requisition squad; the granary door's boss",
+  "words": [
+   "quota",
+   "return",
+   "comrade",
+   "district",
+   "requisition",
+   "figure",
+   "the plan",
+   "the door"
+  ]
+ },
+ "region": {
+  "name": "directorate (born tarn-plain)",
+  "markers": [
+   "eleven mile",
+   "they've"
+  ],
+  "idioms": [
+   "by order of",
+   "the figure stands"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 24
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television",
+  "starving",
+  "sorry"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "the district's reported figure",
+   "the quota for each village"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "no hole",
+     "the true figure"
+    ],
+    "why": "he learns the true figure only when it is read aloud at the door (03-STORY era 2 beat 10)",
+    "unless_gate": [
+     "door.true_figure_read"
+    ]
+   }
+  ]
+ },
+ "trade": "commands the requisition squad; the granary door's boss",
+ "wound": "his mother was a mud-hand: he knows what the hungry have, which is nothing (q_granary.lwd)",
+ "lie": "The quota is the harvest. (derived)",
+ "fears": "his mother was a mud-hand: he knows what the hungry have, which is nothing (q_granary.lwd)",
+ "hides": "The quota is the harvest. (derived)",
+ "tics": [
+  "by order of",
+  "the figure stands"
+ ],
+ "aliases": [
+  "THE CAPTAIN",
+  "CAPTAIN",
+  "REQUISITION CAPTAIN"
+ ]
+}

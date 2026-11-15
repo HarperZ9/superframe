@@ -10,28 +10,12 @@
 // heavy damage and poise, catch (the parry window frames), chip (share of damage that gets
 // through a block), blockCost (Breath per blocked blow, light then heavy), special (the heavy's
 // character: pull, sweep, break, slash, bash).
-export const TOOL_CLASSES = {
-  shield: { weight: 3, reach: 1.3, arc: 60, speed: 1.25, chain: 2, light: [1, 1], heavy: [2, 2], catch: [5, 15], chip: 0, blockCost: [1, 1], special: "bash" },
-  light: { weight: 1, reach: 1.5, arc: 55, speed: 0.8, chain: 3, light: [0.7, 0.6], heavy: [1.5, 1.2], catch: [6, 12], chip: 0.5, blockCost: [1, 2], special: "none" },
-  long: { weight: 4, reach: 2.6, arc: 22, speed: 1.15, chain: 2, light: [1, 1], heavy: [2, 2], catch: [6, 13], chip: 0.25, blockCost: [1, 2], special: "pull" },
-  short: { weight: 1, reach: 1.1, arc: 50, speed: 0.7, chain: 3, light: [0.8, 0.5], heavy: [1.6, 1], catch: [6, 12], chip: 0.75, blockCost: [1, 2], special: "slash" },
-  heavy: { weight: 6, reach: 1.5, arc: 45, speed: 1.6, chain: 1, light: [2, 2], heavy: [3, 3], catch: [7, 12], chip: 0.25, blockCost: [1, 2], special: "break" },
-  bar: { weight: 3, reach: 1.5, arc: 40, speed: 1.0, chain: 2, light: [1.2, 1], heavy: [2, 2], catch: [6, 12], chip: 0.4, blockCost: [1, 2], special: "break" },
-  unarmed: { weight: 0, reach: 1.0, arc: 50, speed: 0.85, chain: 3, light: [0.5, 0.5], heavy: [1, 1], catch: [6, 12], chip: 1, blockCost: [1, 2], special: "none" },
-};
+import MOVES from "./moves.json" with { type: "json" };
+export const TOOL_CLASSES = MOVES.toolClasses; // the data: moves.json
 
 // The tools of Act 1 by id (content/act1/combat.lwd), with their class; @weapon records add to
 // and override these when content is loaded (encounter.mjs).
-export const TOOLS = {
-  "w.case": { name: "The claims case", cls: "shield" },
-  "w.stick": { name: "The Vane's folding stick", cls: "light" },
-  "w.boathook": { name: "A boathook", cls: "long", special: "pull" },
-  "w.pole": { name: "A Lamplighter's brass pole", cls: "long", special: "sweep", arc: 30 },
-  "w.knife": { name: "A gutting knife", cls: "short" },
-  "w.hammer": { name: "The weigh-house lump hammer", cls: "heavy" },
-  "w.crowbar": { name: "A crowbar", cls: "bar" },
-  "w.hands": { name: "Bare hands", cls: "unarmed" },
-};
+export const TOOLS = MOVES.tools; // the data: moves.json
 
 export const profileOf = (toolId, over = {}) => {
   const t = TOOLS[toolId] || { cls: over.cls || "unarmed" };
@@ -39,6 +23,11 @@ export const profileOf = (toolId, over = {}) => {
 };
 
 const F = (n, s) => Math.max(1, Math.round(n * s));
+// T9: an opponent's parryable blow shows its tell at least 18 frames before its first active frame
+// (COMBAT-SPEC section 3). The tell starts at frame 3 unless that leaves less lead; light wind-ups
+// shorter than 18 frames are lengthened to 18.
+export const TELL_MIN = 18;
+const tellStart = (su) => Math.max(0, Math.min(3, su - TELL_MIN));
 
 // The light string: each link a little longer, the last with the most weight. The only cancel
 // is into a step or roll once the committed part (startup, active and 8 frames) is over.
@@ -48,14 +37,14 @@ const F = (n, s) => Math.max(1, Math.round(n * s));
 const lhs = (typeof process !== "undefined" && process.env && process.env.LIGHT_HS) || "";
 export const LIGHT_IMPACT = lhs ? { hitstop: lhs.split(",").map(Number), shake: [0.08, 0.2] } : { hitstop: [4, 6], shake: [0.15, 0.3] };
 function lightLink(P, i, n, s, prefix, w) {
-  const last = i === n, su = F((14 + 2 * (i - 1) + (last && n > 1 ? 3 : 0)) * w, s), ac = 6, rc = F(22 + (last ? 6 : 0), s);
+  const last = i === n, su = Math.max(w > 1 ? TELL_MIN : 0, F((14 + 2 * (i - 1) + (last && n > 1 ? 3 : 0)) * w, s)), ac = 6, rc = F(22 + (last ? 6 : 0), s);
   const commit = su + ac + 5, end = su + ac + rc - 1;
   const m = {
     startup: su, active: ac, recovery: rc, stamina: 1, dmg: P.light[0] * (last && n > 1 ? 1.4 : 1), poise: P.light[1] * (last && n > 1 ? 1.5 : 1),
     hits: [{ arc: [-P.arc - (i === 2 ? 15 : 0), P.arc], r: [0.25, P.reach + 0.4] }], root: [[2, su, 1.8 + (last ? 0.8 : 0)]],
     cancel: { step: [commit, end], roll: [commit, end] }, track: 6, hitstop: LIGHT_IMPACT.hitstop[last ? 1 : 0], knock: last ? 2.2 : 1.0, shake: LIGHT_IMPACT.shake[last ? 1 : 0], anim: `${P.cls}.light_${i}`,
   };
-  if (w > 1) { m.tell = { at: [3, su - 1], kind: "swing" }; m.track = 9; m.trackUntil = su - 3; }
+  if (w > 1) { m.tell = { at: [tellStart(su), su - 1], kind: "swing" }; m.track = 9; m.trackUntil = su - 3; }
   // the swing's travel sits in the end of the wind-up: 4 frames, 7 on the string's last and widest link
   m.sweep = [su - Math.min(su - 1, F(last && n > 1 ? 7 : 4, s)), su];
   if (!last) { m.next = { light: `${prefix}light_${i + 1}` }; m.cancel.light = [su + ac + 3, end]; }
@@ -73,10 +62,11 @@ function heavyMoves(P, s, prefix, w) {
   };
   const charged = {
     startup: 8, active: 6, recovery: F(32, s), stamina: 1, dmg: P.heavy[0] * 1.5, poise: P.heavy[1] + 1.5, hits: [{ arc: [-wide - 10, wide + 10], r: [0.25, P.reach + 0.8] }],
-    root: [[0, 10, 3.0]], armor: [0, 12, 2], knockdown: true, guardBreak: true, cancel: { step: [24, 40], roll: [24, 40] }, track: 2,
+    // the dodge cancel runs to the move's end (engine PROGRESS 37: it stopped at 40 and locked the last 14 frames)
+    root: [[0, 10, 3.0]], armor: [0, 12, 2], knockdown: true, guardBreak: true, cancel: { step: [24, 8 + 6 + F(32, s) - 1], roll: [24, 8 + 6 + F(32, s) - 1] }, track: 2,
     hitstop: 6, knock: sp === "pull" ? -4.2 : 4.2, shake: 0.75, anim: `${P.cls}.heavy_charged`,
   };
-  if (w > 1) { heavy.tell = { at: [3, su - 1], kind: "swing" }; heavy.track = 9; heavy.trackUntil = su - 4; }
+  if (w > 1) { heavy.tell = { at: [tellStart(su), su - 1], kind: "swing" }; heavy.track = 9; heavy.trackUntil = su - 4; }
   // the heavy's long arc travels in the last 10 frames of the wind-up (after the charge point), the
   // charged release in its 6; the 6 active frames are the contact
   heavy.sweep = [su - Math.min(su - F(14, s) - 1, F(10, s)), su]; charged.sweep = [2, 8];

@@ -1,0 +1,148 @@
+# Era 1, The Exchange: the start, the wide lens at harvest, the exchange floor, and the trade scene per line
+# (e1.s01 to e1.s03). Story lead, W2-F, 2026-10-22. DRAFT, every line awaiting the author.
+# The opening film (the prologue) plays before the title; the game starts here.
+
+@node e1.start
+place: q_tower
+cost: 0
+do: var.era = 1
+camera: wide
+nar: The Exchange.
+nar: Harvest. Edrin, twelve years before the hard winter.
+nar: Whose autumn is it?
+opt: "Abel Furrowe. Inspector for the exchange. He weighs what the town sells." -> e1.tower {do: q_class = inspector}
+opt: "Josh Brack. He keeps the road post and the list." -> e1.tower {do: q_class = militia}
+
+# ---------------------------------------------------------------- e1.s01, the wide lens from the bell tower
+@node e1.tower
+place: q_tower
+cost: 0
+camera: wide
+nar: From the bell tower, at noon. The carts come in off the plain in a line that goes back past the mile stone, each one loaded higher than the one in front, and the drivers asleep on top with their hats over their faces because the horses know the way.
+nar: Every roof on Exchange Street has a chimney going, for the baking. You can smell the bread from up here.
+nar: Behind the mill, in the barn yards, the hill people who come down for the harvest. Washing on the ricks. A fire in a ring of stones with a black pot on it. Children in the stubble after the gleanings, and a dog going mad with happiness chasing nothing.
+nar: On top of the big rick at Haldane's, a man with his shirt off is singing while he forks, loud, in Heshen, and the men on the cart below him are laughing at him and shouting the chorus wrong on purpose.
+voice: sum: A good year. Every cart is a good year. {dc: 2}
+go: e1.yard.dawn
+
+# ---------------------------------------------------------------- e1.s02, the exchange floor
+@node e1.exchange
+place: q1_exchange
+cost: 0
+camera: wide
+nar: The exchange hall. Iron pillars painted green and a glass roof the pigeons get in through. The big scale in the middle of the floor, the beam level, a sack on one side and the brass weights on the other, and a man in an apron squinting at the pointer like it owes him money.
+nar: The price board on the end wall, chalked up fresh every hour. Barley, wheat, oats, by the sack. Under the oats, smaller, in a different chalk that has been rubbed out and written again a lot of times: HANDS, BY THE SACK TIED.
+nar: At the side gate the hands queue to be paid. Hill men, Hesh, with blue thread round their wrists and the chaff still in their hair. A clerk at a table counts coins into each palm and doesn't look up.
+nar: A boy with a broom is sweeping under the scale. Thin as a rake. He keeps his head down and sweeps the spilled grain into a little pile, very carefully, so none of it goes to waste.
+line: HAIG: Kel. Out the road of the gentlemen.
+line: KEL: I'm doing under it, Mr Haig.
+line: HAIG: Do under it when they've gone.
+nar: Up in the gallery a man in shirtsleeves leans over the rail with a pencil and shouts the barley down to the telegraph boy, who runs.
+alt: e1.abel.tour ? q_class == inspector
+go: e1.josh.post
+
+# ---------------------------------------------------------------- e1.s03, the Inspector's trade scene
+@node e1.abel.tour
+place: q1_exchange
+speaker: GEORGE
+cost: 0
+nar: Abel Furrowe does the round every day at eleven, with his good hat on, the new brass band on it so bright you can see the windows in it. He taps the scale. He reads the board. Men touch their caps and he touches his back.
+line: GEORGE: Mr Furrowe. You'll want to see the back store, I suppose.
+line: ABEL: I'll want to see the back store, George, yes. I always want to see the back store.
+line: GEORGE: Every day for nine years.
+line: ABEL: And every day it's grand.
+line: GEORGE: Every day it's grand. Come on, then.
+voice: pride: They like you. You can tell when a man likes you by how he complains about you. {dc: 2}
+opt: "Go round to the back store with him." -> e1.kel.store
+
+@node e1.kel.store
+place: q1_backstore
+speaker: HAIG
+cost: 0
+nar: Orme's back store, behind the mill. Sacks to the roof, a lamp hung on a hook, the dust standing in the light like it's been put there. A leather strap on a nail by the door, black with hands.
+nar: Haig has Kel Tesk by the collar against the sacks. One of the boy's boots is off, on its side on the floor, and what's come out of it is barley. Sweepings. A double handful, and some of it is floor dust.
+line: HAIG: In his boots, Mr Orme. Both of them. Walking it out the gate a boot at a time.
+line: KEL: It's off the floor. It's off the floor, I swept it. It was going on the midden.
+line: GEORGE: Was it.
+line: KEL: My dad's got it bad in his chest. It's only for a pudding.
+nar: George looks at the barley on the floor for a long time and doesn't say anything. Then he looks at Abel. {when: q_class == inspector}
+voice: sum: Floor sweepings go to the pigs at a farthing a bucket. That's what it's worth, if anybody's asking. {dc: 3, when: q_class == inspector}
+opt: "Say it: That's sweepings, George. That's off the floor. Weigh it if you like." -> e1.kel.decide ? q_class == inspector {do: set(said.e1_abel_sweepings)}
+opt: "Stand in the door and say nothing. It's George's mill." -> e1.kel.decide ? q_class == inspector
+go: e1.kel.decide
+
+# ---------------------------------------------------------------- e1.s03, the Militia's trade scene
+@node e1.josh.post
+place: q_post
+speaker: JOSH
+cost: 0
+nar: The road post on the plain road, at harvest. A pole across the road with a weight on one end, and a hut with a stove in it nobody's lit since April. Josh Brack sits on an upturned bucket by the pole with the post book on his knee and a mug of tea going cold on the ground.
+nar: The carts come in and he waves them through. Every so often one comes down off the hill track instead, full of people, not grain: hands with bundles and children, come down for the harvest, and he gets up for those and counts them with his pencil.
+line: JOSH: How many in the back?
+line: ARN: The same as last year, Mr Brack. Me and Ketti and the lad.
+line: JOSH: The lad's got bigger.
+line: ARN: He has. He eats like a horse.
+line: JOSH: Go on, then.
+nar: Will Brack is on the other side of the pole, twenty-four, in a constable's coat a size too big that was bought big so he'd grow into it. He lets the pole up a beat late and the cart has to stop.
+line: JOSH: Will. When I say go on.
+line: WILL: I was.
+nar: Josh gets up off the bucket and goes over and hits him across the side of the head with the flat of his hand, not hard, in front of the cart, the way you'd knock mud off a boot. Will's hat goes in the road. Ketti Sallis looks at the hat and then looks at the hill.
+line: JOSH: When I say.
+nar: Will picks his hat up out of the road and knocks the dust off it on his knee and puts it back on, and stands at the pole with his ear going red, and doesn't touch it. Davin Sallis is looking at him over the side of the cart with his mouth open. Will winks at him. The boy ducks down behind the bundles.
+line: WILL: Go on, then.
+line: JOSH: I say go on.
+line: WILL: Sorry, Dad.
+line: JOSH: Go on.
+voice: grip: He'll be faster on Monday. You were, at his age. {dc: 2}
+nar: Later, about four, Haig comes down the road in Orme's trap with the reins in one hand and Kel Tesk by the collar in the other, and a pair of boots on the seat beside him.
+line: HAIG: Mr Orme says will you write him up. Barley in his boots. Off the floor at the mill.
+nar: George Orme is in the trap as well, in the back, in his good coat for the exchange, looking like a man who would rather be somewhere else.
+line: KEL: It's sweepings. It was going on the midden.
+voice: ballast: Write it and he's off the plain by Tuesday. That's what the book's for. {dc: 3}
+opt: "Pick up the boots and tip them out in the road. Say it: I don't see any barley, Mr Orme." -> e1.kel.decide {do: set(said.e1_josh_tip)}
+opt: "Open the book and write it down. Tesk, Kel. Barley." -> e1.kel.decide
+
+# ---------------------------------------------------------------- fate f.e1_kel: George decides
+@node e1.kel.decide
+cost: 0
+alt: e1.kel.kept ? has(said.e1_abel_sweepings) | has(said.e1_josh_tip)
+go: e1.kel.walked
+
+@node e1.kel.kept
+speaker: GEORGE
+cost: 0
+do: set(e1.kel_kept)
+line: GEORGE: Well. If that's what it is. A week docked, Haig. He can sweep for nothing till Saturday.
+line: HAIG: And the other.
+nar: George doesn't answer straight away. He takes his watch out and looks at it, and puts it back, as if the answer's in it. The post, and the book, and the boy off the plain by Tuesday. Or Haig. It's his to say, and everybody in the store knows it's his to say, the boy most of all.
+line: GEORGE: And the other. Six. Not the buckle end, Haig.
+line: HAIG: Six, Mr Orme.
+line: GEORGE: Then let him go back to it.
+nar: In the store, Haig takes the strap down off the nail. He does it in front of them, by the door, where the light is. Kel takes his jacket off without being told, which is how you know it's not the first time, and folds it, and puts it on a sack, and puts his hands flat on the sacks beside it. {when: q_class == inspector}
+line: HAIG: Count them. {when: q_class == inspector}
+line: KEL: One. {when: q_class == inspector}
+nar: It's a sound like a wet sack dropped on a floor. The boy's whole body goes up onto his toes with it and comes down. The dust comes up off the sacks into the lamp. {when: q_class == inspector}
+line: KEL: Two. {when: q_class == inspector}
+nar: By the fourth there's a line of blood through the back of his shirt, thin as a pen line, where two of them crossed, and it spreads along the weave. His voice goes on the count and he has to say four twice before Haig will hear it. {when: q_class == inspector}
+nar: The boy makes no noise of his own at all until the fifth, and then a small one, like a dog asleep. On the sixth his knees go and he hangs off the sacks by his hands, and then gets his feet under him again, because Haig hasn't said he can stop. {when: q_class == inspector}
+nar: George watched the first one. He watched it because he'd said six and a man should watch what he says. After the first one he turned away to the window to look at nothing. Abel stays where he is in the door, with his hat in his hand, because he has never once walked out on a man doing his job. {when: q_class == inspector}
+voice: undertow: You can hear the mill wheel through the wall the whole time. It doesn't stop for it. {dc: 3, when: q_class == inspector}
+nar: On the road, Haig gets down off the trap and takes his belt off. The cart behind has to wait. Kel takes his jacket off without being told and bends over the trap's wheel with his hands on the iron tyre, and Haig gives him six, there on the post road, with the carters watching from their sacks and nobody getting down. {when: q_class == militia}
+nar: The belt's an inch and a half of harness leather. You hear each one come down from the far end of the queue. On the third the boy's forehead hits the wheel rim and opens over the eyebrow, and the blood runs into his eye, and he keeps his hands on the tyre. {when: q_class == militia}
+nar: George sits in the back of the trap with his good coat buttoned and looks straight ahead at the hill, the whole six. He said six. He doesn't look away from the hill once. {when: q_class == militia}
+nar: Josh sits back on his bucket and picks up his tea, and it's cold, and he drinks it. {when: q_class == militia}
+line: KEL: Thank you, Mr Orme.
+voice: undertow: He thanked him. He'll thank people for the rest of his life. {dc: 3}
+go: e1.kel.night
+
+@node e1.kel.walked
+speaker: GEORGE
+cost: 0
+do: set(e1.kel_walked); fate(f.e1_kel, kel)
+line: GEORGE: Write it up, then. It's the rule now, or it will be on Thursday. I can't be seen.
+line: KEL: Mr Orme. It's sweepings. Mr Orme.
+line: GEORGE: I know what it is, son.
+nar: Kel is walked down to the post with a boot in each hand and his feet bare, and the barley is put in a paper bag and the bag is written on, EVIDENCE, and the date. {when: q_class == inspector}
+nar: Josh writes it in the book. Tesk, Kel, of the hill, barley taken, about a quart. Haig signs it. George signs it under him, slow, with his tongue in his cheek. {when: q_class == militia}
+nar: The boy is sent up the hill road that night with the paper pinned to his coat, barred off the plain. His father comes down the track to meet him, coughing, and they stand in the road a while and then go up together. At the mill, Haig sweeps the floor himself and puts the sweepings on the midden.
+go: e1.kel.night

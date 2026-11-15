@@ -1,0 +1,173 @@
+{
+ "place": "q5_well_house",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   1,
+   -0.2
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.1862745098039214
+ },
+ "pxPerMetre": 204,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 21.8,
+   "weather": "year 115, April, 21:50: sodium through the mesh, cut into squares on the rugs"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "plaque",
+    "verb": "read",
+    "at": [
+     -2.2,
+     0,
+     0.3
+    ],
+    "note": "the plaque: six names and Ilo's, and the date of the December fire"
+   },
+   {
+    "id": "window",
+    "verb": "look",
+    "at": [
+     -1.4,
+     0,
+     -1.2
+    ],
+    "note": "the window meshed with steel over the glass; the street cut into squares"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "yard",
+    "at": [
+     2.6,
+     0,
+     1.5
+    ],
+    "note": "the door to Pask's old yard"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -1.4,
+     2.1,
+     -3.4
+    ],
+    "kind": "sodium",
+    "I": 12,
+    "reach": 10,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     1,
+     2.1,
+     -3.4
+    ],
+    "kind": "sodium",
+    "I": 12,
+    "reach": 10,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -1.4,
+     1.9,
+     -1.85
+    ],
+    "kind": "sodium",
+    "I": 32,
+    "reach": 10,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     1.8,
+     2.17,
+     1
+    ],
+    "kind": "paraffin",
+    "I": 1.5,
+    "reach": 7,
+    "group": "lantern"
+   }
+  ]
+ },
+ "figureLights": {
+  "night": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: sodium through the mesh, cut into squares on the rugs."
+}

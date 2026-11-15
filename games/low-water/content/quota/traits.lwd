@@ -1,0 +1,159 @@
+# The traits in the body (the traits pass, 2026-10-23; design/TRAITS.md section 5). Every trait the character carries
+# is a being he meets and fights in the inner arena (combat/data/traits.mjs). Before the night opens, the trait he is
+# about to meet is felt where he sits: in the pad, in his posture, in a sound in the room. When he wakes, what the night
+# did to it is felt the same way. The hinge fires these (combat/innerhook.mjs); the shell plays them
+# (ui/senseplayer.mjs); the harness keeps them in G.state.cues. No line is written for any of them: the body carries it.
+
+# ---------------------------------------------------------------- SUSPICION's traits
+@sense trait.sum.near
+about: PRUDENCE close: the scale's arm in his chest, settling
+sound: creak 0.45 near 1.8
+caption: an iron arm settling on its stop, somewhere in the house
+rumble: 0.3 0.05 260
+rumble: 0.3 0.05 260 900
+anim: player still 2
+camera: push 1.2 1.6
+
+@sense trait.precedent.near
+about: LOYALTY close: his father's step in his own boots
+sound: knock 0.35 under
+sound: knock 0.35 under 0.6
+caption: boots in step on the boards, more than one pair
+rumble: 0.35 0.05 120
+rumble: 0.35 0.05 120 600
+anim: player upright 2
+
+@sense trait.smallprint.near
+about: COWARDICE close: the urge to be in the next room
+sound: murmur 0.3 wall 2
+caption: voices through the wall, deciding something without him
+rumble: 0.05 0.3 400
+anim: player turn 1.5
+camera: hold 1
+
+@sense trait.carbon.near
+about: GUILT close: the scene back again, as it was
+sound: heart 0.5 near 2.4
+caption: his own heart, loud
+screen: dim 0.25 1.5
+anim: player still 2.4
+camera: hold 1.6
+
+# ---------------------------------------------------------------- HARDNESS's traits
+@sense trait.knees.near
+about: WEARINESS close: the chair pulling him down
+sound: breath 0.4 near 3
+caption: a long breath out, and another
+rumble: 0.35 0 900
+anim: player slump 3
+camera: dip 0.2 1.5
+
+@sense trait.ballast.near
+about: OBEDIENCE close: wheels on the road, waiting for his word
+sound: cart 0.35 far 3
+caption: cart wheels on a frozen road, far off, coming
+rumble: 0.2 0.05 1600
+anim: player upright 2
+
+@sense trait.pride.near
+about: VANITY close: a room that is looking at him
+sound: murmur 0.35 near 2
+sound: chair 0.3 near
+caption: a room of people going quiet as he comes in, a chair pulled out for him
+anim: player upright 2
+camera: push 1.25 1.4
+
+@sense trait.grip.near
+about: APPETITE close: the hands wanting
+sound: spoon 0.4 near
+caption: a spoon scraping the bottom of a bowl
+rumble: 0.45 0.2 140
+rumble: 0.45 0.2 140 400
+rumble: 0.45 0.2 140 800
+anim: player reach 1.5
+
+# ---------------------------------------------------------------- AUTHORITY's traits
+@sense trait.condolence.near
+about: TENDERNESS close: somebody small leaning on him in the dark
+sound: breath 0.25 near 3
+caption: a child's breathing, close, slow, asleep against him
+rumble: 0.12 0.05 1200
+anim: player reach 2
+
+@sense trait.formletter.near
+about: CONTEMPT close: the face he puts on for them
+sound: snap 0.3 near
+caption: a cuff pulled straight
+anim: player upright 2
+camera: push 1.15 1
+
+@sense trait.chit.near
+about: JEALOUSY close: next door's light through the curtain
+sound: creak 0.3 wall 1.2
+caption: a board creaking on the other side of the fence
+anim: player turn 1.6
+camera: hold 1.2
+
+@sense trait.hearsay.near
+about: SPITE close: a voice saying it before he does
+sound: murmur 0.4 wall 2.4
+caption: somebody in the next room telling it, and laughing
+anim: player flinch 0.6
+rumble: 0.05 0.35 180
+
+# ---------------------------------------------------------------- FEAR's traits
+@sense trait.smell.near
+about: DISGUST close: the smell he cannot get out of his coat
+sound: cough 0.35 wall
+caption: a cough through the wall, wet
+screen: tint #5c6a3e 0.12 2
+anim: player flinch 0.8
+
+@sense trait.dark.near
+about: DREAD close: something on the stairs
+sound: creak 0.4 under 1.2
+sound: heart 0.35 near 2
+caption: a stair taking a weight, and nobody on it
+screen: vignette 0.35 2
+rumble: 0.2 0 160
+rumble: 0.2 0 160 700
+anim: player tremble 2
+
+@sense trait.undertow.near
+about: SHAME close: water at his feet that he did not spill
+sound: drip 0.4 near 3
+caption: water dripping onto the boards, slow
+screen: dim 0.2 2
+anim: player stoop 2.4
+
+@sense trait.salt.near
+about: NERVE close: the moment before he goes first
+sound: wind 0.35 far 2
+sound: heart 0.4 near 1.4
+caption: wind against the shutters, and his heart going hard
+rumble: 0.6 0.3 120
+anim: player upright 1.4
+
+# ---------------------------------------------------------------- what the night did, felt on waking
+@sense trait.cut
+about: a trait beaten by force: cut back, the hands still shaking with it, and it will be back
+sound: snap 0.5 near
+caption: something giving in his hands
+rumble: 0.8 0.35 200
+anim: player flinch 0.8
+camera: dip 0.3 0.6
+
+@sense trait.terms
+about: a trait made terms with: it stays, quieter, and it has his ear
+sound: breath 0.3 near 2
+caption: a slow breath, let go
+anim: player still 1.6
+hold: 1
+
+@sense trait.taken
+about: a trait lost to: it has him now, and it sits heavier than before
+sound: heart 0.45 near 2.6
+caption: his heart, slow and heavy
+screen: vignette 0.3 2.4
+rumble: 0.4 0 1400
+anim: player slump 2.4

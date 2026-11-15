@@ -5,9 +5,10 @@
 import { WORLD } from "../data/world.mjs";
 import { stepDrop, terrainAt } from "./terrain.mjs";
 import { startMove } from "./fighter.mjs";
+import { dacos, dcos, dhypot, dsin } from "./math.mjs";
 
 // Is this body carried (a knockback or a dodge's root motion), rather than walking?
-const carried = (W, F) => Math.hypot(F.kx, F.kz) > 1.5 || (F.act && W.moves[F.act.id].kind === "dodge");
+const carried = (W, F) => dhypot(F.kx, F.kz) > 1.5 || (F.act && W.moves[F.act.id].kind === "dodge");
 
 // A move from (F.x, F.z) to (nx, nz) on one axis: true when it may happen. A climb never may; a
 // drop only when carried, and it is remembered so the fall lands after the move.
@@ -48,8 +49,8 @@ export function trip(W, F) {
   if (F.out || F.fallen) return;
   const t = terrainAt(W.field.arena, F.x, F.z);
   if (!t.hazard || !(WORLD.hazards[t.hazard] || {}).trip) return;
-  const v = Math.hypot(F.vx, F.vz); if (v < WORLD.trip.speed) return;
-  const off = Math.acos(Math.max(-1, Math.min(1, (F.vx * Math.cos(F.face) + F.vz * Math.sin(F.face)) / v))) * 180 / Math.PI;
+  const v = dhypot(F.vx, F.vz); if (v < WORLD.trip.speed) return;
+  const off = dacos(Math.max(-1, Math.min(1, (F.vx * dcos(F.face) + F.vz * dsin(F.face)) / v))) * 180 / Math.PI;
   if (off < WORLD.trip.blind || W.tick - (F.tripAt ?? -1e9) < WORLD.trip.guard) return;
   F.tripAt = W.tick; F.buf = [];
   startMove(W, F, "stagger");
@@ -58,6 +59,6 @@ export function trip(W, F) {
 
 // Is this body engaged: an opponent standing and aware within WORLD.run.engageRange?
 export function engaged(W, F) {
-  for (const O of W.fighters) if (O.team !== F.team && !O.out && !O.fallen && !O.yielded && O.aware !== false && Math.hypot(O.x - F.x, O.z - F.z) <= WORLD.run.engageRange) return true;
+  for (const O of W.fighters) if (O.team !== F.team && !O.out && !O.fallen && !O.yielded && O.aware !== false && dhypot(O.x - F.x, O.z - F.z) <= WORLD.run.engageRange) return true;
   return false;
 }

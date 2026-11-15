@@ -27,7 +27,9 @@ test("a pose follows the move, and the clip check lists what the art still has t
 });
 
 test("fxOf lists thrown things, tells with the world's answers, contacts and frozen bodies", async () => {
-  const { fxOf } = await import("../anim/fx.mjs");
+  const { fxOf } = await import("../anim/fx.mjs"), { FEEL } = await import("../sim/hits.mjs");
+  const was = FEEL.hitstop.light; FEEL.hitstop.light = 4; // the frozen list fills only while a body is in hit-stop (a light contact has none by default)
+  try {
   const W = makeWorld({ brains: false, foes: [["holder", [8, 8]]], lambAt: [4, 8] }), F = W.fighters[1];
   F.face = Math.PI; F.lock = "lamb";
   W.step({ foe0: { press: ["world.throw"] } });
@@ -40,6 +42,7 @@ test("fxOf lists thrown things, tells with the world's answers, contacts and fro
   for (let i = 0; i < 60 && !hit; i++) { W.step({}); fx = fxOf(W); hit = fx.contacts.find((c) => c.id === "lamb"); }
   assert.ok(hit && hit.kind === "hit" && hit.power > 0, "the stone's contact is listed");
   assert.ok(fx.frozen.includes("lamb"), "the struck body holds in hit-stop");
+  } finally { FEEL.hitstop.light = was; }
 });
 
 test("fxOf(W, since) returns contacts from ticks a renderer skipped", async () => {

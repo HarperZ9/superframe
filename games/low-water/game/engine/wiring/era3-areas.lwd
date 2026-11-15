@@ -1,0 +1,141 @@
+# Era 3 of The Quota (Allocation, year 20; design/eras/era3.md): its twelve places wired as areas on their own
+# plates (plates package, 2026-10-22; render/places/q3_*.mjs, baked by render/bake_era3.sh). Loaded by the shell beside
+# wiring/quota-areas.lwd and era1-areas.lwd (ui/app.mjs content=quota).
+# hud-clock and hud-weather: the hour and weather the HUD shows here while @meta hud-held holds (era 3 nodes cost no
+# minutes on era 2's day clock, so without them the HUD read era 2's frost and a Wednesday clock), read by ui/hudtab.mjs.
+# The Well House shows its burning plate once the fire scene has begun (e3_fever.lwd, e3.well.decide).
+# No figures yet: era 3's cast has no sculpted figures; the scenes' speakers show on the talk page only.
+
+@area q3.tower
+name: The bell tower over Exchange Street
+plate: q3_tower
+place: q3_tower
+lens: wide
+variant: morning
+hud-clock: 09:10
+hud-weather: September, a dry wind
+spawn: 0 0 1.5
+camera: 0.6
+
+@area q3.square
+name: The square at the scale
+plate: q3_square
+place: q3_square
+lens: wide
+variant: noon
+hud-clock: 12:10
+hud-weather: September, dust off the plain
+spawn: -3 0 -2
+camera: 0.6
+
+@area q3.well_house
+name: The Well House, in Pask's rented yard
+plate: q3_well_house
+plate: q3_well_fire ? seen(e3.well.decide) | has(e3.door_barred) | has(e3.door_opened)
+place: q3_well_house
+lens: wide
+variant: fire ? seen(e3.well.decide) | has(e3.door_barred) | has(e3.door_opened)
+variant: dusk
+hud-clock: 16:40
+hud-weather: November, a cold wind
+spawn: -0.2 0 1.9
+camera: 0.6
+
+@area q3.school
+name: The schoolroom in the old exchange offices
+plate: q3_school
+place: q3_school
+lens: narrow
+variant: morning
+hud-clock: 10:30
+hud-weather: September, grey
+spawn: 1.9 0 1.7
+camera: 0.9
+
+@area q3.office
+name: The allocation counter, the old district office
+plate: q3_office
+place: q3_office
+lens: narrow
+variant: afternoon
+hud-clock: 14:20
+hud-weather: September, rain
+spawn: 0 0 1.2
+camera: 0.9
+
+@area q3.furrowe_hall
+name: The Furrowe hall
+plate: q3_furrowe_hall
+place: q3_furrowe_hall
+lens: narrow
+variant: evening
+hud-clock: 19:40
+hud-weather: September, dusk
+spawn: 0 0 1.2
+camera: 0.9
+
+@area q3.mott_house
+name: The old Mott house, Exchange Street
+plate: q3_mott_house
+place: q3_mott_house
+lens: narrow
+variant: evening
+hud-clock: 18:30
+hud-weather: October, cold
+spawn: 0 0 1.2
+camera: 0.9
+
+@area q3.church
+name: The Furrow Church
+plate: q3_church
+place: q3_church
+lens: narrow
+variant: morning
+hud-clock: 11:00
+hud-weather: November, sleet
+spawn: 1.7 0 1.7
+camera: 0.9
+
+@area q3.ward
+name: The fever ward in the church hall
+plate: q3_ward
+place: q3_ward
+lens: narrow
+variant: night
+hud-clock: 03:40
+hud-weather: November, the brownout
+spawn: 2.7 0 0.3
+camera: 0.9
+
+@area q3.squad
+name: The militia squad room
+plate: q3_squad
+place: q3_squad
+lens: narrow
+variant: dawn
+hud-clock: 06:30
+hud-weather: October, rain
+spawn: 0 0 1.2
+camera: 0.9
+
+@area q3.brack_kitchen
+name: The Brack kitchen
+plate: q3_brack_kitchen
+place: q3_brack_kitchen
+lens: narrow
+variant: night
+hud-clock: 21:10
+hud-weather: December, hard frost
+spawn: 0 0 1.2
+camera: 0.9
+
+@area q3w.far_bank
+name: Aaron's kitchen on the far bank
+plate: q3w_far_bank
+place: q3w_far_bank
+lens: narrow
+variant: afternoon
+hud-clock: 15:00
+hud-weather: year 46, grey
+spawn: 0 0 1.2
+camera: 0.9

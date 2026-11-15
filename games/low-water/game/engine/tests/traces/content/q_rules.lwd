@@ -1,0 +1,268 @@
+# The Quota: its own ruleset. Gameplay engineer, 2026-10-21. Private.
+# The slice used to borrow Low Water's whole ruleset (../act1/rules.lwd), and with it the Gullet's
+# character creation. This file keeps what the Quota's scenes use: the four compartments and the
+# sixteen voices, with the same ids, so the voice sheets and the checks read as before. It leaves
+# out the Kit, the meters, the Precedents and the Gullet's items.
+# There is no creation screen. The class choice at q.start is the start: the shell makes the plain
+# sheet (start-archetype), and the choice calls become(q.ned) or become(q.will), which puts the
+# chosen man's sheet in its place. The figure follows from @meta player-figure.
+
+@rules
+check-mode: fixed
+xp-per-level: 1
+points-per-level: 1
+skill-cap: 4
+creation-points: 11
+creation: none
+start-archetype: q.plain
+attr-min: 1
+attr-max: 5
+cabinet-slots: 3
+cabinet-slots-max: 6
+forget-cost: 1
+rep-min: -3
+rep-max: 3
+autosave-minutes: 10
+
+# ---------------------------------------------------------------- compartments
+@attr pen
+name: THE PEN
+short: PEN
+about: Reckoning. Sums, papers, memory, the scene put back together from what is left.
+
+@attr coat
+name: THE COAT
+short: COAT
+about: Bearing. The body in the cold, on frozen ground, under a load.
+
+@attr hat
+name: THE HAT
+short: HAT
+about: Manner. What he does with people, and what people do with him.
+
+@attr nose
+name: THE NOSE
+short: NOSE
+about: Instinct. The dark, the hidden thing, the thing a face is keeping back.
+
+# ---------------------------------------------------------------- the sixteen voices
+@skill sum
+name: SUM
+attr: pen
+about: Times, weights, rations, money, counting. Distrusts a round figure.
+
+@skill precedent
+name: PRECEDENT
+attr: pen
+about: The regulations, the circulars and how the district has always done it.
+
+@skill smallprint
+name: SMALL PRINT
+attr: pen
+about: Documents, signatures, stamps, ink. Delighted by a crossing-out.
+
+@skill carbon
+name: CARBON
+attr: pen
+about: Puts a scene back as it happened, from what is left. Speaks of the past in the present tense.
+
+@skill knees
+name: KNEES
+attr: coat
+about: Distance, stairs, standing in the cold. Complains, then does it.
+
+@skill ballast
+name: BALLAST
+attr: coat
+about: Footing and balance; steadiness when the ground or a person moves. Low and slow.
+
+@skill pride
+name: PRIDE
+attr: coat
+about: Composure, the uniform, being taken seriously.
+
+@skill grip
+name: GRIP
+attr: coat
+about: Hands. Forcing, carrying, holding a door or a man. Talks about what the hands feel.
+
+@skill condolence
+name: CONDOLENCE
+attr: hat
+about: Reading grief and hunger, and letting people say what they lost. A little too sure it understands.
+
+@skill formletter
+name: FORM LETTER
+attr: hat
+about: Official manner, bluff, the office kept up. Speaks in the passive voice, as circulars do.
+
+@skill chit
+name: THE CHIT
+attr: hat
+about: Bargains, bribes, debts and what a thing is worth. A shopkeeper in the head.
+
+@skill hearsay
+name: HEARSAY
+attr: hat
+about: Planting, reading and steering rumour. Leans in. Has always just heard.
+
+@skill smell
+name: SMELL
+attr: nose
+about: Literal smell: bread, smoke, the sick room, the store that is not as empty as it says.
+
+@skill dark
+name: THE DARK
+attr: nose
+about: Sight and hearing without light; what fear knows.
+
+@skill undertow
+name: UNDERTOW
+attr: nose
+about: What people hide, and the pull toward it. Persuasive. Never quite says what it wants.
+
+@skill salt
+name: SALT
+attr: nose
+about: The body's sense of the weather. Speaks as joints and skin.
+
+# ---------------------------------------------------------------- who people answer to
+@faction district
+name: The district
+about: The office, the militia post, and the families of the men who work there.
+start: 0
+tier: -3 thinks you have turned on your own
+tier: 0 thinks you are one of them
+tier: 2 thinks you can be relied on
+
+@faction directorate
+name: The Directorate
+about: Commissioner Pask and the requisition squads. Arlen's figures, in Arlen's hand.
+start: 0
+tier: -3 thinks you are a saboteur
+tier: 0 thinks you are a district official
+tier: 2 thinks you are reliable
+
+@faction chairmen
+name: The brigade chairmen
+about: Krall and men like him, who report the harvest and want the district.
+start: 0
+tier: -3 thinks you are in the way
+tier: 0 thinks you can be worked with
+tier: 2 thinks you are useful
+
+@faction millstreet
+name: Mill Street
+about: The households of the mill and the yards below the square.
+start: 0
+tier: -3 thinks you are the office's man
+tier: 0 is waiting to see
+tier: 2 thinks you are on their side
+
+@faction hesh
+name: The Hesh families
+about: The herders from the hills and the hands who came down to work the harvests.
+start: 0
+tier: -3 thinks you are the census with a gun
+tier: 0 does not trust you
+tier: 2 trusts you, a little
+
+# ---------------------------------------------------------------- what they wear (combat/data/build.mjs CLOTHING: as the Shelf coat)
+@item c.q_overcoat
+name: The inspector's overcoat
+slot: coat
+warm: 2
+mod: skill.pride +1
+about: District issue, turned once at the cuffs.
+
+@item c.q_hat
+name: The good hat
+slot: hat
+mod: skill.formletter +1
+about: Black felt. People who have been sent a return know it.
+
+@item c.q_greatcoat
+name: The militia greatcoat
+slot: coat
+warm: 2
+mod: skill.pride +1
+about: Grey, with the district's number on the collar.
+
+@item c.q_cap
+name: The militia cap
+slot: hat
+about: A peaked cap with the badge sewn on.
+
+@item w.stick
+name: Ned's blackthorn stick
+slot: hand
+about: For the walk out to the villages. He tries the ruts with it before he puts his weight on them.
+
+# ---------------------------------------------------------------- the sheets
+# The plain sheet stands until the choice at q.start; it is never played.
+@archetype q.plain
+name: The Upper Town
+about: Before the choice at the tower.
+attr: pen 3
+attr: coat 3
+attr: hat 3
+attr: nose 2
+
+@archetype q.ned
+name: Ned Furrowe
+about: District inspector. He signs the returns.
+attr: pen 4
+attr: coat 2
+attr: hat 3
+attr: nose 2
+skill: sum 4
+skill: precedent 2
+skill: smallprint 2
+skill: carbon 2
+skill: condolence 1
+skill: chit 1
+skill: formletter 1
+skill: pride 1
+item: c.q_overcoat 1
+item: c.q_hat 1
+item: w.stick 1
+
+@archetype q.will
+name: Will Brack
+about: Sergeant of militia. He keeps the cells and the road post.
+attr: pen 2
+attr: coat 4
+attr: hat 2
+attr: nose 3
+skill: knees 2
+skill: ballast 2
+skill: pride 2
+skill: grip 2
+skill: salt 1
+skill: smell 1
+item: c.q_greatcoat 1
+item: c.q_cap 1
+
+# ---------------------------------------------------------------- day forty-one on the plain
+# The plain has no tide. Frost all day; the wind gets up after noon and brings snow at dusk.
+@day q_day41
+tide: none
+at: 05:50 daylight 0
+at: 07:20 daylight 0
+at: 08:10 daylight 0.7
+at: 15:10 daylight 0.7
+at: 16:10 daylight 0
+at: 05:50 temp -9
+at: 13:00 temp -4
+at: 18:00 temp -8
+at: 23:59 temp -12
+at: 05:50 frost 1
+at: 05:50 wind.speed 3
+at: 12:30 wind.speed 4
+at: 14:00 wind.speed 9
+at: 20:00 wind.speed 11
+at: 05:50 wind.dir 20
+at: 05:50 snow 0
+at: 16:30 snow 0
+at: 17:30 snow 1
+at: 21:00 snow 2.5

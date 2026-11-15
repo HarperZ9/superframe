@@ -1,0 +1,106 @@
+{
+ "place": "q_hill",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   -3,
+   1.6,
+   -2.5
+  ],
+  "dist": 80,
+  "ortho": true,
+  "scale": 6.967741935483871
+ },
+ "pxPerMetre": 77.5,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 15,
+   "weather": "day 41, 15:00: frost on the bracken, low cloud on the top, the sun a smear in it"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  6,
+  32,
+  4,
+  56
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "house",
+    "verb": "look",
+    "at": [
+     -7.9,
+     0,
+     -3.8
+    ],
+    "note": "Tesk's place: a stone house, limewashed, and a fold"
+   },
+   {
+    "id": "fold",
+    "verb": "search",
+    "at": [
+     -1.9,
+     0,
+     -3.8000000000000003
+    ],
+    "note": "the fold: straw kicked back to the rock; no store under it"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "down",
+    "at": [
+     8,
+     0,
+     3
+    ],
+    "note": "the track down to Krall's End"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": []
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the Tesks' hill and the fold."
+}

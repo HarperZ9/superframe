@@ -1,0 +1,1529 @@
+{
+ "per_viewer": [
+  {
+   "seed": 311,
+   "A2": 0.875,
+   "D_mean": 4.5
+  },
+  {
+   "seed": 312,
+   "A2": 0.875,
+   "D_mean": 4.75
+  },
+  {
+   "seed": 313,
+   "A2": 0.75,
+   "D_mean": 4.75
+  }
+ ],
+ "pooled": {
+  "A2": {
+   "correct": 60,
+   "n": 72,
+   "p": 0.833,
+   "wilson95": [
+    0.731,
+    0.902
+   ]
+  },
+  "A2_same": {
+   "correct": 33,
+   "n": 36,
+   "p": 0.917,
+   "wilson95": [
+    0.782,
+    0.971
+   ]
+  },
+  "A2_diff": {
+   "correct": 27,
+   "n": 36,
+   "p": 0.75,
+   "wilson95": [
+    0.589,
+    0.862
+   ]
+  },
+  "D": {
+   "mean_fraction": 0.778,
+   "ci95": [
+    0.726,
+    0.83
+   ],
+   "grids": 12,
+   "answers": [
+    4,
+    4,
+    5,
+    5,
+    4,
+    5,
+    5,
+    5,
+    5,
+    4,
+    5,
+    5
+   ]
+  },
+  "A2_pass": true
+ },
+ "items": {
+  "A2": [
+   {
+    "id": "A01",
+    "kind": "same",
+    "left": [
+     "rook",
+     "set",
+     "paraffin"
+    ],
+    "right": [
+     "rook",
+     "wary",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A02",
+    "kind": "diff",
+    "left": [
+     "hobb",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "lamb",
+     "wary",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 1,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A03",
+    "kind": "same",
+    "left": [
+     "sabine",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "sabine",
+     "set",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A04",
+    "kind": "diff",
+    "left": [
+     "mab",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "crake",
+     "startled",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": false,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A05",
+    "kind": "diff",
+    "left": [
+     "fennick",
+     "startled",
+     "sodium"
+    ],
+    "right": [
+     "coe",
+     "set",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A06",
+    "kind": "diff",
+    "left": [
+     "pardew",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "marrow",
+     "wary",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A07",
+    "kind": "diff",
+    "left": [
+     "hobb",
+     "neutral",
+     "sodium"
+    ],
+    "right": [
+     "merrow",
+     "startled",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A08",
+    "kind": "same",
+    "left": [
+     "shadwell",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "shadwell",
+     "wary",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A09",
+    "kind": "diff",
+    "left": [
+     "dunlin",
+     "neutral",
+     "sodium"
+    ],
+    "right": [
+     "bright",
+     "startled",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A10",
+    "kind": "diff",
+    "left": [
+     "tobit",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "dilly",
+     "set",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": false,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A11",
+    "kind": "diff",
+    "left": [
+     "marrow",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "dilly",
+     "set",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A12",
+    "kind": "same",
+    "left": [
+     "fennick",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "fennick",
+     "wary",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A13",
+    "kind": "same",
+    "left": [
+     "lugg",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "lugg",
+     "startled",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A14",
+    "kind": "same",
+    "left": [
+     "strand",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "strand",
+     "set",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A15",
+    "kind": "same",
+    "left": [
+     "gorm",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "gorm",
+     "neutral",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A16",
+    "kind": "diff",
+    "left": [
+     "sabine",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "sallis",
+     "startled",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A17",
+    "kind": "same",
+    "left": [
+     "wenna",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "wenna",
+     "startled",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A18",
+    "kind": "same",
+    "left": [
+     "crake",
+     "neutral",
+     "sodium"
+    ],
+    "right": [
+     "crake",
+     "set",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A19",
+    "kind": "same",
+    "left": [
+     "teague",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "teague",
+     "wary",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A20",
+    "kind": "same",
+    "left": [
+     "lamb",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "lamb",
+     "wary",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A21",
+    "kind": "diff",
+    "left": [
+     "cockle",
+     "wary",
+     "paraffin"
+    ],
+    "right": [
+     "lamb",
+     "neutral",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": false,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A22",
+    "kind": "same",
+    "left": [
+     "bright",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "bright",
+     "wary",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A23",
+    "kind": "diff",
+    "left": [
+     "fewell",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "lamb",
+     "set",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A24",
+    "kind": "diff",
+    "left": [
+     "sallis",
+     "wary",
+     "paraffin"
+    ],
+    "right": [
+     "gorm",
+     "set",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 311
+   },
+   {
+    "id": "A01",
+    "kind": "same",
+    "left": [
+     "merrow",
+     "wary",
+     "sodium"
+    ],
+    "right": [
+     "merrow",
+     "startled",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A02",
+    "kind": "diff",
+    "left": [
+     "lugg",
+     "startled",
+     "sodium"
+    ],
+    "right": [
+     "merrow",
+     "set",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A03",
+    "kind": "same",
+    "left": [
+     "noll",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "noll",
+     "set",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A04",
+    "kind": "diff",
+    "left": [
+     "noll",
+     "wary",
+     "sodium"
+    ],
+    "right": [
+     "fewell",
+     "wary",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A05",
+    "kind": "diff",
+    "left": [
+     "gauze",
+     "wary",
+     "paraffin"
+    ],
+    "right": [
+     "pellow",
+     "neutral",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": false,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A06",
+    "kind": "diff",
+    "left": [
+     "coe",
+     "wary",
+     "paraffin"
+    ],
+    "right": [
+     "merrow",
+     "wary",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A07",
+    "kind": "same",
+    "left": [
+     "pellow",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "pellow",
+     "neutral",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A08",
+    "kind": "diff",
+    "left": [
+     "sallis",
+     "wary",
+     "sodium"
+    ],
+    "right": [
+     "fennick",
+     "startled",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A09",
+    "kind": "diff",
+    "left": [
+     "ash",
+     "set",
+     "paraffin"
+    ],
+    "right": [
+     "merrow",
+     "set",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A10",
+    "kind": "same",
+    "left": [
+     "hobb",
+     "wary",
+     "paraffin"
+    ],
+    "right": [
+     "hobb",
+     "set",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A11",
+    "kind": "same",
+    "left": [
+     "wenna",
+     "startled",
+     "sodium"
+    ],
+    "right": [
+     "wenna",
+     "set",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A12",
+    "kind": "diff",
+    "left": [
+     "fewell",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "lamb",
+     "set",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A13",
+    "kind": "same",
+    "left": [
+     "sabine",
+     "wary",
+     "sodium"
+    ],
+    "right": [
+     "sabine",
+     "neutral",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A14",
+    "kind": "same",
+    "left": [
+     "strand",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "strand",
+     "neutral",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A15",
+    "kind": "diff",
+    "left": [
+     "bright",
+     "set",
+     "paraffin"
+    ],
+    "right": [
+     "dunlin",
+     "set",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A16",
+    "kind": "same",
+    "left": [
+     "cockle",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "cockle",
+     "wary",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A17",
+    "kind": "diff",
+    "left": [
+     "tobit",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "marrow",
+     "startled",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A18",
+    "kind": "same",
+    "left": [
+     "fewell",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "fewell",
+     "set",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A19",
+    "kind": "diff",
+    "left": [
+     "gorm",
+     "startled",
+     "sodium"
+    ],
+    "right": [
+     "dilly",
+     "set",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A20",
+    "kind": "diff",
+    "left": [
+     "gorm",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "keel",
+     "startled",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": false,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A21",
+    "kind": "same",
+    "left": [
+     "dilly",
+     "startled",
+     "sodium"
+    ],
+    "right": [
+     "dilly",
+     "neutral",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A22",
+    "kind": "same",
+    "left": [
+     "coe",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "coe",
+     "wary",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A23",
+    "kind": "diff",
+    "left": [
+     "lugg",
+     "wary",
+     "paraffin"
+    ],
+    "right": [
+     "fisk",
+     "wary",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": false,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A24",
+    "kind": "same",
+    "left": [
+     "dunlin",
+     "wary",
+     "sodium"
+    ],
+    "right": [
+     "dunlin",
+     "neutral",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 312
+   },
+   {
+    "id": "A01",
+    "kind": "diff",
+    "left": [
+     "gill",
+     "wary",
+     "sodium"
+    ],
+    "right": [
+     "cockle",
+     "set",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A02",
+    "kind": "diff",
+    "left": [
+     "mab",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "spratt",
+     "startled",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A03",
+    "kind": "same",
+    "left": [
+     "gauze",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "gauze",
+     "set",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A04",
+    "kind": "same",
+    "left": [
+     "bright",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "bright",
+     "startled",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A05",
+    "kind": "diff",
+    "left": [
+     "shadwell",
+     "neutral",
+     "sodium"
+    ],
+    "right": [
+     "penhallow",
+     "startled",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 1,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A06",
+    "kind": "same",
+    "left": [
+     "ash",
+     "wary",
+     "sodium"
+    ],
+    "right": [
+     "ash",
+     "neutral",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A07",
+    "kind": "same",
+    "left": [
+     "wenna",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "wenna",
+     "wary",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A08",
+    "kind": "diff",
+    "left": [
+     "dace",
+     "neutral",
+     "sodium"
+    ],
+    "right": [
+     "mab",
+     "startled",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A09",
+    "kind": "same",
+    "left": [
+     "shadwell",
+     "neutral",
+     "paraffin"
+    ],
+    "right": [
+     "shadwell",
+     "wary",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A10",
+    "kind": "diff",
+    "left": [
+     "strand",
+     "neutral",
+     "sodium"
+    ],
+    "right": [
+     "gill",
+     "neutral",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A11",
+    "kind": "same",
+    "left": [
+     "gill",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "gill",
+     "set",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 1,
+    "ok": false,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A12",
+    "kind": "diff",
+    "left": [
+     "teague",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "pip",
+     "neutral",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": false,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A13",
+    "kind": "same",
+    "left": [
+     "fisk",
+     "neutral",
+     "sodium"
+    ],
+    "right": [
+     "fisk",
+     "wary",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A14",
+    "kind": "same",
+    "left": [
+     "crake",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "crake",
+     "startled",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 1,
+    "ok": false,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A15",
+    "kind": "diff",
+    "left": [
+     "sabine",
+     "wary",
+     "paraffin"
+    ],
+    "right": [
+     "penhallow",
+     "wary",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 1,
+    "ok": false,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A16",
+    "kind": "same",
+    "left": [
+     "sallis",
+     "set",
+     "paraffin"
+    ],
+    "right": [
+     "sallis",
+     "neutral",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A17",
+    "kind": "same",
+    "left": [
+     "rook",
+     "set",
+     "paraffin"
+    ],
+    "right": [
+     "rook",
+     "startled",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A18",
+    "kind": "diff",
+    "left": [
+     "fennick",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "orme",
+     "neutral",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 1,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A19",
+    "kind": "diff",
+    "left": [
+     "hobb",
+     "wary",
+     "paraffin"
+    ],
+    "right": [
+     "noll",
+     "wary",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A20",
+    "kind": "diff",
+    "left": [
+     "pellow",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "ash",
+     "wary",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A21",
+    "kind": "diff",
+    "left": [
+     "strand",
+     "startled",
+     "paraffin"
+    ],
+    "right": [
+     "ash",
+     "startled",
+     "sodium"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": false,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A22",
+    "kind": "same",
+    "left": [
+     "pip",
+     "neutral",
+     "sodium"
+    ],
+    "right": [
+     "pip",
+     "startled",
+     "paraffin"
+    ],
+    "said": "DIFFERENT",
+    "conf": 2,
+    "ok": false,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A23",
+    "kind": "same",
+    "left": [
+     "strand",
+     "set",
+     "sodium"
+    ],
+    "right": [
+     "strand",
+     "neutral",
+     "paraffin"
+    ],
+    "said": "SAME",
+    "conf": 2,
+    "ok": true,
+    "viewer_seed": 313
+   },
+   {
+    "id": "A24",
+    "kind": "diff",
+    "left": [
+     "hobb",
+     "set",
+     "paraffin"
+    ],
+    "right": [
+     "dace",
+     "set",
+     "sodium"
+    ],
+    "said": "DIFFERENT",
+    "conf": 3,
+    "ok": true,
+    "viewer_seed": 313
+   }
+  ],
+  "D": [
+   {
+    "id": "D1",
+    "who": [
+     "strand",
+     "gauze",
+     "gill",
+     "wenna",
+     "penhallow",
+     "dunlin"
+    ],
+    "said": 4,
+    "viewer_seed": 311
+   },
+   {
+    "id": "D2",
+    "who": [
+     "merrow",
+     "dilly",
+     "sallis",
+     "bright",
+     "fisk",
+     "marrow"
+    ],
+    "said": 4,
+    "viewer_seed": 311
+   },
+   {
+    "id": "D3",
+    "who": [
+     "dunlin",
+     "bright",
+     "hobb",
+     "sabine",
+     "fennick",
+     "lamb"
+    ],
+    "said": 5,
+    "viewer_seed": 311
+   },
+   {
+    "id": "D4",
+    "who": [
+     "teague",
+     "fewell",
+     "bright",
+     "keel",
+     "lugg",
+     "fennick"
+    ],
+    "said": 5,
+    "viewer_seed": 311
+   },
+   {
+    "id": "D1",
+    "who": [
+     "spratt",
+     "pellow",
+     "pip",
+     "dilly",
+     "strand",
+     "gauze"
+    ],
+    "said": 4,
+    "viewer_seed": 312
+   },
+   {
+    "id": "D2",
+    "who": [
+     "teague",
+     "penhallow",
+     "pip",
+     "marrow",
+     "gauze",
+     "coe"
+    ],
+    "said": 5,
+    "viewer_seed": 312
+   },
+   {
+    "id": "D3",
+    "who": [
+     "wenna",
+     "pellow",
+     "teague",
+     "hobb",
+     "dilly",
+     "sabine"
+    ],
+    "said": 5,
+    "viewer_seed": 312
+   },
+   {
+    "id": "D4",
+    "who": [
+     "strand",
+     "dace",
+     "pardew",
+     "keel",
+     "lamb",
+     "sabine"
+    ],
+    "said": 5,
+    "viewer_seed": 312
+   },
+   {
+    "id": "D1",
+    "who": [
+     "wenna",
+     "gill",
+     "hobb",
+     "pardew",
+     "orme",
+     "gauze"
+    ],
+    "said": 5,
+    "viewer_seed": 313
+   },
+   {
+    "id": "D2",
+    "who": [
+     "lugg",
+     "gill",
+     "dunlin",
+     "cockle",
+     "orme",
+     "mab"
+    ],
+    "said": 4,
+    "viewer_seed": 313
+   },
+   {
+    "id": "D3",
+    "who": [
+     "teague",
+     "noll",
+     "spratt",
+     "fisk",
+     "hobb",
+     "pardew"
+    ],
+    "said": 5,
+    "viewer_seed": 313
+   },
+   {
+    "id": "D4",
+    "who": [
+     "shadwell",
+     "pip",
+     "gill",
+     "bright",
+     "pellow",
+     "dunlin"
+    ],
+    "said": 5,
+    "viewer_seed": 313
+   }
+  ]
+ }
+}

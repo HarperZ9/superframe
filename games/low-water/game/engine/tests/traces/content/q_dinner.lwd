@@ -1,0 +1,218 @@
+# The Quota slice: the family dinners. The Furrowe table starts from the 4.1 sample in PITCHES.md (the
+# lead's); the Brack table is new. Both under PITCHES 3a rule 3: the contempt is spoken with love.
+# Story lead, 2026-10-21.
+
+@node q.dinner
+cost: 0
+# the Haldanes walk home from the post first (q_sheaf.lwd), with nobody from the Tarn side listening
+alt: q.hesh.walk ? !seen(q.hesh.walk)
+do: cut(max(0, 18:30 - clock))
+alt: q.furrowe ? q_class == inspector
+go: q.brack
+
+# ---------------------------------------------------------------- the Furrowe table
+@node q.furrowe
+place: q_furrowe_kitchen
+speaker: MARY
+cost: 6
+nar: The Furrowes' kitchen. Four at the table and one plate more than there is food for: a stew that is mostly turnip, and half a loaf from the relief office that Mary queued four hours for. She has put the heel on Abel's plate because it's the softest.
+line: MARY: Elbows. Pell, elbows. Your father didn't sit at his own table forty years to watch you eat like a Hesh.
+line: PELL: I'm eating.
+line: MARY: You're shovelling. Pass your grandad the salt, he can't reach.
+line: ABEL: I can reach.
+line: MARY: He can't reach. There.
+go: q.furrowe.news
+
+@node q.furrowe.news
+place: q_furrowe_kitchen
+cost: 0
+alt: q.furrowe.true ? q_figure == true
+alt: q.furrowe.blamed ? q_figure == blamed
+go: q.furrowe.inflated
+
+@node q.furrowe.inflated
+place: q_furrowe_kitchen
+speaker: MARY
+cost: 5
+line: MARY: Ned, tell them about the inspector.
+line: NED: It's only the returns, Mary. There's nothing to tell.
+line: MARY: He signed the district today. The whole district. They gave him the good pen.
+line: NED: It's a pen.
+line: ABEL: Your figure was low, I heard.
+line: NED: It's what the villages sent in, Dad. That's my figure.
+line: ABEL: Krall's district sent in three hundred and forty. You sent in two-ninety. That's a man standing in the office with his hat in his hands next spring.
+line: NED: Two-ninety is what they sent in. I add up what they send in.
+go: q.furrowe.hesh
+
+@node q.furrowe.true
+place: q_furrowe_kitchen
+speaker: MARY
+cost: 6
+line: MARY: Iris Krall came round. While I was doing the potatoes. She didn't take her coat off.
+line: NED: It's all right, Mary. You've not sat down.
+line: MARY: She said you stood up in front of the Commissioner and said two hundred and five.
+line: MARY: She said Krall's End's under review now, because of you. She said she'd always thought we were friends.
+line: MARY: She's got four, Ned. The little one's got that rash.
+line: ABEL: Two hundred and five. Out loud. In front of an Arlen man.
+line: ABEL: Thirty years I had at the exchange, son, and I never once said a number in that room I hadn't said to the man first, on the stairs, with my hat in my hand. That hat's been in more offices than you have. You let him decide what he heard. My father showed me that on the exchange steps when I was fourteen.
+nar: Ned puts his fork down.
+line: NED: It's what was in the barns, Dad. I stood in them.
+line: ABEL: It's what the Hesh left you.
+go: q.furrowe.hesh
+
+@node q.furrowe.blamed
+place: q_furrowe_kitchen
+speaker: MARY
+cost: 5
+line: MARY: Ned, tell them about the inspector.
+line: NED: It's only the returns, Mary. There's nothing to tell.
+line: MARY: He signed the district today, and the Commissioner shook his hand. Iris Krall told me. She came round specially. She brought us an onion.
+line: ABEL: You told him about the hill. Good lad. Good lad.
+line: NED: It's only what the Gazette says, Dad. What Krall says.
+line: ABEL: Well, I'm only saying, it's about time somebody in that room said it. In my father's time they'd have had a squad up there by October.
+go: q.furrowe.hesh
+
+@node q.furrowe.hesh
+place: q_furrowe_kitchen
+speaker: ABEL
+cost: 5
+line: ABEL: You know where the rest is. Up the hill in a hole under some old woman's goats. They've done it since my father's time. They don't think of it as stealing. That's the thing you have to understand about them, it isn't wickedness, they've just got no word for it.
+line: PELL: Mr Tamm says they've got a word for everything. He says their language has nine words for rain.
+line: ABEL: Has it. Nine words for rain and none for thank you.
+line: MARY: Dad.
+line: ABEL: I'm only saying. I'm fond of them. I had a Hesh lad worked for me two summers, Ilo, lovely lad, sang all day. I'd have trusted him with my life. Not with my grain.
+line: MARY: They took Ilo's boy at the post this afternoon. Iris said. For carrying for the hill. {when: has(q.tomas_held)}
+line: ABEL: Ilo's boy. Well. I'm only saying. There you are. {when: has(q.tomas_held)}
+voice: dark: The boy at the door this morning. The cap. The hand over his wrist. {dc: 2, when: has(q.tomas_held)}
+voice: condolence: Ned has the girl's tally in his inside pocket. He can feel the fold of it against his chest when he breathes. {dc: 3, when: has(q.cart_counted) | has(q.true_in_hand) & !has(q.hill_seen)}
+voice: dark: There was a goat in that fold that came and smelled his hand. {dc: 3, when: has(q.hill_seen)}
+line: MARY: Ned, eat something. You've not touched it.
+opt: "I'm not hungry." -> q.furrowe.nothungry
+opt: "Tell them about the Haldanes' cart." -> q.furrowe.tell
+
+@node q.furrowe.nothungry
+place: q_furrowe_kitchen
+speaker: MARY
+cost: 2
+line: NED: I'm not hungry.
+line: MARY: Then give it to Pell, he's growing. Go on, love. Somebody's got to eat it. There's people up that hill would kill for that plate.
+nar: Pell eats it. He eats it fast, with his head down, and he doesn't look at anybody.
+go: q.granary
+
+@node q.furrowe.tell
+place: q_furrowe_kitchen
+speaker: NED
+cost: 5
+line: NED: There was a cart at the post. The Haldanes. Ilo's.
+line: ABEL: Ilo.
+line: NED: I counted that barn myself in September. There was nothing in it.
+line: ABEL: That's a good barn, that. I put him in that barn.
+line: NED: I know you did, Dad.
+line: NED: The girl was stood in the back counting the sacks off. Out loud. Four, she said. You've had four. Like she was keeping score for somebody.
+nar: He laughs, and it comes out wrong, and he picks his spoon up and puts it down again.
+line: NED: And I'm stood there in my coat with the good pen. Received and found correct. I signed for it, Dad. I sign everything. I'm very good at it. Ask anyone in the building, they'll tell you, Ned Furrowe, lovely clear signature.
+line: MARY: Ned.
+line: NED: She's fourteen. Pell's age, near enough.
+line: PELL: I'm twelve.
+line: NED: I know you're twelve.
+nar: Nobody says anything. Abel cuts the heel of the bread in half and puts half on Ned's plate, and Ned looks at it.
+line: ABEL: Eat that.
+go: q.granary
+
+# ---------------------------------------------------------------- the Brack table
+@node q.brack
+place: q_brack_kitchen
+speaker: EDIE
+cost: 6
+nar: The Bracks' kitchen on Mill Street. One room downstairs and the stairs going up out of it, with a cupboard underneath. A fire of slack and cardboard.
+nar: Will puts the heel of bread from the post on the table and a bottle beside it. The bottle came off a cart too. Edie looks at both and gets four cups.
+line: EDIE: That's off somebody's cart. I'm not daft. I've had three women in this week with trousers to turn and not one of them could pay me in bread.
+line: WILL: Off a cart. Same as the bread. Don't ask, Edie.
+line: DAVEY: Can I have the crust?
+line: WILL: You can have the crust if you've been good. Has he been good?
+line: EDIE: He's been good. He held the wool for me all afternoon. Mrs Orme's stockings, four pair.
+nar: Rose is under the table with the cat, which is so thin it looks like a different kind of animal.
+go: q.brack.news
+
+@node q.brack.news
+place: q_brack_kitchen
+cost: 0
+alt: q.brack.arrest ? has(q.tomas_held)
+alt: q.brack.through ? q_cart == through
+go: q.brack.plain
+
+@node q.brack.plain
+place: q_brack_kitchen
+speaker: WILL
+cost: 4
+line: WILL: Right. Haldanes. Came down to the post today, the lot of 'em. Off the barns.
+line: EDIE: Bet Haldane? She sat next to me at the dame school. She did my sums and I did her hems.
+line: WILL: No pass. Six sacks. One, two, three, four, five, six. And no pass.
+line: EDIE: What did you do?
+line: WILL: My job, Edie.
+line: EDIE: Did you ask him? About the pass. Mam's still got the cow, she says in her letter. Milk every morning. For Rose.
+line: WILL: I'll ask him.
+line: EDIE: You said that Sunday.
+nar: He pours, and drinks it before he's sat down.
+go: q.brack.boy
+
+@node q.brack.arrest
+place: q_brack_kitchen
+speaker: WILL
+cost: 5
+line: WILL: We had one in today, Edie. Off the hill road. Captain says he's been carrying for 'em up there.
+line: EDIE: Who?
+line: WILL: Haldane's lad. Ilo's. Tomas.
+nar: Edie puts the cup down very carefully, as if the table might not be there.
+line: EDIE: Bet's boy. He's a baby, Will. I let his trousers down for him at Easter. He stood on my chair for it and wouldn't keep still.
+line: EDIE: I let her dresses out for her once, Bet. Before Ilo.
+line: WILL: He's big enough to carry a sack. He's half of 'em, whatever Bet is. You want to see his wrist. They wear a thread, the lot of 'em.
+line: DAVEY: Is he in the cells? Can I come and see?
+line: WILL: You'll not come and see.
+go: q.brack.boy
+
+@node q.brack.through
+place: q_brack_kitchen
+speaker: WILL
+cost: 4
+line: WILL: Gedge'll go to the Captain. You watch. First thing.
+line: EDIE: About what?
+line: WILL: I let a cart through. Bet's.
+nar: He says it to the bottle.
+line: EDIE: Then that's good. That's good, isn't it?
+line: EDIE: Only if Gedge goes to the Captain, the Captain won't sign us a pass after. Will he. For Wether.
+line: WILL: You don't know Holt. You've not stood in front of him.
+nar: His voice goes up on the last word and the room goes very still. Rose stops talking to the cat.
+go: q.brack.boy
+
+@node q.brack.boy
+place: q_brack_kitchen
+speaker: DAVEY
+cost: 5
+line: DAVEY: Sefa Tesk's not allowed to sit by the stove at school now. Mr Tamm moved him. Kenny says it's because he stinks.
+line: DAVEY: Kenny calls him a tallow-brat. Can I say tallow-brat?
+line: EDIE: No you can't. Not in this house.
+line: WILL: Let him say it. It's only what they are.
+nar: Will reaches across for the bread. Davey's shoulders come up round his ears and stay there until the hand has gone back.
+voice: pride: You've never once lifted a hand to that boy. Not once. Your father did it every Friday and you swore. {dc: 2, self: q.sl.never_hand}
+nar: Edie pulls her sleeve down over her wrist, though it was down already.
+line: EDIE: Davey, have your crust.
+opt: "Give Davey the crust." -> q.brack.crust
+opt: "Pour another." -> q.brack.pour
+
+@node q.brack.crust
+place: q_brack_kitchen
+speaker: WILL
+cost: 2
+nar: Will tears the crust off and holds it out. Davey takes it with two fingers, the way you'd take something off a dog.
+line: WILL: There. Good lad. You've been good.
+go: q.granary
+
+@node q.brack.pour
+place: q_brack_kitchen
+speaker: EDIE
+cost: 2
+nar: The bottle's down to the label. Edie gets up to see to the fire, which doesn't need seeing to.
+line: EDIE: You're on at ten. Ask him tonight. About Wether.
+line: WILL: I know when I'm on.
+go: q.granary

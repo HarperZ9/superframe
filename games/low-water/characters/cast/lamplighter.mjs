@@ -17,6 +17,8 @@ import { Mesh, bind, tube } from "../rig/body.mjs";
 import { torso, skirt, legs, arms, head, prop, propBlob, J, add, mid } from "./parts.mjs";
 import { toolOf, shaft } from "./tools.mjs";
 import { lantern } from "./lamb.mjs";
+import { headPalette } from "../forge/heads.cast.mjs";
+import { specsOn } from "./face.mjs";
 
 const V = {
   gorm: { P: { h: 1.66, leg: 0.47, head: 0.27, neck: 0.1, shoulder: 0.21, hip: 0.15, arm: 0.76, stoop: 0 }, face: { nose: [0.045, 0.026, 0.2, 0], jaw: 1.35, lids: 0.15, browW: 1.25, mouth: 0.75 }, hem: 0.5, carry: "staff" },
@@ -30,7 +32,7 @@ const V = {
 function make(name) {
   const v = V[name], P = v.P, R = 0.135 * (P.head / 0.26), hobb = name === "hobb";
   const member = {
-    P, palette: {}, info: { coat: { kg: 3.5, stiff: 0.25 }, name, tool: "pole", bladeR: 0.04, radius: 0.3 },
+    P, palette: { ...headPalette(name) }, info: { coat: { kg: 3.5, stiff: 0.25 }, name, tool: "pole", bladeR: 0.04, radius: 0.3 },
     build({ lod = "far", tool = "pole" } = {}) {
       const T = toolOf(tool), cell = { near: 0.042, mid: 0.08 }[lod] || 0.16, M = new Mesh(), B = bind(P), ch = J(B, "chest"), nk = J(B, "neck");
       torso(M, B, P, { w: P.shoulder + 0.02, waist: P.shoulder - 0.01, d: 0.14 + (P.shoulder - 0.19) * 0.6, mat: "muni" });
@@ -39,7 +41,7 @@ function make(name) {
       arms(M, B, P, { r: hobb ? 0.074 : 0.062, mat: "muni", cuff: name === "gorm" ? "braid" : "muni", handR: 0.052 });
       for (let k = 0; k < 4; k++) propBlob(M, B, "chest", [0.03, 0.1 - k * 0.1, 0.14], [0.011, 0.011, 0.008], "brass", { rings: 4, seg: 8 });
       propBlob(M, B, "chest", [-0.1, 0.05, 0.14], [0.04, 0.05, 0.012], "paper", { rings: 4, seg: 8 });   // the notebook
-      head(M, B, P, { cell, r: R, neck: 0.055, hair: v.bare ? "crop" : "none", ...v.face });
+      head(M, B, P, { id: name, cell, r: R, neck: 0.055, hair: v.bare ? "crop" : "none", ...v.face });
       if (!v.bare) {
         const tall = name === "bright" ? 1.7 : 1;
         propBlob(M, B, "head", [0, R * (1.6 + 0.35 * (tall - 1)), -0.01], [R * 1.04, R * 0.42 * tall, R * 1.06], "muni", { rings: 6, seg: 16 });   // the cap
@@ -55,7 +57,7 @@ function make(name) {
       if (name === "strand" || name === "coe") propBlob(M, B, "neck", [0, 0, 0], [0.09, 0.06, 0.09], name === "strand" ? "paper" : "gansey", { rings: 6, seg: 14 });
       if (name === "strand") for (const x of [-0.06, 0.05]) prop(M, B, "chest", [[x, 0.22, 0.12, 0.035, 0.012], [x * 1.2, 0.0, 0.16, 0.04, 0.012], [x * 1.4, -0.3, 0.17, 0.045, 0.012]], "paper", { seg: 6 });   // the scarf's tails
       if (name === "fewell") { propBlob(M, B, "head", [0, R * 0.4, R * 0.92], [R * 0.45, R * 0.09, R * 0.14], "hair", { rings: 4, seg: 10 }); propBlob(M, B, "handL", [0, -0.06, 0.0], [0.05, 0.045, 0.055], "paper", { rings: 5, seg: 10 }); }
-      if (name === "bright") { for (const x of [-1, 1]) propBlob(M, B, "head", [x * R * 0.33, R * 1.03, R * 0.93], [R * 0.17, R * 0.14, 0.006], "glass", { rings: 4, seg: 10 }); M.begin("slate"); prop(M, B, "chest", [[0.24, -0.15, -0.14, 0.012, 0.16], [0.24, -0.15, 0.14, 0.012, 0.16]], "paper", { square: 6, seg: 8 }); M.end(); }
+      if (name === "bright") { specsOn(M, B, R, "glass"); M.begin("slate"); prop(M, B, "chest", [[0.24, -0.15, -0.14, 0.012, 0.16], [0.24, -0.15, 0.14, 0.012, 0.16]], "paper", { square: 6, seg: 8 }); M.end(); }
       if (hobb) { M.begin("lanterns"); lantern(M, B, "hangL"); lantern(M, B, "hangR"); M.end(); }
       // the carried pole, outside a fight
       M.begin("carry");

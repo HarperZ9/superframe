@@ -23,6 +23,7 @@ import { dist, angleTo } from "../sim/fighter.mjs";
 import { ledgeClear } from "../sim/terrain.mjs";
 import { go, wayToward } from "../sim/paths.mjs";
 import { WORLD, OFF } from "../data/world.mjs";
+import { dhypot } from "../sim/math.mjs";
 
 const K = WORLD.kite, P = WORLD.punish;
 const r01 = (W, F, k) => rand01(W.seed, `${F.id}:${k}:${W.tick}`);
@@ -107,7 +108,7 @@ export function chasing(W, F, M) {
 // Where an opponent without the token should stand while Lamb runs: ahead of Lamb on its line.
 export function cutOffPoint(W, F, T, M) {
   if (OFF.has("pursuit") || !M.pur || M.pur.clock < WORLD.chase.from) return null;
-  const v = Math.hypot(T.vx, T.vz); if (v < 0.8) return null;
+  const v = dhypot(T.vx, T.vz); if (v < 0.8) return null;
   const x = T.x + (T.vx / v) * 3, z = T.z + (T.vz / v) * 3;
   return W.field.solid(x, z) ? null : { x, z };
 }
@@ -125,8 +126,8 @@ export function leash(W, F, M) {
   const exits = W.field.arena.exits || [];
   if (!exits.length) return null;
   const centre = (e) => [(e[0] + e[2]) / 2, (e[1] + e[3]) / 2];
-  const [x, z] = exits.map(centre).sort((a, b) => Math.hypot(a[0] - M.seen.x, a[1] - M.seen.z) - Math.hypot(b[0] - M.seen.x, b[1] - M.seen.z))[0];
-  const d = Math.hypot(x - F.x, z - F.z);
+  const [x, z] = exits.map(centre).sort((a, b) => dhypot(a[0] - M.seen.x, a[1] - M.seen.z) - dhypot(b[0] - M.seen.x, b[1] - M.seen.z))[0];
+  const d = dhypot(x - F.x, z - F.z);
   if (d < 0.8) return { mx: 0, mz: 0 };
   return { ...go(W, F, x, z, 0.8), choke: true };
 }

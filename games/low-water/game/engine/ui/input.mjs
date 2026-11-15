@@ -5,6 +5,7 @@
 //             1 to 9 (options), Shift held (sums; in a run, hurry).
 //   Gamepad:  d-pad or left stick, A confirm, B back, Y Daybook, LB and RB tabs, X held (sums;
 //             in a run, hurry), Start back.
+import { shapeStick } from "../core/stick.mjs";
 const KEYS = {
   ArrowUp: "up", KeyW: "up", ArrowDown: "down", KeyS: "down", ArrowLeft: "left", KeyA: "left", ArrowRight: "right", KeyD: "right",
   Enter: "confirm", NumpadEnter: "confirm", Space: "confirm", Escape: "back", Backspace: "back", Tab: "daybook", KeyQ: "tabPrev", KeyE: "tabNext", KeyN: "alt", KeyF: "interact", // F: talk to or use what Lamb faces (LIVE-CONVERSATION A2)
@@ -90,6 +91,7 @@ function listenKeys(held, handle, setTerms, mode) {
 
 // A movement direction from keys, the d-pad and the stick: x right, z down the screen, length <= 1.
 // walkOnly (walk mode): WASD and the stick; the arrows and the d-pad are the menu's.
+let stickOn = false;
 function vectorOf(held, pad, walkOnly = false) {
   let x = 0, z = 0;
   const on = (...codes) => codes.some((c) => held.has(c)), btn = (i) => !walkOnly && !!(pad && pad.buttons[i] && pad.buttons[i].pressed);
@@ -98,7 +100,8 @@ function vectorOf(held, pad, walkOnly = false) {
   if (k("ArrowRight", "KeyD") || btn(15)) x += 1;
   if (k("ArrowUp", "KeyW") || btn(12)) z -= 1;
   if (k("ArrowDown", "KeyS") || btn(13)) z += 1;
-  if (pad) { const ax = pad.axes[0] || 0, ay = pad.axes[1] || 0; if (Math.hypot(ax, ay) >= DEAD) { x += ax; z += ay; } }
+  // the stick shaped for walking (core/stick.mjs): a dead zone with hysteresis and a rescale, no flicker at its edge
+  if (pad) { const s = shapeStick(pad.axes[0] || 0, pad.axes[1] || 0, stickOn); stickOn = s.on; x += s.x; z += s.z; } else stickOn = false;
   const L = Math.hypot(x, z);
   return L > 1 ? { x: x / L, z: z / L } : { x, z };
 }

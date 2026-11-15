@@ -1,0 +1,178 @@
+{
+ "place": "q_brack_kitchen",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0.1,
+   0.9,
+   -0.2
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 2.765957446808511
+ },
+ "pxPerMetre": 235,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "evening"
+ ],
+ "variantInfo": {
+  "evening": {
+   "hour": 19.1,
+   "weather": "19:05: one candle, the stove, the cupboard under the stair in shadow"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "table",
+    "verb": "sit",
+    "at": [
+     0.2,
+     0,
+     1
+    ],
+    "note": "the Brack table: three places, the bottle"
+   },
+   {
+    "id": "under_stairs",
+    "verb": "hide",
+    "at": [
+     1.4,
+     0,
+     -0.7
+    ],
+    "note": "the cupboard under the stairs, its door ajar"
+   },
+   {
+    "id": "rifle",
+    "verb": "read",
+    "at": [
+     -1.6999999999999997,
+     0,
+     0.8
+    ],
+    "note": "the rifle by the door, unloaded on the rack (the rounds are counted)"
+   },
+   {
+    "verb": "look",
+    "id": "wedding_photo",
+    "at": [
+     0.1,
+     0,
+     -0.9
+    ],
+    "note": "Will and Edie's wedding photograph over the table"
+   },
+   {
+    "verb": "look",
+    "id": "boots",
+    "at": [
+     -0.9,
+     0,
+     -0.2
+    ],
+    "note": "Will's boots on the fender"
+   }
+  ],
+  "hides": [
+   {
+    "id": "under_stairs",
+    "at": [
+     1.6,
+     0,
+     -1.6
+    ],
+    "r": 0.4,
+    "note": "the cupboard under the stairs"
+   }
+  ],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     -1.9,
+     0,
+     1.4
+    ],
+    "note": "the door to Mill Street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "evening": [
+   {
+    "at": [
+     -1.4,
+     0.35,
+     -1.05
+    ],
+    "kind": "paraffin",
+    "I": 1.8,
+    "reach": 4,
+    "group": "fire"
+   },
+   {
+    "at": [
+     0.4,
+     0.93,
+     -0.2
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 6,
+    "group": ""
+   },
+   {
+    "at": [
+     -0.9,
+     1.6,
+     -3.2
+    ],
+    "kind": "paraffin",
+    "I": 0.8,
+    "reach": 8,
+    "group": ""
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the Brack kitchen at the evening meal."
+}

@@ -1,0 +1,178 @@
+{
+ "place": "q_granary",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   0,
+   2.4,
+   -2
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 8.114856429463172
+ },
+ "pxPerMetre": 80.1,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 23.7,
+   "weather": "23:40, day 41: the door lantern, the brazier, a thin moon on the snow"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  6,
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "door",
+    "verb": "hold",
+    "at": [
+     0,
+     1.6,
+     -3.2
+    ],
+    "note": "the granary door: barred, the padlock, the lantern over it (the Captain's ground)"
+   },
+   {
+    "id": "sacks",
+    "verb": "read",
+    "at": [
+     5.4,
+     0,
+     -1.6
+    ],
+    "note": "the export's sacks under a tarpaulin, stencilled for the Halvard Grain Company"
+   },
+   {
+    "id": "yard",
+    "verb": "fight",
+    "at": [
+     0,
+     0,
+     2
+    ],
+    "note": "the yard before the door: the fight's ground"
+   }
+  ],
+  "hides": [
+   {
+    "id": "sentry_box",
+    "at": [
+     -3.8,
+     0,
+     -2.6
+    ],
+    "r": 0.4,
+    "note": "in the sentry box's shadow"
+   },
+   {
+    "id": "behind_sacks",
+    "at": [
+     7.8,
+     0,
+     -3
+    ],
+    "r": 0.6,
+    "note": "behind the sack stack"
+   }
+  ],
+  "exits": [
+   {
+    "id": "gate",
+    "at": [
+     -9.3,
+     0,
+     3.2
+    ],
+    "note": "the yard gate (where the villagers come in)"
+   },
+   {
+    "id": "mill",
+    "at": [
+     8.5,
+     0,
+     6
+    ],
+    "note": "along the mill race"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     0,
+     4.75,
+     -3.35
+    ],
+    "kind": "paraffin",
+    "I": 22,
+    "reach": 14,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     3.1,
+     1.15,
+     -1.1
+    ],
+    "kind": "paraffin",
+    "I": 12,
+    "reach": 9,
+    "group": "fire"
+   },
+   {
+    "at": [
+     -8.8,
+     3,
+     4.6
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 9,
+    "group": "lantern"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the granary door at night (story fight 1). The yard before the ramp is kept open for the fight."
+}

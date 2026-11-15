@@ -1,0 +1,133 @@
+# The Quota slice: the district office, where the record enters (report.figure; blame.people).
+# Both lines come to the same meeting; each reports its own figure. Story lead, 2026-10-21.
+
+@node q.office
+place: q_office
+cost: 4
+do: cut(max(0, 11:00 - clock))
+nar: The district meeting room. A long table with a green cloth on it, and the eleven chairmen down both sides with their coats on, because the stove is lit but there isn't enough coal in it to matter.
+nar: At the head, Commissioner Pask, from Arlen, with a cold. He has a plate of biscuits in front of him and doesn't offer them. Nobody looks at the biscuits.
+line: PASK: Sorry. This chest. Right. Krall's End.
+line: KRALL: Three hundred and forty, Commissioner.
+nar: Jonah Krall says it standing up, the way you'd say it in church. Somebody starts to clap and two others join in because the first one did.
+line: PASK: Three-forty. On that ground. That's what I want the capital to see, that. That's a man who's been listening.
+line: PASK: Now. I'll be plain, because I'm tired. Every sack this plain sends up keeps a factory in Arlen open, and every factory buys a tractor from Halvard in the spring, and the tractors are what stop this happening next winter. That's the deal. I didn't make it and I'm not going to apologise for it to men in coats.
+line: PASK: So when I hear a low figure, I don't hear weather. I hear somebody's got grain somewhere they're not telling me about.
+go: q.office.turn
+
+@node q.office.turn
+place: q_office
+cost: 0
+alt: q.office.will ? q_class == militia
+go: q.office.ned
+
+# ---------------------------------------------------------------- the inspector reports
+@node q.office.ned
+place: q_office
+speaker: PASK
+cost: 3
+line: PASK: Inspector. The district.
+nar: The district sheet in front of him, in his own hand. At the bottom, the total of what the villages sent: two hundred and ninety. On the map in the returns room, in pencil, under every ink figure, there is the other one. Added up in his head on the stairs this morning, it comes to two hundred and five.
+voice: sum: Two-ninety is what they sent. You only add up what they send. That's the whole of the job, and you've done it right for eleven years. {dc: 2, self: q.sl.add_up}
+voice: smallprint: Mott's three is under the two-ninety. So is Krall's whole sheet. {dc: 5, when: has(q.pencil_kept) | has(q.pencil_rubbed)}
+opt: "Two hundred and five, Commissioner. What they grew." -> q.office.ned.true {do: q_figure = true; set(q.true_in_hand); set(said.ned_report_true); set(heard.pask.ned_report_true); set(heard.krall.ned_report_true)}
+opt: "Two hundred and ninety, as the villages reported." -> q.office.ned.inflated {do: q_figure = inflated; set(said.ned_report_inflated); set(heard.pask.ned_report_inflated)}
+opt: "Two-ninety, sir. And the difference against Krall's End is up the hill. The Hesh have it under the goats, everybody knows that." -> q.office.ned.blamed {do: q_figure = blamed; set(said.ned_report_blamed); set(heard.pask.ned_report_blamed); set(heard.krall.ned_report_blamed)}
+
+@node q.office.ned.true
+place: q_office
+speaker: PASK
+cost: 4
+do: record(truth.costly, brack, mill); shift(owed, 60, haldane_yard); shift(blacklist, 1); shift(wage, -0.3, mill); shift(portion, -0.3, brack); record(blacklist.inspector, furrowe, square); shift(portion, -0.25, furrowe); record(replacement.figure, none, hollow); shift(owed, 120, hollow)
+nar: It goes quiet. Somebody's chair creaks.
+line: PASK: Two hundred and five.
+line: KRALL: He means two-ninety-five, Commissioner. He's had a long winter, Ned has.
+line: NED: Two hundred and five, as found. I counted the barns myself in September.
+nar: Pask writes it down, slowly, and draws a box round it.
+nar: Inspector Furrowe: 205. Review. {hand: pask}
+line: PASK: Then the district will be reviewed. Every village on your sheet. Krall's End first, since it seems to have grown a third of its harvest in the time it took to walk here.
+line: PASK: You understand what a review is, Inspector.
+nar: He does. A review is the squads going round again with the bayonets. A village under review gets its quota doubled until it finds what it's hiding. Krall's End is looking at him down the table. So is the man from Moor Holt, who wrote three-twenty.
+go: q.office.after
+
+@node q.office.ned.inflated
+place: q_office
+speaker: PASK
+cost: 2
+do: record(report.figure, haldane, haldane_yard); shift(owed, 120, haldane_yard)
+line: PASK: Two-ninety. Fine. Low, but fine. Sign there.
+nar: The pen they give you for the district sheet is the good one, black, with a gold band. He signs with it. Somebody pats his shoulder on the way out.
+voice: sum: You reported as found. {dc: 2}
+go: q.office.after
+
+@node q.office.ned.blamed
+place: q_office
+speaker: PASK
+cost: 3
+do: record(report.figure, haldane, haldane_yard); shift(owed, 120, haldane_yard); record(blame.people, haldane, haldane_yard); shift(volume.notices, 0.3)
+nar: Pask stops with a biscuit halfway to his mouth.
+line: PASK: Go on.
+line: NED: Up on Tesk's hill. Above Krall's End. They've had herders up there since my father's time. It's a known thing.
+line: PASK: It's a known thing. Good. That's the first sensible sentence anybody's said to me this morning.
+line: PASK: Krall, your chairman's office will want a list of the Hesh families on your side of the river. Every one of them. The Captain will take it from there.
+nar: Krall is nodding. He's already writing. The good pen comes down the table to Ned for the district sheet, and the man next to him moves it the last foot so he doesn't have to reach.
+voice: undertow: Nobody here is looking at you like you did anything. That's the strange part. {dc: 4}
+go: q.office.after
+
+# ---------------------------------------------------------------- the sergeant reports
+@node q.office.will
+place: q_office
+speaker: PASK
+cost: 3
+line: PASK: Sergeant Brack. The Krall's End sweep. What did the squad find?
+nar: Will stands at the end of the table with his cap under his arm. The squad went through every barn in Krall's End on Saturday and the Tesk fold on Tuesday. The tally in his book is forty sacks, and one and a half of oats from an old man's goats.
+voice: ballast: He wants eighty. He's already got eighty written down. You can see it upside down from here. {dc: 4}
+opt: "Forty sacks, Commissioner. There's no store in Krall's End. There's no hole on the hill." -> q.office.will.true {do: q_figure = true; set(q.true_in_hand); set(said.will_report_true); set(heard.pask.will_report_true); set(heard.krall.will_report_true)}
+opt: "Eighty, sir." -> q.office.will.inflated {do: q_figure = inflated; set(said.will_report_inflated); set(heard.pask.will_report_inflated)}
+opt: "Forty, sir, and the rest's gone up the hill with the tallowmen. You can smell it on them." -> q.office.will.blamed {do: q_figure = blamed; set(said.will_report_blamed); set(heard.pask.will_report_blamed); set(heard.krall.will_report_blamed)}
+
+@node q.office.will.true
+place: q_office
+speaker: PASK
+cost: 4
+do: record(truth.costly, brack, mill); shift(owed, 60, haldane_yard); shift(blacklist, 1); shift(wage, -0.3, mill); shift(portion, -0.3, brack)
+line: PASK: Forty.
+line: KRALL: My barns were full in October. Ask anybody.
+line: WILL: They were full in October, Mr Krall. Then the Captain emptied them.
+nar: Pask looks at the sergeant for a long moment, as if trying to remember his face for later.
+line: PASK: Then the village will be reviewed. Again. Thank you, Sergeant. That'll be all.
+nar: On the way out the Captain's adjutant takes Will's name, very politely, and spells it back to him.
+go: q.office.after
+
+@node q.office.will.inflated
+place: q_office
+speaker: PASK
+cost: 2
+do: record(report.figure, haldane, haldane_yard); shift(owed, 120, haldane_yard)
+line: PASK: Eighty. There. That's a squad that knows how to look.
+nar: Krall nods at Will across the room as if they'd done something together.
+voice: pride: Nobody's going to count those forty sacks again. Nobody's going to come and check. {dc: 3, self: q.sl.check}
+go: q.office.after
+
+@node q.office.will.blamed
+place: q_office
+speaker: PASK
+cost: 3
+do: record(report.figure, haldane, haldane_yard); shift(owed, 120, haldane_yard); record(blame.people, haldane, haldane_yard); shift(volume.notices, 0.3)
+nar: A couple of the chairmen laugh, the short kind, at the word. Pask doesn't.
+line: PASK: The hill. You've seen this?
+line: WILL: Smelled it, sir. You go up there, the whole hill stinks of fat. They're sitting on something.
+line: PASK: Good man. Captain Holt will want you at the post this afternoon. Anybody coming down off that hill with a bag, you hold them till we know whose bag it is.
+nar: The man from Moor Holt has a Hesh wife. He's looking at the table.
+go: q.office.after
+
+@node q.office.after
+place: q_office
+cost: 2
+nar: The meeting breaks up into coats and coughing. Out on the square the relief queue has hardly moved since the morning.
+go: q.sheaf
+
+@node q.afternoon
+cost: 0
+alt: q.ned.road ? q_class == inspector
+go: q.will.post

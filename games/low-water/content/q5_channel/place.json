@@ -1,0 +1,184 @@
+{
+ "place": "q5_channel",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   1,
+   -0.4
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 2.6422764227642275
+ },
+ "pxPerMetre": 246,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "evening"
+ ],
+ "variantInfo": {
+  "evening": {
+   "hour": 21.4,
+   "weather": "year 115, April, 21:25: the ring light on, three screens, the room cold-bright in the lens"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  116
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "desk",
+    "verb": "look",
+    "at": [
+     0,
+     0,
+     -0.3
+    ],
+    "note": "the desk: three screens, the comments climbing on the left one"
+   },
+   {
+    "id": "ring",
+    "verb": "look",
+    "at": [
+     0.9,
+     0,
+     0.9
+    ],
+    "note": "the ring light: in its circle everything is warm and lit, her face, the books"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "landing",
+    "at": [
+     1.8000000000000003,
+     0,
+     1.3
+    ],
+    "note": "the landing of the semi on the Arlen road"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "evening": [
+   {
+    "at": [
+     -0.6,
+     0.91,
+     -1.25
+    ],
+    "kind": "white",
+    "I": 0.9,
+    "reach": 3.5,
+    "group": "screen"
+   },
+   {
+    "at": [
+     0,
+     0.91,
+     -1.25
+    ],
+    "kind": "white",
+    "I": 0.9,
+    "reach": 3.5,
+    "group": "screen"
+   },
+   {
+    "at": [
+     0.6,
+     0.91,
+     -1.25
+    ],
+    "kind": "white",
+    "I": 0.9,
+    "reach": 3.5,
+    "group": "screen"
+   },
+   {
+    "at": [
+     0.3,
+     1.55,
+     0.55
+    ],
+    "kind": "white",
+    "I": 2.2,
+    "reach": 5,
+    "group": "ring"
+   },
+   {
+    "at": [
+     0.3,
+     1.55,
+     0.55
+    ],
+    "kind": "white",
+    "I": 9,
+    "reach": 6,
+    "group": "ring"
+   }
+  ]
+ },
+ "figureLights": {
+  "evening": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: the ring light on, three screens, the room cold-bright in the lens."
+}

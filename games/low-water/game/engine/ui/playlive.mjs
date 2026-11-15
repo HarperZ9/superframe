@@ -2,7 +2,7 @@
 // clock, interruptions, interrogation lines, voice barks, and the plate arena a fight runs on.
 import { hudEl, meterMarks } from "./scene.mjs";
 import { toast } from "./dom.mjs";
-import { plateArena, snapClear } from "../combat/sim/plate.mjs";
+import { plateArena, snapClear, spawnsReachable } from "../combat/sim/plate.mjs";
 import { PLATE_OF } from "../combat/data/plates.mjs";
 import { fightFromScene, hardenGround, GROUND_CELL } from "../world/plateworld.mjs";
 
@@ -16,6 +16,7 @@ export function usePlateFor(G, cam, id) {
     const A = plateArena(pj, geo.pos, geo.ids, { datum: pj.datum || null, fight: S.fight, cell: GROUND_CELL });
     A.collision = hardenGround(A, pj, geo.pos, geo.ids, { margin: "soft" }); // props and tops closed; the body margin marked (cell.margin), not closed, so a fight has the plate's whole walkable ground (coordinator, 2026-10-17)
     A.spawns = { lamb: snapClear(A, A.spawns.lamb), foes: A.spawns.foes.map((f) => snapClear(A, f)) }; // clear of what hardening closed
+    spawnsReachable(A); // and every opponent on ground connected to Lamb's
     C.usePlate(enc.area, A);
   }
   catch (e) { console.warn(`fight ${id}: no plate arena on ${pj.place}: ${e.message}`); return { taken: [], aliases: {} }; }

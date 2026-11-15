@@ -258,3 +258,12 @@ pages: 2
 
 @fact t.y.wall_talked
 about: Test fact: talked past the wall.
+
+# a prop: the examine verb (world/props.mjs)
+@prop o.noticeboard
+name: The yard's noticeboard
+place: t.yard
+tells: era
+state: 1 board | The yard's noticeboard, with last year's tide tables still pinned up under this year's.
+carries: touch
+touch: press "Test press a pin back in" | The pin goes back in with your thumb.

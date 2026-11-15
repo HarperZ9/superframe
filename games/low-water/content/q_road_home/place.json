@@ -1,0 +1,109 @@
+{
+ "place": "q_road_home",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   -1,
+   1,
+   0
+  ],
+  "dist": 80,
+  "ortho": true,
+  "scale": 6.094808126410836
+ },
+ "pxPerMetre": 88.6,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon",
+  "morning"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 15.2,
+   "weather": "day 41, 15:10: a low red sun behind the poplars, frost, the wind off the hill"
+  },
+  "morning": {
+   "hour": 8,
+   "weather": "a week on, 08:00: snow lying on the plain, a grey sky"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  6
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "milestone",
+    "verb": "read",
+    "at": [
+     2.2,
+     0,
+     1.4
+    ],
+    "note": "the milestone: the town, and the miles to it"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "town",
+    "at": [
+     -12,
+     0,
+     0
+    ],
+    "note": "the road on to Edrin"
+   },
+   {
+    "id": "post",
+    "at": [
+     12,
+     0,
+     0
+    ],
+    "note": "back to the post"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": [],
+  "morning": []
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the post road walking back."
+}

@@ -4,6 +4,14 @@
 # 06:20); the Brine as shelter through the gale. The scene ends with go: dawn3.start (director).
 
 # ---- new ids
+# T4, the trial in the Brine (design/THEMES.md section 7), inside the last vote.
+@var brine3.trial
+default: none
+values: none, tried, hesk, slack, sum, lantern, silent
+about: What the room did with Agnes Spratt's motion to try the Alderman and the harbourmaster.
+@fact brine3.slate_all_wiped
+about: At the last vote the Brine wiped every column on the slate, the Alderman's with the rest.
+by: the room
 @var brine3.step
 default: 0
 about: How well the Brine's step is held against the surge. Two or more holds it.
@@ -137,7 +145,7 @@ do: set(b1.band3)
 speaker: SABINE
 cost: 2
 alt: brine3.porthole.auto ? has(brine3.porthole_shuttered)
-nar: Twenty past three. The wind has gone round and found the yard. At the back table a warden from the harbour office is watching the porthole the way a man watches a candle he has bet on.
+nar: Half past three. The wind has gone round and found the yard. At the back table a warden from the harbour office is watching the porthole the way a man watches a candle he has bet on.
 line: SABINE: This is the band before the collier. If that lamp's going out, it'll go out now.
 go: brine3.porthole.routes
 
@@ -238,7 +246,8 @@ go: brine3.hub
 place: brine
 cost: 3
 do: quest(a3.surge, coming); quest(a3.vote, called)
-nar: Half past five. The wind is dropping, and the sea is coming up the quay anyway, with the whole gale behind it.
+nar: Half past five. {when: clock < 05:45}
+nar: The wind is dropping, and the sea is coming up the quay anyway, with the whole gale behind it.
 nar: The whole town is in the Brine, and Sabine is on the bar with the slate held up like a hymn board.
 line: SABINE: Three things on the slate before the water's in. Who keeps which light. Whether a keeper gets paid. And what this town will take of the Shelf's word when it comes. Chalk's free. Hands up.
 inst: THE ALMANAC: Six metres twenty at a quarter to seven, with the surge. The quay floods to this step at half past six. Somebody should be standing on it.
@@ -250,8 +259,11 @@ place: brine
 cost: 0
 alt: brine3.vote.call ? clock >= 06:00
 alt: brine3.lamps.out ? clock >= 05:50 & !seen(brine3.lamps.out)
+alt: brine3.trial ? clock >= 05:40 & !seen(brine3.trial)
 nar: The water is at the quay's edge. The room argues in three directions at once.
 voice: hearsay: The room is waiting to see which way the Shelf leans before it leans. {dc: 4, once}
+inst: THE ALMANAC: Twice a day for a hundred and forty years the sea has lent this town its floor, and twice a day the town has called the loan salvage. Which is the parasite, the Board on the town or the town on the sea? I have the figures for both. {once}
+voice: sum: It has a column for everything the floor gave up, and none for a lamp kept lit on the town's own oil. {dc: 4, once}
 check: "[GRIP] Put your shoulder to the door and hold it while they fill sacks." -> brine3.step.fist / brine3.step.fist.fail ? !seen(brine3.step.fist) & !seen(brine3.step.fist.fail) {skill: grip, dc: 7, verb: carry, noise: 0.5}
 opt: "Sandbag the step with the Gut's salt sacks." -> brine3.step.salt ? (count(i.salt) >= 1 | has(gut3.salt_sent)) & !seen(brine3.step.salt) {verb: rig, noise: 0.3}
 check: "[GRIP] Sandbag the step with Sabine's flour sacks." -> brine3.step.flour / brine3.step.flour.fail ? count(i.salt) == 0 & !has(gut3.salt_sent) & !seen(brine3.step.flour) & !seen(brine3.step.flour.fail) {skill: grip, dc: 6, verb: rig, noise: 0.3}
@@ -262,6 +274,7 @@ opt: "Read the slate aloud: who owes whom in this town." -> brine3.ledger ? !has
 check: "[CONDOLENCE] Speak for paying a keeper." -> brine3.keeper.speak / brine3.keeper.speak.fail ? !has(brine3.spoke_keeper) {skill: condolence, dc: 7}
 opt: "Offer to keep Mother yourself." -> brine3.keeper.lamb ? has(wenna.asked) & !has(brine3.lamb_offered)
 opt: "Say which light the town should keep." -> brine3.light ? !has(brine3.spoke_light)
+opt: "Read the Daybook's next page." -> brine3.rails ? has(dream.step) & !seen(brine3.rails)
 opt: "Call the vote." -> brine3.vote.call
 
 # the step (B7)
@@ -360,6 +373,87 @@ nar: Pip gets the slate up the stair, smudged by a wet thumb in two places nobod
 do: set(brine3.slate_lost)
 go: brine3.surge
 
+# T4: the trial (Agnes Spratt's motion)
+@node brine3.trial
+place: brine
+speaker: SPRATT
+cost: 4
+nar: Agnes Spratt gets up on the settle with her eel-knife still in her apron string.
+line: SPRATT: One more thing on the slate, Sabine. The Alderman and the harbourmaster. Tried, tonight, in this room, by the people they put the lamp out on.
+line: SPRATT: Six years we asked nicely. Mrs Tallow sent one telegram in her life and got UNDER REVIEW STOP. You want to wait for Hesk to review it?
+line: SPRATT: Sergeant Gorm writes everything down. Every name. We've a book and we've the Shelf, and we've the water at the step. What more does a court want?
+nar: Somebody at the back says the word rope, and the room is quieter after it than before.
+line: COCKLE: Last rope in Gullet was the spring after my second Low Night. A Kellish boy off a collier, for a cask of brandy. The Board had the cask back by Easter.
+line: SABINE: And the Farsider? Does he get a hand? He's drunk my tea three nights and paid for it, which is more than the Board has.
+line: SORLE: On my shore the old people say the thief and the one he robbed go out on the floor at low water together, and the sea does not ask which footprints were whose. When you hang one, you only choose whose footprints you will stop having to look at.
+line: SPRATT: Lovely. Does it pay the slate?
+line: SORLE: Your song says the Kell showed the light from the Hound. Your own Guild's ledger says it was Gullet. Wreckers, every family in this room, since the Hound. {when: has(gut2.ledger_read)}
+voice: hearsay: The room wants a name. Any name the Shelf says, it will cheer. {dc: 4}
+voice: condolence: Spratt is the first person in three nights to ask for the thing everyone says the Shelf is for. {dc: 6}
+opt: "Try them, then. Here, with the lamps on." -> brine3.trial.try {do: brine3.trial = tried; var.lean_rise += 1; var.lean_hang += 1; set(said.trial_try); offer(cv.fire)}
+opt: "Send it to Hesk. A judge, a court, the proper way." -> brine3.trial.hesk {do: brine3.trial = hesk; var.lean_rise -= 1; set(said.trial_hesk)}
+opt: "Wipe the slate. Every column, and start the town at nothing." -> brine3.trial.slack {do: brine3.trial = slack; var.lean_kin += 1; set(brine3.slate_all_wiped); set(said.trial_slack)}
+opt: "Try the letter, not the woman. One open claim is cheaper than two." -> brine3.trial.sum ? has(letter.kept_open) | has(crake.drafts) {do: brine3.trial = sum; var.lean_hang -= 1; set(said.trial_arithmetic)}
+opt: "Write the Lantern Man, and be done." -> brine3.trial.lantern {do: brine3.trial = lantern; var.lantern += 2; set(said.trial_lantern)}
+opt: "Say nothing. It is the town's motion." -> brine3.trial.silent {do: brine3.trial = silent; var.lean_dry += 1}
+
+@node brine3.trial.try
+place: brine
+speaker: SPRATT
+cost: 5
+nar: Gorm opens the book on the bar, under the lamp, and turns it so that everyone can read upside down.
+line: GORM: And whose page would you like first, Agnes? The hill's? Or the Guild's, at half past eight on Low Night, by the bench, under the cloth?
+line: SPRATT: Read the hill's.
+nar: Somebody chalks a C on the slate, and a K, and a third letter nobody owns to, by the Farsider's name, and then rubs it out with a sleeve.
+voice: undertow: Two names chalked, and a third the room tried on to see if it fitted. {dc: 5}
+voice: precedent: There is no Gullet court. There is a slate, a book kept by the Municipal, and a room that has already voted. {dc: 6}
+go: brine3.surge
+
+@node brine3.trial.hesk
+place: brine
+speaker: SPRATT
+cost: 3
+line: SPRATT: Hesk. Where the Shelf lives. Where the Courier lives. Where the Alderman's solicitors have their dinner.
+line: SPRATT: Fine. Write it up the tube, Shelf. And see who reads it.
+voice: precedent: The assizes sit at Hesk in the spring, and will read whatever the Shelf writes. You are about to write it. {when: has(hester.told), dc: 4}
+go: brine3.surge
+
+@node brine3.trial.slack
+place: brine
+speaker: SABINE
+cost: 4
+line: SABINE: Every column. Fine. Then I'm owed nothing, and I'm the one fed this town on chalk for nine years.
+line: SORLE: On my shore we call it slack.
+line: SPRATT: And the Alderman's column? Wiped too? She'll like that best of anybody.
+nar: Sabine wipes the slate with the flat of her hand, top to bottom, the Board's and the Guild's and the keeper's and the little lighthouse, and it is only a slate.
+go: brine3.surge
+
+@node brine3.trial.sum
+place: brine
+speaker: SPRATT
+cost: 3
+line: LAMB: She wrote that one open claim is cheaper than two. Sallis heard a price in it. Try the letter.
+line: SPRATT: Arithmetic doesn't hang. That's why they're so fond of it up the hill.
+voice: hearsay: By breakfast the Gut will say the Shelf took the Alderman's part. Some of it will be true. {dc: 4}
+go: brine3.surge
+
+@node brine3.trial.lantern
+place: brine
+cost: 3
+nar: Somebody claps. Then the whole room does, and the clapping goes on longer than anything in it deserves.
+nar: Wenna looks at the floor between her boots.
+voice: carbon: The switch at twenty to ten. The chair by the stove. A signature in the harbour office. Clapping, all of it, at once. {dc: 5}
+go: brine3.surge
+
+@node brine3.trial.silent
+place: brine
+speaker: SABINE
+cost: 2
+line: SABINE: The Shelf abstains. Chalk it.
+nar: The room laughs, because the Shelf has abstained for three nights and it is the first time anyone has written it down.
+voice: salt: To the ankle in the sea, and standing in the middle of it. {dc: 3}
+go: brine3.surge
+
 # the vote (B10)
 @node brine3.ledger
 cost: 6
@@ -455,6 +549,7 @@ if: gut3_guild == keeper => brine3.ayes += 2
 if: gut3_guild == trust => brine3.ayes -= 1
 if: guise == keeper => brine3.ayes += 1
 if: guise == lamplighter => brine3.ayes -= 1
+if: var.lean_dry >= 4 => brine3.ayes -= 1
 if: brine3.ayes >= 3 => set(vote.keeper_paid)
 if: brine3.ayes >= 3 & has(brine3.lamb_offered) => brine3.keeper = lamb
 if: brine3.ayes >= 3 & !has(brine3.lamb_offered) => brine3.keeper = wenna
@@ -465,6 +560,7 @@ if: brine3.ayes >= 2 & brine3.ayes < 4 => brine3.accept = first
 if: brine3.step >= 2 => set(surge.held)
 do: quest(a3.vote, voted)
 line: SABINE: Hands up, then. And keep them up; I'm counting by paraffin.
+line: SABINE: And nobody's to look at the Shelf first. Three nights it's looked at us and said nothing. {when: var.lean_dry >= 4}
 alt: brine3.vote.held ? brine3.step >= 2
 go: brine3.vote.in
 
@@ -555,3 +651,44 @@ line: COCKLE: The door was iron, green with it, and it stuck at the bottom. A kn
 voice: hearsay: The low corner, then lift. Somebody out there tonight will want to know that. {dc: 4}
 do: set(brine3.door_told); set(said.cockle_door)
 go: brine3.hub
+
+# ---- the rails (design/THEMES.md 9a): the night already written; one try at stepping off it
+@node brine3.rails
+place: brine
+cost: 2
+nar: The Daybook's next page is not empty. In the assessor's own hand, dated one in the afternoon: Sabine, at the step, "Mind your feet, love. It's over the step." Under it, a time: six forty-four.
+inst: THE ALMANAC: High water at six forty-four, six metres twenty. Every soul in this room will do this morning what that lets them, and not one thing more.
+voice: precedent: Or what the ledger lets them. Every person here is a column in somebody's book, and has been since the Hound. {dc: 5}
+voice: dark: Or the page was written first, and the room is reading it. {dc: 7}
+check: "[THE DARK] Tear the page out before she says it." -> brine3.rails.off / brine3.rails.on {skill: dark, dc: 8, red, noise: 0}
+opt: "Close the Daybook and let her say it." -> brine3.rails.let
+
+@node brine3.rails.off
+place: brine
+speaker: SABINE
+cost: 3
+do: set(brine3.off_rails); set(brine3.page_torn); meter(dread, 3); meter(wear, 3)
+cmd: dream cue
+line: SABINE: Mind your... no. I had something to say, love, and it's gone. I'll say something else. Sit down. You look like you've lost a page.
+nar: The page in the assessor's fist says what it said. The water comes over the step anyway, at its own minute.
+voice: sum: One line. We changed one line of a night, and it cost us the only proof there was a page. {dc: 4}
+go: ^hub
+
+@node brine3.rails.on
+place: brine
+speaker: SABINE
+cost: 3
+do: set(brine3.page_torn); meter(dread, 4)
+cmd: dream cue
+line: SABINE: Mind your feet, love. It's over the step.
+nar: Word for word. The torn page in the assessor's hand says it too, in the same breath, the way a clock and its echo agree.
+voice: dark: A tide does not need its table. It only lets you read it. {dc: 4}
+go: ^hub
+
+@node brine3.rails.let
+place: brine
+speaker: SABINE
+cost: 2
+line: SABINE: Mind your feet, love. It's over the step.
+voice: undertow: You let it happen because you had read it. That is one kind of free. {dc: 6}
+go: ^hub

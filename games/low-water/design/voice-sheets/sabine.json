@@ -1,0 +1,93 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "SABINE",
+ "setting": "gullet",
+ "setting_note": "Gullet (Low Water's first setting). Lamb, Gullet and the harbour are cut as setting and protagonist (QUOTA-DESIGN.md decision 3, 2026-10-21); kept for the archived acts and for VOICE-AUDIT.md re-runs. The Quota's sheets are in design/voice-sheets/quota/.",
+ "status": "draft 2026-10-21, derived from bible/WORLD-BIBLE.md and design/voice/profiles.json; the voice director owns corrections",
+ "role": "landlady of the Brine",
+ "age": "52",
+ "register": {
+  "level": "plain",
+  "education": "none to speak of; sharp with sums",
+  "class": "publican",
+  "trade": "landlady",
+  "words": [
+   "pickled",
+   "tuppence",
+   "ha'penny",
+   "shilling",
+   "tab"
+  ]
+ },
+ "region": {
+  "name": "gullet",
+  "markers": [
+   "I'll not",
+   "you'd not",
+   "it'll not",
+   "'em",
+   "slack"
+  ],
+  "idioms": [
+   "on the turn",
+   "low water",
+   "the floor",
+   "the Shelf"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 20
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television",
+  "email",
+  "computer",
+  "teenager"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "the bread oven",
+   "the bottles",
+   "Wenna"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "specification",
+     "keeper on duty",
+     "restrike"
+    ],
+    "why": "the struck clause is in Crake's papers (bible 7.3); others learn it only if shown",
+    "unless_gate": [
+     "clause",
+     "spec",
+     "restrike"
+    ]
+   },
+   {
+    "terms": [
+     "works order"
+    ],
+    "why": "only Keel and Crake know the works order exists (bible 7.2)",
+    "unless_gate": [
+     "works.order",
+     "order"
+    ]
+   }
+  ]
+ },
+ "wants": "Wenna safe; the Brine neutral; the tab paid",
+ "fears": "the Lamplighters listening in her bar",
+ "hides": "she casts the green prisms in the bread oven",
+ "tics": [
+  "penny",
+  "tuppence",
+  "shilling",
+  "tab",
+  "owe"
+ ]
+}

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Low Water Studio</title>
+<link rel="stylesheet" href="./studio.css">
+</head>
+<body>
+<header>
+  <h1>Studio</h1>
+  <nav id="modes" aria-label="View"></nav>
+  <span id="pressure" class="meta"></span>
+</header>
+<main>
+  <aside id="left" aria-label="Brush and palette"></aside>
+  <div id="stage"><canvas width="768" height="960"></canvas><canvas class="overlay" aria-hidden="true"></canvas></div>
+  <aside id="right" aria-label="Sitter, layers and export"></aside>
+</main>
+<footer><span id="status" data-state="busy">starting</span></footer>
+<script type="module" src="./ui/app.mjs"></script>
+</body>
+</html>

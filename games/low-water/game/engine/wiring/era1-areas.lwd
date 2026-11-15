@@ -1,0 +1,109 @@
+# Era 1 of The Quota (year 0, harvest to the first frost; design/eras/era1.md): its nine new places wired as
+# areas on their own plates (package W3-C, 2026-10-22; render/places/q1_*.mjs, baked by render/bake_era1.sh).
+# Loaded by the shell beside wiring/quota-areas.lwd (ui/app.mjs content=quota). The places era 1 shares with era 2
+# (the post, the hill, the Haldane kitchen, the Sheaf) stay in quota-areas.lwd and take their harvest variant
+# while var.era is 1.
+# hud-clock and hud-weather: the hour and the weather the HUD shows here while @meta hud-held holds (era 1 runs
+# on no clock of its own: every era 1 node costs 0 minutes, content/quota/e1_world.lwd), read by ui/hudtab.mjs.
+# No figures yet: era 1's cast has no sculpted figures; the scenes' speakers show on the talk page only.
+
+# ---------------------------------------------------------------- the wide lens: the district at harvest
+@area q1.exchange
+name: The exchange hall, Exchange Street
+plate: q1_exchange
+place: q1_exchange
+lens: wide
+variant: harvest
+hud-clock: 15:10
+hud-weather: harvest, warm
+spawn: 0 0 1.5
+camera: 0.6
+
+@area q1.osby
+name: Osby fair
+plate: q1_osby
+place: q1_osby
+lens: wide
+variant: noon
+hud-clock: 13:00
+hud-weather: harvest, a dry wind
+spawn: 0 0 1.5
+camera: 0.5
+
+@area q1.barns
+name: The barns at Haldane's
+plate: q1_barns
+place: q1_barns
+lens: wide
+variant: evening
+hud-clock: 17:35
+hud-weather: harvest, warm
+spawn: 0 0 1.5
+camera: 0.6
+
+@area q1.supper_yard
+name: The yard outside Orme's barn
+plate: q1_supper_yard
+place: q1_supper_yard
+lens: wide
+variant: night
+hud-clock: 21:00
+hud-weather: a warm night, the moon full
+spawn: 0 0 1.5
+camera: 0.6
+
+# ---------------------------------------------------------------- the narrow lens: rooms
+@area q1.board
+name: The registrar's upstairs room
+plate: q1_board
+place: q1_board
+lens: narrow
+variant: afternoon
+hud-clock: 16:20
+hud-weather: harvest, warm
+spawn: 0 0 1.2
+camera: 0.9
+
+@area q1.census
+name: The registrar's front counter
+plate: q1_census
+place: q1_census
+lens: narrow
+variant: morning
+hud-clock: 09:20
+hud-weather: harvest
+spawn: 0 0 1.2
+camera: 0.9
+
+@area q1.backstore
+name: Orme's back store, the mill
+plate: q1_backstore
+place: q1_backstore
+lens: narrow
+variant: afternoon
+hud-clock: 15:50
+hud-weather: harvest, warm
+spawn: 0 0 1.2
+camera: 0.9
+
+@area q1.loft
+name: Abel Furrowe's hayloft, over the horse
+plate: q1_loft
+place: q1_loft
+lens: narrow
+variant: evening
+hud-clock: 18:50
+hud-weather: harvest, warm
+spawn: 0 0 1.2
+camera: 0.9
+
+@area q1.supper
+name: Orme's barn, the harvest supper
+plate: q1_supper
+place: q1_supper
+lens: narrow
+variant: supper
+hud-clock: 20:20
+hud-weather: harvest
+spawn: 0 0 1.2
+camera: 0.9

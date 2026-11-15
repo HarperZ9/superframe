@@ -1,0 +1,198 @@
+# Era 4, The Closure: the witness (e4.w), Mira Saro in her flat on Mill Street, year 103, telling her grandson
+# Danil, five, about the month they came. Story lead, 2026-10-23. DRAFT, every line awaiting the author's line
+# approval (ledger row S14). Design: design/eras/era4.md section 4.
+# Mira saw the station, the men with the can coming down the Row, the lights going off, the sign, the Row, her
+# father on the stairs or the white crosses on the doors, the sergeant saying electrical on the pavement, Anni's
+# kitchen or the Well House floor. She heard the gate and the Sheaf from Kasem, and Lew's death from Anni. She never
+# knew who threw the bottle, what was said in the boardroom, what was said at the carries, or what went in the bin at
+# the station. She leaves out Aven, the brother left at the border.
+# After the last beat the dispatch goes to e5.start (era 5, The Clearance); e4.end is removed.
+
+@witness e4.w.mira
+who: MIRA
+listener: DANIL
+guest: q_class inspector=RUTH militia=ANN
+place: q4w_saro_flat
+opens: e4.w.mira.open
+dispatch: e4.w.mira.next
+reach: q4_station, q4_exchange_street, q4_row, q4_joss_flat, q4_well_floor, q4w_saro_flat
+sources: KASEM, ANNI
+never: q4_board, q4_mill_office, q4_estate_stair, q4_furrowe_house, q4_brack_flat, q4_police
+beat: e4.w.mira.train | e4.saros_arrive | seen q4_station ? has(e4.saros_arrive)
+beat: e4.w.mira.gate | e4.hire_open, e4.kasem_hired, e4.dale_hired | heard KASEM ? has(e4.kasem_hired) | has(e4.dale_hired)
+beat: e4.w.mira.paper | e4.board_sat, e4.map_row, e4.map_west, e4.lights_out | seen q4_row ? has(e4.map_row) | has(e4.map_west)
+beat: e4.w.mira.pub | e4.sheaf_said, e4.closed | heard KASEM ? has(e4.sheaf_said)
+beat: e4.w.mira.sign | e4.sign_painted, e4.row_marked | seen q4_exchange_street ? has(e4.sign_painted)
+beat: e4.w.mira.fire | e4.row_burned, e4.anzo_dead, e4.row_stood, e4.report_filed | seen q4_row ? has(e4.row_burned) | has(e4.row_stood)
+beat: e4.w.mira.lew | e4.pit_open, e4.lew_dead | heard ANNI ? has(e4.lew_dead)
+beat: e4.w.mira.kitchen | e4.shelter_anni | seen q4_joss_flat ? has(e4.shelter_anni)
+beat: e4.w.mira.floor | e4.shelter_well | seen q4_well_floor ? has(e4.shelter_well)
+last: e4.w.mira.river
+unwitnessed: e4.lew_lives | the far-bank estate: nobody told her about a night on a stair that ended with a man still alive
+unwitnessed: e4.carry_f2, e4.carry_b2, e4.carry_h1 | the carries: at Pell's table, Davey's flat and Anni's table at night, with nobody from the Row in the room
+unwitnessed: said.e4_ruth_early, said.e4_ruth_month, said.e4_ruth_rate, said.e4_ann_vouch, said.e4_ruth_stay, said.e4_ann_stay, said.e4_ruth_west, said.e4_ruth_row, said.e4_ann_anzo, said.e4_ann_lift, said.e4_answer, said.e4_bags, said.e4_ann_warn | what the guest said at gates, steps, bars and doors: Mira was at home, or on the cinders, or under the arch, and was told none of it in those words
+
+# ---------------------------------------------------------------- the opening: the glass
+@node e4.w.start
+cost: 0
+do: witness(e4.w.mira)
+go: e4.w.mira.open
+
+@node e4.w.mira.open
+place: q4w_saro_flat
+speaker: MIRA
+cost: 3
+camera: near
+nar: Years on. Mill Street, a flat over a shop that sells phone cards and fruit, with the window looking down the hill at the race. A Thursday in March, wet.
+nar: Mira Saro has her hair under a scarf and her reading glasses on a cord, and she has the tea on, in a pot with a cosy, and the glasses out on a tray.
+nar: Old Ruth Furrowe is at the end of the table with a tape recorder from the council archive and a list of questions she hasn't looked at. She's put the recorder down by the sugar and she keeps touching the button to see if the red light's on. {when: q_class == inspector}
+nar: Old Ann Brack is at the end of the table, retired, in a good coat. She came up with a young constable about a complaint from the shop below, and the constable's gone down to talk to the shop, and she's stayed for tea. The young constable is her son, Leon. {when: q_class == militia}
+nar: Danil is five. He's on a cushion on a chair to reach. He has a tea glass in both hands, a thin one with a gold rim mostly worn off, and he's not supposed to have it, and he's holding it very carefully so she'll let him.
+line: DANIL: Is it from the bird?
+line: MIRA: It's from the birdcage. There was never a bird. Your great-grandad carried the cage all the way so the glasses wouldn't break.
+line: DANIL: Why not a bird?
+line: MIRA: The bird died at the first border. Don't drop it.
+go: e4.w.mira.next
+
+@node e4.w.mira.next
+cost: 0
+alt: e5.start ? seen(e4.w.mira.river)
+do: wnext()
+alt: e4.w.mira.train ? wat(e4.w.mira.train)
+alt: e4.w.mira.gate ? wat(e4.w.mira.gate)
+alt: e4.w.mira.paper ? wat(e4.w.mira.paper)
+alt: e4.w.mira.pub ? wat(e4.w.mira.pub)
+alt: e4.w.mira.sign ? wat(e4.w.mira.sign)
+alt: e4.w.mira.fire ? wat(e4.w.mira.fire)
+alt: e4.w.mira.lew ? wat(e4.w.mira.lew)
+alt: e4.w.mira.kitchen ? wat(e4.w.mira.kitchen)
+alt: e4.w.mira.floor ? wat(e4.w.mira.floor)
+go: e4.w.mira.river
+
+# ---------------------------------------------------------------- the beats
+@node e4.w.mira.train
+place: q4w_saro_flat
+speaker: MIRA
+cost: 3
+line: MIRA: We came on the train. In October. It was late, the train. Two days, with the changes.
+line: MIRA: Nobody came to meet us. We stood on the black stones at the end. Your dad was holding my coat, here. He was four. He wanted to hold the cage and your great-grandad wouldn't let him.
+line: DANIL: I'd have let him.
+line: MIRA: You'd have dropped it.
+line: MIRA: And your grandad read the sign on the station. He said it wrong. And then he said it right. He practised it on the train for two days, the name of this town, and he still said it wrong the first time.
+go: e4.w.mira.next
+
+@node e4.w.mira.gate
+place: q4w_saro_flat
+speaker: MIRA
+cost: 3
+line: MIRA: Your grandad went to the mill for work. The flour mill. It's flats now, by the bridge, the big one with the chimney still on.
+line: MIRA: He got a week. Sweeping. They paid him half what they paid the others and he came home and put the money on the table in a row, every note, so I could see. He was so pleased. {when: has(e4.kasem_hired)}
+line: MIRA: He didn't get it. He stood at the gate in the rain with his papers in a bag and a man went past him. He came home and he dried his papers on the stove one at a time, every page, so the stamps wouldn't run. {when: has(e4.dale_hired)}
+line: DANIL: What's half?
+line: MIRA: It means they paid him less. And he said thank you.
+go: e4.w.mira.next
+
+@node e4.w.mira.paper
+place: q4w_saro_flat
+speaker: MIRA
+cost: 3
+line: MIRA: The same week, a morning, the man came for the lights. From the Electricity. He took a little white thing out of the box under the stairs and put it in his pocket, and the radio stopped. Your dad was in the door in his coat and hat. In the house. That's how cold.
+line: MIRA: And then the men came down the Row. In good coats. With a policeman, and the men from the mill behind with their signs. One of them had a can of paint, grey, like for the road.
+line: MIRA: He sprayed a line on our kerb. At the end, by the drain. My father stood on the step with the broom and watched him. Later we found out what it was. No bank would lend on the Row after. The line was there till your dad was grown. {when: has(e4.map_row)}
+line: MIRA: They stopped at the end. They looked at us, and at my father with his broom. Then they went back up the hill, and they put the line up there, on the top of Exchange Street, by the old houses with the trees. We were glad. God forgive us, we were glad. {when: has(e4.map_west)}
+line: DANIL: What was the line for?
+line: MIRA: So everybody would know which street.
+voice: smallprint: It's the Company's grain. It was never ours to give. {echo: e4.sl.barn, when: toldself(e4.sl.barn)}
+nar: Old Ruth touches the recorder's button. The red light is on. She leaves her finger on it. {when: q_class == inspector}
+go: e4.w.mira.next
+
+@node e4.w.mira.pub
+place: q4w_saro_flat
+speaker: MIRA
+cost: 3
+line: MIRA: The night the mill closed your grandad went to the pub. At home when you finish a work, you buy for the men. He wanted to do it right.
+line: MIRA: He came home early. He came in and he sat down at the table with his coat on. All buttoned. He didn't take it off. I said, Kasem, your coat. He said, in a minute. He sat there in his coat.
+line: DANIL: Why?
+line: MIRA: He said a man told him it was not his turn.
+line: DANIL: For what?
+line: MIRA: He didn't say for what. I asked him that. He didn't know either.
+go: e4.w.mira.next
+
+@node e4.w.mira.sign
+place: q4w_saro_flat
+speaker: MIRA
+cost: 3
+line: MIRA: In the morning somebody had painted on the street sign. In white. At the top of Exchange Street, by the bank. Big letters.
+line: DANIL: What did it say?
+nar: Mira looks at the guest. She pours the tea.
+line: MIRA: It said a word they had for us. And out. Chaffers. It means people who haggle in the market. The paint was still running in the morning. It ran down onto the bank's step.
+voice: smell: You can smell it off the Row. Fat and peppers. They're sitting on something down there. {echo: e4.sl.goats, when: toldself(e4.sl.goats)}
+nar: Old Ann looks at the window, at the rain on it, at the hill. {when: q_class == militia}
+line: MIRA: It stayed up all winter. The council came in February and did half and went home.
+go: e4.w.mira.next
+
+@node e4.w.mira.fire
+place: q4w_saro_flat
+speaker: MIRA
+cost: 3
+camera: near
+line: MIRA: My father. Your great-grandad. Anzo. {when: has(e4.row_burned)}
+nar: The camera comes in a little on her, at the table. She says his name again, quieter, as if to check it. {when: has(e4.row_burned)}
+line: MIRA: Somebody threw a fire through our window on the Row. A bottle. In the night. Your dad was under the table. The policewoman got him out by the arm. That's his arm. That's why his arm is like that. {when: has(e4.row_burned)}
+line: MIRA: My father went up the stairs for Mrs Bora upstairs, because she couldn't hear, and he got her down, and he sat on the stairs. He sat down on the stairs in the smoke. They pulled him out the window. I held his hand on the street. He said my name. I think he said my name. {when: has(e4.row_burned)}
+line: DANIL: Did he die?
+line: MIRA: He died on the pavement. In his pyjamas. With his feet bare. {when: has(e4.row_burned)}
+line: MIRA: In the morning the policeman stood on the pavement and said to the man from the paper, electrical. I heard him. I was stood there in my father's slippers. There was no electrical. The man had taken it away. {when: has(e4.row_burned)}
+line: MIRA: In the morning there were crosses on all the doors on the Row. White. Little ones, like this. {when: has(e4.row_stood)}
+nar: She puts her finger on her own forehead, between the eyes, and takes it off. {when: has(e4.row_stood)}
+line: MIRA: And our window was in, on the carpet, with half a brick. Your great-grandad swept it up and put it in a bag and kept the brick. He kept it on the windowsill till he died, the brick. He said it was a good brick. {when: has(e4.row_stood)}
+line: DANIL: Who did it?
+line: MIRA: Nobody knows. Somebody.
+go: e4.w.mira.next
+
+@node e4.w.mira.lew
+place: q4w_saro_flat
+speaker: MIRA
+cost: 3
+line: MIRA: And the same night the old lady's grandson died. The one who said it to your grandad in the pub, his brother. On the stairs of the estate. Tablets. Anni told me, after. She told me in her kitchen, very plain, the way you tell the time.
+line: DANIL: Was he bad?
+line: MIRA: He had a bad back.
+go: e4.w.mira.next
+
+@node e4.w.mira.kitchen
+place: q4w_saro_flat
+speaker: MIRA
+cost: 3
+line: MIRA: We went to the old lady. Anni. A Hesh lady. Somebody said, go there, she's Hesh, they came on trains once too. We stood under her arch with our bags.
+line: MIRA: Her grandson didn't want us. The one from the pub. He said no at the door. She said, it's my table. And we went in.
+line: MIRA: She made tea. Very sweet. Like a funeral. In these glasses. I washed the ash off them in her sink. Your dad held the sugar bag. A whole week we were there. And her grandson slept on the settee and mended the cage.
+line: DANIL: The mean one?
+line: MIRA: He mended the door of the cage with wire. He didn't say anything. He gave it me in the yard in the dark.
+go: e4.w.mira.next
+
+@node e4.w.mira.floor
+place: q4w_saro_flat
+speaker: MIRA
+cost: 3
+line: MIRA: We went to the old lady. A Hesh lady. Somebody said she's Hesh, go to her. We stood under her arch with our bags. Her grandson said no. She looked at us through the window. She took her hand off the window.
+line: MIRA: So we slept in the Hesh prayer house. On the floor. A boy kept the door, Sefa. He gave us the corner by the heater, and the heater didn't work.
+line: MIRA: The old women prayed over us in the evening. They stepped over our feet. One of them left rice.
+line: DANIL: Was it nice rice?
+line: MIRA: It was rice.
+go: e4.w.mira.next
+
+# ---------------------------------------------------------------- the last beat, and the end of era 4
+@node e4.w.mira.river
+place: q4w_saro_flat
+speaker: DANIL
+cost: 3
+do: wend()
+line: DANIL: Nana. What's river? At home. In the old talk.
+nar: Mira opens her mouth to say it. She has the shape of it. It's a word she said every day of her life before the train, at the well, at the bridge, to Kasem on the bank. She waits for it.
+line: MIRA: The Lowe.
+line: DANIL: The Lowe. The Lowe.
+nar: He's pleased he can say it. He says it again to the glass. Mira takes the glass off him and puts it back on the tray with the others, and her hand on the tray is still for a moment, and then she pours.
+nar: Old Ruth switches the recorder off. Then she switches it on again, and leaves it on, though nobody's talking. {when: q_class == inspector}
+nar: Old Ann drinks her tea. Down in the street the young constable comes out of the shop and looks up at the window, and his mother lifts her hand to him, and he waits. {when: q_class == militia}
+go: e4.w.mira.next
+

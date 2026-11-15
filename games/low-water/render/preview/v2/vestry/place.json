@@ -1,0 +1,178 @@
+{
+ "place": "vestry",
+ "version": 2,
+ "width": 1000,
+ "height": 750,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 32,
+  "target": [
+   0,
+   0.8,
+   -0.1
+  ],
+  "dist": 25,
+  "ortho": true,
+  "scale": 3
+ },
+ "pxPerMetre": 125,
+ "near": 0.5208,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "candles"
+ ],
+ "variantInfo": {
+  "candles": {
+   "hour": 22,
+   "weather": "the old valve house by candle: the red ledger, the poor box, the spare jars"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "valve",
+    "verb": "use",
+    "at": [
+     1.3,
+     0,
+     -0.7
+    ],
+    "note": "the old valve wheel on the gas main"
+   },
+   {
+    "id": "ledger",
+    "verb": "read",
+    "at": [
+     -0.3,
+     0,
+     -0.5
+    ],
+    "note": "Ash's ledger bound in red cloth"
+   },
+   {
+    "id": "poor_box",
+    "verb": "use",
+    "at": [
+     0.95,
+     0,
+     1.3
+    ],
+    "note": "the padlocked poor box"
+   },
+   {
+    "id": "jars",
+    "verb": "use",
+    "at": [
+     -1.3,
+     0,
+     0.6
+    ],
+    "note": "the rack of spare bell jars"
+   },
+   {
+    "id": "bench",
+    "verb": "wait",
+    "at": [
+     -0.5,
+     0,
+     0.8
+    ],
+    "note": "the bench: a cold cloth, straw smoke"
+   }
+  ],
+  "hides": [
+   {
+    "id": "behind_main",
+    "at": [
+     1.7,
+     0,
+     -1.2
+    ],
+    "r": 0.3,
+    "note": "behind the gas main"
+   }
+  ],
+  "exits": [
+   {
+    "id": "frame",
+    "at": [
+     -1.6,
+     0,
+     -0.6
+    ],
+    "note": "out to the gasholder frame"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "candles": [
+   {
+    "at": [
+     0.25,
+     1,
+     -1.2
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 4,
+    "group": "candle"
+   },
+   {
+    "at": [
+     1.7,
+     1.76,
+     -0.4
+    ],
+    "kind": "paraffin",
+    "I": 5,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     1.7,
+     1.72,
+     -0.1
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 5,
+    "group": "candle"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "Act 2, place gas_vestry. The door to the frame at -x, the gas main and its valve at the back right. Brother Ash is drawn by the game."
+}

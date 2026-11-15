@@ -210,7 +210,9 @@ nar: Item: three lights in Gullet tonight that were dark when the assessor came 
 # ---------------------------------------------------------------- word comes to Lamb (signposts for the interrogations, 2026-10-17)
 @event ev.word_merrow
 at: 00:05
-when: !has(merrow.cells) & !has(merrow.told) & !seen(brine.merrow.arrive) & !seen(brine.merrow.arrive.robbed) & !seen(brine.merrow.arrive.sunk)
+# not while the midnight tube waits for its cause: word of Merrow at the tube's door took the assessor out
+# of the scene and no cause was ever written (2026-10-21, a tube fetched at two past)
+when: !has(merrow.cells) & !has(merrow.told) & !seen(brine.merrow.arrive) & !seen(brine.merrow.arrive.robbed) & !seen(brine.merrow.arrive.sunk) & !(seen(weigh.tube.scene) & !has(prov.done))
 go: word.merrow
 
 @event ev.word_marrow

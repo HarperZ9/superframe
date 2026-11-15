@@ -1,0 +1,162 @@
+{
+ "place": "q3_squad",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   1,
+   -0.3
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 3.9393939393939394
+ },
+ "pxPerMetre": 165,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "dawn"
+ ],
+ "variantInfo": {
+  "dawn": {
+   "hour": 6.5,
+   "weather": "October, 06:30: the squad bulb on before the day, rain on the yard window, the stove lit"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "boots",
+    "verb": "look",
+    "at": [
+     2,
+     0,
+     0.9
+    ],
+    "note": "a pair of boots too big for the boy who brought them"
+   },
+   {
+    "id": "roster",
+    "verb": "read",
+    "at": [
+     -1,
+     0,
+     -1.2
+    ],
+    "note": "the duty board: the square at noon, the scale"
+   },
+   {
+    "verb": "look",
+    "id": "locker",
+    "at": [
+     -1.9,
+     0,
+     -0.9
+    ],
+    "note": "Will's locker, the door an inch open"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     2.5,
+     0,
+     1.7
+    ],
+    "note": "the door to the yard"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "dawn": [
+   {
+    "at": [
+     2.6,
+     0.42,
+     -1.5
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 3,
+    "group": "stove"
+   },
+   {
+    "at": [
+     0.31,
+     1.86,
+     -0.2
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -2.52,
+     1.6,
+     0.9
+    ],
+    "kind": "white",
+    "I": 0.3,
+    "reach": 6,
+    "group": ""
+   }
+  ]
+ },
+ "figureLights": {
+  "dawn": [
+   {
+    "at": [
+     0.6,
+     2.1,
+     1
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 8,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 3: the militia squad room."
+}

@@ -6,7 +6,8 @@
 // button, so keyboard, pad and mouse move over the chart the same way.
 //   mapTab(ctx, rerender) -> element
 import { h, btn } from "./dom.mjs";
-import { tideTrend, tideWords } from "./hudtab.mjs";
+import { tideTrend, tideWords, tideRange } from "./hudtab.mjs";
+import { risoize } from "../paint/riso.mjs";   // the chart printed in two inks (the rendering lead's; ?riso=0 leaves it plain)
 
 const NS = "http://www.w3.org/2000/svg";
 const svg = (tag, attrs = {}, ...kids) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); for (const k of kids) e.append(k); return e; };
@@ -37,9 +38,9 @@ export function mapTab(ctx) {
     const zone = d.zone, power = term(`power.${zone}`), tide = +term("tide") || 0;
     info.replaceChildren(...[h("h3.mname", d.name),
       d.about && d.about !== "null" ? h("p.small", d.about) : null,
-      h("p.small", d.id === here ? "Lamb is here." : seen.has(d.id) ? "Lamb has been here tonight." : "Lamb has not been here yet; the way is pencilled in."),
-      power ? h("p.small", `Lamps: ${power === "off" ? "out" : "lit"}.`) : null,
-      h("p.small", `Tide ${tideWords(tide, tideTrend(G))}.`),
+      h("p.small", d.id === here ? "You are here." : seen.has(d.id) ? "You have been here." : "You have not been here yet; the way is pencilled in."), // whoever the player is (the Quota: Ned or Will)
+      power && !(G.book.meta && G.book.meta.menu) ? h("p.small", `Lamps: ${power === "off" ? "out" : "lit"}.`) : null, // no lamps in a plain menu's story (the Quota, 2026-10-23)
+      G.env.spec && G.env.spec.tide === false ? null : h("p.small", `Tide ${tideWords(tide, tideTrend(G), tideRange(G))}.`), // no sea, no tide line (world/night.mjs tide: none)
       d.next.length ? h("p.small.quiet", `From here: ${d.next.map((n) => (D[n] || {}).name || n).join(", ")}.`) : null].filter(Boolean));
   }
   const marks = h("div.mapmarks");
@@ -52,6 +53,7 @@ export function mapTab(ctx) {
     if (on) b.dataset.first = "";
     marks.append(b);
   }
+  if (!(typeof location !== "undefined" && /[?&]riso=0/.test(location.search))) risoize(chart, { seed: 11 });
   describe(D[here] || list[0]);
   return h("div.map", h("div.mapwrap", chart, marks), info);
 }

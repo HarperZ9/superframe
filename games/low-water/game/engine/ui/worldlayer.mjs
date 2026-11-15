@@ -54,6 +54,27 @@ export function clearOfPaper(bounds, cam, papers = []) {
   return [x0, y0, x1, y1];
 }
 
+// The part of the view clear of the paper (a fight's strip, its keys, the HUD tab), view px [x0, y0, x1, y1]:
+// each panel that still overlaps the clear part, largest first, is cut off by the side that loses less.
+// sides (optional, a Map kept by the caller): the axis each panel was first cut on, kept while the panel stays, so a
+// panel whose text grows a line does not flip the clear view from its side to its top and swing the camera
+// (engine PROGRESS 37: the quay fight's strip did, a 200 px re-frame mid-fight)
+export function freeOfPaper(cam, papers = [], sides = null) {
+  const view = cam && cam.element ? cam.element.getBoundingClientRect() : null; if (!view || !view.width) return null;
+  const f = [0, 0, view.width, view.height];
+  const rs = papers.filter((el) => el && el.isConnected).map((el) => { const r = el.getBoundingClientRect(), q = [r.left - view.left, r.top - view.top, r.right - view.left, r.bottom - view.top]; q.el = el; return q; })
+    .filter((r) => r[2] > r[0] && r[3] > r[1]).sort((a, b) => (b[2] - b[0]) * (b[3] - b[1]) - (a[2] - a[0]) * (a[3] - a[1]));
+  for (const r of rs) {
+    const [x0, y0, x1, y1] = r;
+    if (x1 <= f[0] || x0 >= f[2] || y1 <= f[1] || y0 >= f[3]) continue;
+    const cx = (x0 + x1) / 2 < (f[0] + f[2]) / 2, cy = (y0 + y1) / 2 < (f[1] + f[3]) / 2;   // the panel's side
+    const loseX = (cx ? x1 - f[0] : f[2] - x0) * (f[3] - f[1]), loseY = (cy ? y1 - f[1] : f[3] - y0) * (f[2] - f[0]);
+    let onX = loseX <= loseY; if (sides) { if (sides.has(r.el)) onX = sides.get(r.el); else sides.set(r.el, onX); }
+    if (onX) { if (cx) f[0] = x1; else f[2] = x0; } else { if (cy) f[1] = y1; else f[3] = y0; }
+  }
+  return f[2] - f[0] > view.width * 0.4 && f[3] - f[1] > view.height * 0.4 ? f : null;   // too little left: use the whole view
+}
+
 // ---- ground marks: drawn on the ground plane, never floating ----
 export function groundPoly(L, pts) { return pts.map((p) => L.screen(p)).filter(Boolean); }
 export function pathOf(g, sp) { g.beginPath(); sp.forEach((s, i) => (i ? g.lineTo(s.x, s.y) : g.moveTo(s.x, s.y))); g.closePath(); }

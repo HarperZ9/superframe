@@ -1,0 +1,328 @@
+# Low Water: shared records for the thematic pass. Story lead, 2026-10-21. Private.
+# Included by all three act roots, after rules.lwd. Design: design/THEMES.md (the questions, the
+# drift axes, the convictions) and design/DISCOURSE-SYSTEM.md (claims, the Lantern Man).
+# Ids here are shared across acts: lean_* drift, cv.* convictions, the thirst meter, theme.* nodes.
+
+# ================================================================ drift
+# Each choice that takes a side moves one of these by 1. Writers tag the option, never the label.
+# Positive and negative ends are named in THEMES.md section 4. Voices and people read them.
+@var lean_rise
+default: 0
+about: Politics. Up: the town takes the lamps itself, by force if it must. Down: mend the institutions, slowly, from inside.
+
+@var lean_faith
+default: 0
+about: Theology. Up: reverence, revelation, the jars left alone. Down: reason, scorn, the jars lifted.
+
+@var lean_sea
+default: 0
+about: The wall and the sea. Up: the open sea, strangers, trade, the far shore. Down: the harbour wall, Gullet for Gullet.
+
+@var lean_kin
+default: 0
+about: Kin and self. Up: duty, honour, the Guild's one voice, the debt wiped among kin. Down: rights, the single vote, the contract, the self.
+
+@var lean_hang
+default: 0
+about: Blame. Up: name the person and their character. Down: name the arithmetic that made the person do it.
+
+@var lean_dry
+default: 0
+about: The middle. Counts the times Lamb chose the option that commits to nothing when something was asked.
+
+@var drinks
+default: 0
+about: Glasses of Brine rum Lamb has drunk, across all three nights.
+
+@var drank_at
+default: 0
+about: Clock minute of Lamb's last glass.
+
+@var lantern
+default: 0
+about: How much Lamb's own mouth has fed the Lantern Man (up) or starved him (down). DISCOURSE-SYSTEM.md section 3.
+
+# ================================================================ convictions
+# Margin notes of a different kind: a position, not a deduction. Each has an upside, a blind spot
+# (a negative mod) and people who call it out (lines gated on trait(cv.x) == done). They take a
+# Margin slot like any note, so holding a conviction crowds out a thought.
+@trait cv.ledger
+name: Follow the Money Up the Hill
+about: Every lamp in Gullet was bought by someone who meant to keep it. Find the counterfoil and the rest of the town explains itself.
+glyph: £
+research: 60
+while: skill.condolence -1
+mod: skill.smallprint +2
+mod: skill.chit +1
+mod: skill.condolence -2 ? district == "hill"
+do: set(conviction.ledger)
+
+@trait cv.fire
+name: Some Lamps Have to Go Out
+about: Nobody on the hill ever gave a lamp back because they were asked nicely. Nonviolence is the aim. It has never once been the method.
+glyph: †
+research: 90
+while: skill.formletter -1
+mod: skill.grip +1
+mod: skill.undertow +1
+mod: skill.condolence -1
+mod: skill.formletter -2
+do: set(conviction.fire)
+
+@trait cv.checked
+name: Nobody Owns the Truth
+about: A fact is what is left after everyone who wanted it false has had a go at it. Not before. Not because the Shelf says.
+glyph: ?
+research: 90
+while: skill.hearsay -1
+mod: skill.sum +1
+mod: skill.precedent +1
+mod: skill.smallprint +1
+mod: skill.hearsay -2
+do: set(conviction.checked)
+
+@trait cv.jars
+name: Leave the Jars Alone
+about: Forty people with glass on their heads have done less harm to Gullet than one Board. The town needs somebody to laugh at. It need not be them.
+glyph: ∩
+research: 45
+while: skill.smallprint -1
+mod: skill.condolence +2 ? district == "gasholder" | at(steps)
+mod: skill.smallprint -2 ? district == "gasholder"
+do: set(conviction.jars)
+
+@trait cv.wall
+name: Gullet Looks After Gullet
+about: The far shore has its own lamps. The Trust has Hesk. The town has nobody but the town, and a wall is only a promise kept in stone.
+glyph: ▬
+research: 45
+while: skill.salt -1
+mod: skill.hearsay +2 ? indistrict(gut) | indistrict(brine) | indistrict(quay)
+mod: skill.chit +1 ? indistrict(brine)
+mod: skill.salt -1
+mod: skill.condolence -1 ? at(ferry) | at(mole_steps) | district == "spit"
+do: set(conviction.wall)
+
+@trait cv.sea
+name: The Sea Belongs to Nobody
+about: Every ship is somebody's town gone to sea. A lamp that lights only its own is a wall with a wick in it.
+glyph: ~
+research: 45
+while: skill.smell -1
+mod: skill.salt +2
+mod: skill.ballast +1
+mod: skill.hearsay -2 ? indistrict(gut)
+mod: skill.smell -1
+do: set(conviction.sea)
+
+@trait cv.dry
+name: The Assessor Takes No Side
+about: The Shelf apportions. It does not belong. A dry coat in a wet town is a kind of honesty.
+glyph: ○
+research: 30
+while: skill.condolence -1
+mod: skill.formletter +2
+mod: skill.pride +2
+mod: skill.condolence -2
+mod: skill.undertow -1
+do: set(conviction.dry)
+
+# A note offered by Orrin Teague to a Lamb who drinks (brine.lwd). Recovery, not a cure: inked, it
+# slows the thirst and does not stop it.
+@trait m.hour
+name: One Hour, Then the Next
+about: Nobody stops for good. People stop for an hour, and then for the next one. Teague has stopped four thousand times.
+glyph: ¦
+research: 60
+while: skill.pride -1
+mod: skill.salt +1
+do: set(margin.hour)
+
+@fact conviction.ledger
+@fact conviction.fire
+@fact conviction.checked
+@fact conviction.jars
+@fact conviction.wall
+@fact conviction.sea
+@fact conviction.dry
+@fact margin.hour
+@fact theme.relapse
+about: Lamb drank again after inking One Hour, Then the Next.
+by: the assessor's own hand
+
+# ================================================================ thirst
+@meter thirst
+name: Thirst
+about: What the rum lent, and is asking back. Rises by the hour once Lamb has drunk twice. A glass empties it. Full: the hand.
+scope: global
+min: 0
+max: 10
+start: 0
+decay: 0
+rise: 1 ? var.drinks >= 2
+rise: 1 ? var.drinks >= 4
+rise: -1 ? trait(m.hour) == done
+warn: 5 The pen hand has begun to look at the bar when the rest of the assessor is looking at the door.
+warn: 8 Every lamp in Gullet is the colour of Brine rum.
+full: thirst.full
+after: 6
+wait: 20
+
+@modifier mod.thirst.hand
+skill: smallprint, grip
+mod: -1
+when: meter.thirst >= 5
+why: The hand wants a glass
+
+@modifier mod.rum.nerve
+skill: pride, formletter
+mod: 1
+when: var.drank_at > 0 & clock < var.drank_at + 60
+why: Brine rum, lately
+
+@modifier mod.rum.blur
+skill: sum, carbon
+mod: -1
+when: var.drank_at > 0 & clock < var.drank_at + 60
+why: Brine rum, lately
+
+@modifier mod.dry.town
+skill: condolence, hearsay
+mod: -1
+when: var.lean_dry >= 4
+why: Nobody tells a fence anything
+
+# ================================================================ shared nodes
+# theme.drink: call it from any option that drinks a glass Lamb holds. Returns.
+@node theme.drink
+cost: 3
+do: take(i.rum, 1); meter(dread, -3); meter(thirst, -10); var.drinks += 1; var.drank_at = clock
+if: trait(m.hour) == done => set(theme.relapse)
+nar: Brine rum, in one go. It goes down warm and stays down, and for a while the room is a room. {when: var.drinks == 1}
+nar: The second glass is easier than the first. That is the whole trouble with a second glass. {when: var.drinks == 2}
+nar: Another. The hand is steady on it before it is steady on anything else. {when: var.drinks >= 3}
+voice: pride: Steadier. Look at the hand. Eleven years dry, and one glass in a gale does not make a drinker. {when: var.drinks <= 2}
+voice: pride: Dry. We were always dry. The coat. It was always about the coat. {when: var.drinks >= 3}
+voice: carbon: A room in Hesk, before the Shelf. A glass on the sill, and a newspaper folded to one advertisement. The hand that rings the advertisement in pencil is shaking. It is our hand. {when: var.drinks == 2, dc: 4}
+voice: carbon: The same room. The glass is empty and the coat on the door is wet through, and has been for a week. We answered the advertisement with a dry coat borrowed for the interview. {when: var.drinks == 3, dc: 4}
+voice: salt: The skin is warm and the feet are still in the sea. Skin knows the difference. Skin always knew. {when: var.drinks >= 4}
+voice: undertow: Teague has watched you drink, from his chair, the way a man watches his own hand. {when: at(brine) & var.drinks >= 2, once}
+return:
+
+# Thirst full. The engine plays it outside a conversation, then sets Thirst to 6 and passes twenty minutes.
+@node thirst.full
+cost: 0
+nar: The hand. It shakes on the Daybook's spine and will not stop for being told. The assessor puts it in a pocket, where it goes on.
+voice: pride: Cold. It is the cold. Everyone in Gullet shakes. {when: var.drinks < 4}
+voice: pride: It is the cold. Say it is the cold, and it will be. {when: var.drinks >= 4}
+voice: carbon: Hesk. The same hand on a doorframe. You told the man from the Shelf it was the cold. He gave you the post anyway, because nobody else answered. {dc: 5, once}
+voice: salt: Not the cold. Skin can tell a cold from a want. {dc: 3}
+voice: condolence: Orrin Teague has had this hand for nine years and keeps it under the table. Nobody in the Brine has ever once mentioned it. That is a kindness, and it is also how nine years go. {dc: 6, once}
+opt: "Go and find a glass." -> thirst.full.glass ? count(i.rum) > 0
+opt: "Go and find a glass." -> thirst.full.none ? count(i.rum) == 0
+opt: "Sit on the hand and count to the end of the hour." -> thirst.full.count
+
+@node thirst.full.glass
+cost: 1
+call: theme.drink
+nar: The hand stops. The assessor writes one line in the Daybook to prove it, and the line is very neat.
+voice: sum: Twenty minutes, one glass. The account balances tonight. It will come back with the interest on it, at breakfast. Sabine said so. {dc: 4}
+exit: walk
+
+@node thirst.full.none
+cost: 2
+nar: The pockets have no glass in them, and nowhere open sells one at this hour without a walk the hand would not survive. The hand goes on.
+go: thirst.full.count
+
+@node thirst.full.count
+cost: 2
+nar: Sixty, and then sixty again. The hand slows on the third sixty, not because it is told, but because a shaking hand also gets tired. At the end of the hour it is only a hand.
+voice: sum: One hour. Write it down. Then do it again; that is the only arithmetic there is. {dc: 3}
+voice: pride: We were never like Teague. {when: var.drinks >= 3, once}
+voice: salt: We are exactly like Teague, with a coat. {when: var.drinks >= 3, once}
+do: offer(m.hour)
+exit: walk
+
+# ================================================================ nodding pages for convictions
+# Wear full plays nod.<most recently inked note>; a conviction's page is strange and partly wrong,
+# and turns the conviction on the one who holds it.
+@node nod.cv.ledger
+cost: 1
+nar: Item: a page of the Daybook ruled into columns in the assessor's sleeping hand: WHO PAID, WHO WAS PAID, WHO KNEW. Every name in Gullet is in the first column. The second column is the assessor's, eleven years of it. The third column is empty, ruled very straight.
+voice: smallprint: Our own name in the paying column. That is either a mistake, or the first true sum on the page. {dc: 5}
+exit: walk
+
+@node nod.cv.fire
+cost: 1
+nar: Item: a page with one lamp drawn on it, carefully, and then crossed out, and then a second lamp drawn where the first one was, and crossed out. Down the margin, small: "Which. Which one. Which one, and who is under it when it goes."
+voice: undertow: You can draw it as often as you like. The ships do not know it is a drawing. {dc: 5}
+exit: walk
+
+@node nod.cv.checked
+cost: 1
+nar: Item: a page on which the assessor's sleeping hand has written one fact and then, beneath it, every objection anyone could make to it, in a smaller hand each time, until the objections are too small to read. The fact at the top has been rubbed out, so gently that it could still be read if anyone wanted.
+voice: sum: Forty-one objections and no fact. The method works. Nobody could call that page wrong. {dc: 5}
+exit: walk
+
+@node nod.cv.jars
+cost: 1
+nar: Item: a page with a bell jar drawn over the assessor's own name. Inside the jar, very small, the assessor has written "I did not look". Outside the jar, in the same hand, a list of what the Congregation keeps in its vestry. The list is upside down.
+voice: smallprint: We wrote it upside down so as not to read it. We read upside down. Gorm says it is a vice. {dc: 5}
+exit: walk
+
+@node nod.cv.wall
+cost: 1
+nar: Item: a page that is a plan of the harbour wall, drawn stone by stone with great love. Every stone has a family's name on it. On the sea side of the wall, in the white of the page, there is nothing written at all, not even "sea".
+voice: salt: The sea side was where the ships were. Skin remembers ships. {dc: 5}
+exit: walk
+
+@node nod.cv.sea
+cost: 1
+nar: Item: a chart of the bay with every light marked and the town left out. Where Gullet should be there is a neat rectangle, and in it, "see Hesk".
+voice: smell: No smell on the page. A town without a smell is a town drawn by someone who never had to live downwind of it. {dc: 5}
+exit: walk
+
+@node nod.cv.dry
+cost: 1
+nar: Item: the claim, copied out in a beautiful hand, with every party's name replaced by the same word: "Unknown". At the foot of the page the verdict, in the same beautiful hand: "Apportioned."
+voice: pride: Not a single blot. {dc: 3}
+voice: salt: Not a single drop on it. Nobody who lives here wrote that. {dc: 4}
+exit: walk
+
+# ================================================================ shared people and claims
+@char sorle
+name: Sorle Ammet
+speaker: SORLE
+faction: shelf
+about: A stoker off the Saint Cuthwin, from Kell on the far shore. Stranded in Gullet while the ferry will not sail. Not served first at the Brine, and does not ask to be.
+walkaway: Go on. The sea is the same on both sides.
+interrupted: Wait. Listen to the wind.
+fightstart: On my shore we do not hit a man indoors.
+
+@fact cl.lantern
+about: The town says a man walks the floor with a lantern when Mother sleeps, and shows a light to bring ships onto the Spit. The Lantern Man.
+by: Brine talk
+
+@fact cl.wreckers
+about: WRECKERS EXPECTED LOW NIGHT. By order of the Harbour Board. Posted on the notice board by the harbour office at half past six.
+by: the Board's notice
+
+# ================================================================ dreams (THEMES.md 9a)
+# Between nights Lamb dreams fragments of scenes still to come, in the dream look (cmd: dream k).
+# When a foreseen scene arrives, its node calls theme.cue.<id>: the one-frame recognition cue and one
+# line. Both readings stay open: foresight, or memory, pattern and a Lamb walking toward what it wrote.
+@fact dream.n2
+@fact dream.n3
+@fact dream.ticks
+@fact dream.ticks_met
+@fact dream.founders
+@fact dream.founders_met
+@fact dream.glass
+@fact dream.glass_met
+@fact dream.eye
+@fact dream.eye_met
+@fact dream.room
+@fact dream.room_met
+@fact dream.running
+@fact dream.running_met
+@fact dream.step

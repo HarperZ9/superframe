@@ -14,9 +14,10 @@ export function createInventory(G) {
     count: (id) => I().items[id] || 0,
     list: () => Object.entries(I().items).filter(([, n]) => n > 0).map(([id, n]) => ({ id, n, item: rs.items[id], worn: api.isWorn(id) })),
     isWorn: (id) => Object.values(I().equipped).includes(id),
-    give(id, n = 1) {
+    // quiet: what a character starts with (rules/creation.mjs become), given without the "found" notes
+    give(id, n = 1, { quiet = false } = {}) {
       if (!rs.items[id]) throw new Error(`no item ${id}`);
-      I().items[id] = api.count(id) + n; G.emit("item.gain", { id, n, name: name(id) });
+      I().items[id] = api.count(id) + n; if (!quiet) G.emit("item.gain", { id, n, name: name(id) });
     },
     take(id, n = 1) {
       const have = api.count(id); if (have < n) return false;

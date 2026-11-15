@@ -1,0 +1,230 @@
+# The shared senses, loads and scale of the five eras (the device rule, the author 2026-10-23: story reaches the
+# player through weight, sound, touch, bodies and changed places, never through a document; design/DEVICE-AUDIT.md).
+# Engine: world/senses.mjs (@sense), world/burden.mjs (@load, @scale), world/echo.mjs (@echo), played in the shell by
+# ui/senseplayer.mjs. Each era's own senses live in its own files with its prefix (e1., q., e3., e4., e5.); these are
+# the ones every era uses. Gate: tools/devicecheck.mjs, tools/echocheck.mjs. Weighted-devices pass, 2026-10-23.
+
+# ---------------------------------------------------------------- the body under a load (fired by world/burden.mjs)
+@sense burden.shoulder
+sound: thud 0.55 near
+caption: a sack landing on a shoulder
+rumble: 0.55 0.15 180
+camera: dip 0.25 0.5
+
+@sense burden.setdown
+sound: thud 0.45 near
+caption: a load set down
+rumble: 0.25 0.05 120
+
+@sense burden.bent
+anim: player bent
+rumble: 0.2 0 260
+
+@sense burden.stagger
+anim: player stagger
+sound: breath 0.35 near 2
+caption: hard breathing under the weight
+rumble: 0.45 0.1 400
+camera: dip 0.4 0.9
+
+@sense burden.upright
+anim: player upright
+
+# ---------------------------------------------------------------- the exchange scale (era 1's market, era 2's instrument)
+@scale q.exchange_scale
+name: The exchange scale
+sense: scale.tip
+
+@sense scale.tip
+sound: creak 0.6 near 1.6
+caption: the iron arm of the scale moving
+rumble: 0.35 0.1 420
+camera: push 1.3 1.2
+
+@sense scale.drop
+sound: creak 0.8 near 1.2
+sound: thud 0.5 near
+caption: the scale's arm dropping hard on its stop
+rumble: 0.8 0.3 260
+screen: shake 0.25 0.35
+camera: push 1.5 1
+
+@sense scale.rise
+sound: creak 0.5 near 2
+caption: the scale's arm coming up, slowly
+rumble: 0.15 0.25 600
+camera: push 1.3 1.6
+
+# ---------------------------------------------------------------- the loads
+@load q.load.sack
+name: A sack of grain
+weight: 32
+
+@load q.load.sack_light
+name: A famine sack, half chaff
+weight: 11
+line: It comes up too easily. Your arms were ready for twice it.
+
+@load q.load.seed
+name: A sack of seed barley
+weight: 25
+
+@load q.load.wedge
+name: Walter Mott's iron wedge
+weight: 3
+line: A wedge of iron the size of a hand, cold through the coat lining. You feel it against your ribs every step.
+
+@load q.load.child
+name: A child
+weight: 22
+
+@load q.load.bucket
+name: A pail of water
+weight: 10
+
+@load q.load.coat
+name: A boy's coat
+weight: 2
+
+# ---------------------------------------------------------------- the thread (the Hesh mark: held, cut, tied)
+@sense thread.hold
+sound: breath 0.2 near 1.4
+caption: someone breathing close
+rumble: 0.08 0.12 500
+camera: push 1.6 1.4
+hold: 0.8
+
+@sense thread.cut
+sound: snip 0.6 near
+caption: a blade through thread
+screen: shake 0.12 0.2
+rumble: 0.05 0.7 90
+anim: player flinch 0.6
+hold: 1.2
+
+@sense thread.snap
+sound: snap 0.6 near
+caption: a thread snapping
+rumble: 0.05 0.8 70
+hold: 1
+
+@sense thread.tie
+sound: breath 0.25 near 1.6
+caption: a slow breath out
+rumble: 0.1 0.2 160
+rumble: 0.1 0.2 160 260
+camera: push 1.5 1.6
+hold: 1
+
+# ---------------------------------------------------------------- hands, doors, rooms
+@sense sack.drag
+sound: drag 0.6 near 2.4
+caption: a sack dragged over stones
+rumble: 0.4 0.1 700
+
+@sense sand.pour
+sound: pour 0.7 near 2.6
+caption: sand pouring out onto the stones
+rumble: 0.15 0.35 1600
+camera: push 1.6 1.8
+
+@sense grain.pour
+sound: pour 0.55 near 2.4
+caption: grain running out of a split sack
+rumble: 0.1 0.3 1400
+
+@sense door.knock
+sound: knock 0.6 near
+caption: a knock at the door
+rumble: 0.3 0 60
+rumble: 0.3 0 60 230
+rumble: 0.3 0 60 460
+
+@sense wall.voice
+sound: knock 0.25 wall
+caption: a voice through the wall
+screen: vignette 0.35 3
+hold: 1.2
+
+@sense door.latch
+sound: latch 0.5 near
+caption: a latch lifting
+rumble: 0.15 0.1 200
+
+@sense door.bar
+sound: thud 0.9 near
+caption: the oak bar dropping into its brackets
+screen: shake 0.35 0.4
+rumble: 1 0.4 300
+
+@sense door.blows
+sound: knock 0.9 near 1.2
+caption: fists on the door
+screen: shake 0.3 1.2
+rumble: 0.7 0.2 140
+rumble: 0.7 0.2 140 300
+rumble: 0.7 0.2 140 600
+rumble: 0.9 0.3 180 900
+
+@sense chair.empty
+sound: chair 0.3 near
+caption: a chair scraped back in an empty room
+screen: dim 0.2 3
+hold: 1
+
+@sense room.cold
+screen: tint #9fb4c8 0.12 4
+sound: breath 0.15 near 2
+caption: your own breath in a cold room
+
+@sense room.burnt
+screen: tint #3a2a1e 0.25 5
+screen: vignette 0.45 5
+sound: drip 0.3 near 4
+caption: water dripping in a burnt room
+
+# ---------------------------------------------------------------- the body
+@sense breath.held
+sound: breath 0.3 near 2.4
+caption: a breath held
+screen: vignette 0.3 2.4
+hold: 1.4
+
+@sense heart.fast
+sound: heart 0.55 under 3
+caption: your heart, fast
+rumble: 0.35 0 70
+rumble: 0.2 0 70 160
+rumble: 0.35 0 70 540
+rumble: 0.2 0 70 700
+screen: vignette 0.4 3
+
+@sense hands.shake
+anim: player tremble 3
+rumble: 0.05 0.25 900
+hold: 0.8
+
+@sense blow.taken
+screen: shake 0.5 0.4
+screen: flash 0.25 0.2
+rumble: 1 0.6 220
+anim: player flinch 1
+sound: thud 0.8 near
+caption: a blow landing
+
+@sense cold.iron
+rumble: 0.05 0.9 160
+screen: tint #c8d8e8 0.18 1.5
+anim: player flinch 0.6
+
+@sense growth
+sound: breath 0.25 near 2
+caption: a long breath out
+rumble: 0.1 0.1 300
+
+# ---------------------------------------------------------------- what the town keeps (ui/recordmarks.mjs: in place of the rubber stamp)
+@sense record.felt
+sound: thud 0.3 under 0.8
+caption: something heavy set down, somewhere below
+rumble: 0.3 0 260
+screen: vignette 0.18 1.4

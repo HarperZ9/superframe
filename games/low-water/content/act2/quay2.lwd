@@ -21,6 +21,25 @@ by: the Almanac
 @fact quay2.procession_seen
 @fact quay2.coffin.failed
 @fact quay2.bulb_out
+# ---- new ids (thematic pass, 2026-10-21: the notice board, DISCOURSE-SYSTEM 4; old Penrose)
+@fact quay2.cl_first
+about: The WRECKERS notice on the quay board is dated in Keel's hand, half past six on Low Night: three hours before the dark it reports. The Courier's story cites the notice.
+by: the notice board
+@fact quay2.cl_copied
+about: One wording in four places: the Board's notice, the 18:30 telegram, the Hesk Courier and Sallis's docket. The Courier cites the notice, the docket cites the Courier, and the notice cites nobody.
+by: the notice board
+@fact quay2.cl_words
+about: The notice names no person. The Courier's subhead under it does: KELL CREWS IN BAY.
+by: the notice board
+@fact quay2.cl_owner
+about: Who gains if WRECKERS is believed: the Board's claim pays only on malice; the Courier sold out in Hesk by nine; the wardens collect "salvage for the insurer".
+by: the notice board
+@fact quay2.cl_test
+about: What would change the assessor's mind about WRECKERS: who showed the low light at twenty past ten. If it was a wrecker, the notice was right by accident.
+by: the notice board
+@fact quay2.ticked_log
+@fact quay2.ticked_wreckers
+@fact quay2.penrose_heard
 
 @encounter quay2.wardens
 name: The Board's boat
@@ -37,7 +56,7 @@ down: quay2.fight.wardens.down
 @node quay2.start
 place: quay
 cost: 0
-do: set(ev2.switch)
+do: cut(max(0, 19:10 - clock)); set(ev2.switch)
 nar: Ten past seven. In the weigh-house somebody puts the quay switch up, and the click carries the length of the quay in the frost.
 nar: The lamps wake red, then rose, then orange. Under a sky with every star in it, every face on the quay can be seen.
 call: quay2.pin
@@ -106,6 +125,7 @@ nar: Lamp Quay under a clear sky: the steps, the Brine, the weigh-house, the har
 nar: At one o'clock the quay is quiet. Nothing comes down the hill road but the cold. {when: has(gasholder.procession_stopped) & clock >= 01:00 & clock < 02:00, once}
 nar: Far out past the Spit two lanterns move on the black, low, where the stranded barges lie. {when: clock >= 22:30 & clock < 23:40}
 call: quay2.hub.lamps
+opt: "Read the Board's notice board by the harbour office door." -> quay2.board
 opt: "Walk along to the mole steps, where the boats lie." -> quay2.boats +2
 opt: "Go into the Brine." -> brine2.hub +1
 opt: "Go to the weigh-house." -> weigh2.hub +1
@@ -121,6 +141,78 @@ cost: 0
 line: FEWELL: Fours, tonight, Shelf. Orders from the hill. They read last night's book up there. {when: has(book.violence), once}
 line: FEWELL: New pole. Nine foot six. Regulation. {when: has(struck.fewell), once}
 return:
+
+# ================================================================ THE NOTICE BOARD (DISCOURSE-SYSTEM 2, 4)
+@node quay2.board
+place: quay
+cost: 2
+nar: The Board's notice board by the harbour office door. Last night's notice is still up, in capitals: WRECKERS EXPECTED LOW NIGHT, and under that, smaller, MALICIOUS DARKENING BY WRECKERS IS ANTICIPATED. BY ORDER OF THE HARBOUR BOARD. Under it, chalk ticks in rows of five. Forty-one. {when: !has(quay2.ticked_wreckers)}
+nar: The Board's notice board by the harbour office door: WRECKERS EXPECTED LOW NIGHT, and under it forty-two ticks, one of them in the Shelf's chalk. {when: has(quay2.ticked_wreckers)}
+nar: Pinned beneath it, a page torn from a ship's log in a square hand: 2220. LIGHT ON WRONG BEARING. HELM OVER. CLEARED SPIT ONE CABLE. Y.P. Three ticks. {when: !has(quay2.ticked_log)}
+nar: Pinned beneath it, Penhallow's page from the log, LIGHT ON WRONG BEARING, and four ticks, one in the Shelf's chalk. {when: has(quay2.ticked_log)}
+nar: Pasted beside them, this morning's Hesk Courier: WRECKERS IN GULLET. SHELF CONFIRMS. {when: has(cause.wreckers)}
+nar: Pasted beside them, this morning's Hesk Courier: GULLET DARK. WRECKERS FEARED. {when: !has(cause.wreckers)}
+voice: hearsay: Nobody ticks a correction. People tick what they were already saying. {dc: 5, once}
+call: theme.cue.ticks
+opt: "Who put it up, and when?" -> quay2.board.first ? !has(quay2.cl_first)
+opt: "Where else do these words turn up?" -> quay2.board.copied ? !has(quay2.cl_copied)
+opt: "What is it made of?" -> quay2.board.words ? !has(quay2.cl_words)
+opt: "Who gains if it is believed?" -> quay2.board.owner ? !has(quay2.cl_owner)
+opt: "What would change my mind about it?" -> quay2.board.test ? !has(quay2.cl_test)
+opt: "Chalk a tick under the ship's log." -> quay2.board.log ? !has(quay2.ticked_log) {do: set(quay2.ticked_log); var.lantern -= 1}
+opt: "Chalk a tick under WRECKERS." -> quay2.board.wreck ? !has(quay2.ticked_wreckers) {do: set(quay2.ticked_wreckers); var.lantern += 1; var.lean_sea -= 1}
+opt: "Leave the board." -> ^hub
+
+@node quay2.board.first
+place: quay
+cost: 2
+do: set(quay2.cl_first)
+nar: The notice is dated in the corner, in Keel's hand, pressed through the paper: Low Night, half past six. The Courier's story is dated this morning and says "a notice posted by the Harbour Board".
+voice: precedent: A notice of a loss, posted three hours before the loss. Who told the Board? {dc: 3}
+go: quay2.board
+
+@node quay2.board.copied
+place: quay
+cost: 3
+do: set(quay2.cl_copied)
+nar: MALICIOUS DARKENING BY WRECKERS. The same four words in the notice, in the Courier's second paragraph, and in the telegram Rook sent at half past six. Sallis read them out of his docket on the steps.
+voice: sum: Four mouths. Now count the sources. The Courier cites the notice, the docket cites the Courier, and the notice cites nobody. How many is that? {dc: 4}
+go: quay2.board
+
+@node quay2.board.words
+place: quay
+cost: 2
+do: set(quay2.cl_words)
+nar: The notice names no one. Wreckers, expected, malicious. The Courier, which has more room, has a subhead: KELL CREWS IN BAY.
+voice: smallprint: No name on the Board's paper, and a whole shore on the Courier's. The paper with no name in it is the one people tick. {dc: 5}
+voice: salt: The Saint Cuthwin's stokehold is Kellish. The stokers carried the Board's coal in. {dc: 6}
+go: quay2.board
+
+@node quay2.board.owner
+place: quay
+cost: 2
+do: set(quay2.cl_owner)
+voice: chit: The Board's claim pays only on malice; a lamp that went out by accident is the Board's own bill. The Courier sold out in Hesk by nine, Sabine said. The wardens are collecting. Who on this quay would lose by not believing it? {dc: 3}
+go: quay2.board
+
+@node quay2.board.test
+place: quay
+cost: 2
+do: set(quay2.cl_test)
+voice: carbon: Twenty past ten. A light on the wrong bearing, low, where the drowned lamp is. Find out who was holding it. If it was a wrecker, the notice was right by accident, and you will have to tick it. {dc: 3}
+go: quay2.board
+
+@node quay2.board.log
+place: quay
+cost: 1
+nar: Four. Across the quay a Lamplighter looks at the chalk on the assessor's glove and writes something down.
+go: quay2.board
+
+@node quay2.board.wreck
+place: quay
+cost: 1
+nar: Forty-two. A man going past with a net over his shoulder nods to the Shelf as to someone who has finally agreed with him.
+go: quay2.board
 
 # ================================================================ BEAT 9: THE BOAT TO THE SPIT (gate A4)
 @node quay2.boats
@@ -456,7 +548,45 @@ line: FENNICK: We are taking her the bulb that was hers. By grace. {when: gashol
 opt: "Walk on with the column to the mole." -> mole2.hub ? gasholder_walked != none | guise == pilgrim {verb: hide, noise: 0}
 opt: "Hand the bundle to Tobit and step out of the line." -> quay2.procession.handover ? has(gasholder.carrying)
 opt: "Walk beside the ladder and talk to the deacon." -> quay2.procession.talk ? has(met.fennick) & !has(gasholder.carrying)
+opt: "Stand by the old man watching from the bollards." -> quay2.penrose.watch ? !has(quay2.penrose_heard)
 opt: "Stand back and let the glass heads go by." -> ^hub
+
+@node quay2.penrose.watch
+place: quay
+speaker: PENROSE
+cost: 3
+do: set(quay2.penrose_heard)
+nar: Old Penrose on a bollard, his cap in both hands, wet to the knee from the Spit, watching the glass heads go by.
+line: PENROSE: Nine years in the second row. Nine years I said grace over that glass with my boy beside me singing.
+line: PENROSE: Three of them broke his jaw on the shingle last May for a bit of prism. Thirty-seven knelt and let them. He hums now, with his mouth shut.
+line: PENROSE: Every one of them. Look at them. Candles. They'd do it again on Saturday and sing after. The Low Company's had no church but the tide, and the tide never broke a man's face for glass.
+voice: undertow: The tide broke the Ammet's crew on the Spit, and the town weighed the tallow. You read it in the hall tonight. {when: has(gut2.founders)}
+opt: "'Three did it, Mr Penrose. Brother Ash entered it, and paid, and you sent it back.'" -> quay2.penrose.three {do: var.lean_faith += 1; set(said.penrose_three); set(heard.penrose.penrose_three)}
+opt: "'Every one of them.'" -> quay2.penrose.all {do: var.lean_faith -= 1; var.lean_hang += 1; set(said.penrose_all); set(heard.penrose.penrose_all)}
+opt: "Sit on the next bollard and say nothing." -> quay2.penrose.sit
+
+@node quay2.penrose.three
+place: quay
+speaker: PENROSE
+cost: 2
+line: PENROSE: He paid. Four pounds for a face. Is that the good one, then? The one that prices it?
+nar: He puts his cap back on to have something to do with his hands.
+voice: condolence: You were right about the three, and it did not help him at all. {dc: 5}
+go: ^hub
+
+@node quay2.penrose.all
+place: quay
+speaker: PENROSE
+cost: 2
+line: PENROSE: Every one.
+nar: He says it to the column as it passes. The last jar in the line turns at the sound. It is Tobit's, and the boy under it is nine.
+go: ^hub
+
+@node quay2.penrose.sit
+place: quay
+cost: 3
+nar: The column goes by, candle by candle. The old man counts them under his breath and loses count at the same place every time.
+go: ^hub
 
 @node quay2.procession.gas
 cost: 0

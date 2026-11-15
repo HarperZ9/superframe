@@ -1,0 +1,75 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "KEEL",
+ "setting": "gullet",
+ "setting_note": "Gullet (Low Water's first setting). Lamb, Gullet and the harbour are cut as setting and protagonist (QUOTA-DESIGN.md decision 3, 2026-10-21); kept for the archived acts and for VOICE-AUDIT.md re-runs. The Quota's sheets are in design/voice-sheets/quota/.",
+ "status": "draft 2026-10-21, derived from bible/WORLD-BIBLE.md and design/voice/profiles.json; the voice director owns corrections",
+ "role": "harbourmaster",
+ "age": "58",
+ "register": {
+  "level": "formal",
+  "education": "Hesk schooled; the Board's clerkly English",
+  "class": "official",
+  "trade": "harbourmaster",
+  "words": []
+ },
+ "region": {
+  "name": "hesk",
+  "markers": [],
+  "idioms": []
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 40
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television",
+  "email",
+  "computer",
+  "teenager",
+  "I'll not",
+  "you'd not",
+  "'em",
+  "ain't",
+  "nowt",
+  "owt"
+ ],
+ "never_patterns": [
+  {
+   "re": "\\b(I|me|my|mine|I'm|I'll|I've)\\b",
+   "msg": "Keel speaks as the Board, never as I (VOICE-BIBLE 3.2)"
+  }
+ ],
+ "knowledge": {
+  "knows": [
+   "the works order",
+   "the Guild's vote pulls the quay switch",
+   "the claim"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "bread oven",
+     "bottle glass"
+    ],
+    "why": "Keel suspects the green lens but does not know the oven (bible 7.2)",
+    "unless_gate": [
+     "prism",
+     "glass",
+     "oven",
+     "bottle"
+    ]
+   }
+  ]
+ },
+ "wants": "a new lens paid for by the Shelf; his signature never read aloud",
+ "fears": "that the works order he signed will be found",
+ "hides": "he signed the rewiring and filed the claim knowing the vote would darken Mother",
+ "tics": [
+  "the Board",
+  "assessor",
+  "the Shelf"
+ ]
+}

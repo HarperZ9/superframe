@@ -6,6 +6,7 @@
 //   { t: "tor", c, R, r, rot? }                                            torus (rings, rims, collars)
 // Combined in a region with ops per shape: op "add" (smooth union, k), "sub" (smooth carve, k),
 // "and" (intersect, k). Displacements after the field: folds, wrinkles, noise, pocks (see disp()).
+import { ellExact } from "./ellipsoid.mjs";
 const len = (x, y, z) => Math.sqrt(x * x + y * y + z * z);
 export const smin = (a, b, k) => { if (k <= 0) return Math.min(a, b); const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; };
 export const smax = (a, b, k) => -smin(-a, -b, k);
@@ -18,6 +19,8 @@ function rotFn(rot) {
 }
 export function field(s) {
   const R = rotFn(s.rot);
+  if (s.t === "ell" && s.exact) { const [cx, cy, cz] = s.c, [rx, ry, rz] = s.r; return (x, y, z) => { let p = [x - cx, y - cy, z - cz]; if (R) p = R(...p); return ellExact(p[0], p[1], p[2], rx, ry, rz); }; }
+  if (s.t === "fn") return s.f;
   if (s.t === "ell") { const [cx, cy, cz] = s.c, [rx, ry, rz] = s.r; return (x, y, z) => { let p = [x - cx, y - cy, z - cz]; if (R) p = R(...p); const k0 = len(p[0] / rx, p[1] / ry, p[2] / rz), k1 = len(p[0] / (rx * rx), p[1] / (ry * ry), p[2] / (rz * rz)); return k1 > 0 ? (k0 * (k0 - 1)) / k1 : -Math.min(rx, ry, rz); }; }
   if (s.t === "cap") { const [r0, r1] = Array.isArray(s.r) ? s.r : [s.r, s.r], [ax, ay, az] = s.a, bx = s.b[0] - ax, by = s.b[1] - ay, bz = s.b[2] - az, bb = bx * bx + by * by + bz * bz; return (x, y, z) => { const px = x - ax, py = y - ay, pz = z - az, h = Math.min(1, Math.max(0, (px * bx + py * by + pz * bz) / bb)); return len(px - bx * h, py - by * h, pz - bz * h) - (r0 + (r1 - r0) * h); }; }
   if (s.t === "box") { const [cx, cy, cz] = s.c, [hx, hy, hz] = s.r, rd = s.round || 0; return (x, y, z) => { let p = [x - cx, y - cy, z - cz]; if (R) p = R(...p); const qx = Math.abs(p[0]) - hx + rd, qy = Math.abs(p[1]) - hy + rd, qz = Math.abs(p[2]) - hz + rd; return len(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0) - rd; }; }
@@ -28,7 +31,7 @@ export function field(s) {
   // a spherical cap facing n: an iris or a pupil on the eyeball's front
   if (s.t === "scap") { const [cx, cy, cz] = s.c, n = s.n, l0 = len(...n), nx = n[0] / l0, ny = n[1] / l0, nz = n[2] / l0; return (x, y, z) => { const qx = x - cx, qy = y - cy, qz = z - cz; return Math.max(len(qx, qy, qz) - s.R, s.h - (qx * nx + qy * ny + qz * nz)); }; }
   // the mouth's slit, its corners bent by smile
-  if (s.t === "slit") { const [cx, cy, cz] = s.c; return (x, y, z) => { const qx = x - cx, qy = y - cy - s.smile * (qx / s.w) ** 2 * 0.012, qz = z - cz; const ax = Math.abs(qx) - s.w * 0.98, ay = Math.abs(qy) - 0.0012, az = Math.abs(qz) - 0.022; return len(Math.max(ax, 0), Math.max(ay, 0), Math.max(az, 0)) + Math.min(Math.max(ax, ay, az), 0); }; }
+  if (s.t === "slit") { const [cx, cy, cz] = s.c; return (x, y, z) => { const qx = x - cx, qy = y - cy - s.smile * (qx / s.w) ** 2 * 0.012, qz = z - cz; const ax = Math.abs(qx) - s.w * 0.98, ay = Math.abs(qy + (s.open || 0) * 0.5) - 0.0012 - (s.open || 0) * 0.5, az = Math.abs(qz) - 0.022; return len(Math.max(ax, 0), Math.max(ay, 0), Math.max(az, 0)) + Math.min(Math.max(ax, ay, az), 0); }; }
   throw new Error(`forge: unknown shape ${s.t}`);
 }
 

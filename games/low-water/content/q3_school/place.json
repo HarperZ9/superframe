@@ -1,0 +1,151 @@
+{
+ "place": "q3_school",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   1,
+   -0.2
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 4.333333333333333
+ },
+ "pxPerMetre": 150,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "morning"
+ ],
+ "variantInfo": {
+  "morning": {
+   "hour": 10.5,
+   "weather": "September, 10:30: grey light in through the two tall windows, the bulb off, chalk dust in the air"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "schoolbook",
+    "verb": "read",
+    "at": [
+     1.2,
+     0,
+     -1
+    ],
+    "note": "\"The Plain Rebuilt\" open on the teacher's table; Heshen words struck out in red"
+   },
+   {
+    "id": "ruler",
+    "verb": "read",
+    "at": [
+     -1.2,
+     0,
+     0.9
+    ],
+    "note": "Mim's desk: the ruler came down here"
+   },
+   {
+    "verb": "look",
+    "id": "mims_desk",
+    "at": [
+     -2.3,
+     0,
+     0.45
+    ],
+    "note": "a word cut small into a desk lid and inked over"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     2.7,
+     0,
+     2.1
+    ],
+    "note": "the passage to Exchange Street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "morning": [
+   {
+    "at": [
+     -2.82,
+     1.75,
+     -0.9
+    ],
+    "kind": "white",
+    "I": 3,
+    "reach": 6,
+    "group": ""
+   },
+   {
+    "at": [
+     -2.82,
+     1.75,
+     0.9
+    ],
+    "kind": "white",
+    "I": 3,
+    "reach": 6,
+    "group": ""
+   }
+  ]
+ },
+ "figureLights": {
+  "morning": [
+   {
+    "at": [
+     0.4,
+     2.2,
+     1.2
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 8,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 3: the schoolroom in the old exchange offices."
+}

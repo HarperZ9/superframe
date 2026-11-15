@@ -10,6 +10,42 @@
 # read the choice; the sheet itself is the interface's.
 
 # ---- new ids
+@char quay.boddy
+name: Boddy
+speaker: BODDY
+faction: board
+about: Mends nets by day; wears a tide-warden's armband on Low Night. His sister is under a bell jar.
+
+@fact quay.boddy_sister
+about: The warden Boddy's sister is Sister Gauze. She went under the jar the night the arc was lit, holding his hand, when the harbourmaster went off the mole.
+by: testimony, on the steps
+
+@var cl_wreckers
+default: none
+values: none, open, credited, doubted
+about: The stance Lamb pinned to the Board's notice in the Daybook.
+
+@fact cl.wreckers.first
+about: The notice is in the harbourmaster's hand, dated twenty to seven in the evening: three hours before the dark, pasted over a notice about dog licences.
+by: reading, the notice board
+@fact cl.wreckers.first_wrong
+about: The notice's paste is still wet: put up this evening, after the dark.
+by: reading, the notice board, in pencil
+@fact cl.wreckers.copied
+about: The same five words, "malicious darkening by wreckers anticipated", on the Board's notice and in the Hesk Courier's stop press off the ferry, from "our Gullet correspondent". Two carriers, one sentence.
+by: counting
+@fact cl.wreckers.copied_wrong
+about: The Courier and the Board say it in different words. Two separate witnesses.
+by: counting, in pencil
+@fact cl.wreckers.words
+about: "Malicious" names an intent before any act. "Wreckers" names nobody, in the plural. "Anticipated" carries the date.
+by: reading the words
+@fact cl.wreckers.owner
+about: If it is believed: the Board gets a new lens from the Shelf, the Courier sells a dearer edition, the town gets a dark that belongs to somebody else. The Low Company gets its name without being named.
+by: reckoning who gains
+@fact cl.wreckers.test
+about: A wrecker shows a light to bring a ship in. Which way did the light Lamb saw send the Saint Cuthwin?
+by: putting it back
 @fact quay.bearing
 about: The bay chart: the Old Light on Hound Rock stands west of the dog-leg. A light there shows a ship on the wrong side of the channel, so a master turns away from it.
 by: reading, the harbour office chart
@@ -226,14 +262,14 @@ camera: wide
 place: mole_steps
 speaker: PENHALLOW
 cost: 2
-do: set(spray.mole); set(met.penhallow); wet(0.2)
+do: cut(max(0, 22:43 - clock)); set(spray.mole); set(met.penhallow); wet(0.2)
 nar: Twenty-one minutes to eleven by the assessor's own watch. The Saint Cuthwin berths at the mole steps, and over the mole's windward side the sea comes in sheets.
 nar: The first sheet takes the assessor's coat on the left side from collar to hem. The coat has been dry for eleven years, as a matter of professional pride. It is not dry now.
 voice: pride: You stood in a burning granary in this coat and kept it dry. A puddle on a breakwater has done what fire could not. {dc: 3}
 inst: THE VANE: West! Spray on the windward side from here to the lamp, and everybody who walked this mole tonight walked through it! Write that down!
 line: PENHALLOW: Off you go, Shelf. Not me. I'm not leaving this ship until I've had words with that light, and the light's not talking yet.
 voice: pride: Wet already. The town will see it. The town will think you are the kind of assessor who gets wet. {below: 3}
-go: quay.pro.berth.menu
+go: open.wardens
 
 @node quay.pro.berth.menu
 place: mole_steps
@@ -346,6 +382,8 @@ call: quay.hub.appt
 call: quay.hub.prov
 opt: "Go to the top of the steps." -> quay.steps +1
 opt: "Go into the harbour office." -> quay.harbour +1
+opt: "Read the notice pasted on the board by the harbour office door." -> quay.notice ? !has(cl.wreckers)
+opt: "Look at the Board's notice properly." -> quay.notice.exam ? has(cl.wreckers) & var.cl_wreckers == none
 opt: "Walk along to the mole steps." -> quay.molesteps +2
 opt: "Speak to the Lamplighter with the open book." -> quay.gorm ? has(gorm.warned) & (clock < 01:30 | clock >= 03:20)
 opt: "Speak to the young Lamplighter with the two lanterns." -> quay.hobb ? clock >= 00:40 & clock < 04:15
@@ -529,6 +567,7 @@ opt: "Go down to the deacon, blessing the floor." -> quay.fennick.start ? !has(m
 opt: "Go back to the deacon." -> quay.fennick.again ? has(met.fennick) & clock < 23:50
 opt: "Speak to the woman kneeling in the bell jar." -> quay.gauze ? clock < 23:50 & !has(quay.gauze.lent) & !has(quay.gauze.refused)
 opt: "Speak to the choirboy." -> quay.tobit ? clock < 23:50 & !has(quay.tobit.sung)
+opt: "Go to the warden shouting down at the jars from the top step." -> quay.boddy ? clock < 23:50 & !seen(quay.boddy)
 opt: "Go down to the deacon at his vigil." -> quay.fennick.vigil ? clock >= 01:20 & (clock < 01:30 | clock >= 02:40)
 opt: "Look at the old paraffin post." -> quay.post
 opt: "Go down the steps to the harbour floor." -> floor.hub ? tide < -0.27 +2
@@ -596,6 +635,11 @@ go: quay.keel.menu
 @node quay.keel.menu
 speaker: KEEL
 cost: 0
+line: KEEL: The ferryman tells the Board the Shelf stood at the rail the whole crossing. The eggs travelled alone. {when: has(lied.keel_below) & (seen(quay.keel.again) | seen(quay.keel.again.lit)), once}
+line: KEEL: A light, low, the Shelf said, that turned the ferry. The Board has been thinking about that light. {when: has(said.light_turned) & (seen(quay.keel.again) | seen(quay.keel.again.lit)), once}
+line: KEEL: Nothing, the Shelf said. It was dark. The Board has it written down in the Shelf's own words. {when: has(said.keel_nothing) & (seen(quay.keel.again) | seen(quay.keel.again.lit)), once}
+line: KEEL: Green, the Shelf told the Board. The Board has not stopped seeing it. {when: has(said.lens_green) & (seen(quay.keel.again) | seen(quay.keel.again.lit)), once}
+line: KEEL: The Shelf's midnight word has reached the Board. The Board has read it twice. {when: has(said.prov) & (seen(quay.keel.again) | seen(quay.keel.again.lit)), once}
 opt: "What happened to the lamp?" -> quay.keel.story ? !seen(quay.keel.story) & !seen(quay.keel.story.dark)
 opt: "Your claim was sent at half past six. She went dark at twenty to ten." -> quay.keel.time ? has(claim.time) & !seen(quay.keel.time) {id: quay.keel.time}
 opt: "Who keeps the weigh-house office?" -> quay.keel.key ? !has(key.office)
@@ -1541,7 +1585,8 @@ opt: "Walk the mole in the dark." -> mole.hub +2
 place: quay
 cost: 1
 do: set(quay.dark.seen); offer(m.dark)
-nar: Ten to three. The three sodium lamps go out together, and everyone on the quay stops talking at once, and then begins again much more quietly.
+nar: Ten to three. The three sodium lamps go out together, and everyone on the quay stops talking at once, and then begins again much more quietly. {when: clock >= 02:45 & clock < 03:00}
+nar: The three sodium lamps are out. Everyone on the quay is still talking, much more quietly than before. {when: clock < 02:45 | clock >= 03:00}
 call: quay.dark.mother
 inst: CANDLEMAS: Dark. Two parts in a hundred. You are invisible now, and so is everyone else, and so is the edge of the quay.
 voice: dark: Now the books are shut. Nobody can see you, you cannot see them, and you can hear everything. {dc: 4}
@@ -1597,6 +1642,10 @@ place: quay
 speaker: HOBB
 cost: 1
 line: HOBB: Still here. Both lit.
+line: HOBB: Eight hundred and forty, I told you. I've counted it again in my head since. Same number. {when: has(heard.hobb.pink), once}
+line: HOBB: The man by the box. I've not told the sergeant. Only you. {when: has(heard.hobb.saw), once}
+line: HOBB: Your paraffin's in my lantern still. It burns better than the Board's. {when: has(said.hobb_lantern), once}
+line: HOBB: Just H. I've written it like that. H. {when: has(said.name_h), once}
 go: quay.hobb.menu
 
 @node quay.hobb.menu
@@ -1660,7 +1709,8 @@ go: quay.hub.dark
 place: quay
 cost: 3
 do: set(quay.highwater_seen)
-nar: Ten past five. High water. The sea slides across the quay's stones and back, and the bollards stand in it like old men paddling.
+nar: Ten past five. {when: clock < 05:20}
+nar: High water. The sea slides across the quay's stones and back, and the bollards stand in it like old men paddling.
 call: quay.highwater.fish
 nar: The harbourmaster stands at the quay's very edge with the sea washing over his boots, as he stood at the top of the steps seven hours ago.
 call: quay.highwater.keel
@@ -2524,3 +2574,176 @@ do: clear(merrow.cells); set(appt.watched); set(book.cells)
 nar: The bolts go, the boots go, and a shuttered lantern opens a crack under the steps, full on the assessor.
 line: GORM: And what are you doing under the steps in the dark? And who were you waiting for?
 go: quay.hub.dark
+
+# ================================================================ THE BOARD'S NOTICE (DISCOURSE-SYSTEM.md 4)
+# The claim on a carrier, and its examination. Answers are facts; the game never stamps it.
+@node quay.notice
+place: quay
+cost: 1
+do: set(cl.wreckers)
+nar: The Board's notice board, under its own small roof, by the harbour office door. One sheet in capitals, newer than the rest: NOTICE. MALICIOUS DARKENING BY WRECKERS IS ANTICIPATED ON LOW NIGHT. THE BOARD WILL PROSECUTE. A. KEEL, HARBOURMASTER.
+nar: Beside it, tucked into the frame, the Hesk Courier's late edition, off the same ferry as the assessor, folded to its stop press.
+voice: hearsay: The whole quay has read it. You can tell by the corners; people touch a notice they agree with. {dc: 4}
+opt: "Look at it properly." -> quay.notice.exam
+opt: "Leave it on its board." -> ^hub
+
+@node quay.notice.exam
+place: quay
+cost: 0
+check: "[PRECEDENT] Who said it first, and when?" -> quay.notice.first / quay.notice.first.fail ? !has(cl.wreckers.first) & !has(cl.wreckers.first_wrong) {skill: precedent, dc: 5, verb: read, noise: 0}
+check: "[SUM] Who else says it, and are they separate?" -> quay.notice.copied / quay.notice.copied.fail ? !has(cl.wreckers.copied) & !has(cl.wreckers.copied_wrong) {skill: sum, dc: 5, verb: read, noise: 0}
+opt: "[SMALL PRINT] What is it made of?" -> quay.notice.words ? !has(cl.wreckers.words) {verb: read, noise: 0}
+opt: "[THE CHIT] Who gains if it is believed?" -> quay.notice.owner ? !has(cl.wreckers.owner) {verb: read, noise: 0}
+opt: "[CARBON] What would change my mind?" -> quay.notice.test ? !has(cl.wreckers.test) {verb: read, noise: 0}
+opt: "Pin it in the Daybook: credited." -> quay.notice.pin.credited {do: cl_wreckers = credited; var.lantern += 1; var.lean_sea -= 1}
+opt: "Pin it in the Daybook: doubted." -> quay.notice.pin.doubted {do: cl_wreckers = doubted}
+opt: "Pin it in the Daybook: open, until the test is done." -> quay.notice.pin.open ? has(cl.wreckers.test) {do: cl_wreckers = open}
+opt: "Pin it in the Daybook: open." -> quay.notice.pin.open ? !has(cl.wreckers.test) {do: cl_wreckers = open; var.lean_dry += 1}
+opt: "Leave it on its board for now." -> ^hub
+
+@node quay.notice.first
+place: quay
+cost: 2
+do: set(cl.wreckers.first)
+nar: The capitals are the harbourmaster's; his K leans like a man on a mole. In the corner, small: 18.40. Under the paste, at the corners, a notice about dog licences still shows.
+voice: precedent: 2210/B, the Mudlow sluice. A flood warning posted the morning before a flood, by the sluice-keeper who opened it. {dc: 7}
+go: quay.notice.exam
+
+@node quay.notice.first.fail
+place: quay
+cost: 2
+do: set(cl.wreckers.first_wrong)
+nar: The paste is wet at the edges, shining under the sodium. Put up tonight, then, after the dark, by somebody who saw it happen.
+go: quay.notice.exam
+
+@node quay.notice.copied
+place: quay
+cost: 2
+do: set(cl.wreckers.copied)
+nar: The Courier's stop press, set in Hesk before the ferry left: GULLET. MALICIOUS DARKENING BY WRECKERS ANTICIPATED, SAYS BOARD. From our Gullet correspondent.
+voice: sum: Two carriers. Five words, the same five, in the same order. A paper and a board, and one sentence between them. {dc: 5}
+voice: undertow: Ask who the Courier's Gullet correspondent is. Then ask who else in Gullet keeps a telegraph account. {dc: 7}
+go: quay.notice.exam
+
+@node quay.notice.copied.fail
+place: quay
+cost: 2
+do: set(cl.wreckers.copied_wrong)
+nar: The Courier says the Board fears wreckers; the Board says they are anticipated. Two witnesses, then, a paper in Hesk and a board in Gullet, and they agree.
+go: quay.notice.exam
+
+@node quay.notice.words
+place: quay
+cost: 2
+do: set(cl.wreckers.words)
+voice: smallprint: "Malicious." A word for what somebody meant, written before they did anything.
+voice: smallprint: "Wreckers." No name. No number. The plural does all the work a name would have to do in court. {dc: 4}
+voice: smallprint: "Anticipated." The only word on the sheet with a date in it. {dc: 6}
+go: quay.notice.exam
+
+@node quay.notice.owner
+place: quay
+cost: 2
+do: set(cl.wreckers.owner)
+voice: chit: The Board: a whole new lens, paid from Hesk. The Courier: a penny more on a stop-press night. The town: a dark that belongs to somebody else.
+voice: chit: And the Low Company gets its name on a notice without its name on it. That one is free. {dc: 5}
+voice: condolence: Everyone who touched the corners got something. Relief has a price too. {dc: 7}
+go: quay.notice.exam
+
+@node quay.notice.test
+place: quay
+cost: 2
+do: set(cl.wreckers.test)
+voice: carbon: The deck. A light low on the water, west, the wrong colour for a lamp. The helm going over. A wrecker shows a light to bring a ship in. Which way did this one send her?
+voice: pride: We were there. We need no test for what we saw. {dc: 3}
+voice: carbon: We were there, and we read the time off a clock that runs fast. {dc: 6}
+go: quay.notice.exam
+
+@node quay.notice.pin.credited
+place: quay
+cost: 1
+nar: In the Daybook, under the time: "Board's notice. Credited." The pencil goes on to the next line by itself.
+voice: hearsay: Now you can say it in the Brine, and it will sound like the Shelf said it. It will be the Shelf saying it. {dc: 4}
+go: ^hub
+
+@node quay.notice.pin.doubted
+place: quay
+cost: 1
+nar: In the Daybook, under the time: "Board's notice. Doubted." The corner of the sheet has a fresh thumbprint since the assessor last stood here.
+voice: formletter: The Shelf doubts the Board in pencil. The Board prosecutes in capitals. {dc: 5}
+go: ^hub
+
+@node quay.notice.pin.open
+place: quay
+cost: 1
+nar: In the Daybook, under the time: "Board's notice. Open."
+voice: carbon: Open until the deck is put back. Which way the ship went is a thing somebody in this town saw. {when: has(cl.wreckers.test)}
+voice: salt: Open. The water is over the boots and the boots are calling it open. {when: !has(cl.wreckers.test) & var.lean_dry >= 2}
+go: ^hub
+
+# ================================================================ THE WARDEN ON THE STEPS (to 23:50)
+@node quay.boddy
+place: steps
+speaker: BODDY
+cost: 3
+nar: At the top of the steps, a man with a net-mender's shoulders and a tide-warden's armband over his jersey leans out over the row of jars and shouts down into them.
+line: BODDY: Can you hear me in there? Can you? Forty fishbowls on a mud flat, praying to a lamp that broke. Knock twice for the Lord.
+line: FENNICK: We do not hate him. Tell him that, assessor; he cannot hear us over himself. We do not envy the Board its lamps. We do not gossip. We have nothing to say about anyone that the light has not already said.
+line: FENNICK: We are, if anything, a little better than this, and we forgive him for not being.
+voice: undertow: The deacon has just told the whole quay he is better than a man who cannot hear him. He said it as a blessing. {dc: 5}
+voice: condolence: The warden is not shouting at the deacon. He is shouting at one jar at the end of the row, the oldest, fogged in a ring. {dc: 6}
+opt: "Leave them be, warden. They kneel in the mud and harm nobody." -> quay.boddy.defend {do: var.lean_faith += 1; offer(cv.jars); set(said.jars_harmless); set(heard.fennick.jars_harmless)}
+opt: "He has a point, deacon. Glass on the head is a strange way to look at anything." -> quay.boddy.mock {do: var.lean_faith -= 1; set(said.jars_mocked); set(heard.fennick.jars_mocked)}
+opt: "What did they do to you, warden?" -> quay.boddy.why
+opt: "Walk on along the steps." -> quay.steps {do: var.lean_dry += 1}
+
+@node quay.boddy.defend
+place: steps
+speaker: BODDY
+cost: 2
+line: BODDY: Nobody. They harm nobody. Ask her. End of the row. Ask her who she was before she was harmless.
+nar: He goes back along the quay, and the jars do not turn to watch him go, except the one at the end.
+voice: pride: Good. A stranger defends the few on a public step, under the sodium, where it will be written down. {dc: 4}
+voice: smallprint: We defended a deacon who had just called himself better than the man he forgave. We did not read that line. We liked the tune. {dc: 7}
+go: quay.steps
+
+@node quay.boddy.mock
+place: steps
+speaker: BODDY
+cost: 2
+line: BODDY: There. The Shelf says so. You hear that, Nell? The Shelf.
+nar: Down in the row nothing moves, and Fennick goes on blessing the mud in the same voice.
+voice: condolence: He wanted a stranger to say it, so that it would be true about the jars and not about him. You were glad to be the stranger. {dc: 6}
+go: quay.steps
+
+@node quay.boddy.why
+place: steps
+speaker: BODDY
+cost: 4
+do: set(quay.boddy_sister)
+line: BODDY: Her. End of the row. Nell. Eleven years. She was holding my hand on the mole the night they lit the arc and the harbourmaster went in.
+line: BODDY: She put it on that night to stop the noise, and he told her it was holy. Now there's a rule. A sister who lifts her jar isn't let back in. So she doesn't lift it, and she doesn't come home, and he says she's at peace.
+line: BODDY: They take the soft ones. Every faith does. They wait under the mole for whoever falls.
+line: GAUZE: In here he sounds a long way off, like a ship's bell in fog. I can hear that he's frightened. Out there I could only hear that he was loud.
+line: GAUZE: I'm not at peace. I'm at a distance. Brother Ambrose says those are the same, and I let him.
+opt: "Then the rule is the cruelty, deacon. Not the jar." -> quay.boddy.rule {do: var.lean_faith -= 1; set(said.jar_rule); set(heard.fennick.jar_rule)}
+opt: "Every faith, warden? That's what the Board says about the Low Company." -> quay.boddy.every {do: var.lean_faith += 1; set(said.boddy_every); set(heard.boddy.every)}
+opt: "Leave the three of them to it." -> quay.steps {do: var.lean_dry += 1}
+
+@node quay.boddy.rule
+place: steps
+speaker: FENNICK
+cost: 2
+line: FENNICK: A rule is a jar for a whole Congregation. You would take it off us, assessor, in the middle of a noise like this?
+voice: undertow: He has an answer for everything, and it is always the jar. {dc: 5}
+go: quay.steps
+
+@node quay.boddy.every
+place: steps
+speaker: BODDY
+cost: 2
+line: BODDY: The Low Company steals copper. These steal people.
+line: BODDY: Fine. Not every. Him. And the ones who let him.
+nar: It is smaller than what he said first, and he says it more quietly, and the quay does not hear it.
+voice: hearsay: The first one carries to the Brine. The second one stops at the steps. They always do. {dc: 5}
+go: quay.steps

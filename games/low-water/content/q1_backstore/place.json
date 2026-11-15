@@ -1,0 +1,168 @@
+{
+ "place": "q1_backstore",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0.1,
+   0.9,
+   -0.4
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 3.4210526315789473
+ },
+ "pxPerMetre": 190,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon",
+  "lamp"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 15.8,
+   "weather": "harvest, 15:50: a shaft of low sun through the west window across the sacks, the desk lamp lit"
+  },
+  "lamp": {
+   "hour": 18.6,
+   "weather": "18:35, the sun off the window: the desk lamp alone"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26,
+  29,
+  56,
+  89,
+  90,
+  93,
+  95,
+  85
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "scale",
+    "verb": "read",
+    "at": [
+     0.8,
+     0,
+     0.3
+    ],
+    "note": "the beam scale: the brass pan worn bright where the sacks go on"
+   },
+   {
+    "id": "ledger",
+    "verb": "read",
+    "at": [
+     2.1,
+     0,
+     -0.6
+    ],
+    "note": "the ledger: the year's weights in Orme's hand, columns that come out even"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "mill",
+    "at": [
+     2.3,
+     0,
+     1.4
+    ],
+    "note": "the door through to the mill"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": [
+   {
+    "at": [
+     2.55,
+     1.28,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.6,
+    "reach": 5,
+    "group": "lantern"
+   }
+  ],
+  "lamp": [
+   {
+    "at": [
+     2.55,
+     1.28,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 2.6,
+    "reach": 5,
+    "group": "lantern"
+   }
+  ]
+ },
+ "figureLights": {
+  "afternoon": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 9,
+    "figure": true
+   }
+  ],
+  "lamp": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 1: Orme's back store at the mill: the year's sacks to the beams."
+}

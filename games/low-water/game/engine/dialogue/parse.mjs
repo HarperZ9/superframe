@@ -1,6 +1,7 @@
 // LWD text to records and steps. Reads LWD/0 (slice/LWD-FORMAT.md) and LWD/1, its superset.
 // Every record and step keeps its file and line, so the validator can point at the text.
 import { compile, compileEffects } from "../core/expr.mjs";
+import { splitDirected, parseDirection } from "./direction.mjs";
 
 // Lines to records: { kind, id, file, line, kv: [{ key, value, line }] }.
 export function parseRecords(text, file = "") {
@@ -50,6 +51,8 @@ export function parseChoice(kind, value, at) {
   if (!m) throw new SyntaxError(`${kind}: expected "label" -> target, got ${value}`);
   const s = { kind, label: m[1], target: m[2], fail: m[3] || null, cond: compile(m[4] && m[4].trim()), cost: m[5] ? +m[5] : 0, attrs, ...at };
   if (attrs.do) s.effects = compileEffects(attrs.do);
+  // {dir: wry 1 fast}: how Lamb performs the option once chosen (direction.mjs)
+  if (typeof attrs.dir === "string") { const d = parseDirection(attrs.dir); s.dir = d.dir; if (d.errors.length) s.dirErrors = d.errors; }
   // {show: cond} hides any choice until it holds. On a claim the condition picks the outcome,
   // so {when: cond} on a claim also only hides it (R13); on opt and check it joins the condition.
   const show = [attrs.show, kind === "claim" ? attrs.when : null].filter((x) => typeof x === "string" && x.trim());
@@ -64,6 +67,9 @@ export function parseChoice(kind, value, at) {
 }
 
 const speakerOf = (v) => { const k = v.indexOf(": "); return k < 0 ? { who: "", text: v } : { who: v.slice(0, k).trim(), text: v.slice(k + 2) }; };
+// A spoken text: the [direction] block and <cues> come out of what the screen shows (direction.mjs)
+const directed = (text) => { const d = splitDirected(text); const o = { text: d.text }; if (Object.keys(d.dir).length) o.dir = d.dir; if (d.cues.length) o.cues = d.cues; if (d.errors.length) o.dirErrors = d.errors; return o; };
+const spoken = (sp) => ({ ...sp, ...directed(sp.text) });
 
 // One node line to a step.
 export function parseStep(key, value, at) {
@@ -81,16 +87,19 @@ export function parseStep(key, value, at) {
       return { kind: "if", cond: compile(v.slice(0, k)), effects: compileEffects(v.slice(k + 2)), ...at };
     }
     // nar, line and inst take {when: cond} and {once} like voice lines (R15); the block never prints
-    case "line": case "inst": { const { body, attrs } = splitAttrs(value); return { kind: key, ...speakerOf(body), attrs, cond: compile(attrs.when), once: !!attrs.once, ...at }; }
-    case "nar": { const { body, attrs } = splitAttrs(value); return { kind: "nar", value: body.trim(), attrs, cond: compile(attrs.when), once: !!attrs.once, ...at }; }
+    case "line": case "inst": { const { body, attrs } = splitAttrs(value); return { kind: key, ...spoken(speakerOf(body)), attrs, cond: compile(attrs.when), once: !!attrs.once, ...at }; }
+    case "nar": { const { body, attrs } = splitAttrs(value), d = directed(body.trim()); return { kind: "nar", value: d.text, ...(d.dir && { dir: d.dir }), ...(d.cues && { cues: d.cues }), ...(d.dirErrors && { dirErrors: d.dirErrors }), attrs, cond: compile(attrs.when), once: !!attrs.once, ...at }; }
     case "voice": { // voice: SKILL: text {dc: n, below: n, when: cond, once}
-      const { body, attrs } = splitAttrs(value), sp = speakerOf(body);
-      return { kind: "voice", skill: sp.who, text: sp.text, dc: attrs.dc ?? null, below: attrs.below ?? null, cond: compile(attrs.when), once: !!attrs.once, attrs, ...at };
+      const { body, attrs } = splitAttrs(value), sp = spoken(speakerOf(body));
+      return { kind: "voice", skill: sp.who, text: sp.text, ...(sp.dir && { dir: sp.dir }), ...(sp.cues && { cues: sp.cues }), ...(sp.dirErrors && { dirErrors: sp.dirErrors }), dc: attrs.dc ?? null, below: attrs.below ?? null, cond: compile(attrs.when), once: !!attrs.once, attrs, ...at };
     }
     case "passive": { // passive: SKILL -> node {dc: n, when: cond}
       const { body, attrs } = splitAttrs(value), m = body.trim().match(new RegExp(`^([\\w.]+)\\s*->\\s*(${TARGET})$`));
       if (!m) throw new SyntaxError(`passive: expected "skill -> node {dc: n}", got ${v}`);
       return { kind: "passive", skill: m[1], target: m[2], dc: attrs.dc ?? null, cond: compile(attrs.when), once: attrs.once !== false, attrs, ...at };
+    }
+    case "dir": { // dir: NAME: tokens   a node default for that speaker (direction.mjs)
+      const sp = speakerOf(v), d = parseDirection(sp.text); return { kind: "dir", who: sp.who, dir: d.dir, ...(d.errors.length && { dirErrors: d.errors }), ...at };
     }
     case "set": case "clear": return { kind: key, value: v, effects: compileEffects(`${key}(${v})`), ...at };
     case "xp": return { kind: "do", effects: compileEffects(`xp(${v})`), ...at };
@@ -99,6 +108,7 @@ export function parseStep(key, value, at) {
     case "return": return { kind: "return", ...at };
     case "go": case "call": case "end": case "exit": case "place": case "read": case "else":
     case "speaker": case "hub": case "title": case "note": case "camera": case "walk":
+    case "hud-clock": case "hud-weather": // the scene's own hour and weather on the HUD while @meta hud-held holds (ui/hudtab.mjs)
       return { kind: key, value: v, ...at };
     default: return { kind: "unknown", key, value: v, ...at };
   }

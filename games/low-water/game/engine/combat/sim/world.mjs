@@ -19,7 +19,7 @@
 import { defineMoves } from "./moves.mjs";
 import { COMMON, RULES } from "../data/common.mjs";
 import { createField } from "./field.mjs";
-import { createFighter, consumeBuffer, stepAction, stepFree, stepRecovery, integrate, startMove } from "./fighter.mjs";
+import { createFighter, consumeBuffer, stepAction, stepFree, stepRecovery, integrate, startMove, bodyMay, settleClear } from "./fighter.mjs";
 import { findContacts, applyHit } from "./hits.mjs";
 import { softTarget, riposteTarget, toggleLock, switchLock, keepLock, lamps, visible } from "./target.mjs";
 import { spawnProjectile, stepProjectiles } from "./projectiles.mjs";
@@ -32,6 +32,7 @@ import { hashStr } from "../../core/rng.mjs";
 import { engaged } from "./ground.mjs";
 import { retreatingFrom, apart } from "../ai/pursuit.mjs";
 import { WORLD, OFF } from "../data/world.mjs";
+import { dhypot } from "./math.mjs";
 
 const FX_KINDS = new Set(["hit", "parry", "block", "guardbreak", "evade"]);
 
@@ -54,15 +55,41 @@ export function createWorld({ G, arena, fighters, seed = 1, minutesPerFrame = 0,
   W.riposteTarget = (F) => riposteTarget(W, F);
   W.visible = (A, B) => visible(W, A, B);
   W.useItem = (F, m) => useItem(W, F, m);
+  W.shout = (F, m) => shout(W, F, m);
+  // a fighter joining a fight under way (a summon, the arena's next wave): its moves into the table, its
+  // def and brain in; returns the new fighter
+  W.addFighter = (f) => {
+    Object.assign(W.moves, defineMoves(f.moves || {}));
+    W.defs[f.id] = { ...f.def, moves: Object.keys(f.moves || {}) };
+    const F = createFighter(f.def, f); W.fighters.push(F);
+    if (f.brain) W.brains[f.id] = f.brain;
+    W.emit({ type: "join", id: f.id, kind: f.def.kind });
+    return F;
+  };
   W.step = (inputs = {}) => step(W, inputs);
   W.hash = () => hashWorld(W);
   W.lamb = () => W.fighters.find((F) => F.team === "lamb");
   W.takedownTarget = (F) => takedownTarget(W, F);
   // a talk exit the content offers now (encounter.mjs sets it; null withdraws it)
   W.offerTalk = (offer) => { const was = W.talk && W.talk.node; W.talk = offer; if (offer && offer.node !== was) W.emit({ type: "talk.offer", ...offer }); if (!offer && was) W.emit({ type: "talk.withdrawn" }); };
+  if (arena.grid) for (const F of W.fighters) settleClear(W, F);   // plates: nobody starts with an edge in a prop
   installProps(W, anchorProps(arena, [...(arena.props || []).map((w) => parseProp(w)), ...props]));
   applyOpening(W, opening, { lastSeen });
   return W;
+}
+
+// A call to the others on the caller's side within m.shout.r: their next attack comes at once (cool), and
+// poise and Breath come back by the amounts given. The arena's sweeper and captain use it.
+function shout(W, F, m) {
+  const S = m.shout, n = [];
+  for (const O of W.fighters) {
+    if (O === F || O.team !== F.team || O.out || O.fallen || O.yielded || dhypot(O.x - F.x, O.z - F.z) > S.r) continue;
+    if (S.cool && O.mem) { O.mem.cool = W.tick; O.mem.next = W.tick; }
+    if (S.poise) O.poise = Math.min(O.poiseMax, O.poise + S.poise);
+    if (S.stamina) O.st = Math.min(O.stMax, O.st + S.stamina);
+    n.push(O.id);
+  }
+  W.emit({ type: "shout", id: F.id, move: m.id, to: n });
 }
 
 function useItem(W, F, m) {
@@ -151,12 +178,12 @@ function separate(W) {
   const live = W.fighters.filter((F) => !F.out && !F.fallen);
   for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) {
     const A = live[i], B = live[j], min = W.defs[A.id].radius + W.defs[B.id].radius;
-    const dx = B.x - A.x, dz = B.z - A.z, d = Math.hypot(dx, dz);
+    const dx = B.x - A.x, dz = B.z - A.z, d = dhypot(dx, dz);
     if (d >= min) continue;
     const nx = d > 1e-6 ? dx / d : 1, nz = d > 1e-6 ? dz / d : 0, push = (min - d) / 2;
     // the push never moves a body into solid ground
-    if (!W.field.solid(A.x - nx * push, A.z - nz * push)) { A.x -= nx * push; A.z -= nz * push; }
-    if (!W.field.solid(B.x + nx * push, B.z + nz * push)) { B.x += nx * push; B.z += nz * push; }
+    if (bodyMay(W, A, A.x - nx * push, A.z - nz * push)) { A.x -= nx * push; A.z -= nz * push; }   // nor its edge into a prop
+    if (bodyMay(W, B, B.x + nx * push, B.z + nz * push)) { B.x += nx * push; B.z += nz * push; }
   }
 }
 
@@ -190,12 +217,16 @@ function judge(W) {
   if (W.talkTaken) return end("talk", W.talkTaken.node);
   if (L.fallen) return end("down", "standing");
   if (!foes.length) { if (W.endEmpty) end("win", "nobody"); return; }
+  // a boss down: the hands it called in give up (a boss fight ends with its boss, The Quota's granary door)
+  for (const B of foes) if (W.defs[B.id].boss && B.out && !B.yielded) for (const H of foes) if (!H.out && H.id.startsWith(`${B.id}-hand`)) { H.yielded = true; H.out = true; W.emit({ type: "yield", id: H.id, by: "lamb" }); }
   if (foes.every((F) => F.out)) return end(foes.every((F) => F.yielded) ? "yield" : "win", "opponents");
   if (W.limitFrames && W.tick >= W.limitFrames) return end(breakOff(W, L, foes), "time");
   // fleeing takes intent: Lamb free, in an exit, and steering (a knockback into an exit is not flight)
-  const steering = L.inp && Math.hypot(L.inp.mx || 0, L.inp.mz || 0) > 0.2;
+  const steering = L.inp && dhypot(L.inp.mx || 0, L.inp.mz || 0) > 0.2;
   W.fleeT = W.field.inExit(L.x, L.z) && !L.act && steering ? W.fleeT + 1 : 0;
-  if (W.fleeT >= 45) return end("fled", "exit");
+  // half a second of steering inside a way out leaves the fight: a run through a doorway two metres deep
+  // takes about that (2026-10-21: at 0.75 s a running Lamb crossed an inside door and stayed in the fight)
+  if (W.fleeT >= 30) return end("fled", "exit");
   // the sea's own level, not a sluice's local flood
   if (W.field.arena.tideEnds && W.field.waterY() - W.field.cellAt(L.x, L.z).h >= 0.85) return end("lose", "tide");
 }
@@ -224,7 +255,7 @@ function step(W, inputs) {
   gather(W, inputs);
   for (const F of W.fighters) stepFighter(W, F);
   const L0 = W.lamb();
-  const near = L0 && !L0.fallen && W.fighters.filter((F) => F.team !== L0.team && !F.out && !F.fallen && F.aware !== false).sort((a, b) => Math.hypot(a.x - L0.x, a.z - L0.z) - Math.hypot(b.x - L0.x, b.z - L0.z))[0];
+  const near = L0 && !L0.fallen && W.fighters.filter((F) => F.team !== L0.team && !F.out && !F.fallen && F.aware !== false).sort((a, b) => dhypot(a.x - L0.x, a.z - L0.z) - dhypot(b.x - L0.x, b.z - L0.z))[0];
   if (near && retreatingFrom(W, near, L0)) W.kited = (W.kited || 0) + 1; // Lamb opening the gap on the nearest opponent
   if (near && apart(W, L0)) W.apart = (W.apart || 0) + 1; // Lamb in nobody's reach
   separate(W);

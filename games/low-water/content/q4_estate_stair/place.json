@@ -1,0 +1,147 @@
+{
+ "place": "q4_estate_stair",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   -0.3,
+   1.6,
+   -0.4
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 4.333333333333333
+ },
+ "pxPerMetre": 150,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 23.7,
+   "weather": "year 70, 23:40: the landing tube blinking, the bulb below gone, sodium in the slot window"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  111
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "stair",
+    "verb": "look",
+    "at": [
+     -0.4,
+     0,
+     1.2
+    ],
+    "note": "the stair: the bulb on the first landing gone, the tube above blinking"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "out",
+    "at": [
+     1.8,
+     0,
+     1.6
+    ],
+    "note": "the door out to the estate"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -0.8,
+     3.85,
+     -1.45
+    ],
+    "kind": "white",
+    "I": 15,
+    "reach": 8,
+    "group": "white"
+   },
+   {
+    "at": [
+     1.8,
+     1.9,
+     3.4
+    ],
+    "kind": "sodium",
+    "I": 34,
+    "reach": 9,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     1.5,
+     3.3,
+     -2.8
+    ],
+    "kind": "sodium",
+    "I": 34,
+    "reach": 8,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "night": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: the far-bank estate, stairwell C."
+}

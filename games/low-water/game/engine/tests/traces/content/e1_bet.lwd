@@ -1,0 +1,144 @@
+# Era 1, The Exchange: Abel and Bet. The marriage as a transaction in the Furrowe parlour; what Bet knows, told to
+# Edie at the fitting (Ilo never hears it); the wedding, a pleasure before Osby. Story lead, deepening pass,
+# 2026-10-23. DRAFT: every line waits for the author's line approval (ledger row S14). The marriage is fixed by
+# canon (era1.md section 3); the scene varies, and Abel's choice here moves only what is said about the rent.
+
+@place q1_furrowe
+name: The Furrowe parlour, Exchange Street
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.4
+sodium: 0
+dark-light: 0.02
+
+@place q1_edie
+name: Edie's room over the draper's
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+@fact e1.rent_fixed
+@fact e1.rent_open
+
+@char e1.mary
+name: Mary Furrowe
+speaker: MARY
+faction: chairmen
+about: Twenty-eight. Ned's wife. Nursing Pell, born at harvest.
+
+# ---------------------------------------------------------------- the Furrowe parlour, the Friday morning
+@node e1.bet.parlour
+place: q1_furrowe
+speaker: BET
+cost: 0
+nar: The Furrowe parlour, the morning after the loft. A good room nobody sits in: a horsehair sofa, a clock under a glass dome, a framed certificate from the exchange with Abel's name in copperplate. The fire's laid and not lit.
+nar: Bet Carrow has come in by the back, through the scullery, because that's the way she's always come into this house, since she was fifteen and did the Furrowes' step on a Saturday for sixpence. She has Anni on her hip. She hasn't been asked to sit and she doesn't.
+nar: Abel is at the table by the window with an envelope in front of him, square to the edge, and a sheet of paper with figures on it in his own hand.
+line: ABEL: He's said yes.
+line: BET: I know. He came by ours last night with his arm in a sack and asked my dad for me. My dad laughed at him for a quarter of an hour.
+line: ABEL: What's wrong with his arm.
+line: BET: You'd have to ask Josh Brack's dog. {when: !has(e1.dog_called)}
+line: BET: He says a hawthorn. He says it like he's proud of it. {when: has(e1.dog_called)}
+nar: Abel looks at the envelope for a while.
+line: ABEL: The barns at Haldane's, then. The house and the end barn and the paddock. At Purkiss's rent, which was fair, and which I've not put up.
+line: BET: Purkiss paid four and six.
+line: ABEL: Purkiss paid four and six.
+line: BET: And what else.
+line: ABEL: There's twelve pound in that for the wedding and the setting up. You'll not need to say where it's from.
+line: BET: Who'd I say it to.
+line: ABEL: And the little one goes in the book as his. That's a kindness to her, Bet. You know it is. A child wants a name on her paper.
+nar: Through the wall, in the back room, Mary Furrowe's baby starts crying, the thin new crying of a baby a week old. Then Mary's voice, low, singing to it. Bet turns her head to the wall and listens to it. Anni turns her head too, because her mother did.
+line: BET: That's Pell.
+line: ABEL: That's Pell.
+line: BET: He's got a good pair of lungs.
+line: ABEL: He has.
+nar: Bet hitches Anni up her hip. Anni has got hold of Bet's collar and is chewing it.
+line: BET: She'll not come to this house. Not to the front, not to the back. That's what you're paying for. I'm not soft. I did your step for five years.
+line: ABEL: I'd not put it like that.
+line: BET: You'd not put it any way at all. That's what the twelve pound is.
+line: BET: And Ned's not to come to the barns. Not for the rent. Not for anything. You'll send somebody.
+line: ABEL: I'll come for the rent myself.
+line: BET: Then you'll come. Not him.
+line: ABEL: Not him.
+nar: She takes the envelope off the table and doesn't open it to count it, which is the thing Abel will remember about her: she didn't count it. She puts it in the front of her dress.
+alt: e1.bet.rent ? q_class == inspector
+go: e1.bet.door
+
+@node e1.bet.rent
+place: q1_furrowe
+speaker: BET
+cost: 0
+line: BET: One more thing. The four and six. I want it written that it stays four and six. Whoever has the barns after you. As long as I'm in them.
+voice: sum: Four and six for thirty years. The barns'll be worth eight by the time she's forty. {dc: 2}
+voice: pride: She's a Carrow off the Osby road. She's asking you for a paper. {dc: 2}
+opt: "Say it: I'll write it. Four and six as long as you're in them. I'll get Mott to witness it." -> e1.bet.door {do: set(e1.rent_fixed)}
+opt: "Say it: The rent's the rent, Bet. It'll be fair. You've my word on it." -> e1.bet.door {do: set(e1.rent_open)}
+
+@node e1.bet.door
+place: q1_furrowe
+speaker: BET
+cost: 0
+line: ABEL: I'll write it. You'll have it by Sunday. {when: has(e1.rent_fixed)}
+line: BET: Your word. Right. {when: has(e1.rent_open)}
+nar: She goes out by the scullery the way she came. In the passage she stops by the back room door, where the singing is, and stands there with Anni for as long as it takes to say a short prayer, and then goes on.
+nar: Abel sits at the table with the sheet of figures, and takes his pencil, and under Purkiss, four and six, writes Haldane, and stops, because it's not a name yet till Friday, and rubs it out.
+go: e1.bet.edie
+
+# ---------------------------------------------------------------- what Bet knows, told to Edie at the fitting
+@node e1.bet.edie
+place: q1_edie
+speaker: EDIE
+cost: 0
+nar: Edie's room over the draper's, the same afternoon. A dressmaker's dummy with no head, pins in a tin, a long glass with a crack across one corner. Bet is standing on a chair in her good blue, the one Edie let out in the spring of the year before last, being taken back in.
+line: EDIE: Breathe in.
+line: BET: I am breathing in.
+line: EDIE: Breathe in like you mean it. You've been eating Furrowe's bread.
+line: BET: I've been eating my dad's bread. It's all chaff.
+nar: Edie has pins in her mouth and talks round them. She takes the waist in an inch, and another inch, kneeling on the floor with the hem across her knees. Anni is asleep on Edie's bed on a pile of offcuts.
+line: EDIE: So it's the hill man.
+line: BET: It's Ilo.
+line: EDIE: It's Ilo who sings on the rick with his shirt off.
+line: BET: That's him.
+line: EDIE: Does he know.
+line: BET: Know what.
+nar: Edie takes the pins out of her mouth one at a time and puts them in the cushion.
+line: EDIE: Bet. I let this out in March. I let it out again in May. I know what I let it out for.
+nar: Bet looks at herself in the cracked glass for a long time, in the blue dress, standing on a chair, like a statue of somebody.
+line: BET: He knows. He was at the wedding. Ned's. He carried the chairs.
+line: EDIE: And he's having you anyway.
+line: BET: He's having a roof. Furrowe's giving him the barns and a name in the book, and he'll not go up the hill at the frost. I'm in with the barns. Like the door.
+line: EDIE: That's a horrible thing to say.
+line: BET: It's what it is, though. He's not daft. He's the least daft man I know. He asked my dad for me with his arm bleeding through a sack, and my dad laughed at him, and he stood there and let him.
+nar: Edie gets up off the floor and stands back to look at the waist. It's good. It's the best she's done.
+line: EDIE: Do you like him.
+line: BET: I like him better than Ned. Ned cried.
+line: EDIE: When.
+line: BET: When I told him. He sat on my dad's wall and cried, and I had to tell him it'd be all right. Me. Telling him.
+nar: She gets down off the chair, careful of the pins.
+line: BET: You'll not say. To anybody. Not your mam, not Will Brack.
+line: EDIE: Who'd I say it to.
+line: BET: That's what I said to Furrowe.
+go: e1.supper
+
+# ---------------------------------------------------------------- the wedding, the Sunday
+@node e1.wedding
+place: q1_barns
+speaker: CARROW
+cost: 0
+nar: The Sunday. The wedding is at nine at the Furrow Church, before the service, so the vicar can do it and then do the service, and there are six people at it, and one of them is asleep, and that's Anni.
+nar: After, in the barns at Haldane's, the hands who are left have made a table out of planks on two barrels, and there's a ham end from Orme's supper that Edie got from the barn the morning after, and bread, and a cake Bet's mother made with no eggs in it that sinks in the middle like a saddle.
+nar: Old Carrow has his fiddle, which is worse than Orme's fiddler's but knows more than four tunes. He plays sitting on a cask with his eyes shut. Ilo dances with Bet in the straw, badly, with his bad arm held up out of the way like a man carrying a tray.
+line: CARROW: You dance like a hen in a wind.
+line: ILO: I dance like a hill man.
+line: CARROW: That's what I said.
+nar: Then Ilo dances with Anni, holding her up, swinging her round till she screams, and puts her down dizzy, and she falls on her bottom in the straw and looks surprised, and gets up and holds her arms up for more.
+nar: The rent paper is on the plank table under the ham, in Abel's hand, with Edwin Mott's name under it as witness. Bet keeps putting her hand on it. {when: has(e1.rent_fixed)}
+nar: Bet's mother takes Ilo by the face with both hands in the yard and looks at him a long time, the way you'd look at a horse you'd been sold, and then kisses him on the forehead, hard, and lets go.
+go: e1.osby

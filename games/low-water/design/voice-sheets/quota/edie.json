@@ -1,0 +1,70 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "EDIE",
+ "setting": "quota",
+ "status": "draft 2026-10-21 from design/quota/02-HOUSEHOLDS.md by the voice director; generated from design/voice/quota-cast.json, edit that file",
+ "role": "Edie Brack (named by the story lead in content/quota/q_dinner.lwd): keeps the house; takes in mending",
+ "age": "about 34",
+ "register": {
+  "level": "plain",
+  "education": "the village school",
+  "class": "working",
+  "trade": "keeps the house; takes in mending",
+  "words": [
+   "mending",
+   "the stairs",
+   "tea",
+   "your father"
+  ]
+ },
+ "region": {
+  "name": "tarn-plain",
+  "markers": [
+   "you'll not",
+   "'em"
+  ],
+  "idioms": [
+   "he's tired",
+   "mind your father"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 14
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television",
+  "abuse",
+  "violent"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "what happens at the table",
+   "the price of bread"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "cell",
+     "cells"
+    ],
+    "why": "Will does not bring the cells home (derived); she knows the Haldanes from the dame school",
+    "unless_gate": [
+     "will.drunk_told"
+    ]
+   }
+  ]
+ },
+ "trade": "keeps the house; takes in mending",
+ "wound": "She pulls her sleeve down over her wrist when Will reaches across the table, though it is already down, and gets up to see to a fire that does not need it.",
+ "lie": "He's tired, that's all.",
+ "fears": "She pulls her sleeve down over her wrist when Will reaches across the table, though it is already down, and gets up to see to a fire that does not need it.",
+ "hides": "He's tired, that's all.",
+ "tics": [
+  "he's tired",
+  "mind your father"
+ ]
+}

@@ -1,0 +1,185 @@
+# Era 4 of The Quota (year 70, the closure, one month in late autumn; design/eras/era4.md): its sixteen places wired
+# as areas on their own plates (plates agent, 2026-10-22; render/places/q4_*.mjs, baked by render/bake_era4.sh).
+# Loaded by the shell beside wiring/quota-areas.lwd (ui/app.mjs content=quota). The tower and the Sheaf are era 4's
+# own plates of era 2's places (q4_tower, q4_sheaf), so era 2's areas are untouched.
+# hud-clock and hud-weather: the hour and the weather the HUD shows here while @meta hud-held holds (var.era == 4,
+# content/quota/slice.lwd), read by ui/hudtab.mjs. Mira's kitchen is year 103: the witness shows no weather.
+# No figures yet: era 4's cast has no sculpted figures; the scenes' speakers show on the talk page only.
+
+# ---------------------------------------------------------------- the wide lens: the town at the closure
+@area q4.tower
+name: The bell tower over Exchange Street
+plate: q4_tower
+place: q4_tower
+lens: wide
+variant: dusk
+hud-clock: 17:40
+hud-weather: late autumn, the first sodium
+spawn: 0 0 1.5
+camera: 0.6
+
+@area q4.station
+name: The station platform
+plate: q4_station
+place: q4_station
+lens: wide
+variant: dusk
+hud-clock: 18:05
+hud-weather: late autumn, cold
+spawn: 0 0 1.5
+camera: 0.6
+
+@area q4.mill_yard
+name: The mill yard and the gate
+plate: q4_mill_yard
+place: q4_mill_yard
+lens: wide
+variant: dusk
+hud-clock: 17:25
+hud-weather: late autumn, drizzle
+spawn: 0 0 1.5
+camera: 0.6
+
+@area q4.row
+name: The Row, by the race
+plate: q4_row
+place: q4_row
+lens: wide
+variant: night
+hud-clock: 23:10
+hud-weather: late autumn, wet
+spawn: 0 0 1.5
+camera: 0.6
+
+@area q4.exchange_street
+name: Exchange Street at night
+plate: q4_exchange_street
+place: q4_exchange_street
+lens: wide
+variant: night
+hud-clock: 01:25
+hud-weather: late autumn, wet
+spawn: 0 0 1.5
+camera: 0.6
+
+# ---------------------------------------------------------------- the narrow lens: rooms
+@area q4.mill_office
+name: The mill manager's office
+plate: q4_mill_office
+place: q4_mill_office
+lens: narrow
+variant: morning
+hud-clock: 10:30
+hud-weather: late autumn, overcast
+spawn: 0.9 0 1.0
+camera: 0.9
+
+@area q4.mill_floor
+name: The mill floor
+plate: q4_mill_floor
+place: q4_mill_floor
+lens: narrow
+variant: last_shift
+hud-clock: 17:20
+hud-weather: late autumn
+spawn: 0 0 2.3
+camera: 0.9
+
+@area q4.board
+name: The bank's boardroom
+plate: q4_board
+place: q4_board
+lens: narrow
+variant: afternoon
+hud-clock: 15:30
+hud-weather: late autumn, low sun
+spawn: 1.0 0 1.7
+camera: 0.9
+
+@area q4.furrowe_house
+name: Pell Furrowe's kitchen
+plate: q4_furrowe_house
+place: q4_furrowe_house
+lens: narrow
+variant: afternoon
+hud-clock: 16:10
+hud-weather: late autumn, overcast
+spawn: 0.6 0 1.3
+camera: 0.9
+
+@area q4.brack_flat
+name: Davey Brack's flat over the Crown
+plate: q4_brack_flat
+place: q4_brack_flat
+lens: narrow
+variant: night
+hud-clock: 22:10
+hud-weather: late autumn, wet
+spawn: -0.6 0 1.2
+camera: 0.9
+
+@area q4.estate_stair
+name: The far-bank estate, stairwell C
+plate: q4_estate_stair
+place: q4_estate_stair
+lens: narrow
+variant: night
+hud-clock: 23:40
+hud-weather: late autumn, cold
+spawn: -0.5 0 1.0
+camera: 0.9
+
+@area q4.sheaf
+name: The Sheaf, closure night
+plate: q4_sheaf
+place: q4_sheaf
+lens: narrow
+variant: closure
+hud-clock: 21:10
+hud-weather: late autumn, wet
+spawn: 0.4 0 1.6
+camera: 0.9
+
+@area q4.joss_flat
+name: Joss Haldane's flat, Haldane Yard
+plate: q4_joss_flat
+place: q4_joss_flat
+lens: narrow
+variant: evening
+hud-clock: 19:30
+hud-weather: late autumn, cold
+spawn: 1.1 0 0.9
+camera: 0.9
+
+@area q4.well_floor
+name: The Well House floor
+plate: q4_well_floor
+place: q4_well_floor
+lens: narrow
+variant: prayer
+hud-clock: 19:00
+hud-weather: late autumn, cold
+spawn: -0.2 0 1.2
+camera: 0.9
+
+@area q4.police
+name: The police station desk
+plate: q4_police
+place: q4_police
+lens: narrow
+variant: morning
+hud-clock: 08:40
+hud-weather: late autumn, overcast
+spawn: 1.0 0 1.0
+camera: 0.9
+
+@area q4w.saro_flat
+name: Mira Saro's kitchen, Mill Street, year 103
+plate: q4w_saro_flat
+place: q4w_saro_flat
+lens: narrow
+variant: evening
+hud-clock: 20:30
+hud-weather: 
+spawn: 0.6 0 1.0
+camera: 0.9

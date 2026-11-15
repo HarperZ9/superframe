@@ -1,0 +1,243 @@
+// sim/field.mjs for row arenas (every arena in the corpus is one): cells,
+// water, footing, light and sight. The field's terms come from the export.
+
+fn wall_cell() -> Cell {
+    Cell { surface: "stone", h: 99.0, solid: true }
+}
+
+fn cell_at(w: &World, x: f64, z: f64) -> Cell {
+    let a = w.arena;
+    let c = ((x - a.ox) / a.cell).floor() as i64;
+    let r = ((z - a.oz) / a.cell).floor() as i64;
+    let nrows = a.rows.len() as i64;
+    let ri = if r < 0 { 0 } else if r > nrows - 1 { nrows - 1 } else { r };
+    let row = a.rows[ri as usize];
+    let ncols = row.len() as i64;
+    let ci = if c < 0 { 0 } else if c > ncols - 1 { ncols - 1 } else { c };
+    let ch = row.as_bytes()[ci as usize];
+    let mut i = 0;
+    while i < a.legend_keys.len() {
+        if a.legend_keys[i].as_bytes()[0] == ch {
+            let cell = a.legend_cells[i];
+            if cell.solid {
+                return wall_cell();
+            }
+            return cell;
+        }
+        i += 1;
+    }
+    Cell { surface: "stone", h: 0.0, solid: false }
+}
+
+fn solid(w: &World, x: f64, z: f64) -> bool {
+    cell_at(w, x, z).solid
+}
+
+fn line_clear(w: &World, ax: f64, az: f64, bx: f64, bz: f64) -> bool {
+    let d = dhypot(bx - ax, bz - az);
+    let n = (d / (w.arena.cell * 0.5)).ceil();
+    let mut i = 1.0;
+    while i < n {
+        let t = i / n;
+        if solid(w, ax + (bx - ax) * t, az + (bz - az) * t) {
+            return false;
+        }
+        i += 1.0;
+    }
+    true
+}
+
+fn sight_clear(w: &World, ax: f64, az: f64, bx: f64, bz: f64) -> bool {
+    line_clear(w, ax, az, bx, bz)
+}
+
+fn water_y(w: &World) -> f64 {
+    if w.arena.has_water {
+        w.arena.water_a + w.arena.water_b * w.terms.tide
+    } else {
+        -9.0
+    }
+}
+
+fn flood_at(w: &World, x: f64, z: f64) -> f64 {
+    let mut a = 0.0;
+    let mut i = 0;
+    while i < w.floods.len() {
+        let f = w.floods[i];
+        if x >= f.z0 && x <= f.z2 && z >= f.z1 && z <= f.z3 {
+            a = a + f.add;
+        }
+        i += 1;
+    }
+    a
+}
+
+fn depth_at(w: &World, x: f64, z: f64) -> f64 {
+    let vs = if w.arena.has_water { w.arena.water_vscale } else { 1.0 };
+    (water_y(w) + flood_at(w, x, z) - cell_at(w, x, z).h) / vs
+}
+
+struct Footing {
+    surface: str,
+    kind: str,
+    grip: f64,
+    depth: f64,
+    band: str,
+    regen: f64,
+    accel: f64,
+    turn: f64,
+    friction: f64,
+    speed: f64,
+    root: f64,
+    recovery: f64,
+    frost: bool,
+    wet: bool,
+}
+
+fn grip_of(w: &World, kind: str) -> f64 {
+    let i = index_of(w.grip_keys, kind);
+    if i < 0 {
+        return 1.0;
+    }
+    w.grip_vals[i as usize]
+}
+
+fn footing(w: &World, x: f64, z: f64) -> Footing {
+    let cell = cell_at(w, x, z);
+    let d = depth_at(w, x, z);
+    // WATER_BANDS: dry, ankle 0.08, knee 0.4, waist 0.85
+    let mut band = "dry";
+    let mut bspeed = 1.0;
+    let mut bregen = 1.0;
+    let mut baccel = 1.0;
+    let mut broot = 1.0;
+    if d >= 0.08 {
+        band = "ankle";
+        bspeed = 0.86;
+        bregen = 0.9;
+        baccel = 0.9;
+        broot = 0.95;
+    }
+    if d >= 0.4 {
+        band = "knee";
+        bspeed = 0.6;
+        bregen = 0.6;
+        baccel = 0.7;
+        broot = 0.7;
+    }
+    if d >= 0.85 {
+        band = "waist";
+        bspeed = 0.36;
+        bregen = 0.35;
+        baccel = 0.5;
+        broot = 0.45;
+    }
+    let t = w.terms;
+    let mut kind = cell.surface;
+    if t.outdoors && t.frost >= 1.0 && d < 0.0 {
+        kind = "frost";
+    } else if t.outdoors && t.rain > 0.5 {
+        kind = format!("wet {}", kind);
+    }
+    if d > 0.05 {
+        kind = "water";
+    }
+    let grip = grip_of(w, kind);
+    let mut sspeed = 1.0;
+    let mut sroot = 1.0;
+    let mut srec = 0.0;
+    if cell.surface == "mud" {
+        sspeed = 0.72;
+        sroot = 0.72;
+        srec = 6.0;
+    }
+    let slip = if sroot < 1.0 { 0.0 } else { 1.0 };
+    Footing {
+        surface: cell.surface, kind: kind, grip: grip, depth: d, band: band, regen: bregen,
+        accel: grip * baccel, turn: 0.5 + 0.5 * grip, friction: 3.0 + 12.0 * grip,
+        speed: sspeed * bspeed, root: sroot * broot * (1.0 + 0.35 * (1.0 - grip) * slip),
+        recovery: srec, frost: kind == "frost", wet: kind.starts_with("wet ") || kind == "water"
+    }
+}
+
+fn lit_share(w: &World) -> f64 {
+    let n = w.arena.lights.len();
+    if n == 0 {
+        return 1.0;
+    }
+    let mut on = 0.0;
+    let mut i = 0;
+    while i < n {
+        if !w.arena.lights[i].off {
+            on += 1.0;
+        }
+        i += 1;
+    }
+    on / (n as f64)
+}
+
+fn light_at(w: &World, x: f64, z: f64, lamps: Vec<GroundLight>) -> f64 {
+    let share = lit_share(w);
+    let mut l = clampf(w.terms.dark + (w.terms.light - w.terms.dark) * share, 0.0, 1.0);
+    let mut i = 0;
+    while i < w.arena.lights.len() {
+        let s = w.arena.lights[i];
+        if !s.off {
+            let d = dhypot(x - s.x, z - s.z);
+            if d < s.r {
+                l = maxf(l, s.k * (1.0 - d / s.r));
+            }
+        }
+        i += 1;
+    }
+    i = 0;
+    while i < lamps.len() {
+        let s = lamps[i];
+        let d = dhypot(x - s.x, z - s.z);
+        if d < s.r {
+            l = maxf(l, s.k * (1.0 - d / s.r));
+        }
+        i += 1;
+    }
+    // Mother's beam: no corpus arena has beams
+    maxf(l, 0.0)
+}
+
+fn sodium_at(w: &World, x: f64, z: f64) -> bool {
+    if w.terms.sodium * lit_share(w) > 0.3 {
+        return true;
+    }
+    let mut i = 0;
+    while i < w.arena.lights.len() {
+        let s = w.arena.lights[i];
+        if s.sodium && !s.off && dhypot(x - s.x, z - s.z) < s.r * 0.8 {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn seen_range(w: &World, light: f64) -> f64 {
+    clampf((2.2 + 22.0 * light) / (1.0 + w.terms.fog * 32.0), 1.6, 24.0)
+}
+
+fn in_exit(w: &World, x: f64, z: f64) -> bool {
+    let mut i = 0;
+    while i < w.arena.exits.len() {
+        let e = w.arena.exits[i];
+        if x >= e[0] && x <= e[2] && z >= e[1] && z <= e[3] {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn anchor_points(w: &World, kind: str) -> Vec<f64> {
+    let i = index_of(w.arena.anchor_keys, kind);
+    if i < 0 {
+        return Vec::new();
+    }
+    w.arena.anchor_pts[i as usize]
+}

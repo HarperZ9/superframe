@@ -1,0 +1,175 @@
+{
+ "place": "q5_tower",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   0.6,
+   6.4,
+   -2.2
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 13.5
+ },
+ "pxPerMetre": 40,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "evening"
+ ],
+ "variantInfo": {
+  "evening": {
+   "hour": 19.6,
+   "weather": "year 115, April, 19:35: overcast going to dusk, the gate lamp lit on the path, the mast's red light over the stones"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  120,
+  121,
+  122,
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "mast",
+    "verb": "look",
+    "at": [
+     1.5,
+     0,
+     -2.4
+    ],
+    "note": "the mast where the bell hung: grey lattice, dishes, the red light that blinks all night"
+   },
+   {
+    "id": "pegs",
+    "verb": "look",
+    "at": [
+     -4,
+     0,
+     0.6
+    ],
+    "note": "survey pegs with orange tops, strung in a line through the old stones; orange paint on the ones to be moved"
+   },
+   {
+    "id": "gate",
+    "verb": "look",
+    "at": [
+     -0.6,
+     0,
+     4.6
+    ],
+    "note": "the churchyard gate under its lamp, the clearance notice cable-tied to the site fence"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "square",
+    "at": [
+     10,
+     0,
+     -1
+    ],
+    "note": "the path to Exchange Square"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "evening": [
+   {
+    "at": [
+     0,
+     20.65,
+     -6
+    ],
+    "kind": "paraffin",
+    "I": 0.25,
+    "reach": 1.5,
+    "group": "mast"
+   },
+   {
+    "at": [
+     -16.2,
+     3.6,
+     -11.65
+    ],
+    "kind": "paraffin",
+    "I": 0.8,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     0.39,
+     3.35,
+     5.56
+    ],
+    "kind": "sodium",
+    "I": 70,
+    "reach": 22,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "evening": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: overcast going to dusk, the mast's red light over the stones."
+}

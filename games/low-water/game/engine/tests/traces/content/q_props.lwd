@@ -1,0 +1,123 @@
+# The Quota slice: props that carry story (design/PITCHES.md 3c.1; engine: world/props.mjs). Gameplay
+# engineer, 2026-10-22, from the eras table in PITCHES 3c; the era 2 texts are drafts for the story lead to
+# rewrite in the slice's voice. Every prop tells about a person or an era (tells:). The five that persist
+# across the eras carry a state for each of them; the slice plays era 2. tools/proplint.mjs checks them.
+
+# ---------------------------------------------------------------- the five that persist across the eras
+@prop q.haldane_table
+name: The Haldane table
+place: q_haldane
+mark: table
+tells: household haldane
+state: 1 new | A new table in a barn, made out of a door. On one leg, low down, somebody has carved a Hesh goat with its head turned back.
+state: 2 fewer ? bowls(haldane) <= 4 | The table Ilo made out of a barn door, with the hinge marks still in it. There are more stools than places laid, and nobody has moved the spare one back against the wall. Bet started sanding the goat off the leg in the autumn, when the notices went up, and stopped halfway.
+state: 2 laid | The table Ilo made out of a barn door, with the hinge marks still in it. Five places close together, on stools from three different houses. Bet started sanding the goat off the leg in the autumn, when the notices went up, and stopped halfway.
+state: 3 shifts | The door table, in a merchant's front room now, with ten families eating round it in shifts. The goat on the leg is black with hands.
+state: 4 initials | The door table, its edge cut all round with children's initials. A.H. is the oldest, and somebody has cut a line through it.
+state: 5 shop | The door table, in the antique shop on the hill, ticketed "farmhouse, rustic, period". The goat is still on the leg.
+
+@prop q.haldane_bowls
+name: The bowls
+place: q_haldane
+mark: table
+tells: household haldane
+macro: 2.8 2.2
+state: 1 five | Five bowls, matched, bought together at Osby fair with the wedding money.
+state: 2 three ? bowls(haldane) <= 3 | Bowls on the shelf, turned over, beside the ones on the table. The ones on the shelf have been wiped. Somebody wipes them every day.
+state: 2 four ? bowls(haldane) == 4 | One bowl on the shelf, turned over, just within reach of Bet's chair, so she can touch it without getting up.
+state: 2 five | The bowls from Osby fair, all of them on the table, two chipped on the rim where the children hold them. A little gruel in each. You can see the glaze through it.
+state: 3 relief | Odd bowls from the relief, no two the same. One is stamped with the district's number.
+state: 4 plastic | Plastic bowls, red, from the market. The last fair bowl is on the windowsill with a plant in it.
+state: 5 survivor | One bowl from Osby fair on the windowsill. The rest went at the clearance.
+
+@prop q.exchange_sign
+name: The street sign
+place: q_furrowe_door
+tells: era
+state: 1 enamel | An enamel sign, white on blue: EXCHANGE STREET. The exchange put it up the year it opened, and polishes it.
+state: 2 shot | EXCHANGE STREET, white on blue, with two holes through the X from October, when the militia fired over the bread queue. Rust has started running down from the holes like something leaking.
+state: 3 renamed | The enamel sign is painted over with the new government's name for the street. The paint is already flaking off the old letters.
+state: 4 defaced | Somebody has written CHAFFERS OUT across the sign in white paint. The council took two months to come and clean it, and did not finish.
+state: 5 overpainted | The residents' group painted the sign over in heritage green. EXCHANGE STREET shows through in the low sun.
+
+@prop q.exchange_scale
+name: The exchange scale
+place: q_tower
+tells: era
+state: 1 grain | The exchange's big scale, brass on an iron frame, for weighing grain at market. The weighman's stool is beside it.
+state: 2 requisition | The exchange's big scale, weighing the requisition. A sack goes on, a corporal calls the weight, a clerk writes it down, two men carry it to the train. The weighman's stool is still beside it, and nobody sits on it.
+state: 3 rations | The scale weighs rations now, a family's week at a time, with a queue round two sides of the square.
+state: 4 base | The scale went for scrap. Its iron base is still bolted to the square, and children sit on it.
+state: 5 bench | A council bench on the old scale's base. A plaque says the exchange stood here, and gives the wrong year.
+
+@prop q.burial_fence
+name: The burial ground
+place: q_tower
+tells: era
+state: 1 iron | The burial ground on the hill's shoulder, behind iron railings. The church charges for the ground and the sexton's spade.
+state: 2 dug ? prior(q.fact.cell_log) | The gap in the railings. The corner past it has been dug over since, for the fever rows, one long trench with lime on it and the ground gone yellow. Whatever was there first is under three others now. There's nothing to stand in front of.
+state: 2 cart ? prior(world.dead.tomas) | The gap in the railings. The fever cart comes up from the town twice a day now, with a sheet over it, and the sexton has stopped charging for the spade. They're digging one long trench on the left and not filling it in between.
+state: 2 corner ? q_class == inspector & q_figure == blamed & has(q.tomas_held) & cday() >= 45 | The gap in the railings. Past it, in the corner, a long patch of earth turned over and trodden flat, and no board. Will Brack said on the steps of the Crown that they put the hoarder in here on the Tuesday night. He said it to Ned as if it were good news.
+state: 2 gap | A gap in the railings, bent apart, where people climb in at night to bury their own without paying the sexton for the spade. The new rows are on the left, where the ground was soft enough to dig in October.
+state: 3 unmarked | A new section of the burial ground, unmarked, fenced with wire.
+state: 4 overgrown | The famine section is overgrown to the waist. The railings have gone for scrap.
+state: 5 moved | The fence has been moved back ten yards for the ring road. The corner it used to stand on is under the verge.
+
+# ---------------------------------------------------------------- era 2, the slice's rooms
+@prop q.haldane_ration_card
+name: The ration card
+place: q_haldane
+mark: ration_card
+tells: household haldane
+macro: 2.2 2.6
+state: 2 card | The ration card on its nail: ILO HALDENE, LABOURER, FIVE. The census office spelled it wrong. Somebody has written the a over the e in pencil, pressing so hard it has gone through the card.
+
+@prop q.returns_ledger
+name: The district ledger
+place: q_returns
+mark: ledger
+tells: person q.mott
+verb: Read the ledger
+macro: 2.6 2.4
+state: 2 entry | The Haldane barns: a hundred and ninety, gone over as three hundred and ten. Walter Mott's hand all down the page, his sevens without a bar, the way his father wrote them. The three is darker than the one and the nought. In the margin, small, in the same hand: T.H. to the inspector, Weds.
+
+@prop q.district_map
+name: The district map
+place: q_returns
+mark: map
+tells: person q.ned
+macro: 2.4 2.0
+state: 2 pencilled | Eleven villages in Ned's own hand, an ink figure beside each. Under some of the ink, if you stand close, a smaller figure in pencil. Every one of the pencil figures is lower than its ink.
+
+@prop q.good_hat
+name: Abel's good hat
+place: q_furrowe_kitchen
+mark: good_hat
+tells: person q.abel
+macro: 2.2 2.4
+state: 2 hat | Abel's hat from the exchange, on its peg by the door. He polishes the brass band on Sundays with a bit of his own shirt. He hasn't worn it out of the house since the exchange shut, but he takes it down to show people.
+
+@prop q.brack_rifle
+name: The rifle by the door
+place: q_brack_kitchen
+mark: rifle
+tells: person q.will
+macro: 2.4 2.2
+state: 2 rack | Will's rifle on the rack by the door, unloaded. The rounds are in a tin on the top shelf. Davey has been up on a chair to look in it. He'll tell you if you ask.
+
+@prop q.cell_log
+name: The cell log
+place: q_cells
+tells: person q.tesk
+verb: Read the cell log
+state: 2 haldane ? has(q.tomas_held) | Two entries for the day. Tesk, of the hill: oats. Under it, in Will's pencil, pressed hard: HALDANE, T. HALF-HESH. HELD, HOARDING, AT THE POST. The column for released is ruled and empty.
+state: 2 tesk_two ? has(q.log_two) | Tesk, of the hill, held since Tuesday: TWO SACKS, in Will's pencil. There was one and a half. The other half a sack is only on the page.
+state: 2 tesk | Tesk, of the hill, held since Tuesday: one and a half sacks of oats, in Will's pencil. The rest of the page is the week's carts, and what came off them.
+
+@prop q.post_board
+name: The district board
+place: q_post
+mark: board
+tells: era
+state: 2 quoted ? prior_runs >= 1 & prior_line != "" | Under the Arlen notice somebody has chalked a line, and it has been rubbed at and come back: "{{prior_line}}"
+state: 2 passes | The district board at the post: the week's passes, not many, pinned in a row, and the printed notice from Arlen that grain may not leave the district without one. Under it somebody has pinned a child's drawing of a cart with a horse and six sacks, and the sacks are numbered.

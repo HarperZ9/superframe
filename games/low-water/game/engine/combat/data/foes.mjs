@@ -11,31 +11,19 @@
 // someone else holds the front (and closes in on a Lamb who does not fight back), throws mud from range (the wind carries it; in the face it
 // blinds for a few seconds), throws a rope at the legs (cannot be caught; puts Lamb down), comes
 // in with the crowbar when Lamb is busy, and scrambles off when hurt.
-export const SPECIALS = {
-  "holder.drag": { startup: 44, active: 6, recovery: 40, stamina: 2, dmg: 1.5, poise: 3, hits: [{ arc: [-14, 14], r: [0.6, 3.4] }],
-    parryable: false, blockable: false, knockdown: true, toward: "water", tell: { at: [6, 43], kind: "grab" }, track: 9, trackUntil: 34, hitstop: 9, knock: 3.6, shake: 0.5 },
-  "holder.chain": { startup: 30, active: 7, recovery: 34, stamina: 2, dmg: 1.5, poise: 2, hits: [{ arc: [-100, 100], r: [0.4, 2.6] }],
-    armor: [8, 36, 2], guardBreak: true, tell: { at: [6, 29], kind: "swing" }, track: 9, trackUntil: 24, hitstop: 5, knock: 3.0, shake: 0.45 },
-  "holder.braced": { startup: 18, active: 7, recovery: 34, stamina: 1, dmg: 1, poise: 2, hits: [{ arc: [-100, 100], r: [0.4, 2.6] }],
-    armor: [0, 42, 4], tell: { at: [2, 17], kind: "swing" }, track: 9, trackUntil: 14, hitstop: 6, knock: 3.0, shake: 0.45 },
-  "skirmisher.mud": { kind: "item", startup: 18, active: 1, recovery: 20, stamina: 1, tell: { at: [4, 17], kind: "throw" }, track: 10,
-    item: { use: "mud", proj: { speed: 12, mass: 0.5, dmg: 0.25, poise: 0.5, r: 0.3, blind: 150 } } },
-  "skirmisher.rope": { kind: "item", startup: 26, active: 1, recovery: 24, stamina: 2, tell: { at: [6, 25], kind: "grab" }, track: 10,
-    item: { use: "rope", proj: { speed: 10, mass: 1.5, dmg: 0.5, poise: 2, r: 0.45, knockdown: true, parryable: false, blockable: false } } },
-  "skirmisher.scuttle": { kind: "dodge", recovery: 22, stamina: 1, iframes: [2, 12], root: [[0, 14, -6.0]] },
-  // The world's answers to a kiter (ai/pursuit.mjs, design/COMBAT-WORLD.md), every opponent's: a slow,
-  // readable throw of whatever is to hand (a stone, a bottle), which can be caught, blocked or stepped;
-  // and a lunge that only fires from range, closes about 4 m in its wind-up with its weight behind it
-  // (armoured against a poke) and recovers quickly.
-  "world.throw": { kind: "item", startup: 48, active: 1, recovery: 36, stamina: 1, tell: { at: [6, 47], kind: "throw" }, track: 8,
-    item: { use: "stone", proj: { speed: 13, mass: 1, dmg: 0.6, poise: 1.5, r: 0.35, knock: 2.0, hitstop: 5, shake: 0.2 } } },
-  "world.lunge": { startup: 28, active: 6, recovery: 26, stamina: 2, armor: [0, 30, 2], dmg: 1, poise: 2, hits: [{ arc: [-35, 35], r: [0.3, 1.7] }],
-    root: [[12, 28, 15.0], [28, 34, 4.0]], tell: { at: [4, 27], kind: "swing" }, track: 8, trackUntil: 22, hitstop: 6, knock: 3.0, shake: 0.35 },
-};
+import { ARENA_SPECIALS, ARENA_ARCHETYPES } from "./archetypes.mjs";
+import MOVES from "./moves.json" with { type: "json" };
+// Notes kept from the table before it moved to moves.json (P1):
+// The world's answers to a kiter (ai/pursuit.mjs, design/COMBAT-WORLD.md), every opponent's: a slow,
+// readable throw of whatever is to hand (a stone, a bottle), which can be caught, blocked or stepped;
+// and a lunge that only fires from range, closes about 4 m in its wind-up with its weight behind it
+// (armoured against a poke) and recovers quickly.
+export const SPECIALS = { ...ARENA_SPECIALS, ...MOVES.foeSpecials }; // the data: moves.json
 
 // Brain numbers (ai/brain.mjs). Attack entries name a move key: a tool strike (light_1, heavy)
 // resolved per fighter, or a special id.
 export const ARCHETYPES = {
+  ...ARENA_ARCHETYPES,
   holder: {
     defaults: { tool: "w.boathook", standing: 12, breath: 5, poise: 5, speed: 2.5, accel: 16, turn: 6, radius: 0.48, height: 2.3, grip: 5 },
     items: { stone: 12 }, specials: ["holder.drag", "holder.chain", "holder.braced", "world.throw", "world.lunge"],

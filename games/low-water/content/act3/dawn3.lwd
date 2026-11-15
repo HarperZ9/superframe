@@ -83,30 +83,164 @@ opt: "No loss. Write the line through." -> dawn3.two.none ? !has(loss3.mother) &
 cost: 2
 do: set(cause3.wreckers2)
 nar: Malice by wreckers, in the gale, and the names under it. For the first time in three nights the claim's own words are true, and they are true about the wrong night.
-go: dawn3.send
+go: dawn3.reck
 
 @node dawn3.two.trust
 cost: 2
 do: set(cause3.trust2)
 nar: The Trust, which wrote at one in the morning to ask for the claim kept open through a gale.
-go: dawn3.send
+go: dawn3.reck
 
 @node dawn3.two.shelf
 cost: 2
 do: set(cause3.shelf2)
 nar: The Shelf, which typed FURTHER LOSS ANTICIPATED and was read aloud on the quay.
-go: dawn3.send
+go: dawn3.reck
 
 @node dawn3.two.sea
 cost: 2
 do: set(cause3.sea2)
 nar: The act of the sea. Tonight, at least, the sea was certainly there.
-go: dawn3.send
+go: dawn3.reck
 
 @node dawn3.two.none
 cost: 1
 do: set(cause3.none2)
 nar: A line ruled through. Nobody in the room has ever seen a loss adjuster write nothing on purpose.
+go: dawn3.reck
+
+# ---------------------------------------------------------------- the reckoning: the assessor assessed
+# Director, 2026-10-21 (design/DIRECTOR.md, the final confrontation and pillar 4). After both lines and
+# before the tube, Gorm asks the Shelf the Shelf's own five questions (DISCOURSE-SYSTEM.md section 4),
+# from her book, aloud, with the water at the step. Every line is gated on what Lamb actually said and
+# did (the reckoning's gap.* flags, var.prov, var.lantern, the wages). Owning it in ink writes a third
+# line and costs Lamb the Alderman's post; denying it is easy and the epilogue says what it bought.
+# Story lead: rewrite freely, keep the gates, the order of the questions and the costs.
+@fact cause3.assessor
+@fact reck3.asked
+@fact reck3.named
+@fact reck3.answered
+@fact reck3.denied
+@fact reck3.refused
+@fact reck3.clean
+@fact reck3.empty
+
+@node dawn3.reck
+place: brine
+speaker: GORM
+cost: 2
+nar: Somebody is standing at the assessor's shoulder in a wet cape, with a book open on one arm and a pencil in the other hand. Sergeant Gorm has been in the room the whole time.
+line: GORM: And is the Shelf finished? And would the Shelf mind if the town asked it the Shelf's own questions, while the water's at the step?
+voice: precedent: Five questions. You taught them to half the town in three nights. They were always going to come back round. {dc: 4}
+opt: "Let her ask." -> dawn3.reck.ask {do: set(reck3.asked)}
+opt: "No. The form is closed." -> dawn3.reck.refuse
+
+@node dawn3.reck.refuse
+place: brine
+cost: 1
+do: set(reck3.refused)
+if: var.gap - var.owned >= 1 => denied += 1
+line: GORM: And shall I write that the Shelf would not be asked?
+nar: She writes it. The pencil makes very little noise.
+go: dawn3.send
+
+@node dawn3.reck.ask
+place: brine
+speaker: GORM
+cost: 3
+line: GORM: Who said it first? And was it the Shelf, at midnight, down the tube, three nights ago, that it was wreckers? {when: var.prov == wreckers}
+line: GORM: Who said it first? And was it the Shelf, at midnight, down the tube, that it was the Guild? {when: var.prov == guild}
+line: GORM: Who said it first? And was it the Shelf, at midnight, down the tube, that it was the Trust? {when: var.prov == trust}
+line: GORM: Who said it first? And was it the Shelf, at midnight, down the tube, that it was the keeper? {when: var.prov == keeper}
+line: GORM: Who said it first? And was it the Shelf, at midnight, that it was the sea, which can't be asked? {when: var.prov == sea}
+line: GORM: Who said it first? And did the Shelf say anything at midnight at all? {when: var.prov == none | var.prov == refused}
+line: GORM: Who else says it? And how many in this room said the Lantern Man tonight because the Shelf said it in the Brine on Low Night? {when: var.lantern >= 2}
+line: GORM: Who else says it? And is there anybody in this room who says what the Shelf says, because the Shelf said it? {when: var.lantern < 2}
+line: GORM: What is it made of? And did the Shelf say some lamps have to go out? And which lamp did the Shelf keep lit, and for whom? {when: has(gap.fire)}
+line: GORM: What is it made of? And did the Shelf say Gullet looks after Gullet? And whose side was the Shelf on, on the quay? {when: has(gap.wall)}
+line: GORM: What is it made of? And did the Shelf say the sea belongs to nobody? And who was the Shelf standing with on the wall? {when: has(gap.sea)}
+line: GORM: What is it made of? And did the Shelf say leave the jars alone? And whose jar was it the Shelf lifted? {when: has(gap.jars)}
+line: GORM: What is it made of? And did the Shelf say follow the money? And whose name did the Shelf put where the money should be? {when: has(gap.ledger)}
+line: GORM: What is it made of? And did the Shelf say nobody owns the truth? And who told the Brine about the Lantern Man? {when: has(gap.checked)}
+line: GORM: What is it made of? And did the Shelf say the Shelf takes no side? And which side was that, on the night the Shelf took it? {when: has(gap.dry)}
+line: GORM: And is it in my book that the Shelf told somebody a thing that wasn't so, and they did something about it? {when: has(gap.lied)}
+line: GORM: And is it in my book that the Shelf gave its word, and where, and who heard? {when: has(gap.promise)}
+line: GORM: Who gains? And whose money paid the Shelf, these six years? And is her name on either line? {when: has(ropewalk3.wages)}
+line: GORM: Who gains? And who paid the Shelf to come here? And does the Shelf know? {when: !has(ropewalk3.wages)}
+line: GORM: And what would the Shelf have to see, to write the Shelf's own name on the Shelf's own form?
+voice: pride: She is a Lamplighter. She speaks only in questions because she has never had to answer one. {when: var.gap - var.owned >= 1, dc: 2}
+voice: carbon: The room. The water a hand below the step. The pencil. You have been here before, asleep. You are here now. {dc: 4}
+voice: condolence: Every one of those is a thing you did. She has only read them out in order. {when: var.gap - var.owned >= 1, dc: 5}
+voice: salt: Three nights read out, and nothing of yours in them. Not one thing you stood in. {when: var.gap - var.owned < 1 & var.lean_dry >= 4}
+go: dawn3.reck.menu
+
+@node dawn3.reck.menu
+hub: yes
+place: brine
+cost: 0
+opt: "Pick up the pencil. Write a third line: contributory, the assessor." -> dawn3.reck.name ? var.gap - var.owned >= 1 | has(ropewalk3.wages)
+opt: "Answer her, aloud, one question at a time." -> dawn3.reck.answer ? var.gap - var.owned >= 1 & !has(reck3.answered)
+check: "[PRIDE] Say that the Shelf assesses. It is not assessed." -> dawn3.reck.deny.ok / dawn3.reck.deny.fail ? var.gap - var.owned >= 1 {skill: pride, dc: 4, red}
+opt: "Say there is nothing in the book to answer." -> dawn3.reck.clean ? var.gap - var.owned < 1 & !(var.lean_dry >= 4 & !has(conviction.fire) & !has(conviction.wall) & !has(conviction.sea) & !has(conviction.jars) & !has(conviction.ledger) & !has(conviction.checked) & !has(conviction.dry))
+opt: "Say nothing. There is nothing to say." -> dawn3.reck.empty ? var.gap - var.owned < 1 & var.lean_dry >= 4 & !has(conviction.fire) & !has(conviction.wall) & !has(conviction.sea) & !has(conviction.jars) & !has(conviction.ledger) & !has(conviction.checked) & !has(conviction.dry)
+
+@node dawn3.reck.name
+place: brine
+cost: 4
+do: set(cause3.assessor); set(reck3.named); owned = var.gap
+nar: The pencil is the same pencil. Under the second line the assessor rules a third, and writes on it, in the claims hand, a word the form has never had to hold.
+nar: CONTRIBUTORY: THE ASSESSOR.
+nar: Nobody in the room says anything. Then Sabine, behind the bar, takes the chalk off its string and draws a small line under the bowler hat on the slate, the way she marks a column paid. {when: var.seenas_brine == regular | rep(brine) >= 2}
+line: GORM: And shall I write that down?
+nar: She does not wait to be told.
+voice: pride: The Alderman will never have you now. Nobody up the hill hires an assessor who puts himself on the form. {dc: 2}
+voice: undertow: There. Now it is on the form with the others. {dc: 5}
+go: dawn3.send
+
+@node dawn3.reck.answer
+place: brine
+cost: 6
+do: set(reck3.answered); owned += 1
+nar: The assessor answers. Yes, at midnight. Yes, in the Brine. Yes, that lamp, and those people. Each answer is short. Nobody in the room takes it down except Gorm.
+nar: The form on the table still has two lines.
+voice: condolence: Out loud is not nothing. It is not ink, either. {dc: 4}
+go: ^hub
+
+@node dawn3.reck.deny.ok
+place: brine
+cost: 1
+do: set(reck3.denied); denied += 1
+nar: The assessor says it in the Shelf's voice, and the room, which has had three nights of the Shelf's voice, lets it go. Somebody laughs, kindly. The water is at the step and there is a canister to send.
+line: GORM: And shall I close the book, then?
+nar: She closes it. Her thumb stays in the page.
+voice: pride: Dry. You see? It is perfectly possible to stay dry. {dc: 2}
+go: dawn3.send
+
+@node dawn3.reck.deny.fail
+place: brine
+cost: 1
+do: set(reck3.denied); denied += 1; rep(brine, -1)
+nar: The Shelf's voice does not come. What comes is the assessor's, and it is thin, and the whole room hears that it is thin.
+line: GORM: And shall I write that the Shelf said so?
+nar: She writes it. Nobody laughs.
+go: dawn3.send
+
+@node dawn3.reck.clean
+place: brine
+cost: 2
+do: set(reck3.clean)
+line: GORM: And is that so?
+nar: She turns the pages back, all three nights, slowly, while the room waits. Then she turns them forward again.
+line: GORM: And shall I write that the Shelf did what the Shelf said?
+nar: It is the only thing she writes that night with the pencil held hard.
+go: dawn3.send
+
+@node dawn3.reck.empty
+place: brine
+cost: 2
+do: set(reck3.empty); denied += 1
+line: GORM: And shall I write the nothing, then? And the date?
+nar: She writes the date. Under it she leaves the page clean, and turns it, and the clean page is the one the room can see.
 go: dawn3.send
 
 # ---------------------------------------------------------------- the tube
@@ -127,6 +261,7 @@ cost: 4
 nar: Twenty minutes later the tube thumps. Pip brings it to the Brine through water to her knees, and reads it out, because there is no point now in not reading it.
 nar: SHELF: RECEIVED. CLAIM 4471/G CLOSED. THE SHELF THANKS THE ASSESSOR FOR ELEVEN YEARS. {when: has(ropewalk3.wages)}
 nar: SHELF: RECEIVED. CLAIM 4471/G CLOSED. {when: !has(ropewalk3.wages)}
+nar: THIRD LINE NOTED. {when: has(cause3.assessor)}
 line: PIP: The e's not sticking. She's used Grandad's machine. {when: has(ropewalk3.carriage_mended)}
 line: PIP: The e's sticking. It's the Trust's machine. It's always the Trust's machine. {when: !has(ropewalk3.carriage_mended)}
 nar: The town takes both lines, as voted, and goes home along the wet quay to say so. {when: var.brine3.accept == whole}
@@ -155,7 +290,7 @@ nar: The assessor's coat hangs on the peg by the stove. It has three tide marks 
 opt: "Go down to the mole steps for the morning boat." -> dawn3.boat ? (var.fate_mother == crown | var.fate_mother == bulb | has(oldlight.lanterns) | var.brine3.kept == oldlight | has(collier.through))
 opt: "Take the Alderman's launch to Hesk, as she offered." -> dawn3.launch ? !(var.fate_mother == crown | var.fate_mother == bulb | has(oldlight.lanterns) | var.brine3.kept == oldlight | has(collier.through)) & var.hill3_offer == boat
 opt: "Take the bag and walk out on the coast road at first light." -> dawn3.road ? !(var.fate_mother == crown | var.fate_mother == bulb | has(oldlight.lanterns) | var.brine3.kept == oldlight | has(collier.through)) & var.hill3_offer != boat
-opt: "Go up the hill and take the Alderman's post." -> dawn3.post ? var.hill3_offer == post
+opt: "Go up the hill and take the Alderman's post." -> dawn3.post ? var.hill3_offer == post & !has(cause3.assessor)
 opt: "Take the brass key on its string, and climb." -> dawn3.keeper ? var.brine3.keeper == lamb | (has(wenna.asked) & has(vote.keeper_paid) & var.brine3.keeper != wenna)
 opt: "Go to the Ropewalk, where there is a machine with a straight e." -> dawn3.typist ? has(ropewalk3.offered) | var.hill3_offer == typewriter | (has(hester.told) & has(e.matched))
 opt: "Sit down at the Brine's bar and ask Sabine what is owed." -> dawn3.brine
@@ -249,6 +384,9 @@ nar: On the harbour office step, the Old Light's bronze lantern gear, green with
 nar: Where the Old Light's bronze gear should be, nothing: it went out on the last of the eye with the men who came for it. {when: has(oldlight.gear_lost)}
 nar: In the Guild hall, under the Captain's apron, a stoker off the Ellen Varty sleeps in Marrow's coat. {when: has(gut3.swimmer)}
 nar: The sodium, orange, on the quay, and under it the harbourmaster, wet like everybody after the surge, for once unremarkable.
+nar: Wherever the assessor sleeps tonight, the coat on the peg has three tide marks at the hem, and nobody has tried to brush them out. {when: has(reck3.named) | has(reck3.clean) | (has(reck3.answered) & var.gap - var.owned <= 1)}
+nar: The assessor's coat comes back from the cleaner's on a wire hanger, dry, with no marks at the hem at all. It looks very well. It looks like a coat nobody was ever in. {when: (has(reck3.denied) | has(reck3.refused)) & var.gap - var.owned >= 2}
+nar: In Gorm's book, under the Shelf, a page with three dates on it and nothing else. {when: has(reck3.empty)}
 nar: Somewhere below the hill a clock in a bar is eleven minutes slow, or it is not.
 nar: LOW WATER ENDS.
 end: game.end

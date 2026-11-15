@@ -1,0 +1,218 @@
+{
+ "place": "roof",
+ "version": 2,
+ "width": 1100,
+ "height": 800,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 40,
+  "target": [
+   -0.3,
+   0.9,
+   -0.3
+  ],
+  "dist": 40,
+  "ortho": true,
+  "scale": 3.2
+ },
+ "pxPerMetre": 125,
+ "near": 0.5729,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night",
+  "frost"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 23,
+   "weather": "wet lead; the quay's sodium up past the parapet"
+  },
+  "frost": {
+   "hour": 4.3,
+   "weather": "after 04:10: the roof white, the beam frozen at its tilt"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  23
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "drainpipe",
+    "verb": "climb",
+    "at": [
+     2.6,
+     0,
+     1.6
+    ],
+    "note": "the drainpipe at the corner, the way up and down"
+   },
+   {
+    "id": "beam_hook",
+    "verb": "use",
+    "at": [
+     -0.09999999999999998,
+     0,
+     0
+    ],
+    "note": "the hook at the top of the beam: hang the lantern"
+   },
+   {
+    "id": "pans",
+    "verb": "read",
+    "at": [
+     0.09999999999999998,
+     0,
+     -1.4
+    ],
+    "note": "the iron pans, tipped toward the harbour"
+   },
+   {
+    "id": "parapet",
+    "verb": "look",
+    "at": [
+     -1.6,
+     0,
+     -1.5
+    ],
+    "note": "out along the mole to Mother"
+   }
+  ],
+  "hides": [
+   {
+    "id": "post_shadow",
+    "at": [
+     -0.19999999999999996,
+     0,
+     0.3
+    ],
+    "r": 0.4,
+    "note": "in the post's shadow"
+   }
+  ],
+  "exits": [
+   {
+    "id": "drainpipe",
+    "at": [
+     2.7,
+     0,
+     1.7
+    ],
+    "note": "down the drainpipe to the weigh-house yard"
+   }
+  ],
+  "lamps": [
+   {
+    "id": "hook_lantern",
+    "at": [
+     -0.6,
+     3.4,
+     -0.2
+    ],
+    "note": "the lantern hung on the hook (run-time light)"
+   }
+  ]
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -3.5,
+     -2.65,
+     -5.75
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     2.8,
+     -2.65,
+     -6.15
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -9,
+     -2.65,
+     -5.55
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   }
+  ],
+  "frost": [
+   {
+    "at": [
+     -3.5,
+     -2.65,
+     -5.75
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     2.8,
+     -2.65,
+     -6.15
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -9,
+     -2.65,
+     -5.55
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "Lead at y 0, -z toward the harbour; the quay 7 m below. Hobb is drawn by the game."
+}

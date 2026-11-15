@@ -1,6 +1,6 @@
 # Low Water engine layer: progress
 
-Game-side systems layer that the content plugs into. Private. Brief from the coordinator,
+Game-side systems layer that the content plugs into. Brief from the coordinator,
 2026-10-16; scope addition the same day (crossover of Disco Elysium, Zero Parades and No Rest
 For The Wicked: real-time hazards from the environment, inventory with crafting and salvage,
 persistent settlement restoration, rumour and cover). No verification apparatus in the game, its
@@ -221,6 +221,57 @@ R1 to R13 from that file.
     tools/visual-check.mjs: headless over seven views, fails loudly; failed the pre-collision build
     (10 figures in props, 1 on a top), passes collision after (0); occlusion, exposure and shadow
     failures remain for the character lead. Held tools get `reach`. Camera reads the panel width.
+
+37. Mechanics and fluidity (author, 2026-10-22: "The character bodies and animations should be done very well.
+    The mechanics must be fluid. Let's push for a completion."; systems engineer). Bounds written before the work,
+    from a measured baseline; each has a control that must fail. Root PROGRESS 177.
+    | # | Bound | Measured with | Baseline (before) | Control that must fail |
+    |---|---|---|---|---|
+    | 1a | Input to action 0 frames when free; a press inside a cancel window starts on that frame | combat/tests/feel.test.mjs, fluid.test.mjs | 0 frames, both | a press one frame early waits a frame |
+    | 1b | Input buffer 100 to 150 ms | feel.test.mjs | 10 frames, 167 ms: miss | a press 12 frames early is dropped |
+    | 1c | Cancel windows in data: every Lamb strike cancels into a dodge from after its blow to its end; every dodge's recovery into a strike | feel.test.mjs | heavy_charged locks its last 14 frames: miss | (the check itself names the move) |
+    | 1d | Input to visible: Lamb's position answers on the next drawn frame; the pose image's latency reported, owned by the figure pipeline | perf bench "Lamb shown" | brawl 69 to 74 ms shown (bench, not quiet) | none (reported) |
+    | 2a | 90% of walking speed within 0.3 s, under 10% within 0.3 s, at least 3 frames (a curve) | feel.test.mjs | 16 and 15 frames (0.27, 0.25 s) | none needed: already met |
+    | 2b | Half turn within 0.3 s, never more than the turn rate a frame | feel.test.mjs | 14 frames (0.23 s) | |
+    | 2c | Diagonal speed within 1% of cardinal | feel.test.mjs | equal (the sim clamps the stick) | |
+    | 2d | A 45 degree walk into a wall slides at 60% of walking speed or more, never a stuck frame | feel.test.mjs | met | |
+    | 2e | Stick: no flicker at the dead zone's edge (at most 1 flip in 600 noisy frames), length continuous (no step over 0.02) | tests/stick.test.mjs | on at 0.35 with the raw length: steps 0 to 0.35, flickers | the old rule: over 20 flips |
+    | 3a | Camera at rest (world held, after 2 s): no per-frame move over 0.5 px | tools/camprobe.mjs (1080p, real time) | quay 14.7 px (?camfollow=old) | ?camfollow=old |
+    | 3b | New bounds (an opponent out): no change in per-frame motion over 2 px; no jitter (move and straight back) | camprobe change phase | brawl 0.94, quay 0 (old follow held still, then re-framed late) | |
+    | 3c | Live fight: no jitter frames; largest change in per-frame motion reported | camprobe live phase | brawl 3 jitter frames, step 15 px; quay 2 and 10.5 | ?camfollow=old |
+    | 3d | Quay framing: the fighters' box centred in the view clear of the paper within 60 px; no framing of water below the quay | camprobe framing, stills | quay +209, -216 px; brawl +103, -196 (fighters top right over water) | ?camfollow=old |
+    | 4 | Every Quota slice scene and the brawl at 16.7 ms a frame at 1080p (bench, GPU) | tools/bench.mjs | brawl 16.74 ms, main thread 12.3 to 12.7 ms; granary 16.67; quota-square and quota-talk views broken | |
+    | 5 | Combat feel: hit-stop, reactions, impact camera in balance; telegraphs readable | impact-capture, visual-check, the feel checklist in combat/TUNING.md | | |
+    | 6 | Quota slice played start to coda on both classes in the harness and in the browser shell; no blocker, soft-lock or broken transition; the F7 hint gone | playthrough, browser | | |
+    Results (2026-10-22). Met: 1a, 1b (8 frames, 133 ms), 1c (the charged heavy cancels to its end), 2a to 2e,
+    3a (rest drift 0 px on the quay, the brawl and the lamplighters; the old follow 16.0 px), 3b (1.34 to 1.78 px),
+    3c (jitter 0 to 2 frames, the old follow 2 to 3), 3d (quay offset (0, -44), brawl (0, -42)), 6 in the harness and
+    the shell (below). Partly met: 4 (the brawl and the granary at 16.67 to 16.74 ms; quota-square and quota-talk bench
+    views break before measuring, so the other Quota scenes are not measured). Reported, not owned here: 1d (Lamb's
+    image 69 to 74 ms in the brawl, the figure pipeline's). Live-fight step 7.9 to 10 px a frame while the fight first
+    frames in from the walk at 14 to 21 fps headless (scaled to 60): the zoom-in's speed, not a jump.
+    - Camera (world/camera.mjs framer; ui/platecam.mjs; ui/fightlayer.mjs; world/stage.mjs): see the commit.
+      Stills: game/capture/camprobe/{quay,brawl}-{old,new}/.
+    - The brawl's main thread is 12.3 to 12.7 ms a frame (bench, GPU, not quiet: 65 to 72% load), not 29 ms; the
+      29 ms was not reproduced. Frame 16.74 ms, p95 16.8.
+    - Quota slice: harness (LW_STORY=quota) inspector and militia, 3 shuffles each and 10 random runs, all finished.
+      Browser shell (tools/quota-shell.mjs, clicks the options): inspector 12 choices, 1 fight, THE END; sergeant 8
+      choices, 1 fight, THE END; no stall. Stills game/capture/quota-shell-2026-10-22/class1, class2.
+    - Character lead's notes: combat sends pose.upper (guard walked, strikes from a walk); Lamb's walk eases up in
+      0.15 s and down in 0.2 s, coasting out when the stick is let go.
+    Defects found, by severity, not mine unless marked:
+      High: ui/compare.mjs has a syntax error in an uncommitted edit (the gameplay lead's, 09:36): every page fails to
+      load until it is fixed. My runs served the committed file through a scratch proxy.
+      High: in the returns room the figures draw as near-black silhouettes against the lit room (character or light lead).
+      Medium: no plate for q_office and q_cells (night.png cannot be decoded): those scenes show name cards.
+      Medium: the title screen for content=quota says "Low Water ... A night on the tide".
+      Medium: engine tests 261 of 276: 15 fail in community, dreams, gear (save v4), lore, quota-world, readback and
+      worldrecord, all under the spine agent's uncommitted edits to world/ and save/.
+      Low: the clock reads 22:16 to 22:20 in the coda kitchen after 22:30 at the granary (story lead to judge).
+      Low: the fight panel covers the Daybook and Pause buttons on the quay; a bark covers them in the visual check.
+      Low: warden clips missing (hook, spin, thrust: the guard shows), character lead.
+      Low: Lamb's lock ring draws two lines down over the quay's edge into the water (ground marks, mine, not fixed).
+      Low: the keys panel folding 12 s into the first fight re-frames the camera once (smoothly).
 
 ## Log
 - 2026-10-16 23:00Z: resumed after the previous session stopped at a usage limit. Inventory: 25

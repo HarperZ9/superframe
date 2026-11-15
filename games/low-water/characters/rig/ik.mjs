@@ -36,7 +36,12 @@ function ikChain(S, ja, jf, jh, target, weight = 1, hint = null) {
   if (weight <= 0) return S;
   const A = INDEX[ja], F = INDEX[jf], H = INDEX[jh];
   const sh = S[A].p, el = S[F].p, wr = S[H].p, a = len(sub(el, sh)), b = len(sub(wr, el));
-  const goal = add(wr, scl(sub(target, wr), weight)), toT = sub(goal, sh), d = Math.min(a + b - 1e-4, Math.max(Math.abs(a - b) + 1e-4, len(toT))), dir = nrm(toT);
+  const goal = add(wr, scl(sub(target, wr), weight)), toT = sub(goal, sh), dir = nrm(toT);
+  // soft reach: within the last 3 % of the limb's length the reach eases toward full extension instead of
+  // arriving at it, so a near-straight leg's knee does not swing a long way for a millimetre of target
+  // (the knee pops a planted, straight leg showed); the hand or foot falls short by at most a few mm there
+  const full = a + b - 1e-4, soft = full * 0.97, raw = len(toT);
+  const d = Math.max(Math.abs(a - b) + 1e-4, raw <= soft ? raw : soft + (full - soft) * (1 - Math.exp(-(raw - soft) / (full - soft))));
   // the bend plane: where the elbow sits now, off the shoulder-wrist line (else down and back)
   let pole = sub(el, add(sh, scl(dir, dot(sub(el, sh), dir))));
   const fw = hint === "forward" ? apply(S[INDEX.pelvis].R, [0, 0, 1]) : hint || [0, -1, -0.5];

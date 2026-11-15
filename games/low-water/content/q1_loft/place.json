@@ -1,0 +1,286 @@
+{
+ "place": "q1_loft",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   0.9,
+   -0.3
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 3.0952380952380953
+ },
+ "pxPerMetre": 210,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "evening",
+  "lamp"
+ ],
+ "variantInfo": {
+  "evening": {
+   "hour": 18.9,
+   "weather": "harvest, 18:50: the last sun level through the loading door, the hay gold, the lantern just lit"
+  },
+  "lamp": {
+   "hour": 19.8,
+   "weather": "19:50, the sun gone: the lantern alone, a little sky through the roof seams"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26,
+  29,
+  56,
+  89,
+  90,
+  93,
+  95,
+  85
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "door",
+    "verb": "read",
+    "at": [
+     -1.9000000000000001,
+     0,
+     -0.4
+    ],
+    "note": "the loading door: open on the evening, the yard below, the horse shifting under the boards"
+   },
+   {
+    "id": "hay",
+    "verb": "listen",
+    "at": [
+     0.6,
+     0,
+     0.4
+    ],
+    "note": "the hay: still warm from the field, and something under it that is not hay"
+   },
+   {
+    "verb": "look",
+    "id": "spoons",
+    "at": [
+     -1.2,
+     0,
+     -0.1
+    ],
+    "note": "Ilo's carving on the oat barrel: one spoon finished, the others roughed out"
+   },
+   {
+    "verb": "look",
+    "id": "beam",
+    "at": [
+     -1,
+     0,
+     0.3
+    ],
+    "note": "the purlin over the hay: letters cut with a knife point, one set scraped out"
+   }
+  ],
+  "hides": [
+   {
+    "id": "hay",
+    "at": [
+     1.2,
+     0,
+     -0.6
+    ],
+    "note": "down in the hay against the eaves"
+   }
+  ],
+  "exits": [
+   {
+    "id": "hatch",
+    "at": [
+     1.6,
+     0,
+     1.2
+    ],
+    "note": "the hatch and the ladder down to the horse"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "evening": [
+   {
+    "at": [
+     -0.55,
+     1.95,
+     0.4
+    ],
+    "kind": "paraffin",
+    "I": 5,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1.35,
+     0.6,
+     -0.1
+    ],
+    "kind": "paraffin",
+    "I": 2.6,
+    "reach": 3.2,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1.2,
+     2.3,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 6,
+    "group": "pool"
+   },
+   {
+    "at": [
+     4.2,
+     2,
+     0.2
+    ],
+    "kind": "paraffin",
+    "I": 1.2,
+    "reach": 9,
+    "group": ""
+   },
+   {
+    "at": [
+     10,
+     220,
+     -90
+    ],
+    "kind": "sky",
+    "I": 12000,
+    "reach": 400,
+    "group": ""
+   }
+  ],
+  "lamp": [
+   {
+    "at": [
+     -0.55,
+     1.95,
+     0.4
+    ],
+    "kind": "paraffin",
+    "I": 5,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1.35,
+     0.6,
+     -0.1
+    ],
+    "kind": "paraffin",
+    "I": 2.6,
+    "reach": 3.2,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1.2,
+     2.3,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 6,
+    "group": "pool"
+   },
+   {
+    "at": [
+     4.2,
+     2,
+     0.2
+    ],
+    "kind": "paraffin",
+    "I": 0.4,
+    "reach": 9,
+    "group": ""
+   },
+   {
+    "at": [
+     10,
+     220,
+     -90
+    ],
+    "kind": "sky",
+    "I": 3000,
+    "reach": 400,
+    "group": ""
+   }
+  ]
+ },
+ "figureLights": {
+  "evening": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 9,
+    "figure": true
+   }
+  ],
+  "lamp": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 1: Abel Furrowe's hayloft over the horse, at harvest evening."
+}

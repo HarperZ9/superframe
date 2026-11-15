@@ -2,55 +2,51 @@
  "place": "gut",
  "version": 2,
  "width": 1440,
- "height": 810,
+ "height": 550,
  "camera": {
-  "yawDeg": 22,
-  "elevDeg": 46,
+  "yawDeg": 6,
+  "elevDeg": 52,
   "target": [
-   0,
-   1,
-   0
+   -0.2,
+   2.2,
+   -0.6
   ],
   "dist": 40,
   "ortho": true,
-  "scale": 10.125
+  "scale": 6.875
  },
  "pxPerMetre": 40,
  "near": 0.75,
  "geoScale": 0.5,
- "layers": [],
- "style": "palette",
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
  "variants": [
   "night",
-  "rigged",
-  "frozen",
-  "dark"
+  "blackout"
  ],
  "variantInfo": {
   "night": {
    "hour": 23.5,
    "weather": "22:00 to 02:50: every other wire lamp dark"
   },
-  "rigged": {
-   "hour": 1,
-   "weather": "after l.gut_wires: every lamp lit (red, amber, green, blue)"
-  },
-  "frozen": {
-   "hour": 2,
-   "weather": "Night 2 from 02:00: the gutter frozen black and glassy under every lamp"
-  },
-  "dark": {
+  "blackout": {
    "hour": 2.9,
    "weather": "the blackout, 02:50 to 03:20: only the gutter glows"
   }
  },
- "dark": false,
+ "dark": true,
  "dithers": [],
  "walk": [
   2,
   3,
   83,
-  66
+  66,
+  10
  ],
  "footing": {
   "1": "stone",
@@ -197,5 +193,331 @@
   ],
   "lamps": []
  },
- "notes": "The Gut lane. Palette-locked; the void ramp cycles at run time if the game re-runs the palette pass (cycleRate in the engine's palettelight)."
+ "notes": "The Gut lane, painted. The palette-locked first take is places/gut_palette.mjs.",
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -11,
+     3.05,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 7,
+    "group": "lamp"
+   },
+   {
+    "at": [
+     -3,
+     3.29,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 7,
+    "group": "lamp"
+   },
+   {
+    "at": [
+     5,
+     3.53,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 7,
+    "group": "lamp"
+   },
+   {
+    "at": [
+     13,
+     3.77,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 7,
+    "group": "lamp"
+   },
+   {
+    "at": [
+     -12.4,
+     0.6,
+     -1.5
+    ],
+    "kind": "paraffin",
+    "I": 2.6,
+    "reach": 3.6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -3.6,
+     0.6,
+     -1.5
+    ],
+    "kind": "paraffin",
+    "I": 2.6,
+    "reach": 3.6,
+    "group": "window"
+   },
+   {
+    "at": [
+     6.2,
+     0.6,
+     1.5
+    ],
+    "kind": "paraffin",
+    "I": 2.6,
+    "reach": 3.6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -13,
+     -0.56,
+     0.25
+    ],
+    "kind": "white",
+    "I": 4.5,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -10.4,
+     -0.48,
+     0.12
+    ],
+    "kind": "white",
+    "I": 4.5,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -7.8,
+     -0.4,
+     -0.1
+    ],
+    "kind": "white",
+    "I": 4.5,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -5.2,
+     -0.33,
+     -0.24
+    ],
+    "kind": "white",
+    "I": 4.5,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -2.6,
+     -0.25,
+     -0.2
+    ],
+    "kind": "white",
+    "I": 4.5,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     0,
+     -0.17,
+     0
+    ],
+    "kind": "white",
+    "I": 4.5,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     2.6,
+     -0.09,
+     0.2
+    ],
+    "kind": "white",
+    "I": 4.5,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     5.2,
+     -0.01,
+     0.24
+    ],
+    "kind": "white",
+    "I": 4.5,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     7.8,
+     0.06,
+     0.1
+    ],
+    "kind": "white",
+    "I": 4.5,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     10.4,
+     0.14,
+     -0.12
+    ],
+    "kind": "white",
+    "I": 4.5,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     13,
+     0.22,
+     -0.25
+    ],
+    "kind": "white",
+    "I": 4.5,
+    "reach": 2.2,
+    "group": "gutter"
+   }
+  ],
+  "blackout": [
+   {
+    "at": [
+     -13,
+     -0.56,
+     0.25
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -10.4,
+     -0.48,
+     0.12
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -7.8,
+     -0.4,
+     -0.1
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -5.2,
+     -0.33,
+     -0.24
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     -2.6,
+     -0.25,
+     -0.2
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     0,
+     -0.17,
+     0
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     2.6,
+     -0.09,
+     0.2
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     5.2,
+     -0.01,
+     0.24
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     7.8,
+     0.06,
+     0.1
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     10.4,
+     0.14,
+     -0.12
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 2.2,
+    "group": "gutter"
+   },
+   {
+    "at": [
+     13,
+     0.22,
+     -0.25
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 2.2,
+    "group": "gutter"
+   }
+  ]
+ },
+ "arenas": []
 }

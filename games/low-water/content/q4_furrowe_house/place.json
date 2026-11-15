@@ -1,0 +1,145 @@
+{
+ "place": "q4_furrowe_house",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   0.9,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.1707317073170733
+ },
+ "pxPerMetre": 205,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 16.2,
+   "weather": "year 70, 16:10: grey autumn light over the sink, the bulb not lit"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  108
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "table",
+    "verb": "talk",
+    "at": [
+     -0.4,
+     0,
+     1.4
+    ],
+    "note": "Pell's table: two mugs, the letters from the Company, his chair turned to the window"
+   },
+   {
+    "verb": "look",
+    "id": "hat",
+    "at": [
+     -1.4,
+     0,
+     -0.9
+    ],
+    "note": "a paper bag on the high shelf with a hat's brim pushing it out"
+   },
+   {
+    "verb": "read",
+    "id": "survey_book",
+    "at": [
+     0.2,
+     0,
+     1.4
+    ],
+    "note": "Pell's old surveyor's book, open on the table"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "hall",
+    "at": [
+     2,
+     0,
+     1.4
+    ],
+    "note": "the hall and the front door"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": [
+   {
+    "at": [
+     0.6,
+     1.8,
+     -1.65
+    ],
+    "kind": "paraffin",
+    "I": 22,
+    "reach": 10,
+    "group": "window"
+   }
+  ]
+ },
+ "figureLights": {
+  "afternoon": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: Pell Furrowe's kitchen."
+}

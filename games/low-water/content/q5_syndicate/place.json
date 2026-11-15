@@ -1,0 +1,163 @@
+{
+ "place": "q5_syndicate",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0.4,
+   1,
+   -0.2
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.1862745098039214
+ },
+ "pxPerMetre": 204,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 14.6,
+   "weather": "year 115, April, 14:35: flat window light on the model of the ring road"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  116
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "model",
+    "verb": "look",
+    "at": [
+     0.4,
+     0,
+     0.9
+    ],
+    "note": "the model of the ring road: the Upper Town as white blocks inside the loop, the burial corner under green felt"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "lift",
+    "at": [
+     2.6,
+     0,
+     1.6
+    ],
+    "note": "the lift down to the street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": [
+   {
+    "at": [
+     -2.6,
+     2,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 1,
+    "reach": 12,
+    "group": "window"
+   },
+   {
+    "at": [
+     0.4,
+     1.97,
+     -0.2
+    ],
+    "kind": "paraffin",
+    "I": 0.3,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     0.4,
+     1.97,
+     -0.2
+    ],
+    "kind": "paraffin",
+    "I": 16,
+    "reach": 12,
+    "group": "window"
+   },
+   {
+    "at": [
+     0.4,
+     1.42,
+     -0.2
+    ],
+    "kind": "paraffin",
+    "I": 1.5,
+    "reach": 7,
+    "group": "lantern"
+   }
+  ]
+ },
+ "figureLights": {
+  "afternoon": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: flat window light on the model of the ring road."
+}

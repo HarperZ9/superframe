@@ -1,0 +1,108 @@
+# The Quota slice: the lore graph (design/PITCHES.md 3c.2; engine: world/lore.mjs; check: tools/lorecheck.mjs).
+# Gameplay engineer, 2026-10-22. The first chain is the missing Haldane brother, as far as day 41 and the week
+# after it reach. The fragments are found in the world (props, touches, scenes, record events); nothing here is
+# shown to the player, and the game never states the answer.
+# Weighted-devices pass, era 2, 2026-10-23 (DEVICE-AUDIT 3.4): the ids stay and the meanings change. The ledger is
+# Walter Mott's wedge under the barns' pan, found by the hand; the notebook is Ned's bare hand on the rock in Tesk's
+# fold; the cell log is Tomas's brown cap, taken off the bench in the end cell and hung on the Brack kitchen nail.
+
+@chain q.missing_tomas
+name: The missing Haldane brother
+# the inspector and the sergeant each hold half of it: the wedge and the cap
+route: two-classes | q.lore.bowls, q.lore.ledger, q.lore.cell_log
+# one inspector who blamed the Hesh at the weighing and said nothing at the post
+route: one-run | q.lore.bowls, q.lore.ledger, q.lore.corner
+# a later run, any class, once an earlier run has found the cap
+route: across-runs | q.lore.stone
+# the corner without blaming anybody (decision 13, 2026-10-22): Edie's boots in the queue, or the sergeant who
+# carried him
+route: one-run | q.lore.bowls, q.lore.ledger, q.lore.boots
+route: one-run | q.lore.bowls, q.lore.cell_log, q.lore.carry
+
+@lore q.lore.bowls
+chain: q.missing_tomas
+layer: surface
+where: prop q.haldane_bowls four,three
+where: touch q.haldane_bowls lift
+about: The Haldane table a week later: fewer bowls laid than there are Haldanes; the one on the shelf, wiped, lifted and put back.
+
+@lore q.lore.ledger
+chain: q.missing_tomas
+layer: deep
+where: node q.ned.three
+where: touch q.exchange_scale press
+requires: class inspector
+gives: q.fact.ledger
+about: Walter Mott's iron wedge under the barns' sack pan at the exchange scale: the half-chaff sacks weigh as full.
+
+@lore q.lore.notebook
+chain: q.missing_tomas
+layer: deep
+where: node q.ned.hill
+where: touch q.tesk_fold press
+requires: class inspector
+gives: q.fact.notebook
+about: Ned's bare hand flat on the rock in Tesk's fold, Sal the goat at his glove: no hole, no store, the hill all the way down.
+
+@lore q.lore.cell_log
+chain: q.missing_tomas
+layer: deep
+where: node q.will.post.arrest
+where: node q.cells.d45
+where: touch q.brack_nail hold
+requires: class militia
+gives: q.fact.cell_log
+about: Tomas's brown cap: picked out of the frost at the post, taken off the end cell's bench, hung on the nail behind the Brack kitchen door.
+
+@lore q.lore.corner
+chain: q.missing_tomas
+layer: hidden
+where: node q.coda.corner
+where: prop q.burial_fence corner
+requires: choice q_figure == blamed
+gives: q.fact.corner
+about: Blame the Hesh at the weighing, and a grateful sergeant tells you where the hoarder was buried: the unmarked corner past the gap.
+
+@lore q.lore.boots
+chain: q.missing_tomas
+layer: hidden
+where: node q.coda.boots
+requires: class inspector
+gives: q.fact.corner
+about: Edie Brack in the relief queue with Will's boots for the cobbler, yellow clay to the ankle: the corner past the gap, where it comes up yellow.
+
+@lore q.lore.carry
+chain: q.missing_tomas
+layer: hidden
+where: node q.cells.corner
+requires: class militia
+gives: q.fact.corner
+about: The sergeant carries him to the corner past the gap on the Tuesday night, with Gedge and the spade.
+
+# no stone and no name on a later run (the critic's softness finding 5, decision 2026-10-22): what an earlier run
+# knew buys nothing; the corner has been dug over for the fever rows
+@lore q.lore.stone
+chain: q.missing_tomas
+layer: hidden
+where: prop q.burial_fence dug
+requires: prior q.fact.cell_log
+about: On a later run, the corner past the gap is dug over for the fever rows: whatever an earlier run learned, there is nothing to stand in front of.
+
+# ---------------------------------------------------------------- the corner, told (the hidden fragment's scene)
+# Reached from q.coda.own (the story lead's routing node) for an inspector who blamed the Hesh at the weighing
+# and said nothing at the post while Tomas was taken. A draft for the story lead.
+@node q.coda.corner
+place: q_tower
+speaker: WILL
+cost: 5
+do: set(q.corner_known)
+nar: On the way home Ned goes round by the square. Will Brack is sitting on the steps of the Crown in the dark with a bottle between his boots, off duty, or as good as.
+line: WILL: Mr Furrowe. Inspector. Sit down. No, don't, you'll get your coat wet. Right.
+line: WILL: You said it straight at the scale. Up the hill, under the goats. Somebody had to say it in front of the Arlen man, and it was you. I thought, there's a man.
+nar: He laughs, and wipes his mouth with the back of his glove, and looks at the glove.
+line: WILL: The hoarder. Haldane's lad. Tuesday night, me and Gedge. In the corner past the gap, where they all go now. Gedge had the spade. I carried him. You don't need two for that. He had that thread on his wrist still. Gedge wanted it off him and I said leave it.
+line: WILL: No board. Captain said no board. Doctor said intestinal. I don't know what that is, I said, say what you like.
+nar: He holds the bottle up to Ned, and Ned doesn't take it, and Will doesn't seem to mind. He puts it back between his boots very carefully, as if it might go off.
+line: WILL: I got my boots wet. In the corner. It's all clay up there. Edie had them by the fire two days and they're still not right.
+line: WILL: Somebody had to keep order, Mr Furrowe. You'll not hear me say different. You'll not hear me say different.
+go: q.coda.queue

@@ -1,0 +1,811 @@
+{"t":"begin","v":1,"seed":1,"policy":"militia","clock":1790,"place":"","vars":{},"flags":[],"start":"e1.start","exits":[]}
+{"t":"talk","node":"e1.start","clock":1790}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.start","clock":1790}
+{"t":"place","id":"q_tower"}
+{"t":"var","n":"var.era","v":1}
+{"t":"ev","n":"camera","d":{"mode":"wide"}}
+{"t":"line","k":"nar","who":"","text":"The Exchange.","clock":1790,"node":"e1.start"}
+{"t":"flag","id":"seen.q.exchange_scale","on":1,"s":"h"}
+{"t":"flag","id":"seen.q.exchange_scale.grain","on":1,"s":"h"}
+{"t":"ev","n":"prop.examine","d":{"era":1,"id":"q.exchange_scale","place":"q_tower","state":"grain","tells":{"id":null,"kind":"era"}}}
+{"t":"flag","id":"seen.q.burial_fence","on":1,"s":"h"}
+{"t":"flag","id":"seen.q.burial_fence.iron","on":1,"s":"h"}
+{"t":"ev","n":"prop.examine","d":{"era":1,"id":"q.burial_fence","place":"q_tower","state":"iron","tells":{"id":null,"kind":"era"}}}
+{"t":"line","k":"nar","who":"","text":"Harvest. Edrin, twelve years before the hard winter.","clock":1790,"node":"e1.start"}
+{"t":"line","k":"nar","who":"","text":"Whose autumn is it?","clock":1790,"node":"e1.start"}
+{"t":"offer","node":"e1.start","opts":[{"key":"e1.start#0","kind":"opt","locked":0},{"key":"e1.start#1","kind":"opt","locked":0}]}
+{"t":"take","i":1,"key":"e1.start#1"}
+{"t":"line","k":"you","who":"LAMB","text":"Josh Brack. He keeps the road post and the list.","clock":1790,"node":"e1.start"}
+{"t":"var","n":"q_class","v":"militia"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.tower","clock":1790}
+{"t":"ev","n":"camera","d":{"mode":"wide"}}
+{"t":"line","k":"nar","who":"","text":"From the bell tower, at noon. The carts come in off the plain in a line that goes back past the mile stone, each one loaded higher than the one in front, and the drivers asleep on top with their hats over their faces because the horses know the way.","clock":1790,"node":"e1.tower"}
+{"t":"line","k":"nar","who":"","text":"Every roof on Exchange Street has a chimney going, for the baking. You can smell the bread from up here.","clock":1790,"node":"e1.tower"}
+{"t":"line","k":"nar","who":"","text":"Behind the mill, in the barn yards, the hill people who come down for the harvest. Washing on the ricks. A fire in a ring of stones with a black pot on it. Children in the stubble after the gleanings, and a dog going mad with happiness chasing nothing.","clock":1790,"node":"e1.tower"}
+{"t":"line","k":"nar","who":"","text":"On top of the big rick at Haldane's, a man with his shirt off is singing while he forks, loud, in Heshen, and the men on the cart below him are laughing at him and shouting the chorus wrong on purpose.","clock":1790,"node":"e1.tower"}
+{"t":"h","f":"checks.passive","a":["e1.tower@25","sum",2],"r":{"dc":2,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"SUM","text":"A good year. Every cart is a good year.","clock":1790,"node":"e1.tower"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.yard.dawn","clock":1790}
+{"t":"place","id":"q1_barns"}
+{"t":"line","k":"nar","who":"","text":"The barns at Haldane's, before it's light. The hands sleep eleven to a barn on straw, and the first one up kicks the fire in the stone ring back to life and puts the black pot on it, and the smell of the oats gets everybody else up.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"nar","who":"","text":"Ketti Sallis is up first, because she's always up first. She's got her hair tied up in a cloth and her sleeves pushed past the elbow, and her forearms are scratched to the wrist from the stubble, a hundred little lines, some old and some from yesterday.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"line","who":"KETTI","text":"Arn. Arn. It's the sun.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"line","who":"ARN","text":"It's not the sun. That's the moon.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"line","who":"KETTI","text":"It's the sun and you owe me a penny.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"line","who":"ARN","text":"I owe you nothing. I tied ninety-one.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"line","who":"KETTI","text":"Ninety-four. Old Tesk counted. Ask him.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"nar","who":"","text":"Old Tesk, on his back in the straw with his hands folded on his chest like a dead bishop, says ninety-four without opening his eyes, and coughs, and turns over.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"nar","who":"","text":"Arn finds a penny in his shirt and throws it at her and she catches it one-handed without looking, and puts it in her mouth for safekeeping, and goes on stirring the pot.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"nar","who":"","text":"Davin, eight, is sitting on an upturned bucket by the fire with a crust, and Kel Tesk, fourteen, is sitting on the ground beside him teaching him to whistle through a split stalk of barley. Kel can get a note out of it like a curlew. Davin can get a noise out of it like a door.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"line","who":"KEL","text":"You're blowing. Don't blow. Breathe at it.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"line","who":"DAVIN","text":"I am breathing at it.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"line","who":"KEL","text":"You're blowing at it like it's soup.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"nar","who":"","text":"Davin tries again and coughs instead, and coughs, and Kel bangs him on the back, not gently, and then takes the stalk off him and does the curlew again, and Davin laughs with his mouth full and sprays crust on the fire.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"nar","who":"","text":"Up on the end rick, Ilo is already working, with his shirt off in the cold, forking down for the first cart. He's singing. The hands below him come in on the chorus wrong on purpose, and he stops, and looks down at them, and starts it again from the top, slower, like a teacher.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"line","who":"KETTI","text":"He'll sing till his teeth drop out, that one.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"line","who":"ARN","text":"He'll sing till Furrowe pays him.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"line","who":"KETTI","text":"Then he'll sing for ever.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"line","k":"nar","who":"","text":"Ketti doles out the oats into the tins, a big spoon each and a little spoon more for Kel, because he's growing, and he looks at the little spoon more and doesn't say anything, and eats it with his fingers before it's cool enough.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"h","f":"checks.passive","a":["e1.yard.dawn@30","undertow",3],"r":{"dc":3,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"UNDERTOW","text":"Remember the oats. The little spoon more.","clock":1790,"node":"e1.yard.dawn"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.exchange","clock":1790}
+{"t":"place","id":"q1_exchange"}
+{"t":"ev","n":"camera","d":{"mode":"wide"}}
+{"t":"line","k":"nar","who":"","text":"The exchange hall. Iron pillars painted green and a glass roof the pigeons get in through. The big scale in the middle of the floor, the beam level, a sack on one side and the brass weights on the other, and a man in an apron squinting at the pointer like it owes him money.","clock":1790,"node":"e1.exchange"}
+{"t":"line","k":"nar","who":"","text":"The price board on the end wall, chalked up fresh every hour. Barley, wheat, oats, by the sack. Under the oats, smaller, in a different chalk that has been rubbed out and written again a lot of times: HANDS, BY THE SACK TIED.","clock":1790,"node":"e1.exchange"}
+{"t":"line","k":"nar","who":"","text":"At the side gate the hands queue to be paid. Hill men, Hesh, with blue thread round their wrists and the chaff still in their hair. A clerk at a table counts coins into each palm and doesn't look up.","clock":1790,"node":"e1.exchange"}
+{"t":"line","k":"nar","who":"","text":"A boy with a broom is sweeping under the scale. Thin as a rake. He keeps his head down and sweeps the spilled grain into a little pile, very carefully, so none of it goes to waste.","clock":1790,"node":"e1.exchange"}
+{"t":"line","k":"line","who":"HAIG","text":"Kel. Out the road of the gentlemen.","clock":1790,"node":"e1.exchange"}
+{"t":"line","k":"line","who":"KEL","text":"I'm doing under it, Mr Haig.","clock":1790,"node":"e1.exchange"}
+{"t":"line","k":"line","who":"HAIG","text":"Do under it when they've gone.","clock":1790,"node":"e1.exchange"}
+{"t":"line","k":"nar","who":"","text":"Up in the gallery a man in shirtsleeves leans over the rail with a pencil and shouts the barley down to the telegraph boy, who runs.","clock":1790,"node":"e1.exchange"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.josh.post","clock":1790}
+{"t":"place","id":"q_post"}
+{"t":"line","k":"nar","who":"","text":"The road post on the plain road, at harvest. A pole across the road with a weight on one end, and a hut with a stove in it nobody's lit since April. Josh Brack sits on an upturned bucket by the pole with the post book on his knee and a mug of tea going cold on the ground.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"nar","who":"","text":"The carts come in and he waves them through. Every so often one comes down off the hill track instead, full of people, not grain: hands with bundles and children, come down for the harvest, and he gets up for those and counts them with his pencil.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"JOSH","text":"How many in the back?","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"ARN","text":"The same as last year, Mr Brack. Me and Ketti and the lad.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"JOSH","text":"The lad's got bigger.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"ARN","text":"He has. He eats like a horse.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"JOSH","text":"Go on, then.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"nar","who":"","text":"Will Brack is on the other side of the pole, twenty-four, in a constable's coat a size too big that was bought big so he'd grow into it. He lets the pole up a beat late and the cart has to stop.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"JOSH","text":"Will. When I say go on.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"WILL","text":"I was.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"nar","who":"","text":"Josh gets up off the bucket and goes over and hits him across the side of the head with the flat of his hand, not hard, in front of the cart, the way you'd knock mud off a boot. Will's hat goes in the road. Ketti Sallis looks at the hat and then looks at the hill.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"JOSH","text":"When I say.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"nar","who":"","text":"Will picks his hat up out of the road and knocks the dust off it on his knee and puts it back on, and stands at the pole with his ear going red, and doesn't touch it. Davin Sallis is looking at him over the side of the cart with his mouth open. Will winks at him. The boy ducks down behind the bundles.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"WILL","text":"Go on, then.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"JOSH","text":"I say go on.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"WILL","text":"Sorry, Dad.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"JOSH","text":"Go on.","clock":1790,"node":"e1.josh.post"}
+{"t":"h","f":"checks.passive","a":["e1.josh.post@96","grip",2],"r":{"dc":2,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"GRIP","text":"He'll be faster on Monday. You were, at his age.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"nar","who":"","text":"Later, about four, Haig comes down the road in Orme's trap with the reins in one hand and Kel Tesk by the collar in the other, and a pair of boots on the seat beside him.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"HAIG","text":"Mr Orme says will you write him up. Barley in his boots. Off the floor at the mill.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"nar","who":"","text":"George Orme is in the trap as well, in the back, in his good coat for the exchange, looking like a man who would rather be somewhere else.","clock":1790,"node":"e1.josh.post"}
+{"t":"line","k":"line","who":"KEL","text":"It's sweepings. It was going on the midden.","clock":1790,"node":"e1.josh.post"}
+{"t":"h","f":"checks.passive","a":["e1.josh.post@101","ballast",3],"r":{"dc":3,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"BALLAST","text":"Write it and he's off the plain by Tuesday. That's what the book's for.","clock":1790,"node":"e1.josh.post"}
+{"t":"offer","node":"e1.josh.post","opts":[{"key":"e1.josh.post#0","kind":"opt","locked":0},{"key":"e1.josh.post#1","kind":"opt","locked":0}]}
+{"t":"take","i":0,"key":"e1.josh.post#0"}
+{"t":"line","k":"you","who":"LAMB","text":"Pick up the boots and tip them out in the road. Say it: I don't see any barley, Mr Orme.","clock":1790,"node":"e1.josh.post"}
+{"t":"h","f":"get","a":["said.e1_josh_tip"],"r":null}
+{"t":"flag","id":"said.e1_josh_tip","on":1}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.kel.decide","clock":1790}
+{"t":"h","f":"get","a":["said.e1_abel_sweepings"],"r":null}
+{"t":"h","f":"get","a":["said.e1_josh_tip"],"r":null}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.kel.kept","clock":1790}
+{"t":"h","f":"get","a":["e1.kel_kept"],"r":null}
+{"t":"flag","id":"e1.kel_kept","on":1}
+{"t":"line","k":"line","who":"GEORGE","text":"Well. If that's what it is. A week docked, Haig. He can sweep for nothing till Saturday.","clock":1790,"node":"e1.kel.kept"}
+{"t":"line","k":"line","who":"HAIG","text":"And the other.","clock":1790,"node":"e1.kel.kept"}
+{"t":"line","k":"nar","who":"","text":"George doesn't answer straight away. He takes his watch out and looks at it, and puts it back, as if the answer's in it. The post, and the book, and the boy off the plain by Tuesday. Or Haig. It's his to say, and everybody in the store knows it's his to say, the boy most of all.","clock":1790,"node":"e1.kel.kept"}
+{"t":"line","k":"line","who":"GEORGE","text":"And the other. Six. Not the buckle end, Haig.","clock":1790,"node":"e1.kel.kept"}
+{"t":"line","k":"line","who":"HAIG","text":"Six, Mr Orme.","clock":1790,"node":"e1.kel.kept"}
+{"t":"line","k":"line","who":"GEORGE","text":"Then let him go back to it.","clock":1790,"node":"e1.kel.kept"}
+{"t":"line","k":"nar","who":"","text":"On the road, Haig gets down off the trap and takes his belt off. The cart behind has to wait. Kel takes his jacket off without being told and bends over the trap's wheel with his hands on the iron tyre, and Haig gives him six, there on the post road, with the carters watching from their sacks and nobody getting down.","clock":1790,"node":"e1.kel.kept"}
+{"t":"line","k":"nar","who":"","text":"The belt's an inch and a half of harness leather. You hear each one come down from the far end of the queue. On the third the boy's forehead hits the wheel rim and opens over the eyebrow, and the blood runs into his eye, and he keeps his hands on the tyre.","clock":1790,"node":"e1.kel.kept"}
+{"t":"line","k":"nar","who":"","text":"George sits in the back of the trap with his good coat buttoned and looks straight ahead at the hill, the whole six. He said six. He doesn't look away from the hill once.","clock":1790,"node":"e1.kel.kept"}
+{"t":"line","k":"nar","who":"","text":"Josh sits back on his bucket and picks up his tea, and it's cold, and he drinks it.","clock":1790,"node":"e1.kel.kept"}
+{"t":"line","k":"line","who":"KEL","text":"Thank you, Mr Orme.","clock":1790,"node":"e1.kel.kept"}
+{"t":"h","f":"checks.passive","a":["e1.kel.kept@135","undertow",3],"r":{"dc":3,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"UNDERTOW","text":"He thanked him. He'll thank people for the rest of his life.","clock":1790,"node":"e1.kel.kept"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.kel.night","clock":1790}
+{"t":"h","f":"get","a":["e1.kel_kept"],"r":null}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.kel.night.kept","clock":1790}
+{"t":"place","id":"q1_barns"}
+{"t":"line","k":"nar","who":"","text":"That night in the barns. Kel lies on his front in the straw by the fire with his shirt off, because he can't bear it on. His back is six stripes from the shoulder blades to the top of his trousers, gone up in ridges the width of a thumb, and where two of them cross the skin has split and wept and stuck to his shirt, and Ketti had to soak the shirt off him with warm water an inch at a time.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"nar","who":"","text":"Ketti has a cup of dripping from the yard pot and she's putting it on with two fingers, very lightly. Davin is holding the candle for her, too close, and she keeps pushing his wrist back.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"line","who":"KETTI","text":"Hold it still, Davin. I can't see his back for your shaking.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"line","who":"DAVIN","text":"Does it hurt?","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"line","who":"KEL","text":"No.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"line","who":"DAVIN","text":"It looks like it hurts.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"line","who":"KEL","text":"It's the dripping that hurts. She's put salt in it.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"line","who":"KETTI","text":"I have not.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"line","who":"KEL","text":"She's put salt in it, Davin. She wants me to sing.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"nar","who":"","text":"He laughs into the straw. He laughs every time anybody says anything, and the laugh shakes his back, and he stops laughing and holds his breath until it settles, and then somebody says something and he laughs again.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"nar","who":"","text":"Old Tesk sits against the wall with his knees up, coughing, watching his son's back by the candle. He doesn't come near. He has the barley in his lap in its paper, the double handful, because George Orme said the boy could keep it, being as it was sweepings.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"line","who":"TESK","text":"Is it bad, missus.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"line","who":"KETTI","text":"It'll be a week before he lies on it. It'll mark.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"line","who":"TESK","text":"Mine marked.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"line","k":"nar","who":"","text":"He makes the pudding with the barley the next day, the one Kel took it for, and nobody else will have any of it, and he eats it himself, slowly, with Kel watching him.","clock":1790,"node":"e1.kel.night.kept"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.board","clock":1790}
+{"t":"place","id":"q1_board"}
+{"t":"line","k":"nar","who":"","text":"The registrar's upstairs room, on the Thursday. A long table with green baize gone bald at the elbows, a fire too big for the day, a decanter nobody has touched yet because the professor hasn't.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"nar","who":"","text":"Round the table: the registrar, asleep with his eyes open. Edwin Mott with the minute book. George Orme. Dr Lind, who came in late and kept his gloves on. Clement Ashby from the Gazette by the window, for the press. Abel Furrowe for the exchange, with his hat on his knee. Josh Brack standing at the back by the door, because nobody asked him to sit.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"nar","who":"","text":"And the guest, Professor Calley from Arlen, who has written a book about the hill people and has the book with him.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"line","who":"EDWIN","text":"The wording, then, as drafted. That for the purposes of the poor rate and the relief, a resident of the district is a person with a fixed abode in the district at the first frost. And that a person engaged for the season is not resident by reason of the engagement.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"line","who":"GEORGE","text":"Which means the hands.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"line","who":"EDWIN","text":"Which means anyone engaged for the season, Mr Orme.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"line","who":"GEORGE","text":"Which means the hands.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"line","who":"EDWIN","text":"It has to be worded generally.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"line","who":"OSKAR","text":"Am I wanted for this or not? I've a woman in the barns at Haldane's who's been coughing since the barley.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"line","who":"EDWIN","text":"The board would like to know whether the hands carry fever down off the hill. For the minute.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"line","who":"OSKAR","text":"They carry what everybody carries. They sleep eleven to a barn on wet straw because that's what the barns are. Put them in a house and they'll cough like a house.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"line","who":"EDWIN","text":"I'll put that they present no special risk.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"line","who":"OSKAR","text":"You'll put what I said.","clock":1790,"node":"e1.board"}
+{"t":"line","k":"nar","who":"","text":"Edwin writes something. It is shorter than what Lind said.","clock":1790,"node":"e1.board"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.board.josh","clock":1790}
+{"t":"line","k":"line","who":"EDWIN","text":"Brack. How many hands came down this summer.","clock":1790,"node":"e1.board.josh"}
+{"t":"line","k":"line","who":"JOSH","text":"The book's at the post.","clock":1790,"node":"e1.board.josh"}
+{"t":"line","k":"line","who":"EDWIN","text":"Roughly.","clock":1790,"node":"e1.board.josh"}
+{"t":"h","f":"checks.passive","a":["e1.board.josh@54","ballast",2],"r":{"dc":2,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"BALLAST","text":"You know the number. You counted every cart.","clock":1790,"node":"e1.board.josh"}
+{"t":"offer","node":"e1.board.josh","opts":[{"key":"e1.board.josh#0","kind":"opt","locked":0},{"key":"e1.board.josh#1","kind":"opt","locked":0}]}
+{"t":"take","i":0,"key":"e1.board.josh#0"}
+{"t":"line","k":"you","who":"LAMB","text":"Say it: More than last year. They came down with everything. Pots. Grandmothers.","clock":1790,"node":"e1.board.josh"}
+{"t":"h","f":"get","a":["said.e1_josh_words"],"r":null}
+{"t":"flag","id":"said.e1_josh_words","on":1}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.board.calley","clock":1790}
+{"t":"line","k":"line","who":"EDWIN","text":"Professor Calley. The board would be glad of your view.","clock":1790,"node":"e1.board.calley"}
+{"t":"line","k":"line","who":"CALLEY","text":"Oh, I'm only a guest. I'm here for the supper.","clock":1790,"node":"e1.board.calley"}
+{"t":"line","k":"nar","who":"","text":"He waits to be asked again. The registrar wakes up and asks him again.","clock":1790,"node":"e1.board.calley"}
+{"t":"line","k":"line","who":"CALLEY","text":"Well. I'd only say this. They don't want to be resident. That's the thing nobody here seems to grasp. You give a Hesh man a house and he'll be gone by Easter. They have the hill in them. I've stood in their villages. You've never seen people so cheerful with so little. I don't believe they think about next year at all.","clock":1790,"node":"e1.board.calley"}
+{"t":"line","k":"line","who":"GEORGE","text":"They think about next year when I pay them.","clock":1790,"node":"e1.board.calley"}
+{"t":"line","k":"line","who":"CALLEY","text":"Ha. Yes. Well, you would know.","clock":1790,"node":"e1.board.calley"}
+{"t":"line","k":"nar","who":"","text":"Everyone laughs, Calley loudest. Ashby writes in his notebook. At the end of the table Edwin Mott writes the minute, and reads it back, and the registrar says carried, and nobody puts a hand up against it, and that's the whole of it. The decanter goes round.","clock":1790,"node":"e1.board.calley"}
+{"t":"h","f":"get","a":["e1.rule_passed"],"r":null}
+{"t":"flag","id":"e1.rule_passed","on":1}
+{"t":"ev","n":"fate.pressure","d":{"day":41,"id":"f.e1_sallis"}}
+{"t":"ev","n":"fate.pressure","d":{"day":41,"id":"f.e1_kel"}}
+{"t":"h","f":"call:pressure","a":[["f.e1_sallis"]],"r":true}
+{"t":"h","f":"call:pressure","a":[["f.e1_kel"]],"r":true}
+{"t":"h","f":"checks.passive","a":["e1.board.calley@70","undertow",3],"r":{"dc":3,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"UNDERTOW","text":"It took eleven minutes. You'll remember that the fire was too big.","clock":1790,"node":"e1.board.calley"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.count","clock":1790}
+{"t":"place","id":"q1_barns"}
+{"t":"line","k":"nar","who":"","text":"The night the rule is passed. Josh Brack comes to the barns at ten with Will and a lantern and the post dog, Pilot, a brindle thing with half an ear, to count every hand who's sleeping on the plain and write them in the book for Mott's list. Every name in the book is a name on the list at the frost.","clock":1790,"node":"e1.count"}
+{"t":"line","k":"nar","who":"","text":"Ilo isn't in the book. He's been sleeping in Furrowe's loft since the barley, and a man in Furrowe's loft is nobody's business. But Furrowe hasn't said anything yet, and Ilo doesn't know if he will, and a man with no paper who's found in the barns at a count is a hand.","clock":1790,"node":"e1.count"}
+{"t":"line","k":"nar","who":"","text":"So he's in the ditch behind the end barn, in the dark, under the hawthorn, lying flat in a foot of black water with the cold coming up through his shirt. He's been there since he heard the gate.","clock":1790,"node":"e1.count"}
+{"t":"line","k":"nar","who":"","text":"He gave his bread at supper to Davin, because Davin was coughing and eats when he's coughing. So he's had a cup of the oats at five in the morning and nothing since, and his stomach has gone past growling into a slow ache like a fist pressed in under the ribs, and the cold is getting into the ache and making it worse.","clock":1790,"node":"e1.count"}
+{"t":"line","k":"line","who":"JOSH","text":"Pruett. Five. Where's the grandmother?","clock":1790,"node":"e1.count"}
+{"t":"line","k":"line","who":"WILL","text":"She's in the corner, Dad. She's asleep.","clock":1790,"node":"e1.count"}
+{"t":"line","k":"line","who":"JOSH","text":"Wake her up. I'm not counting her by the smell.","clock":1790,"node":"e1.count"}
+{"t":"line","k":"nar","who":"","text":"The water's in his ears. He can hear the count through it, name by name, and Pilot snuffling along the barn wall, and the dog's chain. His feet went numb half an hour ago and he can't feel if they're still in his boots. His jaw keeps going and he holds it shut with his hand so his teeth won't click.","clock":1790,"node":"e1.count"}
+{"t":"line","k":"nar","who":"","text":"Pilot comes round the end of the barn. Ilo hears him stop.","clock":1790,"node":"e1.count"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.count.josh","clock":1790}
+{"t":"line","k":"nar","who":"","text":"The dog has stopped at the end of the barn with his head down at the ditch and the hair standing up along his back. He makes the low noise he makes before he goes in.","clock":1790,"node":"e1.count.josh"}
+{"t":"h","f":"checks.passive","a":["e1.count.josh@100","ballast",2],"r":{"dc":2,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"BALLAST","text":"A man in a ditch at a count is a man who knows he shouldn't be counted. That's what the dog's for.","clock":1790,"node":"e1.count.josh"}
+{"t":"h","f":"checks.passive","a":["e1.count.josh@101","grip",3],"r":{"dc":3,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"GRIP","text":"Call him off and Will's watching you call him off.","clock":1790,"node":"e1.count.josh"}
+{"t":"offer","node":"e1.count.josh","opts":[{"key":"e1.count.josh#0","kind":"opt","locked":0},{"key":"e1.count.josh#1","kind":"opt","locked":0}]}
+{"t":"take","i":1,"key":"e1.count.josh#1"}
+{"t":"line","k":"you","who":"LAMB","text":"Whistle him back. Say it: Pilot. Here. It's rats.","clock":1790,"node":"e1.count.josh"}
+{"t":"h","f":"get","a":["e1.dog_called"],"r":null}
+{"t":"flag","id":"e1.dog_called","on":1}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.count.called","clock":1790}
+{"t":"line","k":"line","who":"JOSH","text":"Pilot. Here. It's rats.","clock":1790,"node":"e1.count.called"}
+{"t":"line","k":"nar","who":"","text":"The dog doesn't come at once. He stands with his head down at the hawthorn, and Josh whistles again, sharp, and the dog turns and comes back to his boot with his tail down.","clock":1790,"node":"e1.count.called"}
+{"t":"line","k":"line","who":"WILL","text":"There's no rats in water, Dad.","clock":1790,"node":"e1.count.called"}
+{"t":"line","k":"line","who":"JOSH","text":"There's rats in everything. Get the lantern.","clock":1790,"node":"e1.count.called"}
+{"t":"line","k":"nar","who":"","text":"They go. Ilo lies in the ditch another hour after the gate shuts, to be sure, and when he gets up he can't stand, and he crawls the last of it to Furrowe's yard on his hands and knees through the frost-wet grass with his boots full of water. Getting out through the hawthorn he's ripped his left forearm open from the wrist to the elbow on a branch, and he doesn't feel it till he sees it black in the yard.","clock":1790,"node":"e1.count.called"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.loft","clock":1790}
+{"t":"place","id":"q1_loft"}
+{"t":"line","k":"nar","who":"","text":"Abel's hayloft, over the horse, after the count, past midnight. One lantern on a nail. Ilo Haldane, who was Ilo then and nothing else, sits on a bale with a horse blanket round him that stinks of horse, and his wet things spread over the bales to steam. He's been sleeping up here since the barley. It's warm from the horse, and he can't get warm.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"nar","who":"","text":"He shakes. Not shivers, shakes, in long fits that start in his stomach and go out to his hands, and then stop, and then start again. His feet are white and wrinkled like a drowned man's and he's got them pushed down into the hay.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"nar","who":"","text":"His left forearm is wrapped in a strip torn off a sack, and the sack's gone black through in a patch the size of a hand. He hasn't looked under it.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"nar","who":"","text":"He has a knife and a piece of pear wood, and he's trying to make a spoon one-handed with the wood held between his knees, because his hands want something to do.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"nar","who":"","text":"Abel comes up the ladder slowly, because he's sixty-three and the rungs are greasy, and sits down on the top one with his legs still on the ladder, like a boy. He has a heel of bread in his coat pocket and half a cold sausage in a paper, and he puts them on the boards without saying what they are.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"nar","who":"","text":"Ilo eats the bread first. He eats it too fast and it hurts going down, and he has to stop with his hand flat on his chest and wait, and then he eats the sausage, paper and all nearly, and licks the grease off the paper.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"Brack's been round with the dog, then.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ILO","text":"He has.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"Did it get you.","clock":1790,"node":"e1.loft"}
+{"t":"h","f":"get","a":["e1.dog_called"],"r":null}
+{"t":"h","f":"get","a":["e1.dog_called"],"r":null}
+{"t":"line","k":"line","who":"ILO","text":"No. He called it off. Said it was rats. I did this on the thorn getting out.","clock":1790,"node":"e1.loft"}
+{"t":"h","f":"get","a":["e1.dog_called"],"r":null}
+{"t":"h","f":"get","a":["e1.dog_called"],"r":null}
+{"t":"h","f":"get","a":["e1.dog_called"],"r":null}
+{"t":"h","f":"get","a":["e1.dog_called"],"r":null}
+{"t":"h","f":"get","a":["e1.dog_called"],"r":null}
+{"t":"line","k":"line","who":"ABEL","text":"That's a good spoon.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ILO","text":"It's for the little one. Bet's.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"I know whose it's for.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"nar","who":"","text":"Ilo goes on carving. A curl of pear wood falls off the knife onto his knee.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"They passed it today. Seasonal hands aren't resident. First frost, the ones with no roof go back up the hill road. Mott wrote it.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ILO","text":"Mott writes everything.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"There's the barns at Haldane's. Old Purkiss has gone to his daughter's.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ILO","text":"I know whose barns they are.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"A tenant's a resident. That's in the rule as well. Mott wrote that too.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ILO","text":"And Bet.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"Bet wants a husband and the little one wants a name. You want a roof by the frost.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ILO","text":"You want it done by Sunday.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"I'd like it done by Sunday, yes.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"nar","who":"","text":"The horse shifts underneath them and the boards creak. Ilo holds the spoon up to the lantern and looks along the handle to see if it's straight. It isn't, quite.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ILO","text":"She's a good girl, Bet.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"She is.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ILO","text":"Your Ned thinks so.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"nar","who":"","text":"Abel doesn't say anything for a while. He takes his hat off and turns it round in his hands by the brim, looking for something on the band.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"Ned's married.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ILO","text":"I know. I was at it. I carried the chairs.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"So you were.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ILO","text":"Can I keep the horse company till Sunday, then.","clock":1790,"node":"e1.loft"}
+{"t":"line","k":"line","who":"ABEL","text":"You can keep him company as long as you like.","clock":1790,"node":"e1.loft"}
+{"t":"h","f":"get","a":["e1.loft_taken"],"r":null}
+{"t":"flag","id":"e1.loft_taken","on":1}
+{"t":"line","k":"nar","who":"","text":"Abel goes back down the ladder. Ilo finishes the spoon by feel after the lantern's out, and in the morning the bowl of it is crooked and he keeps it anyway.","clock":1790,"node":"e1.loft"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.bet.parlour","clock":1790}
+{"t":"place","id":"q1_furrowe"}
+{"t":"line","k":"nar","who":"","text":"The Furrowe parlour, the morning after the loft. A good room nobody sits in: a horsehair sofa, a clock under a glass dome, a framed certificate from the exchange with Abel's name in copperplate. The fire's laid and not lit.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"nar","who":"","text":"Bet Carrow has come in by the back, through the scullery, because that's the way she's always come into this house, since she was fifteen and did the Furrowes' step on a Saturday for sixpence. She has Anni on her hip. She hasn't been asked to sit and she doesn't.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"nar","who":"","text":"Abel is at the table by the window with an envelope in front of him, square to the edge, and a sheet of paper with figures on it in his own hand.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"ABEL","text":"He's said yes.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"BET","text":"I know. He came by ours last night with his arm in a sack and asked my dad for me. My dad laughed at him for a quarter of an hour.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"ABEL","text":"What's wrong with his arm.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"h","f":"get","a":["e1.dog_called"],"r":null}
+{"t":"h","f":"get","a":["e1.dog_called"],"r":null}
+{"t":"line","k":"line","who":"BET","text":"He says a hawthorn. He says it like he's proud of it.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"nar","who":"","text":"Abel looks at the envelope for a while.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"ABEL","text":"The barns at Haldane's, then. The house and the end barn and the paddock. At Purkiss's rent, which was fair, and which I've not put up.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"BET","text":"Purkiss paid four and six.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"ABEL","text":"Purkiss paid four and six.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"BET","text":"And what else.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"ABEL","text":"There's twelve pound in that for the wedding and the setting up. You'll not need to say where it's from.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"BET","text":"Who'd I say it to.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"ABEL","text":"And the little one goes in the book as his. That's a kindness to her, Bet. You know it is. A child wants a name on her paper.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"nar","who":"","text":"Through the wall, in the back room, Mary Furrowe's baby starts crying, the thin new crying of a baby a week old. Then Mary's voice, low, singing to it. Bet turns her head to the wall and listens to it. Anni turns her head too, because her mother did.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"BET","text":"That's Pell.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"ABEL","text":"That's Pell.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"BET","text":"He's got a good pair of lungs.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"ABEL","text":"He has.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"nar","who":"","text":"Bet hitches Anni up her hip. Anni has got hold of Bet's collar and is chewing it.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"BET","text":"She'll not come to this house. Not to the front, not to the back. That's what you're paying for. I'm not soft. I did your step for five years.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"ABEL","text":"I'd not put it like that.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"BET","text":"You'd not put it any way at all. That's what the twelve pound is.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"BET","text":"And Ned's not to come to the barns. Not for the rent. Not for anything. You'll send somebody.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"ABEL","text":"I'll come for the rent myself.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"BET","text":"Then you'll come. Not him.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"line","who":"ABEL","text":"Not him.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"line","k":"nar","who":"","text":"She takes the envelope off the table and doesn't open it to count it, which is the thing Abel will remember about her: she didn't count it. She puts it in the front of her dress.","clock":1790,"node":"e1.bet.parlour"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.bet.door","clock":1790}
+{"t":"h","f":"get","a":["e1.rent_fixed"],"r":null}
+{"t":"h","f":"get","a":["e1.rent_open"],"r":null}
+{"t":"line","k":"nar","who":"","text":"She goes out by the scullery the way she came. In the passage she stops by the back room door, where the singing is, and stands there with Anni for as long as it takes to say a short prayer, and then goes on.","clock":1790,"node":"e1.bet.door"}
+{"t":"line","k":"nar","who":"","text":"Abel sits at the table with the sheet of figures, and takes his pencil, and under Purkiss, four and six, writes Haldane, and stops, because it's not a name yet till Friday, and rubs it out.","clock":1790,"node":"e1.bet.door"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.bet.edie","clock":1790}
+{"t":"place","id":"q1_edie"}
+{"t":"line","k":"nar","who":"","text":"Edie's room over the draper's, the same afternoon. A dressmaker's dummy with no head, pins in a tin, a long glass with a crack across one corner. Bet is standing on a chair in her good blue, the one Edie let out in the spring of the year before last, being taken back in.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"EDIE","text":"Breathe in.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"I am breathing in.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"EDIE","text":"Breathe in like you mean it. You've been eating Furrowe's bread.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"I've been eating my dad's bread. It's all chaff.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"nar","who":"","text":"Edie has pins in her mouth and talks round them. She takes the waist in an inch, and another inch, kneeling on the floor with the hem across her knees. Anni is asleep on Edie's bed on a pile of offcuts.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"EDIE","text":"So it's the hill man.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"It's Ilo.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"EDIE","text":"It's Ilo who sings on the rick with his shirt off.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"That's him.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"EDIE","text":"Does he know.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"Know what.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"nar","who":"","text":"Edie takes the pins out of her mouth one at a time and puts them in the cushion.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"EDIE","text":"Bet. I let this out in March. I let it out again in May. I know what I let it out for.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"nar","who":"","text":"Bet looks at herself in the cracked glass for a long time, in the blue dress, standing on a chair, like a statue of somebody.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"He knows. He was at the wedding. Ned's. He carried the chairs.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"EDIE","text":"And he's having you anyway.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"He's having a roof. Furrowe's giving him the barns and a name in the book, and he'll not go up the hill at the frost. I'm in with the barns. Like the door.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"EDIE","text":"That's a horrible thing to say.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"It's what it is, though. He's not daft. He's the least daft man I know. He asked my dad for me with his arm bleeding through a sack, and my dad laughed at him, and he stood there and let him.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"nar","who":"","text":"Edie gets up off the floor and stands back to look at the waist. It's good. It's the best she's done.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"EDIE","text":"Do you like him.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"I like him better than Ned. Ned cried.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"EDIE","text":"When.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"When I told him. He sat on my dad's wall and cried, and I had to tell him it'd be all right. Me. Telling him.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"nar","who":"","text":"She gets down off the chair, careful of the pins.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"You'll not say. To anybody. Not your mam, not Will Brack.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"EDIE","text":"Who'd I say it to.","clock":1790,"node":"e1.bet.edie"}
+{"t":"line","k":"line","who":"BET","text":"That's what I said to Furrowe.","clock":1790,"node":"e1.bet.edie"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.supper","clock":1790}
+{"t":"place","id":"q1_supper"}
+{"t":"line","k":"nar","who":"","text":"The harvest supper, in Orme's big barn, the Saturday. One long table down the middle made of trestles and doors, with every family in the Upper Town along it, and lamps on the beams, and a fiddler on a barrel who can only play four tunes and plays them in turn.","clock":1790,"node":"e1.supper"}
+{"t":"line","k":"nar","who":"","text":"New bread, and dripping in a bowl with the brown at the bottom, and a ham that took two men to carry in. Beer in jugs. A pear on every plate, and the children cutting theirs into eight so it lasts.","clock":1790,"node":"e1.supper"}
+{"t":"line","k":"nar","who":"","text":"Edie the seamstress, twenty-two, is across the table from Will Brack. He's trying to tell her something about the post and has got it backwards, and she's laughing at him with her hand over her mouth, and he's gone red to the ears and is laughing as well.","clock":1790,"node":"e1.supper"}
+{"t":"line","k":"line","who":"EDIE","text":"You said the cart was on the pole.","clock":1790,"node":"e1.supper"}
+{"t":"line","k":"line","who":"WILL","text":"The pole was on the cart. The pole came down on the cart.","clock":1790,"node":"e1.supper"}
+{"t":"line","k":"line","who":"EDIE","text":"Was anyone in it?","clock":1790,"node":"e1.supper"}
+{"t":"line","k":"line","who":"WILL","text":"A pig.","clock":1790,"node":"e1.supper"}
+{"t":"line","k":"nar","who":"","text":"She has to put her head down on the table. Josh, further up, watches his son make a girl laugh and looks pleased for a second and then looks at his beer.","clock":1790,"node":"e1.supper"}
+{"t":"line","k":"nar","who":"","text":"Out in the yard, through the window, on an upturned crate with a plate on his knees, Ilo. The hands eat in the yard. They always have. There's sheep's-fat bread for the yard and a pot of something, and they've a fire going, and they're singing out there as well, a different song, and the two songs get in each other's way.","clock":1790,"node":"e1.supper"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.toast","clock":1790}
+{"t":"line","k":"nar","who":"","text":"George Orme stands up and bangs a spoon on a jug and asks the professor from Arlen to say a few words, as their guest, and the professor stands up with his glass.","clock":1790,"node":"e1.toast"}
+{"t":"line","k":"line","who":"CALLEY","text":"I won't keep you. Your registrar's been very kind, and your Mr Orme. And your Mr Furrowe, who weighed me when I came in and found me wanting.","clock":1790,"node":"e1.toast"}
+{"t":"line","k":"nar","who":"","text":"A big laugh. Abel lifts his glass to him, pleased.","clock":1790,"node":"e1.toast"}
+{"t":"line","k":"line","who":"CALLEY","text":"To the harvest. To the plain, which I'm told is the best wheat ground between here and the sea.","clock":1790,"node":"e1.toast"}
+{"t":"line","k":"line","who":"GEORGE","text":"It is.","clock":1790,"node":"e1.toast"}
+{"t":"line","k":"line","who":"CALLEY","text":"And to our friends in the barns. The Hesh temperament. Patient, and cheerful, and never a thought for next year. They'd sing at a funeral.","clock":1790,"node":"e1.toast"}
+{"t":"line","k":"nar","who":"","text":"And the whole barn laughs, warmly, the way you laugh at a dog that's done something clever. Glasses go up along the table like a wave going down a beach.","clock":1790,"node":"e1.toast"}
+{"t":"h","f":"get","a":["e1.toast_heard"],"r":null}
+{"t":"flag","id":"e1.toast_heard","on":1}
+{"t":"h","f":"checks.passive","a":["e1.toast@152","undertow",2],"r":{"dc":2,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"UNDERTOW","text":"Listen to the yard.","clock":1790,"node":"e1.toast"}
+{"t":"line","k":"nar","who":"","text":"In the yard the singing has stopped. Ilo has his plate on his knees and a piece of bread halfway to his mouth, and he's looking at the window, and he can see every glass in it.","clock":1790,"node":"e1.toast"}
+{"t":"offer","node":"e1.toast","opts":[{"key":"e1.toast#0","kind":"opt","locked":0},{"key":"e1.toast#1","kind":"opt","locked":0}]}
+{"t":"take","i":1,"key":"e1.toast#1"}
+{"t":"line","k":"you","who":"LAMB","text":"Leave the glass on the table.","clock":1790,"node":"e1.toast"}
+{"t":"h","f":"get","a":["said.e1_leave_glass"],"r":null}
+{"t":"flag","id":"said.e1_leave_glass","on":1}
+{"t":"h","f":"get","a":["e1.glass_left"],"r":null}
+{"t":"flag","id":"e1.glass_left","on":1}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.toast.left","clock":1790}
+{"t":"line","k":"nar","who":"","text":"The glass stays on the cloth. Nobody notices. That's the thing. Everyone's drinking, and Calley sits down to a bang of hands on the table, and the fiddler starts up, and not one person in the barn notices a full glass.","clock":1790,"node":"e1.toast.left"}
+{"t":"line","k":"nar","who":"","text":"Ilo, in the yard, notices. He looks at the glass through the window for a second, and then at whoever it belongs to, and then he eats his bread.","clock":1790,"node":"e1.toast.left"}
+{"t":"h","f":"checks.passive","a":["e1.toast.left@169","undertow",2],"r":{"dc":2,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"UNDERTOW","text":"That was all you did. You'll tell yourself about it for years.","clock":1790,"node":"e1.toast.left"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.supper.after","clock":1790}
+{"t":"place","id":"q1_supper_yard"}
+{"t":"line","k":"nar","who":"","text":"Later, when the lamps are low and the children are asleep along the benches like coats, a patch of white in the yard where Ilo was sitting. It's frost, too early. It's gone by the time anyone looks at it again.","clock":1790,"node":"e1.supper.after"}
+{"t":"line","k":"nar","who":"","text":"Nothing happens that night. Everybody walks home singing. It's a good supper, the best anyone can remember.","clock":1790,"node":"e1.supper.after"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.frost.eve","clock":1790}
+{"t":"place","id":"q1_barns"}
+{"t":"line","k":"nar","who":"","text":"The Monday night, the night before the frost, though nobody knows that yet. In the barns at Haldane's. Somebody has got potatoes, a whole sack, off Orme's ground where they were left in the ruts, and they're in the fire in their skins, and the barn smells like nothing else in the world.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"nar","who":"","text":"Ketti is sitting with Davin's coat across her knees, putting a patch on the elbow from a bit of Arn's old shirt. She bites the thread off. Davin is asleep against her side with his mouth open, and every so often he coughs in his sleep without waking, and she puts her hand on his back till he stops.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"nar","who":"","text":"Ilo has come over from Furrowe's for the potatoes, with his arm in a strip of sacking. Nobody's asked him about it. He sits by the fire and pokes the potatoes out of the ash with a stick and juggles them from hand to hand, and blows on them, and hands them round.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"line","who":"ILO","text":"Ketti. That one's yours. It's the best one.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"line","who":"KETTI","text":"They're all the same.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"line","who":"ILO","text":"That one's the best. I've been watching it.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"line","who":"KETTI","text":"You've been watching a potato.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"line","who":"ILO","text":"Since it went in. Somebody had to.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"nar","who":"","text":"She splits it with her thumbs and the steam comes up into her face, and she shuts her eyes in it.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"line","who":"KETTI","text":"My mam used to do them on the hill in the wall. In the hot stones. You'd put them in at dinner and they'd be done by dark and you'd have forgotten them.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"line","who":"ILO","text":"Mine as well.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"line","who":"KETTI","text":"Did yours burn them?","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"line","who":"ILO","text":"Every time. She'd say it was the stones.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"line","who":"KETTI","text":"It's never the stones.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"nar","who":"","text":"Arn says when they go up, at the frost, he'll make her a wall like that at the hut, and she says he said that last year, and he says he'll make it this year, and she says he said that last year as well.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"nar","who":"","text":"Ketti sings, after. Not loud, not for anybody, a Heshen song about a girl who loses a goat and finds it on the roof, and the barn goes quiet to hear it, and two or three come in on the end where the goat comes down.","clock":1790,"node":"e1.frost.eve"}
+{"t":"line","k":"nar","who":"","text":"There's a white skin on the water bucket by the door when Ilo goes out. He looks at it. He puts his finger through it, and it breaks like paper.","clock":1790,"node":"e1.frost.eve"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.frost","clock":1790}
+{"t":"flag","id":"lore.e1.lore.frost_list","on":1,"s":"h"}
+{"t":"ev","n":"lore.found","d":{"chain":"e1.hands","id":"e1.lore.frost_list","layer":"surface","via":"node:e1.frost"}}
+{"t":"place","id":"q_post"}
+{"t":"line","k":"nar","who":"","text":"Three days after the supper, an ordinary Tuesday. The first frost. The road post at seven in the morning, white, and the pole furred with it, and the hill behind gone sharp the way it does on a frost, so you can see every wall on it.","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"nar","who":"","text":"The list is pinned to the post board on a nail. Names in Edwin Mott's hand, nice and round. HANDS, SEASONAL, NOT RESIDENT. Twenty-odd names and their households. The hands are in the road below the pole, with their bundles, because they were told to be.","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"nar","who":"","text":"Josh Brack has the list off the nail and is reading it out. He does it the same every year, so it's not like anything. It's like reading the weather.","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"line","who":"JOSH","text":"Pruett. Pruett and four. Up you go, Pruett.","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"line","who":"JOSH","text":"Tesk. The old man's gone up already, has he. Right.","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"line","who":"JOSH","text":"Sallis. Arn. Wife and the lad.","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"line","who":"ARN","text":"I've work at Orme's till the potatoes are up.","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"line","who":"JOSH","text":"Have you a paper says so?","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"line","who":"ARN","text":"Mr Orme said.","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"line","who":"JOSH","text":"Mr Orme says a lot of things in August.","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"line","who":"KETTI","text":"The lad's got a cough. Can we not go up Monday?","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"line","who":"JOSH","text":"I don't set the frost, missus.","clock":1790,"node":"e1.frost"}
+{"t":"line","k":"nar","who":"","text":"Davin Sallis, eight, is standing behind his mother's skirt. He coughs into it, a wet cough that goes on too long, and she puts her hand on his head without looking.","clock":1790,"node":"e1.frost"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.frost.josh","clock":1790}
+{"t":"line","k":"nar","who":"","text":"George Orme is coming along the road in his trap with Haig, out to the potato ground, and pulls up behind the hands because he can't get past.","clock":1790,"node":"e1.frost.josh"}
+{"t":"h","f":"checks.passive","a":["e1.frost.josh@40","ballast",2],"r":{"dc":2,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"BALLAST","text":"Read it. Read it and they go. It's not your list.","clock":1790,"node":"e1.frost.josh"}
+{"t":"offer","node":"e1.frost.josh","opts":[{"key":"e1.frost.josh#0","kind":"opt","locked":0},{"key":"e1.frost.josh#1","kind":"opt","locked":0}]}
+{"t":"take","i":1,"key":"e1.frost.josh#1"}
+{"t":"line","k":"you","who":"LAMB","text":"Pin the list back on the nail. Say it: Up you go, Sallis.","clock":1790,"node":"e1.frost.josh"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.frost.decide","clock":1790}
+{"t":"h","f":"get","a":["said.e1_abel_loft"],"r":null}
+{"t":"h","f":"get","a":["said.e1_josh_carter"],"r":null}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.frost.sent","clock":1790}
+{"t":"h","f":"get","a":["e1.sallis_sent"],"r":null}
+{"t":"flag","id":"e1.sallis_sent","on":1}
+{"t":"ev","n":"community.record","d":{"clock":1790,"day":41,"decider":"JOSH","id":"fate.f.e1_sallis#1","lens":"near","node":"e1.frost.sent","source":{"node":"e1.frost.josh","option":"e1.frost.josh#1","words":"Pin the list back on the nail. Say it: Up you go, Sallis."},"street":"haldane_yard","type":"fate.f.e1_sallis","victim":"e1_sallis","who":"ketti"}}
+{"t":"ev","n":"fate","d":{"decider":"JOSH","id":"f.e1_sallis","node":"e1.frost.sent","who":"ketti"}}
+{"t":"ev","n":"community.rule","d":{"day":41,"id":"","kind":"district","rule":"Rvp"}}
+{"t":"ev","n":"community.rule","d":{"day":41,"id":"","kind":"district","rule":"Rvc"}}
+{"t":"h","f":"call:fate","a":[["f.e1_sallis","ketti"]],"r":"fate.f.e1_sallis#1"}
+{"t":"line","k":"line","who":"JOSH","text":"Up you go, Sallis.","clock":1790,"node":"e1.frost.sent"}
+{"t":"line","k":"nar","who":"","text":"Arn picks up the big bundle, and Ketti the small one, and Davin a tin kettle on a string. They go through under the pole when Will lifts it, and start up the hill road behind the Pruetts.","clock":1790,"node":"e1.frost.sent"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.frost.up","clock":1790}
+{"t":"place","id":"q_hill"}
+{"t":"ev","n":"camera","d":{"mode":"wide"}}
+{"t":"line","k":"nar","who":"","text":"From the post, held: the hands going up the hill road in a line, with their bundles on their backs, the way they came down in August, only slower, because it's uphill and it's cold. The frost is going off the road where the sun touches it and staying where it doesn't. Josh stands at the pole with the list.","clock":1790,"node":"e1.frost.up"}
+{"t":"h","f":"get","a":["e1.sallis_sent"],"r":null}
+{"t":"line","k":"nar","who":"","text":"Halfway up, Ketti Sallis stops to cough, bent over with her hand on her knee, and Arn waits for her with the bundle, and Davin waits with the kettle, and then they go on.","clock":1790,"node":"e1.frost.up"}
+{"t":"line","k":"nar","who":"","text":"They go over the shoulder of the hill one at a time, and then there's only the road.","clock":1790,"node":"e1.frost.up"}
+{"t":"h","f":"get","a":["e1.sallis_sent"],"r":null}
+{"t":"h","f":"checks.passive","a":["e1.frost.up@84","undertow",4],"r":{"dc":4,"label":"Trivial","pass":false}}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.post.will","clock":1790}
+{"t":"flag","id":"lore.e1.lore.fit_slips","on":1,"s":"h"}
+{"t":"ev","n":"lore.found","d":{"chain":"e1.hands","id":"e1.lore.fit_slips","layer":"hidden","via":"node:e1.post.will"}}
+{"t":"place","id":"q_post"}
+{"t":"line","k":"nar","who":"","text":"The road post, after. The frost is off the road now except in the ruts. The ones who were kept, if there were any, have gone off to wherever they're kept. Josh is pinning Mott's list back on the nail with the crossings-off on it in his pencil.","clock":1790,"node":"e1.post.will"}
+{"t":"line","k":"nar","who":"","text":"Will is at the pole. He hasn't let it down. He's looking up the hill road at the shoulder where they went over.","clock":1790,"node":"e1.post.will"}
+{"t":"line","k":"line","who":"WILL","text":"Dad.","clock":1790,"node":"e1.post.will"}
+{"t":"line","k":"line","who":"JOSH","text":"Let the pole down.","clock":1790,"node":"e1.post.will"}
+{"t":"h","f":"get","a":["e1.sallis_sent"],"r":null}
+{"t":"line","k":"line","who":"WILL","text":"The Sallis lad was coughing blood. On the frost, by the pole. There's some there. I saw it.","clock":1790,"node":"e1.post.will"}
+{"t":"h","f":"get","a":["e1.sallis_kept"],"r":null}
+{"t":"line","k":"line","who":"JOSH","text":"Let the pole down, Will.","clock":1790,"node":"e1.post.will"}
+{"t":"line","k":"line","who":"WILL","text":"I'm only saying we could've had Lind look at him.","clock":1790,"node":"e1.post.will"}
+{"t":"line","k":"nar","who":"","text":"Josh turns round from the board with the post book in his hand, a big book bound in board with brass corners, and hits Will across the face with it. Not the flat. The edge, the corner. Will's head goes round and his hat goes in the road again and he takes two steps sideways to keep his feet.","clock":1790,"node":"e1.post.will"}
+{"t":"line","k":"nar","who":"","text":"When he straightens up his top lip's split against his teeth and his nose is going, two lines of it down into his mouth and off his chin, onto the front of the coat that was bought big for him. It drips on the frost in the rut, beside the other.","clock":1790,"node":"e1.post.will"}
+{"t":"line","k":"line","who":"JOSH","text":"Lind's signed them. Every one. Fit to travel. You want to read his name? It's on the back.","clock":1790,"node":"e1.post.will"}
+{"t":"line","k":"line","who":"WILL","text":"No, Dad.","clock":1790,"node":"e1.post.will"}
+{"t":"line","k":"line","who":"JOSH","text":"When I say let the pole down, you let the pole down. When I say go on, they go on. That's the whole of it, Will. That's the whole of the job.","clock":1790,"node":"e1.post.will"}
+{"t":"line","k":"nar","who":"","text":"Will lets the pole down. He holds his sleeve under his nose. He doesn't wipe it, he just holds it there, and stands at the pole the way his father stands at it, with his feet apart, looking at the road.","clock":1790,"node":"e1.post.will"}
+{"t":"line","k":"nar","who":"","text":"Josh sits down on his bucket and opens the book where he hit him with it, and there's blood on the board of the cover, and he wipes it off with his thumb, and looks at his thumb, and wipes his thumb on his knee.","clock":1790,"node":"e1.post.will"}
+{"t":"h","f":"checks.passive","a":["e1.post.will@27","ballast",2],"r":{"dc":2,"label":"Trivial","pass":true}}
+{"t":"ev","n":"self.lie","d":{"id":"e1.sl.lantern","node":"e1.post.will","voice":"ballast"}}
+{"t":"line","k":"voice","who":"BALLAST","text":"They come down with the harvest and they go up with the frost. You're only saying it out loud.","clock":1790,"node":"e1.post.will"}
+{"t":"h","f":"checks.passive","a":["e1.post.will@28","grip",3],"r":{"dc":3,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"GRIP","text":"He'll stand at that pole for forty years. You've just shown him how.","clock":1790,"node":"e1.post.will"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.census","clock":1790}
+{"t":"place","id":"q1_census"}
+{"t":"line","k":"nar","who":"","text":"The registrar's front counter, the Friday. Census day for the new rule: everybody with a fixed abode comes in and is written down. The queue goes out of the door and along the front of the building and round the corner, and it's raining, and the ones outside hold their coats over their heads.","clock":1790,"node":"e1.census"}
+{"t":"line","k":"nar","who":"","text":"Edwin Mott at the counter with the big book. Walter beside him with the copy slips, writing his sevens with no bar through them, which his father has told him about twice.","clock":1790,"node":"e1.census"}
+{"t":"line","k":"nar","who":"","text":"Ilo in the queue with Bet, and Anni asleep on Bet's hip with her thumb in. Ilo has a clean shirt on that he borrowed. He has the crooked spoon in his pocket and keeps touching it.","clock":1790,"node":"e1.census"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.census.door","clock":1790}
+{"t":"h","f":"get","a":["e1.per_af"],"r":null}
+{"t":"flag","id":"e1.per_af","on":1}
+{"t":"line","k":"nar","who":"","text":"Abel Furrowe is in the doorway, just inside out of the rain, with his hat in his hands, the way a man stands at the back of a church he doesn't go to. He isn't in the queue. He doesn't need to be.","clock":1790,"node":"e1.census.door"}
+{"t":"line","k":"nar","who":"","text":"Josh Brack is at the end of the counter for the hands' entries, with the frost list, to cross off whoever turns up resident after all.","clock":1790,"node":"e1.census.door"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.census.name","clock":1790}
+{"t":"flag","id":"lore.e1.lore.slip","on":1,"s":"h"}
+{"t":"ev","n":"lore.found","d":{"chain":"e1.name","id":"e1.lore.slip","layer":"surface","via":"node:e1.census.name"}}
+{"t":"line","k":"line","who":"EDWIN","text":"Next. Name.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"ILO","text":"Ilo.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"EDWIN","text":"Surname.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"ILO","text":"Ilo.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"EDWIN","text":"Your other name. Your father's name.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"ILO","text":"My father was Ilo as well.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"nar","who":"","text":"Somebody behind them in the queue laughs, and then stops.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"EDWIN","text":"I need a surname. The column's for a surname.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"ILO","text":"We don't have them up there. You're your father's son, that's all. You're Ilo who's Ilo's.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"EDWIN","text":"Well, you're down here now. Where are you resident.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"ILO","text":"The barns at Haldane's. From Sunday.","clock":1790,"node":"e1.census.name"}
+{"t":"h","f":"get","a":["e1.per_af"],"r":null}
+{"t":"h","f":"get","a":["e1.per_letter"],"r":null}
+{"t":"line","k":"nar","who":"","text":"Edwin looks past him, at the door, where Mr Furrowe is standing with his hat.","clock":1790,"node":"e1.census.name"}
+{"t":"h","f":"get","a":["e1.per_letter"],"r":null}
+{"t":"line","k":"nar","who":"","text":"Edwin dips the pen. His pen is over the column, and Ilo can see it there, waiting, and the queue is waiting, and the rain is coming in round the door.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"ILO","text":"Put Haldane.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"EDWIN","text":"Haldane.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"line","who":"ILO","text":"After the farm. Put Haldane.","clock":1790,"node":"e1.census.name"}
+{"t":"line","k":"nar","who":"","text":"Edwin writes it. He strikes through ILO in the first column and writes HALDANE, I., and then after it, small, the way he'd note a source: after the farm. Walter copies it onto a slip and blots it and pushes it across the counter.","clock":1790,"node":"e1.census.name"}
+{"t":"h","f":"get","a":["e1.named"],"r":null}
+{"t":"flag","id":"e1.named","on":1}
+{"t":"h","f":"checks.passive","a":["e1.census.name@138","sum",3],"r":{"dc":3,"label":"Trivial","pass":false}}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.census.bet","clock":1790}
+{"t":"line","k":"line","who":"EDWIN","text":"Wife.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"line","who":"BET","text":"Bet. Elizabeth. Carrow, it was.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"line","who":"EDWIN","text":"Married when.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"line","who":"BET","text":"Sunday.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"line","who":"EDWIN","text":"The child.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"line","who":"BET","text":"Anni.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"line","who":"EDWIN","text":"Born.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"line","who":"BET","text":"Two years at Lammas.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"line","who":"EDWIN","text":"Father.","clock":1790,"node":"e1.census.bet"}
+{"t":"h","f":"get","a":["e1.per_af"],"r":null}
+{"t":"line","k":"nar","who":"","text":"Bet doesn't answer. She hitches Anni up her hip. She doesn't look at the door. She looks at the counter, at the grain of the wood.","clock":1790,"node":"e1.census.bet"}
+{"t":"h","f":"get","a":["e1.per_letter"],"r":null}
+{"t":"h","f":"get","a":["e1.per_af"],"r":null}
+{"t":"line","k":"nar","who":"","text":"Edwin rules a line through the father column with his ruler, neat, all the way across. Then he takes a pencil out from behind his ear, not the pen, and writes in the margin beside it: per A.F.","clock":1790,"node":"e1.census.bet"}
+{"t":"h","f":"get","a":["e1.per_letter"],"r":null}
+{"t":"line","k":"line","who":"EDWIN","text":"Next.","clock":1790,"node":"e1.census.bet"}
+{"t":"h","f":"get","a":["e1.per_af"],"r":null}
+{"t":"line","k":"nar","who":"","text":"In the doorway, Abel puts his hat back on and goes out into the rain.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"nar","who":"","text":"Outside, Ilo unfolds the slip and holds it so the rain won't get it and looks at it a long time, though he can't read it. Bet reads it to him. Then he folds it small and puts it in the inside pocket of the borrowed shirt.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"line","who":"ILO","text":"Haldane. Haldane. Haldane.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"line","who":"BET","text":"You'll get used to it.","clock":1790,"node":"e1.census.bet"}
+{"t":"line","k":"line","who":"ILO","text":"I'll have to, won't I. It's on a paper.","clock":1790,"node":"e1.census.bet"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.wedding","clock":1790}
+{"t":"place","id":"q1_barns"}
+{"t":"line","k":"nar","who":"","text":"The Sunday. The wedding is at nine at the Furrow Church, before the service, so the vicar can do it and then do the service, and there are six people at it, and one of them is asleep, and that's Anni.","clock":1790,"node":"e1.wedding"}
+{"t":"line","k":"nar","who":"","text":"After, in the barns at Haldane's, the hands who are left have made a table out of planks on two barrels, and there's a ham end from Orme's supper that Edie got from the barn the morning after, and bread, and a cake Bet's mother made with no eggs in it that sinks in the middle like a saddle.","clock":1790,"node":"e1.wedding"}
+{"t":"line","k":"nar","who":"","text":"Old Carrow has his fiddle, which is worse than Orme's fiddler's but knows more than four tunes. He plays sitting on a cask with his eyes shut. Ilo dances with Bet in the straw, badly, with his bad arm held up out of the way like a man carrying a tray.","clock":1790,"node":"e1.wedding"}
+{"t":"line","k":"line","who":"CARROW","text":"You dance like a hen in a wind.","clock":1790,"node":"e1.wedding"}
+{"t":"line","k":"line","who":"ILO","text":"I dance like a hill man.","clock":1790,"node":"e1.wedding"}
+{"t":"line","k":"line","who":"CARROW","text":"That's what I said.","clock":1790,"node":"e1.wedding"}
+{"t":"line","k":"nar","who":"","text":"Then Ilo dances with Anni, holding her up, swinging her round till she screams, and puts her down dizzy, and she falls on her bottom in the straw and looks surprised, and gets up and holds her arms up for more.","clock":1790,"node":"e1.wedding"}
+{"t":"h","f":"get","a":["e1.rent_fixed"],"r":null}
+{"t":"line","k":"nar","who":"","text":"Bet's mother takes Ilo by the face with both hands in the yard and looks at him a long time, the way you'd look at a horse you'd been sold, and then kisses him on the forehead, hard, and lets go.","clock":1790,"node":"e1.wedding"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.osby","clock":1790}
+{"t":"place","id":"q1_osby"}
+{"t":"ev","n":"camera","d":{"mode":"wide"}}
+{"t":"line","k":"nar","who":"","text":"Osby fair, the Sunday after the wedding, which was quick and had six people at it. The crockery stall at the end of the row under a striped awning, with bowls stacked up in towers.","clock":1790,"node":"e1.osby"}
+{"t":"line","k":"nar","who":"","text":"Bet has the wedding money in a handkerchief, from Abel, in an envelope with nothing written on it. She picks up the bowls one at a time and taps each one with her nail and listens. She buys five, matched, the blue rim.","clock":1790,"node":"e1.osby"}
+{"t":"line","k":"line","who":"ILO","text":"Five. There's three of us.","clock":1790,"node":"e1.osby"}
+{"t":"line","k":"line","who":"BET","text":"My mam said buy five.","clock":1790,"node":"e1.osby"}
+{"t":"line","k":"line","who":"ILO","text":"Your mam's not paying for them.","clock":1790,"node":"e1.osby"}
+{"t":"line","k":"line","who":"BET","text":"My mam said buy five, Ilo.","clock":1790,"node":"e1.osby"}
+{"t":"line","k":"nar","who":"","text":"He carries them home in the basket on his arm, all the way, with Anni on his shoulders holding his ears.","clock":1790,"node":"e1.osby"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.door","clock":1790}
+{"t":"place","id":"q1_barns"}
+{"t":"ev","n":"camera","d":{"mode":"wide"}}
+{"t":"line","k":"nar","who":"","text":"The barns at Haldane's, the Monday. Old Carrow comes over from the Osby road with a crowbar, and he and Ilo take the big door off the end barn. It comes off the pins with a shriek. It's heavier than either of them thought, and they have to put it down twice crossing the yard, and the second time Carrow sits down on it and laughs till he coughs.","clock":1790,"node":"e1.door"}
+{"t":"line","k":"line","who":"CARROW","text":"You're marrying my girl and you're stealing a door off Furrowe.","clock":1790,"node":"e1.door"}
+{"t":"line","k":"line","who":"ILO","text":"It's my door. I rent it.","clock":1790,"node":"e1.door"}
+{"t":"line","k":"line","who":"CARROW","text":"Since Sunday.","clock":1790,"node":"e1.door"}
+{"t":"line","k":"line","who":"ILO","text":"Since Sunday.","clock":1790,"node":"e1.door"}
+{"t":"line","k":"nar","who":"","text":"Bet stands in the kitchen doorway with Anni and the basket of bowls and doesn't help, and tells them they're doing it wrong. The hinge pins stay in the barn wall, with nothing on them.","clock":1790,"node":"e1.door"}
+{"t":"h","f":"call:prior","a":[["q.fact.corner"]],"r":false}
+{"t":"h","f":"get","a":["e1.door_down"],"r":null}
+{"t":"flag","id":"e1.door_down","on":1}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.table","clock":1790}
+{"t":"place","id":"q_haldane"}
+{"t":"ev","n":"camera","d":{"mode":"near"}}
+{"t":"line","k":"nar","who":"","text":"The Haldane kitchen. The table, new, made of a barn door on four legs, with the hinge marks still in it where Ilo couldn't plane them out. On one of the legs, low down, where you'd only see it if you were a child, Ilo has carved a goat with its head turned back over its shoulder, the way they carve them on the hill.","clock":1790,"node":"e1.table"}
+{"t":"flag","id":"seen.q.haldane_table","on":1,"s":"h"}
+{"t":"flag","id":"seen.q.haldane_table.new","on":1,"s":"h"}
+{"t":"ev","n":"prop.examine","d":{"era":1,"id":"q.haldane_table","place":"q_haldane","state":"new","tells":{"id":"haldane","kind":"household"}}}
+{"t":"flag","id":"seen.q.haldane_bowls","on":1,"s":"h"}
+{"t":"flag","id":"seen.q.haldane_bowls.five","on":1,"s":"h"}
+{"t":"ev","n":"prop.examine","d":{"era":1,"id":"q.haldane_bowls","place":"q_haldane","state":"five","tells":{"id":"haldane","kind":"household"}}}
+{"t":"line","k":"nar","who":"","text":"Three bowls on the table. Three places. Bread, and a little dripping, and an apple for Anni cut small.","clock":1790,"node":"e1.table"}
+{"t":"line","k":"nar","who":"","text":"Two bowls on the shelf over the stove, turned over, so the dust won't get in them. For whoever comes.","clock":1790,"node":"e1.table"}
+{"t":"line","k":"nar","who":"","text":"Ilo puts the crooked spoon by Anni's bowl. She picks it up and bangs the table with it. She does it again, and he laughs.","clock":1790,"node":"e1.table"}
+{"t":"h","f":"checks.passive","a":["e1.table@203","dark",2],"r":{"dc":2,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"THE DARK","text":"You know this table.","clock":1790,"node":"e1.table"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.hill","clock":1790}
+{"t":"h","f":"get","a":["e1.sallis_sent"],"r":null}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.hill.hare","clock":1790}
+{"t":"place","id":"q_hill"}
+{"t":"ev","n":"camera","d":{"mode":"near"}}
+{"t":"line","k":"nar","who":"","text":"That winter. The hut at the top of the hill road, in the lee of the long wall, December. One room of stone with a turf roof and a door made of three planks and a sack, and snow on the turf, and snow on the wall, and snow on the door where it blows in under the sack.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"nar","who":"","text":"Davin's snare has a hare in it. He brings it in by the back legs, stiff, frozen, with snow in its fur, and holds it up with both arms like a thing he made himself.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"line","who":"DAVIN","text":"Mam. Mam. Look.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"line","who":"KETTI","text":"Oh, look at that. Look at him. Arn, look what he's got.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"line","who":"ARN","text":"He never.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"line","who":"DAVIN","text":"I did. In the gap by the thorn. Where you said.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"line","who":"KETTI","text":"Where your dad said and you said it was daft.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"nar","who":"","text":"Ketti skins it on the doorstep with Arn's knife, quick, the way you'd take off a glove, and the steam comes off the meat in the cold. Her fingers are raw and split at every knuckle and the cracks open when she bends them and she doesn't notice.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"nar","who":"","text":"They stew it with the last of the oats and a bit of the dripping, and it takes all afternoon because the fire's peat and wet, and they sit round it in their coats and blankets watching the pot. When it's done they eat it with their fingers out of the one tin, the three of them, burning their mouths.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"line","who":"KETTI","text":"That's the best thing I've ever had. That is. I'm not having it said it isn't.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"line","who":"ARN","text":"You said that about Ilo's potato.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"line","who":"KETTI","text":"That was the best potato. This is the best thing.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"nar","who":"","text":"Davin falls asleep with a bone in his hand. Ketti takes it out of his fingers and sucks it, and puts it on the fire.","clock":1790,"node":"e1.hill.hare"}
+{"t":"line","k":"nar","who":"","text":"She coughs in the night, the first time. Arn hears it and lies still and counts it.","clock":1790,"node":"e1.hill.hare"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.hill.ketti","clock":1790}
+{"t":"ev","n":"camera","d":{"mode":"near"}}
+{"t":"line","k":"nar","who":"","text":"January. The snow is up to the eaves on the wall side and the door won't shut on it any more. They burn the stool. They burn the snare pegs. Arn goes down the hill road as far as the shoulder every morning to look at the plain and comes back.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"nar","who":"","text":"Ketti has had Davin's cough for three weeks and it's gone down into her. She lies on the bed of bracken by the fire under every coat they have, and she's hot, though there's ice on the inside of the walls, so hot that the snow melts where her hand hangs down onto it.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"nar","who":"","text":"When she coughs it comes up red. Not a speck. A mouthful, dark and frothy, and she turns her head to the wall to do it so the boy won't see, and Arn wipes the wall with snow after, and the snow goes pink and he throws it out of the door.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"nar","who":"","text":"Her lips are split in three places and gone a grey colour at the edges. Her feet are the worst. The toes on the left have gone black at the ends, hard and black like burnt wood, and they smell, and she can't feel them. Arn has her feet inside his shirt, against his belly, both of them, and he sits like that all day with his back against the wall.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"KETTI","text":"Arn.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"ARN","text":"I'm here.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"KETTI","text":"Is it the sun.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"ARN","text":"It's the middle of the night, love.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"KETTI","text":"You owe me a penny.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"ARN","text":"I owe you a penny.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"nar","who":"","text":"Davin is asleep against her side, under the coats, the way she used to sleep against her mother. Every time she coughs he wakes and puts his hand on her the way she used to put hers on him, and goes back to sleep.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"KETTI","text":"Did you make the wall.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"ARN","text":"I'll make it in the spring.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"KETTI","text":"For the potatoes.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"ARN","text":"For the potatoes. In the hot stones.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"KETTI","text":"You'll burn them.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"ARN","text":"I'll burn them.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"KETTI","text":"It's never the stones.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"nar","who":"","text":"She goes quiet after that. Her breathing goes on a long time, a wet rattle like stirring gravel, slower, and then there's a gap in it that goes on, and then one more breath, and then there isn't one.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"nar","who":"","text":"Arn sits with her feet in his shirt till the fire goes down. He knows. He doesn't move. When the fire goes down to red he can see her face, and her mouth's open a bit, and there's frost coming on her eyelashes already because she's not warm any more to stop it.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"ARN","text":"He said he didn't set the frost. Brack. He said that.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"nar","who":"","text":"In the morning Davin wakes up because his mother is cold. He lies there a while with his hand on her before he says anything.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"DAVIN","text":"Dad. Mam's gone cold.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"line","who":"ARN","text":"I know, son. Come here. Come here to me.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"nar","who":"","text":"The ground is iron. Arn can't dig it. He carries her out in the blanket and lays her in the lee of the long wall, and he takes the stones off the top of the wall, one at a time, and lays them over her, all day, till you can't see the blanket. He doesn't stop to eat. Davin carries the small ones.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"line","k":"nar","who":"","text":"It's a wall, when it's done. A short wall, against the long wall, the length of a woman.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"h","f":"checks.passive","a":["e1.hill.ketti@90","undertow",2],"r":{"dc":2,"label":"Trivial","pass":true}}
+{"t":"line","k":"voice","who":"UNDERTOW","text":"Josh Brack read the name off a list on a Tuesday, and went home for his tea.","clock":1790,"node":"e1.hill.ketti"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.start","clock":1790}
+{"t":"var","n":"var.era","v":2}
+{"t":"ev","n":"witness.open","d":{"beats":7,"id":"e1.w.ilo"}}
+{"t":"h","f":"call:witness","a":[["e1.w.ilo"]],"r":null}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.open","clock":1790}
+{"t":"place","id":"q_sheaf"}
+{"t":"ev","n":"camera","d":{"mode":"near"}}
+{"t":"line","k":"nar","who":"","text":"Years on. The Sheaf, Mill Street, on a winter evening, the back room. It's rent night, and the window behind Ilo is black with the cold.","clock":1790,"node":"e1.w.ilo.open"}
+{"t":"line","k":"nar","who":"","text":"Ilo Haldane is at the back table with a half he's made last since six. Tomas has been sent to fetch him home and has sat down on the bench instead, in a brown coat too big for him with the cuffs turned back twice.","clock":1790,"node":"e1.w.ilo.open"}
+{"t":"line","k":"nar","who":"","text":"On his stool at the end of the bar, where he always is, old Josh Brack, retired off the post, with a pint and his back to the room.","clock":1790,"node":"e1.w.ilo.open"}
+{"t":"line","k":"line","who":"TOMAS","text":"Why's it Haldane, though. Why's it not something proper.","clock":1790,"node":"e1.w.ilo.open"}
+{"t":"line","k":"line","who":"ILO","text":"What's proper.","clock":1790,"node":"e1.w.ilo.open"}
+{"t":"line","k":"line","who":"TOMAS","text":"Something that's a name. Pruett. Sallis.","clock":1790,"node":"e1.w.ilo.open"}
+{"t":"line","k":"nar","who":"","text":"Ilo goes in his coat and gets out a bit of paper folded so small and so often it's gone soft, like cloth, and puts it on the table, and opens it out flat with the side of his hand.","clock":1790,"node":"e1.w.ilo.open"}
+{"t":"line","k":"line","who":"ILO","text":"That's your name. That's where it come from. Read it me.","clock":1790,"node":"e1.w.ilo.open"}
+{"t":"line","k":"line","who":"TOMAS","text":"Haldane, I. After the farm.","clock":1790,"node":"e1.w.ilo.open"}
+{"t":"line","k":"line","who":"ILO","text":"After the farm.","clock":1790,"node":"e1.w.ilo.open"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.next","clock":1790}
+{"t":"h","f":"get","a":["e1.w.ilo.coin"],"r":null}
+{"t":"ev","n":"witness.beat","d":{"i":0,"node":"e1.w.ilo.name"}}
+{"t":"h","f":"call:wnext","a":[[]],"r":null}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.name"]],"r":true}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.name","clock":1790}
+{"t":"line","k":"line","who":"TOMAS","text":"I know it's because of the farm. Why'd you let him?","clock":1790,"node":"e1.w.ilo.name"}
+{"t":"line","k":"line","who":"ILO","text":"There was a queue right out the door, and it was raining.","clock":1790,"node":"e1.w.ilo.name"}
+{"t":"line","k":"line","who":"TOMAS","text":"That's not why.","clock":1790,"node":"e1.w.ilo.name"}
+{"t":"h","f":"get","a":["e1.per_af"],"r":null}
+{"t":"h","f":"get","a":["e1.per_letter"],"r":null}
+{"t":"line","k":"line","who":"ILO","text":"Mr Furrowe was stood in the door with his hat in his hands. Like it was church.","clock":1790,"node":"e1.w.ilo.name"}
+{"t":"h","f":"get","a":["e1.per_letter"],"r":null}
+{"t":"line","k":"line","who":"ILO","text":"I said put Haldane. I said it. He had the pen over the paper. I thought, if it's going on there anyway, I'll be the one that said it.","clock":1790,"node":"e1.w.ilo.name"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.next","clock":1790}
+{"t":"h","f":"get","a":["e1.w.ilo.coin"],"r":null}
+{"t":"ev","n":"witness.beat","d":{"i":1,"node":"e1.w.ilo.rule"}}
+{"t":"h","f":"call:wnext","a":[[]],"r":null}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.name"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.rule"]],"r":true}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.rule","clock":1790}
+{"t":"line","k":"line","who":"ILO","text":"They'd a meeting up at the registrar's. Mr Furrowe told me after, in the loft. Hands aren't resident. First frost, if you've no roof, you go back up.","clock":1790,"node":"e1.w.ilo.rule"}
+{"t":"line","k":"line","who":"TOMAS","text":"Up the hill?","clock":1790,"node":"e1.w.ilo.rule"}
+{"t":"line","k":"line","who":"ILO","text":"Up the hill. In October.","clock":1790,"node":"e1.w.ilo.rule"}
+{"t":"h","f":"get","a":["e1.tenant_asked"],"r":null}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.next","clock":1790}
+{"t":"h","f":"get","a":["e1.w.ilo.coin"],"r":null}
+{"t":"ev","n":"witness.beat","d":{"i":2,"node":"e1.w.ilo.supper"}}
+{"t":"h","f":"call:wnext","a":[[]],"r":null}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.name"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.rule"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.supper"]],"r":true}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.supper","clock":1790}
+{"t":"line","k":"line","who":"ILO","text":"There was a supper. Orme's big barn. We ate in the yard, we always ate in the yard. You could see in through the window. A ham the size of you.","clock":1790,"node":"e1.w.ilo.supper"}
+{"t":"line","k":"line","who":"TOMAS","text":"Did you get any?","clock":1790,"node":"e1.w.ilo.supper"}
+{"t":"line","k":"line","who":"ILO","text":"I got the fat off it. There was a man from Arlen made a speech, and they all laughed.","clock":1790,"node":"e1.w.ilo.supper"}
+{"t":"line","k":"line","who":"TOMAS","text":"What did he say?","clock":1790,"node":"e1.w.ilo.supper"}
+{"t":"line","k":"line","who":"ILO","text":"He said we'd sing at a funeral.","clock":1790,"node":"e1.w.ilo.supper"}
+{"t":"line","k":"nar","who":"","text":"The men at the next table have heard it. One of them laughs, and stops.","clock":1790,"node":"e1.w.ilo.supper"}
+{"t":"line","k":"line","who":"TOMAS","text":"We would, though.","clock":1790,"node":"e1.w.ilo.supper"}
+{"t":"line","k":"line","who":"ILO","text":"We would. That's why it was funny.","clock":1790,"node":"e1.w.ilo.supper"}
+{"t":"h","f":"get","a":["e1.glass_raised"],"r":null}
+{"t":"h","f":"get","a":["e1.glass_left"],"r":null}
+{"t":"line","k":"line","who":"ILO","text":"Every glass in that barn went up but one. I don't know why I remember that. Nobody else noticed.","clock":1790,"node":"e1.w.ilo.supper"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.next","clock":1790}
+{"t":"h","f":"get","a":["e1.w.ilo.coin"],"r":null}
+{"t":"ev","n":"witness.beat","d":{"i":3,"node":"e1.w.ilo.kel"}}
+{"t":"h","f":"call:wnext","a":[[]],"r":null}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.name"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.rule"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.supper"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.kel"]],"r":true}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.kel","clock":1790}
+{"t":"line","k":"line","who":"ILO","text":"Old Tesk told me this one. His Kel swept the mill. Took a bit of barley off the floor in his boots for his dad's chest.","clock":1790,"node":"e1.w.ilo.kel"}
+{"t":"h","f":"get","a":["e1.kel_kept"],"r":null}
+{"t":"line","k":"line","who":"ILO","text":"Orme had him strapped in the back store. Six. Kel came back and sat in the barns and couldn't lie down on it for a week, and he laughed when anybody asked him.","clock":1790,"node":"e1.w.ilo.kel"}
+{"t":"h","f":"get","a":["e1.kel_walked"],"r":null}
+{"t":"line","k":"line","who":"TOMAS","text":"For sweepings.","clock":1790,"node":"e1.w.ilo.kel"}
+{"t":"line","k":"line","who":"ILO","text":"That's what Tesk said. For sweepings.","clock":1790,"node":"e1.w.ilo.kel"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.next","clock":1790}
+{"t":"h","f":"get","a":["e1.w.ilo.coin"],"r":null}
+{"t":"ev","n":"witness.beat","d":{"i":4,"node":"e1.w.ilo.frost"}}
+{"t":"h","f":"call:wnext","a":[[]],"r":null}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.name"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.rule"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.supper"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.kel"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.frost"]],"r":true}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.frost","clock":1790}
+{"t":"line","k":"line","who":"ILO","text":"The first frost, they read the list at the post. Every name. I went down to see them off, the Sallises and the Pruetts.","clock":1790,"node":"e1.w.ilo.frost"}
+{"t":"line","k":"line","who":"ILO","text":"The sergeant's dad read it.","clock":1790,"node":"e1.w.ilo.frost"}
+{"t":"line","k":"nar","who":"","text":"At the bar, old Josh doesn't turn round.","clock":1790,"node":"e1.w.ilo.frost"}
+{"t":"h","f":"get","a":["e1.sallis_kept"],"r":null}
+{"t":"h","f":"get","a":["e1.sallis_kept"],"r":null}
+{"t":"h","f":"get","a":["e1.sallis_sent"],"r":null}
+{"t":"line","k":"line","who":"ILO","text":"Arn and Ketti went up with the rest. And the lad, Davin. Ketti stopped halfway up to cough and Arn waited for her.","clock":1790,"node":"e1.w.ilo.frost"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.next","clock":1790}
+{"t":"h","f":"get","a":["e1.w.ilo.coin"],"r":null}
+{"t":"ev","n":"witness.beat","d":{"i":5,"node":"e1.w.ilo.ketti"}}
+{"t":"h","f":"call:wnext","a":[[]],"r":null}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.name"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.rule"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.supper"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.kel"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.frost"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.ketti"]],"r":true}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.ketti","clock":1790}
+{"t":"line","k":"nar","who":"","text":"Ilo turns his glass round on the table, a quarter turn at a time.","clock":1790,"node":"e1.w.ilo.ketti"}
+{"t":"line","k":"line","who":"ILO","text":"Dorrah told me at the cup, in the spring. Ketti died up there in the winter. In January. In the hut at the top, with the snow on the door.","clock":1790,"node":"e1.w.ilo.ketti"}
+{"t":"line","k":"line","who":"TOMAS","text":"Of the cough?","clock":1790,"node":"e1.w.ilo.ketti"}
+{"t":"line","k":"line","who":"ILO","text":"Of the cold. Of the cough. Of up there. Arn came down the next harvest with just the lad.","clock":1790,"node":"e1.w.ilo.ketti"}
+{"t":"line","k":"nar","who":"","text":"At the bar, old Josh Brack picks up his pint and drinks some of it, and puts it down again in the same ring.","clock":1790,"node":"e1.w.ilo.ketti"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.next","clock":1790}
+{"t":"h","f":"get","a":["e1.w.ilo.coin"],"r":null}
+{"t":"ev","n":"witness.beat","d":{"i":6,"node":"e1.w.ilo.bowls"}}
+{"t":"h","f":"call:wnext","a":[[]],"r":null}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.name"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.rule"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.supper"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.kel"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.frost"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.ketti"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.bowls"]],"r":true}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.bowls","clock":1790}
+{"t":"line","k":"line","who":"ILO","text":"And then I married your mum. And we went to Osby fair with the money and she bought the bowls. And me and your grandad Carrow took the door off the end barn for the table, and we dropped it twice.","clock":1790,"node":"e1.w.ilo.bowls"}
+{"t":"line","k":"line","who":"TOMAS","text":"Why five bowls, when there was only three of you?","clock":1790,"node":"e1.w.ilo.bowls"}
+{"t":"line","k":"line","who":"ILO","text":"Your gran said buy five.","clock":1790,"node":"e1.w.ilo.bowls"}
+{"t":"line","k":"line","who":"TOMAS","text":"Why?","clock":1790,"node":"e1.w.ilo.bowls"}
+{"t":"line","k":"line","who":"ILO","text":"Because then there was you, and then there was Aaron. Two on the shelf, turned over, waiting. And then you came, and then he came, and that was all of them.","clock":1790,"node":"e1.w.ilo.bowls"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.next","clock":1790}
+{"t":"h","f":"get","a":["e1.w.ilo.coin"],"r":null}
+{"t":"h","f":"call:wnext","a":[[]],"r":null}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.name"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.rule"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.supper"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.kel"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.frost"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.ketti"]],"r":false}
+{"t":"h","f":"call:wat","a":[["e1.w.ilo.bowls"]],"r":false}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.coin","clock":1790}
+{"t":"ev","n":"witness.close","d":{"id":"e1.w.ilo"}}
+{"t":"h","f":"call:wend","a":[[]],"r":null}
+{"t":"line","k":"line","who":"TOMAS","text":"Mum says come now. You're to mind the yard.","clock":1790,"node":"e1.w.ilo.coin"}
+{"t":"line","k":"line","who":"ILO","text":"I'm to mind the yard.","clock":1790,"node":"e1.w.ilo.coin"}
+{"t":"line","k":"nar","who":"","text":"Old Josh Brack puts a coin on the bar for Ilo's half without turning round, and the landlord slides it along. Ilo leaves it where it is. Tomas looks at the coin, and then at his dad, and then at the coin.","clock":1790,"node":"e1.w.ilo.coin"}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.w.ilo.next","clock":1790}
+{"t":"h","f":"get","a":["e1.w.ilo.coin"],"r":null}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"node","id":"e1.end","clock":1790}
+{"t":"var","n":"var.era","v":2}
+{"t":"h","f":"pressure.takeFull","a":[],"r":null}
+{"t":"stop","id":"q.start"}

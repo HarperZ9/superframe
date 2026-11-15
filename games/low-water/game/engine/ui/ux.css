@@ -57,7 +57,7 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 .hud .trend { display: inline-block; width: 0.9em; text-align: center; }
 
 /* ---- prompts tab, top right: only what can be done now, for the device in use ---- */
-.topbar { right: var(--safe); top: var(--safe); gap: 0.3rem; }
+.topbar { right: var(--safe); top: var(--safe); gap: 0.3rem; z-index: 12; }   /* over the fight layer, its strip and its barks: Daybook and Pause are never covered (defect list, 2026-10-22) */
 .play.talking .topbar { right: calc(var(--talk-w) + var(--safe)); transition: right var(--t-in) var(--ease-out); }
 .chip { min-height: var(--hit); display: inline-flex; align-items: center; gap: 0.45rem; }
 .key { display: inline-flex; align-items: center; justify-content: center; min-width: 1.5em; height: 1.5em; padding: 0 0.35em; font-family: var(--body); font-size: var(--fs-xs); font-weight: 600; color: var(--ink); border: 1px solid var(--rule-ink); border-bottom-width: 2px; border-radius: 3px; background: rgba(255, 255, 255, 0.35); line-height: 1; font-variant-numeric: tabular-nums; }
@@ -112,6 +112,10 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 @keyframes offerin { from { opacity: 0; transform: translateX(1.5rem); } to { opacity: 1; transform: none; } }
 .fightlayer .fighthud { display: none; }
 .fightlayer .fightkeys { right: var(--safe); bottom: var(--safe); }
+/* in a fight the meters stand under the top bar, clear of the keys; paper over a way out lets it show (ui/fightlayer.mjs clearWays) */
+.screen.play.fighting .scene > .edge { top: calc(var(--safe) + var(--hit) + 0.75rem); right: var(--safe); transform: none; }
+.fightlayer .fightways, .fightlayer .waymarks { z-index: 6; }
+.fightlayer .clearway, .screen.play.fighting .clearway { opacity: 0.55; pointer-events: none; transition: opacity var(--t-in, 0.2s); }
 
 /* pause over a fight */
 .fightpause { position: absolute; inset: 0; background: var(--scrim); display: grid; place-items: center; }
@@ -164,6 +168,8 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 .vrow .pl.on, .comp .chead .pl.on { border: 1px dashed var(--graphite); color: var(--ink); padding: 0 0.25rem; text-align: center; }
 .vrow .pl.neg { text-decoration: underline dashed var(--graphite); }
 .vrow .note { color: var(--ink-2); font-size: var(--fs-xs); }
+/* what each trait does, under its name (the traits pass, 2026-10-23): the full row width, wrapped */
+.vrow .about, .comp .chead .about { grid-column: 1 / -1; color: var(--ink-2); font-size: var(--fs-xs); font-weight: 400; line-height: 1.35; padding-bottom: 0.3rem; white-space: normal; text-align: left; }
 .vrow:hover, .comp .chead:hover { background: rgba(29, 20, 24, 0.05); }
 .stats { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 .stats th { text-align: left; font-weight: 400; color: var(--ink-2); font-size: var(--fs-s); padding: 0.18rem 0.4rem 0.18rem 0; }
@@ -193,6 +199,10 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 #toasts { left: var(--safe); top: calc(var(--safe) + 6.2rem); transform: none; justify-items: start; gap: 0.3rem; z-index: 40; }
 .toast { padding: 0.3rem 0.7rem; font-size: var(--fs-s); max-width: 26rem; box-shadow: var(--shadow); animation: toastin var(--t-in) var(--ease-out) both; }
 .toast .caps { font-size: var(--fs-xs); }
+.gearcard { background: var(--paper-solid); padding: 0.5rem 0.9rem 0.6rem; max-width: 20rem; box-shadow: var(--shadow); animation: toastin var(--t-in) var(--ease-out) both; color: var(--ink, #1a1118); }
+.gearcard .gname { font-weight: 600; font-size: var(--fs-m, 1rem); }
+.gearcard .gearrows { margin-top: 0.35rem; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.gearcard .gearrows td { padding: 0.05rem 0.6rem 0.05rem 0; }
 @keyframes toastin { from { opacity: 0; transform: translateX(-0.8rem); } to { opacity: 1; transform: none; } }
 
 /* in a fight only Pause is on offer (Tab locks on), at the right */
@@ -309,3 +319,27 @@ html { font-size: calc(var(--ts) * var(--ui) * var(--deck) * clamp(15px, 1.9vmin
 .play.lie-open .opt.lie .liedrain { transform: scaleX(var(--left, 0)); }
 .play.lie-open .opt.lie .lab { text-decoration: underline 2px; text-underline-offset: 3px; }
 .talkchip { font-weight: 700; }
+/* character creation: the four compartments explained once, above the cards (UX walk, 2026-10-21) */
+.createbox:has(.legend) { grid-template-rows: auto auto auto 1fr; }
+.createbox .legend { display: grid; gap: 0.15rem; margin: 0.1rem 0 0.6rem; }
+.createbox .legend .lrow { display: grid; grid-template-columns: 6.5rem 4rem 1fr; gap: 0.5rem; align-items: baseline; }
+.createbox .legend .cname2 { font-weight: 600; font-size: var(--fs-xs, 0.75rem); letter-spacing: 0.06em; }
+.createbox .legend .pillar { color: var(--ink-2); font-size: var(--fs-s, 0.85rem); }
+
+/* the ways out of a fight and the tell when words open (ui/fightways.mjs): small paper labels on the
+   chalked ground; glyph mode draws them in its own type */
+.fightlayer .waymarks { position: absolute; inset: 0; pointer-events: none; }
+.fightlayer .waymark { position: absolute; left: 0; top: 0; right: auto; bottom: auto; padding: 0.1rem 0.4rem; background: var(--paper); color: var(--ink-2); text-shadow: none; font-family: var(--mono); font-size: var(--fs-s); letter-spacing: 0.06em; box-shadow: var(--shadow); opacity: 0.85; }
+.fightlayer .waymark.hot { color: var(--ink); border: 2px solid var(--hot, #9a3b1f); opacity: 1; }
+.fightlayer .waymark.tell { border-radius: 1rem; padding: 0 0.5rem; }
+/* the lens switch's placeholder panel (ui/lenspanel.mjs), under the HUD on the left, words only */
+.lenspanel { position: absolute; left: var(--safe); top: calc(var(--safe) + 7.5rem); max-width: 22rem; max-height: 60%; overflow: auto; padding: 0.6rem 0.8rem; display: grid; gap: 0.25rem; z-index: 3; }
+.lenspanel .btn, .lenspanel .plain { display: block; width: 100%; text-align: left; }
+/* A story that names its face (@meta name-face: grotesk, the Quota): names and headers in Hanken capitals,
+   the grotesk, in place of the display face. Low Water's acts name none and keep theirs. */
+body[data-name-face="grotesk"] { --name: var(--body); }
+body[data-name-face="grotesk"] .hud .place, body[data-name-face="grotesk"] .caps, body[data-name-face="grotesk"] .voiceline .vl .who, body[data-name-face="grotesk"] .tag.chk .vn { font-weight: 600; letter-spacing: 0.06em; }
+/* The witness scene's held footer (ui/witnesspace.mjs): a quiet mark while the next lines wait their reading time. */
+.tfoot .waitnote { margin: 0; letter-spacing: 0.3em; color: var(--ink-2); }
+/* What a prop says (ui/examinecam.mjs propNote): a note card in the margin, readable while walking. */
+.look { background: var(--paper-solid); color: var(--ink, #1a1118); padding: 0.5rem 0.9rem 0.6rem; max-width: 24rem; box-shadow: var(--shadow); animation: toastin var(--t-in) var(--ease-out) both; } .look p { margin: 0.2rem 0 0; }

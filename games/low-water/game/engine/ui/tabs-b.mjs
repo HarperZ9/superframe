@@ -58,13 +58,29 @@ export function lampsTab(ctx, rerender) {
   }));
 }
 
+// What the town has started to say about Lamb's leanings (content/act1/themes.lwd lean_*; design/THEMES.md 4):
+// a sentence once a leaning passes 2 either way, never a number or a compass.
+const LEANS = [
+  ["lean_rise", "you would take the lamps off the hill by force", "you would mend the Trust from inside, slowly"],
+  ["lean_faith", "you would leave the jars alone", "you would lift the jars"],
+  ["lean_sea", "you are for the open sea", "you are for the wall"],
+  ["lean_kin", "you would vote with the Guild in the dark", "you would vote with the lamps on, alone"],
+  ["lean_hang", "you name people", "you name sums, and never people"],
+];
+export function leaningLines(G) {
+  const v = (k) => +(G.scope.get(`var.${k}`) || 0), out = [];
+  for (const [k, up, down] of LEANS) { const x = v(k); if (x >= 3) out.push(`The town has started to say ${up}.`); else if (x <= -3) out.push(`The town has started to say ${down}.`); }
+  if (v("lean_dry") >= 4) out.push("The town has started to say you sit on the fence and keep your coat dry on it.");
+  return out;
+}
 export function townTab(ctx) {
-  const G = ctx.G, fs = G.factions.list();
-  if (!fs.length) return section("Town", empty("Nobody in town has an opinion yet."));
-  return section("Town", h("ul.town", fs.map((f) => h("li",
+  const G = ctx.G, fs = G.factions.list(), leans = leaningLines(G);
+  const said = leans.length ? section("What they say of you", h("ul.town", leans.map((t) => h("li", h("span.sentence", t))))) : null;
+  if (!fs.length) return h("div", section("Town", empty("Nobody in town has an opinion yet.")), said);
+  return h("div", section("Town", h("ul.town", fs.map((f) => h("li",
     h("span.sentence", `${f.name.startsWith("The ") ? "" : "The "}${f.name} reads you as ${String(f.tier || "unknown").toLowerCase()}.`),
     h("span.mono.small.quiet", `favour ${signed(f.value)}`),
-    f.about ? h("span.small.quiet", f.about) : null))));
+    f.about ? h("span.small.quiet", f.about) : null)))), said);
 }
 
 export function historyTab(ctx) {

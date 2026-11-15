@@ -1,0 +1,365 @@
+# Era 5, The Clearance: Joss's birthday tea and the hinge (e5.s06, Ryan says it aloud), the movement choice
+# (e5.s07), the cause of death (e5.s08, fate f.e5_cert, SAM decides), the council vote (e5.s09) and Walter's wedge
+# (e5.s10, fate f.e5_frank, FRANK decides). Story lead, 2026-10-23. DRAFT: every line waits for the author's line
+# approval (ledger row S14). Design: design/eras/era5.md sections 2, 3, 8 and 12.
+# Weighted-devices pass, 2026-10-23 (design/device-audit/era5.md): the petition is standing in the Union's line on the
+# library steps; the certificate is what Sam says aloud to the coroner's officer at the door, and the flour in the
+# boy's nails; the vote's placards are chanted; the order on the door is the bailiffs' orange paint over Tom's pink;
+# Walter's ledger is Walter's iron wedge in Frank Mott's tobacco tin (the cross-era contract, DEVICE-AUDIT 3.4): Frank
+# drops it in the Edd off the bridge (f.e5_frank falls, flag e5.page_torn) or carries it up to the archive's scale.
+
+# ---------------------------------------------------------------- e5.s06, the hinge: Joss's birthday tea
+@node e5.tea
+place: q5_mara_flat
+speaker: RYAN
+cost: 0
+camera: near
+nar: Saturday week. Joss's seventy-third, in the flat in Haldane Yard, the back room with the black wall that Mara has hung a bedsheet over, a good one, with birds on, so it looks like a party.
+nar: A shop cake with a seven and a three in candles, because they didn't have the numbers in the right order and Mara put them on backwards and then swapped them. Sandwiches in triangles. Sausage rolls. Joss in his chair in a clean shirt with the oxygen in his nose and a paper crown on, which he's allowed.
+nar: Kit is here because Mara asked the whole of Ryan's old form, and Kit is the one who came. Tom drove her and was asked in for a cup and couldn't say no, and is standing by the door with the cup and his car keys in the same hand. {when: q_class == inspector}
+nar: Ann Brack is here because she went to school with Joss's wife and stood at the mill gate the month it shut, on the other side, and Joss has never once held that against her. Leon drove her, and was asked in, and couldn't say no. He's by the door in a jumper with his keys in his hand. Nobody in the room knows whose back is in the video. They've only seen the back. {when: q_class == militia}
+nar: Kev Haldane, forty-six, Mara's cousin, a big man in a Tarn United shirt, eating sausage rolls two at a time. His lad Ryan, fifteen, on the arm of the settee in his school trousers, on his phone, the light of it on his face.
+nar: On the windowsill, the fair bowl with the spider plant.
+line: JOSS: Is this all for me. You shouldn't.
+line: MARA: We didn't. It's from the shop.
+line: JOSS: Then I'll have two bits.
+nar: They sing. Joss blows out the seven and the three, and it takes him two goes and the oxygen hisses, and everybody claps too long, the way you do.
+nar: Then they talk about the vote, because everybody's talking about the vote. Kev says the ring road will bring the jobs. Mara says there are no jobs, there's a drive-through and a tyre place. Kev says the drive-through is jobs. Joss asks for more tea and isn't given it because of his bladder.
+nar: Then somebody says Danil's name. It's Kit. She says Ines wasn't in again, all week.
+nar: Ryan doesn't look up from his phone.
+line: RYAN: Shouldn't have been out at that time, then.
+line: MARA: He was coming home from work, Ryan.
+line: RYAN: That's what they're saying.
+line: KEV: Leave it, Ry.
+line: RYAN: I'm only saying. They should all go back. I'm only saying what everybody says.
+nar: It's very quiet. Somebody's put the telly on low in the other room for the football and you can hear a crowd go up and come down.
+line: JOSS: Who's everybody?
+line: RYAN: Everybody. You said it. Mum says you said it in the Sheaf. Years ago. When the mill shut. To the Vell bloke, his grandad. You said it's not your turn.
+line: JOSS: I said a lot in the Sheaf.
+line: RYAN: Well. So.
+nar: Joss looks at the boy for a long time with the paper crown on. His breath goes in and out through the valve, click, click. He knows what the boy is. He's known since Ryan was born. Kev knows a bit of it and has decided not to. Ryan doesn't know at all. He thinks he's Tarn. He's got it on his phone case, the black wheat sheaf.
+line: MARA: Eat your cake, Ryan.
+voice: undertow: He's fifteen. It's on his phone. It was on yours. {dc: 2}
+voice: condolence: Kit's watching you. She's watching who in this room says something. {dc: 2, when: q_class == inspector}
+voice: grip: The lad's talking about you. He doesn't know it. He's on your side, he thinks. {dc: 2, when: q_class == militia}
+opt: "Say it to Ryan: He was seventeen. He had a key on a shoelace." -> e5.tea.out {do: set(said.e5_hinge_spoke)}
+opt: "Say it: More tea, Joss?" -> e5.tea.out {do: set(said.e5_hinge_tea)}
+opt: "Say nothing. Look at your keys." -> e5.tea.out
+
+@node e5.tea.out
+place: q5_mara_flat
+speaker: RYAN
+cost: 0
+do: set(e5.hinge_said)
+line: RYAN: How do you know? {when: has(said.e5_hinge_spoke)}
+nar: Everybody looks at you. You can't say how you know. Because Jo stood at the kitchen sink and told you what she saw on the ward. {when: has(said.e5_hinge_spoke) & q_class == inspector}
+nar: Everybody looks at you. You can't say how you know. Because your own hand found it, going through his pockets on the paving. {when: has(said.e5_hinge_spoke) & q_class == militia}
+line: KEV: He's police, Ry. They know stuff. {when: has(said.e5_hinge_spoke) & q_class == militia}
+line: KEV: He's council, Ry. They know stuff. {when: has(said.e5_hinge_spoke) & q_class == inspector}
+nar: Ryan looks at you over his cup for a while after that, and doesn't say another word all tea. {when: has(said.e5_hinge_spoke)}
+line: JOSS: Go on, then. Half a cup. {when: has(said.e5_hinge_tea)}
+nar: You pour it. Your hand's not steady and it goes in the saucer, and Mara takes the pot off you without a word and pours it properly. Everybody starts talking at once about the cake. {when: has(said.e5_hinge_tea), sense: hands.shake}
+nar: You look at your keys. You look at them so hard you could draw them after. Somebody starts talking about the cake. {when: !has(said.e5_hinge_spoke) & !has(said.e5_hinge_tea)}
+nar: Ann puts her cup down in its saucer very precisely, and looks at you across the room, and you know the look. It's the look from the custody suite. {when: q_class == militia}
+nar: Later, washing up, Mara says to the window, to nobody: He did all the Yard for me with the committee leaflets. Ryan. Every door. On his bike.
+go: e5.after
+
+# ---------------------------------------------------------------- e5.s07, the movement: which line you stand in
+@node e5.move
+place: q5_square
+speaker: SEFA
+cost: 0
+nar: The week before the vote, every doorway on Exchange Square has somebody in it wanting you.
+nar: The Plain Union on the library steps, standing, in a line along the top step, tenants mostly, with placards painted on bedsheets and a woman with a megaphone she doesn't use. Every time somebody new comes up the steps and stands in the line, the ones already there shuffle along to make room, and you can see it from across the square. The Furrow League by the bronze sheaf, three lads in black under a banner with the sheaf on it. The New Edrin Alliance in the café, in good coats, wanting a dialogue. Open Tarn on the steps of the bank that's a bar now, with a speaker playing old songs, saying we can all be Tarn, everybody's welcome, which is how they say it.
+nar: And at the bottom of Mill Street, the Well House, with its door shut and its windows meshed, where Sefa Tesk is on the step in his coat, sixty-five, sweeping. He's swept that step every morning for forty-five years.
+voice: precedent: The Union wants the survey man in the line with them. That's you. They'd stand you at the front. {dc: 2, when: q_class == inspector}
+voice: pride: The League's got your back up on their page already. Without your face. They'd stand behind you all the way to the door. {dc: 2, when: q_class == militia}
+opt: "Go up the library steps and stand in the Plain Union's line." -> e5.move.out {do: set(e5.mv_union)}
+opt: "Stop at the League's banner. Let them shake your hand." -> e5.move.out {do: set(e5.mv_league)}
+opt: "Go into the café and sit with the Alliance." -> e5.move.out {do: set(e5.mv_alliance)}
+opt: "Ask at the Well House." -> e5.move.well
+opt: "Walk across the square to the car and go home." -> e5.move.out {do: set(e5.mv_none)}
+
+@node e5.move.well
+place: q5_well_house
+speaker: SEFA
+cost: 0
+nar: Sefa stops sweeping and leans on the brush.
+line: SEFA: You want the Assembly.
+line: TOM: I'd like to help. If there's something. {when: q_class == inspector}
+line: LEON: I'd like to talk to somebody. If there's somebody. {when: q_class == militia}
+line: SEFA: That's kind of you. It's a prayer house. It's not a committee. We don't have a door for that.
+line: SEFA: If you want to help the Yard, there's a young woman up there called Mara Haldane. She's ours, more or less, whatever she says she is. She'll tell you what to carry.
+nar: He goes back to sweeping. He's polite about it. Behind him through the mesh you can see a row of shoes inside the door, small ones, and a light on.
+do: set(e5.mv_none); set(e5.mv_well_asked)
+go: e5.move.out
+
+@node e5.move.out
+place: q5_square
+speaker: SEFA
+cost: 0
+nar: You go up the steps and stand on the end of the line, and the woman next to you shuffles along without looking, and then looks. Somebody puts a placard in your hands, a broom handle with a bedsheet nailed to it, and after a quarter of an hour your arms ache from holding it up. A car going past slows to film you. You keep it up. The woman with the megaphone says, Saturday, the Yard, first light, wear something you can get dirty. {when: has(e5.mv_union)}
+nar: The lads in black shake your hand one after the other. The third one holds on. He says, we've got your back. He says it like he's said it before and liked it. {when: has(e5.mv_league)}
+nar: In the café the Alliance give you a flat white and a leaflet called Bridges, and a man in a scarf says the word community over and over for a quarter of an hour, and means it every time. {when: has(e5.mv_alliance)}
+nar: You walk to the car. Behind you the megaphone comes on at last, feedback, and then a woman's voice saying the name of the Yard. You don't turn round. {when: has(e5.mv_none) & !has(e5.mv_well_asked)}
+nar: You walk back up Mill Street past the shop with its sheet in the window and its sprayed ply. Somebody has put flowers against the shutter in their cellophane, a lot of them, and somebody else has stood on them. {when: has(e5.mv_well_asked)}
+alt: e5.move.leave ? q_class == militia & has(e5.mv_none)
+go: e5.ryan
+
+@node e5.move.leave
+place: q5_police
+speaker: HALE
+cost: 0
+nar: Monday you go up to the fourth floor and ask for leave. Two weeks, owed. You don't say why.
+nar: Chief Inspector Hale has you in his office with the door shut. Fifty-two, a runner's build, a half-marathon medal hung on the coat stand, a plant somebody waters for him.
+line: HALE: I can't give you leave, Leon.
+line: LEON: It's owed, sir.
+line: HALE: It's owed. And if I give it you this week every paper in the country says we've hidden you. You're on the Yard Saturday. You know the Yard. You know the families. It looks like business as usual, because it is business as usual. That's the best thing for you. Believe me.
+line: LEON: And if I say no.
+line: HALE: Then I've got a sergeant who won't do his job in the week he's under investigation. Think how that looks.
+go: e5.ryan
+
+# ---------------------------------------------------------------- e5.s08, the cause of death (fate f.e5_cert, SAM decides)
+@node e5.cert
+place: q5_mortuary
+speaker: SAM
+cost: 0
+camera: near
+do: set(e5.cert_open); pressure(f.e5_cert)
+nar: The room behind the mortuary at the General. Strip lights, a hum. A steel table with a drain. A desk with a computer older than the porters, and a box of tissues that's been there so long the top one is grey.
+nar: Dr Sam Lind is forty-six, a GP who runs the vaccine centre in the Upper Town on Tuesdays and is on the duty rota for the coroner on the other days, which is how he's here. His great-grandmother was Clara Lind, who ran the fever ward in the old winter. Her name's on a brass plaque by the vaccine centre door. He walks past it every Tuesday.
+nar: The police surgeon, Dr Pryor, is a big man near retirement with a voice for juries. He has his coat on already.
+nar: Danil is on the table under a sheet up to the chest.
+nar: Sam has looked. He looks again. Small red dots in the whites of the eyes like somebody's flicked paint, a lot of them. A bruise across the side of the neck, purple going green at the edges, and the shape of it is rounded, a kneecap, you could fit your own knee to it. Graze down the right cheek, with grit still in it, which nobody has washed out. Two broken nails on the left hand. And flour, white, packed into the beds of every nail, where the lad had been working the dough at the bakery with his fingers.
+line: PRYOR: Sudden death after exertion. Cause unascertained. Pending toxicology. That's what I'd say, Sam, and I've been saying it thirty years.
+line: PRYOR: You've got kids.
+line: SAM: What's that got to do with it?
+line: PRYOR: I'm saying go home to them. Tox'll be six weeks. You say unascertained, it goes to the coroner, the coroner calls the experts, the experts argue, it all comes out right in a year when nobody's on the street. You say what you want to say tonight and there's a riot on Mill Street by Saturday and it's in your voice.
+line: SAM: What I want to say.
+line: PRYOR: You know what I mean.
+nar: At the door, in her coat, with her bag on her shoulder, the coroner's officer, Mrs Eadie, waiting. She'll be at the Saros' door at nine in the morning. Whatever Sam says now, she says to the father then, in the same words.
+line: EADIE: When you're ready, Doctor. I'll need it in your words.
+voice: smallprint: Unascertained isn't a lie. Nothing's ascertained till the tox. {dc: 3, when: q_class == inspector}
+voice: precedent: Your sister said they had him on the ward and his face was blue to the hairline. {dc: 2, when: q_class == inspector}
+voice: grip: That bruise is the shape of your knee. You can feel the shape of it now in your knee. {dc: 1, when: q_class == militia, sense: e5.knee}
+alt: e5.cert.tom ? q_class == inspector
+go: e5.cert.leon
+
+@node e5.cert.tom
+place: q5_mortuary
+speaker: SAM
+cost: 0
+nar: Your phone goes in your pocket, at home, at the kitchen table. Kit, from upstairs, a voice message. {sense: e5.voice.note}
+line: KIT: Dad. Ines sent me the whole one. From the woman's window. Not the one off the news, the whole one. There's a bit before.
+nar: The news has the forty seconds from when the officer kneels. The whole one starts earlier. A lad walking up Mill Street in a tracksuit with a paper bag, eating a roll, and the van pulling up across him, and the lad putting his hands up, both hands, the bag in one, before anybody's touched him.
+nar: Sam Lind was at school with your sister. He's the duty doctor tonight. Jo said so at tea. He'll be at the General, in the room behind the mortuary, twenty minutes in the car.
+opt: "Drive to the General and play Sam the whole video in the corridor, from the first second." -> e5.cert.decide {do: set(said.e5_tom_clip)}
+opt: "Leave it. It's a doctor's job, not yours." -> e5.cert.decide
+
+@node e5.cert.leon
+place: q5_mortuary
+speaker: SAM
+cost: 0
+nar: Dr Pryor has your account on his laptop, the one you gave the camera in your kitchen, sent over from the station at teatime. He turns the laptop round and plays Sam the part he wants. Your own voice comes out of the little speaker into the cold room, and your own kitchen's fridge humming behind it. {sense: e5.bodycam}
+line: LEON: He appeared to become limp. I immediately placed him in the recovery position. {when: has(said.e5_leon_limp)}
+line: PRYOR: There. The officer's own words. {when: has(said.e5_leon_limp)}
+line: LEON: He stopped. I stayed on. I didn't get up. {when: has(said.e5_leon_true)}
+line: PRYOR: The officer's own words, if you can believe it. His Fed rep'll have kittens. {when: has(said.e5_leon_true)}
+nar: Sam plays it again himself, to the end, slowly, with his hand flat on the steel table beside the boy's hand. Then he shuts the laptop.
+go: e5.cert.decide
+
+@node e5.cert.decide
+cost: 0
+alt: e5.cert.true ? has(said.e5_tom_clip) | has(said.e5_leon_true)
+go: e5.cert.false
+
+@node e5.cert.true
+place: q5_mortuary
+speaker: SAM
+cost: 0
+do: set(e5.cert_true)
+nar: Sam goes back to the table and lifts the sheet off the boy's left hand and holds it in his own. Cold, and heavy the way hands get. Flour in the nails, white, to the quick. He holds it a long time.
+line: SAM: Compression of the chest and neck while restrained.
+nar: He says it to Mrs Eadie at the door, slowly, the way you'd say an address to a taxi so it can't go wrong. She says it back to him, word for word, so he knows it's what she'll say in the morning.
+line: EADIE: Compression of the chest and neck while restrained.
+line: PRYOR: That's your voice on that, not mine.
+line: SAM: I know whose voice it is.
+nar: Then he takes a cotton bud and a little pot, and scrapes some of the flour out of one nail into the pot, though nobody has asked for it, and screws the lid on, and gives it to Mrs Eadie to keep with the boy. She holds it in her gloved hand like something alive.
+go: e5.funeral
+
+@node e5.cert.false
+place: q5_mortuary
+speaker: SAM
+cost: 0
+do: set(e5.cert_false); fate(f.e5_cert, danil)
+nar: Sam stands with his hands in his pockets for a long time. Dr Pryor waits. He's good at waiting. It's most of what he does.
+line: SAM: Sudden death after exertion. Cause unascertained.
+line: PRYOR: Pending tox.
+line: SAM: Pending tox.
+nar: Mrs Eadie says it back to him, word for word, so he knows it's what she'll say at the Saros' door in the morning. He nods. He doesn't trust his voice to do it twice.
+line: EADIE: Sudden death after exertion. Cause unascertained. Pending toxicology.
+nar: On the way out he goes past the table and doesn't lift the sheet. At the door he stops and goes back and lifts it after all, and looks at the boy's face with the grit in the cheek, and at the flour in the nails, and puts the sheet back exactly where it was, and goes out to the car park, and sits in his car with the engine off till the windows steam.
+nar: At eleven, in the corridor outside, somebody's phone is playing Ellie Ashby out loud, too loud, the way people in hospitals do.
+line: ELLIE: No cause. They're saying no cause. Pending toxicology. What did I tell you.
+go: e5.funeral
+
+# ---------------------------------------------------------------- e5.s09, the council vote
+@node e5.vote
+place: q5_council
+speaker: DENNIS
+cost: 0
+camera: wide
+do: set(e5.vote_open)
+nar: The council chamber, Thursday night. Oak panels from when the bank built it, and over the chair a portrait of a man in a high collar, Victor Orme's grandfather, that the Plain Union asked to have taken down in March and nobody took down.
+nar: The public gallery is full and the corridor outside is full. The League at one end in black. The Union at the other with their bedsheet placards, chanting the Yard's name under their breath till the whole gallery hums with it. Ines Saro is in the front row of the gallery between two women from the Well House, in a headscarf, with Danil's school photograph held in both hands against her chest, the tie, the bad haircut.
+line: MARA: Haldane Yard is not blight. Our homes. Our yard.
+nar: Dennis Krall is in the chair. Fifty-five, Furrow League, chair of regeneration. As a boy of ten he stood on a chair at the mill and screamed while a Vell lad's nose broke. He's run a carpet business for twenty years and he's good with a room.
+nar: On the screen behind him, the officer's photographs. Mill Street at night with circles drawn round things in red: a group of lads by the chip shop; a bin on fire; a shop's shutter sprayed. Then Tom Furrowe's photographs of the Upper Town. Black walls. Pink dots on doors, one after another, door after door, close up. {when: !has(said.e5_tom_remedy)}
+nar: On the screen behind him, the officer's photographs. Mill Street at night with circles drawn round things in red. Then Tom Furrowe's photographs of the Upper Town, black walls and pink dots, door after door, and in among them one nobody on the screen's side of the room has looked at properly: water coming off the eaves of Haldane Yard in a rope, and a man's wet arm in the corner of the frame. {when: has(said.e5_tom_remedy)}
+line: DENNIS: The Upper Town clearance, under the ring road. I'll take three speakers from the public, briefly. Then members. Then we'll vote.
+line: DENNIS: I'd ask the gallery to remember where they are. There's a lad dead, and I'm sorry for it, and his family. That's not what we're here for. The houses are what we're here for.
+nar: The gallery goes up like a stove door opening. Ines doesn't move. She holds the photograph.
+voice: sum: Those are your photographs. That's your paint, door after door. {dc: 2, when: q_class == inspector}
+voice: ballast: Hale said keep away from it. Hale said be seen at your desk. {dc: 2, when: q_class == militia}
+opt: "Go down to the front and ask to speak." -> e5.vote.speak {do: set(said.e5_spoke_council)}
+opt: "Stand at the back with the League's end of the gallery." -> e5.vote.result {do: set(said.e5_voted_for)}
+opt: "Stand at the back with the Union's end of the gallery." -> e5.vote.result {do: set(said.e5_voted_against)}
+opt: "Go home before it starts." -> e5.vote.result {do: set(said.e5_stayed_home)}
+
+@node e5.vote.speak
+place: q5_council
+speaker: DENNIS
+cost: 0
+camera: near
+nar: You're the third speaker. The first is a man from the League who says the word clean over and over. The second is Mara Haldane.
+nar: Mara has brought the gutter. A length of it, iron, black, as long as she is, rusted through in a line of holes along the bottom. She carries it down the gallery steps on her shoulder like a man carrying a ladder, and people lean out of the way, and she puts it down on the table in front of Dennis, on his papers, and it's still wet, and the water runs out of the end of it across the oak.
+line: MARA: That's the council's. It came off our house. My grandad's been ringing you about it since before I was born. He can't come. He's on oxygen. That's it.
+nar: Dennis thanks her. Her time's gone. The microphone goes off, and she keeps talking anyway with her own voice, about the black wall and her grandad's breath, until two men from the League's end start a slow clap, and she stops, and stands there, and doesn't go back to her seat.
+nar: Then you. The microphone's on a gooseneck and it's too low. You can't get it to go up.
+line: TOM: Those are my photographs. That's my paint. The water in the Yard is that gutter. I had it in my hand. I took the photograph with my arm wet to the elbow. Fix the gutter. {when: q_class == inspector & has(said.e5_tom_remedy)}
+line: TOM: Those are my photographs. That's my paint on the doors. The meter's right. I'd like the council to fix the Yard instead of clearing it, and I know that's not what my paint says. {when: q_class == inspector & !has(said.e5_tom_remedy)}
+line: LEON: I police the Yard. Nights. Five years. The trouble on Mill Street comes from up Bridge Street, from lads in cars. The families in the Yard ring us. That's all. {when: q_class == militia}
+nar: In the gallery somebody from the League says something about you and gets a laugh. Dennis lets the laugh run, then raises a hand, not quickly.
+line: DENNIS: Thank you. Very helpful. Members?
+go: e5.vote.result
+
+@node e5.vote.result
+place: q5_council
+speaker: DENNIS
+cost: 0
+do: set(e5.vote_carried); pressure(f.e5_house)
+nar: You aren't there for it. You're in the kitchen with the radio on and the radio doesn't say. You find out in the morning, the way everybody finds out. {when: has(said.e5_stayed_home)}
+nar: You stand with the League's lads at the back. They make room for you without being asked and one of them claps you on the shoulder, and keeps his hand there, heavy, through the members' vote. {when: has(said.e5_voted_for)}
+nar: You stand with the Union's end at the back, squeezed in between a man in a work jacket and a girl with a placard, close enough to feel them breathe. Nobody asks who you are. {when: has(said.e5_voted_against)}
+nar: The members vote with their hands. Dennis doesn't count them aloud. He says, carried, and moves on to the bins. {when: !has(said.e5_stayed_home)}
+nar: Silence, of the kind a room makes when everybody in it stops at once. Then Ines Saro stands up with the photograph, and the women either side of her stand up, and the whole of the Union's end of the gallery stands up, without a word, and stays standing all through the bins. {when: !has(said.e5_stayed_home)}
+nar: Friday morning a man from the bailiffs' firm comes up the Yard with a can of orange paint. He goes door to door, and sprays a cross over the pink dot on each one, quick, a hiss and a hiss, and knocks, and says the same thing at every door to whoever opens it: Saturday week. {sense: e5.paint.spray}
+voice: sum: Your pink under his orange. You'd know your own drip anywhere. {dc: 1, when: q_class == inspector}
+go: e5.ledger
+
+# ---------------------------------------------------------------- e5.s10, Walter's wedge (fate f.e5_frank, FRANK decides)
+@node e5.ledger
+place: q5_mara_flat
+speaker: FRANK
+cost: 0
+camera: near
+do: set(e5.ledger_open); pressure(f.e5_frank)
+nar: Sunday. Mara's kitchen, the front room with the good wall. Mara has the kettle on. Through the window the orange cross on the door frame is still tacky in the damp.
+nar: Frank Mott is eighty. Walter Mott's grandson. Forty years a clerk at the council, and now the archive is opening in the old district office on Exchange Street, a proper one, with a lottery grant, and the old exchange scale done up in its front room, the iron arm and the two pans, behind a rope. They've asked him to cut the ribbon, because it was his family that worked the scale, and they're putting his name on the room.
+nar: You're here because you came to look at the wall again and Mara said sit down, there's tea, you might as well hear this. {when: q_class == inspector}
+nar: You're here because Hale wants an officer seen in the Yard the week before, being helpful, and Mara said sit down, there's tea, you might as well hear this. {when: q_class == militia}
+nar: Frank takes a tobacco tin out of his coat pocket and puts it on the oilcloth. It's an old tin, the paint worn through to the metal where a thumb opens it, and it goes down on the table with a knock, too heavy for what it is. {sense: e5.tin.set}
+nar: He gets the lid up with his thumbnail. His hands shake. They've shaken for ten years, it's not this, he says. {sense: e5.tin.open}
+nar: Inside, on a bed of old tobacco gone to dust, a wedge of iron the size of a hand, flat, thick at one end, rusted brown, and bright in two places where it's been rubbed by somebody's fingers, a long time, worrying at it.
+line: FRANK: That went under the scale. The exchange scale, on the square. The famine winter.
+line: FRANK: My grandad worked it. Walter. He put that under the sack pan, the barns' side, and the barns' carts weighed heavy every time. Everybody stood there and watched the arm go down and thought there was grain.
+line: MARA: Why are you showing me?
+line: FRANK: Because there was a lad came to the scale. Your Tomas, love. Your great-great-uncle, the one that went to the hills. He came about his father's carts. He said they'd not grown that. He said it to my grandad's face, at the scale, in front of everybody.
+line: FRANK: My grandad sent him home. And they came for the lad in a week.
+nar: He picks the wedge out of the tin and holds it out across the table, to you, because you're nearest, and you take it, because you can't not. It's cold. It's heavy for its size, the way iron is, and your hand drops with it before it catches the weight.
+do: shoulder(q.load.wedge); sense(cold.iron)
+line: FRANK: My dad had that off his dad, and I had it off mine. A hundred years in a tin in a drawer. I've had it out every night this week.
+line: FRANK: Thursday I'm supposed to cut the ribbon by that scale. Schoolkids'll come round. They want me to say a few words about my family. I could put that under the pan where it went, in front of all of them, and let them watch the arm go down. And then they can take my name off the room.
+line: FRANK: Or Mara can walk me down to the bridge, and I drop it in the Edd, and it's a scale. That's all it is. A scale.
+nar: Mara looks at you. She doesn't know why she looks at you. Because you've got it in your hand. Because you're official.
+voice: condolence: He's eighty. He wants his name on a room. {dc: 2, when: q_class == inspector}
+voice: precedent: It's evidence. Of something. A hundred years too late for anybody to stand in a dock. {dc: 2, when: q_class == inspector}
+voice: grip: He's asking her to walk him to the bridge because he can't carry it there on his own. Not his legs. {dc: 2, when: q_class == militia}
+voice: ballast: Not your business. You're here to be seen. {dc: 3, when: q_class == militia}
+opt: "Say it: Take it up there, Frank. Put it under the pan. Somebody should be able to find that boy." -> e5.ledger.decide {do: set(said.e5_ledger_leave)}
+opt: "Say it: Put it in the Edd. It's your family's." -> e5.ledger.decide {do: set(said.e5_ledger_take)}
+opt: "Hold it, and say nothing." -> e5.ledger.decide
+
+@node e5.ledger.decide
+cost: 0
+do: setdown(q.load.wedge)
+alt: e5.ledger.left ? has(said.e5_ledger_leave)
+go: e5.ledger.torn
+
+@node e5.ledger.torn
+place: q5_mara_flat
+speaker: FRANK
+cost: 0
+camera: near
+do: set(e5.page_torn); fate(f.e5_frank, walter)
+line: FRANK: Give it here, then.
+nar: You put it in his hand. He nearly drops it. Mara gets her coat.
+nar: They go down the Yard together, slowly, Frank on Mara's arm, holding the wall with his other hand, and you go with them because nobody says not to. Down Mill Street past the shop with the flowers. Onto the bridge over the Edd, where the water is high and brown with the week's rain and loud under the arches.
+nar: Frank stands at the parapet a long time with the wedge in both hands, the way you'd hold a bird. Then he lets it go. He doesn't throw it. He just opens his hands over the water.
+nar: You hear it go in, a short hard sound, gone at once under the noise of the river. {sense: e5.edd.splash}
+line: FRANK: There. That's done.
+line: MARA: Are you all right, Frank?
+line: FRANK: Cold, that's all. Walk me home.
+nar: He puts the empty tin back in his coat pocket. Walking back up the hill he keeps his hand in that pocket, on it, all the way.
+go: e5.fb
+
+@node e5.ledger.left
+place: q5_mara_flat
+speaker: FRANK
+cost: 0
+line: FRANK: Somebody should.
+line: FRANK: Yes. All right. Somebody should, I suppose.
+nar: You put it in his hand. He puts it back in the tin on its bed of dust and presses the lid down with both thumbs, and sits with both hands flat on top of it to stop them shaking, and they shake anyway, and the tin chatters on the oilcloth under them.
+line: FRANK: They'll take my name off that room when they see it go down. You know that.
+line: MARA: They'll look at it and see a bit of iron, Frank.
+line: FRANK: You did. Once I'd told you.
+nar: He puts the tin back in his pocket, and his coat pulls down on that side with the weight of it, and he goes, and Mara watches him from the window go down the Yard holding the wall.
+go: e5.fb
+
+# ---------------------------------------------------------------- chain F meets chain B: Tom takes the words to a Brack
+# Only a Brack's voice can stand Leon down (design/eras/INDEX.md section 5). On the Inspector line the words reach a
+# Brack through a Furrowe: Tom carries what Nan gave him to Ann's door, and Ann decides whether to hold them.
+@node e5.fb
+cost: 0
+alt: e5.fb.ask ? q_class == inspector & has(e5.carry_f3)
+go: e5.pack
+
+@node e5.fb.ask
+place: q5_mara_flat
+speaker: TOM
+cost: 0
+nar: Friday night. The bailiffs are coming in the morning. You've had your mother's stone in your mouth three weeks and you know the name it belongs to, the name on the back of the jacket in the video, the name nobody's said out loud.
+voice: precedent: A Brack said it first. On the Crown's steps, to a Furrowe. It's theirs before it's yours. {dc: 2}
+voice: pride: You'd be knocking on the door of the man in the clip. At night. With a story off a dying woman. {dc: 3}
+opt: "Drive to the far-bank estate and knock at the Bracks' end house." -> e5.fb.ann {do: set(said.e5_tom_to_ann)}
+opt: "Go home and keep it." -> e5.pack
+
+@node e5.fb.ann
+place: q5_brack_kitchen
+speaker: ANN
+cost: 0
+camera: near
+do: set(e5.carry_fb)
+nar: The end house, the back gate onto the cutting. A light on in the kitchen. Leon's car isn't there. Ann Brack opens the door on the chain in her dressing gown, and looks at your lanyard, and doesn't take the chain off. {sense: door.knock}
+line: ANN: Now then. He's out. If you're press you can go back down that path.
+line: TOM: I'm Nan Furrowe's lad. I've got something that belongs to your family. My mother said it came off a Brack.
+nar: She takes the chain off. She doesn't ask you in. You say it on the step, in the cold, with the cutting's floodlights behind you, the way Nan said it at the table, word for word.
+line: TOM: I carried him. You don't need two for that. A Brack said it to a Furrowe on the Crown's steps. About a Hesh boy out of the cells. From Haldane Yard. {when: has(e5.carry_f3)}
+nar: Ann stands with her hand on the door. She's very still, the way she used to stand at the back of a court.
+nar: Down the hall behind her, at the end, the back door, and on a nail by it a boy's brown cap, small, gone stiff. She turns her head and looks at it, the way you'd look at somebody who's just come into the room. {when: has(q.tomas_held)}
+line: ANN: My grandad Will. My dad said he had a stone in his shoe. He never would say what.
+line: ANN: Why've you brought it here, love?
+line: TOM: Because he'll hear it from you. He'd laugh at me.
+line: ANN: He would. That's all. Go home, Mr Furrowe.
+nar: She shuts the door. Through the frosted glass you watch her shape stay in the hall a long time, not moving, and then go down the hall to the back door, and reach up, and stand there with her arm up.
+go: e5.pack

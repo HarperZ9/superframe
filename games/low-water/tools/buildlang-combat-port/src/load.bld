@@ -1,0 +1,580 @@
+// Builds the world from the exported setup (export-step-inputs.mjs): the move
+// table, defs, fighters, arena and props as createWorld leaves them.
+
+fn jget(j: Json, k: str) -> Json {
+    match json_get(j, k) {
+        Ok(v) => v,
+        Err(_) => Json::Null,
+    }
+}
+
+fn jis_null(j: Json) -> bool {
+    json_kind(j) == "null"
+}
+
+fn jnum(j: Json, k: str, d: f64) -> f64 {
+    let v = jget(j, k);
+    match v {
+        Json::Num(x) => x,
+        _ => d,
+    }
+}
+
+fn jbool(j: Json, k: str, d: bool) -> bool {
+    let v = jget(j, k);
+    match v {
+        Json::Bool(b) => b,
+        _ => d,
+    }
+}
+
+fn jstr(j: Json, k: str) -> str {
+    let v = jget(j, k);
+    match v {
+        Json::Str(s) => s,
+        _ => "",
+    }
+}
+
+fn jitems(j: Json, k: str) -> Vec<Json> {
+    let v = jget(j, k);
+    match v {
+        Json::Arr(items) => items,
+        _ => Vec::new(),
+    }
+}
+
+fn jkeys(j: Json) -> Vec<str> {
+    match json_keys(j) {
+        Ok(k) => k,
+        Err(_) => Vec::new(),
+    }
+}
+
+fn jnum_at(items: Vec<Json>, i: i64, d: f64) -> f64 {
+    if i >= items.len() as i64 {
+        return d;
+    }
+    let v = items[i as usize];
+    match v {
+        Json::Num(x) => x,
+        _ => d,
+    }
+}
+
+fn win_of(j: Json, k: str) -> Win {
+    let items = jitems(j, k);
+    if items.len() < 2 {
+        return Win { has: false, a: 0.0, b: 0.0, n: 0.0 };
+    }
+    Win { has: true, a: jnum_at(items, 0, 0.0), b: jnum_at(items, 1, 0.0), n: jnum_at(items, 2, 0.0) }
+}
+
+fn empty_win() -> Win {
+    Win { has: false, a: 0.0, b: 0.0, n: 0.0 }
+}
+
+fn empty_proj() -> Proj {
+    Proj {
+        speed: 0.0, mass: 1.0, dmg: 0.0, poise: 0.0, r: 0.0, has_light: false, light_r: 0.0,
+        light_k: 0.0, light_frames: 0.0, knockdown: false, parryable: true, blockable: true,
+        blind: 0.0, knock: 1.4, hitstop: 4.0, shake: 0.1, has_up: false, up: 0.0, snare: false
+    }
+}
+
+fn proj_of(p: Json) -> Proj {
+    let mut out = empty_proj();
+    out.speed = jnum(p, "speed", 0.0);
+    out.mass = jnum(p, "mass", 1.0);
+    out.dmg = jnum(p, "dmg", 0.0);
+    out.poise = jnum(p, "poise", 0.0);
+    out.r = jnum(p, "r", 0.0);
+    let light = jget(p, "light");
+    if !jis_null(light) {
+        out.has_light = true;
+        out.light_r = jnum(light, "r", 0.0);
+        out.light_k = jnum(light, "k", 0.0);
+        out.light_frames = jnum(light, "frames", 0.0);
+    }
+    out.knockdown = jbool(p, "knockdown", false);
+    out.parryable = jbool(p, "parryable", true);
+    out.blockable = jbool(p, "blockable", true);
+    out.blind = jnum(p, "blind", 0.0);
+    out.knock = jnum(p, "knock", 1.4);
+    out.hitstop = jnum(p, "hitstop", 4.0);
+    out.shake = jnum(p, "shake", 0.1);
+    if json_has(p, "up") {
+        out.has_up = true;
+        out.up = jnum(p, "up", 3.0);
+    }
+    out.snare = jbool(p, "snare", false);
+    out
+}
+
+fn move_of(m: Json) -> Move {
+    let mut hits: Vec<HitVol> = Vec::new();
+    let hs = jitems(m, "hits");
+    let mut i = 0;
+    while i < hs.len() {
+        let h = hs[i];
+        let arc = jitems(h, "arc");
+        let r = jitems(h, "r");
+        let y = jitems(h, "y");
+        let at = jitems(h, "at");
+        hits.push(HitVol {
+            arc0: jnum_at(arc, 0, 0.0), arc1: jnum_at(arc, 1, 0.0), r0: jnum_at(r, 0, 0.0),
+            r1: jnum_at(r, 1, 0.0), y0: jnum_at(y, 0, 0.0), y1: jnum_at(y, 1, 2.2),
+            at0: jnum_at(at, 0, 0.0), at1: jnum_at(at, 1, 0.0)
+        });
+        i += 1;
+    }
+    let mut root: Vec<Root> = Vec::new();
+    let rs = jitems(m, "root");
+    i = 0;
+    while i < rs.len() {
+        let r = json_items(rs[i]).unwrap_or(Vec::new());
+        root.push(Root { a: jnum_at(r, 0, 0.0), b: jnum_at(r, 1, 0.0), s: jnum_at(r, 2, 0.0) });
+        i += 1;
+    }
+    let cancel = jget(m, "cancel");
+    let mut cancel_keys: Vec<str> = Vec::new();
+    let mut cancel_wins: Vec<Win> = Vec::new();
+    let ck = jkeys(cancel);
+    i = 0;
+    while i < ck.len() {
+        cancel_keys.push(ck[i]);
+        cancel_wins.push(win_of(cancel, ck[i]));
+        i += 1;
+    }
+    let next = jget(m, "next");
+    let mut next_keys: Vec<str> = Vec::new();
+    let mut next_ids: Vec<str> = Vec::new();
+    let nk = jkeys(next);
+    i = 0;
+    while i < nk.len() {
+        next_keys.push(nk[i]);
+        next_ids.push(jstr(next, nk[i]));
+        i += 1;
+    }
+    let tell = jget(m, "tell");
+    let charge = jget(m, "charge");
+    let item = jget(m, "item");
+    let tap = jget(m, "tap");
+    let shout = jget(m, "shout");
+    let has_item = !jis_null(item);
+    let proj_j = if has_item { jget(item, "proj") } else { Json::Null };
+    let has_proj = has_item && !jis_null(proj_j);
+    let proj = if has_proj { proj_of(proj_j) } else { empty_proj() };
+    Move {
+        id: jstr(m, "id"), kind: jstr(m, "kind"), startup: jnum(m, "startup", 0.0),
+        active: jnum(m, "active", 0.0), recovery: jnum(m, "recovery", 0.0), total: jnum(m, "total", 0.0),
+        stamina: jnum(m, "stamina", 0.0), dmg: jnum(m, "dmg", 0.0), poise: jnum(m, "poise", 0.0),
+        hits: hits, root: root, iframes: win_of(m, "iframes"), armor: win_of(m, "armor"),
+        parry: win_of(m, "parry"), cancel_keys: cancel_keys, cancel_wins: cancel_wins,
+        next_keys: next_keys, next_ids: next_ids, track: jnum(m, "track", 0.0),
+        track_until: jnum(m, "trackUntil", 0.0), hitstop: jnum(m, "hitstop", 0.0),
+        knock: jnum(m, "knock", 0.0), shake: jnum(m, "shake", 0.0), dir: jstr(m, "dir"),
+        parryable: jbool(m, "parryable", true), has_tell: !jis_null(tell),
+        tell_kind: if jis_null(tell) { "" } else { jstr(tell, "kind") },
+        has_charge: !jis_null(charge), charge_at: jnum(charge, "at", 0.0),
+        charge_max: jnum(charge, "max", 0.0), charge_min: jnum(charge, "min", 0.0),
+        charge_into: jstr(charge, "into"), has_item: has_item,
+        item_use: if has_item { jstr(item, "use") } else { "" },
+        item_heal: if has_item { jnum(item, "heal", 0.0) } else { 0.0 }, has_proj: has_proj,
+        proj: proj, then: jstr(m, "then"), knockdown: jbool(m, "knockdown", false),
+        shove: jbool(m, "shove", false), grapple: jbool(m, "grapple", false),
+        blockable: jbool(m, "blockable", true), guard_break: jbool(m, "guardBreak", false),
+        toward: jstr(m, "toward"), takedown: jbool(m, "takedown", false), has_tap: !jis_null(tap),
+        tap_before: jnum(tap, "before", 0.0), tap_into: jstr(tap, "into"),
+        composure: jnum(m, "composure", 0.0), pierce: jbool(m, "pierce", false),
+        through: jbool(m, "through", false), snare: jbool(m, "snare", false),
+        reset_read: jbool(m, "resetRead", false), behind: jbool(m, "behind", false),
+        has_shout: !jis_null(shout), shout_r: jnum(shout, "r", 0.0),
+        shout_cool: jbool(shout, "cool", false), shout_poise: jnum(shout, "poise", 0.0),
+        shout_stamina: jnum(shout, "stamina", 0.0), drain: jnum(m, "drain", 0.0),
+        blind: jnum(m, "blind", 0.0)
+    }
+}
+
+fn str_list(j: Json, k: str) -> Vec<str> {
+    let items = jitems(j, k);
+    let mut out: Vec<str> = Vec::new();
+    let mut i = 0;
+    while i < items.len() {
+        let v = items[i];
+        match v {
+            Json::Str(s) => out.push(s),
+            _ => out.push(""),
+        }
+        i += 1;
+    }
+    out
+}
+
+fn def_of(d: Json) -> Def {
+    let tool = jget(d, "tool");
+    let block = jitems(tool, "blockCost");
+    let bonus = jget(d, "bonus");
+    let levels = jget(d, "levels");
+    let tempo = jget(d, "tempo");
+    let breaks = jget(d, "breaks");
+    let set = jget(d, "moveset");
+    let hands = jget(d, "hands");
+    let variants = jget(d, "variants");
+    let mut set_keys: Vec<str> = Vec::new();
+    let mut set_vals: Vec<str> = Vec::new();
+    let mut roll_keys: Vec<str> = Vec::new();
+    let mut roll_vals: Vec<str> = Vec::new();
+    let mut use_list: Vec<str> = Vec::new();
+    let sk = jkeys(set);
+    let mut i = 0;
+    while i < sk.len() {
+        let k = sk[i];
+        if k == "roll" {
+            let r = jget(set, "roll");
+            let rk = jkeys(r);
+            let mut j = 0;
+            while j < rk.len() {
+                roll_keys.push(rk[j]);
+                roll_vals.push(jstr(r, rk[j]));
+                j += 1;
+            }
+        } else if k == "use" {
+            use_list = str_list(set, "use");
+        } else {
+            set_keys.push(k);
+            set_vals.push(jstr(set, k));
+        }
+        i += 1;
+    }
+    let mut hand_keys: Vec<str> = Vec::new();
+    let mut hand_vals: Vec<str> = Vec::new();
+    let hk = jkeys(hands);
+    i = 0;
+    while i < hk.len() {
+        hand_keys.push(hk[i]);
+        hand_vals.push(jstr(hands, hk[i]));
+        i += 1;
+    }
+    let mut var_keys: Vec<str> = Vec::new();
+    let mut var_lists: Vec<Vec<str>> = Vec::new();
+    let vk = jkeys(variants);
+    i = 0;
+    while i < vk.len() {
+        var_keys.push(vk[i]);
+        var_lists.push(str_list(variants, vk[i]));
+        i += 1;
+    }
+    let mut lv_keys: Vec<str> = Vec::new();
+    let mut lv_vals: Vec<f64> = Vec::new();
+    let lk = jkeys(levels);
+    i = 0;
+    while i < lk.len() {
+        lv_keys.push(lk[i]);
+        lv_vals.push(jnum(levels, lk[i], 0.0));
+        i += 1;
+    }
+    let yields = jget(d, "yields");
+    Def {
+        kind: jstr(d, "kind"), hp: jnum(d, "hp", 0.0), stamina_regen: jnum(d, "staminaRegen", 0.0),
+        stamina_delay: jnum(d, "staminaDelay", 0.0), speed: jnum(d, "speed", 0.0),
+        accel: jnum(d, "accel", 0.0), turn: jnum(d, "turn", 0.0), radius: jnum(d, "radius", 0.25),
+        height: jnum(d, "height", 0.0), view: jnum(d, "view", 1.0), sight: jstr(d, "sight"),
+        load: jstr(d, "load"), grip: jnum(d, "grip", 0.0), tool_cls: jstr(tool, "cls"),
+        tool_chip: jnum(tool, "chip", 0.0), tool_block0: jnum_at(block, 0, 0.0),
+        tool_block1: jnum_at(block, 1, 0.0), faction: jstr(d, "faction"),
+        has_yields: !jis_null(yields), yields: jnum(d, "yields", 0.0), soften: jnum(d, "soften", 1.0),
+        dmg_mul: jnum(d, "dmgMul", 1.0), front_guard: jnum(d, "frontGuard", 0.0),
+        floor: jnum(d, "floor", 0.0), keep_feet: jbool(d, "keepFeet", false), style: jstr(d, "style"),
+        lantern: jnum(d, "lantern", 0.0), boss: jbool(d, "boss", false), has_bonus: !jis_null(bonus),
+        bonus_weak: jnum(bonus, "weak", 0.0), bonus_read: jnum(bonus, "read", 0.0),
+        has_levels: !jis_null(levels), lv_keys: lv_keys, lv_vals: lv_vals,
+        has_tempo: !jis_null(tempo), tempo_stun: jnum(tempo, "stun", 1.0),
+        tempo_regain: jnum(tempo, "regain", 1.0), learned: str_list(d, "learned"),
+        brk_nose8: jbool(breaks, "nose8", false), brk_pen8: jbool(breaks, "pen8", false),
+        brk_coat8: jbool(breaks, "coat8", false), brk_hat8: jbool(breaks, "hat8", false),
+        set_keys: set_keys, set_vals: set_vals, roll_keys: roll_keys, roll_vals: roll_vals,
+        use_list: use_list, hand_keys: hand_keys, hand_vals: hand_vals, var_keys: var_keys,
+        var_lists: var_lists, moves: str_list(d, "moves")
+    }
+}
+
+fn empty_act() -> Act {
+    Act {
+        id: "", f: 0.0, end: 0.0, hit: Vec::new(), charge: 0.0, charging: false, dir: 0.0, seq: 0.0,
+        has_carry: false, carry0: 0.0, carry1: 0.0, has_charged: false, charged: 0.0,
+        extra: Vec::new(), gusted: false, evaded: Vec::new()
+    }
+}
+
+fn empty_inp() -> Inp {
+    Inp {
+        has_mx: false, mx: 0.0, has_mz: false, mz: 0.0, has_press: false, press: Vec::new(),
+        has_hold: false, hold_heavy: -1, hold_block: -1, hold_run: -1, choke: false
+    }
+}
+
+fn empty_pur() -> Pur {
+    Pur { clock: 0.0, cut: 0.0, thrown: 0.0, lunged: 0.0, chase: 0.0, rest: 0.0, away: false }
+}
+
+fn empty_mem() -> Mem {
+    Mem {
+        inited: false, next: 0.0, has_seen: false, seen: Seen { x: 0.0, z: 0.0, t: 0.0 }, move_mx: 0.0,
+        move_mz: 0.0, cool: 0.0, stag: false, retreat: 0.0, retreated: false, side: 0.0,
+        searched: 0.0, extra: Vec::new(), lost: 0.0, called: false, pur: empty_pur(), chain: 0.0,
+        home_x: 0.0, home_z: 0.0, home_face: 0.0
+    }
+}
+
+// A fighter as the export holds it: createFighter's keys, and a foe's `mem`
+// from the opening (applyOpening "open": { seen }).
+fn fighter_of(f: Json) -> Fighter {
+    let items = jget(f, "items");
+    let ik = jkeys(items);
+    let mut item_vals: Vec<f64> = Vec::new();
+    let mut i = 0;
+    while i < ik.len() {
+        item_vals.push(jnum(items, ik[i], 0.0));
+        i += 1;
+    }
+    let mut extra: Vec<str> = Vec::new();
+    let mut mem = empty_mem();
+    let mut has_mem = false;
+    let fk = jkeys(f);
+    i = 0;
+    while i < fk.len() {
+        if fk[i] == "mem" {
+            has_mem = true;
+            extra.push("mem");
+            let mj = jget(f, "mem");
+            let sj = jget(mj, "seen");
+            if !jis_null(sj) {
+                mem.has_seen = true;
+                mem.seen = Seen { x: jnum(sj, "x", 0.0), z: jnum(sj, "z", 0.0), t: jnum(sj, "t", 0.0) };
+            }
+        }
+        i += 1;
+    }
+    Fighter {
+        id: jstr(f, "id"), team: jstr(f, "team"), kind: jstr(f, "kind"), x: jnum(f, "x", 0.0),
+        z: jnum(f, "z", 0.0), face: jnum(f, "face", 0.0), vx: 0.0, vz: 0.0, kx: 0.0, kz: 0.0,
+        hp: jnum(f, "hp", 0.0), hp_max: jnum(f, "hpMax", 0.0), st: jnum(f, "st", 0.0),
+        st_max: jnum(f, "stMax", 0.0), st_wait: 0.0, winded: false, poise: jnum(f, "poise", 0.0),
+        poise_max: jnum(f, "poiseMax", 0.0), poise_wait: 0.0, guard_t: 0.0, blind: 0.0,
+        has_act: false, act: empty_act(), hitstop: 0.0, flash: 0.0, lock: jstr(f, "lock"),
+        lock_lost: 0.0, buf: Vec::new(), item_keys: ik, item_vals: item_vals, out: false,
+        fallen: false, yielded: false, last_offense: 0.0, aware: jbool(f, "aware", true),
+        notice: jnum(f, "notice", 1.0), composure: jnum(f, "composure", 0.0),
+        composure_max: jnum(f, "composureMax", 0.0), running: false, lantern: jnum(f, "lantern", 0.0),
+        last_hit_by: jstr(f, "lastHitBy"), tool: jstr(f, "tool"), extra: extra, has_mem: has_mem,
+        mem: mem, engaged: false, seq: 0.0, catch_miss: 0.0, catch_miss_null: false,
+        tokens: Vec::new(), struck_at: 0.0, kited_by: 0.0, flinch_at: 0.0, carriage: false,
+        disarmed: false, dropped: 0.0, trip_at: 0.0, called_at: 0.0, inp: empty_inp()
+    }
+}
+
+fn arena_of(a: Json, bounds: Json) -> Arena {
+    let rows = str_list(a, "rows");
+    let legend = jget(a, "legend");
+    let lk = jkeys(legend);
+    let mut legend_cells: Vec<Cell> = Vec::new();
+    let mut i = 0;
+    while i < lk.len() {
+        let c = jget(legend, lk[i]);
+        legend_cells.push(Cell { surface: jstr(c, "surface"), h: jnum(c, "h", 0.0), solid: jbool(c, "solid", false) });
+        i += 1;
+    }
+    let water = jget(a, "water");
+    let mut lights: Vec<Light> = Vec::new();
+    let ls = jitems(a, "lights");
+    i = 0;
+    while i < ls.len() {
+        let l = ls[i];
+        lights.push(Light {
+            x: jnum(l, "x", 0.0), z: jnum(l, "z", 0.0), r: jnum(l, "r", 0.0), k: jnum(l, "k", 0.0),
+            sodium: jbool(l, "sodium", false), off: jbool(l, "off", false)
+        });
+        i += 1;
+    }
+    let mut exits: Vec<Vec<f64>> = Vec::new();
+    let es = jitems(a, "exits");
+    i = 0;
+    while i < es.len() {
+        let e = json_items(es[i]).unwrap_or(Vec::new());
+        let row: Vec<f64> = vec![jnum_at(e, 0, 0.0), jnum_at(e, 1, 0.0), jnum_at(e, 2, 0.0), jnum_at(e, 3, 0.0)];
+        exits.push(row);
+        i += 1;
+    }
+    let anchors = jget(a, "anchors");
+    let ak = jkeys(anchors);
+    let mut anchor_pts: Vec<Vec<f64>> = Vec::new();
+    i = 0;
+    while i < ak.len() {
+        let pts = jitems(anchors, ak[i]);
+        let mut flat: Vec<f64> = Vec::new();
+        let mut j = 0;
+        while j < pts.len() {
+            let p = json_items(pts[j]).unwrap_or(Vec::new());
+            flat.push(jnum_at(p, 0, 0.0));
+            flat.push(jnum_at(p, 1, 0.0));
+            j += 1;
+        }
+        anchor_pts.push(flat);
+        i += 1;
+    }
+    let origin = jitems(a, "origin");
+    let ox = jnum_at(origin, 0, 0.0);
+    let oz = jnum_at(origin, 1, 0.0);
+    Arena {
+        cell: jnum(a, "cell", 1.0), ox: ox, oz: oz, rows: rows, legend_keys: lk,
+        legend_cells: legend_cells, has_water: !jis_null(water), water_a: jnum(water, "a", 0.0),
+        water_b: jnum(water, "b", 0.0), water_vscale: jnum(water, "vscale", 1.0), lights: lights,
+        exits: exits, tide_ends: jbool(a, "tideEnds", false), anchor_keys: ak,
+        anchor_pts: anchor_pts, width: jnum(bounds, "x1", 0.0) - ox, depth: jnum(bounds, "z1", 0.0) - oz
+    }
+}
+
+fn terms_of(t: Json) -> Terms {
+    Terms {
+        tide: jnum(t, "tide", 0.0), fog: jnum(t, "fog", 0.0), rain: jnum(t, "rain", 0.0),
+        frost: jnum(t, "frost", 0.0), light: jnum(t, "light", 0.0), sodium: jnum(t, "sodium", 0.0),
+        wind_speed: jnum(t, "windSpeed", 0.0), wind_x: jnum(t, "windX", 0.0),
+        wind_z: jnum(t, "windZ", 0.0), outdoors: jbool(t, "outdoors", false), dark: jnum(t, "dark", 0.05),
+        mother: jstr(t, "mother")
+    }
+}
+
+fn prop_of(p: Json) -> Prop {
+    let zone_items = jitems(p, "zone");
+    let mut zone: Vec<f64> = Vec::new();
+    let mut i = 0;
+    while i < zone_items.len() {
+        zone.push(jnum_at(zone_items, i as i64, 0.0));
+        i += 1;
+    }
+    let xj = jget(p, "x");
+    let at = jget(p, "at");
+    Prop {
+        kind: jstr(p, "kind"), has_x: !jis_null(xj), x: jnum(p, "x", 0.0), z: jnum(p, "z", 0.0),
+        on: jbool(p, "on", false), zone: zone, rise: jnum(p, "rise", 0.0), open: jbool(p, "open", false),
+        has_at: !jis_null(at), at: jnum(p, "at", 0.0), armed: jbool(p, "armed", false),
+        n: jnum(p, "n", 0.0), light: jnum(p, "light", -1.0)
+    }
+}
+
+fn brain_of(b: Json) -> BrainCfg {
+    let range = jitems(b, "range");
+    let cool = jitems(b, "cooldown");
+    let mut attacks: Vec<Attack> = Vec::new();
+    let as_ = jitems(b, "attacks");
+    let mut i = 0;
+    while i < as_.len() {
+        let a = as_[i];
+        attacks.push(Attack {
+            mv: jstr(a, "move"), min: jnum(a, "min", 0.0), max: jnum(a, "max", 0.0),
+            w: jnum(a, "w", 0.0), chain: jnum(a, "chain", 0.0), allies: jnum(a, "allies", 0.0)
+        });
+        i += 1;
+    }
+    BrainCfg {
+        think: jnum(b, "think", 0.0), range0: jnum_at(range, 0, 0.0), range1: jnum_at(range, 1, 0.0),
+        flank_slot: jnum(b, "flankSlot", 0.0), retreat_hp: jnum(b, "retreatHp", 0.0),
+        low_stamina: jnum(b, "lowStamina", 0.0), cool0: jnum_at(cool, 0, 0.0),
+        cool1: jnum_at(cool, 1, 0.0), attacks: attacks, on_stagger: jstr(b, "onStagger"),
+        braced: jstr(b, "braced"), dodge: jstr(b, "dodge")
+    }
+}
+
+fn world_of(run: Json) -> World {
+    let mut moves: HashMap<str, Move> = HashMap::new();
+    let mut move_ids: Vec<str> = Vec::new();
+    let mj = jget(run, "moves");
+    let mk = jkeys(mj);
+    let mut i = 0;
+    while i < mk.len() {
+        moves.insert(mk[i], move_of(jget(mj, mk[i])));
+        move_ids.push(mk[i]);
+        i += 1;
+    }
+    let dj = jget(run, "defs");
+    let dk = jkeys(dj);
+    let mut defs: Vec<Def> = Vec::new();
+    i = 0;
+    while i < dk.len() {
+        defs.push(def_of(jget(dj, dk[i])));
+        i += 1;
+    }
+    let mut fighters: Vec<Fighter> = Vec::new();
+    let fs = jitems(run, "fighters");
+    i = 0;
+    while i < fs.len() {
+        fighters.push(fighter_of(fs[i]));
+        i += 1;
+    }
+    let bj = jget(run, "brains");
+    let bk = jkeys(bj);
+    let mut brains: Vec<BrainCfg> = Vec::new();
+    i = 0;
+    while i < bk.len() {
+        brains.push(brain_of(jget(bj, bk[i])));
+        i += 1;
+    }
+    let mut props: Vec<Prop> = Vec::new();
+    let ps = jitems(run, "props");
+    i = 0;
+    while i < ps.len() {
+        props.push(prop_of(ps[i]));
+        i += 1;
+    }
+    let field = jget(run, "field");
+    let arena = arena_of(jget(field, "arena"), jget(field, "bounds"));
+    let gj = jget(run, "grip");
+    let gk = jkeys(gj);
+    let mut grip_vals: Vec<f64> = Vec::new();
+    i = 0;
+    while i < gk.len() {
+        grip_vals.push(jnum(gj, gk[i], 1.0));
+        i += 1;
+    }
+    World {
+        tick: 0, seed: jnum(run, "seed", 0.0).to_uint32(), arena_name: jstr(run, "arena"),
+        move_ids: move_ids, moves: moves, def_ids: dk, defs: defs, fighters: fighters,
+        brain_ids: bk, brains: brains, projectiles: Vec::new(), next_proj: 0.0,
+        ground_lights: Vec::new(), events: Vec::new(), arena: arena,
+        terms: terms_of(jget(field, "terms0")), floods: Vec::new(), seconds: 0.0, grip_keys: gk,
+        grip_vals: grip_vals, lamps_now: Vec::new(), has_result: false, outcome: "", reason: "",
+        flee_t: 0.0, struck: Vec::new(), seen_violence: false, props: props, kited: 0.0, apart: 0.0,
+        telegraphs_seen: 0.0, bark_last_keys: Vec::new(), bark_last_vals: Vec::new(),
+        bark_last_any: -1000000000.0, bark_has_tide: false, bark_tide: 0.0,
+        pilot: Pilot {
+            hold: 0.0, cool: 0.0, style: "", catch_share: 0.0, has_goal: false, goal_x: 0.0,
+            goal_z: 0.0, stuck: 0.0, has_at: false, at_x: 0.0, at_z: 0.0
+        },
+        crowd: 0.0,
+        terms_list: terms_list_of(run),
+        clocks: clocks_of(run)
+    }
+}
+
+fn terms_list_of(run: Json) -> Vec<Terms> {
+    let items = jitems(run, "terms");
+    let mut out: Vec<Terms> = Vec::new();
+    let mut i = 0;
+    while i < items.len() {
+        out.push(terms_of(jget(items[i], "terms")));
+        i += 1;
+    }
+    out
+}
+
+fn clocks_of(run: Json) -> Vec<f64> {
+    let items = jitems(run, "clocks");
+    let mut out: Vec<f64> = Vec::new();
+    let mut i = 0;
+    while i < items.len() {
+        out.push(jnum_at(items, i as i64, 0.0));
+        i += 1;
+    }
+    out
+}

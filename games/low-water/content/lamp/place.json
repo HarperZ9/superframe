@@ -27,21 +27,21 @@
  "style": "painted",
  "variants": [
   "lit",
-  "dark",
-  "frost"
+  "frost",
+  "unlit"
  ],
  "variantInfo": {
   "lit": {
    "hour": 4.2,
    "weather": "relit: the arc, a third of the rings bottle green"
   },
-  "dark": {
-   "hour": 4.2,
-   "weather": "before the restrike: the town in sodium far below, the cold sky"
-  },
   "frost": {
    "hour": 4.6,
    "weather": "lit, 04:25 to 05:05: Keel's drips frozen on the floor (e.hammer)"
+  },
+  "unlit": {
+   "hour": 4.2,
+   "weather": "before the restrike: the town in sodium far below, the cold sky"
   }
  },
  "dark": false,
@@ -315,41 +315,6 @@
     "group": ""
    }
   ],
-  "dark": [
-   {
-    "at": [
-     30,
-     -25,
-     30
-    ],
-    "kind": "sodium",
-    "I": 2500,
-    "reach": 90,
-    "group": ""
-   },
-   {
-    "at": [
-     -30,
-     18,
-     -40
-    ],
-    "kind": "sky",
-    "I": 900,
-    "reach": 90,
-    "group": ""
-   },
-   {
-    "at": [
-     -2.4,
-     1.3,
-     2
-    ],
-    "kind": "paraffin",
-    "I": 3,
-    "reach": 8,
-    "group": ""
-   }
-  ],
   "frost": [
    {
     "at": [
@@ -404,6 +369,41 @@
     "kind": "sky",
     "I": 600,
     "reach": 90,
+    "group": ""
+   }
+  ],
+  "unlit": [
+   {
+    "at": [
+     30,
+     -25,
+     30
+    ],
+    "kind": "sodium",
+    "I": 2500,
+    "reach": 90,
+    "group": ""
+   },
+   {
+    "at": [
+     -30,
+     18,
+     -40
+    ],
+    "kind": "sky",
+    "I": 900,
+    "reach": 90,
+    "group": ""
+   },
+   {
+    "at": [
+     -2.4,
+     1.3,
+     2
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 8,
     "group": ""
    }
   ]

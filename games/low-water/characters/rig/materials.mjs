@@ -55,6 +55,27 @@ grey:     { id: 50, c: [0.5, 0.5, 0.5], v: 0.5, stroke: { scale: 0.06, stretch: 
   mud:      { id: 54, c: [0.28, 0.22, 0.16], v: 0.22, stroke: { scale: 0.03, stretch: 1, amount: 0.35 } },
   pea:      { id: 55, c: [0.12, 0.14, 0.18], v: 0.13, stroke: { scale: 0.05, stretch: 2.5, amount: 0.2 } },
   shawl:    { id: 56, c: [0.45, 0.32, 0.3], v: 0.34, stroke: { scale: 0.012, stretch: 1, amount: 0.3 } },
+  // The Quota, era 2 dress (2026-10-21): the Tarn's dark wool, the Hesh's felt and the blue thread at the wrist,
+  // and a band of untanned skin where a good hat sits (Ned Furrowe's forehead)
+  wool:     { id: 57, c: [0.17, 0.15, 0.14], v: 0.15, stroke: { scale: 0.014, stretch: 1.4, amount: 0.28 } },
+  felt:     { id: 58, c: [0.46, 0.38, 0.28], v: 0.36, stroke: { scale: 0.03, stretch: 1, amount: 0.22 } },
+  thread:   { id: 59, c: [0.16, 0.32, 0.72], v: 0.3 },
+  hatline:  { id: 60, c: [0.8, 0.6, 0.47], v: 0.56, sss: 0.3 },   // the hat's line: skin a shade paler where the sun never reached, low contrast
+  // people and class (2026-10-22): hands that work outdoors, teeth, a scar, patched and good cloth, the Vell's colour
+  hands:    { id: 61, c: [0.84, 0.56, 0.46], v: 0.56, stroke: { scale: 0.02, stretch: 1, amount: 0.25 }, sss: 0.3 },
+  teeth:    { id: 62, c: [0.88, 0.85, 0.76], v: 0.84 },
+  scar:     { id: 63, c: [0.9, 0.7, 0.64], v: 0.68, sss: 0.3 },
+  patch:    { id: 64, c: [0.3, 0.26, 0.22], v: 0.26, stroke: { scale: 0.014, stretch: 1.4, amount: 0.3 } },
+  goodwool: { id: 65, c: [0.1, 0.1, 0.12], v: 0.1, stroke: { scale: 0.04, stretch: 3, amount: 0.1 }, sheen: 0.15 },
+  embroid:  { id: 66, c: [0.72, 0.2, 0.14], v: 0.3, stroke: { scale: 0.006, stretch: 1, amount: 0.35 } },
+  vellscarf:{ id: 67, c: [0.85, 0.55, 0.12], v: 0.55, stroke: { scale: 0.03, stretch: 2, amount: 0.2 } },
+  // the sculpted head (2026-10-22): an iris under a wet cornea (shade.mjs light(): a highlight that ignores the dark albedo)
+  iris:     { id: 68, c: [0.32, 0.27, 0.22], v: 0.26, wet: 1.1, wetPow: 30 },
+  // the sculpted head's skin: skin's colour (a palette's skin applies), lit on a softer ramp (shade.mjs fleshRamp)
+  sclera:   { id: 71, c: [0.86, 0.83, 0.77], v: 0.8 },   // the sculpted head's eye white and pupil: drawn without ink lines between eye parts, so a small eye is not an ink blot
+  pupil:    { id: 72, c: [0.06, 0.04, 0.05], v: 0.04 },
+  catch:    { id: 70, c: [0.96, 0.94, 0.9], v: 0.95 },   // the cornea's painted catchlight (cast/sculpt.mjs eyeMesh)
+  flesh:    { id: 69, c: [0.84, 0.64, 0.52], v: 0.60, stroke: { scale: 0.04, stretch: 1.4, amount: 0.12 }, sss: 0.4 },
   nail:     { id: 27, c: [0.24, 0.24, 0.27], v: 0.2, stroke: { scale: 0.03, stretch: 2, amount: 0.15 } },
 };
 export const BY_ID = [];
