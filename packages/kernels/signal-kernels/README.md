@@ -5,6 +5,8 @@
 
 # signal-kernels
 
+> This library now lives in The Playground at `packages/kernels/signal-kernels`. It moved from `HarperZ9/signal-kernels` at commit `0c62e590` as one commit of the final tree; the earlier history stays in that repository, which is archived. Build and test from this folder: `cmake -S . -B build -DSIGNAL_KERNELS_BUILD_TESTS=ON`, then `cmake --build build --config Debug` and `ctest --test-dir build -C Debug --output-on-failure`. The engine's CI runs the same three steps on Windows (`.github/workflows/kernels-cpp.yml`). Licence for this folder: FSL-1.1-MIT (`LICENSE` here).
+
 C++23 header-only entropy, causality, and forecasting kernels.
 
 ```
@@ -202,3 +204,18 @@ See [AGENTS.md](AGENTS.md) for the repo-specific operating boundary and
 ---
 
 Built by **[Zain Dana Harper](https://harperz9.github.io)** in Seattle: evidence-first tools that leave a re-checkable artifact behind. The full workbench is at [Project Telos](https://harperz9.github.io).
+
+## BuildLang port candidates
+
+The code is C++23 and moved unchanged. Each module below is a candidate for a BuildLang port, held to the test cases in `tests/` as known answers. Port status: not started.
+
+| Module | What it holds |
+|---|---|
+| `include/algorithms/_fft.hpp` | FFT helpers shared by the spectral measures |
+| `include/algorithms/_numeric.hpp` | shared numeric helpers |
+| `include/algorithms/entropy.hpp` | entropy measures |
+| `include/algorithms/information.hpp` | divergences and information measures |
+| `include/algorithms/causal.hpp` | causal tests (Granger) |
+| `include/algorithms/changepoint.hpp` | change-point detection (PELT) |
+| `include/algorithms/curvature.hpp` | graph curvature |
+| `include/algorithms/forecast.hpp` | forecasting (SARIMA, VAR) |

@@ -5,6 +5,8 @@
 
 # anomaly-kernels
 
+> This library now lives in The Playground at `packages/kernels/anomaly-kernels`. It moved from `HarperZ9/anomaly-kernels` at commit `c94ac9b0` as one commit of the final tree; the earlier history stays in that repository, which is archived. Build and test from this folder: `cmake -S . -B build -DANOMALY_KERNELS_TESTS=ON`, then `cmake --build build --config Debug` and `ctest --test-dir build -C Debug --output-on-failure`. The engine's CI runs the same three steps on Windows (`.github/workflows/kernels-cpp.yml`). Licence for this folder: MIT (`LICENSE` here).
+
 Score telemetry outliers with C++23 baselines and correlation windows.
 
 ```
@@ -131,3 +133,13 @@ ctest --test-dir build --output-on-failure
 ---
 
 Built by **[Zain Dana Harper](https://harperz9.github.io)** in Seattle: evidence-first tools that leave a re-checkable artifact behind. The full workbench is at [Project Telos](https://harperz9.github.io).
+
+## BuildLang port candidates
+
+The code is C++23 and moved unchanged. Each module below is a candidate for a BuildLang port, held to the test cases in `tests/` as known answers. Port status: not started.
+
+| Module | What it holds |
+|---|---|
+| `include/anomaly/baseline_builder.h`, `src/baseline_builder.cpp` | baseline profiles from telemetry samples |
+| `include/anomaly/anomaly_scorer.h`, `src/anomaly_scorer.cpp` | z-score, IQR and percentile scoring |
+| `include/anomaly/alert_correlator.h`, `src/alert_correlator.cpp` | alert correlation over time windows |
