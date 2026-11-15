@@ -8,7 +8,7 @@ import { join } from "node:path";
 import { loadAct } from "../dialogue/book.mjs";
 import { loadContent, createFullGame } from "../full.mjs";
 import { ROOT } from "./helpers.mjs";
-import { lintFates, checkFateRuns, outcomes } from "../tools/fatecheck.mjs";
+import { lintFates, checkFateRuns, outcomes, EXEMPT } from "../tools/fatecheck.mjs";
 
 const SLICE = join(ROOT, "..", "..", "content", "quota", "slice.lwd");
 const base = (await loadAct(SLICE, (p) => readFile(p, "utf8"))).sources;
@@ -17,8 +17,26 @@ const withExtra = (extra) => loadContent([...base, { file: "plant.lwd", text: ex
 
 test("the slice's fates lint clean, and each has a way it falls and a way it does not", () => {
   assert.deepEqual(lintFates(content).map((o) => o.msg), []);
-  for (const f of Object.values(content.community.fates)) { const o = outcomes(f, content.book.nodes); assert.ok(o.some((x) => x.fell) && o.some((x) => !x.fell), f.id); }
-  assert.deepEqual(Object.values(content.community.fates).map((f) => f.decider).sort(), ["BET", "GEDGE", "HOLT"]);
+  // Two ways holds for every fate but the ones tools/fatecheck.mjs lists in EXEMPT, each with its decision of record.
+  // There is one: f.e5_danil, era 5's canon hinge, which falls on every way out of its scene. The list is pinned
+  // here, so a second exemption fails this test until it is added on purpose.
+  assert.deepEqual(Object.keys(EXEMPT), ["f.e5_danil"]);
+  for (const f of Object.values(content.community.fates)) {
+    const o = outcomes(f, content.book.nodes);
+    if (EXEMPT[f.id]) assert.ok(o.length > 0 && o.every((x) => x.fell), `${f.id}: exempt, and falls on every way out`);
+    else assert.ok(o.some((x) => x.fell) && o.some((x) => !x.fell), f.id);
+  }
+  // Era 2's three fates and their deciders, as before. The slice now carries eras 1, 3, 4 and 5 as well
+  // (e1_world.lwd, e3_world.lwd, e4_world.lwd, e5_world.lwd): 23 fates, each pinned to the person who decides it.
+  const deciders = Object.fromEntries(Object.values(content.community.fates).map((f) => [f.id, f.decider]));
+  assert.deepEqual(Object.keys(deciders).filter((id) => !/^f\.e\d_/.test(id)).map((id) => deciders[id]).sort(), ["BET", "GEDGE", "HOLT"]);
+  assert.deepEqual(deciders, {
+    "f.anni_home": "BET", "f.aaron_taken": "GEDGE", "f.tomas_held": "HOLT",
+    "f.e1_sallis": "JOSH", "f.e1_kel": "GEORGE",
+    "f.e3_flat": "TOBIN", "f.e3_list": "ANNI", "f.e3_aaron": "WILL", "f.e3_bed": "CLARA", "f.e3_sholl": "ANNI", "f.e3_well": "GEDGE", "f.e3_tomas": "TOMAS",
+    "f.e4_hire": "JOSS", "f.e4_map": "VICTOR", "f.e4_lew": "COL", "f.e4_row": "DALE", "f.e4_shelter": "ANNI",
+    "f.e5_danil": "LEON", "f.e5_cert": "SAM", "f.e5_house": "LEON", "f.e5_frank": "FRANK", "f.e5_page_tom": "TOM", "f.e5_page_leon": "LEON",
+  });
 });
 
 test("control: the old H1 rule is refused: a person decides this", () => {
