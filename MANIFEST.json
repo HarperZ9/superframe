@@ -6328,8 +6328,8 @@
   {
    "path": "superframe/lib/formats/README.md",
    "source": "repo",
-   "bytes": 1714,
-   "sourceSha256": "90dc50f941649cd4248faa298d52b0f9c5a7be547d6464d8e31f731d55f57a80"
+   "bytes": 7457,
+   "sourceSha256": "eb6109cbbc4611ac22de20d9fa356f876c80a73e7b2bb01fac5d064d3628fc4d"
   },
   {
    "path": "superframe/lib/formats/midi-writer.js",
@@ -6494,10 +6494,58 @@
    "sourceSha256": "fdebf9eebf28e31b180ace1674a44d484bdcd8f498572913dc40be01c1c4fd7b"
   },
   {
-   "path": "playbook/lib/ssim.js",
+   "path": "superframe/lib/formats/disciplines.js",
    "source": "repo",
-   "bytes": 2465,
-   "sourceSha256": "32d2d1e1d244aa3265a543b0958a49529c8239f9246aabffff483caf0f1dd988"
+   "bytes": 8967,
+   "sourceSha256": "0b960621e8ea79118937898d18704d71d2412ced74eaffc2823efa308d4afb65"
+  },
+  {
+   "path": "superframe/lib/formats/mesh-io.js",
+   "source": "repo",
+   "bytes": 16011,
+   "sourceSha256": "59214b77d29387334e7e106e23d3208fcf294aaaa2c8fe5cc3018436f56d212d"
+  },
+  {
+   "path": "superframe/lib/formats/mesh-transform.js",
+   "source": "repo",
+   "bytes": 10211,
+   "sourceSha256": "48d3b1e95529b7239cb7c6e37001b4ac143b0694a8c45a96702edeb6c2048d82"
+  },
+  {
+   "path": "superframe/lib/formats/pdf-page.js",
+   "source": "repo",
+   "bytes": 3294,
+   "sourceSha256": "504be2eedccb1c9879d7bc75e7e736468493744291c47b21f26e5db1ec5f84d7"
+  },
+  {
+   "path": "superframe/lib/formats/structure-checks.js",
+   "source": "repo",
+   "bytes": 6306,
+   "sourceSha256": "1740137eec5e4c937396c26b0115707846a04fba397738d616b8bff3c48adcef"
+  },
+  {
+   "path": "superframe/tests/formats-disciplines.test.mjs",
+   "source": "repo",
+   "bytes": 4690,
+   "sourceSha256": "b1cc1d16c29b76c0cbf0db580ee01d2b70f2b6669c6c086647d30f1d0fc5ce57"
+  },
+  {
+   "path": "superframe/tests/formats-mesh-transform.test.mjs",
+   "source": "repo",
+   "bytes": 3450,
+   "sourceSha256": "140cf4d8f24e5fa6850749ff234b3f48c43d6b769e0fe06c2114e0ec0b24cc21"
+  },
+  {
+   "path": "superframe/tests/formats-mesh-writers.test.mjs",
+   "source": "repo",
+   "bytes": 17295,
+   "sourceSha256": "d5378f9bad64c6ab521eada5118d390a3f41d74f1485dac10d564764b60021cb"
+  },
+  {
+   "path": "superframe/tests/formats-readers.test.mjs",
+   "source": "repo",
+   "bytes": 7564,
+   "sourceSha256": "60afb2a24726e685f81689a6613dbace8431cdaf5def1eeca567c7cfb713a811"
   },
   {
    "path": "packages/PROVENANCE.json",
@@ -6508,8 +6556,20 @@
   {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 11399,
-   "sourceSha256": "14725e4574cee10c9c0e6d81c88fc17bc3ffa4b39807459fcda069ce81ecd7ac"
+   "bytes": 11705,
+   "sourceSha256": "d23daf25a8b4f02387676cf32a78e0da7513f2cbd92de66caffe97d7a4344a54"
+  },
+  {
+   "path": "packages/README.md",
+   "source": "repo",
+   "bytes": 11705,
+   "sourceSha256": "d23daf25a8b4f02387676cf32a78e0da7513f2cbd92de66caffe97d7a4344a54"
+  },
+  {
+   "path": "packages/README.md",
+   "source": "repo",
+   "bytes": 11705,
+   "sourceSha256": "d23daf25a8b4f02387676cf32a78e0da7513f2cbd92de66caffe97d7a4344a54"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -15720,6 +15780,42 @@
    "source": "repo",
    "bytes": 13218,
    "sourceSha256": "41a2b9371d105921173546e8e5a6044b1c5799cfde322ff2ff4e37581b09120e"
+  },
+  {
+   "path": "packages/voxel/README.md",
+   "source": "repo",
+   "bytes": 2963,
+   "sourceSha256": "d2c1a94fe1c770596abd77e83d10b1d8c1280ca313160b89c46411c86e41f698"
+  },
+  {
+   "path": "packages/voxel/package.json",
+   "source": "repo",
+   "bytes": 133,
+   "sourceSha256": "f40a31280146364b63b9565b905bee68a7eb3d657aee3169cda486d7dc376d0d"
+  },
+  {
+   "path": "packages/voxel/src/voxel-forge.js",
+   "source": "repo",
+   "bytes": 22650,
+   "sourceSha256": "497972b37f30cc7537228c8b9fdd3edbafce5dfec1f747c6c9c09e4ada7cc762"
+  },
+  {
+   "path": "packages/voxel/src/voxel.js",
+   "source": "repo",
+   "bytes": 6387,
+   "sourceSha256": "af17569d0f4b9ea03b55f5e57ed5495a67badb8274e73068e2d8e45a3afed42a"
+  },
+  {
+   "path": "packages/voxel/tests/voxel-forge.test.mjs",
+   "source": "repo",
+   "bytes": 8929,
+   "sourceSha256": "7b79453bf131cc7aaeb775351654740cff060f921b16679e1bb5c43fb13bd38a"
+  },
+  {
+   "path": "packages/voxel/tests/voxel.test.mjs",
+   "source": "repo",
+   "bytes": 3577,
+   "sourceSha256": "e809c7368c7fb704423d9ca7c023f19460f08948a3d7e549ad6656a1edbc6859"
   },
   {
    "path": "packages/wavelab/README.md",
