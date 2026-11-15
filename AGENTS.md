@@ -44,8 +44,14 @@ python packages/build_manifest.py --check
 
 - The renderer builds and tests from inside `native/` (`native/README.md`). Its workflows are
   `.github/workflows/native-*.yml` and start only when `native/` changes.
+- **A failing test is fixed, or it stays in the run as a counted expected failure with an issue.**
+  Tests are not moved out of the run, deleted or skipped to get a merge. An expected failure
+  asserts the known failure exactly, carries "(expected failure, issue N" in its name, and
+  turns the run red when the rule starts to hold.
 - Plate bakes and media for Low Water are reproducible and untracked. A test that reads a bake
-  reports as skipped where the bake is absent. A skip is never counted as a pass.
+  reports as skipped where the bake is absent. A skip is never counted as a pass:
+  `npm run test:games` prints the count of skips and expected failures and fails when either
+  kind appears that `games/low-water/tools/skips.json` does not name.
 - The publish gate must pass before anything from a private source lands here: no workstation
   paths, no secrets, and author emails in imported history set to the GitHub noreply address.
 

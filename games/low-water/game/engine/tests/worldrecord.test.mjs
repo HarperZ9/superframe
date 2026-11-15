@@ -20,8 +20,11 @@ function run(storage, cls, { choose = null } = {}) {
   if (choose) { const t = G.talk(choose.node); t.choose(t.beat.options.findIndex((o) => o.label.includes(choose.words))); }
   return { G, W };
 }
-// the witness scene ends the run (end: q.end); its old man's choices are taken first-offered
-const finish = (G) => { const t = G.talk("q.readback"); for (let i = 0; i < 10 && t.beat && t.beat.options; i++) t.choose(0); };
+// The run ends at the node that carries end: q.end. That was era 2's witness scene, reached from q.readback in a few
+// choices. With five eras in the slice it is e5.end, after era 5's last beat (content/quota/e5_end.lwd), and era 2's
+// witness now opens era 3. The node is found by its end: step, so a moved end is followed and a second one fails.
+const ENDS = Object.values(content.book.nodes).filter((n) => (n.steps || []).some((s) => s.kind === "end" && s.value === "q.end")).map((n) => n.id);
+const finish = (G) => { assert.deepEqual(ENDS, ["e5.end"], "one node ends the run"); G.talk(ENDS[0]); };
 
 test("a finished run leaves one entry: class, end, facts, harm, kept variables, the line said", () => {
   const S = memoryStorage(), { G, W } = run(S, "militia", { choose: { node: "q.office.will", words: "tallowmen" } });

@@ -14,11 +14,22 @@ const base = (await loadAct(SLICE, (p) => readFile(p, "utf8"))).sources, text = 
 const content = loadContent(base);
 const game = (cls = "inspector") => { const G = createFullGame({ content, seed: 1 }); G.create({ archetype: cls === "militia" ? "q.will" : "q.ned", enter: false }); G.state.vars.q_class = cls; return G; };
 
+// The slice had one chain when these tests were written. It now carries 23: era 2's q.missing_tomas, the chains of
+// eras 1, 3, 4 and 5 (e1_layers.lwd, e3_layers.lwd, e4_layers.lwd, e5_world.lwd) and the world's (w_lore.lwd).
+// The tests below are about the missing-Tomas chain, so they read that chain; the whole graph's size is pinned too.
+const CHAIN = "q.missing_tomas";
+const chainOnly = (C) => ({ ...C, story: { ...C.story, lore: { ...C.story.lore,
+  fragments: Object.fromEntries(Object.entries(C.story.lore.fragments).filter(([, f]) => f.chain === CHAIN)),
+  chains: { [CHAIN]: C.story.lore.chains[CHAIN] } } } });
+
 test("the missing-Tomas chain loads: eight fragments in three layers and five routes", () => {
-  const L = content.story.lore;
+  const L = content.story.lore, own = Object.values(L.fragments).filter((f) => f.chain === CHAIN);
   assert.deepEqual(content.errors.filter((e) => e.level !== "warn"), []);
-  assert.equal(Object.keys(L.fragments).length, 8);
-  assert.deepEqual([...new Set(Object.values(L.fragments).map((f) => f.layer))].sort(), ["deep", "hidden", "surface"]);
+  assert.equal(own.length, 8);
+  assert.deepEqual([...new Set(own.map((f) => f.layer))].sort(), ["deep", "hidden", "surface"]);
+  const size = {}; for (const id of Object.keys(L.fragments)) { const k = id.split(".")[0]; size[k] = (size[k] || 0) + 1; }
+  assert.deepEqual(size, { q: 8, e1: 6, e3: 9, e4: 9, e5: 12, w: 22 }, "66 fragments over five eras and the world");
+  assert.equal(Object.keys(L.chains).length, 23);
   assert.deepEqual(L.chains["q.missing_tomas"].routes.map((r) => r.rule), ["two-classes", "one-run", "across-runs", "one-run", "one-run"]);
   assert.deepEqual(lintLore(content, text), []);
 });
@@ -87,8 +98,13 @@ test("the played check: orphans, a two-class route one run holds whole, a route 
     { build: "d", cls: "inspector", lore: ["q.lore.bowls", "q.lore.ledger", "q.lore.boots"] },
     { build: "e", cls: "militia", lore: ["q.lore.bowls", "q.lore.cell_log", "q.lore.carry"] },
   ];
-  assert.equal(checkLorePlay(content, good).errors, 0, checkLorePlay(content, good).lines.join(" | "));
-  const res = checkLorePlay(content, [
+  // These five runs are written by hand and hold era 2's fragments only, so the check reads era 2's chain. The
+  // played check over all 23 chains needs real runs: tools/lorecheck.mjs plays them (the ledger's lorecheck row).
+  const one = chainOnly(content);
+  assert.equal(Object.keys(one.story.lore.fragments).length, 8);
+  assert.equal(checkLorePlay(one, good).errors, 0, checkLorePlay(one, good).lines.join(" | "));
+  assert.ok(checkLorePlay(content, good).errors > 0, "the control: the same five runs leave the other 22 chains unplayed, and the whole graph says so");
+  const res = checkLorePlay(one, [
     { build: "a", cls: "inspector", lore: ["q.lore.bowls", "q.lore.ledger", "q.lore.cell_log", "q.lore.stone"] },
   ]).lines.join("\n");
   assert.match(res, /q\.lore\.notebook \(deep\): an orphan/);

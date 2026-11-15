@@ -1,0 +1,44 @@
+{
+ "reason": "plate bake absent",
+ "why": "Plate bakes (geo-pos.f32, geo-id.u8, plate images, place.json under capture/) are renders that take minutes each and stay untracked. These tests read one and skip where it is absent. They run on a checkout that has the bakes. A test may join this list only with an issue that says how it will run.",
+ "skips": {
+  "game/engine/combat/tests/composure.test.mjs": [
+   "e.brawl on the brine plate: no body's edge enters solid ground, and the fight still ends",
+   "e.afterdark on the weigh plate: no body's edge enters solid ground, and the fight still ends"
+  ],
+  "game/engine/combat/tests/plate.test.mjs": [
+   "e.wardens on the quay plate: walkable spawns, walls hold, an outcome",
+   "e.brawl on the brine plate: walkable spawns, walls hold, an outcome",
+   "e.afterdark on the weigh plate: walkable spawns, walls hold, an outcome",
+   "solid ground blocks sight for both sides",
+   "a plate with two fight grounds gives each its own marks (the Gut: gut and dogs)"
+  ],
+  "game/engine/combat/tests/world.test.mjs": [
+   "the painted quay has ledges where the wall drops to the floor"
+  ],
+  "game/engine/fx/tests/fx.test.mjs": [
+   "deterministic in (state, t); off draws nothing; low draws less than high",
+   "tied to state: snow only when it snows, fire marks follow the fire's gain, nothing burns in a dead hearth",
+   "accessibility: reduced motion thins the snow and stops sparks and haze; flicker off steadies the flames",
+   "both forms draw: the painted form changes pixels, the glyph form sets marks"
+  ],
+  "game/engine/fx/tests/more.test.mjs": [
+   "decay is staged by the street's index; notices thicken with the carrier's volume",
+   "combat: a ring only while winding up, blood only for heavy hits and kept to a few drops",
+   "the light in the air is drawn: a shaft by day in a room with a window, the fog layer in fog"
+  ],
+  "game/engine/light/tests/steps.test.mjs": [
+   "the banded build gives the same light as the one-piece build, in short steps"
+  ],
+  "game/engine/tests/cinematic.test.mjs": [
+   "every shot's plate and variant are on disk, and the camera and focus stay on the plate",
+   "every person stands and walks on painted ground: no figure inside a wall or on a roof"
+  ]
+ },
+ "expected": {
+  "game/engine/paint/tests/plates.test.mjs": [
+   "every lock entry's recipe matches the sources, or is marked stale with a reason (expected failure, issue 94: the lock is six pipeline files behind)"
+  ]
+ },
+ "expected_why": "A test whose rule does not hold today stays in the run and asserts its known failure, with its issue in its name. It turns red when the rule starts to hold."
+}
