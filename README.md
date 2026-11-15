@@ -136,7 +136,7 @@ Each library below was written against a pre-registration: the predictions, thre
 npm test
 ```
 
-There are 717 tests. On a clean clone 699 pass and 18 skip: the skipped ones need a render, a light table, the reference library or a native build that this repository does not carry. `npm run test:slow` runs the seven name-art mosaic tests, which take about 100 seconds. The tests cover these properties:
+There are 835 tests. On a clean clone 817 pass and 18 skip: the skipped ones need a render, a light table, the reference library or a native build that this repository does not carry. `npm run test:slow` runs the seven name-art mosaic tests, which take about 100 seconds. The tests cover these properties:
 
 - the same recipe gives the same bytes;
 - an edit changes nothing outside its element's region or its time window, with a control that proves the check can fail;
@@ -163,12 +163,12 @@ The engine was built as one workspace, and its folders keep their working names:
 
 | Folder | What it holds |
 |---|---|
-| `superframe/` | the node interface, graph, converters, CLI, the artifact engine (`lib/artifact/`), the file writers (`lib/formats/`), the finishing core (`lib/look/`) and the measured libraries |
+| `superframe/` | the node interface, graph, converters, CLI, the artifact engine (`lib/artifact/`), the file writers and readers (`lib/formats/`), the finishing core (`lib/look/`) and the measured libraries |
 | `creation/` | the creation engine's laws |
 | `typeengine/`, `typeface/` | living type, the Accession family and the type forge (`typeface/forge/lib/`) |
 | `substrate/` | the seed and receipt contracts |
 | `sound/` | the sound engine: instruments, sequencer, sampler and players in `sound/sound/`, the reference renderer in `sound/reference/` |
-| `packages/` | the instruments under the engine: measured data, materials, renderers, CAD and EDA, kernels, the CRT, the field type, the study tools, the weave, retro and fractal generators, the ear that measures rendered audio, and the site's composed music with its measured instrument voices |
+| `packages/` | the instruments under the engine: measured data, materials, renderers, CAD and EDA, kernels, the CRT, the field type, the study tools, the weave, retro, fractal and voxel generators, the ear that measures rendered audio, and the site's composed music with its measured instrument voices |
 | other folders | the techniques the nodes wrap, each imported unchanged |
 
 `MANIFEST.json` lists every file with the SHA-256 of its source.
