@@ -5,6 +5,8 @@
 
 # gpu-trace-validator
 
+> This tool now lives in The Playground at `packages/quality/gpu-trace-validator`. It moved from `HarperZ9/gpu-trace-validator` at commit `19926bb1` (version 0.2.0) as one commit of the final tree; the earlier history and the two releases stay in that repository, which is archived. From this folder, `python -m pip install -e ".[test]"` and `python -m pytest` work as before. The engine's own test run covers it too: `python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/quality/gpu-trace-validator` from the repository root. Licence for this folder: FSL-1.1-MIT (`LICENSE` here).
+
 Validates GPU trace JSON against a schema, with redacted receipts.
 
 ```
@@ -173,3 +175,15 @@ From v0.2.0, code is licensed FSL-1.1-MIT. Earlier releases remain under MIT. FS
 ---
 
 Built by **[Zain Dana Harper](https://harperz9.github.io)** in Seattle: evidence-first tools that leave a re-checkable artifact behind. The full workbench is at [Project Telos](https://harperz9.github.io).
+
+## BuildLang port candidates
+
+The code is Python and moved unchanged. Each module below is a candidate for a BuildLang port, held to the cases in `tests/` as known answers. Port status: not started.
+
+| Module | What it holds |
+|---|---|
+| `src/gpu_trace_validator/validator.py` | trace loading, schema check, assertion counts, expected failures, the redacted payload |
+| `src/gpu_trace_validator/cli.py` | the `gpu-trace-validator` command |
+| `src/gpu_trace_validator/schemas/gpu_trace.schema.json` | the trace schema (data; a port reads it as it is) |
+| `tools/repo_art.py`, `repo_card.py`, `repo_flow.py`, `render_repo_art.py` | the README artwork, drawn from validator output |
+| `tools/check_repo_art.py`, `check_repo_card.py`, `check_repo_flow.py`, `scripts/check_art_receipts.py` | checks that the artwork matches the validator and the stored digests |

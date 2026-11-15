@@ -37,7 +37,7 @@ def test_bundled_fixtures_match_schema() -> None:
 def test_payload_redacts_trace_and_assertion_fields() -> None:
     synthetic = "ghp_" + ("A" * 36)
     trace = {
-        "trace_id": "C:\\Users\\Zain\\trace.json",
+        "trace_id": "C:\\Users\\someone\\trace.json",
         "events": [
             {
                 "event_type": "assertion",
@@ -45,7 +45,7 @@ def test_payload_redacts_trace_and_assertion_fields() -> None:
                 "frame_id": 1,
                 "assertion": f"token={synthetic}",
                 "verdict": "fail",
-                "provenance": "/Users/zain/private/trace.json",
+                "provenance": "/Users/someone/private/trace.json",
             }
         ],
     }
@@ -55,7 +55,7 @@ def test_payload_redacts_trace_and_assertion_fields() -> None:
 
     assert "ghp_" not in rendered
     assert "C:\\Users" not in rendered
-    assert "/Users/zain" not in rendered
+    assert "/Users/someone" not in rendered
     assert "<redacted>" in rendered
 
 

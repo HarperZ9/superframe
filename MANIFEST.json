@@ -6556,8 +6556,8 @@
   {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 11194,
-   "sourceSha256": "67abf30ee65f6f5702206f0f20034a4a2f476422746a1168c0dd089b8252a5d5"
+   "bytes": 11342,
+   "sourceSha256": "0478d6eba443ac0779666fb3e4180fff28abf7c62c203a11d29c155fefbd9550"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -11638,8 +11638,350 @@
   {
    "path": "packages/quality/README.md",
    "source": "repo",
-   "bytes": 1981,
-   "sourceSha256": "566fd0c16d7034fce03eacea0773774d2b77a8f8c5be2ef9dd00e2a6ead4287f"
+   "bytes": 2609,
+   "sourceSha256": "eda8cfa45938a7d0a682fdedaf134da58ea6da9b75d4b6df06a449b6bf22b6ec"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/.gitattributes",
+   "source": "repo",
+   "bytes": 244,
+   "sourceSha256": "78f0d74e7a170d45a05960f16010b0f7e38bc6dbbcf49e65cef0020fba07ca93"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/.github/assets/banner.png",
+   "source": "repo",
+   "bytes": 289982,
+   "sourceSha256": "52c13aa374a701149f5f74b90c205c43abfefe9488ee85de41670565d43d871b"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/.gitignore",
+   "source": "repo",
+   "bytes": 396,
+   "sourceSha256": "ae762584117b2e0d6c831faaa876390108310f72a5d1eac155c0ad504a411b0c"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/AGENTS.md",
+   "source": "repo",
+   "bytes": 595,
+   "sourceSha256": "24d92acb55954cb43d073957175fb0bbb098d46448be522002918d3622a7391d"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/AUTHORS.md",
+   "source": "repo",
+   "bytes": 16,
+   "sourceSha256": "3a720be365de517fd172f677152abe6ea2f691f33c7853477b465d09a2bf3856"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/CHANGELOG.md",
+   "source": "repo",
+   "bytes": 1178,
+   "sourceSha256": "7e89c9afa6c1710dc2c6e29909d6b0f7bf4155c042f729878b815a9177fc0999"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/CONTRIBUTING.md",
+   "source": "repo",
+   "bytes": 358,
+   "sourceSha256": "8adaf226e4f8a4656cdca03bea95325777106bb5e2826050fc456e5e8ff1496a"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/LICENSE",
+   "source": "repo",
+   "bytes": 4216,
+   "sourceSha256": "5d4abfef8a42cb0b1762662ae9745b01cd729991e60c2fee83d6ea8ee752cb6d"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/README.md",
+   "source": "repo",
+   "bytes": 12352,
+   "sourceSha256": "3fefc639578a48a5a0af3f3aed14f61e224bfcba0312bb33a54fab8de8c026c6"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/RELEASE.md",
+   "source": "repo",
+   "bytes": 581,
+   "sourceSha256": "b8548ccd774456baac107e8da958be6cd8f6f825fb78ca5fb08239ef4b5b6b60"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/USAGE.md",
+   "source": "repo",
+   "bytes": 6832,
+   "sourceSha256": "63ad5af0f8770bf7413490ace2aeb23bd6b55c910e61a8d5d6f019389d0937b2"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/art/expectation-lane.svg",
+   "source": "repo",
+   "bytes": 7259,
+   "sourceSha256": "4d6ecb1b002523d5dd5cee5377b283b3b4e655bee7ec52199f0e231cb9e54bd1"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/art/gpu-trace-validator-header.svg",
+   "source": "repo",
+   "bytes": 43040,
+   "sourceSha256": "d03bbb7519885ac8c912c5faf9ac5825a953857c5a0f711a0ca3f5023dce1edb"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/art/gpu-trace-validator.art.json",
+   "source": "repo",
+   "bytes": 9575,
+   "sourceSha256": "024c5ffdb03aa5a5b1a070f734423343f6ea97fd511143b016bf7686c62424ec"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/art/hero-dark.svg",
+   "source": "repo",
+   "bytes": 69143,
+   "sourceSha256": "fb2efcc7ad86b6fbb6c6ec6f5e2087ab31af163808e34ad7c30a509c538ff81e"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/art/hero-light.svg",
+   "source": "repo",
+   "bytes": 69143,
+   "sourceSha256": "cf74560e21c53fa2e0c414c36edf63ec46e2bf0ff9022b1ae50167e352cc788c"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/art/receipts.json",
+   "source": "repo",
+   "bytes": 17939,
+   "sourceSha256": "b05514433b6f63f6706580de6b3e169eefb7a5916b50c850ffe35eea62746263"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/art/social.png",
+   "source": "repo",
+   "bytes": 289982,
+   "sourceSha256": "52c13aa374a701149f5f74b90c205c43abfefe9488ee85de41670565d43d871b"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/art/status-table.svg",
+   "source": "repo",
+   "bytes": 9168,
+   "sourceSha256": "7b788e4d76eefa11af1a23654fe626c0875c65d594c58239ee85f146538c6f28"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/art/trace-lane.svg",
+   "source": "repo",
+   "bytes": 7167,
+   "sourceSha256": "973e42593e2b738e4395faad317f735ad4aa7e06137307b623f0d9b95a98eceb"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/README.md",
+   "source": "repo",
+   "bytes": 1718,
+   "sourceSha256": "61b33cd31c2b90968b8738986dd1aa8c65786e0a294a39a32d4b0d76fd7499fe"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/lockup-horizontal-dark.svg",
+   "source": "repo",
+   "bytes": 11864,
+   "sourceSha256": "2779db059c4a594fc21bd2fbddeb24ea254805dfcba38631995cba41c211762c"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/lockup-horizontal-light.svg",
+   "source": "repo",
+   "bytes": 11864,
+   "sourceSha256": "55292299b0a7310bc01ee0aa8b40fad41dc251c8ac125e3ce3784ff5b3b67e32"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/lockup-stacked-dark.svg",
+   "source": "repo",
+   "bytes": 12157,
+   "sourceSha256": "4063bc4456c5530b86637c43e1ad498a1aa03c293159cfc5c781e7926650a764"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/lockup-stacked-light.svg",
+   "source": "repo",
+   "bytes": 12157,
+   "sourceSha256": "a919f7089b1adafc44ebdc0445b5129945af3cb020533d22300d42f2bece9d24"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/mark-16.png",
+   "source": "repo",
+   "bytes": 632,
+   "sourceSha256": "ba234d4f482b3ad41b3d2095b2f1ca012edc544e211dc61e308a9893b5d0def5"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/mark-16.svg",
+   "source": "repo",
+   "bytes": 2023,
+   "sourceSha256": "adeb3f145be7610ae8fe466ee8aa86e27ef8cbe153eacd83002a04a6b50d8a21"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/mark-32.png",
+   "source": "repo",
+   "bytes": 1360,
+   "sourceSha256": "0231f3f01fb6093e4551b624b0495945a05dc8e66ad71b244612d3a56af0bef1"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/mark-512.png",
+   "source": "repo",
+   "bytes": 45667,
+   "sourceSha256": "9444dd6caebe4b0685c81472d63b2bf9b6b6db1838075beb0eec522dfdb88970"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/mark-64.png",
+   "source": "repo",
+   "bytes": 3175,
+   "sourceSha256": "867e9f0d3cfc78d1dc601a51eb35f90c7159d35f1ff70b8833b3346520f7cff6"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/mark-dark.svg",
+   "source": "repo",
+   "bytes": 2072,
+   "sourceSha256": "b0304df2deccb4b854882f116dce30f5c8469005f3d6486404608e4302f2569e"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/mark-light.svg",
+   "source": "repo",
+   "bytes": 2072,
+   "sourceSha256": "577b5db39e10d72d4ab817860bdb6d071603e92146d15db817150d0d1d1b3ed4"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/brand/mark-tile.svg",
+   "source": "repo",
+   "bytes": 2127,
+   "sourceSha256": "dfe840302e32ac4da2fc896b16169483205fa2d9d02bbc574477cb898cf5379a"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/explainer/README.md",
+   "source": "repo",
+   "bytes": 639,
+   "sourceSha256": "e8957f04d81dabfb890f0ef1ee5f0ba7769dfb99a2b81b8a1b2bef39aefb436e"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/docs/explainer/index.html",
+   "source": "repo",
+   "bytes": 35684,
+   "sourceSha256": "e17bcd37b417eeaf7657faa926e301a76dc4de48f3927a905d8230df52c5f452"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/examples/demo.py",
+   "source": "repo",
+   "bytes": 2916,
+   "sourceSha256": "6a4464a4ea7822bace3c9c64cabc42519692fa9d6948c09f03ac4eb9c2c402e8"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/pyproject.toml",
+   "source": "repo",
+   "bytes": 1059,
+   "sourceSha256": "b4562d1efbb875b9e51d441724e92dbbcef203a48fe39d20c85b88a5de50d538"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/scripts/check_art_receipts.py",
+   "source": "repo",
+   "bytes": 1835,
+   "sourceSha256": "af3b993479184c93b8b2c18babdce5efbce5a87052c79ecb4654ba6668da82c8"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/src/gpu_trace_validator/__init__.py",
+   "source": "repo",
+   "bytes": 164,
+   "sourceSha256": "f84761492c88cdbe6c030fcce306abf6e9e609071f3396dd5b7514564d536b6c"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/src/gpu_trace_validator/__main__.py",
+   "source": "repo",
+   "bytes": 79,
+   "sourceSha256": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/src/gpu_trace_validator/cli.py",
+   "source": "repo",
+   "bytes": 1924,
+   "sourceSha256": "7a69e06df4737caeb6d49497443cd80fb9f87fde911a811d3c8307a19900c42d"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/src/gpu_trace_validator/schemas/gpu_trace.schema.json",
+   "source": "repo",
+   "bytes": 2659,
+   "sourceSha256": "b2a1240d706b8af85598342c4bd99f353c3db034832635c133f0950d2ad2f52e"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/src/gpu_trace_validator/validator.py",
+   "source": "repo",
+   "bytes": 3983,
+   "sourceSha256": "946c89ca4c0db360698fe3e7c1825f04187c0ff3f3dff95014cb31ca3a103dff"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tests/conftest.py",
+   "source": "repo",
+   "bytes": 646,
+   "sourceSha256": "793b58cac0e7511fca478cdf09c74f8ead4279adc5df98d255c316f3fa05b5dc"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tests/fixtures/trace_fail.json",
+   "source": "repo",
+   "bytes": 1038,
+   "sourceSha256": "101d886dd6f4db448767743ed3139657166a0477ab88df10ca7b9c1bc0424105"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tests/fixtures/trace_pass.json",
+   "source": "repo",
+   "bytes": 658,
+   "sourceSha256": "b543ad41e7f4ec32c06d58dd7cdb7eead1ef8edf0eeb6d1cc019e748d3634d8e"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tests/test_gpu_trace_validator.py",
+   "source": "repo",
+   "bytes": 3109,
+   "sourceSha256": "4b383f48a4a55ed94025ec1b3bc56bd157405261bbbaf6486cedae0ed8ebe61f"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tests/test_repo_art.py",
+   "source": "repo",
+   "bytes": 3278,
+   "sourceSha256": "09de1957fd5d78e64efc7252b1459a2b2ed12f43632beec8ad1337b59c6b56b5"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tests/test_repo_art_bindings.py",
+   "source": "repo",
+   "bytes": 12706,
+   "sourceSha256": "dfe7cf38850f2124b10dd8b787d724c4ec2eeda0e1e9d4b8f2ae3c8304392ac4"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tools/check_repo_art.py",
+   "source": "repo",
+   "bytes": 10162,
+   "sourceSha256": "15b32dec208878bd41d6435c05b82842324634f3c651265bae09b08dcde7a911"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tools/check_repo_card.py",
+   "source": "repo",
+   "bytes": 12873,
+   "sourceSha256": "f2dcf85e7e62dabff63397cde240cecc32b68c40f597fa36d83779b93bdd0fec"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tools/check_repo_flow.py",
+   "source": "repo",
+   "bytes": 3217,
+   "sourceSha256": "0276611e159b49ab7505e1dcf5eb063369968c3790ff6dfd161d1b7e21bd7a80"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tools/face-metrics.json",
+   "source": "repo",
+   "bytes": 10310,
+   "sourceSha256": "e263e97f895ef2e476dbddb19efed15e5f0d58b7e5695c29c1ab57f5cd9c9192"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tools/render_repo_art.py",
+   "source": "repo",
+   "bytes": 2844,
+   "sourceSha256": "8d378fac05357ae0fb225c8593b4c22162f72e5d3ca17f91ad0c6c16fe1c63a2"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tools/repo_art.py",
+   "source": "repo",
+   "bytes": 13666,
+   "sourceSha256": "d702f90c3a90610a7f7a5ce4504b93939a5791abca8e42bd2a5f765d1bcd0a3d"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tools/repo_card.py",
+   "source": "repo",
+   "bytes": 9371,
+   "sourceSha256": "be0353ad662a9b49964fc16acc4b4dd3cbab4eddf55367da2e5cd820e5d52adb"
+  },
+  {
+   "path": "packages/quality/gpu-trace-validator/tools/repo_flow.py",
+   "source": "repo",
+   "bytes": 7571,
+   "sourceSha256": "7763bc8ddd21d820dca893545115bb43d4b041160b1c709b580f65747d7fd749"
   },
   {
    "path": "packages/quality/quality/__init__.py",
