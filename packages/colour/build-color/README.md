@@ -6,6 +6,8 @@
 
 # build-color
 
+> This library now lives in The Playground at `packages/colour/build-color`. It moved from `HarperZ9/build-color` at commit `b67fd02a` (version 1.0.2) as one commit of the final tree; the earlier history and the release tags stay in that repository. The package name on PyPI, the import name `build_color` and the `build-color` command are unchanged, and `pip install build-color` installs the same 1.0.2. From this folder, `python -m pip install -e ".[all,dev]"` and `pytest tests/` work as before. The engine's own test run covers it too: `python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/colour` from the repository root. Licence for this folder: FSL-1.1-MIT (`LICENSE` here).
+
 Color math for Python, with a command line and an optional desktop workbench.
 Convert between sRGB, Oklab, CIELAB, JzAzBz, ICtCp and the wide-gamut RGB
 spaces. Tone map HDR values with twelve operators, encode and decode PQ and HLG,
@@ -241,3 +243,23 @@ All rights reserved. See [LICENSE](LICENSE).
 Built by **[Zain Dana Harper](https://harperz9.github.io)** in Seattle.
 
 Other projects: [Project Telos](https://harperz9.github.io) | [gather](https://github.com/HarperZ9/gather) | [crucible](https://github.com/HarperZ9/crucible) | [index](https://github.com/HarperZ9/index) | [forum](https://github.com/HarperZ9/forum) | [telos](https://github.com/HarperZ9/telos) | [emet](https://github.com/HarperZ9/emet) | [buildlang](https://github.com/HarperZ9/buildlang)
+
+## BuildLang port candidates
+
+The code is Python and moved unchanged. Each module below is a candidate for a BuildLang port, held to the cases in `tests/` as known answers. Port status: not started. `packages/colourmix` already holds colour kernels in BuildLang (the Mayer, Lambert and Benson mixing systems, with RGB space and transfer modules); a port of `spaces.py` should start from its `rgbspace.bld` and `transfer.bld`.
+
+| Module | What it holds |
+|---|---|
+| `build_color/spaces.py` | sRGB, Oklab, CIELAB, JzAzBz, ICtCp and the wide-gamut RGB spaces; PQ and HLG |
+| `build_color/adaptation.py` | chromatic adaptation, nine methods |
+| `build_color/appearance.py` | CIECAM02 and CAM16 |
+| `build_color/difference.py` | seven Delta E metrics |
+| `build_color/tonemap.py` | twelve HDR tone-mapping operators |
+| `build_color/gamut.py` | gamut tests and gamut mapping |
+| `build_color/spectral.py` | spectra to tristimulus values |
+| `build_color/blindness.py` | colour-vision deficiency simulation |
+| `build_color/harmony.py`, `naming.py` | palettes and colour names |
+| `build_color/icc.py`, `lut_io.py` | ICC display profiles, `.cube` and CLF LUT files |
+| `build_color/image_io.py`, `image_analysis.py` | image reading and image colour statistics |
+| `build_color/cli.py` | the `build-color` command |
+| `build_color/gui/` | the PyQt6 workbench (untested in CI, as before) |

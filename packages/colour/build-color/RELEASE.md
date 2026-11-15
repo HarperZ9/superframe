@@ -10,7 +10,7 @@ normalization.
 - `python -m pytest -q`
 - `python -m build`
 - `python -m twine check dist/*`
-- `PYTHONPATH=C:\dev\public\public-surface-sweeper\src python -m public_surface_sweeper . --summary`
+- `PYTHONPATH=<public-surface-sweeper checkout>/src python -m public_surface_sweeper . --summary`
 - `git diff --check`
 
 ## Artifacts
