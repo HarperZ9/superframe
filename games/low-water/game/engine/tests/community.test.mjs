@@ -24,11 +24,18 @@ function report(G, cls, figure) {
   t.choose(i); return t;
 }
 
-test("the model loads: three streets and a village row, three households, the eight rules of the brief, a carrier, no errors", () => {
+test("the model loads: three streets and a village row, era 2's three households among the fourteen of five eras, the eight rules of the brief, a carrier, no errors", () => {
   assert.deepEqual(content.errors.filter((e) => e.level !== "warn"), []);
   const M = content.community;
   assert.deepEqual(Object.keys(M.streets).sort(), ["haldane_yard", "hollow", "mill", "square"]); // hollow: the next village over, one row
-  assert.deepEqual(Object.keys(M.households).sort(), ["brack", "furrowe", "haldane"]);
+  // The slice was one day of era 2 when this was written, with three households. slice.lwd now includes eras 1, 3, 4
+  // and 5 (design/eras/INDEX.md), and each era's world file declares the households its fates press (e1_world.lwd,
+  // e3_world.lwd, e4_world.lwd, e5_world.lwd). Era 2's three are pinned as before; the whole list is pinned as well,
+  // so a household added or dropped in any era fails here.
+  const era = (id) => (/^e(\d)_/.exec(id) || [null, "2"])[1];
+  assert.deepEqual(Object.keys(M.households).filter((h) => era(h) === "2").sort(), ["brack", "furrowe", "haldane"]);
+  assert.deepEqual(Object.keys(M.households).sort(), ["brack", "e1_sallis", "e1_tesk", "e3_prayer", "e3_sallis", "e3_sholl", "e4_lew", "e4_row", "e4_saro",
+    "e5_haldane", "e5_record", "e5_saro", "furrowe", "haldane"]);
   assert.deepEqual(M.households.brack.members, ["Will", "Edie", "Davey"]);
   for (const r of ["R2", "R3", "R4", "R5", "R8", "R9", "R11", "R17"]) assert.ok(M.rules.some((x) => x.id === r), r);
   assert.ok(M.carriers.notices);
@@ -71,7 +78,19 @@ test("the record keeps each event's victim, street and the player's own words, a
   assert.ok(rep && rep.victim === "haldane" && rep.street === "haldane_yard");
   assert.ok(ev.some((e) => e.type === "blame.people"));
   assert.ok(rep.source && /Hesh/.test(rep.source.words) && rep.source.node === "q.office.ned", JSON.stringify(rep.source));
-  assert.ok(G.reckoning.log().some((l) => /lied\.figure@haldane\/haldane_yard$/.test(l)), G.reckoning.log().join(" | "));
+  // Until 2026-10-22 the office's outcome nodes set lied.figure, and this test read the gap it opened. The story lead
+  // cut the flag that day with two others no line read: "lied.figure, because q_figure carries it" (PROGRESS.md step
+  // 192). The lie is now kept as the figure, which the world record carries on (world-keep in slice.lwd). The rule in
+  // this test's name is the engine's (rules/reckoning.mjs): a lied.* flag set in the beat of a record event opens a
+  // gap that names the event's household and street. No scene sets one now, so the event and the flag are made here
+  // in one beat, as the outcome node made them.
+  assert.equal(G.state.vars.q_figure, "blamed", "the figure carries the lie");
+  assert.deepEqual(G.state.flags.filter((f) => f.startsWith("lied.")), [], "no scene of the slice sets a lied.* flag; one that does brings its own assertion here");
+  const near = game(); near.community.record("report.figure", "haldane", "haldane_yard"); near.setFlag("lied.figure", true);
+  assert.ok(near.flag("gap.lied"));
+  assert.ok(near.reckoning.log().some((l) => /lied\.figure@haldane\/haldane_yard$/.test(l)), near.reckoning.log().join(" | "));
+  const far = game(); far.setFlag("lied.figure", true);
+  assert.ok(far.reckoning.log().some((l) => /lied\.figure$/.test(l)), "the control: a lie with no record event beside it names nobody");
 });
 
 test("class gating: each line has its own morning and its own road", () => {
