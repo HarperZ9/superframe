@@ -1,0 +1,175 @@
+{
+ "place": "weighoffice",
+ "version": 2,
+ "width": 1000,
+ "height": 750,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 32,
+  "target": [
+   -0.3,
+   0.8,
+   -0.4
+  ],
+  "dist": 25,
+  "ortho": true,
+  "scale": 2.8846153846153846
+ },
+ "pxPerMetre": 130,
+ "near": 0.5208,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 23.5,
+   "weather": "the yard's sodium through the window; otherwise dark"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "blotter",
+    "verb": "read",
+    "at": [
+     -0.4,
+     0,
+     -0.4
+    ],
+    "note": "the green blotter, the last hand pressed into it"
+   },
+   {
+    "id": "drawer",
+    "verb": "use",
+    "at": [
+     0.3,
+     0,
+     -0.35
+    ],
+    "note": "the drawer marked BOARD, WORKS"
+   },
+   {
+    "id": "desk",
+    "verb": "use",
+    "at": [
+     -0.9,
+     0,
+     -0.4
+    ],
+    "note": "the desk: the lantern on it, or low under it"
+   },
+   {
+    "id": "ledger",
+    "verb": "read",
+    "at": [
+     -1.3,
+     0,
+     -0.3
+    ],
+    "note": "the red ledgers: the town balance ledger among them"
+   },
+   {
+    "id": "window",
+    "verb": "read",
+    "at": [
+     -0.4,
+     0,
+     -1
+    ],
+    "note": "by the window's orange"
+   }
+  ],
+  "hides": [
+   {
+    "id": "under_desk",
+    "at": [
+     -0.4,
+     0,
+     -1.1
+    ],
+    "r": 0.35,
+    "note": "low under the desk"
+   }
+  ],
+  "exits": [
+   {
+    "id": "window",
+    "at": [
+     -0.4,
+     0,
+     -1.4
+    ],
+    "note": "the window onto the yard, the way Shadow comes in"
+   },
+   {
+    "id": "tube",
+    "at": [
+     -1.7,
+     0,
+     0.6
+    ],
+    "note": "through to the tube room"
+   }
+  ],
+  "lamps": [
+   {
+    "id": "desk_lantern",
+    "at": [
+     -0.6,
+     0.8,
+     -1.1
+    ],
+    "note": "the lantern Lamb sets on the desk (run-time light)"
+   }
+  ]
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -0.4,
+     1.6,
+     -2.55
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 6,
+    "group": "sodium"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "Window at -z over the desk, the tube room's door at -x. Gorm and Hobb are drawn by the game."
+}

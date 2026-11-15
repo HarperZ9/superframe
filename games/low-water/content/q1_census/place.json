@@ -1,0 +1,274 @@
+{
+ "place": "q1_census",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 34,
+  "target": [
+   0.2,
+   1.1,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.7142857142857144
+ },
+ "pxPerMetre": 175,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "morning",
+  "work"
+ ],
+ "variantInfo": {
+  "morning": {
+   "hour": 9.4,
+   "weather": "harvest, 09:20: warm morning light from the square, the door propped, the lamp not lit"
+  },
+  "work": {
+   "hour": 12,
+   "weather": "a flat work light for judging build stages: no sun, a strong even fill"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26,
+  50,
+  90,
+  93,
+  92
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "counter",
+    "verb": "read",
+    "at": [
+     0.3,
+     0,
+     0.9
+    ],
+    "note": "the counter: where a man gives his name and has another written"
+   },
+   {
+    "verb": "read",
+    "id": "rule",
+    "at": [
+     2.9,
+     0,
+     -0.45
+    ],
+    "note": "the residency rule over the clerk's desk, in Edwin Mott's round hand"
+   },
+   {
+    "verb": "read",
+    "id": "slips",
+    "at": [
+     1.2,
+     0,
+     0.85
+    ],
+    "note": "the copy slips on the counter: the sevens have no bar"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     -2.4,
+     0,
+     0.95
+    ],
+    "note": "the street door, propped open on the morning"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "morning": [
+   {
+    "at": [
+     -1.2,
+     1.6,
+     0.05
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 6,
+    "group": "pool"
+   },
+   {
+    "at": [
+     -0.1,
+     1.6,
+     0.05
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 6,
+    "group": "pool"
+   },
+   {
+    "at": [
+     1,
+     1.6,
+     0.05
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 6,
+    "group": "pool"
+   },
+   {
+    "at": [
+     2.1,
+     1.6,
+     0.05
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 6,
+    "group": "pool"
+   }
+  ],
+  "work": [
+   {
+    "at": [
+     -1.2,
+     1.6,
+     0.05
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 6,
+    "group": "pool"
+   },
+   {
+    "at": [
+     -0.1,
+     1.6,
+     0.05
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 6,
+    "group": "pool"
+   },
+   {
+    "at": [
+     1,
+     1.6,
+     0.05
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 6,
+    "group": "pool"
+   },
+   {
+    "at": [
+     2.1,
+     1.6,
+     0.05
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 6,
+    "group": "pool"
+   },
+   {
+    "at": [
+     -1.3,
+     1.14,
+     0.05
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 5,
+    "group": "lantern"
+   }
+  ]
+ },
+ "figureLights": {
+  "morning": [
+   {
+    "at": [
+     1.2,
+     2.4,
+     2.6
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 9,
+    "figure": true
+   },
+   {
+    "at": [
+     -2.6,
+     1.8,
+     0.4
+    ],
+    "kind": "white",
+    "I": 4,
+    "reach": 7,
+    "figure": true
+   }
+  ],
+  "work": [
+   {
+    "at": [
+     1.2,
+     2.4,
+     2.6
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 9,
+    "figure": true
+   },
+   {
+    "at": [
+     -2.6,
+     1.8,
+     0.4
+    ],
+    "kind": "white",
+    "I": 4,
+    "reach": 7,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 1: the registrar's front counter, the census."
+}

@@ -1,0 +1,162 @@
+{
+ "place": "q3w_far_bank",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   1,
+   -0.4
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 3.25
+ },
+ "pxPerMetre": 200,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 15,
+   "weather": "year 46, 15:00: a grey afternoon through the big window, the tube off, the town across the river"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "bowl",
+    "verb": "read",
+    "at": [
+     0.4,
+     0,
+     0.9
+    ],
+    "note": "the stamped relief bowl, kept 26 years"
+   },
+   {
+    "id": "window",
+    "verb": "look",
+    "at": [
+     -0.2,
+     0,
+     -1.1
+    ],
+    "note": "the window: the town across the river, the old roofs"
+   },
+   {
+    "verb": "read",
+    "id": "service_paper",
+    "at": [
+     -1.5,
+     0,
+     0.8
+    ],
+    "note": "Aaron's long-service paper, framed"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "stair",
+    "at": [
+     2,
+     0,
+     1.5
+    ],
+    "note": "the estate stair"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": [
+   {
+    "at": [
+     -0.2,
+     1.6,
+     -1.7
+    ],
+    "kind": "white",
+    "I": 0,
+    "reach": 1,
+    "group": "tube"
+   },
+   {
+    "at": [
+     -0.2,
+     1.55,
+     -1.65
+    ],
+    "kind": "paraffin",
+    "I": 26,
+    "reach": 9,
+    "group": "window"
+   },
+   {
+    "at": [
+     -0.2,
+     1.45,
+     -1.62
+    ],
+    "kind": "white",
+    "I": 3,
+    "reach": 6,
+    "group": ""
+   }
+  ]
+ },
+ "figureLights": {
+  "afternoon": [
+   {
+    "at": [
+     0.4,
+     2,
+     1
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 8,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 3, the witness: Aaron's estate kitchen on the far bank at year 46."
+}

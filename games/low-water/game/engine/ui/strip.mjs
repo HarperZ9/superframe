@@ -47,6 +47,8 @@ const fmt = (v) => (Math.abs(v - Math.round(v)) < 0.05 ? String(Math.round(v)) :
 const minus = (v) => `−${fmt(v)}`;
 
 export function fightStrip(dock, { G, W, title = "" }) {
+  // @meta numbers: off (The Quota, 2026-10-22): the bars carry it; no numerals and no damage figures on screen
+  const quiet = !!(G && G.book && G.book.meta && G.book.meta.numbers === "off");
   const L0 = W.lamb(), lambId = L0 ? L0.id : "lamb";
   const stand = notchRow(), breath = notchRow(), comp = notchRow(".comp.small");
   const vStand = h("span.v"), vBreath = h("span.v"), vComp = h("span.v");
@@ -70,7 +72,7 @@ export function fightStrip(dock, { G, W, title = "" }) {
     const L = W.lamb();
     if (L) {
       stand.set(L.hp, L.hpMax); breath.set(L.st, L.stMax); comp.set(L.composure || 0, Math.max(1, L.composureMax || 0));
-      vStand.textContent = fmt(Math.max(0, L.hp)); vBreath.textContent = fmt(Math.max(0, L.st)); vComp.textContent = fmt(L.composure || 0);
+      if (!quiet) { vStand.textContent = fmt(Math.max(0, L.hp)); vBreath.textContent = fmt(Math.max(0, L.st)); vComp.textContent = fmt(L.composure || 0); }
       if (winded && L.st >= 1) { winded = false; breath.el.classList.remove("wind"); }
     }
     for (const F of W.fighters) {
@@ -95,10 +97,10 @@ export function fightStrip(dock, { G, W, title = "" }) {
   function event(type, e = {}) {
     switch (type) {
       case "hit":
-        if (isLamb(e.id)) { x(`Struck  ${minus(e.dmg || 0)}`); bump("jolt"); }
-        else if (isLamb(e.by)) x(`${e.move && /riposte/.test(e.move) ? "Riposte" : e.armor ? "Through their guard" : "Landed"}  ${minus(e.dmg || 0)}`);
+        if (isLamb(e.id)) { if (!quiet) x(`Struck  ${minus(e.dmg || 0)}`); bump("jolt"); }
+        else if (isLamb(e.by)) x(`${e.move && /riposte/.test(e.move) ? "Riposte" : e.armor ? "Through their guard" : "Landed"}${quiet ? "" : `  ${minus(e.dmg || 0)}`}`);
         break;
-      case "block": if (isLamb(e.id)) { x(`Blocked  ${minus(e.cost || 0)} Breath`); bump("jolt"); } else if (isLamb(e.by)) x(`${foeName(e.id)} blocked`); break;
+      case "block": if (isLamb(e.id)) { x(quiet ? "Blocked" : `Blocked  ${minus(e.cost || 0)} Breath`); bump("jolt"); } else if (isLamb(e.by)) x(`${foeName(e.id)} blocked`); break;
       case "guardbreak": if (isLamb(e.id)) { x("Guard broken"); bump("jolt"); } else if (isLamb(e.by)) x("Their guard broke"); break;
       case "parry": if (isLamb(e.id)) { x("Caught: strike now"); bump("lift"); } else if (isLamb(e.by)) x(`${foeName(e.id)} caught it`); break;
       case "evade": if (isLamb(e.id)) x("Slipped it"); break;

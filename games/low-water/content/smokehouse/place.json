@@ -1,0 +1,183 @@
+{
+ "place": "smokehouse",
+ "version": 2,
+ "width": 2000,
+ "height": 1700,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 30,
+  "target": [
+   0,
+   1.6,
+   0
+  ],
+  "dist": 25,
+  "ortho": true,
+  "scale": 4.722222222222222
+ },
+ "pxPerMetre": 180,
+ "near": 1.0417,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night",
+  "late"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 1.5,
+   "weather": "Shadwell awake: the pit of oak chips glowing red under the racks"
+  },
+  "late": {
+   "hour": 3.5,
+   "weather": "03:30: Shadwell asleep on the sack, the fire low"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "fire_door",
+    "verb": "wait",
+    "at": [
+     1.9,
+     0,
+     0.9
+    ],
+    "note": "stand in the heat by the fire-door and dry out"
+   },
+   {
+    "id": "soot_board",
+    "verb": "read",
+    "at": [
+     1.6,
+     0,
+     -1.4
+    ],
+    "note": "the whitewashed board by the door where Shadwell reads the hour"
+   },
+   {
+    "id": "fish_of_year",
+    "verb": "smell",
+    "at": [
+     0.9,
+     0,
+     0.2
+    ],
+    "note": "the fish of the year on its hook"
+   },
+   {
+    "id": "box",
+    "verb": "wait",
+    "at": [
+     0.9,
+     0,
+     -0.5
+    ],
+    "note": "the fish box under the fish, where Marrow sits"
+   },
+   {
+    "id": "sack",
+    "verb": "use",
+    "at": [
+     -1.4,
+     0,
+     1.2
+    ],
+    "note": "the corner sack where Shadwell sleeps; curing salt"
+   }
+  ],
+  "hides": [
+   {
+    "id": "under_racks",
+    "at": [
+     -1.6,
+     0,
+     -0.6
+    ],
+    "r": 0.5,
+    "note": "in the smoke under the racks"
+   }
+  ],
+  "exits": [
+   {
+    "id": "lane",
+    "at": [
+     2.2,
+     0,
+     0.9
+    ],
+    "note": "the fire-door to the lane"
+   },
+   {
+    "id": "hall",
+    "at": [
+     -0.6,
+     0,
+     -1.7
+    ],
+    "note": "the back door into the Guild hall"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -0.2,
+     0.7,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 12,
+    "reach": 7,
+    "group": "fire"
+   }
+  ],
+  "late": [
+   {
+    "at": [
+     -0.2,
+     0.7,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 5.4,
+    "reach": 7,
+    "group": "fire"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "Fire-door to the lane at +x, the back door to the hall at -z. Shadwell and Marrow are drawn by the game."
+}

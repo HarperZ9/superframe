@@ -5,9 +5,10 @@
 import { Mesh, bind, tube } from "../rig/body.mjs";
 import { torso, skirt, legs, arms, head, prop, propBlob, J, add, mid } from "./parts.mjs";
 import { toolOf } from "./tools.mjs";
+import { headPalette } from "../forge/heads.cast.mjs";
 
 export const P = { h: 2.1, leg: 0.55, head: 0.26, neck: 0.18, shoulder: 0.18, hip: 0.11, arm: 0.86, stoop: 0 };
-export const palette = { skin: { c: [0.66, 0.68, 0.66], v: 0.62 }, coatIn: { c: [0.08, 0.1, 0.16], v: 0.12 } };
+export const palette = { coatIn: { c: [0.08, 0.1, 0.16], v: 0.12 }, ...headPalette("keel") };   // the head sheet owns the skin
 export const info = { coat: { kg: 4, stiff: 0.2 }, name: "Keel", tool: "hands", offhand: "trumpet", bladeR: 0.05, radius: 0.3, drip: ["handL", "handR", "head"] };
 
 export function build({ lod = "far", tool = "hands" } = {}) {
@@ -17,8 +18,8 @@ export function build({ lod = "far", tool = "hands" } = {}) {
   legs(M, B, P, { r: 0.07, mat: "navy", boot: "boot", bootTop: 0.3 });
   arms(M, B, P, { r: 0.062, mat: "navy", cuff: "navy", handR: 0.054 });
   for (let k = 0; k < 6; k++) propBlob(M, B, k < 3 ? "chest" : "spine", [0, 0.12 - (k % 3) * 0.11, 0.135], [0.012, 0.012, 0.008], "brass", { rings: 4, seg: 8 });
-  propBlob(M, B, "neck", [0, 0.0, 0.0], [0.085, 0.07, 0.08], "navy", { rings: 6, seg: 16 });   // buttoned to the throat
-  head(M, B, P, { cell, r: 0.13, neck: 0.05, nose: [0.06, 0.02, 0.2, 0], hair: "none", jaw: 1.25, chin: 1.4, lids: 0.5, mouth: 0.7 });
+  // the standing collar buttoned to the throat is the head sheet's (forge/heads.cast.mjs)
+  head(M, B, P, { id: "keel", cell, r: 0.13, neck: 0.05, nose: [0.06, 0.02, 0.2, 0], hair: "none", jaw: 1.25, chin: 1.4, lids: 0.5, mouth: 0.7 });
   // the peaked cap: crown, band, the peak out front, the badge
   M.begin("hat"); const hd = J(B, "head"), W = { head: 1 };
   tube(M, [{ c: add(hd, [0, 0.19, 0.0]), rx: 0.135, rz: 0.14, w: W }, { c: add(hd, [0, 0.26, 0.0]), rx: 0.14, rz: 0.145, w: W }, { c: add(hd, [0, 0.31, -0.01]), rx: 0.17, rz: 0.17, w: W }], { mat: mid("navy"), seg: 20 });

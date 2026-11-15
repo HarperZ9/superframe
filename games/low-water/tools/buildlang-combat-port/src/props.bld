@@ -1,0 +1,316 @@
+// sim/props.mjs (lamps, sluices, snares) and sim/projectiles.mjs.
+
+fn interact(w: &mut World, fi: usize) {
+    let f = w.fighters[fi];
+    let mut best: i64 = -1;
+    let mut bd = 1.0 / 0.0;
+    let mut i = 0;
+    // the nearest usable prop in reach (a stable sort's first, by distance)
+    while i < w.props.len() {
+        let p = w.props[i];
+        let usable = if p.kind == "lamp" { p.on } else if p.kind == "sluice" { !p.open } else { false };
+        if p.has_x && dhypot(p.x - f.x, p.z - f.z) <= 1.4 && usable {
+            let d = dhypot(p.x - f.x, p.z - f.z);
+            if d < bd {
+                bd = d;
+                best = i as i64;
+            }
+        }
+        i += 1;
+    }
+    if best < 0 {
+        let mut ev = new_ev(w, "interact");
+        ev_str(&mut ev, "id", f.id);
+        ev_raw(&mut ev, "prop", "null");
+        ev.id = f.id;
+        emit(w, ev);
+        return;
+    }
+    let pi = best as usize;
+    let p = w.props[pi];
+    if p.kind == "lamp" {
+        if p.light >= 0.0 && (p.light as usize) < w.arena.lights.len() {
+            w.arena.lights[p.light as usize].off = true;
+        }
+        w.props[pi].on = false;
+        let mut ev = new_ev(w, "lightcut");
+        ev_str(&mut ev, "id", f.id);
+        ev_num(&mut ev, "prop", p.n);
+        ev_num(&mut ev, "x", p.x);
+        ev_num(&mut ev, "z", p.z);
+        ev.id = f.id;
+        emit(w, ev);
+    }
+    if p.kind == "sluice" {
+        w.props[pi].open = true;
+        w.props[pi].has_at = true;
+        w.props[pi].at = (w.tick as f64) + 40.0;
+        let mut ev = new_ev(w, "sluice");
+        ev_str(&mut ev, "id", f.id);
+        ev_num(&mut ev, "prop", p.n);
+        ev_num(&mut ev, "frames", 40.0);
+        ev.id = f.id;
+        emit(w, ev);
+    }
+}
+
+fn step_props(w: &mut World) {
+    let mut i = 0;
+    while i < w.props.len() {
+        let p = w.props[i];
+        if p.kind == "sluice" && p.open && p.has_at && p.at == (w.tick as f64) {
+            surge(w, i);
+        }
+        if p.kind == "snare" && w.props[i].armed {
+            snare(w, i);
+        }
+        i += 1;
+    }
+}
+
+fn surge(w: &mut World, pi: usize) {
+    let p = w.props[pi];
+    w.floods.push(Flood { z0: p.zone[0], z1: p.zone[1], z2: p.zone[2], z3: p.zone[3], add: p.rise });
+    let mut ev = new_ev(w, "surge");
+    ev_num(&mut ev, "prop", p.n);
+    emit(w, ev);
+    let mut sh = new_ev(w, "shake");
+    ev_num(&mut sh, "amp", 0.5);
+    ev_num(&mut sh, "frames", 20.0);
+    emit(w, sh);
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        let in_zone = f.x >= p.zone[0] && f.x <= p.zone[2] && f.z >= p.zone[1] && f.z <= p.zone[3];
+        if !(f.out || f.fallen || !in_zone) {
+            w.fighters[i].hp = maxf(0.0, f.hp - 0.5);
+            let d = w.defs[i];
+            let light = d.load == "light" || d.style == "skirmisher";
+            if f.team != "lamb" && light && depth_at(w, f.x, f.z) >= 0.85 {
+                w.fighters[i].hp = 0.0;
+                start_move(w, i, "fall", empty_inp(), false, 0.0);
+                let mut e = new_ev(w, "swept");
+                ev_str(&mut e, "id", f.id);
+                e.id = f.id;
+                emit(w, e);
+            } else if w.fighters[i].hp <= 0.0 {
+                start_move(w, i, "fall", empty_inp(), false, 0.0);
+                let mut e = new_ev(w, "fall");
+                ev_str(&mut e, "id", f.id);
+                ev_str(&mut e, "by", "sluice");
+                e.id = f.id;
+                e.by = "sluice";
+                emit(w, e);
+            } else {
+                start_move(w, i, "knockdown", empty_inp(), false, 0.0);
+                let mut e = new_ev(w, "knockdown");
+                ev_str(&mut e, "id", f.id);
+                ev_str(&mut e, "by", "sluice");
+                e.id = f.id;
+                e.by = "sluice";
+                emit(w, e);
+            }
+        }
+        i += 1;
+    }
+}
+
+fn snare(w: &mut World, pi: usize) {
+    let p = w.props[pi];
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        if !(f.team == "lamb" || f.out || f.fallen || f.hp <= 0.0 || dist_xy(f.x, f.z, p.x, p.z) > 0.7) {
+            w.props[pi].armed = false;
+            start_move(w, i, "snared", empty_inp(), false, 0.0);
+            w.fighters[i].aware = true;
+            let mut e = new_ev(w, "snared");
+            ev_str(&mut e, "id", f.id);
+            ev_num(&mut e, "prop", p.n);
+            e.id = f.id;
+            emit(w, e);
+            return;
+        }
+        i += 1;
+    }
+}
+
+// sim/projectiles.mjs
+fn thrown_move(m: Move) -> Move {
+    let p = m.proj;
+    let mut t = m;
+    t.id = format!("thrown:{}", m.item_use);
+    t.dmg = p.dmg;
+    t.poise = p.poise;
+    t.knock = p.knock;
+    t.hitstop = p.hitstop;
+    t.shake = p.shake;
+    t.parryable = p.parryable;
+    t.blockable = p.blockable;
+    t.knockdown = p.knockdown;
+    t.blind = p.blind;
+    t.snare = p.snare;
+    t.guard_break = false;
+    t.shove = false;
+    t.grapple = false;
+    t.toward = "";
+    t.pierce = false;
+    t.takedown = false;
+    t.through = false;
+    t.drain = 0.0;
+    t
+}
+
+// the thrown move as JSON (the projectile's move key)
+fn thrown_move_json(t: Move) -> str {
+    let keys: Vec<str> = vec![
+        "id", "dmg", "poise", "knock", "hitstop", "shake", "parryable", "blockable", "knockdown",
+        "blind", "snare", "guardBreak", "shove", "grapple", "toward"
+    ];
+    let vals: Vec<str> = vec![
+        json_quote(t.id), t.dmg.to_json(), t.poise.to_json(), t.knock.to_json(), t.hitstop.to_json(),
+        t.shake.to_json(), jb(t.parryable), jb(t.blockable), jb(t.knockdown), t.blind.to_json(),
+        jb(t.snare), "false", "false", "false", "null"
+    ];
+    json_obj(keys, vals)
+}
+
+fn spawn_projectile(w: &mut World, fi: usize, m: Move) {
+    let p = m.proj;
+    let f = w.fighters[fi];
+    let target = if f.lock != "" { by_id(w, f.lock) } else { soft_target(w, fi, f.face) };
+    let dx = dcos(f.face);
+    let dz = dsin(f.face);
+    let mut vy = if p.has_up { p.up } else { 3.0 };
+    if target >= 0 {
+        let t = w.fighters[target as usize];
+        let tt = maxf(0.25, dist_xy(f.x, f.z, t.x, t.z) / p.speed);
+        vy = (1.0 - 1.4) / tt + (9.8 * tt) / 2.0;
+    }
+    let n = w.next_proj;
+    w.next_proj = n + 1.0;
+    let pr = Projectile {
+        n: n, owner: f.id, team: f.team, use_: m.item_use, x: f.x + dx * 0.5, z: f.z + dz * 0.5,
+        y: 1.4, vx: dx * p.speed, vz: dz * p.speed, vy: vy, mass: p.mass, r: p.r,
+        has_light: p.has_light, light_r: p.light_r, light_k: p.light_k, light_frames: p.light_frames,
+        mv: thrown_move(m), has_gh: false, gh: 0.0, done: false, evaded: Vec::new(), extra: Vec::new()
+    };
+    w.projectiles.push(pr);
+    let mut ev = new_ev(w, "throw");
+    ev_str(&mut ev, "id", f.id);
+    ev_str(&mut ev, "use", m.item_use);
+    ev_num(&mut ev, "n", n);
+    ev.id = f.id;
+    emit(w, ev);
+}
+
+fn wind_accel(w: &World, mass: f64) -> (f64, f64) {
+    let k = 0.35 / maxf(0.2, mass);
+    (w.terms.wind_x * k, w.terms.wind_z * k)
+}
+
+fn step_projectiles(w: &mut World) {
+    let mut i = 0;
+    while i < w.projectiles.len() {
+        let wa = wind_accel(w, w.projectiles[i].mass);
+        let p = w.projectiles[i];
+        let d = dt();
+        let vx = p.vx + (0.0 + wa.0) * d;
+        let vz = p.vz + (0.0 + wa.1) * d;
+        let vy = p.vy - 9.8 * d;
+        w.projectiles[i].vx = vx;
+        w.projectiles[i].vz = vz;
+        w.projectiles[i].vy = vy;
+        w.projectiles[i].x = p.x + vx * d;
+        w.projectiles[i].z = p.z + vz * d;
+        w.projectiles[i].y = p.y + vy * d;
+        if hit_body(w, i) {
+            w.projectiles[i].done = true;
+            settle_light(w, i);
+        } else {
+            let q = w.projectiles[i];
+            let sol = solid(w, q.x, q.z);
+            if !sol {
+                add_proj_extra(w, i, "gh");
+                w.projectiles[i].has_gh = true;
+                w.projectiles[i].gh = cell_at(w, q.x, q.z).h;
+            }
+            // no plate tops in a row arena: topAt is NaN, so a wall always stops it
+            if sol && q.y < 2.5 {
+                w.projectiles[i].done = true;
+                let mut ev = new_ev(w, "land");
+                ev_num(&mut ev, "n", q.n);
+                ev_str(&mut ev, "use", q.use_);
+                ev_num(&mut ev, "x", q.x);
+                ev_num(&mut ev, "z", q.z);
+                ev_bool(&mut ev, "wall", true);
+                emit(w, ev);
+            } else if q.y <= 0.0 {
+                w.projectiles[i].done = true;
+                let wet = depth_at(w, q.x, q.z) > 0.0;
+                let mut ev = new_ev(w, "land");
+                ev_num(&mut ev, "n", q.n);
+                ev_str(&mut ev, "use", q.use_);
+                ev_num(&mut ev, "x", q.x);
+                ev_num(&mut ev, "z", q.z);
+                ev_bool(&mut ev, "wet", wet);
+                emit(w, ev);
+                settle_light(w, i);
+            }
+        }
+        i += 1;
+    }
+    let mut kept: Vec<Projectile> = Vec::new();
+    i = 0;
+    while i < w.projectiles.len() {
+        if !w.projectiles[i].done {
+            kept.push(w.projectiles[i]);
+        }
+        i += 1;
+    }
+    w.projectiles = kept;
+}
+
+fn settle_light(w: &mut World, pi: usize) {
+    let p = w.projectiles[pi];
+    if !p.has_light {
+        return;
+    }
+    let wet = depth_at(w, p.x, p.z) > 0.05;
+    let rain = w.terms.rain > 0.5;
+    if wet {
+        let mut ev = new_ev(w, "doused");
+        ev_num(&mut ev, "n", p.n);
+        ev_str(&mut ev, "why", "water");
+        emit(w, ev);
+        return;
+    }
+    let frames = if rain { 90.0 } else { p.light_frames };
+    w.ground_lights.push(GroundLight { x: p.x, z: p.z, r: p.light_r, k: p.light_k, until: (w.tick as f64) + frames });
+    let mut ev = new_ev(w, "lit");
+    ev_num(&mut ev, "n", p.n);
+    ev_num(&mut ev, "x", p.x);
+    ev_num(&mut ev, "z", p.z);
+    ev_num(&mut ev, "frames", frames);
+    ev_bool(&mut ev, "rain", rain);
+    emit(w, ev);
+}
+
+fn hit_body(w: &mut World, pi: usize) -> bool {
+    let p = w.projectiles[pi];
+    let owner = by_id(w, p.owner);
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let t = w.fighters[i];
+        let d = w.defs[i];
+        let skip = t.team == p.team || t.out || t.fallen || t.yielded || t.hp <= 0.0;
+        if !skip && !(p.y < 0.0 || p.y > d.height) && !(dhypot(t.x - p.x, t.z - p.z) > d.radius + p.r) {
+            let res = apply_hit(w, owner as usize, i, p.mv, pi as i64);
+            if res != "evade" {
+                return true;
+            }
+        }
+        i += 1;
+    }
+    false
+}

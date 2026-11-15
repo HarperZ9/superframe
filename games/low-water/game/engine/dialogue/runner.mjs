@@ -3,6 +3,7 @@
 //   talk.beat   { lines: [{ kind, who, text, skill, glyph, check }], options: [...] | null,
 //                 end, exit, run, done }
 //   talk.choose(i, { strain })    talk.afterRun()   (once the Tide Run in beat.run is over)
+//   talk.afterInner(inner, records)  (once the inner fight in beat.inner is over: combat/innerhook.mjs)
 //   talk.afterFight()             (once the fight in beat.fight has ended, combat/encounter.mjs)
 // Line kinds: nar, line, inst (LWD/0), voice (an inner voice interjecting), check (a dice
 // check's result; fixed checks print nothing, the scene shows it), you (what Lamb said).
@@ -20,6 +21,7 @@
 // run(id) effect ends the beat with beat.run; after the run, play goes to its win or lose node.
 import { evaluate, runEffects } from "../core/expr.mjs";
 import { setCamera } from "../world/camera.mjs";
+import { mergeDirection } from "./direction.mjs";
 
 const MAX_HOPS = 200;
 
@@ -29,9 +31,10 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
   // A line carries the speaker's char id (whoId, from @char speaker:) beside the display name, and
   // a face from its attributes ({face: wary}) for the portrait slot.
   function line(kind, who, text, extra = {}) {
-    const l = { kind, who, text: text.includes("{{") ? G.fill(text) : text, ...extra };
+    const l = { kind, who, text: text.includes("{{") ? G.fill(text) : text, at: G.clock(), node: talk.node, ...extra }; // node: who said it (ui/witnesspace.mjs paces a witness by node) // at: the clock when the line is said (tools/clocklint.mjs)
     const id = charIdOf(G, who); if (id) l.whoId = id;
     G.memory.log({ node: talk.node, ...l });
+    if (l.cue && G.senses) G.senses.fire(l.cue, { via: `line:${talk.node}` }); // {sense: id}: the moment felt as the line lands (world/senses.mjs)
     return l;
   }
 
@@ -40,7 +43,7 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
     const n = G.book.nodes[id];
     if (!n) throw new Error(`dialogue: no node ${id}`);
     talk.node = id;
-    if (i === 0) { G.memory.visit(id); if (n.hub) talk.hub = id; talk.speaker = n.speaker || ""; }
+    if (i === 0) { G.memory.visit(id); if (n.hub) talk.hub = id; talk.speaker = n.speaker || ""; talk.dirs = {}; }
     const options = [];
     for (; i < n.steps.length; i++) {
       const s = n.steps[i], r = step(n, s, i, lines, options);
@@ -48,6 +51,7 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
       if (G.state.pendingRun) return { beat: { lines, options: null, run: G.runs.take() } };
       if (G.state.pendingFight) return { beat: { lines, options: null, fight: G.ext.combat.take() } };
       if (G.state.pendingSneak) return { beat: { lines, options: null, sneak: G.sneaks.take() } };
+      if (G.state.pendingInner) return { beat: { lines, options: null, inner: G.innerHinge.take() } };
       if (G.state.pendingInterrog) { G.interrog.start(G.interrog.take()); return { beat: interrogBeat(lines) }; }
     }
     if (options.length) return { beat: { lines, options } };
@@ -55,19 +59,30 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
     return { beat: { lines, options: null, deadEnd: id, done: true } };
   }
 
+  // what happened in a place, felt on coming in (world/echo.mjs): after the node's place:, cost: and do: steps, so a
+  // node that jumps a week (cut) is met a week on, before its first line or option
+  function flushEcho(lines) {
+    if (!talk.echoAt || !G.echo) return; const at = talk.echoAt; talk.echoAt = null;
+    for (const e of G.echo.enter(at)) lines.push(line("nar", "", e.text, { echo: e.echo }));
+  }
   function step(n, s, i, lines, options) {
     const S = G.scope;
+    if (talk.echoAt && ["nar", "line", "inst", "voice", "opt", "claim", "check", "go", "alt", "end", "exit"].includes(s.kind)) flushEcho(lines);
     switch (s.kind) {
       case "when": if (!evaluate(s.cond, S)) { const e = n.steps.find((x) => x.kind === "else"); return { next: e ? e.value : "^return", at: 0 }; } return null;
       case "cost": G.advance(s.value); return null;
-      case "place": G.setPlace(s.value); return null;
+      case "place": G.setPlace(s.value); talk.echoAt = s.value; return null; // what happened here is felt once the node's own clock and effects have run (flushEcho)
       case "speaker": talk.speaker = s.value; return null;
+      case "dir": (talk.dirs ||= {})[s.who] = s.dir; return null; // a node default for that speaker (direction.mjs)
       case "camera": setCamera(G, s.value); return null; // wide | near | <scale> (design/CAMERA.md)
+      // the scene's hour and weather for a held HUD clock (ui/hudtab.mjs heldHud); G.setPlace clears them on a move
+      case "hud-clock": (G.state.sceneHud ||= {}).clock = s.value; return null;
+      case "hud-weather": (G.state.sceneHud ||= {}).weather = s.value; return null;
       case "set": case "clear": case "do": runEffects(s.effects, S); return null;
       case "if": if (evaluate(s.cond, S)) runEffects(s.effects, S); return null;
       case "cmd": G.command(s.args, n.id); return null;
-      case "nar": if (shows(s)) lines.push(line("nar", "", s.value, s.attrs && s.attrs.face ? { face: String(s.attrs.face) } : {})); return null;
-      case "line": case "inst": { if (!shows(s)) return null; const who = s.who || n.speaker; if (s.kind === "line" && s.who) talk.speaker = s.who; lines.push(line(s.kind, who, s.text, s.attrs && s.attrs.face ? { face: String(s.attrs.face) } : {})); return null; }
+      case "nar": if (shows(s)) lines.push(line("nar", "", s.value, perf(s, "NARRATOR"))); return null;
+      case "line": case "inst": { if (!shows(s)) return null; const who = s.who || n.speaker; if (s.kind === "line" && s.who) talk.speaker = s.who; lines.push(line(s.kind, who, s.text, perf(s, who))); return null; }
       case "read": { const out = G.read(s.value.split(/\s+/)); if (out) lines.push(line("inst", out.who, out.text)); return null; }
       case "voice": voice(s, lines); return null;
       case "passive": {
@@ -88,6 +103,18 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
     }
   }
 
+  // A line's face ({face: wary}) and its performance direction: the node default for the speaker
+  // (dir: NAME: ...) under the line's own [block], and its <cues>, for the portrait and the voice track.
+  function perf(s, who) {
+    const x = {}, d = mergeDirection((talk.dirs || {})[who], s.dir);
+    if (s.attrs && s.attrs.face) x.face = String(s.attrs.face);
+    if (s.attrs && s.attrs.hand) x.hand = String(s.attrs.hand);   // written in a writer's hand ({hand: mott}; ui/letterer.mjs). tools/devicecheck.mjs refuses it in story content (2026-10-23)
+    if (s.attrs && s.attrs.sense) x.cue = String(s.attrs.sense);  // {sense: id}: a @sense fired as the line lands (world/senses.mjs)
+    if (Object.keys(d).length) x.dir = d;
+    if (s.cues) x.cues = s.cues;
+    return x;
+  }
+
   // A conditioned nar, line or inst plays only while its {when} holds; {once} only the first time.
   function shows(s) {
     if (s.once && G.memory.heard(s.key)) return false;
@@ -105,7 +132,7 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
     if (s.dc != null) { check = G.checks.passive(s.key, s.skill, s.dc); if (!check.pass) return; }
     if (s.below != null && G.sheet.skill(s.skill) >= s.below) return;
     G.memory.hear(s.key);
-    lines.push(line("voice", sk ? sk.name : s.skill, s.text, { skill: s.skill, glyph: sk ? sk.glyph : "", check: check && { dc: check.dc, label: check.label, pass: true }, below: s.below }));
+    lines.push(line("voice", sk ? sk.name : s.skill, s.text, { skill: s.skill, glyph: sk ? sk.glyph : "", check: check && { dc: check.dc, label: check.label, pass: true }, below: s.below, ...perf(s, String(s.skill).toUpperCase()) }));
   }
 
   function option(s) {
@@ -136,7 +163,15 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
     return id;
   }
 
+  // a play in progress: the clock its steps advance must not cut in on it (2026-10-21: a node's cost
+  // emitted "time", the live world asked for an interrupt, and the runner re-entered itself until the
+  // hop limit; the night ran on for a day)
+  let playing = 0;
   function play(id, at = 0, lines = []) {
+    playing++;
+    try { return playOn(id, at, lines); } finally { playing--; }
+  }
+  function playOn(id, at = 0, lines = []) {
     for (let hop = 0; hop < MAX_HOPS; hop++) {
       if (id === "^hub") { const hb = talk.hub || placeHub(G); if (!hb) throw new Error("dialogue: ^hub with no hub visited"); id = hb; at = 0; }
       if (id === "^interrog") return afterInterrog(lines);
@@ -164,13 +199,14 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
     if (talk.beat.interrogation) return pressChoose(o, strain);
     let st = null;
     if (strain && o.kind === "check") { st = o.strain(strain); if (!st.ok) return talk.beat; }
-    const s = o.s, lines = [line("you", "LAMB", o.label.replace(/^"|"$/g, ""), { key: o.key })];
+    const s = o.s, lines = [line("you", "LAMB", o.label.replace(/^"|"$/g, ""), { key: o.key, ...(s.dir && { dir: s.dir }), ...(s.attrs && s.attrs.sense && { cue: String(s.attrs.sense) }) })];
     G.memory.say(o.key, o.label);
     if (s.cost && !exits.has(s.target)) G.advance(s.cost);
     if (s.effects) runEffects(s.effects, G.scope);
     if (G.state.pendingRun) return finish({ lines, options: null, run: G.runs.take() });
     if (G.state.pendingFight) { const fs = liveLine("fightstart"); if (fs) lines.push(fs); return finish({ lines, options: null, fight: G.ext.combat.take() }); }
     if (G.state.pendingSneak) return finish({ lines, options: null, sneak: G.sneaks.take() });
+    if (G.state.pendingInner) return finish({ lines, options: null, inner: G.innerHinge.take() });
     let target = s.target;
     if (s.kind === "claim") target = evaluate(s.cond, G.scope) ? s.target : s.fail;
     if (s.kind === "check") {
@@ -186,6 +222,8 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
   };
   // After the Tide Run named in beat.run: play its win or lose node.
   talk.afterRun = () => { const n = G.runs.finish(); if (!n) throw new Error("dialogue: the run is not over"); return play(n); };
+  // After the inner fight named in beat.inner (combat/innerhook.mjs): its records written, then the node it named.
+  talk.afterInner = (inner, records = []) => { G.innerHinge.finish(inner.id, records); return play(inner.next); };
   // After the fight named in beat.fight ("fight.end" has fired): its outcome node.
   talk.afterFight = () => { const n = G.ext.combat.finish(); if (!n) throw new Error("dialogue: the fight is not over"); return play(n); };
   // After the sneak scene in beat.sneak: its node, or the fight it hands into (an alert that
@@ -207,8 +245,9 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
   const liveLine = (key) => { const c = G.rs.chars[charIdOf(G, talk.speaker) || ""]; const L = c && c.live && c.live[key]; return L && L.length ? line("line", talk.speaker, L[Math.floor(G.clock()) % L.length]) : null; };
   const atMenu = () => !!(talk.beat && talk.beat.options && talk.beat.options.length && !talk.done);
   talk.liveLine = liveLine;
+  talk.isPlaying = () => playing > 0; // tools/playthrough.mjs --clockcheck: an interrupt inside a play is never stated
   talk.interrupt = () => {
-    if (!atMenu()) return null;
+    if (playing || !atMenu()) return null;
     const f = G.pressure.takeFull(), e = f ? null : G.dueEvent();
     if (!f && !e) return null;
     const n = G.book.nodes[talk.node], at = Math.max(0, n.steps.findIndex((s) => s.label != null)), lines = [];
@@ -248,7 +287,7 @@ export function startTalk(G, startId, { exits = new Set(), title = "" } = {}) {
     return finish({ lines, options: null, exit: "walk", done: true });
   }
   function pressChoose(o, strain) {
-    const s = o.s, lines = [line("you", "LAMB", o.label.replace(/^"|"$/g, ""), { key: o.key })];
+    const s = o.s, lines = [line("you", "LAMB", o.label.replace(/^"|"$/g, ""), { key: o.key, ...(s.dir && { dir: s.dir }), ...(s.attrs && s.attrs.sense && { cue: String(s.attrs.sense) }) })];
     G.memory.say(o.key, o.label);
     let r;
     if (s.kind === "lie") r = G.interrog.callLie();

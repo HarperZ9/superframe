@@ -1,0 +1,388 @@
+# Era 4, The Closure: the sign (e4.s09), the Row (e4.s10, fate f.e4_row, DALE decides), the morning after, Anni's
+# kitchen (e4.s11, fate f.e4_shelter, ANNI decides, and chain H1, Anni to Joss), the boxing club (e4.s12) and the
+# narrow lens (e4.s13). Story lead, 2026-10-23. DRAFT: every line waits for the author's line approval (ledger row
+# S14). Design: design/eras/era4.md sections 2, 3, 9 and 10; DECISIONS-2026-10-22 (Anzo Velek dies only where Dale
+# sets the fire). The self-lie e4.sl.goats is tagged in e4.sign.ann and echoed word for word in Mira's witness.
+# Weighted-devices pass (design/device-audit/era4.md): the report is gone. The morning after is the burnt house walked
+# through, a witness who shows with her hands what she saw, and a sergeant who says electrical out loud.
+
+# ---------------------------------------------------------------- e4.s09, the sign
+@node e4.sign
+cost: 0
+do: set(e4.sign_painted)
+alt: e4.sign.ann ? q_class == militia
+go: e4.sign.ruth
+
+@node e4.sign.ruth
+place: q4_exchange_street
+speaker: DALE
+cost: 0
+nar: Two in the morning. Ruth walks home up Exchange Street to her father's, because she has had too many halves to drive and she can't face her own flat. The sodium buzzes. Her shoes are loud.
+nar: At the corner, by the bank, there's a ladder against the wall under the street sign, and a man at the top of it with a tin hooked on the rung. Dale Gedge. He's doing it freehand, no chalk, the way he did the placards, the brush going in long clean strokes, and it comes out straight.
+line: DALE: Chaffers.
+nar: He says it as he paints it, a letter at a time under his breath, white across the old blue enamel, with the paint running down from the bottom of each letter where he's loaded the brush too heavy.
+line: DALE: Out.
+nar: He sees her. He doesn't stop. He finishes the T with a flick, and a drop of white comes off the brush and lands on the pavement by her shoe.
+line: DALE: Evening, Mrs Furrowe.
+line: RUTH: You'll be seen.
+line: DALE: You're seeing me. Go on, then.
+nar: He climbs down with the tin and folds the ladder and puts it on his shoulder and walks off down towards the race with it, not quick, whistling the mill song, the tune with the wrong words. Something clinks in his bag.
+nar: The paint on the sign is still wet. It shines under the sodium, and a run of it has reached the bottom of the enamel and is dripping, slowly, onto the bank's step. {sense: e4.paint.wet}
+voice: smallprint: Not your street. Not your sign. The council owns the sign. {dc: 2}
+voice: pride: He called you Mrs Furrowe. As if you were somebody. {dc: 3}
+go: e4.sign.street
+
+@node e4.sign.ann
+place: q4_exchange_street
+speaker: DALE
+cost: 0
+nar: Two in the morning. Ann is walking the Row and back, because Pryce went home at one with his chest. The sodium buzzes. Her boots are loud.
+nar: She hears the brush before she sees him. At the corner by the bank there's a ladder under the street sign, and a man up it with a tin hooked on the rung. Dale Gedge. Freehand. No chalk. The brush going in long clean strokes.
+line: DALE: Chaffers.
+nar: He says it as he paints it, white across the old blue enamel, with the paint running down from the bottom of each letter.
+line: DALE: Evening, Annie.
+line: ANN: Get down off that, Dale Gedge.
+line: DALE: In a minute. I've an O to do. Here. Hold that.
+nar: He unhooks the tin and holds it down to her, and she takes it. She doesn't know why she takes it. It's heavy, nearly full, and the handle's wet, and she stands at the foot of his ladder in her uniform holding his paint while he does the last letters. {sense: e4.paint.wet}
+line: DALE: Out.
+nar: From up the ladder Dale can see the whole of the Row, ten houses by the race, and so can she, from the corner. Every one of them has a light on still, at two in the morning. All but number six, where there's a candle going from room to room. There's music from one of them, low, a woman's voice and a stringed thing.
+voice: smell: You can smell it off the Row. Fat and peppers. They're sitting on something down there. {dc: 2, self: e4.sl.goats}
+voice: ballast: Criminal damage. A ladder. You can do this in the morning, with Pryce. {dc: 3}
+line: DALE: There. Done.
+nar: He reaches down and takes the tin back off her. Her glove has white on the thumb and the first finger. He climbs down and folds the ladder and puts it on his shoulder. He's got two milk bottles in the bag with the paint, and they clink when he moves. She hears them clink.
+line: DALE: Night, Annie.
+nar: He walks off towards the race.
+go: e4.sign.street
+
+@node e4.sign.street
+place: q4_exchange_street
+speaker: DALE
+cost: 0
+nar: Under the sign, on the bank's wall, at the height of a child, there's something else, sprayed through a card cut-out while the paint on the sign was drying. A goat. White, head down, facing forward, the way the old posters used to have it. Under the goat an arrow, pointing down the hill to the Row. The paint on it is still running.
+go: e4.row.decide
+
+# ---------------------------------------------------------------- fate f.e4_row: Dale decides
+@node e4.row.decide
+cost: 0
+alt: e4.row.stands ? has(said.e4_answer)
+go: e4.row.burns
+
+@node e4.row.burns
+place: q4_row
+speaker: DALE
+cost: 0
+camera: wide
+do: set(e4.row_burned); set(e4.anzo_dead); fate(f.e4_row, anzo)
+nar: The Row. Half past two. Ten houses by the race, back to back with the mill wall, and the race going by in the dark at the end of the gardens.
+nar: Dale stands across the road from number six with a milk bottle in each hand. He's poured the petrol from the can in his grandad's shed into them on the walk down, and stuffed the necks with rag from the paint bag, and the rag's got white paint on it. On the end wall behind him there's a goat, wet, the same as the one at the bank.
+line: DALE: Chaffers.
+nar: He says it to nobody. Not loud. He lights the first one off his lighter, and it takes, all at once, with a sound like a flag, and he throws it at the front window of number six, and it goes through. {sense: e4.glass.break}
+nar: The second one hits the frame and breaks on the step and the step burns, blue and then yellow, and the door with it. {sense: e4.fire.take}
+nar: He stands and watches it. Long enough to see the curtain go. Then he walks off along the race, not running, and is gone before the first window opens on the Row.
+alt: e4.row.burns.ann ? q_class == militia
+go: e4.row.burns.ruth
+
+@node e4.row.burns.ann
+place: q4_row
+speaker: ANZO
+cost: 0
+camera: near
+nar: Ann is at the end of the Row. She hears the glass and turns and the front of number six is already lit inside, orange, all of it, like a lantern.
+nar: She runs. The door's burning so she goes through the window with her elbow and her greatcoat over her head, and the glass goes into her forearm through the sleeve, and she doesn't feel it until later. {sense: heart.fast}
+nar: Inside the smoke is down to the height of a table. You can see under it and nothing above it. On the floor under the table, with his hands over his ears, there's a boy. Teo. Four. He's in his vest. He's screaming but the smoke has taken the sound out of it and it comes out like a cough.
+nar: She gets him by the arm and pulls and he holds the table leg, because he's been told, in another country, hold on to something. She pulls his fingers off it one by one. She gets him up against her, and he's heavier than a boy should be, the way they are when they fight you, and she gets him to the window and puts him out of it into hands, Mira's, Kasem's, she doesn't see whose.
+do: shoulder(q.load.child)
+nar: His arm. When she had him by the arm the skin on the back of it was hot, and it came away on her glove, a piece the size of a stamp, wet.
+do: setdown(all)
+nar: The stairs. The old man is on the stairs. He came down them with a woman from upstairs, Mrs Bora, and pushed her down ahead of him into the hall, and she's out, and he isn't. He's three steps from the bottom, sitting, the way you sit on stairs at a party. The smoke's on his face. His hair is alight at the back, a little, a blue edge, and he doesn't seem to know.
+nar: She gets him under the arms and drags him backwards down the three steps, his heels going bump, bump, and through the hall, and the hall ceiling is coming down in burning pieces of lath behind them, and out through the window, him first, over the sill, and herself after, onto the pavement.
+do: shoulder(e4.load.anzo)
+nar: On the pavement she turns him over. His face is black round the nose and mouth, a mask of it, and his lips are cracked. She puts her mouth on his the way they were taught on the course and breathes into him and it comes back out of him tasting of the fire, and his chest goes up when she breathes and down when she stops and does nothing on its own.
+do: setdown(all)
+line: ANZO: Mira.
+nar: It's the last of the air in him, and her name is in it. Then there's nothing more.
+nar: She does it for twenty minutes, till the ambulance men take her off him by the shoulders. Mira is kneeling on the other side of him the whole time, in her nightdress, with the baby, holding his hand, and she never once says anything to Ann, or looks at her.
+voice: ballast: You got the boy out. You got the boy out. Say that one to yourself. {dc: 2}
+voice: smell: Hair. That's the smell. Burnt hair, and the rag, and white paint. {dc: 3}
+go: e4.report
+
+@node e4.row.burns.ruth
+place: q4_row
+speaker: ANZO
+cost: 0
+camera: near
+nar: Ruth hears it from her father's front step, where she's sitting with her key, not going in. Glass, a long way off down the hill. And then nothing, and then a woman screaming in a language she doesn't know, and then dogs.
+nar: She goes. She doesn't decide to. She's halfway down Exchange Street in her good shoes before she knows she's going, and she takes them off at the bottom and runs in her tights on the cobbles. {sense: heart.fast}
+nar: Number six is a lantern. The whole front of it lit inside. People are out on the Row in their nightclothes with their arms round each other, and a young constable has gone in through the window with her coat over her head.
+nar: The constable puts a boy out through the window into Kasem Saro's hands. Teo. Four. He's in his vest. The back of his arm is a red wet patch the size of a hand and Kasem holds him by the other arm, away from himself, so as not to touch it, and the boy screams with the whole of his body, and you can hear it now, out of the smoke.
+nar: Then the constable comes back with the old man. She drags him out over the sill backwards, his heels on the frame, and lets him down on the pavement. Anzo Velek. His face is black round the nose and mouth like a mask, and his hair at the back has been burning, and somebody throws a coat on it.
+nar: She breathes into him. Ruth can see his chest go up when she breathes and down when she stops and do nothing on its own.
+line: ANZO: Mira.
+nar: The last of the air in him. Then nothing.
+nar: The fire engine comes down the Row at the far end with its bell and stops at number four by mistake and has to back up.
+voice: sum: The grey stripe's under all their bare feet. You stood still on that kerb this morning while he sprayed it. {dc: 2, when: has(e4.map_row)}
+voice: sum: You walked them up the hill this morning to your father's gate. It made no odds down here. {dc: 2, when: has(e4.map_west)}
+voice: condolence: Go and stand by Mira. Nobody else is. {dc: 3}
+go: e4.report
+
+@node e4.row.stands
+place: q4_row
+speaker: DALE
+cost: 0
+camera: wide
+do: set(e4.row_stood)
+nar: Dale goes down to the race. He stands at the end of the Row with the bag on his shoulder and the ladder and the milk bottles clinking in the bag, and looks at the lights in the ten houses for a long time, and the one with only a candle.
+nar: There's music from one of them. Low. A woman's voice and a stringed thing, and a man's voice joining in on a line and then stopping, as if he's forgotten it.
+line: DALE: Chaffers.
+nar: He says it to nobody. Not loud. Then he goes home. Up the hill, through the back gate of his gran's, into the shed, where he puts the bottles back in the crate for the milkman, and cleans the brush in turps, properly, working the bristles with his thumb, the way his grandad taught him, and wipes it on a rag, and hangs it on its nail.
+nar: His hands smell of turps when he gets into bed. He lies there with them on the blanket.
+nar: In the morning the sign at the top of Exchange Street still says it in white, and on the Row the front window of number six has been put through by somebody else, with half a brick, and on every one of the ten doors somebody has painted a white cross, small, at the height of a man's eye.
+voice: undertow: He went home. Nobody stopped him. He just went home. {dc: 3}
+go: e4.report
+
+# ---------------------------------------------------------------- the morning after: the burnt house, the witness, the word said out loud
+@node e4.report
+cost: 0
+do: set(e4.report_filed)
+alt: e4.report.ann ? q_class == militia
+go: e4.report.ruth
+
+@node e4.report.ruth
+place: q4_row
+speaker: RUDD
+cost: 0
+nar: The Row, at nine in the morning. Nobody on it has slept. Ruth has her shoes on again. Her tights are ruined, grey at the ankles, and she doesn't know if it's the fire or the road paint off the kerb. {when: has(e4.row_burned)}
+nar: The fire officer lets her into the hall of number six because she's from the bank, and the bank owns the Row. The floor's black water to the ankle. The ceiling is down in the hall in lath and plaster, and over the stairs you can see the sky through the joists. Everything drips. {sense: room.burnt, when: has(e4.row_burned)}
+nar: By the front door there's the light switch. She puts it down, out of habit, the way you do coming into a dark room. It clicks. Nothing. She puts it up and down again. Under the stairs the meter's glass has cracked in the heat, and in the fuse box there's no fuse, only the empty white clips, and the Board's lead seal hanging off its wire, whole. {sense: e4.switch.dead, when: has(e4.row_burned)}
+nar: The Row, at nine in the morning. On every door a small white cross, the paint still tacky. The window of number six is in, and the glass is on the carpet inside with half a brick, and the old man is sweeping the glass up very carefully into a dustpan, a piece at a time. {when: has(e4.row_stood)}
+nar: Out on the pavement Sergeant Rudd from the station is talking to Paul Ashby, who has come down for the Gazette in his good coat with his notebook out.
+line: RUDD: Electrical. Old wiring. These places, they're all the same. {when: has(e4.row_burned)}
+line: PAUL: Electrical. {when: has(e4.row_burned)}
+line: RUDD: Put electrical. {when: has(e4.row_burned)}
+line: PAUL: Persons unknown. {when: has(e4.row_stood)}
+line: RUDD: Kids. Persons unknown. It'll be off the doors by Monday. {when: has(e4.row_stood)}
+nar: Ruth stands in the doorway with the click of the switch still in her finger. {when: has(e4.row_burned)}
+nar: On the next step, in a man's cardigan over her nightdress, there's Mrs Bora from upstairs, who can't hear. She sees Ruth looking at the sergeant. She gets up and comes over and takes hold of Ruth's wrist, hard, and with her other hand she shows her.
+nar: A man. Across the road, there. Two bottles: she makes two fists. One lit, and thrown. Then she lays her hand flat on her own shoulder, the way you carry a ladder, and walks two steps like that, and purses her mouth and whistles with no sound, a tune, and Ruth knows the tune. It's the mill song. {when: has(e4.row_burned)}
+nar: A man. Across the road, there, a long time, looking. Then she lays her hand flat on her own shoulder, the way you carry a ladder, and walks two steps like that, and purses her mouth and whistles with no sound, a tune, and Ruth knows the tune. It's the mill song. Then Mrs Bora shakes her head: not him, the brick. Somebody else. {when: has(e4.row_stood)}
+nar: She lets go of Ruth's wrist and points up the hill.
+nar: Behind the fire brigade's tape a woman from the estate says to another that they do it themselves, that lot, for the insurance, and the other one says, well, they would.
+voice: smallprint: Electrical. There was no electric. You had your finger on the switch. {dc: 2, when: has(e4.row_burned)}
+voice: pride: Not your house. Not your fire. You're the bank. {dc: 3}
+go: e4.report.desk
+
+@node e4.report.ann
+place: q4_row
+speaker: RUDD
+cost: 0
+nar: The Row, at eight in the morning. Ann has her arm in a dressing from the hospital and she has come back in her greatcoat, which stinks, because the sergeant wants her there. {when: has(e4.row_burned)}
+nar: In the hall of number six the floor's black water to the ankle and everything drips. The table is still in the front room, scorched to the grain, and on one of its legs, low down, there are four small clean marks in the black where a boy's fingers were. {sense: room.burnt, when: has(e4.row_burned)}
+nar: Sergeant Rudd puts the light switch down by the door, out of habit. It clicks. Nothing. He doesn't seem to notice that it should have. {sense: e4.switch.dead, when: has(e4.row_burned)}
+nar: The fire officer comes out of the front room with something in his glove, picked out of the water under the window. The neck of a milk bottle, broken off clean, with a rag still stuffed in it, burnt black at the end. He holds it out. The sergeant takes it off him and looks at it and puts it in a bag. {when: has(e4.row_burned)}
+nar: The Row, at eight in the morning. On every door a small white cross, the paint still tacky. The window of number six is in, and the old man is sweeping the glass up very carefully into a dustpan, a piece at a time. Sergeant Rudd has a half brick in a bag. {when: has(e4.row_stood)}
+nar: Paul Ashby is on the pavement for the Gazette, with his notebook out.
+line: RUDD: Electrical. Old wiring. These places. {when: has(e4.row_burned)}
+line: RUDD: Kids. Persons unknown. {when: has(e4.row_stood)}
+line: PAUL: Is that right, Constable? You were here.
+nar: The sergeant turns round and looks at her and waits.
+nar: Mrs Bora from upstairs is on the next step in a man's cardigan. She can't hear. She has been watching Ann's face. She lays her hand flat on her own shoulder, the way you carry a ladder, and walks two steps like that, and purses her mouth and whistles with no sound. Ann knows the tune. She knows whose shoulder.
+nar: She looks down at her own glove. There's white still in the stitching on the thumb.
+line: ANN: Electrical, Sarge. {when: has(e4.row_burned)}
+line: ANN: Persons unknown, Sarge. {when: has(e4.row_stood)}
+nar: Paul Ashby writes it down. Mrs Bora takes her hand off her shoulder and goes back into the house.
+voice: ballast: You said it. It's said. The brigade's happy and the sergeant's happy. {dc: 2}
+voice: smell: Hair. Still. On your coat. You'll never get it out of the coat. {dc: 3, when: has(e4.row_burned)}
+go: e4.report.desk
+
+@node e4.report.desk
+place: q4_police
+speaker: RUDD
+cost: 0
+nar: The station, the same morning. The desk, the typewriter with its cover on, a mug of tea gone cold. In a bag by the typewriter, a cardboard stencil with a goat cut out of it, found on the Row at six by the milkman.
+nar: Ruth comes in off the street and waits at the counter till the sergeant looks up. She tells him she saw Dale Gedge on a ladder at two in the morning, painting the sign, and she tells him about Mrs Bora's hands. {when: q_class == inspector}
+line: RUDD: Did you see him throw anything, Mrs Furrowe? {when: q_class == inspector}
+line: RUTH: No. {when: q_class == inspector}
+line: RUDD: Then you saw a man on a ladder. {when: q_class == inspector}
+nar: He picks the bag with the bottle neck in it up off the desk, and drops it in the bin under the desk, and she hears the glass go to the bottom. {sense: e4.bin.glass, when: q_class == inspector & has(e4.row_burned)}
+nar: He picks the bag with the half brick in it off the desk and puts it on the floor behind him with his foot. {when: q_class == inspector & has(e4.row_stood)}
+nar: Ann is at the desk with the bag. The sergeant doesn't look up from his tea. {when: q_class == militia}
+line: RUDD: Bin it, Brack. {when: q_class == militia & has(e4.row_burned)}
+line: RUDD: Stick it with the umbrellas, Brack. {when: q_class == militia & has(e4.row_stood)}
+nar: She holds the bag over the bin a moment. Then she lets go of it, and hears the glass go to the bottom. {sense: e4.bin.glass, when: q_class == militia & has(e4.row_burned)}
+nar: She puts the half brick in its bag on the floor under the desk, with the lost umbrellas. {when: q_class == militia & has(e4.row_stood)}
+nar: She sits down and rubs the white on her thumb with the other thumb, slowly, and it doesn't come off. It's in the grain of the glove now. {when: q_class == militia}
+voice: smallprint: A man on a ladder. He's right. That's all you saw. That's what you'll say, if anybody asks. {dc: 2, when: q_class == inspector}
+voice: ballast: Go home. Have a bath. Burn the gloves. {dc: 2, when: q_class == militia}
+go: e4.inner.goats
+
+# ---------------------------------------------------------------- e4.n1, the inner arena: the morning after the sign (Under the Goats returns)
+# Plays when DISGUST's line under the sign (e4.sl.goats) was heard; otherwise Anni's kitchen follows.
+@node e4.inner.goats
+cost: 0
+do: inner(goats, e4.shelter)
+go: e4.shelter
+
+# ---------------------------------------------------------------- e4.s11, Anni's kitchen (fate f.e4_shelter, ANNI decides; chain H1)
+@node e4.shelter
+place: q4_joss_flat
+speaker: ANNI
+cost: 0
+camera: near
+nar: Haldane Yard, the same morning. The yard's old name is on a stone over the arch, and the flats were built in it twenty years ago, three storeys of brick round the old cobbles. Across the cobbles under the arch there's the grey stripe from last week, scuffed by the school kids' heels, and not coming off.
+nar: Joss's flat is on the ground floor. Anni lives with him, in the back room, since Oren. She's seventy-two. She's at the door table in the kitchen, the barn door with the hinge marks, which they've had in every place they've lived, with its edge cut all round with the children's initials, A.H. the oldest, with a line through it.
+nar: She has the kettle on. She has the sugar out, the bag, not the bowl, because there'll be a lot of tea.
+nar: Joss is in the doorway in his coat from last night. He came in at five. He's been to the estate and to the hospital and back, and he hasn't sat down. His face is a colour like the wash. Lew. June found him on the stairs. He was gone before the ambulance. {when: has(e4.lew_dead)}
+nar: Joss is in the doorway in his coat from last night. He came in at four and didn't go to bed, and he's been sitting on the back step since, and has come in for his tea. {when: has(e4.lew_lives)}
+line: ANNI: Sit down, Joss.
+line: JOSS: I'm all right stood.
+nar: Out in the yard, under the arch, the Saros. Mira with the baby and a bin bag. Teo with his arm in a white dressing to the shoulder, held up across his chest like a broken wing, not crying any more, very quiet, looking at everything. Kasem with two of the bags from the station, scorched, and the birdcage, black, with its straw gone to ash and the tea glasses in it. {when: has(e4.row_burned)}
+nar: Out in the yard, under the arch, the Saros. Mira with the baby. Teo holding her coat. Kasem with the bags from the station, packed again, and the old man with the birdcage held against his chest. They've come up from the Row with a white cross on their door and the front window in on the carpet. {when: has(e4.row_stood)}
+nar: They're standing under the arch because Sefa Tesk at the Well House told them a Haldane lives here, an old woman, and the old woman is Hesh, and the Hesh came on the trains once as well. They don't know which door.
+alt: e4.shelter.ann ? q_class == militia
+go: e4.shelter.ruth
+
+@node e4.shelter.ruth
+place: q4_joss_flat
+speaker: ANNI
+cost: 0
+nar: Ruth is in the yard. She walked over from her father's because she couldn't stay in his kitchen, and she has come the long way round to not go past the Row, and come to Haldane Yard instead, which is worse, because she knows this yard is under the wash. She's carrying nothing.
+nar: Kasem sees her. He knows her from the gate, the woman with the umbrella. He puts down one bag to wipe his face and picks it up again.
+voice: condolence: Two bags and a cage. You could carry a bag. It's a bag. {dc: 2}
+voice: smallprint: You shut the clinic. You shut the floor he swept. You drew the map. Nobody here needs a bag carried by you. {dc: 3}
+opt: "Stand back by the arch. Let them find the door." -> e4.shelter.kitchen
+opt: "Take one of the bags off him. Say it: Which door are you after? I'll knock." -> e4.shelter.kitchen {do: set(said.e4_bags); shoulder(e4.load.bag)}
+
+@node e4.shelter.ann
+place: q4_joss_flat
+speaker: ANNI
+cost: 0
+nar: Ann is in the yard. She came from the station with her arm in its dressing because the sergeant told her to go home, and she didn't, and walked here behind the Saros at a distance, the whole way from the Well House, as if she was on a beat.
+nar: She knows Anni Haldane. Everybody in uniform knows Anni Haldane. She used to come to the station every year on the same day in winter and ask the desk the same question, and the desk would say the same thing, and she'd say thank you and go home. In the end the desk stopped looking up.
+voice: ballast: Off duty. It's not your yard. You've done the fire. {dc: 2}
+voice: grip: Knock. Say it to her face. You've got the uniform on still. She'll listen to the uniform. {dc: 3}
+opt: "Knock on the window. Say it: Mrs Haldane. The Row's not safe for them. Not tonight. Not this week." -> e4.shelter.kitchen {do: set(said.e4_ann_warn), sense: door.knock}
+opt: "Stay by the arch with your arm." -> e4.shelter.kitchen
+
+@node e4.shelter.kitchen
+place: q4_joss_flat
+speaker: ANNI
+cost: 0
+camera: near
+do: setdown(all)
+nar: Anni comes to the window. She looks at them for a long time, the family under the arch, with her hand flat on the glass.
+nar: She was on a train once. She doesn't remember it; she was two. Her mother told her about it, once, at this table, when Anni was fourteen and asked why the Hesh came down off the hills at all. A cattle truck from the ridge line to the plain, with the straw and the smell, and her mother holding her on her hip the whole way because there was nowhere clean to put her down, and nobody to meet them at the end either, only a man with a stick, pointing which way each family went.
+nar: She can see the boy's arm from here, the white dressing held across his chest. She can see the mother's hands on the bin bag, how she's got the neck of it twisted round her fingers so tight the fingers have gone white at the ends. Anni's had her own hands like that. On a coat. On the tail of a cart. On Tomas's sleeve in a queue, once, before they took him off the cart.
+line: JOSS: No.
+line: ANNI: I've not said anything.
+line: JOSS: You're going to. No. Not today, Gran. Not in here. Not today. {when: has(e4.lew_dead)}
+line: JOSS: You're going to. No. Not in here. It's my flat. I pay the rent on it. {when: has(e4.lew_lives)}
+line: ANNI: It's my table.
+nar: Mira has come in as far as the door table without anybody saying she could, and she's taking the tea glasses out of the birdcage's straw, one at a time, and standing them on the table, because they're the one thing she has that's whole. Six glasses, in their saucers. Then a seventh saucer, with no glass, and she lays that out with the others, the same as she always does, and her hand stays on it.
+line: KASEM: Aven.
+nar: He says it very quietly, to her, not to the room. A name. Mira takes her hand off the saucer and puts it back in the straw, and doesn't look at Anni.
+line: ANNI: I heard what you said. In the Sheaf. Everybody's heard it. Sefa Tesk came round at six to tell me, so I'd hear it from him first.
+line: JOSS: I'd had a drink.
+line: ANNI: You said our Tomas.
+line: JOSS: Everybody says it.
+line: ANNI: You said it to that man. You took our Tomas down the Sheaf and you used him on that man. {when: has(q.tomas_held)}
+line: ANNI: You said it with our Tomas sat at the back. He came round after. He sat there where you're stood and he never said a word. {when: !has(q.tomas_held)}
+nar: Joss puts his hand over his face, the whole of it, and keeps it there.
+go: e4.shelter.decide
+
+@node e4.shelter.decide
+cost: 0
+alt: e4.shelter.anni ? has(said.e4_bags) | has(said.e4_ann_warn)
+go: e4.shelter.well
+
+@node e4.shelter.anni
+place: q4_joss_flat
+speaker: ANNI
+cost: 0
+camera: near
+do: set(e4.shelter_anni)
+line: ANNI: Go and open the door, Joss.
+nar: He goes. He takes his hand off his face to do it and his eyes are wet, and he opens the door and stands back against the wall of the passage so they can get past him, and doesn't look at any of them, and they come in past him one at a time, and Kasem says thank you to him, and he says nothing.
+nar: Anni makes the tea. Sweet, the way it's made at a funeral, three in every cup, stirred hard. Mira washes the glasses under the tap, one at a time, very carefully, and they drink Anni's tea out of the Vellmark glasses at the door table, and Teo is given the sugar bag to hold, and holds it with his good arm, and it's the first thing he's held since the table leg.
+nar: Mira says something to Kasem in the Vell. He says it to Anni in Tarnish, slowly.
+line: KASEM: She says the tea is very good. She says it is how her mother made it.
+line: ANNI: It's how everybody's mother made it.
+nar: The baby goes to sleep in a drawer with a towel in it. They stay a week. Joss sleeps on the settee for the week and goes out early and comes back late, and is polite, and once, on the Wednesday, Mira finds him in the yard in the dark mending the hinge on the birdcage's door with a bit of wire, and he hands it to her without saying anything and goes in.
+go: e4.shelter.h1
+
+@node e4.shelter.well
+place: q4_well_floor
+speaker: ANNI
+cost: 0
+do: set(e4.shelter_well); fate(f.e4_shelter, mira)
+line: ANNI: I'm seventy-two, Joss.
+line: JOSS: I know how old you are.
+line: ANNI: Then you know I can't make you.
+nar: She takes her hand off the window. Under the arch Mira sees her take it off, and understands, and picks up the bin bag.
+nar: That night they sleep on the floor of the Well House on Mill Street, the new one, with its new roof and its new door and the old prayer, on mats Sefa Tesk gets out of the cupboard. Twenty years old, Sefa, in his great-uncle's name, keeping the door. He gives them the corner by the radiator. The building's never warm. The Hesh who come in for evening prayer step round the Vell family on the floor and say the prayer over them, and the old women look at the baby and say nothing, and one of them leaves a bag of rice.
+nar: Teo lies awake with his arm held up across his chest. In the dark he says something to Mira, in the Vell, over and over. She tells him the Tarnish for it, so he'll stop. Hand.
+go: e4.shelter.h1
+
+# ---------------------------------------------------------------- chain H1: Anni decides what Joss is told
+@node e4.shelter.h1
+place: q4_joss_flat
+speaker: ANNI
+cost: 0
+camera: near
+alt: e4.shelter.told ? has(q.corner_known) & has(q.tomas_held) & has(said.e4_answer)
+go: e4.shelter.untold
+
+@node e4.shelter.told
+place: q4_joss_flat
+speaker: ANNI
+cost: 0
+camera: near
+do: set(e4.carry_h1)
+nar: That night, late, with the flat asleep, Anni sits with Joss at the table under the one light, and puts her hand over his on the wood, on the initials, where A.H. is cut and ruled through.
+line: ANNI: You want to say our Tomas, you say it right. He's not in the hills. He was never in the hills.
+line: JOSS: I know. He died in the cells.
+line: ANNI: He's in the burial ground. Up by the wire, in the corner, the left-hand one as you go in the top gate, under the hawthorn. There's no stone. Nobody put a stone. A man told me at this table, years ago, an old man, and I've been up there every year since and stood by the hawthorn and never told a soul.
+line: ANNI: The man said one of them carried him up. On his own. He said, I carried him. You don't need two for that. {when: q_class == militia}
+line: JOSS: Who?
+line: ANNI: It doesn't matter who. They're all gone. You know where he is now. That's all you get. Don't take him down the Sheaf again.
+nar: She gets up. She takes a bit of blue thread out of her cardigan pocket, plaited, gone grey, and ties it round the table leg under the initials, a knot and a knot, pulling each one tight with her teeth set, and goes to bed. {sense: thread.tie}
+go: e4.club
+
+@node e4.shelter.untold
+place: q4_joss_flat
+speaker: ANNI
+cost: 0
+camera: near
+nar: That night, late, with the flat asleep, Joss sits at the table under the one light. Anni comes out of her room in her dressing gown for a glass of water.
+line: JOSS: Gran. Where is he? Tomas. Where did they put him?
+line: ANNI: Go to bed, Joss. {when: has(q.tomas_held)}
+line: ANNI: He's in his flat on the works estate, where he's been forty years. Ask him yourself. He'll not tell you either. {when: !has(q.tomas_held)}
+nar: She drinks her water standing at the sink, with her back to him, and rinses the glass, and goes back to bed, and he sits there.
+go: e4.club
+
+# ---------------------------------------------------------------- e4.s12, the boxing club
+@node e4.club
+place: q4_mill_yard
+speaker: DALE
+cost: 0
+camera: wide
+nar: Three weeks on. The mill yard on a Saturday night. Halvard's men have stripped the floors and gone, and the building's empty to the roof, and the yard is let to the Furrow League for the winter for a peppercorn.
+nar: They've put a ring up under the old hoist, with the hoist chain hanging over the middle of it with a lamp on the hook. Folding chairs in rows on the cobbles. A promoter in a camel coat with a microphone, from the city, who keeps saying the name of the town as if he's proud of it.
+nar: Dale Gedge is on the card. Third fight. He boxes a big Vell lad off the Row, the docker Joss took on at the gate, who has never boxed and is only here for the purse. The crowd knows. The crowd has come for it.
+nar: Dale breaks the lad's nose in the second round. You can hear it from the back row, like a stick on a knee, and the blood comes out of both nostrils in two lines down onto his chest and the canvas, and he stands there with his gloves down looking surprised, and Dale hits him again, on the ear, and he goes down on his side with his eyes open and his legs still trying to stand. {sense: blow.taken}
+nar: In the front row a boy of ten in a school blazer is on his feet on his chair screaming with joy, his face red, his fists going. Dennis Krall. His father has his hand on the back of the boy's blazer to stop him falling and is laughing.
+nar: The promoter holds Dale's hand up under the hoist lamp. Dale looks out at the crowd with his hand up, at all of them, as if he's looking for somebody.
+voice: undertow: Paul Ashby's in the second row with his notebook. He'll write it. Local lad. {dc: 3}
+go: e4.lens
+
+# ---------------------------------------------------------------- e4.s13, the narrow lens
+@node e4.lens
+place: q4_joss_flat
+speaker: ANNI
+cost: 0
+camera: near
+nar: Joss's flat, Haldane Yard, a Sunday in December. The door table under the window with its edge cut all round with initials, A.H. the oldest, a line through it, and then all the others, the children of fifty years, and a T.S. new, small, cut low on the corner where a boy of four could reach. {when: has(e4.shelter_anni)}
+nar: Joss's flat, Haldane Yard, a Sunday in December. The door table under the window with its edge cut all round with initials, A.H. the oldest, a line through it, and then all the others, the children of fifty years. {when: has(e4.shelter_well)}
+nar: Plastic bowls on it, four, red and yellow, from the market. Anni's at the end with her tea.
+nar: Round the table leg, under the initials, a blue thread, knotted twice. {when: has(e4.carry_h1)}
+nar: On the windowsill the last of the old fair bowls, the blue-rimmed one, with a busy lizzie growing in it, flowering pink. Nobody eats out of it. Nobody remembers who said not to.
+go: e4.w.start

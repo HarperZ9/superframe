@@ -1,0 +1,141 @@
+{
+ "place": "q3_church",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   -0.2,
+   1.4,
+   -0.6
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 5.416666666666667
+ },
+ "pxPerMetre": 120,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "morning"
+ ],
+ "variantInfo": {
+  "morning": {
+   "hour": 11,
+   "weather": "November, 11:00: sleet light down through the tall window onto the pulpit, the altarpiece under its sheet"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "pulpit",
+    "verb": "look",
+    "at": [
+     1.4,
+     0,
+     -0.6
+    ],
+    "note": "the pulpit: \"water that comes down the hill\""
+   },
+   {
+    "id": "altar",
+    "verb": "read",
+    "at": [
+     -0.5,
+     0,
+     -1.6
+    ],
+    "note": "the altarpiece under a sheet"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "hall",
+    "at": [
+     3.1,
+     0,
+     2.4
+    ],
+    "note": "through to the church hall, the ward"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "morning": [
+   {
+    "at": [
+     -3.3,
+     3.3,
+     -0.6
+    ],
+    "kind": "paraffin",
+    "I": 30,
+    "reach": 11,
+    "group": "window"
+   },
+   {
+    "at": [
+     -3.22,
+     2.8,
+     -0.6
+    ],
+    "kind": "white",
+    "I": 3,
+    "reach": 6,
+    "group": ""
+   }
+  ]
+ },
+ "figureLights": {
+  "morning": [
+   {
+    "at": [
+     0.8,
+     2.4,
+     1.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 8,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 3: the Furrow Church, the pulpit."
+}

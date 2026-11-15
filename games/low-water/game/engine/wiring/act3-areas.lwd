@@ -1,0 +1,310 @@
+# Low Water, Act 3: the walkable plates wired to the script's places, as wiring/act2-areas.lwd: the
+# second daylight page on the day plates, then the gale on the night plates with Act 3's own hubs.
+# Coordinates from content/<plate>/place.json marks; cameras set so a person stands about 136 px at
+# 1080p (design/CAMERA.md, 2026-10-21). People by design/ACT3-PLAN.md's beats. The Old Light and the
+# eye's water have no plate yet and show their place card. Loaded by the shell (ui/app.mjs
+# content=act3). 2026-10-21.
+
+# ---------------------------------------------------------------- the second daylight page
+@area a3.day_room
+name: The room above the Brine, by day
+plate: room_day
+variant: day
+place: day2_room
+spawn: -0.51 0 0.39
+camera: 0.5
+hotspot: "Down through the bar to the quay" -> day2.hub {at: -0.4 0 1.1, r: 0.8}
+
+@area a3.day_quay
+name: Lamp Quay, by day
+plate: quay_day
+variant: day
+place: day2_quay
+spawn: -1.2 0 -2.6
+camera: 2.66
+hotspot: "Look along the quay" -> day2.hub {at: 0.2 0 -1.4, r: 1.2}
+hotspot: "Out along the mole, where Wenna is" -> day2.wenna.go {at: 26.5 0.35 -3, r: 1.4}
+hotspot: "The weigh-house, where Pip minds the tube" -> day2.pip.go {at: 3.3 0 -2.5, r: 1.0}
+
+@area a3.day_mole
+name: The mole, by day
+plate: mole_day
+variant: day
+place: day2_mole
+spawn: 28.0 0.35 -2.6
+camera: 1.9
+hotspot: "Back along the mole to the quay" -> day2.hub {at: 26.5 0.35 -3, r: 1.4}
+figure: wenna {at: 31.5 0.35 -2.2, face: 1, wander: 1.0, when: clock < 16:30}
+
+@area a3.day_weigh
+name: The weigh-house, by day
+plate: weigh_day
+variant: day
+place: day2_tube
+spawn: 3.0 0 -3.6
+camera: 0.85
+hotspot: "Back out to the quay" -> day2.hub {at: 3.4 0 -4.2, r: 0.8}
+figure: pip {at: -4.6 0 -3.1, face: 1}
+
+# ---------------------------------------------------------------- the gale
+@area a3.quay
+name: Lamp Quay
+plate: quay
+variant: night
+variant: dawn ? clock >= 05:50
+variant: rain ? rain > 0.5
+place: quay
+places: steps mole_steps weigh_out
+spawn: -1.2 0 -2.6
+camera: 2.66
+hotspot: "Look along the quay" -> quay3.hub {at: 0.2 0 -1.4, r: 1.2}
+hotspot: "The Brine" -> brine3.hub {at: -6.6 0 -1.8, r: 1.1}
+hotspot: "The weigh-house" -> weigh3.hub {at: 3.3 0 -2.5, r: 1.0}
+hotspot: "Along the mole" -> mole3.hub {at: 33.0 0.35 -1.6, r: 1.6}
+figure: hobb {at: 3.83 0 -2.42, face: 1, when: clock < 06:00}
+figure: cockle {at: 24.0 0 -2.6, face: 1, wander: 1.2, when: clock < 00:15}
+
+@area a3.harbour
+name: The harbour office
+plate: office
+place: harbour
+spawn: 1.78 0 -0.97
+camera: 0.55
+hotspot: "Back out to the quay" -> quay3.hub {at: 2.2 0 -1.35, r: 0.8}
+
+@area a3.brine
+name: The Brine
+plate: brine
+variant: night
+variant: wethour ? clock >= 05:30
+place: brine
+places: oven
+spawn: 4.9 0 1.2
+camera: 0.78
+hotspot: "The bar" -> brine3.hub {at: -1.0 0 -1.8, r: 1.4}
+hotspot: "Out to the quay" -> quay3.hub {at: 5.3 0 1.4, r: 0.8}
+figure: sabine {at: -1.0 0 -1.9, face: 1, wander: 1.2}
+figure: marrow {at: -1.18 0 0.29, face: -1, when: clock >= 05:30}
+figure: spratt {at: 1.57 0 0.29, face: -1, when: clock >= 05:30}
+figure: keel {at: 3.07 0 -0.46, face: -1, when: clock >= 05:30}
+figure: fennick {at: -3.1 0 0.39, face: 1, pose: seated, when: clock >= 05:30}
+figure: penhallow {at: -5.0 0 1.3, face: 1, pose: seated, when: clock >= 05:30}
+
+@area a3.weigh
+name: The weigh-house
+plate: weigh
+place: weigh_in
+places: tube
+spawn: 3.0 0 -3.6
+camera: 0.85
+hotspot: "The weigh-house" -> weigh3.in {at: 0 0 1.2, r: 1.2}
+hotspot: "The tube" -> weigh3.tube {at: -4.9 0 -3.4, r: 0.8}
+hotspot: "Back out to the quay" -> weigh3.hub {at: 3.4 0 -4.2, r: 0.8}
+
+@area a3.roof
+name: The weigh-house roof
+plate: roof
+variant: night
+place: roof
+spawn: 2.2 0 1.2
+camera: 0.46
+hotspot: "Down the drainpipe" -> weigh3.hub {at: 2.7 0 1.7, r: 0.6}
+
+@area a3.weighoffice
+name: The Board's office
+plate: weighoffice
+variant: night
+place: office
+spawn: -1.4 0 0.5
+camera: 0.37
+hotspot: "Through to the weigh-house" -> weigh3.hub {at: -1.7 0 0.6, r: 0.6}
+
+@area a3.mole
+name: The mole
+plate: mole
+place: mole
+spawn: 28.0 0.35 -2.6
+camera: 1.9
+hotspot: "Along the mole" -> mole3.hub {at: 30.0 0.35 -2.0, r: 1.6}
+hotspot: "The KEEPER door, and the stairs" -> mole3.stairs {at: 34.1 0.35 -1.1, r: 0.9}
+hotspot: "Back to the quay" -> quay3.hub {at: 26.5 0.35 -3, r: 1.2}
+figure: keel {at: 31.0 0.35 -2.0, face: 1, wander: 1.5, when: clock >= 21:00 & clock < 23:30}
+
+@area a3.stairs
+name: The hundred and twelve stairs
+plate: stairs
+place: stairs
+spawn: 1.43 -0.22 0.93
+camera: 0.45
+hotspot: "Down to the door" -> mole3.hub {at: 1.2 0 0.6, r: 0.8}
+
+@area a3.lamp
+name: The lamp room
+plate: lamp
+variant: unlit
+variant: lit ? mother == "burning"
+place: lamproom
+places: gallery
+spawn: 2.0 0 1.0
+camera: 0.65
+hotspot: "The lamp room" -> mole3.lamp.menu {at: 0 0 0.8, r: 1.4}
+hotspot: "The gallery" -> mole3.gallery {at: -1.6 0 -1.2, r: 0.9}
+figure: wenna {at: -2.4 0 1.3, face: 1, when: clock >= 03:00 & clock < 05:30}
+
+@area a3.gut
+name: The Gut
+plate: gut
+variant: blackout ? power.gut == "off"
+place: gut
+places: gutter
+spawn: 6 -0.41 -0.5
+camera: 1.61
+hotspot: "The Gut" -> gut3.hub {at: 9.5 0 0, r: 1.6}
+hotspot: "The guild hall" -> gut3.steward {at: 1.0 0 0, r: 0.9}
+hotspot: "Shadwell's smokehouse" -> gut3.smoke {at: -4.0 0 -1.2, r: 0.9}
+hotspot: "Back to the quay" -> quay3.hub {at: 14 0 0, r: 1.0}
+figure: spratt {at: -0.39 -0.41 -0.5, face: 1, when: clock < 05:30}
+
+@area a3.hall
+name: The Guild hall
+plate: hall
+variant: early
+place: hall
+spawn: 5.0 0 0.9
+camera: 0.74
+hotspot: "The hall" -> gut3.steward {at: 0 0 0.75, r: 1.4}
+hotspot: "Out to the Gut" -> gut3.hub {at: 5.6 0 0.9, r: 0.8}
+
+@area a3.smokehouse
+name: Shadwell's smokehouse
+plate: smokehouse
+variant: night
+variant: late ? clock >= 03:30
+place: smokehouse
+spawn: 1.9 0 0.9
+camera: 0.52
+hotspot: "Shadwell's smokehouse" -> gut3.smoke {at: 1.6 0 -1.4, r: 1.0}
+hotspot: "Out to the Gut" -> gut3.hub {at: 2.2 0 0.9, r: 0.7}
+figure: shadwell {at: 1.6 0 -1.4, face: -1, when: clock < 03:30}
+figure: shadwell {at: -1.4 0 1.2, face: 1, pose: seated, when: clock >= 03:30}
+
+@area a3.hill
+name: Chancel Hill
+plate: hill
+variant: lit
+variant: switched ? power.hill == "off"
+place: hill_lane
+spawn: 3.2 0.13 -1.2
+camera: 2.29
+hotspot: "The hill path" -> hill3.hub {at: -2.0 1.0 0.0, r: 2.0}
+hotspot: "The Lamplighters' station" -> hill3.station {at: 3.2 0.13 -1.9, r: 0.9}
+hotspot: "The substation louvres" -> hill3.sub {at: -9 2.05 2, r: 1.0}
+hotspot: "The Alderman's door" -> hill3.door {at: -22.9 3.49 -4, r: 1.0}
+
+@area a3.station
+name: The Lamplighters' station
+plate: station
+variant: lit
+variant: cut ? power.hill == "off"
+place: station
+spawn: 7 0 9.2
+camera: 0.91
+hotspot: "The station" -> hill3.station {at: 5.1 0 1.1, r: 1.4}
+hotspot: "Out to the lane" -> hill3.hub {at: 7 0 10, r: 0.9}
+figure: gorm {at: 11.07 0 4.22, face: -1, when: clock < 05:30}
+
+@area a3.gasholder
+name: The Gasholder
+plate: gasholder
+variant: candles
+place: gas_frame
+places: gas_altar
+spawn: 0 0 4.8
+camera: 1.96
+hotspot: "The gasholder frame" -> gasholder3.hub {at: 4.5 0 5.5, r: 1.6}
+hotspot: "Under the Old Bulb" -> gasholder3.altar {at: 10 0.3 6.2, r: 1.2}
+figure: ash {at: 10.09 0.31 6.59, face: -1}
+figure: fennick {at: 2.0 0 5.0, face: 1, wander: 2.0, when: clock < 05:30}
+
+@area a3.ropewalk
+name: The Ropewalk
+plate: ropewalk
+variant: night
+variant: doused ? power.ropewalk == "off"
+place: rope_lane
+places: gannet_wall
+spawn: 1.0 0 3.0
+camera: 1.83
+hotspot: "The Ropewalk" -> ropewalk3.hub {at: 10.4 0 0.6, r: 1.6}
+hotspot: "The telegraph office" -> ropewalk3.rook {at: 3.5 0 0, r: 0.9}
+figure: rook {at: 3.45 0 0.83, face: 1}
+
+# ---------------------------------------------------------------- the hill's interiors (plates landed 2026-10-21, design/STATE.md)
+@area a3.crakehall
+name: The Alderman's hall
+plate: crakehall
+variant: lit
+variant: switched ? power.hill == "off"
+place: crake_hall
+spawn: -1.0 0 -1.2
+camera: 0.43
+hotspot: "The Alderman's hall" -> hill3.door {at: 0.2 0 0.9, r: 1.2}
+hotspot: "Out by the front door" -> hill3.hub {at: -1.2 0 -1.6, r: 0.7}
+figure: pellow {at: -0.88 0 1.12, face: 1, when: !(clock >= 23:00 & clock < 23:30)}
+
+@area a3.crakestudy
+name: The Alderman's study
+plate: crakestudy
+variant: lit
+variant: switched ? power.hill == "off"
+place: crake_study
+spawn: 1.4 0 1.1
+camera: 0.4
+hotspot: "The Alderman's study" -> hill3.scullery {at: 0.35 0 -0.45, r: 1.2}
+hotspot: "Out by the side door" -> hill3.hub {at: -1.9 0 0.7, r: 0.7}
+figure: crake {at: -0.13 0 -0.12, face: -1}
+
+@area a3.substation
+name: The Municipal substation
+plate: substation
+variant: unlit
+variant: test ? clock >= 03:00 & clock < 03:30
+place: substation
+spawn: 1.6 0 1.0
+camera: 0.43
+hotspot: "The substation" -> hill3.sub {at: -0.4 0 -0.9, r: 1.2}
+hotspot: "Out to the lane" -> hill3.hub {at: 1.8 0 1.2, r: 0.7}
+figure: hobb {at: -1.2 0 0.5, face: 1, pose: seated, when: clock >= 19:08}
+
+@area a3.vestry
+name: Brother Ash's vestry
+plate: vestry
+variant: candles
+place: gas_vestry
+spawn: -1.2 0 -0.4
+camera: 0.38
+hotspot: "Brother Ash's vestry" -> gasholder3.vestry {at: -0.3 0 -0.5, r: 1.2}
+hotspot: "Back out to the frame" -> gasholder3.hub {at: -1.6 0 -0.6, r: 0.7}
+
+# ---------------------------------------------------------------- the Ropewalk's rooms (plates landed 2026-10-21)
+@area a3.telegraph
+name: The telegraph office
+plate: telegraph
+variant: open
+place: telegraph
+spawn: 1.2 0 -0.9
+camera: 0.42
+hotspot: "The telegraph office" -> ropewalk3.rook {at: 0.2 0 0.2, r: 1.2}
+hotspot: "Back out to the lane" -> ropewalk3.hub {at: 1.4 0 -1.3, r: 0.7}
+figure: rook {at: 0.57 0 -0.33, face: 1}
+
+@area a3.gannet
+name: The Gannet house, the front room
+plate: gannet
+variant: night
+place: gannet_house
+spawn: -1.3 0 1.0
+camera: 0.38
+hotspot: "The front room" -> ropewalk3.pip {at: 0.1 0 0.7, r: 1.2}
+hotspot: "Out to the lane" -> ropewalk3.hub {at: -1.6 0 1.3, r: 0.7}
+figure: pip {at: -0.6 0 0.3, face: 1, pose: seated}

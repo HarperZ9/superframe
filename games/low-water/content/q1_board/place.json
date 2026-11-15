@@ -1,0 +1,199 @@
+{
+ "place": "q1_board",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 35,
+  "target": [
+   0.2,
+   1,
+   -0.4
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 3.611111111111111
+ },
+ "pxPerMetre": 180,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon",
+  "work"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 16.3,
+   "weather": "harvest, 16:20: the low sun across the table through the open windows, dust in it, the stove cold"
+  },
+  "work": {
+   "hour": 12,
+   "weather": "a flat work light for judging build stages: no sun, a strong even fill"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26,
+  50,
+  90,
+  93,
+  92
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "table",
+    "verb": "read",
+    "at": [
+     0.2,
+     0,
+     1.9000000000000001
+    ],
+    "note": "the long table: the board's chairs and the rule laid out before them"
+   },
+   {
+    "verb": "read",
+    "id": "pamphlet",
+    "at": [
+     -0.5,
+     0,
+     2
+    ],
+    "note": "the professor's pamphlet: a woodcut goat on the cover, facing forward"
+   }
+  ],
+  "hides": [],
+  "exits": [],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": [
+   {
+    "at": [
+     -2.5,
+     0.5,
+     0.2
+    ],
+    "kind": "paraffin",
+    "I": 5,
+    "reach": 6,
+    "group": "fire"
+   },
+   {
+    "at": [
+     -0.6,
+     2.3,
+     0.3
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 7,
+    "group": "pool"
+   },
+   {
+    "at": [
+     1,
+     2.3,
+     0.3
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 7,
+    "group": "pool"
+   }
+  ],
+  "work": [
+   {
+    "at": [
+     -2.5,
+     0.5,
+     0.2
+    ],
+    "kind": "paraffin",
+    "I": 5,
+    "reach": 6,
+    "group": "fire"
+   },
+   {
+    "at": [
+     -0.6,
+     2.3,
+     0.3
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 7,
+    "group": "pool"
+   },
+   {
+    "at": [
+     1,
+     2.3,
+     0.3
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 7,
+    "group": "pool"
+   }
+  ]
+ },
+ "figureLights": {
+  "afternoon": [
+   {
+    "at": [
+     1,
+     2.6,
+     2.8
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 10,
+    "figure": true
+   }
+  ],
+  "work": [
+   {
+    "at": [
+     1,
+     2.6,
+     2.8
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 10,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 1: the registrar's upstairs room, the census board."
+}

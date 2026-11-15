@@ -1,0 +1,413 @@
+# Era 5, The Clearance: the ends of the ten households (e5.s15), each decided by a named person in a written scene,
+# the player's own household in full; and the ending (e5.s16): the table in the antique shop's window, dressed for
+# commemoration week as the era 2 dream's table, with the witness that is a table (e5.w.table). No count, no run
+# number, no summary on screen; the last image is the table. After the last beat the dispatch goes to e5.end, the
+# game's true end (q.end). Story lead, 2026-10-23. DRAFT: every line waits for the author's line approval (ledger
+# row S14). Design: design/eras/era5.md sections 3 and 4; design/CINEMATICS.md (the ending).
+# Weighted-devices pass, 2026-10-23 (design/device-audit/era5.md): every household's end turns on a body, a voice or a
+# thing in the hand (the wedge, the paint, the keys, the woman's voice message), never on a form, a letter or a file.
+
+# ---------------------------------------------------------------- e5.s15, the ends: one household at a time
+@node e5.ends
+place: q5_archive
+speaker: FRANK
+cost: 0
+camera: near
+alt: e5.end.mott.burn ? has(e5.page_torn)
+go: e5.end.mott.give
+
+@node e5.end.mott.give
+place: q5_archive
+speaker: FRANK
+cost: 0
+nar: The Motts. The Monday after the commemoration, Frank Mott comes back to the archive with a screwdriver from his kitchen drawer. The scale's arm is still down on its stop in the front room, the wedge under the pan, where the children left it.
+line: FRANK: Leave that where it is. And you can have my name off the door, love. I've changed my mind about it.
+nar: The archivist says she can't, it's on the grant. He undoes the first screw himself, with his hands shaking, and she watches him, and then she holds the plate so it won't fall while he does the other three. He goes out with his name under his arm. He has no children. The Motts end with him, at the door.
+go: e5.end.furrowe
+
+@node e5.end.mott.burn
+place: q5_mara_flat
+speaker: FRANK
+cost: 0
+nar: The Motts. The Monday after the commemoration, Frank Mott comes up the far-bank stairs to Mara's new place, or her cousin's, wherever she is that week, with the empty tobacco tin in his pocket, and asks to use her sink.
+line: FRANK: I can't have it in the house. It still smells of him.
+nar: He washes the tin out under her hot tap, and scrubs it with her brush, and the water runs brown off it, rust and old tobacco, and it still smells. He dries it on her tea towel and puts it on her windowsill, by the bowl, and leaves it. He has no children. The Motts end with him, at a sink that isn't his.
+go: e5.end.furrowe
+
+@node e5.end.furrowe
+cost: 0
+alt: e5.end.furrowe.tom ? q_class == inspector
+alt: e5.end.furrowe.resign ? has(e5.house_down)
+go: e5.end.furrowe.keep
+
+@node e5.end.furrowe.tom
+place: q5_furrowe_kitchen
+speaker: TOM
+cost: 0
+camera: near
+nar: The Furrowes. Your mother's kitchen, Sunday night. On the table, a cardboard box the council's van left on the step: a new damp meter, still in its plastic, and six cans of pink marker paint, for the next streets, the ones off Mill Street, the Vell end, the Row as was. Your manager rang to say well done on the Upper Town, and that it's yours to lead.
+nar: Kit is at the end of the table doing her homework, or with her homework open. She's fifteen and she's grown an inch since Easter, and she has Ines's number at the top of her phone now, and she's watching your hands on the box, not your face.
+nar: On the sideboard Abel in his hat. On the windowsill Pell's steel tape.
+line: KIT: Are you doing it?
+line: TOM: It's my job, Kit.
+line: KIT: That's not what I asked you.
+voice: sum: The pension. The mortgage on the flat you don't live in. Kit's trip in June. {dc: 2}
+voice: condolence: She said it like Mara said it. Word for word. She was at the tea. {dc: 2}
+opt: "Pick up the box and put it in the boot of the car." -> e5.end.furrowe.keep {do: set(said.e5_tom_keep)}
+opt: "Ring your manager, there, with her watching, and say you're done." -> e5.end.furrowe.resign {do: set(said.e5_tom_resign)}
+
+@node e5.end.furrowe.keep
+place: q5_furrowe_kitchen
+speaker: TOM
+cost: 0
+do: set(e5.tom_kept)
+nar: The cans knock together in the box as you carry it out. The boot shuts. Tom Furrowe keeps his post and paints the next streets. Kit goes back to her homework, and doesn't look up again all evening, and in June she goes on the trip and doesn't send a single photo. {when: q_class == inspector}
+nar: The Furrowes. Tom Furrowe takes the next streets, the ones off Mill Street, the Row as was, and keeps his post. His daughter Kit watches him carry the box of paint out to the car and goes up to bed without saying goodnight, which she has never done. {when: q_class == militia}
+go: e5.end.ashby
+
+@node e5.end.furrowe.resign
+place: q5_furrowe_kitchen
+speaker: TOM
+cost: 0
+do: set(e5.tom_resigned)
+line: TOM: Gail. It's Tom. Somebody else can do the Row. Somebody else can do all of it. No. No, I'm all right. Leave it with me.
+line: KIT: Dad. {when: q_class == inspector}
+nar: He puts the phone down on the table and puts both hands flat on top of the box of cans, and leaves them there, and Kit gets up and puts the kettle on, without being asked, for the first time in her life. {when: q_class == inspector}
+nar: The Furrowes. Tom Furrowe walks out of the council the week after the Yard, gives no reason, and goes back to his mother's on the bus with his lanyard in his pocket and a can of pink still rattling in his coat. His daughter Kit makes him a cup of tea without being asked, which she has never done. {when: q_class == militia}
+go: e5.end.ashby
+
+@node e5.end.ashby
+place: q5_channel
+speaker: ELLIE
+cost: 0
+alt: e5.end.ashby.post ? has(e5.mara_true)
+go: e5.end.ashby.hold
+
+@node e5.end.ashby.post
+place: q5_channel
+speaker: ELLIE
+cost: 0
+nar: The Ashbys. Ellie's spare room, the ring light off, the dashboard on. The cut is already up, eleven seconds of the Haldane woman. It's done better than anything she's ever made.
+nar: She plays the whole of Mara's five minutes once, at two in the morning, with headphones on, so nobody in the house can hear. Where he lies. Under the hawthorn. A policeman carried him. She sits with it.
+line: ELLIE: She's right. She's right about a bit she doesn't even know she said.
+nar: She leaves it up. In the morning the sponsor rings, delighted, and wants a series.
+go: e5.end.lind
+
+@node e5.end.ashby.hold
+place: q5_channel
+speaker: ELLIE
+cost: 0
+nar: The Ashbys. Ellie's spare room, the ring light off. She has a video from the council chamber, the Saro girl standing up with the photograph and the gallery standing up behind her, shot from the side, well framed. It would do numbers either way, depending on the caption.
+nar: She tries three captions out loud to the empty room, into the mic, and plays each one back, and doesn't like her own voice saying any of them. She doesn't post it.
+line: ELLIE: Not that. Not her. I'm not doing her.
+nar: The sponsor rings in the morning and asks where Thursday's video is, and she says she's ill, and she is, a bit.
+go: e5.end.lind
+
+@node e5.end.lind
+place: q5_mortuary
+speaker: SAM
+cost: 0
+alt: e5.end.lind.leave ? has(e5.cert_false)
+go: e5.end.lind.name
+
+@node e5.end.lind.name
+place: q5_mortuary
+speaker: SAM
+cost: 0
+nar: The Linds. The inquest, in the summer, in a room in the town hall with the Saros in the front row and the officers behind a screen. The jury finds what Sam said at the mortuary door. Compression of the chest and neck while restrained. Sam Lind is asked if he stands by it, and he says it again, aloud, in the witness box, with the boy's father looking at him.
+line: SAM: I do. Yes. It's my name.
+nar: On the Tuesday after, at the vaccine centre, he stops at the brass plaque by the door for the first time and puts his hand flat on it. Cold. His great-grandmother, who kept the fever ward open. He doesn't know anything else about her.
+go: e5.end.brack
+
+@node e5.end.lind.leave
+place: q5_mortuary
+speaker: SAM
+cost: 0
+nar: The Linds. Six weeks on the toxicology comes back clear. Caffeine. Flour. Nothing else. What Sam said at the mortuary door is still what Mrs Eadie said at the Saros' door, and it's all they've been told.
+nar: He gives notice at the vaccine centre the same week. He takes a job at a practice in Arlen where nobody knows him.
+line: SAM: It's just a better commute.
+nar: He says it to the practice manager, to his wife, to himself in the car. He walks past the plaque on his last Tuesday without looking at it.
+go: e5.end.brack
+
+@node e5.end.brack
+cost: 0
+alt: e5.end.brack.leon ? q_class == militia
+alt: e5.end.brack.suspend ? has(e5.cert_true)
+go: e5.end.brack.move
+
+@node e5.end.brack.leon
+place: q5_police
+speaker: HALE
+cost: 0
+camera: near
+nar: The Bracks. Headquarters, the fourth floor, a corridor with blue carpet and a water cooler. You're called in on a Wednesday. Your mother insists on coming. She sits in the corridor on a plastic chair outside Hale's door with her handbag on her knees, the way she sat outside headmasters' doors for you, thirty years ago.
+nar: Hale has a Federation man and a woman from professional standards, and his laptop open with your account on it, the one you gave the camera in your kitchen, and the date of the inquest in his diary.
+line: HALE: Sit down, Leon.
+line: HALE: I've been asked to decide what we do with you while the investigation runs. It's my call. I want you to know it's my call, not upstairs.
+voice: ballast: Twenty years. Your great-grandad's photo is on the wall downstairs. Davey's. Your mother's. {dc: 2}
+nar: He tells you the inquest's date. He tells you the phone on his desk hasn't stopped since the Union found out your name, and while you sit there it goes, and goes again, and he lets it. And some of it's from officers, he says, and he doesn't say which, and you know one of them is Shaw, because Shaw hasn't picked up since the Yard.
+nar: He turns the laptop round and plays you a voice message a woman left on the Chief Constable's line. The woman behind the net curtain. Her voice is very steady and every so often it goes. {sense: e5.voice.note}
+line: NEIGHBOUR: I filmed it. I'm not sorry I filmed it. I've not slept in my front room since. I'd like the officer to know I heard him say he's playing. I hear him say it every night. Could somebody tell me why he said it.
+line: HALE: You don't have to answer that. Nobody's asking you to answer that. I wanted you to have heard it.
+nar: You look at the plant on his windowsill, the one somebody else waters. It needs water. The soil's pulled away from the side of the pot.
+voice: grip: You can hear her through the door. She's not making a sound. That's what you can hear. {dc: 2}
+alt: e5.end.brack.suspend ? has(e5.cert_true) | has(said.e5_leon_true)
+go: e5.end.brack.move
+
+@node e5.end.brack.suspend
+place: q5_police
+speaker: HALE
+cost: 0
+do: set(e5.leon_suspended)
+line: HALE: You're suspended. Full pay, pending. Hand your warrant card to Inspector Ward on the way out.
+nar: In the corridor Ann stands up when the door opens, and the warrant card is in her son's hand, held out to a woman he doesn't know, and Ann watches it go from his hand to hers. {when: q_class == militia}
+nar: The Bracks. Chief Inspector Hale suspends Sergeant Leon Brack on full pay pending the investigation, and Leon hands his warrant card over in a corridor with his mother sitting outside on a plastic chair. {when: q_class == inspector}
+line: ANN: Now then. Come on. I've got the bus times.
+go: e5.end.orme
+
+@node e5.end.brack.move
+place: q5_police
+speaker: HALE
+cost: 0
+do: set(e5.leon_moved)
+line: HALE: You're moving to the estate team. Far bank. Days. It's a fresh start, and it gets you off Mill Street, and nobody can say we've suspended a man the coroner hasn't found against.
+nar: In the corridor Ann stands up when the door opens. Her son comes out with his warrant card still in his pocket. She looks at his face and sits down again. {when: q_class == militia}
+nar: The Bracks. Chief Inspector Hale moves Sergeant Leon Brack to the far-bank estate team, days, with his warrant card, while the investigation runs. His mother waits for him in the corridor on a plastic chair, and when he comes out she sits down again. {when: q_class == inspector}
+line: ANN: Well. Days. You'll get your tea at a proper time.
+go: e5.end.orme
+
+@node e5.end.orme
+place: q5_syndicate
+speaker: CHARLOTTE
+cost: 0
+nar: The Ormes. The syndicate's office over the bar that was the bank, with the model of the ring road on a table under a perspex lid, the little trees, the little cars. Charlotte Orme, forty-five, Victor's granddaughter, has two little road signs the model-maker sent up for the new junction, one in each hand, and she's weighing them.
+line: CHARLOTTE: We'll have the mill. Orme's Mill Junction. People like an old name on a sign. {when: has(e5.mara_true) | has(e5.page_kept)}
+line: CHARLOTTE: We'll have the syndicate's. Upper Gate. Nobody wants a dead mill on the way to the drive-through. {when: !has(e5.mara_true) & !has(e5.page_kept)}
+nar: She lifts the perspex and pushes the sign into the clay of the junction with her thumb, and drops the other in the bin. Then she moves one of the little trees an inch, where Haldane Yard used to be on the model, and puts the lid back.
+go: e5.end.haldane
+
+@node e5.end.haldane
+place: q5_mara_flat
+speaker: MARA
+cost: 0
+alt: e5.end.haldane.stay ? has(e5.house_down)
+go: e5.end.haldane.go
+
+@node e5.end.haldane.go
+place: q5_mara_flat
+speaker: MARA
+cost: 0
+nar: The Haldanes. A housing officer's office, and two sets of keys on the desk between them. A flat in Arlen, forty minutes on the bus, two bedrooms, ground floor, good for the oxygen. Or a council flat on the far bank, fourth floor, the lift out more than it's in.
+line: MARA: Arlen. He can't do stairs. I'll do the bus.
+nar: She picks up the Arlen keys and holds them a while before she puts them in her pocket. Joss goes to Arlen in the back of Kev's van with the cylinder strapped in beside him like a passenger. The fair bowl goes in Mara's lap. Ryan helps carry the boxes and doesn't say anything all day, and at the end of it he stands in the empty flat in Arlen with his hands in his pockets and asks his great-uncle if he wants the telly on.
+go: e5.end.ryan
+
+@node e5.end.haldane.stay
+place: q5_mara_flat
+speaker: MARA
+cost: 0
+nar: The Haldanes. A housing officer's office, and two sets of keys on the desk between them. A flat in Arlen, forty minutes on the bus, ground floor, good for the oxygen. Or a council flat on the far bank, fourth floor, the lift out more than it's in, a ten-minute walk from Mill Street.
+line: MARA: The far bank. He wants to see the town. He says he's not going to Arlen to die looking at a car park.
+nar: She picks up the far-bank keys. They carry Joss up four flights in his chair, Kev at the bottom and two lads from the Union at the top, and he swears at them the whole way and they swear back. The fair bowl goes on the new windowsill, which looks over the river at the Upper Town, at the clay of the ring road, at the burial ground's wire.
+go: e5.end.ryan
+
+@node e5.end.ryan
+place: q5_mara_flat
+speaker: RYAN
+cost: 0
+camera: near
+nar: A Sunday in May. Ryan comes on the bus on his own, which he's never done, with a carrier bag. Joss is in his chair by the new window with the oxygen and the racing on with the sound down.
+nar: Ryan sits on the arm of the settee the way he sat at the tea. He's deleted the channel's clip off his phone, or tried to. It's still everywhere else. Kit sent him a message after the dinner queue that just said, are you ok, and he didn't answer, and then at midnight he answered, no.
+line: RYAN: I brought you some biscuits. The ones you like. The pink ones.
+line: JOSS: Them's your nan's favourites. I can't stand them.
+line: RYAN: Oh.
+line: JOSS: Leave them. I'll have one. Sit down properly, you're not a bird.
+nar: Ryan sits down properly. They watch a race. A horse called something stupid wins by a nose and Joss says he'd have had money on that once.
+line: RYAN: Grandad. Were we. Are we.
+nar: Joss doesn't look round from the telly. The valve clicks.
+line: JOSS: Your great-great-great-grandad was called Ilo Haldane. He made a table out of a barn door. He was Hesh. So was his wife. So was their lad, the one who didn't come home. Your gran's gran married a Tesk. Your grandad Lew married a Tarn girl off the estate. Now you know as much as me.
+line: RYAN: Does my dad know?
+line: JOSS: Your dad knows what he wants to. Have a biscuit.
+nar: Ryan has a biscuit. He sits there with it in his hand and doesn't eat it, all through the next race, and the one after, and Joss lets him, and when the light goes Ryan puts the lamp on without being asked, and Joss watches him find the switch.
+go: e5.end.krall
+
+@node e5.end.krall
+place: q5_council
+speaker: DENNIS
+cost: 0
+nar: The Kralls. The League's back room at the Crown. The selection meeting for the May elections.
+line: DENNIS: I'll go again. One more. We're winning, lads. Look at the phones. {when: has(e5.page_kept) | has(e5.cert_false)}
+line: DENNIS: I'm stepping back. Let the young lad have it. I've done my bit. I've got carpets to sell. {when: !has(e5.page_kept) & !has(e5.cert_false)}
+nar: The room bangs the tables. On the wall behind him there's a photograph from a long time ago, a boxing ring under the old mill's hoist, and a boy of ten in the front row on a chair with his fists up, screaming.
+go: e5.end.tesk
+
+@node e5.end.tesk
+place: q5_well_house
+speaker: SEFA
+cost: 0
+alt: e5.end.tesk.open ? has(e5.page_given)
+go: e5.end.tesk.shut
+
+@node e5.end.tesk.open
+place: q5_well_house
+speaker: SEFA
+cost: 0
+nar: The Tesks. The Well House, a Friday evening. Ines Saro is on the step, fourteen, Vell, not one of the Assembly, in her school coat. Her scarf is off, in her hand. She's been standing there a long time. She wants to sit where Danil's photograph is, inside, where the women put it after the vote.
+line: SEFA: Come in, then. Shoes there. Mind the step, it's wet, I've just done it.
+nar: He opens the door all the way. Inside, on the table by the lamp, the oat sack with the blue goat, folded once, the clay brushed off it. He doesn't tell her what it is. He gives her a chair beside it and leaves her there.
+go: e5.end.saro
+
+@node e5.end.tesk.shut
+place: q5_well_house
+speaker: SEFA
+cost: 0
+nar: The Tesks. The Well House, a Friday evening. Ines Saro is on the step, fourteen, Vell, not one of the Assembly, in her school coat. Her scarf is off, in her hand. She wants to sit where Danil's photograph is, inside.
+line: SEFA: It's prayers, love. It's only for us. I'm sorry. There's a bench at the end of the street.
+nar: The League's page has had the Well House's door on it twice this week. He shuts the door gently. Through the mesh she watches the lamp go on inside. She sits on the step anyway, on his clean step, and he lets her, and doesn't come out.
+go: e5.end.saro
+
+@node e5.end.saro
+place: q5_saro_flat
+speaker: TEO
+cost: 0
+camera: near
+nar: The Saros. The flat over the shop. The shutter is up again now, mended, and the window reglazed, and somebody has already sprayed it once and Teo has already washed it off once.
+nar: There are boxes on the floor. Mira's sister in Arlen has a room. Kasem has been saying the same thing every night: We will go back when it's over. Back where, nobody asks.
+line: TEO: We're staying. Get the boxes out of my sight. He worked here. He's in the shop. {when: has(e5.cert_true)}
+nar: He unpacks the tea glasses off the tray one at a time and puts them back on the shelf over the sink, and Mira watches him, and lets him. {when: has(e5.cert_true)}
+line: TEO: We're going. Pack the glasses. Nobody will even say what they did to him. Not even the doctor. There's nothing for him here. {when: !has(e5.cert_true)}
+nar: He wraps the tea glasses in the Gazette one at a time. The last one in the box is the one with the gold rim worn off that Danil held in both hands when he was five. {when: !has(e5.cert_true)}
+nar: The Sunday after, the whole family goes out to the Vell plot at the far end of the new cemetery, by the bypass, where the lorries go past all day on the other side of a chain-link fence. The grave is still a mound of clay with the wreaths on it gone brown. There's no stone yet. Stones take six months. There's a wooden marker with his name in two alphabets, painted by the man at the Well House who does the signs.
+nar: Mira has brought bread. She baked it herself, on purpose, too long, so it's black on the bottom and the top. She breaks it and puts the pieces on the clay, the old way, for the birds, so something eats.
+nar: Ines laughs. She can't stop. She stands at her brother's grave laughing at the burnt bread with her hand over her mouth and the tears coming, and Mira laughs too, and Teo doesn't, and then Teo does, once, and Kasem stands at the end of the grave in his good suit and doesn't understand, and then does.
+nar: A lorry goes by on the bypass. A crow comes down on the mound for the bread before they've even turned to go.
+go: e5.shop
+
+# ---------------------------------------------------------------- e5.s16, the ending: the table in the window
+@node e5.shop
+place: q5_shop
+speaker: DEALER
+cost: 0
+camera: wide
+do: set(e5.window_dressed)
+nar: The last week of commemoration. The hill above Exchange Street, where the old houses with trees were, a parade of shops: a vape shop, a nail bar, and on the corner, Hartley's, Antiques and Clearances.
+nar: The dealer has dressed his window for the week. He's proud of it. He did it on Sunday with his wife holding the stepladder.
+nar: A table made out of a door. Chairs pulled up round it from three different houses. Old bowls from a house clearance, brown and cream, odd ones, chipped at the rims where children held them. In each bowl, grey gruel cast in resin, glossy, with a spoon standing in it. Under the table a humidifier from the chemist's breathes steam up through the gap in the boards so it looks warm. Along the top, a sheaf of wheat tied in black ribbon, the same as the one in the square.
+nar: It's the table from the dream, the first winter's dream, the one the family laid every night and nobody could get to.
+opt: "Stop at the window." -> e5.w.start {do: set(said.e5_window_stopped)}
+opt: "Walk on." -> e5.w.start {do: set(said.e5_window_walked)}
+
+# ---------------------------------------------------------------- the witness that is a table
+@witness e5.w.table
+who: DEALER
+listener: CUSTOMER
+guest: q_class inspector=TOM militia=LEON
+place: q5_shop
+opens: e5.w.table.open
+dispatch: e5.w.table.next
+reach: q5_shop
+sources: DEALER
+never: q5_mortuary, q5_council, q5_police, q5_archive
+beat: e5.w.table.hinge | e5.window_dressed | seen q5_shop ? has(e5.window_dressed)
+beat: e5.w.table.goat | e5.window_dressed | seen q5_shop ? has(e5.window_dressed)
+beat: e5.w.table.initials | e5.window_dressed | seen q5_shop ? has(e5.window_dressed)
+beat: e5.w.table.thread | e4.carry_h1 | seen q5_shop ? has(e4.carry_h1)
+beat: e5.w.table.spoons | e5.house_cleared | seen q5_shop ? has(e5.house_cleared)
+last: e5.w.table.sale
+unwitnessed: e5.clip_open, e5.danil_dead, e5.stories_out, e5.rumour_posted, e5.hinge_said, e5.vote_open, e5.vote_carried | the clip, the stories, the tea and the vote: a table in a shop window saw none of it
+unwitnessed: e5.cert_open, e5.cert_true, e5.cert_false | the cause of death: said at a mortuary door
+unwitnessed: e5.ledger_open, e5.page_torn, e5.archive_open, e5.page_lost, e5.page_kept, e5.page_given | the wedge and the sack: at Mara's table, on the bridge and up the cut
+unwitnessed: e5.door_day, e5.house_down, e5.carry_b3, e5.carry_f3, e5.carry_h2, e5.carry_fb, said.e5_tom_to_ann | the door and the carried words: said in a yard and a kitchen, never at the window
+unwitnessed: e5.commemoration, e5.mara_true, e5.mara_letter, e5.mara_hills | the square: down the hill, out of sight of the shop
+unwitnessed: e5.tom_kept, e5.tom_resigned, e5.leon_suspended, e5.leon_moved, e5.mv_union, e5.mv_league, e5.mv_alliance, e5.mv_none, e5.mv_well_asked | the ends: in kitchens and corridors
+unwitnessed: said.e5_share_left, said.e5_share_deleted, said.e5_share_corrected, said.e5_tom_unfit, said.e5_tom_remedy, said.e5_leon_limp, said.e5_leon_true, said.e5_hinge_spoke, said.e5_hinge_tea, said.e5_tom_clip, said.e5_spoke_council, said.e5_voted_for, said.e5_voted_against, said.e5_stayed_home, said.e5_ledger_leave, said.e5_ledger_take, said.e5_tom_words, said.e5_leon_down, said.e5_page_lost, said.e5_page_kept, said.e5_page_given, said.e5_tom_keep, said.e5_tom_resign, said.e5_leon_drove, said.e5_tom_panel_yes, said.e5_tom_panel_no, said.e5_leon_got_out, e5.funeral_walked, said.e5_window_stopped, said.e5_window_walked | what the guest said: none of it at the window
+
+@node e5.w.start
+cost: 0
+do: witness(e5.w.table)
+go: e5.w.table.open
+
+@node e5.w.table.open
+place: q5_shop
+speaker: DEALER
+cost: 3
+camera: near
+nar: You stop at the window. Your own face is in the glass, over the table, faint, with the street behind you. {when: has(said.e5_window_stopped)}
+nar: You walk on. The camera doesn't. It stays at the glass, on the table, while your reflection goes out of the side of the window, and your footsteps go on down the hill, and stop. {when: has(said.e5_window_walked)}
+nar: Inside, the humidifier breathes. The steam comes up between the boards in a thin sheet and lies along the top of the gruel and doesn't move.
+go: e5.w.table.next
+
+@node e5.w.table.next
+cost: 0
+alt: e5.end ? seen(e5.w.table.sale)
+do: wnext()
+alt: e5.w.table.hinge ? wat(e5.w.table.hinge)
+alt: e5.w.table.goat ? wat(e5.w.table.goat)
+alt: e5.w.table.initials ? wat(e5.w.table.initials)
+alt: e5.w.table.thread ? wat(e5.w.table.thread)
+alt: e5.w.table.spoons ? wat(e5.w.table.spoons)
+go: e5.w.table.sale
+
+@node e5.w.table.hinge
+place: q5_shop
+speaker: DEALER
+cost: 3
+camera: near
+nar: Close. The top of the table, under the bowls. The grain of a door, the long boards, and across them the dark marks where the hinges were, three of them, the screw holes filled with old wax and dirt.
+nar: The dealer has polished round them, not over them. He likes them. They're on the ticket.
+go: e5.w.table.next
+
+@node e5.w.table.goat
+place: q5_shop
+speaker: DEALER
+cost: 3
+camera: near
+nar: Close. A leg of the table, low down, by the floor of the window. A goat cut into the wood, small, with its head turned back over its shoulder as if somebody behind it had said its name. Somebody once sanded at it and stopped halfway. The legs are gone soft. The head is sharp.
+voice: hearsay: Everybody's sharing everything. It was already out. Everybody says it. You only passed it on. {echo: e5.sl.says, when: toldself(e5.sl.says)}
+go: e5.w.table.next
+
+@node e5.w.table.initials
+place: q5_shop
+speaker: DEALER
+cost: 3
+camera: near
+nar: Close. The edge of the table, all the way round, cut with children's initials over years, on top of each other, some deep, some scratched with a pin. The oldest are worn nearly flat. A.H., the oldest, and a line cut through it, straight, by somebody who meant it.
+nar: In the window's glass, over the initials, the reflection of the street. A bus goes by. A woman with a pram.
+voice: precedent: Somebody has to keep order on Mill Street. If it's not us it's the lads with the bats. {echo: e5.sl.order, when: toldself(e5.sl.order)}
+go: e5.w.table.next
+
+@node e5.w.table.thread
+place: q5_shop
+speaker: DEALER
+cost: 3
+camera: near
+nar: Close. Round the same leg as the goat, under the initials, a bit of thread tied in a knot and a knot. Blue once. Grey now, and plaited, and gone hard as wire. The dealer tried to cut it off on Sunday with his wife's nail scissors, and it wouldn't cut, and he left it.
+go: e5.w.table.next
+
+@node e5.w.table.spoons
+place: q5_shop
+speaker: DEALER
+cost: 3
+camera: near
+nar: Close. Beside the table, on a little stand of its own, a bundle of wooden spoons in a jam jar, carved by hand, the bowls worn thin. They came in the same clearance lot from a yard off Mill Street. A price on a string, turned to the wall.
+go: e5.w.table.next
+
+@node e5.w.table.sale
+place: q5_shop
+speaker: CUSTOMER
+cost: 3
+camera: near
+do: wend()
+nar: The shop door opens with a bell. A woman comes out of the nail bar next door with her hands held up, drying, and stops at the window, and then goes into the shop, and you can hear her through the glass.
+line: CUSTOMER: The table in the window. Is it for sale?
+line: DEALER: Everything is.
+line: DEALER: After the week.
+line: DEALER: It's a door, really, if you look underneath. Somebody made it out of a door.
+nar: She says she'll think about it. The bell goes. She walks off down the hill, blowing on her nails.
+nar: The humidifier breathes. The steam lies on the gruel in the bowls. Nobody is at the table.
+nar: The camera stays. It stays there. Nothing moves in the window but the steam.
+go: e5.w.table.next
+
+@node e5.end
+cost: 0
+end: q.end

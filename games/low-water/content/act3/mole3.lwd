@@ -518,12 +518,16 @@ alt: mole3.wreck.waited ? has(mole3.waiting)
 nar: Three pairs of boots under the band. Sallis first, with a crowbar, and the Board's wardens behind with a boathook.
 line: Stand off the lens, Shelf. This isn't your column.
 line: SALLIS: The Board pays for salvage. Nobody's hurt by a dark lamp but a ship, and the ship's insured.
+line: SALLIS: Four months the Board's owed the wardens. The Trust found the money for white lamps on a hill. I'm collecting what's owed, out of the one purse they left open.
+line: SALLIS: You said some lamps have to go out. This is one. {when: trait(cv.fire) == done | var.lean_rise >= 3}
+nar: The last of them carries a storm lantern, lit, in a room that is all lamp.
 nar: One of them is the man in the sou'wester from the corner of the quay. {when: has(weigh3.marked)}
 check: "[FORM LETTER] Tell him what the Board filed on Low Night: wreckers, and no names. He has brought it some." -> mole3.wreck.letter.ok / mole3.wreck.letter.fail {skill: formletter, dc: 6}
 claim: "Open the Daybook at their names, and read them out." -> mole3.wreck.waited / mole3.wreck.waited ? has(strippers.named) {show: has(strippers.named), verb: read}
 check: "[THE DARK] Put out the room lamp and stand behind the lens, where every turn of the beam blinds the door." -> mole3.wreck.blind.ok / mole3.wreck.blind.fail {skill: dark, dc: 5, verb: hide, noise: 0}
 voice: undertow: Stand aside. The Board will be grateful, and you are so tired, and it is one lamp in a gale. {dc: 5}
-voice: condolence: A collier has a crew. Somebody on the quay will know their names by morning. {dc: 6}
+voice: condolence: The collier is insured. Her stokers are Kellish, and are not. Somebody on the quay will know their names by morning. {dc: 6}
+voice: hearsay: Teague said it in the Brine on Low Night. When the gale comes, up the mole, with a lantern. We had him down as a drunk with a song. {when: has(brine.teague_prophecy), dc: 3}
 opt: "Let them throw the isolator. It is locked." -> mole3.wreck.relight ? has(mole3.locked) | has(mole3.jumpered) {verb: cutpower, noise: 0.3}
 opt: "Go out onto the gallery and meet them." -> mole3.wreck.fight {noise: 0.8}
 opt: "Stand aside." -> mole3.wreck.let

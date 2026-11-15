@@ -1,0 +1,147 @@
+{
+ "place": "q4_station",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   0.5,
+   1.2,
+   0
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 5.684210526315789
+ },
+ "pxPerMetre": 95,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "dusk"
+ ],
+ "variantInfo": {
+  "dusk": {
+   "hour": 18.1,
+   "weather": "year 70, 18:05: the train gone out, sodium under the canopy, the last of the light over the line"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "bags",
+    "verb": "look",
+    "at": [
+     1,
+     0,
+     2.6
+    ],
+    "note": "the Saros' bags: three cases and two bundles tied in cloth, set down together"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "town",
+    "at": [
+     -3,
+     0,
+     -3.2
+    ],
+    "note": "through the booking hall to the town"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "dusk": [
+   {
+    "at": [
+     -8,
+     3.3,
+     0.2
+    ],
+    "kind": "sodium",
+    "I": 26,
+    "reach": 12,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -2,
+     3.3,
+     0.2
+    ],
+    "kind": "sodium",
+    "I": 26,
+    "reach": 12,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     4,
+     3.3,
+     0.2
+    ],
+    "kind": "sodium",
+    "I": 26,
+    "reach": 12,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "dusk": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: the station platform, the Saros' bags."
+}

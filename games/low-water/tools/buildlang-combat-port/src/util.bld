@@ -1,0 +1,259 @@
+// Small pieces every part of the sim uses: the seeded hash (core/rng.mjs),
+// JSON text for numbers and strings, move windows (sim/moves.mjs), and the
+// fighter geometry helpers (sim/fighter.mjs).
+
+const JS_PI: f64 = 3.141592653589793;
+
+// core/rng.mjs hashStr over bytes (equal to its UTF-16 loop for ASCII text).
+fn hash_str(s: str, seed: u32) -> u32 {
+    let mut h: u32 = seed;
+    let bytes = s.as_bytes();
+    let n = s.len();
+    let mut i: usize = 0;
+    while i < n {
+        h = h ^ (bytes[i] as u32);
+        h = h.wrapping_mul(0x01000193_u32);
+        i = i + 1;
+    }
+    h = h ^ (h >> 16);
+    h = h.wrapping_mul(0x85ebca6b_u32);
+    h = h ^ (h >> 13);
+    h = h.wrapping_mul(0xc2b2ae35_u32);
+    h ^ (h >> 16)
+}
+
+fn rand01(seed: u32, key: str) -> f64 {
+    (hash_str(key, seed) as f64) / 4294967296.0
+}
+
+// JSON text of a number as JSON.stringify writes it (null when not finite).
+fn jn(x: f64) -> str {
+    x.to_json()
+}
+
+fn jb(b: bool) -> str {
+    if b {
+        "true"
+    } else {
+        "false"
+    }
+}
+
+fn js(s: str) -> str {
+    json_quote(s)
+}
+
+// A JS string that may be null ("" here).
+fn jsn(s: str) -> str {
+    if s == "" {
+        "null"
+    } else {
+        json_quote(s)
+    }
+}
+
+fn jstrs(v: Vec<str>) -> str {
+    let mut parts: Vec<str> = Vec::new();
+    let mut i = 0;
+    while i < v.len() {
+        parts.push(json_quote(v[i]));
+        i += 1;
+    }
+    json_arr(parts)
+}
+
+// JS `${n}` for an integer-valued number.
+fn num_key(x: f64) -> str {
+    x.to_json()
+}
+
+fn tick_key(t: i64) -> str {
+    format!("{}", t)
+}
+
+fn contains(v: Vec<str>, s: str) -> bool {
+    let mut i = 0;
+    while i < v.len() {
+        if v[i] == s {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn index_of(v: Vec<str>, s: str) -> i64 {
+    let mut i = 0;
+    while i < v.len() {
+        if v[i] == s {
+            return i as i64;
+        }
+        i += 1;
+    }
+    -1
+}
+
+fn starts_with(s: str, p: str) -> bool {
+    s.starts_with(p)
+}
+
+fn str_contains(s: str, p: str) -> bool {
+    s.contains(p)
+}
+
+// sim/moves.mjs
+fn within(w: Win, f: f64) -> bool {
+    w.has && f >= w.a && f <= w.b
+}
+
+fn phase_of(m: Move, f: f64) -> str {
+    if f < m.startup {
+        return "startup";
+    }
+    if f < m.startup + m.active {
+        return "active";
+    }
+    if f < m.total {
+        return "recovery";
+    }
+    "done"
+}
+
+fn root_speed(m: Move, f: f64) -> f64 {
+    let mut v = 0.0;
+    let mut i = 0;
+    while i < m.root.len() {
+        let r = m.root[i];
+        if f >= r.a && f <= r.b {
+            v += r.s;
+        }
+        i += 1;
+    }
+    v
+}
+
+fn cancel_win(m: Move, action: str) -> Win {
+    let i = index_of(m.cancel_keys, action);
+    if i < 0 {
+        return Win { has: false, a: 0.0, b: 0.0, n: 0.0 };
+    }
+    m.cancel_wins[i as usize]
+}
+
+fn can_cancel(m: Move, f: f64, action: str) -> bool {
+    within(cancel_win(m, action), f) || within(cancel_win(m, "any"), f)
+}
+
+fn next_of(m: Move, action: str) -> str {
+    let i = index_of(m.next_keys, action);
+    if i < 0 {
+        return "";
+    }
+    m.next_ids[i as usize]
+}
+
+fn hits_at(m: Move, f: f64) -> Vec<HitVol> {
+    let mut out: Vec<HitVol> = Vec::new();
+    let mut i = 0;
+    while i < m.hits.len() {
+        let h = m.hits[i];
+        if f >= h.at0 && f <= h.at1 {
+            out.push(h);
+        }
+        i += 1;
+    }
+    out
+}
+
+fn armor_at(m: Move, f: f64) -> f64 {
+    if within(m.armor, f) {
+        m.armor.n
+    } else {
+        0.0
+    }
+}
+
+fn max_reach(m: Move) -> f64 {
+    let mut r = -1.0 / 0.0;
+    let mut i = 0;
+    while i < m.hits.len() {
+        if m.hits[i].r1 > r {
+            r = m.hits[i].r1;
+        }
+        i += 1;
+    }
+    r
+}
+
+// sim/fighter.mjs geometry
+fn wrap_angle(a: f64) -> f64 {
+    let tau = JS_PI * 2.0;
+    ((((a + JS_PI) % tau) + tau) % tau) - JS_PI
+}
+
+fn angle_to(ax: f64, az: f64, bx: f64, bz: f64) -> f64 {
+    datan2(bz - az, bx - ax)
+}
+
+fn dist_xy(ax: f64, az: f64, bx: f64, bz: f64) -> f64 {
+    dhypot(bx - ax, bz - az)
+}
+
+fn deg() -> f64 {
+    180.0 / JS_PI
+}
+
+fn clampf(x: f64, a: f64, b: f64) -> f64 {
+    if x < a {
+        a
+    } else if x > b {
+        b
+    } else {
+        x
+    }
+}
+
+fn maxf(a: f64, b: f64) -> f64 {
+    // JS Math.max: NaN wins; +0 over -0 does not arise here
+    if a != a || b != b {
+        return 0.0 / 0.0;
+    }
+    if a == 0.0 && b == 0.0 {
+        if 1.0 / a > 0.0 {
+            return a;
+        }
+        return b;
+    }
+    if a >= b {
+        a
+    } else {
+        b
+    }
+}
+
+fn minf(a: f64, b: f64) -> f64 {
+    if a != a || b != b {
+        return 0.0 / 0.0;
+    }
+    if a == 0.0 && b == 0.0 {
+        if 1.0 / a < 0.0 {
+            return a;
+        }
+        return b;
+    }
+    if a <= b {
+        a
+    } else {
+        b
+    }
+}
+
+fn join_lines(v: Vec<str>) -> str {
+    let mut out = "";
+    let mut i = 0;
+    while i < v.len() {
+        out = format!("{}{}\n", out, v[i]);
+        i += 1;
+    }
+    out
+}

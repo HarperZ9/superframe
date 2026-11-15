@@ -1,24 +1,16 @@
 // Moves every body has, and the rules every fighter obeys. Frames at 60 a second; damage in
 // Standing, costs in Breath, poise in hits (SYSTEMS-FULL 18.2). TUNING.md gives each source.
-export const COMMON = {
-  // a hit that lands in a wind-up (or on a body standing open) interrupts it: a short flinch
-  flinch: { kind: "stagger", recovery: 30, root: [[0, 5, -0.8]], cancel: { roll: [22, 29], step: [22, 29] } },
-  // poise broken: the body reels and cannot act
-  stagger: { kind: "stagger", recovery: 60, root: [[0, 10, -1.2]], cancel: { roll: [40, 59], step: [40, 59] } },
-  // a caught (parried) blow: wide open; a riposte lands in this window
-  parried: { kind: "stagger", recovery: 62, root: [[0, 6, -0.8]] },
-  // shoved into water at the knee or deeper: under for a moment
-  ducked: { kind: "stagger", recovery: 54 },
-  // a heavy blow, a hook or a rope puts the body down; it gets up with the frames covered
-  knockdown: { kind: "down", recovery: 48, then: "getup" },
-  getup: { kind: "down", recovery: 50, iframes: [0, 30], cancel: { roll: [30, 49] } },
-  // a rigged rope round the legs: down and held, open to a free strike (sim/props.mjs)
-  snared: { kind: "down", recovery: 150, then: "getup" },
-  // Standing gone: the body goes down and stays down (Lamb: Down, 18.7; a foe: beaten, C5)
-  fall: { kind: "fall", recovery: 70 },
-  // a yielding opponent backs off with its hands open
-  yield: { kind: "fall", recovery: 40 },
-};
+// Notes kept from the table before it moved to moves.json (P1):
+// a hit that lands in a wind-up (or on a body standing open) interrupts it: a short flinch
+// poise broken: the body reels and cannot act
+// a caught (parried) blow: wide open; a riposte lands in this window
+// shoved into water at the knee or deeper: under for a moment
+// a heavy blow, a hook or a rope puts the body down; it gets up with the frames covered
+// a rigged rope round the legs: down and held, open to a free strike (sim/props.mjs)
+// Standing gone: the body goes down and stays down (Lamb: Down, 18.7; a foe: beaten, C5)
+// a yielding opponent backs off with its hands open
+import MOVES from "./moves.json" with { type: "json" };
+export const COMMON = MOVES.common; // the data: moves.json
 
 export const RULES = {
   riposteRange: 2.4,      // metres to a parried target for a light press to become a riposte
@@ -28,7 +20,8 @@ export const RULES = {
   guardFrames: 4,         // frames from pressing block to the guard being up
   guardSpeed: 0.4,        // walking speed while the guard is up
   guardRegen: 0.1,        // breath recovers at this share while the guard is up
-  buffer: 10,             // frames a press waits in the buffer
+  catchLockout: 24,      // frames after a missed catch ends before another catch may start (T5; Lies of P locks 30)
+  buffer: 8,              // frames a press waits in the buffer: 133 ms (engine PROGRESS 37, 100 to 150 ms; was 10, 167 ms)
   softRange: 5,           // metres: soft targeting looks this far
   softCone: 50,           // degrees either side of the intended direction
   flinchGuard: 90,        // frames after a flinch before the same body can be flinched again

@@ -1,0 +1,553 @@
+{
+ "format": "lw-studio-1",
+ "meta": {
+  "who": "will",
+  "mood": "neutral",
+  "w": 768,
+  "h": 960,
+  "dy": 0.051041666666666666,
+  "cam": {
+   "yaw": 34,
+   "elev": 4,
+   "height": 0.7,
+   "turn": -32
+  },
+  "key": {
+   "az": 80,
+   "el": 25
+  },
+  "keyDir": [
+   0.8925389352890299,
+   0.42261826174069944,
+   0.1573786956242627
+  ],
+  "keyColour": [
+   1.25,
+   0.9,
+   0.58
+  ],
+  "age": null,
+  "stature": 1.84,
+  "heads": "old",
+  "refHash": "44bd1e61",
+  "era": 2,
+  "person": "will",
+  "seed": 10114137,
+  "info": {
+   "neutral": {
+    "strokes": [
+     775,
+     542,
+     557,
+     1076
+    ],
+    "eyes": [
+     {
+      "cx": 456,
+      "cy": 384,
+      "wd": 48,
+      "ht": 32,
+      "opened": false
+     },
+     {
+      "cx": 582,
+      "cy": 379,
+      "wd": 26,
+      "ht": 35,
+      "opened": false
+     }
+    ],
+    "mouth": {
+     "x0": 428,
+     "x1": 601,
+     "y": 525
+    }
+   },
+   "angry": {
+    "strokes": [
+     775,
+     515,
+     609,
+     1090
+    ],
+    "eyes": [
+     {
+      "cx": 456,
+      "cy": 384,
+      "wd": 45,
+      "ht": 35,
+      "opened": false
+     },
+     {
+      "cx": 582,
+      "cy": 377,
+      "wd": 22,
+      "ht": 38,
+      "opened": false
+     }
+    ],
+    "mouth": {
+     "x0": 446,
+     "x1": 591,
+     "y": 525
+    }
+   }
+  },
+  "formTones": {
+   "light": [
+    0.9255485002981599,
+    0.5001460205106045,
+    0.31708304633634954
+   ],
+   "shadow": [
+    0.28535745732334195,
+    0.14113820319643663,
+    0.11813974612824885
+   ]
+  }
+ },
+ "layers": [
+  {
+   "name": "underpainting",
+   "kind": "paint",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null
+  },
+  {
+   "name": "ground",
+   "kind": "paint",
+   "author": "script",
+   "opacity": 1,
+   "visible": true,
+   "locked": false,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "ground.png",
+   "heightFile": "ground.height.png"
+  },
+  {
+   "name": "ground mask",
+   "kind": "mask",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": null,
+   "target": "ground",
+   "rule": {
+    "kind": "ids",
+    "ids": [
+     0
+    ],
+    "soft": 1
+   },
+   "blend": null,
+   "group": null,
+   "file": "ground-mask.png",
+   "heightFile": null
+  },
+  {
+   "name": "cloth",
+   "kind": "paint",
+   "author": "script",
+   "opacity": 1,
+   "visible": true,
+   "locked": false,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "cloth.png",
+   "heightFile": "cloth.height.png"
+  },
+  {
+   "name": "cloth mask",
+   "kind": "mask",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": null,
+   "target": "cloth",
+   "rule": {
+    "kind": "ids",
+    "ids": [
+     57,
+     1,
+     58,
+     2,
+     53,
+     31,
+     20,
+     8,
+     45,
+     47,
+     55,
+     56,
+     41,
+     42,
+     43
+    ],
+    "grow": 2,
+    "soft": 1
+   },
+   "blend": null,
+   "group": null,
+   "file": "cloth-mask.png",
+   "heightFile": null
+  },
+  {
+   "name": "skin",
+   "kind": "paint",
+   "author": "script",
+   "opacity": 1,
+   "visible": true,
+   "locked": false,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "skin.png",
+   "heightFile": "skin.height.png"
+  },
+  {
+   "name": "form",
+   "kind": "form",
+   "author": "script",
+   "opacity": 1,
+   "visible": true,
+   "locked": false,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "form.png",
+   "heightFile": null
+  },
+  {
+   "name": "form mask",
+   "kind": "mask",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": null,
+   "target": "form",
+   "rule": {
+    "kind": "ids",
+    "ids": [
+     4,
+     29,
+     39,
+     60,
+     16
+    ],
+    "soft": 0
+   },
+   "blend": null,
+   "group": null,
+   "file": "form-mask.png",
+   "heightFile": null
+  },
+  {
+   "name": "form light",
+   "kind": "paint",
+   "author": "script",
+   "opacity": 0.85,
+   "visible": true,
+   "locked": false,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "form-light.png",
+   "heightFile": "form-light.height.png"
+  },
+  {
+   "name": "form light mask",
+   "kind": "mask",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": null,
+   "target": "form light",
+   "rule": {
+    "kind": "ids",
+    "ids": [
+     4,
+     29,
+     39,
+     60,
+     16
+    ],
+    "grow": 1,
+    "soft": 1
+   },
+   "blend": null,
+   "group": null,
+   "file": "form-light-mask.png",
+   "heightFile": null
+  },
+  {
+   "name": "skin mask",
+   "kind": "mask",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": null,
+   "target": "skin",
+   "rule": {
+    "kind": "ids",
+    "ids": [
+     4,
+     29,
+     39,
+     60,
+     16
+    ],
+    "grow": 2,
+    "soft": 1
+   },
+   "blend": null,
+   "group": null,
+   "file": "skin-mask.png",
+   "heightFile": null
+  },
+  {
+   "name": "light glaze",
+   "kind": "glaze",
+   "author": "script",
+   "opacity": 1,
+   "visible": true,
+   "locked": false,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "light-glaze.png",
+   "heightFile": null
+  },
+  {
+   "name": "light glaze mask",
+   "kind": "mask",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": null,
+   "target": "light glaze",
+   "rule": {
+    "kind": "lit",
+    "ids": [
+     4,
+     29,
+     39,
+     60,
+     16
+    ],
+    "lo": 0.2,
+    "hi": 0.5,
+    "soft": 3
+   },
+   "blend": null,
+   "group": null,
+   "file": "light-glaze-mask.png",
+   "heightFile": null
+  },
+  {
+   "name": "light strokes",
+   "kind": "paint",
+   "author": "script",
+   "opacity": 1,
+   "visible": true,
+   "locked": false,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "light-strokes.png",
+   "heightFile": "light-strokes.height.png"
+  },
+  {
+   "name": "light strokes mask",
+   "kind": "mask",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": null,
+   "target": "light strokes",
+   "rule": {
+    "kind": "ids",
+    "ids": [
+     4,
+     29,
+     39,
+     60
+    ],
+    "soft": 1
+   },
+   "blend": null,
+   "group": null,
+   "file": "light-strokes-mask.png",
+   "heightFile": null
+  },
+  {
+   "name": "features",
+   "kind": "paint",
+   "author": "script",
+   "opacity": 1,
+   "visible": true,
+   "locked": false,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "features.png",
+   "heightFile": "features.height.png"
+  },
+  {
+   "name": "shade",
+   "kind": "paint",
+   "author": "script",
+   "opacity": 0.85,
+   "visible": true,
+   "locked": false,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "shade.png",
+   "heightFile": "shade.height.png"
+  },
+  {
+   "name": "shade mask",
+   "kind": "mask",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": null,
+   "target": "shade",
+   "rule": {
+    "kind": "shade",
+    "lo": 0.3,
+    "hi": 0.02,
+    "foot": 0.62,
+    "soft": 4
+   },
+   "blend": null,
+   "group": null,
+   "file": "shade-mask.png",
+   "heightFile": null
+  },
+  {
+   "name": "eyes",
+   "kind": "paint",
+   "author": "script",
+   "opacity": 1,
+   "visible": true,
+   "locked": false,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "eyes.png",
+   "heightFile": "eyes.height.png"
+  },
+  {
+   "name": "paint",
+   "kind": "paint",
+   "author": "human",
+   "opacity": 1,
+   "visible": true,
+   "locked": false,
+   "mood": null,
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "paint.png",
+   "heightFile": "paint.height.png"
+  },
+  {
+   "name": "mood: angry",
+   "kind": "paint",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": "angry",
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null
+  },
+  {
+   "name": "mood: angry paint",
+   "kind": "paint",
+   "author": "human",
+   "opacity": 1,
+   "visible": true,
+   "locked": false,
+   "mood": "angry",
+   "target": null,
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "mood-angry-paint.png",
+   "heightFile": "mood-angry-paint.height.png"
+  },
+  {
+   "name": "mood: angry mask",
+   "kind": "mask",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": "angry",
+   "target": "mood: angry",
+   "rule": null,
+   "blend": null,
+   "group": null
+  },
+  {
+   "name": "mood: angry paint mask",
+   "kind": "mask",
+   "author": "procedural",
+   "opacity": 1,
+   "visible": true,
+   "locked": true,
+   "mood": "angry",
+   "target": "mood: angry paint",
+   "rule": null,
+   "blend": null,
+   "group": null,
+   "file": "mood-angry-paint-mask.png",
+   "heightFile": null
+  }
+ ],
+ "groups": {},
+ "strokes": "strokes.jsonl"
+}

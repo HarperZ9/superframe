@@ -1,0 +1,64 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "ANNI",
+ "setting": "quota",
+ "status": "draft 2026-10-21 from design/quota/02-HOUSEHOLDS.md by the voice director; generated from design/voice/quota-cast.json, edit that file",
+ "role": "Anni Haldane: counts the sacks on the cart",
+ "age": "14",
+ "register": {
+  "level": "plain",
+  "education": "the Upper Town school",
+  "class": "poor",
+  "trade": "counts the sacks on the cart",
+  "words": [
+   "sacks",
+   "bowls",
+   "the cart",
+   "the hills"
+  ]
+ },
+ "region": {
+  "name": "half-hesh",
+  "markers": [],
+  "idioms": [
+   "went to the hills"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 12
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "how many sacks were on the cart",
+   "how many bowls"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "died",
+     "dead",
+     "the cell"
+    ],
+    "why": "the family is not told how Tomas died",
+    "unless_gate": [
+     "haldane.told"
+    ]
+   }
+  ]
+ },
+ "trade": "counts the sacks on the cart",
+ "wound": "Tomas, carried longest: the lie becomes hers to keep",
+ "lie": "He went to the hills.",
+ "fears": "Tomas, carried longest: the lie becomes hers to keep",
+ "hides": "He went to the hills.",
+ "tics": [
+  "went to the hills"
+ ]
+}

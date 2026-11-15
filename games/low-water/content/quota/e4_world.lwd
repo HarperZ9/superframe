@@ -1,0 +1,846 @@
+# Era 4, The Closure: places, people, households, fates, self-lies, lore, props, and the era's senses, loads and
+# echoes. Year 70, fifty winters after era 3: one month in late autumn. The Saros come in on the train, the bank's
+# board sells the mill to Halvard by a show of hands, Victor Orme walks the town with a can of grey road paint and
+# sprays the kerb of the street the bank gives up on, the mill shuts, CHAFFERS OUT goes up on the sign, and the Row
+# may burn. Story lead, 2026-10-23.
+# DRAFT: every line in era 4 waits for the author's line approval (ledger row S14). Design: design/eras/era4.md.
+# Two classes play it: the Inspector line is Ruth Furrowe (38), Halvard's auditor and Pell's daughter; the Militia
+# line is Constable Ann Brack (30), Davey's daughter.
+# Files: e4_world (this), e4_town (s01 to s05), e4_mill (s07, s06, s08), e4_night (s09 to s13), e4_witness (Mira,
+# year 103). The era 3 to 4 link is the single alt in e3_witness.lwd (e3.w.aaron.next goes to e4.start); era 4
+# hands off to e5.start (e4_witness.lwd).
+# Plates: the sixteen q4_* places are areas on their own plates (plates agent, 2026-10-22; game/engine/wiring/
+# era4-areas.lwd, render/places/q4_*.mjs); the HUD holds to each area's hour and weather while var.era is 4.
+# Order of play: s01, s02, s03, s05, s04, s07, s06, s08, s09, s10, s11, s12, s13, witness. The last shift moves
+# ahead of the pit so that Lew's chapter falls on closure night, the same hour as Joss's line at the Sheaf.
+# Not built here: the inner arena fights (e4.n1; the self-lies below arm them), the perspective-chapter heads for
+# the pit (written as two chapters with their own camera), the community rules R14, R15, R19, R20.
+
+# ---------------------------------------------------------------- places new in era 4 (no plates yet)
+@place q4_tower
+name: The bell tower over Exchange Street, first sodium
+zone: upper
+district: upper
+footing: stone
+shelter: no
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q4_station
+name: The station platform
+zone: lower
+district: mill
+footing: stone
+shelter: yes
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q4_mill_office
+name: The mill manager's office
+zone: lower
+district: mill
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q4_mill_yard
+name: The mill yard and the gate
+zone: lower
+district: mill
+footing: stone
+shelter: no
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q4_mill_floor
+name: The mill floor
+zone: lower
+district: mill
+footing: stone
+shelter: yes
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q4_board
+name: The bank's boardroom
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.6
+sodium: 1
+dark-light: 0.05
+
+@place q4_furrowe_house
+name: Pell Furrowe's kitchen
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q4_brack_flat
+name: Davey Brack's flat over the Crown
+zone: lower
+district: mill
+footing: wood
+shelter: yes
+stove: yes
+light: 0.4
+sodium: 1
+dark-light: 0.05
+
+@place q4_estate_stair
+name: The far-bank estate, stairwell C
+zone: lower
+district: mill
+footing: stone
+shelter: yes
+light: 0.2
+sodium: 1
+dark-light: 0.03
+
+@place q4_sheaf
+name: The Sheaf, with a jukebox
+zone: lower
+district: mill
+footing: wood
+shelter: yes
+stove: yes
+light: 0.4
+sodium: 1
+dark-light: 0.05
+
+@place q4_exchange_street
+name: Exchange Street at night, the sign
+zone: upper
+district: upper
+footing: stone
+shelter: no
+light: 0.3
+sodium: 1
+dark-light: 0.05
+
+@place q4_row
+name: The Row, the Vell terrace by the race
+zone: lower
+district: mill
+footing: stone
+shelter: no
+light: 0.3
+sodium: 1
+dark-light: 0.05
+
+@place q4_joss_flat
+name: Joss Haldane's flat in Haldane Yard
+zone: lower
+district: mill
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q4_well_floor
+name: The Well House floor, rebuilt
+zone: lower
+district: mill
+footing: wood
+shelter: yes
+light: 0.3
+sodium: 1
+dark-light: 0.03
+
+@place q4_police
+name: The police station desk
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q4w_saro_flat
+name: Mira Saro's flat on Mill Street, year 103
+zone: lower
+district: mill
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+# ---------------------------------------------------------------- the Vell, new in era 4
+@faction vell
+name: The Vell families
+about: Off the trains from the Vellmark in the last four years. The Row by the race, ten houses, rent paid weekly in cash.
+start: 0
+tier: -3 thinks you are the sign
+tier: 0 does not trust you
+tier: 2 trusts you, a little
+
+# ---------------------------------------------------------------- the two players' sheets
+@archetype e4.ruth
+name: Ruth Furrowe
+about: Auditor for Halvard, sent in to close the books on Orme's mill. Pell's daughter. She knows what everything costs.
+attr: pen 3
+attr: coat 2
+attr: hat 2
+attr: nose 2
+skill: sum 2
+skill: precedent 2
+skill: smallprint 3
+skill: carbon 1
+skill: condolence 1
+skill: chit 1
+skill: formletter 1
+skill: pride 1
+
+@archetype e4.ann
+name: Ann Brack
+about: Constable. Davey's daughter, Will's granddaughter. She keeps the mill gate this month, and the Row at night.
+attr: pen 2
+attr: coat 3
+attr: hat 2
+attr: nose 3
+skill: knees 2
+skill: ballast 2
+skill: pride 1
+skill: grip 2
+skill: salt 1
+skill: smell 2
+item: c.q_greatcoat 1
+item: c.q_cap 1
+
+# ---------------------------------------------------------------- people new in era 4
+@char e4.ruth_c
+name: Ruth Furrowe, Halvard's auditor
+speaker: RUTH
+faction: district
+about: Thirty-eight. Pell's daughter, Nan's mother. Flat shoes, a calculator in a leather case, a cold she has had since September.
+
+@char e4.ann_c
+name: Constable Ann Brack
+speaker: ANN
+faction: district
+about: Thirty. Davey's daughter. Grew up two streets from the mill gate and went to school with half the picket.
+
+@char e4.joss
+name: Joss Haldane, mill foreman
+speaker: JOSS
+faction: hesh
+about: Twenty-eight. Anni's grandson. Foreman on the second floor. Calls himself Tarn when it helps and Hesh when it helps more.
+
+@char e4.kasem
+name: Kasem Saro
+speaker: KASEM
+faction: vell
+about: Thirty. From the Vellmark. Was a lathe-turner in a works that is a crater now. Smiles when he does not understand, which is often.
+
+@char e4.mira
+name: Mira Saro
+speaker: MIRA
+faction: vell
+about: Twenty-seven, and sixty in year 103. Kasem's wife. Learns Tarnish off the labels in the shop. Laughs with her whole face.
+
+@char e4.teo
+name: Teo Saro
+speaker: TEO
+faction: vell
+about: Four. Wants to hold the birdcage. Is never allowed.
+
+@char e4.anzo
+name: Anzo Velek
+speaker: ANZO
+faction: vell
+about: Sixty. Mira's father. Carried an empty birdcage across three borders with the tea glasses packed in its straw.
+
+@char e4.lew
+name: Lew Haldane
+speaker: LEW
+faction: hesh
+about: Twenty-four. Joss's younger brother. Hurt his back on the hoist two winters ago and has been on the clinic's tablets since.
+
+@char e4.june
+name: June Haldane
+speaker: JUNE
+faction: district
+about: Twenty-two. Lew's wife, Tarn, from the estate. Kev is one.
+
+@char e4.col
+name: Col Haldane
+speaker: COL
+faction: district
+about: Eighteen. Aaron's grandson. Calls himself Tarn. Sells the clinic's tablets on the stairs of the far-bank estate.
+
+@char e4.dale
+name: Dale Gedge
+speaker: DALE
+faction: district
+about: Twenty-four. Constable Gedge's grandson. Three years on the mill's books as casual. Good with his hands, and paints.
+
+@char e4.victor
+name: Victor Orme
+speaker: VICTOR
+faction: district
+about: Fifty. Chairman of the bank and owner of the mill. His great-grandfather's name is over the gate.
+
+@char e4.sell
+name: Arvid Sell, of Halvard
+speaker: SELL
+faction: district
+about: Forty-eight. Halvard's regional man, from the Sund. Has closed nine mills and remembers all of them.
+
+@char e4.irene
+name: Irene Mott, records clerk
+speaker: IRENE
+faction: district
+about: Forty-five. Walter's granddaughter. Takes the minute in shorthand and types it the same night.
+
+@char e4.paul
+name: Paul Ashby, of the campaign office
+speaker: PAUL
+faction: district
+about: Thirty-five. Writes the posters and the Gazette's statements, sometimes the same afternoon.
+
+@char e4.hal
+name: Dr Hal Lind, the mill clinic
+speaker: HAL
+faction: district
+about: Forty-five. Clara Lind's grandson. Has written the estate's scripts for six years and knows where they end up.
+
+@char e4.sefa
+name: Sefa Tesk the younger
+speaker: SEFA
+faction: hesh
+about: Twenty. Keeps the door of the rebuilt Well House. Named for a great-uncle.
+
+@char e4.danil
+name: Danil Saro
+speaker: DANIL
+faction: vell
+about: Five, in year 103. Teo's boy. Repeats any new word twice to keep it.
+
+@char e4.nan
+name: Nan Furrowe
+speaker: NAN
+faction: district
+about: Thirteen. Ruth's daughter. Doing her homework at her grandad's table.
+
+@char e4.rudd
+name: Sergeant Rudd
+speaker: RUDD
+faction: district
+about: Fifty-five. The desk sergeant. Has a word for every fire, and the word is always the same.
+
+@char e4.gary
+name: Gary Peel
+speaker: GARY
+faction: district
+about: Twenty-two. A mill hand. Sings when he has had three.
+
+# ---------------------------------------------------------------- the households the era presses
+@household e4_saro
+name: The Saros, off the train
+street: mill
+people: vell
+hesh: 0
+place: q4_row
+members: Kasem, Mira, Teo, Baby
+taken: 0
+portion: 1
+
+@household e4_row
+name: The Row, the Vell terrace
+street: mill
+people: vell
+hesh: 0
+place: q4_row
+members: Anzo, Bora, Ilsa, Pesh
+taken: 0
+portion: 1
+
+@household e4_lew
+name: Lew and June, stairwell C
+street: mill
+people: hesh
+hesh: 1
+place: q4_estate_stair
+members: Lew, June, Kev
+taken: 0
+portion: 1
+
+# ---------------------------------------------------------------- era 4's record
+@fact e4.saros_arrive
+@fact e4.hire_open
+@fact e4.kasem_hired
+@fact e4.dale_hired
+@fact e4.board_sat
+@fact e4.map_row
+@fact e4.map_west
+@fact e4.closed
+@fact e4.pit_open
+@fact e4.lew_dead
+@fact e4.lew_lives
+@fact e4.sheaf_said
+@fact e4.sign_painted
+@fact e4.row_marked
+@fact e4.row_burned
+@fact e4.anzo_dead
+@fact e4.row_stood
+@fact e4.report_filed
+@fact e4.lights_out
+@fact e4.shelter_anni
+@fact e4.shelter_well
+@fact e4.carry_f2
+@fact e4.carry_b2
+@fact e4.carry_h1
+@fact said.e4_ruth_early
+@fact said.e4_ruth_month
+@fact said.e4_ruth_rate
+@fact said.e4_ann_vouch
+@fact said.e4_ruth_stay
+@fact said.e4_ann_stay
+@fact said.e4_ruth_west
+@fact said.e4_ruth_row
+@fact said.e4_ann_anzo
+@fact said.e4_ann_lift
+@fact said.e4_answer
+@fact said.e4_bags
+@fact said.e4_ann_warn
+
+# ---------------------------------------------------------------- the fates, each with its decider
+@fate f.e4_hire
+pressure: has(e4.hire_open)
+subject: household e4_saro
+decider: JOSS
+scene: e4.hire.decide, e4.hire.kasem, e4.hire.dale
+window: 7
+who: Kasem
+because: the manager's order for agency hands a week before the gates shut; Joss Haldane gives the start to Kasem Saro at the agency rate, or to Dale Gedge at the old one
+
+@fate f.e4_map
+pressure: has(e4.board_sat)
+subject: household e4_row
+decider: VICTOR
+scene: e4.map.decide, e4.map.row, e4.map.west
+window: 7
+who: Anzo
+because: the bank's credit rule; Victor Orme walks the town with Halvard's can of grey road paint and sprays the kerb of one street more after Haldane Yard, the Row or Exchange Street west, and no credit goes to a street with the grey stripe
+
+@fate f.e4_lew
+pressure: has(e4.pit_open)
+subject: household e4_lew
+decider: COL
+scene: e4.lew.decide, e4.lew.dies, e4.lew.lives
+window: 7
+taken: yes
+who: Lew
+because: the mill shut and the clinic with it; Col Haldane sells his cousin Lew the strip on closure night, or says not you
+
+@fate f.e4_row
+pressure: has(e4.row_marked)
+subject: household e4_row
+decider: DALE
+scene: e4.row.decide, e4.row.burns, e4.row.stands
+window: 7
+taken: yes
+who: Anzo
+because: the poster, the pub and what the Sheaf did with Joss's words; Dale Gedge puts a bottle through a window on the Row, or paints the sign and goes home
+
+@fate f.e4_shelter
+pressure: has(e4.row_marked)
+subject: household e4_saro
+decider: ANNI
+scene: e4.shelter.decide, e4.shelter.anni, e4.shelter.well
+window: 7
+who: Mira
+because: the Row burnt or marked; Anni Haldane takes the Saros into Joss's flat over his objection, or they sleep on the Well House floor
+
+# ---------------------------------------------------------------- the self-lies (each echoed word for word in Mira's witness)
+@selflie e4.sl.barn
+about: COWARDICE, The Long Barn's return for Ruth, at the end of the Row on the walk with the can, the boy in the doorway in his hat (e4_town.lwd, e4.walk.ruth)
+happened: The mill shut on a Friday. That night Lew Haldane died on stairwell C of the far-bank estate, on a strip from the clinic's last scripts. ? has(e4.lew_dead)
+happened: The mill shut on a Friday, and the men stood in the yard after the last machine and nobody went home.
+
+@selflie e4.sl.goats
+about: DISGUST, Under the Goats' return for Ann as CHAFFERS OUT, on Exchange Street under the sign (e4_night.lwd, e4.sign.ann)
+happened: The Row burned. Anzo Velek died on the pavement with his lungs full of the stairwell, and in the morning the sergeant stood in the black water in the hall and said electrical, and Ann said it after him. ? has(e4.anzo_dead)
+happened: CHAFFERS OUT stayed on the sign through the winter. The Saros' front window on the Row was put through twice before Christmas.
+
+# ---------------------------------------------------------------- lore
+@chain e4.map
+name: The grey stripe
+# the stripe already under Haldane Yard's arch, and the test squirt on the Row's kerb before the board sat
+route: one-run | e4.lore.map, e4.lore.map_draft
+
+@lore e4.lore.map
+chain: e4.map
+layer: surface
+where: node e4.walk
+about: The grey stripe across the cobbles under Haldane Yard's arch, sprayed the week before, scuffed by the school kids' heels and not coming off.
+
+@lore e4.lore.map_draft
+chain: e4.map
+layer: deep
+where: node e4.walk.ruth
+where: node e4.walk.ann
+about: A grey dot the size of a coin on the Row's kerb by the drain, dry by the time the walk comes down the hill: somebody tried the can there that morning, before the board sat down.
+
+@chain e4.fire
+name: The night of the sign
+# the goat sprayed on the bank wall with the arrow down the hill, and who did it: Mrs Bora's hands, or the white on Ann's thumb
+route: one-run | e4.lore.poster, e4.lore.witness
+route: one-run | e4.lore.poster, e4.lore.pocketbook
+
+@lore e4.lore.poster
+chain: e4.fire
+layer: surface
+where: node e4.sign.street
+about: Under the defaced sign, on the bank's wall, a white goat sprayed through a card stencil, head down, facing forward, with an arrow under it pointing down the hill to the Row. The paint is still running.
+
+@lore e4.lore.witness
+chain: e4.fire
+layer: deep
+where: node e4.report.ruth
+where: node e4.report.ann
+about: Mrs Bora from upstairs at number six, who cannot hear, takes the guest's wrist on the morning after and shows with her hands what she saw from her window: a man across the road, a ladder on his shoulder, whistling the mill song with no sound.
+
+@lore e4.lore.pocketbook
+chain: e4.fire
+layer: hidden
+where: node e4.report.desk
+requires: class militia
+about: The white still in the creases of Ann's thumb and first finger the morning after, from holding Dale Gedge's paint tin at the foot of his ladder. She rubs it with the other thumb at the desk, and it does not come off.
+
+@chain e4.cage
+name: The birdcage
+# the cage on the platform, and what was left at the border: the seventh saucer laid on Anni's table and taken back
+route: one-run | e4.lore.birdcage, e4.lore.border
+
+@lore e4.lore.birdcage
+chain: e4.cage
+layer: surface
+where: node e4.wide
+about: An empty birdcage, brass gone brown, the door wired shut. Packed in the straw at the bottom, six tea glasses in their saucers, and a seventh saucer with no glass.
+
+@lore e4.lore.border
+chain: e4.cage
+layer: deep
+where: node e4.shelter.kitchen
+about: Mira takes the tea glasses out of the birdcage's straw onto Anni's table, and then the seventh saucer, the one with no glass, and lays it with the others, and Kasem says a name, Aven, his brother's, left at the border, and she puts the saucer back in the straw.
+
+@chain e4.carried
+name: What was said on the Crown's steps, and in the Brack kitchen
+# the carried words pass again: Pell to Ruth before the board, Davey to Ann before her shift
+route: two-classes | e4.lore.carry_f, e4.lore.carry_b
+route: one-run | e4.lore.carry_f
+route: one-run | e4.lore.carry_b
+
+@lore e4.lore.carry_f
+chain: e4.carried
+layer: deep
+where: node e4.carry.pell
+requires: class inspector
+about: What Pell has from his father on the step after the Well House fire, and has not said in fifty years: I carried him. You don't need two for that. Will Brack's words, to Ned, on the Crown's steps.
+
+@lore e4.lore.carry_b
+chain: e4.carried
+layer: deep
+where: node e4.carry.davey
+requires: class militia
+about: What Davey has from his father in the Brack kitchen, the night of the Well House fire, with his feet in a bowl: I carried him. You don't need two for that.
+
+
+# ---------------------------------------------------------------- props (era4.md section 7, on their plates' marks; render/props/e4_*.mjs)
+# The device rule (2026-10-23): no prop is a document. The map, the poster and the report became the can, the goat on
+# the wall and the bottle neck in its bag; the ids stay so the plates and w_lore.lwd keep their hooks.
+@prop q.bank_map
+from: 4
+name: The can of road paint
+place: q4_board
+mark: map
+tells: era
+carries: sound
+touch: lift "Pick up the can" | Heavier than it looks, and cold. The ball inside knocks from end to end when you tip it. There's grey dried on the nozzle, and now on your finger. {sense: e4.can.rattle}
+state: 4 easel | A spray can of grey road paint on the ledge of an empty easel, the kind the council's men use to ring a hole in the road. It has left a grey ring on the ledge.
+
+@prop q.edrin_poster
+from: 4
+name: The end wall of the Row
+place: q4_row
+mark: poster
+tells: era
+carries: smell
+touch: wipe "Wipe it with your sleeve" ? has(e4.sign_painted) | The white comes off on the cuff, wet, and leaves a smeared goat behind on the brick. The smell of it stays on your wrist. {sense: e4.paint.wet}
+state: 4 wet ? has(e4.sign_painted) | A white goat on the end wall of the Row, sprayed through a card stencil, head down, facing forward. The paint is still wet and has run from its feet in thin lines to the pavement.
+state: 4 bare | The end wall of the Row, black brick, with a pale square where an old bill was scraped off and the paste left on.
+
+@prop q.fire_report
+from: 4
+name: The bag on the desk
+place: q4_police
+mark: report
+tells: era
+carries: smell
+touch: smell "Smell the bag" ? has(e4.row_burned) | Petrol, through the plastic. Under it the rag. Under that, white paint. {sense: e4.petrol}
+state: 4 typed ? has(e4.row_burned) | A police bag on the desk by the typewriter with the neck of a milk bottle in it, the rag still stuffed in the neck and burnt black at the end. Somebody has stood a mug of tea on it.
+state: 4 brick | A police bag on the desk with half a red brick in it, and grit in the corners of the bag. Nobody has filled in the tag.
+
+@prop q.tea_glass
+from: 4
+name: The tea glass
+place: q4w_saro_flat
+mark: tea_glass
+tells: era
+carries: heat
+touch: hold "Hold the glass" | Hot through the brass holder, too hot at the rim, and the sugar not gone down yet. {sense: e4.glass.warm}
+state: 4 poured | A tulip glass in a brass holder, sugar beside it. Mira pours for the guest first and watches until he drinks.
+
+@prop q.orme_sign
+from: 4
+name: The board over the mill gate
+place: q4_mill_yard
+mark: gate_sign
+tells: era
+carries: sight
+state: 4 painted | HALVARD in new white paint across the gate board. Under it, coming through, the old name in black.
+
+# ---------------------------------------------------------------- the era's senses (fired by the scenes, the props and the echoes)
+@sense e4.key.slide
+sound: drag 0.2 near 0.5
+caption: a key sliding across a desk
+rumble: 0.05 0.25 300
+
+@sense e4.brazier
+sound: brazier 0.5 near 3
+caption: pallets cracking in a brazier
+screen: tint #d8823a 0.06 3
+
+@sense e4.envelope.thin
+rumble: 0.02 0.08 60
+hold: 0.8
+
+@sense e4.envelope.fat
+rumble: 0.15 0.08 160
+anim: player still 0.6
+hold: 0.8
+
+@sense e4.hands.up
+sound: chair 0.25 near
+caption: chairs creaking as hands go up round a table
+camera: push 1.3 1.8
+hold: 1.2
+
+@sense e4.can.rattle
+sound: chain 0.3 near 0.8
+caption: the ball rattling in a paint can
+rumble: 0.05 0.4 260
+rumble: 0.05 0.4 260 380
+
+@sense e4.can.spray
+sound: wind 0.45 near 1.6
+caption: paint hissing out of a can onto stone
+screen: tint #8a8a86 0.12 2
+rumble: 0.02 0.3 1400
+camera: dip 0.2 1
+hold: 1
+
+@sense e4.lights.off
+sound: lamphum 0.35 near 0.8
+caption: the hum of the lights stopping
+screen: dim 0.35 4
+hold: 1.4
+
+@sense e4.arm.thin
+rumble: 0.05 0.15 400
+anim: player reach 1
+hold: 0.8
+
+@sense e4.tape.snap
+sound: snap 0.45 near
+caption: a steel tape snapping back into its case
+rumble: 0.1 0.5 120
+
+@sense e4.paint.wet
+screen: tint #f0f0e8 0.08 1.5
+rumble: 0.03 0.2 220
+anim: player flinch 0.4
+
+@sense e4.petrol
+screen: blur 1.5 1.2
+anim: player turn 0.6
+hold: 0.8
+
+@sense e4.glass.warm
+screen: tint #e8c890 0.08 2
+rumble: 0.03 0.1 500
+
+@sense e4.glass.break
+sound: snap 0.7 near
+caption: a window going in
+screen: shake 0.3 0.3
+rumble: 0.7 0.5 150
+
+@sense e4.fire.take
+sound: brazier 0.9 near 2.5
+caption: petrol catching, all at once
+screen: flash 0.3 0.3
+screen: tint #d8823a 0.22 3
+rumble: 0.6 0.3 400
+
+@sense e4.drag
+sound: drag 0.6 near 2.4
+caption: a man dragged backwards over a sill
+rumble: 0.6 0.2 900
+anim: player stoop 2
+
+@sense e4.switch.dead
+sound: latch 0.35 near
+caption: a light switch clicking, and nothing
+screen: dim 0.2 2
+hold: 1.2
+
+@sense e4.bin.glass
+sound: thud 0.4 near
+sound: snap 0.3 near
+caption: glass dropped into a metal bin
+rumble: 0.3 0.2 150
+hold: 1
+
+@sense e4.wheel.stop
+sound: creak 0.8 under 3
+caption: the wheel's brake coming down through the building
+rumble: 0.8 0.1 1800
+screen: shake 0.15 1.5
+hold: 1.5
+
+@sense e4.breath.slow
+sound: breath 0.3 near 4
+caption: a man's breathing slowing, a landing above
+rumble: 0.1 0 80
+rumble: 0.1 0 80 1600
+hold: 2
+
+@sense e4.torch.stuck
+rumble: 0.05 0.3 120
+anim: player still 0.6
+
+# ---------------------------------------------------------------- the era's loads
+@load e4.load.cashbox
+name: The cash box of pay envelopes
+weight: 7
+line: The cash box pulls your arm straight. The envelopes shift on their edges inside it when you walk.
+
+@load e4.load.anzo
+name: Anzo Velek
+weight: 64
+sense: e4.drag
+line: He is heavier than he looks, and nothing in him helps.
+
+@load e4.load.bag
+name: A scorched bag off the Row
+weight: 14
+line: The bag smells of smoke and cloves. Something in it is hard, a pan or an iron, and it knocks your knee every step.
+
+# ---------------------------------------------------------------- the echoes: what each fate leaves in a place the player comes back to
+@echo e4.e.hire
+place: q4_mill_yard
+when: has(e4.dale_hired) & has(e4.closed)
+from: 4
+to: 4
+tells: fate f.e4_hire
+show: sound wind 0.25 near
+line: On the fence wire by the side gate, where the line stood, a plastic bag has caught and gone white with the rain, the kind you keep papers dry in. It lifts when the wind comes over the yard.
+
+@echo e4.e.map
+place: q4_row
+when: has(e4.map_row) & has(e4.sheaf_said)
+from: 4
+to: 4
+tells: fate f.e4_map
+show: light cold
+line: The grey stripe along the Row's kerb has dried pale under the sodium, and there's the print of a child's shoe in it, from when it was wet.
+
+@echo e4.e.map_west
+place: q4_exchange_street
+when: has(e4.map_west) & has(e4.sheaf_said)
+from: 4
+to: 4
+tells: flag e4.map_west
+line: Along the kerb at the top end, under the pear tree, the grey stripe, and lying on it a pear the wind brought down, gone soft.
+
+@echo e4.e.dark
+place: q4_row
+when: has(e4.lights_out) & has(e4.sheaf_said)
+from: 4
+to: 4
+tells: flag e4.lights_out
+show: light dim
+sense: room.cold
+line: Number six has no light in it but a candle, going from room to room behind the curtains. At the downstairs window somebody's breath shows on the glass.
+
+@echo e4.e.row
+place: q4_row
+when: has(e4.anzo_dead) & has(e4.report_filed)
+from: 4
+to: 4
+tells: fate f.e4_row
+show: sound drip 0.4 near
+show: light cold
+sense: room.burnt
+line: Number six is black to the eaves. Water runs out under the door and down the whitened step in a thin grey stream, and inside something drips, slow, onto something hollow.
+
+@echo e4.e.crosses
+place: q4_row
+when: has(e4.row_stood) & has(e4.report_filed)
+from: 4
+to: 4
+tells: flag e4.row_stood
+line: On every door on the Row there's a small white cross at the height of a man's eye, and on the step of number six the window glass, in pieces, that nobody has swept yet.
+
+@echo e4.e.cage
+place: q4w_saro_flat
+when: has(e4.anzo_dead)
+tells: fate f.e4_row
+show: light warm
+line: On the windowsill, where another family would keep a plant, the birdcage, the brass still black in its joints, and nothing in it.
+
+@echo e4.e.brick
+place: q4w_saro_flat
+when: has(e4.row_stood)
+tells: flag e4.row_stood
+line: On the windowsill by the tea tray, half a red brick, on a crocheted mat so it won't mark the paint.
+
+@echo e4.e.lew
+place: q4_joss_flat
+when: has(e4.lew_dead)
+from: 4
+to: 4
+tells: fate f.e4_lew
+show: seat chair empty
+sense: chair.empty
+line: In the passage the phone is off its hook, lying on the shelf where Joss put it down after the hospital rang, and nobody has put it back.
+
+@echo e4.e.shelter
+place: q4_joss_flat
+when: has(e4.shelter_well)
+from: 4
+to: 4
+tells: fate f.e4_shelter
+line: The sugar bag is still out on the door table where Anni put it this morning, full, with the top folded down.

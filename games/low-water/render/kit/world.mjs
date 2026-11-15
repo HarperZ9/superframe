@@ -15,7 +15,7 @@ import { box } from "../sdf.mjs";
 
 export function makeWorld({ cell = 2, margin = 0.6 } = {}) {
   const props = [], grounds = [];
-  let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity, nx = 0, nz = 0, buckets = null, built = false;
+  let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity, yTop = -Infinity, nx = 0, nz = 0, buckets = null, built = false;
   let d = Infinity, id = 0, pr = -1, curProp = -1;
   const T = (t, i) => { if (t < d) { d = t; id = i; pr = curProp; } };
   const W = {
@@ -23,7 +23,7 @@ export function makeWorld({ cell = 2, margin = 0.6 } = {}) {
     add(p) { if (built) throw new Error("world built"); p.index = props.length; props.push(p); return p; },
     ground(fn) { grounds.push(fn); },
     build() {
-      for (const p of props) { x0 = Math.min(x0, p.bb[0]); z0 = Math.min(z0, p.bb[2]); x1 = Math.max(x1, p.bb[3]); z1 = Math.max(z1, p.bb[5]); }
+      for (const p of props) { x0 = Math.min(x0, p.bb[0]); z0 = Math.min(z0, p.bb[2]); x1 = Math.max(x1, p.bb[3]); z1 = Math.max(z1, p.bb[5]); yTop = Math.max(yTop, p.bb[4]); }
       if (!props.length) { x0 = z0 = 0; x1 = z1 = 1; }
       x0 -= margin; z0 -= margin; x1 += margin; z1 += margin;
       nx = Math.max(1, Math.ceil((x1 - x0) / cell)); nz = Math.max(1, Math.ceil((z1 - z0) / cell));
@@ -40,9 +40,12 @@ export function makeWorld({ cell = 2, margin = 0.6 } = {}) {
       for (const g of grounds) g(x, y, z, T);
       const gx = Math.floor((x - x0) / cell), gz = Math.floor((z - z0) / cell);
       if (gx < 0 || gz < 0 || gx >= nx || gz >= nz) {
-        // outside the grid: no prop is nearer than the grid's own box
-        const out = box(x, 0, z, (x0 + x1) / 2, 0, (z0 + z1) / 2, (x1 - x0) / 2, 1e9, (z1 - z0) / 2);
-        if (out < d) { d = Math.max(out, 0.02); id = 0; pr = -1; }
+        // outside the grid: no prop is nearer than the grid's own box plus the margin it was grown by (or the tallest prop's
+        // top, when above it). The bound was max(box, 0.02), and 0.02 is under the tracer's hit test past 64 m (0.0008 +
+        // 0.0003 t), so a street camera at 70 m stopped on the grid's empty faces and drew them as hatched planes (q5_tower,
+        // 2026-10-24)
+        const out = Math.max(box(x, 0, z, (x0 + x1) / 2, 0, (z0 + z1) / 2, (x1 - x0) / 2, 1e9, (z1 - z0) / 2) + margin, y - yTop);
+        if (out < d) { d = out; id = 0; pr = -1; }
         return d;
       }
       const list = buckets[gz * nx + gx];
@@ -53,8 +56,10 @@ export function makeWorld({ cell = 2, margin = 0.6 } = {}) {
         if (bd > 0.35) { if (bd < d) { d = bd; id = 0; pr = -1; } continue; } // far from it: its box is a safe bound
         curProp = p.index; p.f(x, y, z, T); curProp = -1;
       }
-      // the nearest unlisted prop is at least this far
-      const cx = x0 + gx * cell, cz = z0 + gz * cell, exit = Math.min(x - cx, cx + cell - x, z - cz, cz + cell - z) + margin;
+      // the nearest unlisted prop is at least this far: its cell's edge, or the top of the tallest prop when the point is above
+      // it (without the second term a ray from a high camera crossed the grid in sub-cell steps and ran out of steps before the
+      // ground, which painted hatched curtains over the grid's columns: q5_tower, 2026-10-24)
+      const cx = x0 + gx * cell, cz = z0 + gz * cell, exit = Math.max(Math.min(x - cx, cx + cell - x, z - cz, cz + cell - z) + margin, y - yTop - margin);
       if (exit < d) { d = exit; id = 0; pr = -1; }
       return d;
     },

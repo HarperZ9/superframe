@@ -1,0 +1,588 @@
+// sim/hits.mjs: contacts and what a blow does. A thrown thing hits through
+// apply_hit with `src` its projectile index (-1 for a swing).
+
+fn gone(f: Fighter) -> bool {
+    f.out || f.fallen || f.yielded || f.hp <= 0.0
+}
+
+fn overlaps(a: Fighter, h: HitVol, t: Fighter, td: Def) -> bool {
+    let dx = t.x - a.x;
+    let dz = t.z - a.z;
+    let d = dhypot(dx, dz);
+    let r = td.radius;
+    if d - r > h.r1 || d + r < h.r0 {
+        return false;
+    }
+    if h.y1 < 0.0 || h.y0 > td.height {
+        return false;
+    }
+    if d < 0.000001 {
+        return true;
+    }
+    let ang = wrap_angle(datan2(dz, dx) - a.face) * deg();
+    let pad = dasin(minf(1.0, r / d)) * deg();
+    ang >= h.arc0 - pad && ang <= h.arc1 + pad
+}
+
+struct Contact {
+    a: usize,
+    t: usize,
+    m: Move,
+}
+
+fn find_contacts(w: &World) -> Vec<Contact> {
+    let mut out: Vec<Contact> = Vec::new();
+    let mut ai = 0;
+    while ai < w.fighters.len() {
+        let a = w.fighters[ai];
+        if a.has_act && !(a.hitstop > 0.0) && !gone(a) {
+            let m = mv(w, a.act.id);
+            let live = hits_at(m, a.act.f);
+            if live.len() > 0 {
+                let mut ti = 0;
+                while ti < w.fighters.len() {
+                    let t = w.fighters[ti];
+                    if !(t.team == a.team || gone(t) || contains(a.act.hit, t.id)) {
+                        let mut any = false;
+                        let mut k = 0;
+                        while k < live.len() {
+                            if overlaps(a, live[k], t, w.defs[ti]) {
+                                any = true;
+                                break;
+                            }
+                            k += 1;
+                        }
+                        if any {
+                            out.push(Contact { a: ai, t: ti, m: m });
+                        }
+                    }
+                    ti += 1;
+                }
+            }
+        }
+        ai += 1;
+    }
+    out
+}
+
+fn src_pos(w: &World, ai: usize, src: i64) -> (f64, f64) {
+    if src >= 0 {
+        let p = w.projectiles[src as usize];
+        (p.x, p.z)
+    } else {
+        let a = w.fighters[ai];
+        (a.x, a.z)
+    }
+}
+
+fn frontal(t: Fighter, fx: f64, fz: f64, cone: f64) -> bool {
+    wrap_angle(angle_to(t.x, t.z, fx, fz) - t.face).abs() * deg() <= cone
+}
+
+fn crowd_of(w: &mut World) {
+    let mut n = 0.0;
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        if f.team != "lamb" && !f.out && !f.fallen {
+            n += 1.0;
+        }
+        i += 1;
+    }
+    w.crowd = n;
+}
+
+fn is_heavy(m: Move) -> bool {
+    m.id.contains("heavy") || m.id.contains("charged") || m.hitstop >= 5.0
+}
+
+fn stop_frames(w: &World, heavy: bool) -> f64 {
+    let f = js_round((if heavy { 3.0 } else { 0.0 }) * 1.0);
+    if w.crowd >= 3.0 {
+        minf(f, 4.0)
+    } else {
+        f
+    }
+}
+
+// dirFrom(T, from): unit vector from `from` to T, each part to 3 decimals
+fn dir_from_text(tx: f64, tz: f64, fx: f64, fz: f64) -> str {
+    let a = datan2(tz - fz, tx - fx);
+    let parts: Vec<str> = vec![js_fixed(dcos(a), 3).to_json(), js_fixed(dsin(a), 3).to_json()];
+    json_arr(parts)
+}
+
+fn spring_text(k: f64, damp: f64) -> str {
+    format!("{{\"damp\":{},\"k\":{}}}", damp.to_json(), k.to_json())
+}
+
+fn ev_hit_ids(e: &mut Ev, tid: str, aid: str) {
+    ev_str(e, "id", tid);
+    ev_str(e, "by", aid);
+    e.id = tid;
+    e.by = aid;
+}
+
+fn apply_hit(w: &mut World, ai: usize, ti: usize, m: Move, src: i64) -> str {
+    if gone(w.fighters[ti]) {
+        return "none";
+    }
+    let t = w.fighters[ti];
+    let has_tm = t.has_act;
+    let tm = if has_tm { mv(w, t.act.id) } else { m };
+    let f = if has_tm { t.act.f } else { -1.0 };
+    let from = src_pos(w, ai, src);
+    let aid = w.fighters[ai].id;
+    if has_tm && within(tm.iframes, f) {
+        let mut seen_before = false;
+        if src >= 0 {
+            add_proj_extra(w, src as usize, "evaded");
+            seen_before = contains(w.projectiles[src as usize].evaded, t.id);
+            if !seen_before {
+                w.projectiles[src as usize].evaded.push(t.id);
+            }
+        } else if w.fighters[ai].has_act {
+            if !contains(w.fighters[ai].act.extra, "evaded") {
+                w.fighters[ai].act.extra.push("evaded");
+            }
+            seen_before = contains(w.fighters[ai].act.evaded, t.id);
+            if !seen_before {
+                w.fighters[ai].act.evaded.push(t.id);
+            }
+        }
+        if !seen_before {
+            let mut ev = new_ev(w, "evade");
+            ev_str(&mut ev, "id", t.id);
+            ev_str(&mut ev, "by", aid);
+            ev_str(&mut ev, "move", m.id);
+            ev.id = t.id;
+            ev.by = aid;
+            ev.mv = m.id;
+            emit(w, ev);
+        }
+        return "evade";
+    }
+    if src < 0 && w.fighters[ai].has_act {
+        w.fighters[ai].act.hit.push(t.id);
+    }
+    if has_tm && within(tm.parry, f) && m.parryable && frontal(t, from.0, from.1, 100.0) {
+        return parried(w, ai, ti, m, src);
+    }
+    if guarding(w.fighters[ti]) && m.blockable && frontal(w.fighters[ti], from.0, from.1, 60.0) {
+        return blocked(w, ai, ti, m, src);
+    }
+    if m.grapple {
+        return grappled(w, ai, ti, m);
+    }
+    take_hit(w, ai, ti, m, src, has_tm, tm, f)
+}
+
+fn add_proj_extra(w: &mut World, pi: usize, key: str) {
+    if !contains(w.projectiles[pi].extra, key) {
+        w.projectiles[pi].extra.push(key);
+    }
+}
+
+fn parried(w: &mut World, ai: usize, ti: usize, m: Move, src: i64) -> str {
+    if learned_has(w.defs[ti], "carriage") {
+        add_extra(w, ti, "carriage");
+        w.fighters[ti].carriage = true;
+    }
+    add_extra(w, ti, "catchMiss");
+    w.fighters[ti].catch_miss_null = true;
+    crowd_of(w);
+    w.fighters[ti].has_act = false;
+    w.fighters[ti].hitstop = stop_frames(w, true);
+    if src < 0 {
+        w.fighters[ai].hitstop = 12.0;
+        start_move(w, ai, "parried", empty_inp(), false, 0.0);
+        w.fighters[ai].poise = w.fighters[ai].poise_max;
+    }
+    let a = w.fighters[ai];
+    let t = w.fighters[ti];
+    let mut ev = new_ev(w, "parry");
+    ev_hit_ids(&mut ev, t.id, a.id);
+    ev_str(&mut ev, "move", m.id);
+    ev_bool(&mut ev, "projectile", src >= 0);
+    ev.mv = m.id;
+    emit(w, ev);
+    let mut sh = new_ev(w, "shake");
+    ev_str(&mut sh, "kind", "catch");
+    ev_num(&mut sh, "amp", 0.6);
+    ev_num(&mut sh, "frames", 40.0);
+    ev_raw(&mut sh, "dir", dir_from_text(a.x, a.z, t.x, t.z));
+    ev_raw(&mut sh, "spring", spring_text(260.0, 18.0));
+    sh.kind = "catch";
+    emit(w, sh);
+    let mut ru = new_ev(w, "rumble");
+    ev_hit_ids(&mut ru, t.id, a.id);
+    ev_num(&mut ru, "low", 1.0);
+    ev_num(&mut ru, "high", 0.8);
+    ev_num(&mut ru, "frames", 14.0);
+    emit(w, ru);
+    "parry"
+}
+
+fn push_body(w: &mut World, ti: usize, fx: f64, fz: f64, knock: f64, src: i64, has_toward: bool, toward: f64) {
+    let t = w.fighters[ti];
+    let mut dir = 0.0;
+    if src >= 0 {
+        let p = w.projectiles[src as usize];
+        dir = datan2(p.vz, p.vx);
+    } else {
+        dir = datan2(t.z - fz, t.x - fx);
+    }
+    if has_toward {
+        dir = toward;
+    }
+    w.fighters[ti].kx = t.kx + dcos(dir) * knock;
+    w.fighters[ti].kz = t.kz + dsin(dir) * knock;
+}
+
+fn blocked(w: &mut World, ai: usize, ti: usize, m: Move, src: i64) -> str {
+    let td = w.defs[ti];
+    let heavy = m.guard_break;
+    let shield = td.tool_cls == "shield";
+    let cost = if heavy { td.tool_block1 } else { td.tool_block0 };
+    let aid = w.fighters[ai].id;
+    let tid = w.fighters[ti].id;
+    if (heavy && !shield) || w.fighters[ti].st < cost {
+        w.fighters[ti].st = maxf(0.0, w.fighters[ti].st - cost);
+        w.fighters[ti].guard_t = 0.0;
+        let mut ev = new_ev(w, "guardbreak");
+        ev_hit_ids(&mut ev, tid, aid);
+        ev_str(&mut ev, "move", m.id);
+        ev.mv = m.id;
+        emit(w, ev);
+        crowd_of(w);
+        start_move(w, ti, "stagger", empty_inp(), false, 0.0);
+        w.fighters[ti].hitstop = maxf(w.fighters[ti].hitstop, stop_frames(w, true));
+        if src < 0 {
+            w.fighters[ai].hitstop = maxf(w.fighters[ai].hitstop, stop_frames(w, true));
+        }
+        return "guardbreak";
+    }
+    w.fighters[ti].st = w.fighters[ti].st - cost;
+    w.fighters[ti].st_wait = td.stamina_delay;
+    let chip = m.dmg * td.tool_chip;
+    w.fighters[ti].hp = maxf(0.01, w.fighters[ti].hp - chip);
+    let from = src_pos(w, ai, src);
+    push_body(w, ti, from.0, from.1, m.knock * 0.4, src, false, 0.0);
+    crowd_of(w);
+    w.fighters[ti].hitstop = maxf(w.fighters[ti].hitstop, stop_frames(w, false));
+    if src < 0 {
+        w.fighters[ai].hitstop = maxf(w.fighters[ai].hitstop, stop_frames(w, false));
+    }
+    let mut ev = new_ev(w, "block");
+    ev_hit_ids(&mut ev, tid, aid);
+    ev_str(&mut ev, "move", m.id);
+    ev_num(&mut ev, "cost", cost);
+    ev_num(&mut ev, "chip", chip);
+    ev.mv = m.id;
+    emit(w, ev);
+    let t = w.fighters[ti];
+    let mut sh = new_ev(w, "shake");
+    ev_num(&mut sh, "amp", if m.guard_break { 0.3 } else { 0.15 });
+    ev_num(&mut sh, "frames", 6.0);
+    ev_raw(&mut sh, "dir", dir_from_text(t.x, t.z, from.0, from.1));
+    ev_raw(&mut sh, "spring", spring_text(200.0, 16.0));
+    emit(w, sh);
+    let mut ru = new_ev(w, "rumble");
+    ev_hit_ids(&mut ru, tid, aid);
+    ev_num(&mut ru, "low", 0.5);
+    ev_num(&mut ru, "high", 0.3);
+    ev_num(&mut ru, "frames", 6.0);
+    emit(w, ru);
+    "block"
+}
+
+fn grappled(w: &mut World, ai: usize, ti: usize, m: Move) -> str {
+    let ga = w.defs[ai].grip;
+    let gt = w.defs[ti].grip + (if w.fighters[ti].has_act { 0.0 } else { 1.0 });
+    w.fighters[ti].hitstop = m.hitstop;
+    w.fighters[ai].hitstop = m.hitstop;
+    let aid = w.fighters[ai].id;
+    let tid = w.fighters[ti].id;
+    if ga >= gt {
+        let took = w.fighters[ti].tool;
+        w.fighters[ti].tool = "";
+        add_extra(w, ti, "disarmed");
+        w.fighters[ti].disarmed = true;
+        start_move(w, ti, "stagger", empty_inp(), false, 0.0);
+        let mut ev = new_ev(w, "disarm");
+        ev_hit_ids(&mut ev, tid, aid);
+        ev_strn(&mut ev, "tool", took);
+        emit(w, ev);
+        return "disarm";
+    }
+    start_move(w, ai, "stagger", empty_inp(), false, 0.0);
+    let mut ev = new_ev(w, "grapple-lost");
+    ev_hit_ids(&mut ev, aid, tid);
+    emit(w, ev);
+    "grapple-lost"
+}
+
+fn toward_water(w: &World, ti: usize) -> (bool, f64) {
+    let t = w.fighters[ti];
+    let mut best = 0.0;
+    let mut has = false;
+    let mut deep = -1.0 / 0.0;
+    let mut i = 0;
+    while i < 8 {
+        let a = ((i as f64) * JS_PI) / 4.0;
+        let mut r = 1.0;
+        while r <= 4.0 {
+            let d = depth_at(w, t.x + dcos(a) * r, t.z + dsin(a) * r);
+            if d > deep {
+                deep = d;
+                best = a;
+                has = true;
+            }
+            r += 1.0;
+        }
+        i += 1;
+    }
+    (has, best)
+}
+
+fn toward_anchor(w: &World, ti: usize, kind: str) -> (bool, f64) {
+    let t = w.fighters[ti];
+    let pts = anchor_points(w, kind);
+    let mut best = 0.0;
+    let mut has = false;
+    let mut bd = 1.0 / 0.0;
+    let mut i = 0;
+    while i + 1 < pts.len() {
+        let x = pts[i];
+        let z = pts[i + 1];
+        let d = dhypot(x - t.x, z - t.z);
+        if d < bd {
+            bd = d;
+            best = datan2(z - t.z, x - t.x);
+            has = true;
+        }
+        i += 2;
+    }
+    (has, best)
+}
+
+fn level_of(d: Def, k: str) -> (bool, f64) {
+    let i = index_of(d.lv_keys, k);
+    if i < 0 {
+        return (false, 0.0);
+    }
+    (true, d.lv_vals[i as usize])
+}
+
+fn weak_point(w: &mut World, ai: usize, ti: usize, has_tm: bool, tm: Move, f: f64) -> f64 {
+    let d = w.defs[ai];
+    if !d.has_bonus || w.fighters[ai].team != "lamb" {
+        return 1.0;
+    }
+    if w.fighters[ai].carriage {
+        w.fighters[ai].carriage = false;
+        return 1.0 + d.bonus_weak;
+    }
+    if !has_tm || (tm.kind != "attack" && tm.kind != "item") {
+        return 1.0;
+    }
+    if !visible(w, ai, ti) {
+        return 1.0;
+    }
+    let counted = learned_has(d, "countedge") && w.telegraphs_seen <= 3.0;
+    let win = if d.brk_pen8 { tm.startup } else { 8.0 + d.bonus_read * (if counted { 2.0 } else { 1.0 }) };
+    if f >= tm.startup - win && f < tm.startup {
+        let mut ev = new_ev(w, "weakpoint");
+        ev_hit_ids(&mut ev, w.fighters[ti].id, w.fighters[ai].id);
+        emit(w, ev);
+        return 1.0 + d.bonus_weak;
+    }
+    1.0
+}
+
+fn take_hit(w: &mut World, ai: usize, ti: usize, m: Move, src: i64, has_tm: bool, tm: Move, f: f64) -> str {
+    let t0 = w.fighters[ti];
+    let td = w.defs[ti];
+    let foot = footing(w, t0.x, t0.z);
+    let scale = if foot.frost { 1.5 } else if foot.wet { 1.25 } else { 1.0 };
+    let planted = td.brk_coat8 && has_tm && tm.id.contains("heavy") && f < tm.startup && m.poise < 1.5 && !m.pierce;
+    let from = src_pos(w, ai, src);
+    let fg = td.front_guard;
+    let glance = if fg != 0.0 && !has_tm && !m.guard_break && frontal(t0, from.0, from.1, 60.0) { 1.0 - fg } else { 1.0 };
+    let armor = if planted { 99.0 } else if has_tm && !m.pierce { armor_at(tm, f) } else { 0.0 };
+    let pd = maxf(0.0, m.poise * scale * glance - armor);
+    let sneak = unaware(t0);
+    let weak = weak_point(w, ai, ti, has_tm, tm, f);
+    let soften = if td.soften != 0.0 { td.soften } else { 1.0 };
+    let power = if w.defs[ai].dmg_mul != 0.0 { w.defs[ai].dmg_mul } else { 1.0 };
+    let dmg = if m.takedown && sneak && takedown_out(w, ti) {
+        w.fighters[ti].hp
+    } else {
+        m.dmg * (if sneak { 2.0 } else { 1.0 }) * weak * soften * glance * power
+    };
+    let aid = w.fighters[ai].id;
+    let tid = t0.id;
+    if glance < 1.0 {
+        let mut ev = new_ev(w, "glance");
+        ev_hit_ids(&mut ev, tid, aid);
+        ev_str(&mut ev, "move", m.id);
+        emit(w, ev);
+    }
+    if m.drain != 0.0 {
+        w.fighters[ti].st = maxf(0.0, w.fighters[ti].st - m.drain);
+    }
+    w.fighters[ti].hp = maxf(0.0, w.fighters[ti].hp - dmg);
+    w.fighters[ti].poise = w.fighters[ti].poise - pd;
+    if pd > 0.0 {
+        w.fighters[ti].poise_wait = 120.0;
+    }
+    if td.floor > 0.0 {
+        w.fighters[ti].hp = maxf(w.fighters[ti].hp, td.floor * w.fighters[ti].hp_max);
+    }
+    if sneak {
+        let mut ev = new_ev(w, if m.takedown { "takedown" } else { "sneakhit" });
+        ev_hit_ids(&mut ev, tid, aid);
+        ev_num(&mut ev, "dmg", dmg);
+        emit(w, ev);
+        alert(w, ti, "struck");
+    }
+    let held = learned_has(td, "galleryhold") && (m.shove || m.knock < 0.0 || m.toward != "");
+    if !held {
+        let tw = if m.toward == "water" {
+            toward_water(w, ti)
+        } else if m.toward != "" {
+            toward_anchor(w, ti, m.toward)
+        } else {
+            (false, 0.0)
+        };
+        push_body(w, ti, from.0, from.1, m.knock, src, tw.0, tw.1);
+    }
+    crowd_of(w);
+    let heavy = is_heavy(m);
+    w.fighters[ti].hitstop = maxf(w.fighters[ti].hitstop, stop_frames(w, heavy));
+    if src < 0 {
+        w.fighters[ai].hitstop = maxf(w.fighters[ai].hitstop, stop_frames(w, heavy));
+    }
+    w.fighters[ti].flash = m.hitstop + 3.0;
+    w.fighters[ti].last_hit_by = aid;
+    if m.blind != 0.0 {
+        w.fighters[ti].blind = maxf(w.fighters[ti].blind, m.blind);
+    }
+    let mut ev = new_ev(w, "hit");
+    ev_hit_ids(&mut ev, tid, aid);
+    ev_str(&mut ev, "move", m.id);
+    ev_num(&mut ev, "dmg", dmg);
+    ev_num(&mut ev, "poise", pd);
+    ev_bool(&mut ev, "armor", armor > 0.0);
+    ev_str(&mut ev, "footing", foot.kind);
+    ev.mv = m.id;
+    emit(w, ev);
+    let t = w.fighters[ti];
+    if m.shake > 0.0 {
+        let mut sh = new_ev(w, "shake");
+        ev_num(&mut sh, "amp", m.shake);
+        ev_num(&mut sh, "frames", 6.0 + js_round(m.hitstop * 1.5));
+        ev_raw(&mut sh, "dir", dir_from_text(t.x, t.z, from.0, from.1));
+        ev_raw(&mut sh, "spring", spring_text(180.0, 14.0));
+        emit(w, sh);
+    }
+    let mut ru = new_ev(w, "rumble");
+    ev_hit_ids(&mut ru, tid, aid);
+    ev_num(&mut ru, "low", minf(1.0, 0.2 + m.shake));
+    ev_num(&mut ru, "high", minf(1.0, 0.1 + m.dmg / 4.0));
+    ev_num(&mut ru, "frames", 4.0 + m.hitstop * 2.0);
+    emit(w, ru);
+    if t.hp <= 0.0 {
+        start_move(w, ti, "fall", empty_inp(), false, 0.0);
+        let mut fe = new_ev(w, "fall");
+        ev_hit_ids(&mut fe, tid, aid);
+        emit(w, fe);
+        return "fall";
+    }
+    if td.has_yields && t.hp <= td.yields {
+        w.fighters[ti].yielded = true;
+        start_move(w, ti, "yield", empty_inp(), false, 0.0);
+        let mut ye = new_ev(w, "yield");
+        ev_hit_ids(&mut ye, tid, aid);
+        emit(w, ye);
+        return "yield";
+    }
+    if m.snare {
+        return break_poise(w, ti, "snared");
+    }
+    if m.shove && depth_at(w, t.x + t.kx * 0.25, t.z + t.kz * 0.25) >= 0.4 {
+        return break_poise(w, ti, "ducked");
+    }
+    if m.shove && m.through {
+        return break_poise(w, ti, "knockdown");
+    }
+    if m.shove && (foot.frost || foot.kind.starts_with("wet ")) {
+        let mut se = new_ev(w, "slip");
+        ev_str(&mut se, "id", tid);
+        ev_str(&mut se, "footing", foot.kind);
+        se.id = tid;
+        emit(w, se);
+        return break_poise(w, ti, "knockdown");
+    }
+    if (m.knockdown && armor == 0.0) || t.poise <= -2.0 {
+        let how = if steady(w, ti, m) { "stagger" } else { "knockdown" };
+        return break_poise(w, ti, how);
+    }
+    if t.poise <= 0.0 {
+        return break_poise(w, ti, "stagger");
+    }
+    if armor == 0.0 && pd > 0.0 && interruptible(w, ti, m) {
+        add_extra(w, ti, "flinchAt");
+        w.fighters[ti].flinch_at = w.tick as f64;
+        start_move(w, ti, "flinch", empty_inp(), false, 0.0);
+        let mut fl = new_ev(w, "flinch");
+        ev_str(&mut fl, "id", tid);
+        fl.id = tid;
+        emit(w, fl);
+        return "flinch";
+    }
+    if armor > 0.0 {
+        "armored"
+    } else {
+        "hit"
+    }
+}
+
+fn interruptible(w: &World, ti: usize, blow: Move) -> bool {
+    let t = w.fighters[ti];
+    let fa = if contains(t.extra, "flinchAt") { t.flinch_at } else { -1000000000.0 };
+    if (w.tick as f64) - fa < 90.0 {
+        return false;
+    }
+    let d = w.defs[ti];
+    if d.has_levels {
+        let b = level_of(d, "ballast");
+        if b.0 && b.1 >= 5.0 && blow.poise < 1.5 {
+            return false;
+        }
+    }
+    if !t.has_act {
+        return true;
+    }
+    let m = mv(w, t.act.id);
+    (m.kind == "attack" || m.kind == "item") && t.act.f < m.startup
+}
+
+fn steady(w: &World, ti: usize, m: Move) -> bool {
+    let d = w.defs[ti];
+    let b = level_of(d, "ballast");
+    let ballast = if b.0 { b.1 } else { 0.0 };
+    !m.takedown && (ballast >= 6.0 || (d.keep_feet && !m.blockable))
+}
+
+fn break_poise(w: &mut World, ti: usize, how: str) -> str {
+    w.fighters[ti].poise = w.fighters[ti].poise_max;
+    w.fighters[ti].buf = Vec::new();
+    start_move(w, ti, how, empty_inp(), false, 0.0);
+    let tid = w.fighters[ti].id;
+    let mut ev = new_ev(w, how);
+    ev_str(&mut ev, "id", tid);
+    ev.id = tid;
+    emit(w, ev);
+    how
+}

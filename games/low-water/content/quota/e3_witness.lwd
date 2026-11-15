@@ -1,0 +1,225 @@
+# Era 3, Allocation: the witness (e3.w), Aaron in his kitchen on the far bank, year 46, telling his son Rob about
+# the autumn the Mott house was full. Story lead, 2026-10-23. DRAFT, every line awaiting the author's line approval
+# (ledger row S14). Design: design/eras/era3.md section 4.
+# Aaron saw the Sallises come into the Mott house, the shift table and the wedding under the stairs, the squad room,
+# the riot at the scale, his mother's last night, the fire from the line or the crowd. He heard the list through the
+# wall from Anni and Ilo, and Tomas's going (or staying) from Anni. He never knew whose hand the Sallis key went
+# into, what Walter Mott said to Holt in the hard winter, what Ned Furrowe said at the rail, or what Will said to Davey.
+# He tells it clean, and the clean version breaks. He leaves out the Sholls: the skip is declared unwitnessed below.
+# After the last beat the dispatch goes to e4.start, era 4's first node (e4_town.lwd).
+
+@witness e3.w.aaron
+who: AARON
+listener: ROB
+guest: q_class inspector=PELL militia=WILL
+place: q3w_far_bank
+opens: e3.w.aaron.open
+dispatch: e3.w.aaron.next
+reach: q3_mott_house, q3_ward, q3_square, q3_well_house, q3_squad, q3w_far_bank
+sources: ANNI, ILO, BET, WILL, DAVEY, TOMAS
+never: q3_office, q3_furrowe_hall, q3_brack_kitchen
+beat: e3.w.aaron.flats | e3.allocation, e3.flat_sallis | seen q3_mott_house ? has(e3.allocation)
+beat: e3.w.aaron.table | e3.wedding_done | seen q3_mott_house ? has(e3.wedding_done)
+beat: e3.w.aaron.wall | e3.list_offered, e3.list_signed, e3.list_refused, e3.anni_knocked | heard ANNI ? has(e3.list_signed) | has(e3.list_refused)
+beat: e3.w.aaron.boots | e3.aaron_asked, e3.aaron_taken, e3.aaron_turned | seen q3_squad ? has(e3.aaron_taken) | has(e3.aaron_turned)
+beat: e3.w.aaron.riot | e3.riot_done | seen q3_square ? has(e3.riot_done)
+beat: e3.w.aaron.stairs | e3.fever, e3.bed_mim, e3.bet_dead | seen q3_mott_house ? has(e3.bed_mim)
+beat: e3.w.aaron.ward | e3.fever, e3.bed_bet, e3.bet_dead | seen q3_ward ? has(e3.bed_bet)
+beat: e3.w.aaron.fire | e3.well_claim, e3.door_barred, e3.door_opened, e3.ilo_dead, e3.book_thrown | seen q3_well_house ? has(e3.door_barred) | has(e3.door_opened)
+beat: e3.w.aaron.tomas | e3.tomas_ridge, e3.tomas_stays | heard ANNI ? has(e3.tomas_ridge) | has(e3.tomas_stays)
+last: e3.w.aaron.bowl
+unwitnessed: e3.house_over, e3.sholl_named, e3.haldane_split | the Sholls: his squad carried them down the stairs, or his family went out instead, and he leaves it out of the telling
+unwitnessed: e3.flat_pell, e3.figures_praised | the counter: he saw the Sallis bundles come back over the bridge and never knew whose hand the key went into, or what the board said about Ned Furrowe at the scale
+unwitnessed: e3.margin_told | the Thursday stairs: nobody ever told him Walter Mott said the boy's visit to Holt
+unwitnessed: e3.carry_f1, e3.carry_b1 | the step and the Brack kitchen: he was at neither
+unwitnessed: said.e3_pell_take, said.e3_pell_refuse, said.e3_pell_whose, said.e3_will_counter, said.e3_pell_fetch, said.e3_pell_out, said.e3_will_list, said.e3_pell_aaron_vouch, said.e3_will_aaron_take, said.e3_will_aaron_turn, said.e3_will_baton, said.e3_pell_carry, said.e3_will_cart, said.e3_speak_bet, said.e3_pell_two_rooms, said.e3_will_slow, said.e3_pell_door, said.e3_will_door, said.e3_tomas_pass | what the player's man said at counters, doors and carts: Aaron was a lad in the queue or on the line, and was told none of it
+
+# ---------------------------------------------------------------- the opening: the thread and the bowl
+@node e3.w.start
+cost: 0
+do: witness(e3.w.aaron)
+go: e3.w.aaron.open
+
+@node e3.w.aaron.open
+place: q3w_far_bank
+speaker: AARON
+cost: 3
+camera: near
+nar: Years on. The far bank, the Tarn estate, a kitchen with a tap inside and a window that looks back across the river at the old town. A Tuesday, getting dark at five.
+nar: Aaron Haldane is at the table in his uniform with the collar undone. He has the tea in front of him and hasn't drunk it. {when: has(e3.aaron_taken)}
+nar: Aaron Haldane is at the table in the brown uniform of the works' gate watch, with the collar undone. He has the tea in front of him and hasn't drunk it. {when: !has(e3.aaron_taken)}
+nar: The surveyor from the bank is at the end of the table with his tape on the oilcloth, because the estate's being walked again and he started at the top of the stairs. He took his hat off coming in. He's still holding it. {when: q_class == inspector}
+nar: Old Will Brack is at the end of the table with his stick between his knees. He walked across the bridge to come. He keeps looking up at the black truncheon on its two hooks over the table, and away. {when: q_class == militia}
+nar: Aaron is forty-three. Rob is eleven. He has a bit of blue thread in his fist, the kind that's been plaited and has gone grey with being plaited, and he's put it on the table in front of his dad like a thing he found in the road.
+line: WILL: Halden. {when: q_class == militia}
+line: AARON: Will. Sit down, man. {when: q_class == militia}
+line: PELL: Mr Halden? The bank has it Halden. {when: q_class == inspector}
+line: AARON: Then it's Halden. {when: q_class == inspector}
+line: ROB: It was in the drawer under the knives. In a twist of paper.
+line: AARON: That drawer sticks.
+line: ROB: What is it, though?
+nar: Aaron reaches up to the high shelf without getting up and takes down a bowl. White, chipped on the rim, the district's number stamped in the bottom in blue. He puts it on the table between them and doesn't put anything in it.
+line: AARON: We had these. Everybody had these. You queued with it and they filled it.
+line: ROB: That's not what I asked.
+line: AARON: I know. I'm getting to it. Sorry. I'm getting there.
+go: e3.w.aaron.next
+
+@node e3.w.aaron.next
+cost: 0
+alt: e4.start ? seen(e3.w.aaron.bowl)
+do: wnext()
+alt: e3.w.aaron.flats ? wat(e3.w.aaron.flats)
+alt: e3.w.aaron.table ? wat(e3.w.aaron.table)
+alt: e3.w.aaron.wall ? wat(e3.w.aaron.wall)
+alt: e3.w.aaron.boots ? wat(e3.w.aaron.boots)
+alt: e3.w.aaron.riot ? wat(e3.w.aaron.riot)
+alt: e3.w.aaron.stairs ? wat(e3.w.aaron.stairs)
+alt: e3.w.aaron.ward ? wat(e3.w.aaron.ward)
+alt: e3.w.aaron.fire ? wat(e3.w.aaron.fire)
+alt: e3.w.aaron.tomas ? wat(e3.w.aaron.tomas)
+go: e3.w.aaron.bowl
+
+# ---------------------------------------------------------------- the beats
+@node e3.w.aaron.flats
+place: q3w_far_bank
+speaker: AARON
+cost: 3
+line: AARON: It was a bad time. After the war, after the hard winter. Everybody says that, and it was. There weren't the houses. So they put families in together till the new flats were built. These flats. This one.
+line: ROB: Miss says that. The rebuilding.
+line: AARON: Then Miss is right. You write that down, you'll get a tick.
+line: AARON: We were in the Mott house on Exchange Street. The big one with the iron on the steps. All in the front room, us, and the stairs and the back room full. Ten families, and one tap in the yard.
+line: AARON: The Sallises came in the September. Old Arn and his lads and the wives and the little one. Their things came back over the bridge on a cart and got tipped on our step. They'd been in a flat over here, Arn said. They'd put their things down on the floor of it. He said that to my mum every night for a month. {when: has(e3.allocation) & !has(e3.flat_sallis)}
+line: AARON: The Sallises got a flat over here, Arn and the whole nine. The plaster was wet, so they stopped with us till it dried. Arn wore the key round his neck on a bootlace. He never took it off. {when: has(e3.flat_sallis)}
+voice: carbon: Your dad was the one honest man in that building. The whole board knows it. You're only being paid what he was owed. {echo: e3.sl.figure, when: toldself(e3.sl.figure)}
+nar: At the end of the table the surveyor winds his tape in a turn, and stops. {when: q_class == inspector}
+go: e3.w.aaron.next
+
+@node e3.w.aaron.table
+place: q3w_far_bank
+speaker: AARON
+cost: 3
+line: AARON: We ate in turns. There was the one table, it was ours, your gran's, made out of a door. You'd get your go and then you'd get up for the next lot.
+line: ROB: Like school dinners.
+line: AARON: Like school dinners if the dinner ladies hated you. Except Mrs Pruett. She'd give you her bread. She'd tell you it was good for you while you ate it, so you couldn't enjoy it.
+nar: He laughs, and Rob doesn't, and he stops.
+line: AARON: There was a wedding. Under the stairs. Lio Sallis and a Varn girl. They shut the door so the house wouldn't hear the singing and the whole house heard it. They'd bread with sheep's fat. I had three bits. I was sick on the step.
+line: ROB: What were they singing?
+line: AARON: I don't know. Old stuff. Your Aunt Anni knew the words.
+go: e3.w.aaron.next
+
+@node e3.w.aaron.wall
+place: q3w_far_bank
+speaker: AARON
+cost: 3
+line: AARON: There was a way over. At the office. If you could get a Tarn man to come and stand at the counter with you and say you were his, you got a key, and you were Tarn, and you came over here.
+line: ROB: Were we Tarn?
+line: AARON: We're Tarn now. Eat your tea.
+line: ROB: I've not got any tea.
+line: AARON: The walls in that house were lath. You heard everybody's business. I heard Anni ask Dad who was coming in, and he didn't answer her. Then she asked Mum. She said, was it him.
+line: ROB: Was it who?
+line: AARON: I don't know. I was seventeen. I put my head under the blanket.
+line: AARON: She went over. Somebody stood up for her, she never said who. After that she had the thread off. Mine as well. She cut it off my wrist with the bread knife in the yard so Mum wouldn't see, and Mum saw. {when: has(e3.list_signed)}
+line: AARON: She never went. She came back from the office with her bundle on her own back and sat on the stairs with her coat on till it was dark, and nobody could get up or down. {when: has(e3.list_refused)}
+nar: Rob looks at the thread on the table, and then at the bowl. Aaron moves the bowl an inch, for no reason.
+go: e3.w.aaron.next
+
+@node e3.w.aaron.boots
+place: q3w_far_bank
+speaker: AARON
+cost: 3
+line: AARON: Mum kept the boots by the door. Your uncle's. From before. She'd polish them on a Sunday.
+line: AARON: The day I went to join, she called me Tomas. At the door. She said, Tomas, take your coat. And I took my coat.
+line: ROB: Did you say?
+line: AARON: Say what?
+line: AARON: The sergeant took me on. Sergeant Brack. He looked at my wrists a long time and then he took the last coat off the hook and held it out. It was too big. Everything was too big that year. {when: has(e3.aaron_taken)}
+nar: Old Will looks at the truncheon on its hooks. {when: has(e3.aaron_taken) & q_class == militia}
+line: AARON: The sergeant turned me down. Sergeant Brack. He said it to my face, in the squad room, with Davey Brack stood behind him looking at the floor. He said the militia doesn't take Hesh. I went to the works the Monday after. The man on the gate said it the Tarn way, Halden, and I let him. {when: has(e3.aaron_turned)}
+nar: Old Will looks at his hands on his stick, and doesn't look up. {when: has(e3.aaron_turned) & q_class == militia}
+go: e3.w.aaron.next
+
+@node e3.w.aaron.riot
+place: q3w_far_bank
+speaker: AARON
+cost: 3
+line: AARON: There was a bit of trouble at the scale. About the rations. Everybody says it was a riot. It was people wanting their bread.
+line: AARON: I was on the line. You stand with your arms linked and you lean. A woman hit me in the face with her bowl. One of these. I said sorry to her. Davey laughed about that for years. {when: has(e3.aaron_taken)}
+line: AARON: I was in the queue. The militia came across in a line with their arms linked, and leaning, and I knew half of them from school. Davey Brack put his elbow in my mouth and said sorry. {when: !has(e3.aaron_taken)}
+line: ROB: Did it hurt?
+line: AARON: It was a long time ago.
+go: e3.w.aaron.next
+
+@node e3.w.aaron.stairs
+place: q3w_far_bank
+speaker: AARON
+cost: 3
+camera: near
+line: AARON: There was a fever that winter. With everybody in together. You'd see the white crosses going up on doors, in chalk.
+line: AARON: Mum.
+nar: He stops, and drinks some of the cold tea, and puts the cup back down in its ring.
+line: AARON: The doctor had one bed left and she gave it to the little Sallis girl. Under some other name. Mim. Mum stayed home. She was on the stairs. She'd got as far as the stairs.
+line: AARON: She kept asking where Tomas's boots were. I brought them. I sat on the step under her and held them. She went quiet about four. The house was that full you couldn't lay her flat anywhere, so we didn't.
+line: ROB: Was it the fever?
+line: AARON: It smelled sweet on that stair. That's what I remember. It was nothing. Carbolic. Like the church hall.
+nar: At the end of the table the guest doesn't move.
+go: e3.w.aaron.next
+
+@node e3.w.aaron.ward
+place: q3w_far_bank
+speaker: AARON
+cost: 3
+camera: near
+line: AARON: There was a fever that winter. With everybody in together. You'd see the white crosses going up on doors, in chalk.
+line: AARON: Mum.
+nar: He stops, and drinks some of the cold tea, and puts the cup back down in its ring.
+line: AARON: They took her to the church hall on a handcart. It had a wheel that went round and round with a knock in it. I walked beside it. I can still hear that wheel. Isn't that stupid.
+line: AARON: The doctor said she was Carrow. Her dad's name. Cut her thread off so the vicar wouldn't see it. So she'd get the bed. She was gone the next night, and they buried her as Carrow.
+line: AARON: The little Sallis girl went at home the same week.
+line: ROB: Was it the fever?
+line: AARON: The hall smelled of carbolic. You'd get it on your coat and it'd not come off. I had it on me at the funeral.
+nar: At the end of the table the guest doesn't move.
+go: e3.w.aaron.next
+
+@node e3.w.aaron.fire
+place: q3w_far_bank
+speaker: AARON
+cost: 3
+line: AARON: And then there was a fire. A place on Mill Street, a yard. The Hesh used it. People said the fever came out of the well there. People said all sorts.
+line: AARON: We kept them back off the fire.
+voice: precedent: Somebody has to keep them back off the fire. That's the job. That's all the job ever was. {echo: e3.sl.order, when: toldself(e3.sl.order)}
+line: AARON: That was the job. Keep the crowd back. I had my back to it the most of the time. You could feel it on your neck. {when: has(e3.aaron_taken)}
+line: AARON: I was in the crowd. I couldn't get through. There was a line of militia with their backs to it. {when: !has(e3.aaron_taken)}
+line: AARON: The door had a bar on it. Somebody'd put a bar on it. They were in at prayers. Old Mother Vesh and the Varn sisters, and Arn. {when: has(e3.door_barred)}
+line: AARON: Your grandad went round the back. For Dorrah's cord. The knots. He threw it out the window. I saw it come out, all on fire, like a snake. He didn't come out after it. {when: has(e3.ilo_dead)}
+line: AARON: They got the door open. They came out with their coats on fire and people threw coal at them in the yard. Your grandad came out the front with Dorrah's cord in his arms and his hands like that. {when: has(e3.door_opened)}
+nar: Aaron holds his hands up off the table, curled, and puts them down again. {when: has(e3.door_opened)}
+line: ROB: Grandad's hands. That's why they're like that. {when: has(e3.door_opened)}
+line: AARON: That's why. {when: has(e3.door_opened)}
+line: ROB: Who put the bar on? {when: has(e3.door_barred)}
+line: AARON: It was dark. There was a lot of people. {when: has(e3.door_barred)}
+nar: Old Will looks at the window, at the river, at the old town on the other side with its lights coming on. {when: q_class == militia}
+go: e3.w.aaron.next
+
+@node e3.w.aaron.tomas
+place: q3w_far_bank
+speaker: AARON
+cost: 3
+line: AARON: Your Uncle Tomas went to the hills. That's what we always said. He did, an' all. After the fire he went over the ridge to the Tesks' people. Anni watched him go up the hill road with a bag. He never sent word. {when: has(e3.tomas_ridge)}
+line: AARON: Your Uncle Tomas went to the hills. That's what Mum always said. Only he didn't. He stopped. He's on the next estate, over by the works. They call him Holden over there. Anni told me. He never once came to the door. {when: has(e3.tomas_stays)}
+line: ROB: Can we go and see him?
+line: AARON: He's not a visiting sort of man.
+go: e3.w.aaron.next
+
+# ---------------------------------------------------------------- the last beat, and the end of era 3
+@node e3.w.aaron.bowl
+place: q3w_far_bank
+speaker: ROB
+cost: 3
+do: wend()
+line: ROB: Can I keep it, then? The thread.
+nar: Aaron picks it up off the table between two fingers.
+line: AARON: It's filthy. You don't know where it's been.
+nar: He drops it in the stamped bowl and reaches up and puts the bowl back on the high shelf, at the back, behind the good jug.
+nar: The surveyor sees where it goes. He runs his tape along the shelf, slowly, as if the shelf were what he'd come for. {when: q_class == inspector}
+nar: Old Will sees where it goes. He gets up on his stick and reaches the truncheon down off its hooks, and weighs it in his hand, and puts it on the table by the bowl, and Aaron doesn't touch it. {when: q_class == militia}
+go: e3.w.aaron.next
+

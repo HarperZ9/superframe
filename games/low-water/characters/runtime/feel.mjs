@@ -15,6 +15,22 @@
 // and wherever a Lamb pixel now shows something else, Lamb's edge there is inked.
 //   queueLambOutline(g, { ox, oy, w, h, rgba })   rgba: Lamb's drawn bytes
 const REACT_S = 0.36, RISE_S = 0.035;
+// Impact offsets per tool class (the 2026-10-21 research harvest, after Godwalker's per-weapon recoil: a
+// kick, a weapon rotation and a body rotation for each weapon, and a short torso flick on the struck body),
+// so a hit with the case, the hook and the hammer each read as that tool with the sound off.
+//   kick: the striker's root thrown back (m); wrist: the tool hand's bend (deg); turn: the striker's chest
+//   turn (deg); flick: the struck body's reaction scale; snap: its rise time (s); every: the striker
+//   recoils on every landed blow, not only heavy ones
+export const IMPACT_BY_CLASS = {
+  unarmed: { kick: 0.01, wrist: 6, turn: 6, flick: 0.8, snap: 0.03, every: true },
+  short:   { kick: 0.01, wrist: 18, turn: 4, flick: 0.75, snap: 0.025, every: true },   // a blade or spike: a quick wrist flick, little body
+  light:   { kick: 0.015, wrist: 12, turn: 8, flick: 0.9, snap: 0.03, every: true },   // the case or a cosh: a snap through the forearm
+  bar:     { kick: 0.025, wrist: 8, turn: 14, flick: 1.1, snap: 0.04, every: true },   // a bar: the shoulders turn with it
+  long:    { kick: 0.04, wrist: 4, turn: 10, flick: 1.0, snap: 0.045, every: false },  // a hook or pole: the push travels down the shaft into the body
+  heavy:   { kick: 0.06, wrist: 2, turn: 20, flick: 1.35, snap: 0.05, every: true },   // a hammer: the whole body rebounds and the struck body is thrown
+  shield:  { kick: 0.03, wrist: 0, turn: 12, flick: 1.0, snap: 0.04, every: false },
+};
+const impactOf = (W, id) => { const d = W && W.defs && W.defs[id], cls = d && d.tool && d.tool.cls; return IMPACT_BY_CLASS[cls] || IMPACT_BY_CLASS.light; };
 
 export function makeReactions(fxOf) {
   const hits = new Map(); let lastTick = null;
@@ -32,8 +48,9 @@ export function makeReactions(fxOf) {
       for (const c of fx.contacts || []) {
         const T = W.byId && W.byId(c.id), A = c.by && W.byId && W.byId(c.by), age = c.t != null ? Math.max(0, (W.tick - c.t) / 60) : 0;
         const from = A && T ? [A.x - T.x, A.z - T.z] : [Math.cos(T ? T.face : 0), Math.sin(T ? T.face : 0)];
-        if (c.kind === "hit" || c.kind === "guardbreak") hits.set(c.id, { age: frozen.has(c.id) ? RISE_S : age, pw: Math.max(0.25, c.power), from, kind: "struck" });
-        if (A && (c.kind === "block" || c.kind === "catch" || (c.kind === "hit" && c.power >= 0.6))) hits.set(c.by, { age: frozen.has(c.by) ? RISE_S : age, pw: c.kind === "catch" ? 1 : c.kind === "block" ? 0.6 : c.power, from: [-from[0], -from[1]], kind: "recoil" });
+        const im = A ? impactOf(W, c.by) : IMPACT_BY_CLASS.light;
+        if (c.kind === "hit" || c.kind === "guardbreak") hits.set(c.id, { age: frozen.has(c.id) ? RISE_S : age, pw: Math.max(0.25, c.power) * im.flick, from, kind: "struck", rise: im.snap });
+        if (A && (c.kind === "block" || c.kind === "catch" || (c.kind === "hit" && (c.power >= 0.6 || im.every)))) hits.set(c.by, { age: frozen.has(c.by) ? RISE_S : age, pw: c.kind === "catch" ? 1 : c.kind === "block" ? 0.6 : Math.max(0.3, c.power), from: [-from[0], -from[1]], kind: "recoil", im });
       }
     },
     // the additive pose for body id facing `face` (combat radians) at time now (s), or null
@@ -41,17 +58,18 @@ export function makeReactions(fxOf) {
       const h = hits.get(id); if (!h) return null;
       const t = h.age; if (t > REACT_S * 2.5) { hits.delete(id); return null; }
       // snap in over RISE_S, spring back with one small overshoot
-      const env = t < RISE_S ? Math.sin((t / RISE_S) * Math.PI * 0.5) : Math.exp(-(t - RISE_S) / (REACT_S * 0.45)) * Math.cos(((t - RISE_S) / REACT_S) * Math.PI * 0.9);
-      const a = 1.3 * env * h.pw, l = Math.hypot(h.from[0], h.from[1]) || 1, fx = Math.cos(face), fz = Math.sin(face);
+      const rs = h.rise || RISE_S, env = t < rs ? Math.sin((t / rs) * Math.PI * 0.5) : Math.exp(-(t - rs) / (REACT_S * 0.45)) * Math.cos(((t - rs) / REACT_S) * Math.PI * 0.9);
+      // the power is capped: a heavy blow at full power threw the head back 45 degrees (2026-10-22)
+      const a = 1.3 * env * Math.min(0.95, h.pw), l = Math.hypot(h.from[0], h.from[1]) || 1, fx = Math.cos(face), fz = Math.sin(face);
       const front = (h.from[0] * fx + h.from[1] * fz) / l, left = (-h.from[0] * fz + h.from[1] * fx) / l;
-      if (h.kind === "recoil") return { spine: { bend: -8 * a }, chest: { bend: -12 * a }, head: { bend: -6 * a }, root: { pitch: -4 * a, y: -0.02 * a }, armR: { fwd: -22 * a }, foreR: { bend: 14 * a } };
+      if (h.kind === "recoil") { const im = h.im || IMPACT_BY_CLASS.light, k = im.kick / 0.02; return { spine: { bend: -8 * a * Math.min(1.5, k) }, chest: { bend: -12 * a, turn: -im.turn * a }, head: { bend: -6 * a }, root: { pitch: -4 * a * Math.min(1.5, k), y: -0.02 * a, z: -im.kick * a }, armR: { fwd: -22 * a }, foreR: { bend: 14 * a }, handR: { bend: im.wrist * a } }; }
       const back = Math.max(0, front), fwd = Math.max(0, -front), s = left;   // the blow came from the front (back), behind (fwd) or a side
       return {
-        root: { pitch: (-7 * back + 6 * fwd) * a, roll: -7 * s * a, y: -0.05 * a },
-        spine: { bend: (-12 * back + 14 * fwd) * a, side: -14 * s * a },
-        chest: { bend: (-18 * back + 10 * fwd) * a, side: -10 * s * a, turn: -18 * s * a },
-        neck: { bend: (-10 * back + 8 * fwd) * a },
-        head: { bend: (-20 * back + 14 * fwd) * a, turn: -24 * s * a, side: -8 * s * a },
+        root: { pitch: (-4 * back + 5 * fwd) * a, roll: -6 * s * a, y: -0.05 * a },
+        spine: { bend: (-8 * back + 12 * fwd) * a, side: -12 * s * a },
+        chest: { bend: (-12 * back + 9 * fwd) * a, side: -9 * s * a, turn: -16 * s * a },
+        neck: { bend: (-6 * back + 6 * fwd) * a },
+        head: { bend: (-10 * back + 9 * fwd) * a, turn: -14 * s * a, side: -6 * s * a },   // the head follows the chest, it is not whipped (the read is the body taking the blow)
         armL: { out: 18 * a }, armR: { out: 14 * a },
         thighL: { fwd: -6 * back * a }, shinL: { bend: 10 * a }, shinR: { bend: 12 * a },
       };

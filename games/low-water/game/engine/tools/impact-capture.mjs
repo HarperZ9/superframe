@@ -3,7 +3,8 @@
 // at a time with combat's own pilot playing Lamb, so each treatment sees the same blows on the same
 // frames. Around each of the first contacts it writes frames (the contact, +2, +4, +8) and logs the
 // camera's offset and zoom on every frame.
-//   node tools/impact-capture.mjs [--port 8754] [--out dir] [--frames 600] [--dump a,b]
+//   node tools/impact-capture.mjs [--port 8754] [--out dir] [--frames 600] [--dump a,b] [--modes shake,punch,both] [--query k=v&k=v]
+// --query adds to the page's address (fxflicker=off holds every lamp and flame still: tools/flashframes.mjs, 2026-10-23)
 import { writeFile, mkdir } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -17,9 +18,9 @@ const exe = opt.chrome || `${process.env.LOCALAPPDATA}/ms-playwright/chromium_he
 await mkdir(out, { recursive: true });
 const B = await launch({ exe, port: 9400 + Math.floor(Math.random() * 400) }), summary = {};
 try {
-  for (const mode of ["shake", "punch", "both"]) {
+  for (const mode of opt.modes ? String(opt.modes).split(",") : ["shake", "punch", "both"]) {
     const P = await B.page(1920, 1080);
-    await P.go(`http://127.0.0.1:${port}/engine/play.html?capture=1&impact=${mode}`);
+    await P.go(`http://127.0.0.1:${port}/engine/play.html?capture=1&impact=${mode}${opt.query ? `&${opt.query}` : ""}`);
     await P.until("document.documentElement.dataset.ready === '1' && !!window.__lw");
     await P.eval(`(async () => { const c = window.__lw; c.newGame(11); c.G.create({ archetype: 'p.wader', enter: false }); c.G.setPlace('quay'); for (const ar of Object.values(c.G.content.map.areas)) for (const f of ar.figures) f.wander = 0; c.play(); const p = c.play; if (p.P.talk) { p.P.talk = null; p.P.beat = null; p.render(); } for (let i = 0; i < 400 && !(p.cam.ready() && p.cam.arena()); i++) await new Promise((r) => setTimeout(r, 100)); p.people.walkTo([-0.4, 0, -2.4], () => {}); for (let i = 0; i < 300 && p.people.walking(); i++) await new Promise((r) => setTimeout(r, 100)); return true; })()`);
     await P.eval(`(async () => { const c = window.__lw, p = c.play, G = c.G; G.loop.paused = true; p.cam.hold(true); const { createPilot } = await import('/engine/combat/tools/pilot.mjs'); const C = G.ext.combat, step = C.step.bind(C), pilot = createPilot(); C.step = (input) => step(C.current && !C.current.W.result ? pilot(C.current.W) : input); p.people.talkingWith('fewell'); p.startTalk('quay.lamplighters.stop'); const i = p.P.beat.options.findIndex((o) => /Stand your ground/.test(o.label)); p.choose(i); await new Promise((r) => setTimeout(r, 600)); return true; })()`);

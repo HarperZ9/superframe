@@ -17,9 +17,13 @@
 name: Lamp Quay
 plate: quay
 variant: night
+variant: dawn ? clock >= 05:50
+variant: frost ? frost > 0
+variant: rain ? rain > 0.5
 place: quay
 places: steps mole_steps weigh_out yard
 spawn: -1.2 0 -2.6
+camera: 2.66
 hotspot: "Look along the quay" -> quay.hub {at: 0.2 0 -1.4, r: 1.2}
 hotspot: "The post at the top of the steps" -> quay.post {at: -1.6 0 -0.45, r: 0.9}
 hotspot: "The Brine" -> brine.hub {at: -6.6 0 -1.8, r: 1.1}
@@ -38,6 +42,7 @@ name: The harbour office
 plate: office
 place: harbour
 spawn: 1.78 0 -0.97
+camera: 0.55
 hotspot: "The harbour office" -> quay.harbour.room {at: 0.0 0 -0.8, r: 1.4}
 hotspot: "The bay chart under glass" -> quay.chart ? !has(quay.bearing) {at: 0.2 0 -1.6, r: 0.7}
 hotspot: "The telephone" -> quay.phone.silent {at: 1.7 0 -1.6, r: 0.6}
@@ -53,6 +58,7 @@ plate: brine
 place: brine
 places: oven
 spawn: 4.9 0 1.2
+camera: 0.78
 hotspot: "The bar" -> brine.hub {at: -1.0 0 -1.8, r: 1.4, who: sabine}
 hotspot: "The ship's clock" -> brine.clock {at: 2.6 0 -2.2, r: 0.7}
 hotspot: "The stove" -> brine.stove {at: -3.6 0 -0.5, r: 0.9}
@@ -68,6 +74,7 @@ name: The room above the Brine
 plate: room
 place: room
 spawn: -0.51 0 0.39
+camera: 0.5
 hotspot: "The round window" -> brine.room.window {at: 2.8 0 0, r: 0.7}
 hotspot: "The bench" -> bench {at: 1.3 0 1.3, r: 0.7}
 hotspot: "The plank wall" -> wall {at: -1.0 0 -1.3, r: 0.7}
@@ -80,6 +87,7 @@ plate: weigh
 place: weigh_in
 places: tube
 spawn: 3.0 0 -3.6
+camera: 0.85
 hotspot: "The voting pans" -> weigh.in {at: 0 0 1.2, r: 1.2}
 hotspot: "The Board's store" -> weigh.store ? (has(key.office) | count(i.key_office) > 0) & clock < 04:15 {at: -3.6 0 -4.1, r: 0.8}
 hotspot: "The tube" -> weigh.tube.visit {at: -4.9 0 -3.4, r: 0.8, who: pip}
@@ -92,9 +100,11 @@ figure: hobb {at: 2.3 0 -4.0, face: -1, when: clock >= 04:15 & clock < 06:00}
 @area a1.floor
 name: The harbour floor
 plate: floor
+variant: rain ? rain > 0.5
 place: floor
 places: gully drowned fish
 spawn: -2.45 -3.21 6.13
+camera: 2.65
 hotspot: "Look across the floor" -> floor.hub {at: -2.7 -3.2 6.2, r: 1.4}
 hotspot: "The wreck's ribs" -> floor.wreck {at: -15.2 -3.2 7.8, r: 1.2}
 hotspot: "The gully" -> floor.gully ? tide < -0.35 {at: 4.6 -3.2 8.1, r: 1.4}
@@ -107,8 +117,10 @@ figure: lugg {at: 4.55 -3.59 7.13, face: 1, wander: 1.5, when: clock >= 23:30 & 
 @area a1.mole
 name: The mole
 plate: mole
+variant: frost ? frost > 0
 place: mole
 spawn: 28.0 0.35 -2.6
+camera: 1.9
 hotspot: "Along the mole" -> mole.hub {at: 30.0 0.35 -2.0, r: 1.6}
 hotspot: "The KEEPER door, and the stairs" -> mole.stairs {at: 34.1 0.35 -1.1, r: 0.9}
 hotspot: "Back to the quay" -> quay.hub {at: 26.5 0.35 -3, r: 1.2}
@@ -117,8 +129,10 @@ hotspot: "Back to the quay" -> quay.hub {at: 26.5 0.35 -3, r: 1.2}
 @area a1.stairs
 name: The hundred and twelve stairs
 plate: stairs
+variant: frost ? frost > 0
 place: stairs
 spawn: 1.43 -0.22 0.93
+camera: 0.45
 hotspot: "The landing at fifty-six" -> mole.stairs.landing {at: -0.6 8.68 -0.6, r: 0.8}
 hotspot: "Up into the lamp room" -> mole.lamp {at: 0.8 17.36 0, r: 0.8}
 hotspot: "Down to the door" -> mole.hub {at: 1.2 0 0.6, r: 0.8}
@@ -127,10 +141,13 @@ hotspot: "Down to the door" -> mole.hub {at: 1.2 0 0.6, r: 0.8}
 @area a1.lamp
 name: The lamp room
 plate: lamp
-variant: lit
+variant: unlit
+variant: frost ? frost > 0 & mother == "burning"
+variant: lit ? mother == "burning"
 place: lamproom
 places: gallery
 spawn: 2.0 0 1.0
+camera: 0.65
 hotspot: "The lamp room" -> mole.lamp {at: 0 0 0.8, r: 1.4}
 hotspot: "Down the stairs" -> mole.stairs {at: 2.6 0 2, r: 0.8}
 figure: wenna {at: -2.4 0 1.3, face: 1, when: seen(mole.lamp.wenna) & !has(mole.wenna_home)}
@@ -139,8 +156,12 @@ figure: wenna {at: -2.4 0 1.3, face: 1, when: seen(mole.lamp.wenna) & !has(mole.
 @area a1.gut
 name: The Gut
 plate: gut
+variant: blackout ? power.gut == "off"
+variant: frozen ? frost > 0
 place: gut
+places: gutter
 spawn: 6 -0.41 -0.5
+camera: 1.61
 hotspot: "The Gut" -> gut.hub {at: 9.5 0 0, r: 1.6}
 hotspot: "Spratt's stall" -> gut.spratt ? clock >= 00:40 & clock < 06:10 {at: -0.3 0 -0.6, r: 0.9, who: spratt}
 hotspot: "The wire lamps" -> gut.wires {at: 1.0 0 0, r: 0.9}
@@ -150,3 +171,76 @@ hotspot: "The middens" -> gut.dogs {at: 3.9 0 2.4, r: 0.9}
 hotspot: "The culvert grating" -> gut.culvert ? tide < -0.2 {at: -14 0 0, r: 1.0}
 hotspot: "Back to the quay" -> quay.hub {at: 14 0 0, r: 1.0}
 figure: spratt {at: -0.39 -0.41 -0.5, face: 1, when: clock >= 00:40 & clock < 06:10}
+
+# ---------------------------------------------------------------- the six plates of 2026-10-21 (design/PLACES-NEW.md)
+# Marks from each content/<plate>/place.json. These plates are baked close: at camera 1 (the whole
+# plate) a person stands 180 to 370 px tall at 1080p. Each camera is set below 1 (the view pulls back
+# past the plate, world/camera.mjs) so a person is about 136 px, the play size of design/CAMERA.md.
+@area a1.ferry
+name: The deck of the Saint Cuthwin
+plate: ferry
+variant: night
+place: ferry
+spawn: 1.4 0 -0.7
+camera: 0.74
+figure: penhallow {at: 0.6 0 3.0, face: -1}
+
+@area a1.hall
+name: The Guild hall
+plate: hall
+variant: early
+variant: struck ? has(ev.blackout) & !has(ev.blackout_ends)
+variant: vote ? clock >= 00:40 & clock < 01:30
+place: hall
+spawn: 5.0 0 0.9
+camera: 0.74
+hotspot: "The hall" -> gut.hall {at: 0 0 0.75, r: 1.4}
+hotspot: "Out to the Gut" -> gut.hub {at: 5.6 0 0.9, r: 0.8}
+figure: marrow {at: -4.88 0 0.88, face: 1, when: clock >= 00:40 & clock < 03:30}
+
+@area a1.smokehouse
+name: Shadwell's smokehouse
+plate: smokehouse
+variant: night
+variant: late ? clock >= 03:30
+place: smokehouse
+spawn: 1.9 0 0.9
+camera: 0.52
+hotspot: "Shadwell's smokehouse" -> gut.smoke {at: 1.6 0 -1.4, r: 1.0, who: shadwell}
+hotspot: "Out to the Gut" -> gut.hub {at: 2.2 0 0.9, r: 0.7}
+figure: shadwell {at: 1.6 0 -1.4, face: -1, when: clock < 03:30}
+figure: shadwell {at: -1.4 0 1.2, face: 1, pose: seated, when: clock >= 03:30}
+figure: marrow {at: 0.9 0 -0.5, face: 1, pose: seated, when: clock >= 03:30 & clock < 05:30}
+
+@area a1.loft
+name: The Low Company's net loft
+plate: loft
+variant: night
+place: loft
+spawn: 1.2 0 0.4
+camera: 0.47
+hotspot: "The net loft" -> gut.loft {at: -0.5 0 0, r: 1.4}
+hotspot: "Down the ladder" -> gut.hub {at: 1.7 0 0.6, r: 0.6}
+figure: lugg {at: -1.0 0 -0.9, face: 1, pose: seated, when: clock >= 23:50}
+figure: merrow {at: 1.0 0 -0.5, face: -1, pose: seated, when: clock >= 23:50 & !has(merrow.cells)}
+
+@area a1.roof
+name: The weigh-house roof
+plate: roof
+variant: night
+variant: frost ? frost > 0
+place: roof
+spawn: 2.2 0 1.2
+camera: 0.46
+hotspot: "The town balance" -> weigh.roof {at: -0.1 0 0, r: 1.4}
+hotspot: "Down the drainpipe" -> weigh.hub {at: 2.7 0 1.7, r: 0.6}
+
+@area a1.weighoffice
+name: The Board's office
+plate: weighoffice
+variant: night
+place: office
+spawn: -1.4 0 0.5
+camera: 0.37
+hotspot: "The Board's office" -> weigh.office.enter {at: -0.4 0 -0.4, r: 1.2}
+hotspot: "Through to the weigh-house" -> weigh.in {at: -1.7 0 0.6, r: 0.6}

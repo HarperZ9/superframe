@@ -1,0 +1,171 @@
+{
+ "place": "q3_office",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   1,
+   -0.3
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 4.0625
+ },
+ "pxPerMetre": 160,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 14.3,
+   "weather": "September, 14:20: the counter bulb on in the day, rain on the one window, the queue to the rail"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "register",
+    "verb": "read",
+    "at": [
+     -0.8,
+     0,
+     0.2
+    ],
+    "note": "the register open at the counter: Walter's finger on \"per A.F.\""
+   },
+   {
+    "id": "slip",
+    "verb": "read",
+    "at": [
+     0.6,
+     0,
+     0.2
+    ],
+    "note": "the Sallis allocation slip, a pencil line through the flat"
+   },
+   {
+    "verb": "look",
+    "id": "patch",
+    "at": [
+     -2.2,
+     0,
+     1.2
+    ],
+    "note": "two clean squares on the wall, one inside the other"
+   },
+   {
+    "verb": "read",
+    "id": "unfit_slips",
+    "at": [
+     1.7,
+     0,
+     0.2
+    ],
+    "note": "a spike of slips at the end of the counter"
+   },
+   {
+    "verb": "look",
+    "id": "blotter",
+    "at": [
+     -1.6,
+     0,
+     0.2
+    ],
+    "note": "the blotter on the counter, written backwards all over"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     2.6,
+     0,
+     1.8
+    ],
+    "note": "the door to Exchange Street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": [
+   {
+    "at": [
+     0.01,
+     2.16,
+     -0.5
+    ],
+    "kind": "paraffin",
+    "I": 7.2,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -2.62,
+     1.6,
+     -1.1
+    ],
+    "kind": "white",
+    "I": 0.5,
+    "reach": 6,
+    "group": ""
+   }
+  ]
+ },
+ "figureLights": {
+  "afternoon": [
+   {
+    "at": [
+     0.6,
+     2.2,
+     1
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 8,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 3: the allocation counter in the old district office."
+}

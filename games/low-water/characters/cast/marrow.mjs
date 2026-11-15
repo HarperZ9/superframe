@@ -6,9 +6,10 @@
 import { Mesh, bind, tube } from "../rig/body.mjs";
 import { torso, skirt, legs, arms, head, prop, propBlob, J, add, mid } from "./parts.mjs";
 import { toolOf } from "./tools.mjs";
+import { headPalette } from "../forge/heads.cast.mjs";
 
 export const P = { h: 2.04, leg: 0.45, head: 0.29, neck: 0.07, shoulder: 0.27, hip: 0.17, arm: 0.84, stoop: 11 };
-export const palette = {
+export const palette = { ...headPalette("marrow"),
   smock: { c: [0.24, 0.29, 0.38], v: 0.26 },
   coatIn: { c: [0.2, 0.24, 0.32], v: 0.22 },
   skin: { c: [0.86, 0.6, 0.5], v: 0.6 },
@@ -26,7 +27,7 @@ export function build({ lod = "far", tool = "priest" } = {}) {
   prop(M, B, "spine", [[0, -0.02, 0.05, 0.4, 0.33], [0, 0.02, 0.05, 0.4, 0.33]], "apron", { seg: 24 });
   legs(M, B, P, { r: 0.1, mat: "trouser", boot: "boot", bootTop: 0.95, bootWide: 1.15, foot: 0.3 });
   arms(M, B, P, { r: 0.1, mat: "smock", rolled: "scales", handR: 0.068 });
-  const c = head(M, B, P, { cell, r: 0.16, neck: 0.085, nose: [0.055, 0.034, 0.35, 0], hair: "crop", jaw: 1.25, jowls: 1.0, lids: 0.7, browW: 1.2, cheeks: true, mouth: 1.2, stubble: true });
+  const c = head(M, B, P, { id: "marrow", cell, r: 0.16, neck: 0.085, nose: [0.055, 0.034, 0.35, 0], hair: "crop", jaw: 1.25, jowls: 1.0, lids: 0.7, browW: 1.2, cheeks: true, mouth: 1.2, stubble: true });
   // the blindfold, round the neck
   const nk = J(B, "neck"); tube(M, [{ c: add(nk, [0, 0.0, 0.01]), rx: 0.115, rz: 0.115, w: { neck: 0.6, chest: 0.4 } }, { c: add(nk, [0, 0.05, 0.015]), rx: 0.11, rz: 0.11, w: { neck: 1 } }], { mat: mid("band"), seg: 16 });
   propBlob(M, B, "neck", [0.0, 0.02, 0.12], [0.03, 0.04, 0.02], "band", { rings: 4, seg: 8 });

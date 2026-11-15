@@ -1,0 +1,162 @@
+{
+ "place": "q3_furrowe_hall",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   -0.2,
+   1.1,
+   -0.4
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 3.25
+ },
+ "pxPerMetre": 200,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "evening"
+ ],
+ "variantInfo": {
+  "evening": {
+   "hour": 19.6,
+   "weather": "September, 19:40: one bulb in the hall, the last of the dusk in the fanlight, the door opening"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  3,
+  50
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "mirror",
+    "verb": "look",
+    "at": [
+     -1.0999999999999999,
+     0,
+     -0.6
+    ],
+    "note": "the hall mirror: two faces in it"
+   },
+   {
+    "verb": "look",
+    "id": "ned_photo",
+    "at": [
+     -1,
+     0,
+     1.25
+    ],
+    "note": "a photograph over the hall stand: a young man in a borrowed collar"
+   },
+   {
+    "verb": "look",
+    "id": "pale_oblong",
+    "at": [
+     -1.1,
+     0,
+     0.3
+    ],
+    "note": "a paler oblong on the wall by the mirror, a nail at the top"
+   },
+   {
+    "verb": "look",
+    "id": "hat",
+    "at": [
+     -1,
+     0,
+     1.7
+    ],
+    "note": "a round hat on the hall stand, its brass band gone dull"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "step",
+    "at": [
+     0.3,
+     0,
+     -1.8000000000000003
+    ],
+    "note": "the front door, the step"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "evening": [
+   {
+    "at": [
+     -0.29,
+     2.31,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 5.1,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     0.3,
+     2.55,
+     -1.82
+    ],
+    "kind": "white",
+    "I": 0.6,
+    "reach": 6,
+    "group": ""
+   }
+  ]
+ },
+ "figureLights": {
+  "evening": [
+   {
+    "at": [
+     0,
+     2.2,
+     0.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 8,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 3: the Furrowe hall, the front door and the mirror."
+}

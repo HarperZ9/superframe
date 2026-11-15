@@ -8,7 +8,7 @@ import { dist } from "../sim/fighter.mjs";
 
 test("every opponent special that strikes is telegraphed for most of its wind-up", () => {
   for (const [id, m] of Object.entries(SPECIALS)) {
-    if (m.kind === "dodge") continue;
+    if (m.kind === "dodge" || !(m.hits || []).length) continue; // a stance or a call strikes nothing
     assert.ok(m.tell, `${id} has a tell`);
     assert.ok(m.startup >= 18, `${id} winds up for at least 18 frames`);
     assert.ok(m.tell.at[1] - m.tell.at[0] >= 0.6 * m.startup, `${id} shows its tell for most of the wind-up`);

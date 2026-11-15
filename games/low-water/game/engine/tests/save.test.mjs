@@ -32,12 +32,27 @@ test("slots list their summaries; an unknown slot is refused", () => {
 test("old saves are upgraded: the prototype's v1 shape to v3", () => {
   const v1 = { version: 1, clock: 23 * 60 + 30, notes: ["met.keel"], place: "quay", power: "off", mother: "dark", wet: 0.4 };
   const { save, upgraded } = migrate(JSON.stringify(v1));
-  assert.deepEqual(upgraded, [2, 3, 4]);
-  assert.equal(save.version, 4);
+  assert.deepEqual(upgraded, [2, 3, 4, 5]);
+  assert.equal(save.version, 5);
   assert.deepEqual(save.state.flags, ["met.keel"]);
   assert.deepEqual(save.env.power, { quay: "off" });
   assert.equal(save.state.body.wet, 0.4);
   assert.throws(() => migrate({ version: 99 }), /newer than this game/);
+});
+
+test("version 5: an open read-back becomes the witness scene, resumed from its first beat", () => {
+  const v4 = { format: "low-water.save", version: 4, state: { version: 4, flags: ["q.tomas_held"], selfLies: [{ id: "q.sl.signed" }], saidWords: [{ flag: "said.ned_pencil" }], community: { day: 48 },
+    readback: { id: "q.record", doc: { rows: [] }, shown: 3, lastAt: 10, closed: false } }, env: {} };
+  const { save, upgraded } = migrate(JSON.stringify(v4));
+  assert.deepEqual(upgraded, [5]);
+  assert.equal(save.state.readback, undefined);
+  assert.deepEqual({ id: save.state.witness.id, i: save.state.witness.i, closed: save.state.witness.closed, from: save.state.witness.from }, { id: "q.w.anni", i: -1, closed: false, from: "q.record" });
+  assert.deepEqual(save.state.selfLies, [{ id: "q.sl.signed" }]);
+  assert.deepEqual(save.state.saidWords, [{ flag: "said.ned_pencil" }]);
+  assert.deepEqual(save.state.community, { day: 48 });
+  // a save with no read-back open passes through with nothing added
+  const plain = migrate({ ...v4, state: { version: 4, flags: [] } }).save;
+  assert.equal(plain.state.witness, undefined);
 });
 
 test("ink mode: one slot, written on every action, no manual saves or loads", async () => {

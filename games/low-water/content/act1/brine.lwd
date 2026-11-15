@@ -36,6 +36,9 @@ by: eyes
 @fact brine.damp_door
 @fact brine.glass_gone
 @fact brine.search_found
+@fact brine.teague_prophecy
+about: Orrin Teague, four rums in, on Low Night: the Lantern Man will go up the mole when the gale comes, "because that's when they'll pay for it".
+by: hearing, in the Brine
 
 # ---------------------------------------------------------------- the hub
 @node brine.hub
@@ -79,6 +82,8 @@ opt: "Talk to the pot girl." -> brine.pip.start ? !has(met.pip) & (clock < 23:55
 opt: "Talk to Pip." -> brine.pip ? has(met.pip) & (clock < 23:55 | clock >= 00:15) & clock < 05:50
 opt: "Talk to the man whose luggage is strapped together." -> brine.teague.start ? !seen(brine.teague.start)
 opt: "Talk to Orrin Teague." -> brine.teague ? seen(brine.teague.start)
+opt: "Talk to the stoker waiting at the end of the bar." -> brine.sorle ? clock >= 23:30
+opt: "Drink the rum you bought." -> brine.drink ? count(i.rum) > 0
 opt: "Talk to the ferry's master." -> brine.penhallow ? clock >= 23:30
 opt: "Talk to Merrow, steaming at the stove." -> brine.merrow ? (seen(brine.merrow.arrive) | seen(brine.merrow.arrive.robbed) | seen(brine.merrow.arrive.sunk)) & clock < 00:40 & !has(merrow.cells)
 opt: "Look under the settle by the stove." -> brine.sack ? seen(brine.merrow.arrive) & !has(floor.copper_taken) & !has(floor.copper_sunk) & copper == none & (clock < 00:40 | has(merrow.cells)) & clock < 02:40
@@ -170,6 +175,7 @@ opt: "Wait." -> brine.hub
 speaker: SABINE
 cost: 1
 line: SABINE: You again. You've had a look in my oven. I've had a look at you.
+line: SABINE: Tonight, and for six years, you said, to my oven's face. It's still warm. {when: has(said.oven), once}
 go: brine.sabine
 
 @node brine.sabine.alibi
@@ -329,6 +335,12 @@ speaker: WENNA
 cost: 1
 alt: brine.wenna.silent ? prov == keeper & has(ev.prov_travels) & !has(brine.took_back) & !has(brine.prov_proved) & !(has(ev.blackout) & !has(ev.blackout_ends))
 nar: Wenna looks at the fire as if it owed her money and she had decided not to ask.
+line: WENNA: My chair on the stairs. Three years of dust, and I sat in it. Don't put that in your book. {when: has(heard.wenna.chair) & has(wenna.climbs), once}
+line: WENNA: You've read my log now. March, written in February. That makes one reader. {when: has(heard.wenna.log) & has(wenna.climbs), once}
+line: WENNA: Keeper to attend, the card says. I attended. Write that down. {when: has(heard.wenna.card) & has(wenna.climbs), once}
+line: WENNA: Glass is glass, I told you. Tell the Board that, in those words. {when: has(heard.wenna.green) & has(wenna.climbs), once}
+line: WENNA: We struck her together. My hands remember it, worse luck. {when: has(heard.wenna.restrike) & has(wenna.climbs), once}
+line: WENNA: You did the last twenty steps on your knees. I saw. {when: has(heard.wenna.landing) & has(wenna.climbs), once}
 voice: knees: She has been up the stairs tonight and come down them. Her knees are telling her about it in a voice only she can hear. {when: has(wenna.climbs), once}
 voice: condolence: There is a bruise coming up on your cheekbone and she is pretending, kindly, that there is not. {dc: 5, when: has(brine.brawled), once}
 opt: "Where were you when she went out?" -> brine.wenna.where ? !has(brine.wenna_confessed) & !seen(brine.wenna.where)
@@ -514,6 +526,7 @@ speaker: WENNA
 cost: 3
 alt: brine.wenna.again.easy ? seen(brine.wenna.climb.yes)
 line: WENNA: You put her on with your own hands, by yourself, in your Shelf coat. She went out again with the rain.
+line: WENNA: You said the ferry nearly went on the Spit. I've thought of nothing else since. {when: has(said.ferry), once}
 line: WENNA: Now you want my hands.
 check: "[CONDOLENCE] Tell her you should have asked her the first time." -> brine.wenna.again.yes / brine.wenna.again.no {skill: condolence, dc: 7}
 opt: "Leave it." -> brine.wenna
@@ -522,6 +535,7 @@ opt: "Leave it." -> brine.wenna
 speaker: WENNA
 cost: 2
 line: WENNA: Twice in a night. She's never gone twice in a night.
+line: WENNA: Your book's kept the green glass so far. {when: has(said.kept_glass), once}
 line: WENNA: My knees have been up once already. They know the way.
 opt: "Then come." -> brine.wenna.again.yes
 opt: "Leave it." -> brine.wenna
@@ -661,6 +675,10 @@ go: brine.teague
 speaker: TEAGUE
 cost: 1
 nar: Orrin Teague keeps one hand on the belt of his luggage at all times, as a man keeps a hand on a dog that has never once run off.
+nar: He moves his own glass an inch toward the assessor's side of the table, and then back, and says nothing about it. {when: has(theme.relapse), once}
+opt: "The morning boat, Mr Teague. Nine years of it." -> brine.teague.boat ? !seen(brine.teague.boat)
+opt: "You were watching me drink." -> brine.teague.hour ? var.drinks >= 2 & !seen(brine.teague.hour)
+opt: "Does the Brine believe in wreckers?" -> brine.teague.lantern ? !seen(brine.teague.lantern)
 opt: "Did Merrow say something in here about Mother?" -> brine.teague.blind ? !seen(brine.teague.blind)
 opt: "You face the stove. You'd see who comes and goes." -> brine.teague.clock ? !seen(brine.teague.clock)
 opt: "That letter in your hand." -> brine.teague.letter ? clock >= 01:30 & clock < 02:40 & count(i.orrin_letter) == 0 & tab_orrin == 0 & !seen(brine.teague.letter.no)
@@ -1664,7 +1682,8 @@ go: brine.sabine
 @node brine.wethour
 place: brine
 cost: 2
-nar: Half past one, and the rain comes down on the hull like gravel thrown by a patient man. The Brine fills with everyone the weather has found.
+nar: Half past one, and the rain comes down on the hull like gravel thrown by a patient man. The Brine fills with everyone the weather has found. {when: clock < 01:45}
+nar: The rain comes down on the hull like gravel thrown by a patient man. The Brine fills with everyone the weather has found. {when: clock >= 01:45}
 nar: Item: the ferry's master, not sailing. Item: Teague, a letter out. Item: the deacon, dripping. Item: one choirboy, asleep. Item: Sabine, everywhere.
 voice: hearsay: Everything said in here tonight will be all over Gullet by breakfast, and half of it will be true. {dc: 4}
 go: brine.hub
@@ -1779,7 +1798,8 @@ go: brine.hub
 @node brine.blackout
 speaker: SABINE
 cost: 3
-nar: Ten to three. Every porthole goes black at once.
+nar: Ten to three. Every porthole goes black at once. {when: clock < 03:00}
+nar: Every porthole is black. {when: clock >= 03:00}
 line: SABINE: Low Night rule. When the quay's dark, the Brine's dark. Nobody's to be the only light on the quay; it's bad luck and bad for trade. Lamps down, all but the stove.
 nar: The Brine shrinks to the stove's red mouth and the faces in front of it.
 cmd: setLight brine 0.06 0
@@ -1806,7 +1826,8 @@ opt: "Say nothing, and sit with her." -> brine.hub
 speaker: SABINE
 cost: 2
 cmd: setLight brine 0.5 0.05
-nar: Twenty past three. The portholes go pink, then orange, and Sabine goes round with a taper, and everybody stops saying what they were saying.
+nar: Twenty past three. {when: clock < 03:30}
+nar: The portholes go pink, then orange, and Sabine goes round with a taper, and everybody stops saying what they were saying.
 line: SABINE: That's the dark over. Prices back on.
 inst: CANDLEMAS: Pink.
 go: brine.hub
@@ -2261,4 +2282,98 @@ cost: 3
 nar: Merrow is steaming at the stove, with nothing in his hands.
 line: MERROW: There's a cork bobbing in the gully with my copper under it. You know where. So do I.
 do: set(met.merrow); quest(a1.copper, sack)
+go: brine.hub
+
+# ================================================================ THE RUM, TEAGUE, THE LANTERN MAN (THEMES.md 9; DISCOURSE-SYSTEM.md 3, 5)
+@node brine.drink
+place: brine
+cost: 0
+call: theme.drink
+line: SABINE: That's the rum's half of the bargain kept. {when: var.drinks == 1, once}
+nar: At the table by the door Orrin Teague does not look up, and turns his own glass a quarter turn on its ring. {when: var.drinks >= 2, once}
+go: brine.hub
+
+@node brine.teague.boat
+speaker: TEAGUE
+cost: 3
+line: TEAGUE: Nine years. People think I'm waiting for the weather. I'm waiting for a morning I'm fit to stand on a deck in.
+line: TEAGUE: Every night at closing I stop. I've stopped four thousand times; I'm very good at it. It's the mornings that don't hold.
+line: TEAGUE: The boat goes at seven. By seven I've generally had the first one, to steady the hand for the belt. A man can't carry luggage shaking. Then it's gone, and there's always tomorrow's.
+voice: condolence: He has told it as a joke so often that the joke has worn through, and he does not notice it has. {dc: 7}
+go: brine.teague
+
+@node brine.teague.hour
+speaker: TEAGUE
+cost: 3
+do: offer(m.hour)
+line: TEAGUE: You drink like a man counting. I know the look. I own the look.
+line: TEAGUE: Don't stop. Nobody can stop. Stop for an hour, and when the hour's up, see about the next one. That's the whole of it. It isn't much and it's all there is.
+line: TEAGUE: I'd not give you advice. A man nine years at a table by the door hasn't got any. I've got a method, and it doesn't work, and I do it anyway.
+go: brine.teague
+
+@node brine.teague.lantern
+speaker: TEAGUE
+cost: 4
+do: set(cl.lantern); set(brine.teague_prophecy); rumour(cl.lantern, brine, 0.3)
+line: TEAGUE: Wreckers. You'll have heard the song. The Kell came in on the dark of the moon and showed a light off the Hound, and Gullet built the Old Light to stop them. Every child on the quay can sing it.
+line: TEAGUE: Now it's one man. The Lantern Man. Walks the floor when Mother sleeps, with a light held low. Four people in this room saw him tonight, and not one of them was on the floor.
+line: TEAGUE: He'll go up the mole when the gale comes. Mark me. Not tonight. When the gale comes, because that's when they'll pay for it.
+line: LAMB: Who will?
+line: TEAGUE: Whoever's paying. Somebody always is.
+voice: sum: Four rums, a song and a boat he has not taken in nine years. As a witness, the Daybook would rate him low. {dc: 4}
+voice: undertow: Low is not the same as wrong. {dc: 8}
+opt: "There's no such man, Mr Teague. There's a switch and a signature." -> brine.teague {do: var.lantern -= 1; var.lean_hang -= 1; set(said.no_lantern); set(heard.teague.no_lantern)}
+opt: "Somebody showed that light. I saw it." -> brine.teague {do: var.lantern += 1; set(said.saw_lantern); set(heard.teague.saw_lantern)}
+opt: "Leave the song where it is." -> brine.teague
+
+# ---------------------------------------------------------------- Sorle Ammet, the stoker from Kell (from 23:30, when the ferry's crew are ashore)
+@node brine.sorle
+place: brine
+speaker: SORLE
+cost: 3
+alt: brine.sorle.again ? seen(brine.sorle)
+nar: At the end of the bar, in the draught from the door, a stoker off the Saint Cuthwin, coal still in the creases of his knuckles, waits with a coin on the wood while Sabine serves three people who came in after him.
+line: SABINE: He'll get served. Farsiders drink at that end. It's where the draught is; they like a draught.
+line: SORLE: Sorle Ammet. Kell. Your captain's fireman. She keeps her stokehold full of us because we don't drink at sea.
+line: SORLE: Tonight on my shore it is slack water on the low tide, and every debt between kin is wiped. All down the coast of Kell, people are forgiving each other money. Here I wait for a glass with the coin already out.
+line: SABINE: And here people pay, which is why we've a pub and you've a custom.
+line: SORLE: You keep a widow on a column of chalk for eleven years, landlady. On my shore we'd call that a curse and burn the board.
+line: SABINE: On your shore you'd marry the widow to her husband's brother and call it kindness. I read the Hesk paper. A penny a straight answer; you've had two for nothing.
+voice: chit: Both of them have priced the other's town and neither has paid for their own. {dc: 6}
+voice: smallprint: Kell forgives a debt among kin. A stranger is not kin. Neither of them has said what slack water does for a Farsider in Kell who owes a Kellishman. {dc: 8}
+opt: "Wipe the slate, Sabine. One slack water won't sink the Brine." -> brine.sorle.wipe {do: var.lean_kin += 1; var.lean_sea += 1; offer(cv.sea); set(said.wipe_slate); set(heard.sabine.wipe_slate)}
+opt: "A slate means nobody owns anybody, Mr Ammet. Everyone owes a little." -> brine.sorle.slate {do: var.lean_kin -= 1; var.lean_sea -= 1; offer(cv.wall); set(said.slate_fair); set(heard.sorle.slate_fair)}
+opt: "Serve him, Sabine. He was here first." -> brine.sorle.serve {do: var.lean_sea += 1; set(said.serve_sorle); set(heard.sabine.serve_sorle)}
+opt: "Leave them to their argument." -> brine.hub {do: var.lean_dry += 1}
+
+@node brine.sorle.wipe
+speaker: SABINE
+cost: 2
+line: SABINE: Wipe it. Lovely. And when the Gut's coal runs out in February, who do they owe then? Nobody. And who gives them coal on nobody? Nobody.
+line: SABINE: A slate is a promise somebody will still be here in February. Write that on your shore.
+line: SORLE: On my shore we are still there in February. We are there for each other, landlady. You are there for the chalk.
+voice: condolence: Jory Brine is on that slate, near the top, and she has never once rubbed him out. {dc: 6}
+go: brine.hub
+
+@node brine.sorle.slate
+speaker: SORLE
+cost: 2
+line: SORLE: Nobody owns anybody. Only everybody owes her. You say it like a freedom.
+line: SORLE: In Kell a man can be poor among kin. Here a man can be free among creditors. I have seen both. I go home poorer and I sleep.
+line: SABINE: You go home. That's the custom I'd like to see.
+voice: pride: She said it under the sodium and the bar laughed. That is a vote, of a kind. {dc: 5}
+go: brine.hub
+
+@node brine.sorle.serve
+speaker: SABINE
+cost: 2
+line: SABINE: He was. He'll pay what everyone pays, and he'll get his change in Gullet money, which is the custom on this shore.
+nar: She serves him. It takes four seconds, and in the Brine everybody counts them.
+line: SORLE: Thank you. In Kell that would be a debt. Here, I suppose, it is a transaction.
+go: brine.hub
+
+@node brine.sorle.again
+speaker: SORLE
+cost: 1
+line: SORLE: Still the draught. It's honest, the draught. It comes in off the sea and doesn't ask where you're from.
 go: brine.hub

@@ -1,0 +1,132 @@
+# The Quota (era 2): the era's own senses, for the moments the shared ones in senses.lwd do not cover. The
+# device rule, the author 2026-10-23: story reaches the player through weight, sound, touch, bodies and changed
+# places, never through a document (design/DEVICE-AUDIT.md section 3; design/device-audit/era2.md). Engine:
+# world/senses.mjs. Weighted-devices pass, era 2, 2026-10-23.
+
+# ---------------------------------------------------------------- the scale and the wedge
+@sense q.wedge.find
+sound: knock 0.35 under
+caption: iron knocking on iron, under the pan
+rumble: 0.05 0.8 140
+anim: player reach 1.2
+camera: push 1.6 1.2
+hold: 1
+
+@sense q.wedge.out
+sound: creak 0.55 near 1.4
+sound: thud 0.3 under
+caption: a wedge of iron worked loose from under the pan
+rumble: 0.5 0.2 260
+rumble: 0.2 0.4 220 300
+anim: player stoop 1.5
+hold: 1
+
+@sense q.wedge.in
+sound: knock 0.5 near
+caption: the heel of a hand knocking iron home
+rumble: 0.6 0.1 90
+rumble: 0.6 0.1 90 200
+anim: player stoop 1
+
+# the queue on the square, when the arm comes up and stays up
+@sense q.queue.breath
+sound: murmur 0.45 far 3
+caption: a long breath going out of the whole queue
+screen: vignette 0.25 3
+camera: hold 2
+hold: 1.6
+
+# the queue watching the biscuit go to the inspector's mouth
+@sense q.queue.watch
+sound: murmur 0.2 far 2
+caption: the queue gone quiet
+screen: dim 0.15 2.5
+hold: 1.2
+
+# ---------------------------------------------------------------- the hill
+@sense q.rock.cold
+screen: tint #c8d8e8 0.2 2.5
+sound: breath 0.25 near 2
+caption: a breath through the teeth at the cold
+rumble: 0.05 0.6 600
+anim: player still 2
+hold: 1.4
+
+@sense q.goat.push
+sound: breath 0.3 near 1.2
+caption: a goat breathing hard through its nose
+rumble: 0.3 0.05 160
+rumble: 0.3 0.05 160 280
+anim: player flinch 0.4
+
+# ---------------------------------------------------------------- the knots, the cap, the thread, the bowl
+@sense q.knots
+sound: breath 0.15 near 1.6
+caption: wool running through fingers
+rumble: 0.05 0.25 90
+rumble: 0.05 0.25 90 260
+rumble: 0.05 0.25 90 520
+rumble: 0.05 0.25 90 780
+hold: 0.8
+
+@sense q.cap.hold
+sound: breath 0.2 near 1.8
+caption: a slow breath
+screen: dim 0.18 2.5
+rumble: 0.05 0.15 400
+camera: push 1.5 1.6
+hold: 1.2
+
+@sense q.bowl.lift
+sound: bowlset 0.35 near
+caption: a bowl lifted off a shelf and put back
+rumble: 0.1 0.1 120
+hold: 0.8
+
+@sense q.spoon.scrape
+sound: spoon 0.45 near 2.4
+caption: a spoon scraping an empty bowl
+rumble: 0.02 0.2 300
+rumble: 0.02 0.2 300 500
+hold: 1
+
+@sense q.chalk.goat
+sound: knock 0.2 near
+caption: chalk on a door
+screen: vignette 0.2 2
+hold: 0.8
+
+# ---------------------------------------------------------------- the clay, the corner
+@sense q.clay
+sound: drag 0.3 under 1.6
+caption: wet clay pulling at a boot
+rumble: 0.4 0.05 500
+anim: player stoop 1.5
+
+@sense q.spade
+sound: thud 0.4 near
+sound: drag 0.25 near 1.4
+caption: a spade going into frozen clay
+rumble: 0.7 0.1 160
+rumble: 0.7 0.1 160 900
+screen: dim 0.25 3
+
+# ---------------------------------------------------------------- the post
+@sense q.pole.lift
+sound: creak 0.45 near 1.6
+caption: the barrier pole swinging up
+rumble: 0.2 0.15 500
+
+@sense q.bayonet
+sound: snip 0.4 near
+caption: a bayonet going into a sack
+rumble: 0.05 0.6 80
+anim: player flinch 0.5
+
+# ---------------------------------------------------------------- the doctor
+@sense q.word.said
+sound: breath 0.2 near 1.6
+caption: someone breathing out after a word is said
+screen: dim 0.2 2
+camera: hold 1.6
+hold: 1.4

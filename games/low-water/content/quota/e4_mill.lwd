@@ -1,0 +1,261 @@
+# Era 4, The Closure: the last shift (e4.s07), the pit (e4.s06, fate f.e4_lew, COL decides) and the Sheaf on
+# closure night (e4.s08, the hinge). Story lead, 2026-10-23. DRAFT: every line waits for the author's line
+# approval (ledger row S14). Design: design/eras/era4.md sections 2, 3, 10 and 12.
+# The pit is played after the last shift so that Lew's chapter falls on closure night, in the same hour Joss
+# speaks at the Sheaf. The two chapters are Col's and Lew's, each with its own camera; the perspective-chapter
+# heads of game/engine/world/perspective.mjs are not wired (reported in PROGRESS).
+
+# ---------------------------------------------------------------- the militia's Tuesday: Ann and Col on the stair
+@node e4.shift
+cost: 0
+alt: e4.pit.tuesday ? q_class == militia
+go: e4.shift.yard
+
+@node e4.pit.tuesday
+place: q4_estate_stair
+speaker: COL
+cost: 0
+nar: The Tuesday before, on the far-bank estate, half past ten at night. Stairwell C. The bulb on the second landing has been broken so long the council has stopped sending a man. The light comes up from the first floor and down from the third and the second landing is a gap in the middle where you go by feel.
+nar: Ann has the estate on the late turn. She comes up the stairs with her torch off because you hear more with it off. On the second landing, in the gap, there's a lad sitting on the step with his knees up and a carrier bag between his feet. She smells him before she sees him. Lynx and chips.
+nar: She puts the torch on. Col Haldane, eighteen, with a pale thin face and his hair cut very short at the sides, and his hands round the carrier bag. In the bag, strips of tablets in their foil, a lot of them, with the mill clinic's label on the boxes.
+line: COL: Evening, officer.
+line: ANN: Col.
+line: COL: You know my name. That's nice.
+line: ANN: I know your grandad. Aaron. He was on the force when I joined.
+line: COL: He was on the force when everybody joined. He tells everybody.
+voice: grip: Bag, pockets, the van. He's eighteen. He'll be out by Thursday. {dc: 2}
+voice: knees: He's only a kid with a bag on a step. He'll be back on it Friday. {dc: 3}
+nar: He doesn't get up. He's got the look of a lad who has been lifted before and knows the walk down to the van takes longer than it seems, and that nothing much happens at the end of it.
+opt: "Say it: Up. Hands on the wall. You're coming in." -> e4.pit.tuesday.lift {do: set(said.e4_ann_lift)}
+opt: "Say it: I never saw you. Go home, Col." -> e4.shift.yard
+
+@node e4.pit.tuesday.lift
+place: q4_estate_stair
+speaker: COL
+cost: 0
+nar: He gets up. He puts his hands on the wall, on the graffiti, very flat, and she goes through his pockets, and finds money in a roll with an elastic band and a key and a photograph of a baby, and he says, that's my cousin's, that's Kev, give us that back.
+nar: She gives him the photograph back. She keeps the bag.
+nar: In the cells at the station, at one in the morning, he cries. Not much. She hears it from the desk through the hatch, a sniff and a sniff and a breath held, and she goes and looks through the hatch and he's sitting on the bench with his face in his elbow like a kid at a school desk.
+line: COL: Don't tell my gran. Don't tell her. She'll go up the wall.
+line: ANN: You'll be out in the morning, Col Haldane. That's all.
+line: COL: I know. Don't tell her, though.
+go: e4.shift.yard
+
+# ---------------------------------------------------------------- e4.s07, the last shift
+@node e4.shift.yard
+place: q4_mill_floor
+speaker: JOSS
+cost: 0
+camera: wide
+do: set(e4.closed)
+nar: The Friday. An ordinary grey day. It isn't raining. It looks as if it might and doesn't.
+nar: The mill floor is fifty metres long and three storeys high, with the belts going up through holes in the ceiling to the floors above. Every machine on it was bought by an Orme, and some of them by the first one. They've been stopping one at a time all afternoon, the way the foremen agreed, so it isn't all at once.
+nar: When a machine stops the sound of the floor changes. You hear the others more. And then the next one stops and you hear the ones left more than that, and the room gets bigger and bigger around the sound, until you can hear a man's boots on the iron stairs at the far end, and a cough, and a pigeon in the roof that's always been in the roof.
+nar: Joss stops the second floor's at ten to four. He puts his hand flat on the big roller after it's still. It's warm. He keeps his hand on it.
+nar: Kasem is on the floor below with a broom, because there's been nothing left to lift since Wednesday. When the roller stops above him he looks up at the ceiling, and leans on the broom, and waits for whatever happens next, the way the others are waiting. {when: has(e4.kasem_hired)}
+nar: Dale is on the floor below with a broom, because there's been nothing left to lift since Wednesday. When the roller stops above him he takes his cap off. Nobody else does. He looks round to see if anybody saw. {when: has(e4.dale_hired)}
+nar: The wheel goes last. Somebody in the race-house throws the brake and you can hear it come down through the whole building, a groan in the walls, and then the water going on past outside without turning anything. Just water. {sense: e4.wheel.stop}
+nar: Nobody goes home.
+nar: The men come down out of the floors and stand in the yard. They don't talk much. A few smoke. Gary Peel sits on an upturned crate with his hands between his knees. Somebody's brought a crate of brown ale from the Sheaf and nobody opens it. The sky over the chimney goes from grey to darker grey and the sodium comes on along the gate, orange, and still nobody goes home.
+voice: sum: All of them. Every face from the gate this fortnight, stood there, and not one of them going home. {dc: 3, when: q_class == inspector}
+voice: ballast: Nobody needs moving. That's the thing. You were sent for a crowd and it's not a crowd. {dc: 3, when: q_class == militia}
+nar: Ruth watches it from the manager's window. The cash box is on the desk with its lid up, empty, and she has her hand flat on the lid. She doesn't go down. {when: q_class == inspector}
+nar: Ann stands at the gate with Pryce. The picket's put its placards down against the wall, face in. Pryce takes his helmet off and holds it, and after a minute she does too. {when: q_class == militia}
+nar: At half past five, from up on the gate, a man with a roller on a pole paints out ORME & SON in grey undercoat, in long strokes, and writes HALVARD over it in letters he's chalked first. He's not from here. Nobody watches him do it, and everybody sees.
+go: e4.pit
+
+# ---------------------------------------------------------------- e4.s06, the pit: Col's chapter, then Lew's (fate f.e4_lew, COL decides)
+@node e4.pit
+place: q4_estate_stair
+speaker: COL
+cost: 0
+camera: near
+do: set(e4.pit_open); pressure(f.e4_lew)
+nar: Col's chapter. Closure night, nine o'clock. Stairwell C.
+nar: From the second landing you can hear the whole block. A telly with a quiz on. A row on the fourth floor, a woman's voice going up and a man's going down. A baby that's been crying for an hour with the hiccups between. Somebody frying onions.
+nar: Col likes the second landing. In the gap where the bulb's out nobody can see your face from the stairs, and you can see theirs, lit from below, coming up. He knows everybody's step. Mrs Arkell's two sticks. The Pruett twins taking them in threes. Lew's, slow, a step and a wait on every one, his hand on the rail.
+nar: He's sold more tonight than all of last week. The men from the mill have their last pay packets. They come up the stairs in their work clothes still, with the brown envelope in an inside pocket, and they don't want the tablets for their backs. They want to not be in the flat with the wife looking at them.
+nar: He's got two strips left of the strong ones, the clinic's last scripts, from the men who sold their own on to him to have the cash. {when: has(said.e4_ruth_early)}
+nar: He's got two strips left of the strong ones, and after that he's got nothing. The clinic's going till the end of the month and the men have got their own. {when: !has(said.e4_ruth_early)}
+nar: Col's bag is a different bag. The police kept the old one. He's had a fright and he's smaller on the step than he was. {when: has(said.e4_ann_lift)}
+nar: Lew comes up. A step and a wait. Twenty-four, and he walks like his gran does. He's got his work coat on and a can in his coat pocket and he smells of the Sheaf already, though the Sheaf's on the other bank and he's not been, so it's something from the offy.
+line: LEW: Col.
+line: COL: Lew.
+line: LEW: Just the one strip. I'll have it you Friday.
+line: COL: You said Friday last Friday.
+line: LEW: The mill's shut, Col. There isn't a Friday.
+line: COL: Your gran'd kill me.
+line: LEW: She'd have to find me first.
+nar: He laughs at that. It's not a laugh. He sits down on the step below Col, heavily, the way you sit when your back's gone, all at once, with a hand out behind you.
+line: LEW: June's up there with him. Kev. He's got a tooth coming. He's screaming the place down. I've been walking him round the landing two hours. I put him down and he went off and I came out before he woke up again.
+line: COL: You should be up there.
+line: LEW: I know where I should be. I've a list of where I should be. Give us one strip and I'll go up there and be there.
+voice: undertow: He's your cousin. He took you fishing up the race when you were seven. He let you hold the rod. {dc: 2}
+nar: Col turns the strip over in his fingers in the dark. He can feel the blisters in the foil, ten of them, round.
+go: e4.lew.decide
+
+@node e4.lew.decide
+cost: 0
+alt: e4.lew.lives ? (q_class == inspector & !has(said.e4_ruth_early)) | (q_class == militia & has(said.e4_ann_lift))
+go: e4.lew.dies
+
+@node e4.lew.dies
+place: q4_estate_stair
+speaker: COL
+cost: 0
+camera: near
+do: set(e4.lew_dead); fate(f.e4_lew, lew)
+line: COL: Here. Go easy. They're the big ones. Don't have them with that.
+line: LEW: I'm not stupid.
+nar: Lew takes the strip and puts it inside his coat with the can, and gets up the way he sat down, all at once, with a hand on the wall. He doesn't pay. Col doesn't ask him to. He watches Lew go up into the light on the third floor, a step and a wait, and turn on the landing, and go out of sight.
+nar: Lew's chapter.
+nar: He doesn't go up. On the third landing he sits down again where it's dry, under the window that doesn't open, and gets the can out, and gets the strip out.
+nar: He pushes one out of the foil with his thumb and it skids off along the step and he has to go after it on his knees. He takes it with the can. Then another, because the first one never does anything for the first twenty minutes and he hasn't got twenty minutes in him, the night he's had.
+nar: Above him through the ceiling Kev starts again. That rising cry with the hiccup in the middle. June's feet on the floor going to him. Lew counts the steps she takes. Eight to the cot.
+nar: He has another. His back lets go of him for the first time since August. He feels it go, like a knot pulled out of a rope, and he lets his head go back against the wall, and the wall is cold, and it's lovely.
+nar: The stairwell gets very long. The lights go on a long way off. The quiz on the telly downstairs gets a right answer and the audience claps, a long way off, a sound like rain on the tin roof of the cabin at the mill.
+nar: He has another one because he's forgotten the one before.
+nar: His breathing slows down. You can hear it change from the landing below if you're listening, and Col is, sat on the step in the dark with his bag. A breath. A long wait. A breath, with a catch in it, like a snore. A long wait. Col counts them without meaning to. He gets to nine, and then there isn't a tenth, and then there is, a big one, dragged, and then it's quiet. {sense: e4.breath.slow}
+nar: Col goes up. He doesn't run. He walks up in the dark and the light comes onto him on the third floor.
+nar: Lew is sat against the wall with his head on one side, his chin on his shoulder, as if he's listening to something in the wall. His lips are blue. Not pale. Blue, like a bruise is blue. There's sick down the front of his work coat, and on the step, a little, and the can on its side has run out into it. One of his eyes is open a slit. The strip is in his hand, mostly empty.
+nar: Col gets hold of his face in both hands and says his name into it, and slaps it, which he has seen people do, and it doesn't do anything, and Lew's head goes over the other way with the slap and stays there.
+line: COL: Lew. Lew. Lew, you knob. Lew.
+nar: Upstairs the baby has stopped. June's door opens. Her feet on the landing. She's saying, Lew, is that you, are you on the stairs, and her voice is cross, and then it isn't.
+nar: Col runs. Down, through the gap where the bulb's out, three steps at a time, with the bag, and out of the bottom door into the estate, and he doesn't stop until he's at the river and then he stands at the rail and is sick into it.
+nar: Behind him the whole block can hear June. Doors open on every floor, one after another, up the stairwell, the light coming out of each one.
+voice: undertow: You gave it him. You said go easy. You said it like it was a thing you could say. {dc: 1, when: q_class == inspector}
+voice: undertow: You let him go on Tuesday. You let him go home. {dc: 1, when: q_class == militia}
+go: e4.sheaf
+
+@node e4.lew.lives
+place: q4_estate_stair
+speaker: COL
+cost: 0
+camera: near
+do: set(e4.lew_lives)
+line: COL: Not you. You're family.
+line: LEW: What's that supposed to mean?
+line: COL: It means no. Go up to June.
+line: LEW: Col. One strip. I'm asking you. I'm sat on a step asking my cousin.
+line: COL: I know. I can hear you. Go up.
+nar: Lew looks at him for a long time in the half dark. Then he tries to take the bag. He's not quick, with his back, and Col's quick, and Col has it behind him before Lew's hand gets there, and Lew's hand closes on nothing and stays closed.
+line: LEW: Little Tarn. Little Tarn copper's lad. You think you're something.
+nar: Col says nothing. Lew gets up, and goes up the stairs, a step and a wait.
+nar: Lew's chapter.
+nar: He doesn't go in. He sits on the third landing under the window that doesn't open with his can and no strip, and the night comes on him the way it does now without them. The sweat first, cold, under his arms, though he's shaking. Then his legs, as if they want to run and there's nowhere. Then his back, like a hand closing.
+nar: He's sick on the step at two. He's sick again at three, and there's nothing in it.
+nar: At four June comes out on the landing in her coat over her nightie with Kev asleep on her shoulder, and sees him, and doesn't say anything. She sits down on the step next to him, on the side where he's not been sick, and puts her shoulder against his shoulder.
+nar: They sit there till it's light. The window that doesn't open goes grey. Kev wakes and looks at his dad's face, a long serious look, a baby's, and puts his hand out and holds Lew's nose.
+voice: undertow: He'll go back on them next week. You know that. Somebody'll sell to him. It won't be Col. {dc: 2}
+go: e4.sheaf
+
+# ---------------------------------------------------------------- e4.s08, the Sheaf on closure night: the hinge
+@node e4.sheaf
+place: q4_sheaf
+speaker: JOSS
+cost: 0
+camera: near
+do: set(e4.sheaf_said)
+nar: The Sheaf, the same night, ten o'clock. It's the same room it always was, the low ceiling, the bar along the side, the back table in the corner under the window. There's a jukebox now where the piano was, and a carpet that was red, and a fruit machine with its lights going round on their own.
+nar: It's full. The whole mill is in. The men came over the bridge from the yard at seven in a body, without arranging it, and they've been drinking since with their pay. It's loud the way a pub's loud at a wake, laughing too hard at nothing, and going quiet in the corners.
+nar: Ruth is at the bar, at the end, by the hatch. She was going to go home. She came in for a half because it's her town and she wanted the town to see her come in, and nobody has said a word to her, and she has had three halves. {when: q_class == inspector}
+nar: Ann is at the door in uniform. Pryce sent her in to show the uniform. Show it, don't use it, he said. She stands just inside with her back to the wall by the coats and the room knows she's there and goes on. {when: q_class == militia}
+nar: Gary Peel is singing. He's had more than three. It's an old mill song from before any of them, about a girl and a wheel, and the room joins in on the chorus and gets the words wrong.
+nar: Joss Haldane is at the middle of the bar with the second-floor lads round him, buying. He's been buying all night. He's the foreman. It's what you do. He's laughing at something Gary's said, with his head back, and his face is red, and he looks happy, properly happy, for the first time in a month.
+nar: For half an hour before that, it's a good night. Nobody will say so after, but it is.
+nar: Gary does his impression of the old manager doing the safety talk, with the clock under his arm, and the whole second floor cries laughing, and Joss laughs so hard he has to put his pint down on the bar and hold on to it. Somebody puts the mill song on the jukebox, the proper recording, the brass band one, and the room shouts it back at the speaker. Mrs Arkell from the estate, who is eighty and comes in every Friday for one port and lemon, gets up and dances with Gary, very slowly, with her stick held out to the side like a fan.
+nar: Joss buys her the second port and lemon. She kisses him on the cheek and leaves lipstick on him and the lads won't tell him it's there.
+line: GARY: Joss. Joss. Tell them about the pigeon.
+line: JOSS: I'm not telling them about the pigeon.
+line: GARY: He climbed up the belt shaft. In the spring. Three floors. For a pigeon with its foot caught. And it bit him.
+line: JOSS: It didn't bite me. It pecked me. There's a difference.
+line: GARY: Show them your thumb.
+nar: Joss shows them his thumb. There's nothing on it. The room cheers the thumb anyway, and he bows to it, and for that half hour he's twenty-eight and the foreman and his floor loves him, and the mill is shut, and it doesn't matter yet.
+nar: The door opens and Kasem Saro comes in.
+nar: He has his good jacket on and his hair wet and combed. He comes in like you come into a church, a bit to the side, looking for where you're supposed to stand. The room doesn't stop. It sees him, and it goes on, and the singing on the chorus goes a bit thin.
+nar: He comes to the bar near Joss and puts money down on it, a lot of money for him, notes, flat, and smooths them with both hands.
+line: KASEM: Please. For the men. A drink for the men from the floor. At home this is what you do, when a work is finished. The new man buys.
+nar: The barman looks at the money. He looks at Joss.
+line: JOSS: Put your money away, mate.
+line: KASEM: Please. I would like to.
+line: JOSS: I said put it away. Nobody's drinking on yours.
+nar: The singing has stopped. Gary's still standing on his chair, with his glass up, and he gets down off it carefully, like a man getting off a bus.
+alt: e4.sheaf.tomas ? !has(q.tomas_held)
+go: e4.sheaf.joss
+
+@node e4.sheaf.joss
+place: q4_sheaf
+speaker: JOSS
+cost: 0
+camera: near
+line: KASEM: I have done something wrong.
+line: JOSS: You've done nothing. You've come here. That's all you've done. You've come on a train with your bags and you've stood at my gate and we've all gone home.
+line: KASEM: I am sorry for the mill. I worked one week. It was a good mill.
+line: JOSS: It was a good mill. It was a good mill when my grandad was in it, and they wouldn't have him on the floor, because he was Hesh. They put him on the sacks in the yard with the goat lot. And my gran's brother. Our Tomas. Eleven. They took him up off a cart in the hard winter and he died in their cells, eleven years old, and nobody in this town's ever said sorry for it to my gran. Ask her.
+line: KASEM: I am very sorry.
+line: JOSS: Keep your sorry. Here's how it goes. You wait. We waited seventy years for the floor. It's not your turn, mate. Go back where you came from and wait there.
+nar: Nobody says anything. The fruit machine goes round with its lights, on its own, and plays its little tune to nobody. {sense: breath.held}
+nar: Kasem picks his money up off the bar. One note at a time. He puts them back in his wallet the way they came out, flat, and puts the wallet in the inside pocket of the good jacket, and buttons the jacket.
+go: e4.sheaf.room
+
+@node e4.sheaf.tomas
+place: q4_sheaf
+speaker: JOSS
+cost: 0
+camera: near
+nar: At the back table, under the window, an old man in a flat cap has stopped with his glass halfway. Tomas Haldane, sixty-nine. He's come in every Friday for fifty years and sat at that table, where he made the men laugh when he was a boy sent to fetch his dad home, and most of the room doesn't know that, and he's never said.
+line: KASEM: I have done something wrong.
+line: JOSS: You've done nothing. You've come here. That's all you've done. You've come on a train with your bags and you've stood at my gate and we've all gone home.
+line: KASEM: I am sorry for the mill. I worked one week. It was a good mill.
+line: JOSS: It was a good mill. They wouldn't have my grandad on the floor in it. They had us on the sacks in the yard with the goat lot for seventy years. We had our turn. Nobody gave us a start. Nobody gave us a week at agency rate. It's not your turn, mate. Go back where you came from and wait there.
+line: TOMAS: Sit down, Joss.
+nar: Joss doesn't sit down. He doesn't look round at the back table. He picks his pint up and drinks it, the whole of what's left, with his throat going, and puts it down hard on the bar.
+nar: Kasem picks his money up off the bar. One note at a time. He puts them back in his wallet the way they came out, flat, and puts the wallet in the inside pocket of the good jacket, and buttons the jacket.
+go: e4.sheaf.room
+
+@node e4.sheaf.room
+place: q4_sheaf
+speaker: JOSS
+cost: 0
+camera: near
+nar: The room is waiting. You can feel it, the way it's leaning. Somebody at the back says yeah, quietly, yeah, go on, and somebody else laughs, short, through his nose. Dale Gedge, by the fruit machine, has his pint up already, half up, ready.
+voice: smallprint: It's not your bar. You're the auditor. You shut his mill this afternoon. Anything you say in here is the bank's. {dc: 2, when: q_class == inspector}
+voice: condolence: He's going to cry. Joss is. He's going to cry in front of all of them in about a minute and he's doing this so he won't. {dc: 3, when: q_class == inspector}
+voice: ballast: Show it, don't use it. It's words. It's a pub. Nobody's touched anybody. {dc: 2, when: q_class == militia}
+voice: salt: Your grandad stood on a line with his back to a fire. Your dad's told you that much. {dc: 3, when: q_class == militia}
+opt: "Say it, loud: Joss, let the man buy his round, or go home." -> e4.sheaf.answer {do: set(said.e4_answer); set(e4.row_marked)}
+opt: "Say nothing." -> e4.sheaf.cheer {do: set(e4.row_marked)}
+
+@node e4.sheaf.answer
+place: q4_sheaf
+speaker: JOSS
+cost: 0
+camera: near
+line: RUTH: Joss. Joss. He's been stood at that gate all week, the poor sod. Let him buy his round or go home. {when: q_class == inspector}
+line: ANN: Now then, Joss Haldane. That lad's been at your gate all week. Let him buy his round or get yourself home. {when: q_class == militia}
+nar: It comes out louder than you meant. The room hears it. Nobody laughs at it, and nobody cheers it either, and Dale's pint comes down to the table without anybody seeing it go.
+line: JOSS: Who asked you.
+line: GARY: She's right, Joss. Sit down, son. You're making a show.
+nar: Joss looks round the room for somebody. Nobody gives him anything. He picks up his jacket off the stool and puts it on, wrong, one arm inside out, and has to take it off again and do it again, with the whole room watching him do it, and goes out the side door to the yard without paying for the last round.
+nar: Kasem goes out the front, with his coat on, buttoned, and holds the door for a man coming in.
+nar: Dale finishes his pint by the fruit machine on his own. Then he goes out too. The tin of white is still in the bag at his feet from the placards, and he takes it with him.
+voice: undertow: You said it. Your face is hot. You'll be hearing about it on Monday. {dc: 2}
+go: e4.sign
+
+@node e4.sheaf.cheer
+place: q4_sheaf
+speaker: DALE
+cost: 0
+camera: near
+nar: Somebody claps. One man, at the back, slow. Then the second-floor lads round Joss, because he's their foreman and he's bought all night. Then more of them. Not everybody. Enough. Dale Gedge bangs his pint on the top of the fruit machine and the lights jump.
+line: DALE: Go on, Joss. Tell him.
+line: GARY: Leave it, Dale.
+line: DALE: Somebody's got to. Chaffers. Coming in here with his money.
+line: DALE: Edrin for Edriners.
+nar: The back tables say it with him, twice, like the chorus of something, and then stop, and somebody laughs.
+nar: Kasem goes out the front door with his coat on, buttoned. He holds the door for a man coming in, from habit, and the man comes in past him and says ta.
+nar: Joss turns round to the bar and orders a round for the floor and his hand's shaking on the money. Behind him at the back somebody starts the chorus of the mill song again, too loud, and the room picks it up, and the wrong words come in where they always do.
+nar: Dale doesn't sing. He finishes his pint by the fruit machine and goes out the side door, with the bag from the placards, the tin of white and the brush, and two of the milk bottles off the step at the back that the brewery men leave for the empties.
+voice: undertow: You looked at your glass. It's a nice glass. It's got the Sheaf on it in gold, half rubbed off. {dc: 2, when: q_class == inspector}
+voice: ballast: Nobody touched anybody. Say that, when they ask you. Nobody touched anybody. {dc: 2, when: q_class == militia}
+go: e4.sign

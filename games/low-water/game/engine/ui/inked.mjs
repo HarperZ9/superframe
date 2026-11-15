@@ -4,18 +4,22 @@
 // leaf slides in at the top right: the note's name in ink, the page Lamb writes (the trait's
 // `done:` text, else its `about:`), what it now does and when it works, in words. A chapter page
 // (a gate's page that is every fourth, G event gate with pages and the sheet's count) gets the same
-// leaf with its own words. Leaves wait for a quiet moment: never over a fight, a sneak or a run, and
+// leaf with its own words. Leaves wait for a quiet moment: never over a conversation, a fight, a sneak or a run, and
 // never while another leaf is open. Enter, A, Esc or B, or a click puts the leaf in the book; it
 // never blocks for long and the world keeps its place behind it.
 //   const I = inkedPages(ctx)   I.stop()   I.show({ title, kind, text, lines })   (tests)
 import { h, btn } from "./dom.mjs";
 import { modText } from "./tabs-a.mjs";
+import { menuOf } from "./daybook.mjs";
 import { glyph } from "./bindings.mjs";
 
 export function inkedPages(ctx) {
   const G = ctx.G, queue = [];
   let open = null, timer = 0;
-  const busy = () => { const t = ctx.F.top(); return !t || t.name !== "play" || document.querySelector(".fightlayer"); };
+  // not over a conversation either (UX walk, 2026-10-21: a chapter page took the focus mid-talk, so Enter
+  // put the leaf away instead of choosing the line); it waits until the talk closes
+  const talking = () => { const p = ctx.play && ctx.play.P; return !!(p && (p.talk || p.ended)); };
+  const busy = () => { const t = ctx.F.top(); return !t || t.name !== "play" || document.querySelector(".fightlayer") || talking(); };
   function pump() {
     clearTimeout(timer);
     if (open || !queue.length) return;
@@ -48,7 +52,7 @@ export function inkedPages(ctx) {
       queue.push({ kind: "ink", title: t.name || d.name, text: t.done || t.about || "", lines }); pump();
     }),
     G.on("chapter", (d) => { // the engine's chapter page, when it pays one (SYSTEMS-FULL 19.4)
-      queue.push({ kind: "chapter", title: d.name || "A chapter page", text: "Every fourth page is a chapter page. It raises one compartment by one: the case grows, and so does what it does in a fight.", lines: ["Spend it on the Build page in the Daybook."] }); pump();
+      queue.push({ kind: "chapter", title: d.name || "A chapter page", text: "Every fourth page is a chapter page. It raises one compartment by one: the case grows, and so does what it does in a fight.", lines: [menuOf(G.book.meta).plain ? "Spend it on the Character page." : "Spend it on the Build page in the Daybook."] }); pump();
     }),
   ];
   return { show: (leaf) => { queue.push(leaf); pump(); }, stop: () => { for (const o of offs) o(); clearTimeout(timer); if (open) open.el.remove(); } };

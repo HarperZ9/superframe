@@ -51,19 +51,22 @@ export function plainPerson(g, p, a) { inkFigure(g, p.who === "lamb", a, faintOf
 
 // The character pipeline behind both hooks. Resolves to true when installed, false when the
 // pipeline is not served (the plain figures stay).
-export async function installCharacterFigures({ base = "/characters/" } = {}) {
+// The player's own figure: "lamb" in Low Water; a story names its own by the game state (G.playerFigure,
+// @meta player-figure: The Quota's Ned or Will by q_class)
+export async function installCharacterFigures({ base = "/characters/", hourOf = () => 23, playerOf = () => "lamb" } = {}) {
   let makeFightDrawer, drive;
   try { [{ makeFightDrawer }, drive] = await Promise.all([import(`${base}runtime/fightdrawer.mjs`), import("../combat/anim/drive.mjs")]); }
   catch (e) { console.warn(`figures: character pipeline not loaded (${e.message}); plain figures`); return false; }
   const poseOf = (W, F, clips) => (F.person ? F.pose : drive.poseOf(W, F, clips));
-  const actorOf = (W, F) => (F.person ? F.who : drive.actorOf(W, F));
+  const me = (id) => (id === "lamb" ? playerOf() || "lamb" : id);
+  const actorOf = (W, F) => me(F.person ? F.who : F.team === "lamb" ? "lamb" : drive.actorOf(W, F));
   const drawers = new Map();
   const drawerFor = (cam) => {
     const key = `${cam.yawDeg}|${cam.elevDeg}`;
     if (!drawers.has(key)) {
       const d = { fn: null };
       drawers.set(key, d);
-      makeFightDrawer({ poseOf, actorOf, camera: { yawDeg: cam.yawDeg, elevDeg: cam.elevDeg } }).then((fn) => { d.fn = fn; }).catch((e) => { console.warn(`figures: drawer for camera ${key} failed: ${e.message}`); d.fn = false; });
+      makeFightDrawer({ poseOf, actorOf, hourOf, camera: { yawDeg: cam.yawDeg, elevDeg: cam.elevDeg } }).then((fn) => { d.fn = fn; }).catch((e) => { console.warn(`figures: drawer for camera ${key} failed: ${e.message}`); d.fn = false; });
     }
     return drawers.get(key).fn;
   };

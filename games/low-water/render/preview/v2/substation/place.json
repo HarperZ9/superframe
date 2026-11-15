@@ -1,0 +1,204 @@
+{
+ "place": "substation",
+ "version": 2,
+ "width": 1000,
+ "height": 750,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 34,
+  "target": [
+   0,
+   0.9,
+   -0.2
+  ],
+  "dist": 25,
+  "ortho": true,
+  "scale": 3.260869565217391
+ },
+ "pxPerMetre": 115,
+ "near": 0.5208,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "test",
+  "unlit"
+ ],
+ "variantInfo": {
+  "test": {
+   "hour": 3,
+   "weather": "03:00, the equipment test: the caged white bulb, the board, the hum"
+  },
+  "unlit": {
+   "hour": 2,
+   "weather": "the bulb off: frost light through the louvres"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "board",
+    "verb": "read",
+    "at": [
+     -0.4,
+     0,
+     -0.9
+    ],
+    "note": "the switch board: HILL, HOUSES; HILL, STREET ARCS over HEAD LIGHT; the brass standing order"
+   },
+   {
+    "id": "second_switch",
+    "verb": "use",
+    "at": [
+     0.05,
+     0,
+     -0.9
+    ],
+    "note": "the second switch: the hill's street arcs"
+   },
+   {
+    "id": "transformer",
+    "verb": "listen",
+    "at": [
+     1.3,
+     0,
+     -0.3
+    ],
+    "note": "the hum"
+   },
+   {
+    "id": "duct",
+    "verb": "hide",
+    "at": [
+     1,
+     0,
+     1.1
+    ],
+    "note": "the cable duct's grating: the way in under the floor"
+   },
+   {
+    "id": "louvres",
+    "verb": "look",
+    "at": [
+     -1.6,
+     0,
+     -0.2
+    ],
+    "note": "the louvred window"
+   },
+   {
+    "id": "bench",
+    "verb": "use",
+    "at": [
+     -1.2,
+     0,
+     0.5
+    ],
+    "note": "the bench where the engineer lays his tools out by size"
+   }
+  ],
+  "hides": [
+   {
+    "id": "behind_transformer",
+    "at": [
+     1.9,
+     0,
+     -0.4
+    ],
+    "r": 0.35,
+    "note": "between the transformer and the wall"
+   }
+  ],
+  "exits": [
+   {
+    "id": "door",
+    "at": [
+     1.8,
+     0,
+     1.2
+    ],
+    "note": "the padlocked door to the hill"
+   },
+   {
+    "id": "duct",
+    "at": [
+     1,
+     0,
+     0.6
+    ],
+    "note": "down into the cable duct"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "test": [
+   {
+    "at": [
+     -0.4,
+     2.45,
+     -1
+    ],
+    "kind": "sky",
+    "I": 12,
+    "reach": 7,
+    "group": "white"
+   },
+   {
+    "at": [
+     -3.1,
+     1.9,
+     -0.2
+    ],
+    "kind": "paraffin",
+    "I": 2.5,
+    "reach": 5,
+    "group": "window"
+   }
+  ],
+  "unlit": [
+   {
+    "at": [
+     -3.1,
+     1.9,
+     -0.2
+    ],
+    "kind": "paraffin",
+    "I": 2.5,
+    "reach": 5,
+    "group": "window"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "Act 2, place substation. Board on the back wall (-z), louvres at -x, the duct's grating at the front right, the door at the front right. Fisk and the Trust guards are drawn by the game."
+}

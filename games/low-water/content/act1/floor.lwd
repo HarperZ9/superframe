@@ -433,6 +433,7 @@ opt: "Leave him to the rope." -> floor.hub
 place: gully
 cost: 1
 nar: Lugg is where he was, a turn of the rope round his wrist and the water higher on his boots. He looks across the gully more often than at anything else.
+line: LUGG: Not the Board, you said. Not tonight. I'm holding you to the tonight. {when: has(said.lugg_promise), once}
 go: floor.lugg.menu
 
 @node floor.lugg.light
@@ -608,6 +609,7 @@ go: floor.merrow.menu
 place: drowned
 cost: 1
 nar: Merrow sits on the rubble with the sack between his boots. He takes the pipe out of his mouth, which is as near to a greeting as he goes.
+line: MERROW: The light you saw from the ferry. I've been sitting here not knowing whose it was either. {when: has(said.ferry_light), once}
 go: floor.merrow.menu
 
 @node floor.merrow.menu

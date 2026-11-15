@@ -17,7 +17,7 @@ npm run test:py                                      # the Python tests
 | `perceive` | spectra and fields into sight, sound and touch, with the bits lost | FSL-1.1-MIT, CIE data CC BY-SA 4.0 |
 | `joules` | RAPL, nvidia-smi and NVML power meter, joules per study | FSL-1.1-MIT |
 | `diagram` | one model, every view: CAD, EDA and a circuit simulator | FSL-1.1-MIT |
-| `kernels` | kernel contract with CPU and CUDA equivalence, planted bad kernels, receipts | FSL-1.1-MIT |
+| `kernels` | kernel contract with CPU and CUDA equivalence, planted bad kernels, receipts; `kernels/signal-kernels` (C++23 entropy, causality, change points, forecasting) and `kernels/anomaly-kernels` (C++23 telemetry baselines, outlier scores, alert correlation) moved here from their own repositories | FSL-1.1-MIT; `anomaly-kernels` MIT |
 | `crt` | a CRT simulated as physics, from beam to phosphor to glass | FSL-1.1-MIT |
 | `evolve` | a genetic-algorithm engine that must reproduce Eigen and Kimura first | FSL-1.1-MIT |
 | `lawspace` | a law as a knob, with the wall where behaviour changes | FSL-1.1-MIT |
@@ -27,7 +27,7 @@ npm run test:py                                      # the Python tests
 | `cleanroom` | internal-copy vault, blends, difference report, release gate; see `cleanroom/LEGAL-CHECK.md` | FSL-1.1-MIT |
 | `library` | a SQLite catalogue of every artifact, with an MCP server | FSL-1.1-MIT |
 | `instruments` | the instrument pipeline from a law to a reading with a receipt, and the room meter | FSL-1.1-MIT |
-| `quality` | image, motion and type checks: SSIM, banding, edges, grain, frame pacing, type rules and source evidence | FSL-1.1-MIT |
+| `quality` | image, motion and type checks: SSIM, banding, edges, grain, frame pacing, type rules and source evidence; `quality/gpu-trace-validator` checks GPU and renderer trace JSON against a schema and writes redacted receipts, moved here from its own repository | FSL-1.1-MIT |
 | `lenspipe` | an open lens design in, checked performance, manufacturability, tolerance, limits, as-built fit and interchange out | FSL-1.1-MIT, data CC0-1.0 |
 | `plot-sheet` | plotter output for any line drawing, in BuildLang: an SVG in millimetres with a layer for each pen, HPGL and G-code, with paths clipped, joined, simplified and ordered to cut pen-up travel, and the measures of every sheet (metres drawn, travel, lifts, time) as JSON; see `plot-sheet/README.md` | FSL-1.1-MIT |
 | `emeans` | k-means where each centre forgets, in BuildLang, with a study of when it escapes the traps Lloyd cannot; includes the negative result at the setting fixed in advance | FSL-1.1-MIT |
@@ -49,6 +49,7 @@ npm run test:py                                      # the Python tests
 | `fractal` | a formula language for fractals compiled to JavaScript and GLSL with a symbolic derivative, CPU renders of formula and Markus-Lyapunov fractals, and the shared colour recipe; moved in from the vendored site snapshot; see `fractal/README.md` | FSL-1.1-MIT |
 | `ear` | measurement that stands in for listening: BS.1770 loudness, spectral balance, pitch and chords, tempo, roughness, stereo, dropouts, masking, repetition and instrument identity over PCM samples, with a flag for each number outside its target and eighteen planted defects the flags must catch; carried from the site; see `ear/README.md` | FSL-1.1-MIT, `src/identity-refs.json` measured from CC0 and free sample sets named in the file |
 | `site-music` | music written and played by code: a composer that writes five pieces bar by bar from a seed, voices fitted to measurements of real instruments, sea and wind under the band, an offline render to -14 LUFS and an endless browser player; carried from the site; see `site-music/README.md` | FSL-1.1-MIT; `src/measured-data.js` measured from free and CC0 sample sets and one CC BY 3.0 set (Wurlitzer EP200 samples by Greg Sullivan), named in each table |
+| `alive` | living stills and loops: GIF and APNG writers with no dependency, depth from painters' cues, breathing stills, wigglegrams, measured loop length with a closed seam, mosaics of frames, data or code, and the browser layer that keeps a page's motion on one clock; carried from the site; see `alive/README.md` | FSL-1.1-MIT; `src/vendor/daylight-gif` (the GIF decoder from CMMNS, same author) AGPL-3.0-only as its headers state; test plates public domain and CC0, named in `tests/fixtures/SOURCES.md` |
 | `voxel` | voxel art from a field or a seed: a signed-distance function or a luminance grid to occupancy, four seeded studies with materials and ambient occlusion, and an OBJ of exposed faces, a JSON schematic or a MagicaVoxel `.vox` file out; carried from the site; see `voxel/README.md` | FSL-1.1-MIT |
 | `_vectors` | CC0 golden vectors for canonical records and statistics, shared with Flywheel and CMMNS | CC0-1.0 |
 

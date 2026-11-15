@@ -13,7 +13,7 @@ export default {
   paint: { seed: 5, radii: [15, 8.5, 5, 2.8], relief: 0.3 },
   variants: {
     lit: { hour: 4.2, note: "relit: the arc, a third of the rings bottle green", V: { arc: true }, plan: { ambient: 0.02, mist: 0.0025, extinct: 0.002 }, gain: 1.3, lens: { ghostGain: 0 } },
-    dark: { hour: 4.2, note: "before the restrike: the town in sodium far below, the cold sky", V: { arc: false, lamp: 3 }, plan: { ambient: 0.02, mist: 0.0025, extinct: 0.002 }, gain: 1.6 },
+    unlit: { hour: 4.2, note: "before the restrike: the town in sodium far below, the cold sky", V: { arc: false, lamp: 3 }, plan: { ambient: 0.02, mist: 0.0025, extinct: 0.002 }, gain: 1.6 },
     frost: { hour: 4.6, note: "lit, 04:25 to 05:05: Keel's drips frozen on the floor (e.hammer)", V: { arc: true, frost: 1 }, plan: { ambient: 0.02, mist: 0.0025, extinct: 0.002 }, gain: 1.3 },
   },
   walk: walkIds("iron"), footing: footing(), marks: R.marks,

@@ -1,0 +1,90 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "FENNICK",
+ "setting": "gullet",
+ "setting_note": "Gullet (Low Water's first setting). Lamb, Gullet and the harbour are cut as setting and protagonist (QUOTA-DESIGN.md decision 3, 2026-10-21); kept for the archived acts and for VOICE-AUDIT.md re-runs. The Quota's sheets are in design/voice-sheets/quota/.",
+ "status": "draft 2026-10-21, derived from bible/WORLD-BIBLE.md and design/voice/profiles.json; the voice director owns corrections",
+ "role": "deacon of the Congregation",
+ "age": "50",
+ "register": {
+  "level": "middle",
+  "education": "an electrician's mate turned preacher",
+  "class": "artisan",
+  "trade": "deacon",
+  "words": [
+   "filament",
+   "insulation",
+   "conductor",
+   "current",
+   "resistance",
+   "reliquary",
+   "schedule",
+   "electrician",
+   "congregation"
+  ]
+ },
+ "region": {
+  "name": "congregation",
+  "markers": [
+   "filament",
+   "current",
+   "the Eye"
+  ],
+  "idioms": [
+   "was opened"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 30
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television",
+  "email",
+  "computer",
+  "teenager"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "the prisms",
+   "the bottle glass"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "specification",
+     "keeper on duty",
+     "restrike"
+    ],
+    "why": "the struck clause is in Crake's papers (bible 7.3); others learn it only if shown",
+    "unless_gate": [
+     "clause",
+     "spec",
+     "restrike"
+    ]
+   },
+   {
+    "terms": [
+     "works order"
+    ],
+    "why": "only Keel and Crake know the works order exists (bible 7.2)",
+    "unless_gate": [
+     "works.order",
+     "order"
+    ]
+   }
+  ]
+ },
+ "wants": "more splinters of the Eye; the Old Bulb honoured",
+ "fears": "that the splinters will be called stolen",
+ "hides": "he buys the prisms from Wenna and knows the replacements are bottle glass",
+ "tics": [
+  "the Eye",
+  "opened",
+  "filament",
+  "current"
+ ]
+}

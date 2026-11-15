@@ -1,0 +1,274 @@
+# Era 1, The Exchange: the first frost at the road post (e1.s07, fate f.e1_sallis, Josh Brack decides), census
+# night at the barns (e1.s08, the hinge), Osby fair and the barn door (e1.s09) and the new table (e1.s10). Story
+# lead, W2-F, 2026-10-22. DRAFT, every line awaiting the author.
+# Weighted-devices pass, 2026-10-23 (design/device-audit/era1.md, "Plot changes"): no list at the post, Josh says
+# the hands face by face; Lind passes them with his whip from the gig; the census is the board's man at the end
+# barn door with a lantern and a key, turning the hands out into the frost; Ilo is named Haldane to his face, and
+# the name sticks because Furrowe says it (or sends it by his stable lad, learned by heart).
+
+# ---------------------------------------------------------------- e1.s07, the first frost at the post
+@node e1.frost
+place: q_post
+hud-clock: 07:00
+hud-weather: the first frost
+speaker: JOSH
+cost: 0
+nar: Three days after the supper, an ordinary Tuesday. The first frost. The road post at seven in the morning, white, and the pole furred with it, and the hill behind gone sharp the way it does on a frost, so you can see every wall on it.
+nar: The hands are in the road below the pole with their bundles on their backs, twenty-odd households, because they were told to be. Their breath goes up over them like a cart horse's. Nobody sits down. The road's too cold to sit on.
+nar: Josh Brack walks along the line of them with his hands behind his back and says them. He has no list. He looked in every cart that came down in August and he's been round the barns with the dog, and he knows every face. He does it the same every year, so it's not like anything. It's like saying the weather.
+line: JOSH: Pruett. Pruett and four. Up you go, Pruett.
+line: JOSH: Tesk. The old man's gone up already, has he. Right.
+line: JOSH: Marren. Marren and three. That's the baby as well, missus. The baby's one.
+nar: Dr Lind's gig is pulled up at the end of the road, with Clara holding the reins. Each household walks past it on the way to the pole, and Lind looks down at them from the box without getting down, and lifts his whip an inch, and that's fit to travel. Forty-odd people in a quarter of an hour. He lifts it for the coughing ones the same as the rest.
+line: JOSH: Corley. Corley. Where's Corley.
+line: WILL: He's gone off over Orme's ground, Dad. Before light.
+line: JOSH: Then he's gone. He'll be in a ditch by Tuesday and they'll fetch him back by the collar.
+line: JOSH: Sallis. Arn. Wife and the lad.
+line: ARN: I've work at Orme's till the potatoes are up.
+line: JOSH: Has he said so to me?
+line: ARN: Mr Orme said.
+line: JOSH: Mr Orme says a lot of things in August.
+line: KETTI: The lad's got a cough. Can we not go up Monday?
+line: JOSH: I don't set the frost, missus.
+nar: Davin Sallis, eight, is standing behind his mother's skirt. He coughs into it, a wet cough that goes on too long, and she puts her hand on his head without looking. When he takes his face out of her skirt there's a red thread on his lip, and she wipes it off with her thumb before anybody can see it, and Josh sees it.
+alt: e1.frost.abel ? q_class == inspector
+go: e1.frost.josh
+
+@node e1.frost.abel
+place: q_post
+speaker: JOSH
+cost: 0
+nar: Abel Furrowe has come down the road in his trap to see the hands go up, which he does every year, because they are the exchange's hands as much as anybody's. He sits on the box with his hat on and the reins loose.
+voice: sum: The loft over the horse takes two at a pinch. One's spoken for. {dc: 2}
+opt: "Say it: Josh. I've room over the horse for Sallis till the potatoes. He's with me." -> e1.frost.decide {do: set(said.e1_abel_loft)}
+opt: "Sit on the box and watch them go up." -> e1.frost.decide
+
+@node e1.frost.josh
+place: q_post
+speaker: JOSH
+cost: 0
+nar: George Orme is coming along the road in his trap with Haig, out to the potato ground, and pulls up behind the hands because he can't get past.
+voice: ballast: Say it. Say it and they go. It's not your rule. {dc: 2}
+opt: "Say it: Mr Orme. Is Sallis yours till the potatoes or isn't he? Say so and he stops down." -> e1.frost.decide {do: set(said.e1_josh_carter)}
+opt: "Put your weight on the pole and lift it yourself. Say it: Up you go, Sallis." -> e1.frost.decide {do: sense(e1.pole)}
+
+# ---------------------------------------------------------------- fate f.e1_sallis: Josh decides
+@node e1.frost.decide
+cost: 0
+alt: e1.frost.kept ? has(said.e1_abel_loft) | has(said.e1_josh_carter)
+go: e1.frost.sent
+
+@node e1.frost.kept
+place: q_post
+speaker: JOSH
+cost: 0
+do: set(e1.sallis_kept)
+line: JOSH: With you, Mr Furrowe. {when: has(said.e1_abel_loft)}
+line: ABEL: With me. {when: has(said.e1_abel_loft)}
+nar: Josh looks at Abel for a long moment, at the hat and the trap and the name painted on the trap's side. Then he takes the big bundle off Arn's back himself and swings it up into the back of Abel's trap, and it lands on the boards with a thump that rocks the trap on its springs, and that's it said. {when: has(said.e1_abel_loft)}
+line: GEORGE: Well. I did say. Two-thirds the carters' rate, mind. He's not a carter. {when: has(said.e1_josh_carter)}
+line: JOSH: Two-thirds. You heard him, Haig. Sallis, carter to Orme. {when: has(said.e1_josh_carter)}
+nar: Haig leans down off the trap and takes the bundle off Arn's back and drops it in behind George's boots. {when: has(said.e1_josh_carter)}
+nar: Haig leans over and says something to George about Gedge's father, who has carted for the mill for twenty years at the full rate. George says he knows. {when: has(said.e1_josh_carter)}
+line: JOSH: Sallis. Stand out of the road, then. You're kept.
+nar: Arn doesn't move for a second, as if he hasn't heard it right. Then Ketti takes him by the sleeve and takes Davin by the hand and walks them both to the side of the road, onto the verge, and they stand there in the frost while the others go past them up the hill road, and the others don't look at them, and they don't look at the others.
+line: KETTI: Say thank you.
+line: ARN: Thank you, Mr Brack.
+line: JOSH: It's not me.
+go: e1.frost.up
+
+@node e1.frost.sent
+place: q_post
+speaker: JOSH
+cost: 0
+do: set(e1.sallis_sent); fate(f.e1_sallis, ketti)
+line: JOSH: Up you go, Sallis.
+nar: Arn picks up the big bundle, and Ketti the small one, and Davin a tin kettle on a string. The pole goes up on its weight, and the weight hits the road, and they go through under it and start up the hill road behind the Pruetts. {sense: e1.pole}
+go: e1.frost.up
+
+@node e1.frost.up
+place: q_hill
+cost: 0
+camera: wide
+nar: From the post, held: the hands going up the hill road in a line, with their bundles on their backs, the way they came down in August, only slower, because it's uphill and it's cold. The frost is going off the road where the sun touches it and staying where it doesn't. Josh stands at the pole with his hands behind his back.
+nar: Halfway up, Ketti Sallis stops to cough, bent over with her hand on her knee, and Arn waits for her with the bundle, and Davin waits with the kettle, and then they go on. {when: has(e1.sallis_sent)}
+nar: They go over the shoulder of the hill one at a time, and then there's only the road.
+voice: undertow: That winter, on the hill. You won't hear about it till you're old. {dc: 4, when: has(e1.sallis_sent)}
+go: e1.post.will
+
+# ---------------------------------------------------------------- e1.s08, census night at the barns (the hinge)
+@node e1.census
+place: q1_barns
+hud-clock: 17:40
+hud-weather: frost again, harder
+speaker: EDWIN
+cost: 0
+nar: The Friday. Census night for the new rule. Edwin Mott goes round every barn and loft and cottage on the plain himself, because it's his rule and he likes a thing done properly, and at every door he asks who sleeps there and what their name is. Whoever has no roof of their own, and no master to stand for them, comes out, and the door is locked behind them.
+nar: The barns at Haldane's, at dusk, with the frost coming down again harder than Tuesday's. The end barn, where the hands sleep. From Sunday it's let to Ilo, so tonight whoever's left in it comes out.
+nar: Ilo is by the cart in the yard with Bet, and Anni asleep on Bet's hip with her thumb in. He has a clean shirt on that he borrowed. He has the crooked spoon in his pocket and keeps touching it.
+alt: e1.census.door ? q_class == militia
+opt: "Go down to the barns yourself with the key, and stand in the door with your hat in your hands." -> e1.census.door {do: set(e1.per_af)}
+opt: "Stay at home by the fire. Send the key down with the stable lad, and teach him what to say." -> e1.census.letter {do: set(e1.per_letter)}
+
+@node e1.census.door
+place: q1_barns
+speaker: EDWIN
+cost: 0
+do: set(e1.per_af)
+nar: You're in the barn doorway with the key on its string in one hand and your hat in the other, the way a man stands at the back of a church he doesn't go to. They're your barns. You don't need to say anything. You're there. {when: q_class == inspector}
+nar: Abel Furrowe is in the barn doorway with the key on its string in one hand and his hat in the other, the way a man stands at the back of a church he doesn't go to. They're his barns. He doesn't need to say anything. He's there. {when: q_class == militia}
+nar: You're beside him with the post lantern, for the board, to put out whoever Mott says. Abel gives you the key to hold, the way you'd give a man your gloves. {when: q_class == militia}
+go: e1.census.name
+
+@node e1.census.letter
+place: q1_barns
+speaker: EDWIN
+cost: 0
+nar: Abel isn't there. His stable lad is, twelve or so, with the key on its string round his neck so he won't drop it, and his cap in his hands, saying something over and over under his breath, the way you learn a thing on a walk.
+go: e1.census.name
+
+@node e1.census.name
+place: q1_barns
+speaker: EDWIN
+cost: 0
+nar: Walter holds the lantern up, and Edwin Mott stands at the end barn door, and the hands who are left come to it one at a time.
+nar: A tall Hesh man called Teodor, who's to be George Orme's yard man. Edwin asks his other name, and Teodor says Teodor, and Edwin says he'll be Orme, then, it's usual, the employer's. Teodor Orme. Teodor says thank you, sir, and goes back in to his straw.
+nar: A widow from the mill cottages who's to stop on with her sister. Edwin calls her Mill. She doesn't ask why.
+nar: A young man in a good hill coat with the blue thread at both wrists, who says his name is Ruan, of Ruan, and that's all it is and all it's going to be. Edwin explains it twice, patient. The young man says it a third time.
+line: EDWIN: Then I'm sorry, but there's nothing I can do for you. Out you come.
+nar: Ruan goes in and comes out with everything he owns on his back, and walks out of the yard into the frost without looking at anybody, and the dark has him before he's at the gate.
+nar: Then the Corleys, who Josh's men fetched back by the collar on Wednesday. Edwin doesn't ask them anything. They know. The woman carries out the bedding rolled round the pot and the kettle, tied with cord, on her back, bent under it, with the two little ones' boots tied together by the laces and hung round her neck. Corley carries the children.
+opt: "Take the bundle off the Corley woman's back and carry it out to the road for her." -> e1.census.carry ? has(e1.per_af) {do: shoulder(e1.load.bundle)}
+opt: "Stay in the door and let them carry their own." -> e1.census.turn ? has(e1.per_af)
+go: e1.census.turn
+
+@node e1.census.carry
+place: q1_barns
+speaker: EDWIN
+cost: 0
+nar: She lets you take it because she can't stop you. It comes off her back onto yours, and it's heavier than it looked, and it's warm from her, and it smells of her children. You walk it across the yard with your back bent, slower than you meant to, and the frost crunches, and the Corleys walk beside you, slower still, to keep with you.
+nar: At the gate you put it down on the frozen ruts. She picks it up again and gets it on her back with a heave of her hip.
+do: setdown(e1.load.bundle)
+line: CORLEY: Thank you, sir.
+nar: He doesn't look at you when he says it. They go off up the lane toward the hill road, with no lantern.
+go: e1.census.turn
+
+@node e1.census.turn
+place: q1_barns
+speaker: EDWIN
+cost: 0
+nar: The end barn's empty now but for Teodor and the widow. Edwin pulls the big door to, and it groans on its pins.
+nar: Walter takes a stub of chalk out of his waistcoat and draws a goat on the door at the height of his chest, quick and small, with its head down, facing the way it's walking, the way they draw goats down here. That's so the bailiff's men know this one's done. It isn't how a hill man draws a goat. Theirs look back.
+opt: "Turn the key." -> e1.census.ilo ? has(e1.per_af) {do: sense(e1.key)}
+go: e1.census.locked
+
+@node e1.census.locked
+place: q1_barns
+speaker: EDWIN
+cost: 0
+nar: The stable lad lifts the string off over his head and holds the key out, and Edwin takes it off him and turns it in the lock. It's an old lock and it fights him, and then it goes. {sense: e1.key}
+go: e1.census.ilo
+
+@node e1.census.ilo
+place: q1_barns
+speaker: EDWIN
+cost: 0
+nar: The key goes round in the lock with a noise you feel in your wrist. {when: has(e1.per_af) & q_class == inspector}
+nar: The key goes round in the lock with a noise you feel in your wrist. The lock fights you, and then it goes, and you hand the key back to Mr Furrowe without looking at him. {when: q_class == militia}
+nar: Then Edwin turns round into the lantern light and looks at Ilo by the cart, as if he's only just seen him.
+line: EDWIN: And you. Name.
+line: ILO: Ilo.
+line: EDWIN: Your other name.
+line: ILO: Ilo.
+line: EDWIN: Your father's name, man.
+line: ILO: My father was Ilo as well.
+nar: Walter laughs behind the lantern, and stops.
+line: EDWIN: I've the Marren cottages and the whole of the mill row to do tonight, and it's freezing. I want a surname.
+line: ILO: We don't have them up there. You're your father's son, that's all. You're Ilo who's Ilo's.
+line: EDWIN: Well, you're down here now. Where do you sleep.
+line: ILO: Here. From Sunday.
+nar: Edwin looks past him, at the barn door, at you, standing there with your hat. {when: has(e1.per_af) & !has(e1.per_letter) & q_class == inspector}
+nar: Edwin looks past him, at the barn door, where Mr Furrowe is standing with his hat. {when: has(e1.per_af) & !has(e1.per_letter) & q_class == militia}
+line: ABEL: He's in Haldane's barns. Call him Haldane. That'll do him. {when: has(e1.per_af) & !has(e1.per_letter)}
+nar: Edwin looks at the stable lad. The lad looks at his boots, and goes red, and says it the way he was taught it on the walk down, all in one breath. {when: has(e1.per_letter)}
+line: LAD: Mr Furrowe says, Ilo Haldane, after the farm. {when: has(e1.per_letter)}
+nar: Ilo says it the hill way, under his breath, the whole of it. Ilo who is Ilo's, who was Dannec's, who was Ilo's, back eleven names to the one who came down off the hill the first time and went back up. The way you say it at the top, when somebody's carried up. Nobody in the yard hears it but Bet, and Anni, asleep.
+line: ILO: Haldane, then.
+line: EDWIN: Haldane.
+line: ILO: After the farm. Haldane.
+nar: Edwin says it back to Walter, Haldane, after the farm, and Walter says it, and goes off saying it to himself so he won't forget it. By Monday the whole Upper Town is saying it, because it came from Mr Furrowe.
+do: set(e1.named)
+voice: sum: He said it himself. Haldane, he said. You heard him. {dc: 3}
+go: e1.census.bet
+
+@node e1.census.bet
+place: q1_barns
+speaker: EDWIN
+cost: 0
+line: EDWIN: Wife.
+line: BET: Bet. Elizabeth. Carrow, it was.
+line: EDWIN: Married when.
+line: BET: Sunday.
+line: EDWIN: The child.
+line: BET: Anni.
+line: EDWIN: Born.
+line: BET: Two years at Lammas.
+line: EDWIN: Whose.
+nar: Bet doesn't answer. She hitches Anni up her hip. She doesn't look at the barn door. She looks at the frost on the cart wheel. {when: has(e1.per_af)}
+nar: You turn your hat round once in your hands, by the brim. {when: has(e1.per_af) & q_class == inspector}
+nar: In the doorway Abel turns his hat round once in his hands, by the brim. {when: has(e1.per_af) & q_class == militia}
+line: ABEL: His. She's his. Isn't that right, Ilo. {when: has(e1.per_af)}
+line: ILO: She's mine. {when: has(e1.per_af)}
+nar: Bet doesn't answer. The stable lad has gone red to the ears again, because there's the last of it still to say, and he says it. {when: has(e1.per_letter)}
+line: LAD: And Mr Furrowe says the little one's Ilo's, and that's all anybody need know. {when: has(e1.per_letter)}
+line: EDWIN: That'll do. Mill row, Walter.
+nar: You hold the key out to Ilo on its string. He takes it. It's cold enough to hurt. You put your hat back on and go off up the lane after the Motts' lantern. {when: has(e1.per_af) & q_class == inspector, sense: cold.iron}
+nar: Abel holds the key out to Ilo on its string. Ilo takes it. It's cold enough to hurt. Abel puts his hat back on and goes off up the lane after the Motts' lantern. {when: has(e1.per_af) & q_class == militia, sense: cold.iron}
+nar: The lad puts the key in Ilo's hand and runs, glad to be gone. It's cold enough to hurt. {when: has(e1.per_letter), sense: cold.iron}
+nar: Up the lane, past the Motts' lantern, the dark where the Corleys went. Ilo stands in the yard with the key to the door they were just put out of, and holds it, and looks at it a long time, though there's nothing on it. Then he puts it in the inside pocket of the borrowed shirt.
+line: ILO: Haldane. Haldane. Haldane.
+line: BET: You'll get used to it.
+line: ILO: I'll have to, won't I. Mr Furrowe's said it.
+nar: Anni wakes up on Bet's hip and looks at him. He leans in close to her ear and says the eleven names to her once, fast, the whole string, the way you'd tell a child a secret. She laughs because it tickles. He never says them again, to her or anybody, and she doesn't remember them.
+go: e1.wedding
+
+# ---------------------------------------------------------------- e1.s09, Osby fair and the barn door
+@node e1.osby
+place: q1_osby
+cost: 0
+camera: wide
+nar: Osby fair, the Sunday after the wedding, which was quick and had six people at it. The crockery stall at the end of the row under a striped awning, with bowls stacked up in towers.
+nar: Bet has the wedding money in a handkerchief, from Abel, in an envelope with nothing written on it. She picks up the bowls one at a time and taps each one with her nail and listens. She buys five, matched, the blue rim.
+line: ILO: Five. There's three of us.
+line: BET: My mam said buy five.
+line: ILO: Your mam's not paying for them.
+line: BET: My mam said buy five, Ilo.
+nar: He carries them home in the basket on his arm, all the way, with Anni on his shoulders holding his ears.
+go: e1.door
+
+@node e1.door
+place: q1_barns
+cost: 0
+camera: wide
+nar: The barns at Haldane's, the Monday. Old Carrow comes over from the Osby road with a crowbar. The end barn door still has Walter's chalk goat on it, and the lock Edwin turned on Friday, and Ilo knocks the lock out of the wood with the crowbar first, two blows, and it drops in the straw.
+nar: Then he and Carrow take the big door off. It comes off the pins with a shriek. It's heavier than either of them thought, and they have to put it down twice crossing the yard, and the second time Carrow sits down on it and laughs till he coughs. {sense: e1.doorpins}
+line: CARROW: You're marrying my girl and you're stealing a door off Furrowe.
+line: ILO: It's my door. I rent it.
+line: CARROW: Since Sunday.
+line: ILO: Since Sunday.
+nar: Bet stands in the kitchen doorway with Anni and the basket of bowls and doesn't help, and tells them they're doing it wrong. When the door's down flat on the trestles she comes over with a bucket and a brush, and scrubs the chalk goat off it without a word. The hinge pins stay in the barn wall, with nothing on them.
+nar: There's a blue thread tied through the hinge hole in the door, knotted twice, where nobody would tie one. Ilo looks at it, and leaves it. {when: prior(q.fact.corner)}
+do: set(e1.door_down)
+go: e1.table
+
+# ---------------------------------------------------------------- e1.s10, the narrow lens: the new table
+@node e1.table
+place: q_haldane
+cost: 0
+camera: near
+nar: The Haldane kitchen. The table, new, made of a barn door on four legs, with the hinge marks still in it where Ilo couldn't plane them out, and a hole through the wood where the lock was. On one of the legs, low down, where you'd only see it if you were a child, Ilo has carved a goat with its head turned back over its shoulder, the way they carve them on the hill.
+nar: Three bowls on the table. Three places. Bread, and a little dripping, and an apple for Anni cut small.
+nar: Two bowls on the shelf over the stove, turned over, so the dust won't get in them. For whoever comes.
+nar: Ilo puts the crooked spoon by Anni's bowl. She picks it up and bangs the table with it. She does it again, and he laughs.
+voice: dark: You know this table. {dc: 2}
+go: e1.hill

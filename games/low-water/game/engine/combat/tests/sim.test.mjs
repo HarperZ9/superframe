@@ -1,5 +1,6 @@
 // The simulation's rules one at a time, against a still opponent (no brain) placed by hand.
 import { test } from "node:test";
+import { FEEL, classOf } from "../sim/hits.mjs";
 import assert from "node:assert/strict";
 import { makeWorld, makeG, run, press } from "./helpers.mjs";
 
@@ -9,14 +10,20 @@ const foe = (W) => W.byId("foe0");
 const startFoe = (W, key) => W.step({ foe0: { press: [key.includes(".") ? key : `foe0:${key}`] } });
 const until = (W, type, n = 60, inp = {}) => { for (let i = 0; i < n; i++) { const ev = W.step(inp); const e = ev.find((x) => x.type === type); if (e) return e; } return null; };
 
-test("a light strike lands on its active frames, costs Breath, and freezes both bodies", () => {
+test("a light strike lands and costs Breath with no freeze; a heavy freezes both for 2 frames; FEEL.scale 0 turns it off", () => {
   const W = duel(), L = W.lamb(), st = L.st;
   run(W, 1, press("light"));
   const hit = until(W, "hit");
   assert.ok(hit && hit.by === "lamb", "the strike landed");
   assert.ok(L.st < st);
   assert.ok(foe(W).hp < foe(W).hpMax);
-  assert.ok(L.hitstop > 0 && foe(W).hitstop > 0, "hit-stop on both");
+  assert.ok(L.hitstop === 0 && foe(W).hitstop === 0, "no freeze on a light contact, as the reference");
+  assert.equal(classOf({ id: "lamb:heavy" }), "heavy"); assert.equal(classOf({ id: "lamb:light_1", hitstop: 4 }), "light"); assert.equal(classOf({ id: "holder.chain", hitstop: 6 }), "heavy");
+  const W2 = duel(), L2 = W2.lamb(); run(W2, 1, press("heavy")); const h2 = until(W2, "hit", 120);
+  assert.ok(h2 && h2.by === "lamb", "the heavy landed");
+  assert.ok(L2.hitstop >= 1 && L2.hitstop <= FEEL.hitstop.heavy && foe(W2).hitstop <= FEEL.hitstop.heavy, `heavy freeze ${L2.hitstop}`);
+  FEEL.scale = 0;
+  try { const W3 = duel(), L3 = W3.lamb(); run(W3, 1, press("heavy")); until(W3, "hit", 120); assert.equal(L3.hitstop, 0); } finally { FEEL.scale = 1; }
 });
 
 test("a roll's window lets a swing pass, and the swing lands without it", () => {

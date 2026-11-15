@@ -1,0 +1,116 @@
+{
+ "place": "q_tilney",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   0.8,
+   2.6,
+   -3
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 4.990757855822551
+ },
+ "pxPerMetre": 108.2,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "afternoon"
+ ],
+ "variantInfo": {
+  "afternoon": {
+   "hour": 14.1,
+   "weather": "a week on, 14:05: snow lying, a low grey sky over the home's brick"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  3,
+  6,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "stairs",
+    "verb": "count",
+    "at": [
+     0,
+     0,
+     -2.6000000000000005
+    ],
+    "note": "the stairs up to the home's door"
+   },
+   {
+    "id": "plate",
+    "verb": "read",
+    "at": [
+     1,
+     0,
+     -0.6000000000000001
+    ],
+    "note": "the brass plate on the gate pier, polished"
+   },
+   {
+    "id": "cart",
+    "verb": "look",
+    "at": [
+     6.7,
+     0,
+     -1
+    ],
+    "note": "the cart at the side door with a sheet over it"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "town",
+    "at": [
+     -8,
+     0,
+     0.5
+    ],
+    "note": "back along Tilney Road to the town"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "afternoon": []
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the gate of the children's home on Tilney Road."
+}

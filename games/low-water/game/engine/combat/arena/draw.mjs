@@ -2,13 +2,26 @@
 // ordered dither into five tones, warm under sodium and cold away from it, scaled up 2x. The
 // ground is lit by the same light the simulation's sight rule reads, so what the player can see
 // is what Lamb can see. Opponents Lamb cannot see are not drawn.
-import { drawFigure, drawProjectile } from "./figure.mjs";
+import { drawFigure, drawProjectile, tells } from "./figure.mjs";
 import { drawHud } from "./hud.mjs";
 import { lamps } from "../sim/target.mjs";
 import { poseOf } from "../anim/drive.mjs";
+import { drawForm } from "./forms.mjs";
+import { wallShadows, floorMarks, anchor, innerHud } from "./innerdraw.mjs";
+import { stageGeom, stageBack, stageShaft, shaftDust, stageFront } from "./innerstage.mjs";
+import { stageFloor, bodyShadows } from "./innerfloor.mjs";
+import { smokeBank, puffs, debris, bursts, fxEvents } from "./innerfx.mjs";
+import { figurePass, tone, lightMap } from "./innertone.mjs";
+import { formGround } from "./forms.mjs";
+import { drawLambInner } from "./innerfigure.mjs";
+import { silhouettes } from "./innersil.mjs";
+
+// The shake never hides a tell (design/CAMERA.md, the coordinator's ruling of 2026-10-17): while any opponent's
+// tell shows, the view moves at most 1 buffer pixel (3 px at 1080p). ?shakeclamp=off turns it off (a control).
+export const SHAKE = { tellCap: 1, clamp: typeof location === "undefined" || !/shakeclamp=off/.test(location.search) };
 
 const IW = 640, IH = 360, S = 30, TILT = 0.62;
-const SURF = { stone: 0.6, mud: 0.34, weed: 0.26, wood: 0.5, shingle: 0.46 };
+const SURF = { stone: 0.6, mud: 0.34, weed: 0.26, wood: 0.5, shingle: 0.46, frost: 0.82 };
 const WARM = [[18, 8, 10], [72, 34, 22], [150, 86, 44], [222, 152, 86], [248, 220, 168]];
 const COLD = [[16, 12, 18], [52, 46, 58], [112, 106, 112], [186, 180, 172], [238, 232, 220]];
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => (v + 0.5) / 16);
@@ -18,18 +31,35 @@ const gray = (v, a = 1) => { const c = Math.round(clamp(v) * 255); return `rgba(
 export function createView(canvas, W) {
   const out = canvas.getContext("2d"), buf = new OffscreenCanvas(IW, IH), g = buf.getContext("2d", { willReadFrequently: true });
   const V = { W, cam: { x: W.lamb().x, z: W.lamb().z }, shake: 0, shakeT: 0, bark: null, barkT: 0, flashes: [], sparks: [], t: 0 };
+  // ?innerfx=off,list: the inner arena's layers that can be left out, to find what a measure is reading (smoke,
+  // debris, dust, sparks, bursts, smear, rim)
+  V.off = new Set(typeof location === "undefined" ? [] : (new URLSearchParams(location.search).get("innerfx") || "").split(",").filter(Boolean));
   V.proj = (x, z, y = 0) => [IW / 2 + (x - V.cam.x) * S + V.sx, IH / 2 + (z - V.cam.z) * S * TILT - y * S + V.sy];
+  V.silhouettes = () => silhouettes(V);
   V.events = (ev) => {
+    if (W.inner) fxEvents(V, ev);
     for (const e of ev) {
-      if (e.type === "shake") { V.shake = Math.max(V.shake, e.amp); V.shakeT = Math.max(V.shakeT, e.frames); }
+      // a keyed shake along the blow (design/CAMERA.md "Combat impacts, 2026-10-21"): out to its peak by frame 3,
+      // a 40% swing back at frame 7 to 8, still by frame 12 (15 for a heavier blow); a bigger blow replaces a smaller
+      if (e.type === "shake" && (!V.kick || e.amp * 6 >= V.kick.amp * (1 - V.kick.f / V.kick.len))) V.kick = { amp: e.amp * 6, dir: e.dir || [1, 0], f: 0, len: e.frames > 14 ? 15 : 12 };
       if (e.type === "bark") { V.bark = e; V.barkT = 150; }
       if (["parry", "block", "guardbreak", "ducked", "lit", "doused", "gust", "disarm"].includes(e.type)) V.flashes.push({ ...e, life: 40 });
+      // readable damage: each blow's harm rises off the body it landed on (Lamb's in warm, the others' pale)
+      if (e.type === "hit" && e.dmg > 0 && !W.inner) { const T = W.byId(e.id); if (T) (V.numbers ||= []).push({ x: T.x, z: T.z, y: W.defs[T.id].height + 0.2, n: e.dmg, lamb: e.id === "lamb", life: 50 }); }
+      if (e.type === "glance" && !W.inner) { const T = W.byId(e.id); if (T) (V.numbers ||= []).push({ x: T.x, z: T.z, y: W.defs[T.id].height + 0.2, text: "glance", life: 40 }); }
       if (["hit", "parry", "block"].includes(e.type)) { const T = W.byId(e.id); if (T) V.sparks.push({ x: T.x, z: T.z, y: W.defs[T.id].height * 0.55, life: 8, big: e.type !== "hit" || e.dmg >= 1.5 }); }
     }
   };
-  V.draw = () => { frame(V, g); dither(V, g); out.imageSmoothingEnabled = false; out.drawImage(buf, 0, 0, canvas.width, canvas.height); drawHud(out, V, canvas.width, canvas.height); };
+  V.draw = () => {
+    frame(V, g); if (W.inner) tone(V, g); else dither(V, g); out.imageSmoothingEnabled = false; out.drawImage(buf, 0, 0, canvas.width, canvas.height);
+    if (W.inner) anchor(V, out, canvas.width, canvas.height);
+    drawHud(out, V, canvas.width, canvas.height);
+    if (W.inner) innerHud(out, V, canvas.width, canvas.height);
+  };
   return V;
 }
+
+const keyed = (f, len) => (f <= 3 ? f / 3 : f <= 7.5 ? 1 - (1.4 * (f - 3)) / 4.5 : f <= len ? -0.4 * (1 - (f - 7.5) / (len - 7.5)) : 0);
 
 function frame(V, g) {
   const W = V.W, L = W.lamb();
@@ -38,17 +68,51 @@ function frame(V, g) {
   const b = W.field.bounds, hw = IW / 2 / S, hd = IH / 2 / (S * TILT);
   V.cam.x = b.x1 - b.x0 <= 2 * hw ? (b.x0 + b.x1) / 2 : Math.max(b.x0 + hw, Math.min(b.x1 - hw, V.cam.x));
   V.cam.z = b.z1 - b.z0 <= 2 * hd ? (b.z0 + b.z1) / 2 : Math.max(b.z0 + hd, Math.min(b.z1 - hd, V.cam.z));
-  const k = V.shakeT > 0 ? V.shake * 6 : 0; V.shakeT = Math.max(0, V.shakeT - 2); if (!V.shakeT) V.shake = 0;
-  V.sx = Math.sin(V.t * 1.9) * k; V.sy = Math.cos(V.t * 2.7) * k * 0.7;
+  const tell = W.fighters.some((F) => F.team !== "lamb" && F.act && W.moves[F.act.id].tell && F.act.f >= W.moves[F.act.id].tell.at[0] && F.act.f <= W.moves[F.act.id].tell.at[1]);
+  const K = V.kick, o = K ? K.amp * keyed(++K.f, K.len) : 0; if (K && K.f >= K.len) V.kick = null;
+  V.sx = K ? K.dir[0] * o : 0; V.sy = K ? K.dir[1] * o * TILT : 0;
+  const len = Math.hypot(V.sx, V.sy); if (tell && SHAKE.clamp && len > SHAKE.tellCap) { V.sx *= SHAKE.tellCap / len; V.sy *= SHAKE.tellCap / len; } // the cap is on the offset, not each axis
+  V.shakeNow = { px: +Math.hypot(V.sx, V.sy).toFixed(3), tell };
   const lit = lamps(W);
+  if (W.inner) return innerFrame(V, g, lit);
   ground(V, g, lit);
   for (const L2 of W.groundLights) glow(V, g, L2.x, L2.z, L2.r);
   const bodies = W.fighters.filter((F) => !F.out || F.team === "lamb").filter((F) => F.team === "lamb" || W.visible(L, F) || F.flash > 0);
   bodies.sort((a, b) => a.z - b.z);
-  for (const F of bodies) drawFigure(g, V, F, poseOf(W, F), W.field.lightAt(F.x, F.z, lit));
+  for (const F of bodies) (W.defs[F.id].form ? drawForm : drawFigure)(g, V, F, poseOf(W, F), W.field.lightAt(F.x, F.z, lit));
+  // Lamb's place, drawn over everyone: a boss in front must not hide where Lamb stands
+  { const [lx, ly] = V.proj(L.x, L.z); g.strokeStyle = gray(0.95, 0.55); g.lineWidth = 1; g.beginPath(); g.ellipse(lx, ly, 12, 7, 0, 0, Math.PI * 2); g.stroke(); }
   for (const P of W.projectiles) drawProjectile(g, V, P);
   sparks(V, g);
   weather(V, g);
+}
+
+// The inner arena, staged (combat/data/stages-inner.mjs): the building and its haze, the bank of smoke, the floor, what
+// the forms lay on it, the shaft, the bodies on their own layer with the found edge and the ink line, the tells over
+// everything (a telegraph never breaks: 03-SURREAL.md rule 6), the dust and debris, the rock frame. Every form is
+// drawn: a dream's monster is not hidden by the dark.
+function innerFrame(V, g, lit) {
+  const W = V.W, L = W.lamb(); V.features = [];
+  const on = (k) => !V.off.has(k);
+  stageGeom(V); stageBack(V, g); if (on("smoke")) smokeBank(V, g);
+  stageFloor(V, g, lit); formGround(V, g); wallShadows(V, g); floorMarks(V, g);
+  for (const s of W.field.arena.lights || []) pendant(V, g, s);
+  stageShaft(V, g); if (on("smoke")) puffs(V, g);
+  // a limb of the Host is drawn just after the Host's body, so its wings never hide a lie that has to be named
+  const B = W.byId("boss"), zOf = (F) => (W.defs[F.id].limbOf && B ? B.z + 0.01 : F.z);
+  const bodies = W.fighters.filter((F) => !F.out || F.team === "lamb" || W.defs[F.id].form).sort((a, b) => zOf(a) - zOf(b));
+  bodyShadows(V, g, bodies.filter((F) => !F.out && !F.fallen));
+  const poses = new Map(bodies.map((F) => [F, poseOf(W, F)])); V.lambPose = (poses.get(L) || {}).kind || "free";
+  const li = bodies.indexOf(L), drawSome = (list) => (fg) => { for (const F of list) (F === L ? drawLambInner : drawForm)(fg, V, F, poses.get(F), W.field.lightAt(F.x, F.z, lit)); };
+  // a form's part that lies over the character (Never Once's arm on his shoulders) goes in the front pass
+  V.overlays = [];
+  const behind = drawSome(bodies.slice(0, li)), front = drawSome(bodies.slice(li + 1));
+  figurePass(V, g, { behind, lamb: drawSome([L]), front: (fg) => { front(fg); for (const o of V.overlays) o(fg); } });
+  for (const F of bodies) tells(g, V, F, poses.get(F));
+  { const [lx, ly] = V.proj(L.x, L.z); g.strokeStyle = gray(0.95, 0.55); g.lineWidth = 1; g.beginPath(); g.ellipse(lx, ly, 12, 7, 0, 0, Math.PI * 2); g.stroke(); }
+  for (const P of W.projectiles) drawProjectile(g, V, P);
+  if (on("sparks")) sparks(V, g); if (on("bursts")) bursts(V, g); if (on("debris")) debris(V, g); if (on("dust")) shaftDust(V, g); stageFront(V, g);
+  lightMap(V, lit);
 }
 
 // Tiles by surface, lit by the light the sight rule reads, the sea over them where it stands,
@@ -100,6 +164,11 @@ function post(V, g, s) {
   g.fillStyle = gray(s.off ? 0.15 : 1); g.beginPath(); g.arc(x, top, 3, 0, Math.PI * 2); g.fill();
 }
 
+// an inner room's lamp hangs: a small lit shade, no post standing in the floor
+function pendant(V, g, s) {
+  const [x, y] = V.proj(s.x, s.z, 2.4); g.fillStyle = gray(s.off ? 0.15 : 0.95); g.fillRect(x - 3, y - 1, 6, 3); g.fillStyle = gray(0.06); g.fillRect(x, y - 10, 1, 9);
+}
+
 function glow(V, g, x, z, r) {
   const [px, py] = V.proj(x, z), R = r * S * 0.6, grd = g.createRadialGradient(px, py, 0, px, py, R);
   grd.addColorStop(0, "rgba(255,255,255,0.55)"); grd.addColorStop(1, "rgba(255,255,255,0)");
@@ -108,11 +177,12 @@ function glow(V, g, x, z, r) {
 }
 
 // A contact mark on the frame of the hit: a pale star that shrinks over 8 frames.
-function sparks(V, g) {
+// (`v` under 1 draws a smaller, dimmer star; the inner arena uses the full one since 05-CARE took WCAG's wording)
+function sparks(V, g, v = 1) {
   V.sparks = V.sparks.filter((s) => s.life-- > 0);
-  g.strokeStyle = gray(1); g.lineWidth = 2;
+  const small = v < 1; g.strokeStyle = gray(v); g.lineWidth = small ? 1 : 2;
   for (const s of V.sparks) {
-    const [x, y] = V.proj(s.x, s.z, s.y), r = (s.big ? 16 : 10) * (s.life / 8) + 2;
+    const [x, y] = V.proj(s.x, s.z, s.y), r = (small ? (s.big ? 7 : 5) : s.big ? 16 : 10) * (s.life / 8) + 2;
     g.beginPath(); for (let k = 0; k < 4; k++) { const a = (k * Math.PI) / 4 + 0.4; g.moveTo(x - Math.cos(a) * r, y - Math.sin(a) * r); g.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); } g.stroke();
   }
 }

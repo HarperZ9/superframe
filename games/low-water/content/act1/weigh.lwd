@@ -1227,7 +1227,7 @@ go: weigh.office.menu
 @node weigh.office.ledger
 place: office
 cost: 2
-nar: The ledger of the town balance. Seven months back: WEIGH-HOUSE CLOSED FOR WORKS. TRUST ELECTRICIANS. Tonight, in a small cramped hand: VOTING FISH, TWO. 21:04. LEFT PAN 3 LB 1 OZ. RIGHT PAN 2 LB 13 OZ. A.S.
+nar: The ledger of the town balance. Seven months back: WEIGH-HOUSE CLOSED FOR WORKS. TRUST ELECTRICIANS. Tonight, in a small cramped hand: VOTING FISH, TWO. 21.04. LEFT PAN 3 LB 1 OZ. RIGHT PAN 2 LB 13 OZ. A.S.
 voice: sum: Four ounces between them. A smoked fish has given up its water. A fresh one has not. {dc: 6}
 voice: sum: Two fish, weighed. Fish weigh things. {below: 6}
 go: weigh.office.menu
@@ -1382,7 +1382,7 @@ go: weigh.tube.choose
 place: tube
 speaker: PIP
 cost: 2
-do: prov = "wreckers"; set(prov.wreckers); set(prov.done); set(said.prov); set(said.prov_wreckers); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.wreckers, quay, 0.6); rumour(prov.wreckers, weigh, 0.6); quest(a1.claim, provisional); xp(1)
+do: prov = "wreckers"; set(prov.wreckers); set(prov.done); set(said.prov); set(said.prov_wreckers); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.wreckers, quay, 0.6); rumour(prov.wreckers, weigh, 0.6); quest(a1.claim, provisional); xp(1); var.lean_sea -= 1; var.lean_hang += 1; var.lantern += 1
 if: clock < 00:10 => set(heard.keel.prov)
 if: has(marrow.switch) => quest(a1.nose, kept)
 nar: The assessor writes: malicious darkening, by persons of the Low Company. The hand hesitates at the end of "malicious", where the ink pools.
@@ -1403,13 +1403,15 @@ cost: 1
 nar: The Guild cheers, raggedly. Marrow looks at the floor.
 line: PIP: Tub Merrow. He brings me a whelk every Low Night, in a paper. He's never once not.
 nar: She says it to the cylinder.
+voice: chit: A man in a hole with a sack. Ask who pulled the switch, and who signed the board, and whether either of them owns a sack. {dc: 6}
+voice: hearsay: The Brine will have him by name before Pip gets there. Not Merrow. The man with the lantern. The town likes him better without a face. {dc: 5}
 go: weigh.tube.after
 
 @node weigh.prov.guild
 place: tube
 speaker: PIP
 cost: 2
-do: prov = "guild"; set(prov.guild); set(prov.done); set(said.prov); set(said.prov_guild); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.guild, quay, 0.6); rumour(prov.guild, weigh, 0.6); quest(a1.claim, provisional); xp(1)
+do: prov = "guild"; set(prov.guild); set(prov.done); set(said.prov); set(said.prov_guild); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.guild, quay, 0.6); rumour(prov.guild, weigh, 0.6); quest(a1.claim, provisional); xp(1); var.lean_kin -= 1; var.lean_hang += 1
 if: clock < 00:10 => set(heard.keel.prov)
 if: has(weigh.kept_marrow) => set(lied.keep_marrow)
 nar: The assessor writes: interference with municipal supply by members of the Worshipful Guild of the Gut, on the occasion of their annual vote.
@@ -1429,6 +1431,7 @@ cost: 1
 alt: weigh.prov.guild.betrayed ? has(weigh.kept_marrow)
 nar: Marrow straightens until his head touches the lintel. Agnes Spratt unfolds her arms.
 line: SPRATT: Well. There it is in ink.
+voice: chit: Thirty years that switch went down and nothing went with it. Seven months ago somebody put Mother on it and told nobody. We have written up the hand and let the wiring go home. {dc: 6}
 go: weigh.tube.after
 
 @node weigh.prov.guild.betrayed
@@ -1442,7 +1445,7 @@ go: weigh.tube.after
 place: tube
 speaker: PIP
 cost: 2
-do: prov = "trust"; set(prov.trust); set(prov.done); set(said.prov); set(said.prov_trust); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.trust, quay, 0.6); rumour(prov.trust, weigh, 0.6); quest(a1.claim, provisional); xp(1)
+do: prov = "trust"; set(prov.trust); set(prov.done); set(said.prov); set(said.prov_trust); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.trust, quay, 0.6); rumour(prov.trust, weigh, 0.6); quest(a1.claim, provisional); xp(1); var.lean_rise += 1; offer(cv.ledger)
 if: clock < 00:10 => set(heard.keel.prov)
 if: has(marrow.switch) => quest(a1.nose, kept)
 nar: The assessor writes: loss caused by the transfer of the Light's supply to the quay board without notice to its users, and by the removal of the keeper the specification required; aggravated by the Board's knowledge of the hour, filed in advance as a claim.
@@ -1462,13 +1465,15 @@ go: weigh.prov.trust.room
 @node weigh.prov.trust.room
 cost: 1
 nar: Hobb has written one word and is staring at it. Behind the weighbridge the Guild begins, very low, to hum.
+voice: condolence: A rewiring does not pull a switch. A man did, at twenty to ten, and he is humming behind the weighbridge, forgiven by a sentence about the hill. {dc: 6}
+voice: undertow: And the Alderman will read it with her spectacles on and recognise nobody. Whom did we name? A ledger. {dc: 8}
 go: weigh.tube.after
 
 @node weigh.prov.keeper
 place: tube
 speaker: PIP
 cost: 2
-do: prov = "keeper"; set(prov.keeper); set(prov.done); set(said.prov); set(said.prov_keeper); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.keeper, quay, 0.6); rumour(prov.keeper, weigh, 0.6); rumour(prov.keeper, brine, 0.6); quest(a1.claim, provisional); xp(1)
+do: prov = "keeper"; set(prov.keeper); set(prov.done); set(said.prov); set(said.prov_keeper); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.keeper, quay, 0.6); rumour(prov.keeper, weigh, 0.6); rumour(prov.keeper, brine, 0.6); quest(a1.claim, provisional); xp(1); var.lean_hang += 1
 if: clock < 00:10 => set(heard.keel.prov)
 if: has(marrow.switch) => quest(a1.nose, kept)
 nar: The assessor writes: the keeper absent from her post, and the lens of the Light not the lens insured. Pip rolls it very slowly.
@@ -1486,6 +1491,7 @@ go: weigh.prov.keeper.room
 speaker: PIP
 cost: 1
 line: PIP: Wenna. You've put Wenna up the tube.
+voice: sum: Six years without a wage, and a cause with one name in it. Of everyone in the chain, we wrote down the one nobody was paying. {dc: 5}
 nar: She is gone toward the Brine before the assessor can answer, and everyone in the room knows what she will say when she gets there.
 go: weigh.tube.after
 
@@ -1493,7 +1499,7 @@ go: weigh.tube.after
 place: tube
 speaker: PIP
 cost: 2
-do: prov = "sea"; set(prov.sea); set(prov.done); set(said.prov); set(said.prov_sea); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.sea, quay, 0.6); rumour(prov.sea, weigh, 0.6); quest(a1.claim, provisional); xp(1)
+do: prov = "sea"; set(prov.sea); set(prov.done); set(said.prov); set(said.prov_sea); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.sea, quay, 0.6); rumour(prov.sea, weigh, 0.6); quest(a1.claim, provisional); xp(1); var.lean_dry += 1; offer(cv.dry)
 if: clock < 00:10 => set(heard.keel.prov)
 if: has(marrow.switch) => quest(a1.nose, kept)
 nar: The assessor writes: an act of the sea. A low tide, a dark night, a ship saved by a light nobody can account for. Up, and back. RECEIVED. THE SEA IS NOT A PARTY. PROCEED.
@@ -1502,19 +1508,22 @@ go: weigh.prov.sea.room
 @node weigh.prov.sea.room
 cost: 1
 nar: Everyone looks at everyone else, and then at the assessor. Nobody is blamed. It is the least comfortable room the assessor has stood in for eleven years.
+voice: salt: The sea pulled no switch. It is the only party in Gullet with an alibi, and we gave it the blame because it cannot answer back. {dc: 4}
+voice: pride: Nobody blamed. Nobody wronged. The coat is dry. {dc: 3}
 go: weigh.tube.after
 
 @node weigh.prov.refused
 place: tube
 speaker: PIP
 cost: 2
-do: prov = "refused"; set(prov.refused); set(prov.done); set(said.prov); set(said.prov_refused); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.refused, quay, 0.6); rumour(shelf.failed, quay, 0.4); rumour(shelf.failed, weigh, 0.4); rep(shelf, -1); quest(a1.claim, provisional); xp(1)
+do: prov = "refused"; set(prov.refused); set(prov.done); set(said.prov); set(said.prov_refused); set(heard.pip.prov); set(heard.marrow.prov); set(heard.spratt.prov); set(book.prov); rumour(prov.refused, quay, 0.6); rumour(shelf.failed, quay, 0.4); rumour(shelf.failed, weigh, 0.4); rep(shelf, -1); quest(a1.claim, provisional); xp(1); var.lean_hang -= 1; offer(cv.checked)
 if: clock < 00:10 => set(heard.keel.prov)
 if: has(marrow.switch) => quest(a1.nose, kept)
 nar: The assessor writes: insufficient light. No cause can be given at this hour. One word. DAWN.
 voice: smallprint: One word, and no e in it. {dc: 6, when: has(shelf.e)}
 line: PIP: That's all it ever says when it's cross. Dawn. Like a door.
 nar: Spratt laughs once. Hobb writes INSUFFICIENT, and then, after thinking, LIGHT.
+voice: hearsay: By half past twelve the quay will have filled the gap with a cause of its own, and the quay's will not be insufficient. {dc: 5}
 go: weigh.tube.after
 
 @node weigh.tube.after

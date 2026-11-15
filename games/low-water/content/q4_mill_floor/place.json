@@ -1,0 +1,158 @@
+{
+ "place": "q4_mill_floor",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   1.4,
+   -0.6
+  ],
+  "dist": 34,
+  "ortho": true,
+  "scale": 6.018518518518518
+ },
+ "pxPerMetre": 108,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "last_shift"
+ ],
+ "variantInfo": {
+  "last_shift": {
+   "hour": 17.3,
+   "weather": "year 70, 17:20: the last shift, sodium high bays over the frames, dusk in the tall windows"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  111
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "frames",
+    "verb": "look",
+    "at": [
+     0,
+     0,
+     2.2
+    ],
+    "note": "the frames stopping one by one, the bobbins left half spun"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "yard",
+    "at": [
+     5.4,
+     0,
+     2.6
+    ],
+    "note": "the big doors to the yard"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "last_shift": [
+   {
+    "at": [
+     -3,
+     4.5,
+     0.2
+    ],
+    "kind": "sodium",
+    "I": 18,
+    "reach": 10,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     0.6,
+     4.5,
+     0.2
+    ],
+    "kind": "sodium",
+    "I": 18,
+    "reach": 10,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     4.2,
+     4.5,
+     0.2
+    ],
+    "kind": "sodium",
+    "I": 18,
+    "reach": 10,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     0,
+     4,
+     -9.4
+    ],
+    "kind": "paraffin",
+    "I": 18,
+    "reach": 14,
+    "group": "window"
+   }
+  ]
+ },
+ "figureLights": {
+  "last_shift": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: the mill floor, the last shift."
+}

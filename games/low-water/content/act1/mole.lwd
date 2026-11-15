@@ -449,6 +449,12 @@ alt: mole.lamp.wenna.lit ? mother == burning & power.quay == on & (!has(mother.o
 line: There she is. Don't touch her. I'll touch her.
 nar: Wenna crosses the room and puts her hand flat on the bottom ring of the lens, the way a person puts a hand on a horse.
 line: Cold. Twelve years on the wire and she was never once cold when I came up.
+line: You told Sabine I never left. In front of the whole bar. {when: has(said.wenna_never_left), once}
+line: Dry, you said. My coat. It isn't now. {when: has(said.wenna_dry), once}
+line: In the Brine all night, you said. I was, mostly. {when: has(said.wenna_here), once}
+line: Three years. You heard that in the yard. Sabine shouldn't say things where the bins can hear. {when: has(said.heard_yard), once}
+line: You took it back, in the bar. That was decent of you. {when: has(said.took_back), once}
+line: You said you'd tell it, the glass. Tell it right. {when: has(said.told_glass), once}
 go: mole.lamp.menu
 
 @node mole.lamp.wenna.lit

@@ -1,0 +1,71 @@
+# World layers, era 1 (The Exchange, year 0): props that start at the barns, the board room and the loft and travel
+# into later eras (design/WORLD-LAYERS.md). World-layers pass, 2026-10-23. DRAFT: every prop text in this file waits for
+# the author's line approval (ledger row S14). Geometry: render/places/layers/era1.mjs; the marks are its spots.
+# Weighted-devices pass, 2026-10-23 (design/device-audit/era1.md): no prop is a document. The rule on the board became
+# the lock on the end barn door; the copy slips became Walter's chalk goat (the id and the state id stay, w_lore.lwd
+# finds w.lore.hand_slips on "prop q.copy_slips counter"); the professor's pamphlet became his walking stick.
+
+# DRAFT
+@prop q.barn_lock
+name: The lock on the end barn
+place: q1_barns
+mark: barn_door
+tells: person q.ilo
+carries: weight
+state: 1 locked ? seen(e1.census.turn) | A big old box lock on the end barn door, iron gone brown, with a keyhole you could put your thumb in. It was locked on census night with the hands' straw still warm inside. Put your hand flat on it and it's colder than the frost.
+state: 1 open | A big old box lock on the end barn door, iron gone brown, hanging open, with no key in it. Purkiss's key went up to Furrowe's when Purkiss went to his daughter's, and nobody has locked a hand out of this barn in living memory.
+state: 2 nail | On a nail in the barn wall beside the empty hinge pins, the old box lock off the end barn door, with the splinters of the door still round its screws where it was knocked out. It's rusted shut. The key's in Ilo's coat, and has been for twelve years.
+in: 2 q_yard
+
+# DRAFT. The id and the state id "counter" are kept for w_lore.lwd (w.lore.hand_slips).
+@prop q.copy_slips
+name: Walter's chalk goat
+place: q1_barns
+mark: barn_door
+tells: person e1.walter
+carries: sight
+state: 1 counter ? seen(e1.census.turn) | Chalked on the end barn door at the height of a man's chest, quick and small: a goat with its head down, facing the way it's walking. Walter Mott drew it when the door was shut on the hands, so the bailiff's men would know this one was done. Hill people don't draw a goat like that. Theirs look back over their shoulder.
+state: 1 bare | The end barn door, grey oak, wide enough for a cart, hung on two iron pins as thick as a wrist. Generations of hands have rubbed it smooth at shoulder height going in and out with sacks.
+state: 2 bundle | Under the door table, down where only a child hiding would see it, the ghost of a chalk goat on the boards, head down, facing forward. Bet scrubbed the top. Nobody ever scrubs underneath a table.
+in: 2 q_haldane
+
+# DRAFT
+@prop q.calley_stick
+name: The professor's walking stick
+place: q1_board
+mark: pamphlet
+tells: person e1.calley
+carries: touch
+state: 1 table | Professor Calley's walking stick, leaning on the table edge. Hill ash, with the handle carved into a goat's head, head down, grazing, facing the way it's walking. He bought it at Skell. The Hesh carver who made it made the goat the way the buyer wanted it. Your palm fits the horns.
+state: 2 stand | The professor's walking stick in the umbrella stand by the office door, where somebody left it after a board and nobody ever sent it back to Arlen. The goat's head is rubbed bright where a dozen clerks have picked it up to point with.
+in: 2 q_office
+
+# DRAFT. The spoons travel through all five eras (WORLD-LAYERS section 5).
+@prop q.carved_spoons
+name: Ilo's spoons
+place: q1_loft
+mark: spoons
+tells: person q.ilo
+carries: touch
+state: 1 carving | One spoon finished on the oat barrel, oiled, and three more roughed out beside it with the bark still on the handles. The finished one's handle ends in a goat's head turned back over its shoulder. The shavings are swept into a little heap. Ilo cleans up after himself in another man's loft.
+state: 2 jar | Five of Ilo's spoons in a jar on the table, worn thin at the bowls from nearly forty years of stirring. The goat heads on the handles have gone smooth with thumbs. The jar's wide enough for six.
+state: 3 table | Ilo's spoons in a jar in the middle of the door table, where ten families' children can see them. None of the children use them. Mrs Pruett's boy tried once, and once was enough.
+state: 4 yellow ? prior(q.fact.corner) | The spoon rack over the radiator, six notches with a clean shape on the wallpaper round each. One spoon is back. It's lying on the radiator shelf under the rack, and the grain of its bowl is stained yellow right through. Nobody in the flat says where it came from.
+state: 4 empty | The spoon rack over the radiator: six notches, and a clean shape on the wallpaper round each one where a spoon hung for fifty years. Joss says the man from the shop on the hill gave a fair price. Anni stayed in the bedroom while he was here.
+state: 5 five ? prior(q.fact.corner) | In the antique shop's window, five carved spoons tied together with raffia on a bit of sacking, every handle a goat's head. There's a space in the raffia where a sixth was. The dealer comes over when you pick them up and says they're peasant work, off the hill, and that the heads are what people pay for.
+state: 5 six | In the antique shop's window, six carved spoons tied together with raffia on a bit of sacking, every handle a goat's head. The dealer comes over when you pick them up and says they're peasant work, off the hill, a full set, which you hardly ever see, and that the heads are what people pay for.
+in: 2 q_anni_room
+in: 3 q3_mott_house
+in: 4 q4_joss_flat
+in: 5 q5_shop
+
+# DRAFT. Only the Furrowe line sees the cut letters (WORLD-LAYERS sections 4 and 6).
+@prop q.loft_beam
+name: The purlin over the hay
+place: q1_loft
+mark: beam
+tells: person q.bet
+carries: touch
+state: 1 cut ? q_class == inspector | Cut into the purlin over the hay with a knife point and gone dark with hands: a girl's initials, done carefully, the way a girl does them. Beside them there were a man's. Somebody has scraped those off with the flat of a blade, and the first upright of the first one is still there under your thumb. A bit of blue ribbon is caught on the nail above, gone grey.
+state: 1 plain | The purlin over the hay, black with lantern smoke, a horseshoe nailed to it on the side nobody can reach. Hay dust lies along the top of it like snow on a wall.
+state: 2 hay | The purlin over the hay, with a mouse nest tucked in where it meets the rafter. The knife marks on it are full of dust now and you'd have to know they were there.

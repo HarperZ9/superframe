@@ -1,0 +1,255 @@
+{
+ "place": "hall",
+ "version": 2,
+ "width": 2560,
+ "height": 1500,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 30,
+  "target": [
+   0,
+   0.4,
+   0.3
+  ],
+  "dist": 30,
+  "ortho": true,
+  "scale": 4.6875
+ },
+ "pxPerMetre": 160,
+ "near": 1.3333,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "early",
+  "vote",
+  "struck"
+ ],
+ "variantInfo": {
+  "early": {
+   "hour": 0.2,
+   "weather": "before 00:40: the two lamps over the table, the candle at the head, the hall empty"
+  },
+  "vote": {
+   "hour": 1,
+   "weather": "00:40 to 01:30 and the second vote: the same light, the hall full (people drawn by the game)"
+  },
+  "struck": {
+   "hour": 1.1,
+   "weather": "the vote in darkness: the lamps put out, one struck light in the middle of the hall"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "bench",
+    "verb": "climb",
+    "at": [
+     1.6,
+     0,
+     1.1
+    ],
+    "note": "a bench to stand on and tell the hall about Agnes Spratt"
+   },
+   {
+    "id": "line",
+    "verb": "wait",
+    "at": [
+     2.5,
+     0,
+     1.8
+    ],
+    "note": "where the blindfolded line forms for the vote"
+   },
+   {
+    "id": "head",
+    "verb": "talk",
+    "at": [
+     -4.4,
+     0,
+     0
+    ],
+    "note": "Marrow's place at the head of the table"
+   },
+   {
+    "id": "plate",
+    "verb": "read",
+    "at": [
+     -5.2,
+     0,
+     0.6
+    ],
+    "note": "the brass words over the head of the table, AND NEVER FOR THE SEA scratched under them"
+   },
+   {
+    "id": "pans",
+    "verb": "read",
+    "at": [
+     0,
+     0,
+     0.75
+    ],
+    "note": "the two pans turning on their hooks: pull them down, smell the two fish"
+   },
+   {
+    "id": "back_door",
+    "verb": "sneak",
+    "at": [
+     -5.3,
+     0,
+     1.6
+    ],
+    "note": "Shadwell's back door, to watch from the smoke"
+   }
+  ],
+  "hides": [
+   {
+    "id": "foot_shadow",
+    "at": [
+     5.2,
+     0,
+     2
+    ],
+    "r": 0.6,
+    "note": "the dark at the foot of the hall by the barrel"
+   }
+  ],
+  "exits": [
+   {
+    "id": "lane",
+    "at": [
+     5.6,
+     0,
+     0.9
+    ],
+    "note": "the door to the lane at the foot of the hall"
+   },
+   {
+    "id": "smoke",
+    "at": [
+     -5.6,
+     0,
+     1.6
+    ],
+    "note": "Shadwell's back door into the smoke"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "early": [
+   {
+    "at": [
+     -4.1,
+     1.04,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -2.8,
+     1.95,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 8,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     2.8,
+     1.95,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 8,
+    "group": "lantern"
+   }
+  ],
+  "vote": [
+   {
+    "at": [
+     -4.1,
+     1.04,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 5,
+    "group": "candle"
+   },
+   {
+    "at": [
+     -2.8,
+     1.95,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 8,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     2.8,
+     1.95,
+     0
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 8,
+    "group": "lantern"
+   }
+  ],
+  "struck": [
+   {
+    "at": [
+     0.5,
+     1.5,
+     1.4
+    ],
+    "kind": "paraffin",
+    "I": 5,
+    "reach": 5,
+    "group": "struck"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "Long axis along x, the head of the table at -x, the lane door at +x. Marrow, Spratt and the Guild are drawn by the game."
+}

@@ -6,6 +6,7 @@
 // only one bark plays every `spacing` frames.
 import { angleTo, wrapAngle } from "./fighter.mjs";
 import { rand01 } from "../../core/rng.mjs";
+import { dhypot } from "./math.mjs";
 
 export const BARK_TEXT = {
   "footing.frost": "Frost under the left boot.",
@@ -34,7 +35,7 @@ const RULES = [
   { voice: "salt", key: "tide.near", when: (W, L, s) => s.rising && s.foot.depth > -0.12 && s.foot.depth < 0.08 },
   { voice: "smell", key: "smell.behind", when: (W, L, s) => s.foes.some((F) => behind(L, F) && W.defs[F.id] && upwind(W, L, F)) },
   { voice: "undertow", key: "tell.grab", when: (W, L, s) => s.grab },
-  { voice: "dark", key: "dark.near", when: (W, L, s) => s.foes.some((F) => !W.visible(L, F) && Math.hypot(F.x - L.x, F.z - L.z) < 4) },
+  { voice: "dark", key: "dark.near", when: (W, L, s) => s.foes.some((F) => !W.visible(L, F) && dhypot(F.x - L.x, F.z - L.z) < 4) },
   { voice: "pride", key: "pride.losing", when: (W, L, s) => s.foot.wet && L.hp < L.hpMax * 0.4 },
   { voice: "condolence", key: "words.condolence", words: true, when: (W, L, s) => s.foes.some((F) => F.hp < F.hpMax * 0.7) },
   { voice: "formletter", key: "words.formletter", words: true, when: (W, L, s) => W.tick >= 240 && s.held },
@@ -43,7 +44,7 @@ const RULES = [
 ];
 
 const behind = (L, F) => Math.abs(wrapAngle(angleTo(L, F) - L.face)) > (2 * Math.PI) / 3;
-const upwind = (W, L, F) => { const t = W.field.terms, d = Math.hypot(L.x - F.x, L.z - F.z) || 1, w = Math.hypot(t.windX, t.windZ) || 1; return ((L.x - F.x) * t.windX + (L.z - F.z) * t.windZ) / (d * w) > 0.5; };
+const upwind = (W, L, F) => { const t = W.field.terms, d = dhypot(L.x - F.x, L.z - F.z) || 1, w = dhypot(t.windX, t.windZ) || 1; return ((L.x - F.x) * t.windX + (L.z - F.z) * t.windZ) / (d * w) > 0.5; };
 
 export const BARK_KEYS = ["footing.frost", "footing.wet", "breath.low", "tide.near", "smell.behind", "tell.grab", "dark.near", "pride.losing", "words.condolence", "words.formletter", "words.chit", "words.hearsay"];
 

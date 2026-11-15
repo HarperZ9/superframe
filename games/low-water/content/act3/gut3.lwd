@@ -39,7 +39,7 @@ name: The Guild's quarrel in the wind
 area: gut
 foe: f.gutter 2
 param: gale (gusts down the lane, both sides)
-talk: gut3.fx.ice2 | Ask whose fish the Brine has fed for thirty years ? fight_seconds >= 8
+talk: gut3.fx.ice2 | Ask whose fish the Brine has fed for thirty years ? fight_seconds >= 3
 win: gut3.fight.ice2.win
 yield: gut3.fight.ice2.yield
 fled: gut3.fight.ice2.fled
@@ -51,7 +51,7 @@ area: gut
 opening: sneak
 foe: f.gutter 2
 param: gale
-talk: gut3.fx.ice2 | Ask whose fish the Brine has fed for thirty years ? fight_seconds >= 8
+talk: gut3.fx.ice2 | Ask whose fish the Brine has fed for thirty years ? fight_seconds >= 3
 win: gut3.fight.ice2.win
 yield: gut3.fight.ice2.yield
 fled: gut3.fight.ice2.fled

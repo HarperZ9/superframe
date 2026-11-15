@@ -8,11 +8,15 @@
 //   go(W, F, x, z, s) -> a stick of size s: straight when the line is clear, else along the ground.
 import { stepDrop, ledgeClear } from "./terrain.mjs";
 import { OFF } from "../data/world.mjs";
+import { dhypot } from "./math.mjs";
 
 const fields = new WeakMap();
+// tunables for tools (ablation runs): narrow gaps barred, the cost of a cell beside a wall, the half-width of the straight-line test
+export const PATHS = { narrow: true, hug: 2, wide: 0.2 };
 const NB = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
 
-// Distance (in cells) from every cell to the goal cell, by breadth over passable steps.
+// Distance (in cells) from every cell to the goal cell over passable steps, a cell beside a wall
+// costing more (label-correcting: a cell is queued again when a cheaper way to it is found).
 function flow(W, gi) {
   const A = W.field.arena, { w, h, cells } = A.grid, c = A.cell, [ox, oz] = A.origin;
   let per = fields.get(A); if (!per) fields.set(A, (per = new Map()));
@@ -20,17 +24,21 @@ function flow(W, gi) {
   if (hit) return hit;
   if (per.size > 64) per.clear();
   const cx = (i) => ox + ((i % w) + 0.5) * c, cz = (i) => oz + (Math.floor(i / w) + 0.5) * c;
-  const pass = (i) => cells[i] && W.field.depthAt(cx(i), cz(i)) < 0.85;
-  const dist = new Float32Array(w * h).fill(Infinity), q = new Int32Array(w * h);
-  let head = 0, tail = 0; dist[gi] = 0; q[tail++] = gi;
-  while (head < tail) {
+  // a cell with solid ground on both opposite sides is a gap narrower than a body (0.5 m): not a way through
+  const open1 = (X, Z) => X >= 0 && Z >= 0 && X < w && Z < h && !!cells[Z * w + X];
+  const narrow = (i) => { const x = i % w, z = Math.floor(i / w); return (!open1(x - 1, z) && !open1(x + 1, z)) || (!open1(x, z - 1) && !open1(x, z + 1)); };
+  const pass = (i) => cells[i] && W.field.depthAt(cx(i), cz(i)) < 0.85 && (i === gi || !PATHS.narrow || !narrow(i));
+  const hug = (i) => { const x = i % w, z = Math.floor(i / w); for (const [dx, dz] of NB) { const X = x + dx, Z = z + dz; if (X >= 0 && Z >= 0 && X < w && Z < h && !cells[Z * w + X]) return true; } return false; };
+  const dist = new Float32Array(w * h).fill(Infinity), q = [];
+  let head = 0; dist[gi] = 0; q.push(gi);
+  while (head < q.length) {
     const i = q[head++], x = i % w, z = Math.floor(i / w);
     for (const [dx, dz] of NB) {
       const X = x + dx, Z = z + dz; if (X < 0 || Z < 0 || X >= w || Z >= h) continue;
-      const j = Z * w + X; if (dist[j] !== Infinity || !pass(j)) continue;
+      const j = Z * w + X; if (!pass(j)) continue;
       if (dx && dz && (!cells[z * w + X] || !cells[Z * w + x])) continue; // no cutting a wall's corner
       if (stepDrop(A, cx(j), cz(j), cx(i), cz(i)) !== 0) continue; // the step from j toward i must be walkable
-      dist[j] = dist[i] + (dx && dz ? 1.414 : 1); q[tail++] = j;
+      const nd = dist[i] + (dx && dz ? 1.414 : 1) + (hug(j) ? PATHS.hug : 0); if (nd >= dist[j]) continue; dist[j] = nd; q.push(j);   // keep off walls where there is room (a body has width)
     }
   }
   per.set(key, dist);
@@ -47,13 +55,15 @@ export function wayToward(W, F, x, z) {
   let best = -1, bd = D[si];
   for (const [dx, dz] of NB) { const j = (sz + dz) * w + (sx + dx); if (sx + dx < 0 || sz + dz < 0 || sx + dx >= w || j >= D.length) continue; if (D[j] < bd) { bd = D[j]; best = j; } }
   if (best < 0) return null;
-  const tx = A.origin[0] + ((best % w) + 0.5) * A.cell, tz = A.origin[1] + (Math.floor(best / w) + 0.5) * A.cell, d = Math.hypot(tx - F.x, tz - F.z) || 1;
+  const tx = A.origin[0] + ((best % w) + 0.5) * A.cell, tz = A.origin[1] + (Math.floor(best / w) + 0.5) * A.cell, d = dhypot(tx - F.x, tz - F.z) || 1;
   return { mx: (tx - F.x) / d, mz: (tz - F.z) / d };
 }
 
 export function go(W, F, x, z, s = 1) {
-  const d = Math.hypot(x - F.x, z - F.z) || 1, f = W.field;
-  if (OFF.has("paths") || OFF.has(F.team === "lamb" ? "lambpaths" : "foepaths") || !f.arena.grid || (f.lineClear(F.x, F.z, x, z) && ledgeClear(f.arena, F.x, F.z, x, z))) return { mx: ((x - F.x) / d) * s, mz: ((z - F.z) / d) * s };
+  const d = dhypot(x - F.x, z - F.z) || 1, f = W.field;
+  // straight only when a body's width fits: the line and its two edges 0.2 m either side are clear
+  const px = (-(z - F.z) / d) * PATHS.wide, pz = ((x - F.x) / d) * PATHS.wide, wide = () => f.lineClear(F.x + px, F.z + pz, x + px, z + pz) && f.lineClear(F.x - px, F.z - pz, x - px, z - pz);
+  if (OFF.has("paths") || OFF.has(F.team === "lamb" ? "lambpaths" : "foepaths") || !f.arena.grid || (f.lineClear(F.x, F.z, x, z) && wide() && ledgeClear(f.arena, F.x, F.z, x, z))) return { mx: ((x - F.x) / d) * s, mz: ((z - F.z) / d) * s };
   const way = wayToward(W, F, x, z);
   return way ? { mx: way.mx * s, mz: way.mz * s } : { mx: ((x - F.x) / d) * s, mz: ((z - F.z) / d) * s };
 }

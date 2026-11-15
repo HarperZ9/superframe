@@ -24,6 +24,9 @@ jobs:
       - run: npm run test:packages
       - run: npm run test:py
       - run: python packages/build_manifest.py --check
+      # the GPU trace validator's README artwork: stored bytes must equal the digests in its receipts
+      - run: python scripts/check_art_receipts.py
+        working-directory: packages/quality/gpu-trace-validator
       - run: npm run test:games
       # build-color's README drawings: re-render each one and compare bytes, then check the stored digests
       - run: python tools/check_repo_art.py && python scripts/check_art_receipts.py

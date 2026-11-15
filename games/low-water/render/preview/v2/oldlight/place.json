@@ -1,0 +1,214 @@
+{
+ "place": "oldlight",
+ "version": 2,
+ "width": 1100,
+ "height": 800,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 40,
+  "target": [
+   0.4,
+   0.4,
+   0.8
+  ],
+  "dist": 40,
+  "ortho": true,
+  "scale": 4.848484848484849
+ },
+ "pxPerMetre": 82.5,
+ "near": 0.5729,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "eye",
+  "strippers"
+ ],
+ "variantInfo": {
+  "eye": {
+   "hour": 0.4,
+   "weather": "00:15 to 01:00, the eye: flat black water, every star there is; inside, dark"
+  },
+  "strippers": {
+   "hour": 0.6,
+   "weather": "the strippers in the middle room, two lanterns on the floor round the gear"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  3,
+  10,
+  65
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "door",
+    "verb": "use",
+    "at": [
+     0.6,
+     0,
+     3.4
+    ],
+    "note": "the green door across the passage under a foot of water: a knee to the low corner, lift"
+   },
+   {
+    "id": "doorway",
+    "verb": "climb",
+    "at": [
+     0.6,
+     0,
+     4.6000000000000005
+    ],
+    "note": "the old doorway, the hinge-pins beside it"
+   },
+   {
+    "id": "gear",
+    "verb": "read",
+    "at": [
+     0.8,
+     0,
+     0.9
+    ],
+    "note": "the turning gear: a ring of bronze teeth as wide as a cartwheel, green and whole"
+   },
+   {
+    "id": "stair",
+    "verb": "climb",
+    "at": [
+     -2.6,
+     0,
+     -0.9
+    ],
+    "note": "the broken stair: a tread missing, the posts all rust"
+   },
+   {
+    "id": "low_room",
+    "verb": "read",
+    "at": [
+     1.6,
+     0,
+     -1.5
+    ],
+    "note": "the low room, a step down: soot on the wall that is not old"
+   },
+   {
+    "id": "low_corner",
+    "verb": "hide",
+    "at": [
+     2.8,
+     0,
+     -2.6
+    ],
+    "note": "the low room's corner"
+   },
+   {
+    "id": "boat",
+    "verb": "use",
+    "at": [
+     2.4,
+     0,
+     5.1000000000000005
+    ],
+    "note": "the boat, tied at the base on flat black water"
+   }
+  ],
+  "hides": [
+   {
+    "id": "behind_gear",
+    "at": [
+     -1,
+     0,
+     -0.9
+    ],
+    "r": 0.4,
+    "note": "behind the gear"
+   },
+   {
+    "id": "under_water",
+    "at": [
+     0.6,
+     0,
+     2.9
+    ],
+    "r": 0.4,
+    "note": "under the water by the fallen door"
+   }
+  ],
+  "exits": [
+   {
+    "id": "water",
+    "at": [
+     1.8,
+     0,
+     4.9
+    ],
+    "note": "out to the boat"
+   },
+   {
+    "id": "stair_up",
+    "at": [
+     -3,
+     2.2,
+     -1.6
+    ],
+    "note": "up the broken stair"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "eye": [],
+  "strippers": [
+   {
+    "at": [
+     0.9,
+     0.35,
+     0.6
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 5,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -1.3,
+     0.35,
+     0.8
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 5,
+    "group": "lantern"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "Act 3. One plate for the Old Light's places: the door and flooded passage at +z (oldlight_door), the middle room and its gear at the centre (oldlight_mid), the low room a step down at the back right (oldlight_low), the broken stair round the back wall (oldlight_stair), the boat at the base outside (eye_water)."
+}

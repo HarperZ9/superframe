@@ -6,7 +6,7 @@ import { surf, sky, ripple, footing, walkIds, paintId } from "./_common.mjs";
 const H = harbour({ set: "night" });
 const MOON = { pos: [-70, 60, -140], I: 5000 };
 export default {
-  name: "quay", world: H.world, lights: H.lights, surf, sky, ripple, paintId,
+  name: "quay", world: H.world, lights: H.lights, surf, sky, ripple, rippleAniso: 3, paintId,
   camera: { yawDeg: 26, elevDeg: 30, target: [4, 6.2, -3.0], ppm: 80, W: 4800, H: 2560, dist: 70 },
   paint: { seed: 11, radii: [14, 8, 4.6, 2.6], relief: 0.25 },
   variants: {

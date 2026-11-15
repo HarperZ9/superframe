@@ -1,0 +1,714 @@
+// sim/fighter.mjs: actions, moves, free movement, recovery and integration.
+// Fighters are addressed by index into w.fighters; a JS `null` fighter is -1.
+
+const DT_FPS: f64 = 60.0;
+
+fn dt() -> f64 {
+    1.0 / DT_FPS
+}
+
+fn mv(w: &World, id: str) -> Move {
+    w.moves.get(id)
+}
+
+fn has_move(w: &World, id: str) -> bool {
+    id != "" && w.moves.contains_key(id)
+}
+
+fn def_of_f(w: &World, fi: usize) -> Def {
+    w.defs[fi]
+}
+
+fn by_id(w: &World, id: str) -> i64 {
+    if id == "" {
+        return -1;
+    }
+    let mut i = 0;
+    while i < w.fighters.len() {
+        if w.fighters[i].id == id {
+            return i as i64;
+        }
+        i += 1;
+    }
+    -1
+}
+
+fn lamb_index(w: &World) -> i64 {
+    let mut i = 0;
+    while i < w.fighters.len() {
+        if w.fighters[i].team == "lamb" {
+            return i as i64;
+        }
+        i += 1;
+    }
+    -1
+}
+
+fn item_count(f: Fighter, use_: str) -> f64 {
+    let i = index_of(f.item_keys, use_);
+    if i < 0 {
+        return 0.0;
+    }
+    f.item_vals[i as usize]
+}
+
+fn has_item_f(f: Fighter, use_: str) -> bool {
+    item_count(f, use_) > 0.0
+}
+
+fn set_item(w: &mut World, fi: usize, use_: str, v: f64) {
+    let i = index_of(w.fighters[fi].item_keys, use_);
+    if i < 0 {
+        w.fighters[fi].item_keys.push(use_);
+        w.fighters[fi].item_vals.push(v);
+    } else {
+        w.fighters[fi].item_vals[i as usize] = v;
+    }
+}
+
+// Note a key the JS object gains as the fight runs, in the order it is first set.
+fn add_extra(w: &mut World, fi: usize, key: str) {
+    if !contains(w.fighters[fi].extra, key) {
+        w.fighters[fi].extra.push(key);
+    }
+}
+
+fn set_get(d: Def, tool: str, key: str) -> str {
+    if tool == "" {
+        let h = index_of(d.hand_keys, key);
+        if h >= 0 {
+            return d.hand_vals[h as usize];
+        }
+    }
+    let i = index_of(d.set_keys, key);
+    if i < 0 {
+        return "";
+    }
+    d.set_vals[i as usize]
+}
+
+fn set_has_key(d: Def, tool: str, key: str) -> bool {
+    if tool == "" && index_of(d.hand_keys, key) >= 0 {
+        return true;
+    }
+    index_of(d.set_keys, key) >= 0
+}
+
+fn roll_form(d: Def, key: str) -> str {
+    let i = index_of(d.roll_keys, key);
+    if i < 0 {
+        return "";
+    }
+    d.roll_vals[i as usize]
+}
+
+// inputDir: the stick's direction when it is pushed past 0.2, else none
+fn input_dir(inp: Inp) -> (bool, f64) {
+    let mx = if inp.has_mx && inp.mx == inp.mx { inp.mx } else { 0.0 };
+    let mz = if inp.has_mz && inp.mz == inp.mz { inp.mz } else { 0.0 };
+    if dhypot(mx, mz) > 0.2 {
+        let x = if inp.has_mx { inp.mx } else { 0.0 / 0.0 };
+        let z = if inp.has_mz { inp.mz } else { 0.0 / 0.0 };
+        return (true, datan2(z, x));
+    }
+    (false, 0.0)
+}
+
+fn hold_heavy(inp: Inp) -> bool {
+    inp.has_hold && inp.hold_heavy == 1
+}
+
+fn hold_block(inp: Inp) -> bool {
+    inp.has_hold && inp.hold_block == 1
+}
+
+fn hold_run(inp: Inp) -> bool {
+    inp.has_hold && inp.hold_run == 1
+}
+
+fn learned_has(d: Def, name: str) -> bool {
+    contains(d.learned, name)
+}
+
+// Which move an action name means now ("" for none).
+fn resolve_action(w: &mut World, fi: usize, a: str, inp: Inp) -> str {
+    let d = w.defs[fi];
+    let f = w.fighters[fi];
+    let tool = f.tool;
+    if a == "roll" {
+        return choose_roll(w, fi);
+    }
+    if a == "art" || a == "art2" {
+        let id = set_get(d, tool, a);
+        if id != "" && f.composure >= mv(w, id).composure {
+            return id;
+        }
+        let mut ev = new_ev(w, "nocomposure");
+        ev_str(&mut ev, "id", f.id);
+        ev_str(&mut ev, "action", a);
+        ev.id = f.id;
+        emit(w, ev);
+        return "";
+    }
+    if a == "light" {
+        let run = set_get(d, tool, "run");
+        if run != "" && f.running && !f.has_act {
+            return run;
+        }
+        let td = set_get(d, tool, "takedown");
+        if td != "" && takedown_target(w, fi) >= 0 {
+            return td;
+        }
+        let rp = set_get(d, tool, "riposte");
+        if rp != "" && riposte_target(w, fi) >= 0 {
+            return rp;
+        }
+    }
+    if f.has_act {
+        let nx = next_of(mv(w, f.act.id), a);
+        if nx != "" {
+            return nx;
+        }
+    }
+    if a == "use" {
+        let mut i = 0;
+        while i < d.use_list.len() {
+            let id = d.use_list[i];
+            if has_item_f(f, mv(w, id).item_use) {
+                return id;
+            }
+            i += 1;
+        }
+        return "";
+    }
+    let vi = index_of(d.var_keys, a);
+    if vi >= 0 {
+        let list = d.var_lists[vi as usize];
+        let mut i = 0;
+        while i < list.len() {
+            let vid = list[i];
+            if has_move(w, vid) {
+                let vm = mv(w, vid);
+                if f.composure >= vm.composure && (!vm.has_item || has_item_f(f, vm.item_use)) {
+                    return vid;
+                }
+            }
+            i += 1;
+        }
+    }
+    let mut id = "";
+    let sv = set_get(d, tool, a);
+    if set_has_key(d, tool, a) && sv != "" && a != "use" {
+        id = sv;
+    } else if contains(d.moves, a) {
+        id = a;
+    }
+    if id == "" || !has_move(w, id) {
+        return "";
+    }
+    let m = mv(w, id);
+    if m.has_item && !has_item_f(f, m.item_use) {
+        return "";
+    }
+    id
+}
+
+fn choose_roll(w: &World, fi: usize) -> str {
+    let d = w.defs[fi];
+    if d.roll_keys.len() == 0 {
+        return "";
+    }
+    let f = w.fighters[fi];
+    let foot = footing(w, f.x, f.z);
+    if foot.band == "waist" {
+        return "";
+    }
+    if (foot.band == "knee" || foot.surface == "mud") && !learned_has(d, "mudstep") {
+        return roll_form(d, "lurch");
+    }
+    let by_load = roll_form(d, d.load);
+    if by_load != "" {
+        return by_load;
+    }
+    roll_form(d, "medium")
+}
+
+fn can_act(w: &World, fi: usize, a: str) -> bool {
+    let f = w.fighters[fi];
+    if f.out || f.fallen || f.yielded {
+        return false;
+    }
+    if !f.has_act {
+        return true;
+    }
+    if f.act.charging {
+        return false;
+    }
+    can_cancel(mv(w, f.act.id), f.act.f, a)
+}
+
+fn action_angle(w: &mut World, fi: usize, m: Move, inp: Inp) -> f64 {
+    let stick = input_dir(inp);
+    let f = w.fighters[fi];
+    if m.kind == "stagger" || m.kind == "down" || m.kind == "fall" {
+        return f.face;
+    }
+    if m.dir == "input" {
+        return if stick.0 { stick.1 } else { f.face };
+    }
+    let li = by_id(w, f.lock);
+    if li >= 0 {
+        let t = w.fighters[li as usize];
+        return angle_to(f.x, f.z, t.x, t.z);
+    }
+    let want = if stick.0 { stick.1 } else { f.face };
+    let soft = soft_target(w, fi, want);
+    if soft >= 0 {
+        let t = w.fighters[soft as usize];
+        return angle_to(f.x, f.z, t.x, t.z);
+    }
+    want
+}
+
+fn start_move(w: &mut World, fi: usize, id: str, inp: Inp, has_charged: bool, charged: f64) {
+    if !has_move(w, id) {
+        panic!("combat: no move {}", id);
+    }
+    let m = mv(w, id);
+    let d = w.defs[fi];
+    if m.composure != 0.0 {
+        w.fighters[fi].composure = maxf(0.0, w.fighters[fi].composure - m.composure);
+    }
+    if m.stamina > 0.0 {
+        w.fighters[fi].st = w.fighters[fi].st - m.stamina;
+        let winded = w.fighters[fi].st <= 0.0;
+        w.fighters[fi].winded = winded;
+        if w.fighters[fi].st < 0.0 {
+            w.fighters[fi].st = 0.0;
+        }
+        w.fighters[fi].st_wait = d.stamina_delay * (if winded { 2.0 } else { 1.0 });
+    }
+    let fx = w.fighters[fi].x;
+    let fz = w.fighters[fi].z;
+    let foot = footing(w, fx, fz);
+    let slow = if m.kind == "dodge" { foot.recovery } else { 0.0 };
+    let stun = if d.has_tempo && (m.kind == "stagger" || m.kind == "down") { d.tempo_stun } else { 1.0 };
+    let dir = wrap_angle(action_angle(w, fi, m, inp));
+    let locked = by_id(w, w.fighters[fi].lock) >= 0;
+    if !(m.dir == "input" && locked) {
+        w.fighters[fi].face = dir;
+    }
+    w.fighters[fi].guard_t = 0.0;
+    let carry = m.kind == "attack" || m.kind == "riposte";
+    let c0 = w.fighters[fi].vx * 0.6;
+    let c1 = w.fighters[fi].vz * 0.6;
+    let end = js_round(m.total * stun) + slow;
+    if m.parry.has {
+        add_extra(w, fi, "catchMiss");
+        w.fighters[fi].catch_miss = (w.tick as f64) + js_round(m.total * stun) + slow + 24.0;
+        w.fighters[fi].catch_miss_null = false;
+    }
+    add_extra(w, fi, "seq");
+    let seq = w.fighters[fi].seq + 1.0;
+    w.fighters[fi].seq = seq;
+    let mut act = empty_act();
+    act.id = id;
+    act.end = end;
+    act.dir = dir;
+    act.seq = seq;
+    act.has_carry = carry;
+    act.carry0 = c0;
+    act.carry1 = c1;
+    act.has_charged = has_charged;
+    act.charged = charged;
+    w.fighters[fi].act = act;
+    w.fighters[fi].has_act = true;
+    if m.kind == "attack" || m.kind == "riposte" || m.kind == "parry" || m.shove || m.grapple {
+        w.fighters[fi].last_offense = w.tick as f64;
+    }
+    if m.reset_read || m.behind {
+        learned_start(w, fi, m);
+    }
+    let fid = w.fighters[fi].id;
+    let mut ev = new_ev(w, "move");
+    ev_str(&mut ev, "id", fid);
+    ev_str(&mut ev, "move", id);
+    ev.id = fid;
+    ev.mv = id;
+    emit(w, ev);
+    if m.has_tell {
+        let mut t = new_ev(w, "tell");
+        ev_str(&mut t, "id", fid);
+        ev_str(&mut t, "move", id);
+        ev_str(&mut t, "kind", m.tell_kind);
+        ev_num(&mut t, "frames", m.startup);
+        t.id = fid;
+        t.mv = id;
+        t.kind = m.tell_kind;
+        emit(w, t);
+    }
+}
+
+fn consume_buffer(w: &mut World, fi: usize, inp: Inp) -> str {
+    let f = w.fighters[fi];
+    let mut kept: Vec<BufEntry> = Vec::new();
+    let mut i = 0;
+    while i < f.buf.len() {
+        let b = f.buf[i];
+        if (b.held && f.has_act && f.act.seq == b.seq) || (w.tick as f64) - b.t <= 8.0 {
+            kept.push(b);
+        }
+        i += 1;
+    }
+    w.fighters[fi].buf = kept;
+    let mut k = w.fighters[fi].buf.len() as i64 - 1;
+    while k >= 0 {
+        let a = w.fighters[fi].buf[k as usize].a;
+        if !can_act(w, fi, a) {
+            k -= 1;
+            continue;
+        }
+        let id = resolve_action(w, fi, a, inp);
+        if id == "" {
+            k -= 1;
+            continue;
+        }
+        let m = mv(w, id);
+        let cf = w.fighters[fi];
+        if m.parry.has && catch_miss_set(cf) && (w.tick as f64) < cf.catch_miss {
+            k -= 1;
+            continue;
+        }
+        if m.stamina > 0.0 && cf.st < 1.0 {
+            let mut ev = new_ev(w, "breathless");
+            ev_str(&mut ev, "id", cf.id);
+            ev_str(&mut ev, "action", a);
+            ev.id = cf.id;
+            emit(w, ev);
+            buf_remove(w, fi, k as usize);
+            k -= 1;
+            continue;
+        }
+        buf_remove(w, fi, k as usize);
+        start_move(w, fi, id, inp, false, 0.0);
+        return id;
+    }
+    ""
+}
+
+fn catch_miss_set(f: Fighter) -> bool {
+    contains(f.extra, "catchMiss") && !f.catch_miss_null
+}
+
+fn buf_remove(w: &mut World, fi: usize, at: usize) {
+    let old = w.fighters[fi].buf;
+    let mut out: Vec<BufEntry> = Vec::new();
+    let mut i = 0;
+    while i < old.len() {
+        if i != at {
+            out.push(old[i]);
+        }
+        i += 1;
+    }
+    w.fighters[fi].buf = out;
+}
+
+fn learned_start(w: &mut World, fi: usize, m: Move) {
+    let me = w.fighters[fi];
+    let mut foes: Vec<usize> = Vec::new();
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let t = w.fighters[i];
+        if t.team != me.team && !t.out && !t.fallen {
+            foes.push(i);
+        }
+        i += 1;
+    }
+    if m.reset_read {
+        add_extra(w, fi, "tokens");
+        w.fighters[fi].tokens = Vec::new();
+        let mut j = 0;
+        while j < foes.len() {
+            let ti = foes[j];
+            if w.fighters[ti].has_mem {
+                let cool = w.fighters[ti].mem.cool;
+                w.fighters[ti].mem.cool = maxf(cool, (w.tick as f64) + 40.0);
+                w.fighters[ti].mem.next = (w.tick as f64) + 20.0;
+            }
+            j += 1;
+        }
+        let mut ev = new_ev(w, "readreset");
+        ev_str(&mut ev, "id", me.id);
+        ev.id = me.id;
+        emit(w, ev);
+    }
+    if m.behind && foes.len() > 0 {
+        let sorted = sort_by_dist(w, foes, me.x, me.z);
+        let t = w.fighters[sorted[0]];
+        if dist_xy(me.x, me.z, t.x, t.z) < 3.0 {
+            w.fighters[fi].act.dir = angle_to(me.x, me.z, t.x, t.z) + 0.3;
+        }
+    }
+}
+
+// A stable sort of fighter indices by distance from (x, z), as Array.sort does.
+fn sort_by_dist(w: &World, ids: Vec<usize>, x: f64, z: f64) -> Vec<usize> {
+    let mut out: Vec<usize> = Vec::new();
+    let mut keys: Vec<f64> = Vec::new();
+    let mut i = 0;
+    while i < ids.len() {
+        let f = w.fighters[ids[i]];
+        let d = dhypot(f.x - x, f.z - z);
+        let mut j = out.len();
+        while j > 0 && keys[j - 1] - d > 0.0 {
+            j -= 1;
+        }
+        let mut no: Vec<usize> = Vec::new();
+        let mut nk: Vec<f64> = Vec::new();
+        let mut q = 0;
+        while q < out.len() {
+            if q == j {
+                no.push(ids[i]);
+                nk.push(d);
+            }
+            no.push(out[q]);
+            nk.push(keys[q]);
+            q += 1;
+        }
+        if j == out.len() {
+            no.push(ids[i]);
+            nk.push(d);
+        }
+        out = no;
+        keys = nk;
+        i += 1;
+    }
+    out
+}
+
+fn step_action(w: &mut World, fi: usize, inp: Inp) {
+    let m = mv(w, w.fighters[fi].act.id);
+    let d = w.defs[fi];
+    let fx = w.fighters[fi].x;
+    let fz = w.fighters[fi].z;
+    let foot = footing(w, fx, fz);
+    let af = w.fighters[fi].act.f;
+    if m.has_tap && af > 0.0 && af <= m.tap_before && !hold_heavy(inp) {
+        let into_c = mv(w, m.tap_into).composure;
+        if w.fighters[fi].composure >= into_c {
+            start_move(w, fi, m.tap_into, inp, false, 0.0);
+            return;
+        }
+    }
+    if m.has_charge && af == m.charge_at {
+        let holding = hold_heavy(inp);
+        if holding && w.fighters[fi].act.charge < m.charge_max {
+            w.fighters[fi].act.charge += 1.0;
+            w.fighters[fi].act.charging = true;
+            w.fighters[fi].vx = 0.0;
+            w.fighters[fi].vz = 0.0;
+            return;
+        }
+        if w.fighters[fi].act.charging {
+            w.fighters[fi].act.charging = false;
+            let ch = w.fighters[fi].act.charge;
+            if ch >= m.charge_min {
+                start_move(w, fi, m.charge_into, inp, true, ch);
+                return;
+            }
+        }
+    }
+    let f = w.fighters[fi];
+    let target = if f.lock != "" { by_id(w, f.lock) } else { soft_target(w, fi, f.face) };
+    if m.track > 0.0 && f.act.f < m.track_until && target >= 0 {
+        let t = w.fighters[target as usize];
+        let dd = wrap_angle(angle_to(f.x, f.z, t.x, t.z) - f.face);
+        let lim = (m.track * JS_PI) / 180.0;
+        w.fighters[fi].face = wrap_angle(f.face + maxf(-lim, minf(lim, dd)));
+    }
+    if m.dir != "input" {
+        w.fighters[fi].act.dir = w.fighters[fi].face;
+    }
+    let sure = m.kind == "dodge" && learned_has(d, "mudstep");
+    let rootf = if sure { maxf(1.0, foot.root) } else { foot.root };
+    let v = root_speed(m, w.fighters[fi].act.f) * rootf * 1.0;
+    let adir = w.fighters[fi].act.dir;
+    let dx = dcos(adir);
+    let dz = dsin(adir);
+    w.fighters[fi].vx = dx * v;
+    w.fighters[fi].vz = dz * v;
+    let a = w.fighters[fi].act;
+    if a.has_carry && a.f < 12.0 {
+        let k = 1.0 - a.f / 12.0;
+        w.fighters[fi].vx += a.carry0 * k;
+        w.fighters[fi].vz += a.carry1 * k;
+    }
+    if m.has_item && a.f == m.startup && has_item_f(w.fighters[fi], m.item_use) {
+        use_item(w, fi, m);
+    }
+    if m.has_shout && a.f == m.startup {
+        shout(w, fi, m);
+    }
+    w.fighters[fi].act.f += 1.0;
+    if w.fighters[fi].act.f >= w.fighters[fi].act.end {
+        w.fighters[fi].has_act = false;
+        if m.then != "" {
+            start_move(w, fi, m.then, inp, false, 0.0);
+        }
+    }
+}
+
+fn step_free(w: &mut World, fi: usize, inp: Inp) {
+    let d = w.defs[fi];
+    let fx = w.fighters[fi].x;
+    let fz = w.fighters[fi].z;
+    let foot = footing(w, fx, fz);
+    let stick = input_dir(inp);
+    let g = if hold_block(inp) && w.fighters[fi].tool != "" { w.fighters[fi].guard_t + 1.0 } else { 0.0 };
+    w.fighters[fi].guard_t = g;
+    if g == 1.0 && w.fighters[fi].lantern > 0.0 && !learned_has(d, "lampguard") && d.kind == "lamb" {
+        w.fighters[fi].lantern = 0.0;
+        let fid = w.fighters[fi].id;
+        let mut ev = new_ev(w, "lantern");
+        ev_str(&mut ev, "id", fid);
+        ev_bool(&mut ev, "lit", false);
+        ev_str(&mut ev, "why", "guard");
+        ev.id = fid;
+        emit(w, ev);
+    }
+    let run_cost = if w.fighters[fi].engaged { 1.6 } else { 0.0 };
+    let running = hold_run(inp) && g == 0.0 && (w.fighters[fi].st > 0.2 || run_cost == 0.0) && stick.0;
+    w.fighters[fi].running = running;
+    if running && run_cost > 0.0 {
+        w.fighters[fi].st = maxf(0.0, w.fighters[fi].st - run_cost * dt());
+        w.fighters[fi].st_wait = maxf(w.fighters[fi].st_wait, 10.0);
+    }
+    let guard = if g > 0.0 { 0.4 } else if running { 1.55 } else { 1.0 };
+    let mag = if !stick.0 { 0.0 } else { minf(1.0, dhypot(inp.mx, inp.mz)) };
+    let sp = d.speed * foot.speed * 1.0 * mag * guard;
+    let tx = if !stick.0 { 0.0 } else { dcos(stick.1) * sp };
+    let tz = if !stick.0 { 0.0 } else { dsin(stick.1) * sp };
+    let k = minf(1.0, (d.accel * maxf(0.15, foot.accel * 1.0) * dt()) / maxf(0.5, d.speed));
+    let vx = w.fighters[fi].vx;
+    let vz = w.fighters[fi].vz;
+    w.fighters[fi].vx = vx + (tx - vx) * k;
+    w.fighters[fi].vz = vz + (tz - vz) * k;
+    let f = w.fighters[fi];
+    let li = by_id(w, f.lock);
+    let mut has_want = stick.0;
+    let mut want = stick.1;
+    if li >= 0 {
+        let t = w.fighters[li as usize];
+        has_want = true;
+        want = angle_to(f.x, f.z, t.x, t.z);
+    }
+    if has_want {
+        let dd = wrap_angle(want - f.face);
+        let lim = d.turn * foot.turn * dt();
+        w.fighters[fi].face = wrap_angle(f.face + maxf(-lim, minf(lim, dd)));
+    }
+}
+
+fn guarding(f: Fighter) -> bool {
+    !f.has_act && f.guard_t >= 4.0
+}
+
+fn step_recovery(w: &mut World, fi: usize) {
+    let d = w.defs[fi];
+    let fx = w.fighters[fi].x;
+    let fz = w.fighters[fi].z;
+    let foot = footing(w, fx, fz);
+    let f = w.fighters[fi];
+    let stagger = f.has_act && mv(w, f.act.id).kind == "stagger";
+    if f.blind > 0.0 {
+        w.fighters[fi].blind = f.blind - 1.0;
+    }
+    if f.st_wait > 0.0 {
+        w.fighters[fi].st_wait = f.st_wait - 1.0;
+    } else if !f.has_act || stagger {
+        let gr = if f.guard_t > 0.0 { 0.1 } else { 1.0 };
+        let st = minf(f.st_max, f.st + d.stamina_regen * foot.regen * gr * dt());
+        w.fighters[fi].st = st;
+        if st > f.st_max * 0.3 {
+            w.fighters[fi].winded = false;
+        }
+    }
+    if f.poise_wait > 0.0 {
+        w.fighters[fi].poise_wait = f.poise_wait - 1.0;
+    } else {
+        w.fighters[fi].poise = minf(f.poise_max, f.poise + 1.0 * dt());
+    }
+}
+
+fn rim(i: i64) -> (f64, f64) {
+    let a = ((i as f64) * JS_PI) / 8.0;
+    (dcos(a), dsin(a))
+}
+
+fn edge_of(w: &World, fi: usize) -> f64 {
+    minf(w.defs[fi].radius, 0.25) * 1.3
+}
+
+fn clearance(w: &World, x: f64, z: f64, e: f64) -> f64 {
+    let mut c = e;
+    let mut i: i64 = 0;
+    while i < 16 {
+        let r = rim(i);
+        let mut d = 0.025;
+        while d < c {
+            if solid(w, x + r.0 * d, z + r.1 * d) {
+                c = d;
+                break;
+            }
+            d += 0.025;
+        }
+        i += 1;
+    }
+    c
+}
+
+fn body_may(w: &World, fi: usize, x: f64, z: f64) -> bool {
+    let f = w.fighters[fi];
+    let e = edge_of(w, fi);
+    let c0 = clearance(w, f.x, f.z, e);
+    let c = clearance(w, x, z, e);
+    !solid(w, x, z) && (c >= minf(c0, e) - 0.01 || (c0 < e - 0.01 && c >= 0.13))
+}
+
+fn integrate(w: &mut World, fi: usize) {
+    let f = w.fighters[fi];
+    let foot = footing(w, f.x, f.z);
+    let r = w.defs[fi].radius;
+    let nx = f.x + (f.vx + f.kx) * dt();
+    let nz = f.z + (f.vz + f.kz) * dt();
+    if body_may(w, fi, nx, f.z) {
+        w.fighters[fi].x = nx;
+    } else {
+        w.fighters[fi].kx = 0.0;
+        w.fighters[fi].vx = 0.0;
+    }
+    let cx = w.fighters[fi].x;
+    if body_may(w, fi, cx, nz) {
+        w.fighters[fi].z = nz;
+    } else {
+        w.fighters[fi].kz = 0.0;
+        w.fighters[fi].vz = 0.0;
+    }
+    let decay = dexp(-foot.friction * dt());
+    w.fighters[fi].kx = w.fighters[fi].kx * decay;
+    w.fighters[fi].kz = w.fighters[fi].kz * decay;
+    if w.fighters[fi].kx.abs() < 0.001 {
+        w.fighters[fi].kx = 0.0;
+    }
+    if w.fighters[fi].kz.abs() < 0.001 {
+        w.fighters[fi].kz = 0.0;
+    }
+    let x0 = w.arena.ox;
+    let z0 = w.arena.oz;
+    let x1 = w.arena.ox + w.arena.width;
+    let z1 = w.arena.oz + w.arena.depth;
+    let x = w.fighters[fi].x;
+    let z = w.fighters[fi].z;
+    w.fighters[fi].x = maxf(x0 + r, minf(x1 - r, x));
+    w.fighters[fi].z = maxf(z0 + r, minf(z1 - r, z));
+}

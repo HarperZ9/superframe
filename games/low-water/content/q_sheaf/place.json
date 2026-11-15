@@ -1,0 +1,237 @@
+{
+ "place": "q_sheaf",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0.1,
+   0.9,
+   -0.3
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 3.25
+ },
+ "pxPerMetre": 200,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "noon",
+  "harvest"
+ ],
+ "variantInfo": {
+  "noon": {
+   "hour": 12.7,
+   "weather": "12:40, day 41: grey noon in the windows, the grate low, the bar lamp turned down"
+  },
+  "harvest": {
+   "hour": 19.4,
+   "weather": "rent night, year 12, 19:25: the last harvest light in the windows behind Ilo, the bar lamp lit"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "bar",
+    "verb": "read",
+    "at": [
+     -1.3,
+     0,
+     -0.6
+    ],
+    "note": "the bar: three pumps, all dry; nothing worth the name on the shelf"
+   },
+   {
+    "id": "table",
+    "verb": "sit",
+    "at": [
+     1.3,
+     0,
+     -0.45000000000000007
+    ],
+    "note": "the back table: one jug of something brown and thin, and an egg on a saucer in quarters"
+   },
+   {
+    "id": "door_bench",
+    "verb": "sit",
+    "at": [
+     -0.6,
+     0,
+     1.5
+    ],
+    "note": "the bench by the door"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     -3,
+     0,
+     1.8
+    ],
+    "note": "the door to Mill Street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "noon": [
+   {
+    "at": [
+     0.6,
+     0.25,
+     -2.1
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 4,
+    "group": "fire"
+   },
+   {
+    "at": [
+     -2.9,
+     1.95,
+     -0.2
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -0.6,
+     2,
+     -2.25
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 9,
+    "group": ""
+   },
+   {
+    "at": [
+     1.6,
+     2,
+     -2.25
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 9,
+    "group": ""
+   }
+  ],
+  "harvest": [
+   {
+    "at": [
+     0.6,
+     0.25,
+     -2.1
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 4,
+    "group": "fire"
+   },
+   {
+    "at": [
+     -2.9,
+     1.95,
+     -0.2
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -0.6,
+     2,
+     -2.25
+    ],
+    "kind": "paraffin",
+    "I": 12,
+    "reach": 9,
+    "group": ""
+   },
+   {
+    "at": [
+     1.6,
+     2,
+     -2.25
+    ],
+    "kind": "paraffin",
+    "I": 12,
+    "reach": 9,
+    "group": ""
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the Sheaf at dinner time.",
+ "figureLights": {
+  "noon": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 6,
+    "reach": 9,
+    "figure": true
+   }
+  ],
+  "harvest": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 6,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ }
+}

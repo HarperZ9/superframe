@@ -52,6 +52,7 @@ by: the strippers
 @fact spit.boat_watched
 @fact spit.hid_early
 @fact spit.painter_cut
+@fact spit.sallis_asked
 @fact struck.spit
 @fact down.spit
 
@@ -137,6 +138,8 @@ alt: spit.watch.ok ? has(spit.hid_early)
 alt: spit.captive ? var.quay2.boat == captive
 alt: spit.stow ? var.quay2.boat == stowed & !seen(spit.stow)
 nar: The Patience's hatches are off, and her casks go down a line of hands to a boat in the gut of water. The Ann Tull's hatches are open on coal. Nobody is at them.
+nar: Every man on the line has a lantern on his belt, lit and turned low. For the Lantern Man, if he comes, so he'll know the Board's here first. {when: var.lantern >= 4}
+voice: hearsay: The Brine has been saying his name since eight. This is what he looks like when men dress for him. {dc: 4, when: var.lantern >= 4}
 line: SALLIS: Thirty-one for the Shelf. Thirty-two for the Shelf. {when: spit_lead == sallis}
 nar: Ferris Lugg stands on the high rail, a head above the line, and passes casks down without a word. {when: spit_lead == lugg}
 voice: hearsay: "Not us," Merrow said, this afternoon. {dc: 4, when: has(day.merrow) & spit_lead == lugg}
@@ -156,12 +159,43 @@ line: LUGG: You wrote us wreckers. So. {when: spit_lead == lugg}
 line: LUGG: Again, is it. {when: spit_lead == lugg & has(struck.lugg)}
 voice: ballast: Four with bars on a deck at forty degrees, frost on the deck, and the flood at ten past twelve. A Lamplighter at the mole steps will see the bruises by one. {dc: 4}
 voice: formletter: They have the claim from a newspaper. You have it on the Board's own form. {dc: 6, when: !seen(spit.turn.fail)}
+opt: "Ask Sallis what the Board pays him." -> spit.sallis.why ? spit_lead == sallis & !has(spit.sallis_asked)
 opt: "Take the bar out of the leader's hands." -> spit.fight.start ? !has(down.spit)
 check: "[FORM LETTER] Read them the claim, the line about wreckers, by their own lantern." -> spit.turn.ok / spit.turn.fail ? !seen(spit.turn.fail) {skill: formletter, dc: 7, id: spit_claim, do: set(said.spit_claim)}
 claim: "Those casks are the Brine's, at owner's risk. Nobody pays for them but Sabine." -> spit.cargo.told / spit.cargo.told ? has(spit.cargo) {show: has(spit.cargo), do: set(said.spit_cargo)}
 opt: "Tell them it is all insured with the Shelf, and the Shelf is here." -> spit.cargo.wrong ? has(spit.cargo_wrong) & !has(spit.cargo) & !seen(spit.cargo.wrong) {do: set(said.spit_insured)}
 opt: "Tell them the Municipal will count the coal and the casks itself, tonight, in its own book." -> spit.coat ? guise == lamplighter & !has(spit.coat_used)
 opt: "Climb down and leave them to it." -> spit.hub
+
+# ---- Sallis's case (THEMES 6: grievance turned to extraction)
+@node spit.sallis.why
+place: patience
+speaker: SALLIS
+cost: 4
+do: set(spit.sallis_asked)
+line: SALLIS: Pays? Four months since a warden saw a wage. The Board's dues go up the hill to the Trust, for the sodium. Ask Wenna Tallow what the Trust pays. Six years of nothing, and all of it legal, on a letter.
+line: SALLIS: They strip you with a pen up there, Shelf. Down here we haven't got a pen. We've a bar and a docket, and I keep the docket better than the Board does.
+voice: smallprint: S. BRINE, GULLET. W.G.G. The casks going down the line are the Brine's and the Guild's. Not one of them is the hill's. {when: has(spit.cargo), dc: 4}
+voice: chit: Four months unpaid is a real debt. He is collecting it from the only people poorer than the Board. {dc: 6}
+opt: "'Then take it up the hill. Not off Sabine's barge.'" -> spit.sallis.hill {do: var.lean_rise += 1; set(said.sallis_hill); set(heard.sallis.sallis_hill); offer(cv.fire)}
+opt: "'Put it back, and send the Board a bill for your four months.'" -> spit.sallis.bill {do: var.lean_rise -= 1; set(said.sallis_bill); set(heard.sallis.sallis_bill)}
+opt: "Say nothing, and watch the casks go down." -> spit.lead {do: var.lean_dry += 1}
+
+@node spit.sallis.hill
+place: patience
+speaker: SALLIS
+cost: 2
+line: SALLIS: The hill has lamps on it, Shelf. White ones. This has lanterns.
+nar: He hands the next cask down without looking at whose name is on it.
+go: spit.lead
+
+@node spit.sallis.bill
+place: patience
+speaker: SALLIS
+cost: 2
+line: SALLIS: I sent one. In March. It's under review.
+nar: Somebody on the line laughs, and the line keeps moving.
+go: spit.lead
 
 @node spit.fight.start
 place: patience

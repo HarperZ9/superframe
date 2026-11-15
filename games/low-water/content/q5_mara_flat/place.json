@@ -1,0 +1,172 @@
+{
+ "place": "q5_mara_flat",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   0.9,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 2.7777777777777777
+ },
+ "pxPerMetre": 234,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "morning"
+ ],
+ "variantInfo": {
+  "morning": {
+   "hour": 9.3,
+   "weather": "year 115, April, 09:20: grey spring light in the yard window, the ledger open"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  118
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "ledger",
+    "verb": "read",
+    "at": [
+     0.1,
+     0,
+     1.4
+    ],
+    "note": "Walter's ledger open on the table, Frank's bus ticket keeping the place"
+   },
+   {
+    "id": "drawer",
+    "verb": "look",
+    "at": [
+     1.4,
+     0,
+     0.4
+    ],
+    "note": "the drawer under the takeaway menus, the envelope in it"
+   },
+   {
+    "id": "bowl",
+    "verb": "look",
+    "at": [
+     -0.6,
+     0,
+     -0.9
+    ],
+    "note": "the bowl from Osby fair on the sill, a plant in it; Joss won't have it moved"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "yard",
+    "at": [
+     2,
+     0,
+     1.5
+    ],
+    "note": "the door to the yard steps"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "morning": [
+   {
+    "at": [
+     -0.6,
+     1.9,
+     -1.6
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 9,
+    "group": "window"
+   },
+   {
+    "at": [
+     -0.6,
+     1.9,
+     -1.8
+    ],
+    "kind": "paraffin",
+    "I": 20,
+    "reach": 10,
+    "group": "window"
+   },
+   {
+    "at": [
+     0.2,
+     2.15,
+     0.4
+    ],
+    "kind": "white",
+    "I": 0.6,
+    "reach": 8,
+    "group": "white"
+   }
+  ]
+ },
+ "figureLights": {
+  "morning": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: grey spring light in the yard window, the ledger open."
+}

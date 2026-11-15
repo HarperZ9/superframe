@@ -12,8 +12,8 @@ then ZERO PARADES. Target: four sessions, each under 45 minutes of game time.
 1. Confirm the GPU lock does not exist. If it exists and names another owner, stop.
 2. Take the lock with this role's own token (`cleanroom-study-<pid>-<unix>`), following the lock protocol the coordinator names. Record the token in `cleanroom/PROGRESS.md`.
 3. Hold the lock only while a game runs. Release it the moment the game closes. The explainer 4K render waits on 30 free minutes.
-4. Never delete, overwrite or load over the author's saves. Start a new character or a new game in a new slot. Back up the save folder (for example `%USERPROFILE%/AppData/LocalLow/Moon Studios/`) to `E:/cleanroom-dirty/low-water/<game>/save-backup-<date>/` first, read-only copy.
-5. Captures go to `E:/cleanroom-dirty/low-water/<game>/capture/`. They never enter the Low Water folder or any repo. Only numbers and my own descriptions reach the specs.
+4. Never delete, overwrite or load over the author's saves. Start a new character or a new game in a new slot. Back up the save folder (for example `%USERPROFILE%/AppData/LocalLow/Moon Studios/`) to `<quarantine>/low-water/<game>/save-backup-<date>/` first, read-only copy.
+5. Captures go to `<quarantine>/low-water/<game>/capture/`. They never enter the Low Water folder or any repo. Only numbers and my own descriptions reach the specs.
 
 ### 0.2 Capture
 
@@ -102,7 +102,7 @@ For each game, three locations (street or open ground, interior, large exterior)
 ## 5. After each session
 
 Close the game, release the lock, record the release time in `cleanroom/PROGRESS.md`, update the spec
-the session served, and keep every capture in `E:/cleanroom-dirty/`.
+the session served, and keep every capture in `<quarantine>/`.
 
 ## 6. Version 2 update (2026-10-17): what the data already answered
 

@@ -106,7 +106,55 @@ export function skin(M, B, S) {
     const l = Math.hypot(nx, ny, nz) || 1;
     pos[v * 3] = px; pos[v * 3 + 1] = py; pos[v * 3 + 2] = pz; nrm[v * 3] = nx / l; nrm[v * 3 + 1] = ny / l; nrm[v * 3 + 2] = nz / l;
   }
+  clothPush(M, S, pos);
   return { pos, nrm };
+}
+
+// Cheap cloth against legs (2026-10-22, characters/notes/HEAD-BOUNDS.md, cloth): after skinning, a coat's or
+// dress's vertex that a leg would pass through is pushed out along its own direction from the pelvis's axis, to
+// the leg's far side plus 8 mm. The legs are round cones on the thigh and shin bones, a little over the trouser's
+// radius. Only the skirt part moves (aprons ride their own part); a mesh without legs or a skirt is untouched.
+function clothPush(M, S, pos) {
+  if (M.cloth === undefined) {
+    const sk = M.parts ? M.parts.indexOf("skirt") : -1, verts = [];
+    if (sk >= 0 && M.legR) for (let v = 0; v < M.part.length; v++) if (M.part[v] === sk) verts.push(v);
+    M.cloth = verts.length ? { verts: Int32Array.from(verts), r: M.legR * 1.3 + 0.012 } : null;
+  }
+  const C = M.cloth; if (!C) return;
+  const pl = S[INDEX.pelvis], R = pl.R, o = pl.p;
+  const loc = (p) => { const d = [p[0] - o[0], p[1] - o[1], p[2] - o[2]]; return [R[0] * d[0] + R[3] * d[1] + R[6] * d[2], R[1] * d[0] + R[4] * d[1] + R[7] * d[2], R[2] * d[0] + R[5] * d[1] + R[8] * d[2]]; };
+  const segs = [];
+  for (const s of ["L", "R"]) { const h = loc(S[INDEX["thigh" + s]].p), k = loc(S[INDEX["shin" + s]].p), a = loc(S[INDEX["foot" + s]].p); segs.push([h, k, C.r], [k, a, C.r * 0.82]); }
+  for (const v of C.verts) {
+    const w = [pos[v * 3], pos[v * 3 + 1], pos[v * 3 + 2]], p = loc(w), rv = Math.hypot(p[0], p[2]); if (rv < 1e-4) continue;
+    const dx = p[0] / rv, dz = p[2] / rv; let need = 0;
+    for (const [a, b, r] of segs) for (const yy of [p[1], p[1] - 0.035, p[1] + 0.035]) {   // the leg at the vertex's height and a little above and below (a hem over a shin)
+      if ((yy - a[1]) * (yy - b[1]) > 0) continue;   // that height is not on this bone
+      const t = (yy - a[1]) / (b[1] - a[1] || 1e-6), cx = a[0] + (b[0] - a[0]) * t, cz = a[2] + (b[2] - a[2]) * t;
+      const along = cx * dx + cz * dz, off = Math.abs(cx * dz - cz * dx); if (off >= r || along <= 0) continue;
+      need = Math.max(need, along + Math.sqrt(r * r - off * off));
+    }
+    if (need <= rv) continue;
+    const k = need / rv, q = [p[0] * k, p[1], p[2] * k];   // back to the world: q in the pelvis frame, rotated by R
+    for (let i = 0; i < 3; i++) pos[v * 3 + i] = o[i] + R[i * 3] * q[0] + R[i * 3 + 1] * q[1] + R[i * 3 + 2] * q[2];
+  }
+}
+
+// skin()'s positions for the listed vertices only, into out (the same arithmetic, so the same Float32
+// values); the smear's last frame needs only the tool's vertices (runtime/figjob.mjs)
+export function skinVerts(M, B, S, verts, out) {
+  const T = S.map((s, j) => { const pb = apply(s.R, B[j].p); return [s.p[0] - pb[0], s.p[1] - pb[1], s.p[2] - pb[2]]; });
+  for (let i = 0; i < verts.length; i++) {
+    const v = verts[i], p = [M.pos[v * 3], M.pos[v * 3 + 1], M.pos[v * 3 + 2]];
+    let px = 0, py = 0, pz = 0;
+    for (let k = 0; k < 4; k++) {
+      const w = M.ww[v * 4 + k]; if (!w) continue;
+      const j = M.wj[v * 4 + k], q = apply(S[j].R, p);
+      px += w * (q[0] + T[j][0]); py += w * (q[1] + T[j][1]); pz += w * (q[2] + T[j][2]);
+    }
+    out[v * 3] = px; out[v * 3 + 1] = py; out[v * 3 + 2] = pz;
+  }
+  return out;
 }
 
 export { bind, JOINTS, INDEX, norm, sub, add, scl, dot, lerp };

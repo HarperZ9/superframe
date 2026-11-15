@@ -47,6 +47,12 @@ by: a miscount by candlelight
 @fact gasholder.carrying
 @fact gasholder.escorted
 @fact gasholder.struck_count
+# ---- new ids (thematic pass, 2026-10-21: the persecuted faith and its cruelty)
+@fact gasholder.penrose_paid
+about: In Brother Ash's ledger, last May: paid out to Mr Penrose, for his son's jaw, by the Congregation, four pounds. Beside it, in the same hand: returned, unopened.
+by: the Congregation's own ledger
+@fact gasholder.gauze_rule
+@fact gasholder.ash_reading
 
 @item gasholder.splinter
 name: Splinter 61
@@ -112,6 +118,8 @@ opt: "Go down the hill path." -> hill.hub
 place: gas_frame
 cost: 2
 nar: The white lamps stop ten yards short of the gate. Above it the frame sings one thin note in a wind too small to feel, and inside forty people kneel under glass bell jars. When the gate creaks, every jar turns.
+nar: On the gate, in chalk, in a hand used to chalking prices: GLASSHEADS. RELIC THIEVES. Inside it, a heap of broken jar swept very neatly against the leg of the frame.
+voice: hearsay: The gate gets chalked every Saturday and washed every Sunday. Nobody in the Gut admits to the chalk, and everybody can say what it says. {dc: 5}
 go: gasholder.hub
 
 @node gasholder.gate.thief
@@ -408,6 +416,7 @@ cost: 2
 do: set(met.ash); quest(a2.relics, open)
 nar: Brother Lumen Ash is small and very clean, and holds his pen clear of the page so it will not drip.
 line: ASH: Brother Lumen Ash. Treasurer. You will be the Shelf. I'll enter you. Forgive me. I enter everything. It is the only way I know a thing has happened.
+line: ASH: They say on the quay you take our part. Thank you. You defend us so kindly you have never once read us. {when: trait(cv.jars) == done}
 go: gasholder.ash.menu
 
 @node gasholder.ash.menu
@@ -418,6 +427,8 @@ check: "[THE CHIT] Offer a trade: the ledger, and nobody ever hears the Shelf ha
 opt: "Put two chits in the poor box." -> gasholder.ash.paid ? has(gasholder.ash_priced) & !has(gasholder.accounts) & !has(gasholder.ash_closed) & count(i.chits) >= 2
 check: "[FORM LETTER] In the Lamplighter's coat, hold out a hand for the books, as the Municipal does." -> gasholder.ash.coat.ok / gasholder.ash.coat.fail ? guise == lamplighter & !has(gasholder.accounts) & !has(gasholder.ash_closed) {skill: formletter, dc: 6}
 opt: "Read the open ledger while he wrings the cloth." -> gasholder.ash.read ? seen(gasholder.fight.zealots.down) & !has(gasholder.accounts) {verb: read, noise: 0}
+opt: "The young men in the front row, Brother. Does the faith tell them to do what they do at the gate?" -> gasholder.ash.reading ? !has(gasholder.ash_reading)
+opt: "Read the page after the splinters." -> gasholder.ash.penrose ? has(gasholder.accounts) & !has(gasholder.penrose_paid) {verb: read, noise: 0}
 opt: "Take a spare jar from the rack." -> gasholder.jar.take ? count(c.belljar) == 0 {verb: carry, noise: 0.2}
 opt: "Go back out to the frame." -> ^hub
 
@@ -429,6 +440,42 @@ nar: He turns it a quarter turn toward the assessor and keeps his hand flat on i
 line: ASH: On this side, the splinters as they come to us. Fifty-six, one a month or so, for six years. On that side, money going out in the same weeks, in the right amounts. A gift is entered once, assessor. Ours are entered twice.
 line: ASH: And now the Municipal wants them by six, with a list, and the list is my column. {when: has(cause.keeper)}
 voice: smallprint: His hand is over the payee. {dc: 6}
+go: gasholder.ash.menu
+
+@node gasholder.ash.reading
+speaker: ASH
+cost: 4
+do: set(gasholder.ash_reading)
+line: ASH: The faith says the Eye is to be kept. It does not say how. The how belongs to whoever is reading, and the young men read with their hands.
+line: ASH: Every hard thing anyone has said of us, assessor, was said by a reader. Not by the light. The light has never said anything. That is rather the point of it.
+voice: smallprint: A specification that can be read a hundred ways is a bad specification. The engineer answers for that as well as the electrician. {dc: 5}
+voice: condolence: He has stood between those boys and the gate every Saturday for a year. He is telling you the truth he can afford. {dc: 6, when: trait(cv.jars) == done}
+opt: "'If a thing can be read a hundred ways, Brother, whoever wrote it shares the blame.'" -> gasholder.ash.reading.author {do: var.lean_faith -= 1}
+opt: "'Then the light's not to blame. Only the boys.'" -> gasholder.ash.reading.boys {do: var.lean_faith += 1}
+opt: "Let it lie." -> gasholder.ash.menu {do: var.lean_dry += 1}
+
+@node gasholder.ash.reading.author
+speaker: ASH
+cost: 3
+line: ASH: Then blame the sea for every drowning. It can be read a hundred ways too, and men read it wrong every winter, and we still go out on it.
+line: ASH: And in forty years somebody will read us kinder than we read ourselves, or crueller. You'll be read too. The Shelf's verdicts will look very strange in forty years.
+nar: He enters something in the margin, short.
+go: gasholder.ash.menu
+
+@node gasholder.ash.reading.boys
+speaker: ASH
+cost: 2
+line: ASH: Yes. And I gave them the jars, and the deacon gave them the words, and the town gave them a gate that is chalked every Saturday. Write the boys if you like. Write the rest in the same column.
+go: gasholder.ash.menu
+
+@node gasholder.ash.penrose
+speaker: ASH
+cost: 3
+do: set(gasholder.penrose_paid)
+nar: The page after the splinters. Last May: PAID OUT, TO MR PENROSE, FOR HIS SON'S JAW, BY THE CONGREGATION, FOUR POUNDS. Beside it, in the same hand: RETURNED, UNOPENED.
+line: ASH: Three of ours caught young Penrose at the gate with a splinter in his fist. He was twenty and could sing. They were right that he had it. I entered what they did after.
+line: ASH: His father knelt in the second row for nine years. He sent the money back and his jar with it, in pieces. That's entered too.
+voice: undertow: Four pounds for a jaw. He priced it, and entered it, and he is still ashamed of the price. {dc: 6}
 go: gasholder.ash.menu
 
 @node gasholder.ash.trade.ok
@@ -499,9 +546,21 @@ alt: gasholder.gauze.closed ? has(quay.gauze.refused) & !seen(gasholder.gauze.cl
 line: GAUZE: You've brought it back on your own head. Keep it, then. {when: worn(c.belljar) & has(quay.gauze.lent)}
 line: GAUZE: The one from the ferry. Your shoes are dry tonight. I can hear it. {when: !worn(c.belljar)}
 line: GAUZE: At a quarter to one he puts all the candles out and walks the row, and tells each of us a true thing. I've had eleven years of them. Some of them were the weather.
+opt: "What is it like, under the jar?" -> gasholder.gauze.inside ? !has(gasholder.gauze_rule)
 opt: "Will you go down the hill with them, Sister?" -> gasholder.gauze.down
 opt: "Would you lend me a jar again?" -> gasholder.gauze.lend ? count(c.belljar) == 0 & !has(quay.gauze.refused) & seenas_congregation != thief
 opt: "Leave her in her quiet." -> ^hub
+
+@node gasholder.gauze.inside
+speaker: GAUZE
+cost: 3
+do: set(gasholder.gauze_rule)
+line: GAUZE: Out there it's everybody at once. The fish, the bell, Mrs Spratt's prices, a man three streets off laughing at something, and all of it comes in and there's nobody at the door.
+line: GAUZE: Under here the door shuts. One thing at a time. And one of the things is me.
+line: GAUZE: Eleven years. Brother Ambrose says a sister who lifts her jar has chosen the world, and the world can keep her. So I don't. That isn't the jar's rule. The jar would let me.
+voice: condolence: She is ill, and the jar is her medicine. {dc: 4}
+voice: dark: She did not say ill. She said a door. {dc: 4}
+go: gasholder.gauze
 
 @node gasholder.gauze.down
 speaker: GAUZE
@@ -620,6 +679,7 @@ nar: The candles are lit again, and the assessor is moved gently toward the gate
 nar: The crown goes too, in the deacon's surplice. {when: has(gasholder.eye_sealed) & !has(gasholder.carrying)}
 nar: The crown stays on the altar under a cloth. {when: !has(gasholder.eye_sealed)}
 line: FENNICK: Lift. Mind her on the gate. {when: clock < 01:15}
+call: theme.cue.glass
 opt: "Walk beside it, as the Shelf." -> gasholder.proc.shelf ? !has(gasholder.carrying)
 opt: "Walk in the line under the jar." -> gasholder.proc.pilgrim ? guise == pilgrim
 check: "[PRIDE] Stand in the gate, in the Shelf's coat, and do not move." -> gasholder.proc.stop.ok / gasholder.proc.stop.fail ? !has(gasholder.carrying) & clock < 01:15 {skill: pride, dc: 7, verb: wait, noise: 0.3}

@@ -1,0 +1,151 @@
+{
+ "place": "q5_haldane_yard",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   0.5,
+   1.4,
+   -0.5
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 5.869565217391305
+ },
+ "pxPerMetre": 92,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "dawn"
+ ],
+ "variantInfo": {
+  "dawn": {
+   "hour": 5.9,
+   "weather": "year 115, April, 05:55: first light, grey; the van's lightbar turning blue on the brick"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  6
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "order",
+    "verb": "read",
+    "at": [
+     -2,
+     0,
+     -1.2
+    ],
+    "note": "the clearance order on the Haldane door, in its plastic sleeve, four drawing pins"
+   },
+   {
+    "id": "van",
+    "verb": "look",
+    "at": [
+     2,
+     0,
+     2.2
+    ],
+    "note": "the van up the yard, back doors open, the lightbar turning slow over the brick"
+   },
+   {
+    "id": "tape",
+    "verb": "talk",
+    "at": [
+     0,
+     0,
+     0.6
+    ],
+    "note": "the tape across the yard; the tenants on one side, the escort on the other"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     10,
+     0,
+     1
+    ],
+    "note": "out of the yard to the street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "dawn": [
+   {
+    "at": [
+     4.6,
+     2.6,
+     0.6
+    ],
+    "kind": "sky",
+    "I": 9,
+    "reach": 14,
+    "group": "blue"
+   }
+  ]
+ },
+ "figureLights": {
+  "dawn": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: first light, grey; the van's lightbar turning blue on the brick."
+}

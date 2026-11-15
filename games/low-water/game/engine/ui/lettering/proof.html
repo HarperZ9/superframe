@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lettering proof</title>
+<link rel="icon" href="data:,">
+<style>
+  html, body { margin: 0; background: #0b090c; color: #ddd; font: 15px "Segoe UI", sans-serif; }
+  .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; padding: 18px; }
+  .card { position: relative; padding: 26px 28px 22px; min-height: 300px; background-size: 100% 100%; }
+  .card h2 { margin: 0 0 6px; font: 600 13px "Segoe UI", sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #3a3530; }
+  .card canvas { display: block; margin: 8px 0; }
+</style>
+</head>
+<body>
+<!-- The three lettering tools side by side on the era 2 paper, for the author to choose from (the UI art lead's,
+     2026-10-21). Served at /engine/ui/lettering/proof.html; ?era=1..5 changes the paper. -->
+<div class="row" id="row"></div>
+<script type="module">
+  import { loadHand, drawLettering } from "./hand.mjs";
+  import { paperPixels } from "../paper.mjs";
+  const era = +(new URLSearchParams(location.search).get("era") || 2), row = document.getElementById("row");
+  const TOOLS = [["brush", "A. Round brush, loaded and dry"], ["flat", "B. Flat brush, chisel and dry"], ["pen", "C. Pointed pen, slanted"]];
+  for (const [i, [tool, name]] of TOOLS.entries()) {
+    const card = document.createElement("div"); card.className = "card"; row.append(card);
+    const h = document.createElement("h2"); h.textContent = name; card.append(h);
+    const H = await loadHand(tool);
+    for (const [text, px] of [["The bell tower over Exchange Square", 40], ["Mott  Ned  Anni  Will", 30], ["The Record. Day 41", 30], ["Haldane Yard, Mill Street", 24]]) {
+      const c = document.createElement("canvas"); card.append(c);
+      drawLettering(c, H, text, { px, max: 380, seed: 7 + i, ink: "#1c1a20" });
+    }
+    const r = card.getBoundingClientRect(), P = paperPixels({ w: Math.round(r.width), h: Math.round(r.height), era, seed: 5 + i * 13, kind: "sheet" });
+    const cv = document.createElement("canvas"); cv.width = P.w; cv.height = P.h; cv.getContext("2d").putImageData(new ImageData(P.data, P.w, P.h), 0, 0);
+    card.style.backgroundImage = `url(${cv.toDataURL()})`;
+  }
+  document.documentElement.dataset.ready = "1";
+</script>
+</body>
+</html>

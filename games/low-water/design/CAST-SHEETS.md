@@ -89,7 +89,7 @@ the brass canister. Style: fidgets; rubs the backs of her legs before the tide t
 | Tobit Quill | B | 1.30 | 0.46 | 0.25 | 0.10 | 0.12 | 0.10 | 0.56 | 0 |
 | Ferris Lugg | A | 2.14 | 0.55 | 0.24 | 0.19 | 0.21 | 0.13 | 0.92 | 14 |
 | Nan Cockle | B | 1.48 | 0.45 | 0.27 | 0.08 | 0.15 | 0.13 | 0.70 | 28 |
-| Ysolde Penhallow | B | 1.78 | 0.51 | 0.26 | 0.13 | 0.19 | 0.13 | 0.78 | 0 |
+| Ysolde Penhallow | B | 1.70 | 0.48 | 0.27 | 0.10 | 0.215 | 0.17 | 0.76 | 0 |
 | Orrin Teague | B | 1.70 | 0.49 | 0.27 | 0.13 | 0.16 | 0.12 | 0.76 | 10 |
 | Dilly Rudd | B | 1.22 | 0.45 | 0.26 | 0.09 | 0.12 | 0.10 | 0.52 | 0 |
 | Gill (Spratt's runner) | B | 1.38 | 0.50 | 0.24 | 0.10 | 0.12 | 0.10 | 0.60 | 0 |
@@ -138,8 +138,8 @@ Costume: men's sea boots, three skirts kilted up, a man's coat, a bucket. Pale m
 Face: a nut of a face, toothless smile. Style: walks only on the shingle bar's line; points with the
 stick.
 
-**Ysolde Penhallow.** Exaggerated: the cap and the set of the shoulders of someone who has stood
-at a helm for thirty years. Costume: master's reefer jacket, a peaked cap, a muffler; a log book.
+**Ysolde Penhallow.** A square woman (quay.lwd: "a square woman with a pipe she does not light at sea"). Exaggerated: the cap and the set of the shoulders of someone who has stood
+at a helm for thirty years. Costume: master's reefer jacket over a skirt, a peaked cap with grey hair below it, a muffler, a cold clay pipe in her teeth; a log book.
 Pale mass: the muffler (0.75). Style: stands square to the bay, gives bearings with an arm.
 
 **Orrin Teague.** Exaggerated: luggage. Costume: a travelling coat and hat from nine years ago,

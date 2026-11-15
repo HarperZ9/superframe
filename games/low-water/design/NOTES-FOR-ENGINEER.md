@@ -2228,3 +2228,49 @@ What it does: walking over it costs speed (x0.75); a body that crosses it fast w
 line in the Ropewalk's own scene that sets the strand down would make it the town's, not mine. Optional,
 from the same proposal: `ropewalk_coil` (a net, at [10.4, 0, 1.2], r 0.8) under the post where the Vane
 hangs. Tell me when it is in and I will re-run the Ropewalk fights on the authored record.
+
+### Combat engineer, 2026-10-22: the inner arena, asks of the other leads (PROGRESS 182)
+
+The inner arena is built in game/engine/combat (data/flaws*.mjs, data/host.mjs, arena/inner*.mjs, hostworld.mjs;
+checkers in combat/tools; the arena page's `?mode=inner&flaw=<id>`). Bosses are placeholder forms built from the
+arena's figure parts (arena/forms.mjs). What I need from others, none of it urgent for the engine to run:
+
+**Character lead (characters/): forms to replace the placeholders.** Each must keep the rules in
+design/spine-plan/inferno/02-BESTIARY-A.md section 1 (faces of the liar's line only; no Hesh person, no child, no
+perpetrator; victims only as objects, shadows and sounds). Height cap: the Brack kitchen's ceiling (2.6 m), except
+Friday's Saturn phase, which is the ceiling.
+- Received and Found Correct: a body of stacked return sheets, many hands each with the good pen, the India rubber's
+  shine where the face is; phase 2 the sheets lift and wheel (a flock); phase 3 the desk tilts into a bowl. Clips:
+  stamp (slam), rub-out sweep, flock (ring).
+- Friday: Will's father as Will remembers him, never given a face, in Will's coat; phase 2 Saturn, grown to the
+  ceiling and bent at the waist, only the eyes taking the lamp; phase 3 an arm across the table, too long, that holds
+  and leans. Clips: backhand, reach (pull), table slam, overhead, lean. Plus a wall-shadow sprite: a boy's head and
+  shoulders whose shoulders come up round the ears (the tell; combat draws it on the north wall).
+- He's With Me: a clay man twice Will's height, the cell's iron door for a chest (grille, a coat on a nail behind
+  it), one Tarn word in pencil on the brow (HELD), and the shine left when it is rubbed out. It grows with every blow
+  (combat scales it 1.0 to 2.25). Clips: fist, sweep, hold; a rub reaction.
+- Nearest One: a man in Will's militia greatcoat with a bull's mass in the shoulders, head down, horns of the wicket
+  bar's iron; phase 3 it is the player's own shape. Clips: charge (head down), gore, horn sweep; dazed.
+- Only: eleven chairmen's coats with nobody in them, sitting on chairs and standing; the twelfth chair. Clips: rise,
+  press, clap (the coats clap when one is struck).
+- Forty Carts: a barrier pole jointed like an arm, a tally board for a face, the order in green ink riveted on; carts
+  and horses for the host (never people); one far cart with a horse, a boy at its head, a woman on the bench, a girl
+  counting, in the base look and never fought. Clips: hook, drag, thrust, whistle.
+- Nobody Checks: forty sacks stacked as a body, eighty painted on the front. Clips: bash, shove.
+- The Adversary: the clerk at a desk with one lamp (a man of no particular age in a good coat, clean pen); the Host,
+  a body of the run's kept lies wearing the faces of the player's own line (Abel's smile under the hat, Ned's shine,
+  Will's hands, Pell's stoop), notices pasted on it like posters, and a limb per kept lie that falls when named.
+
+**Story lead (content/quota): the scenes that play the beats.** Every inner fight sends one record through
+onRecord and keeps it in G.state.inner: `inner.outcome { flaw, verb, scene, beat }` (no number on a non-force end;
+a falling dc only on force) and, when a boon is taken, `boon.cost { flaw, boon, who, scene, beat }`. Two condition
+calls read them: `innerend(<flaw>)` (refuse, endure, yield, lose, name, force, or "") and `innerboon(<flaw>)`.
+Each beat (PROPOSAL text in data/flaws-*.mjs) names the scene file it belongs in. Also waiting: the two NEW LINE
+self-lies He's With Me and Nearest One are armed by (`q.sl.with_me`, GRIP; `q.sl.nearest`, BALLAST; text in
+data/flaws-will.mjs `pending`), under the dialogue gate; and the hinge call that opens the stove door on the night
+after each scene (createInnerRun({ flaw, heard: G.state.selfLies, kept, onRecord })).
+
+**Rendering and UI leads:** the dream look (L6) and each boss's surreal break per inferno/07-SENSES.md section 2
+are approximated on the arena page only (a desaturated palette, grain in the darks, the anchor drawn in the base
+look). The shell's fight layer has no inner mode yet; the naming choice (what happened against what was told), the
+lay ring and the Adversary's one card ("It will be back.") are drawn by combat/arena/innerdraw.mjs for the bench.

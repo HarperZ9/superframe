@@ -1,0 +1,197 @@
+# Era 5 of The Quota (year 115, three weeks in April, the clearance; design/eras/era5.md): its seventeen places wired
+# as areas on their own plates (plates agent, 2026-10-23; render/places/q5_*.mjs, baked by render/bake_era5.sh).
+# Loaded by the shell beside wiring/quota-areas.lwd (ui/app.mjs content=quota). No era 2, 3 or 4 area is touched.
+# hud-clock and hud-weather: the hour and the weather the HUD shows here while @meta hud-held holds (var.era == 5,
+# content/quota/slice.lwd), read by ui/hudtab.mjs; era 5 is spring, so none of them says frost.
+# The clip (e5.clip.stop) plays on Mill Street's plate inside the phone's frame: camera: phone (world/camera.mjs,
+# ui/phoneframe.mjs). No figures yet: era 5's cast has no sculpted figures; the speakers show on the talk page.
+
+# ---------------------------------------------------------------- the wide lens: the town in April
+@area q5.tower
+name: The churchyard under the phone mast
+plate: q5_tower
+place: q5_tower
+lens: wide
+variant: evening
+hud-clock: 19:35
+hud-weather: April, overcast
+spawn: 3 0 2.5
+camera: 0.6
+
+@area q5.mill_street
+name: Mill Street at night
+plate: q5_mill_street
+place: q5_mill_street
+lens: wide
+variant: night
+hud-clock: 23:05
+hud-weather: April, a wet night
+spawn: -1.5 0 0.4
+camera: 0.6
+
+@area q5.haldane_yard
+name: Haldane Yard, the clearance
+plate: q5_haldane_yard
+place: q5_haldane_yard
+lens: wide
+variant: dawn
+hud-clock: 05:55
+hud-weather: April, first light
+spawn: -1.0 0 2.4
+camera: 0.6
+
+@area q5.square
+name: Exchange Square, the car park
+plate: q5_square
+place: q5_square
+lens: wide
+variant: evening
+hud-clock: 20:35
+hud-weather: April, dry, cold
+spawn: -3.0 0 0.6
+camera: 0.6
+
+@area q5.ring_verge
+name: The ring road verge
+plate: q5_ring_verge
+place: q5_ring_verge
+lens: wide
+variant: night
+hud-clock: 00:25
+hud-weather: April, clear, cold
+spawn: -2.0 0 2.4
+camera: 0.6
+
+@area q5.shop
+name: Hartley's window on the hill
+plate: q5_shop
+place: q5_shop
+lens: wide
+variant: evening
+hud-clock: 20:10
+hud-weather: April, dry
+spawn: 2.5 0 0.2
+camera: 0.6
+
+
+# ---------------------------------------------------------------- the narrow lens: rooms
+@area q5.furrowe_kitchen
+name: Nan Furrowe's kitchen
+plate: q5_furrowe_kitchen
+place: q5_furrowe_kitchen
+lens: narrow
+variant: evening
+hud-clock: 19:05
+hud-weather: April, rain at the window
+spawn: 1.8 0 1.3
+camera: 0.9
+
+@area q5.brack_kitchen
+name: Leon Brack's kitchen, the far-bank estate
+plate: q5_brack_kitchen
+place: q5_brack_kitchen
+lens: narrow
+variant: night
+hud-clock: 01:40
+hud-weather: April, rain
+spawn: 1.4 0 1.2
+camera: 0.9
+
+@area q5.channel
+name: Ellie Ashby's spare room
+plate: q5_channel
+place: q5_channel
+lens: narrow
+variant: evening
+hud-clock: 21:25
+hud-weather: April, mild
+spawn: 1.4 0 1.2
+camera: 0.9
+
+@area q5.saro_flat
+name: The Saros' flat over the shop
+plate: q5_saro_flat
+place: q5_saro_flat
+lens: narrow
+variant: night
+hud-clock: 22:25
+hud-weather: April, a wet night
+spawn: 1.6 0 1.3
+camera: 0.9
+
+@area q5.mara_flat
+name: Mara's flat, Haldane Yard
+plate: q5_mara_flat
+place: q5_mara_flat
+lens: narrow
+variant: morning
+hud-clock: 09:20
+hud-weather: April, grey
+spawn: 1.6 0 1.5
+camera: 0.9
+
+@area q5.mortuary
+name: The room behind the mortuary
+plate: q5_mortuary
+place: q5_mortuary
+lens: narrow
+variant: night
+hud-clock: 02:35
+hud-weather: April, rain
+spawn: 1.6 0 1.2
+camera: 0.9
+
+@area q5.council
+name: The council chamber
+plate: q5_council
+place: q5_council
+lens: narrow
+variant: afternoon
+hud-clock: 16:10
+hud-weather: April, bright spells
+spawn: 2.6 0 1.0
+camera: 0.9
+
+@area q5.archive
+name: The archive, the old district office
+plate: q5_archive
+place: q5_archive
+lens: narrow
+variant: afternoon
+hud-clock: 15:25
+hud-weather: April, showers
+spawn: -1.4 0 0.9
+camera: 0.9
+
+@area q5.well_house
+name: The Well House
+plate: q5_well_house
+place: q5_well_house
+lens: narrow
+variant: night
+hud-clock: 21:50
+hud-weather: April, dry, cold
+spawn: 2.2 0 1.4
+camera: 0.9
+
+@area q5.police
+name: Headquarters, the fourth floor
+plate: q5_police
+place: q5_police
+lens: narrow
+variant: day
+hud-clock: 11:10
+hud-weather: April, overcast
+spawn: 2.6 0 0.8
+camera: 0.9
+
+@area q5.syndicate
+name: The syndicate's office
+plate: q5_syndicate
+place: q5_syndicate
+lens: narrow
+variant: afternoon
+hud-clock: 14:35
+hud-weather: April, bright
+spawn: 2.2 0 1.5
+camera: 0.9

@@ -12,7 +12,8 @@
 //   resolveWho(index, speaker)  lightOf(G)
 import { h } from "./dom.mjs";
 
-let INDEX = null, loading = null, lastTry = 0;
+const PAINTED = "/characters/portraits-painted/index.json", QUOTA = "/characters/portraits-quota/index.json";
+let INDEX = null, loading = null, lastTry = -Infinity;   // -Infinity: the first try runs at once (0 skipped every try in the first ten seconds after load, so the first speaker had no face)
 export function loadIndex(base = "/characters/portraits/index.json") {
   if (INDEX) return Promise.resolve(INDEX);
   if (!loading && performance.now() - lastTry < 10000) return Promise.resolve({}); // at most one try in ten seconds
@@ -20,14 +21,29 @@ export function loadIndex(base = "/characters/portraits/index.json") {
   const get = (u) => fetch(u).then((r) => (r.ok ? r.json() : null));
   // the character lead's index; its working lane file while the full index is being baked
   // a failed or empty read is not kept: the next speaker tries again (the index may be mid-write)
-  if (!loading) loading = get(base).then((j) => j || get(base.replace("index.json", "index.lane0.json")))
+  // the Studio's painted portraits first (characters/portraits-painted/index.json, ids like ned@e2), the
+  // character lead's baked index under them: a painted face wins where both have one (coordinator, 2026-10-21)
+  const old = () => get(base).then((j) => j || get(base.replace("index.json", "index.lane0.json"))).catch(() => null);
+  const painted = () => get(PAINTED).catch(() => null), quota = () => get(QUOTA).catch(() => null);
+  // the sculptor's Quota heads (characters/portraits-quota) sit between: the Quota's cast has faces before the Studio paints them
+  if (!loading) loading = Promise.all([painted(), quota(), old()]).then(([pa, qu, ol]) => (pa || qu || ol ? { ...(ol || {}), ...(qu || {}), ...(pa || {}) } : null))
     .catch((e) => { console.warn(`portrait: no index yet (${e.message})`); return null; })
     .then((j) => { if (j && Object.keys(j).length) INDEX = j; else loading = null; return j || {}; });
   return loading;
 }
 
-// The portrait id for a speaker as the script names them ("Deacon Fennick" -> "fennick").
-export function resolveWho(index, speaker) {
+// The mood a painted portrait is chosen by, from a line's direction tags (dialogue/direction.mjs): a lie
+// shows the lying face; otherwise the emotion, or the nearest mood the Studio paints; neutral when untagged.
+const MOOD_OF = { tender: "warm", amused: "warm", proud: "warm", wry: "warm", sad: "grieving", grief: "grieving", grieving: "grieving", afraid: "afraid", anxious: "afraid", ashamed: "afraid", contempt: "contempt", cold: "contempt", stern: "contempt", angry: "angry" };
+export function moodOf(dir) { if (!dir) return null; if (dir.lie) return "lying"; return dir.emo ? MOOD_OF[dir.emo] || dir.emo : null; }
+
+// The portrait id for a speaker as the script names them ("Deacon Fennick" -> "fennick"); with a story's era
+// (body[data-ui-era]) the era's own painting first ("ned" in era 2 -> "ned@e2").
+export function resolveWho(index, speaker, era = +((typeof document !== "undefined" && document.body && document.body.dataset.uiEra) || 0)) {
+  const id = resolveBase(index, speaker);
+  return id && era && index[`${id}@e${era}`] ? `${id}@e${era}` : id;
+}
+function resolveBase(index, speaker) {
   if (!speaker || !index) return null;
   const s = String(speaker).trim().toLowerCase(), words = s.split(/\s+/);
   if (index[s]) return s;
