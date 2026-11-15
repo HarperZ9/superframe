@@ -1,0 +1,42 @@
+name: kernels-cpp
+# The two C++23 kernel libraries under packages/kernels build with MSVC only.
+# Each is configured, built and tested from its own folder, as its former
+# repository did, and its art receipt digests are checked against the stored files.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/kernels/signal-kernels/**'
+      - 'packages/kernels/anomaly-kernels/**'
+      - '.github/workflows/kernels-cpp.yml'
+  pull_request:
+    paths:
+      - 'packages/kernels/signal-kernels/**'
+      - 'packages/kernels/anomaly-kernels/**'
+      - '.github/workflows/kernels-cpp.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: signal-kernels
+            flag: -DSIGNAL_KERNELS_BUILD_TESTS=ON
+          - name: anomaly-kernels
+            flag: -DANOMALY_KERNELS_TESTS=ON
+    defaults:
+      run:
+        working-directory: packages/kernels/${{ matrix.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build ${{ matrix.flag }}
+      - name: Build
+        run: cmake --build build --config Debug -j 2
+      - name: Test
+        run: ctest --test-dir build -C Debug --output-on-failure
+      - name: Art receipt digests
+        run: python scripts/check_art_receipts.py

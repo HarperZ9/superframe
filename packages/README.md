@@ -17,7 +17,7 @@ npm run test:py                                      # the Python tests
 | `perceive` | spectra and fields into sight, sound and touch, with the bits lost | FSL-1.1-MIT, CIE data CC BY-SA 4.0 |
 | `joules` | RAPL, nvidia-smi and NVML power meter, joules per study | FSL-1.1-MIT |
 | `diagram` | one model, every view: CAD, EDA and a circuit simulator | FSL-1.1-MIT |
-| `kernels` | kernel contract with CPU and CUDA equivalence, planted bad kernels, receipts | FSL-1.1-MIT |
+| `kernels` | kernel contract with CPU and CUDA equivalence, planted bad kernels, receipts; `kernels/signal-kernels` (C++23 entropy, causality, change points, forecasting) and `kernels/anomaly-kernels` (C++23 telemetry baselines, outlier scores, alert correlation) moved here from their own repositories | FSL-1.1-MIT; `anomaly-kernels` MIT |
 | `crt` | a CRT simulated as physics, from beam to phosphor to glass | FSL-1.1-MIT |
 | `evolve` | a genetic-algorithm engine that must reproduce Eigen and Kimura first | FSL-1.1-MIT |
 | `lawspace` | a law as a knob, with the wall where behaviour changes | FSL-1.1-MIT |
