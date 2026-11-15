@@ -6,7 +6,8 @@
 // opts (gear, temper, fitting) are passed through; until preview applies them (it says so in
 // `applied`), a comparison of clothes, temper or a fitting is marked as not previewed.
 
-// The sheet's keys the fight reads (SYSTEMS-FULL 19.2): the four compartments and the voices.
+// The sheet's keys the fight reads (SYSTEMS-FULL 19.2): the four compartments and the voices, which since the traits
+// pass (2026-10-23, design/TRAITS.md) are the four great traits and the traits under them; the ids are unchanged.
 export const COMPARTMENTS = ["coat", "nose", "pen", "hat"];
 export const FIGHT_VOICES = ["grip", "ballast", "knees", "pride", "sum", "dark", "salt", "carbon", "precedent", "undertow", "condolence", "formletter", "hearsay", "smell"];
 export const PILLAR = { coat: "Endure", nose: "Evade", pen: "Read", hat: "End" };

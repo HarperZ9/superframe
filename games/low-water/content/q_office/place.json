@@ -1,0 +1,132 @@
+{
+ "place": "q_office",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 35,
+  "target": [
+   0.2,
+   1,
+   -0.4
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 3.611111111111111
+ },
+ "pxPerMetre": 180,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "morning"
+ ],
+ "variantInfo": {
+  "morning": {
+   "hour": 11,
+   "weather": "11:00, day 41: the square's flat light through the tall windows, the stove cold"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26,
+  50
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "returns",
+    "verb": "read",
+    "at": [
+     -0.9,
+     0,
+     0.3
+    ],
+    "note": "the eleven returns stacked at the commissioner's hand"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "stairs",
+    "at": [
+     -3.2,
+     0,
+     1.6
+    ],
+    "note": "the door to the stairs"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "morning": [
+   {
+    "at": [
+     -1.2,
+     2.4,
+     -2.45
+    ],
+    "kind": "paraffin",
+    "I": 14,
+    "reach": 11,
+    "group": ""
+   },
+   {
+    "at": [
+     1.2,
+     2.4,
+     -2.45
+    ],
+    "kind": "paraffin",
+    "I": 14,
+    "reach": 11,
+    "group": ""
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the district meeting room.",
+ "figureLights": {
+  "morning": [
+   {
+    "at": [
+     1,
+     2.6,
+     2.8
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 10,
+    "figure": true
+   }
+  ]
+ }
+}

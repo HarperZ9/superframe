@@ -1,0 +1,512 @@
+# Era 4, The Closure: the wide lens at the station (e4.s01), the class's trade (e4.s02), Kasem's start at the gate
+# (e4.s03, fate f.e4_hire, JOSS decides), the carry (e4.s05, F2 Pell to Ruth, B2 Davey to Ann) and the bank's
+# board and the walk with the can (e4.s04, fate f.e4_map, VICTOR decides). Story lead, 2026-10-23. DRAFT: every line
+# waits for the author's line approval (ledger row S14). Design: design/eras/era4.md sections 1 to 3, 8 and 12; the
+# weighted-devices pass (design/device-audit/era4.md) moved the clinic, the hire and the map off paper.
+# The self-lie e4.sl.barn is tagged in e4.walk.ruth, at the end of the Row with the can and the boy in the doorway (moved off
+# the audit 2026-11-09: "Bookkeeping should not be a part of the plot"), and echoed word for word in Mira's witness (e4_witness.lwd).
+
+# ---------------------------------------------------------------- the era transition: fifty winters on
+@node e4.start
+cost: 0
+do: var.era = 4
+alt: e4.start.ann ? q_class == militia
+go: e4.start.ruth
+
+@node e4.start.ruth
+place: q4_tower
+speaker: RUTH
+cost: 0
+do: become(e4.ruth)
+nar: The bell tower. The washing lines across Exchange Street thin out and go, one by one, and behind them the mill's chimney stack comes up out of the river mist, square and black. The bare bulbs on the corners go orange, the first sodium, and buzz.
+nar: Fifty winters on. The Closure.
+nar: Ruth Furrowe's month. Pell's daughter. Thirty-eight. Auditor for Halvard, sent home to close the books on the mill her grandfather's name was never on.
+go: e4.wide
+
+@node e4.start.ann
+place: q4_tower
+speaker: ANN
+cost: 0
+do: become(e4.ann)
+nar: The bell tower. The washing lines across Exchange Street thin out and go, one by one, and behind them the mill's chimney stack comes up out of the river mist, square and black. The bare bulbs on the corners go orange, the first sodium, and buzz.
+nar: Fifty winters on. The Closure.
+nar: Ann Brack's month. Davey's daughter, Will's granddaughter. Thirty. Constable. She has the mill gate in the day this month, and the Row at night.
+go: e4.wide
+
+# ---------------------------------------------------------------- e4.s01, the wide lens
+@node e4.wide
+place: q4_station
+speaker: RUTH
+cost: 0
+do: set(e4.saros_arrive)
+nar: Late October. Shift's end. From the tower the mill wheel can be seen turning in the race, slow, the way it has turned every day for a hundred years, and the hooter goes for the four o'clock and the men come out of the gate in their caps with their hands in their pockets.
+nar: The station is on the near bank under the mill. The two-fifty from the border is late. It comes in with every window steamed and stops with a jerk that sends a suitcase off a rack somewhere inside, and somebody laughs.
+nar: The Saros get off at the back end, where the platform runs out into cinders. A man of thirty in a suit jacket over a jumper, with a bag in each hand and a third on his back. A young woman with a baby tied to her front in a shawl and a boy of four by the wrist. Then an older man, getting down backwards off the step because of what he's carrying, which is a birdcage, brass gone brown, with straw in the bottom and no bird.
+nar: They stand on the cinders. Nobody's come to meet them. The young woman says something to the boy in the Vell tongue and points at the chimney, and the boy looks at the chimney, and the man with the bags reads the station sign under his breath, getting it wrong, and gets it right the second time.
+nar: A porter goes past them with a trolley and says, mind your backs, to the air. The old man moves the birdcage out of his way and holds it against his chest. In the straw at the bottom of the cage something clinks. Glass.
+voice: sum: Four of them and a baby, three bags and a cage. That's a room on the Row, one, if they've got a cousin. They've got a cousin. They've all got a cousin. {dc: 3, when: q_class == inspector}
+voice: smell: Diesel and wet coal, and off them something sweet. Cloves. Whatever they've been eating on that train for two days. {dc: 3, when: q_class == militia}
+nar: Over the river the wheel turns. On the gate, in letters a man could stand in, it still says ORME & SON, with a ladder against it.
+go: e4.trade
+
+# ---------------------------------------------------------------- e4.s02, the trade
+# The clinic is shut or kept by a key in Ruth's hand, not by a line in a book (weighted-devices pass, 2026-10-23).
+@node e4.trade
+cost: 0
+alt: e4.trade.ann ? q_class == militia
+go: e4.trade.ruth
+
+@node e4.trade.ruth
+place: q4_mill_office
+speaker: HAL
+cost: 0
+nar: The manager's office is over the gate, with a window onto the yard and another onto the floor, so the manager could see both without getting up. The manager has gone. He went in August with a clock. Ruth has his desk and his chair and his ashtray, which she uses for paper clips.
+nar: She has been in the building a fortnight and she knows it now the way she knows a house she grew up in. Which floor is cold. Which belt slips on a wet day. Where the men smoke, and which of them stop talking when she comes past.
+nar: She likes this part. Nobody believes her when she says so. She likes the moment a place stops agreeing with itself, and you go back over it a step at a time until you find where somebody lied. Her father taught her that at the kitchen table, with her on his knee. Find me the one that's lying, Ruthie.
+nar: Dr Lind knocks and comes in without waiting. Forty-five, a cardigan under his white coat, a pen behind each ear because he loses one. He has a key on a ring with a wooden tag, and he puts it down on the desk in front of her, and leaves his hand on it a moment before he takes it off.
+line: HAL: You're the auditor.
+line: RUTH: That's me.
+line: HAL: That's the clinic cupboard. They told me to give it you. I've given it you.
+nar: The tag is worn dark and smooth from hands. The key is the old long sort, with a hollow barrel, and it's warm from his pocket.
+line: HAL: I'd like to know when I'm shutting. That's all. I've got people on a course of things. You can't stop some of them like a tap.
+line: RUTH: Month's end, I was told.
+line: HAL: You were told the plant. Nobody's said the clinic. Your Mr Sell's office rang on Monday and asked me why the clinic needs to stay open when the plant's shut and there's nobody to be ill in it.
+line: RUTH: What did you say?
+line: HAL: I said the plant's shut and they're still ill. They didn't think that was funny either.
+nar: He takes off his glasses and rubs his eyes with the heels of his hands.
+line: HAL: There's a lad on the estate. Lew Haldane. Did his back on the hoist two winters since. I tried to bring him down off them in the spring, him and a few more, and they bought them off the stairs instead, off boys, at four times the price. So I put them back on. You can put that in your audit if there's room.
+voice: smallprint: The plant and the buildings, they said. Nobody said clinic. If nobody said it, it's yours to say. {dc: 2}
+voice: condolence: He's asking you to keep a door open he knows you'll shut. He just wants to have asked. {dc: 3}
+nar: Lew Haldane. She knows the name. Everybody knows the Haldanes. Her grandfather knew the Haldanes, which is a thing nobody in her family says.
+opt: "Put the key in your pocket. Say it: It shuts Friday, with the last pay." -> e4.trade.ruth.out {do: set(said.e4_ruth_early), sense: cold.iron}
+opt: "Slide the key back across the desk to him. Say it: Month's end. I'll find the money." -> e4.trade.ruth.out {do: set(said.e4_ruth_month), sense: e4.key.slide}
+
+@node e4.trade.ruth.out
+place: q4_mill_office
+speaker: HAL
+cost: 0
+line: HAL: Friday. Right. {when: has(said.e4_ruth_early)}
+nar: He looks at her coat pocket, where the key went, and not at her. Then he puts his glasses back on. {when: has(said.e4_ruth_early)}
+line: HAL: I'll write the last ones Thursday. Big ones. They'll sell half of it on, you know that. {when: has(said.e4_ruth_early)}
+line: HAL: Month's end. Thank you. {when: has(said.e4_ruth_month)}
+line: HAL: Where will you find it? {when: has(said.e4_ruth_month)}
+line: RUTH: Stationery. There's always too much in stationery. {when: has(said.e4_ruth_month)}
+nar: He nearly laughs. He picks the key up and goes out with it in his fist. Through the window onto the floor she can see him go down the iron stairs, and the men at the machines look up at him and look away. {when: has(said.e4_ruth_month)}
+voice: sum: A key. It moves a man's tablets a fortnight one way or the other. It's only a key. {dc: 2}
+go: e4.hire
+
+@node e4.trade.ann
+place: q4_mill_yard
+speaker: ANN
+cost: 0
+nar: The picket is at the gate and Ann is on the other side of it, the bank's side, with Constable Pryce, who is sixty and has a flask of something he says is tea.
+nar: There are forty men on the picket and she went to school with a dozen of them. Their wives come at eleven with sandwiches in greaseproof paper. Somebody has brought a brazier and they burn pallets in it, and the smoke goes over the gate into the yard and into the office windows, which is why they keep it lit. {sense: e4.brazier}
+nar: She knows the brazier. It was her dad's, off the Crown's back yard, for when the drays came in winter. She doesn't say anything about it.
+line: GARY: Annie. Annie Brack. You're on the wrong side, girl.
+line: ANN: I'm on the side they put me on, Gary Peel.
+line: GARY: Come over here, we've got sausages.
+line: ANN: Then you'd be stood on the wrong side as well.
+nar: They laugh. Gary Peel can't be cross with anybody for long. He was in the year below her and she once sat on him in the playground for a whole dinner hour until he said sorry to a dinner lady.
+nar: At the end of the picket, a little apart, Dale Gedge is painting the placards. He does it well. He's got a tin of white and a tin of red and a proper brush, and he does the letters freehand without chalking them first, and they come out straight. The men bring him boards and he does them, and they hold them up wet, and shout what's on them at the office windows.
+line: GARY: Save Orme's! Save our jobs!
+nar: Dale was in her brother's year. His grandad was Constable Gedge, who had a picture in the station until a sergeant took it down. Nobody ever said why. Ann was at the station the day it came down. She's never asked.
+line: DALE: You can tell Sell I did him one. Halvard go home. He'll want it for his wall.
+line: ANN: Tell him yourself, Dale Gedge.
+line: DALE: He's never been down here. Sends the cars.
+voice: grip: The cars come at two. You'll have to move them off the gate for the cars. You'll have to move Gary. {dc: 2}
+voice: ballast: Pryce has done twelve of these. You do what Pryce does and you go home. {dc: 3}
+nar: Inside the gate, on the yard, the foreman of the second floor is walking along the fence with his hands in his donkey jacket. Joss Haldane, twenty-eight, the mill's name across his back. The picket call him Joss to his face and something else to his back. He knows both.
+go: e4.hire
+
+# ---------------------------------------------------------------- e4.s03, the start at the gate (fate f.e4_hire, JOSS decides)
+# Joss takes men with his hand on their shoulder. Ruth's lever is the pay itself, thin envelopes or fat ones out of the
+# cash box she carries, not a budget line (weighted-devices pass, 2026-10-23).
+@node e4.hire
+place: q4_mill_yard
+speaker: JOSS
+cost: 0
+do: set(e4.hire_open); pressure(f.e4_hire)
+nar: The side gate, the next morning, seven o'clock. It's raining the thin rain that doesn't seem to fall, only to be there. A line of men stands along the fence with their collars up. Some of them are Tarn lads off the estate and some are Vell off the Row, and they stand apart without anybody telling them to, a gap of a yard between them, like two queues for the same bus.
+nar: Agency hands for the run-down, the office wants. A week's work, clearing the floor for Halvard's men to strip, at the agency's rate, which is half. Joss has six to take on, and nineteen at the fence.
+nar: Kasem Saro is fourth in the line. He has his papers in a plastic bag against the rain, and the jacket over the jumper, and he has shaved, which none of the others have. He's holding the bag up a little, the way you hold a ticket up.
+nar: Dale Gedge is ninth. He's not got anything in his hands. He doesn't need to; he's been casual here three years and every man on the gate knows his face. He's smoking, and he's watching Kasem's plastic bag.
+line: JOSS: Right. Six. Agency rate. Floor clearance, a week, no more. Don't ask me about after, there's no after.
+line: DALE: Agency rate's half.
+line: JOSS: It's what Halvard pays, Dale.
+line: DALE: For Halvard. You're giving half to Halvard's agency.
+line: JOSS: I'm doing what I'm told, Dale. That's all I'm doing.
+nar: He goes down the line and takes them with his hand, a tap on the shoulder, and the man he taps steps out of the line. Two Tarn lads he knows. A third. A big Vell man who used to be a docker and can lift a bale on his own, which Joss has seen. He stops in front of Kasem.
+line: KASEM: Good morning. Turner. Lathe. Seven years.
+line: JOSS: There's no lathes. It's lifting.
+line: KASEM: I can lift.
+nar: He smiles. He doesn't know if he's said it right. He holds the plastic bag up so Joss can see the papers through it, the stamps, the photograph of a younger man with more hair. Joss doesn't look at the bag. He looks at Kasem's hands.
+alt: e4.hire.ann ? q_class == militia
+go: e4.hire.ruth
+
+@node e4.hire.ruth
+place: q4_mill_yard
+speaker: JOSS
+cost: 0
+do: shoulder(e4.load.cashbox)
+nar: Ruth is at the side gate with the cash box, because the run-down is paid out of the bank in cash, a week in hand, and the auditor carries it and the auditor pays it. The box pulls her arm straight. She has a golf umbrella from the office stand in the other hand, with somebody else's initials on the handle.
+nar: In the box the brown envelopes stand on their edges in two rows. The agency ones are thin. The old-rate ones are fat, and bend when you take one out.
+nar: Joss comes over to her under the umbrella, so they're stood close, and the rain comes off the umbrella's edge between them in a line.
+line: JOSS: I can take the Vell lad at agency. Or I take Gedge at the old rate. I can't do both. There's six of them in that box and that's all there is.
+line: RUTH: Why's it me?
+line: JOSS: Because you're holding it. Give us a thin one and I'll take him. Give us a fat one and it's Dale.
+voice: smallprint: The office said agency hands. It didn't say which hands. You're only holding the box. {dc: 2}
+voice: pride: He's asking you because he doesn't want to be the one. Let him be the one. {dc: 3}
+opt: "Take out a thin envelope and put it in his hand." -> e4.hire.decide {do: set(said.e4_ruth_rate), sense: e4.envelope.thin}
+opt: "Take out a fat one. Put that in his hand." -> e4.hire.decide {sense: e4.envelope.fat}
+
+@node e4.hire.ann
+place: q4_mill_yard
+speaker: DALE
+cost: 0
+nar: Ann is at the side gate because the side gate is where trouble would start, if it started. She has her hands behind her back. Pryce has gone to the cabin for a sit down.
+nar: Dale comes out of the line, which you don't do, and over to her, close, with his cigarette cupped in his hand against the rain.
+line: DALE: Ann. Tell him.
+line: ANN: Tell him what?
+line: DALE: Tell him I'm good. Tell him what I'm like. He'll listen to the police.
+line: ANN: He'll do what the office tells him, Dale Gedge. That's all.
+line: DALE: Three years I've been casual here. Three years. My grandad was on that gate. And he's stood there looking at a lad off the train with his papers in a sandwich bag.
+nar: Joss has heard. Everybody on the line has heard. Joss looks over at her across the wet yard with his hand still up, half way to Kasem's shoulder, waiting, as if it's her hand.
+voice: grip: He's a good worker. He is. You've seen him do a sign straight off without chalk. {dc: 2}
+voice: smell: Cloves, again, off the bag man. And Dale's fag. And the wet. {dc: 3}
+opt: "Call over: He's a good worker, Joss. I'll vouch for him." -> e4.hire.decide {do: set(said.e4_ann_vouch)}
+opt: "Say it to Dale: Get back in the line." -> e4.hire.decide
+
+@node e4.hire.decide
+cost: 0
+alt: e4.hire.dale ? has(said.e4_ann_vouch) | (q_class == inspector & !has(said.e4_ruth_rate))
+go: e4.hire.kasem
+
+@node e4.hire.kasem
+place: q4_mill_yard
+speaker: JOSS
+cost: 0
+do: set(e4.kasem_hired); setdown(all)
+nar: Joss puts his hand on Kasem's shoulder. On the wet jacket. He leaves it there a second longer than he did on the others.
+nar: Kasem takes the thin envelope off Ruth with both hands, as if it might spill, and says thank you to her, and to the umbrella, and to Joss. {when: q_class == inspector}
+line: JOSS: Saro. Is it Saro? Go and see Phil in the cabin. Boots are your own.
+line: KASEM: Thank you. Thank you very much.
+line: JOSS: Don't thank me. It's a week.
+nar: Kasem goes towards the cabin and then comes back, because he's not sure which is the cabin, and Joss points with his thumb without looking.
+nar: Down the line Dale drops his cigarette in a puddle and stands on it, slowly, turning his boot, until it's gone into the mud.
+line: DALE: Half. He's doing it for half. You know that, Joss.
+line: JOSS: Then he's a mug, isn't he. Next.
+nar: Dale walks off up the yard. He doesn't run. He walks past the Vell men in the line, close enough that one of them has to step back, and none of them looks at him.
+voice: undertow: Phil in the cabin. Boots are your own. He was nice about it. It cost him nothing. {dc: 3}
+go: e4.carry
+
+@node e4.hire.dale
+place: q4_mill_yard
+speaker: JOSS
+cost: 0
+do: set(e4.dale_hired); setdown(all); fate(f.e4_hire, kasem)
+nar: Joss's hand goes past Kasem's shoulder to Dale's. Dale steps out of the line and takes the fat envelope off Ruth without looking at her, and puts it inside his jacket. {when: q_class == inspector}
+nar: Joss's hand goes past Kasem's shoulder and down the line, and taps Dale. {when: q_class == militia}
+line: JOSS: Gedge. Old rate. Go and see Phil.
+line: DALE: Cheers, Joss.
+line: JOSS: Don't. It's a week.
+nar: Joss goes on down the line past Kasem without stopping. He takes a Vell man two further on, a big quiet one, at the agency rate, and then a Tarn lad, and then he's done, and he puts his hands in his pockets.
+nar: Kasem is still holding the plastic bag up. He lowers it. He doesn't understand yet that he's been passed. He's waiting to be told something.
+line: KASEM: Excuse me. Sir.
+line: JOSS: That's six. Sorry, mate. Try the agency, they're in the arcade.
+line: KASEM: The agency send me here.
+line: JOSS: Then I don't know. I don't know what to tell you.
+nar: The men who weren't taken go off in their two lots without talking. Kasem stands by the fence with the bag of papers, and the rain gets into the bag at the top where it's folded over, and he doesn't notice.
+voice: undertow: He's stood there till you go. He'll stand there till everybody's gone. {dc: 3}
+go: e4.carry
+
+# ---------------------------------------------------------------- e4.s05, the carry
+@node e4.carry
+cost: 0
+alt: e4.carry.davey ? q_class == militia
+go: e4.carry.pell
+
+@node e4.carry.pell
+place: q4_furrowe_house
+speaker: PELL
+cost: 0
+camera: near
+nar: The morning of the board. Her father's kitchen, where she grew up, at seven, because she always has breakfast here on a day that matters. She has never once told him that is why.
+nar: Pell Furrowe is seventy. He has his toast cut into four and he eats the four in order, round the plate. He still has the steel tape from the office, on the windowsill, and the pencil on a string, and he still measures things: the shed, the new cupboard, Nan.
+nar: Nan is at the end of the table with her maths homework. Thirteen, her hair in her face, a biro in her mouth.
+line: NAN: Grandad, what's seventeen per cent of four hundred.
+line: PELL: Do it yourself.
+line: NAN: I've done it, I want to see if you get the same.
+line: PELL: Sixty-eight. Near enough, without a pencil.
+line: NAN: I got sixty-eight.
+line: PELL: Then you'll be an auditor. God help you.
+nar: Ruth puts her coat on. The audit is in her case, and her case is on the chair by the door, and he has been looking at it all through breakfast without saying anything.
+line: PELL: You're doing the sale, then. At the bank.
+line: RUTH: I'm doing the figures. They do the sale.
+line: PELL: That's what my dad said. Every time. I do the figures.
+nar: He wipes his fingers on the tea towel, one at a time.
+line: PELL: Ruth. Sit down a minute.
+line: RUTH: Dad, it's at nine.
+line: PELL: I know when it's at. I put that clock up, six foot, near enough. Sit down.
+voice: smallprint: Nine o'clock. Sell's people will be early. They always are. They count it against you. {dc: 2}
+voice: condolence: He's never said sit down. Not since your mum. {dc: 3}
+opt: "Sit down." -> e4.carry.pell.stay {do: set(said.e4_ruth_stay)}
+opt: "Say it: Tell me tonight, Dad. I'll be late." -> e4.carry.pell.go
+
+@node e4.carry.pell.stay
+place: q4_furrowe_house
+speaker: PELL
+cost: 0
+camera: near
+nar: She sits. Nan looks up at the two of them and puts her biro down without being told.
+line: PELL: The night the Well House went. My dad was on the step out the front. Sitting in the snow. I sat with him. {when: has(e3.carry_f1)}
+line: PELL: He'd had it from Will Brack. On the Crown's steps, the day after they took the Haldane boy up. He said it to me like he was reading it off something. {when: has(e3.carry_f1)}
+line: PELL: I carried him. You don't need two for that. {when: has(e3.carry_f1)}
+line: RUTH: What does that mean? {when: has(e3.carry_f1)}
+line: PELL: I don't know. Fifty years I've had it and I don't know. Brack said it first. I've had it in my head like a stone in a shoe. {when: has(e3.carry_f1)}
+nar: He gets up and takes his plate to the sink and stands with his back to them, and runs the tap on it though there's nothing on it to rinse. {when: has(e3.carry_f1)}
+line: PELL: My dad. Your grandad. He signed things. That's all I wanted to say. He signed what they gave him. {when: !has(e3.carry_f1)}
+line: RUTH: I know, Dad. {when: !has(e3.carry_f1)}
+line: PELL: You don't. Nobody does. You sign it and you go home for your tea. {when: !has(e3.carry_f1)}
+nar: He gets up and takes his plate to the sink, and runs the tap on it though there's nothing on it to rinse. {when: !has(e3.carry_f1)}
+line: PELL: Right. Go on. You'll be late.
+alt: e4.carry.pell.f2 ? has(e3.carry_f1)
+go: e4.board
+
+@node e4.carry.pell.f2
+cost: 0
+do: set(e4.carry_f2)
+go: e4.board
+
+@node e4.carry.pell.go
+place: q4_furrowe_house
+speaker: PELL
+cost: 0
+line: RUTH: Tell me tonight, Dad. I'll be late.
+line: PELL: Tonight. Right. Near enough.
+nar: He goes back to his toast. He eats the last quarter, the corner, which he always leaves till last because it's the crust. Nan watches her mother go down the hall.
+line: NAN: What was he going to say?
+line: PELL: Nothing. Do your maths. In pencil, so you can rub it out.
+go: e4.board
+
+@node e4.carry.davey
+place: q4_brack_flat
+speaker: DAVEY
+cost: 0
+camera: near
+nar: Her father's flat over the Crown, at half five in the morning, because she does his tablets before her shift. He has a box with the days of the week on the lids, and she does the week on a Monday and checks it every day after, because he opens Thursday on a Tuesday when his hands are bad.
+nar: Davey Brack is sixty-seven. He was a sergeant like his father and he has his father's hands, big and careful, gone stiff now in the knuckles. The wedding photograph of his parents is on the dresser with the crack across the glass, the two of them cut in half at the shoulder, and he has never had it mended either.
+nar: The pub's quiet underneath. The cellar's being changed. You can hear the barrels go down the chute, a roll and a thump.
+line: DAVEY: You've got the gate.
+line: ANN: I've got the gate.
+line: DAVEY: The Gedge lad'll be on it.
+line: ANN: He's doing the signs.
+line: DAVEY: His grandad did signs.
+nar: She doesn't ask what that means. She puts Wednesday's lid down.
+line: DAVEY: My dad said a thing to me once. After the fire. I was seventeen.
+line: ANN: Now then, Dad. I'm on at six.
+line: DAVEY: I know when you're on.
+voice: ballast: Six o'clock. Pryce'll be stood there already with his flask. He'll say nothing and he'll write it down. {dc: 2}
+voice: knees: He's going to stand up. It takes him a long time now. If you go he won't have to. {dc: 3}
+opt: "Sit back down on the arm of his chair." -> e4.carry.davey.stay {do: set(said.e4_ann_stay)}
+opt: "Say it: Tell me tonight. I'll come round after." -> e4.carry.davey.go
+
+@node e4.carry.davey.stay
+place: q4_brack_flat
+speaker: DAVEY
+cost: 0
+camera: near
+line: DAVEY: He said he'd carried a lad. Up the burial ground. He said you don't need two for that. {when: has(e3.carry_b1)}
+line: ANN: What lad? {when: has(e3.carry_b1)}
+line: DAVEY: He never said. He went up to bed. {when: has(e3.carry_b1)}
+line: DAVEY: I carried him. You don't need two for that. That's what he said. I've said it to nobody. Your mother never knew. {when: has(e3.carry_b1)}
+nar: Below them a barrel goes down the chute and lands, and the floor jumps under the chair. {when: has(e3.carry_b1)}
+line: DAVEY: He said nothing, my dad. After. He took a hair off my baton strap and put it on the stove. {when: !has(e3.carry_b1)}
+line: ANN: Whose hair? {when: !has(e3.carry_b1)}
+line: DAVEY: That's all I was going to say. Go on. You'll be late. {when: !has(e3.carry_b1)}
+nar: He puts his hand on her knee, once, and takes it off. {when: !has(e3.carry_b1)}
+alt: e4.carry.davey.b2 ? has(e3.carry_b1)
+go: e4.board
+
+@node e4.carry.davey.b2
+cost: 0
+do: set(e4.carry_b2)
+go: e4.board
+
+@node e4.carry.davey.go
+place: q4_brack_flat
+speaker: DAVEY
+cost: 0
+line: ANN: Tell me tonight. I'll come round after.
+line: DAVEY: Tonight, then.
+nar: She kisses him on the top of the head where it's thin. He doesn't look up from the pill box. When she's on the stairs he says something else, quietly, to the room, and she doesn't go back up to hear it.
+go: e4.board
+
+# ---------------------------------------------------------------- e4.s04, the bank's board and the walk (fate f.e4_map, VICTOR decides)
+# The sale is a show of hands round the table. The credit rule is not a map shaded on an easel: Victor walks it with a
+# can of grey road paint and sprays the kerb of the street the bank gives up on, in front of the people who live there.
+# Ruth decides by where she walks; Ann by whether she moves Anzo out of the road (weighted-devices pass, 2026-10-23).
+@node e4.board
+cost: 0
+do: set(e4.board_sat); pressure(f.e4_map)
+alt: e4.board.steps ? q_class == militia
+go: e4.board.room
+
+@node e4.board.room
+place: q4_board
+speaker: SELL
+cost: 0
+nar: The bank's boardroom is on the first floor over the counter, with three tall windows on the square. A long table, very polished, so the people round it show in it upside down. Coffee in a silver pot. A plate of biscuits nobody has touched, and a jug of water with a slice of lemon in it going pale.
+nar: By the middle window there's an easel with nothing on it, where they used to stand the town map for meetings. On its ledge stands a can of road paint, the spray kind the council's men use to ring a hole in the road. Grey. Halvard's surveyor brought it in at eight and put it there and went to wait in the car, and it has left a grey ring on the ledge.
+nar: Victor Orme at the head of the table, in his great-grandfather's chair, which has the Orme sheaf carved on its back. Fifty, very tidy, a man who has never once been late. Irene Mott at his elbow. Paul Ashby by the door, who will tell the Gazette what the board did in time for the evening edition. Arvid Sell from Halvard at the other end, with nothing in front of him at all.
+line: SELL: Your mill makes flour for one plain. We make it for four countries at half the price, and your own wives buy ours on a Saturday. I'll pay you for the building. I'll pay your men to the end of the month.
+line: VICTOR: And then.
+line: SELL: And then they'll buy our flour with something else.
+nar: Nobody laughs. Sell didn't mean it to be funny. He pours himself water and doesn't drink it.
+line: SELL: I've closed nine of these. I closed one in the Sund where my father worked. I stood in the yard after and a man I'd been to school with spat on my car. I'd do it again. The flour's better. It's cheaper. People eat it.
+line: VICTOR: Mrs Furrowe. You've been through it all.
+nar: Ruth stands up. She has the audit in her hands and she doesn't open it. She knows it.
+go: e4.board.audit
+
+@node e4.board.audit
+place: q4_board
+speaker: RUTH
+cost: 0
+line: RUTH: The plant hasn't paid since the year the race silted. It's been carried by the bank since. Carried by you.
+line: VICTOR: Say it plainly.
+line: RUTH: It never paid, Mr Orme. It's never paid in my lifetime. The men have been paid out of the bank's other business for fifteen years.
+voice: sum: Two hundred men. You've walked past every one of them at the gate this fortnight. Some of them said good morning. {dc: 3}
+nar: Victor nods. He knew. Everybody at the table knew. It's only that now it's said, out loud, in this room, by somebody who's paid to say it.
+line: VICTOR: Those for the sale.
+nar: The hands go up round the table, one at a time, and in the polish under them their hands go down to meet them, upside down. Victor's goes up last. He keeps it up longer than he needs to, looking at it, as if it were somebody else's. {sense: e4.hands.up}
+line: IRENE: Carried, Mr Orme.
+line: SELL: Thank you. Now the streets. My people want the credit rule from the new year. No lending on a street the bank won't see its money back from. They've done Haldane Yard. They want one more.
+line: VICTOR: I'll not do it off a map, Arvid. If I'm doing it I'll walk it.
+line: SELL: Walk it, then. You know the town.
+nar: Victor gets up and takes the can off the easel himself. The ball inside it rattles, loud in the room. He looks down the table at her. {sense: e4.can.rattle}
+line: VICTOR: Mrs Furrowe. You grew up here. You'll walk it with me.
+go: e4.walk
+
+@node e4.board.steps
+place: q4_board
+speaker: DALE
+cost: 0
+nar: The bank's front steps, on the square, under the three tall windows of the boardroom. The picket has come up from the mill with Dale's placards and shouts what's on them at the windows, over and over, and the rain has made the red run.
+line: GARY: Save Orme's! Save our town!
+nar: Ann and Pryce are on the steps, between the picket and the doors. The bank's cars are parked on the cobbles with their drivers in them, smoking with the windows down an inch.
+nar: From the top step Ann can see in at the middle window, the tops of their heads round the long table. She sees the hands go up. One, and another, and the last one slow. Down on the cobbles the picket can't see it. She can. {sense: e4.hands.up}
+voice: grip: You saw it. They'll know by four o'clock. Let them have till four. {dc: 2}
+voice: ballast: Nobody up the steps. That's the order. Pryce is looking at you. {dc: 3}
+nar: The doors open. Victor Orme comes out with Sell, and behind them a man in a donkey jacket with a can of grey road paint, shaking it as he walks, so the ball inside rattles. Then the auditor, Pell Furrowe's girl, with her case. {sense: e4.can.rattle}
+line: VICTOR: We're walking it, Constable. Down the Row and back up. You'll keep your lads off us.
+line: DALE: Walking what? Ann. Walking what?
+nar: Pryce puts his helmet straight and goes down the steps in front of them. The picket opens to let them through and closes behind them and follows, with the placards down, at the distance you follow a hearse.
+go: e4.walk
+
+# ---------------------------------------------------------------- the walk: down the hill to the Row
+@node e4.walk
+place: q4_row
+speaker: VICTOR
+cost: 0
+do: set(e4.lights_out)
+nar: They go down the hill. Past the bottom of Exchange Street, past the arch of Haldane Yard, where there's a stripe of grey across the cobbles under the arch, sprayed last week. The kids coming home from school have scuffed it with their heels and it hasn't come off. Victor walks fast, in his good shoes, in the middle of the road.
+nar: The Row. Ten houses by the race, back to back with the mill wall. The front steps are scrubbed and whitened with a stone, every one, the way the old Tarn women used to do theirs. There's washing across the backs, a smell of onions and something sweet, cloves, and a radio somewhere playing the Vell music, a woman's voice and a stringed thing.
+nar: Outside number six there's a little van with the Electricity Board's lightning on its side. As they come up a man in a brown coat comes out of the door with a white china fuse in his hand, and puts it in his pocket, and gets in the van.
+nar: In the doorway behind him there's a boy of four in his coat and hat. Indoors. Teo. The hall behind him has gone dark, and the radio has stopped, and his breath shows. {sense: e4.lights.off}
+nar: Anzo Velek is on the step of number six with a broom. He watches the van go. Then he sees the men in good coats, and the can, and the constable, and the picket behind with its placards. He stops sweeping.
+line: SELL: This is it, then.
+line: VICTOR: This. Or the top end of Exchange Street. One or the other.
+alt: e4.walk.ann ? q_class == militia
+go: e4.walk.ruth
+
+@node e4.walk.ruth
+place: q4_row
+speaker: VICTOR
+cost: 0
+nar: On the kerb at the end of the Row, by the drain, there's a grey dot already. A squirt the size of a coin, dry. Somebody tried the can here this morning, before the board sat down.
+nar: Victor turns round in the road. From the end of the Row you can see right up the hill, all of Exchange Street going up to the bank, and at the top the old Tarn houses with their trees. The fourth one up, with the pear tree, is her father's. He's out on his front step with his steel tape, measuring something on the doorframe the way he does, and he's stopped, and he's looking down the hill at her.
+line: VICTOR: You grew up up there. You know both. I'll go where you go, Mrs Furrowe. Then I'll not have done it on my own.
+voice: pride: Your father's house. Nan's room. Nobody'd lend on it again. It'd be worth what it weighs. {dc: 2}
+voice: smallprint: It's the Company's grain. It was never ours to give. {dc: 2, self: e4.sl.barn}
+voice: condolence: The boy's in the doorway in his hat. Indoors. {dc: 3}
+opt: "Stay where you are, on the Row's kerb. Look at the ground." -> e4.map.decide {do: set(said.e4_ruth_west)}
+opt: "Walk back up the hill to your father's gate. Don't look round." -> e4.map.decide {do: set(said.e4_ruth_row)}
+
+@node e4.walk.ann
+place: q4_row
+speaker: ANZO
+cost: 0
+nar: The surveyor shakes the can. He steps off the kerb at the end of the Row, by the drain, where there's a grey dot already, a squirt the size of a coin, dry, from this morning, and he bends to it. {sense: e4.can.rattle}
+nar: Anzo Velek comes down off his step with the broom and stands in the road in front of him. In his slippers. He holds the broom across himself in both hands, the way he held the birdcage on the platform.
+line: ANZO: Please. We pay. Every week we pay. Look. Look at the step.
+nar: Pryce says, without turning his head, move him, Brack.
+line: DALE: Ann. Don't you dare. Not him before us.
+voice: smell: Cloves. Always cloves off them. They're cooking something down there all night. {dc: 2}
+voice: ballast: Move him. That's the job. Pryce is waiting. {dc: 3}
+voice: grip: His arm'll be nothing in your hand. A bone in a sleeve. {dc: 3}
+opt: "Take his arm. Walk him back to his step." -> e4.map.decide
+opt: "Go and stand in the road beside him." -> e4.map.decide {do: set(said.e4_ann_anzo)}
+
+# ---------------------------------------------------------------- fate f.e4_map: Victor decides, with the can
+@node e4.map.decide
+cost: 0
+alt: e4.map.west ? has(said.e4_ruth_row) | has(said.e4_ann_anzo)
+go: e4.map.row
+
+@node e4.map.row
+place: q4_row
+speaker: VICTOR
+cost: 0
+do: set(e4.map_row); fate(f.e4_map, anzo)
+nar: Ann takes his arm. It's nothing in her hand, a bone in a sleeve, and he lets her. She walks him back to his step and he goes up onto it backwards, facing them, holding the broom. {when: q_class == militia, sense: e4.arm.thin}
+nar: Ruth stays on the kerb. She looks at the ground, at the whitened step of number six, at the grey dot by the drain. Up the hill her father goes in and shuts his door. {when: q_class == inspector}
+line: VICTOR: They can't keep the lights on, Arvid. We'll not lend down here.
+nar: He holds his hand out and the surveyor gives him the can. He shakes it himself, which he doesn't need to do, and bends in his good coat, and sprays a stripe along the kerb at the end of the Row, from the drain to the lamp post. It hisses. It goes on dark and wet and dries lighter, and the smell of it comes up off the stones, sweet and chemical. {sense: e4.can.spray}
+line: SELL: Good. That's sensible.
+line: PAUL: Certain areas, I'll put. Nobody wants street names in the paper.
+nar: Teo comes out of the doorway and down the step to look at the wet grey line, and Anzo drops the broom and picks him up before he can touch it.
+voice: smallprint: You didn't say anything. You stood still. It was him that sprayed it. {dc: 2, when: q_class == inspector}
+voice: smell: Paint. Wet road paint, and the cloves, and the race. {dc: 3, when: q_class == militia}
+go: e4.inner.barn
+
+@node e4.map.west
+cost: 0
+do: set(e4.map_west)
+alt: e4.map.west.ann ? q_class == militia
+go: e4.map.west.ruth
+
+@node e4.map.west.ruth
+place: q4_exchange_street
+speaker: VICTOR
+cost: 0
+nar: Ruth walks. Up the hill, past the arch, past the bank, in her flat shoes, and she doesn't look round. She can hear them behind her, Victor's good shoes and the surveyor's boots and the ball in the can going every few steps. She stops at her father's gate.
+nar: Pell is on the step with the steel tape still out in his hand, a yard of it, wavering.
+line: VICTOR: Your father's?
+line: RUTH: Yes.
+line: VICTOR: Right.
+nar: He holds his hand out for the can, and shakes it, and bends, and sprays a stripe along the kerb outside the old Tarn houses, under the pear tree, past his own shoes. It hisses. It goes on dark and dries lighter. {sense: e4.can.spray}
+nar: Pell watches it go on from his step. He doesn't come down. He lets the tape go back into its case, all of it, and it goes in with a snap. {sense: e4.tape.snap}
+line: SELL: It's your town.
+line: VICTOR: It is.
+voice: pride: Your father's step. Nan's room. You walked them up here. {dc: 2}
+go: e4.inner.barn
+
+@node e4.map.west.ann
+place: q4_row
+speaker: VICTOR
+cost: 0
+nar: Ann walks down off the kerb and stands next to the old man in the road. She doesn't say anything. She puts her hands behind her back. Behind her she hears Pryce breathe out through his nose.
+nar: Victor looks at the two of them a long time, the constable and the old man with the broom, and the picket behind them with Dale at the front of it, and the boy in the doorway in his hat.
+line: VICTOR: Not here. Not with the whole street on its steps. The top end, then.
+line: SELL: It's your town.
+line: VICTOR: It is.
+nar: He turns round and goes back up the hill, with the can, and they all go up after him, and Ann stays where she is. A long way up she can hear it, the hiss, and then a man's voice, and then nothing. {sense: e4.can.spray}
+nar: Anzo says something in the Vell and goes in, and comes out again with a glass of tea for her, in a brass holder, very sweet, and stands there in his slippers while she drinks it.
+voice: ballast: You'll get a word from the sergeant about this. Pryce'll see to that. {dc: 3}
+go: e4.inner.barn
+
+# ---------------------------------------------------------------- e4.n1, the inner arena: the night after the board (The Long Barn returns for Ruth)
+# Plays when COWARDICE's line on the walk (e4.sl.barn) was heard; otherwise the last shift follows.
+@node e4.inner.barn
+cost: 0
+do: inner(barn, e4.shift)
+go: e4.shift

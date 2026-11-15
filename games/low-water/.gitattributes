@@ -1,0 +1,6 @@
+# Files compared byte for byte by the combat tests (the moves golden, the deterministic-maths golden, the inner
+# fights' traces and their measure): checked out exactly as committed, never with Windows line endings.
+game/engine/combat/tests/*.golden.json -text
+game/engine/combat/tests/*-golden.json -text
+game/engine/combat/tests/traces-inner/** -text
+game/engine/combat/tests/innerduel.json -text

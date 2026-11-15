@@ -22,7 +22,7 @@ export function fill(text, scope) {
   return String(text).replace(/\{\{(.+?)\}\}/g, (_, src) => {
     try {
       const v = evaluate(compile(src), scope);
-      if (/^\s*(clock|hour|time)\s*$/.test(src)) { const c = Math.floor(+v || 0); return `${String(Math.floor(c / 60) % 24).padStart(2, "0")}:${String(c % 60).padStart(2, "0")}`; }
+      if (/^\s*(clock|hour|time|[\w.]+\.at)\s*$/.test(src)) { const c = Math.floor(+v || 0); return `${String(Math.floor(c / 60) % 24).padStart(2, "0")}:${String(c % 60).padStart(2, "0")}`; }
       return typeof v === "number" ? (Number.isInteger(v) ? String(v) : v.toFixed(2)) : String(v ?? ""); }
     catch (e) { console.warn(`text: could not fill {{${src}}}: ${e.message}`); return `{{${src}}}`; }
   });

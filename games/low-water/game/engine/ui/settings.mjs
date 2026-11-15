@@ -18,14 +18,17 @@ function rows(ctx) {
   return [
     { sect: "Reading", label: "Text size", help: "Size of every word in the interface", value: () => p.textSize, step: (d) => { p.textSize = cycle(Object.keys(TEXT_SIZES), p.textSize, d); } },
     { sect: "Reading", label: "High-contrast dialogue", help: "Solid paper and darker ink behind conversations", value: () => onoff(p.contrast), step: () => { p.contrast = !p.contrast; } },
+    { sect: "Reading", label: "Plain text", help: "Clean type and clean paper in place of the lettering and the aged pages", value: () => onoff(p.plainText), step: () => { p.plainText = !p.plainText; } }, // ux: the art lead's lettering and paper off
     { sect: "Reading", label: "Reduced motion", help: "No fades or slides", value: () => onoff(p.calm), step: () => { p.calm = !p.calm; } },
+    { sect: "Reading", label: "Close looks", help: "When you look at a thing, the camera comes in slowly on it before the words; any key skips it. Never with reduced motion", value: () => onoff(p.closeLooks !== false), step: () => { p.closeLooks = p.closeLooks === false; } }, // gameplay: ui/examinecam.mjs
     // ux: interface scale, shake, rumble, pause on focus loss (UI-SYSTEM section 9)
     { sect: "Reading", label: "Interface scale", help: "Size of every panel, apart from the text size", value: () => `${Math.round((p.uiScale || 1) * 100)} percent`, step: (d) => { p.uiScale = cycle(UI_SCALES, p.uiScale || 1, d); } },
     { sect: "Reading", label: "Portraits in conversation", help: "The painted face of whoever is speaking, at the top of the talk panel", value: () => onoff(p.portraits !== false), step: () => { p.portraits = p.portraits === false; } },
-    { sect: "Feel", label: "Camera shake", help: "How the camera answers a blow in a fight: full, reduced, or off. Exploring and talking always keep a calm camera", value: () => ({ on: "full", light: "reduced", off: "off" }[p.shake] || p.shake), step: (d) => { p.shake = cycle(SHAKES, p.shake, d); } },
-    { sect: "Feel", label: "Controller rumble", help: "The pad answers blows, blocks and catches", value: () => onoff(p.rumble), step: () => { p.rumble = !p.rumble; } },
+    { sect: "Feel", label: "Camera shake", help: "How the screen answers a blow in a fight, or the weight of a moment in a scene: full, reduced, or off", value: () => ({ on: "full", light: "reduced", off: "off" }[p.shake] || p.shake), step: (d) => { p.shake = cycle(SHAKES, p.shake, d); } },
+    { sect: "Feel", label: "Controller rumble", help: "The pad answers blows, blocks and catches, and what your hands hold and carry", value: () => onoff(p.rumble), step: () => { p.rumble = !p.rumble; } },
     { sect: "Feel", label: "Pause when the window loses focus", help: "Fights and runs stop while you are away", value: () => onoff(p.pauseOnBlur), step: () => { p.pauseOnBlur = !p.pauseOnBlur; } },
-    { sect: "Tide Runs", label: "Tide Runs", help: "Off: the story takes another way round each run", value: () => onoff(!p.runsOff), step: () => { p.runsOff = !p.runsOff; } },
+    // no Tide Runs row in a story with none (the Quota: no tide wording, 2026-10-23)
+    ...(ctx.content && ctx.content.runs && !Object.keys(ctx.content.runs).length ? [] : [{ sect: "Tide Runs", label: "Tide Runs", help: "Off: the story takes another way round each run", value: () => onoff(!p.runsOff), step: () => { p.runsOff = !p.runsOff; } }]),
     { sect: "Accessibility", label: "Pace of scenes", help: "Full speed (the default), half speed, or stepped: one step per press, and the world waits between steps", value: () => p.runMode, step: (d) => { p.runMode = cycle(RUN_MODES, p.runMode, d); } },
     ...lens,
     ...controlRows(),

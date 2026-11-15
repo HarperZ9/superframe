@@ -480,3 +480,325 @@ Next, in order:
 5. Held for the art director's direction: new bodies, Keel's eyes and skin.
 Never edit a runtime file while a capture runs (the server reads the working tree). Beware `//` comments
 inside one-line edits: twice they swallowed the rest of a line.
+
+## Head sculptor and distinct heads (2026-10-21)
+
+Brief: every face came from one parametric head with a narrow range, so the cast read as one
+person (Penhallow rebuilt with a pipe and grey hair still had the men's face; Wenna the same head).
+Build ART-DIRECTION 7.1 and give the principals and the named cast their own heads.
+
+**Built** (design/CHARACTERS-ART.md section 7 has the rules):
+- `forge/headkeys.mjs`: every heads.json key and the sculptor's own, each with a natural range and
+  a slider range at least twice as wide; `validateHead` (a sheet without neck, collar or idea fails).
+- `forge/headshapes.mjs`, `forge/hair.mjs`, `forge/headpaint.mjs`, `forge/detail.mjs`: the head,
+  sculpted hair and beards, paint zones, displacement layers per LOD with the alias limit (mesh: four
+  cells a period; screen: three pixels at the LOD's top scale; layers above it are dropped and
+  reported). Head cells: near 3 mm, mid 7 mm, far 16 mm.
+- `forge/ellipsoid.mjs`: exact ellipsoid distance (Eberly), used inside a band round the surface;
+  `forge/mesher.mjs`: a narrow-band polygoniser with per-shape bounding spheres.
+- `forge/heads.mjs`: builds a sheet into a cast member (crown at the body's head length, neck run
+  into the collar, the sculptor's collars: standing, wing, muffler, band), leaves face anchors
+  (`M.headAnchors`) so `cast/face.mjs` puts pipes in mouths and spectacles on eyes.
+- `forge/heads.cast.mjs`: 36 sheets, one idea each ("a brick", "a long thin candle", "a horse").
+  Keel, Lamb and Sabine start from the director's records, copied unchanged (`heads.director.mjs`,
+  tested against heads.json; `forge/director_sync.mjs` recopies).
+- `forge/maps.mjs`, `forge/bakeheads.mjs`: .lwmesh at three LODs with curvature, thickness (capped
+  at 5 cm) and cavity per vertex in the same file (`meshio.mjs` reads files without maps as
+  before), read off the exact distance to the baked mesh; `forged/heads/report.json` has counts,
+  timings and map quantiles. `proto/heads_maps.mjs <who> <lod> <out>` draws the maps.
+- Expression sliders (`forge/headshapes.mjs` EXPR_SLIDERS: brow, browInner, lids, corners, jaw) on
+  top of the four presets; `setExpression` takes a preset name or an object.
+- A pose library with ground contact (`proto/poses.mjs`, `proto/pose_sheet.mjs`): stand, talk,
+  examine, seated on a bollard (0.45 m), a chair, a bench, through the game's own seat fit.
+- Portrait light (`proto/portrait_light.mjs`): warm key on cool grey, after the author's reference.
+
+**Blind test** (`heads-test/PROTOCOL.md`, committed at f8afe21 before any head existed; amendment 1
+at 4abfd2d after the control and before any new-head result; R2 frozen at 96f12d7 with file hashes
+in `heads-test/results/R2-freeze.json`). Viewers: fresh agents given only the images and the
+descriptions, three per round and task set, never reused. Results in `heads-test/results/`.
+
+| Round | Heads | A same/different (head only) | B face to description | C portrait to description | A2 face core | D people in six |
+|---|---|---|---|---|---|---|
+| R0 / R0b control | old (63a61b5) | 67/72, 0.93 (0.85 to 0.97) | 25/36, 0.69 | 22/24, 0.92 | 60/72, 0.83 (0.73 to 0.90) | 0.78 of 6 (0.73 to 0.83) |
+| R1 development | new | 69/72, 0.96 | 30/36, 0.83 | 24/24 | 70/72, 0.97 | 0.99 of 6 |
+| R2 confirmation | frozen | 69/72, 0.96 (0.89 to 0.99) | 27/36, 0.75 (0.59 to 0.86) | 20/24, 0.83 (0.64 to 0.93) | 72/72, 1.00 (0.95 to 1.00) | 0.97 of 6 (0.93 to 1.00) |
+
+Intervals are Wilson 95 percent, except D (a t interval over twelve grids). Chance in B and C is
+0.2. R2 passes every pass line, and D's interval sits clear of the control's.
+
+What it shows and what it does not: the control passed the brief's own tasks A to C, so those tasks
+do not measure the face (viewers used neck, hair, beards, skin colour and costume); the claim rests
+on A2 and D, where the old heads were told apart 83 percent of the time and counted as 4.7 people in
+six, against 100 percent and 5.8 for the new ones. The viewers are models of the builder's family,
+three a round; one camera angle; the R2 face crops hold the long necks (the head-part box) so the new
+faces sit smaller in them than the old, and the face cores are sized to eye spacing, which gave the
+old heads a wider crop. Both differences work against the new heads. Per-item misses in R2: Pellow
+and Pip across expressions, Spratt taken for Teague; in B, the children (Tobit, Gill, Dilly) and
+Cockle were the usual misses. Two D grids scored 5, both with Penhallow and a thin beard edge that
+viewers read as a strap across the face.
+
+**Sizes** (stills: `game/capture/heads-2026-10-21/`, honest crops, nothing sharpened):
+before-after-512.png (baked size), before-after-panel720.png (the talk panel at 720p, 161 x 201),
+before/after-panel1080.png, before-after-play70.png and play105.png (play size, 70 and 105 px a
+metre, the plate camera), before/after-portraits.png, expression-sliders.png, wenna-poses.png. The
+play-size figures are rendered through the portrait path at the game's measured scale, not captured
+in the running game.
+
+**Costs.** Far builds for all 36 people: 1.9 s in Node against 1.0 s for the old heads; mean far head
+1.7 times the triangles (8.3k against 4.8k). Mid heads take 0.1 to 0.3 s each to sculpt. The near map
+bake is slow (several minutes a head; it runs in six lanes at Idle priority).
+
+**Mistakes, mine.** A stray `git stash` and `git stash pop` on the shared tree (about a second;
+restored cleanly, the stash list is empty, nothing lost as far as `git status` shows). A `//`
+comment in a one-line edit swallowed Tobit's export in cast/folk.mjs; the head tests caught it
+before any commit. The first face-crop rule left the old heads wider crops than the new; recorded
+above, not changed.
+
+**Open.**
+1. The runtime sculpts far heads at load; loading `forged/heads/*.lwmesh` instead needs an async
+   load in the cast path (characters runtime) and was not done.
+2. Hats are placed from the old head radius; none pokes through in the stills, but they are not
+   fitted to the sculpted crania.
+3. Thin beards draw an ink edge across the cheek (Merrow, Pardew) that reads as a strap; Penhallow
+   reads as a woman mainly by her grey hair; long necks show in several panel crops; Wenna's white
+   brows vanish at mid and far LOD (below the cell size, as the alias rule intends).
+4. For the gameplay lead: Wenna seated on a bollard works through the existing `pose: seated` with a
+   seat height (0.45 m in proto/poses.mjs); the mole wiring decides whether she sits.
+5. For the rendering lead: the painter and the wear layer can read the baked maps
+   (curvature, thickness, cavity) from the .lwmesh; nothing reads them yet. For the performance
+   engineer: the far head triangle count above.
+6. No in-game capture of the new heads was taken.
+
+### Review and rework after R2, and R3 (2026-10-21, later)
+
+The coordinator looked at the 512 px sheet: distinct, but several heads read worse than the old ones
+(eyes lost in black sockets, stalk necks, Wenna skull-like, Marrow lumpy, Keel grey, mouths as blobs).
+R2 measured telling people apart, not appeal.
+
+**Done.** Amendment 2 (dff6949, before any rework): an old-against-new appeal task E at panel size
+plus A2 and D again, in R3. Then:
+- `forge/headrules.mjs`: human proportion rules (neck against jaw, eye line, eye size, lid opening,
+  mouth width, lumps, visible neck); a sheet outside them fails unless `exaggerate` names the rule and
+  its reason (Lamb's neck, Fennick's neck, Bright's dome, Lugg's long face, Keel's tiny mouth).
+- `proto/heads_check.mjs`: the render gate, eye white and iris pixels per eye and brow pixels at
+  portrait size (thresholds committed at cff8c84 before the check ran): 36 of 36 pass.
+- Eyes forward with whites, mid irises, catch-lights from the key light; shallow shaded sockets with
+  the opening cleared; flat lips; wider blends; thicker necks; collars for Hobb and Lugg; Wenna,
+  Hobb, Marrow, Keel, Lamb and Gorm reworked; a brighter paraffin key.
+- For the painter: per-vertex curvature and cavity bytes (`vertexMaps(M)`), layout in design/STATE.md.
+- For the performance engineer: built heads cached per person, LOD, expression and proportions and
+  replayed exactly (a second build of the same head, 191 ms to 14 ms for Penhallow's far figure).
+
+**R3 (frozen at 2c84801, seeds 401 to 403 and 421 to 423): appeal FAILS, distinctness holds.**
+
+| Task | R3 | Pass line |
+|---|---|---|
+| E1 real person, new chosen | 8/36, 0.22 (0.12 to 0.38) | lower bound above 0.5 |
+| E2 rather talk to | 8/36, 0.22 (0.12 to 0.38) | lower bound above 0.5 |
+| E3 emotion clearer | 10/36, 0.28 (0.16 to 0.44) | lower bound above 0.5 |
+| A2 face core | 69/72, 0.96 (0.89 to 0.99) | lower bound 0.70: pass |
+| D people in six | 0.97 (0.93 to 1.00) against control 0.73 to 0.83 | pass |
+
+Per person, new chosen: Penhallow 9/9, Marrow 3/3, Orme 3/3; Lugg, Noll, Spratt 0/9; Keel 0/6.
+The viewers named stretched or mushroom-shaped heads, bulging or glowing eyes, long necks, faces hard
+to read at that size; the old heads' bold dark brow bars, big noses and wide warm faces read. My own
+reading of the panel-size sheets agrees: the old heads were about 0.24 m wide against a natural 0.15
+to 0.17 for the new ones, and their few large features survive 161 px while the new heads' finer
+modelling turns to dark smudges. Amendment 3 (abbce23) records R3 as a failure and defines R4.
+
+**Not done: R4.** An exploration toward wider, bolder heads with less relief and a frontal fill
+(`heads-test/explore/after-R3-wider-bolder.patch`) did not beat the old heads by my own eye at panel
+size (faces bigger and brighter, but necks merged into faces and Lugg's face still pinched under his
+cap), so it was not frozen or tested and the working heads are back at the R3 state.
+`forge/heads.mjs` `SCULPTED_HEADS = false` returns every person to the old head in one line; which
+ships is the author's call. Sheets: `game/capture/heads-2026-10-21/before-R2-R3-512.png` and
+`before-R2-R3-panel720.png`, `after-R3-*`.
+
+## The Quota: the slice cast on the old heads (2026-10-21)
+
+Brief (coordinator, relaying the author's "yes" to The Quota; design 5c412bb, design/quota/02-HOUSEHOLDS.md
+and 07-PRODUCTION.md): faces on the old heads for the slice's cast, each with its exaggerated feature;
+a child variant and an old-age variant; era 2 dress, dark wool for the Tarn, felt and the blue wrist
+thread for the Hesh. The game is on the old heads (97da457, `SCULPTED_HEADS = false`); both head
+paths stay working (the sculptor's tests still run against `forge/` directly).
+
+**Built.** `cast/quota.mjs`, twelve members on the old parametric head, each with its idea in
+`info.quota.idea`:
+- Ned Furrowe: the good hat's line, a band of untanned skin across a weathered forehead, the hat in
+  his left hand. Mary: high tight cheekbones over a mouth kept straight, scarf and apron. Abel (era 1,
+  `abel_era1`): the good hat worn proud over a big hooked nose; `abel` is the same record aged to 75
+  (stoop, jowls, white moustache and brows, a stick). Pell: the grandfather's hooked nose arriving
+  early, as a boy of ten (`pell`) and the era 3 surveyor (`pell_adult`).
+- Will Brack: a flushed broken nose over a jaw like a step, stubble, the militia armband.
+- Tomas, Aaron and Anni Haldane, half-Hesh, in felt with the blue thread at the left wrist: Tomas
+  hollow-cheeked with the long braid; Aaron a town crop with the ears standing out of it; Anni at
+  fourteen with wide eyes, the braid and the tally (`anni_adult` is era 3, the same face).
+- The Requisition Captain: a long clean chin and a thin moustache under a grey peaked cap, the cross
+  strap and the requisition order.
+- `ageVariant(spec, age)` with `AGES` (10, 14, 40, 75): one face record at any age.
+- Materials (`rig/materials.mjs`): `wool` 57, `felt` 58, `thread` 59, `hatline` 60. The painter's
+  tables take them as detail by default; the rendering lead may want wool and felt in its cloth flow.
+- `PORTRAIT_CAST=quota` makes `proto/portraits.mjs`, `heads_play.mjs`, `heads_preview.mjs` and the
+  portrait index work on this cast into `characters/portraits-quota/` (Low Water's portraits untouched).
+- Tests: `node proto/quota_test.mjs` 5 of 5 (cast present, builds, dress materials, ages, unique ids).
+
+**Stills:** `game/capture/quota-heads-2026-10-21/`: quota-portraits.png (512 x 640), quota-panel720.png
+and panel1080.png, quota-play.png (70 and 105 px a metre), quota-ages.png (child and old beside the
+adult, baked size and 720p panel).
+
+**Limits, seen in the stills.** The old head gives every woman and child the same heavy brow bar
+(lighter in colour here, still a bar); Tomas and Anni read close at panel size, both braided in felt;
+the hat line reads at portrait size and is gone at play size; the cast is not in the fight drawer's
+`CAST` (the gameplay engineer wires bodies into scenes). No blind test was run on this cast.
+
+**Second pass, after the coordinator's notes (same day).** The shared face, the ages, the necks and the
+women's brows, inside the old head: `head()` takes shape options whose defaults reproduce the old head
+exactly (a hash of all 36 Low Water meshes at near detail is identical before and after): `skull`,
+`faceLen`, `eyes`, `eyeX`, `cheekR`, `browShape` ("bar", "arch", "none"), `browT`, `lines`, `lips`,
+`bulb`. The ages now carry them: a child gets a rounder skull, a shorter face, eyes 1.3 times, fuller
+cheeks, a short soft nose and a thin light arched brow in place of the bar; forty a longer face, a
+heavier jaw, folds and creases; seventy-five as before. Women have an arched brow instead of the bar.
+Each person has their own face shape (Will broad and small-eyed, Tomas long and hollow, Aaron a bulb
+nose and a wide mouth, the Captain the longest face and thinnest lips). Bodies: a yoke rounds the
+shoulder blocks and the collar comes up over the neck at portrait size. Stills rebaked in
+`game/capture/quota-heads-2026-10-21/`. Stopped there, as asked, until the author decides where the
+dialogue portraits come from.
+
+
+### The Quota, third pass: the rest of the speakers, cloth, eyes (2026-10-21)
+
+The author chose our own pipeline with a painting Studio (tools/studio/): these figures are the
+reference and the in-world figures, not the final portraits. Asked for clear form and readable planes.
+- **The rest of the slice's speakers** (`cast/quota2.mjs`, from design/voice/quota-cast.json): Edie Brack
+  (a face held still, the sleeve pulled down), Davey (nine; his father's broken nose already, the
+  shoulders up), Rose (four; her mother's face, small and round), Bet Haldane (a broad face gone thin,
+  scarf), Ilo (Tomas's cheekbones grown broad, grey in the braid), Old Tesk (65, the old-age record on a
+  Hesh face), Lil (her sister Mary's cheekbones, widow's black), Gedge (a bull's neck and an easy grin),
+  Pask (the one soft fed face, spectacles), Walter Mott (a narrow head bent to the ledger). New ages 4
+  and 65. Family likeness is built in: Davey from Edie's record, Ilo from Tomas's face, Lil from Mary's.
+  `ERA_IDS` maps the Studio's `<who>@e<era>` ids to these.
+- **Cloth.** Coats and skirts carry folds that grow toward the hem (`skirt({ folds })` in cast/parts.mjs,
+  off by default), sleeves break at the elbow in two soft rolls, aprons hang flat from the waist with
+  their own folds and strings, belts pinch the waist; the yoke and collar scale down for children.
+- **Eyes.** Adults (16 and over) get an upper-lid plane and a socket recess under the brow (`lidPlane`,
+  `socket` on the old head). Seen at 2.4 times zoom: the lid's shelf and the shadow under the brow read.
+- **Expression sliders on the old head** (brow, browInner, lids, jaw, corners), so moods move the
+  shipped faces; the hair now follows the skull option (children's rounder heads had lost theirs).
+- Every new option defaults to the old head: the 36 Low Water meshes still hash identical
+  (417ac6f6...) after each change.
+- STATE: answered the Studio's note (sitters, ids, the reference camera and light, channels,
+  expressions).
+- Tests: quota 6 of 6, heads 13 of 13, drawer 18 of 18. Stills: `game/capture/quota-heads-2026-10-21/`
+  (quota-portraits, quota-panel720 and 1080, quota-play, quota-ages with the family pairs,
+  quota-cloth-250 at 250 px a metre).
+
+Seen in the stills and not fixed: the cloth is still tubes with folds rather than cloth; women's faces
+share the old head's eyes; the hat line, the thread and the lid plane are gone at play size.
+
+## The Quota: open eyes and the eight moods (2026-10-21 to 22)
+
+The Studio's first portrait showed Ned's lids closing his eyes and the moods barely moving. On the old
+head, opt-in for The Quota's cast only (Low Water's 36 heads hash-identical after every change):
+
+- **Open eyes.** `lidRange`: neutral is open with the iris showing; `face.lids` is the character's
+  heaviness and stops short of closing. Expressions can still close the eye.
+- **Moods that read at portrait size.** `exprGain 1.8` multiplies the expression; brows follow the
+  forehead back as they rise, the inner ends pinch twice as far and the outer ends drop for anger, a smile
+  lifts cheeks and lower lids, a grieving mouth pushes the lower lip up, `corners` move the mouth line.
+- **Eyes that were skin.** A material census found most Quota heads (children, Will, Gedge, Pask, Mary)
+  had no iris or white surface: a wider or deeper skull put its front over the iris, and the cheek's
+  colour claim reached the eyes. lidRange heads now build the eye last, the skull grows backward and
+  yields its claim, the cheek's claim stays near the cheek and the white claims its carve.
+- **Ned**: longer, less round cranium and a firm mouth line. **Will**: lighter lids, no stubble over
+  the mouth, a cranium tall enough that the cap clears the brows.
+- Sheet: `game/capture/quota-heads-2026-10-21/quota-moods-ned-will.png`, made by
+  `proto/mood_sheet.mjs` with the portrait painter's mood mapping. Notes: design/state/sculptor.md.
+
+Seen on the sheet: Ned's eyes are open with whites and irises at neutral and the eight moods differ
+(warm squints, angry pinches, afraid opens eyes and mouth, grieving drops the mouth). Will's eyes now
+show; his brows and mouth move less than Ned's, because the cap's brim sits on his brows. Not fixed: a
+small dark spot beside the nose under the near eye on both (the iris's colour claim leaking onto the
+socket wall), and "lying" reads close to "warm".
+
+Second pass (2026-10-22, the coordinator's notes on the sheet). Will rebuilt: a believable broken nose
+(bent tip, low wide bridge: `noseBend`, `noseFlat`), jaw corners and cheekbones (`jawCorners`,
+`cheekbones`) so the face is not a ball, and the flat cap set back on the crown (`hatLift`) so the brows
+move. A lie is now told by the eyes: `X.held` keeps the smile but drops the cheek and lower-lid lift and
+narrows the lids, so warm crinkles and lying stays flat and open. The dark spot under the near eye was the
+iris's colour claim leaking onto the socket wall; the claim is cut (iris surface below the eye: Ned 51
+triangles to 3 at neutral). On the sheet: Will's moods now differ (brows pinch and lift under the cap,
+the mouth drops and opens), the lie reads apart from warm in the eyes. Ned keeps a speck at the inner
+corner in the lying cell, a few pixels. The held smile itself is slight.
+
+
+### The Quota: Tomas at eleven, Aaron at nine (story lead, 2026-10-22)
+
+Author decision (2026-10-22): Tomas about 11 and Aaron about 9 in era 2. `cast/quota.mjs`: a new age
+record, AGES[11], mixed a quarter of the way from the ten record to the fourteen (mixAge); TOMAS built
+with `at(..., 11)` (1.31 m), braid 0.28, the Orme lad's wool coat over his felt (wear handdown, hem
+0.16, wool legs); AARON with `at(..., 10)` and age 9 (1.24 m), as Davey is, felt coat to the knee.
+Both fall under the maker's child rule (no lid plane or socket under 16). quota_test 6 of 6.
+**Follow-up for the character lead:** portraits-quota/tomas and aaron and glyph-portraits-quota are
+still the old ages. `PORTRAIT_CAST=quota node proto/portraits.mjs 0 1 tomas,aaron` fails in
+render/shade.mjs light() (`.emit` of undefined: a material id with no entry, the same failure design/state/studio.md notes).
+
+
+## Bodies and animation: foot lock, layering, fades, the Quota portraits (2026-10-22)
+
+Author direction (2026-10-22): "The character bodies and animations should be done very well. The mechanics
+must be fluid. Let's push for a completion." Bounds, controls and the results table: notes/ANIM-BOUNDS.md.
+
+- **Foot lock** (runtime/actor.mjs): contact phases from the clip, world-pinned feet with two-bone IK,
+  catch-up steps, clearance for a dragged foot, the standing sole as a floor, slope fitting (`opts.ground`).
+  Worst slide 0.77 cm per planted step over 600 steps for Lamb, Tomas and Aaron (baseline 25.8 cm).
+- **Gait** (anim/gait.mjs): world-at-rest lift-off and landing, inside the leg's reach, walk reach 0.95,
+  drop, lift and bob scaled to the leg (the children walked crouched). Soft reach in rig/ik.mjs.
+- **Fades and layering**: smootherstep weights, the whole-turn choice made once per fade, `playUpper` and
+  combat's `pose.upper` with a spine mask, an additive lean. Fade edges 1.84 deg/frame^2 over 3,432 pairs
+  (baseline 30.4).
+- **Portraits**: render/shade.mjs light() covered ids 1 to 63 only; the people's marks are 64 to 67. All 22
+  Quota portraits and glyph portraits rebaked, Anni last, after bdb4a67 set her inherit.
+- Captures: game/capture/anim-2026-10-22/ (proto/anim_strips.mjs, proto/body_sheet.mjs).
+- Tests: every proto/*_test.mjs passes (14, the new anim_bounds_test among them).
+
+Seen and not fixed: popcheck's pop count rose (162 to 213 frames: faster fade middles and quick catch-up
+steps); a walk stopped dead steps the front foot back to the stand rather than bringing the back foot up
+(the actor stops with no deceleration); Lamb's stick tip passes through the floor in the turn and late in
+the walk; the hit reaction at power 0.8 from a heavy tool throws the head back about 45 degrees; aprons'
+ties read as a rigid bar in side view; Rose's legs are short for four. Combat does not send `pose.upper`.
+
+
+## Bodies: the fidelity pass (2026-10-22)
+
+The coordinator's review under the author's approval ("All actions and blockers approved"). Results, what is
+still not good enough and a resume list: notes/FIDELITY.md. Aprons draped and tied, coats and dresses fitted to
+the thighs with weighted hems, a waist and chest, hands sized from the body with fingers, Quota noses 55 %
+shorter, Rose's legs, children upright, the smear an arc without gaps, the stick kept out of the floor (114 to 7
+frames of 400), the strike's arm back to the walk sooner, the hit reaction toned down. Every proto/*_test.mjs
+passes. Not good enough yet: the faces (a sculpt pass), cloth without collision, the smear's look, the portraits
+not rebaked after the nose change.
+
+
+## The Quota's heads sculpted, and cloth kept off the legs (2026-10-22)
+
+Author direction (2026-10-22): "The character bodies and animations should be done very well." The
+coordinator's verdict on the old head: balls with features painted on, goggle eyes, pink cheek discs, smeared
+lips, large ears, a flat cap of hair, faces that fall apart in three-quarter and profile.
+
+- Bounds first (notes/HEAD-BOUNDS.md, committed before the code), controls on the old head.
+- **The head** (cast/sculpt.mjs, sculpt_face.mjs, sculpt_hair.mjs): Loomis's ball with side and temple planes,
+  brow ridge, carved orbits with an outer rim, cheekbones and arches, muzzle, ramus, jaw angle, masseter,
+  chin, the nose's planes and wings, philtrum, lips and corners, ears on the side plane, the neck into the
+  skull. Eyes meshed exactly about the gaze inside lids with thickness; a wet highlight (material iris).
+  One skin with the painter's three zones as a vertex tint; the hat line and Will's scar painted in. Hair and
+  headscarves grown off the skin above a hairline. People, age and sex vary it; a push from the cast's centre.
+- **Cloth** (rig/body.mjs): coats and dresses pushed outside the legs after skinning; 0.0 to 3.2 vertices a
+  frame for every cast member (the Captain was 26).
+- Results: 5 of 22 heads pass every head bound (old head: none); goggles and the missing highlight gone for
+  all 22; distinctness fails (median 0.021 H, bound 0.03). Low Water's 36 meshes hash unchanged.
+- Rebaked: the Quota portraits (characters/portraits-quota/) and glyph portraits (glyph-portraits-quota/).
+- Captures: game/capture/sculpt-2026-10-22/before and after. Tests: every proto/*_test.mjs passes.
+
+Seen and not fixed: sockets and under-cheek planes fall to the darkest band (bruised faces at play size),
+children's lower faces in shadow with pale nubs at the mouth corners, hair a helmet, the cast too alike.
+Resume list: notes/FIDELITY.md.

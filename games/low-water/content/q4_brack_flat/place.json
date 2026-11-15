@@ -1,0 +1,156 @@
+{
+ "place": "q4_brack_flat",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   0.9,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.1707317073170733
+ },
+ "pxPerMetre": 205,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 22.2,
+   "weather": "year 70, 22:10: the street's sodium up through the glass, the bulb low"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  116
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "chair",
+    "verb": "talk",
+    "at": [
+     0.9,
+     0,
+     1.4
+    ],
+    "note": "Davey's chair: turned to the set, the bottles where his hand falls"
+   },
+   {
+    "verb": "look",
+    "id": "wedding_photo",
+    "at": [
+     1.2,
+     0,
+     -0.9
+    ],
+    "note": "Will and Edie's wedding in a new frame"
+   },
+   {
+    "verb": "look",
+    "id": "flood_photo",
+    "at": [
+     -0.9,
+     0,
+     -0.8
+    ],
+    "note": "a photograph of the Crown with water to its sills"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "stair",
+    "at": [
+     2,
+     0,
+     1.4
+    ],
+    "note": "the stair down past the Crown's back door"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     0.2,
+     1.87,
+     0.2
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -2.1,
+     1,
+     -0.4
+    ],
+    "kind": "sodium",
+    "I": 14,
+    "reach": 8,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "night": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: Davey Brack's flat over the Crown."
+}

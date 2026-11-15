@@ -1,0 +1,932 @@
+# Era 5, The Clearance: places, people, households, fates, self-lies, lore and the clearance fight. Year 115,
+# forty-five winters after era 4: three weeks in spring. Danil Saro is dead under a sergeant's knee before the era
+# opens; the council votes to clear the Upper Town for the ring road; Haldane Yard is cleared or stood down; the
+# archive opens; the town commemorates "the hard winter"; the table stands in an antique shop's window.
+# Story lead, 2026-10-23. DRAFT: every line in era 5 waits for the author's line approval (ledger row S14).
+# Design: design/eras/era5.md; design/spine-plan/DECISIONS-2026-10-22.md (era questions 4 and 5).
+# Two classes play it: the Inspector line is Tom Furrowe (33), the council's housing inspector, Nan's son; the
+# Militia line is Sergeant Leon Brack (40), Ann's son, the man in the clip.
+# Files: e5_world (this), e5_town (s01 to s05), e5_vote (s06 to s10), e5_day (s11 to s14), e5_end (s15, s16 and the
+# witness that is a table), e5_week (the viewing room, after the tea, the funeral, the panel or the interview, the
+# packing, the other doors, the ceremony). The era 4 to 5 link is the single alt in e4_witness.lwd (e4.w.mira.next goes to
+# e5.start); era 4's e4.end is removed; the game ends at e5.end (q.end).
+# Plates: the seventeen q5_* places are areas on their own plates (plates agent, 2026-10-23; render/places/q5_*.mjs,
+# game/engine/wiring/era5-areas.lwd), with April's hours and weather on the HUD (@meta hud-held, var.era == 5). The
+# clip plays inside the phone's frame (e5.clip.stop, camera: phone; game/engine/ui/phoneframe.mjs).
+# Not built here: the inner arena fights (Everybody Says for both lines, Order for Leon, the Descent and the
+# Adversary; the self-lies below arm them), the q5_haldane_yard arena and a bailiff boss pattern (e.e5_door borrows
+# the granary's ground and the captain). Built since (2026-10-23): tools/endingcheck.mjs, one harness route per class
+# and movement (tools/quota/policy.mjs; the movement is a plain choice in e5.move), and era5.md section 7's props as
+# @prop (the new ones at the end of this file; the five that persist stand at their era 5 places by in:, q_props.lwd).
+# Weighted-devices pass, 2026-10-23 (design/device-audit/era5.md): the senses, the echoes that show each era 5 fate, the
+# cap on the Brack kitchen's nail are at the end; the voices that carry posts (LAD, LEAGUE, PHONE, NEIGHBOUR) are with the people.
+
+# ---------------------------------------------------------------- places new in era 5 (no plates yet)
+@place q5_tower
+name: The phone mast where the bell hung
+zone: upper
+district: upper
+footing: stone
+shelter: no
+light: 0.4
+sodium: 1
+dark-light: 0.05
+
+@place q5_mill_street
+name: Mill Street at night, under sodium
+zone: lower
+district: mill
+footing: stone
+shelter: no
+light: 0.3
+sodium: 1
+dark-light: 0.05
+
+@place q5_furrowe_kitchen
+name: Nan Furrowe's kitchen
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q5_brack_kitchen
+name: Leon Brack's kitchen on the far-bank estate
+zone: lower
+district: mill
+footing: wood
+shelter: yes
+stove: yes
+light: 0.4
+sodium: 1
+dark-light: 0.05
+
+@place q5_channel
+name: Ellie Ashby's spare room, the ring light
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.7
+sodium: 1
+dark-light: 0.05
+
+@place q5_saro_flat
+name: The Saros' flat over the shop
+zone: lower
+district: mill
+footing: wood
+shelter: yes
+stove: yes
+light: 0.3
+sodium: 1
+dark-light: 0.03
+
+@place q5_mara_flat
+name: Mara's flat in Haldane Yard
+zone: lower
+district: mill
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q5_mortuary
+name: The room behind the mortuary
+zone: upper
+district: upper
+footing: stone
+shelter: yes
+light: 0.7
+sodium: 1
+dark-light: 0.05
+
+@place q5_council
+name: The council chamber and the public gallery
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.6
+sodium: 1
+dark-light: 0.05
+
+@place q5_haldane_yard
+name: Haldane Yard, the van, the tape, the door
+zone: lower
+district: mill
+footing: stone
+shelter: no
+light: 0.4
+sodium: 1
+dark-light: 0.05
+
+@place q5_archive
+name: The archive in the old district office
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q5_square
+name: Exchange Square, the bronze sheaf
+zone: upper
+district: upper
+footing: stone
+shelter: no
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q5_well_house
+name: The Well House, windows meshed
+zone: lower
+district: mill
+footing: stone
+shelter: yes
+light: 0.3
+sodium: 1
+dark-light: 0.03
+
+@place q5_ring_verge
+name: The ring road verge over the burial ground
+zone: upper
+district: upper
+footing: stone
+shelter: no
+light: 0.2
+sodium: 1
+dark-light: 0.03
+
+@place q5_shop
+name: Hartley's window on the hill
+zone: upper
+district: upper
+footing: stone
+shelter: no
+light: 0.5
+sodium: 1
+dark-light: 0.05
+
+@place q5_police
+name: Headquarters, the fourth-floor corridor
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.6
+sodium: 1
+dark-light: 0.05
+
+@place q5_syndicate
+name: The syndicate's office, the model of the road
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.6
+sodium: 1
+dark-light: 0.05
+
+# ---------------------------------------------------------------- the two players' sheets
+@archetype e5.tom
+name: Tom Furrowe
+about: Housing inspector for the council. Nan's son, Pell's great-grandson. He wrote the blight survey of the Upper Town in January.
+attr: pen 3
+attr: coat 2
+attr: hat 2
+attr: nose 2
+skill: sum 3
+skill: precedent 2
+skill: smallprint 2
+skill: carbon 1
+skill: condolence 2
+skill: chit 1
+skill: formletter 1
+skill: pride 1
+
+@archetype e5.leon
+name: Leon Brack
+about: Sergeant. Ann's son, Davey's grandson, Will's great-grandson. Nights on the Mill Street van. His knee is in the clip.
+attr: pen 2
+attr: coat 3
+attr: hat 2
+attr: nose 2
+skill: knees 2
+skill: ballast 3
+skill: pride 2
+skill: grip 2
+skill: salt 1
+skill: smell 2
+item: c.q_greatcoat 1
+item: c.q_cap 1
+
+# ---------------------------------------------------------------- people new in era 5
+@char e5.tom_c
+name: Tom Furrowe, housing inspector
+speaker: TOM
+faction: district
+about: Thirty-three. Divorced, back at his mother's. A lanyard, a clipboard and a damp meter that beeps. Says well when he wants time.
+
+@char e5.kit
+name: Kit Furrowe
+speaker: KIT
+faction: district
+about: Fifteen. Tom's daughter. Was in Ryan Haldane's form. Ines Saro sits behind her in Geography.
+
+@char e5.jo
+name: Jo Furrowe
+speaker: JO
+faction: district
+about: Thirty-six. Tom's sister. A nurse on nights at the General. Was on the ward when they brought Danil up.
+
+@char e5.leon_c
+name: Sergeant Leon Brack
+speaker: LEON
+faction: district
+about: Forty. Big, a knee that clicks, a wedding photograph with a crack in the glass. Says right before he does a thing.
+
+@char e5.shaw
+name: PC Shaw
+speaker: SHAW
+faction: district
+about: Twenty-six. Leon's constable on the van. Says Sarge as a question.
+
+@char e5.hale
+name: Chief Inspector Hale
+speaker: HALE
+faction: district
+about: Fifty-two. A runner. A plant on his windowsill somebody else waters. Thinks in how things read.
+
+@char e5.mara
+name: Mara Haldane
+speaker: MARA
+faction: hesh
+about: Twenty-seven. Joss's granddaughter. The tenants' committee, a laminated lanyard, a spreadsheet of every call about the gutter.
+
+@char e5.kev
+name: Kev Haldane
+speaker: KEV
+faction: district
+about: Forty-six. Lew's son, raised Tarn on the estate. Mara calls him cousin. Tarn United shirt. Two sausage rolls at a time.
+
+@char e5.ryan
+name: Ryan Haldane
+speaker: RYAN
+faction: district
+about: Fifteen. Kev's lad. Thinks he's Tarn; has the black sheaf on his phone case. Delivered the committee's leaflets on his bike.
+
+@char e5.ines
+name: Ines Saro
+speaker: INES
+faction: vell
+about: Fourteen. Danil's sister. Reads the comments aloud to her grandmother because her grandmother asked.
+
+@char e5.frank
+name: Frank Mott
+speaker: FRANK
+faction: district
+about: Eighty. Walter Mott's grandson. Forty years a records clerk. His hands shake and he says it's not this.
+
+@char e5.ellie
+name: Ellie Ashby, the real Edrin
+speaker: ELLIE
+faction: district
+about: Thirty-one. Paul Ashby's granddaughter. A channel, a ring light, a sponsor. Believes every word she says.
+
+@char e5.sam
+name: Dr Sam Lind
+speaker: SAM
+faction: district
+about: Forty-six. GP, the vaccine centre on Tuesdays, the coroner's duty rota. Clara Lind's great-grandson.
+
+@char e5.pryor
+name: Dr Pryor, police surgeon
+speaker: PRYOR
+faction: district
+about: Sixty-three. A voice for juries. Good at waiting.
+
+@char e5.charlotte
+name: Charlotte Orme
+speaker: CHARLOTTE
+faction: district
+about: Forty-five. Victor's granddaughter. The ring-road syndicate and its model under perspex.
+
+@char e5.dennis
+name: Dennis Krall, chair of regeneration
+speaker: DENNIS
+faction: district
+about: Fifty-five. Furrow League. Carpets. As a boy of ten he screamed on a chair at the mill fight.
+
+@char e5.bev
+name: Bev, family liaison officer
+speaker: BEV
+faction: district
+about: Twenty-nine. A lanyard and a folder. Says I'm so sorry and means it every time.
+
+@char e5.baker
+name: Mr Lowe, the baker on Mill Street
+speaker: BAKER
+faction: district
+about: Sixty-one. The bakery was his father's and his father's father's, when the Lowes were the Lowys. Talks about bread.
+
+@char e5.dealer
+name: Mr Hartley, the dealer
+speaker: DEALER
+faction: district
+about: Sixty. Antiques and Clearances, on the hill. Dresses his window for every week the town has a name for.
+
+@char e5.customer
+name: A woman from the nail bar
+speaker: CUSTOMER
+faction: district
+about: Drying her nails. Likes the table.
+
+# the voices that carry the posts and the clip to the player, heard and never shown as text (weighted-devices pass,
+# 2026-10-23: a post is a phone held out and read aloud, a voice message, a chant; design/device-audit/era5.md)
+@char e5.fed
+name: The Federation rep
+speaker: FED
+faction: district
+about: Fifties, a fleece, a coffee. Has sat at a lot of kitchen tables. Knows the words that keep a man in a job.
+
+@char e5.lad
+name: A lad on a bike
+speaker: LAD
+faction: district
+about: On his way to school down Mill Street. Reads out anything sprayed on a wall, the way kids do.
+
+@char e5.league_man
+name: A man's voice on the League's video
+speaker: LEAGUE
+faction: district
+about: Slow and warm, like a man reading in church. Nobody has seen his face.
+
+@char e5.phone_voice
+name: The phone's reading voice
+speaker: PHONE
+faction: district
+about: The voice for people who can't see the screen. Flat, polite, says the names wrong.
+
+@char e5.eadie
+name: Mrs Eadie, the coroner's officer
+speaker: EADIE
+faction: district
+about: Fifty-eight. Takes the cause of death from the doctor's mouth to the family's door. Keeps her coat on.
+
+@char e5.neighbour
+name: The woman behind the net curtain
+speaker: NEIGHBOUR
+faction: district
+about: Lives across Mill Street from the Saros' shop. Filmed it. Has not slept in her front room since.
+
+# ---------------------------------------------------------------- the households the era presses
+@household e5_saro
+name: The Saros, over the shop
+street: mill
+people: vell
+hesh: 0
+place: q5_saro_flat
+members: Teo, Ines, Mira, Kasem, Danil
+taken: 0
+portion: 1
+
+@household e5_haldane
+name: The Haldanes, Haldane Yard
+street: mill
+people: hesh
+hesh: 1
+place: q5_mara_flat
+members: Mara, Joss, Kev, Ryan
+taken: 0
+portion: 1
+
+@household e5_record
+name: What is kept, and what is let go
+street: mill
+people: district
+hesh: 0
+place: q5_archive
+members: Danil, Walter, Tomas
+taken: 0
+portion: 1
+
+# ---------------------------------------------------------------- the clearance fight
+# Story fight 2 (era5.md e5.s12). Placeholder ground and pattern until the combat lead builds q5_haldane_yard's arena
+# and a bailiff pattern; every outcome goes to the same yard after, because the fate was decided at the door.
+@encounter e.e5_door
+name: The Haldane door
+area: granary
+boss: captain
+win: e5.door.carried
+yield: e5.door.carried
+fled: e5.door.carried
+down: e5.door.carried
+
+# ---------------------------------------------------------------- the fates, each with its decider
+# f.e5_danil is the one canon fate: one way only, exempt from the two-outcome rule in tools/fatecheck.mjs (EXEMPT),
+# with this reason: the canon hinge of era 5; the player's agency is in what follows (the certificate, the pages,
+# the door), not in the death (DECISIONS-2026-10-22.md, era questions, item 4; commit e519930).
+@fate f.e5_danil
+pressure: has(e5.clip_open)
+subject: household e5_saro
+decider: LEON
+scene: e5.clip.stop
+window: 7
+taken: yes
+who: Danil
+because: Tuesday's stabbing on Bridge Street and a description that said possibly Vell; Sergeant Leon Brack stops Danil Saro on Mill Street and kneels on him until he stops
+
+@fate f.e5_cert
+pressure: has(e5.cert_open)
+subject: household e5_record
+decider: SAM
+scene: e5.cert.decide, e5.cert.true, e5.cert.false
+window: 7
+who: Danil
+because: the police surgeon's words and a riot feared by Saturday; Dr Sam Lind looks at the flour in the boy's nails and says to the coroner's officer at the door compression of the chest and neck while restrained, or the surgeon's sudden death after exertion, cause unascertained, which is what she takes to the father
+
+@fate f.e5_house
+pressure: has(e5.vote_carried)
+subject: household e5_haldane
+decider: LEON
+scene: e5.door.decide, e5.door.down, e5.door.cleared
+window: 7
+taken: yes
+who: Mara
+because: the vote, and the bailiffs' orange cross sprayed over the inspector's pink dot on the door; Leon Brack stands the van down till Monday when his mother puts Tomas's cap in his hands and says Will's words to him, or tells the bailiffs to go on
+
+@fate f.e5_frank
+pressure: has(e5.ledger_open)
+subject: household e5_record
+decider: FRANK
+scene: e5.ledger.decide, e5.ledger.torn, e5.ledger.left
+window: 7
+who: Walter
+because: the archive opening with his name on the door and the old exchange scale in its front room; Frank Mott brings Walter's iron wedge to Mara's table in his tobacco tin and says what it did under the barns' pan, then drops it off the bridge into the Edd (falls), or carries it up to the archive to go under the pan where it went
+
+@fate f.e5_page_tom
+pressure: has(e5.archive_open) & q_class == inspector
+subject: household e5_record
+decider: TOM
+scene: e5.page.tom, e5.page.tom.lost, e5.page.tom.kept, e5.page.tom.given
+window: 7
+who: Tomas
+because: the ring road's digger opens the wall of Tesk's old fold and Krall's office wants anything Hesh for its heritage panel; Tom Furrowe lets the child's oat sack with the blue goat go back into the spoil, bags it for the panel, or carries it to Sefa Tesk
+
+@fate f.e5_page_leon
+pressure: has(e5.archive_open) & q_class == militia
+subject: household e5_record
+decider: LEON
+scene: e5.page.leon, e5.page.leon.lost, e5.page.leon.kept, e5.page.leon.given
+window: 7
+who: Tomas
+because: the ring road's digger opens the wall of Tesk's old fold and Krall's office wants anything Hesh for its heritage panel; Leon Brack drops the child's oat sack with the blue goat into the bucket, gives it to the contractor's man for the panel, or carries it to Sefa Tesk
+
+# ---------------------------------------------------------------- the self-lies (each echoed word for word at the table)
+@selflie e5.sl.says
+about: SPITE, Everybody Says, armed for both lines by the share already on the player's phone (e5_town.lwd, e5.share); endured at the stone on the verge
+happened: Danil Saro was walking home with a key on a shoelace and a bag of rolls. The story you sent on had a knife in it, or a heart. ? has(e5.danil_dead)
+happened: The story was out before you woke. You were the one who sent it on to the people who trusted you.
+
+@selflie e5.sl.order
+about: LOYALTY, Order for Leon, three generations in the wall, at the account he gives the camera in his kitchen (e5_town.lwd, e5.trade.leon)
+happened: Mill Street was quiet that night until the van stopped. The lad had his hands up before anybody touched him. ? has(e5.danil_dead)
+happened: Nobody on Mill Street had a bat that night. There was a lad with bread, and a sergeant who stayed on.
+
+# ---------------------------------------------------------------- lore
+@chain e5.street
+name: The window across Mill Street
+# the net curtain the clip was shot through, and the wall's answer, read out by a lad on his way to school
+route: one-run | e5.lore.curtain, e5.lore.wall
+
+@lore e5.lore.curtain
+chain: e5.street
+layer: surface
+where: node e5.clip.stop
+about: The first-floor window across Mill Street from the Saros' shop, with a net curtain. In the corner of the clip's first second, a woman's fingers holding the curtain back. Her name was never given to anybody.
+
+@lore e5.lore.wall
+chain: e5.street
+layer: surface
+where: node e5.stories
+about: The ply over the Saros' boarded window, sprayed in the night in letters the height of a man, and read out loud by every kid going past to school: they killed him for walking home. By noon somebody had sprayed a line through killed.
+
+@chain e5.clip
+name: The whole four minutes
+# the first seconds of the video, before the knee; and what the sergeant's knee felt. Each class can hold it in one
+# run: the Inspector by the start and his sister on the ward, the Sergeant by his knee and the start played to him
+route: two-classes | e5.lore.hands, e5.lore.knee
+route: one-run | e5.lore.hands, e5.lore.ward
+route: one-run | e5.lore.knee, e5.lore.start
+
+@lore e5.lore.hands
+chain: e5.clip
+layer: hidden
+where: node e5.cert.tom
+requires: class inspector
+about: The first seconds of the whole video, which the news never showed: a lad eating a roll on Mill Street, the van pulling across him, and both his hands going up, the paper bag in one, before anybody touched him.
+
+@lore e5.lore.knee
+chain: e5.clip
+layer: hidden
+where: node e5.trade.leon
+requires: class militia
+about: What the Federation's words leave out and Sergeant Brack's knee kept: the give under it when the lad stopped, and staying on after, and not getting up.
+
+@lore e5.lore.ward
+chain: e5.clip
+layer: deep
+where: node e5.dinner.furrowe
+requires: class inspector
+about: Jo on the ward when they brought him up, saying it at her mother's table: they knelt on him till he died for walking home.
+
+@lore e5.lore.start
+chain: e5.clip
+layer: deep
+where: node e5.office.leon
+requires: class militia
+about: The start of the window's video, played to the sergeant in an interview room, the first time he has seen it: the lad's hands going up, both of them, the paper bag in one, before anybody touched him.
+
+@chain e5.books
+name: The wedge and the sack
+# Walter Mott's iron wedge in Frank's tobacco tin, and Dorrah Tesk's oat sack in the wall of the fold
+route: one-run | e5.lore.margin, e5.lore.oats
+
+@lore e5.lore.margin
+chain: e5.books
+layer: surface
+where: node e5.ledger
+about: Walter Mott's iron wedge, kept a hundred years in a tobacco tin: it went under the exchange scale's pan the famine winter so the barns' carts weighed heavy, and when a Haldane boy came to the scale about his father's carts, Walter sent him home.
+
+@lore e5.lore.oats
+chain: e5.books
+layer: surface
+where: node e5.fold
+about: A child's oat sack with a goat stitched on it in blue thread, its head turned back, a few oats still in the seam, pushed into the wall of Tesk's fold a hundred years ago and opened by the ring road's digger.
+
+@chain e5.carried
+name: What was said at the kitchen table and at the door
+# the carried words reach era 5: Nan to Tom over the clip, Ann to Leon at the Haldane door with the cap in his hands.
+# Each class can hold it in one run: Tom carries the words to Ann's door; Leon has the cap off the nail and the words
+route: two-classes | e5.lore.carry_f3, e5.lore.carry_b3
+route: one-run | e5.lore.carry_f3, e5.lore.carry_fb
+route: one-run | e5.lore.carry_b3, e5.lore.cap
+
+@lore e5.lore.carry_f3
+chain: e5.carried
+layer: deep
+where: node e5.dinner.f3
+requires: class inspector
+about: What Nan had from her mother in the hospice, and Ruth from Pell, and Pell from Ned on the step: I carried him. You don't need two for that. Will Brack's words, on the Crown's steps.
+
+@lore e5.lore.carry_b3
+chain: e5.carried
+layer: deep
+where: node e5.door.ann.words
+requires: class militia
+about: What Ann had from Davey in the kitchen over the Crown, and Davey from Will with his feet in a bowl: I carried him. You don't need two for that. Said by Ann to her son at the Haldane door, with the boy's brown cap off the Brack kitchen's nail in his hands.
+
+@lore e5.lore.carry_fb
+chain: e5.carried
+layer: deep
+where: node e5.fb.ann
+requires: class inspector
+about: Nan's words said on Ann Brack's step at night, by a Furrowe to a Brack, the way they came: and down the hall behind her, on a nail by the back door, a boy's brown cap.
+
+@lore e5.lore.cap
+chain: e5.carried
+layer: hidden
+where: touch q.brack_cap hold
+requires: class militia
+about: The boy's brown cap on the nail by the Brack kitchen's back door, small enough for a boy of eleven, that Will Brack took off the bench in the end cell and hung there, and that has never come down.
+
+# ---------------------------------------------------------------- era 5's record (generated from the scene files)
+@fact e5.archive_open
+@fact e5.carry_b3
+@fact e5.carry_f3
+@fact e5.carry_h2
+@fact e5.cert_false
+@fact e5.cert_open
+@fact e5.cert_true
+@fact e5.clip_open
+@fact e5.commemoration
+@fact e5.danil_dead
+@fact e5.door_day
+@fact e5.hinge_said
+@fact e5.house_cleared
+@fact e5.house_down
+@fact e5.ledger_open
+@fact e5.leon_moved
+@fact e5.leon_suspended
+@fact e5.mara_hills
+@fact e5.mara_letter
+@fact e5.mara_true
+@fact e5.mv_alliance
+@fact e5.mv_league
+@fact e5.mv_none
+@fact e5.mv_union
+@fact e5.mv_well_asked
+@fact e5.page_given
+@fact e5.page_kept
+@fact e5.page_lost
+@fact e5.page_torn
+@fact e5.rumour_posted
+@fact e5.stories_out
+@fact e5.tom_kept
+@fact e5.tom_resigned
+@fact e5.vote_carried
+@fact e5.vote_open
+@fact e5.window_dressed
+@fact said.e5_hinge_spoke
+@fact said.e5_hinge_tea
+@fact said.e5_ledger_leave
+@fact said.e5_ledger_take
+@fact said.e5_leon_down
+@fact said.e5_leon_limp
+@fact said.e5_leon_true
+@fact said.e5_page_given
+@fact said.e5_page_kept
+@fact said.e5_page_lost
+@fact said.e5_share_corrected
+@fact said.e5_share_deleted
+@fact said.e5_share_left
+@fact said.e5_spoke_council
+@fact said.e5_stayed_home
+@fact said.e5_tom_clip
+@fact said.e5_tom_keep
+@fact said.e5_tom_remedy
+@fact said.e5_tom_resign
+@fact said.e5_tom_unfit
+@fact said.e5_tom_words
+@fact said.e5_voted_against
+@fact said.e5_voted_for
+@fact said.e5_window_stopped
+@fact said.e5_window_walked
+@fact e5.carry_fb
+@fact said.e5_tom_to_ann
+@fact e5.funeral_walked
+@fact said.e5_leon_drove
+@fact said.e5_leon_got_out
+@fact said.e5_tom_panel_yes
+@fact said.e5_tom_panel_no
+
+# ---------------------------------------------------------------- props (era5.md section 7), new in era 5
+# The five that persist from era 1 (the table, the bowls, the sign, the scale, the fence) are in q_props.lwd, standing
+# where era 5's scenes are set (in:). These exist from era 5 only (from: 5). Each stands at a mark on its place's
+# plate (render/props/e5_*.mjs, marks.spots). Weighted-devices pass, 2026-10-23: every prop is a thing the hands and the
+# senses meet; three keep their ids with new things in them (q.mott_ledger is Frank's tobacco tin with Walter's wedge,
+# q.tesk_book the archive's heritage case, q.clearance_order the Haldane door with its paint). DRAFT text (S14).
+@prop q.clip
+from: 5
+name: The clip on a phone
+place: q5_mill_street
+mark: clip
+tells: household e5_saro
+verb: Look at the phone
+carries: sound
+state: 5 paused | The clip on a cracked phone screen, paused where everybody pauses it, at the knee. The phone keeps chiming in your hand, and chiming, as people send it on.
+touch: listen "Hold the phone to your ear" | Under the chiming, very small, through the speaker, a lad saying he lives there. He says it again. {sense: e5.clip.sound}
+
+@prop q.memorial
+from: 5
+name: The memorial
+place: q5_square
+mark: memorial
+tells: era
+carries: touch
+state: 5 washed ? has(e5.commemoration) | The bronze sheaf, unveiled now, the villages in raised letters round the plinth, and no person's name anywhere on it. The step at its foot is wet and clean. Somebody chalked a word there last night and the council's jet wash had it off by eight.
+state: 5 sheeted | The bronze sheaf under a tarpaulin, roped, waiting for the commemoration. Where the rope has slipped you can see raised letters along the bottom of the plinth, villages, and no person.
+touch: wipe "Put your hand on the step" | Cold and wet from the jet wash, and gritty where the chalk was. Your palm comes up clean. {sense: room.cold}
+
+@prop q.mott_ledger
+from: 5
+name: Frank Mott's tobacco tin
+place: q5_mara_flat
+mark: ledger
+tells: household e5_record
+verb: Look at the tin
+carries: weight
+state: 5 drowned ? has(e5.page_torn) | Frank's tobacco tin on Mara's windowsill, empty, the lid not quite shut. It still smells of his pipe, and under the pipe, of rust.
+state: 5 tin ? has(e5.ledger_open) | A tobacco tin on Mara's table, older than anybody in the room, the paint worn through to the metal where a thumb opens it. It sits on the oilcloth heavier than a tin should.
+state: 5 table | Mara's kitchen table under its oilcloth, wiped, the sugar in the middle, a burn mark by the edge from a pan.
+touch: lift "Lift the tin" ? has(e5.ledger_open) & !has(e5.page_torn) | Heavier than a tin should be. Something inside shifts as you tip it and knocks against the side, once, iron on tin. {sense: e5.tin.set}
+
+@prop q.tesk_book
+from: 5
+name: The heritage case
+place: q5_archive
+mark: tesk_book
+tells: household e5_record
+verb: Look at the case
+carries: sight
+state: 5 given ? has(e5.page_given) | The glass case for Krall's heritage panel, by the old scale in the front room, with a space on the green felt at the front that nothing has been put in. The spotlight in the lid shines on the felt.
+state: 5 kept ? has(e5.page_kept) | The glass case by the old scale. On the green felt, a child's oat sack, coarse, mended at one corner, with a goat stitched on it in blue thread, its head turned back. Clay still in the weave. A spotlight on it.
+state: 5 lost ? has(e5.page_lost) | The glass case by the old scale, empty, a square of green felt and a spotlight on nothing.
+state: 5 waiting | The glass case by the old scale, new, empty, with a spotlight in its lid, waiting for whatever Krall's office wants put in it.
+touch: press "Put your hand on the glass" | Cold. Your hand leaves a mark on it that fades in from the edges.
+
+@prop q.haldane_five
+from: 5
+name: The envelope in the drawer
+place: q5_mara_flat
+mark: drawer
+tells: household e5_haldane
+carries: touch
+state: 5 envelope | An envelope in Mara's kitchen drawer, under the takeaway menus. In it, a boy cut out of a photograph with scissors, carefully, a long time ago, so the rest could be shown.
+touch: hold "Take the boy out of the envelope" | He's no bigger than your thumb. The scissors went carefully round his cap. The back of him has gone soft as cloth from being held.
+
+@prop q.clearance_order
+from: 5
+name: The Haldane door
+place: q5_haldane_yard
+mark: order
+tells: household e5_haldane
+verb: Look at the door
+carries: sight
+state: 5 deferred ? has(e5.house_down) | The Haldane door under the headless goat, the bailiffs' orange cross sprayed over the council's pink dot by the frame, and the door still on its hinges, and a light on behind it.
+state: 5 boarded ? has(e5.house_cleared) | The Haldane door boarded with ply, screwed in at the corners. The orange cross and the pink dot go on under the board and come out round its edge.
+state: 5 crossed ? has(e5.vote_carried) | The Haldane door under the headless goat. By the frame, the council's pink dot from January, and over it now a cross in orange, sprayed fast, a drip run down to the step.
+state: 5 dot | The Haldane door under the headless goat. By the frame, a dot of pink paint from the council's can, with a drip run down from it. The black of the damp comes through round the frame.
+touch: wipe "Rub at the pink dot" | It doesn't come off. It's the council's good paint. You rub till your thumb is pink and the dot is the same. {sense: e5.paint.spray}
+
+@prop q.shop_window
+from: 5
+name: The dressed window
+place: q5_shop
+mark: window
+tells: era
+carries: heat
+state: 5 spoons ? has(e5.house_cleared) | The window dressed for commemoration week: five old bowls, gruel cast in resin, steam from a humidifier under the table. Beside it a jar of wooden spoons from a house clearance off Mill Street, with a price on a string.
+state: 5 dressed | The window dressed for commemoration week: five old bowls, gruel cast in resin, steam from a humidifier under the table breathing up between the boards, and a sheaf of wheat laid along the top tied in black ribbon.
+touch: press "Put your hand on the glass" | Warm from the lamps inside. Your breath fogs a patch in front of your mouth, and the table goes soft behind it, and comes back.
+
+@prop q.brack_cap
+from: 5
+name: The cap on the nail
+place: q5_brack_kitchen
+mark: photo
+tells: person e5.leon_c
+carries: touch
+state: 5 cap ? has(q.tomas_held) | A boy's brown cap on the nail by the back door, beside the wedding photograph with the crack. Gone stiff, the peak cracked across, the band inside dark from a boy's hair a hundred years ago. It has hung there longer than anybody has lived in the house.
+state: 5 nail | The nail by the back door, beside the wedding photograph with the crack. A dog lead on it, and no dog.
+touch: hold "Take the cap down" ? has(q.tomas_held) | It's small. It would fit a boy of eleven. It smells of nothing now, of the kitchen, of the nail. You hang it back the way it was, peak down. {sense: e5.cap.hold}
+
+# ---------------------------------------------------------------- era 5's senses (world/senses.mjs; the shared ones are in senses.lwd)
+@sense e5.phone.chime
+sound: spoon 0.3 near
+caption: a phone chiming
+rumble: 0.15 0.35 90
+rumble: 0.15 0.35 90 260
+
+@sense e5.voice.note
+sound: murmur 0.35 near 2
+caption: a voice message playing out of a phone
+screen: vignette 0.2 2
+
+@sense e5.clip.sound
+sound: murmur 0.25 near 2.4
+caption: a small voice out of a phone speaker
+screen: vignette 0.4 2.4
+hold: 1.2
+
+@sense e5.knee
+sound: heart 0.45 under 2.4
+caption: your heart, slow and hard
+rumble: 0.6 0.05 700
+anim: player still 2
+hold: 1.2
+
+@sense e5.bodycam
+sound: lamphum 0.2 near 2
+caption: the small hum of a camera recording
+screen: vignette 0.25 3
+
+@sense e5.paint.spray
+sound: pour 0.3 near 0.8
+caption: paint hissing out of a can
+rumble: 0.05 0.3 400
+
+@sense e5.gutter.water
+sound: pour 0.75 near 2.6
+caption: water coming down a wall in a sheet
+rumble: 0.3 0.4 1400
+screen: tint #9fb4c8 0.12 2.6
+anim: player flinch 0.6
+
+@sense e5.tin.set
+sound: thud 0.5 near
+caption: a heavy tin set down on a table
+rumble: 0.45 0.1 160
+
+@sense e5.tin.open
+sound: latch 0.4 near
+caption: a tin lid prised up with a thumbnail
+rumble: 0.05 0.4 120
+camera: push 1.5 1.2
+hold: 0.8
+
+@sense e5.edd.splash
+sound: thud 0.4 far
+sound: pour 0.35 far 1
+caption: something heavy going into the river
+rumble: 0.2 0.2 300 400
+hold: 1.4
+
+@sense e5.cap.hold
+sound: breath 0.3 near 2
+caption: a long breath in
+anim: player tremble 2
+rumble: 0.1 0.3 600
+camera: push 1.6 1.6
+hold: 1.4
+
+@sense e5.digger
+sound: chain 0.6 near 2
+sound: thud 0.55 near
+caption: a digger's bucket going into a stone wall
+rumble: 0.7 0.2 500
+screen: shake 0.15 0.5
+
+@sense e5.sack.hold
+sound: breath 0.2 near 1.6
+caption: someone breathing close
+rumble: 0.05 0.15 400
+camera: push 1.6 1.4
+hold: 1
+
+@sense e5.quiet.room
+sound: lamphum 0.15 near 3
+caption: a fridge humming in a quiet room
+screen: dim 0.2 3
+hold: 1
+
+# ---------------------------------------------------------------- what happened, met in the place (world/echo.mjs)
+# Every era 5 fate shows in a place the story brings the player to after it falls (tools/echocheck.mjs).
+@echo e5.e.saro
+place: q5_saro_flat
+when: has(e5.danil_dead)
+from: 5
+tells: fate f.e5_danil
+show: person e4.mira still
+show: light dim
+line: On the tray of tea glasses one is turned upside down, the one with the gold rim worn off, and nobody turns it back.
+sense: e5.quiet.room
+
+@echo e5.e.cert
+place: q5_saro_flat
+when: has(e5.cert_false)
+from: 5
+tells: fate f.e5_cert
+show: person e4.teo turn
+line: Teo keeps getting up to look down into Mill Street, as if somebody is coming up it to tell him what was done to his son. Nobody comes.
+
+@echo e5.e.house
+place: q5_mara_flat
+when: has(e5.house_cleared)
+from: 5
+tells: fate f.e5_house
+show: person e5.mara still
+line: The fair bowl is on a windowsill that isn't its own, in a room that smells of somebody else's paint, with the spider plant's roots still hanging out of the soil.
+sense: room.cold
+
+@echo e5.e.wedge
+place: q5_archive
+when: has(e5.page_torn)
+from: 5
+tells: fate f.e5_frank
+show: sound creak 0.15 near
+line: In the front room the old exchange scale hangs level over its two empty pans, done up in new black paint, behind a rope. Nothing has been put under it.
+
+@echo e5.e.sack_lost
+place: q5_square
+when: has(e5.page_lost)
+from: 5
+tells: fate f.e5_page_tom
+tells: fate f.e5_page_leon
+show: sound chain 0.3 far
+line: Over the band, from up on the cut, the digger's bucket going into the stone again, where the fold was.
+
+@echo e5.e.sack_kept
+place: q5_square
+when: has(e5.page_kept)
+from: 5
+tells: fate f.e5_page_tom
+tells: fate f.e5_page_leon
+show: person e4.sefa still
+line: At the League's end of the square a lad has the oat sack tied to the top of a flagpole, held up over their heads, and the blue goat turns in the wind.
+
+@echo e5.e.cap
+place: q5_brack_kitchen
+when: has(q.tomas_held) & q_class == militia
+from: 5
+tells: flag q.tomas_held
+line: On the nail by the back door, where it has hung all your life, a boy's brown cap, gone stiff. You wore it to play at police when you were small.

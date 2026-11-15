@@ -1,0 +1,256 @@
+# The Quota slice: the witness, years later (design/spine-plan/02-WITNESS.md; engine: world/witness.mjs; check:
+# tools/witnesscheck.mjs). Anni Haldane at forty, at her own table, telling her daughter what she saw of that
+# winter, with the player's own man sitting there old. She tells only what she saw or was told (reach, sources,
+# never). The ledger the read-back used to print (q_readback.lwd, @readback q.record) is the oracle underneath:
+# every row it would print is answered by a beat here or declared unwitnessed. No beat is skipped, nothing sums
+# him up, and it ends on an effect. Game director, 2026-10-22.
+
+@witness q.w.anni
+who: ANNI
+listener: DAUGHTER
+guest: q_class inspector=NED militia=WILL
+place: q_anni_room
+opens: q.w.anni.open
+dispatch: q.w.anni.next
+reach: q_haldane, q_post, q_road_home, q_granary, q_tilney, q_yard, q_furrowe_door, q_furrowe_kitchen, q_anni_room
+sources: BET, ILO, AARON, EDIE, STORE, WALTER
+never: q_returns, q_cells, q_office, q_brack_kitchen
+beat: q.w.anni.paper | q_figure, q.true_in_hand | seen q_haldane ? true
+beat: q.w.anni.post | q_cart, q_class, said.ned_sign_cart, said.ned_vouch_cart, q.cart_counted, said.will_take_four, said.will_take_six, said.will_let_through, said.will_refuse_holt, said.will_arrest_tomas, said.ned_free_tomas, q.cart_stripped | seen q_post ? q_cart != none
+beat: q.w.anni.mary | q.ned_looked | seen q_post ? q_class == inspector
+beat: q.w.anni.store | said.ned_report_true, said.ned_report_inflated, said.ned_report_blamed, said.will_report_true, said.will_report_inflated, said.will_report_blamed | heard STORE ? q_figure != none
+beat: q.w.anni.granary | q_door, q.will_down, q.read_aloud, said.read_true_door | seen q_granary ? q_door != none
+beat: q.w.anni.week | q.tomas_held, q.ilo_mark, q.dorrah_taken | heard ILO ? has(q.tomas_held)
+beat: q.w.anni.yard | q.aaron_taken, said.ned_vouch_yard, said.will_next_door, said.will_takes_aaron | seen q_yard ? seen(q.fate.yard)
+beat: q.w.anni.gate | q.anni_sent, q.anni_furrowe, q.ned_claimed, q.ned_parentage, q.ned_food, q.will_bread | seen q_tilney ? seen(q.fate.gate)
+beat: q.w.anni.table | haldane, bowls, food, portion, furrowe, brack, taken | seen q_haldane ? true
+beat: q.w.anni.hands | said.will_leave_thread | heard EDIE ? q_class == militia
+beat: q.w.anni.guest | said.ned_keep_tally, q.corner_known, q.pencil_kept, q.pencil_rubbed | seen q_anni_room ? true
+last: q.w.anni.tin
+unwitnessed: q.log_two, q.log_true | the cell log: she never saw the cells, and nobody who did ever told her about the oats
+unwitnessed: q.pencil_kept, q.pencil_rubbed | the returns room: she never knew about the pencil
+oracle: q.record
+
+# ---------------------------------------------------------------- the opening: the tin
+@node q.w.anni.open
+place: q_anni_room
+speaker: ANNI
+cost: 3
+camera: near
+nar: Anni's kitchen, years later. The same oilcloth. The tin on the table with the lid off and the papers out in a row. Anni is forty, and her daughter is twelve, and it's raining, the fine kind that soaks you.
+line: DAUGHTER: What's all these?
+line: ANNI: Tallies. Put them back the way they were, they go in order.
+line: DAUGHTER: Of what, though?
+line: ANNI: That one's sacks. That's lamps, Exchange Street, all the way down.
+line: ANNI: That one's stairs. {when: has(q.anni_sent)}
+line: DAUGHTER: Whose stairs? {when: has(q.anni_sent)}
+line: ANNI: The home on Tilney Road. I counted them going in. {when: has(q.anni_sent)}
+line: DAUGHTER: Why?
+line: ANNI: So somebody had.
+nar: A knock at the door. An old man with a housing form from the allocation office in a brown envelope, come about the back room, because somebody has to come about the back room. He has his hat in his hand. {when: q_class == inspector}
+nar: A knock at the door. An old man with a parcel of mending in brown paper, which Edie Brack has finished for her, because Edie can't get up the hill now and somebody has to bring it. He stands there with his cap in his hand. {when: q_class == militia}
+nar: Anni lets him in out of the rain and gives him tea in the good cup, and he sits at the end of the table, and she goes on with her daughter as if he were the coal man.
+voice: dark: You know this table. You know the hinge marks. {dc: 2}
+go: q.w.anni.next
+
+@node q.w.anni.next
+cost: 0
+do: wnext()
+alt: q.w.anni.paper ? wat(q.w.anni.paper)
+alt: q.w.anni.post ? wat(q.w.anni.post)
+alt: q.w.anni.mary ? wat(q.w.anni.mary)
+alt: q.w.anni.store ? wat(q.w.anni.store)
+alt: q.w.anni.granary ? wat(q.w.anni.granary)
+alt: q.w.anni.week ? wat(q.w.anni.week)
+alt: q.w.anni.yard ? wat(q.w.anni.yard)
+alt: q.w.anni.gate ? wat(q.w.anni.gate)
+alt: q.w.anni.table ? wat(q.w.anni.table)
+alt: q.w.anni.hands ? wat(q.w.anni.hands)
+alt: q.w.anni.guest ? wat(q.w.anni.guest)
+go: q.w.anni.tin
+
+# ---------------------------------------------------------------- the beats
+@node q.w.anni.paper
+place: q_anni_room
+speaker: ANNI
+cost: 3
+line: ANNI: They came on the Monday with a paper. I read it out, because Mum couldn't and Dad couldn't. It said we owed them sacks. There was a name signed at the bottom with a good pen.
+voice: sum: The sheet says three-ten. You've signed that the sheet says three-ten. Nobody can say you didn't. {echo: q.sl.signed, when: toldself(q.sl.signed)}
+line: ANNI: Your uncle Tomas took it into town. He didn't tell Mum. He thought if somebody looked, they'd see.
+go: q.w.anni.next
+
+@node q.w.anni.post
+place: q_anni_room
+speaker: ANNI
+cost: 4
+line: ANNI: We took the cart to the post with what was left. Six sacks. I counted them off out loud while the constable put his bayonet in them. {count: cost}
+voice: ballast: If one cart goes through without a pass, forty go tomorrow, and then there's no post. There's just you on a road. {echo: q.sl.forty_carts, when: toldself(q.sl.forty_carts)}
+line: ANNI: The sergeant had his hands in his armpits the whole time. {when: q_class == militia}
+line: ANNI: He had the good pen. He kept saying only. It's only four, Mrs Haldane. It's only for the board. {when: has(said.ned_sign_cart)}
+line: ANNI: He wrote my number down in his book. I watched him write it. Then he signed the board anyway. {when: has(q.cart_counted)}
+line: ANNI: He said Furrowe, with an e on the end. Like he was spelling it for somebody. Mum laughed about that after. Not then. {when: has(said.ned_vouch_cart)}
+line: ANNI: The sergeant put the sacks back. Slow, so we could watch him do it. Tomas did his voice all the way to Osby. {when: has(said.will_let_through)}
+line: ANNI: Aaron said thank you for the seed, and Tomas clipped him round the head. {when: has(said.will_take_four)}
+line: ANNI: Mum got down and went and stood in front of him. Right up close. She never said anything. He said order's the order. {when: has(said.will_take_six)}
+line: ANNI: The inspector walked our Tomas down to the Captain. He shook his hand in the road. I saw him do it. {when: has(q.promised_hill)}
+line: ANNI: They had the whole cart off us after, seed and all, and Mum never spoke to him again. {when: has(q.cart_stripped) | has(said.will_refuse_holt)}
+line: ANNI: Your uncle Tomas got in the back of the Captain's car by himself. The step was too high for him. He had to use both hands. {when: q_cart == arrested}
+line: DAUGHTER: Where did they take him? {when: q_cart == arrested}
+line: ANNI: Up the hill. To Mrs Tesk's. {when: q_cart == arrested}
+line: ANNI: That's what your gran said. I let her say it. {when: q_cart == arrested}
+go: q.w.anni.next
+
+@node q.w.anni.mary
+place: q_anni_room
+speaker: ANNI
+cost: 2
+line: ANNI: A lady came through in a trap with a rug on her knees. She had a pass. She looked at me and told him I'd be fourteen. Like she was telling him something.
+nar: The old man at the end of the table puts his cup down.
+go: q.w.anni.next
+
+@node q.w.anni.store
+place: q_anni_room
+speaker: ANNI
+cost: 3
+line: ANNI: The men at the Krall's End store said afterwards that somebody stood up at the meeting that morning and said what we grew. Out loud, to the Arlen man. They didn't say it like it was a good thing. {when: q_figure == true}
+line: ANNI: The men at the store said somebody stood up at the meeting and said the Hesh had it under the goats. Everybody knows that, he said. They said it like it was clever. {when: q_figure == blamed}
+line: ANNI: The men at the store said everybody's figure went to Arlen high that winter, and the requisition came for it. Nobody said whose. {when: q_figure == inflated}
+line: DAUGHTER: Who was it?
+line: ANNI: A man in a coat.
+go: q.w.anni.next
+
+@node q.w.anni.granary
+place: q_anni_room
+speaker: ANNI
+cost: 4
+line: ANNI: That night the whole of Krall's End walked in to the granary. Mum had my wrist so I couldn't get to the front.
+line: ANNI: Somebody inside started saying numbers through the gap in the door. Mum said she'd only ever heard me say a hundred and ninety before that night. {when: q_door == talked, count: cost}
+line: ANNI: They gave out a sack a family through the gap, and nobody said thank you. {when: q_door == talked}
+line: ANNI: The door held. A soldier took somebody by the collar from the front and pulled him in. Mum said it was the Orme lad, by the coat. {when: q_door == held}
+line: DAUGHTER: Was it? {when: q_door == held}
+line: ANNI: The Orme lad died of the fever in November. Everybody knew that. Mum knew it. {when: q_door == held}
+line: ANNI: Mrs Orme was at the door. She heard a man inside tell the Captain how old he was. They kept him anyway. {when: q_door == held & has(said.ned_custody_age)}
+line: ANNI: The door came in. There was a boy by a split sack with the grain running out round him. I didn't look to see who. {when: q_door == broken & !has(q.will_down)}
+line: ANNI: The door came in on one of them. I went in with the lamp and held it over his face. I wanted to see which one he was. {when: has(q.will_down)}
+line: ANNI: Mum saw one of them stood back by the sacks with a lantern. Just stood. She'd not let that go. {when: q_door == aside}
+go: q.w.anni.next
+
+@node q.w.anni.week
+place: q_anni_room
+speaker: ANNI
+cost: 4
+line: ANNI: On the Friday Dad went down to the office in his good cap, because they'd sent for him. He came back with a paper and put it in the stove. Aaron saw him.
+line: ANNI: On the Saturday they took Mrs Tesk off the hill. I didn't know what the paper said till Dad was dead and the office had the copy. {when: has(q.ilo_mark)}
+line: ANNI: Dad said one of them read it him first, at the table. He made his mark anyway. Tomas was downstairs. {when: has(said.ned_told_ilo) | has(said.will_told_ilo)}
+line: ANNI: The certificate said intestinal. Your gran said he'd always had a weak stomach.
+line: DAUGHTER: Had he?
+line: ANNI: No.
+go: q.w.anni.next
+
+@node q.w.anni.yard
+place: q_anni_room
+speaker: ANNI
+cost: 4
+line: ANNI: On the Monday Gedge came to the yard with a list.
+line: ANNI: Dad went in and got Aaron's coat off the hook. He held it open for him, the way you do for a little one. Mum was at the window. {when: has(q.aaron_taken)}
+line: ANNI: Somebody spoke up for us, and they went next door to Sallis's instead. I could hear them knocking. {when: !has(q.aaron_taken)}
+line: ANNI: Mum saw a man at the top of the yard in a good coat, with a book. He stopped and watched, and then he went on to work. {when: has(said.ned_walked_on)}
+go: q.w.anni.next
+
+@node q.w.anni.gate
+place: q_anni_room
+speaker: ANNI
+cost: 4
+line: ANNI: I took the thread off myself at the door. Mum's fingers wouldn't do it. She held it in her mouth all the way home. {when: has(q.anni_sent)}
+line: ANNI: He wrote something in the father line, at the gate. Nobody told me what. {when: has(q.ned_claimed)}
+line: ANNI: Mrs Furrowe opened the door and said wipe your feet. {when: has(q.anni_furrowe)}
+line: ANNI: Somebody left bread on the step that week, wrapped in a man's handkerchief. Mum kept the handkerchief. {when: has(q.will_bread)}
+line: ANNI: Mr Furrowe brought flour down in the trap. Dad didn't thank him. {when: has(q.ned_food)}
+line: ANNI: Mum said no at the gate, and we went home. {when: !has(q.anni_sent) & !has(q.anni_furrowe)}
+go: q.w.anni.next
+
+@node q.w.anni.table
+place: q_anni_room
+speaker: ANNI
+cost: 3
+voice: sum: Two-ninety is what they sent. You only add up what they send. That's the whole of the job, and you've done it right for eleven years. {echo: q.sl.add_up, when: toldself(q.sl.add_up)}
+voice: pride: Nobody's going to count those forty sacks again. Nobody's going to come and check. {echo: q.sl.check, when: toldself(q.sl.check)}
+line: ANNI: Mum laid the bowls every night after, all of them, and turned the empty ones over on the shelf. Every night. She wiped them. {when: has(q.tomas_held) | has(q.anni_sent) | has(q.aaron_taken) | has(q.anni_furrowe)}
+line: ANNI: That week we were all at the table. All of us. I remember thinking that was a thing that could stop. {when: !(has(q.tomas_held) | has(q.anni_sent) | has(q.aaron_taken) | has(q.anni_furrowe))}
+go: q.w.anni.next
+
+@node q.w.anni.hands
+place: q_anni_room
+speaker: ANNI
+cost: 3
+nar: She looks at his hands on the cup.
+line: ANNI: Edie Brack used to say her Davey never once let his own children see him cross. She said he sat on his hands at the table, like that.
+voice: pride: You've never once lifted a hand to that boy. Not once. Your father did it every Friday and you swore. {echo: q.sl.never_hand, when: toldself(q.sl.never_hand)}
+voice: ballast: Somebody had to keep order. You'll not hear different from me. {echo: q.sl.order, when: toldself(q.sl.order)}
+go: q.w.anni.next
+
+@node q.w.anni.guest
+place: q_anni_room
+speaker: ANNI
+cost: 2
+nar: She looks at him properly for the first time, the way she'd look at a sum. {when: has(said.ned_vouch_cart) | has(q.will_down) | has(q.ned_claimed)}
+nar: The girl has the last paper out of the tin, a copy from the register gone soft at the folds, with a line ruled through one of the columns and something in pencil in the margin.
+line: DAUGHTER: Who's this, where it's crossed out?
+line: ANNI: That's where my father goes.
+line: DAUGHTER: So who was he?
+line: ANNI: Ilo carried me on his shoulders to Osby fair, the year they bought the bowls.
+line: DAUGHTER: That's not what I asked.
+line: ANNI: No.
+opt: "Say your name." -> q.w.anni.name {do: set(said.old_name)}
+opt: "Put the tally on the table." -> q.w.anni.tally ? has(said.ned_keep_tally)
+opt: "Tell her where Tomas lies." -> q.w.anni.corner ? has(q.corner_known) | prior(q.fact.corner)
+opt: "Say nothing." -> q.w.anni.quiet
+
+@node q.w.anni.name
+place: q_anni_room
+speaker: ANNI
+cost: 2
+line: NED: Furrowe. With an e. {when: q_class == inspector}
+line: ANNI: I know how it's spelt. {when: q_class == inspector}
+line: WILL: Brack. Will Brack. I was at the post. {when: q_class == militia}
+line: ANNI: I know where you were. {when: q_class == militia}
+nar: She pours him more tea. He hadn't finished the first.
+go: q.w.anni.next
+
+@node q.w.anni.tally
+place: q_anni_room
+speaker: DAUGHTER
+cost: 2
+nar: He takes a folded sheet out of his inside pocket, soft as cloth with keeping, and puts it on the oilcloth. Columns of fives, ticked through, in a girl's careful hand.
+line: DAUGHTER: That's the one that's missing. Mum. That's October.
+nar: Anni picks it up and puts it in the tin, in its place, in order. She doesn't say anything to him at all.
+go: q.w.anni.next
+
+@node q.w.anni.corner
+place: q_anni_room
+speaker: ANNI
+cost: 3
+nar: He tells her. He tells it badly, because he starts at the gap in the railings and has to go back, and because the corner is under the new section now, with wire round it and no markers.
+line: ANNI: Was he awake?
+nar: He wasn't there for that. He says so.
+line: ANNI: The corner past the gap. Where it's yellow.
+nar: She nods. She'll go up on Sunday and stand at the wire, and nobody will know which bit to stand in front of, and she'll stand there anyway.
+go: q.w.anni.next
+
+@node q.w.anni.quiet
+place: q_anni_room
+cost: 2
+nar: He says nothing. She doesn't ask him to. The rain goes on on the window.
+go: q.w.anni.next
+
+# ---------------------------------------------------------------- the last beat: the effect that keeps moving
+@node q.w.anni.tin
+place: q_anni_room
+speaker: DAUGHTER
+cost: 3
+do: wend()
+line: DAUGHTER: Can I take the tin to school? Miss is doing the hard winter this term. She wants things from home.
+line: ANNI: I'll think about it.
+nar: The old man is still at the end of the table, with the cup in both hands, and it's gone cold. {when: has(said.old_name) | has(q.corner_known)}
+nar: The chair at the end of the table is empty. The cup's still warm. {when: !(has(said.old_name) | has(q.corner_known))}
+end: q.end

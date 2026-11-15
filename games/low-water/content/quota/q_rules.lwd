@@ -1,0 +1,281 @@
+# The Quota: its own ruleset. Gameplay engineer, 2026-10-21. Private.
+# The slice used to borrow Low Water's whole ruleset (../act1/rules.lwd), and with it the Gullet's
+# character creation. This file keeps what the Quota's scenes use: the four compartments and the
+# sixteen voices (since 2026-10-23 the four great traits and the sixteen traits), with the same ids, so the voice sheets and the checks read as before. It leaves
+# out the Kit, the meters, the Precedents and the Gullet's items.
+# There is no creation screen. The class choice at q.start is the start: the shell makes the plain
+# sheet (start-archetype), and the choice calls become(q.ned) or become(q.will), which puts the
+# chosen man's sheet in its place. The figure follows from @meta player-figure.
+
+@rules
+check-mode: fixed
+xp-per-level: 1
+points-per-level: 1
+skill-cap: 4
+creation-points: 11
+creation: none
+start-archetype: q.plain
+attr-min: 1
+attr-max: 5
+cabinet-slots: 3
+cabinet-slots-max: 6
+forget-cost: 1
+rep-min: -3
+rep-max: 3
+autosave-minutes: 10
+
+# ---------------------------------------------------------------- the four great traits (the compartments)
+# The traits pass, 2026-10-23 (design/TRAITS.md, design/TRAITS-RENAME.md): every compartment and voice is a quality or
+# a vice the character carries, and each one is a being he meets and fights in the inner arena. The ids are the old
+# ones (pen, coat, hat, nose; sum, precedent and the rest), kept because the scenes, the checks, the saves and the
+# combat build read them; the names and what each one is are new. combat/data/traits.mjs holds the same table and
+# a test keeps the two in step.
+@attr pen
+name: SUSPICION
+short: READ
+about: What you see coming: the lie, the light sack, the shoulder before the blow. Reading blows early, weak points, breath.
+
+@attr coat
+name: HARDNESS
+short: ENDURE
+about: What you can take: cold, a blow, a load, a night on your feet. Standing, the weight you carry, the heavy tools.
+
+@attr hat
+name: AUTHORITY
+short: END
+about: How you make a thing stop: the look that ends a quarrel, the word that ends a fight. People give in sooner.
+
+@attr nose
+name: FEAR
+short: EVADE
+about: How you get out of the way: a step aside, a shadow, the door nobody saw you use. Dodges, footing, getting clear.
+
+# ---------------------------------------------------------------- the sixteen traits (the voices)
+@skill sum
+name: PRUDENCE
+attr: pen
+about: Knows what a thing weighs and what it's worth, and keeps quiet about it. In a fight: swings cost less breath; the stick, the fid and the spanner hit harder.
+
+@skill precedent
+name: LOYALTY
+attr: pen
+about: Your family's words in your mouth. What your father did, you do. In a fight: finds the weak point after a blow you read.
+
+@skill smallprint
+name: COWARDICE
+attr: pen
+about: Finds the reason it was never your job. Quick to see a way out. In a fight: no tool of its own. It talks, and you meet its body inside.
+
+@skill carbon
+name: GUILT
+attr: pen
+about: Puts the scene back as it happened, and makes you stand in it. In a fight: reads a blow earlier and finds the weak point; the marlinspike and the fid.
+
+@skill knees
+name: WEARINESS
+attr: coat
+about: Stairs, cold, the long day. Wants to sit down. Gets you through by wanting less. In a fight: more breath; the roll carries further; the oar, the beetle and bare hands.
+
+@skill ballast
+name: OBEDIENCE
+attr: coat
+about: Holds the line it's given. Keeps you on your feet when the ground moves. In a fight: poise; the pole, the chain and the hammer.
+
+@skill pride
+name: VANITY
+attr: coat
+about: Needs to be seen and liked. Keeps your back straight in a good coat. In a fight: the case catches a longer window; the key and the bell jar.
+
+@skill grip
+name: APPETITE
+attr: coat
+about: The hands' wanting: the bread, the door, the man. Remembers in the knuckles. In a fight: blows break poise; the hammer, the crowbar and bare hands.
+
+@skill condolence
+name: TENDERNESS
+attr: hat
+about: Sees the hurt in people and wants to hold on. Holds on too long. In a fight: people give in sooner; the bell jar.
+
+@skill formletter
+name: CONTEMPT
+attr: hat
+about: Talks down. Makes a man feel the size he is. In a fight: people give in sooner; the case and the pole.
+
+@skill chit
+name: JEALOUSY
+attr: hat
+about: Sees what the other man has and what he paid. Never lets it go. In a fight: no tool of its own. It talks, and you meet its body inside.
+
+@skill hearsay
+name: SPITE
+attr: hat
+about: Says the thing that will hurt, and says it where it will spread. In a fight: people give in sooner.
+
+@skill smell
+name: DISGUST
+attr: nose
+about: Smells sickness, smoke, the store that isn't empty. Wants to wash its hands of people. In a fight: the eel spear.
+
+@skill dark
+name: DREAD
+attr: nose
+about: Knows what's coming before it comes. Sees in the dark. In a fight: longer dodges; the knife and the stick.
+
+@skill undertow
+name: SHAME
+attr: nose
+about: Knows what people hide because it hides things too. Pulls you toward it. In a fight: reads a blow earlier; the crowbar.
+
+@skill salt
+name: NERVE
+attr: nose
+about: The body's nerve: weather in the joints, the will to go first. In a fight: longer dodges; the eel spear, the tiller, the boathook and the oar.
+
+# ---------------------------------------------------------------- who people answer to
+@faction district
+name: The district
+about: The office, the militia post, and the families of the men who work there.
+start: 0
+tier: -3 thinks you have turned on your own
+tier: 0 thinks you are one of them
+tier: 2 thinks you can be relied on
+
+@faction directorate
+name: The Directorate
+about: Commissioner Pask and the requisition squads. Arlen's figures, in Arlen's hand.
+start: 0
+tier: -3 thinks you are a saboteur
+tier: 0 thinks you are a district official
+tier: 2 thinks you are reliable
+
+@faction chairmen
+name: The brigade chairmen
+about: Krall and men like him, who send their carts heaped and want the district.
+start: 0
+tier: -3 thinks you are in the way
+tier: 0 thinks you can be worked with
+tier: 2 thinks you are useful
+
+@faction millstreet
+name: Mill Street
+about: The households of the mill and the yards below the square.
+start: 0
+tier: -3 thinks you are the office's man
+tier: 0 is waiting to see
+tier: 2 thinks you are on their side
+
+@faction hesh
+name: The Hesh families
+about: The herders from the hills and the hands who came down to work the harvests.
+start: 0
+tier: -3 thinks you are the census with a gun
+tier: 0 does not trust you
+tier: 2 trusts you, a little
+
+# ---------------------------------------------------------------- what they wear (combat/data/build.mjs CLOTHING: as the Shelf coat)
+@item c.q_overcoat
+name: The inspector's overcoat
+slot: coat
+warm: 2
+mod: skill.pride +1
+about: District issue, turned once at the cuffs.
+
+@item c.q_hat
+name: The good hat
+slot: hat
+mod: skill.formletter +1
+about: Black felt. People who have stood in the queue by the scale know it.
+
+@item c.q_greatcoat
+name: The militia greatcoat
+slot: coat
+warm: 2
+mod: skill.pride +1
+about: Grey, with the district's number on the collar.
+
+@item c.q_cap
+name: The militia cap
+slot: hat
+about: A peaked cap with the badge sewn on.
+
+@item w.stick
+name: Ned's blackthorn stick
+slot: hand
+about: For the walk out to the villages. He tries the ruts with it before he puts his weight on them.
+
+# ---------------------------------------------------------------- the sheets
+# The plain sheet stands until the choice at q.start; it is never played.
+@archetype q.plain
+name: The Upper Town
+about: Before the choice at the tower.
+attr: pen 3
+attr: coat 3
+attr: hat 3
+attr: nose 2
+
+@archetype q.ned
+name: Ned Furrowe
+about: District inspector. He stands at the scale when the villages' grain is weighed.
+attr: pen 4
+attr: coat 2
+attr: hat 3
+attr: nose 2
+skill: sum 4
+skill: precedent 2
+skill: smallprint 2
+skill: carbon 2
+skill: condolence 1
+skill: chit 1
+skill: formletter 1
+skill: pride 1
+item: c.q_overcoat 1
+item: c.q_hat 1
+item: w.stick 1
+
+@archetype q.will
+name: Will Brack
+about: Sergeant of militia. He keeps the cells and the road post.
+attr: pen 2
+attr: coat 4
+attr: hat 2
+attr: nose 3
+skill: knees 2
+skill: ballast 2
+skill: pride 2
+skill: grip 2
+skill: salt 1
+skill: smell 1
+item: c.q_greatcoat 1
+item: c.q_cap 1
+
+# ---------------------------------------------------------------- day forty-one on the plain
+# The plain has no tide. Frost all day; the wind gets up after noon and brings snow at dusk.
+@day q_day41
+tide: none
+at: 05:50 daylight 0
+at: 07:20 daylight 0
+at: 08:10 daylight 0.7
+at: 15:10 daylight 0.7
+at: 16:10 daylight 0
+at: 05:50 temp -9
+at: 13:00 temp -4
+at: 18:00 temp -8
+at: 23:59 temp -12
+at: 05:50 frost 1
+at: 05:50 wind.speed 3
+at: 12:30 wind.speed 4
+at: 14:00 wind.speed 9
+at: 20:00 wind.speed 11
+at: 05:50 wind.dir 20
+at: 05:50 snow 0
+at: 16:30 snow 0
+at: 17:30 snow 1
+at: 21:00 snow 2.5
+
+# The menu and the day's clock (UI and UX lead, 2026-10-23; DECISIONS-2026-10-22, "Retire the tide and the
+# Daybook"). menu: the pause menu's pages in order, plainly named (ui/daybook.mjs): Character, Inventory, Map,
+# Journal. No Record page: the read-back is never shown (q_readback.lwd), the witness scene carries it. hud-week:
+# day 41, the act's first day, was a Wednesday (q_cells.lwd), so a later day's clock carries its weekday.
+@meta
+menu: build pack map
+hud-week: Wednesday

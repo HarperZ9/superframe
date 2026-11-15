@@ -1,0 +1,585 @@
+// sim/world.mjs: one frame of the fight, and sim/barks.mjs.
+
+fn engaged(w: &World, fi: usize) -> bool {
+    let f = w.fighters[fi];
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let o = w.fighters[i];
+        if o.team != f.team && !o.out && !o.fallen && !o.yielded && o.aware && dhypot(o.x - f.x, o.z - f.z) <= 10.0 {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
+fn shout(w: &mut World, fi: usize, m: Move) {
+    let f = w.fighters[fi];
+    let mut to: Vec<str> = Vec::new();
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let o = w.fighters[i];
+        if !(i == fi || o.team != f.team || o.out || o.fallen || o.yielded || dhypot(o.x - f.x, o.z - f.z) > m.shout_r) {
+            if m.shout_cool && o.has_mem {
+                w.fighters[i].mem.cool = w.tick as f64;
+                w.fighters[i].mem.next = w.tick as f64;
+            }
+            if m.shout_poise != 0.0 {
+                w.fighters[i].poise = minf(o.poise_max, o.poise + m.shout_poise);
+            }
+            if m.shout_stamina != 0.0 {
+                w.fighters[i].st = minf(o.st_max, o.st + m.shout_stamina);
+            }
+            to.push(o.id);
+        }
+        i += 1;
+    }
+    let mut ev = new_ev(w, "shout");
+    ev_str(&mut ev, "id", f.id);
+    ev_str(&mut ev, "move", m.id);
+    ev_raw(&mut ev, "to", jstrs(to));
+    ev.id = f.id;
+    ev.mv = m.id;
+    emit(w, ev);
+}
+
+fn use_item(w: &mut World, fi: usize, m: Move) {
+    let n = item_count(w.fighters[fi], m.item_use);
+    set_item(w, fi, m.item_use, n - 1.0);
+    if m.item_use == "lantern" {
+        w.fighters[fi].lantern = 0.0;
+    }
+    if m.item_heal != 0.0 {
+        let f = w.fighters[fi];
+        w.fighters[fi].hp = minf(f.hp_max, f.hp + m.item_heal);
+        let mut ev = new_ev(w, "heal");
+        ev_str(&mut ev, "id", f.id);
+        ev_num(&mut ev, "n", m.item_heal);
+        ev.id = f.id;
+        emit(w, ev);
+    }
+    if m.has_proj {
+        spawn_projectile(w, fi, m);
+    }
+}
+
+fn held_press(w: &World, fi: usize) -> (bool, f64) {
+    let f = w.fighters[fi];
+    if !f.has_act {
+        return (false, 0.0);
+    }
+    let m = mv(w, f.act.id);
+    let from = if m.kind == "dodge" {
+        if m.iframes.has { m.iframes.a + 2.0 } else { 0.0 }
+    } else {
+        m.startup
+    };
+    if f.act.f >= from {
+        return (true, f.act.seq);
+    }
+    (false, 0.0)
+}
+
+fn shutter(w: &mut World, fi: usize) {
+    let f = w.fighters[fi];
+    if !(item_count(f, "lantern") > 0.0) {
+        return;
+    }
+    let dl = w.defs[fi].lantern;
+    w.fighters[fi].lantern = if f.lantern > 0.0 { 0.0 } else if dl != 0.0 { dl } else { 5.0 };
+    let mut ev = new_ev(w, "lantern");
+    ev_str(&mut ev, "id", f.id);
+    ev_bool(&mut ev, "lit", w.fighters[fi].lantern > 0.0);
+    ev.id = f.id;
+    emit(w, ev);
+}
+
+fn gather(w: &mut World, lamb_inp: Inp) {
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        let idle = f.out || f.fallen || f.yielded;
+        let mut inp = empty_inp();
+        if f.team == "lamb" {
+            inp = lamb_inp;
+        } else if index_of(w.brain_ids, f.id) >= 0 && !idle {
+            inp = think(w, i);
+        }
+        w.fighters[i].inp = inp;
+        let mut k = 0;
+        while k < inp.press.len() {
+            let a = inp.press[k];
+            if a == "lock" {
+                toggle_lock(w, i);
+            } else if a == "next" || a == "prev" {
+                switch_lock(w, i, if a == "next" { 1.0 } else { -1.0 });
+            } else if a == "lantern" {
+                shutter(w, i);
+            } else if a == "interact" {
+                if !w.fighters[i].has_act && !w.fighters[i].fallen {
+                    interact(w, i);
+                }
+            } else if a == "talk" {
+                // no talk exit is offered in a corpus fight
+            } else {
+                let hp = held_press(w, i);
+                w.fighters[i].buf.push(BufEntry { a: a, t: w.tick as f64, held: hp.0, seq: hp.1 });
+            }
+            k += 1;
+        }
+        i += 1;
+    }
+}
+
+fn gust(w: &mut World, fi: usize) {
+    let f = w.fighters[fi];
+    if !f.has_act || f.act.gusted || w.terms.wind_speed <= 20.0 {
+        return;
+    }
+    let m = mv(w, f.act.id);
+    if !m.guard_break || f.act.f >= m.startup {
+        return;
+    }
+    if !contains(w.fighters[fi].act.extra, "gusted") {
+        w.fighters[fi].act.extra.push("gusted");
+    }
+    w.fighters[fi].act.gusted = true;
+    start_move(w, fi, "stagger", empty_inp(), false, 0.0);
+    let mut ev = new_ev(w, "gust");
+    ev_str(&mut ev, "id", f.id);
+    ev_num(&mut ev, "speed", w.terms.wind_speed);
+    ev.id = f.id;
+    emit(w, ev);
+}
+
+fn step_fighter(w: &mut World, fi: usize) {
+    if w.fighters[fi].flash > 0.0 {
+        w.fighters[fi].flash = w.fighters[fi].flash - 1.0;
+    }
+    if w.fighters[fi].hitstop > 0.0 {
+        w.fighters[fi].hitstop = w.fighters[fi].hitstop - 1.0;
+        return;
+    }
+    if w.fighters[fi].out || w.fighters[fi].fallen {
+        return;
+    }
+    let inp = w.fighters[fi].inp;
+    consume_buffer(w, fi, inp);
+    gust(w, fi);
+    if w.fighters[fi].has_act {
+        step_action(w, fi, inp);
+        if !w.fighters[fi].has_act && !w.fighters[fi].yielded {
+            consume_buffer(w, fi, inp);
+        }
+    } else if !w.fighters[fi].yielded {
+        step_free(w, fi, inp);
+    }
+    if !w.fighters[fi].has_act && (w.fighters[fi].hp <= 0.0 || w.fighters[fi].yielded) {
+        settle(w, fi);
+    }
+    step_recovery(w, fi);
+    integrate(w, fi);
+}
+
+fn settle(w: &mut World, fi: usize) {
+    let f = w.fighters[fi];
+    if f.team == "lamb" {
+        w.fighters[fi].fallen = true;
+        let mut ev = new_ev(w, "down");
+        ev_str(&mut ev, "id", f.id);
+        ev.id = f.id;
+        emit(w, ev);
+    } else {
+        w.fighters[fi].out = true;
+        let mut ev = new_ev(w, "out");
+        ev_str(&mut ev, "id", f.id);
+        ev_bool(&mut ev, "yielded", f.yielded);
+        ev.id = f.id;
+        ev.yielded = f.yielded;
+        emit(w, ev);
+    }
+    w.fighters[fi].lock = "";
+}
+
+fn separate(w: &mut World) {
+    let mut live: Vec<usize> = Vec::new();
+    let mut i = 0;
+    while i < w.fighters.len() {
+        if !w.fighters[i].out && !w.fighters[i].fallen {
+            live.push(i);
+        }
+        i += 1;
+    }
+    let mut a = 0;
+    while a < live.len() {
+        let mut b = a + 1;
+        while b < live.len() {
+            let ai = live[a];
+            let bi = live[b];
+            let fa = w.fighters[ai];
+            let fb = w.fighters[bi];
+            let min = w.defs[ai].radius + w.defs[bi].radius;
+            let dx = fb.x - fa.x;
+            let dz = fb.z - fa.z;
+            let d = dhypot(dx, dz);
+            if !(d >= min) {
+                let nx = if d > 0.000001 { dx / d } else { 1.0 };
+                let nz = if d > 0.000001 { dz / d } else { 0.0 };
+                let push = (min - d) / 2.0;
+                if body_may(w, ai, fa.x - nx * push, fa.z - nz * push) {
+                    w.fighters[ai].x = fa.x - nx * push;
+                    w.fighters[ai].z = fa.z - nz * push;
+                }
+                let fb2 = w.fighters[bi];
+                if body_may(w, bi, fb2.x + nx * push, fb2.z + nz * push) {
+                    w.fighters[bi].x = fb2.x + nx * push;
+                    w.fighters[bi].z = fb2.z + nz * push;
+                }
+            }
+            b += 1;
+        }
+        a += 1;
+    }
+}
+
+fn fill_composure(w: &mut World, li: usize, n: f64) {
+    let d = w.defs[li];
+    let regain = if d.has_tempo && d.tempo_regain != 0.0 { d.tempo_regain } else { 1.0 };
+    let l = w.fighters[li];
+    w.fighters[li].composure = minf(l.composure_max, l.composure + n * regain);
+}
+
+fn witness(w: &mut World) {
+    let lx = lamb_index(w);
+    if lx < 0 {
+        return;
+    }
+    let li = lx as usize;
+    let mut k = 0;
+    while k < w.events.len() {
+        let e = w.events[k];
+        let lid = w.fighters[li].id;
+        let d = w.defs[li];
+        if e.typ == "evade" && e.id == lid && d.brk_nose8 && w.fighters[li].has_act && mv(w, w.fighters[li].act.id).kind == "dodge" {
+            let l = w.fighters[li];
+            w.fighters[li].st = minf(l.st_max, l.st + 1.5);
+            let mut ev = new_ev(w, "breathback");
+            ev_str(&mut ev, "id", lid);
+            ev.id = lid;
+            emit(w, ev);
+        }
+        if e.typ == "parry" && e.id == lid {
+            fill_composure(w, li, 1.5);
+        }
+        let struck = if contains(w.fighters[li].extra, "struckAt") { w.fighters[li].struck_at } else { -1000000000.0 };
+        let held = (w.tick as f64) - struck > 60.0;
+        if held && e.typ == "block" && e.id == lid {
+            fill_composure(w, li, 0.35);
+        }
+        if held && e.typ == "evade" && e.id == lid {
+            fill_composure(w, li, 0.35);
+        }
+        if e.typ == "bark" && (e.voice == "condolence" || e.voice == "formletter" || e.voice == "chit" || e.voice == "hearsay") {
+            fill_composure(w, li, 0.5);
+        }
+        if e.typ == "hit" && e.by == lid {
+            add_extra(w, li, "struckAt");
+            w.fighters[li].struck_at = w.tick as f64;
+            fill_composure(w, li, if e.mv == "riposte" { 1.0 } else { 0.5 });
+        }
+        if e.typ == "tell" {
+            w.telegraphs_seen = w.telegraphs_seen + 1.0;
+        }
+        if e.typ == "hit" && e.by == lid {
+            if !contains(w.struck, e.id) {
+                w.struck.push(e.id);
+            }
+            let mut i = 0;
+            while i < w.fighters.len() {
+                let f = w.fighters[i];
+                if w.defs[i].faction == "trust" && !f.out && visible(w, i, li) {
+                    w.seen_violence = true;
+                }
+                i += 1;
+            }
+        }
+        k += 1;
+    }
+}
+
+fn end_fight(w: &mut World, outcome: str, reason: str) {
+    w.has_result = true;
+    w.outcome = outcome;
+    w.reason = reason;
+    let mut ev = new_ev(w, "end");
+    ev_str(&mut ev, "outcome", outcome);
+    ev_strn(&mut ev, "reason", reason);
+    emit(w, ev);
+}
+
+fn judge(w: &mut World) {
+    let lx = lamb_index(w);
+    if lx < 0 {
+        return;
+    }
+    let l = w.fighters[lx as usize];
+    if l.fallen {
+        end_fight(w, "down", "standing");
+        return;
+    }
+    let mut nfoes = 0;
+    let mut all_out = true;
+    let mut all_yielded = true;
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        if f.team != "lamb" {
+            nfoes += 1;
+            if !f.out {
+                all_out = false;
+            }
+            if !f.yielded {
+                all_yielded = false;
+            }
+        }
+        i += 1;
+    }
+    if nfoes == 0 {
+        return;
+    }
+    if all_out {
+        end_fight(w, if all_yielded { "yield" } else { "win" }, "opponents");
+        return;
+    }
+    let mx = if l.inp.has_mx && l.inp.mx == l.inp.mx { l.inp.mx } else { 0.0 };
+    let mz = if l.inp.has_mz && l.inp.mz == l.inp.mz { l.inp.mz } else { 0.0 };
+    let steering = dhypot(mx, mz) > 0.2;
+    w.flee_t = if in_exit(w, l.x, l.z) && !l.has_act && steering { w.flee_t + 1.0 } else { 0.0 };
+    if w.flee_t >= 30.0 {
+        end_fight(w, "fled", "exit");
+        return;
+    }
+    if w.arena.tide_ends && water_y(w) - cell_at(w, l.x, l.z).h >= 0.85 {
+        end_fight(w, "lose", "tide");
+    }
+}
+
+// sim/barks.mjs, with the placeholder text (corpus fights have no @bark records)
+fn bark_text(key: str) -> str {
+    if key == "footing.frost" {
+        return "Frost under the left boot.";
+    }
+    if key == "footing.wet" {
+        return "[placeholder] wet stone";
+    }
+    if key == "breath.low" {
+        return "[placeholder] breath low";
+    }
+    if key == "tide.near" {
+        return "Water at the ankle in twenty seconds.";
+    }
+    if key == "smell.behind" {
+        return "Eel-oil and fear, on your right.";
+    }
+    if key == "tell.grab" {
+        return "He wants you to block.";
+    }
+    if key == "dark.near" {
+        return "[placeholder] footsteps in the dark";
+    }
+    if key == "pride.losing" {
+        return "[placeholder] wet and losing";
+    }
+    key
+}
+
+fn bark_last(w: &World, voice: str) -> f64 {
+    let i = index_of(w.bark_last_keys, voice);
+    if i < 0 {
+        return -1000000000.0;
+    }
+    w.bark_last_vals[i as usize]
+}
+
+fn bark_set_last(w: &mut World, voice: str, t: f64) {
+    let i = index_of(w.bark_last_keys, voice);
+    if i < 0 {
+        w.bark_last_keys.push(voice);
+        w.bark_last_vals.push(t);
+    } else {
+        w.bark_last_vals[i as usize] = t;
+    }
+}
+
+fn barks(w: &mut World) {
+    if w.tick % 15 != 0 {
+        return;
+    }
+    let lx = lamb_index(w);
+    if lx < 0 {
+        return;
+    }
+    let li = lx as usize;
+    let l = w.fighters[li];
+    if l.fallen {
+        return;
+    }
+    let rising = w.bark_has_tide && w.terms.tide > w.bark_tide;
+    w.bark_has_tide = true;
+    w.bark_tide = w.terms.tide;
+    let mut foes: Vec<usize> = Vec::new();
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        if f.team != l.team && !f.out && !f.yielded {
+            foes.push(i);
+        }
+        i += 1;
+    }
+    let mut grab = false;
+    i = 0;
+    while i < w.events.len() {
+        if w.events[i].typ == "tell" && w.events[i].kind == "grab" {
+            grab = true;
+        }
+        i += 1;
+    }
+    i = 0;
+    while i < foes.len() {
+        let f = w.fighters[foes[i]];
+        if f.has_act {
+            let m = mv(w, f.act.id);
+            if m.has_tell && m.tell_kind == "grab" && f.act.f < 12.0 {
+                grab = true;
+            }
+        }
+        i += 1;
+    }
+    let foot = footing(w, l.x, l.z);
+    let t = w.tick as f64;
+    if t - w.bark_last_any < 150.0 {
+        return;
+    }
+    let voices: Vec<str> = vec!["ballast", "ballast", "knees", "salt", "smell", "undertow", "dark", "pride"];
+    let keys: Vec<str> = vec![
+        "footing.frost", "footing.wet", "breath.low", "tide.near", "smell.behind", "tell.grab",
+        "dark.near", "pride.losing"
+    ];
+    let mut r = 0;
+    while r < voices.len() {
+        let voice = voices[r];
+        if !(t - bark_last(w, voice) < 600.0) && bark_when(w, r as i64, li, foot, foes, rising, grab) {
+            bark_set_last(w, voice, t);
+            w.bark_last_any = t;
+            let mut ev = new_ev(w, "bark");
+            ev_str(&mut ev, "voice", voice);
+            ev_str(&mut ev, "key", keys[r]);
+            ev_str(&mut ev, "text", bark_text(keys[r]));
+            ev.voice = voice;
+            emit(w, ev);
+            return;
+        }
+        r += 1;
+    }
+}
+
+fn bark_when(w: &World, r: i64, li: usize, foot: Footing, foes: Vec<usize>, rising: bool, grab: bool) -> bool {
+    let l = w.fighters[li];
+    if r == 0 {
+        return foot.frost;
+    }
+    if r == 1 {
+        return foot.kind == "wet stone";
+    }
+    if r == 2 {
+        return l.st < 1.5;
+    }
+    if r == 3 {
+        return rising && foot.depth > -0.12 && foot.depth < 0.08;
+    }
+    if r == 4 {
+        let mut i = 0;
+        while i < foes.len() {
+            let f = w.fighters[foes[i]];
+            let behind = wrap_angle(angle_to(l.x, l.z, f.x, f.z) - l.face).abs() > (2.0 * JS_PI) / 3.0;
+            if behind && upwind(w, l, f) {
+                return true;
+            }
+            i += 1;
+        }
+        return false;
+    }
+    if r == 5 {
+        return grab;
+    }
+    if r == 6 {
+        let mut i = 0;
+        while i < foes.len() {
+            let f = w.fighters[foes[i]];
+            if !visible(w, li, foes[i]) && dhypot(f.x - l.x, f.z - l.z) < 4.0 {
+                return true;
+            }
+            i += 1;
+        }
+        return false;
+    }
+    foot.wet && l.hp < l.hp_max * 0.4
+}
+
+fn upwind(w: &World, l: Fighter, f: Fighter) -> bool {
+    let t = w.terms;
+    let d0 = dhypot(l.x - f.x, l.z - f.z);
+    let d = if d0 != 0.0 && d0 == d0 { d0 } else { 1.0 };
+    let wv0 = dhypot(t.wind_x, t.wind_z);
+    let wv = if wv0 != 0.0 && wv0 == wv0 { wv0 } else { 1.0 };
+    ((l.x - f.x) * t.wind_x + (l.z - f.z) * t.wind_z) / (d * wv) > 0.5
+}
+
+// One frame. The terms are the field's refresh (every 30 frames) from the export.
+fn step(w: &mut World, lamb_inp: Inp) {
+    w.events = Vec::new();
+    if w.has_result {
+        return;
+    }
+    w.tick = w.tick + 1;
+    if w.tick % 30 == 1 {
+        let k = ((w.tick - 1) / 30) as usize;
+        if k < w.terms_list.len() {
+            w.terms = w.terms_list[k];
+        }
+    }
+    w.seconds = (w.tick as f64) / 60.0;
+    w.lamps_now = lamps(w);
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let e = engaged(w, i);
+        add_extra(w, i, "engaged");
+        w.fighters[i].engaged = e;
+        i += 1;
+    }
+    gather(w, lamb_inp);
+    i = 0;
+    while i < w.fighters.len() {
+        step_fighter(w, i);
+        i += 1;
+    }
+    separate(w);
+    let contacts = find_contacts(w);
+    i = 0;
+    while i < contacts.len() {
+        let c = contacts[i];
+        apply_hit(w, c.a, c.t, c.m, -1);
+        i += 1;
+    }
+    step_projectiles(w);
+    step_props(w);
+    step_awareness(w);
+    i = 0;
+    while i < w.fighters.len() {
+        keep_lock(w, i);
+        i += 1;
+    }
+    barks(w);
+    witness(w);
+    judge(w);
+}

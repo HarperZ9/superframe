@@ -1,7 +1,7 @@
 <!-- writing-profile: research -->
 # Combat tuning log
 
-Private. Every number the fight uses, where it came from, and what changed. Sources:
+Every number the fight uses, where it came from, and what changed. Sources:
 
 - **spec P**: `cleanroom/spec/COMBAT-FEEL.md` v1 section 6, the study role's own starting values
   (genre guesses, labelled P there). Not reference values.
@@ -369,3 +369,66 @@ Harness (node tools/playthrough.mjs --build all, after the taught-move aliases):
 won, Hands 4 of 5, Eye 1 of 3, Shadow 1 of 4, Tongue none fought. The harness Fist never raises a
 compartment past COAT 4, so it reaches no breakpoint; the min-max gap above is what a committed
 player sees. Idle-down: 7.7 to 14.3 s, the conger 16.1 s (1.1 s over the target).
+
+## Feel checklist (systems engineer, 2026-10-22, engine PROGRESS 37)
+
+Each line has a number and the check that holds it. Run before any change to frames, the buffer, the camera or impacts.
+
+| Item | Number | Check |
+|---|---|---|
+| Input to action when free | 0 frames | combat/tests/fluid.test.mjs, feel.test.mjs |
+| Press inside a cancel window | starts that frame | feel.test.mjs |
+| Input buffer (a press in a wind-up) | 8 frames, 133 ms after the press | feel.test.mjs (control: a press after the wind-up is held to its window) |
+| Every Lamb strike cancels into a dodge | from after the blow to the move's end | feel.test.mjs (the charged heavy locked its last 14 frames before 2026-10-22) |
+| Every dodge's recovery cancels into a strike | to the move's end | feel.test.mjs |
+| Up to 90% of walking speed | 16 frames (0.27 s), within 0.3 s | feel.test.mjs |
+| Stop to under 10% | 15 frames (0.25 s), within 0.3 s | feel.test.mjs |
+| Half turn | 14 frames (0.23 s), within 0.3 s | feel.test.mjs |
+| Diagonal against cardinal speed | within 1% | feel.test.mjs |
+| 45 degree walk into a wall | slides at 60% of walking speed or more, no stuck frame | feel.test.mjs |
+| Stick dead zone | on at 0.3, off under 0.24, length from 0.21; no flicker | tests/stick.test.mjs |
+| Strike from a walk | legs walk out the 12-frame carry, the strike above (pose.upper) | feel.test.mjs |
+| Camera at rest | 0 px a frame after 2 s | tools/camprobe.mjs (control ?camfollow=old) |
+| Camera on new bounds | speed changes at most 2 px a frame on the eased path | tests/framer.test.mjs, camprobe |
+| Fighters in the clear view | box centre within 60 px of the clear view's centre | camprobe framing |
+| Hit-stop | light 0, heavy, charged, guard break and catch 2, at most 4 with three or more opponents | CAMERA.md "Combat impacts, 2026-10-21" |
+| Impact shake | peak by frame 3, swing back 7 to 8, rest by 12; capped at 3 px while a tell shows | tools/impact-capture.mjs, tests/fightcam.test.mjs |
+| Telegraphs | a swing's tell from frame 3 to the end of its wind-up, eased slow then fast | visual-check fight views, impact stills |
+
+Open on this list (2026-10-22): the impact capture's largest shake is 15.8 px, against 9.9 px recorded on 2026-10-21. The
+fight now frames closer (zoom 1.80 against about 1.45), and the shake is set in screen pixels, so the change is
+probably the framing and not the shake. Not yet checked against a player at speed.
+
+## The inner arena (combat engineer, 2026-10-22, PROGRESS 182)
+
+The inner fights keep the feel checklist above unchanged; what they add or change:
+
+| Item | Number | Source | Check |
+|---|---|---|---|
+| Hit-stop | light 0, heavy 2, at most 4 with three or more standing, on every inner contact | the checklist | tests/inner.test.mjs F1 (control: heavy 6 fails) |
+| Telegraphs | every inner strike winds up 18 frames or more and shows its tell for 60% of that; Friday's tells are a boy's shoulders in shadow on the north wall | arena bosses' rule | tools/flawcheck.mjs F2 (control: a 12-frame wind-up) |
+| Morph | each phase change opens with the roar (52 frames of iframes, 50 frames' wind-up); every hand is quiet for 50 frames; the arena's change starts that frame | chosen | inner.test.mjs F3 (control: a strike at the morph) |
+| Lay | guard and interact held 60 frames (1.0 s) | chosen | inner.test.mjs V3 |
+| Name | 90 frames (1.5 s) standing still with the world running | chosen | inner.test.mjs V5 |
+| Endure | Nobody Checks: 4 rests in a row with no blow landed | chosen | V2 |
+| Rub (He's With Me) | 150 frames in reach (1.9 m) and in front, from the second phase | chosen | forcecheck |
+| Golem growth | +0.1 of its size a blow, the walls one cell in at 1.5 and every 0.25 after, the door shuts at 2.25 (about 13 blows) | chosen | forcecheck |
+| Floors | Friday 20% (meant to be lost); He's With Me 50%; the Adversary 100% | design | forcecheck S5 |
+| Arena shake | keyed as CAMERA.md (peak frame 3, 40% back at 7 to 8, still by 12 or 15), was a per-frame sine; at most 1 buffer px (3 px at 1080p) while a tell shows | CAMERA.md | inner-capture F4 (control: ?shakeclamp=off) |
+| Flash | at most 3 flashes a second per 1/16 window (05-CARE.md wording: 10% of the brighter); no saturated red; a hit never lights a big form whole | 05-CARE.md | inner-capture F5 (controls: 5 Hz flash, 2 Hz red; a 0.5 Hz breath passes) |
+
+## The traits in the inner arena (the traits pass, 2026-10-23; design/TRAITS.md)
+
+Every inner boss is one of the character's traits (combat/data/traits.mjs). Three constants decide how raising a
+trait and fighting it are one story:
+
+| Constant | Value | What it does | Where |
+|---|---|---|---|
+| `EMBODY` | base 5; standing +6 % and harm +4 % a level, bounded 0.82 to 1.5; height half the standing change | the being's size from his level in its trait | `combat/data/traits.mjs`, applied by `combat/arena/innerspawn.mjs` `embody` |
+| `OUTCOME_MARK` | force -1, terms +1, lost to +2 | what each ending does to the trait, as a sheet modifier | `combat/data/traits.mjs`, kept by `combat/innerhook.mjs` |
+| `FED` | 7 | the level at which a trait arms its gate in the Descent with nothing fought | `combat/data/traits.mjs`, read by `combat/arena/descent.mjs` |
+
+The three new lesser beings were tuned with `tools/innerduel.mjs` over twelve seeds (`tune` in
+`combat/data/fights-c.mjs`): JEALOUSY harm 0.95 (unskilled deaths 0.58 at 0.75); DREAD harm 1.25 with two armoured
+answers to a man who stands in its face (unskilled deaths 0 then 0.33 before them, 0.75 after); SHAME harm 0.85. A gate
+of the Descent is half again its trait's height and keeps its trait's numbers.

@@ -1,0 +1,163 @@
+{
+ "place": "q3_ward",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   -0.4,
+   0.9,
+   -0.3
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 5.2
+ },
+ "pxPerMetre": 125,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 3.7,
+   "weather": "November, 03:40: the brownout, two bulbs at half, the stove door glowing, coughs behind the screens"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "bed",
+    "verb": "look",
+    "at": [
+     -1,
+     0,
+     -0.1
+    ],
+    "note": "the one bed by the stove"
+   },
+   {
+    "id": "handcart",
+    "verb": "look",
+    "at": [
+     1.9,
+     0,
+     1.5
+    ],
+    "note": "the handcart they brought her in on; its wheel squeaks"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "church",
+    "at": [
+     3.4,
+     0,
+     1
+    ],
+    "note": "back through to the church"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -2.8,
+     0.42,
+     0.4
+    ],
+    "kind": "paraffin",
+    "I": 1.6,
+    "reach": 3,
+    "group": "stove"
+   },
+   {
+    "at": [
+     -1.69,
+     2.56,
+     -0.6
+    ],
+    "kind": "paraffin",
+    "I": 4.95,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1.11,
+     2.56,
+     -0.6
+    ],
+    "kind": "paraffin",
+    "I": 4.95,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -3.42,
+     2.3,
+     -1
+    ],
+    "kind": "white",
+    "I": 0.15,
+    "reach": 6,
+    "group": ""
+   }
+  ]
+ },
+ "figureLights": {
+  "night": [
+   {
+    "at": [
+     0,
+     2.2,
+     1
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 8,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 3: the fever ward in the church hall."
+}

@@ -1,0 +1,39 @@
+# The Quota slice: the night's dream (engine: world/dreams.mjs; check: tools/dreamcheck.mjs). Mechanism: gameplay
+# engineer, 2026-10-22. Text: story lead, 2026-10-22, over the engineer's draft (agreed in design/state/story.md).
+# The dream runs the community model a week ahead (2026-10-22, the fates: no rule takes a bowl now, so the copy
+# reads the pressure under Anni's fate as the bowl that may go; Bet decides in the real week)
+# The dream runs the community model a week ahead from the night of day 41, through the dreamer's fear (the
+# Haldanes' food a little lower than it is), and shows the table that future lays. The coda is that week.
+# Sometimes the table matches and sometimes it doesn't, and the game never says whether it was a premonition or
+# the count. The granary's endings come through q.night.
+
+@dream q.dream.table
+days: 7
+# each dreamer fears their own part in it: the inspector, that the requisition comes for what his signature says
+# the barns owe; the sergeant, the sacks he took off the cart (measured 2026-10-22: the inspector's dream comes true
+# on 9 of 14 runs, the sergeant's on 6 of 8; one fear for both made the inspector's a prophecy)
+fear: shift(owed, 60, haldane_yard) ? q_class == inspector
+fear: shift(food, -0.08, haldane)
+see: The Haldanes' table, the barn door with its hinge marks. Bet laying out bowls for the morning. She puts some down, and then she stands there with the rest held against her coat, and asks nobody in particular whose they were. ? bowls(haldane) <= 3 | bowls(haldane) == 4 & pressure(f.anni_home)
+see: The Haldanes' table, the barn door with its hinge marks. Bet laying out bowls for the morning. She lays them all but one. She keeps hold of that one and says it's only till the lambing, and goes on holding it. ? bowls(haldane) == 4 | pressure(f.anni_home)
+see: The Haldanes' table, the barn door with its hinge marks. Every bowl laid, and steam coming off the gruel, which it never does in that house. Everybody is sat down. Nobody picks up a spoon.
+reading: premonition | THE DARK: it is what is coming.
+reading: fear | SUM: it is only what you're frightened of, with the lamp out.
+
+# the night between the granary door and the coda: Bet's chapter (q_perspective.lwd), then the dream. The
+# granary's endings go here, so q.coda itself starts at the week's cut, as before.
+@node q.night
+cost: 0
+alt: q.persp.bet.door ? !seen(q.persp.bet.door)
+alt: q.dream.night ? !seen(q.dream.night)
+go: q.week
+
+@node q.dream.night
+cost: 5
+cmd: dream 0.8
+nar: That night, in the chair by the stove with his boots still on, because the bed is too cold to get into and there's no coal to spare for the bedroom.
+nar: {{dream(q.dream.table)}}
+voice: dark: You've seen that table. That's where this is going, and you knew it before you sat down. {dc: 2}
+voice: sum: You've been up since before five, and you fell asleep in your boots. That's all that was. {dc: 2}
+cmd: dream 0
+go: q.week

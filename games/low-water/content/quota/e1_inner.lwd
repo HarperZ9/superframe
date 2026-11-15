@@ -1,0 +1,78 @@
+# Era 1, The Exchange: the self-lies that arm the inner arena (Fond of Them for Abel, The Lantern for Josh), the
+# era's lore and the records the deepening pass needs. Story lead, 2026-10-23. DRAFT: every line waits for the
+# author's line approval (ledger row S14). The arena fights are the combat track's; this file only arms them: a
+# self-lie heard in era 1 is echoed word for word in Ilo's witness (e1_witness.lwd).
+
+@fact e1.dog_loosed
+@fact e1.dog_called
+
+@char e1.hob
+name: Hob Gedge, carter
+speaker: HOB
+faction: millstreet
+about: Forty-six. Carted for Orme twenty years at the full rate. Gedge's father.
+
+# ---------------------------------------------------------------- the self-lies
+@selflie e1.sl.fond
+about: VANITY, at the harvest supper, as the professor toasts the Hesh temperament (e1_board.lwd, e1.toast)
+happened: The harvest supper: Ilo Haldane in the yard with his plate on his knees while the barn laughed at the toast. He had been made to come in and sing for it. ? has(e1.toast_heard)
+happened: The harvest supper: the hands in the yard went quiet under the window while the barn laughed.
+
+@selflie e1.sl.lantern
+about: OBEDIENCE, at the road post after the first frost, with the post lantern in his hand (e1_hill.lwd, e1.post.will)
+happened: The Sallises went up the hill road at the first frost. Ketti Sallis died in the hut at the top in January, and Arn laid the wall stones over her. ? has(e1.sallis_sent)
+happened: Will Brack's lip split on the corner of the post lantern's cage, and his nose bled on the frost in the rut. ? !has(e1.sallis_sent)
+
+# ---------------------------------------------------------------- lore
+@chain e1.name
+name: How Ilo became Haldane
+# one run of either class sees the chalk goat on the locked door and hears the name given; the inspector line hears
+# whose the child is said aloud (weighted-devices pass, 2026-10-23: no slip, no register)
+route: one-run | e1.lore.slip, e1.lore.column
+route: one-run | e1.lore.slip, e1.lore.turned
+
+@lore e1.lore.slip
+chain: e1.name
+layer: surface
+where: node e1.census.turn
+about: Walter Mott's chalk goat on the end barn door when the hands are turned out, head down and facing forward, the way the town draws a goat; the hill draws theirs looking back.
+
+@lore e1.lore.column
+chain: e1.name
+layer: deep
+where: node e1.census.bet
+requires: class inspector
+about: Whose Anni is, settled at the barn door: Abel says "His" with his hat in his hands, or his stable lad says it for him, learned by heart.
+
+@lore e1.lore.turned
+chain: e1.name
+layer: deep
+where: node e1.census.ilo
+requires: class militia
+about: Josh Brack turning the key on the end barn with Mr Furrowe's key, the lock fighting him, the Corleys gone up the lane in the dark.
+
+@chain e1.hands
+name: Fit to travel
+# the names said at the pole, and the doctor's whip from the gig: the militia line holds both
+route: one-run | e1.lore.frost_list, e1.lore.fit_slips
+route: one-run | e1.lore.frost_list, e1.lore.whip
+
+@lore e1.lore.frost_list
+chain: e1.hands
+layer: surface
+where: node e1.frost
+about: Josh Brack walking the line of hands at the pole on the first frost, saying them face by face, with no list.
+
+@lore e1.lore.fit_slips
+chain: e1.hands
+layer: hidden
+where: node e1.post.will
+requires: class militia
+about: Dr Lind passing forty-odd people fit to travel from the box of his gig with an inch of his whip, the coughing ones the same as the rest, and Josh throwing it at Will with the lantern.
+
+@lore e1.lore.whip
+chain: e1.hands
+layer: deep
+where: node e1.frost.abel
+requires: class inspector
+about: From the box of his trap, Abel watching Lind's whip lift an inch for every household, the coughing ones the same.

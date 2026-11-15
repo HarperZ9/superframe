@@ -1,0 +1,405 @@
+# Era 3, Allocation: the town in September. The wide lens at the tower (e3.s01), the schoolroom (e3.s02), the
+# class's trade (e3.s03), the allocation office, the hinge (e3.s04, fate f.e3_flat, Tobin Krall decides) and the
+# Furrowe door (e3.s05). Story lead, 2026-10-23. DRAFT: every line waits for the author's line approval (ledger
+# row S14). Design: design/eras/era3.md sections 2, 3 and 12; design/spine-plan/09-ANNI.md section 5.
+# The inspector line is Pell Furrowe (20), the militia line Will Brack (44). The self-lie e3.sl.figure is tagged in
+# e3.office.krall and echoed word for word in Aaron's witness (e3_witness.lwd).
+# Weighted-devices pass, 2026-10-23: the allocation is a man with the keys (Walter Mott at the key board), the far-bank
+# flat is a key slid across a green cloth, and the Tarn list is a Tarn man standing at the rail and saying it aloud
+# (design/device-audit/era3.md, Plot changes).
+
+# ---------------------------------------------------------------- Pell's sheet (the inspector line's figure in era 3; mechanics only)
+@archetype e3.town_pell
+name: Pell Furrowe
+about: Surveyor to the reconstruction office. He measures the houses the board fills.
+attr: pen 3
+attr: coat 2
+attr: hat 2
+attr: nose 2
+skill: sum 3
+skill: precedent 1
+skill: smallprint 2
+skill: carbon 1
+skill: condolence 1
+skill: chit 1
+skill: formletter 1
+skill: pride 2
+
+# ---------------------------------------------------------------- the era transition: eight winters on
+@node e3.start
+cost: 0
+do: var.era = 3
+alt: e3.start.pell ? q_class == inspector
+alt: e3.start.will ? q_class == militia
+go: e3.start.pell
+
+@node e3.start.pell
+place: q3_tower
+cost: 0
+do: become(e3.town_pell)
+nar: The bell tower. The snow on the roofs goes thin and grey and runs off the slates in strings, and the strings turn into washing lines, one behind the other, all the way down Exchange Street. The carbide lamps on the corners go out one by one and come back as bare bulbs on flex.
+nar: Eight winters on. Allocation.
+nar: Pell Furrowe's day. Ned's son. Twenty. Surveyor to the reconstruction office. He measures the houses the board fills.
+go: e3.wide
+
+@node e3.start.will
+place: q3_tower
+cost: 0
+do: become(q.will)
+nar: The bell tower. The snow on the roofs goes thin and grey and runs off the slates in strings, and the strings turn into washing lines, one behind the other, all the way down Exchange Street. The carbide lamps on the corners go out one by one and come back as bare bulbs on flex.
+nar: Eight winters on. Allocation.
+nar: Will Brack's day. Still sergeant. Grey at the sides now, and heavier in the mornings. He keeps the counter queue and the square.
+go: e3.wide
+
+# ---------------------------------------------------------------- e3.s01, the wide lens
+@node e3.wide
+place: q3_tower
+speaker: PELL
+cost: 0
+do: set(e3.allocation); pressure(f.e3_flat)
+nar: September, early, with the sun not over the far bank yet. From up here Exchange Street is all washing. Lines go from window to window across the street, from the merchants' good sash windows to the merchants' other good sash windows, and on them are shirts and sheets and nappies and a man's long underwear with the knees gone, and a child's dress the colour of mustard that somebody has dyed with onion skins.
+nar: The merchants' houses were built for a family each and a girl to do the fires. The office has put ten families in each. You can tell from up here, because every window on every floor has something hung out of it, and on the Mott house a woman is shaking a rug out of what used to be the dining room, and the dust comes off it in a brown cloud and drifts across into a window opposite where another woman is frying something.
+nar: Down in the square the scale is out, the big brass scale from the old exchange that used to weigh barley by the cart. Now it weighs bread. The queue for it goes round the pump and back. A militia lad stands by the scale with his hands behind him and watches the pointer, because people say the pointer sticks.
+nar: Over the river, on the far bank, are the new flats. Three long blocks of them, pale, with flat roofs, and a tap inside every one, people say. The early sun gets to them before it gets to anything else, and where it lands on them it lands in a patch of dots, like a newspaper photograph seen too close.
+voice: undertow: Two rooms and a tap. You can see the taps shine from here, if you look. You can't. You think you can. {dc: 3, when: q_class == inspector}
+voice: ballast: Ten to a house and the bread on a scale. You've policed worse. You policed worse eight winters back and you're still here. {dc: 3, when: q_class == militia}
+go: e3.school
+
+# ---------------------------------------------------------------- e3.s02, the schoolroom
+@node e3.school
+place: q3_school
+speaker: TAMM
+cost: 0
+nar: The schoolroom is in the old exchange offices, upstairs, where the clerks used to sit. The desks are clerks' desks, high and sloped, and the children stand at them because there aren't stools for all of them. The window looks straight down onto the scale.
+nar: The children are reciting the eleven times table to the end and back, and they've got a tune to it that they didn't get from the teacher, a sort of rocking tune with a hop in it on the twelves. Mim Sallis, eight, at the end of the second row, is doing the hop with her shoulders as well, and the girl beside her is trying not to laugh, and then laughing, and Mim doing it more because the girl is laughing.
+nar: Miss Tamm lets them finish it. She likes the tune herself. She tapped her foot on the twelves.
+line: TAMM: Very good. Books.
+nar: The books come out of the desks. The Plain Rebuilt. A blue cover, cheap board, with a drawing on the front of a man with a sheaf of barley and a woman with a baby looking at a row of new houses with the sun behind them. They were handed out in September with the date stamped in, and they're already soft at the corners.
+nar: Inside, the pages have been gone over. Every Heshen word in them, and there were a lot in the old printing, the names of the fields and the river and the old fair, has been struck through with red pencil and the Tarn word written over the top in Miss Tamm's hand. She did it herself over a fortnight, every copy, at night.
+line: TAMM: Page nine. The Hard Winter. Mim, you can start us.
+line: MIM: In the hard winter the district fed the country. The farmers of the plain gave everything they had, and the town stood together.
+line: TAMM: Good. Go on.
+line: MIM: The weather was very bad. Some people went away to the hills. When the spring came the board began to build the plain again, so that everybody would have a proper house with a tap.
+line: TAMM: And what do we call the river?
+line: MIM: The kesh.
+nar: She says it the way it's said at home, without thinking, the way you'd say bread.
+nar: The room goes still. The girl beside her stops laughing. Somebody at the back says ooh, very softly, and is sorry.
+line: TAMM: Hands out, please.
+line: MIM: I meant the Lowe. Miss. The Lowe.
+line: TAMM: I know what you meant. Hands.
+nar: Mim puts her hands out, the backs up, the way they all know to. They're small and chapped across the knuckles from the cold water at the pump, and she has drawn a face on her thumbnail in ink.
+nar: Miss Tamm hits them with the ruler, the edge, not the flat. Once across both sets of knuckles, and the sound in the room is like a stick broken over a knee. Mim's hands jump back and she brings them out again herself, because you have to, and Miss Tamm hits them again in the same place. {sense: e3.ruler}
+nar: On the second one the skin over the middle knuckle of her right hand splits. It doesn't bleed straight away. It goes white first, a little white mouth, and then it fills up red and runs down between her fingers and drips off onto the page, onto the Hard Winter.
+line: TAMM: Lowe. Say it.
+line: MIM: Lowe.
+line: TAMM: Thank you. Go and run that under the pump and come straight back. Don't drip on the stairs.
+nar: Mim goes out holding her right hand in her left. She doesn't cry until she's on the stairs, and then she does, the hiccuping kind, trying to keep it quiet. From the window you can see her come out at the bottom and go to the pump and work the handle with her elbow because her hand won't do it.
+nar: Miss Tamm blots the page with her own handkerchief. Then she takes the red pencil out of her top pocket and goes over the word on the page again, the river's Tarn name, harder, so it shows through onto the Plain Rebuilt's next page as well.
+line: TAMM: Page nine. Who'll go on.
+voice: undertow: Mr Tamm says. You said that, at twelve, about everything. Mr Tamm says the hill people don't feel the cold. {dc: 3, when: q_class == inspector}
+voice: ballast: Ruler on the knuckles. Your dad had a strap. It's not your classroom. {dc: 3, when: q_class == militia}
+go: e3.trade
+
+# ---------------------------------------------------------------- e3.s03, the trade
+@node e3.trade
+cost: 0
+alt: e3.trade.pell ? q_class == inspector
+go: e3.trade.will
+
+@node e3.trade.pell
+place: q3_mott_house
+speaker: PELL
+cost: 0
+nar: Pell has the old Mott house this morning, to walk before the board sits. It's the last house on Exchange Street. He has a steel tape, the office's, and a plumb on a string, and a stick of carpenter's chalk in his top pocket, and he likes all three of them more than he would say.
+nar: He likes the job. That is the thing he doesn't say at home. He likes going into a house he's only seen the front of and finding out how it goes, where the back stairs come up, how the chimneys share a stack, which wall was knocked through and filled in again. He likes walking a room with the tape, wall to wall, and the little click when the hook goes over the skirting. He likes that a room is the size it is.
+nar: The Mott house was Edwin Mott's. It has a hall with black and white tiles that somebody has scrubbed this morning, wet still, and it smells of other people's breakfast all the way up. On the first landing there's a window with a bit of coloured glass in the top, a ship, and the sun's coming through it onto the stairs in a blue and yellow patch. Pell stops on it. It's warm.
+nar: In the front room the walls are still the colour old Mott liked, a sort of dried blood, and there's a table in the middle made out of a barn door with the hinge marks in it. Pell walks it heel to toe, both ways, and says it to himself under his breath, the way his father used to pace the bean rows. One family's room. Two at a push.
+nar: Under the stairs there's a door he didn't know about. It opens on a room that's the stairs' underside for a ceiling, sloping, so you can stand up straight at the door end and have to bend at the other. No window. A bucket. A mattress made of sacks, and another one, and another one, put down edge to edge to make one bed the whole floor of it. A woman's shawl, and a doll made of a sock with a face sewn in.
+nar: It's warm in there, warmer than the hall, the warm of bodies that have only just got up out of it. It smells of them. Somebody's hair, wet wool, the bucket. {sense: e3.room_close}
+voice: sum: It's a cupboard. A cupboard isn't a room. Krall doesn't send families into cupboards. {dc: 2}
+voice: undertow: The doll's got eyelashes. Somebody did the eyelashes, one stitch each. {dc: 3}
+nar: Pell measures it, because it's there. He has to kneel at the low end to get the hook over, and the sacks are damp under his knee, and the cold of them comes through his trouser to the skin.
+nar: If he calls it a room at the office, Krall will send a family down those three steps. If he calls it a cupboard, the family in it now are living in a cupboard, and the next man who walks the house will walk them out of it.
+nar: He stands in the door with the tape still out in his hand, and says it to the doll, out loud, because there's nobody else. It's a room. It's what it is.
+go: e3.office
+
+@node e3.trade.will
+place: q3_squad
+speaker: WILL
+cost: 0
+nar: The squad room over the old district stables. It still smells of horse underneath the smell of men, on a warm day, and it's a warm day. Six lads on the benches in their shirtsleeves with their tunics over their knees, sewing on buttons the quartermaster has finally sent, which is a morning's job because none of them can sew.
+nar: Edie has sent a tin of oat biscuits up with Davey. Will has one with his tea, standing at the window, and it's still warm from the oven, and it's the best thing that's happened to him since August.
+line: DAVEY: Mum says one each, Dad.
+line: WILL: Your mum says a lot of things.
+line: DAVEY: She says you'll take two and say she said three.
+line: WILL: She said three.
+nar: The lads laugh. Davey laughs, which he doesn't do in here much, because he's seventeen and the sergeant's son and he's spent a year making sure nobody thinks that counts for anything. He's got his mother's hands, big and careful. He's sewing his button on better than anybody.
+nar: Fenn comes up the stairs from the office below and stands in the door with his cap on, and waits till the room's quiet for him, which it is, because it's Fenn.
+line: FENN: Allocation's sitting. Board wants the queue kept off the square. And the scale. There's talk.
+line: WILL: There's always talk.
+line: FENN: Talk about the far bank. Who's getting the keys. They've been stood since four, some of them.
+line: WILL: Then they'll be tired. Tired's quiet.
+line: FENN: Krall wants batons. Not rifles. Batons, and nobody touches anybody unless they touch the counter.
+nar: Fenn says the last part in Krall's voice, a pleasant voice, and smiles. He's been a corporal since Tilney. He's got the knack of passing an order down so that it's still the officer's when it gets to you, and his hands are clean of it.
+voice: ballast: Batons. You can do batons in your sleep. You've done them in worse than your sleep. {dc: 2}
+line: WILL: Davey. Leave the button. You're on the counter with me.
+line: DAVEY: I've nearly got it.
+line: WILL: Leave it, I said. It'll still be a button at dinner.
+nar: Davey bites the thread off with his side teeth, the way Edie does, and puts the tunic on with the button hanging, and buttons it over the top anyway.
+go: e3.office
+
+# ---------------------------------------------------------------- e3.s04, the allocation office: the hinge
+# The allocation is a man with the keys. Walter Mott hands out the doors by sight across the counter: the old
+# merchants' houses on iron rings, the far-bank flats new and bright on brass tags. Tobin Krall says whose.
+@node e3.office
+place: q3_office
+speaker: WALTER
+cost: 0
+nar: The old district office, ground floor, where the carts used to report in. They've put a counter across it, a long one of new pale wood that doesn't match the room, and a brass rail on it at chest height so people have somewhere to put their hands. The hands on the rail have already worn the brass bright at one end, where the queue comes up.
+nar: Behind the counter is a board of hooks the width of the wall, and on every hook a key. The merchants' houses on Exchange Street hang on the left, big old keys on iron rings, one ring to a house. The far-bank flats hang on the right, new keys, bright, each on its own brass tag. When the door opens the brass ones move and touch and make a small sound, all along the board. {sense: e3.keys}
+nar: Walter Mott sits on a high stool in front of the board. He's forty-eight. He's got his father's way of sitting, very straight, and a forefinger black with ink to the second knuckle from twenty years of the pen, that no soap has ever shifted. He doesn't write anything now. He looks at you. He looks at your hands on the rail and your wrists and your boots, and then he turns on the stool and takes a key down, or he doesn't.
+nar: The queue starts at the rail and goes out of the door and down the steps and round into the square. It's been there since four. People have brought stools. A woman has brought a primus and is making tea on the bottom step and selling it a penny a cup, and nobody stops her, because the militia lads are buying it as well.
+nar: Halfway up the steps is the Sallis lot, all nine of them, in one clump. Old Arn with his hat in his hands, gone very thin in the neck. His sons and their wives, and the children in among the legs, and Mim with her right hand wrapped in a rag. On Thursday Walter walked them over the bridge and let them stand in a far-bank flat, two rooms and a tap, and they put their bundles down on its floor, and he locked it again behind them and brought the key back for the board.
+nar: Behind Walter, at a table of his own with a green cloth, the allocation board's man for the morning. Tobin Krall. Thirty-two, in a good grey suit his father paid for, his hair parted so straight it looks drawn. He has a cup of real coffee and a plate with two biscuits on it and he hasn't touched the biscuits.
+alt: e3.office.wq ? q_class == militia
+go: e3.office.oren
+
+@node e3.office.wq
+place: q3_office
+speaker: WILL
+cost: 0
+nar: Will has the door and the steps. Davey has the rail inside, by the counter, where people put their hands. Will can see him through the door, standing like he's been told to stand, with the baton held across his front in both hands like a man holding a rake.
+nar: The Sallises have been here since before it was light. Will saw them when he came on, sitting on the bottom step in a row with their backs against the wall, asleep, the children across the grown-ups' laps.
+line: ARN: Sergeant. Is it moving?
+line: WILL: It's moving.
+line: ARN: Only we've a flat. On the far bank. Mr Mott took us over Thursday. Our things are on the floor of it. It's only to have the key.
+line: WILL: Then you'll get the key.
+nar: Arn nods, and keeps nodding, and turns his hat round in his hands by the brim, all the way round and back.
+go: e3.office.oren
+
+@node e3.office.oren
+place: q3_office
+speaker: WALTER
+cost: 0
+nar: At the rail, at the front now, a young couple with two little boys. The woman's twenty-two, in a grey coat that was a man's and has been taken in very well, with her hair pinned up hard and a blue thread at her wrist. The husband's tall and thin and Hesh, a drayman by the shoulders, with a little lad asleep on one of them and the other standing on the rail's foot with his chin on the brass.
+nar: Anni Haldane. Oren Tesk. Their boys, Ilo and Tam.
+line: WALTER: Next. Name.
+line: OREN: Tesk. Oren. And this is the wife, and that's the two of them.
+line: WALTER: Tesk.
+nar: Walter's hand has gone up toward the right side of the board, the bright side. It stops in the air. He looks at Oren's wrist on the rail, where the thread is, and brings the hand down again.
+line: WALTER: I can't give a Tesk a key on the far bank. It's a Tarn stair. I'd want a Tarn name for the children, if they're going over.
+line: OREN: It's my name.
+line: WALTER: I know it is. It's a perfectly good name. I can't send it over the bridge.
+line: ANNI: Call him Haldane.
+line: WALTER: Is he Haldane?
+line: ANNI: He is now. Husband, by marriage. You can do that. I've heard you do it.
+nar: Walter looks at Oren. Oren laughs, first, the way he laughs at everything first so nobody else has to, and shifts the boy up on his shoulder.
+line: OREN: Haldane, then. It's a farm, isn't it? I've always wanted a farm.
+line: WALTER: Haldane, O. Husband. And Haldane, and Haldane. The boys.
+nar: He says it the way he'd call it off the steps, so the queue behind them can hear it, so it's said. Then he turns on the stool and looks at the board for a while, and takes down an iron ring, not a brass tag. The Mott house. The first floor back.
+nar: Nobody says anything about it. Three back in the queue, an old Hesh woman, her blue thread gone grey at the wrist, looks down at her boots and keeps looking at them.
+line: ANNI: That's the merchant's house.
+line: WALTER: It is, Mrs Haldane. There's the other stair, if you could get it. The bright ones.
+line: ANNI: Get it how?
+line: WALTER: A Tarn man comes down here and stands at this rail with you, and says you're his. Says it to me, with the queue to hear it. Then I could take one of those down for you.
+nar: His black forefinger is on the brass rail. He takes it off as if the rail's hot.
+line: ANNI: I've a Tarn man. He's stood here holding the baby.
+line: WALTER: A Tarn man by birth, Mrs Haldane. I don't make them.
+nar: Anni looks past him at the bright keys on their tags for a long time. Then she pulls her coat sleeve down over the thread at her wrist with two fingers, and takes the iron ring off the counter. It's heavy. She doesn't look at Oren.
+line: ANNI: Thank you, Mr Mott. Come on. Tam. Off the rail.
+go: e3.office.krall
+
+@node e3.office.krall
+place: q3_office
+speaker: TOBIN
+cost: 0
+do: set(e3.figures_praised)
+nar: Behind the counter Tobin Krall has stood up. He's seen somebody he wants to see.
+nar: Pell has come in by the side door with his tape on his belt, to say the Mott house aloud to the board. Krall puts out his hand to him across Walter, so Walter has to lean back on the stool. {when: q_class == inspector}
+nar: Pell Furrowe has come in by the side door with a tape on his belt. Krall puts out his hand to the lad across Walter, so Walter has to lean back on the stool. From the door Will watches it the way you watch a dog meet a dog. {when: q_class == militia}
+line: TOBIN: Furrowe. You'll be Ned's lad.
+line: PELL: I do the survey. Doors and floors, with the tape.
+line: TOBIN: I know what you are. You've walked three houses for me and you never once made a fuss. Sit down a minute. Walter, get Mr Furrowe a chair.
+nar: Walter gets down off his stool to get the chair.
+line: TOBIN: Do you know what's on the wall in the board room? Upstairs. Over the fire.
+line: PELL: The Directorate's crest. In plaster, with the gold coming off it.
+line: TOBIN: Next to it. The pan off the old exchange scale. The one they weighed the district on, the hard winter. My father had it polished and put up. Every winter since, that's what we've measured against. Your dad stood at that scale himself, the whole of that week.
+line: PELL: He doesn't talk about it.
+line: TOBIN: He wouldn't. He's like that. My father always said, there was one honest man in that building and it was Ned Furrowe. He used to say it at dinner. I'd heard it so many times I thought it was a saying.
+nar: He laughs. It's a nice laugh. He means it.
+voice: carbon: Your dad was the one honest man in that building. The whole board knows it. You're only being paid what he was owed. {dc: 2, self: e3.sl.figure, when: q_class == inspector}
+voice: ballast: Ned Furrowe at the scale. You were on the post the week he stood there. You remember what the post was doing that week. {dc: 2, when: q_class == militia}
+line: TOBIN: How's he keeping? Is he out much?
+line: PELL: He's in the garden mostly. Twelve rows of beans, paced out a foot apart.
+line: TOBIN: Good. Good for him. Give him my father's best. Now, look. I've a thing for you.
+nar: He takes a key out of his waistcoat pocket, a new one, bright, on a brass tag, and puts it down on the green cloth and slides it over to Pell with two fingers. {sense: e3.key_down}
+line: TOBIN: There's a flat on the far bank. Two rooms and a tap inside. South side, so you get the sun in the mornings. You're getting married, aren't you? Somebody said you were getting married.
+line: PELL: In the spring. April, near enough.
+line: TOBIN: Then you'll want two rooms. Nobody starts married in his father's back bedroom. My father did, and look at him.
+alt: e3.office.will ? q_class == militia
+go: e3.office.pell
+
+@node e3.office.pell
+place: q3_office
+speaker: TOBIN
+cost: 0
+nar: Pell picks the key up. It's heavy for its size, and cold, and the tag is warm from Krall's pocket. Through the office window, over the roofs, you can see the far bank and the pale blocks, and the stair up the end of the nearest one.
+do: shoulder(e3.load.key)
+voice: sum: Two rooms, south side, a tap. Marta wants a tap more than she wants you. She said so. She was joking. {dc: 2}
+voice: undertow: Nine of them on the steps since before it was light. You came round by the side door so you wouldn't have to walk past them. {dc: 3}
+opt: "Say it: Whose key is this?" -> e3.office.whose {do: set(said.e3_pell_whose)}
+opt: "Close your hand on it. Say it: Thank you, Mr Krall. Tell your father thank you." -> e3.flat.decide {do: set(said.e3_pell_take)}
+
+@node e3.office.whose
+place: q3_office
+speaker: TOBIN
+cost: 0
+line: PELL: Whose key is that?
+line: TOBIN: It's a key.
+line: PELL: It's the Sallises' key. Walter walked them over on Thursday. The whole square knows it.
+line: TOBIN: They had.
+nar: Krall picks up a biscuit at last and breaks it in half and doesn't eat either half.
+line: TOBIN: Sallis is nine. Nine on two rooms is a barn, and we're done with barns, that's the whole point of the board. They'll go in the Mott house with the others and they'll have the run of a merchant's place. They've never had a hall with tiles in it. They'll love it.
+line: PELL: I walked the Mott house this morning. Fourteen rooms. The damp's to the dado in the back three.
+line: TOBIN: Then you know it's a lovely house.
+nar: Through the open door, on the steps, Pell can see the Sallises. He didn't know which ones they were when he came in. He knows now, from the way the old man is holding his hat.
+voice: pride: It was a barn. He's right about that. Your grandfather knew about barns. {dc: 2}
+opt: "Put the key back on the green cloth. Say it: Give it them, Mr Krall. I'll stop where I am." -> e3.flat.decide {do: set(said.e3_pell_refuse)}
+opt: "Close your hand on it. Say it: All right. Thank you." -> e3.flat.decide {do: set(said.e3_pell_take)}
+
+@node e3.office.will
+place: q3_office
+speaker: WILL
+cost: 0
+nar: Will can see the key from the door, bright, on the green cloth. He knows what a bright key is. He's stood at that rail all week while people told him which flat they'd been shown, to prove they'd been promised, as if he could do anything about it.
+nar: Down the steps Arn Sallis is looking up into the office over the heads in front of him, at the green table and the key. He's got one hand up, open, a little way, the way you hold a hand up at a fair so the man can see you're next.
+nar: Behind Arn the whole queue is looking where he's looking. It goes quiet down the steps, the way a queue goes quiet when it's worked something out.
+voice: ballast: It's not your table. Your table's the door. Keep them on the steps, keep them quiet, and go home at six. {dc: 2}
+voice: undertow: The old man's been on that step since four. You stepped over his feet. {dc: 3}
+opt: "Go to the table. Say it: Mr Krall. The Sallises have stood there since before light. The whole queue's watching that key." -> e3.flat.decide {do: set(said.e3_will_counter)}
+opt: "Turn round to the steps. Say it: Keep it moving. Nobody's been called." -> e3.flat.decide
+
+# ---------------------------------------------------------------- fate f.e3_flat: Tobin Krall decides
+@node e3.flat.decide
+cost: 0
+alt: e3.flat.sallis ? has(said.e3_pell_refuse) | has(said.e3_will_counter)
+go: e3.flat.pell
+
+@node e3.flat.pell
+place: q3_office
+speaker: TOBIN
+cost: 0
+do: set(e3.flat_pell); fate(f.e3_flat, arn)
+line: TOBIN: Lovely. Walter, have the Sallis things fetched back over the bridge this afternoon, for Mr Furrowe. Keys Monday.
+nar: Walter gets down off the stool and goes to the left side of the board, the iron side, and takes down the Mott house ring and works a key off it with his thumbnail. The attic. He's been told which room.
+line: TOBIN: Next.
+nar: Arn Sallis comes up to the rail and puts both hands flat on the brass, and Walter puts the iron key down between them.
+line: ARN: This is the Mott house.
+line: WALTER: Number four, Exchange Street. The attic.
+line: ARN: We had the far bank. Thursday. Our things are in it.
+line: WALTER: They'll be fetched.
+line: ARN: Fetched where?
+nar: Walter wipes his black finger on his cuff. Nobody answers. Behind Arn his sons are standing very still, and one of the wives has put her hand over Mim's mouth, though Mim hasn't said anything, as if she might.
+nar: Arn looks along the counter to the green table, at Krall, who is drinking his coffee, and then at Pell, who is standing by Krall's table with the bright key shut in his fist. {when: q_class == inspector}
+nar: Arn looks along the counter to the green table, at Krall, who is drinking his coffee, and then at the door, at Will, who is the only one there in a uniform. {when: q_class == militia}
+line: ARN: Right. Right. Thank you, sir.
+nar: He takes his family out of the queue. The queue closes up behind them and nobody looks at them, the way nobody looked at them on the hill road the year of the frost. On the steps Mim looks back, with her hand in its rag, at the far bank, which you can see from the top step. There's nothing in her face at all.
+nar: In the afternoon the board's cart comes back over the bridge with the Sallis bundles on it, tied in sheets, and the carter tips them off on the Mott house step, one on top of the other, and drives off. The Sallis lads carry them in one at a time. Arn sits on the last one on the step till dark. {sense: e3.bundle_down}
+line: TOBIN: My father says you can't build a town with nine to two rooms. He's not wrong, you know.
+voice: pride: They'll love the tiles. He said so. {dc: 2, when: q_class == inspector}
+voice: ballast: Nobody touched the counter. Nobody got hurt. That's the order done. {dc: 2, when: q_class == militia}
+do: setdown(all)
+go: e3.door
+
+@node e3.flat.sallis
+place: q3_office
+speaker: TOBIN
+cost: 0
+do: set(e3.flat_sallis); setdown(all)
+line: TOBIN: Oh, for heaven's sake. {when: has(said.e3_pell_refuse)}
+nar: He sits back. He laughs, and shakes his head, and looks at Pell for a moment almost with affection, as if Pell has done something sweet and old-fashioned in front of him, like standing up for a lady. {when: has(said.e3_pell_refuse)}
+line: TOBIN: You're Ned's all right. He'd have done that. My father said he was impossible to give anything to. {when: has(said.e3_pell_refuse)}
+nar: Krall looks past Will at the steps, the whole length of the queue, gone quiet, every face turned up into the office. He's a man who notices a crowd. His father taught him that before the suit. {when: has(said.e3_will_counter)}
+line: TOBIN: Thank you, Sergeant. Yes. I can count a queue. {when: has(said.e3_will_counter)}
+line: TOBIN: Walter. Give the Sallis lot their key.
+nar: Walter takes the bright key off the green cloth by its tag, the way you'd pick up a thing that isn't yours, and holds it out over the rail at arm's length.
+line: TOBIN: Get them up here before I change my mind. And Walter, the Mott house is still ten. Put somebody else under the stairs.
+line: WALTER: Who, Mr Krall?
+line: TOBIN: Somebody from the hill lot. The goat people. They won't mind a cupboard. They've lived in worse.
+nar: Arn Sallis comes up the steps with nine people behind him, so fast the queue lets him through without arguing. He takes the key out of Walter's hand and holds it against his chest in both of his, and the youngest of his sons starts to laugh, and stops, and turns away to the wall.
+line: WALTER: The plaster's wet over there till the new year. You'll stop in the Mott house till it's dry. Then it's yours.
+nar: Mim, in the doorway, says something very quietly in Heshen to the little girl beside her. The word for water. The word for tap. Nobody hits her. Nobody in the office knows the word.
+voice: undertow: Somebody else under the stairs. He said it the way you'd say pass the salt. {dc: 3}
+go: e3.door
+
+# ---------------------------------------------------------------- e3.s05, the Furrowe door
+@node e3.door
+cost: 0
+do: set(e3.anni_knocked)
+alt: e3.door.pell ? q_class == inspector
+go: e3.door.will
+
+@node e3.door.pell
+place: q3_furrowe_hall
+speaker: PELL
+cost: 0
+nar: That evening. The Furrowe house, after supper. Mary made a rabbit pie with the crust she does that goes in flakes, and there was enough for seconds, and Ned had seconds and then sat in his chair by the range with his eyes shut and his hands on his stomach and said that was a pie, Mary, that was a pie, the way he says it every time.
+nar: Pell's in the hall on the bottom stair under the one bulb, winding the office tape back into its case a turn at a time, wiping the steel with a rag as it goes in, because the Mott house sacks left it damp.
+nar: A knock. A quiet one, the kind you make when you don't want to be heard knocking. {sense: e3.knock_quiet}
+nar: He puts the tape down on the stair and opens the door.
+nar: A young woman on the step in a man's grey coat, taken in, with her hair pinned up hard. Her hands are empty. He's seen her today. At the counter, with the drayman and the boys. She's got a blue thread round her wrist, and as the door opens she puts her other hand over it.
+line: ANNI: Is Mr Furrowe in? Sorry. The old one.
+line: PELL: Is it about a house? I do the houses. I measure them.
+line: ANNI: It's not for you.
+nar: The hall mirror is on the wall beside the door, a tall one in a black frame that was Abel's mother's. It's got the two of them in it. Him on the inside of the door, her on the step. They're the same height. They've both got the long face, the long jaw, the eyes set close and a bit deep. Her hair's dark and his is mouse. That's the only difference you'd notice, if you were noticing.
+nar: Nobody is noticing. They're both looking at each other and not at the mirror.
+nar: For a moment nobody says anything. In the kitchen the kettle starts to tick on the range. Out in the road a cart goes past with something loose in the back, knocking.
+nar: Ned comes into the hall behind his son with his napkin still in his hand. Three of them in the mirror now. He stops.
+line: NED: Anni.
+nar: She hasn't said her name. Pell looks round at his father.
+line: PELL: You know her?
+line: NED: I knew her dad.
+nar: He folds the napkin in half, and in half again, and holds it.
+line: ANNI: Mr Mott at the counter says there's a far-bank key for me, Mr Furrowe. If a Tarn man comes down and stands at the rail with me and says I'm his.
+line: NED: Says you're what?
+line: ANNI: You know what.
+nar: Ned puts his hand out, as if to take hers, or to stop her, and she steps back down off the step so it's left out in the air between them.
+line: ANNI: Thursday. Nine o'clock. At the counter. Mr Mott says you'd have to come yourself. He won't have it from anybody else. You'd have to stand there.
+line: NED: Anni.
+line: ANNI: You can do what you like. Thursday. Nine. The counter.
+nar: She looks at Pell, once more, properly, the way you look at a room to see if it's been measured right. Then she goes down the path and doesn't shut the gate behind her.
+nar: Pell shuts the door. Ned is still standing in the hall with the folded napkin.
+line: PELL: Dad. Say she's what?
+line: NED: Go and finish your tape.
+line: PELL: Who is she?
+line: NED: Her mother used to bring the milk up. Every morning, that summer. She'd wait while you drank it.
+nar: He goes back in the kitchen. Pell hears him say something to his mother, and his mother not answer, and the kettle start to scream, and nobody take it off.
+voice: undertow: The same height. The mirror's the only thing in this house that's ever told you anything. {dc: 3}
+voice: pride: She knew him at the counter. Everybody knows him. He's an honest man. {dc: 2}
+go: e3.inner.figure
+
+@node e3.door.will
+place: q3_furrowe_hall
+speaker: WILL
+cost: 0
+nar: That evening, going home off the square by the Upper Town, the long way, because Edie's sister is at the house and he'd as soon not. Past the Furrowe house with its brass knocker and the hedge Mary keeps.
+nar: There's a young woman on the Furrowe step. He knows the coat from the counter this morning, and the back of the neck, the hair pinned up hard. Bet Haldane's girl. Anni. The door's open and the light's coming out of the hall onto her.
+nar: He can't hear anything. He can see young Pell in the door, and then Ned behind him, with a napkin in his hand, and Ned's face doing nothing, the way it did nothing at the post in the hard winter when he saw the Haldane cart.
+voice: ballast: Edie let her mother's dresses out, that spring. The spring young Furrowe married in a hurry. You know. You've always known. Knowing's not the same as being able to say. {dc: 2}
+nar: The door shuts. Anni stands on the step a moment with her hand flat against it, as if she might knock again, and then she takes her hand away, and pushes the blue thread back up her sleeve where it had slipped down, and comes down the path.
+nar: She sees him at the gate. She knows him. Everybody in the Hesh streets knows him.
+line: ANNI: Sergeant.
+line: WILL: Evening, Mrs Haldane.
+line: ANNI: It's Haldane on both of us now. Mr Mott said it out loud this morning. You can tell the barracks.
+line: WILL: I'll tell them.
+line: ANNI: You do that.
+nar: She goes off down the hill toward Exchange Street with her hands in her coat pockets and her elbows out, fast, the way a woman walks when she won't be seen to have been crying on a doorstep.
+nar: Will stands at the Furrowe gate. Inside, a kettle starts to scream, and goes on screaming, and nobody takes it off.
+go: e3.inner.figure
+
+# ---------------------------------------------------------------- e3.n1, the inner arena: the night after the office (The Figure)
+# Plays when GUILT's line at the counter (e3.sl.figure) was heard; otherwise the shift table follows.
+@node e3.inner.figure
+cost: 0
+do: inner(figure, e3.table)
+go: e3.table

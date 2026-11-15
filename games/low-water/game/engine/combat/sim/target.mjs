@@ -5,6 +5,7 @@ import { RULES } from "../data/common.mjs";
 import { wrapAngle, angleTo, dist } from "./fighter.mjs";
 import { beamAt } from "./field.mjs";
 import { WORLD } from "../data/world.mjs";
+import { dhypot } from "./math.mjs";
 
 const DEG = 180 / Math.PI;
 const alive = (F) => !F.out && !F.fallen && !F.yielded && F.hp > 0;
@@ -20,7 +21,7 @@ export function lamps(W) {
 // and anything at arm's length (5 m in still air, where scent pools), whatever the light. Mud in the eyes cuts sight; Dread narrows
 // Lamb's view (def.view).
 export function visible(W, A, B) {
-  const def = W.defs[A.id], d = Math.hypot(B.x - A.x, B.z - A.z), f = W.field;
+  const def = W.defs[A.id], d = dhypot(B.x - A.x, B.z - A.z), f = W.field;
   if (!f.sightClear(A.x, A.z, B.x, B.z)) return d <= 1.2 && def.sight === "smell";
   if (def.sight === "smell") return d <= (f.terms.windSpeed < 1 ? 5 : 2.5) || downwind(f, A, B, d);
   // a body in Mother's beam stands out against the lit fog, whatever the fog (data/world.mjs beam)
@@ -33,7 +34,7 @@ export function visible(W, A, B) {
 
 // B is upwind of A: the wind blows from B toward A, within 12 m.
 function downwind(f, A, B, d) {
-  const w = Math.hypot(f.terms.windX, f.terms.windZ);
+  const w = dhypot(f.terms.windX, f.terms.windZ);
   if (w < 1 || d > 12) return false;
   return ((A.x - B.x) * f.terms.windX + (A.z - B.z) * f.terms.windZ) / (d * w) > 0.7;
 }

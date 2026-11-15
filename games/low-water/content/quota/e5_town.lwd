@@ -1,0 +1,385 @@
+# Era 5, The Clearance: the wide lens at the mast (e5.s01), the clip and the share (e5.s02, fate f.e5_danil, canon,
+# LEON, exempt from the two-outcome rule in tools/fatecheck.mjs with its reason), the dinner over the clip
+# (e5.s03, with chain F3, Nan to Tom), the class's trade (e5.s04) and the false world in two chapters (e5.s05).
+# Story lead, 2026-10-23. DRAFT: every line waits for the author's line approval (ledger row S14).
+# Design: design/eras/era5.md sections 1 to 3, 8, 10 and 12; DECISIONS-2026-10-22.md (era 5 questions 4 and 5).
+# The self-lies e5.sl.says (the share) and e5.sl.order (Leon's account to the camera) are tagged here and echoed word
+# for word at the table (e5_end.lwd).
+# Weighted-devices pass, 2026-10-23 (design/device-audit/era5.md): posts and the clip's captions are heard (a phone
+# held out and read aloud, a voice message, the chime, the clip's own sound), never put on screen to read; Tom's survey
+# is a can of pink paint and a ladder to the gutter; Leon's statement is what he says aloud to the camera.
+
+# ---------------------------------------------------------------- the era transition: forty-five winters on
+@node e5.start
+cost: 0
+do: var.era = 5
+alt: e5.start.leon ? q_class == militia
+go: e5.start.tom
+
+@node e5.start.tom
+place: q5_tower
+speaker: TOM
+cost: 0
+do: become(e5.tom)
+nar: The bell tower. The bell comes down on a crane in the rain, swinging, and the men on the ropes let it down onto a lorry bed so gently it doesn't ring. In the frame where it hung a grey mast goes up, with dishes on it, and a red light on the top that blinks all night.
+nar: The hour doesn't strike any more. All down the hill phones chime instead, in pockets and on bedside tables, a little after each other.
+nar: The Clearance.
+nar: Tom Furrowe's spring. Pell's great-grandson, Nan's boy. Thirty-three. Housing inspector for the council, with a lanyard, a damp meter that beeps, and a can of pink marker paint in his coat pocket that rattles when he walks. In January he went through every flat in the Upper Town with the meter and put a pink dot by every door it screamed at. Next week the council votes on his dots.
+go: e5.wide
+
+@node e5.start.leon
+place: q5_tower
+speaker: LEON
+cost: 0
+do: become(e5.leon)
+nar: The bell tower. The bell comes down on a crane in the rain, swinging, and the men on the ropes let it down onto a lorry bed so gently it doesn't ring. In the frame where it hung a grey mast goes up, with dishes on it, and a red light on the top that blinks all night.
+nar: The hour doesn't strike any more. All down the hill phones chime instead, in pockets and on bedside tables, a little after each other.
+nar: The Clearance.
+nar: Leon Brack's spring. Ann's son, Davey's grandson, Will's great-grandson. Forty. Sergeant. He has the stop-and-search van on Mill Street on nights, and a knee that clicks on the stairs.
+go: e5.wide
+
+# ---------------------------------------------------------------- e5.s01, the wide lens
+@node e5.wide
+place: q5_tower
+speaker: TOM
+cost: 0
+nar: From the mast the Upper Town is a grey square of roofs with a ring of new road cut round three sides of it, raw clay and orange barriers. The council calls it the Opportunity Area. Everybody else says the Vell end, or the Hesh end, or the estate, depending.
+nar: The old burial ground sits in the crook of the new road. Surveyors have been through it with a can of pink spray and a bag of pegs. The pegs go in a straight line across the top corner, under the wire, through the grass where there are no stones. One peg is in the root of a hawthorn. Somebody has pulled it out and somebody has put it back.
+nar: Higher up, where the cut bites into the hill, the digger is parked against an old dry-stone wall gone green, the last of a goat fold nobody has kept goats in for a hundred years.
+nar: Mill Street runs down from the square to the race. The mill is flats now. The Well House is on Mill Street with mesh on its windows. Three doors along, the Saros' shop, phone cards and fruit, has one window boarded with ply and the ply already sprayed.
+voice: sum: You've been through every one of those doors. From up here you could pick out your pink on them, nearly all of them, if the light was better. {dc: 3, when: q_class == inspector}
+voice: smell: Wet clay off the cutting. Diesel. The bakery on Mill Street starts at four and you can smell it on nights from the van with the windows up. {dc: 3, when: q_class == militia}
+nar: A Tuesday in April. Two nights ago a lad was stabbed outside the chip shop at the bottom of Bridge Street and lived. The radio has been saying it every hour since, the same words: a male, dark top, possibly Vell.
+go: e5.bakery
+
+# ---------------------------------------------------------------- e5.s02, the clip, and what is already on your phone
+@node e5.clip
+cost: 0
+do: set(e5.clip_open); pressure(f.e5_danil)
+alt: e5.clip.leon ? q_class == militia
+go: e5.clip.tom
+
+@node e5.clip.tom
+place: q5_furrowe_kitchen
+speaker: KIT
+cost: 0
+nar: Wednesday, ten past six in the morning. Tom's kitchen, his mother's house, where he has lived again since the divorce. The kettle on. Kit's school shoes by the back door with the laces still tied, because she kicks them off without undoing them.
+nar: His phone is face down by the kettle and it won't stop. It chimes, and chimes, and walks itself across the worktop on its buzz. {sense: e5.phone.chime}
+nar: Kit is in the doorway in her dressing gown. She's been up all night; you can see it. She picks his phone up off the worktop before he can and holds it out at him with the screen towards his face, the way you'd hold out something the dog brought in.
+line: KIT: You sent this. Twenty to midnight. To the family.
+line: KIT: The police thing. A man became unwell. Heart condition. No suggestion of anybody else being involved.
+line: KIT: And you put under it, there you go, before everybody starts.
+nar: He doesn't remember sending it. He was in bed. He remembers the phone lighting up the ceiling and his thumb doing something.
+nar: She presses the next message and it plays out loud, his sister Jo, from the hospital, in a voice he hasn't heard her use since their dad. {sense: e5.voice.note}
+line: JO: Tom. Watch the video. Watch it before you say anything else.
+go: e5.clip.stop
+
+@node e5.clip.leon
+place: q5_brack_kitchen
+speaker: LEON
+cost: 0
+nar: Wednesday, ten past six in the morning. Leon's kitchen. He got in at half four and hasn't taken his boots off. He's sitting at the table in his stab vest with the velcro undone, and the kitchen light off, and the fridge humming.
+nar: He was at the hospital till three. Then the station, the room with no window, with the Federation man in a fleece who kept saying, nobody's saying anything yet, Leon, don't you say anything yet.
+nar: His phone has been going all night in the vest's pocket, against his chest, a buzz and a buzz, like something trying to get out. He hasn't looked. Now he looks. {sense: e5.phone.chime}
+nar: The relief's group is all voice messages. He presses the newest and it plays into the dark kitchen, Shaw, from his bed, his voice wrong, too bright, the way you talk when you've not slept. {sense: e5.voice.note}
+line: SHAW: Sarge, it's Shaw. League's saying there was a knife. They've got a picture up. Everybody's saying respect to the lads on nights. Ring me.
+nar: There's the picture, a kitchen knife on a pavement with a ruler beside it, from God knows where. And his own thumb on it, from the hospital car park, when the lad was still on the trolley inside with the doctors round him and nobody had come out.
+nar: There was no knife. He searched the lad himself. He found a door key on a shoelace and a paper bag of bread rolls gone flat where they'd been under him.
+go: e5.clip.stop
+
+@node e5.clip.stop
+place: q5_mill_street
+speaker: LEON
+cost: 0
+camera: phone
+do: set(e5.danil_dead); fate(f.e5_danil, danil)
+nar: The video. Four minutes. Filmed from a first-floor window across Mill Street, through a net curtain that somebody pulls back with one hand at the start, so for a second there's a woman's fingers in the corner of the frame. Sodium light. The picture jumps when she breathes. {sense: e5.clip.sound}
+nar: The van is half on the pavement with its back doors open. A lad is face down on the paving in front of the Saros' shop, in a grey tracksuit with a white stripe. A big officer is on him with one knee in the middle of his back and the other on the side of his neck, and his weight forward, both hands holding the lad's wrists up behind him. A younger officer stands by the van doors with his hands on his belt.
+line: DANIL: Get off me. I live there. I live there. I live there, get off.
+line: LEON: Stop resisting.
+line: DANIL: Please. Please, I can't. My dad's there. Dad.
+nar: The lad's cheek is on the paving and his mouth is open against it. A dark line runs out of his nose across the slab to the gutter grate. One of his trainers comes off kicking, the left, and lies on its side in the road.
+line: LEON: Stop resisting. Stop. Shaw, get his legs.
+line: DANIL: I can't, I can't, I can't.
+nar: A man's voice, close to the phone, out of shot, in the room with the woman: Film it. Film it. Keep filming it. Then somebody is banging on the shop's shutter from inside, over and over, and a man shouting in the Vell tongue, and the shutter is locked from outside for the night and won't come up.
+nar: The lad says get off me again, quieter. Then he says something that isn't a word. Then his feet stop. One sock, one trainer. The officer stays where he is.
+line: SHAW: Sarge.
+line: LEON: He's all right. He's playing.
+nar: A long time after, the officer takes his knee off and rolls the lad onto his side, and the lad's arm stays where it was put, behind him, and his face comes round to the camera, and his eyes are half open. Grit stuck to the cheek. The younger officer runs to the van for something. The woman behind the curtain says, oh God, oh God, and the picture swings to the ceiling and back.
+nar: It ends on the shop's shutter, rattling, and the bread rolls in their paper bag in the gutter, and the trainer on its side.
+nar: The phone plays it again from the start, because nobody touches it.
+nar: His name is Danil Saro. He was seventeen. He was coming home from his first late shift at the bakery on Mill Street, with the rolls they let you take.
+voice: ballast: You know that voice. You've had it in your ear for twenty years telling you it'll be fine. It's your own. {dc: 1, when: q_class == militia}
+voice: condolence: Kit has had this on her phone since midnight. She's fifteen. {dc: 2, when: q_class == inspector}
+go: e5.stories
+
+# ---------------------------------------------------------------- the three stories, within the hour, heard
+@node e5.stories
+place: q5_mill_street
+speaker: LAD
+cost: 0
+do: set(e5.stories_out)
+nar: By one in the morning there are three stories about Mill Street, and each has its people, and you hear all three before you've had a cup of tea.
+nar: The force's, on the radio at six, a man reading it in the voice they use for weather: a man became unwell, a heart condition. By breakfast a channel called the real Edrin has a woman saying the word toxicology, slowly, like a question.
+nar: The Furrow League's, in a voice message going round from phone to phone: a knife, Tuesday's stabber, caught. With a picture of a knife on a pavement by a ruler. The kerb in the picture is white concrete. Mill Street's kerbs are granite, and have been since the mill.
+nar: The Mill Street wall's, sprayed on the ply over the Saros' window in the night in letters the height of a man. The kids going down to school read it out to each other as they go past, the way kids read out anything sprayed.
+line: LAD: They killed him for walking home.
+line: LAD: Look. They killed him for walking home.
+nar: And a fourth thing, going round under the League's: a video, the old district office's steps in a photograph gone brown, and a man's voice over it, warm and slow, like a man reading in church. {when: has(said.ned_send_tomas) | has(said.will_take_six) | has(said.ned_sign_cart) | has(said.will_take_four)}
+line: LEAGUE: Go home. That's what the inspector said, the first winter. Edrin's been telling them for a hundred years. {when: has(said.ned_send_tomas)}
+line: LEAGUE: Grain found is hoarding. That's what the sergeant said, the first winter. Same then as now. {when: has(said.will_take_six) & !has(said.ned_send_tomas)}
+line: LEAGUE: Sign for it and go home. That's what the inspector said, the first winter. Nothing changes. {when: has(said.ned_sign_cart) & !has(said.ned_send_tomas) & !has(said.will_take_six)}
+line: LEAGUE: Take the four. That's what the sergeant said, the first winter. We fed them then too. {when: has(said.will_take_four) & !has(said.ned_send_tomas) & !has(said.will_take_six) & !has(said.ned_sign_cart)}
+voice: precedent: Those are your words. Your family's. Somebody's been in the archive and found a man to read them out like scripture. {dc: 2, when: q_class == inspector & (has(said.ned_send_tomas) | has(said.ned_sign_cart))}
+voice: pride: That's your great-great-grandad's line, in a stranger's mouth. {dc: 2, when: q_class == militia & (has(said.will_take_six) | has(said.will_take_four))}
+go: e5.share
+
+# ---------------------------------------------------------------- the share on your phone
+@node e5.share
+place: q5_mill_street
+speaker: TOM
+cost: 0
+voice: hearsay: Everybody's sharing everything. It was already out. Everybody says it. You only passed it on. {dc: 2, self: e5.sl.says}
+nar: Your share is in the middle of it. Every time somebody sends it on from you the phone gives a little chime in your hand, and it keeps chiming. {sense: e5.phone.chime}
+opt: "Leave it where it is." -> e5.share.out {do: set(said.e5_share_left)}
+opt: "Delete it." -> e5.share.out {do: set(said.e5_share_deleted)}
+opt: "Record a voice message under it: I was wrong to send this. Watch the video." -> e5.share.out {do: set(said.e5_share_corrected)}
+
+@node e5.share.out
+place: q5_mill_street
+speaker: TOM
+cost: 0
+nar: You leave it. It goes on chiming till seven. Somebody you were at school with sends it on from you with a voice message of his own, laughing: from a council man, so. {when: has(said.e5_share_left)}
+nar: You delete it. The family group shows a grey gap where it was, which everybody in it understands. Jo puts a thumb on the gap. {when: has(said.e5_share_deleted) & q_class == inspector}
+nar: You delete it. The relief's group shows a grey gap where it was. A minute later a constable from the day shift sends the same thing again. {when: has(said.e5_share_deleted) & q_class == militia}
+nar: You say it into the phone with your mouth too close, and send it before you can play it back. Within a minute a reply plays out loud on its own, a man's voice: who got to you. Then another. Then your own cousin, laughing: you've changed your tune. {when: has(said.e5_share_corrected)}
+go: e5.dinner
+
+# ---------------------------------------------------------------- e5.s03, the dinner over the clip
+@node e5.dinner
+cost: 0
+alt: e5.dinner.brack ? q_class == militia
+go: e5.dinner.furrowe
+
+@node e5.dinner.furrowe
+place: q5_furrowe_kitchen
+speaker: NAN
+cost: 0
+nar: Wednesday tea. Nan's kitchen, which was Pell's, which has his steel tape still on the windowsill. On the sideboard there's a photograph nobody looks at: a man in a hat at a table, Abel Furrowe, the first of them in this house.
+nar: Nan is fifty-eight. She runs the Furrow Church's food bank, which meets under the Orme portrait in the church hall on Thursdays, and lifts more boxes than her back likes. Jo is thirty-six and works nights at the hospital on the wards and has come straight from sleeping, in a hoodie. Kit is fifteen. Kit is Ryan Haldane's friend, or was, in Year Nine.
+nar: Shepherd's pie. Nobody's eating much. Kit has her phone face up beside her plate, which is a rule, and nobody's said anything about the rule.
+line: KIT: It's on again. Somebody's put it with music on.
+line: NAN: Turn it over, Kit.
+line: KIT: He's shouting get off me. You can hear him. He's shouting get off me and then he stops.
+line: JO: Kit.
+line: KIT: And then he stops, Mum. You can hear him stop.
+nar: Kit turns the phone round so the screen faces the table. It's playing. Nobody stops it. In the small sound from the speaker the lad says I live there, and the big officer says stop resisting, and Nan puts her fork down. {sense: e5.clip.sound}
+line: TOM: The police said a heart thing.
+line: JO: The police said he became unwell.
+line: TOM: Well. He might have.
+line: JO: He became unwell, Tom. With a sergeant on his neck. I was on the ward when they brought him up. They knelt on him till he died for walking home.
+line: NAN: Not at the table.
+line: JO: Where, then, Mum? Where do you want me to say it? In the car park?
+nar: Nan gets up and goes to the sink and runs the tap, and stands there with her hands under it, and the water runs over them.
+line: KIT: I was in Ryan's class. Danil's sister's in my year. Ines. She sits behind me in Geography.
+line: KIT: She wasn't in today.
+voice: condolence: Kit's not crying. She's looking at you. She wants to see what your face does. {dc: 2}
+voice: smallprint: The police said no suggestion at this stage. At this stage. There's always a stage after. {dc: 3}
+alt: e5.dinner.f3 ? has(e4.carry_f2)
+go: e5.dinner.nan
+
+@node e5.dinner.f3
+place: q5_furrowe_kitchen
+speaker: NAN
+cost: 0
+camera: near
+nar: After, when Kit has gone up and Jo has gone back to sleep for her shift, Nan dries her hands on the tea towel one finger at a time, which is how her grandad did it.
+line: NAN: Sit down a minute, Tom.
+line: TOM: Sat down, Mum. Look.
+line: NAN: Then put that phone face down.
+nar: She sits across from him, where Pell sat.
+line: NAN: My mum had something off her dad. Your great-grandad Pell. The night before the mill closed he sat her down at this table and said it. She told me when she was dying, in the hospice, when she was saying all sorts. I thought it was the morphine.
+line: NAN: I carried him. You don't need two for that. {when: has(e4.carry_f2)}
+line: TOM: Who said that?
+line: NAN: A policeman. A Brack. On the Crown's steps, to Ned Furrowe, after they took a Hesh boy up out of the cells. That's all it is. It's been in this family a hundred years like a stone in a shoe and nobody ever knew what to do with it.
+line: TOM: What am I meant to do with it?
+line: NAN: I don't know, love. You've got the lanyard. I've only got the stone.
+do: set(e5.carry_f3)
+go: e5.dinner.nan
+
+@node e5.dinner.nan
+place: q5_furrowe_kitchen
+speaker: NAN
+cost: 0
+nar: At nine Nan's phone goes. The food bank. A Vell woman has come to the hall door for tins out of hours, with a girl, and the volunteer has asked her to wait outside till Thursday, the way they've been told to.
+nar: Nan puts her coat on over her slippers.
+line: NAN: I'm only going to the hall.
+line: TOM: Mum, it's dark.
+line: NAN: It's always dark. Don't wait up.
+go: e5.inner.says
+
+@node e5.dinner.brack
+place: q5_brack_kitchen
+speaker: ANN
+cost: 0
+nar: Wednesday tea, if it's tea. Leon's kitchen on the far-bank estate, the end house, with a back gate onto the cutting. On the wall by the back door the wedding photograph with the crack across the glass that he never got round to, Leon and Carol on the Crown's steps, Carol looking off at something.
+nar: Carol's gone, two years. His mother came the week after with two cases and a commode, and never went back.
+nar: Ann Brack is seventy-five. Thirty years a constable, retired a sergeant, and she sits like one, straight, both feet on the floor. She has the telly on with the sound off. Mill Street is on it. Then the force's crest. Then Mill Street again.
+nar: She's made egg and chips because she always makes egg and chips when something's happened. He hasn't touched it. He's still in the vest.
+line: ANN: Now then. Eat that.
+line: LEON: I'm not hungry, Mam.
+line: ANN: Eat it anyway.
+nar: He eats one chip. On the telly, with no sound, the window across Mill Street, the net curtain, a big man kneeling. They've blurred him. They've blurred his face and his number and left his knee.
+line: ANN: That's you.
+line: LEON: They're saying it's not been decided who.
+line: ANN: That's your back, Leon Brack. I wiped that back when it had nappy rash.
+nar: She picks up the remote and turns the sound on, and it's a woman outside the Well House holding a photograph of a lad in a school tie, and she turns it off again.
+line: ANN: Have you said it? To anybody? What you did, how long?
+line: LEON: The Fed rep says don't say anything.
+line: ANN: The Fed rep's not got to live with it. Say it to me. Tonight. Out loud, in this kitchen, before they put it in your mouth for you. That's all.
+voice: grip: She knows. She's been in that room. Thirty years. She's sat with lads in vests. {dc: 2}
+voice: ballast: It was a stop. It was a lawful stop. You had the description. Anybody would have. {dc: 3}
+nar: Ann gets up. She takes his plate away with the egg still on it and scrapes it into the bin, and stands with her back to him at the sink, a long time, with the tap off.
+nar: Her eyes go to the nail by the back door, where the boy's cap hangs that's hung there all his life, and stay on it. {when: has(q.tomas_held)}
+line: ANN: Your great-grandad had a stone in his shoe all his life. My dad said. He never would say what.
+line: LEON: What's that got to do with anything?
+line: ANN: Nothing, love. Go to bed.
+go: e5.inner.says
+
+# ---------------------------------------------------------------- the night after the clip: Everybody Says (inner arena)
+# The inner fight plays when the share's self-lie (e5.sl.says) was heard and kept; otherwise the night passes and the
+# trade follows (combat/innerhook.mjs; design/eras/era5.md section 9). No line of its own: the dream is the fight.
+@node e5.inner.says
+cost: 0
+do: inner(says, e5.trade)
+go: e5.trade
+
+# ---------------------------------------------------------------- e5.s04, the class's trade
+@node e5.trade
+cost: 0
+alt: e5.trade.leon ? q_class == militia
+go: e5.trade.tom
+
+@node e5.trade.tom
+place: q5_haldane_yard
+speaker: MARA
+cost: 0
+nar: Thursday. Haldane Yard, the re-survey, because the councillors want new photographs for the vote. Tom has the meter and a camera on a lanyard, and the can of pink in his coat.
+nar: The Yard is an arch off Mill Street and a square of cobbles with four doors on each side, stone, older than the street. Haldane's door is at the back. On the lintel somebody once cut a goat in the stone and somebody else chiselled its head off and you can still see the horns. By the frame, at hand height, there's a pink dot. His. From January. It's run a little.
+nar: Mara Haldane opens the door before he knocks. Twenty-seven, a fleece, her hair up in a clip, a lanyard of her own for the tenants' committee, laminated on a library machine.
+line: MARA: You're the survey.
+line: TOM: Re-survey. Just the photographs.
+line: MARA: You were here in January. You stood in our back room and your machine beeped, and on your way out you did that to our door.
+line: TOM: It's the damp. The meter doesn't lie. It's not anybody's fault.
+line: MARA: It's the gutter. The council's gutter. It's been hanging off since my grandad was a boy and nobody'll come. Come here. Put your hand on that.
+nar: She takes his wrist, not gently, and puts his palm flat on the back room wall under the window. It's wet. Not damp. Wet, and cold as a cellar, and soft under the paper, so his fingers go in a little. Through the window he can see the gutter hanging off the eaves at a slant, and the stain running down from the low end of it like a tear down a face.
+nar: In the chair by the window Joss Haldane has an oxygen line in his nose and the cylinder on a trolley. Seventy-three tomorrow week. The wall behind him is black to the height of a man. He nods at Tom and keeps his breath. The valve clicks each time it goes in.
+nar: On the windowsill, in the middle, there's one old bowl, a fair bowl, glazed brown and cream, with a spider plant in it.
+nar: There's a ladder against the Yard wall outside, Kev's, with paint on the rungs.
+voice: sum: The meter's screaming. On the meter alone you'd be right. Nobody on the panel will put their hand on a wall. {dc: 2}
+voice: smallprint: Fix the gutter and the wall dries. Nobody's asked you what fixes it. They've asked you what it is. {dc: 2}
+voice: condolence: He's breathing through a tube in a room that's making him worse. He's watching your hands. {dc: 3}
+opt: "Photograph the black wall with Joss in front of it, and the pink dot on the way out." -> e5.trade.tom.out {do: set(said.e5_tom_unfit)}
+opt: "Go out to Kev's ladder and climb up to the gutter." -> e5.trade.tom.out {do: set(said.e5_tom_remedy)}
+
+@node e5.trade.tom.out
+place: q5_haldane_yard
+speaker: MARA
+cost: 0
+nar: You take it. Joss looks at the camera the way old men look at cameras, straight, with his mouth shut. The flash goes and the black wall jumps out behind him. On the way out you photograph the dot, the way you're supposed to, close up, so the panel can see it's there. {when: has(said.e5_tom_unfit)}
+line: MARA: What's that for? {when: has(said.e5_tom_unfit)}
+line: TOM: It goes to the panel. {when: has(said.e5_tom_unfit)}
+line: MARA: That's not what I asked you. {when: has(said.e5_tom_unfit)}
+nar: You go up the ladder with your good shoes slipping on Kev's paint, and put your hand in the gutter. It's full, black, a hundred years of leaves gone to soup. You pull, and the low end comes away from its last bracket in your hand, and the water in it comes down the wall in a sheet, over your arm, into your sleeve, cold to the elbow, past Joss's window, onto the cobbles. {when: has(said.e5_tom_remedy), sense: e5.gutter.water}
+nar: You photograph that. The water coming off the eaves in a rope. Your own wet arm in the corner of the frame. {when: has(said.e5_tom_remedy)}
+line: MARA: Will that do anything? {when: has(said.e5_tom_remedy)}
+line: TOM: No. Probably not. They'll see it, though. {when: has(said.e5_tom_remedy)}
+line: MARA: They'll see it. Right. {when: has(said.e5_tom_remedy)}
+nar: On the way out you look at the goat on the lintel, the horns, and the pink by the frame under it. Joss's breath goes in and out behind you, a click in the valve each time.
+go: e5.false
+
+@node e5.trade.leon
+place: q5_brack_kitchen
+speaker: LEON
+cost: 0
+do: sense(e5.bodycam)
+nar: Thursday. The Fed rep has come to the house, which is not how it's done, and sits at Leon's kitchen table in his fleece with a coffee, and clips Leon's own bodycam to the fridge door with a magnet, pointing at the chair. Professional Standards want the officer's first account on camera by four. He can do it here, the rep says, where he's comfortable.
+nar: The little green light comes on.
+line: FED: Before we start. Let's just run it. He continued to struggle violently. You applied a restraint to his upper back in line with your training. And then he appeared to become limp and you put him in the recovery position straight away. That's what you saw.
+nar: That isn't what his knee says. His knee says the lad stopped under it, a give, like a step going under you on a stair in the dark, and that he stayed on after. It says it now, sitting in a kitchen chair, through the bone. {sense: e5.knee}
+nar: On the windowsill there's a mug with his name on it that Carol bought and a frame with three photographs in it, Will and Davey and Ann, each of them in uniform, and his own cap beside it.
+voice: precedent: Somebody has to keep order on Mill Street. If it's not us it's the lads with the bats. {dc: 2, self: e5.sl.order}
+voice: grip: You felt him stop. Under your knee. You thought he was getting his breath to go again. {dc: 2}
+voice: knees: Your knee's still hurting. He hasn't asked about that once. {dc: 3}
+nar: His phone goes on the table. Shaw. He puts it on speaker without meaning to.
+line: SHAW: Sarge. They want me on camera by four. What are you saying. I'll say what you're saying.
+opt: "Look at the green light and say the Fed's words: He appeared to become limp." -> e5.trade.leon.out {do: set(said.e5_leon_limp)}
+opt: "Look at the green light and say what your knee says: He stopped. I stayed on. I didn't get up." -> e5.trade.leon.out {do: set(said.e5_leon_true)}
+
+@node e5.trade.leon.out
+place: q5_brack_kitchen
+speaker: LEON
+cost: 0
+nar: You say it. The words come out in the rep's order without you, like water into a ditch. Appeared to become limp. The rep nods along, a little, the way you'd nod at a child saying a poem. Then you tell Shaw: say the same. {when: has(said.e5_leon_limp)}
+line: SHAW: Right, Sarge. {when: has(said.e5_leon_limp)}
+nar: You say it. It takes a long time, because you keep stopping. You say didn't get up once, because it's an account, and your mouth wants to say it twice. The rep has stopped drinking his coffee. {when: has(said.e5_leon_true)}
+nar: You tell Shaw: say what you saw. He doesn't say anything for a long time. Then: OK. Then, very quietly: Sarge, they'll hang you. {when: has(said.e5_leon_true)}
+nar: Ann is on the stairs in her dressing gown, where she's been the whole time, out of the camera's sight, listening, the way he'd never let anybody else do. When the green light goes off she goes back up without a word.
+go: e5.inner.order
+
+# ---------------------------------------------------------------- the night of Leon's account: Order (inner arena)
+# Plays when Order is armed (e5.sl.order heard, or the line's earlier "Somebody had to": e3.sl.order, q.sl.order).
+@node e5.inner.order
+cost: 0
+do: inner(order, e5.false)
+go: e5.false
+
+# ---------------------------------------------------------------- e5.s05, the false world: Ellie's chapter, then the Saros'
+@node e5.false
+place: q5_channel
+speaker: ELLIE
+cost: 0
+camera: near
+do: set(e5.rumour_posted)
+nar: Ellie's chapter.
+nar: The spare room in Ellie Ashby's semi on the Arlen road. A ring light on a stand, three screens, a mic on an arm, a framed photograph of her grandad Paul with his press camera. On the shelf, a mug with a flag on it a sponsor sent.
+nar: In her camera's frame everything is warm and lit, her face, the wall of books she bought by the metre. It looks like a room where somebody thinks.
+nar: Ellie is thirty-one. The real Edrin has a sponsor that sells water filters and an audience that would fill the football ground twice. She believes every word she says. Every morning while she does her face she has the same voices in her ear: the League, a man in Arlen with a podcast, a forum her dad reads out to her down the phone.
+line: ELLIE: Right, I'm going to keep this short, because I know a lot of you are angry, and you've every right to be.
+line: ELLIE: I want to ask one question. Just one. Why haven't we heard the toxicology? It's Thursday. A lad goes into the back of a van, he's a big lad, fit lad, and he just drops. Why won't anybody say what was in him?
+line: ELLIE: I'm asking. That's all this is, a question. And I'll tell you who isn't asking. The Gazette. The council. The people who want you to look at a forty-second clip and not ask what happened before it started.
+nar: It was four minutes. She has seen all four minutes. She saw it at midnight and was sick in the bathroom, quietly, with the tap on. Then she went back to the desk and listened to what the League had put out, and the knife, and the police, and the voices under all of it, and by three the thing she'd seen had settled into the other things, the way a stone goes down in silt.
+line: ELLIE: Share it before they take it down.
+nar: She clicks end. Her face on the monitor holds for a second, lit and certain. Then the phone on the desk starts to chime, and doesn't stop, a little bright sound over and over, and she sits and listens to it like rain. {sense: e5.phone.chime}
+nar: The Saros' chapter.
+go: e5.saro
+
+@node e5.saro
+place: q5_saro_flat
+speaker: INES
+cost: 0
+camera: near
+nar: The same evening. The flat over the shop on Mill Street. The same window that was in the corner of the video, across the road, has a sheet over it now, pinned.
+nar: The room is the same room Mira told Danil about the river in, years ago, with the same tray of tea glasses. Nobody has turned the big light on. The light is the phones.
+nar: Teo Saro is forty-nine, in his shop coat still, on the settee. His sister-in-law has come from Arlen and is in the kitchen making food nobody will eat. Mira, seventy-two, is in her chair with her scarf on and her hands in her lap. Kasem, seventy-five, is in the bedroom with the door shut. He hasn't come out since the hospital.
+nar: Ines is fourteen. She has her phone in both hands and she's saying out loud what people are putting under Ellie's video, because her grandmother asked her to tell her what they're saying, and her grandmother's English doesn't do the internet.
+line: INES: This one says, toxicology, yeah, we all know what that'll say. And a laughing face.
+line: MIRA: What is the word.
+line: INES: It means what was in his blood, Nana. Drugs.
+line: MIRA: Bread. Bread was in his blood. He ate a whole roll on the way, he always did, he ate one on the stairs.
+line: INES: This one says, if he'd stopped when he was told he'd be alive. This one says, good. Just good.
+line: TEO: Stop it, Ines.
+line: INES: Nana asked me.
+line: TEO: Put it down.
+nar: She doesn't put it down. Her thumb slips. The phone's little voice, the one for people who can't see the screen, which she's left on by accident from her gran's phone, starts saying the next ones on its own, flat, polite, getting the names wrong.
+line: PHONE: Send the lot of them back. Thoughts and prayers to the officer.
+line: PHONE: My nan says they've always been like this, the Vell, the Hesh, all of them. Where's the knife then.
+line: PHONE: The Well House should be shut down. Brave lad, the copper. Rest in peace to the lad, no matter what.
+nar: Teo takes the phone off her and holds the button till the voice stops. His thumb slips and opens the camera roll instead, Ines's camera roll, and the first thing in it is a video from six weeks ago, and it starts to play.
+nar: The Saros' kitchen, behind the shop. Danil at the oven in an apron over his tracksuit, with smoke coming out round the oven door. He opens it and a tray of rolls comes out black, every one, and he holds the tray up to the phone like a trophy.
+line: DANIL: It's art. It's art, Nana. You don't understand art.
+nar: Off camera Mira is laughing so hard she can't breathe. Ines, filming, is saying you've killed them, you've killed all of them, and Danil puts one in his mouth anyway and bites it and it cracks like a slate, and he chews it with his eyes shut and makes a face like it's the best thing he's ever had, and the camera shakes.
+line: DANIL: Delicious. Smoky. Tell the bakery.
+nar: In the room, Mira has her hand over her mouth. Teo lets it play to the end, and it stops on Danil's face with his cheeks full, and nobody touches the phone, and it plays again.
+nar: In the bedroom, through the door, Kasem is saying something in the Vell, over and over, the same few words. Ines knows what they are. They're the words for river and for home, which in the old talk are nearly the same word.
+go: e5.ident

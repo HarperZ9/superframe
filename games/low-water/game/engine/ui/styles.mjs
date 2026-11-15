@@ -1,6 +1,6 @@
 // Stylesheets loaded as text and put in <style> tags. game/serve.mjs has no .css type, so a
 // <link rel="stylesheet"> would be served as application/octet-stream and refused.
-const SHEETS = ["theme.css", "tokens.css", "panels.css", "daybook.css", "ux.css"]; // ux: tokens and ux are the UI lead's
+const SHEETS = ["theme.css", "tokens.css", "panels.css", "daybook.css", "ux.css", "era.css"]; // era: the UI art lead's, a story's era (body[data-ui-era]) only // ux: tokens and ux are the UI lead's
 
 export async function loadStyles() {
   const texts = await Promise.all(SHEETS.map(async (f) => {

@@ -1,0 +1,500 @@
+# Era 3, Allocation: the old Mott house and the town, September to November, year 20. The shift table (e3.s06), the
+# wedding under the stairs (e3.s07), the list at home (e3.s08), the Tarn list at the counter (e3.s09, fate f.e3_list,
+# ANNI decides), the pulpit and the fence (e3.s10), Aaron's boots (e3.s11, fate f.e3_aaron, WILL decides) and the
+# allocation riot at the scale (e3.s12). Story lead, fork B, 2026-10-23. Weighted-devices pass, 2026-10-23: the Tarn list
+# is a Tarn man standing at the rail and saying it, and whose bundle goes on the far-bank cart (design/device-audit/era3.md).
+# DRAFT: every line waits for the author's line approval (ledger row S14). Design: design/eras/era3.md sections 2 and 3; Anni's canon, design/spine-plan/09-ANNI.md.
+# Bet is ill from the boots onward; she dies in e3_fever.lwd. On the claim route (q.ned_claimed) there is no Tarn list.
+
+@fact e3.house_bread_given
+
+# ---------------------------------------------------------------- e3.s06, the shift table
+@node e3.table
+place: q3_mott_house
+speaker: PRUETT
+cost: 0
+nar: The old Mott house on Exchange Street, a fortnight into the allocation. Edwin Mott's front room, with the good plaster ceiling and the gas bracket that doesn't work, and ten families' bundles stacked against the walls to the dado.
+nar: In the middle of it, on trestles, the Haldane table. The barn door with the hinge marks in it, carried down from the yard on a handcart because it was the only table big enough. It eats in shifts now. A bell from the hall when the pot's on, and you come down when it's your turn, and you go back up when it isn't.
+nar: Low on one leg, the goat Ilo carved when Anni was born. Twenty years of hands have gone over it, pulling stools up, steadying a child. It's black and shiny as a horn.
+nar: The pot's lentils with a ham bone in it that's been in four pots before this one. The bread is the relief loaf, grey, cut thin on the board at the end, and it smells of the sack. It's hot, though. The whole room smells of it being hot.
+nar: Pell has his tape on his belt. The board wants every room on Exchange Street walked again now it's full, and this is the room. Mrs Pruett has put a bowl in front of him without asking whether he wants it, and he's eating it standing up. {when: q_class == inspector}
+nar: The board wants a sergeant through every allocated house the first month. Will has his cap under his arm. Mrs Pruett has put a bowl in front of him without asking whether he wants it, and he's eating it standing up, because she'd only stand there till he did. {when: q_class == militia}
+nar: Second shift. The Pruetts, two Tarn families off the low road, and the Sallises: old Arn at the end, Davin's wife with the baby, and Mim, who is eight and has a bandage on the back of her left hand that she keeps under the table.
+line: PRUETT: Mim. Mim, love. Hand up where I can see it.
+line: MIM: It's sore.
+line: PRUETT: I know it's sore. Put it up. We eat with both hands in this house.
+nar: Mim puts the hand up. The bandage is a strip of Davin's shirt. Across the knuckles, where it's soaked through, there are three lines the width of a ruler.
+line: PRUETT: Go on, eat it. It's proper bread, there's no fat in it.
+line: MIM: It's horrible.
+line: PRUETT: You'll get used to proper food, love. You all do in the end.
+nar: She means it kindly. You can see her mean it. She tears the crust off Mim's piece for her, because the crust's the hardest, and eats it herself.
+line: PRUETT: My Jenny wouldn't eat crusts. I used to say to her, they'll make your hair curl. She had hair to here.
+line: ARN: Thank Mrs Pruett, Mim.
+line: MIM: Teshkat.
+nar: Nobody moves. Mrs Pruett puts the crust down.
+line: PRUETT: What was that, love.
+line: MIM: Thank you, Mrs Pruett.
+line: PRUETT: There. That's the one Miss wants. We don't want you getting the other hand done.
+nar: Davin's wife takes Mim's good hand under the table and holds it. Arn eats. At the far end of the trestles, at the place by the window, there's a bowl turned upside down on the board and the heel of the loaf beside it, and nobody sits there and nobody moves it. The Haldanes lay it. Every shift. The other families have stopped asking.
+voice: sum: Ten families is what it holds. You walked it with the tape and it holds. {dc: 2, when: q_class == inspector}
+voice: undertow: Her Jenny. Your father stood at the scale the winter Jenny Pruett died in. {dc: 3, when: q_class == inspector}
+voice: ballast: Mrs Pruett is kind to that child. Somebody has to teach them. {dc: 2, when: q_class == militia}
+voice: grip: Three lines on the knuckles. The ruler's edge, then. A flat ruler leaves one. {dc: 3, when: q_class == militia}
+opt: "Give Mim your heel of bread." -> e3.wedding {do: set(e3.house_bread_given), sense: e3.bread}
+opt: "Finish your bowl and go up." -> e3.wedding
+
+# ---------------------------------------------------------------- e3.s07, the wedding under the stairs
+@node e3.wedding
+place: q3_mott_house
+speaker: VESH
+cost: 0
+nar: Mim takes the bread without looking at you and puts it inside her jersey for later. {when: has(e3.house_bread_given)}
+nar: A Saturday at the end of September, after dark. The back room under the stairs, where the Sholls sleep, cleared for the night. The Sholls are sitting on the stairs above it with their four, because it's their room and they wanted to be asked, and Lio Sallis asked them.
+nar: Lio Sallis and Tesse Varn are getting married. The Well House is fenced, the hall's taken, the yard's a yard. So it's here, under the stairs, with the door to the hall pulled to and a coat hung over the keyhole.
+nar: There's a lamp on the floor, and a cup on a stool. The Mott house's best wine glass, which Edwin Mott left behind with the house, because there's no Hesh cup to hand and the Well House cup is in the Well House behind the fence.
+nar: Bet has made the bread. Sheep's-fat bread, the way Dorrah showed her the first winter in the barns, which she's never once made right and has made right tonight. You can smell it on the stairs. Somebody's little one is licking the fat off the paper it came in.
+line: BET: It wants eating warm. Oren Tesk, you've not cut bread before, is it. Like you'd cut it for your mother.
+line: OREN: My mother never had bread like that.
+line: BET: Your mother never had a stove.
+nar: Mother Vesh stands in front of the two of them with her hands up. She's so small she has to lift them high to put them on two heads. She says the words, all of them, in Heshen, quietly, and the words go a long time, and she doesn't miss one.
+nar: Lio holds the cup and Tesse drinks, and Tesse holds it and Lio drinks, and Lio's hand is shaking so the wine goes down his chin, and Tesse wipes it off with her thumb and everybody laughs, the held-in laugh of a room that's keeping its voice down.
+line: VESH: Now the rest of you.
+nar: The cup goes round. Arn. Davin's wife. Hanne Sholl on the stairs, who takes it and holds it a second longer than she needs, because nobody asked her to a wedding since she came over the ridge. Ilo, who drinks and says the word for the dead, which you say at a wedding for the ones who aren't at it, and doesn't look at the turned bowl in the front room through the wall.
+nar: Then the singing. Low. Heshen. The song for the bride's feet, which is a stupid song about a goat that won't go up a path, with a verse for every relation, and every relation has to sing their own verse, and Oren sings Dorrah's verse in Dorrah's voice and Tesse sits down on the floor laughing with both hands over her mouth.
+nar: Anni sings it. Her thread's on, both wrists. She has Tam asleep on her and Ilo the younger asleep on Oren's coat, and she sings the goat's verse with her eyes shut, and she has the best voice in the room and doesn't know it, or knows it and keeps it low.
+nar: Pell is on the hall side of the coat over the keyhole. He was going up. He has stopped on the bottom stair. The door's open a finger's width, and Mim, under the coat, sees him, and goes and gets him a piece of the bread in her good hand and pushes it out through the gap. {when: q_class == inspector}
+nar: Will is in the hall with his cap on. Somebody on Exchange Street could hear it, if they stood at the front door and listened. He stands at the front door, with his back to it, where they'd have to come past him. Davey comes in off the round and Will puts a hand up and Davey stops and listens and doesn't say anything. {when: q_class == militia}
+nar: Nothing happens. The song ends. The bread's eaten. Lio and Tesse get the back room for the one night and the Sholls sleep on the landing, and in the morning Hanne Sholl puts the room back how it was and says the bride snores.
+do: set(e3.wedding_done)
+voice: undertow: Eat it. Nobody's asking anything of you tonight. {dc: 2, when: q_class == inspector}
+voice: ballast: Heshen at night, in a house. That's no law of the board's. You can stand at a door. {dc: 2, when: q_class == militia}
+go: e3.list.home
+
+# ---------------------------------------------------------------- e3.s08, the list at home, through the wall
+@node e3.list.home
+place: q3_mott_house
+speaker: ANNI
+cost: 0
+nar: An ordinary evening in October. The Haldane room, the first floor back, Edwin Mott's dressing room once: two beds pushed together for six of them, a curtain across, a shelf.
+nar: On the shelf, in a frame from Osby fair, the Haldane five. Ilo and Bet on the bench in the yard at the barns, Anni stood between them in a pinafore, Aaron on Bet's knee in a smock. The right-hand edge of the picture has been cut off with scissors, straight and careful, a finger's width from Bet's shoulder. The frame was always too big for it after.
+nar: Ilo is whittling a peg for the curtain. Oren is out on the dray. The little ones are down. Bet is in the bed behind the curtain with her boots on, because her feet are cold and she can't get warm, she says.
+nar: The wall to the next room is lath and old paper, and Pell is on the other side of it with the lamp and the tape, walking the floor again because the board wants it Monday. He can hear the knife on the peg. {when: q_class == inspector, sense: wall.voice}
+nar: The landing window looks over the square, and Will stops at it every night on the round for a smoke. The Haldane room's door is a curtain and a plank. He can hear the knife on the peg. {when: q_class == militia, sense: wall.voice}
+line: ANNI: Mr Mott at the counter says there's another stair.
+line: ILO: There's always another stair.
+line: ANNI: The far bank. Proper houses, he said. Two rooms and a tap inside.
+line: ILO: Whose?
+line: ANNI: He said they're allocated.
+line: ILO: Mm.
+line: ANNI: If a Tarn man comes down to the counter. And stands with me, and says I'm his.
+nar: The knife stops on the peg.
+line: ILO: Who's coming in?
+line: ANNI: You tell me.
+line: ILO: Eat your tea.
+line: ANNI: I've had my tea.
+line: ILO: Then have it again. There's some in the pot.
+nar: He gets up and goes out past the curtain and down the stairs, and you hear him go down them, a stair at a time, the way he goes down stairs since the yard. The front door. Then nothing.
+nar: The bed creaks behind the curtain.
+line: BET: You've not shut that door, Anni Haldane. The heat's going down the stair.
+line: ANNI: There's no heat.
+line: BET: Then the cold's coming up it, is it. Shut it.
+nar: The door. Then Anni's feet on the boards, three steps, and the bed creaking again as she sits on the end of it.
+line: ANNI: Was it him?
+nar: A long time. Out on the square somebody's whistling for a dog.
+line: BET: Pass me that cup of water, is it. On the shelf.
+line: ANNI: Mum.
+line: BET: The cup. By the picture.
+nar: The cup going down on the shelf again. Bet drinking.
+line: BET: He was a lad then.
+line: ANNI: That's not no.
+line: BET: You didn't say no to a Furrowe. Not on that farm. You took the milk up at six and you stood in the kitchen while he drank it, and you took the jug back down.
+line: ANNI: Every morning.
+line: BET: That summer. Seed and barley and the milk up. Then I was at Osby with you on the cart and your dad come to the fair with a hand on him like a ham from Josh Brack's dog, asking my father for me.
+line: ANNI: He's not my dad.
+line: BET: Madam. You'll not say that in this room.
+nar: Nothing. Then the bed again, and a sound out of Anni that she stops with something, her sleeve or her hand.
+line: BET: Your dad carried you to Osby on his shoulders the year we bought the bowls. You were sick down his collar. He wore that shirt the week, he said it was a mark of honour. That's your dad, Anni Haldane. Get your feet up, you're froze.
+voice: undertow: Through the wall. You'll be able to say you never heard it, and nobody will ever ask you. {dc: 2, when: q_class == inspector}
+voice: pride: Your father was a lad then. She said so herself. {dc: 3, when: q_class == inspector}
+voice: ballast: It's nothing to do with the round. Finish your smoke. {dc: 2, when: q_class == militia}
+voice: grip: Bet Haldane's hands were shaking on that cup. You heard it knock the shelf. {dc: 3, when: q_class == militia}
+go: e3.list.next
+
+@node e3.list.next
+cost: 0
+alt: e3.list.claimed ? has(q.ned_claimed)
+go: e3.list.offer
+
+@node e3.list.claimed
+place: q3_mott_house
+speaker: ANNI
+cost: 0
+nar: There's no need of a Tarn man at the rail for Anni Haldane. Ned Furrowe stood at the gate on Tilney Road in the hard winter, in front of the post and half the Upper Town, and said she was his. Walter Mott was there. He'd give her a bright key tomorrow if she held her hand out.
+line: ANNI: I could have the flat tomorrow. I'd only have to go and ask.
+line: BET: Then go and ask.
+line: ANNI: You'd come.
+line: BET: I'd not. I'd stop with your dad.
+nar: Anni doesn't go and ask. In the morning she puts the thread back on her wrists, which she'd taken off to wash, and she ties it tighter than she needs to, and pulls it with her teeth. {sense: thread.tie}
+go: e3.pulpit
+
+@node e3.list.offer
+place: q3_mott_house
+speaker: ANNI
+cost: 0
+nar: On the floor under the cut picture there's a bundle tied up in Anni's good shawl, the corners knotted twice. The boys' things are in it, and Oren's other shirt, and hers. Ilo's whittling knife and Bet's tin cup are on the shelf above it, outside the bundle, where they always are.
+nar: Nobody in the room looks at it. Everybody steps round it.
+do: set(e3.list_offered); pressure(f.e3_list)
+go: e3.tarn
+
+# ---------------------------------------------------------------- e3.s09, the Tarn list at the counter (fate f.e3_list, ANNI decides)
+# The list is a man standing at the rail. A Tarn man says aloud, in front of the queue, that she is his; Walter takes
+# a bright key down; her bundle goes on the far-bank cart at the office steps, and her father's stays on the step.
+@node e3.tarn
+place: q3_office
+speaker: WALTER
+cost: 0
+nar: The allocation counter, the Friday the far-bank cart goes for the last time before the winter. It stands at the bottom of the office steps with the board's horse in the shafts and its tailboard down, and the bundles that are going over are stacked in it, tied in sheets and shawls and blankets, with a boy sat on top to keep the hands off them. The queue goes down the steps past it into the yard.
+nar: A Hesh man near the front has brought everything he owns in a biscuit tin, and keeps lifting the lid to see it's still there.
+nar: Pell is at the end of the counter with his tape, to say the Exchange Street rooms aloud to the board, which is why he's here and why he's still here. {when: q_class == inspector}
+nar: Will is on the stairs, keeping the queue in one line and off the banister, which is loose. {when: q_class == militia}
+nar: Anni Haldane comes up to the counter with Tam on her hip. Behind her on the step is Ilo, with her shawl bundle on his shoulder. He carried it down from the Mott house for her. He's carried things for her all her life. He stands where she left him and holds it.
+go: e3.list.read
+
+@node e3.list.read
+place: q3_office
+speaker: WALTER
+cost: 0
+line: WALTER: Haldane. Haldane, A.
+nar: He looks at her a long time across the rail, at her face more than her wrists, the way he looks at everybody, as if he's sorting them into the two sides of the board by eye. His black finger taps the brass, once.
+line: WALTER: Father. My dad left that blank, the year you were born. I was at his elbow. I was eight.
+line: WALTER: Old Mr Furrowe came down to the counter himself. Abel. He stood where you're stood, in his good coat, and said, Leave it, Edwin. And my dad left it. {when: q_class == inspector}
+nar: He stops. He looks at the end of the counter, at Pell Furrowe, and away again. {when: q_class == inspector}
+nar: From the stairs Will hears Walter say father, and my dad left that blank, and then Walter says nothing else for a bit. {when: q_class == militia}
+line: ANNI: Which stair?
+line: WALTER: The far bank. Proper houses.
+line: ANNI: Whose?
+line: WALTER: They're allocated. It wants a Tarn man to come and stand at this rail with you, and say it, before the cart goes at five. Then your bundle goes on the cart, and you and the little ones go over. Mr Tesk as well, he's Haldane now.
+line: ANNI: And my dad?
+line: WALTER: He'd stop this side. He's father to the boys. Not to you.
+nar: On the step Ilo shifts the bundle from one shoulder to the other. He doesn't say anything. {sense: e3.bundle_shift}
+voice: pride: Your grandfather at this counter, in his good coat, twenty years back. Nobody in this room needs to say anything about it. {dc: 2, when: q_class == inspector}
+voice: undertow: She came to your door and your father said her name before she'd given it. You know whose voice this counter wants now. {dc: 3, when: q_class == inspector}
+voice: ballast: The cart goes at five. You could tell her that. It's no more than you'd tell anybody. {dc: 2, when: q_class == militia}
+go: e3.list.who
+
+@node e3.list.who
+cost: 0
+alt: e3.list.will ? q_class == militia
+go: e3.list.pell
+
+@node e3.list.pell
+place: q3_office
+speaker: ANNI
+cost: 0
+nar: Anni turns her head and looks down the counter at Pell. Just looks. She doesn't ask him anything.
+opt: "Say it: I'll fetch him. Stop there." -> e3.list.ned {do: set(said.e3_pell_fetch)}
+opt: "Say it: He's out. He's at Osby all week, at my aunt's." -> e3.list.decide {do: set(said.e3_pell_out)}
+
+@node e3.list.ned
+place: q3_furrowe_hall
+speaker: NED
+cost: 0
+nar: The Furrowe hall at half past three. Ned in the front room in his chair with the fire going, in his slippers, with the cat asleep across his knees. He hasn't worked since the winter the district took his office off him.
+line: PELL: Dad. She's at the counter.
+nar: He doesn't ask who. He lifts the cat off and puts it down on the rug, and sits there with his hands on his knees where it was.
+line: NED: Get my boots.
+line: MARY: Ned.
+line: NED: Get my boots, Pell.
+nar: Mary stands in the kitchen door with the tea towel and watches him lace them. He has trouble with the left one. She doesn't help.
+line: MARY: You'll want your good coat if you're standing up in front of people.
+nar: He walks to the office. It's not far. He walks it like a long way, and Pell walks beside him, and he doesn't say anything all the way, and at the bottom of the office steps, by the cart, he stops and looks up at the queue and takes his hat off.
+nar: Ilo is on the step with the bundle on his shoulder. Ned has to go past him to get up the steps. They don't look at each other. Ned goes past close enough that their sleeves touch.
+nar: At the rail he stands next to her. He puts his hand flat on the brass beside hers, not on it. The queue behind them goes quiet, the way it does for the board.
+line: NED: She's mine. Anni. She's Tarn. I'll stand for her.
+nar: Walter doesn't say anything. He gets down off the stool and goes to the right side of the board, the bright side, and takes a key down off it, and lays it on the rail between their two hands. {sense: e3.key_down}
+line: NED: That's what you wanted.
+line: ANNI: I never asked you for anything.
+line: NED: No. You never did.
+go: e3.list.decide
+
+@node e3.list.will
+place: q3_office
+speaker: WILL
+cost: 0
+nar: Anni comes back down the stairs past Will with Tam on her hip and her face set. Ilo comes behind her with the bundle. She stops on the step below Will. There's nowhere to go, the queue's solid.
+line: ANNI: Sergeant.
+line: WILL: Mrs Tesk. Haldane, I mean.
+line: ANNI: He says I need a Tarn man. Stood at the rail.
+voice: grip: You know which Tarn man. Edie told you that years ago, letting out a dress, and you never told anybody. {dc: 2}
+opt: "Say it: The cart goes at five. He'd only have to walk down the hill. You'll know whose door." -> e3.list.decide {do: set(said.e3_will_list)}
+opt: "Say it: Keep moving, Mrs Haldane. You're blocking the stair." -> e3.list.decide
+
+@node e3.list.decide
+cost: 0
+alt: e3.list.signed ? has(said.e3_pell_fetch) | has(said.e3_will_list) & has(e3.anni_knocked)
+go: e3.list.refused
+
+@node e3.list.signed
+place: q3_office
+speaker: ANNI
+cost: 0
+do: set(e3.list_signed); fate(f.e3_list, anni)
+nar: Ned comes up the steps at ten to five, in his good coat, with his hat in his hands, past Ilo and the bundle on the step, and the queue lets him by because it's Ned Furrowe. At the rail he stands beside her and says it, not loud: she's mine, she's Tarn. Walter lays a bright key on the brass. Will watches it from the stair. {when: has(said.e3_will_list)}
+line: WALTER: Your hand, Mrs Haldane.
+nar: Anni stands and looks at Ned's hand on the rail beside hers for a while. Tam's got hold of her hair. She takes his fingers out of it, one by one.
+line: ANNI: Give us the key, then.
+nar: Walter puts it in her palm and closes her fingers on it with his black one. It's cold. She holds it so hard the tag's edge cuts a line in her hand.
+line: WALTER: And the thread, Mrs Haldane. Nobody goes over that bridge with thread on.
+nar: She bites through the blue thread on her right wrist with her side teeth. She can't get the left one with the baby on that arm, and she stands there with her wrist at her mouth, chewing at it, and it won't go, and the queue is watching. Walter gets the scissors out of the drawer and cuts it for her. It drops on the counter. He sweeps it off into his hand to put it in the basket. {sense: thread.cut}
+line: ANNI: I'll want that.
+line: WALTER: It's nothing, Mrs Haldane.
+line: ANNI: I'll want it.
+nar: He opens his hand. She takes it off his palm and puts it in her coat pocket.
+nar: Then she goes down the steps, past Ned, to the cart. Ilo is standing by it with her shawl bundle. He doesn't wait for her to ask. He lifts it off his shoulder and puts it up on the tailboard himself, and pushes it in among the others with both hands so it won't fall, and steps back onto the step. {sense: e3.bundle_down}
+nar: His own bundle isn't there. It's at home on the bed in the Mott house where it always is. He has nothing to carry back up the hill.
+nar: On the far bank, a flat in the new terrace, two rooms and a tap, was the Pelleks' until Tuesday, when the board sent them up to the Mott house. They're in the room under the Haldanes'. Anni will pass their door on the stairs every day until the plaster's dry.
+go: e3.pulpit
+
+@node e3.list.refused
+place: q3_office
+speaker: ANNI
+cost: 0
+do: set(e3.list_refused)
+nar: Five o'clock. The carter puts the tailboard up and the board's horse takes the cart away across the yard toward the bridge, with the boy on top of the bundles.
+line: WALTER: That's the cart gone, Mrs Haldane. I'm sorry.
+line: ANNI: You're not.
+line: WALTER: I am, as it goes.
+line: ANNI: Put me back with my dad, then.
+line: WALTER: You were never anywhere else.
+nar: On the step Ilo still has her bundle on his shoulder. She goes down to him and takes it off him, though he holds on to it a moment, and puts it on her own shoulder with Tam on the other hip, and carries it home up the hill herself, past the Hesh man with the biscuit tin, who asks her if they're still taking names, and she says she doesn't know. Going out across the yard she ties the thread tighter on her left wrist with her teeth. {sense: thread.tie}
+voice: undertow: That's your doing. You could call it hers. {dc: 3, when: has(said.e3_pell_out)}
+go: e3.pulpit
+
+# ---------------------------------------------------------------- e3.s10, the pulpit and the well
+@node e3.pulpit
+place: q3_church
+speaker: HOLLIS
+cost: 0
+nar: The Furrow Church, the first Sunday in November. Full, and warm, the stove lit in the aisle. They're singing the harvest hymn late, because nobody had the heart in September, and everyone sings louder over the organ's bad low notes to cover them.
+nar: Pell is in the Furrowe pew with Mary and Ned, Ned's hand on the bench end where his own father's hand wore the varnish off. {when: q_class == inspector}
+nar: Will is at the back in uniform, with Edie and Davey and Rose, because the militia sits at the back. Rose has her head on Edie's shoulder. {when: q_class == militia}
+nar: Reverend Hollis comes up into the pulpit slowly, a step at a time, with his hand on the rail. He doesn't look at the congregation until he's there.
+line: HOLLIS: There's sickness in the town. You'll have seen the chalk on the doors in Mill Street. I've buried five since Michaelmas, and I'm told by the doctor there'll be more before the frost.
+line: HOLLIS: And I want to talk about water. The water that comes down the hill. Because we've always been told the water that comes down the hill is clean, haven't we. Running water. Our grandmothers said so.
+line: HOLLIS: But I'd ask you to think where it comes from. What it comes past on its way down. Who's had their hands in it.
+nar: He doesn't say Hesh. He doesn't need to. The town knows the Well House sits on the spring at the top of Mill Street, and has done since before the town.
+line: HOLLIS: Dr Lind will tell you the medicine of it. I'd only say, keep your children from the low pumps. And watch who you let draw for you.
+nar: Somebody near the front says amen out loud, the way you don't in the Furrow Church. Then a few others. Mrs Pruett, three rows up, has her hand over her mouth.
+voice: sum: Five buried since Michaelmas. Lind's buried more than that. Nobody here will ask her how many. {dc: 3, when: q_class == inspector}
+voice: ballast: He's only told them to keep the children from the pumps. That's sense. {dc: 2, when: q_class == militia}
+go: e3.pulpit.fence
+
+# The well-poisoning talk is a voice in the queue and a hand you can see: a man behind you at the low pump, and a
+# forefinger black with ink to the second knuckle pointing up the street. Then the gate is nailed shut.
+@node e3.pulpit.fence
+place: q3_well_house
+speaker: GEDGE
+cost: 0
+nar: Monday morning, early. The queue for the low pump at the bottom of Mill Street, buckets and jugs and a pram with a churn in it, everybody stood close for the warm. You're in it, because the yard tap at home is frozen. {sense: e3.queue_voice}
+nar: Behind you a man's voice, quiet, a counter voice, the kind that's used to being listened to without being raised.
+line: VOICE: Who drinks from the hill, though? You ask yourself that. Seventeen on Exchange Street since Monday last.
+nar: A hand comes past your shoulder and points up the street, at the top of Mill Street, at the low whitewashed house over the spring. It's a clean hand, a clerk's, with the forefinger black with ink to the second knuckle. It stays there pointing for as long as it takes everyone near to look where it points. Then it goes back.
+nar: You turn round. There's a woman with a jug, and a lad, and a man in a muffler, and a man in a good coat with his hands in his pockets, and the queue has closed up, and nobody's face says anything. Somebody further back says, the hill, that's right, and somebody else says it, and the queue says it down its length like a cough going round a church.
+nar: By ten there's a crowd up at the Well House. Not loud. Women with their buckets, standing. The Well House is in Pask's yard at the top of the street, which it's rented off Pask since the town took the old ground. A low stone house over the spring, whitewashed, with the Hesh water sign over the door in blue and the cup on its chain inside.
+nar: Constable Gedge is nailing the yard gate shut. Boards off the market across the gate, one over another, and Fenn holding them while Gedge drives the nails, three to a board, and every nail goes in with a sound you feel in your teeth. Then hurdles wired along the wall either side. {sense: e3.nails}
+line: GEDGE: Closed. For health. Board's orders. No water to be drawn.
+nar: Mother Vesh is on the other side of the gate with her bucket. She's come for the morning water the way she's come every morning for longer than Gedge has been alive.
+line: VESH: I'll draw for the prayer, Constable. Only the one bucket.
+line: GEDGE: It's shut, Mother.
+line: VESH: It's the spring. It's been running since before your grandmother.
+line: GEDGE: It's running fever now. Reverend said. Go home.
+line: VESH: Where's the fever from, then? It was in the barracks first. Ask the doctor.
+line: FENN: Tell her she can draw from the low pump with the rest.
+line: GEDGE: You can draw from the low pump with the rest.
+nar: The low pump is the one Hollis told the town to keep its children from. Vesh knows it. Gedge knows it. She stands there with her bucket. Then she puts it down on the cobbles on her side of the gate, for the morning after, and goes home without it.
+nar: By dinner time somebody has hung a dead rat on the gate wire by its tail, at the height of a face, for the water. It turns on the wire in the wind. Gedge sees it. He leaves it. By the evening you can smell it from the bottom of the street. {sense: e3.rat}
+nar: The wire came up to Will's squad on the Saturday off Pask's own cart, and Will's lads carried it up the hill on their shoulders. {when: q_class == militia}
+do: set(e3.well_claim); pressure(f.e3_well)
+voice: ballast: For health. Gedge said so. {dc: 2, when: q_class == militia}
+voice: undertow: The spring at the top of the street, and the town at the bottom of it. You've walked it yourself with the tape. {dc: 3, when: q_class == inspector}
+voice: undertow: That finger. You've seen that finger on a brass rail. {dc: 4, when: q_class == inspector}
+voice: grip: That hand. You've seen it on the counter rail, tapping. {dc: 4, when: q_class == militia}
+go: e3.boots
+
+# ---------------------------------------------------------------- e3.s11, Aaron's boots (fate f.e3_aaron, WILL decides)
+@node e3.boots
+place: q3_mott_house
+speaker: BET
+cost: 0
+nar: The Haldane room, a Tuesday night in November. Aaron's boots on a newspaper on the floor and Bet on the end of the bed blacking them, with the tin and the brush and a rag, the smell of it all through the room, polish and paraffin.
+nar: She's got the fever coming on. Nobody's said so. Her face is a colour in the lamp, a dull red, and she keeps putting the back of her wrist to her forehead between strokes as if there's hair in her eyes, and there isn't. Her hands are hot. Aaron felt it when she took the boots off him.
+nar: On a plate on the bed, the end of a pie. Mutton, Bet's own, from the scrag the Pruetts got in the relief and gave a third of for nothing because Bet did Mrs Pruett's sheets. Aaron's eating it with his fingers. It's the best thing he's eaten since the summer. He's seventeen and he eats like a dog, and she watches him do it and doesn't say anything about his manners.
+nar: He's back three weeks from the colony at Calder Green, the Directorate's home for children, where he's been since the winter Gedge took him from the yard. He came off the cart in its grey coat, which has the colony's number stitched on the cuff, and he still wears it, because it's the only coat he's got. He folds his clothes at night with the corners square. He says sir to Oren. {when: has(q.aaron_taken)}
+line: BET: Give us your other foot. That's the left. That's the left, Tomas.
+nar: Aaron stops eating. Anni, at the shelf, stops.
+line: AARON: Aaron, Mum.
+line: BET: Aaron. I said Aaron.
+line: AARON: You said Tomas.
+line: BET: Then I said it. Give us the boot. You'll want them shined for the morning, is it. If you're asking Will Brack for anything you want them so he can see his face in them. Your granddad Carrow always said. A man looks at your boots before your face.
+line: ANNI: He's not asking Will Brack for anything.
+line: AARON: I am, as it goes.
+line: ANNI: For what.
+line: AARON: For the coat. They're taking on. Davey says a name's enough. Mr Mott calls us Haldane at the counter now, it's a farm name, nobody needs to look further.
+line: ANNI: They'll look.
+line: AARON: You could've been out of all this. Years. And you never said.
+line: ANNI: Said what?
+line: AARON: Don't. I've got eyes.
+nar: Bet goes on blacking the boot. She's blacking the same toe she's blacked for the last minute. She spits on it and goes on.
+line: BET: Hold your foot still, Tomas.
+nar: Nobody corrects her the second time.
+go: e3.boots.squad
+
+@node e3.boots.squad
+place: q3_squad
+speaker: AARON
+cost: 0
+nar: The militia squad room over the old corn exchange, Wednesday morning. Rifles chained through the trigger guards. Davey Brack at the table, cleaning his baton with a rag and spit.
+nar: Pell is at the end of the table with his tape, come to walk the squad room for billets, and has been waiting a quarter of an hour for the sergeant to say which rooms he can have. {when: q_class == inspector}
+nar: Aaron comes in with his cap in his hand and his boots so shined the stove's in them.
+line: AARON: Sergeant Brack.
+line: WILL: Haldane.
+line: AARON: I'd like to join, Sergeant. The militia. If you're taking on.
+line: DAVEY: I told him you were.
+line: WILL: I know what you told him.
+nar: On the hook by the door there's one coat left, the last. Will looks at Aaron. The cap, the boots, the hands, which are big and red and scrubbed. The neck of his shirt, where Bet's turned the collar. The wrists. There's no thread on them. There's a paler ring of skin on each where there was one till last night.
+line: AARON: We're Haldane. Mr Mott says it at the counter. Ask him.
+line: WILL: I know what you're on.
+line: AARON: I'm a good runner. I can carry. I carried my dad the length of Mill Street when he went down in the yard that winter.
+do: set(e3.aaron_asked); pressure(f.e3_aaron)
+voice: ballast: A Tarn name's enough. Mott says so. You've only to hand him the coat. {dc: 2, when: q_class == militia}
+voice: grip: The colony's coat. You know what it's like, Calder Green. You put him on the cart. {dc: 3, when: q_class == militia & has(q.aaron_taken)}
+voice: grip: He carried his father. You know how much that weighs. {dc: 3, when: q_class == militia & !has(q.aaron_taken)}
+go: e3.aaron.who
+
+@node e3.aaron.who
+cost: 0
+alt: e3.aaron.pell ? q_class == inspector
+go: e3.aaron.will
+
+@node e3.aaron.will
+place: q3_squad
+speaker: WILL
+cost: 0
+opt: "Take the last coat off the hook and hold it out to him. Say it: Get it on, Haldane." -> e3.aaron.decide {do: set(said.e3_will_aaron_take)}
+opt: "Say it: You're Hesh, son. I know your dad. Go to the works." -> e3.aaron.decide {do: set(said.e3_will_aaron_turn)}
+
+@node e3.aaron.pell
+place: q3_squad
+speaker: WILL
+cost: 0
+nar: Will looks down the table at Pell, as if Pell's going to be any help.
+line: WILL: You go in every house in this town for the board, Furrowe. Is he Haldane or isn't he.
+voice: pride: You could say it. Everybody's what the board calls them. You walk their rooms for it. {dc: 2}
+opt: "Say it: He's Haldane, Sergeant. I've walked their yard. Tarn farm name. He'll do." -> e3.aaron.decide {do: set(said.e3_pell_aaron_vouch)}
+opt: "Say it: I only do the rooms." -> e3.aaron.decide
+
+@node e3.aaron.decide
+cost: 0
+alt: e3.aaron.turned ? has(said.e3_will_aaron_turn) | q_class == inspector & !has(said.e3_pell_aaron_vouch)
+go: e3.aaron.taken
+
+@node e3.aaron.taken
+place: q3_squad
+speaker: WILL
+cost: 0
+do: set(e3.aaron_taken); fate(f.e3_aaron, aaron)
+line: WILL: Get it on. Davey, the cap.
+nar: The coat's the last one off the hook by the door. It was Corporal Lusk's, who went to the fever ward a week ago and didn't come back to the room. It's been boiled. It still smells of the ward. Aaron puts his arms in it like he's putting them into a river. {sense: e3.coat_on}
+nar: In the morning he comes down the Mott house stairs in it, and the whole shift table stops eating. Mrs Pruett says doesn't he look smart. Mim Sallis looks at his wrists. Bet, on the bottom stair with the bucket, stands up slowly with her hand on the wall and looks at him a long time.
+line: BET: Look at you. Look at you, Tomas.
+line: AARON: Aaron, Mum.
+line: BET: Do your top button.
+go: e3.riot
+
+@node e3.aaron.turned
+place: q3_squad
+speaker: WILL
+cost: 0
+do: set(e3.aaron_turned)
+line: WILL: Go to the works, Aaron. They're taking on at the far bank.
+line: AARON: I've polished my boots.
+line: WILL: I can see you have.
+nar: Davey looks at the table. Aaron stands there a bit longer in case it's a joke. Then he puts his cap on in the room, which you don't do, and goes out, and you hear his boots go down the stairs and miss one near the bottom.
+nar: The gatekeeper at the far bank works calls him Halden, short, the way a Tarn man says it, and Aaron doesn't put him right. By the Monday the whole works calls him it. He's on the dray with Oren. He comes home grey to the elbows with cement and doesn't talk at the table.
+go: e3.riot
+
+# ---------------------------------------------------------------- e3.s12, the allocation riot at the scale
+@node e3.riot
+place: q3_square
+speaker: WILL
+cost: 0
+nar: The square, the last Saturday of the allocation. A bright cold morning, the first sun in a week, the cobbles steaming where it hits them. The great scale from the exchange stands in the middle on its iron frame, brass pans polished for once, the ration sacks weighed out on it, and Walter Mott on the steps of the exchange beside it with the last of the Mott house keys on a ring in his fist.
+nar: A man is selling hot chestnuts from a brazier by the church steps, the first anybody's seen for years. One of the Pruett lads has got one and is passing it from hand to hand and laughing because it's burning him.
+nar: Two queues, a Tarn one along the church and a Hesh one along the exchange. The Tarn one's moving. Then Walter calls the north side off the steps, all Hesh names, and holds up a key for each, and Pellek's wife, moved out of the far bank flat on Tuesday, hears her name and her room and the room's a cellar.
+nar: She goes for the scale with both hands and pulls the pan off its chain, and the flour goes up white in the sun, and then the Tarn queue's coming across the square. {sense: e3.pan_down}
+go: e3.riot.who
+
+@node e3.riot.who
+cost: 0
+alt: e3.riot.window ? q_class == inspector
+go: e3.riot.line
+
+@node e3.riot.window
+place: q3_office
+speaker: TOBIN
+cost: 0
+nar: Pell sees it from the window of the allocation office, upstairs, with Tobin Krall beside him in his good suit, eating a chestnut out of a paper bag.
+nar: From up here it's small. The flour still hanging in the light. The Tarn queue meeting the Hesh one at the side of the exchange like water meeting water. The militia line coming out of Church Lane at a run with batons up. One baton going up and down in the middle of it, and up and down, and up. A woman on the cobbles with her arm over her head. Will Brack's voice, which carries, saying hold, hold.
+nar: A lad in a militia coat that's too big for him is in the line at the end, and he has hold of a Hesh man by the collar and is pulling him out of it backwards and saying something into his ear, over and over, and the man's hitting at him. {when: has(e3.aaron_taken)}
+line: TOBIN: Well. That's the north side done.
+line: TOBIN: Have one. They're good. Somebody ought to tell that man he could make a living.
+voice: sum: Krall will call it a disturbance at the scale. You'll call it that at dinner too. {dc: 2}
+go: e3.riot.after
+
+@node e3.riot.line
+place: q3_square
+speaker: WILL
+cost: 0
+nar: Will brings the squad out of Church Lane at the run and puts it across the square between the church and the exchange, between the two queues, in a line, batons out. Davey on his right. On the end, the new lad. {when: has(e3.aaron_taken)}
+nar: Will brings the squad out of Church Lane at the run and puts it across the square between the church and the exchange, between the two queues, in a line, batons out. Davey on his right. {when: !has(e3.aaron_taken)}
+nar: The Tarn crowd hits the line and the line holds, a step back, holds. A Tarn man in a carter's apron is over Davey's shoulder with a half brick, reaching for the Hesh side. Behind the line the Hesh queue's broken and running, and some of it's running into the line from behind, and the line doesn't know which way it's facing.
+nar: In front of Will a Hesh man, Pellek, gets turned round in the crush and comes at him chest first with both hands up, to push him off, to get out, his face white with flour.
+voice: ballast: Keep the line. A line that bends is a line that breaks. That's all your father ever said that was any use. {dc: 2}
+opt: "Bring the baton down." -> e3.riot.baton {do: set(said.e3_will_baton)}
+opt: "Get the rifle across his chest and shove." -> e3.riot.shove
+
+@node e3.riot.baton
+place: q3_square
+speaker: WILL
+cost: 0
+nar: Pellek puts his arm up over his face when he sees it coming, which is what everybody does, and the baton comes down on the forearm a hand's width up from the wrist. You hear it go, and feel it come back up the baton into your own wrist. A wet snap, like a green stick, and the hand turns over at the end of the arm the wrong way, palm out, and hangs. {sense: e3.bone}
+nar: He looks at it. He doesn't make any sound at all. He looks at his hand.
+nar: Will hits him again, because he's still in front of him and the line's bending, across the side of the face this time. The cheekbone goes in under the eye. The eye shuts at once, swells shut while you watch, and the blood comes out of the nose and the mouth together, and Pellek goes down on his knees on the cobbles in the flour and holds his bad arm with his good one and rocks.
+nar: Davey steps over him to close the gap. Somebody behind Pellek is screaming his name. His wife. She's got flour on her too, all down the front of her, white, and blood on the flour where she's got hold of him.
+go: e3.riot.after
+
+@node e3.riot.shove
+place: q3_square
+speaker: DAVEY
+cost: 0
+nar: Will gets the rifle across Pellek's chest and shoves, and Pellek goes back a step into the crush, and comes again, because there's nowhere else, and Davey turns from the carter and brings his baton round on Pellek's arm.
+nar: You hear it go. A wet snap, like a green stick. The hand turns over at the end of the arm the wrong way, palm out, and hangs. Davey hits him again across the side of the face to put him down, and the cheekbone goes in under the eye, and Pellek goes down in the flour and holds his bad arm with his good one and rocks. {sense: e3.bone}
+line: DAVEY: He kept coming, Dad. Sarge. He kept coming.
+line: WILL: Hold the line.
+go: e3.riot.after
+
+@node e3.riot.after
+place: q3_square
+speaker: AARON
+cost: 0
+nar: It's over in less time than it took to start. The Tarn crowd goes back to its queue, and gets its rations. The Hesh queue gets nothing that day, because the scale's broken, and the board says it'll be Monday.
+nar: Along the side of the exchange the militia sits the ones it hit on the kerb in a row, with their hands on their heads, the ones that can still put their hands on their heads. Pellek can't. He sits with the bad arm in his lap like something he's been asked to hold.
+nar: Aaron is on the end of the row, standing over them in the coat. His baton's clean. He's bent over the Hesh woman at the end, an old one, with a cut on her scalp that's bleeding the way scalps bleed, all down her face and into her collar, and he's dabbing at it with his own handkerchief and she's letting him. {when: has(e3.aaron_taken)}
+line: AARON: Sorry. Sorry, missus. Sorry. Hold that there. Press on it. Sorry. {when: has(e3.aaron_taken)}
+nar: Aaron is on the kerb in the row with his hands on his head. He was in the Hesh queue with Oren for the Haldanes' ration. There's a long weal across the back of his neck going purple where somebody's baton found it, and he's looking straight ahead at the church and not at anybody in a coat. {when: !has(e3.aaron_taken)}
+nar: The chestnut man has gone. His brazier's on its side by the church steps with the coals out on the cobbles, still red, and the Pruett lad is crouched by them warming his hands.
+do: set(e3.riot_done)
+voice: ballast: Nobody died. Say that. It was a disturbance at the scale and nobody died. {dc: 2, when: q_class == militia}
+voice: grip: The sound of it. You'll hear that arm in your sleep, the green stick. {dc: 3, when: q_class == militia & has(said.e3_will_baton)}
+voice: undertow: From the window it was small. You'll be able to keep it that size. {dc: 3, when: q_class == inspector}
+go: e3.ward

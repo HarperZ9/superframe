@@ -12,7 +12,7 @@ export default {
   variants: {
     night: { hour: 22.5, note: "Night 2, 22:00 to 01:00: still, clear, one paraffin lamp a street", V: { stars: 1.4, moon: { pos: [-60, 90, 120], I: 18000 } }, plan: { ambient: 0.05, mist: 0.003, extinct: 0.0015 }, gain: 1.6 },
     frost: { hour: 2.0, note: "from 01:00: frost keeps every print; a dark stripe over the warm pipe", V: { frost: 1.1, stars: 2, moon: { pos: [-60, 90, 120], I: 24000 } }, plan: { ambient: 0.05, mist: 0.002, extinct: 0.0015 }, gain: 1.6 },
-    dark: { hour: 2.5, note: "the lamps doused: two lit blinds, the shutter", V: { frost: 1.1, stars: 2.5, moon: { pos: [-60, 90, 120], I: 26000 }, emit: { lantern: 0 } }, plan: { ambient: 0.05, mist: 0.002, extinct: 0.0015 }, gain: 1.8 },
+    doused: { hour: 2.5, note: "the lamps doused: two lit blinds, the shutter", V: { frost: 1.1, stars: 2.5, moon: { pos: [-60, 90, 120], I: 26000 }, emit: { lantern: 0 } }, plan: { ambient: 0.05, mist: 0.002, extinct: 0.0015 }, gain: 1.8 },
   },
   walk: walkIds("cobble", "slab", "iron", "steps"), footing: footing(), marks: R.marks,
   arena: { name: "ropewalk", worldOfArena: "x = arena x, z = arena z, y = 0 (arena h 9)", cell: 1, origin: [0, 0], note: "lamps at (6, 1) and (19, 1) as the arena; the script has one lamp halfway (ROPEWALK text 98)" },

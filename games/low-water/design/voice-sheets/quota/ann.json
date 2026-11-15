@@ -1,0 +1,75 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "ANN",
+ "setting": "quota",
+ "status": "draft 2026-10-23 by the story lead for era 5 (design/eras/era5.md); written by hand, not generated",
+ "role": "Ann Brack: constable at thirty in era 4, retired sergeant at seventy-five in era 5; Davey's daughter, Leon's mother",
+ "age": "30 and 75",
+ "register": {
+  "level": "plain",
+  "education": "the far-bank school, then the force",
+  "class": "working",
+  "trade": "police constable, later sergeant",
+  "words": [
+   "pocketbook",
+   "custody",
+   "times",
+   "write it down",
+   "sir",
+   "love",
+   "bus"
+  ]
+ },
+ "region": {
+  "name": "tarn-town",
+  "markers": [],
+  "idioms": [
+   "Now then",
+   "That's all",
+   "Write it down"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 30
+ },
+ "never": [
+  "okay",
+  "awesome",
+  "trauma",
+  "closure",
+  "process"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "the force's procedures",
+   "every family on the far bank",
+   "what a custody suite sounds like"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "carried him",
+     "two for that"
+    ],
+    "why": "she has the words only where her father passed them, or a Furrowe brought them",
+    "unless_gate": [
+     "e4.carry_b2",
+     "e5.carry_fb"
+    ]
+   }
+  ]
+ },
+ "trade": "police constable, later sergeant",
+ "wound": "She stood on the bank's side of the mill gate in the month it shut, against a picket of boys she went to school with.",
+ "lie": "Write it down and it's done right.",
+ "fears": "That her son is what the clip shows.",
+ "hides": "That she rubbed a name out of her pocketbook the night of the sign.",
+ "tics": [
+  "Now then",
+  "That's all",
+  "calls people by their full name when it matters",
+  "love"
+ ]
+}

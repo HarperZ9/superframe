@@ -9,8 +9,12 @@ import { makeWorld, rnd } from "../kit/world.mjs";
 import { ID } from "../kit/ids.mjs";
 import * as K from "../kit/props.mjs";
 
+// set "exchange" (The Quota era 2, 2026-10-21): the same barn re-dressed as Edrin's grain exchange floor in the
+// famine winter: the pans become the exchange's beam scale, the tally slate a price board, the trestles carry
+// sample bowls of grain, Halvard's sacks stand stencilled where the Guild's aprons hung, a Directorate banner
+// on the back wall, no tankards, no fish; lamps lit for the early trading.
 export function weighRoom({ set = "night" } = {}) {
-  const W = makeWorld({ cell: 1.5, margin: 0.4 }), L = [], marks = { spots: [], hides: [], exits: [], lamps: [] }, day = set === "day";
+  const W = makeWorld({ cell: 1.5, margin: 0.4 }), L = [], marks = { spots: [], hides: [], exits: [], lamps: [] }, ex = set === "exchange", day = set === "day";
   const add = (p) => { W.add(p); if (p.light) L.push({ ...p.light, key: `${p.light.group}@${p.light.pos.join(",")}` }); return p; };
   const spot = (id, verb, at, note) => marks.spots.push({ id, verb, at, note });
   W.ground((x, y, z, T) => {
@@ -27,10 +31,10 @@ export function weighRoom({ set = "night" } = {}) {
     for (const [px, py, pz] of [[-2.1, 1.55, 0.2], [2.1, 1.35, -0.2]]) { for (const s of [-1, 1]) T(cap(x, y, z, [px, py + 1.5, pz], [px + 0.5 * s, py + 0.08, pz], 0.015), ID.iron); T(Math.max(ell(x, y, z, px, py, pz, 0.7, 0.2, 0.7), y - py - 0.04), ID.brass); }
     for (const cx of [-0.6, 0.6]) T(cap(x, y, z, [cx, 3.2, -0.6], [cx, 5.5, -0.6], 0.03), ID.iron); // the chains to the roof balance
   }));
-  spot("pans", "weigh", [0, 0, 1.2], "the voting pans; weigh the vote fish (W:612)");
+  spot("pans", "weigh", [0, 0, 1.2], ex ? "the exchange's beam scale, the day's lots weighed" : "the voting pans; weigh the vote fish (W:612)");
   // chalk tallies on the back wall; trestles with tankards; benches round the walls
   add(K.shape([-2.8, 1.4, -5.1, 1.6, 3.6, -4.9], (x, y, z, T) => { T(box(x, y, z, -0.6, 2.5, -5.0, 2.1, 0.9, 0.03), ID.slate); for (let k = 0; k < 24; k++) T(box(x, y, z, -2.5 + (k % 12) * 0.32 + 0.04 * Math.floor(k / 6), 2.0 + 0.55 * Math.floor(k / 12) + 0.2, -4.96, 0.012, 0.16, 0.01), ID.chalk); for (let k = 0; k < 4; k++) T(cap(x, y, z, [-2.55 + k * 1.28, 2.05, -4.96], [-1.45 + k * 1.28, 2.38, -4.96], 0.012), ID.chalk); }));
-  for (const [tx, tz, a] of [[-3.2, 2.2, 0.15], [2.8, 2.6, -0.2]]) { add(K.table(tx, 0, tz, 1.2, 0.4, 0.82, a)); if (!day) add(K.shape([tx - 1.2, 0.8, tz - 0.5, tx + 1.2, 1.1, tz + 0.5], (x, y, z, T) => { for (let k = 0; k < 4; k++) T(cyl(x, y, z, tx - 0.8 + k * 0.5, 0.92, tz + 0.12 * Math.sin(k * 3), 0.06, 0.1), ID.iron); })); }
+  for (const [tx, tz, a] of [[-3.2, 2.2, 0.15], [2.8, 2.6, -0.2]]) { add(K.table(tx, 0, tz, 1.2, 0.4, 0.82, a)); if (ex) add(K.shape([tx - 1.2, 0.8, tz - 0.5, tx + 1.2, 1.0, tz + 0.5], (x, y, z, T) => { for (let k = 0; k < 4; k++) { const bx = tx - 0.75 + k * 0.5; T(Math.max(ell(x, y, z, bx, 0.88, tz, 0.15, 0.07, 0.15), -ell(x, y, z, bx, 0.91, tz, 0.13, 0.06, 0.13), y - 0.9), ID.darkwood); T(Math.max(ell(x, y, z, bx, 0.87, tz, 0.13, 0.04, 0.13), y - 0.885), ID.straw); } })); else if (!day) add(K.shape([tx - 1.2, 0.8, tz - 0.5, tx + 1.2, 1.1, tz + 0.5], (x, y, z, T) => { for (let k = 0; k < 4; k++) T(cyl(x, y, z, tx - 0.8 + k * 0.5, 0.92, tz + 0.12 * Math.sin(k * 3), 0.06, 0.1), ID.iron); })); }
   for (const [bx, bz, a] of [[-5.6, -1.0, Math.PI / 2], [-1.5, -4.6, 0], [4.8, -4.6, 0], [-5.6, 3.4, Math.PI / 2]]) add(K.table(bx, 0, bz, 1.3, 0.2, 0.45, a));
   // the weighbridge: an iron plate in the floor; its book on a chain on a lectern
   add(K.shape([1.6, -0.1, -3.4, 4.6, 1.4, -1.6], (x, y, z, T) => { T(box(x, y, z, 3.1, 0.0, -2.5, 1.2, 0.03, 0.8), ID.iron); T(box(x, y, z, 4.4, 0.55, -1.9, 0.08, 0.55, 0.08), ID.timber); T(box(x, y, z, 4.4, 1.12, -1.9, 0.28, 0.03, 0.22), ID.timber); T(box(x, y, z, 4.4, 1.17, -1.9, 0.22, 0.03, 0.17), ID.paper); T(cap(x, y, z, [4.6, 1.15, -1.8], [4.5, 0.6, -1.75], 0.012), ID.iron); }));
@@ -47,10 +51,17 @@ export function weighRoom({ set = "night" } = {}) {
   add(K.stool(-4.7, 0, -3.6, 0.17, 0.55));
   spot("tube", "read", [-4.9, 0, -3.4], "the tube terminus: brass mouth, wire basket, stool, lamp (W:1228)");
   add(K.crateStack(-5.2, 0, 1.8, 3, 21, Math.PI / 2));
+  if (ex) {
+    // Halvard's sacks along the side wall, stencilled, three high; the Directorate's sheaf banner on the back wall
+    add(K.shape([-6.1, 0, -3.2, -4.6, 1.5, 4.8], (x, y, z, T) => { for (let i = 0; i < 9; i++) for (let j = 0; j < 3; j++) T(ell(x, y, z, -5.6 + (j % 2) * 0.2, 0.25 + j * 0.42, -2.6 + i * 0.8 + (j % 2) * 0.3, 0.32, 0.22, 0.42), ID.sack); }));
+    add(K.shape([-2.6, 3.4, -5.1, 1.4, 5.0, -4.9], (x, y, z, T) => { T(box(x, y, z, -0.6, 4.2, -5.0, 1.6, 0.7, 0.015 + 0.01 * Math.sin(x * 5)), ID.oxblood); T(ell(x, y, z, -0.6, 4.2, -4.98, 0.2, 0.35, 0.01), ID.mustard); }));
+    spot("sacks", "read", [-4.4, 0, 0.6], "Halvard's sacks, stencilled for the export");
+  } else {
   // the Guild's aprons on pegs along the side wall, fish boxes with the vote fish, buckets, weights
   add(K.shape([-6.1, 0.9, -3.2, -5.8, 2.1, 4.8], (x, y, z, T) => { T(box(x, y, z, -6.0, 1.95, 0.8, 0.05, 0.05, 3.9), ID.timber); for (let k = 0; k < 10; k++) { const pz = -2.7 + k * 0.78; if (Math.abs(pz - 0.6) < 1.3) continue; T(box(x, y, z, -5.95, 1.45, pz, 0.04 + 0.02 * Math.sin(y * 7), 0.48, 0.24), k % 3 ? ID.oilskin : ID.canvas); } }));
   for (let k = 0; k < 3; k++) add(K.fishbox(1.0 + k * 0.95, 0, 4.2 + 0.2 * k, 0.15 * k, true));
   for (const [bx, bz] of [[0.6, 3.6], [-0.4, 4.1]]) add(K.shape([bx - 0.25, 0, bz - 0.25, bx + 0.25, 0.45, bz + 0.25], (x, y, z, T) => T(Math.max(cyl(x, y, z, bx, 0.2, bz, 0.19 + 0.04 * y, 0.2), -cyl(x, y, z, bx, 0.25, bz, 0.17 + 0.04 * y, 0.2)), ID.iron)));
+  }
   add(K.shape([-2.9, 0, -4.4, -1.9, 0.7, -3.6], (x, y, z, T) => { for (let k = 0; k < 5; k++) T(cyl(x, y, z, -2.4 + 0.08 * Math.sin(k), 0.05 + k * 0.1, -4.0, 0.3 - k * 0.04, 0.05), ID.iron); })); add(K.barrel(5.3, 0, -3.8, 0.35, 0.9)); add(K.coil(4.7, 0, -2.9, 0.3));
   // four lamps on hooks, and Pip's lamp at the tube
   for (const [lx, ly, lz] of [[-2.6, 3.0, -1.2], [2.6, 3.0, -1.6], [-3.2, 3.0, 2.6], [3.0, 3.0, 2.8], [-4.8, 1.9, -3.9]]) add({ bb: [lx - 0.3, ly - 0.4, lz - 0.3, lx + 0.3, 5.3, lz + 0.3], light: day ? null : { pos: [lx, ly - 0.05, lz], type: 1, I: lx === -4.8 ? 6 : 16, reach: 12, group: "lantern" }, f: (x, y, z, T) => { T(cap(x, y, z, [lx, 5.2, lz], [lx, ly + 0.25, lz], 0.01), ID.iron); T(cyl(x, y, z, lx, ly + 0.22, lz, 0.17, 0.02), ID.iron); T(ell(x, y, z, lx, ly, lz, 0.1, 0.15, 0.1), day ? ID.glass : ID.lantern); } });

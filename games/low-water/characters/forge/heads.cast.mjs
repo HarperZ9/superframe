@@ -1,0 +1,140 @@
+// Head sheets: one per speaking part (ART-DIRECTION 7.1). Keys as design/art/heads.json (head-local
+// metres at s = 1) plus the sculptor's (forge/headkeys.mjs). Each sheet has one idea (ART-DIRECTION 4
+// rule 2), the head, hair and beard, paint, displacement layers per level of detail, and its neck and
+// collar record. Keel, Lamb and Sabine start from the director's records in heads.json (DIRECTOR,
+// checked equal to the file by the tests) and add the sculptor's keys.
+// height_m: crown to chin; when absent the head is sized to the body's head length (P.head x 1.04).
+import { DIRECTOR } from "./heads.director.mjs";
+
+const G = (v) => ({ c: [v, v, v * 0.97], v });                   // a grey for hair
+const HAIR = { dark: { c: [0.16, 0.12, 0.1], v: 0.13 }, brown: { c: [0.36, 0.24, 0.16], v: 0.27 }, ginger: { c: [0.55, 0.3, 0.16], v: 0.36 }, fair: { c: [0.78, 0.66, 0.44], v: 0.66 }, black: { c: [0.06, 0.05, 0.05], v: 0.05 } };
+const crease = (amp, freq, mid = null) => ({ t: "creases", amp, freq, lod: mid ? { mid } : undefined });
+
+export const SHEETS = {
+  lamb: { idea: "a beak on a stalk", head: { ...DIRECTOR.lamb.head, lid_up: 0.08, hollow: 0.004, nasolabial: 0.003, adam: 0.009, brow_hair: 0.9, brow_tilt: -0.15, ear_out: 18, neck_r: 0.0425, eye_r: 0.0149, lid_lo: -0.67 },
+    hair: { style: "under", top: 0.07, vol: 0.006, line: 0.06 }, paint: { tone: [0.97, 0.97, 0.86], stubble: 0.55, warm: 0.3 },
+    detail: [crease(0.0009, 70, { amp: 0.0006, freq: 32 }), { t: "lines", amp: 0.0008, freq: 60 }],
+    exaggerate: { neck_length: "Lamb is the long-necked one (ART-DIRECTION 4: 0.10 m of neck shows)" },
+    neck: { visible_m: 0.1, r: 0.036, lean: "forward with the stoop" }, collar: { kind: "wing", draw: true, h: 0.06, r: 0.05, mat: "collar", note: DIRECTOR.lamb.collar },
+    palette: { hair: HAIR.dark, brow: HAIR.dark } },
+  keel: { idea: "a tall wet egg", height_m: 0.37, head: { ...DIRECTOR.keel.head, cran_egg: 0.6, hollow: 0.003, eye_bag: 0.002, brow_hair: 0.7, ear_out: 6, neck_r: 0.0442, eye_r: 0.0175, lid_up: 0.3, lid_lo: -0.4, mouth_w: 0.0156, lip_full: 0.9, eye_r: 0.016, lid_up: 0.25, eye_r: 0.0168, eye_r: 0.0172 },
+    exaggerate: { mouth_width: "the tiny down-turned mouth of the art direction (ART-DIRECTION 4)" },
+    hair: { style: "bald" }, beard: { style: "sideburns" }, paint: { tone: [0.98, 0.98, 1.0], warm: 0.25, cool: 0.5, veins: 0.25 },
+    detail: [{ t: "prune", amp: 0.0008, freq: 75, lod: { mid: { amp: 0.0006, freq: 32 } } }],
+    neck: { visible_m: 0.0, into: 0.12 }, collar: { kind: "standing", draw: true, h: 0.17, r: 0.092, th: 0.014, below: 0.05, mat: "navy", note: DIRECTOR.keel.collar },
+    palette: { hair: G(0.62), brow: G(0.5), eye: { c: [0.5, 0.6, 0.64], v: 0.58 }, skin: { c: [0.74, 0.72, 0.69], v: 0.66 } } },
+
+  sabine: { idea: "a wide loaf", head: { ...DIRECTOR.sabine.head, cran_box: 0.5, cran_egg: -0.4, face_box: 0.25, brow_hair: 1.1, neck_r: 0.0723, eye_r: 0.0126, jowl: 0.02 },
+    hair: { style: "bun", vol: 0.005, line: 0.06, bun: [0, 0.08, -0.07, 0.036] }, paint: { blotch: 0.45, warm: 0.8 },
+    detail: [{ t: "crows", amp: 0.001, freq: 70 }],
+    neck: { visible_m: 0.0 }, collar: { kind: "costume", part: "shawl crossed at the throat", note: DIRECTOR.sabine.collar }, palette: { hair: HAIR.dark, brow: HAIR.dark } },
+  wenna: { idea: "an old woman's big pale moon of a head: a high forehead, the features small, set low and weathered", size: 1.1,
+    exaggerate: { },
+    head: { cran: [0.096, 0.112, 0.104], cran_c: [0, 0.03, -0.012], face: [0.064, 0.072, 0.064], face_c: [0, -0.048, 0.034],
+      jaw_w: 0.054, jaw_len: 0.118, chin_r: 0.022, chin_z: 0.068, cheek: [0.048, -0.018, 0.062, 0.022],
+      eye_x: 0.031, eye_y: 0.006, eye_z: 0.078, eye_r: 0.0133, lid_up: 0.0, lid_lo: -0.65, lid_tilt: -0.25, eye_bag: 0.002,
+      nose_bridge: [0.012, 0.088], nose_tip: [-0.034, 0.112], nose_r: [0.007, 0.011], nose_wing: 0.011, wing_r: 0.009,
+      mouth_y: -0.072, mouth_w: 0.02, lip_full: 0.7, smile: -0.35, brow: [0.042, 0.03, 0.081, 0.01], brow_hair: 0.8, nasolabial: 0.0015, ear: [0.024, 0.0], neck_r: 0.047, brow_hair: 0.5 },
+    hair: { style: "crop", vol: 0.009, noise: 0.0025, line: 0.078, back: -0.06, temple: 0.12 }, paint: { warm: 0.35, veins: 0.15, tone: [1.0, 0.97, 0.94] },
+    detail: [{ t: "lines", amp: 0.0007, freq: 40 }, crease(0.0008, 60, { amp: 0.0006, freq: 32 }), { t: "crows", amp: 0.0008, freq: 70 }],
+    neck: { visible_m: 0.0 }, collar: { kind: "costume", part: "the oxblood coat buttoned high" }, palette: { hair: { c: [0.9, 0.89, 0.85], v: 0.88 }, brow: G(0.82), eye: { c: [0.42, 0.46, 0.5], v: 0.45 } } },
+
+  penhallow: { idea: "a brick: a broad square face, squared jaw, eyes narrowed from thirty years at a helm", head: {
+      cran: [0.088, 0.1, 0.1], cran_box: 0.45, face: [0.07, 0.074, 0.068], face_box: 0.8, jaw_w: 0.074, jaw_y: -0.058, jaw_len: 0.118, jaw_r: 0.027, jaw_square: 1.2, chin_w: 1.9, chin_r: 0.028, chin_z: 0.07,
+      cheek: [0.056, -0.012, 0.064, 0.024], brow: [0.05, 0.032, 0.082, 0.009], brow_hair: 0.8, lid_up: 0.08, lid_tilt: 0.0,
+      nose_bridge: [0.016, 0.088], nose_tip: [-0.034, 0.11], nose_r: [0.008, 0.012], nose_wing: 0.013, wing_r: 0.01, mouth_y: -0.07, mouth_w: 0.026, lip_full: 1.3, smile: -0.15, ear: [0.024, 0.0], neck_r: 0.0629, eye_r: 0.013, lid_lo: -0.54 },
+    hair: { style: "under", vol: 0.008, noise: 0.0015, line: 0.035, back: -0.085, temple: 0.0, gather: [-0.045, -0.095, 0.04] }, paint: { warm: 0.6, blotch: 0.2, tone: [1.0, 0.95, 0.9] },
+    detail: [{ t: "crows", amp: 0.0013, freq: 75 }, crease(0.0008, 60)],
+    neck: { visible_m: 0.02 }, collar: { kind: "muffler", draw: true, h: 0.05, r: 0.06, mat: "paper" }, palette: { hair: G(0.64), brow: G(0.34) } },
+  gorm: { idea: "a long flat iron: a long squared face with the brows arched high and the eyes wide (she asks)", head: {
+      face: [0.062, 0.088, 0.066], face_box: 0.5, jaw_w: 0.062, jaw_len: 0.142, jaw_square: 0.6, chin_w: 1.5, chin_r: 0.025, cran: [0.082, 0.108, 0.1],
+      brow_hair: 1.4, brow_lift: 0.011, brow_tilt: 0.5, lid_up: 0.5, lid_lo: -0.7, nose_bridge: [0.03, 0.09], nose_tip: [-0.05, 0.122], nose_r: [0.007, 0.01],
+      mouth_y: -0.084, lip_full: 1.3, muzzle: 0.004, cheek: [0.05, -0.02, 0.062, 0.02], neck_r: 0.0527, eye_r: 0.0144, mouth_w: 0.0186 },
+    hair: { style: "under", top: 0.05, vol: 0.006, line: 0.055, gather: [-0.075, -0.09, 0.022] }, paint: { warm: 0.3, cool: 0.5 },
+    detail: [crease(0.0011, 60, { amp: 0.0008, freq: 32 })],
+    neck: { visible_m: 0.04 }, collar: { kind: "costume", part: "the cape's neck" }, palette: { hair: HAIR.dark, brow: HAIR.black } },
+  hobb: { idea: "a long thin candle: a narrow head, anxious brows, big ears and an Adam's apple", size: 1.08, head: {
+      cran: [0.079, 0.114, 0.098], cran_egg: 0.15, face: [0.057, 0.084, 0.061], jaw_w: 0.048, jaw_len: 0.142, chin_r: 0.021, chin_z: 0.068, jaw_r: 0.019,
+      brow_tilt: -0.6, brow_lift: 0.004, brow_hair: 1.0, eye_r: 0.0145, lid_up: 0.4, lid_lo: -0.6, lid_tilt: -0.25, nose_bridge: [0.025, 0.09], nose_tip: [-0.048, 0.12], nose_r: [0.0065, 0.0095], nose_wing: 0.01, wing_r: 0.008,
+      mouth_y: -0.078, mouth_w: 0.02, lip_full: 0.9, smile: -0.4, ear: [0.034, 0.004], ear_out: 35, adam: 0.009, neck_r: 0.042 },
+    hair: { style: "swept", vol: 0.012, noise: 0.0025, line: 0.068 }, paint: { warm: 0.6 }, detail: [],
+    neck: { visible_m: 0.06 }, collar: { kind: "standing", draw: true, h: 0.085, r: 0.07, th: 0.012, below: 0.03, mat: "muni", note: "the Municipal coat's collar, too big, standing up round a thin neck" }, palette: { hair: HAIR.brown, brow: HAIR.brown, eye: { c: [0.4, 0.45, 0.5], v: 0.44 } } },
+
+  marrow: { idea: "a boulder: a broad heavy lower face, small kind eyes under a shelf of brow", head: {
+      cran: [0.092, 0.1, 0.104], cran_box: 0.3, face: [0.08, 0.084, 0.075], face_box: 0.35, jaw_w: 0.08, jaw_len: 0.13, jaw_r: 0.03, jowl: 0.014, dbl_chin: 0.01,
+      brow: [0.05, 0.034, 0.086, 0.017], brow_hair: 1.2, eye_r: 0.0135, lid_up: 0.05, lid_lo: -0.6, eye_bag: 0.002, nose_tip: [-0.04, 0.118], nose_r: [0.011, 0.018], nose_wing: 0.018, wing_r: 0.013,
+      mouth_w: 0.027, lip_full: 1.0, smile: 0.35, cheek: [0.056, -0.018, 0.068, 0.026], neck_r: 0.068, jowl: 0.008, dbl_chin: 0.008, cheek: [0.056, -0.018, 0.068, 0.022], face_box: 0.5 },
+    hair: { style: "crop", vol: 0.004, line: 0.075, noise: 0.001 }, paint: { stubble: 0.8, warm: 0.55 }, detail: [crease(0.0007, 55, { amp: 0.0005, freq: 32 })],
+    neck: { visible_m: 0.0 }, collar: { kind: "costume", part: "the blindfold round the neck (cast/marrow.mjs)" }, palette: { hair: HAIR.dark, brow: HAIR.dark } },
+
+  fennick: { idea: "a skull on a stalk: hollow cheeks, a hooked blade of a nose, white brows lifted", exaggerate: { neck_length: "the deacon's long neck is his one exaggerated feature (CHARACTERS-ART 3: 0.27 m)" }, head: {
+      cran: [0.075, 0.095, 0.09], face: [0.056, 0.075, 0.06], cheek: [0.05, -0.006, 0.064, 0.028], jaw_w: 0.052,
+      nose_bridge: [0.03, 0.09], nose_hump: [0.0, 0.14], nose_tip: [-0.04, 0.142], nose_r: [0.006, 0.008], hook: 0.006, nose_wing: 0.009, wing_r: 0.007,
+      mouth_w: 0.032, lip_full: 0.45, smile: 0.2, brow_lift: 0.009, brow_hair: 1.2, lid_up: 0.2, adam: 0.01, neck_r: 0.0442, hollow: 0.006 },
+    hair: { style: "bald" }, paint: { warm: 0.3, tone: [1.0, 0.98, 0.95] }, detail: [crease(0.001, 60, { amp: 0.0007, freq: 32 }), { t: "lines", amp: 0.001, freq: 50 }],
+    neck: { visible_m: 0.2 }, collar: { kind: "costume", part: "the stole over the surplice" }, palette: { brow: { c: [0.92, 0.9, 0.86], v: 0.9 } } },
+  crake: { idea: "precision: the one face drawn natural, level and straight", head: { lid_up: 0.2, lid_tilt: 0, chin_w: 1.15, nose_tip: [-0.034, 0.118], mouth_w: 0.023, lip_full: 0.9, brow_hair: 0.7, neck_r: 0.051, eye_r: 0.0135 },
+    hair: { style: "roll", vol: 0.004, line: 0.065 }, paint: { warm: 0.3 }, detail: [], neck: { visible_m: 0.08 }, collar: { kind: "costume", part: "the fitted grey coat" }, palette: { hair: G(0.55), brow: G(0.45) } },
+  merrow: { idea: "a squashed bun: a short wide face, a flat nose, a short beard", head: {
+      face: [0.08, 0.068, 0.07], jaw_w: 0.075, jaw_len: 0.11, nose_bridge: [0.012, 0.088], nose_tip: [-0.034, 0.108], nose_r: [0.011, 0.017], nose_wing: 0.018, wing_r: 0.013, lid_up: 0.1, mouth_w: 0.026, neck_r: 0.0638, lid_lo: -0.52 },
+    hair: { style: "under", top: 0.04, vol: 0.006 }, beard: { style: "short", vol: 0.008 }, paint: { warm: 0.7, blotch: 0.3 }, detail: [{ t: "crows", amp: 0.001, freq: 70 }],
+    neck: { visible_m: 0.0 }, collar: { kind: "costume", part: "the oilskin smock" }, palette: { hair: HAIR.ginger, brow: HAIR.ginger } },
+  pip: { idea: "a fox: a pointed chin, wide eyes, freckles, wild hair tied back", head: {
+      face: [0.058, 0.072, 0.064], jaw_w: 0.05, jaw_len: 0.12, chin_r: 0.018, chin_w: 0.7, eye_r: 0.014, lid_up: 0.5, nose_tip: [-0.025, 0.114], nose_r: [0.006, 0.009], mouth_w: 0.023, smile: 0.5, brow_hair: 0.7, brow_lift: 0.003 },
+    hair: { style: "tied", vol: 0.009, noise: 0.003, line: 0.07 }, paint: { freckles: 1.0, warm: 0.6 }, detail: [],
+    neck: { visible_m: 0.08 }, collar: { kind: "costume", part: "the shawl" }, palette: { hair: HAIR.ginger, brow: HAIR.ginger } },
+  fewell: { idea: "a walrus: a heavy drooping moustache under broad round cheeks", head: { cran: [0.092, 0.1, 0.1], face: [0.08, 0.076, 0.072], face_c: [0, -0.048, 0.036], cheek: [0.058, -0.016, 0.068, 0.03], brow: [0.048, 0.036, 0.084, 0.017], brow_hair: 1.6, nose_tip: [-0.036, 0.12], nose_r: [0.011, 0.017], nose_wing: 0.017, mouth_w: 0.03, lid_up: 0.0, jaw_w: 0.072, neck_r: 0.0612, eye_r: 0.0132, lid_lo: -0.62 },
+    hair: { style: "under", top: 0.05 }, beard: { style: "walrus", mvol: 0.011 }, paint: { warm: 0.6, stubble: 0.3 }, detail: [], neck: { visible_m: 0.04 }, collar: { kind: "costume", part: "the Municipal coat" }, palette: { hair: HAIR.brown, brow: HAIR.brown } },
+  strand: { idea: "a counting man: a pinched narrow face, close-set little eyes, a long upper lip", head: { cran: [0.074, 0.106, 0.098], face: [0.05, 0.084, 0.06], jaw_w: 0.044, jaw_r: 0.017, chin_r: 0.019, eye_x: 0.024, lid_up: 0.1, mouth_y: -0.096, mouth_w: 0.014, lip_full: 0.5, nose_tip: [-0.044, 0.124], nose_r: [0.005, 0.008], nose_wing: 0.008, wing_r: 0.006, hook: 0.006, brow_tilt: -0.4, cheek: [0.04, -0.01, 0.062, 0.016], eye_r: 0.0132, hollow: 0.006 },
+    hair: { style: "under", top: 0.05 }, paint: { warm: 0.3 }, detail: [{ t: "lines", amp: 0.0012, freq: 50 }], neck: { visible_m: 0.04 }, collar: { kind: "costume", part: "the pale scarf" }, palette: { hair: HAIR.brown, brow: HAIR.brown } },
+  bright: { idea: "a tall dome: a high domed forehead over a small neat face, side whiskers", exaggerate: { eye_line: "a tall dome: the forehead is the idea, so the eyes sit low" }, head: { cran: [0.084, 0.145, 0.104], cran_c: [0, 0.045, -0.012], cran_egg: 0.8, face: [0.056, 0.068, 0.06], face_c: [0, -0.05, 0.034], jaw_len: 0.115, mouth_w: 0.019, lid_up: 0.25, brow_hair: 0.7, brow_lift: 0.003, eye_y: 0.006, neck_r: 0.051, eye_r: 0.0166 },
+    hair: { style: "under", top: 0.05 }, beard: { style: "sideburns" }, paint: { warm: 0.3 }, detail: [], neck: { visible_m: 0.06 }, collar: { kind: "costume", part: "the Municipal coat" }, palette: { hair: HAIR.dark, brow: HAIR.dark } },
+  coe: { idea: "a bulldog: an underbite, a wide heavy jaw, a short flat nose, small eyes", head: { cran: [0.088, 0.094, 0.1], face: [0.082, 0.07, 0.074], jaw_w: 0.09, jaw_r: 0.034, jaw_len: 0.12, chin_z: 0.098, chin_w: 2.0, chin_r: 0.03, muzzle: 0.012, nose_tip: [-0.026, 0.104], nose_r: [0.011, 0.018], nose_bridge: [0.005, 0.086], nose_wing: 0.018, mouth_w: 0.034, smile: -0.7, lid_up: 0.0, brow: [0.05, 0.03, 0.086, 0.019], brow_hair: 1.5, neck_r: 0.075, eye_r: 0.0129, lid_lo: -0.62, jowl: 0.02, lid_up: 0.25, eye_r: 0.0136, brow: [0.05, 0.03, 0.086, 0.016], lid_up: 0.4, lid_lo: -0.6, eye_z: 0.08, iris: 0.38, eye_r: 0.0148 },
+    hair: { style: "under", top: 0.05 }, paint: { stubble: 0.7, warm: 0.5 }, detail: [], neck: { visible_m: 0.0 }, collar: { kind: "costume", part: "the muffler" }, palette: { hair: HAIR.dark, brow: HAIR.dark } },
+  lugg: { idea: "a horse: a very long face, a long nose, mild drooping eyes, thin lips", exaggerate: { eye_line: "a horse: the length is all below the eyes" }, head: { face: [0.058, 0.12, 0.065], face_c: [0, -0.07, 0.035], jaw_len: 0.205, jaw_y: -0.07, jaw_w: 0.052, chin_r: 0.022, nose_bridge: [0.025, 0.092], nose_tip: [-0.068, 0.136], nose_r: [0.008, 0.013], lid_tilt: -0.55, lid_up: 0.0, mouth_y: -0.118, lip_full: 0.35, mouth_w: 0.022, ear: [0.032, 0.0], eye_r: 0.0171, lid_lo: -0.62 },
+    hair: { style: "under", top: 0.05 }, paint: { warm: 0.3, stubble: 0.3 }, detail: [], neck: { visible_m: 0.1 }, collar: { kind: "standing", draw: true, h: 0.12, r: 0.068, th: 0.012, below: 0.03, mat: "oilskin", note: "the oilskin's collar turned up" }, palette: { hair: HAIR.brown, brow: HAIR.brown } },
+  cockle: { idea: "a nutcracker: no teeth, the nose and chin meeting", head: { toothless: 1, chin_z: 0.1, chin_r: 0.024, jaw_len: 0.112, nose_tip: [-0.05, 0.122], hook: 0.01, nose_r: [0.008, 0.012], face: [0.06, 0.068, 0.064], lid_up: 0.05, smile: 1.0, mouth_w: 0.022, neck_r: 0.051, eye_r: 0.0128, hollow: 0.006, eye_bag: 0.0035 },
+    hair: { style: "under", top: 0.04, vol: 0.006 }, paint: { warm: 0.5, blotch: 0.3, veins: 0.3 }, detail: [{ t: "lines", amp: 0.0018, freq: 32 }, crease(0.0014, 60, { amp: 0.001, freq: 32 }), { t: "crows", amp: 0.0014, freq: 70 }],
+    neck: { visible_m: 0.02 }, collar: { kind: "costume", part: "the man's coat" }, palette: { hair: G(0.85), brow: G(0.8) } },
+  shadwell: { idea: "soot: a long gaunt skull, black with soot, pale rings round deep-set eyes", head: { cran: [0.078, 0.112, 0.108], face: [0.056, 0.084, 0.062], brow: [0.046, 0.036, 0.088, 0.019], brow_hair: 0.8, eye_z: 0.073, lid_up: 0.35, nose_bridge: [0.03, 0.092], nose_tip: [-0.05, 0.126], nose_r: [0.007, 0.01], jaw_len: 0.15, jaw_w: 0.05, cheek: [0.05, -0.008, 0.062, 0.02], mouth_w: 0.02, lip_full: 0.6, eye_r: 0.015, hollow: 0.006, eye_z: 0.078, brow: [0.046, 0.036, 0.086, 0.016] },
+    hair: { style: "crop", vol: 0.004, line: 0.07 }, paint: { eyeRings: 2.6, warm: 0.0, cool: 0.0 }, detail: [], neck: { visible_m: 0.06 }, collar: { kind: "costume", part: "the smoke-coloured shirt" }, palette: { hair: HAIR.black, brow: HAIR.black } },
+  spratt: { idea: "a shovel: a narrow pinched face with the chin thrust far forward", head: { face: [0.058, 0.08, 0.064], chin_z: 0.106, chin_w: 1.4, chin_r: 0.027, jaw_len: 0.15, jaw_w: 0.05, muzzle: -0.006, mouth_w: 0.018, lip_full: 0.5, smile: -0.6, lid_up: 0.1, nose_tip: [-0.03, 0.115], hollow: 0.006, eye_r: 0.0147 },
+    hair: { style: "under", top: 0.04 }, paint: { warm: 0.5, blotch: 0.2 }, detail: [{ t: "lines", amp: 0.0012, freq: 50 }], neck: { visible_m: 0.03 }, collar: { kind: "costume", part: "the headscarf's knot" }, palette: { hair: HAIR.brown, brow: HAIR.brown } },
+  tobit: { idea: "a choirboy: a narrow child's face under a big round head, wide eyes, brows lifted, an open singing mouth", head: { cran: [0.09, 0.1, 0.098], face: [0.05, 0.06, 0.056], face_c: [0, -0.052, 0.034], jaw_len: 0.108, jaw_w: 0.046, chin_r: 0.02, eye_r: 0.014, eye_y: 0.004, lid_up: 0.6, nose_tip: [-0.028, 0.106], nose_r: [0.005, 0.009], nose_wing: 0.009, mouth_y: -0.072, mouth_w: 0.014, lip_full: 1.4, smile: 0.2, brow_hair: 0.6, brow_lift: 0.009, cheek: [0.042, -0.025, 0.058, 0.022] },
+    hair: { style: "crop", vol: 0.009, line: 0.05, back: -0.05 }, paint: { warm: 0.8 }, detail: [], neck: { visible_m: 0.06 }, collar: { kind: "costume", part: "the surplice" }, palette: { hair: HAIR.fair, brow: HAIR.fair } },
+  dilly: { idea: "a floor child: a wide round face, fat cheeks, big eyes, tangled hair, a smudged face", head: { cran: [0.096, 0.098, 0.098], face: [0.066, 0.06, 0.062], face_c: [0, -0.05, 0.034], jaw_len: 0.104, jaw_w: 0.06, chin_r: 0.022, eye_r: 0.0145, eye_x: 0.038, lid_up: 0.4, nose_tip: [-0.027, 0.106], nose_r: [0.005, 0.009], cheek: [0.05, -0.03, 0.06, 0.034], mouth_w: 0.02, brow_hair: 0.6, neck_r: 0.051 },
+    hair: { style: "wild", vol: 0.012, noise: 0.004, line: 0.06 }, paint: { warm: 0.6, blotch: 0.5, tone: [0.92, 0.9, 0.88] }, detail: [], neck: { visible_m: 0.05 }, collar: { kind: "costume", part: "the gansey" }, palette: { hair: HAIR.dark, brow: HAIR.dark } },
+  gill: { idea: "a jug-eared boy with a snub nose and a wide grin", head: { cran: [0.088, 0.1, 0.098], face: [0.056, 0.058, 0.058], face_c: [0, -0.05, 0.034], jaw_len: 0.105, jaw_w: 0.052, ear: [0.04, 0.008], ear_out: 50, nose_bridge: [0.0, 0.086], nose_tip: [-0.02, 0.104], nose_r: [0.006, 0.011], eye_r: 0.0125, eye_y: 0.004, lid_up: 0.35, mouth_w: 0.026, smile: 1.4 },
+    hair: { style: "under", top: 0.04, vol: 0.006 }, paint: { freckles: 0.4, warm: 0.6 }, detail: [], neck: { visible_m: 0.06 }, collar: { kind: "costume", part: "the apron straps" }, palette: { hair: HAIR.brown, brow: HAIR.brown } },
+  dunlin: { idea: "a ruin: Marrow's broad head gone slack, a drinker's nose, a grey beard", head: { cran: [0.092, 0.1, 0.104], face: [0.078, 0.082, 0.074], jaw_w: 0.078, lid_tilt: -0.3, nose_tip: [-0.042, 0.122], nose_r: [0.011, 0.023], nose_wing: 0.018, wing_r: 0.014, brow_hair: 1.1, brow: [0.05, 0.034, 0.086, 0.018], neck_r: 0.0663, eye_r: 0.0132, lid_up: -0.05, lid_lo: -0.67, eye_bag: 0.0035, jowl: 0.02, lid_up: 0.15, brow: [0.05, 0.034, 0.086, 0.015] },
+    hair: { style: "under", top: 0.04, vol: 0.006 }, beard: { style: "full", vol: 0.012, mvol: 0.004 }, paint: { veins: 1.0, warm: 0.9, blotch: 0.4 }, detail: [{ t: "crows", amp: 0.0012, freq: 70 }],
+    neck: { visible_m: 0.0 }, collar: { kind: "costume", part: "the slack blindfold" }, palette: { hair: G(0.66), brow: G(0.6) } },
+  rook: { idea: "a heron: a small head, a long thin nose, a receding chin, hair pinned up high", head: { cran: [0.078, 0.1, 0.094], face: [0.055, 0.072, 0.06], chin_z: 0.06, chin_r: 0.02, nose_bridge: [0.028, 0.09], nose_tip: [-0.044, 0.132], nose_r: [0.006, 0.008], eye_x: 0.029, mouth_w: 0.019, lip_full: 0.8, neck_r: 0.051, lid_up: 0.3, eye_x: 0.031, eye_x: 0.032, nose_r: [0.0055, 0.0075] },
+    hair: { style: "bun", vol: 0.005, line: 0.065, bun: [0, 0.11, -0.04, 0.03] }, paint: { warm: 0.3 }, detail: [], neck: { visible_m: 0.16 }, collar: { kind: "costume", part: "the dark dress" }, palette: { hair: HAIR.dark, brow: HAIR.dark } },
+  pellow: { idea: "a prune: a pinched little mouth, a sharp nose, deep folds", head: { lip_full: 0.4, smile: -0.6, nasolabial: 0.005, hollow: 0.006, nose_tip: [-0.04, 0.124], nose_r: [0.006, 0.008], hook: 0.003, lid_up: 0.05, brow_tilt: -0.3, neck_r: 0.051, eye_r: 0.0135, mouth_w: 0.018 },
+    hair: { style: "under", top: 0.06, vol: 0.005 }, paint: { warm: 0.3 }, detail: [{ t: "lines", amp: 0.0016, freq: 50 }, { t: "crows", amp: 0.001, freq: 70 }], neck: { visible_m: 0.05 }, collar: { kind: "costume", part: "the black dress" }, palette: { hair: G(0.6), brow: G(0.5) } },
+  fisk: { idea: "a neat egg upside down: a narrow brow over round smooth cheeks, a clipped moustache", head: { cran: [0.074, 0.095, 0.094], face: [0.076, 0.078, 0.072], face_c: [0, -0.05, 0.036], cheek: [0.052, -0.026, 0.066, 0.032], jaw_w: 0.068, chin_r: 0.03, chin_w: 1.4, nose_tip: [-0.03, 0.112], eye_x: 0.03, lid_up: 0.3, mouth_w: 0.02, lip_full: 1.1, neck_r: 0.0578, eye_r: 0.0132 },
+    hair: { style: "under", top: 0.05, vol: 0.004 }, beard: { style: "moustache", mvol: 0.004 }, paint: { warm: 0.6 }, detail: [], neck: { visible_m: 0.05 }, collar: { kind: "costume", part: "the stiff collar" }, palette: { hair: HAIR.brown, brow: HAIR.brown } },
+  ash: { idea: "a pear: a narrow brow over heavy soft jowls and a double chin, half-shut eyes", head: { cran: [0.07, 0.098, 0.094], face: [0.078, 0.076, 0.074], face_c: [0, -0.05, 0.035], jaw_w: 0.078, eye_x: 0.03, lip_full: 1.3, smile: 0.1, neck_r: 0.0663, eye_r: 0.0132, lid_up: -0.05, lid_lo: -0.67, mouth_w: 0.0234, jowl: 0.02, dbl_chin: 0.017 },
+    hair: { style: "fringe", top: 0.05, vol: 0.005 }, paint: { warm: 0.5 }, detail: [], neck: { visible_m: 0.0 }, collar: { kind: "costume", part: "the white collar" }, palette: { hair: G(0.5), brow: G(0.42) } },
+  sallis: { idea: "a slab: a wide short face, a flat broad brow ridge, small hard eyes, a flattened nose", head: { cran: [0.09, 0.096, 0.1], cran_box: 0.6, face: [0.084, 0.068, 0.072], face_box: 0.7, brow: [0.054, 0.032, 0.088, 0.021], brow_hair: 1.3, eye_x: 0.036, lid_up: 0.0, jaw_w: 0.086, jaw_square: 1.0, jaw_len: 0.118, nose_r: [0.012, 0.018], nose_bridge: [0.006, 0.088], nose_tip: [-0.03, 0.11], nose_wing: 0.018, mouth_w: 0.028, lip_full: 0.5, smile: -0.3, neck_r: 0.0731, eye_r: 0.0127, lid_lo: -0.62, lid_up: 0.2, eye_r: 0.0132, eye_x: 0.034, brow: [0.054, 0.032, 0.088, 0.017], lid_up: 0.35, lid_lo: -0.6, eye_z: 0.08, iris: 0.38, eye_r: 0.0146, eye_r: 0.0152, lid_up: 0.45 },
+    hair: { style: "under", top: 0.05 }, paint: { stubble: 1.0, warm: 0.4 }, detail: [], neck: { visible_m: 0.02 }, collar: { kind: "costume", part: "the oilskins" }, palette: { hair: HAIR.dark, brow: HAIR.dark } },
+  pardew: { idea: "a hawk: a hooked beak, deep-set eyes, a clipped grey beard", head: { nose_bridge: [0.03, 0.09], nose_tip: [-0.05, 0.13], hook: 0.012, nose_r: [0.008, 0.01], eye_z: 0.075, brow: [0.044, 0.036, 0.085, 0.016], lid_up: 0.1, neck_r: 0.051, eye_r: 0.0135, eye_z: 0.079, lid_up: 0.2 },
+    hair: { style: "under", top: 0.05 }, beard: { style: "short", vol: 0.005 }, paint: { warm: 0.4 }, detail: [{ t: "crows", amp: 0.001, freq: 70 }], neck: { visible_m: 0.04 }, collar: { kind: "costume", part: "the clean collar" }, palette: { hair: G(0.6), brow: G(0.5) } },
+  dace: { idea: "a box beard: a broad square face behind a square dark beard, a heavy brow", head: { face: [0.078, 0.078, 0.072], face_box: 0.6, cran_box: 0.4, jaw_w: 0.078, jaw_square: 0.8, brow: [0.05, 0.034, 0.086, 0.019], brow_hair: 1.5, lid_up: 0.05, nose_r: [0.01, 0.016], neck_r: 0.0663, eye_r: 0.0135, lid_up: 0.2, brow: [0.05, 0.034, 0.086, 0.016] },
+    hair: { style: "under", top: 0.05 }, beard: { style: "full", vol: 0.016 }, paint: { warm: 0.5 }, detail: [], neck: { visible_m: 0.0 }, collar: { kind: "costume", part: "the pale muffler" }, palette: { hair: HAIR.dark, brow: HAIR.dark } },
+  orme: { idea: "a wrinkled apple: round, deeply lined, the cheeks bunched up in a smile", head: { cheek: [0.05, -0.016, 0.07, 0.031], smile: 1.3, mouth_w: 0.026, face: [0.068, 0.07, 0.07], jaw_len: 0.118, neck_r: 0.051, eye_r: 0.0132, lid_up: -0.05, lid_lo: -0.67, eye_bag: 0.0035 },
+    hair: { style: "under", top: 0.04 }, paint: { warm: 0.8, blotch: 0.3 }, detail: [{ t: "crows", amp: 0.0016, freq: 70 }, { t: "lines", amp: 0.0014, freq: 50 }, crease(0.0012, 60, { amp: 0.001, freq: 32 })],
+    neck: { visible_m: 0.02 }, collar: { kind: "costume", part: "the reefer" }, palette: { hair: G(0.7), brow: G(0.62) } },
+  teague: { idea: "a faded gentleman: a long narrow face, sad sloping eyes, a pencil moustache, a weak chin", head: { face: [0.056, 0.088, 0.062], face_c: [0, -0.052, 0.034], lid_tilt: -0.7, lid_up: 0.0, chin_z: 0.058, chin_r: 0.019, jaw_len: 0.13, jaw_w: 0.05, mouth_y: -0.088, mouth_w: 0.021, lip_full: 0.7, brow_tilt: -0.7, brow_lift: 0.004, nose_tip: [-0.045, 0.122], nose_r: [0.007, 0.01], eye_r: 0.0134, lid_lo: -0.62, eye_bag: 0.0035 },
+    hair: { style: "under", top: 0.05 }, beard: { style: "moustache", mvol: 0.0035 }, paint: { warm: 0.2, tone: [0.97, 0.97, 0.92] }, detail: [{ t: "lines", amp: 0.001, freq: 50 }], neck: { visible_m: 0.07 }, collar: { kind: "costume", part: "the old collar" }, palette: { hair: HAIR.brown, brow: HAIR.brown } },
+  mab: { idea: "the Whelk moon: a big round face, wide-set eyes, a little upturned nose, full smiling lips", head: { cran: [0.094, 0.1, 0.1], face: [0.084, 0.074, 0.07], cheek: [0.058, -0.022, 0.064, 0.034], eye_x: 0.04, lid_up: 0.35, nose_bridge: [0.0, 0.086], nose_tip: [-0.026, 0.11], nose_r: [0.006, 0.01], mouth_w: 0.026, lip_full: 1.5, smile: 0.9, jaw_w: 0.07, neck_r: 0.0595, eye_r: 0.0132 },
+    hair: { style: "under", top: 0.04 }, paint: { warm: 0.7 }, detail: [], neck: { visible_m: 0.0 }, collar: { kind: "costume", part: "the smock" }, palette: { hair: HAIR.brown, brow: HAIR.brown } },
+  noll: { idea: "the Whelk moon gone sour: his sister's round face, a big bulb of a nose, small eyes, a turned-down mouth", head: { cran: [0.094, 0.1, 0.1], face: [0.084, 0.076, 0.07], cheek: [0.058, -0.022, 0.064, 0.03], eye_x: 0.04, lid_up: 0.0, nose_tip: [-0.04, 0.122], nose_r: [0.01, 0.022], nose_wing: 0.02, wing_r: 0.014, jaw_w: 0.076, mouth_w: 0.026, smile: -0.8, lip_full: 0.9, brow_hair: 1.5, brow: [0.048, 0.032, 0.085, 0.017], neck_r: 0.0646, eye_r: 0.0132, lid_lo: -0.62 },
+    hair: { style: "under", top: 0.04 }, paint: { warm: 0.5, stubble: 0.8 }, detail: [], neck: { visible_m: 0.0 }, collar: { kind: "costume", part: "the smock" }, palette: { hair: HAIR.brown, brow: HAIR.brown } },
+  gauze: { idea: "a pale oval in a wimple: tiny features, eyes cast down", head: { face: [0.064, 0.08, 0.064], gaze: [0, -0.5, 1], lip_full: 0.8, nose_r: [0.006, 0.009], nose_tip: [-0.03, 0.112], brow_hair: 0.4, neck_r: 0.051, eye_r: 0.0135, lid_up: -0.05, lid_lo: -0.67, mouth_w: 0.018, face: [0.058, 0.086, 0.062], jaw_w: 0.05, chin_r: 0.021, lid_up: 0, lid_lo: -0.62, brow_lift: 0.005, neck_r: 0.043, mouth_w: 0.015, face: [0.056, 0.09, 0.06], jaw_len: 0.138, nose_tip: [-0.034, 0.114], gaze: [0, -0.5, 1], cheek: [0.042, -0.01, 0.062, 0.018] },
+    hair: { style: "bald" }, paint: { warm: 0.2, tone: [1.02, 1.0, 1.0] }, detail: [], neck: { visible_m: 0.0 }, collar: { kind: "costume", part: "the wimple" }, palette: { brow: G(0.5) } },
+};
+// the colours a sheet adds to its member's palette (hair, brows, eyes)
+// iris colour: a mid brown unless the sheet gives one, so an eye reads as an eye and not a hole
+export const headPalette = (id) => (SHEETS[id] ? { eye: { c: [0.36, 0.25, 0.17], v: 0.28 }, ...SHEETS[id].palette } : {});

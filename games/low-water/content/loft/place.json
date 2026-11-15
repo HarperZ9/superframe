@@ -1,0 +1,167 @@
+{
+ "place": "loft",
+ "version": 2,
+ "width": 2000,
+ "height": 1400,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 30,
+  "target": [
+   0,
+   0.6,
+   -0.2
+  ],
+  "dist": 25,
+  "ortho": true,
+  "scale": 3.5
+ },
+ "pxPerMetre": 200,
+ "near": 1.0417,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 1,
+   "weather": "a shuttered lantern, the lane's light up the hatch; very dark"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "sack",
+    "verb": "read",
+    "at": [
+     -0.5,
+     0,
+     0
+    ],
+    "note": "under the lowest swag, a sack with a loop of green copper at its neck"
+   },
+   {
+    "id": "boards",
+    "verb": "listen",
+    "at": [
+     0.6,
+     0,
+     0.6
+    ],
+    "note": "ear to the boards"
+   },
+   {
+    "id": "waders",
+    "verb": "use",
+    "at": [
+     -2.2,
+     0,
+     -0.9
+    ],
+    "note": "two pairs of waders standing in the corner"
+   },
+   {
+    "id": "merrow",
+    "verb": "talk",
+    "at": [
+     1,
+     0,
+     -0.5
+    ],
+    "note": "Merrow on the coil of rope"
+   },
+   {
+    "id": "lugg",
+    "verb": "talk",
+    "at": [
+     -1,
+     0,
+     -0.9
+    ],
+    "note": "Lugg folded in three under the lowest beam"
+   }
+  ],
+  "hides": [
+   {
+    "id": "behind_nets",
+    "at": [
+     -1.9,
+     0,
+     -1.2
+    ],
+    "r": 0.5,
+    "note": "behind the hung nets"
+   }
+  ],
+  "exits": [
+   {
+    "id": "hatch",
+    "at": [
+     1.7,
+     0,
+     0.6
+    ],
+    "note": "down the ladder to the lane"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -1.3,
+     1.6,
+     -0.15
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 4,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1.7,
+     -0.6,
+     0.6
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 4,
+    "group": "window"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The hatch and its ladder at +x near the front; the lowest beam over the sack. Lugg and Merrow are drawn by the game."
+}

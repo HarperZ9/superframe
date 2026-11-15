@@ -8,6 +8,7 @@
 import { h, btn } from "./dom.mjs";
 import { plateUrl } from "./scene.mjs";
 import { PILLAR } from "./buildstats.mjs";
+import { COMPARTMENT_TRAITS } from "../combat/data/traits.mjs";
 
 const pips = (v, max) => h("span.pips", { "aria-label": `${v} of ${max}` }, ...Array.from({ length: max }, (_, k) => h(k < v ? "i.on" : "i")));
 
@@ -17,6 +18,22 @@ function artFor(ctx) {
   const url = area && area.plate ? plateUrl(area) : "/content/wide_arrival/night.png";
   const img = new Image(); img.onload = () => { art.style.backgroundImage = `url("${url}")`; }; img.onerror = () => console.warn(`create: no plate at ${url}`); img.src = url;
   return art;
+}
+
+// The four great traits and what each one is for, said once where they first appear (UX walk, 2026-10-21: a new player
+// met a compartment and "Read" with nothing to say what they meant). Since the traits pass (2026-10-23, design/TRAITS.md)
+// every compartment and voice is a quality the character carries and a being he meets inside; the story's own line
+// (@attr about:) wins, and these stand in for a ruleset that has none.
+export const COMPARTMENT_LINES = Object.fromEntries(Object.entries(COMPARTMENT_TRAITS).map(([k, t]) => [k, t.does]));
+export const TRAITS_LINE = "Each of these is something you carry. Raise one and it works for you; meet it inside and it is as big as you made it.";
+// the fight words in the summary on the right, one plain line each
+export const FIGHT_LINES = {
+  composure: "Composure: the calm to find words in a fight. Holding your ground fills it; talking your way out spends it.",
+  load: "Load: what you carry against what your coat can bear. Carry little and you dash; more, you roll; too much, you hop.",
+};
+function legend(rs) {
+  const rows = Object.entries(COMPARTMENT_LINES).filter(([k]) => rs.attrs[k]).map(([k, line]) => h("div.lrow", h("span.cname2", rs.attrs[k].name), h("span.pillar", PILLAR[k] || ""), h("span.small", rs.attrs[k].about || line)));
+  return rows.length ? h("div.legend", h("p.small.quiet", TRAITS_LINE), ...rows) : null;
 }
 
 function compRows(rs, attrs, max) {
@@ -47,7 +64,7 @@ export function createScreen(ctx) {
   const C = { archetype: arch[0] ? arch[0].id : null, custom: false, kit: arch[0] ? arch[0].id : null, attrs: Object.fromEntries(Object.keys(rs.attrs).map((k) => [k, R["attr-min"]])), trusted: null, ink: false, look: null };
   const cards = h("div.cards"), fight = h("div.cfight"), detail = h("div.detail"), errs = h("div.errs");
   const root = h("div.screen.create", artFor(ctx),
-    h("div.createbox.sheet.fade-in", h("h2", "Lamb's case"), h("p.sub.quiet", "Eleven years of claims. Choose the three that made you, or spread the points yourself."), cards),
+    h("div.createbox.sheet.fade-in", h("h2", "Lamb's case"), h("p.sub.quiet", "Eleven years of claims. Choose the three that made you, or spread the points yourself."), legend(ctx.G.rs), cards),
     h("div.createside.sheet.fade-in", fight, detail, errs));
   ctx.stage.append(root);
   const spent = () => Object.values(C.attrs).reduce((a, v) => a + v, 0);
@@ -66,7 +83,8 @@ export function createScreen(ctx) {
     fight.replaceChildren(h("div.caps.quiet", `${name} in a fight`),
       h("div.fline", h("span", "Standing"), h("strong.num", String(p.standing)), h("span", "Breath"), h("strong.num", String(p.breath)), h("span", "Composure"), h("strong.num", String(p.composure))),
       h("p.small", best && PILLAR[best[0]] ? `Strongest at ${PILLAR[best[0]].toLowerCase()}: ${({ coat: "you take blows and carry the heavy tools", nose: "you are out of the way before the blow lands", pen: "you read a blow before it comes", hat: "people give in to you sooner" })[best[0]]}.` : "",
-        p.load ? ` Load ${p.load.band}${form ? `: ${form}` : ""}.` : ""));
+        p.load ? ` Load ${p.load.band}${form ? `: ${form}` : ""}.` : ""),
+      h("p.small.quiet", FIGHT_LINES.composure), h("p.small.quiet", FIGHT_LINES.load));
   }
   function drawCards() {
     cards.replaceChildren(...arch.map((a) => archetypeCard(ctx, a, !C.custom && C.archetype === a.id, () => { C.custom = false; C.archetype = a.id; C.kit = a.id; redraw(true); }, () => { C.look = a.id; drawFight(); })),

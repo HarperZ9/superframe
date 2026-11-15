@@ -1,0 +1,218 @@
+# The Quota slice: the granary door at night (story fight 1, design/quota/03-STORY.md beat 10). Both
+# trades put the player inside, with the Captain. The talk-out needs the true figure in hand, read
+# aloud through the door. For the gameplay engineer: until the arena's warden-boss fight is wired as
+# e.q_granary, the fight is played as the checks below. Map the fight's outcomes onto these nodes:
+#   win -> q.granary.held   down -> q.granary.broken   fled or yield -> q.granary.aside
+# Story lead, 2026-10-21. The slur here is invented ("mud-hands", for the Tarn poor), spoken by Holt,
+# who was a cottar's son at Tilney, and heard by the crowd through the door.
+
+@node q.granary
+place: q_granary
+speaker: HOLT
+cost: 6
+do: cut(max(0, 22:00 - clock))
+nar: The district granary on Exchange Square, the one the paper photographs. Inside, by one lantern, sacks to the rafters in rows, each one stencilled for the morning train: HALVARD GRAIN CO., VIA ARLEN.
+nar: Captain Holt, two guards with rifles, and the bar across the big double door, which is a beam of oak as thick as a man. {when: q_class == inspector}
+nar: Ned is here to count the stock for the train, with his book. {when: q_class == inspector}
+nar: Captain Holt, two guards with rifles, Gedge, and the bar across the big double door. Will is on the door. {when: q_class == militia}
+nar: Outside, the sound starts as feet on the frozen square and turns into voices. Then a fist on the door. Then a lot of fists.
+line: HOLT: Krall's End. They've walked it. Eleven mile in that.
+nar: He sounds almost impressed.
+line: HOLT: Mud-hands. My mother was one. I know exactly what they've got, which is nothing, and what they'll do with it, which is that door.
+go: q.granary.crowd
+
+@node q.granary.crowd
+place: q_granary
+cost: 3
+nar: Through the gap where the doors meet, lanterns, and faces, and breath going up. A woman holding up a child so the guards can see it.
+nar: Bet Haldane, near the front, with Aaron beside her. {when: has(q.tomas_held)}
+nar: Bet Haldane, near the front. Tomas has got in ahead of her, right up at the door, with his cap off and his braid out, for once, down his back. {when: !has(q.tomas_held)}
+line: BET: We're not here to steal! We want what's ours! You had every sack we grew!
+line: HOLT: Bar, Sergeant. Get your backs on it.
+voice: grip: Oak, and three men's backs, and a square full of people the other side who haven't eaten since Sunday. The oak will hold. The question's the men. {dc: 3}
+go: q.granary.choice
+
+@node q.granary.choice
+place: q_granary
+cost: 0
+opt: "Put your back to the bar with the guards." -> q.granary.fight {verb: carry}
+opt: "Read the true figure through the gap in the door. Out loud, so they can all hear it." -> q.granary.read ? has(q.true_in_hand) {do: set(q.read_aloud); set(said.read_true_door)}
+opt: "Step back from the door." -> q.granary.aside {do: q_door = aside; var.lean_dry += 1}
+
+# ---------------------------------------------------------------- the talk-out
+@node q.granary.read
+place: q_granary
+cost: 0
+alt: q.granary.read.will ? q_class == militia
+go: q.granary.read.ned
+
+@node q.granary.read.ned
+place: q_granary
+speaker: NED
+cost: 6
+nar: He gets the book out. His hands are cold and the pages stick. He has to put his mouth right to the gap, and the wood's frozen and takes skin off his lip.
+line: NED: District inspector. Furrowe. Listen. Krall's End. Krall's End grew a hundred and ninety. Not three-forty. A hundred and ninety.
+line: NED: The Haldane barns. A hundred and ninety. Tesk's fold on the hill. No store. I went up. There's nothing up there but rock and goats.
+line: HOLT: That's not what you said to the Commissioner. {when: q_figure != true}
+line: NED: No. I gave him two-ninety. {when: q_figure != true}
+nar: Outside it goes quieter, not quiet. Somebody says, what did he say? and somebody else says it back to them, louder.
+go: q.granary.talked
+
+@node q.granary.read.will
+place: q_granary
+speaker: WILL
+cost: 6
+nar: The log is in his coat. He doesn't need it. He gets it out anyway, because his hands want something to do.
+line: WILL: Militia. Sergeant Brack. Shut up a minute, lads. Listen. The squad went through Krall's End on Saturday. Forty sacks. That's all there was. Forty.
+line: WILL: And Tuesday, up Tesk's hill. One and a half sacks of oats for the goats. There's no hole. There's no hole anywhere. I've had my arm in every bin on that hill.
+line: HOLT: That's not what you told the Commissioner, Sergeant. {when: q_figure != true}
+line: GEDGE: Sergeant, for God's sake.
+nar: Outside it goes quieter, not quiet. What he said goes back through the crowd, mouth to mouth.
+go: q.granary.talked
+
+@node q.granary.talked
+place: q_granary
+speaker: HOLT
+cost: 6
+do: q_door = talked; record(truth.read, haldane, haldane_yard); shift(owed, -60, haldane_yard)
+nar: Holt looks at the gap, and at the sacks, and at the stencils on the sacks. You can see him doing a sum, and it's not about grain. It's about who was out there to hear that, and whether the Gazette's woman with the camera is one of them.
+line: HOLT: One sack a family. Krall's End only. Against the review. Your names on it, not mine.
+line: HOLT: And they go home tonight. All of them.
+nar: The bar comes off. The guards hand sacks out through the gap one at a time and people take them without saying anything and go. Bet Haldane takes one and holds it against her like a child. Nobody thanks anybody.
+go: q.night
+
+# ---------------------------------------------------------------- the fight's outcomes
+@node q.granary.held
+place: q_granary
+cost: 8
+do: q_door = held; record(door.held, haldane, haldane_yard); shift(owed, 20, haldane_yard)
+nar: The doors bow in twice. The bar holds. Somebody outside screams, and then a rifle goes off, once, out of the side window, into the air or not.
+nar: When it's quiet the guards open the wicket and drag in a man from Krall's End by his coat, so there's someone to show for the night. {when: q_cart == arrested}
+nar: In the morning there's a woman's shawl frozen to the cobbles outside. Nobody comes back for it. {when: q_cart == arrested}
+alt: q.granary.custody ? q_cart != arrested
+go: q.night
+
+@node q.granary.broken
+place: q_granary
+cost: 8
+alt: q.granary.broken.will ? q_class == militia
+do: q_door = broken; record(door.broken, haldane, haldane_yard)
+nar: The bar jumps in its brackets and then it's out, and the doors come in with people stuck in them.
+nar: The guards fire. Then it's sacks dragged across the floor, people falling over sacks, a boy lying very still beside a split one with the grain running out round him like sand in a glass.
+nar: Afterwards, the Captain's men have four of them against the wall, from Krall's End. {when: q_cart == arrested}
+voice: dark: The boy by the split sack. You looked away before you saw whether he was breathing. {dc: 3}
+alt: q.granary.custody ? q_cart != arrested
+go: q.night
+
+@node q.granary.aside
+place: q_granary
+cost: 6
+do: q_door = aside; record(door.aside, haldane, haldane_yard)
+nar: Ned stands by the sacks with the lantern while the others hold the bar. {when: q_class == inspector}
+nar: Will stands by the sacks with the lantern while the others hold the bar. Gedge looks round at him once. {when: q_class == militia}
+nar: The doors bow in, and in again, and then the noise outside goes thin and stops. Somebody went home first, and then the rest did.
+nar: Through the gap, in the lantern light, Bet Haldane's face for a second, looking straight in, at the one person standing back.
+go: q.night
+
+@node q.granary.broken.will
+place: q_granary
+cost: 8
+do: q_door = broken; set(q.will_down); record(door.lost, haldane, haldane_yard, anni); shift(owed, 30, haldane_yard); shift(food, -0.05, haldane_yard)
+nar: The bar jumps in its brackets and comes out, and the left-hand door comes in on Will with the people behind it. He goes down under it. Somebody's boot is on his hand. Then it's off.
+nar: From the floor: lanterns going past at knee height, sacks dragged by their ears, Gedge shouting his name from a long way off. The guards fire.
+nar: A lantern stops over him. The Haldane girl, holding it with both hands, looking down at his face to see if he's the sergeant from the post. He is. She looks a while longer and then she goes.
+nar: Out on the square they've got a handcart loaded with sacks, and they run it for the corner of Mill Street. Holt's corporals are waiting at the corner. They take the cart back without anybody firing. Tomas Haldane has hold of one of the handles, and Holt points at him with two fingers, the way you'd pick a hen, and a corporal has to open his fingers off the handle one at a time. {when: q_cart != arrested}
+line: HOLT: Him. The one on the handle. {when: q_cart != arrested}
+if: q_cart != arrested => set(q.tomas_held); fate(f.tomas_held, tomas)
+nar: Out on the square they've got a handcart loaded with sacks, and they run it for the corner of Mill Street. Holt's corporals are waiting at the corner. They take the cart back without anybody firing. {when: q_cart == arrested}
+line: GEDGE: Sergeant. Sergeant. Can you see me?
+voice: ballast: Floor's cold. Floor's very cold. Stay on it a minute. {dc: 2}
+go: q.night
+
+# ---------------------------------------------------------------- the custody: Holt decides who is taken
+# design/spine-plan/03-FATES.md section 3 (decision 8, 2026-10-22): the fight sets only whether the door held.
+# Holt wants someone to show for the night and says whom; Corporal Fenn has a name now and one line. The militia
+# line walks to the wicket itself. Game director, 2026-10-22.
+@node q.granary.custody
+place: q_granary
+speaker: HOLT
+cost: 3
+nar: When it's quiet Holt goes to the wicket and looks out through it at the square, at what's left of the crowd, the way you'd look at weather.
+line: HOLT: Somebody to show for the night. Nearest one.
+alt: q.granary.custody.will ? q_class == militia
+nar: Corporal Fenn goes to the wicket with his rifle across him. He's from Tilney, nineteen, and his ears stick out under the cap. Through the gap the nearest face is a boy, right up against the door where the crowd pushed him, with his braid out down his back and his lip split.
+opt: "That's Ilo Haldane's lad. He's eleven, Captain." -> q.granary.custody.age {do: set(said.ned_custody_age)}
+opt: "Say nothing." -> q.granary.custody.taken
+
+@node q.granary.custody.age
+place: q_granary
+speaker: HOLT
+cost: 2
+alt: q.granary.custody.spared ? !has(said.ned_free_tomas) & !has(said.ned_vouch_cart) & q_figure != true
+line: HOLT: They're all somebody's lad. Nearest one, I said.
+line: HOLT: And it's your name on him twice today, Furrowe. I'd keep it in my pocket if I were you. {when: has(said.ned_free_tomas) | has(said.ned_vouch_cart)}
+go: q.granary.custody.taken
+
+@node q.granary.custody.spared
+place: q_granary
+speaker: HOLT
+cost: 2
+line: HOLT: Eleven.
+nar: Holt looks at the boy through the gap, and at the sacks, and at Ned, who signed the district this morning in front of the Commissioner and has given him no trouble all day.
+line: HOLT: Not the boy, Fenn. The father's not here to sign for him, and I don't want the Gazette's woman on the steps with a picture of a boy. The one behind him.
+nar: Fenn reaches past Tomas and takes a man from Krall's End by the coat instead, a man with a cough, and pulls him through, and the man goes along saying he's done nothing, which is true.
+line: FENN: Sorry. Sorry, sir.
+nar: He says it to Ned. Tomas is still at the gap, looking in, and then somebody pulls him back into the dark of the square.
+go: q.night
+
+@node q.granary.custody.taken
+place: q_granary
+speaker: HOLT
+cost: 3
+do: set(q.tomas_held); fate(f.tomas_held, tomas)
+nar: Fenn opens the wicket and reaches out and takes the boy by the collar of his coat and pulls him in. It's done before anybody outside has seen it done.
+nar: His lip is split. He looks round the granary at the sacks, to the rafters, with something like wonder.
+line: FENN: Sorry. Sorry, son.
+nar: In the morning there's a woman's shawl frozen to the cobbles outside. Nobody comes back for it.
+go: q.night
+
+@node q.granary.custody.will
+place: q_granary
+speaker: HOLT
+cost: 2
+line: HOLT: Nearest one, Sergeant. You know the faces.
+nar: Will walks to the wicket. It's ten steps. Whoever the crowd has pushed up against the door is the nearest face, and the crowd doesn't pick, and nor does Holt. Through the gap, a boy with his braid out down his back and his lip split, in a brown coat that comes to his shins.
+voice: ballast: Nearest one. It's not you choosing. It's just how they're stood. {dc: 2}
+opt: "Keep walking. Put your hand on the wicket bar." -> q.granary.custody.walk {do: set(said.will_walked_wicket)}
+opt: "Stop walking." -> q.granary.custody.stop
+opt: "He's eleven, Captain." -> q.granary.custody.eleven
+
+@node q.granary.custody.walk
+place: q_granary
+cost: 2
+do: set(q.tomas_held); fate(f.tomas_held, tomas)
+camera: near
+nar: Will's hand reaches the wicket bar, and the iron is so cold it holds on to his skin.
+nar: Later the boy is sitting on a sack in the lantern light with his knees up, looking at the rafters, at the stencils, at how much there is.
+go: q.night
+
+@node q.granary.custody.stop
+place: q_granary
+speaker: HOLT
+cost: 2
+do: set(q.tomas_held); fate(f.tomas_held, tomas)
+line: HOLT: Fenn.
+nar: Corporal Fenn goes past Will to the wicket, and opens it, and takes the same boy by the collar of the same coat, because he's still the nearest. It takes him no time at all.
+line: FENN: Sorry. Sorry, Sergeant.
+nar: Will is still standing where he stopped, three steps short of the door.
+go: q.night
+
+@node q.granary.custody.eleven
+place: q_granary
+speaker: HOLT
+cost: 2
+do: set(q.tomas_held); fate(f.tomas_held, tomas)
+line: WILL: He's eleven, Captain.
+line: HOLT: Then he'll fit through the wicket. Go on.
+nar: Will's hand reaches the wicket bar, and the iron is so cold it holds on to his skin.
+go: q.night

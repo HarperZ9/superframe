@@ -1,0 +1,70 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "MARY",
+ "setting": "quota",
+ "status": "draft 2026-10-21 from design/quota/02-HOUSEHOLDS.md by the voice director; generated from design/voice/quota-cast.json, edit that file",
+ "role": "Mary Furrowe: keeps the house; feeds everyone",
+ "age": "about 40",
+ "register": {
+  "level": "plain",
+  "education": "the Furrow Church school",
+  "class": "middle",
+  "trade": "keeps the house; feeds everyone",
+  "words": [
+   "plate",
+   "salt",
+   "love",
+   "dripping",
+   "bread"
+  ]
+ },
+ "region": {
+  "name": "tarn-town",
+  "markers": [
+   "you've not",
+   "go on"
+  ],
+  "idioms": [
+   "somebody's got to eat it",
+   "he's growing"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 18
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television",
+  "starving"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "Ned signed the district",
+   "the price of bread this week"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "no hole",
+     "the hill was empty"
+    ],
+    "why": "only Ned saw the hill (02-HOUSEHOLDS, Furrowe era 2)",
+    "unless_gate": [
+     "ned.told_mary"
+    ]
+   }
+  ]
+ },
+ "trade": "keeps the house; feeds everyone",
+ "wound": "Day 41: she put the heel of the relief loaf on Abel's plate, set Ned's untouched plate in front of Pell, and told the boy there were people up the hill who would kill for it.",
+ "lie": "Somebody's got to eat it.",
+ "fears": "Day 41: she put the heel of the relief loaf on Abel's plate, set Ned's untouched plate in front of Pell, and told the boy there were people up the hill who would kill for it.",
+ "hides": "Somebody's got to eat it.",
+ "tics": [
+  "somebody's got to eat it",
+  "he's growing"
+ ]
+}

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lettering proof, round two</title>
+<link rel="icon" href="data:,">
+<style>
+  html, body { margin: 0; background: #0b090c; color: #ddd; font: 14px "Segoe UI", sans-serif; }
+  .sheet { position: relative; margin: 14px; padding: 22px 28px; background-size: 100% 100%; color: #2a1d14; }
+  h2 { margin: 0 0 8px; font: 600 12px "Segoe UI", sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: #5a4330; }
+  .cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; overflow: hidden; }
+  .row { display: grid; grid-template-columns: 9.5rem 1fr; align-items: center; gap: 10px; border-bottom: 1px solid rgba(60, 50, 40, 0.18); padding: 2px 0; }
+  .who { font: 600 11px "Segoe UI", sans-serif; letter-spacing: 0.06em; text-transform: uppercase; color: #5a4330; }
+  .who small { display: block; font-weight: 400; text-transform: none; letter-spacing: 0; color: #6a5a4a; }
+  canvas { display: block; }
+  .ledger { display: grid; grid-template-columns: 1fr 120px 90px; column-gap: 12px; align-items: end; }
+  .ledger .rule { grid-column: 1 / -1; border-bottom: 1px solid rgba(52, 78, 140, 0.35); }
+  .over { position: relative; }
+  .over canvas + canvas { position: absolute; left: 0; top: 0; }
+</style>
+</head>
+<body>
+<!-- Round two for the author (the UI art lead's, 2026-10-22): the insular and blackletter display hands, one
+     sentence in each writer's own hand, and the returns ledger in Mott's hand with Ned's pencil beside it.
+     Served at /engine/ui/lettering/proof2.html. -->
+<div class="sheet" id="hands"><h2>The display hands: insular, insular for titles, textura, bastarda</h2><div class="cols" id="cols"></div></div>
+<div class="sheet" id="writers"><h2>One sentence, each writer's own hand (the clean words in the left column are what hover and Plain text show)</h2><div id="rows"></div></div>
+<div class="sheet" id="ledger"><h2>The returns ledger, day 41: Mott's hand, Ned's pencil, Anni's tally</h2><div class="ledger" id="led"></div></div>
+<script type="module">
+  import { loadHand, drawLettering } from "./hand.mjs";
+  import { loadHands, writeHand } from "./handwrite.mjs";
+  import { paperPixels } from "../paper.mjs";
+  const cv = () => document.createElement("canvas"), add = (p, ...k) => (p.append(...k), k[0]);
+  const cols = document.getElementById("cols");
+  for (const [tool, name] of [["insular", "Insular, old documents"], ["insularround", "Insular, titles (rounder r s t g f)"], ["textura", "Textura"], ["bastarda", "Bastarda, the everyday hand"]]) {
+    const col = add(cols, document.createElement("div")), H = await loadHand(tool);
+    add(col, Object.assign(document.createElement("div"), { className: "who", textContent: name }));
+    for (const [t, px] of [["The Bell Tower over Exchange Square", 36], ["Haldane Yard, Mill Street", 30], ["The Record. Day 41", 32], ["ABCDEFGHIJKLM NOPQRSTUVWXYZ", 22], ["abcdefghijklm nopqrstuvwxyz st ct", 24]]) { const c = add(col, cv()); drawLettering(c, H, t, { px, max: 300, seed: px + tool.length, ink: "#24170e" }); }
+  }
+  const hands = await loadHands(), rows = document.getElementById("rows"), S = "Haldane barns, a hundred and ninety sacks. Received and found correct.";
+  for (const [id, opts, note] of [["mott", {}, "clerk's ledger hand"], ["ned", {}, "civil hand"], ["ned", { mood: "lie" }, "the same, lying"], ["abel", {}, "old copperplate"], ["anni", {}, "careful print, pencil"], ["bet", {}, "slow, phonetic"], ["tomas", {}, "hurried"], ["pask", {}, "official round hand"], ["holt", {}, "school hand, hard grip"], ["ilo", {}, "Hesh letters (provisional)"], ["ilo", { script: "tarn" }, "Tarnish, learned"], ["will", {}, "militia print"]]) {
+    const r = add(rows, Object.assign(document.createElement("div"), { className: "row" }));
+    add(r, Object.assign(document.createElement("div"), { className: "who", innerHTML: `${id[0].toUpperCase() + id.slice(1)}<small>${note}</small>` }));
+    const c = add(r, cv()); writeHand(c, S, { id, ...hands[id] }, { px: 21, max: 1060, seed: 3, ...opts });
+  }
+  const led = document.getElementById("led"), mott = { id: "mott", ...hands.mott }, ned = { id: "ned", ...hands.ned }, anni = { id: "anni", ...hands.anni };
+  const cell = (text, hand, o = {}) => { const d = add(led, document.createElement("div")); const c = add(d, cv()); writeHand(c, text, hand, { px: 22, max: 520, seed: 9, ...o }); return d; };
+  for (const [what, fig] of [["Krall's End, the village return", "340"], ["The Haldane barns", null], ["Tarn Hollow, by the new inspector", "320"]]) {
+    cell(what, mott);
+    if (fig) cell(fig, mott);
+    else { const d = add(led, Object.assign(document.createElement("div"), { className: "over" })); const a = add(d, cv()), b = add(d, cv()); writeHand(a, "190", mott, { px: 18, seed: 4 }); writeHand(b, "310", mott, { px: 19, seed: 7, ink: "#1a1009" }); }
+    if (!fig) cell("190", ned, { ink: "#5b5753" }); else add(led, document.createElement("div"));
+    add(led, Object.assign(document.createElement("div"), { className: "rule" }));
+  }
+  cell("Haldane cart", anni); cell("[tally:6]", anni, { px: 32 }); add(led, document.createElement("div"));
+  for (const [el, era, seed] of [["hands", 1, 4], ["writers", 2, 9], ["ledger", 1, 13]]) { const e = document.getElementById(el), r = e.getBoundingClientRect(), P = paperPixels({ w: Math.round(r.width), h: Math.round(r.height), era, seed, scale: Math.min(1, 700 / Math.max(r.width, r.height)) }); const c = cv(); c.width = P.w; c.height = P.h; c.getContext("2d").putImageData(new ImageData(P.data, P.w, P.h), 0, 0); e.style.backgroundImage = `url(${c.toDataURL()})`; }
+  document.documentElement.dataset.ready = "1";
+</script>
+</body>
+</html>

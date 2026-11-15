@@ -41,6 +41,9 @@ talk: brine2.fx.fork | Shout for Sabine's fork ? fight_seconds >= 6
 talk: brine2.fx.word | Say what you wrote, and why, to the whole room ? fight_struck == 0
 
 # ---------------------------------------------------------------- the hub
+# ---- new ids (thematic pass, 2026-10-21)
+@fact brine2.board_men
+
 @node brine2.hub
 hub: yes
 place: brine
@@ -62,6 +65,7 @@ opt: "Talk to the engineer drying at the stove." -> brine2.fisk ? seen(brine2.fi
 opt: "Go over to the masters' table." -> brine2.masters ? seen(brine2.masters.arrive) & clock < 23:30 & !has(a2.afloat)
 opt: "Sit down beside the telegraphist." -> brine2.rook ? seen(brine2.rook.arrive) & !has(ev2.rook_back) & !has(brine2.rook_gone)
 opt: "Talk to Orrin Teague." -> brine2.teague ? !seen(brine2.teague)
+opt: "Drink the rum in your pocket." -> brine2.drink ? count(i.rum) > 0
 opt: "Go up to the room." -> brine2.room +1
 opt: "Go out to the quay." -> quay2.hub +1
 opt: "Take the yard lane to the Gut." -> gut2.hub +2
@@ -95,6 +99,8 @@ cost: 1
 nar: Sabine wipes the bar in long strokes, as if it might need to be handed over clean.
 opt: "How has the town taken it?" -> brine2.sabine.cause ? !seen(brine2.sabine.cause)
 opt: "An egg and a tea." -> brine2.sabine.supper ? count(i.chits) >= 1
+opt: "Brine rum." -> brine2.sabine.rum ? count(i.chits) >= 1
+opt: "The Board's boat has gone out to the Spit." -> brine2.sabine.board ? seen(quay2.muster) & !has(brine2.board_men)
 opt: "Leave her to the bar." -> brine2.hub
 
 @node brine2.sabine.cause
@@ -118,6 +124,53 @@ speaker: SABINE
 cost: 2
 line: SABINE: A chit. They're ninepence on the quay today, so it's a chit and the change is the pleasure of my company.
 do: take(i.chits, 1); give(i.egg); give(i.tea)
+go: brine2.sabine
+
+@node brine2.sabine.rum
+speaker: SABINE
+cost: 2
+do: take(i.chits, 1); give(i.rum)
+line: SABINE: A chit. Same rum as last night. Same breakfast after it, too.
+go: brine2.sabine
+
+@node brine2.drink
+cost: 1
+call: theme.drink
+line: TEAGUE: Steady, that. {when: var.drinks >= 2 & !has(theme.relapse), once}
+nar: Teague looks at the glass, and then out of the porthole at the boat's weather, and says nothing about either. {when: has(theme.relapse), once}
+go: brine2.hub
+
+# ---- "shame and lies": the generalisation, and what it leaves out (THEMES 8)
+@node brine2.sabine.board
+speaker: SABINE
+cost: 3
+do: set(brine2.board_men)
+line: SABINE: Board men. Shame and lies, the lot of them, from Keel's hat down to the boy who bails. Every one of them has drunk on my slate and paid in the Board's paper.
+voice: chit: The first price she has named tonight, and it is not hers. {dc: 6}
+opt: "'Old Penrose took the bar out of his son's hands, so the boy would stay on the step.'" -> brine2.sabine.penrose ? has(quay2.penrose_stayed) {do: var.lean_hang -= 1}
+opt: "'Shame and lies. And green glass out of your oven, Sabine?'" -> brine2.sabine.oven {do: var.lean_hang += 1}
+opt: "'Every one of them.'" -> brine2.sabine.agree {do: var.lean_hang += 1; set(said.board_men); set(heard.sabine.board_men)}
+opt: "Let it go by." -> brine2.sabine {do: var.lean_dry += 1}
+
+@node brine2.sabine.penrose
+speaker: SABINE
+cost: 2
+line: SABINE: Then he's shame. He's not lies.
+nar: She puts a glass on the bar for nobody, the one Penrose drinks from, and leaves it there.
+go: brine2.sabine
+
+@node brine2.sabine.oven
+speaker: SABINE
+cost: 2
+line: SABINE: My oven's my business. Their boat's everybody's.
+nar: She says it with the smile that asks to have the lie admired, and the smile does not quite arrive.
+go: brine2.sabine
+
+@node brine2.sabine.agree
+speaker: SABINE
+cost: 1
+line: SABINE: There. The Shelf says so. I'll chalk it up.
+nar: Down the bar a Board warden's wife, here for her husband's slate, puts her coins down and goes without the change.
 go: brine2.sabine
 
 # ---------------------------------------------------------------- Wenna on Night 2
@@ -431,6 +484,8 @@ speaker: TEAGUE
 cost: 2
 alt: brine2.teague.letter ? has(brine.letter_given) | tab_orrin == 1
 line: TEAGUE: No boat this morning. I was ready. I'd my hand on the belt.
+line: TEAGUE: You've the look tonight. The first hour's the long one. After that they're all the first hour. {when: var.drinks >= 1 & trait(m.hour) == none}
+if: var.drinks >= 2 & trait(m.hour) == none => offer(m.hour)
 go: brine2.hub
 
 @node brine2.teague.letter

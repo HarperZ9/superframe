@@ -1,0 +1,588 @@
+# Era 3, Allocation: the fever ward (e3.s13), the Sholls on the stair (e3.s14, the midpoint), the night the Well
+# House burns (e3.s15), the margin note (e3.s16), the carried words (e3.s17) and the narrow lens (e3.s18).
+# Story lead, 2026-10-23. DRAFT: every line waits for the author's line approval (ledger row S14).
+# Design: design/eras/era3.md sections 2, 3, 8 and 12. Fates: f.e3_bed (CLARA), f.e3_sholl (ANNI), f.e3_well
+# (GEDGE), f.e3_tomas (TOMAS, only where nobody held Tomas in the hard winter). Bet's death is canon
+# (DECISIONS-2026-10-22): f.e3_bed decides where she dies and under what name, and whether Mim lives.
+# The six named dead at prayer stand, with Ilo among them where the door stays barred (DECISIONS e519930).
+# Entry e3.ward from e3_house.lwd; exit e3.lens to e3.w.start in e3_witness.lwd.
+# Weighted-devices pass, 2026-10-23: the fever is chalk, smell, the handcart and the cart for the dead; the ward's name
+# is said aloud at the bed and the thread is cut off the wrist; the over-allocation is a man counting heads with his
+# finger; Dorrah's household book is her knot cord (design/device-audit/era3.md, Plot changes).
+
+@fact e3.fever_cart_back
+
+@char e3.fever_corin
+name: Corin Sholl
+speaker: CORIN
+faction: hesh
+about: Nine. Hanne's eldest. Holds on to things.
+
+# ---------------------------------------------------------------- e3.s13, the fever ward
+@node e3.ward
+place: q3_mott_house
+speaker: BET
+cost: 0
+camera: near
+do: set(e3.fever); pressure(f.e3_bed)
+nar: November. The old Mott house, the landing at the turn of the stairs, mid-morning, the one hour the stairs are quiet because the ten families are out at the queue or the works.
+nar: Anni has the big basin on the landing and the kettle from the front room, and she's washing her mother's hair. Bet sits on the top step with a towel round her shoulders and her head bent over the basin, and Anni pours the warm water over the back of her neck out of a jug, slow, the way you'd water a seedling.
+line: BET: Not all at once. You'll have it down my back.
+line: ANNI: I'm doing it slow.
+line: BET: Do the front. You've not done the front.
+line: ANNI: I'm getting to the front.
+nar: Bet's hair is long still and gone grey in a stripe from the parting, and wet it looks dark again, nearly black, the way it was. Anni works the soap into it with her fingertips. Bet shuts her eyes. The water is the last of the warm in the house till the evening and they both know it.
+line: BET: Your gran did mine like this. Out in the yard at Carrow's. With rain off the butt.
+line: ANNI: Cold, then.
+line: BET: Cold. You didn't say so, though. You'd get a clip.
+nar: On the stairs below them, Mim Sallis is sitting with her chin on her knees, singing to herself in Heshen, very quiet, so it won't carry to the street. It's the counting song for the goats, the one every Hesh child knows. Bet hums it with her, a beat behind, with her eyes shut, and gets the end wrong, and Mim laughs at her.
+line: BET: Is it not like that, then.
+line: MIM: It goes up at the end.
+line: BET: I've never been any good at the up ones.
+nar: Anni is rinsing behind her mother's ears when she sees them. In the seam of the towel where it's folded at Bet's collar, three of them, grey, the size of a grain of barley, moving. And on Bet's neck below the hairline, under the wet, a rash, small dark spots like pepper that don't go white when Anni presses her thumb on them.
+nar: Anni presses again. They don't go white. {sense: e3.dread}
+line: BET: What are you doing.
+line: ANNI: Nothing. There's soap.
+line: BET: Well, rinse it, then.
+nar: The cough starts the next day, the wet one you hear through every wall in the house. By the Thursday Bet has the fever right up and can't keep her head off the side of the bed for the ache in it, and the smell has started, the one the whole of Exchange Street knows now: sweet, like straw left wet in a barn, coming off the skin. {sense: e3.fever_smell}
+nar: Dr Lind's girl comes round with the chalk on the Friday and draws the white cross on the Haldane door, and on two other doors on the landing, and goes on down the street drawing them. You can hear the chalk on the wood from the stairs, a scrape across and a scrape down. {sense: e3.chalk}
+nar: Bet won't lie down in the front room because the Pruetts eat in there, and she can't get up the stairs any more, so she lies on the landing, on a pallet, where she can see the door. She calls Aaron Tomas when he brings her water. Aaron doesn't correct her. {when: has(e3.aaron_taken)}
+nar: Bet won't lie down in the front room because the Pruetts eat in there, and she can't get up the stairs any more, so she lies on the landing, on a pallet, where she can see the door. She calls Aaron Tomas when he comes in off the far-bank shift with the black on his hands. Aaron doesn't correct her. {when: !has(e3.aaron_taken)}
+line: BET: Tomas. Fill the jug. Fill it at the yard tap, is it, the street one's bad.
+line: AARON: I'll fill it, Mum.
+line: BET: And put your boots by the door. You've not put your boots by the door.
+nar: There's one bed left at the ward in the church hall. Everybody on Exchange Street knows it by the evening. Oren borrows the coal merchant's handcart. They lift Bet onto it in a blanket. She weighs nothing. She's hot through the blanket like a loaf.
+nar: The evening before, going down Exchange Street, they all heard the other cart. The flat one with the sheet over and the two men walking beside it with rags round their mouths, that comes for the ones who didn't get a bed. Everybody on the stairs heard its wheels and nobody went to the window. {sense: e3.dead_cart}
+alt: e3.ward.will ? q_class == militia
+go: e3.ward.pell
+
+@node e3.ward.pell
+place: q3_mott_house
+speaker: ANNI
+cost: 0
+nar: You're in the front doorway with the tape on your belt, come to walk the cellar for the board, and you can't get past the handcart for the width of the hall.
+nar: Oren has the front handle. The back handle is on the floor. Anni is standing over it with her sleeves pushed up, looking at it, and then at you.
+line: ANNI: Take that end.
+line: PELL: I've the cellar to do. Krall wants it by four.
+line: ANNI: Take that end, Pell. Oren can't do the steps on his own. It's the church hall. It's up the hill.
+voice: pride: The chalk's on that door. You've seen what it does. You heard the other cart go down the street last night. {dc: 2}
+voice: sum: Krall wants the cellar by four. {dc: 2}
+opt: "Put the tape down on the tiles. Take the handle." -> e3.ward.cart {do: set(said.e3_pell_carry); shoulder(e3.load.handle)}
+opt: "Say it: I can't. I've the cellar to do. Get one of the Pruett lads." -> e3.ward.left
+
+@node e3.ward.will
+place: q3_church
+speaker: WILL
+cost: 0
+nar: You're at the chalk. Reverend Hollis had the rope put across the church lane on the Monday, with a white line chalked on the setts under it, and he told you himself on the church step, with his hand on your arm: the ward is for the parish. You've got Davey and two others on the rope, with their collars up against the smell.
+nar: The handcart comes up the hill out of the dark with the wheel going round, squeak, squeak, a dry axle, and Oren Haldane between the handles, and Anni beside it with her hand flat on the blanket. {sense: e3.cart_wheel}
+line: OREN: Evening, Sergeant. One for the ward.
+line: WILL: Parish only. Reverend's word.
+line: OREN: She's Tarn. She's a Carrow off the Osby road. You can ask anybody.
+line: WILL: She's a Haldane.
+line: ANNI: She married one.
+nar: Bet turns her head on the cart, and her eyes are open, and she looks up at you and knows you.
+line: BET: Will Brack. Where's your gloves. It's cold for that.
+voice: ballast: Hollis says parish. You don't make the rule. You hold the rope. {dc: 2}
+voice: grip: Edie let out her dresses once. Edie would want to know you were on the rope tonight. {dc: 3}
+opt: "Lift the rope. Say it: Go on through. Quick, before he sees." -> e3.ward.cart {do: set(said.e3_will_cart)}
+opt: "Say it: Ward's full. Turn it round, Oren." -> e3.ward.left
+
+@node e3.ward.cart
+place: q3_ward
+speaker: CLARA
+cost: 0
+camera: near
+do: setdown(all)
+nar: The church hall. The pews are out in the yard under a tarpaulin and the beds are in rows where they stood, iron beds from the old infirmary and camp beds from the militia, and the screens between them are sheets on rope. It smells of carbolic so strong it makes your eyes run, and under the carbolic the sweet smell, and under that the buckets. {sense: e3.ward_air}
+nar: Somebody behind a sheet is saying the same three words over and over in a Tarnish voice, a man's. Somebody else is coughing so hard the bed legs knock on the boards. The bulbs go brown, and come back, and go brown.
+nar: There's one bed at the end with nobody in it, the sheet pulled tight. On the floor beside it, on a folded coat, Mim Sallis, with her father Davin kneeling by her. She's grey at the lips. There's the rash up her arms. She's stopped singing.
+nar: Dr Clara Lind comes down between the beds wiping her hands on a cloth. She is thirty-four and looks fifty under the bulbs. She has a pair of scissors on a string round her neck and her sleeves rolled to the elbow, and her forearms are red raw from the carbolic.
+line: CLARA: Who's this.
+line: ANNI: My mum. She's had it since the Tuesday. She's had the cough since the Saturday.
+line: CLARA: Name.
+nar: Anni opens her mouth and doesn't say it. At the far end of the hall Reverend Hollis is coming down the rows with a lamp, the way he walks them every night, stopping at each bed, asking it its name and its parish, holding the lamp low to its wrists. Down the rows every name he gets back is Tarn.
+line: CLARA: I can't put a Haldane in this bed. He asks them. He looks at their wrists. You know that.
+nar: Davin looks up from the floor, at the cart, at the bed, at Clara, and doesn't say anything at all.
+voice: undertow: She was Carrow before she was anything. Her dad stole a door off your grandad with a crowbar. {dc: 2, when: q_class == inspector}
+voice: ballast: Carrow. You knew old Carrow. He had a cart on the Osby road. {dc: 2, when: q_class == militia}
+opt: "Say it: Her father was Carrow. Elizabeth Carrow. Put that." -> e3.bed.decide {do: set(said.e3_speak_bet)}
+opt: "Say nothing. Stand by the cart with your hands on it." -> e3.bed.decide
+
+@node e3.ward.left
+place: q3_mott_house
+speaker: CLARA
+cost: 0
+do: set(e3.fever_cart_back)
+nar: The cart goes back down the hill with the wheel squeaking, and Bet on it under the blanket, and Anni walking beside it, and Oren with the handles. They have to lift it up the Mott house steps on their own. It takes three goes. On the second go the cart tips and Bet goes onto the step on her side, and she doesn't cry out, and they lift her back.
+nar: Dr Clara Lind comes to the Mott house herself, late, with her bag, because Davin Sallis went and stood at the rope for an hour till she came. She goes up the stairs past Bet on the landing without stopping, to the Sallis room, to Mim.
+nar: On the way down she stops on the landing. Bet is asleep with her mouth open. Clara looks at her for a while.
+go: e3.bed.decide
+
+# ---------------------------------------------------------------- fate f.e3_bed: Clara decides
+@node e3.bed.decide
+cost: 0
+alt: e3.bed.bet ? (has(said.e3_pell_carry) | has(said.e3_will_cart)) & has(said.e3_speak_bet)
+go: e3.bed.mim
+
+@node e3.bed.mim
+place: q3_ward
+speaker: CLARA
+cost: 0
+do: set(e3.bed_mim); set(e3.bet_dead)
+nar: Clara crouches by Mim on the coat and puts the back of her hand on the child's forehead, and leaves it there, and looks at the bed, and at the cart. {when: !has(e3.fever_cart_back)}
+line: CLARA: I'm sorry. She's eight. She'll go through it if she's got a bed and water. Your mother won't, either way. I've seen enough of them to know which. {when: !has(e3.fever_cart_back)}
+line: ANNI: You don't know that. {when: !has(e3.fever_cart_back)}
+line: CLARA: No. {when: !has(e3.fever_cart_back)}
+line: CLARA: Davin. Bring her up to me. And on this bed she's Mildred, do you understand. Mildred Pask, from Tilney. Say it to her so she knows it when he asks.
+line: DAVIN: Mildred Pask.
+nar: Clara takes the scissors off the string round her neck and lifts Mim's good wrist and cuts the blue thread off it, close, so the blade's cold on the skin, and then the other wrist under the rag. She puts the two bits of thread in Davin's hand and shuts his fingers on them. She doesn't look up while she does it. {sense: thread.cut}
+nar: Davin lifts Mim onto the bed and she's so light he nearly throws her. He tells her her new name in her ear, and she says it back to him in Heshen, and he puts his hand over her mouth, gently, and says it again.
+go: e3.bed.mim.stairs
+
+@node e3.bed.mim.stairs
+place: q3_mott_house
+speaker: BET
+cost: 0
+camera: near
+nar: The Mott house, that night. They've given up trying to get her up the stairs. Bet is on the landing with her back against the wall and her legs down the first two steps, because lying flat she drowns, and sitting she can breathe a bit.
+nar: The whole house is awake and nobody comes out. Ten families behind ten doors, and every one of them listening to her breathe. Somebody in the Pruett room is saying a Tarn prayer, the long one. Somebody in the back room under the stairs is saying a Hesh one, over it.
+nar: Anni has her mother's head on her lap. Aaron is two steps down with the jug. Ilo is at the bottom of the stairs, standing, with his hat in his hands. He has not sat down since the cart came back.
+line: BET: Anni. Anni. Is the door shut.
+line: ANNI: It's shut, Mum.
+line: BET: Bolt it. They'll have the coal.
+line: ANNI: There's no coal.
+line: BET: Bolt it anyway. Tomas. Is that Tomas.
+line: AARON: It's me, Mum.
+line: BET: Put the bowls up. Don't leave them face up. Put them face down on the shelf, is it, so the dust doesn't.
+line: AARON: I'll put them face down.
+line: BET: All five.
+nar: Aaron looks down the stairs at Ilo, and Ilo looks at the floor.
+nar: She coughs, and it comes up out of her into the towel, dark, and the smell comes up the stairwell with it. Her fingers are going black at the tips, the left hand, the way they do at the end of it, from the blood not getting there. Her lips are cracked open in the middle and bleeding a little and she licks them and tastes it and makes a face like a child given medicine.
+line: BET: Ilo.
+line: ILO: I am here.
+line: BET: You've not had your tea.
+line: ILO: I will have it after.
+line: BET: There's the end of the loaf. In the cloth. Have that.
+line: ILO: I will have that.
+line: BET: Don't give it to the Sallis girl. She's had hers.
+nar: Anni puts her face down on her mother's wet hair, the hair she washed on the Saturday, and keeps it there.
+line: BET: Anni. Elizabeth Carrow. You tell them that. If they ask. Carrow off the Osby road.
+line: ANNI: I'll tell them.
+line: BET: And the other. You've not to tell anybody the other. You hear me.
+line: ANNI: I hear you.
+nar: After that she's quiet, with her breath going in and out like a saw in wet wood, slower. The prayers stop behind the doors, the Tarn one and the Hesh one, at the same time, as if they'd agreed it.
+nar: There's a long gap.
+nar: Then the breath comes once more, and goes out, and doesn't come back in. {sense: e3.last_breath}
+nar: Nobody on the stairs moves. Then the lice start to come out of her collar, in ones and twos, because she's going cold and they want warm, and walk out across the towel onto Anni's wrist. Anni picks them off one at a time with her thumbnail and cracks them, and goes on doing it, and doesn't stop till Ilo comes up the stairs and takes her hands.
+voice: undertow: There's a bed on the hill with a little girl in it under a Tarn name, breathing. You'll never know her face. {dc: 3, when: q_class == inspector}
+voice: grip: You turned the cart round on the rope. She knew you. She asked where your gloves were. {dc: 3, when: q_class == militia & has(e3.fever_cart_back)}
+go: e3.sholl
+
+@node e3.bed.bet
+place: q3_ward
+speaker: CLARA
+cost: 0
+do: set(e3.bed_bet); set(e3.bet_dead); fate(f.e3_bed, mim)
+line: CLARA: Carrow.
+nar: Clara looks at you for a moment, at your coat and your face, the way you'd look at a face you know from somewhere.
+line: CLARA: Carrow. Right. Elizabeth Carrow, parish of Edrin. Lift her on.
+nar: Davin gets up off the floor. He doesn't say anything. He stands with his arms down. Mim on the coat is looking at the bed, at the bulb over it, with her eyes half shut.
+line: DAVIN: Doctor.
+line: CLARA: Take her home, Davin. Keep her wet. Cloths on her head. Make her drink, even if it comes back. I'll come on Sunday.
+line: DAVIN: It's Thursday.
+line: CLARA: I know what day it is.
+nar: They lift Bet on. Clara takes the scissors off her neck and cuts the thread off Bet's wrists, both, and Bet watches her do it and says nothing, and lets her arm drop on the blanket after. When Hollis comes down the row with the lamp and holds it to her wrists and asks, Clara answers for her. Elizabeth Carrow, Reverend. Parish of Edrin. And the bed has a name, and the name is Tarn. Davin picks Mim up off the coat and carries her out between the rows of beds and she lets her head hang over his arm. {sense: thread.cut}
+line: BET: Anni. This isn't ours, this bed. Whose is this.
+line: ANNI: It's yours, Mum. Go to sleep.
+nar: They aren't let stay. Nobody is. Anni stands at the rope till the militia send her home.
+nar: The next night, on the ward, with the bulbs going brown and coming back, Bet dies behind a sheet on a rope, under her father's name, with nobody she knows. The man three beds down is still saying his three words. The orderly who finds her in the morning says Carrow to the sexton's lad over her, and pulls the sheet up, and the lice walk off the pillow onto the boards. The flat cart takes her down the hill at first light with the others.
+nar: In the Sallis room at the Mott house, the same night, Mim dies on the floor between her father and her uncle Lio, with a wet cloth on her face that Davin keeps wetting from the jug until the jug's empty. She says the goat counting song at the end, the first line, in Heshen, and then she doesn't say the second line.
+nar: Davin carries her down the stairs in the morning in a sheet, past the Haldane door. The Haldane door has the chalk on it. Davin stops on the landing and looks at it for a long time, and then goes on down.
+voice: undertow: You gave the bed a name. You knew whose bed it was before you said it. {dc: 3}
+go: e3.sholl
+
+# ---------------------------------------------------------------- e3.s14, the midpoint: the Sholls on the stair
+# Over allocation is a man counting heads with his finger in the dark, and a key moved from one hook to another.
+@node e3.sholl
+place: q3_mott_house
+speaker: HANNE
+cost: 0
+do: set(e3.house_over); pressure(f.e3_sholl)
+nar: A week after they buried Bet. They put her by the fence at the top of the burial ground with no stone, where the fever dead go now, in a trench, in lime.
+nar: The stairs in the evening. The Sholl children are playing knucklebones on the bottom step with the knucklebones of a sheep, all four of them, and the youngest, Ness, who's three, keeps grabbing the bones out of the air when it's not her go, and the others shout at her, and she laughs so hard she falls off the step.
+nar: Hanne Sholl comes out of the back room under the stairs with a pan and sits on the second step and gives them each a spoon, and they eat out of the pan, crouched round it on the hall floor like birds. It's oats with a bit of goat cheese stirred in that she had from somebody over the ridge. You can smell it from the door.
+line: HANNE: Have you eaten. There's a bit. Corin, give him your spoon.
+line: CORIN: It's my spoon.
+line: HANNE: Give it him, he's company.
+nar: On the Monday night Fenn came through the house with a constable and a lamp. Every room, every floor, with the families in their beds. He stood in each door and held the lamp up and counted heads with his finger, pointing, the sleeping ones too, the babies, his lips going. Nobody sat up. You could hear him on the floor above, a door, then quiet, then the next door. {sense: e3.counting}
+nar: At the front door he said it to the hall, not loud, to whoever was awake to hear. One family over. Thursday. For health. Then he went out and pulled the door to behind him so it wouldn't bang.
+alt: e3.sholl.will ? q_class == militia
+go: e3.sholl.pell
+
+@node e3.sholl.pell
+place: q3_mott_house
+speaker: ANNI
+cost: 0
+nar: You've come back with the tape to walk the house again for the board before anybody's moved, because Fenn's coming through again tonight to count it before Thursday. You've done the front room and the Pruetts and the landing. The Haldane room is next.
+nar: It's one room. There's a curtain across it on a string, the thread end of it blue, and behind the curtain is the press where Anni and Oren sleep with the two boys, and in front of it is where Ilo sleeps, and Aaron, and where Bet slept.
+nar: Anni stands at the curtain with her arms folded while you measure. She watches the tape.
+line: ANNI: That's two rooms, that.
+line: PELL: There's a curtain. Twelve foot by ten. It's one room.
+line: ANNI: It's two rooms. You can measure the curtain if you like.
+voice: sum: Draw it across and Fenn's finger counts two Haldane rooms tonight, and Krall can move one of them without asking anybody for a name. {dc: 3}
+voice: pride: Leave it open. It is one. Fenn knows you, he'll ask you. {dc: 2}
+opt: "Pull the curtain across the room on its string. Say it: That's two rooms. The front, and the press." -> e3.sholl.decide {do: set(said.e3_pell_two_rooms), sense: e3.curtain}
+opt: "Leave the curtain open. Say it: It's one room, Anni. It's what it is." -> e3.sholl.decide
+
+@node e3.sholl.will
+place: q3_squad
+speaker: WILL
+cost: 0
+nar: The squad room, the Wednesday. Fenn comes up the stairs and stands at the stove with his back to it and says it to the room: Krall wants one family out of the Mott house, Exchange Street, Thursday, for health. Which family, the office will say. He says it in Krall's voice, pleasantly, and goes down again.
+nar: Davey is at the stove. Aaron is sitting on the bench doing up his boots, the way he does them, slow, the left one first. {when: has(e3.aaron_taken)}
+line: DAVEY: Who's it going to be, Dad.
+line: WILL: Office says.
+line: DAVEY: It's Aaron's house.
+line: WILL: I know whose house it is.
+nar: Dr Lind's girl is going round with the chalk again tonight. If she chalks a door before the squad gets to it, the family behind the door stops where it is till the cross is washed off. Everybody in the squad room knows that. Nobody has said it.
+voice: ballast: Thursday means Thursday. You go in the morning and it's done by dinner, and nobody's stood on the stairs all day. {dc: 2}
+voice: grip: Go in the afternoon. Give the chalk a morning. {dc: 3}
+opt: "Say it: Thursday afternoon. We've the riot lot to see to in the morning." -> e3.sholl.decide {do: set(said.e3_will_slow)}
+opt: "Say it: Thursday first thing. Get it done." -> e3.sholl.decide
+
+# ---------------------------------------------------------------- fate f.e3_sholl: Anni decides
+@node e3.sholl.decide
+cost: 0
+alt: e3.sholl.split ? has(said.e3_pell_two_rooms) | has(said.e3_will_slow)
+go: e3.sholl.named
+
+@node e3.sholl.named
+place: q3_mott_house
+speaker: HANNE
+cost: 0
+camera: near
+do: set(e3.sholl_named); fate(f.e3_sholl, hanne)
+nar: The allocation counter, the Thursday, first thing. You aren't there. Walter Mott is, on his stool in front of the board, with the Mott house ring off its hook and on the counter by his hand, and Anni Haldane comes to the rail in her mother's coat with the boys at home with Oren.
+line: WALTER: The office needs a family, Mrs Haldane. For the house. Or it takes the room with the fever in it, and that's yours.
+line: ANNI: Sholl. The back room. Under the stair.
+line: WALTER: Sholl.
+line: ANNI: She's from over the ridge. She's only been in since the summer.
+nar: Walter works the key to the back room off the ring with his thumbnail, and gets down, and hangs it on the bare nail at the end of the board where the hill camp keys go. It swings, and touches the wall, and stops. Anni doesn't wait to see it stop. {sense: e3.keys}
+nar: The Mott house, the Thursday, before dinner. The squad comes in at the front door with nothing in its hands but the cart outside, four of them, and goes down the hall to the back room under the stairs. {when: q_class == inspector}
+nar: The Mott house, the Thursday, before dinner. You bring the squad in at the front door with nothing in your hands but the cart outside, four of you, and you go down the hall to the back room under the stairs. {when: q_class == militia}
+nar: You lift the Sholls' bed out yourself, the sacks, all of them together, damp and heavy as a wet sheep, and carry it down the hall on your shoulder and out to the cart, because the lads are slow about it. {when: q_class == militia}
+if: q_class == militia => shoulder(e3.load.sacks)
+nar: Aaron is one of the four. He's got the youngest Sholl under one arm like a sack of meal, Ness, kicking, and she's screaming for her mother in the ridge Heshen, which Aaron half understands. {when: has(e3.aaron_taken)}
+nar: Corin Sholl, who's nine, has got both arms round the newel post at the bottom of the stairs and won't let go. Davey Brack prises his fingers off it one at a time. The last finger doesn't come, and Davey bends it back, and it goes with a sound like a green stick, and Corin lets go and sits down on the hall floor holding his hand and doesn't make any sound at all. {sense: e3.bone}
+nar: Hanne Sholl comes out last with the pan and the knucklebones in her apron. She stops on the stair, because you're on it.
+line: HANNE: We had the back room. Under the stairs. Me and the four of them.
+line: HANNE: Somebody gave our name in. A woman, they said, at the counter.
+nar: She looks up the stairs at the Haldane door, with the chalk on it, and back at you.
+line: HANNE: She's got kids as well, whoever she is. I'd have said us, if I was her.
+nar: Then she goes down the steps after her children and they put them on the cart for the hill camp with the others, for health, where the fever is worst. Corin is holding his hand against his chest. The finger points the wrong way.
+do: setdown(all)
+nar: Anni is at the window of the Haldane room behind the curtain, and she watches the cart all the way down Exchange Street till it turns at the scale. She doesn't come down.
+voice: undertow: Up there, where the fever is worst. Four of them, and the one with the finger. {dc: 3}
+go: e3.fire
+
+@node e3.sholl.split
+place: q3_office
+speaker: ANNI
+cost: 0
+camera: near
+do: set(e3.haldane_split)
+nar: The allocation counter, the Thursday, first thing. Walter Mott on his stool in front of the board, with the Mott house ring off its hook and on the counter by his hand. Anni Haldane comes to the rail in her mother's coat.
+nar: The Sholls' door has a white cross on it this morning, wet, in Dr Lind's girl's hand, and nobody on the squad will put a hand on a chalked door. {when: has(said.e3_will_slow)}
+nar: Fenn's finger counted the Haldane room as two last night, because the curtain was drawn across it, so Krall has two Haldane rooms and can take one without a name from anybody. {when: has(said.e3_pell_two_rooms)}
+line: WALTER: The office needs a family, Mrs Haldane. You can give me one. I'm asked to ask you.
+line: ANNI: Who asked you to ask me.
+line: WALTER: I'm asked to ask everybody.
+line: ANNI: I've no name for you.
+line: WALTER: Then it's yours. It's the room with the fever in it. The key's here. I only have to move it.
+line: ANNI: Move it, then.
+nar: Walter works the Haldane key off the ring. There's a smear of chalk on it from the door, where somebody's hand went from the cross to the key. He hangs it on the hill camp nail, and Anni watches him do it, and watches it stop swinging. {sense: e3.keys}
+nar: The Mott house, the Thursday, before dinner. The squad splits them at the front door. Oren and the two boys go to the far-bank barracks, the men's side, where the works hands sleep in shifts. Anni goes on the cart for the hill camp, for health, with the fever families.
+nar: Little Ilo won't let go of her skirt. Oren takes his hands off it, one, then the other, and the boy screams so hard he goes white and sicks up on the step.
+line: OREN: I'll fetch them up on Sundays. They'll let me. I'll find out who to ask.
+line: ANNI: Don't let them cut his hair. He hates it cut.
+line: OREN: I won't.
+line: ANNI: Tam has the cough at night. It's not the fever. Don't let them say it's the fever.
+nar: Hanne Sholl stands in the back-room door under the stairs with her four behind her and watches Anni go up onto the cart. She doesn't say anything. She goes back in and shuts the door.
+voice: undertow: She had a name ready. You saw her mouth start on it at the rail. {dc: 3}
+go: e3.fire
+
+# ---------------------------------------------------------------- e3.s15, the night the Well House burns
+@node e3.fire
+place: q3_well_house
+speaker: GEDGE
+cost: 0
+camera: wide
+do: set(e3.well_claim); pressure(f.e3_well)
+nar: December, the shortest week. The Well House in Pask's rented yard off Mill Street, with the gate boarded and nailed since November and the dead rat gone to a bit of fur and string on the wire. The town Hesh go in the back way anyway, through Pask's coal yard, for evening prayer.
+nar: Inside, through the one window, with the lamp lit: Mother Vesh at the stone trough with the cup, pouring water over Orla Varn's hands, and Orla laughing because it's freezing, and Lisle Varn laughing at her for laughing. Arn Sallis is there, in his good coat, with his eyes shut. Dorrah Tesk is at the back with the knot cord across her knees, the long one that hangs on the Well House wall, blue thread plaited round and round itself, a knot for every Hesh child born in the town in forty years and a black knot tied over the blue for every one buried. She runs it through her fingers a knot at a time and says the name of each of the year's dead, the fever ones, so they're said in the Well.
+nar: Ketti Sallis is beside Arn, grey-haired, holding his elbow. {when: has(e1.sallis_kept)}
+nar: Mother Vesh starts the water song and they sing it, all of them, low, and for about the length of one verse it's the warmest sound on Mill Street. {sense: e3.song}
+nar: Then the crowd comes down from the Furrow Church, from Hollis's evening sermon on the water that comes down the hill, with lanterns, and fills the lane, and fills Pask's coal yard, and stands round the fence. Men from the works. Women from the queue. Mrs Pruett, with her shawl over her head. Boys. It isn't loud. That's the worst of it, how quiet it is to begin with.
+nar: Constable Gedge is at the Well House door. He's got the cart shaft off Pask's coal cart and he's put it through the two door handles, across, so the door won't open from inside. He leans on it with his shoulder like a man leaning on a gate. Corporal Fenn is beside him with a lamp, a big one, and a can.
+nar: Somebody in the crowd, near the back, in a counter voice that doesn't need to be raised, says it: who drinks from the hill. And the crowd says it, down its length.
+nar: The militia line is across the lane, between the crowd and the fence, facing the crowd, with batons. Will Brack has it. Davey's on it. {when: q_class == militia}
+nar: Aaron is on the line, third from the end, in the coat, with his baton across his chest, facing the crowd, with his back to the Well House where his father is. {when: has(e3.aaron_taken) & q_class == militia}
+nar: Inside, they've stopped singing. Somebody tries the door. The shaft takes it. {sense: door.blows}
+line: GEDGE: Nobody's going in there. It's the fever. It's in the water. Everybody knows.
+alt: e3.fire.pell ? q_class == inspector
+go: e3.fire.will
+
+@node e3.fire.will
+place: q3_well_house
+speaker: WILL
+cost: 0
+line: WILL: Gedge. There's folk in it.
+line: GEDGE: Then they'll want to stop in, Sergeant. Fenn. The lamp.
+nar: Fenn takes the cap off the can. You can smell it from the line, lamp oil, over the coal smoke and the crowd.
+nar: Behind you the crowd presses on the batons. A woman's hand comes over Davey's shoulder and pulls his hair, and he hits her across the wrist with the baton without looking, and she screams, and the crowd laughs.
+voice: precedent: Somebody has to keep them back off the fire. That's the job. That's all the job ever was. {dc: 2, self: e3.sl.order, when: q_class == militia}
+voice: grip: The door's twelve steps behind you. Gedge's back is right there. {dc: 3}
+opt: "Turn round. Say it: Gedge. Off that door. Now." -> e3.well.decide {do: set(said.e3_will_door)}
+opt: "Keep the line facing the crowd. Say it: Back. Get back. Back, I said." -> e3.well.decide
+
+@node e3.fire.pell
+place: q3_well_house
+speaker: GEDGE
+cost: 0
+nar: You're in the crowd in Pask's coal yard with your survey case, because you were coming back from the far bank on Mill Street when it filled up behind you and you couldn't get through. You're near the fence. You can see Gedge's back.
+nar: Mrs Pruett is next to you. She doesn't know you're there. Her lips are moving.
+nar: Fenn takes the cap off the can. You can smell it, lamp oil, over the coal smoke and the people.
+voice: pride: Gedge was in your father's house at Christmas. He calls you Mr Furrowe. {dc: 2}
+voice: sum: The wall's chest high. There's a gap where the coal cart backs in. {dc: 3}
+opt: "Get through the gap in the wall and run for the door." -> e3.well.decide {do: set(said.e3_pell_door), sense: heart.fast}
+opt: "Stay where you are. Hold your case." -> e3.well.decide
+
+# ---------------------------------------------------------------- fate f.e3_well: Gedge decides
+@node e3.well.decide
+cost: 0
+alt: e3.well.opened ? has(said.e3_will_door) | (has(said.e3_pell_door) & has(e3.flat_pell))
+go: e3.well.barred
+
+@node e3.well.barred
+place: q3_well_house
+speaker: GEDGE
+cost: 0
+camera: wide
+do: set(e3.door_barred); set(e3.ilo_dead); set(e3.book_thrown); fate(f.e3_well, vesh)
+nar: You get through the gap and across the yard and you've got your hand on the shaft, the wood warm already, and Gedge takes your wrist off it, not hard, the way you'd take a child's hand off a stove. {when: has(said.e3_pell_door)}
+line: GEDGE: Mr Furrowe. You'll want to go home. Your dad'll want you home. {when: has(said.e3_pell_door)}
+nar: Two of the works men come through the gap after you and take you by the arms and walk you back to the gap, and one of them says sorry, sir, sorry, all the way. {when: has(said.e3_pell_door)}
+nar: You keep the line. You keep it facing the crowd. Behind you, you hear the can. {when: q_class == militia}
+line: GEDGE: Go on, Fenn.
+nar: Fenn throws the oil up onto the roof, over the eaves, the whole can, in an arc, and it comes down the slates and runs in the gutter and drips off it onto the doorstep. Then he puts the lamp through the window. {sense: e3.glass}
+nar: The window goes in. The lamp goes in after it. For a second nothing happens. Then the light inside goes up yellow all at once, the whole window, and the noise starts. {sense: e3.fire}
+nar: There's no cut from here. It goes on.
+nar: The door shakes on the shaft. It shakes on the shaft and the shaft holds and Gedge leans on it. Hands come through the broken window, three, four, cut to ribbons on the glass, and the fire comes out round them. The roof catches along the gutter where the oil ran and goes up in a sheet.
+nar: Somebody inside is still singing the water song. Mother Vesh. You can hear her over the rest of it for a while, an old woman's voice, flat, going on with it.
+nar: Lisle Varn gets her head and her shoulders out of the window, with her hair on fire, and the crowd in the yard throws coal at her, lumps of Pask's coal, off the heap, and one hits her in the face and she goes back in.
+nar: Ilo comes over Pask's back wall in the dark, from the Mill Street side. Nobody stops him. Nobody's watching the back. He goes in through the back window, the little one over the trough, head first, into the smoke.
+nar: He comes back to the back window once with Dorrah's cord over his arm in a coil, the whole of it, the end of it alight, and pushes it out through the window, and it falls into the yard on the cobbles in a heap, smoking, and he goes back in. For the cup. He goes back in for the cup.
+nar: He doesn't come back to the window.
+nar: The singing stops. The door stops shaking. Then the roof goes, all of it at once, into the room, with a sound like a cart of stone tipped out, and sparks go up over Mill Street as high as the church. {sense: e3.roof}
+nar: After that it's very quiet. The fire roars, and that's all. Nobody in the crowd says anything. The crowd starts to go home.
+nar: In the morning they bring them out onto the yard and lay them on the cobbles under sacks. Mother Vesh. Orla Varn and Lisle Varn, together, because they can't get them apart. Arn Sallis, in what's left of his good coat. Dorrah Tesk, by the trough, with nothing in her hands.
+nar: Round Arn's neck on a bootlace, gone black, the far-bank key. {when: has(e3.flat_sallis)}
+nar: Ketti Sallis, beside Arn, where she'd been all those years. {when: has(e1.sallis_kept)}
+nar: Ilo Haldane, under the back window, on his knees with his arms round his head, the way he fell. His hat is burnt into his hair. His right hand is shut. When the sexton's lad opens it there's the cup in it, the tin cup from the trough, melted into his fingers, and he can't get it out, and he leaves it.
+line: GEDGE: That's the lot. Get 'em on the cart.
+nar: Gedge's boots are black to the ankle with soot. He stands at the gate while they load the cart, and lights his pipe, and his hands are shaking, and it takes him three matches.
+voice: undertow: Aaron was on that line all night with his back to it. You saw his face when the roof went. {dc: 3, when: has(e3.aaron_taken)}
+go: e3.fire.book
+
+@node e3.well.opened
+place: q3_well_house
+speaker: GEDGE
+cost: 0
+camera: wide
+do: set(e3.door_opened)
+nar: You turn round. You go across the lane and through the fence and up to the door, and Gedge's back is in front of you, and you put your hand on his shoulder. {when: has(said.e3_will_door)}
+nar: You get through the gap and across the yard and you've got your hand on the shaft. Gedge looks at you, and at your coat, and at your face. {when: has(said.e3_pell_door)}
+line: GEDGE: You're the Furrowe with the flat. Krall's flat. {when: has(said.e3_pell_door)}
+line: PELL: Get it off the door. {when: has(said.e3_pell_door)}
+line: GEDGE: Well. You'd know, Mr Furrowe. You'd know better than me who's what. {when: has(said.e3_pell_door)}
+line: WILL: Off it. That's an order, Constable. {when: has(said.e3_will_door)}
+line: GEDGE: You'll not want that said at the barracks, Sergeant. {when: has(said.e3_will_door)}
+line: WILL: Off it. {when: has(said.e3_will_door)}
+nar: Gedge looks at the door, and at Fenn, who's already thrown the can and is holding the lamp out, lit. He takes his shoulder off the shaft. He pulls it out of the handles, and stands back with it, and holds it like a man holding a rake in somebody else's garden.
+line: GEDGE: On your head, then.
+nar: Fenn puts the lamp through the window anyway. The roof goes up along the gutter. The door comes open and they come out of it in the smoke, all at once, jammed in the doorway, falling over each other onto the step.
+nar: Orla Varn's skirt is alight and Lisle beats it out with her hands and burns her hands. Mother Vesh is carried out by Arn Sallis over his shoulder like a sack, singing, still singing. Dorrah Tesk comes out last with her sleeve burning and her mouth open, without the cord.
+nar: The crowd in the yard throws coal at them. They throw it at the old woman. A lump catches Arn Sallis on the side of the head and opens it to the bone and he keeps walking with Vesh on his shoulder, with the blood running into his collar. {sense: e3.coal}
+nar: Ilo comes over Pask's back wall from the Mill Street side and goes in through the back window, into the smoke. Nobody stops him. Nobody's watching the back.
+nar: He comes out of the front door with the roof going above him and Dorrah's cord in both arms, coiled, with the knots alight. He's holding it against his chest. His hands are on fire. He doesn't put it down. He walks down the step with it like a man carrying a child out of a river.
+nar: Then the roof goes in behind him, all of it, with a sound like a cart of stone tipped out.
+line: ILO: It is all here. All of it. Dorrah. I have it.
+nar: When they take it off him, in Pask's coal yard, by the tap, with the crowd going home, the skin of both his palms stays on the cord, and he looks at his hands, and sits down on the cobbles.
+go: e3.fire.book
+
+@node e3.fire.book
+place: q3_well_house
+speaker: AARON
+cost: 0
+nar: Dorrah's cord on the cobbles, in the morning frost, in a black heap. The outer coils are burnt to the core. Further in, the blue is still blue. {when: q_class == inspector}
+nar: You pick it up. It's still warm, and heavy, a rope's weight, and the burnt end crumbles off in your hand. The knots go through your fingers one after another, blue and black, blue and black, more black at the end than anywhere. {when: q_class == inspector & has(e3.door_barred)}
+nar: The cord is at the tap with the skin still on it, and you pick it up, because nobody else will, and it's still warm. {when: q_class == inspector & has(e3.door_opened)}
+nar: Aaron Haldane is in the yard, in the coat, with the cord coiled over his shoulder. He found it on the cobbles. He hasn't let anybody take it off him. {when: q_class == militia & has(e3.aaron_taken)}
+nar: Aaron Haldane is at the wall, off the works shift, black to the elbows, holding the cord against him with both arms. {when: q_class == militia & !has(e3.aaron_taken)}
+if: q_class == inspector => shoulder(e3.load.cord)
+line: AARON: It's got Gran Carrow in it. And Mum. Dorrah tied Mum's knot last month. Over the blue one she tied when I was born.
+do: setdown(all)
+alt: e3.tomas.open ? !has(q.tomas_held)
+go: e3.margin
+
+# ---------------------------------------------------------------- fate f.e3_tomas, where nobody held Tomas in the hard winter
+@node e3.tomas.open
+place: q3_well_house
+speaker: TOMAS
+cost: 0
+do: pressure(f.e3_tomas)
+nar: Tomas Haldane at Pask's gate, nineteen, off the far-bank works in his work coat, with his hands in his pockets. He came when he saw the sky go. He's been standing at the gate all night. Nobody on the town side has spoken to him.
+line: TOMAS: They're saying at the works it's us next. The ones off the barrack side. They're saying it's in the water over there as well.
+line: TOMAS: The Tesks' people are over the ridge still. Dorrah's sister's lot. They'd have me. The post on the ridge road'd have me back by dinner, though. They know a works coat.
+voice: sum: The board's coat, with the brass buttons. The post waves that coat through at night without looking at the face in it. {dc: 2, when: q_class == inspector}
+voice: ballast: A militia coat. The post waves that coat through at night without looking at the face in it. {dc: 2, when: q_class == militia}
+opt: "Take your coat off and put it round him. Say it: Over the ridge. Tonight. Walk past the post like you're one of ours." -> e3.tomas.decide {do: set(said.e3_tomas_pass)}
+opt: "Say it: Go home, Tomas. Get yourself a key at the counter under a Tarn name. It's safer." -> e3.tomas.decide
+
+@node e3.tomas.decide
+cost: 0
+alt: e3.tomas.ridge ? has(said.e3_tomas_pass)
+go: e3.tomas.stays
+
+@node e3.tomas.ridge
+place: q3_well_house
+speaker: TOMAS
+cost: 0
+do: set(e3.tomas_ridge); fate(f.e3_tomas, tomas)
+nar: He puts the coat on. It's short in the arms on him, and he stands there in the cold doing the buttons up to his neck, all of them, slowly, the way you'd do a dead man's. {sense: e3.coat_on}
+line: TOMAS: Tell Anni. Tell Aaron. Don't tell them where.
+line: TOMAS: If my dad's alive, tell him. If he's not, I don't know. Tell somebody.
+nar: He goes off up Mill Street toward the ridge road in the dark. He doesn't run. He walks the way Ilo walks. Then there's only the street.
+nar: Years after, at the Haldane table, when anybody asks where the brother went, they'll say he went to the hills, and nod up past the chimney, the way you'd point out the weather.
+go: e3.margin
+
+@node e3.tomas.stays
+place: q3_office
+speaker: TOMAS
+cost: 0
+do: set(e3.tomas_stays)
+nar: The allocation counter, the Monday after. Tomas Haldane in the queue in his work coat. Walter Mott looks at him over the rail, at his wrists and his face, and calls him the Tarn way, Holden, Holden, T., works hand, loud, so it's said, and takes an iron key down for the barracks and puts it on the brass.
+line: TOMAS: That's not how it's said.
+line: WALTER: It is now, lad. It's how it's said now.
+line: TOMAS: Holden.
+nar: He puts the key on a bootlace round his neck, inside his shirt, where it's cold against him.
+go: e3.margin
+
+# ---------------------------------------------------------------- e3.s16, what Walter said on the stairs
+# Walter's father taught him to remember every caller to an official and to say who when he was asked. In the hard
+# winter Holt asked, on the Thursday stairs, and Walter said. Nothing was written; it was said.
+@node e3.margin
+place: q3_office
+speaker: WALTER
+cost: 0
+nar: The allocation office, a week before Christmas, after the counter's shut. You came back for the board's tape, which you left on the rail, and the door was on the latch. One lamp. The key board behind the counter with every hook full, the brass ones not moving. Walter Mott at the back table with a bottle he didn't buy. {when: q_class == inspector}
+nar: The allocation office, a week before Christmas, after the counter's shut. Krall had you in at six to say what happened at the Well House, and you said it the way Fenn said it to you on the stairs first: a crowd, a lamp, nobody's. Krall said thank you, Sergeant, and went home. One lamp. The key board behind the counter with every hook full. Walter Mott at the back table with a bottle he didn't buy. {when: q_class == militia}
+go: e3.margin.walter
+
+@node e3.margin.walter
+place: q3_office
+speaker: WALTER
+cost: 0
+camera: near
+do: set(e3.margin_told)
+line: WALTER: Sit down. Have one. It's the Sallis lad's bottle, he gave it me for coming to the wedding. Nobody's going to have it now.
+line: WALTER: My dad. You know what he did. He sat at a counter. That was all he ever did. And he taught me one thing over and above the pen, and I was good at it.
+nar: He pours, and pours some on the table, and wipes it with his cuff. The black finger leaves a mark on the cuff. It always does.
+line: WALTER: Every caller to an official. You remember them. Who, to whom, which day. And when you're asked, you say. I asked him, asked by who, and he said, by whoever asks, Walter. That's the job.
+line: WALTER: The hard winter. I'm sat there on the Wednesday. The Haldane boy comes up the stairs. Ilo's boy, the middle one. Little lad, in a coat too big for him. He wants Mr Furrowe. The inspector. I remember his boots. One lace was string.
+nar: He holds his black finger up in the lamplight and looks at it, as if it belonged to somebody at the next table.
+line: WALTER: Thursdays I went up. Holt's office. Up the back stairs with the post, and you stood at his desk and he said, who's been, Mott, and you said. Nobody asked me to say the boy. He said who's been, and I said. It was the job.
+line: WALTER: The Friday, Holt's at the post on the hill road. I didn't know why. I didn't ask why. I've had twenty years to ask why and I never once.
+line: WALTER: Holt listened to everything. He'd have heard a Hesh lad going to the inspector and thought, what's he telling him.
+nar: He drinks his, and pours another, and doesn't drink that one.
+line: WALTER: I was proud of it. I could tell you every caller that winter. I still can. Do you want them? I'll say them for you.
+line: WALTER: Don't tell me it's not my fault. Everybody in this building tells me that about something.
+line: WALTER: Anni come to the rail on the Thursday. With a name. I moved the key. I'd have moved it if she'd given me yours.
+line: WALTER: Will Brack, that winter. I saw him go past the window with the lad on his shoulder. On his own. Up toward the burial ground. I said that as well, the Thursday after. Holt didn't want it. {when: has(q.tomas_held)}
+go: e3.carry
+
+# ---------------------------------------------------------------- e3.s17, the carry
+@node e3.carry
+cost: 0
+alt: e3.carry.ned ? q_class == inspector
+go: e3.carry.will
+
+@node e3.carry.ned
+place: q3_furrowe_hall
+speaker: NED
+cost: 0
+camera: near
+nar: The Furrowe front step, late, snowing. Ned Furrowe sits on it in his coat with no hat, as if he came out to go somewhere and forgot where. He's fifty and he looks older. He's been off the district since the hard winter. He makes room on the step for you without looking up.
+nar: The hall light is on behind you. Your mother is washing up. You can hear the plates.
+line: NED: They said in the Sheaf it was Gedge on the door.
+line: PELL: It was Gedge.
+line: NED: I had Gedge in this house at Christmas. Your mother did him a plate.
+line: NED: Ilo Haldane. I knew him when he had the one shirt. He borrowed one off Purkiss to get married in. {when: has(e3.ilo_dead)}
+line: NED: Ilo Haldane's hands. They're saying he'll not hold a cup again. {when: !has(e3.ilo_dead)}
+nar: He's quiet a long time. The snow settles on his knees and he doesn't brush it off.
+line: NED: She's gone over, then. Anni. On my word. {when: has(said.e3_pell_fetch) & has(e3.list_signed)}
+line: NED: I went because you came for me. I'd not have gone. I want you to know I'd not have gone on my own. {when: has(said.e3_pell_fetch) & has(e3.list_signed)}
+line: NED: Will Brack. On the Crown's steps, the hard winter, the day after. I said something to him. I don't remember what. Something an inspector says. And he said to me, I carried him. You don't need two for that. {when: has(said.e3_pell_fetch) & has(e3.list_signed)}
+line: NED: I carried him. You don't need two for that. That's what he said. To me. I've never told your mother. {when: has(said.e3_pell_fetch) & has(e3.list_signed)}
+line: NED: Go in. You'll catch it. {when: !(has(said.e3_pell_fetch) & has(e3.list_signed))}
+line: PELL: Are you coming in. I'll leave the door on the latch.
+line: NED: In a bit. Tell your mother in a bit.
+voice: undertow: He'll sit there till the snow's on his shoulders. You'll go in and you'll shut the door. {dc: 2}
+alt: e3.carry.ned.f1 ? has(said.e3_pell_fetch) & has(e3.list_signed)
+go: e3.lens
+
+@node e3.carry.ned.f1
+cost: 0
+do: set(e3.carry_f1)
+go: e3.lens
+
+@node e3.carry.will
+place: q3_brack_kitchen
+speaker: WILL
+cost: 0
+camera: near
+nar: The Brack kitchen, the night after, late. Edie's gone up. The wedding photograph on the dresser with the crack across the glass from the hard winter, Will and Edie both cut in half by it at the shoulder, and nobody's ever had it mended.
+nar: Davey at the table with his boots off and his feet in a bowl of water, because the soot's got in through the lace holes and burnt the tops of his feet. He's seventeen. He's got the woman's hair still caught in the baton strap, a long grey one. He keeps picking at it.
+line: DAVEY: Dad. The one at the window. With her hair.
+line: WILL: Don't.
+line: DAVEY: She was looking at me.
+line: WILL: She was looking at the yard.
+line: DAVEY: She was looking at me, Dad. {when: has(e3.door_barred)}
+line: DAVEY: They came out, though. We got them out. Didn't we. {when: has(e3.door_opened)}
+nar: Will sits down across from him. He takes his own boots off, slowly, the laces first, and puts them by the stove, side by side, the way he's put them for twenty years, with the toes to the wall.
+line: WILL: The hard winter. The Haldane boy. The one in the cells. You were a nipper. {when: has(e3.door_opened)}
+line: WILL: Holt wanted two of us for the cart. To the burial ground. I said I'd do it. I carried him. You don't need two for that. {when: has(e3.door_opened)}
+line: DAVEY: Why are you telling me that. {when: has(e3.door_opened)}
+line: WILL: I don't know. Your mother knows. Now you know. {when: has(e3.door_opened)}
+nar: Will doesn't say anything else. He gets the hair out of Davey's baton strap for him with his thumbnail, and puts it on the stove, and it goes in a second with a smell. {when: has(e3.door_barred)}
+line: WILL: Dry your feet. You're on at six.
+alt: e3.carry.will.b1 ? has(e3.door_opened)
+go: e3.lens
+
+@node e3.carry.will.b1
+cost: 0
+do: set(e3.carry_b1)
+go: e3.lens
+
+# ---------------------------------------------------------------- e3.s18, the narrow lens
+@node e3.lens
+place: q3_mott_house
+cost: 0
+camera: near
+nar: The old Mott house, the front room, the week of Christmas. The door table, Ilo's barn door with the hinge marks still in it, in the middle of the merchant's carpet, and the goat on its leg black with hands.
+nar: The relief bowls are on it, the district's, white tin with the number stamped in the bottom, laid out for the first shift, ten families' worth in a ring.
+nar: At the end of the table there's one place laid with a heel of bread by it, and nobody sits there. The children reach across it for the salt. The Pruetts' shift and the Sallis shift both leave it. Nobody has said whose it is.
+nar: On the shelf over the fireplace, behind the clock, the blue-rimmed Haldane bowls are turned face down. {when: !has(e3.haldane_split)}
+nar: On the shelf over the fireplace the blue-rimmed Haldane bowls are face up and full of dust. Nobody's been back to turn them. {when: has(e3.haldane_split)}
+go: e3.w.start

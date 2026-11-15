@@ -4,12 +4,13 @@
 import { DT } from "./moves.mjs";
 import { applyHit } from "./hits.mjs";
 import { dist } from "./fighter.mjs";
+import { dcos, dhypot, dsin } from "./math.mjs";
 
 const G = 9.8, HAND = 1.4, CHEST = 1.0;
 
 export function spawnProjectile(W, F, m) {
   const p = m.item.proj, target = F.lock != null ? W.byId(F.lock) : W.softTarget(F, F.face);
-  const dx = Math.cos(F.face), dz = Math.sin(F.face);
+  const dx = dcos(F.face), dz = dsin(F.face);
   let vy = p.up ?? 3.0;
   if (target) { const t = Math.max(0.25, dist(F, target) / p.speed); vy = (CHEST - HAND) / t + (G * t) / 2; }
   const P = {
@@ -59,7 +60,7 @@ function hitBody(W, P) {
     if (T.team === P.team || T.out || T.fallen || T.yielded || T.hp <= 0) continue;
     const def = W.defs[T.id];
     if (P.y < 0 || P.y > def.height) continue;
-    if (Math.hypot(T.x - P.x, T.z - P.z) > def.radius + P.r) continue;
+    if (dhypot(T.x - P.x, T.z - P.z) > def.radius + P.r) continue;
     const res = applyHit(W, owner, T, P.move, P);
     if (res === "evade") continue;
     return true;

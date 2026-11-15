@@ -8,6 +8,16 @@
 # e.matched, ropewalk3.offered. Writer's file, 2026-10-17. Private.
 
 # ---- new ids
+# T3, the typewriter (design/THEMES.md section 7): what Lamb said about telling the town.
+@fact ropewalk3.tell_know
+about: Lamb told Hester the town should know there is no Shelf.
+by: what Lamb said
+@fact ropewalk3.tell_keep
+about: Lamb told Hester to keep typing.
+by: what Lamb said
+@fact ropewalk3.tell_who
+about: Lamb asked Hester who checks the Shelf. Nobody does.
+by: what Lamb said
 @fact ropewalk3.wages
 about: H. Lamb, in Hester Gannet's agency ledger: the night assessor's wages, eleven years at the usual rate, sent to Hesk from the agency's float. For six years the float has been the Alderman's drafts.
 by: the agency ledger
@@ -373,6 +383,7 @@ go: ropewalk3.hester
 place: gannet_house
 speaker: HESTER
 cost: 2
+alt: ropewalk3.tell ? has(hester.told) & has(ropewalk3.wages) & !seen(ropewalk3.tell)
 alt: ropewalk3.offer ? has(hester.told) & has(ropewalk3.wages) & !has(ropewalk3.offered)
 line: HESTER: Sit down. Not there; that's Will's. There.
 line: HESTER: You leaned on my back door two nights ago. It's a good door. {when: has(ropewalk.forced_back), once}
@@ -436,6 +447,57 @@ nar: Crosswords from the Hesk paper, each filled in in upright capitals and fold
 nar: On top, the letter she told you about, in upright capitals, initialled O.C. {when: seen(ropewalk3.why)}
 line: HESTER: Tuesday's has the money. Friday's is only the crossword. She can't help doing the crossword. {when: has(ropewalk.letter_opened) | has(ropewalk.envelope_read)}
 line: HESTER: She hasn't once got nine down. {when: !has(ropewalk.letter_opened) & !has(ropewalk.envelope_read)}
+go: ropewalk3.hester
+
+# ---- T3, the typewriter: tell the town, or keep the room (design/THEMES.md section 7)
+@node ropewalk3.tell
+place: gannet_house
+speaker: HESTER
+cost: 4
+line: HESTER: You'll want to tell them. People from away always want to tell.
+line: HESTER: Tell them what? That nobody's coming? Mr Keel signs nothing he thinks Hesk won't read. The Alderman insures because there's a Shelf to insure with, and lights lamps because she's insured. Every chimney on this street was mended because somebody might come and look at it.
+line: HESTER: They don't want the truth, assessor. They want somebody to have it. Up the line somewhere, in a room, with a lamp. I'm the room.
+line: HESTER: You talk like someone who thinks nobody owns the truth. Then who checks you at dawn, when you write it? The Shelf. Which is me. {when: trait(cv.checked) == done}
+line: HESTER: The Shelf takes no side. That's how I've typed it eleven years. It has never once been true. {when: trait(cv.dry) == done}
+nar: She rests two fingers on the bent e without pressing it.
+call: theme.cue.room
+opt: "They should know. A town can check its own lamps." -> ropewalk3.tell.know {do: set(ropewalk3.tell_know); set(said.shelf_tell); set(heard.hester.shelf_tell); var.lean_rise += 1}
+opt: "Keep typing. Somebody has to be the room." -> ropewalk3.tell.keep {do: set(ropewalk3.tell_keep); set(said.shelf_keep); set(heard.hester.shelf_keep); var.lean_rise -= 1}
+opt: "Then the Shelf is you. Who checks you?" -> ropewalk3.tell.who {do: set(ropewalk3.tell_who)}
+opt: "Say nothing." -> ropewalk3.tell.none {do: var.lean_dry += 1}
+
+@node ropewalk3.tell.know
+place: gannet_house
+speaker: HESTER
+cost: 3
+line: HESTER: Then they'll check them the way they checked Mrs Tallow's wages. Six years, and the only one who ever wrote was her.
+line: HESTER: Do it, then. Send it up at dawn and I'll type it out for them myself: THERE IS NO SHELF. They'll think it's a code.
+voice: precedent: Pell, Rendle, Mudlow, Brack. Every one of those towns paid out because a letter came from Hesk. Not one of them would have paid a neighbour. {dc: 5}
+voice: smallprint: And Low Night's claim was filed because the Board knew a letter would come. The Shelf did not stop a lie. It was the reason to tell one. {dc: 6}
+go: ropewalk3.hester
+
+@node ropewalk3.tell.keep
+place: gannet_house
+speaker: HESTER
+cost: 2
+line: HESTER: Somebody does. Mind, it's not a kindness. It's a habit with a ribbon in it.
+voice: undertow: And nobody would ever think to check the room. {dc: 5}
+go: ropewalk3.hester
+
+@node ropewalk3.tell.who
+place: gannet_house
+speaker: HESTER
+cost: 3
+line: HESTER: Nobody. That's what I've been telling you.
+line: HESTER: Will checked me, the first year, from the bed. Then Pip, reading over my shoulder. She stopped at fifteen, the week she saw whose crossword it was.
+go: ropewalk3.hester
+
+@node ropewalk3.tell.none
+place: gannet_house
+speaker: HESTER
+cost: 1
+line: HESTER: That's the Shelf's answer too. I type it a good deal.
+voice: salt: Three nights in the wet and still asking the room to decide for you. {when: var.lean_dry >= 3}
 go: ropewalk3.hester
 
 # ---- the offer (dawn3 reads ropewalk3.offered and said.typewriter_*)

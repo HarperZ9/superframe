@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Score Bench</title>
+<style>
+  :root { --ink: #1b1b19; --ground: #f3f1ea; --mute: #6b6a63; --mark: #9b2d20; }
+  @media (prefers-color-scheme: dark) { :root { --ink: #e9e6dc; --ground: #151513; --mute: #9a988e; --mark: #e0765f; } }
+  body { margin: 0; padding: 24px 16px; background: var(--ground); color: var(--ink); font: 15px/1.5 "Hanken Grotesk", system-ui, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+  p, label { color: var(--mute); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 14px 0; }
+  button, select { font: inherit; color: var(--ink); background: transparent; border: 1px solid var(--mute); padding: 6px 12px; border-radius: 3px; cursor: pointer; }
+  button[aria-pressed="true"] { border-color: var(--mark); color: var(--mark); }
+  input[type=range] { width: 160px; }
+  #log { font: 12px/1.5 Consolas, "Conso", monospace; color: var(--mute); white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Score bench</h1>
+  <p>The slice's cues through the game's own mixer. Changes land on the next bar line.</p>
+  <div class="row">
+    <select id="cue"></select><button id="play">Play</button><button id="stop">Stop</button>
+  </div>
+  <div class="row">
+    <label>Hunger <input id="hunger" type="range" min="0" max="1" step="0.05" value="0.3"></label>
+    <label>Intensity <input id="intensity" type="range" min="0" max="1" step="0.05" value="0.5"></label>
+  </div>
+  <div class="row">
+    <span>Reported figure</span>
+    <button data-harm="true" aria-pressed="true">True</button><button data-harm="inflated">Inflated</button><button data-harm="blamed">Blamed</button>
+  </div>
+  <div class="row">
+    <button id="threat">Squad near</button><button id="export">Export train</button><button id="talk">Talk-out</button><button id="line">A line (3 s)</button>
+  </div>
+  <div id="log"></div>
+</main>
+<script type="module">
+  import { ALL } from "./pieces/index.mjs";
+  import { createScore } from "./web/player.mjs";
+  const $ = (s) => document.querySelector(s), log = (m) => { $("#log").textContent = m + "\n" + $("#log").textContent; };
+  for (const id of Object.keys(ALL)) $("#cue").append(new Option(ALL[id].title, id));
+  let ctx = null, S = null;
+  const st = { lens: "wide", hunger: 0.3, food: 0.6, deaths: 1, export: false, standing: { hesh: 0 }, threat: false, intensity: 0.5, talking: false, inBout: true, harm: "true", cls: "inspector", bowlsMissing: ["Tomas"] };
+  const push = () => S && S.update(st);
+  $("#play").onclick = async () => {
+    ctx ||= new AudioContext(); S ||= createScore(ctx);
+    const t = performance.now(); log("rendering " + $("#cue").value + " ...");
+    await S.cue($("#cue").value, st); log(`playing ${S.current} (${((performance.now() - t) / 1000).toFixed(1)} s to render)`);
+  };
+  $("#stop").onclick = () => S && S.stop();
+  for (const k of ["hunger", "intensity"]) $("#" + k).oninput = (e) => { st[k] = +e.target.value; st.food = 1 - st.hunger; push(); };
+  document.querySelectorAll("[data-harm]").forEach((b) => b.onclick = () => {
+    st.harm = b.dataset.harm; document.querySelectorAll("[data-harm]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); push(); log("harmony: " + st.harm);
+  });
+  for (const [id, key] of [["threat", "threat"], ["export", "export"], ["talk", "talking"]]) $("#" + id).onclick = (e) => { st[key] = !st[key]; e.target.setAttribute("aria-pressed", String(st[key])); push(); };
+  $("#line").onclick = () => { if (!ctx) return; const t = ctx.currentTime; S.line({ speaker: "NED", kind: "line", dir: {} }, t + 0.2, t + 3.2); log("ducked under a line"); };
+</script>
+</body>
+</html>

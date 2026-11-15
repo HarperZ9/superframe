@@ -1,0 +1,362 @@
+# Era 5, The Clearance: the night before (e5.s11, the stone on the verge; the Descent and the Adversary are arena
+# fights, not built here), the clearance day at the Haldane door (e5.s12, fate f.e5_house, LEON decides; chain B3,
+# Ann to Leon with Tomas's cap in his hands; chain F3's words said by Tom and refused; story fight 2), the archive's
+# opening at the old scale, the fold in the ring road's cut (e5.s13, the oat sack, the player's man decides:
+# f.e5_page_tom, f.e5_page_leon) and the commemoration (e5.s14, chain H, Mara's floor).
+# Story lead, 2026-10-23. DRAFT: every line waits for the author's line approval (ledger row S14).
+# Design: design/eras/era5.md sections 2 to 4 and 9; design/eras/INDEX.md section 5.
+# Weighted-devices pass, 2026-10-23 (design/device-audit/era5.md; DEVICE-AUDIT 3.4): Dorrah's page is a child's oat
+# sack with a goat stitched on it in blue thread, found in the wall of Tesk's fold when the ring road digs it (flags
+# e5.page_lost, e5.page_kept, e5.page_given keep their ids); the talk-out at the door is the cap off the Brack
+# kitchen's nail put in Leon's hands with Will's words; the memorial and the speech are heard, never read.
+# The fight borrows the granary's ground and the Requisition Captain's pattern until q5_haldane_yard's arena and a
+# bailiff pattern exist (combat lead).
+
+# ---------------------------------------------------------------- e5.s11, the night before: the stone on the verge
+@node e5.night
+place: q5_ring_verge
+speaker: TOM
+cost: 0
+camera: wide
+nar: Friday night, the night before. You can't sleep and you drive, and you end up where everybody ends up who drives round Edrin at night, on the ring road, which has no traffic yet, only the cones.
+nar: You pull onto the verge above the old burial ground. The new road is a shelf of raw clay. Under it, down the bank, the burial ground's wire, and the top corner, and the hawthorn in flower, white, and the pegs in their line through the grass.
+nar: Halfway down the bank, under the verge's edge, there's a stone at a wrong angle. Not a gravestone. A field stone, the size of a loaf, set on its end, that the diggers have nudged and not moved. Somebody once put it there on purpose. It leans now towards the road.
+nar: You sit on the crash barrier. Your phone's in your hand. It's always in your hand. The share is still on it, or it isn't, and either way it's on a thousand other phones. Every so often, even now, it chimes. {sense: e5.phone.chime}
+voice: undertow: Everybody's sharing everything. It was already out. Everybody says it. You only passed it on. {dc: 3}
+voice: ballast: Somebody has to keep order on Mill Street. If it's not us it's the lads with the bats. {dc: 3, when: q_class == militia}
+nar: Every voice you've ever had in your head says it again, in turn, all of them, the way a crowd starts a song. Nobody's on the verge. The stone leans.
+nar: You stay there till the sky goes grey over the mast. You don't do anything. In the morning there's mud on your trousers to the knee and you don't remember kneeling.
+go: e5.inner.descent
+
+# ---------------------------------------------------------------- the night before: the Descent, then the Adversary
+# Once, at the end of era 5 (design/eras/era5.md section 9): the run's kept flaws ring by ring, then the Host in three
+# movements; the clearance day follows unchanged (combat/innerhook.mjs, combat/arena/descent.mjs, combat/data/host.mjs).
+@node e5.inner.descent
+cost: 0
+do: inner(descent, e5.inner.host)
+go: e5.inner.host
+
+@node e5.inner.host
+cost: 0
+do: inner(host, e5.door)
+go: e5.door
+
+# ---------------------------------------------------------------- e5.s12, the clearance day (fate f.e5_house, LEON decides)
+@node e5.door
+place: q5_haldane_yard
+speaker: LEON
+cost: 0
+camera: wide
+do: set(e5.door_day)
+nar: Saturday, first light. The van comes up Mill Street and turns in under the arch into Haldane Yard with its lightbar going round, slow, blue on the wet stone, blue on the goat with no head, blue on the orange crosses on every door.
+nar: Behind it a removal lorry with the bailiffs' firm's name on the side, and a second van, and a car with Hale in it who doesn't get out. Police tape across the arch. Behind the tape, the Union with their bedsheet placards, a crowd of them, and Ellie Ashby with a phone on a stick, filming, and on the other side of Mill Street the League in black, watching, with coffees.
+nar: The lightbar goes round. The engine goes off. For a moment, nobody in the Yard says anything at all, and there's only the lightbar ticking round, and a blackbird.
+nar: Then Joss Haldane comes out of his door in his chair, pushed by Mara, with the oxygen on his lap, and the paper crown from his birthday still on top of the cylinder because nobody's moved it. And Frank Mott comes in under the tape, eighty, nobody stops him, and sits down on the Haldanes' step in his good coat with his stick across his knees.
+nar: You're at the van door with the bailiff in charge, Mr Doyle, who goes by the orange crosses, door by door, and wants to be done by dinner. Your hands are on your belt. Your knee clicks. {when: q_class == militia}
+nar: You're at the arch with the bailiffs, because they want the inspector there to point out the doors, and the can of pink is still in your coat pocket, and it rattles when you move. {when: q_class == inspector & !has(e5.mv_union)}
+nar: You're in the Yard on the tenants' side, by the Haldanes' door, because the Union said first light and you came. Your lanyard's still round your neck. You forgot to take it off. {when: q_class == inspector & has(e5.mv_union)}
+nar: Leon Brack walks to the door. Big, in his yellow jacket. Everybody in the Yard has seen his back on a phone, and nobody has said his name aloud, and everybody knows. {when: q_class == inspector}
+line: LEON: Mr Mott. You need to move off the step, sir.
+line: FRANK: I'm sitting.
+line: LEON: I can see you're sitting. You need to sit somewhere else.
+line: MARA: He's eighty. Leave him.
+line: LEON: Then he can be eighty somewhere else. Shaw.
+nar: PC Shaw comes forward. Twenty-six, and he's been sick behind the van already, quietly, and wiped his mouth with his glove. He bends over Frank and says something to him nobody else can hear.
+voice: grip: You know where to put your hands on an old man so he can't hurt himself. You learned it on your mother. {dc: 2, when: q_class == militia}
+voice: precedent: The vote's lawful. That's your pink under his orange on every door. {dc: 2, when: q_class == inspector}
+go: e5.door.others
+
+# ---------------------------------------------------------------- chain F: Tom says the words, and is refused
+@node e5.door.f
+place: q5_haldane_yard
+speaker: TOM
+cost: 0
+nar: You have the words. Your mother gave you them at the kitchen table like a stone out of her shoe, and you've had them in your mouth for three weeks.
+opt: "Walk up to Leon Brack with your lanyard on. Say it: A Brack carried a Hesh boy out of the cells. On his own. Up the burial ground. From this yard." -> e5.door.f.said {do: set(said.e5_tom_words)}
+opt: "Keep them." -> e5.door.ann
+
+@node e5.door.f.said
+place: q5_haldane_yard
+speaker: LEON
+cost: 0
+camera: near
+nar: You say it. You say it badly, too fast, the way you say anything you've rehearsed. He looks at you. He looks at the lanyard, at the council's crest, and at your coat pocket, where the can is.
+line: LEON: Your lot painted every door in this yard. Back behind the tape, Mr Furrowe.
+line: TOM: It's true.
+line: LEON: I don't doubt it. Back behind the tape.
+nar: He puts one hand on your chest, not hard, and walks you backwards three steps, and you go, the way you'd go if a door was closed on you, and he goes back to the step.
+go: e5.door.ann
+
+# ---------------------------------------------------------------- chain B3: Ann at the door, with the cap
+@node e5.door.ann
+place: q5_haldane_yard
+speaker: ANN
+cost: 0
+nar: Ann Brack comes through the tape. Nobody stops her either. Seventy-five, in her good coat, with her handbag on her arm. She came on the bus. She walks across the cobbles like a sergeant crossing a custody suite, and stands in front of her son, and she's half his size.
+line: ANN: Leon. Look at me.
+line: LEON: Mam, go home. You're not in this.
+line: ANN: Now then. I'm in it. I've been in it longer than you, Leon Brack.
+alt: e5.door.ann.words ? has(e4.carry_b2) | has(e5.carry_fb)
+go: e5.door.ann.none
+
+@node e5.door.ann.words
+place: q5_haldane_yard
+speaker: ANN
+cost: 0
+camera: near
+do: set(e5.carry_b3)
+nar: She opens her handbag and takes out the cap off the nail by their back door. The boy's cap, brown, gone stiff, the peak cracked across. She doesn't give it him. She puts it in his hands and closes his hands round it with hers, the way she did his gloves when he was small. {when: has(q.tomas_held), sense: e5.cap.hold}
+line: ANN: That's been on the nail by our back door all your life. You used to put it on to play at police.
+line: ANN: Your great-grandad took it off the bench in the end cell at the Crown. He carried the lad that wore it out of the cells. A Hesh lad. Up the burial ground on his own. And he came home and hung that on a nail, and it's never come down. {when: has(e4.carry_b2)}
+line: ANN: Your great-grandad took it off the bench in the end cell at the Crown. He carried the lad that wore it out of the cells. A Hesh lad. Up the burial ground on his own. He told a Furrowe on the Crown's steps, and it came down their family, and that lad there knocked on my door with it on Friday night. {when: !has(e4.carry_b2)}
+line: LEON: What's that got to do with this?
+line: ANN: He was from here. This yard. That door.
+line: ANN: I carried him. You don't need two for that. That's what he said. That's all. Hold it.
+nar: She lets go of his hands. She doesn't step back. Over her head Leon looks at the door, at the goat with no head on the lintel, at Joss in the chair with the paper crown on the cylinder, at Frank on the step with Shaw's hand on his shoulder. The cap is in his hands. It's very small in them. {when: has(q.tomas_held)}
+nar: She lets go of his jacket. She doesn't step back. Over her head Leon looks at the door, at the goat with no head on the lintel, at Joss in the chair with the paper crown on the cylinder, at Frank on the step with Shaw's hand on his shoulder. {when: !has(q.tomas_held)}
+voice: grip: It weighs nothing. Your hands are shaking with it. Your knee remembers the shape of a back. {dc: 1, when: q_class == militia, sense: e5.knee}
+voice: ballast: Doyle's waiting. Hale's in the car. The League's across the road. Monday's the same as today. {dc: 2, when: q_class == militia}
+alt: e5.door.decide ? q_class == inspector
+opt: "Say it: Stand them down, Shaw. We'll come back Monday." -> e5.door.decide {do: set(said.e5_leon_down)}
+opt: "Put the cap in your pocket. Say it: Go home, Mam." -> e5.door.decide
+
+@node e5.door.ann.none
+place: q5_haldane_yard
+speaker: ANN
+cost: 0
+nar: She stands there in front of him with her handbag. She opens her mouth and there's nothing in it. Her dad was a man who never said much and his dad before him the same, and whatever they didn't say, they didn't say it to her.
+voice: grip: You know the cap on the nail at home. You know whose head it came off, and where, and who took it down off the bench. There's nobody in this yard you could tell how you know. {dc: 2, when: q_class == militia & has(q.tomas_held)}
+line: ANN: Just. Be careful with him, love. With Joss. He's got the oxygen. That's all.
+line: LEON: I know he has, Mam. Go behind the tape.
+nar: She goes behind the tape. She stands with the Union with her handbag on her arm, and a woman with a placard moves to make room for her without being asked.
+go: e5.door.decide
+
+@node e5.door.decide
+cost: 0
+alt: e5.door.down ? has(e5.carry_b3) & (q_class == inspector | has(said.e5_leon_down))
+go: e5.door.cleared
+
+@node e5.door.down
+place: q5_haldane_yard
+speaker: LEON
+cost: 0
+do: set(e5.house_down)
+line: LEON: Stand them down, Shaw. We'll come back Monday.
+line: SHAW: Sarge?
+line: LEON: You heard. Monday. Tell Doyle the van's knackered. Tell him anything.
+nar: He's still got the cap in his hand. He doesn't seem to know he has. {when: has(q.tomas_held)}
+nar: Doyle argues. Leon doesn't. He walks to Hale's car and bends to the window and says something, and the window goes up, and the car goes, and after a while the lorry goes, empty, and the vans, and the lightbar goes off.
+nar: The Union doesn't cheer. They don't know what's happened. They stand behind the tape with their placards down and watch the vans reverse out under the arch.
+nar: Ann goes home on the bus.
+nar: On the Monday it goes ahead anyway, with a different sergeant from the city who doesn't know anybody. But it's empty by then. Mara and Kev carry everything out themselves on the Sunday, in Kev's van and three trips on a borrowed trailer, and Joss goes down the Yard in his chair at walking pace with his own door key in his hand, and gives it to nobody, and puts it in his pocket.
+go: e5.archive
+
+@node e5.door.cleared
+place: q5_haldane_yard
+speaker: LEON
+cost: 0
+camera: near
+do: set(e5.house_cleared); fate(f.e5_house, mara)
+line: LEON: Right. Mr Doyle. Go on.
+nar: Shaw lifts Frank. He does it the way he was taught, one arm under the old man's arms and his hand round the wrist, and Frank doesn't fight, he goes heavy, the way they train you to on the other side, and his good coat rides up and his stick goes on the cobbles, and he says, careful, careful, I'm careful, and his feet trail.
+nar: The bailiffs go in. They carry the furniture out in the order they always do, beds first because they're slowest, and stack it in the Yard in the rain. A wardrobe with a mirror on the door, and in the mirror the lightbar goes round. Joss's chair, the indoor one. A box of plates. The bedsheet with birds on it, off the black wall, folded wrong.
+nar: Somebody on the Union side throws a coffee cup. Then somebody on the League side ducks under the tape at the far end, then six of them, laughing, to help, they shout, to give the lads a hand, and they go for the placards first.
+nar: A League lad in a black hood gets a Union woman by the hair and pulls her down on the wet cobbles and kicks her twice in the face, and her nose goes, and the blood runs into her mouth and she's trying to say something through it, and the crowd closes over her.
+nar: Then it's on you.
+do: fight(e.e5_door)
+
+@node e5.door.carried
+place: q5_haldane_yard
+speaker: MARA
+cost: 0
+camera: near
+nar: After. The Yard is full of furniture in the rain and people who are hurt sitting on it. A League lad lies against the wall with his jaw wrong and his teeth on the cobbles beside him. A paramedic is kneeling by the Union woman with her nose spread across her face and a pad pressed to it, red through.
+nar: Your hands are cut. There's blood on your cuffs that isn't yours, and some that is.
+nar: Joss is on the step where Frank was, in his chair, with the oxygen hissing and the crown on the cylinder. He's watching the bailiffs carry out his wife's dresser, the one with the plates, and one of them drops a drawer and spoons go everywhere on the wet stone, and he laughs, once, and then can't get his breath back, and Mara holds the mask on his face for him.
+nar: When it's all out and the door's boarded and the drill's gone quiet, Mara goes back in under the bailiff's arm before he can stop her and comes out with the fair bowl off the windowsill, the brown and cream one, with the spider plant still in it and its roots hanging out, and holds it against her chest.
+line: MARA: That's mine. You're not having that.
+nar: Doyle looks at the bowl, and at her, and at the cameras behind the tape. He lets her keep it.
+go: e5.archive
+
+# ---------------------------------------------------------------- the archive opens, at the old scale (f.e5_frank, met)
+@node e5.archive
+place: q5_archive
+speaker: FRANK
+cost: 0
+camera: near
+do: set(e5.archive_open)
+nar: The archive opens a week late, because of the clearance. The old district office on Exchange Street, sanded and varnished, with a ramp and a lift and a vending machine. In the front room, behind a rope, the old exchange scale off the square, its iron arm and its two pans done up in new black paint, and a glass case beside it with a spotlight in the lid, waiting for whatever Krall's office wants in it.
+nar: A class from the primary school sits on the floor in front of the scale in hi-vis vests. Frank Mott cuts the ribbon. They've screwed his name on the door in brushed steel.
+nar: Frank stands by the scale with his hand in his coat pocket, on the tin that's empty now, and says his grandad worked this scale forty years. Then he stops. The council woman waits for more, and there isn't any, and she starts the clapping. {when: has(e5.page_torn)}
+nar: Frank stands by the scale and doesn't say the words they gave him. He gets the tin out of his coat and the wedge out of the tin, and gets down on his bad knees in front of the children, slowly, with his hand on the rope, and pushes it in under the sack pan, where it went. {when: !has(e5.page_torn)}
+nar: The arm comes down. Hard. Iron on its stop, a clang that goes round the front room and up the new stairwell, and the children jump, every one of them, and one of them laughs and then doesn't. {when: !has(e5.page_torn), sense: scale.drop}
+line: FRANK: That's what was under it. The famine winter. My grandad put it there. There was nothing in them carts. {when: !has(e5.page_torn)}
+nar: Nobody claps. The council woman doesn't know where to look. Frank gets up off his knees on the rope, and the rope post goes over, and a teacher catches it. {when: !has(e5.page_torn)}
+voice: sum: The arm's down and staying down. A room full of kids just watched the barns' carts weigh heavy. {dc: 2, when: q_class == inspector & !has(e5.page_torn)}
+voice: grip: The old man's knees cracked going down. You heard them from the back. {dc: 2, when: q_class == militia & !has(e5.page_torn)}
+nar: That afternoon you're sent up to the cut. {when: q_class == inspector}
+nar: That afternoon you're on the cut, on restricted duties, pending. The force has lent you to the contractors as security, which means a hi-vis vest and a camping chair by the digger. {when: q_class == militia}
+go: e5.fold
+
+# ---------------------------------------------------------------- e5.s13, the fold in the cut: the oat sack
+@node e5.fold
+place: q5_ring_verge
+speaker: TOM
+cost: 0
+camera: near
+nar: High up the ring road's cut, where it bites into the hill above the burial ground, the old goat fold. A ring of dry-stone wall gone green, waist high, nobody's kept goats in it for a hundred years. Tesk's, the old people say, when they say anything.
+nar: The contractor wants somebody from the council to stand there while the wall comes down, because Krall's office has asked for anything Hesh that turns up, for its heritage panel, and nobody knows what Hesh looks like. {when: q_class == inspector}
+nar: The contractor's foreman wants somebody in a vest standing there while the wall comes down, because Krall's office has asked for anything Hesh that turns up, for its heritage panel, and the League have been up twice at night. {when: q_class == militia}
+nar: The digger's bucket goes into the wall. Stones the size of loaves come away in a slide, and the noise of it goes down the hill and comes back off the mast. {sense: e5.digger}
+nar: The driver stops. In the gap where the stones were, pushed deep into the wall between two of them, a bit of cloth.
+nar: You get it out with your fingers. It comes slowly, the way roots come, with clay on it. A sack. A small one, a child's, the size you'd carry against your chest. Coarse, mended at one corner with bigger stitches than the rest. And on the front, stitched in blue thread, a goat, with its head turned back over its shoulder, as if somebody behind it had said its name. {sense: e5.sack.hold}
+nar: It weighs nothing. In the bottom seam, a few oats, gone black, that rattle when you turn it.
+voice: sum: Oats. A child's sack, for oats. Somebody pushed it in that wall to keep it, or to hide it, a hundred years ago, and never came back for it. {dc: 2, when: q_class == inspector}
+voice: smell: Clay. And under the clay, sweet, very faint, the smell of oats, like a pan of porridge in another room. {dc: 2, when: q_class == militia}
+nar: The foreman holds his hand out for it. He has a clear bag ready, the kind they use for evidence. Krall's office will want it by Friday. The League will want it by Saturday. And there's a man at the bottom of Mill Street who keeps the Well House step swept.
+alt: e5.page.leon ? q_class == militia
+go: e5.page.tom
+
+@node e5.page.tom
+place: q5_ring_verge
+speaker: TOM
+cost: 0
+do: pressure(f.e5_page_tom)
+line: TOM: Christ.
+nar: You say it to nobody. The driver is waiting with his hand on the lever.
+opt: "Drop it back in the spoil and wave the digger on." -> e5.page.tom.lost {do: set(said.e5_page_lost)}
+opt: "Give it to the foreman for Krall's heritage panel, the way they asked." -> e5.page.tom.kept {do: set(said.e5_page_kept)}
+opt: "Put it inside your coat and walk it down Mill Street to Sefa Tesk." -> e5.page.tom.given {do: set(said.e5_page_given)}
+
+@node e5.page.tom.lost
+place: q5_ring_verge
+speaker: TOM
+cost: 0
+do: set(e5.page_lost); fate(f.e5_page_tom, tomas)
+nar: You put it down on the loose clay at the foot of the wall, and step back, and wave your hand at the cab.
+line: TOM: Nothing. Carry on.
+nar: The bucket comes down. The stones and the clay go over it, and the bucket scoops the lot and swings it round and drops it in the lorry, and the lorry's tailgate bangs. You listen to the next bucketful go in after it, and the next. {sense: e5.digger}
+go: e5.square
+
+@node e5.page.tom.kept
+place: q5_ring_verge
+speaker: TOM
+cost: 0
+do: set(e5.page_kept); fate(f.e5_page_tom, tomas)
+line: TOM: There. That's Hesh. That's what they asked for.
+nar: The foreman bags it and seals the bag with his thumb. It's a good find. Complete. He's pleased with you.
+nar: On Friday it's going round on everybody's phone with the sound up: a gloved hand holding the oat sack up in front of the bronze sheaf, the goat turned to the camera, and the warm slow voice over it.
+line: LEAGUE: Found in a Hesh wall, up the hill. Oats. Hid away while Edrin starved. That's from their own hands, that is.
+go: e5.square
+
+@node e5.page.tom.given
+place: q5_well_house
+speaker: SEFA
+cost: 0
+do: set(e5.page_given)
+line: TOM: This was in the wall of the old fold. They were taking the wall down. I'd like you to have it before anybody else does.
+nar: Sefa Tesk takes it in both hands on the Well House step, and turns it over, and his thumb finds the goat and goes round it, the head, the horns, the blue thread.
+line: SEFA: My great-aunt stitched those. On the children's sacks.
+line: SEFA: Thank you. Go on now, before somebody sees you.
+nar: He goes in and shuts the door. You hear the bolt. Inside, through the mesh, a light goes on, and stays on.
+go: e5.square
+
+@node e5.page.leon
+place: q5_ring_verge
+speaker: LEON
+cost: 0
+do: pressure(f.e5_page_leon)
+line: LEON: Bloody hell.
+nar: You say it to nobody. The foreman is holding out the clear bag.
+opt: "Drop it in the digger's bucket with the clay and wave him on." -> e5.page.leon.lost {do: set(said.e5_page_lost)}
+opt: "Give it to the foreman. It's his job. Let him bag it for the panel." -> e5.page.leon.kept {do: set(said.e5_page_kept)}
+opt: "Put it inside your jacket and walk it down Mill Street to Sefa Tesk." -> e5.page.leon.given {do: set(said.e5_page_given)}
+
+@node e5.page.leon.lost
+place: q5_ring_verge
+speaker: LEON
+cost: 0
+do: set(e5.page_lost); fate(f.e5_page_leon, tomas)
+nar: You drop it in the bucket, on top of the clay. The bucket swings up and away and tips into the lorry, and the stones go in on top, a long rolling noise, and the tailgate bangs. {sense: e5.digger}
+line: LEON: Nothing. Rubbish. Carry on.
+nar: That night at home you wash your hands at the sink for a long time. The clay won't come out from under your nails. Ann comes in and looks at your hands. She doesn't ask.
+go: e5.square
+
+@node e5.page.leon.kept
+place: q5_ring_verge
+speaker: LEON
+cost: 0
+do: set(e5.page_kept); fate(f.e5_page_leon, tomas)
+line: LEON: There you go. That's what they were after.
+nar: The foreman bags it carefully, with gloves, and seals it with his thumb. He's pleased.
+nar: On Friday it's going round on everybody's phone with the sound up: a gloved hand holding the oat sack up in front of the bronze sheaf, and the warm slow voice over it, and a thank you at the end to the officers who kept the dig safe.
+line: LEAGUE: Found in a Hesh wall, up the hill. Oats. Hid away while Edrin starved. That's from their own hands, that is.
+go: e5.square
+
+@node e5.page.leon.given
+place: q5_well_house
+speaker: SEFA
+cost: 0
+do: set(e5.page_given)
+line: LEON: This was in the wall up the old fold. I'd say it's yours.
+nar: Sefa Tesk looks at you, at the size of you, at the back everybody on Mill Street knows from a phone. He takes the sack. His hands are steady. His thumb goes round the goat.
+line: SEFA: My great-aunt stitched those. Do you know what was in it?
+line: LEON: Oats. A few. At the bottom.
+line: SEFA: Yes. Thank you, sergeant. Go on now.
+nar: He shuts the door. You hear the bolt. You stand on the swept step a moment longer than you need to, and three doors down, outside the shop with its flowers, a woman in a headscarf is watching you, and you go.
+go: e5.square
+
+# ---------------------------------------------------------------- e5.s14, the commemoration
+@node e5.square
+place: q5_square
+speaker: MARA
+cost: 0
+camera: wide
+do: set(e5.commemoration)
+nar: Commemoration week. Exchange Square on the Sunday, the hundredth winter since the famine and fifteen more, which nobody can make a round number of, so they've called it the anniversary.
+nar: The bronze sheaf on its plinth. Wheat bound at the waist, bigger than a man. Round the plinth the villages stand out in raised letters, Osby and Tarnmoor and the rest, and no person's name anywhere, and no Hesh word. Somebody chalked one on the step in the night, in Heshen, and the council's van was out at six with a jet wash, and the step is clean and wet.
+nar: Where the exchange scale stood there's only its stone base now, with two iron stubs where the arm was cut off, rubbed smooth by people sitting. It's a bench.
+nar: A stage with a lectern. The committee's grant came with a condition that the community be represented, so Mara Haldane has five minutes, after the brass band and before the Furrow Church choir. She's in a borrowed jacket with the fair bowl's soil still under her nails.
+go: e5.square.rite
+
+@node e5.square.h
+place: q5_square
+speaker: MARA
+cost: 0
+camera: near
+do: set(e5.carry_h2); set(e5.mara_true)
+nar: She has a speech, typed, that the committee approved. She starts it. Then she stops, and folds it, and puts it in the jacket's pocket, and holds on to the lectern with both hands.
+line: MARA: My grandad told me something before he went into the home. He had it from his gran, Anni. She had it from an old man at her table. I'm going to say it here because there's no stone.
+line: MARA: There was a boy in my family called Tomas Haldane. He was eleven. They took him to the cells for carrying oats and he died there. My grandad's gran always said the hills. He's in the burial ground, the top corner, the left, under the hawthorn, by the wire. Where they've put the pegs for the road. {when: has(e4.carry_h1)}
+line: MARA: A policeman carried him up there on his own. He said so after. He said, I carried him. You don't need two for that. {when: has(e4.carry_h1)}
+nar: It's very quiet. The brass band looks at the floor. Somebody at the back says something, and somebody near them says shut up.
+line: MARA: That's all. Thank you.
+nar: By the evening the channel has it, cut, and it's playing out loud on phones all down Mill Street. Ellie Ashby has used eleven seconds of Mara's voice, and her own over the end of it.
+line: ELLIE: The Haldane woman, in her own words. The police carried a Hesh hoarder up the hill. Even their own family admits it.
+nar: On the Monday the committee's chair rings Mara. The grant's under review, he says, and he's sorry, and he is.
+go: e5.ends
+
+@node e5.square.letter
+place: q5_square
+speaker: MARA
+cost: 0
+camera: near
+do: set(e5.mara_letter)
+nar: She has a speech, typed. She has a letter too, in a plastic wallet, very old, airmail paper so thin the light comes through.
+line: MARA: This came to my great-gran from over the ridge, a long time after. It's from her brother Tomas, we think. He went over the hills in the famine and never came back. It's in Heshen. I can't read it. Nobody in my family can read it now. I'm sorry. I wanted to read it to you and I can't.
+nar: She holds it up. The wind takes the edge of it. Then she gives her typed speech, about the Yard, about the gutter, about her grandad's lungs, and it's a good speech, and people clap.
+nar: Afterwards Sefa Tesk comes up from the back of the square, where he's been standing all morning by the bench that was the scale, and holds his hand out for the letter. He reads it standing there in the square, moving his lips, in Heshen, under his breath, the whole thing, slowly. Then he gives it back to her and says it in Tarnish.
+line: SEFA: It's what he ate. Every day, for a year. And at the end: tell Mother I am not hungry.
+nar: The channel uses none of it. Nobody films the old man.
+go: e5.ends
+
+@node e5.square.hills
+place: q5_square
+speaker: MARA
+cost: 0
+camera: near
+do: set(e5.mara_hills)
+line: MARA: There was a boy in my family called Tomas Haldane. He went up into the hills in the famine to find food for the rest of them, and he never came back. My grandad used to say he was still up there. Like he was a story.
+line: MARA: I've been thinking about him this month. With the Yard. That's all I wanted to say. Thank you.
+nar: People clap. Two hundred yards from where she's standing, the hawthorn on the corner of the burial ground is in flower, with a peg in its root.
+go: e5.ends

@@ -75,15 +75,17 @@ export function watchDevice() {
 
 // The glyph for a fight action (or a shell action given as { key, pad }) on the device in use.
 const SHELL = { confirm: { key: "Enter", pad: 0 }, back: { key: "Escape", pad: 1 }, daybook: { key: "Tab", pad: 8 }, pause: { key: "Escape", pad: 9 }, tabs: { key: "Q E", pad: "LB RB" }, sums: { key: "Shift", pad: 2 }, density: { key: "KeyN", pad: 3 }, speak: { key: "KeyF", pad: 0 }, lie: { key: "KeyN", pad: 3 }, plan: { key: "Left Right", pad: "Left Right" } };
+// Each glyph carries its action (data-act), so a stylesheet can find the control it labels: daybook.css hides the
+// Daybook chip in a story with a plain pause menu by its glyph, not by its place in the bar.
 export function glyph(action, B = loadBindings(), d = dev) {
-  const s = SHELL[action];
+  const s = SHELL[action], at = { "data-act": action };
   if (d === "pad") {
     const i = s ? s.pad : (B.pad[action] || [])[0];
     if (i == null) return null;
-    return h("span.key.pad", typeof i === "number" ? padName(i) : i);
+    return h("span.key.pad", at, typeof i === "number" ? padName(i) : i);
   }
-  if (!s && d === "mouse" && (B.mouse[action] || []).length) return h("span.key", mouseName(B.mouse[action][0]));
+  if (!s && d === "mouse" && (B.mouse[action] || []).length) return h("span.key", at, mouseName(B.mouse[action][0]));
   const c = s ? s.key : (B.key[action] || [])[0];
   if (c == null) return null;
-  return h("span.key", c.includes(" ") ? c : keyName(c));
+  return h("span.key", at, c.includes(" ") ? c : keyName(c));
 }

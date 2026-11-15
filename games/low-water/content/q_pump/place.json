@@ -1,0 +1,113 @@
+{
+ "place": "q_pump",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   0.5,
+   2,
+   -2.4
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 4.337349397590361
+ },
+ "pxPerMetre": 124.5,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "noon"
+ ],
+ "variantInfo": {
+  "noon": {
+   "hour": 12.9,
+   "weather": "12:55, day 41: grey noon, frost on the setts and the trough iced"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  3
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "chalked_door",
+    "verb": "look",
+    "at": [
+     -3.5,
+     0,
+     -1.7999999999999998
+    ],
+    "note": "a door chalked with a white cross, a ribbon on the knocker, a loaf on the step nobody has knocked to give"
+   },
+   {
+    "id": "pump",
+    "verb": "read",
+    "at": [
+     2.4,
+     0,
+     0.3999999999999999
+    ],
+    "note": "the pump: chalk on the iron in two hands"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "mill_street",
+    "at": [
+     -8,
+     0,
+     0.5
+    ],
+    "note": "up Mill Street"
+   },
+   {
+    "id": "square",
+    "at": [
+     8,
+     0,
+     0.5
+    ],
+    "note": "on to Exchange Square"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "noon": []
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the pump on Mill Street (the fever and the Well)."
+}

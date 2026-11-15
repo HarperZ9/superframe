@@ -1,0 +1,151 @@
+{
+ "place": "q5_mortuary",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   1,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 2.7777777777777777
+ },
+ "pxPerMetre": 234,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 2.6,
+   "weather": "year 115, April, 02:35: the tubes, one failing, on the tile and the sheet"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  112
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "trolley",
+    "verb": "look",
+    "at": [
+     0.4,
+     0,
+     0.3
+    ],
+    "note": "the trolley under its sheet; the shape of a boy's feet at the end"
+   },
+   {
+    "id": "chairs",
+    "verb": "talk",
+    "at": [
+     -0.9,
+     0,
+     0.6
+    ],
+    "note": "the two plastic chairs, set facing the window for the family"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "corridor",
+    "at": [
+     2,
+     0,
+     1.4
+    ],
+    "note": "the corridor to the hospital's back door"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     0.4,
+     2.35,
+     -0.7
+    ],
+    "kind": "white",
+    "I": 13,
+    "reach": 8,
+    "group": "white"
+   },
+   {
+    "at": [
+     -0.8,
+     2.35,
+     1
+    ],
+    "kind": "white",
+    "I": 1.5,
+    "reach": 8,
+    "group": "white"
+   }
+  ]
+ },
+ "figureLights": {
+  "night": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: the tubes, one failing, on the tile and the sheet."
+}

@@ -1,0 +1,1161 @@
+{
+ "per_viewer": [
+  {
+   "seed": 401,
+   "E1": 3,
+   "E2": 3,
+   "E3": 3
+  },
+  {
+   "seed": 402,
+   "E1": 2,
+   "E2": 2,
+   "E3": 4
+  },
+  {
+   "seed": 403,
+   "E1": 3,
+   "E2": 3,
+   "E3": 3
+  }
+ ],
+ "pooled": {
+  "E1": {
+   "new_chosen": 8,
+   "n": 36,
+   "p": 0.222,
+   "wilson95": [
+    0.117,
+    0.381
+   ],
+   "pass": false
+  },
+  "E2": {
+   "new_chosen": 8,
+   "n": 36,
+   "p": 0.222,
+   "wilson95": [
+    0.117,
+    0.381
+   ],
+   "pass": false
+  },
+  "E3": {
+   "new_chosen": 10,
+   "n": 36,
+   "p": 0.278,
+   "wilson95": [
+    0.158,
+    0.44
+   ],
+   "pass": false
+  },
+  "per_person_new_of_n": {
+   "cockle": "0/3",
+   "crake": "2/3",
+   "dace": "2/3",
+   "dilly": "2/6",
+   "fewell": "0/3",
+   "fisk": "1/6",
+   "gill": "0/3",
+   "gorm": "0/3",
+   "hobb": "2/6",
+   "keel": "0/6",
+   "lamb": "0/3",
+   "lugg": "0/9",
+   "mab": "0/3",
+   "marrow": "3/3",
+   "merrow": "1/3",
+   "noll": "0/9",
+   "orme": "3/3",
+   "pardew": "0/3",
+   "penhallow": "9/9",
+   "pip": "0/3",
+   "rook": "0/3",
+   "spratt": "0/9",
+   "wenna": "1/6"
+  }
+ },
+ "items": [
+  {
+   "id": "E01",
+   "q": "E1",
+   "who": "spratt",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E02",
+   "q": "E2",
+   "who": "spratt",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E03",
+   "q": "E3",
+   "who": "spratt",
+   "expr": "wary",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E04",
+   "q": "E1",
+   "who": "dilly",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E05",
+   "q": "E2",
+   "who": "dilly",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E06",
+   "q": "E3",
+   "who": "dilly",
+   "expr": "set",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": true
+  },
+  {
+   "id": "E07",
+   "q": "E1",
+   "who": "rook",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E08",
+   "q": "E2",
+   "who": "rook",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E09",
+   "q": "E3",
+   "who": "rook",
+   "expr": "wary",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E10",
+   "q": "E1",
+   "who": "lugg",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E11",
+   "q": "E2",
+   "who": "lugg",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E12",
+   "q": "E3",
+   "who": "lugg",
+   "expr": "set",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E13",
+   "q": "E1",
+   "who": "penhallow",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": true
+  },
+  {
+   "id": "E14",
+   "q": "E2",
+   "who": "penhallow",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": true
+  },
+  {
+   "id": "E15",
+   "q": "E3",
+   "who": "penhallow",
+   "expr": "startled",
+   "new": "RIGHT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": true
+  },
+  {
+   "id": "E16",
+   "q": "E1",
+   "who": "keel",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E17",
+   "q": "E2",
+   "who": "keel",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E18",
+   "q": "E3",
+   "who": "keel",
+   "expr": "startled",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E19",
+   "q": "E1",
+   "who": "fisk",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E20",
+   "q": "E2",
+   "who": "fisk",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E21",
+   "q": "E3",
+   "who": "fisk",
+   "expr": "set",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E22",
+   "q": "E1",
+   "who": "dace",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": true
+  },
+  {
+   "id": "E23",
+   "q": "E2",
+   "who": "dace",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": true
+  },
+  {
+   "id": "E24",
+   "q": "E3",
+   "who": "dace",
+   "expr": "wary",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E25",
+   "q": "E1",
+   "who": "fewell",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E26",
+   "q": "E2",
+   "who": "fewell",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E27",
+   "q": "E3",
+   "who": "fewell",
+   "expr": "wary",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E28",
+   "q": "E1",
+   "who": "wenna",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E29",
+   "q": "E2",
+   "who": "wenna",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E30",
+   "q": "E3",
+   "who": "wenna",
+   "expr": "startled",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": true
+  },
+  {
+   "id": "E31",
+   "q": "E1",
+   "who": "noll",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E32",
+   "q": "E2",
+   "who": "noll",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E33",
+   "q": "E3",
+   "who": "noll",
+   "expr": "set",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E34",
+   "q": "E1",
+   "who": "hobb",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": true
+  },
+  {
+   "id": "E35",
+   "q": "E2",
+   "who": "hobb",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 401,
+   "chose_new": true
+  },
+  {
+   "id": "E36",
+   "q": "E3",
+   "who": "hobb",
+   "expr": "wary",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 401,
+   "chose_new": false
+  },
+  {
+   "id": "E01",
+   "q": "E1",
+   "who": "spratt",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E02",
+   "q": "E2",
+   "who": "spratt",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E03",
+   "q": "E3",
+   "who": "spratt",
+   "expr": "set",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E04",
+   "q": "E1",
+   "who": "dilly",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E05",
+   "q": "E2",
+   "who": "dilly",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E06",
+   "q": "E3",
+   "who": "dilly",
+   "expr": "set",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": true
+  },
+  {
+   "id": "E07",
+   "q": "E1",
+   "who": "pip",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E08",
+   "q": "E2",
+   "who": "pip",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E09",
+   "q": "E3",
+   "who": "pip",
+   "expr": "startled",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E10",
+   "q": "E1",
+   "who": "penhallow",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": true
+  },
+  {
+   "id": "E11",
+   "q": "E2",
+   "who": "penhallow",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": true
+  },
+  {
+   "id": "E12",
+   "q": "E3",
+   "who": "penhallow",
+   "expr": "startled",
+   "new": "RIGHT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": true
+  },
+  {
+   "id": "E13",
+   "q": "E1",
+   "who": "marrow",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": true
+  },
+  {
+   "id": "E14",
+   "q": "E2",
+   "who": "marrow",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": true
+  },
+  {
+   "id": "E15",
+   "q": "E3",
+   "who": "marrow",
+   "expr": "wary",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": true
+  },
+  {
+   "id": "E16",
+   "q": "E1",
+   "who": "lugg",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E17",
+   "q": "E2",
+   "who": "lugg",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E18",
+   "q": "E3",
+   "who": "lugg",
+   "expr": "wary",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E19",
+   "q": "E1",
+   "who": "hobb",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E20",
+   "q": "E2",
+   "who": "hobb",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E21",
+   "q": "E3",
+   "who": "hobb",
+   "expr": "wary",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E22",
+   "q": "E1",
+   "who": "gorm",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E23",
+   "q": "E2",
+   "who": "gorm",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E24",
+   "q": "E3",
+   "who": "gorm",
+   "expr": "set",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E25",
+   "q": "E1",
+   "who": "mab",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E26",
+   "q": "E2",
+   "who": "mab",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E27",
+   "q": "E3",
+   "who": "mab",
+   "expr": "wary",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E28",
+   "q": "E1",
+   "who": "gill",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E29",
+   "q": "E2",
+   "who": "gill",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E30",
+   "q": "E3",
+   "who": "gill",
+   "expr": "wary",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E31",
+   "q": "E1",
+   "who": "merrow",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E32",
+   "q": "E2",
+   "who": "merrow",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E33",
+   "q": "E3",
+   "who": "merrow",
+   "expr": "startled",
+   "new": "RIGHT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": true
+  },
+  {
+   "id": "E34",
+   "q": "E1",
+   "who": "noll",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E35",
+   "q": "E2",
+   "who": "noll",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E36",
+   "q": "E3",
+   "who": "noll",
+   "expr": "wary",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 402,
+   "chose_new": false
+  },
+  {
+   "id": "E01",
+   "q": "E1",
+   "who": "keel",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E02",
+   "q": "E2",
+   "who": "keel",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E03",
+   "q": "E3",
+   "who": "keel",
+   "expr": "startled",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E04",
+   "q": "E1",
+   "who": "noll",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E05",
+   "q": "E2",
+   "who": "noll",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E06",
+   "q": "E3",
+   "who": "noll",
+   "expr": "wary",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E07",
+   "q": "E1",
+   "who": "cockle",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E08",
+   "q": "E2",
+   "who": "cockle",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E09",
+   "q": "E3",
+   "who": "cockle",
+   "expr": "set",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E10",
+   "q": "E1",
+   "who": "fisk",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E11",
+   "q": "E2",
+   "who": "fisk",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E12",
+   "q": "E3",
+   "who": "fisk",
+   "expr": "set",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": true
+  },
+  {
+   "id": "E13",
+   "q": "E1",
+   "who": "lugg",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E14",
+   "q": "E2",
+   "who": "lugg",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E15",
+   "q": "E3",
+   "who": "lugg",
+   "expr": "set",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E16",
+   "q": "E1",
+   "who": "penhallow",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": true
+  },
+  {
+   "id": "E17",
+   "q": "E2",
+   "who": "penhallow",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": true
+  },
+  {
+   "id": "E18",
+   "q": "E3",
+   "who": "penhallow",
+   "expr": "set",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": true
+  },
+  {
+   "id": "E19",
+   "q": "E1",
+   "who": "pardew",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E20",
+   "q": "E2",
+   "who": "pardew",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E21",
+   "q": "E3",
+   "who": "pardew",
+   "expr": "wary",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E22",
+   "q": "E1",
+   "who": "orme",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": true
+  },
+  {
+   "id": "E23",
+   "q": "E2",
+   "who": "orme",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": true
+  },
+  {
+   "id": "E24",
+   "q": "E3",
+   "who": "orme",
+   "expr": "set",
+   "new": "RIGHT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": true
+  },
+  {
+   "id": "E25",
+   "q": "E1",
+   "who": "wenna",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E26",
+   "q": "E2",
+   "who": "wenna",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E27",
+   "q": "E3",
+   "who": "wenna",
+   "expr": "set",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E28",
+   "q": "E1",
+   "who": "crake",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": true
+  },
+  {
+   "id": "E29",
+   "q": "E2",
+   "who": "crake",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": true
+  },
+  {
+   "id": "E30",
+   "q": "E3",
+   "who": "crake",
+   "expr": "wary",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E31",
+   "q": "E1",
+   "who": "lamb",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E32",
+   "q": "E2",
+   "who": "lamb",
+   "expr": "neutral",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E33",
+   "q": "E3",
+   "who": "lamb",
+   "expr": "wary",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E34",
+   "q": "E1",
+   "who": "spratt",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E35",
+   "q": "E2",
+   "who": "spratt",
+   "expr": "neutral",
+   "new": "RIGHT",
+   "said": "LEFT",
+   "viewer_seed": 403,
+   "chose_new": false
+  },
+  {
+   "id": "E36",
+   "q": "E3",
+   "who": "spratt",
+   "expr": "startled",
+   "new": "LEFT",
+   "said": "RIGHT",
+   "viewer_seed": 403,
+   "chose_new": false
+  }
+ ]
+}

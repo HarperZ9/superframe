@@ -17,6 +17,7 @@
 // light the anchor lists, the others go to the anchor's first point. With no anchor a cut takes
 // every arena light and a lamp the first; a snare or sluice with no anchor is left out.
 import { startMove, dist } from "./fighter.mjs";
+import { dhypot } from "./math.mjs";
 
 export const PROPS = { reach: 1.4, surge: 40, snareR: 0.7, snareFrames: 150, sweepDepth: 0.85, surgeDmg: 0.5 };
 
@@ -55,7 +56,7 @@ export function installProps(W, props) {
     if (p.kind === "lamp") {
       const ls = W.field.arena.lights || [];
       let best = -1, bd = Infinity;
-      ls.forEach((l, i) => { const d = Math.hypot(l.x - p.x, l.z - p.z); if (d < bd) { bd = d; best = i; } });
+      ls.forEach((l, i) => { const d = dhypot(l.x - p.x, l.z - p.z); if (d < bd) { bd = d; best = i; } });
       p.light = best;
       if (best >= 0 && !p.on) ls[best].off = true;
     }
@@ -65,7 +66,7 @@ export function installProps(W, props) {
 
 // Lamb's "interact": the nearest prop in reach that can still be worked.
 export function interact(W, F) {
-  const near = (W.props || []).filter((p) => p.x != null && Math.hypot(p.x - F.x, p.z - F.z) <= PROPS.reach && usable(p)).sort((a, b) => Math.hypot(a.x - F.x, a.z - F.z) - Math.hypot(b.x - F.x, b.z - F.z));
+  const near = (W.props || []).filter((p) => p.x != null && dhypot(p.x - F.x, p.z - F.z) <= PROPS.reach && usable(p)).sort((a, b) => dhypot(a.x - F.x, a.z - F.z) - dhypot(b.x - F.x, b.z - F.z));
   const p = near[0];
   if (!p) { W.emit({ type: "interact", id: F.id, prop: null }); return null; }
   if (p.kind === "lamp") { const l = W.field.arena.lights[p.light]; if (l) l.off = true; p.on = false; W.emit({ type: "lightcut", id: F.id, prop: p.n, x: p.x, z: p.z }); }

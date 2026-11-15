@@ -1,0 +1,202 @@
+{
+ "place": "q_returns",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 34,
+  "target": [
+   0.2,
+   1.1,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.7142857142857144
+ },
+ "pxPerMetre": 175,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "morning"
+ ],
+ "variantInfo": {
+  "morning": {
+   "hour": 10.2,
+   "weather": "10:10, day 41: flat winter light from the square, the clerk's lamp lit"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "counter",
+    "verb": "report",
+    "at": [
+     0.6,
+     0,
+     0.9
+    ],
+    "note": "the counter: the slot where the district figure is handed in (true, inflated, or blamed on Hesh hoarding)"
+   },
+   {
+    "id": "ledger",
+    "verb": "read",
+    "at": [
+     0.6,
+     0,
+     -0.7
+    ],
+    "note": "the district ledger, open at Krall's End: the figure in pencil, and the figure over it in ink"
+   },
+   {
+    "id": "map",
+    "verb": "read",
+    "at": [
+     -0.3,
+     0,
+     -1.9
+    ],
+    "note": "the district map: eleven villages, a pin and a chalked quota under each"
+   },
+   {
+    "id": "bench",
+    "verb": "sit",
+    "at": [
+     -1,
+     0,
+     2.3
+    ],
+    "note": "the bench where the villages' men wait their turn"
+   },
+   {
+    "verb": "look",
+    "id": "crown_patch",
+    "at": [
+     -2.6,
+     0,
+     1
+    ],
+    "note": "over the door: a square of cleaner paint, and the Directorate's notice pasted inside it"
+   }
+  ],
+  "hides": [
+   {
+    "id": "behind_shelves",
+    "at": [
+     3,
+     0,
+     -1.6
+    ],
+    "r": 0.4,
+    "note": "behind the ledger shelves"
+   }
+  ],
+  "exits": [
+   {
+    "id": "chairman",
+    "at": [
+     -3,
+     0,
+     1.8
+    ],
+    "note": "the chairman's door"
+   },
+   {
+    "id": "square",
+    "at": [
+     1.9,
+     0,
+     2.4
+    ],
+    "note": "the street door to Exchange Square"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "morning": [
+   {
+    "at": [
+     0,
+     1,
+     -1.4
+    ],
+    "kind": "paraffin",
+    "I": 9,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -4.9,
+     2,
+     -0.6
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 10,
+    "group": ""
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota slice: the district office, where the figure is reported.",
+ "figureLights": {
+  "morning": [
+   {
+    "at": [
+     1.2,
+     2.4,
+     2.6
+    ],
+    "kind": "white",
+    "I": 7,
+    "reach": 9,
+    "figure": true
+   },
+   {
+    "at": [
+     -2.6,
+     1.8,
+     0.4
+    ],
+    "kind": "white",
+    "I": 4,
+    "reach": 7,
+    "figure": true
+   }
+  ]
+ }
+}

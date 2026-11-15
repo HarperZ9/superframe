@@ -13,6 +13,7 @@
 <div id="toasts" aria-live="polite"></div>
 <noscript>Low Water needs JavaScript.</noscript>
 <script type="module">
+  import "./save/nativehook.mjs";
   import { boot } from "./ui/app.mjs";
   boot().catch((e) => {
     console.error("boot failed:", e);

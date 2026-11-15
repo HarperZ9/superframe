@@ -13,16 +13,17 @@ import { within, hitsAt, armorAt } from "./moves.mjs";
 import { RULES } from "../data/common.mjs";
 import { wrapAngle, angleTo, startMove, guarding } from "./fighter.mjs";
 import { unaware, alert, takedownFor, SNEAK_BONUS } from "./stealth.mjs";
+import { dasin, datan2, dcos, dhypot, dsin } from "./math.mjs";
 
 const DEG = 180 / Math.PI;
 const gone = (T) => T.out || T.fallen || T.yielded || T.hp <= 0;
 
 export function overlaps(A, h, T, tdef) {
-  const dx = T.x - A.x, dz = T.z - A.z, d = Math.hypot(dx, dz), r = tdef.radius;
+  const dx = T.x - A.x, dz = T.z - A.z, d = dhypot(dx, dz), r = tdef.radius;
   if (d - r > h.r[1] || d + r < h.r[0]) return false;
   if (h.y[1] < 0 || h.y[0] > tdef.height) return false;
   if (d < 1e-6) return true;
-  const ang = wrapAngle(Math.atan2(dz, dx) - A.face) * DEG, pad = Math.asin(Math.min(1, r / d)) * DEG;
+  const ang = wrapAngle(datan2(dz, dx) - A.face) * DEG, pad = dasin(Math.min(1, r / d)) * DEG;
   return ang >= h.arc[0] - pad && ang <= h.arc[1] + pad;
 }
 
@@ -61,6 +62,20 @@ export function applyHit(W, A, T, m, src = null) {
 // The PEN pillar (19.2): a blow that lands while the opponent winds up, inside Lamb's read window
 // (8 frames + the build's read, doubled for the first three telegraphs with Tobit's count), finds
 // a weak point; Hester's carriage return makes the next blow after a catch count as read.
+// Contact hit-stop by attack class (author, 2026-10-21: "2-frame freeze on heavy blows"; light hits
+// freeze for nothing, as No Rest for the Wicked: cleanroom/spec/NRFTW-PRESENTATION-2.md 3.3). A move is
+// heavy when its id says heavy or charged, or its authored hit-stop is HEAVY_FROM frames or more (the
+// foes' big swings, the arts that knock down, a guard break, a catch); every other contact is light.
+// crowd: with crowdAt or more opponents on their feet no freeze runs past crowdCap frames (Sakurai's
+// rule for fights where a third body can act during a freeze, via the 2026-10-21 research harvest).
+// scale: 1 keeps the class values; 0 turns contact hit-stop off.
+export const FEEL = { hitstop: { light: 0, heavy: 2 }, heavyFrom: 5, crowdAt: 3, crowdCap: 4, scale: 1 };
+export const classOf = (m) => (m && (/heavy|charged/.test(m.id || "") || (m.hitstop || 0) >= FEEL.heavyFrom) ? "heavy" : "light");
+let crowd = 0;
+const stop = (m) => { const f = Math.round(FEEL.hitstop[typeof m === "string" ? m : classOf(m)] * FEEL.scale); return crowd >= FEEL.crowdAt ? Math.min(f, FEEL.crowdCap) : f; };
+// Lamb's opponents on their feet, read as a contact lands
+const crowdOf = (W) => { crowd = W.fighters.filter((F) => F.team !== "lamb" && !F.out && !F.fallen).length; };
+
 function weakPoint(W, A, T, tm, f) {
   const d = W.defs[A.id], b = d.bonus; if (!b || A.team !== "lamb") return 1;
   if (A.carriage) { A.carriage = false; return 1 + b.weak; }
@@ -74,10 +89,11 @@ function weakPoint(W, A, T, tm, f) {
 function parried(W, A, T, m, src) {
   if ((W.defs[T.id].learned || []).includes("carriage")) T.carriage = true;
   // a catch lands like a door slamming: both bodies freeze, a hard spring shake, a heavy rumble
-  T.act = null; T.hitstop = 12;
+  T.catchMiss = null; // a catch that lands carries no lockout
+  crowdOf(W, T); T.act = null; T.hitstop = stop("heavy");   // a catch lands like a heavy blow on the catcher; the caught body below stays held, its opening
   if (!src) { A.hitstop = 12; startMove(W, A, "parried"); A.poise = A.poiseMax; }
   W.emit({ type: "parry", id: T.id, by: A.id, move: m.id, projectile: !!src });
-  W.emit({ type: "shake", amp: 0.6, frames: 16, dir: dirFrom(A, T), spring: { k: 260, damp: 18 } });
+  W.emit({ type: "shake", kind: "catch", amp: 0.6, frames: 40, dir: dirFrom(A, T), spring: { k: 260, damp: 18 } });
   W.emit({ type: "rumble", id: T.id, by: A.id, low: 1, high: 0.8, frames: 14 });
   return "parry";
 }
@@ -90,13 +106,13 @@ function blocked(W, A, T, m, src) {
   if ((heavy && !shield) || T.st < cost) {
     T.st = Math.max(0, T.st - cost); T.guardT = 0;
     W.emit({ type: "guardbreak", id: T.id, by: A.id, move: m.id });
-    startMove(W, T, "stagger"); T.hitstop = Math.max(T.hitstop, 6); if (!src) A.hitstop = Math.max(A.hitstop, 6);
+    crowdOf(W, T); startMove(W, T, "stagger"); T.hitstop = Math.max(T.hitstop, stop("heavy")); if (!src) A.hitstop = Math.max(A.hitstop, stop("heavy"));
     return "guardbreak";
   }
   T.st -= cost; T.stWait = W.defs[T.id].staminaDelay;
   const chip = m.dmg * tool.chip; T.hp = Math.max(0.01, T.hp - chip);
   push(T, src || A, m.knock * 0.4, src);
-  T.hitstop = Math.max(T.hitstop, 3); if (!src) A.hitstop = Math.max(A.hitstop, 3);
+  crowdOf(W, T); T.hitstop = Math.max(T.hitstop, stop("light")); if (!src) A.hitstop = Math.max(A.hitstop, stop("light"));
   W.emit({ type: "block", id: T.id, by: A.id, move: m.id, cost, chip });
   W.emit({ type: "shake", amp: m.guardBreak ? 0.3 : 0.15, frames: 6, dir: dirFrom(T, src || A), spring: { k: 200, damp: 16 } });
   W.emit({ type: "rumble", id: T.id, by: A.id, low: 0.5, high: 0.3, frames: 6 });
@@ -107,7 +123,7 @@ function blocked(W, A, T, m, src) {
 // weaker hand is thrown off balance.
 function grappled(W, A, T, m) {
   const ga = W.defs[A.id].grip, gt = W.defs[T.id].grip + (T.act ? 0 : 1);
-  A.hitstop = T.hitstop = m.hitstop;
+  A.hitstop = T.hitstop = m.hitstop;   // a seize holds both bodies: a grip, not contact hit-stop
   if (ga >= gt) {
     const took = T.tool; T.tool = null; T.disarmed = true;
     startMove(W, T, "stagger");
@@ -120,9 +136,9 @@ function grappled(W, A, T, m) {
 }
 
 function push(T, from, knock, src, toward = null) {
-  let dir = src && src.vx !== undefined ? Math.atan2(src.vz, src.vx) : Math.atan2(T.z - from.z, T.x - from.x);
+  let dir = src && src.vx !== undefined ? datan2(src.vz, src.vx) : datan2(T.z - from.z, T.x - from.x);
   if (toward != null) dir = toward;
-  T.kx += Math.cos(dir) * knock; T.kz += Math.sin(dir) * knock;
+  T.kx += dcos(dir) * knock; T.kz += dsin(dir) * knock;
 }
 
 // The direction from the target to the deepest water within 4 m (eight bearings, 1 m steps).
@@ -130,22 +146,38 @@ function towardWater(W, T) {
   let best = null, deep = -Infinity;
   for (let i = 0; i < 8; i++) {
     const a = (i * Math.PI) / 4;
-    for (let r = 1; r <= 4; r++) { const d = W.field.depthAt(T.x + Math.cos(a) * r, T.z + Math.sin(a) * r); if (d > deep) { deep = d; best = a; } }
+    for (let r = 1; r <= 4; r++) { const d = W.field.depthAt(T.x + dcos(a) * r, T.z + dsin(a) * r); if (d > deep) { deep = d; best = a; } }
   }
+  return best;
+}
+
+// The direction from the target to the nearest of the arena's anchors of a kind (a drag toward the
+// granary's grain chute: anchors.chute), or null when the arena has none.
+function towardAnchor(W, T, kind) {
+  const pts = ((W.field.arena && W.field.arena.anchors) || {})[kind] || [];
+  let best = null, bd = Infinity;
+  for (const [x, z] of pts) { const d = dhypot(x - T.x, z - T.z); if (d < bd) { bd = d; best = datan2(z - T.z, x - T.x); } }
   return best;
 }
 
 function takeHit(W, A, T, m, src, tm, f) {
   const foot = W.field.footing(T.x, T.z), scale = foot.frost ? RULES.frostPoise : foot.wet ? RULES.wetPoise : 1;
   const planted = (W.defs[T.id].breaks || {}).coat8 && tm && /heavy/.test(tm.id) && f < tm.startup && m.poise < 1.5 && !m.pierce;
-  const armor = planted ? 99 : tm && !m.pierce ? armorAt(tm, f) : 0, pd = Math.max(0, m.poise * scale - armor), sneak = unaware(T);
-  const weakMul = weakPoint(W, A, T, tm, f), soften = W.defs[T.id].soften || 1;
-  const dmg = m.takedown && sneak && takedownFor(W, T) === "out" ? T.hp : m.dmg * (sneak ? SNEAK_BONUS : 1) * weakMul * soften;
+  // a carried shield (the arena's shield archetype, def.frontGuard): a blow from the front on a body not
+  // mid-move glances off it, losing that share of its harm, unless it breaks guards
+  const fg = W.defs[T.id].frontGuard, glance = fg && !tm && !m.guardBreak && frontal(T, src || A, RULES.blockCone) ? 1 - fg : 1;
+  const armor = planted ? 99 : tm && !m.pierce ? armorAt(tm, f) : 0, pd = Math.max(0, m.poise * scale * glance - armor), sneak = unaware(T);
+  const weakMul = weakPoint(W, A, T, tm, f), soften = W.defs[T.id].soften || 1, power = W.defs[A.id].dmgMul || 1; // dmgMul: a run's upgrades (combat/arena/run.mjs)
+  const dmg = m.takedown && sneak && takedownFor(W, T) === "out" ? T.hp : m.dmg * (sneak ? SNEAK_BONUS : 1) * weakMul * soften * glance * power;
+  if (glance < 1) W.emit({ type: "glance", id: T.id, by: A.id, move: m.id });
+  if (m.drain) T.st = Math.max(0, T.st - m.drain); // a snatch takes Breath
   T.hp = Math.max(0, T.hp - dmg); T.poise -= pd; if (pd > 0) T.poiseWait = RULES.poiseDelay;
+  // an unbeatable floor (an inner boss, combat/data/flaws.mjs): standing never falls below that share
+  const floor = W.defs[T.id].floor; if (floor > 0) T.hp = Math.max(T.hp, floor * T.hpMax);
   if (sneak) { W.emit({ type: m.takedown ? "takedown" : "sneakhit", id: T.id, by: A.id, dmg }); alert(W, T, "struck"); }
   const held = (W.defs[T.id].learned || []).includes("galleryhold") && (m.shove || m.knock < 0 || m.toward);
-  if (!held) push(T, src || A, m.knock, src, m.toward === "water" ? towardWater(W, T) : null);
-  T.hitstop = Math.max(T.hitstop, m.hitstop); if (!src) A.hitstop = Math.max(A.hitstop, m.hitstop);
+  if (!held) push(T, src || A, m.knock, src, m.toward === "water" ? towardWater(W, T) : m.toward ? towardAnchor(W, T, m.toward) : null);
+  crowdOf(W, T); T.hitstop = Math.max(T.hitstop, stop(m)); if (!src) A.hitstop = Math.max(A.hitstop, stop(m));
   T.flash = m.hitstop + 3; T.lastHitBy = A.id;
   if (m.blind) T.blind = Math.max(T.blind, m.blind);
   W.emit({ type: "hit", id: T.id, by: A.id, move: m.id, dmg, poise: pd, armor: armor > 0, footing: foot.kind });
@@ -179,10 +211,11 @@ function interruptible(W, T, blow) {
 
 // A fighting build with BALLAST 6 or more keeps its feet: what would put it down only staggers it
 // (a takedown still takes it down).
-const steady = (W, T, m) => !m.takedown && ((W.defs[T.id].levels || {}).ballast ?? 0) >= 6;
+// keepFeet: the inner arena's Ballast boon (combat/data/flaws-will.mjs, Forty Carts) does the same for grabs
+const steady = (W, T, m) => !m.takedown && (((W.defs[T.id].levels || {}).ballast ?? 0) >= 6 || (W.defs[T.id].keepFeet && m.blockable === false));
 
 // unit vector from the striker to the struck, for the shake's push (presentation only)
-const dirFrom = (T, from) => { const a = Math.atan2(T.z - from.z, T.x - from.x); return [+Math.cos(a).toFixed(3), +Math.sin(a).toFixed(3)]; };
+const dirFrom = (T, from) => { const a = datan2(T.z - from.z, T.x - from.x); return [+dcos(a).toFixed(3), +dsin(a).toFixed(3)]; };
 
 function breakPoise(W, T, how) {
   T.poise = T.poiseMax; T.buf = [];

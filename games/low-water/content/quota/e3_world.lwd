@@ -1,0 +1,759 @@
+# Era 3, Allocation: places, people, households, fates, self-lies and lore. Year 20, eight winters after era 2:
+# the allocation in September, the fever in November, the fire in December. Story lead, 2026-10-23. DRAFT: every
+# line in era 3 waits for the author's line approval (ledger row S14). Design: design/eras/era3.md.
+# Two classes play it, as in eras 1 and 2: the Inspector line is Pell Furrowe (20), the Militia line Will Brack (44).
+# Files: e3_world (this), e3_town (s01 to s05), e3_house (s06 to s12), e3_fever (s13 to s18), e3_witness (Aaron, year 46).
+# The era 2 to 3 link is the single go: in q_witness.lwd (q.w.anni.tin goes to e3.start); era 3 ends at e3.end.
+# Plates: the q3_* places are areas on their own plates (plates package, 2026-10-22; game/engine/wiring/era3-areas.lwd,
+# render/places/q3_*.mjs); the Well House shows a burning plate (q3_well_fire) from e3.well.decide. Props: the new props of
+# era3.md section 7 (schoolbook, allocation slip, quarantine chalk, the cut photograph) are painted on the plates; the Tesk
+# book is carried as lore and narration.
+# Weighted-devices pass, 2026-10-23 (design/device-audit/era3.md): no beat in era 3 turns on paper. The allocation is
+# Walter Mott at a board of keys, sending families in or past by sight; the Tarn list is a Tarn man standing at the rail
+# and saying it; the fever is chalk, smell and carts; the well talk is a voice in the queue and a hand; Dorrah's book is
+# her knot cord. The era's @sense, @load and @echo records are at the end of this file.
+
+# ---------------------------------------------------------------- places new in era 3
+@place q3_tower
+name: The bell tower over Exchange Street
+zone: upper
+district: upper
+footing: stone
+shelter: no
+light: 0.6
+sodium: 0
+dark-light: 0.02
+
+@place q3_school
+name: The schoolroom in the old exchange offices
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.6
+sodium: 0
+dark-light: 0.02
+
+@place q3_office
+name: The allocation counter, the old district office
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+@place q3_furrowe_hall
+name: The Furrowe hall
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.4
+sodium: 0
+dark-light: 0.02
+
+@place q3_mott_house
+name: The old Mott house, Exchange Street
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.4
+sodium: 0
+dark-light: 0.02
+
+@place q3_church
+name: The Furrow Church
+zone: upper
+district: upper
+footing: stone
+shelter: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+@place q3_ward
+name: The fever ward in the church hall
+zone: upper
+district: upper
+footing: stone
+shelter: yes
+stove: yes
+light: 0.35
+sodium: 0
+dark-light: 0.02
+
+@place q3_square
+name: The square at the scale
+zone: upper
+district: upper
+footing: stone
+shelter: no
+light: 0.6
+sodium: 0
+dark-light: 0.02
+
+@place q3_well_house
+name: The Well House, in Pask's rented yard
+zone: lower
+district: mill
+footing: earth
+shelter: yes
+light: 0.3
+sodium: 0
+dark-light: 0.02
+
+@place q3_squad
+name: The militia squad room
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+@place q3_brack_kitchen
+name: The Brack kitchen
+zone: lower
+district: mill
+footing: stone
+shelter: yes
+stove: yes
+light: 0.4
+sodium: 0
+dark-light: 0.02
+
+@place q3w_far_bank
+name: Aaron's kitchen on the far bank
+zone: lower
+district: mill
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+# ---------------------------------------------------------------- people new in era 3
+@char e3.tobin
+name: Tobin Krall, of the allocation board
+speaker: TOBIN
+faction: district
+about: Thirty-two. Jonah Krall's son. Sits on the allocation board in a suit his father paid for. Remembers everybody's father.
+
+@char e3.oren
+name: Oren Tesk, entered Haldane
+speaker: OREN
+faction: hesh
+about: Twenty-four. Dorrah's nephew, town Hesh, a drayman at the far-bank works. Anni's husband four years. Laughs first so nobody else has to.
+
+@char e3.mim
+name: Mim Sallis
+speaker: MIM
+faction: hesh
+about: Eight. Davin's daughter. Says the Heshen word for a thing before the Tarn one and gets hit for it.
+
+@char e3.lio
+name: Lio Sallis
+speaker: LIO
+faction: hesh
+about: Twenty. Arn's youngest. Marries Tesse Varn under the stairs of the Mott house.
+
+@char e3.tesse
+name: Tesse Varn
+speaker: TESSE
+faction: hesh
+about: Nineteen. Sews sacks at the mill. Lisle and Orla Varn's niece.
+
+@char e3.hanne
+name: Hanne Sholl
+speaker: HANNE
+faction: hesh
+about: Thirty-five. Goat-Hesh from over the ridge, four children, the back room under the stairs. Town Hesh look down on her and she knows it.
+
+@char e3.tamm
+name: Miss Tamm, the teacher
+speaker: TAMM
+faction: district
+about: Twenty-five. Mr Tamm's daughter. Keeps a ruler and a red pencil. Believes every word of the book.
+
+@char e3.hollis
+name: Reverend Hollis
+speaker: HOLLIS
+faction: district
+about: Fifty-five. The Furrow Church. Preaches from notes he has used before.
+
+@char e3.pruett
+name: Mrs Pruett
+speaker: PRUETT
+faction: district
+about: Fifty. Tarn, a widow at the shift table. Lost her little one in the hard winter. Kind to children in a way that hurts them.
+
+@char e3.lena
+name: Lena Ashby, of the Gazette
+speaker: LENA
+faction: district
+about: Thirty-eight. Clement Ashby's daughter. Writes the schoolbook's chapter on the rebuilding.
+
+@char e3.harriet
+name: Harriet Orme, the loan office
+speaker: HARRIET
+faction: district
+about: Forty. George's daughter. The far-bank flats are her bank's paper.
+
+@char e3.vesh
+name: Mother Vesh
+speaker: VESH
+faction: hesh
+about: Old. Nobody knows how old. Leads the prayer at the Well House because she remembers all of it.
+
+@char e3.voice
+name: A voice in the queue
+speaker: VOICE
+faction: district
+about: A man behind you at the low pump, quiet, used to being listened to. You never see his face. You see his hand.
+
+@char e3.rob
+name: Rob Haldane
+speaker: ROB
+faction: district
+about: Eleven, in year 46. Aaron's son. Found a blue thread in a drawer.
+
+# ---------------------------------------------------------------- the households the era presses
+@household e3_sallis
+name: The Sallises, nine to a slip
+street: square
+people: hesh
+hesh: 1
+place: q3_mott_house
+members: Arn, Davin, Lio, Mim, Tesse
+taken: 0
+portion: 1
+
+@household e3_sholl
+name: The Sholls, under the stairs
+street: square
+people: hesh
+hesh: 1
+place: q3_mott_house
+members: Hanne, Pim, Ada, Corin, Ness
+taken: 0
+portion: 1
+
+@household e3_prayer
+name: Those at evening prayer in the Well House
+street: mill
+people: hesh
+hesh: 1
+place: q3_well_house
+members: Vesh, Dorrah, Arn, Ketti, Lisle, Orla
+taken: 0
+portion: 1
+
+# ---------------------------------------------------------------- era 3's record
+@fact e3.allocation
+@fact e3.figures_praised
+@fact e3.flat_pell
+@fact e3.flat_sallis
+@fact e3.anni_knocked
+@fact e3.wedding_done
+@fact e3.list_offered
+@fact e3.list_signed
+@fact e3.list_refused
+@fact e3.well_claim
+@fact e3.aaron_asked
+@fact e3.aaron_taken
+@fact e3.aaron_turned
+@fact e3.riot_done
+@fact e3.fever
+@fact e3.bed_mim
+@fact e3.bed_bet
+@fact e3.bet_dead
+@fact e3.house_over
+@fact e3.sholl_named
+@fact e3.haldane_split
+@fact e3.door_barred
+@fact e3.door_opened
+@fact e3.ilo_dead
+@fact e3.book_thrown
+@fact e3.tomas_ridge
+@fact e3.tomas_stays
+@fact e3.margin_told
+@fact e3.carry_f1
+@fact e3.carry_b1
+@fact said.e3_pell_take
+@fact said.e3_pell_refuse
+@fact said.e3_pell_whose
+@fact said.e3_will_counter
+@fact said.e3_pell_fetch
+@fact said.e3_pell_out
+@fact said.e3_will_list
+@fact said.e3_pell_aaron_vouch
+@fact said.e3_will_aaron_take
+@fact said.e3_will_aaron_turn
+@fact said.e3_will_baton
+@fact said.e3_pell_carry
+@fact said.e3_will_cart
+@fact said.e3_speak_bet
+@fact said.e3_pell_two_rooms
+@fact said.e3_will_slow
+@fact said.e3_pell_door
+@fact said.e3_will_door
+@fact said.e3_tomas_pass
+
+# ---------------------------------------------------------------- the fates, each with its decider
+@fate f.e3_flat
+pressure: has(e3.allocation)
+subject: household e3_sallis
+decider: TOBIN
+scene: e3.flat.decide, e3.flat.pell, e3.flat.sallis
+window: 7
+who: Arn
+because: the allocation puts ten families to a merchant's house; Tobin Krall says whose hand the far-bank key goes into, the Sallis nine whose bundles are on its floor or Ned Furrowe's son, and their bundles come back over the bridge on the board's cart
+
+@fate f.e3_list
+pressure: has(e3.list_offered)
+subject: household haldane
+decider: ANNI
+scene: e3.list.decide, e3.list.signed, e3.list.refused
+window: 7
+who: Anni
+because: Walter Mott gives a far-bank key to anyone a Tarn man will stand beside at the rail and claim aloud; Anni takes the key on Ned Furrowe's word, cuts her thread and puts her bundle on the cart without her father's, or carries it home
+
+@fate f.e3_aaron
+pressure: has(e3.aaron_asked)
+subject: household haldane
+decider: WILL
+scene: e3.aaron.decide, e3.aaron.taken, e3.aaron.turned
+window: 7
+who: Aaron
+because: Aaron asks to join the militia on the family's Tarn name; Will Brack holds out the last coat on the hook or turns him away as Hesh
+
+@fate f.e3_bed
+pressure: has(e3.fever)
+subject: household e3_sallis
+decider: CLARA
+scene: e3.bed.decide, e3.bed.mim, e3.bed.bet
+window: 7
+taken: yes
+who: Mim
+because: typhus in the crowded houses and one bed left on a ward Hollis walks every night asking names and looking at wrists; Dr Clara Lind says who has it, cuts the thread off, and answers for them with a Tarn name
+
+@fate f.e3_sholl
+pressure: has(e3.house_over)
+subject: household e3_sholl
+decider: ANNI
+scene: e3.sholl.decide, e3.sholl.named, e3.sholl.split
+window: 7
+taken: yes
+who: Hanne
+because: Fenn counts one family too many in the Mott house with his finger; Anni Haldane says the Sholls' name at the rail and Walter moves their key to the hill camp nail, or she says none and her own family's key is moved
+
+@fate f.e3_well
+pressure: has(e3.well_claim)
+subject: household e3_prayer
+decider: GEDGE
+scene: e3.well.decide, e3.well.barred, e3.well.opened
+window: 7
+taken: yes
+who: Vesh
+because: the poisoned-well talk from the pulpit and a voice in the queue, the gate nailed shut; Constable Gedge keeps the Well House door barred while Fenn's lamp catches, or stands aside
+
+@fate f.e3_tomas
+pressure: has(e3.door_barred) & !has(q.tomas_held) | has(e3.door_opened) & !has(q.tomas_held)
+subject: household haldane
+decider: TOMAS
+scene: e3.tomas.decide, e3.tomas.ridge, e3.tomas.stays
+window: 7
+who: Tomas
+because: after the fire, on the runs where nobody held him in the hard winter, Tomas goes over the ridge in the player's man's coat, past the post, to the Tesks' people, or stays and is called Holden at the counter
+
+# ---------------------------------------------------------------- the self-lies (each echoed word for word in Aaron's witness)
+@selflie e3.sl.figure
+about: GUILT, at the allocation counter, as Tobin Krall praises Ned at the exchange scale in the hard winter, its pan hung in the board room (e3_town.lwd, e3.office.krall)
+happened: In the hard winter Ned Furrowe stood at the scale for the office, and the Haldane boy was held at the post and never came home. ? has(q.tomas_held)
+happened: In the hard winter Ned Furrowe stood at the scale for the office, and the Hesh on Mill Street went hungry.
+
+@selflie e3.sl.order
+about: LOYALTY, on the line at the Well House, with the baton in his hand (e3_fever.lwd, e3.fire)
+happened: The Well House burned with the door barred. Mother Vesh and the Varn sisters died inside, and Ilo Haldane at the back window. ? has(e3.door_barred)
+happened: The Well House burned. They came out of the door with their clothes alight, and the crowd threw stones at them in the yard. ? has(e3.door_opened)
+
+# ---------------------------------------------------------------- lore
+@chain e3.per_af
+name: The key and the blank
+# both classes meet both: the key slid across the green cloth, and Walter saying aloud whose word left Anni's father blank
+route: one-run | e3.lore.slip, e3.lore.per_af
+
+@lore e3.lore.slip
+chain: e3.per_af
+layer: surface
+where: node e3.flat.decide
+about: The far-bank key Krall slides across the green cloth: the Sallises' things are on the floor of the flat it opens, and it goes into the hand he chooses.
+
+@lore e3.lore.per_af
+chain: e3.per_af
+layer: deep
+where: node e3.list.read
+about: Walter Mott at the rail, twenty years on, saying aloud that his father left Anni's father blank because old Abel Furrowe came down to the counter himself and said, Leave it, Edwin.
+
+@chain e3.margin
+name: Who's been, Mott
+# both classes hear it from Mott after hours: the boy's visit remembered and said to Holt on the Thursday stairs
+route: one-run | e3.lore.register, e3.lore.margin
+
+@lore e3.lore.register
+chain: e3.margin
+layer: surface
+where: node e3.office.oren
+about: Walter Mott calling Oren Tesk Haldane aloud at the rail, Haldane, O., husband, and the boys after him, so the queue hears it and it's said, before he takes down an iron key and not a bright one.
+
+@lore e3.lore.margin
+chain: e3.margin
+layer: deep
+where: node e3.margin.walter
+about: Walter Mott after hours with the Sallis bottle: his father taught him to remember every caller to an official and say who when asked, and on the Thursday stairs Holt asked, and he said the Haldane boy.
+
+@chain e3.book
+name: Dorrah's cord
+# the cut photograph at the Haldane room, and the knot cord thrown out of the Well House window
+route: one-run | e3.lore.photo_cut, e3.lore.tesk_book
+
+@lore e3.lore.photo_cut
+chain: e3.book
+layer: surface
+where: node e3.list.home
+about: The Haldane five, from about year five, in a frame on the room's one shelf: four of them on a bench in the yard, and a clean scissor cut down one side where the fifth was.
+
+@lore e3.lore.tesk_book
+chain: e3.book
+layer: deep
+where: node e3.fire.book
+about: Dorrah Tesk's knot cord from the Well House wall, a blue knot for every Hesh child born in the town in forty years and a black one tied over it at each burial, burnt through at the outer coils and blue further in, with Bet's black knot tied last month over the blue one.
+
+@chain e3.carried
+name: What was said on the Crown's steps, and in the granary
+# the carried words pass one generation: Ned to Pell on the step, Will to Davey in the kitchen; and Walter, who saw
+# Will go past the window with the boy, so each class completes it in one run
+route: one-run | e3.lore.carry_f, e3.lore.carry_seen
+route: one-run | e3.lore.carry_b, e3.lore.carry_seen
+route: two-classes | e3.lore.carry_f, e3.lore.carry_b
+
+@lore e3.lore.carry_f
+chain: e3.carried
+layer: deep
+where: node e3.carry.ned
+requires: class inspector
+about: What Ned tells Pell on the step, word for word as Will said it to him on the Crown's steps in the hard winter, and who said it first.
+
+@lore e3.lore.carry_b
+chain: e3.carried
+layer: deep
+where: node e3.carry.will
+requires: class militia
+about: What Will tells Davey at the kitchen table, the first time he has said it to anybody but Edie: I carried him. You don't need two for that.
+
+@lore e3.lore.carry_seen
+chain: e3.carried
+layer: deep
+where: node e3.margin.walter
+requires: choice has(q.tomas_held)
+about: Walter Mott saw Will Brack go past the office window in the hard winter with the Haldane boy on his shoulder, on his own, toward the burial ground, and said so to Holt the Thursday after.
+
+# ---------------------------------------------------------------- the senses of era 3 (world/senses.mjs; weighted-devices pass, 2026-10-23)
+# The allocation is keys and a man looking at your wrists; the fever is chalk, smell and two carts; the well talk is a
+# voice in the queue; the fire is heat, glass and a roof. No flash and no saturated red in the fire (F5).
+@sense e3.keys
+sound: chain 0.35 near 1.2
+caption: keys moving against each other on their hooks
+rumble: 0.05 0.2 220
+
+@sense e3.key_down
+sound: knock 0.25 near
+caption: a key laid down on cloth
+rumble: 0.05 0.4 90
+camera: push 1.5 1.2
+hold: 0.8
+
+@sense e3.bundle_down
+sound: thud 0.45 near
+caption: a bundle dropped on a stone step
+rumble: 0.35 0.05 160
+
+@sense e3.bundle_shift
+sound: drag 0.2 near 0.8
+caption: cloth sliding on a shoulder
+hold: 0.6
+
+@sense e3.knock_quiet
+sound: knock 0.25 near
+caption: a quiet knock
+rumble: 0.12 0 50
+rumble: 0.12 0 50 260
+
+@sense e3.ruler
+sound: snap 0.65 near
+caption: a ruler's edge on knuckles
+screen: shake 0.15 0.2
+anim: player flinch 0.6
+rumble: 0.2 0.6 80
+hold: 0.8
+
+@sense e3.room_close
+screen: vignette 0.3 3
+sound: breath 0.2 near 2
+caption: close air, other people's breath
+
+@sense e3.bread
+sound: breath 0.15 near 1
+caption: a child's breath let out
+rumble: 0.05 0.1 200
+
+@sense e3.coat_on
+sound: drag 0.25 near 1
+caption: a heavy coat pulled on
+rumble: 0.15 0.05 300
+
+@sense e3.pan_down
+sound: chain 0.6 near 0.8
+sound: thud 0.7 near
+caption: the scale pan torn off its chain and hitting the cobbles
+screen: shake 0.3 0.35
+rumble: 0.7 0.3 260
+
+@sense e3.bone
+sound: snap 0.7 near
+caption: a bone breaking
+screen: shake 0.25 0.25
+anim: player flinch 0.8
+rumble: 0.6 0.8 120
+hold: 1
+
+@sense e3.queue_voice
+sound: queue 0.35 near 3
+sound: murmur 0.3 near 2
+caption: a quiet voice behind you in the queue
+screen: vignette 0.3 2.5
+hold: 1
+
+@sense e3.nails
+sound: knock 0.75 near
+sound: knock 0.75 near
+caption: nails going into boards
+rumble: 0.4 0.2 70
+rumble: 0.4 0.2 70 400
+rumble: 0.4 0.2 70 800
+
+@sense e3.rat
+screen: tint #9a9a60 0.12 3
+sound: breath 0.2 near 1.2
+caption: a breath caught against a smell
+anim: player turn 0.8
+
+@sense e3.dread
+sound: heart 0.35 under 2.4
+caption: your heart, loud in your ears
+rumble: 0.25 0 70
+rumble: 0.15 0 70 180
+screen: vignette 0.25 2.4
+
+@sense e3.fever_smell
+screen: tint #b0a878 0.1 4
+sound: cough 0.35 wall 2
+caption: coughing through the wall
+
+@sense e3.chalk
+sound: drag 0.3 wall 1.2
+caption: chalk scraping on a door
+rumble: 0.05 0.15 400
+
+@sense e3.dead_cart
+sound: cart 0.4 far 4
+caption: a cart's wheels in the street outside
+screen: dim 0.15 4
+
+@sense e3.cart_wheel
+sound: cart 0.45 near 3
+caption: a handcart's dry wheel squeaking
+rumble: 0.1 0.1 180
+rumble: 0.1 0.1 180 600
+
+@sense e3.ward_air
+screen: tint #c8d0b8 0.12 4
+sound: cough 0.45 near 2
+caption: coughing behind a sheet
+hold: 0.8
+
+@sense e3.last_breath
+sound: breath 0.3 near 3
+caption: a long breath going out
+screen: dim 0.3 4
+hold: 2
+
+@sense e3.counting
+sound: murmur 0.25 wall 3
+caption: a man counting under his breath in the next room
+screen: vignette 0.3 3
+
+@sense e3.curtain
+sound: drag 0.3 near 0.8
+caption: curtain rings running on a string
+rumble: 0.05 0.15 150
+
+@sense e3.song
+sound: murmur 0.3 wall 4
+caption: singing, low, through a wall
+hold: 0.6
+
+@sense e3.glass
+sound: snap 0.8 near
+caption: a window breaking
+screen: shake 0.2 0.25
+rumble: 0.4 0.6 140
+
+@sense e3.fire
+sound: brazier 0.8 near 6
+caption: a building burning
+screen: tint #c89058 0.14 6
+rumble: 0.35 0.1 900
+anim: player flinch 0.6
+
+@sense e3.roof
+sound: thud 1 near
+sound: creak 0.8 near 1.4
+caption: a roof falling in
+screen: shake 0.5 0.8
+rumble: 1 0.4 500
+camera: dip 0.4 1
+
+@sense e3.coal
+sound: knock 0.5 far
+caption: lumps of coal hitting stone
+rumble: 0.2 0.1 80
+
+@sense e3.truncheon
+rumble: 0.45 0.05 300
+anim: player bent 0.6
+sound: thud 0.2 near
+caption: a weight settling into the hand
+
+# ---------------------------------------------------------------- what the player's man carries in era 3 (world/burden.mjs)
+@load e3.load.key
+name: A far-bank key on a brass tag
+weight: 0.2
+line: Heavy for its size, and cold. The tag is warm from the man's pocket it came out of.
+sense: e3.key_down
+
+@load e3.load.handle
+name: The back handle of a handcart with Bet on it
+weight: 26
+line: The handle comes up and Bet comes up with it, lighter than you'd think, and hot right through the blanket.
+sense: e3.cart_wheel
+
+@load e3.load.sacks
+name: The Sholls' bed of sacks
+weight: 18
+line: Damp sacks, five of them stitched into one, heavy as a wet sheep. They smell of the children.
+
+@load e3.load.cord
+name: Dorrah's knot cord
+weight: 4
+line: A rope's weight, still warm. The knots go through your fingers one after another, blue and black.
+
+# ---------------------------------------------------------------- the echoes: each fate met later, in the place (world/echo.mjs)
+# Every era 3 fate changes a place the story brings the player back to: the Mott house stairs, the hall, the Well House
+# yard in the morning, the Furrowe hall stand. Weighted-devices pass, 2026-10-23.
+@echo e3.e.sallis_step
+place: q3_mott_house
+when: has(e3.flat_pell)
+tells: fate f.e3_flat
+line: The Sallis bundles are stacked on the attic stairs where the board's cart tipped them, tied in sheets, with the far-bank dust still on them. Old Arn steps round them every time he goes up, as if they were somebody else's.
+sense: e3.bundle_down
+
+@echo e3.e.sallis_key
+place: q3_mott_house
+when: has(e3.flat_sallis)
+tells: flag e3.flat_sallis
+line: Old Arn Sallis has the far-bank key on a bootlace round his neck, outside his shirt, where the whole table can see it. He touches it when he sits down, and when he gets up.
+sense: e3.keys
+
+@echo e3.e.anni_wrists
+place: q3_mott_house
+when: has(e3.list_signed)
+tells: fate f.e3_list
+line: The shawl bundle is gone from under the shelf, over the bridge on the board's cart. Anni sleeps here still, till the plaster's dry. She keeps her sleeves pulled down over her wrists, and Ilo doesn't look at them.
+sense: thread.snap
+
+@echo e3.e.coat
+place: q3_mott_house
+when: has(e3.aaron_taken)
+tells: fate f.e3_aaron
+line: A militia coat hangs on the newel post at the bottom of the stairs, too big for anybody in the house but the dead man it was boiled off. The hall smells of the ward because of it.
+sense: e3.coat_on
+
+@echo e3.e.boots_grey
+place: q3_mott_house
+when: has(e3.aaron_turned)
+tells: flag e3.aaron_turned
+line: Aaron's boots are by the door where Bet keeps them, the ones she blacked for the squad room. They're grey to the laces with cement now, and nobody blacks them.
+
+@echo e3.e.landing
+place: q3_mott_house
+when: has(e3.bet_dead) & seen(e3.sholl)
+tells: fate f.e3_bed
+show: absent q.bet
+line: The pallet is gone off the landing. The boards where it lay have been scrubbed with lime till they're white, and the whole stair smells of lime, and under it, still, faintly, the sweet smell.
+sense: e3.fever_smell
+
+@echo e3.e.back_room
+place: q3_mott_house
+when: has(e3.sholl_named)
+tells: fate f.e3_sholl
+show: sound drip 0.2 near
+line: The door under the stairs stands open on a bare floor. The sacks are gone. Low on the newel post at the bottom of the stairs there are four small scratches in the varnish where a boy held on.
+sense: chair.empty
+
+@echo e3.e.split
+place: q3_mott_house
+when: has(e3.haldane_split)
+tells: flag e3.haldane_split
+show: absent q.anni
+line: The curtain across the Haldane room is down off its string and folded on the end of the bed, the blue end on top. Nobody has slept behind where it was since the Thursday.
+sense: room.cold
+
+@echo e3.e.well_shell
+place: q3_well_house
+when: has(e3.door_barred)
+tells: fate f.e3_well
+show: light cold
+line: In the morning the Well House is a black box with no roof. The spring still runs out under the doorstep, through the soot, and steams in the frost. The shaft is still through the door handles.
+sense: room.burnt
+
+@echo e3.e.ilo_peg
+place: q3_mott_house
+when: has(e3.ilo_dead)
+tells: fate f.e3_well
+show: absent q.ilo
+line: In the hall the peg by the front door where Ilo hung his hat is bare. Nobody hangs anything on it. The children go round it.
+sense: chair.empty
+
+@echo e3.e.ilo_hands
+place: q3_mott_house
+when: has(e3.door_opened)
+tells: flag e3.door_opened
+show: person q.ilo still
+line: Ilo sits at the end of the door table with his hands in his lap, wrapped in strips of sheet to the wrist. When the pot comes round somebody holds his spoon for him, and he lets them.
+
+@echo e3.e.tomas_coat
+place: q3_furrowe_hall
+when: has(e3.tomas_ridge)
+tells: fate f.e3_tomas
+line: Your coat isn't on the hall stand. Your mother has hung your father's old one on your peg instead, and hasn't said anything about it, and won't.
+sense: room.cold

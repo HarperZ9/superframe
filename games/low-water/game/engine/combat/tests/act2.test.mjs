@@ -75,7 +75,7 @@ test("without the lesson the boathook and pole heavies are plain; with it a paid
   assert.equal(lambDef({}, "w.pole").tool.special, "none");
   const hook = makeWorld({ brains: false, foes: [], tool: "w.boathook", lamb: { coat: 3 }, learned: ["hookpull"] });
   assert.ok(hook.moves["lamb:hookpull"].knockdown && hook.moves["lamb:hookpull"].knock < 0, "the hook-pull drags");
-  const L = hook.lamb();
+  const L = hook.lamb(); L.composure = 0; // Lamb starts a fight with the calm for one exchange (roster.mjs composureStart); spent here
   assert.ok(run(hook, 1, press("heavy")).some((e) => e.move === "lamb:heavy"), "without Composure: the plain heavy");
   const hook2 = makeWorld({ brains: false, foes: [], tool: "w.boathook", lamb: { coat: 3 }, learned: ["hookpull"] }); hook2.lamb().composure = 4;
   assert.ok(run(hook2, 1, press("heavy")).some((e) => e.move === "lamb:hookpull"), "with Composure: the hook-pull");

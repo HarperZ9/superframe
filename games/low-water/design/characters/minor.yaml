@@ -1,0 +1,42 @@
+format: lw-character/1
+# Speakers with a few lines each. One entry each; expand to a full sheet when a scene gives them more.
+people:
+  - speaker: MAB
+    name: Mab Whelk
+    background: {trade: Gutter at the Gut's open gutter, the pale apron., family: Her twin, Noll; they finish each other's sentences.}
+    register: Half-sentences picked up by Noll. Gut speech, blunt.
+  - speaker: NOLL
+    name: Noll Whelk
+    background: {trade: Gutter, the dark apron., family: Mab.}
+    register: Starts what Mab finishes, or the other way round.
+  - speaker: DACE
+    name: Hal Dace, master of the barge Patience
+    background: {trade: Barge master; the Patience lies on her side on the Spit., money: His barge and its insurance, which the Shelf may not pay.}
+    register: Reads his log aloud as if it were scripture.
+    good_lines: ["Fourteenth of March. Head Light green, est. half power. Altered course to keep the Spit to starboard by eye. Master's prayer offered."]
+  - speaker: ORME
+    name: Bet Orme, master of the Ann Tull
+    background: {trade: Barge master; the Ann Tull lies beside the Patience., money: Counts money on her fingers while she talks.}
+    register: Brisk, angry, money first.
+    good_lines: ["Can't, won't, may not. I've a barge on her side and a crew being paid in promises. Say no in English."]
+  - speaker: FEWELL
+    name: Fewell, Lamplighter
+    register: One line each, written down by Gorm. Works the pole pair.
+  - speaker: STRAND
+    name: Strand, Lamplighter
+    register: Counts under his breath.
+  - speaker: BRIGHT
+    name: Bright, Lamplighter
+    register: The mole guard; bored, cold, polite.
+  - speaker: COE
+    name: Coe, Lamplighter
+    register: The switch-room guard; says the regulations.
+  - speaker: GUARD
+    name: A Board guard
+    register: Generic; orders and nothing else.
+  - speaker: VARTY
+    name: The master of the Ellen Varty
+    register: Heard by speaking trumpet in a gale, if at all. Orders to his crew, partly in Kell.
+  - speaker: CAPTAIN
+    name: Captain Hale Dunlin (the small thing in the gutter's glow)
+    register: Says almost nothing. Must stay unexplained (EDITOR-NOTES L9).

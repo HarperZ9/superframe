@@ -1,6 +1,7 @@
 // Small DOM helpers shared by every panel.
 //   h("div.sheet.menu", { onclick }, child, "text", [more])   element with classes, props, children
 //   btn("New game", fn, { key: "N" })                           a focusable button
+import { notify } from "./notify.mjs";
 export function h(tag, props = {}, ...kids) {
   if (props == null || typeof props !== "object" || props instanceof Node || Array.isArray(props)) { kids.unshift(props); props = {}; }
   const [name, ...cls] = tag.split(".");
@@ -50,10 +51,8 @@ export const store = {
 };
 
 // Short-lived notes at the top of the screen for what the night does.
+// One stack for all of them (ui/notify.mjs): spaced, capped, folded by kind, clear of the panels.
 export function toast(kind, text, ms = 3200) {
-  const box = document.getElementById("toasts"); if (!box) return;
-  const t = h("div.toast.fade-in", h("span.caps", kind), text);
-  box.append(t);
-  while (box.children.length > 4) box.firstChild.remove();
-  setTimeout(() => t.remove(), ms);
+  if (!document.getElementById("toasts")) return;
+  notify({ kind, text: String(text).trim(), ms });
 }

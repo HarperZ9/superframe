@@ -1,0 +1,131 @@
+# Low Water, Act 1: the first encounter, on the mole steps at the berth (22:43). Game director,
+# 2026-10-21. Design: design/DIRECTOR.md, "The first fifteen minutes". Private.
+# Why: in the scripted runs three of five builds met no fight in all of Act 1, and none met one
+# before the tenth minute, so a player who bought the game for its fighting could close it at
+# minute fifteen without having held a tool. This puts one short encounter in front of every
+# player in the third minute. The man with the boathook is Sallis, a Gullet warden the Board has not
+# paid for four months: the same man who reads the claim at the muster on Night 2 and goes up the
+# mole on Night 3. The first fight and the last confrontation have the same face. It is also the antagonist's first move: the Board's procedure wants
+# the claim unread, and sends two men to take the case "into the Board's keeping".
+# The scene costs no clock (the berth menu reads the ship's clock at 22:47); a fight spends its own seconds.
+# Routes: give the case up (no fight); slip up the steps among the passengers (Shadow); or keep
+# hold of it, which is a fight on wet stone in the spray with two ways to talk out of it once Lamb
+# has held ground (the game's signature: words inside a fight), and a way to leave up the steps.
+# Story lead: rewrite the words freely; keep the routes, the gates and the effects.
+
+@fact open.case_given
+@fact open.case_kept
+@fact open.slipped
+@fact met.wardens
+@fact met.sallis
+
+@char sallis
+name: Sallis
+speaker: SALLIS
+faction: board
+about: A Gullet man, a tide-warden, four months unpaid by the Board. Carries the boathook. On the third night he goes up the mole with a lantern.
+
+@char prothero
+name: Prothero, tide-warden
+speaker: PROTHERO
+faction: board
+about: The other warden from Hesk. Carries the chain like a scarf. Says the thing Cobb is thinking.
+
+@encounter e.open
+name: The Board's keeping
+area: mole
+opening: alerted
+foe: f.warden 2
+talk: fx.open.sealed | Say the case is sealed property of the Shelf ? fight_seconds >= 5
+talk: fx.open.time | Read them the claim's time, aloud ? fight_seconds >= 8 & has(claim.time)
+win: open.fight.win
+yield: open.fight.yield
+fled: open.fight.fled
+down: open.fight.down
+
+@node open.wardens
+place: mole_steps
+speaker: SALLIS
+cost: 0
+do: set(met.wardens); set(met.sallis)
+nar: Halfway up the steps two men in the Board's dark oilskins come down through the passengers against the stream, one with a boathook, one with a chain looped over his shoulder like a scarf.
+line: SALLIS: Shelf? I'll take that case up for you. Board's orders. They want it in the office before anybody reads it wrong.
+nar: He has a Board armband pinned on over a darned elbow.
+line: PROTHERO: Wet steps. Easy to drop a thing in the harbour on wet steps.
+voice: smallprint: Before anybody reads it wrong. Not before anybody reads it. {dc: 4}
+voice: grip: Both hands are already on the handle. They went there by themselves. {dc: 3}
+inst: THE VANE: Spray on the left, every eight seconds, the whole width of the steps! Whoever stands on the left gets it! {when: quay.trusted == vane}
+opt: "Hand over the case." -> open.give
+opt: "Go up the steps among the passengers, with the case under the coat." -> open.slip {verb: hide, noise: 0.2}
+opt: "Keep hold of it." -> open.fight
+
+@node open.give
+place: mole_steps
+cost: 0
+do: set(open.case_given); rep(board, 1)
+nar: The man with the boathook takes the case by its handle the way a man takes a cat by the neck, and the two of them go up the steps with it. The assessor follows with empty hands.
+nar: At the top, under the first sodium lamp, the harbourmaster takes the case from his warden, holds it a moment as if weighing it, and gives it back without opening it.
+line: KEEL: The Board did not ask for that. The Board's men are keen. The Board apologises to the Shelf.
+voice: precedent: He has not opened it. He did not need to. He wanted to know whether you would let go. {dc: 5}
+go: quay.pro.berth.menu
+
+@node open.slip
+place: mole_steps
+cost: 0
+do: set(open.slipped)
+nar: A woman with three hat boxes, a man with a crate of eggs, the master's boy with the mail bag: the assessor goes up inside them like a coin in a purse, with the case flat under the coat.
+nar: Behind, on the steps, the man with the chain is asking the egg man whether he is the Shelf. The egg man says he is not, at length.
+voice: dark: Nobody looks for a face in a crowd coming off a boat. They look for the case. {dc: 4}
+go: quay.pro.berth.menu
+
+@node open.fight
+place: mole_steps
+cost: 0
+do: set(open.case_kept); fight(e.open)
+nar: The boathook comes for the case's handle, low and patient, and the spray comes over the steps behind it.
+
+@node fx.open.sealed
+place: mole_steps
+cost: 0
+line: LAMB: This case is sealed property of the Mutual Indemnity of the Lower Shelf. Anybody who opens it opens a claim against the Board. Somebody write that down.
+nar: The man with the chain looks at the man with the hook. Neither of them is going to write anything down. Both of them know who would have to.
+go: open.fight.yield
+
+@node fx.open.time
+place: mole_steps
+cost: 0
+line: LAMB: Claim 4471. Time of claim, half past six. Time of loss, three hours later. Who sent you down for it?
+nar: Three passengers on the steps stop to listen, and one of them is the master's boy with the mail bag, who repeats "three hours later" to the man behind him.
+line: PROTHERO: Nobody sent us. We came.
+go: open.fight.yield
+
+@node open.fight.win
+place: mole_steps
+cost: 0
+do: rep(board, -1)
+nar: The boathook is in the harbour and the man who held it is sitting on the steps holding his wrist. The other one has stepped back into the spray and is very wet and very thoughtful.
+voice: ballast: Wet stone, and you stayed on it. They did not. {dc: 4}
+voice: pride: Three minutes in Gullet. A fight on the steps, in front of the ferry. The town will have it by morning. {dc: 3}
+go: quay.pro.berth.menu
+
+@node open.fight.yield
+place: mole_steps
+cost: 0
+nar: The man with the chain lets it slide off his shoulder onto the step. They go back up the steps in step, and at the top they stand either side of the first sodium lamp and watch.
+voice: condolence: They were sent for a case. Neither of them wanted the fight. {dc: 4}
+go: quay.pro.berth.menu
+
+@node open.fight.fled
+place: mole_steps
+cost: 0
+nar: The assessor goes up the steps two at a time with the case in both arms. Heavy men on wet stone are careful men. Nobody follows past the lamp.
+go: quay.pro.berth.menu
+
+@node open.fight.down
+place: mole_steps
+cost: 6
+do: wet(0.6); meter(cold, 2); rep(board, -1)
+nar: The steps go out from under the assessor and the next thing is the stone against one cheek and the spray going over in a sheet.
+nar: The case is still there, under the assessor, both hands on its handle. The men have gone. The ferry's passengers step round the Shelf on their way up, politely, as round a puddle.
+voice: grip: The hands did not let go. Remember that. They know something you don't. {dc: 3}
+go: quay.pro.berth.menu

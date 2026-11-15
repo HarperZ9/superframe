@@ -114,3 +114,35 @@ Still to build: a hand region kit (knuckles, nails, fingers posed per hand shape
 follows the coat springs (a forged skirt is skinned to the skirt joints, which works but was not
 tuned), paint stamped from 2D images in bind space (a pattern, a badge), and a browser editor that
 shows a sheet updating as it is edited.
+
+## 7. The head sculptor (ART-DIRECTION 7.1, 2026-10-21)
+
+Every face used to come from one parametric head with a narrow range, so the cast read as one
+person. Now every speaking part has a head sheet in `characters/forge/heads.cast.mjs`, and
+`cast/parts.mjs` `head()` builds that person's head with the sculptor whenever a sheet exists.
+
+- **Sheets.** The keys of `design/art/heads.json` (copied unchanged for Keel, Lamb and Sabine; a
+  test checks the copy) plus the sculptor's: a boxed or egged cranium, a boxed face, squared jaw
+  corners, chin width, hollow cheeks, a two-segment nose, a muzzle, nasolabial folds, eye bags,
+  sculpted brows (lift, tilt, thickness), ear stand-out, a double chin, an Adam's apple and a
+  toothless collapse. `forge/headkeys.mjs` gives each key a natural range and a slider range at
+  least twice as wide. Each sheet also names one idea ("a brick", "a long thin candle"), its
+  hair and beard as sculpted volume (crop, wild, bun, roll, fringe, under a cap, tied, swept;
+  short, full, moustache, walrus, sideburns), paint (warm and cool zones, stubble, freckles,
+  blotches, soot with pale eye rings, broken veins), displacement layers, and its neck and
+  collar record. A sheet without a collar fails validation.
+- **Detail per level of detail.** Displacement layers (creases, prune wrinkles, crow's feet, deep
+  lines) give amplitude and frequency per LOD; `forge/detail.mjs` drops any layer above the
+  lower of the mesh limit (a period of four cells) and the screen limit (three pixels at the LOD's
+  top scale), and reports the drop. Head cells: near 3 mm, mid 7 mm, far 16 mm.
+- **Exact distance where it is read.** Ellipsoids in the head blend on their exact distance inside
+  a band round the surface (`forge/ellipsoid.mjs`), the bound outside it. The baked maps read the
+  exact distance to the baked mesh itself (`forge/maps.mjs`).
+- **Bake.** `node characters/forge/bakeheads.mjs` writes `characters/forged/heads/<who>-<lod>.lwmesh`
+  for every sheet at three LODs with curvature, thickness and cavity per vertex in the same file,
+  and `report.json` with counts, timings and map quantiles. The runtime still sculpts the far head
+  at load (about 50 ms a person in Node); loading these files instead is open.
+- **Faces carry props.** The sculptor leaves anchors on the mesh (`M.headAnchors`: mouth, eyes), and
+  `cast/face.mjs` puts pipes in mouths and spectacles on eyes from them.
+- **Tests:** `node characters/proto/heads_test.mjs`. The blind distinctness test is
+  `characters/heads-test/PROTOCOL.md`.

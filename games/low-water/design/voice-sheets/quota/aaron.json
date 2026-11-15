@@ -1,0 +1,67 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "AARON",
+ "setting": "quota",
+ "status": "draft 2026-10-21 from design/quota/02-HOUSEHOLDS.md by the voice director; generated from design/voice/quota-cast.json, edit that file",
+ "role": "Aaron Haldane: a boy who walks at the horse's head",
+ "age": "9",
+ "register": {
+  "level": "plain",
+  "education": "the Upper Town school",
+  "class": "poor",
+  "trade": "a boy who walks at the horse's head",
+  "words": [
+   "the cart",
+   "the post",
+   "them",
+   "Tomas"
+  ]
+ },
+ "region": {
+  "name": "half-hesh",
+  "markers": [
+   "you've not",
+   "they've"
+  ],
+  "idioms": [
+   "went to the hills"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 14
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "the cart was turned back",
+   "Tomas was taken"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "died",
+     "dead",
+     "the cell"
+    ],
+    "why": "the family is not told how Tomas died (02-HOUSEHOLDS, Haldane)",
+    "unless_gate": [
+     "haldane.told"
+    ]
+   }
+  ]
+ },
+ "trade": "a boy who walks at the horse's head",
+ "wound": "Tomas (derived: the brother he could not follow)",
+ "lie": "He went to the hills.",
+ "fears": "Tomas (derived: the brother he could not follow)",
+ "hides": "He went to the hills.",
+ "tics": [
+  "went to the hills"
+ ]
+}

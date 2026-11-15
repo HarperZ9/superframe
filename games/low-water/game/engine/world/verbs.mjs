@@ -20,6 +20,8 @@
 //   carry             Lamb carries the item (item: id, default the object): slower and louder
 //                     in sneaks and runs, no hand for a lantern; drop() puts it down
 //   weigh, mark       nothing built in (effects and flags make them)
+//   examine           a @prop's text for its era and state (world/props.mjs); every @prop gets this verb
+//   touch             a hand on a @prop (its touch: lines, world/props.mjs): hold, cut, tie, lift and the rest
 //   wait              lets time pass in steps (step: 5) until the condition until: holds, at most
 //                     max: 60 minutes, with the meters running
 // @spot id (NOTES V1) is an object with one verb: area or place, at (x y z r), verb (a kind),
@@ -46,8 +48,8 @@ registerCalls({
   after: (G, _, [m, src]) => G.timers.add(+m, String(src)),
 }, { did: "object", hide: "object", carry: "item" });
 
-export const VERB_KINDS = ["climb", "wade", "hide", "douse", "light", "power", "cutpower", "pry", "rig", "salvage", "eavesdrop", "read", "throw", "carry", "weigh", "mark", "wait"];
-const NOISE = { climb: 0.4, wade: 0.8, hide: 0, douse: 0.2, light: 0.2, power: 0.6, cutpower: 0.6, pry: 0.9, rig: 0.4, salvage: 0.5, eavesdrop: 0, read: 0, throw: 0, carry: 0.3, weigh: 0.2, mark: 0.1, wait: 0 };
+export const VERB_KINDS = ["climb", "wade", "hide", "douse", "light", "power", "cutpower", "pry", "rig", "salvage", "eavesdrop", "read", "throw", "carry", "weigh", "mark", "wait", "examine", "touch"];
+const NOISE = { climb: 0.4, wade: 0.8, hide: 0, douse: 0.2, light: 0.2, power: 0.6, cutpower: 0.6, pry: 0.9, rig: 0.4, salvage: 0.5, eavesdrop: 0, read: 0, throw: 0, carry: 0.3, weigh: 0.2, mark: 0.1, wait: 0, examine: 0, touch: 0 };
 const SPOT_KEYS = ["noise", "once", "skill", "dc", "red", "give", "uses", "text", "cost", "light", "sodium", "zone", "to", "who", "range", "dir", "inst", "cover", "wet", "item", "minutes", "step", "until", "max"];
 
 // A @spot record as an object with one verb (NOTES V1).
@@ -98,7 +100,9 @@ function makeVerb(kind, label, cond, attrs, line) {
 
 export function createVerbs(G, objects) {
   const V = () => (G.state.verbs ||= {}), key = (o, v) => `${o.id}:${v.kind}`;
-  const here = (o) => (o.place ? o.place === G.state.place : o.area ? o.area === G.state.area : false);
+  // a prop's examine object may stand elsewhere in a later era (world/props.mjs in:)
+  const placeOf = (o) => (o.places && o.places[+G.state.vars.era || +(G.book.meta || {}).era || 1]) || o.place;
+  const here = (o) => (placeOf(o) ? placeOf(o) === G.state.place : o.area ? o.area === G.state.area : false);
   const name = (id) => (G.rs.items[id] ? G.rs.items[id].name : id);
   function why(o, v) {
     for (const id of v.needs) if (!G.inv.count(id)) return `Needs ${name(id)}`;
@@ -114,7 +118,7 @@ export function createVerbs(G, objects) {
     list(place = null) {
       const out = [];
       for (const o of Object.values(objects)) {
-        if (place ? o.place !== place : !here(o)) continue;
+        if (place ? placeOf(o) !== place : !here(o)) continue;
         for (const v of o.verbs) if (offered(o, v)) out.push({ object: o, verb: v, label: v.label || o.name, why: why(o, v),
           check: v.attrs.skill ? G.checks.preview(key(o, v), v.attrs.skill, +v.attrs.dc, v.attrs.red ? "never" : "raise") : null });
       }
@@ -162,6 +166,8 @@ function builtIn(G, o, v, lines) {
     case "carry": G.verbs.carry(String(A.item || o.id)); break;
     case "wait": { const step = +(A.step || 5), max = +(A.max || 60); for (let t = 0; t < max && !(v.until && evaluate(v.until, G.scope)); t += step) G.advance(step); break; }
     case "read": { const out = A.inst ? G.instruments.read(A.inst) : null; if (out) lines.push({ kind: "inst", who: out.who, text: out.text }); break; }
+    case "examine": if (G.props && G.props.all[o.id]) lines.push(...G.props.examine(o.id)); break; // a @prop (world/props.mjs)
+    case "touch": if (G.props && G.props.all[o.id]) lines.push(...G.props.touch(o.id, +v.attrs.touch || 0)); break; // a hand on a @prop
     default: break;
   }
 }

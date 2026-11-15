@@ -3,8 +3,21 @@
 // figure stands on, so a build cannot pass by changing what the check imports.
 // Returns { figures: [...], shadow: {...}, fails: [...] } for the view on screen.
 async (opts) => {
-  const { bodyR = 0.25, propStep = 0.4, head = 2.0, minProp = 3, band = [0.25, 2.0], offFloorMax = 0.03, stackMax = 40 } = opts || {};
-  const c = window.__lw, G = c.G, play = c.play, cam = play.cam, place = cam.place(), geo = cam.geo(), fr = cam.frameNow();
+  const SCREEN_MAX = (opts && opts.screenMax) || 0.04;   // painted mode: pixel-scale energy of a dither screen (the unpainted fallback)
+  const BLOTCH_MAX = (opts && opts.blotchMax) || 0.02;   // painted mode: the share of surface interiors compact blotches may cover
+  const WAY_MIN = 0.6;   // glyph mode: the share of a way out's outline cells that must show its mark
+  const LEGIBLE_MIN = (opts && opts.legibleMin) || 0.75;   // glyph mode: the share of the plate's structural blocks that must read
+  const { bodyR = 0.25, propStep = 0.4, head = 2.0, minProp = 3, band = [0.25, 1.6], offFloorMax = 0.03, stackMax = 40 } = opts || {};
+  // judge a settled frame: the figures on the layer are drawn with the camera of the frame they were drawn
+  // in, so a camera still easing by a pixel puts the check's reading of the plate a pixel off the drawing
+  // (shadow rims then read as on a stool's top: brine-bar, 2026-10-21). Wait until the camera holds for two frames.
+  if (window.__lw.play.renderers && window.__lw.play.renderers.mode && window.__lw.play.renderers.mode() === "glyph") globalThis.__lwGlyphMasks = true;   // the glyph frame marks the cells figures and panels set
+  { const cm = window.__lw.play.cam, key = () => { const f = cm.frameNow(); return f ? `${f.left},${f.top},${f.zoom}` : ""; }, raf = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    for (let i = 0, k = key(); i < 60; i++) { await raf(); const k2 = key(); if (k2 === k) break; k = k2; } }
+  const c = window.__lw, G = c.G, play = c.play, cam = play.cam, place = cam.place(), geo = cam.geo(), fr0 = cam.frameNow();
+  // read the plate through the camera the figures on screen were drawn with (the people layer records it),
+  // so a follow camera still easing between the drawing and this reading cannot shift the shadows off the floor
+  const pv = play.people && play.people.canvas && play.people.canvas.dataset.view, fr = pv ? (([l, t, z]) => ({ ...fr0, left: l, top: t, zoom: z }))(pv.split(",").map(Number)) : fr0;
   if (!place || !geo || !fr) return { error: "the plate is not ready" };
   const { plateArena } = await import("/engine/combat/sim/plate.mjs");
   const A = plateArena(place, geo.pos, geo.ids, { cell: 0.25, datum: place.datum || null }), { w, h, cells } = A.grid, cs = A.cell, [ox, oz] = A.origin;
@@ -37,9 +50,10 @@ async (opts) => {
     const floorAround = med(around), onTop = floorAround != null && f.at[1] - floorAround > 0.3;
     const body = [], ring = [];
     // figure pixels drawn where the painting stands more than 0.5 m nearer than the figure (a counter or wall in front): occlusion failures
+    // a hanging thing (lamp, beam) more than 1.95 m above the figure's floor over open floor is let through by design (platecam depthAt with floorY): not counted
     // each body pixel's own depth: h metres up the figure is h x sin(elevation) nearer than the feet under the bake camera (character lead's correction)
     const fd = cam.depthOf ? cam.depthOf(f.at) : null, sinE = Math.sin(((place.camera.elevDeg || 30) * Math.PI) / 180); let drawnOver = 0;
-    for (let sy = y - 2.0 * ppm; sy < y - 0.15 * ppm; sy += Math.max(1, ppm / 40)) for (let sx = x - 0.45 * ppm; sx < x + 0.45 * ppm; sx += Math.max(1, ppm / 40)) { const p = px(sx, sy); if (p && p.a > 0.9) { body.push(p.l); if (fd != null && cam.depthAt && cam.depthAt(sx, sy) < fd - ((y - sy) / ppm) * sinE - 0.5) drawnOver++; } }
+    for (let sy = y - 2.0 * ppm; sy < y - 0.15 * ppm; sy += Math.max(1, ppm / 40)) for (let sx = x - 0.45 * ppm; sx < x + 0.45 * ppm; sx += Math.max(1, ppm / 40)) { const p = px(sx, sy); if (p && p.a > 0.9) { body.push(p.l); if (fd != null && cam.depthAt && cam.depthAt(sx, sy, f.at[1]) < fd - ((y - sy) / ppm) * sinE - 0.5) drawnOver++; } }
     for (let sy = y - 2.3 * ppm; sy < y + 0.4 * ppm; sy += Math.max(1, ppm / 20)) for (let sx = x - 1.6 * ppm; sx < x + 1.6 * ppm; sx += Math.max(1, ppm / 20)) { if (Math.abs(sx - x) < 0.6 * ppm && sy > y - 2.1 * ppm) continue; const l = plateLum(sx, sy); if (l != null) ring.push(l); }
     // a figure's own one-pixel feather is not a shadow: skip pixels within 2 px of an opaque figure pixel (character lead's correction)
     const nearBody = (sx, sy) => { for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const q = px(sx + dx, sy + dy); if (q && q.a > 0.9) return true; } return false; };
@@ -115,6 +129,127 @@ async (opts) => {
   out.shadow = { pixels: shadows.length, offFloor: shadows.filter((x) => x.off).length, single: single && +single.toFixed(2), stacked: dark.length, underTwo: dark.filter((q) => under(q) >= 2).length, darkAt: dark.slice(0, 600).map((q) => [Math.round(q.sx), Math.round(q.sy), +q.a.toFixed(2)]), alphaMax: shadows.length ? +Math.max(...shadows.map((x) => x.a)).toFixed(2) : null, offAt: shadows.filter((x) => x.off).slice(0, 600).map((q) => [Math.round(q.sx), Math.round(q.sy)]), medianAlpha: ma && +ma.toFixed(3) };
   if (shadows.length && out.shadow.offFloor / shadows.length > offFloorMax) out.fails.push(`shadow: ${out.shadow.offFloor} of ${shadows.length} shadow pixels land off the floor (more than ${offFloorMax * 100}%)`);
   if (out.shadow.stacked > stackMax) out.fails.push(`shadow: ${out.shadow.stacked} pixels where shadows stack darker (more than ${stackMax})`);
+  // UI: notes (the #toasts stack: toasts and found cards) never cover an open panel or each other
+  // (coordinator's review, 2026-10-21: FOUND cards over PACK tags, both over the place menu)
+  {
+    const vis = (el) => { const cs = getComputedStyle(el); return cs.visibility !== "hidden" && cs.display !== "none" && +cs.opacity > 0.05 && !el.inert && !el.hidden; };
+    const R = (el, sel) => { const r = el.getBoundingClientRect(); return { sel, x: r.left, y: r.top, w: r.width, h: r.height }; };
+    const panels = [];
+    for (const sel of ["aside.talk", ".screen.play .here", ".fightlayer .dock", ".talkoffer", ".hud", ".topbar"]) for (const el of document.querySelectorAll(sel)) if (vis(el)) { const r = R(el, sel); if (r.w > 4 && r.h > 4) panels.push(r); }
+    const notes = [...document.querySelectorAll("#toasts > *")].filter(vis).map((el) => R(el, el.className));
+    const hit = (a, b) => a.x < b.x + b.w - 1 && b.x < a.x + a.w - 1 && a.y < b.y + b.h - 1 && b.y < a.y + a.h - 1;
+    out.ui = { notes: notes.length, panels: panels.map((p) => p.sel) };
+    for (const n of notes) for (const p of panels) if (hit(n, p)) out.fails.push(`ui: a note (${n.sel}) covers ${p.sel}`);
+    for (let i = 0; i < notes.length; i++) for (let j = i + 1; j < notes.length; j++) if (hit(notes[i], notes[j])) out.fails.push(`ui: two notes overlap (${notes[i].sel}, ${notes[j].sel})`);
+  }
+  if (play.renderers && play.renderers.mode && play.renderers.mode() === "glyph") out.fails = out.fails.filter((f) => /^ui/.test(f));   // figures are judged in painted mode
+  // UI in glyph mode: the panels as the glyph renderer placed them in the grid never overlap one another
+  { const R = play.renderers, gs = R && R.mode && R.mode() === "glyph" ? R.glyph.state.ui : null;
+    if (gs) { out.uiGlyph = gs; const P = gs.placed || [], hit = (a, b) => a.x0 <= b.x1 && b.x0 <= a.x1 && a.y0 <= b.y1 && b.y0 <= a.y1;
+      for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) if (hit(P[i], P[j])) out.fails.push(`ui (glyph): ${P[i].cls} and ${P[j].cls} overlap`); } }
+  // Painted mode: camouflage on the plate (the Spit's frost, 2026-10-21: rime laid where a noise crossed a
+  // threshold made 10 to 30 cm blotches over ground, hull and planks). The check's own reading of the plate as
+  // drawn (the plate canvas) inside the view, at a third of its size: inside one surface kind (a 7 by 7 patch of
+  // one geo id), the compact islands (4 to 300 samples, aspect under 2.5, filling over 45 percent of their box)
+  // that stand 30 percent and 6 levels above or below the local mean; brush strokes are long and thin and do not
+  // count. Fails when those islands cover more than BLOTCH_MAX of the surfaces' interiors.
+  { const R0 = play.renderers, glyphOn = R0 && R0.mode && R0.mode() === "glyph", pc = document.querySelector("canvas.platecam-img");
+    if (!glyphOn && pc && pc.width) {
+      const k = 3, vw = innerWidth / fr0.zoom, vh = innerHeight / fr0.zoom, x0 = Math.max(0, Math.floor(fr0.left)), y0 = Math.max(0, Math.floor(fr0.top));
+      const x1 = Math.min(pc.width, Math.ceil(fr0.left + vw)), y1 = Math.min(pc.height, Math.ceil(fr0.top + vh)), w = Math.floor((x1 - x0) / k), hgt = Math.floor((y1 - y0) / k);
+      const px = pc.getContext("2d", { willReadFrequently: true }).getImageData(x0, y0, x1 - x0, y1 - y0).data, rw = x1 - x0;
+      const idFull = geo.ids.length === place.width * place.height, gs3 = place.geoScale || 1, gw3 = Math.round(place.width * gs3);
+      const L = new Float32Array(w * hgt), ID = new Int16Array(w * hgt);
+      for (let y = 0; y < hgt; y++) for (let x = 0; x < w; x++) {
+        const sx = x * k, sy = y * k, q = (sy * rw + sx) * 4; L[y * w + x] = 0.2126 * px[q] + 0.7152 * px[q + 1] + 0.0722 * px[q + 2];
+        const gx = x0 + sx, gy = y0 + sy; ID[y * w + x] = idFull ? geo.ids[gy * place.width + gx] : geo.ids[Math.floor(gy * gs3) * gw3 + Math.floor(gx * gs3)];
+      }
+      // a box filter (radius r) along rows then columns; min and max of ids over 7 x 7
+      const boxf = (A, r) => { const T = new Float32Array(A.length), O = new Float32Array(A.length);
+        for (let y = 0; y < hgt; y++) { let s = 0, n = 0; for (let x = -r; x < w + r; x++) { if (x + r < w && x + r >= 0) { s += A[y * w + x + r]; n++; } if (x - r - 1 >= 0) { s -= A[y * w + x - r - 1]; n--; } if (x >= 0 && x < w) T[y * w + x] = s / n; } }
+        for (let x = 0; x < w; x++) { let s = 0, n = 0; for (let y = -r; y < hgt + r; y++) { if (y + r < hgt && y + r >= 0) { s += T[(y + r) * w + x]; n++; } if (y - r - 1 >= 0) { s -= T[(y - r - 1) * w + x]; n--; } if (y >= 0 && y < hgt) O[y * w + x] = s / n; } }
+        return O; };
+      const loc = boxf(L, 7), inner = new Uint8Array(w * hgt); let innerN = 0;
+      for (let y = 3; y < hgt - 3; y++) for (let x = 3; x < w - 3; x++) { const i = y * w + x, id = ID[i]; if (L[i] <= 8) continue; let ok = true; for (let dy = -3; dy <= 3 && ok; dy++) for (let dx = -3; dx <= 3; dx++) if (ID[i + dy * w + dx] !== id) { ok = false; break; } if (ok) { inner[i] = 1; innerN++; } }
+      let blot = 0; const lab = new Int32Array(w * hgt), stack = [];
+      for (const sgn of [1, -1]) {
+        lab.fill(0); let nl = 0;
+        const on = (i) => inner[i] && (L[i] - loc[i]) * sgn > 0.3 * loc[i] + 6;
+        for (let i = 0; i < w * hgt; i++) { if (lab[i] || !on(i)) continue; nl++; let a = 0, mnx = 1e9, mny = 1e9, mxx = -1, mxy = -1; stack.length = 0; stack.push(i); lab[i] = nl;
+          while (stack.length) { const j = stack.pop(), jx = j % w, jy = (j / w) | 0; a++; if (jx < mnx) mnx = jx; if (jx > mxx) mxx = jx; if (jy < mny) mny = jy; if (jy > mxy) mxy = jy;
+            for (const q of [j - 1, j + 1, j - w, j + w]) if (q >= 0 && q < w * hgt && !lab[q] && Math.abs((q % w) - jx) <= 1 && on(q)) { lab[q] = nl; stack.push(q); } }
+          const bw = mxx - mnx + 1, bh = mxy - mny + 1; if (a >= 4 && a <= 300 && Math.max(bw, bh) / Math.min(bw, bh) < 2.5 && a / (bw * bh) > 0.45) blot += a; }
+      }
+      const score = innerN ? blot / innerN : 0; out.blotch = { score: +score.toFixed(4), inner: innerN };
+      // the unpainted fallback (the Gut's palette plate in Act 3, 2026-10-21: flat blocks under a dither screen): a
+      // painted plate has almost no pixel-scale energy left once a 3 x 3 median is taken; a dither screen keeps a
+      // lot. Mean |L - median3(L)| / (L + 8) over surface interiors, every third row at full size; painted plates
+      // 0.001 to 0.019, the palette Gut 0.08 to 0.11. Also fails when the plate canvas is empty in view.
+      { let hf = 0, hn = 0, lit = 0, tot = 0; const LF = (x, y) => { const q = (y * rw + x) * 4; return 0.2126 * px[q] + 0.7152 * px[q + 1] + 0.0722 * px[q + 2]; }, nb = new Float32Array(9);
+        for (let y = 1; y < (y1 - y0) - 1; y += 3) for (let x = 1; x < rw - 1; x++) {
+          const l = LF(x, y); tot++; if (l > 2) lit++;
+          const sx = Math.floor(x / k), sy = Math.floor(y / k); if (sx >= w || sy >= hgt || !inner[sy * w + sx] || l <= 6) continue;
+          let t = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) nb[t++] = LF(x + dx, y + dy); nb.sort(); hf += Math.abs(l - nb[4]) / (l + 8); hn++; }
+        const screen = hn ? hf / hn : 0; out.unpainted = { screen: +screen.toFixed(4), lit: tot ? +(lit / tot).toFixed(3) : 0 };
+        if (hn > 2000 && screen > SCREEN_MAX) out.fails.push(`unpainted: a dither screen over the plate (pixel-scale energy ${screen.toFixed(3)}, painted plates stay under ${SCREEN_MAX}): the unpainted fallback, not a painted plate`);
+        if (tot > 1000 && lit / tot < 0.05) out.fails.push(`unpainted: the plate canvas is empty in view (${(100 * lit / tot).toFixed(1)} percent lit): the plate did not load`); }
+      if (innerN > 2000 && score > BLOTCH_MAX) out.fails.push(`camouflage: compact blotches cover ${(score * 100).toFixed(2)} percent of the plate's surfaces in view, over ${(BLOTCH_MAX * 100).toFixed(2)}`);
+    } }
+  // Glyph mode at night: does the plate's structure still read on screen? The check's own reading of what
+  // the glyph raster drew (the frame's cells: glyph, type colour, ground colour, and the atlas's ink per
+  // glyph) against the plate's own geo buffers (surface kind and depth at each cell's centre), not the
+  // renderer's measure. A cell is structural where the plate changes kind or depth (0.6 m or more) against a
+  // neighbour, or meets the void; it reads where the neighbour across differs by 6 display levels in cell
+  // value, or one shows type (ink 16 levels over its ground) and the other none, or both show different
+  // glyphs (texture). Figures and panels are left out.
+  { const R = play.renderers, gl = R && R.mode && R.mode() === "glyph" ? R.glyph : null, S = gl && gl.state, ob = S && S.buf, g = S && S.grid, C = S && S.C;
+    if (ob && g && C) {
+      const { I0, J0, cols, rows } = g, n = cols * rows, mask = S.figMask, cov = gl.atlas.cov;
+      const cam0 = place.camera, yaw = (cam0.yawDeg * Math.PI) / 180, el = (cam0.elevDeg * Math.PI) / 180, fw = [-Math.sin(yaw) * Math.cos(el), -Math.sin(el), -Math.cos(yaw) * Math.cos(el)];
+      const gs2 = place.geoScale || 1, gw2 = Math.round(place.width * gs2), gh2 = Math.round(place.height * gs2), idFull = geo.ids.length === place.width * place.height;
+      const lum = (a, i) => 0.2126 * a[i * 3] + 0.7152 * a[i * 3 + 1] + 0.0722 * a[i * 3 + 2];
+      const K = new Int32Array(n).fill(-2), D = new Float32Array(n), Yc = new Float32Array(n), sh = new Uint8Array(n);
+      for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+        const v = y * cols + x; if (mask && mask[v]) continue;
+        const u = (I0 + x + 0.5) * C.pw, w = (J0 + y + 0.5) * C.ph, gx = Math.floor(u * gs2), gy = Math.floor(w * gs2); if (gx < 0 || gy < 0 || gx >= gw2 || gy >= gh2) continue;
+        const k = gy * gw2 + gx, X = geo.pos[k * 3], Yw = geo.pos[k * 3 + 1], Z = geo.pos[k * 3 + 2];
+        const fg = lum(ob.FG, v), bg = lum(ob.BG, v), cv = cov[ob.G[v]] || 0; Yc[v] = bg + Math.min(1, cv * 2.5) * Math.max(0, fg - bg); sh[v] = cv > 0.01 && fg - bg >= 16 ? 1 : 0;
+        if (!Number.isFinite(Yw) || (X === 0 && Yw === 0 && Z === 0)) { K[v] = -1; continue; }
+        K[v] = idFull ? geo.ids[Math.min(place.height - 1, Math.floor(gy / gs2)) * place.width + Math.min(place.width - 1, Math.floor(gx / gs2))] : geo.ids[k]; D[v] = X * fw[0] + Yw * fw[1] + Z * fw[2];
+      }
+      let st = 0, ok = 0;
+      for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+        const v = y * cols + x; if (K[v] < 0) continue; let isS = false, rd = false;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const X = x + dx, Yb = y + dy; if (X < 0 || Yb < 0 || X >= cols || Yb >= rows) continue; const q = Yb * cols + X; if (K[q] === -2) continue;
+          if (!(K[q] < 0 || K[q] !== K[v] || Math.abs(D[q] - D[v]) >= 0.6)) continue; isS = true;
+          if (Math.abs(Yc[v] - Yc[q]) >= 6 || sh[v] !== sh[q] || (sh[v] && sh[q] && ob.G[v] !== ob.G[q])) rd = true;
+        }
+        if (isS) { st++; if (rd) ok++; }
+      }
+      const legible = st ? ok / st : 1; out.glyphLegible = { structure: +legible.toFixed(3), structural: st };
+      if (st >= 200 && legible < LEGIBLE_MIN) out.fails.push(`legibility (glyph): the plate's structure reads in ${(legible * 100).toFixed(0)} percent of its structural cells, under ${LEGIBLE_MIN * 100}`);
+    } }
+  // Glyph mode in a fight: each way out must show in type. The check walks the exit's outline on the ground (the
+  // arena's own exits, the plate's own ground height, the camera's projection), maps each point to its glyph
+  // cell, and counts cells holding a line or arrow glyph in a light colour; under WAY_MIN of them fails.
+  { const R = play.renderers, gl = R && R.mode && R.mode() === "glyph" ? R.glyph : null, S = gl && gl.state, ob = S && S.buf, gr = S && S.grid;
+    const CW = G.ext && G.ext.combat, FW = CW && CW.current && CW.current.W, exits = FW && !FW.result && FW.field && FW.field.arena && FW.field.arena.exits;
+    if (ob && gr && gr.cw && exits && exits.length && document.querySelector("canvas.fightcanvas")) {
+      const { groundAt } = await import("/engine/world/plateworld.mjs"), FA = FW.field.arena;   // the ground the fight stands on, as the fight reads it
+      const lineG = new Set(["-", "|", "/", "\\", "→", "←", "↑", "↓"].map((c) => gl.atlas.index(c))), hgt = (x, z) => { const q = Math.floor((x - ox) / cs), r = Math.floor((z - oz) / cs), c = q >= 0 && r >= 0 && q < w && r < h ? cells[r * w + q] : null; return c ? c.h : 0; };
+      out.ways = [];
+      for (const [x0, z0, x1, z1] of exits) {
+        const pts = []; for (const [ax, az, bx, bz] of [[x0, z0, x1, z0], [x1, z0, x1, z1], [x1, z1, x0, z1], [x0, z1, x0, z0]]) for (let t = 0; t < 1; t += 0.1) { const x = ax + (bx - ax) * t, z = az + (bz - az) * t; pts.push([x, groundAt(FA, x, z) ?? hgt(x, z), z]); }
+        const seen = new Set(); let on = 0;
+        const panes = ((S.ui && S.ui.placed) || []).map((b) => [b.x0 * gr.cw, b.y0 * gr.ch, (b.x1 + 1) * gr.cw, (b.y1 + 1) * gr.ch]);   // under a panel, a mark is hidden in either mode
+        for (const p of pts) { const sp = cam.toScreen(p); if (!sp || panes.some(([a, b, c, d]) => sp[0] >= a - 8 && sp[0] < c + 8 && sp[1] >= b - 12 && sp[1] < d + 12)) continue; const X = Math.floor((sp[0] - gr.ox) / gr.cw), Y = Math.floor((sp[1] - gr.oy) / gr.ch); if (X < 0 || Y < 0 || X >= gr.cols || Y >= gr.rows) continue;
+          let hit = false; for (let dy = -1; dy <= 1 && !hit; dy++) for (let dx = -1; dx <= 1; dx++) { const XX = X + dx, YY = Y + dy; if (XX < 0 || YY < 0 || XX >= gr.cols || YY >= gr.rows) continue; const i = YY * gr.cols + XX; if (lineG.has(ob.G[i]) && 0.2126 * ob.FG[i * 3] + 0.7152 * ob.FG[i * 3 + 1] + 0.0722 * ob.FG[i * 3 + 2] >= 150) { hit = true; break; } }
+          const key = `${X},${Y}`; if (seen.has(key)) continue; seen.add(key); if (hit) on++; }
+        const share = seen.size ? on / seen.size : 1; out.ways.push({ exit: [x0, z0, x1, z1], cells: seen.size, shown: +share.toFixed(2) });
+        if (seen.size >= 8 && share < WAY_MIN) out.fails.push(`ways (glyph): the way out at ${((x0 + x1) / 2).toFixed(1)}, ${((z0 + z1) / 2).toFixed(1)} shows in ${(share * 100).toFixed(0)} percent of its outline cells, under ${WAY_MIN * 100}`);
+      }
+    } }
   out.state = { talking: !!play.P.talk, node: play.P.talk ? play.P.talk.node : null, walking: play.people.walking ? play.people.walking() : null, clock: G.clock(), pos: G.state.pos };
   return out;
 }

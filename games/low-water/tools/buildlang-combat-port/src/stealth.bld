@@ -1,0 +1,139 @@
+// sim/stealth.mjs: awareness, alerts and takedowns. Corpus fights open "open",
+// so every opponent is aware from the first frame; the rules are here whole.
+
+fn unaware(f: Fighter) -> bool {
+    !f.aware
+}
+
+fn step_awareness(w: &mut World) {
+    let li = lamb_index(w);
+    if li < 0 {
+        return;
+    }
+    let l = w.fighters[li as usize];
+    let loud = noise(w, li as usize);
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        if unaware(f) && alive_f(f) {
+            let d = dist_xy(f.x, f.z, l.x, l.z);
+            let in_cone = wrap_angle(angle_to(f.x, f.z, l.x, l.z) - f.face).abs() * deg() <= 70.0;
+            let sees = in_cone && visible(w, i, li as usize);
+            let near = maxf(0.2, 1.0 - d / maxf(2.0, seen_range(w, light_at(w, l.x, l.z, w.lamps_now))));
+            if sees {
+                w.fighters[i].notice = f.notice + near / 36.0;
+            } else {
+                w.fighters[i].notice = maxf(0.0, f.notice - 0.01);
+            }
+            let mut k = 0;
+            while k + 2 < loud.len() {
+                if dhypot(f.x - loud[k], f.z - loud[k + 1]) <= loud[k + 2] {
+                    w.fighters[i].notice = 1.0;
+                }
+                k += 3;
+            }
+            if w.fighters[i].notice >= 1.0 {
+                alert(w, i, if sees { "sight" } else { "noise" });
+            }
+        }
+        i += 1;
+    }
+    i = 0;
+    while i < w.fighters.len() {
+        let f = w.fighters[i];
+        if unaware(f) && contains(f.extra, "calledAt") && (w.tick as f64) >= f.called_at {
+            alert(w, i, "called");
+        }
+        i += 1;
+    }
+}
+
+// Noises this frame, as flat (x, z, r) triples.
+fn noise(w: &World, li: usize) -> Vec<f64> {
+    let mut out: Vec<f64> = Vec::new();
+    let l = w.fighters[li];
+    if l.has_act {
+        let mut i = 0;
+        let mut rolled = false;
+        while i < w.events.len() {
+            let e = w.events[i];
+            if e.typ == "move" && e.id == l.id && mv(w, e.mv).kind == "dodge" {
+                rolled = true;
+            }
+            i += 1;
+        }
+        if rolled {
+            out.push(l.x);
+            out.push(l.z);
+            out.push(5.0);
+        }
+    }
+    let mut i = 0;
+    while i < w.events.len() {
+        let e = w.events[i];
+        if e.typ == "hit" || e.typ == "fall" || e.typ == "knockdown" || e.typ == "flinch" {
+            let ti = by_id(w, e.id);
+            if ti >= 0 {
+                let t = w.fighters[ti as usize];
+                out.push(t.x);
+                out.push(t.z);
+                out.push(10.0);
+            }
+        }
+        i += 1;
+    }
+    out
+}
+
+fn alert(w: &mut World, fi: usize, why: str) {
+    if !unaware(w.fighters[fi]) {
+        return;
+    }
+    w.fighters[fi].aware = true;
+    w.fighters[fi].notice = 1.0;
+    let li = lamb_index(w) as usize;
+    let l = w.fighters[li];
+    if !w.fighters[fi].has_mem {
+        w.fighters[fi].has_mem = true;
+        add_extra(w, fi, "mem");
+    }
+    w.fighters[fi].mem.has_seen = true;
+    w.fighters[fi].mem.seen = Seen { x: l.x, z: l.z, t: w.tick as f64 };
+    let fid = w.fighters[fi].id;
+    let mut ev = new_ev(w, "alert");
+    ev_str(&mut ev, "id", fid);
+    ev_str(&mut ev, "why", why);
+    ev.id = fid;
+    emit(w, ev);
+    let f = w.fighters[fi];
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let g = w.fighters[i];
+        if unaware(g) && g.team == f.team && dist_xy(g.x, g.z, f.x, f.z) <= 8.0 && !contains(g.extra, "calledAt") {
+            add_extra(w, i, "calledAt");
+            w.fighters[i].called_at = (w.tick as f64) + 30.0;
+        }
+        i += 1;
+    }
+}
+
+fn takedown_target(w: &World, fi: usize) -> i64 {
+    let f = w.fighters[fi];
+    let mut i = 0;
+    while i < w.fighters.len() {
+        let t = w.fighters[i];
+        if !(t.team == f.team || !alive_f(t) || !unaware(t) || dist_xy(f.x, f.z, t.x, t.z) > 1.5) {
+            let behind = wrap_angle(angle_to(t.x, t.z, f.x, f.z) - t.face).abs() * deg() >= 110.0;
+            let facing = wrap_angle(angle_to(f.x, f.z, t.x, t.z) - f.face).abs() * deg() <= 70.0;
+            if behind && facing {
+                return i as i64;
+            }
+        }
+        i += 1;
+    }
+    -1
+}
+
+fn takedown_out(w: &World, ti: usize) -> bool {
+    w.defs[ti].hp <= 10.0
+}

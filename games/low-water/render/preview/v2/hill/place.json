@@ -1,0 +1,181 @@
+{
+ "place": "hill",
+ "version": 2,
+ "width": 960,
+ "height": 540,
+ "camera": {
+  "yawDeg": 24,
+  "elevDeg": 32,
+  "target": [
+   0,
+   6.5,
+   0
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 13.5
+ },
+ "pxPerMetre": 20,
+ "near": 0.5,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [],
+ "variantInfo": {},
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  3,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "station_door",
+    "verb": "enter",
+    "at": [
+     3.2,
+     0.13,
+     -1.9000000000000004
+    ],
+    "note": "the Lamplighters' station door"
+   },
+   {
+    "id": "substation_louvres",
+    "verb": "cutpower",
+    "at": [
+     -9,
+     2.0500000000000003,
+     2.0000000000000004
+    ],
+    "note": "the second switch, hooked through the louvres with the Vane's stick (H:743)"
+   },
+   {
+    "id": "outside_fuse",
+    "verb": "cutpower",
+    "at": [
+     -7,
+     2.0500000000000003,
+     1.9000000000000004
+    ],
+    "note": "the outside fuse on the cable pole (H:873)"
+   },
+   {
+    "id": "candle_timer",
+    "verb": "rig",
+    "at": [
+     -9,
+     2.0500000000000003,
+     2.0000000000000004
+    ],
+    "note": "the candle timer on the switch handle (H:744)"
+   },
+   {
+    "id": "duct_grating",
+    "verb": "pry",
+    "at": [
+     -11.3,
+     2.0500000000000003,
+     1.9000000000000004
+    ],
+    "note": "the cable duct's grating (H:958)"
+   },
+   {
+    "id": "study_window",
+    "verb": "eavesdrop",
+    "at": [
+     -17,
+     3.49,
+     -1.7000000000000002
+    ],
+    "note": "the study window and its blind (H:159)"
+   },
+   {
+    "id": "crake_side",
+    "verb": "enter",
+    "at": [
+     -22.9,
+     3.49,
+     -4
+    ],
+    "note": "Crake's side door, on the latch (H:818)"
+   }
+  ],
+  "hides": [
+   {
+    "id": "sill_strip",
+    "at": [
+     -17,
+     3.49,
+     -2
+    ],
+    "r": 0.3,
+    "note": "the only shadow on the lane: a foot wide, under the study sill (H:523)"
+   }
+  ],
+  "exits": [
+   {
+    "id": "station",
+    "at": [
+     3.2,
+     0.13,
+     -1.9000000000000004
+    ],
+    "note": "into the station (plate: station)"
+   },
+   {
+    "id": "quay",
+    "at": [
+     21,
+     -3.36,
+     0
+    ],
+    "note": "down to the quay: the white ends and the sodium begins"
+   },
+   {
+    "id": "gasholder",
+    "at": [
+     -22,
+     3.52,
+     0
+    ],
+    "note": "on to the Gasholder gate"
+   }
+  ],
+  "lamps": [
+   {
+    "id": "white_arcs",
+    "kind": "white",
+    "note": "every 3.6 m both sides, x 18 to -18, z +-2.05"
+   }
+  ]
+ },
+ "lights": {},
+ "arenas": [],
+ "notes": "Chancel Hill path. The station interior is its own plate (station)."
+}

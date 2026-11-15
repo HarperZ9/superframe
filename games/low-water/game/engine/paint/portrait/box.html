@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Painted dialogue box</title>
+<!-- A still of the painted dialogue box (portrait/box.mjs) over a place, for the contact sheets.
+     ?look=painted|glyph&who=sabine&mood=warm&set=sc&name=Sabine&text=...&bg=/capture/paint/after/brine-bar.png
+     &src= overrides the portrait path. Sets document.documentElement.dataset.ready = "1" when drawn. -->
+<style>
+  @font-face { font-family: "LW Hanken"; src: url("/fonts/hanken-grotesk.woff2") format("woff2"); font-weight: 100 900; }
+  @font-face { font-family: "LW Conso"; src: url("/fonts/conso-regular.woff2") format("woff2"); }
+  html, body { margin: 0; background: #000; } canvas { display: block; }
+</style>
+<canvas id="c" width="1280" height="720"></canvas>
+<script type="module">
+import { drawBox } from "./box.mjs";
+const q = new URLSearchParams(location.search), look = q.get("look") || "painted";
+const load = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error(`no image ${src}`)); i.src = src; });
+await Promise.all([document.fonts.load('16px "LW Hanken"'), document.fonts.load('16px "LW Conso"')]);
+const c = document.getElementById("c"), ctx = c.getContext("2d");
+const bg = q.get("bg") || (look === "glyph" ? "" : "/capture/paint/box/ground-haldane.png");
+try { if (!bg) throw new Error("no ground (glyph: the box on black)"); const b = await load(bg); ctx.drawImage(b, 0, 0, c.width, c.height); } catch (e) { console.warn(e.message); ctx.fillStyle = look === "glyph" ? "#050506" : "#222"; ctx.fillRect(0, 0, c.width, c.height); }
+const src = q.get("src") || `/capture/paint/portraits2/${q.get("set") || "old"}/${q.get("who") || "sabine"}/${q.get("mood") || "neutral"}.png`;
+const img = await load(src);
+drawBox(ctx, { look, x: 120, y: 520, w: 1040, h: 170, img, name: q.get("name") || q.get("who") || "", text: q.get("text") || "", seed: 11 });
+document.documentElement.dataset.ready = "1";
+</script>

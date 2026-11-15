@@ -128,3 +128,14 @@ below their roofline bound (0.01 % to 2 % in the smoke run, invalid under load):
 torch materialises every temporary. The next step for speed is one fused CUDA kernel
 per kernel, compiled without contraction (`-fmad=false`) in the same operation order,
 so the bits stay fixed while the traffic drops to the cost model.
+
+## C++ kernel libraries (moved in 2026-11-15)
+
+Two C++23 libraries sit beside the contract kernels. They came from their own repositories and keep their own build, tests and licence. They do not follow the contract above yet: no CPU and CUDA equivalence, no receipts. Nothing in them duplicates a contract kernel; the contract kernels are rendering and field kernels in Python, and these are time-series and telemetry statistics in C++.
+
+| Folder | What it does | Licence | From |
+|---|---|---|---|
+| `signal-kernels/` | header-only entropy, divergence, Granger causality, PELT change points, FFT helpers, graph curvature and SARIMA and VAR forecasts | FSL-1.1-MIT | `HarperZ9/signal-kernels@0c62e590` |
+| `anomaly-kernels/` | telemetry baselines, z-score, IQR and percentile outlier scores, and alert correlation over time windows | MIT | `HarperZ9/anomaly-kernels@c94ac9b0` |
+
+Both build on Windows with MSVC only (their CMake files stop on other systems). `.github/workflows/kernels-cpp.yml` configures, builds and runs the tests of each on `windows-latest`, and checks the art receipt digests in `docs/art/receipts.json`. Each folder's README lists its modules as BuildLang port candidates.

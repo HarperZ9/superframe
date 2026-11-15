@@ -1,0 +1,289 @@
+{
+ "place": "q1_supper",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0.2,
+   1,
+   -0.3
+  ],
+  "dist": 20,
+  "ortho": true,
+  "scale": 4.333333333333333
+ },
+ "pxPerMetre": 150,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "supper",
+  "unlit"
+ ],
+ "variantInfo": {
+  "supper": {
+   "hour": 20.3,
+   "weather": "harvest supper, 20:20: the lanterns on the tie-beam, the last blue in the doors, the whole district at one table"
+  },
+  "unlit": {
+   "hour": 19.6,
+   "weather": "19:35, before the supper: the lanterns out, the last blue through the yard door, the tables laid and waiting"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26,
+  29,
+  56,
+  89,
+  90,
+  93,
+  95,
+  85
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "sheaf",
+    "verb": "read",
+    "at": [
+     -2.6,
+     0,
+     0.7
+    ],
+    "note": "the last sheaf: cut by hand, tied with red, set at the head where Orme sits"
+   },
+   {
+    "id": "table",
+    "verb": "read",
+    "at": [
+     0.2,
+     0,
+     1.0999999999999999
+    ],
+    "note": "the table: places for the whole district, the Haldane boys at the foot"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "yard",
+    "at": [
+     -3.9000000000000004,
+     0,
+     0.6
+    ],
+    "note": "the big doors out to the yard"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "supper": [
+   {
+    "at": [
+     -2.8,
+     2.5,
+     -1.4
+    ],
+    "kind": "paraffin",
+    "I": 1,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     0,
+     1.95,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 1,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     2.8,
+     1.95,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 1,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -1.4,
+     2.1,
+     -2.4
+    ],
+    "kind": "paraffin",
+    "I": 0.4,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1.4,
+     2.1,
+     -2.4
+    ],
+    "kind": "paraffin",
+    "I": 0.4,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -2,
+     1.5,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 4.5,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -1.25,
+     1.5,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 4.5,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -0.5,
+     1.5,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 4.5,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1,
+     1.5,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 4.5,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1.7,
+     1.5,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 4.5,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     2.4,
+     1.5,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 4.5,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -4.6,
+     1.5,
+     0.6
+    ],
+    "kind": "white",
+    "I": 2,
+    "reach": 5,
+    "group": ""
+   }
+  ],
+  "unlit": [
+   {
+    "at": [
+     -4.6,
+     1.5,
+     0.6
+    ],
+    "kind": "white",
+    "I": 3.5,
+    "reach": 5,
+    "group": ""
+   }
+  ]
+ },
+ "figureLights": {
+  "supper": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 9,
+    "figure": true
+   }
+  ],
+  "unlit": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 1: Orme's barn laid for the harvest supper."
+}
