@@ -28,6 +28,9 @@ jobs:
       - run: python scripts/check_art_receipts.py
         working-directory: packages/quality/gpu-trace-validator
       - run: npm run test:games
+      # build-color's README drawings: re-render each one and compare bytes, then check the stored digests
+      - run: python tools/check_repo_art.py && python scripts/check_art_receipts.py
+        working-directory: packages/colour/build-color
   buildlang-engine:
     # The DAW's real-time engine is BuildLang: build buildc at a pinned buildlang commit and hold the
     # BuildLang kernels to the Python reference, with no skipping (DAW_REQUIRE_NATIVE).
