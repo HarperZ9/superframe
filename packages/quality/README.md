@@ -27,3 +27,7 @@ Each analysis module also runs from the command line, for example `python -m qua
 ## Limits
 
 A pass means the measured number is inside its target. A good score does not make a page good to look at; the checks catch named defects only. The collector tests use the Hanken Grotesk face in `techniques/fonts`.
+
+## GPU trace validator (moved in 2026-11-15)
+
+`gpu-trace-validator/` checks a GPU or renderer trace in JSON against a bundled schema and reports assertion counts, expected failures and a redacted summary, so a rendering demo can carry evidence without the raw payload. It came from `HarperZ9/gpu-trace-validator@19926bb1` (version 0.2.0) as its own Python package with its own `pyproject.toml`, command and licence file, and it does not import the `quality` modules above. Its 28 tests run with the rest under `npm run test:py`. `gpu-trace-validator/README.md` has the usage and lists its modules as BuildLang port candidates.

@@ -1,0 +1,189 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/HarperZ9/gpu-trace-validator/main/docs/art/hero-dark.svg">
+  <img src="https://raw.githubusercontent.com/HarperZ9/gpu-trace-validator/main/docs/art/hero-light.svg" alt="gpu-trace-validator: Validates GPU trace JSON against a schema, with redacted receipts. Parallel rays pass through a lens drawn in fine lines, gather at a bright core and spread out past it." width="100%">
+</picture>
+
+# gpu-trace-validator
+
+> This tool now lives in The Playground at `packages/quality/gpu-trace-validator`. It moved from `HarperZ9/gpu-trace-validator` at commit `19926bb1` (version 0.2.0) as one commit of the final tree; the earlier history and the two releases stay in that repository, which is archived. From this folder, `python -m pip install -e ".[test]"` and `python -m pytest` work as before. The engine's own test run covers it too: `python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/quality/gpu-trace-validator` from the repository root. Licence for this folder: FSL-1.1-MIT (`LICENSE` here).
+
+Validates GPU trace JSON against a schema, with redacted receipts.
+
+```
+git clone https://github.com/HarperZ9/gpu-trace-validator
+```
+
+[![version: 0.2.0](https://img.shields.io/badge/version-0.2.0-e6e1d6?style=flat-square&labelColor=1a1712)](https://github.com/HarperZ9/gpu-trace-validator/releases/latest)
+[![CI](https://github.com/HarperZ9/gpu-trace-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/HarperZ9/gpu-trace-validator/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-FSL--1.1--MIT-e6e1d6?style=flat-square&labelColor=1a1712)](https://github.com/HarperZ9/gpu-trace-validator/blob/main/LICENSE)
+![python 3.10+](https://img.shields.io/badge/python-3.10%2B-e6e1d6?style=flat-square&labelColor=1a1712)
+
+GPU Trace Validator checks GPU or renderer trace fixtures against a bundled JSON
+schema. It reports assertion counts, expected failures, and redacted summaries so
+rendering demos can carry evidence without exposing raw private payloads.
+
+## See it work, step by step
+
+The [animated explainer](https://harperz9.github.io/repo-explainers/gpu-trace-validator.html)
+walks through the shipped pass and fail fixtures: schema validation, an unexpected field named by its path, a deliberate failure matched against an expected count in both directions, and the redacted JSON receipt. Every value on it is output from this repository. Its
+source is [docs/explainer/index.html](docs/explainer/index.html).
+
+## Watch
+
+[![A passing check can still be wrong: a narrated film, 2 min 24 s](https://harperz9.github.io/media/explainers/passing-check/poster.jpg)](https://harperz9.github.io/explainers.html#passing-check-h)
+
+**[A passing check can still be wrong](https://harperz9.github.io/explainers.html#passing-check-h)** (2 min 24 s, narrated, captioned). With --expect-failures the validator shows it can fail on a known-bad trace, the test this film argues for. The film page carries the transcript, the sources and recall questions.
+
+## Walkthrough
+
+Install it, run it once, then use the main feature. Each command below is real, and so is its output.
+
+1. **Install.** Install from a checkout. Python 3.10 or newer; it is not on PyPI.
+
+   ```text
+   $ git clone https://github.com/HarperZ9/gpu-trace-validator && cd gpu-trace-validator
+   $ python -m pip install -e ".[test]"
+   ```
+
+2. **First run: a passing trace.** Validate the bundled passing trace.
+
+   ```text
+   $ gpu-trace-validator tests/fixtures/trace_pass.json
+   gpu_trace_validation: pass
+   trace_id: trace-ok
+   assertions: 1 total, 0 fail, 0 unknown
+   ```
+
+3. **A failing trace.** The failing fixture fails, as it should.
+
+   ```text
+   $ gpu-trace-validator tests/fixtures/trace_fail.json
+   assertions: 2 total, 2 fail, 0 unknown
+   error: observed 2 assertion failure(s)
+   ```
+
+4. **Show the check can fail.** Declare how many failures the fixture must produce. Two expected and two found passes.
+
+   ```text
+   $ gpu-trace-validator --expect-failures 2 tests/fixtures/trace_fail.json
+   gpu_trace_validation: pass
+   assertions: 2 total, 2 fail, 0 unknown
+   ```
+
+## Why it matters
+
+Creative and scientific renderers need more than screenshots. A trace validator
+gives demos and CI jobs a compact receipt that says whether the recorded render
+metadata still matches the expected contract.
+
+## Try it
+
+```bash
+git clone https://github.com/HarperZ9/gpu-trace-validator
+cd gpu-trace-validator
+python -m pip install -e ".[test]"
+python -m gpu_trace_validator --help
+gpu-trace-validator tests/fixtures/trace_pass.json
+python -m pytest
+```
+
+## What to test first
+
+- Validate a bundled or local trace JSON file.
+- Run with `--expect-failures 0 --json`.
+- Run the test suite before changing schemas or report wording.
+
+## Current status
+
+Python package and CLI for validating trace fixtures produced elsewhere. It does
+not capture GPU work and does not certify renderer correctness.
+
+## Existing technical notes
+
+> Validate GPU trace JSON against a schema; emit bounded, redacted receipts.
+
+[![license: FSL-1.1-MIT](https://img.shields.io/badge/license-FSL--1.1--MIT-blue.svg)](LICENSE)
+![python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+![version](https://img.shields.io/badge/version-0.2.0-informational.svg)
+[![CI](https://github.com/HarperZ9/gpu-trace-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/HarperZ9/gpu-trace-validator/actions/workflows/ci.yml)
+[![part of: AI-accountability toolkit](https://img.shields.io/badge/part_of-AI--accountability_toolkit-7a5cff.svg)](https://harperz9.github.io)
+
+![Eight stages of validating one recorded trace: trace, schema, source, events, assertions, verdicts, expectation, and exit code. A trace is one JSON object; a root that is an array or a string is refused before any check runs. Six fields are required at the root, and an unexpected property is named with its path rather than ignored, at the root and inside every frame, resource and event. Source records one of four capture kinds, from a JSON replay, a RenderDoc capture, a live hook, or a hand-written fixture, alongside where it came from. Events carry nine kinds, each pinned to a sequence number and a frame, and errors are sorted by path so two runs over the same trace read alike. Only the assertion kind carries a verdict. Verdicts have four values, of which two are counted: a failure and an unknown. A verdict of not-applicable is counted as neither, so it lands with the passes. Expectation compares observed failures against a number the caller supplied. The exit code is zero unless something was refused or a count did not match. Three outcomes: pass, fail, and not read.](docs/art/trace-lane.svg)
+
+## Install
+
+`gpu-trace-validator` is not currently published on PyPI. A bare
+`python -m pip install gpu-trace-validator` will fail until a package registry
+release exists.
+
+For a pinned release install, use the GitHub release tag:
+
+```bash
+python -m pip install "gpu-trace-validator @ git+https://github.com/HarperZ9/gpu-trace-validator.git@v0.1.0"
+```
+
+For local examples, tests, and schema work, use a source checkout:
+
+```bash
+git clone https://github.com/HarperZ9/gpu-trace-validator
+cd gpu-trace-validator
+python -m pip install -e ".[test]"
+```
+
+## Usage
+
+```bash
+gpu-trace-validator trace.json
+gpu-trace-validator --expect-failures 0 --json trace.json
+```
+
+The JSON Schema ships inside the package and is used by default, so `--schema`
+is only needed to override it with your own file. See [USAGE.md](USAGE.md) for
+worked examples, expected output, and the importable Python API.
+
+![Eight stages of an expectation run: fixture, count, observed, compare, summary, redact, bound, and receipt. A fixture may be recorded to fail on purpose, which is how a check proves it can fail at all. The caller names how many assertion failures to expect. The validator counts how many the trace actually carries. The comparison runs in both directions, so fewer failures than expected is refused exactly as firmly as more. With no expected count supplied, the expectation is reported as not checked and any failure at all fails the run. Each failure is summarized into at most nine named fields: sequence, frame, pass, stage, slot, resource, the assertion text, the verdict, and the provenance. No raw buffer or payload is carried out. Every string in the summary goes through the same redactor, which removes private key blocks, cloud access key ids, three token prefixes, named secrets, and absolute paths of both kinds. Nothing longer than two hundred and forty characters survives, and truncation runs after redaction. The result is one JSON object, printed whole or as a short summary. Three outcomes: matched, missed, and not checked.](docs/art/expectation-lane.svg)
+
+## Notes
+
+- This CLI validates format and assertion summaries.
+- It does not capture GPU work; it validates fixtures produced elsewhere.
+- `--expect-failures` reports whether observed assertion failures matched the
+  expected count.
+- Reports are summaries, not certification or trust verdicts.
+- JSON schema files are bundled with the package.
+
+![Eleven ways a trace run ends, one to a row, with the status reported and why it lands there. A failed verdict fails the run when no expected count was given, and the error names how many failures were seen. The accented row is the unknown verdict: the assertion report reads unknown while the run still exits zero, because unknown is a reading about the trace rather than a refusal of it. A trace where every verdict passes reports pass. So does a trace that asserts nothing at all, since nothing was refused. So does a trace full of not-applicable verdicts, which are counted as neither failures nor unknowns. A fixture recorded to fail on purpose passes when the failures observed equal the number supplied, and fails when that count moves in either direction, since fewer failures than expected is refused exactly as firmly as more. An unexpected property fails wherever it sits, at the root or inside a frame, a resource or an event. A value outside any of the three closed sets fails and is named with its path. If the schema library will not import, or the schema will not compile, that error is reported rather than passed over. A trace whose root is not a JSON object is refused before any check runs, and the command exits one without printing a receipt.](docs/art/status-table.svg)
+
+---
+**Zain Dana Harper** -- small tools with explicit edges.
+[Portfolio](https://harperz9.github.io) | [HarperZ9](https://github.com/HarperZ9)
+<sub>Built with Claude Code; reviewed, tested, and owned by me.</sub>
+
+## For developers
+
+Keep the public README, package metadata, and examples aligned with current behavior. Before opening a PR or pushing a release, run the local package verification path.
+
+```bash
+python -m pip install -e ".[test]"
+python -m pytest
+```
+
+## License
+
+From v0.2.0, code is licensed FSL-1.1-MIT. Earlier releases remain under MIT. FSL-1.1-MIT is the Functional Source License, Version 1.1, with MIT as the future licence: each release becomes available under MIT two years after it is made available. See [LICENSE](LICENSE). Every commit in this repository is by the author.
+
+---
+
+Built by **[Zain Dana Harper](https://harperz9.github.io)** in Seattle: evidence-first tools that leave a re-checkable artifact behind. The full workbench is at [Project Telos](https://harperz9.github.io).
+
+## BuildLang port candidates
+
+The code is Python and moved unchanged. Each module below is a candidate for a BuildLang port, held to the cases in `tests/` as known answers. Port status: not started.
+
+| Module | What it holds |
+|---|---|
+| `src/gpu_trace_validator/validator.py` | trace loading, schema check, assertion counts, expected failures, the redacted payload |
+| `src/gpu_trace_validator/cli.py` | the `gpu-trace-validator` command |
+| `src/gpu_trace_validator/schemas/gpu_trace.schema.json` | the trace schema (data; a port reads it as it is) |
+| `tools/repo_art.py`, `repo_card.py`, `repo_flow.py`, `render_repo_art.py` | the README artwork, drawn from validator output |
+| `tools/check_repo_art.py`, `check_repo_card.py`, `check_repo_flow.py`, `scripts/check_art_receipts.py` | checks that the artwork matches the validator and the stored digests |
