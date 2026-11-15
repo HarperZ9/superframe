@@ -1,0 +1,63 @@
+# The Quota, vertical slice: day 41 of the famine winter, Edrin's Upper Town (era 2). Story lead,
+# 2026-10-21. Private. Design: design/QUOTA-DESIGN.md and design/quota/ (07-PRODUCTION, the slice).
+# Root file. The Gullet acts are untouched (07-PRODUCTION decision 5 is open); this act stands beside
+# them. Its ruleset is its own (q_rules.lwd, 2026-10-21): the compartments and voices under the same
+# ids, two sheets, the plain's day, and no creation screen; it borrows nothing from the Gullet acts. Two classes: the Inspector line (Ned Furrowe) and the Militia line (Will
+# Brack). Slurs are the invented ones only, until decision 2.
+@meta
+title: The Quota. The slice
+title-screen: The Prayer for the Water
+title-sub: The famine winter in Edrin's Upper Town.
+title-area: q.tower
+format: lwd/1
+act: 1
+night: 1
+start: e1.start
+clock: 05:50
+end-clock: 23:59
+community-day: 41
+era: 2
+class-var: q_class
+world-keep: q_class q_figure q_cart q_door
+world-line: said.ned_report_* said.will_report_*
+meters: off
+numbers: off
+hud: clock weather place
+hud-day: Day {day} of the winter
+hud-weather: frost snow wind
+name-face: grotesk
+player-figure: q_class inspector=ned militia=will
+community.export: 0
+community.blacklist: 0
+community.torn.hesh_hoard: 0
+player-household: q_class inspector=furrowe militia=brack
+include: q_rules.lwd
+include: q_world.lwd
+include: q_community.lwd
+include: q_props.lwd
+include: q_lore.lwd
+include: q_record.lwd
+include: q_readback.lwd
+include: q_discourse.lwd
+include: q_dreams.lwd
+include: q_perspective.lwd
+include: q_start.lwd
+include: q_ned.lwd
+include: q_will.lwd
+include: q_office.lwd
+include: q_dinner.lwd
+include: q_granary.lwd
+include: q_coda.lwd
+include: q_sheaf.lwd
+include: q_cells.lwd
+include: q_week.lwd
+include: q_witness.lwd
+include: e1_world.lwd
+include: e1_town.lwd
+include: e1_board.lwd
+include: e1_frost.lwd
+include: e1_witness.lwd
+include: e1_yard.lwd
+include: e1_bet.lwd
+include: e1_hill.lwd
+include: e1_inner.lwd

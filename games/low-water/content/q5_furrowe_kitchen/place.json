@@ -1,0 +1,173 @@
+{
+ "place": "q5_furrowe_kitchen",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0.1,
+   0.9,
+   -0.2
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 2.8508771929824563
+ },
+ "pxPerMetre": 228,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "evening"
+ ],
+ "variantInfo": {
+  "evening": {
+   "hour": 19.1,
+   "weather": "year 115, April, 19:05: the pendant low over the table, the phone face up among the plates"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  118
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "table",
+    "verb": "look",
+    "at": [
+     0.2,
+     0,
+     1.5
+    ],
+    "note": "the table: five places, the phone face up in the middle, nobody eating"
+   },
+   {
+    "id": "sideboard",
+    "verb": "look",
+    "at": [
+     -1.7000000000000002,
+     0,
+     1
+    ],
+    "note": "the sideboard: Abel in his hat in a frame, the glass gone milky"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "hall",
+    "at": [
+     2.2,
+     0,
+     1.4
+    ],
+    "note": "the hall and the front door"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "evening": [
+   {
+    "at": [
+     0.25,
+     0.87,
+     0.55
+    ],
+    "kind": "white",
+    "I": 0.35,
+    "reach": 1.4,
+    "group": "screen"
+   },
+   {
+    "at": [
+     0.2,
+     1.82,
+     0.5
+    ],
+    "kind": "paraffin",
+    "I": 1.4,
+    "reach": 7,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     0.2,
+     1.82,
+     0.5
+    ],
+    "kind": "paraffin",
+    "I": 3.2,
+    "reach": 10,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -0.9,
+     2,
+     -3.7
+    ],
+    "kind": "sodium",
+    "I": 4,
+    "reach": 8,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "evening": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: the pendant low over the table, the phone face up among the plates."
+}

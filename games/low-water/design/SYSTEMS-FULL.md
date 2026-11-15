@@ -1,7 +1,7 @@
 <!-- writing-profile: research -->
 # Low Water: full systems design
 
-Draft 1, 2026-10-16. Private. Supersedes nothing in `design/SYSTEMS.md`; it builds on it. The
+Draft 1, 2026-10-16. Supersedes nothing in `design/SYSTEMS.md`; it builds on it. The
 environment state, the tide clock, the sodium colour rule, blackouts, rumour pressure and erosion
 stay exactly as SYSTEMS.md sections 2 to 8 define them. This document adds Lamb: the voices, the
 checks, the Margin, the meters, clothing and the Kit, salvage and fitting, the Lamps of Gullet, the
@@ -740,15 +740,20 @@ the structure: one sheet, four pillars, soft caps.
 
 ### 19.2 One sheet: the four compartments are the four attributes
 
+**The traits pass, 2026-10-23 (design/TRAITS.md).** Every compartment and voice is now a trait the character
+carries, and each one is a being he fights in the inner arena; raising a trait helps him here and makes its being
+bigger there, and every inner fight's ending changes the trait (cut back, made terms with, lost to). The ids are
+unchanged; the names below are the new ones, with the id in brackets. design/TRAITS-RENAME.md has the old names.
+
 The compartments stay 1 to 5 at creation (section 7). Pages raise them to 10 over the game (19.4).
 Returns halve above 6 (the soft cap). Every compartment drives checks as before and one combat pillar.
 
-| Compartment | In conversation (unchanged) | Combat pillar | What it buys in a fight |
+| Great trait (compartment) | Its traits (voices) | Combat pillar | What it buys in a fight |
 |---|---|---|---|
-| THE COAT | Bearing, footing, dignity | **Endure** | Standing (health) 10 + 2 x COAT; Poise from BALLAST; the load limit (19.6); heavy tools' requirements |
-| THE NOSE | Instinct, smell, the dark | **Evade** | The sidestep and roll windows lengthen with THE DARK and SALT; footing on wet and frost; downwind warnings (SMELL); sneak openings |
-| THE PEN | Reckoning, papers, reconstruction | **Read** | Telegraphs read earlier (UNDERTOW and CARBON lengthen the read window); a blow read in time opens a weak point (CARBON, PRECEDENT); Breath costs fall with SUM ("knows where to stand"); the Kit reads in a fight (19.8) |
-| THE HAT | Manner, people | **End** | Opponents yield sooner (CONDOLENCE, FORM LETTER, HEARSAY); Composure, the pool that pays for learned moves and talk exits mid-fight, is 4 + 2 x HAT; PRIDE scales the claims case's catch |
+| HARDNESS (coat) | WEARINESS (knees), OBEDIENCE (ballast), VANITY (pride), APPETITE (grip) | **Endure** | Standing (health) 10 + 2 x HARDNESS; Poise from OBEDIENCE; the load limit (19.6); heavy tools' requirements |
+| FEAR (nose) | DISGUST (smell), DREAD (dark), SHAME (undertow), NERVE (salt) | **Evade** | The sidestep and roll windows lengthen with DREAD and NERVE; footing on wet and frost; downwind warnings (DISGUST); sneak openings |
+| SUSPICION (pen) | PRUDENCE (sum), LOYALTY (precedent), COWARDICE (smallprint), GUILT (carbon) | **Read** | Telegraphs read earlier (SHAME and GUILT lengthen the read window); a blow read in time opens a weak point (GUILT, LOYALTY); Breath costs fall with PRUDENCE ("knows where to stand"); the Kit reads in a fight (19.8) |
+| AUTHORITY (hat) | TENDERNESS (condolence), CONTEMPT (formletter), JEALOUSY (chit), SPITE (hearsay) | **End** | Opponents yield sooner (TENDERNESS, CONTEMPT, SPITE); Composure, the pool that pays for learned moves and talk exits mid-fight, is 4 + 2 x AUTHORITY; VANITY scales the claims case's catch |
 
 Derived numbers. These replace the table in 18.2; the combat engineer tunes the constants.
 
@@ -771,8 +776,9 @@ view, and wet lowers PRIDE and so the case.
 A tool has a **requirement**, the compartment value needed to wield it properly, and **scaling**,
 the two voices whose levels raise its damage or effect. Below the requirement a tool swings slow and
 costs double Breath (18.2's GRIP rule, generalised). Scaling grades are words: *strongly*, *fairly*,
-*slightly*. Training a voice with pages pays in both places at once. GRIP opens a door in conversation
-and drives the hammer; PRIDE keeps a clerk honest and makes the claims case catch.
+*slightly*. Training a voice with pages pays in both places at once, and (since the traits pass) makes
+its being bigger when he meets it inside. APPETITE (grip) opens a door in conversation and drives the hammer;
+VANITY (pride) keeps his back straight in front of people and makes the claims case catch.
 
 ### 19.4 How Lamb levels: pages, earned by understanding and by resolving
 

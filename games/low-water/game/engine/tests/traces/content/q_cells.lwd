@@ -1,0 +1,190 @@
+# The Quota slice: the week, on the Militia line. Thursday to Sunday in the cells, and the Tuesday night (critic
+# P3, the four days; P4, the paper; the plague direction of 2026-10-22). The death is never shown. The end cell's
+# door is never opened by the camera. The water is the player's verb, and it is the cause on the certificate.
+# Day 41 was a Wednesday ("T.H. to the inspector, Weds."): day 42 Thursday, 43 Friday, 44 Saturday, 45 Sunday,
+# 47 Tuesday, 48 Wednesday. Game director, 2026-10-22.
+
+# ---------------------------------------------------------------- the week begins (both lines)
+@node q.week
+cost: 0
+alt: q.cells.d42 ? q_class == militia
+go: q.ned.week
+
+# ---------------------------------------------------------------- Thursday
+@node q.cells.d42
+place: q_cells
+speaker: GEDGE
+cost: 10
+do: cut(max(0, 1440 + 06:30 - clock))
+alt: q.cells.d42.tesk ? !has(q.tomas_held)
+nar: Thursday. The cells. The lamp that smokes is still smoking, because nobody has trimmed it since Tuesday.
+nar: The end cell. The boy's cap is on the floor outside the bars, where he threw it or where it fell. He's on the bench with his knees up inside the Orme lad's coat and his hands up the sleeves. Old Tesk is in the middle cell now, moved to make room, with the fever on him.
+line: GEDGE: He's asked for his mam twice. I told him she's not on the list.
+nar: Duty, on the board by the door in Will's own hand, the same as every morning: LOG. CARDS. BUCKETS. WATER.
+nar: The buckets first. The end cell's is the worst. You carry it out across the yard at arm's length and tip it in the drain by the barrel, and the barrel's lid is off, and the frost on the water is broken where somebody's dipped it.
+line: TOMAS: Sergeant. When's the hearing?
+line: WILL: When the Captain says.
+line: TOMAS: You took the seed. You could've left the seed.
+nar: Gedge laughs. Will doesn't.
+go: q.cells.water
+
+@node q.cells.d42.tesk
+place: q_cells
+speaker: GEDGE
+cost: 10
+nar: Thursday. The cells. Tesk has the end cell to himself, and the fever has him properly now. He talks to somebody who isn't there in a language Gedge calls warbling.
+nar: Duty, on the board by the door: LOG. CARDS. BUCKETS. WATER. The barrel in the yard with its lid off and the frost on it broken.
+line: GEDGE: He wants the doctor. I told him the doctor's for people.
+go: q.cells.water
+
+@node q.cells.water
+place: q_cells
+cost: 0
+opt: "Fill the jug from the barrel in the yard." -> q.cells.jug {do: set(said.will_jug); var.water_carried += 1}
+opt: "Tell Gedge to fill it." -> q.cells.jug.gedge {do: var.water_carried += 1}
+
+@node q.cells.jug
+place: q_cells
+cost: 4
+nar: The tin jug off its nail. Out across the yard. Break the frost with the jug's own lip and dip it, and the cold goes up your wrist. In through the door, and down the row, and fill each cup through the bars. The boy holds his with both hands. {when: has(q.tomas_held)}
+nar: The tin jug off its nail. Out across the yard. Break the frost with the jug's lip and dip it. In and down the row. Tesk can't hold the cup, so you hold it, and he drinks with his eyes shut. {when: !has(q.tomas_held)}
+voice: grip: It's water. You've carried water. {dc: 2}
+go: q.cells.d43
+
+@node q.cells.jug.gedge
+place: q_cells
+speaker: GEDGE
+cost: 3
+line: GEDGE: Jug's yours on a Thursday, Sergeant.
+line: WILL: Then it's yours today.
+nar: Gedge takes the jug off its nail and goes out to the barrel, whistling, and dips it, and comes back, and fills the cups through the bars without looking at who's holding them. It's the same barrel. It's the same jug.
+go: q.cells.d43
+
+# ---------------------------------------------------------------- Friday: the paper (critic P4)
+@node q.cells.d43
+place: q_cells
+cost: 0
+alt: q.week.mark ? has(q.tomas_held)
+go: q.cells.d43.tesk
+
+@node q.cells.d43.tesk
+place: q_cells
+speaker: HOLT
+cost: 8
+do: cut(max(0, 2 * 1440 + 10:00 - clock)); set(q.tesk_sent)
+nar: Friday. Holt comes down at ten with the doctor behind him. Dr Lind looks at Tesk through the bars and doesn't go in.
+line: LIND: It's the fever. The lice carry it. He wants a clean bed and nobody near him.
+line: HOLT: He wants his hill. Sergeant, put him on the hill road. If he's going to die he can do it on his own books, not on mine.
+nar: Tesk walks out of the yard on his own, with his felt coat over his shoulders, up the hill road toward the Well, stopping every few yards with his hand on the wall. Nobody goes with him. Nobody stops him.
+voice: dark: Up to the Well. With that in him. {dc: 3}
+go: q.cells.d44
+
+# the paper is shared with the Inspector line, who is called to witness it (q_week.lwd: q.week.mark)
+
+# ---------------------------------------------------------------- Saturday: the hill, and the night the singing stops
+@node q.cells.d44
+place: q_cells
+speaker: GEDGE
+cost: 8
+do: cut(max(0, 3 * 1440 + 07:00 - clock))
+alt: q.cells.d44.tesk ? !has(q.tomas_held)
+nar: Saturday. The squad goes up Tesk's hill at first light, on the strength of a paper with a Hesh man's mark on it. They bring back Dorrah Tesk on foot between two corporals, in her felt coat, with her stick taken off her. The six town children from her hut walk down behind, and are sent on to the Furrow Church, and nobody writes them anywhere.
+nar: Dorrah goes in the women's cell, across from the end one.
+line: GEDGE: Full house.
+nar: The day is the log, the cards, the carts at the post, the buckets, the water. The boy in the end cell has started on the bucket himself now, all day, and the smell of it comes through to the guardroom however you shut the door. He's thirsty all the time. He holds the cup out through the bars before you've got the jug down.
+voice: smell: That's the flux. That's not hunger, that smell. That's the water going straight through him. {dc: 2}
+go: q.cells.night
+
+@node q.cells.d44.tesk
+place: q_cells
+speaker: GEDGE
+cost: 6
+nar: Saturday. The squad goes up Tesk's hill at first light, because the list says the hill and the fever came down it. They bring back nothing but a story about the old man lying in the fold with the goats round him, and the woman sitting with him, and nobody would go nearer.
+line: GEDGE: They're saying it's in the Well now. Up there. They're saying that's where it starts.
+go: q.cells.d48
+
+@node q.cells.night
+place: q_cells
+cost: 6
+nar: The night shift. Will on the chair in the guardroom with his boots on the stove fender. Gedge asleep with his cards in his hand.
+nar: From the end cell, quiet, a boy's voice. Not singing. Saying something over and over, low, in Heshen, the same few lines.
+line: GEDGE: He's at it again. Same tune as the old man had.
+line: WILL: Leave him. It's a prayer.
+line: GEDGE: It's a racket.
+nar: From the women's cell, Dorrah's voice, steady, the first time she has spoken since they brought her in.
+line: DORRAH: He has the end of it wrong. Nobody has taught him the end.
+nar: She says the end across the corridor, slowly, so he can hear it. The boy starts again from the beginning, and gets to the end, and gets it wrong in the same place.
+nar: Later, when the stove has gone down, it stops.
+opt: "Look in." -> q.cells.look {do: set(q.looked_in)}
+opt: "Stay in the chair." -> q.cells.d45
+
+@node q.cells.look
+place: q_cells
+cost: 4
+camera: near
+nar: Will takes the lamp down the corridor to the end cell and holds it up to the bars, and looks.
+nar: He stands there a long time. The lamp shakes, and he puts his other hand under it to hold it still, and goes on looking.
+nar: Then he takes the lamp back to the guardroom and puts it on its hook and sits down in the chair again with his boots on the fender, and he doesn't wake Gedge.
+go: q.cells.d45
+
+# ---------------------------------------------------------------- Sunday: the certificate
+@node q.cells.d45
+place: q_cells
+speaker: LIND
+cost: 8
+do: cut(max(0, 4 * 1440 + 07:30 - clock))
+nar: Sunday. Dr Lind writes it at the guardroom table with her coat on, because the stove's out. She has a good hand, fast and clear.
+nar: Prisoner Haldane, T., found unresponsive in the end cell. Certified: intestinal illness. {hand: lind}
+line: LIND: Intestinal. That's what it was, Sergeant, and that's what I'll write. It's the flux. Half the queue's got it. It's in the water.
+nar: She looks at the jug on its nail by the door, and then at the barrel through the window with its lid off, and then she goes back to her writing.
+nar: Will filled that jug himself on Thursday, from the barrel, and stood there while it filled. {when: has(said.will_jug)}
+line: LIND: Place of burial?
+line: WILL: Captain says not recorded.
+nar: Place of burial: not recorded. {hand: lind}
+voice: ballast: You carried water to a boy who was thirsty. Nobody could say you didn't. {dc: 2}
+nar: Dorrah, across the corridor, has her face against the bars and has seen the doctor come and go. She doesn't say anything. She starts the prayer for the water, the whole of it, end and all.
+go: q.cells.corner
+
+# ---------------------------------------------------------------- Tuesday night: the corner
+@node q.cells.corner
+place: q_tower
+speaker: GEDGE
+cost: 10
+do: cut(max(0, 6 * 1440 + 22:00 - clock)); set(q.corner_known)
+nar: Tuesday night. The burial ground on the hill's shoulder, the gap in the railings, and the corner past it where the ground's been turned already for others. Gedge has the spade. Will carries him. You don't need two for that.
+nar: The fever cart has been up twice today. There's a long trench on the left with lime on it, and the smell under the frost even so.
+voice: ballast: Somebody had to keep order. You'll not hear different from me. {dc: 2, self: q.sl.order}
+line: GEDGE: That thread. Have it off him. I'm not putting a Hesh charm in the Church's ground.
+opt: "Leave it." -> q.cells.corner.leave {do: set(said.will_leave_thread)}
+opt: "Let him take it." -> q.cells.corner.take
+
+@node q.cells.corner.leave
+place: q_tower
+speaker: WILL
+cost: 6
+line: WILL: Leave it.
+line: GEDGE: You what?
+line: WILL: I said leave it.
+nar: Gedge digs. The clay comes up yellow and wet under the frost and sticks to everything, the spade, the boots, the knees of Will's trousers when he kneels to put him down. No board. No water over him, the way they do it. Nothing said.
+go: q.cells.d48
+
+@node q.cells.corner.take
+place: q_tower
+cost: 6
+nar: Gedge kneels and works at the knot with his thumbnail, and swears at it, and in the end he cuts it with his knife and puts the thread in his pocket. Then he digs. The clay comes up yellow and wet and sticks to the spade, and to Will's boots, and to the knees of his trousers when he kneels to put him down.
+go: q.cells.d48
+
+# ---------------------------------------------------------------- Wednesday: on the way to the post, past Haldane Yard
+@node q.cells.d48
+place: q_road_home
+cost: 6
+do: cut(max(0, 7 * 1440 + 08:00 - clock))
+nar: Wednesday. A week. On the way out to the post Will goes past the top of Haldane Yard, the way he always does, with a heel of bread from a cart in his pocket.
+opt: "Leave the heel on the Haldanes' step." -> q.cells.bread {do: set(q.will_bread); shift(food, 0.06, haldane)}
+opt: "Keep walking." -> q.fates
+
+@node q.cells.bread
+place: q_road_home
+cost: 2
+nar: He puts it on the step by the barn door, wrapped in his handkerchief, and goes on before anybody can open the door and see who left it. It's the first thing he's done with the post's bread that he wouldn't tell Gedge about.
+go: q.fates

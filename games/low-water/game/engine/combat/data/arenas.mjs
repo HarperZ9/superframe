@@ -7,6 +7,7 @@
 // top with one sodium lamp; the gully cuts across from the steps to the drowned lamp; a wreck's
 // planks lie on the mud; weed on the lower slabs. Placeholder geometry for the test arena only.
 import { ARENAS2 } from "./arenas2.mjs";
+import { ARENAS_QUOTA } from "./arenas-quota.mjs";
 
 export const FLOOR = {
   name: "floor", place: "floor", cell: 1, origin: [0, 0],
@@ -94,4 +95,4 @@ export const BRINE = {
 };
 
 // Encounter areas to arenas (the area: key of every @encounter, Acts 1 and 2).
-export const ARENAS = { floor: FLOOR, quay: QUAY, lamp: LAMP, weigh: WEIGH, gut: GUT, brine: BRINE, ...ARENAS2 };
+export const ARENAS = { floor: FLOOR, quay: QUAY, lamp: LAMP, weigh: WEIGH, gut: GUT, brine: BRINE, ...ARENAS2, ...ARENAS_QUOTA };

@@ -5,7 +5,7 @@
 // pixel's ray has its own origin, so the mist term is given that origin. Original glue code.
 //   runShade({ placeUrl, W, H, variants: [name...], scale, outFiles, workers }) -> { ids, pid, nrm, depth, pos2 }
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
-import { openSync, writeSync, closeSync } from "node:fs";
+import { openSync, writeSync, closeSync, existsSync } from "node:fs";
 import { rn } from "../rn.mjs";
 import { makeTracer, norm, dot } from "../sdf.mjs";
 import { MATERIALS } from "../kit/ids.mjs";
@@ -40,9 +40,15 @@ function band(P, E, cam, W, H, y0, y1, vnames, crop) {
     ids[k] = id; pid[k] = P.paintId ? P.paintId(id, P0, S.propOf()) : id; nrm.set(N, k * 3); depth[k] = hit.t; pos.set(P0, k * 3);
     // which variants want a reflection here
     let want = false; const sv = V.map((v) => { const s = P.surf(id, P0, N, v.V || {}); if (s.wet > 0 && N[1] > 0.6) want = true; return s; });
-    let rh = null, rr = null, Nr = null;
+    let rh = null, rr = null, Nr = null, Nn = N;
     if (want) {
-      const j = P.ripple ? P.ripple(P0) : [0, 0], Nn = norm([N[0] + j[0], N[1], N[2] + j[1]]), c = -dot(d, Nn);
+      let j = P.ripple ? P.ripple(P0) : [0, 0];
+      // rippleAniso: wet ground's ripple stretched along the view (the author's rain-street reference): the
+      // reflected ray wanders up and down the screen, so a lamp's reflection draws out into a streak, and a fine
+      // ripple across it breaks the streak into bars
+      if (P.rippleAniso) { const A = P.rippleAniso, yw = ((P.camera.yawDeg || 0) * Math.PI) / 180, fx = -Math.sin(yw), fz = -Math.cos(yw), al = j[0] * fx + j[1] * fz, ac = -j[0] * fz + j[1] * fx, br = 0.035 * Math.sin((P0[0] * fx + P0[2] * fz) * 38 + Math.sin(P0[0] * 7.1 - P0[2] * 5.3) * 2);
+        j = [fx * (al * A + br) - fz * ac * 0.4, fz * (al * A + br) + fx * ac * 0.4]; }
+      Nn = norm([N[0] + j[0], N[1], N[2] + j[1]]); const c = -dot(d, Nn);
       rr = [d[0] + 2 * c * Nn[0], d[1] + 2 * c * Nn[1], d[2] + 2 * c * Nn[2]];
       const o2 = [P0[0] + N[0] * 0.01, P0[1] + N[1] * 0.01, P0[2] + N[2] * 0.01]; rh = tr.march(o2, rr, 90, 0.02); if (rh.hit) Nr = tr.normal(rh.P);
       rh.F = 0.04 + 0.96 * Math.pow(1 - Math.max(0, c), 5);
@@ -56,7 +62,7 @@ function band(P, E, cam, W, H, y0, y1, vnames, crop) {
       const sel = []; for (const i of cand) { const L = LA[i], I = L.Iv[j]; if (I <= 0) continue; const d2 = (L.pos[0] - P0[0]) ** 2 + (L.pos[1] - P0[1]) ** 2 + (L.pos[2] - P0[2]) ** 2; sel.push([I / Math.max(0.3, d2), i]); }
       sel.sort((a, b) => b[0] - a[0]); if (sel.length > MAXL) sel.length = MAXL;
       const lights = sel.map(([, i]) => { const L = LA[i]; return { pos: L.pos, type: L.typeN, I: L.Iv[j], cone: L.cone, mode: L.mode }; });
-      surfRec(0, P0, N, id, hit.t, v); rec.set(d, 12);
+      surfRec(0, P0, P.rippleLight ? Nn : N, id, hit.t, v); rec.set(d, 12);   // rippleLight: the lamps' highlights break on the ripple too (the ferry's sea)
       rec[15] = s.wet > 0 && N[1] > 0.6 && rh ? s.wet * Math.min(1, rh.F * 1.6 + 0.12) : 0;
       if (rec[15] > 0) { if (rh.hit) surfRec(16, rh.P, Nr, rh.id, rh.t, v); else { const so = skyO; skyO = null; skyRec(16, rr, v); skyO = so; } }
       sel.forEach(([, i], q) => { if (vis[i] < 0) { const L = LA[i], vx = L.pos[0] - P0[0], vy = L.pos[1] - P0[1], vz = L.pos[2] - P0[2], dl = Math.hypot(vx, vy, vz); vis[i] = tr.shadow(P0, N, [vx / dl, vy / dl, vz / dl], Math.min(dl - 0.35, 80), L.soft || 8); } rec[28 + q] = vis[i]; });
@@ -75,22 +81,28 @@ if (!isMainThread) {
 }
 
 // Trace and shade a whole plate on a worker pool. Variant frames go straight to files (Float32 RGB).
-export async function runShade({ placeUrl, W, H, vnames, scale = 1, outFiles, workers = 6, rows = 8, log = () => {}, crop = null }) {
-  const fds = outFiles.map((f) => openSync(f, "w")), n = W * H;
-  const ids = new Uint8Array(n), pid = new Uint8Array(n), nrm = new Float32Array(n * 3), depth = new Float32Array(n), pos = new Float32Array(n * 3);
-  let next = 0, done = 0; const t0 = Date.now();
+// band [ya, yb) with geoFiles: only those rows, written into files kept between runs (a long bake in pieces under
+// the heavy-cpu lock, render/tools/bakequeue.mjs); the geo arrays go to geoFiles at their offsets, not returned
+export async function runShade({ placeUrl, W, H, vnames, scale = 1, outFiles, workers = 6, rows = 8, log = () => {}, crop = null, band = null, geoFiles = null }) {
+  const open = (f) => openSync(f, band && existsSync(f) ? "r+" : "w");
+  const fds = outFiles.map(open), n = W * H, gfd = geoFiles ? Object.fromEntries(Object.entries(geoFiles).map(([k, f]) => [k, open(f)])) : null;
+  const ids = gfd ? null : new Uint8Array(n), pid = gfd ? null : new Uint8Array(n), nrm = gfd ? null : new Float32Array(n * 3), depth = gfd ? null : new Float32Array(n), pos = gfd ? null : new Float32Array(n * 3);
+  const ya = band ? band[0] : 0, yb = band ? band[1] : H;
+  let next = ya, done = 0; const t0 = Date.now();
   await Promise.all(Array.from({ length: workers }, () => new Promise((res, rej) => {
     const wk = new Worker(new URL(import.meta.url), { workerData: { placeUrl, W, H, vnames, scale, crop } });
-    const give = () => { if (next >= H) { wk.postMessage({ stop: true }); res(); return; } const y0 = next; next = Math.min(H, next + rows); wk.postMessage({ y0, y1: next }); };
+    const give = () => { if (next >= yb) { wk.postMessage({ stop: true }); res(); return; } const y0 = next; next = Math.min(yb, next + rows); wk.postMessage({ y0, y1: next }); };
     wk.on("message", (m) => {
       if (m.ready) { give(); return; }
-      const o = m.y0 * W; ids.set(m.ids, o); pid.set(m.pid, o); nrm.set(m.nrm, o * 3); depth.set(m.depth, o); pos.set(m.pos, o * 3);
+      const o = m.y0 * W;
+      if (gfd) { const w = (k, a, per) => writeSync(gfd[k], new Uint8Array(a.buffer, a.byteOffset, a.byteLength), 0, a.byteLength, o * per); w("ids", m.ids, 1); w("pid", m.pid, 1); w("nrm", m.nrm, 12); w("depth", m.depth, 4); w("pos", m.pos, 12); }
+      else { ids.set(m.ids, o); pid.set(m.pid, o); nrm.set(m.nrm, o * 3); depth.set(m.depth, o); pos.set(m.pos, o * 3); }
       m.hdr.forEach((h, j) => writeSync(fds[j], new Uint8Array(h.buffer), 0, h.byteLength, o * 12));
-      const before = done; done += m.y1 - m.y0; if (Math.floor(before * 20 / H) !== Math.floor(done * 20 / H)) log(`shade ${((100 * done) / H).toFixed(0)}% ${((Date.now() - t0) / 1000).toFixed(0)} s`);
+      const before = done; done += m.y1 - m.y0; if (Math.floor(before * 20 / (yb - ya)) !== Math.floor(done * 20 / (yb - ya))) log(`shade ${((100 * done) / (yb - ya)).toFixed(0)}% ${((Date.now() - t0) / 1000).toFixed(0)} s`);
       give();
     });
     wk.on("error", rej);
   })));
-  fds.forEach((fd) => closeSync(fd));
+  fds.forEach((fd) => closeSync(fd)); if (gfd) Object.values(gfd).forEach((fd) => closeSync(fd));
   return { ids, pid, nrm, depth, pos };
 }

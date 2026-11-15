@@ -1,0 +1,206 @@
+# Era 1, The Exchange: the census board (e1.s04), Abel's hayloft (e1.s05) and the harvest supper (e1.s06).
+# Story lead, W2-F, 2026-10-22. DRAFT, every line awaiting the author. The inner arena (e1.n1) waits on the
+# arena package; the board goes straight on to the loft.
+
+# ---------------------------------------------------------------- e1.s04, the census board
+@node e1.board
+place: q1_board
+speaker: EDWIN
+cost: 0
+nar: The registrar's upstairs room, on the Thursday. A long table with green baize gone bald at the elbows, a fire too big for the day, a decanter nobody has touched yet because the professor hasn't.
+nar: Round the table: the registrar, asleep with his eyes open. Edwin Mott, who has the wording by heart and says it with his eyes shut. George Orme. Dr Lind, who came in late and kept his gloves on. Clement Ashby from the Gazette by the window, for the press. Abel Furrowe for the exchange, with his hat on his knee. Josh Brack standing at the back by the door, because nobody asked him to sit.
+nar: And the guest, Professor Calley from Arlen, who has been up to the hill villages twice and brought back a walking stick with a goat carved on the handle, which he leans on the table where everybody can see it.
+line: EDWIN: The wording, then, as drafted. That for the purposes of the poor rate and the relief, a resident of the district is a person with a fixed abode in the district at the first frost. And that a person engaged for the season is not resident by reason of the engagement.
+line: GEORGE: Which means the hands.
+line: EDWIN: Which means anyone engaged for the season, Mr Orme.
+line: GEORGE: Which means the hands.
+line: EDWIN: It has to be worded generally.
+line: OSKAR: Am I wanted for this or not? I've a woman in the barns at Haldane's who's been coughing since the barley.
+line: EDWIN: The board would like to know whether the hands carry fever down off the hill.
+line: OSKAR: They carry what everybody carries. They sleep eleven to a barn on wet straw because that's what the barns are. Put them in a house and they'll cough like a house.
+line: EDWIN: The doctor says they present no special risk.
+line: OSKAR: The doctor said what he said.
+nar: Edwin says it again to the registrar, louder, the short way, no special risk, and the registrar nods. Lind opens his mouth and shuts it and takes one glove off.
+alt: e1.board.abel ? q_class == inspector
+go: e1.board.josh
+
+@node e1.board.abel
+place: q1_board
+speaker: EDWIN
+cost: 0
+line: EDWIN: Mr Furrowe, for the exchange.
+voice: pride: They wait for you. They always wait for you. {dc: 2}
+opt: "Say it: The exchange has no objection. Put the exchange down as content." -> e1.board.calley
+opt: "Say it: A tenant. A man renting a place. He'd be resident under that?" -> e1.board.tenant {do: set(said.e1_abel_tenant); set(e1.tenant_asked)}
+
+@node e1.board.tenant
+place: q1_board
+speaker: EDWIN
+cost: 0
+line: EDWIN: A tenant has a fixed abode. Yes.
+line: ABEL: Even a hill man.
+line: EDWIN: The wording's general, Mr Furrowe.
+line: ABEL: So it is. Put the exchange down as content, then.
+voice: sum: There's the barns at Haldane's standing empty since Purkiss went to his daughter's. You own them. {dc: 2}
+go: e1.board.calley
+
+@node e1.board.josh
+place: q1_board
+speaker: EDWIN
+cost: 0
+line: EDWIN: Brack. How many hands came down this summer.
+line: JOSH: I don't keep them by the number, Mr Mott. I keep them by the face.
+line: EDWIN: Roughly.
+voice: ballast: You know every face. You looked in the back of every cart. {dc: 2}
+opt: "Say it: More than last year. They came down with everything. Pots. Grandmothers." -> e1.board.calley {do: set(said.e1_josh_words)}
+opt: "Say it: The same as always. They come down and they go back up. They always have." -> e1.board.calley
+
+@node e1.board.calley
+place: q1_board
+speaker: CALLEY
+cost: 0
+line: EDWIN: Professor Calley. The board would be glad of your view.
+line: CALLEY: Oh, I'm only a guest. I'm here for the supper.
+nar: He waits to be asked again. The registrar wakes up and asks him again.
+line: CALLEY: Well. I'd only say this. They don't want to be resident. That's the thing nobody here seems to grasp. You give a Hesh man a house and he'll be gone by Easter. They have the hill in them. I've stood in their villages. You've never seen people so cheerful with so little. I don't believe they think about next year at all.
+line: GEORGE: They think about next year when I pay them.
+line: CALLEY: Ha. Yes. Well, you would know.
+nar: Everyone laughs, Calley loudest. Ashby laughs at the window. Edwin Mott says the wording once more, all of it, with his eyes shut, and the registrar says all those for.
+nar: George's hand goes up first. Then Lind's, slow, with the glove on it. Ashby's, from the window. Abel's, with his hat in it, so the hat goes up as well. Nobody's goes up against. Josh, at the door, isn't asked. The registrar says carried, and that's the whole of it. The decanter goes round.
+do: set(e1.rule_passed); pressure(f.e1_sallis); pressure(f.e1_kel)
+voice: undertow: It took eleven minutes. You'll remember that the fire was too big. {dc: 3}
+go: e1.count
+
+# ---------------------------------------------------------------- e1.s05, Abel's hayloft
+@node e1.loft
+place: q1_loft
+hud-clock: 00:40
+hud-weather: a cold night
+speaker: ABEL
+cost: 0
+nar: Abel's hayloft, over the horse, after the count, past midnight. One lantern on a nail. Ilo Haldane, who was Ilo then and nothing else, sits on a bale with a horse blanket round him that stinks of horse, and his wet things spread over the bales to steam. He's been sleeping up here since the barley. It's warm from the horse, and he can't get warm.
+nar: He shakes. Not shivers, shakes, in long fits that start in his stomach and go out to his hands, and then stop, and then start again. His feet are white and wrinkled like a drowned man's and he's got them pushed down into the hay.
+nar: His left forearm is wrapped in a strip torn off a sack, and the sack's gone black through in a patch the size of a hand. He hasn't looked under it.
+nar: He has a knife and a piece of pear wood, and he's trying to make a spoon one-handed with the wood held between his knees, because his hands want something to do.
+nar: Abel comes up the ladder slowly, because he's sixty-three and the rungs are greasy, and sits down on the top one with his legs still on the ladder, like a boy. He has a heel of bread in his coat pocket and half a cold sausage in a paper, and he puts them on the boards without saying what they are.
+nar: Ilo eats the bread first. He eats it too fast and it hurts going down, and he has to stop with his hand flat on his chest and wait, and then he eats the sausage, paper and all nearly, and licks the grease off the paper.
+line: ABEL: Brack's been round with the dog, then.
+line: ILO: He has.
+line: ABEL: Did it get you.
+line: ILO: Something did. {when: !has(e1.dog_called)}
+line: ILO: No. He called it off. Said it was rats. I did this on the thorn getting out. {when: has(e1.dog_called)}
+line: ABEL: Let's see it. {when: !has(e1.dog_called)}
+nar: Ilo unwinds the sacking. The dog's top teeth have gone in in a curve of holes, and the bottom teeth have torn, and there's a flap of skin lifted off the arm like the lid of a tin, and under it it's red and white and wet. Abel looks at it under the lantern for a long time. He has seen a lot of hands' arms. {when: !has(e1.dog_called)}
+line: ABEL: That wants Lind. {when: !has(e1.dog_called)}
+line: ILO: Lind wants a shilling. {when: !has(e1.dog_called)}
+line: ABEL: Wrap it up, then. Keep it clean. Piss on it if it goes green, my father used to say, and he had both his arms when he died. {when: !has(e1.dog_called)}
+line: ABEL: That's a good spoon.
+line: ILO: It's for the little one. Bet's.
+line: ABEL: I know whose it's for.
+nar: Ilo goes on carving. A curl of pear wood falls off the knife onto his knee.
+line: ABEL: They passed it today. Seasonal hands aren't resident. First frost, the ones with no roof go back up the hill road. I put my hand up for it.
+line: ILO: You put your hand up for most things, Mr Furrowe.
+line: ABEL: There's the barns at Haldane's. Old Purkiss has gone to his daughter's.
+line: ILO: I know whose barns they are.
+line: ABEL: A tenant's a resident. That's in the rule as well. Mott saw to that.
+line: ILO: And Bet.
+line: ABEL: Bet wants a husband and the little one wants a name. You want a roof by the frost.
+line: ILO: You want it done by Sunday.
+line: ABEL: I'd like it done by Sunday, yes.
+nar: The horse shifts underneath them and the boards creak. Ilo holds the spoon up to the lantern and looks along the handle to see if it's straight. It isn't, quite.
+line: ILO: She's a good girl, Bet.
+line: ABEL: She is.
+line: ILO: Your Ned thinks so.
+nar: Abel doesn't say anything for a while. He takes his hat off and turns it round in his hands by the brim, looking for something on the band.
+line: ABEL: Ned's married.
+line: ILO: I know. I was at it. I carried the chairs.
+line: ABEL: So you were.
+voice: pride: He'll say yes. He was always going to say yes. You've done him a kindness. {dc: 2, when: q_class == inspector}
+line: ILO: Can I keep the horse company till Sunday, then.
+line: ABEL: You can keep him company as long as you like.
+do: set(e1.loft_taken)
+nar: Abel goes back down the ladder. Ilo finishes the spoon by feel after the lantern's out, and in the morning the bowl of it is crooked and he keeps it anyway.
+go: e1.bet.parlour
+
+# ---------------------------------------------------------------- e1.s06, the harvest supper
+@node e1.supper
+place: q1_supper
+speaker: EDIE
+cost: 0
+nar: The harvest supper, in Orme's big barn, the Saturday. One long table down the middle made of trestles and doors, with every family in the Upper Town along it, and lamps on the beams, and a fiddler on a barrel who can only play four tunes and plays them in turn.
+nar: New bread, and dripping in a bowl with the brown at the bottom, and a ham that took two men to carry in. Beer in jugs. A pear on every plate, and the children cutting theirs into eight so it lasts.
+nar: Edie the seamstress, twenty-two, is across the table from Will Brack. He's trying to tell her something about the post and has got it backwards, and she's laughing at him with her hand over her mouth, and he's gone red to the ears and is laughing as well.
+line: EDIE: You said the cart was on the pole.
+line: WILL: The pole was on the cart. The pole came down on the cart.
+line: EDIE: Was anyone in it?
+line: WILL: A pig.
+nar: She has to put her head down on the table. Josh, further up, watches his son make a girl laugh and looks pleased for a second and then looks at his beer. {when: q_class == militia}
+nar: Further up, Ned Furrowe has his arm along the back of Mary's chair. Mary is feeding the baby under a shawl, Pell, a week old, born at harvest like a good Furrowe. Bet is three places down with Anni on her knee, and Bet doesn't look at Ned once, all night. {when: q_class == inspector}
+voice: pride: Your table. Your town. Look at it. {dc: 2, when: q_class == inspector}
+nar: Out in the yard, through the window, on an upturned crate with a plate on his knees, Ilo. The hands eat in the yard. They always have. There's sheep's-fat bread for the yard and a pot of something, and they've a fire going, and they're singing out there as well, a different song, and the two songs get in each other's way.
+go: e1.toast
+
+@node e1.toast
+place: q1_supper
+speaker: CALLEY
+cost: 0
+nar: George Orme stands up and bangs a spoon on a jug and asks the professor from Arlen to say a few words, as their guest, and the professor stands up with his glass.
+line: CALLEY: I won't keep you. Your registrar's been very kind, and your Mr Orme. And your Mr Furrowe, who weighed me when I came in and found me wanting.
+nar: A big laugh. Abel lifts his glass to him, pleased.
+line: CALLEY: To the harvest. To the plain, which I'm told is the best wheat ground between here and the sea.
+line: GEORGE: It is.
+line: CALLEY: I'll tell you a story about them, if Mr Orme will let me, since it's in the book. I was three weeks at a place called Skell, right at the top. And I asked the headman there, a very old fellow, what they'd do if the harvest failed. And he thought about it a long time, and he said, then we'll be hungry. And he laughed. That was all. Then we'll be hungry.
+nar: The barn laughs. Calley does the old man's voice for the second one, with his shoulders up round his ears and his hands held open, and it gets a bigger laugh than the first.
+line: CALLEY: Nine words for rain, they have. I counted them. And no word at all for thank you. I asked. Not one.
+line: GEORGE: They've a word for more, though. I hear it every Friday.
+nar: That gets the biggest laugh of the night. George sits down on it, pleased, and has to stand up again because Calley's still going.
+line: CALLEY: And they sing. My word, they sing. Is that one of yours out there, Mr Furrowe? The fellow on the rick?
+line: ABEL: That's Ilo.
+line: CALLEY: Bring him in. Do bring him in. Let them hear it. Go on.
+nar: Somebody goes to the door and shouts. Ilo comes in from the yard with his plate still in his hand because nobody told him to put it down. He stands on the barn floor between the end of the table and the door, in his work shirt, with the sacking on his arm and sheep's fat on his chin, and the whole barn turns round on the benches to look at him.
+line: CALLEY: Sing us one. One of the hill ones. Is there one about a goat?
+line: ILO: There's a lot about goats, sir.
+line: CALLEY: Then any of them. Any goat at all.
+nar: Laughter. Ilo looks down the table for Abel. Abel nods to him, kindly, the nod you'd give a lad at a ploughing match.
+voice: pride: They're fond of you, the hands. Every one of them. You've never done one of them a turn they'd hold against you. {dc: 2, self: e1.sl.fond, when: q_class == inspector}
+nar: Ilo sings. He doesn't sing about a goat. He sings the one they sing on the hill when somebody's carried up to the top, the long one, with the names in it, slow, and his voice goes up into the beams where the lamps are.
+nar: Nobody in the barn knows what it is. Calley conducts it with his fork. Out in the yard the hands have all stood up off their crates, and the ones with hats have taken them off, and they stand like that in the dark under the window while it goes on.
+nar: It goes on a long time. Somebody near the end of the table starts to talk, and is shushed, and then somebody else starts, and isn't. When Ilo stops, Calley claps first, and then everybody, and somebody bangs the table.
+line: CALLEY: Marvellous. Marvellous. You see? Like a lark. Here.
+nar: He holds out a sixpence. Ilo has to walk the length of the table to get it, past every family in the Upper Town, with the plate in one hand. He takes the sixpence. He says thank you, sir, in the plain, and goes back out to the yard, and sits down on his crate again with his plate on his knees.
+line: CALLEY: And to our friends in the barns. The Hesh temperament. Patient, and cheerful, and never a thought for next year. They'd sing at a funeral.
+nar: And the whole barn laughs, warmly, the way you laugh at a dog that's done something clever. Glasses go up along the table like a wave going down a beach.
+do: set(e1.toast_heard)
+voice: undertow: Listen to the yard. {dc: 2}
+nar: In the yard the singing has stopped. Ilo has his plate on his knees and a piece of bread halfway to his mouth, and he's looking at the window, and he can see every glass in it.
+opt: "Raise the glass with the rest of them." -> e1.toast.raised {do: set(said.e1_raise); set(e1.glass_raised)}
+opt: "Leave the glass on the table." -> e1.toast.left {do: set(said.e1_leave_glass); set(e1.glass_left)}
+
+@node e1.toast.raised
+place: q1_supper
+cost: 0
+nar: The beer is warm and tastes of the jug. Calley sits down to a bang of hands on the table. The fiddler starts the first of his four tunes again.
+nar: In the yard, Ilo puts the bread in his mouth and chews it and swallows it, and after a minute he starts the song again, and the others come in under him, quieter.
+go: e1.supper.after
+
+@node e1.toast.left
+place: q1_supper
+cost: 0
+nar: The glass stays on the cloth. Everyone's drinking, and Calley sits down to a bang of hands on the table, and the fiddler starts up, and the full glass stands there among the empty ones.
+nar: Ilo, in the yard, notices. He looks at the glass through the window for a second, and then at whoever it belongs to, and then he eats his bread.
+voice: undertow: Your hand's shaking. Put it in your lap. {dc: 2}
+go: e1.supper.after
+
+@node e1.supper.after
+place: q1_supper_yard
+cost: 0
+nar: Later, when the lamps are low and the children are asleep along the benches like coats, a patch of white in the yard where Ilo was sitting. It's frost, too early. It's gone by the time anyone looks at it again.
+nar: Nothing happens that night. Everybody walks home singing. It's a good supper, the best anyone can remember.
+go: e1.inner.fond
+
+# ---------------------------------------------------------------- e1.n1, the inner arena: the night after the board (Fond of Them)
+# Plays when VANITY's toast line (e1.sl.fond) was heard; otherwise the night passes (combat/innerhook.mjs).
+@node e1.inner.fond
+cost: 0
+do: inner(fond, e1.frost.eve)
+go: e1.frost.eve

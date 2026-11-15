@@ -6,6 +6,8 @@ export function hashStr(s, seed = 0x9e3779b9) {
   h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b) >>> 0; h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35) >>> 0; h ^= h >>> 16;
   return h >>> 0;
 }
-export const rand01 = (seed, key) => hashStr(String(key), seed) / 4294967296;
+// The trace recorder (tools/tracer.mjs) sets drawHook.fn to see every draw: (seed, key, value).
+export const drawHook = { fn: null };
+export const rand01 = (seed, key) => { const v = hashStr(String(key), seed) / 4294967296; if (drawHook.fn) drawHook.fn(seed, String(key), v); return v; };
 // n dice of s sides, as a list, from (seed, key).
 export const dice = (seed, key, n = 2, s = 6) => Array.from({ length: n }, (_, i) => 1 + Math.floor(rand01(seed, `${key}#${i}`) * s));

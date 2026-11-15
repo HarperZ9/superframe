@@ -7,12 +7,13 @@ import { RUN } from "../data/build.mjs";
 import { WORLD, OFF } from "../data/world.mjs";
 import { terrainAt } from "./terrain.mjs";
 import { mayStep, land, trip } from "./ground.mjs";
+import { datan2, dcos, dexp, dhypot, dsin } from "./math.mjs";
 
 const TAU = Math.PI * 2;
 export const wrapAngle = (a) => ((((a + Math.PI) % TAU) + TAU) % TAU) - Math.PI;
-export const dirOf = (a) => [Math.cos(a), Math.sin(a)];
-export const angleTo = (A, B) => Math.atan2(B.z - A.z, B.x - A.x);
-export const dist = (A, B) => Math.hypot(B.x - A.x, B.z - A.z);
+export const dirOf = (a) => [dcos(a), dsin(a)];
+export const angleTo = (A, B) => datan2(B.z - A.z, B.x - A.x);
+export const dist = (A, B) => dhypot(B.x - A.x, B.z - A.z);
 
 export function createFighter(def, { id, team, x, z, face = 0 }) {
   return {
@@ -20,12 +21,12 @@ export function createFighter(def, { id, team, x, z, face = 0 }) {
     hp: def.hp, hpMax: def.hp, st: def.stamina, stMax: def.stamina, stWait: 0, winded: false,
     poise: def.poise, poiseMax: def.poise, poiseWait: 0, guardT: 0, blind: 0,
     act: null, hitstop: 0, flash: 0, lock: null, lockLost: 0, buf: [], items: { ...(def.items || {}) },
-    out: false, fallen: false, yielded: false, lastOffense: 0, aware: true, notice: 1, composure: 0, composureMax: def.composureMax || 0, running: false, lantern: def.lantern || 0, lastHitBy: null, tool: def.tool ? def.tool.id : null,
+    out: false, fallen: false, yielded: false, lastOffense: 0, aware: true, notice: 1, composure: Math.min(def.composureMax || 0, def.composureStart || 0), composureMax: def.composureMax || 0, running: false, lantern: def.lantern || 0, lastHitBy: null, tool: def.tool ? def.tool.id : null,
   };
 }
 
 const MOVE_INPUT = 0.2;
-export const inputDir = (inp) => (Math.hypot(inp.mx || 0, inp.mz || 0) > MOVE_INPUT ? Math.atan2(inp.mz, inp.mx) : null);
+export const inputDir = (inp) => (dhypot(inp.mx || 0, inp.mz || 0) > MOVE_INPUT ? datan2(inp.mz, inp.mx) : null);
 const has = (F, use) => F.items[use] > 0;
 
 // Which move an action name means now. Returns null when it means nothing.
@@ -93,6 +94,7 @@ export function startMove(W, F, id, inp = {}, extra = {}) {
   F.guardT = 0;
   // movement hands into the move: 60% of the walking speed carries, fading over 12 frames
   const carry = m.kind === "attack" || m.kind === "riposte" ? [F.vx * 0.6, F.vz * 0.6] : null;
+  if (m.parry) F.catchMiss = W.tick + Math.round(m.total * stun) + slow + RULES.catchLockout; // cleared when the catch lands (sim/hits.mjs parried)
   F.act = { id, f: 0, end: Math.round(m.total * stun) + slow, hit: [], charge: 0, charging: false, dir, seq: (F.seq = (F.seq || 0) + 1), carry, ...extra };
   if (["attack", "riposte", "parry"].includes(m.kind) || m.shove || m.grapple) F.lastOffense = W.tick;
   if (m.resetRead || m.behind) learnedStart(W, F, m); // after F.act exists: the turn re-aims it
@@ -111,6 +113,7 @@ export function consumeBuffer(W, F, inp) {
     if (!canAct(W, F, a)) continue;
     const id = resolveAction(W, F, a, inp);
     if (!id) continue;
+    if (W.moves[id].parry && F.catchMiss != null && W.tick < F.catchMiss) continue; // T5: a missed catch locks the next one out
     if (W.moves[id].stamina > 0 && F.st < 1) { W.emit({ type: "breathless", id: F.id, action: a }); F.buf.splice(i, 1); continue; }
     F.buf.splice(i, 1);
     startMove(W, F, id, inp);
@@ -146,8 +149,17 @@ export function stepAction(W, F, inp) {
   const sure = m.kind === "dodge" && (W.defs[F.id].learned || []).includes("mudstep");
   const v = rootSpeed(m, A.f) * (sure ? Math.max(1, foot.root) : foot.root) * (m.kind === "dodge" ? terrainAt(W.field.arena, F.x, F.z).root : 1), [dx, dz] = dirOf(A.dir ?? F.face);
   F.vx = dx * v; F.vz = dz * v;
+  // a charge that meets a wall (m.wallStun: the move to fall into, a boss's daze): it stops and reels there,
+  // the punish window a learnable pattern gives (combat/ai/boss.mjs)
+  if (m.wallStun && A.f >= m.startup && v > 3) {
+    const r = (W.defs[F.id].radius || 0.4) + 0.8; // a frame and a half of the charge ahead
+    const x = F.x + dx * r, z = F.z + dz * r, b = W.field.bounds; // a wall, or the fight's edge
+    if (W.field.solid(x, z) || (b && (x < b.x0 || z < b.z0 || x > b.x1 || z > b.z1))) { F.vx = 0; F.vz = 0; W.emit({ type: "wallhit", id: F.id, move: m.id }); startMove(W, F, m.wallStun); F.hitstop = Math.max(F.hitstop, 8); return; }
+  }
   if (A.carry && A.f < 12) { const k = 1 - A.f / 12; F.vx += A.carry[0] * k; F.vz += A.carry[1] * k; }
   if (m.item && A.f === m.startup && has(F, m.item.use)) W.useItem(F, m);
+  if (m.shout && A.f === m.startup && W.shout) W.shout(F, m); // a call to the others (combat/data/archetypes.mjs)
+  if (m.summon && A.f === m.startup && W.summon) W.summon(F, m.summon); // more hands in: the host knows how (combat/arena/run.mjs)
   A.f++;
   if (A.f >= A.end) { F.act = null; if (m.then) startMove(W, F, m.then, inp); }
 }
@@ -165,8 +177,8 @@ export function stepFree(W, F, inp) {
   F.running = !!(inp.hold && inp.hold.run) && F.guardT === 0 && (F.st > 0.2 || runCost === 0) && stick !== null && !ter.noRun;
   if (F.running && runCost > 0) { F.st = Math.max(0, F.st - runCost * DT); F.stWait = Math.max(F.stWait, 10); }
   const guard = F.guardT > 0 ? RULES.guardSpeed : F.running ? RUN.speed : 1;
-  const mag = stick === null ? 0 : Math.min(1, Math.hypot(inp.mx, inp.mz));
-  const sp = def.speed * foot.speed * ter.slow * mag * guard, tx = stick === null ? 0 : Math.cos(stick) * sp, tz = stick === null ? 0 : Math.sin(stick) * sp;
+  const mag = stick === null ? 0 : Math.min(1, dhypot(inp.mx, inp.mz));
+  const sp = def.speed * foot.speed * ter.slow * mag * guard, tx = stick === null ? 0 : dcos(stick) * sp, tz = stick === null ? 0 : dsin(stick) * sp;
   const k = Math.min(1, (def.accel * Math.max(0.15, foot.accel * ter.slick) * DT) / Math.max(0.5, def.speed));
   F.vx += (tx - F.vx) * k; F.vz += (tz - F.vz) * k;
   const lock = F.lock != null && W.byId(F.lock), want = lock ? angleTo(F, lock) : stick;
@@ -191,15 +203,41 @@ export function stepRecovery(W, F) {
   else F.poise = Math.min(F.poiseMax, F.poise + RULES.poiseRegen * DT);
 }
 
+// Whether a body may move from where it stands to (x, z): the centre out of solid ground, and no
+// nearer to solid ground than EDGE of its radius (or than it already stands)
+const edgeOf = (W, F) => Math.min(W.defs[F.id].radius ?? 0.25, 0.25) * BODY.edge;
+// metres from (x, z) to the nearest solid ground, looked for out to the body's edge e
+function clearance(W, x, z, e) { let c = e; for (const [a, b] of RIM) for (let d = 0.025; d < c; d += 0.025) if (W.field.solid(x + a * d, z + b * d)) { c = d; break; } return c; }
+export function bodyMay(W, F, x, z) {
+  // a body already inside its edge (boxed in behind a bench) may move about, keeping MIN_CLEAR, so it
+  // can always walk out; from clear ground it may not step inside its edge
+  const e = edgeOf(W, F), c0 = clearance(W, F.x, F.z, e), c = clearance(W, x, z, e);
+  return !W.field.solid(x, z) && (c >= Math.min(c0, e) - 0.01 || (c0 < e - 0.01 && c >= BODY.minClear));
+}
+// A body set down with its edge in a prop (a scene's spot by a wall) steps to the nearest spot within
+// 0.6 m where it fits, before the fight's first frame
+export function settleClear(W, F) {
+  const e = edgeOf(W, F); if (clearance(W, F.x, F.z, e) >= e - 0.01) return false;
+  for (let d = 0.05; d <= 0.6; d += 0.05) for (const [a, b] of RIM) { const x = F.x + a * d, z = F.z + b * d; if (!W.field.solid(x, z) && clearance(W, x, z, e) >= e - 0.01) { F.x = x; F.z = z; return true; } }
+  return false;
+}
+// tunables for tools (ablation runs): edge, a share of the radius (0 turns the edge rule off); minClear
+export const BODY = { edge: 1.3, minClear: 0.13 };
+const RIM = Array.from({ length: 16 }, (_, i) => [dcos((i * Math.PI) / 8), dsin((i * Math.PI) / 8)]);
 // Velocity and knockback into position, knockback decaying with the footing's friction.
 export function integrate(W, F) {
   const foot = W.field.footing(F.x, F.z), b = W.field.bounds, r = W.defs[F.id].radius;
   // solid ground (a plate's walls and furniture) stops a body on that axis
   const nx = F.x + (F.vx + F.kx) * DT, nz = F.z + (F.vz + F.kz) * DT, f = W.field;
   // a ledge stops a walk like a wall; a knockback or a roll carries over it (sim/ground.mjs)
-  if (!f.solid(nx, F.z) && mayStep(W, F, nx, F.z)) F.x = nx; else { F.kx = 0; F.vx = 0; }
-  if (!f.solid(F.x, nz) && mayStep(W, F, F.x, nz)) F.z = nz; else { F.kz = 0; F.vz = 0; }
-  const decay = Math.exp(-foot.friction * DT);
+  // the body's leading edge as well as its centre (EDGE of its radius): a lunge or a shove no longer
+  // carries a body half into a post or a bench (author 2026-10-17: "Characters clipping through objects")
+  // (clearance: the nearest solid ground found round the rim, out to e; a step may not bring a body
+  // closer to solid ground than e, or closer than it already stands, give or take a centimetre of sampling)
+  const into = (x, z) => !bodyMay(W, F, x, z);
+  if (!into(nx, F.z) && mayStep(W, F, nx, F.z)) F.x = nx; else { F.kx = 0; F.vx = 0; }
+  if (!into(F.x, nz) && mayStep(W, F, F.x, nz)) F.z = nz; else { F.kz = 0; F.vz = 0; }
+  const decay = dexp(-foot.friction * DT);
   F.kx *= decay; F.kz *= decay;
   if (Math.abs(F.kx) < 1e-3) F.kx = 0;
   if (Math.abs(F.kz) < 1e-3) F.kz = 0;

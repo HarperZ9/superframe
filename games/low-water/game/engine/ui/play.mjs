@@ -7,6 +7,13 @@
 // chosen from the list is walked to first, and a fight started from a conversation plays on the
 // same plate and ground (the plate's arena with the art lead's fight marks, combat/sim/plate.mjs),
 // after which Lamb stands where the fight ended and walks on.
+import { installLightModel } from "../light/install.mjs";
+import { installFx } from "../fx/install.mjs";
+import { lensPanel } from "./lenspanel.mjs";
+import { phoneFrame } from "./phoneframe.mjs";
+import { witnessPace } from "./witnesspace.mjs";
+import { examineLook, propNote } from "./examinecam.mjs";
+import { sensePlayer, echoNote } from "./senseplayer.mjs";
 import { h, btn, clear } from "./dom.mjs";
 import { hudEl, meterMarks } from "./scene.mjs";
 import { plateCam } from "./platecam.mjs";
@@ -20,10 +27,14 @@ import { runLayer } from "./runlayer.mjs";
 import { inkedPages } from "./inked.mjs";
 import { liveTalkAids } from "./livetalk.mjs";
 import { waitRow } from "./waiting.mjs";
-import { portraitSlot, lightOf } from "./portrait.mjs";
+import { portraitSlot, lightOf, moodOf } from "./portrait.mjs";
+import { talkSpeaker } from "./talkspeaker.mjs";
+import { openInner } from "./inneroverlay.mjs";
 import { glyph, onDevice, watchDevice } from "./bindings.mjs";
 import { peopleLayer } from "./peoplelayer.mjs";
 import { weatherLayer } from "./weatherlayer.mjs";
+import { lightLayer } from "../paint/lightlayer.mjs";
+import { createRenderers } from "../paint/renderer.mjs";
 import { liveWorld, usePlateFor } from "./playlive.mjs";
 
 const WAIT = 10; // minutes one "wait" lets pass
@@ -44,11 +55,27 @@ export function playScreen(ctx, { startNode = null } = {}) {
   const panel = h("aside.talk", els.title, els.portrait.el, els.log, els.opts, els.foot);
   const root = h("div.screen.play", h("div.scene", els.plate, els.hud, els.edge, bar, els.here), panel);
   ctx.stage.append(root);
+  lensPanel(ctx, root.querySelector(".scene")); // The Quota's wide and narrow lenses (a placeholder until the plates land)
+  phoneFrame(ctx, root.querySelector(".scene")); // era 5's clip, seen inside a phone (camera: phone; ui/phoneframe.mjs)
 
-  const api = playApi(ctx, P, els, root);
+  const api = playApi(ctx, P, els, root); api.witness = witnessPace(ctx, P, api); // the witness scene, paced and unskippable in the talk panel
   api.cam = plateCam(els.plate, ctx);
   api.weather = weatherLayer(ctx, els.plate, api.cam);
   api.people = peopleLayer(ctx, els.plate, api.cam, { onPick: (p) => api.pick(p), idle: () => !P.talk && !P.ended && !root.classList.contains("fighting") && ctx.F.top() && ctx.F.top().root === root, onClock: () => api.worldStep(), onFrame: (dt) => api.liveFrame(dt) });
+  // light that moves with the night: Lamb's lantern pool, wet ground mirroring lamps and people (game/engine/paint)
+  if (ctx.q && ctx.q.get("light") !== "0") api.light = lightLayer(ctx, els.plate, api.cam, { people: api.people, before: api.weather.canvas });
+  // the one light model both styles read (game/engine/light, design/art/LIGHT.md): a service, it draws nothing
+  if (!(ctx.q && ctx.q.get("lightmodel") === "0")) api.lightModel = installLightModel(ctx, api.cam);
+  // the effects layer (game/engine/fx): weather, air, fire, both styles, over the light model; ?fx=off leaves it out
+  if (!(ctx.q && ctx.q.get("fx") === "off")) api.fx = installFx(ctx, els.plate, api, { before: api.weather.canvas });
+  // two renderers behind one interface: Oil and Ink (the layers above) and Glyph, its own pipeline (F7, ?look=glyph)
+  api.renderersReady = createRenderers(ctx, els.plate, api).then((r) => (api.renderers = r)).catch((e) => console.warn(`renderers: ${e.message}`));
+  // the story's cues felt: screen, sound, pad, camera, postures (world/senses.mjs, ui/senseplayer.mjs)
+  api.senses = sensePlayer(ctx, { scene: root.querySelector(".scene"), cam: api.cam });
+  // coming into a place on foot (no scene open): what happened there, as a note in the margin (world/echo.mjs)
+  const offEcho = G.echo ? G.on("area", () => { if (!P.talk && !P.ended) echoNote(ctx, G.echo.enter(G.state.place)); }) : null;
+  api.cam.lensOver(); // the lens over the people (ui/platecam.mjs)
+  api.cam.motion(() => api.people.velocity()); // the follow's look-ahead (world/camera.mjs follower)
   const offLive = liveWorld(ctx, P, api, root);
   api.inked = inkedPages(ctx); // ux: the inked Margin page and the chapter page (ui/inked.mjs)
   api.live = liveTalkAids(ctx, api, root, P); // ux: talking in a live world (ui/livetalk.mjs, UI-SYSTEM 7.6)
@@ -62,7 +89,7 @@ export function playScreen(ctx, { startNode = null } = {}) {
 
   const onKey = (e) => { if (e.code === "F5" && ctx.F.top() && ctx.F.top().root === root) { e.preventDefault(); ctx.savesPanel("save"); } };
   window.addEventListener("keydown", onKey);
-  ctx.F.push({ name: "play", root, onAction: (a) => onAction(ctx, P, api, a), onBack: () => ctx.savesPanel("menu"), onClose: () => { window.removeEventListener("keydown", onKey); api.cam.stop(); api.weather.stop(); api.people.stop(); api.inked.stop(); api.live.stop(); ctx.input.setMode(null); offLive(); offDev(); } });
+  ctx.F.push({ name: "play", root, onAction: (a) => onAction(ctx, P, api, a), onBack: () => ctx.savesPanel("menu"), onClose: () => { window.removeEventListener("keydown", onKey); api.cam.stop(); api.weather.stop(); if (api.light) api.light.stop(); if (api.lightModel) api.lightModel.stop(); if (api.fx) api.fx.stop(); if (api.renderers) api.renderers.stop(); api.people.stop(); api.inked.stop(); api.live.stop(); api.witness.stop(); ctx.input.setMode(null); offLive(); offDev(); api.senses(); if (offEcho) offEcho(); } });
   if (startNode) api.startTalk(startNode); else api.worldStep();
   return api;
 }
@@ -84,16 +111,17 @@ function playApi(ctx, P, els, root) {
     startTalk(node) { P.log = []; P.seen = 0; P.sel = {}; P.talk = G.talk(node); api.take(P.talk.beat); },
     // A new beat: add its lines, then open a run, show options, or offer to go on.
     take(beat) {
-      P.beat = beat; P.log.push(...beat.lines);
+      P.beat = beat; P.log.push(...(api.witness ? api.witness.take(beat.lines) : beat.lines));
       if (beat.end) P.ended = beat.end;
       api.render();
       if (beat.run) api.runThen(beat.run);
       else if (beat.fight) api.fightThen(beat.fight);
       else if (beat.sneak) api.sneakThen(beat.sneak);
+      else if (beat.inner) api.innerThen(beat.inner);
       else focusTalk(ctx, els);
     },
     choose(i, strain = 0) {
-      if (!P.talk || !P.beat.options || !P.beat.options[i]) return;
+      if (!P.talk || !P.beat.options || !P.beat.options[i] || (api.witness && api.witness.held())) return;
       const o = P.beat.options[i]; if (o.locked) return;
       api.take(P.talk.choose(i, { strain }));
     },
@@ -123,6 +151,8 @@ function playApi(ctx, P, els, root) {
       if (inWorld()) { root.classList.add("fighting"); return runLayer(ctx, els.plate.parentElement, id, () => { root.classList.remove("fighting"); api.take(P.talk.afterRun()); }, { cam: api.cam }); }
       openRun(ctx, id, () => api.take(P.talk.afterRun()));
     },
+    // an inner fight from the story's hinge (combat/innerhook.mjs): the arena page over the stage, then the scene it names
+    innerThen(inner) { root.classList.add("fighting"); openInner(ctx, inner, (records) => { root.classList.remove("fighting"); api.take(P.talk.afterInner(inner, records)); }); },
     sneakThen(id) {
       if (inWorld()) { root.classList.add("fighting"); return sneakLayer(ctx, els.plate.parentElement, id, () => { root.classList.remove("fighting"); api.take(P.talk.afterSneak()); }, { cam: api.cam }); }
       openSneak(ctx, id, () => api.take(P.talk.afterSneak()));
@@ -144,7 +174,7 @@ function playApi(ctx, P, els, root) {
     // closes, and Lamb is already walking.
     liveFrame(dt) {
       const v = (G.input && G.input.get("move")) || { x: 0, z: 0 }, L = Math.hypot(v.x || 0, v.z || 0);
-      const can = P.talk && P.beat && !P.ended && !P.beat.fight && !P.beat.run && !P.beat.sneak && !root.classList.contains("fighting") && ctx.input.mode && ctx.input.mode() === "talk";
+      const can = P.talk && P.beat && !P.ended && !(api.witness && api.witness.engaged()) && !P.beat.fight && !P.beat.run && !P.beat.sneak && !P.beat.inner && !root.classList.contains("fighting") && ctx.input.mode && ctx.input.mode() === "talk";
       P.leaving = can && L >= (+G.rs.rules["walk-off"] || 0.6) ? (P.leaving || 0) + dt : 0;
       if (P.leaving >= 0.25) { P.leaving = 0; const b = P.talk.walkAway(); if (b) { P.log.push(...b.lines); if (b.done) { P.talk = null; P.beat = null; api.afterTalk(); api.render(); } else api.take(b); } }
     },
@@ -192,7 +222,8 @@ function playApi(ctx, P, els, root) {
     verb(item) {
       const r = G.verbs.act(item.object.id, item.verb.kind, { label: item.verb.label });
       if (r.why) { P.log.push({ kind: "nar", who: "", text: r.why }); return api.render(); }
-      P.log.push(...r.lines);
+      if (r.lines.some((l) => l.macro) && !r.node) return examineLook(ctx, api, r.lines, (lines) => { P.log.push(...lines); propNote(ctx, lines); api.worldStep(); }); // a prop's close look (ui/examinecam.mjs)
+      P.log.push(...r.lines); if (!r.node) propNote(ctx, r.lines); // what a prop says, where it can be read in free roam
       if (r.node) { P.talk = G.talk(r.node); P.sel = {}; return api.take({ ...P.talk.beat, lines: P.talk.beat.lines }); }
       api.worldStep();
     },
@@ -221,7 +252,7 @@ function onAction(ctx, P, api, a) {
   if (a === "daybook") { ctx.daybook(); return true; }
   if (a === "terms:on" || a === "terms:off") { P.termsAll = a === "terms:on"; renderTalk(ctx, P, api.els, api, { keepFocus: true }); return true; }
   if (a.startsWith("opt:") && P.beat && P.beat.options) {
-    const i = +a.slice(4) - 1, o = P.beat.options[i];
+    const n = +a.slice(4) - 1, ord = api.els && api.els.opts && api.els.opts.order, i = ord ? ord[n] : n, o = i == null ? null : P.beat.options[i];   // the number on screen (ui/talk.mjs optionOrder)
     if (o) api.choose(i, (o.check && P.sel[o.key]) || 0);
     return !!o;
   }
@@ -245,7 +276,7 @@ function renderWorld(ctx, P, els, api) {
   // ux: every move that spends the night says how much (UX-AUDIT T6)
   for (const x of G.world.exits()) list.append(btn([h("span.caps.kind", "Go"), x.label.replace(/^"|"$/g, ""), x.attrs && +x.attrs.cost ? h("span.cost", `${+x.attrs.cost} min`) : null], () => api.exit(x), { cls: "act", disabled: busy }));
   list.append(btn([h("span.caps.kind", "Wait"), "Let the night move on", h("span.cost", `${WAIT} min`)], () => api.wait(), { cls: "act", disabled: busy }));
-  list.append(waitRow(ctx, api, { busy })); // ux: wait for the tide to turn, stopped by anything the night has to say (ui/waiting.mjs)
+  { const wr = waitRow(ctx, api, { busy }); if (wr) list.append(wr); } // ux: wait for the tide to turn, stopped by anything the night has to say (ui/waiting.mjs)
   if (!busy && list.firstChild) list.firstChild.dataset.first = "";
   els.here.replaceChildren(h("div.caps.quiet", busy ? "In conversation" : "What is here"), list);
 }
@@ -255,15 +286,18 @@ function renderTalk(ctx, P, els, api, { keepFocus = false } = {}) {
   const focused = keepFocus && document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.opt : null;
   const area = G.world.area();
   els.title.textContent = P.talk ? `${area ? area.name : ""}${P.talk.speaker ? `  /  ${P.talk.speaker}` : ""}` : area ? area.name : "";
-  { const face = [...P.log].reverse().find((l) => l.face); els.portrait.update({ speaker: P.talk ? P.talk.speaker : "", face: face ? face.face : null, light: lightOf(G) }); } // ux
+  { const { speaker, face } = talkSpeaker(P.log, P.talk); // the current node's last named line, else the node's speaker (ui/talkspeaker.mjs)
+    els.portrait.update({ speaker, face: face ? face.face || moodOf(face.dir) : null, light: lightOf(G) }); } // ux: the face a line names, else the mood its direction tags give (painted portraits)
   if (!P.talk && !P.ended) return renderIdle(G, P, els);
   const seen = P.seen || 0; // ux: lines new since the last draw write themselves in
   els.log.replaceChildren(...P.log.map((l, i) => { const e = lineEl(l); if (i >= seen) e.classList.add("fresh"); return e; }));
   P.seen = P.log.length;
   clear(els.foot);
-  if (b && b.options) renderOptions(els.opts, G, b, { sel: P.sel, termsAll: P.termsAll, onChoose: (i, s) => api.choose(i, s), rerender: () => renderTalk(ctx, P, els, api, { keepFocus: true }) });
+  const held = !!(api.witness && api.witness.held());   // the witness holds its lines, options and end until read (ui/witnesspace.mjs)
+  if (b && b.options && !held) renderOptions(els.opts, G, b, { sel: P.sel, termsAll: P.termsAll, onChoose: (i, s) => api.choose(i, s), rerender: () => renderTalk(ctx, P, els, api, { keepFocus: true }) });
   else els.opts.replaceChildren();
-  if (P.ended) els.foot.append(h("p.endnote", h("span.caps", "The end"), ` ${P.ended}`), btn("Back to the title", () => ctx.title(), { cls: "btn go" }));
+  if (held) els.foot.append(api.witness.foot());
+  else if (P.ended) els.foot.append(...[h("p.endnote", h("span.caps", ctx.nextAct && ctx.nextAct() ? "The night ends" : "The end"), /^[\w]+(\.[\w]+)+$/.test(String(P.ended)) ? "" : ` ${P.ended}`), ctx.nextAct && ctx.nextAct() ? btn("On to the next night", () => ctx.goNextAct(), { cls: "btn go" }) : null, btn("Back to the title", () => ctx.title(), { cls: ctx.nextAct && ctx.nextAct() ? "btn" : "btn go" })].filter(Boolean)); // the next-night button is null when there is no next night (it printed "null")
   else if (b && b.done) els.foot.append(btn(["Go on", h("span.k", "Enter")], () => api.close(), { cls: "btn go" }));
   if (focused != null) { const f = els.opts.querySelector(`[data-opt="${focused}"]`); if (f) f.focus({ preventScroll: true }); }
   els.log.scrollTop = els.log.scrollHeight;

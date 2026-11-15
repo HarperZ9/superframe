@@ -1,0 +1,149 @@
+# World layers, era 3 (Allocation, year 20; Aaron's kitchen at year 46): the Mott house, the counter, the squad room, the
+# Furrowe hall, the Brack kitchen, the school and the far bank (design/WORLD-LAYERS.md). World-layers pass, 2026-10-23.
+# DRAFT: every prop text in this file waits for the author's line approval (ledger row S14). Geometry:
+# render/places/layers/era3.mjs; the marks are its spots.
+# Weighted-devices pass, 2026-10-23 (design/device-audit/era3.md): every prop is a thing the hands and the senses meet.
+# Three ids are kept for w_lore.lwd with new things behind them: q.well_handbill is the bucket at the Sholls' door,
+# q.unfit_slips is the ring of Mill Street keys, q.walters_blotter is Walter's ink rag. Their state ids are kept
+# (close is the one w_lore reads).
+
+# DRAFT
+@prop q.height_marks
+from: 3
+name: The notches on the door frame
+place: q3_mott_house
+mark: heights
+macro: 2.4 2.6
+tells: household haldane
+carries: touch
+state: 3 notched | Knife notches up the frame of the back room door, short and level. Two at the bottom, new, this summer's, the wood still pale in them. Higher up, under two coats of paint, older ones, cut the same careful way, a year apart, three of them: a boy who grew up in this house.
+touch: press "Run your thumb up the notches" | The new ones catch your nail. The old ones you only find with your thumb, under the paint, like stitches under skin. The last of the old ones is at your chest. Whoever it was stopped being measured there.
+
+# DRAFT
+@prop q.stair_goat
+from: 3
+name: The chalk mark
+place: q3_mott_house
+mark: chalk_goat
+macro: 2.4 2.6
+tells: era
+carries: sight
+state: 3 scrubbed | Low on the wall by the back room door, at a child's height, a goat drawn in chalk. Somebody has gone at it with a wet cloth and got the body and the head off, and left four legs standing on the skirting board.
+
+# DRAFT. Kept id (w_lore.lwd, the hand chain): the well talk left at the Sholls' door, with the hand on it.
+@prop q.well_handbill
+from: 3
+name: The bucket at the back room door
+place: q3_mott_house
+mark: handbill
+macro: 2.4 2.6
+tells: era
+carries: smell
+state: 3 nailed | A zinc bucket on the step of the back room under the stairs, the Sholls' door, full to the brim with water from the hill, the spring water. Something dead floats in it, grey, a rat, gone soft. On the rim, where the man who carried it set it down, the prints of a thumb and a forefinger, black, in ink.
+touch: smell "Lean over the bucket" | Sweet and thick, so it's in the back of your throat before you've stood up again. Somebody carried this the whole length of Mill Street to leave it here. It's a heavy bucket, full. {sense: e3.rat}
+
+# DRAFT
+@prop q.anni_wedding
+from: 3
+name: Anni's wedding photograph
+place: q3_mott_house
+mark: wedding_photo
+macro: 2.4 2.6
+tells: person q.anni
+carries: sight
+state: 3 counter | Anni and Oren on their wedding day, on the Mott house steps, with the iron railings behind them. Oren's round face is grinning. Anni has a long, careful face, and she isn't smiling, only looking straight at the camera as if it owes her money.
+
+# DRAFT. Kept id (w_lore.lwd, the water chain). The Inspector line turns the ring and feels it; anyone else sees a ring of keys.
+@prop q.unfit_slips
+from: 3
+name: The Mill Street keys
+place: q3_office
+mark: unfit_slips
+macro: 2.4 2.6
+tells: era
+carries: touch
+state: 3 close ? q_class == inspector | A ring of keys on a nail at the end of the counter, all Mill Street, every Hesh door on the street that the board has shut for the damp. Each key is rusted red up its shank to the same height, the height the river came to in the flood. Between two of them there's a gap on the ring, worn bright, where one key has been taken off and never put back. The Bracks' door. The Bracks stayed.
+state: 3 spike | A ring of keys on a nail at the end of the counter, heavy, all from one street, every one of them rusted red up the shank to the same height.
+touch: lift "Lift the ring off its nail" | It's heavier than it looks, a whole street's weight, and the rust comes off on your palm in a red line, level, the same line on every key. {sense: e3.keys}
+
+# DRAFT. Kept id (w_lore.lwd, the hand chain). The Inspector line looks close.
+@prop q.walters_blotter
+from: 3
+name: Walter's ink rag
+place: q3_office
+mark: blotter
+macro: 2.4 2.6
+tells: person q.mott
+carries: touch
+state: 3 close ? q_class == inspector | A rag at the end of the counter by Walter's stool, folded in four, black-blue all through where he wipes his forefinger, which he does without knowing he does it, forty times a morning. It's stiff with ink. It doesn't help. His forefinger is black to the second knuckle and it has been since he was a boy at his father's elbow. Down one edge of the rag there's a smear of something else, grey-green, dried, that smells of a bucket.
+state: 3 blotted | A rag by Walter's stool, folded small, stiff and black-blue all through with ink from wiping one finger.
+touch: hold "Pick up the rag" | Stiff as card with old ink. It leaves your own fingertips blue. You rub them on your trousers and they stay blue.
+
+# DRAFT. The ring is there only where the boy was held, and only the Militia line opens the locker.
+@prop q.will_locker
+from: 3
+name: Will's locker
+place: q3_squad
+mark: locker
+macro: 2.4 2.6
+tells: person q.will
+carries: touch
+state: 3 ring ? q_class == militia & has(q.tomas_held) | Will's locker, the door an inch open. A photograph of Davey in his new coat stuck inside the door, a tin of blacking, a spare collar. On the hook at the back, a little ring of blue thread, plaited, cut clean through. It's small. Will couldn't get two fingers through it.
+state: 3 plain | Will's locker, the door an inch open: a photograph of Davey in his new coat stuck inside the door, a tin of blacking, a spare collar, and nothing on the hook.
+touch: hold "Take the ring off the hook" ? q_class == militia & has(q.tomas_held) | It weighs nothing. It sits in the middle of your palm, and the cut ends stick up like a cat's whiskers. You put it back on the hook the way it was. {sense: thread.hold}
+
+# DRAFT
+@prop q.ned_photo
+from: 3
+name: The photograph over the hall stand
+place: q3_furrowe_hall
+mark: ned_photo
+macro: 2.4 2.6
+tells: person q.ned
+carries: sight
+state: 3 young | A photograph of Ned at twenty-seven, the year before he married Mary, in a collar borrowed from his father. A long, careful face. He isn't looking at the camera but just past it, at somebody who's trying to make him laugh.
+
+# DRAFT
+@prop q.hall_oblong
+from: 3
+name: The pale oblong
+place: q3_furrowe_hall
+mark: pale_oblong
+tells: household furrowe
+carries: sight
+state: 3 nail | A paler oblong on the wallpaper between the mirror and the hall stand, a nail at the top of it. Whatever hung there was big, and it came down this year. The paper round it has gone the colour of weak tea.
+
+# DRAFT
+@prop q.tide_line
+from: 3
+name: The line round the kitchen
+place: q3_brack_kitchen
+mark: tide_line
+tells: household brack
+carries: touch
+state: 3 line | A brown line runs right round the kitchen at the height of the table, wavering a little. Below it the plaster is newer and a shade too white. The range has rusted to the same line, and Edie blacks it every week and the rust comes through.
+touch: wipe "Wipe the line with your thumb" | It doesn't come off. Below it the wall is cold and a bit damp to the touch, still, after all this time. Above it, dry. {sense: room.cold}
+
+# DRAFT
+@prop q.mims_desk
+from: 3
+name: The desk lid
+place: q3_school
+mark: mims_desk
+macro: 2.4 2.6
+tells: person e3.mim
+carries: touch
+state: 3 cut | A wavy line cut small into the desk lid with a compass point, the river, the way the Hesh children draw it, with a hop in it like a goat's back. Somebody has inked it over and over, the way you'd ink out a mistake, until the ink stands up off the wood like a scab. It's Mim Sallis's desk. Her inkwell is full.
+touch: press "Feel the cut under the ink" | Under the scab of ink the groove is still there, deep, cut over and over in the same place. Your nail runs down it like a cart in a rut.
+
+# DRAFT. Aaron's long service: a presentation truncheon, his hand's wear on it; the name is said aloud in the witness.
+@prop q.long_service
+from: 3
+name: The long-service truncheon
+place: q3w_far_bank
+mark: service_paper
+macro: 2.4 2.6
+tells: person q.aaron
+carries: weight
+state: 3 framed | A black truncheon on two brass hooks over the table, the presentation kind they give a man for twenty-five years. The grip is worn pale and smooth in the shape of one hand. The leather loop has been replaced, twice. It's been taken down a lot.
+touch: lift "Lift the truncheon off its hooks" | It's weighted. Far heavier than it should be, lead in the end of it. Your wrist takes the weight before your arm does, and your hand goes into the worn place on the grip by itself, because it's a hand's shape. {sense: e3.truncheon}

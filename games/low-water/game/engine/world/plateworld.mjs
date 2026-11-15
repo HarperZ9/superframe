@@ -58,7 +58,7 @@ export function findPath(arena, from, to, opts = {}) {
   // a body keeps its margin off props where it can (hardenGround soft margins), and squeezes when it must
   return pathOn(arena, from, to, { ...opts, soft: false }) || pathOn(arena, from, to, { ...opts, soft: true });
 }
-function pathOn(arena, from, to, { waterY = -Infinity, maxNodes = 60000, soft = true } = {}) {
+function pathOn(arena, from, to, { waterY = -Infinity, maxNodes = 60000, soft = true, stats = null } = {}) {
   const s = nearestOpen(arena, from[0], from[1], waterY, 1.5), g = nearestOpen(arena, to[0], to[1], waterY, 2);
   if (!s || !g) return null;
   const W = arena.grid.w, key = (c, r) => r * W + c, goal = key(g[0], g[1]);
@@ -78,6 +78,7 @@ function pathOn(arena, from, to, { waterY = -Infinity, maxNodes = 60000, soft = 
       if (t < (gScore.get(nk) ?? Infinity)) { gScore.set(nk, t); came.set(nk, k); open_.push([t + hdist(nc, nr), nc, nr]); }
     }
   }
+  if (stats) stats.expanded = (stats.expanded || 0) + closed.size; // cells expanded (the bench, world/visgraph.mjs)
   if (!gScore.has(goal)) return null;
   const cells = []; for (let k = goal; k != null; k = came.get(k)) cells.push([k % W, Math.floor(k / W)]);
   cells.reverse();
@@ -319,25 +320,52 @@ export function clearAhead(arena, at, face, max = 2.2) {
 }
 
 // A chair or bench near a seated figure's mark, read from the plate. The back is the samples 0.6 to
-// 1.3 m over the floor within 0.7 m of the mark; the seat is the samples 0.3 to 0.6 m up within 0.7 m
+// 1.3 m over the floor within 0.7 m of the mark; the seat is the samples 0.2 to 0.6 m up within 0.7 m
 // that do not stand under the back (5 cm columns), taken as the middle of their extent (from a high
 // camera a chair's back hides part of its seat, so an average leans toward the back). Returns
 // { at: the seat's middle on the floor, face: from the back toward the seat (radians) or null, back,
 //   seatY: the seat's top above the floor (metres) }
 // or null when nothing like a seat is there.
 export function seatOf(place, pos, mark, floorY = mark[1]) {
-  const R2 = 0.49, seat = [], backCols = new Set(); let bx = 0, bz = 0, nb = 0;
+  const R2 = 0.49, R2W = 1.44, seat = [], backCols = new Set(), solidCols = new Set(); let bx = 0, bz = 0, nb = 0;
   const col = (x, z) => `${Math.round(x / 0.05)},${Math.round(z / 0.05)}`;
   for (let i = 0; i < pos.length; i += 3) {
-    const x = pos[i], y = pos[i + 1] - floorY, z = pos[i + 2]; if ((x - mark[0]) ** 2 + (z - mark[2]) ** 2 > R2) continue;
-    if (y > 0.6 && y < 1.3) { backCols.add(col(x, z)); bx += x; bz += z; nb++; } else if (y > 0.3 && y < 0.6) seat.push(x, z, y);
+    const x = pos[i], y = pos[i + 1] - floorY, z = pos[i + 2], d2 = (x - mark[0]) ** 2 + (z - mark[2]) ** 2; if (d2 > R2W) continue;
+    if (y > 0.2 && y < 1.3) solidCols.add(col(x, z));
+    if (y > 0.2 && y < 0.6) seat.push(x, z, y); // whole seats out to 1.2 m, so a rim is seen as the ring it is
+    if (d2 > R2) continue;
+    if (y > 0.6 && y < 1.3) { backCols.add(col(x, z)); bx += x; bz += z; nb++; }
   }
   const flat = []; for (let k = 0; k < seat.length; k += 3) if (!backCols.has(col(seat[k], seat[k + 1]))) flat.push(seat[k], seat[k + 1], seat[k + 2]);
   const L = flat.length >= 150 ? flat : seat; if (L.length < 150) return null;
-  let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity; const ys = []; for (let k = 0; k < L.length; k += 3) { x0 = Math.min(x0, L[k]); x1 = Math.max(x1, L[k]); z0 = Math.min(z0, L[k + 1]); z1 = Math.max(z1, L[k + 1]); ys.push(L[k + 2]); }
-  ys.sort((a, b) => a - b); const seatY = ys[Math.floor(ys.length * 0.9)]; // the seat's top: most samples are its surface, a few its front edge
-  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, back = nb >= 50;
-  return { at: [cx, floorY, cz], face: back ? Math.atan2(cz - bz / nb, cx - bx / nb) : null, back, seatY: +seatY.toFixed(3) };
+  // the seat is one connected surface (5 cm cells, 10 cm gaps bridged), the nearest to the mark that
+  // fills its own footprint: a ring or an arc of one (a fire pit's brick rim, a barrel's lip) leaves its
+  // middle open and is not a seat (2026-10-21: Marrow sat on the smokehouse's pit rim, in the fire).
+  // A fish box counts from 0.2 m up: men sit on them.
+  const cells = new Map(); for (let k = 0; k < L.length; k += 3) { const key = col(L[k], L[k + 1]); (cells.get(key) || cells.set(key, []).get(key)).push(k); }
+  const seen = new Set(), parts = [];
+  for (const start of cells.keys()) {
+    if (seen.has(start)) continue; seen.add(start); const part = [], todo = [start];
+    while (todo.length) { const c = todo.pop(); part.push(...cells.get(c)); const [cx, cz] = c.split(",").map(Number); for (let dx = -2; dx <= 2; dx++) for (let dz = -2; dz <= 2; dz++) { const n = `${cx + dx},${cz + dz}`; if (cells.has(n) && !seen.has(n)) { seen.add(n); todo.push(n); } } }
+    parts.push(part);
+  }
+  const solid = (part) => {
+    let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity; for (const k of part) { x0 = Math.min(x0, L[k]); x1 = Math.max(x1, L[k]); z0 = Math.min(z0, L[k + 1]); z1 = Math.max(z1, L[k + 1]); }
+    const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2; let all = 0, full = 0;
+    for (let i = Math.round(x0 / 0.05); i <= Math.round(x1 / 0.05); i++) for (let j = Math.round(z0 / 0.05); j <= Math.round(z1 / 0.05); j++) { all++; if (solidCols.has(`${i},${j}`)) full++; }
+    return { x0, x1, z0, z1, cx, cz, cover: full / Math.max(1, all), ok: full / Math.max(1, all) >= 0.5 };
+  };
+  const near = (p) => p.some((k) => (L[k] - mark[0]) ** 2 + (L[k + 1] - mark[2]) ** 2 <= R2); // it reaches the mark's 0.7 m
+  // a long surface (a bench along a wall, a ledge) is judged on the stretch by the mark; a ring is seat-sized
+  const clip = (p) => p.filter((k) => (L[k] - mark[0]) ** 2 + (L[k + 1] - mark[2]) ** 2 <= R2);
+  const judge = (p) => { const b = solid(p); if (b.ok || Math.max(b.x1 - b.x0, b.z1 - b.z0) <= 1.2) return { p, b }; const q = clip(p); return { p: q, b: solid(q) }; };
+  const cand = parts.filter((p) => p.length * 3 >= 150 && near(p)).map(judge).filter((c) => c.p.length * 3 >= 150 && c.b.ok)
+    .sort((a, b) => Math.hypot(a.b.cx - mark[0], a.b.cz - mark[2]) - Math.hypot(b.b.cx - mark[0], b.b.cz - mark[2]));
+  if (!cand.length) return null;
+  const { p, b } = cand[0], ys = p.map((k) => L[k + 2]).sort((a, c) => a - c);
+  const seatY = ys[Math.floor(ys.length * 0.9)]; // the seat's top: most samples are its surface, a few its front edge
+  const back = nb >= 50;
+  return { at: [b.cx, floorY, b.cz], face: back ? Math.atan2(b.cz - bz / nb, b.cx - bx / nb) : null, back, seatY: +seatY.toFixed(3) };
 }
 
 // How near a point is to a prop or a top (metres, to the nearest closed cell's edge; Infinity past

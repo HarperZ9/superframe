@@ -1,0 +1,199 @@
+# Era 1, The Exchange: the witness (e1.w), Ilo at the Sheaf, year 12, day 40 of the hard winter, rent night,
+# telling Tomas how he got his name. Story lead, W2-F, 2026-10-22. DRAFT, every line awaiting the author.
+# Design: design/eras/era1.md section 4. Ilo saw the loft, the census table, the supper through the window, the
+# hands going up the hill road and Osby fair. He heard the board's rule from Abel, Kel's story from Old Tesk and
+# Ketti's death from Dorrah. He never knew what was said in the board room or what Bet told Edie Brack.
+# He does not tell Tomas whose Anni is: the omission is declared unwitnessed below.
+# After the last beat the dispatch goes to e1.end, era 1's end and the single link into era 2's start (q.start).
+
+@witness e1.w.ilo
+who: ILO
+listener: TOMAS
+guest: q_class inspector=ABEL militia=JOSH
+place: q_sheaf
+opens: e1.w.ilo.open
+dispatch: e1.w.ilo.next
+reach: q1_loft, q1_supper_yard, q_post, q_hill, q1_osby, q1_barns, q_haldane, q_sheaf
+sources: ABEL, TESK, DORRAH
+never: q1_board, q1_backstore
+beat: e1.w.ilo.name | e1.named, e1.per_af, e1.per_letter | seen q1_barns ? has(e1.named)
+beat: e1.w.ilo.rule | e1.rule_passed, said.e1_abel_tenant, e1.tenant_asked | heard ABEL ? has(e1.rule_passed)
+beat: e1.w.ilo.supper | e1.toast_heard, said.e1_raise, said.e1_leave_glass, e1.glass_raised, e1.glass_left | seen q1_supper_yard ? has(e1.toast_heard)
+beat: e1.w.ilo.kel | e1.kel_kept, e1.kel_walked, said.e1_abel_sweepings, said.e1_josh_tip | heard TESK ? has(e1.kel_kept) | has(e1.kel_walked)
+beat: e1.w.ilo.frost | e1.sallis_sent, e1.sallis_kept, said.e1_abel_loft, said.e1_josh_carter | seen q_post ? has(e1.sallis_sent) | has(e1.sallis_kept)
+beat: e1.w.ilo.ketti | e1.sallis_sent | heard DORRAH ? has(e1.sallis_sent)
+beat: e1.w.ilo.bowls | e1.door_down, e1.loft_taken | seen q1_osby ? has(e1.door_down)
+last: e1.w.ilo.coin
+unwitnessed: said.e1_josh_words | the board room: Ilo was never in it, and Abel never told him what Brack said there
+unwitnessed: e1.per_af | whose Anni is: Ilo knew, and never told Tomas; he skips it
+
+# ---------------------------------------------------------------- the opening: the key to the end barn (was the census slip; weighted-devices pass, 2026-10-23)
+@node e1.w.start
+cost: 0
+do: var.era = 2; witness(e1.w.ilo)
+go: e1.w.ilo.open
+
+@node e1.w.ilo.open
+place: q_sheaf
+speaker: ILO
+cost: 0
+camera: near
+nar: Years on. The Sheaf, Mill Street, on a winter evening, the back room. It's rent night, and the window behind Ilo is black with the cold.
+nar: Ilo Haldane is at the back table with a half he's made last since six. Tomas has been sent to fetch him home and has sat down on the bench instead, in a brown coat too big for him with the cuffs turned back twice.
+nar: Mr Furrowe is at the end of the back table, old now, with the coins in stacks in front of him and the leather bag open. A Hesh tenant doesn't knock at the Furrowe front door. The rent comes to the Sheaf. {when: q_class == inspector}
+nar: On his stool at the end of the bar, where he always is, old Josh Brack, retired off the post, with a pint and his back to the room. {when: q_class == militia}
+line: TOMAS: Why's it Haldane, though. Why's it not something proper.
+line: ILO: What's proper.
+line: TOMAS: Something that's a name. Pruett. Sallis.
+nar: Ilo goes in his coat and gets out a key, a big iron one on a loop of string, the bow of it worn bright where his thumb goes, and puts it on the table between them. It makes a noise on the wood like a dropped spoon. {sense: cold.iron}
+line: ILO: That's your name. That's where it come from.
+line: TOMAS: It's a key.
+line: ILO: It's the key to the end barn.
+line: TOMAS: What's it open?
+line: ILO: Nothing. The door's your mum's table.
+go: e1.w.ilo.next
+
+@node e1.w.ilo.next
+cost: 0
+alt: e1.end ? seen(e1.w.ilo.coin)
+do: wnext()
+alt: e1.w.ilo.name ? wat(e1.w.ilo.name)
+alt: e1.w.ilo.rule ? wat(e1.w.ilo.rule)
+alt: e1.w.ilo.supper ? wat(e1.w.ilo.supper)
+alt: e1.w.ilo.kel ? wat(e1.w.ilo.kel)
+alt: e1.w.ilo.frost ? wat(e1.w.ilo.frost)
+alt: e1.w.ilo.ketti ? wat(e1.w.ilo.ketti)
+alt: e1.w.ilo.bowls ? wat(e1.w.ilo.bowls)
+go: e1.w.ilo.coin
+
+# ---------------------------------------------------------------- the beats
+@node e1.w.ilo.name
+place: q_sheaf
+speaker: ILO
+cost: 0
+line: TOMAS: I know it's because of the farm. Why'd you let him?
+line: ILO: It was dark, and it was freezing, and Mott had the whole mill row still to do.
+line: TOMAS: That's not why.
+line: ILO: Mr Furrowe was stood in the barn door with his hat in his hands. Like it was church. And he said it. Call him Haldane, he said. {when: has(e1.per_af) & !has(e1.per_letter)}
+line: ABEL: Somebody had to give the man a name he could say. {when: q_class == inspector & has(e1.per_af) & !has(e1.per_letter)}
+line: ILO: Mr Furrowe didn't come. He sent his stable lad with the key round his neck, and the lad said it off by heart, like the catechism. Ilo Haldane, after the farm. {when: has(e1.per_letter)}
+line: ABEL: I had the horse to see to. {when: q_class == inspector & has(e1.per_letter)}
+nar: Ilo looks at the old man for a second, and doesn't say anything to that. {when: q_class == inspector}
+line: ILO: And I said Haldane. I said it myself. They'd just turned the Corleys out of that barn into the frost, and Mott was stood there with the lantern. I thought, if it's going to be said anyway, I'll be the one that said it.
+go: e1.w.ilo.next
+
+@node e1.w.ilo.rule
+place: q_sheaf
+speaker: ILO
+cost: 0
+line: ILO: They'd a meeting up at the registrar's. Mr Furrowe told me after, in the loft. Hands aren't resident. First frost, if you've no roof, you go back up.
+line: TOMAS: Up the hill?
+line: ILO: Up the hill. In October.
+line: ILO: And a tenant's resident. That was in it as well. So I was a tenant by the Sunday. {when: has(e1.tenant_asked)}
+go: e1.w.ilo.next
+
+@node e1.w.ilo.supper
+place: q_sheaf
+speaker: ILO
+cost: 0
+line: ILO: There was a supper. Orme's big barn. We ate in the yard, we always ate in the yard. You could see in through the window. A ham the size of you.
+line: TOMAS: Did you get any?
+line: ILO: I got the fat off it. There was a man from Arlen made a speech, and they all laughed.
+line: TOMAS: What did he say?
+line: ILO: He said we'd sing at a funeral.
+nar: The men at the next table have heard it. One of them laughs, and stops.
+line: TOMAS: We would, though.
+line: ILO: We would. That's why it was funny.
+line: ILO: Before that, they had me in. To sing for them. I'd the plate in my hand still. The man from Arlen wanted one about a goat.
+line: TOMAS: Did you do the goat one?
+line: ILO: I did the one for carrying up. The long one. With the names.
+line: TOMAS: At a supper?
+line: ILO: He conducted it with his fork. He gave me sixpence. I walked all the way down the table for it.
+voice: pride: They're fond of you, the hands. Every one of them. You've never done one of them a turn they'd hold against you. {echo: e1.sl.fond, when: toldself(e1.sl.fond)}
+line: ILO: Every glass in that barn went up. I watched them all go up. {when: has(e1.glass_raised)}
+line: ILO: Every glass in that barn went up but one. Nobody else noticed. {when: has(e1.glass_left)}
+go: e1.w.ilo.next
+
+@node e1.w.ilo.kel
+place: q_sheaf
+speaker: ILO
+cost: 0
+line: ILO: Old Tesk told me this one. His Kel swept the mill. Took a bit of barley off the floor in his boots for his dad's chest.
+line: ILO: Orme had him strapped in the back store. Six. Kel came back and sat in the barns and couldn't lie down on it for a week, and he laughed when anybody asked him. {when: has(e1.kel_kept)}
+line: ILO: Orme had him walked to the post in his bare feet with his boots in his hands. They hung his boots on the post nail with the barley in, for the carts to look at, and sent him up. Barred off the plain. He's never been down since. {when: has(e1.kel_walked)}
+line: TOMAS: For sweepings.
+line: ILO: That's what Tesk said. For sweepings.
+go: e1.w.ilo.next
+
+@node e1.w.ilo.frost
+place: q_sheaf
+speaker: ILO
+cost: 0
+line: ILO: The first frost, they said the names at the post. Every one. I went down to see them off, the Sallises and the Pruetts.
+line: ILO: Mr Brack said them. Walking up and down the road with his hands behind him. Like the price of oats. {when: q_class == inspector}
+line: ILO: The sergeant's dad said them. He knew every face. He'd no need of anything in his hand. {when: q_class == militia}
+nar: At the bar, old Josh doesn't turn round. {when: q_class == militia}
+line: ILO: Arn Sallis got kept. Mr Furrowe said he'd room over the horse. Arn stood on the verge with Ketti and the lad and watched the rest go up. He's never said a word about it to me, not once since. {when: has(e1.sallis_kept) & has(said.e1_abel_loft)}
+line: ILO: Arn Sallis got kept. Orme took him on carting, at two-thirds. Gedge's dad never carted for Orme again. {when: has(e1.sallis_kept) & has(said.e1_josh_carter)}
+line: ILO: Arn and Ketti went up with the rest. And the lad, Davin. Ketti stopped halfway up to cough and Arn waited for her. {when: has(e1.sallis_sent)}
+line: ILO: After, Mr Brack hit his Will in the face with the post lantern. With the corner of it. For saying the lad wanted Lind. He bled on the road where the lad had.
+voice: ballast: They come down with the harvest and they go up with the frost. You're only saying it out loud. {echo: e1.sl.lantern, when: toldself(e1.sl.lantern)}
+go: e1.w.ilo.next
+
+@node e1.w.ilo.ketti
+place: q_sheaf
+speaker: ILO
+cost: 0
+nar: Ilo turns his glass round on the table, a quarter turn at a time.
+line: ILO: Dorrah told me at the cup, in the spring. Ketti didn't come down off it in the winter. In January. In the hut at the top, with the snow on the door.
+line: TOMAS: Of the cough?
+line: ILO: Of the cold. Of the cough. Of up there. Arn came down the next harvest with just the lad.
+nar: At the bar, old Josh Brack picks up his pint and drinks some of it, and puts it down again in the same ring. {when: q_class == militia}
+nar: At the end of the table, Mr Furrowe goes on counting the coins into stacks. He loses his count and starts the stack again. {when: q_class == inspector}
+go: e1.w.ilo.next
+
+@node e1.w.ilo.bowls
+place: q_sheaf
+speaker: ILO
+cost: 0
+line: ILO: And then I married your mum. And we went to Osby fair with the money and she bought the bowls. And me and your grandad Carrow took the door off the end barn for the table, and we dropped it twice.
+line: TOMAS: Why five bowls, when there was only three of you?
+line: ILO: Your gran said buy five.
+line: TOMAS: Why?
+line: ILO: Because then there was you, and then there was Aaron. Two on the shelf, turned over, waiting. And then you came, and then he came, and that was all of them.
+go: e1.w.ilo.next
+
+# ---------------------------------------------------------------- the last beat, and the link into era 2
+@node e1.w.ilo.coin
+place: q_sheaf
+speaker: TOMAS
+cost: 0
+do: wend()
+line: TOMAS: Mum says come now. You're to mind the yard.
+line: ILO: I'm to mind the yard.
+nar: Mr Furrowe sweeps the stacks into the leather bag and pulls the string tight. Then he takes one coin off the last stack and pushes it back across the table toward Ilo with one finger, without a word. Ilo leaves it where it is. Tomas looks at the coin, and then at his dad, and then at the coin. {when: q_class == inspector}
+nar: Old Josh Brack puts a coin on the bar for Ilo's half without turning round, and the landlord slides it along. Ilo leaves it where it is. Tomas looks at the coin, and then at his dad, and then at the coin. {when: q_class == militia}
+go: e1.w.ilo.next
+
+@node e1.end
+cost: 0
+do: var.era = 2
+go: q.start
+
+# ---------------------------------------------------------------- era 2's class, carried over from era 1
+# q.start.class jumps here when era 1 set q_class: Abel's line becomes Ned's day, Josh's becomes Will's.
+@node e1.carry.ned
+place: q_tower
+cost: 0
+do: become(q.ned)
+nar: Winter. Edrin, the Upper Town.
+nar: Ned Furrowe's day. Abel's son. District inspector now. He stands at the exchange scale where his father stood.
+go: q.wide
+
+@node e1.carry.will
+place: q_tower
+cost: 0
+do: become(q.will)
+nar: Winter. Edrin, the Upper Town.
+nar: Will Brack's day. Josh's son. Sergeant of militia now. He keeps the cells and the road post.
+go: q.wide

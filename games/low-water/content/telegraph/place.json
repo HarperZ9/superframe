@@ -1,0 +1,185 @@
+{
+ "place": "telegraph",
+ "version": 2,
+ "width": 2000,
+ "height": 1500,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 32,
+  "target": [
+   0,
+   0.9,
+   -0.2
+  ],
+  "dist": 25,
+  "ortho": true,
+  "scale": 3.260869565217391
+ },
+ "pxPerMetre": 230,
+ "near": 1.0417,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "open",
+  "shut"
+ ],
+ "variantInfo": {
+  "open": {
+   "hour": 21,
+   "weather": "to 22:00: Rook behind the grille under the paraffin lamp"
+  },
+  "shut": {
+   "hour": 22.5,
+   "weather": "22:00 to 23:00: the office empty, the lamp out, the stove low"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  26
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "grille",
+    "verb": "talk",
+    "at": [
+     0.2,
+     0,
+     0.2
+    ],
+    "note": "Rook behind the grille"
+   },
+   {
+    "id": "forms",
+    "verb": "read",
+    "at": [
+     0.2,
+     0,
+     -0.7
+    ],
+    "note": "the spike of forms, through the grille"
+   },
+   {
+    "id": "book",
+    "verb": "read",
+    "at": [
+     0.2,
+     0,
+     0.6
+    ],
+    "note": "the book bound in oilcloth by her hand: not the office's book"
+   },
+   {
+    "id": "rates",
+    "verb": "read",
+    "at": [
+     0.6,
+     0,
+     -1.1
+    ],
+    "note": "the rates posted on the public side"
+   },
+   {
+    "id": "bench",
+    "verb": "wait",
+    "at": [
+     1.5,
+     0,
+     0.3
+    ],
+    "note": "the public bench by the door"
+   }
+  ],
+  "hides": [
+   {
+    "id": "under_counter",
+    "at": [
+     0.1,
+     0,
+     1.4
+    ],
+    "r": 0.3,
+    "note": "low by the counter's end"
+   }
+  ],
+  "exits": [
+   {
+    "id": "lane",
+    "at": [
+     1.4,
+     0,
+     -1.3
+    ],
+    "note": "out to the Ropewalk"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "open": [
+   {
+    "at": [
+     -1.5,
+     1.05,
+     -0.6
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 5,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -1.9,
+     0.4,
+     -1
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 3,
+    "group": "fire"
+   }
+  ],
+  "shut": [
+   {
+    "at": [
+     -1.9,
+     0.4,
+     -1
+    ],
+    "kind": "paraffin",
+    "I": 1.5,
+    "reach": 3,
+    "group": "fire"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "Act 2, place telegraph. The counter runs front to back at x -0.3 (Rook's side behind it at -x), the street door in the back wall on the public side. Rook is drawn by the game."
+}

@@ -13,9 +13,9 @@ import { ID_ARG_CALLS, KNOWN_CALLS } from "../core/scope.mjs";
 
 // fight_* names are read by an encounter's talk-exit conditions inside the fight (combat/)
 const BUILTIN = new Set(["fight_seconds", "fight_lamb_standing", "fight_foes_standing", "fight_foes_down", "fight_foes_yielding", "fight_struck", "carrying", "phase", "day", "daylight", "seen", "hidden", "insneak", "inrun", "clock", "hour", "time", "place", "area", "district", "xp", "level", "points", "wet", "soaked", "shed", "warm", "guise", "stove", "shelter", "bench", "runs",
-  "tide", "fog", "rain", "weather", "wind.dir", "wind.speed", "light", "sodium", "mother", "night", "temp", "frost", "true", "false"]);
+  "tide", "fog", "rain", "weather", "wind.dir", "wind.speed", "light", "sodium", "mother", "night", "temp", "frost", "tide.dir", "tide.next", "tide.next.at", "tide.next.h", "true", "false"]);
 const PREFIXES = ["attr", "skill", "rep", "res", "trait", "quest", "project", "meter", "item", "var", "flag", "run", "power"];
-const COMMANDS = new Set(["setPower", "restrike", "setTerm", "clearTerm", "setLight", "gust", "wet", "addRumour", "give"]);
+const COMMANDS = new Set(["setPower", "restrike", "setTerm", "clearTerm", "setLight", "gust", "wet", "addRumour", "give", "dream"]);
 const CONVENTION = [/^chilled(\.|$)/, /^small(\.|$)/, /^nod\./, /^bench$/, /^wall$/];
 
 export function lint(C, { carry = null, cast = null } = {}) {
@@ -179,7 +179,7 @@ function namesAndFlags(X) {
   const nightTerms = new Set([...Object.values(C.nights).flatMap((n) => n.keys.map((k) => k.term))]);
   const has = { flag: (id) => true, place: (id) => !!book.places[id] || Object.values(C.map.areas).some((a) => a.place === id), node: (id) => !!N[id] || !!(X.carry && X.carry.nodes && X.carry.nodes.includes(id)), area: (id) => !!C.map.areas[id], district: (id) => !!C.map.districts[id] || Object.values(book.places).some((p) => p.district === id),
     item: (id) => !!rs.items[id], trait: (id) => !!rs.traits[id], quest: (id) => !!rs.quests[id], faction: (id) => !!rs.factions[id], meter: (id) => !!C.meters[id], project: (id) => !!C.projects[id],
-    interrogation: (id) => !!(C.interrogations || {})[id], sneak: (id) => !!C.sneaks[id], object: (id) => !!C.objects[id], encounter: (id) => !!((book.records || {}).encounter || {})[id], skill: (id) => !!rs.skills[id], attr: (id) => !!rs.attrs[id], resource: (id) => !!rs.resources[id], char: (id) => !!rs.chars[id], run: (id) => !!C.runs[id] };
+    interrogation: (id) => !!(C.interrogations || {})[id], sneak: (id) => !!C.sneaks[id], object: (id) => !!C.objects[id], encounter: (id) => !!((book.records || {}).encounter || {})[id], skill: (id) => !!rs.skills[id], attr: (id) => !!rs.attrs[id], resource: (id) => !!rs.resources[id], char: (id) => !!rs.chars[id], run: (id) => !!C.runs[id], archetype: (id) => !!rs.archetypes[id], readback: (id) => !!(((C.story || {}).readback || {}).docs || {})[id], discourse: (id) => ["repeat", "challenge", "silence", "answer"].includes(id), sense: (id) => !!(((C.story || {}).cues) || {})[id], load: (id) => id === "all" || !!((((C.story || {}).burden) || {}).loads || {})[id], scale: (id) => !!((((C.story || {}).burden) || {}).scales || {})[id], dream: (id) => !!(((C.story || {}).dreams) || {})[id], perspective: (id) => !!(((C.story || {}).perspectives) || {})[id], witness: (id) => !!(((C.story || {}).witness) || {})[id], fate: (id) => !!(((C.community || {}).fates) || {})[id] };
   const reads = new Map();
   for (const { c, at, node } of exprs) {
     for (const id of c.ids) {
@@ -201,8 +201,8 @@ function namesAndFlags(X) {
     }
   }
   // flags the combat layer sets when a fight ends (combat/encounter.mjs, NOTES C1)
-  // flags the engine sets itself: combat (NOTES C1), verbs, and stealth outcomes
-  const COMBAT_SET = /^(struck\.|fought\.|book\.|done\.|seen\.|noticed\.)/;
+  // flags the engine sets itself: combat (NOTES C1), verbs, stealth outcomes, and the reckoning (rules/reckoning.mjs: gap.*)
+  const COMBAT_SET = /^(struck\.|fought\.|book\.|done\.|seen\.|noticed\.|gap\.)/;
   for (const g of Object.values((C.gates && C.gates.gates) || {})) { const never = g.resolved.filter((f) => !sets.has(f) && !COMBAT_SET.test(f)); if (never.length === g.resolved.length) add("warn", g, `gate ${g.id}: none of its resolved flags is ever set (${never.join(", ")}), so it never pays`); }
   for (const [id, where] of reads) if (!sets.has(id) && !COMBAT_SET.test(id)) add("warn", where[0].at, `flag ${id} is read${where.length > 1 ? ` (${where.length} times)` : ""} but never set`, where[0].node);
   return X;

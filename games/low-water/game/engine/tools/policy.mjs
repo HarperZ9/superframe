@@ -24,6 +24,31 @@ export const BUILDS = {
   // build (combat/tools/minmax.mjs BUILDS.focused), its tool tempered and fitted. Not an earned sheet.
   fistmax: { precedent: "p.wader",     comps: ["coat"],        voices: ["grip", "ballast", "knees", "pride"], weapons: ["w.hammer", "w.pole", "w.boathook", "w.stick"], ending: { fate_lamb: ["keeper", "road"], fate_mother: ["keeper", "crown"] }, max: COMBAT_BUILDS.focused },
 };
+// Coverage routes (2026-10-21): a build's policy with goals, so the harness reaches what a player can
+// and the six builds never choose. Each route plays as its base build, plus a pull toward options that
+// set its wants (strong when the option itself sets one, weaker by distance through the script) and
+// away from options that set its avoids. A want already met pulls no more. Where the pull cannot get
+// there (a choice that needs travel at the right hour, which the script's graph does not join), a
+// route may seed an act's opening state instead: `seed: { 3: { vars, flags } }`. A seeded route tests
+// the event and what follows it, not that play reaches its condition; runsummary marks it so. No
+// route seeds now: each reaches its event in play, with appointments (be: a scene inside its hour,
+// after: a scene that must come first) where travel at the right hour is the way there.
+//   playthrough.mjs --build letter   or   --build routes (all of them)
+export const ROUTES = {
+  // writes to the Shelf by the afternoon tube (ev2.shelf_reply)
+  letter: { base: "tongue", want: ["sets:day.wrote"], avoid: [] },
+  // does Hobb a turn (tab_hobb), so he runs to Lamb with news of the hammer at 04:25 (ev.hobb_runs)
+  hobb_turn: { base: "eye", be: [{ act: 1, at: "quay.hobb.fill", from: "01:00", to: "04:10", after: "mole.lamp.stores" }], want: ["node:mole.lamp.stores", "assign:tab_hobb=1"], avoid: [] },
+  // the gale lamps: Mother left out, one leading light chosen first (the wreckers' target, ev3.wreck_*)
+  gale_steps: { base: "tongue", be: [{ act: 3, at: "quay3.post.band", from: "21:20", to: "21:59" }], want: ["assign:light_steps=1", "sets:quay3.tended"], avoid: ["sets:lampout.steps", "assign:mole3.mother=on", "sets:mole3.wreck_met", "sets:wreckers.real", "assign:light_mother=1"] },
+  gale_balance: { base: "hands", want: ["assign:light_balance=1"], avoid: ["assign:mole3.mother=on", "sets:mole3.wreck_met", "sets:wreckers.real", "assign:light_mother=1", "assign:light_steps=1"] },
+  gale_hill: { base: "hands", be: [{ act: 3, at: "hill3.trip", from: "21:20", to: "21:59" }], want: ["assign:light_hill=1", "sets:hill3.lamps_held"], avoid: ["sets:hill.dark", "assign:mole3.mother=on", "sets:mole3.wreck_met", "sets:wreckers.real", "assign:light_mother=1", "assign:light_steps=1", "assign:light_balance=1"] },
+  gale_bulb: { base: "eye", be: [{ act: 2, at: "mole2.standoff", from: "02:00", to: "03:20" }], want: ["assign:mole2.bulb_end=vigil", "assign:light_bulb=1"], avoid: ["assign:mole3.mother=on", "sets:mole3.wreck_met", "sets:wreckers.real", "assign:light_mother=1", "assign:light_steps=1", "assign:light_balance=1", "assign:light_hill=1"] },
+  // the Gut's wires lit in Act 1, chosen as a gale lamp, and left untended (gut3.ev.lampout)
+  gale_gut: { base: "hands", be: [{ act: 1, at: "floor.drowned.look", from: "22:50", to: "23:35" }], want: ["sets:lamp.gut.leave", "sets:floor.salv.wire", "sets:brine.sabine_has_sack", "node:gut.wires.ok", "assign:light_gut=1"], avoid: ["assign:mole3.mother=on", "sets:mole3.wreck_met", "sets:wreckers.real", "sets:gut3.tended", "assign:light_mother=1"] },
+};
+export const baseOf = (b) => (ROUTES[b] ? ROUTES[b].base : b);
+
 // What each build gains from each kind of intent.
 const WANT = {
   fist:   { fight: 4, lesson: 5, run: 2, claim: 0, sneak: -1, talk: 0, project: 0, salvage: 0, props: 1, sneakfight: 1 },
@@ -204,7 +229,34 @@ export function attentive(G, I, menu, o = null) {
 }
 
 // Score an option for a build. Higher is better; locked options are never chosen.
-export function score(G, build, o, { seed = 0, random = false, ends = {}, attend = false, menu = [] } = {}) {
+export function score(G, build, o, opts = {}) {
+  if (ROUTES[build]) { const b = score(G, ROUTES[build].base, o, opts); return b === -Infinity ? b : b + routeBonus(G, ROUTES[build], o); }
+  return scoreBuild(G, build, o, opts);
+}
+const goalCache = new WeakMap();
+export function goalDist(G, key) {
+  const per = goalCache.get(G.book) || goalCache.set(G.book, {}).get(G.book); if (per[key]) return per[key];
+  const N = G.book.nodes, into = {}, d = {}, queue = [];
+  const add = (from, to) => { if (to && N[to]) (into[to] ||= []).push(from); };
+  for (const n of Object.values(N)) for (const st of n.steps) { add(n.id, st.target); add(n.id, st.fail); if (["go", "call", "else"].includes(st.kind)) add(n.id, st.value); }
+  if (key.startsWith("node:")) { if (N[key.slice(5)]) { d[key.slice(5)] = 0; queue.push(key.slice(5)); } }
+  else for (const n of Object.values(N)) if (intentOf(G, { s: { target: n.id, attrs: {} }, kind: "opt" }).has(key)) { d[n.id] = 0; queue.push(n.id); }
+  while (queue.length) { const id = queue.shift(); if (d[id] >= 25) continue; for (const f of into[id] || []) if (!(f in d)) { d[f] = d[id] + 1; queue.push(f); } }
+  return (per[key] = d);
+}
+const met = (G, key) => { if (key.startsWith("node:")) return G.memory.visits(key.slice(5)) > 0; const m = key.match(/^sets:(.+)$/); if (m) return G.flag(m[1]); const a = key.match(/^assign:([\w.]+)=(.+)$/); return !!a && String(G.scope.get(`var.${a[1]}`)) === a[2]; };
+export function routeBonus(G, R, o) {
+  const I = intentOf(G, o); let sc = 0;
+  for (const k of R.avoid) if (I.has(k)) sc -= 50;
+  for (const k of R.want) {
+    if (met(G, k)) continue;
+    if (I.has(k) || (k.startsWith("node:") && o.s.target === k.slice(5))) { sc += 30; continue; }
+    const D = goalDist(G, k), d = Math.min(...[o.s.target, o.s.fail].filter(Boolean).map((id) => D[id] ?? 99));
+    if (d < 99) sc += 20 * Math.pow(0.75, d + 1);
+  }
+  return sc;
+}
+function scoreBuild(G, build, o, { seed = 0, random = false, ends = {}, attend = false, menu = [] } = {}) {
   if (o.locked) return -Infinity;
   const tie = hashStr(o.key, seed) / 4294967296; // order-free tie-break, fixed by the seed
   const visits = G.memory.visits(o.s.target) + (o.s.fail ? G.memory.visits(o.s.fail) : 0);
@@ -237,13 +289,14 @@ export function score(G, build, o, { seed = 0, random = false, ends = {}, attend
 export function strainFor(G, build, o) {
   if (!o.check || !o.canStrain) return 0;
   const short = o.check.dc - o.check.total, sk = G.rs.skills[o.check.skill];
-  if (short <= 0 || short > 3 || !(sk && BUILDS[build].comps.includes(sk.attr))) return 0;
+  if (short <= 0 || short > 3 || !(sk && BUILDS[baseOf(build)].comps.includes(sk.attr))) return 0;
   const st = o.strain(short); return st.ok ? short : 0;
 }
 
 // Between beats: pages into the build's voices, then a Margin slot; research found notes; the
 // best weapon the build can carry in hand; and for Hands, every lamp-project stage it can pay for.
 export function applyMax(G, build) {
+  build = baseOf(build);
   const M = BUILDS[build] && BUILDS[build].max; if (!M) return null;
   const sh = G.state.sheet, set = [];
   for (const [id, v] of Object.entries(M.levels)) if (G.rs.attrs[id]) { sh.attrs[id] = Math.max(sh.attrs[id] || 0, v); set.push(id); }
@@ -260,6 +313,7 @@ export function applyMax(G, build) {
 }
 
 export function upkeep(G, build, { attend = false } = {}) {
+  build = baseOf(build);
   // chapter pages (19.4) into the build's own compartment first, then its next one, then any
   if (G.sheet.chapters) for (let guard = 0; G.sheet.chapters() > 0 && guard < 20; guard++) {
     const c = [...BUILDS[build].comps, ...Object.keys(G.rs.attrs)].find((id) => G.sheet.canRaiseAttr(id)); if (!c) break; G.sheet.raiseAttr(c);

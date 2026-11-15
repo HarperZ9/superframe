@@ -46,6 +46,28 @@ default: none
 values: none, spratt, marrow
 about: Who holds the Guild's stewardship after the vote on the ice.
 
+# ---- new ids (thematic pass, 2026-10-21: the founders' ledger, the chalk, the chorus)
+@fact gut2.founders
+about: The Guild's first ledger, kept under the Captain's apron: on a Low Night a hundred and forty years ago "a light shewn from the Hound by these men", the Kell brig Ammet on the Spit, her cargo weighed on the town balance and shared by name, Dunlin two shares. Her crew: not weighed. Some years after, a subscription "for a light on the Hound, to make the Rock honest".
+by: the Guild's own hand
+
+@fact gut2.founders_read
+about: The founders' ledger was read aloud to the Guild hall by the assessor.
+by: the hall
+
+@fact gut2.ledger_read
+@fact gut2.founders_marrow
+@fact gut2.founders_burned
+@fact gut2.founders_taken
+@fact gut2.chalk_true
+@fact gut2.chalk_false
+@fact gut2.chalk_returned
+@fact gut2.chant_counted
+
+@item gut2.ledger
+name: The Guild's first ledger
+about: Calf boards, salt-stained, a hundred and forty years of the Gut's weights. The first Low Night in it is a wreck.
+
 # ---------------------------------------------------------------- the hub
 @node gut2.hub
 hub: yes
@@ -128,6 +150,7 @@ alt: gut2.spratt.after ? clock >= 03:00 | seen(gut2.ice.spratt) | seen(gut2.ice.
 alt: gut2.spratt.first ? !seen(gut2.spratt.first)
 cost: 1
 nar: The eel stall. Agnes Spratt is selling eels and promises at the same price.
+line: SPRATT: Open sea, you say, like it was a kindness. The open sea brings Hesk herring in at a farthing under mine, and the Trust buys it by the cart. Your sea has a price on it, love, and the price is me. {when: trait(cv.sea) == done, once}
 go: gut2.spratt.menu
 
 @node gut2.spratt.first
@@ -231,8 +254,77 @@ nar: Under the fish of the year, Marrow mends a blindfold with a needle very sma
 line: MARROW: The ice at two. Agnes wants it. Let her ask for it out loud, then.
 call: gut2.hall.banned
 opt: "Will you stand?" -> gut2.hall.stand
+opt: "Ask what is kept in the drawer under the Captain's apron." -> gut2.ledger ? !seen(gut2.ledger) & clock < 02:00
 opt: "I'll speak for you on the ice." -> gut2.hall.back ? !has(gut2.backed_spratt) & !has(gut2.backed_marrow) {do: set(said.backs_marrow); set(heard.marrow.backs_marrow)}
 opt: "Leave him to his needle." -> ^hub
+
+# ---------------------------------------------------------------- the founders' ledger (THEMES 3.2, T2)
+@node gut2.ledger
+place: hall
+speaker: MARROW
+cost: 4
+do: set(gut2.founders)
+line: MARROW: The first book. Nobody reads it. It's kept. Agnes has asked every vote for twenty years to have it read out, and every vote I've told her it's only fish.
+nar: Calf boards, salt-stained, the pages gone the colour of smoked skin. The first Low Night in it is not fish.
+nar: LOW NIGHT. A LIGHT SHEWN FROM THE HOUND BY THESE MEN. THE BRIG AMMET OF KELL ON THE SPIT AT THE TURN. WEIGHED ON THE TOWN BALANCE: TALLOW, NINE HUNDREDWEIGHT. COPPER, THREE. CANVAS, ROPE, A BELL.
+nar: SHARES. Eleven names. DUNLIN, TWO. SHADWELL, ONE. BRINE, ONE. And under the shares, in the same hand, smaller: CREW, NOT WEIGHED.
+nar: Nine pages on, a subscription in the same names: FOR A LIGHT ON THE HOUND, TO MAKE THE ROCK HONEST. In the margin beside it, in a hand a hundred and forty years dead: GULLET LOOKS AFTER GULLET.
+voice: undertow: Your words. In the margin of a wreck, a hundred and forty years before you thought of them. {when: trait(cv.wall) == done}
+voice: precedent: Low Night is the town walking the floor with lanterns to see what the sea gave back. It always was. {dc: 6}
+voice: smallprint: "Shewn". Not "seen". Somebody chose the word, and nobody crossed it out. {dc: 5}
+line: MARROW: We sing the Kell came in on the dark of the moon.
+nar: He does not say anything else for a while. The pans turn on their hooks.
+line: MARROW: Two shares. A Dunlin carried a lantern out to the Hound, and a Dunlin swam home off the Spit in a fog, and a Dunlin pulled the switch. I'd like to know which of them I'm meant to be.
+call: theme.cue.founders
+opt: "Read it aloud to the hall." -> gut2.ledger.aloud {do: set(said.founders_aloud); set(heard.marrow.founders_aloud); var.lean_sea += 1; var.lean_kin -= 1}
+opt: "Give it back to him, and say nothing to anyone." -> gut2.ledger.marrow {do: set(said.founders_kept); set(heard.marrow.founders_kept); var.lean_kin += 1}
+opt: "Put it in the stove." -> gut2.ledger.burn {do: var.lean_sea -= 1; var.lean_kin += 1}
+opt: "Put it under the Shelf's coat and take it out of the Gut." -> gut2.ledger.take {do: var.lean_hang += 1; var.lean_sea += 1}
+
+@node gut2.ledger.aloud
+place: hall
+speaker: MARROW
+cost: 6
+do: set(gut2.founders_read); set(gut2.ledger_read); rep(guild, -1); rumour(gut2.founders, gut, 1); rumour(gut2.founders, brine, 0.6); rumour(gut2.founders, quay, 0.6)
+nar: The assessor reads it standing, to the end of the shares, and then the last line under them. Somebody at the back laughs, once, and stops.
+nar: Nobody starts the herring song. A boy on the bench says "Kell" under his breath, as if trying the word for size.
+line: MARROW: There. It's everybody's now. That's what a thing read out is for.
+line: MARROW: It'll be in the Hesk paper by breakfast. GULLET FOUNDED ON A WRECK. It won't feed one Kell man. It'll sell.
+voice: hearsay: Before the pans stop turning it is in the lane. By two it will be in the Brine, and the Brine has a Kellish stoker by the door. {dc: 4}
+voice: condolence: Forty aprons and every one of them is counting the names for their own. {dc: 6}
+go: gut2.hub
+
+@node gut2.ledger.marrow
+place: hall
+speaker: MARROW
+cost: 2
+do: set(gut2.founders_marrow); rep(guild, 1)
+nar: He puts the book inside his apron, against the scales.
+line: MARROW: I'll read it on my own. Every night, probably.
+voice: smallprint: The only copy of it, kept by the family it names. That is how it was kept for a hundred and forty years. {dc: 5}
+go: gut2.hub
+
+@node gut2.ledger.burn
+place: hall
+speaker: MARROW
+cost: 4
+do: set(gut2.founders_burned); rep(guild, 1)
+line: MARROW: Go on, then.
+nar: Calf boards burn slowly, and salt makes them spit. Marrow watches it the whole way and does not stop the assessor, and does not help.
+voice: precedent: Eleven years, and we have never once put an exhibit in a stove. {dc: 4}
+voice: sum: It is still in the Daybook, in our hand. The only copy now belongs to the Shelf. {dc: 5}
+line: MARROW: Thank you. I'll not forgive you for it.
+go: gut2.hub
+
+@node gut2.ledger.take
+place: hall
+speaker: MARROW
+cost: 2
+do: set(gut2.founders_taken); give(gut2.ledger); rep(guild, -2)
+line: MARROW: That's the Guild's.
+nar: He does not get up.
+line: MARROW: Take it, then. The Shelf takes things. Somebody up the hill will want to read who we are.
+go: gut2.hub
 
 @node gut2.hall.banned
 when: has(cause.guild)
@@ -246,6 +338,7 @@ cost: 2
 nar: The steward's chair is empty. Marrow sits halfway down the bench, mending a blindfold.
 line: MARROW: They voted me out in the dark by a nose. Tonight it's on the ice, with lamps. A thing done in the dark ought to be done again where people can see it.
 opt: "Will you stand?" -> gut2.hall.stand
+opt: "Ask what is kept in the drawer under the Captain's apron." -> gut2.ledger ? !seen(gut2.ledger) & clock < 02:00
 opt: "I'll speak for you on the ice." -> gut2.hall.back ? !has(gut2.backed_spratt) & !has(gut2.backed_marrow) {do: set(said.backs_marrow); set(heard.marrow.backs_marrow)}
 opt: "Leave him to his needle." -> ^hub
 
@@ -271,6 +364,7 @@ speaker: SHADWELL
 cost: 2
 nar: The board by the door is grey to the halfway mark.
 line: SHADWELL: Oak and a half past midnight, near enough. Frost makes the smoke lie down. The board reads slow on a clear night.
+line: SHADWELL: That song on the ice? I had it off my grandfather with a cuff for every verse I got wrong. The Captain's verse is new. Thirty years new. {when: has(gut2.chant_counted), once}
 opt: "A bucket of ash from the pit." -> gut2.smoke.ash ? !has(gut2.ash) {verb: carry, noise: 0.2}
 opt: "Who will you cross to, on the ice?" -> gut2.smoke.who ? !seen(gut2.smoke.who)
 opt: "Go back out." -> ^hub
@@ -309,11 +403,14 @@ go: ^hub
 place: gutter
 cost: 4
 do: quest(a2.ice, open)
-nar: Two o'clock. The trough has frozen black and glassy under twelve colours of lamp. Marrow on the hall bank, Spratt on the stall bank, the Guild behind them, and the Whelk twins on the ice in the middle with their arms folded.
+nar: Two o'clock. {when: clock < 02:15}
+nar: The trough has frozen black and glassy under twelve colours of lamp. Marrow on the hall bank, Spratt on the stall bank, the Guild behind them, and the Whelk twins on the ice in the middle with their arms folded.
 line: NOLL: You cross to the one you want. You speak from the ice or you don't
 line: MAB: speak. And you get past us first.
 call: gut2.ice.banned
+nar: From the hall bank, low, and then from both: the last verse of the herring song, nine words over and over. The Captain's way, the Captain's dark, the Captain's price. {once}
 voice: ballast: Black ice over a moving drain. Every boot on it will be a negotiation. {dc: 4}
+check: "[SUM] Count who started the chant, and who is only repeating it." -> gut2.ice.chant.ok / gut2.ice.chant.fail ? !has(gut2.chant_counted) {skill: sum, dc: 5, verb: read, noise: 0}
 opt: "Step onto the ice." -> gut2.ice.step
 opt: "Spratt brought a speaker. Take the place she offered." -> gut2.ice.on.spratt ? has(gut2.backed_spratt)
 opt: "Marrow did not ask. Go and stand by him anyway." -> gut2.ice.on.marrow ? has(gut2.backed_marrow)
@@ -323,6 +420,24 @@ check: "[THE DARK] Go round behind the hall under the noise of the ice." -> gut2
 opt: "Lay a path across the ice for the old ones on the bank." -> gut2.ice.path ? count(i.salt) >= 1 | has(gut2.ash) {verb: rig, noise: 0.3}
 check: "[CARBON] Read what froze into the ice on Low Night." -> gut2.ice.read.ok / gut2.ice.read.fail ? !has(gut2.ice_read) & !has(gut2.ice_wrong) {skill: carbon, dc: 6, verb: read, noise: 0}
 opt: "Watch from the bank and let them cross." -> gut2.ice.vote
+
+# ---- the chorus (DISCOURSE-SYSTEM 5: the careful count that reads a culture as a campaign)
+@node gut2.ice.chant.ok
+place: gutter
+cost: 2
+do: set(gut2.chant_counted)
+nar: Forty-one mouths, both banks. The same nine words in the same order with the same weight on "dark", begun on the hall bank by three men inside one breath, and taken up on the stall bank a beat behind.
+voice: sum: Forty-one mouths, one wording, three starters. Who taught it them, and when? {dc: 3}
+opt: "Pin it in the Daybook: somebody taught them that line tonight." -> gut2.ice {do: set(said.chant_planted)}
+opt: "Pin it as unsettled." -> gut2.ice
+opt: "Leave the Daybook shut." -> gut2.ice
+
+@node gut2.ice.chant.fail
+place: gutter
+cost: 2
+do: set(gut2.chant_counted)
+nar: The chant comes off both banks at once and the ice gives it back from underneath. The count goes under in it somewhere after twenty.
+go: gut2.ice
 
 @node gut2.ice.banned
 when: has(cause.guild)
@@ -505,6 +620,42 @@ nar: Twelve colours deep, the ice reads as a picture: a silver line running down
 voice: sum: In pencil. Pencil can be wrong. Somebody who knows this gutter could tell you. {dc: 3}
 go: gut2.ice
 
+# ---- the honest count (THEMES T1)
+@node gut2.ice.chalk
+place: gutter
+speaker: MAB
+cost: 3
+nar: The crossing stops short of done. The banks stand near enough even that nobody on either will count the other side.
+line: NOLL: Shelf counts. Shelf's from away. Nobody
+line: MAB: can say it's ours. Here.
+nar: A stub of chalk, warm from Mab's pocket, and the black ice for a slate.
+nar: Hall bank, twenty-two, with the old ones in on the grey stripe. Stall bank, twenty. Two of the old men stand with one boot on the trough's edge and one on the ice.
+line: SPRATT: Two. It'll be two of the old ones, that can't feel their feet. Chalk it, then. Chalk the strike through March, and every eel-wife on this bank eating off Sabine's slate till Easter.
+line: MARROW: Count it how it stands.
+voice: undertow: Two boots on the line. Read them either way and nobody on this ice could ever prove which way you read them. {dc: 5}
+voice: precedent: Agnes Spratt swapped a fish on Low Night for the eel-wives, and you wrote it in the Daybook against her. {when: has(gut.spratt_swap) | has(gut.spratt_seen)}
+voice: condolence: The eel-wives on the stall bank are looking at the chalk and not at you. That is how hungry people look at a thing. {dc: 6}
+opt: "Chalk it as it stands: the hall bank, by two." -> gut2.ice.marrow {do: set(gut2.chalk_true); set(said.chalk_true); set(heard.spratt.chalk_true); set(heard.marrow.chalk_true); var.lean_kin += 1; var.lean_rise -= 1}
+opt: "Chalk the two on the line to the stall bank." -> gut2.ice.chalk.false {do: set(gut2.chalk_false); set(said.chalk_false); set(lied.chalk_false); set(heard.spratt.chalk_false); var.lean_rise += 1; var.lean_kin -= 1}
+opt: "Hand the chalk back. It is the Guild's count." -> gut2.ice.chalk.back {do: set(gut2.chalk_returned); var.lean_dry += 1}
+
+@node gut2.ice.chalk.false
+place: gutter
+speaker: SHADWELL
+cost: 2
+nar: Twenty-two to the stall bank, twenty to the hall, in a clerk's figures on the black ice.
+line: SHADWELL: I make it the other way, Shelf. I'll not say so. You'd a reason. So did she, with the fish.
+voice: pride: The Shelf's figures, on the ice, in front of the whole Guild, wrong. {dc: 4}
+go: gut2.ice.spratt
+
+@node gut2.ice.chalk.back
+place: gutter
+speaker: SPRATT
+cost: 2
+nar: Mab takes the chalk back without a word and counts it as it stands. Hall bank, by two.
+line: SPRATT: The Shelf held the chalk and gave it back like a hot pan. Remember that, all of you, next time it tells you what's fair.
+go: gut2.ice.marrow
+
 # ---- the vote
 @node gut2.ice.on
 place: gutter
@@ -578,6 +729,7 @@ go: gut2.hub
 @node gut2.ice.marrow
 place: gutter
 speaker: MARROW
+alt: gut2.ice.chalk ? has(gut2.on_ice) & !seen(gut2.ice.chalk) & !seen(gut2.ice.deal) & !seen(gut2.ice.herring)
 cost: 3
 do: gut2_steward = marrow; quest(a2.steward, decided); rep(guild, 1)
 nar: The old ones cross last, on the grey stripe, holding each other by the elbow.

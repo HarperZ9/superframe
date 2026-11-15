@@ -1,0 +1,107 @@
+# The witness scene replaced this document on screen (q_witness.lwd, world/witness.mjs, game director 2026-10-22).
+# What follows is kept as the oracle: tools/witnesscheck.mjs proves every row that holds on a run is answered by a
+# beat Anni speaks, or declared unwitnessed. It is never shown to the player.
+# The Quota slice: the read-back as a document in two columns (engine: world/readback.mjs; check:
+# tools/readbackcheck.mjs). Gameplay engineer, 2026-10-22, moved from the story lead's q.readback lines in
+# q_coda.lwd, whose sentences these are; the lines marked are mine, for the story lead to rewrite.
+# The self-lies are the voice lines tagged {self: ...} in the scenes; the said rows quote the option the
+# character chose. toldself(<id>) is true when the character heard that self-lie, so a row that pairs with it
+# is not printed twice.
+
+@readback q.record
+title: THE RECORD. EDRIN, THE UPPER TOWN.
+head: Ned Furrowe, district inspector. ? q_class == inspector
+head: Will Brack, sergeant of militia. ? q_class == militia
+row: 06:30 | The cells | Tesk, of the hill: one and a half sacks of oats. You wrote two. ? has(q.log_two)
+row: 06:30 | The cells | Tesk, of the hill: one and a half sacks of oats. You wrote one and a half. ? has(q.log_true)
+row: 07:10 | The returns room | The Haldane barns: a hundred and ninety, written over as three hundred and ten. You pencilled a hundred and ninety beside it. ? has(q.pencil_kept) & !toldself(q.sl.signed)
+row: 07:10 | The returns room | The Haldane barns: a hundred and ninety, written over as three hundred and ten. You rubbed out your own pencil. ? has(q.pencil_rubbed) & !toldself(q.sl.signed)
+row: 07:10 | The returns room | The Haldane barns: a hundred and ninety, written over as three hundred and ten. You signed it as received and found correct. ? q_class == inspector & !has(q.pencil_kept) & !has(q.pencil_rubbed) & !toldself(q.sl.signed)
+row: 14:00 | The road post | The Haldane cart: six sacks. Four taken as hoarding. ? q_cart == taken & !has(said.will_take_six) & !has(said.will_refuse_holt) & !toldself(q.sl.forty_carts)
+row: 14:00 | The road post | The Haldane cart: six sacks. Six taken as hoarding. ? (has(said.will_take_six) | has(said.will_refuse_holt)) & !toldself(q.sl.forty_carts)
+row: 14:00 | The road post | The Haldane cart: six sacks. Let through to Osby, in your name. ? q_cart == through & !toldself(q.sl.forty_carts)
+row: 14:00 | The road post | Tomas Haldane held for carrying grain for the hill. He had not been up the hill since harvest. ? q_cart == arrested & !toldself(q.sl.forty_carts)
+row: 14:00 | The road post | Anni Haldane counted the sacks off the cart out loud, so that somebody had said it. ? q_class == inspector
+row: 22:00 | The granary door | You read the true figure out loud through the gap. Holt gave one sack a family, against the review, in your name. ? q_door == talked
+row: 22:00 | The granary door | The bar held. The guards took a man to show for the night. A shawl was left frozen to the cobbles. ? q_door == held
+row: 22:00 | The granary door | The doors came in. The guards fired. A boy lay beside a split sack. ? q_door == broken & !has(q.will_down)
+row: 22:00 | The granary door | You went down under the left-hand door. Anni Haldane held a lamp over your face and looked. The corporals took the handcart back at the corner of Mill Street anyway. ? has(q.will_down)
+row: 22:00 | The granary door | You stood back by the sacks with the lantern. Bet Haldane saw you do it. ? q_door == aside
+row: day 45 | The cells | Prisoner Haldane, T., found unresponsive in the end cell, 04.10. Certified: intestinal illness. Place of burial: not recorded. ? has(q.tomas_held)
+row: day 48 | The Haldane table | Every bowl laid. ? bowls(haldane) >= 5
+row: day 48 | The Haldane table | One bowl on the shelf, turned over. ? bowls(haldane) == 4
+row: day 48 | The Haldane table | Bowls on the shelf, turned over. ? bowls(haldane) <= 3
+row: day 43 | The guardroom | Ilo Haldane made his mark on a statement naming Dorrah Tesk and the hill. He cannot read. ? has(q.ilo_mark)
+row: day 44 | Tesk's hill | Dorrah Tesk taken off the hill on the strength of the father's mark. Six town children sent down. ? has(q.ilo_mark)
+row: day 46 | Haldane Yard | Aaron Haldane, nine, taken from the yard by Constable Gedge. His father fetched his coat. ? has(q.aaron_taken)
+row: day 48 | The Haldane table | The family says Tomas went to the hills. ? has(q.tomas_held)
+row: day 48 | Tilney Road | Anni Haldane, fourteen, is in the Furrow Church's home on Tilney Road. The thread came off at the door. ? has(q.anni_sent)
+row: day 48 | The Furrowe table | Anni Haldane, fourteen, eats at the Furrowe table. Her father's line is no longer ruled. ? has(q.anni_furrowe)
+row: day 48 | Krall's End | Anni Haldane, fourteen, counts sacks for the brigade at the Krall's End store, under the review. Her bowl is laid. ? q_figure == true & !has(q.anni_sent) & !has(q.anni_furrowe) & !has(q.tomas_held)
+row: day 48 | Your own table | Less in every bowl. Your post stopped. The new inspector wrote three hundred and twenty for Tarn Hollow. ? q_class == inspector & stock(portion, furrowe) < 1
+row: day 48 | Your own table | Less in every bowl. The militia ration was cut with the district's. ? q_class == militia & stock(portion, brack) < 1
+
+# ---------------------------------------------------------------- what they told themselves (the self-deception layer)
+@selflie q.sl.signed
+about: SUM, in the returns room, over the barns sheet (q_ned.lwd)
+happened: The Haldane barns: a hundred and ninety, written over as three hundred and ten. You pencilled a hundred and ninety beside it. ? has(q.pencil_kept)
+happened: The Haldane barns: a hundred and ninety, written over as three hundred and ten. You rubbed out your own pencil. ? has(q.pencil_rubbed)
+happened: The Haldane barns: a hundred and ninety, written over as three hundred and ten. You signed it as received and found correct. ? !has(q.pencil_kept) & !has(q.pencil_rubbed)
+
+@selflie q.sl.add_up
+about: SUM, at the district office, before the inspector reports (q_office.lwd)
+happened: A week later, the Haldane table: every bowl laid. ? bowls(haldane) >= 5
+happened: A week later, the Haldane table: one bowl on the shelf, turned over. ? bowls(haldane) == 4
+happened: A week later, the Haldane table: bowls on the shelf, turned over.
+
+@selflie q.sl.check
+about: PRIDE, at the district office, before the sergeant reports (q_office.lwd)
+happened: A week later, the Haldane table: every bowl laid. ? bowls(haldane) >= 5
+happened: A week later, the Haldane table: one bowl on the shelf, turned over. ? bowls(haldane) == 4
+happened: A week later, the Haldane table: bowls on the shelf, turned over.
+
+@selflie q.sl.forty_carts
+about: BALLAST, at the road post (q_will.lwd)
+happened: The Haldane cart: six sacks. Four taken as hoarding. ? q_cart == taken & !has(said.will_take_six) & !has(said.will_refuse_holt)
+happened: The Haldane cart: six sacks. Six taken as hoarding. ? has(said.will_take_six) | has(said.will_refuse_holt)
+happened: The Haldane cart: six sacks. Let through to Osby, in your name. ? q_cart == through
+happened: Tomas Haldane held for carrying grain for the hill. He had not been up the hill since harvest. ? q_cart == arrested
+happened: The Haldane cart did not come to the post.
+
+@selflie q.sl.never_hand
+about: PRIDE, at the Brack table (q_dinner.lwd)
+happened: Davey's shoulders came up round his ears when your hand went across the table, and stayed there until it came back. Edie pulled her sleeve down over her wrist.
+
+# ---------------------------------------------------------------- what they said
+@said said.ned_promise_hill
+happened: Tesk's fold, no store: in pencil, in the back of your book. ? has(q.hill_seen)
+happened: Tomas waited at the post road at two.
+
+@said said.ned_keep_tally
+happened: Anni's tally went in your inside pocket with the pen. She keeps the others in a tin.
+
+@said said.ned_send_tomas
+happened: Tomas went home. ? !has(q.tomas_held)
+happened: Tomas Haldane held for carrying grain for the hill. ? has(q.tomas_held)
+
+@said said.ned_report_true
+happened: Krall's End under review. Its quota doubled until it finds what it is hiding.
+
+@said said.ned_report_inflated
+happened: The district's return went to Arlen at two hundred and ninety, and the requisition came for it.
+
+@said said.ned_report_blamed
+happened: A list of the Hesh families on the Krall's End side of the river, in Jonah Krall's hand, to the Captain.
+
+@said said.will_report_true
+happened: Krall's End under review. Its quota doubled until it finds what it is hiding.
+
+@said said.will_report_inflated
+happened: The sweep went in the Commissioner's book as eighty sacks, and the requisition came back for the forty that were never there.
+
+@said said.will_report_blamed
+happened: A list of the Hesh families on the Krall's End side of the river, in Jonah Krall's hand, to the Captain.
+
+@selflie q.sl.order
+about: BALLAST, at the corner past the gap, the Tuesday night (q_cells.lwd)
+happened: Prisoner Haldane, T., buried in the corner past the gap in the burial ground, no board, no rite, with the sergeant's own hands. Certified: intestinal illness. The water was from the barrel in the yard.

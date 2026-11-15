@@ -16,7 +16,7 @@
 //   min max abs
 // Calls (effects):  set(flag) clear(flag) give(item[, n]) take(item[, n]) equip(item)
 //   xp(n) offer(trait) research(trait) quest(id, stage) rep(f, n) rumour(fact, district, w)
-//   meter(id, n) project(id) wet(n) wait(min) journal("text") heal(res, n) hurt(res, n)
+//   meter(id, n) project(id) wet(n) wait(min) cut(min) (the clock jumps, nothing lived) journal("text") heal(res, n) hurt(res, n)
 //   sneak(id) (a sneak scene) hide(object) did(object, verb) (a condition: "ok", "fail" or "")
 //   seen hidden insneak day daylight (names)  sneak.X (win, seen, ambush, time or "")
 //   run(id) (a Tide Run) fight(id) (an encounter, game/engine/combat/) move(char, place) forget(trait) light(place, light, sodium)
@@ -124,6 +124,8 @@ const CALLS = {
   project: (G, [id]) => G.settlement.contribute(id),
   wet: (G, _, [n]) => G.command(["wet", "lamb", String(n)], "effect"),
   wait: (G, _, [n]) => G.advance(+n),
+  // a cut in the telling: the clock moves on and nothing is lived through (no wear, no drying, no meters)
+  cut: (G, _, [n]) => { if (!(+n > 0)) return; const before = G.clock(); G.env.advance(+n); G.emit("time", { before, after: G.clock(), minutes: +n, cut: true }); },
   journal: (G, _, [text]) => G.quests.write("note", "", String(text)),
   heal: (G, [id], [, n]) => G.sheet.setRes(id, G.sheet.res(id) + +n),
   hurt: (G, [id], [, n]) => G.sheet.setRes(id, G.sheet.res(id) - +n),

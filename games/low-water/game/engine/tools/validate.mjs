@@ -8,7 +8,7 @@
 // Exit code 1 when there are errors (warnings alone exit 0).
 import { readFile } from "node:fs/promises";
 import { loadAct } from "../dialogue/book.mjs";
-import { loadContent } from "../game.mjs";
+import { loadContent } from "../full.mjs"; // the full game: its calls include combat's (fight, inner)
 import { lint } from "./lint.mjs";
 import { castIds } from "./cast.mjs";
 

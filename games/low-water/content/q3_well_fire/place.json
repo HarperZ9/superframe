@@ -1,0 +1,153 @@
+{
+ "place": "q3_well_fire",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   -1,
+   1.1,
+   -2
+  ],
+  "dist": 40,
+  "ortho": true,
+  "scale": 3.6
+ },
+ "pxPerMetre": 150,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "fire"
+ ],
+ "variantInfo": {
+  "fire": {
+   "hour": 22.7,
+   "weather": "December, 22:40: the Well House burning, the door barred, the roof gone at the back; slow swells of firelight, no strobe"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  6,
+  2
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "door",
+    "verb": "look",
+    "at": [
+     -0.9,
+     0,
+     0.5
+    ],
+    "note": "the door, the bar across it, Gedge"
+   },
+   {
+    "id": "notice",
+    "verb": "read",
+    "at": [
+     0.8,
+     0,
+     1.9
+    ],
+    "note": "the notice on the gate: closed for health"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "lane",
+    "at": [
+     2.5,
+     0,
+     3.5
+    ],
+    "note": "the lane to Mill Street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "fire": [
+   {
+    "at": [
+     -2.3,
+     4.4,
+     -2.5
+    ],
+    "kind": "paraffin",
+    "I": 28,
+    "reach": 12,
+    "group": "fire"
+   },
+   {
+    "at": [
+     -3.7,
+     1.9,
+     -3
+    ],
+    "kind": "paraffin",
+    "I": 10,
+    "reach": 12,
+    "group": "fire"
+   },
+   {
+    "at": [
+     -2.3,
+     1.6,
+     -0.4
+    ],
+    "kind": "paraffin",
+    "I": 13,
+    "reach": 12,
+    "group": "fire"
+   }
+  ]
+ },
+ "figureLights": {
+  "fire": [
+   {
+    "at": [
+     1.5,
+     2.4,
+     2.5
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 10,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 3: the Well House, burning."
+}

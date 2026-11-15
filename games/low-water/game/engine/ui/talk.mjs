@@ -8,6 +8,11 @@ import { h, btn, signed, pct } from "./dom.mjs";
 const stripTag = (label) => String(label).replace(/^\[[^\]]*\]\s*/, "");
 
 export function lineEl(l) {
+  const el = lineEl0(l);
+  if (l.hand) { el.classList.add("hw"); el.dataset.hand = l.hand; if (l.dir && l.dir.lie) el.dataset.mood = "lie"; }   // a line in a writer's own hand (ui/letterer.mjs)
+  return el;
+}
+function lineEl0(l) {
   const who = (t) => h("span.who.caps", t);
   switch (l.kind) {
     case "nar": return h("p.ln.nar", l.text);
@@ -69,16 +74,16 @@ function strainRow(G, o, sel, rerender) {
   return row;
 }
 
-function optionEl(G, o, i, { sel, termsAll, onChoose, rerender }) {
+function optionEl(G, o, i, { sel, termsAll, onChoose, rerender, pos = i }) {
   const c = o.check, strain = (c && sel[o.key]) || 0;
   const label = h("span.lab", c ? stripTag(o.label) : o.label);
-  const head = h("span.num.mono", `${i + 1}.`);
+  const head = h("span.num.mono", `${pos + 1}.`);
   const tags = [o.kind === "claim" ? h("span.tag.caps", "Claim") : null, c ? checkTag({ ...c, total: c.total + strain }) : null];
   const b = btn([head, h("span.body", tags.filter(Boolean).length ? h("span.tags", tags) : null, label, o.said ? h("span.said.caps", " said") : null)], () => onChoose(i, strain), { cls: `opt k-${o.kind}`, disabled: !!o.locked });
   if (c) b.setAttribute("aria-description", `${c.skillName} ${c.dc}, ${c.red ? "ink, once" : "pencil"}; you ${c.total + strain}, ${gapText({ ...c, total: c.total + strain })}`);
   b.dataset.opt = String(i);
   if (o.lie) { b.classList.add("lie"); b.append(h("span.liedrain", { "aria-hidden": "true" })); } // ux: the lie window drains here (ui/livetalk.mjs)
-  if (i === 0) b.dataset.first = "";
+  if (pos === 0) b.dataset.first = "";
   const wrap = h("div.optwrap", b);
   if (c) wrap.append(checkLine({ ...c, total: c.total + strain }));
   if (o.locked) wrap.append(h("div.lock.small", o.locked));
@@ -92,7 +97,18 @@ function optionEl(G, o, i, { sel, termsAll, onChoose, rerender }) {
 }
 
 // Draw the options of a beat into box. Returns nothing; clicks call onChoose(index, strain).
+// Options already said go below the rest, so the first option (focused, and key 1) is always something
+// new to say (UX walk, 2026-10-21: a new player pressing on kept re-asking the question at the top).
+// The number shown is the place on screen; box.order maps it back to the beat's option index.
+// A locked check ("Nothing has changed.") goes last of all: it cannot be pressed, and at the top it took the
+// focus, so Enter did nothing (Act 3 walk, 2026-10-21: Cockle's boat at the mole steps, from 23:48 to 05:29).
+export function optionOrder(options = []) {
+  const idx = options.map((_, i) => i), rank = (o) => (o.locked ? 2 : o.said ? 1 : 0);
+  return [0, 1, 2].flatMap((r) => idx.filter((i) => rank(options[i]) === r));
+}
 export function renderOptions(box, G, beat, opts) {
   box.replaceChildren();
-  (beat.options || []).forEach((o, i) => box.append(optionEl(G, o, i, opts)));
+  const order = optionOrder(beat.options || []);
+  box.order = order;
+  order.forEach((i, pos) => box.append(optionEl(G, beat.options[i], i, { ...opts, pos })));
 }

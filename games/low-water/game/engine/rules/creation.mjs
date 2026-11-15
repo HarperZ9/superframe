@@ -7,6 +7,7 @@
 // Items with a slot are worn at once; the archetype's traits start done (R6).
 // Returns a list of problems; an empty list means the character was made.
 import { validateBuild, applyArchetype, newSheet } from "./sheet.mjs";
+import { registerCalls } from "../core/scope.mjs";
 
 export function createCharacter(G, { archetype = null, attrs = null, name = "", trusted = null, ink = false, enter = true } = {}) {
   const rs = G.rs, errs = [];
@@ -33,3 +34,20 @@ export function createCharacter(G, { archetype = null, attrs = null, name = "", 
 
 // A trusted instrument: one rank of bonus, listed as its own part of the sum.
 export const trustedMods = (G) => (G.state.sheet && G.state.sheet.trusted ? [{ target: `skill.${G.state.sheet.trusted}`, amount: 1, label: "trusted", source: "creation" }] : []);
+
+// become(q.ned): a story with no creation screen (@rules creation: none, the Quota) makes the plain
+// sheet first and puts the chosen man's sheet in its place at the choice. The archetype's attributes,
+// ranks, items and traits replace the plain sheet's; the name is the archetype's. A sheet already made
+// from that archetype is left as it is (the harness builds the class sheet before the choice).
+export function become(G, id) {
+  const rs = G.rs; if (!rs.archetypes[id]) throw new Error(`become: no archetype ${id}`);
+  const sheet = G.state.sheet || (G.state.sheet = newSheet(rs));
+  if (sheet.archetype === id) return false;
+  const a = applyArchetype(rs, sheet, id);
+  sheet.name = a.name || sheet.name;
+  for (const it of a.items) { G.inv.give(it.id, it.n, { quiet: true }); if (rs.items[it.id] && rs.items[it.id].slot) G.inv.equip(it.id); } // his own clothes: no "found" notes
+  for (const t of a.traits) G.cabinet.grant(t);
+  G.emit("became", { archetype: id, name: sheet.name });
+  return true;
+}
+registerCalls({ become: (G, [id]) => { become(G, id); } }, { become: "archetype" });

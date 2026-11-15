@@ -1,0 +1,107 @@
+# The Quota slice: a perspective chapter (design/PITCHES.md, Perspectives; engine: world/perspective.mjs; check:
+# tools/perspectivecheck.mjs). Mechanism and records: gameplay engineer, 2026-10-22. Text: story lead, 2026-10-22,
+# written over the engineer's draft (agreed in design/state/story.md). The granary door from outside, as Bet
+# Haldane, on her own sheet, between the door and the night: the victim half of the pair "the requisition". Her
+# account and the read-back's disagree on who was taken when the door held: she tells herself it was the Orme
+# lad, because it was the Orme lad's coat; Tomas had it on. She knows his height; the line is her refusal to know
+# (step 172, after the age change). The game does not say which is true.
+
+@perspective q.pov.bet
+name: Bet Haldane, outside the granary
+archetype: q.bet
+figure: bet
+start: q.persp.bet.door
+return: q.night
+
+@archetype q.bet
+name: Bet Haldane
+about: A Tarn cottar's daughter who married a Hesh hand. Keeps the Haldane house.
+attr: pen 2
+attr: coat 3
+attr: hat 2
+attr: nose 4
+skill: dark 2
+skill: smell 2
+skill: knees 2
+skill: salt 2
+skill: undertow 1
+
+@node q.persp.bet.door
+do: perspective(q.pov.bet)
+cost: 0
+nar: The same hour, the other side of the door. Bet Haldane, with Anni's wrist in her hand so the girl can't get to the front.
+nar: Across the square the cell gratings are lit, down at the height of everybody's boots. She has stood on one of them twice tonight, to feel if it was warm, and got off again. {when: has(q.tomas_held)}
+nar: Tomas let go of her coat in the crush by the pump, and now he's up at the front somewhere with his braid out down his back. She told him to keep it in his collar. He has the Orme lad's coat on, the brown one with the patch, the cuffs turned back twice, because his own went on the cart in October. {when: !has(q.tomas_held)}
+line: ANNI: There's sixty-three of us. I've done it twice, Mum.
+line: BET: Hush.
+line: ANNI: I'm not hushing. Sixty-three.
+voice: dark: Count yours. Anni. Aaron by the lamp post. {dc: 2}
+go: q.persp.bet.what
+
+@node q.persp.bet.what
+cost: 0
+alt: q.persp.bet.talked ? q_door == talked
+alt: q.persp.bet.held ? q_door == held
+alt: q.persp.bet.broken ? q_door == broken
+go: q.persp.bet.aside
+
+@node q.persp.bet.talked
+cost: 6
+nar: The little door in the big one opens, and somebody inside drags sacks up into the lantern light, and starts talking through it, too fast, a man's voice with a cold in it. The ones at the front go quiet to hear. The ones at the back push.
+nar: Blue ticking on the corner of the nearest sack. Her own patching, from October, her own stitches, going to Arlen on the train. She'd know them in the dark. {when: q_class == inspector}
+nar: Grain running out over the step from a sack somebody's split, into the lantern light, and nobody on the square moving to pick it up. {when: q_class == militia, sense: grain.pour}
+nar: Then the bar comes off and they hand sacks out through the gap like it was their idea all along. She gets one. It is heavier than she thought, and she nearly drops it, and a soldier holds the other end for a second until she's got it. {sense: burden.shoulder}
+voice: undertow: He'll want thanking. They always want thanking. {dc: 2}
+nar: She doesn't say it. She'll not say it.
+go: q.persp.bet.choice
+
+@node q.persp.bet.held
+cost: 6
+nar: The door doesn't give. It bows and comes back, and bows. Somebody screams near the front, and then the rifle from the side window, once.
+nar: When it's quiet a soldier comes round the side with a lantern and takes somebody by the collar from the back of the crowd, and walks him off up Exchange Street. She can't see his face. She sees the brown coat with the patch, and the soldier stooping to keep hold of the collar. {when: q_cart != arrested}
+nar: When it's quiet a soldier comes round the side with a lantern and takes a man by the collar from the back of the crowd, and walks him off up Exchange Street. The Orme lad, who did nothing but shout. He goes along talking to the soldier the whole way, as if that would help. {when: q_cart == arrested}
+voice: dark: The Orme lad's coat. Say it's the Orme lad. {dc: 2, when: q_cart != arrested}
+nar: She knows whose head comes up to there on a grown man. She stops looking at it. She goes along the front for Tomas, face by face, and can't find him, and tells herself it's the dark, and the lamp. {when: q_cart != arrested}
+go: q.persp.bet.choice
+
+@node q.persp.bet.broken
+cost: 6
+nar: The door comes in all at once, and then the noise. Afterwards she will not be able to say whether it was one shot or three.
+nar: A boy down by a split sack, with the grain running out round him. She can't see whose.
+nar: She counts. Anni, by the wrist. Aaron, by the lamp post, with his hands over his head. Tomas against the wall with the others, and a soldier in front of them. That's three. {when: !has(q.tomas_held) | has(q.will_down)}
+nar: She counts. Anni, by the wrist. Aaron, by the lamp post, with his hands over his head. That's two. That's all of hers that are out tonight. {when: has(q.tomas_held) & !has(q.will_down)}
+go: q.persp.bet.choice
+
+@node q.persp.bet.aside
+cost: 6
+nar: The doors bow in, and in again, and then the people at the back start going home, and then the rest.
+nar: Through the gap, by the lantern, Ned Furrowe stands back against the sacks with his hands where everybody can see them. She sees him do it, and he sees her see it. She has known him since he was a boy in a hat too big for him. {when: q_class == inspector}
+nar: Through the gap, by the lantern, Will Brack stands back against the sacks with his hands where everybody can see them. She sees him do it, and he sees her see it. Edie Brack did her hems at the dame school. {when: q_class == militia}
+go: q.persp.bet.choice
+
+@node q.persp.bet.choice
+cost: 0
+opt: "Get Anni home." -> q.persp.bet.home {do: bet_door = home}
+opt: "Stay, and see who it was." -> q.persp.bet.stay {do: bet_door = stayed}
+
+@node q.persp.bet.home
+cost: 20
+nar: Down Exchange Street with Anni's wrist in her hand, faster than Anni can walk. Anni counts the lamps out loud all the way, and Bet lets her.
+nar: At home Ilo is sitting up. He doesn't ask. She takes the bowls off the shelf for the morning and lays them out, the way she does every night, so it's done.
+nar: She lays them all but one. She stands there with that one against her coat. {when: has(q.tomas_held) | q_door == held & q_cart != arrested | q_door == broken}
+nar: She lays every one, and puts the sack in the middle of the table where everybody will see it when they get up. {when: q_door == talked}
+nar: She lays every one. {when: !(has(q.tomas_held) | q_door == held & q_cart != arrested | q_door == broken) & q_door != talked}
+do: endperspective()
+go: q.night
+
+@node q.persp.bet.stay
+cost: 20
+nar: She sends Anni home with Aaron and stays until the square is empty and the frost has come back on the cobbles. Somebody's shawl is frozen to them by the door. It isn't hers. She knows whose it is, and doesn't pick it up.
+nar: Nobody comes out of the granary. Nobody says a name to her. A corporal asks her what she wants and she says nothing, nothing, she's going.
+nar: At home she takes the bowls off the shelf for the morning, and lays them out, and she doesn't count them, because Anni will.
+do: endperspective()
+go: q.night
+
+@var bet_door
+default: none
+values: none, home, stayed

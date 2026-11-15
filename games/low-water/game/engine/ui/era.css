@@ -1,0 +1,139 @@
+/* The interface as part of the art (the UI art lead's, 2026-10-21; design/STATE.md, UI art). Only for a story
+   that names its era (@meta ui-era, body[data-ui-era]); Low Water's acts never match a rule here.
+   Per era: the stock (ui/paper.mjs draws the page), the inks, and which tool letters what (ui/letterer.mjs
+   reads --hand-title, --hand-head, --hand-name). Body text stays in Hanken for reading; the plain-text
+   setting (:root.plaintext) and glyph mode put back clean type and clean paper. */
+
+/* ---- era 1, the Exchange: a merchant's fine ledger, iron-gall ink; textura titles, insular heads, names signed ---- */
+body[data-ui-era="1"] { --paper: #ece2c7; --paper-solid: #ece2c7; --ink: #2a1c12; --ink-2: #57412f; --ink2: #57412f; --graphite: #5f5348; --hot: #8c2416; --stamp-ink: #7a2418;
+  --rule: rgba(52, 78, 140, 0.24); --margin-rule: rgba(160, 40, 30, 0.42); --hand-title: textura; --hand-head: insularround; --hand-name: bastarda; --hand-own: 1; --hand-ink: #24170e; --bleed: rgba(42, 28, 18, 0.45); }
+/* ---- era 2, the Quota: the ration form on cheap grey paper, typed, carbon, rubber stamps; bastarda, names signed ---- */
+body[data-ui-era="2"] { --paper: #d6d4c8; --paper-solid: #d6d4c8; --ink: #1c1a20; --ink-2: #45424b; --ink2: #45424b; --graphite: #4e4a46; --hot: #7c2236; --stamp-ink: #7c2236;
+  --rule: rgba(60, 64, 74, 0.2); --carbon: #26305e; --hand-title: bastarda; --hand-head: bastarda; --hand-name: bastarda; --hand-own: 1; --hand-ink: #19171c; --bleed: rgba(28, 26, 32, 0.5); --name: "LW Conso", Consolas, monospace; }
+/* ---- era 3, Allocation: duplicated lists, spirit-duplicator violet, hand-cut stencil headings ---- */
+body[data-ui-era="3"] { --paper: #e7e3d6; --paper-solid: #e7e3d6; --ink: #3e2160; --ink-2: #5b4478; --ink2: #5b4478; --graphite: #5d5266; --hot: #9a3b1f; --stamp-ink: #2f3f7a;
+  --rule: rgba(80, 50, 120, 0.12); --hand-title: bastarda; --hand-head: flat; --hand-name: flat; --hand-own: 1; --hand-ink: #3e2160; --bleed: rgba(80, 40, 130, 0.55); }
+/* ---- era 4, the Closure: the bank's typed forms, green form rules, ribbon ink ---- */
+body[data-ui-era="4"] { --paper: #eaece2; --paper-solid: #eaece2; --ink: #1b1d1c; --ink-2: #474d4a; --ink2: #474d4a; --graphite: #505653; --hot: #8a2a1a; --stamp-ink: #1f4f8a;
+  --rule: rgba(60, 120, 100, 0.3); --hand-title: brush; --hand-head: none; --hand-name: brush; --hand-ink: #1b1d1c; --bleed: rgba(27, 29, 28, 0.35); --name: "LW Conso", Consolas, monospace; }
+/* ---- era 5, the Clearance: a photocopied council notice; the HUD a phone-screen fragment ---- */
+body[data-ui-era="5"] { --paper: #eeeeea; --paper-solid: #eeeeea; --ink: #1d1d1d; --ink-2: #444; --ink2: #444; --graphite: #4d4d4d; --hot: #b02a14; --stamp-ink: #222;
+  --rule: transparent; --hand-title: brush; --hand-head: none; --hand-name: brush; --hand-ink: #161616; --bleed: rgba(20, 20, 20, 0.4); }
+
+/* ---- the lettered surfaces: the words stay in the page (hidden while the lettering shows) ---- */
+body[data-ui-era] .placecard .pname, body[data-ui-era] .leaf .ltitle { --hand: var(--hand-title); --hand-size: 1.25; }
+body[data-ui-era] .placecard > .caps, body[data-ui-era] .lenspanel > .caps, body[data-ui-era] .ttitle, body[data-ui-era] .dtitle, body[data-ui-era] .hud .place { --hand: var(--hand-head); --hand-size: 1.35; --hand-case: title; }
+body[data-ui-era] .ln .who, body[data-ui-era] .portrait .pname, body[data-ui-era] .voiceline .who { --hand: var(--hand-name); --hand-size: 1.45; --hand-case: title; }
+body[data-ui-era] .record-stamp { --hand: stamp; --hand-size: 1.3; --hand-ink: var(--stamp-ink); --hand-case: none; }
+body[data-ui-era] .talk.record .log > .ln:first-child { --hand: stamp; --hand-size: 1.15; --hand-ink: var(--stamp-ink); }
+.bl > .bl-c { display: block; max-width: none; }
+.bl.who > .bl-c, .ln .bl > .bl-c { display: inline-block; vertical-align: -0.42em; margin: -0.3em 0 -0.25em; }
+:root:not(.plaintext):not(.look-glyph-ui) body[data-ui-era] .bl:has(> .bl-c) > .bl-src { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+:root.plaintext .bl > .bl-c, :root.look-glyph-ui .bl > .bl-c { display: none !important; }
+body[data-ui-era] .placecard .pname.bl > .bl-c { margin: 0.1rem auto 0; }
+body[data-ui-era] .placecard > .caps.bl > .bl-c { margin: 0 auto; }
+
+/* ---- paper: each panel its own aged page (ui/aged.mjs sets --paper-img); the shadow is in the page ---- */
+:root:not(.plaintext):not(.look-glyph-ui) body[data-ui-era] .aged { background: var(--paper-img, none) 0 0 / 100% 100% no-repeat, transparent !important; box-shadow: none !important; }
+:root:not(.plaintext):not(.look-glyph-ui) body[data-ui-era] .aged:not([style*="--paper-img"]) { background: var(--paper-solid) !important; }
+body[data-ui-era] .talk .ttitle, body[data-ui-era] .talk .opts { background: transparent; }
+body[data-ui-era] .talk, body[data-ui-era] .dbook, body[data-ui-era] .hud, body[data-ui-era] .lenspanel, body[data-ui-era] .here, body[data-ui-era] .placecard, body[data-ui-era] .leaf, body[data-ui-era] .toast, body[data-ui-era] .chip { text-shadow: 0 0 0.7px var(--bleed); }   /* the ink takes a little into the fibres */
+body[data-ui-era] .ttitle { border-bottom-color: var(--rule); padding-left: 1.6rem; }
+body[data-ui-era] .log { padding-left: 1.6rem; padding-right: 1.6rem; }
+body[data-ui-era] .opts { border-top: 1px solid var(--rule); padding-left: 1.2rem; padding-right: 1.2rem; }
+/* pencil: the player's own words, and what they told themselves */
+body[data-ui-era] .ln.you, body[data-ui-era] .ln.told { color: var(--graphite); border-left: 0; letter-spacing: 0.01em; text-shadow: 0 0 0.4px rgba(60, 58, 56, 0.6); }
+body[data-ui-era] .ln.you .who { color: var(--graphite); }
+
+/* ---- the eras' own matter ---- */
+body[data-ui-era="1"] .log { background-image: linear-gradient(to right, transparent 0.9rem, var(--margin-rule) 0.9rem, var(--margin-rule) calc(0.9rem + 1px), transparent calc(0.9rem + 1px), transparent 1.05rem, var(--margin-rule) 1.05rem, var(--margin-rule) calc(1.05rem + 1px), transparent calc(1.05rem + 1px)), repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--line) - 1px), var(--rule) calc(var(--line) - 1px), var(--rule) var(--line)); }
+body[data-ui-era="2"] .ln.nar { color: var(--carbon); text-shadow: 0 0 0.9px rgba(38, 48, 94, 0.55); }   /* the carbon copy's blue, a little soft */
+body[data-ui-era="2"] .hud { outline: 1px dashed rgba(40, 40, 46, 0.35); outline-offset: -0.35rem; }
+body[data-ui-era="2"] .hud .clock, body[data-ui-era="2"] .hud .day, body[data-ui-era="4"] .hud .clock, body[data-ui-era="4"] .hud .day, body[data-ui-era="4"] .ttitle { font-family: "LW Conso", Consolas, monospace; font-weight: 400; letter-spacing: 0.02em; }
+body[data-ui-era="2"] .opt .num, body[data-ui-era="4"] .opt .num { display: inline-grid; place-items: center; min-width: 1.35rem; height: 1.35rem; border: 1.5px solid var(--ink-2); font-family: "LW Conso", Consolas, monospace; font-size: var(--fs-xs); margin-right: 0.3rem; }
+body[data-ui-era="3"] .talk, body[data-ui-era="3"] .dbook, body[data-ui-era="3"] .lenspanel { text-shadow: 0 0 1.3px var(--bleed), 0.5px 0.3px 0 rgba(90, 50, 140, 0.25); }   /* spirit-duplicator violet, spread and doubled */
+body[data-ui-era="3"] .log { background-image: none; }
+body[data-ui-era="3"] .ln.nar { font-style: normal; }
+body[data-ui-era="4"] .log { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--line) - 1px), var(--rule) calc(var(--line) - 1px), var(--rule) var(--line)), linear-gradient(to right, transparent 1.2rem, var(--rule) 1.2rem, var(--rule) calc(1.2rem + 1px), transparent calc(1.2rem + 1px)); }
+body[data-ui-era="4"] .hud .clock, body[data-ui-era="4"] .hud .day { border-bottom: 1px solid var(--rule); }
+body[data-ui-era="5"] .log { background-image: none; }
+body[data-ui-era="5"] .ttitle, body[data-ui-era="5"] .dtitle { font-weight: 800; color: var(--ink); letter-spacing: 0.04em; }
+body[data-ui-era="5"] .hud.hud, :root:not(.plaintext):not(.look-glyph-ui) body[data-ui-era="5"] .hud.aged { --ink: #eef0f2; --ink-2: #b8bdc6; color: var(--ink); text-shadow: none; border-radius: 0.9rem; padding: 0.55rem 0.9rem 0.6rem;
+  background: linear-gradient(118deg, transparent 46%, rgba(255, 255, 255, 0.28) 46.4%, transparent 47%), linear-gradient(160deg, #23262c, #121418 70%) !important; box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.55) !important; }
+body[data-ui-era="5"] .hud .clock { font-size: var(--fs-xl); font-weight: 300; }
+body[data-ui-era="5"] .hud .place { --hand: none; }
+
+/* ---- the read-back: the record as it was typed, flat; times in a column; the told lines in pencil ---- */
+body[data-ui-era] .talk.record .log { background-image: none; font-family: "LW Conso", Consolas, monospace; font-size: var(--fs-s); }
+body[data-ui-era] .talk.record .ln { font-style: normal; color: var(--ink); text-shadow: 0 0 0.6px var(--bleed); }
+body[data-ui-era] .talk.record .ln.timed { display: grid; grid-template-columns: 4.4rem 1fr; gap: 0.6rem; }
+body[data-ui-era] .talk.record .ln .rt { color: var(--ink-2); }
+body[data-ui-era] .talk.record .ln.happened { padding-left: 5rem; font-weight: 700; }
+body[data-ui-era] .talk.record .ln.told { padding-left: 5rem; font-family: var(--body); font-style: italic; color: var(--graphite); }
+body[data-ui-era] .talk.record .log > .ln:first-child { margin: 0.2rem 0 0.8rem; }
+body[data-ui-era] .talk.record .portrait { display: none; }
+
+/* ---- motion: small and physical ---- */
+body[data-ui-era] .log .ln.fresh { animation: inkin 460ms var(--ease-out) both; }
+@keyframes inkin { from { opacity: 0; filter: blur(1.6px); } 45% { opacity: 1; filter: blur(0.5px); } to { opacity: 1; filter: none; } }   /* the ink settles into the page */
+body[data-ui-era] .page.turn { animation: pageturn 300ms var(--ease-out) both; transform-origin: 0 50%; }
+@keyframes pageturn { from { transform: perspective(90rem) rotateY(14deg); opacity: 0.4; } to { transform: none; opacity: 1; } }
+.record-stamp { position: absolute; right: calc(1.2rem + var(--dx, 0rem)); top: calc(4.6rem + var(--dy, 0rem)); font-size: var(--fs-l); z-index: 4; padding: 0.15rem 0.55rem 0.05rem; border: 3px double var(--stamp-ink, #7c2236); border-radius: 0.3rem;
+  color: var(--stamp-ink, #7c2236); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.72; mix-blend-mode: multiply; pointer-events: none; transform: rotate(var(--rot, -6deg));
+  animation: stampin 200ms cubic-bezier(0.55, 0, 0.75, 0.2) both; }
+@keyframes stampin { from { transform: rotate(var(--rot, -6deg)) scale(1.4); opacity: 0; } 75% { transform: rotate(var(--rot, -6deg)) scale(0.96); opacity: 0.9; } to { transform: rotate(var(--rot, -6deg)) scale(1); opacity: 0.72; } }
+:root.calm body[data-ui-era] .log .ln.fresh, :root.calm .record-stamp, :root.calm body[data-ui-era] .page.turn { animation: none; }
+:root.look-glyph-ui .record-stamp { display: none; }
+:root.look-glyph-ui .log, :root.look-glyph-ui .page { scrollbar-width: none; }
+
+/* ---- plain text: the house faces and plain paper back ---- */
+:root.plaintext body[data-ui-era] .ln.nar, :root.plaintext body[data-ui-era] .talk, :root.plaintext body[data-ui-era] .talk.record .ln { text-shadow: none; }
+:root.plaintext body[data-ui-era] .talk.record .log { font-family: var(--body); }
+/* the Daybook stands over the world's own panels (the lens panel sat over it, 2026-10-21) */
+.screen.daybook { z-index: 20; }
+body[data-ui-era] .log, body[data-ui-era] .page, body[data-ui-era] .opts { scrollbar-color: color-mix(in srgb, var(--ink) 45%, transparent) transparent; }
+/* the lettered HUD runs taller: the lens panel and the margin notes stand clear of it */
+body[data-ui-era] .lenspanel { top: calc(var(--safe) + 9.2rem); }
+body[data-ui-era] #toasts { left: calc(var(--safe) + 24rem); top: var(--safe); }
+body[data-ui-era] .hud .place { --hand-size: 1.15; }
+/* aged panels keep their words clear of the eaten edge */
+body[data-ui-era] .lenspanel, body[data-ui-era] .here, body[data-ui-era] .hud { padding: 0.95rem 1.15rem 0.9rem; }
+body[data-ui-era] .placecard { padding: 1.9rem 2.1rem; }
+
+/* ---- the portrait in the era's own mount (painted faces from the Studio, ui/portrait.mjs) ---- */
+body[data-ui-era] .portrait { border-bottom-color: var(--rule); }
+body[data-ui-era] .portrait .pname { color: var(--ink); }
+body[data-ui-era="1"] .portrait .pframe { border-radius: 50% / 46%; box-shadow: inset 0 0 0 1px var(--ink), 0 0 0 3px var(--paper-solid), 0 0 0 4px var(--ink-2), 0 0.3rem 0.8rem rgba(40, 24, 10, 0.35); }   /* a merchant's oval */
+body[data-ui-era="2"] .portrait .pframe { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5), 0 0 0 0.35rem #e6e3d8, 0 0.25rem 0.6rem rgba(0, 0, 0, 0.35); transform: rotate(-1.2deg); }   /* the pass photograph, white-bordered */
+body[data-ui-era="3"] .portrait .pframe { filter: grayscale(0.55) sepia(0.15); box-shadow: inset 0 0 0 1px var(--ink), 0 0.2rem 0.5rem rgba(40, 20, 60, 0.3); }   /* a copy of a copy */
+body[data-ui-era="4"] .portrait .pframe { box-shadow: inset 0 0 0 1px var(--ink), 0 0 0 0.25rem var(--paper-solid), 0 0 0 calc(0.25rem + 1px) var(--rule); }
+body[data-ui-era="4"] .portrait .pframe::before { content: ""; position: absolute; top: 0.4rem; left: 30%; width: 40%; height: 0.25rem; border: 1.5px solid #8a8f8c; border-bottom: 0; z-index: 2; }   /* a staple */
+body[data-ui-era="5"] .portrait .pframe { border-radius: 0.8rem; box-shadow: 0 0 0 0.3rem #15171b, 0 0.3rem 0.8rem rgba(0, 0, 0, 0.5); }   /* on a phone */
+
+/* ---- the record's title block: a drawing office's, the pen weights 0.8 outside and 0.18 within ---- */
+body[data-ui-era] .talk.record { grid-template-rows: auto minmax(0, 1fr) auto auto auto; }   /* title, log, options, title block, foot (the portrait is put away) */
+.title-block { display: grid; grid-template-columns: 1.6fr 0.6fr 1fr; margin: 0.3rem 1.2rem 0.2rem; border: 2px solid var(--ink); font-family: "LW Conso", Consolas, monospace; font-size: var(--fs-xs); }
+.title-block .tb-cell { display: grid; padding: 0.15rem 0.4rem; border-right: 0.5px solid var(--ink-2); }
+.title-block .tb-cell:nth-child(3) { border-right: 0; }
+.title-block .tb-k { color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.85em; }
+.title-block .tb-v { color: var(--ink); }
+.title-block .tb-scale { grid-column: 1 / -1; height: 0.45rem; border-top: 0.5px solid var(--ink-2); background: repeating-linear-gradient(to right, var(--ink) 0 1.2rem, transparent 1.2rem 2.4rem) left 0.4rem center / 9.6rem 0.18rem no-repeat; }
+body[data-ui-era="4"] .title-block { background: #1f4f8a; border-color: #e8eef6; --ink: #f2f6fb; --ink-2: #c6d4e6; }   /* the bank's lending map, a cyanotype */
+body[data-ui-era="4"] .title-block .tb-scale { background-image: repeating-linear-gradient(to right, #f2f6fb 0 1.2rem, transparent 1.2rem 2.4rem); }
+/* glyph mode draws the world and the book in one canvas under the page: the Daybook's scrim would grey the book too */
+:root.look-glyph-ui .screen.daybook { background: transparent !important; animation: none; }
+
+/* ---- a writer's own hand (round two): the clean words show under it on hover and focus, and in Plain text ---- */
+body[data-ui-era] .ln.hw.handed, body[data-ui-era] .dbook .entries li > span.handed { outline: none; }
+:root:not(.plaintext):not(.look-glyph-ui) body[data-ui-era] .bl.handed:is(:hover, :focus-visible, :focus-within) > .bl-src { position: static; width: auto; height: auto; overflow: visible; clip-path: none; white-space: normal; display: block; font-size: var(--fs-xs); font-style: normal; color: var(--ink-2); border-top: 1px dotted var(--rule); margin-top: 0.1rem; }
+body[data-ui-era] .bl.handed:focus-visible { box-shadow: 0 0 0 2px var(--hot); }
+
+/* ---- the notice beside the person (ui/compare.mjs) ---- */
+.screen.compare { background: var(--scrim); z-index: 25; display: grid; place-items: center; }
+.cmp { display: grid; grid-template-columns: auto minmax(14rem, 22rem); gap: 1.6rem; padding: 1.4rem 1.6rem; max-width: 94vw; max-height: 94vh; background: var(--paper-solid); }
+.cmp-col { display: grid; gap: 0.5rem; align-content: start; }
+.cmp-notice { width: min(26rem, 44vw); height: auto; display: block; box-shadow: 0 0.3rem 1rem rgba(0, 0, 0, 0.4); }
+.cmp-face { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; box-shadow: inset 0 0 0 1px var(--ink); }
+.cmp-name { font-weight: 600; font-size: var(--fs-l); }
+.cmp-foot { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
+.cmp-words { max-width: min(26rem, 44vw); margin: 0; }

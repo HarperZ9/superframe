@@ -58,6 +58,29 @@ nar: One in the afternoon. The light through the planking is yellow and moves, b
 nar: The coat on its peg has two tide marks at the hem now, one above the other.
 voice: salt: Something is coming up the coast. The knees knew before the Glass did. {dc: 3}
 inst: THE GLASS: Nine hundred and sixty-two, darling, and the bottom's not in sight. Tonight the wind will want everything that isn't nailed down, and some things that are.
+go: day2.dream
+
+# ---- the second dream (design/THEMES.md 9a): fragments of the gale, and the claim come round again
+@node day2.dream
+place: day2_room
+cost: 3
+cmd: dream 0.8
+do: set(dream.n3); set(dream.eye); set(dream.room); set(dream.running); set(dream.step)
+nar: There was a dream again. The assessor writes it down with the room shaking, in the claims hand.
+nar: Item: the wind stops. Everybody looks up.
+nar: Item: a woman's voice in a small room, saying that they want somebody to have it. No face.
+nar: Item: a ship's lights going up and down in the bay's mouth like a lantern carried by somebody running.
+nar: Item, the third time: the claim. The time of loss is dry now, and reads: six forty-four. Under it, where the place of loss goes: the Brine's step.
+voice: sum: Two of these are the Glass's forecast with a coat on. One is a voice. One is a time of loss for a loss that has not happened. Who said it first? We did. What would change our mind? Six forty-five. {dc: 3}
+voice: dark: The board had forty-one. You counted. {dc: 4, when: has(dream.ticks_met)}
+voice: undertow: If you saw it coming and it comes, whose is it? {dc: 6}
+opt: "Get up." -> day2.dream.wake
+
+@node day2.dream.wake
+place: day2_room
+cost: 1
+cmd: dream 0
+nar: The page is dated. Two tide marks on the coat, and room at the hem for a third.
 go: day2.quay
 
 @node day2.quay
@@ -191,3 +214,32 @@ place: day2_quay
 cost: 0
 nar: At half past three the light goes the colour of a bruise, and then the colour of nothing, and the wind arrives at the end of the mole like a person who has run all the way.
 go: quay3.start
+
+# ---- recognition cues for the second dream: each foreseen scene calls one when it arrives
+@node theme.cue.eye
+cost: 0
+when: has(dream.eye) & !has(dream.eye_met)
+do: set(dream.eye_met)
+cmd: dream cue
+voice: dark: The wind stops. Everybody looks up. You wrote that at one in the afternoon, in a room that was shaking. {dc: 2}
+voice: sum: The Glass said an eye by midnight. Anybody who read the Glass could have dreamed this one. {dc: 4}
+return:
+
+@node theme.cue.room
+cost: 0
+when: has(dream.room) & !has(dream.room_met)
+do: set(dream.room_met)
+cmd: dream cue
+voice: dark: "Somebody to have it." The dream gave you her words and not her face. Now you have the face. {dc: 2}
+return:
+
+@node theme.cue.running
+cost: 0
+when: has(dream.running) & !has(dream.running_met)
+do: set(dream.running_met)
+cmd: dream cue
+voice: dark: Lights going up and down like a lantern carried by somebody running. You wrote it down at one in the afternoon. {dc: 2}
+voice: carbon: You wrote it down very neatly. Then you went out and did what you did tonight, and the dream did not change a word of it. {dc: 4, when: has(collier.spit)}
+voice: undertow: And told whom? Penhallow? The Board? A dream is not a warning anybody would take. That is what we will say, and it will be true, and it will not help. {dc: 5, when: has(collier.spit)}
+voice: sum: She came through. The dream did not say she would not. We filled that in ourselves. {dc: 4, when: has(collier.through)}
+return:

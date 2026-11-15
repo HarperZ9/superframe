@@ -36,6 +36,7 @@ def main():
     ap.add_argument("--port", type=int, default=8742)
     ap.add_argument("--out", required=True)
     ap.add_argument("--video", action="store_true")
+    ap.add_argument("--query", default="", help="more of the page's query, e.g. mode=run&mods=fog (the arena mode)")
     a = ap.parse_args()
     out = Path(a.out); fr = out / "frames"; fr.mkdir(parents=True, exist_ok=True)
     for f in fr.glob("*.png"): f.unlink()
@@ -49,7 +50,7 @@ def main():
             pg = b.new_page(viewport={"width": 1280, "height": 720})
             pg.on("console", lambda m: logs.append(m.text))
             pg.on("pageerror", lambda e: logs.append("PAGEERROR " + str(e)))
-            pg.goto(f"http://127.0.0.1:{a.port}/engine/combat/arena/?capture=1&pilot=1&scenario={a.scenario}&seed={a.seed}")
+            pg.goto(f"http://127.0.0.1:{a.port}/engine/combat/arena/?capture=1&pilot=1&scenario={a.scenario}&seed={a.seed}" + (f"&{a.query}" if a.query else ""))
             pg.wait_for_function("window.__arena !== undefined", timeout=120000)
             n = int(a.seconds * a.fps); ended = None
             for i in range(n):

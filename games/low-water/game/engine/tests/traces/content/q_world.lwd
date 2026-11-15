@@ -1,0 +1,402 @@
+# The Quota slice: places, people and the record the scenes write. Story lead, 2026-10-21. Private.
+# For the gameplay engineer: the record events of design/quota/04-SYSTEMS.md section 3 are written as
+# facts and vars here, so the community model can read them when it lands:
+#   q_class     inspector | militia            (class gating; chosen at q.start until the shell does it)
+#   q_figure    true | inflated | blamed       (report.figure; blamed is also blame.people, victim Tomas)
+#   q_cart      taken | through | arrested     (refuse.pass at the road post; arrested is Tomas held)
+#   q_door      talked | held | broken | aside (the granary door)
+#   q.true_in_hand  the true figure is in the player's hand (pencilled, counted or seen)
+#   q.tomas_held    Tomas Haldane is in the cells by nightfall
+# The coda reads them; the read-back quotes them.
+
+# ---------------------------------------------------------------- the district and places
+@district upper
+name: The Upper Town
+next: upper
+map: 0.5 0.5
+
+@place q_tower
+name: The bell tower over Exchange Square
+zone: upper
+district: upper
+footing: stone
+light: 0.3
+sodium: 0
+dark-light: 0.02
+
+@place q_returns
+name: The returns room, district office
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+@place q_furrowe_door
+name: The Furrowes' front step, Exchange Street
+zone: upper
+district: upper
+footing: stone
+light: 0.6
+sodium: 0
+dark-light: 0.02
+
+@place q_office
+name: The district meeting room
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.6
+sodium: 0
+dark-light: 0.02
+
+@place q_cells
+name: The cells under the district office
+zone: upper
+district: upper
+footing: stone
+shelter: yes
+light: 0.2
+sodium: 0
+dark-light: 0.01
+
+@place q_post
+name: The road post at the district line
+zone: upper
+district: upper
+footing: stone
+light: 0.5
+sodium: 0
+dark-light: 0.01
+
+@place q_hill
+name: The Tesks' hill, above Krall's End
+zone: upper
+district: upper
+footing: stone
+light: 0.5
+sodium: 0
+dark-light: 0.01
+
+@place q_furrowe_kitchen
+name: The Furrowes' kitchen
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+@place q_brack_kitchen
+name: The Bracks' kitchen, Mill Street
+zone: upper
+district: upper
+footing: stone
+shelter: yes
+stove: yes
+light: 0.3
+sodium: 0
+dark-light: 0.01
+
+@place q_granary
+name: The district granary, Exchange Square
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+light: 0.2
+sodium: 0
+dark-light: 0.01
+
+@place q_haldane
+name: The Haldane kitchen, Haldane Yard
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.4
+sodium: 0
+dark-light: 0.01
+
+# ---------------------------------------------------------------- people
+@char q.ned
+name: Ned Furrowe, district inspector
+speaker: NED
+faction: district
+about: Abel's son. Signs the district's returns. Keeps the true figures in pencil on his maps and has never shown them to anyone.
+
+@char q.mary
+name: Mary Furrowe
+speaker: MARY
+faction: district
+about: Ned's wife. Feeds everyone first and herself last, and says so.
+
+@char q.pell
+name: Pell Furrowe
+speaker: PELL
+faction: district
+about: Twelve. Repeats what his teacher said.
+
+@char q.abel
+name: Abel Furrowe
+speaker: ABEL
+faction: district
+about: Ned's father, once the exchange inspector. Still has the good hat.
+
+@char q.mott
+name: Walter Mott, brigade clerk
+speaker: MOTT
+faction: district
+about: Clerk for Krall's End and the Haldane barns. Writes his sevens without a bar.
+
+@char q.pask
+name: Commissioner Pask
+speaker: PASK
+faction: directorate
+about: The Directorate's man for the district. Came from Arlen in October with a list of figures already in it.
+
+@char q.krall
+name: Jonah Krall, chairman of Krall's End
+speaker: KRALL
+faction: chairmen
+about: Stood up in the meeting and gave the biggest figure on the plain. Wants to be district chairman by spring.
+
+@char q.will
+name: Sergeant Will Brack
+speaker: WILL
+faction: district
+about: Militia sergeant for the cells and the road post. Thirty-six. Drinks what the post takes off carts.
+
+@char q.edie
+name: Edie Brack
+speaker: EDIE
+faction: millstreet
+about: Will's wife. Takes in mending. Wears her sleeves down.
+
+@char q.davey
+name: Davey Brack
+speaker: DAVEY
+faction: millstreet
+about: Nine. Copies his father.
+
+@char q.gedge
+name: Constable Gedge
+speaker: GEDGE
+faction: district
+about: Will's constable. His father lost the Orme mill's carting to Hesh hands at two-thirds the rate, and drank the rest of his life on it.
+
+@char q.tesk
+name: Old Tesk
+speaker: TESK
+faction: hesh
+about: A Hesh herder from the hill above Krall's End, in the cells since Tuesday for his goats' oats.
+
+@char q.captain
+name: Captain Holt, the requisition captain
+speaker: HOLT
+faction: directorate
+about: Commands the requisition squads. Has a quota of his own, from Arlen, for sacks taken.
+
+@char q.tomas
+name: Tomas Haldane
+speaker: TOMAS
+faction: hesh
+about: Eleven, half-Hesh, a braid and a blue thread at the wrist. Wears the Orme lad's brown coat, his own having gone on the cart in October.
+
+@char q.anni
+name: Anni Haldane
+speaker: ANNI
+faction: hesh
+about: Fourteen. Counts things out loud.
+
+@char q.aaron
+name: Aaron Haldane
+speaker: AARON
+faction: hesh
+about: Nine. Walks at the horse's head when the cart goes out; his mother drives. Says nothing to anyone in uniform.
+
+@char q.bet
+name: Bet Haldane
+speaker: BET
+faction: hesh
+about: Tomas's mother, a Tarn cottar's daughter who married a Hesh hand. Thirty-five, and looks older.
+
+@char q.ilo
+name: Ilo Haldane
+speaker: ILO
+faction: hesh
+about: Tomas's father. Came down from the hills to work Abel Furrowe's harvests and was given his surname by the census.
+
+# ---------------------------------------------------------------- the record
+@var q_class
+default: none
+values: none, inspector, militia
+@var q_figure
+default: none
+values: none, true, inflated, blamed
+@var q_cart
+default: none
+values: none, taken, through, arrested
+@var q_door
+default: none
+values: none, talked, held, broken, aside
+
+@fact q.true_in_hand
+about: The true figure, in your own hand.
+by: the day
+@fact q.tomas_held
+about: Tomas Haldane is in the cells.
+by: the day
+@fact q.pencil_kept
+@fact q.pencil_rubbed
+@fact q.promised_hill
+@fact q.hill_seen
+@fact q.tomas_sent
+@fact q.log_true
+@fact q.log_two
+@fact q.cart_counted
+@fact q.read_aloud
+@fact q.tesk_let
+@fact q.end
+@fact q.will_down
+about: Will Brack went down under the granary door.
+by: the day
+
+@char q.lil
+name: Lil, Mary Furrowe's sister
+speaker: LIL
+faction: district
+about: From Tarn Hollow, the next village over. A widow with one boy.
+
+# ---------------------------------------------------------------- the spine's era 2 build (game director, 2026-10-22)
+# Places and people for the witness scene, the fates, the four days in the cells, the Sheaf and the walk home.
+@place q_anni_room
+name: Anni's kitchen, years later
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.4
+sodium: 0
+dark-light: 0.01
+
+@place q_sheaf
+name: The Sheaf, Mill Street
+zone: upper
+district: upper
+footing: wood
+shelter: yes
+stove: yes
+light: 0.3
+sodium: 0
+dark-light: 0.01
+
+@place q_pump
+name: The pump, Mill Street
+zone: upper
+district: upper
+footing: stone
+light: 0.5
+sodium: 0
+dark-light: 0.02
+
+@place q_road_home
+name: The post road, walking back
+zone: upper
+district: upper
+footing: stone
+light: 0.3
+sodium: 0
+dark-light: 0.02
+
+@place q_tilney
+name: The gate of the Furrow Church's home, Tilney Road
+zone: upper
+district: upper
+footing: stone
+light: 0.3
+sodium: 0
+dark-light: 0.02
+
+@place q_yard
+name: Haldane Yard, at the barn door
+zone: upper
+district: upper
+footing: stone
+light: 0.3
+sodium: 0
+dark-light: 0.02
+
+@char q.daughter
+name: Anni's daughter
+speaker: DAUGHTER
+faction: hesh
+about: Twelve, years after the winter. Found the tin. Her name is for the author.
+
+@char q.sister
+name: Sister Agnes, the Furrow Church's home
+speaker: SISTER
+faction: district
+about: Keeps the gate of the children's home on Tilney Road. Feeds them once a day and takes the thread off at the door.
+
+@char q.lind
+name: Dr Clara Lind
+speaker: LIND
+faction: district
+about: The district's doctor for the cells and the fever. Writes nothing that isn't so.
+
+@char q.dorrah
+name: Dorrah Tesk
+speaker: DORRAH
+faction: hesh
+about: Old Tesk's wife, on the hill above Krall's End. Has six town children in her hut that are not hers.
+
+@char q.fenn
+name: Corporal Fenn
+speaker: FENN
+faction: directorate
+about: One of Holt's corporals at the granary. Nineteen, from Tilney. Does what he is told and then says sorry to the wrong person.
+
+@char q.iris
+name: Iris Krall
+speaker: IRIS
+faction: chairmen
+about: Jonah Krall's wife. Knows everything said at the pump by noon.
+
+@fact q.anni_sent
+about: Anni Haldane went in at the gate on Tilney Road.
+by: Bet Haldane
+@fact q.aaron_taken
+about: Aaron Haldane was taken from Haldane Yard.
+by: Constable Gedge
+@fact q.ilo_mark
+about: Ilo Haldane made his mark on Holt's statement.
+by: Ilo Haldane
+@fact q.dorrah_taken
+about: The squad took Dorrah Tesk off the hill.
+by: Captain Holt
+@fact q.cart_stripped
+@fact q.ned_claimed
+@fact q.ned_parentage
+@fact q.will_bread
+@fact q.looked_in
+@fact q.corner_known
+@fact q.tesk_sent
+
+@char q.rose
+name: Rose Brack
+speaker: ROSE
+faction: millstreet
+about: Six. Eats out of her mother's bowl on her knee.
+
+@var water_carried
+default: 0

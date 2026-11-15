@@ -1,0 +1,157 @@
+{
+ "place": "q4_mill_yard",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   -0.5,
+   2.6,
+   -0.5
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 7.5
+ },
+ "pxPerMetre": 72,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "dusk"
+ ],
+ "variantInfo": {
+  "dusk": {
+   "hour": 17.4,
+   "weather": "year 70, 17:25: the gate lamp on, the picket's brazier, the stack against the last light"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "gate_sign",
+    "verb": "read",
+    "at": [
+     -3.5,
+     0,
+     4.8
+    ],
+    "note": "the gate board: HALVARD painted over ORME & SON, the old letters ghosting through"
+   },
+   {
+    "id": "picket",
+    "verb": "talk",
+    "at": [
+     -3,
+     0,
+     5.2
+    ],
+    "note": "the picket at the brazier: four men, a board, a bottle going round"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "floor",
+    "at": [
+     3,
+     0,
+     -2.8
+    ],
+    "note": "the loading door onto the floor"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "dusk": [
+   {
+    "at": [
+     -3.5,
+     1.2,
+     4
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -5.65,
+     4.35,
+     1.6
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     5,
+     4.95,
+     -2.65
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "dusk": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: the mill yard and the gate."
+}

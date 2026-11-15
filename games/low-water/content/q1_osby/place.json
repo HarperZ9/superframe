@@ -1,0 +1,127 @@
+{
+ "place": "q1_osby",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   2,
+   1,
+   1.6
+  ],
+  "dist": 80,
+  "ortho": true,
+  "scale": 6.967741935483871
+ },
+ "pxPerMetre": 77.5,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "noon"
+ ],
+ "variantInfo": {
+  "noon": {
+   "hour": 13,
+   "weather": "Osby fair, 13:00: a high warm sun, haze on the plain, the grass dry"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  6,
+  32,
+  4,
+  56,
+  null
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "house",
+    "verb": "look",
+    "at": [
+     -7.9,
+     0,
+     -3.8
+    ],
+    "note": "Tesk's place: a stone house, limewashed, and a fold"
+   },
+   {
+    "id": "fold",
+    "verb": "search",
+    "at": [
+     -1.9,
+     0,
+     -3.8000000000000003
+    ],
+    "note": "the fold: straw kicked back to the rock; no store under it"
+   },
+   {
+    "id": "fair_stalls",
+    "verb": "look",
+    "at": [
+     2,
+     0,
+     1
+    ],
+    "note": "the stalls: bread, cheese, apples, grain and ale under striped awnings"
+   },
+   {
+    "id": "goat_pen",
+    "verb": "look",
+    "at": [
+     10,
+     0,
+     2.6
+    ],
+    "note": "three goats in a hurdle pen, for sale"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "down",
+    "at": [
+     8,
+     0,
+     3
+    ],
+    "note": "the track down to Krall's End"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "noon": []
+ },
+ "arenas": [],
+ "notes": "The Quota era 1: Osby fair on the grass below the hill."
+}

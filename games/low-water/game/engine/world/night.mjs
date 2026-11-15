@@ -8,8 +8,10 @@
 //   high: 05:10 5.3           the next high water
 //   at: 23:20 fog 0           a keyframe: time, term, value. Numbers ease linearly to the next
 //   at: 03:00 fog 0.09        keyframe of the same term; words switch at their time.
+//   tide: none                no sea (the Quota's plain): no low: or high:, the tide stays at 0
 //
-// Terms a night gives: tide, fog, rain (mm/h), wind.speed (m/s), wind.dir (degrees, where it
+// Terms a night gives: tide, tide.dir (rising | falling | slack), tide.next (high | low),
+// tide.next.at (clock minute; {{tide.next.at}} fills as hh:mm), tide.next.h (m), fog, rain (mm/h), wind.speed (m/s), wind.dir (degrees, where it
 // blows from), temp (deg C), frost (0 or 1), daylight (0 to 1), plus any other keyframed term.
 // Places give light and sodium, dimmed to dark-light when their zone's power is off.
 // Daylight (the playable interlude; a @day record is a @night by another name): a place's light
@@ -48,6 +50,7 @@ export function loadNights(book) {
         if (key === "low" || key === "high") n[key] = { at: toMin(w[0]), h: +w[1] };
         else if (key === "night") n.night = +w[0];
         else if (key === "mother-zone") n.motherZone = w[0];
+        else if (key === "tide" && w[0] === "none") { n.tide = false; n.low = { at: 0, h: 0 }; n.high = { at: 360, h: 0 }; } // a place with no sea (the Quota's plain): the tide stays at 0
         else if (key === "at") { if (w.length < 3) throw new SyntaxError(`line ${line}: at: expected "hh:mm term value"`); n.keys.push({ at: toMin(w[0]), term: w[1], v: isNaN(+w[2]) ? w[2] : +w[2] }); }
         else throw new SyntaxError(`line ${line}: unknown key "${key}"`);
       }
@@ -66,6 +69,24 @@ export function tideAt(spec, clock) {
 }
 
 // A keyframed term at a clock minute: linear between numeric keys, stepped for words.
+// The next turn of the tide after a clock minute: { kind: "high" | "low", at, h }. Turns fall every
+// half period from low water, alternating low and high.
+export function tideTurn(spec, clock) {
+  const { low, high } = spec, half = high.at - low.at, k = Math.floor((clock - low.at) / half) + 1;
+  const isHigh = Math.abs(k % 2) === 1;
+  return { kind: isHigh ? "high" : "low", at: low.at + k * half, h: isHigh ? high.h : low.h };
+}
+
+// Which way the tide runs at a clock minute: "slack" within 12 minutes of a turn.
+export function tideDir(spec, clock) {
+  const half = spec.high.at - spec.low.at, ph = (((clock - spec.low.at) % half) + half) % half;
+  if (ph < 12 || half - ph < 12) return "slack";
+  return tideAt(spec, clock + 1) > tideAt(spec, clock) ? "rising" : "falling";
+}
+
+// The tide's range as a fraction: 0 at low water, 1 at high.
+export const tideFrac = (spec, t) => (t - spec.low.h) / Math.max(0.01, spec.high.h - spec.low.h);
+
 export function keyAt(spec, term, clock) {
   const ks = spec.keys.filter((k) => k.term === term);
   if (!ks.length) return undefined;
@@ -96,6 +117,11 @@ export function scheduleEnv({ night = NIGHT_ONE, places = {}, clock = 23 * 60 } 
       const p = P(place), zone = p.zone || place, off = (st.power[zone] || "on") === "off", lit = st.lights[place];
       switch (name) {
         case "tide": return tideAt(night, st.clock);
+        // a place with no sea (tide: none, the Quota's plain) has no turn to wait for: no direction, no next water
+        case "tide.dir": return night.tide === false ? undefined : tideDir(night, st.clock);
+        case "tide.next": return night.tide === false ? undefined : tideTurn(night, st.clock).kind;
+        case "tide.next.at": return night.tide === false ? undefined : tideTurn(night, st.clock).at;
+        case "tide.next.h": return night.tide === false ? undefined : tideTurn(night, st.clock).h;
         case "night": return night.night;
         case "light": case "sodium": {
           const art = off ? p.dark ?? 0.05 : lit ? lit.light : p.light ?? 0.5, artSod = off ? 0 : lit ? lit.sodium : p.sodium ?? 0;

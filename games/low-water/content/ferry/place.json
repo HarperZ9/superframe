@@ -1,0 +1,223 @@
+{
+ "place": "ferry",
+ "version": 2,
+ "width": 2400,
+ "height": 1520,
+ "camera": {
+  "yawDeg": 206,
+  "elevDeg": 30,
+  "target": [
+   0,
+   0.4,
+   1.6
+  ],
+  "dist": 40,
+  "ortho": true,
+  "scale": 5.066666666666666
+ },
+ "pxPerMetre": 150,
+ "near": 1.25,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 22.5,
+   "weather": "22:20 to 22:41: the binnacle and the masthead light; the quay's sodium ahead"
+  }
+ },
+ "dark": true,
+ "dithers": [],
+ "walk": [
+  27,
+  29
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "wheelhouse_door",
+    "verb": "read",
+    "at": [
+     0.6,
+     0,
+     3
+    ],
+    "note": "the ship's clock through the swinging door, against Lamb's watch (Q:297)"
+   },
+   {
+    "id": "hatch",
+    "verb": "use",
+    "at": [
+     -0.9,
+     0,
+     0.6
+    ],
+    "note": "down to the hold and the crate of Hesk eggs (Q:220)"
+   },
+   {
+    "id": "rail",
+    "verb": "look",
+    "at": [
+     1.4,
+     0,
+     -1.4
+    ],
+    "note": "the assessor sits by the rail and looks for the lamp (Q:96)"
+   },
+   {
+    "id": "case",
+    "verb": "read",
+    "at": [
+     1.4,
+     0,
+     -0.7
+    ],
+    "note": "the claims case on both knees: open it and read the claim"
+   },
+   {
+    "id": "kit",
+    "verb": "read",
+    "at": [
+     1.4,
+     0,
+     -2.1
+    ],
+    "note": "the instruments laid out on the bench: Candlemas, the Glass, the Almanac, the Damp, the Vane"
+   }
+  ],
+  "hides": [
+   {
+    "id": "behind_wheelhouse",
+    "at": [
+     -1.8,
+     0,
+     5.2
+    ],
+    "r": 0.5,
+    "note": "the lee of the wheelhouse by the funnel"
+   }
+  ],
+  "exits": [
+   {
+    "id": "gangway",
+    "at": [
+     2.2,
+     0,
+     1
+    ],
+    "note": "the gangway to the quay berth (when alongside)"
+   }
+  ],
+  "lamps": [],
+  "smoke": [
+   {
+    "at": [
+     0,
+     5.5,
+     5.75
+    ],
+    "k": 1.1,
+    "note": "the funnel"
+   }
+  ]
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -0.8,
+     1.75,
+     4.6
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     0.6,
+     1.4,
+     3.3
+    ],
+    "kind": "paraffin",
+    "I": 4,
+    "reach": 5,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     0.9,
+     5.95,
+     4.3
+    ],
+    "kind": "paraffin",
+    "I": 14,
+    "reach": 12,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -9,
+     4.4,
+     60
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     0,
+     4.4,
+     60
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     9,
+     4.4,
+     60
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "After deck at y 0 (heeled 0.05 rad to starboard), +z forward to the town. Penhallow and the passengers are drawn by the game."
+}

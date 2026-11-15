@@ -119,7 +119,7 @@ go: ^hub
 @node gut.lookouts
 place: gut
 cost: 2
-nar: Two Guild boys on fish boxes shut the lane mouth, blindfolds pushed up like a second pair of eyebrows, a bucket of whelks between them. Nobody in till the pans come down, says the larger. Twenty to one. Since the Captain.
+nar: Two Guild boys on fish boxes shut the lane mouth, blindfolds pushed up like a second pair of eyebrows, a bucket of whelks between them. Nobody in till the pans come down at twenty to one, says the larger. Since the Captain.
 voice: grip: The back wall, left of the lane. Brick, nine feet, a slate coping, and a drainpipe somebody has been using as a ladder for years: look at the polish on the brackets. {dc: 5}
 voice: grip: There is a wall. Walls are for keeping out people like you. You are people like you. {below: 5}
 opt: "Ask who the Captain was." -> gut.lookouts.captain {once}
@@ -252,6 +252,15 @@ alt: gut.spratt.first ? !seen(gut.spratt.first)
 alt: gut.spratt.frost ? has(ev.frost) & !seen(gut.spratt.frost)
 cost: 1
 nar: Agnes Spratt's stall. Eels on strings, eels in the tub, and Agnes Spratt behind them, her face shut.
+line: SPRATT: You stood by the fresh fish in the weigh-house. I saw. {when: has(said.vote_for), once}
+line: SPRATT: You stood by the warm fish. Nobody stands by the warm fish. {when: has(said.vote_against), once}
+line: SPRATT: Smoked yesterday, you said, out loud, in front of the whole hall. Nobody's said that in twenty years. {when: has(said.vote_older), once}
+line: SPRATT: Between us, you said. It still is. I've checked twice. {when: has(said.spratt_kept), once}
+line: SPRATT: Him and only him, you said. He's been looking at me like a man with a splinter. {when: has(said.spratt_tell), once}
+line: SPRATT: Provisional, you said. The night's nearly over. {when: has(said.provisional) & clock >= 04:00, once}
+line: SPRATT: Twenty to ten, you said, and Mother with it. I've told the stall that, word for word. {when: has(said.guild_again), once}
+line: SPRATT: You had them weigh the fish on the town balance, in front of the after-vote. I'll not forget it. {when: has(heard.spratt.weighed), once}
+line: SPRATT: You told him. Under the noise. I saw his eyes shut. {when: has(said.spratt_swap), once}
 call: gut.knife.react.spratt
 go: gut.spratt.menu
 
@@ -897,6 +906,8 @@ cost: 4
 nar: At half past three Shadwell is asleep on a sack in the corner.
 nar: On a hook in the middle of the room hangs the fish of the year. Under it, on a fish box, Marrow sits with his blindfold in his hands. He is making himself small.
 line: MARROW: Sit, flatfish. Mind the drip. There's a box.
+line: MARROW: You said you'd keep it. Then the tube said Guild. I told you I'd smell it on the wind. {when: has(lied.keep_marrow), once}
+line: MARROW: The Daybook, you said, and no more. Fair. It was no more. {when: has(said.daybook_marrow) & prov == guild, once}
 nar: He does not say anything else. Nor does the fish.
 opt: "Say nothing. Sit with him." -> gut.smoke.marrow.silent {do: silent_scene = 1}
 check: "[CONDOLENCE] Tell me about your father. Not the version the hall shouts." -> gut.smoke.marrow.told / gut.smoke.marrow.short {skill: condolence, dc: 7}
@@ -920,6 +931,8 @@ do: set(heard.marrow.father)
 line: MARROW: Thirty-one years ago. November. The Abundance coming home over the Spit, a hold full of herring and a fog, and Mother up there burning about as bright as a cigarette, because the keeper then was a man called Pask who drank and let her paraffin run down. My father couldn't see her. He put the Abundance on the Spit doing four knots.
 line: MARROW: Two men drowned. My father swam. All night, in November, with no light anywhere. And off the shoal he smelled Shadwell's grandfather's chimneys, and swam up the smell like a rope.
 line: MARROW: They gave Pask's post to a girl from the quay called Wenna Tallow before the winter was out. My father went down to the lamp and shook her hand. He never went to sea again.
+line: MARROW: He came ashore with a temper the sea had put in him. His own father had taught him the knife with the back of a hand, and the winter I was eight and wouldn't gut, he raised his. Then he looked at it, and put it in his apron pocket, and kept it there the rest of his life.
+nar: Marrow's knife lies on the box beside him. He has been holding it all this while the way a man holds a thing he expects to have taken off him.
 nar: Marrow turns the blindfold over in his hands. The fish turns above him.
 line: MARROW: The next Low Night he started the vote. In the dark, by the nose, because the nose got him home. And he pulled the quay switch for it, because the quay was ours. Never Mother. She burned her own paraffin then, and later had her own line off the hill, and he had seen what a dim Mother cost.
 line: MARROW: And every year for twenty years, before he pulled it, he went out under the eave and looked down the mole. To see her burning, nothing to do with us. Then he came in and pulled it. Lights out for the nose. Never for the sea.
@@ -943,6 +956,7 @@ call: gut.smoke.marrow.vote2
 opt: "I will keep this. It stays yours." -> gut.smoke.marrow.kept {do: set(said.marrow_kept); set(heard.marrow.marrow_kept)}
 opt: "It goes in the Daybook. All of it, the look as well." -> gut.smoke.marrow.written {do: set(said.marrow_written); set(heard.marrow.marrow_written)}
 opt: "Say nothing. Stay till the fire goes down." -> gut.smoke.marrow.stay
+opt: "Agnes Spratt wants the vote with the lamps on." -> gut.smoke.marrow.ballot ? !seen(gut.smoke.marrow.ballot)
 
 @node gut.smoke.marrow.older
 when: has(vote.older)
@@ -1002,6 +1016,13 @@ place: smokehouse
 speaker: MARROW
 cost: 2
 line: MARROW: Still here. So's the fish. Neither of us is going anywhere till half past five.
+line: MARROW: Yours, you said. Keep your word longer than I kept my look. {when: has(said.marrow_kept), once}
+line: MARROW: The look as well, you said. Write it plain. {when: has(said.marrow_written), once}
+line: MARROW: That low light from the ferry. I've been thinking whose it was. {when: has(said.confess_light), once}
+line: MARROW: A tube to nobody, you said. Then write it for us. We read. {when: has(said.confess_shelf), once}
+line: MARROW: Eleven years dry, you said. You're wet to the knee now. It suits you. {when: has(said.confess_dry), once}
+line: MARROW: I told you about the switch, in the weigh-house. I'd tell you again. It doesn't get lighter. {when: has(heard.marrow.switch), once}
+line: MARROW: That was your lantern at the switch box, before the vote. Bright little thing. {when: has(heard.marrow.lantern_at_switch), once}
 check: "[SMELL] Stand under the fish of the year and smell it." -> gut.smoke.smell.ok / gut.smoke.smell.fail ? !has(vote.older) {skill: smell, dc: 8, id: gut.smoke.smell}
 opt: "Sit with him a while." -> gut.smoke.marrow.silent ? !seen(gut.smoke.marrow.silent) {do: silent_scene = 1}
 opt: "Wake Shadwell." -> gut.smoke.wake
@@ -1818,3 +1839,38 @@ cost: 2
 do: take(i.egg); set(gut.dogs_done); set(gut.early_in)
 nar: The assessor rolls one of Sabine's pickled eggs across the yard. The small black dog stops it with a paw, smells it for a long time, and decides. All three go behind the gurry bin to argue about vinegar.
 go: gut.midden
+
+# ---- the ballot: the dark against the lamps (THEMES.md 3, kin and self)
+@node gut.smoke.marrow.ballot
+place: smokehouse
+speaker: MARROW
+cost: 4
+line: MARROW: With the lamps on. Yes. Agnes would.
+line: MARROW: In the light a man votes with his face, flatfish. He looks at the steward, and at the man who lent him his boat, and at his wife's brother by the door, and he votes where his face is safe. In the dark he votes with his nose, and nobody in Gullet has ever been able to read a nose.
+line: MARROW: My father didn't invent the dark for the song. He invented it for Pruett, who owes everybody, so that Pruett could vote against the lot of us and go home and be lent to in the morning.
+voice: smell: Forty noses in a dark room, and not one of them knows which way the next one leans. That is the most private thing in the Gut. {dc: 5}
+voice: smallprint: And then the hall chalks the count on a board by name and sings at whoever stood by the warm fish. Agnes said so. The dark is for the nose. The board is for the song. {dc: 6}
+opt: "Keep the dark, then. A vote the hall can watch is only a show of hands for the steward." -> gut.smoke.marrow.ballot.dark {do: var.lean_kin += 1; set(said.keep_dark); set(heard.marrow.keep_dark)}
+opt: "In the dark nobody sees the steward pull a switch, either." -> gut.smoke.marrow.ballot.lamps {do: var.lean_kin -= 1; set(said.lamps_on); set(heard.marrow.lamps_on)}
+
+@node gut.smoke.marrow.ballot.dark
+place: smokehouse
+speaker: MARROW
+cost: 2
+line: MARROW: That's my father talking, out of a stranger. I'll not pretend I don't like it.
+line: MARROW: Tell Agnes, if you see her. No. Don't. She'll say you smelled of me.
+voice: undertow: He wanted it said. Ask him why the steward needs a stranger to say it. {dc: 7}
+opt: "I will keep this. It stays yours." -> gut.smoke.marrow.kept {do: set(said.marrow_kept); set(heard.marrow.marrow_kept)}
+opt: "It goes in the Daybook. All of it, the look as well." -> gut.smoke.marrow.written {do: set(said.marrow_written); set(heard.marrow.marrow_written)}
+opt: "Say nothing. Stay till the fire goes down." -> gut.smoke.marrow.stay
+
+@node gut.smoke.marrow.ballot.lamps
+place: smokehouse
+speaker: MARROW
+cost: 2
+line: MARROW: No. Nobody does. Nobody did. That's the price of the dark, and I paid it tonight with somebody else's ship.
+line: MARROW: And with the lamps on, Pruett votes with the steward for the rest of his life. That's the price of the light. Agnes has never once owed anybody. She can afford it.
+voice: chit: Both prices are real, and the steward has only ever paid the one. {dc: 6}
+opt: "I will keep this. It stays yours." -> gut.smoke.marrow.kept {do: set(said.marrow_kept); set(heard.marrow.marrow_kept)}
+opt: "It goes in the Daybook. All of it, the look as well." -> gut.smoke.marrow.written {do: set(said.marrow_written); set(heard.marrow.marrow_written)}
+opt: "Say nothing. Stay till the fire goes down." -> gut.smoke.marrow.stay

@@ -1,0 +1,157 @@
+{
+ "place": "q4_mill_office",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0.1,
+   1,
+   -0.4
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.4210526315789473
+ },
+ "pxPerMetre": 190,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "morning"
+ ],
+ "variantInfo": {
+  "morning": {
+   "hour": 10.5,
+   "weather": "year 70, 10:30: the tube on over the desk, the floor through the glass already half dark"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  108
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "desk",
+    "verb": "read",
+    "at": [
+     0.1,
+     0,
+     0.4
+    ],
+    "note": "the desk: the phone, the typed notice of closure under the ashtray"
+   },
+   {
+    "id": "window",
+    "verb": "look",
+    "at": [
+     0.6,
+     0,
+     -1.2
+    ],
+    "note": "the window on the floor: the machines standing in rows under the sodium"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "floor",
+    "at": [
+     -2.1,
+     0,
+     1.1
+    ],
+    "note": "the door down to the floor"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "morning": [
+   {
+    "at": [
+     0.1,
+     2.4,
+     -0.6
+    ],
+    "kind": "white",
+    "I": 0.6,
+    "reach": 8,
+    "group": "white"
+   },
+   {
+    "at": [
+     0.1,
+     2.4,
+     -0.6
+    ],
+    "kind": "white",
+    "I": 14,
+    "reach": 10,
+    "group": "white"
+   },
+   {
+    "at": [
+     0.6,
+     2.6,
+     -4.5
+    ],
+    "kind": "sodium",
+    "I": 14,
+    "reach": 9,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "morning": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: the mill manager's office."
+}

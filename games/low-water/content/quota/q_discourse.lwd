@@ -1,0 +1,100 @@
+# The Quota slice: rumour and discourse (design/DISCOURSE-SYSTEM.md; engine: world/discourse.mjs and the model's
+# carriers in world/community.mjs; check: tools/discoursecheck.mjs). Gameplay engineer, 2026-10-22.
+# Three carriers of the hoarding claim: the district's chalk and its crier (the carrier id "notices", q_community.lwd:
+# Krall's crier on his crate in the square, and the goats chalked on Hesh doors), the Crown on Mill Street, and the
+# Furrow Church's pulpit. Each one's volume moves the Hesh's standing street by street through a rule like R17, at
+# its own speed: talk is quick and fades, a sermon is slow and stays. The player can shout it with the crier, shout
+# him down, scrub the chalk off a door, or stand up where he stood and say what they saw on the hill; every one of
+# those is a record event. The device rule (2026-10-23, design/DEVICE-AUDIT.md): nothing here is paper.
+
+@carrier pub
+name: The Crown, Mill Street
+target: hesh
+volume: 0.15
+reach: mill, square
+
+@carrier pulpit
+name: The Furrow Church
+target: hesh
+volume: 0.2
+reach: all
+
+# ---------------------------------------------------------------- the claims
+@claim cl.hesh_hoard
+words: The Hesh have the grain under the goats. Anybody hiding grain, you tell the Captain.
+target: hesh
+victim: haldane
+carriers: notices, pub, pulpit
+step: 0.1
+first: Krall's crier, on his crate on Exchange Square from day 39, and the goats the squad chalks on Hesh doors
+challenge-cost: shift(portion, -0.05, {self})
+about: The crier's words. Every time it's said again the Hesh pay for it. Call it a lie and the relief office gives your family less.
+
+@claim cl.true_figure
+words: There's no hole on that hill. I've been up. It's rock and goats and six children that aren't theirs.
+target: hesh
+victim: haldane
+carriers: notices
+step: 0.1
+first: The player, on the crier's crate, saying what they saw
+about: What the player saw on the hill, said out loud where the crier stood.
+
+# ---------------------------------------------------------------- the carriers' rules (beside R17, the notices)
+@rule R17p
+name: rhetoric in the pub
+per: street
+when: volume.pub > 0.2 & pub > 0
+do: standing.hesh -= 0.02 * volume.pub * pub / (1 + mixed)
+delay: 3
+because: it is said over the bar by people who were in the queue; talk travels faster than paper
+
+@rule R17c
+name: rhetoric from the pulpit
+per: street
+when: volume.pulpit > 0.2 & pews > 0
+do: standing.hesh -= 0.015 * volume.pulpit * pews / (1 + mixed)
+delay: 7
+because: the minister says thrift and honesty and who has not got them; it lands slowly and it stays
+
+@rule Rvp
+name: the pub forgets
+per: district
+when: volume.pub > 0.1
+do: volume.pub -= 0.01
+delay: 0
+because: talk fades unless somebody says it again
+
+@rule Rvc
+name: the pulpit keeps it
+per: district
+when: volume.pulpit > 0.1
+do: volume.pulpit -= 0.002
+delay: 0
+because: a sermon goes round for weeks
+
+@rule Rr
+name: the crier comes back
+per: district
+when: silenced.hesh_hoard > 0
+do: volume.notices += 0.05; silenced.hesh_hoard -= 1
+delay: 2
+because: a crier pulled down is back on his crate within two days with a constable beside him, and the squad chalks the door again
+
+# ---------------------------------------------------------------- the crier and the chalk, where the player meets them
+@object q.notice_post
+name: The chalked goat
+place: q_post
+about: A goat chalked on the hut door at the post, head down, the squad's mark for a Hesh cart turned back.
+verb: mark "Tell the carts what it means" {do: discourse(repeat, cl.hesh_hoard, hollow), cost: 2}
+verb: mark "Tell the carts it's a lie" {do: discourse(challenge, cl.hesh_hoard, hollow), cost: 2}
+verb: mark "Scrub it off with your sleeve" {do: discourse(silence, cl.hesh_hoard, hollow), cost: 1}
+verb: mark "Tell the carts what you saw on the hill" ? has(q.true_in_hand) {do: discourse(answer, cl.hesh_hoard, hollow, cl.true_figure), cost: 3}
+
+@object q.notice_exchange
+name: Krall's crier
+place: q_furrowe_door
+about: Krall's crier on a crate under the street sign, at the height of the queue's faces, saying it over and over.
+verb: mark "Shout it with him" {do: discourse(repeat, cl.hesh_hoard, square), cost: 2}
+verb: mark "Shout him down" {do: discourse(challenge, cl.hesh_hoard, square), cost: 2}
+verb: mark "Pull him down off the crate" {do: discourse(silence, cl.hesh_hoard, square), cost: 1}
+verb: mark "Get up on the crate and say what you saw on the hill" ? has(q.true_in_hand) {do: discourse(answer, cl.hesh_hoard, square, cl.true_figure), cost: 3}

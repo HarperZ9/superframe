@@ -1,0 +1,2961 @@
+{
+ "lamb": {
+  "far": {
+   "triangles": 5392,
+   "vertices": 2702,
+   "mb": 0.29,
+   "sculpt_ms": 53,
+   "maps_ms": 389,
+   "evaluated": 11251,
+   "dropped": [
+    {
+     "t": "creases",
+     "freq": 70,
+     "limit": 15.6,
+     "lod": "far"
+    },
+    {
+     "t": "lines",
+     "freq": 60,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -6.0572,
+    10.7791,
+    33.4348
+   ],
+   "thickness_p5_p50_p95": [
+    0.0403,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0025,
+    0.1788
+   ]
+  },
+  "mid": {
+   "triangles": 29252,
+   "vertices": 14628,
+   "mb": 1.55,
+   "sculpt_ms": 227,
+   "maps_ms": 7084,
+   "evaluated": 52146,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 60,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -22.8531,
+    11.3337,
+    50.2307
+   ],
+   "thickness_p5_p50_p95": [
+    0.0352,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0012,
+    0.1113
+   ]
+  },
+  "near": {
+   "triangles": 163524,
+   "vertices": 81764,
+   "mb": 8.67,
+   "sculpt_ms": 3537,
+   "maps_ms": 131076,
+   "evaluated": 289496,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -39.8904,
+    12.758,
+    70.3447
+   ],
+   "thickness_p5_p50_p95": [
+    0.0233,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0007,
+    0.1182
+   ]
+  }
+ },
+ "keel": {
+  "far": {
+   "triangles": 6048,
+   "vertices": 3026,
+   "mb": 0.32,
+   "sculpt_ms": 51,
+   "maps_ms": 647,
+   "evaluated": 12565,
+   "dropped": [
+    {
+     "t": "prune",
+     "freq": 75,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -6.5572,
+    9.5701,
+    27.7661
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0015,
+    0.1261
+   ]
+  },
+  "mid": {
+   "triangles": 32412,
+   "vertices": 16208,
+   "mb": 1.72,
+   "sculpt_ms": 226,
+   "maps_ms": 6278,
+   "evaluated": 55615,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -23.3909,
+    9.9007,
+    39.1846
+   ],
+   "thickness_p5_p50_p95": [
+    0.0478,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0003,
+    0.096
+   ]
+  },
+  "near": {
+   "triangles": 179768,
+   "vertices": 89882,
+   "mb": 9.53,
+   "sculpt_ms": 1514,
+   "maps_ms": 345612,
+   "evaluated": 317205,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -42.37,
+    10.2673,
+    55.126
+   ],
+   "thickness_p5_p50_p95": [
+    0.0477,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0002,
+    0.1255
+   ]
+  }
+ },
+ "sabine": {
+  "far": {
+   "triangles": 9072,
+   "vertices": 4538,
+   "mb": 0.48,
+   "sculpt_ms": 191,
+   "maps_ms": 1611,
+   "evaluated": 17010,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -12.8388,
+    8.0243,
+    23.6454
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0012,
+    0.1592
+   ]
+  },
+  "mid": {
+   "triangles": 48744,
+   "vertices": 24374,
+   "mb": 2.58,
+   "sculpt_ms": 588,
+   "maps_ms": 16024,
+   "evaluated": 81794,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -24.1919,
+    8.7703,
+    30.8311
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0005,
+    0.1154
+   ]
+  },
+  "near": {
+   "triangles": 270360,
+   "vertices": 135184,
+   "mb": 14.33,
+   "sculpt_ms": 3545,
+   "maps_ms": 345279,
+   "evaluated": 468547,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -35.9314,
+    9.7503,
+    40.1721
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0002,
+    0.1354
+   ]
+  }
+ },
+ "wenna": {
+  "far": {
+   "triangles": 10620,
+   "vertices": 5312,
+   "mb": 0.56,
+   "sculpt_ms": 193,
+   "maps_ms": 1908,
+   "evaluated": 20489,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 32,
+     "limit": 15.6,
+     "lod": "far"
+    },
+    {
+     "t": "creases",
+     "freq": 60,
+     "limit": 15.6,
+     "lod": "far"
+    },
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -5.9802,
+    6.8288,
+    18.0732
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0021,
+    0.0893
+   ]
+  },
+  "mid": {
+   "triangles": 57680,
+   "vertices": 28834,
+   "mb": 3.06,
+   "sculpt_ms": 765,
+   "maps_ms": 18986,
+   "evaluated": 98316,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -20.2424,
+    7.3253,
+    31.0412
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0016,
+    0.0995
+   ]
+  },
+  "near": {
+   "triangles": 320672,
+   "vertices": 160340,
+   "mb": 17,
+   "sculpt_ms": 3802,
+   "maps_ms": 283800,
+   "evaluated": 563289,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -43.8013,
+    8.0289,
+    49.1616
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0009,
+    0.1368
+   ]
+  }
+ },
+ "penhallow": {
+  "far": {
+   "triangles": 7744,
+   "vertices": 3874,
+   "mb": 0.41,
+   "sculpt_ms": 162,
+   "maps_ms": 1360,
+   "evaluated": 14067,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 75,
+     "limit": 15.6,
+     "lod": "far"
+    },
+    {
+     "t": "creases",
+     "freq": 60,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -11.3777,
+    8.3417,
+    24.1241
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0016,
+    0.1405
+   ]
+  },
+  "mid": {
+   "triangles": 41632,
+   "vertices": 20816,
+   "mb": 2.21,
+   "sculpt_ms": 512,
+   "maps_ms": 13554,
+   "evaluated": 67998,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 75,
+     "limit": 35.7,
+     "lod": "mid"
+    },
+    {
+     "t": "creases",
+     "freq": 60,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -28.4587,
+    9.2612,
+    33.4543
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0009,
+    0.1273
+   ]
+  },
+  "near": {
+   "triangles": 230036,
+   "vertices": 115014,
+   "mb": 12.19,
+   "sculpt_ms": 3067,
+   "maps_ms": 268704,
+   "evaluated": 406732,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -36.8535,
+    10.7942,
+    44.6232
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0005,
+    0.1389
+   ]
+  }
+ },
+ "gorm": {
+  "far": {
+   "triangles": 5880,
+   "vertices": 2940,
+   "mb": 0.31,
+   "sculpt_ms": 130,
+   "maps_ms": 1077,
+   "evaluated": 11526,
+   "dropped": [
+    {
+     "t": "creases",
+     "freq": 60,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -9.7895,
+    10.5023,
+    27.1823
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0027,
+    0.158
+   ]
+  },
+  "mid": {
+   "triangles": 32016,
+   "vertices": 16010,
+   "mb": 1.7,
+   "sculpt_ms": 422,
+   "maps_ms": 10414,
+   "evaluated": 52085,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -29.9737,
+    11.0337,
+    43.9641
+   ],
+   "thickness_p5_p50_p95": [
+    0.0454,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0012,
+    0.1968
+   ]
+  },
+  "near": {
+   "triangles": 177624,
+   "vertices": 88798,
+   "mb": 9.41,
+   "sculpt_ms": 1890,
+   "maps_ms": 178754,
+   "evaluated": 309293,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -46.5239,
+    11.8625,
+    62.4303
+   ],
+   "thickness_p5_p50_p95": [
+    0.0369,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0006,
+    0.2323
+   ]
+  }
+ },
+ "hobb": {
+  "far": {
+   "triangles": 4404,
+   "vertices": 2204,
+   "mb": 0.23,
+   "sculpt_ms": 118,
+   "maps_ms": 832,
+   "evaluated": 9616,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -6.6657,
+    11.1303,
+    32.4358
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0032,
+    0.2428
+   ]
+  },
+  "mid": {
+   "triangles": 24308,
+   "vertices": 12152,
+   "mb": 1.29,
+   "sculpt_ms": 354,
+   "maps_ms": 8735,
+   "evaluated": 42630,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -29.175,
+    12.0484,
+    53.4647
+   ],
+   "thickness_p5_p50_p95": [
+    0.0303,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0022,
+    0.2303
+   ]
+  },
+  "near": {
+   "triangles": 137004,
+   "vertices": 68500,
+   "mb": 7.26,
+   "sculpt_ms": 1536,
+   "maps_ms": 118396,
+   "evaluated": 231203,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -51.1845,
+    13.4877,
+    73.6637
+   ],
+   "thickness_p5_p50_p95": [
+    0.0211,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0014,
+    0.2899
+   ]
+  }
+ },
+ "marrow": {
+  "far": {
+   "triangles": 8500,
+   "vertices": 4252,
+   "mb": 0.45,
+   "sculpt_ms": 163,
+   "maps_ms": 1528,
+   "evaluated": 15312,
+   "dropped": [
+    {
+     "t": "creases",
+     "freq": 55,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -14.5051,
+    8.3827,
+    27.297
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0021,
+    0.1642
+   ]
+  },
+  "mid": {
+   "triangles": 45600,
+   "vertices": 22806,
+   "mb": 2.42,
+   "sculpt_ms": 602,
+   "maps_ms": 14965,
+   "evaluated": 73719,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -27.774,
+    8.988,
+    33.9353
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0006,
+    0.1196
+   ]
+  },
+  "near": {
+   "triangles": 251680,
+   "vertices": 125840,
+   "mb": 13.34,
+   "sculpt_ms": 3758,
+   "maps_ms": 231439,
+   "evaluated": 440734,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -39.9029,
+    9.8785,
+    38.3183
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0002,
+    0.1359
+   ]
+  }
+ },
+ "fennick": {
+  "far": {
+   "triangles": 5064,
+   "vertices": 2536,
+   "mb": 0.27,
+   "sculpt_ms": 81,
+   "maps_ms": 813,
+   "evaluated": 11526,
+   "dropped": [
+    {
+     "t": "creases",
+     "freq": 60,
+     "limit": 15.6,
+     "lod": "far"
+    },
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -12.7454,
+    11.7458,
+    34.7374
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0036,
+    0.346
+   ]
+  },
+  "mid": {
+   "triangles": 28108,
+   "vertices": 14054,
+   "mb": 1.49,
+   "sculpt_ms": 229,
+   "maps_ms": 7717,
+   "evaluated": 53694,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -29.8061,
+    12.8071,
+    49.5785
+   ],
+   "thickness_p5_p50_p95": [
+    0.0259,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0008,
+    0.2028
+   ]
+  },
+  "near": {
+   "triangles": 158756,
+   "vertices": 79366,
+   "mb": 8.41,
+   "sculpt_ms": 1562,
+   "maps_ms": 205642,
+   "evaluated": 288718,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -42.3993,
+    13.2947,
+    68.5137
+   ],
+   "thickness_p5_p50_p95": [
+    0.0236,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0002,
+    0.2569
+   ]
+  }
+ },
+ "crake": {
+  "far": {
+   "triangles": 5524,
+   "vertices": 2764,
+   "mb": 0.29,
+   "sculpt_ms": 85,
+   "maps_ms": 1132,
+   "evaluated": 12117,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -9.0052,
+    10.3688,
+    27.2669
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0031,
+    0.1459
+   ]
+  },
+  "mid": {
+   "triangles": 29916,
+   "vertices": 14960,
+   "mb": 1.59,
+   "sculpt_ms": 319,
+   "maps_ms": 9297,
+   "evaluated": 50425,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -26.3021,
+    11.1903,
+    39.8149
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0011,
+    0.1121
+   ]
+  },
+  "near": {
+   "triangles": 167388,
+   "vertices": 83698,
+   "mb": 8.87,
+   "sculpt_ms": 1812,
+   "maps_ms": 235654,
+   "evaluated": 289508,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -44.2294,
+    12.4917,
+    51.7332
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0005,
+    0.1532
+   ]
+  }
+ },
+ "merrow": {
+  "far": {
+   "triangles": 7572,
+   "vertices": 3788,
+   "mb": 0.4,
+   "sculpt_ms": 76,
+   "maps_ms": 1110,
+   "evaluated": 14358,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -11.7164,
+    9.1852,
+    23.1079
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0024,
+    0.1575
+   ]
+  },
+  "mid": {
+   "triangles": 40988,
+   "vertices": 20496,
+   "mb": 2.17,
+   "sculpt_ms": 326,
+   "maps_ms": 12425,
+   "evaluated": 67250,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -30.3352,
+    9.6954,
+    39.0933
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0015,
+    0.1749
+   ]
+  },
+  "near": {
+   "triangles": 231860,
+   "vertices": 115928,
+   "mb": 12.29,
+   "sculpt_ms": 2603,
+   "maps_ms": 304067,
+   "evaluated": 408187,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -58.1322,
+    9.9165,
+    58.5004
+   ],
+   "thickness_p5_p50_p95": [
+    0.0477,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0011,
+    0.3465
+   ]
+  }
+ },
+ "pip": {
+  "far": {
+   "triangles": 6116,
+   "vertices": 3060,
+   "mb": 0.32,
+   "sculpt_ms": 76,
+   "maps_ms": 1104,
+   "evaluated": 12932,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -8.4881,
+    9.6737,
+    25.7162
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0039,
+    0.1854
+   ]
+  },
+  "mid": {
+   "triangles": 33444,
+   "vertices": 16726,
+   "mb": 1.77,
+   "sculpt_ms": 285,
+   "maps_ms": 11281,
+   "evaluated": 55908,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -29.8821,
+    10.5902,
+    46.7548
+   ],
+   "thickness_p5_p50_p95": [
+    0.0419,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0026,
+    0.1931
+   ]
+  },
+  "near": {
+   "triangles": 186056,
+   "vertices": 93024,
+   "mb": 9.86,
+   "sculpt_ms": 2777,
+   "maps_ms": 163675,
+   "evaluated": 321694,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -48.5474,
+    11.4453,
+    62.5824
+   ],
+   "thickness_p5_p50_p95": [
+    0.0281,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0015,
+    0.2477
+   ]
+  }
+ },
+ "fewell": {
+  "far": {
+   "triangles": 6688,
+   "vertices": 3344,
+   "mb": 0.35,
+   "sculpt_ms": 47,
+   "maps_ms": 748,
+   "evaluated": 13196,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -14.2419,
+    9.8734,
+    28.2136
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0028,
+    0.2102
+   ]
+  },
+  "mid": {
+   "triangles": 35724,
+   "vertices": 17864,
+   "mb": 1.89,
+   "sculpt_ms": 313,
+   "maps_ms": 6991,
+   "evaluated": 57687,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -29.6778,
+    10.5023,
+    37.8288
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.001,
+    0.1321
+   ]
+  },
+  "near": {
+   "triangles": 196084,
+   "vertices": 98044,
+   "mb": 10.39,
+   "sculpt_ms": 1573,
+   "maps_ms": 235086,
+   "evaluated": 343271,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -42.0479,
+    11.5989,
+    45.0447
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0004,
+    0.1163
+   ]
+  }
+ },
+ "strand": {
+  "far": {
+   "triangles": 6040,
+   "vertices": 3024,
+   "mb": 0.32,
+   "sculpt_ms": 60,
+   "maps_ms": 916,
+   "evaluated": 13517,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -5.8857,
+    9.9929,
+    25.7032
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.002,
+    0.1286
+   ]
+  },
+  "mid": {
+   "triangles": 32832,
+   "vertices": 16418,
+   "mb": 1.74,
+   "sculpt_ms": 242,
+   "maps_ms": 9163,
+   "evaluated": 57382,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -21.4343,
+    10.4762,
+    43.187
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0009,
+    0.1106
+   ]
+  },
+  "near": {
+   "triangles": 180924,
+   "vertices": 90462,
+   "mb": 9.59,
+   "sculpt_ms": 2234,
+   "maps_ms": 277757,
+   "evaluated": 329032,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -32.4162,
+    10.9868,
+    59.3425
+   ],
+   "thickness_p5_p50_p95": [
+    0.0487,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0004,
+    0.1085
+   ]
+  }
+ },
+ "bright": {
+  "far": {
+   "triangles": 4196,
+   "vertices": 2100,
+   "mb": 0.22,
+   "sculpt_ms": 36,
+   "maps_ms": 599,
+   "evaluated": 8979,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -4.6315,
+    10.9991,
+    29.3287
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0022,
+    0.1705
+   ]
+  },
+  "mid": {
+   "triangles": 22468,
+   "vertices": 11234,
+   "mb": 1.19,
+   "sculpt_ms": 162,
+   "maps_ms": 4800,
+   "evaluated": 37847,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -21.6885,
+    11.9576,
+    44.1602
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0009,
+    0.1352
+   ]
+  },
+  "near": {
+   "triangles": 126552,
+   "vertices": 63278,
+   "mb": 6.71,
+   "sculpt_ms": 854,
+   "maps_ms": 120830,
+   "evaluated": 212688,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -43.7295,
+    13.3542,
+    63.0919
+   ],
+   "thickness_p5_p50_p95": [
+    0.0494,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0007,
+    0.1908
+   ]
+  }
+ },
+ "coe": {
+  "far": {
+   "triangles": 7776,
+   "vertices": 3888,
+   "mb": 0.41,
+   "sculpt_ms": 52,
+   "maps_ms": 838,
+   "evaluated": 13551,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -15.9472,
+    10.0031,
+    27.0957
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0032,
+    0.2609
+   ]
+  },
+  "mid": {
+   "triangles": 41524,
+   "vertices": 20772,
+   "mb": 2.2,
+   "sculpt_ms": 211,
+   "maps_ms": 8534,
+   "evaluated": 64691,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -30.7587,
+    10.7122,
+    33.5107
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0011,
+    0.1737
+   ]
+  },
+  "near": {
+   "triangles": 229860,
+   "vertices": 114934,
+   "mb": 12.18,
+   "sculpt_ms": 1691,
+   "maps_ms": 232729,
+   "evaluated": 387616,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -46.7502,
+    11.4946,
+    41.6879
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0004,
+    0.1924
+   ]
+  }
+ },
+ "lugg": {
+  "far": {
+   "triangles": 3512,
+   "vertices": 1758,
+   "mb": 0.19,
+   "sculpt_ms": 51,
+   "maps_ms": 531,
+   "evaluated": 7764,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -5.0965,
+    13.4733,
+    32.3822
+   ],
+   "thickness_p5_p50_p95": [
+    0.0433,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0038,
+    0.2016
+   ]
+  },
+  "mid": {
+   "triangles": 19412,
+   "vertices": 9706,
+   "mb": 1.03,
+   "sculpt_ms": 172,
+   "maps_ms": 5621,
+   "evaluated": 37031,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -27.3586,
+    14.1758,
+    56.5706
+   ],
+   "thickness_p5_p50_p95": [
+    0.0291,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0017,
+    0.2426
+   ]
+  },
+  "near": {
+   "triangles": 107684,
+   "vertices": 53838,
+   "mb": 5.71,
+   "sculpt_ms": 1048,
+   "maps_ms": 78789,
+   "evaluated": 193701,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -49.8723,
+    14.8598,
+    74.5997
+   ],
+   "thickness_p5_p50_p95": [
+    0.0244,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0009,
+    0.3124
+   ]
+  }
+ },
+ "cockle": {
+  "far": {
+   "triangles": 7360,
+   "vertices": 3682,
+   "mb": 0.39,
+   "sculpt_ms": 78,
+   "maps_ms": 1098,
+   "evaluated": 13721,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 32,
+     "limit": 15.6,
+     "lod": "far"
+    },
+    {
+     "t": "creases",
+     "freq": 60,
+     "limit": 15.6,
+     "lod": "far"
+    },
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -12.2305,
+    9.3379,
+    28.0686
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0024,
+    0.1684
+   ]
+  },
+  "mid": {
+   "triangles": 39744,
+   "vertices": 19874,
+   "mb": 2.11,
+   "sculpt_ms": 399,
+   "maps_ms": 11326,
+   "evaluated": 65479,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -26.749,
+    10.0294,
+    39.8853
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.001,
+    0.115
+   ]
+  },
+  "near": {
+   "triangles": 220472,
+   "vertices": 110236,
+   "mb": 11.69,
+   "sculpt_ms": 2430,
+   "maps_ms": 284428,
+   "evaluated": 388727,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -43.5933,
+    11.2426,
+    48.6442
+   ],
+   "thickness_p5_p50_p95": [
+    0.0435,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0005,
+    0.1296
+   ]
+  }
+ },
+ "shadwell": {
+  "far": {
+   "triangles": 4960,
+   "vertices": 2480,
+   "mb": 0.26,
+   "sculpt_ms": 51,
+   "maps_ms": 856,
+   "evaluated": 10286,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -8.7662,
+    11.0069,
+    30.2554
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0028,
+    0.2513
+   ]
+  },
+  "mid": {
+   "triangles": 27260,
+   "vertices": 13632,
+   "mb": 1.45,
+   "sculpt_ms": 229,
+   "maps_ms": 8271,
+   "evaluated": 46390,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -26.9135,
+    12.0877,
+    43.2713
+   ],
+   "thickness_p5_p50_p95": [
+    0.0393,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0011,
+    0.2
+   ]
+  },
+  "near": {
+   "triangles": 152644,
+   "vertices": 76308,
+   "mb": 8.09,
+   "sculpt_ms": 1586,
+   "maps_ms": 171517,
+   "evaluated": 262346,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -42.9711,
+    12.8889,
+    59.8381
+   ],
+   "thickness_p5_p50_p95": [
+    0.0303,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0006,
+    0.2879
+   ]
+  }
+ },
+ "spratt": {
+  "far": {
+   "triangles": 6292,
+   "vertices": 3148,
+   "mb": 0.33,
+   "sculpt_ms": 43,
+   "maps_ms": 745,
+   "evaluated": 12515,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -10.2979,
+    10.544,
+    29.6026
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.003,
+    0.2052
+   ]
+  },
+  "mid": {
+   "triangles": 33692,
+   "vertices": 16846,
+   "mb": 1.79,
+   "sculpt_ms": 202,
+   "maps_ms": 6470,
+   "evaluated": 56331,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -27.3851,
+    11.252,
+    39.5697
+   ],
+   "thickness_p5_p50_p95": [
+    0.0469,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0011,
+    0.1228
+   ]
+  },
+  "near": {
+   "triangles": 185976,
+   "vertices": 92988,
+   "mb": 9.86,
+   "sculpt_ms": 1290,
+   "maps_ms": 122836,
+   "evaluated": 323976,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -41.4333,
+    12.316,
+    51.7009
+   ],
+   "thickness_p5_p50_p95": [
+    0.0438,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0005,
+    0.1249
+   ]
+  }
+ },
+ "tobit": {
+  "far": {
+   "triangles": 6724,
+   "vertices": 3364,
+   "mb": 0.36,
+   "sculpt_ms": 36,
+   "maps_ms": 703,
+   "evaluated": 13027,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -8.7301,
+    9.3565,
+    24.7546
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0019,
+    0.1622
+   ]
+  },
+  "mid": {
+   "triangles": 35580,
+   "vertices": 17788,
+   "mb": 1.89,
+   "sculpt_ms": 192,
+   "maps_ms": 6711,
+   "evaluated": 58749,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -25.6776,
+    9.8874,
+    41.32
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0008,
+    0.1474
+   ]
+  },
+  "near": {
+   "triangles": 198472,
+   "vertices": 99234,
+   "mb": 10.52,
+   "sculpt_ms": 1240,
+   "maps_ms": 176306,
+   "evaluated": 348713,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -39.1374,
+    10.5189,
+    56.6957
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0004,
+    0.2029
+   ]
+  }
+ },
+ "dilly": {
+  "far": {
+   "triangles": 9124,
+   "vertices": 4564,
+   "mb": 0.48,
+   "sculpt_ms": 37,
+   "maps_ms": 837,
+   "evaluated": 16041,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -10.8709,
+    8.353,
+    23.8704
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0057,
+    0.1624
+   ]
+  },
+  "mid": {
+   "triangles": 49128,
+   "vertices": 24560,
+   "mb": 2.6,
+   "sculpt_ms": 244,
+   "maps_ms": 12338,
+   "evaluated": 77471,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -28.0943,
+    9.4415,
+    37.3615
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0043,
+    0.1233
+   ]
+  },
+  "near": {
+   "triangles": 271564,
+   "vertices": 135770,
+   "mb": 14.39,
+   "sculpt_ms": 2389,
+   "maps_ms": 187619,
+   "evaluated": 453927,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -46.5005,
+    10.5343,
+    58.2302
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0018,
+    0.1401
+   ]
+  }
+ },
+ "gill": {
+  "far": {
+   "triangles": 6136,
+   "vertices": 3070,
+   "mb": 0.33,
+   "sculpt_ms": 49,
+   "maps_ms": 805,
+   "evaluated": 13880,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -11.5221,
+    10.133,
+    28.8225
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0032,
+    0.223
+   ]
+  },
+  "mid": {
+   "triangles": 33432,
+   "vertices": 16718,
+   "mb": 1.77,
+   "sculpt_ms": 199,
+   "maps_ms": 6847,
+   "evaluated": 58191,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -27.5536,
+    10.476,
+    44.9882
+   ],
+   "thickness_p5_p50_p95": [
+    0.0215,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0013,
+    0.1645
+   ]
+  },
+  "near": {
+   "triangles": 187238,
+   "vertices": 93621,
+   "mb": 9.92,
+   "sculpt_ms": 1414,
+   "maps_ms": 110629,
+   "evaluated": 327458,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -45.5692,
+    10.6946,
+    60.4194
+   ],
+   "thickness_p5_p50_p95": [
+    0.0195,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0005,
+    0.1869
+   ]
+  }
+ },
+ "dunlin": {
+  "far": {
+   "triangles": 9056,
+   "vertices": 4530,
+   "mb": 0.48,
+   "sculpt_ms": 82,
+   "maps_ms": 1062,
+   "evaluated": 16516,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -13.0003,
+    8.6274,
+    24.1398
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.003,
+    0.2013
+   ]
+  },
+  "mid": {
+   "triangles": 49388,
+   "vertices": 24700,
+   "mb": 2.62,
+   "sculpt_ms": 379,
+   "maps_ms": 9846,
+   "evaluated": 79690,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -35.8,
+    9.0215,
+    39.9325
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0017,
+    0.2341
+   ]
+  },
+  "near": {
+   "triangles": 278896,
+   "vertices": 139454,
+   "mb": 14.78,
+   "sculpt_ms": 2786,
+   "maps_ms": 244100,
+   "evaluated": 485065,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -56.2742,
+    9.2517,
+    53.4452
+   ],
+   "thickness_p5_p50_p95": [
+    0.0301,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0014,
+    0.3625
+   ]
+  }
+ },
+ "rook": {
+  "far": {
+   "triangles": 5792,
+   "vertices": 2900,
+   "mb": 0.31,
+   "sculpt_ms": 45,
+   "maps_ms": 594,
+   "evaluated": 12104,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -11.8786,
+    10.0788,
+    31.9092
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0038,
+    0.2207
+   ]
+  },
+  "mid": {
+   "triangles": 31988,
+   "vertices": 15996,
+   "mb": 1.7,
+   "sculpt_ms": 172,
+   "maps_ms": 6421,
+   "evaluated": 52133,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -26.0049,
+    11.5491,
+    45.7774
+   ],
+   "thickness_p5_p50_p95": [
+    0.0434,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0017,
+    0.1985
+   ]
+  },
+  "near": {
+   "triangles": 178652,
+   "vertices": 89320,
+   "mb": 9.47,
+   "sculpt_ms": 1414,
+   "maps_ms": 152889,
+   "evaluated": 312721,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -42.9424,
+    12.9308,
+    61.8609
+   ],
+   "thickness_p5_p50_p95": [
+    0.0269,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0007,
+    0.2243
+   ]
+  }
+ },
+ "pellow": {
+  "far": {
+   "triangles": 5928,
+   "vertices": 2966,
+   "mb": 0.31,
+   "sculpt_ms": 39,
+   "maps_ms": 714,
+   "evaluated": 12779,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 15.6,
+     "lod": "far"
+    },
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -10.3938,
+    10.4729,
+    27.107
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0026,
+    0.1941
+   ]
+  },
+  "mid": {
+   "triangles": 32588,
+   "vertices": 16292,
+   "mb": 1.73,
+   "sculpt_ms": 218,
+   "maps_ms": 6503,
+   "evaluated": 54619,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 35.7,
+     "lod": "mid"
+    },
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -29.9379,
+    10.828,
+    39.2685
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0011,
+    0.1665
+   ]
+  },
+  "near": {
+   "triangles": 180980,
+   "vertices": 90490,
+   "mb": 9.59,
+   "sculpt_ms": 1486,
+   "maps_ms": 146704,
+   "evaluated": 316314,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -50.9316,
+    11.4416,
+    54.566
+   ],
+   "thickness_p5_p50_p95": [
+    0.0446,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0005,
+    0.1712
+   ]
+  }
+ },
+ "fisk": {
+  "far": {
+   "triangles": 6448,
+   "vertices": 3226,
+   "mb": 0.34,
+   "sculpt_ms": 62,
+   "maps_ms": 749,
+   "evaluated": 12613,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -11.1662,
+    10.3915,
+    28.187
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0026,
+    0.1597
+   ]
+  },
+  "mid": {
+   "triangles": 35012,
+   "vertices": 17506,
+   "mb": 1.86,
+   "sculpt_ms": 205,
+   "maps_ms": 6844,
+   "evaluated": 56385,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -25.6349,
+    11.0922,
+    36.2807
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.001,
+    0.1413
+   ]
+  },
+  "near": {
+   "triangles": 192828,
+   "vertices": 96414,
+   "mb": 10.22,
+   "sculpt_ms": 1312,
+   "maps_ms": 158690,
+   "evaluated": 342847,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -37.3723,
+    11.8157,
+    41.2681
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0004,
+    0.1317
+   ]
+  }
+ },
+ "ash": {
+  "far": {
+   "triangles": 5132,
+   "vertices": 2568,
+   "mb": 0.27,
+   "sculpt_ms": 40,
+   "maps_ms": 597,
+   "evaluated": 10882,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -12.4137,
+    11.0009,
+    30.2693
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0043,
+    0.174
+   ]
+  },
+  "mid": {
+   "triangles": 28528,
+   "vertices": 14268,
+   "mb": 1.51,
+   "sculpt_ms": 183,
+   "maps_ms": 5570,
+   "evaluated": 47099,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -32.8458,
+    12.5485,
+    43.2903
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0011,
+    0.1511
+   ]
+  },
+  "near": {
+   "triangles": 156984,
+   "vertices": 78492,
+   "mb": 8.32,
+   "sculpt_ms": 1183,
+   "maps_ms": 85920,
+   "evaluated": 278080,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -48.9459,
+    13.3495,
+    49.1277
+   ],
+   "thickness_p5_p50_p95": [
+    0.0455,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0003,
+    0.1389
+   ]
+  }
+ },
+ "sallis": {
+  "far": {
+   "triangles": 6848,
+   "vertices": 3428,
+   "mb": 0.36,
+   "sculpt_ms": 53,
+   "maps_ms": 837,
+   "evaluated": 13517,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -13.253,
+    8.4241,
+    26.1728
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0021,
+    0.1655
+   ]
+  },
+  "mid": {
+   "triangles": 37132,
+   "vertices": 18566,
+   "mb": 1.97,
+   "sculpt_ms": 245,
+   "maps_ms": 9103,
+   "evaluated": 63526,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -28.5959,
+    9.6693,
+    35.5494
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.001,
+    0.1507
+   ]
+  },
+  "near": {
+   "triangles": 205816,
+   "vertices": 102910,
+   "mb": 10.91,
+   "sculpt_ms": 1408,
+   "maps_ms": 178560,
+   "evaluated": 363605,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -41.0332,
+    10.8471,
+    46.9983
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0004,
+    0.1727
+   ]
+  }
+ },
+ "pardew": {
+  "far": {
+   "triangles": 5788,
+   "vertices": 2894,
+   "mb": 0.31,
+   "sculpt_ms": 50,
+   "maps_ms": 785,
+   "evaluated": 12037,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -10.4103,
+    10.6389,
+    27.2692
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0031,
+    0.2322
+   ]
+  },
+  "mid": {
+   "triangles": 31468,
+   "vertices": 15734,
+   "mb": 1.67,
+   "sculpt_ms": 286,
+   "maps_ms": 7771,
+   "evaluated": 52717,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -29.3371,
+    10.9932,
+    40.8287
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0016,
+    0.1875
+   ]
+  },
+  "near": {
+   "triangles": 178132,
+   "vertices": 89060,
+   "mb": 9.44,
+   "sculpt_ms": 1616,
+   "maps_ms": 102853,
+   "evaluated": 306442,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -59.4422,
+    11.5061,
+    63.2921
+   ],
+   "thickness_p5_p50_p95": [
+    0.0353,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0013,
+    0.2946
+   ]
+  }
+ },
+ "dace": {
+  "far": {
+   "triangles": 7184,
+   "vertices": 3592,
+   "mb": 0.38,
+   "sculpt_ms": 74,
+   "maps_ms": 709,
+   "evaluated": 13716,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -13.032,
+    9.0825,
+    25.4919
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0029,
+    0.2506
+   ]
+  },
+  "mid": {
+   "triangles": 39188,
+   "vertices": 19596,
+   "mb": 2.08,
+   "sculpt_ms": 263,
+   "maps_ms": 8108,
+   "evaluated": 63478,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -35.0285,
+    9.5747,
+    42.9729
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0017,
+    0.2548
+   ]
+  },
+  "near": {
+   "triangles": 220940,
+   "vertices": 110506,
+   "mb": 11.71,
+   "sculpt_ms": 2377,
+   "maps_ms": 182227,
+   "evaluated": 385315,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -54.5883,
+    10.0628,
+    55.8087
+   ],
+   "thickness_p5_p50_p95": [
+    0.0294,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0016,
+    0.4279
+   ]
+  }
+ },
+ "orme": {
+  "far": {
+   "triangles": 6856,
+   "vertices": 3430,
+   "mb": 0.36,
+   "sculpt_ms": 31,
+   "maps_ms": 692,
+   "evaluated": 13601,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 15.6,
+     "lod": "far"
+    },
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 15.6,
+     "lod": "far"
+    },
+    {
+     "t": "creases",
+     "freq": 60,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -11.2063,
+    9.68,
+    27.5954
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0024,
+    0.1709
+   ]
+  },
+  "mid": {
+   "triangles": 36992,
+   "vertices": 18502,
+   "mb": 1.96,
+   "sculpt_ms": 219,
+   "maps_ms": 7209,
+   "evaluated": 60384,
+   "dropped": [
+    {
+     "t": "crows",
+     "freq": 70,
+     "limit": 35.7,
+     "lod": "mid"
+    },
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -27.0268,
+    10.4447,
+    36.7179
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.001,
+    0.1223
+   ]
+  },
+  "near": {
+   "triangles": 206356,
+   "vertices": 103170,
+   "mb": 10.94,
+   "sculpt_ms": 1781,
+   "maps_ms": 133114,
+   "evaluated": 362752,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -46.9785,
+    11.7097,
+    45.74
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0005,
+    0.1576
+   ]
+  }
+ },
+ "teague": {
+  "far": {
+   "triangles": 6344,
+   "vertices": 3174,
+   "mb": 0.34,
+   "sculpt_ms": 34,
+   "maps_ms": 711,
+   "evaluated": 13829,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 15.6,
+     "lod": "far"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -8.3887,
+    9.5969,
+    24.8957
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.002,
+    0.1371
+   ]
+  },
+  "mid": {
+   "triangles": 34436,
+   "vertices": 17216,
+   "mb": 1.83,
+   "sculpt_ms": 225,
+   "maps_ms": 6200,
+   "evaluated": 58916,
+   "dropped": [
+    {
+     "t": "lines",
+     "freq": 50,
+     "limit": 35.7,
+     "lod": "mid"
+    }
+   ],
+   "curvature_p5_p50_p95": [
+    -25.3849,
+    10.0262,
+    42.382
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0009,
+    0.1483
+   ]
+  },
+  "near": {
+   "triangles": 192856,
+   "vertices": 96424,
+   "mb": 10.22,
+   "sculpt_ms": 1054,
+   "maps_ms": 144495,
+   "evaluated": 338054,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -41.0422,
+    10.7193,
+    59.8035
+   ],
+   "thickness_p5_p50_p95": [
+    0.0338,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0004,
+    0.2835
+   ]
+  }
+ },
+ "mab": {
+  "far": {
+   "triangles": 8144,
+   "vertices": 4074,
+   "mb": 0.43,
+   "sculpt_ms": 65,
+   "maps_ms": 1049,
+   "evaluated": 15113,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -11.3264,
+    8.8678,
+    25.3891
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0019,
+    0.1646
+   ]
+  },
+  "mid": {
+   "triangles": 43544,
+   "vertices": 21778,
+   "mb": 2.31,
+   "sculpt_ms": 300,
+   "maps_ms": 9561,
+   "evaluated": 70663,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -23.9115,
+    9.5383,
+    32.1423
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0008,
+    0.1086
+   ]
+  },
+  "near": {
+   "triangles": 242768,
+   "vertices": 121392,
+   "mb": 12.87,
+   "sculpt_ms": 1541,
+   "maps_ms": 172775,
+   "evaluated": 422210,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -40.4946,
+    10.1956,
+    38.7346
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0003,
+    0.1469
+   ]
+  }
+ },
+ "noll": {
+  "far": {
+   "triangles": 8316,
+   "vertices": 4160,
+   "mb": 0.44,
+   "sculpt_ms": 49,
+   "maps_ms": 888,
+   "evaluated": 15381,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -13.1677,
+    8.8911,
+    26.7764
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.002,
+    0.1735
+   ]
+  },
+  "mid": {
+   "triangles": 44864,
+   "vertices": 22436,
+   "mb": 2.38,
+   "sculpt_ms": 270,
+   "maps_ms": 8539,
+   "evaluated": 72223,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -27.2808,
+    9.5097,
+    35.3717
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0009,
+    0.1172
+   ]
+  },
+  "near": {
+   "triangles": 247900,
+   "vertices": 123948,
+   "mb": 13.14,
+   "sculpt_ms": 1565,
+   "maps_ms": 192377,
+   "evaluated": 431342,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -42.3198,
+    10.143,
+    40.9533
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0003,
+    0.1201
+   ]
+  }
+ },
+ "gauze": {
+  "far": {
+   "triangles": 5284,
+   "vertices": 2644,
+   "mb": 0.28,
+   "sculpt_ms": 35,
+   "maps_ms": 560,
+   "evaluated": 11498,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -8.7822,
+    10.7707,
+    26.9629
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0019,
+    0.1401
+   ]
+  },
+  "mid": {
+   "triangles": 28308,
+   "vertices": 14154,
+   "mb": 1.5,
+   "sculpt_ms": 1336,
+   "maps_ms": 5360,
+   "evaluated": 47717,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -24.882,
+    11.3801,
+    37.5766
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0003,
+    0.0986
+   ]
+  },
+  "near": {
+   "triangles": 156740,
+   "vertices": 78376,
+   "mb": 8.31,
+   "sculpt_ms": 757,
+   "maps_ms": 88787,
+   "evaluated": 275771,
+   "dropped": [],
+   "curvature_p5_p50_p95": [
+    -33.6963,
+    11.6222,
+    44.9556
+   ],
+   "thickness_p5_p50_p95": [
+    0.05,
+    0.05,
+    0.05
+   ],
+   "cavity_p5_p50_p95": [
+    0,
+    0.0001,
+    0.1109
+   ]
+  }
+ }
+}

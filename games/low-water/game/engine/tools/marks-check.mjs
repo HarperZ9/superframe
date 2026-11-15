@@ -8,12 +8,12 @@ import { readFile } from "node:fs/promises";
 import { loadAct } from "../dialogue/book.mjs";
 import { loadContent } from "../game.mjs";
 import { plateArena } from "../combat/sim/plate.mjs";
+import { actFiles, wiringOf } from "./acts.mjs";
 import { hardenGround, spotKind, clearSpot, GROUND_CELL } from "../world/plateworld.mjs";
 
 const ROOT = new URL("../../../content/", import.meta.url).pathname.replace(/^\/(\w:)/, "$1");
 const ENGINE = new URL("../", import.meta.url).pathname.replace(/^\/(\w:)/, "$1");
-const acts = process.argv.slice(2).length ? process.argv.slice(2) : ["act1/act1.lwd", "act2/act2.lwd", "act3/act3.lwd"];
-const WIRING = { "act1/act1.lwd": "wiring/act1-areas.lwd" };
+const acts = process.argv.slice(2).length ? process.argv.slice(2) : actFiles(ROOT); // every act on disk (tools/acts.mjs)
 const plates = new Map();
 async function ground(name) {
   if (plates.has(name)) return plates.get(name);
@@ -24,14 +24,20 @@ async function ground(name) {
   plates.set(name, A); return A;
 }
 const f2 = (p) => p.map((v) => (+v).toFixed(2)).join(" ");
-let moved = 0, total = 0;
+let moved = 0, total = 0, bad = 0;
 for (const act of acts) {
   const { sources } = await loadAct(ROOT + act, (p) => readFile(p, "utf8"));
-  if (WIRING[act]) sources.push({ file: WIRING[act], text: await readFile(ENGINE + WIRING[act], "utf8") });
+  // The Quota's eras each wire their own places (wiring/eraN-areas.lwd, beside quota-areas.lwd), as the shell loads them
+  if (act.startsWith("quota/")) { const { readdirSync } = await import("node:fs"); for (const f of readdirSync(ENGINE + "wiring").filter((n) => /^era\d+-areas\.lwd$/.test(n)).sort()) sources.push({ file: `wiring/${f}`, text: await readFile(`${ENGINE}wiring/${f}`, "utf8") }); }
+  { const w = wiringOf(act); try { sources.push({ file: w, text: await readFile(ENGINE + w, "utf8") }); } catch (e) { if (e.code !== "ENOENT") throw e; } } // an act with no wiring yet has none
   const C = loadContent(sources);
   for (const a of Object.values(C.map.areas)) {
     if (!a.plate) continue;
     let A; try { A = await ground(a.plate); } catch (e) { console.log(`${a.id}: plate ${a.plate} not readable (${e.message})`); continue; }
+    // every variant an area names must be one the plate has (a missing one shows no painting at all)
+    { const pj = JSON.parse(await readFile(`${ROOT}${a.plate}/place.json`, "utf8")), have = [...(pj.variants || [])];
+      for (const x of a.plates || []) { try { have.push(...(JSON.parse(await readFile(`${ROOT}${x.v}/place.json`, "utf8")).variants || [])); } catch (e) { bad++; console.log(`${a.file}:${a.line}  ${a.id}: plate ${x.v} ? ${x.src}: not readable (${e.message})`); } }   // an era's own plate (plate: name ? cond)
+      for (const v of [a.variants ? Object.getOwnPropertyDescriptor(a, "variant").value ?? null : null, ...(a.variants || []).map((x) => x.v)].filter(Boolean)) if (v === "dark") { bad++; console.log(`${a.file}:${a.line}  ${a.id}: variant dark is the power-cut overlay's name, not a variant (2026-10-21 names: switched, cut, doused, unlit, blackout)`); } else if (!have.includes(v)) { bad++; console.log(`${a.file}:${a.line}  ${a.id}: variant ${v} is not one of plate ${a.plate}'s (${have.join(", ")})`); } }
     const spots = [["spawn", a.spawn, a.line], ...a.exits.filter((x) => x.spawnAt).map((x) => [`exit spawn "${x.label}"`, x.spawnAt, x.line]), ...a.figures.map((f) => [`figure ${f.id}`, f.at, f.line, f.pose])];
     for (const [what, at, line, pose] of spots) {
       total++;

@@ -1,6 +1,7 @@
 // The Daybook's Build page (design/UI-SYSTEM.md 7.2 and 7.2a). Owned by the UI and UX lead.
-// Left page: the case (four compartments, their pillars, their voices). Right page: Lamb in a
-// fight, in Plain words or in Numbers (N, pad Y), with every planned change shown as old to new.
+// Left page: what he carries (the four great traits, their pillars, the traits under them, each with what it does; the
+// traits pass, 2026-10-23). Right page: Lamb in a fight, in Plain words or in Numbers (N, pad Y), with every planned
+// change shown as old to new.
 // Planning is in pencil: left and right on a voice pencil in ranks (below zero is a respec
 // preview); "Ink the plan" spends the pages. Focusing a tool or a piece of clothing compares it
 // with what Lamb has now, side by side. At a bench, temper and fittings are offered with their
@@ -59,20 +60,26 @@ function inkPlan(G) {
   resetPlan(); return null;
 }
 
-// ---- left page: the case ----
+// ---- left page: what he carries (the traits pass, 2026-10-23; design/TRAITS.md) ----
+// Every row is a trait the character carries, and each one is a being he meets inside. The page says what each does,
+// that raising it makes it work for him and makes it bigger when he meets it, and what the inner arena last did to it
+// (cut back, made terms with, took him), from the sheet's own modifier (combat/innerhook.mjs innerMods).
+const markOf = (G, id) => { const m = (G.sheet.mods(`skill.${id}`) || []).find((x) => /inside/.test(x.why || "")); return m ? m.why : ""; };
 function voiceRow(G, sk, onPlan) {
-  const S = G.sheet, n = UI.plan[sk.id] || 0, lvl = S.skill(sk.id);
+  const S = G.sheet, n = UI.plan[sk.id] || 0, lvl = S.skill(sk.id), mark = markOf(G, sk.id);
   const b = btn([h("span.vn", sk.name), h("span.lvl", String(lvl)), h(`span.pl${n ? ".on" : ""}${n < 0 ? ".neg" : ""}`, n ? `${n > 0 ? "+" : "−"}${Math.abs(n)}` : ""),
-    h("span.note", sk.train === false ? "fitted, not trained" : `ranks ${S.ranks(sk.id)} of ${S.cap(sk.id) - S.skillBase(sk.id) + S.ranks(sk.id)}`)], () => onPlan(sk.id, 1), { cls: "vrow" });
+    h("span.note", sk.train === false ? "fitted, not trained" : mark || `ranks ${S.ranks(sk.id)} of ${S.cap(sk.id) - S.skillBase(sk.id) + S.ranks(sk.id)}`),
+    sk.about ? h("span.about.small.quiet", sk.about) : null], () => onPlan(sk.id, 1), { cls: "vrow", title: sk.about || "" });
   b.dataset.plan = sk.id;
   return b;
 }
 function caseColumn(G, onPlan) {
-  const out = [h("h3", "The case")];
+  const out = [h("h3", "What he carries"), h("p.small.quiet", "Each of these is in him. Raise one and it works for him, in talk and in his hands. When he meets it inside, it is as big as he made it.")];
   for (const k of COMPARTMENTS) {
     const a = G.rs.attrs[k]; if (!a) continue;
     const n = UI.plan[k] || 0;
-    const head = btn([h("span", a.name, " ", h("span.pillar", PILLAR[k])), h("span.lvl", String(G.sheet.attr(k))), h(`span.pl${n ? ".on" : ""}`, n ? `+${n}` : ""), h("span.note", "")], () => onPlan(k, 1), { cls: "chead", title: PILLAR_WORDS[k] });
+    const head = btn([h("span", a.name, " ", h("span.pillar", PILLAR[k])), h("span.lvl", String(G.sheet.attr(k))), h(`span.pl${n ? ".on" : ""}`, n ? `+${n}` : ""), h("span.note", ""),
+      a.about ? h("span.about.small.quiet", a.about) : null], () => onPlan(k, 1), { cls: "chead", title: a.about || PILLAR_WORDS[k] });
     head.dataset.plan = k;
     out.push(h("div.comp", head, ...voicesOf(G, k).filter((s) => s.train !== false).map((s) => voiceRow(G, s, onPlan))));
   }
@@ -166,7 +173,7 @@ export function buildTab(ctx, rerender) {
   function toggleDens() { UI.dens = UI.dens === "plain" ? "numbers" : "plain"; rerender(); }
   const bar = h("div.bar", h("span.pages", `${pts} page${pts === 1 ? "" : "s"} to spend`), h("span.quiet.small", `${Object.values(s.ranks || {}).reduce((a, n) => a + n, 0)} filed`),
     typeof G.sheet.chapters === "function" ? h("span.pages.small", `${G.sheet.chapters()} chapter page${G.sheet.chapters() === 1 ? "" : "s"}`) : null,
-    plan || Object.keys(UI.plan).length ? h("span.plan.small", `pencilled: ${Object.entries(UI.plan).map(([k, n]) => `${nameOf(G, k)} ${n > 0 ? "+" : "−"}${Math.abs(n)}`).join(", ")}`) : h("span.plan.small", "Left and right on a voice pencil in a rank"),
+    plan || Object.keys(UI.plan).length ? h("span.plan.small", `pencilled: ${Object.entries(UI.plan).map(([k, n]) => `${nameOf(G, k)} ${n > 0 ? "+" : "−"}${Math.abs(n)}`).join(", ")}`) : h("span.plan.small", "Left and right on a trait pencil in a rank"),
     inkB, rubB, note, h("span.sp", densB));
   function drawRight() {
     const now = buildOf(G), planB = Object.keys(UI.plan).length ? buildOf(G, { levels: deltas(G), plan: true }) : null;

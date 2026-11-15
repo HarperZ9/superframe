@@ -1,0 +1,167 @@
+{
+ "place": "q4_police",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   0,
+   1,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 3.611111111111111
+ },
+ "pxPerMetre": 180,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "morning"
+ ],
+ "variantInfo": {
+  "morning": {
+   "hour": 8.7,
+   "weather": "year 70, 08:40: the tubes on, one failing, grey day at the street door"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  112
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "report",
+    "verb": "read",
+    "at": [
+     -0.6,
+     0,
+     -0.1
+    ],
+    "note": "the report in the typewriter: the cause of the fire typed as an electrical fault"
+   },
+   {
+    "id": "counter",
+    "verb": "talk",
+    "at": [
+     0.6,
+     0,
+     0.9
+    ],
+    "note": "the public counter: the flap down, the bell, the book for names"
+   },
+   {
+    "verb": "look",
+    "id": "stencil",
+    "at": [
+     0,
+     0,
+     -0.2
+    ],
+    "note": "a cardboard stencil in a police bag on the desk"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "street",
+    "at": [
+     2.4,
+     0,
+     1.6
+    ],
+    "note": "the door to the street"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "morning": [
+   {
+    "at": [
+     -0.6,
+     2.55,
+     -0.6
+    ],
+    "kind": "white",
+    "I": 0.6,
+    "reach": 8,
+    "group": "white"
+   },
+   {
+    "at": [
+     -0.6,
+     2.55,
+     -0.6
+    ],
+    "kind": "white",
+    "I": 24,
+    "reach": 10,
+    "group": "white"
+   },
+   {
+    "at": [
+     1.4,
+     2.55,
+     0.8
+    ],
+    "kind": "white",
+    "I": 0.8,
+    "reach": 8,
+    "group": "white"
+   }
+  ]
+ },
+ "figureLights": {
+  "morning": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: the police station desk, Ann's report."
+}

@@ -1,0 +1,77 @@
+# World layers, era 2 (The Quota, year 12; Anni's kitchen at year 38): the cells, the returns room, the two kitchens and
+# Anni's kitchen (design/WORLD-LAYERS.md). World-layers pass, 2026-10-23. DRAFT: every prop text in this file waits for
+# the author's line approval (ledger row S14). Geometry: render/places/layers/era2.mjs; the marks are its spots.
+# Weighted-devices pass, era 2, 2026-10-23: every prop carries a sense and most take a hand; the Gazette headline is
+# the Furrowes' dripping basin, the Directorate's pasted notice is gone from the clean square, the rent book is the
+# rent jar (its id kept for w_lore.lwd).
+
+# DRAFT. Fresh only where the boy was held; the Militia line reads it as a fragment (WORLD-LAYERS section 6, w.goat).
+@prop q.cell_goat
+name: The mark on the end cell's wall
+place: q_cells
+mark: goat
+macro: 2.4 2.6
+tells: person q.tomas
+carries: touch
+touch: press "Trace the goat with a finger" ? has(q.tomas_held) | The scratches are rough and fresh under your fingertip, and the limewash comes off white on your skin. It's low. You have to sit on the bench to reach it the way he did. {sense: breath.held}
+state: 2 fresh ? has(q.tomas_held) | Low on the end cell's back wall, at the height of somebody sitting on the bench, a goat scratched into the limewash with a button or a nail. Its head is turned right round over its back. The scratches are white and clean. Everything round them is grey.
+state: 2 old | Low on the end cell's back wall, a goat scratched into the limewash, its head turned back over its shoulder. It's been limewashed over so many springs it's only a soft line under the paint, and you have to get down on your knees to see it.
+
+# DRAFT. The pale square nests in era 3's wall (WORLD-LAYERS section 5).
+@prop q.returns_patch
+name: The square over the door
+place: q_returns
+mark: crown_patch
+tells: era
+carries: sight
+state: 2 nail | Over the chairman's door, a square of cleaner paint where the Crown Council's arms hung for forty years. There's one bent nail in the middle of it now, where nothing hangs, and the clean corners show on every side.
+state: 3 nested | Two clean squares on the wall over the old chairman's door, one inside the other. The big one has gone yellow like the rest of the wall. The small one is still white, with a pin hole in each corner.
+in: 3 q3_office
+
+# DRAFT. The Furrowes' dripping (was yesterday's Gazette at the same spot).
+@prop q.furrowe_dripping
+name: The dripping basin
+place: q_furrowe_kitchen
+mark: gazette
+macro: 2.4 2.6
+tells: era
+carries: smell
+touch: smell "Lift the cloth off the basin" | Beef fat gone stale, and the cold of the larder shelf. There's a thin scrape of it in the bottom, smoothed flat with a knife so it looks like more than it is.
+state: 2 basin | A pudding basin on the table with a cloth over it, waiting to go back on the larder shelf. Mary scrapes the dripping flat every night so it looks like more than it is. There isn't much of it.
+
+# DRAFT. The photograph travels with the Bracks (WORLD-LAYERS section 5).
+@prop q.brack_photo
+name: The wedding photograph
+place: q_brack_kitchen
+mark: wedding_photo
+macro: 2.4 2.6
+tells: household brack
+carries: sight
+touch: wipe "Wipe the glass with your cuff" ? era() == 2 | The smoke from the slack fire has put a grey film on it. It comes off on your cuff, and Edie's laughing face comes up clear under it.
+state: 2 whole | Will and Edie's wedding photograph over the table. Will's in his father's suit with the sleeves down past his knuckles. Edie is laughing at something outside the picture, and Will is looking at her and not the camera.
+state: 3 cracked | The wedding photograph over the table, the glass cracked in a star from the bottom corner. Nobody has had it mended. The worst of the crack runs across Will's face. Edie is still laughing underneath it.
+state: 4 reframed | Will and Edie's wedding in a new brass frame on Davey's wall. He paid to have it glazed again and then asked for the cracked glass back, and it's in the frame behind the photograph, so the picture stands a finger off the wall.
+in: 3 q3_brack_kitchen
+in: 4 q4_brack_flat
+
+# DRAFT. The clay shows only in the week after, on runs where the boy was held.
+@prop q.brack_boots
+name: Will's boots
+place: q_brack_kitchen
+mark: boots
+tells: person q.will
+carries: smell
+touch: press "Scrape at the clay with a thumbnail" ? has(q.tomas_held) & cday() >= 45 | It comes away in a yellow curl and leaves a stain under it that won't come out. It smells of cold ground and lime. {sense: q.clay}
+state: 2 clay ? has(q.tomas_held) & cday() >= 45 | Will's boots on the fender, stuffed with newspaper to dry. Yellow clay to the ankle, gone pale where it's dried. Edie has started on one with a knife and stopped halfway round the heel.
+state: 2 polished | Will's boots on the fender, blacked for the morning. He does them himself every night the way his father did, spitting on the toe caps and working it in with two fingers.
+
+# DRAFT. The rent jar (was the rent book; the id stays for the plates)
+@prop q.rent_book
+name: The rent jar
+place: q_anni_room
+mark: rent_book
+macro: 2.4 2.6
+tells: person q.anni
+carries: sound
+touch: lift "Lift the jar down" | Heavy for its size, all coppers. They shift and chink against the glass when you tip it, and you put it back up on the shelf quick, the way she does, out of reach of her own hands.
+state: 2 jar | A jam jar on the high shelf with the week's rent in it, in coppers, ready for the agent on Friday. Anni puts it up there on Thursday night and doesn't touch it again till he knocks.

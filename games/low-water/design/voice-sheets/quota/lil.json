@@ -1,0 +1,72 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "LIL",
+ "setting": "quota",
+ "status": "draft 2026-10-21 from design/quota/02-HOUSEHOLDS.md by the voice director; generated from design/voice/quota-cast.json, edit that file",
+ "role": "Lil, Mary Furrowe's sister (content/quota/q_world.lwd q.lil): a widow at Tarn Hollow with one boy; at the blacklisted Furrowe table after the squads came",
+ "age": "about 38",
+ "register": {
+  "level": "plain",
+  "education": "the village school",
+  "class": "poor",
+  "trade": "a widow at Tarn Hollow with one boy; at the blacklisted Furrowe table after the squads came",
+  "words": [
+   "the Hollow",
+   "the squads",
+   "the car",
+   "Friday",
+   "my boy"
+  ]
+ },
+ "region": {
+  "name": "tarn-plain",
+  "markers": [
+   "he'd not",
+   "you've not"
+  ],
+  "idioms": [
+   "the Hollow",
+   "lovely manners"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 18
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television",
+  "starving",
+  "famine"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "Sallow wrote 320 for Tarn Hollow without leaving the car",
+   "the squads came Friday"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "two hundred and five",
+     "what Ned said",
+     "the district office"
+    ],
+    "why": "nobody at the table says what Ned wrote (q_coda.lwd)",
+    "unless_gate": [
+     "lil.told"
+    ]
+   }
+  ]
+ },
+ "trade": "a widow at Tarn Hollow with one boy; at the blacklisted Furrowe table after the squads came",
+ "wound": "her boy, going without bread at her sister's table (ba43c27)",
+ "lie": "Lovely manners. (derived: she praises the man who did it, because praise is safe)",
+ "fears": "her boy, going without bread at her sister's table (ba43c27)",
+ "hides": "Lovely manners. (derived: she praises the man who did it, because praise is safe)",
+ "tics": [
+  "the Hollow",
+  "lovely manners"
+ ]
+}

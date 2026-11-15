@@ -1,0 +1,1364 @@
+{
+ "tasks": {
+  "P": {
+   "k": 6,
+   "n": 24,
+   "share_wilson": [
+    0.25,
+    0.12,
+    0.449
+   ]
+  },
+  "S1": {
+   "k": 21,
+   "n": 36,
+   "share_wilson": [
+    0.583,
+    0.422,
+    0.729
+   ]
+  },
+  "S2": {
+   "k": 17,
+   "n": 36,
+   "share_wilson": [
+    0.472,
+    0.32,
+    0.63
+   ]
+  },
+  "S3": {
+   "k": 27,
+   "n": 36,
+   "share_wilson": [
+    0.75,
+    0.589,
+    0.862
+   ]
+  }
+ },
+ "decision": "P failed: task S decides nothing; the box keeps the old heads",
+ "note": "S shares are for the sculpted portrait; P for the second-pass painter",
+ "items": [
+  {
+   "seed": 601,
+   "id": "P01",
+   "q": "S2",
+   "who": "sallis",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P02",
+   "q": "S3",
+   "who": "wenna",
+   "mood": "warm",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P03",
+   "q": "S1",
+   "who": "hobb",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P04",
+   "q": "S3",
+   "who": "dilly",
+   "mood": "grieving",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P05",
+   "q": "P",
+   "who": "coe",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P06",
+   "q": "S3",
+   "who": "ash",
+   "mood": "angry",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P07",
+   "q": "S2",
+   "who": "keel",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P08",
+   "q": "S2",
+   "who": "dilly",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P09",
+   "q": "S3",
+   "who": "gauze",
+   "mood": "grieving",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P10",
+   "q": "S3",
+   "who": "sallis",
+   "mood": "warm",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P11",
+   "q": "S1",
+   "who": "sallis",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P12",
+   "q": "S3",
+   "who": "tobit",
+   "mood": "grieving",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P13",
+   "q": "S3",
+   "who": "bright",
+   "mood": "grieving",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P14",
+   "q": "S1",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P15",
+   "q": "P",
+   "who": "keel",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P16",
+   "q": "S1",
+   "who": "ash",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P17",
+   "q": "S1",
+   "who": "dilly",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P18",
+   "q": "S2",
+   "who": "ash",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P19",
+   "q": "S2",
+   "who": "gill",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P20",
+   "q": "S2",
+   "who": "wenna",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P21",
+   "q": "S3",
+   "who": "gill",
+   "mood": "grieving",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P22",
+   "q": "S1",
+   "who": "pardew",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P23",
+   "q": "S1",
+   "who": "bright",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P24",
+   "q": "P",
+   "who": "sallis",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P25",
+   "q": "P",
+   "who": "wenna",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P26",
+   "q": "P",
+   "who": "gorm",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P27",
+   "q": "P",
+   "who": "pardew",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P28",
+   "q": "S2",
+   "who": "cockle",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P29",
+   "q": "S1",
+   "who": "cockle",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P30",
+   "q": "S1",
+   "who": "wenna",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P31",
+   "q": "S2",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P32",
+   "q": "S1",
+   "who": "gill",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P33",
+   "q": "S1",
+   "who": "gauze",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P34",
+   "q": "P",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P35",
+   "q": "S2",
+   "who": "bright",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P36",
+   "q": "S2",
+   "who": "gauze",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P37",
+   "q": "S1",
+   "who": "keel",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P38",
+   "q": "S2",
+   "who": "pardew",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P39",
+   "q": "S3",
+   "who": "cockle",
+   "mood": "angry",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P40",
+   "q": "S2",
+   "who": "hobb",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P41",
+   "q": "S3",
+   "who": "keel",
+   "mood": "grieving",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P42",
+   "q": "S3",
+   "who": "pardew",
+   "mood": "grieving",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 601,
+   "id": "P43",
+   "q": "S3",
+   "who": "hobb",
+   "mood": "grieving",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 601,
+   "id": "P44",
+   "q": "P",
+   "who": "noll",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P01",
+   "q": "S3",
+   "who": "gauze",
+   "mood": "angry",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P02",
+   "q": "S3",
+   "who": "pardew",
+   "mood": "warm",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P03",
+   "q": "P",
+   "who": "ash",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P04",
+   "q": "P",
+   "who": "coe",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P05",
+   "q": "S1",
+   "who": "noll",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P06",
+   "q": "P",
+   "who": "mab",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P07",
+   "q": "S1",
+   "who": "strand",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P08",
+   "q": "S2",
+   "who": "strand",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P09",
+   "q": "S2",
+   "who": "pardew",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P10",
+   "q": "P",
+   "who": "fewell",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P11",
+   "q": "S2",
+   "who": "sallis",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P12",
+   "q": "S2",
+   "who": "coe",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P13",
+   "q": "S3",
+   "who": "noll",
+   "mood": "warm",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P14",
+   "q": "S2",
+   "who": "marrow",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P15",
+   "q": "S2",
+   "who": "gauze",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P16",
+   "q": "S3",
+   "who": "marrow",
+   "mood": "grieving",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P17",
+   "q": "S3",
+   "who": "penhallow",
+   "mood": "warm",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P18",
+   "q": "S3",
+   "who": "lugg",
+   "mood": "warm",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P19",
+   "q": "S2",
+   "who": "wenna",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P20",
+   "q": "S1",
+   "who": "gill",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P21",
+   "q": "S3",
+   "who": "coe",
+   "mood": "angry",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P22",
+   "q": "S3",
+   "who": "gill",
+   "mood": "grieving",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P23",
+   "q": "S2",
+   "who": "noll",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P24",
+   "q": "S1",
+   "who": "marrow",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P25",
+   "q": "S1",
+   "who": "keel",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P26",
+   "q": "S3",
+   "who": "sallis",
+   "mood": "warm",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P27",
+   "q": "S2",
+   "who": "penhallow",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P28",
+   "q": "S1",
+   "who": "wenna",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P29",
+   "q": "P",
+   "who": "pardew",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P30",
+   "q": "S1",
+   "who": "sallis",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P31",
+   "q": "S1",
+   "who": "gauze",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P32",
+   "q": "S3",
+   "who": "keel",
+   "mood": "warm",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P33",
+   "q": "S2",
+   "who": "lugg",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P34",
+   "q": "S1",
+   "who": "coe",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P35",
+   "q": "S3",
+   "who": "strand",
+   "mood": "angry",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P36",
+   "q": "P",
+   "who": "sabine",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P37",
+   "q": "S2",
+   "who": "gill",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P38",
+   "q": "S1",
+   "who": "lugg",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P39",
+   "q": "P",
+   "who": "keel",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P40",
+   "q": "S1",
+   "who": "pardew",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P41",
+   "q": "S1",
+   "who": "penhallow",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P42",
+   "q": "S3",
+   "who": "wenna",
+   "mood": "angry",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 602,
+   "id": "P43",
+   "q": "S2",
+   "who": "keel",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 602,
+   "id": "P44",
+   "q": "P",
+   "who": "fisk",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P01",
+   "q": "S3",
+   "who": "hobb",
+   "mood": "grieving",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P02",
+   "q": "S2",
+   "who": "hobb",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P03",
+   "q": "S3",
+   "who": "coe",
+   "mood": "warm",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P04",
+   "q": "S2",
+   "who": "lamb",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P05",
+   "q": "S3",
+   "who": "pardew",
+   "mood": "grieving",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P06",
+   "q": "P",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P07",
+   "q": "P",
+   "who": "lamb",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P08",
+   "q": "S1",
+   "who": "fisk",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P09",
+   "q": "S1",
+   "who": "pardew",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P10",
+   "q": "S2",
+   "who": "noll",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P11",
+   "q": "S3",
+   "who": "lamb",
+   "mood": "warm",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P12",
+   "q": "P",
+   "who": "sallis",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P13",
+   "q": "P",
+   "who": "penhallow",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P14",
+   "q": "S3",
+   "who": "merrow",
+   "mood": "warm",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P15",
+   "q": "S2",
+   "who": "merrow",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P16",
+   "q": "S2",
+   "who": "fisk",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P17",
+   "q": "S2",
+   "who": "sabine",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P18",
+   "q": "S2",
+   "who": "pardew",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P19",
+   "q": "S2",
+   "who": "cockle",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P20",
+   "q": "P",
+   "who": "pip",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P21",
+   "q": "S1",
+   "who": "sabine",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P22",
+   "q": "S3",
+   "who": "ash",
+   "mood": "warm",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P23",
+   "q": "S1",
+   "who": "ash",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P24",
+   "q": "S2",
+   "who": "ash",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P25",
+   "q": "S1",
+   "who": "cockle",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P26",
+   "q": "P",
+   "who": "mab",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P27",
+   "q": "S1",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P28",
+   "q": "S2",
+   "who": "bright",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P29",
+   "q": "P",
+   "who": "coe",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P30",
+   "q": "S1",
+   "who": "bright",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P31",
+   "q": "S1",
+   "who": "lamb",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P32",
+   "q": "S3",
+   "who": "cockle",
+   "mood": "grieving",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P33",
+   "q": "S3",
+   "who": "noll",
+   "mood": "angry",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P34",
+   "q": "P",
+   "who": "dace",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P35",
+   "q": "S1",
+   "who": "noll",
+   "mood": "neutral",
+   "answer": "LEFT",
+   "target": "RIGHT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P36",
+   "q": "S2",
+   "who": "coe",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P37",
+   "q": "S1",
+   "who": "merrow",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P38",
+   "q": "S3",
+   "who": "bright",
+   "mood": "grieving",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P39",
+   "q": "S3",
+   "who": "sabine",
+   "mood": "angry",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P40",
+   "q": "S1",
+   "who": "coe",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P41",
+   "q": "S3",
+   "who": "fisk",
+   "mood": "warm",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P42",
+   "q": "S3",
+   "who": "tobit",
+   "mood": "angry",
+   "answer": "LEFT",
+   "target": "LEFT",
+   "chose_target": true
+  },
+  {
+   "seed": 603,
+   "id": "P43",
+   "q": "S2",
+   "who": "tobit",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "LEFT",
+   "chose_target": false
+  },
+  {
+   "seed": 603,
+   "id": "P44",
+   "q": "S1",
+   "who": "hobb",
+   "mood": "neutral",
+   "answer": "RIGHT",
+   "target": "RIGHT",
+   "chose_target": true
+  }
+ ]
+}

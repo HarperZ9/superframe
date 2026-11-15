@@ -66,7 +66,7 @@ area: hill
 foe: f.lamplighter 4
 param: white-light (no dark anywhere in the room)
 prop: cut 0 0 ? has(hill.dark)
-talk: fx2.station.tea | Put the pole down and ask for tea ? fight_struck == 0 & fight_seconds >= 5
+talk: fx2.station.tea | Put the pole down and ask for tea ? fight_struck == 0 & fight_seconds >= 3
 win: hill.fight.station.win
 yield: hill.fight.station.yield
 fled: hill.fight.station.fled
@@ -742,7 +742,7 @@ go: hill.sub.menu
 place: substation
 cost: 0
 check: "[CANDLEMAS] Read the board through the louvres: which lamps hang on which switch." -> hill.sub.board / hill.sub.board.fail ? !has(hill.order_restrike) {skill: candlemas, dc: 5, verb: read, noise: 0}
-opt: "Hook the second switch down through the louvres with the Vane's stick, and run for the Alderman's house in the dark." -> hill.run ? !has(hill.dark) & !has(hill.rigged) {verb: cutpower, noise: 0.4}
+opt: "Hook the second switch down through the louvres with the Vane's stick, and run for the Alderman's house in the dark." -> hill.run ? !has(hill.dark) & !has(hill.rigged) {verb: cutpower, noise: 0.4, do: offer(cv.fire)}
 check: "[SUM] Candle under the string, string to the second switch: measure the minutes by the inch." -> hill.rig.ok / hill.rig.fail ? count(i.candle) > 0 & !has(hill.dark) & !has(hill.rigged) {skill: sum, dc: 6, verb: rig, noise: 0.1}
 opt: "Back up the lane." -> ^hub
 

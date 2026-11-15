@@ -1,0 +1,73 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "NED",
+ "setting": "quota",
+ "status": "draft 2026-10-21 from design/quota/02-HOUSEHOLDS.md by the voice director; generated from design/voice/quota-cast.json, edit that file",
+ "role": "Ned Furrowe: district inspector",
+ "age": "about 45",
+ "register": {
+  "level": "middle",
+  "education": "the district school and the inspectors' course in Arlen",
+  "class": "middle",
+  "trade": "district inspector",
+  "words": [
+   "district",
+   "return",
+   "yield",
+   "figure",
+   "inspection",
+   "the office"
+  ]
+ },
+ "region": {
+  "name": "tarn-town",
+  "markers": [
+   "you've not"
+  ],
+  "idioms": [
+   "what they sent in",
+   "reported as found"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 16
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television",
+  "teenager",
+  "famine"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "the true figure for his district",
+   "the hill",
+   "Krall's 340"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "cell",
+     "cells"
+    ],
+    "why": "Ned does not know where Tomas is held until Brack's people tell someone (02-HOUSEHOLDS, Brack era 2)",
+    "unless_gate": [
+     "tomas.held",
+     "cells"
+    ]
+   }
+  ]
+ },
+ "trade": "district inspector",
+ "wound": "the hill: he went up with Tomas Haldane and there was no hole under the goats",
+ "lie": "We only reported what the villages sent.",
+ "fears": "the hill: he went up with Tomas Haldane and there was no hole under the goats",
+ "hides": "We only reported what the villages sent.",
+ "tics": [
+  "what they sent in",
+  "reported as found"
+ ]
+}

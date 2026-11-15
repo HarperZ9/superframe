@@ -1,9 +1,10 @@
 // Builds fighters from the game's numbers: Lamb from the one sheet (SYSTEMS-FULL section 19: four
-// compartments as combat pillars, voices scaling tools, clothing, temper, fittings, learned moves)
-// and opponents from @foe records and an archetype (data/foes.mjs).
+// compartments as combat pillars, voices scaling tools, each a trait he carries (design/TRAITS.md),
+// clothing, temper, fittings, learned moves) and opponents from @foe records and an archetype (data/foes.mjs).
 import { profileOf, buildToolMoves } from "./data/tools.mjs";
 import { BODY, BODY_MOVESET } from "./data/body.mjs";
 import { SPECIALS, ARCHETYPES } from "./data/foes.mjs";
+import { eliteMove, eliteBrain } from "./data/archetypes.mjs";
 import { RULES } from "./data/common.mjs";
 import { createBrain } from "./ai/brain.mjs";
 import { soft, DERIVED as D, GRADES, TOOLS21, FITTINGS, CLOTHING, START_GEAR, LOAD, TEMPER_STEP, COMPOSURE } from "./data/build.mjs";
@@ -34,10 +35,11 @@ export function lambTool(toolId, fitting = null) {
 export const meets = (L, needs = {}) => shortfall(L, needs) === 0;
 export const shortfall = (L, needs = {}) => Object.entries(needs).reduce((m, [k, n]) => Math.max(m, n - (L[k] ?? 3)), 0);
 
-// What the build buys with this tool (19.2, 19.3): damage by the two scaling voices, poise
-// damage by GRIP, the case's catch by PRIDE, cheaper swings by SUM, longer dodge windows by THE
-// DARK and SALT (less in a heavy load), the read window by UNDERTOW and CARBON, the weak point by
-// CARBON and PRECEDENT, and the yield line opponents reach sooner by the HAT voices.
+// What the build buys with this tool (19.2, 19.3): damage by the two scaling traits, poise damage
+// by APPETITE (grip), the case's catch by VANITY (pride), cheaper swings by PRUDENCE (sum), longer
+// dodge windows by DREAD (dark) and NERVE (salt) (less in a heavy load), the read window by SHAME
+// (undertow) and GUILT (carbon), the weak point by GUILT and LOYALTY (precedent), and the yield line
+// opponents reach sooner by the AUTHORITY traits (design/TRAITS.md; ids in combat/data/traits.mjs).
 export function buildBonus(L, toolId = "w.hands", temper = 0, band = "medium") {
   const T = TOOLS21[toolId] || TOOLS21["w.hands"], short = shortfall(L, T.needs), met = short === 0;
   // a harsh shortfall (CHARACTER-BUILDING 3, adapted): one point under keeps 35% of the scaling, two or more 20%
@@ -69,8 +71,9 @@ export function loadOf(L, tool, gear = START_GEAR) {
   return { weight, limit, share, band: share < b[0] ? "light" : share < b[1] ? "medium" : share <= b[2] ? "heavy" : "over" };
 }
 
-// levels: the compartments (coat nose pen hat) and voices (grip ballast knees pride sum dark salt
-// carbon precedent undertow condolence formletter hearsay smell), meters (wear cold dread), wet.
+// levels: the compartments (coat nose pen hat: HARDNESS FEAR SUSPICION AUTHORITY) and voices (grip
+// ballast knees pride sum dark salt carbon precedent undertow condolence formletter hearsay smell:
+// the traits, combat/data/traits.mjs), meters (wear cold dread), wet.
 export function lambDef(levels = {}, toolId = "w.case", over = {}, learned = [], { gear = START_GEAR, temper = 0, fitting = null, items = null } = {}) {
   const L = { coat: 2, nose: 3, pen: 3, hat: 3, grip: 3, ballast: 3, knees: 3, wear: 0, cold: 0, dread: 0, wet: 0, ...levels };
   const tool = lambTool(toolId, fitting), ld = loadOf(L, tool, gear), load = ld.band === "over" ? "heavy" : ld.band, b = buildBonus(L, toolId, temper, ld.band);
@@ -80,6 +83,9 @@ export function lambDef(levels = {}, toolId = "w.case", over = {}, learned = [],
     kind: "lamb", hp: D.standing.base + D.standing.perCoat * soft(L.coat) + protection, stamina, poise: Math.max(1, soft(L.ballast) + protection * 0.5), grip: L.grip, tool,
     levels: L, bonus: b, gear, temper, fitting, loadInfo: ld, protection, soften: 1 - protection / (protection + D.protectionK),
     composureMax: D.composure.base + D.composure.perHat * soft(L.hat),
+    // Lamb comes into a fight with the calm for one exchange of words (2026-10-21 UX walk: from nothing,
+    // a new player standing still was down before holding the guard could pay for "Go quietly")
+    composureStart: COMPOSURE.talk,
     staminaRegen: stamina * BREATH.regenShare * LOAD.regen[ld.band] * (L.wear >= 6 ? 0.75 : 1), staminaDelay: BREATH.delay,
     speed: 3.3, accel: 28, turn: 14, radius: 0.38, height: 1.95, view: L.dread >= 7 ? 0.7 : 1, sight: "eyes",
     load, slow: !b.met, art: (TOOLS21[toolId] || TOOLS21["w.hands"]).art, tempo: tempoOf(L, ld.band), breaks: breakpoints(L),
@@ -98,12 +104,12 @@ export function foeDef(rec, style, over = {}) {
     kind: style, name: get("name") || style, hp: +(get("standing") || d.standing), stamina, poise: +(get("poise") || d.poise), grip: d.grip, tool,
     staminaRegen: stamina * BREATH.regenShare * BREATH.foe, staminaDelay: BREATH.delay, speed: d.speed, accel: d.accel, turn: d.turn, radius: d.radius, height: d.height,
     sight: get("sight") || "eyes", view: 1, load: loadBand(tool.weight), slow: false, yields: yieldsAt(get("yields")),
-    faction: get("faction") || null, char: get("char") || null, items: { ...A.items }, lantern: 0, style, ...over,
+    faction: get("faction") || null, char: get("char") || null, items: { ...A.items }, lantern: 0, style, frontGuard: d.frontGuard || 0, ...over,
   };
 }
 
-// Lamb's own copies: strikes by the build, the case's catch by PRIDE, swings cheaper by SUM, and
-// footwork with its own ids (lamb:roll ...) and windows lengthened by THE DARK and SALT.
+// Lamb's own copies: strikes by the build, the case's catch by VANITY, swings cheaper by PRUDENCE,
+// and footwork with its own ids (lamb:roll ...) and windows lengthened by DREAD and NERVE.
 function strengthen(moves, p, b) {
   const out = {};
   for (const [id, m] of Object.entries(moves)) {
@@ -161,9 +167,15 @@ export function fighterSpec(id, team, def, at, { face = 0, brain = false } = {})
   }
   const A = def.style && ARCHETYPES[def.style];
   if (A) for (const s of A.specials) moves[s] = SPECIALS[s];
+  // an elite's signature move, armoured (combat/data/archetypes.mjs), and its quicker brain
+  let brainCfg = def.brainCfg || (A && A.brain);
+  if (A && def.elite && A.signature && SPECIALS[A.signature]) {
+    const id = `${A.signature}@elite`; moves[id] = eliteMove(SPECIALS[A.signature]);
+    brainCfg = eliteBrain({ ...brainCfg, attacks: brainCfg.attacks.map((a) => (a.move === A.signature ? { ...a, move: id } : a)) });
+  }
   const base = { ...BODY_MOVESET, light: `${p}light_1`, heavy: `${p}heavy`, catch: `${p}catch` };
   const moveset = team === "lamb" ? { ...ownFootwork(base, p), art: moves[`${p}art`] ? `${p}art` : null, art2: moves[`${p}art2`] ? `${p}art2` : null, run: `${p}run`, use: ["use_lantern", "use_bottle", "use_rope", "use_salt"] } : base;
   const handset = { light: `${p}hands:light_1`, heavy: `${p}hands:heavy`, catch: `${p}hands:catch` };
-  return { id, team, x: at[0], z: at[1], face, def: { ...def, moveset, hands: handset, variants }, moves, brain: brain && A ? createBrain(A.brain) : null };
+  return { id, team, x: at[0], z: at[1], face, def: { ...def, moveset, hands: handset, variants }, moves, brain: brain && brainCfg ? createBrain(brainCfg) : null };
 }
 export { COMPOSURE };

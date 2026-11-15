@@ -11,6 +11,7 @@
 //   stepDrop(arena, ax, az, bx, bz) -> metres the body drops going from a to b across a ledge
 //                             (negative: a climb), 0 when no ledge lies between
 import { WORLD, OFF } from "../data/world.mjs";
+import { dhypot } from "./math.mjs";
 
 const cache = new WeakMap();
 
@@ -46,7 +47,7 @@ function cellIndex(arena, x, z) {
 
 function hazardAt(T, x, z) {
   for (const hz of T.hazards) {
-    if (hz.rect ? x >= hz.rect[0] && x <= hz.rect[2] && z >= hz.rect[1] && z <= hz.rect[3] : Math.hypot(x - hz.at[0], z - hz.at[2]) <= (hz.r || 1)) return hz;
+    if (hz.rect ? x >= hz.rect[0] && x <= hz.rect[2] && z >= hz.rect[1] && z <= hz.rect[3] : dhypot(x - hz.at[0], z - hz.at[2]) <= (hz.r || 1)) return hz;
   }
   return null;
 }
@@ -85,7 +86,7 @@ const crosses = (ax, az, bx, bz, cx, cz, dx, dz) => side(ax, az, bx, bz, cx, cz)
 // tell a reachable Lamb from one up a wall or down on the floor.
 export function ledgeClear(arena, ax, az, bx, bz) {
   if (OFF.has("ledges") || !grid(arena)) return true;
-  const d = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.ceil(d / (arena.cell * 0.5)));
+  const d = dhypot(bx - ax, bz - az), n = Math.max(1, Math.ceil(d / (arena.cell * 0.5)));
   let px = ax, pz = az;
   for (let k = 1; k <= n; k++) { const x = ax + ((bx - ax) * k) / n, z = az + ((bz - az) * k) / n; if (stepDrop(arena, px, pz, x, z) !== 0) return false; px = x; pz = z; }
   return true;

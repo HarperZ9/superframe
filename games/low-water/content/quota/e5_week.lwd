@@ -1,0 +1,294 @@
+# Era 5, The Clearance: the weeks between the clip and the clearance. The viewing room (Teo identifies his son),
+# the drive home from the tea or the night on Mill Street (by class), the funeral and the counter-march on Mill
+# Street, the Yard's other doors on the clearance morning, and the commemoration's ceremony before Mara's floor.
+# Story lead, 2026-10-23. DRAFT: every line waits for the author's line approval (ledger row S14).
+# Design: design/eras/era5.md sections 2, 10 and 11 (the four near-silences; the van; the clip on every phone).
+# Weighted-devices pass, 2026-10-23 (design/device-audit/era5.md): the shrine is handprints in paint, not words in
+# marker; Leon's pocketbook is his bodycam on its charger; the panel looks at Tom's photographs and asks him to say it
+# aloud; the League's banners are chanted; the channel's mockery of Ryan is a voice in the dinner queue.
+
+# ---------------------------------------------------------------- the viewing room
+@node e5.ident
+place: q5_mortuary
+speaker: TEO
+cost: 0
+camera: near
+nar: The Friday. The viewing room at the General, which is not the room behind the mortuary. It has a sofa and a box of tissues and a print of a lake, and a curtain across a window in the wall, and behind the curtain, through the glass, a bed.
+nar: The family liaison officer is a young woman called Bev with a lanyard and a folder. She has told Teo three times that he doesn't have to do this, that a photograph would do. He has said three times that he wants to see his son.
+nar: Mira has come and sits on the sofa with her handbag in both hands. Kasem has stayed home. Ines is not allowed. Ines is outside in the corridor with her back against the wall, because she wasn't allowed in and wouldn't go home.
+line: TEO: Open it.
+nar: Bev draws the curtain. Danil is on the bed under a white sheet to the chin, with his hair combed the wrong way, to the side, the way nobody ever combed it. Somebody has washed his face. They haven't got all the grit out of the graze, and it's darker now, along the cheekbone, and the cheek under it has gone a colour like a plum.
+nar: Teo puts both hands flat on the glass.
+line: TEO: That's my son.
+line: TEO: That's him. Danil Saro. Seventeen. He works at the bakery.
+nar: Bev says it back to him, quietly, his son's name, so he knows somebody has heard it said.
+line: TEO: Can I touch him.
+line: BEV: I'm sorry. Not yet. Not till the coroner's finished. I'm so sorry.
+line: TEO: He's got his hair wrong. Can somebody do his hair.
+nar: Bev says she'll ask. She won't be able to. Mira gets up from the sofa and goes to the glass and stands by her son with her handbag over her arm, and says something to the boy behind the glass in the Vell, quietly, the way you talk to a child who is asleep, so as not to wake him, so as to wake him a little.
+nar: Then Teo turns round and walks out past Ines in the corridor without seeing her, and down the corridor, and through the doors at the end, and out into the car park, where he stands in a space marked for disabled drivers in his shop coat in the rain, and screams. Just once. Very long. People in their cars turn their heads. A porter with a trolley stops.
+nar: Ines stays in the corridor with her back against the wall. Bev sits down next to her on the floor, in her good trousers, and doesn't say anything, and stays there with her till the porter has gone by and Teo hasn't come back.
+go: e5.tea
+
+# ---------------------------------------------------------------- after the tea, by class
+@node e5.after
+cost: 0
+alt: e5.after.leon ? q_class == militia
+go: e5.after.tom
+
+@node e5.after.tom
+place: q5_haldane_yard
+speaker: KIT
+cost: 0
+camera: near
+nar: The car home from the tea. Kit in the passenger seat with her knees up and her phone dark in her lap, which is how you know.
+nar: Mill Street. The lights at the bottom are red. On the left, the Saros' shop, the sheet in the window above it, the ply sprayed and sprayed over. The flowers are three deep against the shutter now. Candles in jars. A school photograph in a plastic sleeve taped to the ply, the tie, the bad haircut, and all round it, kids from the school have put their hands in paint and pressed them on the ply, dozens of hands, small ones and big ones, every colour the art room had.
+line: KIT: Can we stop.
+line: TOM: It's red anyway.
+line: KIT: I mean stop. Get out.
+nar: You pull in on the double yellows. She gets out and stands at the flowers in her coat. She doesn't kneel or put anything down. She finds one of the hands, low down, red, and puts her own hand flat over it, and it's the same size.
+nar: You stay in the car with the engine running. A van goes past slowly, a works van with three lads in the front, and one of them leans out of the window and shouts something at the flowers, and Kit doesn't turn round.
+nar: When she gets back in she does her seat belt and sits there.
+line: KIT: Ryan was in my form. He gave me a Twix once in Year Seven because I was crying about my rabbit. He's not even a bad person.
+line: TOM: He's fifteen.
+line: KIT: So am I.
+nar: The lights go green. You don't move. The car behind you flashes once and goes round.
+line: KIT: What did you do. At their house. Mara's. I saw you looking at your hands at the tea like they were going to bite you.
+voice: sum: The dot's on their door. She'll walk past it. She'll know if you lie. {dc: 2}
+line: TOM: I photographed the wall with Joss in front of it. And the dot. It's what they asked for, Kit. {when: has(said.e5_tom_unfit)}
+line: TOM: I went up a ladder and pulled their gutter off and got wet through. It'll make no difference. {when: has(said.e5_tom_remedy)}
+line: KIT: Right.
+nar: She puts her earphones in. She doesn't play anything. You can tell, because there's no sound coming out of them, and she always has it too loud.
+nar: On Thursday you go with your mother to the food bank in the church hall, because Jo's on nights and Nan's back is bad, and somebody has to lift the boxes. The Orme portrait over the hatch, the man in the high collar. A queue down the side of the hall and out of the door, more than you've ever seen. Tarn families from the far bank. Vell families from the Row as was. Two Hesh women in headscarves at the very end, who came in last and let everybody go in front.
+nar: Nan works the hatch. She's quick. She knows everybody's name and their kids' names and who can't have nuts. A Vell woman with a girl of five gets to the front and holds out her hands for the box, and the volunteer next to Nan, a woman from the Furrow Church in a fleece, looks at the woman's headscarf, not her face, for a long time, and doesn't lift the box.
+line: NAN: Give her the box, Pauline.
+line: NAN: Pauline. Give her the box. She stood in the queue. It's the same queue as everybody's.
+nar: Pauline gives her the box. The little girl carries the tins. She's very proud of carrying the tins, and she drops one, and it rolls under the trestle, and you get down on your knees on the church hall floor and get it, and give it her, and she says thank you in Tarnish with a lovely accent, and you can't stand up for a second.
+go: e5.move
+
+@node e5.after.leon
+place: q5_mill_street
+speaker: LEON
+cost: 0
+camera: near
+nar: That night you drive to Mill Street. You're off duty, in your own car, a grey estate with a child seat in the back that's been there since Carol left. You park up by the chip shop and sit.
+nar: Across the road, the Saros' shutter. Flowers three deep. Candles in jars, some still going. A school photograph taped to the ply, the tie, the haircut, and kids' handprints in paint all round it, dozens, pressed on hard.
+nar: The paving stone in front of the shutter. You know which one. The fourth from the kerb, with a crack across one corner. You knelt on that crack. Somebody has scrubbed the stone and it's paler than the ones round it, and the pale is the shape of a lad lying down, if you look, and you look.
+voice: ballast: You've stood on a thousand pavements where something happened. They all get scrubbed. It's a pavement. {dc: 2}
+voice: grip: After he stopped. How long you stayed on after he stopped. Your knee has been going over it all night, the way a tongue goes to a broken tooth. {dc: 1, sense: e5.knee}
+nar: The shop's side door opens. Teo Saro comes out in his shop coat with a bin bag, and puts the bin bag in the wheelie bin, and stands there, and looks across the road, at the chip shop, at the grey estate, at you in it with the window down.
+nar: He doesn't know you. Nobody's printed your name. He sees a big man in a car at night on Mill Street, which is a thing he's seen every night of his life, and he looks at you the way you'd look at weather.
+nar: Then he looks at you a bit longer.
+opt: "Wind the window up and drive away." -> e5.after.leon.out {do: set(said.e5_leon_drove)}
+opt: "Get out of the car." -> e5.after.leon.out {do: set(said.e5_leon_got_out)}
+
+@node e5.after.leon.out
+place: q5_mill_street
+speaker: TEO
+cost: 0
+nar: You wind the window up. Your hand's on the handle and it won't go fast enough. In the mirror, as you go, Teo Saro is still standing by the bin with the lid up, looking at where the car was. {when: has(said.e5_leon_drove)}
+nar: You get out of the car. You stand on the other side of Mill Street with the car door open between you and the road, like a shield, and you've no idea what you're going to say. Teo waits. {when: has(said.e5_leon_got_out)}
+line: TEO: You want something? Shop's shut. {when: has(said.e5_leon_got_out)}
+line: LEON: No. Sorry. Sorry, mate. {when: has(said.e5_leon_got_out)}
+nar: He nods. He's used to men saying sorry, mate, at night, on this street, and meaning nothing by it. He drops the bin lid. He goes in, and you hear him lock the side door, two locks and a chain, and you stand in the road with your car door open until a taxi hoots you. {when: has(said.e5_leon_got_out)}
+nar: At home your mother's left the hall light on. On the hall table, your bodycam in its charger, its little green light on. She's put her reading glasses on top of it, folded, like a paperweight.
+go: e5.move
+
+# ---------------------------------------------------------------- the funeral, and the march that met it
+@node e5.funeral
+place: q5_mill_street
+speaker: INES
+cost: 0
+camera: wide
+do: set(e5.funeral_walked)
+nar: The funeral is on the Tuesday, two weeks to the day. The coroner releases the body on the Monday afternoon, and the Vell bury before the next sunset when they can, and they can't, so they bury as soon as they're let.
+nar: There's no hearse. The men carry him. Six of them in turns, from the shop down Mill Street to the Vell plot at the far end of the new cemetery by the bypass, a mile and a half, in the old way, the box on their shoulders and the women walking behind, and the street fills up behind the women. Tarn families from the Yard. The Well House, the old women in their scarves. Kids from the school in uniform with a banner they made in Art. Kit is in it. {when: q_class == inspector}
+nar: There's no hearse. The men carry him. Six of them in turns, from the shop down Mill Street to the Vell plot at the far end of the new cemetery by the bypass, a mile and a half, in the old way, the box on their shoulders and the women walking behind, and the street fills up behind the women. Tarn families from the Yard. The Well House, the old women in their scarves. Kids from the school in uniform with a banner they made in Art. {when: q_class == militia}
+nar: You're on the pavement outside the chip shop. You don't walk. You stand with your hands in your pockets, where the van stopped. {when: q_class == inspector}
+nar: You're in the control room at headquarters on restricted duties, watching it on the screens from the helicopter's camera. Four screens. The coffin is a small bright thing, moving very slowly down a grey street with everybody behind it. {when: q_class == militia}
+nar: At the bottom of Mill Street, by the bridge, the League are waiting. A crowd of them, in black, behind a line of police. Flags and the sheaf. A lad of twenty with a megaphone. When the box comes level with them the megaphone starts, and the rest come in under it.
+line: LEAGUE: Back the blue. Where's the knife. Back the blue.
+nar: Then a chant about going home, the old one, from the mill, from before the mill. Some of them are filming the coffin on their phones.
+nar: The bearers don't stop. Teo is at the front left corner, under the head. He doesn't turn his face. The women behind start singing, in the Vell, a funeral song, and the Hesh women from the Well House don't know the words but they know the tune from somewhere, the same tune, very nearly, and they hum it, and it goes back along the street behind them like a wind going over grass.
+nar: Then one of the League lads throws a can. Full. It hits a bearer, Danil's cousin from Arlen, on the side of the head, and he goes down on one knee with the corner of the box still on his shoulder, and the box tips, and the whole street makes one sound.
+nar: Ines Saro steps out from the women. Fourteen, in a black headscarf she's never worn before. She walks across the road to the police line, and through it, because nobody can think how to stop her, and stands in front of the lad with the megaphone, close, and looks up at him.
+line: INES: That's my brother.
+line: INES: You can film him if you want. That's my brother. He burned the bread. He was rubbish at it. Film that.
+nar: The lad lowers the megaphone. He doesn't know what to do with his face. Behind him somebody laughs and somebody else tells them to shut it. The cousin gets up with blood coming out of his hair and takes the corner again, and the box goes on, level, past the bridge, and the singing goes on, and the street goes on behind it, a mile and a half to the bypass, and you can hear it all the way back up Mill Street after the last of them have gone round the bend.
+voice: undertow: Everybody was filming. Somebody'll cut it. Somebody'll put music on it. {dc: 3}
+go: e5.kasem
+
+# ---------------------------------------------------------------- the clearance morning: the other doors
+@node e5.door.others
+place: q5_haldane_yard
+speaker: SHAW
+cost: 0
+camera: wide
+nar: The Haldanes' door is the last orange cross. Doyle does the Yard in order, from the arch, like a postman.
+nar: Number one, the Peels, have gone already. The door's open and the rooms are empty and there's a child's drawing still taped to the inside of the window, a house with a sun and four people, felt-tip, faded to pink and green.
+nar: Number two, Mrs Orrin, eighty-eight, Tarn, who has lived in the Yard since she was married, won't come down the stairs. The bailiffs carry her down in her chair, two of them, the way you'd carry a sedan chair, and she holds her handbag on her knee and tells them they're good lads and asks them to mind the turn. At the bottom she asks where she's going, and nobody knows. A social worker comes running from her car and doesn't know either.
+nar: Number five, the Veleks, Vell, a man and his wife and three children under eight. They barricaded the door last night with the wardrobe. The bailiffs take the door off its hinges with a crowbar, and push the wardrobe over from outside, and it goes down inside the room like a tree, and the youngest is behind it, and screams, and isn't hurt, and screams anyway, on and on, a high noise that goes round the Yard and comes back off the walls.
+nar: Shaw goes in for the child. He comes out with her on his hip, three years old, kicking, her face red and wet, her hands in his hair, pulling, and he lets her pull, and he carries her across the cobbles to her mother at the tape, and the mother takes her and spits in his face, and he stands there and lets it run.
+line: SHAW: Sarge.
+line: SHAW: Sarge, I can't do the next one.
+nar: Doyle's lads carry out the Veleks' beds, a cot with the sides down, a television wrapped in a duvet, a bag of shoes. They stack it by the drain. It starts to rain properly. Somebody from the Union holds an umbrella over the television.
+nar: Then it's the Haldanes'.
+alt: e5.door.f ? q_class == inspector & has(e5.carry_f3)
+go: e5.door.ann
+
+# ---------------------------------------------------------------- the commemoration's ceremony, before Mara's floor
+@node e5.square.rite
+place: q5_square
+speaker: DENNIS
+cost: 0
+camera: wide
+nar: The ceremony starts at eleven. The brass band from the Arlen colliery plays a hymn the Furrow Church sings at harvest, and plays it well, slow, the tuba holding the bottom of it.
+nar: The minister speaks first, a woman in a blue coat who arrived in a car with a flag on it and has a train at half past. She says the word resilience. She says a nation remembers. She lays a wreath of poppies and wheat at the foot of the sheaf, and stands for a photograph with her head bowed, and holds it, while the photographer moves round, and then goes.
+nar: Dennis Krall speaks for the council. He speaks well. He talks about his grandfather, who was in the relief queue in the hard winter, and came out of it, and built something. He talks about the ring road, and the Opportunity Area, and how the town that came through that winter will come through anything. He doesn't say who was in the queue in front of his grandfather, or who wasn't let in it. Nobody expects him to.
+line: DENNIS: We don't forget. That's what today's for. We don't forget what this town went through.
+nar: The Furrow League lay a wreath in their colours, black and gold, and the lad who lays it says it loud enough for the square.
+line: LEAGUE: For our own.
+nar: The Plain Union lay one of daffodils from somebody's garden, done up in string. The Well House lays nothing. Sefa Tesk stands at the back of the square by the bench that used to be the scale, in his coat, and doesn't come any nearer.
+nar: Somebody has brought chalk again. A little girl, seven or eight, Hesh, in a pink coat, crouches at the foot of the plinth while everybody's looking at the minister, and chalks a word on the step in Heshen, slowly, saying it under her breath as she makes it, and her mother pulls her away by the hood. Nobody else sees. By the morning the step will be washed.
+alt: e5.square.h ? has(e4.carry_h1)
+alt: e5.square.letter ? !has(q.tomas_held)
+go: e5.square.hills
+
+# ---------------------------------------------------------------- the week before the vote, by class: the panel, the interview
+@node e5.office
+cost: 0
+alt: e5.office.leon ? q_class == militia
+go: e5.office.tom
+
+@node e5.office.tom
+place: q5_council
+speaker: TOM
+cost: 0
+camera: near
+nar: The Monday before the vote. The housing panel, in committee room B, which has no windows and a whiteboard nobody has wiped since a training day on resilience. Five officers round a table. A jug of water with a plate on top. A screen on the wall with your photographs on it, and a clicker going round the table.
+nar: The chair is Gail Prentice, head of regeneration, who has cleared four yards and done a marathon for the hospice. She's kind. Everybody says so. She has a cold and a box of tissues and she apologises for the cold.
+nar: She clicks through the Upper Town. Black walls. Pink dots. Door after door. Nobody says anything. The clicker clicks.
+nar: Haldane Yard comes up. Joss in his chair with the oxygen in his nose and the black wall behind him, looking straight at the camera with his mouth shut. Then the dot on his door, close up, run a little. Gail clicks on. {when: has(said.e5_tom_unfit)}
+nar: Haldane Yard comes up. Joss in his chair with the black wall behind him. Then the next: water coming off the eaves in a rope, and a man's wet sleeve in the corner of the frame. Gail stops clicking. She looks at the water a long time, and then at your sleeve, at the table, as if it might still be wet. {when: has(said.e5_tom_remedy)}
+voice: precedent: The panel takes the survey as the officer says it. You're the officer. {dc: 2}
+nar: She asks you, kindly, out loud, so the room hears: is the wall the gutter's doing? Because if it is, she says, the Yard's fixable, and the clearance can't include it, and the ring road's junction moves east into the syndicate's car park, and the syndicate will want to know why. {when: has(said.e5_tom_remedy)}
+nar: Or would you be comfortable saying the Yard's unfit, and the gutter's a matter for the maintenance team. Two different things. Nobody's asking you to take your photograph down. {when: has(said.e5_tom_remedy)}
+nar: She says thank you, very thorough, and clicks to the next yard. The whole thing takes four minutes. You'd thought about it for three months, and it takes four minutes, and somebody pours you a glass of water off the jug with the plate on, and you drink it. {when: has(said.e5_tom_unfit)}
+opt: "Say it: It's unfit. The gutter's for maintenance." -> e5.office.tom.out {do: set(said.e5_tom_panel_yes)}
+opt: "Say it: It's the gutter. Fix the gutter and the Yard's fine." -> e5.office.tom.out {do: set(said.e5_tom_panel_no)}
+
+@node e5.office.tom.out
+place: q5_council
+speaker: TOM
+cost: 0
+nar: Gail says it back to the room, slowly, so everybody's heard it the same: the officer says unfit. She doesn't look at you while she says it, which is a kindness, and you hate her for it, a little, the way you'd hate a nurse. {when: has(said.e5_tom_panel_yes)}
+nar: Gail says it back to the room, slowly: the officer says the gutter. Then she says she'll have to take it to the director, and the director will take it to the member, and the member is Dennis Krall. You understand that what you've said goes up the stairs and comes back down different. On Wednesday it does. Dennis stops you on the stairs, smiling, and says, we've heard about your gutter, Tom, and the Yard is still on the vote. {when: has(said.e5_tom_panel_no)}
+nar: In the corridor afterwards a woman from legal you've never spoken to touches your arm and says, don't take it personally, it's the road, it was always going to be the road. She means it to help.
+go: e5.vote
+
+@node e5.office.leon
+place: q5_police
+speaker: LEON
+cost: 0
+camera: near
+nar: The Monday before the vote. Standards. An interview under caution in a room on the ground floor of headquarters with a recorder that beeps for a long time before it starts. The Fed rep beside you in his fleece. Across the table, an investigator called Rahman, forty, very calm, with a laptop.
+nar: She turns the laptop round. She plays it. All of it. The whole four minutes, the version from the window, from the first second. The lad walking up the street eating a roll. The van pulling across him. The lad's hands going up, both of them, the paper bag in one.
+nar: You've never seen the start. You were in it.
+line: LEON: I've not seen that bit.
+nar: Rahman stops it where his feet go still. The lad's mouth open on the paving.
+voice: grip: That's where you felt it. Under your knee. The give. {dc: 1}
+voice: ballast: Say what you said to the camera. Say it and stop. The Fed told you. {dc: 2}
+nar: She asks what you heard at that point. You say, he stopped. She asks what you did. You say, I stayed on. The Fed rep stops fidgeting with his lanyard. {when: has(said.e5_leon_true)}
+nar: She asks what you heard at that point. You say you heard him go limp. She asks what limp sounds like. The Fed rep says the officer's answered the question. {when: has(said.e5_leon_limp)}
+nar: She plays the next part without saying anything, all of it, however long it is. Your knee in the frame. Shaw saying Sarge. You saying, he's all right, he's playing. Rahman doesn't stop it there. She lets you hear yourself.
+nar: Then she plays the shutter. The banging from inside. The man shouting. She asks if you knew who that was. You say no. She tells you. You'd guessed, but she tells you. It was the lad's father, behind his own shutter, locked out of the street, with his son on the paving on the other side of a sheet of steel.
+line: LEON: Can we stop for a minute.
+nar: They stop for a minute. The recorder says the time. You sit with your hands flat on the table the way your mother sits on a bus, and you look at them, and they're the same hands. That's the thing. They're the same hands you had on Tuesday.
+go: e5.vote
+
+# ---------------------------------------------------------------- the night before: packing the Haldane flat
+@node e5.pack
+place: q5_mara_flat
+speaker: JOSS
+cost: 0
+camera: near
+nar: Friday night, late. The Haldane flat in boxes. Supermarket boxes that say bananas, and the crockery wrapped in the Gazette, Danil's face on half the sheets, because that's what the Gazette's been for three weeks.
+nar: Mara has done the kitchen. Kev has done the beds and gone home. Joss is in his chair with the oxygen, wrapping his wife's plates one at a time, slowly, because he wants a job, and Mara lets him have the job.
+nar: At ten Ryan comes round on his bike. Nobody asked him. He stands in the door with his helmet still on and says his dad said he should help. His dad said nothing of the kind. He starts carrying boxes down to the van in the Yard, two at a time, too many, and nearly drops the plates on the stairs, and doesn't.
+nar: When Mara goes down with the last of the kitchen, Ryan and Joss are on their own in the back room, under the black wall with the bedsheet with the birds on it, taken down now, folded on the chair.
+line: RYAN: Is it true. What they're saying. About the Yard. That it's, like, a Hesh yard. From before.
+line: JOSS: Who's saying.
+line: RYAN: On the League's page. They had an old photo up. The Yard, years ago, men in it with braids, and the goat over our door with its head still on.
+nar: Joss looks at the boy. The valve clicks. Click. Click. The boy's helmet is still on, the strap undone and hanging. He looks about nine in it.
+line: JOSS: It was a lot of people's yard. Over the years.
+line: RYAN: But was it them. First.
+nar: Joss holds a plate in the Gazette on his knee. Danil's face is on the paper round it, the school photograph, the tie. He turns the plate in his hands so the face goes round and round.
+line: JOSS: Your great-great-grandad made a table out of a door in this yard. A barn door. With a goat on the leg.
+line: RYAN: Where is it?
+line: JOSS: Sold. Before you were born. Your gran needed the money for the electric.
+line: RYAN: Was he Hesh, then? That one?
+nar: Mara comes back up the stairs. Joss hears her on the third step, the one that goes, and he puts the plate in the box.
+line: JOSS: Go home, Ryan. Tell your dad thanks for the van.
+nar: Ryan goes. On the landing he says, see you tomorrow, then, Grandad, which he's never called him, Joss is his great-uncle, and Joss doesn't correct him, and Mara watches Joss not correct him, and neither of them says anything about it till the morning, and then nobody does, because of the van.
+go: e5.night
+
+# ---------------------------------------------------------------- the last shift at the bakery, before the clip
+@node e5.bakery
+place: q5_mill_street
+speaker: BAKER
+cost: 0
+camera: near
+nar: Tuesday night, before. Lowe's bakery on Mill Street, the back room, ten to eleven. The ovens ticking as they cool. Flour in the air so thick under the strip light that it looks like weather.
+nar: Danil Saro has done his first late shift. Five hours on the dough for the morning, his forearms white to the elbow, flour in his eyebrows, flour in the beds of his nails. He's seventeen and he has never been so tired or so pleased.
+nar: Mr Lowe is sixty-one and has had the bakery since his father, and his father's father had it before that, when it was a Hesh bakery on a Hesh street and the Lowes were the Lowys. He doesn't talk about that. He talks about bread.
+line: BAKER: Not bad. Not bad for a lad who set fire to his mother's kitchen.
+line: DANIL: That was one time. That was art.
+line: BAKER: Your sister sent me the video. I've seen your art. Take a bag of the rolls, the flat ones, they'll not sell. And go straight home. Straight up the street.
+line: DANIL: It's two minutes.
+line: BAKER: Then it'll take you two minutes. There's been police up and down all night since that business on Bridge Street. Hood down. Hands out of your pockets. Straight home.
+nar: Danil laughs. He takes his hood down, to show he's listening, and puts it up again as soon as he's out of the back door, because it's April and it's cold, and the paper bag of rolls is warm against his chest through the tracksuit.
+nar: He eats one on the step. He always does. He's got a key on a shoelace round his neck, so he won't lose it, because he lost the last three. He starts up Mill Street towards the shop with the light on over it, where his father is doing the till.
+nar: Behind him, at the bottom of the street, a van turns in off Bridge Street with its lights on full.
+go: e5.clip
+
+# ---------------------------------------------------------------- Ryan on the channel
+@node e5.ryan
+place: q5_channel
+speaker: ELLIE
+cost: 0
+camera: near
+nar: The week of the vote, Ellie Ashby gets a message from a lad of fifteen who says he's Tarn and his family's being cleared out of Haldane Yard by people who say they care about the Yard, and could he come on. She checks his age. She asks for a parent. A man called Kev says on the phone, yeah, whatever, he's always on that thing anyway.
+nar: The ring light. Ryan in her spare room in his school jumper, sat where her guests sit, on a stool that's slightly too high, so his feet don't reach the floor properly and he keeps having to hook them on the rung.
+line: ELLIE: So you live in the Yard. Tell people what it's like.
+line: RYAN: It's all right. It's damp. My great-uncle's got bad lungs off the mill. The council said it's not fit. So.
+line: ELLIE: And what do you think about the people saying it's a heritage site? That it should be saved because of who lived there before?
+line: RYAN: Dunno. It's a yard. Everybody's lived in it.
+line: ELLIE: Some people are saying it was a Hesh yard. Originally.
+nar: Ryan looks at the camera. Not at her, at the lens, the little black circle in the ring of light, the way you look at somebody when you've been told something about yourself in front of other people and you don't know yet if it's true.
+line: RYAN: My family's Tarn. We've always been Tarn.
+line: ELLIE: Great. That's great. Thanks, Ryan.
+nar: It's the best clip she gets all month. She cuts it to eleven seconds. My family's Tarn. We've always been Tarn. With his face, his school jumper, the Yard behind his name in the caption.
+nar: By the weekend the League have put it out again, with the old photograph of the Yard beside it, the goat over the door, and a man's voice laughing over the top. In the dinner queue at school a lad holds his phone up next to Ryan's ear with the sound right up.
+line: LEAGUE: He doesn't even know. Bless him. He doesn't even know.
+nar: Kit is behind him in the queue and sees his face, and then he's gone, through the fire door into the yard, and doesn't come back for afternoon registration.
+go: e5.cert
+
+# ---------------------------------------------------------------- the Saros after the funeral
+@node e5.kasem
+place: q5_saro_flat
+speaker: KASEM
+cost: 0
+camera: near
+nar: The night of the funeral. The flat over the shop, full of people, then empty of them. Plates of food on every surface going stiff under cling film. The women from the Well House did the washing up and left a pan of something on the hob with a cloth tied over it with blue thread, the way the Hesh do it, and nobody in the flat knows the knot.
+nar: Kasem comes out of the bedroom. Seventy-five. He hasn't been out of it in two weeks except to the toilet. He's in his good suit, the jacket he had on the day the train came in, sixty years ago, which has been let out twice and still doesn't do up. He didn't go to the funeral. He couldn't stand. He's dressed for it now.
+nar: He goes to the tray of tea glasses on the sideboard and takes one, the one with the gold rim worn off, and holds it up to the light.
+line: KASEM: He had this one. When he was small. Your mother let him. Always this one.
+line: MIRA: I know. Sit down, Kasem.
+line: KASEM: I carried these from the border. In the cage. With the straw. Your father carried the cage and I carried the bags. Three borders. Not one broke.
+line: KASEM: Not one. Sixty years. Then this.
+nar: He puts the glass back on the tray very carefully, the way you'd put down a bird. Then he sits on the settee next to Ines, who has her phone in her lap, dark, and he puts his hand on top of her head, on the black scarf, and leaves it there, heavy.
+line: INES: Grandad. Do you want to see the bread one.
+line: KASEM: Show me.
+nar: She plays it. Danil at the oven. The smoke. The black tray held up like a trophy. It's art, Nana. Kasem watches it with his hand on her head. When Danil bites the roll and it cracks like a slate, Kasem laughs, a short one, out of his nose, surprised, and then puts his other hand over his face and keeps it there.
+nar: Ines plays it again. Nobody stops her. It plays a lot of times. Outside on Mill Street somebody drives past slowly with music on, a song with a chant in it, and the windows shake, and goes.
+go: e5.office

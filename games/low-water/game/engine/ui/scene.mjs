@@ -12,6 +12,9 @@ export function hudEl(G) { return hudTab(G); }
 // Meters as marks: a notch per unit, filled to the value, with the name and number in words.
 export function meterMarks(G, { all = false } = {}) {
   const out = [];
+  // a book that shows no meters at all (The Quota: decay is shown by the world, never counted on screen,
+  // design/quota/04-SYSTEMS.md section 4), though it borrows a ruleset that has some
+  if (String((G.book && G.book.meta && G.book.meta.meters) || "").trim() === "off") return out;
   for (const m of Object.values(G.content.meters)) {
     const v = G.pressure.meter(m.id), frac = (v - m.min) / Math.max(1e-9, m.max - m.min);
     if (!all && frac < 0.7) continue;

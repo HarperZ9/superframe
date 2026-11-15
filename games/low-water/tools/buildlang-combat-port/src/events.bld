@@ -1,0 +1,44 @@
+// W.emit: events of the frame, with typed fields the sim reads back and every
+// field as JSON text for the trace's cev records (clean() sorts the keys).
+
+fn new_ev(w: &World, typ: str) -> Ev {
+    Ev {
+        t: w.tick, typ: typ, id: "", by: "", mv: "", kind: "", voice: "", yielded: false,
+        has_x: false, x: 0.0, z: 0.0, keys: Vec::new(), vals: Vec::new()
+    }
+}
+
+fn ev_raw(e: &mut Ev, k: str, v: str) {
+    e.keys.push(k);
+    e.vals.push(v);
+}
+
+fn ev_str(e: &mut Ev, k: str, v: str) {
+    e.keys.push(k);
+    e.vals.push(json_quote(v));
+}
+
+// a string that may be JS null ("")
+fn ev_strn(e: &mut Ev, k: str, v: str) {
+    e.keys.push(k);
+    e.vals.push(jsn(v));
+}
+
+fn ev_num(e: &mut Ev, k: str, v: f64) {
+    e.keys.push(k);
+    e.vals.push(v.to_json());
+}
+
+fn ev_bool(e: &mut Ev, k: str, v: bool) {
+    e.keys.push(k);
+    e.vals.push(jb(v));
+}
+
+fn emit(w: &mut World, e: Ev) {
+    w.events.push(e);
+}
+
+// The d object of a cev record: the event's fields, keys sorted.
+fn ev_d(e: Ev) -> str {
+    json_obj_sorted(e.keys, e.vals)
+}

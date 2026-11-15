@@ -1,0 +1,262 @@
+# The Quota slice: the coda (a week later, the Haldane table, the narrow lens), and the witness scene that
+# replaced the read-back (q_witness.lwd). The Haldane table is decided by people now, in the week's scenes
+# (q_week.lwd, q_cells.lwd; @fate in q_community.lwd), and the coda reads their decisions:
+#   Tomas is missing when Holt held him: has(q.tomas_held) (at the post or the granary door).
+#   Anni, the eldest, is missing when Bet let her go in at the gate on Tilney Road (has(q.anni_sent)), or walked
+#   her to the Furrowes' door after Ned put his name to her (has(q.anni_furrowe)).
+#   Aaron is missing when Gedge took him from the yard (has(q.aaron_taken)).
+#   Otherwise nobody is missing. On the true figure Anni is away for the review's sake, not for hunger:
+#   the brigade took her on to sew up split sacks at the Krall's End store, and her bowl is laid anyway.
+# Story lead, 2026-10-21; the fates and the witness, game director, 2026-10-22. Weighted-devices pass, era 2,
+# 2026-10-23: no paper in the stove, no form on the table, no letter from Arlen; the coda shows what happened in
+# bodies, bowls and things (the echoes in q_world.lwd carry the fates into the places).
+
+@node q.coda
+place: q_haldane
+cost: 2
+camera: near
+do: cut(max(0, 7 * 1440 + 19:00 - clock))
+nar: A week later. Haldane Yard.
+nar: The kitchen in the old hands' barn: a table Ilo made out of a door, a stove, and the shelf over it, bare. {when: bowls(haldane) >= 5}
+nar: The kitchen in the old hands' barn: a table Ilo made out of a door, a stove, and the shelf over it, with one bowl on it, turned over. {when: bowls(haldane) == 4}
+nar: The kitchen in the old hands' barn: a table Ilo made out of a door, a stove, and the shelf over it, with bowls on it, turned over. {when: bowls(haldane) <= 3}
+nar: In each bowl a heel of the bread from the granary sack, and hot water with salt in it, which Bet calls soup. {when: q_door == talked}
+nar: In each bowl hot water with a turnip cut into it, which Bet calls soup. {when: q_door != talked}
+nar: A cake of flat barley bread in the middle, from the seed that got to Osby. Nobody touches it yet. {when: q_cart == through}
+go: q.coda.who
+
+@node q.coda.who
+cost: 0
+alt: q.coda.both ? has(q.tomas_held) & has(q.anni_sent)
+alt: q.coda.claimed ? has(q.tomas_held) & has(q.anni_furrowe)
+alt: q.coda.tomas ? has(q.tomas_held)
+alt: q.coda.aaron ? has(q.aaron_taken)
+alt: q.coda.home ? has(q.anni_sent)
+alt: q.coda.anni ? q_figure == true
+go: q.coda.whole
+
+# ---------------------------------------------------------------- Tomas held
+@node q.coda.tomas
+place: q_haldane
+speaker: BET
+cost: 6
+nar: Ilo, Bet, Aaron, Anni. Tomas's bowl is on the shelf, upside down.
+line: ANNI: Is he still up at Mrs Tesk's?
+line: BET: He's up at Mrs Tesk's. He'll be down for the lambing.
+line: ANNI: They took Mrs Tesk on Saturday. The squad. Off the hill. They brought the town children down. {when: has(q.ilo_mark)}
+line: ANNI: Mrs Tesk was down Thursday. She didn't say. {when: !has(q.ilo_mark)}
+line: BET: Eat your soup.
+nar: Ilo is looking at the bowl on the shelf. He hasn't said anything since he came down off the hill on Saturday behind the squad, with his good cap in his hands. He's had the cap in his hands all week. {when: has(q.ilo_mark)}
+nar: Ilo is looking at the bowl on the shelf. He hasn't said anything all week. {when: !has(q.ilo_mark)}
+line: AARON: Dad.
+line: ILO: Eat. Your mother says eat.
+line: ANNI: I'm only asking.
+line: ANNI: The sergeant was on the floor at the granary. I held the lamp on him. His eyes were open. {when: has(q.will_down)}
+nar: Bet gets up and turns the bowl on the shelf the right way up, and then she stands there with her hand on it, and then she turns it back over.
+go: q.coda.own
+
+# ---------------------------------------------------------------- Tomas held, and Anni at the home
+@node q.coda.both
+place: q_haldane
+speaker: BET
+cost: 6
+nar: Ilo, Bet, Aaron. Tomas's bowl and Anni's on the shelf, upside down.
+nar: Anni went in at the gate on Tilney Road this afternoon, because they feed them there once a day, and Bet said she wasn't burying two. She took her tin. The thread is on the shelf beside her bowl, where Bet put it when she got home.
+line: AARON: Is Tomas still up at Mrs Tesk's?
+line: BET: He's up at Mrs Tesk's.
+line: AARON: You said that Sunday.
+line: BET: Then it's still true, isn't it.
+nar: Ilo has his good cap on his knee under the table. He keeps putting his hand on it, as if somebody might take it.
+line: ILO: Eat.
+nar: Nobody turns the bowls over.
+go: q.coda.own
+
+# ---------------------------------------------------------------- Anni at the children's home
+@node q.coda.home
+place: q_haldane
+speaker: BET
+cost: 6
+nar: Ilo, Bet, Tomas, Aaron. Anni's bowl is on the shelf, upside down.
+nar: The brigade came Tuesday for what the barns still owed and took the last of the potatoes from under the floor. This afternoon Bet walked Anni to the Furrow Church's home on Tilney Road, because they feed them there once a day. The thread is on the shelf by her bowl.
+line: TOMAS: They let her keep the tin. She asked.
+line: BET: Course they let her keep the tin.
+line: TOMAS: The sister said they'd soon stop her counting.
+nar: Bet puts her spoon down and picks it up again.
+line: ILO: Sunday we can go and stand at the railings. Dorrah says they let you stand at the railings on a Sunday.
+line: AARON: I'm not standing at railings.
+line: BET: You'll stand where you're told.
+nar: Nobody at the table says the word home, though it's what the sign on the gate says.
+go: q.coda.own
+
+# ---------------------------------------------------------------- Tomas held, and Anni at the Furrowes' (the claim)
+@node q.coda.claimed
+place: q_haldane
+speaker: BET
+cost: 6
+nar: Ilo, Bet, Aaron. Tomas's bowl on the shelf, upside down. Anni's bowl on the shelf beside it, the right way up, because she isn't dead and she isn't in the home. She's at the Furrowes'.
+line: AARON: Is she coming back?
+line: BET: She's being fed.
+line: AARON: That's not what I asked.
+nar: What Ned said at the gate got to the yard before Bet did. Sallis's wife had it from a woman at the railings, and told it at the pump, and Aaron heard it at the pump and said it at the table before anybody could stop him. Ilo holds his spoon and doesn't eat with it.
+line: ILO: Put Haldane.
+line: BET: What?
+line: ILO: Nothing. Something I said once.
+go: q.coda.own
+
+# ---------------------------------------------------------------- Aaron taken from the yard
+@node q.coda.aaron
+place: q_haldane
+speaker: BET
+cost: 6
+nar: Ilo, Bet, Tomas, Anni. Aaron's bowl is on the shelf, upside down. His coat isn't on its hook. {when: !has(q.anni_sent)}
+nar: Ilo, Bet, Tomas. Aaron's bowl and Anni's on the shelf, upside down. Aaron's coat isn't on its hook. Anni went in at the gate on Tilney Road this afternoon, and her thread is on the shelf by her bowl. {when: has(q.anni_sent)}
+line: TOMAS: They'll let him out for the hearing. Gedge said quick. In and out.
+line: BET: Gedge said.
+line: ANNI: Dad got his coat for him. {when: !has(q.anni_sent)}
+line: BET: Anni. {when: !has(q.anni_sent)}
+line: ANNI: Well, he did. {when: !has(q.anni_sent)}
+line: TOMAS: Dad got his coat for him. {when: has(q.anni_sent)}
+line: BET: Tomas. {when: has(q.anni_sent)}
+nar: Bet doesn't look at Ilo. She hasn't looked at him since Monday morning, when he held the coat open in the yard. Ilo eats, slowly, all of his, as if somebody had told him he must.
+go: q.coda.own
+
+# ---------------------------------------------------------------- the true figure: Anni put to work by the review
+@node q.coda.anni
+place: q_haldane
+speaker: BET
+cost: 6
+nar: Ilo, Bet, Tomas, Aaron, and Anni's bowl, laid, with nothing in it.
+nar: The review came Monday with the brigade. They had the barns down to the floorboards looking for the hole and didn't find one, and on the way out the brigadier saw Anni at the gate with a needle, sewing up a split in one of their sacks without being asked, and took her on. The brigade wants somebody at the Krall's End store to sew up what the bayonets split. It feeds the ones who work there. She sleeps there.
+line: TOMAS: She's sewing up the sacks they took off us. That's her job now. Mending our own sacks for their store.
+line: BET: Not at the table.
+line: TOMAS: She's good at it, though. They said. Neatest hand they've had.
+nar: Bet ladles a little soup into the empty bowl, and then, after a moment, pours it back into the pot.
+line: ILO: She'll be fed. That's the thing. She'll be fed there.
+line: BET: Eat your soup.
+go: q.coda.own
+
+# ---------------------------------------------------------------- nobody missing
+@node q.coda.whole
+place: q_haldane
+speaker: BET
+cost: 4
+nar: Ilo, Bet, Tomas, Aaron, Anni. Everybody's bowl is on the table.
+line: ANNI: That's everybody.
+line: BET: It is. Eat.
+nar: Nobody says anything else. They eat slowly, to make it last, and Anni counts the turnip in her bowl, under her breath, and doesn't say the number.
+go: q.coda.own
+
+
+# ---------------------------------------------------------------- the player's own table, a week later
+# No figure leaves every table whole (the coordinator's ruling to gameplay, 2026-10-21): the true figure
+# costs the Brack ration and the Furrowe post, and the replacement inspector's figure lands on Tarn Hollow.
+@node q.coda.own
+cost: 0
+alt: q.coda.brack ? q_class == militia
+# the lore graph's hidden fragment (q_lore.lwd, gameplay engineer)
+alt: q.coda.corner ? q_figure == blamed & has(q.tomas_held)
+go: q.coda.queue
+
+@node q.coda.queue
+place: q_tower
+cost: 3
+alt: q.coda.furrowe ? stock(portion, brack) >= 1 & !has(q.tomas_held)
+nar: On the way home Ned goes round by the square. The relief queue is longer than last week. It goes round the three sides and starts on the fourth. Every few yards somebody coughs, the wet cough, and the people either side of them step half a pace away and then step back, because of losing their place.
+nar: Edie Brack is in it, about halfway, with her mending bag over one arm and the little girl on the other hip. The militia ration was cut with the district's on the Monday. She sees him, and he can see her decide not to have seen him. {when: stock(portion, brack) < 1}
+nar: Edie Brack is crossing the square along the front of it, with the little girl on her hip, not in it. The militia still gets its loaf. She sees him, and he can see her decide not to have seen him. {when: stock(portion, brack) >= 1}
+nar: She has Will's boots over her shoulder by the laces, for the cobbler. There's yellow clay on them, dried to the ankle. {when: has(q.tomas_held)}
+opt: "Ask her about the boots." -> q.coda.boots ? has(q.tomas_held)
+opt: "Walk on." -> q.coda.furrowe
+
+@node q.coda.boots
+place: q_tower
+speaker: EDIE
+cost: 3
+do: set(q.corner_known)
+line: NED: Those are Will's.
+line: EDIE: They're ruined. He was up the burial ground Tuesday night, him and Gedge, and he's kept his mouth shut since. That yellow's off the corner past the gap. Anybody who's had to put their own in at night knows that corner.
+nar: She hitches the little girl up on her hip and looks at the queue ahead of her, not at him.
+go: q.coda.furrowe
+
+@node q.coda.furrowe
+place: q_furrowe_kitchen
+speaker: MARY
+cost: 6
+alt: q.coda.furrowe.whole ? stock(portion, furrowe) >= 1
+nar: The Furrowe table. Less in every bowl than last week. Ned's pay stopped with his post on the Wednesday. A man from Arlen came to the door for the key to his room, and took the brass badge off the front of Ned's hat himself, with his thumbnail, on the step.
+nar: Two extra chairs from the parlour. Mary's sister Lil is in one, from Tarn Hollow, with her boy on her knee.
+nar: Anni Haldane is in the other, at the end, with her hands in her lap and no thread on her wrist. She hasn't touched her bowl. {when: has(q.anni_furrowe)}
+line: ABEL: Pass her the salt, Pell. She can't reach. {when: has(q.anni_furrowe)}
+line: MARY: Lil's come to us for a bit. The new man's been round Tarn Hollow.
+line: LIL: Mr Sallow. Lovely manners. First day, the Hollow's carts went on his scale and the arm dropped like a stone. He'd not even got out of the car to look. The squads came Friday.
+line: ABEL: Like a stone. Well. There's a man who'll keep his post.
+nar: Nobody says what Ned did at the scale. Abel pushes his bowl across the table to Pell without looking at him, and Pell eats it, with his arm round the bowl.
+line: NED: It's only till the spring. It's only the post, Mary, it's only a hat badge, they'll want inspectors again in the spring, they always do. It's only that I let the arm come up. That's all it is. It's only a bit of iron.
+line: MARY: Lil, there's more bread if your boy wants it.
+nar: There isn't.
+go: q.readback
+
+@node q.coda.furrowe.whole
+place: q_furrowe_kitchen
+speaker: MARY
+cost: 4
+nar: The Furrowe table. The bowls full, or full enough. A tin of the Commissioner's biscuits on the dresser, which came round on Friday with his compliments, where Mary can see it from the stove.
+nar: Anni Haldane at the end on a parlour chair, with no thread on her wrist. She eats all of hers, fast, with her head down, the way Pell does. {when: has(q.anni_furrowe)}
+line: ABEL: Pass her the salt, Pell. She can't reach. {when: has(q.anni_furrowe)}
+line: MARY: Iris Krall says Jonah's to be district chairman. She says they'll want a new inspector for the whole plain by the summer, and who else would they ask.
+line: ABEL: That's the hat, that is. That's my hat on your head.
+nar: Ned eats. He eats all of it.
+go: q.readback
+
+@node q.coda.brack
+place: q_brack_kitchen
+speaker: EDIE
+cost: 6
+alt: q.coda.brack.down ? has(q.will_down)
+alt: q.coda.brack.whole ? stock(portion, brack) >= 1
+nar: The Bracks' kitchen. Rose on Edie's knee, eating out of her mother's bowl, and less in every bowl than there was. {when: bowls(brack) <= 3}
+nar: The Bracks' kitchen. Less in every bowl than there was. {when: bowls(brack) >= 4}
+nar: The district's under review and the militia ration went with it on the Monday: half a loaf where there was a loaf, and no more bread off the carts, because the Captain has a corporal on the post now beside Will to watch what's taken.
+line: EDIE: I went down the relief. Three hours. They'd run out of the small loaves.
+line: WILL: You didn't need to go down the relief.
+line: EDIE: Didn't I.
+nar: She gives Rose half of hers and doesn't say so. Davey watches his father's hands.
+line: EDIE: There's no Wether now, is there. Not for us. Not after.
+line: WILL: Eat your tea.
+go: q.readback
+
+@node q.coda.brack.down
+place: q_brack_kitchen
+speaker: EDIE
+cost: 6
+nar: The Bracks' kitchen. Will at the table with stitches over his eye that Edie put in herself, with black thread, because the surgeon wanted paying.
+line: EDIE: Gedge was round. He says the Haldane girl stood over you with the lamp. He says she just looked.
+line: WILL: She was looking to see who it was.
+line: EDIE: And who was it?
+nar: Will doesn't answer. Davey is sitting where he can see the stitches. He hasn't stopped looking at them since the morning.
+line: DAVEY: Does it hurt?
+line: WILL: No.
+line: EDIE: Course it hurts. I did it with the black. It's all I had.
+go: q.readback
+
+@node q.coda.brack.whole
+place: q_brack_kitchen
+speaker: EDIE
+cost: 4
+nar: The Bracks' kitchen. The bowls full, and Rose on Edie's knee eating out of her mother's. A heel of bread in the middle from somebody's cart. {when: bowls(brack) <= 3}
+nar: The Bracks' kitchen. The bowls full, and a heel of bread in the middle from somebody's cart. {when: bowls(brack) >= 4}
+line: EDIE: The Captain says we can go through. Wether, the three of us, Monday week. He'll tell the post himself. He said you'd earned it. {when: has(said.will_arrest_tomas) | has(said.will_walked_wicket)}
+line: WILL: Did he say for what. {when: has(said.will_arrest_tomas) | has(said.will_walked_wicket)}
+line: EDIE: He said you'd know. {when: has(said.will_arrest_tomas) | has(said.will_walked_wicket)}
+line: ROSE: Is it cows at Wether? {when: has(said.will_arrest_tomas) | has(said.will_walked_wicket)}
+line: EDIE: He's not said. He says next month. {when: !(has(said.will_arrest_tomas) | has(said.will_walked_wicket))}
+nar: Davey has the crust. He's been good.
+go: q.readback
+
+# ---------------------------------------------------------------- the witness, years later (q_witness.lwd)
+# The read-back is a scene now (world/witness.mjs; design/spine-plan/02-WITNESS.md). Its ledger (q_readback.lwd)
+# stays underneath as the oracle the checker reads, and is never shown.
+@node q.readback
+cost: 4
+do: witness(q.w.anni)
+go: q.w.anni.open

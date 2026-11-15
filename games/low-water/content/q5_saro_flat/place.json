@@ -1,0 +1,173 @@
+{
+ "place": "q5_saro_flat",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 36,
+  "target": [
+   -0.1,
+   0.9,
+   -0.3
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 2.6422764227642275
+ },
+ "pxPerMetre": 246,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 22.4,
+   "weather": "year 115, April, 22:25: the street's sodium through the net, the phone lit on the low table"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  116
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "phone",
+    "verb": "look",
+    "at": [
+     -0.4,
+     0,
+     0.6
+    ],
+    "note": "the phone on the low table: Danil holding up a loaf, burnt on top, laughing"
+   },
+   {
+    "id": "window",
+    "verb": "look",
+    "at": [
+     0.2,
+     0,
+     -1
+    ],
+    "note": "the net curtain, and through it Mill Street, the place on the paving"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "stair",
+    "at": [
+     1.9,
+     0,
+     1.4
+    ],
+    "note": "the stair down to the shop"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -0.4,
+     0.52,
+     0
+    ],
+    "kind": "white",
+    "I": 0.35,
+    "reach": 1.4,
+    "group": "screen"
+   },
+   {
+    "at": [
+     0.2,
+     2,
+     -3.5
+    ],
+    "kind": "sodium",
+    "I": 4,
+    "reach": 8,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     0.2,
+     2,
+     -3.5
+    ],
+    "kind": "sodium",
+    "I": 34,
+    "reach": 10,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     1.6,
+     1.17,
+     -1.4
+    ],
+    "kind": "paraffin",
+    "I": 0.35,
+    "reach": 7,
+    "group": "lantern"
+   }
+  ]
+ },
+ "figureLights": {
+  "night": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "white",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: the street's sodium through the net, the phone lit on the low table."
+}

@@ -1,0 +1,164 @@
+{
+ "place": "q5_shop",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   0,
+   1.2,
+   -2.4
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 3.085714285714286
+ },
+ "pxPerMetre": 175,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "evening"
+ ],
+ "variantInfo": {
+  "evening": {
+   "hour": 20.2,
+   "weather": "year 115, April, 20:10: the window's spots on the dressed table, the hill street dark"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  3,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "window",
+    "verb": "look",
+    "at": [
+     0,
+     0,
+     -0.6
+    ],
+    "note": "the window dressed for commemoration week: the table, five bowls, gruel cast in resin, steam"
+   },
+   {
+    "id": "table",
+    "verb": "look",
+    "at": [
+     0.8,
+     0,
+     -0.8
+    ],
+    "note": "the door table, ticketed farmhouse, rustic, period; the goat still on the leg"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "hill",
+    "at": [
+     -9,
+     0,
+     0.5
+    ],
+    "note": "down the hill"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "evening": [
+   {
+    "at": [
+     -1.2,
+     2.1,
+     -3
+    ],
+    "kind": "paraffin",
+    "I": 22,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     1.2,
+     2.1,
+     -3
+    ],
+    "kind": "paraffin",
+    "I": 22,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -5,
+     4.35,
+     -0.65
+    ],
+    "kind": "sodium",
+    "I": 9,
+    "reach": 24,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "evening": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: the window's spots on the dressed table, the hill street dark."
+}

@@ -6556,8 +6556,8 @@
   {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 11578,
-   "sourceSha256": "5b7044b165ae4db2bd840342f51b440103b853e8dfdad9db724da15a5a2850ce"
+   "bytes": 12089,
+   "sourceSha256": "a2db42e497bb34d575ec41d2c2dbabba795e76c98f25a1981a90121c1f8e6937"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -6570,6 +6570,270 @@
    "source": "repo",
    "bytes": 4987,
    "sourceSha256": "2d1416cd7e0ca4894476cd7db3b820be3a340fae0b800044a4ae0ec8b30240d7"
+  },
+  {
+   "path": "packages/alive/README.md",
+   "source": "repo",
+   "bytes": 6818,
+   "sourceSha256": "604c850d46bae9bfbbf2b904af4b5a85a4b4750761aed4699e867f3f02f94302"
+  },
+  {
+   "path": "packages/alive/package.json",
+   "source": "repo",
+   "bytes": 125,
+   "sourceSha256": "bfe6dd35c08e579114b1b45ad2dec40d41ec841bc7a709085a6f7078c078b58f"
+  },
+  {
+   "path": "packages/alive/src/alive.css",
+   "source": "repo",
+   "bytes": 1950,
+   "sourceSha256": "9f3c1be0c29b08188e2719ef5460aa5d34dc83598ee5e445ad0205b11280265c"
+  },
+  {
+   "path": "packages/alive/src/alive.js",
+   "source": "repo",
+   "bytes": 11219,
+   "sourceSha256": "2a948ba311e106fa03979664347e6f152b4775a439a4465f6e25b999cbd57558"
+  },
+  {
+   "path": "packages/alive/src/framemosaic.js",
+   "source": "repo",
+   "bytes": 12924,
+   "sourceSha256": "34a2faa5f77461467ca2885388c73a21058c02bb7399612d36f9080fd48da7df"
+  },
+  {
+   "path": "packages/alive/src/gif.js",
+   "source": "repo",
+   "bytes": 9388,
+   "sourceSha256": "edd555577924f45f430a3ef816b5a5de4a61b2330e12bfc9e1edc360a1f4708b"
+  },
+  {
+   "path": "packages/alive/src/lib/apng.js",
+   "source": "repo",
+   "bytes": 6397,
+   "sourceSha256": "632534bf44f1d8cc480dffdd3b641b2f5b0c039a3b0adfad6c8aa38fa665d900"
+  },
+  {
+   "path": "packages/alive/src/lib/clock.js",
+   "source": "repo",
+   "bytes": 496,
+   "sourceSha256": "d98edb7713aca5d1bf97e2981ed6cb5abe271c6073554dc5826bddb8069e0dc6"
+  },
+  {
+   "path": "packages/alive/src/lib/gl.js",
+   "source": "repo",
+   "bytes": 3988,
+   "sourceSha256": "d82ecb5a120720a55ef6530cf6e65840469f9f3b6535ba5fef68358c0ffe23e7"
+  },
+  {
+   "path": "packages/alive/src/lib/img.js",
+   "source": "repo",
+   "bytes": 8985,
+   "sourceSha256": "08241b256ec9658fa5f783f08115ce23aa1d9384c71916a7cba81028a9fcf28a"
+  },
+  {
+   "path": "packages/alive/src/lib/offload.js",
+   "source": "repo",
+   "bytes": 1394,
+   "sourceSha256": "bba5152971ef23fb2cdb417608e0287988d0c6ad918f96f2fc465987a735aff0"
+  },
+  {
+   "path": "packages/alive/src/lib/worker.js",
+   "source": "repo",
+   "bytes": 564,
+   "sourceSha256": "b01c42998fbe86eb05145a12db16dfbce860f3dde57b88f52c7d6f674d46531c"
+  },
+  {
+   "path": "packages/alive/src/lib/zlib.js",
+   "source": "repo",
+   "bytes": 1043,
+   "sourceSha256": "a214775f21ecb60f8642b88f06e27b35b21a4db200b927598bfaf35eca59b52a"
+  },
+  {
+   "path": "packages/alive/src/lives.js",
+   "source": "repo",
+   "bytes": 14299,
+   "sourceSha256": "01300b97da425d20403b814eccf2c50d0ef43e4c0be5cdd14790bfbc91cd6533"
+  },
+  {
+   "path": "packages/alive/src/livestill.js",
+   "source": "repo",
+   "bytes": 13991,
+   "sourceSha256": "dd4b5b4ce5ec21f90ec3b9dec31c8c0c0cb547d5875b19dce66df581098c64fb"
+  },
+  {
+   "path": "packages/alive/src/loop.js",
+   "source": "repo",
+   "bytes": 11138,
+   "sourceSha256": "d4d0a9dd94bef5e12b4a8b0fb812b50155f17ebcda66c94d0bed48d528a2dda3"
+  },
+  {
+   "path": "packages/alive/src/nodes.mjs",
+   "source": "repo",
+   "bytes": 5504,
+   "sourceSha256": "ae199450212cc8e13c3633c9d7dc7bc012f0e44268eb99abcd116f714b52f882"
+  },
+  {
+   "path": "packages/alive/src/vendor/daylight-gif/media-gif-lzw.js",
+   "source": "repo",
+   "bytes": 2682,
+   "sourceSha256": "c44968b38cccede6af40f34e781979f119d0b1c3787754f27ea29dd16e2eff95"
+  },
+  {
+   "path": "packages/alive/src/vendor/daylight-gif/media-gif.js",
+   "source": "repo",
+   "bytes": 5571,
+   "sourceSha256": "afce33f35c9e50e1e81f22ce985ce2f421dbba89123d0437c750654ec78f5e23"
+  },
+  {
+   "path": "packages/alive/src/wiggle.js",
+   "source": "repo",
+   "bytes": 7921,
+   "sourceSha256": "59b43e8eb1b858315f0b35cf03ac130c86c135cec89bf4a1db321eb01e6f9f5b"
+  },
+  {
+   "path": "packages/alive/tests/alive.test.js",
+   "source": "repo",
+   "bytes": 3715,
+   "sourceSha256": "4f336152926a84d1c20d96f594347e50a7f249b8dcf5c830e4d31ef9cd33b2fa"
+  },
+  {
+   "path": "packages/alive/tests/fixtures/SOURCES.md",
+   "source": "repo",
+   "bytes": 1675,
+   "sourceSha256": "88bcd6324685e5fec562b655ce8023b4410f9b75700e25382578cc0b259c1e02"
+  },
+  {
+   "path": "packages/alive/tests/fixtures/alive-snapshot.js.txt",
+   "source": "repo",
+   "bytes": 9982,
+   "sourceSha256": "94dbba04e10d47be1bf776761a4e3143b94402586ea08d5206b875c143817043"
+  },
+  {
+   "path": "packages/alive/tests/fixtures/columbia-disc.png",
+   "source": "repo",
+   "bytes": 115354,
+   "sourceSha256": "e46ab66b2c875d77bd7eb12012f00f9c3c17c1ba4774ed4b6f1f39b9307b1b76"
+  },
+  {
+   "path": "packages/alive/tests/fixtures/goya-nobody.png",
+   "source": "repo",
+   "bytes": 79422,
+   "sourceSha256": "90b2d1210d32bb8d2fc5a0bb35eceb2458bfd2c7a7eabfd96ba0296dc2faae21"
+  },
+  {
+   "path": "packages/alive/tests/fixtures/hmso-store-1950.png",
+   "source": "repo",
+   "bytes": 66337,
+   "sourceSha256": "be0ea48f2252e79c53734fc528bacb1241e8072d2e671bdad48c4d0a827e1612"
+  },
+  {
+   "path": "packages/alive/tests/fixtures/munchausen-dore.png",
+   "source": "repo",
+   "bytes": 169965,
+   "sourceSha256": "20ac0432a0295845db09054a8970c160fecd98932f6cc40ea0b3c9869f2e7edd"
+  },
+  {
+   "path": "packages/alive/tests/fixtures/muybridge-758.png",
+   "source": "repo",
+   "bytes": 1692587,
+   "sourceSha256": "3880ad7b4d435752ad98d7406367f3285c422d4b87525350ab0f7a0f00d312d6"
+  },
+  {
+   "path": "packages/alive/tests/framemosaic.test.js",
+   "source": "repo",
+   "bytes": 5109,
+   "sourceSha256": "652e93f4a0c1e48659a67fd94192cb3811ae78e14ea358a61339731a57ddefe0"
+  },
+  {
+   "path": "packages/alive/tests/gif.test.js",
+   "source": "repo",
+   "bytes": 4639,
+   "sourceSha256": "6928fd12a3c387cfcd1575e6e3fe3dcd8cab749d127125d107e793d531ee41d8"
+  },
+  {
+   "path": "packages/alive/tests/golden/gif-goya-32-fs.png",
+   "source": "repo",
+   "bytes": 14177,
+   "sourceSha256": "5d16048577b24e44dacbdcb58afca061108b6ba29b8450bed4be267b4dfe52bb"
+  },
+  {
+   "path": "packages/alive/tests/golden/livestill-dore.png",
+   "source": "repo",
+   "bytes": 702611,
+   "sourceSha256": "7a396aea25bc274f709eeb334dd14eeeb24c81eddf5cfae72ae27f30aafda2c1"
+  },
+  {
+   "path": "packages/alive/tests/golden/loop-muybridge-row.png",
+   "source": "repo",
+   "bytes": 151300,
+   "sourceSha256": "34cc56483574d03d41684547249be460ae2fb5aa699a3ca321642b835dde40f7"
+  },
+  {
+   "path": "packages/alive/tests/golden/loop-seam-flow.png",
+   "source": "repo",
+   "bytes": 18906,
+   "sourceSha256": "0af84fee59c1e2011dc99f5f46307eba53a71c3cbd69ecf435a604aa590c9888"
+  },
+  {
+   "path": "packages/alive/tests/golden/mosaic-code.png",
+   "source": "repo",
+   "bytes": 2980,
+   "sourceSha256": "c4c9a441ad92dbd5bd249fcf19828ebee9fc63c1760e1acd0de77b88f417d36d"
+  },
+  {
+   "path": "packages/alive/tests/golden/mosaic-frames.png",
+   "source": "repo",
+   "bytes": 7923,
+   "sourceSha256": "b3a234182c94fdb531bda0699e785a82ea2d1c5ccb0ec9fdf3d907960a0e65ff"
+  },
+  {
+   "path": "packages/alive/tests/golden/mosaic-series.png",
+   "source": "repo",
+   "bytes": 1268,
+   "sourceSha256": "99eed4d4bb980a6dfb48c8768d78a6bc295d74d54f9d8bd205a832739f50933c"
+  },
+  {
+   "path": "packages/alive/tests/golden/wiggle-goya.png",
+   "source": "repo",
+   "bytes": 208406,
+   "sourceSha256": "c371c12acefa206d4aaeed58e5caf0869fbf70a9ff2f0da2699745d7aefb90b2"
+  },
+  {
+   "path": "packages/alive/tests/helpers.js",
+   "source": "repo",
+   "bytes": 3859,
+   "sourceSha256": "b7dad4d00b26d99dfc1905c0dee35c65791ce1d1005972da38f109702a9d143c"
+  },
+  {
+   "path": "packages/alive/tests/livestill.test.js",
+   "source": "repo",
+   "bytes": 4984,
+   "sourceSha256": "8a6f73f4a6acc7997e5839c7d4f1764f6b86365d9c6b5b1d1cd0611e7ce41c08"
+  },
+  {
+   "path": "packages/alive/tests/loop.test.js",
+   "source": "repo",
+   "bytes": 4886,
+   "sourceSha256": "3acaf53f5b8e55f9c5bfe4e789db22330055a7cd8e6086d1d903cb3564f48beb"
+  },
+  {
+   "path": "packages/alive/tests/nodes.test.js",
+   "source": "repo",
+   "bytes": 2369,
+   "sourceSha256": "253c6c16c55a288209dd3d74e71909b45ae8fdaa862223e843c46a77fd80abcb"
+  },
+  {
+   "path": "packages/alive/tests/wiggle.test.js",
+   "source": "repo",
+   "bytes": 3651,
+   "sourceSha256": "83231d77e84b361fe6d658666ff81eeb1297c5a50cd3c53ebe4fea4ed55a44d3"
+  },
+  {
+   "path": "packages/alive/tools/make_loops.mjs",
+   "source": "repo",
+   "bytes": 3869,
+   "sourceSha256": "55142b43fdccf8cf918fa0565fcd99643822b179828ad3bde5a356161f5eff23"
   },
   {
    "path": "packages/build_manifest.py",

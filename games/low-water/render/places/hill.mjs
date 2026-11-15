@@ -10,7 +10,7 @@ export default {
   variants: {
     lit: { hour: 21.0, note: "Night 2, 19:10 to 01:00: clear and still, the white arcs, nothing casts a shadow", V: { stars: 1.6, moon: { pos: [-90, 70, -120], I: 5000 } }, plan: { ambient: 0.02, mist: 0.003, extinct: 0.0015 }, gain: 1.35, grade: { saturation: 0.8 } },
     frost: { hour: 2.0, note: "from 01:00: hard frost, the guards stamping at the substation", V: { frost: 1, stars: 2, moon: { pos: [-90, 70, -120], I: 7000 } }, plan: { ambient: 0.02, mist: 0.002, extinct: 0.0015 }, gain: 1.35, grade: { saturation: 0.8 } },
-    dark: { hour: 3.0, note: "03:00, the switch thrown: the stars come down to the roofs; candles and windows only", V: { frost: 1, stars: 3, moon: { pos: [-90, 70, -120], I: 9000 }, emit: { white: 0, sodium: 1 } }, plan: { ambient: 0.022, mist: 0.002, extinct: 0.0015 }, gain: 1.6 },
+    switched: { hour: 3.0, note: "03:00, the switch thrown: the stars come down to the roofs; candles and windows only", V: { frost: 1, stars: 3, moon: { pos: [-90, 70, -120], I: 9000 }, emit: { white: 0, sodium: 1 } }, plan: { ambient: 0.022, mist: 0.002, extinct: 0.0015 }, gain: 1.6 },
   },
   walk: walkIds("cobble", "slab", "steps"), footing: footing(), marks: H.marks,
   notes: "Chancel Hill path. The station interior is its own plate (station).",

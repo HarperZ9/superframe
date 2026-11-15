@@ -1,0 +1,277 @@
+# The Quota slice: the community model (design/quota/04-SYSTEMS.md, game/engine/world/community.mjs) and the
+# granary door's fight. The gameplay engineer's file: the scenes are the story lead's (q_*.lwd); their nodes
+# carry the record() and shift() lines that feed this model.
+# Per street: owed (grain owed over the true yield, for a village row), notices (how thickly the notices are
+# posted there), mixed (1 where Tarn and Hesh households live side by side: rhetoric bites slower), pub (1 where the
+# Crown is heard), pews (how many go to the Furrow Church: q_discourse.lwd). Per
+# household: bowls (one per member at the table), portion (what is in each bowl, 1 full), taken (1 when one
+# of them is held). Globals: export (the train ran), blacklist, volume.notices (the carrier's volume).
+# Who is missing at the Haldane table: the household's food after the requisition (H1: a child goes when it
+# falls below 0.15), with Tomas held as the override (H3, from q.tomas_held; H2 when the patrols come).
+
+@street square
+name: Exchange Square
+peoples: tarn, hesh
+owed: 0
+mixed: 1
+pub: 1
+pews: 1
+notices: 0.6
+food: 0.45
+price: 1.0
+wage: 1.1
+work: 0.5
+hunger: 0.25
+theft: 0.1
+school: 0.7
+standing: hesh -0.1, tarn 0.3
+protection: hesh 0.6, tarn 0.8
+trust: police 0.5, council 0.45
+
+@street mill
+name: Mill Street
+peoples: tarn, hesh
+owed: 0
+mixed: 1
+pub: 1
+pews: 1
+notices: 0.8
+food: 0.4
+price: 1.0
+wage: 0.95
+work: 0.45
+hunger: 0.3
+theft: 0.12
+school: 0.6
+standing: hesh 0, tarn 0.2
+protection: hesh 0.6, tarn 0.7
+trust: police 0.45, council 0.4
+
+@street haldane_yard
+name: Haldane Yard
+peoples: hesh
+village: 1
+owed: 0
+mixed: 0
+pub: 0
+pews: 0.3
+notices: 1
+food: 0.35
+price: 1.0
+wage: 0.8
+work: 0.4
+hunger: 0.35
+theft: 0.18
+school: 0.55
+standing: hesh -0.2
+protection: hesh 0.5
+trust: police 0.35, council 0.3
+
+# the next village over: a village row (era 2 adds the villages one row each); the replacement inspector's
+# figure lands here when Ned is blacklisted for the honest one
+@street hollow
+name: Tarn Hollow
+peoples: tarn, hesh
+village: 1
+owed: 0
+mixed: 1
+pub: 0
+pews: 0.8
+notices: 0.7
+food: 0.4
+price: 1.0
+wage: 0.85
+work: 0.4
+hunger: 0.3
+theft: 0.12
+school: 0.6
+standing: hesh -0.1, tarn 0.2
+protection: hesh 0.6, tarn 0.7
+trust: police 0.4, council 0.35
+
+@household haldane
+name: The Haldanes
+street: haldane_yard
+people: hesh
+hesh: 1
+place: q_haldane
+members: Tomas, Aaron, Anni, Ilo, Bet
+taken: 0
+portion: 1
+
+@household furrowe
+name: The Furrowes
+street: square
+people: tarn
+hesh: 0
+place: q_furrowe_kitchen
+members: Ned, Mary, Pell, Abel
+taken: 0
+portion: 1
+
+@household brack
+name: The Bracks
+street: mill
+people: tarn
+hesh: 0
+place: q_brack_kitchen
+members: Will, Edie, Davey
+# Rose, six, eats from Edie's bowl on her knee (q_coda.lwd): in the household, not a bowl of her own
+lap: Rose
+taken: 0
+portion: 1
+
+# ---------------------------------------------------------------- the two lenses (world/lens.mjs)
+# What each lens shows of the model, as things in the world: the wide lens the district from the bell tower
+# (wiring/quota-areas.lwd q.tower), the narrow lens a household's kitchen. Every stock a record event moves
+# must be shown by one of them (tools/communitycheck.mjs checks it).
+@lens wide
+name: The district, from the bell tower
+shows: hunger (the relief queue), food (the stalls and the carts), price (what the stalls ask, out loud), wage (the hiring hall), export (the train under guard), owed (the brigade's carts), theft (broken shutters), protection.hesh (the patrols), trust.police (who goes into the station), school (children in the street in school hours), standing.hesh (who is served at the shops), volume.notices (the crier on his crate, and the goats chalked on Hesh doors), blacklist (the squads coming round again with bayonets), volume.pub (the talk in the Crown's doorway), volume.pulpit (the hymn board, and who sits where in church)
+
+@lens narrow
+name: A household, at its table
+shows: bowls (the bowls on the table), portion (what is in them), taken (an empty chair), food (the shelf), wage (the pay packet on the table)
+
+@carrier notices
+name: The district's crier and its chalk
+target: hesh
+volume: 0.1
+reach: all
+
+# ---------------------------------------------------------------- the eight rules of the slice
+@rule R2
+name: requisition
+per: street
+when: owed > 0 & village == 1
+do: food -= owed * 0.0018
+delay: 7
+once: yes
+because: the quota stands above what was taken; the brigade comes for the difference
+
+@rule R3
+name: export
+per: street
+when: export > 0
+do: price += 0.1
+delay: 3
+once: yes
+because: the train took the district's grain west
+
+@rule R4
+name: price
+per: street
+when: food < 0.3
+do: price += 0.05
+delay: 1
+because: less food in the street, dearer bread
+
+@rule R5
+name: entitlement
+per: street
+when: price > wage
+do: hunger += 0.05
+delay: 7
+because: a day's pay no longer buys a day's bread
+
+@rule R8
+name: theft
+per: street
+when: hunger > 0.3
+do: theft += 0.02
+delay: 7
+because: hunger
+
+@rule R9
+name: policing
+per: street
+when: theft > 0.15 & volume.notices > 0.2
+do: protection.hesh -= 0.1; trust.police -= 0.05
+delay: 3
+once: yes
+because: patrols, aimed where the crier points and the chalk goats are
+
+@rule R11
+name: school
+per: street
+when: hunger > 0.4
+do: school -= 0.05
+delay: 7
+because: children forage instead
+
+@rule R17
+name: rhetoric
+per: street
+when: volume.notices > 0.2
+do: standing.hesh -= 0.034 * volume.notices * notices / (1 + mixed)
+delay: 7
+because: the crier names the Hesh as hoarders and the squad chalks their doors; loudest where the chalk is thickest, slowest where Tarn and Hesh share a stair
+
+@rule R17b
+name: rhetoric fades
+per: street
+when: volume.notices < 0.15 & standing.hesh < -0.15
+do: standing.hesh += 0.002
+delay: 7
+because: the crier goes quiet, and neighbours remember a little of who the Hesh next door are
+
+@rule Rv
+name: notices fade
+per: district
+when: volume.notices > 0.1
+do: volume.notices -= 0.004
+delay: 0
+because: the rain takes the chalk, and nobody pays the crier
+
+# ---------------------------------------------------------------- the table (households): fates, decided by people
+# No rule removes a bowl (design/spine-plan/03-FATES.md; decisions 6 and 7, 2026-10-22). The model presses; a named
+# person decides, in a written scene, and the scene's node calls fate(). The old rules H1, H2 and H3 are these
+# pressures now. Game director, 2026-10-22.
+@fate f.anni_home
+pressure: food < 0.15
+subject: household haldane
+decider: BET
+scene: q.fate.gate
+window: 7
+who: Anni
+because: too little in the barns after the requisition; Bet decides whether Anni goes to the Furrow Church's home on Tilney Road, where they feed them once a day and take the thread off at the door
+
+@fate f.aaron_taken
+pressure: hesh == 1 & protection.hesh < 0.45 & !has(q.tomas_held)
+subject: household haldane
+decider: GEDGE
+scene: q.fate.yard
+window: 7
+taken: yes
+who: Aaron
+because: the patrols go where the crier points, to the doors Jonah Krall chalked a goat on; Gedge decides at the yard door whose coat is fetched
+
+@fate f.tomas_held
+pressure: hesh == 1 & has(q.tomas_held)
+subject: household haldane
+decider: HOLT
+scene: q.ned.cart.held, q.will.post.holt, q.granary.custody, q.granary.broken.will
+window: 7
+taken: yes
+who: Tomas
+because: Captain Holt wants someone to show, at the post or at the granary door; he says whom
+
+# ---------------------------------------------------------------- the granary door's fight
+# The Requisition Captain on the warden's pattern (combat/data/bosses.mjs captain) on the granary's own ground
+# (combat/data/arenas-quota.mjs); where the class stands is read from q_class. Outcomes as the story lead
+# mapped them in q_granary.lwd: win to the bar held, down to the door broken, fled or yield to standing aside,
+# and the talk-out (the truth met with the body) to the sacks shown at the wicket.
+@encounter e.q_granary
+name: The granary door
+area: granary
+boss: captain
+talk: q.granary.read | Drag the barns' sacks to the wicket and show them ? has(q.true_in_hand) & fight_seconds >= 3
+win: q.granary.held
+yield: q.granary.aside
+fled: q.granary.aside
+down: q.granary.broken
+
+@node q.granary.fight
+place: q_granary
+cost: 2
+do: fight(e.q_granary)

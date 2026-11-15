@@ -23,7 +23,7 @@ const r01 = (W, k) => rand01(W.seed ^ 0x5151, `${k}:${W.tick}`);
 // measurements that predate exits are unchanged). A taken exit is pressed until it goes through (it
 // can wait on Composure) or the offer is withdrawn.
 export const TALK_RATE = { hat: 1, other: 0.5 };
-export function createPilot({ catchShare = null, style = null, kite: kiteOpts = null, talk = null } = {}) {
+export function createPilot({ catchShare = null, style = null, kite: kiteOpts = null, talk = null, prefer = null } = {}) {
   const S = { hold: 0, cool: 0, last: "", K: { ...KITE, ...(kiteOpts || {}) } };
   const decide = (W) => {
     const L = W.lamb();
@@ -39,7 +39,9 @@ export function createPilot({ catchShare = null, style = null, kite: kiteOpts = 
     if (!foes.length) return {};
     // a fighter finishes the most hurt opponent in reach first, to thin the numbers
     const near = foes.filter((F) => dist(L, F) < 3);
-    const T = style === "fighter" && near.length > 1 ? near.sort((a, b) => a.hp - b.hp)[0] : foes[0], out = { mx: 0, mz: 0, press: [], hold: {} };
+    // prefer: a caller's choice of target over the default (the inner arena's leader, tools/innerbots.mjs); null keeps it
+    const pick = prefer && prefer(W, L, foes);
+    const T = pick || (style === "fighter" && near.length > 1 ? near.sort((a, b) => a.hp - b.hp)[0] : foes[0]), out = { mx: 0, mz: 0, press: [], hold: {} };
     // anyone rolls out of a get-up as soon as it allows, away from the nearest
     if (L.act && L.act.id === "getup" && L.act.f >= 30 && L.st >= 2) { const a = angleTo(foes[0], L); return { mx: Math.cos(a), mz: Math.sin(a), press: ["roll"] }; }
     if (L.lock == null || !live(W.byId(L.lock))) out.press.push("lock");

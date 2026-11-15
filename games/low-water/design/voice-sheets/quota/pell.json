@@ -1,0 +1,79 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "PELL",
+ "setting": "quota",
+ "status": "draft 2026-10-23 by the story lead for era 5 (design/eras/era5.md); habits strengthened 2026-10-23 (he measures out loud, Near enough, Right); generated from design/voice/quota-cast.json (speakers.PELL.sheet), edit that file",
+ "role": "Pell Furrowe: Ned's son; a schoolboy in era 2, a district surveyor in era 3, a widower of seventy in era 4",
+ "age": "12, 20 and 70",
+ "register": {
+  "level": "plain",
+  "education": "Mr Tamm's class, then the district office",
+  "class": "middle",
+  "trade": "schoolboy, then surveyor of houses",
+  "words": [
+   "tape",
+   "measure",
+   "doors",
+   "floors",
+   "foot",
+   "inch",
+   "column",
+   "pencil",
+   "clock",
+   "Mr Tamm"
+  ]
+ },
+ "region": {
+  "name": "tarn-town",
+  "markers": [],
+  "idioms": [
+   "Near enough",
+   "Right",
+   "Mr Tamm says",
+   "Do it yourself"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 22
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television",
+  "requisition",
+  "trauma"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [
+   "how big a room is by eye",
+   "nine words for rain",
+   "his father signed things"
+  ],
+  "unknown": [
+   {
+    "terms": [
+     "340",
+     "three hundred and forty"
+    ],
+    "why": "a child at the table does not know the figures until Abel says them",
+    "unless_gate": [
+     "abel.said_340"
+    ]
+   }
+  ]
+ },
+ "trade": "schoolboy, then surveyor of houses",
+ "wound": "He ate his father's plate fast with his head down and did not look at anybody.",
+ "lie": "Near enough is right enough.",
+ "fears": "That his father's signature is in every book he opens.",
+ "hides": "The stone in his shoe from the night of the Well House fire.",
+ "tics": [
+  "Near enough",
+  "measures things out loud: feet, rows, rooms, by eye",
+  "Right.",
+  "Do it yourself",
+  "Near enough's right enough, on a form"
+ ]
+}

@@ -1,0 +1,171 @@
+{
+ "place": "q4_exchange_street",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   -2.5,
+   2.6,
+   -2.5
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 6.136363636363637
+ },
+ "pxPerMetre": 88,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 1.4,
+   "weather": "year 70, 01:25: CHAFFERS OUT wet on the sign, the pavement wet, two sodium posts"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  3,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "wood",
+  "116": "wood"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "sign",
+    "verb": "read",
+    "at": [
+     -6,
+     0,
+     -0.6
+    ],
+    "note": "the exchange sign: CHAFFERS OUT across it in white house paint, still wet, run in drips"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "square",
+    "at": [
+     -11,
+     0,
+     0
+    ],
+    "note": "on to Exchange Square"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     2,
+     3.6,
+     -2.15
+    ],
+    "kind": "paraffin",
+    "I": 1,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     5.6,
+     3.6,
+     -2.15
+    ],
+    "kind": "paraffin",
+    "I": 1,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     9.2,
+     3.6,
+     -2.15
+    ],
+    "kind": "paraffin",
+    "I": 1,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     -1.2,
+     4.55,
+     -1.05
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     9,
+     4.55,
+     -1.05
+    ],
+    "kind": "sodium",
+    "I": 48,
+    "reach": 24,
+    "group": "sodium"
+   }
+  ]
+ },
+ "figureLights": {
+  "night": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 4: Exchange Street at night, the sign."
+}

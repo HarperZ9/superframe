@@ -1,0 +1,219 @@
+{
+ "place": "q5_mill_street",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   0.5,
+   1.6,
+   -1.5
+  ],
+  "dist": 70,
+  "ortho": true,
+  "scale": 5.625
+ },
+ "pxPerMetre": 96,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "night"
+ ],
+ "variantInfo": {
+  "night": {
+   "hour": 23.1,
+   "weather": "year 115, April, 23:05: Mill Street under sodium, the flowers on the paving, the shutter down"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  3,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "earth",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "53": "earth",
+  "65": "weed",
+  "90": "wood",
+  "108": "wood",
+  "111": "stone",
+  "112": "stone",
+  "116": "wood",
+  "118": "wood",
+  "120": "earth",
+  "121": "stone",
+  "122": "stone"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "clip",
+    "verb": "look",
+    "at": [
+     1,
+     0,
+     -0.6
+    ],
+    "note": "a phone face up among the flowers, the clip paused at the knee, the comments still loading"
+   },
+   {
+    "id": "shutter",
+    "verb": "look",
+    "at": [
+     1.2,
+     0,
+     -1
+    ],
+    "note": "the Saros' shutter, down; the dents in it at the height of a man's fist, from inside"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "bridge",
+    "at": [
+     -11,
+     0,
+     0
+    ],
+    "note": "down Mill Street to the bridge"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "night": [
+   {
+    "at": [
+     -7.2,
+     3.6,
+     -2.15
+    ],
+    "kind": "paraffin",
+    "I": 0.8,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     3.6,
+     3.6,
+     -2.15
+    ],
+    "kind": "paraffin",
+    "I": 0.8,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     7.2,
+     3.6,
+     -2.15
+    ],
+    "kind": "paraffin",
+    "I": 0.8,
+    "reach": 6,
+    "group": "window"
+   },
+   {
+    "at": [
+     1,
+     0.13,
+     -1.4
+    ],
+    "kind": "white",
+    "I": 0.35,
+    "reach": 1.4,
+    "group": "screen"
+   },
+   {
+    "at": [
+     2.8,
+     4.55,
+     -1.05
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     2.8,
+     4.55,
+     -1.05
+    ],
+    "kind": "sodium",
+    "I": 50,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     -8,
+     4.55,
+     -1.05
+    ],
+    "kind": "sodium",
+    "I": 8,
+    "reach": 24,
+    "group": "sodium"
+   },
+   {
+    "at": [
+     1.6,
+     0.16,
+     -1.5
+    ],
+    "kind": "paraffin",
+    "I": 0.5,
+    "reach": 2.5,
+    "group": "candle"
+   }
+  ]
+ },
+ "figureLights": {
+  "night": [
+   {
+    "at": [
+     1,
+     2.3,
+     2.6
+    ],
+    "kind": "sodium",
+    "I": 5,
+    "reach": 9,
+    "figure": true
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 5: Mill Street under sodium, the flowers on the paving, the shutter down."
+}

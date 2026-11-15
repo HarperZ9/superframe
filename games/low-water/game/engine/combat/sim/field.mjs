@@ -24,6 +24,7 @@
 import { FOOTING_GRIP } from "../../world/envhub.mjs";
 import { OFF } from "../data/world.mjs";
 import { BEAM_RATE } from "../../ui/weatherlayer.mjs"; // the systems engineer's sweep rate, shared so the drawn beam and the fight agree
+import { datan2, dhypot } from "./math.mjs";
 
 export const STICKY = { mud: { speed: 0.72, root: 0.72, recovery: 6 } };
 export const WATER_BANDS = [
@@ -68,7 +69,7 @@ export function createField({ G, arena }) {
     solid: (x, z) => F.cellAt(x, z) === WALL,
     // nothing solid on the straight line between two points (sampled every half cell)
     lineClear(ax, az, bx, bz) {
-      const d = Math.hypot(bx - ax, bz - az), n = Math.ceil(d / (A.cell * 0.5));
+      const d = dhypot(bx - ax, bz - az), n = Math.ceil(d / (A.cell * 0.5));
       for (let i = 1; i < n; i++) { const t = i / n; if (F.solid(ax + (bx - ax) * t, az + (bz - az) * t)) return false; }
       return true;
     },
@@ -83,7 +84,7 @@ export function createField({ G, arena }) {
     // does). Row arenas and solid cells with no height known block as before.
     sightClear(ax, az, bx, bz) {
       const tops = A.grid && A.grid.tops; if (!tops) return F.lineClear(ax, az, bx, bz);
-      const eye = Math.min(F.cellAt(ax, az).h, F.cellAt(bx, bz).h) + SIGHT.over, d = Math.hypot(bx - ax, bz - az), n = Math.ceil(d / (A.cell * 0.5));
+      const eye = Math.min(F.cellAt(ax, az).h, F.cellAt(bx, bz).h) + SIGHT.over, d = dhypot(bx - ax, bz - az), n = Math.ceil(d / (A.cell * 0.5));
       for (let i = 1; i < n; i++) {
         const t = i / n, x = ax + (bx - ax) * t, z = az + (bz - az) * t; if (!F.solid(x, z)) continue;
         const c = Math.floor((x - A.origin[0]) / A.cell), r = Math.floor((z - A.origin[1]) / A.cell), top = c >= 0 && r >= 0 && c < A.grid.w && r < A.grid.h ? tops[r * A.grid.w + c] : NaN;
@@ -98,7 +99,7 @@ export function createField({ G, arena }) {
     lightAt: (x, z, lamps = []) => lightAt(F, x, z, lamps),
     // seconds of fight time, for the beam's sweep (the world sets it every frame, so replays agree)
     seconds: 0,
-    sodiumAt: (x, z) => terms.sodium * litShare(A) > 0.3 || (A.lights || []).some((s) => s.sodium && !s.off && Math.hypot(x - s.x, z - s.z) < s.r * 0.8),
+    sodiumAt: (x, z) => terms.sodium * litShare(A) > 0.3 || (A.lights || []).some((s) => s.sodium && !s.off && dhypot(x - s.x, z - s.z) < s.r * 0.8),
     // how far away a body standing in this much light can be seen, given the fog
     seenRange: (light) => clamp((SIGHT.base + SIGHT.perLight * light) / (1 + terms.fog * SIGHT.fogK), SIGHT.min, SIGHT.max),
     // acceleration on a thrown thing of this mass (m/s^2), downwind
@@ -136,7 +137,7 @@ function lightAt(F, x, z, lamps) {
   const share = litShare(F.arena);
   let L = clamp(F.terms.dark + (F.terms.light - F.terms.dark) * share, 0, 1);
   for (const s of [...(F.arena.lights || []).filter((l) => !l.off), ...lamps]) {
-    const d = Math.hypot(x - s.x, z - s.z);
+    const d = dhypot(x - s.x, z - s.z);
     if (d < s.r) L = Math.max(L, s.k * (1 - d / s.r));
   }
   return Math.max(L, beamAt(F, x, z));
@@ -148,8 +149,8 @@ export function beamAt(F, x, z) {
   const B = F.arena.beams; if (OFF.has("beam") || !B || !B.length || F.terms.mother !== "burning") return 0;
   let L = 0;
   for (const b of B) {
-    const d = Math.hypot(x - b.x, z - b.z); if (d > b.r || d < 0.5) continue;
-    const a = F.seconds * BEAM_RATE, off = Math.abs(((Math.atan2(z - b.z, x - b.x) - a) % Math.PI + Math.PI * 1.5) % Math.PI - Math.PI / 2);
+    const d = dhypot(x - b.x, z - b.z); if (d > b.r || d < 0.5) continue;
+    const a = F.seconds * BEAM_RATE, off = Math.abs(((datan2(z - b.z, x - b.x) - a) % Math.PI + Math.PI * 1.5) % Math.PI - Math.PI / 2);
     if (off < b.spread) L = Math.max(L, b.k * (1 - (0.4 * d) / b.r));
   }
   return L;

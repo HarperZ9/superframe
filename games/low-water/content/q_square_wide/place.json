@@ -1,0 +1,321 @@
+{
+ "place": "q_square_wide",
+ "version": 2,
+ "width": 1920,
+ "height": 1080,
+ "camera": {
+  "yawDeg": 30,
+  "elevDeg": 42,
+  "target": [
+   0,
+   1.5,
+   -2
+  ],
+  "dist": 160,
+  "ortho": true,
+  "scale": 20.76923076923077
+ },
+ "pxPerMetre": 26,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "dawn",
+  "night",
+  "day",
+  "dusk"
+ ],
+ "variantInfo": {
+  "dawn": {
+   "hour": 7.8,
+   "weather": "07:50, day 41: the sun just over the rim, long blue shadows on the snow, the relief kitchen's lamp still lit"
+  },
+  "night": {
+   "hour": 21.3,
+   "weather": "21:20: the thaw, the cobbles wet, the lit windows laid out on them, a moon over the exchange"
+  },
+  "day": {
+   "hour": 12,
+   "weather": "12:00, day 41: a high white overcast, flat light, the frost holding in the shade"
+  },
+  "dusk": {
+   "hour": 16.4,
+   "weather": "16:25: the sun down behind the hill's shoulder, the first windows lit, the snow blue"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "exchange",
+    "verb": "enter",
+    "at": [
+     -2,
+     0,
+     -14.5
+    ],
+    "note": "the grain exchange's doors"
+   },
+   {
+    "id": "scale",
+    "verb": "read",
+    "at": [
+     -2,
+     0,
+     -7
+    ],
+    "note": "the public scale: the beam, the plate, the book chained to its post"
+   },
+   {
+    "id": "district_office",
+    "verb": "enter",
+    "at": [
+     -18.8,
+     0,
+     -3
+    ],
+    "note": "the district office's door, the banner over it"
+   },
+   {
+    "id": "relief",
+    "verb": "queue",
+    "at": [
+     8.5,
+     0,
+     5.5
+    ],
+    "note": "the relief kitchen's cart: the queue ends here"
+   },
+   {
+    "id": "export",
+    "verb": "read",
+    "at": [
+     17.5,
+     0,
+     -1
+    ],
+    "note": "the export train: Halvard's sacks loaded under guard while the queue watches"
+   },
+   {
+    "id": "burial",
+    "verb": "read",
+    "at": [
+     8,
+     0,
+     -26
+    ],
+    "note": "the burial ground on the hill's shoulder: the new rows"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "mill_street",
+    "at": [
+     14,
+     0,
+     14
+    ],
+    "note": "down Mill Street"
+   },
+   {
+    "id": "haldane_yard",
+    "at": [
+     -21,
+     0,
+     12
+    ],
+    "note": "the lane to Haldane Yard"
+   }
+  ],
+  "lamps": [],
+  "queue": {
+   "path": [
+    [
+     9,
+     0,
+     5.5
+    ],
+    [
+     3,
+     0,
+     6
+    ],
+    [
+     -6,
+     0,
+     5.5
+    ],
+    [
+     -13,
+     0,
+     3.5
+    ],
+    [
+     -15.5,
+     0,
+     -2
+    ],
+    [
+     -16,
+     0,
+     -8
+    ]
+   ],
+   "spacing": 0.75
+  },
+  "crowd": [],
+  "crowdMask": {
+   "open": [
+    [
+     [
+      -19.5,
+      -14
+     ],
+     [
+      -19.5,
+      13.5
+     ],
+     [
+      18.5,
+      13.5
+     ],
+     [
+      18.5,
+      -14
+     ]
+    ]
+   ],
+   "closed": [
+    [
+     [
+      -4.8,
+      -11.8
+     ],
+     [
+      0.8,
+      -11.8
+     ],
+     [
+      0.8,
+      -8.2
+     ],
+     [
+      -4.8,
+      -8.2
+     ]
+    ],
+    [
+     [
+      8.8,
+      3.4
+     ],
+     [
+      13.2,
+      3.4
+     ],
+     [
+      13.2,
+      7.2
+     ],
+     [
+      8.8,
+      7.2
+     ]
+    ],
+    [
+     [
+      15.8,
+      -6.2
+     ],
+     [
+      20.6,
+      -6.2
+     ],
+     [
+      20.6,
+      2.2
+     ],
+     [
+      15.8,
+      2.2
+     ]
+    ]
+   ]
+  }
+ },
+ "lights": {
+  "dawn": [
+   {
+    "at": [
+     9.8,
+     1.9,
+     6.1
+    ],
+    "kind": "paraffin",
+    "I": 8,
+    "reach": 8,
+    "group": "lantern"
+   }
+  ],
+  "night": [
+   {
+    "at": [
+     9.8,
+     1.9,
+     6.1
+    ],
+    "kind": "paraffin",
+    "I": 8,
+    "reach": 8,
+    "group": "lantern"
+   }
+  ],
+  "day": [],
+  "dusk": [
+   {
+    "at": [
+     9.8,
+     1.9,
+     6.1
+    ],
+    "kind": "paraffin",
+    "I": 8,
+    "reach": 8,
+    "group": "lantern"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota slice, the wide lens: Exchange Square from the bell tower at dawn, the export train in; the queue is the crowd tier's."
+}

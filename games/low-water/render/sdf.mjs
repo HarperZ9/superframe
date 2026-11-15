@@ -76,7 +76,9 @@ export function makeTracer(map, idOf) {
   function shadow(P, N, L, maxT, k = 10) {
     const o = [P[0] + N[0] * 0.02, P[1] + N[1] * 0.02, P[2] + N[2] * 0.02];
     let res = 1, t = 0.04;
-    for (let i = 0; i < 64 && t < maxT; i++) { const h = map(o[0] + L[0] * t, o[1] + L[1] * t, o[2] + L[2] * t); if (h < 0.002) return 0; res = Math.min(res, (k * h) / t); t += Math.max(h, 0.03); }
+    // a step whose nearest candidate is a bound and not a surface (id 0: a world grid's cell edge) says nothing about how
+    // close the ray passes to anything, so it does not narrow the penumbra (it darkened lamp pools in rectangles, 2026-10-24)
+    for (let i = 0; i < 64 && t < maxT; i++) { const h = map(o[0] + L[0] * t, o[1] + L[1] * t, o[2] + L[2] * t); if (h < 0.002) return 0; if (!idOf || idOf() !== 0) res = Math.min(res, (k * h) / t); t += Math.max(h, 0.03); }
     return sat(res);
   }
   function ao(P, N) { let o = 0; for (let i = 1; i <= 5; i++) { const h = 0.09 * i; o += (h - map(P[0] + N[0] * h, P[1] + N[1] * h, P[2] + N[2] * h)) / (i * i); } return sat(1 - 1.5 * o); }

@@ -9,24 +9,19 @@
 import { createCast } from "./actor.mjs";
 import { RIGS } from "../render/rigs.mjs";
 import { MATS } from "../rig/materials.mjs";
-import * as lamb from "../cast/lamb.mjs";
-import * as fennick from "../cast/fennick.mjs";
-import * as marrow from "../cast/marrow.mjs";
-import * as warden from "../cast/warden.mjs";
-import * as salvor from "../cast/salvor.mjs";
-import * as keel from "../cast/keel.mjs";
-import * as sabine from "../cast/sabine.mjs";
-import * as wenna from "../cast/wenna.mjs";
-import * as merrow from "../cast/merrow.mjs";
-import { GORM, HOBB, FEWELL, STRAND, BRIGHT, COE } from "../cast/lamplighter.mjs";
-import * as FOLK from "../cast/folk.mjs";
 import { plateCtx } from "./platectx.mjs";
 import { exposure } from "./expose.mjs";
-import { queueShadow } from "./groundshadow.mjs";
+import { oilInk, INK_RGB, inkWidth } from "./oilink.mjs";
+import { queueShadow, queueMask, footprintBox, footprintMask, gridCrop } from "./groundshadow.mjs";
 import { makeReactions, queueLambOutline } from "./feel.mjs";
 import { STAND } from "../anim/stances.mjs";
 import { INDEX } from "../rig/skeleton.mjs";
-const CAST = { lamb, fennick, marrow, warden, salvor, keel, sabine, wenna, merrow, gorm: GORM, hobb: HOBB, fewell: FEWELL, strand: STRAND, bright: BRIGHT, coe: COE, ...Object.fromEntries(Object.entries(FOLK).map(([k, m]) => [k.toLowerCase(), m])) };
+import { tick, tock } from "./perf.mjs";
+import { toolStep, toolOff } from "./toolclear.mjs";
+import { finishFigure, SEAT_SLACK, OCC_BIAS } from "./figure-core.mjs";
+import { toneName, renderJob } from "./figjob.mjs";
+import { figPool } from "./figpool.mjs";
+import { CAST } from "./castmap.mjs";
 
 const MEMBERS = CAST;
 // every figure id with cast data, read by game/engine/tools/cast.mjs (the validator flags any other id)
@@ -37,10 +32,19 @@ const BODY = { lamb: "lamb", holder: "warden", skirmisher: "salvor", fennick: "f
 // Until the drawer is told each fighter's world point (asked in NOTES, A4), the lamps cannot be
 // placed, so fights use an even sodium light from above with a lamp rim: every fighter reads.
 const FIGHT_RIG = { amb: [0.09, 0.07, 0.13], ground: [0.03, 0.025, 0.04], key: { dir: [-0.35, 0.85, 0.4], c: [0.95, 0.6, 0.26], wrap: 0.35 }, fill: { dir: [0.5, 0.3, -0.6], c: [0.2, 0.12, 0.06], wrap: 0.5 }, fresnel: { c: [0.34, 0.2, 0.08], pow: 3 } };
-export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDeg: 26, elevDeg: 30 }, rig = FIGHT_RIG, tone = RIGS.quay.tone, base = "/characters/", combatUrl = "/engine/combat/out/timing.combat.json", ss = 1 } = {}) {
+export async function makeFightDrawer({ poseOf, actorOf = null, hourOf = () => 23, camera = { yawDeg: 26, elevDeg: 30 }, rig = FIGHT_RIG, tone = RIGS.quay.tone, base = "/characters/", combatUrl = "/engine/combat/out/timing.combat.json", ss = 1 } = {}) {
   const timing = await (await fetch(base + "anim/timing.json")).json();
   let combat = null; try { const r = await fetch(combatUrl); if (r.ok) combat = await r.json(); } catch (e) { console.warn("fight figures: combat timing not loaded:", e.message); }
-  const cast = createCast({ timing, combat, members: MEMBERS }), actors = new Map(), tables = {};
+  // a figure's build summary from a figure worker (actor.mjs metaOfBuilt), so this thread never builds a
+  // mesh (a new figure's far mesh cost 50 to 160 ms here); a figure waits, undrawn, the few frames until it comes
+  const metas = new Map();
+  const metaOf = (who, tool) => {
+    const pool = !asyncOff && typeof Worker !== "undefined" ? asyncPool() : null; if (!pool || !pool.meta) return undefined;
+    const k = `${who}|${tool}`; if (metas.has(k)) return metas.get(k);
+    metas.set(k, null); pool.meta(who, tool).then((m) => metas.set(k, m), (e) => { console.warn(`figures: no build summary for ${k} (${e.message}); building here`); metas.set(k, undefined); });
+    return null;
+  };
+  const cast = createCast({ timing, combat, members: MEMBERS, metaOf }), actors = new Map(), tables = {};
   // combat's per-frame contacts (anim/fx.mjs, pure) drive the hit reactions; without it, none
   let fxOf = null; try { ({ fxOf } = await import(combatUrl.replace(/out\/timing\.combat\.json$/, "anim/fx.mjs"))); } catch (e) { console.warn("fight figures: no combat fx, so no hit reactions:", e.message); }
   const reactions = makeReactions(fxOf);
@@ -96,64 +100,87 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
         fresnel: { c: near.length && lit > 0.3 ? (KIND[near[0].L.kind] || KIND.paraffin).map((v) => v * 0.5) : [0.2, 0.24, 0.34], pow: 2.2 } },
     };
   }
+  // Readability without an outline, as the reference does it (cleanroom/spec/NRFTW-PRESENTATION-2.md
+  // section 2; author 2026-10-21 "Make it more like No Rest for the Wicked"): every figure carries a soft
+  // light only figures receive (about 2 m reach, no shadow), and a rim from behind in a cool pale
+  // blue-grey, so a figure separates from warm painted ground by an edge of the other temperature
+  const CARRY = { up: 1.3, toward: 1.0, power: 0.25, c: [1.0, 0.93, 0.82] }, RIM = { c: [0.34, 0.4, 0.54], pow: 2.0, directionality: 2.0, lift: 0.6 };
+  function carry(R, at, cam) {
+    if (!at || !R || !R.rig || globalThis.__lwNoCarry) return R;
+    const f = fwdOf(cam), hl = Math.hypot(f[0], f[2]) || 1, bx = f[0] / hl, bz = f[2] / hl;   // camera forward, level
+    const lamps = [...(R.rig.lamps || []), { pos: [at[0] - bx * CARRY.toward, at[1] + CARRY.up, at[2] - bz * CARRY.toward], c: CARRY.c, power: CARRY.power, kind: "carried" }];
+    const dl = Math.hypot(bx, RIM.lift, bz), fr = R.rig.fresnel || {};
+    // the rim keeps a little of the ruling lamp's colour and takes the cool back light
+    const rc = RIM.c.map((v, k) => v + 0.3 * ((fr.c || [0, 0, 0])[k] || 0));
+    return { ...R, rig: { ...R.rig, lamps, fresnel: { c: rc, pow: RIM.pow, dir: [bx / dl, RIM.lift / dl, bz / dl], directionality: RIM.directionality } } };
+  }
   const D2R = Math.PI / 180, fwdOf = (cam) => { const y = cam.yawDeg * D2R, e = cam.elevDeg * D2R; return [-Math.sin(y) * Math.cos(e), -Math.sin(e), -Math.cos(y) * Math.cos(e)]; };
   // Silhouette treatment, chosen by testing at 1080p gameplay zoom (characters/PROGRESS.md step 55);
   // globalThis.__lwFigureLook overrides it for tests: any of lift, outline, shadow, pool, comma-separated.
+  const oilFor = {}, CAP_X = 1.9;   // linear: about 1.34x in display values
+  const LINB = Float32Array.from({ length: 256 }, (_, i) => { const v = i / 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
+  const ENCB = (v) => Math.round(255 * (v <= 0.0031308 ? 12.92 * v : 1.055 * Math.min(1, v) ** (1 / 2.4) - 0.055));
   const LIFT_IDS = new Set(["skin", "cheek", "jawcool", "lip"].map((n) => MATS[n].id));
-  const LOOK_DEFAULT = "lift,outline";   // the test: outline read best on dark ground, lift added faces and hands; shadow and pool vanished on dark ground
-  const LIFT = 1.6, OCC_BIAS = 0.14, EXPOSE_MODE = "both", LIT_X = 3, SURROUND_X = 2.5;   // the lit third counts up to 3x the ground's median (Merrow beside the fire pool read 2.2x his surroundings)   // face lift in linear light; occlusion slack in metres
+  const LOOK_DEFAULT = "lift,outline,oil";   // outline: the plates' ink line on the silhouette, which the plates themselves carry (not a readability halo)   // oil: Oil and Ink shadow planes and skin halftones (runtime/oilink.mjs, author's pick 2026-10-18)   // the test: outline read best on dark ground, lift added faces and hands; shadow and pool vanished on dark ground
+  const SEAT_SLACK = 0.22, LIFT = 1.25, OCC_BIAS = 0.14, EXPOSE_MODE = "both", LIT_X = 3, SURROUND_X = 2.5;   // the lit third counts up to 3x the ground's median (Merrow beside the fire pool read 2.2x his surroundings)   // face lift in linear light; occlusion slack in metres
   // A held staff or pole kept inside the room around the figure (args.room: metres to the nearest prop
   // or person ahead, left and right, from the engine; args.reach alone means ahead only). Both ends of
   // the shaft are tested, and neither may go under the floor; the whole shaft keeps BODY_R off every
   // other body this drawer drew in the last frames (the room is measured at the feet, a pole is not). When one breaks a limit, the wrist turns
   // (bend in 10 and side in 15 degree steps to 60, both arms drawn in by 0, 15 or 30 when the wrist alone cannot; the smallest change first) to the nearest pose that
   // fits; the angle eases over a few frames so the tool never snaps, and a pose that still fits is kept.
-  const BODY_R = 0.5, BODY_TOP = 2.1,   // a standing body with its arms, coat and hat brim (0.36 and 0.45 let a pole and an arm graze a hat and a coat: PROGRESS 62)
-    TOOL_EASE = 0.25, TOOL_STEP = 64, TOOL_TRY = (() => { const o = []; for (const arm of [0, -15, -30]) for (let b = -60; b <= 60; b += 10) for (let sd = -60; sd <= 60; sd += 15) o.push([b, sd, arm]); return o.sort((p, q) => Math.abs(p[0]) + Math.abs(p[1]) + 1.5 * Math.abs(p[2]) - Math.abs(q[0]) - Math.abs(q[1]) - 1.5 * Math.abs(q[2])); })();
+  // The limits and the search itself: runtime/toolclear.mjs. With module workers the search runs whole in
+  // the tool worker (runtime/toolworker.mjs): each figure has at most one question out, asked with this
+  // frame's pose, and the answer is the target the wrist eases toward from the frame it arrives; here it
+  // costs one pose and a message a frame. ?toolsearch=main (and Node) searches here, TOOL_STEP candidates a
+  // frame (each costs a skeleton solve), so a limit tripping never stalls a frame.
+  const TOOL_EASE = 0.25, TOOL_STEP = 64;
+  const toolHere = !(typeof Worker !== "undefined" && !(globalThis.location && /[?&]toolsearch=main(&|$)/.test(globalThis.location.search || "")));
+  // two tool workers (the brawl's nine armed figures ask about every frame, about 1.2 ms each); a figure
+  // keeps its worker, whose stand-in actors and meshes stay built
+  const TOOL_WORKERS = 2; let toolWs = null, toolSeq = 0, toolNext = 0;
+  const toolWorker = (a) => {
+    if (toolHere || toolFailed) return null;
+    if (!toolWs) try {
+      toolWs = Array.from({ length: TOOL_WORKERS }, () => {
+        const w = new Worker(new URL("./toolworker.mjs", import.meta.url), { type: "module" });
+        w.postMessage({ type: "init", timing, combat });
+        w.onmessage = (e) => { const m = e.data, a = actors.get(m.id), TS = (globalThis.__lwToolSearch ||= { asked: 0, answered: 0, ms: 0, tries: 0, wait: 0, failed: 0 }); if (!a || !a.clear) return; const st = a.clear; if (st.asked !== m.seq) return; st.asked = 0;
+          if (m.error) { TS.failed++; console.warn(`figures: tool search failed (${m.error})`); return; }
+          TS.answered++; TS.ms += m.ms; TS.tries += m.tries; TS.wait += performance.now() - st.askedAt; st.tb = m.tb; st.ts = m.ts; st.to = m.to; };
+        w.onerror = (e) => { console.warn(`figures: tool worker failed (${e.message}); searching here`); toolFailed = true; };
+        return w;
+      });
+    } catch (e) { console.warn(`figures: no tool worker (${e.message}); searching here`); toolFailed = true; return null; }
+    if (a.toolIdx == null) a.toolIdx = toolNext++ % TOOL_WORKERS;
+    return toolWs[a.toolIdx];
+  };
+  let toolFailed = false;
+  // the walk grid's cells round the figure, for the worker's blocked(x, z) (ui/peoplelayer.mjs roomOf passes the arena)
+  function cropBlocked(A, pos, reach = 3.5) {
+    const c = A.cell, [ox, oz] = A.origin, W = A.grid.w, H = A.grid.h;
+    const c0 = Math.max(0, Math.floor((pos[0] - reach - ox) / c)), c1 = Math.min(W - 1, Math.floor((pos[0] + reach - ox) / c)), r0 = Math.max(0, Math.floor((pos[2] - reach - oz) / c)), r1 = Math.min(H - 1, Math.floor((pos[2] + reach - oz) / c));
+    const cw = Math.max(0, c1 - c0 + 1), ch = Math.max(0, r1 - r0 + 1), bits = new Uint8Array(cw * ch);
+    for (let j = 0; j < ch; j++) for (let i = 0; i < cw; i++) { const cell = A.grid.cells[(r0 + j) * W + c0 + i]; bits[j * cw + i] = (cell ? cell.h : null) == null ? 1 : 0; }
+    return { ox, oz, c, w: W, h: H, c0, r0, cw, ch, bits };
+  }
   function keepToolClear(a, room, face = null) {
     const st = (a.clear ||= { b: 0, s: 0, tb: 0, ts: 0 });
-    const R = room == null ? null : typeof room === "number" ? { ahead: room, left: 9, right: 9 } : room;
+    const R = room == null ? null : typeof room === "number" ? { ahead: room, left: 9, right: 9, behind: null } : room;
     const fa = face ?? ((90 - a.facing) * Math.PI) / 180, fx = Math.cos(fa), fz = Math.sin(fa);
-    const now = performance.now(), near = [...actors.values()].filter((o) => o !== a && now - (o.seen || -1e9) < 120 && Math.hypot(o.pos[0] - a.pos[0], o.pos[2] - a.pos[2]) < 2.6);
-    const excess = () => {   // metres by which the shaft's ends break the limits (0: it fits)
-      const w = a.weapon && a.weapon(); if (!w) return 0; let x = 0;
-      for (const e of [w.tip, w.butt]) {
-        if (!e) continue;
-        const dx = e[0] - a.pos[0], dz = e[2] - a.pos[2], ahead = dx * fx + dz * fz, left = -dx * fz + dz * fx;
-        x += Math.max(0, 0.05 - (e[1] - a.pos[1]));
-        if (R) x += Math.max(0, ahead - R.ahead) + Math.max(0, left - R.left) + Math.max(0, -left - R.right);
-      }
-      // and the whole shaft clear of every other body drawn this frame (a standing capsule BODY_R round, to BODY_TOP with the hat)
-      if (near.length) {   // the hands and forearms that hold it, too (a two-handed grip reaches across)
-        const S = a.skeleton();
-        for (const sd of ["L", "R"]) {   // each forearm, elbow to hand, sampled
-          const e = a.toWorld(S[INDEX["fore" + sd]].p), h = a.toWorld(S[INDEX["hand" + sd]].p);
-          for (let i = 0; i <= 4; i++) { const t = i / 4, q = [e[0] + (h[0] - e[0]) * t, e[1] + (h[1] - e[1]) * t, e[2] + (h[2] - e[2]) * t];
-            for (const o of near) { const qy = q[1] - o.pos[1]; if (qy >= 0 && qy <= BODY_TOP) x += Math.max(0, BODY_R - Math.hypot(q[0] - o.pos[0], q[2] - o.pos[2])) / 5; } }
-        }
-      }
-      if (w.butt) for (const o of near) for (let i = 0; i <= 8; i++) {
-        const t = i / 8, px = w.butt[0] + (w.tip[0] - w.butt[0]) * t, py = w.butt[1] + (w.tip[1] - w.butt[1]) * t - o.pos[1], pz = w.butt[2] + (w.tip[2] - w.butt[2]) * t;
-        if (py < 0 || py > BODY_TOP) continue; x += Math.max(0, BODY_R - Math.hypot(px - o.pos[0], pz - o.pos[2])) / 8;
-      }
-      return x;
-    }, fits = () => excess() < 1e-3;
+    const now = performance.now(), near = [...actors.values()].filter((o) => o !== a && now - (o.seen || -1e9) < 600 && Math.hypot(o.pos[0] - a.pos[0], o.pos[2] - a.pos[2]) < 2.6).map((o) => o.pos);
+    const W = !toolFailed && a.fid != null && actors.get(a.fid) === a && (!R || !R.blocked || R.arena) ? toolWorker(a) : null;
     a.adjust(null, "tool");
-    const w = a.weapon && a.weapon(), long = w && Math.hypot(w.tip[0] - w.grip[0], w.tip[1] - w.grip[1], w.tip[2] - w.grip[2]) > 0.8;
-    const set = (b, sd, o) => a.adjust({ handR: { bend: b, side: sd }, armR: { out: o }, armL: { out: o } }, "tool");
-    if (!long || fits()) { st.tb = 0; st.ts = 0; st.to = 0; st.search = null; }
-    else {
-      set(st.tb, st.ts, st.to || 0);
-      if (!(st.tb || st.ts || st.to) || !fits()) {
-        // the first pose that fits, else the one that breaks the limits least; searched TOOL_STEP candidates a
-        // frame (each costs a skeleton solve), so a limit tripping never stalls a frame
-        const q = (st.search ||= { i: 0, best: [0, 0, 0], low: (set(0, 0, 0), excess()) });
-        for (let n = 0; n < TOOL_STEP && q.i < TOOL_TRY.length; n++, q.i++) {
-          const [b, sd, o] = TOOL_TRY[q.i]; if (!b && !sd && !o) continue; set(b, sd, o); const x = excess();
-          if (x < q.low - 0.02) { q.low = x; q.best = [b, sd, o]; } if (x < 1e-3) { q.i = TOOL_TRY.length; break; }
-        }
-        if (q.i >= TOOL_TRY.length) { [st.tb, st.ts, st.to] = q.best; st.search = null; }
-      } else st.search = null;
+    if (W) {
+      if (!st.asked) {
+        const TS = (globalThis.__lwToolSearch ||= { asked: 0, answered: 0, ms: 0, tries: 0, wait: 0, failed: 0 }); TS.asked++;
+        st.asked = ++toolSeq; st.askedAt = now;
+        W.postMessage({ type: "tool", id: a.fid, seq: st.asked, who: a.body, tool: a.tool, base: a.pose(), locks: a.locksLocal(), facing: a.facing, pos: [...a.pos], fx, fz,
+          R: R && { ahead: R.ahead, left: R.left, right: R.right, behind: R.behind }, crop: R && R.blocked && R.arena ? cropBlocked(R.arena, a.pos) : null, near: near.map((p) => [...p]), st: { tb: st.tb, ts: st.ts, to: st.to || 0 } });
+      } else if (now - st.askedAt > 1000) st.asked = 0;   // an answer lost: ask again
+    } else {
+      const env = { measure: (off) => { a.adjust(off ? toolOff(off[0], off[1], off[2]) : null, "tool"); const S = a.skeleton(); return { w: a.weapon && a.weapon(S), S, toWorld: a.toWorld }; }, pos: a.pos, fx, fz, R, blocked: R && R.blocked ? R.blocked : null, near };
+      toolStep(env, st, TOOL_STEP);
     }
     st.b += (st.tb - st.b) * TOOL_EASE; st.s += (st.ts - st.s) * TOOL_EASE; st.o = (st.o || 0) + ((st.to || 0) - (st.o || 0)) * TOOL_EASE;
     a.adjust(Math.abs(st.b) + Math.abs(st.s) + Math.abs(st.o) > 0.5 ? { handR: { bend: st.b, side: st.s }, armR: { out: st.o }, armL: { out: st.o } } : null, "tool");
@@ -178,6 +205,7 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     return (a.seatFit = { y: seatY, dy, da, err, settled });
   }
   drawFighter.fitSeat = fitSeat;   // for proto/drawer_test.mjs
+  drawFighter.actorOf = (id) => actors.get(id) || null;   // a figure's actor (tools/crowd-cards.mjs reads the walk cycle's phase)
   // Tell shapes, all in one pale ink (alpha rising with k, 0..1 through the tell), drawn on the ground:
   //   swing   a ring that tightens;
   //   grab    four chevrons on the ring closing inward (hands reaching);
@@ -224,6 +252,19 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     g.beginPath(); g.arc(x, y - hgt - wid * 0.35, wid * 0.32, 0, Math.PI * 2); g.fill(); g.stroke(); g.restore();
     return "placeholder";
   }
+  // Off-thread drawing (runtime/figpool.mjs): on wherever module workers run, unless a test or tool
+  // needs this thread's results (solo, debug, the painter's trace or screen control) or ?figs=sync asks
+  let asyncOff = !!(globalThis.location && /[?&]figs=sync(&|$)/.test(globalThis.location.search || "")), poolV;
+  const verifyOn = !!(globalThis.location && /[?&]figs=verify(&|$)/.test(globalThis.location.search || ""));
+  const skinWorker = !(globalThis.location && /[?&]figskin=main(&|$)/.test(globalThis.location.search || ""));   // ?figskin=main: skin on this thread, for measuring
+  // one pool for every drawer (a fight's camera has its own drawer, and a figure keeps one worker and so one painter history)
+  const FIRST_WAIT = 1500;
+  const asyncPool = () => (poolV === undefined ? (poolV = asyncOff ? null : (globalThis.__lwFigPool ??= figPool(poolOpts()))) : poolV);
+  const asyncOK = (args, look, tone) => !asyncOff && !args.solo && !globalThis.__lwFigureDebug && !globalThis.__lwFigsSync && !globalThis.__lwPaintDebug && !globalThis.__lwPaintTrace
+    && !(globalThis.__lwPainter && globalThis.__lwPainter.anchor !== "bind") && toneName(tone) !== undefined && !!asyncPool();
+  drawFighter.pool = () => poolV || null;
+  // ?figw=N workers, ?figst=1|2 stages, ?figbudget=N (0: none), ?figlane=0, ?figsplit=1 (split at any frame rate) and ?figadapt=1 (the share under load, off by default) (runtime/figpool.mjs), for measuring
+  function poolOpts() { const q = (globalThis.location && globalThis.location.search) || "", o = {}, w = /[?&]figw=(\d+)/.exec(q), st = /[?&]figst=(\d)/.exec(q); if (w) o.size = +w[1]; if (st) o.stages = +st[1]; const b = /[?&]figbudget=(\d+)/.exec(q); if (b) o.budget = +b[1] || Infinity; if (/[?&]figlane=0/.test(q)) o.lanes = false; if (/[?&]figsplit=1/.test(q)) o.splitMs = Infinity; if (/[?&]figadapt=1/.test(q)) o.adapt = true; return o; }
   drawFighter.bodyOf = bodyOf;   // for proto/drawer_test.mjs
   return drawFighter;
   function drawFighter(g, F, args) {
@@ -231,24 +272,30 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     const { x, y, ppm, face, down, W, at, depth, depthAt, lights, darkness } = args;
     const cam = args.cam || camera, who = bodyOf(W, F);
     if (!who) return placeholder(g, args, cam);
+    let t = tick(); const tAll = t;
     let a = actors.get(F.id);
-    if (!a) { a = cast.actor(who, { tool: toolOfDef(W, F, who) }); actors.set(F.id, a); }
+    if (!a) { a = cast.actor(who, { tool: toolOfDef(W, F, who) }); a.fid = F.id; a.body = who; actors.set(F.id, a); }
+    if (!a.ready()) return;   // its build summary is on its way from a worker (metaOf above)
     // a scene person marked `pose: seated` (args.pose, or the figure's own pose field) sits
     const seated = F.person && (args.pose === "seated" || F.seated || (F.def && F.def.pose === "seated"));
     const pose = seated ? { anim: "sit", loop: true } : poseOf(W, F, clipsFor(who));
     a.drive({ x: F.x, z: F.z, face: face ?? F.face, pose: { ...pose, anim: down && !pose.anim ? "knockdown" : pose.anim }, dt: 1 / 60 });
     if (seated) { if (args.seatY != null) fitSeat(a, args.seatY); } else if (a.seatFit) fitSeat(a, null);
     a.seen = performance.now();
+    tock("d.pose", t); let td = tick();
     // weight on contact: the struck body snaps away from the blow, a heavy striker recoils (runtime/feel.mjs)
     if (W && W.byId) { reactions.read(W); const proto = Object.getPrototypeOf(F), cid = proto && Object.prototype.hasOwnProperty.call(proto, "id") ? proto.id : F.id; a.adjust(reactions.layer(cid, face ?? F.face ?? 0), "hit"); }
+    tock("d.react", td); td = tick();
     const toolK = keepToolClear(a, args.room || args.reach, args.face ?? face ?? null);
+    tock("d.tool", td); td = tick();
     (globalThis.__lwToolStats ||= {})[F.id] = { room: args.room || args.reach, wrist: [+(a.clear?.b || 0).toFixed(1), +(a.clear?.s || 0).toFixed(1)], target: [a.clear?.tb, a.clear?.ts], k: +toolK.toFixed(1), pos: a.pos.map((v) => +v.toFixed(2)), ...(globalThis.__lwFigureDebug ? (() => { const w = a.weapon && a.weapon(), S = a.skeleton(), r3 = (v) => v.map((q) => +q.toFixed(2)); return { tip: w && r3(w.tip), butt: w && w.butt && r3(w.butt), handL: r3(a.toWorld(S[INDEX.handL].p)), handR: r3(a.toWorld(S[INDEX.handR].p)), head: r3(a.toWorld(S[INDEX.head].p)) }; })() : {}) };   // read by proto/markup.mjs
+    // Glyph mode (game/engine/paint/glyph): the posed skeleton is handed to the glyph renderer and nothing is rasterised here
+    if (globalThis.__lwGlyphFigure) { const SK = a.skeleton(), M0 = MEMBERS[who] || {}, dy = at ? at[1] - a.pos[1] : 0, up = (p) => (p ? [p[0] + (at ? at[0] - a.pos[0] : 0), p[1] + dy, p[2] + (at ? at[2] - a.pos[2] : 0)] : p), /* the glyph lead's fix (design/state/glyph.md): on a plate with no arena the stage offsets fight coordinates; move the skeleton to where the painted figure stands */ wp = a.weapon ? a.weapon() : null; globalThis.__lwGlyphFigure({ id: F.id, who, team: F.team, person: !!F.person, down: !!down, joints: SK.map((jt) => up(a.toWorld(jt.p))), weapon: wp && { ...wp, tip: up(wp.tip), butt: up(wp.butt), grip: up(wp.grip) }, P: M0.P, palette: M0.palette, info: M0.info, offhand: M0.info && M0.info.offhand, face: face ?? F.face ?? 0, tell: args.tell || (() => { const m = F.act && W && W.moves ? W.moves[F.act.id] : null; return F.team !== "lamb" && m && m.tell && F.act.f >= m.tell.at[0] && F.act.f < m.tell.at[1] ? { kind: m.tell.kind || "swing", answer: null, k: (F.act.f - m.tell.at[0]) / Math.max(1, m.tell.at[1] - m.tell.at[0]), unstoppable: m.parryable === false && m.blockable === false } : null; })(), solo: !!args.solo }); return "glyph"; }
     // render in the actor's own frame at the plate camera's orientation and scale, feet on (x, y)
     const cosE2 = Math.cos(cam.elevDeg * D2R), truePpm = ppm / cosE2, hM = 2.9, h = Math.ceil(hM * truePpm), w = Math.ceil(h * 0.95), P = a.pos;
-    const R = rigAt(at, lights, darkness || 0);
-    const r = a.render({ yawDeg: cam.yawDeg, elevDeg: cam.elevDeg, height: hM, centre: [P[0], P[1] + 1.05, P[2]] }, w, h, R.rig, { ss, tone: R.tone });
-    const feetDown = 1.05 * cosE2 * truePpm, ox = Math.round(x - r.w / 2), oy = Math.round(y - feetDown - r.h / 2);
-    const img = new ImageData(r.w, r.h), d = img.data, G = r.G, fw = fwdOf(cam), n = r.w * r.h;
+    const R = carry(rigAt(at, lights, darkness || 0), at, cam);
+    tock("drive", t); t = tick();
+    const feetDown = 1.05 * cosE2 * truePpm, fw = fwdOf(cam), view = { yawDeg: cam.yawDeg, elevDeg: cam.elevDeg, height: hM, centre: [P[0], P[1] + 1.05, P[2]] };
     // exposure from the painting around the figure's feet: the light that reaches the spot it stands on
     const PC = plateCtx(args);
     // The light the figure stands in, from the painted ground within 1.5 m (EXPOSE_MODE, chosen by
@@ -256,6 +303,10 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     // pools and candle light round the figure) and a floor that rises inside a lamp's reach (0.03 at
     // its edge to 0.15 under it); "lit" and "mid" (the median, step 57) stay for tests
     const mode = globalThis.__lwExposeMode || EXPOSE_MODE, R15 = 1.5 * truePpm;
+    // read only for a frame that is drawn (sent to a worker, or drawn here): a figure whose worker is busy
+    // skips it (the same values when it is read: the plate, the place and the lights of this frame)
+    let LST = null;
+    const lightStats = () => { if (LST) return LST;
     const stats0 = PC && PC.lumaStats([[x - R15, y - R15 * Math.sin(cam.elevDeg * D2R), x + R15, y + R15 * Math.sin(cam.elevDeg * D2R)]], 28, { at: at || [0, 0, 0], r: 1.5 });
     const reachF = (R.rig.lamps || []).reduce((m, q) => Math.max(m, q.f2 || 0), 0);   // 1 under a lamp, 0 at the edge of its reach
     const floorAt = 0.03 + 0.1 * reachF;
@@ -264,57 +315,101 @@ export async function makeFightDrawer({ poseOf, actorOf = null, camera = { yawDe
     // the lamp floor is not capped by it (the quay's dark stretches under a lamp)
     const sur = PC && PC.lumaStats([[x - 1.6 * ppm, y - 2.3 * ppm, x + 1.6 * ppm, y + 0.4 * ppm]], 24);
     const stats1 = stats0 && (mode === "lit" ? { ...stats0, mid: stats0.lit } : mode === "floor" ? { ...stats0, mid: Math.max(stats0.mid, floorAt) } : mode === "both" ? { ...stats0, mid: Math.max(Math.min(stats0.lit, LIT_X * stats0.mid, sur ? SURROUND_X * sur.mid : 1), floorAt) } : stats0);
-    const stats = stats1;
-    const X = exposure(r.rgba, n, stats, r.albedo, (i) => ((i / r.w) | 0) * ss * G.w + (i % r.w) * ss);
-    (globalThis.__lwFigureStats ||= {})[F.id] = { gain: +X.gain.toFixed(3), ceil: +X.ceil.toFixed(4), mid: stats && +stats.mid.toFixed(4), hi: stats && +stats.hi.toFixed(4), n: stats0 && stats0.n, mode, plate: !!PC };   // read by characters/proto/plate_proof.py
-    // hidden where the painted room stands in front: each pixel's own depth against the painting's
-    // (OCC_BIAS of slack for the geo buffer's half resolution), a hard mask first, then a one-pixel
-    // feather at its edge, so a figure behind a post or a counter is cut cleanly and never ghosted;
-    // props in the hands go through the same test
-    const vis = new Uint8Array(n).fill(1), dbg = globalThis.__lwFigureDebug || args.solo ? new Float32Array(n).fill(NaN) : null;
-    // each figure pixel's depth along the camera's forward axis (metres, the plate's depthOf scale):
-    // kept for args.solo (the visual check compares true depths) and the debug flag
-    const dzAt = (px, py) => { const gi = py * ss * G.w + px * ss; return G.id[gi] && at ? (depth ?? 0) + (G.wp[gi * 3] - at[0]) * fw[0] + (G.wp[gi * 3 + 1] - at[1]) * fw[1] + (G.wp[gi * 3 + 2] - at[2]) * fw[2] : NaN; };
-    if (dbg && !(depthAt && depth != null)) for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) { const i = py * r.w + px; if (r.rgba[i * 4 + 3] > 0) dbg[i] = dzAt(px, py); }
-    if (depthAt && depth != null) for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) {
-      const i = py * r.w + px; if (r.rgba[i * 4 + 3] <= 0) continue;
-      const gi = py * ss * G.w + px * ss, dz = G.id[gi] && at ? depth + (G.wp[gi * 3] - at[0]) * fw[0] + (G.wp[gi * 3 + 1] - at[1]) * fw[1] + (G.wp[gi * 3 + 2] - at[2]) * fw[2] : depth;
-      if (dbg) dbg[i] = dz;
-      if (dz - depthAt(ox + px, oy + py) > OCC_BIAS) vis[i] = 0;
+    return (LST = { stats0, sur, stats: stats1 }); };
+    // Off the main thread (runtime/figpool.mjs): the frame's job goes to this figure's worker when its
+    // last one is back, and the newest finished image is drawn at the feet as they are now
+    // A starved worker (no image yet half a second after the first ask, or none newer than a second while one
+    // is under way: a loaded machine) gives way to this thread for the frame, so a figure is never missing
+    // or a second stale; counted in globalThis.__lwFigStarved
+    const asyncWanted = asyncOK(args, look, R.tone), nowT = performance.now(), L0 = asyncWanted ? asyncPool().latest(F.id) : null;
+    // (measured from the first frame actually sent: a figure waiting for the plate's data is not starved)
+    // A figure's first image waits FIRST_WAIT ms (1.5 s) before this thread draws it: a new place's figures
+    // build their meshes in the workers under the ink blot, and drawing them here meant building them here too
+    // (a 190 ms frame in a move, perf/PROGRESS.md 21)
+    // A main thread already slow (frames over 40 ms) takes no such figure, and at most one figure is drawn
+    // here each 50 ms: drawing many here would slow the frames, age every image past the limit, and feed itself
+    let starved = asyncWanted && !verifyOn && (L0 ? nowT - L0.t > 1000 && asyncPool().busy(F.id) : !!a.firstSent && nowT - a.firstSent > FIRST_WAIT);
+    if (starved) { const S = (globalThis.__lwStarveGate ||= { at: -1e9 }); if ((a.frameMs || 16.7) > 40 || nowT - S.at < 50) starved = false; else S.at = nowT; }
+    if (starved) globalThis.__lwFigStarved = (globalThis.__lwFigStarved || 0) + 1;
+    const async = asyncWanted && !starved;
+    let src = null, sw = 0, sh = 0, solo = null;
+    // the plate's occlusion data (the worker answers the test from it): a job waits for it, so no image is
+    // drawn unoccluded
+    const pool = asyncWanted ? asyncPool() : null, occ = pool && depthAt && depthAt.occlusion ? depthAt.occlusion() : null;
+    const canSend = !!pool && !pool.busy(F.id) && (occ || !depthAt);
+    if (pool) { if (a.lastDraw) a.frameMs = a.frameMs ? a.frameMs * 0.9 + Math.min(200, nowT - a.lastDraw) * 0.1 : Math.min(200, nowT - a.lastDraw); a.lastDraw = nowT; }   // the frames' interval, smoothed
+    // the contact shadow's footprint (runtime/groundshadow.mjs): worked out with the frame's job in its worker,
+    // here when the frame is drawn here
+    const rule = (R.rig.lamps || []).reduce((b, q) => { const w = q.power / ((q.pos[0] - at[0]) ** 2 + (q.pos[2] - at[2]) ** 2 + 1); return w > b.w ? { w, q } : b; }, { w: 0, q: null }).q;
+    const away = rule && at ? (() => { const dx = at[0] - rule.pos[0], dz = at[2] - rule.pos[2], l = Math.hypot(dx, dz); return l > 0.05 ? [dx / l, dz / l] : null; })() : null;
+    const fp = PC && at ? { x, y, at, ppm: truePpm, r: down ? 0.8 : 0.5, dir: away, len: away ? 1.2 : 0 } : null;
+    function dispatch(job) {
+      if (typeof job.tone === "function") job.tone = toneName(job.tone);
+      const { stats, sur, stats0 } = lightStats(); a.sentStats = { stats, n: stats0 && stats0.n };   // reported with the images (globalThis.__lwFigureStats)
+      const post = { ss, stats, sur, look: [...look], seated, depth, at, fw, ox: Math.round(x - w / 2), oy: Math.round(y - feetDown - h / 2), truePpm, yawDeg: cam.yawDeg, solo: false, keepDepth: false, who, team: F.team, person: !!F.person,
+        paint: !!globalThis.__lwPainter, paintInfo: { key: F.id, ppm: truePpm, cam: { ...cam }, plate: args.plate, lamps: R.rig.lamps || null }, hour: hourOf(), perf: !!globalThis.__lwPerf };
+      // ?figs=verify: the same job drawn here as well, and the worker's image compared byte for byte
+      const want = verifyOn ? (() => { const jc = structuredClone(job), r2 = renderJob(jc, a.mesh(jc), (a.vbuf ||= {})), d2 = new Uint8ClampedArray(r2.w * r2.h * 4);
+        post.verify = true; const Z2 = finishFigure(r2, { ...post, look: new Set(post.look), depthAt, painter: post.paint ? globalThis.__lwPainter : null }, (a.vpb ||= {}), d2); let hid = 0; for (let i = 0; i < Z2.vis.length; i++) hid += Z2.vis[i] ? 0 : 1; d2.hidden = hid; d2.preHash = Z2.preHash; return d2; })() : null;
+      a.firstSent ||= performance.now();
+      let sb = [], wantShadow = null;
+      if (fp && PC.grid && PC.grid.pos) { const W = g.canvas.width, H = g.canvas.height, crop = gridCrop(PC.grid, footprintBox(fp, W, H)); post.shadow = { fp: { ...fp }, W, H, crop }; sb = [crop.pos.buffer, crop.valid.buffer]; if (verifyOn) wantShadow = footprintMask({ ...fp }, PC.grid, W, H); }
+      try { pool.send(F.id, job, post, occ, [...(job.S ? [job.S.pos.buffer, job.S.nrm.buffer] : []), ...sb], { feetDown, want, wantShadow, fx: x, fy: y }, { frameMs: a.frameMs || 16.7, lane: who === "lamb" || F.team === "lamb" }); }
+      catch (e) { console.warn(`figures: off-thread drawing stopped (${e.message}); drawing here`); asyncOff = true; }
     }
+    if (async) {
+      if (canSend) dispatch(a.prepare(view, w, h, R.rig, { ss, tone: R.tone, skinAt: skinWorker ? "worker" : "here" }));   // skinned in the worker (?figskin=main: here)
+      const L = pool.latest(F.id);
+      if (L) { src = L.canvas; sw = L.w; sh = L.h; (globalThis.__lwFigureStats ||= {})[F.id] = { gain: +L.gain.toFixed(3), ceil: +L.ceil.toFixed(4), mid: a.sentStats && a.sentStats.stats && +a.sentStats.stats.mid.toFixed(4), hi: a.sentStats && a.sentStats.stats && +a.sentStats.stats.hi.toFixed(4), n: a.sentStats && a.sentStats.n, mode, plate: !!PC, async: true };   // the light of the last frame sent
+        if (L.paintStats) (globalThis.__lwPaintStats ||= {})[F.id] = L.paintStats;
+        // the first frame an image is drawn: how long since its frame's pose was sent (read by tools/bench.mjs)
+        if (L.seq !== a.shownSeq && L.sentAt != null) { a.shownSeq = L.seq; const Q = ((globalThis.__lwFigShown ||= {})[F.id] ||= { n: 0, ms: 0 }); Q.n++; Q.ms += nowT - L.sentAt; }
+        if (verifyOn && L.d && L.meta && L.meta.want && L.seq !== a.verSeq) { a.verSeq = L.seq; const V = (globalThis.__lwFigVerify ||= { frames: 0, bytes: 0, differ: 0, max: 0 }), p = L.d, q = L.meta.want; V.frames++; V.bytes += p.length; if (!L.occluded) V.unoccluded = (V.unoccluded || 0) + 1; if (L.preHash !== q.preHash) { V.preDiff = (V.preDiff || 0) + 1; V.preFirst ||= V.frames; } if (L.hidden !== q.hidden) { V.visDiff = (V.visDiff || 0) + 1; V.visFirst ||= V.frames; } if (V.why === undefined && depthAt && !depthAt.occlusion) V.why = "depthAt without occlusion source";
+          if (p.length !== q.length) V.differ += p.length; else for (let i = 0; i < p.length; i++) { const e = Math.abs(p[i] - q[i]); if (e) { V.differ++; if (e > V.max) V.max = e; (V.by ||= {})[F.id] = (V.by[F.id] || 0) + 1; if (!V.first) V.first = { fid: F.id, frame: V.frames, i }; } } }
+        if (verifyOn && L.shadow && L.meta && L.meta.wantShadow && L.seq !== a.verShadowSeq) { a.verShadowSeq = L.seq; const V = (globalThis.__lwFigVerify ||= { frames: 0, bytes: 0, differ: 0, max: 0 }), p = L.shadow, q = L.meta.wantShadow; V.shadows = (V.shadows || 0) + 1;
+          if (p.x0 !== q.x0 || p.y0 !== q.y0 || p.w !== q.w || p.h !== q.h || p.mask.some((v, i) => v !== q.mask[i])) V.shadowDiffer = (V.shadowDiffer || 0) + 1; }
+        if (L.perf && L.seq !== a.perfSeq && globalThis.__lwPerf) { a.perfSeq = L.seq; for (const [k, e] of Object.entries(L.perf)) { const q = (globalThis.__lwPerf["w." + k] ||= { ms: 0, n: 0 }); q.ms += e.ms; q.n += e.n; } } }
+      else (globalThis.__lwFigureStats ||= {})[F.id] = { async: true, pending: true };
+      t = tick();
+    } else {
+    // starved: drawn here, and the frame still goes to the worker, so it catches up
+    let r; if (starved && canSend) { const job = a.prepare(view, w, h, R.rig, { ss, tone: R.tone }), jt = job.tone; job.tone = toneName(jt); const jc = structuredClone(job); job.tone = jt; dispatch(jc); r = renderJob(job, a.mesh(job), (a.state.buf ||= {})); }
+    else r = a.render(view, w, h, R.rig, { ss, tone: R.tone, pool: true });
+    const ox = Math.round(x - r.w / 2), oy = Math.round(y - feetDown - r.h / 2);
+    tock("render", t); if (globalThis.__lwPerf) { const e = (globalThis.__lwPerf.kpx ||= { ms: 0, n: 0 }); e.ms += (r.w * r.h) / 1000; e.n++; } t = tick();
+    const img = a.img && a.img.width === r.w && a.img.height === r.h ? a.img : (a.img = new ImageData(r.w, r.h)), d = img.data.fill(0), G = r.G, n = r.w * r.h;
+    const pb = (a.drawBuf ||= {});   // this actor's reused arrays (exposure, masks, the image)
+    const { stats, sur, stats0 } = lightStats();
+    const Z = finishFigure(r, { ss, stats, sur, look, seated, depth, at, fw, depthAt, ox, oy, truePpm, yawDeg: cam.yawDeg, solo: !!args.solo, keepDepth: !!(globalThis.__lwFigureDebug || args.solo), who, team: F.team, person: !!F.person,
+      painter: globalThis.__lwPainter || null, paintInfo: { key: F.id, ppm: truePpm, cam, plate: args.plate, lamps: R.rig.lamps || null } }, pb, d);
+    const vis = Z.vis, dbg = Z.dbg;
+    (globalThis.__lwFigureStats ||= {})[F.id] = { gain: +Z.gain.toFixed(3), ceil: +Z.ceil.toFixed(4), mid: stats && +stats.mid.toFixed(4), hi: stats && +stats.hi.toFixed(4), n: stats0 && stats0.n, mode, plate: !!PC };   // read by characters/proto/plate_proof.py
     if (dbg) (globalThis.__lwFigureDepth ||= {})[F.id] = { ox, oy, w: r.w, h: r.h, dz: dbg, vis };   // per-pixel depth for checking the visual check (globalThis.__lwFigureDebug)
-    for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) {
-      const i = py * r.w + px; let al = r.rgba[i * 4 + 3]; if (al <= 0 || !vis[i]) continue;
-      let s9 = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const X2 = px + dx, Y2 = py + dy; s9 += X2 < 0 || Y2 < 0 || X2 >= r.w || Y2 >= r.h ? 1 : vis[Y2 * r.w + X2]; }
-      al *= Math.min(1, s9 / 7);
-      const lift = look.has("lift") && LIFT_IDS.has(G.id[py * ss * G.w + px * ss]) ? LIFT : 1;   // faces and hands catch the light, under the ceiling
-      const c = X.apply(i, lift); d[i * 4] = c[0]; d[i * 4 + 1] = c[1]; d[i * 4 + 2] = c[2]; d[i * 4 + 3] = Math.round(al * 255);
-    }
-    if (look.has("outline")) {   // a thin line of the ruling light just outside the silhouette, no brighter than the room's highlights
-      const rc = X.cap(R.rig.fresnel ? R.rig.fresnel.c.map((v) => Math.min(1, v * 2.4)) : [0.9, 0.8, 0.6]), src = new Uint8ClampedArray(d), wpx = Math.max(1, Math.round(truePpm / 70));
-      for (let py = 0; py < r.h; py++) for (let px = 0; px < r.w; px++) { const i = py * r.w + px; if (src[i * 4 + 3] > 40) continue; let hit = 0;
-        for (let dy = -wpx; dy <= wpx && !hit; dy++) for (let dx = -wpx; dx <= wpx; dx++) { const X2 = px + dx, Y2 = py + dy; if (X2 < 0 || Y2 < 0 || X2 >= r.w || Y2 >= r.h) continue; if (src[(Y2 * r.w + X2) * 4 + 3] > 200) { hit = src[(Y2 * r.w + X2) * 4 + 3]; break; } }
-        if (hit) { d[i * 4] = rc[0]; d[i * 4 + 1] = rc[1]; d[i * 4 + 2] = rc[2]; d[i * 4 + 3] = Math.round(170 * hit / 255); } }
-    }
-    if (!args.solo && (who === "lamb" || F.team === "lamb")) queueLambOutline(g, { ox, oy, w: r.w, h: r.h, rgba: new Uint8ClampedArray(d) });   // Lamb's edge inked through anyone drawn over Lamb
+    t = tick();
     const c = (drawFighter.scratch ||= new OffscreenCanvas(8, 8)); c.width = r.w; c.height = r.h; c.getContext("2d").putImageData(img, 0, 0);
+    src = c; sw = r.w; sh = r.h;
+    // solo (the visual check draws each figure alone): the per-pixel depth of what was drawn, NaN where
+    // nothing was or where the painting hid it, in the image's own pixels placed at (ox, oy) on screen
+    if (args.solo && dbg) { for (let i = 0; i < n; i++) if (!vis[i] || d[i * 4 + 3] === 0) dbg[i] = NaN; solo = { depth: dbg, w: r.w, h: r.h, ox, oy }; if (globalThis.__lwFigureDebug) (globalThis.__lwSolo ||= {})[F.id] = solo; }
+    tock("upload", t); t = tick();
+    }
     g.save();
     if (look.has("pool")) { const gr = g.createRadialGradient(x, y, 0, x, y, 0.9 * truePpm); gr.addColorStop(0, "rgba(255,220,170,0.28)"); gr.addColorStop(1, "rgba(255,220,170,0)"); g.save(); g.scale(1, Math.sin(cam.elevDeg * D2R)); g.fillStyle = gr; g.beginPath(); g.arc(x, y / Math.sin(cam.elevDeg * D2R), 0.9 * truePpm, 0, Math.PI * 2); g.fill(); g.restore(); }
     // contact shadow: queued into the canvas's shared mask (runtime/groundshadow.mjs), laid on the
     // plate's ground only; without the plate's geo yet, a small soft ellipse
-    const rule = (R.rig.lamps || []).reduce((b, q) => { const w = q.power / ((q.pos[0] - at[0]) ** 2 + (q.pos[2] - at[2]) ** 2 + 1); return w > b.w ? { w, q } : b; }, { w: 0, q: null }).q;
-    const away = rule && at ? (() => { const dx = at[0] - rule.pos[0], dz = at[2] - rule.pos[2], l = Math.hypot(dx, dz); return l > 0.05 ? [dx / l, dz / l] : null; })() : null;
     (globalThis.__lwFigureStats[F.id] || {}).away = away;
-    if (PC && at) queueShadow(g, PC, { x, y, at, ppm: truePpm, r: down ? 0.8 : 0.5, dir: away, len: away ? 1.2 : 0 });
+    const LS = async && src ? asyncPool().latest(F.id) : null;
+    if (LS && LS.shadow && LS.meta && LS.meta.fx != null) queueMask(g, LS.shadow, x - LS.meta.fx, y - LS.meta.fy);   // as the image: worked out with its frame, placed with the feet now
+    else if (fp) queueShadow(g, PC, fp);
     else { g.fillStyle = "rgba(8,4,10,0.35)"; g.beginPath(); g.ellipse(x, y, 0.32 * truePpm, 0.32 * truePpm * Math.sin(cam.elevDeg * D2R), 0, 0, Math.PI * 2); g.fill(); }
     // telegraph: an opponent's wind-up, from combat's fxOf tell (args.tell: kind, answer, k, unstoppable)
     // or, without it, the move's tell window. One pale ink, told apart by shape (drawTell)
     let tell = args.tell || null;
     if (!tell) { const m = F.act && W.moves ? W.moves[F.act.id] : null; if (F.team !== "lamb" && m && m.tell && F.act.f >= m.tell.at[0] && F.act.f < m.tell.at[1]) tell = { kind: m.tell.kind || "swing", answer: null, k: (F.act.f - m.tell.at[0]) / Math.max(1, m.tell.at[1] - m.tell.at[0]), unstoppable: m.parryable === false && m.blockable === false }; }
     if (tell && F.team !== "lamb") drawTell(g, tell, x, y, truePpm, cam, face ?? F.face ?? 0);
-    g.drawImage(c, ox, oy); g.restore();
-    // solo (the visual check draws each figure alone): the per-pixel depth of what was drawn, NaN where
-    // nothing was or where the painting hid it, in the image's own pixels placed at (ox, oy) on screen
-    if (args.solo && dbg) { for (let i = 0; i < n; i++) if (!vis[i] || d[i * 4 + 3] === 0) dbg[i] = NaN; const res = { depth: dbg, w: r.w, h: r.h, ox, oy }; if (globalThis.__lwFigureDebug) (globalThis.__lwSolo ||= {})[F.id] = res; return res; }
+    tock("tells", t); t = tick();
+    if (src) g.drawImage(src, Math.round(x - sw / 2), Math.round(y - feetDown - sh / 2)); g.restore();
+    tock("blit", t); tock("figure", tAll);
+    if (solo) return solo;
   };
 }

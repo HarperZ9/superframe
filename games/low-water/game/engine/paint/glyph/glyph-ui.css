@@ -1,0 +1,33 @@
+/* Glyph mode's panels: the DOM panels stay for input and layout but are not shown; the glyph renderer
+   draws them in the grid (glyph/ui.mjs). Their text is laid out in a monospace whose advance is the
+   cell's width (8 px: Consolas at 14.55 px) on two-cell lines, so every character falls on a cell. */
+:root.look-glyph-ui .sheet, :root.look-glyph-ui .sheet *,
+:root.look-glyph-ui .talk, :root.look-glyph-ui .talk *,
+:root.look-glyph-ui .leaf, :root.look-glyph-ui .leaf *,
+:root.look-glyph-ui .btn, :root.look-glyph-ui .btn *,
+:root.look-glyph-ui .chip, :root.look-glyph-ui .chip *,
+:root.look-glyph-ui .key, :root.look-glyph-ui .key *,
+:root.look-glyph-ui .placecard, :root.look-glyph-ui .placecard *,
+:root.look-glyph-ui .hud, :root.look-glyph-ui .hud *,
+:root.look-glyph-ui .strip, :root.look-glyph-ui .strip *,
+:root.look-glyph-ui .meter, :root.look-glyph-ui .meter *,
+:root.look-glyph-ui .menu, :root.look-glyph-ui .menu *,
+:root.look-glyph-ui .toast, :root.look-glyph-ui .toast *,
+:root.look-glyph-ui .vl, :root.look-glyph-ui .vl *,
+:root.look-glyph-ui .gearcard, :root.look-glyph-ui .gearcard *,
+:root.look-glyph-ui .dbook, :root.look-glyph-ui .dbook *,
+:root.look-glyph-ui .hint, :root.look-glyph-ui .hint *,
+:root.look-glyph-ui .mapspot, :root.look-glyph-ui .mapspot *,
+:root.look-glyph-ui .edgemark, :root.look-glyph-ui .edgemark *,
+:root.look-glyph-ui .talkoffer, :root.look-glyph-ui .talkoffer *,
+:root.look-glyph-ui .lietab, :root.look-glyph-ui .lietab * {
+  color: transparent !important; background: transparent !important; border-color: transparent !important; box-shadow: none !important;
+  outline-color: transparent !important; text-shadow: none !important; font-family: Consolas, monospace !important; font-size: 14.55px !important;
+  line-height: 24px !important; letter-spacing: 0 !important; font-style: normal !important;
+}
+:root.look-glyph-ui .tick i { background: transparent !important; border-color: transparent !important; }
+:root.look-glyph-ui body *::before, :root.look-glyph-ui body *::after { background: transparent !important; color: transparent !important; border-color: transparent !important; box-shadow: none !important; }
+/* the dialogue portrait: the painted picture is not shown; the grid sets the speaker's glyph portrait in its
+   frame (glyph/uiextra.mjs, glyph/portrait.mjs) */
+:root.look-glyph-ui .portrait .pimg { visibility: hidden !important; }
+:root.look-glyph-ui .portrait .pframe { background: transparent !important; box-shadow: none !important; }

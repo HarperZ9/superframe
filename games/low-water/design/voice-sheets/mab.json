@@ -1,0 +1,77 @@
+{
+ "format": "articulate-voice-sheet/1",
+ "name": "MAB",
+ "setting": "gullet",
+ "setting_note": "Gullet (Low Water's first setting). Lamb, Gullet and the harbour are cut as setting and protagonist (QUOTA-DESIGN.md decision 3, 2026-10-21); kept for the archived acts and for VOICE-AUDIT.md re-runs. The Quota's sheets are in design/voice-sheets/quota/.",
+ "status": "draft 2026-10-21, derived from bible/WORLD-BIBLE.md and design/voice/profiles.json; the voice director owns corrections",
+ "role": "gutter, the pale apron",
+ "age": "about 40",
+ "register": {
+  "level": "plain",
+  "education": "unknown",
+  "class": "unknown",
+  "trade": "gutter, the pale apron",
+  "words": []
+ },
+ "region": {
+  "name": "gullet",
+  "markers": [
+   "I'll not",
+   "you'd not",
+   "it'll not",
+   "'em",
+   "slack"
+  ],
+  "idioms": [
+   "on the turn",
+   "low water",
+   "the floor",
+   "the Shelf"
+  ]
+ },
+ "sentence_length": {
+  "min": 1,
+  "max": 25
+ },
+ "never": [
+  "okay",
+  "radio",
+  "television",
+  "email",
+  "computer",
+  "teenager"
+ ],
+ "never_patterns": [],
+ "knowledge": {
+  "knows": [],
+  "unknown": [
+   {
+    "terms": [
+     "works order"
+    ],
+    "why": "only Keel and Crake know the works order exists (bible 7.2)",
+    "unless_gate": [
+     "works.order",
+     "order"
+    ]
+   },
+   {
+    "terms": [
+     "bread oven",
+     "bottle glass"
+    ],
+    "why": "the prism casting is Wenna's, Sabine's and Fennick's secret (bible 7.1, 7.6)",
+    "unless_gate": [
+     "prism",
+     "glass",
+     "oven",
+     "bottle"
+    ]
+   }
+  ]
+ },
+ "wants": "unknown",
+ "fears": "unknown",
+ "hides": "unknown",
+ "tics": []
+}

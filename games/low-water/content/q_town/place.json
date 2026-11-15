@@ -1,0 +1,298 @@
+{
+ "place": "q_town",
+ "version": 2,
+ "width": 3200,
+ "height": 1800,
+ "camera": {
+  "yawDeg": 38,
+  "elevDeg": 40,
+  "target": [
+   12,
+   0,
+   -12
+  ],
+  "dist": 160,
+  "ortho": true,
+  "scale": 60
+ },
+ "pxPerMetre": 15,
+ "near": 1.6667,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "dawn"
+ ],
+ "variantInfo": {
+  "dawn": {
+   "hour": 7.8,
+   "weather": "day 41, 07:50: the low sun over the plain's rim, long blue shadows on the snow"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  2,
+  6,
+  11
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "q_tower",
+    "verb": "go",
+    "at": [
+     0,
+     0,
+     0
+    ],
+    "note": "Exchange Square and the bell tower"
+   },
+   {
+    "id": "q_furrowe_door",
+    "verb": "go",
+    "at": [
+     -40,
+     0,
+     -24
+    ],
+    "note": "the Furrowes' front step, Exchange Street"
+   },
+   {
+    "id": "q_sheaf",
+    "verb": "go",
+    "at": [
+     36,
+     0,
+     36
+    ],
+    "note": "the Sheaf on the corner of Mill Street"
+   },
+   {
+    "id": "q_pump",
+    "verb": "go",
+    "at": [
+     59.5,
+     0,
+     51.5
+    ],
+    "note": "the pump at the end of Mill Street"
+   },
+   {
+    "id": "q_returns",
+    "verb": "go",
+    "at": [
+     -25,
+     0,
+     2
+    ],
+    "note": "the district office: the returns room, the meeting room, the cells under it"
+   },
+   {
+    "id": "q_haldane",
+    "verb": "go",
+    "at": [
+     -50,
+     0,
+     36
+    ],
+    "note": "Haldane Yard: the barn and the kitchen in the hands' barn"
+   },
+   {
+    "id": "q_granary",
+    "verb": "go",
+    "at": [
+     -36,
+     0,
+     23
+    ],
+    "note": "the district granary"
+   },
+   {
+    "id": "q_tilney",
+    "verb": "go",
+    "at": [
+     0,
+     0,
+     -61
+    ],
+    "note": "the Furrow Church's home on Tilney Road"
+   },
+   {
+    "id": "q_burial",
+    "verb": "go",
+    "at": [
+     33,
+     0,
+     -76
+    ],
+    "note": "the burial ground on the hill's shoulder: the new rows"
+   },
+   {
+    "id": "q_post",
+    "verb": "go",
+    "at": [
+     132,
+     0,
+     0
+    ],
+    "note": "the road post at the district line"
+   },
+   {
+    "id": "q_road_home",
+    "verb": "go",
+    "at": [
+     80,
+     0,
+     -2
+    ],
+    "note": "the post road between the line and the town"
+   }
+  ],
+  "hides": [],
+  "exits": [],
+  "lamps": [],
+  "places": {
+   "q_tower": {
+    "at": [
+     0,
+     0,
+     0
+    ],
+    "note": "Exchange Square and the bell tower"
+   },
+   "q_furrowe_door": {
+    "at": [
+     -40,
+     0,
+     -24
+    ],
+    "note": "the Furrowes' front step, Exchange Street"
+   },
+   "q_sheaf": {
+    "at": [
+     36,
+     0,
+     36
+    ],
+    "note": "the Sheaf on the corner of Mill Street"
+   },
+   "q_pump": {
+    "at": [
+     59.5,
+     0,
+     51.5
+    ],
+    "note": "the pump at the end of Mill Street"
+   },
+   "q_returns": {
+    "at": [
+     -25,
+     0,
+     2
+    ],
+    "note": "the district office: the returns room, the meeting room, the cells under it"
+   },
+   "q_haldane": {
+    "at": [
+     -50,
+     0,
+     36
+    ],
+    "note": "Haldane Yard: the barn and the kitchen in the hands' barn"
+   },
+   "q_granary": {
+    "at": [
+     -36,
+     0,
+     23
+    ],
+    "note": "the district granary"
+   },
+   "q_tilney": {
+    "at": [
+     0,
+     0,
+     -61
+    ],
+    "note": "the Furrow Church's home on Tilney Road"
+   },
+   "q_burial": {
+    "at": [
+     33,
+     0,
+     -76
+    ],
+    "note": "the burial ground on the hill's shoulder: the new rows"
+   },
+   "q_post": {
+    "at": [
+     132,
+     0,
+     0
+    ],
+    "note": "the road post at the district line"
+   },
+   "q_road_home": {
+    "at": [
+     80,
+     0,
+     -2
+    ],
+    "note": "the post road between the line and the town"
+   }
+  }
+ },
+ "lights": {
+  "dawn": [
+   {
+    "at": [
+     -34.5,
+     2.55,
+     26.4
+    ],
+    "kind": "paraffin",
+    "I": 6,
+    "reach": 12,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     131,
+     1.9,
+     -2.4
+    ],
+    "kind": "paraffin",
+    "I": 5,
+    "reach": 10,
+    "group": "lantern"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota slice: Edrin's Upper Town as one map (the town map plate)."
+}

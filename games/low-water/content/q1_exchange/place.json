@@ -1,0 +1,204 @@
+{
+ "place": "q1_exchange",
+ "version": 2,
+ "width": 1920,
+ "height": 1300,
+ "camera": {
+  "yawDeg": 34,
+  "elevDeg": 34,
+  "target": [
+   0,
+   1.3,
+   0.2
+  ],
+  "dist": 22,
+  "ortho": true,
+  "scale": 4.333333333333333
+ },
+ "pxPerMetre": 150,
+ "near": 1,
+ "geoScale": 0.5,
+ "layers": [
+  "flare",
+  "streak",
+  "halo",
+  "ca"
+ ],
+ "style": "painted",
+ "variants": [
+  "harvest",
+  "work"
+ ],
+ "variantInfo": {
+  "harvest": {
+   "hour": 15.2,
+   "weather": "harvest, 15:10: the afternoon in gold bars through the louvre, chaff in the air, the lamps not wanted"
+  },
+  "work": {
+   "hour": 12,
+   "weather": "a flat work light for judging build stages"
+  }
+ },
+ "dark": false,
+ "dithers": [],
+ "walk": [
+  26,
+  31,
+  89,
+  93,
+  95,
+  90
+ ],
+ "footing": {
+  "1": "stone",
+  "2": "stone",
+  "3": "stone",
+  "4": "stone",
+  "5": "weed",
+  "6": "mud",
+  "7": "water",
+  "8": "sand",
+  "9": "shingle",
+  "10": "weed",
+  "11": "stone",
+  "12": "stone",
+  "26": "wood",
+  "27": "wood",
+  "28": "wood",
+  "29": "wood",
+  "65": "weed"
+ },
+ "marks": {
+  "spots": [
+   {
+    "id": "scale",
+    "verb": "read",
+    "at": [
+     0,
+     0,
+     1.9
+    ],
+    "note": "the scale, level: a sack on one pan, the weights on the other"
+   },
+   {
+    "id": "board",
+    "verb": "read",
+    "at": [
+     3.1,
+     0,
+     2.2
+    ],
+    "note": "the price board: this week's price chalked, rubbed, chalked again"
+   }
+  ],
+  "hides": [],
+  "exits": [
+   {
+    "id": "gate",
+    "at": [
+     3.6,
+     0,
+     1.2
+    ],
+    "note": "the gate to the yard where the hands are paid by the sack"
+   }
+  ],
+  "lamps": []
+ },
+ "lights": {
+  "harvest": [
+   {
+    "at": [
+     -0.6,
+     2.7,
+     0.5
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 7,
+    "group": "pool"
+   },
+   {
+    "at": [
+     0.6,
+     2.7,
+     0.5
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 7,
+    "group": "pool"
+   },
+   {
+    "at": [
+     -2.6,
+     1.8,
+     1.2
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 6,
+    "group": "pool"
+   }
+  ],
+  "work": [
+   {
+    "at": [
+     -2.6,
+     2.4,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     2.6,
+     2.4,
+     -0.3
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 6,
+    "group": "lantern"
+   },
+   {
+    "at": [
+     -0.6,
+     2.7,
+     0.5
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 7,
+    "group": "pool"
+   },
+   {
+    "at": [
+     0.6,
+     2.7,
+     0.5
+    ],
+    "kind": "paraffin",
+    "I": 7,
+    "reach": 7,
+    "group": "pool"
+   },
+   {
+    "at": [
+     -2.6,
+     1.8,
+     1.2
+    ],
+    "kind": "paraffin",
+    "I": 3,
+    "reach": 6,
+    "group": "pool"
+   }
+  ]
+ },
+ "arenas": [],
+ "notes": "The Quota era 1: the exchange hall at harvest (the weigh-house in its trading year)."
+}

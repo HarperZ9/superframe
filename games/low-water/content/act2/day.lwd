@@ -72,6 +72,29 @@ nar: Two in the afternoon. The assessor wakes to a light that comes in through t
 nar: The coat by the stove is dry. It has a tide mark at the hem.
 voice: pride: Dry. Do not get used to it. {dc: 3}
 voice: candlemas: Daylight. Every colour in the room, at once, for free. I hardly know where to look. {dc: 2}
+go: day.dream
+
+# ---- the first dream (design/THEMES.md 9a): fragments of Night 2, and one of Night 1 come back changed
+@node day.dream
+place: day_room
+cost: 3
+cmd: dream 0.8
+do: set(dream.n2); set(dream.ticks); set(dream.founders); set(dream.glass)
+nar: Before the stripes of light, there was a dream, and the assessor writes it down at once in the claims hand, before it can be argued with.
+nar: Item: a board of notices, wet, and chalk ticks under the biggest notice in rows of five. Forty-one. Under a small card beneath it, three.
+nar: Item: a big man in an apron with a book on his knees older than his Guild, saying, "I'd like to know which of them I'm meant to be."
+nar: Item: glass heads going down a hill in the dark, a crowd of them, and one lit from the inside.
+nar: Item, from the night before, and changed: the claim, read a third time. It is still not ashamed of itself. This time somebody has filled in the time of loss, in the assessor's hand, and the ink is too wet to read.
+voice: sum: Who said it first? We did, asleep. Who else says it? Nobody, yet. What would change our mind? A board with other than forty-one ticks on it. {dc: 3}
+voice: precedent: Dreams are not admissible. They are, however, dated. Date it. {dc: 4}
+voice: dark: You have had these before. Not here: before the Shelf. They came true then, and you stopped telling anyone. {dc: 6}
+opt: "Wake properly." -> day.dream.wake
+
+@node day.dream.wake
+place: day_room
+cost: 1
+cmd: dream 0
+nar: The page is dated, and the pencil is warm.
 go: day.wall
 
 @node day.wall
@@ -95,7 +118,7 @@ place: day_quay
 cost: 2
 nar: Down through the bar, empty, the chairs on the tables with their legs up like dead beetles. Sabine is asleep behind the counter on a sack of flour with the slate held to her chest.
 nar: And out, into Gullet in colour.
-nar: The houses over Lamp Quay are oxblood, mustard, teal and bone, five storeys, leaning. Washing on lines across the lane, in reds the sodium has been lying about for two years. The harbour is a grey plain with pools in it that hold the sky. The tide is out again, ordinary as a chair.
+nar: The houses over Lamp Quay are oxblood, mustard, teal and bone, five storeys, leaning. Washing on lines across the lane, in reds the sodium has been lying about for two years. The flats in the harbour are going under one pool at a time, and each pool holds the sky. The tide is on the make again, ordinary as a chair.
 voice: hearsay: People are looking at you. In daylight they can see your face and you can see theirs. It is very nearly unbearable for everybody. {dc: 4}
 go: day.hub
 
@@ -259,3 +282,30 @@ cost: 0
 nar: At four the sun goes behind Chancel Hill.
 nar: The colour goes out of the houses from the bottom of the terraces up, a floor at a time, like a tide coming in.
 go: quay2.start
+
+# ---- recognition cues for the first dream: each foreseen scene calls one when it arrives
+@node theme.cue.ticks
+cost: 0
+when: has(dream.ticks) & !has(dream.ticks_met)
+do: set(dream.ticks_met)
+cmd: dream cue
+voice: sum: Forty-one. The dream said forty-one, at two in the afternoon, and we had never seen this board with chalk on it. Count them again. We would like to be wrong. {dc: 2}
+voice: precedent: A town ticks in fives. Forty-one is eight rows and one over, which is a common sort of number for a guess. {dc: 6}
+return:
+
+@node theme.cue.founders
+cost: 0
+when: has(dream.founders) & !has(dream.founders_met)
+do: set(dream.founders_met)
+cmd: dream cue
+voice: dark: This. The apron, the book on his knees, the words. You wrote them down before he had them to say. {dc: 2}
+voice: undertow: Or you came to the Gut looking for a big man with a book, because you had dreamed one, and found him. {dc: 6}
+return:
+
+@node theme.cue.glass
+cost: 0
+when: has(dream.glass) & !has(dream.glass_met)
+do: set(dream.glass_met)
+cmd: dream cue
+voice: dark: The glass heads going down the hill. One lit from inside. You have stood exactly here, asleep. {dc: 2}
+return:

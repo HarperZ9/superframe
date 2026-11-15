@@ -1,0 +1,232 @@
+# The Quota slice: the script's places wired as areas (content/quota, the story lead's q_*.lwd), with the
+# people who speak in each placed as figures, and the two lenses (design/quota/04-SYSTEMS.md section 5):
+# the bell tower is the wide lens (the district), the three kitchens are the narrow lens (a household).
+# Loaded by the shell after the slice (ui/app.mjs content=quota). Plates are the rendering lead's; until
+# they land each plate id below is a name only, the shell shows the place card, and the positions are
+# placeholders round the spawn. Figures: the sculptor's Quota cast (characters/cast/quota.mjs) by id;
+# the rest of the slice's speakers from characters/cast/quota2.mjs (2026-10-21). Krall has no figure yet
+# and stands in as the folk set's pardew.
+# The player's own figure is Ned or Will by q_class (@meta player-figure in content/quota/slice.lwd), so the
+# other line's man stands in a scene only when the player is not him.
+
+# ---------------------------------------------------------------- the wide lens: the district
+@area q.tower
+name: The bell tower over Exchange Square
+plate: q_square_wide
+# era 1 (var.era 1) sees the square on its own harvest plate, the siding empty (render/places/q1_tower.mjs)
+plate: q1_tower ? var.era == 1
+place: q_tower
+lens: wide
+# the hour picks the painting (clock counts on past midnight; clock % 1440 is the time of day)
+variant: dawn
+variant: harvest ? var.era == 1
+variant: night ? clock % 1440 >= 18:30 % 1440 | clock % 1440 < 05:30 % 1440
+variant: dusk ? clock % 1440 >= 15:30 % 1440
+variant: day ? clock % 1440 >= 08:30 % 1440
+hud-clock: 10:40
+hud-weather: harvest, warm
+spawn: 0 0 0
+camera: 0.35
+exit: "Down to Haldane Yard" -> q.haldane {at: 3 0 2, r: 1.2}
+exit: "Down to the Furrowe kitchen" -> q.furrowe_kitchen {at: -3 0 2, r: 1.2}
+exit: "Down to the Brack kitchen, Mill Street" -> q.brack_kitchen {at: 0 0 3, r: 1.2}
+
+# ---------------------------------------------------------------- the narrow lens: the households
+@area q.haldane
+name: The Haldane kitchen, Haldane Yard
+plate: q_haldane
+place: q_haldane
+variant: harvest ? var.era == 1
+variant: dawn
+hud-clock: 06:55
+hud-weather: harvest
+lens: narrow
+spawn: 0 0 1.2
+camera: 0.9
+figure: tomas {at: -0.6 0 0, face: 1, when: !has(q.tomas_held)}
+figure: aaron {at: 0.6 0 0, face: -1}
+figure: anni {at: 0 0 -0.6, face: 1}
+figure: ilo {at: 1.0 0 -0.6, face: -1}
+figure: bet {at: -1.0 0 -0.6, face: 1}
+exit: "Out to the district" -> q.tower {at: 0 0 2, r: 0.8}
+
+@area q.furrowe_kitchen
+name: The Furrowes' kitchen
+plate: q_furrowe_kitchen
+place: q_furrowe_kitchen
+lens: narrow
+spawn: 0 0 1.2
+camera: 0.9
+figure: ned {at: -0.6 0 0, face: 1, when: q_class != inspector}
+figure: mary {at: 0.6 0 0, face: -1}
+figure: pell {at: 0 0 -0.6, face: 1}
+figure: abel {at: -1.0 0 -0.6, face: 1, pose: seated}
+figure: lil {at: 1.0 0 -0.6, face: -1, when: q_figure == true}
+exit: "Out to the district" -> q.tower {at: 0 0 2, r: 0.8}
+
+@area q.brack_kitchen
+name: The Bracks' kitchen, Mill Street
+plate: q_brack_kitchen
+place: q_brack_kitchen
+lens: narrow
+spawn: 0 0 1.2
+camera: 0.9
+figure: will {at: -0.6 0 0, face: 1, when: q_class != militia & !has(q.will_down)}
+figure: edie {at: 0.6 0 0, face: -1}
+figure: davey {at: 0 0 -0.6, face: 1}
+figure: rose {at: 0.9 0 -0.5, face: -1}
+exit: "Out to the district" -> q.tower {at: 0 0 2, r: 0.8}
+
+# ---------------------------------------------------------------- the day's other places (near, no lens)
+@area q.returns
+name: The returns room, district office
+plate: q_returns
+place: q_returns
+spawn: 0 0 1
+camera: 0.9
+figure: mott {at: 0.8 0 -0.4, face: -1}
+figure: tomas {at: -0.8 0 0.4, face: 1, when: !has(q.tomas_held)}
+
+@area q.furrowe_door
+name: The Furrowes' front step, Exchange Street
+plate: q_furrowe_door
+place: q_furrowe_door
+variant: afternoon
+spawn: 0 0 1
+camera: 0.9
+figure: tomas {at: 0.6 0 -0.6, face: -1, when: !has(q.tomas_held)}
+
+@area q.office
+name: The district meeting room
+plate: q_office
+place: q_office
+variant: morning
+spawn: 0 0 1.2
+camera: 0.8
+figure: pask {at: -1.85 0 -0.6, face: 1, pose: seated}
+figure: pardew {at: 0.7 0 0.25, face: -1, pose: seated}
+figure: ned {at: -1.0 0 0.25, face: 1, pose: seated, when: q_class != inspector}
+figure: will {at: -0.15 0 0.25, face: 1, pose: seated, when: q_class != militia}
+
+@area q.cells
+name: The cells under the district office
+plate: q_cells
+place: q_cells
+variant: morning
+variant: night ? seen(q.cells.night) & !seen(q.cells.d45)
+spawn: 0 0 1
+camera: 0.9
+figure: gedge {at: 0.8 0 -0.2, face: -1}
+figure: tesk {at: -0.8 0 -1.6, face: 1, pose: seated}
+
+@area q.post
+name: The road post at the district line
+plate: q_post
+# era 1: its own plate on the post world in harvest (worlds/_season.mjs; render/places/q1_post.mjs)
+plate: q1_post ? var.era == 1
+place: q_post
+variant: harvest ? var.era == 1
+variant: afternoon
+hud-clock: 17:10
+hud-weather: harvest, warm
+spawn: 0 0 1.5
+camera: 0.6
+figure: holt {at: 1.2 0 -0.6, face: -1}
+figure: gedge {at: 0.6 0 -1.2, face: -1}
+figure: tomas {at: -1.0 0 -1.0, face: 1, when: !has(q.tomas_held)}
+figure: anni {at: -1.4 0 -0.6, face: 1}
+figure: bet {at: -1.8 0 -1.2, face: 1}
+figure: will {at: 0.2 0 -0.2, face: -1, when: q_class != militia}
+figure: ned {at: -0.4 0 0.6, face: 1, when: q_class != inspector}
+
+@area q.hill
+name: The Tesks' hill, above Krall's End
+plate: q_hill
+# era 1: its own plate on the hill world in harvest (render/places/q1_hill.mjs)
+plate: q1_hill ? var.era == 1
+place: q_hill
+variant: harvest ? var.era == 1
+variant: afternoon
+hud-clock: 16:00
+hud-weather: harvest, haze on the top
+spawn: 0 0 1.5
+camera: 0.5
+figure: tomas {at: 0.8 0 -0.8, face: -1, when: !has(q.tomas_held)}
+
+@area q.granary
+name: The district granary, Exchange Square
+plate: q_granary
+place: q_granary
+spawn: 0 0 1.5
+camera: 0.6
+figure: holt {at: 0.8 0 -0.8, face: 1}
+figure: gedge {at: -0.8 0 -0.8, face: 1}
+figure: will {at: 0 0 0.9, face: -1, when: q_class != militia}
+figure: ned {at: 1.2 0 0.4, face: -1, when: q_class != inspector}
+
+# ---------------------------------------------------------------- the spine's era 2 build (game director, 2026-10-22)
+# The witness's kitchen years later, the Sheaf and the pump, the road home, the gate on Tilney Road and the yard
+# door. Plates: render/places/q_*.mjs (art lead, 2026-10-22), in the plate lock.
+@area q.anni_room
+name: Anni's kitchen, years later
+plate: q_anni_room
+place: q_anni_room
+lens: narrow
+variant: evening
+spawn: 0 0 1.2
+camera: 0.9
+figure: anni_adult {at: 0.05 0 -0.4, face: 1, pose: seated}
+
+@area q.sheaf
+name: The Sheaf, Mill Street
+plate: q_sheaf
+place: q_sheaf
+variant: harvest ? var.era == 1
+variant: noon
+hud-clock: 19:25
+hud-weather: 
+spawn: -1.3 0 0.6
+camera: 0.9
+figure: ilo {at: 0.9 0 -0.6, face: -1, pose: seated}
+figure: tomas {at: -0.6 0 1.75, face: 1, pose: seated}
+
+@area q.pump
+name: The pump, Mill Street
+plate: q_pump
+place: q_pump
+variant: noon
+spawn: 0 0 1.2
+camera: 0.6
+
+@area q.road_home
+name: The post road, walking back
+plate: q_road_home
+place: q_road_home
+variant: afternoon
+variant: morning ? seen(q.cells.d48)
+spawn: 0 0 1.2
+camera: 0.6
+figure: bet {at: -0.6 0 0, face: 1}
+figure: anni {at: 0.6 0 0, face: -1}
+figure: aaron {at: 0 0 -0.8, face: 1}
+
+@area q.tilney
+name: The gate of the Furrow Church's home, Tilney Road
+plate: q_tilney
+place: q_tilney
+variant: afternoon
+spawn: 0 0 1.2
+camera: 0.6
+figure: bet {at: -0.5 0 0, face: 1}
+figure: anni {at: 0.5 0 0, face: -1}
+
+@area q.yard
+name: Haldane Yard, at the barn door
+plate: q_yard
+place: q_yard
+variant: morning
+spawn: 0 0 1.2
+camera: 0.6
+figure: gedge {at: 0.6 0 -0.4, face: -1}
+figure: ilo {at: -0.6 0 -0.6, face: 1}
+figure: aaron {at: -0.9 0 -0.8, face: 1}

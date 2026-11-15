@@ -4,9 +4,10 @@
 import { Mesh, bind, tube } from "../rig/body.mjs";
 import { torso, skirt, legs, arms, head, prop, propBlob, J, add, mid } from "./parts.mjs";
 import { toolOf } from "./tools.mjs";
+import { headPalette } from "../forge/heads.cast.mjs";
 
 export const P = { h: 1.62, leg: 0.47, head: 0.27, neck: 0.08, shoulder: 0.22, hip: 0.15, arm: 0.76, stoop: 4 };
-export const palette = { skin: { c: [0.88, 0.66, 0.54], v: 0.62 } };
+export const palette = { ...headPalette("sabine"), skin: { c: [0.88, 0.66, 0.54], v: 0.62 } };
 export const info = { coat: { kg: 1.5, stiff: 0.1 }, name: "Sabine", tool: "hands", bladeR: 0.04, radius: 0.36 };
 
 export function build({ lod = "far", tool = "hands" } = {}) {
@@ -19,7 +20,7 @@ export function build({ lod = "far", tool = "hands" } = {}) {
   for (const x of [-1, 1]) tube(M, [{ c: add(ch, [x * 0.2, 0.16, -0.02]), rx: 0.05, rz: 0.03, w: { chest: 1 } }, { c: add(ch, [x * 0.08, 0.02, 0.17]), rx: 0.06, rz: 0.03, w: { chest: 1 } }, { c: add(ch, [-x * 0.12, -0.14, 0.18]), rx: 0.05, rz: 0.03, w: { chest: 0.6, spine: 0.4 } }], { mat: mid("oxblood"), seg: 8 });
   legs(M, B, P, { r: 0.08, mat: "skirtd", boot: "boot", bootTop: 0.3, foot: 0.22 });
   arms(M, B, P, { r: 0.07, mat: "shirt", rolled: "skin", handR: 0.056 });
-  head(M, B, P, { cell, r: 0.145, neck: 0.07, nose: [0.05, 0.026, 0.3, 0], hair: "cap", hairMat: "hair", jaw: 1.05, lids: 0.3, mouth: 1.35 });
+  head(M, B, P, { id: "sabine", cell, r: 0.145, neck: 0.07, nose: [0.05, 0.026, 0.3, 0], hair: "cap", hairMat: "hair", jaw: 1.05, lids: 0.3, mouth: 1.35 });
   propBlob(M, B, "head", [0, 0.2, -0.12], [0.08, 0.07, 0.07], "hair", { rings: 6, seg: 12 });   // the bun
   prop(M, B, "head", [[0.02, 0.18, -0.12, 0.006], [0.1, 0.32, -0.2, 0.006]], "steel", { seg: 6 });   // the fork through it
   M.begin("tool"); T.build(M, B); M.end();

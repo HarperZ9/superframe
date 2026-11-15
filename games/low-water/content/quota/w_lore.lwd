@@ -1,0 +1,204 @@
+# World layers: the hidden lore chains that run through the props of e1_layers, q_layers, e3_layers and e4_layers
+# (design/WORLD-LAYERS.md section 6). World-layers pass, 2026-10-23. Nothing here is shown to the player; the game never
+# states what a chain means. One game plays all five eras, so a one-run route can cross them.
+
+# ---------------------------------------------------------------- the goat looking back
+@chain w.goat
+name: The goat that looks back
+route: one-run | w.lore.goat_table, w.lore.goat_stair, w.lore.goat_stencil
+route: one-run | w.lore.goat_table, w.lore.goat_cell, w.lore.goat_stair
+
+@lore w.lore.goat_table
+chain: w.goat
+layer: surface
+where: prop q.haldane_table new
+about: The goat carved low on the new table's leg, its head turned back over its shoulder.
+
+@lore w.lore.goat_cell
+chain: w.goat
+layer: hidden
+where: prop q.cell_goat fresh
+requires: class militia
+requires: choice has(q.tomas_held)
+about: The same goat, freshly scratched low on the end cell's wall at the height of a boy sitting on the bench.
+
+@lore w.lore.goat_stair
+chain: w.goat
+layer: surface
+where: prop q.stair_goat
+about: A chalk goat at a child's height by the Mott house back room, scrubbed to its legs.
+
+@lore w.lore.goat_stencil
+chain: w.goat
+layer: surface
+where: prop q.goat_stencil
+about: The town's goat: a stencil, head down and facing forward, used to mark the Row.
+
+# ---------------------------------------------------------------- the barless seven
+@chain w.hand
+name: Walter's black finger
+# the weighted-devices pass (2026-10-23): the barless seven was a thing to read; Walter's forefinger, black with ink to
+# the second knuckle since he was a boy, is a thing you see on a hand: the goat he chalks on the shut barn in era 1, the
+# ink prints on the rim of the bucket at the Sholls' door in era 3, the rag he wipes it on
+route: one-run | w.lore.hand_slips, w.lore.hand_bill, w.lore.hand_blotter
+route: one-run | w.lore.hand_slips, w.lore.hand_bill
+
+@lore w.lore.hand_slips
+chain: w.hand
+layer: surface
+where: prop q.copy_slips counter
+about: Walter Mott's black forefinger chalking the goat on the shut end barn on census night, head down.
+
+@lore w.lore.hand_bill
+chain: w.hand
+layer: surface
+where: prop q.well_handbill
+about: The bucket of spring water at the Sholls' door with a rat in it, and black finger marks on its rim.
+
+@lore w.lore.hand_blotter
+chain: w.hand
+layer: deep
+where: prop q.walters_blotter close
+requires: class inspector
+about: Walter's ink rag in the office drawer, black where a forefinger has been wiped on it for forty years. Whose hand put the rat in the bucket stays open.
+
+# ---------------------------------------------------------------- the tide line
+@chain w.water
+name: The same water
+# the Brack kitchen is the Militia line's, the slips the Inspector line's
+route: two-classes | w.lore.tide, w.lore.unfit
+# each class meets the same water from its own side in one run (no gate the player cannot see)
+route: one-run | w.lore.tide
+route: one-run | w.lore.unfit
+
+@lore w.lore.tide
+chain: w.water
+layer: surface
+where: prop q.tide_line
+about: The flood line round the Brack kitchen on Mill Street, at the height of the table, and new plaster under it. The Bracks stayed.
+
+@lore w.lore.unfit
+chain: w.water
+layer: deep
+where: prop q.unfit_slips close
+requires: class inspector
+about: The ring of Mill Street keys rusted to the flood line on the office hook, and the Brack key the only one gone.
+
+# ---------------------------------------------------------------- faces
+@chain w.faces
+name: A long careful face
+route: one-run | w.lore.beam, w.lore.anni_wedding, w.lore.ned_young
+# the Militia line sees the same face across the scale on the square, and the girl's at the post
+route: one-run | w.lore.ned_scale, w.lore.anni_wedding
+
+@lore w.lore.beam
+chain: w.faces
+layer: hidden
+where: prop q.loft_beam cut
+requires: class inspector
+about: B.C. cut in the loft's purlin three springs before the census, and the letters beside it scraped off.
+
+@lore w.lore.anni_wedding
+chain: w.faces
+layer: surface
+where: prop q.anni_wedding
+about: Anni at her wedding on the Mott house steps: a long, careful face, nothing like Oren's or Ilo's.
+
+@lore w.lore.ned_scale
+chain: w.faces
+layer: deep
+where: node q.office.will
+requires: class militia
+about: Across the scale on the square, Ned Furrowe's long careful face, the same as the Haldane girl's at the post.
+
+@lore w.lore.ned_young
+chain: w.faces
+layer: deep
+where: prop q.ned_photo
+requires: class inspector
+about: Ned at twenty-seven in the Furrowe hall: a long, careful face.
+
+# ---------------------------------------------------------------- the ring
+@chain w.thread
+name: Leave it
+# Will's own words reach the Inspector on the Crown's steps; the Militia line is Will at the corner, and the ring in his
+# locker eight years on is the thread he picked up off the clay
+route: one-run | w.lore.leave_it, w.lore.ring
+route: one-run | w.lore.leave_it, w.lore.spool
+
+@lore w.lore.leave_it
+chain: w.thread
+layer: deep
+where: node q.coda.corner
+where: node q.cells.corner
+about: The thread at the corner past the gap: Gedge wanted it off him, and Will's hand over the boy's wrist, or the thread cut and in Will's pocket.
+
+@lore w.lore.ring
+chain: w.thread
+layer: hidden
+where: prop q.will_locker ring
+requires: class militia
+requires: choice has(q.tomas_held)
+about: A plaited ring of blue thread, cut through, on the hook in Will's locker eight years on; it weighs nothing in the palm.
+
+@lore w.lore.spool
+chain: w.thread
+layer: surface
+where: prop q.haldane_thread
+about: The spare blue wool on its peg by the Haldanes' stove, not much left on it; or Anni's thread in a loop on the shelf by her bowl.
+
+# ---------------------------------------------------------------- the name
+@chain w.name
+name: The name they gave him
+# the weighted-devices pass: the misspelt name was a thing to read; now it is said, to faces, by men who did not
+# bother with it: Haldane from Furrowe at the barn door in era 1, Halden from the gate at the far bank in era 3
+route: one-run | w.lore.name_given, w.lore.long_service
+
+@lore w.lore.name_given
+chain: w.name
+layer: surface
+where: node e1.census.name
+about: Census night at the end barn: the name Ilo is given at the door because the man with the round to do will not take his own.
+
+@lore w.lore.long_service
+chain: w.name
+layer: surface
+where: prop q.long_service
+about: Aaron's long-service truncheon, heavy with lead, given to a man the works and the force called Halden, and nobody putting them right.
+
+# ---------------------------------------------------------------- the Row's lights
+@chain w.meter
+name: No lights
+route: one-run | w.lore.meter_card, w.lore.report
+
+@lore w.lore.meter_card
+chain: w.meter
+layer: surface
+where: prop q.meter_card
+about: Teo's red torch in the tin at Mira's, the switch rusted on: the Row's lights cut off before the fire.
+
+@lore w.lore.report
+chain: w.meter
+layer: deep
+where: prop q.fire_report typed
+about: The bag on the sergeant's desk with the bottle neck in it, and "electrical" said out loud over it.
+
+# ---------------------------------------------------------------- the sixth spoon
+@chain w.spoon
+name: The sixth spoon
+route: one-run | w.lore.spoon_jar
+# a later run, after one that found where Tomas lies
+route: across-runs | w.lore.spoon_back
+
+@lore w.lore.spoon_jar
+chain: w.spoon
+layer: surface
+where: prop q.carved_spoons jar
+about: Five of Ilo's spoons in a jar wide enough for six.
+
+@lore w.lore.spoon_back
+chain: w.spoon
+layer: hidden
+where: prop q.carved_spoons yellow
+requires: prior q.fact.corner
+about: On a later run, one spoon back by Joss's rack, its bowl stained yellow with the corner's clay.
