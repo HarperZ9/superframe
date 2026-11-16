@@ -1,0 +1,74 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// colour.xyz_to_cielab/1 (registry row COL-003): CIE 1976 L*a*b* with the exact rational constants.
+//
+//   in   x, y, z [1], finite, from 0 to 1000 times the white's value on the same axis
+//        white_x, white_y, white_z [1], finite and above zero, on the same scale as x, y, z
+//   out  L, a, b [1]
+//   loss one white, one viewing condition, no adaptation; Lab is only roughly uniform
+//
+// f(t) = t > 216/24389 ? cbrt(t) : (24389/27 t + 16) / 116
+// L = 116 f(y/yn) - 16, a = 500 (f(x/xn) - f(y/yn)), b = 200 (f(y/yn) - f(z/zn))
+//
+// BuildLang has no cbrt built-in yet: the cube root is 64 Newton steps from 1, with + - * / only, the same
+// operations in the same order as the reference.
+//
+// Status: 0 accepted, else the 1-based index of the refused input (whites are checked first).
+
+fn fk_lab_cbrt(t: f64) -> f64 {
+    let mut y: f64 = 1.0;
+    let mut i: i64 = 0;
+    while i < 64 {
+        y = (2.0 * y + t / (y * y)) / 3.0;
+        i = i + 1;
+    }
+    y
+}
+
+fn fk_lab_f(t: f64) -> f64 {
+    if t > 216.0 / 24389.0 {
+        return fk_lab_cbrt(t);
+    }
+    ((24389.0 / 27.0) * t + 16.0) / 116.0
+}
+
+fn fk_lab_white_ok(w: f64) -> bool {
+    w - w == 0.0 && w > 0.0
+}
+
+fn fk_lab_ratio_ok(v: f64, w: f64) -> bool {
+    if !(v - v == 0.0) || v < 0.0 {
+        return false;
+    }
+    v / w <= 1000.0
+}
+
+extern "C" fn fk_colour_xyz_to_cielab(x: f64, y: f64, z: f64, xn: f64, yn: f64, zn: f64, out: *mut f64) -> i32 {
+    if !fk_lab_white_ok(xn) {
+        return 4;
+    }
+    if !fk_lab_white_ok(yn) {
+        return 5;
+    }
+    if !fk_lab_white_ok(zn) {
+        return 6;
+    }
+    if !fk_lab_ratio_ok(x, xn) {
+        return 1;
+    }
+    if !fk_lab_ratio_ok(y, yn) {
+        return 2;
+    }
+    if !fk_lab_ratio_ok(z, zn) {
+        return 3;
+    }
+    let fx = fk_lab_f(x / xn);
+    let fy = fk_lab_f(y / yn);
+    let fz = fk_lab_f(z / zn);
+    let o = unsafe { slice::from_raw_parts_mut(out, 3) };
+    o[0] = 116.0 * fy - 16.0;
+    o[1] = 500.0 * (fx - fy);
+    o[2] = 200.0 * (fy - fz);
+    0
+}
