@@ -71,3 +71,22 @@ and change, and a frame-exact video.
 
 A display list whose fill cost dominates the frame on a mid-range laptop at
 1080p would argue for a coarse tile pass ahead of the band pass.
+
+## Addendum, 2026-11-15: transitions and drivers for pages
+
+Two pure modules extend the layer to media that a page already shows (an image, a loop, a canvas), where no
+renderer is needed:
+
+- `web/motion/transitions.mjs`: named entrances (aperture, letterSet, tiles, inkBleed, waveform, strata,
+  filmGate, curtain, rake, press). Each is a pure function of progress and returns a frame for the compositor:
+  a clip (Motion contours in the piece's unit box), an opacity and an affine matrix. Contours and point counts
+  are constant in progress, so frames interpolate point for point. `walk()` makes an arrival, a hold and a
+  leaving from one transition; the leaving is the arrival backwards.
+- `web/motion/scroll.mjs`: drivers. `bind(el, f, { driver })` gives a transition a clock that is not the
+  player's: the element's passage through the viewport (`"view"`) or a short clock (`"clock"`). With view
+  timelines the frames are sampled into keyframes and the browser moves them with the scroll; without them a
+  passive scroll listener sets the same frames. Reduced motion binds nothing.
+
+Tests: `web/motion/transitions.test.mjs` (start, end, reversibility and constant topology for every transition;
+the drivers on a stub window). Not covered: staging several elements against one clock, springs with
+velocity carried across an interrupted move, and an editor for these presets.
