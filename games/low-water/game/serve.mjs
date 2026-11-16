@@ -3,8 +3,8 @@
 // from their own folders. Localhost only.
 //   node game/serve.mjs [--port 8731] [--rn native/] [--plates DIR]
 // Baked plates (dawn.png, geo-*.f32 and the rest) are build output and are not in the repository.
-// --plates DIR (or LW_PLATES=DIR) names a folder laid out like games/low-water, holding content/ and
-// content4k/ from a local bake; a file missing under the repository's content/ is served from there.
+// --plates DIR (or LW_PLATES=DIR) names a folder laid out like games/low-water, holding content/,
+// content4k/ and characters/ (the painted portraits) from a local bake; a file missing under the repository's content/ is served from there.
 // Without a bake the shell runs on its placeholder ground, and the server says so once at start.
 import http from "node:http";
 import { readFile, stat } from "node:fs/promises";
@@ -16,7 +16,7 @@ const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k);
 const plates = opt("--plates", process.env.LW_PLATES || "");
 const MOUNTS = { "/rn/": opt("--rn", join(root, "..", "..", "native")), "/content/": join(root, "content"), "/content4k/": join(root, "content4k"), "/slice/": join(root, "slice"), "/characters/": join(root, "characters"), "/": here };
 // second roots, tried in order when the first has no such file
-const FALLBACK = plates ? { "/content/": [join(plates, "content")], "/content4k/": [join(plates, "content4k")] } : {};
+const FALLBACK = plates ? { "/content/": [join(plates, "content")], "/content4k/": [join(plates, "content4k")], "/characters/": [join(plates, "characters")] } : {};
 const TYPES = { ".html": "text/html; charset=utf-8", ".mjs": "text/javascript", ".js": "text/javascript", ".json": "application/json", ".css": "text/css; charset=utf-8", ".png": "image/png", ".woff2": "font/woff2", ".lwd": "text/plain; charset=utf-8", ".wgsl": "text/plain" };
 
 // the file under base for this url tail, or null when the tail climbs out of base

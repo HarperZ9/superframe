@@ -28,12 +28,15 @@ test("a plate only in the bake folder is served; the repository's file wins; no 
   writeFileSync(join(dir, "content", "zz_test_place", "dawn.png"), "BAKED");
   writeFileSync(join(dir, "content", "PLATES.lock"), "NOT THE REPO'S");
   writeFileSync(join(dir, "secret.txt"), "OUTSIDE");
+  mkdirSync(join(dir, "characters", "portraits-quota", "zz"), { recursive: true });
+  writeFileSync(join(dir, "characters", "portraits-quota", "zz", "neutral-paraffin.png"), "FACE");
   const s = await start(["--plates", dir]);
   try {
     assert.deepEqual(await get(s.port, "/content/zz_test_place/dawn.png"), { status: 200, body: "BAKED" });
     const lock = await get(s.port, "/content/PLATES.lock");
     assert.equal(lock.status, 200); assert.notEqual(lock.body, "NOT THE REPO'S");
     assert.equal((await get(s.port, "/content/nope/none.png")).status, 404);
+    assert.deepEqual(await get(s.port, "/characters/portraits-quota/zz/neutral-paraffin.png"), { status: 200, body: "FACE" });
     assert.notEqual((await get(s.port, "/content/%2e%2e/secret.txt")).body, "OUTSIDE");
     assert.notEqual((await get(s.port, "/content/..%2fsecret.txt")).body, "OUTSIDE");
     assert.match(s.out(), /plates: /);
