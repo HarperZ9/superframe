@@ -95,3 +95,26 @@ def test_call_carries_arrays_in_and_out():
     assert r["adjusted"][0] == (0.03, 0.04, 0.04)
     r = formulas.call("stats.auroc/1", positive=([0.35, 0.8], "1"), negative=([0.1, 0.4], "1"))
     assert r == {"auc": (0.75, "probability")}
+
+
+def test_radiocarbon_curve_is_refused_when_its_hash_differs(tmp_path, monkeypatch):
+    from formulas.chron_radiocarbon_calibrate import curves
+    (tmp_path / "intcal20.14c").write_text("# not the curve\n0,199,11,-24.5,1.4\n", encoding="latin-1")
+    monkeypatch.setenv("RADIOCARBON_CURVES", str(tmp_path))
+    monkeypatch.setattr(curves, "_LOADED", {})
+    with pytest.raises(curves.CurveError, match="SHA-256"):
+        curves.load("intcal20")
+    with pytest.raises(curves.CurveError, match="unknown curve id"):
+        curves.load("intcal99")
+
+
+def test_radiocarbon_call_refuses_a_calendar_unit_for_a_14c_age():
+    from formulas.chron_radiocarbon_calibrate.reference import _straight, _years
+    cal, mu, sg = _straight()
+    q = dict(error=(30.0, "yr_14C"), grid=(_years(1500.0, 500.0), "yr_cal"), curve_cal_bp=(cal, "yr_cal"),
+             curve_age=(mu, "yr_14C"), curve_error=(sg, "yr_14C"), level_inner=(0.683, "1"),
+             level_outer=(0.954, "1"))
+    r = formulas.call("chron.radiocarbon_calibrate/1", age=(1000.0, "yr_cal"), **q)
+    assert refused(r) and r.input == "age"
+    r = formulas.call("chron.radiocarbon_calibrate/1", age=(1000.0, "yr_14C"), **q)
+    assert abs(sum(r["density"][0]) - 1.0) < 1e-12 and r["density"][1] == "1/yr_cal"
