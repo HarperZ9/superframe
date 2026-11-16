@@ -10756,8 +10756,8 @@
   {
    "path": "packages/kernels/README.md",
    "source": "repo",
-   "bytes": 8819,
-   "sourceSha256": "4f3fbd5c1c5494258252388193758647369e93394120efdda900d9d42f5a79fc"
+   "bytes": 9125,
+   "sourceSha256": "bed3aadfc7c38984467a4dc87a4ec9f02b6962ef6a1158bb2bc567f0f3d186a7"
   },
   {
    "path": "packages/kernels/advect_diffuse/SPEC.md",
@@ -11048,6 +11048,60 @@
    "sourceSha256": "4f8abcc94df8df2f2c757af75ec352210fcb815dcfb419e07b237a80123f6650"
   },
   {
+   "path": "packages/kernels/formulas/README.md",
+   "source": "repo",
+   "bytes": 3050,
+   "sourceSha256": "af11e0b8e36abb9fc9037c3cda12d14a7e7fffb5b1a06f35d70f5afa49c7efbb"
+  },
+  {
+   "path": "packages/kernels/formulas/__init__.py",
+   "source": "repo",
+   "bytes": 1325,
+   "sourceSha256": "06bed3659729bc86bc52bd9f7f2923859b9ae2a85f6ac0a9831593b9e746fdbf"
+  },
+  {
+   "path": "packages/kernels/formulas/check.py",
+   "source": "repo",
+   "bytes": 3988,
+   "sourceSha256": "58db03b5b958d29c6f5aae5c7e4b129e71bd414228e3f17f78f2e40119797883"
+  },
+  {
+   "path": "packages/kernels/formulas/core.py",
+   "source": "repo",
+   "bytes": 2362,
+   "sourceSha256": "24c432a1a53302334f88d863b35fcfd554c9c5e2fdf80aa96974befb018b15e0"
+  },
+  {
+   "path": "packages/kernels/formulas/native.py",
+   "source": "repo",
+   "bytes": 4689,
+   "sourceSha256": "ab54887d4c821b1feb17953833d91a1393507d3745e2854400607f52c4bd43f3"
+  },
+  {
+   "path": "packages/kernels/formulas/optics_airy_radius/kernel.bld",
+   "source": "repo",
+   "bytes": 1175,
+   "sourceSha256": "17b7c88cb745a231ff0dd2da259c9d7b5f2c6ec6a299e9a45777688e80e374d7"
+  },
+  {
+   "path": "packages/kernels/formulas/optics_airy_radius/reference.py",
+   "source": "repo",
+   "bytes": 4653,
+   "sourceSha256": "cc341d081b539e30e791af5a9bbfd9307200ca6f9d1af626f8bf4dd2ba8343ee"
+  },
+  {
+   "path": "packages/kernels/formulas/optics_f_number/kernel.bld",
+   "source": "repo",
+   "bytes": 1037,
+   "sourceSha256": "94e342c95f492fd7cab1047fdce7dbc047edad2dbdaa04608f65a4f17c2c2b0d"
+  },
+  {
+   "path": "packages/kernels/formulas/optics_f_number/reference.py",
+   "source": "repo",
+   "bytes": 3482,
+   "sourceSha256": "4da4e2ca48f46d43b9ca73bc231800925f010f188e5c1ddc37a8cc87da035f4d"
+  },
+  {
    "path": "packages/kernels/kcore/__init__.py",
    "source": "repo",
    "bytes": 87,
@@ -11158,14 +11212,14 @@
   {
    "path": "packages/kernels/kernels.json",
    "source": "repo",
-   "bytes": 15128,
-   "sourceSha256": "d45129391dd1bafeecee12fc603f8ea60d6f4f7dfb0ab32500de8c1e7bbed0fa"
+   "bytes": 19280,
+   "sourceSha256": "f6573dac67a3a7b9619a4ed2a679f80528d8b39e0ec51733f7c4ddbda07ac279"
   },
   {
    "path": "packages/kernels/kernels.py",
    "source": "repo",
-   "bytes": 7722,
-   "sourceSha256": "409713886712cda2ab3ced65b5e00ef80a8b675b589d155d37286aa660baa2d1"
+   "bytes": 8903,
+   "sourceSha256": "ada2d178426e9b8ffa195eab7f3c9cdea42e4cd5283374bcd7320ebf61a08063"
   },
   {
    "path": "packages/kernels/lattice_resample/SPEC.md",
@@ -11538,6 +11592,12 @@
    "source": "repo",
    "bytes": 5238,
    "sourceSha256": "dfadd2ed0cbb145aaa61b7ca2db1891913ae606ee883e55aff8df2943acfe7a7"
+  },
+  {
+   "path": "packages/kernels/tests/test_formulas.py",
+   "source": "repo",
+   "bytes": 3899,
+   "sourceSha256": "3fc036b8ec1964194b5d7ff7d4f10f0d8130379e1a8ded8f1c5bcad6ff68f0c1"
   },
   {
    "path": "packages/kernels/tests/test_kernels.py",

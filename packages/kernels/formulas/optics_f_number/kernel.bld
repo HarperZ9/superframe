@@ -1,0 +1,32 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// optics.f_number/1 (registry row OPT-007): N = |f| / D.
+//
+//   in   focal_length f [m], finite and not zero
+//        aperture_diameter D [m], finite and above zero (the entrance pupil diameter)
+//   out  f_number N [1]
+//   loss object at infinity; the stop's image is the pupil; a thick lens's working f-number is separate
+//
+// Status: 0 accepted, 1 the focal length is refused, 2 the aperture diameter is refused. A refused call
+// leaves out[0] alone. There is no default: an unknown focal length or diameter is a refusal.
+
+fn fk_fnum_finite(x: f64) -> bool {
+    x - x == 0.0
+}
+
+extern "C" fn fk_optics_f_number(f: f64, d: f64, out: *mut f64) -> i32 {
+    if !fk_fnum_finite(f) || f == 0.0 {
+        return 1;
+    }
+    if !fk_fnum_finite(d) || !(d > 0.0) {
+        return 2;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 1) };
+    if f < 0.0 {
+        o[0] = (0.0 - f) / d;
+    } else {
+        o[0] = f / d;
+    }
+    0
+}

@@ -1,0 +1,31 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// optics.airy_radius/1 (registry row OPT-008): r = k * lambda * N, with k = j(1,1) / pi.
+//
+//   in   wavelength lambda [m], finite and above zero
+//        f_number N [1], finite and above zero
+//   out  radius r [m], the radius of the first dark ring in the image plane
+//   loss circular clear pupil, no aberration, incoherent scalar far field, small angles
+//
+// k is the first zero of the Bessel function J1 divided by pi: 3.8317059702075123 / pi. The rounded 1.22
+// that textbooks print is high by 2.7 parts in 10,000. The product is formed as (k * lambda) * N.
+//
+// Status: 0 accepted, 1 the wavelength is refused, 2 the f-number is refused. A refused call leaves
+// out[0] alone.
+
+fn fk_airy_finite(x: f64) -> bool {
+    x - x == 0.0
+}
+
+extern "C" fn fk_optics_airy_radius(lambda: f64, n: f64, out: *mut f64) -> i32 {
+    if !fk_airy_finite(lambda) || !(lambda > 0.0) {
+        return 1;
+    }
+    if !fk_airy_finite(n) || !(n > 0.0) {
+        return 2;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 1) };
+    o[0] = (1.2196698912665045 * lambda) * n;
+    0
+}
