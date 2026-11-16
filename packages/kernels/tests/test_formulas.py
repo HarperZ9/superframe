@@ -7,8 +7,10 @@ The compiled bodies need buildc and a C compiler. Without them those tests skip 
 FORMULAS_REQUIRE_NATIVE set they fail instead (CI sets it).
 """
 import json
+import math
 import os
 import sys
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
@@ -67,6 +69,38 @@ def test_buildlang_body_equals_the_reference(mod):
     assert [n for n, ok in check.run_checks(mod, fn) if not ok] == []
     differ = [g for g in mod.GRID if not same(mod.reference(**g), fn(**g))]
     assert differ == [], f"{len(differ)} of {len(mod.GRID)} grid points differ, first {differ[:1]}"
+
+
+def _is_nearest_cube_root(y, t):
+    """True when the double y is the double nearest the cube root of t, checked with exact fractions."""
+    if y <= 0.0:
+        return False
+    lo = Fraction(y) - Fraction(y - math.nextafter(y, 0.0)) / 2
+    hi = Fraction(y) + Fraction(math.nextafter(y, math.inf) - y) / 2
+    return lo ** 3 <= Fraction(t) <= hi ** 3
+
+
+def test_cielab_cube_root_is_exact_on_a_table_and_nearest_on_a_sweep():
+    from formulas.colour_xyz_to_cielab import reference as lab
+    table = {8.0: 2.0, 27.0: 3.0, 1000.0: 10.0, 0.125: 0.5, 3.375: 1.5, 2.0 ** -30: 2.0 ** -10,
+             (2.0 ** 17 - 1) ** 3 * 2.0 ** 30: (2.0 ** 17 - 1) * 2.0 ** 10, 2.0: 1.2599210498948732,
+             1.0: 1.0, -8.0: -2.0, 0.0: 0.0}
+    assert {t: lab.cbrt(t) for t in table} == table
+    ts = lab.SWEEP + [math.ldexp(1.0 + i / 997.0, e) for i in range(0, 997, 7) for e in (-1070, -7, 0, 1, 9, 1000)]
+    assert [t for t in ts if not _is_nearest_cube_root(lab.cbrt(t), t)] == []
+    # The control for the check itself: the old Newton cube root is not the nearest double everywhere.
+    assert sum(not _is_nearest_cube_root(lab.newton_cbrt(t), t) for t in lab.SWEEP) > 0
+
+
+def test_cielab_old_newton_cube_root_differs_from_the_kernel_on_the_grid():
+    from formulas.colour_xyz_to_cielab import reference as lab
+    mod = next(m for m in MODS if m.SPEC["id"] == "colour.xyz_to_cielab/1")
+    fn = _native_or_skip(mod)
+    newton = lab.PLANTED["the 64-step Newton cube root used until 2026-11-16 (1 ulp off at many points)"]
+    differ = [g for g in mod.GRID if not same(fn(**g), newton(**g))]
+    assert len(differ) >= 2, "the Newton cube root gives the kernel's bytes on the whole grid"
+    sweep = [t for t in lab.SWEEP if not same(fn(1.0, t, 1.0, 1.0, 1.0, 1.0), newton(1.0, t, 1.0, 1.0, 1.0, 1.0))]
+    assert len(sweep) >= 50
 
 
 def test_call_refuses_a_wrong_unit_a_missing_input_and_an_extra_one():

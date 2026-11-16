@@ -590,7 +590,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-16T02:43:11",
+        "checked": "2026-11-16T14:05:15",
         "reference_checks": 10,
         "controls_caught": 2,
         "controls": 2,
@@ -652,7 +652,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-16T02:43:11",
+        "checked": "2026-11-16T14:05:15",
         "reference_checks": 12,
         "controls_caught": 3,
         "controls": 3,
@@ -735,7 +735,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-16T02:43:11",
+        "checked": "2026-11-16T14:05:15",
         "reference_checks": 16,
         "controls_caught": 3,
         "controls": 3,
@@ -799,7 +799,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-16T02:43:11",
+        "checked": "2026-11-16T14:05:15",
         "reference_checks": 13,
         "controls_caught": 3,
         "controls": 3,
@@ -874,12 +874,13 @@
       "properties": [
         "f is continuous at the threshold, value and slope, with the exact constants",
         "a neutral (X/Xn = Y/Yn = Z/Zn) has a = b = 0",
-        "the cube root agrees with a library cube root within 2 ulp"
+        "the cube root is correctly rounded: L, a and b match the exact cube root bit for bit on a 400-point sweep of the accepted range"
       ],
       "controls": [
         "the rounded constants 0.008856 and 7.787",
         "the cube root dropped (L = 116 Y - 16)",
-        "a and b scales swapped (200 and 500)"
+        "a and b scales swapped (200 and 500)",
+        "the 64-step Newton cube root used until 2026-11-16 (1 ulp off at many points)"
       ],
       "provenance": {
         "source": "W3C CSS Color Module Level 4, sample code conversions.js (XYZ_to_Lab), read 2026-11-15: e = 216/24389 and K = 24389/27, with the comment that the CIE standard now defines them as rational fractions; L = 116 f1 - 16, a = 500 (f0 - f1), b = 200 (f1 - f2). CIE 15:2004 and ISO/CIE 11664-4 are unread (paid).",
@@ -891,10 +892,10 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-16T02:43:11",
+        "checked": "2026-11-16T14:05:15",
         "reference_checks": 15,
-        "controls_caught": 3,
-        "controls": 3,
+        "controls_caught": 4,
+        "controls": 4,
         "buildlang": {
           "checked": true,
           "checks": 15,
@@ -964,7 +965,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-16T02:43:11",
+        "checked": "2026-11-16T14:05:15",
         "reference_checks": 14,
         "controls_caught": 3,
         "controls": 3,
@@ -1038,7 +1039,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-16T02:43:11",
+        "checked": "2026-11-16T14:05:15",
         "reference_checks": 13,
         "controls_caught": 3,
         "controls": 3,
@@ -1105,7 +1106,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-16T02:43:11",
+        "checked": "2026-11-16T14:05:15",
         "reference_checks": 12,
         "controls_caught": 3,
         "controls": 3,
@@ -1172,7 +1173,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-16T02:43:11",
+        "checked": "2026-11-16T14:05:15",
         "reference_checks": 12,
         "controls_caught": 3,
         "controls": 3,
@@ -1306,7 +1307,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-16T02:43:11",
+        "checked": "2026-11-16T14:05:15",
         "reference_checks": 41,
         "controls_caught": 4,
         "controls": 4,

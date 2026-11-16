@@ -11,24 +11,15 @@
 // f(t) = t > 216/24389 ? cbrt(t) : (24389/27 t + 16) / 116
 // L = 116 f(y/yn) - 16, a = 500 (f(x/xn) - f(y/yn)), b = 200 (f(y/yn) - f(z/zn))
 //
-// BuildLang has no cbrt built-in yet: the cube root is 64 Newton steps from 1, with + - * / only, the same
-// operations in the same order as the reference.
+// The cube root is BuildLang's built-in cbrt, correctly rounded (the double nearest the true cube root, the
+// same on every platform). The reference computes that double with exact integers, and the rest of the body
+// is the same operations in the same order as the reference, so the bytes agree.
 //
 // Status: 0 accepted, else the 1-based index of the refused input (whites are checked first).
 
-fn fk_lab_cbrt(t: f64) -> f64 {
-    let mut y: f64 = 1.0;
-    let mut i: i64 = 0;
-    while i < 64 {
-        y = (2.0 * y + t / (y * y)) / 3.0;
-        i = i + 1;
-    }
-    y
-}
-
 fn fk_lab_f(t: f64) -> f64 {
     if t > 216.0 / 24389.0 {
-        return fk_lab_cbrt(t);
+        return cbrt(t);
     }
     ((24389.0 / 27.0) * t + 16.0) / 116.0
 }
