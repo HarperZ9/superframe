@@ -24,6 +24,8 @@ import { createDock, fightStrip } from "./strip.mjs";
 import { glyph } from "./bindings.mjs";
 import { figureDrawer } from "./figures.mjs";
 import { fightFx } from "./fightfx.mjs";
+import { fightSound } from "./fightsound.mjs";
+import { playSound } from "./senseplayer.mjs";
 import { fightCam } from "./fightcam.mjs";
 // the combat-impact treatment that ships (CAMERA.md, "Combat impacts", chosen by testing)
 export const IMPACT_DEFAULT = "shake";   // the reference has no zoom punch (NRFTW-PRESENTATION-2 3.1): shake and spring only; ?impact=both brings the punch back
@@ -95,6 +97,7 @@ export function fightLayer(ctx, host, id, onDone, { cam = null } = {}) {
     ...RESPONDS.map((t) => G.on(`fight.${t}`, (e) => strip.event(t, e))),
     G.on("fight.shake", (e) => shakeStart(e)),
     G.on("fight.rumble", (e) => rumble(e)),
+    fightSound(G, playSound), // contact sounds on the contact tick (ui/fightsound.mjs)
   ];
   const prefs = ctx.prefs || {};
   const onBlur = () => { if (prefs.pauseOnBlur !== false) pause(); };
