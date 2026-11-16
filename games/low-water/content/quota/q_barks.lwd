@@ -1,0 +1,167 @@
+# The Quota: the voices in a fight (combat/sim/barks.mjs BARK_KEYS). One line per situation key; the voice is
+# the rule's, named as q_rules.lwd names it: OBEDIENCE (footing), WEARINESS (breath), NERVE (water rising),
+# DISGUST (behind you), SHAME (a grab coming), DREAD (in the dark), VANITY (losing), and the four that hold
+# ground with words, TENDERNESS, CONTEMPT, JEALOUSY and SPITE.
+# Before this file the slice had no @bark records, so its fights spoke the engine's placeholder lines and Lamp
+# Quay's tide and eel-oil. 2026-11-16. Barks are one breath long, say what the body or the nose knows, and
+# name no place or person a given era might not have.
+
+@bark qb.frost1
+key: footing.frost
+text: Ice under the snow. Heel down first, as you were taught.
+
+@bark qb.frost2
+key: footing.frost
+text: Frost on the setts. Short steps. Do as you're told and stay up.
+
+@bark qb.frost3
+key: footing.frost
+text: It's glass under there. Don't go down in front of them.
+
+@bark qb.wet1
+key: footing.wet
+text: Slush. Whole foot down.
+
+@bark qb.wet2
+key: footing.wet
+text: Wet setts. They'll have your feet before he does.
+
+@bark qb.wet3
+key: footing.wet
+text: Muck and meltwater. Stand where you're put and don't shift.
+
+@bark qb.breath1
+key: breath.low
+text: We're blown. Back off a step. Please. Just a step.
+
+@bark qb.breath2
+key: breath.low
+text: Oh, the chest. Let him come to us for once.
+
+@bark qb.breath3
+key: breath.low
+text: Arms like wet sacks. We need to sit down. We can't.
+
+@bark qb.water1
+key: tide.near
+text: Water across the yard. Go now, before it's at your boots.
+
+@bark qb.water2
+key: tide.near
+text: The ground's going to soup behind you. Go first. Go now.
+
+@bark qb.water3
+key: tide.near
+text: The drain's backing up. Off the low stones. Now.
+
+@bark qb.smell1
+key: smell.behind
+text: Wet wool and sick. Behind you.
+
+@bark qb.smell2
+key: smell.behind
+text: Lamp oil and somebody's dinner coming back up. Right behind.
+
+@bark qb.smell3
+key: smell.behind
+text: Tallow and sweat. He's at your back.
+
+@bark qb.grab1
+key: tell.grab
+text: He's after your collar. He wants you held for the others.
+
+@bark qb.grab2
+key: tell.grab
+text: Hands open, coming in low. He wants you held where nobody can see your face.
+
+@bark qb.grab3
+key: tell.grab
+text: He's looking at your coat, not your face.
+
+@bark qb.dark1
+key: dark.near
+text: Somebody breathing past the lamp. It's started already.
+
+@bark qb.dark2
+key: dark.near
+text: Boots in the snow, close. You knew this was coming.
+
+@bark qb.dark3
+key: dark.near
+text: Gone quiet on your left. Here it comes.
+
+@bark qb.pride1
+key: pride.losing
+text: Down in the muck, and the whole square looking at you.
+
+@bark qb.pride2
+key: pride.losing
+text: Your good coat. Ruined. And look who saw it go.
+
+@bark qb.pride3
+key: pride.losing
+text: They'll be telling this one in the Sheaf for years.
+
+@bark qb.tender1
+key: words.condolence
+text: He's crying under all that. Tell him you know.
+
+@bark qb.tender2
+key: words.condolence
+text: He's somebody's lad. Say his name if you know it.
+
+@bark qb.tender3
+key: words.condolence
+text: He doesn't want this either. Tell him it can stop now.
+
+@bark qb.tender4
+key: words.condolence
+text: Oh, look at his hands shaking. Say something gentle to him.
+
+@bark qb.contempt1
+key: words.formletter
+text: Look at the state of him. Can't even hold it right. Tell him.
+
+@bark qb.contempt2
+key: words.formletter
+text: Stand still. Let the little man see what he's swinging at.
+
+@bark qb.contempt3
+key: words.formletter
+text: Out of his depth, this one. Make sure he knows it.
+
+@bark qb.contempt4
+key: words.formletter
+text: Tell him to go home before he hurts himself.
+
+@bark qb.jealous1
+key: words.chit
+text: Boots, a coat, a hot dinner in him. Ask him who went without.
+
+@bark qb.jealous2
+key: words.chit
+text: You're the one who held back. Remind him who's owed.
+
+@bark qb.jealous3
+key: words.chit
+text: He's never been hungry a day in his life. Say it.
+
+@bark qb.jealous4
+key: words.chit
+text: He's got a warm house to go back to. You held back. He owes you.
+
+@bark qb.spite1
+key: words.hearsay
+text: His mates are watching him lose. Say it loud, so it gets round.
+
+@bark qb.spite2
+key: words.hearsay
+text: Tell the other one he's next. They'll all hear about who ran.
+
+@bark qb.spite3
+key: words.hearsay
+text: Say his mother's name where they can all hear it.
+
+@bark qb.spite4
+key: words.hearsay
+text: The one at the back's edging off. Shout it, so the whole street hears.
