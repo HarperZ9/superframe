@@ -590,7 +590,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:29:08",
+        "checked": "2026-11-15T21:43:00",
         "reference_checks": 10,
         "controls_caught": 2,
         "controls": 2,
@@ -652,7 +652,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:29:08",
+        "checked": "2026-11-15T21:43:00",
         "reference_checks": 12,
         "controls_caught": 3,
         "controls": 3,
@@ -735,7 +735,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:29:08",
+        "checked": "2026-11-15T21:43:00",
         "reference_checks": 16,
         "controls_caught": 3,
         "controls": 3,
@@ -799,7 +799,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:29:08",
+        "checked": "2026-11-15T21:43:00",
         "reference_checks": 13,
         "controls_caught": 3,
         "controls": 3,
@@ -891,7 +891,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:29:08",
+        "checked": "2026-11-15T21:43:00",
         "reference_checks": 15,
         "controls_caught": 3,
         "controls": 3,
@@ -900,6 +900,287 @@
           "checks": 15,
           "failed": [],
           "grid": 15,
+          "differ_from_reference": 0,
+          "first_difference": []
+        }
+      }
+    },
+    {
+      "id": "stats.wilson_interval/1",
+      "path": "formulas/stats_wilson_interval/",
+      "inputs": [
+        {
+          "name": "successes",
+          "unit": "count",
+          "range": "a whole number, 0 <= k <= n"
+        },
+        {
+          "name": "trials",
+          "unit": "count",
+          "range": "a whole number, 1 <= n <= 2^53"
+        },
+        {
+          "name": "z",
+          "unit": "1",
+          "range": "finite, 0 < z <= 10"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "low",
+          "unit": "probability"
+        },
+        {
+          "name": "high",
+          "unit": "probability"
+        }
+      ],
+      "row": "STA-001",
+      "formula": "c = (p + z^2/(2n)) / (1 + z^2/n); h = z sqrt(p(1-p)/n + z^2/(4n^2)) / (1 + z^2/n); [max(0, c - h), min(1, c + h)]",
+      "mode": "bit-identical",
+      "loss": "Inverts the normal approximation to the binomial score test, with no continuity correction. Coverage swings around the nominal level as n and p change and dips below it for p near 0 or 1 at small n; the Clopper-Pearson interval is the exact, wider alternative. z is the two-sided quantile the caller chooses (1.959963984540054 for 95 percent); the kernel computes no quantile. Trials must be independent with one success probability.",
+      "known_answers": [
+        "NIST/SEMATECH e-Handbook 7.2.4.1: n 200, p 0.13 (k 26), z 1.645 gives the lower bound 0.09577",
+        "k 0 of n 10 at z 1.96 gives [0, 0.2775401687666] (packages/_vectors/stats_vectors.json)",
+        "all ten Wilson rows of packages/_vectors/stats_vectors.json within 1e-12"
+      ],
+      "properties": [
+        "the interval for n - k is the mirror (1 - high, 1 - low) of the interval for k",
+        "0 <= low <= k/n <= high <= 1, with low exactly 0 at k 0 and high exactly 1 at k n",
+        "the width shrinks as n grows at a fixed k/n"
+      ],
+      "controls": [
+        "the Wald interval p -/+ z sqrt(p(1-p)/n) passed off as Wilson",
+        "z^2/(4n) in place of z^2/(4n^2)",
+        "a NaN interval returned at n 0 instead of a refusal"
+      ],
+      "provenance": {
+        "source": "NIST/SEMATECH e-Handbook of Statistical Methods, section 7.2.4.1, 'Confidence intervals' (itl.nist.gov/div898/handbook/prc/section2/prc241.htm), read 2026-11-15: the Wilson limits with denominator 1 + z^2/n and the worked lower bound 0.09577. Wilson 1927 (JASA 22, 209) is unread (JSTOR).",
+        "body_from": "packages/lenspipe/lenspipe/tolerance.py:93 and the shared convention in packages/_vectors/stats_vectors.json; the study copy read in the registry returned NaN at n 0",
+        "checked_by": "formula-kernels worker 3, 2026-11-15"
+      },
+      "buildlang": {
+        "body": "kernel.bld"
+      },
+      "check": {
+        "pass": true,
+        "checked": "2026-11-15T21:43:00",
+        "reference_checks": 14,
+        "controls_caught": 3,
+        "controls": 3,
+        "buildlang": {
+          "checked": true,
+          "checks": 14,
+          "failed": [],
+          "grid": 560,
+          "differ_from_reference": 0,
+          "first_difference": []
+        }
+      }
+    },
+    {
+      "id": "stats.benjamini_hochberg/1",
+      "path": "formulas/stats_benjamini_hochberg/",
+      "inputs": [
+        {
+          "name": "p_values",
+          "unit": "probability",
+          "range": "1 to 1,000,000 values, each finite and 0 <= p <= 1"
+        },
+        {
+          "name": "q",
+          "unit": "probability",
+          "range": "finite, 0 < q <= 1"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "adjusted",
+          "unit": "probability"
+        },
+        {
+          "name": "reject",
+          "unit": "1"
+        }
+      ],
+      "row": "STA-002",
+      "formula": "sort p; from rank m down to 1, adj = min(adj_next, p (m / rank)) with adj_(m+1) = 1; reject = adj <= q",
+      "mode": "bit-identical",
+      "loss": "Controls the expected share of false rejections at q for independent tests or tests with positive regression dependence (Benjamini and Yekutieli 2001); under arbitrary dependence it needs the larger Benjamini-Yekutieli factor, which is a different kernel. The family must be fixed before the p values are seen. The p values are taken as valid; the kernel cannot check how they were made.",
+      "known_answers": [
+        "Benjamini and Hochberg 1995, the 15 p values of the thrombolysis example, as printed in the SciPy 1.17.1 documentation of false_discovery_control: four rejections at q 0.05 and adjusted values 0.0015, 0.003, 0.0095, 0.035625, 0.0603, 0.06385714, ..., 1",
+        "the reject flags of all eight families in packages/_vectors/stats_vectors.json"
+      ],
+      "properties": [
+        "adjusted values are monotone in the raw p values and never below them",
+        "every p value at most q / m is rejected",
+        "permuting the input permutes the output the same way"
+      ],
+      "controls": [
+        "Bonferroni (p m) passed off as Benjamini-Hochberg",
+        "a step-down walk (no running minimum)",
+        "an empty family returned as empty instead of a refusal"
+      ],
+      "provenance": {
+        "source": "SciPy 1.17.1, scipy.stats.false_discovery_control docstring (installed copy, read 2026-11-15), which reproduces the example of Benjamini and Hochberg 1995 (JRSS B 57, 289) with its adjusted values. The 1995 paper is unread (Wiley, subscriber only).",
+        "body_from": "packages/lattice/lattice/stats.py:39 bh, the same walk, held to packages/_vectors/stats_vectors.json by packages/lattice/tests/test_stats_vectors.py",
+        "checked_by": "formula-kernels worker 3, 2026-11-15"
+      },
+      "array_inputs": [
+        "p_values"
+      ],
+      "array_outputs": {
+        "adjusted": "p_values",
+        "reject": "p_values"
+      },
+      "buildlang": {
+        "body": "kernel.bld"
+      },
+      "check": {
+        "pass": true,
+        "checked": "2026-11-15T21:43:00",
+        "reference_checks": 13,
+        "controls_caught": 3,
+        "controls": 3,
+        "buildlang": {
+          "checked": true,
+          "checks": 13,
+          "failed": [],
+          "grid": 14,
+          "differ_from_reference": 0,
+          "first_difference": []
+        }
+      }
+    },
+    {
+      "id": "stats.spearman/1",
+      "path": "formulas/stats_spearman/",
+      "inputs": [
+        {
+          "name": "a",
+          "unit": "1",
+          "range": "2 to 1,000,000 finite values, not all equal"
+        },
+        {
+          "name": "b",
+          "unit": "1",
+          "range": "as many finite values as a, not all equal"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rho",
+          "unit": "1"
+        }
+      ],
+      "row": "STA-008",
+      "formula": "r = sum (ra - mean)(rb - mean) / sqrt(sum (ra - mean)^2 sum (rb - mean)^2), ra and rb the mid-ranks, mean = (n + 1) / 2",
+      "mode": "bit-identical",
+      "loss": "Measures monotone association only; a U-shaped relation can give 0. Ties take mid-ranks, the convention of SciPy rankdata 'average' and of Kendall and Stuart; the shortcut 1 - 6 sum d^2 / (n (n^2 - 1)) is exact only without ties and is not used. A constant input has no ranks to correlate and is refused. No p value or interval is computed.",
+      "known_answers": [
+        "the tied sample x 1,2,2,3,3,3,4,5 against y 2,1,3,3,5,4,4,6 gives 0.8386549 (scipy.stats.spearmanr 1.17.1 gives 0.8386549; ordinal ranks give 0.9048)",
+        "a strictly increasing map of a gives 1, a strictly decreasing one -1"
+      ],
+      "properties": [
+        "rho(a, b) = rho(b, a)",
+        "unchanged by any strictly increasing transform of either input",
+        "-1 <= rho <= 1"
+      ],
+      "controls": [
+        "ordinal ranks from argsort of argsort (ties broken by input order)",
+        "the no-ties shortcut 1 - 6 sum d^2 / (n (n^2 - 1)) on tied data",
+        "1.0 returned for a constant input instead of a refusal"
+      ],
+      "provenance": {
+        "source": "SciPy 1.17.1 reference for scipy.stats.rankdata (default method 'average') and the installed spearmanr source, which ranks with rankdata and takes the Pearson coefficient, read 2026-11-15. Spearman 1904 and Kendall and Stuart 31.18 are unread.",
+        "body_from": "packages/lattice/lattice/stats.py:22 spearman (mid-ranks through scipy). The ordinal form in 16 study files is the control (ADJUDICATION.md, STA-008)",
+        "checked_by": "formula-kernels worker 3, 2026-11-15"
+      },
+      "array_inputs": [
+        "a",
+        "b"
+      ],
+      "buildlang": {
+        "body": "kernel.bld"
+      },
+      "check": {
+        "pass": true,
+        "checked": "2026-11-15T21:43:00",
+        "reference_checks": 12,
+        "controls_caught": 3,
+        "controls": 3,
+        "buildlang": {
+          "checked": true,
+          "checks": 12,
+          "failed": [],
+          "grid": 13,
+          "differ_from_reference": 0,
+          "first_difference": []
+        }
+      }
+    },
+    {
+      "id": "stats.auroc/1",
+      "path": "formulas/stats_auroc/",
+      "inputs": [
+        {
+          "name": "positive",
+          "unit": "1",
+          "range": "1 or more finite scores, n_pos n_neg <= 2^50"
+        },
+        {
+          "name": "negative",
+          "unit": "1",
+          "range": "1 or more finite scores, n_pos n_neg <= 2^50"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "auc",
+          "unit": "probability"
+        }
+      ],
+      "row": "STA-007",
+      "formula": "A = (2 #{pos > neg} + #{pos = neg}) / (2 n_pos n_neg); equal to the mid-rank Mann-Whitney U over n_pos n_neg",
+      "mode": "bit-identical",
+      "loss": "Uses the order of the scores only, so it says nothing about calibration. Ties count one half, the trapezoid rule of the ROC curve and the mid-rank Mann-Whitney statistic; a rule that drops ties or counts them whole gives a different number. A higher score is taken to mean more likely positive. No interval is computed.",
+      "known_answers": [
+        "labels 0,0,1,1 with scores 0.1,0.4,0.35,0.8 give 0.75 (scikit-learn 1.9.1 roc_auc_score gives 0.75)",
+        "perfect separation gives 1, reversed separation 0, all scores equal 0.5"
+      ],
+      "properties": [
+        "A(pos, neg) = 1 - A(neg, pos)",
+        "unchanged by a strictly increasing transform of the scores",
+        "0 <= A <= 1"
+      ],
+      "controls": [
+        "ties counted as wins",
+        "ties dropped from the numerator and the denominator",
+        "ordinal ranks (ties broken by input order) in the rank form"
+      ],
+      "provenance": {
+        "source": "scikit-learn 1.9.1 roc_auc_score (installed copy, run 2026-11-15) for the known answer and the tie rule; Hanley and McNeil 1982 (Radiology 143, 29), which states the equivalence with the Wilcoxon statistic, is unread.",
+        "body_from": "mission-control 2026-10-02-mmbu/features/validate.py:59 (rank form with scipy rankdata mid-ranks)",
+        "checked_by": "formula-kernels worker 3, 2026-11-15"
+      },
+      "array_inputs": [
+        "positive",
+        "negative"
+      ],
+      "buildlang": {
+        "body": "kernel.bld"
+      },
+      "check": {
+        "pass": true,
+        "checked": "2026-11-15T21:43:00",
+        "reference_checks": 12,
+        "controls_caught": 3,
+        "controls": 3,
+        "buildlang": {
+          "checked": true,
+          "checks": 12,
+          "failed": [],
+          "grid": 10,
           "differ_from_reference": 0,
           "first_difference": []
         }

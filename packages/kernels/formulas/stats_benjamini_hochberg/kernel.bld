@@ -1,0 +1,115 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// stats.benjamini_hochberg/1 (registry row STA-002): Benjamini-Hochberg adjusted p values and rejections.
+//
+//   in   p_values [probability], 1 to 1,000,000 values, each finite and from 0 to 1
+//        q [probability], the false discovery rate, finite, above 0 and at most 1
+//   out  adjusted [probability] and reject [1] (1 or 0), one of each per p value, in input order
+//   loss controls the false discovery rate for independent or positively dependent tests only
+//
+// Sort the p values by a stable merge sort (ties keep input order). Walk the ranks from m down to 1 with
+// run = min(run, p * (m / rank)), starting from run = 1. adjusted = run; reject = adjusted <= q.
+//
+// Status: 0 accepted, 1 a p value or the count is refused, 2 q is refused.
+
+fn fk_bh_finite(x: f64) -> bool {
+    x - x == 0.0
+}
+
+// Stable bottom-up merge sort of the indices 0..n by key[index].
+fn fk_bh_order(key: Vec<f64>, n: i64) -> Vec<i64> {
+    let mut a: Vec<i64> = Vec::new();
+    let mut b: Vec<i64> = Vec::new();
+    let mut i: i64 = 0;
+    while i < n {
+        a.push(i);
+        b.push(i);
+        i = i + 1;
+    }
+    let mut w: i64 = 1;
+    while w < n {
+        let mut lo: i64 = 0;
+        while lo < n {
+            let mut mid = lo + w;
+            if mid > n {
+                mid = n;
+            }
+            let mut hi = lo + 2 * w;
+            if hi > n {
+                hi = n;
+            }
+            let mut l = lo;
+            let mut r = mid;
+            let mut t = lo;
+            while t < hi {
+                let mut take_left = false;
+                if l < mid {
+                    if r >= hi {
+                        take_left = true;
+                    } else {
+                        if key[a[l as usize] as usize] <= key[a[r as usize] as usize] {
+                            take_left = true;
+                        }
+                    }
+                }
+                if take_left {
+                    b[t as usize] = a[l as usize];
+                    l = l + 1;
+                } else {
+                    b[t as usize] = a[r as usize];
+                    r = r + 1;
+                }
+                t = t + 1;
+            }
+            lo = lo + 2 * w;
+        }
+        let mut c: i64 = 0;
+        while c < n {
+            a[c as usize] = b[c as usize];
+            c = c + 1;
+        }
+        w = w * 2;
+    }
+    a
+}
+
+extern "C" fn fk_stats_benjamini_hochberg(ptr: *const f64, len: i64, q: f64, out: *mut f64) -> i32 {
+    if len < 1 || len > 1000000 {
+        return 1;
+    }
+    let src = unsafe { slice::from_raw_parts(ptr, len as usize) };
+    let mut p: Vec<f64> = Vec::new();
+    let mut i: i64 = 0;
+    while i < len {
+        let v = src[i as usize];
+        if !fk_bh_finite(v) || v < 0.0 || v > 1.0 {
+            return 1;
+        }
+        p.push(v);
+        i = i + 1;
+    }
+    if !fk_bh_finite(q) || !(q > 0.0) || q > 1.0 {
+        return 2;
+    }
+    let order = fk_bh_order(p, len);
+    let m = len as f64;
+    let o = unsafe { slice::from_raw_parts_mut(out, (2 * len) as usize) };
+    let mut run: f64 = 1.0;
+    let mut rank: i64 = len;
+    while rank >= 1 {
+        let at = order[(rank - 1) as usize];
+        let v = p[at as usize] * (m / (rank as f64));
+        if v < run {
+            run = v;
+        }
+        o[at as usize] = run;
+        if run <= q {
+            o[(len + at) as usize] = 1.0;
+        } else {
+            o[(len + at) as usize] = 0.0;
+        }
+        rank = rank - 1;
+    }
+    0
+}

@@ -48,6 +48,10 @@ ctypes. Where no compiler is present the tests of the compiled bodies skip with 
 | `physics.beverloo_rate/1` | PHY-006 | W = C rho_b sqrt(g) (D - k d)^(5/2) | bit-identical |
 | `colour.srgb_transfer/1` | COL-001 | IEC 61966-2-1 curve, decode and encode | bit-identical |
 | `colour.xyz_to_cielab/1` | COL-003 | CIE 1976 L*a*b* with e = 216/24389, K = 24389/27 | bit-identical |
+| `stats.wilson_interval/1` | STA-001 | Wilson score interval, exact at k 0 and k n | bit-identical |
+| `stats.benjamini_hochberg/1` | STA-002 | adjusted p = running min of p (m / rank); reject at adjusted <= q | bit-identical |
+| `stats.spearman/1` | STA-008 | Pearson correlation of mid-ranks | bit-identical |
+| `stats.auroc/1` | STA-007 | Mann-Whitney AUC, ties count one half | bit-identical |
 
 `kernels.json`, section `formulas`, holds one entry per kernel with its units, ranges, loss, known
 answers, properties, controls, provenance and the last check result. A test fails when that section and
@@ -55,6 +59,8 @@ the specs in this folder disagree.
 
 ## Export shape
 
-Every export takes its f64 inputs in the order the spec lists them, then a pointer to the outputs, and
-returns 0 when it accepted the call or the 1-based index of the refused input. A refused call writes no
+Every export takes its inputs in the order the spec lists them, then a pointer to the outputs, and returns
+0 when it accepted the call or the 1-based index of the refused input. A scalar input is an f64. An input
+named in `SPEC["array_inputs"]` is a pointer to f64 and an i64 length. Outputs are laid end to end. An output
+named in `SPEC["array_outputs"]` has the length of the array input it names, and comes back as a tuple. A refused call writes no
 output. The wrapper in `native.py` checks both rules on every call.

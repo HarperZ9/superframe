@@ -33,9 +33,25 @@ def refused(result):
     return isinstance(result, Refusal)
 
 
+def flat(values):
+    """A result tuple with each array output (a tuple) spread in place, in output order."""
+    out = []
+    for v in values:
+        out.extend(v) if isinstance(v, tuple) else out.append(v)
+    return out
+
+
+def finite_array(x, minimum=1):
+    """A list or tuple of at least `minimum` finite numbers."""
+    return isinstance(x, (list, tuple)) and len(x) >= minimum and all(finite(v) for v in x)
+
+
 def bits(values):
-    """The bytes of a result tuple, so two implementations can be compared bit for bit."""
-    return struct.pack(f"<{len(values)}d", *values)
+    """The bytes of a result tuple, so two implementations can be compared bit for bit. Array outputs are
+    tuples inside the result; their lengths are part of the bytes."""
+    shape = [len(v) if isinstance(v, tuple) else -1 for v in values]
+    f = flat(values)
+    return struct.pack(f"<{len(shape)}q{len(f)}d", *shape, *f)
 
 
 def same(a, b):

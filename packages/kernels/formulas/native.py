@@ -7,8 +7,10 @@ floating-point contraction off, and ctypes calls the exports. The compiler is th
 variable, else `buildc` on PATH. unavailable() returns the reason the kernels cannot be built here, so a
 test can skip with that reason, or fail with it when FORMULAS_REQUIRE_NATIVE is set.
 
-Every export has one shape: f64 inputs in the order the spec lists them, then a pointer to the outputs,
-returning 0 when accepted or the 1-based index of the refused input.
+Every export has one shape: the inputs in the order the spec lists them (an f64, or for a name in
+SPEC["array_inputs"] a pointer to f64 and an i64 length), then a pointer to the outputs, returning 0 when
+accepted or the 1-based index of the refused input. Outputs are laid end to end: one f64 each, or for a name
+in SPEC["array_outputs"] as many as the array input it names.
 """
 import ctypes
 import os
@@ -88,27 +90,51 @@ def function(mod):
     spec = mod.SPEC
     names = [name for name, _, _ in spec["inputs"]]
     ranges = {name: rng for name, _, rng in spec["inputs"]}
-    width = len(spec["outputs"])
+    arrays = set(spec.get("array_inputs", ()))
+    sized = spec.get("array_outputs", {})          # output name -> the array input whose length it has
     export = getattr(_LIB, spec["export"])
     export.restype = ctypes.c_int32
-    export.argtypes = [ctypes.c_double] * len(names) + [ctypes.POINTER(ctypes.c_double)]
+    argtypes = []
+    for name in names:
+        argtypes += [ctypes.POINTER(ctypes.c_double), ctypes.c_int64] if name in arrays else [ctypes.c_double]
+    export.argtypes = argtypes + [ctypes.POINTER(ctypes.c_double)]
+
+    def carries(name, v):
+        """A value C can carry: a double, or for an array input a list or tuple of doubles."""
+        def num(x):
+            return isinstance(x, (int, float)) and not isinstance(x, bool)
+        if name in arrays:
+            return isinstance(v, (list, tuple)) and all(num(x) for x in v)
+        return num(v)
 
     def fn(*args, **kwargs):
         values = dict(zip(names, args), **kwargs)
-        for name in names:   # a value C cannot carry as a double is refused here, by name
-            v = values.get(name)
-            if not isinstance(v, (int, float)) or isinstance(v, bool):
-                return Refusal(name, v, ranges[name])
-        out = (ctypes.c_double * width)(*([SENTINEL] * width))
-        status = export(*[float(values[name]) for name in names], out)
+        for name in names:   # a value C cannot carry is refused here, by name
+            if not carries(name, values.get(name)):
+                return Refusal(name, values.get(name), ranges[name])
+        call_args = []
+        for name in names:
+            v = values[name]
+            if name in arrays:
+                buf = (ctypes.c_double * max(1, len(v)))(*[float(x) for x in v])
+                call_args += [buf, len(v)]
+            else:
+                call_args.append(float(v))
+        widths = [len(values[sized[o]]) if o in sized else 1 for o, _ in spec["outputs"]]
+        total = sum(widths)
+        out = (ctypes.c_double * max(1, total))(*([SENTINEL] * max(1, total)))
+        status = export(*call_args, out)
         if status != 0:
             if any(v != SENTINEL for v in out):
                 raise AssertionError(f"{spec['id']} wrote an output on a refused call")
             name = names[status - 1]
             return Refusal(name, values[name], ranges[name])
-        result = tuple(out)
-        if not all(finite(v) for v in result):
+        flat_out, result, at = list(out)[:total], [], 0
+        for (o, _), w in zip(spec["outputs"], widths):
+            result.append(tuple(flat_out[at:at + w]) if o in sized else flat_out[at])
+            at += w
+        if not all(finite(v) for v in flat_out):
             raise AssertionError(f"{spec['id']} accepted a call and returned a value that is not finite")
-        return result
+        return tuple(result)
 
     return fn

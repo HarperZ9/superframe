@@ -1,0 +1,56 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// stats.wilson_interval/1 (registry row STA-001): the Wilson score interval for k successes in n trials.
+//
+//   in   successes k [count], a whole number from 0 to n
+//        trials n [count], a whole number from 1 to 2^53
+//        z [1], finite, above 0 and at most 10 (the caller's normal quantile)
+//   out  low, high [probability]
+//   loss normal approximation to the binomial score test, no continuity correction
+//
+// p = k/n, d = 1 + z^2/n, c = (p + z^2/(2n)) / d, h = z sqrt(p(1-p)/n + z^2/(4n^2)) / d, [c - h, c + h]
+// low is set to 0 at k = 0 and high to 1 at k = n (their exact values); elsewhere clamped against rounding.
+//
+// Status: 0 accepted, 1 successes refused, 2 trials refused, 3 z refused. Trials are checked first.
+
+fn fk_wil_finite(x: f64) -> bool {
+    x - x == 0.0
+}
+
+// A whole number in 0 to 2^53: the cast to i64 and back keeps it.
+fn fk_wil_whole(x: f64) -> bool {
+    if !fk_wil_finite(x) || x < 0.0 || x > 9007199254740992.0 {
+        return false;
+    }
+    ((x as i64) as f64) == x
+}
+
+extern "C" fn fk_stats_wilson_interval(k: f64, n: f64, z: f64, out: *mut f64) -> i32 {
+    if !fk_wil_whole(n) || n < 1.0 {
+        return 2;
+    }
+    if !fk_wil_whole(k) || k > n {
+        return 1;
+    }
+    if !fk_wil_finite(z) || !(z > 0.0) || z > 10.0 {
+        return 3;
+    }
+    let p = k / n;
+    let z2 = z * z;
+    let d = 1.0 + z2 / n;
+    let c = (p + z2 / (2.0 * n)) / d;
+    let h = z * sqrt(p * (1.0 - p) / n + z2 / (4.0 * n * n)) / d;
+    let mut low = c - h;
+    let mut high = c + h;
+    if k == 0.0 || low < 0.0 {
+        low = 0.0;
+    }
+    if k == n || high > 1.0 {
+        high = 1.0;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 2) };
+    o[0] = low;
+    o[1] = high;
+    0
+}

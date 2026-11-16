@@ -1,0 +1,127 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// stats.auroc/1 (registry row STA-007): area under the ROC curve, ties counting one half.
+//
+//   in   positive [1], 1 or more finite scores
+//        negative [1], 1 or more finite scores, with n_pos n_neg at most 2^50
+//   out  auc [probability]
+//   loss order of the scores only; says nothing about calibration
+//
+// Rank form: pool the scores, give tied values the mean of the ranks they span (stable merge sort), sum the
+// positives' ranks R, and A = (R - n_pos (n_pos + 1) / 2) / (n_pos n_neg). Every step is exact in f64 below
+// 2^52, so the result has the bits of the reference's pair count.
+//
+// Status: 0 accepted, 1 positive is refused, 2 negative is refused.
+
+fn fk_au_finite(x: f64) -> bool {
+    x - x == 0.0
+}
+
+// Stable bottom-up merge sort of the indices 0..n by key[index].
+fn fk_au_order(key: Vec<f64>, n: i64) -> Vec<i64> {
+    let mut a: Vec<i64> = Vec::new();
+    let mut b: Vec<i64> = Vec::new();
+    let mut i: i64 = 0;
+    while i < n {
+        a.push(i);
+        b.push(i);
+        i = i + 1;
+    }
+    let mut w: i64 = 1;
+    while w < n {
+        let mut lo: i64 = 0;
+        while lo < n {
+            let mut mid = lo + w;
+            if mid > n {
+                mid = n;
+            }
+            let mut hi = lo + 2 * w;
+            if hi > n {
+                hi = n;
+            }
+            let mut l = lo;
+            let mut r = mid;
+            let mut t = lo;
+            while t < hi {
+                let mut take_left = false;
+                if l < mid {
+                    if r >= hi {
+                        take_left = true;
+                    } else {
+                        if key[a[l as usize] as usize] <= key[a[r as usize] as usize] {
+                            take_left = true;
+                        }
+                    }
+                }
+                if take_left {
+                    b[t as usize] = a[l as usize];
+                    l = l + 1;
+                } else {
+                    b[t as usize] = a[r as usize];
+                    r = r + 1;
+                }
+                t = t + 1;
+            }
+            lo = lo + 2 * w;
+        }
+        let mut c: i64 = 0;
+        while c < n {
+            a[c as usize] = b[c as usize];
+            c = c + 1;
+        }
+        w = w * 2;
+    }
+    a
+}
+
+extern "C" fn fk_stats_auroc(pp: *const f64, np: i64, pn: *const f64, nn: i64, out: *mut f64) -> i32 {
+    if np < 1 {
+        return 1;
+    }
+    let sp = unsafe { slice::from_raw_parts(pp, np as usize) };
+    let mut all: Vec<f64> = Vec::new();
+    let mut i: i64 = 0;
+    while i < np {
+        if !fk_au_finite(sp[i as usize]) {
+            return 1;
+        }
+        all.push(sp[i as usize]);
+        i = i + 1;
+    }
+    if nn < 1 || (np as f64) * (nn as f64) > 1125899906842624.0 {
+        return 2;
+    }
+    let sn = unsafe { slice::from_raw_parts(pn, nn as usize) };
+    i = 0;
+    while i < nn {
+        if !fk_au_finite(sn[i as usize]) {
+            return 2;
+        }
+        all.push(sn[i as usize]);
+        i = i + 1;
+    }
+    let total = np + nn;
+    let order = fk_au_order(all, total);
+    let mut rsum: f64 = 0.0;
+    i = 0;
+    while i < total {
+        let mut j = i;
+        while j + 1 < total && all[order[(j + 1) as usize] as usize] == all[order[i as usize] as usize] {
+            j = j + 1;
+        }
+        let r = ((i as f64) + (j as f64)) / 2.0 + 1.0;
+        let mut t = i;
+        while t <= j {
+            if order[t as usize] < np {
+                rsum = rsum + r;
+            }
+            t = t + 1;
+        }
+        i = j + 1;
+    }
+    let npf = np as f64;
+    let o = unsafe { slice::from_raw_parts_mut(out, 1) };
+    o[0] = (rsum - npf * (npf + 1.0) / 2.0) / (npf * (nn as f64));
+    0
+}

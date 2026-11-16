@@ -11050,20 +11050,20 @@
   {
    "path": "packages/kernels/formulas/README.md",
    "source": "repo",
-   "bytes": 3346,
-   "sourceSha256": "490ed3b3541427f40b2fcb5c164c10adc5dcc93206adca6395211d67e189ade9"
+   "bytes": 3990,
+   "sourceSha256": "a2161e34bd631deb68399c79b493990e59cb9b16991b93ed37d00861acc256db"
   },
   {
    "path": "packages/kernels/formulas/__init__.py",
    "source": "repo",
-   "bytes": 1409,
-   "sourceSha256": "1017bd96ad6ad2db0675e40ab54feefb7715e1efe55408e57422736189d616c7"
+   "bytes": 1506,
+   "sourceSha256": "0c29daae0d285eb3330477ca5bd1851b35102b837d4a583f79bfe9b6ffbf9812"
   },
   {
    "path": "packages/kernels/formulas/check.py",
    "source": "repo",
-   "bytes": 3988,
-   "sourceSha256": "58db03b5b958d29c6f5aae5c7e4b129e71bd414228e3f17f78f2e40119797883"
+   "bytes": 4083,
+   "sourceSha256": "0e9186253b313139564e6333f537ab7e334f53a615950b113a55b20f1a50e8a7"
   },
   {
    "path": "packages/kernels/formulas/colour_srgb_transfer/kernel.bld",
@@ -11092,14 +11092,14 @@
   {
    "path": "packages/kernels/formulas/core.py",
    "source": "repo",
-   "bytes": 2362,
-   "sourceSha256": "24c432a1a53302334f88d863b35fcfd554c9c5e2fdf80aa96974befb018b15e0"
+   "bytes": 2964,
+   "sourceSha256": "38575406ead3338a34a3738f59557670df4fb7b0001ba12aa5b8a44609dc8fd3"
   },
   {
    "path": "packages/kernels/formulas/native.py",
    "source": "repo",
-   "bytes": 4689,
-   "sourceSha256": "ab54887d4c821b1feb17953833d91a1393507d3745e2854400607f52c4bd43f3"
+   "bytes": 6028,
+   "sourceSha256": "30db4518d20df0affb0294683d676c91bed1a2bab161572fa2a6c319956e38f6"
   },
   {
    "path": "packages/kernels/formulas/optics_airy_radius/kernel.bld",
@@ -11136,6 +11136,54 @@
    "source": "repo",
    "bytes": 8465,
    "sourceSha256": "4e2183615c1cc92a96b2d4f8d65be159168e777c56a6b73a8d0645a619bfa9ac"
+  },
+  {
+   "path": "packages/kernels/formulas/stats_auroc/kernel.bld",
+   "source": "repo",
+   "bytes": 3815,
+   "sourceSha256": "17b91e5831f75ea51cb0c4cc63c01858de6abb94e014be9c8e0daae5a203659b"
+  },
+  {
+   "path": "packages/kernels/formulas/stats_auroc/reference.py",
+   "source": "repo",
+   "bytes": 6499,
+   "sourceSha256": "a18b0666914ba1aa97fe704abb50e83e847ccc16e92833f42789bcf92ceed7de"
+  },
+  {
+   "path": "packages/kernels/formulas/stats_benjamini_hochberg/kernel.bld",
+   "source": "repo",
+   "bytes": 3572,
+   "sourceSha256": "9284143895258cc326756daa2cd693014340fc11bccc63b83fe2c5984e15d4b1"
+  },
+  {
+   "path": "packages/kernels/formulas/stats_benjamini_hochberg/reference.py",
+   "source": "repo",
+   "bytes": 8046,
+   "sourceSha256": "95314f96d2e419017da39abb81ac2434e9a91c710cb993765680af0401aa8c5b"
+  },
+  {
+   "path": "packages/kernels/formulas/stats_spearman/kernel.bld",
+   "source": "repo",
+   "bytes": 4686,
+   "sourceSha256": "b124e4587fbc6ca1c9e4f692a9cbce29be31329bfc42a6a75e5c8c65eba19ef2"
+  },
+  {
+   "path": "packages/kernels/formulas/stats_spearman/reference.py",
+   "source": "repo",
+   "bytes": 6827,
+   "sourceSha256": "7d19c62db984600af562db03e354b793bfc44238ceb0e8662fdc78aac28b4b83"
+  },
+  {
+   "path": "packages/kernels/formulas/stats_wilson_interval/kernel.bld",
+   "source": "repo",
+   "bytes": 1831,
+   "sourceSha256": "ae2eb107d87efb7042228ca0fafaa2702e1e3afe914141a03d8544ef4103eb5c"
+  },
+  {
+   "path": "packages/kernels/formulas/stats_wilson_interval/reference.py",
+   "source": "repo",
+   "bytes": 7468,
+   "sourceSha256": "c8c412ca72b0ac8ff63b1d87638605f7d6bae0b3fee38c56e4113815d328bd75"
   },
   {
    "path": "packages/kernels/kcore/__init__.py",
@@ -11248,8 +11296,8 @@
   {
    "path": "packages/kernels/kernels.json",
    "source": "repo",
-   "bytes": 28950,
-   "sourceSha256": "e6510c6ec0c7a522e16a39e9b4db4b2a869f4e0efde4eceecd4de4efc9fcfea9"
+   "bytes": 40478,
+   "sourceSha256": "08e77d2b10e86b172e33954878ad8141ecf8bbacd388a967883e818bb0dfe991"
   },
   {
    "path": "packages/kernels/kernels.py",
@@ -11632,8 +11680,8 @@
   {
    "path": "packages/kernels/tests/test_formulas.py",
    "source": "repo",
-   "bytes": 3899,
-   "sourceSha256": "3fc036b8ec1964194b5d7ff7d4f10f0d8130379e1a8ded8f1c5bcad6ff68f0c1"
+   "bytes": 4331,
+   "sourceSha256": "ff2d5d7462bfe11c8a6daf4765fe5f6ad18a212e4315454bdcc03112a29a04cd"
   },
   {
    "path": "packages/kernels/tests/test_kernels.py",

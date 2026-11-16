@@ -1,0 +1,170 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// stats.spearman/1 (registry row STA-008): Spearman's rank correlation with mid-ranks for ties.
+//
+//   in   a [1], 2 to 1,000,000 finite values, not all equal
+//        b [1], as many finite values as a, not all equal
+//   out  rho [1]
+//   loss monotone association only; a constant input is refused
+//
+// Ranks come from a stable merge sort; tied values share the mean of the ranks they span. rho is the Pearson
+// correlation of the ranks about the exact mean (n + 1) / 2, summed in index order, clamped to -1 and 1
+// against rounding only.
+//
+// Status: 0 accepted, 1 a is refused, 2 b is refused.
+
+fn fk_sp_finite(x: f64) -> bool {
+    x - x == 0.0
+}
+
+// Stable bottom-up merge sort of the indices 0..n by key[index].
+fn fk_sp_order(key: Vec<f64>, n: i64) -> Vec<i64> {
+    let mut a: Vec<i64> = Vec::new();
+    let mut b: Vec<i64> = Vec::new();
+    let mut i: i64 = 0;
+    while i < n {
+        a.push(i);
+        b.push(i);
+        i = i + 1;
+    }
+    let mut w: i64 = 1;
+    while w < n {
+        let mut lo: i64 = 0;
+        while lo < n {
+            let mut mid = lo + w;
+            if mid > n {
+                mid = n;
+            }
+            let mut hi = lo + 2 * w;
+            if hi > n {
+                hi = n;
+            }
+            let mut l = lo;
+            let mut r = mid;
+            let mut t = lo;
+            while t < hi {
+                let mut take_left = false;
+                if l < mid {
+                    if r >= hi {
+                        take_left = true;
+                    } else {
+                        if key[a[l as usize] as usize] <= key[a[r as usize] as usize] {
+                            take_left = true;
+                        }
+                    }
+                }
+                if take_left {
+                    b[t as usize] = a[l as usize];
+                    l = l + 1;
+                } else {
+                    b[t as usize] = a[r as usize];
+                    r = r + 1;
+                }
+                t = t + 1;
+            }
+            lo = lo + 2 * w;
+        }
+        let mut c: i64 = 0;
+        while c < n {
+            a[c as usize] = b[c as usize];
+            c = c + 1;
+        }
+        w = w * 2;
+    }
+    a
+}
+
+// Copy n values from a C pointer; returns an empty vector when one is not finite.
+fn fk_sp_load(ptr: *const f64, n: i64) -> Vec<f64> {
+    let src = unsafe { slice::from_raw_parts(ptr, n as usize) };
+    let mut v: Vec<f64> = Vec::new();
+    let mut i: i64 = 0;
+    while i < n {
+        if !fk_sp_finite(src[i as usize]) {
+            let empty: Vec<f64> = Vec::new();
+            return empty;
+        }
+        v.push(src[i as usize]);
+        i = i + 1;
+    }
+    v
+}
+
+fn fk_sp_constant(x: Vec<f64>, n: i64) -> bool {
+    let mut i: i64 = 1;
+    while i < n {
+        if x[i as usize] != x[0] {
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+fn fk_sp_midranks(x: Vec<f64>, n: i64) -> Vec<f64> {
+    let order = fk_sp_order(x, n);
+    let mut ranks: Vec<f64> = Vec::new();
+    let mut k: i64 = 0;
+    while k < n {
+        ranks.push(0.0);
+        k = k + 1;
+    }
+    let mut i: i64 = 0;
+    while i < n {
+        let mut j = i;
+        while j + 1 < n && x[order[(j + 1) as usize] as usize] == x[order[i as usize] as usize] {
+            j = j + 1;
+        }
+        let r = ((i as f64) + (j as f64)) / 2.0 + 1.0;
+        let mut t = i;
+        while t <= j {
+            ranks[order[t as usize] as usize] = r;
+            t = t + 1;
+        }
+        i = j + 1;
+    }
+    ranks
+}
+
+extern "C" fn fk_stats_spearman(pa: *const f64, na: i64, pb: *const f64, nb: i64, out: *mut f64) -> i32 {
+    if na < 2 || na > 1000000 {
+        return 1;
+    }
+    let a = fk_sp_load(pa, na);
+    if (a.len() as i64) != na || fk_sp_constant(a, na) {
+        return 1;
+    }
+    if nb != na {
+        return 2;
+    }
+    let b = fk_sp_load(pb, nb);
+    if (b.len() as i64) != nb || fk_sp_constant(b, nb) {
+        return 2;
+    }
+    let ra = fk_sp_midranks(a, na);
+    let rb = fk_sp_midranks(b, nb);
+    let mean = ((na as f64) + 1.0) / 2.0;
+    let mut sxy: f64 = 0.0;
+    let mut sxx: f64 = 0.0;
+    let mut syy: f64 = 0.0;
+    let mut i: i64 = 0;
+    while i < na {
+        let dx = ra[i as usize] - mean;
+        let dy = rb[i as usize] - mean;
+        sxy = sxy + dx * dy;
+        sxx = sxx + dx * dx;
+        syy = syy + dy * dy;
+        i = i + 1;
+    }
+    let mut r = sxy / sqrt(sxx * syy);
+    if r > 1.0 {
+        r = 1.0;
+    }
+    if r < -1.0 {
+        r = -1.0;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 1) };
+    o[0] = r;
+    0
+}
