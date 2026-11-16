@@ -6,14 +6,18 @@ CIE 1976 L*a*b* from tristimulus values and a reference white, with the CIE's ex
   t = X / Xn (and Y / Yn, Z / Zn);  f(t) = t > e ? t^(1/3) : (K t + 16) / 116,  e = 216 / 24389, K = 24389 / 27
   L = 116 f(Y/Yn) - 16;  a = 500 (f(X/Xn) - f(Y/Yn));  b = 200 (f(Y/Yn) - f(Z/Zn))
 
-The cube root is 64 Newton steps from 1 with + - * / only, so the BuildLang body gives the same bits; a check
-holds it within 2 ulp of a library cube root over the accepted range.
+The cube root is correctly rounded: the double nearest the true cube root, found here with exact integer
+arithmetic. BuildLang's built-in cbrt is correctly rounded too (buildlang 8a6ef692 and later), so the
+BuildLang body gives the same bits. The kernel and the reference used 64 Newton steps from 1 until
+2026-11-16; that result was 1 ulp off on 55,096 of 200,000 points of a log sweep of the accepted range.
 """
-from ..core import Refusal, finite, positive, refused
+import math
+import struct
+
+from ..core import Refusal, finite, positive, refused, same
 
 EPS = 216.0 / 24389.0
 KAPPA = 24389.0 / 27.0
-STEPS = 64
 T_MAX = 1000.0
 
 SPEC = {
@@ -36,9 +40,11 @@ SPEC = {
                       "Y / Yn = 0.18 gives L 49.496108"],
     "properties": ["f is continuous at the threshold, value and slope, with the exact constants",
                    "a neutral (X/Xn = Y/Yn = Z/Zn) has a = b = 0",
-                   "the cube root agrees with a library cube root within 2 ulp"],
+                   "the cube root is correctly rounded: L, a and b match the exact cube root bit for bit on a "
+                   "400-point sweep of the accepted range"],
     "controls": ["the rounded constants 0.008856 and 7.787", "the cube root dropped (L = 116 Y - 16)",
-                 "a and b scales swapped (200 and 500)"],
+                 "a and b scales swapped (200 and 500)",
+                 "the 64-step Newton cube root used until 2026-11-16 (1 ulp off at many points)"],
     "provenance": {
         "source": "W3C CSS Color Module Level 4, sample code conversions.js (XYZ_to_Lab), read 2026-11-15: "
                   "e = 216/24389 and K = 24389/27, with the comment that the CIE standard now defines them as "
@@ -52,9 +58,45 @@ SPEC = {
 }
 
 
+def _icbrt(n):
+    """floor(cbrt(n)) for an integer n >= 0."""
+    if n == 0:
+        return 0
+    y = 1 << ((n.bit_length() + 2) // 3)  # above the root
+    while True:
+        z = (2 * y + n // (y * y)) // 3
+        if z >= y:
+            break
+        y = z
+    while y * y * y > n:
+        y -= 1
+    while (y + 1) ** 3 <= n:
+        y += 1
+    return y
+
+
 def cbrt(t):
+    """The double nearest the cube root of t, by exact integers (the method of buildlang's
+    tools/detmath/cbrt_vectors.py). For t = m 2^e it finds the integer y in [2^52, 2^53] nearest
+    cbrt(t) / 2^k and returns y 2^k; NaN, infinities and zeros come back as they went in."""
+    t = float(t)
+    if t != t or t == 0.0 or math.isinf(t):
+        return t
+    bits = struct.unpack("<Q", struct.pack("<d", abs(t)))[0]
+    ex, frac = bits >> 52, bits & ((1 << 52) - 1)
+    m, e = (frac, -1074) if ex == 0 else (frac | (1 << 52), ex - 1075)
+    k = (e + m.bit_length() - 1) // 3 - 52  # cbrt(t) / 2^k is in [2^52, 2^53)
+    n = m << (e - 3 * k)
+    y = _icbrt(n)
+    if (2 * y + 1) ** 3 < 8 * n:  # above the midpoint y + 1/2, which is never an exact cube root
+        y += 1
+    return math.copysign(math.ldexp(y, k), t)
+
+
+def newton_cbrt(t):
+    """The cube root the kernel used until 2026-11-16: 64 Newton steps from 1. Kept for the control only."""
     y = 1.0
-    for _ in range(STEPS):
+    for _ in range(64):
         y = (2.0 * y + t / (y * y)) / 3.0
     return y
 
@@ -97,6 +139,7 @@ def _grid():
 
 
 GRID = _grid()
+SWEEP = [min(EPS * (T_MAX / EPS) ** ((i + 1) / 400), T_MAX) for i in range(400)]  # above e, up to 1000
 
 
 def checks(fn):
@@ -120,23 +163,18 @@ def checks(fn):
         abs(g - w) < 1e-12 for g, w in zip(c, want))
     neutral = [fn(s * D65[0], s * D65[1], s * D65[2], *D65) for s in (0.001, 0.05, 0.5, 2.0)]
     yield "property: a neutral has a = b = 0", all(abs(r[1]) < 1e-12 and abs(r[2]) < 1e-12 for r in neutral)
-    worst = 0.0
-    t = EPS * 1.0000001
-    while t < T_MAX:
-        exact = t ** (1.0 / 3.0)
-        worst = max(worst, abs(cbrt_of(fn, t) - exact) / exact)
-        t *= 1.37
-    yield "property: the cube root is within 2 ulp of a library cube root", worst < 4.5e-16
+    wrong = 0
+    for t in SWEEP:
+        c = cbrt(t)
+        want = (116.0 * c - 16.0, 500.0 * (1.0 - c), 200.0 * (c - 1.0))
+        wrong += not same(fn(1.0, t, 1.0, 1.0, 1.0, 1.0), want)
+    yield f"property: the cube root is correctly rounded (L, a, b bit for bit on {len(SWEEP)} sweep points)", (
+        wrong == 0)
     for name, args in (("x", (-0.1, 0.5, 0.5) + D65), ("y", (0.5, float("nan"), 0.5) + D65),
                        ("z", (0.5, 0.5, 2000.0) + D65), ("x", (None, 0.5, 0.5) + D65),
                        ("white_x", (0.5, 0.5, 0.5, 0.0, 1.0, 1.0)), ("white_z", (0.5, 0.5, 0.5, 1.0, 1.0, -1.0))):
         got = fn(*args)
         yield f"refusal: {args[:3]!r} with white {args[3:]!r} names {name}", refused(got) and got.input == name
-
-
-def cbrt_of(fn, t):
-    """The cube root inside fn, read back from L: L = 116 cbrt(t) - 16 for Y = t, Yn = 1."""
-    return (fn(t, t, t, 1.0, 1.0, 1.0)[0] + 16.0) / 116.0
 
 
 def _with(fn_of_t):
@@ -164,6 +202,12 @@ def _swapped(tx, ty, tz):
     return (116.0 * fy - 16.0, 200.0 * (fx - fy), 500.0 * (fy - fz))
 
 
+def _newton(tx, ty, tz):
+    g = [newton_cbrt(t) if t > EPS else (KAPPA * t + 16.0) / 116.0 for t in (tx, ty, tz)]
+    return (116.0 * g[1] - 16.0, 500.0 * (g[0] - g[1]), 200.0 * (g[1] - g[2]))
+
+
 PLANTED = {"the rounded constants 0.008856 and 7.787": _with(_rounded),
            "the cube root dropped (L = 116 Y - 16)": _with(_no_root),
-           "a and b scales swapped (200 and 500)": _with(_swapped)}
+           "a and b scales swapped (200 and 500)": _with(_swapped),
+           "the 64-step Newton cube root used until 2026-11-16 (1 ulp off at many points)": _with(_newton)}
