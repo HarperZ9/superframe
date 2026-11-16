@@ -7,6 +7,7 @@
   kernels bench [--window S] smoke benchmark (labelled "under load, not valid" on a loaded machine)
   kernels pipeline           composed blend > resample > shade on every device placement
   kernels list               show the registry
+  kernels formulas           check every formula kernel (formulas/) and write its registry entry
 """
 import argparse
 import datetime as dt
@@ -128,6 +129,24 @@ def cmd_pipeline(a):
     return 0 if res["all_bit_identical"] else 1
 
 
+def cmd_formulas(a):
+    """Check every formula kernel and write its registry entry, with the check result, into kernels.json."""
+    from formulas import check as F
+    results = {r["id"]: r for r in F.check_all(require_native=a.require_native)}
+    reg = _registry()
+    entries = []
+    for entry in F.registry_entries():
+        r = results[entry["id"]]
+        entry["check"] = {"pass": r["pass"], "checked": dt.datetime.now().isoformat(timespec="seconds"),
+                          "reference_checks": r["reference"]["checks"], "controls_caught":
+                          sum(c["caught"] for c in r["controls"].values()), "controls": len(r["controls"]),
+                          "buildlang": r["buildlang"]}
+        entries.append(entry)
+    reg["formulas"] = entries
+    _save(reg)
+    return F.main(require_native=a.require_native)
+
+
 def cmd_list(a):
     for e in _registry()["kernels"]:
         eq = e["contract"].get("equivalence", {})
@@ -150,8 +169,12 @@ def main():
     b.add_argument("--out")
     sub.add_parser("pipeline")
     sub.add_parser("list")
+    f = sub.add_parser("formulas")
+    f.add_argument("--require-native", action="store_true",
+                   help="fail when a BuildLang body cannot be built here (default: report it and go on)")
     a = p.parse_args()
-    return {"check": cmd_check, "bench": cmd_bench, "pipeline": cmd_pipeline, "list": cmd_list}[a.cmd](a)
+    return {"check": cmd_check, "bench": cmd_bench, "pipeline": cmd_pipeline, "list": cmd_list,
+            "formulas": cmd_formulas}[a.cmd](a)
 
 
 if __name__ == "__main__":

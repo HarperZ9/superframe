@@ -541,5 +541,130 @@
       "planted": "planted.library_reduction",
       "caught": true
     }
-  }
+  },
+  "formulas": [
+    {
+      "id": "optics.f_number/1",
+      "path": "formulas/optics_f_number/",
+      "inputs": [
+        {
+          "name": "focal_length",
+          "unit": "m",
+          "range": "finite and not 0"
+        },
+        {
+          "name": "aperture_diameter",
+          "unit": "m",
+          "range": "finite and > 0"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "f_number",
+          "unit": "1"
+        }
+      ],
+      "row": "OPT-007",
+      "formula": "N = |f| / D",
+      "mode": "bit-identical",
+      "loss": "Object at infinity; the stop's image is the pupil. The working f-number of a close focus and the T-number (transmission) are separate quantities.",
+      "known_answers": [
+        "f 50 mm over D 25 mm is N 2 (the definition, exact in binary)"
+      ],
+      "properties": [
+        "scaling f and D by one factor leaves N unchanged",
+        "N is linear in |f|",
+        "the sign of f does not change N"
+      ],
+      "controls": [
+        "a class default (15) returned when D is missing",
+        "D / f in place of f / D"
+      ],
+      "provenance": {
+        "source": "N = f / D with D the entrance pupil diameter. Read 2026-11-15 as a pointer: Wikipedia 'F-number', which cites Smith, Hecht, Greivenkamp and ISO 517:2008. ISO 517 is unread (paywalled).",
+        "body_from": "mission-control 2026-10-31-unbuilt-instruments/vbench/budget/record.py:70 without its default of 15, 5 or 10 for a missing f or D",
+        "checked_by": "formula-kernels worker 3, 2026-11-15"
+      },
+      "buildlang": {
+        "body": "kernel.bld"
+      },
+      "check": {
+        "pass": true,
+        "checked": "2026-11-15T21:21:41",
+        "reference_checks": 10,
+        "controls_caught": 2,
+        "controls": 2,
+        "buildlang": {
+          "checked": true,
+          "checks": 10,
+          "failed": [],
+          "grid": 64,
+          "differ_from_reference": 0,
+          "first_difference": []
+        }
+      }
+    },
+    {
+      "id": "optics.airy_radius/1",
+      "path": "formulas/optics_airy_radius/",
+      "inputs": [
+        {
+          "name": "wavelength",
+          "unit": "m",
+          "range": "finite and > 0"
+        },
+        {
+          "name": "f_number",
+          "unit": "1",
+          "range": "finite and > 0"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "radius",
+          "unit": "m"
+        }
+      ],
+      "row": "OPT-008",
+      "formula": "r = k * lambda * N, k = j(1,1) / pi = 1.2196698912665045",
+      "mode": "bit-identical",
+      "loss": "Circular clear pupil, no aberration, incoherent scalar far field, small angles. A central obstruction, an apodised pupil or a fast lens (N below about 1) moves the first dark ring.",
+      "known_answers": [
+        "k equals the first zero of J1 over pi to 1e-15 (zero printed by OEIS A115369)",
+        "550 nm at N 2 gives 1.3416 um"
+      ],
+      "properties": [
+        "r is linear in lambda and in N",
+        "r times the incoherent cutoff 1 / (lambda N) equals k for every lambda and N"
+      ],
+      "controls": [
+        "k = 1.22 (the rounded textbook literal)",
+        "k = 1.21967 (the study literal)",
+        "the diameter 2.44 lambda N returned as the radius"
+      ],
+      "provenance": {
+        "source": "OEIS A115369, 'Decimal expansion of first zero of BesselJ(1,z)', read 2026-11-15: 3.8317059702075123156. NIST DLMF 10.21 defines the zeros. Airy 1835 is unread.",
+        "body_from": "packages/rooms/core/constants.js airyFactor (1.22) and the five inline copies; the constant is replaced by j(1,1) / pi (ADJUDICATION.md, OPT-008)",
+        "checked_by": "formula-kernels worker 3, 2026-11-15"
+      },
+      "buildlang": {
+        "body": "kernel.bld"
+      },
+      "check": {
+        "pass": true,
+        "checked": "2026-11-15T21:21:41",
+        "reference_checks": 12,
+        "controls_caught": 3,
+        "controls": 3,
+        "buildlang": {
+          "checked": true,
+          "checks": 12,
+          "failed": [],
+          "grid": 72,
+          "differ_from_reference": 0,
+          "first_difference": []
+        }
+      }
+    }
+  ]
 }

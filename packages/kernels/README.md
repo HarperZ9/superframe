@@ -86,7 +86,12 @@ kernels.cmd check        # every equivalence test, known answer and control
 kernels.cmd pipeline     # blend > resample > shade on all 8 device placements, plus a split call
 kernels.cmd bench        # smoke benchmark
 kernels.cmd list
+kernels.cmd formulas     # the scalar formula kernels in formulas/ (no GPU needed)
 ```
+
+Scalar formulas (an f-number, an Airy radius, a flow law) follow a smaller contract with units, a valid
+range with a refusal and a stated loss, and a BuildLang body held to the reference's bytes. See
+`formulas/README.md`.
 
 `kernels.cmd` uses `KERNELS_PY` if set, else the PyTorch CUDA venv at
 a local PyTorch CUDA venv, else `python` (CPU only). The equivalent direct call is
