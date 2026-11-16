@@ -1,0 +1,65 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Helpers shared by the formula kernels. Each kernel file declares `mod shared;`; buildc loads it once.
+//
+// Call these bare (`stable_order(&v, n)`), not by path: at buildlang 12ddf3c1 a path call
+// (`shared::stable_order(&v, n)`) passes a `&Vec<f64>` to the `&[f64]` parameter without making it a slice,
+// and the emitted C does not compile.
+
+// Stable bottom-up merge sort of the indices 0..n by key[index], ascending; ties keep input order.
+pub fn stable_order(key: &[f64], n: i64) -> Vec<i64> {
+    let mut a: Vec<i64> = Vec::new();
+    let mut b: Vec<i64> = Vec::new();
+    let mut i: i64 = 0;
+    while i < n {
+        a.push(i);
+        b.push(i);
+        i = i + 1;
+    }
+    let mut w: i64 = 1;
+    while w < n {
+        let mut lo: i64 = 0;
+        while lo < n {
+            let mut mid = lo + w;
+            if mid > n {
+                mid = n;
+            }
+            let mut hi = lo + 2 * w;
+            if hi > n {
+                hi = n;
+            }
+            let mut l = lo;
+            let mut r = mid;
+            let mut t = lo;
+            while t < hi {
+                let mut take_left = false;
+                if l < mid {
+                    if r >= hi {
+                        take_left = true;
+                    } else {
+                        if key[a[l as usize] as usize] <= key[a[r as usize] as usize] {
+                            take_left = true;
+                        }
+                    }
+                }
+                if take_left {
+                    b[t as usize] = a[l as usize];
+                    l = l + 1;
+                } else {
+                    b[t as usize] = a[r as usize];
+                    r = r + 1;
+                }
+                t = t + 1;
+            }
+            lo = lo + 2 * w;
+        }
+        let mut c: i64 = 0;
+        while c < n {
+            a[c as usize] = b[c as usize];
+            c = c + 1;
+        }
+        w = w * 2;
+    }
+    a
+}
