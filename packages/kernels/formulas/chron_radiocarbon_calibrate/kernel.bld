@@ -1,0 +1,367 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// chron.radiocarbon_calibrate/1 (registry row CHR-001): one radiocarbon age projected onto a calibration curve.
+//
+//   in   age [yr_14C], error [yr_14C] > 0
+//        grid [yr_cal], 2 or more evenly spaced calendar ages inside the curve
+//        curve_cal_bp [yr_cal] strictly monotone, curve_age [yr_14C], curve_error [yr_14C] >= 0, one per point
+//        level_inner, level_outer [1], each in (0, 1)
+//   out  density [1/yr_cal], hdr_inner [1], hdr_outer [1], one value per grid age each
+//   loss no priors; linear curve between points with independent errors; density past the grid ends dropped
+//
+// s(t)^2 = error^2 + sigma(t)^2 and f(t) = exp(-(age - mu(t))^2 / (2 s(t)^2)) / s(t), with mu and sigma read
+// from the curve by linear interpolation. density = f / (sum f * step). A region at level L marks (1) every
+// cell whose probability f / sum f is at least the one where the cells, sorted from most to least probable,
+// first reach L. exp uses + - * / only, as in the reference, so the bits are the same.
+//
+// Status: 0 accepted, else the 1-based index of the refused input (age 1, error 2, grid 3, curve_cal_bp 4,
+// curve_age 5, curve_error 6, level_inner 7, level_outer 8), in the reference's order of checks.
+
+fn fk_rc_finite(x: f64) -> bool {
+    x - x == 0.0
+}
+
+fn fk_rc_exp_neg(x: f64) -> f64 {
+    if x < -700.0 {
+        return 0.0;
+    }
+    let k = (-x * 1.4426950408889634 + 0.5) as i64;
+    let kf = k as f64;
+    let r = (x + kf * 0.6931471803691238) + kf * 0.00000000019082149292705877;
+    let mut p: f64 = 1.0;
+    let mut n: f64 = 14.0;
+    while n >= 1.0 {
+        p = 1.0 + r * p / n;
+        n = n - 1.0;
+    }
+    let mut i: i64 = 0;
+    while i < k {
+        p = p * 0.5;
+        i = i + 1;
+    }
+    p
+}
+
+// +1 strictly increasing, -1 strictly decreasing, 0 neither.
+fn fk_rc_monotone(c: Vec<f64>, n: i64) -> i64 {
+    let mut up = true;
+    let mut down = true;
+    let mut i: i64 = 0;
+    while i + 1 < n {
+        if !(c[(i + 1) as usize] > c[i as usize]) {
+            up = false;
+        }
+        if !(c[(i + 1) as usize] < c[i as usize]) {
+            down = false;
+        }
+        i = i + 1;
+    }
+    if up {
+        return 1;
+    }
+    if down {
+        return -1;
+    }
+    0
+}
+
+fn fk_rc_interp(t: f64, cal: Vec<f64>, val: Vec<f64>, n: i64, sign: f64) -> f64 {
+    let mut lo: i64 = 0;
+    let mut hi: i64 = n - 1;
+    let tk = t * sign;
+    while hi - lo > 1 {
+        let mid = (lo + hi) / 2;
+        if cal[mid as usize] * sign <= tk {
+            lo = mid;
+        } else {
+            hi = mid;
+        }
+    }
+    let c0 = cal[lo as usize];
+    let c1 = cal[(lo + 1) as usize];
+    let v0 = val[lo as usize];
+    let v1 = val[(lo + 1) as usize];
+    let w = (t - c0) / (c1 - c0);
+    v0 + (v1 - v0) * w
+}
+
+// Stable bottom-up merge sort of the indices 0..n by key[index], ascending.
+fn fk_rc_order(key: Vec<f64>, n: i64) -> Vec<i64> {
+    let mut a: Vec<i64> = Vec::new();
+    let mut b: Vec<i64> = Vec::new();
+    let mut i: i64 = 0;
+    while i < n {
+        a.push(i);
+        b.push(i);
+        i = i + 1;
+    }
+    let mut w: i64 = 1;
+    while w < n {
+        let mut lo: i64 = 0;
+        while lo < n {
+            let mut mid = lo + w;
+            if mid > n {
+                mid = n;
+            }
+            let mut hi = lo + 2 * w;
+            if hi > n {
+                hi = n;
+            }
+            let mut l = lo;
+            let mut r = mid;
+            let mut t = lo;
+            while t < hi {
+                let mut take_left = false;
+                if l < mid {
+                    if r >= hi {
+                        take_left = true;
+                    } else {
+                        if key[a[l as usize] as usize] <= key[a[r as usize] as usize] {
+                            take_left = true;
+                        }
+                    }
+                }
+                if take_left {
+                    b[t as usize] = a[l as usize];
+                    l = l + 1;
+                } else {
+                    b[t as usize] = a[r as usize];
+                    r = r + 1;
+                }
+                t = t + 1;
+            }
+            lo = lo + 2 * w;
+        }
+        let mut c: i64 = 0;
+        while c < n {
+            a[c as usize] = b[c as usize];
+            c = c + 1;
+        }
+        w = w * 2;
+    }
+    a
+}
+
+// The probability threshold of the highest-density region at level L.
+fn fk_rc_threshold(mass: Vec<f64>, order: Vec<i64>, n: i64, level: f64) -> f64 {
+    let mut cum: f64 = 0.0;
+    let mut i: i64 = 0;
+    while i < n {
+        let m = mass[order[i as usize] as usize];
+        cum = cum + m;
+        if cum >= level {
+            return m;
+        }
+        i = i + 1;
+    }
+    mass[order[(n - 1) as usize] as usize]
+}
+
+fn fk_rc_level_ok(x: f64) -> bool {
+    fk_rc_finite(x) && x > 0.0 && x < 1.0
+}
+
+extern "C" fn fk_chron_radiocarbon_calibrate(age: f64, error: f64, gp: *const f64, ng: i64, cp: *const f64,
+                                             nc: i64, ap: *const f64, na: i64, ep: *const f64, ne: i64,
+                                             level_inner: f64, level_outer: f64, out: *mut f64) -> i32 {
+    // Every slice is taken here, with a length that is never negative, before the checks.
+    let mut lg = ng;
+    if lg < 0 {
+        lg = 0;
+    }
+    let mut lc = nc;
+    if lc < 0 {
+        lc = 0;
+    }
+    let mut la = na;
+    if la < 0 {
+        la = 0;
+    }
+    let mut le = ne;
+    if le < 0 {
+        le = 0;
+    }
+    let sg = unsafe { slice::from_raw_parts(gp, lg as usize) };
+    let sc = unsafe { slice::from_raw_parts(cp, lc as usize) };
+    let sa = unsafe { slice::from_raw_parts(ap, la as usize) };
+    let se = unsafe { slice::from_raw_parts(ep, le as usize) };
+    if !fk_rc_finite(age) {
+        return 1;
+    }
+    if !fk_rc_finite(error) || !(error > 0.0) {
+        return 2;
+    }
+    if ng < 2 {
+        return 3;
+    }
+    let mut grid: Vec<f64> = Vec::new();
+    let mut i: i64 = 0;
+    while i < ng {
+        if !fk_rc_finite(sg[i as usize]) {
+            return 3;
+        }
+        grid.push(sg[i as usize]);
+        i = i + 1;
+    }
+    let h = grid[1] - grid[0];
+    if h == 0.0 {
+        return 3;
+    }
+    i = 0;
+    while i + 1 < ng {
+        if grid[(i + 1) as usize] - grid[i as usize] != h {
+            return 3;
+        }
+        i = i + 1;
+    }
+    if nc < 2 {
+        return 4;
+    }
+    let mut cal: Vec<f64> = Vec::new();
+    i = 0;
+    while i < nc {
+        if !fk_rc_finite(sc[i as usize]) {
+            return 4;
+        }
+        cal.push(sc[i as usize]);
+        i = i + 1;
+    }
+    let sign_i = fk_rc_monotone(cal, nc);
+    if sign_i == 0 {
+        return 4;
+    }
+    if na < 1 {
+        return 5;
+    }
+    let mut cage: Vec<f64> = Vec::new();
+    i = 0;
+    while i < na {
+        if !fk_rc_finite(sa[i as usize]) {
+            return 5;
+        }
+        cage.push(sa[i as usize]);
+        i = i + 1;
+    }
+    if na != nc {
+        return 5;
+    }
+    if ne < 1 {
+        return 6;
+    }
+    let mut cerr: Vec<f64> = Vec::new();
+    i = 0;
+    while i < ne {
+        if !fk_rc_finite(se[i as usize]) {
+            return 6;
+        }
+        cerr.push(se[i as usize]);
+        i = i + 1;
+    }
+    if ne != nc {
+        return 6;
+    }
+    i = 0;
+    while i < ne {
+        if cerr[i as usize] < 0.0 {
+            return 6;
+        }
+        i = i + 1;
+    }
+    if !fk_rc_level_ok(level_inner) {
+        return 7;
+    }
+    if !fk_rc_level_ok(level_outer) {
+        return 8;
+    }
+    let mut cmin = cal[0];
+    let mut cmax = cal[0];
+    let mut amin = cage[0];
+    let mut amax = cage[0];
+    i = 0;
+    while i < nc {
+        if cal[i as usize] < cmin {
+            cmin = cal[i as usize];
+        }
+        if cal[i as usize] > cmax {
+            cmax = cal[i as usize];
+        }
+        if cage[i as usize] < amin {
+            amin = cage[i as usize];
+        }
+        if cage[i as usize] > amax {
+            amax = cage[i as usize];
+        }
+        i = i + 1;
+    }
+    i = 0;
+    while i < ng {
+        if grid[i as usize] < cmin || grid[i as usize] > cmax {
+            return 3;
+        }
+        i = i + 1;
+    }
+    if age < amin || age > amax {
+        return 1;
+    }
+    let sign = sign_i as f64;
+    let mut f: Vec<f64> = Vec::new();
+    let mut peak: f64 = 0.0;
+    i = 0;
+    while i < ng {
+        let t = grid[i as usize];
+        let mu = fk_rc_interp(t, cal, cage, nc, sign);
+        let sd = fk_rc_interp(t, cal, cerr, nc, sign);
+        let s2 = error * error + sd * sd;
+        let z = age - mu;
+        let v = fk_rc_exp_neg(-(z * z) / (2.0 * s2)) / sqrt(s2);
+        if v > peak {
+            peak = v;
+        }
+        f.push(v);
+        i = i + 1;
+    }
+    if !(peak > 0.0) || f[0] > 0.000001 * peak || f[(ng - 1) as usize] > 0.000001 * peak {
+        return 3;
+    }
+    let mut total: f64 = 0.0;
+    i = 0;
+    while i < ng {
+        total = total + f[i as usize];
+        i = i + 1;
+    }
+    let mut step = h;
+    if step < 0.0 {
+        step = -step;
+    }
+    let mut mass: Vec<f64> = Vec::new();
+    let mut key: Vec<f64> = Vec::new();
+    i = 0;
+    while i < ng {
+        let m = f[i as usize] / total;
+        mass.push(m);
+        key.push(-m);
+        i = i + 1;
+    }
+    let order = fk_rc_order(key, ng);
+    let thr_inner = fk_rc_threshold(mass, order, ng, level_inner);
+    let thr_outer = fk_rc_threshold(mass, order, ng, level_outer);
+    let o = unsafe { slice::from_raw_parts_mut(out, (3 * ng) as usize) };
+    i = 0;
+    while i < ng {
+        o[i as usize] = f[i as usize] / (total * step);
+        let m = mass[i as usize];
+        if m >= thr_inner {
+            o[(ng + i) as usize] = 1.0;
+        } else {
+            o[(ng + i) as usize] = 0.0;
+        }
+        if m >= thr_outer {
+            o[(2 * ng + i) as usize] = 1.0;
+        } else {
+            o[(2 * ng + i) as usize] = 0.0;
+        }
+        i = i + 1;
+    }
+    0
+}

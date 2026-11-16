@@ -52,10 +52,29 @@ ctypes. Where no compiler is present the tests of the compiled bodies skip with 
 | `stats.benjamini_hochberg/1` | STA-002 | adjusted p = running min of p (m / rank); reject at adjusted <= q | bit-identical |
 | `stats.spearman/1` | STA-008 | Pearson correlation of mid-ranks | bit-identical |
 | `stats.auroc/1` | STA-007 | Mann-Whitney AUC, ties count one half | bit-identical |
+| `chron.radiocarbon_calibrate/1` | CHR-001 | normal likelihood of the age about the interpolated curve, errors in quadrature; density and highest-density regions on a stated grid | bit-identical |
 
 `kernels.json`, section `formulas`, holds one entry per kernel with its units, ranges, loss, known
 answers, properties, controls, provenance and the last check result. A test fails when that section and
 the specs in this folder disagree.
+
+## Radiocarbon calibration and its curve
+
+`chron.radiocarbon_calibrate/1` takes the curve as three arrays, so the kernel never holds a curve of its own.
+`calibrate(age, error, curve="intcal20")` in `chron_radiocarbon_calibrate/reference.py` loads a curve by id,
+checks its SHA-256 against `curves.py`, builds a 1-year grid around the age and returns the density, the 68.3
+and 95.4 percent regions as intervals, and the curve's hash:
+
+```
+python packages/kernels/formulas/chron_radiocarbon_calibrate/curves.py fetch intcal20
+from formulas.chron_radiocarbon_calibrate.reference import calibrate
+calibrate(7505, 93, levels=(0.682, 0.954))["outer"]
+# [(8515.0, 8500.0, 0.008...), (8457.0, 8162.0, 0.897...), (8137.0, 8116.0, 0.010...), (8102.0, 8039.0, 0.039...)]
+```
+
+intcal.org states no terms of use for its curve files, so the file is fetched and hash-checked, not stored
+here (`curves/` is ignored by git). CI fetches it before the tests. An age outside the 14C ages the curve spans
+is refused, as is a grid whose ends still carry density.
 
 ## Export shape
 
