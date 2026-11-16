@@ -86,3 +86,12 @@ def test_kernels_json_formulas_section_matches_the_specs():
     fresh = {e["id"]: json.loads(json.dumps(e)) for e in check.registry_entries()}
     assert stored == fresh, "run `python -B kernels.py formulas` in packages/kernels and commit kernels.json"
     assert all(e.get("check", {}).get("pass") for e in reg["formulas"]), "a stored check result is not a pass"
+
+
+def test_call_carries_arrays_in_and_out():
+    r = formulas.call("stats.benjamini_hochberg/1", p_values=([0.01, 0.04, 0.03], "probability"),
+                      q=(0.05, "probability"))
+    assert r["reject"] == ((1.0, 1.0, 1.0), "1")
+    assert r["adjusted"][0] == (0.03, 0.04, 0.04)
+    r = formulas.call("stats.auroc/1", positive=([0.35, 0.8], "1"), negative=([0.1, 0.4], "1"))
+    assert r == {"auc": (0.75, "probability")}

@@ -63,6 +63,9 @@ def registry_entry(mod):
              "inputs": [{"name": n, "unit": u, "range": r} for n, u, r in s["inputs"]],
              "outputs": [{"name": n, "unit": u} for n, u in s["outputs"]]}
     entry.update({k: s[k] for k in REGISTRY_FIELDS})
+    for k in ("array_inputs", "array_outputs"):
+        if k in s:
+            entry[k] = s[k]
     entry["buildlang"] = {"body": "pending", "missing": s["bld_pending"]} if s.get("bld_pending") \
         else {"body": "kernel.bld"}
     return entry

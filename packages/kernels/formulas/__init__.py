@@ -17,7 +17,8 @@ from .core import Refusal, refused  # noqa: F401
 
 PKG = Path(__file__).resolve().parent
 FOLDERS = ["optics_f_number", "optics_airy_radius", "physics_beverloo_rate", "colour_srgb_transfer",
-           "colour_xyz_to_cielab"]
+           "colour_xyz_to_cielab", "stats_wilson_interval", "stats_benjamini_hochberg", "stats_spearman",
+           "stats_auroc"]
 
 
 def modules():
