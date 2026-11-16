@@ -121,3 +121,40 @@ def checker(n=8, size=256):
     y, x = np.mgrid[:size, :size] * n // size
     a = np.where((x + y) % 2 == 0, 0.1, 0.9)
     return np.repeat(a[..., None].astype(float), 3, 2)
+
+
+def _line_canvas(size, bg=(214, 120, 20)):
+    im = Image.new("RGB", (size, size), bg)
+    return im, ImageDraw.Draw(im)
+
+
+def flower_of_life(size=256, rings=2, offset=(9, -6), width=1, ink=(30, 20, 10)):
+    """Flower of life drawn as 1 px circle outlines: six-fold rotation by construction.
+
+    The figure centre sits `offset` pixels from the canvas centre, so a
+    measure must find the centre rather than assume it.
+    """
+    im, d = _line_canvas(size)
+    cx, cy = (size - 1) / 2 + offset[0], (size - 1) / 2 + offset[1]
+    r = size * 0.36 / (rings + 1)
+    centres = {(0, 0)}
+    for _ in range(rings):        # hexagonal lattice points within `rings` steps
+        centres |= {(i + di, j + dj) for i, j in centres
+                    for di, dj in ((1, 0), (-1, 0), (0, 1), (0, -1), (1, -1), (-1, 1))}
+    for i, j in sorted(centres):
+        x, y = cx + r * (i + j / 2), cy + r * j * np.sqrt(3) / 2
+        d.ellipse([x - r, y - r, x + r, y + r], outline=ink, width=width)
+    d.ellipse([cx - (rings + 1) * r, cy - (rings + 1) * r, cx + (rings + 1) * r, cy + (rings + 1) * r],
+              outline=ink, width=width)
+    return np.asarray(im, float) / 255
+
+
+def scattered_circles(size=256, n=19, seed=3, width=1, ink=(30, 20, 10)):
+    """Control for flower_of_life: the same kind of 1 px outlines with no rotation symmetry."""
+    rng = np.random.default_rng(seed)
+    im, d = _line_canvas(size)
+    for _ in range(n):
+        x, y = rng.uniform(0.2, 0.8, 2) * size
+        r = rng.uniform(0.06, 0.2) * size
+        d.ellipse([x - r, y - r, x + r, y + r], outline=ink, width=width)
+    return np.asarray(im, float) / 255

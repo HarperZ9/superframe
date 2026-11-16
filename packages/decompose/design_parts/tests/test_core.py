@@ -75,3 +75,26 @@ def test_straight_versus_curved():
     sq = shape.curvature(lightness(synth.outline("square")))["straight_share"]
     ci = shape.curvature(lightness(synth.outline("circle")))["straight_share"]
     assert sq > 0.6 and ci < 0.4
+
+
+def test_thin_line_flower_of_life_is_six_fold_without_a_caller_blur():
+    """1 px circle outlines, figure centre off the canvas centre. The old measure said order 1 (0.24)."""
+    r = geometry.rotational_symmetry(lightness(synth.flower_of_life()))
+    assert r["rot_order"] == 6
+    assert r["rot_strength_order"] > 0.9
+    assert r["rot_scale"] > 0          # found at a line-aware scale, not by the caller
+
+
+@pytest.mark.parametrize("seed", range(1, 8))
+def test_thin_line_control_stays_order_one(seed):
+    """Same kind of 1 px outlines, scattered: the coarser scales must not invent a rotation."""
+    r = geometry.rotational_symmetry(lightness(synth.scattered_circles(seed=seed)))
+    assert r["rot_order"] == 1
+    assert r["rot_strength"] < 0.5
+
+
+def test_line_scales_only_for_thin_sparse_marks():
+    assert geometry.symmetry_scales(lightness(synth.flower_of_life())) != (0.0,)
+    assert geometry.symmetry_scales(lightness(synth.rosette(6))) == (0.0,)
+    w, share = geometry.stroke_width(lightness(synth.flower_of_life(width=1)))
+    assert 0.5 < w < 2.0 and share < 0.1
