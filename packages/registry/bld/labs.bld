@@ -1,0 +1,454 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Radiocarbon laboratory IDs: the lab table checker and the ID parser. Usage:
+//
+//   labs [table.json]                     check a lab table (default packages/registry/data/labs.json)
+//   labs --expect <check> <table.json>    a broken-table control: succeeds only when <check> is the one
+//                                         and only check that fails on this table
+//   labs --parse <lab id> [table.json]    parse one ID such as OxA-1234; exit 1 with the reason when refused
+//   labs --ids <cases.tsv> [table.json]   parse every case in a file and compare with the expected outcome
+//
+// A lab ID is a prefix from the table, one separator ("-" or a space) and the lab's sample number: one or
+// more digits, optionally followed by one letter. Prefixes are case-sensitive (TKA and TKa are two labs).
+// When several prefixes fit, the longest one whose sample number is well formed wins (D-AMS-1234 is D-AMS).
+// The parser refuses an unknown prefix (naming a prefix that differs only in case, if one exists), a prefix
+// the table lists for two labs (P), and a malformed sample number.
+
+mod json;
+
+use json::parse_value;
+use json::member;
+use json::elements;
+use json::K_STR;
+
+fn NCHECKS() -> i32 { 8 }
+
+fn check_name(c: i32) -> String {
+    if c == 0 { return "id-unique"; }
+    if c == 1 { return "id-slug"; }
+    if c == 2 { return "prefix"; }
+    if c == 3 { return "prefix-active-unique"; }
+    if c == 4 { return "name"; }
+    if c == 5 { return "family"; }
+    if c == 6 { return "status"; }
+    "source"
+}
+
+fn contains(set: String, c: String) -> bool {
+    let mut i: i32 = 0;
+    while i < set.len() as i32 {
+        if set.char_at(i as i64) == c {
+            return true;
+        }
+        i = i + 1;
+    }
+    false
+}
+
+fn text_of(kind: Vec<i32>, parent: Vec<i32>, text: Vec<String>, key: Vec<String>, node: i32,
+           name: String) -> String {
+    let m: i32 = member(parent, key, node, name);
+    if m < 0 || kind[m] != K_STR() {
+        return "";
+    }
+    text[m]
+}
+
+fn starts_with(s: String, p: String) -> bool {
+    if p.len() > s.len() {
+        return false;
+    }
+    let mut i: i32 = 0;
+    while i < p.len() as i32 {
+        if s.char_at(i as i64) != p.char_at(i as i64) {
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+fn lower(s: String) -> String {
+    let up: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let lo: String = "abcdefghijklmnopqrstuvwxyz";
+    let mut out: String = String::new();
+    let mut i: i32 = 0;
+    while i < s.len() as i32 {
+        let c: String = s.char_at(i as i64);
+        let mut d: String = c;
+        let mut j: i32 = 0;
+        while j < 26 {
+            if up.char_at(j as i64) == c {
+                d = lo.char_at(j as i64);
+            }
+            j = j + 1;
+        }
+        out = out + d;
+        i = i + 1;
+    }
+    out
+}
+
+// The characters of s from byte a to the end.
+fn tail(s: String, a: i32) -> String {
+    let mut out: String = String::new();
+    let mut i: i32 = a;
+    while i < s.len() as i32 {
+        out = out + s.char_at(i as i64);
+        i = i + 1;
+    }
+    out
+}
+
+fn occurrences(v: Vec<String>, s: String) -> i32 {
+    let mut n: i32 = 0;
+    let mut i: i64 = 0;
+    while i < v.len() as i64 {
+        if v[i] == s {
+            n = n + 1;
+        }
+        i = i + 1;
+    }
+    n
+}
+
+// lab.<slug>, the slug one or more of a-z 0-9 _.
+fn good_slug(id: String) -> bool {
+    if id.len() <= 4 || !starts_with(id, "lab.") {
+        return false;
+    }
+    let mut i: i32 = 4;
+    while i < id.len() as i32 {
+        if !contains("abcdefghijklmnopqrstuvwxyz0123456789_", id.char_at(i as i64)) {
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+// A prefix starts with a letter and holds letters, digits and inner hyphens only.
+fn good_prefix(p: String) -> bool {
+    let letters: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    if p.len() == 0 || !contains(letters, p.char_at(0)) {
+        return false;
+    }
+    let mut i: i32 = 1;
+    while i < p.len() as i32 {
+        let c: String = p.char_at(i as i64);
+        if !contains(letters, c) && !contains("0123456789-", c) {
+            return false;
+        }
+        i = i + 1;
+    }
+    p.char_at((p.len() - 1) as i64) != "-"
+}
+
+// One or more digits, then at most one letter.
+fn good_sample(s: String) -> bool {
+    let n: i32 = s.len() as i32;
+    if n == 0 || !contains("0123456789", s.char_at(0)) {
+        return false;
+    }
+    let mut i: i32 = 0;
+    while i < n && contains("0123456789", s.char_at(i as i64)) {
+        i = i + 1;
+    }
+    if i == n {
+        return true;
+    }
+    i == n - 1 && contains("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", s.char_at(i as i64))
+}
+
+fn b(x: bool) -> i32 {
+    if x { 1 } else { 0 }
+}
+
+fn active_with(prefixes: Vec<String>, statuses: Vec<String>, p: String) -> i32 {
+    let mut n: i32 = 0;
+    let mut i: i64 = 0;
+    while i < prefixes.len() as i64 {
+        if prefixes[i] == p && statuses[i] == "listed active" {
+            n = n + 1;
+        }
+        i = i + 1;
+    }
+    n
+}
+
+fn judge(c: i32, ids: Vec<String>, prefixes: Vec<String>, names: Vec<String>, families: Vec<String>,
+         statuses: Vec<String>, sources: Vec<String>, i: i64) -> i32 {
+    if c == 0 { return b(occurrences(ids, ids[i]) == 1); }
+    if c == 1 { return b(good_slug(ids[i])); }
+    if c == 2 { return b(good_prefix(prefixes[i])); }
+    if c == 3 {
+        if statuses[i] != "listed active" { return -1; }
+        return b(active_with(prefixes, statuses, prefixes[i]) == 1);
+    }
+    if c == 4 { return b(names[i].len() > 0); }
+    if c == 5 { return b(families[i] == "lab/radiocarbon"); }
+    if c == 6 { return b(statuses[i] == "listed active" || statuses[i] == "closed or renamed"); }
+    b(sources[i].len() > 0)
+}
+
+// Parses one ID against the table. Returns "ok <lab id> <prefix> <sample>" or "refused <reason word> <text>".
+// 0 when p is not a prefix of s followed by a separator; 1 when it is and the rest is not a sample
+// number; 2 when it is and the rest is a sample number.
+fn fit(s: String, p: String) -> i32 {
+    if p.len() == 0 || s.len() <= p.len() || !starts_with(s, p) {
+        return 0;
+    }
+    let sep: String = s.char_at(p.len() as i64);
+    if sep != "-" && sep != " " {
+        return 0;
+    }
+    if good_sample(tail(s, (p.len() + 1) as i32)) { 2 } else { 1 }
+}
+
+// The longer of prefix and alias that fits s with a sample number, as its length, or -1.
+fn fit_len(s: String, p: String, alias: String) -> i32 {
+    let mut n: i32 = -1;
+    if fit(s, p) == 2 {
+        n = p.len() as i32;
+    }
+    if fit(s, alias) == 2 && alias.len() as i32 > n {
+        n = alias.len() as i32;
+    }
+    n
+}
+
+fn parse_id(s: String, ids: Vec<String>, prefixes: Vec<String>, aliases: Vec<String>, names: Vec<String>) -> String {
+    let mut best: i32 = -1;
+    let mut best_len: i32 = -1;
+    let mut matched_any: bool = false;
+    let mut i: i64 = 0;
+    while i < prefixes.len() as i64 {
+        if fit(s, prefixes[i]) > 0 || fit(s, aliases[i]) > 0 {
+            matched_any = true;
+        }
+        let n: i32 = fit_len(s, prefixes[i], aliases[i]);
+        if n > best_len {
+            best_len = n;
+            best = i as i32;
+        }
+        i = i + 1;
+    }
+    let mut fits: i32 = 0;
+    let mut who: String = String::new();
+    i = 0;
+    while i < prefixes.len() as i64 {
+        if best_len > 0 && fit_len(s, prefixes[i], aliases[i]) == best_len {
+            fits = fits + 1;
+            who = who + " " + ids[i] + " (" + names[i] + ")";
+        }
+        i = i + 1;
+    }
+    if fits > 1 {
+        return "refused ambiguous prefix " + prefixes[best as i64] + " names" + who;
+    }
+    if best >= 0 {
+        return "ok " + ids[best as i64] + " " + prefixes[best as i64] + " " + tail(s, best_len + 1);
+    }
+    if matched_any {
+        return "refused malformed sample number in " + s + ": expected digits, then at most one letter";
+    }
+    let mut hint: String = String::new();
+    let ls: String = lower(s);
+    i = 0;
+    while i < prefixes.len() as i64 {
+        let lp: String = lower(prefixes[i]);
+        if ls.len() > lp.len() && starts_with(ls, lp) {
+            let sep: String = ls.char_at(lp.len() as i64);
+            if sep == "-" || sep == " " {
+                hint = hint + " " + prefixes[i];
+            }
+        }
+        i = i + 1;
+    }
+    if hint.len() > 0 {
+        return "refused unknown prefix in " + s + "; prefixes are case-sensitive, did you mean" + hint;
+    }
+    "refused unknown prefix in " + s + ": no lab in the table, or no separator after the prefix"
+}
+
+// The fields of a tab-separated line.
+fn fields(line: String) -> Vec<String> {
+    let out: Vec<String> = Vec::new();
+    let mut cur: String = String::new();
+    let mut i: i32 = 0;
+    while i < line.len() as i32 {
+        let c: String = line.char_at(i as i64);
+        if c == "\t" {
+            out.push(cur);
+            cur = String::new();
+        } else if c != "\r" {
+            cur = cur + c;
+        }
+        i = i + 1;
+    }
+    out.push(cur);
+    out
+}
+
+fn first_word(s: String) -> String {
+    let mut out: String = String::new();
+    let mut i: i32 = 0;
+    while i < s.len() as i32 && s.char_at(i as i64) != " " {
+        out = out + s.char_at(i as i64);
+        i = i + 1;
+    }
+    out
+}
+
+fn main() ~ Console + FileSystem + Process + Environment {
+    let mut mode: String = "check";
+    let mut expect: String = "";
+    let mut arg: String = "";
+    let mut path: String = "packages/registry/data/labs.json";
+    let nargs: i32 = args_count() as i32;
+    let a: i32 = if nargs > 1 && args_get(1) == "--" { 2 } else { 1 };
+    if nargs > a + 1 && (args_get(a) == "--expect" || args_get(a) == "--parse" || args_get(a) == "--ids") {
+        mode = args_get(a);
+        arg = args_get(a + 1);
+        expect = arg;
+        if nargs > a + 2 {
+            path = args_get(a + 2);
+        }
+    } else if nargs > a {
+        path = args_get(a);
+    }
+    let src: String = read_file(path);
+    let p: Vec<i32> = Vec::new();
+    p.push(0);
+    let err: Vec<i32> = Vec::new();
+    err.push(-1);
+    let kind: Vec<i32> = Vec::new();
+    let parent: Vec<i32> = Vec::new();
+    let text: Vec<String> = Vec::new();
+    let key: Vec<String> = Vec::new();
+    let root: i32 = parse_value(src, p, err, kind, parent, text, key, -1, "");
+    if root < 0 || err[0] >= 0 || src.len() == 0 {
+        println("FAIL parse {} at byte {}", path, err[0]);
+        process_exit(1);
+    }
+    let table: i32 = member(parent, key, root, "labs");
+    if table < 0 {
+        println("FAIL parse {} has no labs array", path);
+        process_exit(1);
+    }
+    let labs: Vec<i32> = elements(parent, table);
+    let ids: Vec<String> = Vec::new();
+    let prefixes: Vec<String> = Vec::new();
+    let aliases: Vec<String> = Vec::new();
+    let names: Vec<String> = Vec::new();
+    let families: Vec<String> = Vec::new();
+    let statuses: Vec<String> = Vec::new();
+    let sources: Vec<String> = Vec::new();
+    let mut i: i64 = 0;
+    while i < labs.len() as i64 {
+        ids.push(text_of(kind, parent, text, key, labs[i], "id"));
+        prefixes.push(text_of(kind, parent, text, key, labs[i], "prefix"));
+        aliases.push(text_of(kind, parent, text, key, labs[i], "alias"));
+        names.push(text_of(kind, parent, text, key, labs[i], "name"));
+        families.push(text_of(kind, parent, text, key, labs[i], "family"));
+        statuses.push(text_of(kind, parent, text, key, labs[i], "status"));
+        sources.push(text_of(kind, parent, text, key, labs[i], "source"));
+        i = i + 1;
+    }
+    if mode == "--parse" {
+        let r: String = parse_id(arg, ids, prefixes, aliases, names);
+        println("{}", r);
+        if first_word(r) == "ok" {
+            process_exit(0);
+        }
+        process_exit(1);
+    }
+    if mode == "--ids" {
+        let cases: String = read_file(arg);
+        let mut line: String = String::new();
+        let mut total: i32 = 0;
+        let mut good: i32 = 0;
+        let mut c: i32 = 0;
+        while c <= cases.len() as i32 {
+            let ch: String = if c < cases.len() as i32 { cases.char_at(c as i64) } else { "\n" };
+            if ch == "\n" {
+                if line.len() > 0 && line.char_at(0) != "#" {
+                    let f: Vec<String> = fields(line);
+                    let got: String = parse_id(f[0], ids, prefixes, aliases, names);
+                    let want: String = f[1] + " " + f[2];
+                    let mut ok: bool = starts_with(got, want);
+                    if f.len() > 3 && f[1] == "ok" {
+                        ok = got == "ok " + f[2] + " " + f[3] + " " + f[4];
+                    }
+                    total = total + 1;
+                    if ok {
+                        good = good + 1;
+                    } else {
+                        println("    FAIL {}: wanted {}, got {}", f[0], want, got);
+                    }
+                }
+                line = String::new();
+            } else {
+                line = line + ch;
+            }
+            c = c + 1;
+        }
+        let verdict: String = if good == total { "PASS" } else { "FAIL" };
+        println("{} ids {} of {}", verdict, good, total);
+        if good != total {
+            process_exit(1);
+        }
+        process_exit(0);
+    }
+    println("table {} with {} labs", path, labs.len());
+    let mut failed: i32 = 0;
+    let mut expected_failed: bool = false;
+    let mut c: i32 = 0;
+    while c < NCHECKS() {
+        let mut applies: i32 = 0;
+        let mut ok: i32 = 0;
+        let bad: Vec<String> = Vec::new();
+        let mut u: i64 = 0;
+        while u < labs.len() as i64 {
+            let r: i32 = judge(c, ids, prefixes, names, families, statuses, sources, u);
+            if r >= 0 {
+                applies = applies + 1;
+            }
+            if r == 1 {
+                ok = ok + 1;
+            }
+            if r == 0 {
+                bad.push(ids[u]);
+            }
+            u = u + 1;
+        }
+        let verdict: String = if ok == applies { "PASS" } else { "FAIL" };
+        println("{} {} {} of {}", verdict, check_name(c), ok, applies);
+        let mut k: i64 = 0;
+        while k < bad.len() as i64 {
+            println("    {}", bad[k]);
+            k = k + 1;
+        }
+        if ok != applies {
+            failed = failed + 1;
+            if check_name(c) == expect {
+                expected_failed = true;
+            }
+        }
+        c = c + 1;
+    }
+    if mode == "--expect" {
+        if expected_failed && failed == 1 {
+            println("CONTROL PASS {} fails on {} and nothing else does", expect, path);
+            process_exit(0);
+        }
+        println("CONTROL FAIL expected {} alone to fail on {}; {} checks failed", expect, path, failed);
+        process_exit(1);
+    }
+    if failed > 0 {
+        println("{} of {} checks failed", failed, NCHECKS());
+        process_exit(1);
+    }
+    println("all {} checks passed", NCHECKS());
+}

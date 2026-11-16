@@ -89,6 +89,24 @@ jobs:
               buildc run packages/registry/bld/check.bld -- --expect "$n" "$f"
             fi
           done
+      # The registry radiocarbon lab table: every check passes on the real table, each broken table fails on
+      # its own check alone, the lab IDs parse as expected, and the same IDs fail against a table without OxA.
+      - run: |
+          buildc run packages/registry/bld/labs.bld -- packages/registry/data/labs.json | tee labs-out.txt
+          grep -q "^all 8 checks passed$" labs-out.txt
+          for f in packages/registry/bld/fixtures/labs/*.json; do
+            n=$(basename "$f" .json)
+            if [ "$n" = good ]; then
+              buildc run packages/registry/bld/labs.bld -- "$f"
+            elif [ "$n" != no-oxa ]; then
+              buildc run packages/registry/bld/labs.bld -- --expect "$n" "$f"
+            fi
+          done
+          buildc run packages/registry/bld/labs.bld -- --ids packages/registry/bld/fixtures/labs/ids.tsv packages/registry/data/labs.json | tee labs-ids.txt
+          grep -q "^PASS ids 17 of 17$" labs-ids.txt
+          if buildc run packages/registry/bld/labs.bld -- --ids packages/registry/bld/fixtures/labs/ids.tsv packages/registry/bld/fixtures/labs/no-oxa.json; then
+            echo "control failed: the lab IDs parsed against a table without OxA"; exit 1
+          fi
       # Plot Sheet: the package's own checks, the release build, the fixture's pinned bytes, and the make hook.
       - run: |
           buildc run packages/plot-sheet/bld/selftest.bld | tee plot-sheet-out.txt

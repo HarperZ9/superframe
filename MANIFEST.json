@@ -14026,8 +14026,8 @@
   {
    "path": "packages/registry/README.md",
    "source": "repo",
-   "bytes": 6996,
-   "sourceSha256": "21e454e2f4edafe973afebb7f6b3b8d29587f3875901864d4fd3c8742092423f"
+   "bytes": 9058,
+   "sourceSha256": "12df53ddb2644d750efd884df7dd2a4edb43f1bc13ec5b6d23cff742cb1ef612"
   },
   {
    "path": "packages/registry/bld/GAPS.md",
@@ -14084,6 +14084,72 @@
    "sourceSha256": "af3e087d3a3bd1920eb0b21f6a408576a891b56bc77ef9619ab103b422809105"
   },
   {
+   "path": "packages/registry/bld/fixtures/labs/family.json",
+   "source": "repo",
+   "bytes": 849,
+   "sourceSha256": "2036452b1513ef9b24a7ed93be3fba5fe9d96b6dcb16bd7de917cc286a3552cf"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/labs/good.json",
+   "source": "repo",
+   "bytes": 855,
+   "sourceSha256": "fe6677861262707ba6c751f8702f76b162d8f24a0218ad507200300466b015cf"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/labs/id-slug.json",
+   "source": "repo",
+   "bytes": 855,
+   "sourceSha256": "adb6739977d2505ace48ae201d342820d35086fe3e54627a7756d85c3b181c64"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/labs/id-unique.json",
+   "source": "repo",
+   "bytes": 854,
+   "sourceSha256": "9b2bcc1906ea48cc703902b85db7849b0633013dee249c35288486d7ffc3eaba"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/labs/ids.tsv",
+   "source": "repo",
+   "bytes": 577,
+   "sourceSha256": "c6c33f58c9e7f9a34dfb5794bfd12a95ec0332b21bcf838e43bb720752c940d8"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/labs/name.json",
+   "source": "repo",
+   "bytes": 842,
+   "sourceSha256": "db1d2b2a1b64477b10d3ff87f9abccadca03dfb584a997f8e27f67983a9f3383"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/labs/no-oxa.json",
+   "source": "repo",
+   "bytes": 678,
+   "sourceSha256": "70a721a089c7c221a9033f3271a9168c585203e9ec96f4f529a20f69db3fdf9f"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/labs/prefix-active-unique.json",
+   "source": "repo",
+   "bytes": 851,
+   "sourceSha256": "4ef7f67fd3c91232f205ac2b6a33c7374796249929799cfe82ba5d592ad63627"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/labs/prefix.json",
+   "source": "repo",
+   "bytes": 856,
+   "sourceSha256": "ad84bfeef692d7a72f9feb0c73bdf97bad2e0966b8c5177e48f123b50f6bacfa"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/labs/source.json",
+   "source": "repo",
+   "bytes": 848,
+   "sourceSha256": "303fb994e1cee276e1f6e218817cac750d9af04d03050f6974221e96de0009b3"
+  },
+  {
+   "path": "packages/registry/bld/fixtures/labs/status.json",
+   "source": "repo",
+   "bytes": 846,
+   "sourceSha256": "3e4a2046b20390595bc94ab0a7d42691c3a2acc1214a8346356731248f413043"
+  },
+  {
    "path": "packages/registry/bld/fixtures/linear.json",
    "source": "repo",
    "bytes": 1079,
@@ -14138,10 +14204,22 @@
    "sourceSha256": "616895359cf4bbe086deea1e5c96bfd3e77e6ea536f50aa3843e48e21bfb1900"
   },
   {
+   "path": "packages/registry/bld/labs.bld",
+   "source": "repo",
+   "bytes": 15040,
+   "sourceSha256": "0d47437d0b5ef2b66cf83f5dbab8a696cc4a720b2efa9637b1e072896968c518"
+  },
+  {
    "path": "packages/registry/bld/rules.bld",
    "source": "repo",
    "bytes": 6881,
    "sourceSha256": "f1d6e18cde0fa491d6ccc7c478aa0070986ffc4466afbaf8d8706783d0236f16"
+  },
+  {
+   "path": "packages/registry/data/labs.json",
+   "source": "repo",
+   "bytes": 72780,
+   "sourceSha256": "4ca1df07d3e8e70e127e9da182c301bf46d81dd9fb784242b658fe461635cf1b"
   },
   {
    "path": "packages/registry/data/units.json",
