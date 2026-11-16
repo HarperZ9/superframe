@@ -22,6 +22,12 @@ jobs:
       - run: npm run test:slow
       - run: python -m pip install -r packages/requirements.txt
       - run: npm run test:packages
+      # IntCal20 for the radiocarbon kernel: fetched from intcal.org and refused unless its SHA-256 matches
+      - uses: actions/cache@v4
+        with:
+          path: packages/kernels/formulas/chron_radiocarbon_calibrate/curves
+          key: radiocarbon-curves-intcal20-974a66649f2a
+      - run: python packages/kernels/formulas/chron_radiocarbon_calibrate/curves.py fetch intcal20
       - run: npm run test:py
       - run: python packages/build_manifest.py --check
       # the GPU trace validator's README artwork: stored bytes must equal the digests in its receipts
@@ -51,6 +57,12 @@ jobs:
         env:
           COLOURMIX_REQUIRE_NATIVE: '1'
           BUILDC: buildc
+      # IntCal20 for the radiocarbon kernel: fetched from intcal.org and refused unless its SHA-256 matches
+      - uses: actions/cache@v4
+        with:
+          path: packages/kernels/formulas/chron_radiocarbon_calibrate/curves
+          key: radiocarbon-curves-intcal20-974a66649f2a
+      - run: python packages/kernels/formulas/chron_radiocarbon_calibrate/curves.py fetch intcal20
       # Formula kernels: every BuildLang body must give the reference's bytes, and every planted control fails.
       - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/kernels/tests/test_formulas.py
         env:

@@ -590,7 +590,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:43:00",
+        "checked": "2026-11-16T02:43:11",
         "reference_checks": 10,
         "controls_caught": 2,
         "controls": 2,
@@ -652,7 +652,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:43:00",
+        "checked": "2026-11-16T02:43:11",
         "reference_checks": 12,
         "controls_caught": 3,
         "controls": 3,
@@ -735,7 +735,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:43:00",
+        "checked": "2026-11-16T02:43:11",
         "reference_checks": 16,
         "controls_caught": 3,
         "controls": 3,
@@ -799,7 +799,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:43:00",
+        "checked": "2026-11-16T02:43:11",
         "reference_checks": 13,
         "controls_caught": 3,
         "controls": 3,
@@ -891,7 +891,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:43:00",
+        "checked": "2026-11-16T02:43:11",
         "reference_checks": 15,
         "controls_caught": 3,
         "controls": 3,
@@ -964,7 +964,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:43:00",
+        "checked": "2026-11-16T02:43:11",
         "reference_checks": 14,
         "controls_caught": 3,
         "controls": 3,
@@ -1038,7 +1038,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:43:00",
+        "checked": "2026-11-16T02:43:11",
         "reference_checks": 13,
         "controls_caught": 3,
         "controls": 3,
@@ -1105,7 +1105,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:43:00",
+        "checked": "2026-11-16T02:43:11",
         "reference_checks": 12,
         "controls_caught": 3,
         "controls": 3,
@@ -1172,7 +1172,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:43:00",
+        "checked": "2026-11-16T02:43:11",
         "reference_checks": 12,
         "controls_caught": 3,
         "controls": 3,
@@ -1181,6 +1181,140 @@
           "checks": 12,
           "failed": [],
           "grid": 10,
+          "differ_from_reference": 0,
+          "first_difference": []
+        }
+      }
+    },
+    {
+      "id": "chron.radiocarbon_calibrate/1",
+      "path": "formulas/chron_radiocarbon_calibrate/",
+      "inputs": [
+        {
+          "name": "age",
+          "unit": "yr_14C",
+          "range": "finite, and inside the 14C ages the curve spans"
+        },
+        {
+          "name": "error",
+          "unit": "yr_14C",
+          "range": "finite and > 0"
+        },
+        {
+          "name": "grid",
+          "unit": "yr_cal",
+          "range": "2 or more evenly spaced calendar ages inside the curve's span, with the density at both ends below 1e-6 of its peak"
+        },
+        {
+          "name": "curve_cal_bp",
+          "unit": "yr_cal",
+          "range": "2 or more finite calendar ages, strictly decreasing or strictly increasing"
+        },
+        {
+          "name": "curve_age",
+          "unit": "yr_14C",
+          "range": "finite 14C ages, one per curve calendar age"
+        },
+        {
+          "name": "curve_error",
+          "unit": "yr_14C",
+          "range": "finite errors >= 0, one per curve calendar age"
+        },
+        {
+          "name": "level_inner",
+          "unit": "1",
+          "range": "finite, > 0 and < 1"
+        },
+        {
+          "name": "level_outer",
+          "unit": "1",
+          "range": "finite, > 0 and < 1"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "density",
+          "unit": "1/yr_cal"
+        },
+        {
+          "name": "hdr_inner",
+          "unit": "1"
+        },
+        {
+          "name": "hdr_outer",
+          "unit": "1"
+        }
+      ],
+      "row": "CHR-001",
+      "formula": "s(t)^2 = e^2 + sigma(t)^2; f(t) = exp(-(a - mu(t))^2 / (2 s(t)^2)) / s(t); density = f / (sum f * step); highest-density region at L = cells with probability >= the threshold where the sorted cells first reach L",
+      "mode": "bit-identical",
+      "loss": "One age, one curve, no priors: the result is the likelihood normalised on the grid, which is the posterior only under a uniform prior on the grid (a Bayesian model with phases or sequences needs more priors). The curve is linear between its points, and its errors are taken as independent from point to point; IntCal20's own covariance is not used. Density beyond the grid ends is dropped (the grid is refused when an end holds more than 1e-6 of the peak). exp below -700 is taken as 0. A highest-density region is a set of grid cells, so its ends are known to one grid step. Reservoir offsets, mixed curves and the post-bomb range are not handled.",
+      "known_answers": [
+        "7505 +- 93 14C BP on IntCal20 at levels (0.682, 0.954): intervals {'inner': [(8386, 8283, 42.1), (8266, 8199, 26.0)], 'outer': [(8515, 8500, 0.8), (8457, 8163, 89.7), (8137, 8116, 1.0), (8102, 8039, 3.9)]} (iosacal user's manual, c14.iosa.it/en/latest/how.html (P-769, IntCal20 default curve)); ends within 3 yr",
+        "2000 +- 300 14C BP on IntCal20 at levels (0.682, 0.954): envelope {'inner': (2330, 1611), 'outer': (2710, 1355)} (iosacal quantiles demo, c14.iosa.it/en/latest/quantiles_demo.html, IntCal20); ends within 3 yr",
+        "3000 +- 260 14C BP on IntCal20 at levels (0.682, 0.954): envelope {'inner': (3453, 2854), 'outer': (3834, 2494)} (iosacal quantiles demo); ends within 3 yr",
+        "4500 +- 50 14C BP on IntCal20 at levels (0.682, 0.954): envelope {'inner': (5287, 5052), 'outer': (5312, 4976)} (iosacal quantiles demo); ends within 3 yr",
+        "6500 +- 70 14C BP on IntCal20 at levels (0.682, 0.954): envelope {'inner': (7474, 7324), 'outer': (7562, 7273)} (iosacal quantiles demo); ends within 3 yr",
+        "5700 +- 30 14C BP on IntCal20 at levels (0.6826, 0.9544): intervals {'inner': [(6532, 6520), (6500, 6440), (6422, 6409)], 'outer': [(6600, 6589), (6562, 6401)]} (rcarbon vignette (CRAN, rcarbon.html), D001, IntCal20: three one-sigma intervals); ends within 3 yr",
+        "4820 +- 40 14C BP on IntCal20 at levels (0.6826, 0.9544): intervals {'inner': [(5593, 5573), (5528, 5481)], 'outer': [(5645, 5645), (5602, 5470)]} (rcarbon vignette, D002); ends within 3 yr",
+        "6450 +- 40 14C BP on IntCal20 at levels (0.6826, 0.9544): intervals {'inner': [(7422, 7414), (7399, 7328)], 'outer': [(7426, 7280)]} (rcarbon vignette, D003); ends within 3 yr",
+        "7200 +- 30 14C BP on IntCal20 at levels (0.6826, 0.9544): intervals {'inner': [(8019, 7975)], 'outer': [(8158, 8147), (8110, 8099), (8039, 7939)]} (rcarbon vignette, D004); ends within 3 yr",
+        "11553 +- 230 14C BP on IntCal20 at levels (0.683, 0.95): intervals {'outer': [(14012, 13923), (13874, 13059), (13025, 13004)]} (Bchron vignette (CRAN, Bchron.html), Ox-123456, IntCal20, 95% regions); ends within 3 yr",
+        "3445 +- 50 14C BP on IntCal20 at levels (0.683, 0.95): intervals {'outer': [(3834, 3572)]} (Bchron vignette, Date1, IntCal20, 95% region); ends within 3 yr",
+        "10400 +- 150 14C BP on IntCal20 at levels (0.683, 0.954): envelope {'outer': (12709, 11751)} (c14 README at 3d0a1af4 (Ganj Dareh, ppnd data), IntCal20, 95.4% range GaK 807); ends within 3 yr",
+        "8840 +- 110 14C BP on IntCal20 at levels (0.683, 0.954): envelope {'outer': (10193, 9557)} (c14 README at 3d0a1af4 (Ganj Dareh, ppnd data), IntCal20, 95.4% range OxA 2099); ends within 3 yr",
+        "9010 +- 110 14C BP on IntCal20 at levels (0.683, 0.954): envelope {'outer': (10486, 9748)} (c14 README at 3d0a1af4 (Ganj Dareh, ppnd data), IntCal20, 95.4% range OxA 2100); ends within 3 yr",
+        "8850 +- 100 14C BP on IntCal20 at levels (0.683, 0.954): envelope {'outer': (10197, 9560)} (c14 README at 3d0a1af4 (Ganj Dareh, ppnd data), IntCal20, 95.4% range OxA 2101); ends within 3 yr",
+        "8690 +- 110 14C BP on IntCal20 at levels (0.683, 0.954): envelope {'outer': (10144, 9490)} (c14 README at 3d0a1af4 (Ganj Dareh, ppnd data), IntCal20, 95.4% range OxA 2102); ends within 3 yr",
+        "8570 +- 210 14C BP on IntCal20 at levels (0.683, 0.954): envelope {'outer': (10181, 9034)} (c14 README at 3d0a1af4 (Ganj Dareh, ppnd data), IntCal20, 95.4% range SI 922); ends within 3 yr",
+        "8625 +- 195 14C BP on IntCal20 at levels (0.683, 0.954): envelope {'outer': (10202, 9142)} (c14 README at 3d0a1af4 (Ganj Dareh, ppnd data), IntCal20, 95.4% range SI 923); ends within 3 yr",
+        "8640 +- 90 14C BP on IntCal20 at levels (0.683, 0.954): envelope {'outer': (10106, 9470)} (c14 README at 3d0a1af4 (Ganj Dareh, ppnd data), IntCal20, 95.4% range SI 924); ends within 3 yr",
+        "8385 +- 75 14C BP on IntCal20 at levels (0.683, 0.954): envelope {'outer': (9534, 9141)} (c14 README at 3d0a1af4 (Ganj Dareh, ppnd data), IntCal20, 95.4% range SI 925); ends within 3 yr"
+      ],
+      "properties": [
+        "the density integrates to 1 over the grid, at grid steps 1 and 2",
+        "on a straight curve mu(t) = t with sigma 40, an age error of 30 gives a density with mean the age and standard deviation 50 (the errors add in quadrature)",
+        "shifting the grid and the curve's calendar ages by 1000 years leaves the density's bits unchanged",
+        "reversing the grid reverses the density (within 1e-15) and the regions",
+        "the inner region lies inside the outer, and each holds at least its level",
+        "exp_neg agrees with a library exp within 1e-15 relative on [-700, 0]"
+      ],
+      "controls": [
+        "the curve's error ignored (s = the age's error alone)",
+        "the nearest curve point in place of linear interpolation",
+        "one equal-tailed interval in place of the highest-density region",
+        "the density not divided by the grid step"
+      ],
+      "provenance": {
+        "source": "Method read at source as text, never run: joeroe/c14 R/cal_calibration.R at 3d0a1af4 (dnorm of the age about the interpolated curve with sd sqrt(error^2 + curve error^2)) and R/cal_summary.R (highest-density threshold: sort, first cumulative >= level, keep every density >= it); ISAAKiel/calibrator src/uncal_date.cpp at 226bfbab (the same combined variance, with a Student t of 100 degrees of freedom and no 1/s factor); steko/iosacal iosacal/core.py and hpd.py at edf6de4f (Gaussian with 1/s on a curve interpolated to 1 year). Known answers from the published outputs listed in known_answers, read 2026-11-16. Curve: IntCal20 (Reimer et al. 2020, Radiocarbon 62(4) 725-757), file hash in curves.py.",
+        "body_from": "new; no radiocarbon calibration was found in superframe, buildlang, the site, mission-control or the 2026-11-15 session outputs (searched 2026-11-16)",
+        "checked_by": "radiocarbon worker, 2026-11-16"
+      },
+      "array_inputs": [
+        "grid",
+        "curve_cal_bp",
+        "curve_age",
+        "curve_error"
+      ],
+      "array_outputs": {
+        "density": "grid",
+        "hdr_inner": "grid",
+        "hdr_outer": "grid"
+      },
+      "buildlang": {
+        "body": "kernel.bld"
+      },
+      "check": {
+        "pass": true,
+        "checked": "2026-11-16T02:43:11",
+        "reference_checks": 41,
+        "controls_caught": 4,
+        "controls": 4,
+        "buildlang": {
+          "checked": true,
+          "checks": 41,
+          "failed": [],
+          "grid": 24,
           "differ_from_reference": 0,
           "first_difference": []
         }
