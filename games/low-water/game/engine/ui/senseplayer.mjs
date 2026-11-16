@@ -21,16 +21,16 @@ function audio() {
   return AC;
 }
 const cache = new Map();
-function samples(sfx, secs, vol) {
-  const key = `${sfx}|${secs}|${vol}`; if (cache.has(key)) return cache.get(key);
+function samples(sfx, secs, vol, seed = 7, opt = undefined) {
+  const key = `${sfx}|${secs}|${vol}|${seed}|${opt ? JSON.stringify(opt) : ""}`; if (cache.has(key)) return cache.get(key);
   const fn = SFX[sfx]; if (!fn) throw new Error(`senses: no sound ${sfx} in audio/sfx`);
-  const out = fn(secs || 1.2, vol, 7); cache.set(key, out); return out;
+  const out = fn(secs || 1.2, vol, seed, opt); cache.set(key, out); return out;
 }
 // near: dry; far: quieter and duller; wall: through plaster, the highs gone; under: through the floor, a thud
 const PLACE = { near: { lp: 16000, g: 1 }, far: { lp: 2600, g: 0.45 }, wall: { lp: 700, g: 0.6 }, under: { lp: 260, g: 0.9 } };
 export function playSound(s) {
   const ac = audio(); if (!ac) return false;
-  const data = samples(s.sfx, s.secs, Math.min(1, s.vol)), sr = SR, buf = ac.createBuffer(1, data.length, sr);
+  const data = samples(s.sfx, s.secs, Math.min(1, s.vol), s.seed ?? 7, s.opt), sr = SR, buf = ac.createBuffer(1, data.length, sr);
   buf.copyToChannel(data, 0);
   const src = ac.createBufferSource(), lp = ac.createBiquadFilter(), g = ac.createGain(), p = PLACE[s.at] || PLACE.near;
   src.buffer = buf; lp.type = "lowpass"; lp.frequency.value = p.lp; g.gain.value = p.g;
