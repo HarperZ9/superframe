@@ -1,0 +1,18 @@
+# id	expected	lab id or reason	prefix	sample (tab separated; parsed against data/labs.json)
+OxA-1234	ok	lab.oxa	OxA	1234
+Beta-4567	ok	lab.beta	Beta	4567
+OxA 2099	ok	lab.oxa	OxA	2099
+SI 922	ok	lab.si	SI	922
+OxA-1234a	ok	lab.oxa	OxA	1234a
+D-AMS-001234	ok	lab.d_ams	D-AMS	001234
+KIEV-1234	ok	lab.ki_ul	Ki	1234
+TKa-12345	ok	lab.tka_uul	TKa	12345
+TKA-12345	ok	lab.tka_uuu	TKA	12345
+GrN-6620	ok	lab.grn	GrN	6620
+GaK 807	refused	unknown
+OXA-1234	refused	unknown
+P-1234	refused	ambiguous
+OxA-12a4	refused	malformed
+OxA-	refused	malformed
+OxA1234	refused	unknown
+Foo-12	refused	unknown

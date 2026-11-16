@@ -74,11 +74,27 @@ Of the five checks above it covers check 1 (ids unique and `unit.<slug>`) and th
 
 `bld/fixtures/` holds one small broken table per check and one unbroken table. `check --expect <check> <table>` succeeds only when that check is the one and only check that fails, and CI runs it on every fixture, so a checker that passes everything fails the build.
 
+## Radiocarbon laboratory IDs
+
+A radiocarbon date names its laboratory through an ID such as `OxA-1234` (Oxford Radiocarbon Accelerator Unit) or `Beta-456789` (Beta Analytic): the lab's prefix, a separator (`-` or a space) and the lab's own sample number. `data/labs.json` holds one entry per prefix with the lab's name, country, status and source. The journal states that the codes are self-reported and not assigned or regulated by it, and marks labs reported closed or working under another code; those carry `"status": "closed or renamed"`.
+
+```
+buildc run packages/registry/bld/labs.bld -- --parse "OxA-1234"
+ok lab.oxa OxA 1234
+buildc run packages/registry/bld/labs.bld -- --parse "GaK 807"
+refused unknown prefix in GaK 807; prefixes are case-sensitive, did you mean GAK
+```
+
+Prefixes are case-sensitive, because the list itself uses case to tell labs apart (`TKA` and `TKa` at the University of Tokyo, `Lu` at Lund and `LU` at St. Petersburg). The longest prefix whose sample number is well formed wins, so `D-AMS-1234` is DirectAMS. A sample number is one or more digits with at most one trailing letter. The parser refuses an unknown prefix, a prefix the list gives to two labs (`P`: the Max-Planck-Institut and the University of Pennsylvania) and a malformed sample number, and says which.
+
+`labs.bld` checks the table (ids unique and `lab.<slug>`, a well-formed prefix, no prefix listed active twice, a name, the `lab/radiocarbon` family, one of the two statuses, a source). `bld/fixtures/labs/` holds one broken table per check, and `ids.tsv` holds 17 IDs with their expected outcome. CI runs each broken table with `--expect`, the IDs against the real table, and the same IDs against a table without OxA, which must fail.
+
 ## Tables
 
 | Table | Source today | State |
 |---|---|---|
 | `unit` | `data/units.json` | Written 2026-11-13 as the union of `packages/field/src/units.js`, `packages/rooms/core/units.js` and the BuildLang compiler table, then extended. 90 units over 8 bases (the 7 SI bases and the bit), each with a scale kind. The three code tables are not generated from it yet. |
+| `lab` | `data/labs.json` | Written 2026-11-16 from the journal Radiocarbon's Laboratory Code Designations list (radiocarbon.org/laboratories, the list dated 24 August 2026): 321 radiocarbon laboratory codes, 160 listed active, each with its name, country and status. Checked by `bld/labs.bld`, which also parses lab IDs. |
 | `material` | `packages/materials/data/materials.json` | 111 entries, already carrying value, unit, source, licence and confidence per field. Ids need the `material.` prefix; `law_links` point at ids that do not exist. |
 | `quantity` | `packages/measured/data/codata2022.json` | 355 quantities with uncertainty. They have names and no slugs. |
 | `glass`, `film`, `phosphor`, `sensor` | `packages/lenspipe`, `native/web/shaders` | Ids and sources present. |
