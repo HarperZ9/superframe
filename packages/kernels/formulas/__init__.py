@@ -16,7 +16,7 @@ from . import core
 from .core import Refusal, refused  # noqa: F401
 
 PKG = Path(__file__).resolve().parent
-FOLDERS = ["optics_f_number", "optics_airy_radius"]
+FOLDERS = ["optics_f_number", "optics_airy_radius", "physics_beverloo_rate"]
 
 
 def modules():

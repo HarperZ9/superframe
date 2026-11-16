@@ -590,7 +590,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:21:41",
+        "checked": "2026-11-15T21:25:39",
         "reference_checks": 10,
         "controls_caught": 2,
         "controls": 2,
@@ -652,7 +652,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:21:41",
+        "checked": "2026-11-15T21:25:39",
         "reference_checks": 12,
         "controls_caught": 3,
         "controls": 3,
@@ -661,6 +661,89 @@
           "checks": 12,
           "failed": [],
           "grid": 72,
+          "differ_from_reference": 0,
+          "first_difference": []
+        }
+      }
+    },
+    {
+      "id": "physics.beverloo_rate/1",
+      "path": "formulas/physics_beverloo_rate/",
+      "inputs": [
+        {
+          "name": "orifice_diameter",
+          "unit": "m",
+          "range": "finite and > k d"
+        },
+        {
+          "name": "grain_diameter",
+          "unit": "m",
+          "range": "finite and >= 0.0005"
+        },
+        {
+          "name": "bulk_density",
+          "unit": "kg/m^3",
+          "range": "finite and > 0"
+        },
+        {
+          "name": "gravity",
+          "unit": "m/s^2",
+          "range": "finite and > 0"
+        },
+        {
+          "name": "discharge_coefficient",
+          "unit": "1",
+          "range": "finite, 0 < C <= 1"
+        },
+        {
+          "name": "shape_coefficient",
+          "unit": "1",
+          "range": "finite, 0 <= k <= 4"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mass_rate",
+          "unit": "kg/s"
+        }
+      ],
+      "row": "PHY-006",
+      "formula": "W = C rho_b sqrt(g) (D - k d)^(5/2), formed as ((C rho_b) sqrt(g)) ((e e) sqrt(e)), e = D - k d",
+      "mode": "bit-identical",
+      "loss": "Flow does not depend on fill height (true once the fill exceeds about 1.2 silo diameters, by the Janssen effect) or on silo diameter (when it exceeds 2.5 D and D + 30 d). C and k are fitted per material and must come with their source; the kernel has no default for either. Mono-sized dry grains above 0.5 mm. Near the jamming size (D a few grain diameters) flow is intermittent; over D / d from 2 to 100 the law misfits by up to about 10 percent (Mankoc et al. 2007, sec. III A). A slit outlet follows a 3/2 power instead and is a different kernel.",
+      "known_answers": [
+        "Mankoc et al. 2007 fit, Wb = 50.5 (R - 1.16)^(5/2) beads per second with R = D / d: R 10 gives 11733.35 per second when C rho_b sqrt(g) d^(5/2) / m_bead is set to 50.5",
+        "C 0.58, rho_b 1500 kg/m^3, g 9.80665, D 20 mm, d 2 mm, k 1.5 gives 0.1026601 kg/s (computed from eq. 1 with C inside the range 0.55 to 0.65 that the source attributes to Beverloo et al.)"
+      ],
+      "properties": [
+        "doubling D - k d multiplies W by 2^(5/2) = 5.656854",
+        "W is linear in C, in rho_b and in sqrt(g)",
+        "units close: kg/m^3 * (m/s^2)^(1/2) * m^(5/2) = kg/s"
+      ],
+      "controls": [
+        "exponent 2 in place of 5/2",
+        "the grain term k d dropped",
+        "zero returned where D <= k d instead of a refusal"
+      ],
+      "provenance": {
+        "source": "Mankoc, Janda, Arevalo, Pastor, Zuriguel, Garcimartin, Maza, 'The flow rate of granular materials through an orifice', arXiv:0707.4550 (Granular Matter 9, 407, 2007), read 2026-11-15: eq. 1, C range 0.55 to 0.65 and k range 1 to 2 (sand 2.9) from the introduction, fill-height and silo-diameter conditions, the fit 50.5 (R - 1.16)^(5/2) in sec. III A. Beverloo, Leniger and van de Velde, Chem. Eng. Sci. 15, 260 (1961): unread (Elsevier, subscriber only).",
+        "body_from": "no implementation existed (registry row PHY-006 was DISCUSSED only: H36 in the wavefunction-lens queue)",
+        "checked_by": "formula-kernels worker 3, 2026-11-15"
+      },
+      "buildlang": {
+        "body": "kernel.bld"
+      },
+      "check": {
+        "pass": true,
+        "checked": "2026-11-15T21:25:39",
+        "reference_checks": 16,
+        "controls_caught": 3,
+        "controls": 3,
+        "buildlang": {
+          "checked": true,
+          "checks": 16,
+          "failed": [],
+          "grid": 46,
           "differ_from_reference": 0,
           "first_difference": []
         }
