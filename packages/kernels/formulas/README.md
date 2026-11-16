@@ -35,7 +35,8 @@ ctypes. Where no compiler is present the tests of the compiled bodies skip with 
 |---|---|
 | `core.py` | the refusal, the range tests, the unit-checked `call` and bit comparison |
 | `check.py` | runs each kernel's checks on the reference, on every planted-bad control and on the BuildLang body; compares the body with the reference on a grid of good and bad inputs |
-| `native.py` | builds every `kernel.bld` into one shared library and wraps each export |
+| `native.py` | builds every `kernel.bld` as a module beside `shared.bld` into one shared library and wraps each export |
+| `shared.bld` | helpers the kernels share, declared with `mod shared;` in each kernel: the stable merge sort of indices |
 | `<field>_<name>/reference.py` | `SPEC`, the reference, `GRID`, `checks()` and `PLANTED` |
 | `<field>_<name>/kernel.bld` | the BuildLang body; absent where a compiler feature is missing, and then `SPEC["bld_pending"]` names it |
 

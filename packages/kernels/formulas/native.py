@@ -24,6 +24,7 @@ from . import FOLDERS, PKG, modules
 from .core import Refusal, finite
 
 SENTINEL = -7777777.0
+SHARED = PKG / "shared.bld"
 _LIB = None
 _WHY = None
 
@@ -43,9 +44,13 @@ def _cc():
 
 
 def compile_library(texts):
+    """Each kernel becomes a module named after its folder, beside the shared helpers; main.bld declares them.
+    An extern "C" fn inside a module keeps its own C name (buildlang 12ddf3c1 and later)."""
     work = Path(tempfile.mkdtemp(prefix="formulas-bld-"))
-    # One file, not modules: buildc prefixes the C names of exports inside a module.
-    (work / "main.bld").write_text("\n\n".join(texts.values()), encoding="utf-8")
+    (work / "shared.bld").write_text(SHARED.read_text(encoding="utf-8"), encoding="utf-8")
+    for folder, text in texts.items():
+        (work / f"{folder}.bld").write_text(text, encoding="utf-8")
+    (work / "main.bld").write_text("".join(f"mod {folder};\n" for folder in texts), encoding="utf-8")
     r = subprocess.run([_buildc(), "build", "--emit", "c", "--release", str(work)], capture_output=True, text=True)
     c_file = work / "target" / "release" / "main.c"
     if r.returncode != 0 or not c_file.exists():
