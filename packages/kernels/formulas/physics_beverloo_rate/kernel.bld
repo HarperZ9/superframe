@@ -1,0 +1,50 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// physics.beverloo_rate/1 (registry row PHY-006): W = C rho_b sqrt(g) (D - k d)^(5/2).
+//
+//   in   orifice_diameter D [m], finite and above k d
+//        grain_diameter d [m], finite and at least 0.0005
+//        bulk_density rho_b [kg/m^3], finite and above zero
+//        gravity g [m/s^2], finite and above zero
+//        discharge_coefficient C [1], finite, above zero and at most 1
+//        shape_coefficient k [1], finite, from 0 to 4
+//   out  mass_rate W [kg/s]
+//   loss no dependence on fill height or silo diameter; C and k fitted per material; dry grains above 0.5 mm
+//
+// The 5/2 power is formed as (e * e) * sqrt(e), and the product as ((C * rho_b) * sqrt(g)) * that, in the
+// order the reference uses, so the two give the same bits.
+//
+// Status: 0 accepted, else the 1-based index of the refused input. A refused call leaves out[0] alone.
+
+fn fk_bev_finite(x: f64) -> bool {
+    x - x == 0.0
+}
+
+extern "C" fn fk_physics_beverloo_rate(dd: f64, d: f64, rho: f64, g: f64, c: f64, k: f64, out: *mut f64) -> i32 {
+    if !fk_bev_finite(dd) {
+        return 1;
+    }
+    if !fk_bev_finite(d) || d < 0.0005 {
+        return 2;
+    }
+    if !fk_bev_finite(rho) || !(rho > 0.0) {
+        return 3;
+    }
+    if !fk_bev_finite(g) || !(g > 0.0) {
+        return 4;
+    }
+    if !fk_bev_finite(c) || !(c > 0.0) || c > 1.0 {
+        return 5;
+    }
+    if !fk_bev_finite(k) || k < 0.0 || k > 4.0 {
+        return 6;
+    }
+    let e = dd - k * d;
+    if !(e > 0.0) {
+        return 1;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 1) };
+    o[0] = ((c * rho) * sqrt(g)) * ((e * e) * sqrt(e));
+    0
+}
