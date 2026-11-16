@@ -45,23 +45,82 @@ def rotation_scores(L, cy, cx, orders=range(2, 13), n_t=360):
     return out
 
 
-def rotational_symmetry(L, thr=0.8, search=0.06):
-    """Best centre near the image centre; order = largest n whose rotation score passes thr."""
+def stroke_width(L):
+    """Typical stroke width in pixels of the marks that differ from the ground, and their share.
+
+    Ink is every pixel more than a third of the lightness range from the median
+    (the ground). For long thin strokes, area = width * length and the ink/ground
+    boundary is about 2 * length, so width ~ 2 * area / boundary.
+    """
+    span = float(L.max() - L.min())
+    if span <= 1e-9:
+        return 0.0, 0.0
+    ink = np.abs(L - np.median(L)) > span / 3
+    area = int(ink.sum())
+    if area == 0:
+        return 0.0, 0.0
+    boundary = int((ink[:, 1:] != ink[:, :-1]).sum() + (ink[1:, :] != ink[:-1, :]).sum())
+    return 2.0 * area / max(boundary, 1), area / ink.size
+
+
+LINE_WIDTH_MAX, LINE_SHARE_MAX = 3.0, 0.3
+
+
+def symmetry_scales(L):
+    """Gaussian scales (px) to score at. Thin-line drawings get coarser scales as well.
+
+    A rotation score is a correlation; for 1 px lines a sub-pixel centre error
+    or a raster rounding of a few strokes drops it near zero. Smoothing to about
+    the spacing a raster can be off by (a few px at the 256 px working size)
+    restores the match while leaving filled shapes and photographs at scale 0.
+    """
+    width, share = stroke_width(L)
+    if 0 < width <= LINE_WIDTH_MAX and share <= LINE_SHARE_MAX:
+        return (0.0, 1.5, 3.0)
+    return (0.0,)
+
+
+def _best_centre(L, search, steps, around=None, orders=(2, 3, 4, 6)):
     h, w = L.shape
-    best = (-1, h / 2, w / 2, {})
-    for dy in np.linspace(-search, search, 5) * h:
-        for dx in np.linspace(-search, search, 5) * w:
-            cy, cx = (h - 1) / 2 + dy, (w - 1) / 2 + dx
-            s = rotation_scores(L, cy, cx, orders=(2, 3, 4, 6))
+    cy0, cx0 = around or ((h - 1) / 2, (w - 1) / 2)
+    best = (-np.inf, cy0, cx0)
+    for dy in np.linspace(-search[0], search[0], steps):
+        for dx in np.linspace(-search[1], search[1], steps):
+            s = rotation_scores(L, cy0 + dy, cx0 + dx, orders=orders)
             if max(s.values()) > best[0]:
-                best = (max(s.values()), cy, cx, s)
-    _, cy, cx, _ = best
-    s = rotation_scores(L, cy, cx)
-    passing = [n for n, v in s.items() if v >= thr]
-    order = max(passing) if passing else 1
+                best = (max(s.values()), cy0 + dy, cx0 + dx)
+    return best[1], best[2]
+
+
+def rotational_symmetry(L, thr=0.8, search=0.12):
+    """Best centre near the image centre; order = largest n whose rotation score passes thr.
+
+    The centre is found coarse to fine (an 11 x 11 grid over +/- search of the
+    size on a smoothed copy, then two finer passes down to about half a pixel).
+    Thin-line drawings are also scored at the coarser scales from
+    `symmetry_scales`; the scale with the strongest passing order wins, and
+    `rot_scale` reports it.
+    """
+    h, w = L.shape
+    best = None
+    for sigma in symmetry_scales(L):
+        Ls = ndi.gaussian_filter(L, sigma) if sigma else L
+        guide = ndi.gaussian_filter(L, max(sigma, 3.0))   # a smooth surface for the coarse pass
+        cy, cx = _best_centre(guide, (search * h, search * w), 11)
+        step = 2 * search * max(h, w) / 10
+        for _ in range(2):
+            cy, cx = _best_centre(Ls, (step, step), 5, around=(cy, cx))
+            step /= 4
+        s = rotation_scores(Ls, cy, cx)
+        passing = [n for n, v in s.items() if v >= thr]
+        order = max(passing) if passing else 1
+        key = (order > 1, s.get(order, 0.0) if order > 1 else max(s.values()))
+        if best is None or key > best[0]:
+            best = (key, sigma, cy, cx, s, order)
+    _, sigma, cy, cx, s, order = best
     return {"rot_order": int(order), "rot_strength": float(max(s.values())),
             "rot_strength_order": float(s.get(order, 0.0)) if order > 1 else 0.0,
-            "rot_cy": float(cy / h), "rot_cx": float(cx / w)}
+            "rot_cy": float(cy / h), "rot_cx": float(cx / w), "rot_scale": float(sigma)}
 
 
 def gradients(L):
