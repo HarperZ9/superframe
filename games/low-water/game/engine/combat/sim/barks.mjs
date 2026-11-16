@@ -1,28 +1,30 @@
 // Voice barks in a fight (SYSTEMS-FULL 18.9, NOTES C3): one short line from a skill, chosen by
 // the situation, never stopping the action. Each rule names a voice and a key; the world emits
 // { type: "bark", voice, key, text }. Content will supply the lines as @bark records (skill, when,
-// text); until then the placeholder text below stands in (the director's examples from 18.9
-// where there is one, otherwise the key). A voice speaks at most once every `gap` frames, and
+// text); until then the engine's plain lines below stand in. A voice speaks at most once every `gap` frames, and
 // only one bark plays every `spacing` frames.
 import { angleTo, wrapAngle } from "./fighter.mjs";
 import { rand01 } from "../../core/rng.mjs";
 import { dhypot } from "./math.mjs";
 
 export const BARK_TEXT = {
-  "footing.frost": "Frost under the left boot.",
-  "footing.wet": "[placeholder] wet stone",
-  "breath.low": "[placeholder] breath low",
-  "tide.near": "Water at the ankle in twenty seconds.",
-  "smell.behind": "Eel-oil and fear, on your right.",
+  // the engine's own lines, for a story with no @bark records and for the arena page: plain, and true of any
+  // ground and any town, so a fight never shows a placeholder or another story's place
+  // (tests/barks-story.test.mjs fails any line marked "[placeholder]" here or reached in a story)
+  "footing.frost": "Frost under the boot. Short steps.",
+  "footing.wet": "Wet ground. The whole foot down.",
+  "breath.low": "Out of breath. Step back and let it come.",
+  "tide.near": "Water coming up behind you. Move.",
+  "smell.behind": "Sweat and smoke, behind you.",
   "tell.grab": "He wants you to block.",
-  "dark.near": "[placeholder] footsteps in the dark",
-  "pride.losing": "[placeholder] wet and losing",
+  "dark.near": "Breathing, close, where the light isn't.",
+  "pride.losing": "Losing, and everyone watching.",
   // the HAT voices: words that hold ground (director, 2026-10-17, "talkers earn the talk exit with words
   // and held ground"); each one spoken fills Composure (sim/world.mjs, COMPOSURE.words)
-  "words.condolence": "[placeholder] condolence: he is hurt, say so",
-  "words.formletter": "[placeholder] form letter: state the claim, plainly",
-  "words.chit": "[placeholder] chit: you owe nobody here a blow",
-  "words.hearsay": "[placeholder] hearsay: the others are watching him",
+  "words.condolence": "He's hurt. Tell him you can see it.",
+  "words.formletter": "Say it plainly. You've no quarrel with him.",
+  "words.chit": "You owe nobody here a blow. Say so.",
+  "words.hearsay": "The others are watching him. Say it where they can hear.",
 };
 // a HAT voice speaks only at this level or above (a talker's words, not anyone's)
 export const WORDS_FROM = 4;
