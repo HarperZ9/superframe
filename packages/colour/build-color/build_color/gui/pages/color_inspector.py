@@ -455,19 +455,13 @@ class ColorInspectorPage(QWidget):
             lum = xyz[1]
             self._metric_labels["Luminance"].setText(f"{lum:.4f}")
 
-            # Dominant wavelength - approximate from xy chromaticity
-            xyY = spaces.xyz_to_xyY(xyz)
-            x, y = xyY[0], xyY[1]
-            # Simplified dominant wavelength from chromaticity
-            if y > 0:
-                import math
+            # Dominant wavelength: CIE ray from D65 to the spectral locus
+            from build_color.spectral import describe_wavelength, dominant_wavelength
 
-                angle = math.atan2(y - 0.3333, x - 0.3333)
-                wl = 475 + (angle + math.pi) / (2 * math.pi) * 300
-                wl = wl % 700
-                if wl < 380:
-                    wl += 380
-                self._metric_labels["Dominant WL"].setText(f"~{wl:.0f} nm")
+            xyY = spaces.xyz_to_xyY(xyz)
+            if xyY[1] > 0:
+                wl = dominant_wavelength(xyY[0], xyY[1])
+                self._metric_labels["Dominant WL"].setText(describe_wavelength(wl, short=True))
             else:
                 self._metric_labels["Dominant WL"].setText("\u2014")
 

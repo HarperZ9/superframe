@@ -131,24 +131,51 @@ class TestCMFArrays:
 class TestDominantWavelength:
     """Tests for dominant wavelength calculation."""
 
-    def test_pure_red_near_700nm(self):
-        """Dominant wavelength of a red chromaticity should be near 700nm."""
-        # Approximate chromaticity of pure sRGB red
-        # sRGB red XYZ ~ (0.4125, 0.2127, 0.0193) -> x~0.64, y~0.33
-        lam = dominant_wavelength(0.64, 0.33)
-        assert 610 <= lam <= 780, f"Red dominant wavelength {lam}nm, expected 610-780nm"
+    # Known answers: sRGB colours (IEC 61966-2-1 primaries, D65 white
+    # 0.3127, 0.3290), chromaticity from colour-science 0.4.7
+    # colour.XYZ_to_xy(colour.sRGB_to_XYZ(rgb)), wavelength from
+    # colour.dominant_wavelength with the 1 nm CIE 1931 2 degree observer.
+    # colour-science reports the nearest 1 nm sample, so the tolerance is 0.6 nm.
+    # The old dot-product search returned 775, 520, 530, 420 and 775 nm for the
+    # first five.
+    KNOWN = [
+        # hex,     x,       y,       nm
+        ("ff0000", 0.64007, 0.32997, 611.0),
+        ("00ff00", 0.30000, 0.60000, 549.0),
+        ("ffff00", 0.41932, 0.50526, 570.0),
+        ("0000ff", 0.15002, 0.06001, 464.0),
+        ("b46f00", 0.50681, 0.43578, 585.0),
+        ("00ffff", 0.22466, 0.32874, 491.0),
+        ("ff8000", 0.54302, 0.40703, 591.0),
+    ]
 
-    def test_pure_green_near_520nm(self):
-        """Dominant wavelength of green chromaticity near 520nm."""
-        # sRGB green XYZ ~ (0.3576, 0.7152, 0.1192) -> x~0.30, y~0.60
-        lam = dominant_wavelength(0.30, 0.60)
-        assert 490 <= lam <= 560, f"Green dominant wavelength {lam}nm, expected 490-560nm"
+    @pytest.mark.parametrize("hex_, x, y, nm", KNOWN)
+    def test_known_answers_match_colour_science(self, hex_, x, y, nm):
+        lam = dominant_wavelength(x, y)
+        assert abs(lam - nm) <= 0.6, f"#{hex_}: {lam:.2f} nm, reference {nm} nm"
 
-    def test_pure_blue_near_470nm(self):
-        """Dominant wavelength of blue chromaticity near 470nm."""
-        # sRGB blue XYZ ~ (0.0193, 0.0722, 0.9503) -> x~0.15, y~0.06
-        lam = dominant_wavelength(0.15, 0.06)
-        assert 400 <= lam <= 490, f"Blue dominant wavelength {lam}nm, expected 400-490nm"
+    @pytest.mark.parametrize("hex_, x, y, nm", KNOWN)
+    def test_locus_point_lies_on_the_ray_from_white(self, hex_, x, y, nm):
+        """Independent of the reference: the locus point at the returned
+        wavelength must sit on the ray from D65 through the sample."""
+        lam = dominant_wavelength(x, y)
+        tot = CMF_X + CMF_Y + CMF_Z
+        lx = np.interp(lam, CMF_WAVELENGTHS, CMF_X / tot)
+        ly = np.interp(lam, CMF_WAVELENGTHS, CMF_Y / tot)
+        xw, yw = 0.3127, 0.3290
+        sx, sy, ex, ey = x - xw, y - yw, lx - xw, ly - yw
+        cross = sx * ey - sy * ex
+        assert abs(cross) / (np.hypot(sx, sy) * np.hypot(ex, ey)) < 1e-3
+        assert sx * ex + sy * ey > 0            # same side of the white point
+        assert np.hypot(ex, ey) >= np.hypot(sx, sy)   # locus is outside the sample
+
+    def test_purple_returns_negative_complementary(self):
+        # sRGB magenta; colour-science gives complementary 549 nm (reported as -549).
+        lam = dominant_wavelength(0.32092, 0.15415)
+        assert abs(lam + 549.0) <= 0.6
+
+    def test_white_point_has_no_dominant_wavelength(self):
+        assert np.isnan(dominant_wavelength(0.3127, 0.3290))
 
     def test_returns_float(self):
         lam = dominant_wavelength(0.4, 0.4)

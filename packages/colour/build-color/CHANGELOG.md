@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+### Fixes
+- `dominant_wavelength` now follows the CIE construction: the ray from the
+  white point through the sample, crossed with the spectral locus, with the
+  wavelength interpolated along the crossed segment. The old search took the
+  locus point with the largest dot product, which favoured the far red end:
+  #ff0000 read 775 nm (reference 611), #b46f00 read 775 (585), #0000ff 420
+  (464). Purples now return the complementary wavelength as a negative number,
+  and the white point returns nan. `build-color info` and the GUI inspector
+  print the corrected value; the inspector's separate angle formula is gone.
+
 ## v1.0.1 (2026-06-14)
 
 ### Release Surface

@@ -198,10 +198,10 @@ def cmd_info(args):
     print(f"  Luminance: {lum:.4f}")
 
     # Dominant wavelength
-    from build_color.spectral import dominant_wavelength
+    from build_color.spectral import describe_wavelength, dominant_wavelength
 
     dom = dominant_wavelength(xyY[0], xyY[1])
-    print(f"  Dominant wavelength: {dom:.0f} nm")
+    print(f"  {describe_wavelength(dom)}")
 
     # WCAG contrast vs white and black
     from build_color.difference import contrast_ratio

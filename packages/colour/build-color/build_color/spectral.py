@@ -384,25 +384,74 @@ def spd_to_xyz(
     return np.array([X * k, Y * k, Z * k])
 
 
-def dominant_wavelength(x: float, y: float) -> float:
-    """Find the dominant wavelength for a chromaticity coordinate."""
-    # White point (D65)
-    xw, yw = 0.3127, 0.3290
+D65_XY = (0.3127, 0.3290)
+
+
+def _locus_xy() -> np.ndarray:
+    """Spectral locus chromaticities (x, y) at the CMF sample wavelengths."""
+    total = CMF_X + CMF_Y + CMF_Z
+    return np.stack([CMF_X / total, CMF_Y / total], axis=1)
+
+
+def _ray_hits(origin, direction, locus) -> "list[tuple[float, float]]":
+    """(t, wavelength) for every locus segment the ray origin + t*direction crosses, t > 0.
+
+    Each segment joins two adjacent CMF samples; the wavelength is interpolated
+    linearly along the segment at the crossing point.
+    """
+    ox, oy = origin
+    dx, dy = direction
+    hits = []
+    for i in range(len(locus) - 1):
+        ax, ay = locus[i]
+        ex, ey = locus[i + 1][0] - ax, locus[i + 1][1] - ay
+        denom = dx * ey - dy * ex
+        if abs(denom) < 1e-15:
+            continue
+        # Solve origin + t*d = a + u*e for t (along the ray) and u (along the segment).
+        t = ((ax - ox) * ey - (ay - oy) * ex) / denom
+        u = ((ax - ox) * dy - (ay - oy) * dx) / denom
+        if t > 1e-12 and 0.0 <= u <= 1.0:
+            lam = CMF_WAVELENGTHS[i] + u * (CMF_WAVELENGTHS[i + 1] - CMF_WAVELENGTHS[i])
+            hits.append((t, float(lam)))
+    return hits
+
+
+def dominant_wavelength(x: float, y: float, white: "tuple[float, float]" = D65_XY) -> float:
+    """Dominant wavelength (nm) of chromaticity (x, y) against a white point.
+
+    The CIE construction: draw a ray from the white point through the sample
+    and find where it meets the spectral locus (CIE 1931 2 degree observer).
+    The crossing wavelength is the dominant wavelength.
+
+    A sample in the purple region has no dominant wavelength: its ray meets
+    the line of purples instead. Following the CIE convention, the result is
+    then the complementary wavelength (the locus crossing of the opposite ray)
+    returned as a negative number, for example about -549 for sRGB magenta.
+    A sample at the white point has no hue and returns nan.
+    """
+    xw, yw = white
     dx, dy = x - xw, y - yw
+    if float(np.hypot(dx, dy)) < 1e-9:
+        return float("nan")
+    locus = _locus_xy()
+    hits = _ray_hits((xw, yw), (dx, dy), locus)
+    if hits:
+        # The 700 to 780 nm samples nearly coincide; take the nearest crossing.
+        return min(hits)[1]
+    opposite = _ray_hits((xw, yw), (-dx, -dy), locus)
+    if opposite:
+        return -min(opposite)[1]
+    return float("nan")
 
-    best_lam = 550.0
-    best_dot = -1.0
 
-    for i in range(len(CMF_WAVELENGTHS)):
-        sx = CMF_X[i] / (CMF_X[i] + CMF_Y[i] + CMF_Z[i] + 1e-10)
-        sy = CMF_Y[i] / (CMF_X[i] + CMF_Y[i] + CMF_Z[i] + 1e-10)
-        lx, ly = sx - xw, sy - yw
-        dot = dx * lx + dy * ly
-        if dot > best_dot:
-            best_dot = dot
-            best_lam = CMF_WAVELENGTHS[i]
-
-    return best_lam
+def describe_wavelength(nm: float, short: bool = False) -> str:
+    """Text for a dominant_wavelength result: dominant, complementary (purples) or none."""
+    if np.isnan(nm):
+        return "none" if short else "Dominant wavelength: none (achromatic)"
+    if nm < 0:
+        return f"c{-nm:.0f} nm" if short else f"Complementary wavelength: {-nm:.0f} nm (purple)"
+    return f"{nm:.0f} nm" if short else f"Dominant wavelength: {nm:.0f} nm"
 
 
 # =============================================================================
