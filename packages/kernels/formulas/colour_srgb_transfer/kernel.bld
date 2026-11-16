@@ -1,0 +1,66 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// colour.srgb_transfer/1 (registry row COL-001): the sRGB transfer function of IEC 61966-2-1.
+//
+//   in   value v [1], finite, 0 to 1
+//        direction [1], 0 to decode (encoded value to linear light) or 1 to encode
+//   out  result [1]
+//   loss the standard's curve, not a measured display; values outside 0 to 1 are refused, not mirrored
+//
+// decode: v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055)^(12/5)
+// encode: v <= 0.0031308 ? 12.92 v : 1.055 v^(5/12) - 0.055
+//
+// The powers are whole-number roots by 48 Newton steps down from 1, then whole-number powers, as in
+// packages/colourmix/bld/transfer.bld, so only + - * / are used and the bits match the reference.
+//
+// Status: 0 accepted, 1 the value is refused, 2 the direction is refused.
+
+fn fk_srgb_ipow(y: f64, n: i64) -> f64 {
+    let mut p: f64 = 1.0;
+    let mut i: i64 = 0;
+    while i < n {
+        p = p * y;
+        i = i + 1;
+    }
+    p
+}
+
+fn fk_srgb_root(x: f64, q: i64) -> f64 {
+    let qf = q as f64;
+    let mut y: f64 = 1.0;
+    let mut i: i64 = 0;
+    while i < 48 {
+        y = ((qf - 1.0) * y + x / fk_srgb_ipow(y, q - 1)) / qf;
+        i = i + 1;
+    }
+    y
+}
+
+fn fk_srgb_ratpow(x: f64, num: i64, den: i64) -> f64 {
+    fk_srgb_ipow(fk_srgb_root(x, den), num)
+}
+
+extern "C" fn fk_colour_srgb_transfer(v: f64, direction: f64, out: *mut f64) -> i32 {
+    if !(v >= 0.0 && v <= 1.0) {
+        return 1;
+    }
+    if !(direction == 0.0 || direction == 1.0) {
+        return 2;
+    }
+    let o = unsafe { slice::from_raw_parts_mut(out, 1) };
+    if direction == 0.0 {
+        if v <= 0.04045 {
+            o[0] = v / 12.92;
+        } else {
+            o[0] = fk_srgb_ratpow((v + 0.055) / 1.055, 12, 5);
+        }
+        return 0;
+    }
+    if v <= 0.0031308 {
+        o[0] = 12.92 * v;
+    } else {
+        o[0] = 1.055 * fk_srgb_ratpow(v, 5, 12) - 0.055;
+    }
+    0
+}

@@ -46,6 +46,8 @@ ctypes. Where no compiler is present the tests of the compiled bodies skip with 
 | `optics.f_number/1` | OPT-007 | N = abs(f) / D | bit-identical |
 | `optics.airy_radius/1` | OPT-008 | r = (j(1,1) / pi) lambda N | bit-identical |
 | `physics.beverloo_rate/1` | PHY-006 | W = C rho_b sqrt(g) (D - k d)^(5/2) | bit-identical |
+| `colour.srgb_transfer/1` | COL-001 | IEC 61966-2-1 curve, decode and encode | bit-identical |
+| `colour.xyz_to_cielab/1` | COL-003 | CIE 1976 L*a*b* with e = 216/24389, K = 24389/27 | bit-identical |
 
 `kernels.json`, section `formulas`, holds one entry per kernel with its units, ranges, loss, known
 answers, properties, controls, provenance and the last check result. A test fails when that section and

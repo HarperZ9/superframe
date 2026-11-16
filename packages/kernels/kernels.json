@@ -590,7 +590,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:25:39",
+        "checked": "2026-11-15T21:29:08",
         "reference_checks": 10,
         "controls_caught": 2,
         "controls": 2,
@@ -652,7 +652,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:25:39",
+        "checked": "2026-11-15T21:29:08",
         "reference_checks": 12,
         "controls_caught": 3,
         "controls": 3,
@@ -735,7 +735,7 @@
       },
       "check": {
         "pass": true,
-        "checked": "2026-11-15T21:25:39",
+        "checked": "2026-11-15T21:29:08",
         "reference_checks": 16,
         "controls_caught": 3,
         "controls": 3,
@@ -744,6 +744,162 @@
           "checks": 16,
           "failed": [],
           "grid": 46,
+          "differ_from_reference": 0,
+          "first_difference": []
+        }
+      }
+    },
+    {
+      "id": "colour.srgb_transfer/1",
+      "path": "formulas/colour_srgb_transfer/",
+      "inputs": [
+        {
+          "name": "value",
+          "unit": "1",
+          "range": "finite, 0 <= v <= 1"
+        },
+        {
+          "name": "direction",
+          "unit": "1",
+          "range": "0 (decode) or 1 (encode)"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "unit": "1"
+        }
+      ],
+      "row": "COL-001",
+      "formula": "decode: v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055)^(12/5); encode: v <= 0.0031308 ? 12.92 v : 1.055 v^(5/12) - 0.055",
+      "mode": "bit-identical",
+      "loss": "The standard's piecewise curve, which is close to a 2.2 power display and is not a measured display. Its published constants do not join exactly: the two decode pieces differ by 2.3e-9 at 0.04045, and 0.0031308 x 12.92 is 0.040449936, not 0.04045. Values outside 0 to 1 (the extended form that mirrors negatives) are refused, not clipped.",
+      "known_answers": [
+        "decode 0.5 gives 0.2140411404822 (the registry value 0.21404)",
+        "decode and encode fix 0 and 1 (encode 1 gives 1 - 2^-53, as 1.055 - 0.055 does in binary)",
+        "encode 0.0031308 gives 0.040449936 on the linear piece"
+      ],
+      "properties": [
+        "encode(decode(v)) returns v within 3e-15 on 0 to 1",
+        "both directions rise monotonically",
+        "the power pieces agree with a library pow within 3e-15"
+      ],
+      "controls": [
+        "a plain 2.2 power curve",
+        "the 0.03928 threshold of the 1996 draft",
+        "decode with the offset 0.055 left out"
+      ],
+      "provenance": {
+        "source": "W3C CSS Color Module Level 4, sample code conversions.js (lin_sRGB, gam_sRGB), read 2026-11-15 from the csswg-drafts repository: thresholds 0.04045 and 0.0031308, slope 12.92, offset 0.055, scale 1.055, exponent 2.4. The specification cites the sRGB standard (IEC 61966-2-1:1999), which is unread (paid).",
+        "body_from": "packages/colourmix/bld/transfer.bld (cm_modern_encode, cm_modern_decode), which uses the same constants and rational-power route; 46 engine copies hold the same constants (CALLERS.tsv in the formula registry)",
+        "checked_by": "formula-kernels worker 3, 2026-11-15"
+      },
+      "buildlang": {
+        "body": "kernel.bld"
+      },
+      "check": {
+        "pass": true,
+        "checked": "2026-11-15T21:29:08",
+        "reference_checks": 13,
+        "controls_caught": 3,
+        "controls": 3,
+        "buildlang": {
+          "checked": true,
+          "checks": 13,
+          "failed": [],
+          "grid": 85,
+          "differ_from_reference": 0,
+          "first_difference": []
+        }
+      }
+    },
+    {
+      "id": "colour.xyz_to_cielab/1",
+      "path": "formulas/colour_xyz_to_cielab/",
+      "inputs": [
+        {
+          "name": "x",
+          "unit": "1",
+          "range": "finite, 0 <= X <= 1000 Xn"
+        },
+        {
+          "name": "y",
+          "unit": "1",
+          "range": "finite, 0 <= Y <= 1000 Yn"
+        },
+        {
+          "name": "z",
+          "unit": "1",
+          "range": "finite, 0 <= Z <= 1000 Zn"
+        },
+        {
+          "name": "white_x",
+          "unit": "1",
+          "range": "finite and > 0"
+        },
+        {
+          "name": "white_y",
+          "unit": "1",
+          "range": "finite and > 0"
+        },
+        {
+          "name": "white_z",
+          "unit": "1",
+          "range": "finite and > 0"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "L",
+          "unit": "1"
+        },
+        {
+          "name": "a",
+          "unit": "1"
+        },
+        {
+          "name": "b",
+          "unit": "1"
+        }
+      ],
+      "row": "COL-003",
+      "formula": "f(t) = t > 216/24389 ? cbrt(t) : (24389/27 t + 16) / 116; L = 116 fy - 16, a = 500 (fx - fy), b = 200 (fy - fz)",
+      "mode": "bit-identical",
+      "loss": "One reference white and one fixed viewing condition; no adaptation (convert to the white first), no surround or luminance effects (those need CIECAM02 or CAM16). Lab is only roughly uniform: Delta E 1976 overstates differences in saturated colours. X, Y and Z must share one scale with the white. Negative tristimulus values are refused.",
+      "known_answers": [
+        "the white gives L 100, a 0, b 0 exactly",
+        "Y / Yn = 216 / 24389 gives L 8 on both pieces (116 x 6/29 - 16 = 24 - 16)",
+        "Y / Yn = 0.18 gives L 49.496108"
+      ],
+      "properties": [
+        "f is continuous at the threshold, value and slope, with the exact constants",
+        "a neutral (X/Xn = Y/Yn = Z/Zn) has a = b = 0",
+        "the cube root agrees with a library cube root within 2 ulp"
+      ],
+      "controls": [
+        "the rounded constants 0.008856 and 7.787",
+        "the cube root dropped (L = 116 Y - 16)",
+        "a and b scales swapped (200 and 500)"
+      ],
+      "provenance": {
+        "source": "W3C CSS Color Module Level 4, sample code conversions.js (XYZ_to_Lab), read 2026-11-15: e = 216/24389 and K = 24389/27, with the comment that the CIE standard now defines them as rational fractions; L = 116 f1 - 16, a = 500 (f0 - f1), b = 200 (f1 - f2). CIE 15:2004 and ISO/CIE 11664-4 are unread (paid).",
+        "body_from": "packages/decompose/design_parts/design_parts/imageio.py:67 and superframe/lib/study/cmath.mjs:22 (exact constants); packages/rooms/core/spectra.js:80 and four other copies use the rounded 0.008856 and 7.787, which move L by at most 3.8e-5 and a by 1.6e-4",
+        "checked_by": "formula-kernels worker 3, 2026-11-15"
+      },
+      "buildlang": {
+        "body": "kernel.bld"
+      },
+      "check": {
+        "pass": true,
+        "checked": "2026-11-15T21:29:08",
+        "reference_checks": 15,
+        "controls_caught": 3,
+        "controls": 3,
+        "buildlang": {
+          "checked": true,
+          "checks": 15,
+          "failed": [],
+          "grid": 15,
           "differ_from_reference": 0,
           "first_difference": []
         }
