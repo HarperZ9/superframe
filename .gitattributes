@@ -4,3 +4,7 @@ packages/daw/bld/bl_audio.c text eol=lf
 packages/daw/bld/bl_audio.h text eol=lf
 packages/daw/bld/bl_audio_win.c text eol=lf
 packages/daw/bld/bl_events.c text eol=lf
+
+# wavelab and measured: study manifests pin these files by sha256, so a Windows checkout must keep LF
+packages/wavelab/** text eol=lf
+packages/measured/** text eol=lf

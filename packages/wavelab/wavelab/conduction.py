@@ -23,17 +23,19 @@ GAMMA = 5 / 3
 
 
 class ConductingBubble:
-    def __init__(self, R0, n=60, ratio=1e-3, T=293.15, conduct=True):
+    def __init__(self, R0, n=60, ratio=1e-3, T=293.15, conduct=True, core=0.0):
         w = consts.water(T)
         self.R0, self.n, self.T0, self.conduct = R0, n, T, conduct
         self.rho, self.c, self.mu, self.sig, self.pv = w["rho"], w["c"], w["mu"], w["sigma"], w["pv"]
         self.p0 = consts.ATM
         self.pg0 = self.p0 + 2 * self.sig / R0 - self.pv
-        Ntot = self.pg0 * 4 / 3 * np.pi * R0 ** 3 / (consts.KB * T)
+        self.h = core * R0  # van der Waals hard-core radius (core = 1 / 8.86 for argon); 0 is the ideal gas
+        Ntot = self.pg0 * 4 / 3 * np.pi * (R0 ** 3 - self.h ** 3) / (consts.KB * T)
         q = ratio ** (1 / max(n - 1, 1))
         frac = q ** np.arange(n)
         self.N = Ntot * frac / frac.sum()  # shell 0 at the centre, shell n - 1 at the wall
         self.Ntot = Ntot
+        self.b = 4 / 3 * np.pi * self.h ** 3 / Ntot  # excluded volume per atom
         self.ka, self.kb = conductivity_fit()
 
     def K(self, T):
@@ -41,8 +43,8 @@ class ConductingBubble:
 
     def geometry(self, R, T):
         kT = self.N * consts.KB * T
-        p = 3 * kT.sum() / (4 * np.pi * R ** 3)
-        r_out = (3 * np.cumsum(kT) / (4 * np.pi * p)) ** (1 / 3)
+        p = 3 * kT.sum() / (4 * np.pi * (R ** 3 - self.h ** 3))
+        r_out = (3 * np.cumsum(kT / p + self.N * self.b) / (4 * np.pi)) ** (1 / 3)
         r_in = np.concatenate([[0.0], r_out[:-1]])
         rc = ((r_out ** 3 + r_in ** 3) / 2) ** (1 / 3)
         return p, r_out, rc
@@ -57,7 +59,8 @@ class ConductingBubble:
         Q[:-1] += q_int
         Q[1:] -= q_int
         Q[-1] += q_wall
-        dp = 3 / R * ((GAMMA - 1) * q_wall / (4 * np.pi * R * R) - GAMMA * p * U)
+        # p (R^3 - h^3) = (3 / 4 pi) sum N kB T, with N c_p dT = V_ideal dp + Q, gives (h = 0 is the homobaric law):
+        dp = (3 / (4 * np.pi) * (GAMMA - 1) / GAMMA * q_wall - 3 * p * R * R * U) / ((R ** 3 - self.h ** 3) / GAMMA)
         V = self.N * consts.KB * T / p
         dT = (V * dp + Q) / (self.N * 2.5 * consts.KB)
         pinf = self.p0 - Pa * np.sin(2 * np.pi * f * t)
@@ -78,7 +81,7 @@ class ConductingBubble:
     def volume_check(self, sol):
         """Largest relative mismatch between the shells' summed volume and 4/3 pi R^3 (a consistency check)."""
         p = np.array([self.geometry(R, T)[0] for R, T in zip(sol.y[0], sol.y[2:].T)])
-        V = (self.N[:, None] * consts.KB * sol.y[2:]).sum(0) / p
+        V = (self.N[:, None] * consts.KB * sol.y[2:]).sum(0) / p + self.Ntot * self.b
         return float(np.max(np.abs(V / (4 / 3 * np.pi * sol.y[0] ** 3) - 1)))
 
 

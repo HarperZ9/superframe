@@ -56,11 +56,11 @@ def pattern(name, n_modes=16, size=0.3, seed=0):
     return n * (1 + f)
 
 
-def simulate(F, detune=0.0, n_modes=16, g1=0.01, eps=1.0, W=1.0, periods=120, dt=0.01, keep=4, nonlinear=True, w=None):
+def simulate(F, detune=0.0, n_modes=16, g1=0.01, eps=1.0, W=1.0, periods=120, dt=0.01, keep=4, nonlinear=True, w=None, g=None):
     """RK4 from rest; returns the last `keep` periods of q (time, modes) and their times. `w` overrides the
-    mode frequencies (see pattern)."""
+    mode frequencies (see pattern) and `g` the damping rates (see structural_damping)."""
     w = frequencies(n_modes, detune) if w is None else np.asarray(w, float)
-    g = g1 * np.arange(1, n_modes + 1, dtype=float) ** 2
+    g = g1 * np.arange(1, n_modes + 1, dtype=float) ** 2 if g is None else np.asarray(g, float)
     T = 2 * np.pi / W
     steps = int(round(periods * T / dt))
     rec_from = steps - int(round(keep * T / dt))
@@ -105,7 +105,8 @@ def measures(F, detune=0.0, **kw):
     e = (q ** 2).mean(axis=0)
     du = np.abs(np.gradient(u, t)).max()
     pp = u.max() - u.min()
-    return {"F": F, "detune": detune, "A1": A1, "peak": float(np.abs(u).max()), "pp": float(pp),
+    phase = float(np.degrees(np.angle(np.mean(q[:, 0] * np.exp(-1j * W * t)))))
+    return {"F": F, "detune": detune, "A1": A1, "phase1": phase, "peak": float(np.abs(u).max()), "pp": float(pp),
             "overtone_share": float(e[1:].sum() / e.sum()), "steepness": float(du / (W * pp / 2)) if pp > 0 else 0.0,
             "modes_rms": np.sqrt(e).tolist()}
 
@@ -126,3 +127,71 @@ def ceiling_drive(rows, frac=0.7):
         if r["A1"] < frac * linear_amplitude(r["F"]):
             return r["F"]
     return float("inf")
+
+
+def structural_damping(eta, w):
+    """Damping rates g_n = eta w_n / 2 for a constant loss factor eta (a mode at w_n decays as exp(-eta w_n t / 2)),
+    the law the DAW uses for its bars (daw.materials); contrast with the thermoviscous g_1 n^2 default."""
+    return 0.5 * eta * np.asarray(w, float)
+
+
+def _pairs(N):
+    """Index lists for N_n = 1/2 sum_{m+k=n} q_m q_k + sum_{m-k=n} q_m q_k (1-based modes, 0-based arrays)."""
+    rows = []
+    for n in range(1, N + 1):
+        for m in range(1, N + 1):
+            k = n - m
+            if 1 <= k <= N:
+                rows.append((n - 1, m - 1, k - 1, 0.5))
+            k = m - n
+            if 1 <= k <= N:
+                rows.append((n - 1, m - 1, k - 1, 1.0))
+    a = np.array(rows)
+    return a[:, 0].astype(int), a[:, 1].astype(int), a[:, 2].astype(int), a[:, 3]
+
+
+def batch_measures(Fs, w, g, eps=1.0, W=1.0, periods=120, dt=0.01, keep=4):
+    """The same RK4 model for many drives at once (rows of a batch), for light damping that needs long settling.
+    Returns one measures-style dict per drive (A1, phase1, peak, modes_rms)."""
+    Fs = np.asarray(Fs, float)[:, None]
+    w, g = np.asarray(w, float), np.asarray(g, float)
+    N = len(w)
+    nn, mm, kk, cc = _pairs(N)
+    C = np.zeros((N * N, N))  # interaction as one matrix on the outer product q_m q_k
+    np.add.at(C, (mm * N + kk, nn), cc)
+
+    def acc(t, q, v):
+        inter = (q[:, :, None] * q[:, None, :]).reshape(len(q), N * N) @ C
+        a = -2 * g * v - w * w * q + eps * w * w * inter
+        a[:, 0] += Fs[:, 0] * np.cos(W * t)
+        return a
+    q, v = np.zeros((len(Fs), N)), np.zeros((len(Fs), N))
+    T = 2 * np.pi / W
+    steps = int(round(periods * T / dt))
+    rec_from = steps - int(round(keep * T / dt))
+    ts, qs = [], []
+    t = 0.0
+    for s in range(steps):
+        k1q, k1v = v, acc(t, q, v)
+        k2q, k2v = v + 0.5 * dt * k1v, acc(t + 0.5 * dt, q + 0.5 * dt * k1q, v + 0.5 * dt * k1v)
+        k3q, k3v = v + 0.5 * dt * k2v, acc(t + 0.5 * dt, q + 0.5 * dt * k2q, v + 0.5 * dt * k2v)
+        k4q, k4v = v + dt * k3v, acc(t + dt, q + dt * k3q, v + dt * k3v)
+        q = q + dt / 6 * (k1q + 2 * k2q + 2 * k3q + k4q)
+        v = v + dt / 6 * (k1v + 2 * k2v + 2 * k3v + k4v)
+        t += dt
+        if s >= rec_from:
+            ts.append(t)
+            qs.append(q.copy())
+    ts, qs = np.array(ts), np.array(qs)  # (time, drive, mode)
+    out = []
+    for i, F in enumerate(Fs[:, 0]):
+        qi = qs[:, i, :]
+        if not np.all(np.isfinite(qi)):
+            out.append({"F": float(F), "error": "diverged"})
+            continue
+        u = qi.sum(axis=1)
+        c = np.mean(qi[:, 0] * np.exp(-1j * W * ts))
+        e = (qi ** 2).mean(axis=0)
+        out.append({"F": float(F), "A1": float(2 * abs(c)), "phase1": float(np.degrees(np.angle(c))), "peak": float(np.abs(u).max()),
+                    "modes_rms": np.sqrt(e).tolist()})
+    return out

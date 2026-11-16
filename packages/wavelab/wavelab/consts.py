@@ -96,3 +96,13 @@ def water(T=293.15):
     return {"T": T, "rho": nist_at("water_1atm", T, "Density (kg/m3)"), "c": nist_at("water_1atm", T, c),
             "mu": nist_at("water_1atm", T, "Viscosity (Pa*s)"), "pv": float(np.interp(T, sat[:, 0], sat[:, 1])),
             "sigma": float(np.interp(T, sat[:, 0], sat[:, 2]))}
+
+
+def loss_factor(name):
+    """A material's loss factor by the DAW's rule (daw.materials.material): the measured decay row
+    (decay_iowa.json, '<name>.eta_measured') first, else the mechanical row '<name>.eta'. Returns (value, status, id)."""
+    rows = {}
+    for table in ("mechanical", "decay_iowa"):
+        rows.update({r["id"]: r for r in json.loads((MEASURED / "data" / f"{table}.json").read_text(encoding="utf-8"))["rows"]})
+    rid = f"{name}.eta_measured" if f"{name}.eta_measured" in rows else f"{name}.eta"
+    return rows[rid]["value"], rows[rid]["status"], rid
