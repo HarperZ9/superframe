@@ -123,6 +123,9 @@ if(RAW_NATIVE_BUILD_TESTS)
             continue()
         endif()
         add_executable(${name} ${t} ${RAW_NATIVE_NULL_BACKEND})
+        if(name STREQUAL "test_ao_score")   # the AO comparison's scoring and scenes (bench/ao/)
+            target_sources(${name} PRIVATE bench/ao/ao_score.cpp bench/ao/ao_scenes.cpp)
+        endif()
         target_link_libraries(${name} PRIVATE raw_native)
         target_include_directories(${name} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tests"
             "${CMAKE_CURRENT_SOURCE_DIR}/third_party/superstack")
@@ -156,6 +159,8 @@ target_link_libraries(raw_native_cli PRIVATE raw_native)
 # Adds the CLI's RHI backend: the null backend by default, the D3D12 backend
 # with RAW_NATIVE_GPU_D3D12=ON on Windows. Also defines the WebGPU wasm target.
 include(cmake/gpu.cmake)
+# The AO comparison tools (bench/ao/README.md), off by default.
+include(cmake/ao_bench.cmake)
 if(EMSCRIPTEN)
     raw_native_wasm_target(raw_native_cli)
 endif()

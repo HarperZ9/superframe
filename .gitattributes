@@ -6,3 +6,5 @@ packages/daw/bld/bl_audio_win.c text eol=lf
 packages/daw/bld/bl_events.c text eol=lf
 # a frozen source snapshot a golden picture is rendered from: its bytes must not change
 packages/alive/tests/fixtures/alive-snapshot.js.txt -text
+# XeGTAO (MIT, Intel), vendored byte for byte for the AO comparison: CRLF line endings kept so the pinned hashes hold
+native/third_party/xegtao/** -text
