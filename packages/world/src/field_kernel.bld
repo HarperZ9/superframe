@@ -1,0 +1,71 @@
+// SPDX-License-Identifier: FSL-1.1-MIT
+// field_kernel.bld: the pure kernel of the field, the source of record. packages/world/field.mjs mirrors these
+// functions one for one, and tests/field.test.mjs compares the mirror against field_kernel.expected, the output of
+// this program. When BUILDC names a BuildLang compiler, the test runs this program again and the lines must agree.
+//
+// One field, many properties. An element carries a property at a weight from 0 to 1. Where it carries it is a soft
+// mask: 1 at its centre, 0 far away, and a smooth gradient across its rim, so no boundary is a hard edge. Where two
+// carriers overlap, the property's strength is their union and its value is their mixture, weighted by what each
+// carries. Every function here is continuous in every argument, so a weight moved from 0 to 1 never jumps.
+
+fn clamp01(x: f64) -> f64 {
+    if x < 0.0 { return 0.0; }
+    if x > 1.0 { return 1.0; }
+    return x;
+}
+
+// Hermite smoothstep: 0 below e0, 1 above e1, a cubic with zero slope at both ends between them
+fn smooth(e0: f64, e1: f64, x: f64) -> f64 {
+    let t: f64 = clamp01((x - e0) / (e1 - e0));
+    return t * t * (3.0 - 2.0 * t);
+}
+
+// a soft disc around an element's centre: 1 inside, 0 outside, a gradient 2 * edge wide across the rim
+fn disc(dx: f64, dy: f64, radius: f64, edge: f64) -> f64 {
+    let d: f64 = (dx * dx + dy * dy).sqrt();
+    return 1.0 - smooth(radius - edge, radius + edge, d);
+}
+
+// what one element contributes to one property at one point
+fn carry(mask: f64, weight: f64) -> f64 { return clamp01(mask * weight); }
+
+// strength where two carriers meet: the union, which stays at or under 1 and grows smoothly with either
+fn union2(a: f64, b: f64) -> f64 { return 1.0 - (1.0 - a) * (1.0 - b); }
+
+// value where two carriers meet: the mixture weighted by what each carries; 0 where nothing carries it
+fn mix2(ca: f64, va: f64, cb: f64, vb: f64) -> f64 {
+    let s: f64 = ca + cb;
+    if s <= 0.000000000001 { return 0.0; }
+    return (ca * va + cb * vb) / s;
+}
+
+// the Luneburg profile in a carrier's own frame, as the lens core writes it: n^2 = 2 - r^2 / R^2 inside, 1 outside
+fn luneburg_n2(r: f64, big_r: f64) -> f64 {
+    if r >= big_r { return 1.0; }
+    return 2.0 - (r * r) / (big_r * big_r);
+}
+
+// the index squared at a point: empty space where nothing carries the lens, the mixture where something does
+fn n2_blend(strength: f64, mixed: f64) -> f64 { return 1.0 + strength * (mixed - 1.0); }
+
+// millionths, rounded, so the table reads the same in every language
+fn micro(x: f64) -> i64 {
+    if x < 0.0 { let y: f64 = 0.0 - x * 1000000.0 + 0.5; return 0 - (y as i64); }
+    let y: f64 = x * 1000000.0 + 0.5;
+    return y as i64;
+}
+
+fn main() ~ Console {
+    let mut i: i32 = 0;
+    while i <= 10 {
+        let x: f64 = (i as f64) * 0.1;
+        println!("smooth {} {}", i, micro(smooth(0.2, 0.8, x)));
+        println!("disc {} {}", i, micro(disc(x, 0.0, 0.5, 0.1)));
+        println!("carry {} {}", i, micro(carry(disc(x, 0.3, 0.6, 0.15), 0.7)));
+        println!("union {} {}", i, micro(union2(x, 0.4)));
+        println!("mix {} {}", i, micro(mix2(x, 1.7, 0.5, 1.3)));
+        println!("luneburg {} {}", i, micro(luneburg_n2(x, 0.8)));
+        println!("n2 {} {}", i, micro(n2_blend(x, luneburg_n2(0.3, 0.8))));
+        i = i + 1;
+    }
+}
