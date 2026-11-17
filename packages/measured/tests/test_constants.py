@@ -33,7 +33,15 @@ def test_generated_values_are_the_codata_rows():
 # Its copies are held to the CODATA 2022 value instead, so a drifted digit still fails.
 # colour/build-color is published on PyPI as a package of its own (NumPy only), so it cannot import a module
 # from this repository. Its three copies in spectral.py (c, h, kB) are held to the same check.
+# world/dist/world-field.mjs is the field's page bundle, written by packages/world/bundle.mjs: it carries
+# rooms/core/constants.js byte for byte, so it holds the rooms copies and stands under the same check. Only that
+# generated file is named; the rest of packages/world is scanned like any package.
 CHECKED_COPIES = {"rooms", "colour"}
+CHECKED_FILES = {"world/dist/world-field.mjs"}
+
+
+def checked(rel):
+    return rel.parts[0] in CHECKED_COPIES or rel.as_posix() in CHECKED_FILES
 NUMBER = re.compile(r"\d+(?:\.\d+)?(?:e[-+]?\d+)?", re.I)
 
 
@@ -58,14 +66,14 @@ def matches_codata(literal, values):
 
 
 def test_no_package_keeps_a_hand_copy_of_a_constant():
-    hits = [f"{rel.as_posix()}:{n}: {line.strip()[:90]}" for rel, n, line in scan() if rel.parts[0] not in CHECKED_COPIES]
+    hits = [f"{rel.as_posix()}:{n}: {line.strip()[:90]}" for rel, n, line in scan() if not checked(rel)]
     assert not hits, "import packages/measured/generated/constants instead:\n" + "\n".join(hits)
 
 
 def test_checked_copies_equal_codata_2022():
     values, bad, seen = codata_values(), [], 0
     for rel, n, line in scan():
-        if rel.parts[0] not in CHECKED_COPIES:
+        if not checked(rel):
             continue
         for lit in NUMBER.findall(line):
             if pattern.search(lit):
