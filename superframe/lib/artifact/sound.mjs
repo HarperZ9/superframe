@@ -39,13 +39,21 @@ export function sound(r, layers) {
   return { rate, channels: [L, R], env, freqs, seconds, bytes: () => wavBytes({ rate, channels: [L, R] }) };
 }
 
+// the loudness over time: the RMS of both channels together in each whole step of stepMs (the sum of squares over
+// the step, divided by the samples per step), the envelope the study describes and the touch pattern follows
+export function loudness(snd, stepMs = 100) {
+  const { channels: [L, R], rate } = snd, per = Math.round(rate * stepMs / 1000), out = [];
+  for (let i = 0; i + per <= L.length; i += per) {
+    let s = 0; for (let k = i; k < i + per; k++) s += L[k] * L[k] + R[k] * R[k];
+    out.push(Math.sqrt(s / per));
+  }
+  return out;
+}
+
 // a vibration pattern for touch (Web Vibration API style: alternating on and off milliseconds), from the loudness
 // over time in 100 ms steps. The Pacinian band peaks near 250 Hz, so a phone motor reads pulse length as strength.
 export function tactile(snd, stepMs = 100) {
-  const { channels: [L, R], rate } = snd, per = Math.round(rate * stepMs / 1000), pattern = [];
-  for (let i = 0; i + per <= L.length; i += per) {
-    let s = 0; for (let k = i; k < i + per; k++) s += L[k] * L[k] + R[k] * R[k];
-    const on = Math.round(Math.min(1, Math.sqrt(s / per) * 3) * stepMs); pattern.push(on, stepMs - on);
-  }
+  const pattern = [];
+  for (const v of loudness(snd, stepMs)) { const on = Math.round(Math.min(1, v * 3) * stepMs); pattern.push(on, stepMs - on); }
   return { schema: 'superframe.tactile/1', stepMs, pattern, doc: 'alternating on/off milliseconds; pulse length follows loudness over time' };
 }
