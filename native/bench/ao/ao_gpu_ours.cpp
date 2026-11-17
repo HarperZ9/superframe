@@ -46,13 +46,13 @@ namespace {
 struct PostParamsGpu { uint32_t width, height, slices, steps, refine, flags, ssrSteps, pad1; float view[4], ssr[4], taa[4]; };
 static_assert(sizeof(PostParamsGpu) == 80, "PostParams layout");
 
-// b0 root constant buffer, u1 and u2 root UAVs: the registers post_gtao.hlsl declares.
+// b0 root constant buffer, u1..u5 root UAVs: the registers post_gtao.hlsl (u1, u2) and
+// ours_gtao_fast.hlsl (u1..u5) declare.
 ComPtr<ID3D12RootSignature> oursRoot(Dx& dx) {
-    D3D12_ROOT_PARAMETER p[3]{};
+    D3D12_ROOT_PARAMETER p[6]{};
     p[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; p[0].Descriptor.ShaderRegister = 0;
-    p[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV; p[1].Descriptor.ShaderRegister = 1;
-    p[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV; p[2].Descriptor.ShaderRegister = 2;
-    D3D12_ROOT_SIGNATURE_DESC d{3, p, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
+    for (UINT k = 1; k < 6; ++k) { p[k].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV; p[k].Descriptor.ShaderRegister = k; }
+    D3D12_ROOT_SIGNATURE_DESC d{6, p, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_NONE};
     ComPtr<ID3DBlob> blob, error;
     HRESULT hr = D3D12SerializeRootSignature(&d, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error);
     if (FAILED(hr)) { dx.fail("D3D12SerializeRootSignature (ours)", hr); return nullptr; }
@@ -60,43 +60,87 @@ ComPtr<ID3D12RootSignature> oursRoot(Dx& dx) {
     if (FAILED(hr = dx.dev->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&r)))) { dx.fail("CreateRootSignature (ours)", hr); return nullptr; }
     return r;
 }
+// The passes of a method: post_gtao alone (one dispatch a pixel, 64 a group), or the fast
+// chain: pack (64 a group), main and blur (8 x 8 tiles).
+struct Pass { ComPtr<ID3D12PipelineState> pso; bool tiled; };
+bool passes(Dx& dx, const std::string& dir, ID3D12RootSignature* root, const std::string& shader, std::vector<Pass>& out) {
+    const std::vector<std::pair<std::string, bool>> names = shader == "fast"
+        ? std::vector<std::pair<std::string, bool>>{{"fast_CSPack", false}, {"fast_CSMain", true}, {"fast_CSBlur", true}}
+        : std::vector<std::pair<std::string, bool>>{{shader, false}};
+    for (const auto& [n, tiled] : names) {
+        std::vector<char> cso;
+        if (!loadCso(dir, n, cso, dx.err)) return false;
+        Pass p{pipeline(dx, root, cso), tiled};
+        if (!p.pso) return false;
+        out.push_back(p);
+    }
+    return true;
+}
+// The fast chain's inputs, the ones XeGTAO reads: NDC depth of the same left-handed projection
+// (ao_gpu_xe.cpp), 1 where empty, and view normals (ours, 4 floats a pixel).
+void fastInputs(const Frame& f, std::vector<float>& ndc, std::vector<float>& nrm, float& mul, float& add) {
+    const double n = f.nearZ, fa = f.farZ;
+    mul = float(n * fa / (fa - n)); add = float(fa / (fa - n));
+    const std::size_t px = std::size_t(f.w) * std::size_t(f.h);
+    ndc.assign(px, 1.0f); nrm.assign(px * 4, 0.0f);
+    for (std::size_t i = 0; i < px; ++i) {
+        const float* g = &f.gbuf[i * 8];
+        if (g[3] < 0.0f) continue;
+        ndc[i] = float(double(add) - double(mul) / double(g[3]));
+        for (int k = 0; k < 3; ++k) nrm[i * 4 + std::size_t(k)] = g[4 + k];
+    }
+}
 }  // namespace
 
 bool runOurs(Dx& dx, const std::string& csoDir, const Frame& f, const OursConfig& c, int iters, Run& out) {
-    std::vector<char> cso;
-    if (!loadCso(csoDir, c.shader, cso, dx.err)) return false;
     ComPtr<ID3D12RootSignature> root = oursRoot(dx);
-    ComPtr<ID3D12PipelineState> pso = root ? pipeline(dx, root.Get(), cso) : nullptr;
-    if (!pso) return false;
+    std::vector<Pass> ps;
+    if (!root || !passes(dx, csoDir, root.Get(), c.shader, ps)) return false;
+    const bool fast = c.shader == "fast";
     const uint32_t n = uint32_t(f.w * f.h);
+    std::vector<float> ndc, nrm;
+    float mul = 0, add = 0;
+    if (fast) fastInputs(f, ndc, nrm, mul, add);
     const PostParamsGpu prm{uint32_t(f.w), uint32_t(f.h), uint32_t(c.slices), uint32_t(c.steps), 8, 0, 0, 0,
-                            {float(f.tanHalf), float(f.aspect), float(f.nearZ), float(c.radius)}, {0, 0, 0, 0}, {0, 0, 0, 0}};
-    auto cb = dx.buffer(256, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_COPY_DEST);
-    auto gb = dx.buffer(uint64_t(n) * 32, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_DEST);
-    auto ob = dx.buffer(uint64_t(n) * 4, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-    if (!cb || !gb || !ob) return false;
+                            {float(f.tanHalf), float(f.aspect), float(f.nearZ), float(c.radius)}, {mul, add, 0, 0}, {0, 0, 0, 0}};
+    const auto U = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+    const auto UA = D3D12_RESOURCE_STATE_UNORDERED_ACCESS, CD = D3D12_RESOURCE_STATE_COPY_DEST;
+    auto cb = dx.buffer(256, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_NONE, CD);
+    auto gb = dx.buffer(uint64_t(n) * (fast ? 4 : 32), D3D12_HEAP_TYPE_DEFAULT, U, CD);   // fast: NDC depth; else the G-buffer
+    auto nb = dx.buffer(uint64_t(n) * 16, D3D12_HEAP_TYPE_DEFAULT, U, CD);
+    auto ob = dx.buffer(uint64_t(n) * 4, D3D12_HEAP_TYPE_DEFAULT, U, UA);
+    auto db = dx.buffer(uint64_t(n) * 8,   // every depth level fits in twice the pixels
+                        D3D12_HEAP_TYPE_DEFAULT, U, UA);
+    auto tb = dx.buffer(uint64_t(n) * 4, D3D12_HEAP_TYPE_DEFAULT, U, UA);
+    if (!cb || !gb || !nb || !ob || !db || !tb) return false;
     dx.uploadBuffer(cb.Get(), &prm, sizeof prm);
-    dx.uploadBuffer(gb.Get(), f.gbuf.data(), uint64_t(n) * 32);
-    dx.transition(cb.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-    dx.transition(gb.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+    if (fast) { dx.uploadBuffer(gb.Get(), ndc.data(), uint64_t(n) * 4); dx.uploadBuffer(nb.Get(), nrm.data(), uint64_t(n) * 16); }
+    else dx.uploadBuffer(gb.Get(), f.gbuf.data(), uint64_t(n) * 32);
+    dx.transition(cb.Get(), CD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+    dx.transition(gb.Get(), CD, UA);
+    dx.transition(nb.Get(), CD, UA);
     if (!dx.submit()) return false;
+    const ID3D12Resource* binds[5] = {gb.Get(), ob.Get(), db.Get(), tb.Get(), nb.Get()};
     for (int k = 0; k < iters; ++k) {
         dx.stamp(uint32_t(2 * k));
         dx.list->SetComputeRootSignature(root.Get());
-        dx.list->SetPipelineState(pso.Get());
         dx.list->SetComputeRootConstantBufferView(0, cb->GetGPUVirtualAddress());
-        dx.list->SetComputeRootUnorderedAccessView(1, gb->GetGPUVirtualAddress());
-        dx.list->SetComputeRootUnorderedAccessView(2, ob->GetGPUVirtualAddress());
-        dx.list->Dispatch((n + 63) / 64, 1, 1);
-        dx.uavBarrier();
+        for (UINT r = 0; r < 5; ++r) dx.list->SetComputeRootUnorderedAccessView(r + 1, const_cast<ID3D12Resource*>(binds[r])->GetGPUVirtualAddress());
+        for (const Pass& p : ps) {
+            dx.list->SetPipelineState(p.pso.Get());
+            if (p.tiled) dx.list->Dispatch((uint32_t(f.w) + 7) / 8, (uint32_t(f.h) + 7) / 8, 1);
+            else dx.list->Dispatch((n + 63) / 64, 1, 1);
+            dx.uavBarrier();
+        }
         dx.stamp(uint32_t(2 * k + 1));
+        if (k % 4 == 3 && !dx.submit()) return false;   // short lists: a slow method must not trip the GPU watchdog
     }
     std::vector<double> t;
     if (!dx.submit() || !dx.stamps(uint32_t(2 * iters), t)) return false;
     out.ms.clear();
     for (int k = 0; k < iters; ++k) out.ms.push_back(1e3 * (t[std::size_t(2 * k + 1)] - t[std::size_t(2 * k)]));
     out.ao.assign(n, 1.0f);
-    dx.transition(ob.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_SOURCE);
+    dx.transition(ob.Get(), UA, D3D12_RESOURCE_STATE_COPY_SOURCE);
     return dx.readBuffer(ob.Get(), uint64_t(n) * 4, out.ao.data());
 }
 

@@ -27,6 +27,15 @@ add_custom_command(OUTPUT "${ao_cso}/post_gtao.cso"
             "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/gpu/shaders/hlsl/post_gtao.hlsl"
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/gpu/shaders/hlsl/post_gtao.hlsl" VERBATIM)
 list(APPEND ao_outputs "${ao_cso}/post_gtao.cso")
+# Ours, fast: three passes of one file (bench/ao/shaders/ours_gtao_fast.hlsl).
+set(fast_src "${CMAKE_CURRENT_SOURCE_DIR}/bench/ao/shaders/ours_gtao_fast.hlsl")
+foreach(e CSPack CSMain CSBlur)
+    add_custom_command(OUTPUT "${ao_cso}/fast_${e}.cso"
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${ao_cso}"
+        COMMAND "${RAW_NATIVE_DXC}" -T cs_6_0 -E ${e} -HV 2021 -O3 -Fo "${ao_cso}/fast_${e}.cso" "${fast_src}"
+        DEPENDS "${fast_src}" VERBATIM)
+    list(APPEND ao_outputs "${ao_cso}/fast_${e}.cso")
+endforeach()
 # XeGTAO: each entry point twice, with its shipped constants (xe1_) and with settable ones (xe0_).
 set(xe_src "${CMAKE_CURRENT_SOURCE_DIR}/bench/ao/shaders/xegtao_bench.hlsl")
 foreach(e CSPrefilterDepths16x16 CSGTAOLow CSGTAOMedium CSGTAOHigh CSGTAOUltra CSDenoiseLastPass)

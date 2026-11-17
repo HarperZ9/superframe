@@ -124,6 +124,7 @@ bool runXe(Dx& dx, const std::string& csoDir, const Frame& f, const XeConfig& c,
         pass(den.Get(), 2, (W + 15) / 16, (H + 7) / 8);
         dx.uavBarrier();
         dx.stamp(uint32_t(2 * r + 1));
+        if (r % 4 == 3 && !dx.submit()) return false;   // short lists: a slow method must not trip the GPU watchdog
         dx.transition(t.depth.Get(), kSrv, kUav); dx.transition(t.term.Get(), kSrv, kUav); dx.transition(t.edges.Get(), kSrv, kUav);
     }
     std::vector<double> ts;

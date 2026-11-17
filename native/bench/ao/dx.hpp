@@ -3,6 +3,9 @@
 // chosen adapter, one queue and command list used synchronously, one shader-visible descriptor
 // heap and a timestamp query heap. Textures are needed here (XeGTAO samples a depth mip chain),
 // which the engine RHI's compute path does not bind, so the bench keeps its own small context.
+#ifndef NOMINMAX
+#define NOMINMAX   // windows.h must not define min and max over std::min and std::max
+#endif
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl/client.h>
