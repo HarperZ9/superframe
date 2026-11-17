@@ -13,6 +13,7 @@ The dependency policy is ADR 0005. In brief:
 | Library | Upstream and version | SPDX licence | Files | Adapter files (ours) |
 |---|---|---|---|---|
 | superstack | github.com/HarperZ9/superstack, tag `v0.2.0` | FSL-1.1-MIT | `third_party/superstack/` (see `NOTICE.md` there) | `raw/tools/receipt.hpp`, `app/main.cpp` (receipts); `web/sound/contract.mjs`, `fixtures.mjs`, `meter.mjs` (seed rule, BS.1770 weighting) |
+| XeGTAO | github.com/GameTechDev/XeGTAO, commit `a5b1686c7ea37788eeb3576b5be47f7c03db532c` (2024-04-22), `Source/Rendering/Shaders/XeGTAO.h` and `XeGTAO.hlsli`, plus `LICENSE` | MIT (Copyright 2016-2021 Intel Corporation) | `third_party/xegtao/` (CRLF kept, `-text` in `.gitattributes`) | `bench/ao/shaders/xegtao_bench.hlsl`, `bench/ao/ao_gpu_xe.cpp` (the AO comparison's baseline; never linked into the library) |
 
 superstack is by the same author as raw-native and ships under the same licence. It is listed here because it is versioned and released on its own.
 
@@ -72,4 +73,7 @@ e319da67ce990a6d163411db1ef81641fbe76b9047f98575e9067280f69cb6bd  docs/motion/ha
 e02ccb89a86839b22feff7872ff5cc355cc0f58318d29eee20e2cf83a612f16d  third_party/fonts/OFL-hanken-grotesk.txt
 7b3d72d7a0221040e7ac0d4ab587fb126e95ed40287af14e17f52443e770aa2a  web/explainer/fonts/hanken-grotesk-700.atlas.json
 1968931d0fcf5ae45dba14a9b688bf5f9fc739f6b935472914abc824d8144b93  web/explainer/fonts/conso-400.atlas.json
+14aae285d633840f33a9b2b652091dcacafae603691a9a92d3fedc3fd1141c83  third_party/xegtao/LICENSE
+12ef6102b7f022be43d894d21e8ecbde6c905f1d828ee4373a80e494dc4083e0  third_party/xegtao/XeGTAO.h
+00257d691a460d227d4ca261f609711165b9d43a2333d63374930e2ba4144949  third_party/xegtao/XeGTAO.hlsli
 ```
