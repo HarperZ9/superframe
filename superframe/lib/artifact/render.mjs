@@ -47,9 +47,10 @@ export function write(out, dir, { intent = '', title = '', plot = null } = {}) {
   png('material-roughness.png', grey(out.material.rough.map(asData)));
   png('material-normal.png', (() => { const N = out.material.N, o = new Float32Array(N.length); for (let i = 0; i < N.length; i++) o[i] = asData(N[i] * 0.5 + 0.5); return o; })());
   put('sound.wav', Buffer.from(out.sound.bytes()));
-  put('tactile.json', Buffer.from(JSON.stringify(tactile(out.sound))));
+  const tac = tactile(out.sound);
+  put('tactile.json', Buffer.from(JSON.stringify(tac)));
   put('study.json', Buffer.from(JSON.stringify(out.study, null, 1)));
-  put('study.md', Buffer.from(studyText(r, out.study, { intent, title, text: textOf(r), levels: out.lines.levels })));
+  put('study.md', Buffer.from(studyText(r, out.study, { intent, title, text: textOf(r), levels: out.lines.levels, sound: out.sound, tactile: tac })));
   put('recipe.json', Buffer.from(JSON.stringify({ ...r, intent, report: out.report }, null, 1)));
   let sheet = null;
   if (plot) { sheet = plotSheet(out.lines.V, plot, dir, { title: title || r.seed, seed: r.seed }); for (const n of sheet.files) { const b = readFileSync(join(dir, n)); files[n] = { sha256: sha(b), bytes: b.length }; } }

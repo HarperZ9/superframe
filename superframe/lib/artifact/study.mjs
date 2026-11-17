@@ -14,6 +14,8 @@ import * as G from '../../../creation/lib/gen/index.mjs';
 import { RECIPIENTS } from '../recipient.mjs';
 import { LAWS, MEDIA } from './ir.mjs';
 import { weightOf } from './common.mjs';
+import { loudness } from './sound.mjs';
+import { describeSeries, sig } from '../vendor/chart-describe.mjs';
 
 const KEEPS = {
   paint: { keeps: 'hue, tone and the spectrum under two lights', loses: 'height except as light and shade' },
@@ -81,6 +83,20 @@ export function study(r, layers, out) {
   return { schema: 'superframe.artifact.study/1', recipients: Object.keys(RECIPIENTS).concat('touch'), seed: r.seed, size: r.size, sim: r.sim, media: r.media, detail: r.detail, elements };
 }
 
+// The Sound and Touch alt lines say what the sound and the pulses do, from the rendered sound itself: the loudness
+// envelope in 100 ms steps (the same steps tactile.json is made from), and the band that carries the most of it.
+export function soundAlt(r, snd) {
+  const D = describeSeries(loudness(snd, 100), 0.1, { name: 'loudness', y: { fmt: v => `${sig(v)} RMS` } });
+  const mean = snd.env.map(E => E.reduce((a, b) => a + b, 0) / Math.max(1, E.length)), top = mean.indexOf(Math.max(...mean));
+  const map = `${r.sound.seconds} s, left to right in time, top of the frame as high pitch, ${r.sound.lo} Hz to ${r.sound.hi} Hz.`;
+  return { text: `${map} ${D.text} The band that carries the most is ${Math.round(snd.freqs[top])} Hz.`, facts: D.facts, curve: D };
+}
+export function touchAlt(tac) {
+  const on = tac.pattern.filter((_, i) => i % 2 === 0), n = on.filter(v => v > 0).length;
+  const D = describeSeries(on, tac.stepMs / 1000, { name: 'pulse length', y: { fmt: v => `${Math.round(v)} ms` } });
+  return { text: `tactile.json, ${n} of ${on.length} steps of ${tac.stepMs} ms carry a pulse. ${D.text}`, facts: D.facts, curve: D };
+}
+
 const place = g => `${g.cy < 0.38 ? 'upper ' : g.cy > 0.62 ? 'lower ' : ''}${g.cx < 0.38 ? 'left' : g.cx > 0.62 ? 'right' : 'centre'}`.trim();
 
 export function studyText(r, S, extra = {}) {
@@ -96,7 +112,7 @@ export function studyText(r, S, extra = {}) {
     `- Type: the text set in Accession Mono across the frame; letters thicken where the elements act. The text: "${(extra.text ?? '').slice(0, 160)}"`,
     `- Lines: ${extra.levels ?? 'several'} contour levels of the elements, heavier at higher levels.`,
     '- Material: grey relief of the same elements under a raking light; glossy where the law is smooth, matte where rough.',
-    `- Sound: ${r.sound.seconds} s, left to right in time, top of the frame as high pitch, ${r.sound.lo} Hz to ${r.sound.hi} Hz.`,
-    '- Touch: tactile.json, a vibration pattern following the loudness over time.', '');
+    `- Sound: ${extra.sound ? soundAlt(r, extra.sound).text : `${r.sound.seconds} s, left to right in time, top of the frame as high pitch, ${r.sound.lo} Hz to ${r.sound.hi} Hz.`}`,
+    `- Touch: ${extra.tactile ? touchAlt(extra.tactile).text : 'tactile.json, a vibration pattern following the loudness over time.'}`, '');
   return L.join('\n');
 }
