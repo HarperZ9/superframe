@@ -75,16 +75,22 @@ fn main(@builtin(global_invocation_id) gid: vec3u) {
     var tt: vec3f = vec3f(1.0 - vv.x * vv.x, -vv.x * vv.y, -vv.x * vv.z);
     tt = tt / length(tt);
     let bb: vec3f = cross(vv, tt);
-    let s0: vec3f = project(pp);
     var total: f32 = 0.0;
     for (var s: u32 = 0u; s < P.slices; s++) {
         let phi: f32 = PI * (f32(s) + 0.5) / f32(P.slices);
         let dir: vec3f = cos(phi) * tt + sin(phi) * bb;
-        let s1: vec3f = project(pp + dir * (1.0e-3 * depth));
-        let ddl: f32 = length(s1.xy - s0.xy);
+        let pw: f32 = -pp.z;
+        let dwz: f32 = -dir.z;
+        // The slice's screen direction: the derivative of the projection along dir. It points where
+        // the CPU reference's small step projects (both screen differences carry the same factor),
+        // and it subtracts no nearly equal numbers: differencing two projections 1e-3 apart in f32
+        // turned the direction by about 1e-4, enough to move a far sample into the next pixel.
+        let dsx: f32 = (dir.x * pw - pp.x * dwz) * f32(P.width) / P.view.y;
+        let dsy: f32 = -(dir.y * pw - pp.y * dwz) * f32(P.height);
+        let ddl: f32 = length(vec2f(dsx, dsy));
         if (ddl < 1.0e-12) { continue; }
-        let c: f32 = (s1.x - s0.x) / ddl;
-        let sn: f32 = (s1.y - s0.y) / ddl;
+        let c: f32 = dsx / ddl;
+        let sn: f32 = dsy / ddl;
         let od: vec3f = dir - dot(dir, vv) * vv;
         let ax: vec3f = normalize(cross(od, vv));
         let pn: vec3f = nn - ax * dot(nn, ax);
