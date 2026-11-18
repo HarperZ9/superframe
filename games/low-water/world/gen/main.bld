@@ -96,7 +96,7 @@ fn main() ~ Console + FileSystem + Environment + Clock {
         c += 1;
     }
     let mut moist = zeros(n);
-    climate::moisture(hgt, w, h, moist, target);
+    climate::moisture(hgt, w, h, rain, moist, target);
     c = 0;
     while c < n {
         rain[c] = 0.25 + 1.5 * moist[c];

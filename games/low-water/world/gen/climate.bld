@@ -5,8 +5,9 @@
 use noise::sat;
 use noise::gnoise;
 
-// rain share per cell, 0 to about 1, written to m
-pub fn moisture(h: Vec<f64>, w: i64, hh: i64, m: Vec<f64>, tmp: Vec<f64>) {
+// Wetness per cell, 0 to 1: how much water the air still holds here, more where it is made to
+// climb, scaled by the plate's share of rain. The air loses what it drops, so the lee is dry.
+pub fn moisture(h: Vec<f64>, w: i64, hh: i64, share: Vec<f64>, m: Vec<f64>, tmp: Vec<f64>) {
     let mut y: i64 = 0;
     while y < hh {
         let mut q = 1.0;
@@ -20,10 +21,12 @@ pub fn moisture(h: Vec<f64>, w: i64, hh: i64, m: Vec<f64>, tmp: Vec<f64>) {
                 let mut climb = 0.0;
                 if x > 0 { climb = h[c] - h[c - 1]; }
                 if climb < 0.0 { climb = 0.0; }
-                let r = q * (0.0011 + 0.00075 * climb);
+                let r = q * (0.0009 + 0.0006 * climb);
                 q = q - r;
                 if q < 0.02 { q = 0.02; }
-                m[c] = r;
+                let mut lift = climb * 0.04;
+                if lift > 0.4 { lift = 0.4; }
+                m[c] = q * (0.6 + lift) * share[c] / 1.5;
             }
             x += 1;
         }
@@ -66,7 +69,7 @@ pub fn moisture(h: Vec<f64>, w: i64, hh: i64, m: Vec<f64>, tmp: Vec<f64>) {
     let n = (w * hh) as usize;
     let mut c: usize = 0;
     while c < n {
-        m[c] = sat(m[c] / 0.0042);
+        m[c] = sat(m[c] * 1.25);
         c += 1;
     }
 }
@@ -76,7 +79,7 @@ pub fn temperature(height: f64, y: i64, hh: i64) -> f64 {
     let v = (y as f64) / (hh as f64);
     let mut e = height;
     if e < 0.0 { e = 0.0; }
-    -3.5 + 15.5 * v - 6.2 * e / 1000.0
+    -3.0 + 16.5 * v - 5.0 * e / 1000.0
 }
 
 // Distance to the sea in cells for land, by a breadth-first walk from the shore (capped at 9999).
@@ -126,7 +129,7 @@ pub fn coast_distance(sea: Vec<i64>, w: i64, hh: i64, cd: Vec<i64>) {
 pub fn biome(h: f64, slope: f64, temp: f64, m: f64, plate: i64, sea: i64, lake: i64, wet: f64, g: f64) -> i64 {
     if sea == 1 { return 0; }
     if lake > 0 { return 1; }
-    if temp < -5.0 { return 9; }
+    if temp < -7.0 { return 9; }
     if slope > 0.8 { return 13; }
     if h < 16.0 && plate == 3 && slope < 0.03 { return 3; }
     if h < 9.0 && wet > 2000.0 && slope < 0.02 { return 3; }
@@ -135,20 +138,20 @@ pub fn biome(h: f64, slope: f64, temp: f64, m: f64, plate: i64, sea: i64, lake: 
         if h > 900.0 { return 8; }
         return 7;
     }
-    if m < 0.20 {
+    if m < 0.13 {
         if plate == 1 { return 10; }
         return 11;
     }
-    if m < 0.34 { return 11; }
-    if temp < 2.2 {
-        if m > 0.42 + 0.2 * g { return 6; }
+    if m < 0.20 { return 11; }
+    if temp < 2.4 {
+        if m > 0.26 + 0.12 * g { return 6; }
         return 12;
     }
     if h > 640.0 {
         if g > 0.1 { return 12; }
         return 4;
     }
-    if m > 0.56 + 0.15 * g { return 5; }
+    if m > 0.30 + 0.10 * g { return 5; }
     4
 }
 

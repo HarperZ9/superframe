@@ -1,6 +1,6 @@
 # The world
 
-Low Water as one continuous island, generated from a seed. The island measures 131 km by 98 km on a grid of 2048 by 1536 cells, 64 m to a cell. It holds eleven regions, a river system, lakes, fifteen ring towns a day's walk apart, sixty villages, the roads between them and the landmarks that give each region its skyline.
+Low Water as one continuous island, generated from a seed. The island measures 131 km by 98 km on a grid of 2048 by 1536 cells, 64 m to a cell. It holds eleven regions, a river system, lakes, fifteen ring towns a day's walk apart, forty-six villages, the roads between them and the landmarks that give each region its skyline.
 
 The canonical seed is `20261118`.
 
@@ -50,7 +50,7 @@ BUILDC=buildc node --test games/low-water/world/tests/world.test.mjs
 
 - **Determinism.** Two runs of one seed give byte-identical files. A second seed gives a different terrain.
 - **Hydrology.** Along every river line the water surface never rises, and the line ends in the sea, in a lake or on another line that does. The control builds the same world with one river bed raised 40 m; the generator's own check and the file check must both fail on it.
-- **Scale.** The test prints the walking time of every road between ring towns. For seed 20261118 the median is 5.9 hours over 29 km, the shortest 2.3 hours with the ferry and the longest 12.1 hours.
+- **Scale.** The test prints the walking time of every road between ring towns. For seed 20261118 the median is 5.9 hours over 29 km, the shortest 2.3 hours with the ferry and the longest 12.0 hours.
 - **Regions.** All eleven exist, each with its seat and its landmark kinds.
 
 ## Language

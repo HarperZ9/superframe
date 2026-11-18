@@ -118,6 +118,8 @@ test("regions: all eleven exist and the towns sit in them", () => {
   const { json } = world;
   for (const r of json.regions) assert.ok(r.cells > 3000, `${r.name} has ${r.cells} cells`);
   for (const id of [1, 2, 3, 4, 5, 6, 7, 8, 9, 11]) assert.ok(json.settlements.some((s) => s.kind === "seat" && s.region === id), `region ${id} has no seat`);
+  const names = json.settlements.map((q) => q.name);
+  assert.equal(new Set(names).size, names.length, `two places share a name: ${names.filter((n, i) => names.indexOf(n) !== i).join(", ")}`);
   const kinds = new Set(json.marks.map((m) => m.kind));
   for (const k of ["tower", "spire", "furnace", "stack", "slab", "tenement", "drowned", "seastack", "mudhif"]) assert.ok(kinds.has(k), `no ${k} was placed`);
 });
