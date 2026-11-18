@@ -68,4 +68,24 @@ void lampsRIS(Surf s, float3 v, inout Rng r, uint M, out float3 diff, out float3
     if (on(F_SHADOW) && occluded(offsetRay(s.p, s.ng), pick.l, pick.dist - Lights[pickL].radius * 1.2f)) return;
     diff = pick.diff * W; spec = pick.spec * W;
 }
+// Light scattered by fog at p toward travel direction w from one lamp, chosen by RIS among M lamps
+// drawn uniformly from every light (no cluster: the many far lamps add up in the haze), shadowed.
+float hgPhaseL(float c, float g) { const float g2 = g * g; return (1.0f - g2) / (4.0f * PI * pow(max(1e-4f, 1.0f + g2 - 2.0f * g * c), 1.5f)); }
+float3 fogLampRIS(float3 p, float3 w, inout Rng r, uint M) {
+    const uint n = (uint)F.cluster.w;
+    if (n == 0u) return 0.0f;
+    float wsum = 0.0f, pw = 0.0f; float3 pickL = 0.0f, pl = 0.0f; float pd = 0.0f; uint pi = 0u;
+    for (uint k = 0u; k < M; k++) {
+        const uint li = min(n - 1u, uint(rnd(r) * float(n)));
+        const Light L = Lights[li];
+        const float3 q = lightPoint(L, p, rnd2(r)), d = q - p; const float dist = length(d); const float3 l = d / max(dist, 1e-4f);
+        const float3 c = intensity(L, -l) / max(dist * dist, 0.04f) * hgPhaseL(dot(w, l), F.fog.z);
+        const float wi = lum(c) * float(n);
+        wsum += wi;
+        if (wi > 0.0f && rnd(r) * wsum < wi) { pickL = c; pw = lum(c); pl = l; pd = dist - L.radius * 1.2f; pi = li; }
+    }
+    if (pw <= 0.0f) return 0.0f;
+    if (on(F_SHADOW) && occluded(p, pl, pd)) return 0.0f;
+    return pickL * (wsum / (float(M) * pw));
+}
 #endif

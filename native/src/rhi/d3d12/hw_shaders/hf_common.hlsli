@@ -17,6 +17,7 @@ struct Frame {
     uint4 counts;            // frame index, flags (F_*), the sky's bindless index, path-traced samples so far
     float4 timeParams;       // seconds, snow fall speed, wind x, wind z
     float4 fwd;              // camera forward xyz, w aspect
+    uint4 dbg;               // x: debug view (0 the frame, 1 GI irradiance, 2 direct irradiance, 3 albedo)
 };
 ConstantBuffer<Frame> F : register(b0);
 struct PassC { uint4 a; float4 b; uint4 c; float4 d; };
@@ -47,7 +48,7 @@ SamplerState sClamp : register(s1);                 // linear, clamp
 RWTexture2D<float4> gAlbedo : register(u0);     // albedo, roughness
 RWTexture2D<float4> gNormal : register(u1);     // shading normal, metal
 RWTexture2D<float4> gEmis : register(u2);       // emission, kind
-RWTexture2D<float4> gGeo : register(u3);        // view depth (0 sky), motion xy (pixels), specular F0
+RWTexture2D<float4> gGeo : register(u3);        // view depth (0 sky), motion xy (pixels), geometric normal (packOct)
 RWTexture2D<float> aoOut : register(u4);        // GTAO, unpacked
 RWTexture2D<float4> dDiff : register(u5);       // direct diffuse irradiance (demodulated) + w: glint
 RWTexture2D<float4> dSpec : register(u6);       // direct specular radiance
@@ -75,7 +76,7 @@ RWStructuredBuffer<float> gtaoG : register(u33);       // post_gtao's view-space
 RWStructuredBuffer<float> gtaoO : register(u34);       // post_gtao's visibility
 RWTexture2D<float4> histDiffPrev : register(u35);      // last frame's accumulated diffuse
 RWTexture2D<float4> histSpecPrev : register(u36);      // last frame's accumulated specular
-static const uint FX = 160u, FY = 90u, FZ = 128u;      // froxel grid
+static const uint FX = 240u, FY = 136u, FZ = 128u;     // froxel grid (16 px a froxel at 4K)
 float froxelZ(float s) { return F.cluster.x * exp(s / float(FZ) * log(F.fog.w / F.cluster.x)); }   // slice to view depth
 float froxelS(float vz) { return log(max(vz, F.cluster.x) / F.cluster.x) / log(F.fog.w / F.cluster.x) * float(FZ); }
 
@@ -121,7 +122,24 @@ float3 viewRay(float2 px) {
     const float4 h = mul(F.invViewProj, float4(ndc, 1.0f, 1.0f));
     return normalize(h.xyz / h.w - F.eye.xyz);
 }
-float3 worldAt(uint2 px, float vz) { const float3 r = viewRay(float2(px) + 0.5f); return F.eye.xyz + r * (vz / max(1e-4f, dot(r, F.fwd.xyz))); }
+// the raster drew each pixel's centre at the jittered position, so the surface it found lies on the
+// ray through (centre - jitter) of the unjittered camera
+float3 worldAt(uint2 px, float vz) { const float3 r = viewRay(float2(px) + 0.5f - F.jitter.xy); return F.eye.xyz + r * (vz / max(1e-4f, dot(r, F.fwd.xyz))); }
+// unit vectors in 32 bits (octahedral, 16 bits a coordinate), for the geometric normal in gGeo.w
+float2 octWrap(float2 v) { return (1.0f - abs(v.yx)) * select(v >= 0.0f, 1.0f, -1.0f); }
+float packOct(float3 n) {
+    n /= abs(n.x) + abs(n.y) + abs(n.z);
+    float2 e = n.z >= 0.0f ? n.xy : octWrap(n.xy);
+    const uint2 q = uint2(saturate(e * 0.5f + 0.5f) * 65535.0f + 0.5f);
+    return asfloat((q.x << 16) | q.y);
+}
+float3 unpackOct(float f) {
+    const uint u = asuint(f);
+    const float2 e = float2(float(u >> 16), float(u & 0xFFFFu)) / 65535.0f * 2.0f - 1.0f;
+    float3 n = float3(e, 1.0f - abs(e.x) - abs(e.y));
+    if (n.z < 0.0f) n.xy = octWrap(n.xy);
+    return normalize(n);
+}
 
 // rays
 bool occluded(float3 o, float3 d, float tmax) {

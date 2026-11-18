@@ -25,7 +25,7 @@ const view = viewpoints({ world, roads, towns, ground: (x, z) => baseGround(worl
 if (!view) { console.error(`no viewpoint named ${want}`); process.exit(1); }
 const site = towns.find((t) => want.startsWith(t.s.name.toLowerCase()));
 log(`${want}: ${site.s.name}, ${site.plan.houses.length} houses, view at ${view.x.toFixed(1)}, ${view.z.toFixed(1)}`);
-const { M, L, O, houses } = street(world, site.plan, view);
+const { M, L, O, houses, smoke } = street(world, site.plan, view);
 log(`${houses} houses built, ${M.triangles} triangles, ${L.length} lights`);
 
 // cameras: the viewpoint at eye height; a closer one by the nearest lit door on the right; a walk
@@ -47,6 +47,7 @@ const glb = writeGlb(M, { snow: [0.9, 0.92, 0.95], ground: [0.85, 0.87, 0.9], bo
 await writeFile(join(outDir, `${want}.glb`), glb);
 const frame = { format: "lw-hero-frame-1", seed: world.json.seed, view: want, origin: O, clock: view.clock, day: view.day, cameras: cams,
   lights: L.map((l) => ({ p: l.p.map((v) => +v.toFixed(4)), col: l.col, power: l.power, radius: l.radius, ...(l.aim ? { aim: l.aim, cone: l.cone } : {}), ...(l.street ? { street: true } : {}) })),
+  smoke: smoke.map((c) => c.map((v) => +v.toFixed(3))),
   counts: { triangles: M.triangles, lights: L.length, houses, materials: [...M.b.keys()] } };
 await writeFile(join(outDir, `${want}.frame.json`), JSON.stringify(frame));
 log(`wrote ${want}.glb (${(glb.length / 1e6).toFixed(1)} MB) and ${want}.frame.json`);

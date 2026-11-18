@@ -26,6 +26,7 @@ struct FrameCB {
     float eye[4], size[4], jitter[4], moonDir[4], moonRad[4], skyParams[4], cluster[4], fog[4];
     uint32_t counts[4];
     float timeParams[4], fwd[4];
+    uint32_t dbg[4];
 };
 
 struct Ctx {
@@ -38,9 +39,9 @@ struct Ctx {
     std::map<std::string, ComPtr<ID3D12PipelineState>> pso;
     ComPtr<ID3D12PipelineState> gbufPso, snowPso;
     // scene
-    ComPtr<ID3D12Resource> verts, idx, triMat, mats, lights, blas, tlas, inst, scratch;
+    ComPtr<ID3D12Resource> verts, idx, triMat, mats, lights, smoke, blas, tlas, inst, scratch;
     std::vector<ComPtr<ID3D12Resource>> textures;
-    uint32_t texCount{0}, skyIndex{0}, triangles{0}, lightCount{0};
+    uint32_t texCount{0}, skyIndex{0}, triangles{0}, lightCount{0}, smokeCount{0};
     // targets by u slot, then depth, and the plain buffers
     std::vector<Target> uav;
     Target depth;
@@ -69,7 +70,7 @@ struct Recorded { std::vector<std::string> names; uint32_t stamps{0}; };
 void bindCommon(Ctx& c, bool graphics);
 void dispatch(Ctx& c, const char* pso, uint32_t gx, uint32_t gy, uint32_t gz = 1, const uint32_t* pc = nullptr);
 void recordFrame(Ctx& c, const hw::FrameOptions& o, Recorded& r);
-void recordReference(Ctx& c, const hw::FrameOptions& o, uint32_t first, uint32_t spp, Recorded& r);
+void recordReference(Ctx& c, const hw::FrameOptions& o, uint32_t first, uint32_t spp, uint32_t row0, uint32_t rows, Recorded& r);
 void recordPost(Ctx& c, const hw::FrameOptions& o, Recorded& r, uint32_t taaN);
 
 }  // namespace raw::rhi::d3d12::hf

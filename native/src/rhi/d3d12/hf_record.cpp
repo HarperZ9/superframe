@@ -34,17 +34,18 @@ void gbuffer(Ctx& c){
 }
 // the fast GTAO's PostParams sit after the frame constants in the same upload buffer
 void gtao(Ctx& c){
-    dispatch(c, "hf_gtao_pack", gx(c), gy(c));
+    const uint32_t hw = (c.w + 1) / 2, hh = (c.h + 1) / 2;
+    dispatch(c, "hf_gtao_pack", (hw + 7) / 8, (hh + 7) / 8);
     uavBarrier(c);
-    const uint64_t n = uint64_t(c.w) * c.h;
+    const uint64_t n = uint64_t(hw) * hh;
     const D3D12_GPU_VIRTUAL_ADDRESS G = c.uav[33].res->GetGPUVirtualAddress(), O = c.uav[34].res->GetGPUVirtualAddress();
     const D3D12_GPU_VIRTUAL_ADDRESS bind[5] = {G, O, G + n * 4 * 5, G + n * 4 * 7, G + n * 4};   // Z, O, D, T, N
     c.cl->SetComputeRootSignature(c.gtaoRs.Get());
     c.cl->SetComputeRootConstantBufferView(0, c.cb->GetGPUVirtualAddress() + 2048);
     for (UINT r = 0; r < 5; ++r) c.cl->SetComputeRootUnorderedAccessView(r + 1, bind[r]);
     c.cl->SetPipelineState(c.pso["hf_gtao_fpack"].Get()); c.cl->Dispatch(UINT((n + 63) / 64), 1, 1); uavBarrier(c);
-    c.cl->SetPipelineState(c.pso["hf_gtao_fmain"].Get()); c.cl->Dispatch(gx(c), gy(c), 1); uavBarrier(c);
-    c.cl->SetPipelineState(c.pso["hf_gtao_fblur"].Get()); c.cl->Dispatch(gx(c), gy(c), 1); uavBarrier(c);
+    c.cl->SetPipelineState(c.pso["hf_gtao_fmain"].Get()); c.cl->Dispatch((hw + 7) / 8, (hh + 7) / 8, 1); uavBarrier(c);
+    c.cl->SetPipelineState(c.pso["hf_gtao_fblur"].Get()); c.cl->Dispatch((hw + 7) / 8, (hh + 7) / 8, 1); uavBarrier(c);
     bindCommon(c, false);
     dispatch(c, "hf_gtao_unpack", gx(c), gy(c));
 }
@@ -64,20 +65,21 @@ void snow(Ctx& c){
 void bindCommon(Ctx& c, bool graphics){
     ID3D12DescriptorHeap* heaps[] = {c.heap.Get()};
     c.cl->SetDescriptorHeaps(1, heaps);
-    const D3D12_GPU_VIRTUAL_ADDRESS srv[6] = {c.tlas->GetGPUVirtualAddress(), c.verts->GetGPUVirtualAddress(), c.idx->GetGPUVirtualAddress(),
-                                              c.triMat->GetGPUVirtualAddress(), c.mats->GetGPUVirtualAddress(), c.lights->GetGPUVirtualAddress()};
+    const D3D12_GPU_VIRTUAL_ADDRESS srv[7] = {c.tlas->GetGPUVirtualAddress(), c.verts->GetGPUVirtualAddress(), c.idx->GetGPUVirtualAddress(),
+                                              c.triMat->GetGPUVirtualAddress(), c.mats->GetGPUVirtualAddress(), c.lights->GetGPUVirtualAddress(),
+                                              c.smoke->GetGPUVirtualAddress()};
     if (graphics){
         c.cl->SetGraphicsRootSignature(c.rs.Get());
         c.cl->SetGraphicsRootConstantBufferView(0, c.cb->GetGPUVirtualAddress());
-        for (UINT i = 0; i < 6; ++i) c.cl->SetGraphicsRootShaderResourceView(2 + i, srv[i]);
-        c.cl->SetGraphicsRootDescriptorTable(8, c.gpu(kTexBase));
-        c.cl->SetGraphicsRootDescriptorTable(9, c.gpu(0));
+        for (UINT i = 0; i < 7; ++i) c.cl->SetGraphicsRootShaderResourceView(2 + i, srv[i]);
+        c.cl->SetGraphicsRootDescriptorTable(9, c.gpu(kTexBase));
+        c.cl->SetGraphicsRootDescriptorTable(10, c.gpu(0));
     } else {
         c.cl->SetComputeRootSignature(c.rs.Get());
         c.cl->SetComputeRootConstantBufferView(0, c.cb->GetGPUVirtualAddress());
-        for (UINT i = 0; i < 6; ++i) c.cl->SetComputeRootShaderResourceView(2 + i, srv[i]);
-        c.cl->SetComputeRootDescriptorTable(8, c.gpu(kTexBase));
-        c.cl->SetComputeRootDescriptorTable(9, c.gpu(0));
+        for (UINT i = 0; i < 7; ++i) c.cl->SetComputeRootShaderResourceView(2 + i, srv[i]);
+        c.cl->SetComputeRootDescriptorTable(9, c.gpu(kTexBase));
+        c.cl->SetComputeRootDescriptorTable(10, c.gpu(0));
     }
 }
 void dispatch(Ctx& c, const char* pso, uint32_t x, uint32_t y, uint32_t z, const uint32_t* pc){
@@ -98,8 +100,8 @@ void recordFrame(Ctx& c, const hw::FrameOptions& o, Recorded& r){
     dispatch(c, "hf_direct_shade", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "direct");
     dispatch(c, "hf_gi", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "gi");
     dispatch(c, "hf_reflect", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "reflect");
-    dispatch(c, "hf_fog_inject", 20, 12, 128); uavBarrier(c);
-    dispatch(c, "hf_fog_integrate", 20, 12, 1); uavBarrier(c); stamp(c, r, "fog");
+    dispatch(c, "hf_fog_inject", 30, 17, 128); uavBarrier(c);
+    dispatch(c, "hf_fog_integrate", 30, 17, 1); uavBarrier(c); stamp(c, r, "fog");
     dispatch(c, "hf_temporal", gx(c), gy(c)); uavBarrier(c);
     for (uint32_t k = 0; k < 4; ++k){ const uint32_t pc[16] = {1u << k, k & 1u}; dispatch(c, "hf_atrous", gx(c), gy(c), 1, pc); uavBarrier(c); }
     stamp(c, r, "denoise");
@@ -108,11 +110,11 @@ void recordFrame(Ctx& c, const hw::FrameOptions& o, Recorded& r){
     stamp(c, r, "snow");
 }
 
-void recordReference(Ctx& c, const hw::FrameOptions& o, uint32_t first, uint32_t spp, Recorded& r){
+void recordReference(Ctx& c, const hw::FrameOptions& o, uint32_t first, uint32_t spp, uint32_t row0, uint32_t rows, Recorded& r){
     bindCommon(c, false);
     clearStamp(c, r);
-    const uint32_t pc[16] = {spp, o.referenceBounces, first};
-    dispatch(c, "hf_pt", gx(c), gy(c), 1, pc); uavBarrier(c);
+    const uint32_t pc[16] = {spp, o.referenceBounces, first, 0, 0, 0, 0, 0, row0};
+    dispatch(c, "hf_pt", gx(c), (rows + 7) / 8, 1, pc); uavBarrier(c);
     stamp(c, r, "reference");
 }
 

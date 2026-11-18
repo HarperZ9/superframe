@@ -19,7 +19,7 @@
 using namespace raw;
 
 namespace {
-struct Args { std::string data, view = "hoarstead-main-street", assets = "H:", hdr, out, jobs = "main,close,off,reference,walk", disable; uint32_t w = 3840, h = 2160, frames = 64, spp = 1024; float ev = 0; };
+struct Args { std::string data, view = "hoarstead-main-street", assets = "H:", hdr, out, jobs = "main,close,off,reference,walk", disable; uint32_t debug = 0, w = 3840, h = 2160, frames = 64, spp = 1024; float ev = 0; };
 bool has(const std::string& list, const char* j){ std::stringstream s(list); std::string t; while (std::getline(s, t, ',')) if (t == j) return true; return false; }
 std::string passesJson(const rhi::hw::FrameResult& r){
     std::string s = "[";
@@ -47,7 +47,7 @@ int main(int argc, char** argv){
         const std::string k = argv[i], v = argv[i + 1];
         if (k == "--data") a.data = v; else if (k == "--view") a.view = v; else if (k == "--assets") a.assets = v; else if (k == "--hdr") a.hdr = v;
         else if (k == "--out") a.out = v; else if (k == "--jobs") a.jobs = v; else if (k == "--frames") a.frames = uint32_t(std::stoul(v));
-        else if (k == "--ev") a.ev = std::stof(v); else if (k == "--disable") a.disable = v;
+        else if (k == "--ev") a.ev = std::stof(v); else if (k == "--disable") a.disable = v; else if (k == "--debug") a.debug = uint32_t(std::stoul(v));
         else if (k == "--spp") a.spp = uint32_t(std::stoul(v)); else if (k == "--size") std::sscanf(v.c_str(), "%ux%u", &a.w, &a.h);
         else { std::fprintf(stderr, "lw_frame: unknown option %s\n", k.c_str()); return 2; }
     }
@@ -65,7 +65,7 @@ int main(int argc, char** argv){
     auto R = rhi::hw::FrameRenderer::create(*dev, scene, a.w, a.h, err);
     if (!R){ std::fprintf(stderr, "lw_frame: %s\n", err.c_str()); return 1; }
     std::string log = "{";
-    rhi::hw::FrameOptions base; base.width = a.w; base.height = a.h; base.frames = a.frames; base.time = 3.0f; base.exposureEV = a.ev;
+    rhi::hw::FrameOptions base; base.width = a.w; base.height = a.h; base.frames = a.frames; base.time = 3.0f; base.exposureEV = a.ev; base.debugView = a.debug;
     // --disable: passes off in every job (for looking at one effect at a time)
     if (has(a.disable, "gi")) base.gi = false; if (has(a.disable, "reflect")) base.reflect = false; if (has(a.disable, "gtao")) base.gtao = false;
     if (has(a.disable, "fog")) base.fog = false; if (has(a.disable, "restir")) base.restir = false; if (has(a.disable, "snow")) base.snow = false;

@@ -35,32 +35,35 @@ export function lantern(T, f, x, y, z, kind = "paper", out = 0.42) {
   M.wear = [col[0], col[1], col[2], red ? 0.9 : 1.0];
   M.lathe("lamp", c, prof, 18, 3);
   M.wear = T.col;
-  for (const yy of [-0.02, h - 0.02]) M.lathe("iron", [c[0], c[1] + yy, c[2]], [[r * 0.58, 0], [r * 0.6, 0.05], [r * 0.3, 0.07]], 12);
+  // dark caps top and bottom, closed to the axis, and the paper's ribs
+  M.lathe("iron", [c[0], c[1] - 0.03, c[2]], [[0.01, 0], [r * 0.62, 0.005], [r * 0.6, 0.045], [r * 0.5, 0.05]], 16);
+  M.lathe("iron", [c[0], c[1] + h - 0.03, c[2]], [[r * 0.5, 0], [r * 0.6, 0.005], [r * 0.62, 0.045], [0.01, 0.07]], 16);
+  for (let k = 0; k < 8; k++) { const a = k / 8 * 6.2832, pts = []; for (let i = 0; i <= 6; i++) { const t = i / 6, rr = r * (0.55 + 0.45 * Math.sin(t * Math.PI)) + 0.004; pts.push([c[0] + Math.cos(a) * rr, c[1] + t * h, c[2] + Math.sin(a) * rr]); } M.tube("iron", pts, 0.003, 3); }
   if (R() < 0.75) M.lathe("snow", [c[0], c[1] + h + 0.05, c[2]], [[r * 0.6, 0], [r * 0.48, 0.05], [r * 0.2, 0.09], [0.01, 0.1]], 12);
   T.L.push({ p: [c[0], c[1] + h * 0.5, c[2]], col, power: red ? 14 : 12, radius: r * 0.8 });
 }
 
 // a sign board flat on the wall over a door, painted, with lettering the shader draws from its seed
 export function signBoard(T, f, x, y, z) {
-  const { M, R } = T, w = 1.3 + 1.4 * R(), h = 0.5 + 0.3 * R(), lit = R() < 0.7;
+  const { M, R } = T, w = 1.3 + 1.4 * R(), h = 0.5 + 0.3 * R(), lit = R() < 0.55;
   M.bbox("timber", f, x - w / 2 - 0.05, y - 0.05, z, x + w / 2 + 0.05, y + h + 0.05, z + 0.06, 0.012, 1, [R() * 9, R() * 9]);
   M.wear = [R(), R(), lit ? 1 : 0, 0];
   M.quad("sign", put(f, [x - w / 2, y, z + 0.065]), put(f, [x + w / 2, y, z + 0.065]), put(f, [x + w / 2, y + h, z + 0.065]), put(f, [x - w / 2, y + h, z + 0.065]), [[0, 0], [1, 0], [1, 1], [0, 1]]);
   M.wear = T.col;
   snowPillow(T, f, x - w / 2 - 0.05, z, x + w / 2 + 0.05, z + 0.06, y + h + 0.05, 0.05, 0.01);
-  if (lit) { const p = put(f, [x, y + h + 0.3, z + 0.35]); M.tube("iron", [put(f, [x, y + h + 0.05, z + 0.02]), p], 0.01, 5); M.lathe("iron", [p[0], p[1] - 0.1, p[2]], [[0.09, 0], [0.04, 0.1]], 10); T.L.push({ p: [p[0], p[1] - 0.12, p[2]], col: HUE.paraffin, power: 9, radius: 0.04, aim: dir(f, [0, -0.6, -0.8]), cone: 0.55 }); }
+  if (lit) { const p = put(f, [x, y + h + 0.3, z + 0.35]); M.tube("iron", [put(f, [x, y + h + 0.05, z + 0.02]), p], 0.01, 5); M.lathe("iron", [p[0], p[1] - 0.1, p[2]], [[0.09, 0], [0.04, 0.1]], 10); T.L.push({ p: [p[0], p[1] - 0.12, p[2]], col: HUE.paraffin, power: 3.5, radius: 0.04, aim: dir(f, [0, -0.6, -0.8]), cone: 0.55 }); }
 }
 
 // an upright light box standing out from the wall, lit from inside
 export function signBox(T, f, x, y, z) {
   const { M, R } = T, w = 0.42 + 0.2 * R(), h = 1.2 + 0.9 * R(), d = 0.16, out = 0.3 + 0.4 * R(), hue = [[1.0, 0.9, 0.75], [1.0, 0.45, 0.25], [0.6, 0.95, 0.75], [0.7, 0.82, 1.0]][Math.floor(R() * 4)];
   M.bbox("iron", f, x - 0.02, y - 0.05, z + out - 0.03, x + d + 0.02, y + h + 0.05, z + out + w + 0.03, 0.01);
-  M.wear = [hue[0], hue[1], hue[2], 0.6];
-  for (const sx of [-0.002, d + 0.002]) M.quad("lamp", put(f, [x + sx, y, z + out]), put(f, [x + sx, y, z + out + w]), put(f, [x + sx, y + h, z + out + w]), put(f, [x + sx, y + h, z + out]), [[0, 0], [1, 0], [1, 1], [0, 1]]);
+  M.wear = [2 + Math.floor(R() * 4), R(), 1, 0];   // lettered, lit from inside (hf_material.hlsli signPaint)
+  for (const sx of [-0.002, d + 0.002]) M.quad("sign", put(f, [x + sx, y, z + out]), put(f, [x + sx, y, z + out + w]), put(f, [x + sx, y + h, z + out + w]), put(f, [x + sx, y + h, z + out]), [[0, 0], [1, 0], [1, 1], [0, 1]]);
   M.wear = T.col;
   M.tube("iron", [put(f, [x + d / 2, y + h * 0.8, z]), put(f, [x + d / 2, y + h * 0.8, z + out])], 0.015, 6);
   snowPillow(T, f, x - 0.02, z + out - 0.03, x + d + 0.02, z + out + w + 0.03, y + h + 0.05, 0.08, 0.02);
-  T.L.push({ p: put(f, [x + d / 2, y + h / 2, z + out + w / 2]), col: hue, power: 10, radius: 0.2 });
+  T.L.push({ p: put(f, [x + d / 2, y + h / 2, z + out + w / 2]), col: hue, power: 5, radius: 0.2 });
 }
 
 // a street lamp: a timber pole on a stone foot, an iron arm, a shade over a sodium globe
@@ -85,12 +88,25 @@ export function cable(T, a, b, sag) {
   T.M.tube("iron", pts, 0.009, 4);
 }
 
+// a crate of slats with gaps between them, corner battens and a dark inside
+function crate(T, f, x, y, z, s) {
+  const { M, R } = T, x0 = x - s / 2, x1 = x + s / 2, z0 = z, z1 = z + s, n = 4, g = 0.012, off = () => [R() * 9, R() * 9];
+  M.bbox("timber", f, x0 + 0.02, y + 0.02, z0 + 0.02, x1 - 0.02, y + s - 0.02, z1 - 0.02, 0, 1, [0, 0], { col: [1, 0.3, 0.6, 0] });
+  for (let i = 0; i < n; i++) {
+    const a = y + i * s / n + g / 2, b = y + (i + 1) * s / n - g / 2;
+    M.bbox("timber", f, x0, a, z1 - 0.018, x1, b, z1, 0.004, 1, off()); M.bbox("timber", f, x0, a, z0, x1, b, z0 + 0.018, 0.004, 1, off());
+    M.bbox("timber", f, x0, a, z0, x0 + 0.018, b, z1, 0.004, 1, off()); M.bbox("timber", f, x1 - 0.018, a, z0, x1, b, z1, 0.004, 1, off());
+  }
+  for (const [cx, cz] of [[x0, z0], [x1, z0], [x0, z1], [x1, z1]]) M.bbox("timber", f, cx - 0.025, y, cz - 0.025, cx + 0.025, y + s, cz + 0.025, 0.006, 1, off());
+  for (let i = 0; i < 3; i++) M.bbox("timber", f, x0, y + s - 0.016, z0 + (i + 0.2) * s / 3, x1, y + s, z0 + (i + 0.8) * s / 3, 0.004, 1, off());
+}
+
 // what stands along a wall: crates, a barrel, stacked firewood, a heap of shovelled snow
 export function clutter(T, f, x, z) {
   const { M, R } = T, pick = R();
   if (pick < 0.3) for (let i = 0; i < 2 + Math.floor(R() * 2); i++) {
     const s = 0.38 + 0.2 * R(), px = x + (i - 0.5) * 0.55 + (R() - 0.5) * 0.1, py = i === 2 ? 0.45 : 0;
-    M.bbox("timber", f, px - s / 2, py, z + 0.05, px + s / 2, py + s, z + 0.05 + s, 0.015, 1.2, [R() * 9, R() * 9]);
+    crate(T, f, px, py, z + 0.05, s);
     snowPillow(T, f, px - s / 2, z + 0.05, px + s / 2, z + 0.05 + s, py + s, 0.06 + 0.06 * R(), 0.02);
   } else if (pick < 0.5) {
     const c = put(f, [x, 0, z + 0.4]), prof = []; for (let i = 0; i <= 8; i++) { const t = i / 8; prof.push([0.27 + 0.04 * Math.sin(t * Math.PI), t * 0.85]); }
@@ -102,12 +118,17 @@ export function clutter(T, f, x, z) {
     const w = 1.2 + R(), hgt = 1.0 + 0.4 * R();
     for (let row = 0; row * 0.14 < hgt; row++) for (let k = 0; k * 0.15 < w; k++) {
       const px = x - w / 2 + k * 0.15 + (row % 2) * 0.07, py = 0.08 + row * 0.135, a = put(f, [px, py, z + 0.02]), b = put(f, [px + (R() - 0.5) * 0.02, py, z + 0.5]);
-      M.tube("timber", [a, b], 0.06 + 0.012 * R(), 6, true);
+      M.tube("timber", [a, b], 0.06 + 0.012 * R(), 12, true);
     }
     M.bbox("timber", f, x - w / 2 - 0.1, hgt + 0.15, z, x + w / 2 + 0.1, hgt + 0.19, z + 0.62, 0.008);
     snowPillow(T, f, x - w / 2 - 0.1, z, x + w / 2 + 0.1, z + 0.62, hgt + 0.19, 0.12, 0.03);
   } else {
-    const c = put(f, [x, -0.05, z + 0.55]), s = 0.7 + 0.6 * R();
-    M.lathe("snow", c, [[s, 0], [s * 0.86, s * 0.3], [s * 0.55, s * 0.55], [s * 0.2, s * 0.68], [0.02, s * 0.7]], 18, 0.6);
+    // a heap of shovelled snow: a lumpy mound whose radius wanders round it and whose top is clods
+    const c = put(f, [x, -0.25, z + 0.55]), s = 0.7 + 0.6 * R(), ph = R() * 30;
+    M.grid("snow", (u, t) => {
+      const a = u * 6.2832, rr = s * (1 - t * t) * (0.8 + 0.35 * fbm(Math.cos(a) * 1.3 + ph, Math.sin(a) * 1.3 + t * 2));
+      const hgt = s * 0.75 * Math.sqrt(Math.max(0, t)) * (0.85 + 0.3 * fbm(Math.cos(a) * 2 + ph, Math.sin(a) * 2 + 5));
+      return [c[0] + Math.cos(a) * rr, c[1] + hgt, c[2] + Math.sin(a) * rr];
+    }, 40, 14, (u, t) => [u * s * 4, t * s * 2]);   // the apex row closes on the axis
   }
 }

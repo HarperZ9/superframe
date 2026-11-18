@@ -57,7 +57,8 @@ void main(uint3 id : SV_DispatchThreadID) {
     const float fr = s.kind == K_GLASS ? lum(F_schlick(specF0(s), dot(s.n, v))) : 0.0f;
     c += s.emis * (1.0f - fr);
     c += dDiff[id.xy].w * F.moonRad.rgb / max(lum(F.moonRad.rgb), 1e-6f) * 0.5f;
-    hdr[id.xy] = float4(finite3(fogAt(px, gGeo[id.xy].x, c)), 1.0f);
+    if (F.dbg.x == 1u) c = giRaw[id.xy].rgb / PI; else if (F.dbg.x == 2u) c = dDiff[id.xy].rgb / PI; else if (F.dbg.x == 3u) c = s.albedo;
+    hdr[id.xy] = float4(finite3(F.dbg.x > 0u ? c : fogAt(px, gGeo[id.xy].x, c)), 1.0f);
 #elif MODE == 1
     if (id.x >= (uint)F.size.x || id.y >= (uint)F.size.y) return;
     const float3 cur = finite3(hdr[id.xy].rgb);

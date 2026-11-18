@@ -35,14 +35,14 @@ function icicles(T, f, gx, y, z, long) {
   }
 }
 
-export function roof(T, f, W, D, hw, pitch, lod) {
-  const { M, R } = T, ov = 0.6, gx = W + 0.4, rise = (D + ov) * Math.tan(pitch), ridge = hw + D * Math.tan(pitch), eave = ridge - rise;
+export function roof(T, f, W, D, hw, pitch, lod, o = {}) {
+  const { M, R } = T, ov = o.ov ?? 0.6, rmat = o.mat || "shingle", gx = W + 0.4, rise = (D + ov) * Math.tan(pitch), ridge = hw + D * Math.tan(pitch), eave = ridge - rise;
   const deck = 0.07, n = (sz) => dir(f, [0, Math.cos(pitch), sz * Math.sin(pitch)]);
   for (const sz of [-1, 1]) {
     // the deck of shingles, its uv down the slope so the courses run along the eave
     const A = put(f, [-gx, ridge + deck, 0]), B = put(f, [gx, ridge + deck, 0]), C = put(f, [gx, eave + deck, sz * (D + ov)]), Dd = put(f, [-gx, eave + deck, sz * (D + ov)]), L = Math.hypot(rise, D + ov);
     M.wear = [Math.min(1, T.age + 0.2), 0.3, 0.1, R()];
-    M.quad("shingle", A, B, C, Dd, [[0, 0], [2 * gx, 0], [2 * gx, L], [0, L]]);
+    M.quad(rmat, A, B, C, Dd, [[0, 0], [2 * gx, 0], [2 * gx, L], [0, L]]);
     // the deck's underside and its edge
     const ua = put(f, [-gx, ridge, 0]), ub = put(f, [gx, ridge, 0]), uc = put(f, [gx, eave, sz * (D + ov)]), ud = put(f, [-gx, eave, sz * (D + ov)]);
     M.quad("timber", ud, uc, ub, ua, [[0, 0], [2 * gx, 0], [2 * gx, L], [0, L]]);
@@ -68,5 +68,7 @@ export function roof(T, f, W, D, hw, pitch, lod) {
   for (let y = base; y < top; y += 0.22) M.bbox("stone", f, cx - 0.33 + (R() - 0.5) * 0.02, y, cz - 0.34, cx + 0.33, y + 0.21, cz + 0.34, 0.025, 1, [R() * 9, R() * 9]);
   M.bbox("stone", f, cx - 0.42, top, cz - 0.43, cx + 0.42, top + 0.09, cz + 0.43, 0.02);
   snowPillow(T, f, cx - 0.42, cz - 0.43, cx + 0.42, cz + 0.43, top + 0.09, 0.14 + 0.1 * R(), 0.04);
+  // most chimneys are drawing: their smoke is fog the frame adds over them (hf_fog.hlsl smoke)
+  if (T.L.smoke && R() < 0.75) { const p = put(f, [cx, top + 0.2, cz]); T.L.smoke.push([p[0], p[1], p[2], 0.6 + 0.8 * R()]); }
   return { ridge, eave, gx, ov };
 }

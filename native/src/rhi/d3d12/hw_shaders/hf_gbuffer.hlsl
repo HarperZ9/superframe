@@ -61,6 +61,6 @@ POut ps(VOut i, uint prim : SV_PrimitiveID, bool front : SV_IsFrontFace) {
     o.emis = float4(s.emis, float(s.kind) + s.ao * 0.5f);
     const float2 pc = i.cur.xy / i.cur.w, pp = i.prev.xy / i.prev.w;
     const float2 motion = (pc - pp) * float2(0.5f, -0.5f) * F.size.xy;
-    o.geo = float4(dot(i.wp - F.eye.xyz, F.fwd.xyz), motion, s.f0);
+    o.geo = float4(dot(i.wp - F.eye.xyz, F.fwd.xyz), motion, packOct(s.ng));
     return o;
 }

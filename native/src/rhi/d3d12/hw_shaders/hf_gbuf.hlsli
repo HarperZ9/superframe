@@ -8,8 +8,8 @@ bool loadSurf(uint2 px, out Surf s, out float3 v) {
     s = (Surf)0; v = 0;
     if (g.x <= 0.0f) return false;
     const float4 a = gAlbedo[px], n = gNormal[px], e = gEmis[px];
-    s.p = worldAt(px, g.x); s.n = normalize(n.xyz); s.ng = s.n; s.albedo = a.rgb; s.rough = a.w; s.metal = n.w;
-    s.emis = e.rgb; s.kind = (uint)floor(e.w + 1e-3f); s.ao = saturate(frac(e.w + 1e-3f) * 2.0f); s.f0 = g.w;
+    s.p = worldAt(px, g.x); s.n = normalize(n.xyz); s.ng = unpackOct(g.w); s.albedo = a.rgb; s.rough = a.w; s.metal = n.w;
+    s.emis = e.rgb; s.kind = (uint)floor(e.w + 1e-3f); s.ao = saturate(frac(e.w + 1e-3f) * 2.0f); s.f0 = s.kind == K_ICE ? 0.018f : 0.04f;
     v = normalize(F.eye.xyz - s.p);
     return true;
 }

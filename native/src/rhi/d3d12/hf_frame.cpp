@@ -75,12 +75,13 @@ public:
                       (o.glints ? 128u : 0) | (o.sss ? 256u : 0) | (o.shadows ? 512u : 0) | (o.pom ? 1024u : 0) | (o.bloom ? 2048u : 0) | (reset ? 4096u : 0);
         f.counts[0] = frame; f.counts[1] = fl; f.counts[2] = c.skyIndex; f.counts[3] = ptCount;
         f.timeParams[0] = o.time; f.timeParams[1] = 1.1f; f.timeParams[2] = 0.35f; f.timeParams[3] = 0.15f;
+        f.dbg[0] = o.debugView; f.dbg[1] = c.smokeCount;
         f.fwd[0] = float(k.fwd[0]); f.fwd[1] = float(k.fwd[1]); f.fwd[2] = float(k.fwd[2]); f.fwd[3] = float(k.aspect);
         // the fast GTAO's PostParams at 2048: size, slices, steps, refine, flags, ssr steps, pad; view; ssr (depth unpack); taa
         uint8_t* p = nullptr;
         if (FAILED(c.cb->Map(0, nullptr, reinterpret_cast<void**>(&p)))) return false;
         std::memcpy(p, &f, sizeof f);
-        const uint32_t pp[8] = {c.w, c.h, 2, 6, 8, 0, 0, 0};          // 2 slices, 6 steps, as bench/ao's mid setting
+        const uint32_t pp[8] = {(c.w + 1) / 2, (c.h + 1) / 2, 2, 6, 8, 0, 0, 0};   // half resolution; 2 slices, 6 steps
         const float pv[12] = {float(k.tanY), float(k.aspect), 0.05f, 1.2f, 1.0f, 1.0f, 0, 0, 0, 0, 0, 0};
         std::memcpy(p + 2048, pp, sizeof pp); std::memcpy(p + 2048 + 32, pv, sizeof pv);
         c.cb->Unmap(0, nullptr);
@@ -136,14 +137,18 @@ FrameResult D3d12Frame::render(const FrameCamera& cam, const FrameOptions& o){
     if (o.width != c.w || o.height != c.h){ R.error = "the renderer was made for another size"; return R; }
     if (o.reference){
         uint32_t done = 0;
-        const uint32_t per = 4;
+        const uint32_t per = 1;
         double total = 0;
         while (done < o.referenceSpp){
             const uint32_t n = std::min(per, o.referenceSpp - done);
-            if (!constants(cam, o, done == 0, done) || !c.q.begin(R.error)) return R;
-            hf::Recorded r; hf::recordReference(c, o, done, n, r);
-            if (!c.q.submitAndWait(r.stamps, R.error)) return R;
-            total += 1000.0 * double(c.q.ticks(0, 1)) / c.q.ticksPerSecond();
+            if (!constants(cam, o, done == 0, done)) return R;
+            const uint32_t band = 272;   // rows a submission, a multiple of 8
+            for (uint32_t row = 0; row < c.h; row += band){
+                if (!c.q.begin(R.error)) return R;
+                hf::Recorded r; hf::recordReference(c, o, done, n, row, std::min(band, c.h - row), r);
+                if (!c.q.submitAndWait(r.stamps, R.error)) return R;
+                total += 1000.0 * double(c.q.ticks(0, 1)) / c.q.ticksPerSecond();
+            }
             done += n;
         }
         if (!c.q.begin(R.error)) return R;

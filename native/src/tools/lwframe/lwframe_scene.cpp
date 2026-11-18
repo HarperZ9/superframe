@@ -46,6 +46,7 @@ std::vector<MaterialSpec> materialSpecs(const std::string& r){
     auto shingle = ph(r, "shingle", "grey_roof_01", 8.0f); shingle.heightScale = 0.012f; v.push_back(shingle);
     auto iron = acg(r, "iron", "Metal055B", 1.0f, 0, false); iron.metal = 0.7f; iron.tint[0] = iron.tint[1] = iron.tint[2] = 0.28f; v.push_back(iron);
     auto ice = acg(r, "ice", "Ice002", 1.0f, 4, false); v.push_back(ice);
+    auto plaster = acg(r, "plaster", "Plaster007", 2.0f, 0); plaster.heightScale = 0.004f; plaster.tint[0] = 0.92f; plaster.tint[1] = 0.88f; plaster.tint[2] = 0.8f; v.push_back(plaster);
     MaterialSpec glass; glass.name = "glass"; glass.kind = 3; v.push_back(glass);
     MaterialSpec lamp; lamp.name = "lamp"; lamp.kind = 5; v.push_back(lamp);
     MaterialSpec sign; sign.name = "sign"; sign.kind = 6; v.push_back(sign);
@@ -92,6 +93,8 @@ bool loadScene(const std::string& glbPath, const std::string& framePath, const s
             if (const assets::Json* a = l.get("aim")){ for (int k = 0; k < 3; ++k) L.aim[k] = float(a->a[k].number("aim")); L.cone = float(l.get("cone")->number("cone")); }
             S.lights.push_back(L);
         }
+        if (const assets::Json* sm = j.get("smoke")) for (const assets::Json& q : sm->a)
+            S.smoke.push_back({float(q.a[0].number("smoke")), float(q.a[1].number("smoke")), float(q.a[2].number("smoke")), float(q.a[3].number("smoke"))});
         auto cam = [](const assets::Json& c){ rhi::hw::FrameCamera o{}; for (int k = 0; k < 3; ++k) o.eye[k] = float(c.get("eye")->a[k].number("eye"));
             o.yaw = float(c.get("yaw")->number("yaw")); o.pitch = float(c.get("pitch")->number("pitch")); o.fovDeg = float(c.get("fov")->number("fov")); return o; };
         const assets::Json* cs = j.get("cameras");

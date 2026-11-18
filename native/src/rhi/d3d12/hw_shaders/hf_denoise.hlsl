@@ -64,7 +64,9 @@ void main(uint3 id : SV_DispatchThreadID) {
         const float4 cq = PC.a.y == 0u ? filtA[q] : filtB[q];
         const float wz = exp(-abs(gq.x - g.x) / (0.02f * g.x * float(step) + 1e-3f));
         const float wn = pow(saturate(dot(gNormal[q].xyz, n)), 64.0f);
-        const float wl = exp(-abs(lum(cq.rgb) - l) / (sigL * (l + 0.02f) + 1e-4f));
+        // the luminance stop matters while the history is short; once it is long the noise left is the
+        // low-frequency kind (blotches from shared light samples), which only a wider blur removes
+        const float wl = lerp(exp(-abs(lum(cq.rgb) - l) / (sigL * (l + 0.02f) + 1e-4f)), 1.0f, saturate((c.w - 8.0f) / 24.0f));
         const float wk = k[abs(x)] * k[abs(y)] * wz * wn * wl;
         sum += cq.rgb * wk; wsum += wk;
     }

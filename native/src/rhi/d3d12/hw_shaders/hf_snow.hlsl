@@ -39,7 +39,8 @@ SOut vs(uint vid : SV_VertexID) {
     const uint cl = clusterOf(p), n = min(clusterCount(cl), 8u);
     for (uint j = 0u; j < n; j++) { const Light Lt = Lights[clusterLight(cl, j)]; const float3 d = Lt.p - p; L += intensity(Lt, -normalize(d)) / max(dot(d, d), 0.04f) * (0.5f + 1.5f * pow(saturate(dot(-v, normalize(d))), 4.0f)); }
     o.col = L * 0.85f / PI;
-    o.a = coverage * saturate(1.0f - c.w / 40.0f) * (c.w < 0.25f ? 0.0f : 1.0f) * 0.9f;
+    // flakes nearer than a metre and a half are out of focus and fade, so none blots the view
+    o.a = coverage * saturate(1.0f - c.w / 40.0f) * smoothstep(0.6f, 1.6f, c.w) * 0.9f;
     return o;
 }
 float4 ps(SOut i) : SV_Target0 {

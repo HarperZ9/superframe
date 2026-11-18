@@ -46,7 +46,7 @@ bool rootSignatures(Ctx& c, std::string& err){
     p.push_back(rootDesc(D3D12_ROOT_PARAMETER_TYPE_CBV, 0));
     D3D12_ROOT_PARAMETER k{}; k.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS; k.Constants.ShaderRegister = 1; k.Constants.Num32BitValues = 16; k.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
     p.push_back(k);
-    for (UINT t = 0; t < 6; ++t) p.push_back(rootDesc(D3D12_ROOT_PARAMETER_TYPE_SRV, t));
+    for (UINT t = 0; t < 7; ++t) p.push_back(rootDesc(D3D12_ROOT_PARAMETER_TYPE_SRV, t));
     D3D12_ROOT_PARAMETER t1{}; t1.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; t1.DescriptorTable = {1, &tex}; t1.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
     D3D12_ROOT_PARAMETER t2 = t1; t2.DescriptorTable = {1, &uav};
     p.push_back(t1); p.push_back(t2);

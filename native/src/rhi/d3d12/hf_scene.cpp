@@ -65,6 +65,10 @@ bool uploadScene(Ctx& c, const hw::FrameScene& s, std::string& err){
         !upload(c, s.indices.data(), s.indices.size() * 4, c.idx, keep, err) || !upload(c, s.triMaterial.data(), s.triMaterial.size() * 4, c.triMat, keep, err) ||
         !upload(c, s.materials.data(), s.materials.size() * sizeof(hw::FrameMaterial), c.mats, keep, err) ||
         !upload(c, lights.data(), lights.size() * sizeof(hw::FrameLight), c.lights, keep, err)) return false;
+    std::vector<std::array<float, 4>> smoke = s.smoke;
+    c.smokeCount = uint32_t(smoke.size());
+    if (smoke.empty()) smoke.push_back({0, -1e9f, 0, 0});
+    if (!upload(c, smoke.data(), smoke.size() * 16, c.smoke, keep, err)) return false;
     // textures: the materials' (RGBA8; sRGB where marked), then the sky (RGBA16F) last
     c.textures.resize(s.textures.size() + 1);
     for (size_t i = 0; i < s.textures.size(); ++i)

@@ -35,6 +35,12 @@ function houseAt(H, x, z) {
   return best;
 }
 
+// distance outside a house's footprint with its corners rounded by a metre, so drifts turn the corner
+// smoothly instead of meeting along a crease
+function smoothFoot(ho) {
+  const r = 1.0, qx = Math.abs(ho.u) - (ho.h.W / 2 - r), qz = Math.abs(ho.w) - (ho.h.D / 2 - r);
+  return Math.hypot(Math.max(qx, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qz), 0) - r;
+}
 // height of the ground under the snow, the snow's depth and the blend weights, at a world point
 export function groundOf(world, P, H, x, z) {
   const ln = laneAt(P, x, z), ho = houseAt(H, x, z), raw = baseGround(world, x, z), flat = heightAt(world, x, z);
@@ -57,14 +63,26 @@ export function groundOf(world, P, H, x, z) {
   const bank = Math.exp(-Math.pow((ln.d - 0.75) / 0.55, 2)) * (0.38 + 0.2 * n);
   snow += bank * (1 - inLane * 0.7);
   if (ho.h) {
-    const c = Math.cos(ho.h.turn), s = Math.sin(ho.h.turn), side = ho.u * c + ho.w * s, windward = Math.max(0, -(x - ho.h.x) * 0.6 - (z - ho.h.z) * 0.8) / 6;
-    const drift = Math.exp(-ho.d / 0.9) * (0.25 + 0.5 * windward), drip = Math.exp(-Math.pow((ho.d - 0.55) / 0.22, 2)) * 0.22;
-    snow = Math.max(0.02, snow + drift - drip);
-    void side;
-    // in front of the door the snow is scraped back to the cobbles
-    const front = ho.w > ho.h.D / 2 - 0.2 && ho.w < ho.h.D / 2 + 1.6, door = Math.abs(ho.u - ho.h.doorX) < 0.9;
-    if (front && door) { const k = smooth(0.95, 0.5, Math.abs(ho.u - ho.h.doorX)) * smooth(1.6, 0.9, ho.w - ho.h.D / 2); snow = lerp(snow, 0.015, k); w = [w[0] * (1 - k), w[1] * (1 - k), k * 0.9, k * 0.1]; }
-    if (ho.d < 0.4) w[3] = Math.max(w[3], smooth(0.4, 0.1, ho.d) * 0.6);
+    // wind-shaped drifts against the walls: a smooth swell whose reach and height wander with noise,
+    // deeper to the north-west, with a soft drip trench under the eaves and ripples on top
+    const r2 = smoothFoot(ho), windward = Math.max(0, -(x - ho.h.x) * 0.6 - (z - ho.h.z) * 0.8) / 6;
+    const reach = 1.1 + 1.0 * fbm(x * 0.37 + 3, z * 0.37 + 7), height = (0.18 + 0.45 * windward) * (0.7 + 0.6 * fbm(x * 0.21, z * 0.21));
+    const t = Math.min(1, Math.max(0, r2 / reach)), swell = height * Math.pow(1 - t * t * (3 - 2 * t), 1.6);
+    const drip = 0.1 * Math.exp(-Math.pow((r2 - 0.55 - 0.15 * fine) / 0.3, 2));
+    const ripple = 0.022 * Math.sin((x * 0.8 - z * 0.6) * 5.5 + fbm(x * 0.9, z * 0.9) * 6) * (1 - inLane);
+    snow = Math.max(0.02, snow + swell - drip + ripple);
+    // nothing piles past the window sills
+    const cap = 0.85 + 0.6 * Math.min(1, r2 / 2.5), k = 0.25, hm = Math.max(k - Math.abs(snow - cap), 0) / k;
+    snow = Math.min(snow, cap) - hm * hm * k * 0.25;   // a smooth minimum, so the cap leaves no ridge
+    // in front of the door the snow is shovelled back to the cobbles, in a rough oval with a berm round it
+    const du = (ho.u - ho.h.doorX) / (0.95 + 0.12 * fbm(x * 3, z * 3)), dw = (ho.w - ho.h.D / 2 - 0.55) / (1.05 + 0.15 * fbm(x * 2.3, z * 2.3));
+    const e = Math.hypot(du, dw);
+    if (e < 1.6) {
+      const k = 1 - smooth(0.75, 1.0, e), berm = 0.16 * Math.exp(-Math.pow((e - 1.08) / 0.18, 2)) * (0.7 + 0.6 * fine);
+      snow = lerp(snow, 0.012, k) + berm * (1 - k);
+      w = [w[0] * (1 - k), w[1] * (1 - k), k * 0.92, k * 0.08];
+    }
+    if (ho.d < 0.4) w[3] = Math.max(w[3], smooth(0.4, 0.1, ho.d) * 0.5);
   }
   return { g, snow, w, inHouse: ho.d < -0.05 };
 }
@@ -110,7 +128,7 @@ function farLand(M, world, O, view) {
 }
 
 export function street(world, P, view, opts = {}) {
-  const M = new HeroMesh(), L = [], O = [view.x, Math.round(baseGround(world, view.x, view.z)), view.z];
+  const M = new HeroMesh(), L = Object.assign([], { smoke: [] }), O = [view.x, Math.round(baseGround(world, view.x, view.z)), view.z];
   const fx = Math.sin(view.yaw), fz = -Math.cos(view.yaw), seen = (x, z, back = 25, side = 60, far = 280) => {
     const d = (x - view.x) * fx + (z - view.z) * fz, a = Math.abs((x - view.x) * Math.cos(view.yaw) + (z - view.z) * Math.sin(view.yaw));
     return d > -back && d < far && a < side;
@@ -141,8 +159,9 @@ export function street(world, P, view, opts = {}) {
     if (!other) continue;
     for (let k = 0; k < 1 + Math.floor(T.R() * 2); k++) cable(T, put(out.f, [(T.R() - 0.5) * h.W * 0.6, h.hw - 0.3 - k * 0.15, h.D / 2 + 0.15]), put(other.out.f, [(T.R() - 0.5) * other.h.W * 0.6, other.h.hw - 0.35 - k * 0.12, other.h.D / 2 + 0.15]), 0.4 + 0.4 * T.R());
   }
-  for (const l of L) { l.p = [l.p[0], l.p[1], l.p[2]]; }
-  return { M, L, O, houses: H.length };
+  // a light that the snow has buried (a window low on a drifted wall) is left out
+  const lit = L.filter((l) => { const q = groundOf(world, P, H, l.p[0] + O[0], l.p[2] + O[2]); return l.p[1] + O[1] > q.g + q.snow + 0.35; });
+  return { M, L: lit, O, houses: H.length, smoke: L.smoke || [] };
 }
 
 function mulberry(seed) { let a = seed >>> 0; return () => { a = (a + 0x6d2b79f5) >>> 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }

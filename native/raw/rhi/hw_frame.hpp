@@ -48,6 +48,7 @@ struct FrameScene {
     std::vector<FrameMaterial> materials;
     std::vector<FrameTexture> textures;
     std::vector<FrameLight> lights;
+    std::vector<std::array<float, 4>> smoke;   // chimney tops that draw: x y z, strength
     uint32_t skyW{0}, skyH{0};
     std::vector<float> sky;                 // equirectangular RGB radiance, the moon taken out
     float moonDir[3]{0, 1, 0}, moonRadiance[3]{0, 0, 0}, moonHalfAngle{0.0045f};
@@ -63,6 +64,7 @@ struct FrameOptions {
     bool reference{false};        // the path tracer instead
     uint32_t referenceSpp{1024}, referenceBounces{6};
     float time{0};                // seconds, for the falling snow
+    uint32_t debugView{0};        // 0 the frame; 1 GI irradiance, 2 direct irradiance, 3 albedo (each before the tone map)
 };
 struct PassTime { std::string name; double ms; };
 struct FrameResult {

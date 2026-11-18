@@ -35,7 +35,7 @@ Surf surface(uint mi, Vtx v, float3 ng, float3 viewDir, float lod, float2 dx, fl
         return s;
     }
     if (m.kind == K_SIGN) {
-        s.albedo = signPaint(v.uv, v.c); s.rough = 0.55f; s.emis = s.albedo * v.c.b * 0.6f;
+        float3 e; s.albedo = signPaint(v.uv, v.c, e); s.rough = 0.55f; s.emis = e;
         return s;
     }
     if (m.kind == K_GLASS) {

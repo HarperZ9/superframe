@@ -26,7 +26,7 @@ void main(uint3 id : SV_DispatchThreadID) {
         if (R.light != 0xFFFFFFFFu && on(F_SHADOW)) {
             const Light L = Lights[R.light];
             const float3 q = lightPoint(L, s.p, R.u), d = q - s.p;
-            if (occluded(offsetRay(s.p, s.n), normalize(d), length(d) - L.radius * 1.2f)) { R.wsum = 0.0f; }
+            if (occluded(offsetRay(s.p, s.ng), normalize(d), length(d) - L.radius * 1.2f)) { R.wsum = 0.0f; }
         }
         // temporal: last frame's reservoir where this surface was, if it is the same surface
         const float2 pp = float2(id.xy) + 0.5f - gGeo[id.xy].yz;
@@ -34,11 +34,12 @@ void main(uint3 id : SV_DispatchThreadID) {
             const uint2 q = uint2(pp);
             const float4 gp = geoPrev[q];
             if (abs(gp.x - gGeo[id.xy].x) < 0.05f * gGeo[id.xy].x && dot(nrmPrev[q].xyz, s.n) > 0.9f) {
+                // last frame's reservoir carries its contribution weight W (not its weight sum), so its
+                // weight here is this surface's target times W times its count (Bitterli et al. 2020, eq. 6)
                 Resv P = unpackResv(resvPrev[q.y * w + q.x]);
-                // cap the history at four frames of candidates (longer histories mottle the light), scaling its weight with it
-                if (P.M > 64.0f) { P.wsum *= 64.0f / P.M; P.M = 64.0f; }
-                const float ph = pHat(s, v, P.light, P.u), Wp = P.M > 0.0f && ph > 0.0f ? P.wsum / (P.M * max(pHat(s, v, P.light, P.u), 1e-9f)) : 0.0f;
-                update(R, P.light, P.u, ph * Wp * P.M, P.M, r);
+                P.M = min(P.M, 64.0f);
+                const float ph = pHat(s, v, P.light, P.u);
+                update(R, P.light, P.u, ph * P.wsum * P.M, P.M, r);
             }
         }
     }
@@ -71,14 +72,16 @@ void main(uint3 id : SV_DispatchThreadID) {
             const LightSample ls = evalLight(s, v, L, q);
             const float ph = glossy(s) ? lum(ls.diff * max(s.albedo, 0.05f)) : ls.w;
             const float W = ph > 0.0f ? R.wsum / (R.M * ph) : 0.0f;
-            const bool vis = !on(F_SHADOW) || !occluded(offsetRay(s.p, s.n), ls.l, ls.dist - L.radius * 1.2f);
+            const bool vis = !on(F_SHADOW) || !occluded(offsetRay(s.p, s.ng), ls.l, ls.dist - L.radius * 1.2f);
             if (vis) {
                 diff += ls.diff * W; if (!glossy(s)) spec += ls.spec * W;
                 gl += intensity(L, -ls.l) / max(ls.dist * ls.dist, 0.0025f) * glint(s, v, ls.l, footprintAt(length(F.eye.xyz - s.p))) * min(W, 4.0f);
             }
             // keep the shaded reservoir for next frame, its weight with this pixel's target
-            if (R.M > 64.0f) { R.wsum *= 64.0f / R.M; R.M = 64.0f; }
+            // kept for next frame as its contribution weight W at this surface
+            R.wsum = W; R.M = min(R.M, 64.0f);
         }
+        if (R.light == 0xFFFFFFFFu || R.M <= 0.0f) R.wsum = 0.0f;
         resvPrev[i] = packResv(R);
     } else {
         float3 ld, lsp;

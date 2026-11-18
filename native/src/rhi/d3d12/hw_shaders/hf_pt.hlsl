@@ -5,6 +5,7 @@
 // are already sampled directly; the fog by delta tracking against the same density with multiple
 // scattering (Henyey-Greenstein). PC.a: samples this dispatch, bounces, the first sample's index.
 #include "hf_light.hlsli"
+#include "hf_medium.hlsli"
 
 float hgPhase(float c, float g) { const float g2 = g * g; return (1.0f - g2) / (4.0f * PI * pow(max(1e-4f, 1.0f + g2 - 2.0f * g * c), 1.5f)); }
 float3 hgSample(float3 w, float g, float2 u) {
@@ -12,17 +13,6 @@ float3 hgSample(float3 w, float g, float2 u) {
     const float c = abs(g) < 1e-3f ? 1.0f - 2.0f * u.x : clamp((1.0f + g * g - q * q) / (2.0f * g), -1.0f, 1.0f), sn = sqrt(max(0.0f, 1.0f - c * c));
     const float3x3 B = basis(w);
     return normalize(B[0] * (sn * cos(2.0f * PI * u.y)) + B[1] * (sn * sin(2.0f * PI * u.y)) + w * c);
-}
-float n3(float3 p) {
-    const float3 i = floor(p), f = frac(p), u = f * f * (3.0f - 2.0f * f);
-    float r = 0.0f;
-    [unroll] for (uint k = 0u; k < 8u; k++) { const float3 o = float3(k & 1u, (k >> 1) & 1u, (k >> 2) & 1u); const float3 q = i + o; r += frac(sin(dot(q, float3(12.9898f, 78.233f, 37.719f))) * 43758.5453f) * lerp(1.0f - u.x, u.x, o.x) * lerp(1.0f - u.y, u.y, o.y) * lerp(1.0f - u.z, u.z, o.z); }
-    return r;
-}
-float density(float3 p) {
-    const float3 wind = float3(F.timeParams.z, 0.0f, F.timeParams.w) * F.timeParams.x;
-    const float base = F.fog.x * exp(-max(0.0f, p.y - F.eye.y + 2.0f) * F.fog.y);
-    return base * (0.55f + 0.9f * n3(p * 0.06f - wind * 0.05f) * n3(p * 0.21f + wind * 0.11f));
 }
 float3 sampleVndf(float3 v, float a, float2 u) {
     const float3 vh = normalize(float3(a * v.x, a * v.y, v.z));
@@ -40,25 +30,31 @@ float3 fogNEE(float3 p, float3 w, inout Rng r) {
     float3 L = 0.0f;
     const float3 l = coneDir(F.moonDir.xyz, 0.99996f, rnd2(r));
     if (!on(F_SHADOW) || !occluded(p, l, 1500.0f)) L += F.moonRad.rgb * F.moonRad.w * hgPhase(dot(w, l), F.fog.z);
-    const uint n = (uint)F.cluster.w;
-    if (n > 0u) {
-        const Light Lt = Lights[min(n - 1u, uint(rnd(r) * float(n)))];
-        const float3 q = lightPoint(Lt, p, rnd2(r)), d = q - p; const float dist = length(d);
-        if (!on(F_SHADOW) || !occluded(p, d / dist, dist - Lt.radius * 1.2f)) L += intensity(Lt, -d / dist) / max(dist * dist, 0.04f) * hgPhase(dot(w, d / dist), F.fog.z) * float(n);
-    }
+    L += fogLampRIS(p, w, r, 16u);
     return L;
 }
 
+// does the segment o + d t, t in [0, tEnd], pass through any chimney's plume box?
+bool crossesSmoke(float3 o, float3 d, float tEnd) {
+    for (uint i = 0u; i < F.dbg.y; i++) {
+        const float3 lo = Smoke[i].xyz - float3(9.0f, 0.0f, 9.0f), hi = Smoke[i].xyz + float3(9.0f, 10.0f, 9.0f);
+        const float3 a = (lo - o) / d, b = (hi - o) / d, t0 = min(a, b), t1 = max(a, b);
+        const float tn = max(max(t0.x, t0.y), max(t0.z, 0.0f)), tf = min(min(t1.x, t1.y), min(t1.z, tEnd));
+        if (tn <= tf) return true;
+    }
+    return false;
+}
 float3 pathSample(float2 px, inout Rng r, uint bounces) {
     float3 o = F.eye.xyz, d = viewRay(px), thr = 1.0f, L = 0.0f;
     bool countEmit = true;
-    const float sMax = F.fog.x * 1.5f;
+    const float sHaze = F.fog.x * 1.5f;   // the haze's bound; smoke raises it only on segments that pass a plume
     for (uint b = 0u; b <= bounces; b++) {
         const Hit h = trace(o, d, 2000.0f);
         // the fog between here and the hit, by delta tracking
-        if (on(F_FOG) && sMax > 0.0f) {
-            float t = 0.0f; bool scattered = false; const float tEnd = min(h.t, F.fog.w * 1.5f);
-            for (uint k = 0u; k < 64u; k++) {
+        if (on(F_FOG) && sHaze > 0.0f) {
+            float t = 0.0f; bool scattered = false; const float tEnd = min(h.t, F.fog.w);   // the same reach as the froxels
+            const float sMax = sHaze + (crossesSmoke(o, d, tEnd) ? 1.1f : 0.0f);
+            for (uint k = 0u; k < 512u; k++) {
                 t -= log(1.0f - rnd(r)) / sMax;
                 if (t >= tEnd) break;
                 if (rnd(r) < density(o + d * t) / sMax) { scattered = true; break; }
@@ -77,7 +73,7 @@ float3 pathSample(float2 px, inout Rng r, uint bounces) {
         if (s.kind == K_GLASS) {
             const float fr = lum(F_schlick(specF0(s), dot(s.n, v)));
             if (countEmit) L += thr * s.emis * (1.0f - fr);
-            thr *= fr; o = offsetRay(s.p, s.n); d = reflect(d, s.n); countEmit = true;
+            thr *= fr; d = reflect(d, s.n); o = offsetRay(s.p, dot(d, s.ng) >= 0.0f ? s.ng : -s.ng); countEmit = true;
             continue;
         }
         if (countEmit) L += thr * s.emis;
@@ -101,14 +97,18 @@ float3 pathSample(float2 px, inout Rng r, uint bounces) {
             d = cosineDir(s.n, rnd2(r));
             thr *= s.albedo * (1.0f - s.metal) / (1.0f - ps); countEmit = false;
         }
-        o = offsetRay(s.p, s.n);
+        if (dot(d, s.ng) <= 0.0f) break;   // below the true surface (a normal map tilted it): absorbed
+        o = offsetRay(s.p, s.ng);
         if (b >= 2u) { const float q = clamp(lum(thr), 0.05f, 0.95f); if (rnd(r) > q) break; thr /= q; }
     }
     return min(L, 400.0f);
 }
 
 [numthreads(8, 8, 1)]
-void main(uint3 id : SV_DispatchThreadID) {
+void main(uint3 gid : SV_DispatchThreadID) {
+    // the frame goes in bands of rows (PC.c.x the first), one submission each, so no submission
+    // runs into the operating system's GPU watchdog
+    const uint3 id = uint3(gid.x, gid.y + PC.c.x, 0);
     if (id.x >= (uint)F.size.x || id.y >= (uint)F.size.y) return;
     float3 sum = 0.0f;
     for (uint k = 0u; k < PC.a.x; k++) {

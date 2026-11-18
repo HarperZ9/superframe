@@ -8,6 +8,7 @@
 import { frame, put, dir } from "../kit.mjs";
 import { snowPillow, lantern, signBoard, signBox, clutter, HUE } from "./hparts.mjs";
 import { roof } from "./hroof.mjs";
+import { chooseStyle, halfTimber, dormer, porch, balcony, shed, fence, settle, mark } from "./hvariety.mjs";
 
 // wear at a point of a wall: age, the side the weather comes from (north-west), height above ground
 function wearAt(T, f, p, n) {
@@ -17,10 +18,10 @@ function wearAt(T, f, p, n) {
 
 // the boards of one wall: the wall runs along local x from a to b at depth z (facing sgn), from y0
 // up to top(x); openings [x0, x1, y0, y1] are left open with the boards cut round them
-function boards(T, f, a, b, z, sgn, y0, top, openings, mat) {
+function boards(T, f, a, b, z, sgn, y0, top, openings, mat, wide = false) {
   const { M, R } = T;
   for (let x = a; x < b - 0.02;) {
-    const w = Math.min(b - x, 0.17 + 0.09 * R()), cx = x + w / 2, ht = top(cx), proud = 0.018 + 0.008 * R(), off = [R() * 7, R() * 7];
+    const w = Math.min(b - x, wide ? 0.9 + 0.3 * R() : 0.17 + 0.09 * R()), cx = x + w / 2, ht = top(cx), proud = wide ? 0.012 : 0.018 + 0.008 * R(), off = [R() * 7, R() * 7];
     const cuts = openings.filter((o) => cx > o[0] - 0.02 && cx < o[1] + 0.02).sort((p, q) => p[2] - q[2]);
     let y = y0;
     for (const o of [...cuts, [0, 0, ht, ht]]) {
@@ -28,7 +29,7 @@ function boards(T, f, a, b, z, sgn, y0, top, openings, mat) {
       if (yt - y > 0.04) {
         M.wear = wearAt(T, f, [cx, (y + yt) / 2, z], [0, 0, sgn]);
         const zz = sgn > 0 ? [z, z + proud] : [z - proud, z];
-        M.bbox(mat, f, x + 0.003, y, zz[0], x + w - 0.003, yt, zz[1], 0.004, 1, off, { top: true, bottom: true });
+        M.bbox(mat, f, x + (wide ? 0 : 0.003), y, zz[0], x + w - (wide ? 0 : 0.003), yt, zz[1], wide ? 0.002 : 0.004, 1, off, { top: true, bottom: true });
       }
       y = Math.max(y, o[3]);
     }
@@ -53,7 +54,9 @@ function windowAt(T, f, x, y, w, h, z, sgn, lit, cols, rows) {
   snowPillow(T, f, x - w / 2 - 0.09, Math.min(Z(-0.02), Z(0.12)), x + w / 2 + 0.09, Math.max(Z(-0.02), Z(0.12)), y, 0.07 + 0.05 * R(), 0.02);
   snowPillow(T, f, x - w / 2 - 0.1, Math.min(Z(-0.02), Z(0.09)), x + w / 2 + 0.1, Math.max(Z(-0.02), Z(0.09)), y + h + 0.13, 0.05, 0.015);
   // a lit room throws its light out through the glass
-  if (lit) T.L.push({ p: put(f, [x, y + h * 0.55, Z(0.14)]), col: R() < 0.2 ? HUE.led : HUE.paraffin, power: 8 + 10 * w * h, radius: Math.min(w, h) * 0.35, aim: dir(f, [0, -0.25, s]), cone: 0.0 });
+  // a lit room throws its light out through the glass: a lamp a hand in front of it, aimed out and
+  // down so it lights the snow and the lane rather than the wall beside it
+  if (lit) T.L.push({ p: put(f, [x, y + h * 0.5, Z(0.3)]), col: R() < 0.2 ? HUE.led : HUE.paraffin, power: 5 + 6 * w * h, radius: Math.min(w, h) * 0.3, aim: dir(f, [0, -0.35, s * 0.94]), cone: 0.55 });
 }
 
 // a plank door under a hood, with a step, at x on the front wall z
@@ -105,30 +108,53 @@ export function heroHouse(M, h, O, L, lod = 0) {
   const f = frame(h.x - O[0], h.y + 0.1 - O[1], h.z - O[2], h.turn), W = h.W / 2, D = h.D / 2, hw = h.hw, age = 0.25 + 0.7 * R();
   const T = { M, R, L, age, col: [age, 0.2, 0.2, 0.5] };
   M.wear = T.col;
-  const wallMat = R() < 0.72 ? "boards" : "cedar", gable = (x) => hw + (D - Math.abs(x)) * Math.tan(h.pitch);
+  const st = chooseStyle(R, age), m0 = mark(M), gable = (x) => hw + (D - Math.abs(x)) * Math.tan(h.pitch);
+  T.roofMat = st.roofMat;
   footing(T, f, W, D);
   timberFrame(T, f, W, D, hw);
-  const doorX = (R() - 0.5) * W * 1.1, open = { front: [[doorX - 0.62, doorX + 0.62, 0.55, 2.62]], back: [], left: [], right: [] }, wins = [];
+  const doorX = (R() - 0.5) * W * 1.1, open = { front: [[doorX - 0.62, doorX + 0.62, 0.55, 2.62]], back: [], gable: [] }, wins = [];
   for (const x of [-W * 0.6, W * 0.6]) if (Math.abs(x - doorX) > 1.5) { const w = Math.min(2.0, W * 0.55); wins.push(["front", x, 1.25, w, 1.15, R() < 0.75, 4, 2]); }
-  if (hw > 4.2) for (const x of [-W * 0.5, W * 0.5]) wins.push(["front", x, hw - 1.75, 1.15, 1.05, R() < 0.55, 3, 2]);
+  const upper = hw > 4.2, split = upper ? hw - 2.05 : hw;
+  if (upper) for (const x of [-W * 0.5, W * 0.5]) wins.push(["upper", x, hw - 1.75, 1.15, 1.05, R() < 0.55, 3, 2]);
   wins.push(["back", (R() - 0.5) * W, 1.3, 1.1, 1.0, R() < 0.3, 3, 2]);
-  for (const wv of wins) open[wv[0]].push([wv[1] - wv[3] / 2 - 0.1, wv[1] + wv[3] / 2 + 0.1, wv[2] - 0.12, wv[2] + wv[4] + 0.13]);
-  // walls: front and back between the posts; the gable ends run up to the roof line
-  boards(T, f, -W + 0.1, W - 0.1, D, 1, 0.6, () => hw - 0.22, open.front, wallMat);
-  boards(T, f, -W + 0.1, W - 0.1, -D, -1, 0.6, () => hw - 0.22, open.back, wallMat);
+  const jz = upper && st.jetty ? 0.32 : 0;
+  for (const wv of wins) open[wv[0] === "upper" ? "front" : wv[0]].push([wv[1] - wv[3] / 2 - 0.1, wv[1] + wv[3] / 2 + 0.1, wv[2] - 0.12, wv[2] + wv[4] + 0.13]);
+  // walls by style: boards or cedar all over, plaster in a timber frame, or plaster below and boards above
+  const lowMat = st.style === "cedar" ? "cedar" : st.style === "framed" || st.style === "mixed" ? "plaster" : "boards";
+  const upMat = st.style === "framed" ? "plaster" : st.style === "mixed" ? "boards" : lowMat;
+  const wall = (fr, a, b, z, sgn, y0, top, op, mat) => { boards(T, fr, a, b, z, sgn, y0, top, op, mat, mat === "plaster"); if (mat === "plaster" && sgn > 0) halfTimber(T, fr, a, b, z + 0.012, y0, Math.min(top(0), 6), top); };
+  wall(f, -W + 0.1, W - 0.1, D, 1, 0.6, () => split - 0.22, open.front, lowMat);
+  if (upper) {
+    wall(f, -W + 0.1, W - 0.1, D + jz, 1, split, () => hw - 0.22, open.front, upMat);
+    if (jz) { M.bbox("timber", f, -W - 0.1, split - 0.2, D - 0.1, W + 0.1, split, D + jz + 0.05, 0.015); for (let x = -W; x <= W; x += 0.6) M.bbox("timber", f, x - 0.06, split - 0.32, D, x + 0.06, split - 0.2, D + jz, 0.01); }
+  }
+  boards(T, f, -W + 0.1, W - 0.1, -D, -1, 0.6, () => hw - 0.22, open.back, lowMat === "plaster" ? "plaster" : lowMat, lowMat === "plaster");
   for (const sx of [-1, 1]) {
     const g = { o: put(f, [sx * W, 0, 0]), c: Math.cos(h.turn + sx * Math.PI / 2), s: Math.sin(h.turn + sx * Math.PI / 2), turn: h.turn + sx * Math.PI / 2 };
-    boards(T, g, -D + 0.1, D - 0.1, 0, 1, 0.6, (x) => gable(x) - 0.05, [], wallMat);
+    const gw = st.gableWindow ? [[-0.55, 0.55, gable(0) - 1.9, gable(0) - 0.85]] : [];
+    const lw = R() < 0.6 ? (R() - 0.5) * D : null, lop = lw === null ? [] : [[lw - 0.6, lw + 0.6, 1.18, 2.38]];
+    wall(g, -D + 0.1, D - 0.1, 0, 1, 0.6, () => split - 0.22, lop, lowMat);
+    wall(g, -D + 0.1, D - 0.1, 0, 1, split - 0.22, (x) => gable(x) - 0.05, gw, upper ? upMat : lowMat);
+    if (gw.length) windowAt(T, g, 0, gable(0) - 1.78, 0.85, 0.82, 0, 1, R() < 0.5, 2, 2);
+    // a lower gable window on some houses, so the end walls toward the street are not blank
+    if (lw !== null) windowAt(T, g, lw, 1.3, 1.0, 0.95, 0.02, 1, R() < 0.6, 2, 2);
   }
   // a wall of boards behind the frame closes each face, so no ray sees through the joints
   M.bbox("boards", f, -W + 0.02, 0.5, -D + 0.02, W - 0.02, hw, D - 0.02, 0, 1, [0, 0], { top: false, bottom: false, col: [1, 0.1, 0.1, 0] });
-  for (const wv of wins) { const [side, x, y, w, hh, lit, c, r] = wv; windowAt(T, f, x, y, w, hh, side === "front" ? D : -D, side === "front" ? 1 : -1, lit, c, r); }
+  for (const wv of wins) { const [side, x, y, w, hh, lit, c, r] = wv; windowAt(T, f, x, y, w, hh, side === "back" ? -D : side === "upper" ? D + jz : D, side === "back" ? -1 : 1, lit, c, r); }
   doorAt(T, f, doorX, D + 0.02);
   if (h.bar) for (let i = 0; i < 2 + Math.floor(R() * 3); i++) lantern(T, f, doorX - 1.3 + i * 0.75, 2.15, D + 0.05, "red", 0.38);
   else lantern(T, f, doorX + 0.85, 1.95, D + 0.05, "paper", 0.4);
-  if (h.bar || R() < 0.6) signBoard(T, f, doorX, Math.min(hw - 0.9, 2.75), D + 0.08);
+  if (h.bar || R() < 0.6) signBoard(T, f, doorX, Math.min(split - 0.9, 2.75), D + 0.08);
   if (h.bar || R() < 0.45) signBox(T, f, (R() < 0.5 ? -1 : 1) * W * 0.82, 2.0 + R() * 0.6, D + 0.08);
-  if (lod === 0) for (let i = 0; i < 2 + Math.floor(R() * 2); i++) { const x = (R() - 0.5) * W * 1.7; if (Math.abs(x - doorX) > 1.0) clutter(T, f, x, D + 0.1); }
-  roof(T, f, W, D, hw, h.pitch, lod);
+  if (st.porch && !h.bar) porch(T, f, doorX, D + 0.05);
+  if (upper && st.balcony) balcony(T, f, (R() - 0.5) * W * 0.6, split + 0.05, D + jz);
+  if (lod === 0) for (let i = 0; i < 2 + Math.floor(R() * 2); i++) { const x = (R() - 0.5) * W * 1.7; if (Math.abs(x - doorX) > 1.4) clutter(T, f, x, D + 0.1); }
+  if (st.shed) shed(T, f, R() < 0.5 ? -1 : 1, W, D);
+  if (st.fence && lod === 0) fence(T, f, R() < 0.5 ? -1 : 1, W, D);
+  const rf = roof(T, f, W, D, hw, h.pitch, lod, { ov: st.ov, mat: st.roofMat });
+  for (let i = 0; i < st.dormers && upper; i++) dormer(T, f, (st.dormers === 1 ? 0 : (i - 0.5) * W) + (R() - 0.5) * 0.4, D, hw, h.pitch, windowAt);
+  void rf;
+  settle(M, m0, f, st, hw, W);
   return { f, W, D, hw, doorX };
 }
