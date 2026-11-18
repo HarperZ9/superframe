@@ -28,11 +28,13 @@ struct Frame {
   snowp: vec4f,     // new snow depth m, thaw 0..1, dusting 0..1, old-snow share 0..1
   gfog: vec4f,      // ground fog density per m, thickness m, wisp share, lamp haze per m
   view: vec4f,      // target width, height, mirror level m, 1 when the mirror is drawn
-  walk: vec4f,      // the walker: x, y, z, speed m/s
+  walk: vec4f,      // the walker's feet: x, y, z, and 1 when the walker's figure is drawn
   trail: array<vec4f, 8>,   // where the walker has just been: x, y, z, how open the fog still is
   shadowVP: mat4x4f,
   shp: vec4f,       // 1 when the shadow map is drawn, texel size, depth bias, wind phase
   clip: vec4f,      // keep fragments above this height when y > 0.5; z: 1 in the mirror pass; w: 1 when drawing the sheet of far trees
+  cut: vec4f,       // the iso cut-away: the walker x, y, z, radius m (0: off)
+  cutv: vec4f,      // the direction of the view, and how far the cut has come in 0..1
 }
 struct Light { pos: vec4f, col: vec4f, dir: vec4f }   // place + reach; colour + sodium share; aim + cos of the cone (-1: all round)
 struct Lights { n: vec4u, l: array<Light, 64> }
@@ -243,3 +245,34 @@ fn lampLight(p: vec3f, n: vec3f, v: vec3f, alb: vec3f, rough: f32, gloss: f32, w
 }
 // the surface a mirror pass must not draw: everything under the water plane
 fn clipped(p: vec3f) -> bool { return F.clip.y > 0.5 && p.y < F.clip.x; }
+// The walker's figure on the ground: a soft dark patch under the feet, and its shadow cast along
+// the key light as a capsule's would be (a person 1.8 m tall), so the figure stands on the ground.
+fn walkerAO(p: vec3f) -> f32 {
+  if (F.walk.w < 0.5) { return 1.0; }
+  let d = p.xz - F.walk.xz;
+  return 1.0 - 0.55 * exp(-dot(d, d) / 0.16) * smoothstep(0.8, 0.0, abs(p.y - F.walk.y));
+}
+fn walkerKey(p: vec3f) -> f32 {
+  if (F.walk.w < 0.5 || F.key.y < 0.04) { return 1.0; }
+  let run = -F.key.xz / F.key.y;
+  let len = min(length(run) * 1.75, 9.0);
+  let dir = run / max(length(run), 1e-4);
+  let d = p.xz - F.walk.xz;
+  let t = clamp(dot(d, dir), 0.0, len);
+  let off = length(d - dir * t);
+  let w = mix(0.2, 0.12, t / max(len, 0.01));
+  return 1.0 - 0.75 * (1.0 - smoothstep(w * 0.5, w * 1.6, off)) * smoothstep(1.2, 0.0, abs(p.y - F.walk.y)) * smoothstep(len, len * 0.6, t);
+}
+// The iso cut-away: what stands between the eye and the walker, inside a round sight line through
+// the walker, is dropped by an ordered dither, so walls and roofs open like a cut-away drawing.
+fn cutaway(p: vec3f, frag: vec2f) -> bool {
+  if (F.cut.w <= 0.0 || F.clip.z > 0.5) { return false; }
+  let rel = p - F.cut.xyz;
+  let along = dot(rel, F.cutv.xyz);
+  if (along > -0.6) { return false; }
+  let off = length(rel - F.cutv.xyz * along);
+  let k = (1.0 - smoothstep(F.cut.w * 0.6, F.cut.w, off)) * F.cutv.w * smoothstep(-0.6, -2.2, along);
+  let i = u32(frag.x) % 4u; let j = u32(frag.y) % 4u;
+  let b = array<f32, 16>(0.0, 8.0, 2.0, 10.0, 12.0, 4.0, 14.0, 6.0, 3.0, 11.0, 1.0, 9.0, 15.0, 7.0, 13.0, 5.0);
+  return k * 16.0 > b[j * 4u + i] + 0.5;
+}

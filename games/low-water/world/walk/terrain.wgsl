@@ -231,7 +231,8 @@ fn rainRings(p: vec2f) -> f32 {
   let ndl = clamp((dot(n, F.key.xyz) + 0.25 * cov) / (1.0 + 0.25 * cov), 0.0, 1.0);
   var keyShade = groundShadow(vec3f(v.wp.x, trueGround, v.wp.z) + vec3f(0.0, 6.0, 0.0)) * keyShadow(v.wp, n);
   if (F.shp.x < 0.5) { keyShade *= mix(1.0, 0.12, cover); }
-  var lit = m.c * (F.amb.rgb * (0.55 + 0.45 * n.y) * floorLight + F.keyCol.rgb * F.key.w * ndl * keyShade);
+  keyShade *= walkerKey(v.wp);
+  var lit = m.c * (F.amb.rgb * (0.55 + 0.45 * n.y) * floorLight * walkerAO(v.wp) + F.keyCol.rgb * F.key.w * ndl * keyShade);
   lit += m.c * F.ev.w * vec3f(0.7, 0.75, 0.9);
   lit += lampLight(v.wp, n, -view, m.c, m.r, m.g, 0.3 * cov);
   // far towns still glow on their ground where the lamps are too far to count one by one

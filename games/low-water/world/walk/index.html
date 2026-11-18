@@ -16,6 +16,13 @@
   #hud .where { font-family: "Conso", ui-monospace, monospace; font-size: 11px; margin-top: 5px; padding-top: 4px; border-top: 1px solid rgba(29, 26, 22, 0.5); white-space: pre; }
   #hud .keys { font-size: 11px; margin-top: 4px; color: #4a4338; }
   #note { position: fixed; left: 50%; top: 46%; transform: translate(-50%, -50%); color: #e9e2d0; font: 15px "Hanken", system-ui, sans-serif; letter-spacing: 0.08em; text-align: center; max-width: 70vw; }
+  /* the camera control: four small paper tabs, low and right, the live one inked */
+  #cams { position: fixed; right: 20px; bottom: 18px; display: flex; gap: 0; border: 1px solid #1d1a16; background: rgba(233, 226, 208, 0.88); font-family: "Hanken", system-ui, sans-serif; }
+  #cams button { font: 600 12px/1 "Hanken", system-ui, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; color: #1d1a16; background: transparent; border: 0; border-left: 1px solid rgba(29, 26, 22, 0.4); padding: 9px 12px; min-height: 36px; cursor: pointer; }
+  #cams button:first-child { border-left: 0; }
+  #cams button[aria-pressed="true"] { background: #1d1a16; color: #e9e2d0; }
+  #cams button:focus-visible { outline: 2px solid #b4562a; outline-offset: 2px; }
+  @media (max-width: 640px) { #hud { left: 12px; right: 12px; bottom: 64px; max-width: none; } #hud .keys { display: none; } #cams { right: 12px; left: 12px; bottom: 12px; justify-content: stretch; } #cams button { flex: 1; min-height: 44px; } }
   [hidden] { display: none !important; }
   @media (prefers-reduced-motion: reduce) { #hud { transition: none; } }
 </style>
@@ -26,7 +33,7 @@
   <div class="place"></div>
   <div class="air"></div>
   <div class="where"></div>
-  <div class="keys">W A S D move. Click, then the mouse looks. Shift runs. F flies. Space and C rise and sink. 1 to 9, 0 and the minus key go to a region. The wheel turns the clock. T holds it. H hides this plate.</div>
+  <div class="keys">W A S D move. Click, then the mouse looks. Shift runs. V changes the camera, F flies. E reaches. Space and C rise and sink in flight. In the plan view the wheel zooms and R turns it. 1 to 9, 0 and the minus key go to a region. Elsewhere the wheel turns the clock; T holds it. H hides this plate. A gamepad and a phone's touch work too.</div>
 </div>
 <div id="note" role="alert">Starting</div>
 <script type="module" src="./walk.mjs"></script>
