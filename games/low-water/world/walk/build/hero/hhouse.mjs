@@ -113,9 +113,9 @@ export function heroHouse(M, h, O, L, lod = 0) {
   footing(T, f, W, D);
   timberFrame(T, f, W, D, hw);
   const doorX = (R() - 0.5) * W * 1.1, open = { front: [[doorX - 0.62, doorX + 0.62, 0.55, 2.62]], back: [], gable: [] }, wins = [];
-  for (const x of [-W * 0.6, W * 0.6]) if (Math.abs(x - doorX) > 1.5) { const w = Math.min(2.0, W * 0.55); wins.push(["front", x, 1.25, w, 1.15, R() < 0.75, 4, 2]); }
+  for (const x of [-W * 0.6, W * 0.6]) if (Math.abs(x - doorX) > 1.5) { const w = Math.min(2.0, W * 0.55); wins.push(["front", x, 1.25, w, 1.15, R() < 0.9, 4, 2]); }
   const upper = hw > 4.2, split = upper ? hw - 2.05 : hw;
-  if (upper) for (const x of [-W * 0.5, W * 0.5]) wins.push(["upper", x, hw - 1.75, 1.15, 1.05, R() < 0.55, 3, 2]);
+  if (upper) for (const x of [-W * 0.5, W * 0.5]) wins.push(["upper", x, hw - 1.75, 1.15, 1.05, R() < 0.7, 3, 2]);
   wins.push(["back", (R() - 0.5) * W, 1.3, 1.1, 1.0, R() < 0.3, 3, 2]);
   const jz = upper && st.jetty ? 0.32 : 0;
   for (const wv of wins) open[wv[0] === "upper" ? "front" : wv[0]].push([wv[1] - wv[3] / 2 - 0.1, wv[1] + wv[3] / 2 + 0.1, wv[2] - 0.12, wv[2] + wv[4] + 0.13]);
@@ -137,7 +137,7 @@ export function heroHouse(M, h, O, L, lod = 0) {
     wall(g, -D + 0.1, D - 0.1, 0, 1, split - 0.22, (x) => gable(x) - 0.05, gw, upper ? upMat : lowMat);
     if (gw.length) windowAt(T, g, 0, gable(0) - 1.78, 0.85, 0.82, 0, 1, R() < 0.5, 2, 2);
     // a lower gable window on some houses, so the end walls toward the street are not blank
-    if (lw !== null) windowAt(T, g, lw, 1.3, 1.0, 0.95, 0.02, 1, R() < 0.6, 2, 2);
+    if (lw !== null) windowAt(T, g, lw, 1.3, 1.0, 0.95, 0.02, 1, R() < 0.85, 2, 2);
   }
   // a wall of boards behind the frame closes each face, so no ray sees through the joints
   M.bbox("boards", f, -W + 0.02, 0.5, -D + 0.02, W - 0.02, hw, D - 0.02, 0, 1, [0, 0], { top: false, bottom: false, col: [1, 0.1, 0.1, 0] });

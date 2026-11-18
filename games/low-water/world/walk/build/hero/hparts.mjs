@@ -15,7 +15,7 @@ export const fbm = (x, y) => vnoise(x, y) * 0.55 + vnoise(x * 2.1 + 7, y * 2.1 +
 // its middle, rounded down at every edge, hanging `over` metres past it where it can. The mesh is
 // a closed cushion: a displaced top and a skirt tucked under it, so rays from below meet snow too.
 export function snowPillow(T, f, x0, z0, x1, z1, y, depth, over = 0.03, n = null) {
-  const w = x1 - x0, d = z1 - z0, nu = n || Math.max(3, Math.min(28, Math.round(w / 0.08))), nv = n || Math.max(3, Math.min(28, Math.round(d / 0.08))), ph = T.R() * 50;
+  const w = x1 - x0, d = z1 - z0, nu = n || Math.max(4, Math.min(56, Math.round(w / 0.045))), nv = n || Math.max(4, Math.min(56, Math.round(d / 0.045))), ph = T.R() * 50;
   const X = (s) => x0 - over + (w + 2 * over) * s, Z = (t) => z0 - over + (d + 2 * over) * t;
   const h = (s, t) => {
     const ex = Math.min(s, 1 - s) * (w + 2 * over), ez = Math.min(t, 1 - t) * (d + 2 * over), e = Math.min(ex, ez);
@@ -101,6 +101,28 @@ function crate(T, f, x, y, z, s) {
   for (let i = 0; i < 3; i++) M.bbox("timber", f, x0, y + s - 0.016, z0 + (i + 0.2) * s / 3, x1, y + s, z0 + (i + 0.8) * s / 3, 0.004, 1, off());
 }
 
+// one piece of split firewood: a round, half or quarter of a log (split), its outline jittered and
+// oval, pushed along the frame's z for len; bark on the round side, split wood on the flat faces,
+// and the two ends of the log-end material
+function firewoodPiece(M, f, c, len, r, split, turn, R) {
+  const n = split === 1 ? 14 : split === 0.5 ? 9 : 6, sx = 0.85 + 0.3 * R(), sy = 0.85 + 0.3 * R(), out = [];
+  for (let k = 0; k <= n; k++) {
+    const t = turn + (k / n) * split * 6.2832, rr = r * (0.92 + 0.12 * R());
+    out.push({ x: Math.cos(t) * rr * sx, y: Math.sin(t) * rr * sy, bark: true });
+  }
+  if (split < 1) out.push({ x: 0, y: 0, bark: false }); else out.pop();
+  const P = (o, zz) => put(f, [c[0] + o.x, c[1] + o.y, zz]), col = [R(), Math.floor(R() * 4), R() * 6.28, R() < 0.15 ? 1 : 0];
+  for (let k = 0; k < out.length; k++) {
+    const p = out[k], q = out[(k + 1) % out.length], m = p.bark && q.bark ? "bark" : "timber";
+    M.quad(m, P(p, c[2]), P(q, c[2]), P(q, c[2] + len), P(p, c[2] + len), [[0, 0], [0.1, 0], [0.1, len], [0, len]]);
+  }
+  for (const [zz, sg] of [[c[2], -1], [c[2] + len, 1]]) {
+    const nrm = dir(f, [0, 0, sg]), mid = out.reduce((a, o) => ({ x: a.x + o.x / out.length, y: a.y + o.y / out.length }), { x: 0, y: 0 });
+    const ctr = M.v("logend", P(mid, zz), nrm, mid.x / r, mid.y / r, col), ring = out.map((o) => M.v("logend", P(o, zz), nrm, o.x / r, o.y / r, col));
+    for (let k = 0; k < ring.length; k++) M.tri("logend", ctr, ring[k], ring[(k + 1) % ring.length]);
+  }
+}
+
 // the cut end of a log: a disc facing out of the stack (sg), split into a fan; its uv runs -1..1
 // across the face, and its numbers carry the log's seed, a crack count and a turn of its rings
 function logEnd(M, f, c, sg, r, R) {
@@ -125,13 +147,18 @@ export function clutter(T, f, x, z) {
   } else if (pick < 0.75) {
     // firewood: split logs stacked in a rack against the wall, under a board
     const w = 1.2 + R(), hgt = 1.0 + 0.4 * R();
-    for (let row = 0; row * 0.14 < hgt; row++) for (let k = 0; k * 0.15 < w; k++) {
-      // each log its own size, offset and length; its two ends are discs of the log-end material, whose
-      // rings, cracks and bark edge the frame draws from the seed in the vertex numbers
-      const rr = 0.05 + 0.022 * R(), px = x - w / 2 + k * 0.15 + (row % 2) * 0.07 + (R() - 0.5) * 0.025, py = 0.08 + row * 0.135 + (R() - 0.5) * 0.02;
-      const z0 = z + 0.02 + R() * 0.05, z1 = z + 0.46 + R() * 0.08, a = put(f, [px, py, z0]), b = put(f, [px + (R() - 0.5) * 0.02, py, z1]);
-      M.tube("bark", [a, b], rr, 14);
-      for (const [p, sg] of [[a, -1], [b, 1]]) logEnd(M, f, p, sg, rr, R);
+    // split firewood stacked by hand: rounds, halves and quarters of uneven size, packed in rows that
+    // drift, some ends set back and some proud, each piece turned its own way
+    let row = 0;
+    for (let py = 0.06; py < hgt; row++) {
+      let rowH = 0;
+      for (let px = x - w / 2 + R() * 0.05; px < x + w / 2;) {
+        const rr = 0.045 + 0.03 * R(), kind = R(), split = kind < 0.35 ? 1 : kind < 0.75 ? 0.5 : 0.25;
+        const z0 = z + 0.02 + (R() - 0.3) * 0.08, len = 0.38 + 0.12 * R(), turn = R() * 6.2832;
+        firewoodPiece(M, f, [px + rr, py + rr * 0.9, z0], len, rr, split, turn, R);
+        px += rr * (split === 1 ? 2 : 1.6) + 0.005; rowH = Math.max(rowH, rr * 1.8);
+      }
+      py += rowH * (0.8 + 0.15 * R());
     }
     M.bbox("timber", f, x - w / 2 - 0.1, hgt + 0.15, z, x + w / 2 + 0.1, hgt + 0.19, z + 0.62, 0.008);
     snowPillow(T, f, x - w / 2 - 0.1, z, x + w / 2 + 0.1, z + 0.62, hgt + 0.19, 0.12, 0.03);
@@ -141,7 +168,9 @@ export function clutter(T, f, x, z) {
     M.grid("snow", (u, t) => {
       const a = u * 6.2832, rr = s * (1 - Math.pow(t, 2.2)) * (0.8 + 0.35 * (1 - t * t) * fbm(Math.cos(a) * 1.3 + ph, Math.sin(a) * 1.3 + t * 2));
       const hgt = s * 0.75 * Math.sqrt(Math.max(0, t)) * (0.85 + 0.3 * (1 - t) * fbm(Math.cos(a) * 2 + ph, Math.sin(a) * 2 + 5) + 0.15 * t);
-      return [c[0] + Math.cos(a) * rr, c[1] + hgt, c[2] + Math.sin(a) * rr];
-    }, 48, 16, (u, t) => [u * s * 4, t * s * 2], null, c);   // the apex row closes on the axis
+      // wind ribs across its windward face
+      const rib = 0.025 * s * Math.sin((Math.cos(a) * 0.6 + Math.sin(a) * 0.8) * rr * 22 + ph) * Math.sqrt(Math.max(0, t * (1 - t))) * 2;
+      return [c[0] + Math.cos(a) * rr, c[1] + hgt + rib, c[2] + Math.sin(a) * rr];
+    }, 64, 22, (u, t) => [u * s * 4, t * s * 2], null, c);   // the apex row closes on the axis
   }
 }

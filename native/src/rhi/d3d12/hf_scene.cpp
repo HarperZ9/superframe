@@ -104,6 +104,8 @@ bool uploadScene(Ctx& c, const hw::FrameScene& s, std::string& err){
     D3D12_RESOURCE_BARRIER sb{}; sb.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION; sb.Transition.pResource = c.scratch.Get();
     sb.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON; sb.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS; sb.Transition.Subresource = 0;
     c.cl->ResourceBarrier(1, &sb);
+    // the uploads finish first, so the timestamps below hold the builds alone
+    if (!c.q.submitAndWait(0, err) || !c.q.begin(err)) return false;
     c.q.timestamp(0);
     D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC bd{}; bd.Inputs = bi; bd.DestAccelerationStructureData = c.blas->GetGPUVirtualAddress(); bd.ScratchAccelerationStructureData = c.scratch->GetGPUVirtualAddress();
     c.cl->BuildRaytracingAccelerationStructure(&bd, 0, nullptr);

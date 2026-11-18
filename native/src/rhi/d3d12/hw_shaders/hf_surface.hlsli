@@ -45,13 +45,14 @@ Surf surface(uint mi, Vtx v, float3 ng, float3 viewDir, float lod, float2 dx, fl
         const float wob = 0.06f * sin(a * 3.0f + seed * 20.0f) + 0.04f * sin(a * 7.0f + seed * 9.0f);
         const float ringN = 9.0f + 7.0f * seed, ring = frac((r + wob * r) * ringN + seed * 3.0f);
         const float late = smoothstep(0.65f, 0.95f, ring);
-        float3 wood = lerp(float3(0.46f, 0.34f, 0.21f), float3(0.3f, 0.2f, 0.12f), late * 0.7f) * lerp(0.7f, 1.1f, frac(seed * 13.7f));
+        const float fresh = v.c.w;   // most ends are a winter old: grey-brown; a few are fresh cuts
+        float3 wood = lerp(lerp(float3(0.24f, 0.2f, 0.16f), float3(0.46f, 0.34f, 0.21f), fresh), lerp(float3(0.15f, 0.12f, 0.1f), float3(0.3f, 0.2f, 0.12f), fresh), late * 0.7f) * lerp(0.75f, 1.1f, frac(seed * 13.7f));
         wood = lerp(wood, float3(0.32f, 0.3f, 0.28f), smoothstep(0.5f, 0.85f, r) * 0.45f * frac(seed * 5.1f));   // weathered grey toward the bark
         wood = lerp(wood * float3(0.78f, 0.62f, 0.5f), wood, smoothstep(0.25f, 0.55f, r));
         float crack = 0.0f;
         for (uint k = 0u; k < (uint)v.c.y + 1u; k++) { const float ca = frac(seed * 7.3f + k * 0.37f) * 6.2832f; crack = max(crack, saturate(1.0f - abs(sin((a - ca) * 0.5f)) * r * 60.0f) * smoothstep(0.15f, 0.5f, r)); }
         wood *= 1.0f - 0.8f * crack;
-        s.albedo = r > 0.86f ? float3(0.12f, 0.09f, 0.07f) * (0.8f + 0.4f * hash21(float2(a * 20.0f, seed))) : wood;
+        s.albedo = r > 0.9f ? float3(0.12f, 0.09f, 0.07f) * (0.8f + 0.4f * hash21(float2(a * 20.0f, seed))) : wood;
         s.rough = 0.85f; s.ao = 1.0f - 0.5f * crack;
         return s;
     }
@@ -88,7 +89,7 @@ Surf surface(uint mi, Vtx v, float3 ng, float3 viewDir, float lod, float2 dx, fl
     shadeTextures(s, m, T, B, A, N);
     // detail: a fine grain at eight times the texture's repeat, fading out by six metres (the
     // scans run out of resolution under a metre)
-    if (lod < 0) {
+    if (lod <= 0.0f) {
         const float fade = saturate(1.0f - length(v.p - F.eye.xyz) / 6.0f);
         if (fade > 0.0f) {
             const float2 q = matUV(m, v.uv) * 8.0f, e = float2(0.02f, 0.0f);

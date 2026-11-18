@@ -35,7 +35,7 @@ void main(uint3 id : SV_DispatchThreadID) {
     // scattered more than once adds about half again to what the froxels see once; the factor is fitted to the
     // path-traced reference on the committed view (an approximation in the spirit of Hillaire 2020's
     // isotropic multiple-scattering term), not derived
-    const float kMultiple = 1.3f;
+    const float kMultiple = 1.15f;
     float4 cur = float4(Lin * sigma * kMultiple, sigma);
     // last frame's froxel at this point, where it was in view
     const float4 pc = mul(F.prevViewProj, float4(p, 1.0f));

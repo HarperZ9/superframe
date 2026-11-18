@@ -7,7 +7,7 @@ import { sub, add, mul, norm, lerp } from "./hmesh.mjs";
 import { snowPillow, fbm } from "./hparts.mjs";
 
 function snowLoad(T, f, gx, D, ov, ridge, eave, pitch, sz, depth) {
-  const { M, R } = T, ph = R() * 40, run = D + ov, nu = Math.max(24, Math.round(gx * 2 / 0.12)), nv = 26, cornice = 0.22 + 0.25 * R();
+  const { M, R } = T, ph = R() * 40, run = D + ov, nu = Math.max(40, Math.round(gx * 2 / 0.06)), nv = 52, cornice = 0.22 + 0.25 * R();
   const ca = Math.cos(pitch), sa = Math.sin(pitch);
   // s across the roof (0..1 over -gx..gx), t down the slope from the ridge (0) past the eave (1.12)
   const P = (s, t) => {
