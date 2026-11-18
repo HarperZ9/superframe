@@ -14,16 +14,18 @@ fn mixMat(a: Mat, b: Mat, t: f32) -> Mat {
 // fallen needles and leaves: rust under conifers, umber, ochre and rot under birch
 fn litterMat(p: vec2f, broad: f32, det: f32) -> Mat {
   let big = fbm(p * 0.35);
-  let st = vnoise(vec2f(p.x * 38.0 + p.y * 9.0, p.y * 7.0 - p.x * 3.0));
+  let st = vnoise(p * 31.0) * 0.6 + vnoise(vec2f(p.x * 17.0 - p.y * 23.0, p.x * 23.0 + p.y * 17.0)) * 0.4;
   let twig = voro(p * 2.3 + big);
-  var needle = mix(vec3f(0.080, 0.050, 0.032), vec3f(0.165, 0.092, 0.048), big) * (0.82 + 0.36 * st * det);
+  var needle = mix(vec3f(0.060, 0.042, 0.030), vec3f(0.125, 0.078, 0.045), big) * (0.82 + 0.36 * st * det);
   needle *= 1.0 - 0.55 * det * (1.0 - smoothstep(0.0, 0.035, twig.y)) * step(0.6, twig.z);
-  let v = voro(p * 13.0 + big * 2.0);
-  var leaf = mix(vec3f(0.150, 0.088, 0.040), vec3f(0.330, 0.200, 0.075), v.z);
-  if (v.z > 0.82) { leaf = vec3f(0.42, 0.29, 0.075); }
-  if (v.z < 0.16) { leaf = vec3f(0.055, 0.042, 0.030); }
-  let edge = smoothstep(0.0, 0.09, v.y);
-  leaf = mix(vec3f(0.19, 0.12, 0.052), leaf * (0.5 + 0.5 * edge) * (0.9 + 0.2 * st), det);
+  // leaves lie over one another at every angle: two sets of cells, the upper hiding the lower in places
+  let v1 = voro(p * 11.0 + big * 2.0); let v2 = voro(vec2f(p.x * 0.8 - p.y * 0.6, p.x * 0.6 + p.y * 0.8) * 15.0 + 9.0);
+  var v = v1; if (v2.z > 0.45) { v = v2; }
+  var leaf = mix(vec3f(0.095, 0.064, 0.038), vec3f(0.215, 0.140, 0.062), v.z);
+  if (v.z > 0.90) { leaf = vec3f(0.30, 0.215, 0.07); }
+  if (v.z < 0.2) { leaf = vec3f(0.045, 0.036, 0.028); }
+  let edge = smoothstep(0.0, 0.07, v.y);
+  leaf = mix(vec3f(0.125, 0.085, 0.045), leaf * (0.72 + 0.28 * edge) * (0.85 + 0.3 * st), det);
   let c = mix(needle, leaf, broad);
   let h = mix(st * 0.004, edge * (1.0 - v.x) * 0.014, broad) * det;
   return Mat(c, h + 0.006, 0.9, 0.02);

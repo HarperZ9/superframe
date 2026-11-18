@@ -163,6 +163,9 @@ fn down(v: POut) -> vec3f {
   let x = c * F.misc.z * 0.9;
   var m = (x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14);
   m = pow(clamp(m, vec3f(0.0), vec3f(1.0)), vec3f(1.0 / 2.2));
+  // the print: shadows lean to blue-green, lights stay where they are, a little colour taken out
+  let l = lum(m);
+  m = mix(vec3f(l), m, 0.90) * mix(vec3f(0.90, 1.0, 1.05), vec3f(1.0), smoothstep(0.0, 0.6, l));
   // grain, so a dark gradient does not band
   m += (ign(v.clip.xy + fract(F.cam.w) * 61.0) - 0.5) / 255.0 * 1.5;
   return vec4f(m, 1.0);

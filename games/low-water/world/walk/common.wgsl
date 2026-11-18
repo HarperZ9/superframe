@@ -32,7 +32,7 @@ struct Frame {
   trail: array<vec4f, 8>,   // where the walker has just been: x, y, z, how open the fog still is
   shadowVP: mat4x4f,
   shp: vec4f,       // 1 when the shadow map is drawn, texel size, depth bias, wind phase
-  clip: vec4f,      // keep fragments above this height when y > 0.5; z: 1 in the mirror pass
+  clip: vec4f,      // keep fragments above this height when y > 0.5; z: 1 in the mirror pass; w: 1 when drawing the sheet of far trees
 }
 struct Light { pos: vec4f, col: vec4f, dir: vec4f }   // place + reach; colour + sodium share; aim + cos of the cone (-1: all round)
 struct Lights { n: vec4u, l: array<Light, 64> }
@@ -187,6 +187,10 @@ fn inAir(col: vec3f, p: vec3f) -> vec3f {
 fn warmth(p: vec3f) -> f32 {
   let v = clamp(p.z / F.world.y, 0.0, 1.0);
   return -3.0 + 16.5 * v - 5.0 * max(p.y, 0.0) / 1000.0 - 4.0 * max(0.35 - v, 0.0) / 0.35;
+}
+// how cold a place is for snow: 0 bare, 1 lying (never on the sheet of far trees, clip.w)
+fn snowCold(p: vec3f) -> f32 {
+  return smoothstep(-0.8, -2.4, warmth(p) + (fbm(p.xz * 0.0016) - 0.5) * 3.0) * (1.0 - F.clip.w);
 }
 // kept for the passes written before the float target: the film curve now runs once, in post
 fn toneMap(c: vec3f) -> vec3f { return c; }

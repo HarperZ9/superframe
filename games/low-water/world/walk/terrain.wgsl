@@ -38,10 +38,6 @@ fn morphK(p: vec3f, level: f32) -> f32 {
   return clamp((distance(p, F.cam.xyz) - range * 0.70) / (range * 0.24), 0.0, 1.0);
 }
 
-// how cold a place is for snow: 0 bare, 1 lying
-fn snowCold(p: vec3f) -> f32 {
-  return smoothstep(-0.8, -2.4, warmth(p) + (fbm(p.xz * 0.0016) - 0.5) * 3.0);
-}
 // new snow lifts the ground where it can settle: not under roofs, less where feet and wheels pack it
 fn snowLift(xz: vec2f, y: f32) -> f32 {
   if (F.snowp.x <= 0.0) { return 0.0; }
@@ -142,6 +138,7 @@ fn rainRings(p: vec2f) -> f32 {
     n = normalize(mix(n, normalize(vec3f(h0 - hx, s, h0 - hz)), 1.0 - smoothstep(260.0, 420.0, dist)));
   }
   let slope = 1.0 - n.y;
+  let lie = 1.0 - sqrt(max(1.0 - (aux.r * 2.0 - 1.0) * (aux.r * 2.0 - 1.0) - (aux.g * 2.0 - 1.0) * (aux.g * 2.0 - 1.0), 0.04));
 
   // what stands over this ground and what has crossed it
   let cover = mix(aux.b * 0.8, na.r, nu.z);                       // crowns overhead
@@ -166,7 +163,7 @@ fn rainRings(p: vec2f) -> f32 {
     floorM = mixMat(floorM, soilMat(p, det), smoothstep(0.62, 0.8, fbm(p * 0.6 + 21.0)) * 0.7);
     m = mixMat(m, floorM, forest);
   }
-  let rockAmt = smoothstep(0.16, 0.34, slope + (fbm(p * 0.35) - 0.5) * 0.10 * mid);
+  let rockAmt = smoothstep(0.16, 0.34, lie + (fbm(p * 0.35) - 0.5) * 0.10 * mid);
   if (rockAmt > 0.0) {
     var rk = rockMat(v.wp, det);
     rk = mixMat(rk, mossMat(p * 1.3, det), smoothstep(0.5, 0.7, fbm(p * 0.8 + 3.0)) * (0.3 + 0.5 * cover) * n.y);
@@ -189,8 +186,9 @@ fn rainRings(p: vec2f) -> f32 {
   let cold = snowCold(v.wp) * (1.0 - smoothstep(0.30, 0.55, slope));
   let sn = fbm(p * 0.9 + 40.0);
   let lying = cold * (1.0 - cover * 0.45) * (1.0 - shelter);
-  let dust = F.snowp.z * (1.0 - cover * 0.9) * (1.0 - shelter) * smoothstep(0.0, 0.25, 1.0 - slope * 2.2) * (1.0 - wear * 0.95) * (1.0 - 0.5 * smoothstep(0.2, 0.5, road) * (1.0 - wear));
-  var cov = max(lying, dust * smoothstep(0.32, 0.62, sn + (1.0 - cover) * 0.25));
+  let open = smoothstep(0.75, 0.2, cover);
+  let dust = F.snowp.z * open * (1.0 - shelter) * smoothstep(0.0, 0.25, 1.0 - slope * 2.2) * (1.0 - wear * 0.97) * (1.0 - 0.45 * smoothstep(0.3, 0.5, road) * (1.0 - wear));
+  var cov = max(lying, dust * smoothstep(0.50, 0.80, sn * 0.75 + fbm(p * 0.07 + 11.0) * 0.5 + open * 0.08));
   // a thaw opens holes from the high points of the surface down
   cov = cov * smoothstep(F.snowp.y * 1.15 - 0.12, F.snowp.y * 1.15 + 0.10, sn * 0.7 + (1.0 - wear) * 0.25 + (0.3 - m.h * 5.0) + lying * 0.2) + 0.0;
   cov = clamp(mix(cov, smoothstep(0.42, 0.56, cov + (sn - 0.5) * 0.5 - m.h * 5.0 * det), mid), 0.0, 1.0);
@@ -220,11 +218,12 @@ fn rainRings(p: vec2f) -> f32 {
     let dpx = dpdx(v.wp); let dpy = dpdy(v.wp); let dhx = dpdx(bump); let dhy = dpdy(bump);
     let r1 = cross(dpy, n); let r2 = cross(n, dpx); let dt = dot(dpx, r1);
     let g = (r1 * dhx + r2 * dhy) * sign(dt);
-    n = normalize(mix(n, normalize(abs(dt) * n - g * 1.6), det));
+    let bent = abs(dt) * n - g * 1.6;
+    if (dot(bent, bent) > 1e-20) { n = normalize(mix(n, normalize(bent), det)); }
   }
 
   // light: the sky through the crowns, the key light, every lamp
-  let floorLight = mix(1.0, 0.24, cover) * (0.80 + 0.20 * hollow) * (1.0 - 0.5 * na.a);
+  let floorLight = mix(1.0, 0.16, cover) * (0.80 + 0.20 * hollow) * (1.0 - 0.5 * na.a);
   let ndl = clamp((dot(n, F.key.xyz) + 0.25 * cov) / (1.0 + 0.25 * cov), 0.0, 1.0);
   var keyShade = groundShadow(vec3f(v.wp.x, trueGround, v.wp.z) + vec3f(0.0, 6.0, 0.0)) * keyShadow(v.wp, n);
   if (F.shp.x < 0.5) { keyShade *= mix(1.0, 0.12, cover); }

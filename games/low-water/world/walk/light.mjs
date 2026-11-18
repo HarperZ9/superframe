@@ -59,6 +59,6 @@ export function groundState(s, sh) {
   const w = s.weather, day = smooth(-4, 8, s.sunElevation);
   return {
     gfog: [w.fog * 0.0042, Math.min(18, Math.max(2.5, w.fogTop * 0.05)), clamp(0.75 - w.wind * 0.5), 0.0035 + w.fog * 0.0045 + 0.022 * (w.rain + w.snow)],
-    snowp: [0.5 * w.snow, sh[1] * (0.10 + 0.28 * day), clamp(sh[3] * 0.95 + sh[6] * 0.0), 0.28 + 0.25 * sh[1] + 0.2 * sh[11]],
+    snowp: [0.5 * w.snow, sh[1] * (0.10 + 0.28 * day), clamp(sh[3] * 0.85), 0.28 + 0.25 * sh[1] + 0.2 * sh[11]],
   };
 }
