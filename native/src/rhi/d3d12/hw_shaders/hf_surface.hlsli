@@ -38,6 +38,23 @@ Surf surface(uint mi, Vtx v, float3 ng, float3 viewDir, float lod, float2 dx, fl
         float3 e; s.albedo = signPaint(v.uv, v.c, e); s.rough = 0.55f; s.emis = e;
         return s;
     }
+    if (m.kind == K_LOGEND) {
+        // a cut log's end: growth rings that wander, darker late wood, heartwood, radial checks and a
+        // bark rim, all from the log's own seed (c.x), check count (c.y) and turn (c.z)
+        const float r = length(v.uv), a = atan2(v.uv.y, v.uv.x) + v.c.z, seed = v.c.x;
+        const float wob = 0.06f * sin(a * 3.0f + seed * 20.0f) + 0.04f * sin(a * 7.0f + seed * 9.0f);
+        const float ringN = 9.0f + 7.0f * seed, ring = frac((r + wob * r) * ringN + seed * 3.0f);
+        const float late = smoothstep(0.65f, 0.95f, ring);
+        float3 wood = lerp(float3(0.46f, 0.34f, 0.21f), float3(0.3f, 0.2f, 0.12f), late * 0.7f) * lerp(0.7f, 1.1f, frac(seed * 13.7f));
+        wood = lerp(wood, float3(0.32f, 0.3f, 0.28f), smoothstep(0.5f, 0.85f, r) * 0.45f * frac(seed * 5.1f));   // weathered grey toward the bark
+        wood = lerp(wood * float3(0.78f, 0.62f, 0.5f), wood, smoothstep(0.25f, 0.55f, r));
+        float crack = 0.0f;
+        for (uint k = 0u; k < (uint)v.c.y + 1u; k++) { const float ca = frac(seed * 7.3f + k * 0.37f) * 6.2832f; crack = max(crack, saturate(1.0f - abs(sin((a - ca) * 0.5f)) * r * 60.0f) * smoothstep(0.15f, 0.5f, r)); }
+        wood *= 1.0f - 0.8f * crack;
+        s.albedo = r > 0.86f ? float3(0.12f, 0.09f, 0.07f) * (0.8f + 0.4f * hash21(float2(a * 20.0f, seed))) : wood;
+        s.rough = 0.85f; s.ao = 1.0f - 0.5f * crack;
+        return s;
+    }
     if (m.kind == K_GLASS) {
         s.albedo = 0.0f; s.rough = 0.03f; s.f0 = 0.04f;
         const float3 bt = cross(s.n, T) * B;
@@ -69,6 +86,18 @@ Surf surface(uint mi, Vtx v, float3 ng, float3 viewDir, float lod, float2 dx, fl
     }
     const float4 A = lod < 0 ? texAg(m, v.uv, dx, dy) : texA(m, v.uv, lod), N = lod < 0 ? texBg(m, v.uv, dx, dy) : texB(m, v.uv, lod);
     shadeTextures(s, m, T, B, A, N);
+    // detail: a fine grain at eight times the texture's repeat, fading out by six metres (the
+    // scans run out of resolution under a metre)
+    if (lod < 0) {
+        const float fade = saturate(1.0f - length(v.p - F.eye.xyz) / 6.0f);
+        if (fade > 0.0f) {
+            const float2 q = matUV(m, v.uv) * 8.0f, e = float2(0.02f, 0.0f);
+            const float h0 = n2(q * 16.0f), hx = n2((q + e.xy) * 16.0f), hy = n2((q + e.yx) * 16.0f);
+            const float3 bt = cross(s.n, T) * B;
+            s.n = normalize(s.n + (T * (h0 - hx) + bt * (h0 - hy)) * 2.5f * fade);
+            s.albedo *= 1.0f + (h0 - 0.5f) * 0.12f * fade;
+        }
+    }
     weather(s);
     if (m.kind == K_ICE) { s.albedo = lerp(float3(0.55f, 0.72f, 0.8f), s.albedo, 0.25f); s.rough = 0.04f; s.f0 = 0.018f; }
     return s;

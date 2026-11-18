@@ -65,12 +65,12 @@ public:
         f.moonDir[0] = scene.moonDir[0]; f.moonDir[1] = scene.moonDir[1]; f.moonDir[2] = scene.moonDir[2]; f.moonDir[3] = float(ca);
         const float omega = float(2.0 * 3.14159265358979 * (1.0 - ca));
         // the night sky's map is bright beside the lamps; scaled so a street lamp at five metres gives
-        // the street about forty times the moon's light, as a lit street at full moon does
-        constexpr float kSky = 0.05f;
+        // the snow under it a few times the moon's light, and moonlit snow away from the lamps still reads
+        constexpr float kSky = 0.3f;
         f.moonRad[0] = scene.moonRadiance[0] * kSky; f.moonRad[1] = scene.moonRadiance[1] * kSky; f.moonRad[2] = scene.moonRadiance[2] * kSky; f.moonRad[3] = omega;
         f.skyParams[0] = scene.skyRotate; f.skyParams[1] = kSky; f.skyParams[2] = 0.0f; f.skyParams[3] = float(std::pow(2.0, -0.5 + o.exposureEV));
         f.cluster[0] = 0.2f; f.cluster[1] = 400.0f; f.cluster[2] = float(std::log(400.0 / 0.2)); f.cluster[3] = float(c.lightCount);
-        f.fog[0] = 0.018f; f.fog[1] = 0.08f; f.fog[2] = 0.55f; f.fog[3] = 220.0f;
+        f.fog[0] = 0.012f; f.fog[1] = 0.08f; f.fog[2] = 0.55f; f.fog[3] = 220.0f;
         uint32_t fl = (o.gi ? 1u : 0) | (o.reflect ? 2u : 0) | (o.gtao ? 4u : 0) | (o.fog ? 8u : 0) | (o.restir ? 16u : 0) | (o.snow ? 32u : 0) | (o.taa ? 64u : 0) |
                       (o.glints ? 128u : 0) | (o.sss ? 256u : 0) | (o.shadows ? 512u : 0) | (o.pom ? 1024u : 0) | (o.bloom ? 2048u : 0) | (reset ? 4096u : 0);
         f.counts[0] = frame; f.counts[1] = fl; f.counts[2] = c.skyIndex; f.counts[3] = ptCount;

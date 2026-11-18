@@ -10,7 +10,9 @@
 
 float3 fogAt(float2 px, float vz, float3 c) {
     if (!on(F_FOG)) return c;
-    const float3 f = float3(px.x * F.size.z * float(FX), px.y * F.size.w * float(FY), froxelS(vz));
+    // a little jitter per pixel and frame, so the froxel grid's trilinear steps dissolve under TAA
+    Rng jr = rngAt(uint2(px), F.counts.x, 91u);
+    const float3 f = float3(px.x * F.size.z * float(FX), px.y * F.size.w * float(FY), froxelS(vz)) + (float3(rnd2(jr), rnd(jr)) - 0.5f) * float3(0.9f, 0.9f, 0.6f);
     const float3 b = clamp(f - 0.5f, 0.0f, float3(FX, FY, FZ) - 1.001f), i = floor(b), t = b - i;
     float4 r = 0.0f;
     [unroll] for (uint k = 0u; k < 8u; k++) { const uint3 o = uint3(k & 1u, (k >> 1) & 1u, (k >> 2) & 1u); r += fogInt[uint3(i) + o] * lerp(1.0f - t.x, t.x, o.x) * lerp(1.0f - t.y, t.y, o.y) * lerp(1.0f - t.z, t.z, o.z); }
@@ -103,6 +105,7 @@ void main(uint3 id : SV_DispatchThreadID) {
     float3 c = taaB[id.xy].rgb;
     if (on(F_BLOOM)) { const float2 q = float2(id.xy) * 0.5f; c = lerp(c, bloom[0][min(uint2(q), uint2(F.size.xy) / 2u - 1u)].rgb, 0.035f); }
     c *= F.skyParams.w;
+    c *= float3(0.9f, 0.97f, 1.12f);   // white balance a little warmer than the moon: moonlight cool, sodium still amber
     ldr[id.xy] = float4(srgb(aces(c)), 1.0f);
 #elif MODE == 5
     if (id.x >= (uint)F.size.x || id.y >= (uint)F.size.y) return;

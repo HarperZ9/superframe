@@ -41,12 +41,15 @@ export class HeroMesh {
     this.tri(m, i[0], i[1], i[2]); this.tri(m, i[0], i[2], i[3]);
   }
   // a surface P(s, t) over [0,1]^2 in nu x nv cells; uvOf(s, t) gives its uv; normals by differences
-  grid(m, P, nu, nv, uvOf, colOf = null) {
+  // `out`, a point inside a closed surface: every normal is turned to face away from it
+  grid(m, P, nu, nv, uvOf, colOf = null, out = null) {
     const idx = [];
     for (let j = 0; j <= nv; j++) for (let i = 0; i <= nu; i++) {
       const s = i / nu, t = j / nv, e = 1e-3, p = P(s, t);
       const du = sub(P(Math.min(1, s + e), t), P(Math.max(0, s - e), t)), dv = sub(P(s, Math.min(1, t + e)), P(s, Math.max(0, t - e)));
-      const c = cross(du, dv), n = Math.hypot(...c) > 1e-12 ? norm(c) : [0, 1, 0], uv = uvOf(s, t, p);
+      const c = cross(du, dv); let n = Math.hypot(...c) > 1e-12 ? norm(c) : [0, 1, 0];
+      if (out && dot(n, sub(p, out)) < 0) n = mul(n, -1);
+      const uv = uvOf(s, t, p);
       idx.push(this.v(m, p, n, uv[0], uv[1], colOf ? colOf(s, t, p) : this.wear));
     }
     const at = (i, j) => idx[j * (nu + 1) + i];

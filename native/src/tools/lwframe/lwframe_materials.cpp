@@ -3,8 +3,7 @@
 // two RGBA8 textures with a full mip chain: albedo (sRGB) + height, and normal (OpenGL
 // convention) + roughness + ambient occlusion. Roughness in each mip grows by the spread of the
 // normals it averages (Toksvig 2005), so distant surfaces do not sparkle.
-// Not done: BC7 and BC5 block compression (no encoder in the tree yet); the textures are
-// uncompressed, four times the memory a shipping cook would use.
+// Each texture is then BC7-compressed (lwframe_bc7.cpp, mode 6), a quarter of the RGBA8 memory.
 #include "lwframe.hpp"
 #include "raw/platform/image_codec.hpp"
 #include <algorithm>
@@ -83,6 +82,8 @@ bool cookMaterials(const std::vector<MaterialSpec>& specs, std::vector<rhi::hw::
                 if (specs[i].dir.empty()){ out[i * 2] = out[i * 2 + 1] = {1, 1, 1, false, {255, 255, 255, 255}}; return std::string(); }
                 if (!readSet(specs[i], m, e)) return e;
                 cook(m, out[i * 2], out[i * 2 + 1]);
+                // snow and ice keep RGBA8: one-mode BC7 bands their smooth gradients into visible blocks
+                if (specs[i].kind != 1 && specs[i].kind != 2 && specs[i].kind != 4){ compressBc7(out[i * 2]); compressBc7(out[i * 2 + 1]); }
                 return std::string();
             }));
         }

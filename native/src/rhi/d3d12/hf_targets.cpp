@@ -36,9 +36,9 @@ bool makeTargets(Ctx& c, uint32_t w, uint32_t h, std::string& err){
     std::vector<Spec> specs = {{0, F16, w, h, 1, true}, {1, F16, w, h, 1, true}, {2, F16, w, h, 1, true}, {3, F32, w, h, 1, true},
         {4, DXGI_FORMAT_R16_FLOAT, w, h, 1, false}, {5, F16, w, h, 1, false}, {6, F16, w, h, 1, false}, {7, F16, w, h, 1, false},
         {8, F16, w, h, 1, false}, {9, F16, w, h, 1, false}, {10, F16, w, h, 1, false}, {11, F16, w, h, 1, false}, {12, F16, w, h, 1, false},
-        {13, F16, w, h, 1, true}, {14, F16, w, h, 1, false}, {15, F16, w, h, 1, false}, {16, F16, 240, 136, 128, false}, {17, F16, 240, 136, 128, false},
+        {13, F16, w, h, 1, true}, {14, F16, w, h, 1, false}, {15, F16, w, h, 1, false}, {16, F16, 160, 96, 96, false}, {17, F16, 160, 96, 96, false},
         {18, DXGI_FORMAT_R8G8B8A8_UNORM, w, h, 1, false}, {29, F32, w, h, 1, false}, {30, F32, w, h, 1, false}, {31, F16, w, h, 1, false},
-        {32, F16, 240, 136, 128, false}, {35, F16, w, h, 1, false}, {36, F16, w, h, 1, false}};
+        {32, F16, 160, 96, 96, false}, {35, F16, w, h, 1, false}, {36, F16, w, h, 1, false}};
     for (UINT k = 0; k < 7; ++k) specs.push_back({22 + k, F16, std::max(1u, w >> (k + 1)), std::max(1u, h >> (k + 1)), 1, false});
     for (const Spec& s : specs){
         if (!texture(c, c.uav[s.slot], s.f, s.w, s.h, s.d, s.rt, err)) return false;

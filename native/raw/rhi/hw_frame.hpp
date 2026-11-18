@@ -38,7 +38,7 @@ struct FrameMaterial {
     uint32_t kind{0};                    // see hf_common.hlsli: K_OPAQUE, K_SNOW, K_GROUND, K_GLASS, K_ICE, K_LAMP, K_SIGN
     float pad{0};
 };
-struct FrameTexture { uint32_t width{0}, height{0}, mips{0}; bool srgb{true}; std::vector<uint8_t> rgba; };  // all mips, largest first
+struct FrameTexture { uint32_t width{0}, height{0}, mips{0}; bool srgb{true}; std::vector<uint8_t> rgba; bool bc7{false}; };  // all mips, largest first; BC7 blocks when bc7
 struct FrameLight { float p[3], radius, col[3], power, aim[3], cone; };   // cone: cos of the half angle; 0 a full sphere
 struct FrameCamera { float eye[3], yaw, pitch, fovDeg; };
 struct FrameScene {

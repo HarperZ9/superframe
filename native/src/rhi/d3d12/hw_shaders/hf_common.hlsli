@@ -32,7 +32,7 @@ struct Vtx { float3 p; float3 n; float4 t; float2 uv; float4 c; };
 struct Mat { int texA; int texB; float uvScale; float heightScale; float3 tint; float roughScale; float roughBias; float metal; uint kind; float pad; };
 struct Light { float3 p; float radius; float3 col; float power; float3 aim; float cone; };
 // material kinds
-static const uint K_OPAQUE = 0u, K_SNOW = 1u, K_GROUND = 2u, K_GLASS = 3u, K_ICE = 4u, K_LAMP = 5u, K_SIGN = 6u;
+static const uint K_OPAQUE = 0u, K_SNOW = 1u, K_GROUND = 2u, K_GLASS = 3u, K_ICE = 4u, K_LAMP = 5u, K_SIGN = 6u, K_LOGEND = 7u;
 
 RaytracingAccelerationStructure Scene : register(t0);
 StructuredBuffer<Vtx> Verts : register(t1);
@@ -76,7 +76,7 @@ RWStructuredBuffer<float> gtaoG : register(u33);       // post_gtao's view-space
 RWStructuredBuffer<float> gtaoO : register(u34);       // post_gtao's visibility
 RWTexture2D<float4> histDiffPrev : register(u35);      // last frame's accumulated diffuse
 RWTexture2D<float4> histSpecPrev : register(u36);      // last frame's accumulated specular
-static const uint FX = 240u, FY = 136u, FZ = 128u;     // froxel grid (16 px a froxel at 4K)
+static const uint FX = 160u, FY = 96u, FZ = 96u;       // froxel grid (24 px a froxel at 4K; jittered, filtered and accumulated)
 float froxelZ(float s) { return F.cluster.x * exp(s / float(FZ) * log(F.fog.w / F.cluster.x)); }   // slice to view depth
 float froxelS(float vz) { return log(max(vz, F.cluster.x) / F.cluster.x) / log(F.fog.w / F.cluster.x) * float(FZ); }
 

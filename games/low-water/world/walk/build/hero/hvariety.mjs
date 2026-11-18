@@ -18,14 +18,21 @@ export function chooseStyle(R, age) {
 
 // studs, rails and braces of a timber-framed wall over its plaster, in the wall's plane z (facing +z)
 export function halfTimber(T, f, a, b, z, y0, y1, top) {
+  // studs at uneven spacing, a rail that wanders a little, and in each bay a brace of its own kind:
+  // none, a single diagonal, a K or a cross, as a frame repaired over a century would have
   const { M, R } = T, B = (x0, yy0, x1, yy1) => M.bbox("timber", f, x0, yy0, z, x1, yy1, z + 0.045, 0.01, 1, [R() * 9, R() * 9]);
-  const n = Math.max(2, Math.round((b - a) / 1.1));
-  for (let i = 0; i <= n; i++) { const x = a + (b - a) * i / n; B(x - 0.06, y0, x + 0.06, Math.min(y1, top(x))); }
-  for (const y of [y0, (y0 + y1) / 2]) B(a, y, b, y + 0.12);
-  // a brace in each end bay, a long timber turned on the diagonal
-  for (const [x0, x1] of [[a, a + (b - a) / n], [b, b - (b - a) / n]]) {
-    const p = put(f, [x0, y0 + 0.15, z + 0.03]), q = put(f, [x1, (y0 + y1) / 2, z + 0.03]);
-    M.tube("timber", [p, q], 0.055, 4);
+  const xs = [a]; for (let x = a + 0.7 + 0.6 * R(); x < b - 0.5; x += 0.65 + 0.75 * R()) xs.push(x); xs.push(b);
+  for (const x of xs) { const w = 0.05 + 0.025 * R(); B(x - w, y0, x + w, Math.min(y1, top(x))); }
+  const mid = (y0 + y1) / 2 + (R() - 0.5) * 0.3;
+  B(a, y0, b, y0 + 0.12);
+  for (let i = 0; i + 1 < xs.length; i++) { const dy = (R() - 0.5) * 0.08; B(xs[i], mid + dy, xs[i + 1], mid + dy + 0.11); }
+  const brace = (x0, ya, x1, yb) => M.tube("timber", [put(f, [x0, ya, z + 0.03]), put(f, [x1, yb, z + 0.03])], 0.045 + 0.015 * R(), 4);
+  for (let i = 0; i + 1 < xs.length; i++) {
+    const k = R(), xa = xs[i], xb = xs[i + 1];
+    if (k < 0.3) continue;
+    if (k < 0.6) brace(xa, y0 + 0.15, xb, mid);
+    else if (k < 0.8) { brace(xa, mid - 0.4, (xa + xb) / 2, mid); brace(xb, mid - 0.4, (xa + xb) / 2, mid); }
+    else { brace(xa, y0 + 0.15, xb, mid); brace(xb, y0 + 0.15, xa, mid); }
   }
 }
 

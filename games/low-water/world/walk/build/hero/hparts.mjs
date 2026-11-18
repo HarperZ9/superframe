@@ -101,6 +101,15 @@ function crate(T, f, x, y, z, s) {
   for (let i = 0; i < 3; i++) M.bbox("timber", f, x0, y + s - 0.016, z0 + (i + 0.2) * s / 3, x1, y + s, z0 + (i + 0.8) * s / 3, 0.004, 1, off());
 }
 
+// the cut end of a log: a disc facing out of the stack (sg), split into a fan; its uv runs -1..1
+// across the face, and its numbers carry the log's seed, a crack count and a turn of its rings
+function logEnd(M, f, c, sg, r, R) {
+  const n = dir(f, [0, 0, sg]), u = dir(f, [1, 0, 0]), v = [0, 1, 0], sides = 16, col = [R(), Math.floor(R() * 4), R() * 6.28, 0];
+  const ctr = M.v("logend", c, n, 0, 0, col), ring = [];
+  for (let k = 0; k <= sides; k++) { const t = k / sides * 6.2832, x = Math.cos(t), y = Math.sin(t); ring.push(M.v("logend", [c[0] + (u[0] * x + v[0] * y) * r, c[1] + (u[1] * x + v[1] * y) * r, c[2] + (u[2] * x + v[2] * y) * r], n, x, y, col)); }
+  for (let k = 0; k < sides; k++) M.tri("logend", ctr, ring[k], ring[k + 1]);
+}
+
 // what stands along a wall: crates, a barrel, stacked firewood, a heap of shovelled snow
 export function clutter(T, f, x, z) {
   const { M, R } = T, pick = R();
@@ -117,8 +126,12 @@ export function clutter(T, f, x, z) {
     // firewood: split logs stacked in a rack against the wall, under a board
     const w = 1.2 + R(), hgt = 1.0 + 0.4 * R();
     for (let row = 0; row * 0.14 < hgt; row++) for (let k = 0; k * 0.15 < w; k++) {
-      const px = x - w / 2 + k * 0.15 + (row % 2) * 0.07, py = 0.08 + row * 0.135, a = put(f, [px, py, z + 0.02]), b = put(f, [px + (R() - 0.5) * 0.02, py, z + 0.5]);
-      M.tube("timber", [a, b], 0.06 + 0.012 * R(), 12, true);
+      // each log its own size, offset and length; its two ends are discs of the log-end material, whose
+      // rings, cracks and bark edge the frame draws from the seed in the vertex numbers
+      const rr = 0.05 + 0.022 * R(), px = x - w / 2 + k * 0.15 + (row % 2) * 0.07 + (R() - 0.5) * 0.025, py = 0.08 + row * 0.135 + (R() - 0.5) * 0.02;
+      const z0 = z + 0.02 + R() * 0.05, z1 = z + 0.46 + R() * 0.08, a = put(f, [px, py, z0]), b = put(f, [px + (R() - 0.5) * 0.02, py, z1]);
+      M.tube("bark", [a, b], rr, 14);
+      for (const [p, sg] of [[a, -1], [b, 1]]) logEnd(M, f, p, sg, rr, R);
     }
     M.bbox("timber", f, x - w / 2 - 0.1, hgt + 0.15, z, x + w / 2 + 0.1, hgt + 0.19, z + 0.62, 0.008);
     snowPillow(T, f, x - w / 2 - 0.1, z, x + w / 2 + 0.1, z + 0.62, hgt + 0.19, 0.12, 0.03);
@@ -126,9 +139,9 @@ export function clutter(T, f, x, z) {
     // a heap of shovelled snow: a lumpy mound whose radius wanders round it and whose top is clods
     const c = put(f, [x, -0.25, z + 0.55]), s = 0.7 + 0.6 * R(), ph = R() * 30;
     M.grid("snow", (u, t) => {
-      const a = u * 6.2832, rr = s * (1 - t * t) * (0.8 + 0.35 * fbm(Math.cos(a) * 1.3 + ph, Math.sin(a) * 1.3 + t * 2));
-      const hgt = s * 0.75 * Math.sqrt(Math.max(0, t)) * (0.85 + 0.3 * fbm(Math.cos(a) * 2 + ph, Math.sin(a) * 2 + 5));
+      const a = u * 6.2832, rr = s * (1 - Math.pow(t, 2.2)) * (0.8 + 0.35 * (1 - t * t) * fbm(Math.cos(a) * 1.3 + ph, Math.sin(a) * 1.3 + t * 2));
+      const hgt = s * 0.75 * Math.sqrt(Math.max(0, t)) * (0.85 + 0.3 * (1 - t) * fbm(Math.cos(a) * 2 + ph, Math.sin(a) * 2 + 5) + 0.15 * t);
       return [c[0] + Math.cos(a) * rr, c[1] + hgt, c[2] + Math.sin(a) * rr];
-    }, 40, 14, (u, t) => [u * s * 4, t * s * 2]);   // the apex row closes on the axis
+    }, 48, 16, (u, t) => [u * s * 4, t * s * 2], null, c);   // the apex row closes on the axis
   }
 }

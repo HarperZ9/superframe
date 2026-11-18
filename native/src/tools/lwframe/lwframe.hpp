@@ -18,6 +18,8 @@ struct Cameras { rhi::hw::FrameCamera main, close; bool hasClose{false}; std::ve
 // The texture sets under the two CC0 folders (assetRoot holds cc0-ambientcg-* and cc0-polyhaven-*).
 std::vector<MaterialSpec> materialSpecs(const std::string& assetRoot);
 bool cookMaterials(const std::vector<MaterialSpec>& specs, std::vector<rhi::hw::FrameTexture>& out, std::string& err);
+// BC7 (mode 6) in place of a texture's RGBA8 mips (lwframe_bc7.cpp)
+void compressBc7(rhi::hw::FrameTexture& t);
 // The scene from the kit's files; cameras from the frame file.
 bool loadScene(const std::string& glb, const std::string& frameJson, const std::string& assetRoot, const std::string& hdr,
                rhi::hw::FrameScene& scene, Cameras& cams, std::string& err);

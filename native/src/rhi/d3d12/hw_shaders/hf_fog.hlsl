@@ -29,20 +29,20 @@ void main(uint3 id : SV_DispatchThreadID) {
         const bool vis = !on(F_SHADOW) || !occluded(p, l, 1500.0f);
         Lin += vis ? F.moonRad.rgb * F.moonRad.w * hgPhase(dot(vdir, F.moonDir.xyz), F.fog.z) : 0.0f;
     }
-    // the lamps: six picks, each by RIS over 16 lamps drawn from every light, each shadowed
-    for (uint k = 0u; k < 6u; k++) Lin += fogLampRIS(p, vdir, r, 16u) * (1.0f / 6.0f);
+    // the lamps: three picks, each by RIS over 12 lamps drawn from every light, each shadowed
+    for (uint k = 0u; k < 3u; k++) Lin += fogLampRIS(p, vdir, r, 12u) * (1.0f / 3.0f);
     // multiple scattering: the haze is optically thick down the street (about 3 along the view), so light
     // scattered more than once adds about half again to what the froxels see once; the factor is fitted to the
     // path-traced reference on the committed view (an approximation in the spirit of Hillaire 2020's
     // isotropic multiple-scattering term), not derived
-    const float kMultiple = 1.5f;
+    const float kMultiple = 1.3f;
     float4 cur = float4(Lin * sigma * kMultiple, sigma);
     // last frame's froxel at this point, where it was in view
     const float4 pc = mul(F.prevViewProj, float4(p, 1.0f));
     if (pc.w > 0.05f && !on(F_RESET)) {
         const float2 ndc = pc.xy / pc.w;
         const float3 pf = float3((ndc.x * 0.5f + 0.5f) * float(FX), (0.5f - ndc.y * 0.5f) * float(FY), froxelS(dot(p - F.eye.xyz, F.fwd.xyz)));
-        if (all(pf >= 0.0f) && all(pf < float3(FX, FY, FZ))) cur = lerp(cur, fogPrev[uint3(pf)], 0.95f);
+        if (all(pf >= 0.0f) && all(pf < float3(FX, FY, FZ))) cur = lerp(cur, fogPrev[uint3(pf)], 0.96f);
     }
     fogScat[id] = cur;
 }

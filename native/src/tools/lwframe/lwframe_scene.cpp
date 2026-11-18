@@ -47,6 +47,8 @@ std::vector<MaterialSpec> materialSpecs(const std::string& r){
     auto iron = acg(r, "iron", "Metal055B", 1.0f, 0, false); iron.metal = 0.7f; iron.tint[0] = iron.tint[1] = iron.tint[2] = 0.28f; v.push_back(iron);
     auto ice = acg(r, "ice", "Ice002", 1.0f, 4, false); v.push_back(ice);
     auto plaster = acg(r, "plaster", "Plaster007", 2.0f, 0); plaster.heightScale = 0.004f; plaster.tint[0] = 0.92f; plaster.tint[1] = 0.88f; plaster.tint[2] = 0.8f; v.push_back(plaster);
+    auto bark = ph(r, "bark", "medieval_wood", 0.8f); bark.tint[0] = 0.45f; bark.tint[1] = 0.36f; bark.tint[2] = 0.3f; bark.roughBias = 0.15f; v.push_back(bark);
+    MaterialSpec logend; logend.name = "logend"; logend.kind = 7; v.push_back(logend);
     MaterialSpec glass; glass.name = "glass"; glass.kind = 3; v.push_back(glass);
     MaterialSpec lamp; lamp.name = "lamp"; lamp.kind = 5; v.push_back(lamp);
     MaterialSpec sign; sign.name = "sign"; sign.kind = 6; v.push_back(sign);

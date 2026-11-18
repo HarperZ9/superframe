@@ -78,7 +78,8 @@ export function groundOf(world, P, H, x, z) {
     const du = (ho.u - ho.h.doorX) / (0.95 + 0.12 * fbm(x * 3, z * 3)), dw = (ho.w - ho.h.D / 2 - 0.55) / (1.05 + 0.15 * fbm(x * 2.3, z * 2.3));
     const e = Math.hypot(du, dw);
     if (e < 1.6) {
-      const k = 1 - smooth(0.75, 1.0, e), berm = 0.16 * Math.exp(-Math.pow((e - 1.08) / 0.18, 2)) * (0.7 + 0.6 * fine);
+      // the cut walls of the clearing slope off over a third of a metre, the berm low and soft
+      const k = 1 - smooth(0.55, 1.2, e), berm = 0.1 * Math.exp(-Math.pow((e - 1.25) / 0.3, 2)) * (0.7 + 0.6 * fine);
       snow = lerp(snow, 0.012, k) + berm * (1 - k);
       w = [w[0] * (1 - k), w[1] * (1 - k), k * 0.92, k * 0.08];
     }

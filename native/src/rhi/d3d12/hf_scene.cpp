@@ -33,8 +33,10 @@ bool uploadTexture(Ctx& c, const hw::FrameTexture& t, DXGI_FORMAT fmt, ComPtr<ID
     size_t src = 0;
     for (uint32_t m = 0; m < t.mips; ++m){
         const uint32_t w = std::max(1u, t.width >> m), h = std::max(1u, t.height >> m);
-        for (uint32_t y = 0; y < h; ++y) std::memcpy(&staged[fp[m].Offset + uint64_t(y) * fp[m].Footprint.RowPitch], &t.rgba[src + size_t(y) * w * texel], size_t(w) * texel);
-        src += size_t(w) * h * texel;
+        // BC7 rows are rows of 4 x 4 blocks, 16 bytes a block
+        const uint32_t rowsN = t.bc7 ? (h + 3) / 4 : h; const size_t rowB = t.bc7 ? size_t((w + 3) / 4) * 16 : size_t(w) * texel;
+        for (uint32_t y = 0; y < rowsN; ++y) std::memcpy(&staged[fp[m].Offset + uint64_t(y) * fp[m].Footprint.RowPitch], &t.rgba[src + size_t(y) * rowB], rowB);
+        src += rowB * rowsN;
     }
     ComPtr<ID3D12Resource> stage;
     if (!c.q.uploadBuffer(staged.data(), total, stage, err)) return false;
@@ -72,7 +74,7 @@ bool uploadScene(Ctx& c, const hw::FrameScene& s, std::string& err){
     // textures: the materials' (RGBA8; sRGB where marked), then the sky (RGBA16F) last
     c.textures.resize(s.textures.size() + 1);
     for (size_t i = 0; i < s.textures.size(); ++i)
-        if (!uploadTexture(c, s.textures[i], s.textures[i].srgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM, c.textures[i], keep, err)) return false;
+        if (!uploadTexture(c, s.textures[i], s.textures[i].bc7 ? (s.textures[i].srgb ? DXGI_FORMAT_BC7_UNORM_SRGB : DXGI_FORMAT_BC7_UNORM) : s.textures[i].srgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM, c.textures[i], keep, err)) return false;
     hw::FrameTexture sky; sky.width = s.skyW; sky.height = s.skyH; sky.mips = 1; sky.rgba.resize(size_t(s.skyW) * s.skyH * 8);
     for (size_t p = 0; p < size_t(s.skyW) * s.skyH; ++p){
         const auto half = [](float f){ uint32_t x; std::memcpy(&x, &f, 4); const uint32_t sg = (x >> 16) & 0x8000u; int e = int((x >> 23) & 0xFF) - 127 + 15; uint32_t m = (x >> 13) & 0x3FFu;

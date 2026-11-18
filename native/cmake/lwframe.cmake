@@ -55,7 +55,7 @@ add_library(raw_native_hf STATIC src/rhi/d3d12/hf_device.cpp src/rhi/d3d12/hf_ta
 target_include_directories(raw_native_hf PRIVATE "${hfgen}" "${CMAKE_CURRENT_SOURCE_DIR}/src/rhi/d3d12")
 target_link_libraries(raw_native_hf PUBLIC raw_native_d3d12)
 set(lwfdir "${CMAKE_CURRENT_SOURCE_DIR}/src/tools/lwframe")
-add_executable(lw_frame app/lw_frame.cpp "${lwfdir}/lwframe_scene.cpp" "${lwfdir}/lwframe_materials.cpp" "${lwfdir}/lwframe_sky.cpp"
+add_executable(lw_frame app/lw_frame.cpp "${lwfdir}/lwframe_scene.cpp" "${lwfdir}/lwframe_materials.cpp" "${lwfdir}/lwframe_sky.cpp" "${lwfdir}/lwframe_bc7.cpp"
     src/platform/win32/image_codec_win32.cpp)
 target_include_directories(lw_frame PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(lw_frame PRIVATE raw_native_hf windowscodecs ole32)

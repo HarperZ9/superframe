@@ -1,7 +1,8 @@
 // The night sky (see lwframe.hpp): a Radiance RGBE .hdr read with its run-length scanlines (Greg
 // Ward's format, written from its published description), the moon found as the brightest disc,
 // its power measured and moved to an analytic light, its pixels filled from their surround, and
-// the sky turned so the moon stands 35 degrees right of the view and a little behind it.
+// the sky turned so the moon stands behind the view's right shoulder (150 degrees round from it):
+// the street's snow is moonlit and the houses throw their moon shadows up the lane toward the lamps.
 #include "lwframe.hpp"
 #include <algorithm>
 #include <cmath>
@@ -73,7 +74,7 @@ bool loadSky(const std::string& path, float viewYaw, rhi::hw::FrameScene& S, std
     for (size_t p : disc) for (int c = 0; c < 3; ++c) S.sky[p * 3 + c] = float(ring[c] / std::max(1, rn));
     // where the moon is in the map, and the turn that puts it 35 degrees right of the view
     const double u = (mx / mw + 0.5) / W, v = (my / mw + 0.5) / H, th = v * kPi;
-    const double aMap = (u - 0.5) * 2 * kPi, aWorld = double(viewYaw) + 35.0 * kPi / 180.0;
+    const double aMap = (u - 0.5) * 2 * kPi, aWorld = double(viewYaw) + 150.0 * kPi / 180.0;
     S.skyRotate = float(aMap - aWorld);
     S.moonDir[0] = float(std::sin(th) * std::sin(aWorld)); S.moonDir[1] = float(std::cos(th)); S.moonDir[2] = float(-std::sin(th) * std::cos(aWorld));
     const double omega = 2 * kPi * (1 - std::cos(S.moonHalfAngle));

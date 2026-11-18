@@ -100,8 +100,8 @@ void recordFrame(Ctx& c, const hw::FrameOptions& o, Recorded& r){
     dispatch(c, "hf_direct_shade", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "direct");
     dispatch(c, "hf_gi", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "gi");
     dispatch(c, "hf_reflect", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "reflect");
-    dispatch(c, "hf_fog_inject", 30, 17, 128); uavBarrier(c);
-    dispatch(c, "hf_fog_integrate", 30, 17, 1); uavBarrier(c); stamp(c, r, "fog");
+    dispatch(c, "hf_fog_inject", 20, 12, 96); uavBarrier(c);
+    dispatch(c, "hf_fog_integrate", 20, 12, 1); uavBarrier(c); stamp(c, r, "fog");
     dispatch(c, "hf_temporal", gx(c), gy(c)); uavBarrier(c);
     for (uint32_t k = 0; k < 4; ++k){ const uint32_t pc[16] = {1u << k, k & 1u}; dispatch(c, "hf_atrous", gx(c), gy(c), 1, pc); uavBarrier(c); }
     stamp(c, r, "denoise");
