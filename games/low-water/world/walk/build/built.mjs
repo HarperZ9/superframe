@@ -4,6 +4,9 @@
 // within reach.
 import * as town from "./town.mjs";
 import * as works from "./works.mjs";
+import * as coast from "./coast.mjs";
+import * as marsh from "./marsh.mjs";
+import { Kit } from "./kit.mjs";
 
 export async function makeBuilt({ dev, stage, world, roads, near, lights, vbuf }) {
   const mod = await stage.module("materials.wgsl", "built.wgsl");
@@ -21,6 +24,10 @@ export async function makeBuilt({ dev, stage, world, roads, near, lights, vbuf }
     sites.push(site);
   }
   for (const P of works.plans(world)) sites.push({ x: P.cx, z: P.cz, reach: P.reach, from: 9000, stamp: (t) => works.stamp(P, t), build: () => works.mesh(world, P, lights), plan: P, here: () => world.has(P.cx - P.reach, P.cz - P.reach, P.cx + P.reach, P.cz + P.reach) });
+  // the storm coast's stacks and the marsh's reed halls: plans are cheap, meshes are made on arrival
+  const site = (P, from, build) => ({ x: P.cx, z: P.cz, reach: P.reach, from, stamp: () => {}, build, plan: P, here: () => world.has(P.cx - P.reach, P.cz - P.reach, P.cx + P.reach, P.cz + P.reach) });
+  for (const P of coast.plans(world)) sites.push(site(P, 7000, () => { const K = new Kit(), O = [P.cx, 0, P.cz]; coast.mesh(world, P, K, O); return { data: K.data, origin: O }; }));
+  for (const P of marsh.plans(world)) sites.push(site(P, 3000, () => { const K = new Kit(), O = [P.cx, 0, P.cz]; marsh.mesh(world, P, K, O, lights); return { data: K.data, origin: O }; }));
   near.stampers.push((t) => { for (const s of sites) if (Math.abs(s.x - (t.ox + t.N / 2)) < t.N / 2 + s.reach && Math.abs(s.z - (t.oz + t.N / 2)) < t.N / 2 + s.reach) s.stamp(t); });
   let tris = 0;
   function update({ cam }) {
@@ -35,6 +42,6 @@ export async function makeBuilt({ dev, stage, world, roads, near, lights, vbuf }
     for (const s of sites) if (s.buf) { pass.setVertexBuffer(0, s.buf); pass.setVertexBuffer(1, s.inst); pass.draw(s.n, 1); }
   }
   // settlements and landmarks that are drawn here and so must not be drawn as placeholder masses
-  const owns = { settlement: (s) => s.region === 1, mark: (m) => works.owns(m) };
+  const owns = { settlement: (s) => s.region === 1, mark: (m) => works.owns(m) || coast.owns(m) || marsh.owns(m) };
   return { sites, update, draw, owns, stats: () => ({ builtTriangles: tris, sites: sites.filter((s) => s.buf).length }) };
 }

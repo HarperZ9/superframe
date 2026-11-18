@@ -304,7 +304,9 @@ fn waterColour(p: vec3f, depth: f32, px: vec2f) -> vec4f {
     }
     mirror = acc / 5.0;
   }
-  var col = mix(body, mirror, fres);
+  // a storm sea: the wind tears the surface into long white streaks and breaks the mirror
+  let storm = smoothstep(0.6, 0.95, F.wx.z);
+  var col = mix(body, mirror, fres * (1.0 - 0.55 * storm));
   // the path of the light on the water
   let spec = pow(max(dot(r, F.key.xyz), 0.0), 220.0) * 6.0 + pow(max(dot(r, F.key.xyz), 0.0), 24.0) * 0.25;
   col += F.keyCol.rgb * F.key.w * spec * (1.0 - 0.8 * F.horizon.a);
@@ -315,6 +317,14 @@ fn waterColour(p: vec3f, depth: f32, px: vec2f) -> vec4f {
   // foam where the water is thin and the wind is up
   let foam = (1.0 - smoothstep(0.0, 1.6 + 2.5 * F.wx.z, depth)) * smoothstep(0.45, 0.75, vnoise(p.xz * 0.35 + F.cam.w * 0.3)) * (0.3 + F.wx.z) * (1.0 - smoothstep(400.0, 2500.0, dist));
   col = mix(col, lightAll * 0.8, clamp(foam, 0.0, 1.0));
+  if (storm > 0.0) {
+    // streaks a few metres long, broken and turned by a slow swirl, bunched where the swell breaks
+    let swirl = vec2f(vnoise(p.xz * 0.006 + 2.0), vnoise(p.xz * 0.006 + 9.0)) - 0.5;
+    let q = p.xz + swirl * 60.0;
+    let sw = vnoise(vec2f(q.x * 0.12 + F.cam.w * 0.04, q.y * 0.9)) * 0.55 + vnoise(q * 0.45 - F.cam.w * 0.05) * 0.45;
+    let caps = smoothstep(0.6, 0.82, sw) * smoothstep(0.4, 0.7, vnoise(p.xz * 0.02 + 4.0) * 0.7 + vnoise(p.xz * 0.08) * 0.3);
+    col = mix(col, lightAll * 0.75, storm * caps * 0.7 * (1.0 - smoothstep(250.0, 1800.0, dist)));
+  }
   col += F.ev.w * vec3f(0.35, 0.4, 0.5) * fres;
   return vec4f(inAir(col, p), clamp(0.55 + depth * 0.5 + fres, 0.0, 1.0));
 }
