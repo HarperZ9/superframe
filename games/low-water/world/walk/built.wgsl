@@ -8,7 +8,9 @@
 //   23 lattice (atlas card; tone)  24 lagged pipe (tone)       25 ribbed sheet: colour
 //   26 banded stack (height m)     27 lit strip of shed windows (seed)
 //   18 sign (hue, seed, upright)   19 cloth: colour             28 slate or tile (tone)
-//   29 thatch or reed (tone)       30 leaf card (atlas)
+//   29 thatch or reed (tone; 1 woven mat, 2 lattice)  30 leaf card (atlas)
+//   31 sea rock (tone)             32 surf (flow angle, rock radius)
+//   33 woven rug (palette, seed, cushion)
 // An instance is the chunk's corner in the world.
 
 struct BOut {
@@ -183,19 +185,61 @@ fn rust(p: vec2f, tone: f32) -> vec3f {
     alb = mix(vec3f(0.035, 0.038, 0.045), vec3f(0.075, 0.075, 0.08), id) * (0.55 + 0.45 * smoothstep(0.0, 0.08, edge));
     alb = mix(alb, vec3f(0.16, 0.16, 0.10), smoothstep(0.6, 0.85, fbm(v.uv * 0.7 + v.m.y * 5.0)) * 0.6);
     rough = 0.4; gloss = 0.3;
+  } else if (k > 32.5 && k < 33.5) {
+    // a woven rug or cushion: a field colour, bands across it and a row of lozenges, the way the
+    // flat-woven rugs of the marsh read from across a hall
+    var c0 = vec3f(0.42, 0.05, 0.04); var c1 = vec3f(0.62, 0.45, 0.12);
+    if (v.m.y > 0.5) { c0 = vec3f(0.08, 0.09, 0.30); c1 = vec3f(0.70, 0.62, 0.50); } if (v.m.y > 1.5) { c0 = vec3f(0.48, 0.10, 0.05); c1 = vec3f(0.05, 0.05, 0.06); }
+    if (v.m.y > 2.5) { c0 = vec3f(0.30, 0.04, 0.05); c1 = vec3f(0.08, 0.10, 0.28); } if (v.m.y > 3.5) { c0 = vec3f(0.45, 0.32, 0.10); c1 = vec3f(0.35, 0.05, 0.04); }
+    let q = vec2f(v.uv.x * 9.0, v.uv.y * 9.0 + v.m.z * 7.0);
+    let band = step(0.72, fract(q.y * 0.5 + v.m.z));
+    let loz = step(abs(fract(q.x) - 0.5) + abs(fract(q.y) - 0.5), 0.28) * step(fract(q.y * 0.25 + v.m.z), 0.5);
+    alb = mix(c0, c1, max(band, loz)) * (0.8 + 0.25 * vnoise(v.uv * 60.0));
+    alb = mix(alb, vec3f(0.85, 0.82, 0.75) * 0.6, step(0.93, fract(q.y * 0.5 + 0.3 + v.m.z)) * 0.7);
+    rough = 0.95; gloss = 0.02; wrap = 0.3;
+  } else if (k > 30.5 && k < 31.5) {
+    // sea rock: dark and jointed, banded by strata, black and glossy where the sea wets it,
+    // grey lichen and salt crust above the reach of the spray
+    let strata = vnoise(vec2f(v.wp.y * 1.3 + vnoise(v.wp.xz * 0.2) * 2.0, v.m.y * 9.0));
+    let crack = smoothstep(0.05, 0.0, abs(vnoise(v.wp.xz * 0.5 + v.wp.y * 0.25) - 0.5)) * 0.4;
+    alb = mix(vec3f(0.040, 0.042, 0.046), vec3f(0.11, 0.10, 0.095), strata * 0.7 + fbm(v.wp.xz * 0.5 + v.wp.y * 0.3) * 0.3) * (1.0 - 0.6 * crack);
+    let wetBand = 1.0 - smoothstep(1.5, 5.0, v.wp.y);
+    alb = mix(alb, alb * 0.45, wetBand); gloss = mix(0.08, 0.6, wetBand); rough = mix(0.8, 0.25, wetBand);
+    alb = mix(alb, vec3f(0.30, 0.31, 0.28), smoothstep(0.62, 0.85, fbm(v.wp.xz * 0.7 + v.wp.y)) * smoothstep(8.0, 14.0, v.wp.y) * 0.6 * max(n.y, 0.2));
+    alb = mix(alb, vec3f(0.12, 0.12, 0.07), smoothstep(0.5, 0.9, n.y) * 0.5);
+  } else if (k > 31.5 && k < 32.5) {
+    // surf in a long exposure: foam drawn into streaks along the flow round the rock
+    let ang = v.uv.x * 6.2832; let rad = v.uv.y;
+    let along = ang * 8.0 + F.cam.w * 0.15;
+    let streak = vnoise(vec2f(along * 0.8, rad * 14.0 + v.m.y * 3.0)) * 0.65 + vnoise(vec2f(along * 2.7, rad * 40.0)) * 0.35;
+    let thick = (1.0 - rad) * 0.9 + 0.15;
+    if (streak * thick < 0.28) { discard; }
+    alb = mix(vec3f(0.38, 0.44, 0.48), vec3f(0.78, 0.82, 0.86), smoothstep(0.28, 0.6, streak * thick));
+    rough = 0.6; gloss = 0.05; wrap = 0.5; n = vec3f(0.0, 1.0, 0.0);
   } else if (k > 28.5 && k < 29.5) {
     // reed and thatch: bundles laid in courses, the stems running down the slope
+    if (v.m.z > 1.5) {
+      // a lattice screen: reed laths crossed on the diagonal, open between
+      let d1 = abs(fract((v.uv.x + v.uv.y) / 0.32) - 0.5); let d2 = abs(fract((v.uv.x - v.uv.y) / 0.32) - 0.5);
+      if (min(d1, d2) > 0.13) { discard; }
+    }
     let course = fract(v.uv.y / 0.45);
     let stem = vnoise(vec2f(v.uv.x * 40.0, v.uv.y * 2.0 + v.m.y * 9.0));
     alb = mix(vec3f(0.16, 0.12, 0.07), vec3f(0.36, 0.29, 0.17), stem * 0.7 + v.m.y * 0.3) * (0.55 + 0.45 * smoothstep(0.0, 0.25, course));
     alb = mix(alb, vec3f(0.07, 0.07, 0.05), smoothstep(0.55, 0.8, fbm(v.uv * vec2f(0.5, 0.2) + 3.0)) * 0.5);
+    if (v.m.z > 0.5 && v.m.z < 1.5) {
+      // a woven mat: strips over and under in a herringbone
+      let q = v.uv / 0.12; let row = floor(q.y);
+      let wv = abs(fract(q.x + row * 0.5 + select(0.0, q.y, fract(row * 0.5) > 0.25)) - 0.5);
+      alb = mix(vec3f(0.20, 0.15, 0.08), vec3f(0.42, 0.33, 0.18), smoothstep(0.0, 0.3, wv) * (0.6 + 0.4 * vnoise(v.uv * 3.0)));
+    }
     rough = 0.95; gloss = 0.02; wrap = 0.2;
   } else {
     // a strip of shed windows: most dark, some lit green-white, grime on all of them
     let pane = floor(v.uv.x / 1.4); let lit = step(0.45, hash21(vec2f(pane, v.m.y * 91.0)));
     let bar = step(abs(fract(v.uv.x / 1.4) - 0.5), 0.44) * step(abs(v.uv.y - 0.5), 0.42);
     alb = vec3f(0.02, 0.025, 0.03);
-    glow = mix(vec3f(0.75, 1.0, 0.85), vec3f(1.0, 0.8, 0.5), step(0.8, hash21(vec2f(pane, 3.0)))) * lit * bar * (0.5 + 0.5 * vnoise(v.uv * 3.0)) * (0.1 + 1.2 * night);
+    glow = mix(vec3f(0.75, 1.0, 0.85), vec3f(1.0, 0.8, 0.5), step(0.8, hash21(vec2f(pane, 3.0)))) * lit * bar * (0.5 + 0.5 * vnoise(v.uv * 3.0)) * (0.06 + 0.45 * night);
     rough = 0.2; gloss = 0.4;
   }
   if (!front && card) { n = -n; }
@@ -208,11 +252,20 @@ fn rust(p: vec2f, tone: f32) -> vec3f {
   var lit = alb * (F.amb.rgb * (0.6 + 0.4 * n.y) + F.keyCol.rgb * F.key.w * ndl * keyShadow(v.wp, n));
   lit += alb * F.ev.w * vec3f(0.7, 0.75, 0.9);
   lit += lampLight(v.wp, n, -view, alb, rough, gloss, wrap);
+  // Steel in a lit plant: hundreds of lamps too small to be sent one by one still light the
+  // decks and vessels round them. Pools of white and sodium on the steel, strongest low down
+  // where the lamps hang thickest, so the plant reads as lit structure from across the water.
+  if (k > 19.5) {
+    let pool = smoothstep(0.35, 0.8, vnoise(v.wp.xz * 0.06 + v.wp.y * 0.11)) * 0.8 + 0.2;
+    let hue = mix(vec3f(0.95, 0.97, 1.0), vec3f(1.0, 0.62, 0.25), smoothstep(0.4, 0.7, vnoise(v.wp.xz * 0.013 + 7.0)));
+    lit += alb * hue * F.misc.x * 0.55 * pool * (0.55 + 0.45 * max(n.y, 0.0) + 0.25 * (1.0 - abs(n.y)));
+  }
   let fres = gloss * (0.04 + 0.96 * pow(1.0 - max(dot(-view, n), 0.0), 5.0));
   let r = reflect(view, n);
   lit = mix(lit, skyBase(vec3f(r.x, abs(r.y), r.z)), clamp(fres, 0.0, 1.0) * 0.6);
   return vec4f(inAir(lit + glow, v.wp), 1.0);
 }
 @fragment fn fsBuiltShadow(v: BOut) {
+  if (v.m.x > 31.5 && v.m.x < 32.5) { discard; }
   if ((v.m.x > 16.5 && v.m.x < 17.5) || (v.m.x > 22.5 && v.m.x < 23.5) || (v.m.x > 29.5 && v.m.x < 30.5)) { if (textureSample(atlasTex, rsamp, v.uv).a < 0.4) { discard; } }
 }

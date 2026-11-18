@@ -66,7 +66,7 @@ function trunk(M, R, H, r0, wander, flare, sides, species, top = 1, rings = 14) 
 
 function spruce(R, d) {
   const M = new Mesh(), H = 23 + R() * 9, r0 = 0.20 + H * 0.007, T = trunk(M, R, H, r0, 0.25, 0.5, d > 0.9 ? 8 : 5, SPECIES.spruce);
-  const cb = H * (0.26 + 0.14 * R()), gap = d > 0.9 ? 0.46 : 1.25, per = d > 0.9 ? 5 : 3, wide = d > 0.9 ? 1 : 1.7, mat = (fl) => [1, R(), fl, 1];
+  const cb = H * (0.26 + 0.14 * R()), gap = d > 0.9 ? 0.46 : 1.1, per = d > 0.9 ? 5 : 3, wide = d > 0.9 ? 1 : 1.4, mat = (fl) => [1, R(), fl, 1];
   let turn = R() * 6.28;
   for (let y = cb; y < H - 0.5; y += gap * (0.8 + 0.4 * R())) {
     const t = (y - cb) / (H - cb), L = (0.35 + 3.5 * (1 - t) ** 0.9) * Math.min(1, 0.5 + t * 4.5), lift = lerp(-0.55, 0.5, t ** 0.7);
@@ -75,11 +75,18 @@ function spruce(R, d) {
       const az = turn + k / per * 6.28 + (R() - 0.5) * 0.5, h = [Math.cos(az), 0, Math.sin(az)], side = cross(h, UP), Lb = L * (0.75 + 0.5 * R()), base = add(T.axis(y), mul(h, T.radius(y) * 0.6));
       // the branch sags along its length and lifts again at the tip
       const at = (s) => add(base, add(mul(h, Lb * s), mul(UP, Lb * (Math.sin(lift) * s - 0.22 * Math.sin(s * Math.PI) + 0.12 * s * s * s))));
-      const n = norm(add(mul(h, 0.5), [0, 0.7, 0])), w = (Lb * 0.30 + 0.22) * wide;
-      M.ribbon([0, 0.5, 1].map((s) => ({ p: at(s), side: mul(side, w * (s === 1 ? 0.75 : 1)), n, s: lerp(0.30, 1, s) })), CELLS.spruceFlat, mat(0.5));
+      // A spray tapers from the trunk to a point and droops at its outer edge, so from below it
+      // reads as a fan of needles and not a slab. Its normal is the crown's: out from the crown's
+      // own axis and up, as an impostor card's would be, so the crown shades as one volume, light
+      // on its shoulders and dark under each whorl.
+      const w = (Lb * 0.30 + 0.22) * wide, mid = (cb + H) * 0.5, cn = (p) => norm(add(mul(norm(sub(p, T.axis(mid))), 0.65), [0, 0.55, 0]));
+      M.ribbon([0, 0.35, 0.7, 1].map((s) => { const p = add(at(s), [0, -w * 0.35 * s * s, 0]); return { p, side: mul(side, w * [0.35, 1, 0.85, 0.3][Math.round(s * 3 / 1.05)] ), n: cn(p), s: lerp(0.30, 1, s) }; }), CELLS.spruceFlat, mat(0.5));
+      // a second, narrower spray turned up off the branch: the crown has depth between whorls
+      if (d > 0.9) { const up2 = norm(add(side, [0, 1.6, 0])); M.ribbon([0.15, 0.55, 0.95].map((s) => { const p = add(at(s), [0, w * 0.18, 0]); return { p, side: mul(up2, w * 0.42 * (1 - Math.abs(s - 0.55))), n: cn(p), s: lerp(0.45, 1, s) }; }), CELLS.spruceFlat, mat(0.6)); }
       // the fringe that hangs from it
       const hang = (Lb * 0.42 + 0.3) * wide, nh = norm(add(mul(h, 0.75), [0, 0.35, 0]));
-      M.quad(at(0.05), at(1), add(at(1), [0, -hang * 0.7, 0]), add(at(0.05), [0, -hang, 0]), CELLS.spruceHang, nh, mat(1), 0.28, 0.95);
+      // tapered toward the tip, so a row of them reads as a ragged skirt and not a board
+      M.quad(at(0.05), at(0.92), add(at(0.92), [0, -hang * 0.3, 0]), add(at(0.05), [0, -hang * 0.85, 0]), CELLS.spruceHang, nh, mat(1), 0.28, 0.95);
     }
   }
   // the leader
@@ -170,11 +177,31 @@ function snag(R, d) {
   return { mesh: M, H: H * top, crown: 0.8, cover: 0.05, broad: 0 };
 }
 
+// A bare broadleaf sapling of the understory (young birch, alder, hazel in winter): no cards at
+// all, only stems that fork three or four times into fine twigs, so it reads as the grey-brown
+// haze of twigs under the spruce that fills the fog forest in November.
+function twig(R, d) {
+  const M = new Mesh(), H = 5 + R() * 3, levels = d > 0.9 ? 4 : 3;
+  const grow = (p, dir, L, r, lv) => {
+    const bend = norm(add(dir, [(R() - 0.5) * 0.5, 0.15, (R() - 0.5) * 0.5])), mid = add(p, mul(dir, L * 0.5)), end = add(p, mul(bend, L));
+    M.tube([{ p, r }, { p: mid, r: r * 0.8 }, { p: end, r: r * 0.55 }], lv < 2 ? 4 : 3, [0, SPECIES.snag, r * 6.28, lerp(0.42, 0.62, lv / levels)]);
+    if (lv >= levels) return;
+    const n = lv === 0 ? 5 : 3;
+    for (let i = 0; i < n; i++) {
+      const t = lv === 0 ? 0.3 + 0.65 * (i / (n - 1)) : 0.45 + 0.5 * R(), at = add(p, mul(sub(end, p), t)), az = R() * 6.28, out = [Math.cos(az), 0, Math.sin(az)];
+      const nd = norm(add(mul(bend, 0.75), mul(out, 0.65 + 0.3 * R())));
+      grow(at, nd, L * (0.42 + 0.2 * R()) * (lv === 0 ? 1.2 * (1 - t * 0.6) : 1), r * 0.5, lv + 1);
+    }
+  };
+  grow([0, -0.3, 0], [0.05 * (R() - 0.5), 1, 0.05 * (R() - 0.5)], H, 0.045 + 0.02 * R(), 0);
+  return { mesh: M, H, crown: 1.4, cover: 0.06, broad: 1 };
+}
+
 // Every form the forest draws from: two of each species, each at two levels of detail.
 // kind names what it is; near is the full tree, mid the same rule drawn with fewer, larger parts.
-export const KINDS = ["spruce", "spruce", "spruce", "pine", "pine", "cedar", "cedar", "birch", "birch", "birchLeaf", "snag", "snag"];
+export const KINDS = ["spruce", "spruce", "spruce", "pine", "pine", "cedar", "cedar", "birch", "birch", "birchLeaf", "snag", "snag", "twig", "twig"];
 export function growAll(seed = 20261118) {
-  const make = { spruce, pine, cedar, birch: (R, d) => birch(R, d, false), birchLeaf: (R, d) => birch(R, d, true), snag };
+  const make = { spruce, pine, cedar, twig, birch: (R, d) => birch(R, d, false), birchLeaf: (R, d) => birch(R, d, true), snag };
   return KINDS.map((kind, i) => {
     const near = make[kind](rng(seed + i * 131), 1), mid = make[kind](rng(seed + i * 131), 0.4);
     return { kind, H: near.H, crown: near.crown, cover: near.cover, broad: near.broad, near: near.mesh.data, mid: mid.mesh.data };

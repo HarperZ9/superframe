@@ -192,6 +192,10 @@ fn rainRings(p: vec2f) -> f32 {
   // a thaw opens holes from the high points of the surface down
   cov = cov * smoothstep(F.snowp.y * 1.15 - 0.12, F.snowp.y * 1.15 + 0.10, sn * 0.7 + (1.0 - wear) * 0.25 + (0.3 - m.h * 5.0) + lying * 0.2) + 0.0;
   cov = clamp(mix(cov, smoothstep(0.42, 0.56, cov + (sn - 0.5) * 0.5 - m.h * 5.0 * det), mid), 0.0, 1.0);
+  // a gravel or paved road carries no snow: traffic and the plough keep it bare and wet, with a
+  // ragged edge of slush where the verge begins. Town lanes of packed snow (sett) keep theirs.
+  let bare = smoothstep(0.32, 0.5, road + (fbm(p * 0.8 + 5.0) - 0.5) * 0.18) * (1.0 - step(0.875, kind));
+  cov = cov * (1.0 - 0.96 * bare);
   // age: wear packs it, edges and thaw grey it, new fall resets it
   let fresh = clamp(F.snowp.x * 3.0 + F.wx.y * 0.6, 0.0, 1.0);
   let age = clamp(wear * 0.75 + F.snowp.w * (0.5 + 0.6 * fbm(p * 0.13)) + (1.0 - cov) * 0.5 + F.snowp.y * 0.5 - fresh * 0.55 * (1.0 - wear * 0.6), 0.0, 1.0);
@@ -295,16 +299,34 @@ fn waterColour(p: vec3f, depth: f32, px: vec2f) -> vec4f {
     let suv = px / F.view.xy;
     let lean = 1.0 / max(-view.y, 0.04);
     var acc = vec3f(0.0);
-    for (var k = 0; k < 5; k++) {
+    for (var k = 0; k < 4; k++) {
       let fk = f32(k);
       let q = p.xz * (0.35 + 0.22 * fk) + vec2f(F.cam.w * (0.17 + 0.05 * fk), F.cam.w * 0.11 - fk * 3.0);
       let wob = (vnoise(q) - 0.5) + (vnoise(q * 3.1 + 9.0) - 0.5) * 0.5;
       let off = vec2f(n.x * 0.03 + wob * 0.002, (n.z * 0.5 + wob) * 0.0042 * min(lean, 14.0) * (0.5 + F.wx.z));
       acc += textureSampleLevel(mirrorTex, samp, clamp(suv + off, vec2f(0.001), vec2f(0.999)), 0.0).rgb;
     }
-    mirror = acc / 5.0;
+    let base = acc / 4.0;
+    // The streaks. Each facet of a ripple tilts a little toward or away from the eye, so a lamp
+    // is seen in every facet along a vertical line below its double: the brightest of the taps
+    // up and down the line, fading toward its ends. The crests break the line into dashes, and
+    // the dashes run in bands of distance from the eye, the way ripples cross a reflection.
+    let reach = 0.0065 * min(lean, 18.0) * (0.45 + 0.9 * F.wx.z);
+    let sway = (vnoise(vec2f(dist * 0.35, F.cam.w * 0.4)) - 0.5) * 0.004;
+    var streak = vec3f(0.0);
+    for (var k = 0; k < 12; k++) {
+      let t = (f32(k) + 0.5) / 12.0 * 2.0 - 1.0;
+      let w = 1.0 - abs(t) * abs(t);
+      let c = textureSampleLevel(mirrorTex, samp, clamp(suv + vec2f(sway * t, t * reach), vec2f(0.001), vec2f(0.999)), 0.0).rgb;
+      streak = max(streak, c * w);
+    }
+    let crest = vnoise(vec2f(p.x * 0.05 + dist * 0.02, dist * 1.7 - F.cam.w * 0.9)) * 0.6 + vnoise(vec2f(p.x * 0.4, dist * 6.0 + F.cam.w * 1.3)) * 0.4;
+    let dash = smoothstep(0.42, 0.62, crest);
+    mirror = base + max(streak - base, vec3f(0.0)) * dash * 0.85;
   }
-  var col = mix(body, mirror, fres);
+  // a storm sea: the wind tears the surface into long white streaks and breaks the mirror
+  let storm = smoothstep(0.6, 0.95, F.wx.z);
+  var col = mix(body, mirror, fres * (1.0 - 0.55 * storm));
   // the path of the light on the water
   let spec = pow(max(dot(r, F.key.xyz), 0.0), 220.0) * 6.0 + pow(max(dot(r, F.key.xyz), 0.0), 24.0) * 0.25;
   col += F.keyCol.rgb * F.key.w * spec * (1.0 - 0.8 * F.horizon.a);
@@ -315,6 +337,14 @@ fn waterColour(p: vec3f, depth: f32, px: vec2f) -> vec4f {
   // foam where the water is thin and the wind is up
   let foam = (1.0 - smoothstep(0.0, 1.6 + 2.5 * F.wx.z, depth)) * smoothstep(0.45, 0.75, vnoise(p.xz * 0.35 + F.cam.w * 0.3)) * (0.3 + F.wx.z) * (1.0 - smoothstep(400.0, 2500.0, dist));
   col = mix(col, lightAll * 0.8, clamp(foam, 0.0, 1.0));
+  if (storm > 0.0) {
+    // streaks a few metres long, broken and turned by a slow swirl, bunched where the swell breaks
+    let swirl = vec2f(vnoise(p.xz * 0.006 + 2.0), vnoise(p.xz * 0.006 + 9.0)) - 0.5;
+    let q = p.xz + swirl * 60.0;
+    let sw = vnoise(vec2f(q.x * 0.12 + F.cam.w * 0.04, q.y * 0.9)) * 0.55 + vnoise(q * 0.45 - F.cam.w * 0.05) * 0.45;
+    let caps = smoothstep(0.6, 0.82, sw) * smoothstep(0.4, 0.7, vnoise(p.xz * 0.02 + 4.0) * 0.7 + vnoise(p.xz * 0.08) * 0.3);
+    col = mix(col, lightAll * 0.75, storm * caps * 0.7 * (1.0 - smoothstep(250.0, 1800.0, dist)));
+  }
   col += F.ev.w * vec3f(0.35, 0.4, 0.5) * fres;
   return vec4f(inAir(col, p), clamp(0.55 + depth * 0.5 + fres, 0.0, 1.0));
 }
