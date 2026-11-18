@@ -52,6 +52,16 @@ Stills and frame times come from `tools/shot.mjs`, which drives a headless brows
 node games/low-water/world/tools/shot.mjs --out stills --views all
 ```
 
+## The plate
+
+```bash
+node games/low-water/world/plate/plate.mjs --out plate.svg
+```
+
+The same files drawn as a hachured map: shadow hachures lit from the north-west, water-lining round the coast, rivers that widen to the sea, tree, reed and stipple signs by cover, the roads and the ferry in one accent colour, and every name lettered from the game's own stroke skeletons (`game/engine/ui/lettering`). The scale bar carries the measured day's walk between ring towns. `plate/low-water-20261118.png` is the plate of the canonical seed.
+
+![The island of Low Water as a hachured plate](plate/low-water-20261118.png)
+
 ## How the island is made
 
 1. **Tectonic sketch** (`tect.bld`). Five plates, each a handful of seeds moved by the world seed. Where two plates meet the ground lifts: the long north-south range stands on the boundary of the west foreland and the east block. The south-west plate sinks and becomes the delta. A city island stands across a strait from the bay.
