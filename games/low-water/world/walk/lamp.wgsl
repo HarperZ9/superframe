@@ -15,13 +15,16 @@ struct LOut {
   let c = F.viewProj * vec4f(p0.xyz, 1.0);
   // the lamp's radius in pixels, held to a floor
   let px = p0.w * F.view.y * 0.5 * F.viewProj[1][1] / max(c.w, 0.01);
-  let grow = max(1.5 / max(px, 0.001), 1.0);
-  let r = max(px, 1.5) * 2.2;
+  // in the mirror a lamp keeps a floor twice as wide, so its double survives the smaller target
+  // and the water's streaks have a source to stretch
+  let floorPx = select(1.5, 3.0, F.clip.z > 0.5);
+  let grow = max(floorPx / max(px, 0.001), 1.0);
+  let r = max(px, floorPx) * 2.2;
   var o: LOut;
   o.clip = vec4f(c.xy + corner * r * 2.0 / F.view.xy * c.w, c.z, c.w);
   o.q = corner * 2.2;
   // a lamp smaller than its floor keeps the light it sends, not the light per pixel
-  var col = p1.rgb / pow(grow, 1.15);
+  var col = p1.rgb / pow(grow, select(1.15, 0.45, F.clip.z > 0.5));
   // lamps come on as the sky goes; a flare (flicker below zero) burns through the day
   let fl = select(p1.w, -1.0 - p1.w, p1.w < 0.0);
   if (fl > 0.0) { col *= 0.75 + 0.25 * sin(F.cam.w * (7.0 + 9.0 * fl) + p0.x * 3.1 + p0.z * 1.7) * sin(F.cam.w * 2.3 + p0.x); }
