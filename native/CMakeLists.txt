@@ -161,6 +161,8 @@ target_link_libraries(raw_native_cli PRIVATE raw_native)
 include(cmake/gpu.cmake)
 # The AO comparison tools (bench/ao/README.md), off by default.
 include(cmake/ao_bench.cmake)
+# Low Water's native shell (games/low-water/runtime/), off by default.
+include(cmake/lwshell.cmake)
 if(EMSCRIPTEN)
     raw_native_wasm_target(raw_native_cli)
 endif()
