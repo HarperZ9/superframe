@@ -75,7 +75,9 @@ try {
     }
     return at;
   } };
-  const all = viewsFor(worldJson, probe), pick = !opt.views || opt.views === "all" ? all : opt.views.split(",").map((n) => all.find((v) => v.name === n) || (() => { throw new Error(`no view ${n}; have ${all.map((v) => v.name).join(", ")}`); })());
+  const all = viewsFor(worldJson, probe), pick = opt.at ? [] : !opt.views || opt.views === "all" ? all : opt.views.split(",").map((n) => all.find((v) => v.name === n) || (() => { throw new Error(`no view ${n}; have ${all.map((v) => v.name).join(", ")}`); })());
+  // --at x,z,alt,yaw,pitch,clock,day (km, m, degrees, hours) draws one view of your own; --name names its file
+  if (opt.at) { const [x, z, alt, yaw, pitch, clock, day] = opt.at.split(",").map(Number); pick.length = 0; pick.push({ name: opt.name || "at", fly: alt > 2.5, x, z, alt, yaw, pitch, clock, day: day ?? 3 }); }
   await send("Page.navigate", { url: `http://127.0.0.1:${port}/world/walk/index.html?still=1&world=${worldDir}&quality=${opt.quality || 1}${opt.hud ? "" : "&nohud=1"}` });
   let ready = false;
   for (let i = 0; i < 1200 && !ready; i++) {

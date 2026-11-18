@@ -1,135 +1,64 @@
-// Walk or fly the island. One WebGPU device from the engine's web host (native/web/raw-gpu.mjs),
-// four passes: sky, ground, masses, water. The clock, the weather and the sky events come from
-// world/weather.mjs; the ground, the settlements and the landmarks from the generated world.
+// Walk or fly the island. One WebGPU device from the engine's web host (native/web/raw-gpu.mjs).
+// A frame is: the mirror pass where still water is near, the world in linear light (sky, ground,
+// what stands on it, water, weather, lamps), then fog, bloom and the film curve (post.wgsl).
+// The clock, the weather and the sky events come from world/weather.mjs; the ground, the
+// settlements and the landmarks from the generated world.
 //
 //   ?world=out/20261118   which generated world to load (under games/low-water/world/)
 //   ?x=&z=&alt=&yaw=&pitch=&clock=&day=&fly=1   a starting view (km, m, degrees, hours)
-//   ?still=1              hold the clock (for stills); ?quality=0.5 scales tree and grass reach
+//   ?still=1              hold the clock (for stills); ?quality=0.5 scales how far detail reaches
+//   ?mirror=0 ?scale=0.5  switch the mirror pass off; draw at a share of the window's size
 import { createHost } from "/rn/web/raw-gpu.mjs";
 import { loadWorld, groundAt, regionAt, waterAt, bakeMaps, heightPyramid } from "./data.mjs";
 import { selectNodes, frustumPlanes } from "./lod.mjs";
-import { MESHES, architecture, flora } from "./masses.mjs";
-import { frameLight } from "./light.mjs";
+import { frameLight, groundState } from "./light.mjs";
 import { sky as skyAt, makeRegionField } from "../weather.mjs";
+import { viewProj, invert, mirrored } from "./mat.mjs";
+import { makeStage, OFF, FRAME_FLOATS } from "./stage.mjs";
+import { makeRoads } from "./roads.mjs";
+import { makeNear } from "./near.mjs";
+import { makeLights } from "./lights.mjs";
+import { makeScene } from "./scene.mjs";
 
 const Q = new URLSearchParams(location.search), num = (k, d) => Q.has(k) ? +Q.get(k) : d;
 const canvas = document.getElementById("view"), hud = document.getElementById("hud"), note = document.getElementById("note");
 const say = (t) => { note.textContent = t; note.hidden = !t; };
 const REGION_NAMES = ["Open Sea", "Thaw Country", "The Folded Uplands", "The Fog Forest", "The Storm Coast", "The Canyon and Badlands", "The Marsh", "The City Across the Water", "The Works", "The Monument Ground", "The Drowned Quarter", "The Far-North Works Town"];
 
-// ---------------------------------------------------------------- maths (column-major 4 x 4)
-function viewProj(cam, aspect, fovY = 1.05, near = 0.3) {
-  const cp = Math.cos(cam.pitch), f = [Math.sin(cam.yaw) * cp, Math.sin(cam.pitch), -Math.cos(cam.yaw) * cp];           // yaw 0 looks north
-  const r = [Math.cos(cam.yaw), 0, Math.sin(cam.yaw)], u = [r[1] * f[2] - r[2] * f[1], r[2] * f[0] - r[0] * f[2], r[0] * f[1] - r[1] * f[0]];
-  const e = [cam.x, cam.y, cam.z], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-  const V = [r[0], u[0], -f[0], 0, r[1], u[1], -f[1], 0, r[2], u[2], -f[2], 0, -dot(r, e), -dot(u, e), dot(f, e), 1];
-  const t = 1 / Math.tan(fovY / 2), P = [t / aspect, 0, 0, 0, 0, t, 0, 0, 0, 0, 0, -1, 0, 0, near, 0];                   // reversed depth, no far plane
-  const M = new Float32Array(16);
-  for (let c = 0; c < 4; c++) for (let rI = 0; rI < 4; rI++) { let s = 0; for (let k = 0; k < 4; k++) s += P[k * 4 + rI] * V[c * 4 + k]; M[c * 4 + rI] = s; }
-  return { M, f, r, u };
-}
-function invert(m) {
-  const inv = new Float32Array(16), a = m;
-  inv[0] = a[5] * a[10] * a[15] - a[5] * a[11] * a[14] - a[9] * a[6] * a[15] + a[9] * a[7] * a[14] + a[13] * a[6] * a[11] - a[13] * a[7] * a[10];
-  inv[4] = -a[4] * a[10] * a[15] + a[4] * a[11] * a[14] + a[8] * a[6] * a[15] - a[8] * a[7] * a[14] - a[12] * a[6] * a[11] + a[12] * a[7] * a[10];
-  inv[8] = a[4] * a[9] * a[15] - a[4] * a[11] * a[13] - a[8] * a[5] * a[15] + a[8] * a[7] * a[13] + a[12] * a[5] * a[11] - a[12] * a[7] * a[9];
-  inv[12] = -a[4] * a[9] * a[14] + a[4] * a[10] * a[13] + a[8] * a[5] * a[14] - a[8] * a[6] * a[13] - a[12] * a[5] * a[10] + a[12] * a[6] * a[9];
-  inv[1] = -a[1] * a[10] * a[15] + a[1] * a[11] * a[14] + a[9] * a[2] * a[15] - a[9] * a[3] * a[14] - a[13] * a[2] * a[11] + a[13] * a[3] * a[10];
-  inv[5] = a[0] * a[10] * a[15] - a[0] * a[11] * a[14] - a[8] * a[2] * a[15] + a[8] * a[3] * a[14] + a[12] * a[2] * a[11] - a[12] * a[3] * a[10];
-  inv[9] = -a[0] * a[9] * a[15] + a[0] * a[11] * a[13] + a[8] * a[1] * a[15] - a[8] * a[3] * a[13] - a[12] * a[1] * a[11] + a[12] * a[3] * a[9];
-  inv[13] = a[0] * a[9] * a[14] - a[0] * a[10] * a[13] - a[8] * a[1] * a[14] + a[8] * a[2] * a[13] + a[12] * a[1] * a[10] - a[12] * a[2] * a[9];
-  inv[2] = a[1] * a[6] * a[15] - a[1] * a[7] * a[14] - a[5] * a[2] * a[15] + a[5] * a[3] * a[14] + a[13] * a[2] * a[7] - a[13] * a[3] * a[6];
-  inv[6] = -a[0] * a[6] * a[15] + a[0] * a[7] * a[14] + a[4] * a[2] * a[15] - a[4] * a[3] * a[14] - a[12] * a[2] * a[7] + a[12] * a[3] * a[6];
-  inv[10] = a[0] * a[5] * a[15] - a[0] * a[7] * a[13] - a[4] * a[1] * a[15] + a[4] * a[3] * a[13] + a[12] * a[1] * a[7] - a[12] * a[3] * a[5];
-  inv[14] = -a[0] * a[5] * a[14] + a[0] * a[6] * a[13] + a[4] * a[1] * a[14] - a[4] * a[2] * a[13] - a[12] * a[1] * a[6] + a[12] * a[2] * a[5];
-  inv[3] = -a[1] * a[6] * a[11] + a[1] * a[7] * a[10] + a[5] * a[2] * a[11] - a[5] * a[3] * a[10] - a[9] * a[2] * a[7] + a[9] * a[3] * a[6];
-  inv[7] = a[0] * a[6] * a[11] - a[0] * a[7] * a[10] - a[4] * a[2] * a[11] + a[4] * a[3] * a[10] + a[8] * a[2] * a[7] - a[8] * a[3] * a[6];
-  inv[11] = -a[0] * a[5] * a[11] + a[0] * a[7] * a[9] + a[4] * a[1] * a[11] - a[4] * a[3] * a[9] - a[8] * a[1] * a[7] + a[8] * a[3] * a[5];
-  inv[15] = a[0] * a[5] * a[10] - a[0] * a[6] * a[9] - a[4] * a[1] * a[10] + a[4] * a[2] * a[9] + a[8] * a[1] * a[6] - a[8] * a[2] * a[5];
-  const det = a[0] * inv[0] + a[1] * inv[4] + a[2] * inv[8] + a[3] * inv[12];
-  for (let i = 0; i < 16; i++) inv[i] /= det;
-  return inv;
-}
-
-// ---------------------------------------------------------------- start
 async function start() {
   say("Opening the GPU");
-  const host = await createHost({ canvas, timing: false }), dev = host.device, fmt = host.format;
+  const host = await createHost({ canvas, timing: false }), dev = host.device;
   say("Reading the island");
   const world = await loadWorld(`/world/${Q.get("world") || "out/20261118"}`, (p, n) => say(`Reading the island: ${n} (${Math.round(p * 100)} %)`));
   say("Drawing the ground maps");
-  const maps = bakeMaps(world), pyramid = heightPyramid(world), seed = world.json.seed, W = world.W, H = world.H;
+  const maps = bakeMaps(world), pyramid = heightPyramid(world), seed = world.json.seed;
   const shares = makeRegionField((x, z) => regionAt(world, x, z), world.width, world.depth);
+  const stage = await makeStage(dev, host.format, world, maps);
+  const roads = makeRoads(world), near = makeNear(roads), lights = makeLights(), quality = num("quality", 1);
+  world.near = near;
 
-  const tex = (format, data, bytes) => {
-    const t = dev.createTexture({ size: [W, H], format, usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST, mipLevelCount: format === "rgba8unorm" ? 3 : 1 });
-    dev.queue.writeTexture({ texture: t }, data, { bytesPerRow: W * bytes }, [W, H]);
-    return t;
-  };
-  const heightTex = tex("r32float", world.height, 4), waterTex = tex("r32float", world.water, 4), albTex = tex("rgba8unorm", maps.alb, 4), auxTex = tex("rgba8unorm", maps.aux, 4);
-  // two coarser levels of the aux map, by box average, for the lamp reflections on water
-  for (const t of [albTex, auxTex]) {
-    let src = t === albTex ? maps.alb : maps.aux, w = W, h = H;
-    for (let l = 1; l < 3; l++) {
-      const nw = w >> 1, nh = h >> 1, dst = new Uint8Array(nw * nh * 4);
-      for (let y = 0; y < nh; y++) for (let x = 0; x < nw; x++) for (let c = 0; c < 4; c++) dst[(y * nw + x) * 4 + c] = (src[(2 * y * w + 2 * x) * 4 + c] + src[(2 * y * w + 2 * x + 1) * 4 + c] + src[((2 * y + 1) * w + 2 * x) * 4 + c] + src[((2 * y + 1) * w + 2 * x + 1) * 4 + c]) >> 2;
-      dev.queue.writeTexture({ texture: t, mipLevel: l }, dst, { bytesPerRow: nw * 4 }, [nw, nh]);
-      src = dst; w = nw; h = nh;
-    }
-  }
-  const sampler = dev.createSampler({ magFilter: "linear", minFilter: "linear", mipmapFilter: "linear", addressModeU: "clamp-to-edge", addressModeV: "clamp-to-edge" });
-
-  const text = async (f) => (await fetch(new URL(f, import.meta.url))).text();
-  const common = await text("common.wgsl"), mod = async (f) => dev.createShaderModule({ code: common + "\n" + await text(f), label: f });
-  const [terrainM, skyM, massM] = await Promise.all([mod("terrain.wgsl"), mod("sky.wgsl"), mod("mass.wgsl")]);
-  for (const m of [terrainM, skyM, massM]) { const info = await m.getCompilationInfo(); const bad = info.messages.filter((x) => x.type === "error"); if (bad.length) throw new Error(`${m.label}: ${bad.map((x) => `${x.lineNum}: ${x.message}`).join("; ")}`); }
-
-  const FRAME_FLOATS = 100, frame = new Float32Array(FRAME_FLOATS), frameBuf = dev.createBuffer({ size: FRAME_FLOATS * 4, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-  const VIS = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
-  const frameLayout = dev.createBindGroupLayout({ entries: [{ binding: 0, visibility: VIS, buffer: {} }] });
-  const groundLayout = dev.createBindGroupLayout({ entries: [
-    { binding: 0, visibility: VIS, buffer: {} }, { binding: 1, visibility: VIS, texture: { sampleType: "unfilterable-float" } }, { binding: 2, visibility: VIS, texture: { sampleType: "unfilterable-float" } },
-    { binding: 3, visibility: GPUShaderStage.FRAGMENT, texture: {} }, { binding: 4, visibility: VIS, texture: {} }, { binding: 5, visibility: VIS, sampler: {} }] });
-  const frameBind = dev.createBindGroup({ layout: frameLayout, entries: [{ binding: 0, resource: { buffer: frameBuf } }] });
-  const groundBind = dev.createBindGroup({ layout: groundLayout, entries: [{ binding: 0, resource: { buffer: frameBuf } }, { binding: 1, resource: heightTex.createView() }, { binding: 2, resource: waterTex.createView() }, { binding: 3, resource: albTex.createView() }, { binding: 4, resource: auxTex.createView() }, { binding: 5, resource: sampler }] });
-  const depthState = (write) => ({ format: "depth32float", depthWriteEnabled: write, depthCompare: "greater" });
+  const skyM = await stage.module("sky.wgsl"), terrainM = await stage.module("materials.wgsl", "terrain.wgsl"), lampM = await stage.module("lamp.wgsl");
   const gridBuffers = [{ arrayStride: 8, attributes: [{ shaderLocation: 0, offset: 0, format: "float32x2" }] }, { arrayStride: 16, stepMode: "instance", attributes: [{ shaderLocation: 1, offset: 0, format: "float32x4" }] }];
-  const pipe = (layout, module, vs, fs, buffers, { depth = true, write = true, blend = null } = {}) => dev.createRenderPipeline({
-    layout: dev.createPipelineLayout({ bindGroupLayouts: [layout] }), vertex: { module, entryPoint: vs, buffers },
-    fragment: { module, entryPoint: fs, targets: [{ format: fmt, blend: blend || undefined }] }, primitive: { topology: "triangle-list", cullMode: "none" },
-    depthStencil: depth ? depthState(write) : { format: "depth32float", depthWriteEnabled: false, depthCompare: "always" },
-  });
-  const alpha = { color: { srcFactor: "src-alpha", dstFactor: "one-minus-src-alpha" }, alpha: { srcFactor: "one", dstFactor: "one-minus-src-alpha" } };
-  const skyPipe = pipe(frameLayout, skyM, "vsSky", "fsSky", [], { depth: false });
-  const groundPipe = pipe(groundLayout, terrainM, "vsGround", "fsGround", gridBuffers);
-  const waterPipe = pipe(groundLayout, terrainM, "vsWater", "fsWater", gridBuffers, { write: false, blend: alpha });
-  const massBuffers = [{ arrayStride: 24, attributes: [{ shaderLocation: 0, offset: 0, format: "float32x3" }, { shaderLocation: 1, offset: 12, format: "float32x3" }] },
-    { arrayStride: 48, stepMode: "instance", attributes: [{ shaderLocation: 2, offset: 0, format: "float32x4" }, { shaderLocation: 3, offset: 16, format: "float32x4" }, { shaderLocation: 4, offset: 32, format: "float32x4" }] }];
-  const massPipe = pipe(frameLayout, massM, "vsMass", "fsMass", massBuffers);
+  const skyPipe = stage.pipe(skyM, "vsSky", "fsSky", [], { depth: "none" });
+  const groundPipe = stage.pipe(terrainM, "vsGround", "fsGround", gridBuffers);
+  const waterPipe = stage.pipe(terrainM, "vsWater", "fsWater", gridBuffers, { blend: "alpha" });
+  const lampPipe = stage.pipe(lampM, "vsLamp", "fsLamp", [{ arrayStride: 32, stepMode: "instance", attributes: [{ shaderLocation: 0, offset: 0, format: "float32x4" }, { shaderLocation: 1, offset: 16, format: "float32x4" }] }], { depth: "test", blend: "add", topology: "triangle-strip" });
 
   // the 32 x 32 grid every terrain node is drawn with
   const N = 32, grid = new Float32Array(N * N * 12);
   for (let j = 0, o = 0; j < N; j++) for (let i = 0; i < N; i++) for (const [a, b] of [[0, 0], [1, 0], [1, 1], [0, 0], [1, 1], [0, 1]]) { grid[o++] = (i + a) / N; grid[o++] = (j + b) / N; }
   const vbuf = (data, usage = GPUBufferUsage.VERTEX) => { const b = dev.createBuffer({ size: Math.max(16, data.byteLength), usage: usage | GPUBufferUsage.COPY_DST }); dev.queue.writeBuffer(b, 0, data); return b; };
-  const gridBuf = vbuf(grid), MAX_NODES = 2048, nodes = new Float32Array(MAX_NODES * 4), nodeBuf = dev.createBuffer({ size: nodes.byteLength, usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST });
-  const meshBuf = Object.fromEntries(Object.entries(MESHES).map(([k, v]) => [k, { buf: vbuf(v), count: v.length / 6 }]));
+  const gridBuf = vbuf(grid), MAX_NODES = 4096, nodes = new Float32Array(MAX_NODES * 4), nodesM = new Float32Array(MAX_NODES * 4);
+  const nodeBuf = dev.createBuffer({ size: nodes.byteLength, usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST }), nodeBufM = dev.createBuffer({ size: nodes.byteLength, usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST });
+  let lampBuf = null, lampCount = 0;
 
-  say("Raising the towns");
-  const arch = architecture(world), archBuf = Object.fromEntries(Object.entries(arch).filter(([, v]) => v.length).map(([k, v]) => [k, { buf: vbuf(v), count: v.length / 12 }]));
-  const FLORA_MAX = 90000, floraBuf = { cone: { buf: dev.createBuffer({ size: FLORA_MAX * 48, usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST }), count: 0 }, cyl: { buf: dev.createBuffer({ size: FLORA_MAX * 48, usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST }), count: 0 } };
-  const quality = num("quality", 1);
-  let floraAt = [1e12, 1e12];
-  function growFlora(x, z) {
-    if (Math.hypot(x - floraAt[0], z - floraAt[1]) < 6) return;
-    floraAt = [x, z];
-    const f = flora(world, x, z, 2200 * quality, 26 * Math.min(1, quality * 1.5));
-    for (const k of ["cone", "cyl"]) { const n = Math.min(FLORA_MAX, f[k].length / 12); floraBuf[k].count = n; if (n) dev.queue.writeBuffer(floraBuf[k].buf, 0, f[k], 0, n * 12); }
-  }
+  say("Raising what stands on the island");
+  const scene = await makeScene({ dev, stage, world, roads, near, lights, quality, vbuf, say });
 
   // ---------------------------------------------------------------- the walker
   const seat = world.json.settlements.find((s) => s.name === "Gullet") || world.json.settlements[0];
-  const cam = { x: num("x", seat.x * 0.064 + 1.2) * 1000, z: num("z", seat.y * 0.064 + 0.4) * 1000, y: 0, yaw: num("yaw", 80) * Math.PI / 180, pitch: num("pitch", -4) * Math.PI / 180, fly: Q.get("fly") === "1", alt: num("alt", 1.7) };
-  const time = { day: num("day", 3), clock: num("clock", 17.2), hold: Q.get("still") === "1", rate: num("rate", 30) };   // rate: game seconds per real second
+  const cam = { x: num("x", seat.x * 0.064 + 1.2) * 1000, z: num("z", seat.y * 0.064 + 0.4) * 1000, y: 0, yaw: num("yaw", 80) * Math.PI / 180, pitch: num("pitch", -4) * Math.PI / 180, fly: Q.get("fly") === "1", alt: num("alt", 1.7), speed: 0 };
+  const time = { day: num("day", 3), clock: num("clock", 17.2), hold: Q.get("still") === "1", rate: num("rate", 30), t: 0 };   // rate: game seconds per real second
   const keys = new Set();
   addEventListener("keydown", (e) => { keys.add(e.code); if (e.code === "KeyF") cam.fly = !cam.fly; if (e.code === "KeyT") time.hold = !time.hold; if (e.code === "KeyH") hud.hidden = !hud.hidden; if (e.code.startsWith("Digit") || e.code === "Minus") jump(e.code === "Minus" ? 11 : e.code === "Digit0" ? 10 : +e.code.slice(5)); });
   addEventListener("keyup", (e) => keys.delete(e.code));
@@ -142,12 +71,14 @@ async function start() {
     cam.x = ((s.x ?? s.cx) + 6) * world.cell; cam.z = ((s.y ?? s.cy) + 9) * world.cell; cam.yaw = -0.6; cam.pitch = -0.05;
   }
   const surfaceAt = (x, z) => Math.max(groundAt(world, x, z), waterAt(world, x, z) > -500 ? waterAt(world, x, z) - 1.1 : -1e9);
+  let route = null;   // a line to walk for a capture: { pts, s, speed }
   function move(dt) {
     const fwd = (keys.has("KeyW") ? 1 : 0) - (keys.has("KeyS") ? 1 : 0), side = (keys.has("KeyD") ? 1 : 0) - (keys.has("KeyA") ? 1 : 0), rise = (keys.has("Space") ? 1 : 0) - (keys.has("KeyC") ? 1 : 0);
-    const fast = keys.has("ShiftLeft") || keys.has("ShiftRight");
+    const fast = keys.has("ShiftLeft") || keys.has("ShiftRight"), x0 = cam.x, z0 = cam.z;
     if (keys.has("BracketRight")) time.clock = (time.clock + dt * 2) % 24;
     if (keys.has("BracketLeft")) time.clock = (time.clock - dt * 2 + 24) % 24;
-    if (cam.fly) {
+    if (route) followRoute(dt);
+    else if (cam.fly) {
       const v = (fast ? 1200 : 120) * Math.max(1, cam.alt / 300), cp = Math.cos(cam.pitch);
       cam.x += (Math.sin(cam.yaw) * cp * fwd + Math.cos(cam.yaw) * side) * v * dt; cam.z += (-Math.cos(cam.yaw) * cp * fwd + Math.sin(cam.yaw) * side) * v * dt;
       cam.alt = Math.max(2, cam.alt + (Math.sin(cam.pitch) * fwd + rise) * v * dt);
@@ -157,45 +88,106 @@ async function start() {
       cam.alt = 1.7;
     }
     cam.x = Math.max(-20000, Math.min(world.width + 20000, cam.x)); cam.z = Math.max(-20000, Math.min(world.depth + 20000, cam.z));
+    if (near.bake(cam.x, cam.z)) stage.uploadNear(near);
     cam.y = surfaceAt(cam.x, cam.z) + cam.alt;
+    cam.speed = dt > 0 ? Math.hypot(cam.x - x0, cam.z - z0) / dt : 0;
+    // a walker's head rises and falls a little with each stride
+    if (!cam.fly && cam.speed > 0.2) { cam.stride = (cam.stride || 0) + cam.speed * dt; cam.y += Math.sin(cam.stride * 4.2) * 0.022; }
+  }
+  function followRoute(dt) {
+    const r = route; r.s += r.speed * dt;
+    const at = (s) => { const f = Math.min(r.pts.length - 1.001, Math.max(0, s / r.step)), i = Math.floor(f), t = f - i, a = r.pts[i], b = r.pts[i + 1]; return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; };
+    const p = at(r.s), q = at(r.s + 9), want = Math.atan2(q[0] - p[0], -(q[1] - p[1]));
+    let d = want - cam.yaw; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+    cam.yaw += d * Math.min(1, dt * 2.2) + (r.look || 0) * dt; cam.x = p[0]; cam.z = p[1]; cam.alt = r.alt ?? 1.7; cam.fly = false;
+    if (r.s > (r.pts.length - 1) * r.step) route = null;
+  }
+
+  // where the walker has just been, so the fog can open there and close again (about a second)
+  const trail = [];
+  function leaveTrail(dt) {
+    for (const t of trail) t.age += dt;
+    while (trail.length && trail[0].age > 1.2) trail.shift();
+    const lastT = trail[trail.length - 1];
+    if (!lastT || Math.hypot(cam.x - lastT.x, cam.z - lastT.z) > 0.9) { trail.push({ x: cam.x, y: cam.y - 0.6, z: cam.z, age: 0 }); if (trail.length > 7) trail.shift(); }
+  }
+  // still water near the walker: its level, or null
+  function waterNear() {
+    if (cam.alt > 600) return null;
+    for (const r of [0, 120, 400, 1000, 2200]) for (let a = 0; a < (r ? 8 : 1); a++) {
+      const x = cam.x + Math.sin(cam.yaw + a * Math.PI / 4) * r, z = cam.z - Math.cos(cam.yaw + a * Math.PI / 4) * r;
+      if (x < 0 || z < 0 || x >= world.width || z >= world.depth) return 0;
+      const w = waterAt(world, x, z); if (w > -500 && w < cam.y) return w;
+    }
+    return null;
   }
 
   // ---------------------------------------------------------------- a frame
-  let depthTex = null, last = performance.now(), t0 = last, frames = 0, nodeCount = 0, state = null;
-  const gaps = [];
-  let grabbing = null;
-  function draw(now) {
-    const dt = Math.min(0.1, (now - last) / 1000); gaps.push(now - last); if (gaps.length > 240) gaps.shift(); last = now;
-    const cw = Math.max(1, Math.floor(canvas.clientWidth * (num("scale", 1)))), chh = Math.max(1, Math.floor(canvas.clientHeight * num("scale", 1)));
-    if (canvas.width !== cw || canvas.height !== chh || !depthTex) { canvas.width = cw; canvas.height = chh; if (depthTex) depthTex.destroy(); depthTex = dev.createTexture({ size: [cw, chh], format: "depth32float", usage: GPUTextureUsage.RENDER_ATTACHMENT }); }
-    move(dt);
+  const frame = new Float32Array(FRAME_FLOATS), frameM = new Float32Array(FRAME_FLOATS);
+  let last = performance.now(), frames = 0, nodeCount = 0, state = null, grabbing = null, manual = false;
+  const gaps = [], wantMirror = Q.get("mirror") !== "0";
+  function drawWorld(pass, which, nBuf, nCount) {
+    pass.setBindGroup(0, stage.st.binds[which]);
+    pass.setPipeline(skyPipe); pass.draw(3);
+    pass.setPipeline(groundPipe); pass.setVertexBuffer(0, gridBuf); pass.setVertexBuffer(1, nBuf); pass.draw(N * N * 6, nCount);
+    scene.draw(pass, which);
+    if (which === "main") { pass.setPipeline(waterPipe); pass.setVertexBuffer(0, gridBuf); pass.setVertexBuffer(1, nBuf); pass.draw(N * N * 6, nCount); scene.drawAir(pass); }
+    if (lampCount) { pass.setPipeline(lampPipe); pass.setVertexBuffer(0, lampBuf); pass.draw(4, lampCount); }
+  }
+  function draw(now, fixedDt = null) {
+    const dt = fixedDt ?? Math.min(0.1, (now - last) / 1000); gaps.push(now - last); if (gaps.length > 240) gaps.shift(); last = now;
+    const scale = num("scale", 1), cw = Math.max(2, Math.floor(canvas.clientWidth * scale)), chh = Math.max(2, Math.floor(canvas.clientHeight * scale));
+    if (canvas.width !== cw || canvas.height !== chh) { canvas.width = cw; canvas.height = chh; }
+    stage.resize(cw, chh);
+    move(dt); leaveTrail(dt); time.t += dt;
     if (!time.hold) { time.clock += dt * time.rate / 3600; if (time.clock >= 24) { time.clock -= 24; time.day++; } }
-    growFlora(cam.x, cam.z);
-    const vp = viewProj(cam, cw / chh), s = skyAt(seed, shares, cam.x, cam.z, world.depth, time.day, time.clock);
+    const vp = viewProj(cam, cw / chh), s = skyAt(seed, shares, cam.x, cam.z, world.depth, time.day, time.clock), sh = shares(cam.x, cam.z);
     // lightning strikes only while the clock runs, so a held still is never caught mid-flash
-    const flash = !time.hold && s.events.cells.some((c) => c.flash) && ((now / 90) | 0) % 3 === 0 ? 1 : 0, L = frameLight(s, flash);
+    const flash = !time.hold && s.events.cells.some((c) => c.flash) && ((now / 90) | 0) % 3 === 0 ? 1 : 0, L = frameLight(s, flash), G = groundState(s, sh);
     L.fogp[0] = Math.max(0, groundAt(world, cam.x, cam.z)) * (s.weather.cloudSea > 0 ? 0 : 0.85);
-    frame.set(vp.M, 0); frame.set(invert(vp.M), 16); frame.set([cam.x, cam.y, cam.z, (now - t0) / 1000], 32);
-    let o = 36; for (const k of ["key", "sun", "moon", "zenith", "horizon", "fog", "fogp", "wx", "ev", "misc", "keyCol", "amb", "lamp"]) { frame.set(L[k], o); o += 4; }
-    frame.set([world.width, world.depth, world.cell, W], o); frame.set(L.glow, o + 4);
-    dev.queue.writeBuffer(frameBuf, 0, frame);
+    scene.update({ cam, vp, dt, time, sky: s, shares: sh, light: L, ground: G });
+    const sp = lights.spriteData();
+    if (sp.changed) { if (lampBuf) lampBuf.destroy(); lampBuf = vbuf(sp.data); lampCount = sp.count; }
+    lights.select([cam.x, cam.y, cam.z], vp.f, 260 * Math.max(0.5, quality)); stage.writeLights(lights.block);
+
+    const level = wantMirror ? waterNear() : null;
+    frame.set(vp.M, OFF.viewProj); frame.set(invert(vp.M), OFF.invViewProj); frame.set([cam.x, cam.y, cam.z, time.t], OFF.cam);
+    for (const k of ["key", "sun", "moon", "zenith", "horizon", "fog", "fogp", "wx", "ev", "misc", "keyCol", "amb", "lamp", "glow"]) frame.set(L[k], OFF[k]);
+    frame.set([world.width, world.depth, world.cell, world.W], OFF.world);
+    frame.set([near.state.ox, near.state.oz, 512, near.state.baked ? 1 : 0], OFF.near);
+    frame.set(G.snowp, OFF.snowp); frame.set(G.gfog, OFF.gfog);
+    frame.set([cw, chh, level ?? 0, level === null ? 0 : 1], OFF.view);
+    frame.set([cam.x, cam.y, cam.z, cam.speed], OFF.walk);
+    frame.fill(0, OFF.trail, OFF.trail + 32);
+    trail.forEach((t, i) => frame.set([t.x, t.y, t.z, 0.85 * Math.max(0, 1 - t.age / 1.1)], OFF.trail + i * 4));
+    frame.set([cam.x, cam.y - 0.6, cam.z, cam.fly ? 0 : 0.8], OFF.trail + 28);
+    frame.fill(0, OFF.shadowVP, OFF.clip + 4);
+    scene.shadow(frame, { cam, light: L });
+    stage.writeFrame("main", frame);
     nodeCount = selectNodes(pyramid, [cam.x, cam.y, cam.z], frustumPlanes(vp.M), nodes);
     dev.queue.writeBuffer(nodeBuf, 0, nodes, 0, nodeCount * 4);
 
-    const enc = dev.createCommandEncoder(), pass = enc.beginRenderPass({
-      colorAttachments: [{ view: host.context.getCurrentTexture().createView(), loadOp: "clear", storeOp: "store", clearValue: [0, 0, 0, 1] }],
-      depthStencilAttachment: { view: depthTex.createView(), depthClearValue: 0, depthLoadOp: "clear", depthStoreOp: "store" },
-    });
-    pass.setPipeline(skyPipe); pass.setBindGroup(0, frameBind); pass.draw(3);
-    pass.setPipeline(groundPipe); pass.setBindGroup(0, groundBind); pass.setVertexBuffer(0, gridBuf); pass.setVertexBuffer(1, nodeBuf); pass.draw(N * N * 6, nodeCount);
-    pass.setPipeline(massPipe); pass.setBindGroup(0, frameBind);
-    for (const set of [archBuf, floraBuf]) for (const [k, b] of Object.entries(set)) if (b.count) { pass.setVertexBuffer(0, meshBuf[k].buf); pass.setVertexBuffer(1, b.buf); pass.draw(meshBuf[k].count, b.count); }
-    pass.setPipeline(waterPipe); pass.setBindGroup(0, groundBind); pass.setVertexBuffer(0, gridBuf); pass.setVertexBuffer(1, nodeBuf); pass.draw(N * N * 6, nodeCount);
-    pass.end(); dev.queue.submit([enc.finish()]);
-    if (grabbing) { const g = grabbing; grabbing = null; g(canvas.toDataURL("image/png")); }   // read the canvas in the frame that drew it
+    const enc = dev.createCommandEncoder(), T = stage.st.targets;
+    scene.before(enc);
+    if (level !== null) {
+      // the world upside down in the water: the same view reflected in the water's plane
+      const mm = mirrored(vp.M, level), my = 2 * level - cam.y;
+      frameM.set(frame); frameM.set(mm, OFF.viewProj); frameM.set(invert(mm), OFF.invViewProj); frameM.set([cam.x, my, cam.z, time.t], OFF.cam);
+      frameM.set([cw >> 1, chh >> 1, level, 0], OFF.view); frameM.set([level - 0.05, 1, 1, 0], OFF.clip);
+      stage.writeFrame("mirror", frameM);
+      const nm = selectNodes(pyramid, [cam.x, cam.y, cam.z], frustumPlanes(mm), nodesM);
+      dev.queue.writeBuffer(nodeBufM, 0, nodesM, 0, nm * 4);
+      const mp = enc.beginRenderPass({ colorAttachments: [{ view: T.mirror.createView(), loadOp: "clear", storeOp: "store", clearValue: [0, 0, 0, 1] }], depthStencilAttachment: { view: T.mirrorDepth.createView(), depthClearValue: 0, depthLoadOp: "clear", depthStoreOp: "store" } });
+      drawWorld(mp, "mirror", nodeBufM, nm); mp.end();
+    }
+    const pass = enc.beginRenderPass({ colorAttachments: [{ view: T.scene.createView(), loadOp: "clear", storeOp: "store", clearValue: [0, 0, 0, 1] }], depthStencilAttachment: { view: T.depth.createView(), depthClearValue: 0, depthLoadOp: "clear", depthStoreOp: "store" } });
+    drawWorld(pass, "main", nodeBuf, nodeCount); pass.end();
+    stage.post(enc, host.context.getCurrentTexture().createView());
+    dev.queue.submit([enc.finish()]);
+    if (grabbing) { const g = grabbing; grabbing = null; g(canvas.toDataURL(g.type || "image/png", g.q)); }   // read the canvas in the frame that drew it
     frames++; state = s;
     if (frames % 12 === 0 && !hud.hidden) writeHud(s);
-    requestAnimationFrame(draw);
+    if (!manual) requestAnimationFrame(draw);
   }
   const hh = (c) => `${String(Math.floor(c)).padStart(2, "0")}:${String(Math.floor((c % 1) * 60)).padStart(2, "0")}`;
   function writeHud(s) {
@@ -207,12 +199,19 @@ async function start() {
 
   // what a capture or a test can drive
   globalThis.__lwWorld = {
-    world, cam, time,
-    view(v) { Object.assign(cam, { x: (v.x ?? cam.x / 1000) * 1000, z: (v.z ?? cam.z / 1000) * 1000, alt: v.alt ?? cam.alt, fly: v.fly ?? cam.fly }); if (v.yaw !== undefined) cam.yaw = v.yaw * Math.PI / 180; if (v.pitch !== undefined) cam.pitch = v.pitch * Math.PI / 180; if (v.clock !== undefined) time.clock = v.clock; if (v.day !== undefined) time.day = v.day; if (v.hold !== undefined) time.hold = v.hold; floraAt = [1e12, 1e12]; },
+    world, cam, time, roads, lights, scene, near,
+    view(v) { Object.assign(cam, { x: (v.x ?? cam.x / 1000) * 1000, z: (v.z ?? cam.z / 1000) * 1000, alt: v.alt ?? cam.alt, fly: v.fly ?? cam.fly }); if (v.yaw !== undefined) cam.yaw = v.yaw * Math.PI / 180; if (v.pitch !== undefined) cam.pitch = v.pitch * Math.PI / 180; if (v.clock !== undefined) time.clock = v.clock; if (v.day !== undefined) time.day = v.day; if (v.hold !== undefined) time.hold = v.hold; route = null; trail.length = 0; },
     async settle(n = 3) { const f = frames; while (frames < f + n) await new Promise((r) => requestAnimationFrame(r)); await dev.queue.onSubmittedWorkDone(); return this.stats(); },
-    stats() { const g = gaps.slice(2).sort((a, b) => a - b); return { frames, nodes: nodeCount, triangles: nodeCount * N * N * 4 + Object.values(floraBuf).reduce((a, b) => a + b.count * 14, 0), frameMs: g.length ? +(g.reduce((a, b) => a + b, 0) / g.length).toFixed(2) : 0, p95: g.length ? +g[Math.floor(g.length * 0.95)].toFixed(2) : 0, region: state && state.weather.region, air: state && state.weather.name, part: state && state.part, adapter: host.info || null, trees: floraBuf.cone.count + floraBuf.cyl.count }; },
+    stats() { const g = gaps.slice(2).sort((a, b) => a - b); return { frames, nodes: nodeCount, ...scene.stats(), lamps: lights.all.length, frameMs: g.length ? +(g.reduce((a, b) => a + b, 0) / g.length).toFixed(2) : 0, p95: g.length ? +g[Math.floor(g.length * 0.95)].toFixed(2) : 0, region: state && state.weather.region, air: state && state.weather.name, part: state && state.part, adapter: host.info || null, at: [cam.x, cam.y, cam.z] }; },
     clearGaps() { gaps.length = 0; },
-    grab() { return new Promise((ok) => { grabbing = ok; }); },
+    grab(type, q) { return new Promise((ok) => { ok.type = type; ok.q = q; grabbing = ok; }); },
+    // walk a line: pts are [x, z] in metres, 3 m apart (roads.walkFrom), at `speed` metres a second
+    walk(pts, speed = 1.4, o = {}) { route = { pts, s: 0, speed, step: 3, ...o }; const a = pts[0], b = pts[Math.min(3, pts.length - 1)]; cam.x = a[0]; cam.z = a[1]; cam.yaw = Math.atan2(b[0] - a[0], -(b[1] - a[1])); },
+    // for a capture at a steady rate whatever the machine does: stop the loop, then draw one frame per call
+    hold(on = true) { manual = on; if (!on) requestAnimationFrame(draw); },
+    async step(dt, type = "image/jpeg", q = 0.92) { const p = this.grab(type, q); draw(performance.now(), dt); const url = await p; await dev.queue.onSubmittedWorkDone(); return url; },
+    // time for the GPU to finish n frames drawn back to back, in ms a frame: the cost of a frame without the display's wait
+    async bench(n = 60) { manual = true; await dev.queue.onSubmittedWorkDone(); const t = performance.now(); for (let i = 0; i < n; i++) draw(performance.now(), 1 / 60); await dev.queue.onSubmittedWorkDone(); const ms = (performance.now() - t) / n; manual = false; requestAnimationFrame(draw); return +ms.toFixed(2); },
   };
   say("");
   move(0);

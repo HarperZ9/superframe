@@ -1,7 +1,7 @@
 // Unit meshes and the instances that stand on the island: placeholder architecture at three
 // scales from world.json (settlements and landmarks), and the trees and grass round the walker.
 // An instance is 12 floats: place xyz, turn; size xyz, taper; colour rgb, kind (see mass.wgsl).
-import { groundAt, cellAt, hash2, CANOPY } from "./data.mjs";
+import { baseGround as groundAt, cellAt, hash2, CANOPY } from "./data.mjs";
 
 // ---------------------------------------------------------------- meshes (position, normal)
 function prism(sides, { cap = true } = {}) {

@@ -41,10 +41,21 @@ function builtAt(w, x, z) {
   const x0 = clampi(ix, 0, w.W - 1), x1 = clampi(ix + 1, 0, w.W - 1), z0 = clampi(iz, 0, w.H - 1), z1 = clampi(iz + 1, 0, w.H - 1);
   return ((b[z0 * w.W + x0] * (1 - fx) + b[z0 * w.W + x1] * fx) * (1 - fz) + (b[z1 * w.W + x0] * (1 - fx) + b[z1 * w.W + x1] * fx) * fz) / 255;
 }
-// the ground a walker stands on: the raster plus the small relief the shader adds near the eye
+// The ground before roads and yards have touched it: the raster plus the small relief the shader
+// adds near the eye. Trees and buildings stand on this, so they do not move when the near maps do.
+const reliefAt = (x, z) => (lnoise(x / 16, z / 16) - 0.5) * 3.2 + (lnoise(x / 4 + 50, z / 4 + 50) - 0.5) * 0.6 + (lnoise(x / 1.3 + 90, z / 1.3 + 90) - 0.5) * 0.16;
+export function baseGround(w, x, z) {
+  const y = heightAt(w, x, z);
+  return y + reliefAt(x, z) * (1 - builtAt(w, x, z)) * Math.min(1, Math.max(0, y));
+}
+// The ground a walker stands on: the same, with the cut of a road and the pads and banks of a
+// yard from the near maps (common.wgsl groundAt computes the same number).
+const nb = new Float32Array(5);
 export function groundAt(w, x, z) {
-  const y = heightAt(w, x, z), relief = (lnoise(x / 16, z / 16) - 0.5) * 3.2 + (lnoise(x / 4 + 50, z / 4 + 50) - 0.5) * 0.6;
-  return y + relief * (1 - builtAt(w, x, z)) * Math.min(1, Math.max(0, y));
+  if (!w.near) return baseGround(w, x, z);
+  w.near.sampleB(x, z, nb);
+  const y = heightAt(w, x, z), road = nb[0] * nb[4], t = Math.min(1, Math.max(0, (road - 0.15) / 0.45)), damp = 1 - 0.85 * t * t * (3 - 2 * t);
+  return y + reliefAt(x, z) * (1 - builtAt(w, x, z)) * Math.min(1, Math.max(0, y)) * damp + nb[2] * nb[4];
 }
 export const cellAt = (w, x, z) => clampi(Math.floor(z / w.cell), 0, w.H - 1) * w.W + clampi(Math.floor(x / w.cell), 0, w.W - 1);
 export const regionAt = (w, x, z) => w.region[cellAt(w, x, z)];
@@ -124,17 +135,24 @@ export function bakeMaps(w) {
   return { alb, aux };
 }
 
-// lowest and highest ground in every 128 m block, then every level above, for the quadtree
+// Lowest and highest ground for the quadtree: level 0 is 32 m blocks, level 1 the 64 m cells
+// (both read from the raster, which has no finer detail), then every level above by halving.
 export function heightPyramid(w) {
-  const B = 2, bw = w.W / B, bh = w.H / B, levels = [];
-  let lo = new Float32Array(bw * bh).fill(1e9), hi = new Float32Array(bw * bh).fill(-1e9);
-  for (let y = 0; y < w.H; y++) for (let x = 0; x < w.W; x++) { const k = (y / B | 0) * bw + (x / B | 0), h = w.height[y * w.W + x]; if (h < lo[k]) lo[k] = h; if (h > hi[k]) hi[k] = h; }
-  levels.push({ w: bw, h: bh, lo, hi });
-  for (let l = 1; l <= 8; l++) {
+  const levels = [], cw = w.W, chh = w.H, lo1 = new Float32Array(cw * chh), hi1 = new Float32Array(cw * chh);
+  for (let y = 0; y < chh; y++) for (let x = 0; x < cw; x++) {
+    // a cell's surface is bilinear between it and its neighbours, so its range takes them in
+    let lo = 1e9, hi = -1e9;
+    for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) { const h = w.height[Math.min(chh - 1, Math.max(0, y + j)) * cw + Math.min(cw - 1, Math.max(0, x + i))]; if (h < lo) lo = h; if (h > hi) hi = h; }
+    lo1[y * cw + x] = lo - 2; hi1[y * cw + x] = hi + 2;
+  }
+  const lo0 = new Float32Array(cw * chh * 4), hi0 = new Float32Array(cw * chh * 4);
+  for (let y = 0; y < chh * 2; y++) for (let x = 0; x < cw * 2; x++) { lo0[y * cw * 2 + x] = lo1[(y >> 1) * cw + (x >> 1)]; hi0[y * cw * 2 + x] = hi1[(y >> 1) * cw + (x >> 1)]; }
+  levels.push({ w: cw * 2, h: chh * 2, lo: lo0, hi: hi0 }, { w: cw, h: chh, lo: lo1, hi: hi1 });
+  for (let l = 2; l <= 10; l++) {
     const p = levels[l - 1], nw = p.w / 2, nh = p.h / 2, nlo = new Float32Array(nw * nh), nhi = new Float32Array(nw * nh);
     for (let y = 0; y < nh; y++) for (let x = 0; x < nw; x++) {
-      const a = 2 * y * p.w + 2 * x, b = a + 1, c = a + p.w, d = c + 1;
-      nlo[y * nw + x] = Math.min(p.lo[a], p.lo[b], p.lo[c], p.lo[d]); nhi[y * nw + x] = Math.max(p.hi[a], p.hi[b], p.hi[c], p.hi[d]);
+      const a = 2 * y * p.w + 2 * x, b = a + 1, c = a + p.w, e = c + 1;
+      nlo[y * nw + x] = Math.min(p.lo[a], p.lo[b], p.lo[c], p.lo[e]); nhi[y * nw + x] = Math.max(p.hi[a], p.hi[b], p.hi[c], p.hi[e]);
     }
     levels.push({ w: nw, h: nh, lo: nlo, hi: nhi });
   }

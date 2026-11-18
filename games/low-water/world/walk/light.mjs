@@ -50,3 +50,15 @@ export function frameLight(s, flash = 0) {
     misc: [night, w.snowLine, k.exposure * (1 - 0.3 * cover * (1 - night)), ev.cells.length ? clamp(w.storm) : 0], lamp: [...w.lamp, 0],
   };
 }
+
+// The air near the ground and the snow on it. sh is the share of each region at the walker
+// (weather.mjs makeRegionField), so a border is a gradient here too.
+//   gfog: ground fog density per metre, its depth in metres, how wispy it is, lamp haze per metre
+//   snowp: new snow in metres, thaw, first-snow dusting, share of old grey snow
+export function groundState(s, sh) {
+  const w = s.weather, day = smooth(-4, 8, s.sunElevation);
+  return {
+    gfog: [w.fog * 0.0042, Math.min(18, Math.max(2.5, w.fogTop * 0.05)), clamp(0.75 - w.wind * 0.5), 0.0035 + w.fog * 0.0045 + 0.022 * (w.rain + w.snow)],
+    snowp: [0.5 * w.snow, sh[1] * (0.10 + 0.28 * day), clamp(sh[3] * 0.95 + sh[6] * 0.0), 0.28 + 0.25 * sh[1] + 0.2 * sh[11]],
+  };
+}
