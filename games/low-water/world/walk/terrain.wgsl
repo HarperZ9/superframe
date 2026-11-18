@@ -295,14 +295,30 @@ fn waterColour(p: vec3f, depth: f32, px: vec2f) -> vec4f {
     let suv = px / F.view.xy;
     let lean = 1.0 / max(-view.y, 0.04);
     var acc = vec3f(0.0);
-    for (var k = 0; k < 5; k++) {
+    for (var k = 0; k < 4; k++) {
       let fk = f32(k);
       let q = p.xz * (0.35 + 0.22 * fk) + vec2f(F.cam.w * (0.17 + 0.05 * fk), F.cam.w * 0.11 - fk * 3.0);
       let wob = (vnoise(q) - 0.5) + (vnoise(q * 3.1 + 9.0) - 0.5) * 0.5;
       let off = vec2f(n.x * 0.03 + wob * 0.002, (n.z * 0.5 + wob) * 0.0042 * min(lean, 14.0) * (0.5 + F.wx.z));
       acc += textureSampleLevel(mirrorTex, samp, clamp(suv + off, vec2f(0.001), vec2f(0.999)), 0.0).rgb;
     }
-    mirror = acc / 5.0;
+    let base = acc / 4.0;
+    // The streaks. Each facet of a ripple tilts a little toward or away from the eye, so a lamp
+    // is seen in every facet along a vertical line below its double: the brightest of the taps
+    // up and down the line, fading toward its ends. The crests break the line into dashes, and
+    // the dashes run in bands of distance from the eye, the way ripples cross a reflection.
+    let reach = 0.0065 * min(lean, 18.0) * (0.45 + 0.9 * F.wx.z);
+    let sway = (vnoise(vec2f(dist * 0.35, F.cam.w * 0.4)) - 0.5) * 0.004;
+    var streak = vec3f(0.0);
+    for (var k = 0; k < 12; k++) {
+      let t = (f32(k) + 0.5) / 12.0 * 2.0 - 1.0;
+      let w = 1.0 - abs(t) * abs(t);
+      let c = textureSampleLevel(mirrorTex, samp, clamp(suv + vec2f(sway * t, t * reach), vec2f(0.001), vec2f(0.999)), 0.0).rgb;
+      streak = max(streak, c * w);
+    }
+    let crest = vnoise(vec2f(p.x * 0.05 + dist * 0.02, dist * 1.7 - F.cam.w * 0.9)) * 0.6 + vnoise(vec2f(p.x * 0.4, dist * 6.0 + F.cam.w * 1.3)) * 0.4;
+    let dash = smoothstep(0.42, 0.62, crest);
+    mirror = base + max(streak - base, vec3f(0.0)) * dash * 0.85;
   }
   var col = mix(body, mirror, fres);
   // the path of the light on the water

@@ -34,6 +34,9 @@ export function frameLight(s, flash = 0) {
   // moonlight lifts a clear night a little
   const moonUp = clamp(m.dir[1] * 4) * m.lit * night * (1 - cover * 0.7);
   zenith = zenith.map((c, i) => c + [0.010, 0.014, 0.030][i] * moonUp); horizon = horizon.map((c, i) => c + [0.016, 0.022, 0.040][i] * moonUp);
+  // a gloomy night: the dome, and so the air and the fill, fall toward black
+  const dim = 1 - clamp(w.gloom || 0) * night * 0.88;
+  zenith = zenith.map((c) => c * dim); horizon = horizon.map((c) => c * dim);
   const sunUp = s.sunElevation > -1.5;
   const key = sunUp ? s.sun : m.dir[1] > 0.03 ? m.dir : [0.2, 0.9, 0.3];
   const keyCol = sunUp ? k.sun : [0.50, 0.62, 0.95];
