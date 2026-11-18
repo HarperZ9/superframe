@@ -2,6 +2,8 @@
 #include "hw_queue.hpp"
 #include "raw/rhi/hw.hpp"
 #include <cstdio>
+#include <dxgi1_4.h>
+#include <wrl/client.h>
 namespace raw::rhi::hw {
 namespace {
 const char* smName(D3D_SHADER_MODEL m){
@@ -32,7 +34,18 @@ Probe probe(Device& base){
     p.backend = base.backendName();
     p.adapter = base.adapter().description;
     p.driver = base.adapter().driver;
+    p.vendor = base.adapter().vendor;
     ID3D12Device* d = static_cast<d3d12::D3d12Device&>(base).d3d();
+    // Memory sizes from the DXGI adapter that owns this device, found by its LUID.
+    {
+        Microsoft::WRL::ComPtr<IDXGIFactory4> f;
+        Microsoft::WRL::ComPtr<IDXGIAdapter1> a;
+        DXGI_ADAPTER_DESC1 ad{};
+        if (SUCCEEDED(CreateDXGIFactory1(IID_PPV_ARGS(&f))) && SUCCEEDED(f->EnumAdapterByLuid(d->GetAdapterLuid(), IID_PPV_ARGS(&a)))
+            && SUCCEEDED(a->GetDesc1(&ad))){
+            p.videoMemory = ad.DedicatedVideoMemory; p.sharedMemory = ad.SharedSystemMemory;
+        }
+    }
     const D3D_SHADER_MODEL sm = highestShaderModel(d);
     const std::string smDetail = std::string("highest shader model ") + smName(sm);
 
@@ -52,6 +65,11 @@ Probe probe(Device& base){
     D3D12_FEATURE_DATA_D3D12_OPTIONS7 o7{};
     const bool mesh = query(d, D3D12_FEATURE_D3D12_OPTIONS7, o7) && o7.MeshShaderTier >= D3D12_MESH_SHADER_TIER_1;
     p.add(kMeshShader, mesh, "D3D12_FEATURE_D3D12_OPTIONS7.MeshShaderTier >= 1", mesh ? "mesh shader tier 1" : "not supported");
+
+    D3D12_FEATURE_DATA_D3D12_OPTIONS6 o6{};
+    const bool vrs = query(d, D3D12_FEATURE_D3D12_OPTIONS6, o6) && o6.VariableShadingRateTier >= D3D12_VARIABLE_SHADING_RATE_TIER_1;
+    p.add(kVariableRateShading, vrs, "D3D12_FEATURE_D3D12_OPTIONS6.VariableShadingRateTier >= 1",
+          vrs ? str("variable shading rate tier %ld, tile %ld", (long)o6.VariableShadingRateTier, (long)o6.ShadingRateImageTileSize) : "not supported");
 
     D3D12_FEATURE_DATA_D3D12_OPTIONS1 o1{};
     const bool has1 = query(d, D3D12_FEATURE_D3D12_OPTIONS1, o1);

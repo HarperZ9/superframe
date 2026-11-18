@@ -30,6 +30,7 @@ inline constexpr const char* kEnhancedBarriers = "enhanced_barriers";
 inline constexpr const char* kWorkGraphs = "work_graphs";
 inline constexpr const char* kAsyncCompute = "async_compute";
 inline constexpr const char* kTimestamps = "timestamps";
+inline constexpr const char* kVariableRateShading = "variable_rate_shading";
 
 // True when RAW_NATIVE_HW_DISABLE names the feature or says "all".
 inline bool disabled(std::string_view feature){
@@ -69,6 +70,8 @@ struct Feature {
 
 struct Probe {
     std::string backend, adapter, driver, error;
+    std::string vendor;                         // the adapter's vendor as the RHI reports it ("nvidia", "microsoft")
+    uint64_t videoMemory{0}, sharedMemory{0};   // bytes: dedicated video memory, shared system memory (0: unknown)
     std::vector<Feature> features;
     const Feature* find(std::string_view name) const {
         for (const Feature& f : features) if (f.name == name) return &f;
@@ -81,7 +84,9 @@ struct Probe {
     }
     std::string json() const {
         std::string j = "{\"backend\":\"" + jsonEscape(backend) + "\",\"adapter\":\"" + jsonEscape(adapter) +
-                        "\",\"driver\":\"" + jsonEscape(driver) + "\",\"error\":\"" + jsonEscape(error) + "\",\"features\":[";
+                        "\",\"driver\":\"" + jsonEscape(driver) + "\",\"vendor\":\"" + jsonEscape(vendor) +
+                        "\",\"video_memory\":" + std::to_string(videoMemory) + ",\"shared_memory\":" + std::to_string(sharedMemory) +
+                        ",\"error\":\"" + jsonEscape(error) + "\",\"features\":[";
         for (size_t i = 0; i < features.size(); ++i){
             const Feature& f = features[i];
             j += (i ? "," : "") + std::string("{\"name\":\"") + f.name + "\",\"supported\":" + (f.supported() ? "true" : "false") +

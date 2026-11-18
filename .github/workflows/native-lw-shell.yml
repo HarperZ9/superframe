@@ -1,0 +1,94 @@
+name: low water native shell
+# Milestone N0 (games/low-water/runtime/README.md). The game code is BuildLang, built by buildc
+# at a pinned commit. Linux replays the committed input trace with gcc and no GPU; Windows builds
+# the shell with MSVC and the D3D12 backend, replays the same trace, and runs the shell on WARP
+# (the Windows software rasterizer: the code path, not GPU evidence).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'games/low-water/runtime/**'
+      - 'games/low-water/world/gen/**'
+      - 'native/**'
+      - '.github/workflows/native-lw-shell.yml'
+  pull_request:
+    paths:
+      - 'games/low-water/runtime/**'
+      - 'games/low-water/world/gen/**'
+      - 'native/**'
+      - '.github/workflows/native-lw-shell.yml'
+permissions:
+  contents: read
+env:
+  # buildlang with the C runtime that builds under MSVC (HarperZ9/buildlang#324); repin to main once it merges.
+  BUILDLANG_REV: 3c81f2c00f49d6dec57187dd53d6c17976cc861b
+  TRACE: games/low-water/runtime/traces/n0-autowalk.lwin
+
+jobs:
+  replay-linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo install --git https://github.com/HarperZ9/buildlang --rev "$BUILDLANG_REV" --locked buildlang --bin buildc
+      - name: Generate the world and cut tile 3 1 (Thaw Country)
+        run: |
+          buildc build --release games/low-water/world/gen
+          mkdir -p world
+          games/low-water/world/gen/target/release/main 20261118 world
+          buildc build --release games/low-water/runtime/tilecut
+          games/low-water/runtime/tilecut/target/release/main world/height.pgm 3 1 256 t_3_1.pgm
+      - name: Build the replay tool and the tier test (gcc, no GPU)
+        run: |
+          cmake -S native -B build -DCMAKE_BUILD_TYPE=Release -DRAW_NATIVE_LW_SHELL=ON -DRAW_NATIVE_BUILD_TESTS=OFF
+          cmake --build build --target lw_shell_replay lw_shell_tier_test -j 2
+      - run: build/lw_shell_tier_test
+      - name: The trace recorded on Windows replays to its hash here; one perturbed tick changes it
+        run: |
+          build/lw_shell_replay "$TRACE" --tile t_3_1.pgm
+          build/lw_shell_replay "$TRACE" --tile t_3_1.pgm --perturb 100
+          build/lw_shell_replay "$TRACE" --tile t_3_1.pgm --perturb 850
+
+  shell-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo install --git https://github.com/HarperZ9/buildlang --rev "$BUILDLANG_REV" --locked buildlang --bin buildc
+      - name: Generate the world and cut tile 3 1
+        run: |
+          buildc build --release games/low-water/world/gen
+          mkdir -p world
+          games/low-water/world/gen/target/release/main 20261118 world
+          buildc build --release games/low-water/runtime/tilecut
+          games/low-water/runtime/tilecut/target/release/main world/height.pgm 3 1 256 t_3_1.pgm
+      - name: Build lw_shell with MSVC and D3D12
+        run: |
+          cmake -S native -B build -DRAW_NATIVE_GPU_D3D12=ON -DRAW_NATIVE_LW_SHELL=ON -DRAW_NATIVE_BUILD_TESTS=OFF
+          cmake --build build --config Release --target lw_shell lw_shell_replay lw_shell_tier_test -- -m:2
+      - run: build/Release/lw_shell_tier_test.exe
+      - name: The committed trace replays to its hash under MSVC; the control changes it
+        run: |
+          build/Release/lw_shell_replay.exe "$TRACE" --tile t_3_1.pgm
+          build/Release/lw_shell_replay.exe "$TRACE" --tile t_3_1.pgm --perturb 100
+      - name: The shell on WARP records a walk, writes the frame trace, and the walk replays to its hash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          build/Release/lw_shell.exe --tile t_3_1.pgm --autowalk --ticks 240 --width 320 --height 180 --hidden \
+            --record warp.lwin --trace warp-frames.json --caps warp-caps.json
+          python - <<'EOF'
+          import json
+          t = json.load(open("warp-frames.json"))
+          names = {e["name"] for e in t["traceEvents"] if e.get("ph") == "X"}
+          need = {"cpu.wait", "cpu.input", "cpu.sim", "cpu.render_submit_present", "gpu.sky", "gpu.terrain", "gpu.capsule", "gpu.post"}
+          missing = need - names
+          assert not missing, f"zones missing from the frame trace: {missing}"
+          s = t["summary"]
+          assert s["ticks"] == 240 and s["cold_start_ms"]["walking"] > 0, s
+          assert s["graphics"]["tier"] == "reduced", s["graphics"]   # WARP is a software adapter
+          print("frame trace ok:", s["frames"], "frames,", s["present_interval_ms"])
+          EOF
+          build/Release/lw_shell_replay.exe warp.lwin --tile t_3_1.pgm
+          build/Release/lw_shell_replay.exe warp.lwin --tile t_3_1.pgm --perturb 10
