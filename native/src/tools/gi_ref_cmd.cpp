@@ -29,27 +29,37 @@
 namespace raw {
 namespace {
 constexpr char kMagic[9] = "RNGISC01";
+constexpr char kMagic2[9] = "RNGISC02";
 std::uint32_t byteOf(float v) { return std::uint32_t(std::lround(std::clamp(v, 0.0f, 1.0f) * 255.0f)); }
 
-// A scene file into a path-tracer scene (one 1 x 1 texture and material per albedo and emission).
+// A scene file into a path-tracer scene (one 1 x 1 texture and material per distinct material).
+// RNGISC01: a 16-float header and 24 floats a triangle (positions, normals, albedo, emission), every
+// material pure Lambert. RNGISC02 adds the camera's up vector to the header (20 floats: 16, up x y z,
+// one reserved) and roughness, metallic and specular to each triangle (28 floats: 24, those three,
+// one reserved), so glossy water, varnished wood and metal render through the GGX lobe.
 bool readSceneFile(const std::string& path, rt::PtScene& s, rt::PtCamera& cam) {
     std::ifstream f(path, std::ios::binary);
     char m[8]; std::uint32_t n = 0;
-    if (!f.read(m, 8) || std::memcmp(m, kMagic, 8) != 0 || !f.read(reinterpret_cast<char*>(&n), 4)) return false;
-    std::vector<float> h(16), t(std::size_t(n) * 24);
-    if (!f.read(reinterpret_cast<char*>(h.data()), 64) || !f.read(reinterpret_cast<char*>(t.data()), std::streamsize(t.size() * 4))) return false;
+    if (!f.read(m, 8) || !f.read(reinterpret_cast<char*>(&n), 4)) return false;
+    const bool v2 = std::memcmp(m, kMagic2, 8) == 0;
+    if (!v2 && std::memcmp(m, kMagic, 8) != 0) return false;
+    const std::size_t hn = v2 ? 20 : 16, tn = v2 ? 28 : 24;
+    std::vector<float> h(hn), t(std::size_t(n) * tn);
+    if (!f.read(reinterpret_cast<char*>(h.data()), std::streamsize(hn * 4)) || !f.read(reinterpret_cast<char*>(t.data()), std::streamsize(t.size() * 4))) return false;
     s = {};
     s.name = path;
-    std::map<std::tuple<std::uint32_t, float, float, float>, std::uint32_t> mats;
+    std::map<std::tuple<std::uint32_t, float, float, float, float, float, float>, std::uint32_t> mats;
     for (std::uint32_t i = 0; i < n; ++i) {
-        const float* r = &t[std::size_t(i) * 24];
+        const float* r = &t[std::size_t(i) * tn];
         const std::uint32_t c = byteOf(r[18]) | (byteOf(r[19]) << 8) | (byteOf(r[20]) << 16) | (255u << 24);
-        const auto key = std::make_tuple(c, r[21], r[22], r[23]);
+        const float rough = v2 ? std::clamp(r[24], 0.02f, 1.0f) : 1.0f, metal = v2 ? std::clamp(r[25], 0.0f, 1.0f) : 0.0f;
+        const float spec = v2 ? std::max(r[26], 0.0f) : 0.0f;
+        const auto key = std::make_tuple(c, r[21], r[22], r[23], rough, metal, spec);
         auto it = mats.find(key);
         if (it == mats.end()) {
             const std::uint32_t tex = s.tex.add(1, 1, {c});
             s.materials.resize(std::size_t(tex) + 1);
-            s.materials[tex] = {1.0f, 1.0f, 0.0f, 0.0f, {r[21], r[22], r[23]}};
+            s.materials[tex] = {1.0f, rough, metal, spec, {r[21], r[22], r[23]}};
             it = mats.emplace(key, tex).first;
         }
         for (int v = 0; v < 3; ++v) {
@@ -61,7 +71,8 @@ bool readSceneFile(const std::string& path, rt::PtScene& s, rt::PtCamera& cam) {
         s.geo.triTexture.push_back(it->second);
     }
     s.sunDir = {h[0], h[1], h[2]}; s.sunIrradiance = {h[3], h[4], h[5]}; s.sky = {h[6], h[7], h[8]};
-    cam = {{h[9], h[10], h[11]}, {h[12], h[13], h[14]}, {0, 1, 0}, h[15]};
+    const Vec3 up = v2 && (h[16] != 0 || h[17] != 0 || h[18] != 0) ? Vec3{h[16], h[17], h[18]} : Vec3{0, 1, 0};
+    cam = {{h[9], h[10], h[11]}, {h[12], h[13], h[14]}, up, h[15]};
     rt::finishPtScene(s);
     return true;
 }
@@ -105,6 +116,7 @@ int giReferenceCommand(int argc, char** argv) {
     rt::PathTraceDesc d;
     d.width = 512; d.height = 320; d.spp = 256; d.maxBounces = 8; d.seed = 1; d.jitter = false;
     bool cpu = false;
+    int threads = 3;
     std::vector<const char*> rest{argv[0]};
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
@@ -116,6 +128,8 @@ int giReferenceCommand(int argc, char** argv) {
         else if (a == "--bounces" && more) d.maxBounces = std::uint32_t(std::atoi(argv[++i]));
         else if (a == "--seed" && more) d.seed = std::strtoull(argv[++i], nullptr, 10);
         else if (a == "--cpu") cpu = true;
+        else if (a == "--jitter") d.jitter = true;
+        else if (a == "--threads" && more) threads = std::max(1, std::atoi(argv[++i]));
         else {
             if ((a == "--width" || a == "--height") && more) (a == "--width" ? d.width : d.height) = std::atoi(argv[i + 1]);
             rest.push_back(argv[i]);
@@ -148,10 +162,13 @@ int giReferenceCommand(int argc, char** argv) {
     std::string why;
     rhi::Device* dev = cpu ? nullptr : rhi::device(why);
     const auto t0 = std::chrono::steady_clock::now();
-    const rt::PathTraceOutput o = dev ? gpu_check::pathTraceGpu(*dev, s, d) : rt::pathTraceCpu(s, d, 3);
+    const rt::PathTraceOutput o = dev ? gpu_check::pathTraceGpu(*dev, s, d) : rt::pathTraceCpu(s, d, threads);
     const double ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
     if (!o.error.empty()) { std::printf("gi-reference: %s\n", o.error.c_str()); return 2; }
-    const bool ok = writePfm(ptDir + "/radiance.pfm", o.width, o.height, 3, o.radiance) && writePfm(ptDir + "/variance.pfm", o.width, o.height, 1, o.variance);
+    const bool ok = writePfm(ptDir + "/radiance.pfm", o.width, o.height, 3, o.radiance) && writePfm(ptDir + "/variance.pfm", o.width, o.height, 1, o.variance)
+                    && (o.albedo.empty() || writePfm(ptDir + "/albedo.pfm", o.width, o.height, 3, o.albedo))
+                    && (o.normal.empty() || writePfm(ptDir + "/normal.pfm", o.width, o.height, 3, o.normal))
+                    && (o.depth.empty() || writePfm(ptDir + "/depth.pfm", o.width, o.height, 1, o.depth));
     std::ofstream(ptDir + "/triangle.i32", std::ios::binary).write(reinterpret_cast<const char*>(o.triangle.data()), std::streamsize(o.triangle.size() * 4));
     char j[600];
     std::snprintf(j, sizeof j, "{\n \"schema\": \"raw-native.gi-reference/1\",\n \"width\": %d,\n \"height\": %d,\n \"spp\": %u,\n \"bounces\": %u,\n"
