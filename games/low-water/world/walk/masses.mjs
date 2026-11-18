@@ -148,7 +148,8 @@ function treeCell(w, cx, cz, out) {
         list.push("cyl", x, y - 0.5, z, turn, 0.7, tall * 0.5, 0.7, 0.7, 0.06, 0.05, 0.05, 3);
         list.push("cone", x, y + 3.5, z, turn, 6 + 3 * q, tall, 6 + 3 * q, 0, 0.035, 0.07, 0.062, 3);
       }
-      else if (b === 6) list.push(q > 0.5 ? "cone" : "cyl", x, y - 0.5, z, turn, 5 + 3 * q, 8 + 8 * q, 5 + 3 * q, q > 0.5 ? 0 : 0.5, 0.20, 0.19, 0.16, 3);        // thin taiga
+      else if (b === 6 && q > 0.5) list.push("cone", x, y - 0.5, z, turn, 3 + 2 * q, 9 + 8 * q, 3 + 2 * q, 0, 0.06, 0.09, 0.08, 3);                              // thin spruce
+      else if (b === 6) list.push("cyl", x, y - 0.5, z, turn, 0.35, 8 + 6 * roll, 0.35, 0.4, 0.60, 0.58, 0.55, 3);                                         // a bare birch pole
       else if (b === 3) list.push("cone", x, y - 0.2, z, turn, 5, 2.6 + q, 5, 0.6, 0.55, 0.47, 0.24, 4);                                                           // reed clump
       else if (b === 11 && w.river[k] > 0) list.push("cyl", x, y - 0.5, z, turn, 12, 14, 12, 0.6, 0.72, 0.58, 0.16, 3);                                           // cottonwood by water
       else list.push("cone", x, y - 0.5, z, turn, 4.5 + 2 * q, 9 + 6 * q, 4.5 + 2 * q, 0, 0.07, 0.10, 0.08, 3);                                                                      // a lone tree

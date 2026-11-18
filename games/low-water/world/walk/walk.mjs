@@ -172,7 +172,8 @@ async function start() {
     if (!time.hold) { time.clock += dt * time.rate / 3600; if (time.clock >= 24) { time.clock -= 24; time.day++; } }
     growFlora(cam.x, cam.z);
     const vp = viewProj(cam, cw / chh), s = skyAt(seed, shares, cam.x, cam.z, world.depth, time.day, time.clock);
-    const flash = s.events.cells.some((c) => c.flash) && ((now / 90) | 0) % 3 === 0 ? 1 : 0, L = frameLight(s, flash);
+    // lightning strikes only while the clock runs, so a held still is never caught mid-flash
+    const flash = !time.hold && s.events.cells.some((c) => c.flash) && ((now / 90) | 0) % 3 === 0 ? 1 : 0, L = frameLight(s, flash);
     L.fogp[0] = Math.max(0, groundAt(world, cam.x, cam.z)) * (s.weather.cloudSea > 0 ? 0 : 0.85);
     frame.set(vp.M, 0); frame.set(invert(vp.M), 16); frame.set([cam.x, cam.y, cam.z, (now - t0) / 1000], 32);
     let o = 36; for (const k of ["key", "sun", "moon", "zenith", "horizon", "fog", "fogp", "wx", "ev", "misc", "keyCol", "amb", "lamp"]) { frame.set(L[k], o); o += 4; }

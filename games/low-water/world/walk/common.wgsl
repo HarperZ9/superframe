@@ -101,7 +101,8 @@ fn inAir(col: vec3f, p: vec3f) -> vec3f {
 
 // yearly mean temperature of a place in degrees, by the generator's own rule
 fn warmth(p: vec3f) -> f32 {
-  return -3.0 + 16.5 * clamp(p.z / F.world.y, 0.0, 1.0) - 5.0 * max(p.y, 0.0) / 1000.0;
+  let v = clamp(p.z / F.world.y, 0.0, 1.0);
+  return -3.0 + 16.5 * v - 5.0 * max(p.y, 0.0) / 1000.0 - 4.0 * max(0.35 - v, 0.0) / 0.35;
 }
 fn toneMap(c: vec3f) -> vec3f {
   // a filmic curve (Narkowicz's fit to ACES): deep shadows, a soft shoulder
