@@ -183,7 +183,7 @@ function bakePrep(w) {
     }
   };
   for (const s of w.json.settlements) lamp(s.x, s.y, s.kind === "seat" ? 12 : s.kind === "town" ? 9 : s.kind === "village" ? 4 : 1.5, s.kind === "house" ? 0.5 : 1);
-  const BRIGHT = { furnace: [15, 1], stack: [3, 0.6], tenement: [3, 0.8], decotower: [4, 1], slab: [3, 0.8], tower: [8, 0.8], spire: [5, 0.6], lighthouse: [5, 1], coolingtower: [5, 0.7], piperack: [4, 0.7], glasshall: [4, 1] };
+  const BRIGHT = { furnace: [15, 1], stack: [3, 0.6], tenement: [3, 0.8], decotower: [4, 1], slab: [3, 0.8], tower: [8, 0.8], spire: [5, 0.6], lighthouse: [5, 1], coolingtower: [5, 0.7], piperack: [4, 0.7], glasshall: [4, 1], mudhif: [1.6, 0.9] };
   for (const m of w.json.marks) if (BRIGHT[m.kind]) lamp(m.x, m.y, BRIGHT[m.kind][0], BRIGHT[m.kind][1]);
   return { glow, road };
 }
