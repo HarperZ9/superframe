@@ -30,6 +30,28 @@ A run takes about 30 seconds on one core and prints the time of each stage.
 
 The rasters are plain PGM text. buildc's file writer takes strings and a string cannot hold a zero byte, so a binary raster is a compiler gap, recorded here as language debt. `pgm.mjs` reads them in node and in the browser.
 
+## Walk it
+
+```bash
+node games/low-water/game/serve.mjs
+```
+
+Open `http://127.0.0.1:8731/world/walk/index.html` in a browser with WebGPU. W A S D move, the mouse looks after a click, Shift runs, F flies, Space and C rise and sink. The number keys, 0 and minus go to the eleven regions. The wheel turns the clock and T holds it.
+
+The page draws four passes on the engine's web GPU host (`native/web/raw-gpu.mjs`): sky, ground, masses and water.
+
+- **Ground.** CDLOD on a quadtree from 32.8 km nodes to 128 m, vertices 4 m apart under the walker. The 64 m raster carries the land; a lattice noise adds relief 16 m and 4 m across, and the walker's feet compute the same function.
+- **Water.** One surface for the sea, the lakes and the rivers, with depth colour, a wind-driven swell, foam at the shore and lamp streaks near towns.
+- **Masses.** Instanced trees and grass round the walker, and placeholder architecture from `world.json` at three scales: houses and ring walls, monuments, megastructures.
+- **Sky.** Sun, moon, stars, the Milky Way, a cloud layer with storm cells, a 22 degree halo, aurora and a comet.
+- **Weather and time** (`weather.mjs`). A day weighted toward dusk, night and dawn, one signature weather for each region with gradient borders, and sky events by rule from the seed.
+
+Stills and frame times come from `tools/shot.mjs`, which drives a headless browser on the CPU adapter by default.
+
+```bash
+node games/low-water/world/tools/shot.mjs --out stills --views all
+```
+
 ## How the island is made
 
 1. **Tectonic sketch** (`tect.bld`). Five plates, each a handful of seeds moved by the world seed. Where two plates meet the ground lifts: the long north-south range stands on the boundary of the west foreland and the east block. The south-west plate sinks and becomes the delta. A city island stands across a strait from the bay.
