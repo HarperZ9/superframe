@@ -7,11 +7,13 @@
 //                lake or on another line; a world with one river bed raised 40 m must fail
 //   scale        walking time along the roads between ring towns, measured
 //   regions      all eleven exist, each with a seat where the rules ask for one
+//   tiles        the binary tiles decode to the PGM values; the converter from the PGMs writes the
+//                same bytes; a flipped tile byte and a changed PGM value must both fail the check
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdtempSync, mkdirSync, readFileSync, existsSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, copyFileSync, readdirSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -19,7 +21,7 @@ import { parsePgm } from "../pgm.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url)), gen = join(here, "..", "gen");
 const BUILDC = process.env.BUILDC, SEED = process.env.LW_WORLD_SEED || "20261118";
-const FILES = ["height.pgm", "water.pgm", "moist.pgm", "river.pgm", "biome.pgm", "region.pgm", "world.json"];
+const FILES = ["height.pgm", "water.pgm", "moist.pgm", "river.pgm", "biome.pgm", "region.pgm", "world.json", "tiles.json", "t_3_2.lwt"];
 const exe = join(gen, "target", "release", process.platform === "win32" ? "main.exe" : "main");
 const root = process.env.LW_WORLD_KEEP || mkdtempSync(join(tmpdir(), "lw-world-"));
 
@@ -122,4 +124,44 @@ test("regions: all eleven exist and the towns sit in them", () => {
   assert.equal(new Set(names).size, names.length, `two places share a name: ${names.filter((n, i) => names.indexOf(n) !== i).join(", ")}`);
   const kinds = new Set(json.marks.map((m) => m.kind));
   for (const k of ["tower", "spire", "furnace", "stack", "slab", "tenement", "drowned", "seastack", "mudhif"]) assert.ok(kinds.has(k), `no ${k} was placed`);
+});
+
+// the generator in a converter mode; returns { ok, out }
+function mode(...args) {
+  try { return { ok: true, out: execFileSync(exe, args.map(String), { encoding: "utf8" }) }; }
+  catch (e) { return { ok: false, out: String(e.stdout || "") }; }
+}
+const fwd = (p) => p.split("\\").join("/");
+
+test("tiles: the binary tiles hold the PGM values, and the converter writes the same bytes", { timeout: 600000 }, () => {
+  const tiles = readdirSync(A.dir).filter((f) => f.endsWith(".lwt"));
+  const index = JSON.parse(readFileSync(join(A.dir, "tiles.json"), "utf8"));
+  assert.equal(index.format, "lw-tile-native-1");
+  assert.equal(tiles.length, index.cols * index.rows);
+  assert.equal(world.json.hash.tiles, index.all, "world.json and tiles.json disagree on the tiles");
+  const ok = mode("tiles-check", fwd(A.dir));
+  assert.ok(ok.ok, ok.out);
+  assert.match(ok.out, /tiles checked 48 {2}failing 0/);
+
+  // the converter, from the PGMs alone, in a fresh folder
+  const C = join(root, "converted"); mkdirSync(C, { recursive: true });
+  for (const f of FILES.filter((f) => f.endsWith(".pgm"))) copyFileSync(join(A.dir, f), join(C, f));
+  const conv = mode("tiles", fwd(C), SEED);
+  assert.ok(conv.ok, conv.out);
+  for (const f of [...tiles, "tiles.json"]) assert.ok(readFileSync(join(A.dir, f)).equals(readFileSync(join(C, f))), `${f} differs between the generator and the converter`);
+
+  // control 1: one payload byte flipped fails the tile's hash
+  const t = join(C, "t_3_2.lwt"), keep = readFileSync(t), bad = Buffer.from(keep); bad[1000] ^= 0x40;
+  writeFileSync(t, bad);
+  const flipped = mode("tiles-check", fwd(C));
+  assert.ok(!flipped.ok && /tile 3 2: bad header or hash/.test(flipped.out), `a flipped byte passed: ${flipped.out}`);
+  writeFileSync(t, keep);
+
+  // control 2: the first height code in the PGM raised by one fails the value comparison
+  const hp = join(C, "height.pgm"), text = readFileSync(hp, "latin1");
+  const at = text.indexOf("65535") + 6, end = text.indexOf(" ", at);
+  writeFileSync(hp, text.slice(0, at) + String(Number(text.slice(at, end)) + 1) + text.slice(end), "latin1");
+  const changed = mode("tiles-check", fwd(C));
+  assert.ok(!changed.ok && /tile 0 0: 1 values differ/.test(changed.out), `a changed PGM value passed: ${changed.out}`);
+  console.log(`  ${tiles.length} tiles, ${readFileSync(join(A.dir, tiles[0])).length} bytes each, all ${index.all}`);
 });
