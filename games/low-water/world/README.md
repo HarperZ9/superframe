@@ -44,7 +44,7 @@ The page draws four passes on the engine's web GPU host (`native/web/raw-gpu.mjs
 
 - **Ground.** CDLOD on a quadtree from 32.8 km nodes to 128 m, vertices 4 m apart under the walker. The 64 m raster carries the land; a lattice noise adds relief 16 m and 4 m across, and the walker's feet compute the same function.
 - **Water.** One surface for the sea, the lakes and the rivers, with depth colour, a wind-driven swell, foam at the shore and lamp streaks near towns.
-- **Masses.** Instanced trees and grass round the walker, and placeholder architecture from `world.json` at three scales: houses and ring walls, monuments, megastructures.
+- **Masses.** Instanced trees and grass round the walker (spruce sprays taper to a point and carry the crown's normal, every foliage card is eaten back from its edges by noise so no card outline shows, and a bare broadleaf understory of forked twigs stands under the fog forest's spruce), and placeholder architecture from `world.json` at three scales: houses and ring walls, monuments, megastructures.
 - **Sky.** Sun, moon, stars, the Milky Way, a cloud layer with storm cells, a 22 degree halo, aurora and a comet.
 - **Weather and time** (`weather.mjs`). A day weighted toward dusk, night and dawn, one signature weather for each region with gradient borders, and sky events by rule from the seed.
 
@@ -71,7 +71,7 @@ The same files drawn as a hachured map: shadow hachures lit from the north-west,
 3. **Water** (`hydro.bld`). Four overdeepened valley reaches become long lakes. Kettle ponds open on the northern shield and pools in the marsh. A last flood finds every basin and its spill level.
 4. **Climate** (`climate.bld`). Temperature falls to the north and with height. Rain arrives on a west wind and is spent on the climb, so the east block sits in a rain shadow.
 5. **Cover and regions** (`climate.bld`, `stages.bld`). Cover follows temperature, rain, slope and height. Regions follow plate, height and shore.
-6. **Settlements and roads** (`settle.bld`, `roads.bld`). One seat for each region that can hold one, then ring towns where the nearest is too far, villages, and lone houses on the high moor. Roads are least-time routes under Tobler's hiking function.
+6. **Settlements and roads** (`settle.bld`, `roads.bld`). One seat for each region that can hold one, then ring towns where the nearest is too far, villages, and lone houses on the high moor. Roads are least-time routes under Tobler's hiking function. In the walk (`walk/roads.mjs`) each road wanders and bends toward the low side of the land it crosses, from the overview heights so the bends never change as tiles arrive, and carries no snow except in town lanes.
 7. **Landmarks** (`landmarks.bld`). Vernacular, monument and megastructure masses placed by rule, up to the 1,200 m Tower of the monument ground.
 
 Every step uses integer hashing and the operations `+ - * / sqrt floor` only, the rule of `design/DETMATH.md`, so a seed gives the same bytes on any machine.
