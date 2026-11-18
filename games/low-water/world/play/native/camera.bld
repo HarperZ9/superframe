@@ -1,0 +1,182 @@
+// The walker's camera rig (world/play/camera.mjs) in BuildLang, for the native engine: nav, follow,
+// first person and iso, and the blend between any two. This port covers the island's ground as the
+// thing to collide with, the case the native shell has today (one terrain tile); solids and drawn
+// meshes come with the shell's buildings. Every expression is in the JS's order, with DETMATH
+// functions, so the two give the same bits (tests/camera-native.test.mjs).
+
+struct V3 { x: f64, y: f64, z: f64 }
+fn v3(x: f64, y: f64, z: f64) -> V3 { V3 { x: x, y: y, z: z } }
+
+struct Pose { t: V3, yaw: f64, pitch: f64, dist: f64, fov: f64, ortho: bool, half: f64, near: f64, roll: f64 }
+
+struct Body { x: f64, y: f64, z: f64, vx: f64, vz: f64, speed: f64, phase: f64, moving: f64, neck: V3 }
+
+struct Cam {
+    mode: i64,
+    has_from: bool, from: Pose, w: f64,
+    nav_p: V3, nav_v: V3, nav_yaw: f64, nav_pitch: f64,
+    f_yaw: f64, f_pitch: f64, f_arm: f64, f_leadx: f64, f_leadz: f64, f_open: f64, f_idle: f64, has_pivot: bool, pivot: V3,
+    p_yaw: f64, p_pitch: f64,
+    i_zoom: f64, i_turn: f64, has_itarget: bool, itarget: V3,
+    has_pose: bool, pose: Pose,
+}
+
+// modes: 0 nav, 1 follow, 2 first, 3 iso
+fn new_cam(mode: i64, yaw: f64, pitch: f64) -> Cam {
+    let z = v3(0.0, 0.0, 0.0);
+    let p0 = Pose { t: z, yaw: 0.0, pitch: 0.0, dist: 0.0, fov: 60.0, ortho: false, half: 0.0, near: 0.3, roll: 0.0 };
+    Cam { mode: mode, has_from: false, from: p0, w: 1.0,
+        nav_p: v3(0.0, 30.0, 0.0), nav_v: z, nav_yaw: yaw, nav_pitch: pitch,
+        f_yaw: yaw, f_pitch: -0.12, f_arm: 3.8, f_leadx: 0.0, f_leadz: 0.0, f_open: 0.0, f_idle: 0.0, has_pivot: false, pivot: z,
+        p_yaw: yaw, p_pitch: 0.0, i_zoom: 1.0, i_turn: 0.0, has_itarget: false, itarget: z, has_pose: false, pose: p0 }
+}
+
+// ---------------------------------------------------------------- play/math.mjs
+fn half_ln() -> f64 { -LN2_HI - LN2_LO }
+fn clampd(v: f64, a: f64, b: f64) -> f64 { if v < a { return a; } if v > b { return b; } v }
+fn fmax(a: f64, b: f64) -> f64 { if b > a { b } else { a } }
+fn fmin(a: f64, b: f64) -> f64 { if b < a { b } else { a } }
+fn lerp(a: f64, b: f64, t: f64) -> f64 { a + (b - a) * t }
+fn smooth(t: f64) -> f64 { let u = clampd(t, 0.0, 1.0); u * u * (3.0 - 2.0 * u) }
+fn wrap(a0: f64) -> f64 {
+    let mut a = a0;
+    while a > DPI { a = a - 2.0 * DPI; }
+    while a < -DPI { a = a + 2.0 * DPI; }
+    a
+}
+fn lerp_angle(a: f64, b: f64, t: f64) -> f64 { a + wrap(b - a) * t }
+fn damp(x: f64, target: f64, half: f64, dt: f64) -> f64 { if half <= 0.0 { return target; } target + (x - target) * dexp((dt / half) * half_ln()) }
+fn damp_angle(x: f64, target: f64, half: f64, dt: f64) -> f64 { x + wrap(target - x) * (1.0 - dexp((dt / fmax(1e-4, half)) * half_ln())) }
+fn forward(yaw: f64, pitch: f64) -> V3 { v3(dsin(yaw) * dcos(pitch), dsin(pitch), -dcos(yaw) * dcos(pitch)) }
+fn heading(dx: f64, dz: f64) -> f64 { datan2(dx, -dz) }
+fn d2r() -> f64 { DPI / 180.0 }
+
+// ---------------------------------------------------------------- the ground, as the camera meets it
+// ground(x, z) is the host's: the shell's tile, or the test's made-up hills
+fn sdf_ground(x: f64, y: f64, z: f64) -> f64 { (y - ground(x, z)) * 0.7 }
+fn cast_sphere(a: V3, b: V3, r: f64) -> f64 {
+    let dx = b.x - a.x; let dy = b.y - a.y; let dz = b.z - a.z;
+    let l = (dx * dx + dy * dy + dz * dz).sqrt();
+    if l < 1e-6 { return 1.0; }
+    let ux = dx / l; let uy = dy / l; let uz = dz / l;
+    let mut t = 0.0;
+    let mut i = 0;
+    while i < 96 && t < l {
+        let m = sdf_ground(a.x + ux * t, a.y + uy * t, a.z + uz * t) - r;
+        if m < 0.004 { return t / l; }
+        t = t + fmax(m, 0.03);
+        i = i + 1;
+    }
+    1.0
+}
+fn clear_ground(p: V3, pad: f64) -> V3 { v3(p.x, fmax(p.y, ground(p.x, p.z) + pad), p.z) }
+fn eye_of(p: Pose) -> V3 { let f = forward(p.yaw, p.pitch); v3(p.t.x - f.x * p.dist, p.t.y - f.y * p.dist, p.t.z - f.z * p.dist) }
+
+// ---------------------------------------------------------------- the four cameras
+fn nav_pose(c: &mut Cam, dt: f64, lx: f64, ly: f64) -> Pose {
+    c.nav_yaw = wrap(c.nav_yaw + lx); c.nav_pitch = clampd(c.nav_pitch - ly, -1.5, 1.5);
+    let agl = fmax(0.0, c.nav_p.y - ground(c.nav_p.x, c.nav_p.z));
+    let v = 1.0 * 9.0 * fmax(1.0, agl / 12.0);
+    let f = forward(c.nav_yaw, c.nav_pitch); let rx = dcos(c.nav_yaw); let rz = dsin(c.nav_yaw);
+    let m0 = 0.0; let m1 = 0.0;
+    let wx = (f.x * -m1 + rx * m0) * v; let wy = (f.y * -m1 + 0.0) * v; let wz = (f.z * -m1 + rz * m0) * v;
+    c.nav_v.x = damp(c.nav_v.x, wx, 0.18, dt); c.nav_p.x = c.nav_p.x + c.nav_v.x * dt;
+    c.nav_v.y = damp(c.nav_v.y, wy, 0.18, dt); c.nav_p.y = c.nav_p.y + c.nav_v.y * dt;
+    c.nav_v.z = damp(c.nav_v.z, wz, 0.18, dt); c.nav_p.z = c.nav_p.z + c.nav_v.z * dt;
+    let floor = ground(c.nav_p.x, c.nav_p.z) + 1.5;
+    if c.nav_p.y < floor { c.nav_p.y = floor; c.nav_v.y = fmax(0.0, c.nav_v.y); }
+    c.nav_p = clear_ground(c.nav_p, 0.5);
+    Pose { t: c.nav_p, yaw: c.nav_yaw, pitch: c.nav_pitch, dist: 0.0, fov: 60.0, ortho: false, half: 0.0, near: 0.3, roll: 0.0 }
+}
+
+fn follow_pose(c: &mut Cam, dt: f64, lx: f64, ly: f64, b: Body) -> Pose {
+    let looking = lx.abs() + ly.abs() > 1e-5;
+    c.f_yaw = wrap(c.f_yaw + lx); c.f_pitch = clampd(c.f_pitch - ly, -1.2, 0.75);
+    if looking { c.f_idle = 0.0; } else { c.f_idle = c.f_idle + dt; }
+    if c.f_idle > 1.6 && b.speed > 0.8 { c.f_yaw = damp_angle(c.f_yaw, heading(b.vx, b.vz), 1.6, dt); }
+    c.f_leadx = damp(c.f_leadx, b.vx * 0.35, 0.5, dt); c.f_leadz = damp(c.f_leadz, b.vz * 0.35, 0.5, dt);
+    // no solids here: open country whenever the walker moves
+    let mut gain = 0.0; if b.speed > 0.6 { gain = dt / 10.0; }
+    c.f_open = clampd(c.f_open + gain, 0.0, 1.0);
+    let pull = smooth(c.f_open); let rx = dcos(c.f_yaw); let rz = dsin(c.f_yaw);
+    let shoulder = lerp(0.42, 0.15, pull);
+    let px = b.x + c.f_leadx + rx * shoulder; let py = b.y + 1.55 + pull * 0.6; let pz = b.z + c.f_leadz + rz * shoulder;
+    if c.has_pivot { c.pivot = v3(damp(c.pivot.x, px, 0.05, dt), damp(c.pivot.y, py, 0.12, dt), damp(c.pivot.z, pz, 0.05, dt)); }
+    else { c.pivot = v3(px, py, pz); c.has_pivot = true; }
+    let want = lerp(3.8, 15.0, pull); let pitch = c.f_pitch - pull * 0.14; let f = forward(c.f_yaw, pitch);
+    let end = v3(c.pivot.x - f.x * want, c.pivot.y - f.y * want, c.pivot.z - f.z * want);
+    let t = cast_sphere(c.pivot, end, 0.3);
+    let reach = fmax(0.12, want * t - 0.05);
+    if reach < c.f_arm { c.f_arm = reach; } else { c.f_arm = damp(c.f_arm, reach, 0.45, dt); }
+    let e0 = v3(c.pivot.x - f.x * c.f_arm, c.pivot.y - f.y * c.f_arm, c.pivot.z - f.z * c.f_arm);
+    let e = clear_ground(e0, 0.24);
+    let tg = v3(c.pivot.x + (e.x - e0.x), c.pivot.y + (e.y - e0.y), c.pivot.z + (e.z - e0.z));
+    Pose { t: tg, yaw: c.f_yaw, pitch: pitch, dist: c.f_arm, fov: 55.0 - pull * 6.0, ortho: false, half: 0.0, near: 0.2, roll: 0.0 }
+}
+
+fn first_pose(c: &mut Cam, lx: f64, ly: f64, b: Body) -> Pose {
+    c.p_yaw = wrap(c.p_yaw + lx); c.p_pitch = clampd(c.p_pitch - ly, -1.35, 1.35);
+    let u = b.phase; let mv = b.moving; let run = clampd((b.speed - 1.9) / 1.6, 0.0, 1.0); let a = lerp(0.028, 0.055, run) * mv;
+    let f = forward(c.p_yaw, 0.0); let rx = dcos(c.p_yaw); let rz = dsin(c.p_yaw);
+    let bob = -a * (1.0 + dcos(4.0 * DPI * u)) / 2.0; let sway = dsin(2.0 * DPI * u) * a * 0.45;
+    let e = clear_ground(v3(b.neck.x + f.x * 0.13 + rx * sway, b.neck.y + 0.13 + bob, b.neck.z + f.z * 0.13 + rz * sway), 0.12);
+    Pose { t: e, yaw: c.p_yaw, pitch: c.p_pitch, dist: 0.0, fov: 68.0, ortho: false, half: 0.0, near: 0.05, roll: dsin(2.0 * DPI * u) * 0.006 * mv }
+}
+
+fn iso_pose(c: &mut Cam, dt: f64, b: Body) -> Pose {
+    c.i_zoom = clampd(c.i_zoom * dpow(1.15, 0.0), 0.4, 5.0);
+    let gx = b.x + b.vx * 0.25; let gy = b.y + 1.0; let gz = b.z + b.vz * 0.25;
+    if c.has_itarget { c.itarget = v3(damp(c.itarget.x, gx, 0.14, dt), damp(c.itarget.y, gy, 0.14, dt), damp(c.itarget.z, gz, 0.14, dt)); }
+    else { c.itarget = v3(gx, gy, gz); c.has_itarget = true; }
+    let half = 7.25 * c.i_zoom; let fov = 3.0;
+    Pose { t: c.itarget, yaw: wrap(26.0 * DPI / 180.0 + c.i_turn * DPI / 2.0), pitch: -30.0 * DPI / 180.0, dist: half / dtan(fov * d2r() / 2.0), fov: fov, ortho: true, half: half, near: 1.0, roll: 0.0 }
+}
+
+// two poses in framing space: the subject stays framed while one becomes the other
+fn blend(a: Pose, b: Pose, w: f64) -> Pose {
+    if w >= 1.0 { return b; }
+    if w <= 0.0 { return a; }
+    let ha = fmax(0.05, a.dist) * dtan(a.fov * d2r() / 2.0); let hb = fmax(0.05, b.dist) * dtan(b.fov * d2r() / 2.0);
+    let fov = dexp(lerp(dlog(a.fov), dlog(b.fov), w)); let half = dexp(lerp(dlog(ha), dlog(hb), w));
+    let mut dist = 0.0;
+    if !(a.dist < 0.05 && b.dist < 0.05) { dist = half / dtan(fov * d2r() / 2.0); }
+    Pose { t: v3(lerp(a.t.x, b.t.x, w), lerp(a.t.y, b.t.y, w), lerp(a.t.z, b.t.z, w)), yaw: lerp_angle(a.yaw, b.yaw, w), pitch: lerp(a.pitch, b.pitch, w), dist: dist, fov: fov, ortho: false, half: 0.0, near: fmin(a.near, b.near), roll: lerp(a.roll, b.roll, w) }
+}
+
+fn set_mode(c: &mut Cam, m: i64) {
+    if m == c.mode { return; }
+    if c.has_pose {
+        let cur = c.pose;
+        let mut fr = cur; fr.ortho = false;
+        c.from = fr; c.has_from = true;
+        let e = eye_of(cur);
+        if m == 0 { c.nav_p = e; c.nav_v = v3(0.0, 0.0, 0.0); c.nav_yaw = cur.yaw; c.nav_pitch = cur.pitch; }
+        if m == 1 { c.f_yaw = cur.yaw; c.f_pitch = clampd(cur.pitch, -1.2, 0.75); }
+        if m == 2 { c.p_yaw = cur.yaw; c.p_pitch = clampd(cur.pitch, -1.35, 1.35); }
+        c.w = 0.0;
+    }
+    c.mode = m;
+}
+
+// one frame: returns the pose; its eye is eye_of(pose)
+fn cam_update(c: &mut Cam, dt: f64, lx: f64, ly: f64, b: Body) -> Pose {
+    if c.mode != 1 { let _held = follow_pose(c, dt, 0.0, 0.0, b); }
+    let mut p = c.pose;
+    if c.mode == 0 { p = nav_pose(c, dt, lx, ly); }
+    if c.mode == 1 { p = follow_pose(c, dt, lx, ly, b); }
+    if c.mode == 2 { p = first_pose(c, lx, ly, b); }
+    if c.mode == 3 { p = iso_pose(c, dt, b); }
+    if c.w < 1.0 && c.has_from {
+        c.w = fmin(1.0, c.w + dt / 0.9);
+        let k = smooth(c.w);
+        let mut to = p; to.ortho = false;
+        p = blend(c.from, to, k);
+        if c.w >= 1.0 { p = to; if c.mode == 3 { p.ortho = true; } c.has_from = false; }
+        else if p.dist > 0.05 {
+            let e = clear_ground(eye_of(p), 0.2); let f = forward(p.yaw, p.pitch);
+            p.dist = fmax(0.0, (p.t.x - e.x) * f.x + (p.t.y - e.y) * f.y + (p.t.z - e.z) * f.z);
+        }
+    }
+    c.pose = p; c.has_pose = true;
+    p
+}

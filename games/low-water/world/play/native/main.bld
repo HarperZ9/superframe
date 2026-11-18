@@ -1,0 +1,44 @@
+// The camera rig's check run: a scripted walk over made-up hills (the walker's path, its stride and
+// the look input all worked out here from the frame number), the camera switched through every mode,
+// and each frame's eye, heading, pitch and field printed as the bits of the doubles. The JS rig
+// prints the same run (tests/camera-native.test.mjs) and the two must match bit for bit.
+//   main.exe [frames]
+mod detmath;
+mod camera;
+
+fn ground(x: f64, z: f64) -> f64 { 2.0 * dsin(x * 0.11) * dcos(z * 0.07) + 0.04 * x + 1.5 * dsin(z * 0.031 + 0.4) }
+
+fn speed_at(f: i64) -> f64 {
+    if f < 40 { return 1.45 * (f as f64) / 40.0; }
+    if f < 300 { return 1.45; }
+    if f < 420 { return 4.6; }
+    if f < 760 { return 1.45; }
+    0.0
+}
+
+fn main() ~ Console {
+    let dt = 1.0 / 60.0;
+    let mut c = new_cam(1, 0.0, -0.1);
+    let mut x = 0.0; let mut z = 0.0; let mut phase = 0.0;
+    let mut f: i64 = 0;
+    while f < 900 {
+        if f == 450 { set_mode(&mut c, 2); }
+        if f == 560 { set_mode(&mut c, 3); }
+        if f == 700 { set_mode(&mut c, 1); }
+        if f == 820 { set_mode(&mut c, 0); }
+        let s = speed_at(f); let h = 0.6 * dsin((f as f64) * dt * 0.4);
+        let vx = dsin(h) * s; let vz = -dcos(h) * s;
+        x = x + vx * dt; z = z + vz * dt;
+        let y = ground(x, z);
+        phase = phase + s * dt / 1.6; phase = phase - phase.floor();
+        let b = Body { x: x, y: y, z: z, vx: vx, vz: vz, speed: s, phase: phase, moving: smooth(s / 0.55), neck: v3(x, y + 1.6, z) };
+        let mut lx = 0.0; let mut ly = 0.0;
+        if f >= 100 && f < 160 { lx = 0.012; }
+        if f >= 200 && f < 230 { ly = -0.008; }
+        if f >= 600 && f < 640 { ly = 0.01; }
+        let p = cam_update(&mut c, dt, lx, ly, b);
+        let e = eye_of(p);
+        println!("{} {} {} {} {} {} {}", f, e.x.to_bits(), e.y.to_bits(), e.z.to_bits(), p.yaw.to_bits(), p.pitch.to_bits(), p.fov.to_bits());
+        f = f + 1;
+    }
+}
