@@ -17,6 +17,9 @@
 // read-only storage buffer a root UAV.
 // Swapchains (d3d12_swapchain.cpp, N2): flip-discard swapchains whose backbuffers are adopted
 // as texture records with RTVs in slots reserved once, so a resize reuses them.
+// Host frames (d3d12_host.cpp, raw/rhi/host.hpp): the device and queue may be a host's, a
+// texture record may wrap a host's resource, and a submission may be split into recording,
+// sending and retiring so it can be ordered against the host's fence.
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -29,6 +32,7 @@
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 #include "raw/core/slot_pool.hpp"
+#include "raw/rhi/host.hpp"
 #include "raw/rhi/rhi.hpp"
 #include <cstdint>
 #include <string>
@@ -43,12 +47,15 @@ struct TexRec {
     ComPtr<ID3D12Resource> res; uint32_t w{0}, h{0}; TextureUsage usage{TextureUsage::None};
     D3D12_RESOURCE_STATES state{D3D12_RESOURCE_STATE_COMMON}; UINT srv{~0u}, rtv{~0u}, dsv{~0u};
     TextureFormat format{TextureFormat::RGBA8Unorm};
+    // A host's texture: `boundary` is its state outside a submission.
+    bool external{false}; D3D12_RESOURCE_STATES boundary{D3D12_RESOURCE_STATE_COMMON};
 };
 struct SampRec { UINT slot{0}; };
 struct RasterRec { ComPtr<ID3D12RootSignature> rs; ComPtr<ID3D12PipelineState> pso; std::vector<RasterBinding> layout; uint32_t targetCount{1}; bool depth{false}; };
 // A descriptor heap and the next free slot in it.
 struct Heap { ComPtr<ID3D12DescriptorHeap> heap; UINT size{0}, next{0}, capacity{0}; };
 DXGI_FORMAT dxgiFormat(TextureFormat f);
+D3D12_RESOURCE_STATES d3dState(TextureState s);   // d3d12_host.cpp
 D3D12_CPU_DESCRIPTOR_HANDLE cpuAt(const Heap& h, UINT i);
 D3D12_GPU_DESCRIPTOR_HANDLE gpuAt(const Heap& h, UINT i);
 
@@ -93,6 +100,9 @@ public:
     // RAW_NATIVE_D3D12_DEBUG=1 enables the D3D12 debug layer, and any error it
     // reports fails the submission (init fails when the layer is missing).
     bool init(std::string& err);
+    // On a host's device and direct queue instead: no adapter is picked and nothing the host
+    // owns is created or destroyed here.
+    bool initAdopted(const HostDevice& host, std::string& err);
 
     const char* backendName() const override { return "d3d12"; }
     const AdapterInfo& adapter() const override { return info_; }
@@ -112,6 +122,10 @@ public:
     bool lost() const override;
     bool loseForTest(std::string& err) override;
     bool timestampSeconds(uint32_t count, std::vector<double>& out, std::string& err) override;
+    TextureHandle importTexture(const ExternalTextureDesc& desc, std::string& err) override;
+    bool endRecording(std::string& err) override;
+    bool submit(const FenceSync& sync, std::string& err) override;
+    WaitResult retire(uint32_t timeoutMs, std::string& err) override;
     // The timestamp query heap and its readback buffer, made on first use.
     ID3D12QueryHeap* timestampHeap(std::string& err);
     ID3D12CommandQueue* queue(){ return queue_.Get(); }
@@ -157,6 +171,16 @@ private:
     SlotPool<RasterRec> rasters_;
     D3d12CommandList cmd_{*this};
     bool open_{false};
+    bool closed_{false};    // recorded and closed, not yet sent
+    bool pending_{false};   // sent; fenceValue_ on fence_ marks its end
+    bool adopted_{false};   // device_ and queue_ belong to a host
+    uint32_t retireMs_{2000};
+    std::vector<TextureHandle> externals_;
+    std::vector<UINT> srvFree_, rtvFree_;   // view slots of forgotten host textures
+    // The allocator, list, fence and event every device needs, on device_.
+    bool initSubmission(std::string& err);
+    // info_ from adapter_ (left empty where the API did not say).
+    void describeAdapter();
     ComPtr<ID3D12InfoQueue> infoQueue_;   // set with RAW_NATIVE_D3D12_DEBUG=1
     bool pickAdapter(std::string& err);
     bool debugErrors(std::string& err);

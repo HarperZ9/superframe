@@ -20,6 +20,9 @@
 // evidence/n2-presentation-bounds.json): the RGB10A2Unorm format, a swapchain on a native
 // window, device loss, and devices the caller owns. Queries and multiple queues are added
 // behind the same handles when the renderer needs them (docs/architecture/adr/0002-rhi.md).
+// Host frames (raw/rhi/host.hpp; evidence/host-frame-bounds.json) are additive too: a device
+// on a host's own device and queue, the host's textures as texture handles, and a submission
+// ordered against the host's fence.
 //
 // Textures track their own state inside the backend: an upload, a draw that
 // samples it, a render pass that targets it and a copy out of it each move it to
@@ -162,6 +165,11 @@ struct RenderPassDesc {
     float depthClear{1.0f};
 };
 
+// Host frames; the descriptions are in raw/rhi/host.hpp.
+struct ExternalTextureDesc;
+struct FenceSync;
+enum class WaitResult : uint8_t { Done, TimedOut, Failed };
+
 class CommandList;
 // A swapchain presents a native window's backbuffers (N2). Its current backbuffer is an
 // ordinary texture of the device (usage RenderTarget | CopySrc) for the frame being drawn;
@@ -276,6 +284,19 @@ public:
     // differences are what count). False with the reason when the backend records none.
     virtual bool timestampSeconds(uint32_t count, std::vector<double>& out, std::string& err){
         (void)count; out.clear(); err = std::string(backendName()) + ": no GPU timestamps in this backend"; return false; }
+    // Host frames (raw/rhi/host.hpp). A backend without them refuses each call with the reason.
+    // A texture the host owns, in the state the description gives; destroyTexture forgets it
+    // and never destroys the host's resource.
+    virtual TextureHandle importTexture(const ExternalTextureDesc& desc, std::string& err){ (void)desc; err = noHostFrames(); return {}; }
+    // Close the open list without sending it, so a host can record before its own work is queued.
+    virtual bool endRecording(std::string& err){ err = noHostFrames(); return false; }
+    // Send the recorded list: the queue waits on sync's fence, runs the list, then signals the
+    // fence. Returns at once; retire() or the next begin() waits for the GPU.
+    virtual bool submit(const FenceSync& sync, std::string& err){ (void)sync; err = noHostFrames(); return false; }
+    // Wait up to timeoutMs for the last submit() to finish. TimedOut leaves it pending.
+    virtual WaitResult retire(uint32_t timeoutMs, std::string& err){ (void)timeoutMs; err = noHostFrames(); return WaitResult::Failed; }
+private:
+    std::string noHostFrames() const { return std::string(backendName()) + ": no host frames in this backend"; }
 };
 inline constexpr uint32_t kMaxTimestamps = 64;
 

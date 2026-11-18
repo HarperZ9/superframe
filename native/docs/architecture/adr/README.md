@@ -27,6 +27,7 @@ supersedes it and both stay.
 | [0017](0017-environment-state.md) | One environment state (time, weather, wind, moisture, temperature, light, atmosphere) shared by lighting, effects, materials, particles, audio, animation and gameplay | Proposed |
 | [0018](0018-renderer-first-one-core-buildlang.md) | Renderer first, one C++ core native and in WebAssembly, gameplay in BuildLang, Low Water as the showcase (D1, D2, D3, D10), and D11: games may ship BuildLang-generated code (amended 2026-10-16); D4 to D9 pending | Accepted |
 | [0019](0019-style-passes-in-the-core.md) | Style passes in the C++ core: one translator-subset WGSL source, a float64 C++ reference, the JavaScript reference kept as an oracle | Accepted |
+| [0020](0020-host-frames.md) | Host frames: the RHI on a host application's D3D12 device, queue, textures and fence, with a submission split into record, send and retire | Accepted |
 
 To add one, copy the shape of an existing record: status and date, context,
 decision, consequences, alternatives, and the signal that would reverse it.

@@ -82,7 +82,15 @@ TextureHandle D3d12Device::createTexture(const TextureDesc& desc, std::string& e
     auto id = textures_.insert(std::move(t));
     return {id.index, id.gen};
 }
-void D3d12Device::destroyTexture(TextureHandle h){ textures_.erase(h.index, h.gen); }
+// A host's texture is only forgotten: the record's reference goes, the resource stays the
+// host's, and its view slots are free for the next import.
+void D3d12Device::destroyTexture(TextureHandle h){
+    const auto t = textures_.erase(h.index, h.gen);
+    if (!t || !t->external) return;
+    if (t->srv != ~0u) srvFree_.push_back(t->srv);
+    if (t->rtv != ~0u) rtvFree_.push_back(t->rtv);
+    std::erase(externals_, h);
+}
 bool D3d12Device::reserveRtv(UINT& slot, std::string& err){
     if (!srvCpu.heap && !initHeaps(err)) return false;
     if (rtvCpu.next >= rtvCpu.capacity){ err = "d3d12: out of RTV slots"; return false; }
