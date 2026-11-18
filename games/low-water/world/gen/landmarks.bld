@@ -68,9 +68,9 @@ pub fn place_all(seed: u32, w: i64, hh: i64, h: Vec<f64>, reg: Vec<i64>, sea: Ve
     n = scatter("decotower", 5, 7, 0, 5.0, 300.0, 6, d[0], d[1], 40, 110.0, 190.0, 40.0, 52.0, s.wrapping_add(32), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
     n = scatter("glasshall", 1, 7, 0, 5.0, 300.0, 1, d[0], d[1], 30, 40.0, 40.0, 120.0, 120.0, s.wrapping_add(33), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
 
-    // 10, the drowned quarter: blocks standing in the shallows of the island's low shore
-    let e = seat(10, sx, sy, sk, sr, rn, rx, ry);
-    n = scatter("drowned", 30, 10, 2, -7.0, 5.0, 2, e[0], e[1], 150, 14.0, 34.0, 60.0, 90.0, s.wrapping_add(41), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    // 10, the drowned quarter: blocks standing in the shallows off the city's own shore
+    // (any region: the shallows carry whichever region the nearest land has)
+    n = scatter("drowned", 30, 0, 1, -8.0, -0.3, 2, d[0], d[1], 45, 16.0, 36.0, 60.0, 90.0, s.wrapping_add(41), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
 
     // 4, the storm coast: sea stacks off the shore, lights on the headlands
     let g = seat(4, sx, sy, sk, sr, rn, rx, ry);

@@ -131,9 +131,10 @@ pub fn biome(h: f64, slope: f64, temp: f64, m: f64, plate: i64, sea: i64, lake: 
     if lake > 0 { return 1; }
     if temp < -7.0 { return 9; }
     if slope > 0.8 { return 13; }
-    if h < 16.0 && plate == 3 && slope < 0.03 { return 3; }
+    if h < 32.0 && plate == 3 && slope < 0.06 { return 3; }
     if h < 9.0 && wet > 2000.0 && slope < 0.02 { return 3; }
     if h < 2.6 { return 2; }
+    if plate == 5 { return 12; }
     if temp < -1.2 {
         if h > 900.0 { return 8; }
         return 7;
