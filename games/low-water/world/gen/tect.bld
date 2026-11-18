@@ -1,0 +1,186 @@
+// The tectonic sketch: five plates on one island, a subsiding foreland in the south-west and a
+// city island across a strait. Plate bases blend by inverse distance; convergent boundaries lift
+// ranges. The result is the uplift target the erosion pass then cuts into.
+// Distances are kilometres; x runs east, y runs south.
+
+use noise::fbm;
+use noise::ridged;
+use noise::rnd;
+use noise::sat;
+use noise::smooth;
+use noise::maxf;
+
+// A plate is a handful of seeds; a point belongs to the plate that owns its nearest seed.
+pub struct Plate { base: f64, kmul: f64, rain: f64 }
+pub struct Seed { x: f64, y: f64, plate: usize }
+
+pub fn plates() -> Vec<Plate> {
+    let mut p: Vec<Plate> = Vec::new();
+    // 0 west foreland, 1 east block, 2 north shield, 3 south-west sag, 4 south plain
+    p.push(Plate { base: 40.0, kmul: 1.0, rain: 1.5 });
+    p.push(Plate { base: 620.0, kmul: 2.4, rain: 0.3 });
+    p.push(Plate { base: 110.0, kmul: 0.8, rain: 0.9 });
+    p.push(Plate { base: -70.0, kmul: 1.2, rain: 1.3 });
+    p.push(Plate { base: 170.0, kmul: 1.0, rain: 0.6 });
+    p
+}
+
+// a seed, moved up to 2.5 km by the world seed
+fn sd(k: i64, seed: u32, x: f64, y: f64, plate: usize) -> Seed {
+    Seed { x: x + (rnd(k, 11, seed) - 0.5) * 5.0, y: y + (rnd(k, 23, seed) - 0.5) * 5.0, plate: plate }
+}
+
+pub fn seeds(seed: u32) -> Vec<Seed> {
+    let mut s: Vec<Seed> = Vec::new();
+    s.push(sd(0, seed, 24.0, 36.0, 0));
+    s.push(sd(1, seed, 26.0, 54.0, 0));
+    s.push(sd(2, seed, 44.0, 44.0, 0));
+    s.push(sd(3, seed, 48.0, 60.0, 0));
+    s.push(sd(4, seed, 42.0, 32.0, 0));
+    s.push(sd(5, seed, 92.0, 36.0, 1));
+    s.push(sd(6, seed, 96.0, 56.0, 1));
+    s.push(sd(7, seed, 112.0, 46.0, 1));
+    s.push(sd(8, seed, 88.0, 48.0, 1));
+    s.push(sd(9, seed, 100.0, 70.0, 1));
+    s.push(sd(10, seed, 34.0, 12.0, 2));
+    s.push(sd(11, seed, 50.0, 10.0, 2));
+    s.push(sd(12, seed, 62.0, 14.0, 2));
+    s.push(sd(13, seed, 76.0, 10.0, 2));
+    s.push(sd(14, seed, 92.0, 12.0, 2));
+    s.push(sd(15, seed, 34.0, 74.0, 3));
+    s.push(sd(16, seed, 44.0, 82.0, 3));
+    s.push(sd(17, seed, 26.0, 66.0, 3));
+    s.push(sd(18, seed, 70.0, 84.0, 4));
+    s.push(sd(19, seed, 84.0, 88.0, 4));
+    s.push(sd(20, seed, 66.0, 72.0, 4));
+    s.push(sd(21, seed, 78.0, 74.0, 4));
+    s
+}
+
+// uplift where plates i and j meet, metres
+fn boundary_amp(i: usize, j: usize) -> f64 {
+    let a = if i < j { i } else { j };
+    let b = if i < j { j } else { i };
+    if a == 0 && b == 1 { return 1750.0; }
+    if a == 1 && b == 2 { return 1150.0; }
+    if a == 0 && b == 2 { return 380.0; }
+    if a == 0 && b == 3 { return 0.0; }
+    if a == 3 && b == 4 { return 150.0; }
+    if a == 1 && b == 4 { return 700.0; }
+    if a == 0 && b == 4 { return 520.0; }
+    260.0
+}
+
+fn blob(x: f64, y: f64, cx: f64, cy: f64, r: f64) -> f64 {
+    let dx = x - cx;
+    let dy = y - cy;
+    let q = 1.0 - (dx * dx + dy * dy) / (r * r);
+    if q < 0.0 { return 0.0; }
+    q * q
+}
+
+// One cell of the sketch. plate 5 is the city island.
+pub struct Sketch { height: f64, land: f64, plate: i64, kmul: f64, rain: f64, uplift: f64 }
+
+pub fn sketch(xk: f64, yk: f64, p: Vec<Plate>, sds: Vec<Seed>, seed: u32) -> Sketch {
+    let wx = xk + 7.0 * fbm(xk / 40.0, yk / 40.0, 4, seed.wrapping_add(101));
+    let wy = yk + 7.0 * fbm(xk / 40.0 + 17.3, yk / 40.0 - 9.1, 4, seed.wrapping_add(202));
+    // the island: a squared ellipse with a noisy rim, a bay bitten out of the south-west
+    let ex = (wx - 66.0) / 58.0;
+    let ey = (wy - 48.0) / 42.0;
+    let r2 = sqrt(ex * ex + ey * ey);
+    let r4 = sqrt(sqrt(ex * ex * ex * ex + ey * ey * ey * ey));
+    let mut e = 1.0 - 0.5 * (r2 + r4) + 0.19 * fbm(xk / 30.0, yk / 30.0, 5, seed.wrapping_add(303));
+    e = e + 0.08 * fbm(xk / 13.0, yk / 13.0, 4, seed.wrapping_add(323));
+    e = e + 0.05 * fbm(xk / 7.0, yk / 7.0, 4, seed.wrapping_add(313));
+    e = e - 0.60 * blob(wx, wy, 27.0, 80.0, 14.0);
+    // a fjord coast in the north-west
+    e = e - 0.16 * sat(1.0 - wy / 44.0) * sat(1.0 - wx / 56.0) * ridged(xk / 10.0, yk / 10.0, 3, seed.wrapping_add(404));
+    let isl = 0.62 * blob(wx, wy, 14.5, 85.5, 8.0) - 0.04;
+    let on_isle = isl > e;
+    if on_isle { e = isl; }
+
+    // distance to each plate (its nearest seed)
+    let np = p.len();
+    let mut dp: Vec<f64> = Vec::new();
+    let mut i: usize = 0;
+    while i < np {
+        dp.push(1.0e18);
+        i += 1;
+    }
+    i = 0;
+    while i < sds.len() {
+        let dx = wx - sds[i].x;
+        let dy = wy - sds[i].y;
+        let d = dx * dx + dy * dy;
+        let k = sds[i].plate;
+        if d < dp[k] { dp[k] = d; }
+        i += 1;
+    }
+    let mut d1 = 1.0e18;
+    let mut d2 = 1.0e18;
+    let mut i1: usize = 0;
+    let mut sw = 0.0;
+    let mut sb = 0.0;
+    let mut sk = 0.0;
+    let mut sr = 0.0;
+    i = 0;
+    while i < np {
+        let d = dp[i];
+        let q = 1.0 / ((d + 40.0) * (d + 40.0));
+        sw = sw + q;
+        sb = sb + q * p[i].base;
+        sk = sk + q * p[i].kmul;
+        sr = sr + q * p[i].rain;
+        dp[i] = sqrt(d);
+        if dp[i] < d1 {
+            d2 = d1;
+            d1 = dp[i];
+            i1 = i;
+        } else if dp[i] < d2 {
+            d2 = dp[i];
+        }
+        i += 1;
+    }
+    // every pair of plates lifts along its boundary; pairs that are not the nearest two fade out
+    let mut up = 0.0;
+    i = 0;
+    while i < np {
+        let mut j = i + 1;
+        while j < np {
+            let t = (dp[i] - dp[j]) / 11.0;
+            let f = 1.0 / ((1.0 + t * t) * (1.0 + t * t));
+            let far = (maxf(dp[i], dp[j]) - d2) / 9.0;
+            let rel = 1.0 / ((1.0 + far * far) * (1.0 + far * far));
+            up = up + boundary_amp(i, j) * f * rel;
+            j += 1;
+        }
+        i += 1;
+    }
+    let crest = 0.45 + 0.85 * ridged(xk / 15.0, yk / 15.0, 5, seed.wrapping_add(505));
+    up = up * crest;
+    if up > 1900.0 { up = 1900.0 + (up - 1900.0) * 0.2; }
+    // foothills on the wet western side
+    if i1 == 0 { up = up + 240.0 * ridged(xk / 21.0, yk / 21.0, 4, seed.wrapping_add(515)); }
+    let mut base = sb / sw;
+    if on_isle {
+        up = 0.0;
+        base = 30.0;
+    }
+
+    let mut hgt = 0.0;
+    if e > 0.0 {
+        let l = smooth(0.0, 0.07, e);
+        let inland = smooth(0.03, 0.42, e);
+        let rough = 70.0 * fbm(xk / 6.0, yk / 6.0, 5, seed.wrapping_add(606));
+        let body = 4.0 + 150.0 * smooth(0.0, 0.5, e) + base * inland + up * smooth(0.06, 0.36, e);
+        hgt = l * maxf(body + rough * inland * (0.4 + body / 1500.0), 1.5) + 0.3;
+    } else {
+        hgt = e * 1400.0;
+        if hgt < -420.0 { hgt = -420.0; }
+        hgt = hgt - 0.5;
+    }
+    let mut pl = i1 as i64;
+    if on_isle { pl = 5; }
+    Sketch { height: hgt, land: e, plate: pl, kmul: sk / sw, rain: sr / sw, uplift: up }
+}

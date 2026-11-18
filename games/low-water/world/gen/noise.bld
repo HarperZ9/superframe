@@ -1,0 +1,128 @@
+// Seeded noise for the world generator. Integer hashing and + - * / sqrt floor only, so the
+// same seed gives the same bits on every machine (design/DETMATH.md, section 1).
+
+pub fn hash2(x: i64, y: i64, seed: u32) -> u32 {
+    let mut h: u32 = seed ^ ((x as u32).wrapping_mul(0x9E3779B1));
+    h = h ^ ((y as u32).wrapping_mul(0x85EBCA77));
+    h = h ^ (h >> 15);
+    h = h.wrapping_mul(0x2C1B3C6D);
+    h = h ^ (h >> 12);
+    h = h.wrapping_mul(0x297A2D39);
+    h ^ (h >> 15)
+}
+
+// a number in [0, 1) from two integers and a seed
+pub fn rnd(x: i64, y: i64, seed: u32) -> f64 {
+    (hash2(x, y, seed) as f64) / 4294967296.0
+}
+
+pub fn sat(x: f64) -> f64 {
+    if x < 0.0 { return 0.0; }
+    if x > 1.0 { return 1.0; }
+    x
+}
+
+pub fn absf(x: f64) -> f64 {
+    if x < 0.0 { return 0.0 - x; }
+    x
+}
+
+pub fn minf(a: f64, b: f64) -> f64 {
+    if a < b { return a; }
+    b
+}
+
+pub fn maxf(a: f64, b: f64) -> f64 {
+    if a > b { return a; }
+    b
+}
+
+pub fn mix(a: f64, b: f64, t: f64) -> f64 { a + (b - a) * t }
+
+pub fn smooth(lo: f64, hi: f64, x: f64) -> f64 {
+    let t = sat((x - lo) / (hi - lo));
+    t * t * (3.0 - 2.0 * t)
+}
+
+fn fade(t: f64) -> f64 { t * t * t * (t * (t * 6.0 - 15.0) + 10.0) }
+
+// the dot of one of eight fixed directions with (dx, dy); none lies on a grid axis, so the
+// noise has no zero lines along the lattice
+fn grad(ix: i64, iy: i64, seed: u32, dx: f64, dy: f64) -> f64 {
+    let g = hash2(ix, iy, seed) & 7;
+    let a = 0.9238795325112867;
+    let b = 0.3826834323650898;
+    if g == 0 { return a * dx + b * dy; }
+    if g == 1 { return b * dx + a * dy; }
+    if g == 2 { return a * dy - b * dx; }
+    if g == 3 { return b * dy - a * dx; }
+    if g == 4 { return 0.0 - a * dx - b * dy; }
+    if g == 5 { return 0.0 - b * dx - a * dy; }
+    if g == 6 { return b * dx - a * dy; }
+    a * dx - b * dy
+}
+
+// gradient noise, about -0.7 to 0.7
+pub fn gnoise(x: f64, y: f64, seed: u32) -> f64 {
+    let fx = floor(x);
+    let fy = floor(y);
+    let ix = fx as i64;
+    let iy = fy as i64;
+    let tx = x - fx;
+    let ty = y - fy;
+    let a = grad(ix, iy, seed, tx, ty);
+    let b = grad(ix + 1, iy, seed, tx - 1.0, ty);
+    let c = grad(ix, iy + 1, seed, tx, ty - 1.0);
+    let e = grad(ix + 1, iy + 1, seed, tx - 1.0, ty - 1.0);
+    let u = fade(tx);
+    let v = fade(ty);
+    mix(mix(a, b, u), mix(c, e, u), v)
+}
+
+// fractal sum, about -1 to 1
+pub fn fbm(x: f64, y: f64, oct: i32, seed: u32) -> f64 {
+    let mut s = 0.0;
+    let mut a = 1.0;
+    let mut f = 1.0;
+    let mut norm = 0.0;
+    let mut px = x;
+    let mut py = y;
+    let mut k: i32 = 0;
+    while k < oct {
+        let rx = px * 0.8 - py * 0.6;
+        let ry = px * 0.6 + py * 0.8;
+        px = rx;
+        py = ry;
+        s = s + a * gnoise(px * f + 3.7, py * f - 1.9, seed.wrapping_add((k as u32).wrapping_mul(1013)));
+        norm = norm + a;
+        a = a * 0.5;
+        f = f * 2.0;
+        k += 1;
+    }
+    s / norm * 1.4
+}
+
+// ridged fractal, 0 to 1, sharp crests
+pub fn ridged(x: f64, y: f64, oct: i32, seed: u32) -> f64 {
+    let mut s = 0.0;
+    let mut a = 1.0;
+    let mut f = 1.0;
+    let mut norm = 0.0;
+    let mut px = x;
+    let mut py = y;
+    let mut k: i32 = 0;
+    while k < oct {
+        let rx = px * 0.8 - py * 0.6;
+        let ry = px * 0.6 + py * 0.8;
+        px = rx;
+        py = ry;
+        let n = 1.0 - absf(gnoise(px * f + 3.7, py * f - 1.9, seed.wrapping_add((k as u32).wrapping_mul(977)))) * 1.6;
+        let r = sat(n);
+        s = s + a * r * r;
+        norm = norm + a;
+        a = a * 0.5;
+        f = f * 2.0;
+        k += 1;
+    }
+    s / norm
+}

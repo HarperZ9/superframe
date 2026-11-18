@@ -1,0 +1,215 @@
+// Climate, ground cover and the eleven regions.
+// Temperature falls to the north and with height. Rain comes on a west wind: air picks up water
+// over the sea, drops it as it climbs, and arrives dry in the lee of the range.
+
+use noise::sat;
+use noise::gnoise;
+
+// rain share per cell, 0 to about 1, written to m
+pub fn moisture(h: Vec<f64>, w: i64, hh: i64, m: Vec<f64>, tmp: Vec<f64>) {
+    let mut y: i64 = 0;
+    while y < hh {
+        let mut q = 1.0;
+        let mut x: i64 = 0;
+        while x < w {
+            let c = (y * w + x) as usize;
+            if h[c] <= 0.0 {
+                q = q + (1.0 - q) * 0.02;
+                m[c] = 0.0;
+            } else {
+                let mut climb = 0.0;
+                if x > 0 { climb = h[c] - h[c - 1]; }
+                if climb < 0.0 { climb = 0.0; }
+                let r = q * (0.0011 + 0.00075 * climb);
+                q = q - r;
+                if q < 0.02 { q = 0.02; }
+                m[c] = r;
+            }
+            x += 1;
+        }
+        y += 1;
+    }
+    // two box blurs, 17 cells wide, across then down
+    let rad: i64 = 8;
+    let mut pass = 0;
+    while pass < 2 {
+        y = 0;
+        while y < hh {
+            let mut s = 0.0;
+            let mut x: i64 = 0 - rad;
+            while x < w {
+                let xa = x + rad;
+                if xa < w { s = s + m[(y * w + xa) as usize]; }
+                let xr = x - rad - 1;
+                if xr >= 0 { s = s - m[(y * w + xr) as usize]; }
+                if x >= 0 { tmp[(y * w + x) as usize] = s / 17.0; }
+                x += 1;
+            }
+            y += 1;
+        }
+        let mut x: i64 = 0;
+        while x < w {
+            let mut s = 0.0;
+            y = 0 - rad;
+            while y < hh {
+                let ya = y + rad;
+                if ya < hh { s = s + tmp[(ya * w + x) as usize]; }
+                let yr = y - rad - 1;
+                if yr >= 0 { s = s - tmp[(yr * w + x) as usize]; }
+                if y >= 0 { m[(y * w + x) as usize] = s / 17.0; }
+                y += 1;
+            }
+            x += 1;
+        }
+        pass += 1;
+    }
+    let n = (w * hh) as usize;
+    let mut c: usize = 0;
+    while c < n {
+        m[c] = sat(m[c] / 0.0042);
+        c += 1;
+    }
+}
+
+// yearly mean in degrees C
+pub fn temperature(height: f64, y: i64, hh: i64) -> f64 {
+    let v = (y as f64) / (hh as f64);
+    let mut e = height;
+    if e < 0.0 { e = 0.0; }
+    -3.5 + 15.5 * v - 6.2 * e / 1000.0
+}
+
+// Distance to the sea in cells for land, by a breadth-first walk from the shore (capped at 9999).
+pub fn coast_distance(sea: Vec<i64>, w: i64, hh: i64, cd: Vec<i64>) {
+    let n = (w * hh) as usize;
+    let mut queue: Vec<i64> = Vec::new();
+    let mut c: usize = 0;
+    while c < n {
+        if sea[c] == 1 {
+            cd[c] = 0;
+            queue.push(c as i64);
+        } else {
+            cd[c] = 9999;
+        }
+        c += 1;
+    }
+    let mut head: usize = 0;
+    while head < queue.len() {
+        let q = queue[head];
+        head += 1;
+        let qx = q % w;
+        let qy = q / w;
+        let d = cd[q as usize] + 1;
+        let mut k = 0;
+        while k < 4 {
+            let mut nx = qx;
+            let mut ny = qy;
+            if k == 0 { nx = qx + 1; }
+            if k == 1 { nx = qx - 1; }
+            if k == 2 { ny = qy + 1; }
+            if k == 3 { ny = qy - 1; }
+            if nx >= 0 && ny >= 0 && nx < w && ny < hh {
+                let m = (ny * w + nx) as usize;
+                if cd[m] > d {
+                    cd[m] = d;
+                    queue.push(m as i64);
+                }
+            }
+            k += 1;
+        }
+    }
+}
+
+// Ground cover.
+//  0 sea  1 lake  2 shore  3 marsh  4 pasture  5 fog forest  6 birch taiga  7 snow tundra
+//  8 alpine rock  9 ice  10 badland  11 steppe  12 heath  13 cliff
+pub fn biome(h: f64, slope: f64, temp: f64, m: f64, plate: i64, sea: i64, lake: i64, wet: f64, g: f64) -> i64 {
+    if sea == 1 { return 0; }
+    if lake > 0 { return 1; }
+    if temp < -5.0 { return 9; }
+    if slope > 0.8 { return 13; }
+    if h < 16.0 && plate == 3 && slope < 0.03 { return 3; }
+    if h < 9.0 && wet > 2000.0 && slope < 0.02 { return 3; }
+    if h < 2.6 { return 2; }
+    if temp < -1.2 {
+        if h > 900.0 { return 8; }
+        return 7;
+    }
+    if m < 0.20 {
+        if plate == 1 { return 10; }
+        return 11;
+    }
+    if m < 0.34 { return 11; }
+    if temp < 2.2 {
+        if m > 0.42 + 0.2 * g { return 6; }
+        return 12;
+    }
+    if h > 640.0 {
+        if g > 0.1 { return 12; }
+        return 4;
+    }
+    if m > 0.56 + 0.15 * g { return 5; }
+    4
+}
+
+// The eleven regions, by plate, height and shore.
+//  1 thaw country  2 folded uplands  3 fog forest  4 storm coast  5 canyon and badlands
+//  6 marsh  7 the city across the water  8 the works  9 the monument ground
+//  10 the drowned quarter  11 the far-north works town
+pub fn region(h: f64, plate: i64, cd: i64, yk: f64, works_d2: f64) -> i64 {
+    if plate == 5 {
+        if h < 3.0 { return 10; }
+        return 7;
+    }
+    if works_d2 < 6.5 * 6.5 && h < 140.0 { return 8; }
+    if h > 1250.0 { return 2; }
+    if plate == 1 { return 5; }
+    if h > 650.0 { return 2; }
+    if plate == 2 {
+        if yk < 15.0 && h < 380.0 { return 11; }
+        return 1;
+    }
+    if plate == 3 {
+        if h < 45.0 { return 6; }
+        return 3;
+    }
+    if plate == 4 { return 9; }
+    if cd < 110 { return 4; }
+    3
+}
+
+// Give every sea cell the region of the nearest land, so weather has no hole over water.
+pub fn spread_regions(reg: Vec<i64>, w: i64, hh: i64) {
+    let n = (w * hh) as usize;
+    let mut queue: Vec<i64> = Vec::new();
+    let mut c: usize = 0;
+    while c < n {
+        if reg[c] > 0 { queue.push(c as i64); }
+        c += 1;
+    }
+    let mut head: usize = 0;
+    while head < queue.len() {
+        let q = queue[head];
+        head += 1;
+        let qx = q % w;
+        let qy = q / w;
+        let r = reg[q as usize];
+        let mut k = 0;
+        while k < 4 {
+            let mut nx = qx;
+            let mut ny = qy;
+            if k == 0 { nx = qx + 1; }
+            if k == 1 { nx = qx - 1; }
+            if k == 2 { ny = qy + 1; }
+            if k == 3 { ny = qy - 1; }
+            if nx >= 0 && ny >= 0 && nx < w && ny < hh {
+                let m = (ny * w + nx) as usize;
+                if reg[m] == 0 {
+                    reg[m] = r;
+                    queue.push(m as i64);
+                }
+            }
+            k += 1;
+        }
+    }
+}

@@ -1,0 +1,140 @@
+// Roads and paths: least-time routes over the coarse grid, by Dijkstra. Walking speed follows
+// Tobler's hiking function, 5 km/h on a gentle downslope and less on any other; the exponential
+// is taken as a cubic series so the result is the same bits everywhere. Cells that already carry
+// a road are cheaper, so later roads join earlier ones. Only the crossing to the city island may
+// use the sea.
+
+use heap::heap_push;
+use heap::heap_pop;
+
+// hours to walk dist_km from height a to height b
+pub fn walk_hours(a: f64, b: f64, dist_km: f64) -> f64 {
+    let slope = (b - a) / (dist_km * 1000.0);
+    let mut s = slope + 0.05;
+    if s < 0.0 { s = 0.0 - s; }
+    let x = 3.5 * s;
+    let speed = 6.0 / (1.0 + x + x * x / 2.0 + x * x * x / 6.0);
+    dist_km / speed
+}
+
+// One route. water: 0 land, 1 sea, 2 lake. Returns the coarse cells from src to dst, or empty.
+// stop_at_road: end at the first cell that already carries a road.
+pub fn route(src: i64, dst: i64, cw: i64, chh: i64, ch: Vec<f64>, water: Vec<i64>, criv: Vec<i64>, road: Vec<i64>, ferry: bool, stop_at_road: bool, dist: Vec<f64>, prev: Vec<i64>) -> Vec<i64> {
+    let n = (cw * chh) as usize;
+    let mut i: usize = 0;
+    while i < n {
+        dist[i] = 1.0e30;
+        prev[i] = -1;
+        i += 1;
+    }
+    let mut hk: Vec<f64> = Vec::new();
+    let mut hv: Vec<i64> = Vec::new();
+    let mut live: usize = 0;
+    dist[src as usize] = 0.0;
+    live = heap_push(hk, hv, live, 0.0, src);
+    let mut end: i64 = -1;
+    let km = 0.256;
+    while live > 0 {
+        let c = hv[0];
+        let dc = hk[0];
+        live = heap_pop(hk, hv, live);
+        if dc <= dist[c as usize] {
+            if c == dst || (stop_at_road && road[c as usize] > 0 && c != src) {
+                end = c;
+                live = 0;
+            } else {
+                let cx = c % cw;
+                let cy = c / cw;
+                let mut k = 0;
+                while k < 8 {
+                    let mut dx: i64 = 0;
+                    let mut dy: i64 = 0;
+                    if k == 0 { dx = 1; }
+                    if k == 1 { dx = -1; }
+                    if k == 2 { dy = 1; }
+                    if k == 3 { dy = -1; }
+                    if k == 4 { dx = 1; dy = 1; }
+                    if k == 5 { dx = -1; dy = 1; }
+                    if k == 6 { dx = 1; dy = -1; }
+                    if k == 7 { dx = -1; dy = -1; }
+                    let nx = cx + dx;
+                    let ny = cy + dy;
+                    if nx >= 1 && ny >= 1 && nx < cw - 1 && ny < chh - 1 {
+                        let q = (ny * cw + nx) as usize;
+                        let wq = water[q];
+                        let mut t = -1.0;
+                        let mut d = km;
+                        if k >= 4 { d = km * 1.4142135623730951; }
+                        if wq == 1 {
+                            if ferry {
+                                t = d / 6.0;
+                                if water[c as usize] != 1 { t = t + 0.4; }
+                            }
+                        } else if wq == 0 {
+                            t = walk_hours(ch[c as usize], ch[q], d);
+                            if water[c as usize] == 1 { t = t + 0.4; }
+                            if criv[q] > 40 && road[q] == 0 { t = t + 0.25; }
+                            if road[q] > 0 { t = t * 0.65; }
+                        }
+                        if t >= 0.0 {
+                            let nd = dc + t;
+                            if nd < dist[q] {
+                                dist[q] = nd;
+                                prev[q] = c;
+                                live = heap_push(hk, hv, live, nd, q as i64);
+                            }
+                        }
+                    }
+                    k += 1;
+                }
+            }
+        }
+    }
+    let mut back: Vec<i64> = Vec::new();
+    if end < 0 { return back; }
+    let mut c = end;
+    while c >= 0 {
+        back.push(c);
+        c = prev[c as usize];
+    }
+    let mut path: Vec<i64> = Vec::new();
+    let mut j = back.len();
+    while j > 0 {
+        j -= 1;
+        path.push(back[j]);
+    }
+    path
+}
+
+fn is_straight(dd: i64, cw: i64) -> bool {
+    dd == 1 || dd == -1 || dd == cw || dd == 0 - cw
+}
+
+// true walking time along a route in hundredths of an hour, with no discount for the road
+pub fn route_hours100(path: Vec<i64>, cw: i64, ch: Vec<f64>, water: Vec<i64>) -> i64 {
+    let mut t = 0.0;
+    let mut i: usize = 1;
+    while i < path.len() {
+        let a = path[i - 1];
+        let b = path[i];
+        let mut d = 0.256;
+        if !is_straight(b - a, cw) { d = 0.256 * 1.4142135623730951; }
+        if water[b as usize] == 1 || water[a as usize] == 1 {
+            t = t + d / 6.0;
+        } else {
+            t = t + walk_hours(ch[a as usize], ch[b as usize], d);
+        }
+        i += 1;
+    }
+    floor(t * 100.0 + 0.5) as i64
+}
+
+pub fn route_km100(path: Vec<i64>, cw: i64) -> i64 {
+    let mut t = 0.0;
+    let mut i: usize = 1;
+    while i < path.len() {
+        if is_straight(path[i] - path[i - 1], cw) { t = t + 0.256; } else { t = t + 0.256 * 1.4142135623730951; }
+        i += 1;
+    }
+    floor(t * 100.0 + 0.5) as i64
+}

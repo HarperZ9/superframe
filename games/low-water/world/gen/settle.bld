@@ -1,0 +1,226 @@
+// Settlements by rule. Ring towns stand about a day's walk apart: one seat for each region that
+// can hold one, then more wherever the nearest town is still too far. Villages fill the gaps and
+// lone houses stand on the high moor. Sites are scored on a grid a quarter the map's resolution.
+
+use noise::rnd;
+
+// Score for building at each coarse point (every fourth cell); negative means no.
+pub fn site_scores(h: Vec<f64>, w: i64, hh: i64, sea: Vec<i64>, lake: Vec<i64>, riv: Vec<i64>, cd: Vec<i64>, score: Vec<f64>, fresh: Vec<f64>) {
+    let cw = w / 4;
+    let ch = hh / 4;
+    let mut cy: i64 = 0;
+    while cy < ch {
+        let mut cx: i64 = 0;
+        while cx < cw {
+            let x = cx * 4 + 2;
+            let y = cy * 4 + 2;
+            let c = (y * w + x) as usize;
+            let k = (cy * cw + cx) as usize;
+            score[k] = -1.0;
+            fresh[k] = 0.0;
+            if sea[c] == 0 && lake[c] == 0 && x > 8 && y > 8 && x < w - 8 && y < hh - 8 {
+                let mut worst = 0.0;
+                let mut rmax: i64 = 0;
+                let mut wetn: i64 = 0;
+                let mut dy: i64 = -4;
+                while dy <= 4 {
+                    let mut dx: i64 = -4;
+                    while dx <= 4 {
+                        let q = ((y + dy) * w + x + dx) as usize;
+                        if dx >= -2 && dx <= 2 && dy >= -2 && dy <= 2 {
+                            let mut d = h[q] - h[c];
+                            if d < 0.0 { d = 0.0 - d; }
+                            if d > worst { worst = d; }
+                            if sea[q] == 1 || lake[q] > 0 { wetn += 1; }
+                        }
+                        if riv[q] > rmax { rmax = riv[q]; }
+                        dx += 1;
+                    }
+                    dy += 1;
+                }
+                let slope = worst / 128.0;
+                if slope < 0.11 && wetn < 9 {
+                    let mut f = (rmax as f64) / 90.0;
+                    if f > 1.0 { f = 1.0; }
+                    let mut s = 1.0 - slope * 7.0 + 0.8 * f - h[c] / 2600.0;
+                    if cd[c] < 10 { s = s + 0.45; }
+                    score[k] = s + 0.1 * rnd(cx, cy, 4242);
+                    fresh[k] = f;
+                }
+            }
+            cx += 1;
+        }
+        cy += 1;
+    }
+}
+
+// what a region asks of its seat, added to the plain score; a large negative forbids
+pub fn seat_bonus(r: i64, x: i64, y: i64, height: f64, cd: i64, fresh: f64, mx: f64, my: f64) -> f64 {
+    let dx = ((x as f64) - mx) / 300.0;
+    let dy = ((y as f64) - my) / 300.0;
+    let centre = 0.0 - sqrt(dx * dx + dy * dy);
+    if r == 4 {
+        if cd > 9 { return -100.0; }
+        return fresh * 1.5 + centre * 0.5;
+    }
+    if r == 7 {
+        if cd > 22 { return -100.0; }
+        return (x as f64) / 80.0;
+    }
+    if r == 8 {
+        if cd > 9 { return -100.0; }
+        return centre;
+    }
+    if r == 11 {
+        if cd > 12 { return -100.0; }
+        return centre * 1.5;
+    }
+    if r == 6 {
+        if height > 12.0 { return -100.0; }
+        return fresh + centre;
+    }
+    if r == 2 {
+        if height < 660.0 || height > 1150.0 { return -100.0; }
+        return fresh + centre * 2.0;
+    }
+    if r == 5 {
+        if height < 300.0 { return -100.0; }
+        return fresh * 2.0 + centre * 2.0;
+    }
+    if r == 9 {
+        if cd < 90 { return -100.0; }
+        return centre * 2.0 + fresh;
+    }
+    centre * 2.0 + fresh * 0.5
+}
+
+// Best coarse point in region r (any region when r is 0) at least `gap` cells from every
+// settlement so far. Returns the coarse index or -1.
+pub fn best_site(r: i64, gap: i64, least: f64, w: i64, hh: i64, score: Vec<f64>, fresh: Vec<f64>, h: Vec<f64>, cd: Vec<i64>, reg: Vec<i64>, sx: Vec<i64>, sy: Vec<i64>, mx: f64, my: f64) -> i64 {
+    let cw = w / 4;
+    let ch = hh / 4;
+    let mut best = least;
+    let mut pick: i64 = -1;
+    let mut cy: i64 = 2;
+    while cy < ch - 2 {
+        let mut cx: i64 = 2;
+        while cx < cw - 2 {
+            let k = (cy * cw + cx) as usize;
+            if score[k] > 0.0 {
+                let x = cx * 4 + 2;
+                let y = cy * 4 + 2;
+                let c = (y * w + x) as usize;
+                if r == 0 || reg[c] == r {
+                    let mut s = score[k];
+                    if r > 0 { s = s + seat_bonus(r, x, y, h[c], cd[c], fresh[k], mx, my); }
+                    if s > best {
+                        let mut ok = true;
+                        let mut i: usize = 0;
+                        while i < sx.len() {
+                            let dx = x - sx[i];
+                            let dy = y - sy[i];
+                            if dx * dx + dy * dy < gap * gap { ok = false; }
+                            i += 1;
+                        }
+                        if ok {
+                            best = s;
+                            pick = k as i64;
+                        }
+                    }
+                }
+            }
+            cx += 1;
+        }
+        cy += 1;
+    }
+    pick
+}
+
+// names, by region, seat first
+pub fn place_name(r: i64, k: i64) -> str {
+    if r == 1 {
+        if k == 0 { return "Hoarstead"; }
+        if k == 1 { return "Thawmere"; }
+        if k == 2 { return "Rookhythe"; }
+        if k == 3 { return "Quillet"; }
+        if k == 4 { return "Embermoss"; }
+        if k == 5 { return "Snowle"; }
+        return "Lanthorn";
+    }
+    if r == 2 {
+        if k == 0 { return "Cloudsill"; }
+        if k == 1 { return "Tarnhead"; }
+        if k == 2 { return "High Fold"; }
+        if k == 3 { return "Corrie Ban"; }
+        if k == 4 { return "Whitehouse Rigg"; }
+        return "Alpenfold";
+    }
+    if r == 3 {
+        if k == 0 { return "Birchwell"; }
+        if k == 1 { return "Mosstair"; }
+        if k == 2 { return "Dimsdale"; }
+        if k == 3 { return "Hallowick"; }
+        if k == 4 { return "Fernshaw"; }
+        if k == 5 { return "Greywood"; }
+        return "Lichgate";
+    }
+    if r == 4 {
+        if k == 0 { return "Gullet"; }
+        if k == 1 { return "Stackness"; }
+        if k == 2 { return "Saltwick"; }
+        if k == 3 { return "Basalt Row"; }
+        if k == 4 { return "Kittiwake"; }
+        return "Spume";
+    }
+    if r == 5 {
+        if k == 0 { return "Rustwater"; }
+        if k == 1 { return "Cottonwood Ford"; }
+        if k == 2 { return "Dry Chapel"; }
+        if k == 3 { return "Banded Hill"; }
+        if k == 4 { return "Sepia"; }
+        if k == 5 { return "Ochre"; }
+        return "Last Motel";
+    }
+    if r == 6 {
+        if k == 0 { return "Reedhall"; }
+        if k == 1 { return "Buffalo Wade"; }
+        if k == 2 { return "Mudhythe"; }
+        if k == 3 { return "Eelmoor"; }
+        if k == 4 { return "Sedge"; }
+        return "Blackpool Ings";
+    }
+    if r == 7 {
+        if k == 0 { return "Overwater"; }
+        if k == 1 { return "Tenter Row"; }
+        return "Farquay";
+    }
+    if r == 8 {
+        if k == 0 { return "Ironmouth"; }
+        if k == 1 { return "Coke Row"; }
+        return "Sinter";
+    }
+    if r == 9 {
+        if k == 0 { return "Plinth"; }
+        if k == 1 { return "Cypress Gate"; }
+        if k == 2 { return "Domefield"; }
+        if k == 3 { return "Colonnade"; }
+        if k == 4 { return "Starfort"; }
+        return "Obelisk Cross";
+    }
+    if r == 10 { return "the Drowned Quarter"; }
+    if r == 12 {
+        if k == 0 { return "the White House"; }
+        if k == 1 { return "Bield"; }
+        if k == 2 { return "Far Shieling"; }
+        if k == 3 { return "Cold Comfort"; }
+        if k == 4 { return "Lamb Hole"; }
+        if k == 5 { return "Tarn Cottage"; }
+        if k == 6 { return "Summer Stead"; }
+        if k == 7 { return "Hafod"; }
+        if k == 8 { return "Windy Gap"; }
+        return "Last House";
+    }
+    if k == 0 { return "Kolvik"; }
+    if k == 1 { return "Pipe End"; }
+    "Whiteout"
+}

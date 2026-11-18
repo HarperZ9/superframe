@@ -1,0 +1,145 @@
+// Priority flood (Barnes, Lehman and Mulla 2014, the epsilon variant): starting from the map edge,
+// always grow from the lowest cell on the frontier. Each cell's filled level is its own height or
+// a hair above the cell it was reached from, so every cell has a strictly downhill way out.
+// The cell it was reached from is its receiver. That makes the drainage a tree by construction:
+// no loops, no uphill step, every path ends at the edge of the map, which is sea.
+
+use noise::rnd;
+
+use heap::heap_push;
+use heap::heap_pop;
+
+// Fills f (level), rcv (receiver cell, -1 at the map edge) and order (cells, lowest first).
+pub fn flood(h: Vec<f64>, w: i64, hh: i64, eps: f64, f: Vec<f64>, rcv: Vec<i64>, order: Vec<i64>) {
+    let n = (w * hh) as usize;
+    let mut hk: Vec<f64> = Vec::new();
+    let mut hv: Vec<i64> = Vec::new();
+    let mut live: usize = 0;
+    let mut i: usize = 0;
+    while i < n {
+        rcv[i] = -2;
+        i += 1;
+    }
+    let mut x: i64 = 0;
+    while x < w {
+        let a = x as usize;
+        let b = ((hh - 1) * w + x) as usize;
+        f[a] = h[a];
+        rcv[a] = -1;
+        live = heap_push(hk, hv, live, h[a], a as i64);
+        f[b] = h[b];
+        rcv[b] = -1;
+        live = heap_push(hk, hv, live, h[b], b as i64);
+        x += 1;
+    }
+    let mut y: i64 = 1;
+    while y < hh - 1 {
+        let a = (y * w) as usize;
+        let b = (y * w + w - 1) as usize;
+        f[a] = h[a];
+        rcv[a] = -1;
+        live = heap_push(hk, hv, live, h[a], a as i64);
+        f[b] = h[b];
+        rcv[b] = -1;
+        live = heap_push(hk, hv, live, h[b], b as i64);
+        y += 1;
+    }
+    let mut cnt: usize = 0;
+    while live > 0 {
+        let c = hv[0];
+        let fc = hk[0];
+        live = heap_pop(hk, hv, live);
+        order[cnt] = c;
+        cnt += 1;
+        let cx = c % w;
+        let cy = c / w;
+        let mut k = 0;
+        while k < 8 {
+            let mut dx: i64 = 0;
+            let mut dy: i64 = 0;
+            if k == 0 { dx = 1; }
+            if k == 1 { dx = -1; }
+            if k == 2 { dy = 1; }
+            if k == 3 { dy = -1; }
+            if k == 4 { dx = 1; dy = 1; }
+            if k == 5 { dx = -1; dy = 1; }
+            if k == 6 { dx = 1; dy = -1; }
+            if k == 7 { dx = -1; dy = -1; }
+            let nx = cx + dx;
+            let ny = cy + dy;
+            if nx >= 0 && ny >= 0 && nx < w && ny < hh {
+                let q = (ny * w + nx) as usize;
+                if rcv[q] == -2 {
+                    rcv[q] = c;
+                    let mut v = h[q];
+                    if v < fc + eps { v = fc + eps; }
+                    f[q] = v;
+                    live = heap_push(hk, hv, live, v, q as i64);
+                }
+            }
+            k += 1;
+        }
+    }
+}
+
+// Second pass: point every cell at its steepest lower neighbour on the filled surface. A lower
+// neighbour always comes earlier in the order, so the tree stays a tree. The slope is weighed by a
+// hashed factor so that long even slopes do not all drain along the eight grid directions.
+pub fn steepest(f: Vec<f64>, w: i64, hh: i64, rcv: Vec<i64>, salt: u32) {
+    let mut y: i64 = 1;
+    while y < hh - 1 {
+        let mut x: i64 = 1;
+        while x < w - 1 {
+            let c = (y * w + x) as usize;
+            let fc = f[c];
+            let mut best = 0.0;
+            let mut pick: i64 = -1;
+            let mut k: i64 = 0;
+            while k < 8 {
+                let mut dx: i64 = 0;
+                let mut dy: i64 = 0;
+                if k == 0 { dx = 1; }
+                if k == 1 { dx = -1; }
+                if k == 2 { dy = 1; }
+                if k == 3 { dy = -1; }
+                if k == 4 { dx = 1; dy = 1; }
+                if k == 5 { dx = -1; dy = 1; }
+                if k == 6 { dx = 1; dy = -1; }
+                if k == 7 { dx = -1; dy = -1; }
+                let q = ((y + dy) * w + x + dx) as usize;
+                let mut drop = fc - f[q];
+                if drop > 0.0 {
+                    if k >= 4 { drop = drop * 0.7071067811865476; }
+                    drop = drop * (0.55 + 0.9 * rnd(c as i64, k, salt));
+                    if drop > best {
+                        best = drop;
+                        pick = q as i64;
+                    }
+                }
+                k += 1;
+            }
+            if pick >= 0 { rcv[c] = pick; }
+            x += 1;
+        }
+        y += 1;
+    }
+}
+
+// Rain-weighted drainage: every cell starts with its own rain and passes the total downstream.
+pub fn accumulate(rain: Vec<f64>, rcv: Vec<i64>, order: Vec<i64>, acc: Vec<f64>) {
+    let n = order.len();
+    let mut i: usize = 0;
+    while i < n {
+        acc[i] = rain[i];
+        i += 1;
+    }
+    i = n;
+    while i > 0 {
+        i -= 1;
+        let c = order[i] as usize;
+        let r = rcv[c];
+        if r >= 0 {
+            acc[r as usize] = acc[r as usize] + acc[c];
+        }
+    }
+}

@@ -1,0 +1,117 @@
+// The lists in world.json: regions, settlements, roads, rivers and landmarks.
+
+use emit::put;
+use emit::put_points;
+use emit::put_coarse;
+use emit::region_name;
+use emit::river_name;
+
+pub fn regions(j: str, rn: Vec<i64>, rx: Vec<i64>, ry: Vec<i64>) ~ FileSystem {
+    let nl = "\n";
+    put(j, "\"regions\":[");
+    let mut r: usize = 1;
+    while r < 12 {
+        let mut cx: i64 = 0;
+        let mut cy: i64 = 0;
+        if rn[r] > 0 {
+            cx = rx[r] / rn[r];
+            cy = ry[r] / rn[r];
+        }
+        let mut sep = ",";
+        if r == 11 { sep = ""; }
+        put(j, format!("{}{{\"id\":{},\"name\":\"{}\",\"cells\":{},\"cx\":{},\"cy\":{}}}{}", nl, r, region_name(r as i64), rn[r], cx, cy, sep));
+        r += 1;
+    }
+    put(j, format!("],{}", nl));
+}
+
+pub fn settlements(j: str, hgt: Vec<f64>, w: i64, sx: Vec<i64>, sy: Vec<i64>, sk: Vec<i64>, sr: Vec<i64>, sn: Vec<str>) ~ FileSystem {
+    let nl = "\n";
+    put(j, "\"settlements\":[");
+    let mut i: usize = 0;
+    while i < sx.len() {
+        let mut kind = "seat";
+        if sk[i] == 1 { kind = "town"; }
+        if sk[i] == 2 { kind = "village"; }
+        if sk[i] == 3 { kind = "house"; }
+        let mut sep = ",";
+        if i + 1 == sx.len() { sep = ""; }
+        let e = floor(hgt[(sy[i] * w + sx[i]) as usize]) as i64;
+        put(j, format!("{}{{\"id\":{},\"name\":\"{}\",\"kind\":\"{}\",\"region\":{},\"x\":{},\"y\":{},\"elev_m\":{}}}{}", nl, i, sn[i], kind, sr[i], sx[i], sy[i], e, sep));
+        i += 1;
+    }
+    put(j, format!("],{}", nl));
+}
+
+pub fn roads(j: str, cw: i64, ra: Vec<i64>, rb: Vec<i64>, rk: Vec<i64>, rkm: Vec<i64>, rhr: Vec<i64>, rpts: Vec<i64>, roff: Vec<i64>) ~ FileSystem {
+    let nl = "\n";
+    put(j, "\"roads\":[");
+    let mut i: usize = 0;
+    while i < ra.len() {
+        let mut kind = "road";
+        if rk[i] == 1 { kind = "path"; }
+        if rk[i] == 2 { kind = "ferry"; }
+        put(j, format!("{}{{\"from\":{},\"to\":{},\"kind\":\"{}\",\"km100\":{},\"hours100\":{},\"pts\":[", nl, ra[i], rb[i], kind, rkm[i], rhr[i]));
+        let mut seg: Vec<i64> = Vec::new();
+        let mut q = roff[i] as usize;
+        while q < (roff[i + 1] as usize) {
+            seg.push(rpts[q]);
+            q += 1;
+        }
+        put_coarse(j, seg, cw);
+        let mut sep = "]},";
+        if i + 1 == ra.len() { sep = "]}"; }
+        put(j, sep);
+        i += 1;
+    }
+    put(j, format!("],{}", nl));
+}
+
+// a line that reaches the sea with 90 km2 of rain behind it gets a name from its region
+pub fn rivers(j: str, w: i64, acc: Vec<f64>, reg: Vec<i64>, pts: Vec<i64>, off: Vec<i64>, ends: Vec<i64>) ~ FileSystem {
+    let nl = "\n";
+    put(j, "\"rivers\":[");
+    let mut named: Vec<i64> = Vec::new();
+    let mut k = 0;
+    while k < 12 {
+        named.push(0);
+        k += 1;
+    }
+    let mut i: usize = 0;
+    while i + 1 < off.len() {
+        let a = off[i] as usize;
+        let b = off[i + 1] as usize;
+        let mut last = b - 1;
+        if b - a > 1 { last = b - 2; }
+        let q = floor(acc[pts[last] as usize] * 0.004096) as i64;
+        let mut end = "sea";
+        if ends[i] == 1 { end = "lake"; }
+        if ends[i] == 2 { end = "join"; }
+        let mut name = "";
+        if ends[i] == 0 && q >= 90 {
+            let rg = reg[pts[last] as usize];
+            name = river_name(rg, named[rg as usize]);
+            named[rg as usize] = named[rg as usize] + 1;
+        }
+        put(j, format!("{}{{\"id\":{},\"name\":\"{}\",\"end\":\"{}\",\"q_km2\":{},\"pts\":[", nl, i, name, end, q));
+        put_points(j, pts, a, b, w);
+        let mut sep = "]},";
+        if i + 2 == off.len() { sep = "]}"; }
+        put(j, sep);
+        i += 1;
+    }
+    put(j, format!("],{}", nl));
+}
+
+pub fn marks(j: str, mk: Vec<str>, mx: Vec<i64>, my: Vec<i64>, mt: Vec<i64>, ms: Vec<i64>, mr: Vec<i64>, mg: Vec<i64>) ~ FileSystem {
+    let nl = "\n";
+    put(j, "\"marks\":[");
+    let mut i: usize = 0;
+    while i < mk.len() {
+        let mut sep = ",";
+        if i + 1 == mk.len() { sep = ""; }
+        put(j, format!("{}{{\"kind\":\"{}\",\"x\":{},\"y\":{},\"tall_m\":{},\"size_m\":{},\"turn_deg\":{},\"region\":{}}}{}", nl, mk[i], mx[i], my[i], mt[i], ms[i], mr[i], mg[i], sep));
+        i += 1;
+    }
+    put(j, format!("]{}}}{}", nl, nl));
+}

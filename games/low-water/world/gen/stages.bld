@@ -1,0 +1,266 @@
+// Stages of the build that need more than one line in main: the cover and region pass, the
+// settlements, the road net and the landmarks.
+
+use noise::gnoise;
+use climate::temperature;
+use climate::biome;
+use climate::region;
+use climate::spread_regions;
+use settle::best_site;
+use settle::place_name;
+use roads::route;
+use roads::route_hours100;
+use roads::route_km100;
+use marks::scatter;
+
+// Cover and region for every cell; region sums go to rn, rx, ry (12 entries each).
+pub fn cover(hgt: Vec<f64>, w: i64, hh: i64, moist: Vec<f64>, plate: Vec<i64>, sea: Vec<i64>, lake: Vec<i64>, acc: Vec<f64>, cd: Vec<i64>, bio: Vec<i64>, reg: Vec<i64>, wx: f64, wy: f64, rn: Vec<i64>, rx: Vec<i64>, ry: Vec<i64>, seed: u32) {
+    let mut y: i64 = 0;
+    while y < hh {
+        let mut x: i64 = 0;
+        while x < w {
+            let c = (y * w + x) as usize;
+            let mut slope = 0.0;
+            if x > 0 && y > 0 && x < w - 1 && y < hh - 1 {
+                let mut a = hgt[c + 1] - hgt[c - 1];
+                let mut b = hgt[c + (w as usize)] - hgt[c - (w as usize)];
+                if a < 0.0 { a = 0.0 - a; }
+                if b < 0.0 { b = 0.0 - b; }
+                if b > a { a = b; }
+                slope = a / 128.0;
+            }
+            let t = temperature(hgt[c], y, hh);
+            let g = gnoise((x as f64) / 37.0, (y as f64) / 37.0, seed.wrapping_add(909));
+            bio[c] = biome(hgt[c], slope, t, moist[c], plate[c], sea[c], lake[c], acc[c], g);
+            reg[c] = 0;
+            if sea[c] == 0 {
+                let dx = (x as f64) * 0.064 - wx;
+                let dy = (y as f64) * 0.064 - wy;
+                let r = region(hgt[c], plate[c], cd[c], (y as f64) * 0.064, dx * dx + dy * dy);
+                reg[c] = r;
+                let ru = r as usize;
+                rn[ru] = rn[ru] + 1;
+                rx[ru] = rx[ru] + x;
+                ry[ru] = ry[ru] + y;
+            }
+            x += 1;
+        }
+        y += 1;
+    }
+    spread_regions(reg, w, hh);
+}
+
+fn add_site(k: i64, kind: i64, w: i64, reg: Vec<i64>, cnt: Vec<i64>, sx: Vec<i64>, sy: Vec<i64>, sk: Vec<i64>, sr: Vec<i64>, sn: Vec<str>) {
+    let cw = w / 4;
+    let x = (k % cw) * 4 + 2;
+    let y = (k / cw) * 4 + 2;
+    let r = reg[(y * w + x) as usize];
+    sx.push(x);
+    sy.push(y);
+    sk.push(kind);
+    sr.push(r);
+    let mut book = r;
+    if kind == 3 { book = 12; }
+    sn.push(place_name(book, cnt[book as usize]));
+    cnt[book as usize] = cnt[book as usize] + 1;
+}
+
+// kinds: 0 seat, 1 ring town, 2 village, 3 lone house
+pub fn settle_all(hgt: Vec<f64>, w: i64, hh: i64, score: Vec<f64>, fresh: Vec<f64>, cd: Vec<i64>, reg: Vec<i64>, rn: Vec<i64>, rx: Vec<i64>, ry: Vec<i64>, sx: Vec<i64>, sy: Vec<i64>, sk: Vec<i64>, sr: Vec<i64>, sn: Vec<str>) {
+    let mut cnt: Vec<i64> = Vec::new();
+    let mut i = 0;
+    while i < 13 {
+        cnt.push(0);
+        i += 1;
+    }
+    let order: Vec<i64> = vec![7, 8, 4, 6, 11, 1, 2, 3, 5, 9];
+    let mut o: usize = 0;
+    while o < order.len() {
+        let r = order[o];
+        let ru = r as usize;
+        if rn[ru] > 0 {
+            let mx = (rx[ru] as f64) / (rn[ru] as f64);
+            let my = (ry[ru] as f64) / (rn[ru] as f64);
+            let mut k = best_site(r, 300, -50.0, w, hh, score, fresh, hgt, cd, reg, sx, sy, mx, my);
+            if k < 0 { k = best_site(r, 150, -50.0, w, hh, score, fresh, hgt, cd, reg, sx, sy, mx, my); }
+            if k >= 0 { add_site(k, 0, w, reg, cnt, sx, sy, sk, sr, sn); }
+        }
+        o += 1;
+    }
+    let mut t = 0;
+    while t < 9 {
+        let k = best_site(0, 380, 1.1, w, hh, score, fresh, hgt, cd, reg, sx, sy, 0.0, 0.0);
+        if k >= 0 { add_site(k, 1, w, reg, cnt, sx, sy, sk, sr, sn); }
+        t += 1;
+    }
+    t = 0;
+    while t < 60 {
+        let k = best_site(0, 100, 0.85, w, hh, score, fresh, hgt, cd, reg, sx, sy, 0.0, 0.0);
+        if k >= 0 { add_site(k, 2, w, reg, cnt, sx, sy, sk, sr, sn); }
+        t += 1;
+    }
+    t = 0;
+    while t < 10 {
+        let ru: usize = 2;
+        if rn[ru] > 0 {
+            let mx = (rx[ru] as f64) / (rn[ru] as f64);
+            let my = (ry[ru] as f64) / (rn[ru] as f64);
+            let k = best_site(2, 70, -50.0, w, hh, score, fresh, hgt, cd, reg, sx, sy, mx, my);
+            if k >= 0 { add_site(k, 3, w, reg, cnt, sx, sy, sk, sr, sn); }
+        }
+        t += 1;
+    }
+}
+
+fn coarse_of(x: i64, y: i64, cw: i64) -> i64 { (y / 4) * cw + x / 4 }
+
+fn keep_route(path: Vec<i64>, a: i64, b: i64, kind: i64, mark: i64, cw: i64, chgt: Vec<f64>, cwat: Vec<i64>, croad: Vec<i64>, ra: Vec<i64>, rb: Vec<i64>, rk: Vec<i64>, rkm: Vec<i64>, rhr: Vec<i64>, rpts: Vec<i64>, roff: Vec<i64>) {
+    let mut wet = false;
+    let mut i: usize = 0;
+    while i < path.len() {
+        let c = path[i] as usize;
+        if cwat[c] == 1 { wet = true; } else if croad[c] == 0 { croad[c] = mark; }
+        rpts.push(path[i]);
+        i += 1;
+    }
+    ra.push(a);
+    rb.push(b);
+    let mut kd = kind;
+    if wet { kd = 2; }
+    rk.push(kd);
+    rkm.push(route_km100(path, cw));
+    rhr.push(route_hours100(path, cw, chgt, cwat));
+    roff.push(rpts.len() as i64);
+}
+
+// Roads between towns (each to its two nearest), then a path from every village and lone house
+// to the nearest road. kinds: 0 road, 1 path, 2 a road with a ferry in it.
+pub fn road_net(w: i64, hh: i64, chgt: Vec<f64>, cwat: Vec<i64>, criv: Vec<i64>, croad: Vec<i64>, sx: Vec<i64>, sy: Vec<i64>, sk: Vec<i64>, sr: Vec<i64>, ra: Vec<i64>, rb: Vec<i64>, rk: Vec<i64>, rkm: Vec<i64>, rhr: Vec<i64>, rpts: Vec<i64>, roff: Vec<i64>) {
+    let cw = w / 4;
+    let chh = hh / 4;
+    let cn = (cw * chh) as usize;
+    let mut dist: Vec<f64> = Vec::new();
+    let mut prev: Vec<i64> = Vec::new();
+    let mut i: usize = 0;
+    while i < cn {
+        dist.push(0.0);
+        prev.push(-1);
+        i += 1;
+    }
+    let ns = sx.len();
+    let mut done: Vec<i64> = Vec::new();
+    roff.push(0);
+    i = 0;
+    while i < ns {
+        if sk[i] <= 1 {
+            // the two nearest other towns
+            let mut n1: i64 = -1;
+            let mut n2: i64 = -1;
+            let mut d1: i64 = 1000000000;
+            let mut d2: i64 = 1000000000;
+            let mut j: usize = 0;
+            while j < ns {
+                if j != i && sk[j] <= 1 {
+                    let dx = sx[i] - sx[j];
+                    let dy = sy[i] - sy[j];
+                    let d = dx * dx + dy * dy;
+                    if d < d1 {
+                        d2 = d1;
+                        n2 = n1;
+                        d1 = d;
+                        n1 = j as i64;
+                    } else if d < d2 {
+                        d2 = d;
+                        n2 = j as i64;
+                    }
+                }
+                j += 1;
+            }
+            let mut pass = 0;
+            while pass < 2 {
+                let mut j2 = n1;
+                if pass == 1 { j2 = n2; }
+                if j2 >= 0 {
+                    let mut lo = i as i64;
+                    let mut hi = j2;
+                    if hi < lo {
+                        lo = j2;
+                        hi = i as i64;
+                    }
+                    let key = lo * 1000 + hi;
+                    let mut dup = false;
+                    let mut q: usize = 0;
+                    while q < done.len() {
+                        if done[q] == key { dup = true; }
+                        q += 1;
+                    }
+                    if !dup {
+                        done.push(key);
+                        let ju = j2 as usize;
+                        let ferry = sr[i] == 7 || sr[i] == 10 || sr[ju] == 7 || sr[ju] == 10;
+                        let path = route(coarse_of(sx[i], sy[i], cw), coarse_of(sx[ju], sy[ju], cw), cw, chh, chgt, cwat, criv, croad, ferry, false, dist, prev);
+                        if path.len() > 1 { keep_route(path, i as i64, j2, 0, 1, cw, chgt, cwat, croad, ra, rb, rk, rkm, rhr, rpts, roff); }
+                    }
+                }
+                pass += 1;
+            }
+        }
+        i += 1;
+    }
+    i = 0;
+    while i < ns {
+        if sk[i] >= 2 {
+            let mut n1: i64 = -1;
+            let mut d1: i64 = 1000000000;
+            let mut j: usize = 0;
+            while j < ns {
+                if sk[j] <= 1 && (sr[j] != 7) == (sr[i] != 7) {
+                    let dx = sx[i] - sx[j];
+                    let dy = sy[i] - sy[j];
+                    let d = dx * dx + dy * dy;
+                    if d < d1 {
+                        d1 = d;
+                        n1 = j as i64;
+                    }
+                }
+                j += 1;
+            }
+            if n1 >= 0 {
+                let ju = n1 as usize;
+                let path = route(coarse_of(sx[i], sy[i], cw), coarse_of(sx[ju], sy[ju], cw), cw, chh, chgt, cwat, criv, croad, false, true, dist, prev);
+                if path.len() > 1 { keep_route(path, i as i64, n1, 1, 2, cw, chgt, cwat, croad, ra, rb, rk, rkm, rhr, rpts, roff); }
+            }
+        }
+        i += 1;
+    }
+}
+
+// The coarse grid the roads run on: height at the centre of each 4 x 4 block, water
+// (0 land, 1 sea, 2 lake) and the largest river class in the block.
+pub fn coarsen(hgt: Vec<f64>, w: i64, hh: i64, sea: Vec<i64>, lake: Vec<i64>, riv: Vec<i64>, chgt: Vec<f64>, cwat: Vec<i64>, criv: Vec<i64>) {
+    let cw = w / 4;
+    let cn = chgt.len();
+    let mut k: usize = 0;
+    while k < cn {
+        let x = ((k as i64) % cw) * 4 + 2;
+        let y = ((k as i64) / cw) * 4 + 2;
+        let q = (y * w + x) as usize;
+        chgt[k] = hgt[q];
+        cwat[k] = 0;
+        if sea[q] == 1 { cwat[k] = 1; }
+        if lake[q] > 0 { cwat[k] = 2; }
+        let mut m: i64 = 0;
+        let mut dy: i64 = -2;
+        while dy < 2 {
+            let mut dx: i64 = -2;
+            while dx < 2 {
+                let v = riv[((y + dy) * w + x + dx) as usize];
+                if v > m { m = v; }
+                dx += 1;
+            }
+            dy += 1;
+        }
+        criv[k] = m;
+        k += 1;
+    }
+}

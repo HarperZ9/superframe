@@ -1,0 +1,54 @@
+// Stream-power erosion against uplift (the implicit scheme of Braun and Willett 2013, n = 1).
+// Each round: flood for receivers, gather drainage, then set every cell from its receiver,
+// downstream first:  h = (filled + uplift + k * h_receiver) / (1 + k),  k = K * erodibility * sqrt(area) / step.
+// Pits fill with sediment each round; a light slope diffusion rounds the hillsides.
+
+use flood::flood;
+use flood::accumulate;
+use flood::steepest;
+
+pub fn erode(h: Vec<f64>, w: i64, hh: i64, target: Vec<f64>, kmul: Vec<f64>, rain: Vec<f64>, rounds: i64, ke: f64, f: Vec<f64>, rcv: Vec<i64>, order: Vec<i64>, acc: Vec<f64>) {
+    let n = (w * hh) as usize;
+    let mut it: i64 = 0;
+    while it < rounds {
+        flood(h, w, hh, 0.00002, f, rcv, order);
+        steepest(f, w, hh, rcv, 7919 + (it as u32));
+        accumulate(rain, rcv, order, acc);
+        let mut i: usize = 0;
+        while i < n {
+            let c = order[i] as usize;
+            let r = rcv[c];
+            if r >= 0 && h[c] > 0.0 {
+                let ru = r as usize;
+                let d = (r - (c as i64));
+                let mut step = 1.4142135623730951;
+                if d == 1 || d == -1 || d == w || d == 0 - w { step = 1.0; }
+                let k = ke * kmul[c] * sqrt(acc[c]) / step;
+                let mut hr = h[ru];
+                if hr < 0.0 { hr = 0.0; }
+                let up = ke * kmul[c] * target[c] / 9.0;
+                let mut v = (f[c] + up + k * hr) / (1.0 + k);
+                if v < 0.2 { v = 0.2; }
+                h[c] = v;
+            }
+            i += 1;
+        }
+        // slope diffusion, land only
+        let mut y: i64 = 1;
+        while y < hh - 1 {
+            let mut x: i64 = 1;
+            while x < w - 1 {
+                let c = (y * w + x) as usize;
+                if h[c] > 0.0 {
+                    let a = (h[c - 1] + h[c + 1] + h[c - (w as usize)] + h[c + (w as usize)]) * 0.25;
+                    let mut v = h[c] + 0.10 * (a - h[c]);
+                    if v < 0.2 { v = 0.2; }
+                    h[c] = v;
+                }
+                x += 1;
+            }
+            y += 1;
+        }
+        it += 1;
+    }
+}

@@ -1,0 +1,58 @@
+// Writers. buildc 1.4.0 has no byte-string constructor, so rasters go out as plain PGM (P2):
+// a real image format, read by the page and by the checks with a short parser.
+
+// value = round((v + bias) * scale), clamped to 16 bits; returns an FNV-1a hash of the values
+pub fn pgm16(path: str, v: Vec<f64>, w: i64, h: i64, scale: f64, bias: f64) -> u64 ~ FileSystem {
+    let ok = write_file(path, format!("P2\n{} {}\n65535\n", w, h));
+    let n = (w * h) as usize;
+    let mut hash: u64 = 14695981039346656037;
+    let mut i: usize = 0;
+    let mut line = "";
+    let mut k = 0;
+    while i < n {
+        let mut q = floor((v[i] + bias) * scale + 0.5) as i64;
+        if q < 0 { q = 0; }
+        if q > 65535 { q = 65535; }
+        hash = (hash ^ (q as u64)).wrapping_mul(1099511628211);
+        line = format!("{}{} ", line, q);
+        k += 1;
+        if k == 256 {
+            let a = append_file(path, format!("{}\n", line));
+            line = "";
+            k = 0;
+        }
+        i += 1;
+    }
+    if k > 0 {
+        let b = append_file(path, format!("{}\n", line));
+    }
+    hash
+}
+
+// small integers (classes, ids), one PGM value each
+pub fn pgm8(path: str, v: Vec<i64>, w: i64, h: i64) -> u64 ~ FileSystem {
+    let ok = write_file(path, format!("P2\n{} {}\n255\n", w, h));
+    let n = (w * h) as usize;
+    let mut hash: u64 = 14695981039346656037;
+    let mut i: usize = 0;
+    let mut line = "";
+    let mut k = 0;
+    while i < n {
+        let mut q = v[i];
+        if q < 0 { q = 0; }
+        if q > 255 { q = 255; }
+        hash = (hash ^ (q as u64)).wrapping_mul(1099511628211);
+        line = format!("{}{} ", line, q);
+        k += 1;
+        if k == 512 {
+            let a = append_file(path, format!("{}\n", line));
+            line = "";
+            k = 0;
+        }
+        i += 1;
+    }
+    if k > 0 {
+        let b = append_file(path, format!("{}\n", line));
+    }
+    hash
+}

@@ -1,0 +1,58 @@
+# The world
+
+Low Water as one continuous island, generated from a seed. The island measures 131 km by 98 km on a grid of 2048 by 1536 cells, 64 m to a cell. It holds eleven regions, a river system, lakes, fifteen ring towns a day's walk apart, sixty villages, the roads between them and the landmarks that give each region its skyline.
+
+The canonical seed is `20261118`.
+
+## Make a world
+
+The generator is BuildLang (`gen/`). Build it with buildc 1.15.0 or later, then run it with a seed and an output folder.
+
+```bash
+buildc build --release games/low-water/world/gen
+mkdir -p games/low-water/world/out/20261118
+games/low-water/world/gen/target/release/main 20261118 games/low-water/world/out/20261118
+```
+
+A run takes about 30 seconds on one core and prints the time of each stage.
+
+## What it writes
+
+| File | Holds |
+|---|---|
+| `height.pgm` | ground height, 16 codes to the metre, code = (metres + 512) x 16 |
+| `water.pgm` | water surface in the same code, 0 where the ground is dry |
+| `river.pgm` | river class, 8 x sqrt(drainage in km2), 0 where there is no river |
+| `moist.pgm` | rain share, 0 to 255 |
+| `biome.pgm` | ground cover, 0 to 13 (the list is in `gen/climate.bld`) |
+| `region.pgm` | region, 1 to 11, spread over the sea so weather has no hole |
+| `world.json` | regions, settlements, roads with walking hours, river lines, landmarks, checks |
+
+The rasters are plain PGM text. buildc's file writer takes strings and a string cannot hold a zero byte, so a binary raster is a compiler gap, recorded here as language debt. `pgm.mjs` reads them in node and in the browser.
+
+## How the island is made
+
+1. **Tectonic sketch** (`tect.bld`). Five plates, each a handful of seeds moved by the world seed. Where two plates meet the ground lifts: the long north-south range stands on the boundary of the west foreland and the east block. The south-west plate sinks and becomes the delta. A city island stands across a strait from the bay.
+2. **Erosion** (`erode.bld`, `flood.bld`). Thirty rounds of stream-power erosion against uplift. Each round floods the surface from the sea inward, which gives every cell a downhill way out, then cuts each cell toward its receiver in proportion to the square root of its drainage.
+3. **Water** (`hydro.bld`). Four overdeepened valley reaches become long lakes. Kettle ponds open on the northern shield and pools in the marsh. A last flood finds every basin and its spill level.
+4. **Climate** (`climate.bld`). Temperature falls to the north and with height. Rain arrives on a west wind and is spent on the climb, so the east block sits in a rain shadow.
+5. **Cover and regions** (`climate.bld`, `stages.bld`). Cover follows temperature, rain, slope and height. Regions follow plate, height and shore.
+6. **Settlements and roads** (`settle.bld`, `roads.bld`). One seat for each region that can hold one, then ring towns where the nearest is too far, villages, and lone houses on the high moor. Roads are least-time routes under Tobler's hiking function.
+7. **Landmarks** (`landmarks.bld`). Vernacular, monument and megastructure masses placed by rule, up to the 1,200 m Tower of the monument ground.
+
+Every step uses integer hashing and the operations `+ - * / sqrt floor` only, the rule of `design/DETMATH.md`, so a seed gives the same bytes on any machine.
+
+## Checks
+
+```bash
+BUILDC=buildc node --test games/low-water/world/tests/world.test.mjs
+```
+
+- **Determinism.** Two runs of one seed give byte-identical files. A second seed gives a different terrain.
+- **Hydrology.** Along every river line the water surface never rises, and the line ends in the sea, in a lake or on another line that does. The control builds the same world with one river bed raised 40 m; the generator's own check and the file check must both fail on it.
+- **Scale.** The test prints the walking time of every road between ring towns. For seed 20261118 the median is 5.9 hours over 29 km, the shortest 2.3 hours with the ferry and the longest 12.1 hours.
+- **Regions.** All eleven exist, each with its seat and its landmark kinds.
+
+## Language
+
+The generator is BuildLang. The raster reader and the checks are JavaScript modules run by node, the form every other Low Water test takes. The debt: binary output from BuildLang, and the checks themselves, which could move once buildc can read a file of this size quickly.
