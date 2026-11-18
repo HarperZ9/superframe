@@ -18,6 +18,11 @@ inline PostParamsGpu params(int w, int h, double tanHalf, double aspect, double 
             {float(tanHalf), float(aspect), float(nearZ), float(g.radius)}, {float(s.maxDistance), float(s.thickness), 0, 0},
             {taa::kBlend, taa::kClipSigma, 0, 0}};
 }
+// The workgroup counts (x, y) of a post pass over n pixels: rows of 32,768 groups, so a frame
+// of more than 4,194,240 pixels (3840 x 2160 is 8,294,400) stays inside
+// rhi::kMaxDispatchGroups. The passes index gid.x + gid.y * 2,097,152, as the style passes do.
+inline uint32_t postGroupsX(uint32_t n) { const uint32_t g = (n + 63) / 64; return g < 32768u ? g : 32768u; }
+inline uint32_t postGroupsY(uint32_t n) { return ((n + 63) / 64 + 32767u) / 32768u; }
 inline std::vector<float> pack(const post::ViewGBuffer& v) {
     std::vector<float> g(std::size_t(v.w) * v.h * 8, 0.0f);
     for (std::size_t i = 0; i < std::size_t(v.w) * v.h; ++i) {

@@ -117,6 +117,7 @@ int giReferenceCommand(int argc, char** argv) {
     d.width = 512; d.height = 320; d.spp = 256; d.maxBounces = 8; d.seed = 1; d.jitter = false;
     bool cpu = false;
     int threads = 3;
+    std::uint32_t slice = 16;
     std::vector<const char*> rest{argv[0]};
     for (int i = 1; i < argc; ++i) {
         const std::string a = argv[i];
@@ -129,6 +130,7 @@ int giReferenceCommand(int argc, char** argv) {
         else if (a == "--seed" && more) d.seed = std::strtoull(argv[++i], nullptr, 10);
         else if (a == "--cpu") cpu = true;
         else if (a == "--jitter") d.jitter = true;
+        else if (a == "--slice" && more) slice = std::uint32_t(std::max(1, std::atoi(argv[++i])));
         else if (a == "--threads" && more) threads = std::max(1, std::atoi(argv[++i]));
         else {
             if ((a == "--width" || a == "--height") && more) (a == "--width" ? d.width : d.height) = std::atoi(argv[i + 1]);
@@ -162,7 +164,7 @@ int giReferenceCommand(int argc, char** argv) {
     std::string why;
     rhi::Device* dev = cpu ? nullptr : rhi::device(why);
     const auto t0 = std::chrono::steady_clock::now();
-    const rt::PathTraceOutput o = dev ? gpu_check::pathTraceGpu(*dev, s, d) : rt::pathTraceCpu(s, d, threads);
+    const rt::PathTraceOutput o = dev ? gpu_check::pathTraceGpu(*dev, s, d, slice) : rt::pathTraceCpu(s, d, threads);
     const double ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
     if (!o.error.empty()) { std::printf("gi-reference: %s\n", o.error.c_str()); return 2; }
     const bool ok = writePfm(ptDir + "/radiance.pfm", o.width, o.height, 3, o.radiance) && writePfm(ptDir + "/variance.pfm", o.width, o.height, 1, o.variance)
