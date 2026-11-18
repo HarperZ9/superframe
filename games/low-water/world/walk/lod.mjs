@@ -1,9 +1,9 @@
 // Which terrain nodes to draw, by CDLOD selection (Strugar 2009). The island is a quadtree of
-// square nodes from 32.8 km down to 128 m, whose vertices stand 4 m apart. A node is drawn at level L when it lies inside level L's
+// square nodes from 32.8 km down to 32 m, whose vertices stand 1 m apart under the walker. A node is drawn at level L when it lies inside level L's
 // range and outside level L-1's; a child that falls outside the finer range is drawn at its
 // parent's density: it is sent with its own level, and the vertex shader has already slid every
 // vertex that far out onto the coarser grid.
-export const RANGE0 = 250, LEAF = 128, LEVELS = 9;
+export const RANGE0 = 62.5, LEAF = 32, LEVELS = 11;
 export const rangeOf = (level) => RANGE0 * 2 ** level;
 
 // six planes from a column-major view-projection matrix with reversed infinite depth

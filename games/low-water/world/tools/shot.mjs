@@ -75,28 +75,56 @@ try {
     }
     return at;
   } };
-  const all = viewsFor(worldJson, probe), pick = !opt.views || opt.views === "all" ? all : opt.views.split(",").map((n) => all.find((v) => v.name === n) || (() => { throw new Error(`no view ${n}; have ${all.map((v) => v.name).join(", ")}`); })());
-  await send("Page.navigate", { url: `http://127.0.0.1:${port}/world/walk/index.html?still=1&world=${worldDir}&quality=${opt.quality || 1}${opt.hud ? "" : "&nohud=1"}` });
-  let ready = false;
+  const all = viewsFor(worldJson, probe), pick = opt.at ? [] : !opt.views || opt.views === "all" ? all : opt.views.split(",").map((n) => all.find((v) => v.name === n) || (() => { throw new Error(`no view ${n}; have ${all.map((v) => v.name).join(", ")}`); })());
+  // --at "name:x,z,alt,yaw,pitch,clock,day;name:..." (km, m, degrees, hours) draws views of your own
+  if (opt.at) for (const [i, part] of opt.at.split(";").entries()) { const named = part.includes(":"), [x, z, alt, yaw, pitch, clock, day, fov] = (named ? part.split(":")[1] : part).split(",").map(Number); pick.push({ name: named ? part.split(":")[0] : opt.name || `at${i}`, fly: alt > 2.5, x, z, alt, yaw, pitch, clock, day: day ?? 3, fov: fov || 60 }); }
+  await send("Page.navigate", { url: `http://127.0.0.1:${port}/world/walk/index.html?still=1&world=${worldDir}&quality=${opt.quality || 1}${opt.hud ? "" : "&nohud=1"}${opt.query ? "&" + opt.query : ""}` });
+  let ready = false, said = "";
   for (let i = 0; i < 1200 && !ready; i++) {
     await sleep(250);
     const s = await ev("globalThis.__lwWorldError ? 'error: ' + globalThis.__lwWorldError : (globalThis.__lwWorld ? 'ready' : document.getElementById('note')?.textContent || '')");
     if (s.startsWith("error")) throw new Error(s);
+    if (opt.verbose && s !== said) { said = s; console.log(`  page: ${s}`); }
     ready = s === "ready";
   }
   if (!ready) throw new Error(`the page did not start; ${logs.join(" | ")}`);
   if (!opt.hud) await ev("document.getElementById('hud').hidden = true");
+  // --probe EXPR prints what a JavaScript expression gives in the page (for finding a place to stand)
+  if (opt.probe) console.log(JSON.stringify(await ev(opt.probe)));
   const record = { adapter: null, gpu, size: [w, h], quality: +(opt.quality || 1), cpuBefore: await cpuLoad(), gpuBefore: gpuLoad(), views: [] };
   for (const v of pick) {
     await ev(`globalThis.__lwWorld.view(${JSON.stringify({ ...v, hold: true })})`);
     let st = await ev("globalThis.__lwWorld.settle(4)");
     if (opt.perf) { await ev("globalThis.__lwWorld.clearGaps()"); await sleep(+opt.perf * 1000); st = await ev("globalThis.__lwWorld.stats()"); }
+    // --bench N: the time the GPU takes to finish N frames drawn back to back, with no wait for the display
+    let bench = null;
+    if (opt.bench) { bench = { ms: await ev(`globalThis.__lwWorld.bench(${+opt.bench || 120})`), gpuLoad: gpuLoad() }; await ev("globalThis.__lwWorld.settle(3)"); console.log(`  ${v.name}: ${bench.ms} ms a frame over ${+opt.bench || 120} frames, the GPU at ${bench.gpuLoad} before the run ended`); }
     // the page hands over its own canvas: a screenshot of a page drawn on the CPU adapter can come back blank
     const png = opt.hud ? (await send("Page.captureScreenshot", { format: "png" })).result.data : (await ev("globalThis.__lwWorld.grab()")).split(",")[1];
     await writeFile(join(out, `${v.name}.png`), Buffer.from(png, "base64"));
+    if (opt.after) console.log(v.name, JSON.stringify(await ev(opt.after)));
     record.adapter = st.adapter;
-    record.views.push({ name: v.name, region: st.region, air: st.air, part: st.part, nodes: st.nodes, triangles: st.triangles, trees: st.trees, frameMs: opt.perf ? st.frameMs : null, p95: opt.perf ? st.p95 : null });
+    record.views.push({ bench, name: v.name, region: st.region, air: st.air, part: st.part, nodes: st.nodes, triangles: st.triangles, trees: st.trees, frameMs: opt.perf ? st.frameMs : null, p95: opt.perf ? st.p95 : null });
     console.log(`${v.name}: region ${st.region}, ${st.air}, ${st.part}; ${st.nodes} nodes, ${st.triangles} triangles${opt.perf ? `; ${st.frameMs} ms a frame (p95 ${st.p95})` : ""}`);
+  }
+  // --walk "name:x0,z0,x1,z1,clock,day,seconds,speed[,road]": a walk at a steady 30 frames a second, written as
+  // <name>.webm. From (x0, z0) toward (x1, z1) in km, or along the nearest road when the last word is "road".
+  if (opt.walk) for (const part of opt.walk.split(";")) {
+    const [name, rest] = part.split(":"), f = rest.split(","), [x0, z0, x1, z1, clock, day, seconds, speed] = f.map(Number), onRoad = f[8] === "road";
+    await ev(`(() => { const W = globalThis.__lwWorld, a = [${x0 * 1000}, ${z0 * 1000}], b = [${x1 * 1000}, ${z1 * 1000}], len = ${seconds * speed + 40};
+      let pts = ${onRoad} ? W.roads.walkFrom(a[0], a[1], len) : null;
+      if (pts && Math.hypot(pts[pts.length - 1][0] - b[0], pts[pts.length - 1][1] - b[1]) > Math.hypot(pts[0][0] - b[0], pts[0][1] - b[1]) + len * 0.5) pts = null;
+      if (!pts) { const d = Math.hypot(b[0] - a[0], b[1] - a[1]); pts = []; for (let s = 0; s <= len; s += 3) pts.push([a[0] + (b[0] - a[0]) * s / d, a[1] + (b[1] - a[1]) * s / d]); }
+      W.view({ x: pts[0][0] / 1000, z: pts[0][1] / 1000, alt: 1.7, fly: false, pitch: 2, clock: ${clock}, day: ${day}, hold: false }); W.time.rate = 1; W.walk(pts, ${speed}); })()`);
+    await ev("globalThis.__lwWorld.settle(6)"); await ev("globalThis.__lwWorld.hold(true)");
+    const ffRoot = `${process.env.LOCALAPPDATA}/ms-playwright`, ff = opt.ffmpeg || `${ffRoot}/${(await readdir(ffRoot)).filter((d) => d.startsWith("ffmpeg-")).sort().at(-1)}/ffmpeg-win64.exe`;
+    const enc = spawn(ff, ["-loglevel", "error", "-f", "image2pipe", "-avioflags", "direct", "-fpsprobesize", "0", "-probesize", "32", "-analyzeduration", "0", "-c:v", "mjpeg", "-i", "pipe:0", "-y", "-an", "-r", "30", "-c:v", "libvpx-vp9", "-crf", "42", "-b:v", "0", "-deadline", "realtime", "-cpu-used", "8", "-row-mt", "1", join(out, `${name}.webm`)], { stdio: ["pipe", "ignore", "inherit"], windowsHide: true });
+    const frames = Math.round(seconds * 30), t0 = performance.now(); let dead = false; enc.setMaxListeners(0); enc.on("close", () => { dead = true; }); enc.stdin.on("error", () => { dead = true; });
+    for (let i = 0; i < frames && !dead; i++) { const url = await ev("globalThis.__lwWorld.step(1 / 30, 'image/jpeg', 0.93)"); if (!enc.stdin.write(Buffer.from(url.split(",")[1], "base64"))) await Promise.race([new Promise((r) => enc.stdin.once("drain", r)), new Promise((r) => enc.once("close", r))]); }
+    enc.stdin.end(); if (!dead) await new Promise((r) => enc.on("close", r));
+    if (!existsSync(join(out, `${name}.webm`))) throw new Error(`walk: the encoder stopped before ${name}.webm was written`);
+    await ev("globalThis.__lwWorld.hold(false)");
+    console.log(`${name}.webm: ${frames} frames of a ${seconds} s walk at ${speed} m/s, captured in ${((performance.now() - t0) / 1000).toFixed(0)} s`);
   }
   record.cpuAfter = await cpuLoad(); record.gpuAfter = gpuLoad(); record.log = logs.slice(0, 20);
   await writeFile(join(out, "record.json"), JSON.stringify(record, null, 1));

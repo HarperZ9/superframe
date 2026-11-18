@@ -142,7 +142,7 @@ export function skyEvents(seed, w, zNorth01, day, clockHours) {
     const flash = hash(seed, 7400 + i, Math.floor((day * 24 + clockHours) * 3600 / 4)) < 0.25 ? 1 : 0;   // one strike in four, every four seconds
     cells.push({ bearing: a, drift: t, range: 14000 + 20000 * hash(seed, 7500 + i, day), flash });
   }
-  return { night, aurora: clamp(aurora), halo: clamp(halo), comet: clamp(comet), cells, moon: m, stars: night * (1 - clamp(w.cover * 1.3)) };
+  return { night, aurora: clamp(aurora), halo: clamp(halo), comet: clamp(comet), cells, moon: m, stars: night * (1 - clamp(w.cover * 1.6)) ** 2 * (1 - clamp(w.snow * 3 + w.rain * 3)) };
 }
 
 // ---------------------------------------------------------------- one call for a frame
