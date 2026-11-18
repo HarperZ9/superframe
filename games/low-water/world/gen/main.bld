@@ -1,6 +1,8 @@
 // Low Water world generator. One seed, one island, the same bytes every time.
 //   main.exe <seed> <out dir> [plant]
 // "plant" raises one river bed after the world is built, so the hydrology check has a fault to find.
+//   main.exe tiles <world dir> [seed] binary tiles from a world's PGM rasters (the converter)
+//   main.exe tiles-check <world dir>  decode every tile and compare it with the PGM rasters
 mod noise;
 mod heap;
 mod tect;
@@ -17,6 +19,7 @@ mod landmarks;
 mod emit;
 mod report;
 mod out;
+mod tile;
 
 fn zeros(n: usize) -> Vec<f64> {
     let mut v: Vec<f64> = Vec::new();
@@ -38,8 +41,68 @@ fn izeros(n: usize) -> Vec<i64> {
     v
 }
 
-fn main() ~ Console + FileSystem + Environment + Clock {
+// The six rasters of a written world, as codes. Empty when one is missing or the wrong size.
+fn load_codes(dir: str, w: i64, h: i64) -> Vec<Vec<i64>> ~ Console + FileSystem {
+    let mut all: Vec<Vec<i64>> = Vec::new();
+    let names = ["height", "water", "moist", "river", "biome", "region"];
+    let mut k: usize = 0;
+    while k < 6 {
+        let v = tile::read_pgm(format!("{}/{}.pgm", dir, names[k]), w, h);
+        if v.len() == 0 {
+            println!("tiles: {}/{}.pgm is missing or not a {} x {} PGM", dir, names[k], w, h);
+            let none: Vec<Vec<i64>> = Vec::new();
+            return none;
+        }
+        all.push(v);
+        k += 1;
+    }
+    all
+}
+
+// `tiles` and `tiles-check`: the converter from the text rasters, and the decode check.
+fn tiles_mode(mode: str, dir: str) ~ Console + FileSystem + Environment + Process {
+    let w: i64 = 2048;
+    let h: i64 = 1536;
+    let c = load_codes(dir, w, h);
+    if c.len() != 6 {
+        exit(1);
+    }
+    let tdir = dir;
+    if mode == "tiles" {
+        // the seed only labels the header; world.json holds it
+        let seed = if args_count() > 3 { args_get(3).parse_int() as u32 } else { 0 };
+        let all = tile::write_all(tdir, seed, w, h, c[0], c[1], c[2], c[3], c[4], c[5]);
+        println!("tiles {}", all);
+        if all == 0 { exit(1); }
+        return;
+    }
+    let cols = tile::count(w);
+    let rows = tile::count(h);
+    let mut bad: i64 = 0;
+    let mut r: i64 = 0;
+    while r < rows {
+        let mut q: i64 = 0;
+        while q < cols {
+            let m = tile::check(format!("{}/t_{}_{}.lwt", tdir, q, r), w, h, c[0], c[1], c[2], c[3], c[4], c[5]);
+            if m != 0 {
+                println!("tile {} {}: {}", q, r, if m < 0 { "bad header or hash".to_string() } else { format!("{} values differ", m) });
+                bad += 1;
+            }
+            q += 1;
+        }
+        r += 1;
+    }
+    println!("tiles checked {}  failing {}", cols * rows, bad);
+    if bad > 0 { exit(1); }
+}
+
+fn main() ~ Console + FileSystem + Environment + Clock + Process {
     let t0 = clock_ms();
+    let mode = args_get(1);
+    if mode == "tiles" || mode == "tiles-check" {
+        tiles_mode(mode, args_get(2));
+        return;
+    }
     let seed = args_get(1).parse_int() as u32;
     let dir = args_get(2);
     let plant = args_count() > 3;
@@ -229,11 +292,12 @@ fn main() ~ Console + FileSystem + Environment + Clock {
     let hr = out::pgm8(format!("{}/river.pgm", dir), riv, w, h);
     let hb = out::pgm8(format!("{}/biome.pgm", dir), bio, w, h);
     let hg = out::pgm8(format!("{}/region.pgm", dir), reg, w, h);
+    let ht = tile::write_all(dir, seed, w, h, tile::code16(hgt, n, 16.0, 512.0), tile::code16(wat, n, 16.0, 512.0), tile::code16(moist, n, 255.0, 0.0), riv, bio, reg);
     let j = format!("{}/world.json", dir);
     let nl = "\n";
     let ok = write_file(j, format!("{{\"format\":\"low-water-world/1\",\"seed\":{},\"width\":{},\"height\":{},\"cell_m\":64,\"sea_level_m\":0,{}", seed, w, h, nl));
     emit::put(j, format!("\"height_code\":{{\"scale\":16,\"bias\":512}},{}", nl));
-    emit::put(j, format!("\"hash\":{{\"height\":\"{}\",\"water\":\"{}\",\"moist\":\"{}\",\"river\":\"{}\",\"biome\":\"{}\",\"region\":\"{}\"}},{}", hh, hw, hm, hr, hb, hg, nl));
+    emit::put(j, format!("\"hash\":{{\"height\":\"{}\",\"water\":\"{}\",\"moist\":\"{}\",\"river\":\"{}\",\"biome\":\"{}\",\"region\":\"{}\",\"tiles\":\"{}\"}},{}", hh, hw, hm, hr, hb, hg, ht, nl));
     emit::put(j, format!("\"checks\":{{\"hydrology_faults\":{},\"river_lines\":{},\"lakes\":{},\"long_lakes\":{},\"planted\":{}}},{}", faults, lines, lakes, long_lakes, plant, nl));
     emit::put(j, format!("\"works_anchor\":[{},{}],\"isle_centre\":[{},{}],{}", floor(wx / cell) as i64, floor(wy / cell) as i64, floor(ix) as i64, floor(iy) as i64, nl));
     report::regions(j, rn, rx, ry);

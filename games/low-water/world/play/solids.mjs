@@ -32,8 +32,9 @@ export function makeSolids({ ground, maxCells = 4096 } = {}) {
     return out;
   }
   const scratch = [];
-  // drawn triangles the camera keeps clear of (play/geocheck.mjs makeTriangleGrid): what a house's
-  // walls and roof leave out, its signs, clutter, cables and people, is in the mesh
+  // drawn triangles kept clear of (play/geocheck.mjs makeTriangleGrid): what a house's walls and roof
+  // leave out, its signs, clutter, cables and people, is in the mesh. A grid marked cameraOnly (the
+  // trees' lower branches) stops the camera and not the walker.
   const meshes = [];
   // signed distance from a point to the nearest solid (not the ground); negative inside a shape,
   // never negative for a mesh (its distance is unsigned)
@@ -76,6 +77,7 @@ export function makeSolids({ ground, maxCells = 4096 } = {}) {
       }
       if (!moved) break;
     }
+    for (const g of meshes) { if (g.cameraOnly) continue; const q = g.pushOut(x, z, r, y0, y1); if (q[2]) { x = q[0]; z = q[1]; touched = true; } }
     return [x, z, touched];
   }
   // is a point inside a solid, or within `pad` of one, or under the ground

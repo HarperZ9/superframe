@@ -100,6 +100,12 @@ fn treeSurface(v: TOut, front: bool) -> Surf {
     let thin = v.m.z < 0.2 || v.m.z > 1.3;
     if (thin && lod > 5.2) { discard; }
     if (textureSampleLevel(atlasTex, rsamp, v.uv, min(lod, select(1.4, 1.6, thin))).a < 0.33) { discard; }
+    // A card's own outline must never show: the foliage is eaten back from every edge of its cell
+    // by a ragged noise, so a crown seen from below is a mass of sprays and not a stack of boards.
+    let local = fract(v.uv * 4.0);
+    let edge = min(min(local.x, 1.0 - local.x), min(local.y, 1.0 - local.y));
+    let rag = vnoise(local * 7.0 + floor(v.uv * 4.0) * 3.1 + v.m.y * 13.0) * 0.6 + vnoise(local * 19.0 + v.m.y * 5.0) * 0.4;
+    if (edge < 0.04 + 0.24 * rag) { discard; }
     s.alb = tx.rgb;
     if (v.m.y >= 2.0) { s.alb = vec3f(lum(tx.rgb)) * vec3f(0.95, 0.90, 0.84); }   // dead twigs: grey
     else { s.alb *= 0.78 + 0.5 * fract(v.m.y * 7.31 + v.inst.x * 3.7); }

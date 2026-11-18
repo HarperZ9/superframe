@@ -10,7 +10,7 @@ import { ortho } from "../mat.mjs";
 import { FRAME_FLOATS, OFF, DEPTH } from "../stage.mjs";
 
 const CELL = 32, STEP = 4, NEAR_R = 55, MID_R = 170, SHEET_W = 1536, SHEET_H = 1024;
-const OF = { spruce: [0, 1, 2], pine: [3, 4], cedar: [5, 6], birch: [7, 8], birchLeaf: [9], snag: [10, 11] };
+const OF = { spruce: [0, 1, 2], pine: [3, 4], cedar: [5, 6], birch: [7, 8], birchLeaf: [9], snag: [10, 11], twig: [12, 13] };
 function vn(x, z) {
   const ix = Math.floor(x), iz = Math.floor(z), fx = x - ix, fz = z - iz, ux = fx * fx * (3 - 2 * fx), uz = fz * fz * (3 - 2 * fz);
   return (hash2(ix, iz) * (1 - ux) + hash2(ix + 1, iz) * ux) * (1 - uz) + (hash2(ix, iz + 1) * (1 - ux) + hash2(ix + 1, iz + 1) * ux) * uz;
@@ -41,7 +41,8 @@ export async function makeForest({ dev, stage, world, roads, near, quality, vbuf
       const depth = dev.createTexture({ size: [SHEET_W >> l, SHEET_H >> l], format: DEPTH, usage: GPUTextureUsage.RENDER_ATTACHMENT });
       const p = enc.beginRenderPass({ colorAttachments: [{ view: sheet.createView({ baseMipLevel: l, mipLevelCount: 1 }), loadOp: "clear", storeOp: "store", clearValue: [0.05, 0.06, 0.05, 0] }], depthStencilAttachment: { view: depth.createView(), depthClearValue: 0, depthLoadOp: "clear", depthStoreOp: "discard" } });
       p.setPipeline(bakePipe); p.setBindGroup(0, stage.st.binds.bake); p.setVertexBuffer(1, ib);
-      forms.forEach((f, i) => { p.setVertexBuffer(0, f.nearBuf); p.draw(f.nearN, 1, 0, i); });
+      // the sheet holds twelve forms; the understory's twigs are never drawn as far cards
+      forms.forEach((f, i) => { if (i < 12) { p.setVertexBuffer(0, f.nearBuf); p.draw(f.nearN, 1, 0, i); } });
       p.end();
     }
     dev.queue.submit([enc.finish()]);
@@ -60,9 +61,12 @@ export async function makeForest({ dev, stage, world, roads, near, quality, vbuf
       if (!(dens > 0) || world.height[k] < 0.6 || (world.built && world.built[k] > 70)) continue;
       const roll = hash2(gx * 3 + 11, gz * 5 + 2), glade = vn(x / 110 + 3, z / 110 + 9), thick = b === 5 ? dens * Math.min(1, Math.max(0, (glade - 0.2) / 0.22)) * 0.9 : dens;
       const sapling = b === 5 && roll > thick && roll < thick + 0.07;
-      if (roll > thick && !sapling) continue;
+      // the bare broadleaf understory: young birch and alder standing leafless under the spruce,
+      // thickest where the canopy is open enough to let them up and along the roads
+      const under = b === 5 && !sapling && roll > thick + 0.07 && roll < thick + 0.07 + 0.34 * vn(x / 40 + 17, z / 40 + 5);
+      if (roll > thick && !sapling && !under) continue;
       const rd = roads.nearest(x, z, 14);
-      if (rd && rd.d < rd.half + 2.6) continue;
+      if (rd && rd.d < rd.half + (under ? 1.2 : 2.6)) continue;
       const p = hash2(gx * 7 + 1, gz * 3 + 4), q = hash2(gx + 31, gz * 11 + 8), stand = vn(x / 170 + 7, z / 170 + 3), wet = vn(x / 60 + 11, z / 60 + 5);
       let kind = "spruce", size = 0.62 + 0.55 * q;
       if (b === 5) {
@@ -73,6 +77,7 @@ export async function makeForest({ dev, stage, world, roads, near, quality, vbuf
       } else if (b === 6) { kind = p < 0.5 ? "birch" : p < 0.92 ? "spruce" : "snag"; size *= 0.62; }
       else kind = world.river[k] > 0 || p < 0.5 ? "birch" : "pine";
       if (sapling) { kind = "spruce"; size = 0.08 + 0.16 * q; }
+      if (under) { kind = "twig"; size = 0.55 + 0.6 * q; }
       const set = OF[kind], form = set[Math.floor(hash2(gx * 13 + 5, gz * 17 + 3) * set.length)];
       out.push(x, baseGround(world, x, z) - 0.05, z, p * 6.283, size, q, form, forms[form].H * size);
     }
@@ -111,13 +116,13 @@ export async function makeForest({ dev, stage, world, roads, near, quality, vbuf
       if (cd > reach) continue;
       // cells well beyond the mid range go to the far list whole, and only when the walker has moved a good way
       if (Math.hypot((cx + 0.5) * CELL - farAt[0], (cz + 0.5) * CELL - farAt[1]) > band) {
-        if (wantFar) { const t = cellOf(cx, cz).t; for (let i = 0; i < t.length; i += 8) if (t[i + 4] > 0.3 && fo + 8 <= scratch.length) { scratch.set(t.subarray(i, i + 8), fo); fo += 8; } }
+        if (wantFar) { const t = cellOf(cx, cz).t; for (let i = 0; i < t.length; i += 8) if (t[i + 4] > 0.3 && t[i + 6] < 12 && fo + 8 <= scratch.length) { scratch.set(t.subarray(i, i + 8), fo); fo += 8; } }
         continue;
       }
       const t = cellOf(cx, cz).t;
       for (let i = 0; i < t.length; i += 8) {
-        const d = Math.hypot(t[i] - x, t[i + 2] - z), small = t[i + 4] < 0.3, row = t.subarray(i, i + 8);
-        if (d < NEAR_R * quality && !small) lists.near[t[i + 6]].push(...row);
+        const d = Math.hypot(t[i] - x, t[i + 2] - z), small = t[i + 4] < 0.3 || t[i + 6] >= 12, row = t.subarray(i, i + 8);
+        if (d < NEAR_R * quality && (!small || (t[i + 6] >= 12 && d < 30))) lists.near[t[i + 6]].push(...row);
         else if (d < (small ? 90 : MID_R) * quality) lists.mid[t[i + 6]].push(...row);
         else if (!small) edge.push(...row);
       }

@@ -54,7 +54,25 @@ export function makeTriangleGrid() {
     for (const t of around(p[0] - reach, p[2] - reach, p[0] + reach, p[2] + reach)) { const tr = tris[t]; if (Math.min(tr[0][1], tr[1][1], tr[2][1]) - p[1] > d || p[1] - Math.max(tr[0][1], tr[1][1], tr[2][1]) > d) continue; d = Math.min(d, pointTri(p, tr)); }
     return d;
   }
-  return { add, probe, around, distance, get count() { return tris.length; } };
+  // push an upright body (a circle of radius r from y0 to y1) out of every triangle it overlaps, on the
+  // map: [x, z, touched]. People, crates and signs that the walls and roofs leave out stop the walker.
+  function pushOut(x, z, r, y0, y1) {
+    let touched = false;
+    for (let it = 0; it < 3; it++) {
+      let moved = false;
+      for (const t of around(x - r, z - r, x + r, z + r)) {
+        const tr = tris[t];
+        if (Math.max(tr[0][1], tr[1][1], tr[2][1]) < y0 || Math.min(tr[0][1], tr[1][1], tr[2][1]) > y1) continue;
+        const mid = [x, Math.min(y1, Math.max(y0, (tr[0][1] + tr[1][1] + tr[2][1]) / 3)), z], q = closestOnTri(mid, tr);
+        if (q[1] < y0 || q[1] > y1) continue;
+        const dx = x - q[0], dz = z - q[2], d = Math.hypot(dx, dz);
+        if (d < r && d > 1e-5) { x += dx / d * (r - d + 1e-3); z += dz / d * (r - d + 1e-3); moved = touched = true; }
+      }
+      if (!moved) break;
+    }
+    return [x, z, touched];
+  }
+  return { add, probe, around, distance, pushOut, get count() { return tris.length; } };
 }
 
 // Moller-Trumbore: distance along d to the triangle, or -1
@@ -69,10 +87,12 @@ function hit(o, d, [a, b, c]) {
   return (e2[0] * q[0] + e2[1] * q[1] + e2[2] * q[2]) * inv;
 }
 // distance from a point to a triangle (Ericson, Real-Time Collision Detection 5.1.5)
-export function pointTri(p, [a, b, c]) {
+export function pointTri(p, t) { const q = closestOnTri(p, t); return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]); }
+// the nearest point of a triangle to p
+export function closestOnTri(p, [a, b, c]) {
   const sub = (x, y) => [x[0] - y[0], x[1] - y[1], x[2] - y[2]], dot = (x, y) => x[0] * y[0] + x[1] * y[1] + x[2] * y[2];
   const ab = sub(b, a), ac = sub(c, a), ap = sub(p, a), d1 = dot(ab, ap), d2 = dot(ac, ap);
-  const at = (q) => Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]), lin = (x, y, t) => [x[0] + (y[0] - x[0]) * t, x[1] + (y[1] - x[1]) * t, x[2] + (y[2] - x[2]) * t];
+  const at = (q) => q, lin = (x, y, t) => [x[0] + (y[0] - x[0]) * t, x[1] + (y[1] - x[1]) * t, x[2] + (y[2] - x[2]) * t];
   if (d1 <= 0 && d2 <= 0) return at(a);
   const bp = sub(p, b), d3 = dot(ab, bp), d4 = dot(ac, bp);
   if (d3 >= 0 && d4 <= d3) return at(b);
