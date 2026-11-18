@@ -29,8 +29,9 @@ A run takes about 30 seconds on one core and prints the time of each stage.
 | `biome.pgm` | ground cover, 0 to 13 (the list is in `gen/climate.bld`) |
 | `region.pgm` | region, 1 to 11, spread over the sea so weather has no hole |
 | `world.json` | regions, settlements, roads with walking hours, river lines, landmarks, checks |
+| `t_<col>_<row>.lwt`, `tiles.json` | the same rasters as 48 binary tiles for the native engine (`TILES.md`) |
 
-The rasters are plain PGM text. buildc's file writer takes strings and a string cannot hold a zero byte, so a binary raster is a compiler gap, recorded here as language debt. `pgm.mjs` reads them in node and in the browser.
+The rasters are plain PGM text, which `pgm.mjs` reads in node and in the browser. The binary tiles need buildc with `write_file_bytes` (HarperZ9/buildlang, binary I/O); `TILES.md` gives the format and the converter from existing PGMs.
 
 ## Walk it
 
@@ -93,4 +94,4 @@ BUILDC=buildc node --test games/low-water/world/tests/world.test.mjs
 
 ## Language
 
-The generator is BuildLang. The raster reader and the checks are JavaScript modules run by node, the form every other Low Water test takes. The debt: binary output from BuildLang, and the checks themselves, which could move once buildc can read a file of this size quickly.
+The generator is BuildLang. The raster reader and the checks are JavaScript modules run by node, the form every other Low Water test takes. The debt: the checks themselves, which could move once buildc can read a file of this size quickly.

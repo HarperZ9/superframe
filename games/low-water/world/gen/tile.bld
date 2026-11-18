@@ -1,0 +1,223 @@
+// Binary world tiles (lw-tile-native-1, spec in ../TILES.md). The island is cut into tiles of
+// 256 x 256 cells; each tile file holds the 257 x 257 vertices of its cells, so neighbours share
+// their edge row and column, and a tile past the island's edge repeats the last row or column.
+// Every value is the generator's own code, the same number its PGM holds.
+mod bytes;
+
+pub const TILE: i64 = 256;
+pub const HEADER_BYTES: usize = 64;
+pub const LAYERS: u32 = 6;
+
+// Tiles along an edge of `cells` cells. (A function: buildc 1.15 does not emit a `pub const`
+// reached as `tile::TILE` from another module.)
+pub fn count(cells: i64) -> i64 {
+    (cells + TILE - 1) / TILE
+}
+
+// The PGM writer's quantisation: round((v + bias) * scale), clamped to 16 bits.
+pub fn code16(v: Vec<f64>, n: usize, scale: f64, bias: f64) -> Vec<i64> {
+    let mut out: Vec<i64> = Vec::new();
+    let mut i: usize = 0;
+    while i < n {
+        let mut q = floor((v[i] + bias) * scale + 0.5) as i64;
+        if q < 0 { q = 0; }
+        if q > 65535 { q = 65535; }
+        out.push(q);
+        i += 1;
+    }
+    out
+}
+
+// FNV-1a over bytes a..b of buf.
+pub fn fnv(buf: &Vec<u8>, a: usize, b: usize) -> u64 {
+    let mut hash: u64 = 14695981039346656037;
+    let mut i = a;
+    while i < b {
+        hash = (hash ^ (buf[i] as u64)).wrapping_mul(1099511628211);
+        i += 1;
+    }
+    hash
+}
+
+fn clampi(v: i64, hi: i64) -> i64 {
+    if v > hi { hi } else { v }
+}
+
+// One layer of a tile: side x side vertices from (x0, y0), `wide` bytes each, little-endian.
+// A value that does not fit is a fault in the caller, so the tile is refused rather than wrapped.
+fn put_layer(out: &mut Vec<u8>, src: Vec<i64>, w: i64, h: i64, x0: i64, y0: i64, side: i64, wide: i64) -> bool {
+    let top = if wide == 2 { 65535 } else { 255 };
+    let mut j: i64 = 0;
+    while j < side {
+        let y = clampi(y0 + j, h - 1);
+        let mut i: i64 = 0;
+        while i < side {
+            let x = clampi(x0 + i, w - 1);
+            let v = src[(y * w + x) as usize];
+            if v < 0 || v > top { return false; }
+            if wide == 2 {
+                put_u16_le(out, v as u16);
+            } else {
+                put_u8(out, v as u8);
+            }
+            i += 1;
+        }
+        j += 1;
+    }
+    true
+}
+
+// The bytes of tile (col, row): header then height, water (u16) and moist, river, biome,
+// region (u8). Empty when a value does not fit its layer.
+pub fn encode(seed: u32, w: i64, h: i64, col: i64, row: i64, hgt: Vec<i64>, wat: Vec<i64>, moist: Vec<i64>, riv: Vec<i64>, bio: Vec<i64>, reg: Vec<i64>) -> Vec<u8> {
+    let side = TILE + 1;
+    let x0 = col * TILE;
+    let y0 = row * TILE;
+    let mut out: Vec<u8> = Vec::new();
+    // magic "LWTN", version 1, header size
+    put_u8(&mut out, 76);
+    put_u8(&mut out, 87);
+    put_u8(&mut out, 84);
+    put_u8(&mut out, 78);
+    put_u16_le(&mut out, 1);
+    put_u16_le(&mut out, HEADER_BYTES as u16);
+    put_u32_le(&mut out, w as u32);
+    put_u32_le(&mut out, h as u32);
+    put_u32_le(&mut out, x0 as u32);
+    put_u32_le(&mut out, y0 as u32);
+    put_u16_le(&mut out, side as u16);
+    put_u16_le(&mut out, side as u16);
+    put_u16_le(&mut out, 64);
+    put_u16_le(&mut out, 16);
+    put_u32_le(&mut out, 512);
+    put_u32_le(&mut out, seed);
+    put_u32_le(&mut out, LAYERS);
+    let payload = (side * side * 8) as u32;
+    put_u32_le(&mut out, payload);
+    // the two hashes are filled in below; 48..56 payload, 56..64 header
+    put_u64_le(&mut out, 0);
+    put_u64_le(&mut out, 0);
+    let ok = put_layer(&mut out, hgt, w, h, x0, y0, side, 2)
+        && put_layer(&mut out, wat, w, h, x0, y0, side, 2)
+        && put_layer(&mut out, moist, w, h, x0, y0, side, 1)
+        && put_layer(&mut out, riv, w, h, x0, y0, side, 1)
+        && put_layer(&mut out, bio, w, h, x0, y0, side, 1)
+        && put_layer(&mut out, reg, w, h, x0, y0, side, 1);
+    if !ok {
+        let none: Vec<u8> = Vec::new();
+        return none;
+    }
+    let ph = fnv(&out, HEADER_BYTES, out.len());
+    set_u64(&mut out, 48, ph);
+    let hh = fnv(&out, 0, 56);
+    set_u64(&mut out, 56, hh);
+    out
+}
+
+fn set_u64(out: &mut Vec<u8>, at: usize, v: u64) {
+    let mut x = v;
+    let mut i: usize = 0;
+    while i < 8 {
+        out[at + i] = (x & 255) as u8;
+        x = x >> 8;
+        i += 1;
+    }
+}
+
+// Write every tile and tiles.json into dir. Returns the FNV-1a of the tile hashes in
+// order, or 0 when a value did not fit or a file could not be written.
+pub fn write_all(dir: str, seed: u32, w: i64, h: i64, hgt: Vec<i64>, wat: Vec<i64>, moist: Vec<i64>, riv: Vec<i64>, bio: Vec<i64>, reg: Vec<i64>) -> u64 ~ Console + FileSystem {
+    let cols = count(w);
+    let rows = count(h);
+    let mut all: u64 = 14695981039346656037;
+    let mut list = "";
+    let mut r: i64 = 0;
+    while r < rows {
+        let mut c: i64 = 0;
+        while c < cols {
+            let t = encode(seed, w, h, c, r, hgt, wat, moist, riv, bio, reg);
+            if t.len() == 0 {
+                println!("tiles: a value does not fit its layer in tile {} {}", c, r);
+                return 0;
+            }
+            let path = format!("{}/t_{}_{}.lwt", dir, c, r);
+            if !write_file_bytes(path, &t) {
+                println!("tiles: cannot write {}", path);
+                return 0;
+            }
+            let th = get_u64_le(&t, 48);
+            all = (all ^ th).wrapping_mul(1099511628211);
+            if r > 0 || c > 0 { list = format!("{},", list); }
+            list = format!("{}\"t_{}_{}.lwt\":\"{}\"", list, c, r, th);
+            c += 1;
+        }
+        r += 1;
+    }
+    let ok = write_file(format!("{}/tiles.json", dir), format!("{{\"format\":\"lw-tile-native-1\",\"seed\":{},\"width\":{},\"height\":{},\"tile\":{},\"cols\":{},\"rows\":{},\"all\":\"{}\",\"tiles\":{{{}}}}}\n", seed, w, h, TILE, cols, rows, all, list));
+    if !ok { return 0; }
+    all
+}
+
+// A plain PGM (P2) as codes; empty when the file is not one or its size is not w x h.
+pub fn read_pgm(path: str, w: i64, h: i64) -> Vec<i64> ~ FileSystem {
+    let b = read_file_bytes(path);
+    let mut out: Vec<i64> = Vec::new();
+    let n = b.len();
+    if n < 2 || b[0] != 80 || b[1] != 50 { return out; }
+    let mut at: usize = 2;
+    let mut vals: Vec<i64> = Vec::new();
+    let want = 3 + w * h;
+    while at < n && (vals.len() as i64) < want {
+        let c = b[at];
+        if c == 35 {
+            while at < n && b[at] != 10 { at += 1; }
+        } else if c >= 48 && c <= 57 {
+            let mut v: i64 = 0;
+            while at < n && b[at] >= 48 && b[at] <= 57 {
+                v = v * 10 + ((b[at] - 48) as i64);
+                at += 1;
+            }
+            vals.push(v);
+        } else {
+            at += 1;
+        }
+    }
+    if (vals.len() as i64) < want || vals[0] != w || vals[1] != h { return out; }
+    let mut i: usize = 3;
+    while i < vals.len() {
+        out.push(vals[i]);
+        i += 1;
+    }
+    out
+}
+
+// Decode tile file `path` and compare every vertex with the codes; returns the number of
+// mismatches, or -1 when the header or a hash is wrong.
+pub fn check(path: str, w: i64, h: i64, hgt: Vec<i64>, wat: Vec<i64>, moist: Vec<i64>, riv: Vec<i64>, bio: Vec<i64>, reg: Vec<i64>) -> i64 ~ FileSystem {
+    let t = read_file_bytes(path);
+    if t.len() < HEADER_BYTES { return -1; }
+    if t[0] != 76 || t[1] != 87 || t[2] != 84 || t[3] != 78 || get_u16_le(&t, 4) != 1 { return -1; }
+    if fnv(&t, 0, 56) != get_u64_le(&t, 56) { return -1; }
+    if fnv(&t, HEADER_BYTES, t.len()) != get_u64_le(&t, 48) { return -1; }
+    let x0 = get_u32_le(&t, 16) as i64;
+    let y0 = get_u32_le(&t, 20) as i64;
+    let side = get_u16_le(&t, 24) as i64;
+    let nn = (side * side) as usize;
+    if t.len() != HEADER_BYTES + nn * 8 { return -1; }
+    let mut bad: i64 = 0;
+    let mut k: usize = 0;
+    while k < nn {
+        let j = (k as i64) / side;
+        let i = (k as i64) % side;
+        let at = (clampi(y0 + j, h - 1) * w + clampi(x0 + i, w - 1)) as usize;
+        let o = HEADER_BYTES;
+        if get_u16_le(&t, o + k * 2) as i64 != hgt[at] { bad += 1; }
+        if get_u16_le(&t, o + nn * 2 + k * 2) as i64 != wat[at] { bad += 1; }
+        if t[o + nn * 4 + k] as i64 != moist[at] { bad += 1; }
+        if t[o + nn * 5 + k] as i64 != riv[at] { bad += 1; }
+        if t[o + nn * 6 + k] as i64 != bio[at] { bad += 1; }
+        if t[o + nn * 7 + k] as i64 != reg[at] { bad += 1; }
+        k += 1;
+    }
+    bad
+}
