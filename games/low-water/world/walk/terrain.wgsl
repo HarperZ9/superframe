@@ -82,11 +82,11 @@ fn morphK(p: vec3f, level: f32) -> f32 {
 fn groundShadow(p: vec3f) -> f32 {
   let l = F.key.xyz;
   if (l.y <= 0.01) { return 0.0; }
-  var shade = 1.0; var s = 45.0;
+  var shade = 1.0; var s = 70.0;
   for (var i = 0; i < 14; i++) {
     let q = p + l * s;
-    let h = texel(vec2i(floor(q.xz / F.world.z)));
-    shade = min(shade, clamp((q.y - h) / (s * 0.06) + 1.0, 0.0, 1.0));
+    let h = groundAt(q.xz);                       // the smooth surface: a nearest texel throws stair-step shadows
+    shade = min(shade, clamp((q.y - h) / (s * 0.10) + 1.0, 0.0, 1.0));
     s *= 1.45;
   }
   return shade;
@@ -111,7 +111,7 @@ fn groundShadow(p: vec3f) -> f32 {
   let e = 0.35;
   let nz = vec2f(vnoise(v.wp.xz * 0.21 + vec2f(e, 0.0)) - vnoise(v.wp.xz * 0.21 - vec2f(e, 0.0)), vnoise(v.wp.xz * 0.21 + vec2f(0.0, e)) - vnoise(v.wp.xz * 0.21 - vec2f(0.0, e)));
   let big = vec2f(vnoise(v.wp.xz * 0.013 + vec2f(e, 0.0)) - vnoise(v.wp.xz * 0.013 - vec2f(e, 0.0)), vnoise(v.wp.xz * 0.013 + vec2f(0.0, e)) - vnoise(v.wp.xz * 0.013 - vec2f(0.0, e)));
-  n = vec3f(n.x - nz.x * 0.45 * near - big.x * 0.15, 0.0, n.z - nz.y * 0.45 * near - big.y * 0.15);
+  n = vec3f(n.x - nz.x * 0.14 * near - big.x * 0.10, 0.0, n.z - nz.y * 0.14 * near - big.y * 0.10);
   n.y = sqrt(max(1.0 - n.x * n.x - n.z * n.z, 0.04));
   n = normalize(n);
   let slope = 1.0 - n.y;
@@ -121,7 +121,7 @@ fn groundShadow(p: vec3f) -> f32 {
   let close = 1.0 - smoothstep(60.0, 500.0, dist);
   let hollow = lnoise(v.wp.xz / 4.0 + 50.0) * 0.6 + lnoise(v.wp.xz / 16.0) * 0.4;
   var col = alb.rgb * (0.82 + 0.36 * fbm(v.wp.xz * 0.004)) * (0.92 + 0.16 * near * fbm(v.wp.xz * 0.05)) * (0.90 + 0.20 * close * vnoise(v.wp.xz * 2.3));
-  col *= mix(1.0, 0.86 + 0.26 * hollow, close);
+  col *= mix(1.0, 0.93 + 0.14 * hollow, close);
   // bare rock on the steeps, darker than the ground it breaks through
   let rock = smoothstep(0.16, 0.34, slope);
   col = mix(col, mix(col * 0.55, vec3f(0.27, 0.26, 0.27), 0.5), rock * 0.85);
@@ -136,7 +136,7 @@ fn groundShadow(p: vec3f) -> f32 {
   col *= 1.0 - 0.35 * F.wx.w * (1.0 - snow);
 
   let ndl = max(dot(n, F.key.xyz), 0.0);
-  let shade = groundShadow(v.wp + n * 2.0);
+  let shade = groundShadow(vec3f(v.wp.x, groundAt(v.wp.xz), v.wp.z) + vec3f(0.0, 6.0, 0.0));
   var lit = col * (F.amb.rgb * (0.55 + 0.45 * n.y) + F.keyCol.rgb * F.key.w * ndl * shade);
   // lightning lights everything for a frame
   lit += col * F.ev.w * vec3f(0.7, 0.75, 0.9);
