@@ -1,0 +1,33 @@
+{
+ "criterion": "Real-time ambient occlusion (raw/renderer/ao_realtime.hpp): the GTAO integral of post_gtao at a frame budget, scored against the CPU reference raw::post::gtao at 16 slices by 16 steps.",
+ "written": "2026-11-18. The three bounds were fixed while the pass still ran 1 slice by 6 steps (it measured 0.012, 0.017 and 0.019 then). The defaults later moved to 2 slices by 16 steps and the bounds were kept.",
+ "pass": {
+  "prefilter": "depth -> half-resolution view depth, one pixel of each 2 x 2 block; with accumulation on the chosen pixel cycles through all four in four frames",
+  "levels": "three coarser levels, each texel the mean of the input texels within 10 % of the nearest one",
+  "trace": "half resolution, 2 slices of 16 steps a side by default. Slice turn and step offset come from a 64 x 64 blue-noise field (void and cluster, generated at start, src/renderer/ao_noise.cpp) moved each frame by a rank-1 sequence. Depth at a step is interpolated in 1 / depth from the four texels around the exact position, with the nearest texel alone where they span more than 10 %. A step reads the level whose texels are about half the step spacing.",
+  "resolve": "full resolution: depth-weighted upsample of the four half-resolution texels, a running mean along the motion vectors (a pixel's own trace weighs 1, a value borrowed from neighbours 0.15), history rejected where it is off screen or held another depth (10 %), a 4 x 4 depth-weighted mean while a pixel has under 7 frames of history, and the frame times the visibility as the second target"
+ },
+ "rhi_additions": "TextureFormat::RG16Float (D3D12, Vulkan and WebGPU format tables) and sampled R32Float and RG16Float textures on D3D12. The pass is five raster passes over textures, so it needed no compute texture bindings.",
+ "check": "tests/gpu/ao_realtime.cpp (ctest gpu_ao_realtime; CI runs it on WARP). Scene: a floor, a wall and a ball at 480 x 270, the game's projection terms, radius 35. Error: mean |visibility - reference| over the frame, a 16-pixel border left out, visibility clamped to 1.",
+ "bounds": {
+  "converged_32_frames": 0.02,
+  "first_frame_no_history": 0.06,
+  "slide_right_motion_vectors": 0.03
+ },
+ "controls_that_must_fail": {
+  "radius_x2": "the pass with twice the radius scores at least 1.5 times the converged error",
+  "zero_motion_vectors": "the scene slides 3 pixels a frame for 24 frames; with zero motion vectors and depth rejection off, the error over the pixels the reference puts under 0.9 is at least 1.5 times the error with the right vectors"
+ },
+ "measured": {
+  "adapters": "RTX 4090 and WARP gave the same numbers to five decimals",
+  "converged_32_frames": 0.00512,
+  "first_frame_no_history": 0.0049,
+  "slide_right_motion_vectors": 0.00623,
+  "slide_right_motion_vectors_occluded": 0.02661,
+  "control_radius_x2": 0.03083,
+  "control_zero_motion_vectors_occluded": 0.12961
+ },
+ "blue_noise": "tests/test_ao_noise.cpp: every rank once, deterministic for a seed, low-frequency ratio 0.14 against 0.96 for the same ranks shuffled (the white-noise control); bound 0.25.",
+ "game_content": "On a captured 3840 x 2160 game frame the pass runs behind RAW's D3D12 bridge; cost and error at each step are in RAW's docs/D3D12_BRIDGE.md and its evidence folder. There the 16 x 16 reference is itself 0.062 from a 48 x 48 one, and the pass at its defaults is 0.050 from the first and 0.060 from the second.",
+ "limits": "The slide is synthesised: each frame shows the same buffers moved sideways, so no surface is uncovered and the view rays of the moved content are not those of a real camera pan. The noise is blue in space and a rank-1 sequence in time at a fixed pixel; along a motion path the sequence a surface sees is no longer low-discrepancy. Past half of the ranks the generator keeps filling voids where the paper swaps roles. D3D12 only: the shaders are hand-written HLSL. The motion vector has no depth component, so a camera moving fast along its axis can trip the depth rejection."
+}

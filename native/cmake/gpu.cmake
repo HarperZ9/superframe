@@ -207,7 +207,9 @@ function(raw_native_hw_shaders gen out_header)
         "hw_async_p|hw_async|cs_6_0|-DMODE=0" "hw_async_w|hw_async|cs_6_0|-DMODE=1" "hw_async_c|hw_async|cs_6_0|-DMODE=2"
         "hw_busy|hw_busy|cs_6_0|-DFLAT=0"
         "hw_busy_flat|hw_busy|cs_6_0|-DFLAT=1"
-        "host_pack|host_pack|cs_6_0|" "host_resolve_vs|host_resolve|vs_6_0||vs" "host_resolve_fs|host_resolve|ps_6_0||fs")
+        "host_pack|host_pack|cs_6_0|" "host_resolve_vs|host_resolve|vs_6_0||vs" "host_resolve_fs|host_resolve|ps_6_0||fs"
+        "ao_rt_vs|ao_rt|vs_6_0|-DPASS=0|vs" "ao_rt_prefilter|ao_rt|ps_6_0|-DPASS=0|fs" "ao_rt_level|ao_rt|ps_6_0|-DPASS=1|fs"
+        "ao_rt_trace|ao_rt|ps_6_0|-DPASS=2|fs" "ao_rt_resolve|ao_rt|ps_6_0|-DPASS=3|fs")
     set(headers "")
     set(includes "")
     set(table "")
@@ -311,6 +313,12 @@ if(RAW_NATIVE_GPU_D3D12)
         add_test(NAME gpu_host_frame COMMAND gpu_host_frame)
         set_tests_properties(gpu_host_frame PROPERTIES SKIP_RETURN_CODE 77)
         # The lighting's GPU parity (M3, evidence/m3-lighting-bounds.json), skipped the same way.
+        # Real-time AO against post::gtao (evidence/ao-realtime-bounds.json).
+        add_executable(gpu_ao_realtime tests/gpu/ao_realtime.cpp)
+        target_link_libraries(gpu_ao_realtime PRIVATE raw_native_d3d12)
+        target_include_directories(gpu_ao_realtime PRIVATE "${gen}")
+        add_test(NAME gpu_ao_realtime COMMAND gpu_ao_realtime)
+        set_tests_properties(gpu_ao_realtime PROPERTIES SKIP_RETURN_CODE 77)
         add_executable(gpu_lighting_parity tests/gpu/lighting_parity.cpp)
         target_link_libraries(gpu_lighting_parity PRIVATE raw_native_d3d12)
         add_test(NAME gpu_lighting_parity COMMAND gpu_lighting_parity)
