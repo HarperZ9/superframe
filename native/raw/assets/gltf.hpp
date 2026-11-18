@@ -19,6 +19,10 @@ struct GltfMesh {
     std::vector<std::uint32_t> indices;          // triangles
     Vec3 baseColor{0.8f, 0.8f, 0.8f};            // linear, from baseColorFactor
     std::string name;
+    // Optional attributes, empty when the primitive has none: TEXCOORD_0 (2 floats a vertex),
+    // TANGENT (4: xyz in world space, w the handedness) and COLOR_0 (4, float RGBA only).
+    std::vector<float> uv, tangents, colors;
+    std::string material;                        // the material's name, if it has one
 };
 
 struct GltfModel {
