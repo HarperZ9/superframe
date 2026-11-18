@@ -33,7 +33,7 @@ bool runView(rhi::Device& dev, int pass, const post::ViewGBuffer& v, std::vector
         const rhi::BufferBarrier in[3] = {{ub, Access::CopyDst, Access::Uniform}, {gb, Access::CopyDst, Access::StorageRead}, {ob, Access::Undefined, Access::StorageWrite}};
         c.barrier(in);
         const rhi::BufferHandle binds[3] = {ub, gb, ob};
-        c.dispatch(pipe, binds, (n + 63) / 64, 1, 1);
+        c.dispatch(pipe, binds, postGroupsX(uint32_t(n)), postGroupsY(uint32_t(n)), 1);
     }, ob, uint64_t(n) * 4, out.data());
     if (!ok) err = gpu.err;
     return ok;
@@ -62,7 +62,7 @@ bool runTaa(rhi::Device& dev, const taa::Frame& f, const std::vector<float>& his
                                           {db, Access::CopyDst, Access::StorageRead}, {hb, Access::CopyDst, Access::StorageRead}, {ob, Access::Undefined, Access::StorageWrite}};
         c.barrier(in);
         const rhi::BufferHandle binds[6] = {ub, cb, rb, db, hb, ob};
-        c.dispatch(pipe, binds, (n + 63) / 64, 1, 1);
+        c.dispatch(pipe, binds, postGroupsX(uint32_t(n)), postGroupsY(uint32_t(n)), 1);
     }, ob, uint64_t(n) * 12, out.data());
     if (!ok) err = gpu.err;
     return ok;

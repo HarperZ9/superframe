@@ -83,7 +83,7 @@ bool recordFrame(rhi::Device& dev, Gpu& gpu, const Imports& im, const post::View
     const rhi::BufferBarrier d[2] = {{gb, Access::StorageWrite, Access::StorageRead}, {ob, Access::Undefined, Access::StorageWrite}};
     c->barrier(d);
     const rhi::BufferHandle gtaoBinds[3] = {ug, gb, ob};
-    c->dispatch(gtao, gtaoBinds, (n + 63) / 64, 1, 1);
+    c->dispatch(gtao, gtaoBinds, postGroupsX(n), postGroupsY(n), 1);
     const rhi::BufferBarrier e[1] = {{ob, Access::StorageWrite, Access::StorageRead}};
     c->barrier(e);
     rhi::RenderPassDesc rp;
