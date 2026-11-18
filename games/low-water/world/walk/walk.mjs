@@ -57,7 +57,7 @@ async function start() {
 
   // ---------------------------------------------------------------- the walker
   const seat = world.json.settlements.find((s) => s.name === "Gullet") || world.json.settlements[0];
-  const cam = { x: num("x", seat.x * 0.064 + 1.2) * 1000, z: num("z", seat.y * 0.064 + 0.4) * 1000, y: 0, yaw: num("yaw", 80) * Math.PI / 180, pitch: num("pitch", -4) * Math.PI / 180, fly: Q.get("fly") === "1", alt: num("alt", 1.7), speed: 0 };
+  const cam = { x: num("x", seat.x * 0.064 + 1.2) * 1000, z: num("z", seat.y * 0.064 + 0.4) * 1000, y: 0, yaw: num("yaw", 80) * Math.PI / 180, pitch: num("pitch", -4) * Math.PI / 180, fly: Q.get("fly") === "1", alt: num("alt", 1.7), speed: 0, fov: num("fov", 60) };
   const time = { day: num("day", 3), clock: num("clock", 17.2), hold: Q.get("still") === "1", rate: num("rate", 30), t: 0 };   // rate: game seconds per real second
   const keys = new Set();
   addEventListener("keydown", (e) => { keys.add(e.code); if (e.code === "KeyF") cam.fly = !cam.fly; if (e.code === "KeyT") time.hold = !time.hold; if (e.code === "KeyH") hud.hidden = !hud.hidden; if (e.code.startsWith("Digit") || e.code === "Minus") jump(e.code === "Minus" ? 11 : e.code === "Digit0" ? 10 : +e.code.slice(5)); });
@@ -123,7 +123,7 @@ async function start() {
   }
 
   // ---------------------------------------------------------------- a frame
-  const frame = new Float32Array(FRAME_FLOATS), frameM = new Float32Array(FRAME_FLOATS);
+  const frame = new Float32Array(FRAME_FLOATS), frameM = new Float32Array(FRAME_FLOATS), nbProbe = new Float32Array(5);
   let last = performance.now(), frames = 0, nodeCount = 0, state = null, grabbing = null, manual = false;
   const gaps = [], wantMirror = Q.get("mirror") !== "0";
   function drawWorld(pass, which, nBuf, nCount) {
@@ -141,16 +141,20 @@ async function start() {
     stage.resize(cw, chh);
     move(dt); leaveTrail(dt); time.t += dt;
     if (!time.hold) { time.clock += dt * time.rate / 3600; if (time.clock >= 24) { time.clock -= 24; time.day++; } }
-    const vp = viewProj(cam, cw / chh), s = skyAt(seed, shares, cam.x, cam.z, world.depth, time.day, time.clock), sh = shares(cam.x, cam.z);
+    const vp = viewProj(cam, cw / chh, cam.fov * Math.PI / 180), s = skyAt(seed, shares, cam.x, cam.z, world.depth, time.day, time.clock), sh = shares(cam.x, cam.z);
     // lightning strikes only while the clock runs, so a held still is never caught mid-flash
     const flash = !time.hold && s.events.cells.some((c) => c.flash) && ((now / 90) | 0) % 3 === 0 ? 1 : 0, L = frameLight(s, flash), G = groundState(s, sh);
+    // the works are never dry: steam settles on everything; the city across the water is seldom dry
+    L.wx[3] = Math.max(L.wx[3], sh[8] * 0.7, sh[7] * 0.4);
     L.fogp[0] = Math.max(0, groundAt(world, cam.x, cam.z)) * (s.weather.cloudSea > 0 ? 0 : 0.85);
     scene.update({ cam, vp, dt, time, sky: s, shares: sh, light: L, ground: G });
     const sp = lights.spriteData();
     if (sp.changed) { if (lampBuf) lampBuf.destroy(); lampBuf = vbuf(sp.data); lampCount = sp.count; }
-    lights.select([cam.x, cam.y, cam.z], vp.f, 260 * Math.max(0.5, quality)); stage.writeLights(lights.block);
+    lights.select([cam.x, cam.y, cam.z], vp.f, 260 * Math.max(0.5, quality), Math.min(1, Math.max(0, (L.misc[0] - 0.2) / 0.55))); stage.writeLights(lights.block);
 
-    const level = wantMirror ? waterNear() : null;
+    // still water mirrors the world; so does wet paving, in a plane at the walker's feet
+    let level = wantMirror ? waterNear() : null;
+    if (wantMirror && level === null && !cam.fly && L.wx[3] + G.snowp[1] > 0.12 && near.sampleB(cam.x, cam.z, nbProbe)[0] > 0.5 && nbProbe[1] > 0.1) level = groundAt(world, cam.x, cam.z) - 0.02;
     frame.set(vp.M, OFF.viewProj); frame.set(invert(vp.M), OFF.invViewProj); frame.set([cam.x, cam.y, cam.z, time.t], OFF.cam);
     for (const k of ["key", "sun", "moon", "zenith", "horizon", "fog", "fogp", "wx", "ev", "misc", "keyCol", "amb", "lamp", "glow"]) frame.set(L[k], OFF[k]);
     frame.set([world.width, world.depth, world.cell, world.W], OFF.world);
@@ -200,7 +204,7 @@ async function start() {
   // what a capture or a test can drive
   globalThis.__lwWorld = {
     world, cam, time, roads, lights, scene, near,
-    view(v) { Object.assign(cam, { x: (v.x ?? cam.x / 1000) * 1000, z: (v.z ?? cam.z / 1000) * 1000, alt: v.alt ?? cam.alt, fly: v.fly ?? cam.fly }); if (v.yaw !== undefined) cam.yaw = v.yaw * Math.PI / 180; if (v.pitch !== undefined) cam.pitch = v.pitch * Math.PI / 180; if (v.clock !== undefined) time.clock = v.clock; if (v.day !== undefined) time.day = v.day; if (v.hold !== undefined) time.hold = v.hold; route = null; trail.length = 0; },
+    view(v) { Object.assign(cam, { x: (v.x ?? cam.x / 1000) * 1000, z: (v.z ?? cam.z / 1000) * 1000, alt: v.alt ?? cam.alt, fly: v.fly ?? cam.fly }); if (v.yaw !== undefined) cam.yaw = v.yaw * Math.PI / 180; if (v.pitch !== undefined) cam.pitch = v.pitch * Math.PI / 180; if (v.clock !== undefined) time.clock = v.clock; if (v.day !== undefined) time.day = v.day; if (v.hold !== undefined) time.hold = v.hold; cam.fov = v.fov ?? 60; route = null; trail.length = 0; },
     async settle(n = 3) { const f = frames; while (frames < f + n) await new Promise((r) => requestAnimationFrame(r)); await dev.queue.onSubmittedWorkDone(); return this.stats(); },
     stats() { const g = gaps.slice(2).sort((a, b) => a - b); return { frames, nodes: nodeCount, ...scene.stats(), lamps: lights.all.length, frameMs: g.length ? +(g.reduce((a, b) => a + b, 0) / g.length).toFixed(2) : 0, p95: g.length ? +g[Math.floor(g.length * 0.95)].toFixed(2) : 0, region: state && state.weather.region, air: state && state.weather.name, part: state && state.part, adapter: host.info || null, at: [cam.x, cam.y, cam.z] }; },
     clearGaps() { gaps.length = 0; },

@@ -5,6 +5,7 @@ import { MESHES, architecture } from "./masses.mjs";
 import { drawAtlas, uploadAtlas } from "./flora/atlas.mjs";
 import { makeForest } from "./flora/forest.mjs";
 import { makeUnderstory } from "./flora/understory.mjs";
+import { makeBuilt } from "./build/built.mjs";
 
 export async function makeScene(ctx) {
   const { stage, world, vbuf, say } = ctx;
@@ -15,18 +16,25 @@ export async function makeScene(ctx) {
     { arrayStride: 48, stepMode: "instance", attributes: [{ shaderLocation: 2, offset: 0, format: "float32x4" }, { shaderLocation: 3, offset: 16, format: "float32x4" }, { shaderLocation: 4, offset: 32, format: "float32x4" }] }];
   const massPipe = stage.pipe(massM, "vsMass", "fsMass", massBuffers);
   const meshBuf = Object.fromEntries(Object.entries(MESHES).map(([k, v]) => [k, { buf: vbuf(v), count: v.length / 6 }]));
-  const arch = architecture(world), archBuf = Object.fromEntries(Object.entries(arch).filter(([, v]) => v.length).map(([k, v]) => [k, { buf: vbuf(v), count: v.length / 12 }]));
+  const built = await makeBuilt(ctx), arch = architecture(world, built.owns), archBuf = Object.fromEntries(Object.entries(arch).filter(([, v]) => v.length).map(([k, v]) => [k, { buf: vbuf(v), count: v.length / 12 }]));
   say("Growing the forest");
-  const forest = await makeForest(ctx), parts = [forest, makeUnderstory(ctx, forest)];
+  const forest = await makeForest(ctx), parts = [built, forest, makeUnderstory(ctx, forest)];
+  // what falls: one seed for each of 50,000 flakes or drops
+  const AIR = 50000, seeds = new Float32Array(AIR * 4); let a = 12345;
+  for (let i = 0; i < seeds.length; i++) { a = (Math.imul(a, 1664525) + 1013904223) >>> 0; seeds[i] = a / 4294967296; }
+  const airBuf = vbuf(seeds), airPipe = stage.pipe(await stage.module("air.wgsl"), "vsAir", "fsAir", [{ arrayStride: 16, stepMode: "instance", attributes: [{ shaderLocation: 0, offset: 0, format: "float32x4" }] }], { depth: "test", blend: "premul", topology: "triangle-strip" });
+  let falling = 0;
   return {
     forest,
-    update(f) { for (const p of parts) p.update(f); },
+    built,
+    update(f) { for (const p of parts) p.update(f); falling = Math.min(AIR, Math.round(AIR * Math.min(1, Math.max(f.sky.weather.rain, f.sky.weather.snow) * 1.4))); },
     draw(pass, which) {
       pass.setPipeline(massPipe);
       for (const [k, b] of Object.entries(archBuf)) { pass.setVertexBuffer(0, meshBuf[k].buf); pass.setVertexBuffer(1, b.buf); pass.draw(meshBuf[k].count, b.count); }
       for (const p of parts) p.draw(pass, which);
     },
-    drawAir() {}, shadow() {}, before() {},
+    drawAir(pass) { if (falling) { pass.setPipeline(airPipe); pass.setVertexBuffer(0, airBuf); pass.draw(4, falling); } },
+    shadow() {}, before() {},
     stats() { return Object.assign({}, ...parts.map((p) => p.stats())); },
   };
 }

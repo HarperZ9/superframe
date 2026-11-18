@@ -145,7 +145,7 @@ fn rainRings(p: vec2f) -> f32 {
   let forest = smoothstep(0.2, 0.55, max(aux.b, na.r));
   let broad = mix(0.3 + 0.4 * vnoise(v.wp.xz * 0.02), na.g, nu.z);
   let road = nb.r * nu.z; let wear = nb.a * nu.z; let kind = nb.g;
-  let shelter = na.b;
+  let shelter = smoothstep(0.6, 0.9, na.b);
   let p = v.wp.xz;
   let hollow = lnoise(p / 4.0 + 50.0) * 0.6 + lnoise(p / 16.0) * 0.4;
   let wetAir = F.wx.w;
@@ -236,7 +236,13 @@ fn rainRings(p: vec2f) -> f32 {
   // what the wet and the ice mirror: the sky between the crowns
   let fres = m.g * (0.04 + 0.96 * pow(1.0 - max(dot(-view, n), 0.0), 5.0));
   let r = reflect(view, n);
-  lit = mix(lit, skyBase(vec3f(r.x, abs(r.y), r.z)) * mix(1.0, 0.35, cover), clamp(fres, 0.0, 1.0));
+  var mirrored = skyBase(vec3f(r.x, abs(r.y), r.z)) * mix(1.0, 0.35, cover);
+  if (F.view.w > 0.5 && F.clip.z < 0.5 && abs(v.wp.y - F.view.z) < 0.6 && m.g > 0.2) {
+    // the mirror was drawn for a level plane at the walker's feet: good for a yard, a lane, a puddle
+    let suv = v.clip.xy / F.view.xy + n.xz * vec2f(0.06, 0.10);
+    mirrored = mix(mirrored, textureSampleLevel(mirrorTex, samp, clamp(suv, vec2f(0.001), vec2f(0.999)), 0.0).rgb, smoothstep(0.6, 0.25, abs(v.wp.y - F.view.z)));
+  }
+  lit = mix(lit, mirrored, clamp(fres, 0.0, 1.0));
   // new snow glints
   if (cov > 0.2 && det > 0.0) {
     let cell = floor(v.wp.xz * 220.0);
@@ -293,7 +299,7 @@ fn waterColour(p: vec3f, depth: f32, px: vec2f) -> vec4f {
       let fk = f32(k);
       let q = p.xz * (0.35 + 0.22 * fk) + vec2f(F.cam.w * (0.17 + 0.05 * fk), F.cam.w * 0.11 - fk * 3.0);
       let wob = (vnoise(q) - 0.5) + (vnoise(q * 3.1 + 9.0) - 0.5) * 0.5;
-      let off = vec2f(n.x * 0.05 + wob * 0.003, (n.z * 0.5 + wob) * 0.018 * min(lean, 14.0) * (0.5 + F.wx.z));
+      let off = vec2f(n.x * 0.03 + wob * 0.002, (n.z * 0.5 + wob) * 0.0042 * min(lean, 14.0) * (0.5 + F.wx.z));
       acc += textureSampleLevel(mirrorTex, samp, clamp(suv + off, vec2f(0.001), vec2f(0.999)), 0.0).rgb;
     }
     mirror = acc / 5.0;

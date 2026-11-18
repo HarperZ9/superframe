@@ -77,7 +77,7 @@ try {
   } };
   const all = viewsFor(worldJson, probe), pick = opt.at ? [] : !opt.views || opt.views === "all" ? all : opt.views.split(",").map((n) => all.find((v) => v.name === n) || (() => { throw new Error(`no view ${n}; have ${all.map((v) => v.name).join(", ")}`); })());
   // --at "name:x,z,alt,yaw,pitch,clock,day;name:..." (km, m, degrees, hours) draws views of your own
-  if (opt.at) for (const [i, part] of opt.at.split(";").entries()) { const named = part.includes(":"), [x, z, alt, yaw, pitch, clock, day] = (named ? part.split(":")[1] : part).split(",").map(Number); pick.push({ name: named ? part.split(":")[0] : opt.name || `at${i}`, fly: alt > 2.5, x, z, alt, yaw, pitch, clock, day: day ?? 3 }); }
+  if (opt.at) for (const [i, part] of opt.at.split(";").entries()) { const named = part.includes(":"), [x, z, alt, yaw, pitch, clock, day, fov] = (named ? part.split(":")[1] : part).split(",").map(Number); pick.push({ name: named ? part.split(":")[0] : opt.name || `at${i}`, fly: alt > 2.5, x, z, alt, yaw, pitch, clock, day: day ?? 3, fov: fov || 60 }); }
   await send("Page.navigate", { url: `http://127.0.0.1:${port}/world/walk/index.html?still=1&world=${worldDir}&quality=${opt.quality || 1}${opt.hud ? "" : "&nohud=1"}` });
   let ready = false;
   for (let i = 0; i < 1200 && !ready; i++) {
@@ -88,6 +88,8 @@ try {
   }
   if (!ready) throw new Error(`the page did not start; ${logs.join(" | ")}`);
   if (!opt.hud) await ev("document.getElementById('hud').hidden = true");
+  // --probe EXPR prints what a JavaScript expression gives in the page (for finding a place to stand)
+  if (opt.probe) console.log(JSON.stringify(await ev(opt.probe)));
   const record = { adapter: null, gpu, size: [w, h], quality: +(opt.quality || 1), cpuBefore: await cpuLoad(), gpuBefore: gpuLoad(), views: [] };
   for (const v of pick) {
     await ev(`globalThis.__lwWorld.view(${JSON.stringify({ ...v, hold: true })})`);

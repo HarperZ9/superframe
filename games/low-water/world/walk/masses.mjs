@@ -119,10 +119,11 @@ function mark(L, w, m, seed) {
   }
 }
 
-export function architecture(w) {
+// owns says which settlements and landmarks are built for real elsewhere (build/built.mjs)
+export function architecture(w, owns = { settlement: () => false, mark: () => false }) {
   const L = new Lists(), seed = w.json.seed % 100000;
-  for (const s of w.json.settlements) town(L, w, s, seed);
-  for (const m of w.json.marks) mark(L, w, m, seed);
+  for (const s of w.json.settlements) if (!owns.settlement(s)) town(L, w, s, seed);
+  for (const m of w.json.marks) if (!owns.mark(m)) mark(L, w, m, seed);
   return L.arrays();
 }
 
