@@ -1,0 +1,3669 @@
+{
+ "comment": "Every feature of every package the field touches. Written by node packages/world/parity.mjs --write; tests/parity.test.mjs fails when one stops resolving.",
+ "rows": [
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "apparentRadius",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "centreSphereEdge",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "diffusionSlope",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "eatonTurn",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "fisheyeAntipode",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "globeSdf",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "gravityDeflection",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "luneburgExit",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "malus",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "moireFromGratings",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "parabolaFocus",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "plateRepeats",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "plateSdf",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "reflect",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "refract",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "rk4",
+   "field": "lens"
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "slabTransport",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "snellWindowDeg",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/trace.js",
+   "kind": "export",
+   "name": "traceInside",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/fields.js",
+   "kind": "export",
+   "name": "FIELDS",
+   "field": "lens"
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/constants.js",
+   "kind": "export",
+   "name": "CONSTANTS",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/constants.js",
+   "kind": "export",
+   "name": "MATERIAL_RECORDS",
+   "field": "lens"
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/constants.js",
+   "kind": "export",
+   "name": "PRESET_PROVENANCE",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "MAT",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "PRESETS",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "frames",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "indexField",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "materialRecord",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "presetProvenance",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "registerShape",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "scene",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "sceneProgram",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "shape",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "shapeGroups",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "shapes",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "unregisterShape",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/registry.js",
+   "kind": "export",
+   "name": "worldFields",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/train.js",
+   "kind": "export",
+   "name": "PRESETS",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/train.js",
+   "kind": "export",
+   "name": "UNBUILT",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/train.js",
+   "kind": "export",
+   "name": "achromat",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/train.js",
+   "kind": "export",
+   "name": "para",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/train.js",
+   "kind": "export",
+   "name": "paraxImage",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/train.js",
+   "kind": "export",
+   "name": "sagAt",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/train.js",
+   "kind": "export",
+   "name": "spotStats",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/train.js",
+   "kind": "export",
+   "name": "surf",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/wave.js",
+   "kind": "export",
+   "name": "fft1",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/wave.js",
+   "kind": "export",
+   "name": "fft2",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "BL",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "ILL",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "MACH",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "MP",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "R2X",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "SENS",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "X2R",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "cmfB",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "dE",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "gauss",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "labOf",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "labOf0",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "lerpT",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "metaPair",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/spectra.js",
+   "kind": "export",
+   "name": "solve3",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/units.js",
+   "kind": "export",
+   "name": "UnitError",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/units.js",
+   "kind": "export",
+   "name": "convert",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/units.js",
+   "kind": "export",
+   "name": "sameDim",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/units.js",
+   "kind": "export",
+   "name": "unit",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/provenance.js",
+   "kind": "export",
+   "name": "FROM_MEMORY",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/provenance.js",
+   "kind": "export",
+   "name": "auditConstants",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/core/provenance.js",
+   "kind": "export",
+   "name": "constant",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "BRACHET_TABLE3",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "FLUID_CONSTANTS",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "MODEL_LIMITS",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "Spectral2",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "Spectral3",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "abc",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "annularCouette",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "azimuthal",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "blasiusProfile",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "blasiusShear",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "bowl",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "bowlWall",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "burgersBudget",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "burgersOmega",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "drainFlow",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "fft2d",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "fft3d",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "gaussLink",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "hopf",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "ifft2d",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "ifft3d",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "kolmogorovCritical",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "kolmogorovGrowth",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "lambOseen",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "lambOseenOmega",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "largestRealEig",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "plate",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "plateReading",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "poiseuille",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "radialProfile",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "rankine",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "regimeGate",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "ring",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "spectralSlope",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "stokesShear",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "taylorGreen2Energy",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "taylorGreen2Omega",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "taylorGreen3",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "tubes",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "twiddles",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "waveInt",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/solvers/fluid/index.js",
+   "kind": "export",
+   "name": "within",
+   "field": null
+  },
+  {
+   "package": "superframe medium",
+   "file": "superframe/lib/medium/grid.mjs",
+   "kind": "export",
+   "name": "KAPPA",
+   "field": null
+  },
+  {
+   "package": "superframe medium",
+   "file": "superframe/lib/medium/grid.mjs",
+   "kind": "export",
+   "name": "advect",
+   "field": "flow"
+  },
+  {
+   "package": "superframe medium",
+   "file": "superframe/lib/medium/grid.mjs",
+   "kind": "export",
+   "name": "bilerp",
+   "field": null
+  },
+  {
+   "package": "superframe medium",
+   "file": "superframe/lib/medium/grid.mjs",
+   "kind": "export",
+   "name": "clamp",
+   "field": null
+  },
+  {
+   "package": "superframe medium",
+   "file": "superframe/lib/medium/grid.mjs",
+   "kind": "export",
+   "name": "confine",
+   "field": "flow"
+  },
+  {
+   "package": "superframe medium",
+   "file": "superframe/lib/medium/grid.mjs",
+   "kind": "export",
+   "name": "diffuse",
+   "field": "flow"
+  },
+  {
+   "package": "superframe medium",
+   "file": "superframe/lib/medium/grid.mjs",
+   "kind": "export",
+   "name": "project",
+   "field": "flow"
+  },
+  {
+   "package": "creation",
+   "file": "creation/lib/gen/advect.mjs",
+   "kind": "export",
+   "name": "advect",
+   "field": null
+  },
+  {
+   "package": "rooms sound",
+   "file": "packages/rooms/solvers/sound/fdtd.js",
+   "kind": "export",
+   "name": "WaveField",
+   "field": "sound"
+  },
+  {
+   "package": "rooms sound",
+   "file": "packages/rooms/solvers/sound/fdtd.js",
+   "kind": "export",
+   "name": "amplitudeAt",
+   "field": null
+  },
+  {
+   "package": "rooms sound",
+   "file": "packages/rooms/solvers/sound/fdtd.js",
+   "kind": "export",
+   "name": "click",
+   "field": null
+  },
+  {
+   "package": "rooms sound",
+   "file": "packages/rooms/solvers/sound/fdtd.js",
+   "kind": "export",
+   "name": "roomMode",
+   "field": null
+  },
+  {
+   "package": "rooms sound",
+   "file": "packages/rooms/solvers/sound/rooms.js",
+   "kind": "export",
+   "name": "inside",
+   "field": null
+  },
+  {
+   "package": "rooms sound",
+   "file": "packages/rooms/solvers/sound/rooms.js",
+   "kind": "export",
+   "name": "rooms",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "DC",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "DES",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "DX",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "DY",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "EXAMPLES",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "FP",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "G6",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "GLYPH",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "K_CU",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "K_FR4",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "RHO_CU",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "RULES",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "STACKS",
+   "field": "circuit"
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "TLine",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "UNBUILT",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "Z0_CACHE",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "arrayExample",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "arrayPositions",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "astar",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "bbox",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "bodyBox",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "bomCsv",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "buildDesign",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "buildGen",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "buildNetLine",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "checksGen",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "chip",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "cloneDesign",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "compareGerber",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "connectivity",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "copperGerber",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "courtyard",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "csvq",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "dcSolve",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "designStats",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "drawPads",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "drc",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "emitPath",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "excellon",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "exportAll",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "fieldSection",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "fieldZ0",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "footprint",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "gerberLayer",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "graded",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "hammerstad",
+   "field": "circuit"
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "hdr",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "heap",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "ipc2141",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "ipc2221Width",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "joinPour",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "laplace",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "layerZ",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "makeGrid",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "miniTrace",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "netTraceInfo",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "nodeFree",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "padGeo",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "padNodes",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "paint",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "parseNetlist",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "pcg",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "place",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "planStub",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "planeClears",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "planeRaster",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "plantViolations",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "pnpCsv",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "primDist",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "prims",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "rasterPrim",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "readExcellon",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "readGerber",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "rng32",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "rot",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "route",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "routeGen",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "routeNet",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "runChecks",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "samples",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "schemRoute",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "schematic",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "segD",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "silkLines",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "ssD",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "sweep",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "textStrokes",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "thermalSolve",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "uniformLine",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "viaOk",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/solvers/pcb/index.js",
+   "kind": "export",
+   "name": "viaR",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/map.js",
+   "kind": "export",
+   "name": "STATUS",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/map.js",
+   "kind": "export",
+   "name": "WORDS",
+   "field": "map"
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/map.js",
+   "kind": "export",
+   "name": "groupResidual",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/map.js",
+   "kind": "export",
+   "name": "mapFaults",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/map.js",
+   "kind": "export",
+   "name": "parseUnit",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/map.js",
+   "kind": "export",
+   "name": "statusFrom",
+   "field": "map"
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/map.js",
+   "kind": "export",
+   "name": "unitFaults",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/bond.js",
+   "kind": "export",
+   "name": "deriv",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/bond.js",
+   "kind": "export",
+   "name": "nrmse",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/bond.js",
+   "kind": "export",
+   "name": "omega0",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/bond.js",
+   "kind": "export",
+   "name": "pipeRe",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/bond.js",
+   "kind": "export",
+   "name": "rk4",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/bond.js",
+   "kind": "export",
+   "name": "runThree",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/bond.js",
+   "kind": "export",
+   "name": "shared",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/bond.js",
+   "kind": "export",
+   "name": "threeSystems",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/bond.js",
+   "kind": "export",
+   "name": "zeta",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/model.js",
+   "kind": "export",
+   "name": "MEASURED",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/model.js",
+   "kind": "export",
+   "name": "POTENTIAL",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/model.js",
+   "kind": "export",
+   "name": "instrument",
+   "field": "measure"
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/model.js",
+   "kind": "export",
+   "name": "plainLabel",
+   "field": "measure"
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/model.js",
+   "kind": "export",
+   "name": "propertyObject",
+   "field": "all"
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/model.js",
+   "kind": "export",
+   "name": "recordMeasurement",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/polarisation.js",
+   "kind": "export",
+   "name": "POLARISATION",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/polarisation.js",
+   "kind": "export",
+   "name": "applyJones",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/polarisation.js",
+   "kind": "export",
+   "name": "compilePath",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/polarisation.js",
+   "kind": "export",
+   "name": "jonesOf",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/polarisation.js",
+   "kind": "export",
+   "name": "plateFor",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/polarisation.js",
+   "kind": "export",
+   "name": "quartzThickness",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/polarisation.js",
+   "kind": "export",
+   "name": "rotateOnSphere",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/polarisation.js",
+   "kind": "export",
+   "name": "stokes",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/impedance.js",
+   "kind": "export",
+   "name": "IMPEDANCE",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/impedance.js",
+   "kind": "export",
+   "name": "compileMatch",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/impedance.js",
+   "kind": "export",
+   "name": "gammaByLineSolver",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/impedance.js",
+   "kind": "export",
+   "name": "gammaOf",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/impedance.js",
+   "kind": "export",
+   "name": "microstripWidth",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/impedance.js",
+   "kind": "export",
+   "name": "singleStub",
+   "field": null
+  },
+  {
+   "package": "rooms properties",
+   "file": "packages/rooms/properties/impedance.js",
+   "kind": "export",
+   "name": "zOf",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "ESERIES",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "LAYERS",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "PN_STATUS",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "REG",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "SYM",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "Sheet",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "VIEWS",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "VIEW_NAMES",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "angDim",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "arrow",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "ascii",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "balloon",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "blueprint",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "boxHits",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "chain2",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "checkConnectivity",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "datum",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "dec",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "defaults",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "diagDef",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "eng",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "fcf",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "featureEdges",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "frame",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "fromRecord",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "g",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "hasTol",
+   "field": "shape"
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "hashText",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "hatch",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "itemQty",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "kicadConnectivity",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "libToSheet",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "linDim",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "lintPassive",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "measure",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "netName",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "onSeg",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "onSeries",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "parseDXF",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "parseKicadNet",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "parseKicadSch",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "partMesh",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "passive",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "powerSym",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "record",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "register",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "resolve",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "rotLib",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "sAll",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "sFind",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "sQ",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "scaleGeom",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "scaleText",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "schematic",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "schematicSVG",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "segCross",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "sexpr",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "snapE",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "sparse",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "specHTML",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "specMD",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "specSheet",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "strokes",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "symPins",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "textBox",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "textFree",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "textLint",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "textW",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "thirdAngle",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "toDXF",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "toKicadNet",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "toKicadSch",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "toSVG",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "tolText",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "unitBox",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "uuid",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "validate",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "validateNetlist",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "view",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/load.js",
+   "kind": "umd",
+   "key": "C",
+   "name": "visiblePoint",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "zernike_basis",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "zernike_fit",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "regions",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "measure",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "params",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "apply_params",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "standard_metric",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "Fitter",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "assess",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "refuse_overclaim",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "plant",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/asbuilt.py",
+   "kind": "py",
+   "name": "noisy",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/cadout.py",
+   "kind": "py",
+   "name": "pieces",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/cadout.py",
+   "kind": "py",
+   "name": "mech_radius",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/cadout.py",
+   "kind": "py",
+   "name": "radius_tol",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/cadout.py",
+   "kind": "py",
+   "name": "write_step",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/cadout.py",
+   "kind": "py",
+   "name": "analytic_volume",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/cadout.py",
+   "kind": "py",
+   "name": "write_glb",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/cadout.py",
+   "kind": "py",
+   "name": "read_glb",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/cadout.py",
+   "kind": "py",
+   "name": "iso_codes",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/cadout.py",
+   "kind": "py",
+   "name": "drawing",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/design.py",
+   "kind": "py",
+   "name": "DesignError",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/design.py",
+   "kind": "py",
+   "name": "load",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/design.py",
+   "kind": "py",
+   "name": "validate",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/design.py",
+   "kind": "py",
+   "name": "Lens",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/design.py",
+   "kind": "py",
+   "name": "to_lens",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/design.py",
+   "kind": "py",
+   "name": "tolerances",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/design.py",
+   "kind": "py",
+   "name": "elements",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/design.py",
+   "kind": "py",
+   "name": "scale",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/glass.py",
+   "kind": "py",
+   "name": "catalog",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/glass.py",
+   "kind": "py",
+   "name": "model_glass",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/glass.py",
+   "kind": "py",
+   "name": "index",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/glass.py",
+   "kind": "py",
+   "name": "k_at",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/glass.py",
+   "kind": "py",
+   "name": "internal_transmittance",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/interchange.py",
+   "kind": "py",
+   "name": "to_zmx",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/interchange.py",
+   "kind": "py",
+   "name": "write_zmx",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/interchange.py",
+   "kind": "py",
+   "name": "read_zmx",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/interchange.py",
+   "kind": "py",
+   "name": "to_seq",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/interchange.py",
+   "kind": "py",
+   "name": "write_seq",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/interchange.py",
+   "kind": "py",
+   "name": "read_seq",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/interchange.py",
+   "kind": "py",
+   "name": "to_lens_room",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/interchange.py",
+   "kind": "py",
+   "name": "from_lens_room",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/interchange.py",
+   "kind": "py",
+   "name": "compare",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/interchange.py",
+   "kind": "py",
+   "name": "parse_iso_codes",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/limits.py",
+   "kind": "py",
+   "name": "pupil_field",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/limits.py",
+   "kind": "py",
+   "name": "psf_grid",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/limits.py",
+   "kind": "py",
+   "name": "fisher_axis",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/limits.py",
+   "kind": "py",
+   "name": "qfi_pupil",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/limits.py",
+   "kind": "py",
+   "name": "airy_qfi",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/limits.py",
+   "kind": "py",
+   "name": "transmission",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/limits.py",
+   "kind": "py",
+   "name": "field_limit",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/limits.py",
+   "kind": "py",
+   "name": "bits",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/limits.py",
+   "kind": "py",
+   "name": "report",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "aim_chief",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "bundle",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "field_rays",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "centroid",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "spot_rms",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "wavefront",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "wave_stats",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "pupil_scale",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "otf_slices",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "mtf",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "best_focus",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "distortion_pct",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "chief_height",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "relative_illumination",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "vignetting",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "mtf_geom",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "needed_grid",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optics.py",
+   "kind": "py",
+   "name": "evaluate",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "variables",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "to_vec",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "from_vec",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "hill_climb",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "hinge",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "rule_penalties",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "merit_parts",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "residuals",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "dls",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "to_design",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "improve",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/optimise.py",
+   "kind": "py",
+   "name": "ledger",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/pipeline.py",
+   "kind": "py",
+   "name": "cost_class",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/pipeline.py",
+   "kind": "py",
+   "name": "perf_class",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/pipeline.py",
+   "kind": "py",
+   "name": "headline",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/pipeline.py",
+   "kind": "py",
+   "name": "verdict",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/pipeline.py",
+   "kind": "py",
+   "name": "run",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules.py",
+   "kind": "py",
+   "name": "row",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules.py",
+   "kind": "py",
+   "name": "sag",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules.py",
+   "kind": "py",
+   "name": "slope_deg",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules.py",
+   "kind": "py",
+   "name": "bfs_departure_um",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules.py",
+   "kind": "py",
+   "name": "geometry_rules",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules.py",
+   "kind": "py",
+   "name": "intent_rules",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules.py",
+   "kind": "py",
+   "name": "check",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules.py",
+   "kind": "py",
+   "name": "blockers",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules.py",
+   "kind": "py",
+   "name": "flags",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules_shop.py",
+   "kind": "py",
+   "name": "aperture_rules",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules_shop.py",
+   "kind": "py",
+   "name": "glass_rules",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules_shop.py",
+   "kind": "py",
+   "name": "process_rules",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules_shop.py",
+   "kind": "py",
+   "name": "tolerance_rules",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules_shop.py",
+   "kind": "py",
+   "name": "cement_rules",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules_shop.py",
+   "kind": "py",
+   "name": "moulded_tolerance_rules",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/rules_shop.py",
+   "kind": "py",
+   "name": "test_plate_rule",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/tolerance.py",
+   "kind": "py",
+   "name": "dc_from_fringes",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/tolerance.py",
+   "kind": "py",
+   "name": "sample",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/tolerance.py",
+   "kind": "py",
+   "name": "apply",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/tolerance.py",
+   "kind": "py",
+   "name": "score",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/tolerance.py",
+   "kind": "py",
+   "name": "monte_carlo",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/tolerance.py",
+   "kind": "py",
+   "name": "wilson",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/tolerance.py",
+   "kind": "py",
+   "name": "sensitivities",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/trace.py",
+   "kind": "py",
+   "name": "sag_grad",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/trace.py",
+   "kind": "py",
+   "name": "trace",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/trace.py",
+   "kind": "py",
+   "name": "paraxial",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/trace.py",
+   "kind": "py",
+   "name": "entrance_pupil",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/lenspipe/trace.py",
+   "kind": "py",
+   "name": "launch",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/chain.py",
+   "kind": "py",
+   "name": "sweep",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/chain.py",
+   "kind": "py",
+   "name": "quantise",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/chain.py",
+   "kind": "py",
+   "name": "biquad_highpass",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/chain.py",
+   "kind": "py",
+   "name": "speaker",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/chain.py",
+   "kind": "py",
+   "name": "red_noise",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/chain.py",
+   "kind": "py",
+   "name": "fftconv",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/chain.py",
+   "kind": "py",
+   "name": "loopback",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/chain.py",
+   "kind": "py",
+   "name": "record",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/chain.py",
+   "kind": "py",
+   "name": "deconvolve",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/meter.py",
+   "kind": "py",
+   "name": "schroeder_t60",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/meter.py",
+   "kind": "py",
+   "name": "spectrum",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/meter.py",
+   "kind": "py",
+   "name": "pick_peaks",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/meter.py",
+   "kind": "py",
+   "name": "f_low",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/meter.py",
+   "kind": "py",
+   "name": "density",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/meter.py",
+   "kind": "py",
+   "name": "poisson_fit",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/meter.py",
+   "kind": "py",
+   "name": "box_fit",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/meter.py",
+   "kind": "py",
+   "name": "analyse",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/modes.py",
+   "kind": "py",
+   "name": "weyl",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/modes.py",
+   "kind": "py",
+   "name": "geometry",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/modes.py",
+   "kind": "py",
+   "name": "eigenfrequencies",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/modes.py",
+   "kind": "py",
+   "name": "impulse_response",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/modes.py",
+   "kind": "py",
+   "name": "random_room",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/modes.py",
+   "kind": "py",
+   "name": "corner_positions",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/pencil.py",
+   "kind": "py",
+   "name": "matrix_pencil",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/pencil.py",
+   "kind": "py",
+   "name": "modes_in_band",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/receipt.py",
+   "kind": "py",
+   "name": "code_sha256",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/receipt.py",
+   "kind": "py",
+   "name": "calibration_state",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/receipt.py",
+   "kind": "py",
+   "name": "reading",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/receipt.py",
+   "kind": "py",
+   "name": "read_wav",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/receipt.py",
+   "kind": "py",
+   "name": "write_sweep_wav",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/receipt.py",
+   "kind": "py",
+   "name": "from_wav",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/receipt.py",
+   "kind": "py",
+   "name": "sim_example",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/roundtrip.py",
+   "kind": "py",
+   "name": "ideal_digital",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/roundtrip.py",
+   "kind": "py",
+   "name": "r0_loopback",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/roundtrip.py",
+   "kind": "py",
+   "name": "planted_ir",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/roundtrip.py",
+   "kind": "py",
+   "name": "r1_injection",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/roundtrip.py",
+   "kind": "py",
+   "name": "r2_full",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/roundtrip.py",
+   "kind": "py",
+   "name": "run_all",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/trial.py",
+   "kind": "py",
+   "name": "true_chain_ir",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/trial.py",
+   "kind": "py",
+   "name": "run",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/units_room.py",
+   "kind": "py",
+   "name": "analysis",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/units_room.py",
+   "kind": "py",
+   "name": "shuffled_truth",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/room/units_room.py",
+   "kind": "py",
+   "name": "signflip",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/views/lens-room/build.mjs",
+   "kind": "file",
+   "name": "build.mjs",
+   "field": null
+  },
+  {
+   "package": "rooms fluid",
+   "file": "packages/rooms/views/fluid-room/build.mjs",
+   "kind": "file",
+   "name": "build.mjs",
+   "field": null
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/views/map-room/build.mjs",
+   "kind": "file",
+   "name": "build.mjs",
+   "field": null
+  },
+  {
+   "package": "rooms pcb",
+   "file": "packages/rooms/views/pcb-room/build.mjs",
+   "kind": "file",
+   "name": "build.mjs",
+   "field": null
+  },
+  {
+   "package": "rooms sound",
+   "file": "packages/rooms/views/sound-room/build.mjs",
+   "kind": "file",
+   "name": "build.mjs",
+   "field": null
+  },
+  {
+   "package": "rooms",
+   "file": "packages/rooms/views/build-view.mjs",
+   "kind": "file",
+   "name": "build-view.mjs",
+   "field": "all"
+  },
+  {
+   "package": "rooms map",
+   "file": "packages/rooms/maps/registry.json",
+   "kind": "file",
+   "name": "registry.json",
+   "field": null
+  },
+  {
+   "package": "rooms lens",
+   "file": "packages/rooms/tests/golden/lens-page.json",
+   "kind": "file",
+   "name": "lens-page.json",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/schemas/instrument.schema.json",
+   "kind": "file",
+   "name": "instrument.schema.json",
+   "field": "measure"
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/schemas/receipt.schema.json",
+   "kind": "file",
+   "name": "receipt.schema.json",
+   "field": "measure"
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/records/room.json",
+   "kind": "file",
+   "name": "room.json",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/records/jnt.json",
+   "kind": "file",
+   "name": "jnt.json",
+   "field": null
+  },
+  {
+   "package": "instruments",
+   "file": "packages/instruments/records/polariscope.json",
+   "kind": "file",
+   "name": "polariscope.json",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/src/blueprint.js",
+   "kind": "file",
+   "name": "blueprint.js",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/src/kicad.js",
+   "kind": "file",
+   "name": "kicad.js",
+   "field": null
+  },
+  {
+   "package": "diagram cad",
+   "file": "packages/diagram/cad/export.js",
+   "kind": "file",
+   "name": "export.js",
+   "field": null
+  },
+  {
+   "package": "lenspipe",
+   "file": "packages/lenspipe/data/glass_catalog.json",
+   "kind": "file",
+   "name": "glass_catalog.json",
+   "field": null
+  },
+  {
+   "package": "shaders",
+   "file": "native/web/shaders/lens",
+   "kind": "file",
+   "name": "lens",
+   "field": null
+  },
+  {
+   "package": "shaders",
+   "file": "native/web/shaders/cascades",
+   "kind": "file",
+   "name": "cascades",
+   "field": null
+  },
+  {
+   "package": "shaders",
+   "file": "native/web/shaders/cascades3d",
+   "kind": "file",
+   "name": "cascades3d",
+   "field": null
+  }
+ ]
+}

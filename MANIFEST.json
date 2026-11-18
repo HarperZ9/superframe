@@ -6556,8 +6556,8 @@
   {
    "path": "packages/README.md",
    "source": "repo",
-   "bytes": 12544,
-   "sourceSha256": "9322fc987359855b8fb2dd1f89eb7811d8fbc478ebe48ce5dc8ba1a6ce4f6494"
+   "bytes": 12811,
+   "sourceSha256": "3cdac3daca2b005c40067bd494304974c670a268fb51319ad6402c47922c022f"
   },
   {
    "path": "packages/_vectors/canonical_vectors.json",
@@ -12748,8 +12748,8 @@
   {
    "path": "packages/measured/tests/test_constants.py",
    "source": "repo",
-   "bytes": 3581,
-   "sourceSha256": "a6ec515ef361b3438808f5646873de8f8480af9b6f2ff2879ce25e5d527e8386"
+   "bytes": 3991,
+   "sourceSha256": "fa8c67b81e61b1edc1be68bd52911442c8fb2da51947988afb8afee027633231"
   },
   {
    "path": "packages/measured/tests/test_measured.py",
@@ -17688,6 +17688,102 @@
    "source": "repo",
    "bytes": 5400,
    "sourceSha256": "6da96d406b0d585114c9ed1642232ed3a680b7322fe22cb797a0fe77fa336fec"
+  },
+  {
+   "path": "packages/world/README.md",
+   "source": "repo",
+   "bytes": 4067,
+   "sourceSha256": "51f51c88eb9c0461ad4b58ed3414ddf2a8cbe0b76407a535e7afebb6768393e6"
+  },
+  {
+   "path": "packages/world/bench.mjs",
+   "source": "repo",
+   "bytes": 885,
+   "sourceSha256": "477581f10d5a547b7d661a14aae94aaef1ce186ff41da518812623fc9d6b11f4"
+  },
+  {
+   "path": "packages/world/bundle.mjs",
+   "source": "repo",
+   "bytes": 3878,
+   "sourceSha256": "efb80c206ea11a545b47eaa91e01f608f0d98d4bac47e3aa92658e718bb5f16c"
+  },
+  {
+   "path": "packages/world/dist/world-field.mjs",
+   "source": "repo",
+   "bytes": 76178,
+   "sourceSha256": "f629eebb9aa9be5b745a909949c93ae51578706fa517c327f55d475d60f7e37f"
+  },
+  {
+   "path": "packages/world/field.mjs",
+   "source": "repo",
+   "bytes": 5509,
+   "sourceSha256": "a4a3c93018962f75f44e5db23ed9d2b85839a42382b92deff2fb6adae0b0c66c"
+  },
+  {
+   "path": "packages/world/package.json",
+   "source": "repo",
+   "bytes": 200,
+   "sourceSha256": "0014e3b11830fd747993faee42a7f13b92f758d2b57e48dc378bdb08e27a3eb3"
+  },
+  {
+   "path": "packages/world/parity.json",
+   "source": "repo",
+   "bytes": 75956,
+   "sourceSha256": "90c258078630822494858e44588ae06fe266361081af1113ec5902dc9ed80607"
+  },
+  {
+   "path": "packages/world/parity.mjs",
+   "source": "repo",
+   "bytes": 7444,
+   "sourceSha256": "ae5e18695a5653652bdf10d5015cbffff24ff6225b8c824440039411440b4cdf"
+  },
+  {
+   "path": "packages/world/properties.mjs",
+   "source": "repo",
+   "bytes": 10283,
+   "sourceSha256": "6de38fb28938dad32023b1fbd79b48817f51e0339f94d264ab6266f1e46b721c"
+  },
+  {
+   "path": "packages/world/scene-read.mjs",
+   "source": "repo",
+   "bytes": 4915,
+   "sourceSha256": "29f15ce27f16bb79fe5a55243e4b69d55dd7cb9fe57237513696d8b06ba7daef"
+  },
+  {
+   "path": "packages/world/scene.mjs",
+   "source": "repo",
+   "bytes": 9303,
+   "sourceSha256": "f1493a2cd881db55ea63c80cabb9f9b910c884a6708c15d927debd54c3fff842"
+  },
+  {
+   "path": "packages/world/src/field_kernel.bld",
+   "source": "repo",
+   "bytes": 3320,
+   "sourceSha256": "da1fa4d96fd59e99faeda74736663deda16265aeeba6575c6939d5f093fda412"
+  },
+  {
+   "path": "packages/world/src/field_kernel.expected",
+   "source": "repo",
+   "bytes": 1121,
+   "sourceSha256": "bae484c13a4e90b482cc9cff80d3152b7ed4a5f8acda2464ef4e8502aecdf042"
+  },
+  {
+   "path": "packages/world/tests/field.test.mjs",
+   "source": "repo",
+   "bytes": 5664,
+   "sourceSha256": "58c31a704ac4fa7f6cdbf2d4edba061727461438c915e5bcff54f85eb4fb1bb5"
+  },
+  {
+   "path": "packages/world/tests/parity.test.mjs",
+   "source": "repo",
+   "bytes": 2429,
+   "sourceSha256": "6155395b6ec38fd90d7035706202cfcad3c3b866ed4b90e997db4b4eefb182a7"
+  },
+  {
+   "path": "packages/world/tests/scene.test.mjs",
+   "source": "repo",
+   "bytes": 6082,
+   "sourceSha256": "2b179394993adec21dd33b1de0333db7b475c840df7260952618e1ca5c1e2402"
   }
  ]
 }
