@@ -2,8 +2,8 @@
 // solids the camera steers by, so a wrong solid shows up as a failure here.
 //   const G = makeTriangleGrid(); G.add(a, b, c) ... ; G.probe(eye, near) -> { clipped, enclosed, nearest }
 // clipped: a triangle closer than `near` (the near plane would cut it open on screen).
-// enclosed: rays east, west, north, south and up all meet a triangle within `reach` metres, as they
-// do from inside a house; under an eave or beside one wall, at least one ray gets out.
+// enclosed: inside a closed shape: along level rays the nearest faces are back faces (outward-wound
+// meshes seen from inside); under an eave, between two walls or beside a window, it is not.
 const CELL = 2;
 
 export function makeTriangleGrid() {
@@ -20,26 +20,41 @@ export function makeTriangleGrid() {
     for (let i = Math.floor(x0 / CELL); i <= Math.floor(x1 / CELL); i++) for (let j = Math.floor(z0 / CELL); j <= Math.floor(z1 / CELL); j++) for (const t of grid.get(key(i, j)) || []) out.add(t);
     return out;
   }
+  // the nearest triangle along a ray within reach: { h, back } (back: its face turns away from the ray's
+  // origin, as every wall does seen from inside a closed shape), or null
   function ray(o, d, reach) {
-    // walk the cells the ray crosses on the map, testing each cell's triangles
     const seen = new Set(), steps = Math.ceil(reach / (CELL * 0.5));
+    let best = reach, bt = -1;
     for (let s = 0; s <= steps; s++) {
+      if (bt >= 0 && best < s * CELL * 0.5 - CELL) break;
       const p = [o[0] + d[0] * s * CELL * 0.5, o[2] + d[2] * s * CELL * 0.5];
       for (const t of grid.get(key(Math.floor(p[0] / CELL), Math.floor(p[1] / CELL))) || []) {
         if (seen.has(t)) continue; seen.add(t);
-        const h = hit(o, d, tris[t]); if (h > 0 && h < reach) return h;
+        const h = hit(o, d, tris[t]); if (h > 0 && h < best) { best = h; bt = t; }
       }
       if (d[0] === 0 && d[2] === 0) break;
     }
-    return -1;
+    if (bt < 0) return null;
+    const [A, B, C] = tris[bt], e1 = [B[0] - A[0], B[1] - A[1], B[2] - A[2]], e2 = [C[0] - A[0], C[1] - A[1], C[2] - A[2]];
+    const n = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+    return { h: best, back: n[0] * d[0] + n[1] * d[1] + n[2] * d[2] > 0 };
   }
-  function probe(eye, near = 0.2, reach = 16) {
+  function probe(eye, near = 0.2, reach = 24) {
     let nearest = 1e9;
     for (const t of around(eye[0] - near - 1, eye[2] - near - 1, eye[0] + near + 1, eye[2] + near + 1)) nearest = Math.min(nearest, pointTri(eye, tris[t]));
-    const dirs = [[1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1], [0, 1, 0]], hits = dirs.map((d) => ray(eye, d, reach));
-    return { clipped: nearest < near, enclosed: hits.every((h) => h > 0), nearest, hits };
+    // inside a closed shape: the nearest face along at least three of four level rays is a back face
+    // (meshes are wound outward, walk/build/kit.mjs); a window or a sign on a wall does not fool it
+    const dirs = [[1, 0, 0.013], [-1, 0, -0.011], [0.017, 0, 1], [-0.009, 0, -1]].map((d) => { const l = Math.hypot(...d); return d.map((v) => v / l); });
+    const backs = dirs.map((d) => ray(eye, d, reach)).filter((r) => r && r.back).length;
+    return { clipped: nearest < near, enclosed: backs >= 3, nearest, backs };
   }
-  return { add, probe, around, get count() { return tris.length; } };
+  // unsigned distance from a point to the nearest triangle within `reach` (reach + 1 when none is)
+  function distance(p, reach = 1.5) {
+    let d = reach + 1;
+    for (const t of around(p[0] - reach, p[2] - reach, p[0] + reach, p[2] + reach)) { const tr = tris[t]; if (Math.min(tr[0][1], tr[1][1], tr[2][1]) - p[1] > d || p[1] - Math.max(tr[0][1], tr[1][1], tr[2][1]) > d) continue; d = Math.min(d, pointTri(p, tr)); }
+    return d;
+  }
+  return { add, probe, around, distance, get count() { return tris.length; } };
 }
 
 // Moller-Trumbore: distance along d to the triangle, or -1

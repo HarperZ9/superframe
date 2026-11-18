@@ -13,11 +13,11 @@
 // behind `target` along the view. Two poses blend in that form, so the subject stays framed while
 // one becomes the other; perspective turns into orthographic by a dolly zoom (the field narrows to
 // 3 degrees while the eye draws back) and the switch to a true orthographic view comes at the end.
-import { clamp, damp, dampAngle, lerp, lerpAngle, smooth, forward, heading, wrap } from "./math.mjs";
+import { clamp, damp, dampAngle, lerp, lerpAngle, smooth, forward, heading, wrap, dsin, dcos, dtan, dlog, dexp, dpow, hyp3, DPI } from "./math.mjs";
 
 export const MODES = ["nav", "follow", "first", "iso"];
-const ISO = { yaw: 26 * Math.PI / 180, pitch: -30 * Math.PI / 180, half: 7.25, fov: 3 };
-const BLEND_S = 0.9, R2D = 180 / Math.PI, D2R = Math.PI / 180;
+const ISO = { yaw: 26 * DPI / 180, pitch: -30 * DPI / 180, half: 7.25, fov: 3 };
+const BLEND_S = 0.9, R2D = 180 / DPI, D2R = DPI / 180;
 
 export function makeCamera({ solids, ground, mode = "follow", yaw = 0, pitch = -0.1 } = {}) {
   const st = {
@@ -34,7 +34,7 @@ export function makeCamera({ solids, ground, mode = "follow", yaw = 0, pitch = -
     for (let i = 0; i < 6; i++) {
       const d = solids ? solids.sdfSolids(p) : 1e9;
       if (d >= pad) break;
-      const e = 0.05, g = [solids.sdfSolids([p[0] + e, p[1], p[2]]) - solids.sdfSolids([p[0] - e, p[1], p[2]]), solids.sdfSolids([p[0], p[1] + e, p[2]]) - solids.sdfSolids([p[0], p[1] - e, p[2]]), solids.sdfSolids([p[0], p[1], p[2] + e]) - solids.sdfSolids([p[0], p[1], p[2] - e])], l = Math.hypot(...g) || 1;
+      const e = 0.05, g = [solids.sdfSolids([p[0] + e, p[1], p[2]]) - solids.sdfSolids([p[0] - e, p[1], p[2]]), solids.sdfSolids([p[0], p[1] + e, p[2]]) - solids.sdfSolids([p[0], p[1] - e, p[2]]), solids.sdfSolids([p[0], p[1], p[2] + e]) - solids.sdfSolids([p[0], p[1], p[2] - e])], l = hyp3(g[0], g[1], g[2]) || 1;
       for (let k = 0; k < 3; k++) p[k] += (g[k] / l) * (pad - d + 0.01);
     }
     p[1] = Math.max(p[1], ground(p[0], p[2]) + pad);
@@ -45,7 +45,7 @@ export function makeCamera({ solids, ground, mode = "follow", yaw = 0, pitch = -
     const N = st.nav;
     N.yaw = wrap(N.yaw + inp.look[0]); N.pitch = clamp(N.pitch - inp.look[1], -1.5, 1.5);
     const agl = Math.max(0, N.p[1] - ground(N.p[0], N.p[2])), v = (inp.fast ? 6 : 1) * 9 * Math.max(1, agl / 12);
-    const f = forward(N.yaw, N.pitch), r = [Math.cos(N.yaw), 0, Math.sin(N.yaw)], m = inp.move;
+    const f = forward(N.yaw, N.pitch), r = [dcos(N.yaw), 0, dsin(N.yaw)], m = inp.move;
     const want = [(f[0] * -m[1] + r[0] * m[0]) * v, (f[1] * -m[1] + (inp.rise || 0)) * v, (f[2] * -m[1] + r[2] * m[0]) * v];
     for (let k = 0; k < 3; k++) { N.v[k] = damp(N.v[k], want[k], 0.18, dt); N.p[k] += N.v[k] * dt; }
     // the floor: a metre and a half over the ground, and out of anything built
@@ -67,9 +67,15 @@ export function makeCamera({ solids, ground, mode = "follow", yaw = 0, pitch = -
     // seconds, holds while the walker stands, and comes in over two and a half once walls are near
     const crowd = solids ? solids.near(body.x, body.z, 16, []).length : 0, open = crowd === 0 && body.speed > 0.6;
     F.open = clamp(F.open + (open ? dt / 10 : crowd > 0 ? -dt / 2.5 : 0), 0, 1);
-    const pull = smooth(F.open), r = [Math.cos(F.yaw), 0, Math.sin(F.yaw)];
+    const pull = smooth(F.open), r = [dcos(F.yaw), 0, dsin(F.yaw)];
     const shoulder = lerp(0.42, 0.15, pull), pivot = [body.x + F.lead[0] + r[0] * shoulder, body.y + 1.55 + pull * 0.6, body.z + F.lead[1] + r[2] * shoulder];
     F.pivot = F.pivot ? F.pivot.map((v, k) => damp(v, pivot[k], k === 1 ? 0.12 : 0.05, dt)) : pivot;
+    // the pivot leads and stands off the shoulder, so beside a wall it can reach into it: it is held
+    // on the near side, cast out from the walker's head (which the body keeps clear of every wall)
+    if (st.collide && solids) {
+      const head = [body.x, body.y + 1.55, body.z], t = solids.castSphere(head, F.pivot, 0.26, { ground: false });
+      if (t < 1) F.pivot = head.map((v, k) => v + (F.pivot[k] - v) * t);
+    }
     const want = lerp(3.8, 15, pull), pitch = F.pitch - pull * 0.14, f = forward(F.yaw, pitch);
     let reach = want;
     if (st.collide && solids) {
@@ -80,7 +86,15 @@ export function makeCamera({ solids, ground, mode = "follow", yaw = 0, pitch = -
       if (t < 1) st.hits++;
     }
     F.arm = reach < F.arm ? reach : damp(F.arm, reach, 0.45, dt);
-    return { target: F.pivot.slice(), yaw: F.yaw, pitch, dist: F.arm, fov: 55 - pull * 6, ortho: false, near: 0.2 };
+    // last, the eye itself is held clear: a wall that stands at the pivot (a doorway, a planted wall)
+    // moves the whole frame off it rather than letting the near plane cut it
+    let target = F.pivot.slice();
+    if (st.collide && solids) {
+      const eye = [target[0] - f[0] * F.arm, target[1] - f[1] * F.arm, target[2] - f[2] * F.arm], e0 = eye.slice();
+      clear(eye, 0.24);
+      for (let k = 0; k < 3; k++) target[k] += eye[k] - e0[k];
+    }
+    return { target, yaw: F.yaw, pitch, dist: F.arm, fov: 55 - pull * 6, ortho: false, near: 0.2 };
   }
 
   function firstPose(dt, inp, body, anim) {
@@ -88,29 +102,29 @@ export function makeCamera({ solids, ground, mode = "follow", yaw = 0, pitch = -
     P.yaw = wrap(P.yaw + inp.look[0]); P.pitch = clamp(P.pitch - inp.look[1], -1.35, 1.35);
     // the eyes: above the neck, a hand ahead of it; the step's rise and fall from the stride's phase
     const u = anim ? anim.phase : 0, mv = anim ? anim.moving : 0, run = clamp((body.speed - 1.9) / 1.6, 0, 1), A = lerp(0.028, 0.055, run) * mv;
-    const neck = anim ? anim.neck : [body.x, body.y + 1.6, body.z], f = forward(P.yaw, 0), r = [Math.cos(P.yaw), 0, Math.sin(P.yaw)];
-    const bob = -A * (1 + Math.cos(4 * Math.PI * u)) / 2, sway = Math.sin(2 * Math.PI * u) * A * 0.45;
+    const neck = anim ? anim.neck : [body.x, body.y + 1.6, body.z], f = forward(P.yaw, 0), r = [dcos(P.yaw), 0, dsin(P.yaw)];
+    const bob = -A * (1 + dcos(4 * DPI * u)) / 2, sway = dsin(2 * DPI * u) * A * 0.45;
     const eye = [neck[0] + f[0] * 0.13 + r[0] * sway, neck[1] + 0.13 + bob, neck[2] + f[2] * 0.13 + r[2] * sway];
     if (st.collide && solids) clear(eye, 0.12);
-    return { target: eye, yaw: P.yaw, pitch: P.pitch, dist: 0, fov: 68, ortho: false, near: 0.05, roll: Math.sin(2 * Math.PI * u) * 0.006 * mv };
+    return { target: eye, yaw: P.yaw, pitch: P.pitch, dist: 0, fov: 68, ortho: false, near: 0.05, roll: dsin(2 * DPI * u) * 0.006 * mv };
   }
 
   function isoPose(dt, inp, body) {
     const I = st.iso;
-    I.zoom = clamp(I.zoom * Math.pow(1.15, inp.zoom || 0), 0.4, 5);
+    I.zoom = clamp(I.zoom * dpow(1.15, inp.zoom || 0), 0.4, 5);
     if (inp.turnIso) I.turn = (I.turn + inp.turnIso) % 4;
     const goal = [body.x + body.vx * 0.25, body.y + 1.0, body.z + body.vz * 0.25];
     I.target = I.target ? I.target.map((v, k) => damp(v, goal[k], 0.14, dt)) : goal;
     const half = ISO.half * I.zoom, fov = ISO.fov;
-    return { target: I.target.slice(), yaw: wrap(ISO.yaw + I.turn * Math.PI / 2), pitch: ISO.pitch, dist: half / Math.tan(fov * D2R / 2), fov, ortho: true, half, near: 1 };
+    return { target: I.target.slice(), yaw: wrap(ISO.yaw + I.turn * DPI / 2), pitch: ISO.pitch, dist: half / dtan(fov * D2R / 2), fov, ortho: true, half, near: 1 };
   }
 
   // blend two poses in framing space
   function blend(a, b, w) {
     if (w >= 1) return b; if (w <= 0) return a;
-    const ha = Math.max(0.05, a.dist) * Math.tan(a.fov * D2R / 2), hb = Math.max(0.05, b.dist) * Math.tan(b.fov * D2R / 2);
-    const fov = Math.exp(lerp(Math.log(a.fov), Math.log(b.fov), w)), half = Math.exp(lerp(Math.log(ha), Math.log(hb), w));
-    const dist = (a.dist < 0.05 && b.dist < 0.05) ? 0 : half / Math.tan(fov * D2R / 2);
+    const ha = Math.max(0.05, a.dist) * dtan(a.fov * D2R / 2), hb = Math.max(0.05, b.dist) * dtan(b.fov * D2R / 2);
+    const fov = dexp(lerp(dlog(a.fov), dlog(b.fov), w)), half = dexp(lerp(dlog(ha), dlog(hb), w));
+    const dist = (a.dist < 0.05 && b.dist < 0.05) ? 0 : half / dtan(fov * D2R / 2);
     return { target: a.target.map((v, k) => lerp(v, b.target[k], w)), yaw: lerpAngle(a.yaw, b.yaw, w), pitch: lerp(a.pitch, b.pitch, w), dist, fov, ortho: false, near: Math.min(a.near, b.near), roll: lerp(a.roll || 0, b.roll || 0, w) };
   }
 

@@ -32,10 +32,15 @@ export function makeSolids({ ground, maxCells = 4096 } = {}) {
     return out;
   }
   const scratch = [];
-  // signed distance from a point to the nearest solid (not the ground); negative inside
+  // drawn triangles the camera keeps clear of (play/geocheck.mjs makeTriangleGrid): what a house's
+  // walls and roof leave out, its signs, clutter, cables and people, is in the mesh
+  const meshes = [];
+  // signed distance from a point to the nearest solid (not the ground); negative inside a shape,
+  // never negative for a mesh (its distance is unsigned)
   function sdfSolids(p, reach = 6) {
     let d = 1e9;
     for (const s of near(p[0], p[2], reach, scratch)) d = Math.min(d, sdf(s, p));
+    for (const g of meshes) d = Math.min(d, g.distance(p, Math.min(1.5, Math.max(0.3, d))));
     return d;
   }
   // the ground as a distance: height above it, eased for slopes (a lower bound up to 45 degrees)
@@ -45,10 +50,10 @@ export function makeSolids({ ground, maxCells = 4096 } = {}) {
   // A sphere of radius r moved from a to b: the share of the way it gets before it touches
   // anything (1: the whole way). A start already touching gives 0.
   function castSphere(a, b, r, { ground: withGround = true } = {}) {
-    const d = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], L = Math.hypot(d[0], d[1], d[2]);
+    const d = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], L = Math.sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]);
     if (L < 1e-6) return 1;
     const u = [d[0] / L, d[1] / L, d[2] / L], list = near((a[0] + b[0]) / 2, (a[2] + b[2]) / 2, L / 2 + r + 2, []);
-    const at = (t) => { const p = [a[0] + u[0] * t, a[1] + u[1] * t, a[2] + u[2] * t]; let m = withGround ? sdfGround(p) : 1e9; for (const s of list) m = Math.min(m, sdf(s, p)); return m - r; };
+    const at = (t) => { const p = [a[0] + u[0] * t, a[1] + u[1] * t, a[2] + u[2] * t]; let m = withGround ? sdfGround(p) : 1e9; for (const s of list) m = Math.min(m, sdf(s, p)); for (const g of meshes) m = Math.min(m, g.distance(p, Math.min(1.5, Math.max(r + 0.05, m)))); return m - r; };
     let t = 0;
     for (let i = 0; i < 96 && t < L; i++) {
       const m = at(t);
@@ -78,7 +83,7 @@ export function makeSolids({ ground, maxCells = 4096 } = {}) {
   // a solid put in by hand: the checks plant a wall to prove the camera check can fail
   function plant(s) { planted.push(s); cells.clear(); return s; }
   function unplant(s) { const i = planted.indexOf(s); if (i >= 0) planted.splice(i, 1); cells.clear(); }
-  return { sources, near, sdf: sdfAll, sdfSolids, castSphere, pushOut, inside, plant, unplant, ground, forget: () => cells.clear() };
+  return { sources, meshes, near, sdf: sdfAll, sdfSolids, castSphere, pushOut, inside, plant, unplant, ground, forget: () => cells.clear() };
 }
 
 // local axes of a turned shape
