@@ -2,7 +2,7 @@
 // (web/shaders/cascades3d, docs/radiance-cascades-3d.md).
 //
 //   raw_native_cli gi-reference (--scene-file F | scene flags as for a render) [--export F]
-//                               [--pt DIR --width W --height H --spp N --bounces B --seed S] [--cpu]
+//                               [--pt DIR --width W --height H --spp N --bounces B --seed S --jitter] [--cpu --threads T]
 //
 // The scene comes from a scene file (web/shaders/cascades3d/scene3d.mjs writes one) or from the
 // render flags (--owned-scene raw-hall-nave, ...), lit as pt-error lights it: sky 0.2, sun irradiance
@@ -149,7 +149,7 @@ int giReferenceCommand(int argc, char** argv) {
         cam = rt::ptCameraOf(sc.camera);
     }
     if (out.empty() && ptDir.empty()) {
-        std::printf("usage: raw_native_cli gi-reference (--scene-file F | scene flags) [--export F] [--pt DIR --width W --height H --spp N --bounces B --seed S] [--cpu]\n");
+        std::printf("usage: raw_native_cli gi-reference (--scene-file F | scene flags) [--export F] [--pt DIR --width W --height H --spp N --bounces B --seed S --jitter] [--cpu --threads T]\n");
         return 2;
     }
     std::printf("gi-reference: %zu triangles\n", s.geo.triangles());
