@@ -44,6 +44,7 @@ The page draws four passes on the engine's web GPU host (`native/web/raw-gpu.mjs
 
 - **Ground.** CDLOD on a quadtree from 32.8 km nodes to 128 m, vertices 4 m apart under the walker. The 64 m raster carries the land; a lattice noise adds relief 16 m and 4 m across, and the walker's feet compute the same function.
 - **Water.** One surface for the sea, the lakes and the rivers, with depth colour, a wind-driven swell, foam at the shore and lamp streaks near towns.
+- **The kit of parts** (`walk/build/parts.mjs`). Windows, doors, lanterns turned on a lathe, signs with lettering drawn from a seed, chimneys, clutter (air conditioners, potted plants, bicycles, crates, vending machines, heaps of shovelled snow), cables across lanes, and people as small figures with coats and umbrellas. Each region builds from the same parts in its own vernacular (`VERNACULAR`: snow, coast, marsh). The snow town of Thaw Country is built from it.
 - **Masses.** Instanced trees and grass round the walker, and placeholder architecture from `world.json` at three scales: houses and ring walls, monuments, megastructures.
 - **Sky.** Sun, moon, stars, the Milky Way, a cloud layer with storm cells, a 22 degree halo, aurora and a comet.
 - **Weather and time** (`weather.mjs`). A day weighted toward dusk, night and dawn, one signature weather for each region with gradient borders, and sky events by rule from the seed.
