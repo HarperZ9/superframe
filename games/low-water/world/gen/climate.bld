@@ -79,7 +79,10 @@ pub fn temperature(height: f64, y: i64, hh: i64) -> f64 {
     let v = (y as f64) / (hh as f64);
     let mut e = height;
     if e < 0.0 { e = 0.0; }
-    -3.0 + 16.5 * v - 5.0 * e / 1000.0
+    // the northern third is colder again, so snow lies to the shore there
+    let mut north = (0.35 - v) / 0.35;
+    if north < 0.0 { north = 0.0; }
+    -3.0 + 16.5 * v - 5.0 * e / 1000.0 - 4.0 * north
 }
 
 // Distance to the sea in cells for land, by a breadth-first walk from the shore (capped at 9999).
