@@ -8,7 +8,7 @@
 import { heading } from "./math.mjs";
 
 const clockOf = { night: 21.2, dusk: 18.3, dawn: 6.9 };
-export function viewpoints({ world, roads, towns = [], works = null, ground, water = () => -1e9, solids = null }) {
+export function viewpoints({ world, roads, towns = [], works = null, coast = null, marsh = null, ground, water = () => -1e9, solids = null }) {
   const out = [], clear = (x, z, eye) => { const y = ground(x, z) + eye; return (!solids || solids.sdfSolids([x, y, z]) > 0.5) && water(x, z) < ground(x, z) - 0.05; };
   const add = (v) => { if (clear(v.x, v.z, v.eye)) out.push({ pitch: 0.02, day: 3, mode: "first", ...v }); };
   // stand on a lane at share t of its length and look along it, toward its far end (or back)
@@ -52,6 +52,17 @@ export function viewpoints({ world, roads, towns = [], works = null, ground, wat
     const isle = [world.json.isle_centre[0] * world.cell, world.json.isle_centre[1] * world.cell], v = [isle[0] - c[0], isle[1] - c[1]], l = Math.hypot(...v) || 1;
     for (const d of [160, 200, 240, 120]) { const n = out.length; const x = c[0] + v[0] / l * d, z = c[1] + v[1] / l * d; add({ name: "works-yard", says: "in the works yard, the furnaces ahead", x, z, yaw: heading(-v[0], -v[1]), eye: 1.7, clock: 21.5, pitch: 0.12 }); if (out.length > n) break; }
   }
+  // a place looked at from a stand-off: the first bearing and distance with dry, clear ground
+  const standOff = (name, says, c, dists, extra) => {
+    for (const d of dists) for (let b = 0; b < 360; b += 15) {
+      const u = [Math.sin(b * Math.PI / 180), -Math.cos(b * Math.PI / 180)], x = c[0] + u[0] * d, z = c[1] + u[1] * d, n = out.length;
+      add({ name, says, x, z, yaw: heading(-u[0], -u[1]), eye: 1.7, ...extra });
+      if (out.length > n) return;
+    }
+  };
+  // the storm coast: its sea stacks from the shore at dusk; the marsh: a reed hall from its causeway
+  if (coast && coast.marks.length) standOff("storm-coast", "the sea stacks of the storm coast from the shore, at dusk", [coast.marks[0].wx, coast.marks[0].wz], [260, 340, 420, 520], { clock: 17.3, pitch: 0.05 });
+  if (marsh && marsh.marks.length) standOff("marsh-hall", "a reed hall of the marsh from the water's edge", [marsh.marks[0].wx, marsh.marks[0].wz], [45, 60, 80, 110], { clock: 15.4, pitch: 0.04 });
   // the fog forest: the road point with the most forest cover round it, looking along the road
   if (roads) {
     let best = null;
