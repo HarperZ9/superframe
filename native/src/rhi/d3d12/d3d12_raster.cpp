@@ -17,8 +17,8 @@ D3D12_COMPARISON_FUNC compareOf(CompareFunc c){
 // a sampler table for a sampler, and a root UAV (u<k>, k counting storage bindings) for a
 // read-only storage buffer, the same state the compute passes keep their buffers in.
 bool rootSignature(ID3D12Device* d, std::span<const RasterBinding> layout, ComPtr<ID3D12RootSignature>& out, const std::string& pass, std::string& err){
-    D3D12_ROOT_PARAMETER params[8] = {};
-    D3D12_DESCRIPTOR_RANGE ranges[8] = {};
+    D3D12_ROOT_PARAMETER params[kMaxRasterBindings] = {};
+    D3D12_DESCRIPTOR_RANGE ranges[kMaxRasterBindings] = {};
     UINT cbv = 0, srv = 0, smp = 0, uav = 0;
     for (size_t i = 0; i < layout.size(); ++i){
         params[i].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -44,7 +44,7 @@ RasterPipelineHandle D3d12Device::createRasterPipeline(const RasterPipelineDesc&
     const std::string pass = desc.label;
     if (desc.vertex.format != ShaderFormat::Dxil || desc.fragment.format != ShaderFormat::Dxil || !desc.vertex.bytes || !desc.fragment.bytes){
         err = "raster pass " + pass + ": the D3D12 backend takes DXIL"; return {}; }
-    if (desc.layout.size() > 8){ err = "raster pass " + pass + ": more than 8 bindings"; return {}; }
+    if (desc.layout.size() > kMaxRasterBindings){ err = "raster pass " + pass + ": more than " + std::to_string(kMaxRasterBindings) + " bindings"; return {}; }
     if (desc.targetCount == 0 || desc.targetCount > kMaxColorTargets){ err = "raster pass " + pass + ": 1 to 4 colour targets"; return {}; }
     RasterRec r;
     r.layout.assign(desc.layout.begin(), desc.layout.end());
