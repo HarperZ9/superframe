@@ -30,6 +30,7 @@ export async function loadWorld(base, onProgress = () => {}, start = null, first
       for (let k = 0; k < data.length; k++) store(w, n, k, data[k]);
       onProgress(++done / NAMES.length, n);
     }));
+    w.coarse = w.height;
     return w;
   }
   const bin = async (f) => gunzip(new Uint8Array(await (await fetch(`${base}/tiles/${f}`)).arrayBuffer()));
@@ -45,6 +46,8 @@ export async function loadWorld(base, onProgress = () => {}, start = null, first
     w.water[k] = small.water[o] > 0 ? small.water[o] / 16 - 512 : -512;
     w.biome[k] = small.biome[o]; w.region[k] = small.region[o]; w.river[k] = small.river[o]; w.moist[k] = small.moist[o];
   }
+  // the eased overview stays as it is, for whatever must not change as tiles arrive (the bends of the roads)
+  w.coarse = Float32Array.from(w.height);
   onProgress(0.1, "the whole island");
   const T = idx.tile, got = new Uint8Array(idx.cols * idx.rows), listeners = [], sx = start ? start[0] : w.width / 2, sz = start ? start[1] : w.depth / 2;
   w.has = (x0, z0, x1, z1) => {
@@ -77,6 +80,11 @@ export async function loadWorld(base, onProgress = () => {}, start = null, first
 
 const clampi = (v, a, b) => v < a ? a : v > b ? b : v;
 // raster height in metres at a point in metres, the same bilinear rule the shader uses
+// the eased overview height at a point, bilinear: the same number whenever it is asked
+export function coarseAt(w, x, z) {
+  const h = w.coarse || w.height, qx = Math.min(w.W - 1.001, Math.max(0, x / w.cell - 0.5)), qz = Math.min(w.H - 1.001, Math.max(0, z / w.cell - 0.5)), ix = Math.floor(qx), iz = Math.floor(qz), fx = qx - ix, fz = qz - iz, k = iz * w.W + ix;
+  return (h[k] * (1 - fx) + h[k + 1] * fx) * (1 - fz) + (h[k + w.W] * (1 - fx) + h[k + w.W + 1] * fx) * fz;
+}
 export function heightAt(w, x, z) {
   const qx = x / w.cell - 0.5, qz = z / w.cell - 0.5, ix = Math.floor(qx), iz = Math.floor(qz), fx = qx - ix, fz = qz - iz;
   const x0 = clampi(ix, 0, w.W - 1), x1 = clampi(ix + 1, 0, w.W - 1), z0 = clampi(iz, 0, w.H - 1), z1 = clampi(iz + 1, 0, w.H - 1), h = w.height;
@@ -175,7 +183,7 @@ function bakePrep(w) {
     }
   };
   for (const s of w.json.settlements) lamp(s.x, s.y, s.kind === "seat" ? 12 : s.kind === "town" ? 9 : s.kind === "village" ? 4 : 1.5, s.kind === "house" ? 0.5 : 1);
-  const BRIGHT = { furnace: [8, 1], stack: [3, 0.6], tenement: [3, 0.8], decotower: [4, 1], slab: [3, 0.8], tower: [8, 0.8], spire: [5, 0.6], lighthouse: [5, 1], coolingtower: [5, 0.7], piperack: [4, 0.7], glasshall: [4, 1], mudhif: [1.6, 0.9] };
+  const BRIGHT = { furnace: [15, 1], stack: [3, 0.6], tenement: [3, 0.8], decotower: [4, 1], slab: [3, 0.8], tower: [8, 0.8], spire: [5, 0.6], lighthouse: [5, 1], coolingtower: [5, 0.7], piperack: [4, 0.7], glasshall: [4, 1], mudhif: [1.6, 0.9] };
   for (const m of w.json.marks) if (BRIGHT[m.kind]) lamp(m.x, m.y, BRIGHT[m.kind][0], BRIGHT[m.kind][1]);
   return { glow, road };
 }

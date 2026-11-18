@@ -8,6 +8,7 @@ import { CELLS } from "../flora/atlas.mjs";
 import { rng } from "../flora/grow.mjs";
 import { baseGround } from "../data.mjs";
 import { HUE } from "../lights.mjs";
+import * as plant from "./plant.mjs";
 
 const KINDS = new Set(["furnace", "stack", "coolingtower", "tank", "piperack"]);
 export const owns = (m) => m.region === 8 && KINDS.has(m.kind);
@@ -18,11 +19,16 @@ export function plans(world) {
   if (!marks.length) return [];
   const cx = marks.reduce((a, m) => a + m.x, 0) / marks.length * world.cell, cz = marks.reduce((a, m) => a + m.y, 0) / marks.length * world.cell;
   const at = marks.map((m) => ({ ...m, wx: (m.x + 0.5) * world.cell, wz: (m.y + 0.5) * world.cell }));
-  return [{ cx, cz, marks: at, reach: Math.max(...at.map((m) => Math.hypot(m.wx - cx, m.wz - cz))) + 260 }];
+  const P = { cx, cz, marks: at, reach: Math.max(...at.map((m) => Math.hypot(m.wx - cx, m.wz - cz))) + 260, layout: null };
+  // the plant's blocks are laid out on the ground as it stands, so not before the ground has arrived
+  P.ensure = () => P.layout || (P.layout = plant.layout(world, P));
+  P.reach += 520;
+  return [P];
 }
 // the yards: poured concrete wherever plant stands
 export function stamp(P, { B, rect, KIND }) {
   for (const m of P.marks) { const r = m.kind === "furnace" ? 150 : m.kind === "piperack" ? m.size_m * 0.6 + 12 : m.size_m + 30; rect(m.wx, m.wz, 0, r, r, 0, (k, u, v) => { if (Math.hypot(u, v) < r && B[k] < 255) { B[k] = 255; B[k + 1] = KIND.concrete; B[k + 3] = Math.max(B[k + 3], 70); } }); }
+  if (P.layout) for (const b of P.layout.blocks) rect(b.x, b.z, b.turn, P.layout.half + 9, P.layout.half + 9, 0, (k) => { if (B[k] < 255) { B[k] = 255; B[k + 1] = KIND.concrete; B[k + 3] = Math.max(B[k + 3], 90); } });
 }
 
 export function mesh(world, P, lights) {
@@ -147,6 +153,8 @@ export function mesh(world, P, lights) {
       const half = m.size_m * 0.5; rack(x - ux * half, z - uz * half, x + ux * half, z + uz * half, Math.min(14, Math.max(8, m.tall_m)));
     }
   }
+  // the plant that fills the ground round the furnaces
+  P.ensure(); plant.build({ K, g, lamp, dot, landing, scaffold, column, sphere, rack, stack, O, put, lights, HUE }, P);
   // the flare: a thin stack off to one side, burning what the plant cannot use; it lights the smoke above the works
   if (furnaces.length) {
     const f0 = furnaces[0], x = f0.wx - O[0] + 190, z = f0.wz - O[2] - 120, y = g(x, z);

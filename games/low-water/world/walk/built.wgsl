@@ -239,7 +239,7 @@ fn rust(p: vec2f, tone: f32) -> vec3f {
     let pane = floor(v.uv.x / 1.4); let lit = step(0.45, hash21(vec2f(pane, v.m.y * 91.0)));
     let bar = step(abs(fract(v.uv.x / 1.4) - 0.5), 0.44) * step(abs(v.uv.y - 0.5), 0.42);
     alb = vec3f(0.02, 0.025, 0.03);
-    glow = mix(vec3f(0.75, 1.0, 0.85), vec3f(1.0, 0.8, 0.5), step(0.8, hash21(vec2f(pane, 3.0)))) * lit * bar * (0.5 + 0.5 * vnoise(v.uv * 3.0)) * (0.1 + 1.2 * night);
+    glow = mix(vec3f(0.75, 1.0, 0.85), vec3f(1.0, 0.8, 0.5), step(0.8, hash21(vec2f(pane, 3.0)))) * lit * bar * (0.5 + 0.5 * vnoise(v.uv * 3.0)) * (0.06 + 0.45 * night);
     rough = 0.2; gloss = 0.4;
   }
   if (!front && card) { n = -n; }
@@ -252,6 +252,14 @@ fn rust(p: vec2f, tone: f32) -> vec3f {
   var lit = alb * (F.amb.rgb * (0.6 + 0.4 * n.y) + F.keyCol.rgb * F.key.w * ndl * keyShadow(v.wp, n));
   lit += alb * F.ev.w * vec3f(0.7, 0.75, 0.9);
   lit += lampLight(v.wp, n, -view, alb, rough, gloss, wrap);
+  // Steel in a lit plant: hundreds of lamps too small to be sent one by one still light the
+  // decks and vessels round them. Pools of white and sodium on the steel, strongest low down
+  // where the lamps hang thickest, so the plant reads as lit structure from across the water.
+  if (k > 19.5) {
+    let pool = smoothstep(0.35, 0.8, vnoise(v.wp.xz * 0.06 + v.wp.y * 0.11)) * 0.8 + 0.2;
+    let hue = mix(vec3f(0.95, 0.97, 1.0), vec3f(1.0, 0.62, 0.25), smoothstep(0.4, 0.7, vnoise(v.wp.xz * 0.013 + 7.0)));
+    lit += alb * hue * F.misc.x * 0.55 * pool * (0.55 + 0.45 * max(n.y, 0.0) + 0.25 * (1.0 - abs(n.y)));
+  }
   let fres = gloss * (0.04 + 0.96 * pow(1.0 - max(dot(-view, n), 0.0), 5.0));
   let r = reflect(view, n);
   lit = mix(lit, skyBase(vec3f(r.x, abs(r.y), r.z)), clamp(fres, 0.0, 1.0) * 0.6);

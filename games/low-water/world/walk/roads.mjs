@@ -36,7 +36,7 @@ export function smoothLine(pts, cell, seed) {
       const l = Math.hypot(dx, dz) || 1, s = run + t * len;
       // the wander fades in over the first 120 m so the road still meets the gate
       const ease = Math.min(1, s / 120, Math.max(0, (total - s) / 120));
-      const w = (wander(seed, s / 85) * 22 + wander(seed + 7, s / 23) * 5) * ease;
+      const w = (wander(seed, s / 140) * 40 + wander(seed + 7, s / 46) * 18 + wander(seed + 13, s / 13) * 2) * ease;
       out.push([x - dz / l * w, z + dx / l * w]);
     }
     run += len;
@@ -45,11 +45,28 @@ export function smoothLine(pts, cell, seed) {
   return out;
 }
 
-export function makeRoads(world) {
+// A road bends with the land: where the ground falls away to one side of it, a cart road was
+// laid a little toward the low side, round the shoulder of a rise instead of over it. The shift is
+// smoothed along the line so the bends are long, and fades at the ends where the towns hold it.
+export function bendWithLand(line, ground) {
+  const n = line.length, off = new Float32Array(n);
+  for (let i = 1; i < n - 1; i++) {
+    const a = line[i - 1], b = line[i + 1], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1, nx = -dz / l, nz = dx / l, p = line[i];
+    const dh = ground(p[0] + nx * 10, p[1] + nz * 10) - ground(p[0] - nx * 10, p[1] - nz * 10);
+    off[i] = Math.max(-14, Math.min(14, -dh * 1.6));
+  }
+  const R = 14, sm = new Float32Array(n);
+  for (let i = 0; i < n; i++) { let a = 0, c = 0; for (let k = Math.max(0, i - R); k <= Math.min(n - 1, i + R); k++) { a += off[k]; c++; } sm[i] = a / c * Math.min(1, i / 40, (n - 1 - i) / 40); }
+  return line.map((p, i) => { if (i === 0 || i === n - 1) return p; const a = line[i - 1], b = line[i + 1], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1; return [p[0] - dz / l * sm[i], p[1] + dx / l * sm[i]]; });
+}
+
+export function makeRoads(world, ground = null) {
   const lines = [], hash = new Map();
   for (const [ri, r] of world.json.roads.entries()) {
     if (r.kind === "ferry") continue;
-    const line = smoothLine(r.pts, world.cell, (world.json.seed % 65536) + ri * 31), half = r.kind === "path" ? 0.75 : 1.9;
+    let line = smoothLine(r.pts, world.cell, (world.json.seed % 65536) + ri * 31);
+    if (ground) line = bendWithLand(line, ground);
+    const half = r.kind === "path" ? 0.75 : 1.6;
     lines.push({ kind: r.kind, half, pts: line, from: r.from, to: r.to });
     for (let i = 0; i < line.length; i++) {
       const key = Math.floor(line[i][0] / CELL) * 65536 + Math.floor(line[i][1] / CELL);

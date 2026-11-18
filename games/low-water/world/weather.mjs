@@ -56,22 +56,24 @@ export function moon(day, clockHours) {
 // fog: density per km at the ground; fogTop: metres over which it thins; cover: cloud 0..1;
 // rain, snow, wind 0..1; cloudSea: height of a fog deck with clear air above, 0 for none;
 // tint: what the air does to distance (rgb); lamp: the hue that names the place at night;
-// storm: chance scale for cells; clear: chance scale for star, aurora and halo nights.
+// storm: chance scale for cells; clear: chance scale for star, aurora and halo nights;
+// gloom: how far the night dome and the air fall toward black (0 none; the works is near black
+// under its own lamps, so the lamps carry the picture and the air does not).
 export const REGION_WEATHER = {
   0: { name: "open sea", fog: 0.05, fogTop: 400, cover: 0.5, rain: 0.1, snow: 0, wind: 0.6, cloudSea: 0, tint: [0.62, 0.70, 0.78], lamp: [1.0, 0.62, 0.24], storm: 0.4, clear: 0.5, snowLine: 0 },
   1: { name: "burying snow", fog: 0.5, fogTop: 500, cover: 0.85, rain: 0, snow: 0.7, wind: 0.35, cloudSea: 0, tint: [0.80, 0.85, 0.92], lamp: [1.0, 0.62, 0.24], storm: 0, clear: 0.35, snowLine: -6 },
   2: { name: "cloud sea below, clear above", fog: 0.5, fogTop: 120, cover: 0.2, rain: 0, snow: 0.1, wind: 0.7, cloudSea: 950, tint: [0.72, 0.76, 0.88], lamp: [1.0, 0.86, 0.6], storm: 0.1, clear: 0.8, snowLine: 0 },
   3: { name: "standing fog", fog: 1.7, fogTop: 260, cover: 0.75, rain: 0.25, snow: 0, wind: 0.1, cloudSea: 0, tint: [0.55, 0.66, 0.66], lamp: [1.0, 0.70, 0.36], storm: 0, clear: 0.15, snowLine: 1 },
-  4: { name: "sea fog and swell", fog: 0.6, fogTop: 300, cover: 0.8, rain: 0.5, snow: 0, wind: 0.9, cloudSea: 0, tint: [0.56, 0.62, 0.70], lamp: [1.0, 0.58, 0.20], storm: 1, clear: 0.2, snowLine: 1 },
+  4: { name: "sea fog and swell", fog: 0.6, fogTop: 300, cover: 0.8, rain: 0.5, snow: 0, wind: 0.9, cloudSea: 0, tint: [0.56, 0.62, 0.70], lamp: [1.0, 0.58, 0.20], storm: 1, clear: 0.2, snowLine: 1, gloom: 0.45 },
   5: { name: "dry and far-seeing", fog: 0.015, fogTop: 1500, cover: 0.12, rain: 0, snow: 0, wind: 0.3, cloudSea: 0, tint: [0.86, 0.70, 0.56], lamp: [0.6, 0.9, 1.0], storm: 0.15, clear: 0.9, snowLine: 3 },
   6: { name: "storm light on the marsh", fog: 0.45, fogTop: 60, cover: 0.65, rain: 0.35, snow: 0, wind: 0.4, cloudSea: 0, tint: [0.60, 0.64, 0.58], lamp: [1.0, 0.74, 0.40], storm: 0.8, clear: 0.25, snowLine: 3 },
-  7: { name: "smoke and drizzle", fog: 0.4, fogTop: 350, cover: 0.7, rain: 0.3, snow: 0, wind: 0.3, cloudSea: 0, tint: [0.66, 0.62, 0.60], lamp: [1.0, 0.60, 0.22], storm: 0.3, clear: 0.2, snowLine: 3 },
-  8: { name: "steam and flare", fog: 0.5, fogTop: 300, cover: 0.6, rain: 0.15, snow: 0, wind: 0.3, cloudSea: 0, tint: [0.70, 0.60, 0.50], lamp: [0.55, 1.0, 0.62], storm: 0.3, clear: 0.2, snowLine: 3 },
+  7: { name: "smoke and drizzle", fog: 0.4, fogTop: 350, cover: 0.7, rain: 0.3, snow: 0, wind: 0.3, cloudSea: 0, tint: [0.66, 0.62, 0.60], lamp: [1.0, 0.60, 0.22], storm: 0.3, clear: 0.2, snowLine: 3, gloom: 0.5 },
+  8: { name: "steam and flare", fog: 0.5, fogTop: 300, cover: 0.6, rain: 0.15, snow: 0, wind: 0.3, cloudSea: 0, tint: [0.70, 0.60, 0.50], lamp: [0.55, 1.0, 0.62], storm: 0.3, clear: 0.2, snowLine: 3, gloom: 0.9 },
   9: { name: "still and clear", fog: 0.03, fogTop: 900, cover: 0.18, rain: 0, snow: 0, wind: 0.08, cloudSea: 0, tint: [0.80, 0.78, 0.80], lamp: [1.0, 0.9, 0.7], storm: 0.05, clear: 0.9, snowLine: 3 },
   10: { name: "fog on still water", fog: 1.1, fogTop: 80, cover: 0.7, rain: 0.1, snow: 0, wind: 0.05, cloudSea: 0, tint: [0.52, 0.62, 0.64], lamp: [0.5, 0.8, 1.0], storm: 0.2, clear: 0.2, snowLine: 3 },
   11: { name: "whiteout", fog: 1.3, fogTop: 400, cover: 0.7, rain: 0, snow: 0.85, wind: 0.8, cloudSea: 0, tint: [0.86, 0.88, 0.92], lamp: [1.0, 0.60, 0.22], storm: 0, clear: 0.45, snowLine: -9 },
 };
-const NUM = ["fog", "fogTop", "cover", "rain", "snow", "wind", "cloudSea", "storm", "clear", "snowLine"];
+const NUM = ["fog", "fogTop", "cover", "rain", "snow", "wind", "cloudSea", "storm", "clear", "snowLine", "gloom"];
 
 // One region's state at a time. It drifts by up to a quarter either way and keeps its character.
 export function regionState(seed, id, day, clockHours) {
@@ -82,7 +84,7 @@ export function regionState(seed, id, day, clockHours) {
   return {
     id, name: R.name, fog: R.fog * d(0) * (1 - 0.5 * open), fogTop: R.fogTop, cover, rain: clamp(R.rain * d(2) * (cover > 0.35 ? 1 : 0.2)),
     snow: clamp(R.snow * d(3) * (cover > 0.3 ? 1 : 0.15)), wind: clamp(R.wind * d(4)), cloudSea: R.cloudSea, tint: R.tint, lamp: R.lamp,
-    storm: R.storm, clear: open, snowLine: R.snowLine,
+    storm: R.storm, clear: open, snowLine: R.snowLine, gloom: R.gloom || 0,
   };
 }
 // How much of each region lies round every point of a 1 km lattice: the share of region ids in a
