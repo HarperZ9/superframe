@@ -20,8 +20,9 @@ on:
 permissions:
   contents: read
 env:
-  # buildlang with the C runtime that builds under MSVC (HarperZ9/buildlang#324); repin to main once it merges.
-  BUILDLANG_REV: 3c81f2c00f49d6dec57187dd53d6c17976cc861b
+  # buildlang with binary file I/O and the C runtime that builds under MSVC (HarperZ9/buildlang#325);
+  # repin to main once it merges.
+  BUILDLANG_REV: 102ce134864548bad2068130eb15c3493f212e03
   TRACE: games/low-water/runtime/traces/n0-autowalk.lwin
 
 jobs:

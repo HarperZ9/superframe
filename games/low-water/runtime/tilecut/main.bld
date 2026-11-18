@@ -8,51 +8,13 @@
 // The tile holds the vertices of cells col * size .. col * size + size on each axis, so it is
 // (size + 1) x (size + 1) values and two neighbouring tiles share their edge row. A tile that runs
 // past the island's edge repeats the last row or column. The values are the generator's own codes,
-// code = (metres + 512) x 16, unchanged. Tiles are text because buildc's string writer cannot
-// hold a zero byte (games/low-water/world/README.md, language debt); this tool reads and writes
-// through the C library's stdio instead of strings, so it is fast on the 20 MB raster.
-
-extern "C" {
-    fn fopen(path: *const u8, mode: *const u8) -> *mut u8;
-    fn fclose(f: *mut u8) -> i32;
-    fn fread(p: *mut u8, size: usize, n: usize, f: *mut u8) -> usize;
-    fn fwrite(p: *const u8, size: usize, n: usize, f: *mut u8) -> usize;
-    fn fseek(f: *mut u8, off: i64, whence: i32) -> i32;
-    fn ftell(f: *mut u8) -> i64;
-    fn malloc(n: usize) -> *mut u8;
-    fn free(p: *mut u8);
-}
-
-// A NUL-terminated copy of s in C memory, for the C library. (buildc 1.15.0 has no Vec::as_ptr,
-// so bytes reach C through malloc and a slice over it.)
-fn cstr(s: str) -> *mut u8 ~ Foreign {
-    let n = s.len();
-    let p = unsafe { malloc(n + 1) };
-    let b = unsafe { slice::from_raw_parts_mut(p, n + 1) };
-    let mut i: usize = 0;
-    for c in s.chars() {
-        b[i] = c as u8;
-        i = i + 1;
-    }
-    b[n] = 0;
-    p
-}
-
-fn to_c(v: &Vec<u8>) -> *mut u8 ~ Foreign {
-    let n = v.len();
-    let p = unsafe { malloc(n + 1) };
-    let b = unsafe { slice::from_raw_parts_mut(p, n + 1) };
-    let mut i: usize = 0;
-    while i < n {
-        b[i] = v[i];
-        i = i + 1;
-    }
-    p
-}
+// code = (metres + 512) x 16, unchanged. The 20 MB raster is read and the tile written as bytes
+// (read_file_bytes and write_file_bytes, buildc with binary I/O), so the parse is a loop over a
+// byte vector rather than over a string.
 
 fn is_space(c: u8) -> bool { c == 32 || c == 10 || c == 13 || c == 9 }
 
-fn next_uint(bytes: &[u8], n: usize, at: &mut usize) -> i64 {
+fn next_uint(bytes: &Vec<u8>, n: usize, at: &mut usize) -> i64 {
     let mut i: usize = *at;
     while i < n {
         let c = bytes[i];
@@ -93,7 +55,7 @@ fn put_uint(out: &mut Vec<u8>, v: i64, sep: u8) {
     out.push(sep);
 }
 
-fn main() ~ Console + Environment + Foreign {
+fn main() ~ Console + Environment + FileSystem {
     if args_count() < 6 {
         println!("usage: tilecut <height.pgm> <col> <row> <size> <out.pgm>");
         return;
@@ -104,39 +66,28 @@ fn main() ~ Console + Environment + Foreign {
     let size = args_get(4).parse_int();
     let dst = args_get(5);
 
-    let path = cstr(src);
-    let rb = cstr("rb");
-    let f = unsafe { fopen(path as *const u8, rb as *const u8) };
-    if f as usize == 0 {
-        println!("tilecut: cannot open {}", src);
-        return;
-    }
-    unsafe { fseek(f, 0, 2); }
-    let n = unsafe { ftell(f) } as usize;
-    unsafe { fseek(f, 0, 0); }
-    let buf = unsafe { malloc(n + 1) };
-    let got = unsafe { fread(buf, 1, n, f) };
-    unsafe { fclose(f); }
-    let bytes = unsafe { slice::from_raw_parts(buf as *const u8, got) };
+    let bytes = read_file_bytes(src);
+    let got = bytes.len();
     if got < 2 || bytes[0] != 80 || bytes[1] != 50 {
-        println!("tilecut: {} is not a plain PGM (P2)", src);
+        println!("tilecut: {} is missing or not a plain PGM (P2)", src);
         return;
     }
     let mut at: usize = 2;
-    let w = next_uint(bytes, got, &mut at);
-    let h = next_uint(bytes, got, &mut at);
-    let maxv = next_uint(bytes, got, &mut at);
+    let w = next_uint(&bytes, got, &mut at);
+    let h = next_uint(&bytes, got, &mut at);
+    let maxv = next_uint(&bytes, got, &mut at);
     let mut codes: Vec<i64> = Vec::new();
     let mut k: i64 = 0;
     while k < w * h {
-        codes.push(next_uint(bytes, got, &mut at));
+        codes.push(next_uint(&bytes, got, &mut at));
         k = k + 1;
     }
-    unsafe { free(buf); }
 
     let side = size + 1;
     let mut out: Vec<u8> = Vec::new();
-    for c in "P2\n".chars() { out.push(c as u8); }
+    out.push(80);
+    out.push(50);
+    out.push(10);
     put_uint(&mut out, side, 32);
     put_uint(&mut out, side, 10);
     put_uint(&mut out, maxv, 10);
@@ -158,15 +109,6 @@ fn main() ~ Console + Environment + Foreign {
         }
         j = j + 1;
     }
-    let dpath = cstr(dst);
-    let wb = cstr("wb");
-    let o = unsafe { fopen(dpath as *const u8, wb as *const u8) };
-    if o as usize == 0 {
-        println!("tilecut: cannot write {}", dst);
-        return;
-    }
-    let cbuf = to_c(&out);
-    let put = unsafe { fwrite(cbuf as *const u8, 1, out.len(), o) };
-    unsafe { fclose(o); }
-    println!("tilecut: tile {} {} of {} x {} cells from a {} x {} raster, {} bytes, mean code {}", col, row, size, size, w, h, put, sum / (side * side));
+    let ok = write_file_bytes(dst, &out);
+    println!("tilecut: tile {} {} of {} x {} cells from a {} x {} raster, {} bytes, written {}, mean code {}", col, row, size, size, w, h, out.len(), ok, sum / (side * side));
 }

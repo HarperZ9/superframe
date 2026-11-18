@@ -12,7 +12,7 @@ The engine's side is in `native/`: `app/lw_shell_main.cpp`, `app/lw_shell_replay
 
 ## Build and run (Windows)
 
-You need buildc 1.15.0 or later with the MSVC runtime fix (buildlang PR 324), the Windows SDK and Visual Studio.
+You need buildc 1.15.0 or later with binary file I/O and the MSVC runtime fix (buildlang PR 325), the Windows SDK and Visual Studio.
 
 ```bash
 buildc build --release games/low-water/world/gen
@@ -83,8 +83,8 @@ The capsule walks at 2.2 m/s and runs at 7 m/s. It refuses a step where the grou
 
 ## Compiler gaps found
 
-- **Generated C did not build with MSVC.** The C runtime used `__int128` everywhere and wrote infinity as `1.0 / 0.0`. Fixed in buildlang PR 324; CI here pins its commit until it merges.
-- **No `Vec::as_ptr` in the C backend.** `tilecut` copies a vector into `malloc` memory to hand bytes to `fwrite`.
-- **The generated header drops `const`.** `*const u8` and `*const Game` come out as `uint8_t*` and `Game*`, so the host casts away `const` at the call.
-- **No binary file output from strings** (known, `world/README.md`): `tilecut` writes through the C library's stdio from `extern "C"` declarations, which also gives a route to binary tiles before the language has one.
+- **Generated C did not build with MSVC.** The C runtime used `__int128` everywhere and wrote infinity as `1.0 / 0.0`. Fixed in buildlang PR 325 (which carries PR 324); CI here pins its commit until it merges.
+- **No `Vec::as_ptr` in the C backend.** Added in buildlang PR 325.
+- **The generated header dropped `const`.** Fixed in buildlang PR 325.
+- **No binary file I/O.** `tilecut` first went through the C library's stdio from `extern "C"` declarations, which assigned `FILE *` to `uint8_t *` and failed under the CI's gcc. It now uses `read_file_bytes` and `write_file_bytes` from buildlang PR 325, and writes the same bytes as before.
 - **Shaders, not tried.** The four passes are HLSL. BuildLang's shader examples show no vertex stage that reads a storage buffer by vertex index or a constant buffer with a matrix; porting the passes is the test of whether it can.
