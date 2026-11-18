@@ -1,0 +1,16 @@
+{
+ "check": "host frame",
+ "backend": "d3d12",
+ "adapter": "Microsoft Basic Render Driver",
+ "host_adapter": "Microsoft Basic Render Driver",
+ "error": "",
+ "skipped": "",
+ "size": 256,
+ "adoption": {"refuses_a_host_with_no_device": true, "reports_the_host_adapter": true, "import_refuses_a_wrong_format": true},
+ "frame": {"pass": "post_gtao", "pixels": 37996, "gtao_outside_1e-3": 0, "gtao_worst": 4.525e-04, "host_fence_signalled": true, "within_bound": true},
+ "controls_fail": {"target_before_the_pass": true, "fence_value_never_signalled": true, "wrong_initial_state": true},
+ "fence_control": {"asked_ms": 750, "answered_ms": 757, "begin_refused_while_pending": true, "ended_after_host_signal": true},
+ "state_control": {"right_state_passes": true, "message": "the D3D12 debug layer reported 1 error(s); first: ID3D12CommandQueue1::ExecuteCommandLists: Using ResourceBarrier on Command List (0x0000025D9A78F730:'Unnamed ID3D12GraphicsCommandList Object'): Before state (0x0: D3D12_RESOURCE_STATE_[COMMON|PRESENT]) of resource (0x0000025D9A3F3670:'Unnamed ID3D12Resource Object') (subresource: 0) specified by transition barrier does not match with the state (0x4: D3D12_RESOURCE_STATE_RENDER_TARGET) specified in preceding ResourceBarrier or as InitialState"},
+ "ownership": {"textures_survive": true, "host_objects_released": true},
+ "pass": true
+}

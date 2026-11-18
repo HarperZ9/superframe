@@ -206,7 +206,8 @@ function(raw_native_hw_shaders gen out_header)
         "hw_mesh_ms|hw_mesh|ms_6_5||ms" "hw_mesh_ps|hw_mesh|ps_6_5||ps"
         "hw_async_p|hw_async|cs_6_0|-DMODE=0" "hw_async_w|hw_async|cs_6_0|-DMODE=1" "hw_async_c|hw_async|cs_6_0|-DMODE=2"
         "hw_busy|hw_busy|cs_6_0|-DFLAT=0"
-        "hw_busy_flat|hw_busy|cs_6_0|-DFLAT=1")
+        "hw_busy_flat|hw_busy|cs_6_0|-DFLAT=1"
+        "host_pack|host_pack|cs_6_0|" "host_resolve_vs|host_resolve|vs_6_0||vs" "host_resolve_fs|host_resolve|ps_6_0||fs")
     set(headers "")
     set(includes "")
     set(table "")
@@ -261,6 +262,7 @@ if(RAW_NATIVE_GPU_D3D12)
     raw_native_hw_shaders("${gen}" "${gen}/raw_hw_dxil.hpp")
     add_library(raw_native_d3d12 STATIC src/rhi/d3d12/d3d12_device.cpp src/rhi/d3d12/d3d12_timestamps.cpp src/rhi/d3d12/d3d12_commands.cpp
         src/rhi/d3d12/d3d12_raster.cpp src/rhi/d3d12/d3d12_texture.cpp src/rhi/d3d12/d3d12_swapchain.cpp
+        src/rhi/d3d12/d3d12_host.cpp src/rhi/d3d12/host_rig.cpp src/renderer/gpu/host_frame.cpp src/renderer/gpu/host_frame_json.cpp
         src/renderer/gpu/shaders_dxil.cpp
         src/rhi/d3d12/hw_queue.cpp src/rhi/d3d12/hw_probe.cpp src/rhi/d3d12/hw_checks.cpp src/rhi/d3d12/hw_rayquery.cpp src/rhi/d3d12/hw_async.cpp src/rhi/d3d12/hw_wave16.cpp src/rhi/d3d12/hw_mesh.cpp
         src/rhi/d3d12/hw_accel.cpp src/rhi/d3d12/hw_pt.cpp src/rhi/d3d12/hw_caustic.cpp
@@ -302,6 +304,12 @@ if(RAW_NATIVE_GPU_D3D12)
         target_link_libraries(gpu_post_parity PRIVATE raw_native_d3d12)
         add_test(NAME gpu_post_parity COMMAND gpu_post_parity)
         set_tests_properties(gpu_post_parity PROPERTIES SKIP_RETURN_CODE 77)
+        # Host frames: the RHI on a host's device, textures and fence (evidence/host-frame-bounds.json).
+        # Skipped the same way, and also without the D3D12 debug layer its state control needs.
+        add_executable(gpu_host_frame tests/gpu/host_frame.cpp)
+        target_link_libraries(gpu_host_frame PRIVATE raw_native_d3d12)
+        add_test(NAME gpu_host_frame COMMAND gpu_host_frame)
+        set_tests_properties(gpu_host_frame PROPERTIES SKIP_RETURN_CODE 77)
         # The lighting's GPU parity (M3, evidence/m3-lighting-bounds.json), skipped the same way.
         add_executable(gpu_lighting_parity tests/gpu/lighting_parity.cpp)
         target_link_libraries(gpu_lighting_parity PRIVATE raw_native_d3d12)

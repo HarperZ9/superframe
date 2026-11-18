@@ -1,5 +1,6 @@
 // The RHI backend of a build without a GPU: no device, and a reason that says
 // how to get one. The renderer then reports --gpu as unverifiable.
+#include "raw/rhi/host.hpp"
 #include "raw/rhi/rhi.hpp"
 namespace raw::rhi {
 const char* linkedBackend(){ return "none"; }
@@ -9,4 +10,5 @@ Device* device(std::string& err){
     return nullptr;
 }
 std::unique_ptr<Device> createDevice(std::string& err){ device(err); return nullptr; }
+std::unique_ptr<Device> adoptDevice(const HostDevice&, std::string& err){ device(err); return nullptr; }
 }

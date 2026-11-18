@@ -72,11 +72,18 @@ bool D3d12Device::pickAdapter(std::string& err){
     err = "no hardware D3D12 adapter" + (skipped.empty() ? std::string() : "; skipped: " + skipped);
     return false;
 }
-D3d12Device::~D3d12Device(){ if (event_) CloseHandle(event_); }
+D3d12Device::~D3d12Device(){
+    // A submission still on the queue reads this device's allocator and staging buffers; give
+    // it a bounded time to end before they go.
+    if (pending_ && fence_ && event_ && fence_->GetCompletedValue() < fenceValue_ &&
+        SUCCEEDED(fence_->SetEventOnCompletion(fenceValue_, event_))) WaitForSingleObject(event_, 5000);
+    if (event_) CloseHandle(event_);
+}
 bool D3d12Device::lost() const {
     return device_ && device_->GetDeviceRemovedReason() != S_OK;
 }
 bool D3d12Device::loseForTest(std::string& err){
+    if (adopted_){ err = "d3d12: the device belongs to the host and is not removed here"; return false; }
     ComPtr<ID3D12Device5> d5;
     if (!device_ || FAILED(device_.As(&d5))){ err = "d3d12: ID3D12Device5::RemoveDevice is not available"; return false; }
     d5->RemoveDevice();
@@ -93,15 +100,25 @@ bool D3d12Device::init(std::string& err){
     }
     if (!pickAdapter(err)) return false;
     if (envOn("RAW_NATIVE_D3D12_DEBUG")) device_.As(&infoQueue_);
+    describeAdapter();
+    D3D12_COMMAND_QUEUE_DESC qd{};
+    qd.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    const HRESULT hr = device_->CreateCommandQueue(&qd, IID_PPV_ARGS(&queue_));
+    if (FAILED(hr)){ err = hrError("CreateCommandQueue", hr); return false; }
+    return initSubmission(err);
+}
+void D3d12Device::describeAdapter(){
+    info_ = AdapterInfo{};
+    info_.backend = "d3d12";
+    if (!adapter_) return;
     DXGI_ADAPTER_DESC1 d{};
     adapter_->GetDesc1(&d);
     char id[16]; std::snprintf(id, sizeof id, "0x%04X", (unsigned)d.DeviceId);
     info_ = AdapterInfo{vendorName(d.VendorId), "", id, utf8(d.Description), "d3d12", driverVersion(adapter_.Get())};
-    D3D12_COMMAND_QUEUE_DESC qd{};
-    qd.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+}
+bool D3d12Device::initSubmission(std::string& err){
     HRESULT hr;
-    if (FAILED(hr = device_->CreateCommandQueue(&qd, IID_PPV_ARGS(&queue_)))) err = hrError("CreateCommandQueue", hr);
-    else if (FAILED(hr = device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&alloc_)))) err = hrError("CreateCommandAllocator", hr);
+    if (FAILED(hr = device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&alloc_)))) err = hrError("CreateCommandAllocator", hr);
     else if (FAILED(hr = device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, alloc_.Get(), nullptr, IID_PPV_ARGS(&list_)))) err = hrError("CreateCommandList", hr);
     else if (FAILED(hr = list_->Close())) err = hrError("CommandList Close", hr);
     else if (FAILED(hr = device_->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_)))) err = hrError("CreateFence", hr);
@@ -169,6 +186,10 @@ PipelineHandle D3d12Device::createComputePipeline(const ComputePipelineDesc& des
 }
 CommandList* D3d12Device::begin(std::string& err){
     if (open_){ err = "d3d12: a command list is already open"; return nullptr; }
+    // The allocator and the descriptor rings are reused, so the last submission ends first.
+    if (pending_ && retire(retireMs_, err) != WaitResult::Done) return nullptr;
+    closed_ = false;   // a list recorded and never sent is dropped
+    for (TextureHandle h : externals_) if (TexRec* t = texture(h)) t->state = t->boundary;
     HRESULT hr = alloc_->Reset();
     if (SUCCEEDED(hr)) hr = list_->Reset(alloc_.Get(), nullptr);
     if (FAILED(hr)){ err = hrError("command list Reset", hr); return nullptr; }
@@ -185,28 +206,10 @@ void D3d12Device::drain(){
     if (FAILED(queue_->Signal(fence_.Get(), v)) || fence_->GetCompletedValue() >= v) return;
     if (SUCCEEDED(fence_->SetEventOnCompletion(v, event_))) WaitForSingleObject(event_, 5000);
 }
+// Record, send and wait as one call: the three steps of d3d12_host.cpp with no fence but the
+// device's own.
 bool D3d12Device::submitAndWait(std::string& err){
-    if (!open_){ err = "d3d12: no command list is open"; return false; }
-    open_ = false;
-    if (cmd_.timestampsUsed > 0 && tsHeap_)   // the slots into the readback buffer, read by timestampSeconds
-        list_->ResolveQueryData(tsHeap_.Get(), D3D12_QUERY_TYPE_TIMESTAMP, 0, cmd_.timestampsUsed, tsReadback_.Get(), 0);
-    tsResolved_ = cmd_.timestampsUsed;
-    HRESULT hr = list_->Close();
-    if (!cmd_.error.empty()){ err = cmd_.error; cmd_.staging.clear(); return false; }
-    if (FAILED(hr)){ err = hrError("command list Close", hr); cmd_.staging.clear(); return false; }
-    ID3D12CommandList* lists[] = {list_.Get()};
-    queue_->ExecuteCommandLists(1, lists);
-    const uint64_t v = ++fenceValue_;
-    bool ok = true;
-    if (FAILED(hr = queue_->Signal(fence_.Get(), v))){ err = hrError("queue Signal", hr); ok = false; }
-    else if (fence_->GetCompletedValue() < v){
-        if (FAILED(hr = fence_->SetEventOnCompletion(v, event_))){ err = hrError("SetEventOnCompletion", hr); ok = false; }
-        else WaitForSingleObject(event_, INFINITE);
-    }
-    if (ok && FAILED(hr = device_->GetDeviceRemovedReason())){ err = hrError("the D3D12 device was removed", hr); ok = false; }
-    if (ok && !debugErrors(err)) ok = false;
-    if (ok) cmd_.staging.clear();   // on failure the GPU may still read them; keep them alive
-    return ok;
+    return endRecording(err) && submit(FenceSync{}, err) && retire(INFINITE, err) == WaitResult::Done;
 }
 // With the debug layer on, any error or corruption message it stored fails the
 // submission, so a wrong barrier is a failed run and never a lucky pass.

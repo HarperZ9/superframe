@@ -297,6 +297,13 @@ jobs:
         run: |
           build/Release/raw_native_cli.exe post-parity --out post-warp.json > /dev/null || true
           python tests/gpu/post_gate.py post-warp.json --min-scenes 5
+      - name: Host frames on WARP with the debug layer; a stand-in host's device, textures and fence, GTAO into its target, and three controls (ADR 0020)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          build/Release/gpu_host_frame.exe host-frame-warp.json
+          grep -q '"pass": true' host-frame-warp.json
       - name: The core's style passes and post-stack driver on WARP match the C++ float64 reference, which matches the JavaScript one (ADR 0019)
         shell: bash
         env:

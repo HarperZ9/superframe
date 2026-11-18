@@ -1,0 +1,25 @@
+{
+ "criterion": "Host frames (ADR 0020): the RHI on a host application's D3D12 device, queue, textures and fence. Groundwork for RAW's D3D12 bridge, stage 2.",
+ "written": "2026-11-17, after the first run on WARP. The frame's tolerance is not new: it is post_parity's GTAO bound from evidence/m3-post-bounds.json, unchanged. The controls and their thresholds below were fixed in the code before that run and were not adjusted after it; the one edit after the first run moved the device reference baseline to after the host's textures exist, because each texture holds a device reference.",
+ "scope": "Three RHI capabilities on D3D12: a device on a host's device and queue, a host's textures as texture handles with a stated state, and a submission ordered by a wait and a signal on the host's fence. Checked with one stand-in host in one process. Not checked: a host on a second device or API (the bridge's D3D11 side), shared-handle textures, a host that renders on the same queue from another thread, and any real GPU.",
+ "adapters": {
+  "ci_and_local": "WARP (RAW_NATIVE_D3D12_WARP=1), the Windows software rasterizer, with the D3D12 debug layer on. Its results are not GPU evidence.",
+  "gpu": "No hardware run is part of this record."
+ },
+ "host": "raw/rhi/host_rig.hpp: its own D3D12 device with the debug layer, a frame queue handed to the RHI, a producer queue that stands for the source of the frame's inputs, one fence, and five textures it creates, fills and reads with its own command lists. Depth R32Float (state COMMON), position RGBA32Float (shader resource), normal RGBA32Float (copy source), target R32Float with ALLOW_RENDER_TARGET (COMMON), and a second R32Float target kept in RENDER_TARGET for the state control.",
+ "frame": {
+  "scene": "the built-in test scene at 256 x 256, post_parity's first scene, rasterized with perspective depth",
+  "pass": "post_gtao, the DXIL the build already carries, unchanged. Its input is the view G-buffer (position, view depth, normal). The host's three textures are copied into buffers and interleaved by host_pack (values moved, not recomputed); post_gtao's output is drawn into the host's target by host_resolve.",
+  "order": "The RHI records and closes the list. The producer queue then writes the real depth (the depth texture starts empty) and signals fence value 1002. The RHI submits with a queue wait on 1002 and a queue signal of 1003. The host reads its target back with its own command list.",
+  "bound": "|host read-back - raw::post::gtao| <= 1e-3 on at least 99.9% of the pixels with geometry (post_parity's bound), and the host's fence at 1003 afterwards"
+ },
+ "controls_that_must_fail": {
+  "target_before_the_pass": "the host's target read back before the frame is outside the bound (more than 0.1% of pixels off by more than 1e-3)",
+  "fence_value_never_signalled": "a submission that waits on fence value 1000, which nobody signals: retire(750 ms) answers TimedOut with the fence still below 1000, and begin() refuses while it is pending. After the host signals 1000 from the CPU the submission ends and the fence reads 1001. The frame above runs after this control, so it also shows the queue works again.",
+  "wrong_initial_state": "the texture the host keeps in RENDER_TARGET, imported with the stated state COMMON and read once: the submission fails with a D3D12 debug-layer error. The same read with the stated state RENDER_TARGET passes first."
+ },
+ "ownership": "After every imported texture is forgotten and the RHI device destroyed: each host texture's COM reference count equals its count before import, the device's, queue's and fence's counts equal their counts before adoption, and the target reads back byte for byte as it did after the frame.",
+ "adoption": "A host description with no device is refused. The adopted device reports the host's adapter description. Importing the R32Float depth as RGBA8Unorm is refused.",
+ "known_before_writing": "The first run passed every item except the device reference count, for the reason given under 'written'.",
+ "limits": "A wrong stated state is caught only where the debug layer runs; without it D3D12 gives no error. A stated state the texture can be promoted to implicitly (COMMON stated as a read state) is not an error in D3D12 and is not caught. post_gtao needs position and normal as well as depth, so this is not a depth-only GTAO."
+}
