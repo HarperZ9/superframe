@@ -1,0 +1,96 @@
+// Which landmarks each region gets. Counts, heights and footprints are the art direction's three
+// scales made into numbers: vernacular (tens of metres), monument (hundreds) and megastructure
+// (up to 1,200 m, so the Tower of the monument ground shows from other regions).
+
+use marks::scatter;
+
+// the seat of region r, or the region's centre when it has no seat: returns x then y
+fn seat(r: i64, sx: Vec<i64>, sy: Vec<i64>, sk: Vec<i64>, sr: Vec<i64>, rn: Vec<i64>, rx: Vec<i64>, ry: Vec<i64>) -> Vec<i64> {
+    let mut o: Vec<i64> = Vec::new();
+    let mut i: usize = 0;
+    while i < sx.len() {
+        if sk[i] == 0 && sr[i] == r && o.len() == 0 {
+            o.push(sx[i]);
+            o.push(sy[i]);
+        }
+        i += 1;
+    }
+    if o.len() == 0 {
+        let ru = r as usize;
+        if rn[ru] > 0 {
+            o.push(rx[ru] / rn[ru]);
+            o.push(ry[ru] / rn[ru]);
+        } else {
+            o.push(0);
+            o.push(0);
+        }
+    }
+    o
+}
+
+pub fn place_all(seed: u32, w: i64, hh: i64, h: Vec<f64>, reg: Vec<i64>, sea: Vec<i64>, lake: Vec<i64>, sx: Vec<i64>, sy: Vec<i64>, sk: Vec<i64>, sr: Vec<i64>, rn: Vec<i64>, rx: Vec<i64>, ry: Vec<i64>, mk: Vec<str>, mx: Vec<i64>, my: Vec<i64>, mt: Vec<i64>, ms: Vec<i64>, mr: Vec<i64>, mg: Vec<i64>) {
+    let s = seed.wrapping_mul(2654435761);
+    let mut n: i64 = 0;
+
+    // 9, the monument ground: the Tower, spires, stepped tower-mountains, dome, star fort, prison
+    let a = seat(9, sx, sy, sk, sr, rn, rx, ry);
+    n = scatter("tower", 1, 9, 0, 1.0, 900.0, 1, a[0], a[1], 45, 1200.0, 1200.0, 190.0, 190.0, s.wrapping_add(1), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("spire", 7, 9, 0, 1.0, 900.0, 50, a[0], a[1], 260, 420.0, 900.0, 90.0, 150.0, s.wrapping_add(2), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("ziggurat", 2, 9, 0, 1.0, 900.0, 90, a[0], a[1], 240, 380.0, 520.0, 520.0, 700.0, s.wrapping_add(3), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("dome", 1, 9, 0, 1.0, 900.0, 1, a[0], a[1], 110, 160.0, 160.0, 320.0, 320.0, s.wrapping_add(4), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("starfort", 1, 9, 0, 1.0, 900.0, 1, a[0], a[1], 8, 18.0, 18.0, 900.0, 900.0, s.wrapping_add(5), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("prison", 1, 9, 0, 1.0, 900.0, 1, a[0], a[1], 150, 70.0, 70.0, 400.0, 400.0, s.wrapping_add(6), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("colonnade", 3, 9, 0, 1.0, 900.0, 30, a[0], a[1], 160, 24.0, 24.0, 300.0, 300.0, s.wrapping_add(7), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("blackvolume", 1, 9, 0, 1.0, 900.0, 1, a[0], a[1], 200, 60.0, 60.0, 60.0, 60.0, s.wrapping_add(8), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("cypress", 10, 9, 0, 1.0, 900.0, 12, a[0], a[1], 180, 24.0, 30.0, 120.0, 200.0, s.wrapping_add(9), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+
+    // 8, the works: furnaces, stacks, cooling towers, tanks, pipe racks, and a church beside them
+    let b = seat(8, sx, sy, sk, sr, rn, rx, ry);
+    n = scatter("furnace", 5, 8, 0, 1.0, 140.0, 9, b[0], b[1], 55, 85.0, 110.0, 60.0, 70.0, s.wrapping_add(11), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("stack", 12, 8, 0, 1.0, 140.0, 4, b[0], b[1], 70, 120.0, 230.0, 12.0, 18.0, s.wrapping_add(12), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("coolingtower", 3, 8, 0, 1.0, 140.0, 5, b[0], b[1], 60, 110.0, 120.0, 90.0, 95.0, s.wrapping_add(13), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("tank", 10, 8, 0, 1.0, 140.0, 3, b[0], b[1], 60, 16.0, 22.0, 36.0, 48.0, s.wrapping_add(14), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("piperack", 14, 8, 0, 1.0, 140.0, 3, b[0], b[1], 70, 12.0, 16.0, 180.0, 320.0, s.wrapping_add(15), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("church", 1, 8, 0, 1.0, 140.0, 1, b[0], b[1], 20, 34.0, 34.0, 26.0, 26.0, s.wrapping_add(16), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+
+    // 11, the far-north works town: slab blocks, smelter stacks, pipes above ground, relics
+    let c = seat(11, sx, sy, sk, sr, rn, rx, ry);
+    n = scatter("slab", 18, 11, 0, 1.0, 380.0, 3, c[0], c[1], 28, 27.0, 45.0, 80.0, 110.0, s.wrapping_add(21), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("stack", 3, 11, 0, 1.0, 380.0, 6, c[0], c[1], 40, 160.0, 200.0, 14.0, 16.0, s.wrapping_add(22), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("piperack", 8, 11, 0, 1.0, 380.0, 3, c[0], c[1], 40, 6.0, 8.0, 240.0, 400.0, s.wrapping_add(23), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("saucer", 1, 11, 0, 1.0, 380.0, 1, c[0], c[1], 70, 22.0, 22.0, 110.0, 110.0, s.wrapping_add(24), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("ringblock", 1, 11, 0, 1.0, 380.0, 1, c[0], c[1], 50, 30.0, 30.0, 180.0, 180.0, s.wrapping_add(25), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("relic", 2, 11, 0, 1.0, 380.0, 120, c[0], c[1], 320, 36.0, 48.0, 40.0, 60.0, s.wrapping_add(26), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+
+    // 7, the city across the water: tenements, deco towers, a planted glass hall
+    let d = seat(7, sx, sy, sk, sr, rn, rx, ry);
+    n = scatter("tenement", 90, 7, 0, 5.0, 300.0, 2, d[0], d[1], 60, 22.0, 44.0, 70.0, 110.0, s.wrapping_add(31), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("decotower", 5, 7, 0, 5.0, 300.0, 6, d[0], d[1], 40, 110.0, 190.0, 40.0, 52.0, s.wrapping_add(32), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("glasshall", 1, 7, 0, 5.0, 300.0, 1, d[0], d[1], 30, 40.0, 40.0, 120.0, 120.0, s.wrapping_add(33), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+
+    // 10, the drowned quarter: blocks standing in the shallows off the city's own shore
+    // (any region: the shallows carry whichever region the nearest land has)
+    n = scatter("drowned", 30, 0, 1, -8.0, -0.3, 2, d[0], d[1], 45, 16.0, 36.0, 60.0, 90.0, s.wrapping_add(41), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+
+    // 4, the storm coast: sea stacks off the shore, lights on the headlands
+    let g = seat(4, sx, sy, sk, sr, rn, rx, ry);
+    n = scatter("seastack", 18, 4, 1, -28.0, -2.0, 6, g[0], g[1], 520, 25.0, 70.0, 25.0, 50.0, s.wrapping_add(51), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("lighthouse", 3, 4, 0, 18.0, 140.0, 150, g[0], g[1], 520, 38.0, 44.0, 9.0, 10.0, s.wrapping_add(52), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+
+    // 6, the marsh: reed halls round the seat
+    let m = seat(6, sx, sy, sk, sr, rn, rx, ry);
+    n = scatter("mudhif", 10, 6, 0, 0.5, 14.0, 4, m[0], m[1], 60, 9.0, 11.0, 26.0, 34.0, s.wrapping_add(61), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+
+    // 1, 2, 3, 5: the small things that stand alone
+    let t = seat(1, sx, sy, sk, sr, rn, rx, ry);
+    n = scatter("church", 1, 1, 0, 1.0, 600.0, 1, t[0], t[1], 6, 30.0, 30.0, 22.0, 22.0, s.wrapping_add(71), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    let u = seat(2, sx, sy, sk, sr, rn, rx, ry);
+    n = scatter("cairn", 8, 2, 0, 1300.0, 4000.0, 60, u[0], u[1], 500, 3.0, 4.0, 4.0, 5.0, s.wrapping_add(72), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    let f = seat(3, sx, sy, sk, sr, rn, rx, ry);
+    n = scatter("stairs", 4, 3, 0, 60.0, 640.0, 80, f[0], f[1], 400, 40.0, 60.0, 80.0, 120.0, s.wrapping_add(73), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("shrine", 4, 3, 0, 20.0, 640.0, 80, f[0], f[1], 400, 7.0, 9.0, 8.0, 10.0, s.wrapping_add(74), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    let k = seat(5, sx, sy, sk, sr, rn, rx, ry);
+    n = scatter("chapel", 1, 5, 0, 100.0, 1250.0, 1, k[0], k[1], 200, 14.0, 14.0, 12.0, 12.0, s.wrapping_add(75), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("cashmachine", 1, 5, 0, 100.0, 1250.0, 1, k[0], k[1], 300, 2.0, 2.0, 2.0, 2.0, s.wrapping_add(76), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+    n = scatter("motelsign", 1, 5, 0, 100.0, 1250.0, 1, k[0], k[1], 300, 12.0, 12.0, 6.0, 6.0, s.wrapping_add(77), w, hh, h, reg, sea, lake, mk, mx, my, mt, ms, mr, mg);
+}

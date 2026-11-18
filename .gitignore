@@ -29,3 +29,7 @@ packages/diagram/eda/data/jnt-chain.json
 packages/instruments/examples/*.md
 # radiocarbon curves: fetched and hash-checked, not stored (see packages/kernels/formulas/chron_radiocarbon_calibrate/curves.py)
 packages/kernels/formulas/chron_radiocarbon_calibrate/curves/
+
+# Low Water world generator: build output and generated worlds (rebuild from the seed)
+games/low-water/world/gen/target/
+games/low-water/world/out/

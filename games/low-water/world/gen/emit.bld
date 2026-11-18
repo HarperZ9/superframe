@@ -1,0 +1,76 @@
+// world.json, written a record at a time. Every number is an integer (cells, metres, hundredths),
+// so the text does not depend on how a machine prints a float.
+
+pub fn put(path: str, text: str) ~ FileSystem {
+    let ok = append_file(path, text);
+}
+
+// cell indices as "x,y,x,y,..." in pieces of 48 points
+pub fn put_points(path: str, pts: Vec<i64>, a: usize, b: usize, w: i64) ~ FileSystem {
+    let mut line = "";
+    let mut k = 0;
+    let mut i = a;
+    while i < b {
+        let c = pts[i];
+        if i > a { line = format!("{},", line); }
+        line = format!("{}{},{}", line, c % w, c / w);
+        k += 1;
+        if k == 48 {
+            put(path, line);
+            line = "";
+            k = 0;
+        }
+        i += 1;
+    }
+    if k > 0 { put(path, line); }
+}
+
+// coarse cells (every fourth cell, centred) as full-resolution "x,y,..."
+pub fn put_coarse(path: str, pts: Vec<i64>, cw: i64) ~ FileSystem {
+    let mut line = "";
+    let mut k = 0;
+    let mut i: usize = 0;
+    while i < pts.len() {
+        let c = pts[i];
+        if i > 0 { line = format!("{},", line); }
+        line = format!("{}{},{}", line, (c % cw) * 4 + 2, (c / cw) * 4 + 2);
+        k += 1;
+        if k == 48 {
+            put(path, line);
+            line = "";
+            k = 0;
+        }
+        i += 1;
+    }
+    if k > 0 { put(path, line); }
+}
+
+pub fn region_name(r: i64) -> str {
+    if r == 1 { return "Thaw Country"; }
+    if r == 2 { return "The Folded Uplands"; }
+    if r == 3 { return "The Fog Forest"; }
+    if r == 4 { return "The Storm Coast"; }
+    if r == 5 { return "The Canyon and Badlands"; }
+    if r == 6 { return "The Marsh"; }
+    if r == 7 { return "The City Across the Water"; }
+    if r == 8 { return "The Works"; }
+    if r == 9 { return "The Monument Ground"; }
+    if r == 10 { return "The Drowned Quarter"; }
+    if r == 11 { return "The Far-North Works Town"; }
+    "Open Sea"
+}
+
+pub fn river_name(r: i64, k: i64) -> str {
+    if k > 1 { return ""; }
+    if r == 1 { if k == 0 { return "Thawwater"; } return "Rookbeck"; }
+    if r == 2 { if k == 0 { return "Tarn Beck"; } return "Corrie Water"; }
+    if r == 3 { if k == 0 { return "Birch Water"; } return "Dim Beck"; }
+    if r == 4 { if k == 0 { return "the Gull"; } return "Stack Burn"; }
+    if r == 5 { if k == 0 { return "the Rust"; } return "Dry Fork"; }
+    if r == 6 { if k == 0 { return "the Sedge"; } return "Eel Lode"; }
+    if r == 7 { if k == 0 { return "the Cut"; } return ""; }
+    if r == 8 { if k == 0 { return "the Sinter"; } return ""; }
+    if r == 9 { if k == 0 { return "the Processional"; } return "Cypress Water"; }
+    if r == 11 { if k == 0 { return "Cold Lode"; } return "Pipe Water"; }
+    ""
+}

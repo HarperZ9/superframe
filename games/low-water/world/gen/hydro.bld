@@ -1,0 +1,176 @@
+// Standing and running water. Long lakes are carved where a glacier would have overdeepened a
+// trunk valley, ponds where frozen ground or peat slumps; the flood then finds every basin and its
+// spill level. Rivers are the cells whose rain-weighted drainage passes a threshold.
+
+use noise::gnoise;
+use noise::rnd;
+
+// Overdeepen up to `want` valley reaches on the wet plates. Returns how many were carved.
+pub fn carve_long_lakes(h: Vec<f64>, w: i64, hh: i64, rcv: Vec<i64>, acc: Vec<f64>, plate: Vec<i64>, want: i64) -> i64 {
+    let n = (w * hh) as usize;
+    let mut px: Vec<i64> = Vec::new();
+    let mut py: Vec<i64> = Vec::new();
+    let mut made: i64 = 0;
+    while made < want {
+        let mut best = 0.0;
+        let mut pick: i64 = -1;
+        let mut c: usize = 0;
+        while c < n {
+            if acc[c] > best && acc[c] > 9000.0 && acc[c] < 160000.0 && h[c] > 60.0 && h[c] < 700.0 && (plate[c] == 0 || plate[c] == 2) {
+                let x = (c as i64) % w;
+                let y = (c as i64) / w;
+                let mut ok = true;
+                let mut k: usize = 0;
+                while k < px.len() {
+                    let dx = x - px[k];
+                    let dy = y - py[k];
+                    if dx * dx + dy * dy < 300 * 300 { ok = false; }
+                    k += 1;
+                }
+                if ok {
+                    best = acc[c];
+                    pick = c as i64;
+                }
+            }
+            c += 1;
+        }
+        if pick < 0 { break; }
+        px.push(pick % w);
+        py.push(pick / w);
+        // walk 110 cells downstream, lowering a trough that is deepest in the middle
+        let len: i64 = 110;
+        let mut cur = pick;
+        let mut i: i64 = 0;
+        while i < len && cur >= 0 && h[cur as usize] > 8.0 {
+            let t = (i as f64) / (len as f64);
+            let bump = 4.0 * t * (1.0 - t);
+            let depth = 46.0 * bump;
+            let rad = 3.0 + 4.0 * bump;
+            let bed = h[cur as usize];
+            let cx = cur % w;
+            let cy = cur / w;
+            let r = (rad + 1.0) as i64;
+            let mut dy = 0 - r;
+            while dy <= r {
+                let mut dx = 0 - r;
+                while dx <= r {
+                    let d2 = ((dx * dx + dy * dy) as f64) / (rad * rad);
+                    let qx = cx + dx;
+                    let qy = cy + dy;
+                    if d2 < 1.0 && qx > 0 && qy > 0 && qx < w - 1 && qy < hh - 1 {
+                        let q = (qy * w + qx) as usize;
+                        let v = bed - depth * (1.0 - d2);
+                        if v < h[q] && h[q] > 0.5 { h[q] = v; }
+                    }
+                    dx += 1;
+                }
+                dy += 1;
+            }
+            cur = rcv[cur as usize];
+            i += 1;
+        }
+        made += 1;
+    }
+    made
+}
+
+// Kettle ponds on the cold northern shield and pools in the south-west marsh.
+pub fn carve_ponds(h: Vec<f64>, w: i64, hh: i64, plate: Vec<i64>, seed: u32) {
+    let mut y: i64 = 1;
+    while y < hh - 1 {
+        let mut x: i64 = 1;
+        while x < w - 1 {
+            let c = (y * w + x) as usize;
+            let v = h[c];
+            if v > 1.5 {
+                let g = gnoise((x as f64) / 9.0, (y as f64) / 9.0, seed.wrapping_add(808));
+                if plate[c] == 2 && v < 320.0 && g > 0.26 { h[c] = v - (g - 0.26) * 16.0; }
+                if plate[c] == 3 && v < 30.0 && g > 0.16 { h[c] = v - (g - 0.16) * 9.0; }
+                if h[c] < 0.6 { h[c] = 0.6; }
+            }
+            x += 1;
+        }
+        y += 1;
+    }
+}
+
+// Label every basin deeper than 0.4 m. Basins under `least` cells are filled in instead.
+// lake[c] becomes the basin's id (1..) or 0; land outside a lake is set to its filled level.
+pub fn find_lakes(h: Vec<f64>, f: Vec<f64>, w: i64, hh: i64, lake: Vec<i64>, least: i64) -> i64 {
+    let n = (w * hh) as usize;
+    let mut queue: Vec<i64> = Vec::new();
+    let mut id: i64 = 0;
+    let mut c: usize = 0;
+    while c < n {
+        lake[c] = 0;
+        c += 1;
+    }
+    c = 0;
+    while c < n {
+        if lake[c] == 0 && f[c] > 0.05 && f[c] - h[c] > 0.4 {
+            id += 1;
+            let start = queue.len();
+            queue.push(c as i64);
+            lake[c] = id;
+            let mut head = start;
+            while head < queue.len() {
+                let q = queue[head];
+                head += 1;
+                let qx = q % w;
+                let qy = q / w;
+                let mut k = 0;
+                while k < 4 {
+                    let mut nx = qx;
+                    let mut ny = qy;
+                    if k == 0 { nx = qx + 1; }
+                    if k == 1 { nx = qx - 1; }
+                    if k == 2 { ny = qy + 1; }
+                    if k == 3 { ny = qy - 1; }
+                    if nx >= 0 && ny >= 0 && nx < w && ny < hh {
+                        let m = (ny * w + nx) as usize;
+                        if lake[m] == 0 && f[m] > 0.05 && f[m] - h[m] > 0.4 {
+                            lake[m] = id;
+                            queue.push(m as i64);
+                        }
+                    }
+                    k += 1;
+                }
+            }
+            if ((queue.len() - start) as i64) < least {
+                let mut k = start;
+                while k < queue.len() {
+                    lake[queue[k] as usize] = -1;
+                    k += 1;
+                }
+                id -= 1;
+            }
+        }
+        c += 1;
+    }
+    c = 0;
+    while c < n {
+        if lake[c] < 0 { lake[c] = 0; }
+        if lake[c] == 0 && f[c] > 0.05 { h[c] = f[c]; }
+        c += 1;
+    }
+    id
+}
+
+// River class per cell: 0 for none, else 8 * sqrt(drainage in km2 of rain), capped at 255.
+pub fn mark_rivers(acc: Vec<f64>, f: Vec<f64>, lake: Vec<i64>, riv: Vec<i64>, least_km2: f64) -> i64 {
+    let n = riv.len();
+    let mut count: i64 = 0;
+    let mut c: usize = 0;
+    while c < n {
+        let q = acc[c] * 0.004096;
+        riv[c] = 0;
+        if q >= least_km2 && f[c] > 0.05 && lake[c] == 0 {
+            let mut v = floor(sqrt(q) * 8.0) as i64;
+            if v > 255 { v = 255; }
+            riv[c] = v;
+            count += 1;
+        }
+        c += 1;
+    }
+    count
+}

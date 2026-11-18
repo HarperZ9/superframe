@@ -1,0 +1,44 @@
+// Landmarks: the masses that give each region its skyline. Each is placed by rule from the seed:
+// a kind, a place, a height and a footprint in metres. The traversal draws them as plain masses
+// at the right scale; the plate draws them as signs.
+
+use noise::rnd;
+
+// Scatter up to `count` marks of one kind inside `radius` cells of (cx, cy).
+// wet: 0 dry land only, 1 sea only, 2 either. lo..hi bounds the ground height in metres.
+// Returns how many were placed; the mark arrays grow in step.
+pub fn scatter(kind: str, count: i64, region: i64, wet: i64, lo: f64, hi: f64, gap: i64, cx: i64, cy: i64, radius: i64, tall_a: f64, tall_b: f64, size_a: f64, size_b: f64, salt: u32, w: i64, hh: i64, h: Vec<f64>, reg: Vec<i64>, sea: Vec<i64>, lake: Vec<i64>, mk: Vec<str>, mx: Vec<i64>, my: Vec<i64>, mt: Vec<i64>, ms: Vec<i64>, mr: Vec<i64>, mg: Vec<i64>) -> i64 {
+    let first = mx.len();
+    let mut made: i64 = 0;
+    let mut t: i64 = 0;
+    while made < count && t < count * 400 {
+        let x = cx + floor((rnd(t, 1, salt) * 2.0 - 1.0) * (radius as f64)) as i64;
+        let y = cy + floor((rnd(t, 2, salt) * 2.0 - 1.0) * (radius as f64)) as i64;
+        if x > 4 && y > 4 && x < w - 4 && y < hh - 4 {
+            let c = (y * w + x) as usize;
+            let mut ok = lake[c] == 0 && h[c] >= lo && h[c] <= hi;
+            if region > 0 && reg[c] != region { ok = false; }
+            if wet == 0 && sea[c] == 1 { ok = false; }
+            if wet == 1 && sea[c] == 0 { ok = false; }
+            let mut i = first;
+            while ok && i < mx.len() {
+                let dx = x - mx[i];
+                let dy = y - my[i];
+                if dx * dx + dy * dy < gap * gap { ok = false; }
+                i += 1;
+            }
+            if ok {
+                mk.push(kind);
+                mx.push(x);
+                my.push(y);
+                mt.push(floor(tall_a + (tall_b - tall_a) * rnd(t, 3, salt)) as i64);
+                ms.push(floor(size_a + (size_b - size_a) * rnd(t, 4, salt)) as i64);
+                mr.push(floor(rnd(t, 5, salt) * 360.0) as i64);
+                mg.push(reg[c]);
+                made += 1;
+            }
+        }
+        t += 1;
+    }
+    made
+}

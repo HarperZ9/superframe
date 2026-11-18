@@ -75,6 +75,11 @@ jobs:
           ./native/bld/target/release/main | tee native-bld-out.txt
           grep -q "^modules identical to the C++: 1 of 1$" native-bld-out.txt
           grep -q "differs from the frame 0 pin: 1 of 1$" native-bld-out.txt
+      # Low Water's world generator is BuildLang: the same seed must give the same bytes, every river
+      # must run downhill to water, and a planted uphill river must fail (linux has node 20+ on the runner).
+      - run: node --test games/low-water/world/tests/world.test.mjs
+        env:
+          BUILDC: buildc
       # e-means: the study program is BuildLang end to end; its output must equal the stored results.
       - run: buildc run packages/emeans/bld/emeans.bld > emeans-out.txt && diff emeans-out.txt packages/emeans/results/emeans.txt
       # The registry unit table: every check must pass on the real table, the unbroken control table must

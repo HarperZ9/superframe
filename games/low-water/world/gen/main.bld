@@ -1,0 +1,250 @@
+// Low Water world generator. One seed, one island, the same bytes every time.
+//   main.exe <seed> <out dir> [plant]
+// "plant" raises one river bed after the world is built, so the hydrology check has a fault to find.
+mod noise;
+mod heap;
+mod tect;
+mod flood;
+mod erode;
+mod hydro;
+mod climate;
+mod settle;
+mod roads;
+mod marks;
+mod rivers;
+mod stages;
+mod landmarks;
+mod emit;
+mod report;
+mod out;
+
+fn zeros(n: usize) -> Vec<f64> {
+    let mut v: Vec<f64> = Vec::new();
+    let mut i: usize = 0;
+    while i < n {
+        v.push(0.0);
+        i += 1;
+    }
+    v
+}
+
+fn izeros(n: usize) -> Vec<i64> {
+    let mut v: Vec<i64> = Vec::new();
+    let mut i: usize = 0;
+    while i < n {
+        v.push(0);
+        i += 1;
+    }
+    v
+}
+
+fn main() ~ Console + FileSystem + Environment + Clock {
+    let t0 = clock_ms();
+    let seed = args_get(1).parse_int() as u32;
+    let dir = args_get(2);
+    let plant = args_count() > 3;
+    let w: i64 = 2048;
+    let h: i64 = 1536;
+    let n = (w * h) as usize;
+    let cell = 0.064;
+
+    // 1. the tectonic sketch
+    let p = tect::plates();
+    let sds = tect::seeds(seed);
+    let mut hgt = zeros(n);
+    let mut target = zeros(n);
+    let mut kmul = zeros(n);
+    let mut rain = zeros(n);
+    let mut plate = izeros(n);
+    let mut y: i64 = 0;
+    while y < h {
+        let mut x: i64 = 0;
+        while x < w {
+            let s = tect::sketch(((x as f64) + 0.5) * cell, ((y as f64) + 0.5) * cell, p, sds, seed);
+            let c = (y * w + x) as usize;
+            hgt[c] = s.height;
+            target[c] = s.height;
+            kmul[c] = s.kmul;
+            rain[c] = s.rain;
+            plate[c] = s.plate;
+            x += 1;
+        }
+        y += 1;
+    }
+    println!("sketch       {} ms", clock_ms() - t0);
+
+    // 2. erosion
+    let mut f = zeros(n);
+    let mut acc = zeros(n);
+    let mut rcv = izeros(n);
+    let mut order = izeros(n);
+    erode::erode(hgt, w, h, target, kmul, rain, 30, 0.05, f, rcv, order, acc);
+    println!("erosion      {} ms", clock_ms() - t0);
+
+    // 3. lakes, ponds, the last flood, climate, rivers
+    flood::flood(hgt, w, h, 0.00002, f, rcv, order);
+    flood::steepest(f, w, h, rcv, 31);
+    flood::accumulate(rain, rcv, order, acc);
+    let long_lakes = hydro::carve_long_lakes(hgt, w, h, rcv, acc, plate, 4);
+    hydro::carve_ponds(hgt, w, h, plate, seed);
+    flood::flood(hgt, w, h, 0.00002, f, rcv, order);
+    flood::steepest(f, w, h, rcv, 37);
+    let mut sea = izeros(n);
+    let mut c: usize = 0;
+    while c < n {
+        if f[c] <= 0.05 { sea[c] = 1; }
+        c += 1;
+    }
+    let mut moist = zeros(n);
+    climate::moisture(hgt, w, h, rain, moist, target);
+    c = 0;
+    while c < n {
+        rain[c] = 0.25 + 1.5 * moist[c];
+        c += 1;
+    }
+    flood::accumulate(rain, rcv, order, acc);
+    let mut lake = izeros(n);
+    let lakes = hydro::find_lakes(hgt, f, w, h, lake, 4);
+    let mut riv = izeros(n);
+    let river_cells = hydro::mark_rivers(acc, f, lake, riv, 12.0);
+    let mut cd = izeros(n);
+    climate::coast_distance(sea, w, h, cd);
+    println!("water        {} ms  lakes {} (long {})  river cells {}", clock_ms() - t0, lakes, long_lakes, river_cells);
+
+    // 4. the works stand on the mainland shore nearest the city island
+    let mut ix = 0.0;
+    let mut iy = 0.0;
+    let mut inum = 0.0;
+    c = 0;
+    while c < n {
+        if plate[c] == 5 && sea[c] == 0 {
+            ix = ix + ((c as i64) % w) as f64;
+            iy = iy + ((c as i64) / w) as f64;
+            inum = inum + 1.0;
+        }
+        c += 1;
+    }
+    ix = ix / inum;
+    iy = iy / inum;
+    let mut wbest = 1.0e30;
+    let mut wx = 0.0;
+    let mut wy = 0.0;
+    c = 0;
+    while c < n {
+        if plate[c] != 5 && sea[c] == 0 && cd[c] < 3 {
+            let dx = (((c as i64) % w) as f64) - ix;
+            let dy = (((c as i64) / w) as f64) - iy;
+            let d = dx * dx + dy * dy;
+            if d < wbest {
+                wbest = d;
+                wx = (((c as i64) % w) as f64) * cell;
+                wy = (((c as i64) / w) as f64) * cell;
+            }
+        }
+        c += 1;
+    }
+
+    // 5. cover and regions
+    let mut bio = izeros(n);
+    let mut reg = izeros(n);
+    let mut rn = izeros(12);
+    let mut rx = izeros(12);
+    let mut ry = izeros(12);
+    stages::cover(hgt, w, h, moist, plate, sea, lake, acc, cd, bio, reg, wx, wy, rn, rx, ry, seed);
+    println!("cover        {} ms", clock_ms() - t0);
+
+    // 6. settlements and roads, on a grid of every fourth cell
+    let cw = w / 4;
+    let chh = h / 4;
+    let cn = (cw * chh) as usize;
+    let mut score = zeros(cn);
+    let mut fresh = zeros(cn);
+    settle::site_scores(hgt, w, h, sea, lake, riv, cd, score, fresh);
+    let mut sx: Vec<i64> = Vec::new();
+    let mut sy: Vec<i64> = Vec::new();
+    let mut sk: Vec<i64> = Vec::new();
+    let mut sr: Vec<i64> = Vec::new();
+    let mut sn: Vec<str> = Vec::new();
+    stages::settle_all(hgt, w, h, score, fresh, cd, reg, rn, rx, ry, sx, sy, sk, sr, sn);
+    let mut chgt = zeros(cn);
+    let mut cwat = izeros(cn);
+    let mut criv = izeros(cn);
+    let mut croad = izeros(cn);
+    stages::coarsen(hgt, w, h, sea, lake, riv, chgt, cwat, criv);
+    let mut ra: Vec<i64> = Vec::new();
+    let mut rb: Vec<i64> = Vec::new();
+    let mut rk: Vec<i64> = Vec::new();
+    let mut rkm: Vec<i64> = Vec::new();
+    let mut rhr: Vec<i64> = Vec::new();
+    let mut rpts: Vec<i64> = Vec::new();
+    let mut roff: Vec<i64> = Vec::new();
+    stages::road_net(w, h, chgt, cwat, criv, croad, sx, sy, sk, sr, ra, rb, rk, rkm, rhr, rpts, roff);
+    println!("settlements  {} ms  places {}  routes {}", clock_ms() - t0, sx.len(), ra.len());
+
+    // 7. landmarks
+    let mut mk: Vec<str> = Vec::new();
+    let mut mx: Vec<i64> = Vec::new();
+    let mut my: Vec<i64> = Vec::new();
+    let mut mt: Vec<i64> = Vec::new();
+    let mut ms: Vec<i64> = Vec::new();
+    let mut mr: Vec<i64> = Vec::new();
+    let mut mg: Vec<i64> = Vec::new();
+    landmarks::place_all(seed, w, h, hgt, reg, sea, lake, sx, sy, sk, sr, rn, rx, ry, mk, mx, my, mt, ms, mr, mg);
+
+    // 8. river lines and the hydrology check
+    let mut pts: Vec<i64> = Vec::new();
+    let mut off: Vec<i64> = Vec::new();
+    let mut ends: Vec<i64> = Vec::new();
+    let lines = rivers::trace(riv, rcv, sea, lake, w, h, pts, off, ends);
+    let mut wat = zeros(n);
+    c = 0;
+    while c < n {
+        wat[c] = -512.0;
+        if sea[c] == 1 { wat[c] = 0.0; }
+        if lake[c] > 0 { wat[c] = f[c]; }
+        if lake[c] == 0 && sea[c] == 0 { f[c] = hgt[c]; }
+        c += 1;
+    }
+    if plant {
+        // the longest line, two thirds of the way down
+        let mut best: usize = 0;
+        let mut i: usize = 0;
+        while i + 1 < off.len() {
+            if off[i + 1] - off[i] > off[best + 1] - off[best] { best = i; }
+            i += 1;
+        }
+        let at = pts[(off[best] + (off[best + 1] - off[best]) * 2 / 3) as usize] as usize;
+        hgt[at] = hgt[at] + 40.0;
+        f[at] = f[at] + 40.0;
+        println!("planted a 40 m rise in river line {} at cell {}", best, at);
+    }
+    let mut first: Vec<i64> = Vec::new();
+    let faults = rivers::check(f, pts, off, ends, first);
+    println!("rivers       {} ms  lines {}  hydrology faults {}", clock_ms() - t0, lines, faults);
+
+    // 9. write
+    let hh = out::pgm16(format!("{}/height.pgm", dir), hgt, w, h, 16.0, 512.0);
+    let hw = out::pgm16(format!("{}/water.pgm", dir), wat, w, h, 16.0, 512.0);
+    let hm = out::pgm16(format!("{}/moist.pgm", dir), moist, w, h, 255.0, 0.0);
+    let hr = out::pgm8(format!("{}/river.pgm", dir), riv, w, h);
+    let hb = out::pgm8(format!("{}/biome.pgm", dir), bio, w, h);
+    let hg = out::pgm8(format!("{}/region.pgm", dir), reg, w, h);
+    let j = format!("{}/world.json", dir);
+    let nl = "\n";
+    let ok = write_file(j, format!("{{\"format\":\"low-water-world/1\",\"seed\":{},\"width\":{},\"height\":{},\"cell_m\":64,\"sea_level_m\":0,{}", seed, w, h, nl));
+    emit::put(j, format!("\"height_code\":{{\"scale\":16,\"bias\":512}},{}", nl));
+    emit::put(j, format!("\"hash\":{{\"height\":\"{}\",\"water\":\"{}\",\"moist\":\"{}\",\"river\":\"{}\",\"biome\":\"{}\",\"region\":\"{}\"}},{}", hh, hw, hm, hr, hb, hg, nl));
+    emit::put(j, format!("\"checks\":{{\"hydrology_faults\":{},\"river_lines\":{},\"lakes\":{},\"long_lakes\":{},\"planted\":{}}},{}", faults, lines, lakes, long_lakes, plant, nl));
+    emit::put(j, format!("\"works_anchor\":[{},{}],\"isle_centre\":[{},{}],{}", floor(wx / cell) as i64, floor(wy / cell) as i64, floor(ix) as i64, floor(iy) as i64, nl));
+    report::regions(j, rn, rx, ry);
+    report::settlements(j, hgt, w, sx, sy, sk, sr, sn);
+    report::roads(j, cw, ra, rb, rk, rkm, rhr, rpts, roff);
+    report::rivers(j, w, acc, reg, pts, off, ends);
+    report::marks(j, mk, mx, my, mt, ms, mr, mg);
+    println!("written      {} ms", clock_ms() - t0);
+    if faults > 0 {
+        println!("hydrology: FAIL, first fault in line {} at step {} (cell {})", first[0], first[1], first[2]);
+    } else {
+        println!("hydrology: pass");
+    }
+}

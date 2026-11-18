@@ -1,0 +1,50 @@
+// A min-heap of (key, cell) held in two vectors; the caller keeps the live count.
+
+// min-heap of (key, cell) held in two vectors; n is the live count
+pub fn heap_push(hk: Vec<f64>, hv: Vec<i64>, n: usize, key: f64, cell: i64) -> usize {
+    if n < hk.len() {
+        hk[n] = key;
+        hv[n] = cell;
+    } else {
+        hk.push(key);
+        hv.push(cell);
+    }
+    let mut i = n;
+    while i > 0 {
+        let p = (i - 1) / 2;
+        if hk[p] <= hk[i] { break; }
+        let tk = hk[p];
+        let tv = hv[p];
+        hk[p] = hk[i];
+        hv[p] = hv[i];
+        hk[i] = tk;
+        hv[i] = tv;
+        i = p;
+    }
+    n + 1
+}
+
+// removes the least; the caller reads hk[0], hv[0] first
+pub fn heap_pop(hk: Vec<f64>, hv: Vec<i64>, n: usize) -> usize {
+    let last = n - 1;
+    hk[0] = hk[last];
+    hv[0] = hv[last];
+    let mut i: usize = 0;
+    while true {
+        let l = 2 * i + 1;
+        let r = l + 1;
+        let mut m = i;
+        if l < last && hk[l] < hk[m] { m = l; }
+        if r < last && hk[r] < hk[m] { m = r; }
+        if m == i { break; }
+        let tk = hk[m];
+        let tv = hv[m];
+        hk[m] = hk[i];
+        hv[m] = hv[i];
+        hk[i] = tk;
+        hv[i] = tv;
+        i = m;
+    }
+    last
+}
+
