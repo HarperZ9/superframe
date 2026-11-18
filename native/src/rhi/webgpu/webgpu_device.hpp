@@ -26,6 +26,7 @@ inline WGPUTextureFormat wgpuFormat(TextureFormat f){
         case TextureFormat::RGBA16Float: return WGPUTextureFormat_RGBA16Float;
         case TextureFormat::RGBA32Float: return WGPUTextureFormat_RGBA32Float;
         case TextureFormat::R32Float: return WGPUTextureFormat_R32Float;
+        case TextureFormat::RG16Float: return WGPUTextureFormat_RG16Float;
         case TextureFormat::Depth32Float: return WGPUTextureFormat_Depth32Float;
         default: return WGPUTextureFormat_RGBA8Unorm;
     }

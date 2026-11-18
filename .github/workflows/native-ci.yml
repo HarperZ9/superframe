@@ -304,6 +304,13 @@ jobs:
         run: |
           build/Release/gpu_host_frame.exe host-frame-warp.json
           grep -q '"pass": true' host-frame-warp.json
+      - name: Real-time AO on WARP against the CPU GTAO reference, with the radius and motion-vector controls (evidence/ao-realtime-bounds.json)
+        shell: bash
+        env:
+          RAW_NATIVE_D3D12_WARP: "1"
+        run: |
+          build/Release/gpu_ao_realtime.exe ao-realtime-warp.json
+          grep -q '"pass":true' ao-realtime-warp.json
       - name: The core's style passes and post-stack driver on WARP match the C++ float64 reference, which matches the JavaScript one (ADR 0019)
         shell: bash
         env:
