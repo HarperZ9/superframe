@@ -125,5 +125,5 @@ export function makeUnderstory({ dev, world, near, quality, vbuf }, forest) {
     pass.setPipeline(which === "shadow" ? forest.shadowPipe : forest.treePipe);
     forms.forEach((f, i) => { if (counts[i] && !(which === "shadow" && i < 6)) { pass.setVertexBuffer(0, f.buf); pass.setVertexBuffer(1, bufs[i]); pass.draw(f.n, counts[i]); } });
   }
-  return { update, draw, stats: () => ({ plants: counts.reduce((a, b) => a + b, 0) }) };
+  return { update, draw, landed() { tiles.clear(); at = [1e12, 1e12]; }, stats: () => ({ plants: counts.reduce((a, b) => a + b, 0) }) };
 }

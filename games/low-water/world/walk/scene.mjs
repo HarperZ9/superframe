@@ -33,6 +33,8 @@ export async function makeScene(ctx) {
       for (const [k, b] of Object.entries(archBuf)) { pass.setVertexBuffer(0, meshBuf[k].buf); pass.setVertexBuffer(1, b.buf); pass.draw(meshBuf[k].count, b.count); }
       for (const p of parts) p.draw(pass, which);
     },
+    // new ground has arrived for a box of metres: whatever was placed on the old ground is placed again
+    landed(x0, z0, x1, z1) { for (const p of parts) if (p.landed) p.landed(x0, z0, x1, z1); },
     drawAir(pass) { if (falling) { pass.setPipeline(airPipe); pass.setVertexBuffer(0, airBuf); pass.draw(4, falling); } },
     shadow() {}, before() {},
     stats() { return Object.assign({}, ...parts.map((p) => p.stats())); },

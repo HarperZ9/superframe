@@ -11,13 +11,21 @@ export async function makeBuilt({ dev, stage, world, roads, near, lights, vbuf }
     { arrayStride: 16, stepMode: "instance", attributes: [{ shaderLocation: 4, offset: 0, format: "float32x4" }] }];
   const pipe = stage.pipe(mod, "vsBuilt", "fsBuilt", layout), shadowPipe = stage.pipe(mod, "vsBuilt", "fsBuiltShadow", layout, { format: null });
   const sites = [];
-  for (const s of world.json.settlements) if (s.region === 1) { const P = town.plan(world, roads, s); sites.push({ x: P.cx, z: P.cz, reach: P.reach, from: 2600, stamp: (t) => town.stamp(P, t), build: () => town.mesh(world, P, lights), plan: P }); }
-  for (const P of works.plans(world)) sites.push({ x: P.cx, z: P.cz, reach: P.reach, from: 9000, stamp: (t) => works.stamp(P, t), build: () => works.mesh(world, P, lights), plan: P });
+  // a town is planned on the ground it stands on, so not before that ground has arrived at full detail
+  for (const s of world.json.settlements) if (s.region === 1) {
+    const site = { x: (s.x + 0.5) * world.cell, z: (s.y + 0.5) * world.cell, reach: 460, from: 2600, plan: null };
+    site.here = () => world.has(site.x - site.reach, site.z - site.reach, site.x + site.reach, site.z + site.reach);
+    site.ensure = () => site.plan || (site.here() ? (site.plan = town.plan(world, roads, s)) : null);
+    site.stamp = (t) => { const P = site.ensure(); if (P) town.stamp(P, t); };
+    site.build = () => town.mesh(world, site.ensure(), lights);
+    sites.push(site);
+  }
+  for (const P of works.plans(world)) sites.push({ x: P.cx, z: P.cz, reach: P.reach, from: 9000, stamp: (t) => works.stamp(P, t), build: () => works.mesh(world, P, lights), plan: P, here: () => world.has(P.cx - P.reach, P.cz - P.reach, P.cx + P.reach, P.cz + P.reach) });
   near.stampers.push((t) => { for (const s of sites) if (Math.abs(s.x - (t.ox + t.N / 2)) < t.N / 2 + s.reach && Math.abs(s.z - (t.oz + t.N / 2)) < t.N / 2 + s.reach) s.stamp(t); });
   let tris = 0;
   function update({ cam }) {
     // one site a frame at most: a town is a few megabytes of vertices
-    const s = sites.find((q) => !q.buf && Math.hypot(q.x - cam.x, q.z - cam.z) < q.from + q.reach);
+    const s = sites.find((q) => !q.buf && Math.hypot(q.x - cam.x, q.z - cam.z) < q.from + q.reach && q.here());
     if (!s) return;
     const m = s.build();
     s.buf = vbuf(m.data); s.n = m.data.length / 12; s.inst = vbuf(new Float32Array([m.origin[0], m.origin[1], m.origin[2], 0])); tris += s.n / 3;

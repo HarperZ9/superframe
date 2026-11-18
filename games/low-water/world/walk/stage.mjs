@@ -25,14 +25,23 @@ export async function makeStage(dev, canvasFormat, world, maps) {
   };
   const heightTex = tex2("r32float", W, H, world.height, 4), waterTex = tex2("r32float", W, H, world.water, 4), albTex = tex2("rgba8unorm", W, H, maps.alb, 4, 3), auxTex = tex2("rgba8unorm", W, H, maps.aux, 4, 3);
   // two coarser levels of the colour and aux maps, by box average
-  for (const t of [albTex, auxTex]) {
-    let src = t === albTex ? maps.alb : maps.aux, w = W, h = H;
-    for (let l = 1; l < 3; l++) {
-      const nw = w >> 1, nh = h >> 1, dst = new Uint8Array(nw * nh * 4);
-      for (let y = 0; y < nh; y++) for (let x = 0; x < nw; x++) for (let c = 0; c < 4; c++) dst[(y * nw + x) * 4 + c] = (src[(2 * y * w + 2 * x) * 4 + c] + src[(2 * y * w + 2 * x + 1) * 4 + c] + src[((2 * y + 1) * w + 2 * x) * 4 + c] + src[((2 * y + 1) * w + 2 * x + 1) * 4 + c]) >> 2;
-      dev.queue.writeTexture({ texture: t, mipLevel: l }, dst, { bytesPerRow: nw * 4 }, [nw, nh]);
-      src = dst; w = nw; h = nh;
+  function refreshMips() {
+    for (const t of [albTex, auxTex]) {
+      let src = t === albTex ? maps.alb : maps.aux, w = W, h = H;
+      for (let l = 1; l < 3; l++) {
+        const nw = w >> 1, nh = h >> 1, dst = new Uint8Array(nw * nh * 4);
+        for (let y = 0; y < nh; y++) for (let x = 0; x < nw; x++) for (let c = 0; c < 4; c++) dst[(y * nw + x) * 4 + c] = (src[(2 * y * w + 2 * x) * 4 + c] + src[(2 * y * w + 2 * x + 1) * 4 + c] + src[((2 * y + 1) * w + 2 * x) * 4 + c] + src[((2 * y + 1) * w + 2 * x + 1) * 4 + c]) >> 2;
+        dev.queue.writeTexture({ texture: t, mipLevel: l }, dst, { bytesPerRow: nw * 4 }, [nw, nh]);
+        src = dst; w = nw; h = nh;
+      }
     }
+  }
+  refreshMips();
+  // a box of cells has changed (a tile landed): send those rows of the four maps again
+  function updateRect(x0, y0, w, h) {
+    const f = new Float32Array(w * h), b = new Uint8Array(w * h * 4);
+    for (const [t, src] of [[heightTex, world.height], [waterTex, world.water]]) { for (let y = 0; y < h; y++) f.set(src.subarray((y0 + y) * W + x0, (y0 + y) * W + x0 + w), y * w); dev.queue.writeTexture({ texture: t, origin: [x0, y0] }, f, { bytesPerRow: w * 4 }, [w, h]); }
+    for (const [t, src] of [[albTex, maps.alb], [auxTex, maps.aux]]) { for (let y = 0; y < h; y++) b.set(src.subarray(((y0 + y) * W + x0) * 4, ((y0 + y) * W + x0 + w) * 4), y * w * 4); dev.queue.writeTexture({ texture: t, origin: [x0, y0] }, b, { bytesPerRow: w * 4 }, [w, h]); }
   }
   // the ground averaged over half a kilometre and more: where it lies below this, fog pools
   const cw = W >> 3, ch = H >> 3, mean = new Float32Array(cw * ch), coarse = new Uint16Array(cw * ch);
@@ -125,7 +134,7 @@ export async function makeStage(dev, canvasFormat, world, maps) {
     dev.queue.writeTexture({ texture: nearB }, near.state.B, { bytesPerRow: NEAR * 4 }, [NEAR, NEAR]);
   }
   rebind();
-  return { st, frames, lightBuf, layout, module, pipe, resize, post, uploadNear, rebind, tex2,
+  return { st, frames, lightBuf, layout, module, pipe, resize, post, uploadNear, rebind, tex2, updateRect, refreshMips,
     set(name, texture) { st[name] = texture; rebind(); },
     writeFrame(which, data) { dev.queue.writeBuffer(frames[which], 0, data); },
     writeLights(block) { dev.queue.writeBuffer(lightBuf, 0, block); } };

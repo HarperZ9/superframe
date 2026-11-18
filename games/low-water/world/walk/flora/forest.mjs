@@ -152,5 +152,9 @@ export async function makeForest({ dev, stage, world, roads, near, quality, vbuf
     if (farN) { pass.setVertexBuffer(0, bufs.far); pass.draw(4, farN); }
     if (edgeN) { pass.setVertexBuffer(0, bufs.edge); pass.draw(4, edgeN); }
   }
-  return { forms, update, draw, cellOf, treePipe, shadowPipe, stats: () => ({ trees: counts.near + counts.mid + counts.far, treesNear: counts.near, treesMid: counts.mid, treesFar: counts.far, triangles: ranges.near.reduce((a, [i, , n]) => a + forms[i].nearN / 3 * n, 0) + ranges.mid.reduce((a, [i, , n]) => a + forms[i].midN / 3 * n, 0) + counts.far * 2 }) };
+  function landed(x0, z0, x1, z1) {
+    for (let cz = Math.floor(z0 / CELL) - 1; cz <= Math.floor(z1 / CELL) + 1; cz++) for (let cx = Math.floor(x0 / CELL) - 1; cx <= Math.floor(x1 / CELL) + 1; cx++) cells.delete(cx * 8192 + cz);
+    at = [1e12, 1e12]; farAt = [1e12, 1e12];
+  }
+  return { forms, update, draw, cellOf, landed, treePipe, shadowPipe, stats: () => ({ trees: counts.near + counts.mid + counts.far, treesNear: counts.near, treesMid: counts.mid, treesFar: counts.far, triangles: ranges.near.reduce((a, [i, , n]) => a + forms[i].nearN / 3 * n, 0) + ranges.mid.reduce((a, [i, , n]) => a + forms[i].midN / 3 * n, 0) + counts.far * 2 }) };
 }

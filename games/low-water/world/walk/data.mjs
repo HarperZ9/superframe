@@ -1,21 +1,75 @@
 // The generated world as the traversal holds it: typed arrays, lookups in metres, and the two
 // maps the ground shader reads (colour, and normal with canopy and lamp glow).
+// The world arrives as binary tiles (../tiles.mjs): an overview of the whole island at once, the
+// tiles round the walker before the first frame, and the rest behind the walk, nearest first.
+// A world that was never packed is read from the generator's text rasters instead.
 import { parsePgm } from "../pgm.mjs";
+import { gunzip, decodeBlock, FORMAT } from "../tiles.mjs";
 
-export async function loadWorld(base, onProgress = () => {}) {
-  const names = ["height", "water", "biome", "region", "river", "moist"], got = {};
-  const json = await (await fetch(`${base}/world.json`)).json();
-  let done = 0;
-  await Promise.all(names.map(async (n) => {
-    const r = await fetch(`${base}/${n}.pgm`);
-    if (!r.ok) throw new Error(`world: ${base}/${n}.pgm is missing. Run the generator (games/low-water/world/README.md).`);
-    got[n] = parsePgm(new Uint8Array(await r.arrayBuffer()));
-    onProgress(++done / names.length, n);
-  }));
+const NAMES = ["height", "water", "biome", "region", "river", "moist"];
+function blank(json) {
   const W = json.width, H = json.height, cell = json.cell_m, n = W * H;
-  const height = new Float32Array(n), water = new Float32Array(n);
-  for (let i = 0; i < n; i++) { height[i] = got.height.data[i] / 16 - 512; water[i] = got.water.data[i] > 0 ? got.water.data[i] / 16 - 512 : -512; }
-  return { json, W, H, cell, width: W * cell, depth: H * cell, height, water, biome: Uint8Array.from(got.biome.data), region: Uint8Array.from(got.region.data), river: Uint8Array.from(got.river.data), moist: Uint8Array.from(got.moist.data) };
+  return { json, W, H, cell, width: W * cell, depth: H * cell, height: new Float32Array(n), water: new Float32Array(n).fill(-512), biome: new Uint8Array(n), region: new Uint8Array(n), river: new Uint8Array(n), moist: new Uint8Array(n),
+    // has(x0, z0, x1, z1): is every cell of this box of metres here at full detail yet?
+    has: () => true, stream: null };
+}
+const store = (w, name, k, v) => { if (name === "height") w.height[k] = v / 16 - 512; else if (name === "water") w.water[k] = v > 0 ? v / 16 - 512 : -512; else w[name][k] = v; };
+
+// start is where the walker will stand, in metres: the tiles within `first` metres of it are read
+// before this returns. onProgress(share, what) reports the wait.
+export async function loadWorld(base, onProgress = () => {}, start = null, first = 4200) {
+  const json = await (await fetch(`${base}/world.json`)).json(), w = blank(json), { W, H } = w;
+  if (typeof start === "function") start = start(json);
+  const idx = await fetch(`${base}/tiles/index.json`).then((r) => r.ok ? r.json() : null).catch(() => null);
+  if (!idx || idx.format !== FORMAT) {
+    let done = 0;
+    await Promise.all(NAMES.map(async (n) => {
+      const r = await fetch(`${base}/${n}.pgm`);
+      if (!r.ok) throw new Error(`world: ${base}/${n}.pgm is missing. Run the generator (games/low-water/world/README.md).`);
+      const data = parsePgm(new Uint8Array(await r.arrayBuffer())).data;
+      for (let k = 0; k < data.length; k++) store(w, n, k, data[k]);
+      onProgress(++done / NAMES.length, n);
+    }));
+    return w;
+  }
+  const bin = async (f) => gunzip(new Uint8Array(await (await fetch(`${base}/tiles/${f}`)).arrayBuffer()));
+  // the overview: one cell in eight, spread over the cells round it
+  const S = idx.step, ow = Math.floor(W / S), oh = Math.floor(H / S), small = {};
+  for (const n of NAMES) small[n] = new Uint16Array(ow * oh);
+  decodeBlock(await bin("overview.bin"), ow, oh, (name, x, y, v) => { small[name][y * ow + x] = v; });
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const k = y * W + x, sx = Math.min(ow - 1, x >> 3), sy = Math.min(oh - 1, y >> 3), o = sy * ow + sx;
+    // heights are eased between overview cells so the far ground is not a staircase
+    const fx = Math.min(ow - 1.001, Math.max(0, (x - S / 2 + 0.5) / S)), fy = Math.min(oh - 1.001, Math.max(0, (y - S / 2 + 0.5) / S)), ix = Math.floor(fx), iy = Math.floor(fy), tx = fx - ix, ty = fy - iy, a = iy * ow + ix, hh = small.height;
+    w.height[k] = ((hh[a] * (1 - tx) + hh[a + 1] * tx) * (1 - ty) + (hh[a + ow] * (1 - tx) + hh[a + ow + 1] * tx) * ty) / 16 - 512;
+    w.water[k] = small.water[o] > 0 ? small.water[o] / 16 - 512 : -512;
+    w.biome[k] = small.biome[o]; w.region[k] = small.region[o]; w.river[k] = small.river[o]; w.moist[k] = small.moist[o];
+  }
+  onProgress(0.1, "the whole island");
+  const T = idx.tile, got = new Uint8Array(idx.cols * idx.rows), listeners = [], sx = start ? start[0] : w.width / 2, sz = start ? start[1] : w.depth / 2;
+  w.has = (x0, z0, x1, z1) => {
+    for (let r = Math.max(0, Math.floor(z0 / w.cell / T)); r <= Math.min(idx.rows - 1, Math.floor(z1 / w.cell / T)); r++) for (let c = Math.max(0, Math.floor(x0 / w.cell / T)); c <= Math.min(idx.cols - 1, Math.floor(x1 / w.cell / T)); c++) if (!got[r * idx.cols + c]) return false;
+    return true;
+  };
+  const order = [];
+  for (let r = 0; r < idx.rows; r++) for (let c = 0; c < idx.cols; c++) {
+    const x0 = c * T * w.cell, z0 = r * T * w.cell, x1 = Math.min(w.width, x0 + T * w.cell), z1 = Math.min(w.depth, z0 + T * w.cell);
+    order.push({ c, r, d: Math.hypot(Math.max(x0 - sx, 0, sx - x1), Math.max(z0 - sz, 0, sz - z1)) });
+  }
+  order.sort((a, b) => a.d - b.d);
+  async function tile({ c, r }) {
+    const tw = Math.min(T, W - c * T), th = Math.min(T, H - r * T), u8 = await bin(`t_${c}_${r}.bin`);
+    decodeBlock(u8, tw, th, (name, x, y, v) => store(w, name, (r * T + y) * W + c * T + x, v));
+    got[r * idx.cols + c] = 1;
+    for (const f of listeners) f({ x0: c * T, y0: r * T, w: tw, h: th });
+  }
+  const near = order.filter((t) => t.d < first), rest = order.filter((t) => t.d >= first);
+  let n = 0;
+  await Promise.all(near.map(async (t) => { await tile(t); onProgress(0.1 + 0.9 * ++n / near.length, "the ground near you"); }));
+  // the rest arrives behind the walk, three tiles at a time; onTile(f) hears each one land
+  const done = (async () => { let i = 0; const lane = async () => { while (i < rest.length) await tile(rest[i++]); }; await Promise.all([lane(), lane(), lane()]); })();
+  w.stream = { onTile: (f) => listeners.push(f), done, total: order.length, left: () => order.length - got.reduce((a, b) => a + b, 0), bytes: idx.bytes };
+  return w;
 }
 
 const clampi = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -103,9 +157,9 @@ function coverColour(b, region, h, m, x, y) {
 // how thickly trees stand on a cover, 0 to 1
 export const CANOPY = [0, 0, 0, 0.06, 0.015, 0.95, 0.45, 0, 0, 0, 0, 0.008, 0.01, 0];
 
-// colour (rgb, a = river) and aux (normal x, normal z, canopy, lamp glow), both RGBA8
-export function bakeMaps(w) {
-  const { W, H } = w, n = W * H, alb = new Uint8Array(n * 4), aux = new Uint8Array(n * 4), glow = new Float32Array(n), road = new Uint8Array(n);
+// What the maps need that does not come from the rasters: where roads run and where lamps glow.
+function bakePrep(w) {
+  const { W, H } = w, n = W * H, glow = new Float32Array(n), road = new Uint8Array(n);
   for (const r of w.json.roads) for (let i = 0; i < r.pts.length; i += 2) {
     const k = r.pts[i + 1] * W + r.pts[i]; road[k] = Math.max(road[k], r.kind === "path" ? 1 : 2);
     // a road point stands for a 4 x 4 block; mark a line toward the next point
@@ -120,8 +174,13 @@ export function bakeMaps(w) {
   for (const s of w.json.settlements) lamp(s.x, s.y, s.kind === "seat" ? 12 : s.kind === "town" ? 9 : s.kind === "village" ? 4 : 1.5, s.kind === "house" ? 0.5 : 1);
   const BRIGHT = { furnace: [8, 1], stack: [3, 0.6], tenement: [3, 0.8], decotower: [4, 1], slab: [3, 0.8], tower: [8, 0.8], spire: [5, 0.6], lighthouse: [5, 1], coolingtower: [5, 0.7], piperack: [4, 0.7], glasshall: [4, 1] };
   for (const m of w.json.marks) if (BRIGHT[m.kind]) lamp(m.x, m.y, BRIGHT[m.kind][0], BRIGHT[m.kind][1]);
-  const hgt = w.height;
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+  return { glow, road };
+}
+// colour (rgb, a = river) and aux (normal x, normal z, canopy, lamp glow), both RGBA8, for the
+// cells of a box; the whole island when no box is given
+export function bakeRect(w, maps, x0 = 0, y0 = 0, x1 = w.W, y1 = w.H) {
+  const { W, H } = w, { alb, aux } = maps, { glow, road } = maps.prep, hgt = w.height;
+  for (let y = Math.max(0, y0); y < Math.min(H, y1); y++) for (let x = Math.max(0, x0); x < Math.min(W, x1); x++) {
     const k = y * W + x, h = hgt[k], b = w.biome[k];
     let c = coverColour(b, w.region[k], h, w.moist[k] / 255, x, y);
     if (road[k] && h > 0) c = mix3(c, [0.52, 0.48, 0.41], road[k] === 2 ? 0.6 : 0.3);
@@ -130,31 +189,40 @@ export function bakeMaps(w) {
     const xe = Math.min(W - 1, x + 1), xw = Math.max(0, x - 1), ys = Math.min(H - 1, y + 1), yn = Math.max(0, y - 1);
     const dx = (hgt[y * W + xe] - hgt[y * W + xw]) / (2 * w.cell), dz = (hgt[ys * W + x] - hgt[yn * W + x]) / (2 * w.cell), l = Math.hypot(dx, dz, 1);
     aux[k * 4] = (-dx / l * 0.5 + 0.5) * 255; aux[k * 4 + 1] = (-dz / l * 0.5 + 0.5) * 255; aux[k * 4 + 2] = CANOPY[b] * 255; aux[k * 4 + 3] = Math.min(1, glow[k]) * 255;
+    w.built[k] = aux[k * 4 + 3];
   }
-  w.built = new Uint8Array(n); for (let k = 0; k < n; k++) w.built[k] = aux[k * 4 + 3];
-  return { alb, aux };
+}
+export function bakeMaps(w) {
+  const n = w.W * w.H, maps = { alb: new Uint8Array(n * 4), aux: new Uint8Array(n * 4), prep: bakePrep(w) };
+  w.built = new Uint8Array(n);
+  bakeRect(w, maps);
+  return maps;
 }
 
 // Lowest and highest ground for the quadtree: level 0 is 32 m blocks, level 1 the 64 m cells
 // (both read from the raster, which has no finer detail), then every level above by halving.
+// refreshPyramid redoes the part of it over a box of cells, for when a tile lands.
 export function heightPyramid(w) {
-  const levels = [], cw = w.W, chh = w.H, lo1 = new Float32Array(cw * chh), hi1 = new Float32Array(cw * chh);
-  for (let y = 0; y < chh; y++) for (let x = 0; x < cw; x++) {
+  const cw = w.W, chh = w.H, levels = [{ w: cw * 2, h: chh * 2, lo: new Float32Array(cw * chh * 4), hi: new Float32Array(cw * chh * 4) }, { w: cw, h: chh, lo: new Float32Array(cw * chh), hi: new Float32Array(cw * chh) }];
+  for (let l = 2; l <= 10; l++) { const p = levels[l - 1]; levels.push({ w: p.w / 2, h: p.h / 2, lo: new Float32Array(p.w * p.h / 4), hi: new Float32Array(p.w * p.h / 4) }); }
+  refreshPyramid(w, levels, 0, 0, cw, chh);
+  return levels;
+}
+export function refreshPyramid(w, levels, x0, y0, x1, y1) {
+  const cw = w.W, chh = w.H, L0 = levels[0], L1 = levels[1];
+  x0 = Math.max(0, x0 - 1); y0 = Math.max(0, y0 - 1); x1 = Math.min(cw, x1 + 1); y1 = Math.min(chh, y1 + 1);
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
     // a cell's surface is bilinear between it and its neighbours, so its range takes them in
     let lo = 1e9, hi = -1e9;
     for (let j = -1; j <= 1; j++) for (let i = -1; i <= 1; i++) { const h = w.height[Math.min(chh - 1, Math.max(0, y + j)) * cw + Math.min(cw - 1, Math.max(0, x + i))]; if (h < lo) lo = h; if (h > hi) hi = h; }
-    lo1[y * cw + x] = lo - 2; hi1[y * cw + x] = hi + 2;
+    L1.lo[y * cw + x] = lo - 2; L1.hi[y * cw + x] = hi + 2;
+    for (let j = 0; j < 2; j++) for (let i = 0; i < 2; i++) { L0.lo[(y * 2 + j) * cw * 2 + x * 2 + i] = lo - 2; L0.hi[(y * 2 + j) * cw * 2 + x * 2 + i] = hi + 2; }
   }
-  const lo0 = new Float32Array(cw * chh * 4), hi0 = new Float32Array(cw * chh * 4);
-  for (let y = 0; y < chh * 2; y++) for (let x = 0; x < cw * 2; x++) { lo0[y * cw * 2 + x] = lo1[(y >> 1) * cw + (x >> 1)]; hi0[y * cw * 2 + x] = hi1[(y >> 1) * cw + (x >> 1)]; }
-  levels.push({ w: cw * 2, h: chh * 2, lo: lo0, hi: hi0 }, { w: cw, h: chh, lo: lo1, hi: hi1 });
   for (let l = 2; l <= 10; l++) {
-    const p = levels[l - 1], nw = p.w / 2, nh = p.h / 2, nlo = new Float32Array(nw * nh), nhi = new Float32Array(nw * nh);
-    for (let y = 0; y < nh; y++) for (let x = 0; x < nw; x++) {
+    const p = levels[l - 1], q = levels[l], s = 2 ** (l - 1);
+    for (let y = Math.floor(y0 / s); y < Math.min(q.h, Math.ceil(y1 / s)); y++) for (let x = Math.floor(x0 / s); x < Math.min(q.w, Math.ceil(x1 / s)); x++) {
       const a = 2 * y * p.w + 2 * x, b = a + 1, c = a + p.w, e = c + 1;
-      nlo[y * nw + x] = Math.min(p.lo[a], p.lo[b], p.lo[c], p.lo[e]); nhi[y * nw + x] = Math.max(p.hi[a], p.hi[b], p.hi[c], p.hi[e]);
+      q.lo[y * q.w + x] = Math.min(p.lo[a], p.lo[b], p.lo[c], p.lo[e]); q.hi[y * q.w + x] = Math.max(p.hi[a], p.hi[b], p.hi[c], p.hi[e]);
     }
-    levels.push({ w: nw, h: nh, lo: nlo, hi: nhi });
   }
-  return levels;
 }

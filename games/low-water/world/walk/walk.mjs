@@ -9,7 +9,7 @@
 //   ?still=1              hold the clock (for stills); ?quality=0.5 scales how far detail reaches
 //   ?mirror=0 ?scale=0.5  switch the mirror pass off; draw at a share of the window's size
 import { createHost } from "/rn/web/raw-gpu.mjs";
-import { loadWorld, groundAt, regionAt, waterAt, bakeMaps, heightPyramid } from "./data.mjs";
+import { loadWorld, groundAt, regionAt, waterAt, bakeMaps, bakeRect, heightPyramid, refreshPyramid } from "./data.mjs";
 import { selectNodes, frustumPlanes } from "./lod.mjs";
 import { frameLight, groundState } from "./light.mjs";
 import { sky as skyAt, makeRegionField } from "../weather.mjs";
@@ -29,7 +29,9 @@ async function start() {
   say("Opening the GPU");
   const host = await createHost({ canvas, timing: false }), dev = host.device;
   say("Reading the island");
-  const world = await loadWorld(`/world/${Q.get("world") || "out/20261118"}`, (p, n) => say(`Reading the island: ${n} (${Math.round(p * 100)} %)`));
+  // the tiles round where the walker will stand are read first
+  const startAt = (json) => { const s = json.settlements.find((q) => q.name === "Gullet") || json.settlements[0]; return [num("x", s.x * 0.064 + 1.2) * 1000, num("z", s.y * 0.064 + 0.4) * 1000]; };
+  const world = await loadWorld(`/world/${Q.get("world") || "out/20261118"}`, (p, n) => say(`Reading the island: ${n} (${Math.round(p * 100)} %)`), startAt);
   say("Drawing the ground maps");
   const maps = bakeMaps(world), pyramid = heightPyramid(world), seed = world.json.seed;
   const shares = makeRegionField((x, z) => regionAt(world, x, z), world.width, world.depth);
@@ -205,7 +207,7 @@ async function start() {
   globalThis.__lwWorld = {
     world, cam, time, roads, lights, scene, near,
     view(v) { Object.assign(cam, { x: (v.x ?? cam.x / 1000) * 1000, z: (v.z ?? cam.z / 1000) * 1000, alt: v.alt ?? cam.alt, fly: v.fly ?? cam.fly }); if (v.yaw !== undefined) cam.yaw = v.yaw * Math.PI / 180; if (v.pitch !== undefined) cam.pitch = v.pitch * Math.PI / 180; if (v.clock !== undefined) time.clock = v.clock; if (v.day !== undefined) time.day = v.day; if (v.hold !== undefined) time.hold = v.hold; cam.fov = v.fov ?? 60; route = null; trail.length = 0; },
-    async settle(n = 3) { const f = frames; while (frames < f + n) await new Promise((r) => requestAnimationFrame(r)); await dev.queue.onSubmittedWorkDone(); return this.stats(); },
+    async settle(n = 3) { if (world.stream) await world.stream.done; const f = frames; while (frames < f + n) await new Promise((r) => requestAnimationFrame(r)); await dev.queue.onSubmittedWorkDone(); return this.stats(); },
     stats() { const g = gaps.slice(2).sort((a, b) => a - b); return { frames, nodes: nodeCount, ...scene.stats(), lamps: lights.all.length, frameMs: g.length ? +(g.reduce((a, b) => a + b, 0) / g.length).toFixed(2) : 0, p95: g.length ? +g[Math.floor(g.length * 0.95)].toFixed(2) : 0, region: state && state.weather.region, air: state && state.weather.name, part: state && state.part, adapter: host.info || null, at: [cam.x, cam.y, cam.z] }; },
     clearGaps() { gaps.length = 0; },
     grab(type, q) { return new Promise((ok) => { ok.type = type; ok.q = q; grabbing = ok; }); },
@@ -217,6 +219,17 @@ async function start() {
     // time for the GPU to finish n frames drawn back to back, in ms a frame: the cost of a frame without the display's wait
     async bench(n = 60) { manual = true; await dev.queue.onSubmittedWorkDone(); const t = performance.now(); for (let i = 0; i < n; i++) draw(performance.now(), 1 / 60); await dev.queue.onSubmittedWorkDone(); const ms = (performance.now() - t) / n; manual = false; requestAnimationFrame(draw); return +ms.toFixed(2); },
   };
+  // a tile that lands behind the walk: redo the maps, the quadtree and whatever stood on that ground
+  if (world.stream) {
+    world.stream.onTile(({ x0, y0, w, h }) => {
+      const ax = Math.max(0, x0 - 1), ay = Math.max(0, y0 - 1), bx = Math.min(world.W, x0 + w + 1), by = Math.min(world.H, y0 + h + 1);
+      bakeRect(world, maps, ax, ay, bx, by); refreshPyramid(world, pyramid, x0, y0, x0 + w, y0 + h);
+      stage.updateRect(ax, ay, bx - ax, by - ay);
+      scene.landed(ax * world.cell, ay * world.cell, bx * world.cell, by * world.cell);
+      if (near.bake(cam.x, cam.z, true)) stage.uploadNear(near);
+    });
+    world.stream.done.then(() => stage.refreshMips());
+  }
   say("");
   move(0);
   requestAnimationFrame(draw);
