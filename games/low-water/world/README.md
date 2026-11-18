@@ -4,6 +4,8 @@ Low Water as one continuous island, generated from a seed. The island measures 1
 
 The canonical seed is `20261118`.
 
+The world bible is `WORLD.md`: every region with its geography, climate, light, architecture, people, creatures and the saved images it traces to. `stills/README.md` shows each region and says plainly which look right.
+
 ## Make a world
 
 The generator is BuildLang (`gen/`). Build it with buildc 1.15.0 or later, then run it with a seed and an output folder.
