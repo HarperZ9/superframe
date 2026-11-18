@@ -20,6 +20,7 @@ DXGI_FORMAT dxgiFormat(TextureFormat f){
         case TextureFormat::RGBA16Float: return DXGI_FORMAT_R16G16B16A16_FLOAT;
         case TextureFormat::RGBA32Float: return DXGI_FORMAT_R32G32B32A32_FLOAT;
         case TextureFormat::R32Float: return DXGI_FORMAT_R32_FLOAT;
+        case TextureFormat::RG16Float: return DXGI_FORMAT_R16G16_FLOAT;
         case TextureFormat::Depth32Float: return DXGI_FORMAT_D32_FLOAT;
         case TextureFormat::RGB10A2Unorm: return DXGI_FORMAT_R10G10B10A2_UNORM;
         case TextureFormat::BGRA8Unorm: return DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -44,8 +45,9 @@ bool D3d12Device::initHeaps(std::string& err){
 TextureHandle D3d12Device::createTexture(const TextureDesc& desc, std::string& err){
     if (desc.width == 0 || desc.height == 0){ err = "d3d12: textures are not empty"; return {}; }
     const bool depth = isDepth(desc.format), sampled = has(desc.usage, TextureUsage::Sampled);
-    if (sampled && desc.format != TextureFormat::RGBA8Unorm && desc.format != TextureFormat::RGBA16Float && !depth){
-        err = "d3d12: only RGBA8Unorm, RGBA16Float and depth textures are sampled"; return {}; }
+    if (sampled && desc.format != TextureFormat::RGBA8Unorm && desc.format != TextureFormat::RGBA16Float && desc.format != TextureFormat::R32Float
+        && desc.format != TextureFormat::RG16Float && !depth){
+        err = "d3d12: only RGBA8Unorm, RGBA16Float, R32Float, RG16Float and depth textures are sampled"; return {}; }
     if (!srvCpu.heap && !initHeaps(err)) return {};
     TexRec t;
     t.w = desc.width; t.h = desc.height; t.usage = desc.usage; t.format = desc.format;

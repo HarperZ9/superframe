@@ -46,6 +46,7 @@ VkFormat vkFormat(TextureFormat f){
         case TextureFormat::RGBA16Float: return VK_FORMAT_R16G16B16A16_SFLOAT;
         case TextureFormat::RGBA32Float: return VK_FORMAT_R32G32B32A32_SFLOAT;
         case TextureFormat::R32Float: return VK_FORMAT_R32_SFLOAT;
+        case TextureFormat::RG16Float: return VK_FORMAT_R16G16_SFLOAT;
         case TextureFormat::Depth32Float: return VK_FORMAT_D32_SFLOAT;
         case TextureFormat::RGB10A2Unorm: return VK_FORMAT_A2B10G10R10_UNORM_PACK32;   // red in the low bits, as DXGI's R10G10B10A2
         case TextureFormat::BGRA8Unorm: return VK_FORMAT_B8G8R8A8_UNORM;

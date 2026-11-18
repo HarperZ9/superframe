@@ -102,7 +102,7 @@ struct ComputePipelineDesc {
 // can also be sampled. RGB10A2Unorm (10 bits a colour channel, 2 for alpha, red in the low
 // bits of a 32-bit word) is the HDR10 swapchain format; RGBA32Float can also be uploaded.
 // BGRA8Unorm is the order some Vulkan surfaces offer for an 8-bit swapchain (N3).
-enum class TextureFormat : uint8_t { RGBA8Unorm, RGBA16Float, RGBA32Float, R32Float, Depth32Float, RGB10A2Unorm, BGRA8Unorm };
+enum class TextureFormat : uint8_t { RGBA8Unorm, RGBA16Float, RGBA32Float, R32Float, Depth32Float, RGB10A2Unorm, BGRA8Unorm, RG16Float };
 constexpr uint32_t bytesPerTexel(TextureFormat f){
     switch (f){
         case TextureFormat::RGBA16Float: return 8;
