@@ -141,7 +141,7 @@ fn standLight(wp: vec3f, n: vec3f, alb: vec3f, shade: f32, soft: f32, h: f32, to
 }
 
 @fragment fn fsTree(v: TOut, @builtin(front_facing) front: bool) -> @location(0) vec4f {
-  if (clipped(v.wp)) { discard; }
+  if (clipped(v.wp) || cutaway(v.wp, v.clip.xy)) { discard; }
   let s = treeSurface(v, front);
   let lit = standLight(v.wp, s.n, s.alb, v.m.w, s.soft, v.wp.y - v.inst.z, v.inst.y);
   return vec4f(inAir(lit, v.wp), 1.0);

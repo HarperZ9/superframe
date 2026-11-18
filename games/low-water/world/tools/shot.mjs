@@ -75,7 +75,7 @@ try {
     }
     return at;
   } };
-  const all = viewsFor(worldJson, probe), pick = opt.at ? [] : !opt.views || opt.views === "all" ? all : opt.views.split(",").map((n) => all.find((v) => v.name === n) || (() => { throw new Error(`no view ${n}; have ${all.map((v) => v.name).join(", ")}`); })());
+  const all = viewsFor(worldJson, probe), pick = opt.at || ((opt.play || opt.check) && !opt.views) ? [] : !opt.views || opt.views === "all" ? all : opt.views.split(",").map((n) => all.find((v) => v.name === n) || (() => { throw new Error(`no view ${n}; have ${all.map((v) => v.name).join(", ")}`); })());
   // --at "name:x,z,alt,yaw,pitch,clock,day;name:..." (km, m, degrees, hours) draws views of your own
   if (opt.at) for (const [i, part] of opt.at.split(";").entries()) { const named = part.includes(":"), [x, z, alt, yaw, pitch, clock, day, fov] = (named ? part.split(":")[1] : part).split(",").map(Number); pick.push({ name: named ? part.split(":")[0] : opt.name || `at${i}`, fly: alt > 2.5, x, z, alt, yaw, pitch, clock, day: day ?? 3, fov: fov || 60 }); }
   await send("Page.navigate", { url: `http://127.0.0.1:${port}/world/walk/index.html?still=1&world=${worldDir}&quality=${opt.quality || 1}${opt.hud ? "" : "&nohud=1"}${opt.query ? "&" + opt.query : ""}` });
@@ -125,6 +125,55 @@ try {
     if (!existsSync(join(out, `${name}.webm`))) throw new Error(`walk: the encoder stopped before ${name}.webm was written`);
     await ev("globalThis.__lwWorld.hold(false)");
     console.log(`${name}.webm: ${frames} frames of a ${seconds} s walk at ${speed} m/s, captured in ${((performance.now() - t0) / 1000).toFixed(0)} s`);
+  }
+  // --check "viewpoint[,seconds];...": the follow camera on a scripted walk from each viewpoint, every eye tested
+  // against the drawn triangles (walk/checks.mjs); then the same walk with collision off, and with a wall planted
+  // behind the walker halfway, on and off. The off runs must show frames in geometry, or the check proves nothing.
+  if (opt.check) {
+    await ev("globalThis.__lwWorld.settle(2)");
+    await ev("import('/world/walk/checks.mjs').then((m) => { globalThis.__lwCheck = m; })");
+    record.checks = [];
+    for (const part of opt.check.split(";")) {
+      const [vp, secs] = part.split(","), seconds = +secs || 40;
+      for (const o of [{ collide: true }, { collide: false }, { collide: true, plant: true }, { collide: false, plant: true }]) {
+        const r = await ev(`globalThis.__lwCheck.checkWalk(globalThis.__lwWorld, ${JSON.stringify({ viewpoint: vp, seconds, ...o })})`);
+        record.checks.push(r);
+        console.log(`check ${vp}${o.plant ? " with a planted wall" : ""}, collision ${o.collide ? "on" : "off"}: ${r.bad} of ${r.frames} frames in geometry (${r.clipped} clipped, ${r.enclosed} enclosed, ${r.under} under the ground); ${r.triangles} triangles; nearest ${r.nearest} m; shortest arm ${r.armMin} m`);
+      }
+    }
+  }
+  // --play "name=viewpoint,camera[,seconds[,run]];...": the walker stands at a named viewpoint (play/viewpoints.mjs)
+  // with a camera (follow, first, iso, nav) and is held a moment so its springs settle; a still is written as
+  // <name>.png, and with seconds also a walk at a steady 30 frames a second as <name>.webm, along the road when
+  // one is near and straight ahead when not. --bench N measures each.
+  if (opt.play) for (const part of opt.play.split(";")) {
+    const [name, rest] = part.split("="), [vp, mode, secs, run] = rest.split(","), seconds = +secs || 0;
+    await ev("globalThis.__lwWorld.settle(2)");
+    const v = await ev(`(() => { const W = globalThis.__lwWorld, v = W.play.stand(${JSON.stringify(vp)}, ${JSON.stringify(mode)}); W.time.hold = true; return v; })()`);
+    await ev("globalThis.__lwWorld.hold(true)");
+    for (let i = 0; i < 45; i++) await ev("globalThis.__lwWorld.step(1 / 30, 'image/jpeg', 0.5).then(() => 0)");
+    let bench = null;
+    if (opt.bench) { await ev("globalThis.__lwWorld.hold(false)"); bench = { ms: await ev(`globalThis.__lwWorld.bench(${+opt.bench || 120})`), gpuLoad: gpuLoad() }; await ev("globalThis.__lwWorld.hold(true)"); }
+    const png = (await ev("globalThis.__lwWorld.step(1 / 30, 'image/png')")).split(",")[1];
+    await writeFile(join(out, `${name}.png`), Buffer.from(png, "base64"));
+    const st = await ev("globalThis.__lwWorld.stats()");
+    console.log(`${name}: ${v.says} (${(v.x / 1000).toFixed(2)} km E, ${(v.z / 1000).toFixed(2)} km S), camera ${mode}; region ${st.region}${bench ? `; ${bench.ms} ms a frame, the GPU at ${bench.gpuLoad}` : ""}`);
+    record.views.push({ name, viewpoint: vp, mode, at: [v.x, v.z], bench, region: st.region });
+    if (seconds) {
+      await ev(`(() => { const W = globalThis.__lwWorld, v = ${JSON.stringify(v)}, len = ${seconds} * ${run ? 5 : 1.6} + 20;
+        let pts = W.roads.walkFrom(v.x, v.z, len); const near = pts && Math.hypot(pts[0][0] - v.x, pts[0][1] - v.z) < 8;
+        if (!near) { pts = []; for (let s = 0; s <= len; s += 3) pts.push([v.x + Math.sin(v.yaw) * s, v.z - Math.cos(v.yaw) * s]); }
+        else { const a = pts[0], b = pts[Math.min(4, pts.length - 1)]; if ((b[0] - a[0]) * Math.sin(v.yaw) - (b[1] - a[1]) * Math.cos(v.yaw) < 0) pts = W.roads.walkFrom(v.x, v.z, len).reverse(); }
+        W.time.hold = false; W.time.rate = 1; W.play.walk(pts, { run: ${run ? "true" : "false"} }); })()`);
+      const ffRoot = `${process.env.LOCALAPPDATA}/ms-playwright`, ff = opt.ffmpeg || `${ffRoot}/${(await readdir(ffRoot)).filter((d) => d.startsWith("ffmpeg-")).sort().at(-1)}/ffmpeg-win64.exe`;
+      const enc = spawn(ff, ["-loglevel", "error", "-f", "image2pipe", "-c:v", "mjpeg", "-i", "pipe:0", "-y", "-an", "-r", "30", "-c:v", "libvpx-vp9", "-crf", "36", "-b:v", "0", "-deadline", "realtime", "-cpu-used", "8", "-row-mt", "1", join(out, `${name}.webm`)], { stdio: ["pipe", "ignore", "inherit"], windowsHide: true });
+      const frames = Math.round(seconds * 30); let dead = false; enc.on("close", () => { dead = true; }); enc.stdin.on("error", () => { dead = true; });
+      for (let i = 0; i < frames && !dead; i++) { const url = await ev("globalThis.__lwWorld.step(1 / 30, 'image/jpeg', 0.9)"); if (!enc.stdin.write(Buffer.from(url.split(",")[1], "base64"))) await new Promise((r) => enc.stdin.once("drain", r)); }
+      enc.stdin.end(); if (!dead) await new Promise((r) => enc.on("close", r));
+      await ev("globalThis.__lwWorld.play.stop()");
+      console.log(`${name}.webm: ${frames} frames, ${seconds} s`);
+    }
+    await ev("globalThis.__lwWorld.hold(false)");
   }
   record.cpuAfter = await cpuLoad(); record.gpuAfter = gpuLoad(); record.log = logs.slice(0, 20);
   await writeFile(join(out, "record.json"), JSON.stringify(record, null, 1));

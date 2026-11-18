@@ -39,7 +39,7 @@ fn rust(p: vec2f, tone: f32) -> vec3f {
 }
 
 @fragment fn fsBuilt(v: BOut, @builtin(front_facing) front: bool) -> @location(0) vec4f {
-  if (clipped(v.wp)) { discard; }
+  if (clipped(v.wp) || cutaway(v.wp, v.clip.xy)) { discard; }
   var n = normalize(v.n);
   let view = normalize(v.wp - F.cam.xyz);
   let dist = distance(v.wp, F.cam.xyz);

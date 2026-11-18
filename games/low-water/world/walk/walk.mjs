@@ -8,17 +8,23 @@
 //   ?x=&z=&alt=&yaw=&pitch=&clock=&day=&fly=1   a starting view (km, m, degrees, hours)
 //   ?still=1              hold the clock (for stills); ?quality=0.5 scales how far detail reaches
 //   ?mirror=0 ?scale=0.5  switch the mirror pass off; draw at a share of the window's size
+//   ?cam=follow|first|iso|nav  the camera to start with; ?at=<viewpoint>  stand at a named viewpoint
+//   ?play=0               the old free camera with no walker (the stills of tools/views.mjs use it)
 import { createHost } from "/rn/web/raw-gpu.mjs";
 import { loadWorld, coarseAt, groundAt, regionAt, waterAt, bakeMaps, bakeRect, heightPyramid, refreshPyramid } from "./data.mjs";
 import { selectNodes, frustumPlanes } from "./lod.mjs";
 import { frameLight, groundState } from "./light.mjs";
 import { sky as skyAt, makeRegionField } from "../weather.mjs";
-import { viewProj, invert, mirrored } from "./mat.mjs";
+import { viewProj, orthoView, invert, mirrored } from "./mat.mjs";
 import { makeStage, OFF, FRAME_FLOATS } from "./stage.mjs";
 import { makeRoads } from "./roads.mjs";
 import { makeNear } from "./near.mjs";
 import { makeLights } from "./lights.mjs";
 import { makeScene } from "./scene.mjs";
+import { makePlayer } from "./player.mjs";
+import { makeDevices } from "./devices.mjs";
+import { viewpoints } from "../play/viewpoints.mjs";
+import { makeAutopilot } from "../play/autopilot.mjs";
 
 const Q = new URLSearchParams(location.search), num = (k, d) => Q.has(k) ? +Q.get(k) : d;
 const canvas = document.getElementById("view"), hud = document.getElementById("hud"), note = document.getElementById("note");
@@ -66,12 +72,23 @@ async function start() {
   addEventListener("keyup", (e) => keys.delete(e.code));
   canvas.addEventListener("click", () => canvas.requestPointerLock && canvas.requestPointerLock());
   addEventListener("mousemove", (e) => { if (document.pointerLockElement === canvas) { cam.yaw += e.movementX * 0.0022; cam.pitch = Math.max(-1.5, Math.min(1.5, cam.pitch - e.movementY * 0.0022)); } });
-  addEventListener("wheel", (e) => { time.clock = (time.clock + Math.sign(e.deltaY) * 0.25 + 24) % 24; });
+  addEventListener("wheel", (e) => { if (play && !legacy && play.cam.state.mode === "iso") return; time.clock = (time.clock + Math.sign(e.deltaY) * 0.25 + 24) % 24; });
   function jump(region) {
     const s = world.json.settlements.find((q) => q.kind === "seat" && q.region === region) || world.json.regions.find((r) => r.id === region);
     if (!s) return;
     cam.x = ((s.x ?? s.cx) + 6) * world.cell; cam.z = ((s.y ?? s.cy) + 9) * world.cell; cam.yaw = -0.6; cam.pitch = -0.05;
+    if (play && !legacy) standAt({ x: cam.x, z: cam.z, yaw: cam.yaw });
   }
+  // the walker, its camera and the devices that drive them; `legacy` is the old free camera
+  say("Dressing the walker");
+  const play = Q.get("play") === "0" ? null : await makePlayer({ dev, stage, world, scene, lights, at: { x: cam.x, z: cam.z, yaw: cam.yaw }, mode: Q.get("cam") || "follow" });
+  const devices = play ? makeDevices(canvas) : null;
+  let legacy = !play, pilot = null, view = null;
+  const siteOf = (kind) => scene.built.sites.find((q) => q.plan && q.plan.marks && q.plan.marks.some((m) => m.kind === kind))?.plan || null;
+  const views = () => viewpoints({ world, roads, towns: scene.built.sites.filter((q) => q.ensure).map((q) => ({ s: q.s, plan: q.ensure() })), works: siteOf("furnace"), coast: siteOf("seastack"), marsh: siteOf("mudhif"), ground: (x, z) => groundAt(world, x, z), water: (x, z) => waterAt(world, x, z), solids: play && play.solids });
+  function standAt(v, mode) { play.body.place(v.x, v.z, groundAt(world, v.x, v.z), v.yaw); const C = play.cam.state; C.follow.yaw = C.first.yaw = v.yaw; C.first.pitch = v.pitch || 0; C.follow.pitch = -0.12; C.follow.open = 0; C.follow.arm = 3.8; C.follow.pivot = null; C.iso.target = null; if (mode) { C.mode = mode; C.from = null; C.w = 1; } if (mode === "nav") Object.assign(C.nav, { p: [v.x, groundAt(world, v.x, v.z) + Math.max(v.eye || 1.7, 18), v.z], v: [0, 0, 0], yaw: v.yaw, pitch: -0.18 }); if (v.clock != null) time.clock = v.clock; if (v.day != null) time.day = v.day; legacy = false; pilot = null; trail.length = 0; }
+  // an orthographic view's eye stands far back along the view, so nothing near is behind it
+  const orthoEye = (v) => { const cp = Math.cos(v.pitch), f = [Math.sin(v.yaw) * cp, Math.sin(v.pitch), -Math.cos(v.yaw) * cp]; return { x: v.target[0] - f[0] * 1200, y: v.target[1] - f[1] * 1200, z: v.target[2] - f[2] * 1200, yaw: v.yaw, pitch: v.pitch }; };
   const surfaceAt = (x, z) => Math.max(groundAt(world, x, z), waterAt(world, x, z) > -500 ? waterAt(world, x, z) - 1.1 : -1e9);
   let route = null;   // a line to walk for a capture: { pts, s, speed }
   function move(dt) {
@@ -111,7 +128,8 @@ async function start() {
     for (const t of trail) t.age += dt;
     while (trail.length && trail[0].age > 1.2) trail.shift();
     const lastT = trail[trail.length - 1];
-    if (!lastT || Math.hypot(cam.x - lastT.x, cam.z - lastT.z) > 0.9) { trail.push({ x: cam.x, y: cam.y - 0.6, z: cam.z, age: 0 }); if (trail.length > 7) trail.shift(); }
+    const w = legacy ? { x: cam.x, y: cam.y - 0.6, z: cam.z } : { x: play.body.state.x, y: play.body.state.y + 1.1, z: play.body.state.z };
+    if (!lastT || Math.hypot(w.x - lastT.x, w.z - lastT.z) > 0.9) { trail.push({ ...w, age: 0 }); if (trail.length > 7) trail.shift(); }
   }
   // still water near the walker: its level, or null
   function waterNear() {
@@ -133,6 +151,7 @@ async function start() {
     pass.setPipeline(skyPipe); pass.draw(3);
     pass.setPipeline(groundPipe); pass.setVertexBuffer(0, gridBuf); pass.setVertexBuffer(1, nBuf); pass.draw(N * N * 6, nCount);
     scene.draw(pass, which);
+    if (play && !legacy) play.draw(pass, which);
     if (which === "main") { pass.setPipeline(waterPipe); pass.setVertexBuffer(0, gridBuf); pass.setVertexBuffer(1, nBuf); pass.draw(N * N * 6, nCount); scene.drawAir(pass); }
     if (lampCount) { pass.setPipeline(lampPipe); pass.setVertexBuffer(0, lampBuf); pass.draw(4, lampCount); }
   }
@@ -141,9 +160,17 @@ async function start() {
     const scale = num("scale", 1), cw = Math.max(2, Math.floor(canvas.clientWidth * scale)), chh = Math.max(2, Math.floor(canvas.clientHeight * scale));
     if (canvas.width !== cw || canvas.height !== chh) { canvas.width = cw; canvas.height = chh; }
     stage.resize(cw, chh);
-    move(dt); leaveTrail(dt); time.t += dt;
+    if (legacy) move(dt);
+    else {
+      view = play.update(dt, devices.read(), pilot ? { intent: pilot.step(play.body.state) } : {});
+      const e = view.ortho ? view.fogEye : view.eye;
+      Object.assign(cam, { x: e[0], y: e[1], z: e[2], yaw: view.yaw, pitch: view.pitch, fov: view.fov, fly: view.mode === "nav", speed: play.body.state.speed });
+      if (near.bake(view.focus[0], view.focus[2])) stage.uploadNear(near);
+      play.upload(); devices.showMode(view.mode);
+    }
+    leaveTrail(dt); time.t += dt;
     if (!time.hold) { time.clock += dt * time.rate / 3600; if (time.clock >= 24) { time.clock -= 24; time.day++; } }
-    const vp = viewProj(cam, cw / chh, cam.fov * Math.PI / 180), s = skyAt(seed, shares, cam.x, cam.z, world.depth, time.day, time.clock), sh = shares(cam.x, cam.z);
+    const vp = !legacy && view.ortho ? orthoView(orthoEye(view), cw / chh, view.ortho, 1, 2400) : viewProj(cam, cw / chh, cam.fov * Math.PI / 180, legacy ? 0.3 : view.near), s = skyAt(seed, shares, cam.x, cam.z, world.depth, time.day, time.clock), sh = shares(cam.x, cam.z);
     // lightning strikes only while the clock runs, so a held still is never caught mid-flash
     const flash = !time.hold && s.events.cells.some((c) => c.flash) && ((now / 90) | 0) % 3 === 0 ? 1 : 0, L = frameLight(s, flash), G = groundState(s, sh);
     // the works are never dry: steam settles on everything; the city across the water is seldom dry
@@ -163,10 +190,13 @@ async function start() {
     frame.set([near.state.ox, near.state.oz, 512, near.state.baked ? 1 : 0], OFF.near);
     frame.set(G.snowp, OFF.snowp); frame.set(G.gfog, OFF.gfog);
     frame.set([cw, chh, level ?? 0, level === null ? 0 : 1], OFF.view);
-    frame.set([cam.x, cam.y, cam.z, cam.speed], OFF.walk);
+    const B = play && play.body.state, feet = !legacy ? [B.x, play.pose.root.y, B.z, 1] : [cam.x, cam.y, cam.z, 0];
+    frame.set(feet, OFF.walk);
+    const cut = !legacy && view.cut, cf = !legacy ? [Math.sin(view.yaw) * Math.cos(view.pitch), Math.sin(view.pitch), -Math.cos(view.yaw) * Math.cos(view.pitch)] : [0, 0, 0];
+    frame.set(cut ? [...cut.at, cut.radius] : [0, 0, 0, 0], OFF.cut); frame.set([...cf, cut ? cut.share : 0], OFF.cutv);
     frame.fill(0, OFF.trail, OFF.trail + 32);
     trail.forEach((t, i) => frame.set([t.x, t.y, t.z, 0.85 * Math.max(0, 1 - t.age / 1.1)], OFF.trail + i * 4));
-    frame.set([cam.x, cam.y - 0.6, cam.z, cam.fly ? 0 : 0.8], OFF.trail + 28);
+    frame.set(legacy ? [cam.x, cam.y - 0.6, cam.z, cam.fly ? 0 : 0.8] : [B.x, B.y + 1.1, B.z, 0.8], OFF.trail + 28);
     frame.fill(0, OFF.shadowVP, OFF.clip + 4);
     scene.shadow(frame, { cam, light: L });
     stage.writeFrame("main", frame);
@@ -206,7 +236,14 @@ async function start() {
   // what a capture or a test can drive
   globalThis.__lwWorld = {
     world, cam, time, roads, lights, scene, near,
-    view(v) { Object.assign(cam, { x: (v.x ?? cam.x / 1000) * 1000, z: (v.z ?? cam.z / 1000) * 1000, alt: v.alt ?? cam.alt, fly: v.fly ?? cam.fly }); if (v.yaw !== undefined) cam.yaw = v.yaw * Math.PI / 180; if (v.pitch !== undefined) cam.pitch = v.pitch * Math.PI / 180; if (v.clock !== undefined) time.clock = v.clock; if (v.day !== undefined) time.day = v.day; if (v.hold !== undefined) time.hold = v.hold; cam.fov = v.fov ?? 60; route = null; trail.length = 0; },
+    // the walker: stand at a named viewpoint with a camera, walk a line (pts in metres), switch cameras
+    play: play && {
+      player: play, viewpoints: () => views(),
+      stand(v, mode) { if (typeof v === "string") { const all = views(); v = all.find((q) => q.name === v) || (() => { throw new Error(`no viewpoint ${v}; have ${all.map((q) => q.name).join(", ")}`); })(); } standAt(v, mode); return v; },
+      mode(m) { play.cam.setMode(m); }, walk(pts, o = {}) { pilot = makeAutopilot(pts, o); return pilot; }, stop() { pilot = null; },
+      get view() { return view; }, get legacy() { return legacy; },
+    },
+    view(v) { legacy = true; Object.assign(cam, { x: (v.x ?? cam.x / 1000) * 1000, z: (v.z ?? cam.z / 1000) * 1000, alt: v.alt ?? cam.alt, fly: v.fly ?? cam.fly }); if (v.yaw !== undefined) cam.yaw = v.yaw * Math.PI / 180; if (v.pitch !== undefined) cam.pitch = v.pitch * Math.PI / 180; if (v.clock !== undefined) time.clock = v.clock; if (v.day !== undefined) time.day = v.day; if (v.hold !== undefined) time.hold = v.hold; cam.fov = v.fov ?? 60; route = null; trail.length = 0; },
     async settle(n = 3) { if (world.stream) await world.stream.done; const f = frames; while (frames < f + n) await new Promise((r) => requestAnimationFrame(r)); await dev.queue.onSubmittedWorkDone(); return this.stats(); },
     stats() { const g = gaps.slice(2).sort((a, b) => a - b); return { frames, nodes: nodeCount, ...scene.stats(), lamps: lights.all.length, frameMs: g.length ? +(g.reduce((a, b) => a + b, 0) / g.length).toFixed(2) : 0, p95: g.length ? +g[Math.floor(g.length * 0.95)].toFixed(2) : 0, region: state && state.weather.region, air: state && state.weather.name, part: state && state.part, adapter: host.info || null, at: [cam.x, cam.y, cam.z] }; },
     clearGaps() { gaps.length = 0; },
@@ -231,6 +268,7 @@ async function start() {
     world.stream.done.then(() => stage.refreshMips());
     world.stream.start();
   }
+  if (play && Q.has("at")) (world.stream ? world.stream.done : Promise.resolve()).then(() => { const v = views().find((q) => q.name === Q.get("at")); if (v) standAt(v); else say(`no viewpoint ${Q.get("at")}`); });
   say("");
   move(0);
   requestAnimationFrame(draw);

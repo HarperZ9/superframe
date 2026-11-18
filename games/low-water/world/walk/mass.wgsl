@@ -37,7 +37,7 @@ struct MOut {
 }
 
 @fragment fn fsMass(v: MOut) -> @location(0) vec4f {
-  if (clipped(v.wp)) { discard; }
+  if (clipped(v.wp) || cutaway(v.wp, v.clip.xy)) { discard; }
   let n = normalize(v.n);
   var col = v.col;
   let seed = hash21(v.base.xz * 0.37);
