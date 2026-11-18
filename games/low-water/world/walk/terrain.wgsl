@@ -192,6 +192,10 @@ fn rainRings(p: vec2f) -> f32 {
   // a thaw opens holes from the high points of the surface down
   cov = cov * smoothstep(F.snowp.y * 1.15 - 0.12, F.snowp.y * 1.15 + 0.10, sn * 0.7 + (1.0 - wear) * 0.25 + (0.3 - m.h * 5.0) + lying * 0.2) + 0.0;
   cov = clamp(mix(cov, smoothstep(0.42, 0.56, cov + (sn - 0.5) * 0.5 - m.h * 5.0 * det), mid), 0.0, 1.0);
+  // a gravel or paved road carries no snow: traffic and the plough keep it bare and wet, with a
+  // ragged edge of slush where the verge begins. Town lanes of packed snow (sett) keep theirs.
+  let bare = smoothstep(0.32, 0.5, road + (fbm(p * 0.8 + 5.0) - 0.5) * 0.18) * (1.0 - step(0.875, kind));
+  cov = cov * (1.0 - 0.96 * bare);
   // age: wear packs it, edges and thaw grey it, new fall resets it
   let fresh = clamp(F.snowp.x * 3.0 + F.wx.y * 0.6, 0.0, 1.0);
   let age = clamp(wear * 0.75 + F.snowp.w * (0.5 + 0.6 * fbm(p * 0.13)) + (1.0 - cov) * 0.5 + F.snowp.y * 0.5 - fresh * 0.55 * (1.0 - wear * 0.6), 0.0, 1.0);

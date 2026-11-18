@@ -9,7 +9,7 @@
 //   ?still=1              hold the clock (for stills); ?quality=0.5 scales how far detail reaches
 //   ?mirror=0 ?scale=0.5  switch the mirror pass off; draw at a share of the window's size
 import { createHost } from "/rn/web/raw-gpu.mjs";
-import { loadWorld, groundAt, regionAt, waterAt, bakeMaps, bakeRect, heightPyramid, refreshPyramid } from "./data.mjs";
+import { loadWorld, coarseAt, groundAt, regionAt, waterAt, bakeMaps, bakeRect, heightPyramid, refreshPyramid } from "./data.mjs";
 import { selectNodes, frustumPlanes } from "./lod.mjs";
 import { frameLight, groundState } from "./light.mjs";
 import { sky as skyAt, makeRegionField } from "../weather.mjs";
@@ -36,7 +36,7 @@ async function start() {
   const maps = bakeMaps(world), pyramid = heightPyramid(world), seed = world.json.seed;
   const shares = makeRegionField((x, z) => regionAt(world, x, z), world.width, world.depth);
   const stage = await makeStage(dev, host.format, world, maps);
-  const roads = makeRoads(world), near = makeNear(roads), lights = makeLights(), quality = num("quality", 1);
+  const roads = makeRoads(world, (x, z) => coarseAt(world, x, z)), near = makeNear(roads), lights = makeLights(), quality = num("quality", 1);
   world.near = near;
 
   const skyM = await stage.module("sky.wgsl"), terrainM = await stage.module("materials.wgsl", "terrain.wgsl"), lampM = await stage.module("lamp.wgsl");
