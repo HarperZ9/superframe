@@ -41,6 +41,7 @@ std::string frameTraceJson(const Summary& s, const std::vector<Zone>& zones){
     j += " \"adapter\": " + str(s.adapter) + ", \"backend\": " + str(s.backend) + ", \"input\": " + str(s.input) + ", \"tile\": " + str(s.tile) + ",\n";
     j += " \"size\": " + str(std::to_string(s.width) + "x" + std::to_string(s.height)) + ", \"sync_interval\": " + std::to_string(s.syncInterval)
        + ", \"refresh_hz\": " + num(s.refreshHz) + ", \"waitable_swapchain\": true,\n";
+    j += " \"graphics\": " + s.capabilities + ",\n";
     j += " \"cold_start_ms\": {\"clock\": \"process creation (GetProcessTimes) to the moment\", \"main_entry\": " + num(s.mainEntryMs)
        + ", \"first_present\": " + num(s.firstPresentMs) + ", \"walking\": " + num(s.walkingMs) + "},\n";
     j += " \"frames\": " + std::to_string(s.frames) + ", \"ticks\": " + std::to_string(s.ticks) + ", \"tick_hz\": 60, \"terrain_triangles\": "

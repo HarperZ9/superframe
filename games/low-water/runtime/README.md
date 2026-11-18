@@ -60,7 +60,7 @@ At start-up the shell asks the adapter what it offers (`raw/rhi/hw.hpp`: DXR tie
 
 ## Measured
 
-On the reference machine, an RTX 4090 at 120 Hz, 1280 x 720, with another job's SkyrimSE.exe running on the same GPU through every run (`evidence/`):
+On the reference machine, an RTX 4090 at 120 Hz, 1280 x 720, with another job's SkyrimSE.exe running on the same GPU through every run (`evidence/` (`evidence/`; that frame trace predates the `graphics` key, and the same run's tier choice is in `n0-rtx4090-caps.json`):
 
 - **Cold start to walking**: 332, 342, 393, 430, 438 and 813 ms over six runs; the 813 ms run was the first after a build. The bound is 5 s.
 - **Present interval** over 1,767 frames after 30 warm-up frames: mean 8.35 ms, p50 8.34 ms, p99 9.40 ms, standard deviation 0.97 ms, maximum 43.8 ms. The maximum is frame 200, the frame that wrote the screenshot. An earlier run of the same walk had two stalls of 323 and 263 ms at frames 442 and 456, with the window's message pump stalled 84 ms beside them; the cause was not isolated.
