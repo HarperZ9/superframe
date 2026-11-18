@@ -7,6 +7,8 @@
 //   20 painted steel: colour       21 rusted plate (tone)      22 concrete (tone)
 //   23 lattice (atlas card; tone)  24 lagged pipe (tone)       25 ribbed sheet: colour
 //   26 banded stack (height m)     27 lit strip of shed windows (seed)
+//   18 sign (hue, seed, upright)   19 cloth: colour             28 slate or tile (tone)
+//   29 thatch or reed (tone)       30 leaf card (atlas)
 // An instance is the chunk's corner in the world.
 
 struct BOut {
@@ -99,13 +101,50 @@ fn rust(p: vec2f, tone: f32) -> vec3f {
     alb = v.m.yzw * 0.2;
     let heart = 0.45 + 0.55 * smoothstep(0.0, 0.5, min(min(fract(v.uv.x * 0.9999), 1.0 - fract(v.uv.x * 0.9999)), 0.5));
     glow = v.m.yzw * (0.04 + 0.96 * smoothstep(0.2, 0.75, night)) * 0.5 * heart;
-  } else if (k < 17.5 || (k > 22.5 && k < 23.5)) {
+  } else if (k < 17.5 || (k > 22.5 && k < 23.5) || (k > 29.5 && k < 30.5)) {
     let tx = textureSample(atlasTex, rsamp, v.uv);
     let lod = log2(max(max(length(dpdx(v.uv)), length(dpdy(v.uv))) * 2048.0, 1.0));
     if (textureSampleLevel(atlasTex, rsamp, v.uv, min(lod, 2.5)).a < 0.4) { discard; }
     card = true;
-    if (k < 17.5) { alb = vec3f(0.55, 0.62, 0.70); rough = 0.08; gloss = 0.8; wrap = 0.6; }
+    if (k > 29.5) { alb = tx.rgb * 0.6; rough = 0.8; gloss = 0.02; wrap = 0.5; alb = mix(alb, vec3f(0.80, 0.84, 0.90), cold * smoothstep(0.4, 0.8, vnoise(v.uv * 900.0))); }
+    else if (k < 17.5) { alb = vec3f(0.55, 0.62, 0.70); rough = 0.08; gloss = 0.8; wrap = 0.6; }
     else { alb = mix(rust(v.wp.xy + v.wp.zz, v.m.y), tx.rgb * vec3f(0.30, 0.31, 0.33), step(0.5, v.m.y)); rough = 0.6; gloss = 0.15; }
+  } else if (k < 18.5) {
+    // A sign with lettering. Letters are drawn from a seed: each cell of a column (upright) or a
+    // row holds a glyph of three to five strokes, the way a lit board reads from down a lane. Light
+    // boards carry dark strokes, dark boards carry lit coloured strokes.
+    let up = v.m.w > 0.5;
+    let q = select(v.uv, vec2f(v.uv.y, v.uv.x), up);
+    let n = select(4.0, 3.0, up);
+    let hueId = v.m.y;
+    var face = vec3f(0.95, 0.92, 0.82);
+    if (hueId > 0.5) { face = vec3f(1.0, 0.88, 0.6); } if (hueId > 1.5) { face = vec3f(0.9, 0.12, 0.08); } if (hueId > 2.5) { face = vec3f(0.08, 0.10, 0.09); }
+    if (hueId > 3.5) { face = vec3f(0.12, 0.30, 0.55); } if (hueId > 4.5) { face = vec3f(0.98, 0.95, 0.9); }
+    let ink = select(vec3f(0.05, 0.04, 0.04), vec3f(0.55, 1.0, 0.75), hueId > 2.5 && hueId < 3.5);
+    let cell = floor(q.x * n); let f = vec2f(fract(q.x * n), q.y);
+    var stroke = 0.0;
+    if (q.x > 0.06 && q.x < 0.94 && q.y > 0.14 && q.y < 0.86) {
+      for (var i = 0; i < 7; i++) {
+        let h = hash21(vec2f(cell * 7.0 + f32(i), v.m.z * 113.0));
+        let h2 = hash21(vec2f(cell * 3.0 + f32(i) * 5.0, v.m.z * 71.0 + 3.0));
+        if (f32(i) > 3.0 + h2 * 4.0) { break; }
+        let a = vec2f(0.18 + 0.64 * fract(h * 7.0), 0.2 + 0.6 * fract(h * 13.0));
+        let b = select(vec2f(a.x, 0.2 + 0.6 * h2), vec2f(0.18 + 0.64 * h2, a.y), fract(h * 3.0) > 0.5);
+        let pa = vec2f(f.x, (q.y - 0.14) / 0.72) - a; let ba = b - a;
+        let t = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-4), 0.0, 1.0);
+        stroke = max(stroke, smoothstep(0.06, 0.035, length(pa - ba * t)));
+      }
+    }
+    let rim = step(min(min(v.uv.x, 1.0 - v.uv.x), min(v.uv.y, 1.0 - v.uv.y)), 0.03);
+    let paint = mix(face, ink, stroke);
+    alb = paint * 0.25 * (1.0 - rim) + vec3f(0.02) * rim;
+    let on = smoothstep(0.15, 0.6, night + 0.25) * step(0.2, fract(v.m.z * 5.0));
+    glow = paint * on * 0.35 * (1.0 - rim) * (0.9 + 0.1 * vnoise(v.uv * 20.0));
+    rough = 0.3; gloss = 0.2;
+  } else if (k < 19.5) {
+    // cloth: wool and down, dull, a little lighter where it folds toward the light
+    alb = v.m.yzw * (0.85 + 0.3 * vnoise(v.wp.xy * 9.0 + v.wp.z));
+    rough = 0.95; gloss = 0.02; wrap = 0.3;
   } else if (k < 20.5) {
     // paint over steel: chipped at the edges, streaked under every bolt
     let chip = smoothstep(0.62, 0.8, fbm(v.wp.xz * 1.1 + v.wp.y * 1.7));
@@ -136,6 +175,21 @@ fn rust(p: vec2f, tone: f32) -> vec3f {
     // a stack: concrete, with red and white bands near its top
     let band = step(0.5, fract(v.uv.y / 18.0)) * step(v.m.y * 0.55, v.uv.y);
     alb = mix(vec3f(0.19, 0.185, 0.18) * (0.7 + 0.5 * fbm(vec2f(v.uv.x * 0.3, v.uv.y * 0.05))), mix(vec3f(0.5, 0.5, 0.48), vec3f(0.42, 0.045, 0.03), band), step(v.m.y * 0.55, v.uv.y));
+  } else if (k > 27.5 && k < 28.5) {
+    // slate: courses of small dark plates, each a little different, lichen on the old ones
+    let row = floor(v.uv.y / 0.25); let col = floor(v.uv.x / 0.3 + row * 0.5);
+    let id = hash21(vec2f(col, row + v.m.y * 17.0));
+    let edge = min(abs(fract(v.uv.y / 0.25) - 0.02), abs(fract(v.uv.x / 0.3 + row * 0.5) - 0.5) * 2.0);
+    alb = mix(vec3f(0.035, 0.038, 0.045), vec3f(0.075, 0.075, 0.08), id) * (0.55 + 0.45 * smoothstep(0.0, 0.08, edge));
+    alb = mix(alb, vec3f(0.16, 0.16, 0.10), smoothstep(0.6, 0.85, fbm(v.uv * 0.7 + v.m.y * 5.0)) * 0.6);
+    rough = 0.4; gloss = 0.3;
+  } else if (k > 28.5 && k < 29.5) {
+    // reed and thatch: bundles laid in courses, the stems running down the slope
+    let course = fract(v.uv.y / 0.45);
+    let stem = vnoise(vec2f(v.uv.x * 40.0, v.uv.y * 2.0 + v.m.y * 9.0));
+    alb = mix(vec3f(0.16, 0.12, 0.07), vec3f(0.36, 0.29, 0.17), stem * 0.7 + v.m.y * 0.3) * (0.55 + 0.45 * smoothstep(0.0, 0.25, course));
+    alb = mix(alb, vec3f(0.07, 0.07, 0.05), smoothstep(0.55, 0.8, fbm(v.uv * vec2f(0.5, 0.2) + 3.0)) * 0.5);
+    rough = 0.95; gloss = 0.02; wrap = 0.2;
   } else {
     // a strip of shed windows: most dark, some lit green-white, grime on all of them
     let pane = floor(v.uv.x / 1.4); let lit = step(0.45, hash21(vec2f(pane, v.m.y * 91.0)));
@@ -168,5 +222,5 @@ fn rust(p: vec2f, tone: f32) -> vec3f {
   return vec4f(inAir(lit + glow, v.wp), 1.0);
 }
 @fragment fn fsBuiltShadow(v: BOut) {
-  if ((v.m.x > 16.5 && v.m.x < 17.5) || (v.m.x > 22.5 && v.m.x < 23.5)) { if (textureSample(atlasTex, rsamp, v.uv).a < 0.4) { discard; } }
+  if ((v.m.x > 16.5 && v.m.x < 17.5) || (v.m.x > 22.5 && v.m.x < 23.5) || (v.m.x > 29.5 && v.m.x < 30.5)) { if (textureSample(atlasTex, rsamp, v.uv).a < 0.4) { discard; } }
 }
