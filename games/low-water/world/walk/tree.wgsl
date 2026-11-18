@@ -99,7 +99,7 @@ fn treeSurface(v: TOut, front: bool) -> Surf {
     let lod = log2(max(max(length(dpdx(v.uv)), length(dpdy(v.uv))) * 2048.0, 1.0));
     let thin = v.m.z < 0.2 || v.m.z > 1.3;
     if (thin && lod > 5.2) { discard; }
-    if (textureSampleLevel(atlasTex, rsamp, v.uv, min(lod, select(3.0, 1.6, thin))).a < 0.33) { discard; }
+    if (textureSampleLevel(atlasTex, rsamp, v.uv, min(lod, select(1.4, 1.6, thin))).a < 0.33) { discard; }
     s.alb = tx.rgb;
     if (v.m.y >= 2.0) { s.alb = vec3f(lum(tx.rgb)) * vec3f(0.95, 0.90, 0.84); }   // dead twigs: grey
     else { s.alb *= 0.78 + 0.5 * fract(v.m.y * 7.31 + v.inst.x * 3.7); }

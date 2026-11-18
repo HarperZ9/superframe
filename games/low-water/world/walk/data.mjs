@@ -61,14 +61,17 @@ export async function loadWorld(base, onProgress = () => {}, start = null, first
     const tw = Math.min(T, W - c * T), th = Math.min(T, H - r * T), u8 = await bin(`t_${c}_${r}.bin`);
     decodeBlock(u8, tw, th, (name, x, y, v) => store(w, name, (r * T + y) * W + c * T + x, v));
     got[r * idx.cols + c] = 1;
-    for (const f of listeners) f({ x0: c * T, y0: r * T, w: tw, h: th });
+    // a listener that fails must not stop the tiles behind it; the failure is kept and shown
+    for (const f of listeners) try { f({ x0: c * T, y0: r * T, w: tw, h: th }); } catch (e) { console.error(`tile ${c}, ${r}: ${e && e.stack || e}`); w.stream.error = String(e && e.message || e); }
   }
   const near = order.filter((t) => t.d < first), rest = order.filter((t) => t.d >= first);
   let n = 0;
   await Promise.all(near.map(async (t) => { await tile(t); onProgress(0.1 + 0.9 * ++n / near.length, "the ground near you"); }));
-  // the rest arrives behind the walk, three tiles at a time; onTile(f) hears each one land
-  const done = (async () => { let i = 0; const lane = async () => { while (i < rest.length) await tile(rest[i++]); }; await Promise.all([lane(), lane(), lane()]); })();
-  w.stream = { onTile: (f) => listeners.push(f), done, total: order.length, left: () => order.length - got.reduce((a, b) => a + b, 0), bytes: idx.bytes };
+  // The rest arrives behind the walk, three tiles at a time, once start() is called: the caller
+  // first hangs its listener with onTile(f), so no tile lands unheard.
+  let finish; const done = new Promise((ok) => { finish = ok; });
+  const begin = () => { let i = 0; const lane = async () => { while (i < rest.length) await tile(rest[i++]); }; Promise.all([lane(), lane(), lane()]).then(finish, (e) => { console.error(`tiles: ${e && e.stack || e}`); w.stream.error = String(e && e.message || e); finish(); }); };
+  w.stream = { onTile: (f) => listeners.push(f), start: begin, done, total: order.length, left: () => order.length - got.reduce((a, b) => a + b, 0), bytes: idx.bytes };
   return w;
 }
 

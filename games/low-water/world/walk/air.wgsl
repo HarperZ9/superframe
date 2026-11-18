@@ -34,9 +34,13 @@ struct AOut {
   let c0 = F.viewProj * vec4f(p, 1.0);
   // the shutter is open a twenty-fifth of a second: a drop draws a line, a flake a short dash
   let c1 = F.viewProj * vec4f(p - vel * select(0.012, 0.035, rain), 1.0);
-  let s0 = c0.xy / max(c0.w, 0.01); let s1 = c1.xy / max(c1.w, 0.01);
+  let s0 = c0.xy / max(c0.w, 0.01);
+  // a drop passing the lens has no far end to draw to: it is a point, and no streak is longer than 70 pixels
+  var s1 = s0; if (c1.w > 0.3) { s1 = c1.xy / c1.w; }
   var along = (s1 - s0) * F.view.xy * 0.5;
-  let la = max(length(along), 0.001);
+  let la0 = max(length(along), 0.001);
+  let la = min(la0, 70.0);
+  s1 = s0 + (s1 - s0) * (la / la0);
   let dirv = along / la;
   let r = select(0.006 + 0.008 * fract(seed.w * 3.0), 0.004, rain);
   let px = r * F.view.y * 0.5 * F.viewProj[1][1] / max(c0.w, 0.05);
@@ -49,8 +53,8 @@ struct AOut {
   o.q = vec2f(corner.x * o.half, corner.y);
   let light = F.amb.rgb * 1.3 + F.keyCol.rgb * F.key.w * 0.6 + lampLight(p, vec3f(0.0, 1.0, 0.0), vec3f(0.0, 1.0, 0.0), vec3f(1.0), 1.0, 0.0, 6.0) * 2.2 + F.ev.w * vec3f(0.7, 0.75, 0.9);
   let dist = distance(p, F.cam.xyz);
-  let a = alive * dim * dim * smoothstep(0.8, 2.6, dist) * select(0.85, 0.22, rain) * wide / (la * 0.5 + wide);
-  o.col = vec4f(light * select(0.8, 0.5, rain), a);
+  let a = alive * dim * dim * smoothstep(0.8, 2.6, dist) * select(0.85, 0.5, rain) * wide / (la * 0.5 + wide);
+  o.col = vec4f(light * select(0.8, 0.35, rain), a);
   if (c0.w < 0.05 || a <= 0.0) { o.clip = vec4f(0.0, 0.0, -1.0, 1.0); }
   return o;
 }

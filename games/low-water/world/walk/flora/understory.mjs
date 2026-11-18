@@ -75,12 +75,12 @@ export function makeUnderstory({ dev, world, near, quality, vbuf }, forest) {
       if (!S || world.height[k] < 0.5) continue;
       near.sampleB(x, z, nb);
       const road = nb[0] * nb[4];
-      if (road > 0.47 || (world.built && world.built[k] > 90)) continue;
-      const cover = near.sampleA(x, z, 0), verge = road > 0.12 ? 1 : 0, p = hash2(gx * 3 + 5, gz * 7 + 1), q = hash2(gx * 11 + 3, gz * 5 + 9);
+      if (road > 0.24 || (world.built && world.built[k] > 90)) continue;
+      const cover = near.sampleA(x, z, 0), verge = road > 0.02 ? 1 : 0, p = hash2(gx * 3 + 5, gz * 7 + 1), q = hash2(gx * 11 + 3, gz * 5 + 9);
       // shade thins the grass and feeds the ferns; an edge brings shrubs and long grass
       const w = [S[0] * (0.35 + 1.3 * cover), S[1] * (1.1 - 0.6 * cover), S[2] * (1 - cover) ** 1.5 * 2.2 + verge * 0.45, S[3] * (1 - cover * 0.8) + verge * 0.06, S[4] * (1 - cover * 0.7) + verge * 0.010 * (1 - cover), S[5]];
       let acc = 0;
-      for (let f = 0; f < 6; f++) { acc += w[f]; if (p < acc) { put(f, x, z, (f === 4 ? 0.6 : 0.7) + 0.7 * q, q, 0.03); break; } }
+      for (let f = 0; f < 6; f++) { acc += w[f]; if (p < acc) { put(f, x, z, (f === 4 ? 0.45 + 0.5 * q : 0.7 + 0.7 * q), q, 0.03); break; } }
     }
     // dead wood and boulders, one chance in each 4 m square
     for (let j = 0; j < 2; j++) for (let i = 0; i < 2; i++) {

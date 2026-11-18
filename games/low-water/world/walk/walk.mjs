@@ -229,6 +229,7 @@ async function start() {
       if (near.bake(cam.x, cam.z, true)) stage.uploadNear(near);
     });
     world.stream.done.then(() => stage.refreshMips());
+    world.stream.start();
   }
   say("");
   move(0);

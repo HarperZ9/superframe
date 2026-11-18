@@ -26,7 +26,8 @@ struct LOut {
   let fl = select(p1.w, -1.0 - p1.w, p1.w < 0.0);
   if (fl > 0.0) { col *= 0.75 + 0.25 * sin(F.cam.w * (7.0 + 9.0 * fl) + p0.x * 3.1 + p0.z * 1.7) * sin(F.cam.w * 2.3 + p0.x); }
   if (p1.w >= 0.0) { col *= smoothstep(0.2, 0.75, F.misc.x); }
-  o.col = col * (1.0 - airAmount(p0.xyz));
+  // in still water a lamp's double is as bright as the lamp
+  o.col = col * (1.0 - airAmount(p0.xyz)) * (1.0 + 1.5 * F.clip.z);
   o.wp = p0.xyz;
   o.grow = grow;
   return o;
