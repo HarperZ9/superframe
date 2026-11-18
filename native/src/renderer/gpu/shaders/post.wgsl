@@ -60,7 +60,7 @@ fn sample_depth(fx: f32, fy: f32, sx: i32, sy: i32) -> f32 {
 
 @compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) gid: vec3u) {
-    let i: u32 = gid.x;
+    let i: u32 = gid.x + gid.y * 2097152u;
     if (i >= P.width * P.height) { return; }
     O[i] = 1.0;
     let b: u32 = i * GB;
@@ -154,7 +154,7 @@ fn probe_at(t: f32, a: vec3f, e: vec3f, k0: f32, k1: f32) -> Probe {
 
 @compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) gid: vec3u) {
-    let i: u32 = gid.x;
+    let i: u32 = gid.x + gid.y * 2097152u;
     if (i >= P.width * P.height) { return; }
     O[i] = -1.0;
     let b: u32 = i * GB;
@@ -238,7 +238,7 @@ fn cur_rgb(x: i32, y: i32) -> vec3f {
 
 @compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) gid: vec3u) {
-    let i: u32 = gid.x;
+    let i: u32 = gid.x + gid.y * 2097152u;
     if (i >= P.width * P.height) { return; }
     let w: i32 = i32(P.width);
     let h: i32 = i32(P.height);
