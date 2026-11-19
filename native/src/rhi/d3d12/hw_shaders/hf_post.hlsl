@@ -6,6 +6,8 @@
 //   MODE 2 bloom down (13 taps, Jimenez 2014), MODE 3 bloom up (tent), PC.a.x the level
 //   MODE 4 tone map: exposure, bloom, ACES filmic (the Hill fit of the RRT and ODT), sRGB
 //   MODE 5 the path tracer's mean into hdr
+//   MODE 6 the lens (F.lens.x): tilt-shift miniature, oil (anisotropic Kuwahara over the structure
+//          tensor, Kyprianidis 2009) or oil and ink, from the graded frame in filtA into ldr
 #include "hf_gbuf.hlsli"
 
 float3 fogAt(float2 px, float vz, float3 c) {
@@ -105,8 +107,74 @@ void main(uint3 id : SV_DispatchThreadID) {
     float3 c = taaB[id.xy].rgb;
     if (on(F_BLOOM)) { const float2 q = float2(id.xy) * 0.5f; c = lerp(c, bloom[0][min(uint2(q), uint2(F.size.xy) / 2u - 1u)].rgb, 0.035f); }
     c *= F.skyParams.w;
-    c *= float3(0.9f, 0.97f, 1.12f);   // white balance a little warmer than the moon: moonlight cool, sodium still amber
-    ldr[id.xy] = float4(srgb(aces(c)), 1.0f);
+    c *= F.grade0.rgb;   // white balance (default a little warmer than the moon: moonlight cool, sodium still amber)
+    float3 g = aces(c);
+    // the grade after the tone map: contrast about mid grey in a perceptual space, saturation about luma, lift into the shadows, vignette
+    g = pow(saturate((pow(max(g, 0.0f), 1.0f / 2.2f) - 0.5f) * F.grade1.w + 0.5f), 2.2f);
+    g = max(lerp(lum(g).xxx, g, F.grade0.w), 0.0f);
+    g = g + F.grade1.rgb * (1.0f - saturate(lum(g) * 3.0f));
+    const float2 uvv = (float2(id.xy) + 0.5f) * F.size.zw - 0.5f;
+    g *= 1.0f - F.grade2.x * saturate(dot(uvv, uvv) * 2.2f);
+    if (F.lens.x != 0u) filtA[id.xy] = float4(saturate(g), 1.0f); else ldr[id.xy] = float4(srgb(saturate(g)), 1.0f);
+#elif MODE == 6
+    if (id.x >= (uint)F.size.x || id.y >= (uint)F.size.y) return;
+    const int2 P = int2(id.xy);
+    float3 c = filtA[P].rgb;
+    const float sc = F.size.y / 2160.0f;
+    if (F.lens.x == 1u) {
+        // tilt-shift: a disc blur that grows away from the focus band, so the world reads as a model
+        const float dy = abs((float(id.y) + 0.5f) * F.size.w - F.grade2.y);
+        const float r = 22.0f * sc * F.grade2.w * smoothstep(F.grade2.z, F.grade2.z + 0.28f, dy);
+        if (r > 0.6f) {
+            float3 acc = c; float wsum = 1.0f;
+            [loop] for (uint k = 1u; k < 64u; k++) {
+                const float a = float(k) * 2.39996323f, rr = r * sqrt(float(k) / 64.0f);
+                const float3 q = loadClamp(filtA, P + int2(round(float2(cos(a), sin(a)) * rr))).rgb;
+                const float w = 1.0f + 2.0f * lum(q);   // bright points open into bokeh, as a real lens does
+                acc += q * w; wsum += w;
+            }
+            c = acc / wsum;
+        }
+    } else {
+        // the structure tensor from Sobel on luma, its eigenvector the stroke direction
+        float3 gx = 0, gy = 0;
+        [unroll] for (int y = -1; y <= 1; y++) [unroll] for (int x = -1; x <= 1; x++) {
+            const float3 q = loadClamp(filtA, P + int2(x, y)).rgb;
+            const float wx = float(x) * (y == 0 ? 2.0f : 1.0f), wy = float(y) * (x == 0 ? 2.0f : 1.0f);
+            gx += q * wx; gy += q * wy;
+        }
+        const float E = dot(gx, gx), Fq = dot(gx, gy), G = dot(gy, gy);
+        const float l1 = 0.5f * (E + G + sqrt((E - G) * (E - G) + 4.0f * Fq * Fq)), l2 = 0.5f * (E + G - sqrt((E - G) * (E - G) + 4.0f * Fq * Fq));
+        float2 t = float2(l1 - E, -Fq); t = dot(t, t) > 1e-8f ? normalize(t) : float2(0, 1);
+        const float A = (l1 + l2) > 1e-6f ? (l1 - l2) / (l1 + l2) : 0.0f;
+        const float R = 7.0f * sc * F.grade2.w;
+        const float ax = R * (1.0f + A), ay = R / (1.0f + A);   // brush stretched along the stroke
+        float3 m[4] = { (float3)0, (float3)0, (float3)0, (float3)0 }, s2[4] = { (float3)0, (float3)0, (float3)0, (float3)0 }; float n[4] = { 0, 0, 0, 0 };
+        [loop] for (int yy = -8; yy <= 8; yy++) [loop] for (int xx = -8; xx <= 8; xx++) {
+            const float2 v = float2(xx, yy) / 8.0f;
+            if (dot(v, v) > 1.0f) continue;
+            const float2 o = float2(t.x * v.x * ax - t.y * v.y * ay, t.y * v.x * ax + t.x * v.y * ay);
+            const float3 q = loadClamp(filtA, P + int2(round(o))).rgb;
+            const uint sct = (v.x >= 0.0f ? 0u : 1u) + (v.y >= 0.0f ? 0u : 2u);
+            m[sct] += q; s2[sct] += q * q; n[sct] += 1.0f;
+        }
+        float best = 1e9f; float3 pick = c;
+        [unroll] for (uint k = 0u; k < 4u; k++) {
+            const float3 mu = m[k] / max(n[k], 1.0f), var = s2[k] / max(n[k], 1.0f) - mu * mu;
+            const float vs = var.r + var.g + var.b;
+            if (vs < best) { best = vs; pick = mu; }
+        }
+        c = pick;
+        if (F.lens.x == 3u) {
+            // ink: a dark line where luma changes fast, thicker where the change is strong
+            const float e = sqrt(lum(gx) * lum(gx) + lum(gy) * lum(gy));
+            c *= 1.0f - 0.9f * smoothstep(0.03f, 0.16f, e);
+        }
+        // the paper's tooth: a faint fixed grain, the same every frame
+        Rng gr = rngAt(id.xy, 0u, 7u);
+        c *= 0.97f + 0.06f * rnd(gr);
+    }
+    ldr[id.xy] = float4(srgb(saturate(c)), 1.0f);
 #elif MODE == 5
     if (id.x >= (uint)F.size.x || id.y >= (uint)F.size.y) return;
     const float4 a = ptAcc[id.xy];

@@ -35,7 +35,9 @@ SOut vs(uint vid : SV_VertexID) {
     const float coverage = saturate(rpx * rpx / max(rpx * (rpx + len), 1e-3f));
     // light: the moon scattered forward through the flake, and the lamps nearest it
     const float3 v = normalize(F.eye.xyz - p);
-    float3 L = F.moonRad.rgb * F.moonRad.w * (0.2f + 1.5f * pow(saturate(dot(-v, F.moonDir.xyz)), 8.0f)) + sky(float3(0, 1, 0)) * 0.6f;
+    // the sky's light: as before at night; by day (a look with more sky in the haze) the whole sky lights a flake
+    const float3 skyL = F.look.x == 0.15f ? sky(float3(0, 1, 0)) * 0.6f : (sky(float3(0, 1, 0)) + sky(float3(0.94f, 0.34f, 0)) + sky(float3(-0.94f, 0.34f, 0))) / 3.0f * F.look.x * PI;
+    float3 L = F.moonRad.rgb * F.moonRad.w * (0.2f + 1.5f * pow(saturate(dot(-v, F.moonDir.xyz)), 8.0f)) + skyL;
     const uint cl = clusterOf(p), n = min(clusterCount(cl), 8u);
     for (uint j = 0u; j < n; j++) { const Light Lt = Lights[clusterLight(cl, j)]; const float3 d = Lt.p - p; L += intensity(Lt, -normalize(d)) / max(dot(d, d), 0.04f) * (0.5f + 1.5f * pow(saturate(dot(-v, normalize(d))), 4.0f)); }
     o.col = L * 0.85f / PI;

@@ -10,6 +10,7 @@ import { HeroMesh, lerp } from "./hmesh.mjs";
 import { heroHouse } from "./hhouse.mjs";
 import { streetLamp, cable, fbm } from "./hparts.mjs";
 import { put } from "../kit.mjs";
+import { knollLift } from "./hscape.mjs";
 
 const smooth = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
 
@@ -85,7 +86,39 @@ export function groundOf(world, P, H, x, z) {
     }
     if (ho.d < 0.4) w[3] = Math.max(w[3], smooth(0.4, 0.1, ho.d) * 0.5);
   }
+  if (P.knoll) g += knollLift(P.knoll, x, z);
+  if (P.pond) {
+    // the frozen pond (hscape.mjs): the ground terraced under the ice, the snow thin at its shore
+    const pd = Math.hypot(x - P.pond.x, z - P.pond.z), k = smooth(P.pond.r + 9, P.pond.r - 1, pd);
+    if (k > 0) { g = lerp(g, P.pond.y - 0.3, k); snow = lerp(snow, 0.12, k); }
+  }
   return { g, snow, w, inHouse: ho.d < -0.05 };
+}
+
+// the ground round the whole town for the wide views: a square grid on the town's middle, coarser
+// than the street's, holed where the street grid lies and dropped a few centimetres under its edge
+function wideGround(M, world, P, H, O, view, half, step) {
+  const fx = Math.sin(view.yaw), fz = -Math.cos(view.yaw), rx = Math.cos(view.yaw), rz = Math.sin(view.yaw);
+  const inStreet = (x, z, m) => { const d = (x - view.x) * fx + (z - view.z) * fz, a = (x - view.x) * rx + (z - view.z) * rz; return d > -30 + m && d < 259 - m && Math.abs(a) < 69 - m; };
+  const n = Math.round((2 * half) / step), ids = [], inner = [], pos = [];
+  const at = (i, j) => j * (n + 1) + i;
+  for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) {
+    const x = P.cx - half + i * step, z = P.cz - half + j * step, q = groundOf(world, P, H, x, z);
+    pos.push([x - O[0], q.g + q.snow - (inStreet(x, z, 0) ? 0.05 : 0) - O[1], z - O[2], q.w]);
+    inner.push(inStreet(x, z, 1.5) || q.inHouse);
+  }
+  for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) {
+    const c = pos[at(i, j)], l = pos[at(Math.max(0, i - 1), j)], r = pos[at(Math.min(n, i + 1), j)], b = pos[at(i, Math.max(0, j - 1))], t = pos[at(i, Math.min(n, j + 1))];
+    const du = [r[0] - l[0], r[1] - l[1], r[2] - l[2]], dv = [t[0] - b[0], t[1] - b[1], t[2] - b[2]];
+    let nn = [du[1] * dv[2] - du[2] * dv[1], du[2] * dv[0] - du[0] * dv[2], du[0] * dv[1] - du[1] * dv[0]];
+    if (nn[1] < 0) nn = nn.map((v) => -v);
+    const L = Math.hypot(...nn) || 1;
+    ids.push(M.v("ground", c.slice(0, 3), nn.map((v) => v / L), c[0], c[2], c[3]));
+  }
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    if (inner[at(i, j)] && inner[at(i + 1, j)] && inner[at(i, j + 1)] && inner[at(i + 1, j + 1)]) continue;
+    M.tri("ground", ids[at(i, j)], ids[at(i + 1, j)], ids[at(i + 1, j + 1)]); M.tri("ground", ids[at(i, j)], ids[at(i + 1, j + 1)], ids[at(i, j + 1)]);
+  }
 }
 
 // the ground grid in the view's frame: rows along the view, spaced by distance; columns across it
@@ -118,12 +151,14 @@ function groundMesh(M, world, P, H, O, view) {
 }
 
 // the land beyond the street: the raster under snow, 16 m cells, sunk where the street grid lies
-function farLand(M, world, O, view) {
-  const R = 1800, step = 16;
+function farLand(M, world, O, view, wide = null) {
+  const R = wide ? 2600 : 1800, step = 16;
   M.grid("snow", (s, t) => {
     // sunk well under the street grid where that grid lies (which levels the town's relief), and
     // eased back up beyond it, so no far cell pokes through the near snow
-    const x = view.x - R + 2 * R * s, z = view.z - R + 2 * R * t, sink = 4 * smooth(320, 220, Math.hypot(x - view.x, z - view.z));
+    const x = view.x - R + 2 * R * s, z = view.z - R + 2 * R * t;
+    const sink = 4 * smooth(320, 220, Math.hypot(x - view.x, z - view.z)) +
+      (wide ? 4 * smooth(wide.half + 30, wide.half - 20, Math.max(Math.abs(x - wide.cx), Math.abs(z - wide.cz))) : 0);
     return [x - O[0], baseGround(world, x, z) + 0.4 - sink - O[1], z - O[2]];
   }, (2 * R) / step, (2 * R) / step, (s, t) => [s * 2 * R * 0.25, t * 2 * R * 0.25]);
 }
@@ -134,7 +169,7 @@ export function street(world, P, view, opts = {}) {
     const d = (x - view.x) * fx + (z - view.z) * fz, a = Math.abs((x - view.x) * Math.cos(view.yaw) + (z - view.z) * Math.sin(view.yaw));
     return d > -back && d < far && a < side;
   };
-  const H = P.houses.filter((h) => seen(h.x, h.z));
+  const H = opts.wide ? P.houses.filter((h) => Math.hypot(h.x - P.cx, h.z - P.cz) < opts.wide.half - 8) : P.houses.filter((h) => seen(h.x, h.z));
   // each house stands on the levelled ground at its middle (the plan sat it on the unlevelled ground)
   for (const h of H) { h.y = undefined; }
   for (const h of H) { const q = groundOf(world, P, [], h.x, h.z); h.y = q.g; }
@@ -147,9 +182,10 @@ export function street(world, P, view, opts = {}) {
     built.push({ h, out });
   }
   groundMesh(M, world, P, H, O, view);
-  farLand(M, world, O, view);
+  if (opts.wide) wideGround(M, world, P, H, O, view, opts.wide.half, opts.wide.step);
+  farLand(M, world, O, view, opts.wide ? { cx: P.cx, cz: P.cz, half: opts.wide.half } : null);
   const T = { M, R: mulberry(world.json.seed ^ 0x51ee7), L, col: [0.5, 0.2, 0.2, 0.5] };
-  for (const l of P.lamps) if (seen(l.x, l.z)) {
+  for (const l of P.lamps) if (opts.wide ? Math.hypot(l.x - P.cx, l.z - P.cz) < opts.wide.half - 8 : seen(l.x, l.z)) {
     const q = groundOf(world, P, H, l.x, l.z);
     streetLamp(T, l.x - O[0], q.g - O[1], l.z - O[2], l.ax, l.az);
   }
@@ -162,7 +198,7 @@ export function street(world, P, view, opts = {}) {
   }
   // a light that the snow has buried (a window low on a drifted wall) is left out
   const lit = L.filter((l) => { const q = groundOf(world, P, H, l.p[0] + O[0], l.p[2] + O[2]); return l.p[1] + O[1] > q.g + q.snow + 0.35; });
-  return { M, L: lit, O, houses: H.length, smoke: L.smoke || [] };
+  return { M, L: lit, O, H, houses: H.length, smoke: L.smoke || [] };
 }
 
 function mulberry(seed) { let a = seed >>> 0; return () => { a = (a + 0x6d2b79f5) >>> 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }

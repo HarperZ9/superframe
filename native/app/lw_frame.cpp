@@ -1,6 +1,7 @@
 // lw_frame: the Low Water hero frame on D3D12 with DXR (raw/rhi/hw_frame.hpp).
 //   lw_frame --data DIR --view NAME --assets ROOT --hdr FILE --out DIR [--size WxH] [--frames N]
-//            [--spp N] [--jobs main,close,off,reference,walk] [--chars LIST]
+//            [--spp N] [--jobs main,close,off,reference,walk] [--chars LIST] [--looks FILE]
+// --looks renders each look of the file (lwframe.hpp runLooks) before the jobs.
 // --chars places the hero characters (lwframe.hpp loadCharacters) and adds the jobs street,
 // portrait, charref, turn, cwalk and parity (lwframe_shots.cpp).
 // DIR holds NAME.glb and NAME.frame.json from games/low-water/world/walk/build/hero/emit.mjs;
@@ -21,7 +22,7 @@
 using namespace raw;
 
 namespace {
-struct Args { std::string data, view = "hoarstead-main-street", assets = "H:", hdr, out, jobs = "main,close,off,reference,walk", disable, chars; uint32_t debug = 0, w = 3840, h = 2160, frames = 64, spp = 1024; float ev = 0; };
+struct Args { std::string data, view = "hoarstead-main-street", assets = "H:", hdr, out, jobs = "main,close,off,reference,walk", disable, chars, looks; uint32_t debug = 0, w = 3840, h = 2160, frames = 64, spp = 1024; float ev = 0; };
 bool has(const std::string& list, const char* j){ std::stringstream s(list); std::string t; while (std::getline(s, t, ',')) if (t == j) return true; return false; }
 std::string passesJson(const rhi::hw::FrameResult& r){
     std::string s = "[";
@@ -50,7 +51,7 @@ int main(int argc, char** argv){
         if (k == "--data") a.data = v; else if (k == "--view") a.view = v; else if (k == "--assets") a.assets = v; else if (k == "--hdr") a.hdr = v;
         else if (k == "--out") a.out = v; else if (k == "--jobs") a.jobs = v; else if (k == "--frames") a.frames = uint32_t(std::stoul(v));
         else if (k == "--ev") a.ev = std::stof(v); else if (k == "--disable") a.disable = v; else if (k == "--debug") a.debug = uint32_t(std::stoul(v));
-        else if (k == "--spp") a.spp = uint32_t(std::stoul(v)); else if (k == "--chars") a.chars = v; else if (k == "--size") std::sscanf(v.c_str(), "%ux%u", &a.w, &a.h);
+        else if (k == "--spp") a.spp = uint32_t(std::stoul(v)); else if (k == "--chars") a.chars = v; else if (k == "--looks") a.looks = v; else if (k == "--size") std::sscanf(v.c_str(), "%ux%u", &a.w, &a.h);
         else { std::fprintf(stderr, "lw_frame: unknown option %s\n", k.c_str()); return 2; }
     }
     if (a.data.empty() || a.out.empty() || a.hdr.empty()){ std::fprintf(stderr, "usage: lw_frame --data DIR --hdr FILE --out DIR [--view NAME] [--assets ROOT]\n"); return 2; }
@@ -86,6 +87,7 @@ int main(int argc, char** argv){
         for (auto& [i, l] : lights) R->setLights(uint32_t(i), {l});
         if (!lwframe::characterShots(*R, cast, base, a.jobs, a.out, [&](const char* n, const rhi::hw::FrameResult& r){ return save(a, n, r, log); }, log)) return 1;
     }
+    if (!a.looks.empty() && !lwframe::runLooks(*R, cams, base, a.looks, [&](const char* n, const rhi::hw::FrameResult& r){ return save(a, n, r, log); }, err)){ std::fprintf(stderr, "%s\n", err.c_str()); return 1; }
     if (has(a.jobs, "main") && !run("native-main", cams.main, base)) return 1;
     if (has(a.jobs, "close") && cams.hasClose && !run("native-close", cams.close, base)) return 1;
     if (has(a.jobs, "off")){

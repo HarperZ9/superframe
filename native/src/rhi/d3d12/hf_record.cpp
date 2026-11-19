@@ -56,7 +56,7 @@ void snow(Ctx& c){
     bindCommon(c, true);
     c.cl->SetPipelineState(c.snowPso.Get());
     viewport(c);
-    c.cl->DrawInstanced(140000 * 6, 1, 0, 0);
+    c.cl->DrawInstanced(c.snowFlakes * 6, 1, 0, 0);
     transition(c, c.uav[13], D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
     bindCommon(c, false);
 }
@@ -115,7 +115,7 @@ void recordFrame(Ctx& c, const hw::FrameOptions& o, Recorded& r){
     stamp(c, r, "denoise");
     if (c.skinCount && o.skinSss){ dispatch(c, "hf_sss_h", gx(c), gy(c)); uavBarrier(c); dispatch(c, "hf_sss_v", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "skin_sss"); }
     dispatch(c, "hf_composite", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "composite");
-    if (o.snow){ snow(c); }
+    if (o.snow){ c.snowFlakes = o.snowFlakes; snow(c); }
     stamp(c, r, "snow");
 }
 
@@ -135,6 +135,7 @@ void recordPost(Ctx& c, const hw::FrameOptions& o, Recorded& r, uint32_t taaN){
     for (uint32_t lv = 0; lv < 7; ++lv){ const uint32_t pc[16] = {lv}; dispatch(c, "hf_bloom_down", ((c.w >> (lv + 1)) + 7) / 8 + 1, ((c.h >> (lv + 1)) + 7) / 8 + 1, 1, pc); uavBarrier(c); }
     for (int lv = 5; lv >= 0; --lv){ const uint32_t pc[16] = {uint32_t(lv)}; dispatch(c, "hf_bloom_up", ((c.w >> (lv + 1)) + 7) / 8 + 1, ((c.h >> (lv + 1)) + 7) / 8 + 1, 1, pc); uavBarrier(c); }
     dispatch(c, "hf_tonemap", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "post");
+    if (o.lens && !o.reference){ dispatch(c, "hf_lens", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "lens"); }
     // this frame becomes last frame
     copy(c, 30, 3); copy(c, 31, 1); copy(c, 35, 9); copy(c, 36, 10); copy(c, 14, 15);
     stamp(c, r, "history");

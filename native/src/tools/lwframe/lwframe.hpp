@@ -17,7 +17,7 @@ struct MaterialSpec {
     float uvScale{1}, heightScale{0}, tint[3]{1, 1, 1}, roughScale{1}, roughBias{0}, metal{0};
     uint32_t kind{0};
 };
-struct Cameras { rhi::hw::FrameCamera main, close; bool hasClose{false}; std::vector<rhi::hw::FrameCamera> walk; };
+struct Cameras { rhi::hw::FrameCamera main, close; bool hasClose{false}; std::vector<rhi::hw::FrameCamera> walk; std::map<std::string, rhi::hw::FrameCamera> views; };
 
 // The texture sets under the two CC0 folders (assetRoot holds cc0-ambientcg-* and cc0-polyhaven-*).
 std::vector<MaterialSpec> materialSpecs(const std::string& assetRoot);
@@ -49,6 +49,14 @@ std::vector<anim::Mat> skinAt(const Person& p, double t, double extraYaw, anim::
 // everyone's palette (12 floats a joint) and the lights that move with them; extraYaw turns the first
 void castFrame(const Cast& cast, double t, std::vector<float>& palette, std::vector<std::pair<int, rhi::hw::FrameLight>>& lights, double extraYaw = 0);
 // lwframe_shots.cpp: the jobs street, portrait, charref, turn, cwalk, parity
+// lwframe_looks.cpp: the versions of one place from a looks file
+//   { "looks": [{ "name", "camera": NAME | {eye, yaw, pitch, fov}, "ev", "frames", "time",
+//                 "fog": [density, falloff, g, reach], "sky", "moon", "snow": false | [speed, wind x, wind z, flakes],
+//                 "wb": [r, g, b], "saturation", "contrast", "lift": [r, g, b], "vignette",
+//                 "lens": "tilt" | "oil" | "ink", "focus", "band", "strength", "fogAmbient", "skyTurn", "flip": SPP }] }
+// NAME is main, close or one of the frame file's "views". Each look renders and saves as NAME.png.
+bool runLooks(rhi::hw::FrameRenderer& R, const Cameras& cams, const rhi::hw::FrameOptions& base, const std::string& path,
+              const std::function<bool(const char*, const rhi::hw::FrameResult&)>& save, std::string& err);
 bool characterShots(rhi::hw::FrameRenderer& R, const Cast& cast, const rhi::hw::FrameOptions& base, const std::string& jobs, const std::string& out,
                     const std::function<bool(const char*, const rhi::hw::FrameResult&)>& save, std::string& log);
 

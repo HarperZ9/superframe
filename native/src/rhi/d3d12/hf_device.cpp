@@ -107,7 +107,7 @@ bool raster(Ctx& c, const char* vs, const char* ps, bool snow, ComPtr<ID3D12Pipe
 bool pipelines(Ctx& c, std::string& err){
     static const char* kCompute[] = {"hf_cluster", "hf_gtao_pack", "hf_gtao_unpack", "hf_direct_initial", "hf_direct_shade", "hf_gi", "hf_reflect",
         "hf_fog_inject", "hf_fog_integrate", "hf_temporal", "hf_atrous", "hf_composite", "hf_taa", "hf_bloom_down", "hf_bloom_up",
-        "hf_tonemap", "hf_pt_resolve", "hf_pt", "hf_skin", "hf_sss_h", "hf_sss_v"};
+        "hf_tonemap", "hf_lens", "hf_pt_resolve", "hf_pt", "hf_skin", "hf_sss_h", "hf_sss_v"};
     for (const char* n : kCompute) if (!compute(c, n, c.rs.Get(), c.pso[n], err)) return false;
     for (const char* n : {"hf_gtao_fpack", "hf_gtao_fmain", "hf_gtao_fblur"}) if (!compute(c, n, c.gtaoRs.Get(), c.pso[n], err)) return false;
     return

@@ -19,6 +19,11 @@ struct Frame {
     float4 fwd;              // camera forward xyz, w aspect
     uint4 dbg;               // x: debug view (0 the frame, 1 GI irradiance, 2 direct irradiance, 3 albedo); y smoke plumes;
                              // z the first skinned vertex (~0 none); w: the skinned vertices' last positions are valid
+    float4 grade0;           // white balance rgb, saturation
+    float4 grade1;           // lift rgb, contrast
+    float4 grade2;           // vignette, lens focus row, sharp half band, strength
+    uint4 lens;              // x: 0 none, 1 tilt-shift, 2 oil, 3 oil and ink
+    float4 look;             // x: the sky's share in the haze's in-scatter
 };
 ConstantBuffer<Frame> F : register(b0);
 struct PassC { uint4 a; float4 b; uint4 c; float4 d; };
@@ -36,6 +41,8 @@ struct Light { float3 p; float radius; float3 col; float power; float3 aim; floa
 static const uint K_OPAQUE = 0u, K_SNOW = 1u, K_GROUND = 2u, K_GLASS = 3u, K_ICE = 4u, K_LAMP = 5u, K_SIGN = 6u, K_LOGEND = 7u;
 // the characters' kinds (hf_surface.hlsli): skin, cloth and leather (with sheen), eyes, hair strands
 static const uint K_SKIN = 8u, K_CLOTH = 9u, K_EYE = 10u, K_HAIR = 11u;
+// still black water that doubles what stands over it (the works, region 8)
+static const uint K_WATER = 12u;
 
 RaytracingAccelerationStructure Scene : register(t0);
 StructuredBuffer<Vtx> Verts : register(t1);
