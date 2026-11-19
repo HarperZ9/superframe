@@ -80,6 +80,11 @@ jobs:
       - run: node --test games/low-water/world/tests/world.test.mjs
         env:
           BUILDC: buildc
+      # The fourier lettering kernel is BuildLang: its resampling, descriptors, pixel-error cut and alignment must
+      # give the browser twin's bits on real glyph outlines, and a kernel with one sum reassociated must not.
+      - run: node --test lettering/native/fourier-native.test.mjs
+        env:
+          BUILDC: buildc
       # e-means: the study program is BuildLang end to end; its output must equal the stored results.
       - run: buildc run packages/emeans/bld/emeans.bld > emeans-out.txt && diff emeans-out.txt packages/emeans/results/emeans.txt
       # The registry unit table: every check must pass on the real table, the unbroken control table must

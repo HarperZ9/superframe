@@ -1,0 +1,105 @@
+// The kernel's check run. Reads a file of contours and pairs and prints every result as the bits of the
+// doubles; the JS twin prints the same run (fourier-native.test.mjs) and the two must match bit for bit.
+//   main.exe <input>
+// Input lines (each double is written as the decimal of its 64 bits):
+//   C N K scale tol n x0 y0 x1 y1 ...     a contour: resample to N, K descriptors each side, truncate at tol px
+//   A i j                                 align contour j to contour i (both as resampled)
+// Output: P i <2N bits> | F i <k re im ...> | T i kept bound <keep flags> | A i j shift rev cost
+mod detmath;
+mod fourier;
+
+fn bits_of(s: str) -> f64 {
+    let mut n: u64 = 0;
+    for c in s.chars() {
+        let d = c as i64 - 48;
+        if d >= 0 && d <= 9 {
+            n = n * 10 + (d as u64);
+        }
+    }
+    f64::from_bits(n)
+}
+
+fn int_of(s: str) -> i64 {
+    let mut n: i64 = 0;
+    for c in s.chars() {
+        let d = c as i64 - 48;
+        if d >= 0 && d <= 9 {
+            n = n * 10 + d;
+        }
+    }
+    n
+}
+
+fn main() ~ Console + FileSystem + Environment {
+    let src = read_file(args_get(1));
+    let rx: Vec<Vec<f64>> = Vec::new();
+    let ry: Vec<Vec<f64>> = Vec::new();
+    let mut ci: i64 = 0;
+    for raw in src.split("\n") {
+        let tok: Vec<String> = Vec::new();
+        for t in raw.split(" ") {
+            if t != "" && t != "\r" {
+                tok.push(t);
+            }
+        }
+        if tok.len() == 0 {
+            continue;
+        }
+        if tok[0] == "C" {
+            let nn = int_of(tok[1]);
+            let kk = int_of(tok[2]);
+            let scale = bits_of(tok[3]);
+            let tol = bits_of(tok[4]);
+            let n = int_of(tok[5]);
+            let px: Vec<f64> = Vec::new();
+            let py: Vec<f64> = Vec::new();
+            let mut i: i64 = 0;
+            while i < n {
+                px.push(bits_of(tok[6 + 2 * i]));
+                py.push(bits_of(tok[7 + 2 * i]));
+                i = i + 1;
+            }
+            let ox: Vec<f64> = Vec::new();
+            let oy: Vec<f64> = Vec::new();
+            resample(px, py, nn, ox, oy);
+            let mut line = format!("P {}", ci);
+            i = 0;
+            while i < nn {
+                line = line + format!(" {} {}", ox[i].to_bits(), oy[i].to_bits());
+                i = i + 1;
+            }
+            println!("{}", line);
+            let ks: Vec<i64> = Vec::new();
+            let re: Vec<f64> = Vec::new();
+            let im: Vec<f64> = Vec::new();
+            dft(ox, oy, kk, ks, re, im);
+            line = format!("F {}", ci);
+            i = 0;
+            while i < ks.len() as i64 {
+                line = line + format!(" {} {} {}", ks[i], re[i].to_bits(), im[i].to_bits());
+                i = i + 1;
+            }
+            println!("{}", line);
+            let keep: Vec<i64> = Vec::new();
+            let bound = truncate(re, im, scale, tol, keep);
+            let mut kept: i64 = 0;
+            let mut flags = format!("");
+            i = 0;
+            while i < keep.len() as i64 {
+                kept = kept + keep[i];
+                flags = flags + format!("{}", keep[i]);
+                i = i + 1;
+            }
+            println!("T {} {} {} {}", ci, kept, bound.to_bits(), flags);
+            rx.push(ox);
+            ry.push(oy);
+            ci = ci + 1;
+        } else if tok[0] == "A" {
+            let a = int_of(tok[1]);
+            let b = int_of(tok[2]);
+            let out: Vec<f64> = Vec::new();
+            align(rx[a], ry[a], rx[b], ry[b], out);
+            println!("A {} {} {} {} {}", a, b, out[0] as i64, out[1] as i64, out[2].to_bits());
+        }
+    }
+}
