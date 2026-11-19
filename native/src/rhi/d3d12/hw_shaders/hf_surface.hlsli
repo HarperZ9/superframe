@@ -2,6 +2,7 @@
 #ifndef HF_SURFACE
 #define HF_SURFACE
 #include "hf_material.hlsli"
+#include "hf_character.hlsli"
 
 // interpolated vertex data of triangle `tri` at barycentrics b
 Vtx vtxAt(uint tri, float2 b) {
@@ -25,11 +26,12 @@ Surf surface(uint mi, Vtx v, float3 ng, float3 viewDir, float lod, float2 dx, fl
     const Mat m = Mats[mi];
     Surf s;
     s.p = v.p; s.ng = ng; s.n = v.n; s.c = v.c; s.uv = v.uv; s.kind = m.kind;
-    s.emis = 0.0f; s.ao = 1.0f; s.f0 = 0.04f; s.metal = 0.0f;
+    s.emis = 0.0f; s.ao = 1.0f; s.f0 = 0.04f; s.metal = 0.0f; s.tan = float3(1, 0, 0); s.sheen = 0.0f; s.thick = 1.0f;
     if (dot(s.ng, viewDir) > 0.0f) { s.ng = -s.ng; }
     if (dot(s.n, s.ng) < 0.0f) { s.n = -s.n; }
     const float3 T = normalize(v.t.xyz - s.n * dot(v.t.xyz, s.n) + 1e-6f);
     const float B = v.t.w < 0.0f ? -1.0f : 1.0f;
+    if (m.kind >= K_SKIN) return charSurface(s, m, v, T, B, viewDir, lod, dx, dy);
     if (m.kind == K_LAMP) {
         s.albedo = 0.6f; s.rough = 0.6f; s.emis = v.c.rgb * v.c.a * 5.0f;
         return s;
@@ -121,12 +123,30 @@ float3 specF0(Surf s) { return lerp(float3(s.f0, s.f0, s.f0), s.albedo, s.metal)
 float diffuseTerm(Surf s, float3 l) {
     const float nl = dot(s.n, l);
     if (s.kind == K_SNOW && on(F_SSS)) { const float w = 0.35f; return saturate((nl + w) / (1.0f + w)) / (1.0f + w) * step(0.0f, dot(s.ng, l) + 0.25f); }
+    if (s.kind == K_HAIR) { const float tl = dot(s.tan, l); return sqrt(saturate(1.0f - tl * tl)) * 0.3f * saturate(nl * 0.5f + 0.6f); }
+    if (s.kind == K_SKIN && on(F_SKINSSS)) {
+        // wrapped diffuse (the near-field scattering the screen blur cannot reach) and light through
+        // thin skin from behind (ears, nostrils, lids), by the baked thickness
+        const float w = 0.2f;
+        return saturate((nl + w) / (1.0f + w)) / (1.0f + w) * step(0.0f, dot(s.ng, l) + 0.2f) + 0.4f * exp(-s.thick * 7.0f) * saturate(-nl);
+    }
     return saturate(nl) * step(0.0f, dot(s.ng, l));
 }
 float3 specTerm(Surf s, float3 v, float3 l) {
+    if (s.kind == K_HAIR) return hairSpec(s, v, l);
     const float3 h = normalize(v + l);
     const float nl = saturate(dot(s.n, l)), nv = saturate(dot(s.n, v)) + 1e-4f, nh = saturate(dot(s.n, h)), a = max(s.rough * s.rough, 0.002f), a2 = a * a;
-    return D_ggx(a2, nh) * V_smith(a2, nv, nl) * F_schlick(specF0(s), dot(v, h)) * nl;
+    float3 r = D_ggx(a2, nh) * V_smith(a2, nv, nl) * F_schlick(specF0(s), dot(v, h)) * nl;
+    if (s.kind == K_SKIN) {   // a second, tighter lobe (the oily film over the rough horny layer)
+        const float b = a * 0.5f, b2 = b * b;
+        r = r * 0.85f + 0.15f * D_ggx(b2, nh) * V_smith(b2, nv, nl) * F_schlick(specF0(s), dot(v, h)) * nl;
+    }
+    if (s.kind == K_CLOTH && s.sheen > 0.0f) {   // Charlie sheen with the Neubelt visibility
+        const float sa = 0.45f, sin2 = max(1.0f - nh * nh, 1e-4f);
+        const float Dc = (2.0f + 1.0f / sa) * pow(sin2, 0.5f / sa) / (2.0f * PI), Vc = 1.0f / max(4.0f * (nl + nv - nl * nv), 1e-4f);
+        r += s.sheen * sqrt(max(s.albedo, 0.0f)) * Dc * Vc * nl;
+    }
+    return r;
 }
 // a split-sum style estimate of the specular albedo, used to demodulate reflections
 float3 specAlbedo(Surf s, float3 v) {

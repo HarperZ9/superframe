@@ -1,6 +1,8 @@
 // lw_frame: the Low Water hero frame on D3D12 with DXR (raw/rhi/hw_frame.hpp).
 //   lw_frame --data DIR --view NAME --assets ROOT --hdr FILE --out DIR [--size WxH] [--frames N]
-//            [--spp N] [--jobs main,close,off,reference,walk]
+//            [--spp N] [--jobs main,close,off,reference,walk] [--chars LIST]
+// --chars places the hero characters (lwframe.hpp loadCharacters) and adds the jobs street,
+// portrait, charref, turn, cwalk and parity (lwframe_shots.cpp).
 // DIR holds NAME.glb and NAME.frame.json from games/low-water/world/walk/build/hero/emit.mjs;
 // ROOT holds the cc0-ambientcg-* and cc0-polyhaven-* folders. Writes PNG stills and frame.json
 // with each pass's GPU time (median of the last 16 frames), the memory counts and what ran.
@@ -19,7 +21,7 @@
 using namespace raw;
 
 namespace {
-struct Args { std::string data, view = "hoarstead-main-street", assets = "H:", hdr, out, jobs = "main,close,off,reference,walk", disable; uint32_t debug = 0, w = 3840, h = 2160, frames = 64, spp = 1024; float ev = 0; };
+struct Args { std::string data, view = "hoarstead-main-street", assets = "H:", hdr, out, jobs = "main,close,off,reference,walk", disable, chars; uint32_t debug = 0, w = 3840, h = 2160, frames = 64, spp = 1024; float ev = 0; };
 bool has(const std::string& list, const char* j){ std::stringstream s(list); std::string t; while (std::getline(s, t, ',')) if (t == j) return true; return false; }
 std::string passesJson(const rhi::hw::FrameResult& r){
     std::string s = "[";
@@ -48,7 +50,7 @@ int main(int argc, char** argv){
         if (k == "--data") a.data = v; else if (k == "--view") a.view = v; else if (k == "--assets") a.assets = v; else if (k == "--hdr") a.hdr = v;
         else if (k == "--out") a.out = v; else if (k == "--jobs") a.jobs = v; else if (k == "--frames") a.frames = uint32_t(std::stoul(v));
         else if (k == "--ev") a.ev = std::stof(v); else if (k == "--disable") a.disable = v; else if (k == "--debug") a.debug = uint32_t(std::stoul(v));
-        else if (k == "--spp") a.spp = uint32_t(std::stoul(v)); else if (k == "--size") std::sscanf(v.c_str(), "%ux%u", &a.w, &a.h);
+        else if (k == "--spp") a.spp = uint32_t(std::stoul(v)); else if (k == "--chars") a.chars = v; else if (k == "--size") std::sscanf(v.c_str(), "%ux%u", &a.w, &a.h);
         else { std::fprintf(stderr, "lw_frame: unknown option %s\n", k.c_str()); return 2; }
     }
     if (a.data.empty() || a.out.empty() || a.hdr.empty()){ std::fprintf(stderr, "usage: lw_frame --data DIR --hdr FILE --out DIR [--view NAME] [--assets ROOT]\n"); return 2; }
@@ -60,6 +62,9 @@ int main(int argc, char** argv){
     const auto t0 = std::chrono::steady_clock::now();
     rhi::hw::FrameScene scene; lwframe::Cameras cams;
     if (!lwframe::loadScene(a.data + "/" + a.view + ".glb", a.data + "/" + a.view + ".frame.json", a.assets, a.hdr, scene, cams, err)){ std::fprintf(stderr, "%s\n", err.c_str()); return 1; }
+    lwframe::Cast cast;
+    if (!a.chars.empty() && !lwframe::loadCharacters(a.chars, a.assets, scene, cast, err)){ std::fprintf(stderr, "%s\n", err.c_str()); return 1; }
+    for (const auto& p : cast.people) std::printf("person %s lod%u: %u triangles, %u vertices, %zu joints, at (%.2f, %.2f, %.2f)\n", p.id.c_str(), p.lod, p.triangles, p.vertexCount, p.sk.joints.size(), p.x, p.y, p.z);
     const double loadS = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
     std::printf("scene: %zu triangles, %zu vertices, %zu lights, %zu textures, loaded in %.1f s\n", scene.indices.size() / 3, scene.vertices.size(), scene.lights.size(), scene.textures.size(), loadS);
     auto R = rhi::hw::FrameRenderer::create(*dev, scene, a.w, a.h, err);
@@ -75,6 +80,12 @@ int main(int argc, char** argv){
         if (!r.ran){ std::fprintf(stderr, "lw_frame: %s: %s\n", name, r.error.c_str()); return false; }
         return save(a, name, r, log);
     };
+    if (!cast.people.empty()){
+        std::vector<float> pal; std::vector<std::pair<int, rhi::hw::FrameLight>> lights;
+        lwframe::castFrame(cast, 0.4, pal, lights); R->setJoints(pal, true);
+        for (auto& [i, l] : lights) R->setLights(uint32_t(i), {l});
+        if (!lwframe::characterShots(*R, cast, base, a.jobs, a.out, [&](const char* n, const rhi::hw::FrameResult& r){ return save(a, n, r, log); }, log)) return 1;
+    }
     if (has(a.jobs, "main") && !run("native-main", cams.main, base)) return 1;
     if (has(a.jobs, "close") && cams.hasClose && !run("native-close", cams.close, base)) return 1;
     if (has(a.jobs, "off")){
@@ -108,9 +119,9 @@ int main(int argc, char** argv){
     // memory and scene counts, from the last renderer state
     rhi::hw::FrameOptions o = base; o.frames = 1;
     const rhi::hw::FrameResult r = R->render(cams.main, o);
-    char b[512];
-    std::snprintf(b, sizeof b, "%s\"counts\":{\"triangles\":%llu,\"vertices\":%zu,\"lights\":%zu,\"blas_bytes\":%llu,\"tlas_bytes\":%llu,\"texture_bytes\":%llu,\"target_bytes\":%llu,\"as_build_ms\":%.3f,\"scene_load_s\":%.2f,\"width\":%u,\"height\":%u,\"frames\":%u,\"reference_spp\":%u,\"adapter\":\"%s\"}}",
-        log.size() > 1 ? "," : "", (unsigned long long)r.triangles, scene.vertices.size(), scene.lights.size(), (unsigned long long)r.blasBytes, (unsigned long long)r.tlasBytes,
+    char b[640];
+    std::snprintf(b, sizeof b, "%s\"counts\":{\"skinned_blas_bytes\":%llu,\"triangles\":%llu,\"vertices\":%zu,\"lights\":%zu,\"blas_bytes\":%llu,\"tlas_bytes\":%llu,\"texture_bytes\":%llu,\"target_bytes\":%llu,\"as_build_ms\":%.3f,\"scene_load_s\":%.2f,\"width\":%u,\"height\":%u,\"frames\":%u,\"reference_spp\":%u,\"adapter\":\"%s\"}}",
+        log.size() > 1 ? "," : "", (unsigned long long)r.skinBlasBytes, (unsigned long long)r.triangles, scene.vertices.size(), scene.lights.size(), (unsigned long long)r.blasBytes, (unsigned long long)r.tlasBytes,
         (unsigned long long)r.textureBytes, (unsigned long long)r.targetBytes, r.buildMs, loadS, a.w, a.h, a.frames, a.spp, dev->adapter().description.c_str());
     log += b;
     std::ofstream(a.out + "/frame.json") << log << "\n";

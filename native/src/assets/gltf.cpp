@@ -159,6 +159,18 @@ void addPrimitive(const Doc& d, const Json& prim, const M4& world, const std::st
     optional("TEXCOORD_0", 2, m.uv);
     optional("TANGENT", 4, m.tangents);
     optional("COLOR_0", 4, m.colors);
+    // skinning: JOINTS_0 as unsigned bytes or shorts, WEIGHTS_0 as floats, four a vertex
+    if (const Json* jj = attrs->get("JOINTS_0")){
+        const View v = accessor(d, jj->integer("JOINTS_0", 0, 1 << 30));
+        if (v.comps != 4 || (v.type != 5121 && v.type != 5123) || std::size_t(v.count) != nv) fail("JOINTS_0 must be four unsigned bytes or shorts a vertex");
+        m.joints.resize(nv * 4);
+        for (std::size_t i = 0; i < nv; ++i) for (int k = 0; k < 4; ++k){
+            const std::uint8_t* q = v.base + std::int64_t(i) * v.stride + (v.type == 5121 ? k : k * 2);
+            m.joints[i * 4 + std::size_t(k)] = v.type == 5121 ? q[0] : std::uint16_t(q[0] | q[1] << 8);
+        }
+        optional("WEIGHTS_0", 4, m.weights);
+        if (m.weights.empty()) fail("JOINTS_0 without WEIGHTS_0");
+    }
     if (const Json* mi = prim.get("material")){
         const Json& mat = d.item("materials", mi->integer("material", 0, 1 << 30));
         if (const Json* mn = mat.get("name")) if (mn->is(Json::Kind::String)) m.material = mn->s.substr(0, 256);

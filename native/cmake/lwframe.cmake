@@ -24,7 +24,8 @@ set(hfentries
     "hf_temporal|hf_denoise|cs_6_5|-DMODE=0|main" "hf_atrous|hf_denoise|cs_6_5|-DMODE=1|main"
     "hf_composite|hf_post|cs_6_5|-DMODE=0|main" "hf_taa|hf_post|cs_6_5|-DMODE=1|main" "hf_bloom_down|hf_post|cs_6_5|-DMODE=2|main"
     "hf_bloom_up|hf_post|cs_6_5|-DMODE=3|main" "hf_tonemap|hf_post|cs_6_5|-DMODE=4|main" "hf_pt_resolve|hf_post|cs_6_5|-DMODE=5|main"
-    "hf_snow_vs|hf_snow|vs_6_5||vs" "hf_snow_ps|hf_snow|ps_6_5||ps" "hf_pt|hf_pt|cs_6_5||main")
+    "hf_snow_vs|hf_snow|vs_6_5||vs" "hf_snow_ps|hf_snow|ps_6_5||ps" "hf_pt|hf_pt|cs_6_5||main"
+    "hf_skin|hf_skin|cs_6_5||main" "hf_sss_h|hf_sss|cs_6_5|-DMODE=0|main" "hf_sss_v|hf_sss|cs_6_5|-DMODE=1|main")
 set(hfheaders "")
 set(hfinc "")
 set(hftable "")
@@ -55,7 +56,7 @@ add_library(raw_native_hf STATIC src/rhi/d3d12/hf_device.cpp src/rhi/d3d12/hf_ta
 target_include_directories(raw_native_hf PRIVATE "${hfgen}" "${CMAKE_CURRENT_SOURCE_DIR}/src/rhi/d3d12")
 target_link_libraries(raw_native_hf PUBLIC raw_native_d3d12)
 set(lwfdir "${CMAKE_CURRENT_SOURCE_DIR}/src/tools/lwframe")
-add_executable(lw_frame app/lw_frame.cpp "${lwfdir}/lwframe_scene.cpp" "${lwfdir}/lwframe_materials.cpp" "${lwfdir}/lwframe_sky.cpp" "${lwfdir}/lwframe_bc7.cpp"
+add_executable(lw_frame app/lw_frame.cpp "${lwfdir}/lwframe_scene.cpp" "${lwfdir}/lwframe_materials.cpp" "${lwfdir}/lwframe_sky.cpp" "${lwfdir}/lwframe_bc7.cpp" "${lwfdir}/lwframe_chars.cpp" "${lwfdir}/lwframe_shots.cpp"
     src/platform/win32/image_codec_win32.cpp)
 target_include_directories(lw_frame PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(lw_frame PRIVATE raw_native_hf windowscodecs ole32)

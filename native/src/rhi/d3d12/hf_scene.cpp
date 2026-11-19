@@ -7,9 +7,9 @@
 namespace raw::rhi::d3d12::hf {
 namespace {
 // copy bytes into a new DEFAULT-heap buffer through an upload buffer kept until `keep` is cleared
-bool upload(Ctx& c, const void* data, uint64_t bytes, ComPtr<ID3D12Resource>& out, std::vector<ComPtr<ID3D12Resource>>& keep, std::string& err){
+bool upload(Ctx& c, const void* data, uint64_t bytes, ComPtr<ID3D12Resource>& out, std::vector<ComPtr<ID3D12Resource>>& keep, std::string& err, bool uav = false){
     ComPtr<ID3D12Resource> stage;
-    if (!c.q.uploadBuffer(data, bytes, stage, err) || !defaultBuffer(c, bytes, out, err, false)) return false;
+    if (!c.q.uploadBuffer(data, bytes, stage, err) || !defaultBuffer(c, bytes, out, err, uav)) return false;
     D3D12_RESOURCE_BARRIER b{}; b.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION; b.Transition.pResource = out.Get();
     b.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON; b.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST; b.Transition.Subresource = 0;
     c.cl->ResourceBarrier(1, &b);
@@ -63,10 +63,24 @@ bool uploadScene(Ctx& c, const hw::FrameScene& s, std::string& err){
     c.triangles = uint32_t(s.indices.size() / 3); c.lightCount = uint32_t(s.lights.size());
     std::vector<hw::FrameLight> lights = s.lights;
     if (lights.empty()) lights.push_back({});
-    if (!upload(c, s.vertices.data(), s.vertices.size() * sizeof(hw::FrameVertex), c.verts, keep, err) ||
+    c.vertCount = uint32_t(s.vertices.size());
+    c.skinCount = uint32_t(s.skin.size()); c.skinFirstVertex = s.skinFirstVertex; c.skinFirstIndex = s.skinFirstIndex; c.joints = s.joints;
+    c.skinRayEnd = s.skinRayIndexEnd ? s.skinRayIndexEnd : uint32_t(s.indices.size());
+    // the lights stay in an upload heap, mapped, so a lantern can move with its hand (setLights)
+    if (!c.q.uploadBuffer(lights.data(), lights.size() * sizeof(hw::FrameLight), c.lights, err)) return false;
+    if (FAILED(c.lights->Map(0, nullptr, &c.lightsMap))){ err = "hero frame: cannot map the lights"; return false; }
+    if (!upload(c, s.vertices.data(), s.vertices.size() * sizeof(hw::FrameVertex), c.verts, keep, err, c.skinCount > 0) ||
         !upload(c, s.indices.data(), s.indices.size() * 4, c.idx, keep, err) || !upload(c, s.triMaterial.data(), s.triMaterial.size() * 4, c.triMat, keep, err) ||
-        !upload(c, s.materials.data(), s.materials.size() * sizeof(hw::FrameMaterial), c.mats, keep, err) ||
-        !upload(c, lights.data(), lights.size() * sizeof(hw::FrameLight), c.lights, keep, err)) return false;
+        !upload(c, s.materials.data(), s.materials.size() * sizeof(hw::FrameMaterial), c.mats, keep, err)) return false;
+    if (c.skinCount){
+        std::vector<float> pal(size_t(std::max(1u, c.joints)) * 12, 0.0f);
+        for (uint32_t j = 0; j < c.joints; ++j){ pal[j * 12] = pal[j * 12 + 5] = pal[j * 12 + 10] = 1.0f; }
+        if (!upload(c, s.skin.data(), s.skin.size() * sizeof(hw::FrameSkinVertex), c.skinV, keep, err) || !c.q.uploadBuffer(pal.data(), pal.size() * 4, c.palette, err) ||
+            !defaultBuffer(c, uint64_t(c.skinCount) * 16, c.prevP, err, true)) return false;
+        if (FAILED(c.palette->Map(0, nullptr, &c.paletteMap))){ err = "hero frame: cannot map the joint palette"; return false; }
+        D3D12_RESOURCE_BARRIER pb{}; pb.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION; pb.Transition.pResource = c.prevP.Get();
+        pb.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON; pb.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS; c.cl->ResourceBarrier(1, &pb);
+    }
     std::vector<std::array<float, 4>> smoke = s.smoke;
     c.smokeCount = uint32_t(smoke.size());
     if (smoke.empty()) smoke.push_back({0, -1e9f, 0, 0});
@@ -90,16 +104,29 @@ bool uploadScene(Ctx& c, const hw::FrameScene& s, std::string& err){
     D3D12_RAYTRACING_GEOMETRY_DESC g{}; g.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES; g.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
     g.Triangles.VertexBuffer = {c.verts->GetGPUVirtualAddress(), sizeof(hw::FrameVertex)}; g.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
     g.Triangles.VertexCount = UINT(s.vertices.size()); g.Triangles.IndexBuffer = c.idx->GetGPUVirtualAddress(); g.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
-    g.Triangles.IndexCount = UINT(s.indices.size());
+    g.Triangles.IndexCount = UINT(c.skinCount ? s.skinFirstIndex : s.indices.size());
     D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS bi{}; bi.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
     bi.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE; bi.NumDescs = 1; bi.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY; bi.pGeometryDescs = &g;
     D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO pb{}; c.dev->GetRaytracingAccelerationStructurePrebuildInfo(&bi, &pb);
-    D3D12_RAYTRACING_INSTANCE_DESC inst{}; inst.Transform[0][0] = inst.Transform[1][1] = inst.Transform[2][2] = 1.0f; inst.InstanceMask = 0xFF;
-    D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS ti{}; ti.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL; ti.NumDescs = 1;
+    D3D12_RAYTRACING_INSTANCE_DESC inst[2]{}; for (auto& in : inst){ in.Transform[0][0] = in.Transform[1][1] = in.Transform[2][2] = 1.0f; in.InstanceMask = 0xFF; }
+    // the skinned triangles: their own BLAS, built to be refit; its instance's ID is the index of its
+    // first triangle, so hf_common.hlsli trace() turns a hit into a scene triangle by adding them
+    D3D12_RAYTRACING_GEOMETRY_DESC gd = g;
+    gd.Triangles.IndexBuffer = c.idx->GetGPUVirtualAddress() + uint64_t(s.skinFirstIndex) * 4; gd.Triangles.IndexCount = UINT(c.skinRayEnd - s.skinFirstIndex);
+    D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS di{}; di.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
+    di.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE | D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE; di.NumDescs = 1; di.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY; di.pGeometryDescs = &gd;
+    if (c.skinCount){
+        D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO dp{}; c.dev->GetRaytracingAccelerationStructurePrebuildInfo(&di, &dp);
+        if (!accelBuffer(c, dp.ResultDataMaxSizeInBytes, c.blasDyn, err) || !defaultBuffer(c, std::max(dp.ScratchDataSizeInBytes, dp.UpdateScratchDataSizeInBytes), c.scratchDyn, err)) return false;
+        c.blasDynBytes = dp.ResultDataMaxSizeInBytes;
+        D3D12_RESOURCE_BARRIER sb2{}; sb2.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION; sb2.Transition.pResource = c.scratchDyn.Get();
+        sb2.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON; sb2.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS; c.cl->ResourceBarrier(1, &sb2);
+    }
+    D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS ti{}; ti.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL; ti.NumDescs = c.skinCount ? 2 : 1;
     ti.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY; ti.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
     D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO tp{}; c.dev->GetRaytracingAccelerationStructurePrebuildInfo(&ti, &tp);
     if (!accelBuffer(c, pb.ResultDataMaxSizeInBytes, c.blas, err) || !accelBuffer(c, tp.ResultDataMaxSizeInBytes, c.tlas, err) ||
-        !defaultBuffer(c, std::max(pb.ScratchDataSizeInBytes, tp.ScratchDataSizeInBytes), c.scratch, err) || !c.q.uploadBuffer(&inst, sizeof inst, c.inst, err)) return false;
+        !defaultBuffer(c, std::max(pb.ScratchDataSizeInBytes, tp.ScratchDataSizeInBytes), c.scratch, err) || !c.q.uploadBuffer(inst, sizeof inst, c.inst, err)) return false;
     c.blasBytes = pb.ResultDataMaxSizeInBytes; c.tlasBytes = tp.ResultDataMaxSizeInBytes;
     D3D12_RESOURCE_BARRIER sb{}; sb.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION; sb.Transition.pResource = c.scratch.Get();
     sb.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON; sb.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS; sb.Transition.Subresource = 0;
@@ -111,8 +138,14 @@ bool uploadScene(Ctx& c, const hw::FrameScene& s, std::string& err){
     c.cl->BuildRaytracingAccelerationStructure(&bd, 0, nullptr);
     D3D12_RESOURCE_BARRIER ub{}; ub.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV; ub.UAV.pResource = nullptr;   // the scratch is shared by both builds
     c.cl->ResourceBarrier(1, &ub);
-    inst.AccelerationStructure = c.blas->GetGPUVirtualAddress();
-    void* p = nullptr; c.inst->Map(0, nullptr, &p); std::memcpy(p, &inst, sizeof inst); c.inst->Unmap(0, nullptr);
+    inst[0].AccelerationStructure = c.blas->GetGPUVirtualAddress();
+    if (c.skinCount){
+        D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC dd{}; dd.Inputs = di; dd.DestAccelerationStructureData = c.blasDyn->GetGPUVirtualAddress(); dd.ScratchAccelerationStructureData = c.scratchDyn->GetGPUVirtualAddress();
+        c.cl->BuildRaytracingAccelerationStructure(&dd, 0, nullptr);
+        D3D12_RESOURCE_BARRIER db{}; db.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV; db.UAV.pResource = c.blasDyn.Get(); c.cl->ResourceBarrier(1, &db);
+        inst[1].AccelerationStructure = c.blasDyn->GetGPUVirtualAddress(); inst[1].InstanceID = s.skinFirstIndex / 3;
+    }
+    void* p = nullptr; c.inst->Map(0, nullptr, &p); std::memcpy(p, inst, sizeof inst); c.inst->Unmap(0, nullptr);
     ti.InstanceDescs = c.inst->GetGPUVirtualAddress();
     D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC td{}; td.Inputs = ti; td.DestAccelerationStructureData = c.tlas->GetGPUVirtualAddress(); td.ScratchAccelerationStructureData = c.scratch->GetGPUVirtualAddress();
     c.cl->BuildRaytracingAccelerationStructure(&td, 0, nullptr);
@@ -123,4 +156,40 @@ bool uploadScene(Ctx& c, const hw::FrameScene& s, std::string& err){
     return true;
 }
 
+// The skin pass (hf_skin.hlsl: linear-blend skinning of the bind-pose vertices by the palette into
+// the vertex buffer, last frame's positions kept for motion vectors), then the skinned BLAS refit
+// (or rebuilt when asked) and the TLAS rebuilt over both instances.
+void recordSkin(Ctx& c, Recorded* r){
+    if (!c.skinCount || !c.skinPending) return;
+    D3D12_RESOURCE_BARRIER b{}; b.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION; b.Transition.pResource = c.verts.Get();
+    b.Transition.StateBefore = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE; b.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+    c.cl->ResourceBarrier(1, &b);
+    bindCommon(c, false);
+    const uint32_t pc[16] = {c.skinCount, c.skinFirstVertex, c.skinEver ? 0u : 1u};
+    dispatch(c, "hf_skin", (c.skinCount + 63) / 64, 1, 1, pc);
+    std::swap(b.Transition.StateBefore, b.Transition.StateAfter);
+    c.cl->ResourceBarrier(1, &b);
+    uavBarrier(c);
+    if (r){ c.q.timestamp(r->stamps++); r->names.push_back("skin"); }
+    D3D12_RAYTRACING_GEOMETRY_DESC g{}; g.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES; g.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
+    g.Triangles.VertexBuffer = {c.verts->GetGPUVirtualAddress(), sizeof(hw::FrameVertex)}; g.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT; g.Triangles.VertexCount = c.vertCount;
+    g.Triangles.IndexBuffer = c.idx->GetGPUVirtualAddress() + uint64_t(c.skinFirstIndex) * 4; g.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT; g.Triangles.IndexCount = c.skinRayEnd - c.skinFirstIndex;
+    D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC d{};
+    d.Inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL; d.Inputs.NumDescs = 1; d.Inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY; d.Inputs.pGeometryDescs = &g;
+    d.Inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE | D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+    if (!c.skinRebuild){ d.Inputs.Flags |= D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE; d.SourceAccelerationStructureData = c.blasDyn->GetGPUVirtualAddress(); }
+    d.DestAccelerationStructureData = c.blasDyn->GetGPUVirtualAddress(); d.ScratchAccelerationStructureData = c.scratchDyn->GetGPUVirtualAddress();
+    c.cl->BuildRaytracingAccelerationStructure(&d, 0, nullptr);
+    D3D12_RESOURCE_BARRIER ub{}; ub.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV; ub.UAV.pResource = c.blasDyn.Get(); c.cl->ResourceBarrier(1, &ub);
+    D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC t{};
+    t.Inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL; t.Inputs.NumDescs = 2; t.Inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
+    t.Inputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE; t.Inputs.InstanceDescs = c.inst->GetGPUVirtualAddress();
+    t.DestAccelerationStructureData = c.tlas->GetGPUVirtualAddress(); t.ScratchAccelerationStructureData = c.scratch->GetGPUVirtualAddress();
+    c.cl->BuildRaytracingAccelerationStructure(&t, 0, nullptr);
+    ub.UAV.pResource = c.tlas.Get(); c.cl->ResourceBarrier(1, &ub);
+    if (r){ c.q.timestamp(r->stamps++); r->names.push_back(c.skinRebuild ? "blas_build" : "blas_refit"); }
+    c.skinPending = false; c.skinEver = true; c.skinRebuild = false;
+}
+
 }  // namespace raw::rhi::d3d12::hf
+

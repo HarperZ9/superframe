@@ -50,6 +50,10 @@ bool rootSignatures(Ctx& c, std::string& err){
     D3D12_ROOT_PARAMETER t1{}; t1.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; t1.DescriptorTable = {1, &tex}; t1.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
     D3D12_ROOT_PARAMETER t2 = t1; t2.DescriptorTable = {1, &uav};
     p.push_back(t1); p.push_back(t2);
+    // skinning: last frame's positions (t7), the vertex buffer and those positions written (u40,
+    // u41), the bind-pose skinned vertices (t8) and the joint palette (t9)
+    p.push_back(rootDesc(D3D12_ROOT_PARAMETER_TYPE_SRV, 7)); p.push_back(rootDesc(D3D12_ROOT_PARAMETER_TYPE_UAV, 40)); p.push_back(rootDesc(D3D12_ROOT_PARAMETER_TYPE_UAV, 41));
+    p.push_back(rootDesc(D3D12_ROOT_PARAMETER_TYPE_SRV, 8)); p.push_back(rootDesc(D3D12_ROOT_PARAMETER_TYPE_SRV, 9));
     D3D12_STATIC_SAMPLER_DESC s[2]{};
     for (int i = 0; i < 2; ++i){
         s[i].Filter = i == 0 ? D3D12_FILTER_ANISOTROPIC : D3D12_FILTER_MIN_MAG_MIP_LINEAR; s[i].MaxAnisotropy = 16;
@@ -103,7 +107,7 @@ bool raster(Ctx& c, const char* vs, const char* ps, bool snow, ComPtr<ID3D12Pipe
 bool pipelines(Ctx& c, std::string& err){
     static const char* kCompute[] = {"hf_cluster", "hf_gtao_pack", "hf_gtao_unpack", "hf_direct_initial", "hf_direct_shade", "hf_gi", "hf_reflect",
         "hf_fog_inject", "hf_fog_integrate", "hf_temporal", "hf_atrous", "hf_composite", "hf_taa", "hf_bloom_down", "hf_bloom_up",
-        "hf_tonemap", "hf_pt_resolve", "hf_pt"};
+        "hf_tonemap", "hf_pt_resolve", "hf_pt", "hf_skin", "hf_sss_h", "hf_sss_v"};
     for (const char* n : kCompute) if (!compute(c, n, c.rs.Get(), c.pso[n], err)) return false;
     for (const char* n : {"hf_gtao_fpack", "hf_gtao_fmain", "hf_gtao_fblur"}) if (!compute(c, n, c.gtaoRs.Get(), c.pso[n], err)) return false;
     return

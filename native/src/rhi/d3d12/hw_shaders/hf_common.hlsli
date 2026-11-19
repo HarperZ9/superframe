@@ -17,7 +17,8 @@ struct Frame {
     uint4 counts;            // frame index, flags (F_*), the sky's bindless index, path-traced samples so far
     float4 timeParams;       // seconds, snow fall speed, wind x, wind z
     float4 fwd;              // camera forward xyz, w aspect
-    uint4 dbg;               // x: debug view (0 the frame, 1 GI irradiance, 2 direct irradiance, 3 albedo)
+    uint4 dbg;               // x: debug view (0 the frame, 1 GI irradiance, 2 direct irradiance, 3 albedo); y smoke plumes;
+                             // z the first skinned vertex (~0 none); w: the skinned vertices' last positions are valid
 };
 ConstantBuffer<Frame> F : register(b0);
 struct PassC { uint4 a; float4 b; uint4 c; float4 d; };
@@ -25,7 +26,7 @@ ConstantBuffer<PassC> PC : register(b1);
 
 // flags in F.counts.y
 static const uint F_GI = 1u, F_REFLECT = 2u, F_GTAO = 4u, F_FOG = 8u, F_RESTIR = 16u, F_SNOW = 32u, F_TAA = 64u,
-                  F_GLINT = 128u, F_SSS = 256u, F_SHADOW = 512u, F_POM = 1024u, F_BLOOM = 2048u, F_RESET = 4096u;
+                  F_GLINT = 128u, F_SSS = 256u, F_SHADOW = 512u, F_POM = 1024u, F_BLOOM = 2048u, F_RESET = 4096u, F_SKINSSS = 8192u;
 bool on(uint f) { return (F.counts.y & f) != 0u; }
 
 struct Vtx { float3 p; float3 n; float4 t; float2 uv; float4 c; };
@@ -33,6 +34,8 @@ struct Mat { int texA; int texB; float uvScale; float heightScale; float3 tint; 
 struct Light { float3 p; float radius; float3 col; float power; float3 aim; float cone; };
 // material kinds
 static const uint K_OPAQUE = 0u, K_SNOW = 1u, K_GROUND = 2u, K_GLASS = 3u, K_ICE = 4u, K_LAMP = 5u, K_SIGN = 6u, K_LOGEND = 7u;
+// the characters' kinds (hf_surface.hlsli): skin, cloth and leather (with sheen), eyes, hair strands
+static const uint K_SKIN = 8u, K_CLOTH = 9u, K_EYE = 10u, K_HAIR = 11u;
 
 RaytracingAccelerationStructure Scene : register(t0);
 StructuredBuffer<Vtx> Verts : register(t1);
@@ -156,7 +159,7 @@ Hit trace(float3 o, float3 d, float tmax) {
     q.TraceRayInline(Scene, 0, 0xFF, r);
     q.Proceed();
     Hit h; h.hit = q.CommittedStatus() == COMMITTED_TRIANGLE_HIT;
-    h.t = h.hit ? q.CommittedRayT() : tmax; h.tri = h.hit ? q.CommittedPrimitiveIndex() : 0u; h.bary = h.hit ? q.CommittedTriangleBarycentrics() : 0.0f;
+    h.t = h.hit ? q.CommittedRayT() : tmax; h.tri = h.hit ? q.CommittedInstanceID() + q.CommittedPrimitiveIndex() : 0u; h.bary = h.hit ? q.CommittedTriangleBarycentrics() : 0.0f;
     return h;
 }
 float3 offsetRay(float3 p, float3 n) { return p + n * (0.004f + 0.0006f * length(p - F.eye.xyz)); }

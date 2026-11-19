@@ -80,5 +80,24 @@ int main(){
     CHECK(refuses(cyc));                                        // a node that is its own child
     std::string deep(200, '['); deep += std::string(200, ']');
     CHECK(refuses(deep));                                       // nesting limit
+    // skinning attributes: JOINTS_0 as unsigned shorts and WEIGHTS_0 as floats, four a vertex
+    {
+        std::vector<std::uint8_t> b = triangleBuffer();          // 44 bytes: positions, indices, pad
+        for (int v = 0; v < 3; ++v) for (std::uint16_t j : {std::uint16_t(v), std::uint16_t(7), std::uint16_t(0), std::uint16_t(0)}) put(b, j);   // 24 bytes at 44
+        for (int v = 0; v < 3; ++v) for (float w : {0.75f, 0.25f, 0.f, 0.f}) put(b, w);                  // 48 bytes at 68
+        auto doc = [&](const char* jointsType){
+            return std::string(R"({"asset":{"version":"2.0"},"scene":0,"scenes":[{"nodes":[0]}],"nodes":[{"mesh":0}],)") +
+                R"("meshes":[{"primitives":[{"attributes":{"POSITION":0,"JOINTS_0":2,"WEIGHTS_0":3},"indices":1}]}],)" +
+                R"("accessors":[{"bufferView":0,"componentType":5126,"count":3,"type":"VEC3"},{"bufferView":1,"componentType":5123,"count":3,"type":"SCALAR"},)" +
+                R"({"bufferView":2,"componentType":)" + std::string(jointsType) + R"(,"count":3,"type":"VEC4"},{"bufferView":3,"componentType":5126,"count":3,"type":"VEC4"}],)" +
+                R"("bufferViews":[{"buffer":0,"byteOffset":0,"byteLength":36},{"buffer":0,"byteOffset":36,"byteLength":6},{"buffer":0,"byteOffset":44,"byteLength":24},{"buffer":0,"byteOffset":68,"byteLength":48}],)" +
+                R"("buffers":[{"byteLength":116,"uri":"data:application/octet-stream;base64,)" + b64(b) + "\"}]}";
+        };
+        const GltfModel sk = load(doc("5123"));
+        CHECK(sk.meshes.size() == 1 && sk.meshes[0].joints.size() == 12 && sk.meshes[0].weights.size() == 12);
+        CHECK(sk.meshes[0].joints[4] == 1 && sk.meshes[0].joints[5] == 7);
+        CHECK_NEAR(sk.meshes[0].weights[1], 0.25, 1e-6);
+        CHECK(refuses(doc("5126")));                            // joints must be unsigned integers
+    }
     return raw_test_summary();
 }

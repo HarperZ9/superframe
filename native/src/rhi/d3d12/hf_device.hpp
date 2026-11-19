@@ -41,6 +41,14 @@ struct Ctx {
     // scene
     ComPtr<ID3D12Resource> verts, idx, triMat, mats, lights, smoke, blas, tlas, inst, scratch;
     std::vector<ComPtr<ID3D12Resource>> textures;
+    // skinning (hf_scene.cpp): bind-pose vertices, the palette (upload heap, mapped), last frame's
+    // positions, the skinned triangles' own BLAS (refit each frame) and a two-instance TLAS
+    ComPtr<ID3D12Resource> skinV, palette, prevP, blasDyn, scratchDyn, instDyn;
+    uint32_t skinCount{0}, skinFirstVertex{0}, skinFirstIndex{0}, joints{0}, vertCount{0}, skinRayEnd{0};
+    uint64_t blasDynBytes{0};
+    bool skinPending{false}, skinRebuild{true}, skinEver{false};
+    void* paletteMap{nullptr};
+    void* lightsMap{nullptr};
     uint32_t texCount{0}, skyIndex{0}, triangles{0}, lightCount{0}, smokeCount{0};
     // targets by u slot, then depth, and the plain buffers
     std::vector<Target> uav;
@@ -72,5 +80,7 @@ void dispatch(Ctx& c, const char* pso, uint32_t gx, uint32_t gy, uint32_t gz = 1
 void recordFrame(Ctx& c, const hw::FrameOptions& o, Recorded& r);
 void recordReference(Ctx& c, const hw::FrameOptions& o, uint32_t first, uint32_t spp, uint32_t row0, uint32_t rows, Recorded& r);
 void recordPost(Ctx& c, const hw::FrameOptions& o, Recorded& r, uint32_t taaN);
+// the skin pass and the acceleration-structure update, when a new palette waits (hf_scene.cpp)
+void recordSkin(Ctx& c, Recorded* r);
 
 }  // namespace raw::rhi::d3d12::hf

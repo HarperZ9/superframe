@@ -23,6 +23,9 @@ struct GltfMesh {
     // TANGENT (4: xyz in world space, w the handedness) and COLOR_0 (4, float RGBA only).
     std::vector<float> uv, tangents, colors;
     std::string material;                        // the material's name, if it has one
+    // JOINTS_0 and WEIGHTS_0 (four a vertex), empty without a skin; positions stay in the bind pose
+    std::vector<std::uint16_t> joints;
+    std::vector<float> weights;
 };
 
 struct GltfModel {

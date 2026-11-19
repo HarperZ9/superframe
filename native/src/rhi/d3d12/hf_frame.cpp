@@ -76,6 +76,9 @@ public:
         f.counts[0] = frame; f.counts[1] = fl; f.counts[2] = c.skyIndex; f.counts[3] = ptCount;
         f.timeParams[0] = o.time; f.timeParams[1] = 1.1f; f.timeParams[2] = 0.35f; f.timeParams[3] = 0.15f;
         f.dbg[0] = o.debugView; f.dbg[1] = c.smokeCount;
+        // skinned vertices from dbg.z; dbg.w: this frame skins, so their last positions are valid motion
+        f.dbg[2] = c.skinCount ? c.skinFirstVertex : 0xFFFFFFFFu; f.dbg[3] = c.skinPending && c.skinEver && !reset ? 1u : 0u;
+        if (o.skinSss) f.counts[1] |= 8192u;
         f.fwd[0] = float(k.fwd[0]); f.fwd[1] = float(k.fwd[1]); f.fwd[2] = float(k.fwd[2]); f.fwd[3] = float(k.aspect);
         // the fast GTAO's PostParams at 2048: size, slices, steps, refine, flags, ssr steps, pad; view; ssr (depth unpack); taa
         uint8_t* p = nullptr;
@@ -126,9 +129,35 @@ public:
         return true;
     }
     void stats(FrameResult& R){
-        R.buildMs = c.buildMs; R.triangles = c.triangles; R.blasBytes = c.blasBytes; R.tlasBytes = c.tlasBytes; R.textureBytes = c.texBytes; R.targetBytes = c.targetBytes;
+        R.skinBlasBytes = c.blasDynBytes; R.buildMs = c.buildMs; R.triangles = c.triangles; R.blasBytes = c.blasBytes; R.tlasBytes = c.tlasBytes; R.textureBytes = c.texBytes; R.targetBytes = c.targetBytes;
     }
     FrameResult render(const FrameCamera& cam, const FrameOptions& o) override;
+    void setJoints(const std::vector<float>& pal, bool rebuild) override {
+        if (!c.paletteMap) return;
+        std::memcpy(c.paletteMap, pal.data(), std::min<size_t>(pal.size(), size_t(c.joints) * 12) * 4);
+        c.skinPending = true; c.skinRebuild = c.skinRebuild || rebuild;
+    }
+    void setLights(uint32_t first, const std::vector<FrameLight>& L) override {
+        if (!c.lightsMap || first + L.size() > c.lightCount) return;
+        std::memcpy(static_cast<FrameLight*>(c.lightsMap) + first, L.data(), L.size() * sizeof(FrameLight));
+    }
+    bool readSkinned(std::vector<float>& pos, std::string& err) override {
+        if (!c.skinCount){ pos.clear(); return true; }
+        const uint64_t bytes = uint64_t(c.skinCount) * sizeof(FrameVertex);
+        ComPtr<ID3D12Resource> rb;
+        if (!c.q.readbackBuffer(bytes, rb, err) || !c.q.begin(err)) return false;
+        D3D12_RESOURCE_BARRIER b{}; b.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION; b.Transition.pResource = c.verts.Get();
+        b.Transition.StateBefore = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE; b.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
+        c.cl->ResourceBarrier(1, &b);
+        c.cl->CopyBufferRegion(rb.Get(), 0, c.verts.Get(), uint64_t(c.skinFirstVertex) * sizeof(FrameVertex), bytes);
+        std::swap(b.Transition.StateBefore, b.Transition.StateAfter); c.cl->ResourceBarrier(1, &b);
+        if (!c.q.submitAndWait(0, err)) return false;
+        std::vector<FrameVertex> v(c.skinCount);
+        if (!c.q.readBack(rb.Get(), v.data(), bytes, err)) return false;
+        pos.resize(size_t(c.skinCount) * 3);
+        for (uint32_t i = 0; i < c.skinCount; ++i) for (int k = 0; k < 3; ++k) pos[size_t(i) * 3 + k] = v[i].p[k];
+        return true;
+    }
     FrameResult step(const FrameCamera& cam, const FrameOptions& o) override;
 };
 
@@ -136,6 +165,11 @@ FrameResult D3d12Frame::render(const FrameCamera& cam, const FrameOptions& o){
     FrameResult R; stats(R);
     if (o.width != c.w || o.height != c.h){ R.error = "the renderer was made for another size"; return R; }
     if (o.reference){
+        if (c.skinPending){
+            if (!c.q.begin(R.error)) return R;
+            hf::recordSkin(c, nullptr);
+            if (!c.q.submitAndWait(0, R.error)) return R;
+        }
         uint32_t done = 0;
         const uint32_t per = 1;
         double total = 0;
