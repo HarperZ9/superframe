@@ -13,6 +13,8 @@ struct Surf {
     uint kind;
     float4 c;          // the vertex numbers
     float2 uv;
+    float3 tan;        // hair: along the strand
+    float sheen, thick;   // cloth: sheen weight; skin: thickness 0 (thin: ears, nostrils) .. 1
 };
 
 // a material's uv: metres times its scale; a negative scale turns the texture a quarter (grain along v)

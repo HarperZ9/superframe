@@ -44,6 +44,34 @@ bool crossesSmoke(float3 o, float3 d, float tEnd) {
     }
     return false;
 }
+// Skin's subsurface scattering by a random walk (Chiang, Kutz and Burley 2016): one hero channel a
+// path, the single-scattering albedo from the surface albedo by the van de Hulst inversion, the
+// extinction from the channel's mean free path, isotropic steps until a ray leaves through a
+// surface. Returns false if the walk is lost; else the exit point, its outward normal and the weight.
+bool skinWalk(Surf s, inout Rng r, out float3 xo, out float3 no, out float3 wgt) {
+    const float3 mfp = float3(3.6f, 1.4f, 0.75f) * 1e-3f, A = saturate(s.albedo);
+    const float3 q = 4.09712f + 4.20863f * A - sqrt(9.59217f + 41.6808f * A + 17.7126f * A * A), alpha = 1.0f - q * q;
+    const uint ch = min(2u, uint(rnd(r) * 3.0f));
+    const float st = 1.0f / mfp[ch], al = alpha[ch];
+    float3 x = s.p - s.ng * 2e-5f, d = cosineDir(-s.ng, rnd2(r));
+    float w = 1.0f;
+    xo = 0; no = 0; wgt = 0;
+    for (uint k = 0u; k < 96u; k++) {
+        const float t = -log(1.0f - rnd(r) * 0.999999f) / st;
+        const Hit hh = trace(x, d, t);
+        if (hh.hit) {
+            xo = x + d * hh.t; const float3 fn = faceNormal(hh.tri); no = dot(fn, d) > 0.0f ? fn : -fn;
+            wgt = (ch == 0u ? float3(3, 0, 0) : ch == 1u ? float3(0, 3, 0) : float3(0, 0, 3)) * w;
+            return true;
+        }
+        x += d * t; w *= al;
+        if (w < 1e-3f) return false;
+        const float2 u = rnd2(r); const float cz = 1.0f - 2.0f * u.x, sz = sqrt(max(0.0f, 1.0f - cz * cz));
+        d = float3(sz * cos(2.0f * PI * u.y), sz * sin(2.0f * PI * u.y), cz);
+    }
+    return false;
+}
+
 float3 pathSample(float2 px, inout Rng r, uint bounces) {
     float3 o = F.eye.xyz, d = viewRay(px), thr = 1.0f, L = 0.0f;
     bool countEmit = true;
@@ -81,7 +109,8 @@ float3 pathSample(float2 px, inout Rng r, uint bounces) {
         float3 md, ms, g, ld, ls;
         moonLight(s, v, r, md, ms, g, 0.01f);
         lampsRIS(s, v, r, 8u, ld, ls);
-        L += thr * (s.albedo * (1.0f - s.metal) / PI * (md + ld) + (gl ? 0.0f : ms + ls) + (b == 0u ? g * 0.5f : 0.0f));
+        const bool walk = s.kind == K_SKIN && on(F_SKINSSS);   // skin's diffuse light enters by the walk below
+        L += thr * ((walk ? 0.0f : s.albedo * (1.0f - s.metal) / PI * (md + ld)) + (gl ? 0.0f : ms + ls) + (b == 0u ? g * 0.5f : 0.0f));
         if (b == bounces) break;
         // the next direction: the specular lobe with the weight of its albedo, else diffuse
         const float3 sa = specAlbedo(s, v);
@@ -93,6 +122,19 @@ float3 pathSample(float2 px, inout Rng r, uint bounces) {
             d = reflect(-v, mt);
             if (dot(d, s.n) <= 0.0f) break;
             thr *= sa / ps; countEmit = gl;
+        } else if (walk) {
+            float3 xo, no, wgt;
+            if (!skinWalk(s, r, xo, no, wgt)) break;
+            thr *= wgt * (1.0f - lum(F_schlick(specF0(s), dot(s.n, v)))) / (1.0f - ps);
+            // light at the exit, as from a white diffuse surface (the colour is in the walk's weight)
+            Surf se = s; se.p = xo; se.n = no; se.ng = no; se.albedo = 1.0f; se.kind = K_OPAQUE; se.metal = 0.0f;
+            float3 md2, ms2, g2, ld2, ls2;
+            moonLight(se, no, r, md2, ms2, g2, 0.01f);
+            lampsRIS(se, no, r, 8u, ld2, ls2);
+            L += thr * (md2 + ld2) / PI;
+            d = cosineDir(no, rnd2(r)); o = offsetRay(xo, no); countEmit = false;
+            if (b >= 2u) { const float qq = clamp(lum(thr), 0.05f, 0.95f); if (rnd(r) > qq) break; thr /= qq; }
+            continue;
         } else {
             d = cosineDir(s.n, rnd2(r));
             thr *= s.albedo * (1.0f - s.metal) / (1.0f - ps); countEmit = false;

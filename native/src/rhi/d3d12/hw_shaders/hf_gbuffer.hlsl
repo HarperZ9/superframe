@@ -2,6 +2,7 @@
 // material evaluated with texture gradients, parallax occlusion mapping (MAT POM: Tatarchuk 2006)
 // on materials with a height map, written to four targets (see hf_common.hlsli gAlbedo..gGeo).
 #include "hf_surface.hlsli"
+StructuredBuffer<float4> PrevP : register(t7);     // the skinned vertices' positions last frame (hf_skin.hlsl)
 
 struct VOut {
     float4 pos : SV_Position;
@@ -15,11 +16,14 @@ struct VOut {
 };
 
 VOut vs(uint vid : SV_VertexID) {
-    const Vtx v = Verts[Idx[vid]];
+    const uint vi = Idx[vid];
+    const Vtx v = Verts[vi];
     VOut o;
     const float4 c = mul(F.viewProj, float4(v.p, 1.0f));
     o.cur = c;
-    o.prev = mul(F.prevViewProj, float4(v.p, 1.0f));
+    // a skinned vertex moved since last frame: its motion is from where it was
+    const float3 pp = vi >= F.dbg.z && F.dbg.w != 0u ? PrevP[vi - F.dbg.z].xyz : v.p;
+    o.prev = mul(F.prevViewProj, float4(pp, 1.0f));
     o.pos = c + float4(F.jitter.xy * float2(2.0f, -2.0f) * F.size.zw * c.w, 0, 0);
     o.wp = v.p; o.n = v.n; o.t = v.t; o.uv = v.uv; o.c = v.c;
     return o;
@@ -58,7 +62,8 @@ POut ps(VOut i, uint prim : SV_PrimitiveID, bool front : SV_IsFrontFace) {
     POut o;
     o.albedo = float4(s.albedo, s.rough);
     o.normal = float4(s.n, s.metal);
-    o.emis = float4(s.emis, float(s.kind) + s.ao * 0.5f);
+    const float3 aux = s.kind == K_SKIN ? float3(s.thick, 0, 0) : s.kind == K_CLOTH ? float3(s.sheen, 0, 0) : s.kind == K_HAIR ? s.tan * 0.5f + 0.5f : s.emis;
+    o.emis = float4(s.kind == K_EYE ? 0.0f : aux, float(s.kind) + s.ao * 0.5f);
     const float2 pc = i.cur.xy / i.cur.w, pp = i.prev.xy / i.prev.w;
     const float2 motion = (pc - pp) * float2(0.5f, -0.5f) * F.size.xy;
     o.geo = float4(dot(i.wp - F.eye.xyz, F.fwd.xyz), motion, packOct(s.ng));

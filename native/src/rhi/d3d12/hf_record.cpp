@@ -68,18 +68,24 @@ void bindCommon(Ctx& c, bool graphics){
     const D3D12_GPU_VIRTUAL_ADDRESS srv[7] = {c.tlas->GetGPUVirtualAddress(), c.verts->GetGPUVirtualAddress(), c.idx->GetGPUVirtualAddress(),
                                               c.triMat->GetGPUVirtualAddress(), c.mats->GetGPUVirtualAddress(), c.lights->GetGPUVirtualAddress(),
                                               c.smoke->GetGPUVirtualAddress()};
+    // without skinned vertices the skinning slots point at the vertex buffer (bound, never read)
+    const D3D12_GPU_VIRTUAL_ADDRESS vb = c.verts->GetGPUVirtualAddress();
+    const D3D12_GPU_VIRTUAL_ADDRESS skin[5] = {c.prevP ? c.prevP->GetGPUVirtualAddress() : vb, vb, c.prevP ? c.prevP->GetGPUVirtualAddress() : vb,
+                                               c.skinV ? c.skinV->GetGPUVirtualAddress() : vb, c.palette ? c.palette->GetGPUVirtualAddress() : vb};
     if (graphics){
         c.cl->SetGraphicsRootSignature(c.rs.Get());
         c.cl->SetGraphicsRootConstantBufferView(0, c.cb->GetGPUVirtualAddress());
         for (UINT i = 0; i < 7; ++i) c.cl->SetGraphicsRootShaderResourceView(2 + i, srv[i]);
         c.cl->SetGraphicsRootDescriptorTable(9, c.gpu(kTexBase));
         c.cl->SetGraphicsRootDescriptorTable(10, c.gpu(0));
+        for (UINT i = 0; i < 5; ++i){ if (i == 1 || i == 2) c.cl->SetGraphicsRootUnorderedAccessView(11 + i, skin[i]); else c.cl->SetGraphicsRootShaderResourceView(11 + i, skin[i]); }
     } else {
         c.cl->SetComputeRootSignature(c.rs.Get());
         c.cl->SetComputeRootConstantBufferView(0, c.cb->GetGPUVirtualAddress());
         for (UINT i = 0; i < 7; ++i) c.cl->SetComputeRootShaderResourceView(2 + i, srv[i]);
         c.cl->SetComputeRootDescriptorTable(9, c.gpu(kTexBase));
         c.cl->SetComputeRootDescriptorTable(10, c.gpu(0));
+        for (UINT i = 0; i < 5; ++i){ if (i == 1 || i == 2) c.cl->SetComputeRootUnorderedAccessView(11 + i, skin[i]); else c.cl->SetComputeRootShaderResourceView(11 + i, skin[i]); }
     }
 }
 void dispatch(Ctx& c, const char* pso, uint32_t x, uint32_t y, uint32_t z, const uint32_t* pc){
@@ -92,6 +98,8 @@ void dispatch(Ctx& c, const char* pso, uint32_t x, uint32_t y, uint32_t z, const
 void recordFrame(Ctx& c, const hw::FrameOptions& o, Recorded& r){
     bindCommon(c, false);
     clearStamp(c, r);
+    recordSkin(c, &r);
+    bindCommon(c, false);
     dispatch(c, "hf_cluster", (kCluster + 63) / 64, 1); uavBarrier(c); stamp(c, r, "clusters");
     gbuffer(c); stamp(c, r, "gbuffer");
     bindCommon(c, false);
@@ -105,6 +113,7 @@ void recordFrame(Ctx& c, const hw::FrameOptions& o, Recorded& r){
     dispatch(c, "hf_temporal", gx(c), gy(c)); uavBarrier(c);
     for (uint32_t k = 0; k < 4; ++k){ const uint32_t pc[16] = {1u << k, k & 1u}; dispatch(c, "hf_atrous", gx(c), gy(c), 1, pc); uavBarrier(c); }
     stamp(c, r, "denoise");
+    if (c.skinCount && o.skinSss){ dispatch(c, "hf_sss_h", gx(c), gy(c)); uavBarrier(c); dispatch(c, "hf_sss_v", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "skin_sss"); }
     dispatch(c, "hf_composite", gx(c), gy(c)); uavBarrier(c); stamp(c, r, "composite");
     if (o.snow){ snow(c); }
     stamp(c, r, "snow");

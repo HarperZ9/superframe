@@ -10,6 +10,11 @@ bool loadSurf(uint2 px, out Surf s, out float3 v) {
     const float4 a = gAlbedo[px], n = gNormal[px], e = gEmis[px];
     s.p = worldAt(px, g.x); s.n = normalize(n.xyz); s.ng = unpackOct(g.w); s.albedo = a.rgb; s.rough = a.w; s.metal = n.w;
     s.emis = e.rgb; s.kind = (uint)floor(e.w + 1e-3f); s.ao = saturate(frac(e.w + 1e-3f) * 2.0f); s.f0 = s.kind == K_ICE ? 0.018f : 0.04f;
+    // the characters' kinds carry their extra numbers in the emission slot (hf_gbuffer.hlsl)
+    if (s.kind == K_SKIN) { s.thick = e.r; s.f0 = 0.028f; s.emis = 0.0f; }
+    else if (s.kind == K_CLOTH) { s.sheen = e.r; s.emis = 0.0f; }
+    else if (s.kind == K_HAIR) { s.tan = normalize(e.rgb * 2.0f - 1.0f); s.emis = 0.0f; }
+    else if (s.kind == K_EYE) { s.f0 = 0.025f; s.emis = 0.0f; }
     v = normalize(F.eye.xyz - s.p);
     return true;
 }
