@@ -7,7 +7,7 @@ import { mkdtempSync, existsSync, readdirSync, writeFileSync, mkdirSync, utimesS
 import { tmpdir, hostname } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
-import { acquireGpuLock, lockStatus } from "../gpu-lock.mjs";
+import { acquireGpuLock, lockStatus, queueStatus } from "../gpu-lock.mjs";
 
 const fresh = () => mkdtempSync(join(tmpdir(), "lwgpu-"));
 const quiet = { log: () => {} };
@@ -108,4 +108,37 @@ test("CLI run --lock heavy-cpu holds an entry while the command runs", () => {
   const root = fresh(), cli = new URL("../gpu-lock.mjs", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
   const r = spawnSync(process.execPath, [cli, "run", "--lock", "heavy-cpu", "cli-job", "--", process.execPath, "-e", "const fs=require('fs');console.log(fs.readdirSync(process.env.LW_GPU_LOCK_ROOT+'/heavy').length)"], { env: { ...process.env, LW_GPU_LOCK_ROOT: root }, encoding: "utf8" });
   assert.equal(r.status, 0, r.stderr); assert.equal(r.stdout.trim(), "1"); assert.equal(heavyStatus({ root }).length, 0);
+});
+
+test("waiters take the lock in arrival order", async () => {
+  const root = fresh(), L = await acquireGpuLock({ job: "holder", root, ...quiet });
+  const order = [];
+  const first = acquireGpuLock({ job: "first", root, pollMs: 20, ...quiet }).then((H) => { order.push("first"); return H; });
+  await new Promise((r) => setTimeout(r, 60));
+  const second = acquireGpuLock({ job: "second", root, pollMs: 20, ...quiet }).then((H) => { order.push("second"); return H; });
+  await new Promise((r) => setTimeout(r, 60));
+  assert.deepEqual(queueStatus({ root }).map((t) => t.job), ["first", "second"]);
+  L.release();
+  const A = await first; await new Promise((r) => setTimeout(r, 100));
+  assert.deepEqual(order, ["first"]);        // second still waits behind the holder 'first'
+  A.release();
+  const B = await second; assert.deepEqual(order, ["first", "second"]); B.release();
+  assert.equal(queueStatus({ root }).length, 0);
+});
+test("a stale ticket does not block the queue", async () => {
+  const root = fresh(), dead = spawnSync(process.execPath, ["-e", "0"]).pid;
+  mkdirSync(join(root, "gpu-queue"), { recursive: true });
+  writeFileSync(join(root, "gpu-queue", "000000000000001-1-dead.json"), JSON.stringify({ pid: dead, job: "gone", host: hostname(), heartbeat: Date.now() }));
+  const L = await acquireGpuLock({ job: "next", root, waitMs: 2000, pollMs: 20, ...quiet });
+  assert.equal(lockStatus({ root }).owner.job, "next"); L.release();
+  assert.equal(readdirSync(join(root, "gpu-queue")).filter((n) => n.endsWith(".json")).length, 0);
+});
+test("a newcomer queues behind a waiter even when the lock is momentarily free", async () => {
+  const root = fresh(), L = await acquireGpuLock({ job: "holder", root, ...quiet });
+  const waiter = acquireGpuLock({ job: "waiter", root, pollMs: 200, ...quiet });
+  await new Promise((r) => setTimeout(r, 50));
+  L.release();                                 // free, but the waiter has not polled yet
+  const late = acquireGpuLock({ job: "late", root, pollMs: 20, ...quiet });
+  const W = await waiter; assert.equal(lockStatus({ root }).owner.job, "waiter"); W.release();
+  const Z = await late; Z.release();
 });

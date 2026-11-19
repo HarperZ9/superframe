@@ -18,6 +18,10 @@
 // CLI:
 //   node tools/gpu-lock.mjs status                                                 every lock, and whether it is stale
 //   node tools/gpu-lock.mjs run [--lock gpu|bench|heavy-cpu] <job> -- <cmd ...>    hold a lock while a command runs
+// Waiting is first come, first served (coordinator, 2026-11-18): a job that has to wait for gpu or bench leaves a
+// ticket in <lock root>/<name>-queue/ (arrival time in the name, owner and heartbeat inside) and tries the lock
+// only while its ticket is the oldest live one. A ticket whose pid is gone or whose heartbeat is over 2 minutes
+// old is skipped and removed. A free lock with no queue is taken at once, as before.
 // LW_GPU_LOCK_ROOT moves the locks (the tests use a scratch folder).
 import { mkdirSync, writeFileSync, readFileSync, renameSync, rmdirSync, unlinkSync, statSync, readdirSync } from "node:fs";
 import { hostname, tmpdir } from "node:os";
@@ -54,7 +58,36 @@ export function heavyStatus({ root = ROOT, now, staleMs } = {}) {
   let names = []; try { names = readdirSync(heavyDir(root)).filter((n) => n.endsWith(".d")); } catch { /* none yet */ }
   return names.map((n) => ({ dir: join(heavyDir(root), n), ...dirStatus(join(heavyDir(root), n), { now, staleMs }) }));
 }
-export const allStatus = ({ root = ROOT } = {}) => ({ gpu: lockStatus({ root, name: "gpu" }), bench: lockStatus({ root, name: "bench" }), heavy: heavyStatus({ root }) });
+// the live tickets waiting for a lock, oldest first: [{ file, pid, job, host, heartbeat }]
+const queueDir = (root, name) => join(root, `${name}-queue`);
+function ticketLive(t, now, staleMs) {
+  if (!t) return false;
+  if (t.host === hostname() && !pidAlive(t.pid)) return false;
+  return now - (t.heartbeat || 0) <= staleMs;
+}
+export function queueStatus({ root = ROOT, name = "gpu", now = Date.now(), staleMs = STALE_MS, prune = false } = {}) {
+  let names = []; try { names = readdirSync(queueDir(root, name)).filter((n) => n.endsWith(".json")).sort(); } catch { return []; }
+  const out = [];
+  for (const n of names) {
+    const file = join(queueDir(root, name), n);
+    let t = null; try { t = JSON.parse(readFileSync(file, "utf8")); } catch { /* being written */ }
+    if (t && !ticketLive(t, now, staleMs)) { if (prune) { try { unlinkSync(file); } catch { /* another waiter pruned it */ } } continue; }
+    out.push({ file, ...(t || { pid: 0, job: "?", heartbeat: now }) });
+  }
+  return out;
+}
+function enqueue(root, name, job, heartbeatMs) {
+  mkdirSync(queueDir(root, name), { recursive: true });
+  const file = join(queueDir(root, name), `${String(Date.now()).padStart(15, "0")}-${process.pid}-${tag()}.json`);
+  const write = () => { const tmp = `${file}.${process.pid}.tmp`; writeFileSync(tmp, JSON.stringify({ pid: process.pid, job, host: hostname(), heartbeat: Date.now() })); renameSync(tmp, file); };
+  write();
+  const timer = setInterval(() => { try { write(); } catch (e) { console.error(`gpu-lock: ticket heartbeat failed: ${e.message}`); } }, heartbeatMs); timer.unref();
+  const leave = () => { clearInterval(timer); process.off("exit", leave); try { unlinkSync(file); } catch { /* already gone */ } };
+  process.on("exit", leave);
+  return { file, leave };
+}
+export const allStatus = ({ root = ROOT } = {}) => ({ gpu: lockStatus({ root, name: "gpu" }), bench: lockStatus({ root, name: "bench" }), heavy: heavyStatus({ root }),
+  queue: { gpu: queueStatus({ root, name: "gpu" }).map((t) => `${t.job} (pid ${t.pid})`), bench: queueStatus({ root, name: "bench" }).map((t) => `${t.job} (pid ${t.pid})`) } });
 
 // rename a stale lock aside; true when this caller moved it (another may have won the race)
 function takeOver(root, dir, why) {
@@ -92,16 +125,32 @@ export async function acquireLock({ name = "gpu", job, root = ROOT, waitMs = Inf
   if (name === "heavy-cpu") throw new Error("gpu-lock: heavy-cpu is shared; use acquireHeavy");
   mkdirSync(root, { recursive: true });
   const dir = lockDir(root, name), t0 = Date.now();
-  for (let i = 0; ; i++) {
-    try { mkdirSync(dir); break; }
-    catch (e) {
-      if (e.code !== "EEXIST") throw e;
+  let ticket = null;
+  try {
+    for (let i = 0; ; i++) {
+      // with others waiting, only the oldest live ticket may try the lock; a newcomer queues first
+      const q = queueStatus({ root, name, staleMs, prune: true });
+      if (!ticket && q.length) ticket = enqueue(root, name, job, heartbeatMs);
+      const first = ticket ? queueStatus({ root, name, staleMs })[0] : null;
+      if (!ticket || (first && first.file === ticket.file)) {
+        try { mkdirSync(dir); break; }
+        catch (e) {
+          if (e.code !== "EEXIST") throw e;
+          const s = dirStatus(dir, { staleMs });
+          if (s.stale && takeOver(root, dir, s.why)) continue;
+          if (!ticket) ticket = enqueue(root, name, job, heartbeatMs);
+        }
+      }
       const s = dirStatus(dir, { staleMs });
-      if (s.stale && takeOver(root, dir, s.why)) continue;
       if (Date.now() - t0 > waitMs) throw new Error(`gpu-lock: ${name} still held after ${Math.round(waitMs / 1000)} s (${s.why})`);
-      if (i % 12 === 0) log(`gpu-lock: ${name} ${s.why}; waiting`);
+      if (i % 12 === 0) {
+        const ahead = queueStatus({ root, name, staleMs }).findIndex((t) => ticket && t.file === ticket.file);
+        log(`gpu-lock: ${name} ${s.why}; waiting${ahead > 0 ? `, ${ahead} ahead in the queue` : ""}`);
+      }
       await sleep(pollMs);
     }
+  } finally {
+    if (ticket) ticket.leave();
   }
   return hold(dir, job, heartbeatMs);
 }
