@@ -163,6 +163,7 @@ include(cmake/gpu.cmake)
 include(cmake/ao_bench.cmake)
 # Low Water's native shell (games/low-water/runtime/), off by default.
 include(cmake/lwshell.cmake)
+include(cmake/lwframe.cmake)
 if(EMSCRIPTEN)
     raw_native_wasm_target(raw_native_cli)
 endif()

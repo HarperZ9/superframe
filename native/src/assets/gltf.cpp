@@ -148,8 +148,20 @@ void addPrimitive(const Doc& d, const Json& prim, const M4& world, const std::st
     for (const std::uint32_t i : idx) if (i >= nv) fail("index " + std::to_string(i) + " past the vertex count");
     GltfMesh m;
     m.name = name;
+    // the optional attributes, each checked against the vertex count
+    auto optional = [&](const char* key, int comps, std::vector<float>& out){
+        const Json* a = attrs->get(key);
+        if (!a) return;
+        out = floats(accessor(d, a->integer(key, 0, 1 << 30)), comps);
+        if (out.size() != nv * std::size_t(comps)) fail(std::string(key) + " count differs from POSITION");
+        for (const float f : out) if (!std::isfinite(f)) fail(std::string(key) + " has a value that is not finite");
+    };
+    optional("TEXCOORD_0", 2, m.uv);
+    optional("TANGENT", 4, m.tangents);
+    optional("COLOR_0", 4, m.colors);
     if (const Json* mi = prim.get("material")){
         const Json& mat = d.item("materials", mi->integer("material", 0, 1 << 30));
+        if (const Json* mn = mat.get("name")) if (mn->is(Json::Kind::String)) m.material = mn->s.substr(0, 256);
         if (const Json* pbr = mat.get("pbrMetallicRoughness")) if (const Json* bc = pbr->get("baseColorFactor")){
             if (!bc->is(Json::Kind::Array) || bc->a.size() != 4) fail("baseColorFactor must have four values");
             m.baseColor = {float(bc->a[0].number("baseColorFactor")), float(bc->a[1].number("baseColorFactor")), float(bc->a[2].number("baseColorFactor"))};
@@ -183,6 +195,16 @@ void addPrimitive(const Doc& d, const Json& prim, const M4& world, const std::st
             const double l = std::sqrt(acc[3 * i] * acc[3 * i] + acc[3 * i + 1] * acc[3 * i + 1] + acc[3 * i + 2] * acc[3 * i + 2]);
             m.normals[i] = l > 0 ? Vec3{float(acc[3 * i] / l), float(acc[3 * i + 1] / l), float(acc[3 * i + 2] / l)} : Vec3{0, 1, 0};
         }
+    }
+    // tangents turn with the node (the linear part; their handedness flips with a mirroring transform)
+    for (std::size_t i = 0; i < m.tangents.size() / 4; ++i){
+        float* t = &m.tangents[i * 4];
+        const double x = t[0], y = t[1], z = t[2];
+        double v[3] = {W[0] * x + W[4] * y + W[8] * z, W[1] * x + W[5] * y + W[9] * z, W[2] * x + W[6] * y + W[10] * z};
+        const double l = std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        if (l > 0) for (int k = 0; k < 3; ++k) t[k] = float(v[k] / l);
+        const double det = W[0] * cof[0] + W[4] * cof[1] + W[8] * cof[2];
+        if (det < 0) t[3] = -t[3];
     }
     for (const Vec3& p : m.positions) if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z)) fail("a position is not finite");
     m.indices = std::move(idx);
