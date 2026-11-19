@@ -133,11 +133,13 @@ export function scatterTrees(M, R, P, H, O, groundY, radius) {
 // from the pond, raised into a rounded hill so the view falls over the roofs to the ice and the valley
 export function findKnoll(P, g) {
   let best = null;
-  for (let a = 0; a < 64; a++) for (const rr of [P.reach * 0.75, P.reach * 0.9]) {
-    const t = a / 64 * Math.PI * 2, x = P.cx + Math.cos(t) * rr, z = P.cz + Math.sin(t) * rr;
-    if (P.houses.some((h) => Math.hypot(h.x - x, h.z - z) < 70)) continue;
-    const score = g(x, z) + (P.pond ? 0.05 * Math.hypot(x - P.pond.x, z - P.pond.z) : 0);
-    if (!best || score > best.score) best = { x, z, r: 130, h: 34, score };
+  // as near the houses as leaves room for the hill's foot, so the view looks down into the streets
+  for (let a = 0; a < 96; a++) for (const rr of [P.reach * 0.45, P.reach * 0.55, P.reach * 0.65, P.reach * 0.75]) {
+    const t = a / 96 * Math.PI * 2, x = P.cx + Math.cos(t) * rr, z = P.cz + Math.sin(t) * rr;
+    const near = Math.min(...P.houses.map((h) => Math.hypot(h.x - x, h.z - z)));
+    if (near < 55) continue;
+    const score = g(x, z) + (P.pond ? 0.05 * Math.hypot(x - P.pond.x, z - P.pond.z) : 0) - 0.04 * rr;
+    if (!best || score > best.score) best = { x, z, r: Math.min(150, near * 1.4), h: 46, score };
   }
   return best;
 }
