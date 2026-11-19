@@ -30,7 +30,7 @@ MaterialSpec setSpec(const std::string& root, const std::string& set){
     return m;
 }
 // the highest surface under (x, z) among the scene's first `tris` triangles (the street, before the
-// characters are added), below 3 m so roofs and lamps are skipped
+// characters are added), below 0.8 m so porch roofs, eaves and lamps are skipped
 double groundAt(const rhi::hw::FrameScene& S, size_t tris, double x, double z){
     double best = -1e9;
     for (size_t t = 0; t < tris; ++t){
@@ -40,7 +40,7 @@ double groundAt(const rhi::hw::FrameScene& S, size_t tris, double x, double z){
         const double u = ((b[2] - c[2]) * (x - c[0]) + (c[0] - b[0]) * (z - c[2])) / d, v = ((c[2] - a[2]) * (x - c[0]) + (a[0] - c[0]) * (z - c[2])) / d, w = 1 - u - v;
         if (u < 0 || v < 0 || w < 0) continue;
         const double y = u * a[1] + v * b[1] + w * c[1];
-        if (y < 3.0 && y > best) best = y;
+        if (y < 0.8 && y > best) best = y;
     }
     return best > -1e8 ? best : 0.0;
 }

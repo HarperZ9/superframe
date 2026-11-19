@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fourier lettering</title>
+<style>
+  :root { --letter-ink: #17140f; --letter-accent: #c2601e; color-scheme: light; }
+  body { margin: 0; background: #f1ebdd; color: #17140f; font: 16px/1.5 "Hanken Grotesk", system-ui, sans-serif; padding: 3rem clamp(1rem, 4vw, 4rem); }
+  h1, h2 { font-weight: 700; margin: 0 0 1.4rem; letter-spacing: -0.02em; line-height: 1.1; }
+  h1 { font-size: clamp(64px, 12vw, 168px); }
+  h2 { font-size: clamp(48px, 8vw, 112px); }
+  section { margin: 0 0 3.2rem; }
+  p { max-width: 62ch; margin: 0 0 0.8rem; }
+  button { font: inherit; padding: 0.4rem 0.9rem; border: 1px solid currentColor; background: transparent; border-radius: 4px; cursor: pointer; }
+  output { font: 13px/1.4 ui-monospace, Consolas, monospace; display: block; opacity: 0.75; }
+</style>
+</head>
+<body>
+<section>
+  <h1 id="build">Fourier</h1>
+  <p>Each contour of each letter is a sum of rotating vectors, read from the font's own outlines. The letters grow from a few terms to every term that shows at this size.</p>
+  <button id="play" type="button">Play the shape</button>
+  <output id="build-info"></output>
+</section>
+<section>
+  <h2 id="machine">Low Water</h2>
+  <p>The machine: the arms that draw each contour, shown while the letters form.</p>
+</section>
+<section>
+  <h2 id="morph">Low</h2>
+  <p>Words into words: contours matched, start points and directions aligned, descriptors blended.</p>
+</section>
+<section>
+  <h2 id="band">Fourier</h2>
+  <p>Beyond outlines: the word's picture as a 2D Fourier series, rebuilt band by band. The orange is the ringing of the bands still missing.</p>
+</section>
+<script type="module">
+  import { letter } from '../lib/letter.mjs';
+  const q = new URLSearchParams(location.search), renderer = q.get('renderer') || 'gpu';
+  const items = {
+    build: letter('Fourier', 'fourier', { renderer }),
+    machine: letter('Low Water', 'fourier', { renderer, machine: true }),
+    morph: letter('Low', 'fourier', { renderer, words: ['Water', 'Commons'] }),
+    band: letter('Fourier', 'fourier', { mode: 'band' }),
+  };
+  for (const [id, d] of Object.entries(items)) await d.mount(document.getElementById(id));
+  const i = items.build.impl.info;
+  document.getElementById('build-info').textContent = `${i.renderer} renderer, ${i.contours} contours, ${i.termsKept} of ${i.termsFull} terms kept at this size, outlines from the ${i.source}`;
+  document.getElementById('play').addEventListener('click', () => items.build.act('play'));
+  window.demo = { items, ready: true };
+</script>
+</body>
+</html>

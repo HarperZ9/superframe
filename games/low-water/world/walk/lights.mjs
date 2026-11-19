@@ -26,6 +26,9 @@ export function makeLights() {
     b.push(L); dirty = true;
     return L;
   }
+  // lamps that move (a lantern in a hand): kept out of the grid, always considered, moved by the caller
+  const carried = [];
+  function carry(l) { const L = { mono: 0, aim: null, cone: -1, size: 0.05, flicker: 0, haze: 0, glow: 1, ...l }; carried.push(L); return L; }
   const pick = [];
   // the lamps that count at the eye, into the uniform block; returns how many
   // `on` is how far the lamps have come on (0 by day, 1 at night); a flare burns all day
@@ -43,6 +46,12 @@ export function makeLights() {
         L.score = L.power * L.reach * (0.6 + 0.4 * ahead) / (d2 + L.reach * L.reach * 0.15 + 9);
         pick.push(L);
       }
+    }
+    for (const L of carried) {
+      if (L.power <= 0) continue;
+      const dx = L.x - cam[0], dy = L.y - cam[1], dz = L.z - cam[2], d2 = dx * dx + dy * dy + dz * dz;
+      if (d2 > (reach + L.reach) * (reach + L.reach)) continue;
+      L.score = 1e9; pick.push(L);
     }
     // haze lamps first, each kind by how much it counts; haze lamps may take at most MAX_HAZE places
     pick.sort((a, b) => b.score - a.score);
@@ -65,5 +74,5 @@ export function makeLights() {
     dirty = false;
     return { data: sprites, count: all.length, changed: true };
   }
-  return { all, add, select, spriteData, block };
+  return { all, add, carry, select, spriteData, block };
 }

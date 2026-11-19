@@ -5,8 +5,8 @@ import { NEAR } from "./near.mjs";
 
 export const HDR = "rgba16float", DEPTH = "depth32float";
 // where each field of the frame block starts, in floats (common.wgsl struct Frame)
-export const OFF = { viewProj: 0, invViewProj: 16, cam: 32, key: 36, sun: 40, moon: 44, zenith: 48, horizon: 52, fog: 56, fogp: 60, wx: 64, ev: 68, misc: 72, keyCol: 76, amb: 80, lamp: 84, world: 88, glow: 92, near: 96, snowp: 100, gfog: 104, view: 108, walk: 112, trail: 116, shadowVP: 148, shp: 164, clip: 168 };
-export const FRAME_FLOATS = 172;
+export const OFF = { viewProj: 0, invViewProj: 16, cam: 32, key: 36, sun: 40, moon: 44, zenith: 48, horizon: 52, fog: 56, fogp: 60, wx: 64, ev: 68, misc: 72, keyCol: 76, amb: 80, lamp: 84, world: 88, glow: 92, near: 96, snowp: 100, gfog: 104, view: 108, walk: 112, trail: 116, shadowVP: 148, shp: 164, clip: 168, cut: 172, cutv: 176 };
+export const FRAME_FLOATS = 180;
 
 // a float as the 16 bits of a half
 const f32 = new Float32Array(1), u32 = new Uint32Array(f32.buffer);

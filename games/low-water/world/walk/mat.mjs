@@ -51,3 +51,13 @@ export function invert(m) {
   for (let i = 0; i < 16; i++) inv[i] /= det;
   return inv;
 }
+// An orthographic view along the camera's heading and pitch, `half` metres from the centre of the
+// picture to its top, with reversed depth from `near` (1) to `far` (0) metres along the view.
+export function orthoView(cam, aspect, half, near = 1, far = 2000) {
+  const cp = Math.cos(cam.pitch), f = [Math.sin(cam.yaw) * cp, Math.sin(cam.pitch), -Math.cos(cam.yaw) * cp];
+  const r = [Math.cos(cam.yaw), 0, Math.sin(cam.yaw)], u = [r[1] * f[2] - r[2] * f[1], r[2] * f[0] - r[0] * f[2], r[0] * f[1] - r[1] * f[0]];
+  const e = [cam.x, cam.y, cam.z], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], w = half * aspect, d = far - near;
+  // x = r.(p-e)/w, y = u.(p-e)/half, z = (far - f.(p-e)) / (far - near)
+  const M = new Float32Array([r[0] / w, u[0] / half, -f[0] / d, 0, r[1] / w, u[1] / half, -f[1] / d, 0, r[2] / w, u[2] / half, -f[2] / d, 0, -dot(r, e) / w, -dot(u, e) / half, (far + dot(f, e)) / d, 1]);
+  return { M, f, r, u };
+}

@@ -1,0 +1,172 @@
+// The Fourier descriptor kernel (Zahn and Roskies 1972; Kuhl and Giardina 1982) for the fourier lettering
+// technique. A closed contour is resampled by arc length, turned into descriptors by a complex DFT, cut to
+// the terms a screen can show, and matched to another contour (start point and direction) for morphing.
+// Every expression is in the JS twin's order (lettering/lib/fourier/kernel.mjs), with DETMATH sin and cos,
+// so the two give the same bits (lettering/native/fourier-native.test.mjs).
+
+// closed polyline px, py (n points) to nn points equally spaced by arc length, pushed onto ox, oy
+fn resample(px: Vec<f64>, py: Vec<f64>, nn: i64, ox: Vec<f64>, oy: Vec<f64>) {
+    let n = px.len() as i64;
+    let cum: Vec<f64> = Vec::new();
+    cum.push(0.0);
+    let mut i: i64 = 0;
+    while i < n {
+        let j = if i + 1 < n { i + 1 } else { 0 };
+        let dx = px[j] - px[i];
+        let dy = py[j] - py[i];
+        cum.push(cum[i] + (dx * dx + dy * dy).sqrt());
+        i = i + 1;
+    }
+    let per = cum[n];
+    i = 0;
+    let mut m: i64 = 0;
+    while m < nn {
+        let s = (per * (m as f64)) / (nn as f64);
+        while i < n - 1 && cum[i + 1] <= s {
+            i = i + 1;
+        }
+        let j = if i + 1 < n { i + 1 } else { 0 };
+        let l = cum[i + 1] - cum[i];
+        let t = if l > 0.0 { (s - cum[i]) / l } else { 0.0 };
+        ox.push(px[i] + (px[j] - px[i]) * t);
+        oy.push(py[i] + (py[j] - py[i]) * t);
+        m = m + 1;
+    }
+}
+
+fn freq_of(j: i64) -> i64 {
+    if j == 0 {
+        return 0;
+    }
+    if j % 2 == 1 {
+        return (j + 1) / 2;
+    }
+    0 - j / 2
+}
+
+// nn points to 2K + 1 descriptors, k = 0, 1, -1, 2, -2, ...; each is (1/N) sum z_n e^(-2 pi i k n / N)
+fn dft(zx: Vec<f64>, zy: Vec<f64>, kk: i64, ks: Vec<i64>, re: Vec<f64>, im: Vec<f64>) {
+    let nn = zx.len() as i64;
+    let cs: Vec<f64> = Vec::new();
+    let sn: Vec<f64> = Vec::new();
+    let mut m: i64 = 0;
+    while m < nn {
+        let a = (TAU * (m as f64)) / (nn as f64);
+        cs.push(dcos(a));
+        sn.push(dsin(a));
+        m = m + 1;
+    }
+    let tt = 2 * kk + 1;
+    let mut j: i64 = 0;
+    while j < tt {
+        let f = freq_of(j);
+        let mut a = 0.0;
+        let mut b = 0.0;
+        let mut n: i64 = 0;
+        while n < nn {
+            let q = (((f * n) % nn) + nn) % nn;
+            let x = zx[n];
+            let y = zy[n];
+            a = a + (x * cs[q] + y * sn[q]);
+            b = b + (y * cs[q] - x * sn[q]);
+            n = n + 1;
+        }
+        ks.push(f);
+        re.push(a / (nn as f64));
+        im.push(b / (nn as f64));
+        j = j + 1;
+    }
+}
+
+// Drop the smallest terms (never k = 0) while their summed screen amplitude stays under tol pixels. By the
+// triangle inequality no point of the curve moves more than that sum. keep gets 1 or 0 per term; returns the sum.
+fn truncate(re: Vec<f64>, im: Vec<f64>, scale: f64, tol: f64, keep: Vec<i64>) -> f64 {
+    let tt = re.len() as i64;
+    let amp: Vec<f64> = Vec::new();
+    let order: Vec<i64> = Vec::new();
+    amp.push(0.0);
+    keep.push(1);
+    let mut j: i64 = 1;
+    while j < tt {
+        amp.push((re[j] * re[j] + im[j] * im[j]).sqrt() * scale);
+        order.push(j);
+        keep.push(1);
+        j = j + 1;
+    }
+    let no = order.len() as i64;
+    let mut a: i64 = 1;
+    while a < no {
+        let v = order[a];
+        let mut b = a - 1;
+        while b >= 0 && amp[order[b]] > amp[v] {
+            order[b + 1] = order[b];
+            b = b - 1;
+        }
+        order[b + 1] = v;
+        a = a + 1;
+    }
+    let mut sum = 0.0;
+    let mut i: i64 = 0;
+    let mut going = true;
+    while i < no && going {
+        let q = order[i];
+        if sum + amp[q] < tol {
+            sum = sum + amp[q];
+            keep[q] = 0;
+        } else {
+            going = false;
+        }
+        i = i + 1;
+    }
+    sum
+}
+
+// The cyclic shift and direction of b that best match a, centroids removed; out gets shift, rev and the cost.
+fn align(ax: Vec<f64>, ay: Vec<f64>, bx: Vec<f64>, by: Vec<f64>, out: Vec<f64>) {
+    let nn = ax.len() as i64;
+    let mut cax = 0.0;
+    let mut cay = 0.0;
+    let mut cbx = 0.0;
+    let mut cby = 0.0;
+    let mut n: i64 = 0;
+    while n < nn {
+        cax = cax + ax[n];
+        cay = cay + ay[n];
+        cbx = cbx + bx[n];
+        cby = cby + by[n];
+        n = n + 1;
+    }
+    let fnn = nn as f64;
+    cax = cax / fnn;
+    cay = cay / fnn;
+    cbx = cbx / fnn;
+    cby = cby / fnn;
+    let mut best = 1.0 / 0.0;
+    let mut shift: i64 = 0;
+    let mut rev: i64 = 0;
+    let mut d: i64 = 0;
+    while d < 2 {
+        let mut s: i64 = 0;
+        while s < nn {
+            let mut c = 0.0;
+            n = 0;
+            while n < nn {
+                let m = if d == 0 { (n + s) % nn } else { (s - n + nn) % nn };
+                let dx = (ax[n] - cax) - (bx[m] - cbx);
+                let dy = (ay[n] - cay) - (by[m] - cby);
+                c = c + (dx * dx + dy * dy);
+                n = n + 1;
+            }
+            if c < best {
+                best = c;
+                shift = s;
+                rev = d;
+            }
+            s = s + 1;
+        }
+        d = d + 1;
+    }
+    out.push(shift as f64);
+    out.push(rev as f64);
+    out.push(best);
+}

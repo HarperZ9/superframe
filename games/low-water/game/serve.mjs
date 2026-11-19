@@ -14,7 +14,7 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url)), root = join(here, "..");
 const args = process.argv.slice(2), opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const plates = opt("--plates", process.env.LW_PLATES || "");
-const MOUNTS = { "/rn/": opt("--rn", join(root, "..", "..", "native")), "/content/": join(root, "content"), "/content4k/": join(root, "content4k"), "/slice/": join(root, "slice"), "/characters/": join(root, "characters"), "/world/": join(root, "world"), "/": here };
+const MOUNTS = { "/rn/": opt("--rn", join(root, "..", "..", "native")), "/content/": join(root, "content"), "/content4k/": join(root, "content4k"), "/slice/": join(root, "slice"), "/characters/": join(root, "characters"), "/world/": join(root, "world"), "/game/": here, "/": here };   // /game/: the folder by its own name, so a module outside it (world/play) reaches it by its path in the repository
 // second roots, tried in order when the first has no such file
 const FALLBACK = plates ? { "/content/": [join(plates, "content")], "/content4k/": [join(plates, "content4k")], "/characters/": [join(plates, "characters")] } : {};
 const TYPES = { ".html": "text/html; charset=utf-8", ".mjs": "text/javascript", ".js": "text/javascript", ".json": "application/json", ".css": "text/css; charset=utf-8", ".png": "image/png", ".woff2": "font/woff2", ".lwd": "text/plain; charset=utf-8", ".wgsl": "text/plain", ".pgm": "application/octet-stream", ".svg": "image/svg+xml" };

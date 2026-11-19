@@ -1,0 +1,53 @@
+// DETMATH sin and cos (games/low-water/design/DETMATH.md), copied from the camera rig's
+// games/low-water/world/play/native/detmath.bld. The JS twin is lettering/lib/fourier/kernel.mjs.
+
+const DPI: f64 = 3.141592653589793;
+const TAU: f64 = 6.283185307179586;
+const PIO2_HI: f64 = 1.57079632673412561417;
+const PIO2_LO: f64 = 6.07710050650619224932e-11;
+const INV_PIO2: f64 = 6.36619772367581382433e-1;
+
+const S1: f64 = -1.66666666666666324348e-1;
+const S2: f64 = 8.33333333332248946124e-3;
+const S3: f64 = -1.98412698298579493134e-4;
+const S4: f64 = 2.75573137070700676789e-6;
+const S5: f64 = -2.50507602534068634195e-8;
+const S6: f64 = 1.58969099521155010221e-10;
+const C1: f64 = 4.16666666666666019037e-2;
+const C2: f64 = -1.38888888888741095749e-3;
+const C3: f64 = 2.48015872894767294178e-5;
+const C4: f64 = -2.75573143513906633035e-7;
+const C5: f64 = 2.08757232129817482790e-9;
+const C6: f64 = -1.13596475577881948265e-11;
+
+fn ksin(r: f64) -> f64 {
+    let z = r * r;
+    r + r * z * (S1 + z * (S2 + z * (S3 + z * (S4 + z * (S5 + z * S6)))))
+}
+
+fn kcos(r: f64) -> f64 {
+    let z = r * r;
+    1.0 - 0.5 * z + z * z * (C1 + z * (C2 + z * (C3 + z * (C4 + z * (C5 + z * C6)))))
+}
+
+fn quadrant(x: f64) -> f64 {
+    let k = (x * INV_PIO2 + 0.5).floor();
+    ((k % 4.0) + 4.0) % 4.0
+}
+
+fn reduced(x: f64) -> f64 {
+    let k = (x * INV_PIO2 + 0.5).floor();
+    (x - k * PIO2_HI) - k * PIO2_LO
+}
+
+fn dsin(x: f64) -> f64 {
+    let r = reduced(x);
+    let q = quadrant(x);
+    if q == 0.0 { ksin(r) } else if q == 1.0 { kcos(r) } else if q == 2.0 { -ksin(r) } else { -kcos(r) }
+}
+
+fn dcos(x: f64) -> f64 {
+    let r = reduced(x);
+    let q = quadrant(x);
+    if q == 0.0 { kcos(r) } else if q == 1.0 { -ksin(r) } else if q == 2.0 { -kcos(r) } else { ksin(r) }
+}

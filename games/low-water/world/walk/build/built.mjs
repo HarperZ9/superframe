@@ -16,7 +16,7 @@ export async function makeBuilt({ dev, stage, world, roads, near, lights, vbuf }
   const sites = [];
   // a town is planned on the ground it stands on, so not before that ground has arrived at full detail
   for (const s of world.json.settlements) if (s.region === 1) {
-    const site = { x: (s.x + 0.5) * world.cell, z: (s.y + 0.5) * world.cell, reach: 460, from: 2600, plan: null };
+    const site = { s, x: (s.x + 0.5) * world.cell, z: (s.y + 0.5) * world.cell, reach: 460, from: 2600, plan: null };
     site.here = () => world.has(site.x - site.reach, site.z - site.reach, site.x + site.reach, site.z + site.reach);
     site.ensure = () => site.plan || (site.here() ? (site.plan = town.plan(world, roads, s)) : null);
     site.stamp = (t) => { const P = site.ensure(); if (P) town.stamp(P, t); };
@@ -35,7 +35,7 @@ export async function makeBuilt({ dev, stage, world, roads, near, lights, vbuf }
     const s = sites.find((q) => !q.buf && Math.hypot(q.x - cam.x, q.z - cam.z) < q.from + q.reach && q.here());
     if (!s) return;
     const m = s.build();
-    s.buf = vbuf(m.data); s.n = m.data.length / 12; s.inst = vbuf(new Float32Array([m.origin[0], m.origin[1], m.origin[2], 0])); tris += s.n / 3;
+    s.buf = vbuf(m.data); s.mesh = m; s.n = m.data.length / 12; s.inst = vbuf(new Float32Array([m.origin[0], m.origin[1], m.origin[2], 0])); tris += s.n / 3;
   }
   function draw(pass, which) {
     pass.setPipeline(which === "shadow" ? shadowPipe : pipe);

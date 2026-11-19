@@ -46,7 +46,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: cargo install --git https://github.com/HarperZ9/buildlang --rev 102ce134864548bad2068130eb15c3493f212e03 --locked buildlang --bin buildc
+      - run: cargo install --git https://github.com/HarperZ9/buildlang --rev 1878a08784169755903680c668ce422233c4b707 --locked buildlang --bin buildc
       - run: python -m pip install -r packages/requirements.txt
       - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/daw/tests/test_native.py packages/daw/tests/test_clap.py packages/daw/tests/test_clap_organ.py packages/daw/tests/test_vst3.py packages/daw/tests/test_mpe.py
         env:
@@ -78,6 +78,11 @@ jobs:
       # Low Water's world generator is BuildLang: the same seed must give the same bytes, every river
       # must run downhill to water, and a planted uphill river must fail (linux has node 20+ on the runner).
       - run: node --test games/low-water/world/tests/world.test.mjs
+        env:
+          BUILDC: buildc
+      # The fourier lettering kernel is BuildLang: its resampling, descriptors, pixel-error cut and alignment must
+      # give the browser twin's bits on real glyph outlines, and a kernel with one sum reassociated must not.
+      - run: node --test lettering/native/fourier-native.test.mjs
         env:
           BUILDC: buildc
       # e-means: the study program is BuildLang end to end; its output must equal the stored results.

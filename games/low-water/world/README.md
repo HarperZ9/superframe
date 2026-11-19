@@ -59,6 +59,52 @@ Stills and frame times come from `tools/shot.mjs`, which drives a headless brows
 node games/low-water/world/tools/shot.mjs --out stills --views all
 ```
 
+## Play it
+
+The walk page puts Lamb on the island: the player, built by the character forge (`characters/cast/lamb.mjs`), animated from the shared clips and gaits (`characters/anim/`), lit by the town's own lamps and carrying a lantern that lights the snow round it. Four cameras, switched with V, the gamepad's Y or the small control at the bottom right, each blending into the next over 0.9 s with no cut:
+
+- **Follow** (the default). A spring arm over the right shoulder that leads the walk by a third of a second, gives way at once to walls, roofs, trunks and the ground and comes back slowly. In open country, with nothing standing within 16 m, it draws back over ten seconds to 15 m and a little higher, so the figure reads small in a large place; near walls it comes in again.
+- **Eyes.** First person: the eye over the neck, the stride's rise and fall from the gait's own phase, the lantern brought up into the lower left of the view, the head and hat not drawn.
+- **Plan.** The 2D game's fixed three-quarter angle (yaw 26, down 30, `design/CAMERA.md`), orthographic, a person about 134 px tall in a 1080-line view at zoom 1. The wheel zooms from 0.4 to 5 times; R turns the view a quarter. Whatever stands between the eye and the walker is cut away by an ordered dither (`cutaway` in `walk/common.wgsl`). The change into it is a dolly zoom: the field narrows to 3 degrees while the eye draws back, and the switch to a true orthographic view comes at the end.
+- **Fly.** Free flight for exploring and building, faster the higher it goes, kept 1.5 m over the ground and out of anything built. F goes to it and back.
+
+Keys: W A S D move, Shift runs, E reaches. A gamepad: the left stick moves, the right looks, the left stick's click or RT runs, A reaches. A phone: the left thumb is a stick wherever it lands, the right drags to look. `?cam=iso` starts in a camera, `?at=hoarstead-main-street` at a named viewpoint, `?play=0` gives the old free camera with no walker.
+
+### The parts
+
+The logic lives in `play/` and touches no browser or GPU (a test enforces it), so the native engine can run the same modules; `walk/player.mjs` and `walk/devices.mjs` are the browser's half.
+
+| Module | Holds |
+|---|---|
+| `play/controller.mjs` | the body: walk 1.45 m/s and run 4.6 m/s, Tobler's rule on slopes, a wade from knee depth, turned back by chest-deep water and by slopes over 42 degrees, pushed out of walls and trunks |
+| `play/animator.mjs` | idle, walk and run blended by speed, start and stop (the stride settles onto double support), turning on the spot in small steps, wading, leaning into slopes and curves, coat springs and wind on the coat, first-person arms (walk sway, the look, a reach); each foot locked to the ground while it bears weight, set on the ground's real height by two-bone IK (heel and toe both above it, so a foot on a stair stands on the step its toe reaches), a toe-off before the leg runs out of reach, and the hips dropped so the lower foot reaches |
+| `play/camera.mjs` | the four cameras and the blend, in framing space (target, heading, pitch, distance, field) |
+| `play/solids.mjs` | what cannot be passed: houses as walls and roof prisms, trunks, lamp posts and the works' vessels as cylinders, read lazily per 32 m cell; a signed distance, a sphere cast and a push-out |
+| `play/input.mjs` | keys, mouse, gamepad and touch to one intent |
+| `play/viewpoints.mjs` | named places to stand, worked out from the world (below) |
+| `play/geocheck.mjs` | is an eye inside the drawn triangles: the check the camera tests use |
+
+### Viewpoints
+
+A still or a spawn names a viewpoint instead of carrying coordinates, so a change to the generator moves the view with the thing it looks at. Each is checked to stand half a metre clear of every solid and on dry ground.
+
+| Name | Worked out from |
+|---|---|
+| `<town>-main-street` | the town's plan: a third of the way along its street, looking down it past at least four houses, at night |
+| `<town>-lane` | the town's longest side lane, from near its mouth |
+| `<town>-approach` | the road outside the town, looking in, at dusk |
+| `works-across-water` | the bearing from the furnaces with the most open water between, on the shore |
+| `works-yard` | the concrete 160 m from the furnaces, toward the island's middle |
+| `fog-forest-road` | the road point in the fog forest with the most forest cover round it, looking along the road, at dawn |
+| `fog-forest-under` | 30 m off that road among the trunks |
+
+```bash
+node games/low-water/world/tools/shot.mjs --out play --play "street=hoarstead-main-street,follow,20"
+node games/low-water/world/tools/shot.mjs --out check --check "hoarstead-main-street,40;fog-forest-road,40"
+```
+
+`--play name=viewpoint,camera[,seconds[,run]]` writes a still and, with seconds, a walk at a steady 30 frames a second. `--check` walks the follow camera from each viewpoint, swung toward the walls every few seconds, and tests every eye against the triangles the page draws (not the solids the camera steers by); then the same walk with collision off and with a wall planted behind the walker. The runs with collision off must show frames in geometry, or the check proves nothing.
+
 ## The plate
 
 ```bash
@@ -95,3 +141,7 @@ BUILDC=buildc node --test games/low-water/world/tests/world.test.mjs
 ## Language
 
 The generator is BuildLang. The raster reader and the checks are JavaScript modules run by node, the form every other Low Water test takes. The debt: the checks themselves, which could move once buildc can read a file of this size quickly.
+
+The camera rig is also BuildLang: `play/native/` is a port of `play/camera.mjs` (all four cameras and the blends, with the ground as the thing to collide with), compiled by buildc's C backend to a native executable. Both use the DETMATH functions (`design/DETMATH.md`; `play/math.mjs` adds `dlog` by the same rules), and on a 900-frame walk through every camera the two give the same bits on every frame (`tests/camera-native.test.mjs`; the control, the lead changed from 0.35 s to 0.36 s in the BuildLang copy, differs on 702 frames). It is not yet wired into the native shell (`lw_game_view` in `games/low-water/runtime/game/main.bld`, superframe#132), and the solids and drawn meshes it steers by in the browser are not ported.
+
+The rest of `play/` (the body, the animation, the solids, the input) is JavaScript with no browser or GPU inside it. The debt, measured on 2026-11-18: buildc 1.15.0's wasm target refuses `sqrt` ("no WASM runtime for `sqrt`"), so the browser page cannot call the BuildLang camera and keeps its JavaScript twin, held equal by the test above; and the animation reads the character modules (`characters/`), which are JavaScript too.
