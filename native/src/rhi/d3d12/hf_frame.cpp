@@ -62,19 +62,26 @@ public:
         f.size[0] = float(c.w); f.size[1] = float(c.h); f.size[2] = 1.0f / c.w; f.size[3] = 1.0f / c.h;
         f.jitter[0] = float(jx); f.jitter[1] = float(jy);
         const double ca = std::cos(scene.moonHalfAngle);
-        f.moonDir[0] = scene.moonDir[0]; f.moonDir[1] = scene.moonDir[1]; f.moonDir[2] = scene.moonDir[2]; f.moonDir[3] = float(ca);
+        // the look's turn of the sky: the map's lookup turns by skyTurn, so the disc's world bearing turns back by it
+        const float ct = std::cos(o.skyTurn), st = std::sin(o.skyTurn);
+        f.moonDir[0] = scene.moonDir[0] * ct + scene.moonDir[2] * st; f.moonDir[1] = scene.moonDir[1]; f.moonDir[2] = -scene.moonDir[0] * st + scene.moonDir[2] * ct; f.moonDir[3] = float(ca);
         const float omega = float(2.0 * 3.14159265358979 * (1.0 - ca));
         // the night sky's map is bright beside the lamps; scaled so a street lamp at five metres gives
         // the snow under it a few times the moon's light, and moonlit snow away from the lamps still reads
-        constexpr float kSky = 0.3f;
-        f.moonRad[0] = scene.moonRadiance[0] * kSky; f.moonRad[1] = scene.moonRadiance[1] * kSky; f.moonRad[2] = scene.moonRadiance[2] * kSky; f.moonRad[3] = omega;
-        f.skyParams[0] = scene.skyRotate; f.skyParams[1] = kSky; f.skyParams[2] = 0.0f; f.skyParams[3] = float(std::pow(2.0, -0.5 + o.exposureEV));
-        f.cluster[0] = 0.2f; f.cluster[1] = 400.0f; f.cluster[2] = float(std::log(400.0 / 0.2)); f.cluster[3] = float(c.lightCount);
-        f.fog[0] = 0.012f; f.fog[1] = 0.08f; f.fog[2] = 0.55f; f.fog[3] = 220.0f;
+        const float kSky = o.skyScale, kMoon = o.skyScale * o.moonScale;
+        f.moonRad[0] = scene.moonRadiance[0] * kMoon; f.moonRad[1] = scene.moonRadiance[1] * kMoon; f.moonRad[2] = scene.moonRadiance[2] * kMoon; f.moonRad[3] = omega;
+        f.skyParams[0] = scene.skyRotate + o.skyTurn; f.skyParams[1] = kSky; f.skyParams[2] = 0.0f; f.skyParams[3] = float(std::pow(2.0, -0.5 + o.exposureEV));
+        const float cFar = std::max(400.0f, o.fogMax); f.cluster[0] = 0.2f; f.cluster[1] = cFar; f.cluster[2] = float(std::log(cFar / 0.2)); f.cluster[3] = float(c.lightCount);
+        f.fog[0] = o.fogDensity; f.fog[1] = o.fogFalloff; f.fog[2] = o.fogG; f.fog[3] = o.fogMax;
         uint32_t fl = (o.gi ? 1u : 0) | (o.reflect ? 2u : 0) | (o.gtao ? 4u : 0) | (o.fog ? 8u : 0) | (o.restir ? 16u : 0) | (o.snow ? 32u : 0) | (o.taa ? 64u : 0) |
                       (o.glints ? 128u : 0) | (o.sss ? 256u : 0) | (o.shadows ? 512u : 0) | (o.pom ? 1024u : 0) | (o.bloom ? 2048u : 0) | (reset ? 4096u : 0);
         f.counts[0] = frame; f.counts[1] = fl; f.counts[2] = c.skyIndex; f.counts[3] = ptCount;
-        f.timeParams[0] = o.time; f.timeParams[1] = 1.1f; f.timeParams[2] = 0.35f; f.timeParams[3] = 0.15f;
+        f.timeParams[0] = o.time; f.timeParams[1] = o.snowSpeed; f.timeParams[2] = o.windX; f.timeParams[3] = o.windZ;
+        for (int k = 0; k < 3; ++k){ f.grade0[k] = o.whiteBalance[k]; f.grade1[k] = o.lift[k]; }
+        f.grade0[3] = o.saturation; f.grade1[3] = o.contrast;
+        f.grade2[0] = o.vignette; f.grade2[1] = o.lensFocus; f.grade2[2] = o.lensBand; f.grade2[3] = o.lensStrength;
+        f.lens[0] = o.reference ? 0u : o.lens;
+        f.look[0] = o.fogAmbient;
         f.dbg[0] = o.debugView; f.dbg[1] = c.smokeCount;
         // skinned vertices from dbg.z; dbg.w: this frame skins, so their last positions are valid motion
         f.dbg[2] = c.skinCount ? c.skinFirstVertex : 0xFFFFFFFFu; f.dbg[3] = c.skinPending && c.skinEver && !reset ? 1u : 0u;

@@ -31,7 +31,17 @@ Surf surface(uint mi, Vtx v, float3 ng, float3 viewDir, float lod, float2 dx, fl
     if (dot(s.n, s.ng) < 0.0f) { s.n = -s.n; }
     const float3 T = normalize(v.t.xyz - s.n * dot(v.t.xyz, s.n) + 1e-6f);
     const float B = v.t.w < 0.0f ? -1.0f : 1.0f;
-    if (m.kind >= K_SKIN) return charSurface(s, m, v, T, B, viewDir, lod, dx, dy);
+    if (m.kind >= K_SKIN && m.kind <= K_HAIR) return charSurface(s, m, v, T, B, viewDir, lod, dx, dy);
+    if (m.kind == K_WATER) {
+        // dark, nearly still water: a long low swell across the view stretches each light into a
+        // vertical streak, as long exposures of harbour water do; Fresnel from water's f0
+        const float2 q = v.p.xz;
+        const float wx = sin(q.y * 1.7f + 0.6f * sin(q.x * 0.21f)) * 0.5f + sin(q.y * 4.3f + q.x * 0.35f) * 0.25f + (n2(q * float2(0.4f, 3.0f)) - 0.5f) * 0.6f;
+        const float wz = (n2(q * float2(0.25f, 2.2f) + 7.0f) - 0.5f) * 0.4f;
+        s.n = normalize(float3(wz * 0.035f, 1.0f, wx * 0.06f));
+        s.albedo = float3(0.008f, 0.011f, 0.013f); s.rough = 0.025f; s.f0 = 0.02f;
+        return s;
+    }
     if (m.kind == K_LAMP) {
         s.albedo = 0.6f; s.rough = 0.6f; s.emis = v.c.rgb * v.c.a * 5.0f;
         return s;
