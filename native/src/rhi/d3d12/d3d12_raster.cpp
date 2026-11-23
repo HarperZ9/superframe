@@ -32,10 +32,18 @@ bool rootSignature(ID3D12Device* d, std::span<const RasterBinding> layout, ComPt
     }
     D3D12_ROOT_SIGNATURE_DESC rd{};
     rd.NumParameters = (UINT)layout.size(); rd.pParameters = params;
+    // Unlock SM 6.6+ / SM 6.9 true bindless ResourceDescriptorHeap[] & SamplerDescriptorHeap[] on all raster passes!
+    rd.Flags = D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED | D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED;
     ComPtr<ID3DBlob> blob, msg;
     HRESULT hr = D3D12SerializeRootSignature(&rd, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &msg);
-    if (FAILED(hr)){ err = hrError("root signature for raster pass " + pass, hr) + (msg ? ": " + std::string((const char*)msg->GetBufferPointer(), msg->GetBufferSize()) : ""); return false; }
-    if (FAILED(hr = d->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&out)))){ err = hrError("CreateRootSignature " + pass, hr); return false; }
+    if (FAILED(hr) || FAILED(hr = d->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&out)))){
+        // Graceful fallback on legacy/WARP adapters that lack bindless heap indexing:
+        rd.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
+        blob.Reset(); msg.Reset();
+        hr = D3D12SerializeRootSignature(&rd, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &msg);
+        if (FAILED(hr)){ err = hrError("root signature for raster pass " + pass, hr) + (msg ? ": " + std::string((const char*)msg->GetBufferPointer(), msg->GetBufferSize()) : ""); return false; }
+        if (FAILED(hr = d->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&out)))){ err = hrError("CreateRootSignature " + pass, hr); return false; }
+    }
     return true;
 }
 }  // namespace

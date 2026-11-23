@@ -147,7 +147,7 @@ inline constexpr uint32_t kMaxColorTargets = 4;
 // The most bindings one raster pipeline may declare. A deferred lighting pass reads a
 // G-buffer, shadow maps and a light list in one draw; 16 root parameters stay well inside
 // D3D12's 64-DWORD root signature (a table costs 1, a root CBV or UAV 2).
-inline constexpr uint32_t kMaxRasterBindings = 16;
+inline constexpr uint32_t kMaxRasterBindings = 60;
 struct RasterPipelineDesc {
     const char* label{""};
     ShaderCode vertex, fragment;   // WGSL: one module with entry points vs and fs, given twice
