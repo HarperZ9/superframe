@@ -5,6 +5,8 @@ Comprehensive color analysis tool with bidirectional input controls,
 multi-space conversion, CVD simulation, and color difference metrics.
 """
 
+import logging
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QGridLayout,
@@ -85,6 +87,9 @@ _CSS_COLORS = {
 }
 
 
+logger = logging.getLogger(__name__)
+
+
 def _nearest_css_name(r: int, g: int, b: int) -> str:
     """Find the closest CSS color name by Euclidean distance."""
     try:
@@ -95,8 +100,8 @@ def _nearest_css_name(r: int, g: int, b: int) -> str:
         rgb = np.array([r, g, b], dtype=np.float64) / 255.0
         name, _distance = nearest_css_name(rgb)
         return name
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("Falling back to local CSS color table for (%d, %d, %d): %s", r, g, b, exc)
     best_name = "black"
     best_dist = float("inf")
     for name, (cr, cg, cb) in _CSS_COLORS.items():

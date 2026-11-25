@@ -4,6 +4,8 @@ Settings Page
 Application preferences, about information, and keyboard shortcut reference.
 """
 
+import logging
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QComboBox,
@@ -20,6 +22,9 @@ from PyQt6.QtWidgets import (
 )
 
 from build_color.gui.app import C, Card, Heading
+
+
+logger = logging.getLogger(__name__)
 
 
 class SettingsPage(QWidget):
@@ -215,7 +220,8 @@ class SettingsPage(QWidget):
         try:
             __import__(f"build_color.{name}")
             return True
-        except Exception:
+        except Exception as exc:
+            logger.debug("Optional module build_color.%s check failed: %s", name, exc)
             return False
 
     @staticmethod
