@@ -17,7 +17,7 @@ where which who whose why will with would you your about after before into than 
 SYNONYMS = {
     "bdb": ("qdb", "BuildDB"), "qdb": ("bdb", "BuildDB"), "builddb": ("qdb", "bdb"),
     "cmmns": ("daylight",), "daylight": ("cmmns",),
-    "plygrnd": ("playground",), "zentropy": ("harper",),
+    "plygrnd": ("playground",),
 }
 
 

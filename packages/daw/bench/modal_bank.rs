@@ -2,7 +2,20 @@
 // Modal bank cost: N two-pole resonators driven by one input, summed, per sample.
 use std::time::Instant;
 fn main() {
-    let n_modes: usize = std::env::args().nth(1).map(|s| s.parse().unwrap()).unwrap_or(1024);
+    let n_modes: usize = match std::env::args().nth(1) {
+        Some(arg) => match arg.parse::<usize>() {
+            Ok(n) if n > 0 => n,
+            Ok(_) => {
+                eprintln!("error: mode count must be greater than 0");
+                std::process::exit(2);
+            }
+            Err(err) => {
+                eprintln!("error: invalid mode count '{}': {}", arg, err);
+                std::process::exit(2);
+            }
+        },
+        None => 1024,
+    };
     let fs = 48000usize; let s = fs * 2;
     let mut a1 = vec![0f32; n_modes]; let mut a2 = vec![0f32; n_modes]; let b = vec![1.0f32 / n_modes as f32; n_modes];
     let (mut y1, mut y2) = (vec![0f32; n_modes], vec![0f32; n_modes]);

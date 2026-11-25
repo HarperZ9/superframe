@@ -5,6 +5,8 @@ Overview page with quick stats, navigation shortcuts,
 and library information.
 """
 
+import logging
+
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (
     QGridLayout,
@@ -18,6 +20,9 @@ from PyQt6.QtWidgets import (
 )
 
 from build_color.gui.app import C, Card, Heading, Stat
+
+
+logger = logging.getLogger(__name__)
 
 
 class DashboardPage(QWidget):
@@ -173,8 +178,8 @@ class DashboardPage(QWidget):
             try:
                 __import__(f"build_color.{name}")
                 count += 1
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Optional module build_color.%s unavailable: %s", name, exc)
         return str(count)
 
     @staticmethod
@@ -186,6 +191,6 @@ class DashboardPage(QWidget):
             if test_dir.is_dir():
                 tests = list(test_dir.glob("test_*.py"))
                 return f"{len(tests)} files"
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning("Failed to count build_color tests: %s", exc)
         return "\u2014"
