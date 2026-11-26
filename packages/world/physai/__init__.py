@@ -40,6 +40,26 @@ from .env_receipts import (  # noqa: F401
     trajectory_sha256,
     verify_episode_receipt,
 )
+from .noh3_world_bridge import (  # noqa: F401
+    BuckinghamPiScaleNormalizer,
+    CODITFaultGuard,
+    CODITQuarantineEvent,
+    CausticSparseScheduler,
+    LivingWorldTickBridge,
+    WorldActor,
+    spawn_mixed_world_actors,
+)
+from .tree_biomechanics import (  # noqa: F401
+    SPECIES_PRESETS,
+    SpeciesBiomech,
+    TreeStructure,
+    TreeWindBiomechanics,
+    compute_tree_structure,
+    verify_tree_energy_bound,
+    verify_white_furnace_bound,
+    vogel_drag_force,
+    wet_leaf_pbr_response,
+)
 from .rigid_contact import (  # noqa: F401
     MATERIAL_PRESETS,
     ContactConstraint,
