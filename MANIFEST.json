@@ -16370,6 +16370,18 @@
    "sourceSha256": "1a0824f5944dc494535cdd9c05857db46c17cbf2f41957698926a8f3debb94bd"
   },
   {
+   "path": "packages/studio-libs/render-sound/instruments/estuary-clock.mjs",
+   "source": "repo",
+   "bytes": 9944,
+   "sourceSha256": "f3f150264c1a7eeac3337c4ab63446fa2b72b9bd9a92d501fdf79b8c723e66b8"
+  },
+  {
+   "path": "packages/studio-libs/render-sound/instruments/estuary-space.mjs",
+   "source": "repo",
+   "bytes": 11079,
+   "sourceSha256": "15d8a534a19c5d1dcef299e9b33a9230ad7a0d79cbe696146b7206852fa3eafb"
+  },
+  {
    "path": "packages/studio-libs/render-sound/instruments/fft.mjs",
    "source": "repo",
    "bytes": 2494,
@@ -16384,8 +16396,8 @@
   {
    "path": "packages/studio-libs/render-sound/instruments/index.mjs",
    "source": "repo",
-   "bytes": 1189,
-   "sourceSha256": "285a7b38b91f3209e714c744e0aa9c61df3ba40d407750b347e3ac0957c42590"
+   "bytes": 1911,
+   "sourceSha256": "a86156a5f17b1fa4b09f8f88d9a8223e0ecd9396470236e099976010f7433243"
   },
   {
    "path": "packages/studio-libs/render-sound/instruments/inst/drums.mjs",
@@ -16436,6 +16448,18 @@
    "sourceSha256": "960bcdd2bab8eaf59f8c11c6f5a6ac18faddf5459fbe88a1ae3c92ecdd7622f8"
   },
   {
+   "path": "packages/studio-libs/render-sound/instruments/inst/taste-melodic.mjs",
+   "source": "repo",
+   "bytes": 11701,
+   "sourceSha256": "42a03716a10a08e8dadcc6cf8c2c0240fd85dca7237c3f7db7fd1727289812c5"
+  },
+  {
+   "path": "packages/studio-libs/render-sound/instruments/inst/taste-rhythm.mjs",
+   "source": "repo",
+   "bytes": 6897,
+   "sourceSha256": "c535f512bddb7bc365b88cbdd36a1f7e850ce8ae747a9ff35ca90ec0e4c8e499"
+  },
+  {
    "path": "packages/studio-libs/render-sound/instruments/inst/wind.mjs",
    "source": "repo",
    "bytes": 4124,
@@ -16446,6 +16470,12 @@
    "source": "repo",
    "bytes": 3300,
    "sourceSha256": "ef3bee3b249b558c1633a29e8dced9545d9b83d2ae6b7f9979b4d57b57bda590"
+  },
+  {
+   "path": "packages/studio-libs/render-sound/instruments/round3-cues.mjs",
+   "source": "repo",
+   "bytes": 20109,
+   "sourceSha256": "bd992cc83bfe84f5bb0e3d986a105eb78e77105aea780fdead852bb7b1990db1"
   },
   {
    "path": "packages/studio-libs/render-sound/package.json",
@@ -16482,6 +16512,12 @@
    "source": "repo",
    "bytes": 9436,
    "sourceSha256": "9835d6cb3ecc84b10d7815a2e50e9bab1778255f22bcd24feb0609cde9fdec79"
+  },
+  {
+   "path": "packages/studio-libs/render-sound/test/wave30a-taste-estuary.test.mjs",
+   "source": "repo",
+   "bytes": 7673,
+   "sourceSha256": "e3743ae376a3eb74d6eeba76353b31f46e1145aeb233180010a1e12afbb9d407"
   },
   {
    "path": "packages/studio-libs/scripts/sync-to-site.mjs",
