@@ -6,7 +6,7 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from . import drude, optics, schema, spectral  # noqa: F401
+from . import drude, optics, proc_material, proc_mesh_forge, schema, spectral  # noqa: F401
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 
