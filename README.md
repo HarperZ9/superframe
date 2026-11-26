@@ -1,16 +1,17 @@
-# Superframe
+# Superframe (The Playground)
 
-Describe a piece in plain words and get it back in every medium at once: a painting, a page of living type, a line drawing, a carved material, a sound and a touch pattern. All of them come from one seeded recipe. You can then read the piece back as a study of its own parts, in whichever sense works for you.
-
-This repository is The Playground: the engine. Superframe is its core, and the renderers, type, sound, material and study packages that used to live in separate repositories are moving into `packages/` here, each with its history.
+The Playground rendering and simulation engine. Describe a piece in plain words and get it back across media from one seeded recipe: paint, living type, line drawings, relief materials, sound, and tactile patterns. Beside the seeded artifact engine, the same repository holds the C++23 GPU renderer, Low Water, 6-DOF physical-AI and biomechanical tree simulation, ITU-R BT.2020/2100 spectral optics, the `NOH-3` world bridge, and measured study tools.
 
 | Where | What |
 |---|---|
-| `superframe/`, `creation/`, `typeengine/` and the folders beside them | the core: laws, media and measures |
-| `packages/` | instruments and study tools, each with known-answer tests |
-| `library/` | reference material and the tools that gather it: `library/open-archives` searches free archives and museum collections with one query, downloads what you pick and tags each item with its licence (AGPL-3.0-only; moved here from its own repository) |
-| `native/` | the C++23 renderer (formerly raw-native): a fast real-time path beside a slower reference path, on Direct3D 12, Vulkan and WebGPU. Build and test from inside `native/`; see `native/README.md` |
-| `games/low-water/` | Low Water, the narrative action game built on the engine. `npm run test:games` runs its engine and combat tests. Plate bakes and media are reproducible and stay out of the repository, so the six tests that read a bake report as skipped until the plates are baked |
+| `superframe/`, `creation/`, `typeengine/` | Core seeded artifact engine: 15 laws, 181 technique nodes, 31 converters, living type, and measured study libraries |
+| `native/` | C++23 renderer (Direct3D 12, Vulkan, WebGPU) with modular WGSL shader assembly (`native/src/renderer/gpu/shaders/`) and BuildLang parity shaders (`native/bld/`). See `native/README.md` |
+| `games/low-water/` | Low Water, the narrative action game built on the engine. `npm run test:games` runs its engine, weather, light, paint, and combat tests |
+| `packages/world/physai/` | SI rigid-body PGS/Coulomb contact physics, 6-DOF aerospace and powered-descent dynamics, biomechanical tree dynamics, and the `NOH-3` world bridge (Buckingham-Pi scale normalizer, caustic sparse scheduler, CODIT fault guard) |
+| `packages/lenspipe/`, `packages/crt/` | ITU-R BT.2020/2100 PQ spectral optics, Draine-HG scattering, dark-mist radiance, Sellmeier dispersion/caustics, and CRT phosphor/scanline physics |
+| `packages/superstack/`, `packages/kernels/` | Shared colour/hash kernels (`kcore`) and stdlib-only canonical SHA-256 `engine-receipt/1` emission and verification (`packages/superstack/engine_receipt.py`) |
+| `packages/` | Additional instruments and study tools (colour mixing, DAW/sound, CAD/EDA, fractals, voxels, weave, study tools), each with known-answer tests |
+| `library/open-archives/` | Cross-archive search and download tool tagging each downloaded item with its licence (AGPL-3.0-only) |
 
 ```
 npm run make -- "heavy rust coral upper left, fine teal frost on the right, \"seeing sounds, hearing images\"" out/first --seed first
@@ -133,20 +134,23 @@ Each library below was written against a pre-registration: the predictions, thre
 
 ## Run the tests
 
+```bash
+npm test                 # core JS engine, laws, sound, type, and measured libraries
+npm run test:packages    # JS package suites and cross-language superstack vector parity
+npm run test:py          # Python suites across packages/ (physai, lenspipe, crt, kcore, superstack, colour) and library/open-archives/
+npm run test:games       # Low Water engine, weather, light, paint, and combat suites
+npm run test:rooms       # room solver suites
+npm run test:slow        # name-art mosaic, site-music, and ear controls (~100s)
 ```
-npm test
-```
 
-There are 835 tests. On a clean clone 817 pass and 18 skip: the skipped ones need a render, a light table, the reference library or a native build that this repository does not carry. `npm run test:slow` runs the seven name-art mosaic tests, which take about 100 seconds. The tests cover these properties:
+The suites verify:
 
-- the same recipe gives the same bytes;
-- an edit changes nothing outside its element's region or its time window, with a control that proves the check can fail;
-- an unused word changes nothing;
-- the metamer split;
-- golden hashes for every node;
-- each measured library's predictions, with a control beside each that must fail.
+- byte-identical output for the same recipe and seed;
+- local edit isolation (an edit changes nothing outside its element's region or time window, paired with a control that fails if isolation breaks);
+- metamer splits, golden node hashes, and known-answer physics/optics bounds with planted-wrong controls;
+- fail-closed canonical `engine-receipt/1` SHA-256 verification (`packages/superstack/engine_receipt.py`).
 
-Node 24 or later. The JavaScript engine has no dependencies. Python 3 runs the study verifier, with the standard library only. The instruments in `packages/` have their own tests and pinned Python dependencies: see `packages/README.md`.
+Node 24 or later. The JavaScript engine has no third-party runtime dependencies. Python 3 runs the study verifier and `engine_receipt.py` using the standard library alone; `packages/` Python tests list their dependencies in `packages/README.md`.
 
 ## Limits
 
