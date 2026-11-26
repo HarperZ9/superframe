@@ -40,6 +40,17 @@ from .env_receipts import (  # noqa: F401
     trajectory_sha256,
     verify_episode_receipt,
 )
+from .latency_sim import (  # noqa: F401
+    SIM_DT,
+    SIM_HZ,
+    LatencyRolloutMetrics,
+    LatencyVehicleEnv,
+    benchmark_fast_vs_overthinking,
+    run_latency_quadrotor_rollout,
+    run_latency_vehicle_rollout,
+    vehicle_pd_action,
+    verify_latency_faithful_clock,
+)
 from .noh3_world_bridge import (  # noqa: F401
     BuckinghamPiScaleNormalizer,
     CODITFaultGuard,
