@@ -15,3 +15,20 @@ export { organ, REGISTRATIONS } from "./inst/organ.mjs";
 export { drone, metal, breath, hum } from "./inst/pad.mjs";
 export { pad, strings, choir } from "./inst/synth.mjs";
 export { ep } from "./inst/ep.mjs";
+export {
+  tideRhodes, atlantisSub, coffaroStrand, lateefBreath, sakamotoChamber, sakamotoStrings,
+} from "./inst/taste-melodic.mjs";
+export {
+  POCKET_OFFSETS, pocketGain, pocketKick, pocketSnare, pocketRide, pocketHat, sliceBreak,
+} from "./inst/taste-rhythm.mjs";
+export {
+  hadamard8, fdnReverb, sidechainVca, masterGlueVca, monoMakerLR4, airExciter,
+  truePeak4x, truePeakLimiter4x, kWeightedLufs, estuaryMasterChain,
+} from "./estuary-space.mjs";
+export {
+  createEstuaryClockDrift, extractAudioFeaturesFrame, welchAuditStereo,
+  ROUND3_GATES, verifyRound3Gates,
+} from "./estuary-clock.mjs";
+export {
+  encodeStereoWav16, renderEstuaryCurrent, renderAtlantisGlass, renderCoffaroHorizon,
+} from "./round3-cues.mjs";
