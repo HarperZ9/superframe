@@ -8,7 +8,11 @@
 //   buildc build --release native/bld && native/bld/target/release/main
 
 mod kit;
+mod art_prims;
 mod art_scene;
+mod art_anchor;
+mod art_town_coc;
+mod wave25f_parity;
 
 fn main() ~ Console {
     let mut same: i32 = 0;
@@ -18,10 +22,25 @@ fn main() ~ Console {
     same = same + kit::report("art scene, still life, daylight, 256 x 144, lit buffer", art_scene::lit_hash(0, 256, 144), 0x8e70a9159d2007bf);
     all = all + 1;
 
-    // A control: a different frame must not produce the pinned hash, or the check proves nothing.
+    // tests/test_art_strokes.cpp: anchorCanvas(f, anchorParams(v)) at 256 x 144
+    same = same + kit::report("art anchor, still life, 256 x 144, canvas buffer", art_anchor::anchor_hash(0, 256, 144, 0.0), 0x364d778712fdc849);
+    all = all + 1;
+
+    // tests/test_art_tiltshift.cpp: cocMap(renderFrame(townView(256, 144), townDusk(), 4, Town), town_map)
+    same = same + kit::report("art town + tiltshift, town_map, 256 x 144, CoC buffer", art_town_coc::coc_hash(256, 144, 0.0), 0x2c4cd941314f50b5);
+    all = all + 1;
+
+    // Controls: each module must reject a different frame or tiny parameter perturbation.
     let mut control: i32 = 0;
     if art_scene::lit_hash(1, 256, 144) != 0x8e70a9159d2007bf { control = 1; }
     println!("control: frame 1 differs from the frame 0 pin: {} of 1", control);
+
+    let mut planted: i32 = control;
+    if art_anchor::anchor_hash(0, 256, 144, 0.0000001) != 0x364d778712fdc849 { planted = planted + 1; }
+    if art_town_coc::coc_hash(256, 144, 0.00001) != 0x2c4cd941314f50b5 { planted = planted + 1; }
+    println!("planted controls rejected: {} of {}", planted, all);
+
+    let _p: i32 = wave25f_parity::run_parity_report();
 
     println!("modules identical to the C++: {} of {}", same, all);
 }

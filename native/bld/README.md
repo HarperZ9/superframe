@@ -14,14 +14,22 @@ buildc build --release native/bld
 native/bld/target/release/main
 ```
 
-The runner prints one line a module, `same` or `DIFF`, then a control line and a count. CI fails
-unless the count reads `1 of 1` today, and the number grows with each module.
+The runner prints one line a module, `same` or `DIFF`, then control lines, cross-engine parity
+invariants, and a count. CI fails unless the count reads `3 of 3` today, and the number grows
+with each module.
 
 ## Moved so far
 
 | Module | C++ source | BuildLang | Pinned in |
 |---|---|---|---|
-| Art scene: ray caster, sun shadow, sky and ambient shading, four samples a pixel | `src/renderer/art_scene.cpp`, `art_scene_trace.cpp`, `art_scene_prims.hpp` | `art_scene.bld` | `tests/test_art_strokes.cpp`, lit buffer of frame 0 at 256 x 144, `0x8e70a9159d2007bf` on GCC and MSVC |
+| Art scene: ray caster, sun shadow, sky and ambient shading, four samples a pixel | `src/renderer/art_scene.cpp`, `art_scene_trace.cpp`, `art_scene_prims.hpp` | `art_scene.bld`, `art_prims.bld` | `tests/test_art_strokes.cpp`, lit buffer of frame 0 at 256 x 144, `0x8e70a9159d2007bf` on GCC and MSVC |
+| World anchor: triplanar surface charts and sky cube-map coordinates in f32 canvas layout | `src/renderer/art_anchor.cpp`, `raw/renderer/art_anchor.hpp` | `art_anchor.bld` | `tests/test_art_strokes.cpp`, anchor buffer of frame 0 at 256 x 144, `0x364d778712fdc849` on GCC and MSVC |
+| Three-quarter town ray caster and Scheimpflug tilt-shift CoC map (`town_map`) | `src/renderer/art_scene_town.cpp`, `src/renderer/art_tiltshift.cpp` | `art_town_coc.bld` | `tests/test_art_tiltshift.cpp`, CoC buffer at 256 x 144, `0x2c4cd941314f50b5` on GCC and MSVC |
+
+`wave25f_parity.bld` also links Superframe's 100 Hz latency-faithful simulation mode and Deja-VAE
+10-step Moore-Penrose null-space back-projection invariants directly to compiled BuildLang f64
+arithmetic (`packages/world/tests/test_wave25f_buildlang_parity.py` and
+`superframe/tests/wave25f_cross_engine_parity.test.mjs`).
 
 During the first port all 110,592 colour floats of that frame were also compared one by one
 against a C++ build and were equal.

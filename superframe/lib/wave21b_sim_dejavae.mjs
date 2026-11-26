@@ -25,7 +25,7 @@ function refLaneY(t) {
   );
 }
 
-export function runLatencySim100Hz({ seed = 42, latencyMs = 10.0, totalTicks = 500 } = {}) {
+export function runLatencySim100Hz({ seed = 42, latencyMs = 10.0, totalTicks = 500, gustScale = 1.1 } = {}) {
   if (latencyMs < 0) throw new Error("latencyMs must be non-negative");
   const ticksPerDecision = Math.max(1, Math.ceil(latencyMs / (SIM_DT * 1000)));
   const rng = mulberry32(seed);
@@ -46,7 +46,7 @@ export function runLatencySim100Hz({ seed = 42, latencyMs = 10.0, totalTicks = 5
       staleTicks += 1;
     }
     const alpha = Math.exp(-SIM_DT / 0.4);
-    const noise = (rng() + rng() - 1.0) * 1.1;
+    const noise = gustScale > 0 ? (rng() + rng() - 1.0) * gustScale : 0.0;
     gust = alpha * gust + Math.sqrt(1 - alpha * alpha) * noise;
     const ay = heldAy + gust - 0.18 * vy;
     vy += ay * SIM_DT;

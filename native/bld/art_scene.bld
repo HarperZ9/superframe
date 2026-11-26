@@ -13,23 +13,14 @@ use kit::sub;
 use kit::cross;
 use kit::norm;
 use kit::along;
-use kit::axis;
 use kit::absd;
 use kit::clampd;
-
-// The nearest hit along a ray. t < 0 means nothing was hit.
-struct Hit { t: f64, n: V3, obj: i32, mat: i32, albedo: V3 }
-
-fn no_hit() -> Hit {
-    Hit { t: -1.0, n: v3(0.0, 0.0, 0.0), obj: 0, mat: 0, albedo: v3(0.0, 0.0, 0.0) }
-}
-
-fn consider(best: Hit, t: f64, n: V3, obj: i32, mat: i32, albedo: V3) -> Hit {
-    if t > 0.000000001 && (best.t < 0.0 || t < best.t) {
-        return Hit { t: t, n: n, obj: obj, mat: mat, albedo: albedo };
-    }
-    best
-}
+use art_prims::Hit;
+use art_prims::no_hit;
+use art_prims::consider;
+use art_prims::hit_box;
+use art_prims::hit_sphere;
+use art_prims::hit_cylinder;
 
 fn hit_ground(o: V3, d: V3, best: Hit) -> Hit {
     if absd(d.y) < 0.000000000000001 { return best; }
@@ -42,90 +33,8 @@ fn hit_ground(o: V3, d: V3, best: Hit) -> Hit {
     best
 }
 
-fn hit_box(lo: V3, hi: V3, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best: Hit) -> Hit {
-    let mut t0: f64 = -1.0e300;
-    let mut t1: f64 = 1.0e300;
-    let mut ax: i32 = -1;
-    let mut sign: f64 = 0.0;
-    let mut k: i32 = 0;
-    while k < 3 {
-        let dk: f64 = axis(d, k);
-        let ok: f64 = axis(o, k);
-        if absd(dk) < 0.000000000000001 {
-            if ok < axis(lo, k) || ok > axis(hi, k) { return best; }
-        } else {
-            let inv: f64 = 1.0 / dk;
-            let mut ta: f64 = (axis(lo, k) - ok) * inv;
-            let mut tb: f64 = (axis(hi, k) - ok) * inv;
-            let mut s: f64 = -1.0;
-            if ta > tb {
-                let swap: f64 = ta;
-                ta = tb;
-                tb = swap;
-                s = 1.0;
-            }
-            if ta > t0 { t0 = ta; ax = k; sign = s; }
-            if tb < t1 { t1 = tb; }
-            if t0 > t1 { return best; }
-        }
-        k = k + 1;
-    }
-    if ax < 0 || t0 <= 0.000000001 { return best; }
-    let mut n: V3 = v3(0.0, 0.0, sign);
-    if ax == 0 { n = v3(sign, 0.0, 0.0); }
-    if ax == 1 { n = v3(0.0, sign, 0.0); }
-    consider(best, t0, n, obj, mat, albedo)
-}
-
-fn hit_sphere(c: V3, r: f64, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best: Hit) -> Hit {
-    let q: V3 = sub(o, c);
-    let b: f64 = dot(q, d);
-    let cc: f64 = dot(q, q) - r * r;
-    let disc: f64 = b * b - cc;
-    if disc < 0.0 { return best; }
-    let sq: f64 = sqrt(disc);
-    let mut t: f64 = -b - sq;
-    if t <= 0.000000001 { t = -b + sq; }
-    if t <= 0.000000001 { return best; }
-    consider(best, t, v3((q.x + t * d.x) / r, (q.y + t * d.y) / r, (q.z + t * d.z) / r), obj, mat, albedo)
-}
-
-fn hit_cylinder(x: f64, z: f64, r: f64, y0: f64, y1: f64, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best0: Hit) -> Hit {
-    let mut best: Hit = best0;
-    let qx: f64 = o.x - x;
-    let qz: f64 = o.z - z;
-    let a: f64 = d.x * d.x + d.z * d.z;
-    let b: f64 = qx * d.x + qz * d.z;
-    let cc: f64 = qx * qx + qz * qz - r * r;
-    if a > 0.000000000000001 {
-        let disc: f64 = b * b - a * cc;
-        if disc >= 0.0 {
-            let sq: f64 = sqrt(disc);
-            // the nearer root first; the first one on the side wall is taken
-            let ta: f64 = (-b - sq) / a;
-            let ya: f64 = o.y + ta * d.y;
-            if ta > 0.000000001 && ya >= y0 && ya <= y1 {
-                best = consider(best, ta, v3((qx + ta * d.x) / r, 0.0, (qz + ta * d.z) / r), obj, mat, albedo);
-            } else {
-                let tb: f64 = (-b + sq) / a;
-                let yb: f64 = o.y + tb * d.y;
-                if tb > 0.000000001 && yb >= y0 && yb <= y1 {
-                    best = consider(best, tb, v3((qx + tb * d.x) / r, 0.0, (qz + tb * d.z) / r), obj, mat, albedo);
-                }
-            }
-        }
-    }
-    if absd(d.y) > 0.000000000000001 {
-        let t: f64 = (y1 - o.y) / d.y;
-        let px: f64 = qx + t * d.x;
-        let pz: f64 = qz + t * d.z;
-        if px * px + pz * pz <= r * r { best = consider(best, t, v3(0.0, 1.0, 0.0), obj, mat, albedo); }
-    }
-    best
-}
-
 // the still life: ground, wall, plinth, two spheres, a column, in that order
-fn trace(o: V3, d: V3) -> Hit {
+pub fn trace_still(o: V3, d: V3) -> Hit {
     let mut best: Hit = no_hit();
     best = hit_ground(o, d, best);
     best = hit_box(v3(-6.0, 0.0, -4.6), v3(6.0, 4.0, -4.0), 2, 4, v3(0.58, 0.36, 0.27), o, d, best);
@@ -150,7 +59,7 @@ fn shade(sun_dir: V3, o: V3, d: V3, h: Hit) -> V3 {
     let nl: f64 = dot(h.n, sun_dir);
     let mut sun: f64 = 0.0;
     if nl > 0.0 {
-        let s: Hit = trace(lifted, sun_dir);
+        let s: Hit = trace_still(lifted, sun_dir);
         if !(s.t > 0.0 && s.t < 1.0e30) { sun = nl; }
     }
     // no lamp in daylight and no emission in this scene: both terms are exact zeros in the C++
@@ -187,7 +96,7 @@ pub fn lit_hash(frame: i32, w: i32, h: i32) -> u64 {
                 let dx: f64 = (px - 0.5 * (w as f64)) / focal;
                 let dy: f64 = -(py - 0.5 * (h as f64)) / focal;
                 let d: V3 = norm(v3(f.x + dx * r.x + dy * u.x, f.y + dx * r.y + dy * u.y, f.z + dx * r.z + dy * u.z));
-                let c: V3 = shade(sun_dir, eye, d, trace(eye, d));
+                let c: V3 = shade(sun_dir, eye, d, trace_still(eye, d));
                 cr = cr + c.x / 4.0;
                 cg = cg + c.y / 4.0;
                 cb = cb + c.z / 4.0;

@@ -1,0 +1,209 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// P23 three-quarter town ray caster and Scheimpflug tilt-shift CoC map, ported from
+// src/renderer/art_scene_town.cpp and src/renderer/art_tiltshift.cpp (resolveLens, cocAt, cocMap).
+// Reproduces the pinned town_map CoC hash in tests/test_art_tiltshift.cpp bit for bit.
+
+use kit::V3;
+use kit::v3;
+use kit::dot;
+use kit::sub;
+use kit::cross;
+use kit::norm;
+use kit::absd;
+use art_prims::Hit;
+use art_prims::no_hit;
+use art_prims::consider;
+use art_prims::hit_box;
+use art_prims::hit_sphere;
+use art_prims::hit_cylinder;
+use art_prims::mind;
+use art_prims::maxd;
+
+struct LensGeom {
+    eye: V3,
+    fwd: V3,
+    n: V3,
+    d: f64,
+    fpx: f64,
+    fmm: f64,
+    mm_per_unit: f64,
+    f_num: f64,
+    c_max: f64,
+}
+
+fn round_f32(x: f64) -> f64 {
+    (x as f32) as f64
+}
+
+fn hit_town_ground(o: V3, d: V3, best: Hit) -> Hit {
+    if absd(d.y) < 0.000000000000001 { return best; }
+    let t: f64 = -o.y / d.y;
+    let x: f64 = o.x + t * d.x;
+    let z: f64 = o.z + t * d.z;
+    if absd(x) <= 80.0 && absd(z) <= 80.0 {
+        let mut alb: V3 = v3(0.30, 0.28, 0.25);
+        if absd(z) < 4.0 { alb = v3(0.22, 0.21, 0.20); }
+        return consider(best, t, v3(0.0, 1.0, 0.0), 1, 1, alb);
+    }
+    best
+}
+
+fn hit_person(px: f64, pz: f64, obj: i32, alb: V3, o: V3, d: V3, best0: Hit) -> Hit {
+    let skin: V3 = v3(0.62, 0.46, 0.38);
+    let b1: Hit = hit_cylinder(px, pz, 0.24, 0.0, 1.45, obj, 11, alb, o, d, best0);
+    hit_sphere(v3(px, 1.78 - 0.165, pz), 0.165, obj, 12, skin, o, d, b1)
+}
+
+pub fn trace_town(o: V3, d: V3) -> Hit {
+    let mut best: Hit = no_hit();
+    best = hit_town_ground(o, d, best);
+    // north row (9 houses)
+    best = hit_box(v3(-34.0, 0.0, -11.0), v3(-27.0, 6.0, -5.0), 2, 3, v3(0.62, 0.52, 0.40), o, d, best);
+    best = hit_box(v3(-26.0, 0.0, -11.0), v3(-19.0, 8.0, -5.0), 3, 3, v3(0.55, 0.50, 0.46), o, d, best);
+    best = hit_box(v3(-18.0, 0.0, -11.0), v3(-12.0, 5.5, -5.0), 4, 3, v3(0.66, 0.58, 0.44), o, d, best);
+    best = hit_box(v3(-11.0, 0.0, -11.0), v3(-4.0, 7.0, -5.0), 5, 3, v3(0.48, 0.42, 0.38), o, d, best);
+    best = hit_box(v3(-3.0, 0.0, -11.0), v3(3.0, 9.0, -5.0), 6, 3, v3(0.60, 0.55, 0.50), o, d, best);
+    best = hit_box(v3(4.0, 0.0, -11.0), v3(10.0, 6.0, -5.0), 7, 3, v3(0.58, 0.44, 0.34), o, d, best);
+    best = hit_box(v3(11.0, 0.0, -11.0), v3(17.0, 7.5, -5.0), 8, 3, v3(0.52, 0.50, 0.44), o, d, best);
+    best = hit_box(v3(18.0, 0.0, -11.0), v3(25.0, 5.0, -5.0), 9, 3, v3(0.64, 0.56, 0.46), o, d, best);
+    best = hit_box(v3(26.0, 0.0, -11.0), v3(33.0, 6.5, -5.0), 10, 3, v3(0.50, 0.44, 0.40), o, d, best);
+    // south row (7 houses)
+    best = hit_box(v3(-34.0, 0.0, 5.0), v3(-26.0, 4.0, 10.0), 11, 3, v3(0.56, 0.48, 0.40), o, d, best);
+    best = hit_box(v3(-25.0, 0.0, 5.0), v3(-17.0, 5.0, 10.0), 12, 3, v3(0.62, 0.56, 0.48), o, d, best);
+    best = hit_box(v3(-16.0, 0.0, 5.0), v3(-9.0, 3.6, 10.0), 13, 3, v3(0.50, 0.46, 0.42), o, d, best);
+    best = hit_box(v3(-8.0, 0.0, 5.0), v3(-2.0, 4.5, 10.0), 14, 3, v3(0.60, 0.50, 0.40), o, d, best);
+    best = hit_box(v3(4.0, 0.0, 5.0), v3(11.0, 4.2, 10.0), 15, 3, v3(0.54, 0.50, 0.46), o, d, best);
+    best = hit_box(v3(12.0, 0.0, 5.0), v3(19.0, 5.0, 10.0), 16, 3, v3(0.64, 0.54, 0.42), o, d, best);
+    best = hit_box(v3(20.0, 0.0, 5.0), v3(28.0, 3.8, 10.0), 17, 3, v3(0.52, 0.46, 0.40), o, d, best);
+    // chimneys
+    best = hit_cylinder(-22.0, -8.0, 0.35, 8.0, 9.4, 18, 2, v3(0.45, 0.30, 0.26), o, d, best);
+    best = hit_cylinder(0.5, -9.0, 0.35, 9.0, 10.3, 19, 2, v3(0.45, 0.30, 0.26), o, d, best);
+    // lamp posts
+    best = hit_cylinder(-10.5, -4.4, 0.09, 0.0, 4.2, 20, 6, v3(0.10, 0.10, 0.11), o, d, best);
+    best = hit_cylinder(0.0, -4.6, 0.09, 0.0, 4.2, 21, 6, v3(0.10, 0.10, 0.11), o, d, best);
+    best = hit_cylinder(12.0, 4.4, 0.09, 0.0, 4.2, 22, 6, v3(0.10, 0.10, 0.11), o, d, best);
+    // emissive sodium globes
+    best = hit_sphere(v3(-10.5, 4.45, -4.4), 0.28, 23, 10, v3(0.9, 0.8, 0.6), o, d, best);
+    best = hit_sphere(v3(0.0, 4.45, -4.6), 0.28, 24, 10, v3(0.9, 0.8, 0.6), o, d, best);
+    best = hit_sphere(v3(12.0, 4.45, 4.4), 0.28, 25, 10, v3(0.9, 0.8, 0.6), o, d, best);
+    // lit window, dog, washing
+    best = hit_box(v3(6.0, 2.2, -5.03), v3(7.2, 3.6, -4.98), 26, 7, v3(0.2, 0.2, 0.2), o, d, best);
+    best = hit_box(v3(-6.2, 0.0, 1.2), v3(-5.2, 0.5, 1.6), 27, 8, v3(0.35, 0.24, 0.16), o, d, best);
+    best = hit_box(v3(-1.4, 2.3, 7.4), v3(-0.6, 3.0, 7.5), 28, 9, v3(0.86, 0.84, 0.78), o, d, best);
+    best = hit_box(v3(0.0, 2.4, 7.4), v3(0.9, 3.0, 7.5), 28, 9, v3(0.70, 0.76, 0.84), o, d, best);
+    best = hit_box(v3(1.4, 2.2, 7.4), v3(2.1, 3.0, 7.5), 28, 9, v3(0.84, 0.70, 0.62), o, d, best);
+    best = hit_box(v3(2.6, 2.4, 7.4), v3(3.4, 3.0, 7.5), 28, 9, v3(0.86, 0.84, 0.78), o, d, best);
+    // 7 people
+    best = hit_person(-13.0, 0.15, 40, v3(0.20, 0.18, 0.22), o, d, best);
+    best = hit_person(-7.0, -0.2, 41, v3(0.42, 0.20, 0.16), o, d, best);
+    best = hit_person(0.0, 0.0, 42, v3(0.30, 0.34, 0.40), o, d, best);
+    best = hit_person(6.0, 0.2, 43, v3(0.24, 0.30, 0.22), o, d, best);
+    best = hit_person(12.5, -0.15, 44, v3(0.50, 0.44, 0.30), o, d, best);
+    best = hit_person(1.0, 6.2, 45, v3(0.40, 0.36, 0.34), o, d, best);
+    hit_person(-18.0, 3.4, 46, v3(0.26, 0.24, 0.30), o, d, best)
+}
+
+fn coc_at(g: LensGeom, dir: V3, dist: f64) -> f64 {
+    let cos_a: f64 = dot(dir, g.fwd);
+    let dn: f64 = dot(dir, g.n);
+    let mut t_plane: f64 = -1.0;
+    if absd(dn) > 0.000000000001 {
+        t_plane = (g.d - dot(g.eye, g.n)) / dn;
+    }
+    let sky_z: bool = dist < 0.0;
+    let sky_s: bool = t_plane <= 0.0;
+    if sky_z && sky_s { return 0.0; }
+    let mut s_val: f64 = 0.0;
+    if !sky_s {
+        s_val = maxd(t_plane * cos_a * g.mm_per_unit, 2.0 * g.fmm);
+    }
+    let mut c: f64 = 0.0;
+    if sky_z {
+        c = g.fpx * g.fmm / (g.f_num * (s_val - g.fmm));
+    } else {
+        let z_val: f64 = dist * cos_a * g.mm_per_unit;
+        if sky_s {
+            c = g.fpx * g.fmm / (g.f_num * z_val);
+        } else {
+            c = g.fpx * g.fmm * absd(z_val - s_val) / (g.f_num * z_val * (s_val - g.fmm));
+        }
+    }
+    mind(c, g.c_max)
+}
+
+// Town_map tilt-shift CoC buffer hash at w x h; tilt_eps is 0.0 for the pinned render and
+// non-zero for the planted perturbation control.
+pub fn coc_hash(w: i32, h: i32, tilt_eps: f64) -> u64 {
+    let pi: f64 = 3.141592653589793;
+    let az: f64 = 45.0 * pi / 180.0;
+    let pitch: f64 = 35.0 * pi / 180.0;
+    let dist_cam: f64 = 46.0;
+    let target: V3 = v3(0.0, 0.8, 0.0);
+    let eye: V3 = v3(
+        dist_cam * cos(pitch) * sin(az),
+        0.8 + dist_cam * sin(pitch),
+        dist_cam * cos(pitch) * cos(az),
+    );
+    let fovy: f64 = 0.45;
+    let fwd: V3 = norm(sub(target, eye));
+    let world_up: V3 = v3(0.0, 1.0, 0.0);
+    let right: V3 = norm(cross(fwd, world_up));
+    let up: V3 = cross(right, fwd);
+    let focal: f64 = 0.5 * (h as f64) / tan(0.5 * fovy);
+
+    // resolveLens for town_map: K=40, fNumber=1.4, tiltDeg=90+tilt_eps, focus=(0, 0.89, 0), axis=(1, 0, 0)
+    let a_vec: V3 = norm(v3(1.0, 0.0, 0.0));
+    let across: V3 = norm(cross(world_up, a_vec));
+    let t_ang: f64 = (90.0 + tilt_eps) * pi / 180.0;
+    let ct: f64 = cos(t_ang);
+    let st: f64 = sin(t_ang);
+    let u_vec: V3 = v3(
+        ct * across.x + world_up.x * st,
+        ct * across.y + world_up.y * st,
+        ct * across.z + world_up.z * st,
+    );
+    let gn: V3 = norm(cross(a_vec, u_vec));
+    let gd: f64 = dot(gn, v3(0.0, 0.89, 0.0));
+    let g: LensGeom = LensGeom {
+        eye: eye,
+        fwd: fwd,
+        n: gn,
+        d: gd,
+        fpx: focal,
+        fmm: 12.0 / tan(0.5 * fovy),
+        mm_per_unit: 1000.0 / 40.0,
+        f_num: 1.4,
+        c_max: 48.0 * (h as f64) / 1080.0,
+    };
+
+    let mut hash: u64 = kit::fnv_start();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let px: f64 = (x as f64) + 0.5;
+            let py: f64 = (y as f64) + 0.5;
+            let rx: f64 = (px - 0.5 * (w as f64)) / focal;
+            let ry: f64 = -(py - 0.5 * (h as f64)) / focal;
+            let d: V3 = norm(v3(fwd.x + rx * right.x + ry * up.x, fwd.y + rx * right.y + ry * up.y, fwd.z + rx * right.z + ry * up.z));
+            let hit: Hit = trace_town(eye, d);
+            let d32: V3 = v3(round_f32(d.x), round_f32(d.y), round_f32(d.z));
+            let mut dist32: f64 = -1.0;
+            if hit.t >= 0.0 {
+                dist32 = round_f32(hit.t);
+            }
+            let coc: f64 = coc_at(g, d32, dist32);
+            let mut axial: f64 = 1000000.0;
+            if dist32 >= 0.0 {
+                axial = dist32 * dot(d32, fwd);
+            }
+            hash = kit::fnv_f32(hash, coc);
+            hash = kit::fnv_f32(hash, axial);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}

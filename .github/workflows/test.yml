@@ -69,12 +69,20 @@ jobs:
           FORMULAS_REQUIRE_NATIVE: '1'
           BUILDC: buildc
       - run: buildc build --release packages/daw/bld
-      # The renderer in BuildLang: every moved module must reproduce the hash the C++ pins.
+      # The renderer in BuildLang: every moved module must reproduce the hash the C++ pins,
+      # every planted perturbation control must fail closed, and cross-engine 100 Hz / Deja-VAE
+      # numeric parity must hold with zero silent divergence.
       - run: |
           buildc build --release native/bld
           ./native/bld/target/release/main | tee native-bld-out.txt
-          grep -q "^modules identical to the C++: 1 of 1$" native-bld-out.txt
+          grep -q "^modules identical to the C++: 3 of 3$" native-bld-out.txt
           grep -q "differs from the frame 0 pin: 1 of 1$" native-bld-out.txt
+          grep -q "^planted controls rejected: 3 of 3$" native-bld-out.txt
+          grep -q "^parity invariants verified: 2 of 2$" native-bld-out.txt
+      - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/world/tests/test_wave25f_buildlang_parity.py
+        env:
+          NATIVE_BLD_REQUIRE: '1'
+          BUILDC: buildc
       # Low Water's world generator is BuildLang: the same seed must give the same bytes, every river
       # must run downhill to water, and a planted uphill river must fail (linux has node 20+ on the runner).
       - run: node --test games/low-water/world/tests/world.test.mjs
