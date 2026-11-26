@@ -1,0 +1,116 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Analytic ray-primitive intersections in float64, ported from src/renderer/art_scene_prims.hpp
+// so art_scene, art_anchor and art_town_coc intersect geometry identically bit for bit.
+
+use kit::V3;
+use kit::v3;
+use kit::dot;
+use kit::sub;
+use kit::axis;
+use kit::absd;
+
+pub struct Hit { t: f64, n: V3, obj: i32, mat: i32, albedo: V3 }
+
+pub fn no_hit() -> Hit {
+    Hit { t: -1.0, n: v3(0.0, 0.0, 0.0), obj: 0, mat: 0, albedo: v3(0.0, 0.0, 0.0) }
+}
+
+pub fn mind(a: f64, b: f64) -> f64 {
+    if a < b { return a; }
+    b
+}
+
+pub fn maxd(a: f64, b: f64) -> f64 {
+    if a > b { return a; }
+    b
+}
+
+pub fn consider(best: Hit, t: f64, n: V3, obj: i32, mat: i32, albedo: V3) -> Hit {
+    if t > 0.000000001 && (best.t < 0.0 || t < best.t) {
+        return Hit { t: t, n: n, obj: obj, mat: mat, albedo: albedo };
+    }
+    best
+}
+
+pub fn hit_box(lo: V3, hi: V3, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best: Hit) -> Hit {
+    let mut t0: f64 = -1.0e300;
+    let mut t1: f64 = 1.0e300;
+    let mut ax: i32 = -1;
+    let mut sign: f64 = 0.0;
+    let mut k: i32 = 0;
+    while k < 3 {
+        let dk: f64 = axis(d, k);
+        let ok: f64 = axis(o, k);
+        if absd(dk) < 0.000000000000001 {
+            if ok < axis(lo, k) || ok > axis(hi, k) { return best; }
+        } else {
+            let inv: f64 = 1.0 / dk;
+            let mut ta: f64 = (axis(lo, k) - ok) * inv;
+            let mut tb: f64 = (axis(hi, k) - ok) * inv;
+            let mut s: f64 = -1.0;
+            if ta > tb {
+                let swap: f64 = ta;
+                ta = tb;
+                tb = swap;
+                s = 1.0;
+            }
+            if ta > t0 { t0 = ta; ax = k; sign = s; }
+            if tb < t1 { t1 = tb; }
+            if t0 > t1 { return best; }
+        }
+        k = k + 1;
+    }
+    if ax < 0 || t0 <= 0.000000001 { return best; }
+    let mut n: V3 = v3(0.0, 0.0, sign);
+    if ax == 0 { n = v3(sign, 0.0, 0.0); }
+    if ax == 1 { n = v3(0.0, sign, 0.0); }
+    consider(best, t0, n, obj, mat, albedo)
+}
+
+pub fn hit_sphere(c: V3, r: f64, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best: Hit) -> Hit {
+    let q: V3 = sub(o, c);
+    let b: f64 = dot(q, d);
+    let cc: f64 = dot(q, q) - r * r;
+    let disc: f64 = b * b - cc;
+    if disc < 0.0 { return best; }
+    let sq: f64 = sqrt(disc);
+    let mut t: f64 = -b - sq;
+    if t <= 0.000000001 { t = -b + sq; }
+    if t <= 0.000000001 { return best; }
+    consider(best, t, v3((q.x + t * d.x) / r, (q.y + t * d.y) / r, (q.z + t * d.z) / r), obj, mat, albedo)
+}
+
+pub fn hit_cylinder(x: f64, z: f64, r: f64, y0: f64, y1: f64, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best0: Hit) -> Hit {
+    let mut best: Hit = best0;
+    let qx: f64 = o.x - x;
+    let qz: f64 = o.z - z;
+    let a: f64 = d.x * d.x + d.z * d.z;
+    let b: f64 = qx * d.x + qz * d.z;
+    let cc: f64 = qx * qx + qz * qz - r * r;
+    if a > 0.000000000000001 {
+        let disc: f64 = b * b - a * cc;
+        if disc >= 0.0 {
+            let sq: f64 = sqrt(disc);
+            let ta: f64 = (-b - sq) / a;
+            let ya: f64 = o.y + ta * d.y;
+            if ta > 0.000000001 && ya >= y0 && ya <= y1 {
+                best = consider(best, ta, v3((qx + ta * d.x) / r, 0.0, (qz + ta * d.z) / r), obj, mat, albedo);
+            } else {
+                let tb: f64 = (-b + sq) / a;
+                let yb: f64 = o.y + tb * d.y;
+                if tb > 0.000000001 && yb >= y0 && yb <= y1 {
+                    best = consider(best, tb, v3((qx + tb * d.x) / r, 0.0, (qz + tb * d.z) / r), obj, mat, albedo);
+                }
+            }
+        }
+    }
+    if absd(d.y) > 0.000000000000001 {
+        let t: f64 = (y1 - o.y) / d.y;
+        let px: f64 = qx + t * d.x;
+        let pz: f64 = qz + t * d.z;
+        if px * px + pz * pz <= r * r { best = consider(best, t, v3(0.0, 1.0, 0.0), obj, mat, albedo); }
+    }
+    best
+}

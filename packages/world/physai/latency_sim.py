@@ -44,9 +44,10 @@ class LatencyRolloutMetrics:
 class LatencyVehicleEnv:
     """100 Hz 2D lane-keeping and sudden-obstacle avoidance vehicle dynamics."""
 
-    def __init__(self, dt: float = SIM_DT, max_ticks: int = 600) -> None:
+    def __init__(self, dt: float = SIM_DT, max_ticks: int = 600, gust_sigma: float = 0.85) -> None:
         self.dt = float(dt)
         self.max_ticks = int(max_ticks)
+        self.gust_sigma = float(gust_sigma)
         self.lane_half_width_m = 1.6
         self.reset(seed=0)
 
@@ -77,7 +78,8 @@ class LatencyVehicleEnv:
         ax = max(-6.0, min(4.0, float(act[0])))
         ay_cmd = max(-9.5, min(9.5, float(act[1])))
         alpha = math.exp(-self.dt / 0.4)
-        self.gust_y = alpha * self.gust_y + math.sqrt(max(0.0, 1.0 - alpha * alpha)) * float(self._rng.normal(0.0, 0.85))
+        gust_sample = float(self._rng.normal(0.0, self.gust_sigma)) if self.gust_sigma > 0.0 else 0.0
+        self.gust_y = alpha * self.gust_y + math.sqrt(max(0.0, 1.0 - alpha * alpha)) * gust_sample
         ay = ay_cmd + self.gust_y - 0.18 * self.vy
 
         self.vx = max(4.0, min(22.0, self.vx + ax * self.dt))
@@ -142,13 +144,14 @@ def run_latency_vehicle_rollout(
     latency_ms: float = 10.0,
     policy_name: str = "fast-route",
     total_ticks: int = 500,
+    gust_sigma: float = 0.85,
     policy_fn: Callable[[LatencyVehicleEnv], np.ndarray] = vehicle_pd_action,
 ) -> LatencyRolloutMetrics:
     """Run 100 Hz vehicle rollout where physics keeps ticking during agent latency_ms."""
     if latency_ms < 0.0:
         raise ValueError("latency_ms must be non-negative")
     ticks_per_decision = max(1, int(math.ceil(latency_ms / (SIM_DT * 1000.0))))
-    env = LatencyVehicleEnv(dt=SIM_DT, max_ticks=total_ticks)
+    env = LatencyVehicleEnv(dt=SIM_DT, max_ticks=total_ticks, gust_sigma=gust_sigma)
     env.reset(seed=seed)
     held, pending = np.zeros(2, dtype=np.float64), policy_fn(env)
     ticks_until, decisions, stale_ticks = ticks_per_decision, 1, 0

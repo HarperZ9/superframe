@@ -1,0 +1,192 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Cross-engine deterministic numeric parity kernel bridging Superframe's 100 Hz latency-faithful
+// sim mode and Deja-VAE 10-step Moore-Penrose null-space back-projection with BuildLang f64
+// arithmetic. Uses range-reduced polynomial exp_neg (+ - * / only) so bits match across platforms.
+
+use kit::absd;
+use kit::clampd;
+
+struct SimResult {
+    ticks: i32,
+    decisions: i32,
+    stale_ticks: i32,
+    collisions: i32,
+    rmse: f64,
+    max_overshoot: f64,
+    hash: u64,
+}
+
+struct DejaResult {
+    max_drift: f64,
+    final_drift: f64,
+    hash: u64,
+}
+
+// Deterministic exp(x) for x <= 0 using + - * / only (matches chron_radiocarbon_calibrate).
+fn exp_neg(x: f64) -> f64 {
+    if x < -700.0 { return 0.0; }
+    let k: i64 = (-x * 1.4426950408889634 + 0.5) as i64;
+    let kf: f64 = k as f64;
+    let r: f64 = (x + kf * 0.6931471803691238) + kf * 0.00000000019082149292705877;
+    let mut p: f64 = 1.0;
+    let mut n: f64 = 14.0;
+    while n >= 1.0 {
+        p = 1.0 + r * p / n;
+        n = n - 1.0;
+    }
+    let mut i: i64 = 0;
+    while i < k {
+        p = p * 0.5;
+        i = i + 1;
+    }
+    p
+}
+
+fn ref_lane_y(t: f64) -> f64 {
+    let a1: f64 = (t - 1.8) / 0.35;
+    let a2: f64 = (t - 4.0) / 0.35;
+    0.9 * sin(1.4 * t) + 1.35 * exp_neg(-(a1 * a1)) - 1.25 * exp_neg(-(a2 * a2))
+}
+
+// Deterministic zero-gust 100 Hz latency-faithful vehicle rollout (dt = 0.01 s).
+pub fn run_sim_100hz(ticks_per_decision: i32, total_ticks: i32, y_eps: f64) -> SimResult {
+    let dt: f64 = 0.01;
+    let mut y: f64 = y_eps;
+    let mut vy: f64 = 0.0;
+    let mut t: f64 = 0.0;
+    let mut held_ay: f64 = 0.0;
+    let mut pending_ay: f64 = clampd(14.0 * (0.0 - y) - 4.8 * vy, -9.5, 9.5);
+    let mut ticks_until: i32 = ticks_per_decision;
+    let mut decisions: i32 = 1;
+    let mut stale_ticks: i32 = 0;
+    let mut collisions: i32 = 0;
+    let mut sq_err: f64 = 0.0;
+    let mut max_over: f64 = 0.0;
+    let mut h: u64 = kit::fnv_start();
+    let mut tick: i32 = 0;
+    while tick < total_ticks {
+        if ticks_until <= 0 {
+            held_ay = pending_ay;
+            pending_ay = clampd(14.0 * (ref_lane_y(t) - y) - 4.8 * vy, -9.5, 9.5);
+            ticks_until = ticks_per_decision;
+            decisions = decisions + 1;
+        } else {
+            stale_ticks = stale_ticks + 1;
+        }
+        let ay: f64 = held_ay - 0.18 * vy;
+        vy = vy + ay * dt;
+        y = y + vy * dt;
+        t = t + dt;
+        ticks_until = ticks_until - 1;
+        let err: f64 = absd(y - ref_lane_y(t));
+        sq_err = sq_err + err * err;
+        if err > max_over { max_over = err; }
+        if err > 1.6 { collisions = collisions + 1; }
+        h = kit::fnv_f32(h, err);
+        tick = tick + 1;
+    }
+    SimResult {
+        ticks: total_ticks,
+        decisions: decisions,
+        stale_ticks: stale_ticks,
+        collisions: collisions,
+        rmse: sqrt(sq_err / (total_ticks as f64)),
+        max_overshoot: max_over,
+        hash: h,
+    }
+}
+
+// 10-step Deja-VAE Moore-Penrose null-space back-projection oracle for fixed 2x4 surjective E:
+//   E = [[1.0, 0.5, -0.25, 0.25], [0.25, -0.5, 1.0, 0.5]]
+//   D_base = E^T + mismatch (non-right-inverse baseline decoder)
+//   use_deja = true applies x' = x + E^dagger (z - E x); false runs naive uncorrected passes.
+pub fn run_deja_10step(use_deja: bool, distort_eps: f64) -> DejaResult {
+    // E rows
+    let e00: f64 = 1.0; let e01: f64 = 0.5; let e02: f64 = -0.25; let e03: f64 = 0.25;
+    let e10: f64 = 0.25; let e11: f64 = -0.5; let e12: f64 = 1.0; let e13: f64 = 0.5;
+    // Gram G = E * E^T (2x2 symmetric positive definite)
+    let g00: f64 = e00 * e00 + e01 * e01 + e02 * e02 + e03 * e03;
+    let g01: f64 = e00 * e10 + e01 * e11 + e02 * e12 + e03 * e13;
+    let g11: f64 = e10 * e10 + e11 * e11 + e12 * e12 + e13 * e13;
+    let det: f64 = g00 * g11 - g01 * g01;
+    let i00: f64 = g11 / det;
+    let i01: f64 = -g01 / det;
+    let i11: f64 = g00 / det;
+    // Right pseudoinverse E^dagger = E^T * G^{-1} (4x2)
+    let p00: f64 = e00 * i00 + e10 * i01; let p01: f64 = e00 * i01 + e10 * i11;
+    let p10: f64 = e01 * i00 + e11 * i01; let p11: f64 = e01 * i01 + e11 * i11;
+    let p20: f64 = e02 * i00 + e12 * i01; let p21: f64 = e02 * i01 + e12 * i11;
+    let p30: f64 = e03 * i00 + e13 * i01; let p31: f64 = e03 * i01 + e13 * i11;
+    // Mismatched baseline decoder D_base (4x2)
+    let d00: f64 = 1.12; let d01: f64 = 0.18;
+    let d10: f64 = 0.41; let d11: f64 = -0.62;
+    let d20: f64 = -0.19; let d21: f64 = 1.09;
+    let d30: f64 = 0.31; let d31: f64 = 0.44;
+
+    let z0_0: f64 = 1.25;
+    let z0_1: f64 = -0.75;
+    let mut zc0: f64 = z0_0;
+    let mut zc1: f64 = z0_1;
+    let mut max_drift: f64 = 0.0;
+    let mut final_drift: f64 = 0.0;
+    let mut h: u64 = kit::fnv_start();
+    let mut step: i32 = 0;
+    while step < 10 {
+        let mut x0: f64 = d00 * zc0 + d01 * zc1;
+        let mut x1: f64 = d10 * zc0 + d11 * zc1;
+        let mut x2: f64 = d20 * zc0 + d21 * zc1;
+        let mut x3: f64 = d30 * zc0 + d31 * zc1;
+        if use_deja {
+            let r0: f64 = zc0 - (e00 * x0 + e01 * x1 + e02 * x2 + e03 * x3);
+            let r1: f64 = zc1 - (e10 * x0 + e11 * x1 + e12 * x2 + e13 * x3);
+            x0 = x0 + p00 * r0 + p01 * r1;
+            x1 = x1 + p10 * r0 + p11 * r1;
+            x2 = x2 + p20 * r0 + p21 * r1;
+            x3 = x3 + p30 * r0 + p31 * r1;
+        }
+        x0 = x0 + distort_eps;
+        let zn0: f64 = e00 * x0 + e01 * x1 + e02 * x2 + e03 * x3;
+        let zn1: f64 = e10 * x0 + e11 * x1 + e12 * x2 + e13 * x3;
+        let de0: f64 = zn0 - z0_0;
+        let de1: f64 = zn1 - z0_1;
+        let drift: f64 = sqrt(de0 * de0 + de1 * de1);
+        if drift > max_drift { max_drift = drift; }
+        final_drift = drift;
+        h = kit::fnv_f32(h, zn0);
+        h = kit::fnv_f32(h, zn1);
+        zc0 = zn0;
+        zc1 = zn1;
+        step = step + 1;
+    }
+    DejaResult { max_drift: max_drift, final_drift: final_drift, hash: h }
+}
+
+pub fn run_parity_report() -> i32 ~ Console {
+    let fast: SimResult = run_sim_100hz(1, 500, 0.0);
+    let slow: SimResult = run_sim_100hz(18, 500, 0.0);
+    let pert: SimResult = run_sim_100hz(1, 500, 0.00001);
+    let deja: DejaResult = run_deja_10step(true, 0.0);
+    let naive: DejaResult = run_deja_10step(false, 0.0);
+    let deja_bad: DejaResult = run_deja_10step(true, 0.01);
+
+    println!("parity_sim_fast ticks={} decisions={} stale={} collisions={} rmse={:.12} max_over={:.12} hash={:x}",
+        fast.ticks, fast.decisions, fast.stale_ticks, fast.collisions, fast.rmse, fast.max_overshoot, fast.hash);
+    println!("parity_sim_slow ticks={} decisions={} stale={} collisions={} rmse={:.12} max_over={:.12} hash={:x}",
+        slow.ticks, slow.decisions, slow.stale_ticks, slow.collisions, slow.rmse, slow.max_overshoot, slow.hash);
+    println!("parity_deja_pass max_drift={:.16} final_drift={:.16} hash={:x}",
+        deja.max_drift, deja.final_drift, deja.hash);
+    println!("parity_deja_naive max_drift={:.12} final_drift={:.12} hash={:x}",
+        naive.max_drift, naive.final_drift, naive.hash);
+
+    let mut ok: i32 = 0;
+    if fast.rmse < slow.rmse && fast.collisions <= slow.collisions && fast.hash != pert.hash {
+        ok = ok + 1;
+    }
+    if deja.max_drift <= 0.000000000001 && naive.max_drift > 1.0 && deja_bad.max_drift > 0.001 && deja.hash != deja_bad.hash {
+        ok = ok + 1;
+    }
+    println!("parity invariants verified: {} of 2", ok);
+    ok
+}

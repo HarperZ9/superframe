@@ -1,0 +1,116 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// P5 world-anchored stroke canvas, ported from src/renderer/art_anchor.cpp and
+// raw/renderer/art_anchor.hpp. Computes triplanar surface charts and sky cube-map charts
+// from the G-buffer stored in f32 precision, matching the C++ anchor hash bit for bit.
+
+use kit::V3;
+use kit::v3;
+use kit::dot;
+use kit::sub;
+use kit::cross;
+use kit::norm;
+use kit::along;
+use kit::absd;
+use art_prims::Hit;
+
+struct UV { u: f64, v: f64 }
+
+fn round_f32(x: f64) -> f64 {
+    (x as f32) as f64
+}
+
+fn chart(px: f64, py: f64, pz: f64, nx: f64, ny: f64, nz: f64, sky: bool, scale: f64, focal: f64) -> UV {
+    let ax: f64 = absd(nx);
+    let ay: f64 = absd(ny);
+    let az: f64 = absd(nz);
+    if sky {
+        let mut m: f64 = az;
+        let mut p: f64 = px;
+        let mut q: f64 = py;
+        if ay >= ax && ay >= az {
+            m = ay;
+            p = px;
+            q = pz;
+        } else {
+            if ax >= az {
+                m = ax;
+                p = pz;
+                q = py;
+            }
+        }
+        return UV { u: p / m * focal + 1009.0, v: q / m * focal + 787.0 };
+    }
+    let mut face: i32 = 2;
+    let mut p: f64 = px;
+    let mut q: f64 = py;
+    if ay >= ax && ay >= az {
+        face = 0;
+        p = px;
+        q = pz;
+    } else {
+        if ax >= az {
+            face = 1;
+            p = pz;
+            q = py;
+        }
+    }
+    let mut off_u: f64 = 523.0;
+    let mut off_v: f64 = 419.0;
+    if face == 0 { off_u = 0.0; off_v = 0.0; }
+    if face == 1 { off_u = 311.0; off_v = 157.0; }
+    UV { u: p * scale + off_u, v: q * scale + off_v }
+}
+
+// Frame `frame` of the orbit at w x h; scale_eps is 0.0 for the pinned render and non-zero for
+// the planted perturbation control.
+pub fn anchor_hash(frame: i32, w: i32, h: i32, scale_eps: f64) -> u64 {
+    let a: f64 = (20.0 + 1.0 * (frame as f64)) * 3.141592653589793 / 180.0;
+    let eye: V3 = v3(8.5 * sin(a), 4.2, 8.5 * cos(a));
+    let target: V3 = v3(0.0, 1.0, 0.0);
+    let f: V3 = norm(sub(target, eye));
+    let r: V3 = norm(cross(f, v3(0.0, 1.0, 0.0)));
+    let u: V3 = cross(r, f);
+    let focal: f64 = 0.5 * (h as f64) / tan(0.5 * 0.75);
+    let ex: f64 = eye.x - target.x;
+    let ey: f64 = eye.y - target.y;
+    let ez: f64 = eye.z - target.z;
+    let scale: f64 = focal / sqrt(ex * ex + ey * ey + ez * ez) + scale_eps;
+    let mut hash: u64 = kit::fnv_start();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let px: f64 = (x as f64) + 0.5;
+            let py: f64 = (y as f64) + 0.5;
+            let rx: f64 = (px - 0.5 * (w as f64)) / focal;
+            let ry: f64 = -(py - 0.5 * (h as f64)) / focal;
+            let d: V3 = norm(v3(f.x + rx * r.x + ry * u.x, f.y + rx * r.y + ry * u.y, f.z + rx * r.z + ry * u.z));
+            let hit: Hit = art_scene::trace_still(eye, d);
+            let mut uv: UV = UV { u: 0.0, v: 0.0 };
+            if hit.t < 0.0 {
+                let dx32: f64 = round_f32(d.x);
+                let dy32: f64 = round_f32(d.y);
+                let dz32: f64 = round_f32(d.z);
+                uv = chart(dx32, dy32, dz32, dx32, dy32, dz32, true, scale, focal);
+            } else {
+                let p_raw: V3 = along(eye, hit.t, d);
+                let px32: f64 = round_f32(p_raw.x);
+                let py32: f64 = round_f32(p_raw.y);
+                let pz32: f64 = round_f32(p_raw.z);
+                let nx32: f64 = round_f32(hit.n.x);
+                let ny32: f64 = round_f32(hit.n.y);
+                let nz32: f64 = round_f32(hit.n.z);
+                uv = chart(px32, py32, pz32, nx32, ny32, nz32, false, scale, focal);
+            }
+            hash = kit::fnv_f32(hash, uv.u);
+            hash = kit::fnv_f32(hash, uv.v);
+            hash = kit::fnv_f32(hash, 0.0);
+            hash = kit::fnv_f32(hash, 0.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}
