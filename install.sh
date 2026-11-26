@@ -90,7 +90,7 @@ install_from_stage() {
     if [ -f "$cand" ]; then archive="$cand"; break; fi
   done
   [ -n "$archive" ] || { echo "Refusing install: no Superframe Playground archive found." >&2; return 1; }
-  verify_checksum "$archive" "$(basename "$archive")" "$sums"
+  verify_checksum "$archive" "$(basename "$archive")" "$sums" || return 1
 
   bundle_dir="$target/bundle"
   bin_dir="$target/bin"

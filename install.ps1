@@ -9,9 +9,21 @@ param(
 
 $ErrorActionPreference = "Stop"
 $Repo = "HarperZ9/superframe"
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 function Get-Sha256Hex([string]$Path) {
-  return (Get-FileHash -Algorithm SHA256 -Path $Path).Hash.ToLowerInvariant()
+  $sha = [System.Security.Cryptography.SHA256]::Create()
+  try {
+    $stream = [System.IO.File]::OpenRead($Path)
+    try { return ([BitConverter]::ToString($sha.ComputeHash($stream))).Replace("-", "").ToLowerInvariant() }
+    finally { $stream.Dispose() }
+  } finally { $sha.Dispose() }
+}
+
+function Expand-ZipClean([string]$ZipPath, [string]$DestDir) {
+  if (Test-Path $DestDir) { Remove-Item -Path $DestDir -Recurse -Force }
+  New-Item -ItemType Directory -Force -Path $DestDir | Out-Null
+  [System.IO.Compression.ZipFile]::ExtractToDirectory($ZipPath, $DestDir)
 }
 
 function Parse-Sums([string]$SumsPath) {
@@ -72,9 +84,8 @@ function Install-FromStage([string]$StageDir, [string]$TargetDir, [bool]$SkipPat
 
   $bundleDir = Join-Path $TargetDir "bundle"
   $binDir = Join-Path $TargetDir "bin"
-  New-Item -ItemType Directory -Force -Path $bundleDir, $binDir | Out-Null
-  Get-ChildItem -Path $bundleDir -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
-  Expand-Archive -Path $archive.FullName -DestinationPath $bundleDir -Force
+  New-Item -ItemType Directory -Force -Path $binDir | Out-Null
+  Expand-ZipClean $archive.FullName $bundleDir
 
   $cli = Get-ChildItem -Path $bundleDir -Recurse -Filter "superframe.mjs" | Select-Object -First 1
   if ($cli) {
@@ -109,7 +120,7 @@ function Invoke-SelfTest {
     Set-Content -Path (Join-Path $payload "superframe\cli\superframe.mjs") -Value 'console.log("superframe selftest ok");' -Encoding UTF8
     Set-Content -Path (Join-Path $payload "native\bin\raw_native_cli.exe") -Value "stub-binary-payload" -Encoding ASCII
     $zipPath = Join-Path $stage "superframe-playground-windows-x64.zip"
-    Compress-Archive -Path (Join-Path $payload "*") -DestinationPath $zipPath -Force
+    [System.IO.Compression.ZipFile]::CreateFromDirectory($payload, $zipPath)
 
     $sumsText = "$(Get-Sha256Hex $zipPath)  superframe-playground-windows-x64.zip`n"
     Set-Content -Path (Join-Path $stage "SHA256SUMS") -Value $sumsText -NoNewline -Encoding UTF8
