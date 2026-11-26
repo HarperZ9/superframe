@@ -2,6 +2,22 @@
 
 The Playground rendering and simulation engine. Describe a piece in plain words and get it back across media from one seeded recipe: paint, living type, line drawings, relief materials, sound, and tactile patterns. Beside the seeded artifact engine, the same repository holds the C++23 GPU renderer, Low Water, 6-DOF physical-AI and biomechanical tree simulation, ITU-R BT.2020/2100 spectral optics, the `NOH-3` world bridge, and measured study tools.
 
+## One-command install
+
+Downloads the prepackaged Playground bundle (`superframe`, `packages/`, and compiled `raw_native_cli`), verifies `SHA256SUMS` fail-closed before extracting, and adds `superframe` to your user `PATH`:
+
+Windows (PowerShell):
+```powershell
+irm https://raw.githubusercontent.com/HarperZ9/superframe/main/install.ps1 | iex
+```
+
+Linux / macOS:
+```sh
+curl -fsSL https://raw.githubusercontent.com/HarperZ9/superframe/main/install.sh | sh
+```
+
+Pass `-WithRawDx12` / `--with-raw-dx12` for SHA-256 verification guidance on optional RAW DX12 game runtime binaries (Skyrim SE / Fallout 4 / Starfield).
+
 | Where | What |
 |---|---|
 | `superframe/`, `creation/`, `typeengine/` | Core seeded artifact engine: 15 laws, 181 technique nodes, 31 converters, living type, and measured study libraries |
