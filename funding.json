@@ -1,0 +1,107 @@
+{
+  "$schema": "https://fundingjson.org/schema/v1.0.0.json",
+  "version": "v1.0.0",
+  "entity": {
+    "type": "individual",
+    "role": "owner",
+    "name": "Zain Dana Harper",
+    "email": "17142659+HarperZ9@users.noreply.github.com",
+    "description": "Independent researcher and toolmaker operating as a sole proprietor in Kent, Washington. Builds verifiable local-first compilers, AI evaluation harnesses, rendering engines, and open archival tools, publishing methods, data, and null results openly.",
+    "webpageUrl": {
+      "url": "https://harperz9.github.io/",
+      "wellKnown": "https://harperz9.github.io/.well-known/funding-manifest-urls"
+    }
+  },
+  "projects": [
+    {
+      "guid": "superframe",
+      "name": "The Playground (Superframe)",
+      "description": "Deterministic rendering, simulation, and multi-medium creative engine (DX12, Vulkan, WebGPU, C++23 native core): renders one seeded recipe as paint, living type, sound, and accessible plain-language study, alongside 6-DOF physical-AI simulation, ITU-R BT.2020/2100 spectral optics, and biomechanical tree dynamics. Source-available under FSL-1.1-MIT (converts to MIT after two years).",
+      "webpageUrl": {
+        "url": "https://harperz9.github.io/playground/",
+        "wellKnown": "https://harperz9.github.io/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/HarperZ9/superframe",
+        "wellKnown": "https://raw.githubusercontent.com/HarperZ9/superframe/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "spdx:FSL-1.1-MIT"
+      ],
+      "tags": [
+        "graphics",
+        "3d-modeling",
+        "audio",
+        "design",
+        "gaming",
+        "scientific-computing",
+        "animation",
+        "education",
+        "science"
+      ]
+    }
+  ],
+  "funding": {
+    "channels": [
+      {
+        "guid": "github-sponsors",
+        "type": "payment-provider",
+        "address": "https://github.com/sponsors/HarperZ9",
+        "description": "GitHub Sponsors for Zain Dana Harper. Supports one-time or recurring sponsorship with full public disclosure on https://harperz9.github.io/income-ledger.html."
+      },
+      {
+        "guid": "direct-grant",
+        "type": "bank",
+        "address": "US wire or ACH grant transfer (sole proprietor, Kent, WA; contact via https://harperz9.github.io/hire.html)",
+        "description": "Direct bank transfer for institutional graphics, simulation, and accessible creative tooling grants. Account details provided directly on award."
+      }
+    ],
+    "plans": [
+      {
+        "guid": "community-any",
+        "status": "active",
+        "name": "Community support (any amount)",
+        "description": "Flexible support for Playground WebGPU/DX12 rendering, accessible screen-reader study output, and C++23 native builds.",
+        "amount": 0,
+        "currency": "USD",
+        "frequency": "one-time",
+        "channels": [
+          "github-sponsors"
+        ]
+      },
+      {
+        "guid": "monthly-maintainer",
+        "status": "active",
+        "name": "Monthly graphics and simulation maintenance",
+        "description": "Recurring support for spectral optics tests, physical-AI simulation benchmarks, and cross-platform native binary releases.",
+        "amount": 50,
+        "currency": "USD",
+        "frequency": "monthly",
+        "channels": [
+          "github-sponsors"
+        ]
+      },
+      {
+        "guid": "infra-grant-superframe",
+        "status": "active",
+        "name": "Deterministic rendering and simulation grant",
+        "description": "Scoped milestone grant funding unified WebGPU/DX12 scene-graph parity, spectral optics validation, and accessible multi-modal rendering tools. Note: Superframe uses FSL-1.1-MIT (source-available, converts to MIT after two years).",
+        "amount": 20000,
+        "currency": "USD",
+        "frequency": "one-time",
+        "channels": [
+          "direct-grant",
+          "github-sponsors"
+        ]
+      }
+    ],
+    "history": [
+      {
+        "year": 2026,
+        "income": 0,
+        "currency": "USD",
+        "description": "Self-funded sole proprietorship with zero external grants, sponsors, or paid clients to date. Full public disclosure at https://harperz9.github.io/income-ledger.html."
+      }
+    ]
+  }
+}
