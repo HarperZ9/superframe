@@ -32,6 +32,23 @@ from .quat_math import (  # noqa: F401
     quat_normalize,
     quat_to_rotmat,
 )
+from .cross_api_parity import (  # noqa: F401
+    CPP_STILL_LIFE_PIN,
+    MAX_ABS_LIN_BOUND,
+    MAX_P99_OKLAB_DELTA_E_BOUND,
+    MIN_PSNR_DB_BOUND,
+    SCHEMA_ID as CROSS_API_PARITY_SCHEMA_ID,
+    DualTargetBuild,
+    RadiometricParity,
+    advance_probe_state_100hz,
+    compile_dual_target_shaders,
+    compute_radiometric_parity,
+    emit_cross_api_parity_certificate,
+    fnv1a_f32_hex,
+    quantize_scene_state_hash,
+    render_scene_parity_probe_64x64,
+    verify_cross_api_parity_certificate,
+)
 from .env_receipts import (  # noqa: F401
     GRAVITY_PRESETS,
     DomainConfig,

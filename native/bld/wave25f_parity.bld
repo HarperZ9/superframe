@@ -163,6 +163,117 @@ pub fn run_deja_10step(use_deja: bool, distort_eps: f64) -> DejaResult {
     DejaResult { max_drift: max_drift, final_drift: final_drift, hash: h }
 }
 
+fn sqrt_f32(v: f32) -> f32 {
+    let zero: f32 = 0.0;
+    let half: f32 = 0.5;
+    let mut g: f32 = zero;
+    if v > zero {
+        g = v * half + half;
+        let mut k: i32 = 0;
+        while k < 8 {
+            g = half * (g + v / g);
+            k = k + 1;
+        }
+    }
+    g
+}
+
+// Evaluates the exact same 64x64 f32 scene_parity_probe kernel as scene_parity_probe.bld at tick
+// `ticks` of the deterministic 100 Hz damped oscillator and returns its FNV-1a float buffer hash.
+pub fn scene_probe_64x64_hash(ticks: i32) -> u64 {
+    let mut px: f64 = 0.35;
+    let mut vx: f64 = 0.0;
+    let mut k: i32 = 0;
+    while k < ticks {
+        let ax: f64 = -4.0 * px - 0.35 * vx;
+        vx = vx + ax * 0.01;
+        px = px + vx * 0.01;
+        k = k + 1;
+    }
+    let sx: f32 = px as f32;
+    let sy: f32 = (1.15 + 0.12 * px) as f32;
+    let sz: f32 = (-0.25 * vx) as f32;
+    let slen: f32 = sqrt_f32((-0.45 as f32) * (-0.45 as f32) + (0.78 as f32) * (0.78 as f32) + (0.42 as f32) * (0.42 as f32));
+    let sun_x: f32 = (-0.45 as f32) / slen;
+    let sun_y: f32 = (0.78 as f32) / slen;
+    let sun_z: f32 = (0.42 as f32) / slen;
+    let zero: f32 = 0.0;
+    let half: f32 = 0.5;
+    let one: f32 = 1.0;
+    let two: f32 = 2.0;
+    let ox: f32 = 0.0;
+    let oy: f32 = 1.4;
+    let oz: f32 = 4.2;
+    let mut hash: u64 = kit::fnv_start();
+    let mut y: i32 = 0;
+    while y < 64 {
+        let mut x: i32 = 0;
+        while x < 64 {
+            let u: f32 = ((x as f32) + half) / (64.0 as f32) * two - one;
+            let v: f32 = one - ((y as f32) + half) / (64.0 as f32) * two;
+            let rdx: f32 = u * (0.72 as f32);
+            let rdy: f32 = v * (0.72 as f32) - (0.095 as f32);
+            let rdz: f32 = -one;
+            let rlen: f32 = sqrt_f32(rdx * rdx + rdy * rdy + rdz * rdz);
+            let dx: f32 = rdx / rlen;
+            let dy: f32 = rdy / rlen;
+            let dz: f32 = rdz / rlen;
+            let mut sky_t: f32 = dy * (1.6 as f32) + (0.25 as f32);
+            if sky_t < zero { sky_t = zero; }
+            if sky_t > one { sky_t = one; }
+            let mut cr: f32 = (0.78 as f32) + ((0.34 as f32) - (0.78 as f32)) * sky_t;
+            let mut cg: f32 = (0.81 as f32) + ((0.50 as f32) - (0.81 as f32)) * sky_t;
+            let mut cb: f32 = (0.86 as f32) + ((0.78 as f32) - (0.86 as f32)) * sky_t;
+            let mut best_t: f32 = 1000000.0 as f32;
+            if dy < (-0.0001 as f32) {
+                let tg: f32 = -oy / dy;
+                if tg > (0.001 as f32) && tg < best_t {
+                    let gx: f32 = ox + tg * dx;
+                    let gz: f32 = oz + tg * dz;
+                    if gx > (-12.0 as f32) && gx < (12.0 as f32) && gz > (-12.0 as f32) && gz < (12.0 as f32) {
+                        best_t = tg;
+                        let mut nl_g: f32 = sun_y;
+                        if nl_g < zero { nl_g = zero; }
+                        cr = (0.34 as f32) * ((1.85 as f32) * nl_g + (0.35 as f32));
+                        cg = (0.32 as f32) * ((1.72 as f32) * nl_g + (0.35 as f32));
+                        cb = (0.27 as f32) * ((1.55 as f32) * nl_g + (0.35 as f32));
+                    }
+                }
+            }
+            let qx: f32 = ox - sx;
+            let qy: f32 = oy - sy;
+            let qz: f32 = oz - sz;
+            let b: f32 = qx * dx + qy * dy + qz * dz;
+            let c: f32 = qx * qx + qy * qy + qz * qz - (0.7225 as f32);
+            let disc: f32 = b * b - c;
+            if disc >= zero {
+                let ts: f32 = -b - sqrt_f32(disc);
+                if ts > (0.001 as f32) && ts < best_t {
+                    let nx: f32 = (qx + ts * dx) / (0.85 as f32);
+                    let ny: f32 = (qy + ts * dy) / (0.85 as f32);
+                    let nz: f32 = (qz + ts * dz) / (0.85 as f32);
+                    let mut nl: f32 = nx * sun_x + ny * sun_y + nz * sun_z;
+                    if nl < zero { nl = zero; }
+                    let amb_t: f32 = half + half * ny;
+                    let ar: f32 = (0.22 as f32) + ((0.42 as f32) - (0.22 as f32)) * amb_t;
+                    let ag: f32 = (0.20 as f32) + ((0.55 as f32) - (0.20 as f32)) * amb_t;
+                    let ab: f32 = (0.18 as f32) + ((0.80 as f32) - (0.18 as f32)) * amb_t;
+                    cr = (0.84 as f32) * ((2.10 as f32) * nl + ar);
+                    cg = (0.42 as f32) * ((1.95 as f32) * nl + ag);
+                    cb = (0.28 as f32) * ((1.75 as f32) * nl + ab);
+                }
+            }
+            hash = kit::fnv_f32(hash, cr as f64);
+            hash = kit::fnv_f32(hash, cg as f64);
+            hash = kit::fnv_f32(hash, cb as f64);
+            hash = kit::fnv_f32(hash, 1.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}
+
 pub fn run_parity_report() -> i32 ~ Console {
     let fast: SimResult = run_sim_100hz(1, 500, 0.0);
     let slow: SimResult = run_sim_100hz(18, 500, 0.0);
@@ -170,6 +281,8 @@ pub fn run_parity_report() -> i32 ~ Console {
     let deja: DejaResult = run_deja_10step(true, 0.0);
     let naive: DejaResult = run_deja_10step(false, 0.0);
     let deja_bad: DejaResult = run_deja_10step(true, 0.01);
+    let probe_t100: u64 = scene_probe_64x64_hash(100);
+    let probe_t101: u64 = scene_probe_64x64_hash(101);
 
     println!("parity_sim_fast ticks={} decisions={} stale={} collisions={} rmse={:.12} max_over={:.12} hash={:x}",
         fast.ticks, fast.decisions, fast.stale_ticks, fast.collisions, fast.rmse, fast.max_overshoot, fast.hash);
@@ -179,12 +292,14 @@ pub fn run_parity_report() -> i32 ~ Console {
         deja.max_drift, deja.final_drift, deja.hash);
     println!("parity_deja_naive max_drift={:.12} final_drift={:.12} hash={:x}",
         naive.max_drift, naive.final_drift, naive.hash);
+    println!("parity_scene_64x64 tick=100 hash={:x} tick101_differs={}",
+        probe_t100, if probe_t100 != probe_t101 { 1 } else { 0 });
 
     let mut ok: i32 = 0;
     if fast.rmse < slow.rmse && fast.collisions <= slow.collisions && fast.hash != pert.hash {
         ok = ok + 1;
     }
-    if deja.max_drift <= 0.000000000001 && naive.max_drift > 1.0 && deja_bad.max_drift > 0.001 && deja.hash != deja_bad.hash {
+    if deja.max_drift <= 0.000000000001 && naive.max_drift > 1.0 && deja_bad.max_drift > 0.001 && deja.hash != deja_bad.hash && probe_t100 != probe_t101 {
         ok = ok + 1;
     }
     println!("parity invariants verified: {} of 2", ok);

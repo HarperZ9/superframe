@@ -1,0 +1,156 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// Canonical 64x64 dual-target BuildLang scene probe compiled simultaneously to:
+//   - WebGPU WGSL (buildc native/bld/scene_parity_probe.bld --target wgsl)
+//   - DX12 HLSL   (buildc native/bld/scene_parity_probe.bld --target hlsl)
+// Evaluates a deterministic 100 Hz pose-driven lit sphere, ground plane, and sky gradient
+// in strict IEEE-754 f32 arithmetic (+ - * / only) for superframe.cross-api-parity/v1.
+
+fn sqrt_f32(v: f32) -> f32 {
+    let zero: f32 = 0.0;
+    let half: f32 = 0.5;
+    let mut g: f32 = zero;
+    if v > zero {
+        g = v * half + half;
+        let mut k: u32 = 0;
+        let iters: u32 = 8;
+        let step_u: u32 = 1;
+        while k < iters {
+            g = half * (g + v / g);
+            k = k + step_u;
+        }
+    }
+    g
+}
+
+#[compute]
+fn scene_parity_probe(w: u32, h: u32, state_in: &[f32], rgba_out: &mut [f32]) ~ Gpu {
+    let x: u32 = gl_GlobalInvocationID.x;
+    let y: u32 = gl_GlobalInvocationID.y;
+    if x < w {
+        if y < h {
+            let sx: f32 = state_in[0];
+            let sy: f32 = state_in[1];
+            let sz: f32 = state_in[2];
+            let sun_x: f32 = state_in[3];
+            let sun_y: f32 = state_in[4];
+            let sun_z: f32 = state_in[5];
+            let zero: f32 = 0.0;
+            let half: f32 = 0.5;
+            let one: f32 = 1.0;
+            let two: f32 = 2.0;
+            let wf: f32 = w as f32;
+            let hf: f32 = h as f32;
+            let u: f32 = ((x as f32) + half) / wf * two - one;
+            let v: f32 = one - ((y as f32) + half) / hf * two;
+
+            let ox: f32 = 0.0;
+            let oy: f32 = 1.4;
+            let oz: f32 = 4.2;
+            let fov_scale: f32 = 0.72;
+            let pitch_bias: f32 = 0.095;
+            let rdx: f32 = u * fov_scale;
+            let rdy: f32 = v * fov_scale - pitch_bias;
+            let rdz: f32 = -one;
+            let rlen: f32 = sqrt_f32(rdx * rdx + rdy * rdy + rdz * rdz);
+            let dx: f32 = rdx / rlen;
+            let dy: f32 = rdy / rlen;
+            let dz: f32 = rdz / rlen;
+
+            let sky_slope: f32 = 1.6;
+            let sky_off: f32 = 0.25;
+            let mut sky_t: f32 = dy * sky_slope + sky_off;
+            if sky_t < zero { sky_t = zero; }
+            if sky_t > one { sky_t = one; }
+            let hr: f32 = 0.78;
+            let hg: f32 = 0.81;
+            let hb: f32 = 0.86;
+            let tr: f32 = 0.34;
+            let tg_col: f32 = 0.50;
+            let tb: f32 = 0.78;
+            let mut cr: f32 = hr + (tr - hr) * sky_t;
+            let mut cg: f32 = hg + (tg_col - hg) * sky_t;
+            let mut cb: f32 = hb + (tb - hb) * sky_t;
+            let mut best_t: f32 = 1000000.0;
+
+            let eps_dy: f32 = -0.0001;
+            let t_min: f32 = 0.001;
+            let g_lim: f32 = 12.0;
+            let g_neg: f32 = -12.0;
+            if dy < eps_dy {
+                let tg: f32 = -oy / dy;
+                if tg > t_min {
+                    if tg < best_t {
+                        let gx: f32 = ox + tg * dx;
+                        let gz: f32 = oz + tg * dz;
+                        if gx > g_neg {
+                            if gx < g_lim {
+                                if gz > g_neg {
+                                    if gz < g_lim {
+                                        best_t = tg;
+                                        let mut nl_g: f32 = sun_y;
+                                        if nl_g < zero { nl_g = zero; }
+                                        let amb_g: f32 = 0.35;
+                                        let g_ar: f32 = 0.34;
+                                        let g_ag: f32 = 0.32;
+                                        let g_ab: f32 = 0.27;
+                                        let sr: f32 = 1.85;
+                                        let sg: f32 = 1.72;
+                                        let sb: f32 = 1.55;
+                                        cr = g_ar * (sr * nl_g + amb_g);
+                                        cg = g_ag * (sg * nl_g + amb_g);
+                                        cb = g_ab * (sb * nl_g + amb_g);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            let rad: f32 = 0.85;
+            let rad2: f32 = 0.7225;
+            let qx: f32 = ox - sx;
+            let qy: f32 = oy - sy;
+            let qz: f32 = oz - sz;
+            let b: f32 = qx * dx + qy * dy + qz * dz;
+            let c: f32 = qx * qx + qy * qy + qz * qz - rad2;
+            let disc: f32 = b * b - c;
+            if disc >= zero {
+                let ts: f32 = -b - sqrt_f32(disc);
+                if ts > t_min {
+                    if ts < best_t {
+                        let nx: f32 = (qx + ts * dx) / rad;
+                        let ny: f32 = (qy + ts * dy) / rad;
+                        let nz: f32 = (qz + ts * dz) / rad;
+                        let mut nl: f32 = nx * sun_x + ny * sun_y + nz * sun_z;
+                        if nl < zero { nl = zero; }
+                        let amb_t: f32 = half + half * ny;
+                        let g0r: f32 = 0.22; let t0r: f32 = 0.42;
+                        let g0g: f32 = 0.20; let t0g: f32 = 0.55;
+                        let g0b: f32 = 0.18; let t0b: f32 = 0.80;
+                        let ar: f32 = g0r + (t0r - g0r) * amb_t;
+                        let ag: f32 = g0g + (t0g - g0g) * amb_t;
+                        let ab: f32 = g0b + (t0b - g0b) * amb_t;
+                        let s_ar: f32 = 0.84; let s_ag: f32 = 0.42; let s_ab: f32 = 0.28;
+                        let l_r: f32 = 2.10; let l_g: f32 = 1.95; let l_b: f32 = 1.75;
+                        cr = s_ar * (l_r * nl + ar);
+                        cg = s_ag * (l_g * nl + ag);
+                        cb = s_ab * (l_b * nl + ab);
+                    }
+                }
+            }
+
+            let u1: u32 = 1;
+            let u2: u32 = 2;
+            let u3: u32 = 3;
+            let u4: u32 = 4;
+            let base: u32 = (y * w + x) * u4;
+            rgba_out[base] = cr;
+            rgba_out[base + u1] = cg;
+            rgba_out[base + u2] = cb;
+            rgba_out[base + u3] = one;
+        }
+    }
+}
