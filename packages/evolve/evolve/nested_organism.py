@@ -268,3 +268,6 @@ def run_noh1_benchmark(seed: int = 42) -> dict[str, object]:
         "immune_false_alarms": noh.immune.interventions,
         "replay_sha256": noh.replay_digest(),
     }
+
+
+from .noh1_aerospace import FlatAerospacePolicy, NOH1AerospaceOrganism, evaluate_noh1_aerospace_6dof  # noqa: E402, F401
