@@ -12436,8 +12436,8 @@
   {
    "path": "packages/materials/materials/__init__.py",
    "source": "repo",
-   "bytes": 1126,
-   "sourceSha256": "d9d2d9dbd63603c337723d166364e37b3e41ee09853a37fe463d3bec25bc2229"
+   "bytes": 1158,
+   "sourceSha256": "29a88cc3f76c527feb2c0f124ad88667e653351dd64e2dffcae9a9d2175e0d48"
   },
   {
    "path": "packages/materials/materials/drude.py",
@@ -12450,6 +12450,30 @@
    "source": "repo",
    "bytes": 4658,
    "sourceSha256": "642001c49925f207e331f7e06d503054797befc1fbf5aa671f9595af48e89783"
+  },
+  {
+   "path": "packages/materials/materials/proc_material.py",
+   "source": "repo",
+   "bytes": 9050,
+   "sourceSha256": "e5439d87c5590d7cc0c71d9060436e67f5af15faa496be08aca6a4d152529098"
+  },
+  {
+   "path": "packages/materials/materials/proc_mesh_forge.py",
+   "source": "repo",
+   "bytes": 11854,
+   "sourceSha256": "0fdf8c3a1f7f0afab1fc8049123a9a8214812b7fc63bb72a7d98de691f02d895"
+  },
+  {
+   "path": "packages/materials/materials/proc_meshlet.py",
+   "source": "repo",
+   "bytes": 12931,
+   "sourceSha256": "9a1105565406f45c0727d7ca43fa2032ecdcc615f5c063136219aaaa90785728"
+  },
+  {
+   "path": "packages/materials/materials/proc_shader_emit.py",
+   "source": "repo",
+   "bytes": 8184,
+   "sourceSha256": "01dc698f6017bbeb2bbf443360fe7ca01852a8cfff2e5f908a0db1a5b6390b77"
   },
   {
    "path": "packages/materials/materials/schema.py",
@@ -12468,6 +12492,12 @@
    "source": "repo",
    "bytes": 8417,
    "sourceSha256": "8b507c270845e4d6cb05c5af541a8f907f4202172c0023c147fe1820e0d5cd0e"
+  },
+  {
+   "path": "packages/materials/tests/test_proc_asset_forge.py",
+   "source": "repo",
+   "bytes": 9475,
+   "sourceSha256": "06c2f770cc8fbfe99a7ab53bc7a0f6cb30a742e7d7dec2e2990d78effe632f58"
   },
   {
    "path": "packages/measured/.gitignore",
