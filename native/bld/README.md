@@ -31,6 +31,12 @@ with each module.
 arithmetic (`packages/world/tests/test_wave25f_buildlang_parity.py` and
 `superframe/tests/wave25f_cross_engine_parity.test.mjs`).
 
+`scene_parity_probe.bld` is a canonical 64 x 64 f32 compute probe compiled from one BuildLang
+source to both `--target wgsl` (WebGPU) and `--target hlsl` (DX12) under the
+`superframe.cross-api-parity/v1` certificate (`packages/world/physai/cross_api_parity.py`,
+`superframe/lib/cross_api_parity.mjs`), pinning 0-bit quantized 100 Hz state hash parity,
+PSNR >= 60 dB, and p99 OKLab DeltaE <= 0.002 with fail-closed planted controls.
+
 During the first port all 110,592 colour floats of that frame were also compared one by one
 against a C++ build and were equal.
 
