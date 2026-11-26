@@ -1,0 +1,3 @@
+# Keep exact LF bytes on checkout so SHA-256 matches packages/superstack/SHA256SUMS on every OS.
+/superstack.mjs -text
+/SUPERSTACK.sha256 -text
