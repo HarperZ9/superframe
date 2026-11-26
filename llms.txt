@@ -1,0 +1,34 @@
+# The Playground (Superframe)
+
+> Deterministic multi-medium creative, rendering, optics, audio DSP, and physical-AI simulation engine (`v0.3.0`). Source-available under `FSL-1.1-MIT` (converts to MIT two years after release).
+
+- Live WebGPU Studio: https://harperz9.github.io/playground/
+- Repository: https://github.com/HarperZ9/superframe
+- Native C++23 renderer: https://github.com/HarperZ9/raw-native
+
+## One-Command Install (Fail-Closed SHA256SUMS)
+
+- Windows PowerShell: `irm https://raw.githubusercontent.com/HarperZ9/superframe/main/install.ps1 | iex`
+- Linux / macOS: `curl -fsSL https://raw.githubusercontent.com/HarperZ9/superframe/main/install.sh | sh`
+
+## Key Capabilities & Verified Proofs
+
+- One seeded recipe renders paint, living type (`typeface/`, `typeengine/`), line drawing, material, sound (`sound/`), and touch, plus a plain-language accessibility study and a JSON study.
+- Native C++23 DX12, Vulkan, and WebGPU engines (`native/`, `raw_native_cli`) with verified WGSL/HLSL `DeltaE 0.0` parity (`#153`) and RAW Wave 80 (`96/96` checks, `#155`).
+- Clean-room taste synths (`tideRhodes`, `atlantisSub`, `coffaroStrand`, `lateefBreath`, `sakamotoChamber`, `sakamotoStrings`), `Estuary-Space` FX rack (8x8 Hadamard FDN, LR4 `<120 Hz` mono-maker, 4x oversampled `-1.0 dBTP` true-peak limiter), and `Estuary Clock-Drift` DAW engine passing `36/36` Welch PSD gates on both JS Welch and Python `audio_deconstruct.py` (`#156`).
+- ITU-R BT.2020/2100 spectral optics (`packages/lenspipe/`, `glass/`), tree biomechanics, 100 Hz 6-DOF physical-AI simulation (`packages/world/physai/`), canonical SHA-256 `engine-receipt/1` (`packages/superstack/`), and playable world (`games/low-water/`).
+
+## Core Commands
+
+- Generate from recipe: `node superframe/cli/superframe.mjs make`
+- Run test suite: `npm test`
+- Run package tests: `npm run test:packages`
+- Run audio DSP tests: `node --test packages/studio-libs/render-sound/test/*.test.mjs`
+- Run Low Water game tests: `npm run test:games`
+
+## Core Files
+
+- [README.md](README.md): Overview, install, modules, and architecture
+- [CITATION.cff](CITATION.cff): Citation metadata (`FSL-1.1-MIT`, ORCID)
+- [codemeta.json](codemeta.json): Schema.org `SoftwareSourceCode` metadata
+- [LICENSE](LICENSE): `FSL-1.1-MIT` license text

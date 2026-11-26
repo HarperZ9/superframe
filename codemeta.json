@@ -1,0 +1,53 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "The Playground (Superframe)",
+  "alternateName": [
+    "Superframe",
+    "The Playground"
+  ],
+  "version": "0.3.0",
+  "description": "Deterministic multi-medium rendering, paint, living typography, clean-room audio DSP (taste synths, Estuary-Space FX rack, Estuary Clock-Drift DAW engine), ITU-R BT.2020/2100 spectral optics, DX12/Vulkan/WebGPU engine, and 6-DOF physical-AI simulation from one seed.",
+  "license": "https://github.com/HarperZ9/superframe/blob/main/LICENSE",
+  "codeRepository": "https://github.com/HarperZ9/superframe",
+  "issueTracker": "https://github.com/HarperZ9/superframe/issues",
+  "url": "https://harperz9.github.io/playground/",
+  "downloadUrl": "https://github.com/HarperZ9/superframe/releases/latest",
+  "programmingLanguage": [
+    "JavaScript",
+    "C++",
+    "WGSL",
+    "HLSL",
+    "Python"
+  ],
+  "operatingSystem": [
+    "Windows",
+    "macOS",
+    "Linux",
+    "Web Browser (WebGPU)"
+  ],
+  "applicationCategory": "MultimediaApplication",
+  "author": [
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0009-0001-7175-5393",
+      "givenName": "Zain Dana",
+      "familyName": "Harper",
+      "url": "https://harperz9.github.io/"
+    }
+  ],
+  "datePublished": "2026-11-15",
+  "dateModified": "2026-11-26",
+  "keywords": [
+    "webgpu",
+    "dx12",
+    "vulkan",
+    "spectral-optics",
+    "audio-dsp",
+    "synthesizer",
+    "typography",
+    "physical-ai",
+    "procedural-generation",
+    "fsl-1.1-mit"
+  ]
+}
