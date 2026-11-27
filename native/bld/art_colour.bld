@@ -21,9 +21,9 @@ struct Prim {
 
 struct C3 { r: f64, g: f64, b: f64 }
 
-fn max_f(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
-fn min_f(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
-fn clamp_f(v: f64, lo: f64, hi: f64) -> f64 { if v < lo { lo } else if v > hi { hi } else { v } }
+fn m15_max_f(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
+fn m15_min_f(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
+fn m15_clamp_f(v: f64, lo: f64, hi: f64) -> f64 { if v < lo { lo } else if v > hi { hi } else { v } }
 
 fn mat_at(m: Mat3, i: i32) -> f64 {
     if i == 0 { return m.m0; }
@@ -165,7 +165,7 @@ fn prim_ap1() -> Prim {
 }
 
 pub fn srgb_encode(x0: f64) -> f64 {
-    let x: f64 = max_f(0.0, x0);
+    let x: f64 = m15_max_f(0.0, x0);
     if x <= 0.0031308 { return 12.92 * x; }
     1.055 * pow(x, 1.0 / 2.4) - 0.055
 }
@@ -175,8 +175,8 @@ pub fn srgb_decode(v: f64) -> f64 {
     pow((v + 0.055) / 1.055, 2.4)
 }
 
-fn bt1886_encode(x: f64) -> f64 { pow(max_f(0.0, x), 1.0 / 2.4) }
-fn bt1886_decode(v: f64) -> f64 { pow(max_f(0.0, v), 2.4) }
+fn bt1886_encode(x: f64) -> f64 { pow(m15_max_f(0.0, x), 1.0 / 2.4) }
+fn bt1886_decode(v: f64) -> f64 { pow(m15_max_f(0.0, v), 2.4) }
 
 pub fn pq_encode(linear100: f64) -> f64 {
     let m1: f64 = 2610.0 / 16384.0;
@@ -184,7 +184,7 @@ pub fn pq_encode(linear100: f64) -> f64 {
     let c1: f64 = 3424.0 / 4096.0;
     let c2: f64 = 2413.0 / 4096.0 * 32.0;
     let c3: f64 = 2392.0 / 4096.0 * 32.0;
-    let y: f64 = max_f(0.0, linear100) / 100.0;
+    let y: f64 = m15_max_f(0.0, linear100) / 100.0;
     let p: f64 = pow(y, m1);
     pow((c1 + c2 * p) / (1.0 + c3 * p), m2)
 }
@@ -195,19 +195,19 @@ fn pq_decode(v: f64) -> f64 {
     let c1: f64 = 3424.0 / 4096.0;
     let c2: f64 = 2413.0 / 4096.0 * 32.0;
     let c3: f64 = 2392.0 / 4096.0 * 32.0;
-    let p: f64 = pow(max_f(0.0, v), 1.0 / m2);
-    100.0 * pow(max_f(0.0, p - c1) / (c2 - c3 * p), 1.0 / m1)
+    let p: f64 = pow(m15_max_f(0.0, v), 1.0 / m2);
+    100.0 * pow(m15_max_f(0.0, p - c1) / (c2 - c3 * p), 1.0 / m1)
 }
 
 fn pbr_neutral(r0: f64, g0: f64, b0: f64) -> C3 {
     let start: f64 = 0.8 - 0.04;
     let desat: f64 = 0.15;
-    let x: f64 = min_f(r0, min_f(g0, b0));
+    let x: f64 = m15_min_f(r0, m15_min_f(g0, b0));
     let off: f64 = if x < 0.08 { x - 6.25 * x * x } else { 0.04 };
     let r: f64 = r0 - off;
     let g: f64 = g0 - off;
     let b: f64 = b0 - off;
-    let peak: f64 = max_f(r, max_f(g, b));
+    let peak: f64 = m15_max_f(r, m15_max_f(g, b));
     if peak < start { return C3 { r: r, g: g, b: b }; }
     let d: f64 = 1.0 - start;
     let new_peak: f64 = 1.0 - d * d / (peak + d - start);
@@ -222,8 +222,8 @@ fn pbr_neutral(r0: f64, g0: f64, b0: f64) -> C3 {
 fn agx_poly(x0: f64) -> f64 {
     let min_ev: f64 = -12.47393;
     let max_ev: f64 = 4.026069;
-    let lg2: f64 = log(max_f(x0, 1e-10)) / log(2.0);
-    let x: f64 = clamp_f((lg2 - min_ev) / (max_ev - min_ev), 0.0, 1.0);
+    let lg2: f64 = log(m15_max_f(x0, 1e-10)) / log(2.0);
+    let x: f64 = m15_clamp_f((lg2 - min_ev) / (max_ev - min_ev), 0.0, 1.0);
     let x2: f64 = x * x;
     let x4: f64 = x2 * x2;
     15.5 * x4 * x2 - 40.14 * x4 * x + 31.96 * x4
@@ -234,17 +234,17 @@ fn agx_one(r0: f64, g0: f64, b0: f64, pre: Mat3, outset: Mat3, from2020: Mat3) -
     let v0: f64 = agx_poly(pre.m0 * r0 + pre.m1 * g0 + pre.m2 * b0);
     let v1: f64 = agx_poly(pre.m3 * r0 + pre.m4 * g0 + pre.m5 * b0);
     let v2: f64 = agx_poly(pre.m6 * r0 + pre.m7 * g0 + pre.m8 * b0);
-    let o0: f64 = pow(max_f(0.0, outset.m0 * v0 + outset.m1 * v1 + outset.m2 * v2), 2.2);
-    let o1: f64 = pow(max_f(0.0, outset.m3 * v0 + outset.m4 * v1 + outset.m5 * v2), 2.2);
-    let o2: f64 = pow(max_f(0.0, outset.m6 * v0 + outset.m7 * v1 + outset.m8 * v2), 2.2);
+    let o0: f64 = pow(m15_max_f(0.0, outset.m0 * v0 + outset.m1 * v1 + outset.m2 * v2), 2.2);
+    let o1: f64 = pow(m15_max_f(0.0, outset.m3 * v0 + outset.m4 * v1 + outset.m5 * v2), 2.2);
+    let o2: f64 = pow(m15_max_f(0.0, outset.m6 * v0 + outset.m7 * v1 + outset.m8 * v2), 2.2);
     C3 {
-        r: clamp_f(from2020.m0 * o0 + from2020.m1 * o1 + from2020.m2 * o2, 0.0, 1.0),
-        g: clamp_f(from2020.m3 * o0 + from2020.m4 * o1 + from2020.m5 * o2, 0.0, 1.0),
-        b: clamp_f(from2020.m6 * o0 + from2020.m7 * o1 + from2020.m8 * o2, 0.0, 1.0),
+        r: m15_clamp_f(from2020.m0 * o0 + from2020.m1 * o1 + from2020.m2 * o2, 0.0, 1.0),
+        g: m15_clamp_f(from2020.m3 * o0 + from2020.m4 * o1 + from2020.m5 * o2, 0.0, 1.0),
+        b: m15_clamp_f(from2020.m6 * o0 + from2020.m7 * o1 + from2020.m8 * o2, 0.0, 1.0),
     }
 }
 
-fn fnv_f32(h0: u64, v: f64) -> u64 {
+fn m15_fnv_f32(h0: u64, v: f64) -> u64 {
     let b: u32 = (v as f32).to_bits();
     let mut h: u64 = h0;
     let mut k: u32 = 0;
@@ -260,7 +260,7 @@ fn fnv_mat(h0: u64, m: Mat3) -> u64 {
     let mut h: u64 = h0;
     let mut k: i32 = 0;
     while k < 9 {
-        h = fnv_f32(h, mat_at(m, k));
+        h = m15_fnv_f32(h, mat_at(m, k));
         k = k + 1;
     }
     h
@@ -280,12 +280,12 @@ pub fn colour_suite_hashes(eps: f64) -> (u64, u64, u64, u64, u64) {
     let mut i: i32 = 0;
     while i <= 64 {
         let v: f64 = ((i as f64) / 64.0) + eps;
-        h_xfer = fnv_f32(h_xfer, srgb_encode(v));
-        h_xfer = fnv_f32(h_xfer, srgb_decode(v));
-        h_xfer = fnv_f32(h_xfer, bt1886_encode(v));
-        h_xfer = fnv_f32(h_xfer, bt1886_decode(v));
-        h_xfer = fnv_f32(h_xfer, pq_encode(v * 100.0));
-        h_xfer = fnv_f32(h_xfer, pq_decode(v));
+        h_xfer = m15_fnv_f32(h_xfer, srgb_encode(v));
+        h_xfer = m15_fnv_f32(h_xfer, srgb_decode(v));
+        h_xfer = m15_fnv_f32(h_xfer, bt1886_encode(v));
+        h_xfer = m15_fnv_f32(h_xfer, bt1886_decode(v));
+        h_xfer = m15_fnv_f32(h_xfer, pq_encode(v * 100.0));
+        h_xfer = m15_fnv_f32(h_xfer, pq_decode(v));
         i = i + 1;
     }
 
@@ -329,8 +329,8 @@ pub fn colour_suite_hashes(eps: f64) -> (u64, u64, u64, u64, u64) {
                 let rv: f64 = (axis[ri as usize] as f64) + eps;
                 let p: C3 = pbr_neutral(rv, gv, bv);
                 let a: C3 = agx_one(rv, gv, bv, pre, outset, from2020);
-                h_pbr = fnv_f32(fnv_f32(fnv_f32(h_pbr, p.r), p.g), p.b);
-                h_agx = fnv_f32(fnv_f32(fnv_f32(h_agx, a.r), a.g), a.b);
+                h_pbr = m15_fnv_f32(m15_fnv_f32(m15_fnv_f32(h_pbr, p.r), p.g), p.b);
+                h_agx = m15_fnv_f32(m15_fnv_f32(m15_fnv_f32(h_agx, a.r), a.g), a.b);
                 ri = ri + 1;
             }
             gi = gi + 1;

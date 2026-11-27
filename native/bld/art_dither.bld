@@ -47,7 +47,7 @@ pub fn bayer_rank(n: i32, x: i32, y: i32) -> i32 {
     r
 }
 
-fn blue_noise_packed() -> Vec<u64> {
+fn m12_blue_noise_packed() -> Vec<u64> {
     let arr: [u64; 1024] = [
         103645481766456u64, 178661984402291u64, 279561003726733u64, 142392506944009u64,
         224250949312242u64, 108792895027819u64, 59399197807409u64, 23789141085342u64,
@@ -542,7 +542,7 @@ fn build_card(eps: f32) -> Vec<f32> {
 
 pub fn dither_goldens_hash(eps: f64) -> u64 {
     let eps32: f32 = eps as f32;
-    let bn: Vec<u64> = blue_noise_packed();
+    let bn: Vec<u64> = m12_blue_noise_packed();
     let ramp: Vec<f32> = build_ramp(eps32);
     let card: Vec<f32> = build_card(eps32);
     let mut all: u64 = 1469598103934665603u64;

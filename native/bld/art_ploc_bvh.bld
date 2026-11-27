@@ -29,11 +29,11 @@ fn p3_norm(v: Ploc3) -> Ploc3 {
     let l: f32 = sqrt(p3_dot(v, v) as f64) as f32;
     if l > (0.0 as f32) { p3_mul(v, (1.0 as f32) / l) } else { v }
 }
-fn absf(x: f32) -> f32 { if x < (0.0 as f32) { -x } else { x } }
-fn minf(a: f32, b: f32) -> f32 { if b < a { b } else { a } }
-fn maxf(a: f32, b: f32) -> f32 { if a < b { b } else { a } }
-fn mini(a: i32, b: i32) -> i32 { if b < a { b } else { a } }
-fn maxi(a: i32, b: i32) -> i32 { if a < b { b } else { a } }
+fn m20_absf(x: f32) -> f32 { if x < (0.0 as f32) { -x } else { x } }
+fn m20_minf(a: f32, b: f32) -> f32 { if b < a { b } else { a } }
+fn m20_maxf(a: f32, b: f32) -> f32 { if a < b { b } else { a } }
+fn m20_mini(a: i32, b: i32) -> i32 { if b < a { b } else { a } }
+fn m20_maxi(a: i32, b: i32) -> i32 { if a < b { b } else { a } }
 fn minu(a: u32, b: u32) -> u32 { if b < a { b } else { a } }
 
 fn empty_node() -> PlocNode {
@@ -83,19 +83,19 @@ pub fn box_area(lo0: f32, lo1: f32, lo2: f32, hi0: f32, hi1: f32, hi2: f32) -> f
 
 fn union_area(a: PlocNode, b: PlocNode) -> f32 {
     box_area(
-        minf(a.lo0, b.lo0), minf(a.lo1, b.lo1), minf(a.lo2, b.lo2),
-        maxf(a.hi0, b.hi0), maxf(a.hi1, b.hi1), maxf(a.hi2, b.hi2),
+        m20_minf(a.lo0, b.lo0), m20_minf(a.lo1, b.lo1), m20_minf(a.lo2, b.lo2),
+        m20_maxf(a.hi0, b.hi0), m20_maxf(a.hi1, b.hi1), m20_maxf(a.hi2, b.hi2),
     )
 }
 
 fn make_leaf_node(t: PlocTri, tri_id: i32) -> PlocNode {
     PlocNode {
-        lo0: minf(minf(t.a.x, t.b.x), t.c.x),
-        lo1: minf(minf(t.a.y, t.b.y), t.c.y),
-        lo2: minf(minf(t.a.z, t.b.z), t.c.z),
-        hi0: maxf(maxf(t.a.x, t.b.x), t.c.x),
-        hi1: maxf(maxf(t.a.y, t.b.y), t.c.y),
-        hi2: maxf(maxf(t.a.z, t.b.z), t.c.z),
+        lo0: m20_minf(m20_minf(t.a.x, t.b.x), t.c.x),
+        lo1: m20_minf(m20_minf(t.a.y, t.b.y), t.c.y),
+        lo2: m20_minf(m20_minf(t.a.z, t.b.z), t.c.z),
+        hi0: m20_maxf(m20_maxf(t.a.x, t.b.x), t.c.x),
+        hi1: m20_maxf(m20_maxf(t.a.y, t.b.y), t.c.y),
+        hi2: m20_maxf(m20_maxf(t.a.z, t.b.z), t.c.z),
         left: -1, right: -1, tri: tri_id,
     }
 }
@@ -111,8 +111,8 @@ fn sort_u64(arr: &mut Vec<u64>) {
     while width < n {
         let mut left: i32 = 0;
         while left < n {
-            let mid: i32 = mini(left + width, n);
-            let right: i32 = mini(left + 2 * width, n);
+            let mid: i32 = m20_mini(left + width, n);
+            let right: i32 = m20_mini(left + 2 * width, n);
             let mut i: i32 = left;
             let mut j: i32 = mid;
             let mut out: i32 = left;
@@ -149,12 +149,12 @@ pub fn build_ploc(tris: &Vec<PlocTri>, radius: i32) -> PlocTree {
     while i < n {
         let c: Ploc3 = tri_centroid(tris[i]);
         cent.push(c);
-        lo0 = minf(lo0, c.x); hi0 = maxf(hi0, c.x);
-        lo1 = minf(lo1, c.y); hi1 = maxf(hi1, c.y);
-        lo2 = minf(lo2, c.z); hi2 = maxf(hi2, c.z);
+        lo0 = m20_minf(lo0, c.x); hi0 = m20_maxf(hi0, c.x);
+        lo1 = m20_minf(lo1, c.y); hi1 = m20_maxf(hi1, c.y);
+        lo2 = m20_minf(lo2, c.z); hi2 = m20_maxf(hi2, c.z);
         i = i + 1;
     }
-    let s: f32 = pow2_scale(maxf(hi0 - lo0, maxf(hi1 - lo1, hi2 - lo2)));
+    let s: f32 = pow2_scale(m20_maxf(hi0 - lo0, m20_maxf(hi1 - lo1, hi2 - lo2)));
     let mut keys: Vec<u64> = Vec::new();
     let qmax: u32 = 1023;
     let qscale: f32 = 1023.0 as f32;
@@ -194,8 +194,8 @@ pub fn build_ploc(tris: &Vec<PlocTri>, radius: i32) -> PlocTree {
         while i < m {
             let mut best: f32 = flt_max;
             let mut best_j: i32 = -1;
-            let j_lo: i32 = maxi(0, i - radius);
-            let j_hi: i32 = mini(m - 1, i + radius);
+            let j_lo: i32 = m20_maxi(0, i - radius);
+            let j_hi: i32 = m20_mini(m - 1, i + radius);
             let ni: PlocNode = nodes[cl[i]];
             let mut j: i32 = j_lo;
             while j <= j_hi {
@@ -225,8 +225,8 @@ pub fn build_ploc(tris: &Vec<PlocTri>, radius: i32) -> PlocTree {
             let a: PlocNode = nodes[cl[i]];
             let b: PlocNode = nodes[cl[j]];
             nodes[next_id] = PlocNode {
-                lo0: minf(a.lo0, b.lo0), lo1: minf(a.lo1, b.lo1), lo2: minf(a.lo2, b.lo2),
-                hi0: maxf(a.hi0, b.hi0), hi1: maxf(a.hi1, b.hi1), hi2: maxf(a.hi2, b.hi2),
+                lo0: m20_minf(a.lo0, b.lo0), lo1: m20_minf(a.lo1, b.lo1), lo2: m20_minf(a.lo2, b.lo2),
+                hi0: m20_maxf(a.hi0, b.hi0), hi1: m20_maxf(a.hi1, b.hi1), hi2: m20_maxf(a.hi2, b.hi2),
                 left: cl[i], right: cl[j], tri: -1,
             };
             out.push(next_id);
@@ -254,7 +254,7 @@ pub fn ploc_sah_cost(tree: &PlocTree) -> f64 {
     c
 }
 
-fn watertight_frame(v: Ploc3, kz: i32, swap: bool) -> Ploc3 {
+fn m20_watertight_frame(v: Ploc3, kz: i32, swap: bool) -> Ploc3 {
     let p: Ploc3 = if kz == 0 {
         ploc3(v.y, v.z, v.x)
     } else if kz == 1 {
@@ -265,20 +265,20 @@ fn watertight_frame(v: Ploc3, kz: i32, swap: bool) -> Ploc3 {
     if swap { ploc3(p.y, p.x, p.z) } else { p }
 }
 
-pub fn intersect_tri(r: PlocRay, tri: PlocTri) -> (bool, f32, f32, f32) {
-    let ax: f32 = absf(r.d.x);
-    let ay: f32 = absf(r.d.y);
-    let az: f32 = absf(r.d.z);
+pub fn m20_intersect_tri(r: PlocRay, tri: PlocTri) -> (bool, f32, f32, f32) {
+    let ax: f32 = m20_absf(r.d.x);
+    let ay: f32 = m20_absf(r.d.y);
+    let az: f32 = m20_absf(r.d.z);
     let kz: i32 = if ax > ay { if ax > az { 0 } else { 2 } } else if ay > az { 1 } else { 2 };
-    let mut d: Ploc3 = watertight_frame(r.d, kz, false);
+    let mut d: Ploc3 = m20_watertight_frame(r.d, kz, false);
     let sw: bool = d.z < (0.0 as f32);
     if sw { d = ploc3(d.y, d.x, d.z); }
     let sx: f32 = d.x / d.z;
     let sy: f32 = d.y / d.z;
     let sz: f32 = (1.0 as f32) / d.z;
-    let va: Ploc3 = watertight_frame(p3_sub(tri.a, r.o), kz, sw);
-    let vb: Ploc3 = watertight_frame(p3_sub(tri.b, r.o), kz, sw);
-    let vc: Ploc3 = watertight_frame(p3_sub(tri.c, r.o), kz, sw);
+    let va: Ploc3 = m20_watertight_frame(p3_sub(tri.a, r.o), kz, sw);
+    let vb: Ploc3 = m20_watertight_frame(p3_sub(tri.b, r.o), kz, sw);
+    let vc: Ploc3 = m20_watertight_frame(p3_sub(tri.c, r.o), kz, sw);
     let pax: f32 = va.x - sx * va.z;
     let pay: f32 = va.y - sy * va.z;
     let pbx: f32 = vb.x - sx * vb.z;
@@ -306,8 +306,8 @@ pub fn intersect_tri(r: PlocRay, tri: PlocTri) -> (bool, f32, f32, f32) {
     let inv: f32 = (1.0 as f32) / dm;
     let tv: Ploc3 = p3_sub(r.o, tri.a);
     let qv: Ploc3 = p3_cross(tv, e1);
-    let mut u: f32 = maxf(0.0 as f32, p3_dot(tv, pv) * inv);
-    let mut v: f32 = maxf(0.0 as f32, p3_dot(r.d, qv) * inv);
+    let mut u: f32 = m20_maxf(0.0 as f32, p3_dot(tv, pv) * inv);
+    let mut v: f32 = m20_maxf(0.0 as f32, p3_dot(r.d, qv) * inv);
     let t: f32 = p3_dot(e2, qv) * inv;
     let s: f32 = u + v;
     if s > (1.0 as f32) { u = u / s; v = v / s; }
@@ -343,15 +343,15 @@ pub fn ploc_closest(tree: &PlocTree, tris: &Vec<PlocTri>, r: PlocRay, t_max: f32
         let b1: f32 = (n.hi1 - r.o.y) * iv1;
         let a2: f32 = (n.lo2 - r.o.z) * iv2;
         let b2: f32 = (n.hi2 - r.o.z) * iv2;
-        let mut t0: f32 = maxf(0.0 as f32, minf(a0, b0));
-        let mut t1: f32 = minf(best, maxf(a0, b0));
-        t0 = maxf(t0, minf(a1, b1));
-        t1 = minf(t1, maxf(a1, b1));
-        t0 = maxf(t0, minf(a2, b2));
-        t1 = minf(t1, maxf(a2, b2));
+        let mut t0: f32 = m20_maxf(0.0 as f32, m20_minf(a0, b0));
+        let mut t1: f32 = m20_minf(best, m20_maxf(a0, b0));
+        t0 = m20_maxf(t0, m20_minf(a1, b1));
+        t1 = m20_minf(t1, m20_maxf(a1, b1));
+        t0 = m20_maxf(t0, m20_minf(a2, b2));
+        t1 = m20_minf(t1, m20_maxf(a2, b2));
         if !(t0 <= t1 * slab_exit) { continue; }
         if n.tri >= 0 {
-            let (ok, tt, u, v) = intersect_tri(r, tris[n.tri]);
+            let (ok, tt, u, v) = m20_intersect_tri(r, tris[n.tri]);
             if ok && (tt < best || (any && tt == best && n.tri < htri)) {
                 best = tt; hu = u; hv = v; htri = n.tri; any = true;
             }
@@ -367,7 +367,7 @@ pub fn ploc_occluded(tree: &PlocTree, tris: &Vec<PlocTri>, r: PlocRay, t_max: f3
     ploc_closest(tree, tris, r, t_max).hit
 }
 
-fn fnv_u32(h0: u64, b: u32) -> u64 {
+fn m20_fnv_u32(h0: u64, b: u32) -> u64 {
     let mut h: u64 = h0;
     let mut k: u32 = 0;
     while k < 4 {
@@ -377,9 +377,9 @@ fn fnv_u32(h0: u64, b: u32) -> u64 {
     h
 }
 
-fn fnv_f32_raw(h0: u64, f: f32) -> u64 { fnv_u32(h0, f.to_bits()) }
+fn m20_fnv_f32_raw(h0: u64, f: f32) -> u64 { m20_fnv_u32(h0, f.to_bits()) }
 
-fn fnv_u64(h0: u64, v: u64) -> u64 {
+fn m20_fnv_u64(h0: u64, v: u64) -> u64 {
     let mut h: u64 = h0;
     let mut k: u32 = 0;
     while k < 8 {
@@ -389,7 +389,7 @@ fn fnv_u64(h0: u64, v: u64) -> u64 {
     h
 }
 
-fn mesh_vtx(ix: i32, iz: i32) -> Ploc3 {
+fn m20_mesh_vtx(ix: i32, iz: i32) -> Ploc3 {
     let x: f32 = (-4.0 as f32) + (0.5 as f32) * (ix as f32);
     let z: f32 = (-4.0 as f32) + (0.5 as f32) * (iz as f32);
     let t1: f32 = (sin((x * (0.9 as f32)) as f64) as f32) * (cos((z * (0.8 as f32)) as f64) as f32);
@@ -398,16 +398,16 @@ fn mesh_vtx(ix: i32, iz: i32) -> Ploc3 {
     ploc3(x, y, z)
 }
 
-fn make_mesh() -> Vec<PlocTri> {
+fn m20_make_mesh() -> Vec<PlocTri> {
     let mut tris: Vec<PlocTri> = Vec::new();
     let mut iz: i32 = 0;
     while iz < 16 {
         let mut ix: i32 = 0;
         while ix < 16 {
-            let p00: Ploc3 = mesh_vtx(ix, iz);
-            let p10: Ploc3 = mesh_vtx(ix + 1, iz);
-            let p01: Ploc3 = mesh_vtx(ix, iz + 1);
-            let p11: Ploc3 = mesh_vtx(ix + 1, iz + 1);
+            let p00: Ploc3 = m20_mesh_vtx(ix, iz);
+            let p10: Ploc3 = m20_mesh_vtx(ix + 1, iz);
+            let p01: Ploc3 = m20_mesh_vtx(ix, iz + 1);
+            let p11: Ploc3 = m20_mesh_vtx(ix + 1, iz + 1);
             tris.push(PlocTri { a: p00, b: p10, c: p11 });
             tris.push(PlocTri { a: p00, b: p11, c: p01 });
             ix = ix + 1;
@@ -418,34 +418,34 @@ fn make_mesh() -> Vec<PlocTri> {
 }
 
 pub fn run_ploc_parity() -> (u64, u64, u64, u64, u64, u64, i32, i32, u32, i32, i32) {
-    let tris: Vec<PlocTri> = make_mesh();
+    let tris: Vec<PlocTri> = m20_make_mesh();
     let tree: PlocTree = build_ploc(&tris, 16);
     let nn: i32 = tree.nodes.len() as i32;
 
     let mut h_tree: u64 = kit::fnv_start();
-    h_tree = fnv_u32(h_tree, nn as u32);
-    h_tree = fnv_u32(h_tree, tree.root as u32);
-    h_tree = fnv_u32(h_tree, tree.rounds);
+    h_tree = m20_fnv_u32(h_tree, nn as u32);
+    h_tree = m20_fnv_u32(h_tree, tree.root as u32);
+    h_tree = m20_fnv_u32(h_tree, tree.rounds);
     let mut i: i32 = 0;
     while i < nn {
         let n: PlocNode = tree.nodes[i];
-        h_tree = fnv_f32_raw(h_tree, n.lo0);
-        h_tree = fnv_f32_raw(h_tree, n.lo1);
-        h_tree = fnv_f32_raw(h_tree, n.lo2);
-        h_tree = fnv_f32_raw(h_tree, n.hi0);
-        h_tree = fnv_f32_raw(h_tree, n.hi1);
-        h_tree = fnv_f32_raw(h_tree, n.hi2);
-        h_tree = fnv_u32(h_tree, (n.left + 1) as u32);
-        h_tree = fnv_u32(h_tree, (n.right + 1) as u32);
-        h_tree = fnv_u32(h_tree, (n.tri + 1) as u32);
+        h_tree = m20_fnv_f32_raw(h_tree, n.lo0);
+        h_tree = m20_fnv_f32_raw(h_tree, n.lo1);
+        h_tree = m20_fnv_f32_raw(h_tree, n.lo2);
+        h_tree = m20_fnv_f32_raw(h_tree, n.hi0);
+        h_tree = m20_fnv_f32_raw(h_tree, n.hi1);
+        h_tree = m20_fnv_f32_raw(h_tree, n.hi2);
+        h_tree = m20_fnv_u32(h_tree, (n.left + 1) as u32);
+        h_tree = m20_fnv_u32(h_tree, (n.right + 1) as u32);
+        h_tree = m20_fnv_u32(h_tree, (n.tri + 1) as u32);
         i = i + 1;
     }
 
     let sah: f64 = ploc_sah_cost(&tree);
     let mut h_sah: u64 = kit::fnv_start();
-    h_sah = fnv_f32_raw(h_sah, sah as f32);
-    h_sah = fnv_u32(h_sah, morton3(1023, 511, 255));
-    h_sah = fnv_f32_raw(h_sah, pow2_scale(7.5 as f32));
+    h_sah = m20_fnv_f32_raw(h_sah, sah as f32);
+    h_sah = m20_fnv_u32(h_sah, morton3(1023, 511, 255));
+    h_sah = m20_fnv_f32_raw(h_sah, pow2_scale(7.5 as f32));
 
     let mut h_closest: u64 = kit::fnv_start();
     let mut hits: i32 = 0;
@@ -460,13 +460,13 @@ pub fn run_ploc_parity() -> (u64, u64, u64, u64, u64, u64, i32, i32, u32, i32, i
             let dir: Ploc3 = p3_norm(ploc3(dx, -1.0 as f32, dz));
             let r: PlocRay = PlocRay { o: ploc3(ox, 3.2 as f32, oz), d: dir };
             let ht: Hit3 = ploc_closest(&tree, &tris, r, 20.0 as f32);
-            h_closest = fnv_u32(h_closest, if ht.hit { 1 } else { 0 });
+            h_closest = m20_fnv_u32(h_closest, if ht.hit { 1 } else { 0 });
             if ht.hit {
                 hits = hits + 1;
-                h_closest = fnv_u32(h_closest, ht.tri as u32);
-                h_closest = fnv_f32_raw(h_closest, ht.t);
-                h_closest = fnv_f32_raw(h_closest, ht.u);
-                h_closest = fnv_f32_raw(h_closest, ht.v);
+                h_closest = m20_fnv_u32(h_closest, ht.tri as u32);
+                h_closest = m20_fnv_f32_raw(h_closest, ht.t);
+                h_closest = m20_fnv_f32_raw(h_closest, ht.u);
+                h_closest = m20_fnv_f32_raw(h_closest, ht.v);
             }
             px = px + 1;
         }
@@ -483,28 +483,28 @@ pub fn run_ploc_parity() -> (u64, u64, u64, u64, u64, u64, i32, i32, u32, i32, i
         let r: PlocRay = PlocRay { o: ploc3(ox, -0.1 as f32, oz), d: occ_dir };
         let blocked: bool = ploc_occluded(&tree, &tris, r, 8.0 as f32);
         if blocked { occ_cnt = occ_cnt + 1; }
-        h_occ = fnv_u32(h_occ, if blocked { 1 } else { 0 });
+        h_occ = m20_fnv_u32(h_occ, if blocked { 1 } else { 0 });
         i = i + 1;
     }
 
     let tree_ctrl: PlocTree = build_ploc(&tris, 2);
     let mut h_ctrl: u64 = kit::fnv_start();
-    h_ctrl = fnv_u32(h_ctrl, tree_ctrl.rounds);
-    h_ctrl = fnv_f32_raw(h_ctrl, ploc_sah_cost(&tree_ctrl) as f32);
+    h_ctrl = m20_fnv_u32(h_ctrl, tree_ctrl.rounds);
+    h_ctrl = m20_fnv_f32_raw(h_ctrl, ploc_sah_cost(&tree_ctrl) as f32);
     let nnc: i32 = tree_ctrl.nodes.len() as i32;
     i = 0;
     while i < nnc {
         let nc: PlocNode = tree_ctrl.nodes[i];
-        h_ctrl = fnv_u32(h_ctrl, (nc.left + 1) as u32);
-        h_ctrl = fnv_u32(h_ctrl, (nc.right + 1) as u32);
+        h_ctrl = m20_fnv_u32(h_ctrl, (nc.left + 1) as u32);
+        h_ctrl = m20_fnv_u32(h_ctrl, (nc.right + 1) as u32);
         i = i + 1;
     }
 
     let mut h_all: u64 = kit::fnv_start();
-    h_all = fnv_u64(h_all, h_tree);
-    h_all = fnv_u64(h_all, h_sah);
-    h_all = fnv_u64(h_all, h_closest);
-    h_all = fnv_u64(h_all, h_occ);
+    h_all = m20_fnv_u64(h_all, h_tree);
+    h_all = m20_fnv_u64(h_all, h_sah);
+    h_all = m20_fnv_u64(h_all, h_closest);
+    h_all = m20_fnv_u64(h_all, h_occ);
 
     (h_tree, h_sah, h_closest, h_occ, h_all, h_ctrl, nn, tree.root, tree.rounds, hits, occ_cnt)
 }

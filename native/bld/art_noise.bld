@@ -22,7 +22,7 @@ pub fn hash(x: u32, y: u32, z: u32, seed: u32) -> u32 {
     lowbias32(x ^ lowbias32(y ^ lowbias32(z ^ lowbias32(seed))))
 }
 
-fn unit(h: u32) -> f32 {
+fn m13_unit(h: u32) -> f32 {
     ((h >> 8) as f32) * (1.0f32 / 16777216.0f32)
 }
 
@@ -46,12 +46,12 @@ fn max_f32(a: f32, b: f32) -> f32 {
     if a > b { a } else { b }
 }
 
-fn sqrt_f32(v: f32) -> f32 {
+fn m13_sqrt_f32(v: f32) -> f32 {
     sqrt(v as f64) as f32
 }
 
 pub fn white(x: i32, y: i32, z: i32, seed: u32) -> f32 {
-    unit(hash(x as u32, y as u32, z as u32, seed))
+    m13_unit(hash(x as u32, y as u32, z as u32, seed))
 }
 
 fn grad2(h: u32, x: f32, y: f32) -> f32 {
@@ -269,8 +269,8 @@ fn worley2(x: f32, y: f32, seed: u32) -> Cell {
         let mut a: i32 = -1;
         while a <= 1 {
             let h: u32 = hash((i + a) as u32, (j + b) as u32, 0x5eedu32, seed);
-            let px: f32 = ((i + a) as f32) + unit(h);
-            let py: f32 = ((j + b) as f32) + unit(lowbias32(h));
+            let px: f32 = ((i + a) as f32) + m13_unit(h);
+            let py: f32 = ((j + b) as f32) + m13_unit(lowbias32(h));
             let dx: f32 = px - x;
             let dy: f32 = py - y;
             let d: f32 = dx * dx + dy * dy;
@@ -279,7 +279,7 @@ fn worley2(x: f32, y: f32, seed: u32) -> Cell {
         }
         b = b + 1;
     }
-    Cell { f1: sqrt_f32(d1), f2: sqrt_f32(d2) }
+    Cell { f1: m13_sqrt_f32(d1), f2: m13_sqrt_f32(d2) }
 }
 
 fn worley3(x: f32, y: f32, z: f32, seed: u32) -> Cell {
@@ -301,9 +301,9 @@ fn worley3(x: f32, y: f32, z: f32, seed: u32) -> Cell {
                     seed ^ 0x5eedu32,
                 );
                 let h2: u32 = lowbias32(h);
-                let px: f32 = ((i + a) as f32) + unit(h);
-                let py: f32 = ((j + b) as f32) + unit(h2);
-                let pz: f32 = ((k + c) as f32) + unit(lowbias32(h2));
+                let px: f32 = ((i + a) as f32) + m13_unit(h);
+                let py: f32 = ((j + b) as f32) + m13_unit(h2);
+                let pz: f32 = ((k + c) as f32) + m13_unit(lowbias32(h2));
                 let dx: f32 = px - x;
                 let dy: f32 = py - y;
                 let dz: f32 = pz - z;
@@ -315,7 +315,7 @@ fn worley3(x: f32, y: f32, z: f32, seed: u32) -> Cell {
         }
         c = c + 1;
     }
-    Cell { f1: sqrt_f32(d1), f2: sqrt_f32(d2) }
+    Cell { f1: m13_sqrt_f32(d1), f2: m13_sqrt_f32(d2) }
 }
 
 fn base3(b: i32, x: f32, y: f32, z: f32, seed: u32) -> f32 {
@@ -404,7 +404,7 @@ fn warp(x: f32, y: f32, z: f32, seed: u32, strength: f32) -> Warped {
     Warped { x: x + strength * wx, y: y + strength * wy, z: z + strength * wz }
 }
 
-fn blue_noise_packed() -> Vec<u64> {
+fn m13_blue_noise_packed() -> Vec<u64> {
     let arr: [u64; 1024] = [
         103645481766456u64, 178661984402291u64, 279561003726733u64, 142392506944009u64,
         224250949312242u64, 108792895027819u64, 59399197807409u64, 23789141085342u64,
@@ -734,7 +734,7 @@ fn eval_golden(idx: i32, x: i32, y: i32, bn: &Vec<u64>, eps: f32) -> f32 {
         let py: f32 = 1.0f32 - (yf + 0.5f32) / s * 2.0f32;
         let r2: f32 = px * px + py * py;
         if r2 >= 0.92f32 { return 0.0f32; }
-        let pz: f32 = sqrt_f32(0.92f32 - r2);
+        let pz: f32 = m13_sqrt_f32(0.92f32 - r2);
         let sc: f32 = 2.5f32;
         let w: Warped = warp(px * sc, py * sc, pz * sc, 21u32, 0.6f32);
         let dotl: f32 = (-0.4f32 * px + 0.5f32 * py + 0.77f32 * pz) / 0.96f32;
@@ -752,7 +752,7 @@ fn eval_golden(idx: i32, x: i32, y: i32, bn: &Vec<u64>, eps: f32) -> f32 {
 
 pub fn noise_goldens_hash(eps: f64) -> u64 {
     let eps32: f32 = eps as f32;
-    let bn: Vec<u64> = blue_noise_packed();
+    let bn: Vec<u64> = m13_blue_noise_packed();
     let mut all: u64 = 1469598103934665603u64;
     let mut idx: i32 = 0;
     while idx < 20 {

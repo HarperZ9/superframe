@@ -16,10 +16,10 @@ pub struct TaaFrame {
     prev: Vec<f32>,
 }
 
-fn absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
-fn mind(a: f64, b: f64) -> f64 { if b < a { b } else { a } }
-fn maxd(a: f64, b: f64) -> f64 { if a < b { b } else { a } }
-fn mini(a: i32, b: i32) -> i32 { if b < a { b } else { a } }
+fn m21_absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
+fn m21_mind(a: f64, b: f64) -> f64 { if b < a { b } else { a } }
+fn m21_maxd(a: f64, b: f64) -> f64 { if a < b { b } else { a } }
+fn m21_mini(a: i32, b: i32) -> i32 { if b < a { b } else { a } }
 fn clampi(v: i32, lo: i32, hi: i32) -> i32 {
     if v < lo { lo } else if v > hi { hi } else { v }
 }
@@ -126,8 +126,8 @@ pub fn taa_resolve(
                 continue;
             }
             if depth_test {
-                let nx: i32 = mini(w - 1, px as i32);
-                let ny: i32 = mini(h - 1, py as i32);
+                let nx: i32 = m21_mini(w - 1, px as i32);
+                let ny: i32 = m21_mini(h - 1, py as i32);
                 let mut lo: f64 = 1.0e30;
                 let mut hi: f64 = -1.0;
                 let mut empty: bool = false;
@@ -141,8 +141,8 @@ pub fn taa_resolve(
                         if pd < 0.0 {
                             empty = true;
                         } else {
-                            lo = mind(lo, pd);
-                            hi = maxd(hi, pd);
+                            lo = m21_mind(lo, pd);
+                            hi = m21_maxd(hi, pd);
                         }
                         a = a + 1;
                     }
@@ -236,9 +236,9 @@ pub fn taa_resolve(
                 let ext1: f64 = k_clip_sigma * sqrt(v1 / nf) + 1.0e-4;
                 let ext2: f64 = k_clip_sigma * sqrt(v2 / nf) + 1.0e-4;
                 let mut sc: f64 = 0.0;
-                sc = maxd(sc, absd(hy0 - m0) / ext0);
-                sc = maxd(sc, absd(hy1 - m1) / ext1);
-                sc = maxd(sc, absd(hy2 - m2) / ext2);
+                sc = m21_maxd(sc, m21_absd(hy0 - m0) / ext0);
+                sc = m21_maxd(sc, m21_absd(hy1 - m1) / ext1);
+                sc = m21_maxd(sc, m21_absd(hy2 - m2) / ext2);
                 if sc > 1.0 {
                     hy0 = m0 + (hy0 - m0) / sc;
                     hy1 = m1 + (hy1 - m1) / sc;
@@ -261,7 +261,7 @@ pub fn taa_resolve(
     out
 }
 
-fn fnv_u32(h0: u64, b: u32) -> u64 {
+fn m21_fnv_u32(h0: u64, b: u32) -> u64 {
     let mut h: u64 = h0;
     let mut k: u32 = 0;
     while k < 4 {
@@ -271,9 +271,9 @@ fn fnv_u32(h0: u64, b: u32) -> u64 {
     h
 }
 
-fn fnv_f32_raw(h0: u64, f: f32) -> u64 { fnv_u32(h0, f.to_bits()) }
+fn m21_fnv_f32_raw(h0: u64, f: f32) -> u64 { m21_fnv_u32(h0, f.to_bits()) }
 
-fn fnv_u64(h0: u64, v: u64) -> u64 {
+fn m21_fnv_u64(h0: u64, v: u64) -> u64 {
     let mut h: u64 = h0;
     let mut k: u32 = 0;
     while k < 8 {
@@ -287,7 +287,7 @@ fn hash_vec(v: &Vec<f32>) -> u64 {
     let mut h: u64 = kit::fnv_start();
     let n: i32 = v.len() as i32;
     let mut i: i32 = 0;
-    while i < n { h = fnv_f32_raw(h, v[i]); i = i + 1; }
+    while i < n { h = m21_fnv_f32_raw(h, v[i]); i = i + 1; }
     h
 }
 
@@ -296,8 +296,8 @@ pub fn run_taa_parity() -> (u64, u64, u64, u64, u64) {
     let mut k: i32 = 0;
     while k < 32 {
         let (jx, jy) = taa_jitter(k);
-        h_jitter = fnv_f32_raw(h_jitter, jx);
-        h_jitter = fnv_f32_raw(h_jitter, jy);
+        h_jitter = m21_fnv_f32_raw(h_jitter, jx);
+        h_jitter = m21_fnv_f32_raw(h_jitter, jy);
         k = k + 1;
     }
 
@@ -376,10 +376,10 @@ pub fn run_taa_parity() -> (u64, u64, u64, u64, u64) {
     let h_accum: u64 = hash_vec(&acc);
 
     let mut h_all: u64 = kit::fnv_start();
-    h_all = fnv_u64(h_all, h_jitter);
-    h_all = fnv_u64(h_all, h_full);
-    h_all = fnv_u64(h_all, h_raw);
-    h_all = fnv_u64(h_all, h_accum);
+    h_all = m21_fnv_u64(h_all, h_jitter);
+    h_all = m21_fnv_u64(h_all, h_full);
+    h_all = m21_fnv_u64(h_all, h_raw);
+    h_all = m21_fnv_u64(h_all, h_accum);
 
     (h_jitter, h_full, h_raw, h_accum, h_all)
 }

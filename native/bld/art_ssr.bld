@@ -36,12 +36,12 @@ struct Probe {
     inside: bool,
 }
 
-fn absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
-fn mind(a: f64, b: f64) -> f64 { if b < a { b } else { a } }
-fn maxd(a: f64, b: f64) -> f64 { if a < b { b } else { a } }
-fn maxi(a: i32, b: i32) -> i32 { if a < b { b } else { a } }
+fn m23_absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
+fn m23_mind(a: f64, b: f64) -> f64 { if b < a { b } else { a } }
+fn m23_maxd(a: f64, b: f64) -> f64 { if a < b { b } else { a } }
+fn m23_maxi(a: i32, b: i32) -> i32 { if a < b { b } else { a } }
 
-fn project_pt(v: &SsrGbuf, px: f64, py: f64, pz: f64) -> (bool, f64, f64) {
+fn m23_project_pt(v: &SsrGbuf, px: f64, py: f64, pz: f64) -> (bool, f64, f64) {
     if pz >= -1.0e-6 { return (false, 0.0, 0.0); }
     let w: f64 = -pz;
     let sx: f64 = (px / (w * v.tan_half * v.aspect) * 0.5 + 0.5) * (v.w as f64);
@@ -53,10 +53,10 @@ fn clip_axis(s0: f64, s1: f64, hi: f64, t_in: f64) -> f64 {
     let lim: f64 = 1.0e-3;
     let mut t_end: f64 = t_in;
     if s1 > hi - lim && s1 != s0 {
-        t_end = mind(t_end, (hi - lim - s0) / (s1 - s0));
+        t_end = m23_mind(t_end, (hi - lim - s0) / (s1 - s0));
     }
     if s1 < 0.0 && s1 != s0 {
-        t_end = mind(t_end, (0.0 - s0) / (s1 - s0));
+        t_end = m23_mind(t_end, (0.0 - s0) / (s1 - s0));
     }
     t_end
 }
@@ -78,7 +78,7 @@ fn segment_of(v: &SsrGbuf, i: i32, max_dist: f64, view_normal: bool) -> Seg {
     let rz: f64 = dz - 2.0 * dn * nz;
     let mut len: f64 = max_dist;
     if rz > 1.0e-9 {
-        len = mind(len, (-v.near_z - pz) / rz * 0.999);
+        len = m23_mind(len, (-v.near_z - pz) / rz * 0.999);
     }
     if len <= 0.0 {
         return Seg { ok: false, sx0: 0.0, sy0: 0.0, sx1: 0.0, sy1: 0.0, k0: 0.0, k1: 0.0 };
@@ -86,8 +86,8 @@ fn segment_of(v: &SsrGbuf, i: i32, max_dist: f64, view_normal: bool) -> Seg {
     let ex: f64 = px + rx * len;
     let ey: f64 = py + ry * len;
     let ez: f64 = pz + rz * len;
-    let (ok0, sx0, sy0) = project_pt(v, px, py, pz);
-    let (ok1, sx1_0, sy1_0) = project_pt(v, ex, ey, ez);
+    let (ok0, sx0, sy0) = m23_project_pt(v, px, py, pz);
+    let (ok1, sx1_0, sy1_0) = m23_project_pt(v, ex, ey, ez);
     if !ok0 || !ok1 {
         return Seg { ok: false, sx0: 0.0, sy0: 0.0, sx1: 0.0, sy1: 0.0, k0: 0.0, k1: 0.0 };
     }
@@ -148,7 +148,7 @@ fn march_one(
     let steps: i32 = if steps_in > 0 {
         steps_in
     } else {
-        maxi(1, ceil_i32(maxd(absd(g.sx1 - g.sx0), absd(g.sy1 - g.sy0))))
+        m23_maxi(1, ceil_i32(m23_maxd(m23_absd(g.sx1 - g.sx0), m23_absd(g.sy1 - g.sy0))))
     };
     let mut prev: f64 = 0.0;
     let mut s: i32 = 1;
@@ -199,7 +199,7 @@ pub fn run_ssr(
     out
 }
 
-fn fnv_u32(h0: u64, b: u32) -> u64 {
+fn m23_fnv_u32(h0: u64, b: u32) -> u64 {
     let mut h: u64 = h0;
     let mut k: u32 = 0;
     while k < 4 {
@@ -209,7 +209,7 @@ fn fnv_u32(h0: u64, b: u32) -> u64 {
     h
 }
 
-fn fnv_u64(h0: u64, v: u64) -> u64 {
+fn m23_fnv_u64(h0: u64, v: u64) -> u64 {
     let mut h: u64 = h0;
     let mut k: u32 = 0;
     while k < 8 {
@@ -227,7 +227,7 @@ fn hash_hits(v: &Vec<i32>) -> (u64, i32) {
     while i < n {
         let idx: i32 = v[i];
         if idx >= 0 { hits = hits + 1; }
-        h = fnv_u32(h, (idx + 2) as u32);
+        h = m23_fnv_u32(h, (idx + 2) as u32);
         i = i + 1;
     }
     (h, hits)
@@ -264,7 +264,7 @@ pub fn run_ssr_parity() -> (u64, u64, u64, u64, i32, i32, i32) {
                 let mut n1: f64 = 0.0;
                 let mut n2: f64 = 1.0;
                 if pillar {
-                    big_d = 2.6 + 0.15 * absd(nx);
+                    big_d = 2.6 + 0.15 * m23_absd(nx);
                     back_d = big_d + 0.85;
                     n0 = if nx >= 0.0 { 0.25 } else { -0.25 };
                     n1 = 0.0;
@@ -277,7 +277,7 @@ pub fn run_ssr_parity() -> (u64, u64, u64, u64, i32, i32, i32) {
                     n1 = 0.94;
                     n2 = 0.34;
                 } else {
-                    big_d = 5.4 - 0.5 * absd(nx);
+                    big_d = 5.4 - 0.5 * m23_absd(nx);
                     back_d = big_d + 0.4;
                     n0 = if nx >= 0.0 { -0.30 } else { 0.30 };
                     n1 = -0.05;
@@ -313,8 +313,8 @@ pub fn run_ssr_parity() -> (u64, u64, u64, u64, i32, i32, i32) {
     let (h_ctrl, hits_ctrl) = hash_hits(&r_ctrl);
 
     let mut h_all: u64 = kit::fnv_start();
-    h_all = fnv_u64(h_all, h_std);
-    h_all = fnv_u64(h_all, h_noback);
+    h_all = m23_fnv_u64(h_all, h_std);
+    h_all = m23_fnv_u64(h_all, h_noback);
 
     (h_std, h_noback, h_all, h_ctrl, hits_std, hits_noback, hits_ctrl)
 }

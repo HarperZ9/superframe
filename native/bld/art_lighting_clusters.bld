@@ -23,11 +23,11 @@ struct Light {
 }
 
 fn d3(x: f64, y: f64, z: f64) -> D3 { D3 { x: x, y: y, z: z } }
-fn dot(a: D3, b: D3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
-fn abs_f(v: f64) -> f64 { if v < 0.0 { -v } else { v } }
-fn min_f(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
-fn max_f(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
-fn clamp_f(v: f64, lo: f64, hi: f64) -> f64 { if v < lo { lo } else if v > hi { hi } else { v } }
+fn m16_dot(a: D3, b: D3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
+fn m16_abs_f(v: f64) -> f64 { if v < 0.0 { -v } else { v } }
+fn m16_min_f(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
+fn m16_max_f(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
+fn m16_clamp_f(v: f64, lo: f64, hi: f64) -> f64 { if v < lo { lo } else if v > hi { hi } else { v } }
 fn min_i(a: i32, b: i32) -> i32 { if a < b { a } else { b } }
 
 pub fn cluster_of(p: D3) -> i32 {
@@ -40,7 +40,7 @@ pub fn cluster_of(p: D3) -> i32 {
     let th: f64 = tan(0.5 * fovy);
     let nx: f64 = p.x / (d * th * aspect);
     let ny: f64 = p.y / (d * th);
-    if !(abs_f(nx) <= 1.0 && abs_f(ny) <= 1.0) { return -1; }
+    if !(m16_abs_f(nx) <= 1.0 && m16_abs_f(ny) <= 1.0) { return -1; }
     let ix: i32 = min_i(((nx + 1.0) * 0.5 * 16.0) as i32, 15);
     let iy: i32 = min_i(((ny + 1.0) * 0.5 * 9.0) as i32, 8);
     let iz: i32 = min_i((log(d / near_z) / log(far_z / near_z) * 24.0) as i32, 23);
@@ -77,8 +77,8 @@ fn cluster_bounds(c: i32) -> Aabb {
                 let qx: f64 = xs[jx as usize] * dv * th * aspect;
                 let qy: f64 = ys[jy as usize] * dv * th;
                 let qz: f64 = -dv;
-                lo = d3(min_f(lo.x, qx), min_f(lo.y, qy), min_f(lo.z, qz));
-                hi = d3(max_f(hi.x, qx), max_f(hi.y, qy), max_f(hi.z, qz));
+                lo = d3(m16_min_f(lo.x, qx), m16_min_f(lo.y, qy), m16_min_f(lo.z, qz));
+                hi = d3(m16_max_f(hi.x, qx), m16_max_f(hi.y, qy), m16_max_f(hi.z, qz));
                 jy = jy + 1;
             }
             jx = jx + 1;
@@ -113,7 +113,7 @@ fn illuminance(l: Light, p: D3) -> (Rgb, D3) {
         return (e, to_l);
     }
     let d: D3 = d3(l.pos.x - p.x, l.pos.y - p.y, l.pos.z - p.z);
-    let d2: f64 = dot(d, d);
+    let d2: f64 = m16_dot(d, d);
     let dist: f64 = sqrt(d2);
     if dist <= 0.0 {
         return (Rgb { r: 0.0, g: 0.0, b: 0.0 }, d3(0.0, 0.0, 1.0));
@@ -122,14 +122,14 @@ fn illuminance(l: Light, p: D3) -> (Rgb, D3) {
     let mut att: f64 = 1.0 / d2;
     if l.range > 0.0 {
         let q: f64 = dist / l.range;
-        let w: f64 = clamp_f(1.0 - q * q * q * q, 0.0, 1.0);
+        let w: f64 = m16_clamp_f(1.0 - q * q * q * q, 0.0, 1.0);
         att = att * w * w;
     }
     if l.kind == 2 {
-        let scale: f64 = 1.0 / max_f(0.001, cos(l.inner_cone) - cos(l.outer_cone));
+        let scale: f64 = 1.0 / m16_max_f(0.001, cos(l.inner_cone) - cos(l.outer_cone));
         let offset: f64 = -cos(l.outer_cone) * scale;
-        let cd: f64 = -dot(l.dir, to_l);
-        let a: f64 = clamp_f(cd * scale + offset, 0.0, 1.0);
+        let cd: f64 = -m16_dot(l.dir, to_l);
+        let a: f64 = m16_clamp_f(cd * scale + offset, 0.0, 1.0);
         att = att * a * a;
     }
     let e: f64 = l.intensity * att;
@@ -144,7 +144,7 @@ pub fn exposure(ev: f64) -> f64 {
     1.0 / (1.2 * pow(2.0, ev))
 }
 
-fn fnv_u32(h0: u64, b: u32) -> u64 {
+fn m16_fnv_u32(h0: u64, b: u32) -> u64 {
     let mut h: u64 = h0;
     let mut k: u32 = 0;
     while k < 4 {
@@ -155,8 +155,8 @@ fn fnv_u32(h0: u64, b: u32) -> u64 {
     h
 }
 
-fn fnv_f32(h0: u64, v: f64) -> u64 {
-    fnv_u32(h0, (v as f32).to_bits())
+fn m16_fnv_f32(h0: u64, v: f64) -> u64 {
+    m16_fnv_u32(h0, (v as f32).to_bits())
 }
 
 fn build_lights(eps: f64) -> Vec<Light> {
@@ -209,12 +209,12 @@ pub fn lighting_clusters_hashes(eps: f64) -> (u64, u64, u64, u64, u64, i32, i32)
     let mut c: i32 = 0;
     while c < 3456 {
         let ab: Aabb = cluster_bounds(c);
-        h_bounds = fnv_f32(h_bounds, ab.lo.x);
-        h_bounds = fnv_f32(h_bounds, ab.lo.y);
-        h_bounds = fnv_f32(h_bounds, ab.lo.z);
-        h_bounds = fnv_f32(h_bounds, ab.hi.x);
-        h_bounds = fnv_f32(h_bounds, ab.hi.y);
-        h_bounds = fnv_f32(h_bounds, ab.hi.z);
+        h_bounds = m16_fnv_f32(h_bounds, ab.lo.x);
+        h_bounds = m16_fnv_f32(h_bounds, ab.lo.y);
+        h_bounds = m16_fnv_f32(h_bounds, ab.lo.z);
+        h_bounds = m16_fnv_f32(h_bounds, ab.hi.x);
+        h_bounds = m16_fnv_f32(h_bounds, ab.hi.y);
+        h_bounds = m16_fnv_f32(h_bounds, ab.hi.z);
         c = c + 1;
     }
 
@@ -231,7 +231,7 @@ pub fn lighting_clusters_hashes(eps: f64) -> (u64, u64, u64, u64, u64, i32, i32)
                 let x: f64 = -40.0 + 5.3 * (ix as f64) + eps;
                 let cid: i32 = cluster_of(d3(x, y, z));
                 if cid >= 0 { in_frust = in_frust + 1; }
-                h_probe = fnv_u32(h_probe, (cid + 2) as u32);
+                h_probe = m16_fnv_u32(h_probe, (cid + 2) as u32);
                 ix = ix + 1;
             }
             iy = iy + 1;
@@ -254,10 +254,10 @@ pub fn lighting_clusters_hashes(eps: f64) -> (u64, u64, u64, u64, u64, i32, i32)
             k = k + 1;
         }
         let n_h: usize = hits.len();
-        h_assign = fnv_u32(h_assign, n_h as u32);
+        h_assign = m16_fnv_u32(h_assign, n_h as u32);
         let mut j: usize = 0;
         while j < n_h {
-            h_assign = fnv_u32(h_assign, hits[j] as u32);
+            h_assign = m16_fnv_u32(h_assign, hits[j] as u32);
             entries = entries + 1;
             j = j + 1;
         }
@@ -272,12 +272,12 @@ pub fn lighting_clusters_hashes(eps: f64) -> (u64, u64, u64, u64, u64, i32, i32)
         let mut li: i32 = 0;
         while li < 64 {
             let (e, to_l) = illuminance(lights[li as usize], pos);
-            h_illum = fnv_f32(h_illum, e.r);
-            h_illum = fnv_f32(h_illum, e.g);
-            h_illum = fnv_f32(h_illum, e.b);
-            h_illum = fnv_f32(h_illum, to_l.x);
-            h_illum = fnv_f32(h_illum, to_l.y);
-            h_illum = fnv_f32(h_illum, to_l.z);
+            h_illum = m16_fnv_f32(h_illum, e.r);
+            h_illum = m16_fnv_f32(h_illum, e.g);
+            h_illum = m16_fnv_f32(h_illum, e.b);
+            h_illum = m16_fnv_f32(h_illum, to_l.x);
+            h_illum = m16_fnv_f32(h_illum, to_l.y);
+            h_illum = m16_fnv_f32(h_illum, to_l.z);
             li = li + 4;
         }
         pi = pi + 1;
@@ -287,8 +287,8 @@ pub fn lighting_clusters_hashes(eps: f64) -> (u64, u64, u64, u64, u64, i32, i32)
         let fk: f64 = ek as f64;
         let iso_m: i32 = 1 << (ek % 4);
         let ev: f64 = ev100(1.4 + 0.8 * fk, 1.0 / (60.0 * (fk + 1.0)), 100.0 * (iso_m as f64));
-        h_illum = fnv_f32(h_illum, ev);
-        h_illum = fnv_f32(h_illum, exposure(ev));
+        h_illum = m16_fnv_f32(h_illum, ev);
+        h_illum = m16_fnv_f32(h_illum, exposure(ev));
         ek = ek + 1;
     }
 

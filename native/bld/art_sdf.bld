@@ -30,16 +30,16 @@ fn add3(a: S3, b: S3) -> S3 { s3(a.x + b.x, a.y + b.y, a.z + b.z) }
 fn sub3(a: S3, b: S3) -> S3 { s3(a.x - b.x, a.y - b.y, a.z - b.z) }
 fn mul3(a: S3, s: f64) -> S3 { s3(a.x * s, a.y * s, a.z * s) }
 fn at3(o: S3, d: S3, t: f64) -> S3 { s3(o.x + d.x * t, o.y + d.y * t, o.z + d.z * t) }
-fn dot3(a: S3, b: S3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
-fn len3(a: S3) -> f64 { sqrt(dot3(a, a)) }
+fn m17_dot3(a: S3, b: S3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
+fn len3(a: S3) -> f64 { sqrt(m17_dot3(a, a)) }
 fn unit3(a: S3) -> S3 {
-    let l: f64 = sqrt(dot3(a, a));
+    let l: f64 = sqrt(m17_dot3(a, a));
     s3(a.x / l, a.y / l, a.z / l)
 }
-fn absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
-fn maxd(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
-fn mind(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
-fn clampd(v: f64, lo: f64, hi: f64) -> f64 { mind(maxd(v, lo), hi) }
+fn m17_absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
+fn m17_maxd(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
+fn m17_mind(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
+fn m17_clampd(v: f64, lo: f64, hi: f64) -> f64 { m17_mind(m17_maxd(v, lo), hi) }
 
 // Float32 Vec3 helpers matching raw/math/vec.hpp
 fn f3_sub(a: F3, b: F3) -> F3 { f3(a.x - b.x, a.y - b.y, a.z - b.z) }
@@ -169,7 +169,7 @@ fn eval_bulb(p: S3, iters: i32, power: f64) -> f64 {
     while i < iters {
         r = len3(z);
         if r > 2.0 { break; }
-        let theta: f64 = acos(clampd(z.z / r, -1.0, 1.0)) * power;
+        let theta: f64 = acos(m17_clampd(z.z / r, -1.0, 1.0)) * power;
         let phi: f64 = atan2(z.y, z.x) * power;
         dr = pow(r, power - 1.0) * power * dr + 1.0;
         let zr: f64 = pow(r, power);
@@ -190,11 +190,11 @@ fn eval_mandelbox(p: S3, iters: i32, scale: f64) -> f64 {
     let mut i: i32 = 0;
     while i < iters {
         z = s3(
-            clampd(z.x, -fold, fold) * 2.0 - z.x,
-            clampd(z.y, -fold, fold) * 2.0 - z.y,
-            clampd(z.z, -fold, fold) * 2.0 - z.z,
+            m17_clampd(z.x, -fold, fold) * 2.0 - z.x,
+            m17_clampd(z.y, -fold, fold) * 2.0 - z.y,
+            m17_clampd(z.z, -fold, fold) * 2.0 - z.z,
         );
-        let r2: f64 = dot3(z, z);
+        let r2: f64 = m17_dot3(z, z);
         if r2 < min_r2 {
             let k: f64 = fixed_r2 / min_r2;
             z = mul3(z, k);
@@ -205,10 +205,10 @@ fn eval_mandelbox(p: S3, iters: i32, scale: f64) -> f64 {
             dr = dr * k;
         }
         z = add3(mul3(z, scale), p);
-        dr = dr * absd(scale) + 1.0;
+        dr = dr * m17_absd(scale) + 1.0;
         i = i + 1;
     }
-    len3(z) / absd(dr)
+    len3(z) / m17_absd(dr)
 }
 
 fn eval_primitive(nodes: &Vec<f32>, base: i32, p: S3) -> f64 {
@@ -217,12 +217,12 @@ fn eval_primitive(nodes: &Vec<f32>, base: i32, p: S3) -> f64 {
     if op == 2 || op == 3 {
         let r: f64 = if op == 3 { nodes[base + 5] as f64 } else { 0.0 };
         let q: S3 = s3(
-            absd(p.x) - ((nodes[base + 2] as f64) - r),
-            absd(p.y) - ((nodes[base + 3] as f64) - r),
-            absd(p.z) - ((nodes[base + 4] as f64) - r),
+            m17_absd(p.x) - ((nodes[base + 2] as f64) - r),
+            m17_absd(p.y) - ((nodes[base + 3] as f64) - r),
+            m17_absd(p.z) - ((nodes[base + 4] as f64) - r),
         );
-        let outside: f64 = len3(s3(maxd(q.x, 0.0), maxd(q.y, 0.0), maxd(q.z, 0.0)));
-        return outside + mind(maxd(q.x, maxd(q.y, q.z)), 0.0) - r;
+        let outside: f64 = len3(s3(m17_maxd(q.x, 0.0), m17_maxd(q.y, 0.0), m17_maxd(q.z, 0.0)));
+        return outside + m17_mind(m17_maxd(q.x, m17_maxd(q.y, q.z)), 0.0) - r;
     }
     if op == 4 {
         let a: f64 = sqrt(p.x * p.x + p.z * p.z) - (nodes[base + 2] as f64);
@@ -233,15 +233,15 @@ fn eval_primitive(nodes: &Vec<f32>, base: i32, p: S3) -> f64 {
         let b: S3 = s3(nodes[base + 5] as f64, nodes[base + 6] as f64, nodes[base + 7] as f64);
         let pa: S3 = sub3(p, a);
         let ba: S3 = sub3(b, a);
-        let h: f64 = clampd(dot3(pa, ba) / dot3(ba, ba), 0.0, 1.0);
+        let h: f64 = m17_clampd(m17_dot3(pa, ba) / m17_dot3(ba, ba), 0.0, 1.0);
         return len3(sub3(pa, mul3(ba, h))) - (nodes[base + 8] as f64);
     }
     if op == 6 {
         let dx: f64 = sqrt(p.x * p.x + p.z * p.z) - (nodes[base + 2] as f64);
-        let dy: f64 = absd(p.y) - (nodes[base + 3] as f64);
-        let ox: f64 = maxd(dx, 0.0);
-        let oy: f64 = maxd(dy, 0.0);
-        return mind(maxd(dx, dy), 0.0) + sqrt(ox * ox + oy * oy);
+        let dy: f64 = m17_absd(p.y) - (nodes[base + 3] as f64);
+        let ox: f64 = m17_maxd(dx, 0.0);
+        let oy: f64 = m17_maxd(dy, 0.0);
+        return m17_mind(m17_maxd(dx, dy), 0.0) + sqrt(ox * ox + oy * oy);
     }
     if op == 7 {
         return p.x * (nodes[base + 2] as f64)
@@ -332,13 +332,13 @@ pub fn eval_sdf(prog: &SdfProg, q: S3) -> SdfSample {
         if o == 20 {
             if bd < ad { rd = bd; rm = bm; }
         } else if o == 22 {
-            rd = maxd(ad, -bd);
+            rd = m17_maxd(ad, -bd);
             rm = am;
         } else if o == 23 {
             if ad < bd { rd = bd; rm = bm; }
         } else {
             let k: f64 = prog.nodes[i + 2] as f64;
-            let h: f64 = clampd(0.5 + 0.5 * (bd - ad) / k, 0.0, 1.0);
+            let h: f64 = m17_clampd(0.5 + 0.5 * (bd - ad) / k, 0.0, 1.0);
             rd = bd + (ad - bd) * h - k * h * (1.0 - h);
             rm = if h > 0.5 { am } else { bm };
         }
@@ -396,7 +396,7 @@ pub fn march_sdf(prog: &SdfProg, o: S3, d: S3, t_max: f64, eps: f64, do_refine: 
     while i < 512 {
         let steps: i32 = i + 1;
         let s: SdfSample = eval_sdf(prog, at3(o, d, t));
-        closest = mind(closest, s.d / (1.0 + t));
+        closest = m17_mind(closest, s.d / (1.0 + t));
         if s.d < eps * (1.0 + t) {
             let ht: f64 = if do_refine { refine_hit(prog, o, d, t, eps * (1.0 + t)) } else { t };
             let hn: S3 = sdf_normal(prog, at3(o, d, ht), ht);
@@ -417,13 +417,13 @@ pub fn soft_shadow(prog: &SdfProg, x: S3, l: S3, k: f64) -> f64 {
     let mut i: i32 = 0;
     while i < 128 {
         let h: f64 = eval_sdf(prog, at3(x, l, t)).d;
-        res = mind(res, k * h / t);
+        res = m17_mind(res, k * h / t);
         if res < 1.0e-3 { return 0.0; }
-        t = t + clampd(h, 0.01, 0.5);
+        t = t + m17_clampd(h, 0.01, 0.5);
         if t > 30.0 { break; }
         i = i + 1;
     }
-    clampd(res, 0.0, 1.0)
+    m17_clampd(res, 0.0, 1.0)
 }
 
 pub fn ambient_occlusion(prog: &SdfProg, x: S3, n: S3) -> f64 {
@@ -436,7 +436,7 @@ pub fn ambient_occlusion(prog: &SdfProg, x: S3, n: S3) -> f64 {
         sca = sca * 0.85;
         i = i + 1;
     }
-    clampd(1.0 - 3.0 * occ, 0.0, 1.0)
+    m17_clampd(1.0 - 3.0 * occ, 0.0, 1.0)
 }
 
 pub fn hard_shadow(prog: &SdfProg, x: S3, l: S3) -> bool {
@@ -448,7 +448,7 @@ pub fn fog_homogeneous(sigma: f64, t: f64) -> f64 { exp(-sigma * t) }
 pub fn fog_height(a: f64, b: f64, o: S3, d: S3, t: f64) -> f64 {
     let base: f64 = a * exp(-b * o.y);
     let k: f64 = b * d.y;
-    let optical: f64 = if absd(k) < 1.0e-9 { base * t } else { base * (1.0 - exp(-k * t)) / k };
+    let optical: f64 = if m17_absd(k) < 1.0e-9 { base * t } else { base * (1.0 - exp(-k * t)) / k };
     exp(-optical)
 }
 
@@ -471,7 +471,7 @@ pub fn henyey_greenstein(c: f64, g: f64) -> f64 {
 pub fn god_rays(sc: &SdfScene, o: S3, d: S3, t_end: f64) -> (f64, i32) {
     let l: S3 = unit3(d3_of(sc.sun_dir));
     let dt: f64 = t_end / 64.0;
-    let phase: f64 = henyey_greenstein(dot3(d, l), 0.6);
+    let phase: f64 = henyey_greenstein(m17_dot3(d, l), 0.6);
     let mut rad: f64 = 0.0;
     let mut vis: i32 = 0;
     let fa: f64 = sc.fog_a as f64;
@@ -501,7 +501,7 @@ pub fn camera_ray(sc: &SdfScene, x: i32, y: i32, w: i32, h: i32) -> S3 {
     d3_of(dir)
 }
 
-fn fnv_u32(h0: u64, b: u32) -> u64 {
+fn m17_fnv_u32(h0: u64, b: u32) -> u64 {
     let mut h: u64 = h0;
     let mut k: u32 = 0;
     while k < 4 {
@@ -511,7 +511,7 @@ fn fnv_u32(h0: u64, b: u32) -> u64 {
     h
 }
 
-fn fnv_u64(h0: u64, v: u64) -> u64 {
+fn m17_fnv_u64(h0: u64, v: u64) -> u64 {
     let mut h: u64 = h0;
     let mut k: u32 = 0;
     while k < 8 {
@@ -594,7 +594,7 @@ pub fn run_sdf_parity() -> (u64, u64, u64, u64, u64, u64, i32, i32, i32) {
         let z: f64 = -8.0 + 5.5 * ((i / 128) as f64) / 7.0;
         let s: SdfSample = eval_sdf(&csg, s3(x, y, z));
         h_csg = kit::fnv_f32(h_csg, s.d);
-        h_csg = fnv_u32(h_csg, (s.mat + 100) as u32);
+        h_csg = m17_fnv_u32(h_csg, (s.mat + 100) as u32);
         i = i + 1;
     }
 
@@ -606,7 +606,7 @@ pub fn run_sdf_parity() -> (u64, u64, u64, u64, u64, u64, i32, i32, i32) {
         let z: f64 = -1.2 + 2.4 * ((i / 64) as f64) / 7.0;
         let s: SdfSample = eval_sdf(&frac, s3(x, y, z));
         h_frac = kit::fnv_f32(h_frac, s.d);
-        h_frac = fnv_u32(h_frac, (s.mat + 100) as u32);
+        h_frac = m17_fnv_u32(h_frac, (s.mat + 100) as u32);
         i = i + 1;
     }
 
@@ -635,9 +635,9 @@ pub fn run_sdf_parity() -> (u64, u64, u64, u64, u64, u64, i32, i32, i32) {
             let mh: SdfHit = march_sdf(&sc.prog, o, d, 20.0, 1.0e-4, true);
             let mc: SdfHit = march_sdf(&sc.prog, o, d, 20.0, 1.0e-2, false);
             total_steps = total_steps + mh.steps;
-            h_march = fnv_u32(h_march, if mh.hit { 1 } else { 0 });
-            h_march = fnv_u32(h_march, (mh.mat + 100) as u32);
-            h_march = fnv_u32(h_march, mh.steps as u32);
+            h_march = m17_fnv_u32(h_march, if mh.hit { 1 } else { 0 });
+            h_march = m17_fnv_u32(h_march, (mh.mat + 100) as u32);
+            h_march = m17_fnv_u32(h_march, mh.steps as u32);
             h_march = kit::fnv_f32(h_march, mh.t);
             h_march = kit::fnv_f32(h_march, mh.closest);
             if mh.hit {
@@ -651,7 +651,7 @@ pub fn run_sdf_parity() -> (u64, u64, u64, u64, u64, u64, i32, i32, i32) {
                 h_march = kit::fnv_f32(h_march, sh);
                 h_march = kit::fnv_f32(h_march, ao);
             }
-            h_ctrl = fnv_u32(h_ctrl, if mc.hit { 1 } else { 0 });
+            h_ctrl = m17_fnv_u32(h_ctrl, if mc.hit { 1 } else { 0 });
             h_ctrl = kit::fnv_f32(h_ctrl, mc.t);
             px = px + 1;
         }
@@ -669,7 +669,7 @@ pub fn run_sdf_parity() -> (u64, u64, u64, u64, u64, u64, i32, i32, i32) {
         let fh: f64 = fog_homogeneous(0.08, t_end);
         let fht: f64 = fog_height(sc.fog_a as f64, sc.fog_b as f64, o, d, t_end);
         let fhm: f64 = fog_height_march(sc.fog_a as f64, sc.fog_b as f64, o, d, t_end, 32);
-        let hg: f64 = henyey_greenstein(dot3(d, sun_l), 0.6);
+        let hg: f64 = henyey_greenstein(m17_dot3(d, sun_l), 0.6);
         let (gr, vis) = god_rays(&sc, o, d, t_end);
         total_vis = total_vis + vis;
         h_fog = kit::fnv_f32(h_fog, fh);
@@ -677,15 +677,15 @@ pub fn run_sdf_parity() -> (u64, u64, u64, u64, u64, u64, i32, i32, i32) {
         h_fog = kit::fnv_f32(h_fog, fhm);
         h_fog = kit::fnv_f32(h_fog, hg);
         h_fog = kit::fnv_f32(h_fog, gr);
-        h_fog = fnv_u32(h_fog, vis as u32);
+        h_fog = m17_fnv_u32(h_fog, vis as u32);
         i = i + 1;
     }
 
     let mut h_all: u64 = kit::fnv_start();
-    h_all = fnv_u64(h_all, h_csg);
-    h_all = fnv_u64(h_all, h_frac);
-    h_all = fnv_u64(h_all, h_march);
-    h_all = fnv_u64(h_all, h_fog);
+    h_all = m17_fnv_u64(h_all, h_csg);
+    h_all = m17_fnv_u64(h_all, h_frac);
+    h_all = m17_fnv_u64(h_all, h_march);
+    h_all = m17_fnv_u64(h_all, h_fog);
 
     (h_csg, h_frac, h_march, h_fog, h_all, h_ctrl, hits, total_steps, total_vis)
 }

@@ -14,19 +14,19 @@ struct Basis { fwd: Fd3, right: Fd3, up: Fd3, tan_h: f64, aspect: f64 }
 
 fn fd3(x: f64, y: f64, z: f64) -> Fd3 { Fd3 { x: x, y: y, z: z } }
 fn add(a: Fd3, b: Fd3) -> Fd3 { fd3(a.x + b.x, a.y + b.y, a.z + b.z) }
-fn sub(a: Fd3, b: Fd3) -> Fd3 { fd3(a.x - b.x, a.y - b.y, a.z - b.z) }
+fn m14_sub(a: Fd3, b: Fd3) -> Fd3 { fd3(a.x - b.x, a.y - b.y, a.z - b.z) }
 fn mul(a: Fd3, s: f64) -> Fd3 { fd3(a.x * s, a.y * s, a.z * s) }
-fn dot(a: Fd3, b: Fd3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
+fn m14_dot(a: Fd3, b: Fd3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
 
-fn cross(a: Fd3, b: Fd3) -> Fd3 {
+fn m14_cross(a: Fd3, b: Fd3) -> Fd3 {
     fd3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
 }
 
-fn unit(a: Fd3) -> Fd3 { mul(a, 1.0 / sqrt(dot(a, a))) }
-fn abs_f(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
+fn m14_unit(a: Fd3) -> Fd3 { mul(a, 1.0 / sqrt(m14_dot(a, a))) }
+fn m14_abs_f(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
 fn sat(x: f64) -> f64 { if x < 0.0 { 0.0 } else if x > 1.0 { 1.0 } else { x } }
-fn min_f(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
-fn max_f(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
+fn m14_min_f(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
+fn m14_max_f(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
 
 fn take(h: FdHit, t: f64, n: Fd3, id: i32) -> FdHit {
     if t > 1e-6 && t < h.t {
@@ -35,16 +35,16 @@ fn take(h: FdHit, t: f64, n: Fd3, id: i32) -> FdHit {
     h
 }
 
-fn hit_sphere(h: FdHit, o: Fd3, d: Fd3, c: Fd3, r: f64, id: i32) -> FdHit {
-    let oc: Fd3 = sub(o, c);
-    let b: f64 = dot(oc, d);
-    let q: f64 = dot(oc, oc) - r * r;
+fn m14_hit_sphere(h: FdHit, o: Fd3, d: Fd3, c: Fd3, r: f64, id: i32) -> FdHit {
+    let oc: Fd3 = m14_sub(o, c);
+    let b: f64 = m14_dot(oc, d);
+    let q: f64 = m14_dot(oc, oc) - r * r;
     let disc: f64 = b * b - q;
     if disc < 0.0 { return h; }
     let s: f64 = sqrt(disc);
     let t: f64 = if (-b - s) > 1e-6 { -b - s } else { -b + s };
     if t > 1e-6 && t < h.t {
-        return take(h, t, unit(sub(add(o, mul(d, t)), c)), id);
+        return take(h, t, m14_unit(m14_sub(add(o, mul(d, t)), c)), id);
     }
     h
 }
@@ -55,7 +55,7 @@ fn axis_v(v: Fd3, a: i32) -> f64 {
     v.z
 }
 
-fn hit_box(h: FdHit, o: Fd3, d: Fd3, lo: Fd3, hi: Fd3, id: i32) -> FdHit {
+fn m14_hit_box(h: FdHit, o: Fd3, d: Fd3, lo: Fd3, hi: Fd3, id: i32) -> FdHit {
     let mut t0: f64 = 1e-6;
     let mut t1: f64 = 1e30;
     let mut axis: i32 = -1;
@@ -66,7 +66,7 @@ fn hit_box(h: FdHit, o: Fd3, d: Fd3, lo: Fd3, hi: Fd3, id: i32) -> FdHit {
         let oa: f64 = axis_v(o, a);
         let loa: f64 = axis_v(lo, a);
         let hia: f64 = axis_v(hi, a);
-        if abs_f(da) < 1e-12 {
+        if m14_abs_f(da) < 1e-12 {
             if oa < loa || oa > hia { return h; }
         } else {
             let mut ta: f64 = (loa - oa) / da;
@@ -83,7 +83,7 @@ fn hit_box(h: FdHit, o: Fd3, d: Fd3, lo: Fd3, hi: Fd3, id: i32) -> FdHit {
                 axis = a;
                 sgn = s;
             }
-            t1 = min_f(t1, tb);
+            t1 = m14_min_f(t1, tb);
             if t0 > t1 { return h; }
         }
         a = a + 1;
@@ -112,16 +112,16 @@ fn hit_column(h0: FdHit, o: Fd3, d: Fd3, cx: f64, cz: f64, r: f64, y1: f64, id: 
         let t_a: f64 = (-b - sd) / a;
         let y_a: f64 = o.y + d.y * t_a;
         if t_a > 1e-6 && y_a >= 0.0 && y_a <= y1 {
-            h = take(h, t_a, unit(fd3(ox + d.x * t_a, 0.0, oz + d.z * t_a)), id);
+            h = take(h, t_a, m14_unit(fd3(ox + d.x * t_a, 0.0, oz + d.z * t_a)), id);
         } else {
             let t_b: f64 = (-b + sd) / a;
             let y_b: f64 = o.y + d.y * t_b;
             if t_b > 1e-6 && y_b >= 0.0 && y_b <= y1 {
-                h = take(h, t_b, unit(fd3(ox + d.x * t_b, 0.0, oz + d.z * t_b)), id);
+                h = take(h, t_b, m14_unit(fd3(ox + d.x * t_b, 0.0, oz + d.z * t_b)), id);
             }
         }
     }
-    if abs_f(d.y) > 1e-12 {
+    if m14_abs_f(d.y) > 1e-12 {
         let t: f64 = (y1 - o.y) / d.y;
         let x: f64 = ox + d.x * t;
         let z: f64 = oz + d.z * t;
@@ -134,11 +134,11 @@ fn hit_column(h0: FdHit, o: Fd3, d: Fd3, cx: f64, cz: f64, r: f64, y1: f64, id: 
 
 fn hit_wall(h: FdHit, o: Fd3, d: Fd3, axis: i32, at: f64, sign: f64, id: i32) -> FdHit {
     let da: f64 = axis_v(d, axis);
-    if abs_f(da) < 1e-12 { return h; }
+    if m14_abs_f(da) < 1e-12 { return h; }
     let t: f64 = (at - axis_v(o, axis)) / da;
     if t <= 1e-6 || t >= h.t { return h; }
     let p: Fd3 = add(o, mul(d, t));
-    if p.y < 0.0 || p.y > 14.0 || abs_f(p.x) > 18.0 + 1e-9 || abs_f(p.z) > 18.0 + 1e-9 {
+    if p.y < 0.0 || p.y > 14.0 || m14_abs_f(p.x) > 18.0 + 1e-9 || m14_abs_f(p.z) > 18.0 + 1e-9 {
         return h;
     }
     let n: Fd3 = if axis == 0 { fd3(sign, 0.0, 0.0) } else { fd3(0.0, 0.0, sign) };
@@ -147,16 +147,16 @@ fn hit_wall(h: FdHit, o: Fd3, d: Fd3, axis: i32, at: f64, sign: f64, id: i32) ->
 
 fn cast(o: Fd3, d: Fd3, occluders_only: bool) -> FdHit {
     let mut h: FdHit = FdHit { t: 1e30, nx: 0.0, ny: 1.0, nz: 0.0, id: 0 };
-    h = hit_box(h, o, d, fd3(-1.5, 0.0, -1.5), fd3(1.5, 0.8, 1.5), 6);
-    h = hit_sphere(h, o, d, fd3(0.0, 2.0, 0.0), 1.2, 7);
-    h = hit_sphere(h, o, d, fd3(3.2, 0.6, 1.5), 0.6, 8);
+    h = m14_hit_box(h, o, d, fd3(-1.5, 0.0, -1.5), fd3(1.5, 0.8, 1.5), 6);
+    h = m14_hit_sphere(h, o, d, fd3(0.0, 2.0, 0.0), 1.2, 7);
+    h = m14_hit_sphere(h, o, d, fd3(3.2, 0.6, 1.5), 0.6, 8);
     h = hit_column(h, o, d, -4.0, -2.0, 0.7, 5.0, 9);
     if occluders_only { return h; }
     if d.y < 0.0 {
         let t: f64 = -o.y / d.y;
         let px: f64 = o.x + d.x * t;
         let pz: f64 = o.z + d.z * t;
-        if t > 1e-6 && t < h.t && abs_f(px) < 18.0 && abs_f(pz) < 18.0 {
+        if t > 1e-6 && t < h.t && m14_abs_f(px) < 18.0 && m14_abs_f(pz) < 18.0 {
             h = take(h, t, fd3(0.0, 1.0, 0.0), 1);
         }
     }
@@ -179,18 +179,18 @@ fn base_albedo(id: i32) -> f64 {
 }
 
 fn radial_mask(lpos: Fd3, radius: f64, core: f64, intensity: f64, p: Fd3) -> f64 {
-    let v: Fd3 = sub(p, lpos);
-    let r2: f64 = dot(v, v);
+    let v: Fd3 = m14_sub(p, lpos);
+    let r2: f64 = m14_dot(v, v);
     let q: f64 = r2 / (radius * radius);
     if q >= 1.0 { return 0.0; }
     (intensity * (1.0 - q) * (1.0 - q)) / (1.0 + r2 / (core * core))
 }
 
 fn surface_term(lpos: Fd3, wrap: f64, p: Fd3, n: Fd3) -> f64 {
-    let v: Fd3 = sub(lpos, p);
-    let l: f64 = sqrt(dot(v, v));
+    let v: Fd3 = m14_sub(lpos, p);
+    let l: f64 = sqrt(m14_dot(v, v));
     if l < 1e-6 { return 1.0; }
-    sat((dot(n, v) / l + wrap) / (1.0 + wrap))
+    sat((m14_dot(n, v) / l + wrap) / (1.0 + wrap))
 }
 
 pub fn bayer8_rank(x0: i32, y0: i32) -> i32 {
@@ -230,9 +230,9 @@ pub fn fractal_blend(tc: f64, tf: f64, m: f64) -> f64 {
 }
 
 fn fractal_threshold(apos: Fd3, anrm: Fd3, depth: f64, pa: f64, cell_shift: i32) -> f64 {
-    let ax: f64 = abs_f(anrm.x);
-    let ay: f64 = abs_f(anrm.y);
-    let az: f64 = abs_f(anrm.z);
+    let ax: f64 = m14_abs_f(anrm.x);
+    let ay: f64 = m14_abs_f(anrm.y);
+    let az: f64 = m14_abs_f(anrm.z);
     let mut u: f64 = apos.x;
     let mut v: f64 = apos.y;
     if ax >= ay && ax >= az {
@@ -242,7 +242,7 @@ fn fractal_threshold(apos: Fd3, anrm: Fd3, depth: f64, pa: f64, cell_shift: i32)
         u = apos.x;
         v = apos.z;
     }
-    let ratio: f64 = (2.0 * pa * max_f(depth, 1e-6)) / 0.1;
+    let ratio: f64 = (2.0 * pa * m14_max_f(depth, 1e-6)) / 0.1;
     let mut lam: f64 = log(ratio) / log(2.0);
     if lam < -16.0 { lam = -16.0; }
     if lam > 16.0 { lam = 16.0; }
@@ -276,9 +276,9 @@ pub fn level_hash(levels: i32, anchor_mode: i32, cell_shift: i32) -> u64 {
     let eye: Fd3 = fd3(8.5 * cos(ang), 4.2, 8.5 * sin(ang));
     let target: Fd3 = fd3(0.0, 1.0, 0.0);
     let fov: f64 = 0.75;
-    let fwd: Fd3 = unit(sub(target, eye));
-    let right: Fd3 = unit(cross(fwd, fd3(0.0, 1.0, 0.0)));
-    let up: Fd3 = cross(right, fwd);
+    let fwd: Fd3 = m14_unit(m14_sub(target, eye));
+    let right: Fd3 = m14_unit(m14_cross(fwd, fd3(0.0, 1.0, 0.0)));
+    let up: Fd3 = m14_cross(right, fwd);
     let tan_h: f64 = tan(fov / 2.0);
     let aspect: f64 = (w as f64) / (h as f64);
     let pa: f64 = (2.0 * tan_h) / (h as f64);
@@ -294,7 +294,7 @@ pub fn level_hash(levels: i32, anchor_mode: i32, cell_shift: i32) -> u64 {
         let mut x: i32 = 0;
         while x < w {
             let u_ndc: f64 = ((x as f64) + 0.5) / (w as f64) * 2.0 - 1.0;
-            let ray_d: Fd3 = unit(add(
+            let ray_d: Fd3 = m14_unit(add(
                 b.fwd,
                 add(mul(b.right, u_ndc * b.tan_h * b.aspect), mul(b.up, v_ndc * b.tan_h)),
             ));
@@ -314,18 +314,18 @@ pub fn level_hash(levels: i32, anchor_mode: i32, cell_shift: i32) -> u64 {
                 let hn: Fd3 = fd3(hit.nx, hit.ny, hit.nz);
                 let wob: f64 = 0.75 + 0.25 * sin(0.7 * p.x) * sin(0.9 * p.z + 0.5 * p.y);
                 albedo = ((base_albedo(hit.id) * wob) as f32) as f64;
-                depth = (dot(sub(p, eye), b.fwd) as f32) as f64;
+                depth = (m14_dot(m14_sub(p, eye), b.fwd) as f32) as f64;
                 wpos = fd3((p.x as f32) as f64, (p.y as f32) as f64, (p.z as f32) as f64);
                 nrm = fd3((hn.x as f32) as f64, (hn.y as f32) as f64, (hn.z as f32) as f64);
 
                 let orig: Fd3 = add(p, mul(hn, 1e-4));
-                let to0: Fd3 = sub(l0, p);
-                let d0: f64 = sqrt(dot(to0, to0));
+                let to0: Fd3 = m14_sub(l0, p);
+                let d0: f64 = sqrt(m14_dot(to0, to0));
                 let s0: FdHit = cast(orig, mul(to0, 1.0 / d0), true);
                 vis0 = if s0.t < d0 { 0.0 } else { 1.0 };
 
-                let to1: Fd3 = sub(l1, p);
-                let d1: f64 = sqrt(dot(to1, to1));
+                let to1: Fd3 = m14_sub(l1, p);
+                let d1: f64 = sqrt(m14_dot(to1, to1));
                 let s1: FdHit = cast(orig, mul(to1, 1.0 / d1), true);
                 vis1 = if s1.t < d1 { 0.0 } else { 1.0 };
             }

@@ -44,7 +44,7 @@ pub struct SensTable {
     im_b: Vec<f64>,
 }
 
-fn k_pi() -> f64 { 3.14159265358979323846 }
+fn m18_k_pi() -> f64 { 3.14159265358979323846 }
 fn k_min_rough() -> f64 { 0.045 }
 fn k_min_sheen() -> f64 { 0.07 }
 fn k_sens_max() -> f64 { 40000.0 }
@@ -72,55 +72,55 @@ fn c_sqrt_real(x: f64) -> C2 {
     if x >= 0.0 { c2(sqrt(x), 0.0) } else { c2(0.0, sqrt(-x)) }
 }
 
-fn absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
-fn maxd(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
-fn mind(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
-fn clampd(v: f64, lo: f64, hi: f64) -> f64 { mind(maxd(v, lo), hi) }
-fn dot3(a: P3, b: P3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
+fn m18_absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
+fn m18_maxd(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
+fn m18_mind(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
+fn m18_clampd(v: f64, lo: f64, hi: f64) -> f64 { m18_mind(m18_maxd(v, lo), hi) }
+fn m18_dot3(a: P3, b: P3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
 fn ch_rgb(c: Rgb3, k: i32) -> f64 { if k == 0 { c.r } else if k == 1 { c.g } else { c.b } }
 
 // --- pbr_lobes.cpp ---
 
 pub fn alpha_of(roughness: f64) -> f64 {
-    let r: f64 = clampd(roughness, k_min_rough(), 1.0);
+    let r: f64 = m18_clampd(roughness, k_min_rough(), 1.0);
     r * r
 }
 
 pub fn aniso_alphas(roughness: f64, anisotropy: f64) -> (f64, f64) {
     let a: f64 = alpha_of(roughness);
-    let k: f64 = clampd(anisotropy, 0.0, 1.0);
+    let k: f64 = m18_clampd(anisotropy, 0.0, 1.0);
     (a + (1.0 - a) * k * k, a)
 }
 
-pub fn ggx_d(h: P3, ax: f64, ay: f64) -> f64 {
+pub fn m18_ggx_d(h: P3, ax: f64, ay: f64) -> f64 {
     if h.z <= 0.0 { return 0.0; }
     let u: f64 = h.x / ax;
     let v: f64 = h.y / ay;
     let s: f64 = u * u + v * v + h.z * h.z;
-    1.0 / (k_pi() * ax * ay * s * s)
+    1.0 / (m18_k_pi() * ax * ay * s * s)
 }
 
-pub fn smith_v(wo: P3, wi: P3, ax: f64, ay: f64) -> f64 {
+pub fn m18_smith_v(wo: P3, wi: P3, ax: f64, ay: f64) -> f64 {
     let qo: f64 = sqrt(ax * ax * wo.x * wo.x + ay * ay * wo.y * wo.y + wo.z * wo.z);
     let qi: f64 = sqrt(ax * ax * wi.x * wi.x + ay * ay * wi.y * wi.y + wi.z * wi.z);
-    0.5 / (absd(wi.z) * qo + absd(wo.z) * qi)
+    0.5 / (m18_absd(wi.z) * qo + m18_absd(wo.z) * qi)
 }
 
-pub fn smith_g2(wo: P3, wi: P3, ax: f64, ay: f64) -> f64 {
-    4.0 * absd(wo.z) * absd(wi.z) * smith_v(wo, wi, ax, ay)
+pub fn m18_smith_g2(wo: P3, wi: P3, ax: f64, ay: f64) -> f64 {
+    4.0 * m18_absd(wo.z) * m18_absd(wi.z) * m18_smith_v(wo, wi, ax, ay)
 }
 
 pub fn schlick(f0: f64, f90: f64, cosine: f64) -> f64 {
-    let m: f64 = 1.0 - clampd(cosine, 0.0, 1.0);
+    let m: f64 = 1.0 - m18_clampd(cosine, 0.0, 1.0);
     let m5: f64 = m * m * m * m * m;
     f0 + (f90 - f0) * m5
 }
 
 pub fn charlie_d(h: P3, sheen_roughness: f64) -> f64 {
-    let r: f64 = clampd(sheen_roughness, k_min_sheen(), 1.0);
+    let r: f64 = m18_clampd(sheen_roughness, k_min_sheen(), 1.0);
     let inv: f64 = 1.0 / (r * r);
     let s2: f64 = h.x * h.x + h.y * h.y;
-    (2.0 + inv) * pow(s2, 0.5 * inv) / (2.0 * k_pi())
+    (2.0 + inv) * pow(s2, 0.5 * inv) / (2.0 * m18_k_pi())
 }
 
 fn sheen_l(x: f64, a: f64) -> f64 {
@@ -134,11 +134,11 @@ fn sheen_l(x: f64, a: f64) -> f64 {
 }
 
 fn sheen_lambda(c: f64, a: f64) -> f64 {
-    if absd(c) < 0.5 { exp(sheen_l(c, a)) } else { exp(2.0 * sheen_l(0.5, a) - sheen_l(1.0 - c, a)) }
+    if m18_absd(c) < 0.5 { exp(sheen_l(c, a)) } else { exp(2.0 * sheen_l(0.5, a) - sheen_l(1.0 - c, a)) }
 }
 
 pub fn charlie_v(mu_o: f64, mu_i: f64, sheen_roughness: f64) -> f64 {
-    let r: f64 = clampd(sheen_roughness, k_min_sheen(), 1.0);
+    let r: f64 = m18_clampd(sheen_roughness, k_min_sheen(), 1.0);
     let a: f64 = r * r;
     1.0 / ((1.0 + sheen_lambda(mu_o, a) + sheen_lambda(mu_i, a)) * (4.0 * mu_o * mu_i))
 }
@@ -150,18 +150,18 @@ pub fn walter_btdf(vin: P3, eta_in: f64, vout: P3, eta_out: f64, ax: f64, ay: f6
         -(eta_in * vin.y + eta_out * vout.y),
         -(eta_in * vin.z + eta_out * vout.z),
     );
-    let l: f64 = sqrt(dot3(h, h));
+    let l: f64 = sqrt(m18_dot3(h, h));
     if l <= 0.0 { return 0.0; }
     h = p3(h.x / l, h.y / l, h.z / l);
     if h.z < 0.0 { h = p3(-h.x, -h.y, -h.z); }
-    let ih: f64 = dot3(vin, h);
-    let oh: f64 = dot3(vout, h);
+    let ih: f64 = m18_dot3(vin, h);
+    let oh: f64 = m18_dot3(vout, h);
     if ih * vin.z <= 0.0 || oh * vout.z <= 0.0 { return 0.0; }
-    let cos_low: f64 = if eta_in <= eta_out { absd(ih) } else { absd(oh) };
+    let cos_low: f64 = if eta_in <= eta_out { m18_absd(ih) } else { m18_absd(oh) };
     let fr: f64 = schlick(f0, 1.0, cos_low);
     let den: f64 = eta_in * ih + eta_out * oh;
-    absd(ih) * absd(oh) / (absd(vin.z) * absd(vout.z)) * eta_out * eta_out * (1.0 - fr)
-        * smith_g2(vin, vout, ax, ay) * ggx_d(h, ax, ay) / (den * den)
+    m18_absd(ih) * m18_absd(oh) / (m18_absd(vin.z) * m18_absd(vout.z)) * eta_out * eta_out * (1.0 - fr)
+        * m18_smith_g2(vin, vout, ax, ay) * m18_ggx_d(h, ax, ay) / (den * den)
 }
 
 // --- pbr_iridescence.cpp ---
@@ -185,15 +185,15 @@ fn xyz_to_rec709(x: f64, y: f64, z: f64) -> Rgb3 {
 }
 
 fn eval_sensitivity(opd: f64, s0: f64, s1: f64, s2: f64) -> Rgb3 {
-    let phase: f64 = 2.0 * k_pi() * opd * 1.0e-9;
+    let phase: f64 = 2.0 * m18_k_pi() * opd * 1.0e-9;
     let p2: f64 = phase * phase;
-    let mut x: f64 = 5.4856e-13 * sqrt(2.0 * k_pi() * 4.3278e+09)
+    let mut x: f64 = 5.4856e-13 * sqrt(2.0 * m18_k_pi() * 4.3278e+09)
         * cos(1.6810e+06 * phase + s0) * exp(-p2 * 4.3278e+09);
-    let y: f64 = 4.4201e-13 * sqrt(2.0 * k_pi() * 9.3046e+09)
+    let y: f64 = 4.4201e-13 * sqrt(2.0 * m18_k_pi() * 9.3046e+09)
         * cos(1.7953e+06 * phase + s1) * exp(-p2 * 9.3046e+09);
-    let z: f64 = 5.2481e-13 * sqrt(2.0 * k_pi() * 6.6121e+09)
+    let z: f64 = 5.2481e-13 * sqrt(2.0 * m18_k_pi() * 6.6121e+09)
         * cos(2.2084e+06 * phase + s2) * exp(-p2 * 6.6121e+09);
-    x = x + 9.7470e-14 * sqrt(2.0 * k_pi() * 4.5282e+09)
+    x = x + 9.7470e-14 * sqrt(2.0 * m18_k_pi() * 4.5282e+09)
         * cos(2.2399e+06 * phase + s0) * exp(-4.5282e+09 * p2);
     xyz_to_rec709(x / 1.0685e-7, y / 1.0685e-7, z / 1.0685e-7)
 }
@@ -211,8 +211,8 @@ fn eval_film(outside_ior: f64, film_ior: f64, d: f64, base_f0: Rgb3, cos1: f64) 
     let cos2: f64 = sqrt(c2sq);
     let r12: f64 = schlick(ior_to_f0(film_ior, outside_ior), 1.0, cos1);
     let t121: f64 = 1.0 - r12;
-    let phi12: f64 = if film_ior < outside_ior { k_pi() } else { 0.0 };
-    let phi21: f64 = k_pi() - phi12;
+    let phi12: f64 = if film_ior < outside_ior { m18_k_pi() } else { 0.0 };
+    let phi21: f64 = m18_k_pi() - phi12;
     let b0: f64 = f0_to_ior(base_f0.r + 0.0001);
     let b1: f64 = f0_to_ior(base_f0.g + 0.0001);
     let b2: f64 = f0_to_ior(base_f0.b + 0.0001);
@@ -226,9 +226,9 @@ fn eval_film(outside_ior: f64, film_ior: f64, d: f64, base_f0: Rgb3, cos1: f64) 
         r23_r: schlick(ior_to_f0(b0, film_ior), 1.0, cos2),
         r23_g: schlick(ior_to_f0(b1, film_ior), 1.0, cos2),
         r23_b: schlick(ior_to_f0(b2, film_ior), 1.0, cos2),
-        phi23_r: if b0 < film_ior { k_pi() } else { 0.0 },
-        phi23_g: if b1 < film_ior { k_pi() } else { 0.0 },
-        phi23_b: if b2 < film_ior { k_pi() } else { 0.0 },
+        phi23_r: if b0 < film_ior { m18_k_pi() } else { 0.0 },
+        phi23_g: if b1 < film_ior { m18_k_pi() } else { 0.0 },
+        phi23_b: if b2 < film_ior { m18_k_pi() } else { 0.0 },
     }
 }
 
@@ -282,7 +282,7 @@ pub fn build_sens_table() -> SensTable {
         let mut idx: i32 = 0;
         while idx <= 400 {
             let l: f64 = (380 + idx) as f64;
-            let a: f64 = 2.0 * k_pi() * opd / l;
+            let a: f64 = 2.0 * m18_k_pi() * opd / l;
             let cv: f64 = cos(a);
             let sv: f64 = sin(a);
             let x: f64 = cx[idx];
@@ -303,7 +303,7 @@ pub fn build_sens_table() -> SensTable {
 
 fn tab_sensitivity(t: &SensTable, opd: f64, s0: f64, s1: f64, s2: f64) -> Rgb3 {
     let n: i32 = t.re_r.len() as i32;
-    let u: f64 = clampd(opd / k_sens_step(), 0.0, (n - 1) as f64);
+    let u: f64 = m18_clampd(opd / k_sens_step(), 0.0, (n - 1) as f64);
     let mut j: i32 = u as i32;
     if j > n - 2 { j = n - 2; }
     let f: f64 = u - (j as f64);
@@ -338,7 +338,7 @@ fn eval_polarized(n1: f64, n2: f64, cos1: f64, cos2: f64, n3r: f64, n3g: f64, n3
         (n1 * cos1 - n2 * cos2) / (n1 * cos1 + n2 * cos2)
     };
     let r12sq: f64 = r12 * r12;
-    let phi21: f64 = if -r12 >= 0.0 { 0.0 } else { k_pi() };
+    let phi21: f64 = if -r12 >= 0.0 { 0.0 } else { m18_k_pi() };
     let sin2sq: f64 = 1.0 - cos2 * cos2;
     let (rr, pr) = eval_pol_ch(n2, cos2, n3r, sin2sq, p_pol);
     let (rg, pg) = eval_pol_ch(n2, cos2, n3g, sin2sq, p_pol);
@@ -359,9 +359,9 @@ fn eval_series(
     let p0: f64 = phi21 + phi23_r;
     let p1: f64 = phi21 + phi23_g;
     let p2: f64 = phi21 + phi23_b;
-    let r123_0: f64 = clampd(r12 * r23_r, 1.0e-5, 0.9999);
-    let r123_1: f64 = clampd(r12 * r23_g, 1.0e-5, 0.9999);
-    let r123_2: f64 = clampd(r12 * r23_b, 1.0e-5, 0.9999);
+    let r123_0: f64 = m18_clampd(r12 * r23_r, 1.0e-5, 0.9999);
+    let r123_1: f64 = m18_clampd(r12 * r23_g, 1.0e-5, 0.9999);
+    let r123_2: f64 = m18_clampd(r12 * r23_b, 1.0e-5, 0.9999);
     let sr0: f64 = sqrt(r123_0);
     let sr1: f64 = sqrt(r123_1);
     let sr2: f64 = sqrt(r123_2);
@@ -397,7 +397,7 @@ pub fn iridescent_fresnel(
 ) -> Rgb3 {
     let f: FilmInfo = eval_film(outside_ior, film_ior, d, base_f0, cos1);
     if !f.ok { return rgb3(1.0, 1.0, 1.0); }
-    let max_f0: f64 = maxd(base_f0.r, maxd(base_f0.g, base_f0.b));
+    let max_f0: f64 = m18_maxd(base_f0.r, m18_maxd(base_f0.g, base_f0.b));
     let pol: bool = if pol_in && max_f0 > 0.25 { false } else { pol_in };
     let out: Rgb3 = if !pol {
         eval_series(
@@ -420,7 +420,7 @@ pub fn iridescent_fresnel(
         );
         rgb3(0.5 * (a.r + b.r), 0.5 * (a.g + b.g), 0.5 * (a.b + b.b))
     };
-    rgb3(maxd(out.r, 0.0), maxd(out.g, 0.0), maxd(out.b, 0.0))
+    rgb3(m18_maxd(out.r, 0.0), m18_maxd(out.g, 0.0), m18_maxd(out.b, 0.0))
 }
 
 pub fn iridescent_spectral(outside_ior: f64, film_ior: f64, d: f64, base_f0: Rgb3, cos1: f64) -> Rgb3 {
@@ -433,7 +433,7 @@ pub fn iridescent_spectral(outside_ior: f64, film_ior: f64, d: f64, base_f0: Rgb
     while k < 3 {
         let r23k: f64 = if k == 0 { f.r23_r } else if k == 1 { f.r23_g } else { f.r23_b };
         let phi23k: f64 = if k == 0 { f.phi23_r } else if k == 1 { f.phi23_g } else { f.phi23_b };
-        let rho12: C2 = c_polar(sqrt(f.r12), k_pi() - f.phi21);
+        let rho12: C2 = c_polar(sqrt(f.r12), m18_k_pi() - f.phi21);
         let rho21: C2 = c_polar(sqrt(f.r12), f.phi21);
         let rho23: C2 = c_polar(sqrt(r23k), phi23k);
         let r123: f64 = f.r12 * r23k;
@@ -444,7 +444,7 @@ pub fn iridescent_spectral(outside_ior: f64, film_ior: f64, d: f64, base_f0: Rgb
         let mut yn: f64 = 0.0;
         let mut wl: i32 = 380;
         while wl <= 780 {
-            let e: C2 = c_polar(1.0, 2.0 * k_pi() * f.opd / (wl as f64));
+            let e: C2 = c_polar(1.0, 2.0 * m18_k_pi() * f.opd / (wl as f64));
             let num: C2 = c_mul(c_scale(rho23, f.t121), e);
             let den: C2 = c_sub(c2(1.0, 0.0), c_mul(c_mul(rho21, rho23), e));
             let rv: C2 = c_add(rho12, c_div(num, den));
@@ -457,7 +457,7 @@ pub fn iridescent_spectral(outside_ior: f64, film_ior: f64, d: f64, base_f0: Rgb
         if k == 0 { out_r = val; } else if k == 1 { out_g = val; } else { out_b = val; }
         k = k + 1;
     }
-    rgb3(maxd(out_r, 0.0), maxd(out_g, 0.0), maxd(out_b, 0.0))
+    rgb3(m18_maxd(out_r, 0.0), m18_maxd(out_g, 0.0), m18_maxd(out_b, 0.0))
 }
 
 pub fn iridescent_exact(n1: f64, n2: f64, d: f64, n3: f64, cos1: f64) -> Rgb3 {
@@ -472,7 +472,7 @@ pub fn iridescent_exact(n1: f64, n2: f64, d: f64, n3: f64, cos1: f64) -> Rgb3 {
     let mut wz: f64 = 0.0;
     let mut wl: i32 = 380;
     while wl <= 780 {
-        let e: C2 = c_exp(c_mul(c2(0.0, 4.0 * k_pi() * n2 * d / (wl as f64)), c2v));
+        let e: C2 = c_exp(c_mul(c2(0.0, 4.0 * m18_k_pi() * n2 * d / (wl as f64)), c2v));
         let mut rv: f64 = 0.0;
         let mut pol: i32 = 0;
         while pol < 2 {
@@ -506,7 +506,7 @@ fn unit_dir(theta: f64, phi: f64) -> P3 {
     p3(s * cos(phi), s * sin(phi), cos(theta))
 }
 
-fn fnv_u64(h0: u64, v: u64) -> u64 {
+fn m18_fnv_u64(h0: u64, v: u64) -> u64 {
     let mut h: u64 = h0;
     let mut k: u32 = 0;
     while k < 8 {
@@ -533,10 +533,10 @@ pub fn run_pbr_lobes_parity() -> (u64, u64, u64, u64, u64, u64) {
         let hz: f64 = wo.z + wi.z;
         let hl: f64 = sqrt(hx * hx + hy * hy + hz * hz);
         let hv: P3 = p3(hx / hl, hy / hl, hz / hl);
-        h_ggx = kit::fnv_f32(h_ggx, ggx_d(hv, ax, ay));
-        h_ggx = kit::fnv_f32(h_ggx, smith_v(wo, wi, ax, ay));
-        h_ggx = kit::fnv_f32(h_ggx, smith_g2(wo, wi, ax, ay));
-        h_ggx = kit::fnv_f32(h_ggx, schlick(0.04, 1.0, dot3(wo, hv)));
+        h_ggx = kit::fnv_f32(h_ggx, m18_ggx_d(hv, ax, ay));
+        h_ggx = kit::fnv_f32(h_ggx, m18_smith_v(wo, wi, ax, ay));
+        h_ggx = kit::fnv_f32(h_ggx, m18_smith_g2(wo, wi, ax, ay));
+        h_ggx = kit::fnv_f32(h_ggx, schlick(0.04, 1.0, m18_dot3(wo, hv)));
         i = i + 1;
     }
 
@@ -604,10 +604,10 @@ pub fn run_pbr_lobes_parity() -> (u64, u64, u64, u64, u64, u64) {
     }
 
     let mut h_all: u64 = kit::fnv_start();
-    h_all = fnv_u64(h_all, h_ggx);
-    h_all = fnv_u64(h_all, h_sb);
-    h_all = fnv_u64(h_all, h_irid_fast);
-    h_all = fnv_u64(h_all, h_irid_spec);
+    h_all = m18_fnv_u64(h_all, h_ggx);
+    h_all = m18_fnv_u64(h_all, h_sb);
+    h_all = m18_fnv_u64(h_all, h_irid_fast);
+    h_all = m18_fnv_u64(h_all, h_irid_spec);
 
     (h_ggx, h_sb, h_irid_fast, h_irid_spec, h_all, h_irid_ctrl)
 }
