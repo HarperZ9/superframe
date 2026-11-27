@@ -56,4 +56,4 @@ Every fixture is synthetic and lives in a temp dir.
 - Transcript capture sees files written through file tools only; files written by shell commands
   need the walk mode (`capture --since T ROOTS...`).
 
-Licence: FSL-1.1-MIT (see the repository LICENSE).
+Licence: MIT (see the repository LICENSE).

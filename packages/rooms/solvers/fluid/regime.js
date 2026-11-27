@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Regime gate: says when a run is outside what its solver can claim, from the run's own numbers. A pretty field with
 // no validity label is the failure this exists to stop. Each rule comes from a failure met while building the room.
 const row = (id, text) => ({ id, text });

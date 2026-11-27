@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A sampler over our own renders (gap G10): slice, chop to a grid, pitch, stretch, reverse, gate, loop.
 
 Provenance first. A Sample is a mono buffer and the sha256 of the file it came from; load() refuses a file

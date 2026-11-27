@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 //
 // impacts.mjs: an engine scene that makes its own sound. Balls fall through the rooms' impact geometry
 // (rooms/core/data/impact-scene.js) onto bars of measured materials, bounce and settle; every impact is sent,

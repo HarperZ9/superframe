@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Time behaviour: a camera shutter against the raster, and phosphor trails behind a moving ball.
     python -B study/run_time.py
 """

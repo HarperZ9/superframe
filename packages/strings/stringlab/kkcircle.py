@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One periodic dimension, three ladders: Kaluza-Klein masses, Kaluza-Klein charges, string harmonics.
 
 Coordinates (x^mu, theta) with theta on a circle of radius R; the metric does not depend on theta. A massless 5D

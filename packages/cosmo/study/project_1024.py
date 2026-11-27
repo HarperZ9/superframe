@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Project a 1024^3 out-of-core run (256 Mpc/h, mesh 1024, ghosts every sub-step, sliced FFT) from measured
 runs, and apply the run rule (peak GPU under --max-gib, energy under --max-mj).
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Wave view
 // Exit phase comes from the optical path of the same rays. Far field by FFT of the pupil, padded.
 export function fft1(re, im, n, st, off, tw) {

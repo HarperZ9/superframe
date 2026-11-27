@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/cad/ortho: orthographic views of the resolved model, as line work. For each view the part meshes are
    mapped to (u, v, depth), rasterised once by the engine's software z-buffer (raster.js) for visibility, and
    every feature edge (a sharp crease, an open boundary, or a silhouette in this view) is sampled against that

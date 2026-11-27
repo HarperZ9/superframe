@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* field/units: every value carries a unit, and every unit is a dimension vector plus a scale to SI.
    The dimensions are the seven SI base quantities plus information (bit), so volts and bits are different
    kinds of thing and adding them is refused. Angles, counts and ratios are dimensionless. */

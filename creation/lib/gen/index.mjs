@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // The generator set, one import. Order is the rank in REGISTRY.md (recurrence in the author's material times motion

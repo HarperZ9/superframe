@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* field/transducer: converters are typed transducers. Each one declares
      id, claims (the grade it promises), tol and residual (how a round trip is compared),
      from / to ({ domain kind, unit }) checked on entry,

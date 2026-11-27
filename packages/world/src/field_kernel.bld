@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // field_kernel.bld: the pure kernel of the field, the source of record. packages/world/field.mjs mirrors these
 // functions one for one, and tests/field.test.mjs compares the mirror against field_kernel.expected, the output of
 // this program. When BUILDC names a BuildLang compiler, the test runs this program again and the lines must agree.

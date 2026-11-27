@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Zero-point sums and the light-cone critical dimension.
 
 The sum over oscillator frequencies sum_{n>=0} (n + a) diverges. With a smooth regulator f(eps x) the sum

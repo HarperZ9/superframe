@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """SU(2) link fields on a 2D lattice and their interpolation to smooth continuum fields.
 
 Conventions follow `nonabelian`: D = d + i A, A = A^a T^a, and a link U_mu(x) = P exp(i int_x^{x+mu} A) transforms as

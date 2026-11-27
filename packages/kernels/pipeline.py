@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Composed pipeline: blend -> lattice resample -> spectral shade, each stage on any device.
 
 Three source layers, each with two channels (material mix w, incidence cosine c), are

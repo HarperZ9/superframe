@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A memory-lean CUDA engine for the block-step integrator (stepping.py), sized so 512^3 particles with a
 512^3 mesh run in about 5 GB of GPU memory.
 

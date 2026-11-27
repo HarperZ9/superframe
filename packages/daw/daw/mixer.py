@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The mixer: gain and equal-power pan per track, a send to the room, a master limiter.
 
 Pan law: theta = (pan + 1) pi / 4, left = cos(theta), right = sin(theta), so left^2 + right^2 = 1 at every

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Clean-room Superframe ESM kernel for Wave 21B-3:
 //   1. DrivingBench v2 latency-faithful 100 Hz fixed-timestep simulation mode
 //   2. Deja-VAE training-free null-space back-projection & 10-step PasteBench drift oracle.

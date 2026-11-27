@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // dither.mjs: the last step. Display transform (tone.mjs), then 8-bit sRGB with a seeded TPDF dither of one code

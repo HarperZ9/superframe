@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Benson 1872: equality with the reference, and the properties the source states."""
 from collections import Counter
 from itertools import product

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Cylinder wake on the torus. Boundary method: Brinkman penalty for the cylinder (soft wall, first order in
 // sqrt(nu eta)) and a fringe that resets the flow to uniform before it wraps round. Limit: the box is not an open
 // domain, and the penalised cylinder is a little larger than its nominal diameter. Both shift the Strouhal number.

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Build the diagram pages: run the engine tests, then inline the engine, ndim, perceive's Planck and entropy
 code, the diagram, the material values and the site kit into one page per diagram that opens from disk.
 

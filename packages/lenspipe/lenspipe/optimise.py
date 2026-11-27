@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Iteration helper: damped least squares on a stated goal, kept inside the manufacturability rules, with a cost ledger.
 

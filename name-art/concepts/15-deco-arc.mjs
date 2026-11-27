@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 15 deco-arc (v2 of 08): the letters are drawn on the sunburst's own geometry. The name is set flat, then mapped

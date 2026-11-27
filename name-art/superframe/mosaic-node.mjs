@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // mosaic-node.mjs: lib/mosaic as a superframe node, so any word, and later any reference the author shares, goes

@@ -81,4 +81,4 @@ Needs a buildc with `slice::from_raw_parts_mut` and extern `source` clauses (Bui
 
 Loss factors for aluminium and steel are measured from recorded bars (upper bounds, since a mounted bar also loses energy to its supports); the other materials' are still from memory and marked so. Arrangement, mixer and export run offline in Python. Full design, measurements and roadmap: `DESIGN.md`.
 
-Code: FSL-1.1-MIT. `daw/superstack.py` is superstack v0.2.0, vendored unchanged and pinned by sha256.
+Code: MIT. `daw/superstack.py` is superstack v0.2.0, vendored unchanged and pinned by sha256.

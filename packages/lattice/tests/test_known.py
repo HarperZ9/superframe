@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known-answer tests. Run from the repo root: python -m pytest -q -p no:cacheprovider packages/lattice"""
 import math
 import sys

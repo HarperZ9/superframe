@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "type": "module",
   "description": "Native MCP perception+render server (stdio, zero-dep) — sense-core + render-nd as a model-native organ.",
-  "license": "FSL-1.1-MIT",
+  "license": "MIT",
   "bin": { "studio-perception-mcp": "server.mjs" },
   "scripts": { "test": "node --test" }
 }

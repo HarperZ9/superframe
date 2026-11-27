@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Tape echo (H185): the analyser first recovers planted settings from a synthetic signal, then the tape
 model's own settings: head delays within 1 percent, intensity 0.62 within 0.02, wow 0.8 Hz within 0.1 Hz,
 and the speed depth once the record-and-read cancellation 2 |sin(pi f D)| is divided out."""

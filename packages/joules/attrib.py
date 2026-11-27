@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Split measured machine power across processes, grouped by study.
 

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Scene IR helpers shared by the Python backends .
 
 Turns a superstack.scene/1 document into the triangle list raw-native

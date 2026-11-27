@@ -6,7 +6,7 @@
 
 # build-color
 
-> This library now lives in The Playground at `packages/colour/build-color`. It moved from `HarperZ9/build-color` at commit `b67fd02a` (version 1.0.2) as one commit of the final tree; the earlier history and the release tags stay in that repository. The package name on PyPI, the import name `build_color` and the `build-color` command are unchanged, and `pip install build-color` installs the same 1.0.2. From this folder, `python -m pip install -e ".[all,dev]"` and `pytest tests/` work as before. The engine's own test run covers it too: `python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/colour` from the repository root. Licence for this folder: FSL-1.1-MIT (`LICENSE` here).
+> This library now lives in The Playground at `packages/colour/build-color`. It moved from `HarperZ9/build-color` at commit `b67fd02a` (version 1.0.2) as one commit of the final tree; the earlier history and the release tags stay in that repository. The package name on PyPI, the import name `build_color` and the `build-color` command are unchanged, and `pip install build-color` installs the same 1.0.2. From this folder, `python -m pip install -e ".[all,dev]"` and `pytest tests/` work as before. The engine's own test run covers it too: `python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/colour` from the repository root. Licence for this folder: MIT (`LICENSE` here).
 
 Color math for Python, with a command line and an optional desktop workbench.
 Convert between sRGB, Oklab, CIELAB, JzAzBz, ICtCp and the wide-gamut RGB
@@ -91,9 +91,8 @@ Limits to know before you rely on it:
 - **[OpenColorIO](https://opencolorio.org/)** runs color pipelines from config
   files inside VFX and imaging applications, on CPU and GPU. build-color does not
   read OCIO configs. It can write `.cube` and CLF LUTs, two formats OCIO reads.
-- The license differs. colour-science is BSD-3-Clause and ColorAide is MIT.
-  build-color is FSL-1.1-MIT, which allows any use other than a competing
-  commercial product. Each release becomes MIT two years after it ships.
+- The license is MIT, matching ColorAide (colour-science is BSD-3-Clause).
+  build-color is OSI-approved open source under the MIT License (`LICENSE`).
 
 ![Eight stages of taking one color out of sRGB and back: sRGB in, linearize, to XYZ, perceptual, adapt, appearance, invert, and measure. A hex triple is decoded to eight bits a channel, the sRGB transfer curve is undone, and a single three by three matrix carrying the primaries as columns lands the color in XYZ. From there it reaches the perceptual spaces, Oklab and CIELAB and JzAzBz and ICtCp among twenty-six named conversions in all. Chromatic adaptation moves the white point using any of nine matrices across seven illuminants, and the appearance models, CIECAM02 and CAM16, add viewing conditions: a white point, an adapting luminance, a background and a surround. Then the steps that carry an inverse run backwards, CIECAM02 and Oklab among them, and the result is measured against where it started. Round tripping sRGB to Oklab and back over a twenty-six cubed grid never moves a channel more than four times ten to the minus fourteen, and adapting D65 to D50 and back returns within three units in the last place for all nine matrices. Three outcomes: the round trip holds, the color is out of gamut, or the input was never a color.](docs/art/round-trip.svg)
 
@@ -232,7 +231,7 @@ reference, and worked examples with expected output.
 
 ## License
 
-Build Color is released under the FSL-1.1-MIT.
+Build Color is released under the MIT License.
 The source is source-available: you may read, run, modify, and build on it for
 any purpose other than a competing commercial use, which is reserved to the
 Licensor to fund continued development. Copyright (c) 2022-2026 Zain Dana Harper.

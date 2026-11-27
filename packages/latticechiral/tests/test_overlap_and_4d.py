@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers: the 4D index theorem for constant fluxes, and the overlap chiral determinant's basic properties."""
 import math
 import sys

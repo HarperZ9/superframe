@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // fidelity.mjs: each generator's measured score against its source descriptor (BLEED section 16: "a measured score

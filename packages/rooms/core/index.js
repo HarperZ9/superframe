@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 export * from "./units.js";
 export * from "./provenance.js";
 export { CONSTANTS, PRESET_PROVENANCE } from "./constants.js";

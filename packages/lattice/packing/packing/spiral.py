@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Spiral packing: Vogel's phyllotaxis model (Vogel 1979), r = c sqrt(n), theta = n * alpha.
 
 r ~ sqrt(n) makes the areal density uniform on average; the divergence angle alpha decides whether

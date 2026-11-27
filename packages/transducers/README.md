@@ -52,4 +52,4 @@ The package reads its neighbours through `src/adapter.js`. `TRANSDUCERS_ROOT` po
 
 CPU reference only. Every kernel is a small-data reference, not a production path. Bits lost are estimates on the sample in hand, and each row names its method; methods differ, so losses do not sum to a true total. The built page inlines measured rows and stays internal until their terms are settled.
 
-Licence: FSL-1.1-MIT, as the rest of superframe.
+Licence: MIT, as the rest of superframe.

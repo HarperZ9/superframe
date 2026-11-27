@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Known-answer tests for the diagram engine.  node tests/engine.test.js [--json out.json]
    Exit 1 if a check fails or a planted wrong value is accepted. Each block plants one bad input and requires
    the same check to reject it, so a check that accepts anything fails. */

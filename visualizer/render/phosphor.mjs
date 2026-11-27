@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // phosphor.mjs: lines drawn as light, the way a vector display draws them: a thin core, a soft halo from the

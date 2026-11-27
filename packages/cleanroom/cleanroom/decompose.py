@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The study side: turn a vault copy into a SPEC record of measurements, parts, rules and prose.
 
 A SPEC holds numbers and words only. It never carries media, frames, crops, thumbnails or verbatim

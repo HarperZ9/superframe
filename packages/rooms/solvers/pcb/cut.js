@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { layerZ } from "./constants.js";
 import { planeRaster } from "./plane.js";
 import { bbox, prims } from "./copper.js";

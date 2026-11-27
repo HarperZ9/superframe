@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known-answer tests. Equivalence shows the devices agree; these show the shared
 answer is the right one, by cases whose result is known without the kernel."""
 

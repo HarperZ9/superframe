@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { MATERIAL_RECORDS } from "./constants.js";
 export { MATERIAL_RECORDS };
 export const DISPB = 1 / (0.465 * 0.465) - 1 / (0.63 * 0.63);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // lib/wordmark: six display directions for the CMMNS wordmark (spoken "commons"), the product formerly called

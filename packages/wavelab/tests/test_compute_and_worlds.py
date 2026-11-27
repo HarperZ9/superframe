@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for computing with a vibrating chain, sound on other worlds, the acoustic horizon and scaling."""
 import sys
 from pathlib import Path

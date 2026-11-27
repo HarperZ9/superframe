@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A tempo map inside an Arrangement: notes start on the map's samples and are held for the map's time."""
 import sys
 from pathlib import Path

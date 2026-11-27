@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
 /* ndim draws from superframe's seed rule xmur3-mulberry32/1.
      node --test packages/ndim/tests/seed.test.mjs

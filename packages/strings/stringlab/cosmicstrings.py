@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The gravitational-wave background from a network of cosmic strings and superstrings.
 
 Units: c = 1, times and lengths in seconds, frequencies in Hz.

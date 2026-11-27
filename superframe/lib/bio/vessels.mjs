@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // vessels.mjs: a branching vessel tree grown by the laws measured from coronary angiograms. Source: ARCADE (X-ray

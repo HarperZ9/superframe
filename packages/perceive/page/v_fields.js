@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive page: field bridges. Electric potential of charges you drag; the magnetic field of wires with a
    compass you drag; heat spreading over a metal sheet. World units are metres; the view spans 4 m across. */
 (function () {

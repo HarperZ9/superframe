@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Monte Carlo tolerance run: perturb the numeric lens, refocus, score, count yield.
 

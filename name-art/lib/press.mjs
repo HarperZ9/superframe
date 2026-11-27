@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // press.mjs: the press finish on a float picture, the same emboss family BuildTeX sets on the CV, the resumes and

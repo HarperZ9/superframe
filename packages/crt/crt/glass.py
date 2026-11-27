@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The faceplate: Fresnel exit with n(lambda) from the materials library, the tinted body, and the
 halation ring that total internal reflection makes around a bright spot.
 

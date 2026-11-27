@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { RHO_CU, layerZ } from "./constants.js";
 import { fieldZ0 } from "./field-solve.js";
 // ======================================================================= Transmission lines: leapfrog on a graph of series L, R and shunt C

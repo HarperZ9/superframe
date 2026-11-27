@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // nuclei.mjs: cell nuclei placed by the packing law measured from real tissue. Source of the law: BBBC038 (Data

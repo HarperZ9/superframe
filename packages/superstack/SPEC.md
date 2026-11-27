@@ -1,7 +1,7 @@
 <!-- writing-profile: research -->
 # superstack contract v0
 
-Contract id `superstack/0`, release 0.2.0. Text: CC BY 4.0. Code: FSL-1.1-MIT from v0.2.0; v0.1.0 remains MIT.
+Contract id `superstack/0`, release 0.2.0. Text: CC BY 4.0. Code: MIT (`LICENSE`).
 
 This contract lets different renderers and sound engines produce the same bytes from the same scene, and lets anyone check whether they did. It fixes six things every producer shares: a scene description, one canonical byte form with SHA-256, one seed rule, one integer clock, one receipt with two verdicts, and one reconcile check. Pixels and sound follow the same rules.
 

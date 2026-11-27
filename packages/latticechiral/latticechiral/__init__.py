@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """latticechiral: lattice fermions, the 2D index theorem, and continuum chiral fermions on interpolated lattice fields.
 
   free    free lattice Dirac operators: doubling, Wilson, overlap, Ginsparg-Wilson, Nielsen-Ninomiya, SLAC non-locality

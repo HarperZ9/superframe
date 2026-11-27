@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // meter.mjs: a geometric reading of meter. A bar is a polygon with one vertex per beat: a triangle for 3/4, a

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // isomer.mjs: same properties, different structure (BLEED section 19; CORE.md). Operators that keep every weight and

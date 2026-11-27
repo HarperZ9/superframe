@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/board: the board record built from an instrument's netlist, and a constructive placer.
    The board's outline comes from the instrument's own "pcb" part, so the box, the drawing and the board agree.
    Placement: anchored parts first, then the rest in order of how many connections they share with what is already

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // seabed.mjs: looking down through moving water at a sand floor. Two optical effects of one surface h(x, y):

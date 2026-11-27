@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The patch library (gap G2): an instrument as a JSON record with a content hash, saved, recalled by name and
 version, and listed.
 

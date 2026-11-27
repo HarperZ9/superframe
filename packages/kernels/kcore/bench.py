@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Benchmark harness: throughput, joules per result, roofline percent, the open built-in
 on the same machine, and the speed and energy optima across sizes.
 

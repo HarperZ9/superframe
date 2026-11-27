@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 31 crystal-rods (flagship variant B): the letters are solid glass rods lying on the security note, bent along the

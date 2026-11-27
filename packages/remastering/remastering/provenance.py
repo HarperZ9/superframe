@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Provenance on every sample: a time by frequency map of what is original, restored or inferred.
 
 Cells are 0.1 s by eight bands. Each stage marks the cells it touched with its kind and confidence; a later, more

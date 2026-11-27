@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Brute force to light: a single gas bubble driven by sound, from the Rayleigh cavity to sonoluminescence.
 
 Known answers: Rayleigh's empty-cavity collapse time t_c = 0.914681 R0 sqrt(rho / dp); Minnaert's frequency

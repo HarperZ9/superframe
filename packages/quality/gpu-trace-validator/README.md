@@ -5,7 +5,7 @@
 
 # gpu-trace-validator
 
-> This tool now lives in The Playground at `packages/quality/gpu-trace-validator`. It moved from `HarperZ9/gpu-trace-validator` at commit `19926bb1` (version 0.2.0) as one commit of the final tree; the earlier history and the two releases stay in that repository, which is archived. From this folder, `python -m pip install -e ".[test]"` and `python -m pytest` work as before. The engine's own test run covers it too: `python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/quality/gpu-trace-validator` from the repository root. Licence for this folder: FSL-1.1-MIT (`LICENSE` here).
+> This tool now lives in The Playground at `packages/quality/gpu-trace-validator`. It moved from `HarperZ9/gpu-trace-validator` at commit `19926bb1` (version 0.2.0) as one commit of the final tree; the earlier history and the two releases stay in that repository, which is archived. From this folder, `python -m pip install -e ".[test]"` and `python -m pytest` work as before. The engine's own test run covers it too: `python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/quality/gpu-trace-validator` from the repository root. Licence for this folder: MIT (`LICENSE` here).
 
 Validates GPU trace JSON against a schema, with redacted receipts.
 
@@ -102,7 +102,7 @@ not capture GPU work and does not certify renderer correctness.
 
 > Validate GPU trace JSON against a schema; emit bounded, redacted receipts.
 
-[![license: FSL-1.1-MIT](https://img.shields.io/badge/license-FSL--1.1--MIT-blue.svg)](LICENSE)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![version](https://img.shields.io/badge/version-0.2.0-informational.svg)
 [![CI](https://github.com/HarperZ9/gpu-trace-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/HarperZ9/gpu-trace-validator/actions/workflows/ci.yml)
@@ -170,7 +170,7 @@ python -m pytest
 
 ## License
 
-From v0.2.0, code is licensed FSL-1.1-MIT. Earlier releases remain under MIT. FSL-1.1-MIT is the Functional Source License, Version 1.1, with MIT as the future licence: each release becomes available under MIT two years after it is made available. See [LICENSE](LICENSE). Every commit in this repository is by the author.
+Code is licensed under the OSI-approved MIT License (`LICENSE`). See [LICENSE](LICENSE). Every commit in this repository is by the author.
 
 ---
 

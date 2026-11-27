@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Order-independent float32 sums: binned integer accumulation.
 
 Source: ReproBLAS (corpus entries ahrens2015-reproblas-tr, demmel2016-reproblas-tr; Ahrens, Nguyen

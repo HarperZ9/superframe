@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // trees.mjs: rain with the wind in the trees. Late October, the blue hour after sunset, rain coming and going in

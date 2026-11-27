@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // intaglio.mjs: direction 4, the record that cannot be erased. CMMNS is engraved in fine intaglio line, banknote

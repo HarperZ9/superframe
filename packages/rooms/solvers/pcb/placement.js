@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { rng32 } from "./constants.js";
 import { courtyard, padGeo } from "./netlist.js";
 // ======================================================================= Placement: annealed wirelength with fixed parts honoured

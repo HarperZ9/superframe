@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/sim/analyses: DC operating point (Newton with step limiting), AC small-signal sweep, transient
    (backward Euler start, then trapezoidal or BDF2), and small-signal noise with every source propagated to one
    output or to the cross-spectrum of two outputs. */

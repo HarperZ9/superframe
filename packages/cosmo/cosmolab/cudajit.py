@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Compile a CUDA C kernel at run time and launch it on torch tensors, with no compiler installed.
 
 torch's CUDA wheels ship NVIDIA's run-time compiler (nvrtc) and the display driver ships the CUDA driver

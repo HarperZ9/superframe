@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/autoroute: drives the grid router over a placed board. Pads are painted first; signal and power
    nets are routed shortest-span first; then each ground pour is filled on the bottom layer inside its island,
    clear of foreign copper; then every ground pad is joined to its own pour (a stub and a via); then pour copper

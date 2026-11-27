@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim/project: orthographic, repeated perspective, stereographic and Schlegel projections.
    Every view states its lens (what it keeps, what it loses) and one distortion number. */
 (function (g) {

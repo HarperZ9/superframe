@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Computing with a vibrating medium: a mass-spring chain as a physical reservoir with a linear readout.
 
 The chain (n masses, nearest-neighbour springs k1 x + k2 x^2 + k3 x^3, damping g, fixed ends) is driven at mass 0 by a

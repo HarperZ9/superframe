@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // frame.mjs: for every pixel near the centre lines, which stroke is nearest, how far along it (s, px from the

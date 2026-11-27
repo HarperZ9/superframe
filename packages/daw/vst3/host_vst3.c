@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 //
 // A minimal VST3 host for tests: load a module, create class INDEX as a component, set it up for 32-bit stereo
 // at FS, play note events in blocks of BLOCK frames, and write the stereo output as raw float32 (interleaved).

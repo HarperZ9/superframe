@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Weighted N-source blend with gain and detune. Mode: bit-identical. See SPEC.md."""
 import math
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // advect: diffusion and advection. Ink carried by a current and spreading against it (BLEED section 4: virality is

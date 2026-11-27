@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Build the instrument pages: run the engine and cad tests, export every artefact, then inline the engine, the
 cad layer, one instrument, its pipeline record and the site kit into one page per instrument, plus an index.
 

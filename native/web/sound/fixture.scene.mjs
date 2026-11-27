@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A minimal scene for the scene-sheet test: chapters, one asset read, and a sound() method.
 export default {
   title: "Fixture", duration: 6, fps: 30, params: [], chapters: [],

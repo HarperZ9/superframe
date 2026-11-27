@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Write data/camb_reference.json: CAMB's linear and halofit (Takahashi) P(k) for the default cosmology.
 
 CAMB is used here only as a reference generator (pip install camb); nothing in cosmolab imports it.

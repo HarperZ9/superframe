@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Build the BuildLang real-time kernels (bld/dsp.bld) and call them from Python, for tests and offline use.
 
 buildc compiles the BuildLang source to C; the system C compiler makes a shared library; ctypes calls the

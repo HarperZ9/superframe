@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Median filtering on the GPU when torch with CUDA is present, else scipy. A median of an odd count selects one of
 its inputs, and both paths pad by repeating the edge value (scipy's mode "nearest"), so the two return the same
 bits; the tests hold them to that whenever torch is installed. REMASTER_GPU=0 forces the scipy path."""

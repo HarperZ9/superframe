@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // tesserae.mjs: how each tile meets the light. A tile is a small slab with a softly rounded top (the dome rises from

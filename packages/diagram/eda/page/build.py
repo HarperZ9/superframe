@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Build the thermometer board page : run the sim, chain and board tests, run the
 chain, then inline the engine, the eda layer, the results and the site kit.
 

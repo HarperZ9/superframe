@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A stiff waveguide string (gap G19): piano inharmonicity from a cascade of allpass filters in the loop.
 
 A real string has bending stiffness, so its partials are stretched: f_n = n f0 sqrt(1 + B n^2) (Fletcher 1964),

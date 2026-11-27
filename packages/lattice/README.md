@@ -54,7 +54,7 @@ L.nyquist_density("bcc", 1) / L.nyquist_density("cubic", 1)    # 0.7071
 - The time-frequency hex lattice is a quincunx; it is hexagonal after the window's time-frequency rescaling, which the window search provides.
 - Isotropic random fields are a model. Real images, sounds and globes are not isotropic, and that is where results change.
 
-Licence: FSL-1.1-MIT, from the repository root.
+Licence: MIT, from the repository root.
 
 `packing/` is the packing algebra (basis plus motif, tilings, spirals, Penrose, Apollonian, crystals).
 Import it with `packages/lattice/packing` on `sys.path` as `from packing import algebra`; see `packing/README.md`.

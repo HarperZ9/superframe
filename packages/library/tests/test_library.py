@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Tests for ingest, query and the no-new-notes-file refusal.
 
 Run from the superframe root: python -m pytest -q -p no:cacheprovider packages/library/tests

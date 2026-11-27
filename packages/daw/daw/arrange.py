@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The timeline: instruments, notes in beats, tracks with automation, and an arrangement at one tempo.
 
 Time is kept in beats and placed on the sample grid as round(beat * 60 * fs / bpm), so a note lands on

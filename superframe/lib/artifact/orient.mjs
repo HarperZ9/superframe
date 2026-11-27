@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // orient.mjs: does the hatching follow the form? Measured from the rendered pixels, against a reference the hatcher

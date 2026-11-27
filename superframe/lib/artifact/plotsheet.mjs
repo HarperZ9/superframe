@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // plotsheet.mjs: the engine's door to Plot Sheet (packages/plot-sheet). Plot Sheet itself is BuildLang; this file

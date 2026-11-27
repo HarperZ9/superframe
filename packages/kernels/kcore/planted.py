@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Planted-bad kernels: one per gate, each a plausible shortcut a performance-minded port of
 `blend` might take. They are the false-success control for kcore/stress.py and kcore/gates.py:
 every gate must catch its planted kernel and must pass the four real kernels.

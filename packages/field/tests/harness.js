@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Shared check harness, the same shape as tools/perceive's known-answer tests: every check counts, and a
    planted wrong value or converter must be rejected, so a check that accepts anything fails the suite. */
 "use strict";

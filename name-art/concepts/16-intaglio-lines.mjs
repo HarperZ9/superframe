@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 16 intaglio-lines (v2 of 02): the letters are made of the engraving lines themselves, with no outline. Each

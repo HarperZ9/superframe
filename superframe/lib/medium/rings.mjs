@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // rings.mjs: Newton's rings. A thin air gap between two glasses, reflected with exact Airy multiple-beam theory.

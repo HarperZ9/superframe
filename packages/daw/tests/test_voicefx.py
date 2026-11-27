@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for the voice modulation chain: pitch and formants moved apart, harmoniser intervals, the
 vocoder's envelope transfer, breath at a planted harmonics-to-noise ratio, varispeed, and the chopped sampler."""
 import math

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Matter power spectrum of a particle set: cloud-in-cell assignment, window deconvolution and the
 cloud-in-cell shot-noise term of Jing (2005, ApJ 620, 559), binned in shells of the fundamental mode.
 

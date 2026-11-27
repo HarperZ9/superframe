@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/sim/spice: a SPICE-format netlist, written and read here. It is the interchange path to any SPICE
    (and the differential check against ngspice when one happens to be installed). The op-amp macro is written as its
    expanded primitives, so the file needs no vendor model. Waves: DC, AC, PULSE-free step as PWL, SIN. */

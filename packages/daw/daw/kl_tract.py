@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The vocal tract in time: a Kelly-Lochbaum waveguide that the vocal folds drive and that pushes back on them.
 
 The tract is cut into N tube sections each c / fs long, so a wave crosses one section per sample (Kelly and

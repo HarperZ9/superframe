@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Wave 21B-3 Node tests for 100 Hz latency-faithful sim & Deja-VAE 10-step drift oracle.
 import { test } from "node:test";
 import assert from "node:assert/strict";

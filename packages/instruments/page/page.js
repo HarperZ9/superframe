@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Instrument Pipeline page. D is written in by build_page.py; FIG comes from figs.js. */
 const D = /*DATA*/null;
 const $ = id => document.getElementById(id);

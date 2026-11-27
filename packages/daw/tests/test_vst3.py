@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The VST3 bundle (vst3/vst3.c) played by a VST3 host (vst3/host_vst3.c) against the CLAP bundle.
 
 Known answers: the factory lists the three instruments as audio modules with no latency; each one's VST3 output

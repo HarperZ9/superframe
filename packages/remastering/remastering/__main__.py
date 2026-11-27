@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """python -m remastering run FILE --slug S [--preset streaming|dynamic|archival] [--reference FILE]
                                   [--resynth stem.layer ...] [--stems 4|6] [--device cuda|cpu] [--debleed] [--wow] [--denoise]
    python -m remastering condition FILE

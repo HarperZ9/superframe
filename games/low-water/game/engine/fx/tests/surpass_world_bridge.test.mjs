@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Known-answer and planted-failure tests for Low Water Wave 13B clean-room bridge.
 import { test } from "node:test";
 import assert from "node:assert/strict";

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Linear matter power spectrum: the Eisenstein and Hu (1998, ApJ 496, 605) transfer function with baryon
 acoustic oscillations, normalised to sigma8.
 

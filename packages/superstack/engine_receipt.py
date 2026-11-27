@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Native engine-receipt/1 emitter and verifier for Superframe engines.
 
 Emits canonical SHA-256 verification envelopes compatible with the

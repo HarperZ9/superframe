@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for round 3: Lamb's shape-mode frequency, the ionisation sink's no-ionisation limit, Saha's
 behaviour, and a planted sink-free compression that must run hotter."""
 import sys

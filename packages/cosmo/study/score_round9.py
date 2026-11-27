@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Round nine: the pooled same-phase factor R over eight seeds, the closure on its interval (with and without
 the base reading's own seed scatter), and softening convergence D = P(eps 0.0042) / P(eps 0.0083) - 1.
 

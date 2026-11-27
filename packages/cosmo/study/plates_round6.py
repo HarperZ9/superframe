@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Two 3840x2160 plates for round six: three seeds at the halved softening against Cosmic Emu, and the
 out-of-core slab stepping against the in-core engine.
 

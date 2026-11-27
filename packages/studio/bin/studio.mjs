@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // studio: the design studio from the command line. Every output is seeded: the same command writes the same bytes.
 //
 //   node packages/studio/bin/studio.mjs list                                   materials, lanes and nodes

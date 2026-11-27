@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for round 5: the radially resolved bubble's adiabatic limit and volume consistency, and the
 mode-2 detuning pattern with a downward shift."""
 import sys

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // G. I. Taylor's unmixing as a known answer: annular Stokes flow wound out and back. The map is exact and has no speed
 // in it; a random walk stands in for diffusion. Same formula, sizes and metric as the reversal study in the working
 // notes, with this package's own generator, so agreement with that study's curve is statistical and not bitwise.

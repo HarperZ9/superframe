@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Score a set of seeds against Cosmic Emu on a preregistered pass line, and against an earlier set on the
 same phases.
 

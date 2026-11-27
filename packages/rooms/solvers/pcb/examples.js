@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { arrayPositions, parseNetlist } from "./netlist.js";
 import { place } from "./placement.js";
 import { routeGen } from "./router.js";

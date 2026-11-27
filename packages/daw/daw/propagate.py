@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Sound in space: delay, spreading, air absorption, Doppler, and how a mode radiates.
 
 Positions are metres in one world frame; time is the sample clock. A point source at distance r arrives

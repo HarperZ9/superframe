@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Point sets for sampling studies, at exactly equal counts.
 
 Disc (unit radius): Vogel spiral, hexagonal, square, Penrose vertices, uniform random, jittered

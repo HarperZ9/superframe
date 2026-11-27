@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Layers inside a stem, each with a role from measurement.
 
 Every stem is split three ways by soft masks on one STFT (n_fft 4096, hop 1024 at 44.1 kHz, scaled with the rate):

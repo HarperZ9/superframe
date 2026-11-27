@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Vortex tubes on the 3D solver: closed curves with a Gaussian core, velocity by the spectral Biot-Savart law.
 // Moffatt 1969: linked tubes carry helicity 2 Lk Gamma^2 (the Gauss linking number Lk). Volume integral, not mean.
 import { fft3d } from "./fftn.js";

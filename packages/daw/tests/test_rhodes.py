@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Electric piano tine and tone bar (H186): cantilever ratios, the tuning spring, Hertz contact, the fork's
 sustain against detuning, and the pickup's harmonics against the tine's offset from the pole centre."""
 import math

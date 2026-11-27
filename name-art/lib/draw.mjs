@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // draw.mjs: analytic anti-aliased line work into a coverage buffer (Float32Array w*h, 0..1, max-combined).

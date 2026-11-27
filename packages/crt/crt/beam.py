@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The electron beams: raster in time, gaussian spots that grow with current, the grille's colour
 selection, and the phosphor light each excitation emits inside an exposure window.
 

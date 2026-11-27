@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // mosaic: tesserae laid with andamento, the flow of courses a mosaicist lays along a form (BLEED section 3; the

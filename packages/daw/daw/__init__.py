@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A workstation whose instruments are physical models: objects of measured materials and real shapes,
 struck, plucked or blown, ringing in a simulated room, arranged and mixed on a timeline, rendered
 offline from a seed with a receipt. See DESIGN.md."""

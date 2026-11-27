@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // ink.mjs: a brush-and-ink line renderer for shapes given as signed distance fields (px, negative inside).

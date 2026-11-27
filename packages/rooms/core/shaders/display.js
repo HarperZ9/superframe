@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 export const VS = `#version 300 es
 in vec2 a;void main(){gl_Position=vec4(a,0,1);}`;
 export const VIEWS_DS = `#version 300 es

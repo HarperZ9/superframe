@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // crystal.mjs: glass lying on paper, seen from straight above, lit by a low sun. The glass is two height fields

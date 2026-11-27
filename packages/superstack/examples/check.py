@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One check reconciles every backend against its reference, using only the contract.
 
 Pixels: the reference is raw-native 0.4.0's CPU frame (a fresh run under

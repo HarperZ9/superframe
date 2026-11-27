@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Demo: the room-meter audio to its modes.
    The audio is the room meter's own measurement path (the private study 2026-10-30-hardware-pipeline):
    a planted room of six modes (two of them 1 Hz apart) through the laptop speaker, air and mic twin,

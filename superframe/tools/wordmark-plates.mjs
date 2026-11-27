@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // wordmark-plates.mjs: measure the stratum palettes for the CMMNS strata direction from reference photographs, with

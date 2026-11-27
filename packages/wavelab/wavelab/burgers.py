@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Brute force in sound: a plane wave steepening to a shock, and the ceiling it then meets.
 
 Dimensionless Burgers equation (Blackstock's form): dV/dsigma - V dV/dtheta = (1/Gamma) d2V/dtheta2, V(0) = sin theta.

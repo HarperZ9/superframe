@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """colour.srgb_transfer/1: the reference, the known answers, the properties and the planted-bad controls.
 
 The sRGB transfer function of IEC 61966-2-1 in both directions, on the closed range 0 to 1:

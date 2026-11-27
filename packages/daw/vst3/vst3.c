@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 //
 // The superframe instruments as VST3 plug-ins: a thin layer over the CLAP instruments in this bundle (bars.c,
 // piano.c, organ.c), written in C against Steinberg's VST3 C API (include/vst3_c_api.h, BSD 3-clause, from

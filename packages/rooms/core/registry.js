@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // One way in for a view or tool: shapes, index fields, scenes, materials, world fields, frames and presets.
 import { SH, GR, GROUPS } from "./shapes.js";
 import { SCENES, sceneCode } from "./scenes.js";

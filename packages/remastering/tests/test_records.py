@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Decode, source condition, provenance map and plate, receipts, edition generations, transcription and
 resynthesis, the layer split, and the deterministic split (skipped with the reason when torch, Demucs or the pinned
 weights are absent)."""

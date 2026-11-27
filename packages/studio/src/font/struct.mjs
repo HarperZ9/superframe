@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // struct.mjs: the big-endian subset of Python's struct.pack that the font writers use, so the port can
 // follow the source table by table. Codes: B b (1 byte), H h (2), L l I (4), Q (8, BigInt-safe), Ns (N raw
 // bytes from a string or a byte array). A count before a code repeats it, as in Python ('3H').

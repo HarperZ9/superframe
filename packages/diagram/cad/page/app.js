@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* cad page: one parametric instrument, every view drawn from one resolved record. Moving a parameter re-solves
    the model, rebuilds the 3D body, re-solves the physics at once, and regenerates the drawing, the schematic,
    the parts lists and the spec sheet a moment later. Picking a part in any view picks it in all of them. */

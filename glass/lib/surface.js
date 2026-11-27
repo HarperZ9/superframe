@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // surface.js: two more ways to make a glass body, added for feed set 31 (frosted pebbled glass; swept liquid-glass

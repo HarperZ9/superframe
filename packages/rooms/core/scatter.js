@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { F_HELP, fGLSL, fParse } from "./formula.js";
 import { AIR0, SCENES } from "./scenes.js";
 // ======================================================================= Scattering medium, transmission gradient

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Discrete Gabor frames on rectangular and hexagonal time-frequency lattices, plus chirplets.
 
 Signal length L, periodic. An atom at time n a and frequency bin m b + shift_n is

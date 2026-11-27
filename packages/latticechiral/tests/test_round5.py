@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers: the curved-field 3D eta reduces to the flat one for constant fields; the closed-form holonomy of a
 flat circle; U(1) link interpolation converges; an SU(2) x U(1) anomaly-free content cancels the U(1) move while a
 content with one hypercharge changed moves by its sum of Y^2."""

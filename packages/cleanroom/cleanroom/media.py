@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Decoders. Images go through PIL; video and audio go through the ffmpeg binary that ships with
 imageio-ffmpeg. Inputs are data: ffmpeg is called with an argument list (no shell), stdin closed,
 a timeout, and output to a pipe, so decoded frames and samples stay in memory and are never saved.

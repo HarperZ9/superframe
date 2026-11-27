@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for the one-circle sandbox: Behiel's radius and first rung, the mass and charge ladders, seam
 invariance of F, and the closed string's w = 0 sector as the Kaluza-Klein ladder."""
 import sys

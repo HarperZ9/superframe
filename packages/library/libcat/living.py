@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The registry of living documents and the topic matcher.
 
 A living document is the one place a topic's notes go. New notes for a topic

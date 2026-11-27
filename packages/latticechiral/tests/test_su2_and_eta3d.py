@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers: SU(2) quaternion algebra, a^2 convergence of the link interpolation and of its gauge covariance,
 the anomaly ratio 4 on interpolated fields, and the 3D spectral eta against the flat-connection holonomy."""
 import math

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Equality of an implementation with the reference, kernel by kernel.
 
 Each suite walks the whole domain where it is finite (every cell of the historical figures, with a border

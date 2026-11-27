@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // finish.mjs: the last pass, in linear light. A soft shoulder (highlights roll off instead of clipping, R6), a

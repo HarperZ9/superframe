@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The fuzz target runs in a child process, so a trap or crash in a kernel shows as a bad exit code."""
 import json
 import subprocess

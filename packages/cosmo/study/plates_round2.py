@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Two 3840x2160 plates: the z = 0 power spectrum against the Cosmic Emu for each test configuration, and
 the eigenvalue staircases of E1 to E6 against COMPACT's modes.
 

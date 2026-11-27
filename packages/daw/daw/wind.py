@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Wind held to measured storm spectra: turbulent noise with the recordings' spectral slope, plus aeolian tones.
 
 The broadband part is seeded Gaussian noise shaped in frequency so its power falls as f^-beta, with beta taken

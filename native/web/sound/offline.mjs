@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Offline work on a sheet: resolve its levels, render it, measure it, and
 // write a superstack receipt. Runs in Node (or any host with enough memory).
 //

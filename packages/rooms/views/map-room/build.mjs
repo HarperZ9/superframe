@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Map Room as a thin view of maps/. node packages/rooms/views/map-room/build.mjs [out.html]
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";

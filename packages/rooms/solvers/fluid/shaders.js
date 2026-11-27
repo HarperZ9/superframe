@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The GPU step for the 2D view: IF SSP RK3 on a 2/3-dealiased vorticity spectrum, the same scheme as Spectral2 with
 // scheme "ssp3". One small program per job, flat loops only. Fields live in RGBA32F: RG holds one complex field and
 // BA another, so one FFT pass transforms two fields at once. Index (x, y) in a texture is index y*nx + x on the CPU.

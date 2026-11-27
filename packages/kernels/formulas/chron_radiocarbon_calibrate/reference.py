@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """chron.radiocarbon_calibrate/1: the reference, the known answers, the properties and the planted-bad controls.
 
 Calibration projects a conventional radiocarbon age (14C yr BP, with its one-sigma error) onto a calibration

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // gif.mjs: a GIF89a writer for indexed pixel art (our own code; the format is the CompuServe GIF89a specification).

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Paths, sibling library locations and the preregistered thresholds.
 
 The vault root comes from --vault or the CLEANROOM_VAULT environment variable. There is no default:

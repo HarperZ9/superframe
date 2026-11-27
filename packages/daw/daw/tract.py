@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The vocal tract with its losses: lip radiation and yielding walls, as complex chain matrices.
 
 Each section is a transmission line of area A and length l, followed by a shunt admittance for its wall:

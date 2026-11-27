@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Planetary scale: the free oscillations of the Earth computed from PREM by radial shooting.
 
 Spheroidal modes solve the six first-order equations of a self-gravitating, non-rotating, isotropic Earth

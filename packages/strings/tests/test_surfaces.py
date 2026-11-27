@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for graphs on identified squares: Euler's planar bounds, and explicit crossing-free drawings of K5 and
 K3,3 on the torus, the Moebius strip and the Klein bottle that a planted wrong identification breaks."""
 import sys

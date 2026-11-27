@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Planted defects: each one is a small wrong edit to a kernel source that the equality suite must catch.
 
 A check that passes on a wrong kernel proves nothing, so every suite is run against these as well. Each

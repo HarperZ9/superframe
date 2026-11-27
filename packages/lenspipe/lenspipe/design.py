@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """The open design file: surfaces, materials, tolerances and intent. See data/design_schema.txt in the report."""
 import copy

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Images on lattices: point sampling with a matched kernel, and decomposition into primitives.
 
 Pixels sit at integer (x, y), image shape (H, W), values in [0, 1]. A primitive i has a centre

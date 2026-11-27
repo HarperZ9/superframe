@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // inputs.mjs: the seeded pixel buffers the eye goldens and the eye tests share. Neither the source module nor
 // the port lives here, so the goldens and the tests read the same bytes without the port touching them.
 import { renderImage, toRGBA } from '../../../studio/lib/lanes/image.mjs';

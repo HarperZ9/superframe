@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Wave propagation on top of the view's FFT: focal field of a pupil (Fraunhofer) and the angular spectrum method.
 // The pupil grid and padding are the page's: 128 samples padded to 1024.
 import { fft2 } from "./wave.js";

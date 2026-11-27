@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Out-of-core slab stepping (ooc.py, slabwindow.py) and the sliced FFT (slicedfft.py).
 
 The window layout, the ghost bound and the re-sort plan are plain Python and run everywhere. The engine

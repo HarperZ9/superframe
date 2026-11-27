@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Prepared piano (gap G17): a mass (a bolt, a screw) or a damping wedge (rubber, felt) at one point of a string.
 
 A point mass M at x = a on a string of length L, tension T and linear density mu, fixed at both ends. Each side

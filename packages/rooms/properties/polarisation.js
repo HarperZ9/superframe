@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Polarisation on the Poincare sphere. A waveplate of retardance G at azimuth a rotates the sphere by G about the equatorial
 // axis (cos 2a, sin 2a, 0). A path of waypoints compiles to one plate per leg, and the result is checked by Jones matrices.
 import { retarder } from "../core/film.js";

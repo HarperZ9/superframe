@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Spherical harmonics, sphere quadrature, test environments and reflection kernels for the SH demo (sh.js).
    Directions are unit vectors with +Y up, as in raw-native's sky.hpp. Radiance is relative (unit "1").
    Real orthonormal SH by the associated-Legendre recurrence, no Condon-Shortley phase (any consistent sign works

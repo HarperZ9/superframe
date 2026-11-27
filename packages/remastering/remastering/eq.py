@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Equalisers, minimum phase and linear phase.
 
 Minimum phase: RBJ cookbook biquads (peaking, low and high shelf, high and low pass) cascaded as second-order

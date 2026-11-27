@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // porch.mjs: a person on the back porch on a winter night, seen from the kitchen doorway behind them. The moon comes

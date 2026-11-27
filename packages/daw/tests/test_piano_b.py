@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Piano inharmonicity from measured data: the B table from a Steinway model B (packages/measured
 piano_b_iowa.json) and the stiff string's B read back from rendered notes within 10 percent of it."""
 import math

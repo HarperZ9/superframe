@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive/polar: polarisation as Jones vectors, Stokes parameters and points on the Poincare sphere.
    Jones vector (Ex, Ey) with complex entries given as [re, im]. Stokes:
      S0 = |Ex|^2 + |Ey|^2,  S1 = |Ex|^2 - |Ey|^2,  S2 = 2 Re(conj(Ex) Ey),  S3 = 2 Im(conj(Ex) Ey).

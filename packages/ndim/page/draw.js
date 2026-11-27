@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim page: shared drawing. Colours come from the site-kit tokens, so light and dark follow the kit. */
 (function () {
   "use strict";

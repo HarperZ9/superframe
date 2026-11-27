@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One-factor effects on P(k): each candidate run against a baseline on the same phases, band by band.
 
     python packages/cosmo/study/score_factors.py base.npz cand1.npz cand2.npz ... [--json out.json]

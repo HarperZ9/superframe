@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 35 pearls-strung (v3 of 11): the letters are strands of pearls on silk, laid along the forge's centre lines, the

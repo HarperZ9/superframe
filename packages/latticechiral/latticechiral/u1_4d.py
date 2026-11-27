@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Four-dimensional U(1) on an L^4 torus: constant fluxes in the (1,2) and (3,4) planes and the overlap index.
 
 With Q12 flux quanta through every (1,2) plane and Q34 through every (3,4) plane, the topological charge is

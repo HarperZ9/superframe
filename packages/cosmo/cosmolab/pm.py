@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Particle-mesh gravity in a periodic box, comoving coordinates, kick-drift-kick in the scale factor.
 
 Equations (time in 1/H0, length in Mpc/h; p = a^2 dx/dt):

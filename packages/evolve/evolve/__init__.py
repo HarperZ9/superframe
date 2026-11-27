@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """evolve: evolution as a hypothesis-and-experiment engine, with signal-chain knobs. See README.md."""
 from . import drift, engine, info, landscapes, nested_organism, organelles, popgen, search, surrogate  # noqa: F401
 

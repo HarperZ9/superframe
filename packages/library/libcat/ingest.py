@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Add one artifact to the catalogue, and the no-new-notes-file rule.
 
 The rule: a notes file (.md, .txt and the like, of a notes kind) whose topic

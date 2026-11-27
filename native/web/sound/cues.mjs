@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Procedural cue voices. Each cue is synthesised from its parameters and a
 // seeded noise stream, so there are no samples to license and the same sheet
 // always gives the same sound. A cue type names a job in the explanation, not

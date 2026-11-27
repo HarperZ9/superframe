@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive/signal: tones, a Butterworth low-pass, the heterodyne, an FFT peak finder, a synthetic bat call,
    and vibration patterns. Heterodyning is the bat detector's method: multiply by a local oscillator at f_LO
    and low-pass, leaving the difference |f - f_LO| in hearing. */

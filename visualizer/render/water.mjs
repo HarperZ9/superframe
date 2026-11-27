@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // water.mjs: the sounding water. The glass module's wave-equation surface (glass/liquid.js), with a

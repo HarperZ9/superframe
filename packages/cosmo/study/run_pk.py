@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A LambdaCDM box from z = 49 to z = 0 and its matter power spectrum against halofit.
 
     python packages/cosmo/study/run_pk.py --n 256 --box 256 --backend torch

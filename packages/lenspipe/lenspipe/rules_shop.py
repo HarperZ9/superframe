@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Shop-side rules: glass catalogue, process limits, tolerance tiers, cement, moulded parts, test plates. Origins as in rules.SOURCES."""
 import math

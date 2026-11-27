@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The mesh kick of ooc.SlabRunner through the sliced FFT (slicedfft.force_slabs), so no ng^3 array of the
 density, the Green's function or a force component sits on the GPU.
 

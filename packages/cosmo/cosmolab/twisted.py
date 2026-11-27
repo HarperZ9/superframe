@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Gravity on the twisted flat 3-manifolds E2 to E6: a deposit and Poisson solve that know only the generators.
 
 A manifold M = R^3 / Gamma is covered by the torus T = R^3 / (translations in Gamma) (`topology.cover`). A

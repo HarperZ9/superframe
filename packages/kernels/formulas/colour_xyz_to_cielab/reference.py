@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """colour.xyz_to_cielab/1: the reference, the known answers, the properties and the planted-bad controls.
 
 CIE 1976 L*a*b* from tristimulus values and a reference white, with the CIE's exact rational constants:

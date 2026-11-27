@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The 4x interpolator for true-peak measurement and the true-peak limiter:
 // the order-48, 4-phase FIR printed in ITU-R BS.1770-5 (11/2023), Annex 2.
 // The Recommendation offers it as one set of coefficients that meets its

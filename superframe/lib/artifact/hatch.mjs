@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // hatch.mjs: tone as hatching, the way an engraver or a sketch artist lays it. The idea comes from the author's

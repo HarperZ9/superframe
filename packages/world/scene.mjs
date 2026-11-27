@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // scene.mjs: one continuous scene in the field. Light crosses a Luneburg glass and a body of stirred water; a probe
 // reads the water; the water is dimensioned; a voice sends a wave through all of it; a graticule shows where things
 // are against where they are seen. None of these is a room: each is a property some element carries at a weight, and

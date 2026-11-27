@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Sequential ray trace of a prescription in double precision: the CPU reference for the shader's flat train loop.
 // Surfaces use the fields of surf() in train.js. Light starts along +z. Mirrors reflect, ty 2 is a stop, ty 3 ends.
 const conicHit = (s, p, d) => {

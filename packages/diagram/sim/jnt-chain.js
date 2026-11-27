@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* The thermometer's simulated budget: filter response, Re Z, the noise budget term by term, the high-pass
    settle, and a seeded transient-noise thermometry run that reads the temperature back from the simulated
    outputs the way the instrument does (cross-spectrum of the two chains, ratio against the ice-point resistor).

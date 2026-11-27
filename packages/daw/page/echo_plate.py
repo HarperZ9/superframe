@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Tape echo and electric piano: audio examples and a 3840 x 2160 plate.
 
     python -I packages/daw/page/echo_plate.py OUT_DIR

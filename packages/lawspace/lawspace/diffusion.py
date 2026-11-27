@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Family 4: anomalous diffusion, MSD ~ t^alpha, and mixing at a fresh/salt interface.
 
 alpha < 1: continuous-time random walk with Pareto waiting times (tail exponent alpha), unit Gaussian

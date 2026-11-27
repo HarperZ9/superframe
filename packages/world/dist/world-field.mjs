@@ -1,8 +1,8 @@
 // world-field.mjs: built by packages/world/bundle.mjs from the files named below, each with the sha256 of its source.
-// Do not edit: change the sources and build again. SPDX-License-Identifier: FSL-1.1-MIT
-// ---- packages/world/field.mjs (sha256 a4a3c93018962f75f44e5db23ed9d2b85839a42382b92deff2fb6adae0b0c66c)
+// Do not edit: change the sources and build again. SPDX-License-Identifier: MIT
+// ---- packages/world/field.mjs (sha256 4785bf19996e133aba07cd3b98ab593fa6a715a3297ae3062e3e2fe6419564e8)
 const { PROPERTY_IDS, clamp01, smooth, disc, carry, union2, mix2, luneburgN2, n2Blend, micro, kernelTable, element, carryAt, strength, mixture, largestStep, continuity } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // field.mjs: one field, many properties. The kernel mirrors src/field_kernel.bld function for function (that file is
 // the source of record; tests/field.test.mjs holds this file to its output). Nothing here imports anything, so the
 // site can carry this file as it is.
@@ -91,9 +91,9 @@ function continuity(f, { n = 100, shrink = 0.75, floor = 1e-9 } = {}) {
 
 return { PROPERTY_IDS, clamp01, smooth, disc, carry, union2, mix2, luneburgN2, n2Blend, micro, kernelTable, element, carryAt, strength, mixture, largestStep, continuity };
 })();
-// ---- packages/rooms/properties/model.js (sha256 12cdd8801156b8d08d009e92982107668a576f45d91a2c10a3535b931626a918)
+// ---- packages/rooms/properties/model.js (sha256 1eb9de3d5d1e30bba5d4ab9de76867545764e837d3638cecb63b07463c39f78e)
 const { propertyObject, instrument, plainLabel } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A property as a physical object in calculation space. A property has a state space with a shape, operations on it, the
 // physical elements that perform them, the instrument assembled from them and a fabrication route with its limits.
 // The shape renders a real mathematical object in coordinates someone chose, and the record says so.
@@ -132,9 +132,9 @@ const plainLabel = (ins) =>
 
 return { propertyObject, instrument, plainLabel };
 })();
-// ---- packages/rooms/core/sampler.js (sha256 30bcf42709fd50db81b08ea7b917887f6eb84cbc7c2c4c7c0c4be786c3cdbf18)
+// ---- packages/rooms/core/sampler.js (sha256 5406d07bb9ace559b84aad2f15dac20415358f5f099aae60baae1bdcf1d46c17)
 const { Pcg } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The shaders' random number: st=st*747796405u+2891336453u; w=((st>>((st>>28u)+4u))^st)*277803737u;
 // float((w>>22u)^w)/2^32. This is the same integer maths on the CPU, so a CPU reference can share a stream.
 function pcgStep(state) {
@@ -155,9 +155,9 @@ class Pcg {
 
 return { Pcg };
 })();
-// ---- packages/rooms/core/trace.js (sha256 6a3c23fcdafa6c14ab9a2a55c60ef57f0fec07309fa9f086abe4ada38dde33cf)
+// ---- packages/rooms/core/trace.js (sha256 2f7ee3e3e174196031f8f2dd7173839174243a4ab9d2e306d5ebf4e2653df9de)
 const { rk4 } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // CPU reference for the known answers the shaders are held to. Double precision, no GPU, so CI can run it. It
 // covers the shapes the checks use: the plate and the globe, plus index fields. It does not replace the shader.
 
@@ -433,9 +433,9 @@ function parabolaFocus(cv, h = 0.01) {
 
 return { rk4 };
 })();
-// ---- packages/rooms/core/units.js (sha256 66e32bbbf6925e717d153b98233304a3acce73a2cb4be110fc537b87dda83878)
+// ---- packages/rooms/core/units.js (sha256 8b34284a8c7e5990d48de1658063096626b5a9c25f9ab40368c3a747aaebf704)
 const { unit } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A unit is a scale to SI plus a dimension vector, the same model as packages/field/src/units.js. The field
 // package is not on main yet; once it is, tests/units-field.test.mjs compares the two tables.
 const BASE = ["m", "kg", "s", "A", "K", "mol", "cd", "bit"];
@@ -506,9 +506,9 @@ function convert(v, from, to) {
 
 return { unit };
 })();
-// ---- packages/rooms/core/provenance.js (sha256 6217563b29af3c7241bbec2e2cd58077f4447d7da37d0ed6db78a506cc4d6a29)
+// ---- packages/rooms/core/provenance.js (sha256 b6ae5ef1193b3fe9f1641c56593a3d6a1544ec851c22d9d46eac2963c373eb47)
 const { constant } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Every physical constant is a frozen record: value, unit, source, and how it was checked. A record with no
 // check names carries the flag. "verified" means a comparison that someone ran and wrote down, never a citation.
 
@@ -542,10 +542,10 @@ function auditConstants(table) {
 
 return { constant };
 })();
-// ---- packages/rooms/core/constants.js (sha256 94060f8b3c9762035f667710ab03e9a34a6dcbd96636c8f7b2c36d9f44fc9e96)
+// ---- packages/rooms/core/constants.js (sha256 888f6b907cf8fb50a0182e58c4f0f948e36a846faa96ee733895d79fe0cf7362)
 const { MATERIAL_RECORDS, CONSTANTS } = (() => {
 const c = constant;
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Physical constants the rooms use, each with unit and source. Those marked verified were compared on 2026-10-31
 // against the reference named in the row; every other row carries the flag "from memory, unverified" until a check
 // is run and written here. A citation alone does not clear the flag.
@@ -735,9 +735,9 @@ const PRESET_PROVENANCE = {
 
 return { MATERIAL_RECORDS, CONSTANTS };
 })();
-// ---- packages/rooms/core/fields.js (sha256 44f98783ab56b99d31471a1bc95cab67bf3f3581a0df6e8e7965865ca75cff4b)
+// ---- packages/rooms/core/fields.js (sha256 e075d407157914f7a185fc15bc23927d8ce73777dc6d2bce95626e8f2e0a78f0)
 const { FIELDS } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= World fields
 // Each field is the body of n2f(p), with r, x, y, z in scope. Sources in the note beside it.
 const FIELDS = {
@@ -927,9 +927,9 @@ function confine(u, v, scale, nx, ny, dt, curl) {
 
 return { advect, diffuse, project, confine };
 })();
-// ---- packages/rooms/solvers/sound/fdtd.js (sha256 238d721fb81058d82fc0f55673ff645c99a89a9ae4e233c1e8b052042389d994)
+// ---- packages/rooms/solvers/sound/fdtd.js (sha256 3b80f33a1d046ffa8f9e07c183856b44201e6a9281991862c41275da36ce54cc)
 const { WaveField } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // CPU reference for the room's wave step: the same second-order update as the step shader, on any grid. Walls are
 // rigid mirrors: a wall neighbour contributes the cell's own pressure, as in the shader.
 class WaveField {
@@ -990,9 +990,9 @@ const roomMode = (c, Lx, Ly, m, q) => (c / 2) * Math.hypot(m / Lx, q / Ly);
 
 return { WaveField };
 })();
-// ---- packages/rooms/solvers/pcb/formulas.js (sha256 1369d75825ad294415ec2919eddb4b93eb3bd5e559f97e51afc4c53ad0ce3595)
+// ---- packages/rooms/solvers/pcb/formulas.js (sha256 3274e9878fe5ec1e605cc676e4eaa9d7ebbf490950ea9fcacf297262909ae3ca)
 const { hammerstad } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Published impedance formulas
 function hammerstad(w, h, er) {
   const u = w / h;
@@ -1010,9 +1010,9 @@ function ipc2141(w, h, t, er) {
 
 return { hammerstad };
 })();
-// ---- packages/rooms/solvers/pcb/constants.js (sha256 9cbcf1ffc0096cd9f390bc1fad01fdadbc59732754577253ba714b3fa55a3278)
+// ---- packages/rooms/solvers/pcb/constants.js (sha256 51038d1a90764276f00d0c0a17498a0cc5625a280c68a0b178a3505d8453b982)
 const { STACKS } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Constants, sourced where noted
 const RHO_CU = CONSTANTS.copperResistivity.value;
 // ohm mm, annealed copper standard (IACS)
@@ -1089,9 +1089,9 @@ function layerZ(layers) {
 
 return { STACKS };
 })();
-// ---- packages/rooms/maps/map.js (sha256 f15f414734e9485626b7a9709587da71e09f3acb86ddefd84cb1b8b139b45786)
+// ---- packages/rooms/maps/map.js (sha256 25ba6fbde9738db963e52b1c77a72176a8fe4cc341d561fbe9eaf90ef9fd97ac)
 const { statusFrom } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A map between two domains, as a typed object that can fail. An analogy states a likeness; a map states which
 // quantities correspond, with units, what stays preserved, over what range, what a round trip loses, one prediction it
 // can get wrong, and the condition that would show it wrong. Status comes from a rule on that test.
@@ -1161,9 +1161,9 @@ function mapFaults(m) {
 
 return { statusFrom };
 })();
-// ---- packages/world/properties.mjs (sha256 6de38fb28938dad32023b1fbd79b48817f51e0339f94d264ab6266f1e46b721c)
+// ---- packages/world/properties.mjs (sha256 7d027581fb2c624b070c177835ca586a380f7856a37f02701d315de72c52540c)
 const { CORES, DYE_N2, SOUND_N2, BOARD, lensProfile, traceZ0, PROPERTIES } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // properties.mjs: the property registry of the field. Each property is a capability any element can carry at a
 // weight, and each is the core of a package that already exists, used as it stands: nothing here re-derives what the
 // package computes. The record of each property is a propertyObject (rooms/properties/model.js): its state space,
@@ -1259,9 +1259,9 @@ const PROPERTIES = Object.freeze({
 
 return { CORES, DYE_N2, SOUND_N2, BOARD, lensProfile, traceZ0, PROPERTIES };
 })();
-// ---- packages/world/scene-read.mjs (sha256 29f15ce27f16bb79fe5a55243e4b69d55dd7cb9fe57237513696d8b06ba7daef)
+// ---- packages/world/scene-read.mjs (sha256 a331d5e40fb5a3c42009f0b2e0a9a0028a5d69a7b34e0f8e3fc592ab82397242)
 const { hasTol, measureField, dimsOf } = (() => {
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // scene-read.mjs: what the measure and shape properties take from a scene. Measurement is a weighted read over
 // everything that carries it, so a probe reads a point and a body of water given the property reads itself whole.
 // Shape dimensions what carries it by its second moments, and every dimension carries a tolerance or it is refused,
@@ -1326,10 +1326,10 @@ function dimsOf(s) {
 
 return { hasTol, measureField, dimsOf };
 })();
-// ---- packages/world/scene.mjs (sha256 f1493a2cd881db55ea63c80cabb9f9b910c884a6708c15d927debd54c3fff842)
+// ---- packages/world/scene.mjs (sha256 392f226b5e650fe1004f1b504f92cd0d63be76de958d5a4cadfcc02556598279)
 const { SIZE, DEFAULTS, createScene, bilerp } = (() => {
 const NAMES = PROPERTY_IDS;
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // scene.mjs: one continuous scene in the field. Light crosses a Luneburg glass and a body of stirred water; a probe
 // reads the water; the water is dimensioned; a voice sends a wave through all of it; a graticule shows where things
 // are against where they are seen. None of these is a room: each is a property some element carries at a weight, and

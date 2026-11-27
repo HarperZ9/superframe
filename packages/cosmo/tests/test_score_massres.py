@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The round-eight same-phase scorer: a planted 1 percent raise reads back as 1 percent, arms with different
 k bins are refused, and the closure words follow the preregistered cut points."""
 import sys

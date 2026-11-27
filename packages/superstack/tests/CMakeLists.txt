@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # Builds the C++ vector runner. Usage:
 #   cmake -S tests -B build && cmake --build build --config Release
 #   build/run_vectors <repo root>     (build/Release/run_vectors.exe with MSVC)

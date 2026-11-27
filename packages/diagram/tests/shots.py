@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Screenshots of every diagram page at desktop and phone width, assembled, exploded and sectioned, plus an
 in-browser determinism check (the CPU frame at one t, scrubbed away and back, hashes the same).
 

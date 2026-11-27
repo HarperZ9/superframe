@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Manufacturability rules with their origin. Severity: BLOCK cannot be made as drawn; FLAG costs or risks; INFO a note.
 

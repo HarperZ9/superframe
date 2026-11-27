@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Folds coupled to a time-domain tract, the nasal branch, and the oesophageal voice."""
 import sys
 from pathlib import Path

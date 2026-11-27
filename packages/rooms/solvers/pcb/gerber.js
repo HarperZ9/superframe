@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { DES, UNBUILT } from "./constants.js";
 import { bodyBox } from "./netlist.js";
 import { planeClears, segD } from "./plane.js";

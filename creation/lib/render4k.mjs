@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // render4k.mjs: the five elements built for 3840 x 2160 delivery. Two resolutions, stated in every record:

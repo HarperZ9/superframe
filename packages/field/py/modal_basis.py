@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One Laplacian eigenbasis serving heat, room sound, diffuse light and distance (study 2026-10-31-sdf-sh, H1).
 
 The domain is an L-shaped room (10 m square, top-right quadrant removed) on a cell-centred grid. The

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Hashes and receipts. A receipt names the input hash, every model and binary hash, the settings and the
 output hashes, so a rerun can be checked byte for byte."""
 import hashlib

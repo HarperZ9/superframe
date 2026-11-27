@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Screenshots of the instrument pages at desktop and phone width, light and dark, plus in-browser checks: a
 parameter change reaches the drawing, the schematic and the 3D model; a pick lights the part in every view; no
 page errors; no sideways scroll.

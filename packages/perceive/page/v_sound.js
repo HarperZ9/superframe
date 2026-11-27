@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive page: sound bridges. A bat call heterodyned into hearing; the ring-channel series audified so the
    years can be heard; the law table's 8D signatures played as chords, one voice per axis. */
 (function () {

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive/registry: every bridge, stated the same way. A bridge names the quantity and its units, its natural
    geometry, the perceptual map it uses, what that map keeps and loses, one plain line, its known-answer test
    and the people whose technique it borrows. The page and the tests read this table; nothing else does. */

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 08 deco-sunburst: the name as an art deco marquee. Accession Display is stretched tall (1.7) and tracked

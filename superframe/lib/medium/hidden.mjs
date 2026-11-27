@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // hidden.mjs: a picture that looks the same as another in daylight and becomes a different picture by candlelight.

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 17 pearls-large (v2 of 11): the same nacre, set larger and cropped tight so the name fills the frame. The name packed with iridescent spheres. A greedy packing fills each letter with spheres that

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Fluid Room as a view of solvers/fluid. node packages/rooms/views/fluid-room/build.mjs [out.html]
 import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";

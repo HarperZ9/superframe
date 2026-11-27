@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Words shared by every diagram page and the index."""
 
 OVERLAYS = """<p>The <strong>physics layer</strong> recolours whichever view is open: the 3D model, the exploded view, the cut, or a moment in time. Material values come from the materials library (packages/materials), copied with their sources by build/materials_export.py. Where the library holds no value the part is drawn as "no data", and no value is made up to fill it.</p>

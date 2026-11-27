@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // plates.mjs: the study-plate back end (CORE.md "Study plates"). Every IR property gets a variable type, and the type

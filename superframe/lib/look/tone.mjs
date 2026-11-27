@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // tone.mjs: the display transform shared by every renderer. Two curves, both on linear-light RGB in place.

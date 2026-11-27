@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers: doubling and Nielsen-Ninomiya, Ginsparg-Wilson, the 2D index theorem, spectral flow, the
 consistent anomaly -q^2/(4 pi) int chi F, and its cancellation in the 3-4-5 model. Planted wrong cases must fail."""
 import math

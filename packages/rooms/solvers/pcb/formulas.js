@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Published impedance formulas
 export function hammerstad(w, h, er) {
   const u = w / h;

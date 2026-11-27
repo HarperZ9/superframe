@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A deterministic note transcriber and the scores the suite uses.
 
 Transcriber: harmonic-sum salience on an STFT (n_fft 4096 at 44.1 kHz, hop 10 ms),

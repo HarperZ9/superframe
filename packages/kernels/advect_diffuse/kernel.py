@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Semi-Lagrangian advection then explicit diffusion on a periodic 2-D grid.
 Mode: bit-identical. Formulas follow slAdvect, sampC and diffuse in the brackish
 simulator (2026-10-29-brackish-marbling/sim.html). See SPEC.md for differences."""

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known-answer, planted-failure, and OOD generalization tests for NOH-1 nested organism.
 
 Run: python -I -B -m pytest -p no:cacheprovider packages/evolve/tests/test_nested_organism.py

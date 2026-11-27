@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The measured difference report: an output against every vault item in its lineage and against
 its nearest neighbours in the vault, each number beside its preregistered threshold.
 

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """stringlab: string theory and its extensions as checkable computations.
 
 Each module reproduces a known answer before it says anything new:

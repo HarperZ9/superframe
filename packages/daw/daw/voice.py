@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A voice from the shape of a body: the vocal tract as a chain of tubes, and a glottal source.
 
 The tract is an area function (areas in m^2 and lengths in m, glottis first). Each section is a lossless

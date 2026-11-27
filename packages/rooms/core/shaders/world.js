@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { ACC, CAM, COMMON } from "./common.js";
 import { F_HELP } from "../formula.js";
 import { scatCode } from "../scatter.js";

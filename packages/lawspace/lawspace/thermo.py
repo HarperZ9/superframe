@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Family 6: the laws of thermodynamics as switchable toy worlds. Units: k_B = 1.
 
 zeroth   three bodies with heat capacities and pairwise couplings (Newtonian conduction).

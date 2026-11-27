@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers: SU(2) generators and Dynkin indices, the anomaly ratio triplet / doublet = 4, and the adiabatic phase
 reducing to the Wigner-Brillouin phase on a one-step path."""
 import math

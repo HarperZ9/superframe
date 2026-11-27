@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* IEEE-488 / HP-IB three-wire handshake. Source: HP-GAPS.md section 7. */
 (function (g) {
   "use strict";

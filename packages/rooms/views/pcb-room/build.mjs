@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // PCB Room as a view of solvers/pcb. node packages/rooms/views/pcb-room/build.mjs [out.html]
 import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";

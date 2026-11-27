@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // stencil.mjs: direction 6, the posted notice. CMMNS is cut in the Accession stencil (bowls split, strokes stopping

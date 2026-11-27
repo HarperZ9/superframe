@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Planted tests for every mastering stage: EQ, compressor, multiband, true-peak limiter, width, dither, the
 preset chain and reference match, plus the accelerated recursions held to bit identity with plain Python."""
 import math

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 09 surreal-doors: a set piece. The letters stand on a heath at dusk as thin slabs, and each one is a doorway

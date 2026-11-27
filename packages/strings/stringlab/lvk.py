@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A spectrum against the published LIGO-Virgo cross-correlation spectrum.
 
 The O3 isotropic data release gives, per frequency bin, an estimator C(f) of Omega_gw(f) and its standard deviation

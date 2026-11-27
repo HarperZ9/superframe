@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A small particle-mesh run in the twisted manifold E3 (a quarter turn on each pass along z) and its plate.
 
     python packages/cosmo/study/run_twisted.py --out out/cosmo/twisted

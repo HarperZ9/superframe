@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Planted damage on synthetic audio, each repair scored against the clean original. The thresholds are the floors
 these methods clear on these signals; the scored study on music is in the private results, not here."""
 import math

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Shared parts of a formula kernel: the refusal, the range tests and the unit-checked call.
 
 A formula kernel never returns a default, a NaN or a clipped value in place of an answer. Outside its stated

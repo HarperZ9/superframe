@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The forecaster: a ridge-regression surrogate fitted to past real evaluations.
 
 Features are the genome's sites in +-1 coding plus an intercept: an additive model. It is right on

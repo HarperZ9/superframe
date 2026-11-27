@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // sound: the visualizer's sound-to-water node (visualizer/lib/flow.mjs, superframe vis.flow), adapted,

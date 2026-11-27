@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers: Euler genus from face tracing for explicit embeddings (planar K4, K7 on the torus, K6 in the
 projective plane, K8 on the double torus), and the Ringel-Youngs and Franklin formulas."""
 import sys

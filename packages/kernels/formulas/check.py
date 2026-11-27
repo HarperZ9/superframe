@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Check every formula kernel: known answers, properties, refusals, planted-bad controls, and bit equality
 between the reference and the compiled BuildLang body.
 

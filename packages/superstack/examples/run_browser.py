@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Serve the repo and run examples/browser.html in headless Chromium.
 
 Writes examples/out/<webgl2-dir>/{frame.rgb, ao.f32, mask.u8, receipt.json}

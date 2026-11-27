@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 01 shallow-glass: the name as flint glass standing in shallow sea at a low sun. The sun sits on the horizon

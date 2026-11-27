@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Build the VST3 bundle (vst3/vst3.c over the CLAP instruments) and the VST3 test host (vst3/host_vst3.c).
 
     python -m daw.vst3_build OUT_DIR           # writes superframe.vst3/ and host_vst3(.exe)

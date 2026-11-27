@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 30 crystal-plate (flagship variant A): a thick plate of crown glass lies on a security note, and the name is cut

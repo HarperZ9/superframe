@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Wall finder: locate the knob value where a qualitative behaviour changes.
 
 find_wall(observe, lo, hi) takes observe(eps, rng) -> bool and a bracket whose ends behave

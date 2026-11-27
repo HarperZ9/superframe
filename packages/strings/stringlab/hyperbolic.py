@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A drawn genus-2 surface: the regular hyperbolic octagon with opposite sides identified, and graphs drawn on it.
 
 The octagon lives in the Poincare disk with interior angles pi/4, so eight copies meet at each corner and the

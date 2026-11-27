@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // wallpaper.mjs: a front end that reads which plane symmetry group an image has (the crystallography fixture).

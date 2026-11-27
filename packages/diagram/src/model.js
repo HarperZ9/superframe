@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/model: one model, every view. A part carries geometry, a material, a label, a text alternative, what it
    does, the physical quantity it carries, and where it goes when the model is taken apart. Links join parts.
    validate() refuses a model whose parts lack a label or a text alternative, so a screen reader always has words. */

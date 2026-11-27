@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Finesse: timing instead of amplitude. Parametric pumping, phased focusing and time reversal.
 
 Known answers. Mathieu x'' + (a - 2 q cos 2t) x = 0: the first instability tongue is bounded by

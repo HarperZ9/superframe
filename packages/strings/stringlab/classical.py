@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The classical relativistic open string (Nambu-Goto in conformal and light-cone gauge).
 
 Transverse coordinates X^i(sigma, tau), sigma in [0, pi], obey the free wave equation with Neumann ends.

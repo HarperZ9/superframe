@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Loudness and peak meters, ITU-R BS.1770 and EBU Tech 3341/3342.
 //
 //   integrated(chans, rate)  gated programme loudness (LUFS), the superstack-bs1770/1 algorithm

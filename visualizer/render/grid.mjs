@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // grid.mjs: the struck grid. A score (MIDI notes) plays on a grid of framed cells. A struck cell fills with ink and

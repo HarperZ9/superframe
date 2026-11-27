@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Sound channel of a blend: spectral-envelope interpolation, resynthesised with random phase.
 
 Each source contributes its mean log-magnitude spectrum (detuned by a per-source shift in cents)

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/cad/symbols: the schematic symbol library. Coordinates in millimetres with y up, the KiCad library
    convention, on a 1.27 mm grid so every pin end lands on KiCad's connection grid. A pin's `at` is its
    connection point and `ang` the direction from that point toward the body (0 right, 90 up, 180 left, 270 down).

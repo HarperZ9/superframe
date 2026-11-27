@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Forward and inverse transforms over N-dimensional grids, built on the one FFT in core/wave.js. Inverse scales by
 // 1/N, and swapping re and im is the inverse: the convention here is the forward sign exp(-ikx).
 import { fft1 } from "../../core/wave.js";

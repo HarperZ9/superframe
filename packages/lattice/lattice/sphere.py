@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Sampling on the sphere: lat-long grids, icosahedral geodesic grids, spherical-harmonic fields.
 
 Fields are real spherical-harmonic sums with angular power C_l per degree; every m in a degree

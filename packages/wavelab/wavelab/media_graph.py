@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Vibrating media beyond one chain: mass-spring graphs (chains, square membranes) with several input sites, and
 the NARMA-10 benchmark.
 

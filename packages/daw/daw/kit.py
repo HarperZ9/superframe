@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """An electronic kit (gap G13): an 808-style bass drum, hats from small plate modes and band-passed noise, and
 a roll generator.
 

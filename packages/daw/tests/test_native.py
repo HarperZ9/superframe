@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The BuildLang real-time core against the Python reference. Skips, with the reason, where buildc or a
 C compiler is missing or the buildc here predates slice::from_raw_parts_mut."""
 import math

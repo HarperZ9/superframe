@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Instrument Pipeline: the three live figures. Each takes (g, W, H, a, b, mode) and returns a readout line.
    Physics in the browser is the same physics as the Python twin, reduced: no noise, no estimator. */
 const FIG = (() => {

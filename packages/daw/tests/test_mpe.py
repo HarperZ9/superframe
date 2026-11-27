@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Per-note expression on the CLAP bars (clap/bars.c, bld/mpe.bld): CLAP note-expression tuning and MPE pitch bend.
 
 Known answers: the plugin equals the BuildLang kernels driven offline (voice_set at each note, voice_retune at

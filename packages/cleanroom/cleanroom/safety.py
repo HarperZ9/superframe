@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Rules for handling untrusted inputs.
 
 Every saved artifact is data. It is read in binary, hashed and copied; it is never executed, never

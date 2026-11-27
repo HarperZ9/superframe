@@ -23,7 +23,7 @@ The code hashes, measures and blends files that a person supplies. It holds none
 
 ## Licence
 
-The folder is FSL-1.1-MIT. At run time `cleanroom` imports `lattice` and `packing` (FSL-1.1-MIT), `design_parts` and `textphase` (AGPL-3.0-only) and `materials` (AGPL-3.0-only). All of them are the same author's work, so the author may ship them together. A third party who distributes a modified combined work takes on the AGPL terms for those parts. Decision for the author, if that matters: relicense the imported parts, or make those imports optional.
+The folder is MIT. At run time `cleanroom` imports `lattice` and `packing` (MIT), `design_parts` and `textphase` (AGPL-3.0-only) and `materials` (AGPL-3.0-only). All of them are the same author's work, so the author may ship them together. A third party who distributes a modified combined work takes on the AGPL terms for those parts. Decision for the author, if that matters: relicense the imported parts, or make those imports optional.
 
 ## Open
 

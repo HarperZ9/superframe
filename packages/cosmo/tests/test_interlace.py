@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Interlaced P(k) (power.py) and the shifted deposit behind it (lean.deposit), round five.
 
 Truth here is the same particles measured on a mesh four times finer, where the band under test sits below a

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Fitness landscapes on bit strings, with an exact table and a continuous (multilinear) extension.
 
 Every landscape is a sum of components. A component reads a few sites and looks its value up in a

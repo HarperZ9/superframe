@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The workstation layers: synthesis, arrangement, mixer, export, receipt, determinism, materials, contract."""
 import hashlib
 import math
@@ -19,12 +19,12 @@ from daw.shapes_1d import Bar  # noqa: E402
 from daw.synth import render  # noqa: E402
 
 FS = 48000
-SUPERSTACK_V020 = "d5f86b29354a43e676d3d2db7005150b100427137e7708be9841f1e7d5589353"
+SUPERSTACK_V020 = "6c2aff5881d9ed5ce3cb0457632a1a7d66ef44f7e1c0454fb27bdc8eb18c99e2"
 BL_AUDIO_SHA256 = {   # runtime/audio in HarperZ9/buildlang, vendored unchanged
-    "bl_audio.c": "57cfaf8721f6d19c9a2d2951197d52255e3d7ca7174748c0e612c95be3a6ab9e",
-    "bl_audio_win.c": "9f0eee25f23db4413448b75e10de4c5bffe43485724341f85368e14b5d3e0023",
-    "bl_events.c": "26af3955624954c9b311a7b08784c7ed834342926fa823e0216572f3cef4090d",
-    "bl_audio.h": "ed46a6816bbbbba535cc724936d167cb5980e0cc5f2cfd795d97ecb4bc4a75cc",
+    "bl_audio.c": "206af32f7572c77120dda7ddc92118938216b785d424f3a1b06302a7625a836f",
+    "bl_audio_win.c": "7f6b2e67c9bc01ff89c7020846839c1f844360bf517829e102a784b7f2bed3c5",
+    "bl_events.c": "f43a8dcd67c24e57d82283465e6a0615fddfc5dcf4c71b9c15db579a713867fb",
+    "bl_audio.h": "3c7675d8a104f56242114157e54b2c1ee411d45acfeb1e43dbf5184bce646670",
 }
 
 

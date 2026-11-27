@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // language.mjs: a text front end (CORE.md "Language and speech"). Properties: words, syllables (vowel-group count, a

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A short demo piece, rendered offline from a seed: seven objects of five materials in one room.
 
     python -I -m daw.demo OUT_DIR [--seed STRING] [--seconds S]     (run from packages/daw)

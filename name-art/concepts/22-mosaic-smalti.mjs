@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 22 mosaic-smalti: Byzantine gold. The letters are gold-leaf tesserae, each pressed in at its own small tilt, so each catches the light differently; one course of red glass outlines them and the field is lapis smalti. Over the loop the light swings and the gold flickers tile by tile, as a wall does when you walk past.

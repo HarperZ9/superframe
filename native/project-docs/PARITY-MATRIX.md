@@ -55,7 +55,7 @@ support a claim.
 | 25 | Verification of rendering | none described | none described | none described | none described | none described | CPU reference for every verified pass, certificates, byte-identical frames per device class, bounds committed before runs | Present (distinctive) | Keep. A claim that others lack it needs a survey beyond these pages |
 | 26 | Docs | Full versioned docs | Docs "can be sparse" (Bevy's own words) | Versioned manual | Versioned docs | Manual per feature | Deep design records, ADRs, evidence; no user manual or getting-started guide | Partial | Getting started at W4; manual and API reference at E1 |
 | 27 | Samples and templates | unknown (not fetched) | Examples in repository | unknown (not fetched) | unknown (not fetched) | unknown (not fetched) | Three template scaffolds as timelines, not interactive | Partial | Three playable templates at W4 |
-| 28 | Licence clear for commercial games | MIT, no fees | MIT or Apache 2.0 | Free under USD 200,000; Pro above | Free under USD 1M; 5% royalty above (3.5% with the Epic launch programme) | Defold License, no fees or royalties | FSL-1.1-MIT: games read as permitted use; each release becomes MIT after two years; no plain statement for game makers | Partial | Parity at W4 with a plain statement (release plan D7) |
+| 28 | Licence clear for commercial games | MIT, no fees | MIT or Apache 2.0 | Free under USD 200,000; Pro above | Free under USD 1M; 5% royalty above (3.5% with the Epic launch programme) | Defold License, no fees or royalties | MIT, no fees or competing-use restrictions | Partial | Parity at W4 with a plain statement (release plan D7) |
 
 ## Counts
 

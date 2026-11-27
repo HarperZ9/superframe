@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // droplens.mjs: a water drop sitting on a window is a spherical cap, and a spherical cap is a plano-convex lens.

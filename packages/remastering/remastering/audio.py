@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One decode front end for every format: mp3, aac/m4a/mp4, opus/webm, ogg, flac, wav/aiff and video containers,
 through the ffmpeg build pinned by imageio-ffmpeg (its sha256 goes in every receipt). Files are data: ffmpeg
 reads them, nothing in them is executed.

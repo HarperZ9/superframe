@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/spacetime: time as a fourth axis. A diagram supplies 4D points (x, y, z, t) and edges; world-line
    edges are flagged timelike. ndim turns the object in any of its six planes (xy xz xt yz yt zt), projects it
    to 3D through a lens that states what it keeps and loses, and slices it with the hyperplane t = t0: the

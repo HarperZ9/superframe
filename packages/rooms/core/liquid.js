@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { CONSTANTS } from "./constants.js";
 // ======================================================================= Liquid lenses
 // Spinning mirror: free surface z = omega^2 r^2 / (2 g), focal length g/(2 omega^2). Scene unit read as a metre.

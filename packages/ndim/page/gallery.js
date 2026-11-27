@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim page, plain layer figures: Petrie polygons, Schlegel diagrams, the Hopf fibration on the Clifford
    torus, and the law table's signatures as an 8D point cloud you can turn and slice. */
 (function () {

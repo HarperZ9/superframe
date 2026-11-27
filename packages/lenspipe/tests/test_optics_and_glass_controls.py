@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Comprehensive known-answer and planted-wrong-control tests for lenspipe:
 optical refraction (Snell + TIR + lensmaker), glass dispersion (Sellmeier/Cauchy/Abbe),

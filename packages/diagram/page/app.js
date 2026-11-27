@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram page: one shared state, every view drawn from it. Selecting a part in any view selects it in all of
    them; each view's lens line says what it keeps and drops. */
 (function () {

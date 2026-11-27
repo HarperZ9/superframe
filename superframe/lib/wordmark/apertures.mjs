@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // apertures.mjs: direction 2, the missing O's as apertures. CMMNS drops the two O's of COMMONS; here they return

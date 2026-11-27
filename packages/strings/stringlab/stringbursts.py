@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The burst recipe of the LIGO-Virgo-KAGRA cosmic-string searches: cusps, kinks and kink-kink collisions.
 
 Following Abbott et al. 2021 (PRL 126 241102, section II and Supplemental Material) and Abbott et al. 2018:

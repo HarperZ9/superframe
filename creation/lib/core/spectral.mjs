@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // spectral.mjs: combine() on spectra, and the observer (BLEED sections 18, 21, 22). The spectral medium is the

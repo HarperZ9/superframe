@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Closed bosonic strings with one dimension on a circle of radius R: spectrum, partition function, T-duality.
 
 Spectrum (no noncompact momentum): alpha' M^2 = alpha' (n/R)^2 + (w R)^2/alpha' + 2 (N + Nt - 2), with

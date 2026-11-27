@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Run every vector in vectors/ against superstack.py.
 
 Usage: python tests/run_vectors.py [--impl PATH] [--summary OUT.json]

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Offline export and the receipt.
 
 16-bit WAV uses the superstack quantiser rule (clamp, then floor(v * 32767 + 0.5)) and its canonical

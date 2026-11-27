@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // warp.mjs: caricature warps as inverse maps (output px -> source px), so any field or SDF can be sampled through them.

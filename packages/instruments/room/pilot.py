@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Pilot (exploratory, seeds 1 and 2 only): is the estimator alive, and what resolving width fits?"""
 import sys
 import time

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """From phosphor light per stripe to the light that leaves the faceplate, cell by cell.
 
 A cell is one stripe (pitch / 3 wide, the same tall). Its direct light is its own phosphor's.

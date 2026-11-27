@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Build the CLAP instruments (clap/bars.c over the BuildLang kernels, clap/piano.c over clap/piano_table.h, clap/organ.c over clap/organ_table.h) and the test host (clap/host_check.c).
 
     python -m daw.clap_build OUT_DIR           # writes superframe.clap and host_check(.exe)

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The font port against the fonts Flywheel wrote at 681810fe (goldens/font.golden.json, made by
 // goldens/font_from_flywheel.py from the source tree, before the port ran). Three checks per writer:
 // byte-identical to the source's font, byte-identical across two runs, and a seeded planted change caught.

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Sparse conjugate gradient shared by the copper and heat solvers
 export function pcg(n, ea, eb, eg, diag, rhs, tol, maxit) {
   const D = new Float64Array(n);

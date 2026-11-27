@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The CLAP instrument (clap/bars.c) played by a CLAP host (clap/host_check.c) against the offline reference.
 
 Known answers: the plugin's output equals the BuildLang kernels driven offline, bit for bit, at any host block

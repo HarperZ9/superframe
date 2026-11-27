@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The canonical form runs everywhere. The full equivalence check needs PyTorch with CUDA, so it skips on CI."""
 import json
 import os

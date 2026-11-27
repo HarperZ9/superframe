@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """CUDA C for the lean GPU engine (lean.py). Particles are stored as six float32 arrays (x, y, z, px, py, pz)
 so no step needs an (N, 3) temporary. Every sum is either integer (the deposit) or done by one thread in a
 fixed order (readback, pair force), so runs repeat bit for bit."""

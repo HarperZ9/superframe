@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive/loss: what a view keeps and what it loses, in bits and in named knobs.
 
    For a deterministic map f from a discrete source X to an output Y = f(X), the information lost is

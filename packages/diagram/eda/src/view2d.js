@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/view2d: the board seen from above, as SVG from the vector geometry (for the page) and as an RGBA
    composite from the shape rasteriser (for the comparison images). Layers are drawn back to front: bottom copper,
    top copper, pads, vias, silkscreen, outline. */

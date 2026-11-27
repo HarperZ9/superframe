@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* field: the core type for values over any domain, with units, uncertainty, provenance, representation and
    a chain ledger; converters as graded transducers; shared operators; a render hook into tools/diagram.
    In Node, require("field/src/index.js"); in a page, load perceive first, then these files in this order

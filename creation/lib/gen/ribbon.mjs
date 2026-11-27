@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // ribbon: a signal drawn along a curve, its width the signal's amplitude (lead reading of the 2026-10-26 batch's

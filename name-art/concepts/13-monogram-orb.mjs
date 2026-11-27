@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 13 monogram-orb: ZDH as the canon's aperture. A luminous orb (a warm incandescent disc with a wide, faint

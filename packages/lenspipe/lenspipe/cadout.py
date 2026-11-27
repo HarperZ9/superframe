@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Mechanical outputs: STEP AP214 solids, binary glTF, ISO 10110 element drawing as SVG and text. Standard library plus numpy.
 

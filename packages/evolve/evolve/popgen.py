@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known laws the engine must reproduce before any knob is read.
 
 Eigen error threshold (Eigen 1971; Q_c = 1 / sigma as stated on the Wikipedia page "Error

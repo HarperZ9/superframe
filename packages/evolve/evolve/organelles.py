@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Level 0 deterministic nested organelles: VirtualCPUOrganelle and UniverseSimOrganelle.
 
 Provides an embedded IEEE-754 register-VM with step-budget safety valves and canonical

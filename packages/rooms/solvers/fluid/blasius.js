@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Blasius boundary layer: f''' + f f'' / 2 = 0 with f(0) = f'(0) = 0, f'(inf) = 1. Solved here by shooting, so the
 // constant f''(0) = 0.33206 (Howarth 1938, from memory) is computed and not copied. An inviscid mode has no layer to
 // grow and must fail this. The plate is a Brinkman strip with a fringe upstream, as in the cylinder wake.

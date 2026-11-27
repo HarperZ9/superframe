@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Launcher: python -I packages/cleanroom/cleanroom_cli.py <command> ...
 -I keeps the current directory and PYTHONPATH off sys.path, so this file adds only its own folder."""
 import os

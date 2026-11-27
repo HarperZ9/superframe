@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Build packages/perceive/perceive.html: run the known-answer tests, then inline the library, ndim's
 source, the page scripts, the data, the test record and the site kit into one page that opens from disk.
 

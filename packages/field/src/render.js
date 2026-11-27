@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* field/render: the render hook into tools/diagram. Any field becomes
      panel  a trace in the shape diagram's charts.js drawPanels() reads (title, x, y, series), for a page
      svg    a drawing through diagram's own SVG writer (cad/src/out.js toSVG), for files and tests

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // stokes.mjs: slow viscous flow in a thin layer (Stokes flow with floor friction, the Brinkman form), on a periodic

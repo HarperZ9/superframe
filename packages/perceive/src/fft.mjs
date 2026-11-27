@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
 /* perceive/fft.mjs: the packages' one FFT (src/signal.js) for ES module callers, in Node and in a browser.
    signal.js is a classic script that also works with require; importing it for its side effect sets

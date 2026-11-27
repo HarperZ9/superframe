@@ -13,7 +13,7 @@ git clone https://github.com/HarperZ9/superstack && cd superstack
 
 [![version: 0.2.0](https://img.shields.io/badge/version-0.2.0-e6e1d6?style=flat-square&labelColor=1a1712)](https://github.com/HarperZ9/superstack/releases/latest)
 [![CI](https://github.com/HarperZ9/superstack/actions/workflows/ci.yml/badge.svg)](https://github.com/HarperZ9/superstack/actions/workflows/ci.yml)
-[![license](https://img.shields.io/badge/license-FSL--1.1--MIT-e6e1d6?style=flat-square&labelColor=1a1712)](https://github.com/HarperZ9/superstack/blob/main/LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-e6e1d6?style=flat-square&labelColor=1a1712)](https://github.com/HarperZ9/superstack/blob/main/LICENSE)
 
 <!-- writing-profile: readme -->
 
@@ -21,9 +21,9 @@ One contract for renderers and sound engines, so a frame or a sound made by one 
 
 You get one file for your language. It writes a canonical hash of any scene, draws the same random numbers from the same seed string, keeps time on one integer clock, and seals a receipt that says two things: whether your bytes equal the reference (MATCH or DRIFT), and whether they fall within tolerance (verified, refuted or unverifiable). Every receipt also lists what it does not prove.
 
-Text: CC BY 4.0. Code: FSL-1.1-MIT.
+Text: CC BY 4.0. Code: MIT.
 
-From v0.2.0, code is licensed FSL-1.1-MIT. Earlier releases remain under MIT. Each release turns MIT two years after it ships. [docs/LICENSING.md](docs/LICENSING.md) explains what that means for engines that vendor a file.
+Code is licensed under the OSI-approved MIT License (`LICENSE`). Prose documentation remains under CC BY 4.0 (`LICENSE-TEXT`). [docs/LICENSING.md](docs/LICENSING.md) explains what that means for engines that vendor a file.
 
 ## Run it now
 

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A subtractive voice for pads (gap G14): band-limited oscillators, a state-variable filter, envelopes, unison.
 
 Oscillators. Saw and pulse with polyBLEP correction (Valimaki and Huovilainen 2007): the naive waveform's step

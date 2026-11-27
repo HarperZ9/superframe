@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Reference spectra read from data/: the Mira-Titan IV Cosmic Emu and CAMB, for scoring a box's P(k).
 
 cosmicemu(k, z)        the emulator's nonlinear P(k), (Mpc/h)^3, k in h/Mpc, z in {0, 0.5, 1}

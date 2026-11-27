@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Law registry: every law as a knob with a continuous deformation epsilon; the true law sits at 0.
 
 Each entry gives the knob, its true value, units, the anchor (with the grade of the source this

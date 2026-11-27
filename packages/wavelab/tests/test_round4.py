@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for round 4: the thermal bubble's adiabatic limit and slow-drive isothermal behaviour, its
 match to the review's Fig. 4 radius, and the detuning patterns' weak-drive answer."""
 import sys

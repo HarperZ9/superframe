@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { DES, RULES, STACKS } from "./constants.js";
 import { footprint, rot } from "./footprints.js";
 // ======================================================================= Netlist text to design

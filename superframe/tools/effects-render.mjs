@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // tools/effects-render.mjs: render one wordmark direction's hero still for the effects pass (2026-10-28).

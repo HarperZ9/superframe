@@ -58,4 +58,4 @@ n^2, and sound's coupling to the index is exaggerated, both so the effects can b
 the sizes are not measured. Readings are simulated and stay potential until a physical part is measured. The map
 from object to image has no held-out test yet, so its status is analogy.
 
-Licence: FSL-1.1-MIT.
+Licence: MIT.

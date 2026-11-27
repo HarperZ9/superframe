@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // pixq.mjs: the pixel-art pass. Scene light (HDR, linear) -> a tone curve -> a fixed palette with ordered dither.

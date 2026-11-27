@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/cad/schsvg: the routed schematic drawn as SVG on an A3 sheet: symbols from the library, pins, reference
    designators and values, wires, junction dots, net labels, power symbols, no-connect marks, a frame and a
    small title block. Each symbol is a group with data-ref and data-part, so selection reaches it. */

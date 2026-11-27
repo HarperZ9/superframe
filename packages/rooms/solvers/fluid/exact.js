@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Known answers in closed form, plus the small eigenproblems that are not. Sources are named per function, and the
 // values read from a paper are held here with where they were read.
 import { constant } from "../../core/provenance.js";

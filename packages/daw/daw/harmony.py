@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Tension and consonance from an instrument's own partials, voice-leading distance, and tension as pitch.
 
 Roughness of two partials (Plomp and Levelt 1965, in Sethares' parametric form, Sethares 1993 and the book

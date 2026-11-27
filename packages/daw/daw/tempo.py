@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Tempo map and metre (gap G4): tempo changes, ramps (accelerando, ritardando), bars of any metre, free time.
 
 A map is a list of points (beat, bpm, ramp). From each point the tempo holds (ramp False) or moves linearly in

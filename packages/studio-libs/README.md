@@ -38,7 +38,7 @@ release.
 
 ## License
 
-From v0.2.0, code is licensed FSL-1.1-MIT. Earlier releases remain under AGPL-3.0-or-later. FSL-1.1-MIT is the Functional Source License, Version 1.1, with MIT as the future licence: each release becomes available under MIT two years after it is made available. See [LICENSE](LICENSE).
+Code is licensed under the OSI-approved MIT License (`LICENSE`). Earlier v0.1.x releases remain under AGPL-3.0-or-later. See [LICENSE](LICENSE).
 
 The repository and all five packages (render-nd, render-sound, sense-core, studio-perception-mcp, viable-viz) carry the same licence. Each package directory has its own copy of `LICENSE`, so an extracted package keeps it. Every commit in this repository is by the author.
 

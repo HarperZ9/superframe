@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* field/field: the core type. A field is values over a domain. The domain is a sequence, a grid, a mesh,
    a graph, space plus time, or a point. Every field carries its unit and dimension, its uncertainty, its
    provenance, its representation (analog or digital, with sample rate, grain or bit depth, and the

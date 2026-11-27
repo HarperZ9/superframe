@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Generated rooms and long spaces (gap G16): stereo impulse responses with a set reverberation time per octave.
 
 The decay comes from the room's own physics. Eyring's formula, T60 = 0.161 V / (-S ln(1 - a) + 4 m V)

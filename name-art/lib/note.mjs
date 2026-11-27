@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // note.mjs: the security-note paper that the glass pieces lie on. Warm stock with fibres, a waving line tint (the

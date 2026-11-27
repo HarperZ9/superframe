@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Core tests: units, the field contract, uncertainty, provenance, the ledger, grades and planted claims.
    node tests/core.test.js [--json out.json] */
 "use strict";

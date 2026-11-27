@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Physical constants the rooms use, each with unit and source. Those marked verified were compared on 2026-10-31
 // against the reference named in the row; every other row carries the flag "from memory, unverified" until a check
 // is run and written here. A citation alone does not clear the flag.

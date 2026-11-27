@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Family 3: a 1-D lake column with a seasonal air temperature, ice, and a switchable equation of state.
 
 Enthalpy per cell (J m^-3, one reference density 1000 kg m^-3 for heat capacity): E < 0 is ice below

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/sim/stamp: element stamps for the real system (DC and each transient step) and the complex system
    (AC and noise). Sign convention: a branch current flows from n[0] through the element to n[1]; a row of the
    node equations is the sum of currents leaving that node. */

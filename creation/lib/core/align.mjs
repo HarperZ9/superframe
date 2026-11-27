@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // align.mjs: align before blend (BLEED section 20). Two elements of one kind (two palettes, stroke sets, stems) are

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """STFT, inverse STFT, a phase vocoder, and time and pitch operations that keep formants.
 
 STFT: periodic Hann, centred frames (padded by n_fft / 2 with reflection), inverse by weighted overlap-add divided

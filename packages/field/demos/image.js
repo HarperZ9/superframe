@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Demo: an image to its spectrum.
    PNG (8-bit sRGB, decoded by superframe playbook/lib/png.js) -> RGB grid field, values code/255, grain 1/255
    --luma (homomorphism: keeps Rec. 709 luma at 8 bits; loses chroma, measured as H(RGB) - H(Y') per pixel)

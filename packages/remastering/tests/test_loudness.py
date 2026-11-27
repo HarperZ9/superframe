@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The loudness meter against EBU Tech 3341 and Tech 3342 cases, synthesized from their parametric definitions
 (the official test files were not reachable: HTTP 403, no archive capture), and the resampler's measured spec."""
 import math

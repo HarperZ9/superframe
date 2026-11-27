@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 20 mosaic-andamento: the name as a Roman floor. Inside each letter the tiles run in courses along its own centre lines (opus vermiculatum), cut to the outline; two courses of black basalt follow the letter outside it; the field is limestone in straight hand-laid rows (opus tessellatum). Every joint is grout, so the drawing is the grout.

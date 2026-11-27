@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Polarised surfaces and layers. Fresnel coefficients, the transfer matrix of a thin-film stack and Jones matrices
 // of a twisted retarder, folded from the instrument-method and lens-geometry benches.
 const C = (re, im = 0) => [re, im];

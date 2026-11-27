@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers at planetary scale: Earth's free oscillations from PREM and the Lamb wave."""
 import sys
 from pathlib import Path

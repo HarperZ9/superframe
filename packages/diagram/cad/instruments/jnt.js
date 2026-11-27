@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Johnson-noise thermometer: the parametric model. Sources: packages/instruments records/jnt.json (name, design values,
    assumptions), examples/jnt.json (stages 1 to 4) and PIPELINE.md worked example 1. Part numbers from memory are marked unverified; nothing is ordered. */
 (function (g) {

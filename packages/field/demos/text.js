@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Demo: text -> symbol sequence -> motif spectrum, with a shuffled control.
    chars --tokens (isomorphism)--> tokens --words (homomorphism: keeps word-type counts up to case)--> words
    --motif (homomorphism: keeps the motif's positions)--> 0/1 sequence --pad (embedding)--> --spectrum

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Sound engine tests: the contract vector, the meters against BS.1770 and EBU
 // Tech 3341/3342 cases, determinism, block-size independence, the float32
 // live path, seeking, mastering to target and the true-peak ceiling.

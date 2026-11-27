@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for the particle-mesh solver: point-mass force, Zel'dovich pancake, momentum, linear growth."""
 import sys
 from pathlib import Path

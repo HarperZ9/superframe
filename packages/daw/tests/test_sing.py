@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for the expressive tract: measured vowels sung back within 10 percent of their measured
 formants, a vowel glide that ends where its second shape says, a pitch line and vibrato read back from the
 audio, jitter read back from the flow, and effort read back as the H1 - H2 tilt."""

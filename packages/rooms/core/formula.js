@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Formula grammar
 // Strict expression grammar, so typed text can never become arbitrary GLSL:
 //   expr = term {(+|-) term}; term = unary {(*|/) unary}; unary = [+|-] pow; pow = atom [^ unary];

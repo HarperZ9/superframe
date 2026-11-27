@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The eye port against studio-engine's eye at 328a0ddf (goldens/eye.golden.json, made by
 // goldens/eye_from_studio_engine.mjs from the source file, before the port ran). The checks: every hash,
 // feature and drift verdict equal to the source's, the same outputs across two runs, and seeded planted

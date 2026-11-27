@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // orbit: the orbit field and the aperture motif (the 2026-10-26 batches: ellipses at tilts around a nucleus, dotted

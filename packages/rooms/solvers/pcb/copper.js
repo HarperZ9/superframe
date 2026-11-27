@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { segD } from "./plane.js";
 // ======================================================================= Copper primitives and distance
 export function prims(d, l) {

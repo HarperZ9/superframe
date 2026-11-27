@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Chern classes from the curvature of a Kahler metric, integrated by Monte Carlo.
 
 For the holomorphic tangent bundle with Hermitian metric G_{a b} = g_{a bbar} in local coordinates w,

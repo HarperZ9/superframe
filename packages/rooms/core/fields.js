@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= World fields
 // Each field is the body of n2f(p), with r, x, y, z in scope. Sources in the note beside it.
 export const FIELDS = {

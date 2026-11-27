@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Sliced FFT force meshes (cosmolab.slicedfft) against torch's 3-D FFT, on a clustered density field.
 
     python packages/cosmo/study/check_slicedfft.py --mesh 256 --box 256 --out sliced256.json

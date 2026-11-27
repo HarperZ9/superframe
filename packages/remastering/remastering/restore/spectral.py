@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Frequency-domain restoration: hum, wow and flutter, bandwidth extension, codec artifacts.
 
 - hum: the mains fundamental is searched within 2 Hz of 50 and 60 Hz on a 0.05 Hz-resolution spectrum (the frequency

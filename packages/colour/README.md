@@ -4,7 +4,7 @@ Colour science libraries. One today.
 
 | Folder | What it does | Licence | From |
 |---|---|---|---|
-| `build-color/` | Colour math for Python with a command line and an optional desktop workbench: sRGB, Oklab, CIELAB, JzAzBz, ICtCp and wide-gamut RGB conversions, PQ and HLG, twelve tone-mapping operators, CIECAM02 and CAM16, seven Delta E metrics, nine chromatic adaptations, ICC display profiles, `.cube` and CLF LUT files. Needs NumPy only. | FSL-1.1-MIT | `HarperZ9/build-color@b67fd02a`, version 1.0.2 |
+| `build-color/` | Colour math for Python with a command line and an optional desktop workbench: sRGB, Oklab, CIELAB, JzAzBz, ICtCp and wide-gamut RGB conversions, PQ and HLG, twelve tone-mapping operators, CIECAM02 and CAM16, seven Delta E metrics, nine chromatic adaptations, ICC display profiles, `.cube` and CLF LUT files. Needs NumPy only. | MIT | `HarperZ9/build-color@b67fd02a`, version 1.0.2 |
 
 ```
 python -m pip install -r packages/requirements.txt

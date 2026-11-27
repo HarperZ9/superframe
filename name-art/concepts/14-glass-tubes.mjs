@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 14 glass-tubes (v2 of 01): the letters are not a font cut from glass. Each letter is a solid rod of flint glass

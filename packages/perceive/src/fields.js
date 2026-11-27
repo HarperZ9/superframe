@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive/fields: electric potential of point charges, magnetic field of wires (closed form in 2D and a
    numeric Biot-Savart sum in 3D), and heat diffusion. SI units throughout: metres, coulombs, amperes, tesla. */
 (function (g) {

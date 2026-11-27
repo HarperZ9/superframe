@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ttf.mjs: a minted face becomes an installable TrueType font. A port of Flywheel's harness/typeface_ttf.py
 // (HarperZ9/flywheel@681810fe), table by table. The forge's polygon rings are valid TrueType contours (every
 // point on-curve), so the file carries exactly the outlines the legibility rules approved, with no curve

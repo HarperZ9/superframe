@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { RHO_CU, layerZ } from "./constants.js";
 import { planeRaster, segD } from "./plane.js";
 import { bbox, prims } from "./copper.js";

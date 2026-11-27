@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Deterministic stem split with Demucs: htdemucs_ft for four stems, htdemucs_6s for six.
 
 stems=4 (the default) runs htdemucs_ft, four per-source fine-tuned Hybrid Transformer Demucs models, each trusted

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Print the page builder's inputs as JSON: lens and layer tables, and each diagram's words and parts. */
 "use strict";
 const fs = require("fs"), path = require("path");

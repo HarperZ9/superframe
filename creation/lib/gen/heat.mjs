@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // heat: blackbody heat colour (BLEED section 14's first case of red to orange to yellow). One hidden tick per cell,

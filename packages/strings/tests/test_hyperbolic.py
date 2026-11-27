@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers: the regular octagon with angle pi/4 and opposite sides glued has one vertex class (genus 2); the
 side pairings map side j + 4 onto side j; K5 draws without crossings and its face-traced rotation has Euler genus at
 most 4; the Gamma_d convention switches reproduce the default."""

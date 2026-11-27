@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 //
 // The real-time core of the physical-model workstation, in BuildLang. The host owns the device, the
 // buffers and the clock; it calls these exports once per period. Every buffer is a pointer and a

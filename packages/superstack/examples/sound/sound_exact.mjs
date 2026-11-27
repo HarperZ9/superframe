@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The second sound path: the same score in JavaScript float64, run in Node or a
 // browser. Usage: node sound_exact.mjs sound.json OUTDIR
 import * as ss from '../../superstack.mjs';

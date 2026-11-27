@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 24 mosaic-echo: the name with Ravenna's echo. Every field course runs parallel to the letters' outline and ripples out to the frame edge, banded light and dark; the tiles are the cells of seed points spaced evenly along each course, so the joints turn with the course and never meet on a seam.

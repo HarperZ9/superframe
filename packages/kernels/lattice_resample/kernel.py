@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Lattice resample: sample a square-pixel image on a hex or square lattice, then
 reconstruct the pixel grid from those samples. Mode: bit-identical. See SPEC.md.
 Lattice bases match tools/packing/lattice.py (SQUARE = I, HEX = [[1, 1/2], [0, sqrt3/2]])."""

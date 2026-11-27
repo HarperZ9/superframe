@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 25 mosaic-divisumma (v2 of 06, the code mosaic): the name as solid letters whose every face is a field of tiny

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* CORDIC and the HP-35's decimal pseudo-division. Sources: HP-GAPS.md section 6 and HP-GAPS-PRIMARY.md section 4
    (Cochran, HPJ June 1972: pseudo-division traced to Briggs, 1624; the binary gain 1.6468 does not apply to decimal). */
 (function (g) {

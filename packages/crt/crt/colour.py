@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Spectral frames to the display, through the materials library's colour pipeline.
 
 A frame is spectral: per cell, the light energy of each phosphor (J), and each phosphor's unit

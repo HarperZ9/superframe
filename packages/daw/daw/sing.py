@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """An expressive voice from the physical tract: a pitch line with vibrato, jitter and shimmer, effort that changes
 the glottal pulse, aspiration, and vowels that glide from one measured tract shape to the next.
 

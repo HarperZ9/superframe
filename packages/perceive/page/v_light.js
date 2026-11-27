@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive page: the spectral window over the electromagnetic spectrum (blackbody and line sources) and the
    materials library's n and k spectra. One operator: a window [lo, hi] on wavelength, log scale, into
    380 to 750 nm for sight and 20 Hz to 20 kHz for sound (short waves high, long waves low). */

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/core: vectors, 4x4 matrices, the orbit camera, exact snapping, a seeded generator and a byte hash.
    No dependencies. Loads as a classic script (window.Diagram) or with require (module.exports is the same object). */
 (function (g) {

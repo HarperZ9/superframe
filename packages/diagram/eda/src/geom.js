@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/geom: copper shapes as rounded convex sets, a point list (1 point = disc, 2 = capsule, 3+ = convex
    polygon) grown by a radius r. Exact distance between two shapes, containment, and a rasteriser that decides each
    pixel by the same distance function, so the board view and the DRC read one geometry. Millimetres, y up. */

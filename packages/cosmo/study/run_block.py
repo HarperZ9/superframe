@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A P3M box with block time steps (cosmolab.stepping) on the lean GPU engine (cosmolab.lean), z = 49 to 0.
 
     python packages/cosmo/study/run_block.py --n 256 --box 128 --eta 0.025 --levels 4

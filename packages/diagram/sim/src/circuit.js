@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/sim/circuit: the circuit record and its compiled form for modified nodal analysis.
    A circuit is a list of elements. Node "0" is ground. Each element is { t, name, n: [nodes], ...params }:
      R  { R, T, noise }          resistor; thermal noise 4kT/R as a current, at its own temperature T (K)

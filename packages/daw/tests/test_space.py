@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Sound in space, reference implementation: delay to the sample, inverse-square loss, ISO 9613-1 air
 absorption against the Kaye and Laby table, the Doppler shift, and the radiation moment of plate modes."""
 import math

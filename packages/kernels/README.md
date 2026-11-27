@@ -140,7 +140,7 @@ Two C++23 libraries sit beside the contract kernels. They came from their own re
 
 | Folder | What it does | Licence | From |
 |---|---|---|---|
-| `signal-kernels/` | header-only entropy, divergence, Granger causality, PELT change points, FFT helpers, graph curvature and SARIMA and VAR forecasts | FSL-1.1-MIT | `HarperZ9/signal-kernels@0c62e590` |
+| `signal-kernels/` | header-only entropy, divergence, Granger causality, PELT change points, FFT helpers, graph curvature and SARIMA and VAR forecasts | MIT | `HarperZ9/signal-kernels@0c62e590` |
 | `anomaly-kernels/` | telemetry baselines, z-score, IQR and percentile outlier scores, and alert correlation over time windows | MIT | `HarperZ9/anomaly-kernels@c94ac9b0` |
 
 Both build on Windows with MSVC only (their CMake files stop on other systems). `.github/workflows/kernels-cpp.yml` configures, builds and runs the tests of each on `windows-latest`, and checks the art receipt digests in `docs/art/receipts.json`. Each folder's README lists its modules as BuildLang port candidates.

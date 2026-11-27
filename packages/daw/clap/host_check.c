@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 //
 // A minimal CLAP host for tests: load a plugin, check its descriptor and extensions, play a list of notes in
 // blocks of a given size, and write the stereo output as raw float32 (interleaved). Timing of the process

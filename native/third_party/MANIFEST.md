@@ -12,7 +12,7 @@ The dependency policy is ADR 0005. In brief:
 
 | Library | Upstream and version | SPDX licence | Files | Adapter files (ours) |
 |---|---|---|---|---|
-| superstack | github.com/HarperZ9/superstack, tag `v0.2.0` | FSL-1.1-MIT | `third_party/superstack/` (see `NOTICE.md` there) | `raw/tools/receipt.hpp`, `app/main.cpp` (receipts); `web/sound/contract.mjs`, `fixtures.mjs`, `meter.mjs` (seed rule, BS.1770 weighting) |
+| superstack | github.com/HarperZ9/superstack (synced with `packages/superstack/`) | MIT | `third_party/superstack/` (see `NOTICE.md` there) | `raw/tools/receipt.hpp`, `app/main.cpp` (receipts); `web/sound/contract.mjs`, `fixtures.mjs`, `meter.mjs` (seed rule, BS.1770 weighting) |
 | XeGTAO | github.com/GameTechDev/XeGTAO, commit `a5b1686c7ea37788eeb3576b5be47f7c03db532c` (2024-04-22), `Source/Rendering/Shaders/XeGTAO.h` and `XeGTAO.hlsli`, plus `LICENSE` | MIT (Copyright 2016-2021 Intel Corporation) | `third_party/xegtao/` (CRLF kept, `-text` in `.gitattributes`) | `bench/ao/shaders/xegtao_bench.hlsl`, `bench/ao/ao_gpu_xe.cpp` (the AO comparison's baseline; never linked into the library) |
 
 superstack is by the same author as raw-native and ships under the same licence. It is listed here because it is versioned and released on its own.
@@ -45,14 +45,14 @@ These were found while writing this manifest and are not resolved here:
 
 ```sha256
 1b9e0dfd2b54dfe3210cb2d985db85b559c3f91233ccdb4750369dbfca7eac0b  third_party/NOTICE-OpenColorIO.md
-1d1cc85b096776d3996d62b06a6eed2304fe756601d9796974818c2fd9b6b9bc  third_party/superstack/LICENSE.txt
-fa72735ac03a0f6a6dbe08c7097530570b7a1be10fedb195daef13ebfbcf6c4b  third_party/superstack/NOTICE.md
-30ddc178fe40be3f9490312fa140fed70cfd5576f7a9dd8c8bd74881ff248096  third_party/superstack/SUPERSTACK.sha256
+f6fe0cac4617d4f144c48a2d3f275f44b8bc43e3c3ba57072ff0ad37f5fe0926  third_party/superstack/LICENSE.txt
+c24f022b64589fa662726ca536aba04bbcdf4bbcfc601db7f82ccb58eeb42645  third_party/superstack/NOTICE.md
+b611de55d4c159674dc13b3c5542b27e7c58fab7cfd40c62e3b0d66864d64f0c  third_party/superstack/SUPERSTACK.sha256
 ff9c7b11c0cc1e6a324fc58e0e91a0a627533538ccfa97e9341a439919261ec9  third_party/superstack/examples/sound/sound.json
-8c553e7db8f89fae128b6d9dac2012a17191c74d14022332a3c395b3a961a3b2  third_party/superstack/examples/sound/sound_exact.mjs
-a0d223c0567c883b73ed74b19d93cb087e213dc14b950ab0f6f04206cb72c590  third_party/superstack/superstack.hpp
-b972095e4eadb007fb892e48027fe6d970328eb2256749e046b296f500208878  third_party/superstack/superstack.mjs
-693400f92d1396a036535bb1bcf057b691a973c3a5f3b1fa365d54fa9c58d8d2  third_party/superstack/tests/run_vectors.cpp
+6b71ead33641140a215e0885fcc4fd5443bdd4338dcd3484fbe857e3ed07ce32  third_party/superstack/examples/sound/sound_exact.mjs
+8bf7374be4f18b4049ec0511a206de37fe7b958b4c0776d3e7cef00b7fff970f  third_party/superstack/superstack.hpp
+5fb56c459bbcdd94fda7cedca23c3b20b6c5241e55d8b1df6b38cd352b40bd3b  third_party/superstack/superstack.mjs
+0f5e2309cf09d9e176e2d5c0ec519a3132693e1f68a7fe87b5f420c2654e6cbe  third_party/superstack/tests/run_vectors.cpp
 a4672aad9c14e0de9733bd6af8462504e91783acf1caaf43640e4fd3abaae4ed  third_party/superstack/vectors/MANIFEST.json
 395112b48140f455f80793e289491dc76333607734099c3995f095312320a8f1  third_party/superstack/vectors/canonical.json
 96fc2e066e9e32af4a76dbfa8c6af7d4fbd73e3378d7ca58433e78f9cc9e3bba  third_party/superstack/vectors/clock.json

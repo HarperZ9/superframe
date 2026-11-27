@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/section: cut a closed mesh with a plane n . x = d. The part on the side n . x > d is removed. The cut
    leaves loops on the plane; each loop is wound counter-clockwise seen from +n when it bounds material and
    clockwise when it bounds a cavity, so the signed shoelace sum is the cut area (tested against analytic

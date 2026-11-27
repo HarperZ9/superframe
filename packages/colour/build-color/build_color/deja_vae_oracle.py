@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Deja-VAE training-free null-space invertibility & 10-step PasteBench drift oracle.
 
 Clean-room implementation of training-free surjective pseudo-invertible wrapping (SPNN):

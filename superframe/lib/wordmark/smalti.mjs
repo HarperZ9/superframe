@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // smalti.mjs: direction 1, many hands. Each letter is laid in glass tesserae, and every tessera takes its colour,

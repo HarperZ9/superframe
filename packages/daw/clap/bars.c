@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 //
 // superframe bars: the DAW's modal bar bank as a CLAP instrument, so it plays inside any CLAP host. This file
 // also holds the bundle's factory, which lists the bars and the piano (piano.c).

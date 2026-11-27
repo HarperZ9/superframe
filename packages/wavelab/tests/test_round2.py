@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for round 2: diffusive equilibrium in the static limit, the modal resonator's linear and
 weak-drive answers, and graph media (symmetry, NARMA alignment), each with a control that must fail."""
 import sys

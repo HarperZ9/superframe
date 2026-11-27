@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Load the circuit simulator into Node; returns D.SIM. The engine's core is loaded for its seeded generator. */
 "use strict";
 const path = require("path");

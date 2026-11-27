@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Lineage: what every build-side output read and did.
 
 The build side may open vault copies directly (copy-derived work: derivative works and

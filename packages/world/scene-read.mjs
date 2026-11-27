@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // scene-read.mjs: what the measure and shape properties take from a scene. Measurement is a weighted read over
 // everything that carries it, so a probe reads a point and a body of water given the property reads itself whole.
 // Shape dimensions what carries it by its second moments, and every dimension carries a tolerance or it is refused,

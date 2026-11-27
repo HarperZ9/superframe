@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // substrate/raster: the raster floor every canvas piece stands on (QUALITY-SPEC.md R1, R2, R4, R5).

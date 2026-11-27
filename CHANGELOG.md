@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-26
+
+- Relicensed all `FSL-1.1-MIT` code in The Playground (`HarperZ9/superframe`, including `native/`, `packages/`, `superframe/`, `creation/`, `sound/`, `substrate/`, `typeface/`, and vendored `superstack`) to the OSI-approved `MIT` License (`Copyright (c) 2026 Zain Dana Harper`). Written documentation in `packages/superstack/LICENSE-TEXT` remains `CC BY 4.0`; `AGPL-3.0-only` packages (`measured`, `materials`, `decompose`, `library/open-archives`) and third-party notices keep their existing licenses.
+
 ## Unreleased
 
 Added:

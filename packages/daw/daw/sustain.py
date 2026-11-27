@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Sustained excitation: a bowed string and a reed on an air column, as waveguides with a nonlinear junction.
 
 Bow (McIntyre, Schumacher and Woodhouse 1983; Smith 1986): the string is two delay lines meeting at the bow,

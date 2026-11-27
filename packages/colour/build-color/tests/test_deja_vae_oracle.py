@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Tests for Deja-VAE null-space back-projection & 10-step PasteBench drift oracle."""
 from __future__ import annotations
 

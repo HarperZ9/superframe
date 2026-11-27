@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // combine(layers, weights): weighted recombination with no law above the layers (BLEED sections 9, 11 and 12).

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Each space writes per-cell speed ratio, wall and edge absorption.
 export const inside = (x, y, a, b, w, h) => x >= a && x < a + w && y >= b && y < b + h;
 export const rooms = {

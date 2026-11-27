@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A view is a shell of HTML plus classic scripts, generated from core ES modules. The modules become classic code by
 // dropping import and export keywords. Modules named in `sealed` go in a function scope and show only the names listed,
 // so a helper such as `d` in units.js never becomes a page global.

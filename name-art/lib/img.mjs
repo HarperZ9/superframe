@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // img.mjs: the float picture every name piece renders into. { w, h, px: Float32Array(w*h*3) } in linear light

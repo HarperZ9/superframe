@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Paired mutations: prove the vectors catch a broken implementation.
 
 For each entry in tests/mutations.json and each language it names, copy the

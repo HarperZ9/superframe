@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // wordmark.mjs: render the six CMMNS wordmark directions (lib/wordmark) to files, in worker threads.

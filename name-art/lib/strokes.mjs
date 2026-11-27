@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // strokes.mjs: the letters as centre lines, for pieces where the technique builds the letter (a tube swept along

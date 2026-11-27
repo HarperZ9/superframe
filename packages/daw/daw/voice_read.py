@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Read a voice back: pitch, a pitch track, vibrato, formants and the harmonics-to-noise ratio.
 
 These are the instruments the voice tests hold the processors to, so each is a standard method with a known

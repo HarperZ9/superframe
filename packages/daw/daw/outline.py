@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Membranes and plates of any outline, by finite differences on a grid.
 
 The outline is a boolean mask over the n x n interior nodes of a grid whose box has side `size` metres, so the

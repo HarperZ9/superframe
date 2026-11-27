@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The short-range half of a P3M force: a direct pair sum inside a cut-off radius.
 
 The Newtonian potential -G m / r is split with a Gaussian of scale r_s (Springel 2005, MNRAS 364, 1105):

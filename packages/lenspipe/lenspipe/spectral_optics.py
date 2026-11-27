@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Physical lens metamer, ITU-R BT.2020/BT.2100 transfer, Draine-HG atmosphere & water caustics.
 
 Clean-room synthesis from:

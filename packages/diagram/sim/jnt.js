@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* The Johnson-noise thermometer as a circuit: built from the instrument's own netlist (cad/instruments/jnt.js),
    so the simulation, the schematic, the board and the fab files share one source. Values are read back from the
    netlist's value strings, the same numbers the schematic prints. What the netlist does not hold is named here and

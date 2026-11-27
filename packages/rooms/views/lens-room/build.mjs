@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Lens Room as a view of core. node packages/rooms/views/lens-room/build.mjs [out.html]; default out/rooms/lens-room.html
 import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";

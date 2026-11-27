@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Demo tests: each cross-layer converter grades as its physics says, against known answers and controls.
    node tests/demos.test.js [--json out.json] [--no-python]   (--no-python skips the room meter bridge) */
 "use strict";

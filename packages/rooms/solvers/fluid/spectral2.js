@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // 2D periodic pseudospectral vorticity solver with 2/3 dealiasing and exact integration of viscosity (IFRK4 or IF
 // SSP RK3, the scheme the GPU view runs). Carries any number of passive dyes. Extras are physical-space hooks:
 //   drive: a body force on vorticity in spectral space, f(q, t) -> [re, im] per unit time (Kolmogorov forcing)

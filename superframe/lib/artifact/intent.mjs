@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // intent.mjs: prose to recipe, the front end a person writes in. The intent is split into clauses (commas,

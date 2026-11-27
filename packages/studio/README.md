@@ -95,4 +95,4 @@ To make the page the studio's front end:
 
 ## Licence
 
-FSL-1.1-MIT, like the rest of the repo. The ported code came from FSL-1.1-MIT sources by the same author; `PROVENANCE.json` in `packages/` lists each file with both sha256 values.
+MIT, like the rest of the repo. The ported code came from MIT sources by the same author; `PROVENANCE.json` in `packages/` lists each file with both sha256 values.

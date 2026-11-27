@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 12 riso: the name as a two-ink stencil print with a spot colour. A gradient field of arcs (bands bending

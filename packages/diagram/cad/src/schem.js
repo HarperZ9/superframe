@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/cad/schem: the netlist drawn as a schematic. Symbols sit where the instrument places them (sheet mm,
    y down, the KiCad schematic convention); nets are routed as orthogonal wires when a one- or two-bend path
    touches nothing it should not, and fall back to net labels when it cannot. Power nets end in power symbols.

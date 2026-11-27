@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Each property in the scene does what its core says, with known answers where the core has one.
 //   node --test packages/world/tests/scene.test.mjs
 import test from "node:test";

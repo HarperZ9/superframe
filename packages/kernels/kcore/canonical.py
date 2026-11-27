@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """canonical-record/1: one byte form for a hashed JSON record, and one digest for a numeric array.
 
 Ported unchanged in logic from the Flywheel reference implementation (harness/canonical_record.py,
-FSL-1.1-MIT, same author, copied 2026-10-31); the command-line entry point was left out. The spec is
+MIT, same author, copied 2026-10-31); the command-line entry point was left out. The spec is
 Flywheel docs/spec/canonical-record.md. The JSON form is RFC 8785 (JCS): keys sorted by UTF-16 code
 unit, no whitespace, strings as raw UTF-8 with the JSON short escapes, numbers in the ECMAScript
 Number-to-String form. Arrays hash as sha256 over the header "cr1-array" 0x00 DTYPE 0x00 SHAPE 0x00 and the items

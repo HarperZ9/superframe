@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Circle packing with unequal sizes: the Apollonian gasket by the Descartes circle theorem.
 
 Four mutually tangent circles with curvatures k_i satisfy (sum k)^2 = 2 sum k^2; with centres z_i

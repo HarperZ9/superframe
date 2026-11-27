@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* The thermometer's whole chain from one model: schematic netlist, then simulation against the spec sheet,
    then the board (place, route, pour, DRC), the board's copper back into the simulation, the fab files with their
    round trips, the Gerbers rendered back against the board view, and the 3D board render.

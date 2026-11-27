@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Band-limited resampling: a Kaiser-windowed sinc run polyphase (scipy's upfirdn core), designed from a spec.
 
 For a rate change fs_in -> fs_out = fs_in L / M, the filter runs at fs_in L. Passband edge 0.4535 of the lower rate

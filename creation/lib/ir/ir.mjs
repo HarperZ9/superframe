@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // ir.mjs: the transpiler's intermediate representation (BLEED section 17). It is refdb.parts/1 (the reference

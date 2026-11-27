@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A periodic packing is a basis matrix B (columns are the lattice vectors) plus a motif.
 
 Density = motif volume / |det B|. Linear maps act by matrix products on B: M @ B shears, rotates

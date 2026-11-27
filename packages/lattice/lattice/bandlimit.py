@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Band-limited fields on a lattice's periodic supercell, sampled and rebuilt exactly.
 
 Set-up. Sampling lattice G (d x d). The domain is the supercell G [0, M)^d, periodic. A field on

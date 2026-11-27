@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { ACC, COMMON } from "./common.js";
 import { sceneCode } from "../scenes.js";
 // Train program: sequential surfaces in a uniform array, one flat loop in each direction, no signed distance function.

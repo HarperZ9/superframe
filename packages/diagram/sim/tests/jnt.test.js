@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* The thermometer's simulated chain against its spec sheet.  node sim/tests/jnt.test.js [--json out.json]
    The spec sheet's numbers are hand-derived in cad/instruments/jnt.js; the simulation is built from the same
    model's netlist. Where the two must differ (finite op-amp gain, relay contact, gain-resistor noise) the test

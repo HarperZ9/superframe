@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Per-layer refinement: denoise, de-bleed against the other stems, resample.
 
 Denoise: the noise level per frequency bin comes from the 10th percentile of the magnitude over time. For a

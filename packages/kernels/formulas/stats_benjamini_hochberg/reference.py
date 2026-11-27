@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """stats.benjamini_hochberg/1: the reference, the known answers, the properties and the planted-bad controls.
 
 Benjamini-Hochberg step-up, given as adjusted p values: sort p ascending (ties keep input order), then from

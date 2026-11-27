@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Spherical-harmonic deformed globes as a registered shape family, r = 1 + c*a*Y(l,m). The GLSL is flat: the Legendre
 // recurrence is written out as statements for the chosen l and m, so no program holds a loop or a table.
 import { registerShape, shape } from "./registry.js";
