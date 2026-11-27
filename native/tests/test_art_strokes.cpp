@@ -21,10 +21,10 @@ constexpr const char* kFamily = "gcc";
 #else
 constexpr const char* kFamily = "other";
 #endif
-struct Pinned { const char* family; std::uint64_t lit, litCodes8, anchor, oil, watercolour; };
-// Recorded 2026-10-22 on GCC 13.3 and MSVC (VS 18); litCodes8 added 2026-11-26; the two agree.
-constexpr Pinned kPinned[] = {{"gcc", 0x8e70a9159d2007bfull, 0xbf2cbc974ff8fcadull, 0x364d778712fdc849ull, 0x3745369e1e2a4c6full, 0x89864af512059e7cull},
-                               {"msvc", 0x8e70a9159d2007bfull, 0xbf2cbc974ff8fcadull, 0x364d778712fdc849ull, 0x3745369e1e2a4c6full, 0x89864af512059e7cull}};
+struct Pinned { const char* family; std::uint64_t lit, litCodes8, paintRef, motion1to0, anchor, oil, watercolour; };
+// Recorded 2026-10-22 on GCC 13.3 and MSVC (VS 18); litCodes8, paintRef, motion1to0 added 2026-11-26; the two agree.
+constexpr Pinned kPinned[] = {{"gcc", 0x8e70a9159d2007bfull, 0xbf2cbc974ff8fcadull, 0x4add0d97495fd95dull, 0x30d7597963cbf119ull, 0x364d778712fdc849ull, 0x3745369e1e2a4c6full, 0x89864af512059e7cull},
+                               {"msvc", 0x8e70a9159d2007bfull, 0xbf2cbc974ff8fcadull, 0x4add0d97495fd95dull, 0x30d7597963cbf119ull, 0x364d778712fdc849ull, 0x3745369e1e2a4c6full, 0x89864af512059e7cull}};
 
 void checkPinned(const char* what, std::uint64_t got, std::uint64_t Pinned::*field) {
     std::printf("w4 %s %s 0x%016llxull\n", kFamily, what, static_cast<unsigned long long>(got));
@@ -76,6 +76,9 @@ int main() {
     checkMetric();
     checkPinned("lit", fnv1a(f.lit), &Pinned::lit);
     checkPinned("litCodes8", fnv1a(codes8(f.lit)), &Pinned::litCodes8);
+    checkPinned("paintRef", fnv1a(paintReference(f.lit, 1.0)), &Pinned::paintRef);
+    const Frame f1 = renderFrame(orbitView(1, 256, 144), art::daylight(), 4);
+    checkPinned("motion1to0", fnv1a(motionTo(f1, v)), &Pinned::motion1to0);
     checkPinned("anchor", fnv1a(anchorCanvas(f, a)), &Pinned::anchor);
     checkPinned("oil", fnv1a(codes8(paintWorld(f, a, style::resolvePaint(style::paintPreset("oil"), f.w, f.h)))), &Pinned::oil);
     checkPinned("watercolour", fnv1a(codes8(paintWorld(f, a, style::resolvePaint(style::paintPreset("watercolour"), f.w, f.h)))), &Pinned::watercolour);

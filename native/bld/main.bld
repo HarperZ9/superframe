@@ -14,6 +14,8 @@ mod art_anchor;
 mod art_town_coc;
 mod art_town_lit;
 mod art_metrics;
+mod art_strokes_ref;
+mod art_tiltshift_defocus;
 mod wave25f_parity;
 
 fn main() ~ Console {
@@ -40,6 +42,16 @@ fn main() ~ Console {
     same = same + kit::report("art metrics, still life, daylight, 256 x 144, 8-bit sRGB codes", art_metrics::still_codes8_hash(0, 256, 144, 0.0), 0xbf2cbc974ff8fcad);
     all = all + 1;
 
+    // tests/test_art_strokes.cpp: paintReference(f.lit, 1.0) at 256 x 144 (plus motionTo 1->0 check)
+    let mut strokes_ok: i32 = kit::report("art strokes ref, still life, 256 x 144, tonemapped 8-bit", art_strokes_ref::paint_reference_hash(0, 256, 144, 0.0), 0x4add0d97495fd95d);
+    if art_strokes_ref::motion_1to0_hash(256, 144) != 0x30d7597963cbf119 { strokes_ok = 0; }
+    same = same + strokes_ok;
+    all = all + 1;
+
+    // tests/test_art_tiltshift.cpp: codes8(paintDefocus(townDusk.lit, coc, 256, 144, {}, Gaussian))
+    same = same + kit::report("art tiltshift defocus, town_map, 256 x 144, 8-bit compose", art_tiltshift_defocus::tiltshift_defocus_codes8_hash(256, 144, 0.0), 0x6d3f8b9acb221e67);
+    all = all + 1;
+
     // Controls: each module must reject a different frame or tiny parameter perturbation.
     let mut control: i32 = 0;
     if art_scene::lit_hash(1, 256, 144) != 0x8e70a9159d2007bf { control = 1; }
@@ -50,6 +62,8 @@ fn main() ~ Console {
     if art_town_coc::coc_hash(256, 144, 0.00001) != 0x2c4cd941314f50b5 { planted = planted + 1; }
     if art_town_lit::town_night_lit_hash(256, 144, 0.0001) != 0x91ee8ea81ab861f0 { planted = planted + 1; }
     if art_metrics::still_codes8_hash(0, 256, 144, 0.005) != 0xbf2cbc974ff8fcad { planted = planted + 1; }
+    if art_strokes_ref::paint_reference_hash(0, 256, 144, 0.005) != 0x4add0d97495fd95d { planted = planted + 1; }
+    if art_tiltshift_defocus::tiltshift_defocus_codes8_hash(256, 144, 0.05) != 0x6d3f8b9acb221e67 { planted = planted + 1; }
     println!("planted controls rejected: {} of {}", planted, all);
 
     let metrics_ok: i32 = art_metrics::metrics_identities_ok();
