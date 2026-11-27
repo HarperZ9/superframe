@@ -1,0 +1,230 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Analytic physical skies and baked environment cubemaps (Preetham daylight, CIE clear sky,
+// CIE overcast sky, Beer-Lambert sun illuminance, cubemap addressing, and solid-angle deposition),
+// ported from src/renderer/sky.cpp and raw/renderer/lighting_cube.hpp.
+// Matches GCC 13.3 and MSVC VS 18 bit for bit.
+
+use kit::V3;
+use kit::v3;
+use kit::dot;
+use kit::norm;
+use kit::absd;
+use kit::clampd;
+use art_prims::maxd;
+
+fn perez(a: f64, b: f64, c: f64, d: f64, e: f64, cos_theta: f64, gamma: f64) -> f64 {
+    let ct: f64 = maxd(cos_theta, 0.01);
+    let cg: f64 = cos(gamma);
+    (1.0 + a * exp(b / ct)) * (1.0 + c * exp(d * gamma) + e * cg * cg)
+}
+
+fn zenith_chroma_x(t: f64, ts: f64) -> f64 {
+    let t2: f64 = t * t;
+    let ts2: f64 = ts * ts;
+    let ts3: f64 = ts2 * ts;
+    let r0: f64 = t2 * (0.00166 * ts3 + (-0.00375) * ts2 + 0.00209 * ts + 0.0);
+    let r1: f64 = t * ((-0.02903) * ts3 + 0.06377 * ts2 + (-0.03202) * ts + 0.00394);
+    let r2: f64 = 1.0 * (0.11693 * ts3 + (-0.21196) * ts2 + 0.06052 * ts + 0.25886);
+    r0 + r1 + r2
+}
+
+fn zenith_chroma_y(t: f64, ts: f64) -> f64 {
+    let t2: f64 = t * t;
+    let ts2: f64 = ts * ts;
+    let ts3: f64 = ts2 * ts;
+    let r0: f64 = t2 * (0.00275 * ts3 + (-0.00610) * ts2 + 0.00317 * ts + 0.0);
+    let r1: f64 = t * ((-0.04214) * ts3 + 0.08970 * ts2 + (-0.04153) * ts + 0.00516);
+    let r2: f64 = 1.0 * (0.15346 * ts3 + (-0.26756) * ts2 + 0.06670 * ts + 0.26688);
+    r0 + r1 + r2
+}
+
+fn xyy_to_rgb(x: f64, y: f64, lum_y: f64) -> V3 {
+    let big_x: f64 = x / y * lum_y;
+    let big_z: f64 = (1.0 - x - y) / y * lum_y;
+    v3(
+        3.2406 * big_x - 1.5372 * lum_y - 0.4986 * big_z,
+        -0.9689 * big_x + 1.8758 * lum_y + 0.0415 * big_z,
+        0.0557 * big_x - 0.2040 * lum_y + 1.0570 * big_z,
+    )
+}
+
+fn preetham_zenith_nits(t: f64, sun_y: f64) -> f64 {
+    let pi: f64 = 3.14159265358979323846;
+    let ts: f64 = acos(clampd(sun_y, 0.0, 1.0));
+    let chi: f64 = (4.0 / 9.0 - t / 120.0) * (pi - 2.0 * ts);
+    1000.0 * ((4.0453 * t - 4.9710) * tan(chi) - 0.2155 * t + 2.4192)
+}
+
+fn preetham_upper(t: f64, sun: V3, d: V3) -> V3 {
+    let ts: f64 = acos(clampd(sun.y, 0.0, 1.0));
+    let g: f64 = acos(clampd(dot(d, norm(sun)), -1.0, 1.0));
+    let yz: f64 = preetham_zenith_nits(t, sun.y);
+    let xz: f64 = zenith_chroma_x(t, ts);
+    let yz_c: f64 = zenith_chroma_y(t, ts);
+
+    let pya: f64 = 0.1787 * t - 1.4630;
+    let pyb: f64 = -0.3554 * t + 0.4275;
+    let pyc: f64 = -0.0227 * t + 5.3251;
+    let pyd: f64 = 0.1206 * t - 2.5771;
+    let pye: f64 = -0.0670 * t + 0.3703;
+
+    let pxa: f64 = -0.0193 * t - 0.2592;
+    let pxb: f64 = -0.0665 * t + 0.0008;
+    let pxc: f64 = -0.0004 * t + 0.2125;
+    let pxd: f64 = -0.0641 * t - 0.8989;
+    let pxe: f64 = -0.0033 * t + 0.0452;
+
+    let pya2: f64 = -0.0167 * t - 0.2608;
+    let pyb2: f64 = -0.0950 * t + 0.0092;
+    let pyc2: f64 = -0.0079 * t + 0.2102;
+    let pyd2: f64 = -0.0441 * t - 1.6537;
+    let pye2: f64 = -0.0109 * t + 0.0529;
+
+    let lum_y: f64 = yz * perez(pya, pyb, pyc, pyd, pye, d.y, g) / perez(pya, pyb, pyc, pyd, pye, 1.0, ts);
+    let cx: f64 = xz * perez(pxa, pxb, pxc, pxd, pxe, d.y, g) / perez(pxa, pxb, pxc, pxd, pxe, 1.0, ts);
+    let cy: f64 = yz_c * perez(pya2, pyb2, pyc2, pyd2, pye2, d.y, g) / perez(pya2, pyb2, pyc2, pyd2, pye2, 1.0, ts);
+    let r: V3 = xyy_to_rgb(cx, cy, lum_y);
+    v3(maxd(r.x, 0.0), maxd(r.y, 0.0), maxd(r.z, 0.0))
+}
+
+fn preetham(t: f64, sun: V3, ground_albedo: f64, dir: V3) -> V3 {
+    let d: V3 = norm(dir);
+    if d.y < 0.0 {
+        let l: f64 = sqrt(d.x * d.x + d.z * d.z);
+        let mut h: V3 = v3(1.0, 0.01, 0.0);
+        if l > 0.000000001 {
+            h = v3(d.x / l, 0.01, d.z / l);
+        }
+        let s: V3 = preetham_upper(t, sun, norm(h));
+        return v3(s.x * ground_albedo, s.y * ground_albedo, s.z * ground_albedo);
+    }
+    preetham_upper(t, sun, d)
+}
+
+fn overcast_sky(zenith_nits: f64, dir: V3, ground_albedo: f64) -> V3 {
+    let d: V3 = norm(dir);
+    let lum: f64 = zenith_nits * (1.0 + 2.0 * maxd(d.y, 0.0)) / 3.0;
+    let mut v: f64 = zenith_nits / 3.0 * ground_albedo;
+    if d.y >= 0.0 { v = lum; }
+    v3(v, v, v)
+}
+
+fn sun_illuminance(t: f64, sun: V3) -> V3 {
+    let m: f64 = 1.0 / maxd(norm(sun).y, 0.05);
+    let tau: f64 = 0.08 + 0.025 * t;
+    v3(1.0e5 * exp(-tau * 0.6 * m), 1.0e5 * exp(-tau * m), 1.0e5 * exp(-tau * 1.8 * m))
+}
+
+fn elev_dir(deg: f64, az: f64) -> V3 {
+    let pi: f64 = 3.14159265358979323846;
+    let a: f64 = deg * pi / 180.0;
+    let b: f64 = az * pi / 180.0;
+    v3(cos(a) * cos(b), sin(a), cos(a) * sin(b))
+}
+
+fn texel_solid_angle(size: i32, u: f64, v: f64) -> f64 {
+    let sc: f64 = 2.0 * u - 1.0;
+    let tc: f64 = 2.0 * v - 1.0;
+    let a: f64 = 2.0 / (size as f64);
+    a * a / pow(1.0 + sc * sc + tc * tc, 1.5)
+}
+
+fn cube_dir_of(f: i32, u: f64, v: f64) -> V3 {
+    let sc: f64 = 2.0 * u - 1.0;
+    let tc: f64 = 2.0 * v - 1.0;
+    let mut d: V3 = v3(-sc, -tc, -1.0);
+    if f == 0 { d = v3(1.0, -tc, -sc); }
+    if f == 1 { d = v3(-1.0, -tc, sc); }
+    if f == 2 { d = v3(sc, 1.0, tc); }
+    if f == 3 { d = v3(sc, -1.0, -tc); }
+    if f == 4 { d = v3(sc, -tc, 1.0); }
+    norm(d)
+}
+
+fn deposit_disk(rgb: &mut Vec<f64>, size: i32, dir: V3, illum: V3) {
+    let d: V3 = norm(dir);
+    let ax: f64 = absd(d.x);
+    let ay: f64 = absd(d.y);
+    let az: f64 = absd(d.z);
+    let mut f: i32 = 5;
+    let mut ma: f64 = az;
+    let mut sc: f64 = -d.x;
+    let mut tc: f64 = -d.y;
+    if ax >= ay && ax >= az {
+        ma = ax;
+        tc = -d.y;
+        if d.x >= 0.0 { f = 0; sc = -d.z; } else { f = 1; sc = d.z; }
+    } else if ay >= az {
+        ma = ay;
+        sc = d.x;
+        if d.y >= 0.0 { f = 2; tc = d.z; } else { f = 3; tc = -d.z; }
+    } else {
+        ma = az;
+        tc = -d.y;
+        if d.z >= 0.0 { f = 4; sc = d.x; } else { f = 5; sc = -d.x; }
+    }
+    let u: f64 = 0.5 * (sc / ma + 1.0);
+    let v: f64 = 0.5 * (tc / ma + 1.0);
+    let mut x: i32 = (u * (size as f64)) as i32;
+    let mut y: i32 = (v * (size as f64)) as i32;
+    if x >= size { x = size - 1; }
+    if y >= size { y = size - 1; }
+    let om: f64 = texel_solid_angle(size, ((x as f64) + 0.5) / (size as f64), ((y as f64) + 0.5) / (size as f64));
+    let idx: usize = (((f * size + y) * size + x) as usize) * 3;
+    rgb[idx] = rgb[idx] + illum.x / om;
+    rgb[idx + 1] = rgb[idx + 1] + illum.y / om;
+    rgb[idx + 2] = rgb[idx + 2] + illum.z / om;
+}
+
+fn bake_env_hash(h0: u64, env_id: i32, size: i32, turb_eps: f64) -> u64 {
+    let mut t: f64 = 2.5 + turb_eps;
+    let mut sun: V3 = elev_dir(70.0, 30.0);
+    if env_id == 1 {
+        t = 4.0 + turb_eps;
+        sun = elev_dir(4.0, 200.0);
+    }
+    let mut rgb: Vec<f64> = Vec::new();
+    let mut f: i32 = 0;
+    while f < 6 {
+        let mut y: i32 = 0;
+        while y < size {
+            let mut x: i32 = 0;
+            while x < size {
+                let d: V3 = cube_dir_of(f, ((x as f64) + 0.5) / (size as f64), ((y as f64) + 0.5) / (size as f64));
+                let mut c: V3 = overcast_sky(8000.0, d, 0.25);
+                if env_id == 0 || env_id == 1 {
+                    c = preetham(t, sun, 0.25, d);
+                }
+                rgb.push(c.x);
+                rgb.push(c.y);
+                rgb.push(c.z);
+                x = x + 1;
+            }
+            y = y + 1;
+        }
+        f = f + 1;
+    }
+    if env_id == 0 || env_id == 1 {
+        deposit_disk(&mut rgb, size, sun, sun_illuminance(t, sun));
+    }
+    let mut hash: u64 = h0;
+    let n: usize = rgb.len();
+    let mut i: usize = 0;
+    while i < n {
+        hash = kit::fnv_f32(hash, rgb[i]);
+        i = i + 1;
+    }
+    hash
+}
+
+// Bakes sky::bake(ClearNoon, 16, 1), GoldenHour, and Overcast and returns the FNV-1a f32 hash.
+// turb_eps is 0.0 for the pinned bake and non-zero for the planted control.
+pub fn sky_cube16_hash(turb_eps: f64) -> u64 {
+    let mut h: u64 = kit::fnv_start();
+    h = bake_env_hash(h, 0, 16, turb_eps);
+    h = bake_env_hash(h, 1, 16, turb_eps);
+    h = bake_env_hash(h, 2, 16, turb_eps);
+    h
+}

@@ -15,7 +15,7 @@ native/bld/target/release/main
 ```
 
 The runner prints one line a module, `same` or `DIFF`, then control lines, cross-engine parity
-invariants, and a count. CI fails unless the count reads `9 of 9` today, and the number grows
+invariants, and a count. CI fails unless the count reads `11 of 11` today, and the number grows
 with each module.
 
 ## Moved so far
@@ -31,6 +31,8 @@ with each module.
 | Half-resolution tilt-shift defocus, rim-guarded weight, and bilinear compose (`unlinedHalf`, `defocusWeight`, `paintDefocus`) | `src/renderer/art_tiltshift_paint.cpp`, `src/renderer/art_scene.cpp` | `art_tiltshift_defocus.bld` | `tests/test_art_tiltshift.cpp`, `codes8(paintDefocus(..., Gaussian))` at 256 x 144, `0x6d3f8b9acb221e67` on GCC and MSVC |
 | Conversation room ray caster, group bounding slabs, burst drop-in animation, and studio key lighting (`SceneKind::Room`) | `src/renderer/art_scene_room.cpp`, `raw/renderer/art_room.hpp` | `art_scene_room.bld` | `tests/test_art_strokes.cpp`, `Room` lit buffer (`t=3.0`) at 256 x 144, `0xc99282210e56cf4a` on GCC and MSVC |
 | P23 lens and print effect stack: quarter-res bright pass, 24-tap halation, 4-axis star, chromatic aberration, cat-eye vignette, and PCG film grain (`fxStack`) | `src/renderer/art_tiltshift_fx.cpp`, `src/renderer/style_image.cpp` | `art_tiltshift_fx.bld` | `tests/test_art_tiltshift.cpp`, `fxStack(night, townNight.lit)` at 256 x 144, `0x593c8ac027015c51` on GCC and MSVC |
+| Analytic physical skies and baked environment cubemaps: Preetham daylight, CIE overcast, Beer-Lambert sun disk deposition (`sky::bake`) | `src/renderer/sky.cpp`, `raw/renderer/lighting_cube.hpp` | `art_sky.bld` | `tests/test_sky.cpp`, 3 analytic environments at 16 x 16 cube faces, `0x4774e06b9efdb90d` on GCC and MSVC |
+| Physically based GGX specular BRDF: Heitz VNDF directional albedo, height-correlated Smith V/G2, Schlick Fresnel, and 64-point Gauss-Legendre quadrature | `src/renderer/brdf.cpp`, `raw/renderer/brdf.hpp` | `art_brdf.bld` | `tests/test_brdf_furnace.cpp`, 16 x 16 VNDF + lobe + GL64 grid, `0xe8d741020e6f146a` on GCC and MSVC |
 
 `wave25f_parity.bld` also links Superframe's 100 Hz latency-faithful simulation mode and Deja-VAE
 10-step Moore-Penrose null-space back-projection invariants directly to compiled BuildLang f64
