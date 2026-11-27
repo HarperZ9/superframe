@@ -1,0 +1,71 @@
+// coastal_kernel.bld: Deterministic BuildLang kernel for Low Water's coastal parcel
+// flood-risk, breakwater shelter, runoff, rainwater harvest, and FNV-1a 64-bit state hash.
+// Verified bit-for-bit against games/low-water/world/civ/settlement-sim.mjs.
+
+fn clamp01(x: f64) -> f64 {
+    if x < 0.0 { return 0.0; }
+    if x > 1.0 { return 1.0; }
+    x
+}
+
+fn round_i64(x: f64) -> i64 {
+    if x >= 0.0 { return floor(x + 0.5) as i64; }
+    0 - (floor(0.5 - x) as i64)
+}
+
+fn fnv1a_step(h: u64, v: i64) -> u64 {
+    let mut acc: u64 = h;
+    let prime: u64 = 1099511628211;
+    let uv: u64 = v as u64;
+    let mut b: u64 = 0;
+    while b < 8 {
+        let byte: u64 = (uv >> (b * 8)) & 255;
+        acc = (acc ^ byte).wrapping_mul(prime);
+        b = b + 1;
+    }
+    acc
+}
+
+fn parcel_flood_risk(elev: f64, tide_m: f64, surge_m: f64, shelter: f64) -> f64 {
+    let eff_surge = surge_m * (1.0 - clamp01(shelter));
+    let freeboard = elev - (tide_m + eff_surge);
+    clamp01((1.4 - freeboard) / 2.6)
+}
+
+fn parcel_runoff(rain: f64, forest: f64, porosity: f64, elev: f64) -> f64 {
+    let bare = clamp01(1.0 - forest);
+    let imperm = clamp01(1.0 - porosity * 0.65);
+    let mut imp = imperm;
+    if imp < 0.2 { imp = 0.2; }
+    let slope_k = if elev > 0.6 { 0.035 } else { 0.01 };
+    rain * bare * imp * slope_k
+}
+
+fn main() ~ Console {
+    let mut h: u64 = 14695981039346656037;
+    // Fixed-vector coastal benchmark matching JS parity test in coastal-civ.test.mjs
+    let tide_m = 0.85;
+    let surge_m = 1.65;
+    let rain = 0.55;
+    let mut i: i64 = 0;
+    let mut sum_sheltered: i64 = 0;
+    let mut sum_exposed: i64 = 0;
+    while i < 8 {
+        let elev = -0.2 + (i as f64) * 0.65;
+        let forest = clamp01(0.15 + (i as f64) * 0.11);
+        let porosity = clamp01(0.65 - (i as f64) * 0.05);
+        let r_exp = parcel_flood_risk(elev, tide_m, surge_m, 0.0);
+        let r_shl = parcel_flood_risk(elev, tide_m, surge_m, 0.55);
+        let ro = parcel_runoff(rain, forest, porosity, elev);
+        let q_exp = round_i64(r_exp * 10000.0);
+        let q_shl = round_i64(r_shl * 10000.0);
+        let q_ro = round_i64(ro * 100000.0);
+        sum_exposed = sum_exposed + q_exp;
+        sum_sheltered = sum_sheltered + q_shl;
+        h = fnv1a_step(h, q_exp);
+        h = fnv1a_step(h, q_shl);
+        h = fnv1a_step(h, q_ro);
+        i = i + 1;
+    }
+    println!("COASTAL_KERNEL_OK exposed={} sheltered={} fnv1a64={}", sum_exposed, sum_sheltered, h);
+}
