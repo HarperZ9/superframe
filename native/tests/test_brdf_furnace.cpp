@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 #include <vector>
 using namespace raw::brdf;
@@ -72,5 +73,27 @@ int main(int argc, char** argv) {
     else std::printf("white furnace: max |albedo - 1| = %.3e at roughness %.2f, mu %.2f; single only at roughness 1 loses up to %.4f; table %.2f s\n",
                      worst, worstR, worstMu, controlAtOne, buildS);
     CHECK(controlAtOne > 0.1);   // the control: without f_ms the furnace fails
+    // BuildLang parity pin (native/bld/art_brdf.bld): 16x16 VNDF albedo + microfacet lobe + 64-pt Gauss-Legendre.
+    auto fnvF32 = [](std::uint64_t h, float v) {
+        std::uint32_t b = 0;
+        std::memcpy(&b, &v, 4);
+        for (int k = 0; k < 4; ++k) { h ^= std::uint64_t((b >> (8 * k)) & 255u); h *= 1099511628211ull; }
+        return h;
+    };
+    std::uint64_t hBrdf = 1469598103934665603ull;
+    for (int kr = 1; kr <= 16; ++kr) {
+        const double r = kr * 0.0625, a = alphaOf(r);
+        for (int km = 1; km <= 16; ++km) {
+            const double mu = km * 0.0625, muI = (17 - km) * 0.0625, muH = 0.5 * (mu + muI);
+            hBrdf = fnvF32(hBrdf, float(albedoVndf(mu, a, 256)));
+            hBrdf = fnvF32(hBrdf, float(ggxD(muH, a) * smithV(mu, muI, a) * schlickF(0.04, muH)));
+        }
+    }
+    std::vector<double> gx64, gw64;
+    gaussLegendre01(64, gx64, gw64);
+    for (int i = 0; i < 64; ++i) { hBrdf = fnvF32(hBrdf, float(gx64[i])); hBrdf = fnvF32(hBrdf, float(gw64[i])); }
+#if defined(_MSC_VER) || (defined(__GNUC__) && !defined(__clang__))
+    CHECK(hBrdf == 0xe8d741020e6f146aull);
+#endif
     return json ? (raw_test_failures() ? 1 : 0) : raw_test_summary();
 }

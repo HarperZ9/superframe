@@ -18,6 +18,8 @@ mod art_strokes_ref;
 mod art_tiltshift_defocus;
 mod art_scene_room;
 mod art_tiltshift_fx;
+mod art_sky;
+mod art_brdf;
 mod wave25f_parity;
 
 fn main() ~ Console {
@@ -62,6 +64,14 @@ fn main() ~ Console {
     same = same + kit::report("art tiltshift fx, night halation + star + vignette + grain, 256 x 144", art_tiltshift_fx::fx_night_lit_hash(256, 144, 0.0), 0x593c8ac027015c51);
     all = all + 1;
 
+    // tests/test_sky.cpp: sky::bake(ClearNoon, GoldenHour, Overcast) at 16 x 16 cubemap faces
+    same = same + kit::report("sky model, Preetham + CIE overcast + sun disk, 3 x 6 x 16 x 16 cube", art_sky::sky_cube16_hash(0.0), 0x4774e06b9efdb90d);
+    all = all + 1;
+
+    // tests/test_brdf_furnace.cpp: GGX-VNDF albedo (16 x 16 x 256) + microfacet lobe + 64-pt Gauss-Legendre
+    same = same + kit::report("brdf specular, GGX-VNDF + Smith + Schlick + Gauss-Legendre 64", art_brdf::brdf_grid_hash(0.0), 0xe8d741020e6f146a);
+    all = all + 1;
+
     // Controls: each module must reject a different frame or tiny parameter perturbation.
     let mut control: i32 = 0;
     if art_scene::lit_hash(1, 256, 144) != 0x8e70a9159d2007bf { control = 1; }
@@ -76,6 +86,8 @@ fn main() ~ Console {
     if art_tiltshift_defocus::tiltshift_defocus_codes8_hash(256, 144, 0.05) != 0x6d3f8b9acb221e67 { planted = planted + 1; }
     if art_scene_room::room_lit_hash(256, 144, 0.05) != 0xc99282210e56cf4a { planted = planted + 1; }
     if art_tiltshift_fx::fx_night_lit_hash(256, 144, 0.01) != 0x593c8ac027015c51 { planted = planted + 1; }
+    if art_sky::sky_cube16_hash(0.01) != 0x4774e06b9efdb90d { planted = planted + 1; }
+    if art_brdf::brdf_grid_hash(0.001) != 0xe8d741020e6f146a { planted = planted + 1; }
     println!("planted controls rejected: {} of {}", planted, all);
 
     let metrics_ok: i32 = art_metrics::metrics_identities_ok();

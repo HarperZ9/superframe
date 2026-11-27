@@ -141,14 +141,16 @@ def test_live_buildlang_native_binary_matches_cpp_and_python_zero_divergence() -
         "0x6d3f8b9acb221e67",
         "0xc99282210e56cf4a",
         "0x593c8ac027015c51",
+        "0x4774e06b9efdb90d",
+        "0xe8d741020e6f146a",
     ):
         assert expected_pin in main_src
     out = _run_native_bld_binary()
     if out is None:
         return
 
-    assert "modules identical to the C++: 9 of 9" in out
-    assert "planted controls rejected: 9 of 9" in out
+    assert "modules identical to the C++: 11 of 11" in out
+    assert "planted controls rejected: 11 of 11" in out
     assert "art metrics identities verified: 1 of 1" in out
     assert "parity invariants verified: 2 of 2" in out
 
@@ -165,3 +167,18 @@ def test_live_buildlang_native_binary_matches_cpp_and_python_zero_divergence() -
     assert abs(float(bld_slow["rmse"]) - PINNED_SIM_SLOW["rmse"]) <= 1e-12
     assert float(bld_deja["max_drift"]) <= 1e-12
     assert abs(float(bld_naive["max_drift"]) - PINNED_DEJA_NAIVE_DRIFT) <= 1e-9
+
+
+def test_funding_json_mit_manifest_and_well_known() -> None:
+    import json
+
+    funding_path = REPO_ROOT / "funding.json"
+    well_known_path = REPO_ROOT / ".well-known" / "funding-manifest-urls"
+    assert funding_path.is_file() and well_known_path.is_file()
+    raw = funding_path.read_text(encoding="utf-8")
+    assert "\u2014" not in raw and "\u2013" not in raw and "FSL" not in raw
+    doc = json.loads(raw)
+    assert doc["version"] == "v1.0.0"
+    assert doc["projects"][0]["licenses"] == ["spdx:MIT"]
+    urls = [u.strip() for u in well_known_path.read_text(encoding="utf-8").splitlines() if u.strip()]
+    assert "https://raw.githubusercontent.com/HarperZ9/superframe/main/funding.json" in urls

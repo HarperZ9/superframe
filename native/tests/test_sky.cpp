@@ -114,5 +114,19 @@ int main() {
         }
     }
     std::printf("k6 lockfile entries checked for %s: %d\n", kFamily, checked);
+    // BuildLang parity pin (native/bld/art_sky.bld): 3 analytic environments at 16 x 16 cube faces, f32 FNV-1a.
+    std::uint64_t hSky = 1469598103934665603ull;
+    for (sky::Env e : {sky::Env::ClearNoon, sky::Env::GoldenHour, sky::Env::Overcast}) {
+        const lighting::Cube c = sky::bake(e, 16, 1);
+        const std::size_t n = c.levelOffset(1);
+        for (std::size_t i = 0; i < n; ++i) {
+            const float v = float(c.rgb[i]);
+            std::uint32_t b = 0;
+            std::memcpy(&b, &v, 4);
+            for (int k = 0; k < 4; ++k) { hSky ^= std::uint64_t((b >> (8 * k)) & 255u); hSky *= 1099511628211ull; }
+        }
+    }
+    std::printf("k7 %s skyCube16 0x%016llxull\n", kFamily, static_cast<unsigned long long>(hSky));
+    if (!std::strcmp(kFamily, "gcc") || !std::strcmp(kFamily, "msvc")) CHECK(hSky == 0x4774e06b9efdb90dull);
     return raw_test_summary();
 }
