@@ -1,0 +1,128 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Wave 59B (G4 / PHY-101): Cantilevered Trunk Euler-Bernoulli Wind-Loading
+// and Root-Plate Anchorage Buckling Solver. Models aerodynamic drag torque
+// 0.5*rho*Cd*A*v^2*h, Euler-Bernoulli tip deflection, adaptive
+// thigmomorphogenetic root thickening against prevailing wind, and critical
+// root-rot anchorage uprooting. Catches negative wind and zero root modulus
+// fail-closed.
+
+struct TreeStability {
+    rc: i64,
+    drag_force_n: f64,
+    wind_torque_nm: f64,
+    tip_deflect_m: f64,
+    root_capacity_nm: f64,
+    safety_factor: f64,
+    uprooted: i64,
+}
+
+fn solve_tree_wind(
+    wind_ms: f64,
+    crown_area_m2: f64,
+    lever_h_m: f64,
+    trunk_r_m: f64,
+    wood_e_pa: f64,
+    root_modulus: f64,
+    thigmo_exposure: f64,
+    rot_frac: f64
+) -> TreeStability {
+    if wind_ms < 0.0 {
+        return TreeStability {
+            rc: -201, drag_force_n: 0.0, wind_torque_nm: 0.0,
+            tip_deflect_m: 0.0, root_capacity_nm: 0.0, safety_factor: 0.0, uprooted: 0,
+        };
+    }
+    if wood_e_pa <= 0.0 || root_modulus <= 0.0 || rot_frac < 0.0 || rot_frac >= 1.0 {
+        return TreeStability {
+            rc: -202, drag_force_n: 0.0, wind_torque_nm: 0.0,
+            tip_deflect_m: 0.0, root_capacity_nm: 0.0, safety_factor: 0.0, uprooted: 0,
+        };
+    }
+
+    let rho_air: f64 = 1.225;
+    let cd: f64 = 0.65;
+    let force: f64 = 0.5 * rho_air * cd * crown_area_m2 * wind_ms * wind_ms;
+    let torque: f64 = force * lever_h_m;
+
+    // Circular trunk second moment of area I = pi * r^4 / 4
+    let pi: f64 = 3.141592653589793;
+    let r4: f64 = trunk_r_m * trunk_r_m * trunk_r_m * trunk_r_m;
+    let inertia: f64 = 0.25 * pi * r4;
+    let deflect: f64 = (force * lever_h_m * lever_h_m * lever_h_m) / (3.0 * wood_e_pa * inertia);
+
+    // Thigmomorphogenesis increases root anchorage; root rot degrades intact section ^(3/2)
+    let adapt_factor: f64 = 1.0 + 0.35 * thigmo_exposure;
+    let intact: f64 = 1.0 - rot_frac;
+    let rot_factor: f64 = intact * intact.sqrt();
+    let root_cap: f64 = root_modulus * adapt_factor * rot_factor;
+    let sf: f64 = if torque > 1e-9 { root_cap / torque } else { 999.0 };
+    let uproot: i64 = if sf < 1.0 { 1 } else { 0 };
+
+    return TreeStability {
+        rc: 0, drag_force_n: force, wind_torque_nm: torque,
+        tip_deflect_m: deflect, root_capacity_nm: root_cap,
+        safety_factor: sf, uprooted: uproot,
+    };
+}
+
+fn main() -> i64 ~ Console {
+    // 25 m/s coastal storm, 18 m^2 crown, 12 m lever height, 0.28 m radius, 10 GPa wood
+    let v_storm: f64 = 25.0;
+    let area: f64 = 18.0;
+    let h: f64 = 12.0;
+    let r: f64 = 0.28;
+    let e_wood: f64 = 1.0e10;
+    let root_base: f64 = 62000.0;
+
+    // Case 1: Sheltered healthy tree (thigmo=0.0, rot=0.0)
+    let sheltered: TreeStability = solve_tree_wind(v_storm, area, h, r, e_wood, root_base, 0.0, 0.0);
+    // Case 2: Wind-adapted healthy tree (thigmo=1.0, rot=0.0)
+    let adapted: TreeStability = solve_tree_wind(v_storm, area, h, r, e_wood, root_base, 1.0, 0.0);
+    // Case 3: Root-rotted tree (thigmo=0.0, 45% root cross-section loss) -> uproots!
+    let rotted: TreeStability = solve_tree_wind(v_storm, area, h, r, e_wood, root_base, 0.0, 0.45);
+
+    // Planted controls: negative wind (-201) and zero root modulus (-202)
+    let bad_wind: TreeStability = solve_tree_wind(-10.0, area, h, r, e_wood, root_base, 0.0, 0.0);
+    let bad_mod: TreeStability = solve_tree_wind(v_storm, area, h, r, e_wood, 0.0, 0.0, 0.0);
+
+    println!(
+        "SHELTERED torque={:.1} deflect={:.4} cap={:.1} sf={:.4} uproot={}",
+        sheltered.wind_torque_nm, sheltered.tip_deflect_m,
+        sheltered.root_capacity_nm, sheltered.safety_factor, sheltered.uprooted
+    );
+    println!(
+        "ADAPTED   torque={:.1} deflect={:.4} cap={:.1} sf={:.4} uproot={}",
+        adapted.wind_torque_nm, adapted.tip_deflect_m,
+        adapted.root_capacity_nm, adapted.safety_factor, adapted.uprooted
+    );
+    println!(
+        "ROTTED45  torque={:.1} deflect={:.4} cap={:.1} sf={:.4} uproot={}",
+        rotted.wind_torque_nm, rotted.tip_deflect_m,
+        rotted.root_capacity_nm, rotted.safety_factor, rotted.uprooted
+    );
+    println!(
+        "PLANTED_CONTROLS bad_wind_rc={} bad_mod_rc={}",
+        bad_wind.rc, bad_mod.rc
+    );
+
+    let phys_ok: i64 = if adapted.safety_factor > sheltered.safety_factor
+        && sheltered.uprooted == 0 && adapted.uprooted == 0 && rotted.uprooted == 1 {
+        1
+    } else {
+        0
+    };
+    let planted_ok: i64 = if bad_wind.rc == -201 && bad_mod.rc == -202 { 1 } else { 0 };
+
+    if sheltered.rc == 0 && adapted.rc == 0 && rotted.rc == 0
+        && phys_ok == 1 && planted_ok == 1 {
+        println!(
+            "[PASS] G4_TREE_WIND_ROT sf_adapt={:.4} sf_rot={:.4} deflect={:.4} planted=2/2",
+            adapted.safety_factor, rotted.safety_factor, sheltered.tip_deflect_m
+        );
+        return 0;
+    }
+    println!("[FAIL] G4_TREE_WIND_ROT");
+    return 1;
+}

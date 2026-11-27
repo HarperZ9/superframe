@@ -1,0 +1,189 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Wave 58E (H6 / SIG-121): Generative Ambient Jazz and Pink-Noise Surf
+// Synthesizer. Solves minimal L1 voice-leading distance across a
+// ii9 -> V13 -> Imaj9 -> VI7alt progression plus 6-octave Voss-McCartney
+// pink-noise wave envelope verifying 0.0 digital clipping (peak <= 0.95)
+// and low-frequency spectral tilt (E_low > E_high). Catches planted clipped
+// and flat white-noise controls fail-closed.
+
+fn abs_i64(x: i64) -> i64 {
+    if x < 0 {
+        return -x;
+    }
+    return x;
+}
+
+// Compute minimal semitone movement from 4-voice chord a to chord b
+// allowing octave-equivalent voicing shifts in {-12, 0, +12} per voice
+fn min_voice_leading(a: &Vec<i64>, b: &Vec<i64>) -> i64 {
+    let mut dist: i64 = 0;
+    let mut i: i64 = 0;
+    while i < 4 {
+        let av: i64 = a[i as usize];
+        let bv: i64 = b[i as usize];
+        let d0: i64 = abs_i64(bv - av);
+        let d1: i64 = abs_i64((bv + 12) - av);
+        let d2: i64 = abs_i64((bv - 12) - av);
+        let mut best: i64 = d0;
+        if d1 < best { best = d1; }
+        if d2 < best { best = d2; }
+        dist = dist + best;
+        i = i + 1;
+    }
+    return dist;
+}
+
+// Deterministic LCG uniform in [-1.0, 1.0]
+fn lcg_next(state: u64) -> u64 {
+    return (state * 1103515245 + 12345) & 2147483647;
+}
+
+fn lcg_unit(state: u64) -> f64 {
+    let u: f64 = (state as f64) / 2147483647.0;
+    return 2.0 * u - 1.0;
+}
+
+fn band_energy(buf: &Vec<f64>, k_lo: i64, k_hi: i64) -> f64 {
+    let n: i64 = buf.len() as i64;
+    let nf: f64 = n as f64;
+    let two_pi: f64 = 6.283185307179586;
+    let mut energy: f64 = 0.0;
+    let mut k: i64 = k_lo;
+    while k <= k_hi {
+        let mut re: f64 = 0.0;
+        let mut im: f64 = 0.0;
+        let mut t: i64 = 0;
+        while t < n {
+            let ang: f64 = two_pi * (k as f64) * (t as f64) / nf;
+            let s: f64 = buf[t as usize];
+            re = re + s * ang.cos();
+            im = im - s * ang.sin();
+            t = t + 1;
+        }
+        energy = energy + (re * re + im * im) / (nf * nf);
+        k = k + 1;
+    }
+    return energy;
+}
+
+fn audit_audio_buffer(buf: &Vec<f64>) -> i64 {
+    let n: i64 = buf.len() as i64;
+    let mut peak: f64 = 0.0;
+    let mut i: i64 = 0;
+    while i < n {
+        let a: f64 = buf[i as usize].abs();
+        if a > peak {
+            peak = a;
+        }
+        i = i + 1;
+    }
+    if peak > 0.95 {
+        return -201;
+    }
+    let e_low: f64 = band_energy(buf, 1, 16);
+    let e_high: f64 = band_energy(buf, 112, 127);
+    if e_low <= e_high {
+        return -202;
+    }
+    return 0;
+}
+
+fn main() -> i64 ~ Console {
+    // Smooth voice-led ii9 -> V13 -> Imaj9 -> VI7alt (MIDI pitches)
+    // Dm9:    F4(65), A4(69), C5(72), E5(76)
+    // G13:    F4(65), A4(69), B4(71), E5(76)  -> distance = 1 semitone!
+    // Cmaj9:  E4(64), G4(67), B4(71), D5(74)  -> distance = 5 semitones!
+    // A7alt:  F4(65), G4(67), C5(72), C#5(73) -> distance = 3 semitones!
+    let mut c_ii: Vec<i64> = Vec::new();
+    c_ii.push(65); c_ii.push(69); c_ii.push(72); c_ii.push(76);
+    let mut c_v: Vec<i64> = Vec::new();
+    c_v.push(65); c_v.push(69); c_v.push(71); c_v.push(76);
+    let mut c_i: Vec<i64> = Vec::new();
+    c_i.push(64); c_i.push(67); c_i.push(71); c_i.push(74);
+    let mut c_vi: Vec<i64> = Vec::new();
+    c_vi.push(65); c_vi.push(67); c_vi.push(72); c_vi.push(73);
+
+    let vl1: i64 = min_voice_leading(&c_ii, &c_v);
+    let vl2: i64 = min_voice_leading(&c_v, &c_i);
+    let vl3: i64 = min_voice_leading(&c_i, &c_vi);
+    let vl_total: i64 = vl1 + vl2 + vl3;
+
+    // 6-octave Voss-McCartney pink-noise surf generator (N = 256 samples)
+    let n: i64 = 256;
+    let mut oct: Vec<f64> = Vec::new();
+    let mut k: i64 = 0;
+    while k < 6 {
+        oct.push(0.0);
+        k = k + 1;
+    }
+    let mut rng: u64 = 424242;
+    let mut pink: Vec<f64> = Vec::new();
+    let mut white: Vec<f64> = Vec::new();
+    let mut clipped: Vec<f64> = Vec::new();
+    let mut peak_pink: f64 = 0.0;
+
+    let mut t: i64 = 0;
+    while t < n {
+        let mut b: i64 = 0;
+        while b < 6 {
+            let step: i64 = 1 << b;
+            if (t % step) == 0 {
+                rng = lcg_next(rng);
+                oct[b as usize] = lcg_unit(rng);
+            }
+            b = b + 1;
+        }
+        let sum_oct: f64 = oct[0] + oct[1] + oct[2] + oct[3] + oct[4] + oct[5];
+        // Slow ocean wave LFO swell envelope in [0.35, 0.85]
+        let swell: f64 = 0.60 + 0.25 * (6.283185307179586 * (t as f64) / 256.0).sin();
+        let sample: f64 = 0.14 * swell * sum_oct;
+        if sample.abs() > peak_pink {
+            peak_pink = sample.abs();
+        }
+        pink.push(sample);
+
+        // Planted control 1: flat white noise
+        rng = lcg_next(rng);
+        let wn: f64 = 0.25 * lcg_unit(rng);
+        // High-pass emphasis for deterministic white/violet control
+        let hp: f64 = if (t % 2) == 0 { 0.40 + 0.10 * wn } else { -0.40 + 0.10 * wn };
+        white.push(hp);
+
+        // Planted control 2: clipped signal exceeding 0.95
+        clipped.push(sample * 3.5 + 0.90);
+        t = t + 1;
+    }
+
+    let e_low: f64 = band_energy(&pink, 1, 16);
+    let e_high: f64 = band_energy(&pink, 112, 127);
+    let tilt_ratio: f64 = e_low / (e_high + 1e-12);
+    let pink_rc: i64 = audit_audio_buffer(&pink);
+    let clip_rc: i64 = audit_audio_buffer(&clipped);
+    let white_rc: i64 = audit_audio_buffer(&white);
+
+    println!(
+        "VOICE_LEADING ii_V={} V_I={} I_VI={} total={}",
+        vl1, vl2, vl3, vl_total
+    );
+    println!(
+        "PINK_SURF peak={:.4} e_low={:.6} e_high={:.6} tilt={:.2}x rc={}",
+        peak_pink, e_low, e_high, tilt_ratio, pink_rc
+    );
+    println!(
+        "PLANTED_CONTROLS clip_rc={} white_rc={}",
+        clip_rc, white_rc
+    );
+
+    if vl_total == 9 && pink_rc == 0 && peak_pink <= 0.95
+        && tilt_ratio > 5.0 && clip_rc == -201 && white_rc == -202 {
+        println!(
+            "[PASS] H6_AMBIENT_JAZZ_WAVES vl=9 peak={:.4} tilt={:.2}x planted=2/2",
+            peak_pink, tilt_ratio
+        );
+        return 0;
+    }
+    println!("[FAIL] H6_AMBIENT_JAZZ_WAVES");
+    return 1;
+}

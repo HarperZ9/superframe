@@ -85,7 +85,7 @@ jobs:
           NATIVE_BLD_REQUIRE: '1'
           CROSS_API_REQUIRE_NATIVE: '1'
           BUILDC: buildc
-      - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/world/tests/test_wave82h_engine_batch3.py
+      - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/world/tests/test_wave82h_engine_batch3.py packages/world/tests/test_wave85b_engine_batch4.py
         env:
           NATIVE_BLD_REQUIRE: '1'
           BUILDC: buildc
