@@ -1,0 +1,515 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe native/bld Module #19: 12-Bin SAH Triangle BVH Builder, Ize 2013 Robust Slab
+// Traversal (closest/occluded), Woop-Benthin-Wald 2013 Watertight Ray-Triangle Intersection,
+// GPU Buffer Flattening, Max Traversal Stack Depth, and Binned SAH Cost.
+// Bit-exact 0 ULP port of native/src/renderer/bvh.cpp and rt_bvh_sah.cpp.
+
+
+pub struct B3 { x: f32, y: f32, z: f32 }
+pub struct Tri3 { a: B3, b: B3, c: B3 }
+pub struct Ray3 { o: B3, d: B3 }
+pub struct Aabb3 { mn: B3, mx: B3 }
+pub struct BvhHit { hit: bool, t: f32, u: f32, v: f32, tri: i32 }
+pub struct BvhNode { box_: Aabb3, first: i32, count: i32, right: i32 }
+pub struct BvhTree { tris: Vec<Tri3>, nodes: Vec<BvhNode>, index: Vec<i32> }
+
+pub fn b3(x: f32, y: f32, z: f32) -> B3 { B3 { x: x, y: y, z: z } }
+fn b3_add(a: B3, b: B3) -> B3 { b3(a.x + b.x, a.y + b.y, a.z + b.z) }
+fn b3_sub(a: B3, b: B3) -> B3 { b3(a.x - b.x, a.y - b.y, a.z - b.z) }
+fn b3_mul(a: B3, s: f32) -> B3 { b3(a.x * s, a.y * s, a.z * s) }
+fn b3_dot(a: B3, b: B3) -> f32 { a.x * b.x + a.y * b.y + a.z * b.z }
+fn b3_cross(a: B3, b: B3) -> B3 {
+    b3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
+}
+fn b3_norm(v: B3) -> B3 {
+    let l: f32 = sqrt(b3_dot(v, v) as f64) as f32;
+    if l > (0.0 as f32) { b3_mul(v, (1.0 as f32) / l) } else { v }
+}
+fn m19_absf(x: f32) -> f32 { if x < (0.0 as f32) { -x } else { x } }
+// Exact C++ std::min / std::max evaluation order
+fn m19_minf(a: f32, b: f32) -> f32 { if b < a { b } else { a } }
+fn m19_maxf(a: f32, b: f32) -> f32 { if a < b { b } else { a } }
+fn m19_mini(a: i32, b: i32) -> i32 { if b < a { b } else { a } }
+fn m19_maxi(a: i32, b: i32) -> i32 { if a < b { b } else { a } }
+fn axis3(v: B3, k: i32) -> f32 { if k == 0 { v.x } else if k == 1 { v.y } else { v.z } }
+
+fn aabb_empty() -> Aabb3 {
+    Aabb3 {
+        mn: b3(1.0e30 as f32, 1.0e30 as f32, 1.0e30 as f32),
+        mx: b3(-1.0e30 as f32, -1.0e30 as f32, -1.0e30 as f32),
+    }
+}
+fn aabb_grow(b: Aabb3, p: B3) -> Aabb3 {
+    Aabb3 {
+        mn: b3(m19_minf(b.mn.x, p.x), m19_minf(b.mn.y, p.y), m19_minf(b.mn.z, p.z)),
+        mx: b3(m19_maxf(b.mx.x, p.x), m19_maxf(b.mx.y, p.y), m19_maxf(b.mx.z, p.z)),
+    }
+}
+fn aabb_unite(a: Aabb3, b: Aabb3) -> Aabb3 { aabb_grow(aabb_grow(a, b.mn), b.mx) }
+fn aabb_area(b: Aabb3) -> f32 {
+    let d: B3 = b3_sub(b.mx, b.mn);
+    if d.x < (0.0 as f32) {
+        0.0 as f32
+    } else {
+        (2.0 as f32) * (d.x * d.y + d.y * d.z + d.z * d.x)
+    }
+}
+
+fn m19_watertight_frame(v: B3, kz: i32, swap: bool) -> B3 {
+    let p: B3 = if kz == 0 {
+        b3(v.y, v.z, v.x)
+    } else if kz == 1 {
+        b3(v.z, v.x, v.y)
+    } else {
+        v
+    };
+    if swap { b3(p.y, p.x, p.z) } else { p }
+}
+
+pub fn m19_intersect_tri(r: Ray3, tri: Tri3) -> (bool, f32, f32, f32) {
+    let ax: f32 = m19_absf(r.d.x);
+    let ay: f32 = m19_absf(r.d.y);
+    let az: f32 = m19_absf(r.d.z);
+    let kz: i32 = if ax > ay { if ax > az { 0 } else { 2 } } else if ay > az { 1 } else { 2 };
+    let mut d: B3 = m19_watertight_frame(r.d, kz, false);
+    let sw: bool = d.z < (0.0 as f32);
+    if sw { d = b3(d.y, d.x, d.z); }
+    let sx: f32 = d.x / d.z;
+    let sy: f32 = d.y / d.z;
+    let sz: f32 = (1.0 as f32) / d.z;
+    let va: B3 = m19_watertight_frame(b3_sub(tri.a, r.o), kz, sw);
+    let vb: B3 = m19_watertight_frame(b3_sub(tri.b, r.o), kz, sw);
+    let vc: B3 = m19_watertight_frame(b3_sub(tri.c, r.o), kz, sw);
+    let pax: f32 = va.x - sx * va.z;
+    let pay: f32 = va.y - sy * va.z;
+    let pbx: f32 = vb.x - sx * vb.z;
+    let pby: f32 = vb.y - sy * vb.z;
+    let pcx: f32 = vc.x - sx * vc.z;
+    let pcy: f32 = vc.y - sy * vc.z;
+    let eu: f32 = pcx * pby - pcy * pbx;
+    let ev: f32 = pax * pcy - pay * pcx;
+    let ew: f32 = pbx * pay - pby * pax;
+    let neg: bool = eu < (0.0 as f32) || ev < (0.0 as f32) || ew < (0.0 as f32);
+    let pos: bool = eu > (0.0 as f32) || ev > (0.0 as f32) || ew > (0.0 as f32);
+    if neg && pos { return (false, 0.0 as f32, 0.0 as f32, 0.0 as f32); }
+    let det: f32 = eu + ev + ew;
+    if det == (0.0 as f32) { return (false, 0.0 as f32, 0.0 as f32, 0.0 as f32); }
+    let e1: B3 = b3_sub(tri.b, tri.a);
+    let e2: B3 = b3_sub(tri.c, tri.a);
+    let pv: B3 = b3_cross(r.d, e2);
+    let dm: f32 = b3_dot(e1, pv);
+    if dm > (-1.0e-7 as f32) && dm < (1.0e-7 as f32) {
+        let tt: f32 = eu * (sz * va.z) + ev * (sz * vb.z) + ew * (sz * vc.z);
+        let inv: f32 = (1.0 as f32) / det;
+        let t: f32 = tt * inv;
+        return (t > (1.0e-4 as f32), t, ev * inv, ew * inv);
+    }
+    let inv: f32 = (1.0 as f32) / dm;
+    let tv: B3 = b3_sub(r.o, tri.a);
+    let qv: B3 = b3_cross(tv, e1);
+    let mut u: f32 = m19_maxf(0.0 as f32, b3_dot(tv, pv) * inv);
+    let mut v: f32 = m19_maxf(0.0 as f32, b3_dot(r.d, qv) * inv);
+    let t: f32 = b3_dot(e2, qv) * inv;
+    let s: f32 = u + v;
+    if s > (1.0 as f32) { u = u / s; v = v / s; }
+    (t > (1.0e-4 as f32), t, u, v)
+}
+
+fn inv_ray(d: B3) -> B3 {
+    let one: f32 = 1.0 as f32;
+    b3(one / d.x, one / d.y, one / d.z)
+}
+
+fn m19_slab_hit(b: Aabb3, o: B3, inv: B3, t_max: f32) -> bool {
+    let mut t0: f32 = 0.0 as f32;
+    let mut t1: f32 = t_max;
+    let mut k: i32 = 0;
+    while k < 3 {
+        let ik: f32 = axis3(inv, k);
+        let a: f32 = (axis3(b.mn, k) - axis3(o, k)) * ik;
+        let c: f32 = (axis3(b.mx, k) - axis3(o, k)) * ik;
+        t0 = m19_maxf(t0, m19_minf(a, c));
+        t1 = m19_minf(t1, m19_maxf(a, c));
+        k = k + 1;
+    }
+    t0 <= t1 * (1.0000008 as f32)
+}
+
+fn split_node(
+    ni: i32,
+    tris: &Vec<Tri3>,
+    nodes: &mut Vec<BvhNode>,
+    order: &mut Vec<i32>,
+    centres: &Vec<B3>,
+) {
+    let first: i32 = nodes[ni].first;
+    let count: i32 = nodes[ni].count;
+    let mut box_: Aabb3 = aabb_empty();
+    let mut cb: Aabb3 = aabb_empty();
+    let mut i: i32 = first;
+    while i < first + count {
+        let oi: i32 = order[i];
+        let tr: Tri3 = tris[oi];
+        box_ = aabb_grow(aabb_grow(aabb_grow(box_, tr.a), tr.b), tr.c);
+        cb = aabb_grow(cb, centres[oi]);
+        i = i + 1;
+    }
+    nodes[ni].box_ = box_;
+    if count <= 4 { return; }
+
+    let mut best_axis: i32 = -1;
+    let mut best_bin: i32 = 0;
+    let mut best_cost: f32 = aabb_area(box_) * (count as f32);
+    let mut k: i32 = 0;
+    while k < 3 {
+        let lo: f32 = axis3(cb.mn, k);
+        let ext: f32 = axis3(cb.mx, k) - lo;
+        if ext > (0.0 as f32) {
+            let mut bb: Vec<Aabb3> = Vec::new();
+            let mut cnt: Vec<i32> = Vec::new();
+            let mut bi: i32 = 0;
+            while bi < 12 { bb.push(aabb_empty()); cnt.push(0); bi = bi + 1; }
+            i = first;
+            while i < first + count {
+                let oi: i32 = order[i];
+                let raw_b: i32 = (((axis3(centres[oi], k) - lo) / ext) * (12.0 as f32)) as i32;
+                let b: i32 = m19_mini(11, raw_b);
+                let tr: Tri3 = tris[oi];
+                bb[b] = aabb_grow(aabb_grow(aabb_grow(bb[b], tr.a), tr.b), tr.c);
+                cnt[b] = cnt[b] + 1;
+                i = i + 1;
+            }
+            let mut s: i32 = 1;
+            while s < 12 {
+                let mut lb: Aabb3 = aabb_empty();
+                let mut rb: Aabb3 = aabb_empty();
+                let mut cl: i32 = 0;
+                let mut cr: i32 = 0;
+                bi = 0;
+                while bi < s {
+                    if cnt[bi] != 0 { lb = aabb_unite(lb, bb[bi]); cl = cl + cnt[bi]; }
+                    bi = bi + 1;
+                }
+                bi = s;
+                while bi < 12 {
+                    if cnt[bi] != 0 { rb = aabb_unite(rb, bb[bi]); cr = cr + cnt[bi]; }
+                    bi = bi + 1;
+                }
+                if cl != 0 && cr != 0 {
+                    let cost: f32 = aabb_area(lb) * (cl as f32) + aabb_area(rb) * (cr as f32);
+                    if cost < best_cost { best_cost = cost; best_axis = k; best_bin = s; }
+                }
+                s = s + 1;
+            }
+        }
+        k = k + 1;
+    }
+    if best_axis < 0 { return; }
+
+    let lo: f32 = axis3(cb.mn, best_axis);
+    let ext: f32 = axis3(cb.mx, best_axis) - lo;
+    let mut left_part: Vec<i32> = Vec::new();
+    let mut right_part: Vec<i32> = Vec::new();
+    i = first;
+    while i < first + count {
+        let oi: i32 = order[i];
+        let raw_b: i32 = (((axis3(centres[oi], best_axis) - lo) / ext) * (12.0 as f32)) as i32;
+        let b: i32 = m19_mini(11, raw_b);
+        if b < best_bin { left_part.push(oi); } else { right_part.push(oi); }
+        i = i + 1;
+    }
+    let left_count: i32 = left_part.len() as i32;
+    let mut wi: i32 = 0;
+    while wi < left_count { order[first + wi] = left_part[wi]; wi = wi + 1; }
+    let right_count: i32 = right_part.len() as i32;
+    wi = 0;
+    while wi < right_count { order[first + left_count + wi] = right_part[wi]; wi = wi + 1; }
+
+    let left_idx: i32 = nodes.len() as i32;
+    nodes.push(BvhNode { box_: aabb_empty(), first: first, count: left_count, right: 0 });
+    nodes.push(BvhNode { box_: aabb_empty(), first: first + left_count, count: count - left_count, right: 0 });
+    nodes[ni].count = 0;
+    nodes[ni].first = left_idx;
+    nodes[ni].right = left_idx + 1;
+    split_node(left_idx, tris, nodes, order, centres);
+    split_node(left_idx + 1, tris, nodes, order, centres);
+}
+
+pub fn build_bvh(tris_in: Vec<Tri3>) -> BvhTree {
+    let n: i32 = tris_in.len() as i32;
+    let mut order: Vec<i32> = Vec::new();
+    let mut centres: Vec<B3> = Vec::new();
+    let third: f32 = (1.0 as f32) / (3.0 as f32);
+    let mut i: i32 = 0;
+    while i < n {
+        order.push(i);
+        let tr: Tri3 = tris_in[i];
+        centres.push(b3_mul(b3_add(b3_add(tr.a, tr.b), tr.c), third));
+        i = i + 1;
+    }
+    let mut nodes: Vec<BvhNode> = Vec::new();
+    nodes.push(BvhNode { box_: aabb_empty(), first: 0, count: n, right: 0 });
+    if n > 0 { split_node(0, &tris_in, &mut nodes, &mut order, &centres); }
+    let mut sorted: Vec<Tri3> = Vec::new();
+    i = 0;
+    while i < n { sorted.push(tris_in[order[i]]); i = i + 1; }
+    BvhTree { tris: sorted, nodes: nodes, index: order }
+}
+
+pub fn bvh_closest(tree: &BvhTree, r: Ray3, t_max: f32) -> BvhHit {
+    if tree.nodes.len() == 0 || tree.tris.len() == 0 {
+        return BvhHit { hit: false, t: 0.0 as f32, u: 0.0 as f32, v: 0.0 as f32, tri: -1 };
+    }
+    let inv: B3 = inv_ray(r.d);
+    let mut stack: Vec<i32> = Vec::new();
+    let mut si: i32 = 0;
+    while si < 128 { stack.push(0); si = si + 1; }
+    let mut sp: i32 = 1;
+    let mut any: bool = false;
+    let mut best: f32 = t_max;
+    let mut hit_u: f32 = 0.0 as f32;
+    let mut hit_v: f32 = 0.0 as f32;
+    let mut hit_tri: i32 = -1;
+    while sp > 0 {
+        sp = sp - 1;
+        let n: BvhNode = tree.nodes[stack[sp]];
+        if !m19_slab_hit(n.box_, r.o, inv, best) { continue; }
+        if n.count != 0 {
+            let mut i: i32 = n.first;
+            while i < n.first + n.count {
+                let (ok, t, u, v) = m19_intersect_tri(r, tree.tris[i]);
+                if ok {
+                    let id: i32 = tree.index[i];
+                    if t < best || (any && t == best && id < hit_tri) {
+                        best = t; hit_u = u; hit_v = v; hit_tri = id; any = true;
+                    }
+                }
+                i = i + 1;
+            }
+        } else {
+            stack[sp] = n.right; sp = sp + 1;
+            stack[sp] = n.first; sp = sp + 1;
+        }
+    }
+    BvhHit { hit: any, t: best, u: hit_u, v: hit_v, tri: hit_tri }
+}
+
+pub fn bvh_occluded(tree: &BvhTree, r: Ray3, t_max: f32) -> bool {
+    if tree.nodes.len() == 0 || tree.tris.len() == 0 { return false; }
+    let inv: B3 = inv_ray(r.d);
+    let mut stack: Vec<i32> = Vec::new();
+    let mut si: i32 = 0;
+    while si < 128 { stack.push(0); si = si + 1; }
+    let mut sp: i32 = 1;
+    while sp > 0 {
+        sp = sp - 1;
+        let n: BvhNode = tree.nodes[stack[sp]];
+        if !m19_slab_hit(n.box_, r.o, inv, t_max) { continue; }
+        if n.count != 0 {
+            let mut i: i32 = n.first;
+            while i < n.first + n.count {
+                let (ok, t, _u, _v) = m19_intersect_tri(r, tree.tris[i]);
+                if ok && t < t_max { return true; }
+                i = i + 1;
+            }
+        } else {
+            stack[sp] = n.right; sp = sp + 1;
+            stack[sp] = n.first; sp = sp + 1;
+        }
+    }
+    false
+}
+
+pub fn bvh_max_stack(tree: &BvhTree) -> i32 {
+    let nn: i32 = tree.nodes.len() as i32;
+    if nn == 0 { return 0; }
+    let mut need: Vec<i32> = Vec::new();
+    let mut i: i32 = 0;
+    while i < nn { need.push(0); i = i + 1; }
+    i = nn - 1;
+    while i >= 0 {
+        let n: BvhNode = tree.nodes[i];
+        if n.count == 0 {
+            need[i] = m19_maxi(2, m19_maxi(1 + need[n.first], need[n.right]));
+        }
+        i = i - 1;
+    }
+    m19_maxi(1, need[0])
+}
+
+pub fn bvh_sah_cost(tree: &BvhTree) -> (f64, i32) {
+    let nn: i32 = tree.nodes.len() as i32;
+    if nn == 0 { return (0.0, 0); }
+    let root_area: f64 = aabb_area(tree.nodes[0].box_) as f64;
+    let mut cost: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < nn {
+        let n: BvhNode = tree.nodes[i];
+        let ar: f64 = aabb_area(n.box_) as f64;
+        if n.count != 0 {
+            cost = cost + ar * (n.count as f64) / root_area;
+        } else {
+            cost = cost + ar / root_area;
+        }
+        i = i + 1;
+    }
+    (cost, nn)
+}
+
+fn m19_fnv_u32(h0: u64, b: u32) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 4 {
+        h = (h ^ (((b >> (8 * k)) & 255) as u64)).wrapping_mul(1099511628211);
+        k = k + 1;
+    }
+    h
+}
+
+fn m19_fnv_f32_raw(h0: u64, f: f32) -> u64 { m19_fnv_u32(h0, f.to_bits()) }
+
+fn m19_fnv_u64(h0: u64, v: u64) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 8 {
+        h = (h ^ ((v >> (8 * k)) & 255)).wrapping_mul(1099511628211);
+        k = k + 1;
+    }
+    h
+}
+
+fn m19_mesh_vtx(ix: i32, iz: i32) -> B3 {
+    let x: f32 = (-4.0 as f32) + (0.5 as f32) * (ix as f32);
+    let z: f32 = (-4.0 as f32) + (0.5 as f32) * (iz as f32);
+    let t1: f32 = (sin((x * (0.9 as f32)) as f64) as f32) * (cos((z * (0.8 as f32)) as f64) as f32);
+    let t2: f32 = sin(((x + z) * (1.4 as f32)) as f64) as f32;
+    let y: f32 = (0.45 as f32) * t1 + (0.15 as f32) * t2;
+    b3(x, y, z)
+}
+
+fn m19_make_mesh() -> Vec<Tri3> {
+    let mut tris: Vec<Tri3> = Vec::new();
+    let mut iz: i32 = 0;
+    while iz < 16 {
+        let mut ix: i32 = 0;
+        while ix < 16 {
+            let p00: B3 = m19_mesh_vtx(ix, iz);
+            let p10: B3 = m19_mesh_vtx(ix + 1, iz);
+            let p01: B3 = m19_mesh_vtx(ix, iz + 1);
+            let p11: B3 = m19_mesh_vtx(ix + 1, iz + 1);
+            tris.push(Tri3 { a: p00, b: p10, c: p11 });
+            tris.push(Tri3 { a: p00, b: p11, c: p01 });
+            ix = ix + 1;
+        }
+        iz = iz + 1;
+    }
+    tris
+}
+
+pub fn run_bvh_parity() -> (u64, u64, u64, u64, u64, u64, i32, i32, i32, i32) {
+    let tris: Vec<Tri3> = m19_make_mesh();
+    let bvh: BvhTree = build_bvh(tris);
+    let nn: i32 = bvh.nodes.len() as i32;
+    let max_st: i32 = bvh_max_stack(&bvh);
+
+    let pad: f32 = 1.0e-4 as f32;
+    let eps: f32 = 1.0e-6 as f32;
+    let mut h_tree: u64 = kit::fnv_start();
+    h_tree = m19_fnv_u32(h_tree, nn as u32);
+    h_tree = m19_fnv_u32(h_tree, max_st as u32);
+    let mut i: i32 = 0;
+    while i < nn {
+        let n: BvhNode = bvh.nodes[i];
+        let e: B3 = b3_sub(n.box_.mx, n.box_.mn);
+        let d: B3 = b3(m19_absf(e.x) * pad + eps, m19_absf(e.y) * pad + eps, m19_absf(e.z) * pad + eps);
+        let lo: B3 = b3_sub(n.box_.mn, d);
+        let hi: B3 = b3_add(n.box_.mx, d);
+        h_tree = m19_fnv_f32_raw(h_tree, lo.x);
+        h_tree = m19_fnv_f32_raw(h_tree, lo.y);
+        h_tree = m19_fnv_f32_raw(h_tree, lo.z);
+        h_tree = m19_fnv_f32_raw(h_tree, n.first as f32);
+        h_tree = m19_fnv_f32_raw(h_tree, hi.x);
+        h_tree = m19_fnv_f32_raw(h_tree, hi.y);
+        h_tree = m19_fnv_f32_raw(h_tree, hi.z);
+        h_tree = m19_fnv_f32_raw(h_tree, n.count as f32);
+        i = i + 1;
+    }
+    let nt: i32 = bvh.tris.len() as i32;
+    i = 0;
+    while i < nt {
+        let tr: Tri3 = bvh.tris[i];
+        h_tree = m19_fnv_f32_raw(h_tree, tr.a.x);
+        h_tree = m19_fnv_f32_raw(h_tree, tr.a.y);
+        h_tree = m19_fnv_f32_raw(h_tree, tr.a.z);
+        h_tree = m19_fnv_f32_raw(h_tree, tr.b.x);
+        h_tree = m19_fnv_f32_raw(h_tree, tr.b.y);
+        h_tree = m19_fnv_f32_raw(h_tree, tr.b.z);
+        h_tree = m19_fnv_f32_raw(h_tree, tr.c.x);
+        h_tree = m19_fnv_f32_raw(h_tree, tr.c.y);
+        h_tree = m19_fnv_f32_raw(h_tree, tr.c.z);
+        i = i + 1;
+    }
+
+    let (sah, sah_nodes) = bvh_sah_cost(&bvh);
+    let mut h_sah: u64 = kit::fnv_start();
+    h_sah = m19_fnv_u32(h_sah, sah_nodes as u32);
+    h_sah = m19_fnv_f32_raw(h_sah, sah as f32);
+
+    let mut h_closest: u64 = kit::fnv_start();
+    let mut h_ctrl: u64 = kit::fnv_start();
+    let mut hits: i32 = 0;
+    let mut py: i32 = 0;
+    while py < 32 {
+        let mut px: i32 = 0;
+        while px < 32 {
+            let ox: f32 = (-4.2 as f32) + (8.4 as f32) * ((px as f32) + (0.5 as f32)) / (32.0 as f32);
+            let oz: f32 = (-4.2 as f32) + (8.4 as f32) * ((py as f32) + (0.5 as f32)) / (32.0 as f32);
+            let dx: f32 = (0.18 as f32) * (sin(((px as f32) * (0.3 as f32)) as f64) as f32);
+            let dz: f32 = (0.16 as f32) * (cos(((py as f32) * (0.25 as f32)) as f64) as f32);
+            let dir: B3 = b3_norm(b3(dx, -1.0 as f32, dz));
+            let r: Ray3 = Ray3 { o: b3(ox, 3.2 as f32, oz), d: dir };
+            let ht: BvhHit = bvh_closest(&bvh, r, 20.0 as f32);
+            h_closest = m19_fnv_u32(h_closest, if ht.hit { 1 } else { 0 });
+            if ht.hit {
+                hits = hits + 1;
+                h_closest = m19_fnv_u32(h_closest, ht.tri as u32);
+                h_closest = m19_fnv_f32_raw(h_closest, ht.t);
+                h_closest = m19_fnv_f32_raw(h_closest, ht.u);
+                h_closest = m19_fnv_f32_raw(h_closest, ht.v);
+            }
+            let rc: Ray3 = Ray3 { o: b3(ox + (0.15 as f32), 3.2 as f32, oz), d: dir };
+            let hc: BvhHit = bvh_closest(&bvh, rc, 20.0 as f32);
+            h_ctrl = m19_fnv_u32(h_ctrl, if hc.hit { 1 } else { 0 });
+            if hc.hit {
+                h_ctrl = m19_fnv_u32(h_ctrl, hc.tri as u32);
+                h_ctrl = m19_fnv_f32_raw(h_ctrl, hc.t);
+            }
+            px = px + 1;
+        }
+        py = py + 1;
+    }
+
+    let mut h_occ: u64 = kit::fnv_start();
+    let mut occ_cnt: i32 = 0;
+    let occ_dir: B3 = b3_norm(b3(0.65 as f32, 0.25 as f32, -0.45 as f32));
+    i = 0;
+    while i < 512 {
+        let ox: f32 = (-3.6 as f32) + (7.2 as f32) * ((i % 32) as f32) / (31.0 as f32);
+        let oz: f32 = (-3.6 as f32) + (7.2 as f32) * ((i / 32) as f32) / (15.0 as f32);
+        let r: Ray3 = Ray3 { o: b3(ox, -0.1 as f32, oz), d: occ_dir };
+        let blocked: bool = bvh_occluded(&bvh, r, 8.0 as f32);
+        if blocked { occ_cnt = occ_cnt + 1; }
+        h_occ = m19_fnv_u32(h_occ, if blocked { 1 } else { 0 });
+        i = i + 1;
+    }
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = m19_fnv_u64(h_all, h_tree);
+    h_all = m19_fnv_u64(h_all, h_sah);
+    h_all = m19_fnv_u64(h_all, h_closest);
+    h_all = m19_fnv_u64(h_all, h_occ);
+
+    (h_tree, h_sah, h_closest, h_occ, h_all, h_ctrl, nn, max_st, hits, occ_cnt)
+}

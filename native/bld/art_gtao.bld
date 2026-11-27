@@ -1,0 +1,315 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe native/bld Module #22: Ground-Truth Ambient Occlusion (Jimenez et al. 2016):
+// view-space perspective projection, inverse-depth bilinear reconstruction, horizon-angle
+// slicing, projected-normal hemisphere clamping, and closed-form cosine integration (eq. 10).
+// Bit-exact 0 ULP port of native/src/renderer/post_gtao.cpp.
+
+
+pub struct ViewGbuf {
+    w: i32,
+    h: i32,
+    tan_half: f64,
+    aspect: f64,
+    near_z: f64,
+    pos: Vec<f32>,
+    nrm: Vec<f32>,
+    depth: Vec<f32>,
+}
+
+fn m22_k_pi() -> f64 { 3.14159265358979323846 }
+fn m22_absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
+fn m22_mind(a: f64, b: f64) -> f64 { if b < a { b } else { a } }
+fn m22_maxd(a: f64, b: f64) -> f64 { if a < b { b } else { a } }
+fn m22_clampd(v: f64, lo: f64, hi: f64) -> f64 { m22_mind(m22_maxd(v, lo), hi) }
+fn m22_dot3(ax: f64, ay: f64, az: f64, bx: f64, by: f64, bz: f64) -> f64 {
+    ax * bx + ay * by + az * bz
+}
+
+fn gbuf_valid(v: &ViewGbuf, x: i32, y: i32) -> bool {
+    x >= 0 && y >= 0 && x < v.w && y < v.h && v.depth[y * v.w + x] >= (0.0 as f32)
+}
+
+pub fn m22_project_pt(v: &ViewGbuf, px: f64, py: f64, pz: f64) -> (bool, f64, f64) {
+    if pz >= -1.0e-6 { return (false, 0.0, 0.0); }
+    let w: f64 = -pz;
+    let sx: f64 = (px / (w * v.tan_half * v.aspect) * 0.5 + 0.5) * (v.w as f64);
+    let sy: f64 = (1.0 - (py / (w * v.tan_half) * 0.5 + 0.5)) * (v.h as f64);
+    (true, sx, sy)
+}
+
+fn sample_depth(v: &ViewGbuf, fx: f64, fy: f64, sx: i32, sy: i32) -> f64 {
+    let nearest: f64 = v.depth[sy * v.w + sx] as f64;
+    let x0: i32 = floor(fx - 0.5) as i32;
+    let y0: i32 = floor(fy - 0.5) as i32;
+    let ax: f64 = fx - 0.5 - (x0 as f64);
+    let ay: f64 = fy - 0.5 - (y0 as f64);
+    if !gbuf_valid(v, x0, y0) || !gbuf_valid(v, x0 + 1, y0)
+        || !gbuf_valid(v, x0, y0 + 1) || !gbuf_valid(v, x0 + 1, y0 + 1) {
+        return nearest;
+    }
+    let d0: f64 = v.depth[y0 * v.w + x0] as f64;
+    let d1: f64 = v.depth[y0 * v.w + x0 + 1] as f64;
+    let d2: f64 = v.depth[(y0 + 1) * v.w + x0] as f64;
+    let d3: f64 = v.depth[(y0 + 1) * v.w + x0 + 1] as f64;
+    let lo: f64 = m22_mind(m22_mind(d0, d1), m22_mind(d2, d3));
+    let hi: f64 = m22_maxd(m22_maxd(d0, d1), m22_maxd(d2, d3));
+    if hi > 1.1 * lo { return nearest; }
+    let k0: f64 = 1.0 / d0;
+    let k1: f64 = 1.0 / d1;
+    let k2: f64 = 1.0 / d2;
+    let k3: f64 = 1.0 / d3;
+    let inv: f64 = (k0 * (1.0 - ax) + k1 * ax) * (1.0 - ay)
+        + (k2 * (1.0 - ax) + k3 * ax) * ay;
+    1.0 / inv
+}
+
+pub fn run_gtao(v: &ViewGbuf, radius: f64, slices: i32, steps: i32) -> Vec<f64> {
+    let n_px: i32 = v.w * v.h;
+    let mut out: Vec<f64> = Vec::new();
+    let mut oi: i32 = 0;
+    while oi < n_px { out.push(1.0); oi = oi + 1; }
+
+    let half_pi: f64 = m22_k_pi() / 2.0;
+    let mut y: i32 = 0;
+    while y < v.h {
+        let mut x: i32 = 0;
+        while x < v.w {
+            let i: i32 = y * v.w + x;
+            let dep_f: f32 = v.depth[i];
+            if dep_f < (0.0 as f32) {
+                x = x + 1;
+                continue;
+            }
+            let dep: f64 = dep_f as f64;
+            let px: f64 = v.pos[i * 3] as f64;
+            let py: f64 = v.pos[i * 3 + 1] as f64;
+            let pz: f64 = v.pos[i * 3 + 2] as f64;
+            let nx: f64 = v.nrm[i * 3] as f64;
+            let ny: f64 = v.nrm[i * 3 + 1] as f64;
+            let nz: f64 = v.nrm[i * 3 + 2] as f64;
+
+            let pl: f64 = sqrt(m22_dot3(px, py, pz, px, py, pz));
+            let vx: f64 = -px / pl;
+            let vy: f64 = -py / pl;
+            let vz: f64 = -pz / pl;
+            let rpx: f64 = radius * (v.h as f64) / (2.0 * v.tan_half * dep);
+
+            let tx0: f64 = 1.0 - vx * vx;
+            let ty0: f64 = -vx * vy;
+            let tz0: f64 = -vx * vz;
+            let tl: f64 = sqrt(m22_dot3(tx0, ty0, tz0, tx0, ty0, tz0));
+            let tx: f64 = tx0 / tl;
+            let ty: f64 = ty0 / tl;
+            let tz: f64 = tz0 / tl;
+            let bx: f64 = vy * tz - vz * ty;
+            let by: f64 = vz * tx - vx * tz;
+            let bz: f64 = vx * ty - vy * tx;
+
+            let (_ok0, sx0, sy0) = m22_project_pt(v, px, py, pz);
+            let mut sum: f64 = 0.0;
+            let mut s: i32 = 0;
+            while s < slices {
+                let phi: f64 = m22_k_pi() * ((s as f64) + 0.5) / (slices as f64);
+                let cp: f64 = cos(phi);
+                let sp: f64 = sin(phi);
+                let dirx: f64 = cp * tx + sp * bx;
+                let diry: f64 = cp * ty + sp * by;
+                let dirz: f64 = cp * tz + sp * bz;
+                let e: f64 = 1.0e-3 * dep;
+                let (_ok1, sx1, sy1) = m22_project_pt(v, px + dirx * e, py + diry * e, pz + dirz * e);
+                let ddx: f64 = sx1 - sx0;
+                let ddy: f64 = sy1 - sy0;
+                let ddl: f64 = sqrt(ddx * ddx + ddy * ddy);
+                if ddl < 1.0e-12 {
+                    s = s + 1;
+                    continue;
+                }
+                let cs: f64 = ddx / ddl;
+                let sn: f64 = ddy / ddl;
+                let dv: f64 = m22_dot3(dirx, diry, dirz, vx, vy, vz);
+                let odx: f64 = dirx - dv * vx;
+                let ody: f64 = diry - dv * vy;
+                let odz: f64 = dirz - dv * vz;
+                let ax0: f64 = ody * vz - odz * vy;
+                let ay0: f64 = odz * vx - odx * vz;
+                let az0: f64 = odx * vy - ody * vx;
+                let al: f64 = sqrt(m22_dot3(ax0, ay0, az0, ax0, ay0, az0));
+                let ax: f64 = ax0 / al;
+                let ay: f64 = ay0 / al;
+                let az: f64 = az0 / al;
+                let na: f64 = m22_dot3(nx, ny, nz, ax, ay, az);
+                let pnx: f64 = nx - ax * na;
+                let pny: f64 = ny - ay * na;
+                let pnz: f64 = nz - az * na;
+                let pnl: f64 = sqrt(m22_dot3(pnx, pny, pnz, pnx, pny, pnz));
+                if pnl < 1.0e-9 {
+                    s = s + 1;
+                    continue;
+                }
+                let sgn: f64 = if m22_dot3(odx, ody, odz, pnx, pny, pnz) >= 0.0 { 1.0 } else { -1.0 };
+                let cn: f64 = m22_clampd(m22_dot3(pnx, pny, pnz, vx, vy, vz) / pnl, 0.0, 1.0);
+                let nang: f64 = sgn * acos(cn);
+                let mut hc0: f64 = cos(nang + half_pi);
+                let mut hc1: f64 = cos(nang - half_pi);
+
+                let mut side: i32 = 0;
+                while side < 2 {
+                    let sd: f64 = if side == 0 { 1.0 } else { -1.0 };
+                    let mut k: i32 = 1;
+                    while k <= steps {
+                        let off: f64 = sd * rpx * (k as f64) / (steps as f64);
+                        let fx: f64 = (x as f64) + 0.5 + off * cs;
+                        let fy: f64 = (y as f64) + 0.5 + off * sn;
+                        let sx: i32 = floor(fx) as i32;
+                        let sy: i32 = floor(fy) as i32;
+                        if gbuf_valid(v, sx, sy) && !(sx == x && sy == y) {
+                            let big_d: f64 = sample_depth(v, fx, fy, sx, sy);
+                            let svx: f64 = (fx / (v.w as f64) * 2.0 - 1.0) * big_d * v.tan_half * v.aspect;
+                            let svy: f64 = (1.0 - fy / (v.h as f64) * 2.0) * big_d * v.tan_half;
+                            let svz: f64 = -big_d;
+                            let rx: f64 = svx - px;
+                            let ry: f64 = svy - py;
+                            let rz: f64 = svz - pz;
+                            let dl: f64 = sqrt(m22_dot3(rx, ry, rz, rx, ry, rz));
+                            if dl >= 1.0e-9 && dl <= radius {
+                                let cand: f64 = m22_dot3(rx, ry, rz, vx, vy, vz) / dl;
+                                if side == 0 { hc0 = m22_maxd(hc0, cand); } else { hc1 = m22_maxd(hc1, cand); }
+                            }
+                        }
+                        k = k + 1;
+                    }
+                    side = side + 1;
+                }
+
+                let h1: f64 = nang + m22_mind(acos(m22_clampd(hc0, -1.0, 1.0)) - nang, half_pi);
+                let h0: f64 = nang + m22_maxd(-acos(m22_clampd(hc1, -1.0, 1.0)) - nang, -half_pi);
+                let sn2: f64 = sin(nang);
+                let a0: f64 = (cn + 2.0 * h0 * sn2 - cos(2.0 * h0 - nang)) / 4.0;
+                let a1: f64 = (cn + 2.0 * h1 * sn2 - cos(2.0 * h1 - nang)) / 4.0;
+                sum = sum + pnl * (a0 + a1);
+                s = s + 1;
+            }
+            out[i] = sum / (slices as f64);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    out
+}
+
+fn m22_fnv_u32(h0: u64, b: u32) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 4 {
+        h = (h ^ (((b >> (8 * k)) & 255) as u64)).wrapping_mul(1099511628211);
+        k = k + 1;
+    }
+    h
+}
+
+fn m22_fnv_u64(h0: u64, v: u64) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 8 {
+        h = (h ^ ((v >> (8 * k)) & 255)).wrapping_mul(1099511628211);
+        k = k + 1;
+    }
+    h
+}
+
+fn hash_f64_vec(v: &Vec<f64>) -> u64 {
+    let mut h: u64 = kit::fnv_start();
+    let n: i32 = v.len() as i32;
+    let mut i: i32 = 0;
+    while i < n { h = kit::fnv_f32(h, v[i]); i = i + 1; }
+    h
+}
+
+pub fn run_gtao_parity() -> (u64, u64, u64, u64, u64, i32) {
+    let w: i32 = 32;
+    let h: i32 = 24;
+    let tan_half: f64 = tan(0.5 * 0.85);
+    let aspect: f64 = (w as f64) / (h as f64);
+    let mut pos: Vec<f32> = Vec::new();
+    let mut nrm: Vec<f32> = Vec::new();
+    let mut depth: Vec<f32> = Vec::new();
+    let mut valid_px: i32 = 0;
+
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            if x == 0 || y == 0 || x == w - 1 || y == h - 1 {
+                pos.push(0.0 as f32); pos.push(0.0 as f32); pos.push(0.0 as f32);
+                nrm.push(0.0 as f32); nrm.push(0.0 as f32); nrm.push(0.0 as f32);
+                depth.push(-1.0 as f32);
+            } else {
+                valid_px = valid_px + 1;
+                let fx: f64 = (x as f64) + 0.5;
+                let fy: f64 = (y as f64) + 0.5;
+                let nx: f64 = (fx / (w as f64)) * 2.0 - 1.0;
+                let ny: f64 = 1.0 - (fy / (h as f64)) * 2.0;
+                let mut big_d: f64 = 4.2 - 0.65 * m22_absd(nx) - 0.55 * m22_maxd(0.0, -ny);
+                let mut n0: f64 = if nx > 0.0 { -0.35 } else { 0.35 };
+                let mut n1: f64 = if ny < 0.0 { 0.30 } else { -0.10 };
+                let mut n2: f64 = 1.0;
+                let dx: f64 = nx + 0.10;
+                let dy: f64 = ny - 0.05;
+                let r2: f64 = dx * dx + dy * dy;
+                if r2 < 0.16 {
+                    let h_bump: f64 = sqrt(0.16 - r2);
+                    big_d = big_d - 0.75 * h_bump;
+                    n0 = dx * 2.5;
+                    n1 = dy * 2.5;
+                    n2 = h_bump * 2.5 + 0.2;
+                }
+                let nl: f64 = sqrt(n0 * n0 + n1 * n1 + n2 * n2);
+                pos.push((nx * big_d * tan_half * aspect) as f32);
+                pos.push((ny * big_d * tan_half) as f32);
+                pos.push((-big_d) as f32);
+                nrm.push((n0 / nl) as f32);
+                nrm.push((n1 / nl) as f32);
+                nrm.push((n2 / nl) as f32);
+                depth.push(big_d as f32);
+            }
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+
+    let gbuf: ViewGbuf = ViewGbuf {
+        w: w, h: h, tan_half: tan_half, aspect: aspect, near_z: 0.1,
+        pos: pos, nrm: nrm, depth: depth,
+    };
+
+    let mut h_proj: u64 = kit::fnv_start();
+    let mut i: i32 = 0;
+    while i < 64 {
+        let px: f64 = -1.2 + 2.4 * ((i % 8) as f64) / 7.0;
+        let py: f64 = -0.9 + 1.8 * (((i / 8) % 8) as f64) / 7.0;
+        let pz: f64 = -1.5 - 0.1 * (i as f64);
+        let (ok, sx, sy) = m22_project_pt(&gbuf, px, py, pz);
+        h_proj = m22_fnv_u32(h_proj, if ok { 1 } else { 0 });
+        h_proj = kit::fnv_f32(h_proj, sx);
+        h_proj = kit::fnv_f32(h_proj, sy);
+        i = i + 1;
+    }
+
+    let ao_std: Vec<f64> = run_gtao(&gbuf, 0.85, 4, 6);
+    let h_std: u64 = hash_f64_vec(&ao_std);
+
+    let ao_hi: Vec<f64> = run_gtao(&gbuf, 1.25, 8, 10);
+    let h_hi: u64 = hash_f64_vec(&ao_hi);
+
+    let ao_ctrl: Vec<f64> = run_gtao(&gbuf, 0.25, 4, 6);
+    let h_ctrl: u64 = hash_f64_vec(&ao_ctrl);
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = m22_fnv_u64(h_all, h_proj);
+    h_all = m22_fnv_u64(h_all, h_std);
+    h_all = m22_fnv_u64(h_all, h_hi);
+
+    (h_proj, h_std, h_hi, h_all, h_ctrl, valid_px)
+}
