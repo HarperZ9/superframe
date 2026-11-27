@@ -1,0 +1,119 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// P5 stroke-orbit reference encoder and camera reprojection motion vectors, ported from
+// src/renderer/art_strokes.cpp (paintReference) and src/renderer/art_scene.cpp (motionTo).
+// Reproduces both GCC 13.3 and MSVC VS 18 pinned hashes bit for bit.
+
+use kit::V3;
+use kit::v3;
+use kit::dot;
+use kit::sub;
+use kit::cross;
+use kit::norm;
+use kit::along;
+use art_prims::Hit;
+use art_prims::maxd;
+
+// Exact mirror of raw::art::paintReference(f.lit, exposure) in src/renderer/art_strokes.cpp.
+// exposure_eps is 0.0 for the pinned render (exposure = 1.0) and non-zero for the planted control.
+pub fn paint_reference_hash(frame: i32, w: i32, h: i32, exposure_eps: f64) -> u64 {
+    let exposure: f64 = 1.0 + exposure_eps;
+    let a: f64 = (20.0 + 1.0 * (frame as f64)) * 3.141592653589793 / 180.0;
+    let eye: V3 = v3(8.5 * sin(a), 4.2, 8.5 * cos(a));
+    let f: V3 = norm(sub(v3(0.0, 1.0, 0.0), eye));
+    let r: V3 = norm(cross(f, v3(0.0, 1.0, 0.0)));
+    let u: V3 = cross(r, f);
+    let focal: f64 = 0.5 * (h as f64) / tan(0.5 * 0.75);
+    let sun_dir: V3 = norm(v3(-0.45, 0.78, 0.42));
+    let mut hash: u64 = kit::fnv_start();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut cr: f64 = 0.0;
+            let mut cg: f64 = 0.0;
+            let mut cb: f64 = 0.0;
+            let mut s: i32 = 0;
+            while s < 4 {
+                let px: f64 = (x as f64) + 0.25 + 0.5 * ((s % 2) as f64);
+                let py: f64 = (y as f64) + 0.25 + 0.5 * ((s / 2) as f64);
+                let dx: f64 = (px - 0.5 * (w as f64)) / focal;
+                let dy: f64 = -(py - 0.5 * (h as f64)) / focal;
+                let d: V3 = norm(v3(f.x + dx * r.x + dy * u.x, f.y + dx * r.y + dy * u.y, f.z + dx * r.z + dy * u.z));
+                let c: V3 = art_scene::shade_daylight(sun_dir, eye, d, art_scene::trace_still(eye, d));
+                cr = cr + c.x / 4.0;
+                cg = cg + c.y / 4.0;
+                cb = cb + c.z / 4.0;
+                s = s + 1;
+            }
+            let rr: f64 = maxd(0.0, (cr as f32) as f64);
+            let gg: f64 = maxd(0.0, (cg as f32) as f64);
+            let bb: f64 = maxd(0.0, (cb as f32) as f64);
+            let m: f64 = maxd(rr, maxd(gg, bb));
+            let t: f64 = m * exposure;
+            let mut gain: f64 = 0.0;
+            if t < 0.001 {
+                gain = exposure * (1.0 - t / 2.0 + (t * t) / 6.0);
+            } else {
+                gain = (1.0 - exp(-t)) / m;
+            }
+            hash = kit::fnv_u8(hash, art_metrics::encode8(rr * gain));
+            hash = kit::fnv_u8(hash, art_metrics::encode8(gg * gain));
+            hash = kit::fnv_u8(hash, art_metrics::encode8(bb * gain));
+            hash = kit::fnv_u8(hash, 255);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}
+
+// Exact mirror of raw::art::motionTo(renderFrame(orbitView(cur), ...), orbitView(prev)).
+pub fn motion_1to0_hash(w: i32, h: i32) -> u64 {
+    let pi: f64 = 3.141592653589793;
+    let a1: f64 = 21.0 * pi / 180.0;
+    let eye1: V3 = v3(8.5 * sin(a1), 4.2, 8.5 * cos(a1));
+    let f1: V3 = norm(sub(v3(0.0, 1.0, 0.0), eye1));
+    let r1: V3 = norm(cross(f1, v3(0.0, 1.0, 0.0)));
+    let u1: V3 = cross(r1, f1);
+
+    let a0: f64 = 20.0 * pi / 180.0;
+    let eye0: V3 = v3(8.5 * sin(a0), 4.2, 8.5 * cos(a0));
+    let f0: V3 = norm(sub(v3(0.0, 1.0, 0.0), eye0));
+    let r0: V3 = norm(cross(f0, v3(0.0, 1.0, 0.0)));
+    let u0: V3 = cross(r0, f0);
+
+    let focal: f64 = 0.5 * (h as f64) / tan(0.5 * 0.75);
+    let mut hash: u64 = kit::fnv_start();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let rx: f64 = ((x as f64) + 0.5 - 0.5 * (w as f64)) / focal;
+            let ry: f64 = -((y as f64) + 0.5 - 0.5 * (h as f64)) / focal;
+            let d: V3 = norm(v3(f1.x + rx * r1.x + ry * u1.x, f1.y + rx * r1.y + ry * u1.y, f1.z + rx * r1.z + ry * u1.z));
+            let hit: Hit = art_scene::trace_still(eye1, d);
+            let mut q: V3 = v3((d.x as f32) as f64, (d.y as f32) as f64, (d.z as f32) as f64);
+            if hit.t >= 0.0 {
+                let p_raw: V3 = along(eye1, hit.t, d);
+                let p32: V3 = v3((p_raw.x as f32) as f64, (p_raw.y as f32) as f64, (p_raw.z as f32) as f64);
+                q = sub(p32, eye0);
+            }
+            let z: f64 = dot(q, f0);
+            let mut mvx: f64 = 0.0;
+            let mut mvy: f64 = 0.0;
+            if z > 0.000000001 {
+                let px: f64 = dot(q, r0) * focal / z + 0.5 * (w as f64) - 0.5;
+                let py: f64 = -dot(q, u0) * focal / z + 0.5 * (h as f64) - 0.5;
+                mvx = (x as f64) - px;
+                mvy = (y as f64) - py;
+            }
+            hash = kit::fnv_f32(hash, mvx);
+            hash = kit::fnv_f32(hash, mvy);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}

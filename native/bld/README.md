@@ -15,7 +15,7 @@ native/bld/target/release/main
 ```
 
 The runner prints one line a module, `same` or `DIFF`, then control lines, cross-engine parity
-invariants, and a count. CI fails unless the count reads `5 of 5` today, and the number grows
+invariants, and a count. CI fails unless the count reads `7 of 7` today, and the number grows
 with each module.
 
 ## Moved so far
@@ -27,6 +27,8 @@ with each module.
 | Three-quarter town ray caster and Scheimpflug tilt-shift CoC map (`town_map`) | `src/renderer/art_scene_town.cpp`, `src/renderer/art_tiltshift.cpp` | `art_town_coc.bld` | `tests/test_art_tiltshift.cpp`, CoC buffer at 256 x 144, `0x2c4cd941314f50b5` on GCC and MSVC |
 | Three-quarter town night lighting, shadowed sodium spot lamp cone, and emissive sodium globes/window | `src/renderer/art_scene_town.cpp`, `src/renderer/art_scene.cpp` | `art_town_lit.bld` | `tests/test_art_tiltshift.cpp`, `townNight` lit buffer at 256 x 144, `0x91ee8ea81ab861f0` on GCC and MSVC |
 | 8-bit sRGB encoder (`encode8`/`codes8`) and stylised-track metrics (`instability`, `splitmix`, `pairedBootstrap`) | `src/renderer/art_metrics.cpp`, `raw/renderer/art_metrics.hpp` | `art_metrics.bld` | `tests/test_art_strokes.cpp`, `codes8(lit)` at 256 x 144, `0xbf2cbc974ff8fcad` on GCC and MSVC |
+| Stroke-orbit exposure tonemap reference (`paintReference`) and camera reprojection motion vectors (`motionTo`) | `src/renderer/art_strokes.cpp`, `src/renderer/art_scene.cpp` | `art_strokes_ref.bld` | `tests/test_art_strokes.cpp`, `paintReference(lit, 1.0)` `0x4add0d97495fd95d` and `motionTo(f1, v0)` `0x30d7597963cbf119` on GCC and MSVC |
+| Half-resolution tilt-shift defocus, rim-guarded weight, and bilinear compose (`unlinedHalf`, `defocusWeight`, `paintDefocus`) | `src/renderer/art_tiltshift_paint.cpp`, `src/renderer/art_scene.cpp` | `art_tiltshift_defocus.bld` | `tests/test_art_tiltshift.cpp`, `codes8(paintDefocus(..., Gaussian))` at 256 x 144, `0x6d3f8b9acb221e67` on GCC and MSVC |
 
 `wave25f_parity.bld` also links Superframe's 100 Hz latency-faithful simulation mode and Deja-VAE
 10-step Moore-Penrose null-space back-projection invariants directly to compiled BuildLang f64

@@ -1,0 +1,350 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// P23 half-resolution tilt-shift defocus, rim-guarded defocus weight, and bilinear compose,
+// ported from src/renderer/art_tiltshift_paint.cpp (unlinedHalf, defocusWeight, coarse Gaussian,
+// paintDefocus) and src/renderer/art_scene.cpp (townDusk). Matches GCC 13.3 and MSVC VS 18 pins.
+
+use kit::V3;
+use kit::v3;
+use kit::dot;
+use kit::sub;
+use kit::cross;
+use kit::norm;
+use kit::along;
+use kit::absd;
+use kit::clampd;
+use art_prims::Hit;
+use art_prims::mind;
+use art_prims::maxd;
+
+struct DuskRig {
+    sun_dir: V3,
+    sun_c: V3,
+    lamp_pos: V3,
+    lamp_axis: V3,
+    cos_outer: f64,
+    cos_inner: f64,
+    lamp_c: V3,
+    sky_top: V3,
+    sky_horizon: V3,
+    ground: V3,
+    emit_scale: f64,
+}
+
+struct LensG {
+    eye: V3,
+    fwd: V3,
+    n: V3,
+    d: f64,
+    fpx: f64,
+    fmm: f64,
+    mm_per_unit: f64,
+    f_num: f64,
+    c_max: f64,
+}
+
+fn r32(x: f64) -> f64 { (x as f32) as f64 }
+
+fn smooth_step(a: f64, b: f64, x: f64) -> f64 {
+    let t: f64 = clampd((x - a) / (b - a), 0.0, 1.0);
+    t * t * (3.0 - 2.0 * t)
+}
+
+fn clamp_i(v: i32, lo: i32, hi: i32) -> i32 {
+    if v < lo { return lo; }
+    if v > hi { return hi; }
+    v
+}
+
+fn ceil_pos(x: f64) -> i32 {
+    let i: i32 = x as i32;
+    if (i as f64) < x { return i + 1; }
+    i
+}
+
+fn occluded_town(o: V3, d: V3, t_max: f64) -> bool {
+    let h: Hit = art_town_coc::trace_town(o, d);
+    h.t > 0.0 && h.t < t_max
+}
+
+fn shade_dusk(rig: DuskRig, o: V3, d: V3, h: Hit) -> V3 {
+    if h.t < 0.0 {
+        let t: f64 = clampd(d.y * 1.6 + 0.1, 0.0, 1.0);
+        return v3(
+            rig.sky_horizon.x + (rig.sky_top.x - rig.sky_horizon.x) * t,
+            rig.sky_horizon.y + (rig.sky_top.y - rig.sky_horizon.y) * t,
+            rig.sky_horizon.z + (rig.sky_top.z - rig.sky_horizon.z) * t,
+        );
+    }
+    let p: V3 = along(o, h.t, d);
+    let lifted: V3 = v3(p.x + h.n.x * 0.000001, p.y + h.n.y * 0.000001, p.z + h.n.z * 0.000001);
+    let nl: f64 = dot(h.n, rig.sun_dir);
+    let mut sun: f64 = 0.0;
+    if nl > 0.0 && !occluded_town(lifted, rig.sun_dir, 1.0e30) { sun = nl; }
+    let to_l: V3 = sub(rig.lamp_pos, p);
+    let d2: f64 = dot(to_l, to_l);
+    let dist: f64 = sqrt(d2);
+    let ldir: V3 = v3(to_l.x / dist, to_l.y / dist, to_l.z / dist);
+    let nl2: f64 = dot(h.n, ldir);
+    let cone: f64 = -dot(ldir, rig.lamp_axis);
+    let s: f64 = clampd((cone - rig.cos_outer) / (rig.cos_inner - rig.cos_outer), 0.0, 1.0);
+    let mut lamp: f64 = 0.0;
+    if nl2 > 0.0 && s > 0.0 && !occluded_town(lifted, ldir, dist) {
+        lamp = nl2 * s * s * (3.0 - 2.0 * s) / d2;
+    }
+    let amb_t: f64 = 0.5 + 0.5 * h.n.y;
+    let ar: f64 = rig.ground.x + (rig.sky_top.x - rig.ground.x) * amb_t;
+    let ag: f64 = rig.ground.y + (rig.sky_top.y - rig.ground.y) * amb_t;
+    let ab: f64 = rig.ground.z + (rig.sky_top.z - rig.ground.z) * amb_t;
+    v3(
+        h.albedo.x * (rig.sun_c.x * sun + rig.lamp_c.x * lamp + ar) + h.emit.x * rig.emit_scale,
+        h.albedo.y * (rig.sun_c.y * sun + rig.lamp_c.y * lamp + ag) + h.emit.y * rig.emit_scale,
+        h.albedo.z * (rig.sun_c.z * sun + rig.lamp_c.z * lamp + ab) + h.emit.z * rig.emit_scale,
+    )
+}
+
+fn coc_eval(g: LensG, dir: V3, dist: f64) -> f64 {
+    let cos_a: f64 = dot(dir, g.fwd);
+    let dn: f64 = dot(dir, g.n);
+    let mut t_plane: f64 = -1.0;
+    if absd(dn) > 0.000000000001 { t_plane = (g.d - dot(g.eye, g.n)) / dn; }
+    let sky_z: bool = dist < 0.0;
+    let sky_s: bool = t_plane <= 0.0;
+    if sky_z && sky_s { return 0.0; }
+    let mut s_val: f64 = 0.0;
+    if !sky_s { s_val = maxd(t_plane * cos_a * g.mm_per_unit, 2.0 * g.fmm); }
+    let mut c: f64 = 0.0;
+    if sky_z {
+        c = g.fpx * g.fmm / (g.f_num * (s_val - g.fmm));
+    } else {
+        let z_val: f64 = dist * cos_a * g.mm_per_unit;
+        if sky_s { c = g.fpx * g.fmm / (g.f_num * z_val); }
+        else { c = g.fpx * g.fmm * absd(z_val - s_val) / (g.f_num * z_val * (s_val - g.fmm)); }
+    }
+    mind(c, g.c_max)
+}
+
+// Full tilt-shift Gaussian half-res defocus + rim-guarded compose + codes8 at w x h.
+// c0_eps is 0.0 for the pinned render (c0=1.0) and non-zero for the planted control.
+pub fn tiltshift_defocus_codes8_hash(w: i32, h: i32, c0_eps: f64) -> u64 {
+    let c0: f64 = 1.0 + c0_eps;
+    let c1: f64 = 2.5;
+    let pi: f64 = 3.141592653589793;
+    let az: f64 = 45.0 * pi / 180.0;
+    let pitch: f64 = 35.0 * pi / 180.0;
+    let target: V3 = v3(0.0, 0.8, 0.0);
+    let eye: V3 = v3(46.0 * cos(pitch) * sin(az), 0.8 + 46.0 * sin(pitch), 46.0 * cos(pitch) * cos(az));
+    let fwd: V3 = norm(sub(target, eye));
+    let world_up: V3 = v3(0.0, 1.0, 0.0);
+    let right: V3 = norm(cross(fwd, world_up));
+    let up: V3 = cross(right, fwd);
+    let focal: f64 = 0.5 * (h as f64) / tan(0.5 * 0.45);
+    let rig: DuskRig = DuskRig {
+        sun_dir: norm(v3(-0.8, 0.22, 0.35)), sun_c: v3(1.5, 0.85, 0.45),
+        lamp_pos: v3(0.0, 4.4, -4.6), lamp_axis: norm(v3(0.0, -1.0, 0.75)),
+        cos_outer: 0.62, cos_inner: 0.80, lamp_c: v3(9.0, 5.2, 1.6),
+        sky_top: v3(0.16, 0.20, 0.36), sky_horizon: v3(0.70, 0.48, 0.38), ground: v3(0.10, 0.08, 0.07),
+        emit_scale: 1.0,
+    };
+    let a_vec: V3 = norm(v3(1.0, 0.0, 0.0));
+    let across: V3 = norm(cross(world_up, a_vec));
+    let t_ang: f64 = 90.0 * pi / 180.0;
+    let u_vec: V3 = v3(cos(t_ang) * across.x + world_up.x * sin(t_ang), cos(t_ang) * across.y + world_up.y * sin(t_ang), cos(t_ang) * across.z + world_up.z * sin(t_ang));
+    let gn: V3 = norm(cross(a_vec, u_vec));
+    let g: LensG = LensG {
+        eye: eye, fwd: fwd, n: gn, d: dot(gn, v3(0.0, 0.89, 0.0)),
+        fpx: focal, fmm: 12.0 / tan(0.5 * 0.45), mm_per_unit: 25.0, f_num: 1.4, c_max: 48.0 * (h as f64) / 1080.0,
+    };
+
+    // 1. Render full-res lit (f32) and CoC/depth (f32)
+    let mut lit_r: Vec<f64> = Vec::new();
+    let mut lit_g: Vec<f64> = Vec::new();
+    let mut lit_b: Vec<f64> = Vec::new();
+    let mut coc_c: Vec<f64> = Vec::new();
+    let mut coc_z: Vec<f64> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut cr: f64 = 0.0;
+            let mut cg: f64 = 0.0;
+            let mut cb: f64 = 0.0;
+            let mut s: i32 = 0;
+            while s < 4 {
+                let px: f64 = (x as f64) + 0.25 + 0.5 * ((s % 2) as f64);
+                let py: f64 = (y as f64) + 0.25 + 0.5 * ((s / 2) as f64);
+                let rx: f64 = (px - 0.5 * (w as f64)) / focal;
+                let ry: f64 = -(py - 0.5 * (h as f64)) / focal;
+                let d: V3 = norm(v3(fwd.x + rx * right.x + ry * up.x, fwd.y + rx * right.y + ry * up.y, fwd.z + rx * right.z + ry * up.z));
+                let col: V3 = shade_dusk(rig, eye, d, art_town_coc::trace_town(eye, d));
+                cr = cr + col.x / 4.0;
+                cg = cg + col.y / 4.0;
+                cb = cb + col.z / 4.0;
+                s = s + 1;
+            }
+            lit_r.push(r32(cr));
+            lit_g.push(r32(cg));
+            lit_b.push(r32(cb));
+
+            let rx0: f64 = ((x as f64) + 0.5 - 0.5 * (w as f64)) / focal;
+            let ry0: f64 = -((y as f64) + 0.5 - 0.5 * (h as f64)) / focal;
+            let d0: V3 = norm(v3(fwd.x + rx0 * right.x + ry0 * up.x, fwd.y + rx0 * right.y + ry0 * up.y, fwd.z + rx0 * right.z + ry0 * up.z));
+            let hit: Hit = art_town_coc::trace_town(eye, d0);
+            let d32: V3 = v3(r32(d0.x), r32(d0.y), r32(d0.z));
+            let mut dist32: f64 = -1.0;
+            if hit.t >= 0.0 { dist32 = r32(hit.t); }
+            coc_c.push(r32(coc_eval(g, d32, dist32)));
+            let mut axial: f64 = 1000000.0;
+            if dist32 >= 0.0 { axial = r32(dist32 * dot(d32, fwd)); }
+            coc_z.push(axial);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+
+    // 2. unlinedHalf (alpha is 1.0 on f.lit, so t = max(1.0, 0.05) = 1.0)
+    let hw: i32 = (w + 1) / 2;
+    let hh: i32 = (h + 1) / 2;
+    let mut hu_r: Vec<f64> = Vec::new();
+    let mut hu_g: Vec<f64> = Vec::new();
+    let mut hu_b: Vec<f64> = Vec::new();
+    let mut hc_c: Vec<f64> = Vec::new();
+    let mut hc_z: Vec<f64> = Vec::new();
+    y = 0;
+    while y < hh {
+        let mut x: i32 = 0;
+        while x < hw {
+            let mut sr: f64 = 0.0; let mut sg: f64 = 0.0; let mut sb: f64 = 0.0;
+            let mut sc: f64 = 0.0; let mut sz: f64 = 0.0;
+            let mut j: i32 = 0;
+            while j < 2 {
+                let mut i: i32 = 0;
+                while i < 2 {
+                    let qx: i32 = clamp_i(2 * x + i, 0, w - 1);
+                    let qy: i32 = clamp_i(2 * y + j, 0, h - 1);
+                    let q: usize = (qy * w + qx) as usize;
+                    sr = sr + lit_r[q] / 1.0 / 4.0;
+                    sg = sg + lit_g[q] / 1.0 / 4.0;
+                    sb = sb + lit_b[q] / 1.0 / 4.0;
+                    sc = sc + coc_c[q] / 4.0;
+                    sz = sz + coc_z[q] / 4.0;
+                    i = i + 1;
+                }
+                j = j + 1;
+            }
+            hu_r.push(r32(sr)); hu_g.push(r32(sg)); hu_b.push(r32(sb));
+            hc_c.push(r32(sc)); hc_z.push(r32(sz));
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+
+    // 3. Half-resolution depth-aware Gaussian defocus (scale = 0.5)
+    let mut out_r: Vec<f64> = Vec::new();
+    let mut out_g: Vec<f64> = Vec::new();
+    let mut out_b: Vec<f64> = Vec::new();
+    y = 0;
+    while y < hh {
+        let mut x: i32 = 0;
+        while x < hw {
+            let idx: usize = (y * hw + x) as usize;
+            let c_val: f64 = hc_c[idx];
+            let zc: f64 = hc_z[idx];
+            if smooth_step(c0, c1, c_val) <= 0.0 {
+                out_r.push(hu_r[idx]); out_g.push(hu_g[idx]); out_b.push(hu_b[idx]);
+            } else {
+                let rad: f64 = 0.5 * c_val * 0.5;
+                let sg: f64 = maxd(0.5 * rad, 0.001);
+                let rad_i: i32 = ceil_pos(3.0 * sg);
+                let mut ws: f64 = 0.0;
+                let mut rr: f64 = 0.0; let mut gg: f64 = 0.0; let mut bb: f64 = 0.0;
+                let mut dy: i32 = -rad_i;
+                while dy <= rad_i {
+                    let mut dx: i32 = -rad_i;
+                    while dx <= rad_i {
+                        let qx: i32 = clamp_i(x + dx, 0, hw - 1);
+                        let qy: i32 = clamp_i(y + dy, 0, hh - 1);
+                        let q: usize = (qy * hw + qx) as usize;
+                        let dist: f64 = sqrt((dx * dx + dy * dy) as f64);
+                        let mut wq: f64 = exp(-0.5 * dist * dist / (sg * sg));
+                        if hc_z[q] < zc {
+                            wq = wq * clampd(0.5 * hc_c[q] * 0.5 - dist + 1.0, 0.0, 1.0);
+                        }
+                        ws = ws + wq;
+                        rr = rr + wq * hu_r[q];
+                        gg = gg + wq * hu_g[q];
+                        bb = bb + wq * hu_b[q];
+                        dx = dx + 1;
+                    }
+                    dy = dy + 1;
+                }
+                out_r.push(r32(rr / ws)); out_g.push(r32(gg / ws)); out_b.push(r32(bb / ws));
+            }
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+
+    // 4. Rim-guarded defocusWeight + bilinear compose + codes8 FNV-1a
+    let mut hash: u64 = kit::fnv_start();
+    y = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let idx: usize = (y * w + x) as usize;
+            let c_val: f64 = coc_c[idx];
+            let z_val: f64 = coc_z[idx];
+            let mut wt: f64 = smooth_step(c0, c1, c_val);
+            let mut dy: i32 = -2;
+            while dy <= 2 && wt > 0.0 {
+                let mut dx: i32 = -2;
+                while dx <= 2 && wt > 0.0 {
+                    if dx * dx + dy * dy <= 4 {
+                        let qx: i32 = clamp_i(x + dx, 0, w - 1);
+                        let qy: i32 = clamp_i(y + dy, 0, h - 1);
+                        let q: usize = (qy * w + qx) as usize;
+                        if coc_c[q] <= c0 && coc_z[q] < 0.98 * z_val { wt = 0.0; }
+                    }
+                    dx = dx + 1;
+                }
+                dy = dy + 1;
+            }
+            let wi: f64 = r32(wt);
+            let mut fr: f64 = lit_r[idx];
+            let mut fg: f64 = lit_g[idx];
+            let mut fb: f64 = lit_b[idx];
+            if wi > 0.0 {
+                let fx: f64 = clampd(((x as f64) + 0.5) / 2.0 - 0.5, 0.0, (hw - 1) as f64);
+                let fy: f64 = clampd(((y as f64) + 0.5) / 2.0 - 0.5, 0.0, (hh - 1) as f64);
+                let mut x0: i32 = fx as i32;
+                let mut y0: i32 = fy as i32;
+                if x0 > hw - 1 { x0 = hw - 1; }
+                if y0 > hh - 1 { y0 = hh - 1; }
+                let mut x1: i32 = x0 + 1;
+                let mut y1: i32 = y0 + 1;
+                if x1 > hw - 1 { x1 = hw - 1; }
+                if y1 > hh - 1 { y1 = hh - 1; }
+                let tx: f64 = fx - (x0 as f64);
+                let ty: f64 = fy - (y0 as f64);
+                let i00: usize = (y0 * hw + x0) as usize;
+                let i10: usize = (y0 * hw + x1) as usize;
+                let i01: usize = (y1 * hw + x0) as usize;
+                let i11: usize = (y1 * hw + x1) as usize;
+                let br: f64 = (out_r[i00] * (1.0 - tx) + out_r[i10] * tx) * (1.0 - ty) + (out_r[i01] * (1.0 - tx) + out_r[i11] * tx) * ty;
+                let bg: f64 = (out_g[i00] * (1.0 - tx) + out_g[i10] * tx) * (1.0 - ty) + (out_g[i01] * (1.0 - tx) + out_g[i11] * tx) * ty;
+                let bb: f64 = (out_b[i00] * (1.0 - tx) + out_b[i10] * tx) * (1.0 - ty) + (out_b[i01] * (1.0 - tx) + out_b[i11] * tx) * ty;
+                fr = r32(fr * (1.0 - wi) + br * wi);
+                fg = r32(fg * (1.0 - wi) + bg * wi);
+                fb = r32(fb * (1.0 - wi) + bb * wi);
+            }
+            hash = kit::fnv_u8(hash, art_metrics::encode8(fr));
+            hash = kit::fnv_u8(hash, art_metrics::encode8(fg));
+            hash = kit::fnv_u8(hash, art_metrics::encode8(fb));
+            hash = kit::fnv_u8(hash, 255);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}
