@@ -1,0 +1,263 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// P23 lens and print effect stack (fxBright, fxGlow, fxFinish, catEye, haloTable, planFx),
+// ported from src/renderer/art_tiltshift_fx.cpp and src/renderer/style_image.cpp (pcg, hash3).
+// Runs over the townNight 256 x 144 lit buffer under tiltLook("night") and matches GCC 13.3 and
+// MSVC VS 18 bit for bit.
+
+use kit::V3;
+use kit::v3;
+use kit::clampd;
+use art_prims::maxd;
+
+fn pcg32(v: u32) -> u32 {
+    let state: u32 = v.wrapping_mul(747796405).wrapping_add(2891336453);
+    let shift: u32 = (state >> 28) + 4;
+    let word: u32 = ((state >> shift) ^ state).wrapping_mul(277803737);
+    (word >> 22) ^ word
+}
+
+fn hash3(x: u32, y: u32, z: u32) -> f64 {
+    (pcg32(x ^ pcg32(y ^ pcg32(z))) as f64) / 4294967296.0
+}
+
+fn luma(c: V3) -> f64 {
+    0.2126 * c.x + 0.7152 * c.y + 0.0722 * c.z
+}
+
+fn cat_eye(e: f64, rb: f64) -> f64 {
+    let pi: f64 = 3.141592653589793;
+    if e <= rb - 1.0 { return 1.0; }
+    if e >= rb + 1.0 { return 0.0; }
+    let a1: f64 = acos(clampd((e * e + 1.0 - rb * rb) / (2.0 * e), -1.0, 1.0));
+    let a2: f64 = acos(clampd((e * e + rb * rb - 1.0) / (2.0 * e * rb), -1.0, 1.0));
+    let k: f64 = sqrt(maxd(0.0, (-e + 1.0 + rb) * (e + 1.0 - rb) * (e - 1.0 + rb) * (e + 1.0 + rb)));
+    (a1 + rb * rb * a2 - 0.5 * k) / pi
+}
+
+fn clamp_i32(v: i32, lo: i32, hi: i32) -> i32 {
+    if v < lo { return lo; }
+    if v > hi { return hi; }
+    v
+}
+
+fn bilinear3(a: &Vec<f64>, stride: i32, off: i32, w: i32, h: i32, fx0: f64, fy0: f64) -> V3 {
+    let fx: f64 = clampd(fx0, 0.0, (w - 1) as f64);
+    let fy: f64 = clampd(fy0, 0.0, (h - 1) as f64);
+    let x0: i32 = clamp_i32(floor(fx) as i32, 0, w - 1);
+    let y0: i32 = clamp_i32(floor(fy) as i32, 0, h - 1);
+    let x1: i32 = clamp_i32(x0 + 1, 0, w - 1);
+    let y1: i32 = clamp_i32(y0 + 1, 0, h - 1);
+    let tx: f64 = fx - (x0 as f64);
+    let ty: f64 = fy - (y0 as f64);
+    let st: usize = stride as usize;
+    let of: usize = off as usize;
+    let p00: usize = ((y0 * w + x0) as usize) * st + of;
+    let p10: usize = ((y0 * w + x1) as usize) * st + of;
+    let p01: usize = ((y1 * w + x0) as usize) * st + of;
+    let p11: usize = ((y1 * w + x1) as usize) * st + of;
+    let r: f64 = (a[p00] * (1.0 - tx) + a[p10] * tx) * (1.0 - ty) + (a[p01] * (1.0 - tx) + a[p11] * tx) * ty;
+    let g: f64 = (a[p00 + 1] * (1.0 - tx) + a[p10 + 1] * tx) * (1.0 - ty) + (a[p01 + 1] * (1.0 - tx) + a[p11 + 1] * tx) * ty;
+    let b: f64 = (a[p00 + 2] * (1.0 - tx) + a[p10 + 2] * tx) * (1.0 - ty) + (a[p01 + 2] * (1.0 - tx) + a[p11 + 2] * tx) * ty;
+    v3(r, g, b)
+}
+
+fn halo_table() -> Vec<f64> {
+    let mut o: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < 24 {
+        let r: f64 = sqrt(((i as f64) + 0.5) / 24.0);
+        let a: f64 = (i as f64) * 2.399963229728653 + 0.5;
+        o.push(((r * cos(a)) as f32) as f64);
+        o.push(((r * sin(a)) as f32) as f64);
+        i = i + 1;
+    }
+    o
+}
+
+fn fx_bright(img: &Vec<f64>, w: i32, h: i32, qw: i32, qh: i32) -> Vec<f64> {
+    let thr: f64 = 0.7;
+    let knee: f64 = 0.25;
+    let mut o: Vec<f64> = Vec::new();
+    let mut y: i32 = 0;
+    while y < qh {
+        let mut x: i32 = 0;
+        while x < qw {
+            let mut c0: f64 = 0.0;
+            let mut c1: f64 = 0.0;
+            let mut c2: f64 = 0.0;
+            let mut j: i32 = 0;
+            while j < 4 {
+                let sy: i32 = clamp_i32(4 * y + j, 0, h - 1);
+                let mut i: i32 = 0;
+                while i < 4 {
+                    let sx: i32 = clamp_i32(4 * x + i, 0, w - 1);
+                    let q4: usize = ((sy * w + sx) as usize) * 4;
+                    c0 = c0 + img[q4] / 16.0;
+                    c1 = c1 + img[q4 + 1] / 16.0;
+                    c2 = c2 + img[q4 + 2] / 16.0;
+                    i = i + 1;
+                }
+                j = j + 1;
+            }
+            let lum: f64 = 0.2126 * c0 + 0.7152 * c1 + 0.0722 * c2;
+            let mut e: f64 = 0.0;
+            if lum > thr {
+                e = (lum - thr) * (lum - thr) / (lum - thr + knee);
+            }
+            let warm: f64 = clampd(3.0 * (c0 - c2) / (c0 + c1 + c2 + 0.0001), 0.0, 1.0);
+            let g: f64 = e / maxd(lum, 0.0001) * warm;
+            o.push(((c0 * g) as f32) as f64);
+            o.push(((c1 * g) as f32) as f64);
+            o.push(((c2 * g) as f32) as f64);
+            o.push(0.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    o
+}
+
+fn fx_glow(bright: &Vec<f64>, qw: i32, qh: i32, halo_r: f64, star_step: f64, dirs: &Vec<f64>) -> Vec<f64> {
+    let ht: Vec<f64> = halo_table();
+    let mut o: Vec<f64> = Vec::new();
+    let mut y: i32 = 0;
+    while y < qh {
+        let mut x: i32 = 0;
+        while x < qw {
+            let mut hr: f64 = 0.0;
+            let mut hg: f64 = 0.0;
+            let mut hb: f64 = 0.0;
+            let mut i: i32 = 0;
+            while i < 24 {
+                let htx: f64 = ht[(2 * i) as usize];
+                let hty: f64 = ht[(2 * i + 1) as usize];
+                let b: V3 = bilinear3(bright, 4, 0, qw, qh, (x as f64) + halo_r * htx, (y as f64) + halo_r * hty);
+                hr = hr + b.x / 24.0;
+                hg = hg + b.y / 24.0;
+                hb = hb + b.z / 24.0;
+                i = i + 1;
+            }
+            let mut sr: f64 = 0.0;
+            let mut sg_c: f64 = 0.0;
+            let mut sb: f64 = 0.0;
+            let mut j: i32 = 0;
+            while j < 4 {
+                let dx: f64 = dirs[(2 * j) as usize];
+                let dy: f64 = dirs[(2 * j + 1) as usize];
+                let mut sg_i: i32 = -1;
+                while sg_i <= 1 {
+                    let mut m: i32 = 1;
+                    while m <= 16 {
+                        let f: f64 = 1.0 - (m as f64) / 17.0;
+                        let wgt: f64 = f * f / 8.0;
+                        let d: f64 = (sg_i as f64) * (m as f64) * star_step;
+                        let b: V3 = bilinear3(bright, 4, 0, qw, qh, (x as f64) + d * dx, (y as f64) + d * dy);
+                        sr = sr + wgt * b.x;
+                        sg_c = sg_c + wgt * b.y;
+                        sb = sb + wgt * b.z;
+                        m = m + 1;
+                    }
+                    sg_i = sg_i + 2;
+                }
+                j = j + 1;
+            }
+            o.push((hr as f32) as f64);
+            o.push((hg as f32) as f64);
+            o.push((hb as f32) as f64);
+            o.push(0.0);
+            o.push((sr as f32) as f64);
+            o.push((sg_c as f32) as f64);
+            o.push((sb as f32) as f64);
+            o.push(0.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    o
+}
+
+// Runs fxStack(planFx(tiltLook("night"), FxFrame{0, true, false}, w, h, fpx), townNight.lit) and
+// returns the FNV-1a hash of the display-linear RGBA f32 output buffer.
+// fx_eps is 0.0 for the pinned render and non-zero for the planted control.
+pub fn fx_night_lit_hash(w: i32, h: i32, fx_eps: f64) -> u64 {
+    let img: Vec<f64> = art_town_lit::render_town_night_lit(w, h, 0.0);
+    let pi: f64 = 3.141592653589793;
+    let qw: i32 = (w + 3) / 4;
+    let qh: i32 = (h + 3) / 4;
+    let fpx: f64 = 0.5 * (h as f64) / tan(0.5 * 0.45);
+    let halo_r: f64 = 0.012 * (h as f64) / 4.0;
+    let star_step: f64 = 0.06 * (h as f64) / 4.0 / 16.0;
+    let mut dirs: Vec<f64> = Vec::new();
+    let mut dj: i32 = 0;
+    while dj < 4 {
+        let a: f64 = (8.0 + 45.0 * (dj as f64)) * pi / 180.0;
+        dirs.push((cos(a) as f32) as f64);
+        dirs.push((sin(a) as f32) as f64);
+        dj = dj + 1;
+    }
+
+    let bright: Vec<f64> = fx_bright(&img, w, h, qw, qh);
+    let glow: Vec<f64> = fx_glow(&bright, qw, qh, halo_r, star_step, &dirs);
+
+    // tiltLook("night"): vignette=0.4, mech=0.3, halation=1.0, star=1.0, starRotDeg=8, grain=0.03, ca=0.8
+    let vignette: f64 = 0.4;
+    let mech: f64 = 0.3;
+    let halation: f64 = 1.0 + fx_eps;
+    let star_amt: f64 = 1.0;
+    let grain: f64 = 0.03;
+    let ca: f64 = 0.8;
+    let seed: u32 = 7;
+
+    let cx: f64 = 0.5 * (w as f64);
+    let cy: f64 = 0.5 * (h as f64);
+    let r2: f64 = cx * cx + cy * cy;
+    let r_len: f64 = sqrt(r2);
+    let h_scale: f64 = (h as f64) / 1080.0;
+
+    let mut hash: u64 = kit::fnv_start();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let px: f64 = (x as f64) + 0.5;
+            let py: f64 = (y as f64) + 0.5;
+            let dx: f64 = px - cx;
+            let dy: f64 = py - cy;
+            let rn2: f64 = (dx * dx + dy * dy) / r2;
+            let sx: f64 = ca * h_scale * rn2 * dx / r_len;
+            let sy: f64 = ca * h_scale * rn2 * dy / r_len;
+            let bx: f64 = x as f64;
+            let by: f64 = y as f64;
+            let c_r0: V3 = bilinear3(&img, 4, 0, w, h, bx + sx, by + sy);
+            let c_g0: V3 = bilinear3(&img, 4, 0, w, h, bx, by);
+            let c_b0: V3 = bilinear3(&img, 4, 0, w, h, bx - sx, by - sy);
+            let gx: f64 = px / 4.0 - 0.5;
+            let gy: f64 = py / 4.0 - 0.5;
+            let halo: V3 = bilinear3(&glow, 8, 0, qw, qh, gx, gy);
+            let star: V3 = bilinear3(&glow, 8, 4, qw, qh, gx, gy);
+
+            let cr: f64 = c_r0.x + 1.0 * (halation * halo.x * 1.0 + star_amt * star.x * 1.0);
+            let cg: f64 = c_g0.y + 1.0 * (halation * halo.y * 0.55 + star_amt * star.y * 0.82);
+            let cb: f64 = c_b0.z + 1.0 * (halation * halo.z * 0.22 + star_amt * star.z * 0.5);
+
+            let tan2: f64 = (dx * dx + dy * dy) / (fpx * fpx);
+            let vnat: f64 = 1.0 / ((1.0 + tan2) * (1.0 + tan2));
+            let vig: f64 = (1.0 + vignette * (vnat - 1.0)) * (1.0 + mech * (cat_eye(sqrt(rn2), 1.15) - 1.0));
+            let n: f64 = hash3(x as u32, y as u32, seed) - 0.5;
+            let lum: f64 = clampd(luma(v3(cr, cg, cb)), 0.0, 1.0);
+            let or: f64 = maxd(0.0, cr * vig + grain * n * (0.25 + lum));
+            let og: f64 = maxd(0.0, cg * vig + grain * n * (0.25 + lum));
+            let ob: f64 = maxd(0.0, cb * vig + grain * n * (0.25 + lum));
+
+            hash = kit::fnv_f32(hash, or);
+            hash = kit::fnv_f32(hash, og);
+            hash = kit::fnv_f32(hash, ob);
+            hash = kit::fnv_f32(hash, 1.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}

@@ -1,0 +1,384 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// The conversation room ray caster and studio key lighting, ported from
+// src/renderer/art_scene_room.cpp (build, groupBounds, slab, roomFootAt, traceRoom, roomLight)
+// and src/renderer/art_scene.cpp (orbitView, shade, writePixel).
+// Completes 100% of SceneKind (StillLife, Town, Room). Matches GCC 13.3 and MSVC VS 18 bit for bit.
+
+use kit::V3;
+use kit::v3;
+use kit::dot;
+use kit::sub;
+use kit::cross;
+use kit::norm;
+use kit::along;
+use kit::axis;
+use kit::absd;
+use kit::clampd;
+use art_prims::Hit;
+use art_prims::no_hit;
+use art_prims::mind;
+use art_prims::maxd;
+use art_prims::consider;
+use art_prims::hit_box;
+use art_prims::hit_sphere;
+use art_prims::hit_cylinder;
+
+fn lcg_next(s: u32) -> u32 {
+    s.wrapping_mul(1664525).wrapping_add(1013904223)
+}
+
+fn coat_r(idx: i32) -> f64 {
+    if idx == 0 { return 0.42; }
+    if idx == 1 { return 0.30; }
+    if idx == 2 { return 0.24; }
+    if idx == 3 { return 0.50; }
+    if idx == 4 { return 0.26; }
+    if idx == 5 { return 0.58; }
+    0.36
+}
+
+fn coat_g(idx: i32) -> f64 {
+    if idx == 0 { return 0.20; }
+    if idx == 1 { return 0.34; }
+    if idx == 2 { return 0.30; }
+    if idx == 3 { return 0.44; }
+    if idx == 4 { return 0.24; }
+    if idx == 5 { return 0.52; }
+    0.28
+}
+
+fn coat_b(idx: i32) -> f64 {
+    if idx == 0 { return 0.16; }
+    if idx == 1 { return 0.40; }
+    if idx == 2 { return 0.22; }
+    if idx == 3 { return 0.30; }
+    if idx == 4 { return 0.30; }
+    if idx == 5 { return 0.42; }
+    0.24
+}
+
+fn slab_hit(gb: &Vec<f64>, g: i32, o: V3, d: V3, t_best: f64) -> bool {
+    let base: usize = (g as usize) * 6;
+    let lo: V3 = v3(gb[base], gb[base + 1], gb[base + 2]);
+    let hi: V3 = v3(gb[base + 3], gb[base + 4], gb[base + 5]);
+    let mut t0: f64 = 0.0;
+    let mut t1: f64 = t_best;
+    if t_best < 0.0 { t1 = 1.0e300; }
+    let mut k: i32 = 0;
+    while k < 3 {
+        let dk: f64 = axis(d, k);
+        let ok: f64 = axis(o, k);
+        let lok: f64 = axis(lo, k);
+        let hik: f64 = axis(hi, k);
+        if absd(dk) < 0.000000000000001 {
+            if ok < lok || ok > hik { return false; }
+        } else {
+            let mut ta: f64 = (lok - ok) / dk;
+            let mut tb: f64 = (hik - ok) / dk;
+            if ta > tb {
+                let tmp: f64 = ta;
+                ta = tb;
+                tb = tmp;
+            }
+            t0 = maxd(t0, ta);
+            t1 = mind(t1, tb);
+            if t0 > t1 { return false; }
+        }
+        k = k + 1;
+    }
+    true
+}
+
+// Each figure packs 8 f64 values: [px, py, pz, ar, ag, ab, group_f, arrive]
+fn build_room_figures() -> Vec<f64> {
+    let mut figs: Vec<f64> = Vec::new();
+    // Group 0: Poster on the dais
+    figs.push(0.0); figs.push(0.55); figs.push(-7.3);
+    figs.push(0.20); figs.push(0.24); figs.push(0.30);
+    figs.push(0.0); figs.push(-1.0);
+
+    // Group 1: 26 ordinary repliers placed by rejection sampling
+    let mut s: u32 = 20261022;
+    let mut taken_x: Vec<f64> = Vec::new();
+    let mut taken_z: Vec<f64> = Vec::new();
+    let mut n_ord: i32 = 0;
+    let mut tries: i32 = 0;
+    while n_ord < 26 && tries < 4000 {
+        tries = tries + 1;
+        s = lcg_next(s);
+        let ux: f64 = ((s >> 8) as f64) / 16777216.0;
+        s = lcg_next(s);
+        let uz: f64 = ((s >> 8) as f64) / 16777216.0;
+        let px: f64 = -12.5 + 13.0 * ux;
+        let pz: f64 = -4.6 + 9.4 * uz;
+        let mut ok: bool = true;
+        let mut j: i32 = 0;
+        while j < n_ord {
+            let dx: f64 = px - taken_x[j as usize];
+            let dz: f64 = pz - taken_z[j as usize];
+            if sqrt(dx * dx + dz * dz) < 1.25 {
+                ok = false;
+                j = n_ord;
+            } else {
+                j = j + 1;
+            }
+        }
+        if ok {
+            taken_x.push(px);
+            taken_z.push(pz);
+            s = lcg_next(s);
+            let ci: i32 = (s % 7) as i32;
+            figs.push(px); figs.push(0.0); figs.push(pz);
+            figs.push(coat_r(ci)); figs.push(coat_g(ci)); figs.push(coat_b(ci));
+            figs.push(1.0); figs.push(-1.0);
+            n_ord = n_ord + 1;
+        }
+    }
+
+    // Group 2: 4 disclosed paid voices
+    let paid_x: Vec<f64> = vec![-3.2, -1.1, 1.0, -2.0];
+    let paid_z: Vec<f64> = vec![-3.9, -4.4, -3.6, -2.2];
+    let mut pi: i32 = 0;
+    while pi < 4 {
+        figs.push(paid_x[pi as usize]); figs.push(0.0); figs.push(paid_z[pi as usize]);
+        figs.push(0.44); figs.push(0.40); figs.push(0.36);
+        figs.push(2.0); figs.push(-1.0);
+        pi = pi + 1;
+    }
+
+    // Group 3: 3 look-alikes
+    let look_x: Vec<f64> = vec![2.6, 3.4, 1.6];
+    let look_z: Vec<f64> = vec![-1.8, -3.6, -0.4];
+    let mut li: i32 = 0;
+    while li < 3 {
+        figs.push(look_x[li as usize]); figs.push(0.0); figs.push(look_z[li as usize]);
+        figs.push(0.44); figs.push(0.40); figs.push(0.36);
+        figs.push(3.0); figs.push(-1.0);
+        li = li + 1;
+    }
+
+    // Group 4: 36 burst figures arriving in a tight block
+    let mut b: u32 = 7;
+    let mut bi: i32 = 0;
+    while bi < 36 {
+        let r: i32 = bi / 6;
+        let c: i32 = bi % 6;
+        b = lcg_next(b);
+        let ux: f64 = ((b >> 8) as f64) / 16777216.0;
+        b = lcg_next(b);
+        let uz: f64 = ((b >> 8) as f64) / 16777216.0;
+        let px: f64 = 5.4 + 1.0 * (c as f64) + 0.12 * (ux - 0.5);
+        let pz: f64 = -0.8 + 1.0 * (r as f64) + 0.12 * (uz - 0.5);
+        let arr: f64 = 0.075 * (((bi * 7) % 36) as f64);
+        figs.push(px); figs.push(0.0); figs.push(pz);
+        figs.push(0.47); figs.push(0.47); figs.push(0.46);
+        figs.push(4.0); figs.push(arr);
+        bi = bi + 1;
+    }
+    figs
+}
+
+fn build_group_bounds(figs: &Vec<f64>, n_figs: i32) -> Vec<f64> {
+    let mut gb: Vec<f64> = Vec::new();
+    let mut g: i32 = 0;
+    while g < 5 {
+        gb.push(1.0e9); gb.push(1.0e9); gb.push(1.0e9);
+        gb.push(-1.0e9); gb.push(-1.0e9); gb.push(-1.0e9);
+        g = g + 1;
+    }
+    let mut i: i32 = 0;
+    while i < n_figs {
+        let base: usize = (i as usize) * 8;
+        let fx: f64 = figs[base];
+        let fy: f64 = figs[base + 1];
+        let fz: f64 = figs[base + 2];
+        let grp: i32 = figs[base + 6] as i32;
+        let gb_idx: usize = (grp as usize) * 6;
+        gb[gb_idx] = mind(gb[gb_idx], fx - 0.52);
+        gb[gb_idx + 3] = maxd(gb[gb_idx + 3], fx + 0.52);
+        gb[gb_idx + 2] = mind(gb[gb_idx + 2], fz - 0.52);
+        gb[gb_idx + 5] = maxd(gb[gb_idx + 5], fz + 0.52);
+        gb[gb_idx + 1] = mind(gb[gb_idx + 1], fy);
+        let mut extra: f64 = 0.0;
+        if grp == 4 { extra = 8.0; }
+        gb[gb_idx + 4] = maxd(gb[gb_idx + 4], fy + 1.78 + extra);
+        i = i + 1;
+    }
+    gb
+}
+
+fn mix_v3(a: V3, b: V3, t: f64) -> V3 {
+    v3(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t)
+}
+
+fn trace_room(
+    figs: &Vec<f64>,
+    n_figs: i32,
+    gb: &Vec<f64>,
+    t_now: f64,
+    burst_at: f64,
+    paid_mark: f64,
+    look_mark: f64,
+    o: V3,
+    d: V3,
+) -> Hit {
+    let mut best: Hit = no_hit();
+    if absd(d.y) > 0.000000000000001 {
+        let t: f64 = (-0.4 - o.y) / d.y;
+        let x: f64 = o.x + t * d.x;
+        let z: f64 = o.z + t * d.z;
+        if absd(x) <= 90.0 && absd(z) <= 90.0 {
+            best = consider(best, t, v3(0.0, 1.0, 0.0), 1, 1, v3(0.10, 0.075, 0.06));
+        }
+    }
+    best = hit_box(v3(-15.0, -0.4, -10.0), v3(15.0, 0.0, 8.0), 2, 1, v3(0.50, 0.46, 0.39), o, d, best);
+    best = hit_box(v3(-1.8, 0.0, -8.4), v3(1.8, 0.55, -6.2), 3, 2, v3(0.30, 0.29, 0.28), o, d, best);
+
+    let skin: V3 = v3(0.62, 0.50, 0.42);
+    let disc_rest: V3 = v3(0.42, 0.39, 0.33);
+    let drift: V3 = v3(0.27, 0.042, 0.010);
+    let ink: V3 = v3(0.008, 0.007, 0.005);
+    let paid_col: V3 = mix_v3(disc_rest, drift, clampd(paid_mark, 0.0, 1.0));
+    let look_col: V3 = mix_v3(disc_rest, ink, clampd(look_mark, 0.0, 1.0));
+
+    let mut i: i32 = 0;
+    while i < n_figs {
+        let base: usize = (i as usize) * 8;
+        let grp: i32 = figs[base + 6] as i32;
+        if slab_hit(gb, grp, o, d, best.t) {
+            let mut px: f64 = figs[base];
+            let mut py: f64 = figs[base + 1];
+            let pz: f64 = figs[base + 2];
+            let arr: f64 = figs[base + 7];
+            let mut present: bool = true;
+            if arr >= 0.0 {
+                let at: f64 = burst_at + arr;
+                if t_now < at {
+                    present = false;
+                } else {
+                    let u: f64 = clampd((t_now - at) / 0.45, 0.0, 1.0);
+                    let e: f64 = 1.0 - (1.0 - u) * (1.0 - u) * (1.0 - u);
+                    py = py + 6.0 * (1.0 - e);
+                }
+            }
+            if present {
+                let alb: V3 = v3(figs[base + 3], figs[base + 4], figs[base + 5]);
+                let obj_id: i32 = 40 + i;
+                best = hit_cylinder(px, pz, 0.24, py, py + 1.45, obj_id, 11, alb, o, d, best);
+                best = hit_sphere(v3(px, py + 1.78 - 0.165, pz), 0.165, obj_id, 12, skin, o, d, best);
+                if grp == 2 {
+                    best = hit_cylinder(px, pz, 0.52, py, py + 0.035, obj_id, 13, paid_col, o, d, best);
+                }
+                if grp == 3 {
+                    best = hit_cylinder(px, pz, 0.52, py, py + 0.035, obj_id, 13, look_col, o, d, best);
+                }
+            }
+        }
+        i = i + 1;
+    }
+    best
+}
+
+fn shade_room(
+    figs: &Vec<f64>,
+    n_figs: i32,
+    gb: &Vec<f64>,
+    t_now: f64,
+    burst_at: f64,
+    paid_mark: f64,
+    look_mark: f64,
+    sun_dir: V3,
+    o: V3,
+    d: V3,
+    h: Hit,
+) -> V3 {
+    let sky_top: V3 = v3(0.24, 0.27, 0.32);
+    let sky_hor: V3 = v3(0.34, 0.32, 0.30);
+    let ground: V3 = v3(0.10, 0.085, 0.07);
+    let sun_c: V3 = v3(1.55, 1.42, 1.22);
+    if h.t < 0.0 {
+        let t: f64 = clampd(d.y * 1.6 + 0.1, 0.0, 1.0);
+        return v3(
+            sky_hor.x + (sky_top.x - sky_hor.x) * t,
+            sky_hor.y + (sky_top.y - sky_hor.y) * t,
+            sky_hor.z + (sky_top.z - sky_hor.z) * t,
+        );
+    }
+    let p: V3 = along(o, h.t, d);
+    let lifted: V3 = v3(p.x + h.n.x * 0.000001, p.y + h.n.y * 0.000001, p.z + h.n.z * 0.000001);
+    let nl: f64 = dot(h.n, sun_dir);
+    let mut sun: f64 = 0.0;
+    if nl > 0.0 {
+        let sh: Hit = trace_room(figs, n_figs, gb, t_now, burst_at, paid_mark, look_mark, lifted, sun_dir);
+        if !(sh.t > 0.0 && sh.t < 1.0e30) {
+            sun = nl;
+        }
+    }
+    let amb_t: f64 = 0.5 + 0.5 * h.n.y;
+    let ar: f64 = ground.x + (sky_top.x - ground.x) * amb_t;
+    let ag: f64 = ground.y + (sky_top.y - ground.y) * amb_t;
+    let ab: f64 = ground.z + (sky_top.z - ground.z) * amb_t;
+    v3(
+        h.albedo.x * (sun_c.x * sun + 0.0 * 0.0 + ar) + h.emit.x * 1.0,
+        h.albedo.y * (sun_c.y * sun + 0.0 * 0.0 + ag) + h.emit.y * 1.0,
+        h.albedo.z * (sun_c.z * sun + 0.0 * 0.0 + ab) + h.emit.z * 1.0,
+    )
+}
+
+// Renders orbitView(0, w, h) on SceneKind::Room under roomLight() with
+// RoomState{t=3.0, burstAt=1.0, paidMark=1.0 - mark_eps, lookalikeMark=0.5} and returns the lit
+// buffer FNV-1a hash. mark_eps is 0.0 for the pinned render and non-zero for the planted control.
+pub fn room_lit_hash(w: i32, h: i32, mark_eps: f64) -> u64 {
+    let figs: Vec<f64> = build_room_figures();
+    let n_figs: i32 = (figs.len() / 8) as i32;
+    let gb: Vec<f64> = build_group_bounds(&figs, n_figs);
+
+    let pi: f64 = 3.141592653589793;
+    let a: f64 = 20.0 * pi / 180.0;
+    let eye: V3 = v3(8.5 * sin(a), 4.2, 8.5 * cos(a));
+    let target: V3 = v3(0.0, 1.0, 0.0);
+    let fwd: V3 = norm(sub(target, eye));
+    let right: V3 = norm(cross(fwd, v3(0.0, 1.0, 0.0)));
+    let up: V3 = cross(right, fwd);
+    let focal: f64 = 0.5 * (h as f64) / tan(0.5 * 0.75);
+    let sun_dir: V3 = norm(v3(-0.42, 0.84, 0.34));
+
+    let t_now: f64 = 3.0;
+    let burst_at: f64 = 1.0;
+    let paid_mark: f64 = 1.0 - mark_eps;
+    let look_mark: f64 = 0.5;
+
+    let mut hash: u64 = kit::fnv_start();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut cr: f64 = 0.0;
+            let mut cg: f64 = 0.0;
+            let mut cb: f64 = 0.0;
+            let mut s: i32 = 0;
+            while s < 4 {
+                let px: f64 = (x as f64) + 0.25 + 0.5 * ((s % 2) as f64);
+                let py: f64 = (y as f64) + 0.25 + 0.5 * ((s / 2) as f64);
+                let dx: f64 = (px - 0.5 * (w as f64)) / focal;
+                let dy: f64 = -(py - 0.5 * (h as f64)) / focal;
+                let d: V3 = norm(v3(fwd.x + dx * right.x + dy * up.x, fwd.y + dx * right.y + dy * up.y, fwd.z + dx * right.z + dy * up.z));
+                let hit: Hit = trace_room(&figs, n_figs, &gb, t_now, burst_at, paid_mark, look_mark, eye, d);
+                let c: V3 = shade_room(&figs, n_figs, &gb, t_now, burst_at, paid_mark, look_mark, sun_dir, eye, d, hit);
+                cr = cr + c.x / 4.0;
+                cg = cg + c.y / 4.0;
+                cb = cb + c.z / 4.0;
+                s = s + 1;
+            }
+            hash = kit::fnv_f32(hash, cr);
+            hash = kit::fnv_f32(hash, cg);
+            hash = kit::fnv_f32(hash, cb);
+            hash = kit::fnv_f32(hash, 1.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}
