@@ -21,7 +21,8 @@ Pass `-WithRawDx12` / `--with-raw-dx12` for SHA-256 verification guidance on opt
 | Where | What |
 |---|---|
 | `superframe/`, `creation/`, `typeengine/` | Core seeded artifact engine: 15 laws, 181 technique nodes, 31 converters, living type, and measured study libraries |
-| `native/` | C++23 renderer (Direct3D 12, Vulkan, WebGPU) with modular WGSL shader assembly (`native/src/renderer/gpu/shaders/`) and BuildLang parity shaders (`native/bld/`). See `native/README.md` |
+| `native/` | C++23 renderer (Direct3D 12, Vulkan, WebGPU) with modular WGSL shader assembly (`native/src/renderer/gpu/shaders/`), `11/11` bit-exact `0` ULP C++23-to-BuildLang renderer parity modules (`native/bld/`, `#159..#163`, `16` `.bld` files), and `superframe.cross-api-parity/v1` dual-target WGSL+HLSL certificates (`#155`). See `native/README.md` |
+| `packages/world/bld/` | `16` pure-OSI `MIT` BuildLang engine kernels live on `main` across Batches 1..4 (`#164`, `#165`, `#166`, `#168`), including `OPT-052` `BuildLang-NTC610` (`-83.33%` 4K PBR VRAM vs BC7 baseline), `gsplat_keepsake`, and `sensorless_display_cal` |
 | `games/low-water/` | Low Water, the narrative action game built on the engine. `npm run test:games` runs its engine, weather, light, paint, and combat tests |
 | `packages/world/physai/` | SI rigid-body PGS/Coulomb contact physics, 6-DOF aerospace and powered-descent dynamics, biomechanical tree dynamics, and the `NOH-3` world bridge (Buckingham-Pi scale normalizer, caustic sparse scheduler, CODIT fault guard) |
 | `packages/lenspipe/`, `packages/crt/` | ITU-R BT.2020/2100 PQ spectral optics, Draine-HG scattering, dark-mist radiance, Sellmeier dispersion/caustics, and CRT phosphor/scanline physics |
@@ -168,7 +169,13 @@ The suites verify:
 
 Node 24 or later. The JavaScript engine has no third-party runtime dependencies. Python 3 runs the study verifier and `engine_receipt.py` using the standard library alone; `packages/` Python tests list their dependencies in `packages/README.md`.
 
-## Limits
+## Verified and Scope Limits
+
+- **Live `origin/main` anchor (`39da76ec`, `F1`, `G9`, `N49`, `N52`, `N53`, `I16`):** Relicensed from `FSL-1.1-MIT` to pure OSI `MIT` (`#162`), with `11/11` bit-exact `0` ULP C++23 parity modules in `native/bld/` (`#159..#163`), `16` pure-OSI `MIT` BuildLang engine kernels in `packages/world/bld/` (`#164`, `#165`, `#166`, `#168`), `superframe.cross-api-parity/v1` (`#155`), deterministic coastal simulation (`#158`), `CITATION.cff` / `codemeta.json` / `llms.txt` (`#157`), and `SECURITY.md` / `CONTRIBUTING.md` / `CODE_OF_CONDUCT.md` (`#167`, `11/11` OSS Gold Standard).
+- **Verification mechanism and silicon budget:** Renderer parity and physics tests execute deterministically in `O(N)` frame time via `SHA-256` `engine-receipt/1` and `SIG-058` checks on a single workstation CPU (`< 2 GB` RAM, `< 30 s` wall clock) plus optional RTX 4090 (`24 GB` VRAM) for `RAW` DX12 captures, bound alongside `buildlang`, `flywheel`, and `cmmns` in the unified 15-repo SBOM. Planted failing test and negative controls reject cell shifts, super-unitary albedo, and negative optical depth fail-closed.
+- **Offline staging boundary:** Open PR `#169` (`native/bld/` renderer parity modules `#12..#24`) remains in CI review and is not claimed as merged on `main`; `v1.2.0` has not been tagged yet.
+
+Core engine and measured library limits:
 
 - The laws run on their own grids at half the output size. Fine texture at 4K comes from seeded grain, and the law itself runs coarser, so close up the paint is soft.
 - Elements don't act on one another yet. Each law runs alone in its own region.
