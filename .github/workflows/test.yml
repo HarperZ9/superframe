@@ -80,7 +80,7 @@ jobs:
           grep -q "^planted controls rejected: 11 of 11$" native-bld-out.txt
           grep -q "^art metrics identities verified: 1 of 1$" native-bld-out.txt
           grep -q "^parity invariants verified: 2 of 2$" native-bld-out.txt
-      - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/world/tests/test_wave25f_buildlang_parity.py packages/world/tests/test_wave27c_cross_api_parity.py packages/world/tests/test_wave59d_engine_kernels.py
+      - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/world/tests/test_wave25f_buildlang_parity.py packages/world/tests/test_wave27c_cross_api_parity.py packages/world/tests/test_wave59d_engine_kernels.py packages/world/tests/test_wave80a_engine_batch2.py
         env:
           NATIVE_BLD_REQUIRE: '1'
           CROSS_API_REQUIRE_NATIVE: '1'

@@ -1,0 +1,161 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+// Wave 58H - Author Idea H1: World-Decay-Per-Covered-Up-Lie State Engine
+// Proves strictly monotonic growth in world corrosion, boss distortion, and harmonic dissonance
+// for each covered-up lie, paired with verifiable structural repair when truth is surfaced
+// (retaining an irreversible historical scar floor).
+// Planted Control: negative-entropy cover-up bug reducing corrosion rejected fail-closed.
+
+struct WorldState {
+    corrosion: f64,
+    boss_dist: f64,
+    dissonance: f64,
+    scar_floor: f64,
+    active_lies: i32,
+}
+
+fn world_integrity(st: &WorldState) -> f64 {
+    1.0 / (1.0 + st.corrosion)
+}
+
+// Apply a covered-up lie; returns (new_state, invariant_status) where 0=monotonic OK, 1=REJECT
+fn apply_cover_up(st: &WorldState, severity: f64, neg_entropy_bug: bool) -> (WorldState, i32) {
+    let lies_f: f64 = st.active_lies as f64;
+    let mut dc: f64 = severity * (0.14 + 0.06 * lies_f);
+    if neg_entropy_bug {
+        dc = -0.10 * severity;
+    }
+    let new_corr: f64 = st.corrosion + dc;
+    let db: f64 = severity * (0.18 + 0.08 * new_corr);
+    let new_boss: f64 = st.boss_dist + db;
+    let dd: f64 = severity * (0.12 + 0.05 * new_boss);
+    let new_diss: f64 = st.dissonance + dd;
+    let new_scar: f64 = st.scar_floor + 0.03 * severity;
+
+    let mut status: i32 = 0;
+    if new_corr <= st.corrosion || new_boss <= st.boss_dist || new_diss <= st.dissonance {
+        status = 1;
+    }
+
+    let next: WorldState = WorldState {
+        corrosion: new_corr,
+        boss_dist: new_boss,
+        dissonance: new_diss,
+        scar_floor: new_scar,
+        active_lies: st.active_lies + 1,
+    };
+    (next, status)
+}
+
+// Surface truth with verified witness token; repairs corrosion/distortion down to scar floor
+fn apply_truth_repair(st: &WorldState, witness_ok: i32) -> (WorldState, i32) {
+    if witness_ok == 0 || st.active_lies <= 0 {
+        return (
+            WorldState {
+                corrosion: st.corrosion,
+                boss_dist: st.boss_dist,
+                dissonance: st.dissonance,
+                scar_floor: st.scar_floor,
+                active_lies: st.active_lies,
+            },
+            1,
+        );
+    }
+    let mut new_corr: f64 = st.corrosion * 0.72;
+    if new_corr < st.scar_floor {
+        new_corr = st.scar_floor;
+    }
+    let new_boss: f64 = st.boss_dist * 0.66;
+    let new_diss: f64 = st.dissonance * 0.70;
+    let status: i32 = if new_corr < st.corrosion && new_boss < st.boss_dist && new_diss < st.dissonance {
+        0
+    } else {
+        1
+    };
+    let next: WorldState = WorldState {
+        corrosion: new_corr,
+        boss_dist: new_boss,
+        dissonance: new_diss,
+        scar_floor: st.scar_floor,
+        active_lies: st.active_lies - 1,
+    };
+    (next, status)
+}
+
+fn main() ~ Clock + Console {
+    let t0: i64 = clock_ns();
+
+    let mut st: WorldState = WorldState {
+        corrosion: 0.0,
+        boss_dist: 0.0,
+        dissonance: 0.0,
+        scar_floor: 0.0,
+        active_lies: 0,
+    };
+
+    // 8 consecutive covered-up lies across Acts 1-2
+    let mut sevs: Vec<f64> = Vec::new();
+    sevs.push(0.60);
+    sevs.push(0.75);
+    sevs.push(0.90);
+    sevs.push(0.85);
+    sevs.push(1.10);
+    sevs.push(1.25);
+    sevs.push(1.05);
+    sevs.push(1.40);
+
+    let mut mono_ok_steps: i32 = 0;
+    let mut i: usize = 0;
+    while i < sevs.len() {
+        let res: (WorldState, i32) = apply_cover_up(&st, sevs[i], false);
+        st = res.0;
+        if res.1 == 0 {
+            mono_ok_steps = mono_ok_steps + 1;
+        }
+        i = i + 1;
+    }
+
+    let peak_corr: f64 = st.corrosion;
+    let peak_boss: f64 = st.boss_dist;
+    let peak_diss: f64 = st.dissonance;
+    let peak_integ: f64 = world_integrity(&st);
+
+    // 4 consecutive truth-surfacing structural repairs in Act 3
+    let mut repair_ok_steps: i32 = 0;
+    let mut r: i32 = 0;
+    while r < 4 {
+        let res: (WorldState, i32) = apply_truth_repair(&st, 1);
+        st = res.0;
+        if res.1 == 0 {
+            repair_ok_steps = repair_ok_steps + 1;
+        }
+        r = r + 1;
+    }
+
+    let repaired_corr: f64 = st.corrosion;
+    let repaired_boss: f64 = st.boss_dist;
+    let repaired_diss: f64 = st.dissonance;
+    let repaired_integ: f64 = world_integrity(&st);
+    let scar_preserved: i32 = if repaired_corr >= st.scar_floor && st.scar_floor > 0.0 { 1 } else { 0 };
+
+    // Planted negative control: negative-entropy cover-up bug reduces corrosion -> REJECT (1)
+    let bug_res: (WorldState, i32) = apply_cover_up(&st, 1.0, true);
+    let planted_neg_entropy: i32 = bug_res.1;
+
+    let checksum: f64 = peak_corr + peak_boss + peak_diss + repaired_corr + repaired_boss
+        + repaired_diss + repaired_integ + st.scar_floor;
+    let elapsed_ms: f64 = ((clock_ns() - t0) as f64) / 1000000.0;
+
+    println!(
+        "H1_PART1 mono_ok={} peak_corr={} peak_boss={} peak_diss={} peak_integ={}",
+        mono_ok_steps, peak_corr, peak_boss, peak_diss, peak_integ
+    );
+    println!(
+        "H1_PART2 repair_ok={} rep_corr={} rep_boss={} rep_diss={} rep_integ={} scar_ok={}",
+        repair_ok_steps, repaired_corr, repaired_boss, repaired_diss, repaired_integ, scar_preserved
+    );
+    println!(
+        "H1_PART3 planted_neg_entropy={} checksum={} elapsed_ms={}",
+        planted_neg_entropy, checksum, elapsed_ms
+    );
+}

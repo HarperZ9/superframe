@@ -1,0 +1,218 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+// Wave 58H - Author Idea E2: Weighty 120 Hz Combat-Momentum & Civilization Logistics Coupled Engine
+// Runs a coupled melee-impulse/stagger/recovery physics loop and 12-node settlement supply/fortification
+// schedule across 60, 144, and 240 FPS render cadences via exact fixed-step 120 Hz accumulation,
+// proving 0.0 bit-exact drift across frame rates.
+// Planted Control: naive variable-dt Euler loop diverges across 60 vs 240 FPS, caught fail-closed.
+
+fn abs_f64(x: f64) -> f64 {
+    if x < 0.0 { -x } else { x }
+}
+
+struct SimState {
+    pos: f64,
+    vel: f64,
+    poise: f64,
+    total_supply: f64,
+    total_fort: f64,
+    ticks_run: i32,
+}
+
+fn step_physics(
+    pos: f64,
+    vel: f64,
+    poise: f64,
+    stagger: i32,
+    supply: &mut Vec<f64>,
+    fort: &mut Vec<f64>,
+    dt: f64,
+    step_idx: i32,
+) -> (f64, f64, f64, i32) {
+    let mass: f64 = 82.0;
+    let friction: f64 = 6.5;
+    let mut impulse: f64 = 0.0;
+    let mut new_stagger: i32 = stagger;
+    let mut new_poise: f64 = poise;
+
+    // Scheduled melee windup/strike/stagger windows every 120 ticks (1.0 s)
+    let phase: i32 = step_idx % 120;
+    if phase == 20 {
+        impulse = 680.0;
+    } else if phase == 64 {
+        impulse = -540.0;
+        new_poise = new_poise - 35.0;
+        if new_poise <= 0.0 {
+            new_poise = 0.0;
+            new_stagger = 24;
+        }
+    }
+    if new_stagger > 0 {
+        new_stagger = new_stagger - 1;
+        impulse = impulse * 0.25;
+    } else if new_poise < 100.0 {
+        new_poise = new_poise + 22.0 * dt;
+        if new_poise > 100.0 {
+            new_poise = 100.0;
+        }
+    }
+
+    let acc: f64 = (impulse - friction * vel) / mass;
+    let new_vel: f64 = vel + acc * dt;
+    let new_pos: f64 = pos + new_vel * dt;
+
+    // 12-node coastal settlement supply diffusion & fortification conversion
+    let n_nodes: usize = 12;
+    let mut delta: Vec<f64> = Vec::new();
+    let mut i: usize = 0;
+    while i < n_nodes {
+        delta.push(0.0);
+        i = i + 1;
+    }
+    let k_flow: f64 = 0.45 * dt;
+    let k_fort: f64 = 0.08 * dt;
+    i = 0;
+    while i < n_nodes {
+        let next: usize = (i + 1) % n_nodes;
+        let flow: f64 = k_flow * (supply[i] - supply[next]);
+        delta[i] = delta[i] - flow;
+        delta[next] = delta[next] + flow;
+        i = i + 1;
+    }
+    i = 0;
+    while i < n_nodes {
+        let mut prod: f64 = 0.30 * dt;
+        if i == 0 && phase == 64 {
+            prod = prod - 0.18;
+        }
+        let conv: f64 = k_fort * supply[i];
+        supply[i] = supply[i] + delta[i] + prod - conv;
+        if supply[i] < 0.0 {
+            supply[i] = 0.0;
+        }
+        fort[i] = fort[i] + conv;
+        i = i + 1;
+    }
+
+    (new_pos, new_vel, new_poise, new_stagger)
+}
+
+// Run 10.0 seconds (1200 fixed 120 Hz ticks) driven by render_fps using exact integer accumulator
+fn run_fixed_120hz(render_fps: i64) -> SimState {
+    let sim_hz: i64 = 120;
+    let total_secs: i64 = 10;
+    let total_frames: i64 = render_fps * total_secs;
+    let dt: f64 = 1.0 / 120.0;
+
+    let mut pos: f64 = 0.0;
+    let mut vel: f64 = 0.0;
+    let mut poise: f64 = 100.0;
+    let mut stagger: i32 = 0;
+    let mut supply: Vec<f64> = Vec::new();
+    let mut fort: Vec<f64> = Vec::new();
+    let mut i: usize = 0;
+    while i < 12 {
+        supply.push(10.0 + (i as f64) * 1.5);
+        fort.push(2.0);
+        i = i + 1;
+    }
+
+    // Rational accumulator in units of 1 / (render_fps * sim_hz)
+    let mut accum: i64 = 0;
+    let mut ticks: i32 = 0;
+    let mut f: i64 = 0;
+    while f < total_frames {
+        accum = accum + sim_hz;
+        while accum >= render_fps {
+            let res: (f64, f64, f64, i32) = step_physics(
+                pos, vel, poise, stagger, &mut supply, &mut fort, dt, ticks,
+            );
+            pos = res.0;
+            vel = res.1;
+            poise = res.2;
+            stagger = res.3;
+            ticks = ticks + 1;
+            accum = accum - render_fps;
+        }
+        f = f + 1;
+    }
+
+    let mut s_sum: f64 = 0.0;
+    let mut f_sum: f64 = 0.0;
+    i = 0;
+    while i < 12 {
+        s_sum = s_sum + supply[i];
+        f_sum = f_sum + fort[i];
+        i = i + 1;
+    }
+
+    SimState {
+        pos: pos,
+        vel: vel,
+        poise: poise,
+        total_supply: s_sum,
+        total_fort: f_sum,
+        ticks_run: ticks,
+    }
+}
+
+// Planted buggy loop: steps physics directly at variable render dt without fixed-step accumulator
+fn run_variable_dt_bug(render_fps: i64) -> f64 {
+    let total_frames: i64 = render_fps * 10;
+    let dt: f64 = 1.0 / (render_fps as f64);
+    let mut pos: f64 = 0.0;
+    let mut vel: f64 = 0.0;
+    let mass: f64 = 82.0;
+    let friction: f64 = 6.5;
+    let mut f: i64 = 0;
+    while f < total_frames {
+        let mut force: f64 = 0.0;
+        if (f % render_fps) == (render_fps / 6) {
+            force = 680.0;
+        }
+        let acc: f64 = (force - friction * vel) / mass;
+        vel = vel + acc * dt;
+        pos = pos + vel * dt;
+        f = f + 1;
+    }
+    pos
+}
+
+fn state_diff(a: &SimState, b: &SimState) -> f64 {
+    abs_f64(a.pos - b.pos)
+        + abs_f64(a.vel - b.vel)
+        + abs_f64(a.poise - b.poise)
+        + abs_f64(a.total_supply - b.total_supply)
+        + abs_f64(a.total_fort - b.total_fort)
+}
+
+fn main() ~ Clock + Console {
+    let t0: i64 = clock_ns();
+
+    let s60: SimState = run_fixed_120hz(60);
+    let s144: SimState = run_fixed_120hz(144);
+    let s240: SimState = run_fixed_120hz(240);
+
+    let d_60_144: f64 = state_diff(&s60, &s144);
+    let d_60_240: f64 = state_diff(&s60, &s240);
+    let max_fps_drift: f64 = if d_60_144 > d_60_240 { d_60_144 } else { d_60_240 };
+    let fixed_ok: i32 = if max_fps_drift == 0.0 && s60.ticks_run == 1200 { 0 } else { 1 };
+
+    // Planted negative control: naive variable-dt diverges across 60 vs 240 FPS
+    let v60: f64 = run_variable_dt_bug(60);
+    let v240: f64 = run_variable_dt_bug(240);
+    let var_dt_drift: f64 = abs_f64(v60 - v240);
+    let planted_var_dt_status: i32 = if var_dt_drift > 0.05 { 1 } else { 0 };
+
+    let checksum: f64 = s60.pos + s60.vel + s60.poise + s60.total_supply + s60.total_fort + var_dt_drift;
+    let elapsed_ms: f64 = ((clock_ns() - t0) as f64) / 1000000.0;
+
+    println!(
+        "E2_PART1 ticks={} pos={} vel={} poise={} total_supply={} total_fort={}",
+        s60.ticks_run, s60.pos, s60.vel, s60.poise, s60.total_supply, s60.total_fort
+    );
+    println!(
+        "E2_PART2 max_fps_drift={} fixed_ok={} var_dt_drift={} planted_var_dt_status={} checksum={} elapsed_ms={}",
+        max_fps_drift, fixed_ok, var_dt_drift, planted_var_dt_status, checksum, elapsed_ms
+    );
+}

@@ -1,0 +1,119 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+// Wave 58G (Author Idea N64, SIG-128): 16-Archetype PBR + Multi-Bounce RT Furnace Verifier
+// Evaluates white-furnace hemisphere directional reflectance and 3-bounce passive energy
+// conservation across 16 material archetypes (dielectric, metal, foliage, snow, ice, water,
+// skin, cloth, etc.) and catches planted energy-creating BRDF (albedo > 1.0) fail-closed.
+
+struct PbrMat {
+    albedo: f64,
+    roughness: f64,
+    metallic: f64,
+    f0: f64,
+}
+
+fn schlick_fresnel(cos_t: f64, f0: f64) -> f64 {
+    let omc: f64 = 1.0 - cos_t;
+    let omc2: f64 = omc * omc;
+    f0 + (1.0 - f0) * (omc2 * omc2 * omc)
+}
+
+// Cosine-weighted hemisphere white-furnace albedo integral (32 midpoint strips on mu in [0,1])
+// For a physical energy-conserving Lambert + microfacet Schlick blend:
+// R(mu) = metallic * F(mu, albedo) + (1 - metallic) * (F(mu, f0) + (1 - F(mu, f0)) * albedo)
+// Energy conservation requires R(mu) <= 1.0 for every mu, hence furnace integral <= 1.0.
+fn furnace_albedo(m: &PbrMat) -> f64 {
+    let n: i32 = 32;
+    let dmu: f64 = 1.0 / (n as f64);
+    let mut acc: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < n {
+        let mu: f64 = ((i as f64) + 0.5) * dmu;
+        let f_met: f64 = schlick_fresnel(mu, m.albedo);
+        let f_diel: f64 = schlick_fresnel(mu, m.f0);
+        // Microfacet roughness attenuation (single-scatter energy stays <= F)
+        let r_atten: f64 = 1.0 - 0.15 * m.roughness * m.roughness;
+        let r_met: f64 = f_met * r_atten;
+        let r_diel: f64 = f_diel * r_atten + (1.0 - f_diel) * m.albedo;
+        let r_tot: f64 = m.metallic * r_met + (1.0 - m.metallic) * r_diel;
+        // Cosine-weighted hemisphere PDF = 2 * mu * dmu
+        acc = acc + (2.0 * mu * dmu) * r_tot;
+        i = i + 1;
+    }
+    acc
+}
+
+// Fail-closed BRDF energy conservation gate (1-bounce + 3-bounce passive decay)
+fn verify_energy_conserving(m: &PbrMat) -> i32 {
+    let a1: f64 = furnace_albedo(m);
+    let a3: f64 = a1 * a1 * a1;
+    if m.albedo < 0.0 || a1 > 1.0 || a3 > 1.0 {
+        -301
+    } else {
+        0
+    }
+}
+
+fn main() ~ Console + Clock {
+    let t0: i64 = clock_ns();
+
+    let mut mats: Vec<PbrMat> = Vec::new();
+    mats.push(PbrMat { albedo: 0.72, roughness: 0.45, metallic: 0.00, f0: 0.04 }); // 1 dielectric paint
+    mats.push(PbrMat { albedo: 0.91, roughness: 0.25, metallic: 1.00, f0: 0.91 }); // 2 brushed aluminum
+    mats.push(PbrMat { albedo: 0.96, roughness: 0.05, metallic: 1.00, f0: 0.96 }); // 3 mirror silver
+    mats.push(PbrMat { albedo: 0.80, roughness: 0.90, metallic: 0.00, f0: 0.03 }); // 4 matte plaster
+    mats.push(PbrMat { albedo: 0.28, roughness: 0.55, metallic: 0.00, f0: 0.04 }); // 5 leaf foliage
+    mats.push(PbrMat { albedo: 0.18, roughness: 0.65, metallic: 0.00, f0: 0.04 }); // 6 pine needle
+    mats.push(PbrMat { albedo: 0.88, roughness: 0.50, metallic: 0.00, f0: 0.02 }); // 7 fresh snow
+    mats.push(PbrMat { albedo: 0.78, roughness: 0.12, metallic: 0.00, f0: 0.02 }); // 8 glacier ice
+    mats.push(PbrMat { albedo: 0.06, roughness: 0.04, metallic: 0.00, f0: 0.02 }); // 9 calm water
+    mats.push(PbrMat { albedo: 0.10, roughness: 0.30, metallic: 0.00, f0: 0.02 }); // 10 rough ocean
+    mats.push(PbrMat { albedo: 0.52, roughness: 0.42, metallic: 0.00, f0: 0.03 }); // 11 skin
+    mats.push(PbrMat { albedo: 0.44, roughness: 0.85, metallic: 0.00, f0: 0.03 }); // 12 woven cloth
+    mats.push(PbrMat { albedo: 0.12, roughness: 0.22, metallic: 0.00, f0: 0.05 }); // 13 wet asphalt
+    mats.push(PbrMat { albedo: 0.34, roughness: 0.72, metallic: 0.00, f0: 0.04 }); // 14 weathered wood
+    mats.push(PbrMat { albedo: 0.38, roughness: 0.80, metallic: 0.00, f0: 0.04 }); // 15 clay brick
+    mats.push(PbrMat { albedo: 0.84, roughness: 0.10, metallic: 0.00, f0: 0.05 }); // 16 ceramic glaze
+
+    let mut pass_cnt: i32 = 0;
+    let mut max_a1: f64 = 0.0;
+    let mut sum_a3: f64 = 0.0;
+    let mut i: usize = 0;
+    while i < mats.len() {
+        let a1: f64 = furnace_albedo(&mats[i]);
+        let a3: f64 = a1 * a1 * a1;
+        if a1 > max_a1 { max_a1 = a1; }
+        sum_a3 = sum_a3 + a3;
+        if verify_energy_conserving(&mats[i]) == 0 {
+            pass_cnt = pass_cnt + 1;
+        }
+        i = i + 1;
+    }
+
+    // Planted control: unphysical energy-creating BRDF (albedo = 1.18 > 1.0)
+    let bad_brdf: PbrMat = PbrMat { albedo: 1.18, roughness: 0.20, metallic: 0.00, f0: 0.04 };
+    let bad_a1: f64 = furnace_albedo(&bad_brdf);
+    let rc_bad: i32 = verify_energy_conserving(&bad_brdf);
+
+    let t1: i64 = clock_ns();
+    let elapsed_ms: f64 = ((t1 - t0) as f64) / 1.0e6;
+
+    let mut failures: i32 = 0;
+    if pass_cnt != 16 || max_a1 > 1.0 || rc_bad != -301 || bad_a1 <= 1.0 {
+        failures = failures + 1;
+    }
+
+    let p1: String = format!(
+        "PBR_16ARCH status={} failures={} elapsed_ms={:.4} pass={}/16 max_a1={:.9}",
+        if failures == 0 { "PASS" } else { "FAIL" },
+        failures,
+        elapsed_ms,
+        pass_cnt,
+        max_a1
+    );
+    let p2: String = format!(
+        "sum_a3={:.9} bad_a1={:.9} rc_bad={}",
+        sum_a3, bad_a1, rc_bad
+    );
+    println!("{} {}", p1, p2);
+}
