@@ -53,10 +53,14 @@ assembler is in the toolchain yet to turn it into a module a browser loads.
 
 ## Graduated BuildLang Engine Kernels
 
-`bld/` holds four standalone MIT BuildLang engine kernels verified by `tests/test_wave59d_engine_kernels.py`
-and enforced in CI under `buildlang-engine`: 3D Gaussian Splatting (`gsplat_keepsake.bld`), 4K neural PBR
-material decoding (`ntc610_decoder.bld`), sensorless display calibration (`sensorless_display_cal.bld`), and
-JONSWAP/Gerstner ocean waves (`buoy_ocean_field.bld`). See `bld/README.md` for known-answer targets and commands.
+`bld/` holds eight standalone MIT BuildLang engine kernels verified by `tests/test_wave59d_engine_kernels.py`
+and `tests/test_wave80a_engine_batch2.py`, and enforced in CI under `buildlang-engine`: 3D Gaussian Splatting
+(`gsplat_keepsake.bld`), 4K neural PBR material decoding (`ntc610_decoder.bld`), sensorless display calibration
+(`sensorless_display_cal.bld`), JONSWAP/Gerstner ocean waves (`buoy_ocean_field.bld`), 120 Hz combat and
+settlement simulation (`low_water_combat_civ.bld`), monotonic corrosion and witnessed repair
+(`low_water_lie_decay.bld`), 16-archetype PBR white-furnace conservation (`pbr_16archetype_rt.bld`), and
+100k-instance frustum/Hi-Z indirect draw culling (`moat_indirect_draw_cull.bld`). See `bld/README.md` for
+known-answer targets and commands.
 
 ## Limits
 

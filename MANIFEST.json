@@ -17860,8 +17860,8 @@
   {
    "path": "packages/world/README.md",
    "source": "repo",
-   "bytes": 4537,
-   "sourceSha256": "0f0833e9230f2d8305cf19e33c904780aa7221b8989d0d2c112a09001c401b8d"
+   "bytes": 4875,
+   "sourceSha256": "a35f12f22b7b8cd846730ac46be8a276c33340dcf8b685d8ce14a2058461bc5f"
   },
   {
    "path": "packages/world/bench.mjs",
@@ -17872,8 +17872,8 @@
   {
    "path": "packages/world/bld/README.md",
    "source": "repo",
-   "bytes": 2607,
-   "sourceSha256": "9e766644ec7704114ec26df2ea0fcb761e1f1242354fcc62a549222084d038ca"
+   "bytes": 3948,
+   "sourceSha256": "0525a6f548193b86f2e0ab0027bf71111d609fede8bf2e75237efba4de3dc4d6"
   },
   {
    "path": "packages/world/bld/buoy_ocean_field.bld",
@@ -17888,10 +17888,34 @@
    "sourceSha256": "96bacf975fba1727919a8632df16befaf62ef0e3aa8db2ae295c50c26c2565b2"
   },
   {
+   "path": "packages/world/bld/low_water_combat_civ.bld",
+   "source": "repo",
+   "bytes": 6699,
+   "sourceSha256": "f67c398ae551da987c7048f4e77e8a13662a29f70fd8466808cbda061bed40c9"
+  },
+  {
+   "path": "packages/world/bld/low_water_lie_decay.bld",
+   "source": "repo",
+   "bytes": 5378,
+   "sourceSha256": "231d288ad1fe00089477209f04026b40adebe940938988d11cd28aa516f4af31"
+  },
+  {
+   "path": "packages/world/bld/moat_indirect_draw_cull.bld",
+   "source": "repo",
+   "bytes": 7985,
+   "sourceSha256": "e4bbaed2fd31c42152c2ba23144927e07d2bddbb6de352b24badd9af29e0917d"
+  },
+  {
    "path": "packages/world/bld/ntc610_decoder.bld",
    "source": "repo",
    "bytes": 23376,
    "sourceSha256": "11db787f00ceb2bb2e62d1ef069d8ede79775857ce44f3c4939e832903f313d2"
+  },
+  {
+   "path": "packages/world/bld/pbr_16archetype_rt.bld",
+   "source": "repo",
+   "bytes": 5191,
+   "sourceSha256": "5b2d664fd8cf527f295d52c5451be05b744d7409b54da67182d645ab40908994"
   },
   {
    "path": "packages/world/bld/sensorless_display_cal.bld",
@@ -18090,6 +18114,12 @@
    "source": "repo",
    "bytes": 7337,
    "sourceSha256": "7fd414128e2bab8026dc748c5dcca85998e744398154db7c685f65507c79d68b"
+  },
+  {
+   "path": "packages/world/tests/test_wave80a_engine_batch2.py",
+   "source": "repo",
+   "bytes": 6169,
+   "sourceSha256": "50dd4832183c02fc5d0cc9ba7b87f7bab94a88f57c1c00ad8aa1793fbfe3c56e"
   }
  ]
 }
