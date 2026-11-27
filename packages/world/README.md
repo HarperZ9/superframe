@@ -51,6 +51,13 @@ assembler is in the toolchain yet to turn it into a module a browser loads.
   field reaches 19 of them; the rest stay where they were. The test fails when any row stops resolving.
 - The bundle the site carries is rebuilt in the test and must match byte for byte.
 
+## Graduated BuildLang Engine Kernels
+
+`bld/` holds four standalone MIT BuildLang engine kernels verified by `tests/test_wave59d_engine_kernels.py`
+and enforced in CI under `buildlang-engine`: 3D Gaussian Splatting (`gsplat_keepsake.bld`), 4K neural PBR
+material decoding (`ntc610_decoder.bld`), sensorless display calibration (`sensorless_display_cal.bld`), and
+JONSWAP/Gerstner ocean waves (`buoy_ocean_field.bld`). See `bld/README.md` for known-answer targets and commands.
+
 ## Limits
 
 The scene is two dimensional and runs on the CPU on a 100 by 60 grid. Dye raises water's index by a chosen 0.2 of

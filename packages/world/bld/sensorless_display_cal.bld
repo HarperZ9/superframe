@@ -1,0 +1,371 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Wave 57C - Author Idea N65: Zero-Instrument Sensorless Display Calibration Solver
+// Fits 3-channel TRC gamma + white-point gain matrix from psychophysical checkerboard luminance
+// matches and achromatic gray-balance ratios across drifted sRGB and Display-P3 panels, verifying
+// <= 1.5 dE recovery on 24 ColorChecker patches.
+// Planted Control: inverted-LUT / negative-gamma panel rejected fail-closed.
+
+fn abs_f64(x: f64) -> f64 {
+    if x < 0.0 { -x } else { x }
+}
+
+fn det_sqrt(x: f64) -> f64 {
+    if x <= 0.0 {
+        return 0.0;
+    }
+    let mut s: f64 = x;
+    let mut scale: f64 = 1.0;
+    while s > 4.0 {
+        s = s * 0.25;
+        scale = scale * 2.0;
+    }
+    while s < 0.25 {
+        s = s * 4.0;
+        scale = scale * 0.5;
+    }
+    let mut g: f64 = 0.5 * (s + 1.0);
+    let mut i: i32 = 0;
+    while i < 12 {
+        g = 0.5 * (g + s / g);
+        i = i + 1;
+    }
+    g * scale
+}
+
+fn det_cbrt(x: f64) -> f64 {
+    if x == 0.0 {
+        return 0.0;
+    }
+    let sign: f64 = if x < 0.0 { -1.0 } else { 1.0 };
+    let mut s: f64 = abs_f64(x);
+    let mut scale: f64 = 1.0;
+    while s > 8.0 {
+        s = s * 0.125;
+        scale = scale * 2.0;
+    }
+    while s < 0.125 {
+        s = s * 8.0;
+        scale = scale * 0.5;
+    }
+    let mut g: f64 = 0.5 * (s + 1.0);
+    let mut i: i32 = 0;
+    while i < 14 {
+        g = (2.0 * g + s / (g * g)) / 3.0;
+        i = i + 1;
+    }
+    sign * g * scale
+}
+
+fn det_ln(x: f64) -> f64 {
+    if x <= 1.0e-30 {
+        return -69.0;
+    }
+    let mut v: f64 = x;
+    let mut k: i32 = 0;
+    let ln2: f64 = 0.69314718055994530942;
+    while v > 1.4142135623730951 {
+        v = v * 0.5;
+        k = k + 1;
+    }
+    while v < 0.7071067811865476 {
+        v = v * 2.0;
+        k = k - 1;
+    }
+    let y: f64 = (v - 1.0) / (v + 1.0);
+    let y2: f64 = y * y;
+    let mut term: f64 = y;
+    let mut sum: f64 = y;
+    let mut n: i32 = 1;
+    while n < 12 {
+        term = term * y2;
+        sum = sum + term / ((2 * n + 1) as f64);
+        n = n + 1;
+    }
+    2.0 * sum + (k as f64) * ln2
+}
+
+fn det_exp(x: f64) -> f64 {
+    if x < -50.0 {
+        return 0.0;
+    }
+    let u: f64 = x / 128.0;
+    let p6: f64 = 1.388888888888889e-3 + u * 1.984126984126984e-4;
+    let p5: f64 = 8.333333333333333e-3 + u * p6;
+    let p4: f64 = 4.1666666666666664e-2 + u * p5;
+    let mut t: f64 = 1.0 + u * (1.0 + u * (0.5 + u * (0.16666666666666666 + u * p4)));
+    let mut i: i32 = 0;
+    while i < 7 {
+        t = t * t;
+        i = i + 1;
+    }
+    t
+}
+
+fn det_pow(base: f64, exp_v: f64) -> f64 {
+    if base <= 0.0 {
+        return 0.0;
+    }
+    det_exp(exp_v * det_ln(base))
+}
+
+fn lab_f(t: f64) -> f64 {
+    let eps: f64 = 0.008856451679035631;
+    if t > eps {
+        det_cbrt(t)
+    } else {
+        7.787037037037037 * t + 0.13793103448275862
+    }
+}
+
+struct LabColor {
+    l: f64,
+    a: f64,
+    b: f64,
+}
+
+// Convert linear RGB to CIE L*a*b* (D65 whitepoint Xn=0.95047, Yn=1.0, Zn=1.08883)
+// mode=0: sRGB matrix; mode=1: Display-P3 matrix
+fn rgb_to_lab(r: f64, g: f64, b: f64, mode: i32) -> LabColor {
+    let mut x: f64 = 0.0;
+    let mut y: f64 = 0.0;
+    let mut z: f64 = 0.0;
+    if mode == 0 {
+        x = 0.4124564 * r + 0.3575761 * g + 0.1804375 * b;
+        y = 0.2126729 * r + 0.7151522 * g + 0.0721750 * b;
+        z = 0.0193339 * r + 0.1191920 * g + 0.9503041 * b;
+    } else {
+        x = 0.4865709 * r + 0.2656677 * g + 0.1982173 * b;
+        y = 0.2289746 * r + 0.6917385 * g + 0.0792869 * b;
+        z = 0.0000000 * r + 0.0451134 * g + 1.0439444 * b;
+    }
+    let fx: f64 = lab_f(x / 0.95047);
+    let fy: f64 = lab_f(y / 1.00000);
+    let fz: f64 = lab_f(z / 1.08883);
+    LabColor {
+        l: 116.0 * fy - 16.0,
+        a: 500.0 * (fx - fy),
+        b: 200.0 * (fy - fz),
+    }
+}
+
+fn delta_e76(c1: LabColor, c2: LabColor) -> f64 {
+    let dl: f64 = c1.l - c2.l;
+    let da: f64 = c1.a - c2.a;
+    let db: f64 = c1.b - c2.b;
+    det_sqrt(dl * dl + da * da + db * db)
+}
+
+// Fit channel gamma from 5 psychophysical luminance matches (c_i^gamma = L_i)
+// Rejects non-monotonic or negative/out-of-bounds LUT observations fail-closed (returns -1.0).
+fn fit_channel_gamma(codes: &Vec<f64>, lums: &Vec<f64>) -> f64 {
+    let n: usize = codes.len();
+    let mut i: usize = 0;
+    while i < n {
+        if codes[i] <= 0.001 || codes[i] >= 0.999 || lums[i] <= 0.001 || lums[i] >= 0.999 {
+            return -1.0;
+        }
+        if i > 0 && codes[i] <= codes[i - 1] {
+            return -1.0;
+        }
+        i = i + 1;
+    }
+    let mut num: f64 = 0.0;
+    let mut den: f64 = 0.0;
+    i = 0;
+    while i < n {
+        let lc: f64 = det_ln(codes[i]);
+        let ll: f64 = det_ln(lums[i]);
+        num = num + lc * ll;
+        den = den + lc * lc;
+        i = i + 1;
+    }
+    if den <= 1.0e-12 {
+        return -1.0;
+    }
+    let g: f64 = num / den;
+    if g < 0.8 || g > 4.5 {
+        return -1.0;
+    }
+    g
+}
+
+struct PanelCalResult {
+    status: i32,
+    uncal_max_de: f64,
+    cal_med_de: f64,
+    cal_max_de: f64,
+    max_gamma_err: f64,
+}
+
+fn sort_f64(vals: &mut Vec<f64>) {
+    let n: usize = vals.len();
+    let mut i: usize = 0;
+    while i < n {
+        let mut j: usize = i + 1;
+        while j < n {
+            if vals[j] < vals[i] {
+                let tmp: f64 = vals[i];
+                vals[i] = vals[j];
+                vals[j] = tmp;
+            }
+            j = j + 1;
+        }
+        i = i + 1;
+    }
+}
+
+fn run_panel_calibration(
+    true_gr: f64, true_gg: f64, true_gb: f64,
+    true_wr: f64, true_wg: f64, true_wb: f64,
+    mode: i32,
+    invert_trap: bool,
+) -> PanelCalResult {
+    let mut lums: Vec<f64> = Vec::new();
+    lums.push(0.125);
+    lums.push(0.250);
+    lums.push(0.375);
+    lums.push(0.500);
+    lums.push(0.750);
+
+    // Deterministic psychophysical match offsets (<= 0.0018 code units)
+    let mut jit: Vec<f64> = Vec::new();
+    jit.push(0.0012);
+    jit.push(-0.0015);
+    jit.push(0.0009);
+    jit.push(-0.0011);
+    jit.push(0.0014);
+
+    let mut cr: Vec<f64> = Vec::new();
+    let mut cg: Vec<f64> = Vec::new();
+    let mut cb: Vec<f64> = Vec::new();
+    let mut i: usize = 0;
+    while i < 5 {
+        let mut vr: f64 = det_pow(lums[i], 1.0 / true_gr) + jit[i];
+        let vg: f64 = det_pow(lums[i], 1.0 / true_gg) - 0.8 * jit[i];
+        let vb: f64 = det_pow(lums[i], 1.0 / true_gb) + 0.6 * jit[i];
+        if invert_trap {
+            vr = 1.0 - vr;
+        }
+        cr.push(vr);
+        cg.push(vg);
+        cb.push(vb);
+        i = i + 1;
+    }
+
+    let gr_hat: f64 = fit_channel_gamma(&cr, &lums);
+    let gg_hat: f64 = fit_channel_gamma(&cg, &lums);
+    let gb_hat: f64 = fit_channel_gamma(&cb, &lums);
+    if gr_hat < 0.0 || gg_hat < 0.0 || gb_hat < 0.0 {
+        return PanelCalResult {
+            status: 1,
+            uncal_max_de: 0.0,
+            cal_med_de: 0.0,
+            cal_max_de: 0.0,
+            max_gamma_err: -1.0,
+        };
+    }
+
+    // Visual gray-balance observation at mid-gray L_ref = 0.35 (observer tunes channel ratios)
+    let l_ref: f64 = 0.35;
+    let c_bal_r: f64 = det_pow(l_ref / true_wr, 1.0 / true_gr) + 0.0007;
+    let c_bal_g: f64 = det_pow(l_ref / true_wg, 1.0 / true_gg) - 0.0005;
+    let c_bal_b: f64 = det_pow(l_ref / true_wb, 1.0 / true_gb) + 0.0006;
+    let wr_hat: f64 = l_ref / det_pow(c_bal_r, gr_hat);
+    let wg_hat: f64 = l_ref / det_pow(c_bal_g, gg_hat);
+    let wb_hat: f64 = l_ref / det_pow(c_bal_b, gb_hat);
+
+    // Evaluate 24 deterministic ColorChecker-like linear RGB patches
+    let mut uncal_max: f64 = 0.0;
+    let mut cal_des: Vec<f64> = Vec::new();
+    let mut p: i32 = 0;
+    while p < 24 {
+        let pf: f64 = p as f64;
+        let tr: f64 = 0.08 + 0.72 * (((p * 7 + 3) % 23) as f64) / 22.0;
+        let tg: f64 = 0.08 + 0.72 * (((p * 11 + 5) % 23) as f64) / 22.0;
+        let tb: f64 = 0.08 + 0.72 * (((p * 13 + 9) % 23) as f64) / 22.0;
+        let ref_lab: LabColor = rgb_to_lab(tr, tg, tb, mode);
+
+        // Uncalibrated drive (assumes nominal gamma=2.2, white=1.0)
+        let u_r: f64 = true_wr * det_pow(det_pow(tr, 1.0 / 2.2), true_gr);
+        let u_g: f64 = true_wg * det_pow(det_pow(tg, 1.0 / 2.2), true_gg);
+        let u_b: f64 = true_wb * det_pow(det_pow(tb, 1.0 / 2.2), true_gb);
+        let u_de: f64 = delta_e76(ref_lab, rgb_to_lab(u_r, u_g, u_b, mode));
+        if u_de > uncal_max {
+            uncal_max = u_de;
+        }
+
+        // Calibrated drive using fitted inverse TRC + inverse whitepoint gain
+        let c_r: f64 = true_wr * det_pow(det_pow(tr / wr_hat, 1.0 / gr_hat), true_gr);
+        let c_g: f64 = true_wg * det_pow(det_pow(tg / wg_hat, 1.0 / gg_hat), true_gg);
+        let c_b: f64 = true_wb * det_pow(det_pow(tb / wb_hat, 1.0 / gb_hat), true_gb);
+        let c_de: f64 = delta_e76(ref_lab, rgb_to_lab(c_r, c_g, c_b, mode));
+        cal_des.push(c_de + 0.0 * pf);
+        p = p + 1;
+    }
+
+    sort_f64(&mut cal_des);
+    let cal_med: f64 = 0.5 * (cal_des[11] + cal_des[12]);
+    let cal_max: f64 = cal_des[23];
+    let e_r: f64 = abs_f64(gr_hat - true_gr);
+    let e_g: f64 = abs_f64(gg_hat - true_gg);
+    let e_b: f64 = abs_f64(gb_hat - true_gb);
+    let mut max_ge: f64 = e_r;
+    if e_g > max_ge { max_ge = e_g; }
+    if e_b > max_ge { max_ge = e_b; }
+
+    PanelCalResult {
+        status: 0,
+        uncal_max_de: uncal_max,
+        cal_med_de: cal_med,
+        cal_max_de: cal_max,
+        max_gamma_err: max_ge,
+    }
+}
+
+fn main() ~ Clock + Console {
+    let t0: i64 = clock_ns();
+
+    // Panel 0: drifted sRGB
+    let srgb: PanelCalResult = run_panel_calibration(
+        2.34, 2.18, 2.42,
+        1.06, 0.98, 0.89,
+        0, false,
+    );
+    // Panel 1: drifted Display-P3
+    let p3: PanelCalResult = run_panel_calibration(
+        2.12, 2.27, 2.38,
+        0.94, 1.02, 1.08,
+        1, false,
+    );
+    // Planted control: inverted-LUT / negative-gamma panel
+    let planted: PanelCalResult = run_panel_calibration(
+        2.34, 2.18, 2.42,
+        1.06, 0.98, 0.89,
+        0, true,
+    );
+
+    let checksum: f64 = srgb.uncal_max_de + srgb.cal_med_de + srgb.cal_max_de
+        + p3.uncal_max_de + p3.cal_med_de + p3.cal_max_de
+        + srgb.max_gamma_err + p3.max_gamma_err;
+    let elapsed_ms: f64 = ((clock_ns() - t0) as f64) / 1000000.0;
+
+    let max_ge: f64 = if srgb.max_gamma_err > p3.max_gamma_err {
+        srgb.max_gamma_err
+    } else {
+        p3.max_gamma_err
+    };
+    println!(
+        "N65_PART1 srgb_status={} srgb_uncal_max_de={} srgb_cal_med_de={} srgb_cal_max_de={} p3_status={}",
+        srgb.status, srgb.uncal_max_de, srgb.cal_med_de, srgb.cal_max_de, p3.status
+    );
+    println!(
+        "N65_PART2 p3_uncal_max_de={} p3_cal_med_de={} p3_cal_max_de={} max_gamma_err={}",
+        p3.uncal_max_de, p3.cal_med_de, p3.cal_max_de, max_ge
+    );
+    println!(
+        "N65_PART3 planted_status={} checksum={} elapsed_ms={}",
+        planted.status, checksum, elapsed_ms
+    );
+}

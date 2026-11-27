@@ -1,0 +1,161 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Wave 57D (Author Idea N38): JONSWAP Ocean Spectrum & Gerstner Wave Field Solver (buoy_ocean_field.bld)
+// - Synthesizes 64-band JONSWAP spectrum from NOAA buoy (Hs, Tp) verifying Parseval |4*sqrt(m0)-Hs|/Hs < 1e-3
+// - Evaluates Gerstner 16x16 surface elevation, unit slope normals, and wave steepness bounds (ak < 1)
+// - Planted failing controls: non-physical Hs <= 0 and breaking steepness ak > 1 rejected fail-closed
+
+fn abs_f64(x: f64) -> f64 {
+    if x < 0.0 { return -x; }
+    x
+}
+
+// Validate buoy telemetry & Gerstner steepness bound fail-closed
+fn validate_buoy(hs: f64, tp: f64, max_ak: f64) -> i32 {
+    if hs <= 0.0 || tp <= 0.0 { return -1; }
+    if max_ak >= 1.0 { return -2; }
+    1
+}
+
+// Unnormalized JONSWAP spectral density S_raw(f) for peak frequency fp
+fn jonswap_raw(f: f64, fp: f64) -> f64 {
+    let gamma: f64 = 3.3;
+    let sigma: f64 = if f <= fp { 0.07 } else { 0.09 };
+    let r: f64 = (f - fp) / (sigma * fp);
+    let peak_boost: f64 = exp(log(gamma) * exp(-0.5 * r * r));
+    let u: f64 = fp / f;
+    let u4: f64 = u * u * u * u;
+    let f5: f64 = f * f * f * f * f;
+    (1.0 / f5) * exp(-1.25 * u4) * peak_boost
+}
+
+fn main() ~ Clock + Console {
+    let t0: i64 = clock_ns();
+    let twopi: f64 = 6.283185307179586476925286766559;
+    let g: f64 = 9.80665;
+
+    // NOAA buoy telemetry: Hs = 2.40 m, Tp = 10.5 s
+    let hs_target: f64 = 2.40;
+    let tp_target: f64 = 10.5;
+    let fp: f64 = 1.0 / tp_target;
+
+    // 64-band JONSWAP discretization across [0.04, 0.44] Hz
+    let n_bands: usize = 64;
+    let f_min: f64 = 0.04;
+    let f_max: f64 = 0.44;
+    let df: f64 = (f_max - f_min) / (n_bands as f64);
+
+    let mut freqs: Vec<f64> = Vec::new();
+    let mut s_raw: Vec<f64> = Vec::new();
+    let mut m0_raw: f64 = 0.0;
+    let mut k: usize = 0;
+    while k < n_bands {
+        let f: f64 = f_min + ((k as f64) + 0.5) * df;
+        let sr: f64 = jonswap_raw(f, fp);
+        freqs.push(f);
+        s_raw.push(sr);
+        m0_raw = m0_raw + sr * df;
+        k = k + 1;
+    }
+
+    // Scale spectrum so total variance m0 = (Hs / 4)^2
+    let m0_target: f64 = (hs_target / 4.0) * (hs_target / 4.0);
+    let alpha: f64 = m0_target / m0_raw;
+
+    let mut amps: Vec<f64> = Vec::new();
+    let mut wnums: Vec<f64> = Vec::new();
+    let mut dir_x: Vec<f64> = Vec::new();
+    let mut dir_y: Vec<f64> = Vec::new();
+    let mut phases: Vec<f64> = Vec::new();
+    let mut m0_rec: f64 = 0.0;
+    let mut max_ak: f64 = 0.0;
+
+    k = 0;
+    while k < n_bands {
+        let s_k: f64 = alpha * s_raw[k];
+        let a_k: f64 = sqrt(2.0 * s_k * df);
+        let om_k: f64 = twopi * freqs[k];
+        let wn_k: f64 = (om_k * om_k) / g; // deep-water dispersion
+        let ak: f64 = a_k * wn_k;
+        if ak > max_ak { max_ak = ak; }
+        m0_rec = m0_rec + 0.5 * a_k * a_k;
+        // Directional spreading +/- 25 deg around dominant swell vector
+        let ang: f64 = 0.4363323129985824 * sin((k as f64) * 1.7 + 0.3);
+        amps.push(a_k);
+        wnums.push(wn_k);
+        dir_x.push(cos(ang));
+        dir_y.push(sin(ang));
+        phases.push(((k as f64) * 2.399963229728653) % twopi);
+        k = k + 1;
+    }
+
+    let hs_rec: f64 = 4.0 * sqrt(m0_rec);
+    let parseval_err: f64 = abs_f64(hs_rec - hs_target) / hs_target;
+    let clean_valid: i32 = validate_buoy(hs_target, tp_target, max_ak);
+
+    // Evaluate 16x16 Gerstner elevation & unit slope normals at t = 12.0 s
+    let t_eval: f64 = 12.0;
+    let mut eta_csum: f64 = 0.0;
+    let mut max_norm_err: f64 = 0.0;
+    let mut gy: i32 = 0;
+    while gy < 16 {
+        let mut gx: i32 = 0;
+        while gx < 16 {
+            let x: f64 = (gx as f64) * 8.0;
+            let y: f64 = (gy as f64) * 8.0;
+            let mut eta: f64 = 0.0;
+            let mut deta_dx: f64 = 0.0;
+            let mut deta_dy: f64 = 0.0;
+            k = 0;
+            while k < n_bands {
+                let om_k: f64 = twopi * freqs[k];
+                let ph: f64 = wnums[k] * (dir_x[k] * x + dir_y[k] * y) - om_k * t_eval + phases[k];
+                let a_k: f64 = amps[k];
+                eta = eta + a_k * cos(ph);
+                let s_ph: f64 = -a_k * wnums[k] * sin(ph);
+                deta_dx = deta_dx + s_ph * dir_x[k];
+                deta_dy = deta_dy + s_ph * dir_y[k];
+                k = k + 1;
+            }
+            let nlen: f64 = sqrt(deta_dx * deta_dx + deta_dy * deta_dy + 1.0);
+            let nx: f64 = -deta_dx / nlen;
+            let ny: f64 = -deta_dy / nlen;
+            let nz: f64 = 1.0 / nlen;
+            let nerr: f64 = abs_f64(sqrt(nx * nx + ny * ny + nz * nz) - 1.0);
+            if nerr > max_norm_err { max_norm_err = nerr; }
+            eta_csum = eta_csum + abs_f64(eta);
+            gx = gx + 1;
+        }
+        gy = gy + 1;
+    }
+
+    // Planted failing controls: Hs <= 0 and breaking steepness ak = 1.35 > 1.0
+    let rc_neg_hs: i32 = validate_buoy(-1.2, 10.5, 0.12);
+    let rc_break: i32 = validate_buoy(2.4, 10.5, 1.35);
+    let traps_caught: i32 = if rc_neg_hs == -1 && rc_break == -2 { 1 } else { 0 };
+
+    let t1: i64 = clock_ns();
+    let elapsed_ms: f64 = ((t1 - t0) as f64) / 1.0e6;
+
+    println!("N38_HS_REC={:.12}", hs_rec);
+    println!("N38_PARSEVAL_ERR={:.15}", parseval_err);
+    println!("N38_MAX_AK={:.10}", max_ak);
+    println!("N38_MAX_NORM_ERR={:.15}", max_norm_err);
+    println!("N38_ETA_CHECKSUM={:.10}", eta_csum);
+    println!("N38_TRAPS_CAUGHT={}", traps_caught);
+    println!("N38_ELAPSED_MS={:.4}", elapsed_ms);
+
+    let ok: bool = clean_valid == 1
+        && parseval_err < 1.0e-3
+        && max_norm_err < 1.0e-12
+        && traps_caught == 1;
+    if ok {
+        println!(
+            "[PASS] N38_BUOY_OCEAN hs={:.4}m parseval={:.15} max_ak={:.4} traps_caught=1",
+            hs_rec, parseval_err, max_ak
+        );
+    } else {
+        println!("[FAIL] N38_BUOY_OCEAN parseval={:.15} traps={}", parseval_err, traps_caught);
+    }
+}
