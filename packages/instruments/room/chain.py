@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Stage 2 and 7 twin, the signal chain: digital sweep -> DAC -> speaker -> air (the room) -> mic -> ADC.
 
 Every element is an explicit, seeded model so the round trip can be scored against truth:

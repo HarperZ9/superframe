@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Demo: a CAD dimension to DXF and back, through tools/diagram's own DXF writer and reader (cad/src/out.js).
    The source is the drawing's dimension record (BP.dims of each instrument in diagram/cad), model mm,
    plus a stress sample of the same dimensions with sub-micron decimals.

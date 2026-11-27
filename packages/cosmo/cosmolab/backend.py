@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Array backends for the particle-mesh solver: numpy with scipy.fft on the CPU, torch on CUDA when present.
 
 Both expose the same few operations, so pm.py has one body. The CPU backend caps FFT threads at 3.

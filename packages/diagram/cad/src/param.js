@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/cad/param: the parametric instrument model, one source of truth. An instrument is a list of parameters
    and a build(p) that returns parts (geometry in millimetres, material, tolerances), the assembly tree, the
    bill-of-materials items, the netlist, the schematic placement and the drawing's dimensions. resolve() runs

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A modulation chain for any voice: pitch and formants moved independently, harmoniser, channel vocoder,
 breath, varispeed, and the pitched-and-chopped sampler moves.
 

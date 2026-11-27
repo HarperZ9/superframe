@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Dynamics: a feed-forward compressor, a multiband compressor on linear-phase crossovers, and a true-peak limiter.
 
 Compressor: the level is the stereo-linked mean square through a 5 ms one-pole, in dB. Static curve with a soft

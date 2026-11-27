@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Family 5c: renormalization-group flow of the 2-D Ising model by majority-rule block spins.
 
 Swendsen-Wang sampling at coupling K (J / kT, zero field, periodic). Block spins (b = 3,

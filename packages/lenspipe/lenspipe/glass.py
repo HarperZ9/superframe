@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Glass indices. Catalogue rows come from the CC0 refractiveindex.info database; nd and Vd alone give a model glass.
 

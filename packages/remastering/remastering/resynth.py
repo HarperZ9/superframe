@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Re-render a layer from its notes and its timbre profile, two ways.
 
 Timbre profile (measured from the layer at its own notes): the mean level of harmonics 1 to 16 relative to the

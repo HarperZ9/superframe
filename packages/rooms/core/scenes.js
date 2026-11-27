@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { RAIN_RECORD } from "./data/rain-record.js";
 // ======================================================================= Far side scenes
 // Each is one vec3 shade(ro,rd), selected at compile time. gT is the hit distance, used by depth and time of flight.

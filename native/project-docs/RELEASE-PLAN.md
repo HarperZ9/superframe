@@ -76,7 +76,7 @@ M3 post passes. ADR 0018 settles the host: one C++ core, so the style passes por
 | Editor | glTF viewer with CPU reference and error map | `web/viewer/` | Released (0.7.0) |
 | Platforms shipped | Windows x64 CLI (CPU and D3D12), Linux x64 CLI, WebAssembly, viewer zip | v0.8.0 assets | Released |
 | Tests and CI | 58 C++ test files, 17 browser test scripts, 31 Node test files; CI jobs on Ubuntu and Windows: build-test, d3d12 (WARP), fuzz-sanitizers, wasm, identity, shader lab, media | `.github/workflows/ci.yml` | Merged; a full run takes about an hour |
-| Licence | FSL-1.1-MIT; superstack vendored; ACES 2.0 ported from OpenColorIO (BSD-3-Clause) | `LICENSE`, `third_party/MANIFEST.md` | Released |
+| Licence | MIT; superstack vendored; ACES 2.0 ported from OpenColorIO (BSD-3-Clause) | `LICENSE`, `third_party/MANIFEST.md` | Released |
 
 Defects found during the audit:
 - The README badge says version 0.5.1; the latest release is 0.8.0.
@@ -454,16 +454,12 @@ SharedArrayBuffer hosting is checked.
 
 ## 6. Licensing
 
-- **Engine code.** raw-native is FSL-1.1-MIT (`LICENSE`). Each release becomes MIT two years
-  after its publication. That stays as it is; no relicensing is proposed. Vendored and ported
-  parts keep their own licences (`third_party/MANIFEST.md`). The licence memory says: keep MIT
-  where code is MIT now, and new own work defaults to FSL-1.1.
-- **What FSL means for a game maker.** FSL permits any purpose except a Competing Use: making
-  the software available in a commercial product that substitutes for it or for another
-  product of ours. Shipping a game made with the engine is not a substitute for the engine, so
-  it reads as permitted. A game maker should not have to read the licence to know that. The
-  plan asks the author to publish a short plain statement (decision D7). This is a reading of
-  the licence text, not legal advice.
+- **Engine code.** raw-native is MIT (`LICENSE`), OSI-approved open source (relicensed from
+  FSL-1.1-MIT on 2026-11-26). Vendored and ported parts keep their own licences
+  (`third_party/MANIFEST.md`).
+- **What MIT means for a game maker.** MIT permits any commercial or non-commercial use,
+  modification, and distribution with attribution and no competing-use restrictions. This is a
+  reading of the licence text, not legal advice.
 - **Game content.** Text, art, audio and the game's own code: the author decides (D5). Options
   range from all rights reserved to CC BY for text, per the licence memory's split.
 - **Third parties.** No code from ENB, ReShade or any shader author (the no-third-party check

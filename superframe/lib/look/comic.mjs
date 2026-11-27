@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // comic.mjs: a panel compositor for the weird-print family. A panel is a stack of layers, back to front; each layer is

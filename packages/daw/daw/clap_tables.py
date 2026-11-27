@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The per-note tables the CLAP piano reads, written from the offline code so both use the same numbers.
 
     python -m daw.clap_tables           # from packages/daw: rewrites clap/piano_table.h

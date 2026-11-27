@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Polygons as motifs: area, tilings that reach density 1, and the densest translative (lattice)
 packing of a convex polygon by Minkowski's critical determinant.
 

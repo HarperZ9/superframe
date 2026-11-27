@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The working layer's text for ndim.html. HTML fragments; numbers that the tests check are not typed
 here, the page reads them from the test record and computes the f-vectors live."""
 

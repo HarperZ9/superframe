@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Constants and media, read from packages/measured and never typed by hand.
 
 CODATA 2022 values come from measured/generated/constants.py and, for the few it does not export (G, R,

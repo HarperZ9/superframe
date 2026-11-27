@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Loudness to ITU-R BS.1770-4 and EBU R128 (Tech 3341, Tech 3342).
 
 K-weighting: a high shelf (+4 dB above about 1.7 kHz, head effects) and a high pass (RLB, about 38 Hz), from the

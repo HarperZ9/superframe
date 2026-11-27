@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { CONSTANTS } from "../../core/constants.js";
 // ======================================================================= Constants, sourced where noted
 export const RHO_CU = CONSTANTS.copperResistivity.value;

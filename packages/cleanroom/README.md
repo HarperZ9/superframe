@@ -197,5 +197,5 @@ Dependencies: numpy, scipy, Pillow, opencv-python, soundfile, imageio-ffmpeg (fo
 binary), and the sibling packages design_parts, textphase, lattice, packing and materials, found
 by path from this folder. The vault and its copies never ship; only this code is published.
 
-Licence: FSL-1.1-MIT (see the repository LICENSE). What was checked before publication, and what
+Licence: MIT (see the repository LICENSE). What was checked before publication, and what
 was removed, is in `LEGAL-CHECK.md`.

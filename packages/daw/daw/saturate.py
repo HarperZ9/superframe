@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Saturation, bit and rate reduction (gap G12): inserts with known answers.
 
 Curves, each a memoryless map of the drive-scaled input:

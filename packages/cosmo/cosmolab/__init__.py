@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """cosmolab: a particle-mesh cosmological N-body solver with known-answer checks.
 
   background  flat LambdaCDM expansion, linear growth D(a) and f(a), kick and drift factors

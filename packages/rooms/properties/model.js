@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A property as a physical object in calculation space. A property has a state space with a shape, operations on it, the
 // physical elements that perform them, the instrument assembled from them and a fabrication route with its limits.
 // The shape renders a real mathematical object in coordinates someone chose, and the record says so.

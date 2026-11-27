@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Text interchange: Zemax ZMX, CODE V .seq, Lens Room JSON, and our own readers for each.
 

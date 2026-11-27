@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Mid/side and width. M = (L + R) / 2, S = (L - R) / 2; width scales S (0 mono, 1 unchanged, above 1 wider).
 `mono_below` folds the side signal below a frequency to mono with a linear-phase lowpass, so bass stays centred."""
 import numpy as np

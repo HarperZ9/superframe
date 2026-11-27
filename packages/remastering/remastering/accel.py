@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Sample-by-sample recursions that cannot be vectorised: the attack/release follower, the noise-shaping
 quantiser and the waveguide loop. Each is written once in plain Python; when numba is installed the same source
 is compiled (no fastmath, so IEEE operations run in the same order) and the tests hold the two to bit identity.

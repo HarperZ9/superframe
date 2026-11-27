@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive/spectral: the window operator, blackbody and line spectra, and wavelength to colour.
 
    One operator for every spectrum: pick a window [lo, hi] on the source axis and a target window (the

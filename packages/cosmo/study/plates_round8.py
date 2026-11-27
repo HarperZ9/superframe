@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Two 3840x2160 plates for round eight: the same-phase resolution factor (spacing 0.5 to 0.25 Mpc/h) per
 seed against k, with the planted softening and the mass-only arm; and the box bridge with the closure figure.
 

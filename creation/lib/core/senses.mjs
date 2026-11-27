@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // senses.mjs: readouts are the senses (CORE.md). One observer per sense, each a readout law with a weight, and for

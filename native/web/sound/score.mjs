@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A generated score bed: one sustained chord per section of the film, cross-
 // faded at section starts, with silences where the viewer is asked to think.
 // The score marks structure (where a section begins, where to pause); it does

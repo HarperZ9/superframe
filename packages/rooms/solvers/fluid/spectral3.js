@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // 3D periodic pseudospectral Navier-Stokes on a 2 pi cube, rotational form with projection, 2/3 dealiasing, IFRK4.
 // Readouts: vorticity, Q-criterion, helicity, enstrophy, energy, shell spectrum, divergence.
 import { fft3d, ifft3d, waveInt } from "./fftn.js";

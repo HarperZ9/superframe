@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/fabcsv: pick-and-place and bill of materials as CSV (RFC 4180 quoting), written and read here. */
 (function (g) {
   "use strict";

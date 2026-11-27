@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // sound.mjs: the elements as heard. The frame is read as a score, the way a spectrogram is read backwards: x is

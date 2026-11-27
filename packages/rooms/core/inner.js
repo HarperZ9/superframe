@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= World inside the lens
 // Objects live in the lens's own frame and are tested only while a ray is in the medium, so any part reaching past the surface is cut away by it. From outside, the same objects are met through the glass by the same trace.
 export const I_COMMON = `bool sphI(vec3 ro,vec3 rd,vec4 s,inout float t){vec3 q=ro-s.xyz;float B=dot(q,rd),C=dot(q,q)-s.w*s.w,D=B*B-C;if(D<0.)return false;float a=-B-sqrt(D);if(a>1e-3&&a<t){t=a;return true;}return false;}

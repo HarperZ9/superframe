@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Load INVENTORY.tsv (the consolidation pass) into the catalogue, with sha256s.
 
 Read-only on the inventoried files. Rows whose file is gone are kept with

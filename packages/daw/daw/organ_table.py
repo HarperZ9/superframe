@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The numbers the CLAP organ reads, written from the offline organ (daw/organ.py) so both start from the same bits.
 
     python -m daw.organ_table           # from packages/daw: rewrites clap/organ_table.h

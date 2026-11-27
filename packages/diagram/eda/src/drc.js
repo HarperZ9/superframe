@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/drc: design-rule check on vector geometry, independent of the router's grid.
    Copper objects (pads, traces, vias, pour rectangles, net-tie bridges) are rounded convex shapes. Checks:
    clearance between different nets on a shared layer (a negative gap is a short), track width against the net

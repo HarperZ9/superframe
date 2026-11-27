@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // flow.mjs: the visualizer as a source for the super framework's medium (superframe/lib/medium), the tank

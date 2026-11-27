@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 23 mosaic-scales: the name at two scales. Each letter tile carries the initials, turned to read along its course; each field tile carries the whole name, which resolves only at 4K, so the picture changes as you come closer.

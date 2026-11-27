@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // thickplate.mjs: the coloured rings of a thick silvered glass plate (Newton, Opticks II.4). Two coherent paths reach a

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Image comparison primitives: perceptual hash, radial spectrum, feature distance, copied-region
 search and per-cell attribution.
 

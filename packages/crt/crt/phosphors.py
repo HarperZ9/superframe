@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """P22 phosphors: emission spectra, energy efficiency and decay laws, each graded by source.
 
 Spectra live on the materials library grid (380 to 780 nm, 5 nm, 81 bins) and are normalised

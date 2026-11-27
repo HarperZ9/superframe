@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Throughput of the out-of-core particle store (ooc.Store with a path: memory-mapped .npy files), for the
 1024^3 projection. Writes one float32 column of --gib GiB in chunks, flushes it, then reads it back in the
 same chunks into fresh arrays (the copy ooc.SlabRunner makes when it loads a window).

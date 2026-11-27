@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Jewel packing, reading (b): close packing in crystals.
 
 The 32 crystal classes are the finite point groups that map a 3-D lattice to itself. Every one is a

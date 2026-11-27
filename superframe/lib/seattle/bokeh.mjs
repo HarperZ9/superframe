@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // bokeh.mjs: the child's eye is focused on the raindrops on the glass, so everything beyond the glass is out of focus.

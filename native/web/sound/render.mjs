@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Offline render of a sound sheet.
 //
 //   node web/sound/render.mjs SHEET.json --narration narration.wav --out DIR [--timing timing.json] [--no-resolve]

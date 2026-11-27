@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Known answers. Margins are stated in each test. Run with: python -I -B -m pytest tests (from the project folder)."""
 import json

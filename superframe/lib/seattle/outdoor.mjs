@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // outdoor.mjs: what the porch and tree scenes share: a pinhole camera, a point lamp with a cobra-head cutoff, the

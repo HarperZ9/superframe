@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A direct spectral eta invariant in three dimensions, for loops of flat U(1) connections on a 2D torus.
 
 The space is the mapping torus T^2 x S^1_beta. The gauge field is flat in space and moves around a loop in time:

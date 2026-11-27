@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive/dims: the bridge to ndim. A shape in n dimensions is turned with ndim's plane rotations, its first
    three coordinates are kept as space, and each further coordinate is carried by a sense the reader picks:
    time (a slice sweeping through), colour (hue), sound (pitch) or touch (pulse length). The loss reporter

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Modal bank cost: N two-pole resonators driven by one input, summed, per sample.
 use std::time::Instant;
 fn main() {

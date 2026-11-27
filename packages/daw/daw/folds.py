@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Two-mass vocal folds: a self-oscillating source whose pitch and voice quality come from fold physics.
 
 Each fold is two masses on springs, coupled to each other (Ishizaka and Flanagan 1972), in the symmetric

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Family 1: central force F = -k r^-n in a plane, and the d-dimensional Gauss-law line n = d - 1.
 
 Units are dimensionless: mass 1, k 1, circular radius 1. A single particle in a central force moves in a

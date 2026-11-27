@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Sounds of nature by physics, first pieces: the aeolian tone, the bubble, and frequency scaling that keeps
 a measured spectrum's ratios.
 

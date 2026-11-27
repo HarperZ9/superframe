@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The every-dimension state: Telos measurement-bus/v1 events, extended, never replaced.
 
 Each channel is one event with the seventeen bus fields of

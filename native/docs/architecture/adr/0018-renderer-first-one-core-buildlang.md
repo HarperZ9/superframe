@@ -44,7 +44,7 @@ Pending, with the recommendation from the plan kept for the author:
 | D4 | macOS | Defer until after the demo; a Metal backend (ROADMAP M5) or the web build |
 | D5 | The game's repository and content licence | A separate private repository until the demo; the licence is the author's |
 | D6 | The game's price model | Open; the demo is free either way |
-| D7 | A plain statement that games made with raw-native are permitted use under FSL-1.1-MIT | Yes, in the README and the docs |
+| D7 | A plain statement that games made with raw-native are permitted use under MIT | Yes, in the README and the docs |
 | D8 | Languages at launch | English, with string tables ready |
 | D9 | Spend: the Steam Direct fee, an optional code-signing certificate | The author's call; itch.io needs no spend |
 

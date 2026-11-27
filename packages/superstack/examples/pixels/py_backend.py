@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Python backend: a float32 numpy port of raw-native 0.4.0's CPU path.
 
 Same rasterizer (screen-space barycentrics at pixel centres, perspective-

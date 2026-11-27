@@ -102,7 +102,7 @@ Now that parity is recorded, each long function can be split in its own change a
 
 ## Licences
 
-Package code is FSL-1.1-MIT with the repo. `core/data/cie.js` is CC BY-SA 4.0, as the CIE publishes those tables, and stays in its own file. Hat and spectre tile rules from the lens-geometry bench are not in this package yet; when they come, their BSD and MIT notices come with them. Nothing here comes from an AGPL source.
+Package code is MIT with the repo. `core/data/cie.js` is CC BY-SA 4.0, as the CIE publishes those tables, and stays in its own file. Hat and spectre tile rules from the lens-geometry bench are not in this package yet; when they come, their BSD and MIT notices come with them. Nothing here comes from an AGPL source.
 
 ## Duplicates this leaves for later
 

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Stage 2 twin, the room: a rigid-walled shoebox as a sum of damped normal modes.
 
 Model (Morse and Ingard 1968; Kuttruff, Room Acoustics, ch. 3): the pressure response at r_mic to a

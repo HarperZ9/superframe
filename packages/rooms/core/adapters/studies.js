@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Adapters for two benches still being written elsewhere. They read each bench's published file shape and change
 // nothing in it. When the benches land as packages these become imports.
 import { surf, paraxImage } from "../train.js";

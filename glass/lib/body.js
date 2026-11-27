@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // body.js: glass bodies as height fields. A body is { w, h, mask: Float32Array coverage 0..1, height:

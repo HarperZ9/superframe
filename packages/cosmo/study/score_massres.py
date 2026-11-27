@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Same-phase resolution factor: R = band mean of P_hi / P_lo - 1 per seed, with the seed mean, sample sd
 and a Student t interval, for several pairs at once (round eight).
 

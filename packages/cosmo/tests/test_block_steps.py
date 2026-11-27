@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Block time steps (stepping.py): the level rule, linear growth with few mesh steps, P(k) against a run on
 many global steps with a planted too-coarse step rule, and the lean CUDA engine against the CPU one."""
 import hashlib

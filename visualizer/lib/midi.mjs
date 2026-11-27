@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // midi.mjs: Standard MIDI Files, read and written, no dependency. Pure, so it runs in Node and in the browser.

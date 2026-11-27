@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Bridge to the room meter (packages/instruments/room in this repository), run as a transducer.
 
 measure: the impulse response of the planted six-mode room through the laptop speaker, air and mic twin

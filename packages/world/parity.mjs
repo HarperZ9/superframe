@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // parity.mjs: every feature of every package the field touches, and whether each one is still there.
 //
 //   node packages/world/parity.mjs           check parity.json against the repository; exit 1 when a feature is gone

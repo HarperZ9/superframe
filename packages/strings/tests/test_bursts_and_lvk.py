@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for the LVK burst recipe (cusps, kinks, kink-kink collisions) and the cross-spectrum likelihood."""
 import math
 import sys

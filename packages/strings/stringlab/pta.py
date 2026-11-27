@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Gravitational-wave background spectra against pulsar-timing and LIGO-Virgo-KAGRA limits.
 
 PTA likelihood by refitting a free spectrum (the method of Lamb, Taylor and van Haasteren 2023): for each

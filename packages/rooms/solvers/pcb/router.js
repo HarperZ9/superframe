@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { DES } from "./constants.js";
 import { planeRaster } from "./plane.js";
 // ======================================================================= Router: A* on a 0.2 mm grid over two signal levels

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The CLAP organ (clap/organ.c) against the offline organ (daw/organ.py) with the stored table.
 
 Known answers: the plugin's output equals organ.play with the table's numbers, bit for bit, at 44.1 and 48 kHz,

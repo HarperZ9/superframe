@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // lightlut.mjs: read a spectral light-response table (tools/light-response.mjs) and look a surface up in it.

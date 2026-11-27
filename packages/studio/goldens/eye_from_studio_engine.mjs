@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Write eye.golden.json from studio-engine's own eye, before the port runs.
 //
 //   git -C <studio-engine> show 328a0ddf:showcase/eye.js > <dir>/eye.js

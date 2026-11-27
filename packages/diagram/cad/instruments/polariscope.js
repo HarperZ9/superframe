@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Photoelastic polariscope: the parametric model. Sources: packages/instruments records/polariscope.json,
    examples/polariscope.json and PIPELINE.md worked example 3. Disc stresses after Frocht (1941). The fringe constant of polycarbonate and its
    yield stress are from memory (moderate); the disc calibration measures the first. Nothing is bought. */

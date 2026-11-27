@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """False-success controls: realistic ways a GPU port drifts from the contract.
 
 Each control builds a variant of a kernel that a performance-minded port would plausibly

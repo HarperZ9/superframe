@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Time-domain repair: declip, declick, decrackle, short gaps, long gaps from the track's own structure.
 
 Every function returns (audio, regions): a region is (start_s, end_s, kind, confidence), where kind is "restored"

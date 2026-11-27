@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known-answer tests for the physical CRT. Run: python -B tests/test_crt.py (or pytest)."""
 import hashlib
 import json

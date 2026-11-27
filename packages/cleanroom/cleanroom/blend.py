@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """`cleanroom blend`: combine any number of sources at any ratio, per channel, through the knobs.
 
 A recipe names the sources (vault copies, specs, generated parameter sets or our own files), their

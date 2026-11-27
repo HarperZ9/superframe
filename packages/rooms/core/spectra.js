@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { CONSTANTS } from "./constants.js";
 import { CMF, D65 } from "./data/cie.js";
 import { AIR0, SCENES } from "./scenes.js";

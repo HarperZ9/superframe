@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Audio features (spectrum, onsets, tempo, loudness) and a band-energy fingerprint.
 
 Features follow textbook definitions: spectral centroid, bandwidth, 85% rolloff and flatness per

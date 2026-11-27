@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The instruments plate, 3840 x 2160: mode shapes of every resonator family and their spectra.
 
     python -I packages/daw/page/plate.py OUT.png [DEMO_DIR]

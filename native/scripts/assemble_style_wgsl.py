@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Deterministic assembler and parity checker for native/src/renderer/gpu/shaders/style.wgsl.
 
 Modular WGSL source files live under native/src/renderer/gpu/shaders/style/*.wgsl

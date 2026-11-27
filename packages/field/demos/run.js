@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Run every demo, write out/demo.json (grades and numbers), one chain ledger per demo (out/ledger-*.jsonl)
    and the rendered views through tools/diagram (out/*.svg, out/panels.json).
    node demos/run.js */

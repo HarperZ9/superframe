@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Nonlinear matter power by halofit, with the Takahashi et al. (2012, ApJ 761, 152) coefficients for w = -1.
 
 Takahashi et al. quote the fit as good to 5 percent for k < 1 h/Mpc at 0 <= z <= 10, and 10 percent for

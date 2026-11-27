@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // bundle.mjs: the field as one ES module for a page, dist/world-field.mjs. The site carries this file unchanged.
 //
 //   node packages/world/bundle.mjs            write dist/world-field.mjs
@@ -47,7 +47,7 @@ export function build() {
     if (isOwn) own.push(...list);
     parts.push(`// ---- ${rel(f)} (sha256 ${sha(src)})\nconst { ${list.join(", ")} } = (() => {\n${classic(src)}\nreturn { ${list.join(", ")} };\n})();`);
   }
-  const head = `// world-field.mjs: built by packages/world/bundle.mjs from the files named below, each with the sha256 of its source.\n// Do not edit: change the sources and build again. SPDX-License-Identifier: FSL-1.1-MIT\n`;
+  const head = `// world-field.mjs: built by packages/world/bundle.mjs from the files named below, each with the sha256 of its source.\n// Do not edit: change the sources and build again. SPDX-License-Identifier: MIT\n`;
   return `${head}${parts.join("\n")}\nexport { ${own.join(", ")} };\n`;
 }
 const rel = (f) => relative(REPO, f).replace(/\\/g, "/");

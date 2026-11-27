@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Flat LambdaCDM background: expansion rate, linear growth and the leapfrog factors.
 
 Units: time in 1/H0, comoving length in Mpc/h, so H0 = 1 and a velocity unit is 100 km/s.

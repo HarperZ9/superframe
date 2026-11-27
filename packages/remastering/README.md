@@ -86,4 +86,4 @@ the device, the model, the stem count and the path. The tests run the split twic
 | `edition`, `receipts` | generations in the library, diffs between them, hashed receipts |
 | `chain` | the one-command run that ties the stages together |
 
-Licence: FSL-1.1-MIT. The Demucs weights are MIT and stay outside the repository.
+Licence: MIT. The Demucs weights are MIT and stay outside the repository.

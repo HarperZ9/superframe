@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 32 crystal-light (flagship variant C): the letters are clear, polished glass, cast as low cushions lying on the

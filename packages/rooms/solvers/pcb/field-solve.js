@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Field solver: finite volume Laplace on a graded grid
 export function graded(pts, lo, hi, fine, ratio) {
   const set = [...pts].sort((a, b) => a - b);

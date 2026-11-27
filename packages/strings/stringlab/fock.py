@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A sparse Fock-space engine and the Virasoro central charges of free fields, in exact rational arithmetic.
 
 A state is a dict {basis: coefficient}; a basis is a sorted tuple of creation modes (field, mode) acting on

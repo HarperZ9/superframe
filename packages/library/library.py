@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Entry point. Run with: python -I packages/library/library.py <command> (from the superframe root)
 
 -I drops the script directory from sys.path, so the package path is added here,

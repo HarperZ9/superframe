@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Two 3840x2160 plates for round seven: three seeds with the halved softening and the tighter step rule
 together, and ghost exchange every sub-step with the sliced FFT, with the 1024^3 projection.
 

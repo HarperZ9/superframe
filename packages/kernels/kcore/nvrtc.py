@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Compile CUDA C with NVRTC and launch it through the driver API, by ctypes (no dependency).
 
 Bit-identical kernels compile with --fmad=false --prec-div=true --prec-sqrt=true --ftz=false, so every

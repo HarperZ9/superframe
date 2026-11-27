@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Shared fixtures. Property tests run on the reference and on the compiled kernels; equality needs both."""
 import os
 import sys

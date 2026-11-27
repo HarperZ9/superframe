@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Time reversal in a reverberant 2D cavity: record, reverse, re-emit, and the wave finds its way back.
 
 Scalar wave equation u_tt = c^2 lap u on a grid with rigid walls (u = 0) and a few hard scatterers that make the

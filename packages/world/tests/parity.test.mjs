@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Parity: every feature of every package the field touches is still there, the field reaches the ones it names, and
 // the bundle the site carries is a fresh build of the sources.
 //   node --test packages/world/tests/parity.test.mjs

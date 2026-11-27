@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Image blend engine: per-channel weights over any number of sources, and signal-chain knobs.
 
 Channels and what each one moves:

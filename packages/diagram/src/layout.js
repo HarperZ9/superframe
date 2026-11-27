@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/layout: the 2D schematic, drawn as SVG from the same model. Parts placed by hand (part.sch.x, .y in
    grid cells) keep their place; the rest are laid out in layers from the links (longest path from the sources,
    then barycentre ordering). After HP's own drawings (HP-JOURNAL-DIAGRAM-NOTES.md): every arrow carries the

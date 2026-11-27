@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for finesse: Mathieu tongues, the parametric threshold, the Faraday half frequency, phased
 focusing and time-reversal refocusing, each with a control that must fail."""
 import sys

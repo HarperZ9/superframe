@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Cesium beam frequency standard (HP 5060A class). Sources: HP-GAPS.md section 2, HP-GAPS-PRIMARY.md section 2. */
 (function (g) {
   "use strict";

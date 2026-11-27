@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Published peak figures for the roofline, each graded by where the number came from.
 
 FETCHED: read from the vendor's page during this work, with the URL.

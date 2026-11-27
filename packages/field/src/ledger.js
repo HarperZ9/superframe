@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* field/ledger: every conversion appends one entry to the field's chain ledger. An entry names the
    converter, the grade it claimed and the grade measured, the bits lost on the round trip, the tolerance,
    and sha256 hashes of the input and output values. Each entry also holds the hash of the entry before

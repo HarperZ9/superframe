@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // ops.mjs: recombination. Each operator takes recipes and returns a new recipe; none touches pixels, so every

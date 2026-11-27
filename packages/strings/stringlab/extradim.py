@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Large extra dimensions against inverse-square-law data.
 
 Gravity in 4 + n dimensions with n of them on a torus of radius R. Between two point masses on the brane,

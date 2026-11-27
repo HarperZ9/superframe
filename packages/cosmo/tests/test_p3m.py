@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for the P3M short-range force: the two-body force across the mesh/pair split against Ewald,
 the Layzer-Irvine energy equation in an expanding box, and bitwise repeats of the CUDA pair kernel."""
 import sys

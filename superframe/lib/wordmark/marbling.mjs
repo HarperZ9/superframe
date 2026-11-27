@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // marbling.mjs: direction 5, many inks, one bath. Each contributor's ink is dropped on one bath (lib/marble/bath.mjs:

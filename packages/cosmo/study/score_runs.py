@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Score saved runs (run_pk.py .npz files) against halofit and the Cosmic Emu, band by band.
 
     python packages/cosmo/study/score_runs.py run1.npz run2.npz ... [--json out.json]

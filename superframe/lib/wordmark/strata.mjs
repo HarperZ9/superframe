@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // strata.mjs: direction 3, shared ground. CMMNS is cut down through layered ground. Each stratum is a dated

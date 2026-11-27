@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Worked example 3 (optional, added on the coordinator's request): a DIY photoelastic polariscope.
 A screen is already a polarised source; one polariser sheet and a phone camera complete it. On paper."""
 from common import BUS, CHECKS, PERCEIVE, PY, STUDYRUN, gate, record, stage, tool, walls

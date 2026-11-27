@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* field/converters: the standard converters every field can use, each with its claim and its test.
      pad(shape)        zero-pad to a larger shape: an embedding (crop undoes it; random tails show the
                        target holds more than pad can make)

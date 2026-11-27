@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // textfield.mjs: a plane of tiny, dense text, the tile of a code mosaic. After Olivetti's Divisumma 26 sheet (study

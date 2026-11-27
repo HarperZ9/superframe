@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A map between two domains, as a typed object that can fail. An analogy states a likeness; a map states which
 // quantities correspond, with units, what stays preserved, over what range, what a round trip loses, one prediction it
 // can get wrong, and the condition that would show it wrong. Status comes from a rule on that test.

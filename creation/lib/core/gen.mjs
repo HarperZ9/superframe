@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // gen.mjs: the common generator interface. Every generator in lib/gen is one defineGen({...}) and exports

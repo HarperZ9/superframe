@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/footprints: land patterns, generated here. Pad sizes for the standard packages follow the common
    IPC-7351 nominal lands as remembered (from memory, unverified against the standard; no part is ordered from them).
    Off-board parts (panel connectors, battery holders, probe leads) land on through-hole wire pads.

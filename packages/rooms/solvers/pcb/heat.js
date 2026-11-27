@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { K_CU, K_FR4 } from "./constants.js";
 import { bodyBox } from "./netlist.js";
 import { planeRaster } from "./plane.js";

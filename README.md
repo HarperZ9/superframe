@@ -196,6 +196,6 @@ The engine was built as one workspace, and its folders keep their working names:
 
 ## Licence
 
-The code is under FSL-1.1-MIT (`LICENSE`), which becomes MIT two years after each release. The Accession fonts are under the SIL Open Font License 1.1 (`OFL-Accession.txt`). Hanken Grotesk is under the same licence, from its authors (`OFL-Hanken-Grotesk.txt`). The creation engine's Zipf test reads one of the author's published essays as its corpus (CC BY 4.0, credited in the file).
+The code is under the OSI-approved MIT License (`LICENSE`). The Accession fonts are under the SIL Open Font License 1.1 (`OFL-Accession.txt`). Hanken Grotesk is under the same licence, from its authors (`OFL-Hanken-Grotesk.txt`). The creation engine's Zipf test reads one of the author's published essays as its corpus (CC BY 4.0, credited in the file).
 
 By Zain Dana Harper.

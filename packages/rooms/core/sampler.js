@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The shaders' random number: st=st*747796405u+2891336453u; w=((st>>((st>>28u)+4u))^st)*277803737u;
 // float((w>>22u)^w)/2^32. This is the same integer maths on the CPU, so a CPU reference can share a stream.
 export function pcgStep(state) {

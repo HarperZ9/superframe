@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Clean-room Low Water engine bridge for Wave 13B:
 //   1. Tree & foliage biomechanics (Vogel drag, snow/rain sag, wet-leaf white-furnace PBR)
 //   2. Physical BT.2020/Draine-HG DS-08 dark-mist & Snell/Fresnel water caustic optics

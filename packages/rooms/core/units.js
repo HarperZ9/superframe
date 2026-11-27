@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A unit is a scale to SI plus a dimension vector, the same model as packages/field/src/units.js. The field
 // package is not on main yet; once it is, tests/units-field.test.mjs compares the two tables.
 const BASE = ["m", "kg", "s", "A", "K", "mol", "cd", "bit"];

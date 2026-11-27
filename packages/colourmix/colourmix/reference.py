@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The reference for the kernels in bld/: plain Python, standard library only, one rule per line.
 
 Every function takes 64-bit signed integers and follows the contract in docs/. A function that fills an

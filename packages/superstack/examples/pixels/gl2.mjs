@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Minimal WebGL2 helpers for the example backend: a context, a program with its
 // uniform locations, a fullscreen triangle and an RGBA8 render target.
 

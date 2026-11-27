@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/raster: a software z-buffer. It is the Canvas2D fallback renderer, the picking buffer, the source of
    the lens samples, and the frame whose bytes the determinism test hashes. Same draw list as the GPU path.
    Draw list: tris (9 numbers each, world space), per triangle rgb (0..1), alpha and part; caps (cut faces:

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
 """Parsers on recorded sampler output. Live metering stays manual (it needs RAPL and an NVIDIA GPU).
 

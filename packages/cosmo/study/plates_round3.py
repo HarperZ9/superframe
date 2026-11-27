@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Two 3840x2160 plates for round three: P3M against the Cosmic Emu (with the CAMB-input comparison), and
 gravity in the twisted manifold E3.
 

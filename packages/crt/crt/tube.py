@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The tube in physical units: raster timing, face geometry, the aperture grille, the guns.
 
 Lengths in millimetres, times in seconds, currents in amperes, voltages in volts, energies in

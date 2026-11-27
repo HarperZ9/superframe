@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Comprehensive known-answer and planted-wrong-control tests for CRT physics:
 phosphor decay laws & emission spectra, faceplate Fresnel/halation optics,
 NTSC scanline raster timing, gun gamma/spot blooming, and colour transforms.

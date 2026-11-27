@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Family 2: Lenia, a continuous cellular automaton (after Chan 2019), batched on numpy FFTs.
 
 A(t + dt) = clip(A + dt G(K * A), 0, 1), with a smooth ring kernel K of radius R (Chan's exponential

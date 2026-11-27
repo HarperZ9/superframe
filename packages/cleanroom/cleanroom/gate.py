@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Publish gate. Other tools (superframe export, site deploy, study publishing) call `check(path)`.
 
 Order of checks:

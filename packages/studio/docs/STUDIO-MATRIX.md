@@ -16,12 +16,12 @@ One row per feature in the older code that moves into the design studio: `studio
 
 | Source | Commit | Licence | Status |
 |---|---|---|---|
-| Flywheel creative modules (`harness/design_studio.py`, `sound_studio.py`, `typeface_*.py`) | HarperZ9/flywheel@681810fe (2026-11-05) | FSL-1.1-MIT | live in the accountability platform |
-| studio-engine | HarperZ9/studio-engine@328a0ddf (2026-10-23) | FSL-1.1-MIT | deprecated (author, 2026-10-23) |
-| studio-libs | HarperZ9/studio-libs@b6dad12f (2026-10-22), private repo | FSL-1.1-MIT | publication inside superframe not yet cleared |
-| Telos creative engine | HarperZ9/telos@e0867789 (2026-10-31), `demo/creative-*.mjs`, `demo/render-nd`, `demo/render-sound` | FSL-1.1-MIT | must leave Telos before Telos moves into THE FLYWHEEL |
-| Site Studio (`studio.html`, 28 sources) | HarperZ9/HarperZ9.github.io@0151b773 (2026-11-09) | site code all rights reserved; vendored `render-nd`, `sense-core`, `reconcile`, raw-native and `media-engine/contracts.mjs` are FSL-1.1-MIT | live page; old shell |
-| superframe | HarperZ9/superframe@29bf3ed (2026-11-08) | FSL-1.1-MIT; `measured`, `materials`, `decompose` AGPL-3.0-only | target |
+| Flywheel creative modules (`harness/design_studio.py`, `sound_studio.py`, `typeface_*.py`) | HarperZ9/flywheel@681810fe (2026-11-05) | MIT | live in the accountability platform |
+| studio-engine | HarperZ9/studio-engine@328a0ddf (2026-10-23) | MIT | deprecated (author, 2026-10-23) |
+| studio-libs | HarperZ9/studio-libs@b6dad12f (2026-10-22), private repo | MIT | publication inside superframe not yet cleared |
+| Telos creative engine | HarperZ9/telos@e0867789 (2026-10-31), `demo/creative-*.mjs`, `demo/render-nd`, `demo/render-sound` | MIT | must leave Telos before Telos moves into THE FLYWHEEL |
+| Site Studio (`studio.html`, 28 sources) | HarperZ9/HarperZ9.github.io@0151b773 (2026-11-09) | site code all rights reserved; vendored `render-nd`, `sense-core`, `reconcile`, raw-native and `media-engine/contracts.mjs` are MIT | live page; old shell |
+| superframe | HarperZ9/superframe@29bf3ed (2026-11-08) | MIT; `measured`, `materials`, `decompose` AGPL-3.0-only | target |
 
 The site Studio holds 28 sources, not the 24 the older memory note gives: `system/studio-shell.js` says "the 28 sources", and one stale comment in `studio.html` still says 24.
 
@@ -38,7 +38,7 @@ The site Studio holds 28 sources, not the 24 the older memory note gives: `syste
 
 "Has it" counts the state after the first ported release, so the four ported rows count as yes. Before the PR the yes column was 17 and the no column 38.
 
-## Flywheel (HarperZ9/flywheel@681810fe, FSL-1.1-MIT)
+## Flywheel (HarperZ9/flywheel@681810fe, MIT)
 
 | # | Feature | Lives now | studio/ has it | Parity check that proves a port | Disposition |
 |---|---|---|---|---|---|
@@ -57,7 +57,7 @@ The site Studio holds 28 sources, not the 24 the older memory note gives: `syste
 | FW13 | Face gallery: publish, list and fetch minted faces in Flywheel's store | `harness/typeface_gallery.py` | no | n/a | stays in Flywheel: it is a receipted store, which is accountability work |
 | FW14 | `/api/typeface*` request handling | `harness/typeface_route.py` | no | n/a | stays in Flywheel as the thin client; it would call the studio package once FW11 lands |
 
-## studio-engine (HarperZ9/studio-engine@328a0ddf, FSL-1.1-MIT, deprecated)
+## studio-engine (HarperZ9/studio-engine@328a0ddf, MIT, deprecated)
 
 | # | Feature | Lives now | studio/ has it | Parity check that proves a port | Disposition |
 |---|---|---|---|---|---|
@@ -83,11 +83,11 @@ The site Studio holds 28 sources, not the 24 the older memory note gives: `syste
 | SE20 | The eye: dHash, Hamming distance, drift verdict, five features | `showcase/eye.js` | **yes, ported**: `packages/studio/src/eye.mjs` | ten goldens (seven seeded buffers, three studio renders) equal in hash and every feature; six drift verdicts equal; seeded neighbour-pair reversals caught; a luma-rounding mutant caught | done |
 | SE21 | Showcase UI: media in, WebGL and Canvas out | `showcase/media.js`, `render.js`, `showcase.js` | partial: `superframe/lib/medium/gpu/*` | n/a (DOM) | drop: the site Studio is the UI |
 
-## studio-libs (HarperZ9/studio-libs@b6dad12f, FSL-1.1-MIT, private)
+## studio-libs (HarperZ9/studio-libs@b6dad12f, MIT, private)
 
 A private library of 31 features: n-D rendering (`render-nd`, also vendored on the site), sonification and instruments (`render-sound`), perception readouts (`sense-core`, also vendored on the site), and a perception server. Seven are covered by `packages/ndim`, `packages/perceive` and `sound/`, 14 in part, 10 not at all. None moves here until the library is cleared for publication; each row and its parity check are kept in the maintainer's internal matrix.
 
-## Telos creative engine (HarperZ9/telos@e0867789, FSL-1.1-MIT)
+## Telos creative engine (HarperZ9/telos@e0867789, MIT)
 
 | # | Feature | Lives now | studio/ has it | Parity check that proves a port | Disposition |
 |---|---|---|---|---|---|
@@ -102,7 +102,7 @@ A private library of 31 features: n-D rendering (`render-nd`, also vendored on t
 
 ## Site Studio (HarperZ9/HarperZ9.github.io@0151b773)
 
-Site code is all rights reserved, held by the same author. The engine side moves into superframe under FSL-1.1-MIT; the page stays on the site as the front end.
+Site code is all rights reserved, held by the same author. The engine side moves into superframe under MIT; the page stays on the site as the front end.
 
 | # | Tool | Lives now | studio/ has it | Parity check that proves an engine port | Disposition |
 |---|---|---|---|---|---|

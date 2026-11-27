@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // sprites.mjs: the living things, drawn from proportions in metres, not from pixel maps, and shaded by the light that

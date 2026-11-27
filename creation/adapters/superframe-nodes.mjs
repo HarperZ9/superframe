@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // superframe-nodes.mjs: every creation-engine generator as a superframe node (superframe/lib/node.mjs),

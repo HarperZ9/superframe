@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Write every artefact of each instrument at its default parameters:
      node cad/export.js [outdir]      default cad/out; one folder per instrument
    drawing.svg, drawing.dxf, schematic.svg, <id>.kicad_sch, <id>.net (electrical instruments only), spec.md,

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """optics.f_number/1: the reference, the known answer, the properties and the planted-bad controls."""
 from ..core import Refusal, finite, positive, refused
 

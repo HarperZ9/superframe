@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Write the ten stage templates and the reading receipt as JSON Schemas (draft 2020-12) into schemas/.
 
     python -I -B make_schemas.py

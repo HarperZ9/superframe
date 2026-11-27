@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A first non-abelian step: continuum SU(2) Weyl fermions on a torus and the non-abelian consistent anomaly.
 
 A smooth su(2) field A_mu = A_mu^a T^a (no lattice interpolation in this step) couples to Weyl fermions in the

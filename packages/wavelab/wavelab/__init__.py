@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """wavelab: waves pushed hard (amplitude) and waves timed well (phase), each checked against a known answer.
 
   consts      CODATA and media read from packages/measured (PREM, NIST fluids, Mars, Hunga, 1976 atmosphere)

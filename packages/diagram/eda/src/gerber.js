@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/gerber: fabrication layers as primitives, RS-274X (Gerber X2 attributes) written and read here,
    and a rasteriser for the primitives. Units mm, format 4.6 (1 nm steps), absolute, linear interpolation only.
    Primitives: { type: "flash", ap: { kind: "C" | "R" | "O", w, h }, at }, { type: "stroke", ap: { kind: "C", w }, a, b },

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Human release notes for copy-derived outputs.
 
 A note binds who approved, why, the output's sha256 and the difference report's sha256. Its own

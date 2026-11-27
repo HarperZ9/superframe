@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { DES } from "./constants.js";
 // ======================================================================= Plane geometry, shared by Gerber, raster and textures
 export function planeClears(d, pl) {

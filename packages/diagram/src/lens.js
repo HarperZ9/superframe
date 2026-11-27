@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/lens: every view states what it keeps and what it drops, and how many bits that costs.
    The measure follows perceive/loss: take seeded samples of the model's surface, code each one by its voxel
    (1/24 of the model's radius per axis), and code what the view still shows of it. The bits lost are

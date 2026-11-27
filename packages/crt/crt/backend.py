@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One array interface over numpy (CPU) and torch (CUDA, float64) for the beam scatter.
 
 The scatter writes each line's spot into rows that never repeat within one add, so the CUDA

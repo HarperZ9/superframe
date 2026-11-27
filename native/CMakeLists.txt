@@ -65,7 +65,7 @@ target_include_directories(raw_native PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
     "$<INSTALL_INTERFACE:include>")
 target_compile_features(raw_native PUBLIC cxx_std_23)
-# superstack.hpp (FSL-1.1-MIT, vendored and pinned in third_party/superstack)
+# superstack.hpp (MIT, vendored and pinned in third_party/superstack)
 # builds the receipt; it is private to the library and not installed.
 target_include_directories(raw_native PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/third_party/superstack")
 # Receipts need the header to compile with this standard library. superstack
@@ -87,7 +87,7 @@ endif()
 # two checkouts in different directories produce the same binaries.
 target_compile_options(raw_native PUBLIC
     "$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-ffile-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}=.>")
-set(RAW_NATIVE_LICENSE "FSL-1.1-MIT")   # SPDX id; 0.2.0 and earlier were released under MIT
+set(RAW_NATIVE_LICENSE "MIT")   # SPDX id (OSI-approved MIT License)
 if(EMSCRIPTEN)
     include(cmake/wasm.cmake)
 elseif(NOT WIN32)

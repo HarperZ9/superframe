@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Modal synthesis: a set of modes, an excitation at one point, a pickup at another, rendered offline.
 
 Each mode is a damped oscillator of unit modal mass. Its velocity response at the pickup to a unit

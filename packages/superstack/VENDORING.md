@@ -30,7 +30,7 @@ An engine uses the contract by copying one file into its own tree and pinning th
    <sha256 from SHA256SUMS>  system/media-engine/contracts.mjs  superstack.mjs v0.2.0
    ```
 
-The file carries its whole licence notice: FSL-1.1-MIT from v0.2.0, the MIT text it turns into, and the notices for the public domain algorithms it contains. The copy needs nothing else to meet the licence. Releases up to v0.1.0 remain MIT. `docs/LICENSING.md` covers vendoring into each consumer.
+The file carries its whole licence notice: the MIT License text and the notices for the public domain algorithms it contains. The copy needs nothing else to meet the licence. Releases up to v0.1.0 remain MIT. `docs/LICENSING.md` covers vendoring into each consumer.
 
 ## 3. Check the copy in CI
 

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim/fields: the Clifford torus, Hopf fibres, n-dimensional signed distance functions sliced to 3D and
    ray-marched, and the quaternion Julia set. A 3D slice of an nD distance bound is still a distance
    bound, so sphere tracing inside the slice never steps through a surface. */

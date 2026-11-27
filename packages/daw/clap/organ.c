@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 //
 // superframe organ: the DAW's flue-pipe organ (daw/organ.py voice, wind and play) as a CLAP instrument.
 //

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Worked example 2: the room-shape meter. Stages 3 and 4 are an existing laptop or phone; stages 2, 7 and 9
 are built and run (room/). Numbers are read from the study results, never typed in."""
 import json

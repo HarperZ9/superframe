@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Instrument prescriptions
 // Train surfaces: z and y vertex, R radius (0 flat), k conic, a4 a6 asphere, n index after, V Abbe after, ap semi aperture,
 // hole inner radius, ty 0 refract 1 mirror 2 stop 3 image, tilt radians about x. Light starts along +z.

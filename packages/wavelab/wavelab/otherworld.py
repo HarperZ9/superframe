@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Sound in other media and other worlds, the acoustic horizon, and the frequency scaling of planetary motion.
 
 Mars: CO2's vibrational modes hold heat only when the sound is slow enough to share it, so the sound speed has

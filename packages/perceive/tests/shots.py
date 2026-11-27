@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Open perceive.html in headless Chromium, visit every view at desktop and phone width, record page errors and
 each view's text equivalents, and save screenshots to $RENDER_OUT/perceive/.
 

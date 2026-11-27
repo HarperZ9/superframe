@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Two 3840x2160 plates from run_pk.py output: a density slab, and P(k) against halofit.
 
     python packages/cosmo/study/plates.py RUN.npz [MORE.npz ...] --out DIR

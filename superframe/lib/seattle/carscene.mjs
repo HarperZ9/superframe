@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // carscene.mjs: the memory. A child lies curled on the back seat at night, face about 25 cm from the rear side window,

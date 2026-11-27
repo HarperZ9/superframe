@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """cleanroom CLI. Run it as `cleanroom <command>` through cleanroom.cmd, or
 `python -I -B packages/cleanroom/cleanroom_cli.py <command>` from the superframe root."""
 import argparse

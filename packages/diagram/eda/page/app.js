@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* The board page's live 3D view: the routed board from eda/run-jnt.js, drawn by the engine's WebGL2 path when it
    is there and by its software raster when not. Drag or arrow keys orbit, wheel or + and - zoom; the mask
    switch shows the copper under the solder mask. */

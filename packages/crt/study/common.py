@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Shared helpers for the CRT study: a stdlib PNG writer, backends, and the eye render."""
 import os
 import json

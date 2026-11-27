@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Rain as live engine events: the drops of a scene-physics record that leave a bubble, sent as they land.
 
     python -m daw.rain_stream [seconds] | buildc run packages/daw/bld/main.bld -- live

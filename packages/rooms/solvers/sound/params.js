@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { CONSTANTS } from "../../core/constants.js";
 /** Grid size, cell size in metres, speed of sound, Courant number, and the time step they imply. */
 export const N = 512,

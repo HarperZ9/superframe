@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/sim/linalg: dense LU with partial pivoting, real and complex. Circuits here have tens of unknowns,
    so a dense factor is exact enough and fast enough; the factor is kept so one matrix can be solved against many
    right-hand sides (every noise source at one frequency, every time step of a linear transient). */

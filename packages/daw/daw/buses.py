@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Group buses and sidechain compression that keep the stems additive.
 
 A bus gathers the tracks whose `Track.bus` names it. Its processing is one gain curve over time, computed once

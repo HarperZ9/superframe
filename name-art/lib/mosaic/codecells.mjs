@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // codecells.mjs: tesserae that are characters of our own source code. Each tile of a course carries one glyph,

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Board, DRC and fab-output tests for the thermometer board.  node eda/tests/eda.test.js [--json out.json]
    The routed board must pass the DRC; planted rule breaks must each be caught under their own rule name; every
    fab file must read back to what was written; the copper Gerbers rendered back must match the board view; and

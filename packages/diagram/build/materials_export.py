@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Copy the material values the diagram engine reads out of packages/materials into data/materials.json.
 
     python -I build/materials_export.py           write data/materials.json

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One room-meter trial end to end: room twin, signal chain, deconvolution, estimate, error against truth.
 
 Speakers (low-frequency corner fc of a 2nd-order roll-off):

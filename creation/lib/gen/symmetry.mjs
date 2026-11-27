@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // symmetry: the symmetry tiler (the crystallography plate save, mathemetica 2026-10-25). The law is a wallpaper group:

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { K_FR4, RHO_CU, RULES, STACKS } from "./constants.js";
 import { drc, plantViolations } from "./drc.js";
 import { hammerstad, ipc2141 } from "./formulas.js";

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // WebGL2 backend for a superstack.scene/1 document, in the plugin shape
 // { id, version, backends, create } that the site's media engine mounts.
 // Method differs from the reference on purpose: primary visibility is an

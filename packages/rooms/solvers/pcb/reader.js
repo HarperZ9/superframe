@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { planeClears } from "./plane.js";
 // ======================================================================= An independent reader, shares nothing with the writer
 export function readGerber(txt) {

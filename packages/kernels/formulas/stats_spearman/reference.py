@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """stats.spearman/1: the reference, the known answers, the properties and the planted-bad controls.
 
 Spearman's rank correlation: the Pearson correlation of the two rank vectors, with tied values given the

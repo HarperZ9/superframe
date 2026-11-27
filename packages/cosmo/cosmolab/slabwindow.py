@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One slab and its ghost zones on the GPU for ooc.SlabRunner: the pair kicks, drifts and re-sorts of one
 global step, with the kernels and arithmetic of lean.CudaEngine, so a slab particle gets the same bits.
 

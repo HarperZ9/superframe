@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Demo: one floating-point computation, fused and unfused, graded against its own specification.
    The spec is saxpy, y' = a x + y in float32, rounded once (IEEE 754 fusedMultiplyAdd). Inputs follow
    F122: a = 2.5, x and y drawn on the 2^-24 grid in [0, 1), so every input is an exact float32.

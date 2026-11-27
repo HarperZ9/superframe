@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A sound sheet from a Motion scene, so every release video gets its sound
 // from the same timeline its picture moves on.
 //

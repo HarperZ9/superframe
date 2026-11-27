@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Write font.golden.json from Flywheel's own font writers, before the port runs.
 
     git -C <flywheel> archive 681810fe harness/__init__.py harness/typeface_forge.py \

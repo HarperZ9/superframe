@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // DSP primitives for the sound engine. Everything here is float64, written as
 // plain loops in index order, so Node (offline render) and an AudioWorklet
 // (live) run the same arithmetic and produce the same samples. No WebAudio

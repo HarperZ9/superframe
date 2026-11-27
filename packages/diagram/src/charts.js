@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/charts: the time view's traces. Stacked panels share one x-axis where they share time (AN 123's
    stackplot); a panel may be lines, steps or log-scale bars; a playhead marks the current time. A scale bar
    replaces the axis where the shape is the point (HP Journal 1960). */

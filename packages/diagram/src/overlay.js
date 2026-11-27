@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/overlay: physical-property layers that recolour any view (schematic, 3D, exploded, section, time).
    Material values come from packages/materials (data/materials.json here, copied by build/materials_export.py);
    a value the library lacks stays missing and the part is drawn as "no data". Planck's law is perceive's.

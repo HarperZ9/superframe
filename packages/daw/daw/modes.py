@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A set of modes: frequencies, labels, a shape function and a loss factor.
 
 shape(point) returns every mode's amplitude at a point in normalised coordinates (x in [0, 1] along a

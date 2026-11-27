@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // lights.mjs: every light in the three scenes as linear RGB radiance, derived from a spectrum (spd.mjs) and a material

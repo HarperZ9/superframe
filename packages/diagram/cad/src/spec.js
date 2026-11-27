@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/cad/spec: the spec sheet, generated from the resolved model and the pipeline's own stage records.
    Ranges and the accuracy budget come from the instrument's physics; the assumptions come from stage 1 of the
    pipeline example (the one place they are written) and each carries a flag saying whether it is optional:

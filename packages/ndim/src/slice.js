@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim/slice: cut an n-polytope with a hyperplane (Flatland style) and measure the (n-1)-dimensional slice.
    The slice's vertices are where edges cross the plane; its edges are where 2-faces cross it; its volume is
    an exact convex-hull volume by pyramids over facets, recursing down one dimension at a time. */

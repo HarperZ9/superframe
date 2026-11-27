@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // couple.mjs: the elements meet, the way inks meet on a marbling bath. Without this pass each law acts alone in its

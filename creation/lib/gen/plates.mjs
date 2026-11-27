@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // plates.mjs: four registry entries that had no generator, written from their rules (registry ranks in REGISTRY.md).

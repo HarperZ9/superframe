@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The wave step, microphone and display programs. One flat pass per step.
 export const VS_SHADER = "#version 300 es\nin vec2 a;void main(){gl_Position=vec4(a,0,1);}";
 export const STEP_SHADER = "#version 300 es\nprecision highp float;uniform sampler2D F,M;uniform float uDamp,uAmp;uniform vec2 uSrc;out vec4 o;\nvoid main(){ivec2 q=ivec2(gl_FragCoord.xy);vec4 c=texelFetch(F,q,0);vec4 m=texelFetch(M,q,0);\n if(m.g>.5){o=vec4(0,0,c.b,0);return;}\n float p=c.r,s=0.;ivec2 d[4]=ivec2[4](ivec2(1,0),ivec2(-1,0),ivec2(0,1),ivec2(0,-1));\n for(int i=0;i<4;i++){ivec2 n=q+d[i];float w=texelFetch(M,n,0).g;s+=w>.5?p:texelFetch(F,n,0).r;}\n float k=m.r;float nx=(2.-uDamp)*p-(1.-uDamp)*c.g+k*k*(s-4.*p);nx*=m.b;\n float r=distance(gl_FragCoord.xy,uSrc);nx+=uAmp*exp(-r*r/4.);\n o=vec4(nx,p,c.b*.9995+nx*nx*.0005,0);}";

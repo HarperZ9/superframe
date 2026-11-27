@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """kernels: a growing library of compute kernels, each built to one contract.
 
   kernels check              every equivalence test, stress profile, batch test and reward-hack gate,

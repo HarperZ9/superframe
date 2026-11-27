@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A bubble whose gas exchanges heat with the water, so it is isothermal when slow and adiabatic when fast.
 
 Round 3 found the polytropic bubble (kappa = 5/3 throughout) expanding to about half of the literature radius:

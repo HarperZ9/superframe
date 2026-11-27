@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """studyrun units for the room-shape meter (spec: ../studies/room/spec.json).
 
 Analysis: 240 simulated rooms (3 speakers x 2 background levels x 40 rooms), each measured through the

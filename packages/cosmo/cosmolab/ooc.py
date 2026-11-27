@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Out-of-core block stepping: the particles live in host memory or a file on disk, and each global step runs
 slab by slab on the GPU with ghost zones, so the GPU holds one slab and its ghosts instead of every particle.
 

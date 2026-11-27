@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // bath.mjs: marbling between sources. Each source (an image, a study, a concept) is an ink with an element weight.

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Native engine-receipt/1 emission and verification for cosmolab runs.
 
 Reuses packages/superstack/engine_receipt.py so every cosmological simulation

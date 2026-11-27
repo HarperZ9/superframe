@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // andamento.mjs: where every tessera goes. A mosaicist lays tiles in courses (rows) that follow the form; that flow

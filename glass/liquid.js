@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // liquid.js: a water surface and its reflection. The surface is a damped wave equation on a grid, with an optional

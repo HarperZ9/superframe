@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // lash.mjs: squinting at a light makes rays. The eyelids close the pupil to a horizontal slit, and a straight

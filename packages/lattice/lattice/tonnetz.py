@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Pitch on the hexagonal Tonnetz: fifths, major thirds and minor thirds as the three axes.
 
 A pitch class k (semitones mod 12) is reached by i fifths and j major thirds when

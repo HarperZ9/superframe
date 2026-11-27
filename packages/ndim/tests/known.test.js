@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Known-answer tests for ndim, written before the library.
    node tests/known.test.js     exit 1 if any check fails or any planted wrong value is accepted.
 

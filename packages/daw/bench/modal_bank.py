@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Modal bank cost in numpy: the per-sample recursion (a real-time style loop) and the offline closed form.
 
     python -I modal_bank.py N [recursion|closed]

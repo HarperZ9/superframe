@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Granular cloud and spectral freeze (gap G11): any buffer turned into a floating texture.
 
 Cloud. Grains are short Hann-windowed slices of the source, read at a position that moves through the source

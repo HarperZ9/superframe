@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // wordmark-metamer.mjs: how far away the smalti mosaic (direction 1) must be before it is a metamer of a clean,

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Materials and media with provenance, read from packages/measured (data/mechanical.json).
 
 A Material carries density rho, Young's modulus E, Poisson's ratio nu and a loss factor eta, each with the

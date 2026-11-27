@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The mastering chain: EQ (linear or minimum phase), multiband compression, width, loudness to target, true-peak
 limit, dither. Presets name the targets; reference match fits the EQ and the dynamics to a chosen track.
 

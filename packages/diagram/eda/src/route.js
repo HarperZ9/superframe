@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/route: a two-layer grid autorouter. Each layer is a grid of cells that records which net's copper
    covers it (every cell the copper touches). A trace centre may sit on a cell only if no foreign copper lies inside
    width / 2 + clearance + one cell diagonal, so the grid answer is conservative and the vector DRC is the judge.

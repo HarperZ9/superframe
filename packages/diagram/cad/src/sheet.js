@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/cad/sheet: drawing entities on a sheet in millimetres, y up (the DXF convention), and the drafting
    marks built from them: dimensions with their tolerances (ASME Y14.5-2018 unidirectional text, filled 3:1
    arrowheads, a 1 mm gap and 2 mm overshoot on extension lines), datum feature symbols and feature control

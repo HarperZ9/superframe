@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // kelvin.mjs: vendored from Low Water (game/engine/light/kelvin.mjs, 2026-10-26) so the engine stands alone; the

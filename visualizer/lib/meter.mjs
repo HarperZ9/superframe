@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // meter.mjs: beats per bar (3 or 4) and the downbeat phase, from three independent readings of the beat series.

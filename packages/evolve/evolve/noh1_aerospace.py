@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """NOH-1 Nested Organism evaluator on 6-DOF QuadrotorDroneEnv & PoweredDescent6DOFEnv.
 
 Compares a flat in-distribution linear ridge baseline (FlatAerospacePolicy) against

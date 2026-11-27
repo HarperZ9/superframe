@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // word.mjs: the CMMNS word as geometry, and the contributor hashes the directions seed their pieces from.

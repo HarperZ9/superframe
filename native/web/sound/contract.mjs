@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The superstack.sound/1 example scene through the mixer. The contract's
 // example instrument (sine voices with linear envelopes, summed in score order,
 // then a master gain) becomes a sheet of exact notes on the music bus with the

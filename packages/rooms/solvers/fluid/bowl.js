@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A bowl-like swirl with a drain, on the 2D solver. Stated method and limits:
 //  Wall: Brinkman penalty on a ring, target velocity tangential; a soft wall of thickness about sqrt(nu eta). It rings at the grid scale when that thickness
 //  falls under one cell, and the vorticity view shows it.

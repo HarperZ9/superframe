@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The forest-in-rain scene draws its rain from the scene-physics record the workstation plays
 // (core/data/rain-record.js, written by packages/daw). Accept: the record's 2 mm/h gives the threshold the scene
 // had before it read the record (.86), heavier rain lowers the threshold (more lit cells), and the threshold is

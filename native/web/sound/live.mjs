@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Live playback of a resolved sound sheet in the browser.
 //
 //   const snd = await createSound({ sheet, narrationUrl });   // loads, does not play

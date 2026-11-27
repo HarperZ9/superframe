@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The field's kernel against its BuildLang source of record, the element rules, and blend continuity: every output
 // the page shows changes smoothly as each weight goes from 0 to 1, with a control that a hard switch fails.
 //   node --test packages/world/tests/field.test.mjs

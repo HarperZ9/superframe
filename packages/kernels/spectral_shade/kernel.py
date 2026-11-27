@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Spectral shading: per pixel, mix two materials' n(l), k(l), take the unpolarised
 Fresnel reflectance at the pixel's incidence cosine, and integrate it with a light
 spectrum and the CIE 1931 2-degree observer to XYZ. Mode: bit-identical. See SPEC.md.

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """spectral_shade as one fused CUDA kernel, bit-identical to the eager kernel.
 
 Method from FlashAttention (corpus dao2022-flashattention): count the bytes each version moves and keep

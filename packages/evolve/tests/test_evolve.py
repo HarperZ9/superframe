@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known-answer tests: the error threshold, the fixation probability, the landscapes and the estimators.
 
 Run: python -I -B -m pytest -p no:cacheprovider packages/evolve/tests

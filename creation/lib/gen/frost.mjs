@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // frost: a crystal growth front, after Reiter's hexagonal snowflake automaton (Reiter 2005, "A local cellular model

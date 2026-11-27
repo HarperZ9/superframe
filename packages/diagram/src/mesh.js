@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/mesh: closed triangle meshes for the primitives a part is built from. Every mesh winds counter-
    clockwise seen from outside, so the signed volume is positive (tested) and the cutting plane can orient its
    loops. A cavity is a second closed mesh wound inward, so a shell is "outer box plus inverted inner box".

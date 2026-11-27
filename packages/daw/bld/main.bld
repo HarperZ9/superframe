@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 //
 // The real-time host, in BuildLang: opens the audio device through the BuildLang binding (audio.bld),
 // renders banks of modal voices (dsp.bld) every period, and reports render time against the deadline.

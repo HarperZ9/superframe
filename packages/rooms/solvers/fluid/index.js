@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 export * from "./fftn.js";
 export * from "./spectral2.js";
 export * from "./spectral3.js";

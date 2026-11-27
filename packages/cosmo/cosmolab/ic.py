@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Initial conditions: first- and second-order Lagrangian displacements from a linear power spectrum.
 
 Zel'dovich: x = q + D(a) Psi(q),  Psi_k = i k / k^2 delta_k (so delta = -div Psi),  p = a^2 E(a) f(a) D(a) Psi.

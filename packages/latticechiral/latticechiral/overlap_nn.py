@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The Narayanan-Neuberger overlap chiral determinant in 2D, on a fine lattice built from a continuum field.
 
 The overlap formula writes the chiral determinant as the overlap of two many-body ground states: the vacuum of the

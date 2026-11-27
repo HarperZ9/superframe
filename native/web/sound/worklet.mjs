@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The live half of the sound engine: an AudioWorkletProcessor that runs the
 // same Mix as the offline render, 128 samples at a time on the audio thread.
 // WebAudio only carries the samples to the speakers; no browser filter,

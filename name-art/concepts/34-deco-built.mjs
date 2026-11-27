@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 34 deco-built (v3 of 08): the letters are built from deco's own vocabulary, not cut from a font. The forge's

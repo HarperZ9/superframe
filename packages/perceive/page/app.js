@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive page core: the view registry, the canvas, the sound engine, touch, and the loss panel.
    Each view supplies draw(), describe(), loss(), sound() and haptic(); this file wires them to the controls.
    Sound starts only from the Play button; vibration only when its box is ticked. */

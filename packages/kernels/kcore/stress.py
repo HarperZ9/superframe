@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Stressed input profiles and the batch-composition test.
 
 Source: ForgeKernel's correctness monitor (corpus entry openbmb-forgekernel, docs-correctness-

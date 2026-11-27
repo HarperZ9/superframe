@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/pour: copper pours on the bottom layer. A pour cell is a whole grid square inside its island whose
    every point clears foreign copper by the pour clearance; ground pads then reach their pour by the router (a stub
    and a via), pour fragments that no pad reaches are removed, and the survivors are merged into rectangles, which

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Steer any parameter space by choosing between candidates: interactive evolution with a recorded session. The proposal
 // rule is Mind's Eye's, so a session over its 26 genes reproduces the page's candidates exactly. A choice carries log2(K)
 // bits at most, and the step size falls with the bits spent.

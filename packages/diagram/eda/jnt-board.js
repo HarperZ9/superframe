@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* The thermometer's board: outline from the model's pcb part, zones for the two chains and the input switch
    matrix, two bottom-layer ground islands that meet only at the net tie NT1, then place, route, pour and check.
    Board coordinates: millimetres, origin at the back-left corner, y toward the front panel. */

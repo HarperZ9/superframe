@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // sheet: transparency. A sheet is a translucent layer with its own compositing law (BLEED sections 2, 9 and the

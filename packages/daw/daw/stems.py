@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Additive stems: every track written as its own file, and the files sum to the master exactly (gap G1).
 
 mixer.mix keeps the room on one shared bus scaled by the peak of its own output, and discards the limiter's

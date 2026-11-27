@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Self-test for tools/check_vendored.py: a true copy matches, a renamed copy
 matches through --as, a CRLF copy and an edited copy fail, and the CRLF cause
 is named. Usage: python tests/test_check_vendored.py"""

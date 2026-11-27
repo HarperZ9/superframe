@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Scene IR to triangles, JavaScript twin of scene_ir.py (same order as raw-native).
 const quad = (a, b, c, d, n, alb) => [[[a, b, c], n, alb], [[a, c, d], n, alb]];
 

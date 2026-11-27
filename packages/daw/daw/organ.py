@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Pipe organ from the air column (gap G15): flue pipes, ranks and stops by footage, and a wind supply that sags.
 
 Pitch. A pipe is a `shapes_1d.Tube`: open at both ends it speaks c / (2 L_e), stopped (closed at the top) it

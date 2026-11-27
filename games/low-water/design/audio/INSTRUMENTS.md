@@ -8,7 +8,7 @@ all of this. The music can be made using our own instrument tools."
 ## Where they live
 
 The instruments are a shared library in studio-libs, `render-sound/instruments/` (render-sound 0.3.0,
-FSL-1.1-MIT, merged as studio-libs PR #3 at `51cb70d`, CI green on Ubuntu and Windows). The game keeps a
+MIT, merged as studio-libs PR #3 at `51cb70d`, CI green on Ubuntu and Windows). The game keeps a
 byte-for-byte copy in `game/engine/audio/lib/`, pinned by commit and per-file SHA-256 in `lib/VENDOR.json`;
 `node tools/audio-vendor.mjs --check` fails on any drift and a test runs it. The game's build stays free of
 dependencies. Game-specific sound (the train, the press, the chute, the lamps, the people, the house) stays

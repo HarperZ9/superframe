@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 # The engine runs these tests from the repository root (python -m pytest packages), where the
 # pyproject.toml in this folder is not read. Two things that file and its folder used to give the
 # tests are given here: src/ on the import path, and the package folder as the working directory,

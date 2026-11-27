@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Stage 9, data return: every reading leaves as a receipt on the existing measurement bus.
 
 Format: one project-telos.measurement-bus/v1 event (the seventeen fields), with the every-dimension

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // CPU reference for the known answers the shaders are held to. Double precision, no GPU, so CI can run it. It
 // covers the shapes the checks use: the plate and the globe, plus index fields. It does not replace the shader.
 import { Pcg } from "./sampler.js";

@@ -1,14 +1,10 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
-// Copyright 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Zain Dana Harper
 //
-// Licensed under the Functional Source License, Version 1.1, MIT Future
-// License (FSL-1.1-MIT). The full text is LICENSE in the superstack
-// repository and https://fsl.software/FSL-1.1-MIT.template.md. Each release
-// becomes available under the MIT licence below on the second anniversary of
-// the date it was made available. From v0.2.0 this file is FSL-1.1-MIT;
-// releases up to and including v0.1.0 remain under the MIT licence.
+// Licensed under the MIT License. The full text is in LICENSE in the
+// repository root and included below.
 //
-// Algorithms by others, each under its own terms, which the FSL does not change:
+// Algorithms by others, each under its own terms:
 //   mulberry32: Tommy Ettinger, 2017, CC0 1.0 public domain dedication.
 //   xmur3: bryc (github.com/bryc/code), public domain, MIT fallback,
 //     Copyright (c) 2024 bryc.
@@ -17,8 +13,7 @@
 //     libebur128 (MIT); the 48 kHz table is ITU-R BS.1770-4's.
 // Sources and dates: docs/LICENSING.md in the superstack repository.
 //
-// MIT licence text. It applies to the parts above that use an MIT fallback,
-// and to this file once its FSL period ends:
+// MIT License text:
 //
 // Copyright 2026 Zain Dana Harper
 //

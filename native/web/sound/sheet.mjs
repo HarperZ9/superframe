@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The sound sheet: a superstack.sound/1 scene that a mix is rendered from.
 //
 //   { kind: "superstack.sound/1", seed, rate: 48000, channels: 2, duration_samples,

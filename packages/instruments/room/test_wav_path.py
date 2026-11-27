@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known-answer test of the real-recording path (CHECKS.json `knowninject`): no twin, only files.
 
 Writes the 48 kHz sweep WAV, builds a 'recording' as the sweep through six planted modes (two 1 Hz apart),

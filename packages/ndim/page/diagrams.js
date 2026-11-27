@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim page, working layer: Coxeter-Dynkin diagrams from computed simple roots, the face lattice as a
    Hasse diagram, the f-vector table computed in this page, and the known-answer test record. */
 (function () {

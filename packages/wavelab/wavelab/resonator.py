@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Resonant macrosonic synthesis in a modal model: does detuning the overtones postpone the saturation ceiling?
 
 A one-dimensional resonator driven at its first mode, written in modes u(theta, t) = sum_n q_n(t) cos(n theta):

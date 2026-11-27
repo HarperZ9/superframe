@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Continuum Weyl fermions on a two-torus coupled to a lattice U(1) field interpolated to the continuum.
 
 A small 2D version of the construction of Craig (arXiv:2610.09093), Hsu (arXiv:2610.29019) and Witten

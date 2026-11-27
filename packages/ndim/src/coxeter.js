@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim/coxeter: root systems, simple roots, Coxeter elements, Coxeter planes (Petrie projections),
    Coxeter-Dynkin diagrams and Wythoff orbits. Simple roots are found, not typed in: a positive root is
    simple exactly when its reflection permutes the other positive roots. */

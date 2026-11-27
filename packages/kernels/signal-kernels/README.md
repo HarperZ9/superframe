@@ -5,7 +5,7 @@
 
 # signal-kernels
 
-> This library now lives in The Playground at `packages/kernels/signal-kernels`. It moved from `HarperZ9/signal-kernels` at commit `0c62e590` as one commit of the final tree; the earlier history stays in that repository, which is archived. Build and test from this folder: `cmake -S . -B build -DSIGNAL_KERNELS_BUILD_TESTS=ON`, then `cmake --build build --config Debug` and `ctest --test-dir build -C Debug --output-on-failure`. The engine's CI runs the same three steps on Windows (`.github/workflows/kernels-cpp.yml`). Licence for this folder: FSL-1.1-MIT (`LICENSE` here).
+> This library now lives in The Playground at `packages/kernels/signal-kernels`. It moved from `HarperZ9/signal-kernels` at commit `0c62e590` as one commit of the final tree; the earlier history stays in that repository, which is archived. Build and test from this folder: `cmake -S . -B build -DSIGNAL_KERNELS_BUILD_TESTS=ON`, then `cmake --build build --config Debug` and `ctest --test-dir build -C Debug --output-on-failure`. The engine's CI runs the same three steps on Windows (`.github/workflows/kernels-cpp.yml`). Licence for this folder: MIT (`LICENSE` here).
 
 C++23 header-only entropy, causality, and forecasting kernels.
 
@@ -95,7 +95,7 @@ Windows x64/MSVC, while the headers are standard-library-only.
 
 > Header-only C++23 signal/information-theory library: entropy, MI/transfer entropy, divergences, Granger, PELT, FFT, and forecasting.
 
-[![license: FSL-1.1-MIT](https://img.shields.io/badge/license-FSL--1.1--MIT-blue.svg)](LICENSE)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)
 [![CI](https://github.com/HarperZ9/signal-kernels/actions/workflows/ci.yml/badge.svg)](https://github.com/HarperZ9/signal-kernels/actions/workflows/ci.yml)
 ![header-only](https://img.shields.io/badge/header--only-C%2B%2B23-success.svg)
@@ -179,7 +179,7 @@ affect consumers of the header-only library.
 
 ## License
 
-From v1.1.0, code is licensed FSL-1.1-MIT. Earlier releases remain under MIT. FSL-1.1-MIT is the Functional Source License, Version 1.1, with MIT as the future licence: each release becomes available under MIT two years after it is made available. See [LICENSE](LICENSE). Every commit in this repository is by the author.
+Code is licensed under the OSI-approved MIT License (`LICENSE`). See [LICENSE](LICENSE). Every commit in this repository is by the author.
 
 The vendored test framework `tests/third_party/doctest/doctest.h` is doctest 2.4.11 by Viktor Kirilov, under its own MIT licence ([tests/third_party/doctest/LICENSE.txt](tests/third_party/doctest/LICENSE.txt)). It is test-only and not relicensed.
 

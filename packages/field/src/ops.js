@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* field/ops: operators shared by every field, so a motif spectrum and an image spectrum are one call.
    fft / ifft work on sequences and on 2D grids (radix-2; padding to a power of two is a converter, an
    embedding, never done silently). The butterfly is tools/perceive's (signal.js), passed in, not copied.

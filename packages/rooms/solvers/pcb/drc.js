@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { DES } from "./constants.js";
 import { courtyard } from "./netlist.js";
 import { planeRaster } from "./plane.js";

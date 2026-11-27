@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Formula kernels: every check on the reference, every planted-bad control caught, the BuildLang body equal
 to the reference, and the kernels.json section in step with the specs.
 

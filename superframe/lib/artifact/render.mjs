@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // render.mjs: one recipe, every medium. compute() returns the raw outputs (tests read these); write() puts them on

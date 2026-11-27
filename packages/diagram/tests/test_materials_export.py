@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """data/materials.json and eda/data/board-materials.json are generated from packages/materials.
 
 The diagram pages inline these files, so they stay in the repo. Each is pinned by sha256 to a fresh export

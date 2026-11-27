@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Loudness in the DAW: ITU-R BS.1770-4 and EBU R128, read through the meter in packages/remastering.
 
 The meter itself (K-weighting, gating, short-term, momentary, loudness range, 4x true peak) lives in

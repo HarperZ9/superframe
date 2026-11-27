@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Ricci-flat metrics on the Fermat quintic by Donaldson's algorithm, and its topological numbers.
 
 X = {p = z0^5 + ... + z4^5 = 0} in P^4 (psi = 0 member of the Dwork family p - 5 psi z0 z1 z2 z3 z4).

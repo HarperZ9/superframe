@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 36 orb-crystal (v2 of 13): the aperture as a crystal cabochon. A domed disc of crown glass lies over a field of

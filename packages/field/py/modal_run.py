@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Runs H1 of study 2026-10-31-sdf-sh: one modal basis against full-rank solves, with controls.
 
     python -I modal_run.py OUT.json [n]

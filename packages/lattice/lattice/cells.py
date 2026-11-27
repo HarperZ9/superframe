@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Piecewise fields on Voronoi cells: one constant, or one first-order (linear) field, per cell.
 
 This is the Hexel ingredient taken off the image plane. Sites are lattice points (or sphere

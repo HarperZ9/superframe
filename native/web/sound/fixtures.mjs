@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Test fixtures: a 10 s speech-like signal (seeded noise in syllables, shaped
 // toward the voice band, with two sentences and pauses) and a sheet that uses
 // every cue type, the score and the ducker. Used by sound.test.mjs and the CI

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 05 cloud: the name as a cumulus volume. Density is the letter's thickness (a dome over its distance field)

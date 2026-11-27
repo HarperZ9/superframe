@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Known-answer tests for the circuit simulator.  node sim/tests/sim.test.js [--json out.json]
    Every check compares the simulator with a closed form derived independently of it. Planted errors (a wrong
    capacitor, a wrong temperature, a swapped filter, a first-order integrator) must fail the same comparisons,

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Rewrite the packages/ rows of MANIFEST.json from what git tracks or would track under packages/.
 
     python packages/build_manifest.py          write the rows

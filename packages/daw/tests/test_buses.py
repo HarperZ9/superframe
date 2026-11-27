@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Group buses and sidechain compression (daw/buses.py) inside the additive stems.
 
 Known answers: the compressor's static curve puts a steady -6 dB detector at -15 dB out (threshold -18, ratio

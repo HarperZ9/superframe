@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Screenshots of the board page and the matrix page at desktop and phone width, light and dark, with page
 errors, sideways scroll and the 3D view's renderer recorded.
 

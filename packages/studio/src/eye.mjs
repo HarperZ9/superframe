@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // eye.mjs: the studio's eye. It reads any picture the studio makes (or one a person drops in) as numbers anyone
 // can recompute: a 64-bit difference hash, a drift verdict between two pictures, and five descriptive features.
 // A port of studio-engine's showcase/eye.js (HarperZ9/studio-engine@328a0ddf), which is itself a port of the

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // dry: drying, the coffee ring, and the tide line. Two modes from one idea: a liquid edge leaves what it carried where

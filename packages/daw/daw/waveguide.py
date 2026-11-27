@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Digital waveguide strings: a travelling wave in a delay loop (Karplus and Strong 1983; Jaffe and Smith 1983).
 
 The loop holds N samples, a two-point average (half a sample of delay, gain cos(pi f / fs) at f) and a

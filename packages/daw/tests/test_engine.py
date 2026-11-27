@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The engine's impact scene (engine/impacts.mjs over rooms/core/data/impact-scene.js) and the workstation agree
 on the physics: each bar's fundamental equals the modal core's, balls land where the geometry puts them, bounces
 follow free fall and the restitution, a ball over no bar makes no sound, and sound reaches the listener after

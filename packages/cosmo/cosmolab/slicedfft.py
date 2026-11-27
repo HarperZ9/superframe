@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The P3M mesh force without the whole mesh on the GPU: a 3-D real FFT done as 2-D FFTs over (y, z) per x
 slab, then 1-D FFTs along x per block of y pencils, with the spectrum held in host memory between passes.
 

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Pilot 2 (exploratory, seeds 1 and 2): choose the band rule and resolving widths before the lock."""
 import sys
 import numpy as np

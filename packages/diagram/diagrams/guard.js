@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Guarding in a precision voltmeter. Sources: HP-GAPS.md section 3; AN 123 (1970) via HP-GAPS-PRIMARY.md section 3:
    guard to source low holds for a floating supply; for a bridge, guard to ground at the bridge is usually best. */
 (function (g) {

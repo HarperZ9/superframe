@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Stage 7, the round trip scored like a capsule: digital -> analog -> digital, bits lost and error against truth.
 
 Three paths, each against a truth the twin knows exactly:

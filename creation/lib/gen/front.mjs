@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // front: transformation as a moving front (BLEED section 13), and unravel, its reveal-under-a-sheet case.

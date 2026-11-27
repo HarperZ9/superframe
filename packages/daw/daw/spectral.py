@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Short-time Fourier tools for processing a voice: the transform pair, a phase vocoder, the true envelope and
 varispeed.
 

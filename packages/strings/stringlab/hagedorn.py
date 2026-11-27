@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Exact level degeneracies and the Hagedorn temperature.
 
 Open bosonic string: d(N) = coefficient of prod (1 - q^n)^-24, alpha' M^2 = N - 1.

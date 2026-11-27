@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Round nine's words: closure on the interval against on the mean only, the base scatter widening the
 interval, and the convergence line on the mean and on the upper bound."""
 import sys

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Perception frames
 // Each has one stated model. Sources are in the shader comments and the note shown to the viewer.
 export const FRAMES = [

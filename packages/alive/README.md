@@ -46,7 +46,7 @@ const apng = await encodeAPNG(w, h, frames);                             // Uint
 
 ## Licences
 
-The package is FSL-1.1-MIT like the rest of the repository, with one exception. `src/vendor/daylight-gif/media-gif.js` and `media-gif-lzw.js` are the GIF decoder from CMMNS (HarperZ9/cmmns, same author), copied unmodified, and their headers state AGPL-3.0-only as in that repository. Only decoding uses them: `decodeGif` in `gif.js`, the round-trip tests and `make_loops.mjs`. The GIF encoder is this package's own code.
+The package is MIT like the rest of the repository, with one exception. `src/vendor/daylight-gif/media-gif.js` and `media-gif-lzw.js` are the GIF decoder from CMMNS (HarperZ9/cmmns, same author), copied unmodified, and their headers state AGPL-3.0-only as in that repository. Only decoding uses them: `decodeGif` in `gif.js`, the round-trip tests and `make_loops.mjs`. The GIF encoder is this package's own code.
 
 ## Origin
 

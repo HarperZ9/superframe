@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Rhombus packing: the Penrose P3 tiling by Robinson-triangle substitution.
 
 Triangles are (kind, A, B, C) with complex vertices. Kind 0 is the 36-72-72 golden triangle, half a

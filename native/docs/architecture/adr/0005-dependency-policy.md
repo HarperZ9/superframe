@@ -5,7 +5,7 @@
 ## Context
 
 raw-native's default build depends on the C++ standard library and one
-vendored header (`superstack.hpp`, pinned by SHA-256, FSL-1.1-MIT). The GPU
+vendored header (`superstack.hpp`, pinned by SHA-256, MIT). The GPU
 builds add only platform SDKs: `d3d12.lib`, `dxgi.lib` and DXC from the Windows
 SDK, and Emscripten's WebGPU port. That property is part of why the renderer's
 output can be trusted: there is little code in the pixel path the project did
@@ -46,7 +46,7 @@ patches.
    URL, version or commit and date, SPDX licence, why it is here, which
    interface wraps it, local patches (ideally none), and who reviewed it.
 5. **Licences:** MIT, BSD-2/3, Zlib, Apache-2.0, ISC and Boost are compatible
-   with FSL-1.1-MIT distribution. Copyleft (GPL, LGPL, MPL for static linking)
+   with MIT distribution. Copyleft (GPL, LGPL, MPL for static linking)
    is excluded from the engine; it may appear in optional tools that ship
    separately. Each release archive carries every licence text.
 6. **Behind an interface.** Every library is reached through one adapter file

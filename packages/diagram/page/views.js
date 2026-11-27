@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram page: the other views of the same model. The schematic and its AN 123 variant panels, the time
    traces, the spacetime (4D) view and the register-state table. Each draws from the model and the shared state. */
 (function () {

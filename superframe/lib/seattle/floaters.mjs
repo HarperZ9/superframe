@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // floaters.mjs: the "squigglies". Muscae volitantes are clumps of collagen fibres and cells in the vitreous gel. They

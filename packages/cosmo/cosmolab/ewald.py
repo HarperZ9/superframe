@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The exact periodic force of a point mass with a uniform neutralising background, by Ewald summation
 (Hernquist, Bouchet and Suto 1991, ApJS 75, 231). The reference a particle-mesh force is scored against.
 

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for brute force: shocks and saturation in sound, cavitation and its collapse."""
 import sys
 from pathlib import Path

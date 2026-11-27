@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Write data/cosmicemu_reference.json: the Mira-Titan IV Cosmic Emu P(k) for the default cosmology.
 
 The Cosmic Emu (Moran et al. 2023, MNRAS 520, 3443; github.com/lanl/CosmicEmu, 2022-Mira-Titan-IV/P_tot)

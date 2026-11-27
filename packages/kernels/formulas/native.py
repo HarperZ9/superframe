@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Build every kernel.bld into one shared library and call the exports from Python.
 
 Same route as packages/colourmix: buildc emits C, the system C compiler makes a shared library with

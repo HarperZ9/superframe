@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The studio's own determinism claims, as the README states them: every material validates, and one seed gives
 // the same picture bytes and the same sound score twice.
 import { test } from 'node:test';

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
 /* One FFT for the packages: perceive's src/signal.js, against an exact DFT and against the other JS FFTs in
    this repository, on the same seeded inputs. The other files are read here, never edited.

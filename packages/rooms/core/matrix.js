@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 export function rx(a) {
   const c = Math.cos(a),
     s = Math.sin(a);

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Radiocarbon calibration curves as versioned, hashed inputs.
 
 A curve is named by an id such as "intcal20". Each id records where the file is published, its SHA-256, the

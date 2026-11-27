@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One-dimensional resonators in closed form: the string, the Euler-Bernoulli bar and the air column.
 
 String (stiff): f_n = n f1 sqrt(1 + B n^2), f1 = sqrt(T / mu) / 2L, B = pi^3 E d^4 / (64 T L^2) (Fletcher 1964).

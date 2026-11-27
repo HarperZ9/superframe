@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim page, toy layer: spin a polytope with one knob per rotation plane, slide a cutting hyperplane
    through it, change the lens, and the powers-of-dimension strip. */
 (function () {

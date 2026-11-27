@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive/surface: parametric surfaces and their Gaussian and mean curvature, from the first and second
    fundamental forms by central differences. K = (LN - M^2) / (EG - F^2). Gauss's Theorema Egregium (1827):
    K depends on lengths measured inside the surface alone. */

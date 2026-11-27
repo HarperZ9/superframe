@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Waveguide strings and piano, and the effects analyser recovering planted settings
 (tremolo 12 Hz, attack 400 ms, delay 375 ms)."""
 import math

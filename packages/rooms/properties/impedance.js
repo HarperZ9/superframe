@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Impedance on the Smith chart. A line of length l rotates reflection about the centre, a shunt stub moves along a circle of
 // constant conductance. A matched path compiles to microstrip on the PCB engine's stackups, with two checks: the transfer
 // matrix at the design frequency, and the engine's time-domain line solver.

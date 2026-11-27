@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The room and the medium: a shoebox of damped normal modes from packages/instruments/room/modes.py.
 
 That model fixes the sound speed at 343 m/s. A room in another medium (water, say) has the same modes as a

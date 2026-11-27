@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Standard-library reference for the named RGB spaces (bld/rgbspace.bld, bld/transfer.bld).
 
 Every expression keeps the operation order of the kernel, so a Python float and the kernel's f64 carry the

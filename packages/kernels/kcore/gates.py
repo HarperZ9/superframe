@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Reward-hack gates, after Wafer AI's field guide to ten reward hacks in kernel generation
 (frontier sweep entry A-K-06): sync-all-streams timing, NaN-sentinel outputs, in-place input
 overwrite between runs, an fp64 ULP reference, and a static ban on library calls.

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Every physical constant is a frozen record: value, unit, source, and how it was checked. A record with no
 // check names carries the flag. "verified" means a comparison that someone ran and wrote down, never a citation.
 import { unit } from "./units.js";

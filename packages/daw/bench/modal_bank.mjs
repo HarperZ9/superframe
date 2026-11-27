@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Modal bank cost in V8, the engine an AudioWorklet runs on, processed in 128-sample render quanta.
 const N = Number(process.argv[2] ?? 1024), FS = 48000, S = FS * 2, Q = 128;
 const a1 = new Float32Array(N), a2 = new Float32Array(N), b = new Float32Array(N).fill(1 / N);

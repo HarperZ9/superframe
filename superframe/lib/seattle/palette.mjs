@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // palette.mjs: from a lamp's spectrum to a pixel-art palette. A palette here is not picked by eye. It is the set of

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Board materials for the 3D render and the trace-resistance back-annotation, read through the materials
 library's own API (materials.get). Records the library lacks are written as assumed, with the reason, so the
 render can show them and the coverage matrix can count them as gaps.

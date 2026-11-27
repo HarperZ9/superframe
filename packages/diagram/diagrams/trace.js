@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Calibration traceability as a hierarchy you can walk. Sources: HP-GAPS.md section 4 (NIST traceability policy). */
 (function (g) {
   "use strict";

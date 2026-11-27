@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim page: n-dimensional distance fields and the quaternion Julia set, sliced to 3D and ray-marched.
    The CPU path is the reference (NDim.renderSlice). The WebGL2 path runs the same camera, step rule,
    iteration counts and shading in a fragment shader; the page measures how far the two agree. */

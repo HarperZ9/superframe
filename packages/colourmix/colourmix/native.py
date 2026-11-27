@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Build the BuildLang kernels in bld/ and call them from Python.
 
 buildc compiles the BuildLang source to C, the system C compiler makes a shared library, and ctypes calls

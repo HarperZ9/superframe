@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // kasane: kasane no irome, robes stacked so each layer shows only an edge (the Meditations in Color Piene set, image

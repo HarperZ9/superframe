@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Stdio MCP server for the catalogue: query, where, ingest, stats. Stdlib only.
 
 Newline-delimited JSON-RPC 2.0 on stdin and stdout, the MCP stdio transport.

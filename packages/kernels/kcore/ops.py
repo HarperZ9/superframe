@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One array interface over numpy (CPU) and torch (CUDA).
 
 A kernel body is written once against these methods, so both devices execute

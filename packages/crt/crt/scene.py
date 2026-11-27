@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Source frames, 320 x 240 R'G'B' signal values in [0, 1]. Seeded, so a seed gives the same
 frame bytes. The dungeon echoes the reference save: stone, a skeleton, a torch whose flame
 flickers field by field."""

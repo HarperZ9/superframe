@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A choir from the expressive tract: parts of several singers, each a whole voice of its own.
 
 Every singer is drawn from the seeded generator, so a choir is a list of people who differ the way singers in a

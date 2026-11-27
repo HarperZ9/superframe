@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // motion.mjs: motion broken down to first principles, then to its metamers (BLEED section 25; CORE.md "motion:

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The copy side: content-addressed copies of saved artifacts, one record per copy.
 
 A record holds the sha256, the original URL and post, the save date, the media type, a licence tag

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Footprints. Pads in mm about the part origin; y up.
 export function hdr(n, p, dr, pad) {
   const a = [];

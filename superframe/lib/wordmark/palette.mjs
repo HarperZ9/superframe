@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // palette.mjs: colour for the wordmark directions. The mark uses the open spectrum; the product's three verdict

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The mastering chain: EQ, a gentle compressor and a true-peak limiter, all
 // stateful and stepped one stereo sample at a time, so offline and live run
 // the same arithmetic in the same order.

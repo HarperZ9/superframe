@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Edition records and generations: a private catalogue entry per title, one folder per rebuild.
 
     <library>/<slug>/gen-001/edition.json      source condition, chain settings, model and binary hashes,

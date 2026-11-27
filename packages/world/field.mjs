@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // field.mjs: one field, many properties. The kernel mirrors src/field_kernel.bld function for function (that file is
 // the source of record; tests/field.test.mjs holds this file to its output). Nothing here imports anything, so the
 // site can carry this file as it is.

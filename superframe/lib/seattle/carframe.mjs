@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // carframe.mjs: the rear side window's opening as seen from the back seat, lying down and looking up. The roof's

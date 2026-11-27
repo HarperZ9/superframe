@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Still frames: the dungeon through the physical tube, the spectral frame, the spot growth, the
 cost per frame, and raw-native style_crt on the same source. Run with the CUDA venv:
     python -B study/run_frames.py <style_crt_root> <node_runner>

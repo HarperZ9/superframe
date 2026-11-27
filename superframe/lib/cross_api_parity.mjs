@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Unified WebGPU + Native DX12 Scene-Graph Certificate Parity (superframe.cross-api-parity/v1).
 import { createHash } from "node:crypto";
 

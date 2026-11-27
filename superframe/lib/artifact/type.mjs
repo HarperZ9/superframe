@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // type.mjs: the elements as living type. The recipe's text is set across the whole frame in Accession Mono, through

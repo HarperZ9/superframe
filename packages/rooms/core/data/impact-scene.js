@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The geometry of the impact scene: bars of measured materials lying on supports, balls held above them, and a
 // listener, in metres (x along the bars, y up, z towards the listener). packages/daw/engine/impacts.mjs drops
 // the balls through this geometry; where a ball lands along its bar sets which modes ring, and the path to the

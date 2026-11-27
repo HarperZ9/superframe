@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim/polytopes: vertex and edge sets of the regular polytopes.
    Simplex, hypercube and cross-polytope in any n; the 24-cell, 120-cell and 600-cell from their standard
    coordinates (the 120-cell is built as the H4 Wythoff orbit in the 600-cell's frame; its published coordinates are kept

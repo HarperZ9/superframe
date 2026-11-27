@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for G11 (granular and freeze), G10 (sampler over our own renders) and G13 (electronic kit)."""
 import math
 import sys

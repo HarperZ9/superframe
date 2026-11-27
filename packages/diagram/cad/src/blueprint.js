@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/cad/blueprint: the assembly drawing, generated from the resolved model. Front, top and right side in
    third-angle projection at one standard scale (ISO 5455), an isometric view with balloons, a section view
    with hatching, dimensions measured from the geometry itself (so a test can compare them with the model's

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A scene that makes its own sound: rain from one physics record, read by the renderer and the DAW."""
 import math
 import sys

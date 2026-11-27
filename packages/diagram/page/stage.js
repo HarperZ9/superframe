@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram page: the 3D stage. One model drawn by WebGL2 when it is there and by the software raster when it is
    not (or when the reader picks CPU, or the single-line drawing). Orbit by drag, arrow keys or the knobs; zoom by
    wheel or + and -. Labels hang from each part and follow it when the model is taken apart. */

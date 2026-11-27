@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // pnwtrees.mjs: three Pacific Northwest trees as branch skeletons, in metres, in the plane of the picture.

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim/vec: n-vectors, matrices and rotations in coordinate planes. No dependencies.
    Loads as a classic script (window.NDim) or with require (module.exports is the same object). */
 (function (g) {

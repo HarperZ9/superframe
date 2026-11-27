@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for G1 (additive stems), G2 (patch library), G6 (loudness in the DAW) and the waveguide
 string as one recursive filter."""
 import json

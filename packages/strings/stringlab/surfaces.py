@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One graph on the plane, the cylinder, the Moebius strip, the torus and the Klein bottle.
 
 Each surface is a square of side 1 with its edges identified, written as a group of deck transformations of the

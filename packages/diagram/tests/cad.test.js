@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Known-answer tests for the parametric instrument layer.  node tests/cad.test.js [--json out.json]
    Round trips (model to DXF and back; netlist to .net and .kicad_sch and back), drawn dimensions equal to the
    model's values, a changed parameter reaching every view, and planted errors that must be refused. Exit 1 if

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Readers for the two intake formats: CMMNS saves (daylight.sidecar/1 .md sidecars) and Gather
 corpora (catalog.jsonl plus content-addressed bodies). Both are parsed as text data only.
 """

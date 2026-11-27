@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // looks.mjs: how each wordmark direction is finished, in two looks (effects pass, 2026-10-28).

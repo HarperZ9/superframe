@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 //
 // Pen layers. A path the caller gave a pen keeps it. Every other path is clustered by its stroke
 // colour into as many groups as there are pens, and the groups are handed to the pens by

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Lattice generators, densities, packing radii and point sets.
 
 A lattice is a d x d generator matrix G whose columns are basis vectors. Points are G n for

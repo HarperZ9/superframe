@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* perceive page: state and shape bridges. Polarisation on the Poincare sphere; Gaussian curvature on a
    surface, heard along a path; extra dimensions through ndim, each extra axis carried by a sense. */
 (function () {

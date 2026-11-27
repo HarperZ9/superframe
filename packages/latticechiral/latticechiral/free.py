@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Free lattice Dirac operators in momentum space: doubling, its cures, and the Nielsen-Ninomiya count.
 
 Naive operator D(p) = i sum_mu gamma_mu sin p_mu (lattice spacing 1). Its zeros sit at p in {0, pi}^d, 2^d of them,

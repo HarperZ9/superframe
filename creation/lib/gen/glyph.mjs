@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // glyph: words as a layer, set in the typeface agent's living cuts. Accession Burin has a LINE axis (how many burin

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // loudness.mjs: ITU-R BS.1770-4 loudness. K-weighting (a high shelf and a high pass) designed for any sample rate

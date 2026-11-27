@@ -134,7 +134,7 @@ std::string exportGltf(const Asset& a, std::vector<uint8_t>& bin) {
     }
     std::string usedList;
     for (int b = 0; b < kExtCount; ++b) if (used & (1u << b)) usedList += (usedList.empty() ? "\"" : ", \"") + std::string(extName(b)) + "\"";
-    return "{\n \"asset\": {\"version\": \"2.0\", \"generator\": \"raw-native owned assets (src/tools/owned_*.cpp)\", \"copyright\": \"raw-native, FSL-1.1-MIT\"},\n"
+    return "{\n \"asset\": {\"version\": \"2.0\", \"generator\": \"raw-native owned assets (src/tools/owned_*.cpp)\", \"copyright\": \"raw-native, MIT\"},\n"
            " \"extensionsUsed\": [" + usedList + "],\n \"scene\": 0,\n \"scenes\": [{\"name\": \"" + a.name + "\", \"nodes\": [" + nodeList + "]}],\n"
            " \"nodes\": [\n" + nodes + "\n ],\n \"meshes\": [\n" + meshes + "\n ],\n \"materials\": [\n" + materials + "\n ],\n"
            " \"accessors\": [\n" + accessors + "\n ],\n \"bufferViews\": [\n" + views + "\n ],\n"

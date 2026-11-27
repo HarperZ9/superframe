@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Second-order Lagrangian initial conditions against a planted two-mode field, and bitwise repeat runs."""
 import hashlib
 import sys

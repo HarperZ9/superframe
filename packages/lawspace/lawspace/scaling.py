@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Family 5: scaling. Multifractal spectra (MFDFA), self-affine surfaces, dynamic scaling, and the
 square-cube law with its small-scale mirror (Bond and Reynolds numbers).
 """

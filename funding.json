@@ -16,7 +16,7 @@
     {
       "guid": "superframe",
       "name": "The Playground (Superframe)",
-      "description": "Deterministic rendering, simulation, and multi-medium creative engine (DX12, Vulkan, WebGPU, C++23 native core): renders one seeded recipe as paint, living type, sound, and accessible plain-language study, alongside 6-DOF physical-AI simulation, ITU-R BT.2020/2100 spectral optics, and biomechanical tree dynamics. Source-available under FSL-1.1-MIT (converts to MIT after two years).",
+      "description": "Deterministic rendering, simulation, and multi-medium creative engine (DX12, Vulkan, WebGPU, C++23 native core): renders one seeded recipe as paint, living type, sound, and accessible plain-language study, alongside 6-DOF physical-AI simulation, ITU-R BT.2020/2100 spectral optics, and biomechanical tree dynamics. Open-source under the OSI-approved MIT License.",
       "webpageUrl": {
         "url": "https://harperz9.github.io/playground/",
         "wellKnown": "https://harperz9.github.io/.well-known/funding-manifest-urls"
@@ -26,7 +26,7 @@
         "wellKnown": "https://raw.githubusercontent.com/HarperZ9/superframe/main/.well-known/funding-manifest-urls"
       },
       "licenses": [
-        "spdx:FSL-1.1-MIT"
+        "spdx:MIT"
       ],
       "tags": [
         "graphics",
@@ -85,7 +85,7 @@
         "guid": "infra-grant-superframe",
         "status": "active",
         "name": "Deterministic rendering and simulation grant",
-        "description": "Scoped milestone grant funding unified WebGPU/DX12 scene-graph parity, spectral optics validation, and accessible multi-modal rendering tools. Note: Superframe uses FSL-1.1-MIT (source-available, converts to MIT after two years).",
+        "description": "Scoped milestone grant funding unified WebGPU/DX12 scene-graph parity, spectral optics validation, and accessible multi-modal rendering tools. Open-source under the OSI-approved MIT License.",
         "amount": 20000,
         "currency": "USD",
         "frequency": "one-time",

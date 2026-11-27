@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Equality suites for the modern readings: the Benson cube as RGB, and the named RGB spaces.
 
 Floats are compared by their bits. Inputs stay within a bounded range: a finite input large enough to

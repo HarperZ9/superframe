@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Volume swell, tremolo and feedback delay, and an analyser that reads their settings back from the sound.
 
 swell(x, attack): gain rises linearly from 0 to 1 over `attack` seconds. tremolo(x, rate, depth): gain

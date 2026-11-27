@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 21 mosaic-code: every tessera is one character of the code that lays it (lib/mosaic, the lettering and the glass optics, read at render time). Lines of code run along each stroke's courses, heavy and on bone tiles inside the letters, light and on dark glass in the field rows, so the word is drawn by the weight of its own source.

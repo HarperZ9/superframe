@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Block time steps for P3M: the mesh force on global steps, the pair force on power-of-two sub-steps.
 
 Time is the drift time tau, d tau = da / (a^3 E), in which dx/d tau = p and dp/d tau = a g. Each global step

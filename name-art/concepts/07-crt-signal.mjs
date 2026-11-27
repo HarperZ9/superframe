@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 07 crt-signal: the name as a broadcast ident. An ident card is set in Accession, encoded as 240 lines of

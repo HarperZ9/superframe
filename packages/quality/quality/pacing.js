@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
 // pacing.js: frame-pacing recorder. Inject before page scripts run (Playwright add_init_script).
 // Wraps requestAnimationFrame to time every callback, observes layout shifts and long animation

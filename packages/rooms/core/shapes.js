@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Shapes
 // Each shape is the body of float s(vec3 p,float c): c is Strength, r is length(p). Inside is negative.
 // Only the selected body reaches the compiler, so a program's size does not grow with this table.

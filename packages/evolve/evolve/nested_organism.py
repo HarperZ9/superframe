@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Levels 1-3 Nested Organism Hierarchy (NOH-1) with Immune Verification Organ.
 
 Architecture:

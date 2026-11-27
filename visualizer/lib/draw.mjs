@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // draw.mjs: anti-aliased marks into a float coverage plane (Float32Array w*h, 0..1 and above for emission).

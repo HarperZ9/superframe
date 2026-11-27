@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // raster.mjs: a small HDR frame for the Seattle scenes. { w, h, d: Float32Array(w*h*3) } in linear light, values may

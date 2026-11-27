@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // lines.mjs: the elements as drawn line. Marching squares cuts the lines-weighted field at evenly spaced levels

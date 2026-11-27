@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 import { heap } from "./router.js";
 // ======================================================================= Schematic from the netlist
 export function schematic(d) {

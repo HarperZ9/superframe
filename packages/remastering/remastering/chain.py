@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """One command: decode, read the condition, restore, split, layer, refine, resynthesize or remix, master, record.
 
 Nothing is dropped on the way: the remix is the sum of every layer plus the split's residual (the mix minus the

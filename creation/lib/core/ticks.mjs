@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // ticks.mjs: THE tick model (BLEED sections 11 to 15). One module for every caller; it merges the two earlier ones:

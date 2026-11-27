@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Requantisation with TPDF dither and error-feedback noise shaping.
 
 TPDF dither: the sum of two independent uniform values of 1 LSB each, so the error is independent of the signal in

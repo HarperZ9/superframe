@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // plate.mjs: a study plate, the artifact shown as its own parts. Everything on the plate is read from the render:

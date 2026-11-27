@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Fab outputs for a routed board, every one written and read back here: Gerber RS-274X per layer, Excellon drill,
    pick-and-place and BOM CSV, a board-outline DXF (through the CAD layer's own DXF writer and reader), and the
    comparison of each copper Gerber, rendered back to pixels, with the board view rasterised from the geometry. */

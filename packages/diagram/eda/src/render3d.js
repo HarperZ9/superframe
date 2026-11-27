@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/render3d: the routed board as an engine draw list, so the engine's software raster (and its WebGL2
    path in a page) draws it with the same shading as every instrument body. Layers stacked in millimetres: bottom
    copper, FR-4 core 1.6 mm, top copper 35 um, solder mask over the copper (translucent), ENIG pads and silkscreen

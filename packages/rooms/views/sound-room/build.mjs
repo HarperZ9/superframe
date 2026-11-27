@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Sound Room as a view of solvers/sound. node packages/rooms/views/sound-room/build.mjs [out.html]
 import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Equivalent-time sampling (HP 185A with the 187A plug-in, 1960). Sources: HP-GAPS.md section 1 and the primary
    corrections in HP-GAPS-PRIMARY.md section 1: the held value is fed back so the gate samples only the difference,
    loop gain 1 in Normal and about 0.2 in Smoothed. */

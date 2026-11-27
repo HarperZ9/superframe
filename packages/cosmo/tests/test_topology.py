@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Eigenmode spectra of E1 to E6 (unequal sides, twisted gluings) against COMPACT's analytic modes.
 
 A capability test of the topology machinery; nothing here bears on the topology of our universe."""

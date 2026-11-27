@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A bubble with a radially resolved gas temperature, so a centre temperature can be compared with gas dynamics.
 
 Homobaric model (Prosperetti, Crum and Commander 1988): the gas pressure p is uniform, the temperature is not. The gas

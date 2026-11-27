@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Load the engine, the CAD layer and the three instruments into Node; returns { D, C, pipeline(id) }. */
 "use strict";
 const path = require("path"), fs = require("fs");

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* ndim/lattice: the face lattice of a convex polytope from its vertices and edges.
 
    Facets: at each vertex, every (d-1)-subset of its neighbours spans a candidate hyperplane; it is a facet

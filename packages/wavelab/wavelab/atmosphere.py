@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """The Lamb wave: the atmosphere's own guided acoustic mode, the one the 2022 Hunga eruption sent round the globe.
 
 Linear, compressible, non-hydrostatic, windless and flat: for a horizontal wavenumber k the vertical structure

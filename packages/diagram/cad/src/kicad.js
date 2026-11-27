@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/cad/kicad: the schematic and netlist in KiCad's own formats, written and read back here because KiCad
    is not installed. .kicad_sch is the KiCad 8 s-expression schematic (version 20231120) with its symbols
    embedded in lib_symbols, so it opens without our library; .net is the KiCad "E" netlist the board editor

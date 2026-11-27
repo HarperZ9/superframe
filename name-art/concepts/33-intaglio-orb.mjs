@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // 33 intaglio-orb (flagship variant D): the engraved note (16, the letters made of burin cuts) with a solid crystal

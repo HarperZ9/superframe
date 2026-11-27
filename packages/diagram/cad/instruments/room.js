@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Room-shape meter: the parametric model of the measurement set-up and its loopback pad. Sources: packages/instruments
    records/room.json, examples/room-weyl.json and PIPELINE.md worked example 2 (the study's numbers are simulation, not
    measurement). The laptop and the phone are existing devices; the pad is the stage-7 round-trip rig. */

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Score time-step schemes against a reference run on the same initial conditions.
 
     python packages/cosmo/study/score_steps.py ref420.npz ref840.npz cand1.npz cand2.npz ... [--json out.json]

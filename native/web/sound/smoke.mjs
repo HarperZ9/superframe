@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Writes the fixture sheet, its narration and its offline render to DIR, so
 // scripts/sound_live_check.py can play the same sheet through the browser's
 // AudioWorklet and reconcile the two.   node web/sound/smoke.mjs DIR

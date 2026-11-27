@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/gl: the WebGL2 path. It draws the same draw list as the software raster, with the same flat shading
    computed per triangle, so both paths show one picture. Cut faces use the stencil buffer: each loop is fanned
    with INVERT (even-odd, so cavities stay open), then the same fans are drawn again where the stencil is set,

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // ======================================================================= Shader assembly
 export const COMMON = `#version 300 es
 precision highp float;precision highp int;

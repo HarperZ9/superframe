@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // wav.mjs: RIFF WAVE in and out, with no dependencies, so the same reader runs in Node and in a browser worker.

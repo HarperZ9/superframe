@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
 // typemetrics.js: collect type metrics for every visible element that owns text.
 // Evaluate in a page (Playwright page.evaluate(src)); returns {fonts, items}. Read-only.

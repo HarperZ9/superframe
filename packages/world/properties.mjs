@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // properties.mjs: the property registry of the field. Each property is a capability any element can carry at a
 // weight, and each is the core of a package that already exists, used as it stands: nothing here re-derives what the
 // package computes. The record of each property is a propertyObject (rooms/properties/model.js): its state space,

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Out-of-core slab stepping (cosmolab.ooc) against the in-core lean engine on the same initial conditions.
 
     python packages/cosmo/study/run_ooc_equiv.py --n 256 --box 256 --mesh 512 --levels 3 --slabs 4

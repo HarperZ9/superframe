@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Demo (study 2026-10-31-sdf-sh, H3 and H4): spherical-harmonic band-limiting graded by the field type.
    An environment's radiance on 16,384 equal-area directions is projected to SH bands 0..8. Three converters:
      sh.irradiance(L)  radiance -> Lambertian irradiance at 2,048 normals through bands <= L (Ramamoorthi and

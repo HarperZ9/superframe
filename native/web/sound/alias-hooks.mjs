@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Node module hooks: resolve "@raw-native/..." the way a media bundle's import
 // map does in the browser, so scene-sheet.mjs can load a bundled scene in Node.
 let base = null;

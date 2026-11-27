@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/eda/font: a single-stroke font for silkscreen, drawn here on a 4 x 6 grid (baseline 0, cap height 6),
    so reference designators can be plotted as strokes in a Gerber. Capitals, digits and + - . / _ only. */
 (function (g) {

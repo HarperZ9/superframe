@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // png.mjs: the smallest PNG reader and writer the transpiler needs (8-bit RGB or RGBA, non-interlaced), on node:zlib.

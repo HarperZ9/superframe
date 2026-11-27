@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // variable.mjs: a minted family shipped as ONE variable font with a weight axis. A port of Flywheel's
 // harness/typeface_variable.py and the mint_variable_family half of typeface_family.py
 // (HarperZ9/flywheel@681810fe).

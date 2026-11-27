@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 export * from "./constants.js";
 export * from "./footprints.js";
 export * from "./netlist.js";

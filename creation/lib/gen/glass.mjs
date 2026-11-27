@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // glass: a witness you can see through (SYNTHESIS-MAP section 3). A height field of glass over whatever lies below;

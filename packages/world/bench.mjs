@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // bench.mjs: the frame budget of the scene's own work, without drawing. One frame is one step (flow, dye, sound, the
 // field again) and one trace of 17 rays, as the page does it. Prints the median and the 95th percentile over 300
 // frames after 60 to warm up, on this machine's CPU, in Node.   node packages/world/bench.mjs

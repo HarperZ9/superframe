@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Two-dimensional resonators in closed form: membranes and Kirchhoff plates.
 
 Circular membrane (radius a, wave speed c = sqrt(T / sigma)): f_mn = j_mn c / (2 pi a), j_mn the n-th zero

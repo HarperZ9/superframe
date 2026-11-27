@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Shared helpers for the worked examples: one tool row, one gate, one stage, all in the schema's shape.
 
 Each example reads its instrument record (../records/ID.json): the name, the summary and the stage-1 assumptions

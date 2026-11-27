@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Timing with the GPU clock's memory in mind.
 
 Le et al. (arXiv 2607.08307, abstract read 2026-10-30) report that NVIDIA clocks track roughly the

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Gravity on E2 to E6: the image-deposit Poisson solve against the eigenmode Green's function built from
 COMPACT's selection rules; the planted untwisted solve must fail. No claim about our universe's topology."""
 import sys

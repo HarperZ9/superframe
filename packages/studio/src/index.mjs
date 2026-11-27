@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // index.mjs: the design studio as one import. The material model and its four lanes live in ../../../studio/lib
 // (the published studio folder); this package adds the parts ported in from older work (fonts, the eye) and a
 // description a front end can build its controls from.

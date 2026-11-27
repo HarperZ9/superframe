@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // film.mjs: turn a scene (create, step, render) into pixel-art frames, loops, sheets and files.

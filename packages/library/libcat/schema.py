@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Catalogue schema and connection helpers. One SQLite file, FTS5 for text."""
 from __future__ import annotations
 

@@ -8,7 +8,7 @@
   "raw-spheres": "The material gallery's 49 spheres (raw/renderer/gallery.hpp), already owned, in place of MetalRoughSpheres."
  },
  "source_of_truth": "The generator code is the asset. raw_native_cli export-assets writes each asset as glTF 2.0 (JSON plus binary buffer) with its material extensions; the files are reproduced byte for byte from the code, and their SHA-256 hashes are committed in evidence/m3-assets.json.",
- "licence": "The engine's licence (FSL-1.1-MIT, see LICENSE). No third-party geometry, texture or reference image is used; assets/PROVENANCE.md states this per asset.",
+ "licence": "The engine's licence (MIT, see LICENSE). No third-party geometry, texture or reference image is used; assets/PROVENANCE.md states this per asset.",
  "checks": {
   "determinism": {"what": "the exported files regenerated on MSVC and GCC", "bound": "byte-identical to the committed SHA-256 on both"},
   "geometry": {"what": "every triangle of both assets", "bound": "no triangle with area below 1e-10 square units; every normal of unit length within 1e-5; every vertex normal within 90 degrees of its triangle's face normal"},

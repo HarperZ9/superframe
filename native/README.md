@@ -133,9 +133,8 @@ each is described further down this page or in its `--help` text.
 - The GPU paths are optional builds. Hardware timings come from one RTX 4090.
 - The C++ API is versioned by numbered snapshots, and a snapshot can change
   between minor releases. Each change ships a migration note under `api/`.
-- The licence is FSL-1.1-MIT: use and modify it for anything except a
-  competing commercial product. Each version becomes MIT two years after
-  release (see [License](#license)).
+- The licence is MIT (`LICENSE`): OSI-approved open source with no
+  competing-use restrictions (see [License](#license)).
 
 ## How it compares
 
@@ -767,7 +766,7 @@ find_package(raw_native 0.5 CONFIG REQUIRED)
 target_link_libraries(your_target PRIVATE raw_native::raw_native)
 ```
 
-The package sets `raw_native_LICENSE` to `FSL-1.1-MIT`.
+The package sets `raw_native_LICENSE` to `MIT`.
 
 ## Layout
 
@@ -800,23 +799,18 @@ evidence/     raw timing runs, the wasm-versus-native comparison, the GPU
               golden hashes
 docs/         example images and certificates, and the architecture
 third_party/superstack/  the vendored superstack header, its vectors and
-              their pins (FSL-1.1-MIT; see NOTICE.md there)
+              their pins (MIT; see NOTICE.md there)
 ```
 
 ## License
 
-From version 0.3.0, raw-native is released under the Functional Source License,
-Version 1.1, MIT Future License (`FSL-1.1-MIT`). See [LICENSE](LICENSE). You may
-use, copy, modify and redistribute it for any purpose other than a competing
-commercial product or service, and each version becomes available under the MIT
-license two years after its release.
+raw-native is released under the OSI-approved MIT License (`MIT`). See
+[LICENSE](LICENSE). You may use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the software under the terms of the MIT
+License.
 
-Version 0.2.0 and earlier remain under the MIT license, as released.
+The files in `third_party/superstack/` are also under the MIT License, with the
+notice carried in each file and in `third_party/superstack/LICENSE.txt`. The
+public domain algorithms the header contains keep their own terms.
 
-The files in `third_party/superstack/` are superstack 0.2.0, also under
-FSL-1.1-MIT, with the notice carried in each file and in
-`third_party/superstack/LICENSE.txt`. The public domain algorithms the header
-contains keep their own terms. raw-native 0.5.0 vendored superstack 0.1.0,
-which remains under the MIT license.
-
-Copyright 2026 Zain Dana Harper.
+Copyright (c) 2026 Zain Dana Harper.

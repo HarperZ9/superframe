@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/scene: one draw list from the compiled model and the view's settings. Every renderer (GPU, CPU,
    picking, lens samples, frame hash) reads this list, so every view shows the same thing.
    view = { explode: 0..1, cut: { on, n, d }, xray, opacity: { id: a }, selected, state, tokens, overlay } */

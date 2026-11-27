@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Physics limits on a driven bubble: shape instability and an ionisation energy sink.
 
 Shape. A distortion R + a_n Y_n obeys a_n'' + B_n a_n' - A_n a_n = 0 with, in the boundary-layer approximation

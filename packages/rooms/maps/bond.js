@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // A one-junction bond graph: effort source, inertance, resistance, compliance on one common flow. Paynter's elements.
 //   I df/dt = e(t) - R f - loss(f) - q/C,   dq/dt = f
 // Three carriers on one layer, each with its own units. Effort times flow is power in watts in all three.

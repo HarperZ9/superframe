@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Assemble the study's frames into GIFs and frame strips (Pillow, research tooling only), then
 remove the loose frames. python -B study/make_gifs.py"""
 import os

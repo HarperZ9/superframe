@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """A tape echo as a physical tape loop: erase, record and three playback heads on one endless loop.
 
 The tape moves at speed v(t). A sample written at the record head at time t_w passes playback head k when the

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // rd: reaction-diffusion (Turing 1952; the Gray-Scott model, Pearson 1993's map of its regimes). An adapter on the

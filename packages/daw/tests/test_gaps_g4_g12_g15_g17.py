@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for the tempo map (G4), saturation and crush (G12), the pipe organ (G15) and the prepared
 piano (G17), each with a planted control that must fail."""
 import math

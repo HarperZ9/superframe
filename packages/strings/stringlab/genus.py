@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Surfaces of any genus, combinatorially: rotation systems and face tracing.
 
 An embedding of a graph in a closed surface is fixed (up to homeomorphism) by a rotation system (the cyclic order of

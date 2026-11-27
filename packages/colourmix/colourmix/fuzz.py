@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Fuzz target: out-of-range and malformed inputs from a fixed, recorded seed.
 
     python -m colourmix.fuzz [cases] [seed]        (run from packages/colourmix)

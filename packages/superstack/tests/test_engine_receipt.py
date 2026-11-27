@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Unit and planted-tamper tests for packages/superstack/engine_receipt.py."""
 from __future__ import annotations
 

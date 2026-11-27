@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // CPU reference for the room's wave step: the same second-order update as the step shader, on any grid. Walls are
 // rigid mirrors: a wall neighbour contributes the cell's own pressure, as in the shader.
 export class WaveField {

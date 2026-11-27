@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Electric piano: tine and tone bar as an asymmetric tuning fork, a neoprene hammer, a magnetic pickup.
 
 Tine: a steel cantilever of round wire, clamped at the tone bar block, with a sliding tuning spring as a

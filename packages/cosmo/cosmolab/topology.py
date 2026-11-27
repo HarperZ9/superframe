@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Laplacian eigenmodes of the six compact orientable flat 3-manifolds E1 to E6, two independent ways.
 
 A flat 3-manifold is R^3 divided by a group of rigid motions. Its covering 3-torus (the "associated E1")

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // nameart.mjs: the name-art generator as a superframe node, so any name or word goes through it. The node wraps

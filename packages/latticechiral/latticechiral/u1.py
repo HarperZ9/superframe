@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Two-dimensional compact U(1) lattice gauge fields, the Wilson and overlap Dirac operators, and the index theorem.
 
 Links U_mu(x) = exp(i theta_mu(x)) on an L x L periodic lattice. The plaquette angle F(x) is the principal value of

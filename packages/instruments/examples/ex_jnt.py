@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Worked example 1: the Johnson-noise thermometer, the hardware instrument. Every stage on paper."""
 from common import BUS, CHECKS, KICAD, NGSPICE, PERCEIVE, PY, STUDYRUN, K, gate, record, stage, tool, walls
 

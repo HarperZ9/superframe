@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // The mixer: a sound sheet in, stereo samples out, one sample at a time.
 //
 // Sources are pure functions of the absolute sample index (narration buffer,

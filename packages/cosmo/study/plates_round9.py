@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Two 3840x2160 plates for round nine: the pooled spacing factor over eight seeds with the closure on its
 interval; and softening convergence at 0.25 Mpc/h spacing (eps 0.0083 to 0.0042) with the planted check.
 

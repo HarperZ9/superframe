@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """Known answers for the choir (DAW gap G18): every singer's vibrato rate, depth and pitch offset read back from
 their own stem, a chord whose parts sing their notes, a section's vowel within 10 percent of the measured
 formants, a shorter tract that raises the formants by the inverse ratio, stems that sum to the mix, and a planted

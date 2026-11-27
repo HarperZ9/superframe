@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2026 Zain Dana Harper
-# SPDX-License-Identifier: FSL-1.1-MIT
+# SPDX-License-Identifier: MIT
 """optics.airy_radius/1: the reference, the known answers, the properties and the planted-bad controls."""
 import math
 

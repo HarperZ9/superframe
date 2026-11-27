@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 // Copyright 2026 Zain Dana Harper
 //
 // spd.mjs: the light sources of the Seattle night scenes, as spectral power distributions at 1 nm, 380 to 780 nm,

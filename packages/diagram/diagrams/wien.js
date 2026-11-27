@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* Wien bridge with Hewlett's lamp (HP 200A, US 2,268,872). Sources: HP-GAPS.md section 5 and the patent. */
 (function (g) {
   "use strict";

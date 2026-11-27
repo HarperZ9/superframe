@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Zain Dana Harper
-// SPDX-License-Identifier: FSL-1.1-MIT
+// SPDX-License-Identifier: MIT
 /* diagram/cad/out: the sheet's entities written as SVG and as DXF, and a DXF reader for the round trip.
    DXF is release 12 ASCII (AC1009), the oldest form every CAD reader still opens: HEADER, TABLES (LTYPE,
    LAYER), ENTITIES (LINE, POLYLINE with VERTEX and SEQEND, CIRCLE, ARC, SOLID, TEXT), EOF. Written here,
