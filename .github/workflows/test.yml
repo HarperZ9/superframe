@@ -75,9 +75,9 @@ jobs:
       - run: |
           buildc build --release native/bld
           ./native/bld/target/release/main | tee native-bld-out.txt
-          grep -q "^modules identical to the C++: 7 of 7$" native-bld-out.txt
+          grep -q "^modules identical to the C++: 9 of 9$" native-bld-out.txt
           grep -q "differs from the frame 0 pin: 1 of 1$" native-bld-out.txt
-          grep -q "^planted controls rejected: 7 of 7$" native-bld-out.txt
+          grep -q "^planted controls rejected: 9 of 9$" native-bld-out.txt
           grep -q "^art metrics identities verified: 1 of 1$" native-bld-out.txt
           grep -q "^parity invariants verified: 2 of 2$" native-bld-out.txt
       - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/world/tests/test_wave25f_buildlang_parity.py packages/world/tests/test_wave27c_cross_api_parity.py

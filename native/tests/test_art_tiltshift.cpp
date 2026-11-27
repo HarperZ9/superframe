@@ -22,10 +22,10 @@ constexpr const char* kFamily = "gcc";
 #else
 constexpr const char* kFamily = "other";
 #endif
-struct Pinned { const char* family; std::uint64_t coc, codes, townNightLit, gaussDefocusC8; };
-// Recorded 2026-10-22 on MSVC (VS 18) and GCC 13.3; townNightLit and gaussDefocusC8 added 2026-11-26; the two agree.
-constexpr Pinned kPinned[] = {{"msvc", 0x2c4cd941314f50b5ull, 0x1a208990a1cda158ull, 0x91ee8ea81ab861f0ull, 0x6d3f8b9acb221e67ull},
-                               {"gcc", 0x2c4cd941314f50b5ull, 0x1a208990a1cda158ull, 0x91ee8ea81ab861f0ull, 0x6d3f8b9acb221e67ull}};
+struct Pinned { const char* family; std::uint64_t coc, codes, townNightLit, gaussDefocusC8, fxNightLit; };
+// Recorded 2026-10-22 on MSVC (VS 18) and GCC 13.3; townNightLit, gaussDefocusC8, fxNightLit added 2026-11-26; the two agree.
+constexpr Pinned kPinned[] = {{"msvc", 0x2c4cd941314f50b5ull, 0x1a208990a1cda158ull, 0x91ee8ea81ab861f0ull, 0x6d3f8b9acb221e67ull, 0x593c8ac027015c51ull},
+                               {"gcc", 0x2c4cd941314f50b5ull, 0x1a208990a1cda158ull, 0x91ee8ea81ab861f0ull, 0x6d3f8b9acb221e67ull, 0x593c8ac027015c51ull}};
 
 void checkPinned(const char* what, std::uint64_t got, std::uint64_t Pinned::*field) {
     std::printf("g2 %s %s 0x%016llxull\n", kFamily, what, static_cast<unsigned long long>(got));
@@ -59,6 +59,8 @@ void checkGoldens() {
     checkPinned("townNightLit", fnv1a(fNight.lit), &Pinned::townNightLit);
     const std::vector<float> tsGauss = paintDefocus(f.lit, coc, 256, 144, {}, DefocusMode::Gaussian, 4);
     checkPinned("gaussDefocusC8", fnv1a(codes8(tsGauss)), &Pinned::gaussDefocusC8);
+    const std::vector<float> fxNight = fxStack(planFx(tiltLook("night"), FxFrame{0, true, false}, 256, 144, v.focalPx()), fNight.lit);
+    checkPinned("fxNightLit", fnv1a(fxNight), &Pinned::fxNightLit);
     // In-focus pixels are untouched (weight 0 below c0).
     const std::vector<float> w = defocusWeight(coc, 256, 144, {});
     long same = 0, sharp = 0;

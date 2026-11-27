@@ -16,6 +16,8 @@ mod art_town_lit;
 mod art_metrics;
 mod art_strokes_ref;
 mod art_tiltshift_defocus;
+mod art_scene_room;
+mod art_tiltshift_fx;
 mod wave25f_parity;
 
 fn main() ~ Console {
@@ -52,6 +54,14 @@ fn main() ~ Console {
     same = same + kit::report("art tiltshift defocus, town_map, 256 x 144, 8-bit compose", art_tiltshift_defocus::tiltshift_defocus_codes8_hash(256, 144, 0.0), 0x6d3f8b9acb221e67);
     all = all + 1;
 
+    // tests/test_art_strokes.cpp: renderFrame(orbitView(0, 256, 144), roomLight(), 4, Room).lit
+    same = same + kit::report("art scene room, conversation room, 256 x 144, lit buffer", art_scene_room::room_lit_hash(256, 144, 0.0), 0xc99282210e56cf4a);
+    all = all + 1;
+
+    // tests/test_art_tiltshift.cpp: fxStack(planFx(tiltLook("night"), {0, true, false}, 256, 144, fpx), townNight.lit)
+    same = same + kit::report("art tiltshift fx, night halation + star + vignette + grain, 256 x 144", art_tiltshift_fx::fx_night_lit_hash(256, 144, 0.0), 0x593c8ac027015c51);
+    all = all + 1;
+
     // Controls: each module must reject a different frame or tiny parameter perturbation.
     let mut control: i32 = 0;
     if art_scene::lit_hash(1, 256, 144) != 0x8e70a9159d2007bf { control = 1; }
@@ -64,6 +74,8 @@ fn main() ~ Console {
     if art_metrics::still_codes8_hash(0, 256, 144, 0.005) != 0xbf2cbc974ff8fcad { planted = planted + 1; }
     if art_strokes_ref::paint_reference_hash(0, 256, 144, 0.005) != 0x4add0d97495fd95d { planted = planted + 1; }
     if art_tiltshift_defocus::tiltshift_defocus_codes8_hash(256, 144, 0.05) != 0x6d3f8b9acb221e67 { planted = planted + 1; }
+    if art_scene_room::room_lit_hash(256, 144, 0.05) != 0xc99282210e56cf4a { planted = planted + 1; }
+    if art_tiltshift_fx::fx_night_lit_hash(256, 144, 0.01) != 0x593c8ac027015c51 { planted = planted + 1; }
     println!("planted controls rejected: {} of {}", planted, all);
 
     let metrics_ok: i32 = art_metrics::metrics_identities_ok();

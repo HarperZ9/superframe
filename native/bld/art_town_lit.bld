@@ -72,9 +72,9 @@ fn shade_town_night(rig: NightRig, o: V3, d: V3, h: Hit) -> V3 {
     )
 }
 
-// Renders townView(w, h) under townNight() with 2 x 2 samples a pixel and returns the lit buffer
-// FNV-1a hash. lamp_eps is 0.0 for the pinned render and non-zero for the planted control.
-pub fn town_night_lit_hash(w: i32, h: i32, lamp_eps: f64) -> u64 {
+// Renders townView(w, h) under townNight() with 2 x 2 samples a pixel into a flat RGBA f32-rounded
+// Vec<f64> buffer, matching Frame::lit from src/renderer/art_scene.cpp bit for bit.
+pub fn render_town_night_lit(w: i32, h: i32, lamp_eps: f64) -> Vec<f64> {
     let pi: f64 = 3.141592653589793;
     let az: f64 = 45.0 * pi / 180.0;
     let pitch: f64 = 35.0 * pi / 180.0;
@@ -102,7 +102,7 @@ pub fn town_night_lit_hash(w: i32, h: i32, lamp_eps: f64) -> u64 {
         ground: v3(0.004, 0.004, 0.005),
         emit_scale: 4.0 + lamp_eps,
     };
-    let mut hash: u64 = kit::fnv_start();
+    let mut lit: Vec<f64> = Vec::new();
     let mut y: i32 = 0;
     while y < h {
         let mut x: i32 = 0;
@@ -123,13 +123,27 @@ pub fn town_night_lit_hash(w: i32, h: i32, lamp_eps: f64) -> u64 {
                 cb = cb + c.z / 4.0;
                 s = s + 1;
             }
-            hash = kit::fnv_f32(hash, cr);
-            hash = kit::fnv_f32(hash, cg);
-            hash = kit::fnv_f32(hash, cb);
-            hash = kit::fnv_f32(hash, 1.0);
+            lit.push((cr as f32) as f64);
+            lit.push((cg as f32) as f64);
+            lit.push((cb as f32) as f64);
+            lit.push(1.0);
             x = x + 1;
         }
         y = y + 1;
+    }
+    lit
+}
+
+// Renders townView(w, h) under townNight() with 2 x 2 samples a pixel and returns the lit buffer
+// FNV-1a hash. lamp_eps is 0.0 for the pinned render and non-zero for the planted control.
+pub fn town_night_lit_hash(w: i32, h: i32, lamp_eps: f64) -> u64 {
+    let lit: Vec<f64> = render_town_night_lit(w, h, lamp_eps);
+    let mut hash: u64 = kit::fnv_start();
+    let n: usize = (w as usize) * (h as usize) * 4;
+    let mut i: usize = 0;
+    while i < n {
+        hash = kit::fnv_f32(hash, lit[i]);
+        i = i + 1;
     }
     hash
 }

@@ -15,7 +15,7 @@ native/bld/target/release/main
 ```
 
 The runner prints one line a module, `same` or `DIFF`, then control lines, cross-engine parity
-invariants, and a count. CI fails unless the count reads `7 of 7` today, and the number grows
+invariants, and a count. CI fails unless the count reads `9 of 9` today, and the number grows
 with each module.
 
 ## Moved so far
@@ -29,6 +29,8 @@ with each module.
 | 8-bit sRGB encoder (`encode8`/`codes8`) and stylised-track metrics (`instability`, `splitmix`, `pairedBootstrap`) | `src/renderer/art_metrics.cpp`, `raw/renderer/art_metrics.hpp` | `art_metrics.bld` | `tests/test_art_strokes.cpp`, `codes8(lit)` at 256 x 144, `0xbf2cbc974ff8fcad` on GCC and MSVC |
 | Stroke-orbit exposure tonemap reference (`paintReference`) and camera reprojection motion vectors (`motionTo`) | `src/renderer/art_strokes.cpp`, `src/renderer/art_scene.cpp` | `art_strokes_ref.bld` | `tests/test_art_strokes.cpp`, `paintReference(lit, 1.0)` `0x4add0d97495fd95d` and `motionTo(f1, v0)` `0x30d7597963cbf119` on GCC and MSVC |
 | Half-resolution tilt-shift defocus, rim-guarded weight, and bilinear compose (`unlinedHalf`, `defocusWeight`, `paintDefocus`) | `src/renderer/art_tiltshift_paint.cpp`, `src/renderer/art_scene.cpp` | `art_tiltshift_defocus.bld` | `tests/test_art_tiltshift.cpp`, `codes8(paintDefocus(..., Gaussian))` at 256 x 144, `0x6d3f8b9acb221e67` on GCC and MSVC |
+| Conversation room ray caster, group bounding slabs, burst drop-in animation, and studio key lighting (`SceneKind::Room`) | `src/renderer/art_scene_room.cpp`, `raw/renderer/art_room.hpp` | `art_scene_room.bld` | `tests/test_art_strokes.cpp`, `Room` lit buffer (`t=3.0`) at 256 x 144, `0xc99282210e56cf4a` on GCC and MSVC |
+| P23 lens and print effect stack: quarter-res bright pass, 24-tap halation, 4-axis star, chromatic aberration, cat-eye vignette, and PCG film grain (`fxStack`) | `src/renderer/art_tiltshift_fx.cpp`, `src/renderer/style_image.cpp` | `art_tiltshift_fx.bld` | `tests/test_art_tiltshift.cpp`, `fxStack(night, townNight.lit)` at 256 x 144, `0x593c8ac027015c51` on GCC and MSVC |
 
 `wave25f_parity.bld` also links Superframe's 100 Hz latency-faithful simulation mode and Deja-VAE
 10-step Moore-Penrose null-space back-projection invariants directly to compiled BuildLang f64
