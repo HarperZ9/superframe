@@ -1,0 +1,529 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe Renderer Module #25: Physical CRT Broadcast Video Signal Pipeline
+// Bit-exact 0-ULP port of native/src/renderer/style_crt_signal.cpp, style_crt_plan.cpp
+// (Blackman-windowed sinc lowpass/notch FIR taps + 4*fsc signal plan), and style_spectral.cpp
+// (inv3): RGB low-pass, NTSC S-Video, NTSC Composite 2D line-comb vs 1D notch separation,
+// PAL Composite alternating V-phase + 1-line delay-line demodulation, and CRT mask mean.
+
+
+pub struct CrtMat3 {
+    m0: f64, m1: f64, m2: f64,
+    m3: f64, m4: f64, m5: f64,
+    m6: f64, m7: f64, m8: f64,
+}
+
+pub struct CrtSigPlan {
+    mode: i32,
+    pal: bool,
+    comb: bool,
+    src_w: i32,
+    src_h: i32,
+    n_sig: i32,
+    lines: i32,
+    fs: f64,
+    line_cyc: f64,
+    frame_cyc: f64,
+    taps: Vec<f32>,
+    off_rgb: i32, half_rgb: i32,
+    off_enc: i32, half_enc: i32,
+    off_sep: i32, half_sep: i32,
+    off_lum: i32, half_lum: i32,
+    off_i: i32, half_i: i32,
+    off_q: i32, half_q: i32,
+}
+
+fn cmin_d(a: f64, b: f64) -> f64 {
+    if b < a { return b; }
+    a
+}
+
+fn cmax_d(a: f64, b: f64) -> f64 {
+    if a < b { return b; }
+    a
+}
+
+fn cmin_i(a: i32, b: i32) -> i32 {
+    if b < a { return b; }
+    a
+}
+
+fn cmax_i(a: i32, b: i32) -> i32 {
+    if a < b { return b; }
+    a
+}
+
+fn crt_pi() -> f64 { 3.141592653589793 }
+
+fn yiq_mat() -> CrtMat3 {
+    CrtMat3 {
+        m0: 0.299, m1: 0.587, m2: 0.114,
+        m3: 0.596, m4: -0.274, m5: -0.322,
+        m6: 0.211, m7: -0.523, m8: 0.312,
+    }
+}
+
+fn yuv_mat() -> CrtMat3 {
+    CrtMat3 {
+        m0: 0.299, m1: 0.587, m2: 0.114,
+        m3: -0.14713, m4: -0.28886, m5: 0.436,
+        m6: 0.615, m7: -0.51499, m8: -0.10001,
+    }
+}
+
+pub fn crt_inv3(m: CrtMat3) -> CrtMat3 {
+    let a: f64 = m.m0; let b: f64 = m.m1; let c: f64 = m.m2;
+    let d: f64 = m.m3; let e: f64 = m.m4; let f: f64 = m.m5;
+    let gg: f64 = m.m6; let h: f64 = m.m7; let ii: f64 = m.m8;
+    let ca: f64 = e * ii - f * h;
+    let cb: f64 = -(d * ii - f * gg);
+    let cc: f64 = d * h - e * gg;
+    let det: f64 = a * ca + b * cb + c * cc;
+    CrtMat3 {
+        m0: ca / det,
+        m1: -(b * ii - c * h) / det,
+        m2: (b * f - c * e) / det,
+        m3: cb / det,
+        m4: (a * ii - c * gg) / det,
+        m5: -(a * f - c * d) / det,
+        m6: cc / det,
+        m7: -(a * h - b * gg) / det,
+        m8: (a * e - b * d) / det,
+    }
+}
+
+fn lowpass_taps(cutoff: f64, half: i32) -> Vec<f64> {
+    let n: i32 = 2 * half + 1;
+    let mut h: Vec<f64> = Vec::new();
+    let pi: f64 = crt_pi();
+    let mut sum: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < n {
+        let m: i32 = i - half;
+        let x: f64 = 2.0 * cutoff * (m as f64);
+        let sinc: f64 = if m == 0 { 2.0 * cutoff } else { sin(pi * x) / (pi * (m as f64)) };
+        let w: f64 = 0.42 - 0.5 * cos((2.0 * pi * (i as f64)) / ((n - 1) as f64))
+            + 0.08 * cos((4.0 * pi * (i as f64)) / ((n - 1) as f64));
+        let v: f64 = sinc * w;
+        h.push(v);
+        sum = sum + v;
+        i = i + 1;
+    }
+    let mut out: Vec<f64> = Vec::new();
+    let mut j: i32 = 0;
+    while j < n {
+        out.push(h[j] / sum);
+        j = j + 1;
+    }
+    out
+}
+
+fn notch_taps(centre: f64, half_width: f64, half: i32) -> Vec<f64> {
+    let hi: Vec<f64> = lowpass_taps(cmin_d(0.499, centre + half_width), half);
+    let lo: Vec<f64> = lowpass_taps(cmax_d(0.001, centre - half_width), half);
+    let n: i32 = 2 * half + 1;
+    let mut h: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < n {
+        let delta: f64 = if i == half { 1.0 } else { 0.0 };
+        h.push(delta - (hi[i] - lo[i]));
+        i = i + 1;
+    }
+    h
+}
+
+fn append_taps_f32(dst: &mut Vec<f32>, src: &Vec<f64>) -> i32 {
+    let off: i32 = dst.len() as i32;
+    let n: i32 = src.len() as i32;
+    let mut i: i32 = 0;
+    while i < n {
+        dst.push(src[i] as f32);
+        i = i + 1;
+    }
+    off
+}
+
+fn lp_or_unit(mhz: f64, fs: f64, half: i32) -> Vec<f64> {
+    if mhz > 0.0 {
+        return lowpass_taps(cmin_d(0.49, mhz / fs), half);
+    }
+    let mut u: Vec<f64> = Vec::new();
+    u.push(1.0);
+    u
+}
+
+pub fn build_crt_sig_plan(mode: i32, pal: bool, comb: bool, src_w: i32, src_h: i32) -> CrtSigPlan {
+    let fsc: f64 = if pal { 4.43361875 } else { 315.0 / 88.0 };
+    let luma_mhz: f64 = if pal { 5.0 } else { 4.2 };
+    let i_mhz: f64 = 1.3;
+    let q_mhz: f64 = if pal { 1.3 } else { 0.4 };
+    let fs: f64 = 4.0 * fsc;
+    let pix_clk: f64 = 5.369318;
+    let n_sig: i32 = cmax_i(1, floor(((src_w as f64) * fs) / pix_clk + 0.5) as i32);
+    let line_cyc: f64 = (if pal { 270.6 } else { 180.0 }) / 360.0;
+    let frame_cyc: f64 = (if pal { 0.0 } else { 180.0 }) / 360.0;
+
+    let mut taps: Vec<f32> = Vec::new();
+    let t_rgb: Vec<f64> = lp_or_unit(8.0, fs, 8);
+    let off_rgb: i32 = append_taps_f32(&mut taps, &t_rgb);
+    let half_rgb: i32 = ((t_rgb.len() as i32) - 1) / 2;
+
+    let t_enc: Vec<f64> = lp_or_unit(1.3, fs, 12);
+    let off_enc: i32 = append_taps_f32(&mut taps, &t_enc);
+    let half_enc: i32 = ((t_enc.len() as i32) - 1) / 2;
+
+    let t_sep: Vec<f64> = if !comb {
+        notch_taps(0.25, 1.0 / fs, 16)
+    } else {
+        let mut u: Vec<f64> = Vec::new();
+        u.push(1.0);
+        u
+    };
+    let off_sep: i32 = append_taps_f32(&mut taps, &t_sep);
+    let half_sep: i32 = ((t_sep.len() as i32) - 1) / 2;
+
+    let t_lum: Vec<f64> = lp_or_unit(luma_mhz, fs, 12);
+    let off_lum: i32 = append_taps_f32(&mut taps, &t_lum);
+    let half_lum: i32 = ((t_lum.len() as i32) - 1) / 2;
+
+    let t_i: Vec<f64> = lp_or_unit(i_mhz, fs, 24);
+    let off_i: i32 = append_taps_f32(&mut taps, &t_i);
+    let half_i: i32 = ((t_i.len() as i32) - 1) / 2;
+
+    let t_q: Vec<f64> = lp_or_unit(q_mhz, fs, 24);
+    let off_q: i32 = append_taps_f32(&mut taps, &t_q);
+    let half_q: i32 = ((t_q.len() as i32) - 1) / 2;
+
+    CrtSigPlan {
+        mode: mode, pal: pal, comb: comb,
+        src_w: src_w, src_h: src_h, n_sig: n_sig, lines: src_h,
+        fs: fs, line_cyc: line_cyc, frame_cyc: frame_cyc,
+        taps: taps,
+        off_rgb: off_rgb, half_rgb: half_rgb,
+        off_enc: off_enc, half_enc: half_enc,
+        off_sep: off_sep, half_sep: half_sep,
+        off_lum: off_lum, half_lum: half_lum,
+        off_i: off_i, half_i: half_i,
+        off_q: off_q, half_q: half_q,
+    }
+}
+
+fn frac_d(x: f64) -> f64 { x - floor(x) }
+
+fn sig_phase(plan: &CrtSigPlan, k: i32, y: i32, f: i32) -> f64 {
+    let q: f64 = ((k & 3) as f64) / 4.0;
+    let ly: f64 = frac_d((y as f64) * plan.line_cyc);
+    let lf: f64 = frac_d((f as f64) * plan.frame_cyc);
+    2.0 * crt_pi() * (q + ly + lf)
+}
+
+fn pal_sign(y: i32) -> f64 {
+    if (y & 1) == 0 { return 1.0; }
+    -1.0
+}
+
+fn held_sample(plan: &CrtSigPlan, src: &Vec<f32>, y: i32, k: i32, c: i32) -> f64 {
+    let kk: i32 = cmin_i(plan.n_sig - 1, cmax_i(0, k));
+    let num: f64 = ((2 * kk + 1) * plan.src_w) as f64;
+    let den: f64 = 2.0 * (plan.n_sig as f64);
+    let x: i32 = cmin_i(plan.src_w - 1, floor(num / den) as i32);
+    src[(y * plan.src_w + x) * 4 + c] as f64
+}
+
+fn encode_signal(plan: &CrtSigPlan, src: &Vec<f32>, f: i32) -> Vec<f32> {
+    let n_sig: i32 = plan.n_sig;
+    let lines: i32 = plan.lines;
+    let total: i32 = n_sig * lines * 4;
+    let mut out: Vec<f32> = Vec::new();
+    let mut z: i32 = 0;
+    while z < total {
+        out.push(0.0 as f32);
+        z = z + 1;
+    }
+    let m: CrtMat3 = if plan.pal { yuv_mat() } else { yiq_mat() };
+    let mut y: i32 = 0;
+    while y < lines {
+        let mut k: i32 = 0;
+        while k < n_sig {
+            let idx: i32 = (y * n_sig + k) * 4;
+            if plan.mode == 0 {
+                let mut c: i32 = 0;
+                while c < 3 {
+                    let mut s: f64 = 0.0;
+                    let mut j: i32 = -plan.half_rgb;
+                    while j <= plan.half_rgb {
+                        let tv: f64 = plan.taps[plan.off_rgb + j + plan.half_rgb] as f64;
+                        s = s + tv * held_sample(plan, src, y, k + j, c);
+                        j = j + 1;
+                    }
+                    out[idx + c] = s as f32;
+                    c = c + 1;
+                }
+            } else {
+                let r: f64 = held_sample(plan, src, y, k, 0);
+                let g: f64 = held_sample(plan, src, y, k, 1);
+                let b: f64 = held_sample(plan, src, y, k, 2);
+                let mut a_acc: f64 = 0.0;
+                let mut q_acc: f64 = 0.0;
+                let mut j: i32 = -plan.half_enc;
+                while j <= plan.half_enc {
+                    let tv: f64 = plan.taps[plan.off_enc + j + plan.half_enc] as f64;
+                    let rj: f64 = held_sample(plan, src, y, k + j, 0);
+                    let gj: f64 = held_sample(plan, src, y, k + j, 1);
+                    let bj: f64 = held_sample(plan, src, y, k + j, 2);
+                    let c0: f64 = m.m3 * rj + m.m4 * gj + m.m5 * bj;
+                    let c1: f64 = m.m6 * rj + m.m7 * gj + m.m8 * bj;
+                    a_acc = a_acc + tv * c0;
+                    q_acc = q_acc + tv * c1;
+                    j = j + 1;
+                }
+                let ph: f64 = sig_phase(plan, k, y, f);
+                let chroma: f64 = if plan.pal {
+                    a_acc * sin(ph) + pal_sign(y) * q_acc * cos(ph)
+                } else {
+                    a_acc * cos(ph) + q_acc * sin(ph)
+                };
+                let y_enc: f64 = 0.299 * r + 0.587 * g + 0.114 * b;
+                out[idx] = y_enc as f32;
+                out[idx + 1] = chroma as f32;
+            }
+            k = k + 1;
+        }
+        y = y + 1;
+    }
+    out
+}
+
+fn comp_at(enc: &Vec<f32>, n_sig: i32, y: i32, k: i32) -> f64 {
+    let kc: i32 = cmin_i(n_sig - 1, cmax_i(0, k));
+    let idx: i32 = (y * n_sig + kc) * 4;
+    (enc[idx] as f64) + (enc[idx + 1] as f64)
+}
+
+fn separate_signal(plan: &CrtSigPlan, enc: &Vec<f32>) -> Vec<f32> {
+    let n_sig: i32 = plan.n_sig;
+    let lines: i32 = plan.lines;
+    let total: i32 = n_sig * lines * 4;
+    let mut out: Vec<f32> = Vec::new();
+    let mut z: i32 = 0;
+    while z < total {
+        out.push(0.0 as f32);
+        z = z + 1;
+    }
+    let use_comb: bool = plan.comb && !plan.pal;
+    let mut y: i32 = 0;
+    while y < lines {
+        let mut k: i32 = 0;
+        while k < n_sig {
+            let idx: i32 = (y * n_sig + k) * 4;
+            if plan.mode == 1 {
+                out[idx] = enc[idx];
+                out[idx + 1] = enc[idx + 1];
+            } else {
+                let mut yl: f64 = 0.0;
+                if use_comb {
+                    let y2: i32 = if y > 0 { y - 1 } else { cmin_i(1, lines - 1) };
+                    yl = 0.5 * (comp_at(enc, n_sig, y, k) + comp_at(enc, n_sig, y2, k));
+                } else {
+                    let mut j: i32 = -plan.half_sep;
+                    while j <= plan.half_sep {
+                        let tv: f64 = plan.taps[plan.off_sep + j + plan.half_sep] as f64;
+                        yl = yl + tv * comp_at(enc, n_sig, y, k + j);
+                        j = j + 1;
+                    }
+                }
+                let c_sep: f64 = comp_at(enc, n_sig, y, k) - yl;
+                out[idx] = yl as f32;
+                out[idx + 1] = c_sep as f32;
+            }
+            k = k + 1;
+        }
+        y = y + 1;
+    }
+    out
+}
+
+fn demod_line(plan: &CrtSigPlan, sep: &Vec<f32>, y: i32, k: i32, f: i32) -> (f64, f64) {
+    let n_sig: i32 = plan.n_sig;
+    let mut a: f64 = 0.0;
+    let mut j: i32 = -plan.half_i;
+    while j <= plan.half_i {
+        let ph: f64 = sig_phase(plan, k + j, y, f);
+        let kc: i32 = cmin_i(n_sig - 1, cmax_i(0, k + j));
+        let cv: f64 = sep[(y * n_sig + kc) * 4 + 1] as f64;
+        let tv: f64 = plan.taps[plan.off_i + j + plan.half_i] as f64;
+        let car: f64 = if plan.pal { sin(ph) } else { cos(ph) };
+        a = a + tv * 2.0 * cv * car;
+        j = j + 1;
+    }
+    let mut b: f64 = 0.0;
+    let mut j2: i32 = -plan.half_q;
+    while j2 <= plan.half_q {
+        let ph: f64 = sig_phase(plan, k + j2, y, f);
+        let kc: i32 = cmin_i(n_sig - 1, cmax_i(0, k + j2));
+        let cv: f64 = sep[(y * n_sig + kc) * 4 + 1] as f64;
+        let tv: f64 = plan.taps[plan.off_q + j2 + plan.half_q] as f64;
+        let car: f64 = if plan.pal { pal_sign(y) * cos(ph) } else { sin(ph) };
+        b = b + tv * 2.0 * cv * car;
+        j2 = j2 + 1;
+    }
+    (a, b)
+}
+
+fn demod_signal(plan: &CrtSigPlan, sep: &Vec<f32>, f: i32) -> Vec<f32> {
+    let n_sig: i32 = plan.n_sig;
+    let lines: i32 = plan.lines;
+    let total: i32 = n_sig * lines * 4;
+    let mut out: Vec<f32> = Vec::new();
+    let mut z: i32 = 0;
+    while z < total {
+        out.push(0.0 as f32);
+        z = z + 1;
+    }
+    let inv_m: CrtMat3 = crt_inv3(if plan.pal { yuv_mat() } else { yiq_mat() });
+    let mut y: i32 = 0;
+    while y < lines {
+        let mut k: i32 = 0;
+        while k < n_sig {
+            let mut y_lum: f64 = 0.0;
+            let mut j: i32 = -plan.half_lum;
+            while j <= plan.half_lum {
+                let kc: i32 = cmin_i(n_sig - 1, cmax_i(0, k + j));
+                let lv: f64 = sep[(y * n_sig + kc) * 4] as f64;
+                let tv: f64 = plan.taps[plan.off_lum + j + plan.half_lum] as f64;
+                y_lum = y_lum + tv * lv;
+                j = j + 1;
+            }
+            let (mut ab0, mut ab1) = demod_line(plan, sep, y, k, f);
+            if plan.pal && y > 0 {
+                let (p0, p1) = demod_line(plan, sep, y - 1, k, f);
+                ab0 = 0.5 * (ab0 + p0);
+                ab1 = 0.5 * (ab1 + p1);
+            }
+            let idx: i32 = (y * n_sig + k) * 4;
+            let ro: f64 = inv_m.m0 * y_lum + inv_m.m1 * ab0 + inv_m.m2 * ab1;
+            let go: f64 = inv_m.m3 * y_lum + inv_m.m4 * ab0 + inv_m.m5 * ab1;
+            let bo: f64 = inv_m.m6 * y_lum + inv_m.m7 * ab0 + inv_m.m8 * ab1;
+            out[idx] = ro as f32;
+            out[idx + 1] = go as f32;
+            out[idx + 2] = bo as f32;
+            k = k + 1;
+        }
+        y = y + 1;
+    }
+    out
+}
+
+pub fn crt_signal_run(plan: &CrtSigPlan, src: &Vec<f32>, f: i32) -> Vec<f32> {
+    let enc: Vec<f32> = encode_signal(plan, src, f);
+    if plan.mode == 0 {
+        return enc;
+    }
+    let sep: Vec<f32> = separate_signal(plan, &enc);
+    demod_signal(plan, &sep, f)
+}
+
+pub fn crt_mask_mean(mask_type: i32, pitch: f64, fill: f64, slot_h: f64, slot_g: f64) -> f64 {
+    if mask_type == 1 {
+        return fill / 3.0;
+    }
+    if mask_type == 2 {
+        return (fill / 3.0) * (slot_h / (slot_h + slot_g));
+    }
+    if mask_type == 3 {
+        let d: f64 = pitch / sqrt(3.0);
+        let r: f64 = (fill * d) / 2.0;
+        return (crt_pi() * r * r) / ((sqrt(3.0) / 2.0) * pitch * pitch);
+    }
+    1.0
+}
+
+fn make_crt_source(w: i32, h: i32) -> Vec<f32> {
+    let mut src: Vec<f32> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let bar: i32 = (x * 6) / w;
+            let mut r: f64 = 0.15 + 0.70 * ((x as f64) / (w as f64));
+            let mut g: f64 = 0.20 + 0.65 * ((y as f64) / (h as f64));
+            let mut b: f64 = 0.85 - 0.60 * ((x as f64) / (w as f64));
+            if bar == 0 { r = 0.95; g = 0.12; b = 0.10; }
+            else if bar == 1 { r = 0.10; g = 0.92; b = 0.18; }
+            else if bar == 2 { r = 0.14; g = 0.20; b = 0.96; }
+            else if bar == 3 { r = 0.90; g = 0.88; b = 0.12; }
+            else if bar == 4 { r = 0.88; g = 0.16; b = 0.86; }
+            if (((x + y) & 1) == 0) && ((x % 3) == 0) {
+                r = r * 0.35;
+                g = g * 0.75;
+                b = b * 0.55;
+            }
+            src.push(r as f32);
+            src.push(g as f32);
+            src.push(b as f32);
+            src.push(1.0 as f32);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    src
+}
+
+fn hash_f32_vec(buf: &Vec<f32>, h0: u64) -> u64 {
+    let n: i32 = buf.len() as i32;
+    let mut h: u64 = h0;
+    let mut i: i32 = 0;
+    while i < n {
+        h = kit::fnv_f32(h, buf[i] as f64);
+        i = i + 1;
+    }
+    h
+}
+
+pub fn run_crt_signal_parity() -> (u64, u64, u64, u64, u64, u64, u64) {
+    let w: i32 = 24;
+    let h: i32 = 16;
+    let frame: i32 = 1;
+    let src: Vec<f32> = make_crt_source(w, h);
+
+    let pl_rgb: CrtSigPlan = build_crt_sig_plan(0, false, true, w, h);
+    let pl_svid: CrtSigPlan = build_crt_sig_plan(1, false, true, w, h);
+    let pl_ntsc: CrtSigPlan = build_crt_sig_plan(2, false, true, w, h);
+    let pl_notch: CrtSigPlan = build_crt_sig_plan(2, false, false, w, h);
+    let pl_pal: CrtSigPlan = build_crt_sig_plan(2, true, false, w, h);
+
+    let out_rgb: Vec<f32> = crt_signal_run(&pl_rgb, &src, frame);
+    let out_svid: Vec<f32> = crt_signal_run(&pl_svid, &src, frame);
+    let out_ntsc: Vec<f32> = crt_signal_run(&pl_ntsc, &src, frame);
+    let out_notch: Vec<f32> = crt_signal_run(&pl_notch, &src, frame);
+    let out_pal: Vec<f32> = crt_signal_run(&pl_pal, &src, frame);
+
+    let h_rgb: u64 = hash_f32_vec(&out_rgb, kit::fnv_start());
+    let h_svid: u64 = hash_f32_vec(&out_svid, kit::fnv_start());
+    let h_ntsc: u64 = hash_f32_vec(&out_ntsc, kit::fnv_start());
+    let h_pal: u64 = hash_f32_vec(&out_pal, kit::fnv_start());
+    let h_ctrl: u64 = hash_f32_vec(&out_notch, kit::fnv_start());
+
+    let m0: f64 = crt_mask_mean(0, 0.70, 0.85, 0.60, 0.12);
+    let m1: f64 = crt_mask_mean(1, 0.30, 0.85, 0.60, 0.12);
+    let m2: f64 = crt_mask_mean(2, 0.75, 0.85, 0.85, 0.18);
+    let m3: f64 = crt_mask_mean(3, 0.28, 0.80, 0.60, 0.12);
+    let mut h_mask: u64 = kit::fnv_start();
+    h_mask = kit::fnv_f32(h_mask, m0);
+    h_mask = kit::fnv_f32(h_mask, m1);
+    h_mask = kit::fnv_f32(h_mask, m2);
+    h_mask = kit::fnv_f32(h_mask, m3);
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = hash_f32_vec(&out_rgb, h_all);
+    h_all = hash_f32_vec(&out_svid, h_all);
+    h_all = hash_f32_vec(&out_ntsc, h_all);
+    h_all = hash_f32_vec(&out_pal, h_all);
+    h_all = kit::fnv_f32(h_all, m0);
+    h_all = kit::fnv_f32(h_all, m1);
+    h_all = kit::fnv_f32(h_all, m2);
+    h_all = kit::fnv_f32(h_all, m3);
+
+    (h_rgb, h_svid, h_ntsc, h_pal, h_mask, h_all, h_ctrl)
+}

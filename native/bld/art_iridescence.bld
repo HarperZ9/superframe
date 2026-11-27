@@ -1,0 +1,633 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Module #38: thin-film iridescence (native/src/renderer/pbr_iridescence.cpp).
+// Belcour-Barla harmonic thin-film Fresnel (8-harmonic Schlick + exact s/p polarized
+// complex Fresnel with tabulated 4001-entry CIE 1931 Fourier sensitivity), 401-wavelength
+// spectral Airy integrator, and exact complex dielectric Airy stack (including evanescent TIR).
+
+struct M38Cpx { re: f64, im: f64 }
+struct M38Rgb { r: f64, g: f64, b: f64 }
+
+struct M38Film {
+    ok: i32,
+    r12: f64,
+    t121: f64,
+    phi21: f64,
+    cos2: f64,
+    opd: f64,
+    r23_0: f64,
+    r23_1: f64,
+    r23_2: f64,
+    phi23_0: f64,
+    phi23_1: f64,
+    phi23_2: f64,
+}
+
+struct M38Pol {
+    r12: f64,
+    t121: f64,
+    phi21: f64,
+    r23_0: f64,
+    r23_1: f64,
+    r23_2: f64,
+    phi23_0: f64,
+    phi23_1: f64,
+    phi23_2: f64,
+}
+
+struct M38Sens {
+    re0: Vec<f64>,
+    re1: Vec<f64>,
+    re2: Vec<f64>,
+    im0: Vec<f64>,
+    im1: Vec<f64>,
+    im2: Vec<f64>,
+}
+
+fn m38_pi() -> f64 { 3.14159265358979323846 }
+
+fn m38_clampd(x: f64, lo: f64, hi: f64) -> f64 {
+    if x < lo { return lo; }
+    if x > hi { return hi; }
+    x
+}
+
+fn m38_fnv_start() -> u64 { 1469598103934665603 }
+
+fn m38_fnv_u8(h0: u64, b: u64) -> u64 {
+    let h: u64 = h0 ^ b;
+    h.wrapping_mul(1099511628211)
+}
+
+fn m38_fnv_f32(h0: u64, v: f64) -> u64 {
+    let b: u32 = (v as f32).to_bits();
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 4 {
+        h = m38_fnv_u8(h, ((b >> (8 * k)) & 255) as u64);
+        k = k + 1;
+    }
+    h
+}
+
+fn m38_maxd(a: f64, b: f64) -> f64 {
+    if a > b { return a; }
+    b
+}
+
+fn m38_cpx(re: f64, im: f64) -> M38Cpx { M38Cpx { re: re, im: im } }
+fn m38_rgb(r: f64, g: f64, b: f64) -> M38Rgb { M38Rgb { r: r, g: g, b: b } }
+
+fn m38_cadd(a: M38Cpx, b: M38Cpx) -> M38Cpx { m38_cpx(a.re + b.re, a.im + b.im) }
+fn m38_csub(a: M38Cpx, b: M38Cpx) -> M38Cpx { m38_cpx(a.re - b.re, a.im - b.im) }
+fn m38_cmul(a: M38Cpx, b: M38Cpx) -> M38Cpx {
+    m38_cpx(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re)
+}
+fn m38_cdiv(a: M38Cpx, b: M38Cpx) -> M38Cpx {
+    let d: f64 = b.re * b.re + b.im * b.im;
+    m38_cpx((a.re * b.re + a.im * b.im) / d, (a.im * b.re - a.re * b.im) / d)
+}
+fn m38_cnorm(z: M38Cpx) -> f64 { z.re * z.re + z.im * z.im }
+fn m38_csqrt_real(x: f64) -> M38Cpx {
+    if x >= 0.0 { return m38_cpx(sqrt(x), 0.0); }
+    m38_cpx(0.0, sqrt(-x))
+}
+fn m38_cpolar(r: f64, th: f64) -> M38Cpx { m38_cpx(r * cos(th), r * sin(th)) }
+
+fn m38_ior_to_f0(transmitted: f64, incident: f64) -> f64 {
+    let q: f64 = (transmitted - incident) / (transmitted + incident);
+    q * q
+}
+
+fn m38_f0_to_ior(f0: f64) -> f64 {
+    let s: f64 = sqrt(f0);
+    (1.0 + s) / (1.0 - s)
+}
+
+fn m38_schlick(f0: f64, f90: f64, cosine: f64) -> f64 {
+    let m: f64 = 1.0 - m38_clampd(cosine, 0.0, 1.0);
+    let m5: f64 = m * m * m * m * m;
+    f0 + (f90 - f0) * m5
+}
+
+fn m38_xyz_to_rec709(x: f64, y: f64, z: f64) -> M38Rgb {
+    let r: f64 = 3.2404542 * x - 1.5371385 * y - 0.4985314 * z;
+    let g: f64 = -0.9692660 * x + 1.8760108 * y + 0.0415560 * z;
+    let b: f64 = 0.0556434 * x - 0.2040259 * y + 1.0572252 * z;
+    m38_rgb(r, g, b)
+}
+
+fn m38_eval_sensitivity(opd: f64, s0: f64, s1: f64, s2: f64) -> M38Rgb {
+    let pi: f64 = m38_pi();
+    let phase: f64 = 2.0 * pi * opd * 1.0e-9;
+    let p2: f64 = phase * phase;
+
+    let x0: f64 = 5.4856e-13 * sqrt(2.0 * pi * 4.3278e+09) * cos(1.6810e+06 * phase + s0) * exp(-p2 * 4.3278e+09);
+    let x1: f64 = 9.7470e-14 * sqrt(2.0 * pi * 4.5282e+09) * cos(2.2399e+06 * phase + s0) * exp(-4.5282e+09 * p2);
+    let vx: f64 = (x0 + x1) / 1.0685e-7;
+    let vy: f64 = (4.4201e-13 * sqrt(2.0 * pi * 9.3046e+09) * cos(1.7953e+06 * phase + s1) * exp(-p2 * 9.3046e+09)) / 1.0685e-7;
+    let vz: f64 = (5.2481e-13 * sqrt(2.0 * pi * 6.6121e+09) * cos(2.2084e+06 * phase + s2) * exp(-p2 * 6.6121e+09)) / 1.0685e-7;
+    m38_xyz_to_rec709(vx, vy, vz)
+}
+
+fn m38_gauss(l: f64, mu: f64, s1: f64, s2: f64) -> f64 {
+    let mut denom: f64 = s2;
+    if l < mu { denom = s1; }
+    let t: f64 = (l - mu) / denom;
+    exp(-0.5 * t * t)
+}
+
+fn m38_cmf(l: f64) -> M38Rgb {
+    let x: f64 = 1.056 * m38_gauss(l, 599.8, 37.9, 31.0)
+        + 0.362 * m38_gauss(l, 442.0, 16.0, 26.7)
+        - 0.065 * m38_gauss(l, 501.1, 20.4, 26.2);
+    let y: f64 = 0.821 * m38_gauss(l, 568.8, 46.9, 40.5)
+        + 0.286 * m38_gauss(l, 530.9, 16.3, 31.1);
+    let z: f64 = 1.217 * m38_gauss(l, 437.0, 11.8, 36.0)
+        + 0.681 * m38_gauss(l, 459.0, 26.0, 13.8);
+    m38_rgb(x, y, z)
+}
+
+fn m38_build_sens_table() -> M38Sens {
+    let pi: f64 = m38_pi();
+    let mut cx: Vec<f64> = Vec::new();
+    let mut cy: Vec<f64> = Vec::new();
+    let mut cz: Vec<f64> = Vec::new();
+    let mut wx: f64 = 0.0;
+    let mut wy: f64 = 0.0;
+    let mut wz: f64 = 0.0;
+    let mut l: i32 = 380;
+    while l <= 780 {
+        let c: M38Rgb = m38_cmf(l as f64);
+        cx.push(c.r);
+        cy.push(c.g);
+        cz.push(c.b);
+        wx = wx + c.r;
+        wy = wy + c.g;
+        wz = wz + c.b;
+        l = l + 1;
+    }
+    let w: M38Rgb = m38_xyz_to_rec709(wx, wy, wz);
+
+    let mut re0: Vec<f64> = Vec::new();
+    let mut re1: Vec<f64> = Vec::new();
+    let mut re2: Vec<f64> = Vec::new();
+    let mut im0: Vec<f64> = Vec::new();
+    let mut im1: Vec<f64> = Vec::new();
+    let mut im2: Vec<f64> = Vec::new();
+
+    let n: i32 = 4001;
+    let mut j: i32 = 0;
+    while j < n {
+        let opd: f64 = (j as f64) * 10.0;
+        let mut rx: f64 = 0.0;
+        let mut ry: f64 = 0.0;
+        let mut rz: f64 = 0.0;
+        let mut ix: f64 = 0.0;
+        let mut iy: f64 = 0.0;
+        let mut iz: f64 = 0.0;
+        let mut idx: i32 = 0;
+        while idx < 401 {
+            let lf: f64 = (380 + idx) as f64;
+            let a: f64 = 2.0 * pi * opd / lf;
+            let cs: f64 = cos(a);
+            let sn: f64 = sin(a);
+            let xv: f64 = cx[idx as usize];
+            let yv: f64 = cy[idx as usize];
+            let zv: f64 = cz[idx as usize];
+            rx = rx + xv * cs;
+            ry = ry + yv * cs;
+            rz = rz + zv * cs;
+            ix = ix + xv * sn;
+            iy = iy + yv * sn;
+            iz = iz + zv * sn;
+            idx = idx + 1;
+        }
+        let re_rgb: M38Rgb = m38_xyz_to_rec709(rx, ry, rz);
+        let im_rgb: M38Rgb = m38_xyz_to_rec709(ix, iy, iz);
+        re0.push(re_rgb.r / w.r);
+        re1.push(re_rgb.g / w.g);
+        re2.push(re_rgb.b / w.b);
+        im0.push(im_rgb.r / w.r);
+        im1.push(im_rgb.g / w.g);
+        im2.push(im_rgb.b / w.b);
+        j = j + 1;
+    }
+    M38Sens { re0: re0, re1: re1, re2: re2, im0: im0, im1: im1, im2: im2 }
+}
+
+fn m38_tabulated_sens(t: &M38Sens, opd: f64, s0: f64, s1: f64, s2: f64) -> M38Rgb {
+    let n_max: f64 = 4000.0;
+    let u: f64 = m38_clampd(opd / 10.0, 0.0, n_max);
+    let mut j: usize = u as usize;
+    if j > 3999 { j = 3999; }
+    let f: f64 = u - (j as f64);
+    let omf: f64 = 1.0 - f;
+
+    let r0: f64 = (t.re0[j] * omf + t.re0[j + 1] * f) * cos(s0) - (t.im0[j] * omf + t.im0[j + 1] * f) * sin(s0);
+    let r1: f64 = (t.re1[j] * omf + t.re1[j + 1] * f) * cos(s1) - (t.im1[j] * omf + t.im1[j + 1] * f) * sin(s1);
+    let r2: f64 = (t.re2[j] * omf + t.re2[j + 1] * f) * cos(s2) - (t.im2[j] * omf + t.im2[j + 1] * f) * sin(s2);
+    m38_rgb(r0, r1, r2)
+}
+
+fn m38_film(outside_ior: f64, film_ior: f64, d: f64, base_f0: M38Rgb, cos1: f64) -> M38Film {
+    let pi: f64 = m38_pi();
+    let ratio: f64 = outside_ior / film_ior;
+    let s2: f64 = ratio * ratio * (1.0 - cos1 * cos1);
+    let c2sq: f64 = 1.0 - s2;
+    if c2sq < 0.0 {
+        return M38Film {
+            ok: 0, r12: 0.0, t121: 0.0, phi21: 0.0, cos2: 0.0, opd: 0.0,
+            r23_0: 0.0, r23_1: 0.0, r23_2: 0.0, phi23_0: 0.0, phi23_1: 0.0, phi23_2: 0.0,
+        };
+    }
+    let cos2: f64 = sqrt(c2sq);
+    let r12: f64 = m38_schlick(m38_ior_to_f0(film_ior, outside_ior), 1.0, cos1);
+    let t121: f64 = 1.0 - r12;
+    let mut phi12: f64 = 0.0;
+    if film_ior < outside_ior { phi12 = pi; }
+    let phi21: f64 = pi - phi12;
+
+    let i0: f64 = m38_f0_to_ior(base_f0.r + 0.0001);
+    let i1: f64 = m38_f0_to_ior(base_f0.g + 0.0001);
+    let i2: f64 = m38_f0_to_ior(base_f0.b + 0.0001);
+
+    let r23_0: f64 = m38_schlick(m38_ior_to_f0(i0, film_ior), 1.0, cos2);
+    let r23_1: f64 = m38_schlick(m38_ior_to_f0(i1, film_ior), 1.0, cos2);
+    let r23_2: f64 = m38_schlick(m38_ior_to_f0(i2, film_ior), 1.0, cos2);
+
+    let mut p0: f64 = 0.0;
+    let mut p1: f64 = 0.0;
+    let mut p2: f64 = 0.0;
+    if i0 < film_ior { p0 = pi; }
+    if i1 < film_ior { p1 = pi; }
+    if i2 < film_ior { p2 = pi; }
+
+    let opd: f64 = 2.0 * film_ior * d * cos2;
+    M38Film {
+        ok: 1, r12: r12, t121: t121, phi21: phi21, cos2: cos2, opd: opd,
+        r23_0: r23_0, r23_1: r23_1, r23_2: r23_2, phi23_0: p0, phi23_1: p1, phi23_2: p2,
+    }
+}
+
+fn m38_pol_r23(n2: f64, cos2: f64, sin2sq: f64, n3: f64, is_p: i32) -> (f64, f64) {
+    let ratio: f64 = n2 / n3;
+    let disc: f64 = 1.0 - ratio * ratio * sin2sq;
+    let c3: M38Cpx = m38_csqrt_real(disc);
+    let mut r23: M38Cpx = m38_cpx(0.0, 0.0);
+    if is_p != 0 {
+        let num: M38Cpx = m38_cpx(n3 * cos2 - n2 * c3.re, -n2 * c3.im);
+        let den: M38Cpx = m38_cpx(n3 * cos2 + n2 * c3.re, n2 * c3.im);
+        r23 = m38_cdiv(num, den);
+    } else {
+        let num: M38Cpx = m38_cpx(n2 * cos2 - n3 * c3.re, -n3 * c3.im);
+        let den: M38Cpx = m38_cpx(n2 * cos2 + n3 * c3.re, n3 * c3.im);
+        r23 = m38_cdiv(num, den);
+    }
+    let norm_v: f64 = m38_cnorm(r23);
+    let mut arg_v: f64 = atan2(r23.im, r23.re);
+    if disc >= 0.0 {
+        if r23.re >= 0.0 { arg_v = 0.0; } else { arg_v = m38_pi(); }
+    }
+    (norm_v, arg_v)
+}
+
+fn m38_polarized(n1: f64, n2: f64, cos1: f64, cos2: f64, n3_0: f64, n3_1: f64, n3_2: f64, is_p: i32) -> M38Pol {
+    let mut r12: f64 = (n1 * cos1 - n2 * cos2) / (n1 * cos1 + n2 * cos2);
+    if is_p != 0 {
+        r12 = (n2 * cos1 - n1 * cos2) / (n2 * cos1 + n1 * cos2);
+    }
+    let r12sq: f64 = r12 * r12;
+    let t121: f64 = 1.0 - r12sq;
+    let mut phi21: f64 = m38_pi();
+    if -r12 >= 0.0 { phi21 = 0.0; }
+    let sin2sq: f64 = 1.0 - cos2 * cos2;
+    let (a0, p0) = m38_pol_r23(n2, cos2, sin2sq, n3_0, is_p);
+    let (a1, p1) = m38_pol_r23(n2, cos2, sin2sq, n3_1, is_p);
+    let (a2, p2) = m38_pol_r23(n2, cos2, sin2sq, n3_2, is_p);
+    M38Pol {
+        r12: r12sq, t121: t121, phi21: phi21,
+        r23_0: a0, r23_1: a1, r23_2: a2, phi23_0: p0, phi23_1: p1, phi23_2: p2,
+    }
+}
+
+fn m38_series(
+    r12: f64, t121: f64, phi21: f64,
+    r23_0: f64, r23_1: f64, r23_2: f64,
+    phi23_0: f64, phi23_1: f64, phi23_2: f64,
+    opd: f64, harmonics: i32, tabulated: i32, sens: &M38Sens
+) -> M38Rgb {
+    let phi0: f64 = phi21 + phi23_0;
+    let phi1: f64 = phi21 + phi23_1;
+    let phi2: f64 = phi21 + phi23_2;
+
+    let r123_0_sq: f64 = m38_clampd(r12 * r23_0, 1.0e-5, 0.9999);
+    let r123_1_sq: f64 = m38_clampd(r12 * r23_1, 1.0e-5, 0.9999);
+    let r123_2_sq: f64 = m38_clampd(r12 * r23_2, 1.0e-5, 0.9999);
+
+    let r123_0: f64 = sqrt(r123_0_sq);
+    let r123_1: f64 = sqrt(r123_1_sq);
+    let r123_2: f64 = sqrt(r123_2_sq);
+
+    let rs0: f64 = t121 * t121 * r23_0 / (1.0 - r123_0_sq);
+    let rs1: f64 = t121 * t121 * r23_1 / (1.0 - r123_1_sq);
+    let rs2: f64 = t121 * t121 * r23_2 / (1.0 - r123_2_sq);
+
+    let mut out0: f64 = r12 + rs0;
+    let mut out1: f64 = r12 + rs1;
+    let mut out2: f64 = r12 + rs2;
+
+    let mut cm0: f64 = rs0 - t121;
+    let mut cm1: f64 = rs1 - t121;
+    let mut cm2: f64 = rs2 - t121;
+
+    let mut m: i32 = 1;
+    while m <= harmonics {
+        let mf: f64 = m as f64;
+        let mut sm: M38Rgb = m38_rgb(0.0, 0.0, 0.0);
+        if tabulated != 0 {
+            sm = m38_tabulated_sens(sens, mf * opd, mf * phi0, mf * phi1, mf * phi2);
+        } else {
+            sm = m38_eval_sensitivity(mf * opd, mf * phi0, mf * phi1, mf * phi2);
+        }
+        cm0 = cm0 * r123_0;
+        cm1 = cm1 * r123_1;
+        cm2 = cm2 * r123_2;
+        out0 = out0 + cm0 * 2.0 * sm.r;
+        out1 = out1 + cm1 * 2.0 * sm.g;
+        out2 = out2 + cm2 * 2.0 * sm.b;
+        m = m + 1;
+    }
+    m38_rgb(out0, out1, out2)
+}
+
+fn m38_iridescent_fresnel(
+    outside_ior: f64, film_ior: f64, d: f64, base_f0: M38Rgb,
+    cos1: f64, harmonics: i32, pol_in: i32, sens: &M38Sens
+) -> M38Rgb {
+    let f: M38Film = m38_film(outside_ior, film_ior, d, base_f0, cos1);
+    if f.ok == 0 { return m38_rgb(1.0, 1.0, 1.0); }
+    let mut pol: i32 = pol_in;
+    let max_f0: f64 = m38_maxd(base_f0.r, m38_maxd(base_f0.g, base_f0.b));
+    if pol != 0 && max_f0 > 0.25 { pol = 0; }
+    let mut out: M38Rgb = m38_rgb(0.0, 0.0, 0.0);
+    if pol == 0 {
+        out = m38_series(
+            f.r12, f.t121, f.phi21,
+            f.r23_0, f.r23_1, f.r23_2,
+            f.phi23_0, f.phi23_1, f.phi23_2,
+            f.opd, harmonics, 0, sens
+        );
+    } else {
+        let n3_0: f64 = m38_f0_to_ior(base_f0.r + 0.0001);
+        let n3_1: f64 = m38_f0_to_ior(base_f0.g + 0.0001);
+        let n3_2: f64 = m38_f0_to_ior(base_f0.b + 0.0001);
+        let s: M38Pol = m38_polarized(outside_ior, film_ior, cos1, f.cos2, n3_0, n3_1, n3_2, 0);
+        let p: M38Pol = m38_polarized(outside_ior, film_ior, cos1, f.cos2, n3_0, n3_1, n3_2, 1);
+        let a: M38Rgb = m38_series(
+            s.r12, s.t121, s.phi21,
+            s.r23_0, s.r23_1, s.r23_2,
+            s.phi23_0, s.phi23_1, s.phi23_2,
+            f.opd, harmonics, 1, sens
+        );
+        let b: M38Rgb = m38_series(
+            p.r12, p.t121, p.phi21,
+            p.r23_0, p.r23_1, p.r23_2,
+            p.phi23_0, p.phi23_1, p.phi23_2,
+            f.opd, harmonics, 1, sens
+        );
+        out = m38_rgb(0.5 * (a.r + b.r), 0.5 * (a.g + b.g), 0.5 * (a.b + b.b));
+    }
+    m38_rgb(m38_maxd(out.r, 0.0), m38_maxd(out.g, 0.0), m38_maxd(out.b, 0.0))
+}
+
+fn m38_spectral_channel(f: &M38Film, r23: f64, phi23: f64, k: i32) -> f64 {
+    let pi: f64 = m38_pi();
+    let s12: f64 = sqrt(f.r12);
+    let rho12: M38Cpx = m38_cpolar(s12, pi - f.phi21);
+    let rho21: M38Cpx = m38_cpolar(s12, f.phi21);
+    let rho23: M38Cpx = m38_cpolar(sqrt(r23), phi23);
+    let r123: f64 = f.r12 * r23;
+    let c0: f64 = f.r12 + f.t121 * f.t121 * r23 / (1.0 - r123);
+    let num_base: M38Cpx = m38_cpx(f.t121 * rho23.re, f.t121 * rho23.im);
+    let prod2123: M38Cpx = m38_cmul(rho21, rho23);
+
+    let mut sx: f64 = 0.0;
+    let mut sy: f64 = 0.0;
+    let mut sz: f64 = 0.0;
+    let mut yn: f64 = 0.0;
+    let mut l: i32 = 380;
+    while l <= 780 {
+        let lf: f64 = l as f64;
+        let e: M38Cpx = m38_cpolar(1.0, 2.0 * pi * f.opd / lf);
+        let num: M38Cpx = m38_cmul(num_base, e);
+        let den: M38Cpx = m38_csub(m38_cpx(1.0, 0.0), m38_cmul(prod2123, e));
+        let r: M38Cpx = m38_cadd(rho12, m38_cdiv(num, den));
+        let cm: M38Rgb = m38_cmf(lf);
+        let ac: f64 = m38_cnorm(r) - c0;
+        sx = sx + ac * cm.r;
+        sy = sy + ac * cm.g;
+        sz = sz + ac * cm.b;
+        yn = yn + cm.g;
+        l = l + 1;
+    }
+    let rec: M38Rgb = m38_xyz_to_rec709(sx / yn, sy / yn, sz / yn);
+    let mut ch_val: f64 = rec.b;
+    if k == 0 { ch_val = rec.r; }
+    else if k == 1 { ch_val = rec.g; }
+    c0 + ch_val
+}
+
+fn m38_iridescent_spectral(outside_ior: f64, film_ior: f64, d: f64, base_f0: M38Rgb, cos1: f64) -> M38Rgb {
+    let f: M38Film = m38_film(outside_ior, film_ior, d, base_f0, cos1);
+    if f.ok == 0 { return m38_rgb(1.0, 1.0, 1.0); }
+    let r: f64 = m38_spectral_channel(&f, f.r23_0, f.phi23_0, 0);
+    let g: f64 = m38_spectral_channel(&f, f.r23_1, f.phi23_1, 1);
+    let b: f64 = m38_spectral_channel(&f, f.r23_2, f.phi23_2, 2);
+    m38_rgb(m38_maxd(r, 0.0), m38_maxd(g, 0.0), m38_maxd(b, 0.0))
+}
+
+fn m38_iridescent_exact(n1: f64, n2: f64, d: f64, n3: f64, cos1: f64) -> M38Rgb {
+    let pi: f64 = m38_pi();
+    let s1: f64 = 1.0 - cos1 * cos1;
+    let r12_ior: f64 = n1 / n2;
+    let r13_ior: f64 = n1 / n3;
+    let c2: M38Cpx = m38_csqrt_real(1.0 - r12_ior * r12_ior * s1);
+    let c3: M38Cpx = m38_csqrt_real(1.0 - r13_ior * r13_ior * s1);
+
+    let r12_s: M38Cpx = m38_cdiv(
+        m38_cpx(n1 * cos1 - n2 * c2.re, -n2 * c2.im),
+        m38_cpx(n1 * cos1 + n2 * c2.re, n2 * c2.im)
+    );
+    let r23_s: M38Cpx = m38_cdiv(
+        m38_cpx(n2 * c2.re - n3 * c3.re, n2 * c2.im - n3 * c3.im),
+        m38_cpx(n2 * c2.re + n3 * c3.re, n2 * c2.im + n3 * c3.im)
+    );
+    let r12_p: M38Cpx = m38_cdiv(
+        m38_cpx(n2 * cos1 - n1 * c2.re, -n1 * c2.im),
+        m38_cpx(n2 * cos1 + n1 * c2.re, n1 * c2.im)
+    );
+    let r23_p: M38Cpx = m38_cdiv(
+        m38_cpx(n3 * c2.re - n2 * c3.re, n3 * c2.im - n2 * c3.im),
+        m38_cpx(n3 * c2.re + n2 * c3.re, n3 * c2.im + n2 * c3.im)
+    );
+    let prod_s: M38Cpx = m38_cmul(r12_s, r23_s);
+    let prod_p: M38Cpx = m38_cmul(r12_p, r23_p);
+
+    let mut sx: f64 = 0.0;
+    let mut sy: f64 = 0.0;
+    let mut sz: f64 = 0.0;
+    let mut wx: f64 = 0.0;
+    let mut wy: f64 = 0.0;
+    let mut wz: f64 = 0.0;
+
+    let mut l: i32 = 380;
+    while l <= 780 {
+        let lf: f64 = l as f64;
+        let k_phase: f64 = 4.0 * pi * n2 * d / lf;
+        let mag: f64 = exp(-k_phase * c2.im);
+        let ang: f64 = k_phase * c2.re;
+        let e: M38Cpx = m38_cpx(mag * cos(ang), mag * sin(ang));
+
+        let num_s: M38Cpx = m38_cadd(r12_s, m38_cmul(r23_s, e));
+        let den_s: M38Cpx = m38_cadd(m38_cpx(1.0, 0.0), m38_cmul(prod_s, e));
+        let rs: f64 = m38_cnorm(m38_cdiv(num_s, den_s));
+
+        let num_p: M38Cpx = m38_cadd(r12_p, m38_cmul(r23_p, e));
+        let den_p: M38Cpx = m38_cadd(m38_cpx(1.0, 0.0), m38_cmul(prod_p, e));
+        let rp: f64 = m38_cnorm(m38_cdiv(num_p, den_p));
+
+        let rr: f64 = 0.5 * rs + 0.5 * rp;
+        let cm: M38Rgb = m38_cmf(lf);
+        sx = sx + rr * cm.r;
+        sy = sy + rr * cm.g;
+        sz = sz + rr * cm.b;
+        wx = wx + cm.r;
+        wy = wy + cm.g;
+        wz = wz + cm.b;
+        l = l + 1;
+    }
+    let a: M38Rgb = m38_xyz_to_rec709(sx, sy, sz);
+    let w: M38Rgb = m38_xyz_to_rec709(wx, wy, wz);
+    m38_rgb(a.r / w.r, a.g / w.g, a.b / w.b)
+}
+
+fn m38_fnv_u32(h0: u64, v: u32) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 4 {
+        h = m38_fnv_u8(h, ((v >> (8 * k)) & 255) as u64);
+        k = k + 1;
+    }
+    h
+}
+
+fn m38_fnv_u64(h0: u64, v: u64) -> u64 {
+    let lo: u32 = (v & 4294967295) as u32;
+    let hi: u32 = ((v >> 32) & 4294967295) as u32;
+    m38_fnv_u32(m38_fnv_u32(h0, lo), hi)
+}
+
+fn m38_fnv_rgb(h0: u64, c: M38Rgb) -> u64 {
+    let r1: f64 = c.r + 1.0;
+    let g1: f64 = c.g + 1.0;
+    let b1: f64 = c.b + 1.0;
+    let h1: u64 = m38_fnv_f32(h0, r1);
+    let h2: u64 = m38_fnv_f32(h1, g1);
+    m38_fnv_f32(h2, b1)
+}
+
+fn m38_cond_base(idx: i32) -> M38Rgb {
+    if idx == 0 { return m38_rgb(0.95, 0.78, 0.34); }
+    if idx == 1 { return m38_rgb(0.92, 0.62, 0.52); }
+    if idx == 2 { return m38_rgb(0.66, 0.68, 0.71); }
+    m38_rgb(0.88, 0.89, 0.91)
+}
+
+fn m38_diel_base(idx: i32) -> M38Rgb {
+    if idx == 0 { return m38_rgb(0.04, 0.04, 0.04); }
+    if idx == 1 { return m38_rgb(0.06, 0.08, 0.11); }
+    if idx == 2 { return m38_rgb(0.14, 0.16, 0.19); }
+    m38_rgb(0.20, 0.12, 0.05)
+}
+
+pub fn run_iridescence_parity() -> (u64, u64, u64, u64, u64, u64) {
+    let sens: M38Sens = m38_build_sens_table();
+
+    let mut h_unpol: u64 = m38_fnv_start();
+    let mut h_ctrl: u64 = m38_fnv_start();
+    let mut i: i32 = 0;
+    while i < 48 {
+        let mut out_ior: f64 = 1.0 + 0.08 * ((i % 3) as f64);
+        let mut film_ior: f64 = 1.30 + 0.18 * (((i / 4) % 4) as f64);
+        let mut cos1: f64 = 0.06 + 0.019 * (i as f64);
+        if i == 47 {
+            out_ior = 1.65;
+            film_ior = 1.15;
+            cos1 = 0.32;
+        }
+        let d_nm: f64 = 120.0 + 18.0 * (i as f64);
+        let f0: M38Rgb = m38_cond_base(i % 4);
+        let c8: M38Rgb = m38_iridescent_fresnel(out_ior, film_ior, d_nm, f0, cos1, 8, 0, &sens);
+        let c2: M38Rgb = m38_iridescent_fresnel(out_ior, film_ior, d_nm, f0, cos1, 2, 0, &sens);
+        h_unpol = m38_fnv_rgb(h_unpol, c8);
+        h_ctrl = m38_fnv_rgb(h_ctrl, c2);
+        i = i + 1;
+    }
+
+    let mut h_pol: u64 = m38_fnv_start();
+    i = 0;
+    while i < 48 {
+        let out_ior: f64 = 1.0 + 0.12 * ((i % 3) as f64);
+        let film_ior: f64 = 1.32 + 0.32 * (((i / 4) % 4) as f64);
+        let d_nm: f64 = 95.0 + 24.0 * (i as f64);
+        let cos1: f64 = 0.08 + 0.0185 * (i as f64);
+        let f0: M38Rgb = m38_diel_base(i % 4);
+        let cp: M38Rgb = m38_iridescent_fresnel(out_ior, film_ior, d_nm, f0, cos1, 8, 1, &sens);
+        h_pol = m38_fnv_rgb(h_pol, cp);
+        i = i + 1;
+    }
+
+    let mut h_spec: u64 = m38_fnv_start();
+    i = 0;
+    while i < 24 {
+        let out_ior: f64 = 1.0 + 0.10 * ((i % 2) as f64);
+        let film_ior: f64 = 1.35 + 0.25 * ((i % 4) as f64);
+        let d_nm: f64 = 140.0 + 35.0 * (i as f64);
+        let cos1: f64 = 0.10 + 0.036 * (i as f64);
+        let mut f0: M38Rgb = m38_diel_base(i % 4);
+        if (i % 2) == 0 { f0 = m38_cond_base(i % 4); }
+        let cs: M38Rgb = m38_iridescent_spectral(out_ior, film_ior, d_nm, f0, cos1);
+        h_spec = m38_fnv_rgb(h_spec, cs);
+        i = i + 1;
+    }
+
+    let mut h_exact: u64 = m38_fnv_start();
+    i = 0;
+    while i < 24 {
+        let mut n1: f64 = 1.0 + 0.15 * ((i % 3) as f64);
+        let mut n2: f64 = 1.33 + 0.28 * ((i % 4) as f64);
+        let mut n3: f64 = 1.48 + 0.22 * (((i / 3) % 4) as f64);
+        let mut d_nm: f64 = 110.0 + 32.0 * (i as f64);
+        let mut cos1: f64 = 0.12 + 0.035 * (i as f64);
+        if i == 19 || i == 23 {
+            n1 = 1.55;
+            n2 = 1.18;
+            n3 = 1.72;
+            d_nm = 80.0 + 15.0 * ((i - 19) as f64);
+            cos1 = 0.42;
+        }
+        let ce: M38Rgb = m38_iridescent_exact(n1, n2, d_nm, n3, cos1);
+        h_exact = m38_fnv_rgb(h_exact, ce);
+        i = i + 1;
+    }
+
+    let mut h_all: u64 = m38_fnv_start();
+    h_all = m38_fnv_u64(h_all, h_unpol);
+    h_all = m38_fnv_u64(h_all, h_pol);
+    h_all = m38_fnv_u64(h_all, h_spec);
+    h_all = m38_fnv_u64(h_all, h_exact);
+
+    (h_unpol, h_pol, h_spec, h_exact, h_all, h_ctrl)
+}

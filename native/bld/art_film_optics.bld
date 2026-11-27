@@ -1,0 +1,611 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe Renderer Module #30: Physical Film Halation Optics and Boolean Silver-Halide Grain
+// Bit-exact 0-ULP port of native/src/renderer/style_film_optics.cpp:
+// Fresnel TIR base-glass halation kernel with pressure-plate diffuse bounce and 3-bounce
+// spatial convolution, Boolean-model circular-grain overlap variance table J(u), 512x16 Poisson
+// CDF threshold table, and hybrid PCG Monte Carlo + Box-Muller analytical silver-halide grain.
+
+
+pub struct M30BaseGlass {
+    thickness: f64,
+    n: f64,
+    transmission: f64,
+    albedo: f64,
+    cell: f64,
+    back_reflectance: f64,
+}
+
+pub struct M30HaloKernel {
+    q: i32,
+    r: i32,
+    ring_mm: f64,
+    kappa: f64,
+    weights: Vec<f32>,
+}
+
+pub struct M30FilmPlan {
+    out_w: i32,
+    out_h: i32,
+    um_per_px: f64,
+    grain_amount: f64,
+    grain_um0: f64,
+    grain_um1: f64,
+    grain_um2: f64,
+    grain_c0: f64,
+    grain_c1: f64,
+    grain_c2: f64,
+    j_table: Vec<f32>,
+    p_table: Vec<u64>,
+}
+
+fn m30_pi() -> f64 { 3.141592653589793 }
+
+fn m30_min_d(a: f64, b: f64) -> f64 {
+    if b < a { return b; }
+    a
+}
+
+fn m30_max_d(a: f64, b: f64) -> f64 {
+    if a < b { return b; }
+    a
+}
+
+fn m30_min_i(a: i32, b: i32) -> i32 {
+    if b < a { return b; }
+    a
+}
+
+fn m30_max_i(a: i32, b: i32) -> i32 {
+    if a < b { return b; }
+    a
+}
+
+fn m30_abs_i(x: i32) -> i32 {
+    if x < 0 { return -x; }
+    x
+}
+
+fn m30_js_round(x: f64) -> i32 {
+    floor(x + 0.5) as i32
+}
+
+fn m30_fnv_u32(h0: u64, v0: u64) -> u64 {
+    let v: u64 = v0 & 4294967295;
+    let mut h: u64 = h0;
+    let mut k: u64 = 0;
+    while k < 4 {
+        h = h ^ ((v >> (8 * k)) & 255);
+        h = h.wrapping_mul(1099511628211);
+        k = k + 1;
+    }
+    h
+}
+
+fn m30_i32_to_u32(x: i32) -> u64 {
+    ((x as i64) as u64) & 4294967295
+}
+
+fn m30_pcg(v0: u64) -> u64 {
+    let v: u64 = v0 & 4294967295;
+    let state: u64 = (v.wrapping_mul(747796405).wrapping_add(2891336453)) & 4294967295;
+    let shift: u64 = (state >> 28) + 4;
+    let word: u64 = (((state >> shift) ^ state).wrapping_mul(277803737)) & 4294967295;
+    ((word >> 22) ^ word) & 4294967295
+}
+
+fn m30_hash3(x: u64, y: u64, z: u64) -> f64 {
+    let h: u64 = m30_pcg((x & 4294967295) ^ m30_pcg((y & 4294967295) ^ m30_pcg(z & 4294967295)));
+    (h as f64) / 4294967296.0
+}
+
+fn m30_fresnel(n: f64, theta: f64) -> f64 {
+    let s: f64 = n * sin(theta);
+    if s >= 1.0 { return 1.0; }
+    let ci: f64 = cos(theta);
+    let ct: f64 = sqrt(1.0 - s * s);
+    let rs: f64 = (n * ci - ct) / (n * ci + ct);
+    let rp: f64 = (n * ct - ci) / (n * ct + ci);
+    0.5 * (rs * rs + rp * rp)
+}
+
+fn m30_back_plate(
+    t: f64,
+    n: f64,
+    tr: f64,
+    refl: f64,
+    bins: &mut Vec<f64>,
+    dr: f64,
+    r_max: f64,
+) -> f64 {
+    let thc: f64 = asin(1.0 / n);
+    let a_cnt: i32 = 160;
+    let b_cnt: i32 = 80;
+    let c_cnt: i32 = 48;
+    let pi: f64 = m30_pi();
+    let mut total: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < a_cnt {
+        let th: f64 = (((i as f64) + 0.5) * thc) / (a_cnt as f64);
+        let w: f64 = sin(2.0 * th) * (thc / (a_cnt as f64)) * (1.0 - m30_fresnel(n, th))
+            * pow(tr, 1.0 / cos(th)) * refl * 0.92;
+        let r1: f64 = t * tan(th);
+        let mut j: i32 = 0;
+        while j < b_cnt {
+            let s2: f64 = ((j as f64) + 0.5) / (b_cnt as f64);
+            let th2: f64 = asin(sqrt(s2) / n);
+            let r2: f64 = t * tan(th2);
+            let w2: f64 = (w / (b_cnt as f64)) * pow(tr, 1.0 / cos(th2));
+            let mut k: i32 = 0;
+            while k < c_cnt {
+                let ang: f64 = (((k as f64) + 0.5) * 2.0 * pi) / (c_cnt as f64);
+                let r: f64 = sqrt(r1 * r1 + r2 * r2 + 2.0 * r1 * r2 * cos(ang));
+                if r < r_max {
+                    let bi: i32 = floor(r / dr) as i32;
+                    bins[bi] = bins[bi] + w2 / (c_cnt as f64);
+                }
+                total = total + w2 / (c_cnt as f64);
+                k = k + 1;
+            }
+            j = j + 1;
+        }
+        i = i + 1;
+    }
+    total
+}
+
+fn m30_radial_return(g: &M30BaseGlass, dr: f64, r_max: f64, bins: &mut Vec<f64>) -> f64 {
+    let n_bins: i32 = (ceil(r_max / dr) as i32) + 1;
+    let mut z: i32 = 0;
+    while z < n_bins { bins.push(0.0); z = z + 1; }
+    let steps: i32 = 40000;
+    let dth: f64 = m30_pi() / 2.0 / (steps as f64);
+    let mut kappa: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < steps {
+        let th: f64 = ((i as f64) + 0.5) * dth;
+        let w: f64 = sin(2.0 * th) * dth;
+        let e: f64 = w * m30_fresnel(g.n, th) * pow(g.transmission, 2.0 / cos(th));
+        let r: f64 = 2.0 * g.thickness * tan(th);
+        kappa = kappa + e;
+        if r < r_max {
+            let bi: i32 = floor(r / dr) as i32;
+            bins[bi] = bins[bi] + e;
+        }
+        i = i + 1;
+    }
+    if g.back_reflectance > 0.0 {
+        kappa = kappa + m30_back_plate(
+            g.thickness, g.n, g.transmission, g.back_reflectance, bins, dr, r_max
+        );
+    }
+    kappa
+}
+
+fn m30_convolve(a: &Vec<f64>, b: &Vec<f64>, rad: i32) -> Vec<f64> {
+    let s: i32 = 2 * rad + 1;
+    let n: i32 = s * s;
+    let mut o: Vec<f64> = Vec::new();
+    let mut z: i32 = 0;
+    while z < n { o.push(0.0); z = z + 1; }
+    let mut ay: i32 = 0;
+    while ay < s {
+        let mut ax: i32 = 0;
+        while ax < s {
+            let va: f64 = a[ay * s + ax];
+            if va != 0.0 {
+                let mut by: i32 = 0;
+                while by < s {
+                    let y: i32 = ay + by - rad;
+                    if y >= 0 && y < s {
+                        let mut bx: i32 = 0;
+                        while bx < s {
+                            let x: i32 = ax + bx - rad;
+                            if x >= 0 && x < s {
+                                let oi: i32 = y * s + x;
+                                o[oi] = o[oi] + va * b[by * s + bx];
+                            }
+                            bx = bx + 1;
+                        }
+                    }
+                    by = by + 1;
+                }
+            }
+            ax = ax + 1;
+        }
+        ay = ay + 1;
+    }
+    o
+}
+
+fn m30_film_halo_kernel(g: &M30BaseGlass, mm_per_px: f64, max_cells: i32) -> M30HaloKernel {
+    let t: f64 = g.thickness;
+    let n: f64 = g.n;
+    let rho: f64 = g.albedo;
+    let ring_mm: f64 = 2.0 * t * tan(asin(1.0 / n));
+    let reach: f64 = 3.2 * ring_mm;
+    let cell_base: f64 = if g.cell > 0.0 { g.cell } else { 1.0 };
+    let mut q: i32 = m30_max_i(1, m30_js_round(cell_base / mm_per_px));
+    while ((max_cells * q) as f64) * mm_per_px < reach { q = q + 1; }
+    let cell_mm: f64 = (q as f64) * mm_per_px;
+    let rad: i32 = m30_min_i(max_cells, ceil(reach / cell_mm) as i32);
+    let s: i32 = 2 * rad + 1;
+    let dr: f64 = cell_mm / 8.0;
+    let mut bins: Vec<f64> = Vec::new();
+    let kappa: f64 = m30_radial_return(g, dr, ((rad as f64) + 0.5) * cell_mm, &mut bins);
+
+    let sz: i32 = s * s;
+    let mut k1: Vec<f64> = Vec::new();
+    let mut z: i32 = 0;
+    while z < sz { k1.push(0.0); z = z + 1; }
+    let a_cnt: i32 = 96;
+    let n_bins: i32 = bins.len() as i32;
+    let pi: f64 = m30_pi();
+    let mut bi: i32 = 0;
+    while bi < n_bins {
+        let bv: f64 = bins[bi];
+        if bv != 0.0 {
+            let r: f64 = ((bi as f64) + 0.5) * dr;
+            let mut k: i32 = 0;
+            while k < a_cnt {
+                let ang: f64 = (((k as f64) + 0.5) * 2.0 * pi) / (a_cnt as f64);
+                let x: i32 = m30_js_round((r * cos(ang)) / cell_mm);
+                let y: i32 = m30_js_round((r * sin(ang)) / cell_mm);
+                if m30_abs_i(x) <= rad && m30_abs_i(y) <= rad {
+                    let ki: i32 = (y + rad) * s + x + rad;
+                    k1[ki] = k1[ki] + bv / (a_cnt as f64);
+                }
+                k = k + 1;
+            }
+        }
+        bi = bi + 1;
+    }
+    let k2: Vec<f64> = m30_convolve(&k1, &k1, rad);
+    let k3: Vec<f64> = m30_convolve(&k2, &k1, rad);
+    let mut kv: Vec<f64> = Vec::new();
+    let mut total: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < sz {
+        let v: f64 = rho * k1[i] + rho * rho * k2[i] + rho * rho * rho * k3[i];
+        kv.push(v);
+        total = total + v;
+        i = i + 1;
+    }
+    let centre: i32 = rad * s + rad;
+    let norm: f64 = 1.0 + total;
+    let mut weights: Vec<f32> = Vec::new();
+    i = 0;
+    while i < sz {
+        if i == centre {
+            weights.push(0.0 as f32);
+        } else {
+            let wn: f64 = kv[i] / norm;
+            weights.push(wn as f32);
+        }
+        i = i + 1;
+    }
+    M30HaloKernel { q: q, r: rad, ring_mm: ring_mm, kappa: kappa, weights: weights }
+}
+
+fn m30_hash_halo(hk: &M30HaloKernel, h0: u64) -> u64 {
+    let mut h: u64 = kit::fnv_f32(h0, hk.ring_mm);
+    h = kit::fnv_f32(h, hk.kappa);
+    h = m30_fnv_u32(h, m30_i32_to_u32(hk.q));
+    h = m30_fnv_u32(h, m30_i32_to_u32(hk.r));
+    let n: i32 = hk.weights.len() as i32;
+    let mut i: i32 = 0;
+    while i < n {
+        h = kit::fnv_f32(h, hk.weights[i] as f64);
+        i = i + 1;
+    }
+    h
+}
+
+fn m30_lens(s: f64) -> f64 {
+    2.0 * acos(s / 2.0) - (s / 2.0) * sqrt(4.0 - s * s)
+}
+
+fn m30_variance_table() -> Vec<f32> {
+    let k_jn: i32 = 33;
+    let pi: f64 = m30_pi();
+    let mut t: Vec<f32> = Vec::new();
+    let mut i: i32 = 0;
+    while i < k_jn {
+        let u: f64 = m30_min_d(0.995, (i as f64) / ((k_jn - 1) as f64));
+        let lr: f64 = -ln(1.0 - u) / pi;
+        let mut acc: f64 = 0.0;
+        let n: i32 = 400;
+        let mut k: i32 = 0;
+        while k < n {
+            let s: f64 = (((k as f64) + 0.5) * 2.0) / (n as f64);
+            acc = acc + (exp(lr * m30_lens(s)) - 1.0) * 2.0 * pi * s * (2.0 / (n as f64));
+            k = k + 1;
+        }
+        let val: f64 = (1.0 - u) * (1.0 - u) * acc;
+        t.push(val as f32);
+        i = i + 1;
+    }
+    t
+}
+
+fn m30_poisson_table() -> Vec<u64> {
+    let k_mu_levels: i32 = 512;
+    let k_pois_k: i32 = 16;
+    let k_mu_max: f64 = -ln(0.001) / m30_pi();
+    let mut t: Vec<u64> = Vec::new();
+    let mut m: i32 = 0;
+    while m < k_mu_levels {
+        let mu: f64 = (((m as f64) + 0.5) * k_mu_max) / (k_mu_levels as f64);
+        let mut p: f64 = exp(-mu);
+        let mut f_cdf: f64 = p;
+        let mut k: i32 = 0;
+        while k < k_pois_k {
+            let qv: f64 = m30_min_d(4294967295.0, floor(f_cdf * 4294967296.0));
+            t.push(qv as u64);
+            p = p * (mu / ((k + 1) as f64));
+            f_cdf = f_cdf + p;
+            k = k + 1;
+        }
+        m = m + 1;
+    }
+    t
+}
+
+fn m30_table_at(t: &Vec<f32>, u: f64) -> f64 {
+    let k_jn: i32 = 33;
+    let f: f64 = m30_min_d((k_jn - 1) as f64, m30_max_d(0.0, u * ((k_jn - 1) as f64)));
+    let i: i32 = m30_min_i(k_jn - 2, floor(f) as i32);
+    let t0: f64 = t[i] as f64;
+    let t1: f64 = t[i + 1] as f64;
+    t0 + (t1 - t0) * (f - (i as f64))
+}
+
+fn m30_poisson_count(p_tab: &Vec<u64>, mu: f64, h: u64) -> i32 {
+    let k_mu_levels: i32 = 512;
+    let k_pois_k: i32 = 16;
+    let k_mu_max: f64 = -ln(0.001) / m30_pi();
+    let m: i32 = m30_min_i(k_mu_levels - 1, m30_max_i(0, floor((mu / k_mu_max) * (k_mu_levels as f64)) as i32));
+    let mut k: i32 = 0;
+    while k < k_pois_k && h >= p_tab[m * k_pois_k + k] {
+        k = k + 1;
+    }
+    k
+}
+
+fn m30_u_at(f_buf: &Vec<f32>, w: i32, x: i32, y: i32, c: i32) -> f64 {
+    f_buf[(y * w + x) * 4 + c] as f64
+}
+
+fn m30_hypot(a0: f64, b0: f64) -> f64 {
+    let a: f64 = kit::absd(a0);
+    let b: f64 = kit::absd(b0);
+    if a == 0.0 && b == 0.0 { return 0.0; }
+    if a >= b {
+        let r: f64 = b / a;
+        return a * sqrt(1.0 + r * r);
+    }
+    let r: f64 = a / b;
+    b * sqrt(1.0 + r * r)
+}
+
+fn m30_grain_mc(
+    plan: &M30FilmPlan,
+    px: i32,
+    py: i32,
+    c: i32,
+    r_um: f64,
+    frame: i32,
+    f_buf: &Vec<f32>,
+) -> f64 {
+    let um: f64 = plan.um_per_px;
+    let r_px: f64 = r_um / um;
+    let w: i32 = plan.out_w;
+    let h: i32 = plan.out_h;
+    let pi: f64 = m30_pi();
+    let ns: i32 = m30_min_d(64.0, m30_max_d(8.0, ceil(12.0 / (pi * r_px * r_px)))) as i32;
+    let d: f64 = r_um;
+    let seed: u64 = m30_i32_to_u32(frame * 3 + c);
+    let upx: u64 = m30_i32_to_u32(px);
+    let upy: u64 = m30_i32_to_u32(py);
+    let mut hit: f64 = 0.0;
+    let mut s: i32 = 0;
+    while s < ns {
+        let us: u64 = s as u64;
+        let z0: u64 = (seed.wrapping_mul(131).wrapping_add(2 * us)) & 4294967295;
+        let z1: u64 = (seed.wrapping_mul(131).wrapping_add(2 * us + 1)) & 4294967295;
+        let x: f64 = ((px as f64) + m30_hash3(upx, upy, z0)) * um;
+        let y: f64 = ((py as f64) + m30_hash3(upx, upy, z1)) * um;
+        let cx0: i32 = floor(x / d) as i32;
+        let cy0: i32 = floor(y / d) as i32;
+        let mut cov: f64 = 0.0;
+        let mut cy: i32 = cy0 - 1;
+        while cy <= cy0 + 1 && cov < 1.0 {
+            let mut cx: i32 = cx0 - 1;
+            while cx <= cx0 + 1 && cov < 1.0 {
+                let qx: i32 = m30_min_i(w - 1, m30_max_i(0, floor((((cx as f64) + 0.5) * d) / um) as i32));
+                let qy: i32 = m30_min_i(h - 1, m30_max_i(0, floor((((cy as f64) + 0.5) * d) / um) as i32));
+                let u: f64 = m30_min_d(0.999, m30_u_at(f_buf, w, qx, qy, c));
+                let mu: f64 = -ln(1.0 - u) / pi;
+                let ucx: u64 = m30_i32_to_u32(cx);
+                let ucy: u64 = m30_i32_to_u32(cy);
+                let z_cnt: u64 = (seed.wrapping_mul(977).wrapping_add(1)) & 4294967295;
+                let ph: u64 = m30_pcg(ucx ^ m30_pcg(ucy ^ m30_pcg(z_cnt)));
+                let k_cnt: i32 = m30_poisson_count(&plan.p_table, mu, ph);
+                let mut gi: i32 = 0;
+                while gi < k_cnt {
+                    let ugi: u64 = gi as u64;
+                    let zgx: u64 = (seed.wrapping_mul(977).wrapping_add(2 + 2 * ugi)) & 4294967295;
+                    let zgy: u64 = (seed.wrapping_mul(977).wrapping_add(3 + 2 * ugi)) & 4294967295;
+                    let gx: f64 = ((cx as f64) + m30_hash3(ucx, ucy, zgx)) * d;
+                    let gy: f64 = ((cy as f64) + m30_hash3(ucx, ucy, zgy)) * d;
+                    let dist: f64 = m30_hypot(x - gx, y - gy);
+                    let e: f64 = m30_min_d(1.0, m30_max_d(0.0, 0.5 + (r_um - dist) / (0.05 * r_um)));
+                    if e > cov { cov = e; }
+                    gi = gi + 1;
+                }
+                cx = cx + 1;
+            }
+            cy = cy + 1;
+        }
+        hit = hit + cov;
+        s = s + 1;
+    }
+    hit / (ns as f64)
+}
+
+fn m30_grain_analytic(
+    plan: &M30FilmPlan,
+    px: i32,
+    py: i32,
+    c: i32,
+    u: f64,
+    r_um: f64,
+    frame: i32,
+) -> f64 {
+    let seed: u64 = m30_i32_to_u32(frame * 3 + c);
+    let upx: u64 = m30_i32_to_u32(px);
+    let upy: u64 = m30_i32_to_u32(py);
+    let z0: u64 = (seed.wrapping_mul(131).wrapping_add(200)) & 4294967295;
+    let z1: u64 = (seed.wrapping_mul(131).wrapping_add(201)) & 4294967295;
+    let u1: f64 = m30_max_d(1.0e-7, m30_hash3(upx, upy, z0));
+    let u2: f64 = m30_hash3(upx, upy, z1);
+    let z: f64 = sqrt(-2.0 * ln(u1)) * cos(2.0 * m30_pi() * u2);
+    u + sqrt(m30_table_at(&plan.j_table, u) * (r_um * r_um) / (plan.um_per_px * plan.um_per_px)) * z
+}
+
+fn m30_film_grain_at(
+    plan: &M30FilmPlan,
+    px: i32,
+    py: i32,
+    c: i32,
+    f_buf: &Vec<f32>,
+    frame: i32,
+) -> f64 {
+    let r_um: f64 = if c == 0 { plan.grain_um0 } else if c == 1 { plan.grain_um1 } else { plan.grain_um2 };
+    let u: f64 = m30_u_at(f_buf, plan.out_w, px, py, c);
+    let r_px: f64 = r_um / plan.um_per_px;
+    let tt: f64 = m30_min_d(1.0, m30_max_d(0.0, (r_px - 0.25) / (0.4 - 0.25)));
+    let w: f64 = tt * tt * (3.0 - 2.0 * tt);
+    if r_um <= 0.0 { return u; }
+    let mut v: f64 = 0.0;
+    if w >= 1.0 {
+        v = m30_grain_mc(plan, px, py, c, r_um, frame, f_buf);
+    } else if w <= 0.0 {
+        v = m30_grain_analytic(plan, px, py, c, u, r_um, frame);
+    } else {
+        let a: f64 = m30_grain_mc(plan, px, py, c, r_um, frame, f_buf) - u;
+        let b: f64 = m30_grain_analytic(plan, px, py, c, u, r_um, frame) - u;
+        v = u + w * a + sqrt(1.0 - w * w) * b;
+    }
+    let gc: f64 = if c == 0 { plan.grain_c0 } else if c == 1 { plan.grain_c1 } else { plan.grain_c2 };
+    let cs: f64 = gc * plan.grain_amount;
+    m30_min_d(1.0, m30_max_d(0.0, u + (v - u) * cs))
+}
+
+fn m30_make_dev_frame(w: i32, h: i32) -> Vec<f32> {
+    let mut f: Vec<f32> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut r: f64 = 0.08 + 0.78 * ((x as f64) / (w as f64));
+            let mut g: f64 = 0.12 + 0.72 * ((y as f64) / (h as f64));
+            let mut b: f64 = 0.18 + 0.64 * (1.0 - (x as f64) / (w as f64));
+            if x >= 8 && x <= 15 && y >= 5 && y <= 10 {
+                r = 0.88; g = 0.54; b = 0.26;
+            }
+            f.push(r as f32);
+            f.push(g as f32);
+            f.push(b as f32);
+            f.push(1.0 as f32);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    f
+}
+
+pub fn run_film_optics_parity() -> (u64, u64, u64, u64, u64, u64) {
+    let g_bare: M30BaseGlass = M30BaseGlass {
+        thickness: 0.125, n: 1.48, transmission: 0.98,
+        albedo: 0.35, cell: 0.04, back_reflectance: 0.0,
+    };
+    let g_back: M30BaseGlass = M30BaseGlass {
+        thickness: 0.125, n: 1.48, transmission: 0.96,
+        albedo: 0.55, cell: 0.04, back_reflectance: 0.05,
+    };
+    let g_ctrl: M30BaseGlass = M30BaseGlass {
+        thickness: 0.125, n: 1.48, transmission: 0.96,
+        albedo: 0.0, cell: 0.04, back_reflectance: 0.05,
+    };
+
+    let hk_bare: M30HaloKernel = m30_film_halo_kernel(&g_bare, 0.04, 6);
+    let hk_back: M30HaloKernel = m30_film_halo_kernel(&g_back, 0.04, 6);
+    let hk_ctrl: M30HaloKernel = m30_film_halo_kernel(&g_ctrl, 0.04, 6);
+
+    let j_tab: Vec<f32> = m30_variance_table();
+    let p_tab: Vec<u64> = m30_poisson_table();
+
+    let h_bare: u64 = m30_hash_halo(&hk_bare, kit::fnv_start());
+    let h_back: u64 = m30_hash_halo(&hk_back, kit::fnv_start());
+    let h_ctrl: u64 = m30_hash_halo(&hk_ctrl, kit::fnv_start());
+
+    let mut h_tab: u64 = kit::fnv_start();
+    let nj: i32 = j_tab.len() as i32;
+    let mut ji: i32 = 0;
+    while ji < nj { h_tab = kit::fnv_f32(h_tab, j_tab[ji] as f64); ji = ji + 1; }
+    let np: i32 = p_tab.len() as i32;
+    let mut pi_idx: i32 = 0;
+    while pi_idx < np { h_tab = m30_fnv_u32(h_tab, p_tab[pi_idx]); pi_idx = pi_idx + 1; }
+
+    let w: i32 = 24;
+    let h: i32 = 16;
+    let dev: Vec<f32> = m30_make_dev_frame(w, h);
+    let plan: M30FilmPlan = M30FilmPlan {
+        out_w: w, out_h: h, um_per_px: 10.0, grain_amount: 1.0,
+        grain_um0: 5.5, grain_um1: 3.2, grain_um2: 1.5,
+        grain_c0: 0.85, grain_c1: 0.90, grain_c2: 0.75,
+        j_table: j_tab, p_table: p_tab,
+    };
+
+    let mut h_grain: u64 = kit::fnv_start();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut c: i32 = 0;
+            while c < 3 {
+                let gv: f64 = m30_film_grain_at(&plan, x, y, c, &dev, 3);
+                h_grain = kit::fnv_f32(h_grain, gv);
+                c = c + 1;
+            }
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = m30_hash_halo(&hk_bare, h_all);
+    h_all = m30_hash_halo(&hk_back, h_all);
+    ji = 0;
+    while ji < nj { h_all = kit::fnv_f32(h_all, plan.j_table[ji] as f64); ji = ji + 1; }
+    pi_idx = 0;
+    while pi_idx < np { h_all = m30_fnv_u32(h_all, plan.p_table[pi_idx]); pi_idx = pi_idx + 1; }
+    y = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut c: i32 = 0;
+            while c < 3 {
+                let gv: f64 = m30_film_grain_at(&plan, x, y, c, &dev, 3);
+                h_all = kit::fnv_f32(h_all, gv);
+                c = c + 1;
+            }
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+
+    (h_bare, h_back, h_tab, h_grain, h_all, h_ctrl)
+}

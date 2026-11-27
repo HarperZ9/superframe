@@ -1,0 +1,508 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe Renderer Module #29: Scan-Causal CRT EHT Sag & Diffeomorphic Salience Caricature
+// Bit-exact 0-ULP port of native/src/renderer/style_sag.cpp:
+// scan-causal anode-voltage RC recurrence with blanking settle, dynamic deflection expansion
+// k=1/sqrt(1-v), defocus bloom, binary-search scanline resampling, sagSignal8, separable Gaussian
+// salience smoothing, Frobenius Jacobian bound for fold-free diffeomorphic caricature advection.
+
+
+pub struct M29SagPlan {
+    s_coeff: f64,
+    tau_frame: f64,
+    focus: f64,
+    sigma0: f64,
+    bright: f64,
+    gamma: f64,
+    blank_frac: f64,
+    settle: bool,
+    initial: f64,
+    w: i32,
+    h: i32,
+    blank: i32,
+    rad: i32,
+    tau_lines: f64,
+    alpha: f64,
+}
+
+pub struct M29CariPlan {
+    w: i32,
+    h: i32,
+    rad: i32,
+    sigma: f64,
+    lambda_cap: f64,
+    gain: f64,
+    steps: i32,
+    weights: Vec<f64>,
+    taps: Vec<f64>,
+}
+
+fn m29_min_d(a: f64, b: f64) -> f64 {
+    if b < a { return b; }
+    a
+}
+
+fn m29_max_d(a: f64, b: f64) -> f64 {
+    if a < b { return b; }
+    a
+}
+
+fn m29_min_i(a: i32, b: i32) -> i32 {
+    if b < a { return b; }
+    a
+}
+
+fn m29_max_i(a: i32, b: i32) -> i32 {
+    if a < b { return b; }
+    a
+}
+
+fn m29_resolve_sag(kind: i32, w: i32, h: i32) -> M29SagPlan {
+    // 0 = consumer, 1 = thriller, 2 = thriller zero-sag control (S=0)
+    let mut s_c: f64 = 0.02;
+    let mut tau_f: f64 = 0.1;
+    let mut foc: f64 = 4.0;
+    let mut sig0: f64 = 0.45;
+    let mut br: f64 = 1.0;
+    if kind == 1 || kind == 2 {
+        s_c = if kind == 2 { 0.0 } else { 0.08 };
+        tau_f = 0.05;
+        foc = 14.0;
+        sig0 = 0.5;
+        br = 1.5;
+    }
+    let blank_f: f64 = 0.08;
+    let blank: i32 = floor((h as f64) * blank_f + 0.5) as i32;
+    let tau_lines: f64 = tau_f * ((h + blank) as f64);
+    let alpha: f64 = 1.0 - exp(-1.0 / tau_lines);
+    let rad: i32 = (ceil(3.0 * (sig0 + foc * s_c)) as i32) + 1;
+    M29SagPlan {
+        s_coeff: s_c, tau_frame: tau_f, focus: foc, sigma0: sig0, bright: br,
+        gamma: 2.4, blank_frac: blank_f, settle: true, initial: 0.0,
+        w: w, h: h, blank: blank, rad: rad, tau_lines: tau_lines, alpha: alpha,
+    }
+}
+
+fn m29_sample_line(p: &M29SagPlan, src: &Vec<f32>, y: i32, xs: f64, sigma: f64) -> (f64, f64, f64) {
+    let w: i32 = p.w;
+    let rad: i32 = p.rad;
+    let x0: i32 = floor(xs) as i32;
+    let mut ws: f64 = 0.0;
+    let mut o0: f64 = 0.0;
+    let mut o1: f64 = 0.0;
+    let mut o2: f64 = 0.0;
+    let mut j: i32 = x0 - rad;
+    while j <= x0 + rad {
+        if j >= 0 && j < w {
+            let d: f64 = ((j as f64) + 0.5 - xs) / sigma;
+            let wt: f64 = exp(-0.5 * d * d);
+            let o: i32 = (y * w + j) * 4;
+            ws = ws + wt;
+            o0 = o0 + wt * pow(m29_max_d(0.0, src[o] as f64), p.gamma);
+            o1 = o1 + wt * pow(m29_max_d(0.0, src[o + 1] as f64), p.gamma);
+            o2 = o2 + wt * pow(m29_max_d(0.0, src[o + 2] as f64), p.gamma);
+        }
+        j = j + 1;
+    }
+    if ws > 0.0 {
+        return (o0 / ws, o1 / ws, o2 / ws);
+    }
+    (0.0, 0.0, 0.0)
+}
+
+pub fn m29_sag_signal8(v: f64) -> u64 {
+    floor(m29_min_d(1.0, m29_max_d(0.0, v)) * 255.0 + 0.5) as u64
+}
+
+fn m29_run_sag_hash(p: &M29SagPlan, src: &Vec<f32>, h0: u64) -> u64 {
+    let w: i32 = p.w;
+    let h: i32 = p.h;
+    let mut sc_i: Vec<f64> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut s: f64 = 0.0;
+        let mut x: i32 = 0;
+        while x < w {
+            let o: i32 = (y * w + x) * 4;
+            let r_g: f64 = pow(m29_max_d(0.0, src[o] as f64), p.gamma);
+            let g_g: f64 = pow(m29_max_d(0.0, src[o + 1] as f64), p.gamma);
+            let b_g: f64 = pow(m29_max_d(0.0, src[o + 2] as f64), p.gamma);
+            s = s + (r_g + g_g + b_g) / 3.0;
+            x = x + 1;
+        }
+        sc_i.push(s / (w as f64));
+        y = y + 1;
+    }
+    let cy: f64 = (h as f64) / 2.0;
+    let alpha: f64 = p.alpha;
+    let mut sc_v: Vec<f64> = Vec::new();
+    let mut z: i32 = 0;
+    while z < h { sc_v.push(0.0); z = z + 1; }
+    let mut st: f64 = p.initial;
+    let mut y1: i32 = 0;
+    while y1 < h {
+        st = st + alpha * (p.s_coeff * sc_i[y1] - st);
+        sc_v[y1] = st;
+        y1 = y1 + 1;
+    }
+    if p.settle {
+        st = st * pow(1.0 - alpha, p.blank as f64);
+        let mut y2: i32 = 0;
+        while y2 < h {
+            st = st + alpha * (p.s_coeff * sc_i[y2] - st);
+            sc_v[y2] = st;
+            y2 = y2 + 1;
+        }
+    }
+    let mut sc_k: Vec<f64> = Vec::new();
+    let mut sc_y: Vec<f64> = Vec::new();
+    let mut sc_sig: Vec<f64> = Vec::new();
+    let mut y3: i32 = 0;
+    while y3 < h {
+        let kv: f64 = 1.0 / sqrt(1.0 - sc_v[y3]);
+        sc_k.push(kv);
+        sc_y.push(cy + ((y3 as f64) + 0.5 - cy) * kv);
+        sc_sig.push(p.sigma0 + p.focus * sc_v[y3]);
+        y3 = y3 + 1;
+    }
+    let cx: f64 = (w as f64) / 2.0;
+    let mut out: Vec<f32> = Vec::new();
+    let mut yo: i32 = 0;
+    while yo < h {
+        let yc: f64 = (yo as f64) + 0.5;
+        if yc < sc_y[0] || yc > sc_y[h - 1] {
+            let mut x: i32 = 0;
+            while x < w {
+                out.push(0.0 as f32); out.push(0.0 as f32); out.push(0.0 as f32); out.push(1.0 as f32);
+                x = x + 1;
+            }
+        } else {
+            let mut lo: i32 = 0;
+            let mut hi: i32 = h - 1;
+            while hi - lo > 1 {
+                let mid: i32 = (lo + hi) >> 1;
+                if sc_y[mid] <= yc { lo = mid; } else { hi = mid; }
+            }
+            let hi_y: i32 = m29_min_i(h - 1, lo + 1);
+            let f: f64 = if hi_y == lo { 0.0 } else { (yc - sc_y[lo]) / (sc_y[hi_y] - sc_y[lo]) };
+            let ga: f64 = pow(1.0 - sc_v[lo], p.bright);
+            let gb: f64 = pow(1.0 - sc_v[hi_y], p.bright);
+            let inv_g: f64 = 1.0 / p.gamma;
+            let mut x: i32 = 0;
+            while x < w {
+                let xc: f64 = (x as f64) + 0.5;
+                let (a0, a1, a2) = m29_sample_line(p, src, lo, cx + (xc - cx) / sc_k[lo], sc_sig[lo]);
+                let (b0, b1, b2) = m29_sample_line(p, src, hi_y, cx + (xc - cx) / sc_k[hi_y], sc_sig[hi_y]);
+                let c0: f64 = pow((a0 * ga) * (1.0 - f) + (b0 * gb) * f, inv_g);
+                let c1: f64 = pow((a1 * ga) * (1.0 - f) + (b1 * gb) * f, inv_g);
+                let c2: f64 = pow((a2 * ga) * (1.0 - f) + (b2 * gb) * f, inv_g);
+                out.push(c0 as f32);
+                out.push(c1 as f32);
+                out.push(c2 as f32);
+                out.push(1.0 as f32);
+                x = x + 1;
+            }
+        }
+        yo = yo + 1;
+    }
+
+    let mut hash: u64 = h0;
+    let n_out: i32 = out.len() as i32;
+    let mut oi: i32 = 0;
+    while oi < n_out {
+        hash = kit::fnv_f32(hash, out[oi] as f64);
+        oi = oi + 1;
+    }
+    let mut yi: i32 = 0;
+    while yi < h { hash = kit::fnv_f32(hash, sc_i[yi]); yi = yi + 1; }
+    yi = 0;
+    while yi < h { hash = kit::fnv_f32(hash, sc_v[yi]); yi = yi + 1; }
+    yi = 0;
+    while yi < h { hash = kit::fnv_f32(hash, sc_k[yi]); yi = yi + 1; }
+    yi = 0;
+    while yi < h { hash = kit::fnv_f32(hash, sc_y[yi]); yi = yi + 1; }
+    yi = 0;
+    while yi < h { hash = kit::fnv_f32(hash, sc_sig[yi]); yi = yi + 1; }
+    let mut ci: i32 = 0;
+    while ci < n_out {
+        hash = kit::fnv_u8(hash, m29_sag_signal8(out[ci] as f64));
+        hash = kit::fnv_u8(hash, m29_sag_signal8(out[ci + 1] as f64));
+        hash = kit::fnv_u8(hash, m29_sag_signal8(out[ci + 2] as f64));
+        ci = ci + 4;
+    }
+    hash
+}
+
+fn m29_resolve_cari(kind: i32, w: i32, h: i32) -> M29CariPlan {
+    // 0 = grotesque, 1 = subtle
+    let mut weights: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < 10 { weights.push(0.0); i = i + 1; }
+    let mut sigma: f64 = 0.035;
+    let mut gain: f64 = 1.0;
+    let mut steps: i32 = 4;
+    if kind == 0 {
+        weights[4] = 0.45; weights[5] = 1.0; weights[6] = 0.7; weights[7] = 0.15; weights[8] = 0.5;
+    } else {
+        weights[4] = 0.5; weights[5] = 1.0; weights[6] = 0.6; weights[7] = 0.1; weights[8] = 0.4;
+        sigma = 0.09; gain = 0.4; steps = 1;
+    }
+    let sig: f64 = sigma * (h as f64);
+    let rad: i32 = ceil(3.0 * sig) as i32;
+    let mut raw: Vec<f64> = Vec::new();
+    let mut s: f64 = 0.0;
+    let mut k: i32 = -rad;
+    while k <= rad {
+        let q: f64 = (k as f64) / sig;
+        let tv: f64 = exp(-0.5 * (q * q));
+        raw.push(tv);
+        s = s + tv;
+        k = k + 1;
+    }
+    let mut taps: Vec<f64> = Vec::new();
+    let nt: i32 = raw.len() as i32;
+    let mut ti: i32 = 0;
+    while ti < nt {
+        taps.push(raw[ti] / s);
+        ti = ti + 1;
+    }
+    M29CariPlan {
+        w: w, h: h, rad: rad, sigma: sigma, lambda_cap: 1.0e9,
+        gain: gain, steps: steps, weights: weights, taps: taps,
+    }
+}
+
+fn m29_cl_idx(w: i32, h: i32, x: i32, y: i32) -> i32 {
+    m29_min_i(h - 1, m29_max_i(0, y)) * w + m29_min_i(w - 1, m29_max_i(0, x))
+}
+
+fn m29_bil2(w: i32, h: i32, g: &Vec<f64>, fx: f64, fy: f64) -> (f64, f64) {
+    let u: f64 = fx - 0.5;
+    let v: f64 = fy - 0.5;
+    let x0: i32 = m29_max_i(0, m29_min_i(w - 1, floor(u) as i32));
+    let y0: i32 = m29_max_i(0, m29_min_i(h - 1, floor(v) as i32));
+    let x1: i32 = m29_min_i(w - 1, x0 + 1);
+    let y1: i32 = m29_min_i(h - 1, y0 + 1);
+    let tx: f64 = m29_max_d(0.0, m29_min_d(1.0, u - (x0 as f64)));
+    let ty: f64 = m29_max_d(0.0, m29_min_d(1.0, v - (y0 as f64)));
+    let i00: i32 = (y0 * w + x0) * 2;
+    let i10: i32 = (y0 * w + x1) * 2;
+    let i01: i32 = (y1 * w + x0) * 2;
+    let i11: i32 = (y1 * w + x1) * 2;
+    let r0: f64 = (g[i00] * (1.0 - tx) + g[i10] * tx) * (1.0 - ty)
+        + (g[i01] * (1.0 - tx) + g[i11] * tx) * ty;
+    let r1: f64 = (g[i00 + 1] * (1.0 - tx) + g[i10 + 1] * tx) * (1.0 - ty)
+        + (g[i01 + 1] * (1.0 - tx) + g[i11 + 1] * tx) * ty;
+    (r0, r1)
+}
+
+fn m29_bil3(w: i32, h: i32, src: &Vec<f32>, fx: f64, fy: f64) -> (f64, f64, f64) {
+    let u: f64 = fx - 0.5;
+    let v: f64 = fy - 0.5;
+    let x0: i32 = m29_max_i(0, m29_min_i(w - 1, floor(u) as i32));
+    let y0: i32 = m29_max_i(0, m29_min_i(h - 1, floor(v) as i32));
+    let x1: i32 = m29_min_i(w - 1, x0 + 1);
+    let y1: i32 = m29_min_i(h - 1, y0 + 1);
+    let tx: f64 = m29_max_d(0.0, m29_min_d(1.0, u - (x0 as f64)));
+    let ty: f64 = m29_max_d(0.0, m29_min_d(1.0, v - (y0 as f64)));
+    let i00: i32 = (y0 * w + x0) * 4;
+    let i10: i32 = (y0 * w + x1) * 4;
+    let i01: i32 = (y1 * w + x0) * 4;
+    let i11: i32 = (y1 * w + x1) * 4;
+    let r0: f64 = ((src[i00] as f64) * (1.0 - tx) + (src[i10] as f64) * tx) * (1.0 - ty)
+        + ((src[i01] as f64) * (1.0 - tx) + (src[i11] as f64) * tx) * ty;
+    let r1: f64 = ((src[i00 + 1] as f64) * (1.0 - tx) + (src[i10 + 1] as f64) * tx) * (1.0 - ty)
+        + ((src[i01 + 1] as f64) * (1.0 - tx) + (src[i11 + 1] as f64) * tx) * ty;
+    let r2: f64 = ((src[i00 + 2] as f64) * (1.0 - tx) + (src[i10 + 2] as f64) * tx) * (1.0 - ty)
+        + ((src[i01 + 2] as f64) * (1.0 - tx) + (src[i11 + 2] as f64) * tx) * ty;
+    (r0, r1, r2)
+}
+
+fn m29_run_cari_hash(p: &M29CariPlan, src: &Vec<f32>, mat: &Vec<i32>, h0: u64) -> u64 {
+    let w: i32 = p.w;
+    let h: i32 = p.h;
+    let rad: i32 = p.rad;
+    let n: i32 = w * h;
+    let mut sal: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < n {
+        let mid: i32 = mat[i];
+        let sv: f64 = if mid >= 0 && mid <= 9 { p.weights[mid] } else { 0.0 };
+        sal.push(sv);
+        i = i + 1;
+    }
+    let mut a: Vec<f64> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut v: f64 = 0.0;
+            let mut k: i32 = -rad;
+            while k <= rad {
+                let xc: i32 = m29_min_i(w - 1, m29_max_i(0, x + k));
+                v = v + p.taps[k + rad] * sal[y * w + xc];
+                k = k + 1;
+            }
+            a.push(v);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    let mut s_fld: Vec<f64> = Vec::new();
+    y = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut v: f64 = 0.0;
+            let mut k: i32 = -rad;
+            while k <= rad {
+                let yc: i32 = m29_min_i(h - 1, m29_max_i(0, y + k));
+                v = v + p.taps[k + rad] * a[yc * w + x];
+                k = k + 1;
+            }
+            s_fld.push(v);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    let mut g_fld: Vec<f64> = Vec::new();
+    y = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let gx: f64 = 0.5 * (s_fld[m29_cl_idx(w, h, x + 1, y)] - s_fld[m29_cl_idx(w, h, x - 1, y)]);
+            let gy: f64 = 0.5 * (s_fld[m29_cl_idx(w, h, x, y + 1)] - s_fld[m29_cl_idx(w, h, x, y - 1)]);
+            g_fld.push(gx);
+            g_fld.push(gy);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    let mut m_max: f64 = 0.0;
+    y = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let a0: f64 = 0.5 * (g_fld[m29_cl_idx(w, h, x + 1, y) * 2] - g_fld[m29_cl_idx(w, h, x - 1, y) * 2]);
+            let a1: f64 = 0.5 * (g_fld[m29_cl_idx(w, h, x, y + 1) * 2] - g_fld[m29_cl_idx(w, h, x, y - 1) * 2]);
+            let a2: f64 = 0.5 * (g_fld[m29_cl_idx(w, h, x + 1, y) * 2 + 1] - g_fld[m29_cl_idx(w, h, x - 1, y) * 2 + 1]);
+            let a3: f64 = 0.5 * (g_fld[m29_cl_idx(w, h, x, y + 1) * 2 + 1] - g_fld[m29_cl_idx(w, h, x, y - 1) * 2 + 1]);
+            let norm_f: f64 = sqrt(a0 * a0 + a1 * a1 + a2 * a2 + a3 * a3);
+            m_max = m29_max_d(m_max, norm_f);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    let steps: i32 = if p.steps > 0 { p.steps } else { 1 };
+    let c_b: f64 = 1.0 - pow(0.04, 1.0 / ((2 * steps) as f64));
+    let lam: f64 = if m_max > 0.0 { m29_min_d(p.lambda_cap, (c_b * p.gain) / m_max) } else { 0.0 };
+    let mut hash: u64 = h0;
+    y = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let idx: i32 = y * w + x;
+            let mut fx: f64 = (x as f64) + 0.5 + lam * g_fld[idx * 2];
+            let mut fy: f64 = (y as f64) + 0.5 + lam * g_fld[idx * 2 + 1];
+            let mut k: i32 = 1;
+            while k < steps {
+                let (d0, d1) = m29_bil2(w, h, &g_fld, fx, fy);
+                fx = fx + lam * d0;
+                fy = fy + lam * d1;
+                k = k + 1;
+            }
+            let (c0, c1, c2) = m29_bil3(w, h, src, fx, fy);
+            let f0: f32 = c0 as f32;
+            let f1: f32 = c1 as f32;
+            let f2: f32 = c2 as f32;
+            hash = kit::fnv_f32(hash, f0 as f64);
+            hash = kit::fnv_f32(hash, f1 as f64);
+            hash = kit::fnv_f32(hash, f2 as f64);
+            hash = kit::fnv_f32(hash, 1.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    let mut si: i32 = 0;
+    while si < n { hash = kit::fnv_f32(hash, s_fld[si]); si = si + 1; }
+    let mut gi: i32 = 0;
+    while gi < n * 2 { hash = kit::fnv_f32(hash, g_fld[gi]); gi = gi + 1; }
+    kit::fnv_f32(hash, lam)
+}
+
+fn m29_make_source(w: i32, h: i32) -> Vec<f32> {
+    let mut src: Vec<f32> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut r: f64 = 0.08 + 0.35 * ((x as f64) / (w as f64));
+            let mut g: f64 = 0.10 + 0.30 * ((y as f64) / (h as f64));
+            let mut b: f64 = 0.14 + 0.25 * (1.0 - (x as f64) / (w as f64));
+            if y >= 8 && y <= 16 && x >= 6 && x <= 41 {
+                r = 0.96; g = 0.94; b = 0.92;
+            }
+            if (x % 6) == 0 && y >= 18 {
+                r = 0.85; g = 0.25; b = 0.18;
+            }
+            src.push(r as f32);
+            src.push(g as f32);
+            src.push(b as f32);
+            src.push(1.0 as f32);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    src
+}
+
+fn m29_make_materials(w: i32, h: i32) -> Vec<i32> {
+    let mut mat: Vec<i32> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let dx: i32 = x - w / 2;
+            let dy: i32 = y - h / 2;
+            let r2: i32 = dx * dx + dy * dy;
+            let mut id: i32 = 0;
+            if r2 < 25 { id = 5; }
+            else if r2 < 64 { id = 6; }
+            else if r2 < 120 { id = 8; }
+            else if x > 30 && y < 14 { id = 4; }
+            else if x < 14 && y > 20 { id = 7; }
+            mat.push(id);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    mat
+}
+
+pub fn run_sag_parity() -> (u64, u64, u64, u64, u64, u64) {
+    let w: i32 = 48;
+    let h: i32 = 32;
+    let src: Vec<f32> = m29_make_source(w, h);
+    let mat: Vec<i32> = m29_make_materials(w, h);
+
+    let p_con: M29SagPlan = m29_resolve_sag(0, w, h);
+    let p_thr: M29SagPlan = m29_resolve_sag(1, w, h);
+    let p_ctrl: M29SagPlan = m29_resolve_sag(2, w, h);
+    let c_gro: M29CariPlan = m29_resolve_cari(0, w, h);
+    let c_sub: M29CariPlan = m29_resolve_cari(1, w, h);
+
+    let h_con: u64 = m29_run_sag_hash(&p_con, &src, kit::fnv_start());
+    let h_thr: u64 = m29_run_sag_hash(&p_thr, &src, kit::fnv_start());
+    let h_gro: u64 = m29_run_cari_hash(&c_gro, &src, &mat, kit::fnv_start());
+    let h_sub: u64 = m29_run_cari_hash(&c_sub, &src, &mat, kit::fnv_start());
+    let h_ctrl: u64 = m29_run_sag_hash(&p_ctrl, &src, kit::fnv_start());
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = m29_run_sag_hash(&p_con, &src, h_all);
+    h_all = m29_run_sag_hash(&p_thr, &src, h_all);
+    h_all = m29_run_cari_hash(&c_gro, &src, &mat, h_all);
+    h_all = m29_run_cari_hash(&c_sub, &src, &mat, h_all);
+
+    (h_con, h_thr, h_gro, h_sub, h_all, h_ctrl)
+}

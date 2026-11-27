@@ -1,0 +1,488 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe Renderer Module #34: Palette-Locked Lighting with Two-Phase Bayer 8x8 Dithering
+// Bit-exact 0-ULP port of native/src/renderer/style_palettelight.cpp (+ radial light & Bayer8
+// primitives from style_ditherlight.cpp): OKLab cool/warm material ramp synthesis, cycling void
+// & emissive ramps, wrapped radial attenuation, and two-phase Bayer 8x8 palette shading.
+
+
+pub struct M34Radial {
+    px: f64,
+    py: f64,
+    pz: f64,
+    radius: f64,
+    core: f64,
+    intensity: f64,
+    wrap: f64,
+}
+
+pub struct M34RampPalette {
+    steps: i32,
+    void_steps: i32,
+    rgb_r: Vec<u64>,
+    rgb_g: Vec<u64>,
+    rgb_b: Vec<u64>,
+    void_off: i32,
+    win_off: i32,
+    lamp_off: i32,
+    night: i32,
+}
+
+pub struct M34PlPlan {
+    gain: f64,
+    ambient: f64,
+    moon: f64,
+    cycle_rate: f64,
+    steps: i32,
+    void_steps: i32,
+    ambient_base: f64,
+    mx: f64,
+    my: f64,
+    mz: f64,
+    lamp: M34Radial,
+    glow0: M34Radial,
+    glow1: M34Radial,
+    pal: M34RampPalette,
+}
+
+pub struct M34ChapelG {
+    w: i32,
+    h: i32,
+    hit: Vec<i32>,
+    cls: Vec<i32>,
+    a: Vec<f32>,
+    phase: Vec<f32>,
+    pos: Vec<f32>,
+    nrm: Vec<f32>,
+    vis: Vec<f32>,
+}
+
+fn m34_pi() -> f64 { 3.14159265358979323846 }
+
+fn m34_min_d(a: f64, b: f64) -> f64 {
+    if b < a { return b; }
+    a
+}
+
+fn m34_max_d(a: f64, b: f64) -> f64 {
+    if a < b { return b; }
+    a
+}
+
+fn m34_min_i(a: i32, b: i32) -> i32 {
+    if b < a { return b; }
+    a
+}
+
+fn m34_sat(x: f64) -> f64 {
+    if x < 0.0 { return 0.0; }
+    if x > 1.0 { return 1.0; }
+    x
+}
+
+fn m34_hypot2(a0: f64, b0: f64) -> f64 {
+    let a: f64 = kit::absd(a0);
+    let b: f64 = kit::absd(b0);
+    if a == 0.0 && b == 0.0 { return 0.0; }
+    if a >= b {
+        let r: f64 = b / a;
+        return a * sqrt(1.0 + r * r);
+    }
+    let r: f64 = a / b;
+    b * sqrt(1.0 + r * r)
+}
+
+fn m34_hypot3(x0: f64, y0: f64, z0: f64) -> f64 {
+    let x: f64 = kit::absd(x0);
+    let y: f64 = kit::absd(y0);
+    let z: f64 = kit::absd(z0);
+    let mx: f64 = m34_max_d(x, m34_max_d(y, z));
+    if mx == 0.0 { return 0.0; }
+    let sx: f64 = x / mx;
+    let sy: f64 = y / mx;
+    let sz: f64 = z / mx;
+    mx * sqrt(sx * sx + sy * sy + sz * sz)
+}
+
+fn m34_srgb_to_lin(c: f64) -> f64 {
+    if c <= 0.04045 { return c / 12.92; }
+    pow((c + 0.055) / 1.055, 2.4)
+}
+
+fn m34_lin_to_srgb(c: f64) -> f64 {
+    if c <= 0.0031308 { return 12.92 * c; }
+    1.055 * pow(c, 1.0 / 2.4) - 0.055
+}
+
+fn m34_srgb_to_oklab(r0: f64, g0: f64, b0: f64) -> (f64, f64, f64) {
+    let r: f64 = m34_srgb_to_lin(r0);
+    let g: f64 = m34_srgb_to_lin(g0);
+    let b: f64 = m34_srgb_to_lin(b0);
+    let l: f64 = cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+    let m: f64 = cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+    let s: f64 = cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+    (
+        0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+        1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+        0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s,
+    )
+}
+
+fn m34_oklab_to_srgb(ol: f64, oa: f64, ob: f64) -> (f64, f64, f64) {
+    let l0: f64 = ol + 0.3963377774 * oa + 0.2158037573 * ob;
+    let m0: f64 = ol - 0.1055613458 * oa - 0.0638541728 * ob;
+    let s0: f64 = ol - 0.0894841775 * oa - 1.2914855480 * ob;
+    let l: f64 = l0 * l0 * l0;
+    let m: f64 = m0 * m0 * m0;
+    let s: f64 = s0 * s0 * s0;
+    let r: f64 = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+    let g: f64 = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+    let b: f64 = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
+    (
+        m34_sat(m34_lin_to_srgb(r)),
+        m34_sat(m34_lin_to_srgb(g)),
+        m34_sat(m34_lin_to_srgb(b)),
+    )
+}
+
+fn m34_toward(h: f64, t: f64, f: f64) -> f64 {
+    let pi: f64 = m34_pi();
+    let mut d: f64 = t - h;
+    while d > pi { d = d - 2.0 * pi; }
+    while d < -pi { d = d + 2.0 * pi; }
+    h + d * f
+}
+
+fn m34_byte8(v: f64) -> u64 {
+    floor(m34_min_d(1.0, m34_max_d(0.0, v)) * 255.0 + 0.5) as u64
+}
+
+fn m34_push_entry(rr: &mut Vec<u64>, rg: &mut Vec<u64>, rb: &mut Vec<u64>, ol: f64, oc: f64, oh: f64) {
+    let (s0, s1, s2) = m34_oklab_to_srgb(ol, oc * cos(oh), oc * sin(oh));
+    rr.push(m34_byte8(s0));
+    rg.push(m34_byte8(s1));
+    rb.push(m34_byte8(s2));
+}
+
+fn m34_build_ramp_palette(steps: i32, void_steps: i32) -> M34RampPalette {
+    let pi: f64 = m34_pi();
+    let d2r: f64 = pi / 180.0;
+    let mut rr: Vec<u64> = Vec::new();
+    let mut rg: Vec<u64> = Vec::new();
+    let mut rb: Vec<u64> = Vec::new();
+    let mut c: i32 = 0;
+    while c < 4 {
+        let br: f64 = if c == 0 { 0.34 } else if c == 1 { 0.62 } else if c == 2 { 0.42 } else { 0.2 };
+        let bg: f64 = if c == 0 { 0.42 } else if c == 1 { 0.6 } else if c == 2 { 0.29 } else { 0.38 };
+        let bb: f64 = if c == 0 { 0.24 } else if c == 1 { 0.58 } else if c == 2 { 0.18 } else { 0.22 };
+        let (l0, oa0, ob0) = m34_srgb_to_oklab(br, bg, bb);
+        let c0: f64 = m34_hypot2(oa0, ob0);
+        let h0: f64 = atan2(ob0, oa0);
+        let mut v: i32 = 0;
+        while v < 2 {
+            let mut s: i32 = 0;
+            while s < steps {
+                let t: f64 = (s as f64) / ((steps - 1) as f64);
+                let mut lv: f64 = m34_min_d(0.97, l0 * (0.34 + 0.86 * pow(t, 0.9)));
+                let mut cv: f64 = m34_min_d(0.2, c0 * (0.6 + 0.9 * sin(pi * (0.15 + 0.8 * t))));
+                let mut hv: f64 = m34_toward(h0, 285.0 * d2r, 0.55 * pow(1.0 - t, 1.2));
+                hv = m34_toward(hv, 85.0 * d2r, 0.4 * pow(t, 1.6));
+                if v == 0 {
+                    hv = m34_toward(hv, 250.0 * d2r, 0.3);
+                    lv = lv * 0.97;
+                } else {
+                    hv = m34_toward(hv, 62.0 * d2r, 0.72 * (0.4 + 0.6 * t));
+                    cv = m34_min_d(0.22, cv * 1.3);
+                    lv = m34_min_d(0.97, lv * 1.12);
+                }
+                m34_push_entry(&mut rr, &mut rg, &mut rb, lv, cv, hv);
+                s = s + 1;
+            }
+            v = v + 1;
+        }
+        c = c + 1;
+    }
+    let void_off: i32 = rr.len() as i32;
+    let mut vs: i32 = 0;
+    while vs < void_steps {
+        let t: f64 = (vs as f64) / (void_steps as f64);
+        let bump: f64 = if vs == 3 { 0.04 } else { 0.0 };
+        let hshift: f64 = if vs == 3 { 40.0 } else { 0.0 };
+        let lv: f64 = 0.2 + 0.44 * pow(sin(pi * t), 1.3) + bump;
+        let cv: f64 = 0.07 + 0.1 * sin(pi * t);
+        let hv: f64 = (285.0 + 75.0 * sin(2.0 * pi * t) - hshift) * d2r;
+        m34_push_entry(&mut rr, &mut rg, &mut rb, lv, cv, hv);
+        vs = vs + 1;
+    }
+    let win_off: i32 = rr.len() as i32;
+    m34_push_entry(&mut rr, &mut rg, &mut rb, 0.7, 0.13, 70.0 * d2r);
+    m34_push_entry(&mut rr, &mut rg, &mut rb, 0.83, 0.12, 85.0 * d2r);
+    m34_push_entry(&mut rr, &mut rg, &mut rb, 0.95, 0.08, 95.0 * d2r);
+    let lamp_off: i32 = rr.len() as i32;
+    m34_push_entry(&mut rr, &mut rg, &mut rb, 0.9, 0.1, 90.0 * d2r);
+    m34_push_entry(&mut rr, &mut rg, &mut rb, 0.98, 0.05, 100.0 * d2r);
+    let night: i32 = rr.len() as i32;
+    m34_push_entry(&mut rr, &mut rg, &mut rb, 0.14, 0.04, 285.0 * d2r);
+    M34RampPalette {
+        steps: steps, void_steps: void_steps, rgb_r: rr, rgb_g: rg, rgb_b: rb,
+        void_off: void_off, win_off: win_off, lamp_off: lamp_off, night: night,
+    }
+}
+
+fn m34_plan(steps: i32, void_steps: i32, amb_base: f64) -> M34PlPlan {
+    let l: f64 = m34_hypot3(-0.5, 0.68, 0.5);
+    let lamp: M34Radial = M34Radial {
+        px: 1.5, py: 2.2, pz: 1.4, radius: 11.0, core: 1.6, intensity: 6.0, wrap: 0.25,
+    };
+    let g0: M34Radial = M34Radial {
+        px: -6.0, py: 2.2, pz: 1.22, radius: 6.0, core: 1.0, intensity: 1.3, wrap: 0.5,
+    };
+    let g1: M34Radial = M34Radial {
+        px: -3.0, py: 2.2, pz: 1.22, radius: 6.0, core: 1.0, intensity: 1.3, wrap: 0.5,
+    };
+    M34PlPlan {
+        gain: 1.5, ambient: 0.08, moon: 0.45, cycle_rate: 0.18,
+        steps: steps, void_steps: void_steps, ambient_base: amb_base,
+        mx: -0.5 / l, my: 0.68 / l, mz: 0.5 / l,
+        lamp: lamp, glow0: g0, glow1: g1,
+        pal: m34_build_ramp_palette(steps, void_steps),
+    }
+}
+
+fn m34_bayer8_thresh(x0: i32, y0: i32) -> f64 {
+    let x: i32 = x0 & 7;
+    let y: i32 = y0 & 7;
+    let v: i32 = x ^ y;
+    let r: i32 = ((v & 1) << 5) | ((y & 1) << 4) | (((v >> 1) & 1) << 3)
+        | (((y >> 1) & 1) << 2) | (((v >> 2) & 1) << 1) | ((y >> 2) & 1);
+    ((r as f64) + 0.5) / 64.0
+}
+
+fn m34_mask_radial(l: &M34Radial, px: f64, py: f64, pz: f64) -> f64 {
+    let vx: f64 = px - l.px;
+    let vy: f64 = py - l.py;
+    let vz: f64 = pz - l.pz;
+    let r2: f64 = vx * vx + vy * vy + vz * vz;
+    let q: f64 = r2 / (l.radius * l.radius);
+    if q >= 1.0 { return 0.0; }
+    (l.intensity * (1.0 - q) * (1.0 - q)) / (1.0 + r2 / (l.core * l.core))
+}
+
+fn m34_surface_term(l: &M34Radial, px: f64, py: f64, pz: f64, nx: f64, ny: f64, nz: f64) -> f64 {
+    let vx: f64 = l.px - px;
+    let vy: f64 = l.py - py;
+    let vz: f64 = l.pz - pz;
+    let len_v: f64 = m34_hypot3(vx, vy, vz);
+    if len_v < 1.0e-6 { return 1.0; }
+    let ndv: f64 = nx * vx + ny * vy + nz * vz;
+    m34_sat((ndv / len_v + l.wrap) / (1.0 + l.wrap))
+}
+
+fn m34_fmod_pos(a: f64, b: f64) -> f64 {
+    a - floor(a / b) * b
+}
+
+fn m34_hash_pal(pal: &M34RampPalette, h0: u64) -> u64 {
+    let n: i32 = pal.rgb_r.len() as i32;
+    let mut h: u64 = h0;
+    let mut i: i32 = 0;
+    while i < n {
+        h = kit::fnv_u8(h, pal.rgb_r[i]);
+        h = kit::fnv_u8(h, pal.rgb_g[i]);
+        h = kit::fnv_u8(h, pal.rgb_b[i]);
+        i = i + 1;
+    }
+    h
+}
+
+fn m34_run_frame_hash(p: &M34PlPlan, g: &M34ChapelG, time: f64, h0: u64) -> u64 {
+    let w: i32 = g.w;
+    let h: i32 = g.h;
+    let k_st: i32 = p.steps;
+    let vs: i32 = p.void_steps;
+    let mut idx_out: Vec<i32> = Vec::new();
+    let mut rgba_out: Vec<u64> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let i: i32 = y * w + x;
+            let t1: f64 = m34_bayer8_thresh(x, y);
+            let t2: f64 = m34_bayer8_thresh(x + 11, y + 7);
+            let px: f64 = g.pos[i * 3] as f64;
+            let py: f64 = g.pos[i * 3 + 1] as f64;
+            let pz: f64 = g.pos[i * 3 + 2] as f64;
+            let nx: f64 = g.nrm[i * 3] as f64;
+            let ny: f64 = g.nrm[i * 3 + 1] as f64;
+            let nz: f64 = g.nrm[i * 3 + 2] as f64;
+            let a_v: f64 = g.a[i] as f64;
+            let mut k: i32 = p.pal.night;
+            if g.hit[i] != 0 {
+                let cls: i32 = g.cls[i];
+                if cls == 4 {
+                    let pos_v: f64 = m34_fmod_pos(
+                        (g.phase[i] as f64) * (vs as f64) + time * p.cycle_rate * (vs as f64),
+                        vs as f64,
+                    );
+                    let lo: f64 = floor(pos_v);
+                    let fr: f64 = pos_v - lo;
+                    let vi: i32 = (if fr > t1 { (lo as i32) + 1 } else { lo as i32 }) % vs;
+                    k = p.pal.void_off + vi;
+                } else if cls == 5 {
+                    let sv: f64 = 1.4 + 0.6 * sin(time * 5.0 + px * 3.0) + 0.4 * (a_v - 0.5);
+                    let tone: f64 = m34_min_d(2.0, m34_max_d(0.0, sv));
+                    let lo: i32 = m34_min_i(1, floor(tone) as i32);
+                    let wi: i32 = if tone - (lo as f64) > t1 { lo + 1 } else { lo };
+                    k = p.pal.win_off + wi;
+                } else if cls == 6 {
+                    let sv: f64 = 0.5 + 0.2 * sin(time * 7.0);
+                    k = p.pal.lamp_off + (if sv > t1 { 1 } else { 0 });
+                } else {
+                    let nl: f64 = m34_max_d(0.0, nx * p.mx + ny * p.my + nz * p.mz);
+                    let cool: f64 = p.ambient * (p.ambient_base + 0.3 * (0.5 + 0.5 * ny))
+                        + p.moon * nl * (g.vis[i * 3] as f64);
+                    let mut warm: f64 = 0.0;
+                    let m0: f64 = m34_mask_radial(&p.lamp, px, py, pz);
+                    if m0 > 0.0 {
+                        warm = warm + (g.vis[i * 3 + 1] as f64) * m0
+                            * m34_surface_term(&p.lamp, px, py, pz, nx, ny, nz);
+                    }
+                    let q0: f64 = m34_mask_radial(&p.glow0, px, py, pz);
+                    if q0 > 0.0 {
+                        warm = warm + (g.vis[i * 3 + 2] as f64) * q0
+                            * m34_surface_term(&p.glow0, px, py, pz, nx, ny, nz);
+                    }
+                    let q1: f64 = m34_mask_radial(&p.glow1, px, py, pz);
+                    if q1 > 0.0 {
+                        warm = warm + (g.vis[i * 3 + 2] as f64) * q1
+                            * m34_surface_term(&p.glow1, px, py, pz, nx, ny, nz);
+                    }
+                    let e_tot: f64 = cool + warm;
+                    let tone: f64 = 1.0 - exp(-p.gain * e_tot * a_v);
+                    let s_v: f64 = m34_min_d((k_st - 1) as f64, m34_max_d(0.0, tone * ((k_st - 1) as f64)));
+                    let w_r: f64 = if e_tot > 1.0e-9 { warm / e_tot } else { 0.0 };
+                    let lo: i32 = m34_min_i(k_st - 2, floor(s_v) as i32);
+                    let step: i32 = if s_v - (lo as f64) > t1 { lo + 1 } else { lo };
+                    let var: i32 = if w_r >= 0.7 {
+                        1
+                    } else if w_r <= 0.3 {
+                        0
+                    } else if (w_r - 0.3) / 0.4 > t2 {
+                        1
+                    } else {
+                        0
+                    };
+                    k = (cls * 2 + var) * k_st + step;
+                }
+            }
+            idx_out.push(k);
+            rgba_out.push(p.pal.rgb_r[k]);
+            rgba_out.push(p.pal.rgb_g[k]);
+            rgba_out.push(p.pal.rgb_b[k]);
+            rgba_out.push(255);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    let mut hash: u64 = h0;
+    let ni: i32 = idx_out.len() as i32;
+    let mut ii: i32 = 0;
+    while ii < ni {
+        hash = kit::fnv_u8(hash, (idx_out[ii] & 255) as u64);
+        ii = ii + 1;
+    }
+    let nr: i32 = rgba_out.len() as i32;
+    let mut ri: i32 = 0;
+    while ri < nr {
+        hash = kit::fnv_u8(hash, rgba_out[ri]);
+        ri = ri + 1;
+    }
+    hash
+}
+
+fn m34_make_chapel(w: i32, h: i32) -> M34ChapelG {
+    let mut hit: Vec<i32> = Vec::new();
+    let mut cls: Vec<i32> = Vec::new();
+    let mut a: Vec<f32> = Vec::new();
+    let mut phase: Vec<f32> = Vec::new();
+    let mut pos: Vec<f32> = Vec::new();
+    let mut nrm: Vec<f32> = Vec::new();
+    let mut vis: Vec<f32> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            if y < 4 {
+                hit.push(0); cls.push(0); a.push(0.8 as f32); phase.push(0.0 as f32);
+                pos.push(0.0 as f32); pos.push(0.0 as f32); pos.push(0.0 as f32);
+                nrm.push(0.0 as f32); nrm.push(0.0 as f32); nrm.push(0.0 as f32);
+                vis.push(1.0 as f32); vis.push(1.0 as f32); vis.push(1.0 as f32);
+            } else {
+                hit.push(1);
+                let px: f64 = -8.0 + 16.0 * ((x as f64) / (w as f64));
+                let py: f64 = 4.0 * (1.0 - (y as f64) / (h as f64));
+                let pz: f64 = 2.0 * ((y as f64) / (h as f64)) - 0.5;
+                let mut nx: f64 = 0.0;
+                let mut ny: f64 = 1.0;
+                let mut nz: f64 = 0.0;
+                let mut c_id: i32 = 0;
+                if y >= 20 {
+                    c_id = 0; nx = 0.1 * sin(px * 0.5); ny = 0.98; nz = 0.15;
+                } else if x < 16 {
+                    c_id = 1; nx = 0.25; ny = 0.20; nz = 0.95;
+                } else if x < 28 {
+                    c_id = 2; nx = -0.20; ny = 0.35; nz = 0.91;
+                } else if x < 38 {
+                    c_id = 3; nx = 0.40 * cos(y as f64); ny = 0.70; nz = 0.58;
+                } else if y < 12 {
+                    c_id = 4;
+                } else if y < 16 {
+                    c_id = 5;
+                } else {
+                    c_id = 6;
+                }
+                let nl: f64 = sqrt(nx * nx + ny * ny + nz * nz);
+                cls.push(c_id);
+                let av: f64 = 0.45 + 0.50 * ((x as f64) / (w as f64));
+                let phv: f64 = ((x + y) as f64) / ((w + h) as f64);
+                a.push(av as f32);
+                phase.push(phv as f32);
+                pos.push(px as f32); pos.push(py as f32); pos.push(pz as f32);
+                let nxn: f64 = nx / nl;
+                let nyn: f64 = ny / nl;
+                let nzn: f64 = nz / nl;
+                nrm.push(nxn as f32); nrm.push(nyn as f32); nrm.push(nzn as f32);
+                let v0: f64 = if ((x + y) % 5) == 0 { 0.35 } else { 1.0 };
+                let v1: f64 = if x > 6 && x < 42 { 0.95 } else { 0.25 };
+                let v2: f64 = if x < 24 { 0.85 } else { 0.15 };
+                vis.push(v0 as f32); vis.push(v1 as f32); vis.push(v2 as f32);
+            }
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    M34ChapelG { w: w, h: h, hit: hit, cls: cls, a: a, phase: phase, pos: pos, nrm: nrm, vis: vis }
+}
+
+pub fn run_palettelight_parity() -> (u64, u64, u64, u64, u64, u64) {
+    let g: M34ChapelG = m34_make_chapel(48, 32);
+    let pl4: M34PlPlan = m34_plan(4, 6, 0.7);
+    let pl6: M34PlPlan = m34_plan(6, 8, 0.7);
+    let pl_ctrl: M34PlPlan = m34_plan(4, 6, 0.0);
+
+    let h_pal: u64 = m34_hash_pal(&pl6.pal, m34_hash_pal(&pl4.pal, kit::fnv_start()));
+    let h_t0: u64 = m34_run_frame_hash(&pl4, &g, 0.0, kit::fnv_start());
+    let h_t1: u64 = m34_run_frame_hash(&pl4, &g, 1.75, kit::fnv_start());
+    let h_s6: u64 = m34_run_frame_hash(&pl6, &g, 0.85, kit::fnv_start());
+    let h_ctrl: u64 = m34_run_frame_hash(&pl_ctrl, &g, 0.0, kit::fnv_start());
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = m34_hash_pal(&pl4.pal, h_all);
+    h_all = m34_hash_pal(&pl6.pal, h_all);
+    h_all = m34_run_frame_hash(&pl4, &g, 0.0, h_all);
+    h_all = m34_run_frame_hash(&pl4, &g, 1.75, h_all);
+    h_all = m34_run_frame_hash(&pl6, &g, 0.85, h_all);
+
+    (h_pal, h_t0, h_t1, h_s6, h_all, h_ctrl)
+}

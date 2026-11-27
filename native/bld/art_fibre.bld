@@ -1,0 +1,435 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe Renderer Module #33: Fibre-Network Anisotropic Watercolour Diffusion
+// Bit-exact 0-ULP port of native/src/renderer/style_fibre.cpp:
+// stochastic cellulose paper fibre field, 7x7 smoothed capillary conductivity tensor,
+// monotone 8-link anisotropic stencil, CFL-stable explicit pigment transport, flocculation
+// deposition at fibre crossings, linear evaporation, and Beer-Lambert reflectance reconstruction.
+
+
+pub struct M33FibrePlan {
+    edge_dry: f64,
+    per_cell: i32,
+    len_frac: f64,
+    width: f64,
+    md: f64,
+    spread: f64,
+    k0: f64,
+    k1: f64,
+    rate: f64,
+    floc: f64,
+    evap: f64,
+    steps: i32,
+    strength: f64,
+    paper0: f64,
+    paper1: f64,
+    paper2: f64,
+    w: i32,
+    h: i32,
+    l_px: f64,
+    cell: f64,
+    dt: f64,
+    tensor_radius: i32,
+}
+
+fn m33_pi() -> f64 { 3.141592653589793 }
+
+fn m33_min_d(a: f64, b: f64) -> f64 {
+    if b < a { return b; }
+    a
+}
+
+fn m33_max_d(a: f64, b: f64) -> f64 {
+    if a < b { return b; }
+    a
+}
+
+fn m33_min_i(a: i32, b: i32) -> i32 {
+    if b < a { return b; }
+    a
+}
+
+fn m33_max_i(a: i32, b: i32) -> i32 {
+    if a < b { return b; }
+    a
+}
+
+fn m33_i32_to_u32(x: i32) -> u64 {
+    ((x as i64) as u64) & 4294967295
+}
+
+fn m33_pcg(v0: u64) -> u64 {
+    let v: u64 = v0 & 4294967295;
+    let state: u64 = (v.wrapping_mul(747796405).wrapping_add(2891336453)) & 4294967295;
+    let shift: u64 = (state >> 28) + 4;
+    let word: u64 = (((state >> shift) ^ state).wrapping_mul(277803737)) & 4294967295;
+    ((word >> 22) ^ word) & 4294967295
+}
+
+fn m33_hash3(x: u64, y: u64, z: u64) -> f64 {
+    let h: u64 = m33_pcg((x & 4294967295) ^ m33_pcg((y & 4294967295) ^ m33_pcg(z & 4294967295)));
+    (h as f64) / 4294967296.0
+}
+
+fn m33_resolve(kind: i32, w: i32, h: i32) -> M33FibrePlan {
+    // 0 = cold-press, 1 = hot-press, 2 = rough, 3 = rough isotropic control (k1=0)
+    let mut edge_dry: f64 = 6.0;
+    let mut per_cell: i32 = 6;
+    let mut len_f: f64 = 0.05;
+    let mut width: f64 = 1.2;
+    let mut md: f64 = 0.0;
+    let mut spread: f64 = 1.0;
+    let mut k0: f64 = 0.25;
+    let mut k1: f64 = 0.9;
+    let mut rate: f64 = 0.08;
+    let mut floc: f64 = 1.0;
+    let mut evap: f64 = 0.02;
+    let mut steps: i32 = 40;
+    let mut p0: f64 = 0.96;
+    let mut p1: f64 = 0.94;
+    let mut p2: f64 = 0.89;
+    if kind == 1 {
+        edge_dry = 8.0; per_cell = 3; len_f = 0.06; width = 1.0;
+        k0 = 0.3; k1 = 0.5; rate = 0.12; floc = 0.3; steps = 32;
+        p0 = 0.97; p1 = 0.96; p2 = 0.93;
+    } else if kind == 2 || kind == 3 {
+        edge_dry = 4.0; per_cell = 9; len_f = 0.08; width = 1.4;
+        md = 0.15; spread = 0.6; k0 = 0.2;
+        k1 = if kind == 3 { 0.0 } else { 0.95 };
+        rate = 0.06; floc = 1.5; evap = 0.015; steps = 56;
+        p0 = 0.95; p1 = 0.92; p2 = 0.86;
+    }
+    let l_px: f64 = m33_max_d(2.0, len_f * (h as f64));
+    let cell: f64 = m33_max_d(2.0, ceil(l_px));
+    let gmax: f64 = 2.0 * (2.0 * k0 + k1);
+    let dt: f64 = 0.45 / gmax;
+    M33FibrePlan {
+        edge_dry: edge_dry, per_cell: per_cell, len_frac: len_f, width: width,
+        md: md, spread: spread, k0: k0, k1: k1, rate: rate, floc: floc,
+        evap: evap, steps: steps, strength: 1.0,
+        paper0: p0, paper1: p1, paper2: p2,
+        w: w, h: h, l_px: l_px, cell: cell, dt: dt, tensor_radius: 3,
+    }
+}
+
+fn m33_paper_field(plan: &M33FibrePlan) -> Vec<f64> {
+    let w: i32 = plan.w;
+    let h: i32 = plan.h;
+    let cell: f64 = plan.cell;
+    let pi: f64 = m33_pi();
+    let mut f_fld: Vec<f64> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let qx: f64 = (x as f64) + 0.5;
+            let qy: f64 = (y as f64) + 0.5;
+            let cx: i32 = floor(qx / cell) as i32;
+            let cy: i32 = floor(qy / cell) as i32;
+            let mut cov: f64 = 0.0;
+            let mut cov2: f64 = 0.0;
+            let mut txx: f64 = 0.0;
+            let mut txy: f64 = 0.0;
+            let mut tyy: f64 = 0.0;
+            let mut j: i32 = cy - 1;
+            while j <= cy + 1 {
+                let mut i: i32 = cx - 1;
+                while i <= cx + 1 {
+                    let a: u64 = m33_i32_to_u32(i + 8192);
+                    let b: u64 = m33_i32_to_u32(j + 8192);
+                    let mut k: i32 = 0;
+                    while k < plan.per_cell {
+                        let s: u64 = m33_i32_to_u32(k * 97 + 13);
+                        let fx: f64 = ((i as f64) + m33_hash3(a, b, s)) * cell;
+                        let fy: f64 = ((j as f64) + m33_hash3(a, b, s + 1)) * cell;
+                        let th: f64 = pi * (plan.md + plan.spread * (m33_hash3(a, b, s + 2) - 0.5));
+                        let lf: f64 = plan.l_px * (0.6 + 0.8 * m33_hash3(a, b, s + 3));
+                        let dx: f64 = cos(th);
+                        let dy: f64 = sin(th);
+                        let hl: f64 = lf / 2.0;
+                        let rx: f64 = qx - fx;
+                        let ry: f64 = qy - fy;
+                        let t: f64 = m33_max_d(-hl, m33_min_d(hl, rx * dx + ry * dy));
+                        let ex: f64 = rx - t * dx;
+                        let ey: f64 = ry - t * dy;
+                        let c: f64 = m33_max_d(0.0, m33_min_d(1.0, 0.5 * plan.width + 0.5 - sqrt(ex * ex + ey * ey)));
+                        if c > 0.0 {
+                            cov = cov + c;
+                            cov2 = cov2 + c * c;
+                            txx = txx + c * dx * dx;
+                            txy = txy + c * dx * dy;
+                            tyy = tyy + c * dy * dy;
+                        }
+                        k = k + 1;
+                    }
+                    i = i + 1;
+                }
+                j = j + 1;
+            }
+            f_fld.push(cov);
+            f_fld.push(txx);
+            f_fld.push(txy);
+            f_fld.push(tyy);
+            f_fld.push(0.5 * (cov * cov - cov2));
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    f_fld
+}
+
+fn m33_tensors(plan: &M33FibrePlan, f_fld: &Vec<f64>) -> Vec<f64> {
+    let w: i32 = plan.w;
+    let h: i32 = plan.h;
+    let rad: i32 = plan.tensor_radius;
+    let mut k_fld: Vec<f64> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut c: f64 = 0.0;
+            let mut a: f64 = 0.0;
+            let mut b: f64 = 0.0;
+            let mut d: f64 = 0.0;
+            let mut cnt: f64 = 0.0;
+            let mut yy: i32 = m33_max_i(0, y - rad);
+            let y_end: i32 = m33_min_i(h - 1, y + rad);
+            while yy <= y_end {
+                let mut xx: i32 = m33_max_i(0, x - rad);
+                let x_end: i32 = m33_min_i(w - 1, x + rad);
+                while xx <= x_end {
+                    let o: i32 = (yy * w + xx) * 5;
+                    c = c + f_fld[o];
+                    a = a + f_fld[o + 1];
+                    b = b + f_fld[o + 2];
+                    d = d + f_fld[o + 3];
+                    cnt = cnt + 1.0;
+                    xx = xx + 1;
+                }
+                yy = yy + 1;
+            }
+            let cm: f64 = c / cnt;
+            let s: f64 = if c > 1.0e-12 { 1.0 / c } else { 0.0 };
+            let g: f64 = plan.k1 * m33_min_d(1.0, cm);
+            k_fld.push(plan.k0 + g * a * s);
+            k_fld.push(g * b * s);
+            k_fld.push(plan.k0 + g * d * s);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    k_fld
+}
+
+fn m33_lum(src: &Vec<f32>, w: i32, h: i32, x: i32, y: i32) -> f64 {
+    let xc: i32 = m33_min_i(w - 1, m33_max_i(0, x));
+    let yc: i32 = m33_min_i(h - 1, m33_max_i(0, y));
+    let o: i32 = (yc * w + xc) * 4;
+    0.2126 * (src[o] as f64) + 0.7152 * (src[o + 1] as f64) + 0.0722 * (src[o + 2] as f64)
+}
+
+fn m33_link_dx(l: i32) -> i32 {
+    if l == 0 || l == 4 || l == 6 { return 1; }
+    if l == 1 || l == 5 || l == 7 { return -1; }
+    0
+}
+
+fn m33_link_dy(l: i32) -> i32 {
+    if l == 2 || l == 4 || l == 7 { return 1; }
+    if l == 3 || l == 5 || l == 6 { return -1; }
+    0
+}
+
+fn m33_run_fibre(plan: &M33FibrePlan, src: &Vec<f32>) -> Vec<f64> {
+    let w: i32 = plan.w;
+    let h: i32 = plan.h;
+    let n: i32 = w * h;
+    let dt: f64 = plan.dt;
+    let f_fld: Vec<f64> = m33_paper_field(plan);
+    let k_fld: Vec<f64> = m33_tensors(plan, &f_fld);
+
+    let mut wt: Vec<f64> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let gx: f64 = 0.5 * (m33_lum(src, w, h, x + 1, y) - m33_lum(src, w, h, x - 1, y));
+            let gy: f64 = 0.5 * (m33_lum(src, w, h, x, y + 1) - m33_lum(src, w, h, x, y - 1));
+            wt.push(m33_min_d(1.0, m33_max_d(0.05, 1.0 - plan.edge_dry * sqrt(gx * gx + gy * gy))));
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+
+    let mut p_buf: Vec<f64> = Vec::new();
+    let mut d_buf: Vec<f64> = Vec::new();
+    let mut i: i32 = 0;
+    while i < n {
+        let s0: f64 = m33_max_d(0.02, m33_min_d(1.0, (src[i * 4] as f64) / plan.paper0));
+        let s1: f64 = m33_max_d(0.02, m33_min_d(1.0, (src[i * 4 + 1] as f64) / plan.paper1));
+        let s2: f64 = m33_max_d(0.02, m33_min_d(1.0, (src[i * 4 + 2] as f64) / plan.paper2));
+        p_buf.push(plan.strength * -ln(s0));
+        p_buf.push(plan.strength * -ln(s1));
+        p_buf.push(plan.strength * -ln(s2));
+        d_buf.push(0.0); d_buf.push(0.0); d_buf.push(0.0);
+        i = i + 1;
+    }
+
+    let mut lk_g: Vec<f64> = Vec::new();
+    i = 0;
+    while i < n {
+        let kxx: f64 = k_fld[i * 3];
+        let kxy: f64 = k_fld[i * 3 + 1];
+        let kyy: f64 = k_fld[i * 3 + 2];
+        let akxy: f64 = kit::absd(kxy);
+        let ax: f64 = m33_max_d(0.0, kxx - akxy);
+        let ay: f64 = m33_max_d(0.0, kyy - akxy);
+        let dg: f64 = akxy / 2.0;
+        let pos: bool = kxy >= 0.0;
+        lk_g.push(ax); lk_g.push(ax); lk_g.push(ay); lk_g.push(ay);
+        lk_g.push(if pos { dg } else { 0.0 });
+        lk_g.push(if pos { dg } else { 0.0 });
+        lk_g.push(if pos { 0.0 } else { dg });
+        lk_g.push(if pos { 0.0 } else { dg });
+        i = i + 1;
+    }
+
+    let mut it: i32 = 0;
+    while it < plan.steps {
+        let mut pn: Vec<f64> = Vec::new();
+        let mut wn: Vec<f64> = Vec::new();
+        y = 0;
+        while y < h {
+            let mut x: i32 = 0;
+            while x < w {
+                let idx: i32 = y * w + x;
+                let dep: f64 = plan.rate * (1.0 + plan.floc * f_fld[idx * 5 + 4]) * dt;
+                let mut fl0: f64 = 0.0;
+                let mut fl1: f64 = 0.0;
+                let mut fl2: f64 = 0.0;
+                let mut l: i32 = 0;
+                while l < 8 {
+                    let xx: i32 = x + m33_link_dx(l);
+                    let yy: i32 = y + m33_link_dy(l);
+                    if xx >= 0 && yy >= 0 && xx < w && yy < h {
+                        let j: i32 = yy * w + xx;
+                        let opp: i32 = l ^ 1;
+                        let gi: f64 = lk_g[idx * 8 + l];
+                        let gj: f64 = lk_g[j * 8 + opp];
+                        let g: f64 = 0.5 * (gi + gj) * m33_min_d(wt[idx], wt[j]) * dt;
+                        fl0 = fl0 + g * (p_buf[j * 3] - p_buf[idx * 3]);
+                        fl1 = fl1 + g * (p_buf[j * 3 + 1] - p_buf[idx * 3 + 1]);
+                        fl2 = fl2 + g * (p_buf[j * 3 + 2] - p_buf[idx * 3 + 2]);
+                    }
+                    l = l + 1;
+                }
+                let pc0: f64 = p_buf[idx * 3] + fl0;
+                let dd0: f64 = m33_min_d(pc0, dep * pc0);
+                pn.push(pc0 - dd0);
+                d_buf[idx * 3] = d_buf[idx * 3] + dd0;
+                let pc1: f64 = p_buf[idx * 3 + 1] + fl1;
+                let dd1: f64 = m33_min_d(pc1, dep * pc1);
+                pn.push(pc1 - dd1);
+                d_buf[idx * 3 + 1] = d_buf[idx * 3 + 1] + dd1;
+                let pc2: f64 = p_buf[idx * 3 + 2] + fl2;
+                let dd2: f64 = m33_min_d(pc2, dep * pc2);
+                pn.push(pc2 - dd2);
+                d_buf[idx * 3 + 2] = d_buf[idx * 3 + 2] + dd2;
+                wn.push(m33_max_d(0.0, wt[idx] - plan.evap));
+                x = x + 1;
+            }
+            y = y + 1;
+        }
+        p_buf = pn;
+        wt = wn;
+        it = it + 1;
+    }
+
+    let mut out: Vec<f64> = Vec::new();
+    i = 0;
+    while i < n {
+        out.push(plan.paper0 * exp(-(p_buf[i * 3] + d_buf[i * 3])));
+        out.push(plan.paper1 * exp(-(p_buf[i * 3 + 1] + d_buf[i * 3 + 1])));
+        out.push(plan.paper2 * exp(-(p_buf[i * 3 + 2] + d_buf[i * 3 + 2])));
+        out.push(1.0);
+        i = i + 1;
+    }
+    out
+}
+
+fn m33_hash_vec(v: &Vec<f64>, h0: u64) -> u64 {
+    let n: i32 = v.len() as i32;
+    let mut h: u64 = h0;
+    let mut i: i32 = 0;
+    while i < n {
+        h = kit::fnv_f32(h, v[i]);
+        i = i + 1;
+    }
+    h
+}
+
+fn m33_make_wash_source(w: i32, h: i32) -> Vec<f32> {
+    let mut src: Vec<f32> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut r: f64 = 0.90 - 0.18 * ((x as f64) / (w as f64));
+            let mut g: f64 = 0.86 - 0.14 * ((y as f64) / (h as f64));
+            let mut b: f64 = 0.78 - 0.10 * ((x as f64) / (w as f64));
+            let dx: i32 = x - 11;
+            let dy: i32 = y - 11;
+            if dx * dx + dy * dy <= 30 {
+                r = 0.14; g = 0.24; b = 0.62;
+            }
+            let dx2: i32 = x - 22;
+            let dy2: i32 = y - 14;
+            if dx2 * dx2 + dy2 * dy2 <= 22 {
+                r = 0.78; g = 0.18; b = 0.16;
+            }
+            if y == 6 && x >= 4 && x <= 27 {
+                r = 0.18; g = 0.42; b = 0.26;
+            }
+            src.push(r as f32);
+            src.push(g as f32);
+            src.push(b as f32);
+            src.push(1.0 as f32);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    src
+}
+
+pub fn run_fibre_parity() -> (u64, u64, u64, u64, u64, u64) {
+    let w: i32 = 32;
+    let h: i32 = 24;
+    let src: Vec<f32> = m33_make_wash_source(w, h);
+    let pl_cold: M33FibrePlan = m33_resolve(0, w, h);
+    let pl_hot: M33FibrePlan = m33_resolve(1, w, h);
+    let pl_rough: M33FibrePlan = m33_resolve(2, w, h);
+    let pl_ctrl: M33FibrePlan = m33_resolve(3, w, h);
+
+    let f_cold: Vec<f64> = m33_paper_field(&pl_cold);
+    let k_cold: Vec<f64> = m33_tensors(&pl_cold, &f_cold);
+    let out_cold: Vec<f64> = m33_run_fibre(&pl_cold, &src);
+    let out_hot: Vec<f64> = m33_run_fibre(&pl_hot, &src);
+    let out_rough: Vec<f64> = m33_run_fibre(&pl_rough, &src);
+    let out_ctrl: Vec<f64> = m33_run_fibre(&pl_ctrl, &src);
+
+    let h_field: u64 = m33_hash_vec(&k_cold, m33_hash_vec(&f_cold, kit::fnv_start()));
+    let h_cold: u64 = m33_hash_vec(&out_cold, kit::fnv_start());
+    let h_hot: u64 = m33_hash_vec(&out_hot, kit::fnv_start());
+    let h_rough: u64 = m33_hash_vec(&out_rough, kit::fnv_start());
+    let h_ctrl: u64 = m33_hash_vec(&out_ctrl, kit::fnv_start());
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = m33_hash_vec(&f_cold, h_all);
+    h_all = m33_hash_vec(&k_cold, h_all);
+    h_all = m33_hash_vec(&out_cold, h_all);
+    h_all = m33_hash_vec(&out_hot, h_all);
+    h_all = m33_hash_vec(&out_rough, h_all);
+
+    (h_field, h_cold, h_hot, h_rough, h_all, h_ctrl)
+}
