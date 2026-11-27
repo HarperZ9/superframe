@@ -1,0 +1,246 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe Renderer Module #24: CRT Colour Purity & Degauss Reference
+// Port of native/src/renderer/style_purity.cpp and style_image.cpp (pcg, hash3, fade5)
+// into pure BuildLang f64 arithmetic with bit-exact 0-ULP C++23 parity.
+
+
+pub struct PurityPlan {
+    s: f64,
+    spread: f64,
+    w: f64,
+    mag: f64,
+    mag_scale: f64,
+    earth: f64,
+    degauss: f64,
+    tau: f64,
+    mains: f64,
+    field: f64,
+    blank: f64,
+    wobble: f64,
+    radial: f64,
+}
+
+pub struct Landing3x3 {
+    f00: f64, f01: f64, f02: f64,
+    f10: f64, f11: f64, f12: f64,
+    f20: f64, f21: f64, f22: f64,
+}
+
+fn dmin(a: f64, b: f64) -> f64 {
+    if b < a { return b; }
+    a
+}
+
+fn dmax(a: f64, b: f64) -> f64 {
+    if a < b { return b; }
+    a
+}
+
+pub fn pcg_u32(v: u32) -> u32 {
+    let state: u32 = v.wrapping_mul(747796405).wrapping_add(2891336453);
+    let shift: u32 = (state >> 28) + 4;
+    let word: u32 = ((state >> shift) ^ state).wrapping_mul(277803737);
+    (word >> 22) ^ word
+}
+
+pub fn hash3_u32(x: u32, y: u32, z: u32) -> f64 {
+    (pcg_u32(x ^ pcg_u32(y ^ pcg_u32(z))) as f64) / 4294967296.0
+}
+
+pub fn fade5(t: f64) -> f64 {
+    t * t * t * (t * (t * 6.0 - 15.0) + 10.0)
+}
+
+fn hash_grid(i: f64, j: f64, seed: u32) -> f64 {
+    let ix: u32 = ((i as i64) + 4096) as u32;
+    let iy: u32 = ((j as i64) + 4096) as u32;
+    hash3_u32(ix, iy, seed)
+}
+
+pub fn vnoise2(x: f64, y: f64, seed: u32) -> f64 {
+    let xi: f64 = floor(x);
+    let yi: f64 = floor(y);
+    let u: f64 = fade5(x - xi);
+    let v: f64 = fade5(y - yi);
+    let h00: f64 = hash_grid(xi, yi, seed);
+    let h10: f64 = hash_grid(xi + 1.0, yi, seed);
+    let h01: f64 = hash_grid(xi, yi + 1.0, seed);
+    let h11: f64 = hash_grid(xi + 1.0, yi + 1.0, seed);
+    (h00 * (1.0 - u) + h10 * u) * (1.0 - v) + (h01 * (1.0 - u) + h11 * u) * v
+}
+
+fn overlap(a0: f64, a1: f64, b0: f64, b1: f64) -> f64 {
+    dmax(0.0, dmin(a1, b1) - dmax(a0, b0))
+}
+
+fn stripe_center(idx: i32) -> f64 {
+    if idx == 0 { return -1.0 / 3.0; }
+    if idx == 1 { return 0.0; }
+    1.0 / 3.0
+}
+
+fn gun_stripe_overlap(p: PurityPlan, gun_idx: i32, stripe_idx: i32, ek: f64) -> f64 {
+    let c_gun: f64 = stripe_center(gun_idx);
+    let c_stripe: f64 = stripe_center(stripe_idx);
+    let a0: f64 = c_gun + ek - p.w / 2.0;
+    let a1: f64 = c_gun + ek + p.w / 2.0;
+    let mut acc: f64 = 0.0;
+    let mut m: i32 = -1;
+    while m <= 1 {
+        let b_mid: f64 = c_stripe + (m as f64);
+        acc = acc + overlap(a0, a1, b_mid - p.s / 2.0, b_mid + p.s / 2.0) / p.w;
+        m = m + 1;
+    }
+    acc
+}
+
+pub fn landing_matrix(p: PurityPlan, ek0: f64, ek1: f64, ek2: f64) -> Landing3x3 {
+    Landing3x3 {
+        f00: gun_stripe_overlap(p, 0, 0, ek0),
+        f01: gun_stripe_overlap(p, 0, 1, ek0),
+        f02: gun_stripe_overlap(p, 0, 2, ek0),
+        f10: gun_stripe_overlap(p, 1, 0, ek1),
+        f11: gun_stripe_overlap(p, 1, 1, ek1),
+        f12: gun_stripe_overlap(p, 1, 2, ek1),
+        f20: gun_stripe_overlap(p, 2, 0, ek2),
+        f21: gun_stripe_overlap(p, 2, 1, ek2),
+        f22: gun_stripe_overlap(p, 2, 2, ek2),
+    }
+}
+
+pub fn purity_preset(kind: i32) -> PurityPlan {
+    // 0 = magnetised, 1 = earth-field, 2 = degauss, 3 = degauss control (radial = 0.0)
+    if kind == 0 {
+        return PurityPlan {
+            s: 0.26, spread: 0.35, w: 0.2, mag: 0.16, mag_scale: 0.3,
+            earth: 0.0, degauss: 0.0, tau: 0.25, mains: 60.0, field: 59.94,
+            blank: 0.08, wobble: 0.0, radial: 0.3,
+        };
+    }
+    if kind == 1 {
+        return PurityPlan {
+            s: 0.26, spread: 0.35, w: 0.2, mag: 0.02, mag_scale: 0.3,
+            earth: 0.12, degauss: 0.0, tau: 0.25, mains: 60.0, field: 59.94,
+            blank: 0.08, wobble: 0.0, radial: 0.3,
+        };
+    }
+    let rad: f64 = if kind == 3 { 0.0 } else { 0.3 };
+    PurityPlan {
+        s: 0.26, spread: 0.35, w: 0.2, mag: 0.015, mag_scale: 0.3,
+        earth: 0.0, degauss: 0.08, tau: 0.25, mains: 60.0, field: 59.94,
+        blank: 0.08, wobble: 3.0, radial: rad,
+    }
+}
+
+pub fn make_test_source(w: i32, h: i32) -> Vec<f32> {
+    let mut src: Vec<f32> = Vec::new();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let fx: f64 = ((x as f64) + 0.5) / (w as f64);
+            let fy: f64 = ((y as f64) + 0.5) / (h as f64);
+            let bar: i32 = (x * 6) / w;
+            let mut r: f64 = 0.12 + 0.72 * fx;
+            let mut g: f64 = 0.15 + 0.65 * fy;
+            let mut b: f64 = 0.20 + 0.60 * (1.0 - fx);
+            if bar == 0 { r = 0.92; g = 0.18; b = 0.12; }
+            else if bar == 1 { r = 0.14; g = 0.88; b = 0.22; }
+            else if bar == 2 { r = 0.16; g = 0.24; b = 0.94; }
+            else if bar == 3 { r = 0.86; g = 0.82; b = 0.14; }
+            else if bar == 4 { r = 0.80; g = 0.20; b = 0.84; }
+            if (x % 7) == 0 || (y % 9) == 0 {
+                r = r * 0.45;
+                g = g * 0.45;
+                b = b * 0.45;
+            }
+            src.push(r as f32);
+            src.push(g as f32);
+            src.push(b as f32);
+            src.push(1.0 as f32);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    src
+}
+
+pub fn hash_purity_pass(p: PurityPlan, w: i32, h: i32, src: &Vec<f32>, t: f64, h_init: u64) -> u64 {
+    let pi: f64 = 3.14159265358979323846;
+    let a: f64 = (w as f64) / (h as f64);
+    let sc: f64 = p.mag_scale * (w as f64);
+    let mut hash: u64 = h_init;
+    let mut y: i32 = 0;
+    while y < h {
+        let v: f64 = (((y as f64) + 0.5) / (h as f64)) * 2.0 - 1.0;
+        let tl: f64 = t + ((y as f64) / (h as f64)) * (1.0 - p.blank) / p.field;
+        let dg_line: f64 = p.degauss * exp(-tl / p.tau) * sin(2.0 * pi * p.mains * tl);
+        let mut x: i32 = 0;
+        while x < w {
+            let u: f64 = (((x as f64) + 0.5) / (w as f64)) * 2.0 - 1.0;
+            let r2: f64 = (u * u * a * a + v * v) / (a * a + 1.0) * 2.0;
+            let n0: f64 = vnoise2((x as f64) / sc, (y as f64) / sc, 31);
+            let n1: f64 = vnoise2((x as f64) / (0.4 * sc), (y as f64) / (0.4 * sc), 37);
+            let m: f64 = p.mag * ((0.65 * n0 + 0.35 * n1) - 0.5) * 2.0;
+            let stat: f64 = m + p.earth * u * r2;
+            let dg: f64 = dg_line * (p.radial + r2);
+            let e: f64 = stat + dg;
+            let f: Landing3x3 = landing_matrix(p, e * (1.0 - p.spread), e, e * (1.0 + p.spread));
+            let xs: f64 = (x as f64) - p.wobble * (dg / dmax(p.degauss, 1e-9));
+            let x0: f64 = floor(xs);
+            let fx: f64 = xs - x0;
+
+            let xc0: i32 = (dmin((w - 1) as f64, dmax(0.0, x0))) as i32;
+            let xc1: i32 = (dmin((w - 1) as f64, dmax(0.0, x0 + 1.0))) as i32;
+            let o0: i32 = (y * w + xc0) * 4;
+            let o1: i32 = (y * w + xc1) * 4;
+            let w0: f64 = 1.0 - fx;
+            let w1: f64 = fx;
+
+            let i0: f64 = w0 * (src[o0] as f64) + w1 * (src[o1] as f64);
+            let i1: f64 = w0 * (src[o0 + 1] as f64) + w1 * (src[o1 + 1] as f64);
+            let i2: f64 = w0 * (src[o0 + 2] as f64) + w1 * (src[o1 + 2] as f64);
+
+            let out0: f64 = f.f00 * i0 + f.f10 * i1 + f.f20 * i2;
+            let out1: f64 = f.f01 * i0 + f.f11 * i1 + f.f21 * i2;
+            let out2: f64 = f.f02 * i0 + f.f12 * i1 + f.f22 * i2;
+
+            hash = kit::fnv_f32(hash, out0);
+            hash = kit::fnv_f32(hash, out1);
+            hash = kit::fnv_f32(hash, out2);
+            hash = kit::fnv_f32(hash, 1.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}
+
+pub fn purity_mag_hash() -> u64 {
+    let src: Vec<f32> = make_test_source(48, 32);
+    hash_purity_pass(purity_preset(0), 48, 32, &src, 0.045, kit::fnv_start())
+}
+
+pub fn purity_earth_hash() -> u64 {
+    let src: Vec<f32> = make_test_source(48, 32);
+    hash_purity_pass(purity_preset(1), 48, 32, &src, 0.045, kit::fnv_start())
+}
+
+pub fn purity_degauss_hash() -> u64 {
+    let src: Vec<f32> = make_test_source(48, 32);
+    hash_purity_pass(purity_preset(2), 48, 32, &src, 0.045, kit::fnv_start())
+}
+
+pub fn purity_all_hash() -> u64 {
+    let src: Vec<f32> = make_test_source(48, 32);
+    let h1: u64 = hash_purity_pass(purity_preset(0), 48, 32, &src, 0.045, kit::fnv_start());
+    let h2: u64 = hash_purity_pass(purity_preset(1), 48, 32, &src, 0.045, h1);
+    hash_purity_pass(purity_preset(2), 48, 32, &src, 0.045, h2)
+}
+
+pub fn purity_control_hash() -> u64 {
+    let src: Vec<f32> = make_test_source(48, 32);
+    hash_purity_pass(purity_preset(3), 48, 32, &src, 0.045, kit::fnv_start())
+}

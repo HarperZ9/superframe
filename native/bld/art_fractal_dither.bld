@@ -1,0 +1,362 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Renderer module #14: src/renderer/fractal_scene.cpp + src/renderer/style_ditherlight.cpp
+// Reproduces all three pinned level-plane hashes in native/tests/test_fractal_dither.cpp
+// at 256 x 144 (orbit frame 0):
+//   ink    + Fractal: 0x5ac361b7dfe0a6bb
+//   tones4 + Fractal: 0x922c22c7c711d410
+//   ink    + Screen:  0x31c2b5c49d02867d
+
+struct Fd3 { x: f64, y: f64, z: f64 }
+struct FdHit { t: f64, nx: f64, ny: f64, nz: f64, id: i32 }
+struct Basis { fwd: Fd3, right: Fd3, up: Fd3, tan_h: f64, aspect: f64 }
+
+fn fd3(x: f64, y: f64, z: f64) -> Fd3 { Fd3 { x: x, y: y, z: z } }
+fn add(a: Fd3, b: Fd3) -> Fd3 { fd3(a.x + b.x, a.y + b.y, a.z + b.z) }
+fn sub(a: Fd3, b: Fd3) -> Fd3 { fd3(a.x - b.x, a.y - b.y, a.z - b.z) }
+fn mul(a: Fd3, s: f64) -> Fd3 { fd3(a.x * s, a.y * s, a.z * s) }
+fn dot(a: Fd3, b: Fd3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
+
+fn cross(a: Fd3, b: Fd3) -> Fd3 {
+    fd3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
+}
+
+fn unit(a: Fd3) -> Fd3 { mul(a, 1.0 / sqrt(dot(a, a))) }
+fn abs_f(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
+fn sat(x: f64) -> f64 { if x < 0.0 { 0.0 } else if x > 1.0 { 1.0 } else { x } }
+fn min_f(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
+fn max_f(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
+
+fn take(h: FdHit, t: f64, n: Fd3, id: i32) -> FdHit {
+    if t > 1e-6 && t < h.t {
+        return FdHit { t: t, nx: n.x, ny: n.y, nz: n.z, id: id };
+    }
+    h
+}
+
+fn hit_sphere(h: FdHit, o: Fd3, d: Fd3, c: Fd3, r: f64, id: i32) -> FdHit {
+    let oc: Fd3 = sub(o, c);
+    let b: f64 = dot(oc, d);
+    let q: f64 = dot(oc, oc) - r * r;
+    let disc: f64 = b * b - q;
+    if disc < 0.0 { return h; }
+    let s: f64 = sqrt(disc);
+    let t: f64 = if (-b - s) > 1e-6 { -b - s } else { -b + s };
+    if t > 1e-6 && t < h.t {
+        return take(h, t, unit(sub(add(o, mul(d, t)), c)), id);
+    }
+    h
+}
+
+fn axis_v(v: Fd3, a: i32) -> f64 {
+    if a == 0 { return v.x; }
+    if a == 1 { return v.y; }
+    v.z
+}
+
+fn hit_box(h: FdHit, o: Fd3, d: Fd3, lo: Fd3, hi: Fd3, id: i32) -> FdHit {
+    let mut t0: f64 = 1e-6;
+    let mut t1: f64 = 1e30;
+    let mut axis: i32 = -1;
+    let mut sgn: f64 = 1.0;
+    let mut a: i32 = 0;
+    while a < 3 {
+        let da: f64 = axis_v(d, a);
+        let oa: f64 = axis_v(o, a);
+        let loa: f64 = axis_v(lo, a);
+        let hia: f64 = axis_v(hi, a);
+        if abs_f(da) < 1e-12 {
+            if oa < loa || oa > hia { return h; }
+        } else {
+            let mut ta: f64 = (loa - oa) / da;
+            let mut tb: f64 = (hia - oa) / da;
+            let mut s: f64 = -1.0;
+            if ta > tb {
+                let tmp: f64 = ta;
+                ta = tb;
+                tb = tmp;
+                s = 1.0;
+            }
+            if ta > t0 {
+                t0 = ta;
+                axis = a;
+                sgn = s;
+            }
+            t1 = min_f(t1, tb);
+            if t0 > t1 { return h; }
+        }
+        a = a + 1;
+    }
+    if axis < 0 { return h; }
+    let n: Fd3 = if axis == 0 {
+        fd3(sgn, 0.0, 0.0)
+    } else if axis == 1 {
+        fd3(0.0, sgn, 0.0)
+    } else {
+        fd3(0.0, 0.0, sgn)
+    };
+    take(h, t0, n, id)
+}
+
+fn hit_column(h0: FdHit, o: Fd3, d: Fd3, cx: f64, cz: f64, r: f64, y1: f64, id: i32) -> FdHit {
+    let mut h: FdHit = h0;
+    let ox: f64 = o.x - cx;
+    let oz: f64 = o.z - cz;
+    let a: f64 = d.x * d.x + d.z * d.z;
+    let b: f64 = ox * d.x + oz * d.z;
+    let c: f64 = ox * ox + oz * oz - r * r;
+    let disc: f64 = b * b - a * c;
+    if a > 1e-12 && disc >= 0.0 {
+        let sd: f64 = sqrt(disc);
+        let t_a: f64 = (-b - sd) / a;
+        let y_a: f64 = o.y + d.y * t_a;
+        if t_a > 1e-6 && y_a >= 0.0 && y_a <= y1 {
+            h = take(h, t_a, unit(fd3(ox + d.x * t_a, 0.0, oz + d.z * t_a)), id);
+        } else {
+            let t_b: f64 = (-b + sd) / a;
+            let y_b: f64 = o.y + d.y * t_b;
+            if t_b > 1e-6 && y_b >= 0.0 && y_b <= y1 {
+                h = take(h, t_b, unit(fd3(ox + d.x * t_b, 0.0, oz + d.z * t_b)), id);
+            }
+        }
+    }
+    if abs_f(d.y) > 1e-12 {
+        let t: f64 = (y1 - o.y) / d.y;
+        let x: f64 = ox + d.x * t;
+        let z: f64 = oz + d.z * t;
+        if t > 1e-6 && x * x + z * z <= r * r {
+            h = take(h, t, fd3(0.0, 1.0, 0.0), id);
+        }
+    }
+    h
+}
+
+fn hit_wall(h: FdHit, o: Fd3, d: Fd3, axis: i32, at: f64, sign: f64, id: i32) -> FdHit {
+    let da: f64 = axis_v(d, axis);
+    if abs_f(da) < 1e-12 { return h; }
+    let t: f64 = (at - axis_v(o, axis)) / da;
+    if t <= 1e-6 || t >= h.t { return h; }
+    let p: Fd3 = add(o, mul(d, t));
+    if p.y < 0.0 || p.y > 14.0 || abs_f(p.x) > 18.0 + 1e-9 || abs_f(p.z) > 18.0 + 1e-9 {
+        return h;
+    }
+    let n: Fd3 = if axis == 0 { fd3(sign, 0.0, 0.0) } else { fd3(0.0, 0.0, sign) };
+    take(h, t, n, id)
+}
+
+fn cast(o: Fd3, d: Fd3, occluders_only: bool) -> FdHit {
+    let mut h: FdHit = FdHit { t: 1e30, nx: 0.0, ny: 1.0, nz: 0.0, id: 0 };
+    h = hit_box(h, o, d, fd3(-1.5, 0.0, -1.5), fd3(1.5, 0.8, 1.5), 6);
+    h = hit_sphere(h, o, d, fd3(0.0, 2.0, 0.0), 1.2, 7);
+    h = hit_sphere(h, o, d, fd3(3.2, 0.6, 1.5), 0.6, 8);
+    h = hit_column(h, o, d, -4.0, -2.0, 0.7, 5.0, 9);
+    if occluders_only { return h; }
+    if d.y < 0.0 {
+        let t: f64 = -o.y / d.y;
+        let px: f64 = o.x + d.x * t;
+        let pz: f64 = o.z + d.z * t;
+        if t > 1e-6 && t < h.t && abs_f(px) < 18.0 && abs_f(pz) < 18.0 {
+            h = take(h, t, fd3(0.0, 1.0, 0.0), 1);
+        }
+    }
+    h = hit_wall(h, o, d, 0, 18.0, -1.0, 2);
+    h = hit_wall(h, o, d, 0, -18.0, 1.0, 3);
+    h = hit_wall(h, o, d, 2, 18.0, -1.0, 4);
+    h = hit_wall(h, o, d, 2, -18.0, 1.0, 5);
+    h
+}
+
+fn base_albedo(id: i32) -> f64 {
+    if id == 0 { return 0.9; }
+    if id == 1 { return 0.75; }
+    if id == 2 || id == 3 { return 0.6; }
+    if id == 4 || id == 5 { return 0.55; }
+    if id == 6 { return 0.7; }
+    if id == 7 { return 0.8; }
+    if id == 8 { return 0.5; }
+    0.85
+}
+
+fn radial_mask(lpos: Fd3, radius: f64, core: f64, intensity: f64, p: Fd3) -> f64 {
+    let v: Fd3 = sub(p, lpos);
+    let r2: f64 = dot(v, v);
+    let q: f64 = r2 / (radius * radius);
+    if q >= 1.0 { return 0.0; }
+    (intensity * (1.0 - q) * (1.0 - q)) / (1.0 + r2 / (core * core))
+}
+
+fn surface_term(lpos: Fd3, wrap: f64, p: Fd3, n: Fd3) -> f64 {
+    let v: Fd3 = sub(lpos, p);
+    let l: f64 = sqrt(dot(v, v));
+    if l < 1e-6 { return 1.0; }
+    sat((dot(n, v) / l + wrap) / (1.0 + wrap))
+}
+
+pub fn bayer8_rank(x0: i32, y0: i32) -> i32 {
+    let x: i32 = x0 & 7;
+    let y: i32 = y0 & 7;
+    let v: i32 = x ^ y;
+    ((v & 1) << 5)
+        | ((y & 1) << 4)
+        | (((v >> 1) & 1) << 3)
+        | (((y >> 1) & 1) << 2)
+        | (((v >> 2) & 1) << 1)
+        | ((y >> 2) & 1)
+}
+
+pub fn fractal_rank(x: i32, y: i32, digits: i32) -> i32 {
+    let mut r: i32 = 0;
+    let mut k: i32 = 0;
+    while k < digits {
+        let xb: i32 = (x >> k) & 1;
+        let yb: i32 = (y >> k) & 1;
+        r = (r << 2) | (((xb ^ yb) << 1) | yb);
+        k = k + 1;
+    }
+    r
+}
+
+pub fn fractal_blend(tc: f64, tf: f64, m: f64) -> f64 {
+    let b: f64 = (1.0 - m) * tc + m * tf;
+    let den: f64 = 1.0 - 0.75 * m;
+    let mut s: f64 = 0.0;
+    let mut d: i32 = 0;
+    while d < 4 {
+        s = s + sat((b - m * (d as f64) * 0.25) / den);
+        d = d + 1;
+    }
+    s * 0.25
+}
+
+fn fractal_threshold(apos: Fd3, anrm: Fd3, depth: f64, pa: f64, cell_shift: i32) -> f64 {
+    let ax: f64 = abs_f(anrm.x);
+    let ay: f64 = abs_f(anrm.y);
+    let az: f64 = abs_f(anrm.z);
+    let mut u: f64 = apos.x;
+    let mut v: f64 = apos.y;
+    if ax >= ay && ax >= az {
+        u = apos.z;
+        v = apos.y;
+    } else if ay >= az {
+        u = apos.x;
+        v = apos.z;
+    }
+    let ratio: f64 = (2.0 * pa * max_f(depth, 1e-6)) / 0.1;
+    let mut lam: f64 = log(ratio) / log(2.0);
+    if lam < -16.0 { lam = -16.0; }
+    if lam > 16.0 { lam = 16.0; }
+    let n0: f64 = floor(lam);
+    let size: f64 = 0.1 * pow(2.0, n0);
+    let m: f64 = 1.0 - (lam - n0);
+    let ci: i32 = (floor(u / size) as i32) + cell_shift;
+    let cj: i32 = floor(v / size) as i32;
+    let tf: f64 = ((fractal_rank(ci, cj, 6) as f64) + 0.5) / 4096.0;
+    let tc: f64 = ((fractal_rank(ci >> 1, cj >> 1, 6) as f64) + 0.5) / 4096.0;
+    fractal_blend(tc, tf, m)
+}
+
+fn quantise(levels: i32, y0: f64, t: f64) -> i32 {
+    let y: f64 = sat(y0);
+    let nm1: f64 = (levels - 1) as f64;
+    let mut k: i32 = floor(pow(y, 1.0 / 2.2) * nm1) as i32;
+    if k > levels - 2 { k = levels - 2; }
+    let lo: f64 = pow((k as f64) / nm1, 2.2);
+    let hi: f64 = pow(((k + 1) as f64) / nm1, 2.2);
+    let f: f64 = (y - lo) / (hi - lo);
+    if f > t { k + 1 } else { k }
+}
+
+// anchor_mode: 0 = Screen (Bayer8), 1 = Fractal
+pub fn level_hash(levels: i32, anchor_mode: i32, cell_shift: i32) -> u64 {
+    let w: i32 = 256;
+    let h: i32 = 144;
+    let pi: f64 = 3.14159265358979323846;
+    let ang: f64 = 20.0 * pi / 180.0;
+    let eye: Fd3 = fd3(8.5 * cos(ang), 4.2, 8.5 * sin(ang));
+    let target: Fd3 = fd3(0.0, 1.0, 0.0);
+    let fov: f64 = 0.75;
+    let fwd: Fd3 = unit(sub(target, eye));
+    let right: Fd3 = unit(cross(fwd, fd3(0.0, 1.0, 0.0)));
+    let up: Fd3 = cross(right, fwd);
+    let tan_h: f64 = tan(fov / 2.0);
+    let aspect: f64 = (w as f64) / (h as f64);
+    let pa: f64 = (2.0 * tan_h) / (h as f64);
+    let b: Basis = Basis { fwd: fwd, right: right, up: up, tan_h: tan_h, aspect: aspect };
+
+    let l0: Fd3 = fd3(3.0, 6.0, 2.0);
+    let l1: Fd3 = fd3(-6.0, 4.0, -5.0);
+
+    let mut hash: u64 = 1469598103934665603u64;
+    let mut y: i32 = 0;
+    while y < h {
+        let v_ndc: f64 = 1.0 - ((y as f64) + 0.5) / (h as f64) * 2.0;
+        let mut x: i32 = 0;
+        while x < w {
+            let u_ndc: f64 = ((x as f64) + 0.5) / (w as f64) * 2.0 - 1.0;
+            let ray_d: Fd3 = unit(add(
+                b.fwd,
+                add(mul(b.right, u_ndc * b.tan_h * b.aspect), mul(b.up, v_ndc * b.tan_h)),
+            ));
+            let hit: FdHit = cast(eye, ray_d, false);
+
+            let mut kind: i32 = 0;
+            let mut albedo: f64 = (0.9f32) as f64;
+            let mut depth: f64 = (1000.0f32) as f64;
+            let mut wpos: Fd3 = fd3(0.0, 0.0, 0.0);
+            let mut nrm: Fd3 = fd3(0.0, 0.0, 0.0);
+            let mut vis0: f64 = 0.0;
+            let mut vis1: f64 = 0.0;
+
+            if hit.id != 0 {
+                kind = 2;
+                let p: Fd3 = add(eye, mul(ray_d, hit.t));
+                let hn: Fd3 = fd3(hit.nx, hit.ny, hit.nz);
+                let wob: f64 = 0.75 + 0.25 * sin(0.7 * p.x) * sin(0.9 * p.z + 0.5 * p.y);
+                albedo = ((base_albedo(hit.id) * wob) as f32) as f64;
+                depth = (dot(sub(p, eye), b.fwd) as f32) as f64;
+                wpos = fd3((p.x as f32) as f64, (p.y as f32) as f64, (p.z as f32) as f64);
+                nrm = fd3((hn.x as f32) as f64, (hn.y as f32) as f64, (hn.z as f32) as f64);
+
+                let orig: Fd3 = add(p, mul(hn, 1e-4));
+                let to0: Fd3 = sub(l0, p);
+                let d0: f64 = sqrt(dot(to0, to0));
+                let s0: FdHit = cast(orig, mul(to0, 1.0 / d0), true);
+                vis0 = if s0.t < d0 { 0.0 } else { 1.0 };
+
+                let to1: Fd3 = sub(l1, p);
+                let d1: f64 = sqrt(dot(to1, to1));
+                let s1: FdHit = cast(orig, mul(to1, 1.0 / d1), true);
+                vis1 = if s1.t < d1 { 0.0 } else { 1.0 };
+            }
+
+            let mut tone: f64 = albedo;
+            if kind == 2 {
+                let mut e_val: f64 = 0.16 * (1.0 - 0.5 + 0.5 * (0.5 + 0.5 * nrm.y));
+                if vis0 > 0.0 {
+                    let m0: f64 = radial_mask(l0, 22.0, 2.5, 1.6, wpos);
+                    if m0 > 0.0 { e_val = e_val + vis0 * m0 * surface_term(l0, 0.3, wpos, nrm); }
+                }
+                if vis1 > 0.0 {
+                    let m1: f64 = radial_mask(l1, 16.0, 3.0, 1.0, wpos);
+                    if m1 > 0.0 { e_val = e_val + vis1 * m1 * surface_term(l1, 0.3, wpos, nrm); }
+                }
+                let lit: f64 = sat(albedo * e_val);
+                let rf: f64 = depth / 38.0;
+                let tf: f64 = 1.0 - exp(-(rf * rf));
+                tone = lit * (1.0 - tf) + tf;
+            }
+
+            let thr: f64 = if anchor_mode == 1 {
+                fractal_threshold(wpos, nrm, depth, pa, cell_shift)
+            } else {
+                ((bayer8_rank(x + cell_shift, y) as f64) + 0.5) / 64.0
+            };
+            let lvl: u64 = quantise(levels, tone, thr) as u64;
+            hash = (hash ^ lvl).wrapping_mul(1099511628211u64);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}

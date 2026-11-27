@@ -1,0 +1,320 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe native/bld Module #23: Screen-Space Mirror Reflections (SSR):
+// perspective-correct 1/depth screen-segment clipping, 1-step-per-pixel DDA ray marching,
+// binary bisection hit refinement, back-layer hidden-entry rejection, and viewNormal control.
+// Bit-exact 0 ULP port of native/src/renderer/post_ssr.cpp.
+
+
+pub struct SsrGbuf {
+    w: i32,
+    h: i32,
+    tan_half: f64,
+    aspect: f64,
+    near_z: f64,
+    pos: Vec<f32>,
+    nrm: Vec<f32>,
+    depth: Vec<f32>,
+    back: Vec<f32>,
+}
+
+struct Seg {
+    ok: bool,
+    sx0: f64,
+    sy0: f64,
+    sx1: f64,
+    sy1: f64,
+    k0: f64,
+    k1: f64,
+}
+
+struct Probe {
+    j: i32,
+    behind: bool,
+    within: bool,
+    inside: bool,
+}
+
+fn absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
+fn mind(a: f64, b: f64) -> f64 { if b < a { b } else { a } }
+fn maxd(a: f64, b: f64) -> f64 { if a < b { b } else { a } }
+fn maxi(a: i32, b: i32) -> i32 { if a < b { b } else { a } }
+
+fn project_pt(v: &SsrGbuf, px: f64, py: f64, pz: f64) -> (bool, f64, f64) {
+    if pz >= -1.0e-6 { return (false, 0.0, 0.0); }
+    let w: f64 = -pz;
+    let sx: f64 = (px / (w * v.tan_half * v.aspect) * 0.5 + 0.5) * (v.w as f64);
+    let sy: f64 = (1.0 - (py / (w * v.tan_half) * 0.5 + 0.5)) * (v.h as f64);
+    (true, sx, sy)
+}
+
+fn clip_axis(s0: f64, s1: f64, hi: f64, t_in: f64) -> f64 {
+    let lim: f64 = 1.0e-3;
+    let mut t_end: f64 = t_in;
+    if s1 > hi - lim && s1 != s0 {
+        t_end = mind(t_end, (hi - lim - s0) / (s1 - s0));
+    }
+    if s1 < 0.0 && s1 != s0 {
+        t_end = mind(t_end, (0.0 - s0) / (s1 - s0));
+    }
+    t_end
+}
+
+fn segment_of(v: &SsrGbuf, i: i32, max_dist: f64, view_normal: bool) -> Seg {
+    let px: f64 = v.pos[i * 3] as f64;
+    let py: f64 = v.pos[i * 3 + 1] as f64;
+    let pz: f64 = v.pos[i * 3 + 2] as f64;
+    let pl: f64 = sqrt(px * px + py * py + pz * pz);
+    let dx: f64 = px / pl;
+    let dy: f64 = py / pl;
+    let dz: f64 = pz / pl;
+    let nx: f64 = if view_normal { -dx } else { v.nrm[i * 3] as f64 };
+    let ny: f64 = if view_normal { -dy } else { v.nrm[i * 3 + 1] as f64 };
+    let nz: f64 = if view_normal { -dz } else { v.nrm[i * 3 + 2] as f64 };
+    let dn: f64 = dx * nx + dy * ny + dz * nz;
+    let rx: f64 = dx - 2.0 * dn * nx;
+    let ry: f64 = dy - 2.0 * dn * ny;
+    let rz: f64 = dz - 2.0 * dn * nz;
+    let mut len: f64 = max_dist;
+    if rz > 1.0e-9 {
+        len = mind(len, (-v.near_z - pz) / rz * 0.999);
+    }
+    if len <= 0.0 {
+        return Seg { ok: false, sx0: 0.0, sy0: 0.0, sx1: 0.0, sy1: 0.0, k0: 0.0, k1: 0.0 };
+    }
+    let ex: f64 = px + rx * len;
+    let ey: f64 = py + ry * len;
+    let ez: f64 = pz + rz * len;
+    let (ok0, sx0, sy0) = project_pt(v, px, py, pz);
+    let (ok1, sx1_0, sy1_0) = project_pt(v, ex, ey, ez);
+    if !ok0 || !ok1 {
+        return Seg { ok: false, sx0: 0.0, sy0: 0.0, sx1: 0.0, sy1: 0.0, k0: 0.0, k1: 0.0 };
+    }
+    let k0: f64 = -1.0 / pz;
+    let k1_0: f64 = -1.0 / ez;
+    let mut t_end: f64 = 1.0;
+    t_end = clip_axis(sx0, sx1_0, v.w as f64, t_end);
+    t_end = clip_axis(sy0, sy1_0, v.h as f64, t_end);
+    if t_end <= 0.0 {
+        return Seg { ok: false, sx0: 0.0, sy0: 0.0, sx1: 0.0, sy1: 0.0, k0: 0.0, k1: 0.0 };
+    }
+    Seg {
+        ok: true,
+        sx0: sx0,
+        sy0: sy0,
+        sx1: sx0 + (sx1_0 - sx0) * t_end,
+        sy1: sy0 + (sy1_0 - sy0) * t_end,
+        k0: k0,
+        k1: k0 + (k1_0 - k0) * t_end,
+    }
+}
+
+fn probe_at(v: &SsrGbuf, g: &Seg, t: f64, thickness: f64, use_back: bool) -> Probe {
+    let px: i32 = floor(g.sx0 + (g.sx1 - g.sx0) * t) as i32;
+    let py: i32 = floor(g.sy0 + (g.sy1 - g.sy0) * t) as i32;
+    if px < 0 || py < 0 || px >= v.w || py >= v.h {
+        return Probe { j: -2, behind: false, within: false, inside: false };
+    }
+    let j: i32 = py * v.w + px;
+    let big_d: f64 = v.depth[j] as f64;
+    if big_d < 0.0 {
+        return Probe { j: j, behind: false, within: false, inside: false };
+    }
+    let ray: f64 = 1.0 / (g.k0 + (g.k1 - g.k0) * t);
+    let behind: bool = ray > big_d;
+    let within: bool = behind && (ray - big_d < thickness);
+    let inside: bool = use_back && (ray >= big_d + thickness) && (ray <= (v.back[j] as f64));
+    Probe { j: j, behind: behind, within: within, inside: inside }
+}
+
+fn ceil_i32(x: f64) -> i32 {
+    let fl: f64 = floor(x);
+    if x > fl { (fl as i32) + 1 } else { fl as i32 }
+}
+
+fn march_one(
+    v: &SsrGbuf,
+    i: i32,
+    max_dist: f64,
+    thickness: f64,
+    steps_in: i32,
+    refine: i32,
+    view_normal: bool,
+    use_back: bool,
+) -> i32 {
+    let g: Seg = segment_of(v, i, max_dist, view_normal);
+    if !g.ok { return -1; }
+    let steps: i32 = if steps_in > 0 {
+        steps_in
+    } else {
+        maxi(1, ceil_i32(maxd(absd(g.sx1 - g.sx0), absd(g.sy1 - g.sy0))))
+    };
+    let mut prev: f64 = 0.0;
+    let mut s: i32 = 1;
+    while s <= steps {
+        let t: f64 = (s as f64) / (steps as f64);
+        let p: Probe = probe_at(v, &g, t, thickness, use_back);
+        if p.j == -2 { break; }
+        if p.behind && p.j != i {
+            let mut lo: f64 = prev;
+            let mut hi: f64 = t;
+            let mut b: i32 = 0;
+            while b < refine {
+                let mid: f64 = 0.5 * (lo + hi);
+                if probe_at(v, &g, mid, thickness, use_back).behind { hi = mid; } else { lo = mid; }
+                b = b + 1;
+            }
+            let h: Probe = probe_at(v, &g, hi, thickness, use_back);
+            if h.within && h.j >= 0 && h.j != i { return h.j; }
+            if p.inside { return -1; }
+        }
+        prev = t;
+        s = s + 1;
+    }
+    -1
+}
+
+pub fn run_ssr(
+    v: &SsrGbuf,
+    max_dist: f64,
+    thickness: f64,
+    steps: i32,
+    refine: i32,
+    view_normal: bool,
+    hidden_entry: bool,
+) -> Vec<i32> {
+    let n_px: i32 = v.w * v.h;
+    let use_back: bool = hidden_entry && (v.back.len() == v.depth.len());
+    let mut out: Vec<i32> = Vec::new();
+    let mut i: i32 = 0;
+    while i < n_px {
+        if v.depth[i] >= (0.0 as f32) {
+            out.push(march_one(v, i, max_dist, thickness, steps, refine, view_normal, use_back));
+        } else {
+            out.push(-1);
+        }
+        i = i + 1;
+    }
+    out
+}
+
+fn fnv_u32(h0: u64, b: u32) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 4 {
+        h = (h ^ (((b >> (8 * k)) & 255) as u64)).wrapping_mul(1099511628211);
+        k = k + 1;
+    }
+    h
+}
+
+fn fnv_u64(h0: u64, v: u64) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 8 {
+        h = (h ^ ((v >> (8 * k)) & 255)).wrapping_mul(1099511628211);
+        k = k + 1;
+    }
+    h
+}
+
+fn hash_hits(v: &Vec<i32>) -> (u64, i32) {
+    let mut h: u64 = kit::fnv_start();
+    let mut hits: i32 = 0;
+    let n: i32 = v.len() as i32;
+    let mut i: i32 = 0;
+    while i < n {
+        let idx: i32 = v[i];
+        if idx >= 0 { hits = hits + 1; }
+        h = fnv_u32(h, (idx + 2) as u32);
+        i = i + 1;
+    }
+    (h, hits)
+}
+
+pub fn run_ssr_parity() -> (u64, u64, u64, u64, i32, i32, i32) {
+    let w: i32 = 48;
+    let h: i32 = 32;
+    let tan_half: f64 = tan(0.5 * 0.85);
+    let aspect: f64 = (w as f64) / (h as f64);
+    let mut pos: Vec<f32> = Vec::new();
+    let mut nrm: Vec<f32> = Vec::new();
+    let mut depth: Vec<f32> = Vec::new();
+    let mut back: Vec<f32> = Vec::new();
+
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            if x == 0 || y == 0 || x == w - 1 || y == h - 1 {
+                pos.push(0.0 as f32); pos.push(0.0 as f32); pos.push(0.0 as f32);
+                nrm.push(0.0 as f32); nrm.push(0.0 as f32); nrm.push(0.0 as f32);
+                depth.push(-1.0 as f32);
+                back.push(-1.0 as f32);
+            } else {
+                let fx: f64 = (x as f64) + 0.5;
+                let fy: f64 = (y as f64) + 0.5;
+                let nx: f64 = (fx / (w as f64)) * 2.0 - 1.0;
+                let ny: f64 = 1.0 - (fy / (h as f64)) * 2.0;
+                let pillar: bool = x >= 19 && x <= 28 && y >= 6 && y <= 20;
+                let mut big_d: f64 = 0.0;
+                let mut back_d: f64 = 0.0;
+                let mut n0: f64 = 0.0;
+                let mut n1: f64 = 0.0;
+                let mut n2: f64 = 1.0;
+                if pillar {
+                    big_d = 2.6 + 0.15 * absd(nx);
+                    back_d = big_d + 0.85;
+                    n0 = if nx >= 0.0 { 0.25 } else { -0.25 };
+                    n1 = 0.0;
+                    n2 = 1.0;
+                } else if y >= 18 {
+                    let t: f64 = ((y - 18) as f64) / ((h - 19) as f64);
+                    big_d = 5.2 - 2.6 * t;
+                    back_d = big_d + 0.3;
+                    n0 = 0.04 * sin(nx * 2.0);
+                    n1 = 0.94;
+                    n2 = 0.34;
+                } else {
+                    big_d = 5.4 - 0.5 * absd(nx);
+                    back_d = big_d + 0.4;
+                    n0 = if nx >= 0.0 { -0.30 } else { 0.30 };
+                    n1 = -0.05;
+                    n2 = 1.0;
+                }
+                let nl: f64 = sqrt(n0 * n0 + n1 * n1 + n2 * n2);
+                pos.push((nx * big_d * tan_half * aspect) as f32);
+                pos.push((ny * big_d * tan_half) as f32);
+                pos.push((-big_d) as f32);
+                nrm.push((n0 / nl) as f32);
+                nrm.push((n1 / nl) as f32);
+                nrm.push((n2 / nl) as f32);
+                depth.push(big_d as f32);
+                back.push(back_d as f32);
+            }
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+
+    let gbuf: SsrGbuf = SsrGbuf {
+        w: w, h: h, tan_half: tan_half, aspect: aspect, near_z: 0.1,
+        pos: pos, nrm: nrm, depth: depth, back: back,
+    };
+
+    let r_std: Vec<i32> = run_ssr(&gbuf, 1.0e4, 0.22, 0, 8, false, true);
+    let (h_std, hits_std) = hash_hits(&r_std);
+
+    let r_noback: Vec<i32> = run_ssr(&gbuf, 1.0e4, 0.22, 32, 6, false, false);
+    let (h_noback, hits_noback) = hash_hits(&r_noback);
+
+    let r_ctrl: Vec<i32> = run_ssr(&gbuf, 1.0e4, 0.22, 0, 8, true, true);
+    let (h_ctrl, hits_ctrl) = hash_hits(&r_ctrl);
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = fnv_u64(h_all, h_std);
+    h_all = fnv_u64(h_all, h_noback);
+
+    (h_std, h_noback, h_all, h_ctrl, hits_std, hits_noback, hits_ctrl)
+}

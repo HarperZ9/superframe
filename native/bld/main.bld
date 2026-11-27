@@ -20,56 +20,177 @@ mod art_scene_room;
 mod art_tiltshift_fx;
 mod art_sky;
 mod art_brdf;
+mod art_dither;
+mod art_noise;
+mod art_fractal_dither;
+mod art_colour;
+mod art_lighting_clusters;
+mod art_sdf;
+mod art_pbr_lobes;
+mod art_bvh;
+mod art_ploc_bvh;
+mod art_taa;
+mod art_gtao;
+mod art_ssr;
+mod art_purity;
 mod wave25f_parity;
 
 fn main() ~ Console {
     let mut same: i32 = 0;
     let mut all: i32 = 0;
 
-    // tests/test_art_strokes.cpp: renderFrame(orbitView(0, 256, 144), daylight(), 4).lit
+    // #1: tests/test_art_strokes.cpp: renderFrame(orbitView(0, 256, 144), daylight(), 4).lit
     same = same + kit::report("art scene, still life, daylight, 256 x 144, lit buffer", art_scene::lit_hash(0, 256, 144), 0x8e70a9159d2007bf);
     all = all + 1;
 
-    // tests/test_art_strokes.cpp: anchorCanvas(f, anchorParams(v)) at 256 x 144
+    // #2: tests/test_art_strokes.cpp: anchorCanvas(f, anchorParams(v)) at 256 x 144
     same = same + kit::report("art anchor, still life, 256 x 144, canvas buffer", art_anchor::anchor_hash(0, 256, 144, 0.0), 0x364d778712fdc849);
     all = all + 1;
 
-    // tests/test_art_tiltshift.cpp: cocMap(renderFrame(townView(256, 144), townDusk(), 4, Town), town_map)
+    // #3: tests/test_art_tiltshift.cpp: cocMap(renderFrame(townView(256, 144), townDusk(), 4, Town), town_map)
     same = same + kit::report("art town + tiltshift, town_map, 256 x 144, CoC buffer", art_town_coc::coc_hash(256, 144, 0.0), 0x2c4cd941314f50b5);
     all = all + 1;
 
-    // tests/test_art_tiltshift.cpp: renderFrame(townView(256, 144), townNight(), 4, Town).lit
+    // #4: tests/test_art_tiltshift.cpp: renderFrame(townView(256, 144), townNight(), 4, Town).lit
     same = same + kit::report("art town lit, night + sodium lamp, 256 x 144, lit buffer", art_town_lit::town_night_lit_hash(256, 144, 0.0), 0x91ee8ea81ab861f0);
     all = all + 1;
 
-    // tests/test_art_strokes.cpp: codes8(renderFrame(orbitView(0, 256, 144), daylight(), 4).lit)
+    // #5: tests/test_art_strokes.cpp: codes8(renderFrame(orbitView(0, 256, 144), daylight(), 4).lit)
     same = same + kit::report("art metrics, still life, daylight, 256 x 144, 8-bit sRGB codes", art_metrics::still_codes8_hash(0, 256, 144, 0.0), 0xbf2cbc974ff8fcad);
     all = all + 1;
 
-    // tests/test_art_strokes.cpp: paintReference(f.lit, 1.0) at 256 x 144 (plus motionTo 1->0 check)
+    // #6: tests/test_art_strokes.cpp: paintReference(f.lit, 1.0) at 256 x 144 (plus motionTo 1->0 check)
     let mut strokes_ok: i32 = kit::report("art strokes ref, still life, 256 x 144, tonemapped 8-bit", art_strokes_ref::paint_reference_hash(0, 256, 144, 0.0), 0x4add0d97495fd95d);
     if art_strokes_ref::motion_1to0_hash(256, 144) != 0x30d7597963cbf119 { strokes_ok = 0; }
     same = same + strokes_ok;
     all = all + 1;
 
-    // tests/test_art_tiltshift.cpp: codes8(paintDefocus(townDusk.lit, coc, 256, 144, {}, Gaussian))
+    // #7: tests/test_art_tiltshift.cpp: codes8(paintDefocus(townDusk.lit, coc, 256, 144, {}, Gaussian))
     same = same + kit::report("art tiltshift defocus, town_map, 256 x 144, 8-bit compose", art_tiltshift_defocus::tiltshift_defocus_codes8_hash(256, 144, 0.0), 0x6d3f8b9acb221e67);
     all = all + 1;
 
-    // tests/test_art_strokes.cpp: renderFrame(orbitView(0, 256, 144), roomLight(), 4, Room).lit
+    // #8: tests/test_art_strokes.cpp: renderFrame(orbitView(0, 256, 144), roomLight(), 4, Room).lit
     same = same + kit::report("art scene room, conversation room, 256 x 144, lit buffer", art_scene_room::room_lit_hash(256, 144, 0.0), 0xc99282210e56cf4a);
     all = all + 1;
 
-    // tests/test_art_tiltshift.cpp: fxStack(planFx(tiltLook("night"), {0, true, false}, 256, 144, fpx), townNight.lit)
+    // #9: tests/test_art_tiltshift.cpp: fxStack(planFx(tiltLook("night"), {0, true, false}, 256, 144, fpx), townNight.lit)
     same = same + kit::report("art tiltshift fx, night halation + star + vignette + grain, 256 x 144", art_tiltshift_fx::fx_night_lit_hash(256, 144, 0.0), 0x593c8ac027015c51);
     all = all + 1;
 
-    // tests/test_sky.cpp: sky::bake(ClearNoon, GoldenHour, Overcast) at 16 x 16 cubemap faces
+    // #10: tests/test_sky.cpp: sky::bake(ClearNoon, GoldenHour, Overcast) at 16 x 16 cubemap faces
     same = same + kit::report("sky model, Preetham + CIE overcast + sun disk, 3 x 6 x 16 x 16 cube", art_sky::sky_cube16_hash(0.0), 0x4774e06b9efdb90d);
     all = all + 1;
 
-    // tests/test_brdf_furnace.cpp: GGX-VNDF albedo (16 x 16 x 256) + microfacet lobe + 64-pt Gauss-Legendre
+    // #11: tests/test_brdf_furnace.cpp: GGX-VNDF albedo (16 x 16 x 256) + microfacet lobe + 64-pt Gauss-Legendre
     same = same + kit::report("brdf specular, GGX-VNDF + Smith + Schlick + Gauss-Legendre 64", art_brdf::brdf_grid_hash(0.0), 0xe8d741020e6f146a);
+    all = all + 1;
+
+    // #12: tests/test_dither.cpp: 9 dithering methods x (ramp 256x64 + card 128x128)
+    same = same + kit::report("dither goldens, 9 methods x (ramp 256x64 + card 128x128)", art_dither::dither_goldens_hash(0.0), 0xb9ca7e2db4a440f7);
+    all = all + 1;
+
+    // #13: tests/test_noise.cpp: 20 procedural noise fields x 128 x 128
+    same = same + kit::report("noise goldens, 20 procedural fields x 128 x 128", art_noise::noise_goldens_hash(0.0), 0xbb69adfcaefa21bc);
+    all = all + 1;
+
+    // #14: tests/test_fractal_dither.cpp: 3 level planes at 256 x 144
+    let mut fd_ok: i32 = kit::report("fractal dither, ink + Fractal, 256 x 144", art_fractal_dither::level_hash(2, 1, 0), 0x5ac361b7dfe0a6bb);
+    if art_fractal_dither::level_hash(4, 1, 0) != 0x922c22c7c711d410 { fd_ok = 0; }
+    if art_fractal_dither::level_hash(2, 0, 0) != 0x31c2b5c49d02867d { fd_ok = 0; }
+    same = same + fd_ok;
+    all = all + 1;
+
+    // #15: src/renderer/colour_math.cpp: 5 primaries + transfers + PBR Neutral + AgX 33^3
+    let (c_mat, c_xfer, c_pbr, c_agx, c_all) = art_colour::colour_suite_hashes(0.0);
+    let mut col_ok: i32 = kit::report("colour math, 5 primaries + transfers + PBR Neutral + AgX 33^3", c_all, 0xbe6b65ab61737ae6);
+    if c_mat != 0xabf8b7450d564275 || c_xfer != 0x04a27bfe3099437d || c_pbr != 0x3209e79f82efc2fb || c_agx != 0xb922512d04147640 {
+        col_ok = 0;
+    }
+    same = same + col_ok;
+    all = all + 1;
+
+    // #16: src/renderer/lighting_clusters.cpp + lighting_lights.cpp: 16x9x24 froxels + Arvo 1990
+    let (lc_b, lc_p, lc_a, lc_i, lc_all, _lc_f, _lc_e) = art_lighting_clusters::lighting_clusters_hashes(0.0);
+    let mut lc_ok: i32 = kit::report("lighting clusters, 16x9x24 froxels + Arvo + KHR punctual", lc_all, 0xc93a45505a52aa3d);
+    if lc_b != 0xf85f68cd54f6c07b || lc_p != 0x4be96cd953b3b232 || lc_a != 0xd7a7c64e6ded90e2 || lc_i != 0xf2b65d5044d7942b {
+        lc_ok = 0;
+    }
+    same = same + lc_ok;
+    all = all + 1;
+
+    // #17: src/renderer/sdf_eval.cpp + sdf_march.cpp: CSG + fractal + sphere trace + fog
+    let (sdf_csg, sdf_frac, sdf_march, sdf_fog, sdf_all, sdf_ctrl, _sdf_h, _sdf_s, _sdf_v) = art_sdf::run_sdf_parity();
+    let mut sdf_ok: i32 = kit::report("sdf evaluator + sphere tracer + height fog", sdf_all, 0x441e439d92cdee53);
+    if sdf_csg != 0xfc95bcdfb4c924c0 || sdf_frac != 0xa0e35ab8d772f733 || sdf_march != 0xf351d60b6b0d5c10 || sdf_fog != 0x502baf4e8daf140e {
+        sdf_ok = 0;
+    }
+    same = same + sdf_ok;
+    all = all + 1;
+
+    // #18: src/renderer/pbr_lobes.cpp + pbr_iridescence.cpp: glTF 2.0 lobes + Airy thin-film
+    let (pbr_ggx, pbr_sb, pbr_fast, pbr_spec, pbr_all, pbr_ctrl) = art_pbr_lobes::run_pbr_lobes_parity();
+    let mut pbr_ok: i32 = kit::report("pbr lobes + Belcour-Barla / Airy thin-film iridescence", pbr_all, 0x1da1fb8c3ac0b50f);
+    if pbr_ggx != 0x1910d71016117f17 || pbr_sb != 0x2830ac6575b8617f || pbr_fast != 0xdcc6f6fe8ef5ef41 || pbr_spec != 0xae9d3befe9066305 {
+        pbr_ok = 0;
+    }
+    same = same + pbr_ok;
+    all = all + 1;
+
+    // #19: src/renderer/bvh.cpp + rt_bvh_sah.cpp: 12-bin SAH BVH + Ize/Woop watertight trace
+    let (bvh_tree, bvh_sah, bvh_cl, bvh_occ, bvh_all, bvh_ctrl, _bvh_n, _bvh_ms, _bvh_h, _bvh_o) = art_bvh::run_bvh_parity();
+    let mut bvh_ok: i32 = kit::report("bvh 12-bin SAH + Ize/Woop watertight ray trace", bvh_all, 0xc950370edf7ab36c);
+    if bvh_tree != 0x4ba2e9e4ac44978f || bvh_sah != 0x9216aa3da3942721 || bvh_cl != 0x28ada22f392d0e9f || bvh_occ != 0x9be1017593f1eb23 {
+        bvh_ok = 0;
+    }
+    same = same + bvh_ok;
+    all = all + 1;
+
+    // #20: src/renderer/rt_bvh.cpp: PLOC Morton BVH builder + SAH + watertight trace
+    let (ploc_tree, ploc_sah, ploc_cl, ploc_occ, ploc_all, ploc_ctrl, _pn, _pr, _prd, _ph, _po) = art_ploc_bvh::run_ploc_parity();
+    let mut ploc_ok: i32 = kit::report("ploc Morton BVH builder + SAH + watertight trace", ploc_all, 0xa826c415ba37a213);
+    if ploc_tree != 0x15d8a0fddff70a6f || ploc_sah != 0x4ffd5b92cecf8c10 || ploc_cl != 0x28ada22f392d0e9f || ploc_occ != 0x9be1017593f1eb23 {
+        ploc_ok = 0;
+    }
+    same = same + ploc_ok;
+    all = all + 1;
+
+    // #21: src/renderer/taa.cpp: Halton(2,3) jitter + Catmull-Rom + YCoCg variance clip TAA
+    let (taa_j, taa_full, taa_raw, taa_acc, taa_all) = art_taa::run_taa_parity();
+    let mut taa_ok: i32 = kit::report("taa Halton + Catmull-Rom + YCoCg variance clip resolve", taa_all, 0x1948d3ac3111573e);
+    if taa_j != 0x3239948c3e1c8d63 || taa_full != 0xf7417b184ead13d1 || taa_raw != 0x6375b11856918bd7 || taa_acc != 0xdfa37801cab7f7b7 {
+        taa_ok = 0;
+    }
+    same = same + taa_ok;
+    all = all + 1;
+
+    // #22: src/renderer/post_gtao.cpp: Jimenez 2016 horizon-angle GTAO
+    let (gtao_p, gtao_std, gtao_hi, gtao_all, gtao_ctrl, _gtao_v) = art_gtao::run_gtao_parity();
+    let mut gtao_ok: i32 = kit::report("gtao Jimenez 2016 horizon-angle ambient occlusion", gtao_all, 0x28cadd1bf99ef7cf);
+    if gtao_p != 0x10d3723a5bd82529 || gtao_std != 0x18cacb7a24d2d03c || gtao_hi != 0xb1edf333d5925383 {
+        gtao_ok = 0;
+    }
+    same = same + gtao_ok;
+    all = all + 1;
+
+    // #23: src/renderer/post_ssr.cpp: 1/depth DDA screen-space mirror reflections + back-layer guard
+    let (ssr_std, ssr_noback, ssr_all, ssr_ctrl, ssr_hs, ssr_hnb, ssr_hc) = art_ssr::run_ssr_parity();
+    let mut ssr_ok: i32 = kit::report("ssr 1/depth DDA + 8-step bisection + back-layer guard", ssr_all, 0xfba75d3ca1ba5ca1);
+    if ssr_std != 0x5fe10583a278ee55 || ssr_noback != 0xf99e235517d04fbe || ssr_hs != 344 || ssr_hnb != 378 {
+        ssr_ok = 0;
+    }
+    same = same + ssr_ok;
+    all = all + 1;
+
+    // #24: src/renderer/style_purity.cpp + style_image.cpp: CRT magnetic purity + degauss coil
+    let pur_mag: u64 = art_purity::purity_mag_hash();
+    let pur_earth: u64 = art_purity::purity_earth_hash();
+    let pur_deg: u64 = art_purity::purity_degauss_hash();
+    let pur_all: u64 = art_purity::purity_all_hash();
+    let mut pur_ok: i32 = kit::report("crt purity, magnetised + earth-field + degauss coil, 48 x 32", pur_all, 0x2ba3846871f3701a);
+    if pur_mag != 0x7fce44868c056d9c || pur_earth != 0xf3ba482e245a43f1 || pur_deg != 0xd8cc2dc73422ba83 {
+        pur_ok = 0;
+    }
+    same = same + pur_ok;
     all = all + 1;
 
     // Controls: each module must reject a different frame or tiny parameter perturbation.
@@ -88,6 +209,23 @@ fn main() ~ Console {
     if art_tiltshift_fx::fx_night_lit_hash(256, 144, 0.01) != 0x593c8ac027015c51 { planted = planted + 1; }
     if art_sky::sky_cube16_hash(0.01) != 0x4774e06b9efdb90d { planted = planted + 1; }
     if art_brdf::brdf_grid_hash(0.001) != 0xe8d741020e6f146a { planted = planted + 1; }
+    if art_dither::dither_goldens_hash(0.001) != 0xb9ca7e2db4a440f7 { planted = planted + 1; }
+    if art_noise::noise_goldens_hash(0.001) != 0xbb69adfcaefa21bc { planted = planted + 1; }
+    if art_fractal_dither::level_hash(2, 1, 1) != 0x5ac361b7dfe0a6bb { planted = planted + 1; }
+    let (_cm, _cx, _cp, _ca, col_ctrl) = art_colour::colour_suite_hashes(0.001);
+    if col_ctrl != 0xbe6b65ab61737ae6 { planted = planted + 1; }
+    let (_lb, _lp, _la, _li, lc_ctrl, _lf, _le) = art_lighting_clusters::lighting_clusters_hashes(0.05);
+    if lc_ctrl != 0xc93a45505a52aa3d { planted = planted + 1; }
+    if sdf_ctrl != sdf_march && sdf_ctrl == 0x7752fe4a13b0865f { planted = planted + 1; }
+    if pbr_ctrl != pbr_fast && pbr_ctrl == 0x8ddd1538b2132b60 { planted = planted + 1; }
+    if bvh_ctrl != bvh_cl && bvh_ctrl == 0x910038feb9f9cce9 { planted = planted + 1; }
+    if ploc_ctrl != ploc_tree && ploc_ctrl == 0xefc65193d1b21b8c { planted = planted + 1; }
+    if taa_raw != taa_full && taa_raw == 0x6375b11856918bd7 { planted = planted + 1; }
+    if gtao_ctrl != gtao_std && gtao_ctrl == 0x35c3ea81948e6711 { planted = planted + 1; }
+    if ssr_ctrl != ssr_std && ssr_ctrl == 0xf513463006c87383 && ssr_hc == 0 { planted = planted + 1; }
+    if art_purity::purity_control_hash() != pur_deg && art_purity::purity_control_hash() == 0x3785bd59637ac6f0 {
+        planted = planted + 1;
+    }
     println!("planted controls rejected: {} of {}", planted, all);
 
     let metrics_ok: i32 = art_metrics::metrics_identities_ok();

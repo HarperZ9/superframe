@@ -1,0 +1,385 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe native/bld Module #21: Temporal Anti-Aliasing (TAA) Resolve and Halton(2, 3)
+// Subpixel Jitter: 3x3 nearest-depth velocity dilation, 3x3 depth disocclusion test,
+// 4x4 bicubic Catmull-Rom history resampling, two-pass YCoCg variance clipping
+// (mean +/- 1.25 sigma), and exponential temporal blend (kBlend = 0.1).
+// Bit-exact 0 ULP port of native/src/renderer/taa.cpp.
+
+
+pub struct TaaFrame {
+    w: i32,
+    h: i32,
+    rgb: Vec<f32>,
+    depth: Vec<f32>,
+    prev: Vec<f32>,
+}
+
+fn absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
+fn mind(a: f64, b: f64) -> f64 { if b < a { b } else { a } }
+fn maxd(a: f64, b: f64) -> f64 { if a < b { b } else { a } }
+fn mini(a: i32, b: i32) -> i32 { if b < a { b } else { a } }
+fn clampi(v: i32, lo: i32, hi: i32) -> i32 {
+    if v < lo { lo } else if v > hi { hi } else { v }
+}
+
+fn halton(i0: i32, b: i32) -> f64 {
+    let mut i: i32 = i0;
+    let mut f: f64 = 1.0;
+    let mut r: f64 = 0.0;
+    let bf: f64 = b as f64;
+    while i > 0 {
+        f = f / bf;
+        r = r + f * ((i % b) as f64);
+        i = i / b;
+    }
+    r
+}
+
+pub fn taa_jitter(k: i32) -> (f32, f32) {
+    let idx: i32 = (k % 16) + 1;
+    let jx: f32 = (halton(idx, 2) - 0.5) as f32;
+    let jy: f32 = (halton(idx, 3) - 0.5) as f32;
+    (jx, jy)
+}
+
+fn to_ycocg(r: f64, g: f64, b: f64) -> (f64, f64, f64) {
+    (
+        0.25 * r + 0.5 * g + 0.25 * b,
+        0.5 * r - 0.5 * b,
+        -0.25 * r + 0.5 * g - 0.25 * b,
+    )
+}
+
+fn from_ycocg(y: f64, co: f64, cg: f64) -> (f64, f64, f64) {
+    (y + co - cg, y + cg, y - co - cg)
+}
+
+fn catmull_rom(t: f64) -> (f64, f64, f64, f64) {
+    let t2: f64 = t * t;
+    let t3: f64 = t2 * t;
+    (
+        -0.5 * t3 + t2 - 0.5 * t,
+        1.5 * t3 - 2.5 * t2 + 1.0,
+        -1.5 * t3 + 2.0 * t2 + 0.5 * t,
+        0.5 * t3 - 0.5 * t2,
+    )
+}
+
+fn cr_wt(w0: f64, w1: f64, w2: f64, w3: f64, k: i32) -> f64 {
+    if k == 0 { w0 } else if k == 1 { w1 } else if k == 2 { w2 } else { w3 }
+}
+
+pub fn taa_resolve(
+    f: &TaaFrame,
+    hist: &Vec<f32>,
+    prev_depth: &Vec<f32>,
+    clip: bool,
+    depth_test: bool,
+    dilate: bool,
+) -> Vec<f32> {
+    let w: i32 = f.w;
+    let h: i32 = f.h;
+    let total: i32 = f.rgb.len() as i32;
+    let mut out: Vec<f32> = Vec::new();
+    let mut oi: i32 = 0;
+    while oi < total { out.push(f.rgb[oi]); oi = oi + 1; }
+    if hist.len() == 0 { return out; }
+
+    let k_blend: f64 = (0.1 as f32) as f64;
+    let k_clip_sigma: f64 = (1.25 as f32) as f64;
+
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let i: i32 = y * w + x;
+            let mut px: f64 = f.prev[i * 3] as f64;
+            let mut py: f64 = f.prev[i * 3 + 1] as f64;
+            let ed: f64 = f.prev[i * 3 + 2] as f64;
+            if dilate {
+                let di: f32 = f.depth[i];
+                let mut best: f64 = if di >= (0.0 as f32) { di as f64 } else { 1.0e30 };
+                let mut b: i32 = -1;
+                while b <= 1 {
+                    let mut a: i32 = -1;
+                    while a <= 1 {
+                        let qx: i32 = x + a;
+                        let qy: i32 = y + b;
+                        if !(a == 0 && b == 0) && qx >= 0 && qy >= 0 && qx < w && qy < h {
+                            let j: i32 = qy * w + qx;
+                            let dj: f32 = f.depth[j];
+                            if dj >= (0.0 as f32) && (dj as f64) < best {
+                                best = dj as f64;
+                                px = (f.prev[j * 3] - (a as f32)) as f64;
+                                py = (f.prev[j * 3 + 1] - (b as f32)) as f64;
+                            }
+                        }
+                        a = a + 1;
+                    }
+                    b = b + 1;
+                }
+            }
+            if px < 0.5 || py < 0.5 || px > (w as f64) - 0.5 || py > (h as f64) - 0.5 {
+                x = x + 1;
+                continue;
+            }
+            if depth_test {
+                let nx: i32 = mini(w - 1, px as i32);
+                let ny: i32 = mini(h - 1, py as i32);
+                let mut lo: f64 = 1.0e30;
+                let mut hi: f64 = -1.0;
+                let mut empty: bool = false;
+                let mut b: i32 = -1;
+                while b <= 1 {
+                    let mut a: i32 = -1;
+                    while a <= 1 {
+                        let qx: i32 = clampi(nx + a, 0, w - 1);
+                        let qy: i32 = clampi(ny + b, 0, h - 1);
+                        let pd: f64 = prev_depth[qy * w + qx] as f64;
+                        if pd < 0.0 {
+                            empty = true;
+                        } else {
+                            lo = mind(lo, pd);
+                            hi = maxd(hi, pd);
+                        }
+                        a = a + 1;
+                    }
+                    b = b + 1;
+                }
+                let tol: f64 = 0.02 * ed + 0.02;
+                let disocc: bool = if ed < 0.0 {
+                    !empty
+                } else {
+                    hi < 0.0 || ed < lo - tol || ed > hi + tol
+                };
+                if disocc {
+                    x = x + 1;
+                    continue;
+                }
+            }
+
+            let fx: f64 = px - 0.5;
+            let fy: f64 = py - 0.5;
+            let x0: i32 = floor(fx) as i32;
+            let y0: i32 = floor(fy) as i32;
+            let (wx0, wx1, wx2, wx3) = catmull_rom(fx - (x0 as f64));
+            let (wy0, wy1, wy2, wy3) = catmull_rom(fy - (y0 as f64));
+            let mut hc0: f64 = 0.0;
+            let mut hc1: f64 = 0.0;
+            let mut hc2: f64 = 0.0;
+            let mut b: i32 = 0;
+            while b < 4 {
+                let wyb: f64 = cr_wt(wy0, wy1, wy2, wy3, b);
+                let qy: i32 = clampi(y0 - 1 + b, 0, h - 1);
+                let mut a: i32 = 0;
+                while a < 4 {
+                    let wxa: f64 = cr_wt(wx0, wx1, wx2, wx3, a);
+                    let qx: i32 = clampi(x0 - 1 + a, 0, w - 1);
+                    let j: i32 = (qy * w + qx) * 3;
+                    let wt: f64 = wxa * wyb;
+                    hc0 = hc0 + wt * (hist[j] as f64);
+                    hc1 = hc1 + wt * (hist[j + 1] as f64);
+                    hc2 = hc2 + wt * (hist[j + 2] as f64);
+                    a = a + 1;
+                }
+                b = b + 1;
+            }
+
+            if clip {
+                let mut yc0: Vec<f64> = Vec::new();
+                let mut yc1: Vec<f64> = Vec::new();
+                let mut yc2: Vec<f64> = Vec::new();
+                let mut m0: f64 = 0.0;
+                let mut m1: f64 = 0.0;
+                let mut m2: f64 = 0.0;
+                let mut nb: i32 = 0;
+                let mut bb: i32 = -1;
+                while bb <= 1 {
+                    let mut aa: i32 = -1;
+                    while aa <= 1 {
+                        let qx: i32 = x + aa;
+                        let qy: i32 = y + bb;
+                        if qx >= 0 && qy >= 0 && qx < w && qy < h {
+                            let j: i32 = (qy * w + qx) * 3;
+                            let (y0v, co0v, cg0v) = to_ycocg(
+                                f.rgb[j] as f64,
+                                f.rgb[j + 1] as f64,
+                                f.rgb[j + 2] as f64,
+                            );
+                            yc0.push(y0v); yc1.push(co0v); yc2.push(cg0v);
+                            m0 = m0 + y0v; m1 = m1 + co0v; m2 = m2 + cg0v;
+                            nb = nb + 1;
+                        }
+                        aa = aa + 1;
+                    }
+                    bb = bb + 1;
+                }
+                let nf: f64 = nb as f64;
+                m0 = m0 / nf; m1 = m1 / nf; m2 = m2 / nf;
+                let mut v0: f64 = 0.0;
+                let mut v1: f64 = 0.0;
+                let mut v2: f64 = 0.0;
+                let mut q: i32 = 0;
+                while q < nb {
+                    let d0: f64 = yc0[q] - m0;
+                    let d1: f64 = yc1[q] - m1;
+                    let d2: f64 = yc2[q] - m2;
+                    v0 = v0 + d0 * d0;
+                    v1 = v1 + d1 * d1;
+                    v2 = v2 + d2 * d2;
+                    q = q + 1;
+                }
+                let (mut hy0, mut hy1, mut hy2) = to_ycocg(hc0, hc1, hc2);
+                let ext0: f64 = k_clip_sigma * sqrt(v0 / nf) + 1.0e-4;
+                let ext1: f64 = k_clip_sigma * sqrt(v1 / nf) + 1.0e-4;
+                let ext2: f64 = k_clip_sigma * sqrt(v2 / nf) + 1.0e-4;
+                let mut sc: f64 = 0.0;
+                sc = maxd(sc, absd(hy0 - m0) / ext0);
+                sc = maxd(sc, absd(hy1 - m1) / ext1);
+                sc = maxd(sc, absd(hy2 - m2) / ext2);
+                if sc > 1.0 {
+                    hy0 = m0 + (hy0 - m0) / sc;
+                    hy1 = m1 + (hy1 - m1) / sc;
+                    hy2 = m2 + (hy2 - m2) / sc;
+                }
+                let (r_out, g_out, b_out) = from_ycocg(hy0, hy1, hy2);
+                hc0 = r_out; hc1 = g_out; hc2 = b_out;
+            }
+
+            let c0: f64 = f.rgb[i * 3] as f64;
+            let c1: f64 = f.rgb[i * 3 + 1] as f64;
+            let c2: f64 = f.rgb[i * 3 + 2] as f64;
+            out[i * 3] = (hc0 + (c0 - hc0) * k_blend) as f32;
+            out[i * 3 + 1] = (hc1 + (c1 - hc1) * k_blend) as f32;
+            out[i * 3 + 2] = (hc2 + (c2 - hc2) * k_blend) as f32;
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    out
+}
+
+fn fnv_u32(h0: u64, b: u32) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 4 {
+        h = (h ^ (((b >> (8 * k)) & 255) as u64)).wrapping_mul(1099511628211);
+        k = k + 1;
+    }
+    h
+}
+
+fn fnv_f32_raw(h0: u64, f: f32) -> u64 { fnv_u32(h0, f.to_bits()) }
+
+fn fnv_u64(h0: u64, v: u64) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 8 {
+        h = (h ^ ((v >> (8 * k)) & 255)).wrapping_mul(1099511628211);
+        k = k + 1;
+    }
+    h
+}
+
+fn hash_vec(v: &Vec<f32>) -> u64 {
+    let mut h: u64 = kit::fnv_start();
+    let n: i32 = v.len() as i32;
+    let mut i: i32 = 0;
+    while i < n { h = fnv_f32_raw(h, v[i]); i = i + 1; }
+    h
+}
+
+pub fn run_taa_parity() -> (u64, u64, u64, u64, u64) {
+    let mut h_jitter: u64 = kit::fnv_start();
+    let mut k: i32 = 0;
+    while k < 32 {
+        let (jx, jy) = taa_jitter(k);
+        h_jitter = fnv_f32_raw(h_jitter, jx);
+        h_jitter = fnv_f32_raw(h_jitter, jy);
+        k = k + 1;
+    }
+
+    let w: i32 = 32;
+    let h: i32 = 24;
+    let mut rgb: Vec<f32> = Vec::new();
+    let mut depth: Vec<f32> = Vec::new();
+    let mut prev: Vec<f32> = Vec::new();
+    let mut hist: Vec<f32> = Vec::new();
+    let mut prev_depth: Vec<f32> = Vec::new();
+
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let fg: bool = x >= 10 && x <= 18 && y >= 7 && y <= 15;
+            let bg: bool = x >= 2 && x <= 29 && y >= 2 && y <= 21;
+            let u: f32 = (x as f32) / (w as f32);
+            let v: f32 = (y as f32) / (h as f32);
+            if fg {
+                let r: f32 = (0.85 as f32) + (0.10 as f32) * (sin((x as f64) * 0.7) as f32);
+                let g: f32 = (0.35 as f32) + (0.08 as f32) * (cos((y as f64) * 0.6) as f32);
+                let dp: f32 = (2.4 as f32) + (0.03 as f32) * ((x - 14) as f32);
+                rgb.push(r); rgb.push(g); rgb.push(0.22 as f32);
+                depth.push(dp);
+                prev.push((x as f32) + (0.5 as f32) - (1.35 as f32));
+                prev.push((y as f32) + (0.5 as f32) + (0.65 as f32));
+                prev.push(dp);
+            } else if bg {
+                let dp: f32 = (8.5 as f32) + (0.12 as f32) * ((y - 12) as f32);
+                rgb.push((0.20 as f32) + (0.45 as f32) * u);
+                rgb.push((0.30 as f32) + (0.35 as f32) * v);
+                rgb.push((0.55 as f32) - (0.20 as f32) * u);
+                depth.push(dp);
+                prev.push((x as f32) + (0.5 as f32) - (0.42 as f32));
+                prev.push((y as f32) + (0.5 as f32) - (0.28 as f32));
+                prev.push(dp);
+            } else {
+                rgb.push(0.12 as f32); rgb.push(0.18 as f32); rgb.push(0.28 as f32);
+                depth.push(-1.0 as f32);
+                prev.push((x as f32) + (0.5 as f32));
+                prev.push((y as f32) + (0.5 as f32));
+                prev.push(-1.0 as f32);
+            }
+            let prev_fg: bool = x >= 9 && x <= 17 && y >= 8 && y <= 16;
+            if prev_fg {
+                hist.push(0.80 as f32); hist.push(0.30 as f32); hist.push(0.25 as f32);
+                prev_depth.push((2.4 as f32) + (0.03 as f32) * ((x - 13) as f32));
+            } else if bg {
+                hist.push((0.22 as f32) + (0.42 as f32) * u);
+                hist.push((0.28 as f32) + (0.36 as f32) * v);
+                hist.push((0.52 as f32) - (0.18 as f32) * u);
+                prev_depth.push((8.5 as f32) + (0.12 as f32) * ((y - 12) as f32));
+            } else {
+                hist.push(0.11 as f32); hist.push(0.17 as f32); hist.push(0.27 as f32);
+                prev_depth.push(-1.0 as f32);
+            }
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+
+    let frame: TaaFrame = TaaFrame { w: w, h: h, rgb: rgb, depth: depth, prev: prev };
+    let r_full: Vec<f32> = taa_resolve(&frame, &hist, &prev_depth, true, true, true);
+    let h_full: u64 = hash_vec(&r_full);
+
+    let r_raw: Vec<f32> = taa_resolve(&frame, &hist, &prev_depth, false, false, false);
+    let h_raw: u64 = hash_vec(&r_raw);
+
+    let mut acc: Vec<f32> = r_full;
+    let mut step: i32 = 0;
+    while step < 3 {
+        acc = taa_resolve(&frame, &acc, &prev_depth, true, true, true);
+        step = step + 1;
+    }
+    let h_accum: u64 = hash_vec(&acc);
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = fnv_u64(h_all, h_jitter);
+    h_all = fnv_u64(h_all, h_full);
+    h_all = fnv_u64(h_all, h_raw);
+    h_all = fnv_u64(h_all, h_accum);
+
+    (h_jitter, h_full, h_raw, h_accum, h_all)
+}

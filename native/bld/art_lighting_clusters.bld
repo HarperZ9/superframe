@@ -1,0 +1,301 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Renderer module #16: src/renderer/lighting_clusters.cpp + src/renderer/lighting_lights.cpp
+// Reproduces exact C++23 FNV-1a pins across 16x9x24 (3,456) frustum cluster AABBs, 4,096
+// clusterOf probes, 221,184 Arvo 1990 sphere-AABB cluster assignments (64 lights), and
+// KHR_lights_punctual physical illuminance + camera EV100/exposure.
+
+struct D3 { x: f64, y: f64, z: f64 }
+struct Rgb { r: f64, g: f64, b: f64 }
+struct Aabb { lo: D3, hi: D3 }
+
+// kind: 0 = Directional, 1 = Point, 2 = Spot
+struct Light {
+    kind: i32,
+    pos: D3,
+    dir: D3,
+    col: Rgb,
+    intensity: f64,
+    range: f64,
+    inner_cone: f64,
+    outer_cone: f64,
+}
+
+fn d3(x: f64, y: f64, z: f64) -> D3 { D3 { x: x, y: y, z: z } }
+fn dot(a: D3, b: D3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
+fn abs_f(v: f64) -> f64 { if v < 0.0 { -v } else { v } }
+fn min_f(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
+fn max_f(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
+fn clamp_f(v: f64, lo: f64, hi: f64) -> f64 { if v < lo { lo } else if v > hi { hi } else { v } }
+fn min_i(a: i32, b: i32) -> i32 { if a < b { a } else { b } }
+
+pub fn cluster_of(p: D3) -> i32 {
+    let fovy: f64 = 1.0;
+    let aspect: f64 = 16.0 / 9.0;
+    let near_z: f64 = 0.1;
+    let far_z: f64 = 200.0;
+    let d: f64 = -p.z;
+    if !(d >= near_z && d < far_z) { return -1; }
+    let th: f64 = tan(0.5 * fovy);
+    let nx: f64 = p.x / (d * th * aspect);
+    let ny: f64 = p.y / (d * th);
+    if !(abs_f(nx) <= 1.0 && abs_f(ny) <= 1.0) { return -1; }
+    let ix: i32 = min_i(((nx + 1.0) * 0.5 * 16.0) as i32, 15);
+    let iy: i32 = min_i(((ny + 1.0) * 0.5 * 9.0) as i32, 8);
+    let iz: i32 = min_i((log(d / near_z) / log(far_z / near_z) * 24.0) as i32, 23);
+    (iz * 9 + iy) * 16 + ix
+}
+
+fn cluster_bounds(c: i32) -> Aabb {
+    let fovy: f64 = 1.0;
+    let aspect: f64 = 16.0 / 9.0;
+    let near_z: f64 = 0.1;
+    let far_z: f64 = 200.0;
+    let ix: i32 = c % 16;
+    let iy: i32 = (c / 16) % 9;
+    let iz: i32 = c / 144;
+    let th: f64 = tan(0.5 * fovy);
+    let x0: f64 = -1.0 + 2.0 * (ix as f64) / 16.0;
+    let x1: f64 = -1.0 + 2.0 * ((ix + 1) as f64) / 16.0;
+    let y0: f64 = -1.0 + 2.0 * (iy as f64) / 9.0;
+    let y1: f64 = -1.0 + 2.0 * ((iy + 1) as f64) / 9.0;
+    let d0: f64 = near_z * pow(far_z / near_z, (iz as f64) / 24.0);
+    let d1: f64 = near_z * pow(far_z / near_z, ((iz + 1) as f64) / 24.0);
+    let mut lo: D3 = d3(1e300, 1e300, 1e300);
+    let mut hi: D3 = d3(-1e300, -1e300, -1e300);
+    let ds: [f64; 2] = [d0, d1];
+    let xs: [f64; 2] = [x0, x1];
+    let ys: [f64; 2] = [y0, y1];
+    let mut id: i32 = 0;
+    while id < 2 {
+        let mut jx: i32 = 0;
+        while jx < 2 {
+            let mut jy: i32 = 0;
+            while jy < 2 {
+                let dv: f64 = ds[id as usize];
+                let qx: f64 = xs[jx as usize] * dv * th * aspect;
+                let qy: f64 = ys[jy as usize] * dv * th;
+                let qz: f64 = -dv;
+                lo = d3(min_f(lo.x, qx), min_f(lo.y, qy), min_f(lo.z, qz));
+                hi = d3(max_f(hi.x, qx), max_f(hi.y, qy), max_f(hi.z, qz));
+                jy = jy + 1;
+            }
+            jx = jx + 1;
+        }
+        id = id + 1;
+    }
+    Aabb { lo: lo, hi: hi }
+}
+
+fn axis_d2(c: f64, a: f64, b: f64) -> f64 {
+    if c < a { return (a - c) * (a - c); }
+    if c > b { return (c - b) * (c - b); }
+    0.0
+}
+
+fn light_touches_box(l: Light, lo: D3, hi: D3) -> bool {
+    if l.kind == 0 || l.range <= 0.0 { return true; }
+    let d2: f64 = axis_d2(l.pos.x, lo.x, hi.x)
+        + axis_d2(l.pos.y, lo.y, hi.y)
+        + axis_d2(l.pos.z, lo.z, hi.z);
+    d2 <= l.range * l.range
+}
+
+fn illuminance(l: Light, p: D3) -> (Rgb, D3) {
+    if l.kind == 0 {
+        let to_l: D3 = d3(-l.dir.x, -l.dir.y, -l.dir.z);
+        let e: Rgb = Rgb {
+            r: l.col.r * l.intensity,
+            g: l.col.g * l.intensity,
+            b: l.col.b * l.intensity,
+        };
+        return (e, to_l);
+    }
+    let d: D3 = d3(l.pos.x - p.x, l.pos.y - p.y, l.pos.z - p.z);
+    let d2: f64 = dot(d, d);
+    let dist: f64 = sqrt(d2);
+    if dist <= 0.0 {
+        return (Rgb { r: 0.0, g: 0.0, b: 0.0 }, d3(0.0, 0.0, 1.0));
+    }
+    let to_l: D3 = d3(d.x / dist, d.y / dist, d.z / dist);
+    let mut att: f64 = 1.0 / d2;
+    if l.range > 0.0 {
+        let q: f64 = dist / l.range;
+        let w: f64 = clamp_f(1.0 - q * q * q * q, 0.0, 1.0);
+        att = att * w * w;
+    }
+    if l.kind == 2 {
+        let scale: f64 = 1.0 / max_f(0.001, cos(l.inner_cone) - cos(l.outer_cone));
+        let offset: f64 = -cos(l.outer_cone) * scale;
+        let cd: f64 = -dot(l.dir, to_l);
+        let a: f64 = clamp_f(cd * scale + offset, 0.0, 1.0);
+        att = att * a * a;
+    }
+    let e: f64 = l.intensity * att;
+    (Rgb { r: l.col.r * e, g: l.col.g * e, b: l.col.b * e }, to_l)
+}
+
+pub fn ev100(aperture: f64, shutter: f64, iso: f64) -> f64 {
+    log(aperture * aperture / shutter * 100.0 / iso) / log(2.0)
+}
+
+pub fn exposure(ev: f64) -> f64 {
+    1.0 / (1.2 * pow(2.0, ev))
+}
+
+fn fnv_u32(h0: u64, b: u32) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 4 {
+        h = h ^ (((b >> (8 * k)) & 255u32) as u64);
+        h = h.wrapping_mul(1099511628211u64);
+        k = k + 1;
+    }
+    h
+}
+
+fn fnv_f32(h0: u64, v: f64) -> u64 {
+    fnv_u32(h0, (v as f32).to_bits())
+}
+
+fn build_lights(eps: f64) -> Vec<Light> {
+    let mut ls: Vec<Light> = Vec::new();
+    let mut i: i32 = 0;
+    while i < 64 {
+        let fi: f64 = i as f64;
+        if i == 0 {
+            ls.push(Light {
+                kind: 0,
+                pos: d3(0.0, 0.0, 0.0),
+                dir: d3(-0.36, -0.80, -0.48),
+                col: Rgb { r: 1.0, g: 0.96, b: 0.90 },
+                intensity: 12.0 + eps,
+                range: 0.0,
+                inner_cone: 0.0,
+                outer_cone: 0.7853981633974483,
+            });
+        } else if i < 40 {
+            ls.push(Light {
+                kind: 1,
+                pos: d3(-30.0 + 1.6 * fi + eps, -12.0 + 0.65 * fi, -(2.0 + 4.5 * fi)),
+                dir: d3(0.0, 0.0, -1.0),
+                col: Rgb { r: 0.9, g: 0.75, b: 0.55 },
+                intensity: 40.0 + 2.5 * fi,
+                range: 8.0 + 0.4 * fi,
+                inner_cone: 0.0,
+                outer_cone: 0.7853981633974483,
+            });
+        } else {
+            let fj: f64 = (i - 40) as f64;
+            ls.push(Light {
+                kind: 2,
+                pos: d3(-20.0 + 1.8 * fj + eps, 6.0 - 0.5 * fj, -(4.0 + 5.0 * fj)),
+                dir: d3(0.0, -0.6, -0.8),
+                col: Rgb { r: 0.65, g: 0.85, b: 1.0 },
+                intensity: 120.0 + 4.0 * fj,
+                range: 20.0 + 0.8 * fj,
+                inner_cone: 0.25,
+                outer_cone: 0.60,
+            });
+        }
+        i = i + 1;
+    }
+    ls
+}
+
+pub fn lighting_clusters_hashes(eps: f64) -> (u64, u64, u64, u64, u64, i32, i32) {
+    let mut h_bounds: u64 = 1469598103934665603u64;
+    let mut c: i32 = 0;
+    while c < 3456 {
+        let ab: Aabb = cluster_bounds(c);
+        h_bounds = fnv_f32(h_bounds, ab.lo.x);
+        h_bounds = fnv_f32(h_bounds, ab.lo.y);
+        h_bounds = fnv_f32(h_bounds, ab.lo.z);
+        h_bounds = fnv_f32(h_bounds, ab.hi.x);
+        h_bounds = fnv_f32(h_bounds, ab.hi.y);
+        h_bounds = fnv_f32(h_bounds, ab.hi.z);
+        c = c + 1;
+    }
+
+    let mut h_probe: u64 = 1469598103934665603u64;
+    let mut in_frust: i32 = 0;
+    let mut iz: i32 = 0;
+    while iz < 16 {
+        let z: f64 = -(0.05 + 14.0 * (iz as f64));
+        let mut iy: i32 = 0;
+        while iy < 16 {
+            let y: f64 = -25.0 + 3.3 * (iy as f64);
+            let mut ix: i32 = 0;
+            while ix < 16 {
+                let x: f64 = -40.0 + 5.3 * (ix as f64) + eps;
+                let cid: i32 = cluster_of(d3(x, y, z));
+                if cid >= 0 { in_frust = in_frust + 1; }
+                h_probe = fnv_u32(h_probe, (cid + 2) as u32);
+                ix = ix + 1;
+            }
+            iy = iy + 1;
+        }
+        iz = iz + 1;
+    }
+
+    let lights: Vec<Light> = build_lights(eps);
+    let mut h_assign: u64 = 1469598103934665603u64;
+    let mut entries: i32 = 0;
+    c = 0;
+    while c < 3456 {
+        let ab: Aabb = cluster_bounds(c);
+        let mut hits: Vec<i32> = Vec::new();
+        let mut k: i32 = 0;
+        while k < 64 {
+            if light_touches_box(lights[k as usize], ab.lo, ab.hi) {
+                if hits.len() < 256 { hits.push(k); }
+            }
+            k = k + 1;
+        }
+        let n_h: usize = hits.len();
+        h_assign = fnv_u32(h_assign, n_h as u32);
+        let mut j: usize = 0;
+        while j < n_h {
+            h_assign = fnv_u32(h_assign, hits[j] as u32);
+            entries = entries + 1;
+            j = j + 1;
+        }
+        c = c + 1;
+    }
+
+    let mut h_illum: u64 = 1469598103934665603u64;
+    let mut pi: i32 = 0;
+    while pi < 64 {
+        let fp: f64 = pi as f64;
+        let pos: D3 = d3(-15.0 + 0.5 * fp, -4.0 + 0.15 * fp, -(1.5 + 1.2 * fp));
+        let mut li: i32 = 0;
+        while li < 64 {
+            let (e, to_l) = illuminance(lights[li as usize], pos);
+            h_illum = fnv_f32(h_illum, e.r);
+            h_illum = fnv_f32(h_illum, e.g);
+            h_illum = fnv_f32(h_illum, e.b);
+            h_illum = fnv_f32(h_illum, to_l.x);
+            h_illum = fnv_f32(h_illum, to_l.y);
+            h_illum = fnv_f32(h_illum, to_l.z);
+            li = li + 4;
+        }
+        pi = pi + 1;
+    }
+    let mut ek: i32 = 0;
+    while ek < 8 {
+        let fk: f64 = ek as f64;
+        let iso_m: i32 = 1 << (ek % 4);
+        let ev: f64 = ev100(1.4 + 0.8 * fk, 1.0 / (60.0 * (fk + 1.0)), 100.0 * (iso_m as f64));
+        h_illum = fnv_f32(h_illum, ev);
+        h_illum = fnv_f32(h_illum, exposure(ev));
+        ek = ek + 1;
+    }
+
+    let mut h_all: u64 = 1469598103934665603u64;
+    h_all = (h_all ^ h_bounds).wrapping_mul(1099511628211u64);
+    h_all = (h_all ^ h_probe).wrapping_mul(1099511628211u64);
+    h_all = (h_all ^ h_assign).wrapping_mul(1099511628211u64);
+    h_all = (h_all ^ h_illum).wrapping_mul(1099511628211u64);
+    (h_bounds, h_probe, h_assign, h_illum, h_all, in_frust, entries)
+}

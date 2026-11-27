@@ -1,0 +1,613 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Superframe native/bld Module #18: glTF 2.0 PBR microfacet lobes and Belcour-Barla / Airy
+// thin-film iridescence (anisotropic GGX, height-correlated Smith V/G2, Schlick Fresnel,
+// Estevez-Kulla Charlie sheen D/V, Walter rough dielectric BTDF, and spectral/exact Airy
+// thin-film reflectance). Bit-exact 0 ULP port of pbr_lobes.cpp and pbr_iridescence.cpp.
+
+
+pub struct P3 { x: f64, y: f64, z: f64 }
+pub struct Rgb3 { r: f64, g: f64, b: f64 }
+pub struct C2 { re: f64, im: f64 }
+pub struct FilmInfo {
+    ok: bool,
+    r12: f64,
+    t121: f64,
+    phi21: f64,
+    cos2: f64,
+    opd: f64,
+    r23_r: f64,
+    r23_g: f64,
+    r23_b: f64,
+    phi23_r: f64,
+    phi23_g: f64,
+    phi23_b: f64,
+}
+pub struct PolInfo {
+    r12: f64,
+    t121: f64,
+    phi21: f64,
+    r23_r: f64,
+    r23_g: f64,
+    r23_b: f64,
+    phi23_r: f64,
+    phi23_g: f64,
+    phi23_b: f64,
+}
+pub struct SensTable {
+    re_r: Vec<f64>,
+    re_g: Vec<f64>,
+    re_b: Vec<f64>,
+    im_r: Vec<f64>,
+    im_g: Vec<f64>,
+    im_b: Vec<f64>,
+}
+
+fn k_pi() -> f64 { 3.14159265358979323846 }
+fn k_min_rough() -> f64 { 0.045 }
+fn k_min_sheen() -> f64 { 0.07 }
+fn k_sens_max() -> f64 { 40000.0 }
+fn k_sens_step() -> f64 { 10.0 }
+
+pub fn p3(x: f64, y: f64, z: f64) -> P3 { P3 { x: x, y: y, z: z } }
+pub fn rgb3(r: f64, g: f64, b: f64) -> Rgb3 { Rgb3 { r: r, g: g, b: b } }
+fn c2(re: f64, im: f64) -> C2 { C2 { re: re, im: im } }
+fn c_add(a: C2, b: C2) -> C2 { c2(a.re + b.re, a.im + b.im) }
+fn c_sub(a: C2, b: C2) -> C2 { c2(a.re - b.re, a.im - b.im) }
+fn c_mul(a: C2, b: C2) -> C2 { c2(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re) }
+fn c_scale(a: C2, s: f64) -> C2 { c2(a.re * s, a.im * s) }
+fn c_div(a: C2, b: C2) -> C2 {
+    let d: f64 = b.re * b.re + b.im * b.im;
+    c2((a.re * b.re + a.im * b.im) / d, (a.im * b.re - a.re * b.im) / d)
+}
+fn c_norm(a: C2) -> f64 { a.re * a.re + a.im * a.im }
+fn c_arg(a: C2) -> f64 { atan2(a.im, a.re) }
+fn c_polar(r: f64, a: f64) -> C2 { c2(r * cos(a), r * sin(a)) }
+fn c_exp(a: C2) -> C2 {
+    let er: f64 = exp(a.re);
+    c2(er * cos(a.im), er * sin(a.im))
+}
+fn c_sqrt_real(x: f64) -> C2 {
+    if x >= 0.0 { c2(sqrt(x), 0.0) } else { c2(0.0, sqrt(-x)) }
+}
+
+fn absd(x: f64) -> f64 { if x < 0.0 { -x } else { x } }
+fn maxd(a: f64, b: f64) -> f64 { if a > b { a } else { b } }
+fn mind(a: f64, b: f64) -> f64 { if a < b { a } else { b } }
+fn clampd(v: f64, lo: f64, hi: f64) -> f64 { mind(maxd(v, lo), hi) }
+fn dot3(a: P3, b: P3) -> f64 { a.x * b.x + a.y * b.y + a.z * b.z }
+fn ch_rgb(c: Rgb3, k: i32) -> f64 { if k == 0 { c.r } else if k == 1 { c.g } else { c.b } }
+
+// --- pbr_lobes.cpp ---
+
+pub fn alpha_of(roughness: f64) -> f64 {
+    let r: f64 = clampd(roughness, k_min_rough(), 1.0);
+    r * r
+}
+
+pub fn aniso_alphas(roughness: f64, anisotropy: f64) -> (f64, f64) {
+    let a: f64 = alpha_of(roughness);
+    let k: f64 = clampd(anisotropy, 0.0, 1.0);
+    (a + (1.0 - a) * k * k, a)
+}
+
+pub fn ggx_d(h: P3, ax: f64, ay: f64) -> f64 {
+    if h.z <= 0.0 { return 0.0; }
+    let u: f64 = h.x / ax;
+    let v: f64 = h.y / ay;
+    let s: f64 = u * u + v * v + h.z * h.z;
+    1.0 / (k_pi() * ax * ay * s * s)
+}
+
+pub fn smith_v(wo: P3, wi: P3, ax: f64, ay: f64) -> f64 {
+    let qo: f64 = sqrt(ax * ax * wo.x * wo.x + ay * ay * wo.y * wo.y + wo.z * wo.z);
+    let qi: f64 = sqrt(ax * ax * wi.x * wi.x + ay * ay * wi.y * wi.y + wi.z * wi.z);
+    0.5 / (absd(wi.z) * qo + absd(wo.z) * qi)
+}
+
+pub fn smith_g2(wo: P3, wi: P3, ax: f64, ay: f64) -> f64 {
+    4.0 * absd(wo.z) * absd(wi.z) * smith_v(wo, wi, ax, ay)
+}
+
+pub fn schlick(f0: f64, f90: f64, cosine: f64) -> f64 {
+    let m: f64 = 1.0 - clampd(cosine, 0.0, 1.0);
+    let m5: f64 = m * m * m * m * m;
+    f0 + (f90 - f0) * m5
+}
+
+pub fn charlie_d(h: P3, sheen_roughness: f64) -> f64 {
+    let r: f64 = clampd(sheen_roughness, k_min_sheen(), 1.0);
+    let inv: f64 = 1.0 / (r * r);
+    let s2: f64 = h.x * h.x + h.y * h.y;
+    (2.0 + inv) * pow(s2, 0.5 * inv) / (2.0 * k_pi())
+}
+
+fn sheen_l(x: f64, a: f64) -> f64 {
+    let t: f64 = (1.0 - a) * (1.0 - a);
+    let ca: f64 = 21.5473 + (25.3245 - 21.5473) * t;
+    let cb: f64 = 3.82987 + (3.32435 - 3.82987) * t;
+    let cc: f64 = 0.19823 + (0.16801 - 0.19823) * t;
+    let cd: f64 = -1.97760 + (-1.27393 + 1.97760) * t;
+    let ce: f64 = -4.32054 + (-4.85967 + 4.32054) * t;
+    ca / (1.0 + cb * pow(x, cc)) + cd * x + ce
+}
+
+fn sheen_lambda(c: f64, a: f64) -> f64 {
+    if absd(c) < 0.5 { exp(sheen_l(c, a)) } else { exp(2.0 * sheen_l(0.5, a) - sheen_l(1.0 - c, a)) }
+}
+
+pub fn charlie_v(mu_o: f64, mu_i: f64, sheen_roughness: f64) -> f64 {
+    let r: f64 = clampd(sheen_roughness, k_min_sheen(), 1.0);
+    let a: f64 = r * r;
+    1.0 / ((1.0 + sheen_lambda(mu_o, a) + sheen_lambda(mu_i, a)) * (4.0 * mu_o * mu_i))
+}
+
+pub fn walter_btdf(vin: P3, eta_in: f64, vout: P3, eta_out: f64, ax: f64, ay: f64, f0: f64) -> f64 {
+    if vin.z * vout.z >= 0.0 { return 0.0; }
+    let mut h: P3 = p3(
+        -(eta_in * vin.x + eta_out * vout.x),
+        -(eta_in * vin.y + eta_out * vout.y),
+        -(eta_in * vin.z + eta_out * vout.z),
+    );
+    let l: f64 = sqrt(dot3(h, h));
+    if l <= 0.0 { return 0.0; }
+    h = p3(h.x / l, h.y / l, h.z / l);
+    if h.z < 0.0 { h = p3(-h.x, -h.y, -h.z); }
+    let ih: f64 = dot3(vin, h);
+    let oh: f64 = dot3(vout, h);
+    if ih * vin.z <= 0.0 || oh * vout.z <= 0.0 { return 0.0; }
+    let cos_low: f64 = if eta_in <= eta_out { absd(ih) } else { absd(oh) };
+    let fr: f64 = schlick(f0, 1.0, cos_low);
+    let den: f64 = eta_in * ih + eta_out * oh;
+    absd(ih) * absd(oh) / (absd(vin.z) * absd(vout.z)) * eta_out * eta_out * (1.0 - fr)
+        * smith_g2(vin, vout, ax, ay) * ggx_d(h, ax, ay) / (den * den)
+}
+
+// --- pbr_iridescence.cpp ---
+
+fn ior_to_f0(transmitted: f64, incident: f64) -> f64 {
+    let q: f64 = (transmitted - incident) / (transmitted + incident);
+    q * q
+}
+
+fn f0_to_ior(f0: f64) -> f64 {
+    let s: f64 = sqrt(f0);
+    (1.0 + s) / (1.0 - s)
+}
+
+fn xyz_to_rec709(x: f64, y: f64, z: f64) -> Rgb3 {
+    rgb3(
+        3.2404542 * x - 1.5371385 * y - 0.4985314 * z,
+        -0.9692660 * x + 1.8760108 * y + 0.0415560 * z,
+        0.0556434 * x - 0.2040259 * y + 1.0572252 * z,
+    )
+}
+
+fn eval_sensitivity(opd: f64, s0: f64, s1: f64, s2: f64) -> Rgb3 {
+    let phase: f64 = 2.0 * k_pi() * opd * 1.0e-9;
+    let p2: f64 = phase * phase;
+    let mut x: f64 = 5.4856e-13 * sqrt(2.0 * k_pi() * 4.3278e+09)
+        * cos(1.6810e+06 * phase + s0) * exp(-p2 * 4.3278e+09);
+    let y: f64 = 4.4201e-13 * sqrt(2.0 * k_pi() * 9.3046e+09)
+        * cos(1.7953e+06 * phase + s1) * exp(-p2 * 9.3046e+09);
+    let z: f64 = 5.2481e-13 * sqrt(2.0 * k_pi() * 6.6121e+09)
+        * cos(2.2084e+06 * phase + s2) * exp(-p2 * 6.6121e+09);
+    x = x + 9.7470e-14 * sqrt(2.0 * k_pi() * 4.5282e+09)
+        * cos(2.2399e+06 * phase + s0) * exp(-4.5282e+09 * p2);
+    xyz_to_rec709(x / 1.0685e-7, y / 1.0685e-7, z / 1.0685e-7)
+}
+
+fn eval_film(outside_ior: f64, film_ior: f64, d: f64, base_f0: Rgb3, cos1: f64) -> FilmInfo {
+    let ratio: f64 = outside_ior / film_ior;
+    let s2: f64 = ratio * ratio * (1.0 - cos1 * cos1);
+    let c2sq: f64 = 1.0 - s2;
+    if c2sq < 0.0 {
+        return FilmInfo {
+            ok: false, r12: 0.0, t121: 0.0, phi21: 0.0, cos2: 0.0, opd: 0.0,
+            r23_r: 0.0, r23_g: 0.0, r23_b: 0.0, phi23_r: 0.0, phi23_g: 0.0, phi23_b: 0.0,
+        };
+    }
+    let cos2: f64 = sqrt(c2sq);
+    let r12: f64 = schlick(ior_to_f0(film_ior, outside_ior), 1.0, cos1);
+    let t121: f64 = 1.0 - r12;
+    let phi12: f64 = if film_ior < outside_ior { k_pi() } else { 0.0 };
+    let phi21: f64 = k_pi() - phi12;
+    let b0: f64 = f0_to_ior(base_f0.r + 0.0001);
+    let b1: f64 = f0_to_ior(base_f0.g + 0.0001);
+    let b2: f64 = f0_to_ior(base_f0.b + 0.0001);
+    FilmInfo {
+        ok: true,
+        r12: r12,
+        t121: t121,
+        phi21: phi21,
+        cos2: cos2,
+        opd: 2.0 * film_ior * d * cos2,
+        r23_r: schlick(ior_to_f0(b0, film_ior), 1.0, cos2),
+        r23_g: schlick(ior_to_f0(b1, film_ior), 1.0, cos2),
+        r23_b: schlick(ior_to_f0(b2, film_ior), 1.0, cos2),
+        phi23_r: if b0 < film_ior { k_pi() } else { 0.0 },
+        phi23_g: if b1 < film_ior { k_pi() } else { 0.0 },
+        phi23_b: if b2 < film_ior { k_pi() } else { 0.0 },
+    }
+}
+
+fn cmf_g(l: f64, mu: f64, s1: f64, s2: f64) -> f64 {
+    let t: f64 = (l - mu) / (if l < mu { s1 } else { s2 });
+    exp(-0.5 * t * t)
+}
+
+fn cmf_xyz(l: f64) -> (f64, f64, f64) {
+    let x: f64 = 1.056 * cmf_g(l, 599.8, 37.9, 31.0)
+        + 0.362 * cmf_g(l, 442.0, 16.0, 26.7)
+        - 0.065 * cmf_g(l, 501.1, 20.4, 26.2);
+    let y: f64 = 0.821 * cmf_g(l, 568.8, 46.9, 40.5)
+        + 0.286 * cmf_g(l, 530.9, 16.3, 31.1);
+    let z: f64 = 1.217 * cmf_g(l, 437.0, 11.8, 36.0)
+        + 0.681 * cmf_g(l, 459.0, 26.0, 13.8);
+    (x, y, z)
+}
+
+pub fn build_sens_table() -> SensTable {
+    let n: i32 = ((k_sens_max() / k_sens_step()) as i32) + 1;
+    let mut cx: Vec<f64> = Vec::new();
+    let mut cy: Vec<f64> = Vec::new();
+    let mut cz: Vec<f64> = Vec::new();
+    let mut wx: f64 = 0.0;
+    let mut wy: f64 = 0.0;
+    let mut wz: f64 = 0.0;
+    let mut wl: i32 = 380;
+    while wl <= 780 {
+        let (x, y, z) = cmf_xyz(wl as f64);
+        cx.push(x); cy.push(y); cz.push(z);
+        wx = wx + x; wy = wy + y; wz = wz + z;
+        wl = wl + 1;
+    }
+    let w: Rgb3 = xyz_to_rec709(wx, wy, wz);
+    let mut re_r: Vec<f64> = Vec::new();
+    let mut re_g: Vec<f64> = Vec::new();
+    let mut re_b: Vec<f64> = Vec::new();
+    let mut im_r: Vec<f64> = Vec::new();
+    let mut im_g: Vec<f64> = Vec::new();
+    let mut im_b: Vec<f64> = Vec::new();
+    let mut j: i32 = 0;
+    while j < n {
+        let opd: f64 = (j as f64) * k_sens_step();
+        let mut rx: f64 = 0.0;
+        let mut ry: f64 = 0.0;
+        let mut rz: f64 = 0.0;
+        let mut ix: f64 = 0.0;
+        let mut iy: f64 = 0.0;
+        let mut iz: f64 = 0.0;
+        let mut idx: i32 = 0;
+        while idx <= 400 {
+            let l: f64 = (380 + idx) as f64;
+            let a: f64 = 2.0 * k_pi() * opd / l;
+            let cv: f64 = cos(a);
+            let sv: f64 = sin(a);
+            let x: f64 = cx[idx];
+            let y: f64 = cy[idx];
+            let z: f64 = cz[idx];
+            rx = rx + x * cv; ry = ry + y * cv; rz = rz + z * cv;
+            ix = ix + x * sv; iy = iy + y * sv; iz = iz + z * sv;
+            idx = idx + 1;
+        }
+        let re: Rgb3 = xyz_to_rec709(rx, ry, rz);
+        let im: Rgb3 = xyz_to_rec709(ix, iy, iz);
+        re_r.push(re.r / w.r); re_g.push(re.g / w.g); re_b.push(re.b / w.b);
+        im_r.push(im.r / w.r); im_g.push(im.g / w.g); im_b.push(im.b / w.b);
+        j = j + 1;
+    }
+    SensTable { re_r: re_r, re_g: re_g, re_b: re_b, im_r: im_r, im_g: im_g, im_b: im_b }
+}
+
+fn tab_sensitivity(t: &SensTable, opd: f64, s0: f64, s1: f64, s2: f64) -> Rgb3 {
+    let n: i32 = t.re_r.len() as i32;
+    let u: f64 = clampd(opd / k_sens_step(), 0.0, (n - 1) as f64);
+    let mut j: i32 = u as i32;
+    if j > n - 2 { j = n - 2; }
+    let f: f64 = u - (j as f64);
+    let rer: f64 = t.re_r[j] * (1.0 - f) + t.re_r[j + 1] * f;
+    let imr: f64 = t.im_r[j] * (1.0 - f) + t.im_r[j + 1] * f;
+    let reg: f64 = t.re_g[j] * (1.0 - f) + t.re_g[j + 1] * f;
+    let img: f64 = t.im_g[j] * (1.0 - f) + t.im_g[j + 1] * f;
+    let reb: f64 = t.re_b[j] * (1.0 - f) + t.re_b[j + 1] * f;
+    let imb: f64 = t.im_b[j] * (1.0 - f) + t.im_b[j + 1] * f;
+    rgb3(
+        rer * cos(s0) - imr * sin(s0),
+        reg * cos(s1) - img * sin(s1),
+        reb * cos(s2) - imb * sin(s2),
+    )
+}
+
+fn eval_pol_ch(n2: f64, cos2: f64, n3: f64, sin2sq: f64, p_pol: bool) -> (f64, f64) {
+    let ratio: f64 = n2 / n3;
+    let c3: C2 = c_sqrt_real(1.0 - ratio * ratio * sin2sq);
+    let r23: C2 = if p_pol {
+        c_div(c_sub(c2(n3 * cos2, 0.0), c_scale(c3, n2)), c_add(c2(n3 * cos2, 0.0), c_scale(c3, n2)))
+    } else {
+        c_div(c_sub(c2(n2 * cos2, 0.0), c_scale(c3, n3)), c_add(c2(n2 * cos2, 0.0), c_scale(c3, n3)))
+    };
+    (c_norm(r23), c_arg(r23))
+}
+
+fn eval_polarized(n1: f64, n2: f64, cos1: f64, cos2: f64, n3r: f64, n3g: f64, n3b: f64, p_pol: bool) -> PolInfo {
+    let r12: f64 = if p_pol {
+        (n2 * cos1 - n1 * cos2) / (n2 * cos1 + n1 * cos2)
+    } else {
+        (n1 * cos1 - n2 * cos2) / (n1 * cos1 + n2 * cos2)
+    };
+    let r12sq: f64 = r12 * r12;
+    let phi21: f64 = if -r12 >= 0.0 { 0.0 } else { k_pi() };
+    let sin2sq: f64 = 1.0 - cos2 * cos2;
+    let (rr, pr) = eval_pol_ch(n2, cos2, n3r, sin2sq, p_pol);
+    let (rg, pg) = eval_pol_ch(n2, cos2, n3g, sin2sq, p_pol);
+    let (rb, pb) = eval_pol_ch(n2, cos2, n3b, sin2sq, p_pol);
+    PolInfo {
+        r12: r12sq, t121: 1.0 - r12sq, phi21: phi21,
+        r23_r: rr, r23_g: rg, r23_b: rb, phi23_r: pr, phi23_g: pg, phi23_b: pb,
+    }
+}
+
+fn eval_series(
+    t: &SensTable,
+    r12: f64, t121: f64, phi21: f64,
+    r23_r: f64, r23_g: f64, r23_b: f64,
+    phi23_r: f64, phi23_g: f64, phi23_b: f64,
+    opd: f64, harmonics: i32, tabulated: bool,
+) -> Rgb3 {
+    let p0: f64 = phi21 + phi23_r;
+    let p1: f64 = phi21 + phi23_g;
+    let p2: f64 = phi21 + phi23_b;
+    let r123_0: f64 = clampd(r12 * r23_r, 1.0e-5, 0.9999);
+    let r123_1: f64 = clampd(r12 * r23_g, 1.0e-5, 0.9999);
+    let r123_2: f64 = clampd(r12 * r23_b, 1.0e-5, 0.9999);
+    let sr0: f64 = sqrt(r123_0);
+    let sr1: f64 = sqrt(r123_1);
+    let sr2: f64 = sqrt(r123_2);
+    let rs0: f64 = t121 * t121 * r23_r / (1.0 - r123_0);
+    let rs1: f64 = t121 * t121 * r23_g / (1.0 - r123_1);
+    let rs2: f64 = t121 * t121 * r23_b / (1.0 - r123_2);
+    let mut or: f64 = r12 + rs0;
+    let mut og: f64 = r12 + rs1;
+    let mut ob: f64 = r12 + rs2;
+    let mut cm0: f64 = rs0 - t121;
+    let mut cm1: f64 = rs1 - t121;
+    let mut cm2: f64 = rs2 - t121;
+    let mut m: i32 = 1;
+    while m <= harmonics {
+        let mf: f64 = m as f64;
+        let sm: Rgb3 = if tabulated {
+            tab_sensitivity(t, mf * opd, mf * p0, mf * p1, mf * p2)
+        } else {
+            eval_sensitivity(mf * opd, mf * p0, mf * p1, mf * p2)
+        };
+        cm0 = cm0 * sr0; cm1 = cm1 * sr1; cm2 = cm2 * sr2;
+        or = or + cm0 * 2.0 * sm.r;
+        og = og + cm1 * 2.0 * sm.g;
+        ob = ob + cm2 * 2.0 * sm.b;
+        m = m + 1;
+    }
+    rgb3(or, og, ob)
+}
+
+pub fn iridescent_fresnel(
+    t: &SensTable, outside_ior: f64, film_ior: f64, d: f64,
+    base_f0: Rgb3, cos1: f64, harmonics: i32, pol_in: bool,
+) -> Rgb3 {
+    let f: FilmInfo = eval_film(outside_ior, film_ior, d, base_f0, cos1);
+    if !f.ok { return rgb3(1.0, 1.0, 1.0); }
+    let max_f0: f64 = maxd(base_f0.r, maxd(base_f0.g, base_f0.b));
+    let pol: bool = if pol_in && max_f0 > 0.25 { false } else { pol_in };
+    let out: Rgb3 = if !pol {
+        eval_series(
+            t, f.r12, f.t121, f.phi21, f.r23_r, f.r23_g, f.r23_b,
+            f.phi23_r, f.phi23_g, f.phi23_b, f.opd, harmonics, false,
+        )
+    } else {
+        let n3r: f64 = f0_to_ior(base_f0.r + 0.0001);
+        let n3g: f64 = f0_to_ior(base_f0.g + 0.0001);
+        let n3b: f64 = f0_to_ior(base_f0.b + 0.0001);
+        let sp: PolInfo = eval_polarized(outside_ior, film_ior, cos1, f.cos2, n3r, n3g, n3b, false);
+        let pp: PolInfo = eval_polarized(outside_ior, film_ior, cos1, f.cos2, n3r, n3g, n3b, true);
+        let a: Rgb3 = eval_series(
+            t, sp.r12, sp.t121, sp.phi21, sp.r23_r, sp.r23_g, sp.r23_b,
+            sp.phi23_r, sp.phi23_g, sp.phi23_b, f.opd, harmonics, true,
+        );
+        let b: Rgb3 = eval_series(
+            t, pp.r12, pp.t121, pp.phi21, pp.r23_r, pp.r23_g, pp.r23_b,
+            pp.phi23_r, pp.phi23_g, pp.phi23_b, f.opd, harmonics, true,
+        );
+        rgb3(0.5 * (a.r + b.r), 0.5 * (a.g + b.g), 0.5 * (a.b + b.b))
+    };
+    rgb3(maxd(out.r, 0.0), maxd(out.g, 0.0), maxd(out.b, 0.0))
+}
+
+pub fn iridescent_spectral(outside_ior: f64, film_ior: f64, d: f64, base_f0: Rgb3, cos1: f64) -> Rgb3 {
+    let f: FilmInfo = eval_film(outside_ior, film_ior, d, base_f0, cos1);
+    if !f.ok { return rgb3(1.0, 1.0, 1.0); }
+    let mut out_r: f64 = 0.0;
+    let mut out_g: f64 = 0.0;
+    let mut out_b: f64 = 0.0;
+    let mut k: i32 = 0;
+    while k < 3 {
+        let r23k: f64 = if k == 0 { f.r23_r } else if k == 1 { f.r23_g } else { f.r23_b };
+        let phi23k: f64 = if k == 0 { f.phi23_r } else if k == 1 { f.phi23_g } else { f.phi23_b };
+        let rho12: C2 = c_polar(sqrt(f.r12), k_pi() - f.phi21);
+        let rho21: C2 = c_polar(sqrt(f.r12), f.phi21);
+        let rho23: C2 = c_polar(sqrt(r23k), phi23k);
+        let r123: f64 = f.r12 * r23k;
+        let c0: f64 = f.r12 + f.t121 * f.t121 * r23k / (1.0 - r123);
+        let mut sx: f64 = 0.0;
+        let mut sy: f64 = 0.0;
+        let mut sz: f64 = 0.0;
+        let mut yn: f64 = 0.0;
+        let mut wl: i32 = 380;
+        while wl <= 780 {
+            let e: C2 = c_polar(1.0, 2.0 * k_pi() * f.opd / (wl as f64));
+            let num: C2 = c_mul(c_scale(rho23, f.t121), e);
+            let den: C2 = c_sub(c2(1.0, 0.0), c_mul(c_mul(rho21, rho23), e));
+            let rv: C2 = c_add(rho12, c_div(num, den));
+            let (x, y, z) = cmf_xyz(wl as f64);
+            let ac: f64 = c_norm(rv) - c0;
+            sx = sx + ac * x; sy = sy + ac * y; sz = sz + ac * z; yn = yn + y;
+            wl = wl + 1;
+        }
+        let val: f64 = c0 + ch_rgb(xyz_to_rec709(sx / yn, sy / yn, sz / yn), k);
+        if k == 0 { out_r = val; } else if k == 1 { out_g = val; } else { out_b = val; }
+        k = k + 1;
+    }
+    rgb3(maxd(out_r, 0.0), maxd(out_g, 0.0), maxd(out_b, 0.0))
+}
+
+pub fn iridescent_exact(n1: f64, n2: f64, d: f64, n3: f64, cos1: f64) -> Rgb3 {
+    let s1: f64 = 1.0 - cos1 * cos1;
+    let c2v: C2 = c_sqrt_real(1.0 - (n1 / n2) * (n1 / n2) * s1);
+    let c3v: C2 = c_sqrt_real(1.0 - (n1 / n3) * (n1 / n3) * s1);
+    let mut sx: f64 = 0.0;
+    let mut sy: f64 = 0.0;
+    let mut sz: f64 = 0.0;
+    let mut wx: f64 = 0.0;
+    let mut wy: f64 = 0.0;
+    let mut wz: f64 = 0.0;
+    let mut wl: i32 = 380;
+    while wl <= 780 {
+        let e: C2 = c_exp(c_mul(c2(0.0, 4.0 * k_pi() * n2 * d / (wl as f64)), c2v));
+        let mut rv: f64 = 0.0;
+        let mut pol: i32 = 0;
+        while pol < 2 {
+            let r12: C2 = if pol != 0 {
+                c_div(c_sub(c2(n2 * cos1, 0.0), c_scale(c2v, n1)), c_add(c2(n2 * cos1, 0.0), c_scale(c2v, n1)))
+            } else {
+                c_div(c_sub(c2(n1 * cos1, 0.0), c_scale(c2v, n2)), c_add(c2(n1 * cos1, 0.0), c_scale(c2v, n2)))
+            };
+            let r23: C2 = if pol != 0 {
+                c_div(c_sub(c_scale(c2v, n3), c_scale(c3v, n2)), c_add(c_scale(c2v, n3), c_scale(c3v, n2)))
+            } else {
+                c_div(c_sub(c_scale(c2v, n2), c_scale(c3v, n3)), c_add(c_scale(c2v, n2), c_scale(c3v, n3)))
+            };
+            let r23e: C2 = c_mul(r23, e);
+            let frac: C2 = c_div(c_add(r12, r23e), c_add(c2(1.0, 0.0), c_mul(r12, r23e)));
+            rv = rv + 0.5 * c_norm(frac);
+            pol = pol + 1;
+        }
+        let (x, y, z) = cmf_xyz(wl as f64);
+        sx = sx + rv * x; sy = sy + rv * y; sz = sz + rv * z;
+        wx = wx + x; wy = wy + y; wz = wz + z;
+        wl = wl + 1;
+    }
+    let a: Rgb3 = xyz_to_rec709(sx, sy, sz);
+    let w: Rgb3 = xyz_to_rec709(wx, wy, wz);
+    rgb3(a.r / w.r, a.g / w.g, a.b / w.b)
+}
+
+fn unit_dir(theta: f64, phi: f64) -> P3 {
+    let s: f64 = sin(theta);
+    p3(s * cos(phi), s * sin(phi), cos(theta))
+}
+
+fn fnv_u64(h0: u64, v: u64) -> u64 {
+    let mut h: u64 = h0;
+    let mut k: u32 = 0;
+    while k < 8 {
+        h = (h ^ ((v >> (8 * k)) & 255)).wrapping_mul(1099511628211);
+        k = k + 1;
+    }
+    h
+}
+
+pub fn run_pbr_lobes_parity() -> (u64, u64, u64, u64, u64, u64) {
+    let mut h_ggx: u64 = kit::fnv_start();
+    let mut i: i32 = 0;
+    while i < 1024 {
+        let rough: f64 = 0.05 + 0.90 * ((i % 8) as f64) / 7.0;
+        let aniso: f64 = (((i / 8) % 4) as f64) / 3.0;
+        let th_o: f64 = 0.1 + 1.35 * (((i / 32) % 4) as f64) / 3.0;
+        let th_i: f64 = 0.15 + 1.30 * (((i / 128) % 4) as f64) / 3.0;
+        let ph_i: f64 = 0.3 + 2.5 * ((i / 512) as f64);
+        let (ax, ay) = aniso_alphas(rough, aniso);
+        let wo: P3 = unit_dir(th_o, 0.25);
+        let wi: P3 = unit_dir(th_i, ph_i);
+        let hx: f64 = wo.x + wi.x;
+        let hy: f64 = wo.y + wi.y;
+        let hz: f64 = wo.z + wi.z;
+        let hl: f64 = sqrt(hx * hx + hy * hy + hz * hz);
+        let hv: P3 = p3(hx / hl, hy / hl, hz / hl);
+        h_ggx = kit::fnv_f32(h_ggx, ggx_d(hv, ax, ay));
+        h_ggx = kit::fnv_f32(h_ggx, smith_v(wo, wi, ax, ay));
+        h_ggx = kit::fnv_f32(h_ggx, smith_g2(wo, wi, ax, ay));
+        h_ggx = kit::fnv_f32(h_ggx, schlick(0.04, 1.0, dot3(wo, hv)));
+        i = i + 1;
+    }
+
+    let mut h_sb: u64 = kit::fnv_start();
+    i = 0;
+    while i < 512 {
+        let sr: f64 = 0.07 + 0.90 * ((i % 8) as f64) / 7.0;
+        let th_o: f64 = 0.12 + 1.32 * (((i / 8) % 8) as f64) / 7.0;
+        let th_i: f64 = 0.18 + 1.28 * (((i / 64) % 8) as f64) / 7.0;
+        let wo: P3 = unit_dir(th_o, 0.2);
+        let wi: P3 = unit_dir(th_i, 1.1);
+        let hx: f64 = wo.x + wi.x;
+        let hy: f64 = wo.y + wi.y;
+        let hz: f64 = wo.z + wi.z;
+        let hl: f64 = sqrt(hx * hx + hy * hy + hz * hz);
+        let hv: P3 = p3(hx / hl, hy / hl, hz / hl);
+        let wt: P3 = p3(wi.x, wi.y, -wi.z);
+        h_sb = kit::fnv_f32(h_sb, charlie_d(hv, sr));
+        h_sb = kit::fnv_f32(h_sb, charlie_v(wo.z, wi.z, sr));
+        h_sb = kit::fnv_f32(h_sb, walter_btdf(wo, 1.0, wt, 1.5, 0.25, 0.15, 0.04));
+        h_sb = kit::fnv_f32(h_sb, walter_btdf(wt, 1.5, wo, 1.0, 0.25, 0.15, 0.04));
+        i = i + 1;
+    }
+
+    let st: SensTable = build_sens_table();
+    let f0_diel: Rgb3 = rgb3(0.04, 0.04, 0.04);
+    let f0_metal: Rgb3 = rgb3(0.91, 0.78, 0.42);
+    let mut h_irid_fast: u64 = kit::fnv_start();
+    let mut h_irid_ctrl: u64 = kit::fnv_start();
+    i = 0;
+    while i < 256 {
+        let film_ior: f64 = 1.2 + 0.8 * ((i % 4) as f64) / 3.0;
+        let thick: f64 = 100.0 + 700.0 * (((i / 4) % 8) as f64) / 7.0;
+        let cos1: f64 = 0.15 + 0.84 * (((i / 32) % 8) as f64) / 7.0;
+        let rf_sch: Rgb3 = iridescent_fresnel(&st, 1.0, film_ior, thick, f0_metal, cos1, 2, false);
+        let rf_pol: Rgb3 = iridescent_fresnel(&st, 1.0, film_ior, thick, f0_diel, cos1, 4, true);
+        let rf_ctrl: Rgb3 = iridescent_fresnel(&st, 1.0, film_ior, thick + 25.0, f0_diel, cos1, 4, true);
+        h_irid_fast = kit::fnv_f32(h_irid_fast, rf_sch.r);
+        h_irid_fast = kit::fnv_f32(h_irid_fast, rf_sch.g);
+        h_irid_fast = kit::fnv_f32(h_irid_fast, rf_sch.b);
+        h_irid_fast = kit::fnv_f32(h_irid_fast, rf_pol.r);
+        h_irid_fast = kit::fnv_f32(h_irid_fast, rf_pol.g);
+        h_irid_fast = kit::fnv_f32(h_irid_fast, rf_pol.b);
+        h_irid_ctrl = kit::fnv_f32(h_irid_ctrl, rf_ctrl.r);
+        h_irid_ctrl = kit::fnv_f32(h_irid_ctrl, rf_ctrl.g);
+        h_irid_ctrl = kit::fnv_f32(h_irid_ctrl, rf_ctrl.b);
+        i = i + 1;
+    }
+
+    let mut h_irid_spec: u64 = kit::fnv_start();
+    i = 0;
+    while i < 64 {
+        let film_ior: f64 = 1.3 + 0.5 * ((i % 4) as f64) / 3.0;
+        let thick: f64 = 180.0 + 520.0 * (((i / 4) % 4) as f64) / 3.0;
+        let cos1: f64 = 0.25 + 0.72 * ((i / 16) as f64) / 3.0;
+        let sp: Rgb3 = iridescent_spectral(1.0, film_ior, thick, f0_diel, cos1);
+        let ex: Rgb3 = iridescent_exact(1.0, film_ior, thick, 1.5, cos1);
+        h_irid_spec = kit::fnv_f32(h_irid_spec, sp.r);
+        h_irid_spec = kit::fnv_f32(h_irid_spec, sp.g);
+        h_irid_spec = kit::fnv_f32(h_irid_spec, sp.b);
+        h_irid_spec = kit::fnv_f32(h_irid_spec, ex.r);
+        h_irid_spec = kit::fnv_f32(h_irid_spec, ex.g);
+        h_irid_spec = kit::fnv_f32(h_irid_spec, ex.b);
+        i = i + 1;
+    }
+
+    let mut h_all: u64 = kit::fnv_start();
+    h_all = fnv_u64(h_all, h_ggx);
+    h_all = fnv_u64(h_all, h_sb);
+    h_all = fnv_u64(h_all, h_irid_fast);
+    h_all = fnv_u64(h_all, h_irid_spec);
+
+    (h_ggx, h_sb, h_irid_fast, h_irid_spec, h_all, h_irid_ctrl)
+}
