@@ -22,9 +22,10 @@ constexpr const char* kFamily = "gcc";
 #else
 constexpr const char* kFamily = "other";
 #endif
-struct Pinned { const char* family; std::uint64_t coc, codes; };
-// Recorded 2026-10-22 on MSVC (VS 18) and GCC 13.3; codes re-pinned under addendum C (half-resolution defocus).
-constexpr Pinned kPinned[] = {{"msvc", 0x2c4cd941314f50b5ull, 0x1a208990a1cda158ull}, {"gcc", 0x2c4cd941314f50b5ull, 0x1a208990a1cda158ull}};
+struct Pinned { const char* family; std::uint64_t coc, codes, townNightLit; };
+// Recorded 2026-10-22 on MSVC (VS 18) and GCC 13.3; townNightLit added 2026-11-26; the two agree.
+constexpr Pinned kPinned[] = {{"msvc", 0x2c4cd941314f50b5ull, 0x1a208990a1cda158ull, 0x91ee8ea81ab861f0ull},
+                               {"gcc", 0x2c4cd941314f50b5ull, 0x1a208990a1cda158ull, 0x91ee8ea81ab861f0ull}};
 
 void checkPinned(const char* what, std::uint64_t got, std::uint64_t Pinned::*field) {
     std::printf("g2 %s %s 0x%016llxull\n", kFamily, what, static_cast<unsigned long long>(got));
@@ -54,6 +55,8 @@ void checkGoldens() {
     const std::vector<float> ts = paintDefocus(paint, coc, 256, 144, {}, DefocusMode::Paint, 4);
     checkPinned("coc", fnv1a(coc), &Pinned::coc);
     checkPinned("codes", fnv1a(codes8(ts)), &Pinned::codes);
+    const Frame fNight = renderFrame(v, townNight(), 4, SceneKind::Town);
+    checkPinned("townNightLit", fnv1a(fNight.lit), &Pinned::townNightLit);
     // In-focus pixels are untouched (weight 0 below c0).
     const std::vector<float> w = defocusWeight(coc, 256, 144, {});
     long same = 0, sharp = 0;

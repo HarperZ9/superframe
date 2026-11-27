@@ -16,7 +16,9 @@ use art_prims::Hit;
 use art_prims::no_hit;
 use art_prims::consider;
 use art_prims::hit_box;
+use art_prims::hit_box_emit;
 use art_prims::hit_sphere;
+use art_prims::hit_sphere_emit;
 use art_prims::hit_cylinder;
 use art_prims::mind;
 use art_prims::maxd;
@@ -85,11 +87,12 @@ pub fn trace_town(o: V3, d: V3) -> Hit {
     best = hit_cylinder(0.0, -4.6, 0.09, 0.0, 4.2, 21, 6, v3(0.10, 0.10, 0.11), o, d, best);
     best = hit_cylinder(12.0, 4.4, 0.09, 0.0, 4.2, 22, 6, v3(0.10, 0.10, 0.11), o, d, best);
     // emissive sodium globes
-    best = hit_sphere(v3(-10.5, 4.45, -4.4), 0.28, 23, 10, v3(0.9, 0.8, 0.6), o, d, best);
-    best = hit_sphere(v3(0.0, 4.45, -4.6), 0.28, 24, 10, v3(0.9, 0.8, 0.6), o, d, best);
-    best = hit_sphere(v3(12.0, 4.45, 4.4), 0.28, 25, 10, v3(0.9, 0.8, 0.6), o, d, best);
+    let sodium: V3 = v3(24.0, 13.0, 3.2);
+    best = hit_sphere_emit(v3(-10.5, 4.45, -4.4), 0.28, 23, 10, v3(0.9, 0.8, 0.6), sodium, o, d, best);
+    best = hit_sphere_emit(v3(0.0, 4.45, -4.6), 0.28, 24, 10, v3(0.9, 0.8, 0.6), sodium, o, d, best);
+    best = hit_sphere_emit(v3(12.0, 4.45, 4.4), 0.28, 25, 10, v3(0.9, 0.8, 0.6), sodium, o, d, best);
     // lit window, dog, washing
-    best = hit_box(v3(6.0, 2.2, -5.03), v3(7.2, 3.6, -4.98), 26, 7, v3(0.2, 0.2, 0.2), o, d, best);
+    best = hit_box_emit(v3(6.0, 2.2, -5.03), v3(7.2, 3.6, -4.98), 26, 7, v3(0.2, 0.2, 0.2), v3(3.0, 1.9, 0.8), o, d, best);
     best = hit_box(v3(-6.2, 0.0, 1.2), v3(-5.2, 0.5, 1.6), 27, 8, v3(0.35, 0.24, 0.16), o, d, best);
     best = hit_box(v3(-1.4, 2.3, 7.4), v3(-0.6, 3.0, 7.5), 28, 9, v3(0.86, 0.84, 0.78), o, d, best);
     best = hit_box(v3(0.0, 2.4, 7.4), v3(0.9, 3.0, 7.5), 28, 9, v3(0.70, 0.76, 0.84), o, d, best);

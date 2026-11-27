@@ -1,0 +1,135 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// P23 three-quarter town night lighting and shadowed sodium spot lamp term, ported from
+// src/renderer/art_scene.cpp (townNight, lightTerms, shade, writePixel) and
+// src/renderer/art_scene_town.cpp (traceTown). Matches GCC 13.3 and MSVC VS 18 bit for bit.
+
+use kit::V3;
+use kit::v3;
+use kit::dot;
+use kit::sub;
+use kit::cross;
+use kit::norm;
+use kit::along;
+use kit::clampd;
+use art_prims::Hit;
+
+struct NightRig {
+    sun_dir: V3,
+    sun_c: V3,
+    lamp_pos: V3,
+    lamp_axis: V3,
+    cos_outer: f64,
+    cos_inner: f64,
+    lamp_c: V3,
+    sky_top: V3,
+    sky_horizon: V3,
+    ground: V3,
+    emit_scale: f64,
+}
+
+fn occluded_town(o: V3, d: V3, t_max: f64) -> bool {
+    let h: Hit = art_town_coc::trace_town(o, d);
+    h.t > 0.0 && h.t < t_max
+}
+
+fn shade_town_night(rig: NightRig, o: V3, d: V3, h: Hit) -> V3 {
+    if h.t < 0.0 {
+        let t: f64 = clampd(d.y * 1.6 + 0.1, 0.0, 1.0);
+        return v3(
+            rig.sky_horizon.x + (rig.sky_top.x - rig.sky_horizon.x) * t,
+            rig.sky_horizon.y + (rig.sky_top.y - rig.sky_horizon.y) * t,
+            rig.sky_horizon.z + (rig.sky_top.z - rig.sky_horizon.z) * t,
+        );
+    }
+    let p: V3 = along(o, h.t, d);
+    let lifted: V3 = v3(p.x + h.n.x * 0.000001, p.y + h.n.y * 0.000001, p.z + h.n.z * 0.000001);
+    let nl: f64 = dot(h.n, rig.sun_dir);
+    let mut sun: f64 = 0.0;
+    if nl > 0.0 && !occluded_town(lifted, rig.sun_dir, 1.0e30) {
+        sun = nl;
+    }
+    let to_l: V3 = sub(rig.lamp_pos, p);
+    let d2: f64 = dot(to_l, to_l);
+    let dist: f64 = sqrt(d2);
+    let ldir: V3 = v3(to_l.x / dist, to_l.y / dist, to_l.z / dist);
+    let nl2: f64 = dot(h.n, ldir);
+    let cone: f64 = -dot(ldir, rig.lamp_axis);
+    let s: f64 = clampd((cone - rig.cos_outer) / (rig.cos_inner - rig.cos_outer), 0.0, 1.0);
+    let mut lamp: f64 = 0.0;
+    if nl2 > 0.0 && s > 0.0 && !occluded_town(lifted, ldir, dist) {
+        lamp = nl2 * s * s * (3.0 - 2.0 * s) / d2;
+    }
+    let amb_t: f64 = 0.5 + 0.5 * h.n.y;
+    let ar: f64 = rig.ground.x + (rig.sky_top.x - rig.ground.x) * amb_t;
+    let ag: f64 = rig.ground.y + (rig.sky_top.y - rig.ground.y) * amb_t;
+    let ab: f64 = rig.ground.z + (rig.sky_top.z - rig.ground.z) * amb_t;
+    v3(
+        h.albedo.x * (rig.sun_c.x * sun + rig.lamp_c.x * lamp + ar) + h.emit.x * rig.emit_scale,
+        h.albedo.y * (rig.sun_c.y * sun + rig.lamp_c.y * lamp + ag) + h.emit.y * rig.emit_scale,
+        h.albedo.z * (rig.sun_c.z * sun + rig.lamp_c.z * lamp + ab) + h.emit.z * rig.emit_scale,
+    )
+}
+
+// Renders townView(w, h) under townNight() with 2 x 2 samples a pixel and returns the lit buffer
+// FNV-1a hash. lamp_eps is 0.0 for the pinned render and non-zero for the planted control.
+pub fn town_night_lit_hash(w: i32, h: i32, lamp_eps: f64) -> u64 {
+    let pi: f64 = 3.141592653589793;
+    let az: f64 = 45.0 * pi / 180.0;
+    let pitch: f64 = 35.0 * pi / 180.0;
+    let dist_cam: f64 = 46.0;
+    let target: V3 = v3(0.0, 0.8, 0.0);
+    let eye: V3 = v3(
+        dist_cam * cos(pitch) * sin(az),
+        0.8 + dist_cam * sin(pitch),
+        dist_cam * cos(pitch) * cos(az),
+    );
+    let fwd: V3 = norm(sub(target, eye));
+    let right: V3 = norm(cross(fwd, v3(0.0, 1.0, 0.0)));
+    let up: V3 = cross(right, fwd);
+    let focal: f64 = 0.5 * (h as f64) / tan(0.5 * 0.45);
+    let rig: NightRig = NightRig {
+        sun_dir: norm(v3(0.3, 0.75, -0.5)),
+        sun_c: v3(0.05, 0.065, 0.11),
+        lamp_pos: v3(0.0, 4.4, -4.6),
+        lamp_axis: norm(v3(0.0, -1.0, 0.75)),
+        cos_outer: 0.62,
+        cos_inner: 0.80,
+        lamp_c: v3(14.0 + lamp_eps, 7.6, 2.2),
+        sky_top: v3(0.008, 0.012, 0.03),
+        sky_horizon: v3(0.02, 0.025, 0.045),
+        ground: v3(0.004, 0.004, 0.005),
+        emit_scale: 4.0 + lamp_eps,
+    };
+    let mut hash: u64 = kit::fnv_start();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut cr: f64 = 0.0;
+            let mut cg: f64 = 0.0;
+            let mut cb: f64 = 0.0;
+            let mut s: i32 = 0;
+            while s < 4 {
+                let px: f64 = (x as f64) + 0.25 + 0.5 * ((s % 2) as f64);
+                let py: f64 = (y as f64) + 0.25 + 0.5 * ((s / 2) as f64);
+                let dx: f64 = (px - 0.5 * (w as f64)) / focal;
+                let dy: f64 = -(py - 0.5 * (h as f64)) / focal;
+                let d: V3 = norm(v3(fwd.x + dx * right.x + dy * up.x, fwd.y + dx * right.y + dy * up.y, fwd.z + dx * right.z + dy * up.z));
+                let c: V3 = shade_town_night(rig, eye, d, art_town_coc::trace_town(eye, d));
+                cr = cr + c.x / 4.0;
+                cg = cg + c.y / 4.0;
+                cb = cb + c.z / 4.0;
+                s = s + 1;
+            }
+            hash = kit::fnv_f32(hash, cr);
+            hash = kit::fnv_f32(hash, cg);
+            hash = kit::fnv_f32(hash, cb);
+            hash = kit::fnv_f32(hash, 1.0);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}

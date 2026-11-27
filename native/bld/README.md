@@ -15,7 +15,7 @@ native/bld/target/release/main
 ```
 
 The runner prints one line a module, `same` or `DIFF`, then control lines, cross-engine parity
-invariants, and a count. CI fails unless the count reads `3 of 3` today, and the number grows
+invariants, and a count. CI fails unless the count reads `5 of 5` today, and the number grows
 with each module.
 
 ## Moved so far
@@ -25,6 +25,8 @@ with each module.
 | Art scene: ray caster, sun shadow, sky and ambient shading, four samples a pixel | `src/renderer/art_scene.cpp`, `art_scene_trace.cpp`, `art_scene_prims.hpp` | `art_scene.bld`, `art_prims.bld` | `tests/test_art_strokes.cpp`, lit buffer of frame 0 at 256 x 144, `0x8e70a9159d2007bf` on GCC and MSVC |
 | World anchor: triplanar surface charts and sky cube-map coordinates in f32 canvas layout | `src/renderer/art_anchor.cpp`, `raw/renderer/art_anchor.hpp` | `art_anchor.bld` | `tests/test_art_strokes.cpp`, anchor buffer of frame 0 at 256 x 144, `0x364d778712fdc849` on GCC and MSVC |
 | Three-quarter town ray caster and Scheimpflug tilt-shift CoC map (`town_map`) | `src/renderer/art_scene_town.cpp`, `src/renderer/art_tiltshift.cpp` | `art_town_coc.bld` | `tests/test_art_tiltshift.cpp`, CoC buffer at 256 x 144, `0x2c4cd941314f50b5` on GCC and MSVC |
+| Three-quarter town night lighting, shadowed sodium spot lamp cone, and emissive sodium globes/window | `src/renderer/art_scene_town.cpp`, `src/renderer/art_scene.cpp` | `art_town_lit.bld` | `tests/test_art_tiltshift.cpp`, `townNight` lit buffer at 256 x 144, `0x91ee8ea81ab861f0` on GCC and MSVC |
+| 8-bit sRGB encoder (`encode8`/`codes8`) and stylised-track metrics (`instability`, `splitmix`, `pairedBootstrap`) | `src/renderer/art_metrics.cpp`, `raw/renderer/art_metrics.hpp` | `art_metrics.bld` | `tests/test_art_strokes.cpp`, `codes8(lit)` at 256 x 144, `0xbf2cbc974ff8fcad` on GCC and MSVC |
 
 `wave25f_parity.bld` also links Superframe's 100 Hz latency-faithful simulation mode and Deja-VAE
 10-step Moore-Penrose null-space back-projection invariants directly to compiled BuildLang f64
@@ -72,6 +74,6 @@ threaded. The C++ uses a row-parallel loop; a parallel loop here is the next mea
 
 ## Next modules
 
-In order: the town scene (`art_scene_town.cpp`), the lamp term and night lighting, the 8-bit
-encoder and the metrics in `art_metrics.cpp`, then the stroke and paint passes, whose pinned
-hashes are in the same test file.
+In order: the stroke and paint passes (`style_paint.cpp` oil and watercolour, whose pinned hashes
+`0x3745369e1e2a4c6f` and `0x89864af512059e7c` live in `tests/test_art_strokes.cpp`) and the
+half-resolution painted tilt-shift defocus pass (`0x1a208990a1cda158` in `tests/test_art_tiltshift.cpp`).
