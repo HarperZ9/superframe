@@ -1,0 +1,115 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Wave 59C (Author Idea H8): Schwarzschild Reciprocity & Origami Flat-Fold Validator (camera_reciprocity_origami.bld)
+// - Solves film exposure Schwarzschild reciprocity law E = I * t^p with exact compensated exposure round-trip
+// - Validates Kawasaki (sum even == sum odd == 180 deg) and Maekawa (|M - V| == 2) flat-foldable crane vertex
+// - Planted failing controls: non-flat-foldable 172 deg crease angle and Maekawa parity fault caught fail-closed
+
+fn abs_f64(x: f64) -> f64 {
+    if x < 0.0 { return -x; }
+    x
+}
+
+fn pow_pos(base: f64, exp_v: f64) -> f64 {
+    exp(log(base) * exp_v)
+}
+
+// Schwarzschild compensated exposure time t_comp = (E_target / I)^(1/p)
+fn schwarzschild_time(e_target: f64, irrad: f64, p_exp: f64) -> f64 {
+    if e_target <= 0.0 || irrad <= 0.0 || p_exp <= 0.0 { return -1.0; }
+    pow_pos(e_target / irrad, 1.0 / p_exp)
+}
+
+struct FoldCheck {
+    sum_even: f64,
+    sum_odd: f64,
+    mv_diff: i32,
+    valid: i32,
+}
+
+fn validate_origami_vertex(angles: &Vec<f64>, m_cnt: i32, v_cnt: i32) -> FoldCheck {
+    let n: usize = angles.len();
+    if n < 4 || n % 2 != 0 {
+        return FoldCheck { sum_even: 0.0, sum_odd: 0.0, mv_diff: 0, valid: -3 };
+    }
+    let mut se: f64 = 0.0;
+    let mut so: f64 = 0.0;
+    let mut i: usize = 0;
+    while i < n {
+        if i % 2 == 0 { se = se + angles[i]; } else { so = so + angles[i]; }
+        i = i + 1;
+    }
+    let diff: i32 = if m_cnt >= v_cnt { m_cnt - v_cnt } else { v_cnt - m_cnt };
+    if abs_f64(se - 180.0) > 1.0e-6 || abs_f64(so - 180.0) > 1.0e-6 {
+        return FoldCheck { sum_even: se, sum_odd: so, mv_diff: diff, valid: -1 };
+    }
+    if diff != 2 {
+        return FoldCheck { sum_even: se, sum_odd: so, mv_diff: diff, valid: -2 };
+    }
+    FoldCheck { sum_even: se, sum_odd: so, mv_diff: diff, valid: 1 }
+}
+
+fn main() ~ Clock + Console {
+    let t0: i64 = clock_ns();
+
+    // Part A: Schwarzschild reciprocity (p=0.85 film vs p=1.0 ideal) for E=10.0, I=0.25
+    let e_target: f64 = 10.0;
+    let irrad: f64 = 0.25;
+    let p_film: f64 = 0.85;
+    let t_ideal: f64 = schwarzschild_time(e_target, irrad, 1.0);
+    let t_film: f64 = schwarzschild_time(e_target, irrad, p_film);
+    let e_check: f64 = irrad * pow_pos(t_film, p_film);
+    let recip_err: f64 = abs_f64(e_check - e_target);
+
+    // Part B: Flat-foldable origami crane interior vertex (6 creases: 4 Mountain, 2 Valley)
+    // Even: 45 + 67.5 + 67.5 = 180.0 deg; Odd: 22.5 + 45 + 112.5 = 180.0 deg
+    let mut angs: Vec<f64> = Vec::new();
+    angs.push(45.0);
+    angs.push(22.5);
+    angs.push(67.5);
+    angs.push(45.0);
+    angs.push(67.5);
+    angs.push(112.5);
+    let clean_fold: FoldCheck = validate_origami_vertex(&angs, 4, 2);
+
+    // Planted control 1: non-flat-foldable crease angle (even sum = 172 deg != 180 deg)
+    let mut bad_angs: Vec<f64> = Vec::new();
+    bad_angs.push(41.0);
+    bad_angs.push(26.5);
+    bad_angs.push(63.5);
+    bad_angs.push(49.0);
+    bad_angs.push(67.5);
+    bad_angs.push(112.5);
+    let bad_kawa: FoldCheck = validate_origami_vertex(&bad_angs, 4, 2);
+
+    // Planted control 2: Maekawa violation (M=3, V=3 => |M-V|=0 != 2)
+    let bad_maek: FoldCheck = validate_origami_vertex(&angs, 3, 3);
+    let traps_caught: i32 = if bad_kawa.valid == -1 && bad_maek.valid == -2 { 1 } else { 0 };
+
+    let t1: i64 = clock_ns();
+    let elapsed_ms: f64 = ((t1 - t0) as f64) / 1.0e6;
+
+    println!("H8_T_IDEAL_S={:.8}", t_ideal);
+    println!("H8_T_FILM_S={:.10}", t_film);
+    println!("H8_RECIP_ERR={:.15}", recip_err);
+    println!("H8_EVEN_SUM_DEG={:.8}", clean_fold.sum_even);
+    println!("H8_ODD_SUM_DEG={:.8}", clean_fold.sum_odd);
+    println!("H8_MV_DIFF={}", clean_fold.mv_diff);
+    println!("H8_BAD_EVEN_DEG={:.6}", bad_kawa.sum_even);
+    println!("H8_TRAPS_CAUGHT={}", traps_caught);
+    println!("H8_ELAPSED_MS={:.4}", elapsed_ms);
+
+    let ok: bool = recip_err < 1.0e-12
+        && t_film > t_ideal
+        && clean_fold.valid == 1
+        && traps_caught == 1;
+    if ok {
+        println!(
+            "[PASS] H8_CAMERA_ORIGAMI t_film={:.3}s kawasaki=180/180 maekawa=2 traps_caught=1",
+            t_film
+        );
+    } else {
+        println!("[FAIL] H8_CAMERA_ORIGAMI recip_err={:.16} traps={}", recip_err, traps_caught);
+    }
+}
