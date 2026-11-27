@@ -85,6 +85,10 @@ jobs:
           NATIVE_BLD_REQUIRE: '1'
           CROSS_API_REQUIRE_NATIVE: '1'
           BUILDC: buildc
+      - run: python -m pytest -q -p no:cacheprovider --import-mode=importlib packages/world/tests/test_wave82h_engine_batch3.py
+        env:
+          NATIVE_BLD_REQUIRE: '1'
+          BUILDC: buildc
       # Low Water's world generator is BuildLang: the same seed must give the same bytes, every river
       # must run downhill to water, and a planted uphill river must fail (linux has node 20+ on the runner).
       - run: node --test games/low-water/world/tests/world.test.mjs

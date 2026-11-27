@@ -1,0 +1,278 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: MIT
+//
+// Wave 56D (N61 / STA-058): Metamer Divergence Stress Test.
+// Constructs two spectrally distinct 31-band (400..700 nm) physical
+// reflectances via exact Gram-Schmidt null-space projection orthogonal to
+// D65 * CIE 1931 CMFs so |XYZ_D65(R1) - XYZ_D65(R2)| < 1e-12, while shifting
+// to a narrow-band sodium/LED illuminant drives CIE76 Delta-E > 15.
+// Catches planted naive-RGB matcher false-match fail-closed.
+
+struct XYZ {
+    x: f64,
+    y: f64,
+    z: f64,
+}
+
+struct Lab {
+    l: f64,
+    a: f64,
+    b: f64,
+}
+
+fn piecewise_gauss(x: f64, mu: f64, s1: f64, s2: f64) -> f64 {
+    let t: f64 = if x < mu { (x - mu) * s1 } else { (x - mu) * s2 };
+    return (-0.5 * t * t).exp();
+}
+
+// Wyman-Sloan-Shirley analytical CIE 1931 2-deg CMF approximations
+fn cmf_x(lam: f64) -> f64 {
+    return 1.056 * piecewise_gauss(lam, 599.8, 0.0264, 0.0323)
+        + 0.362 * piecewise_gauss(lam, 442.0, 0.0624, 0.0374)
+        - 0.065 * piecewise_gauss(lam, 501.1, 0.0490, 0.0382);
+}
+
+fn cmf_y(lam: f64) -> f64 {
+    return 0.821 * piecewise_gauss(lam, 568.8, 0.0213, 0.0247)
+        + 0.286 * piecewise_gauss(lam, 530.9, 0.0613, 0.0322);
+}
+
+fn cmf_z(lam: f64) -> f64 {
+    return 1.217 * piecewise_gauss(lam, 437.0, 0.0845, 0.0278)
+        + 0.681 * piecewise_gauss(lam, 459.0, 0.0385, 0.0725);
+}
+
+fn spd_d65(lam: f64) -> f64 {
+    // Smooth Planckian 6504 K daylight surrogate normalized near 560 nm
+    let lm: f64 = lam * 1e-9;
+    let c2: f64 = 1.4388e-2;
+    let t: f64 = 6504.0;
+    let raw: f64 = 1.0 / (lm * lm * lm * lm * lm * ((c2 / (lm * t)).exp() - 1.0));
+    let lm0: f64 = 560.0e-9;
+    let ref_v: f64 = 1.0 / (lm0 * lm0 * lm0 * lm0 * lm0 * ((c2 / (lm0 * t)).exp() - 1.0));
+    return raw / ref_v;
+}
+
+fn spd_sodium_led(lam: f64) -> f64 {
+    // Narrow-band high-pressure sodium (589 nm) + blue LED pump (450 nm)
+    let d1: f64 = (lam - 589.0) / 8.0;
+    let d2: f64 = (lam - 450.0) / 10.0;
+    let d3: f64 = (lam - 630.0) / 9.0;
+    return 0.03 + 2.40 * (-0.5 * d1 * d1).exp()
+        + 0.85 * (-0.5 * d2 * d2).exp()
+        + 0.35 * (-0.5 * d3 * d3).exp();
+}
+
+fn dot31(a: &Vec<f64>, b: &Vec<f64>) -> f64 {
+    let mut s: f64 = 0.0;
+    let mut k: i64 = 0;
+    while k < 31 {
+        s = s + a[k as usize] * b[k as usize];
+        k = k + 1;
+    }
+    return s;
+}
+
+fn spectrum_to_xyz(r: &Vec<f64>, spd: &Vec<f64>, cx: &Vec<f64>, cy: &Vec<f64>, cz: &Vec<f64>) -> XYZ {
+    let mut x: f64 = 0.0;
+    let mut y: f64 = 0.0;
+    let mut z: f64 = 0.0;
+    let mut yn: f64 = 0.0;
+    let mut k: i64 = 0;
+    while k < 31 {
+        let ku: usize = k as usize;
+        let w: f64 = spd[ku];
+        x = x + r[ku] * w * cx[ku];
+        y = y + r[ku] * w * cy[ku];
+        z = z + r[ku] * w * cz[ku];
+        yn = yn + w * cy[ku];
+        k = k + 1;
+    }
+    return XYZ { x: x / yn, y: y / yn, z: z / yn };
+}
+
+fn lab_f(t: f64) -> f64 {
+    if t > 0.008856451679 {
+        return t.powf(1.0 / 3.0);
+    }
+    return 7.787037037 * t + 16.0 / 116.0;
+}
+
+fn xyz_to_lab(c: &XYZ, wp: &XYZ) -> Lab {
+    let fx: f64 = lab_f(c.x / wp.x);
+    let fy: f64 = lab_f(c.y / wp.y);
+    let fz: f64 = lab_f(c.z / wp.z);
+    return Lab {
+        l: 116.0 * fy - 16.0,
+        a: 500.0 * (fx - fy),
+        b: 200.0 * (fy - fz),
+    };
+}
+
+fn delta_e76(p: &Lab, q: &Lab) -> f64 {
+    let dl: f64 = p.l - q.l;
+    let da: f64 = p.a - q.a;
+    let db: f64 = p.b - q.b;
+    return (dl * dl + da * da + db * db).sqrt();
+}
+
+fn metamer_guard(delta_xyz_d65: f64, spec_rms: f64, de_alt: f64) -> i64 {
+    // Naive RGB matcher declares match whenever D65 XYZ matches;
+    // spectral guard catches false match when spectra or alt illuminant diverge!
+    if delta_xyz_d65 < 1e-6 && (spec_rms > 0.10 || de_alt > 15.0) {
+        return -401;
+    }
+    return 0;
+}
+
+fn main() -> i64 ~ Console {
+    let mut cx: Vec<f64> = Vec::new();
+    let mut cy: Vec<f64> = Vec::new();
+    let mut cz: Vec<f64> = Vec::new();
+    let mut s_d65: Vec<f64> = Vec::new();
+    let mut s_alt: Vec<f64> = Vec::new();
+    let mut w1: Vec<f64> = Vec::new();
+    let mut w2: Vec<f64> = Vec::new();
+    let mut w3: Vec<f64> = Vec::new();
+    let mut r1: Vec<f64> = Vec::new();
+    let mut v: Vec<f64> = Vec::new();
+    let mut ones: Vec<f64> = Vec::new();
+
+    let mut k: i64 = 0;
+    while k < 31 {
+        let lam: f64 = 400.0 + 10.0 * (k as f64);
+        let vx: f64 = cmf_x(lam);
+        let vy: f64 = cmf_y(lam);
+        let vz: f64 = cmf_z(lam);
+        let sd: f64 = spd_d65(lam);
+        let sa: f64 = spd_sodium_led(lam);
+        cx.push(vx);
+        cy.push(vy);
+        cz.push(vz);
+        s_d65.push(sd);
+        s_alt.push(sa);
+        w1.push(sd * vx);
+        w2.push(sd * vy);
+        w3.push(sd * vz);
+        r1.push(0.50);
+        ones.push(1.0);
+        // Strong spectral oscillation peaking near 589 nm sodium line
+        let arg: f64 = 2.0 * 3.141592653589793 * ((lam - 555.0) / 135.0);
+        v.push(arg.sin());
+        k = k + 1;
+    }
+
+    // Exact Gram-Schmidt orthonormalization of {w1, w2, w3} -> {u1, u2, u3}
+    let n1: f64 = dot31(&w1, &w1).sqrt();
+    let mut u1: Vec<f64> = Vec::new();
+    k = 0;
+    while k < 31 {
+        u1.push(w1[k as usize] / n1);
+        k = k + 1;
+    }
+
+    let p21: f64 = dot31(&w2, &u1);
+    let mut t2: Vec<f64> = Vec::new();
+    k = 0;
+    while k < 31 {
+        t2.push(w2[k as usize] - p21 * u1[k as usize]);
+        k = k + 1;
+    }
+    let n2: f64 = dot31(&t2, &t2).sqrt();
+    let mut u2: Vec<f64> = Vec::new();
+    k = 0;
+    while k < 31 {
+        u2.push(t2[k as usize] / n2);
+        k = k + 1;
+    }
+
+    let p31: f64 = dot31(&w3, &u1);
+    let p32: f64 = dot31(&w3, &u2);
+    let mut t3: Vec<f64> = Vec::new();
+    k = 0;
+    while k < 31 {
+        t3.push(w3[k as usize] - p31 * u1[k as usize] - p32 * u2[k as usize]);
+        k = k + 1;
+    }
+    let n3: f64 = dot31(&t3, &t3).sqrt();
+    let mut u3: Vec<f64> = Vec::new();
+    k = 0;
+    while k < 31 {
+        u3.push(t3[k as usize] / n3);
+        k = k + 1;
+    }
+
+    // Project perturbation v into exact D65 null space
+    let c1: f64 = dot31(&v, &u1);
+    let c2: f64 = dot31(&v, &u2);
+    let c3: f64 = dot31(&v, &u3);
+    let mut vp: Vec<f64> = Vec::new();
+    let mut max_abs: f64 = 0.0;
+    k = 0;
+    while k < 31 {
+        let ku: usize = k as usize;
+        let val: f64 = v[ku] - c1 * u1[ku] - c2 * u2[ku] - c3 * u3[ku];
+        if val.abs() > max_abs {
+            max_abs = val.abs();
+        }
+        vp.push(val);
+        k = k + 1;
+    }
+
+    // Scale into physically valid [0.05, 0.95] reflectance band
+    let scale: f64 = 0.44 / max_abs;
+    let mut r2: Vec<f64> = Vec::new();
+    let mut rms_acc: f64 = 0.0;
+    let mut phys_ok: i64 = 1;
+    k = 0;
+    while k < 31 {
+        let diff: f64 = scale * vp[k as usize];
+        let val: f64 = 0.50 + diff;
+        if val < 0.04 || val > 0.96 {
+            phys_ok = 0;
+        }
+        r2.push(val);
+        rms_acc = rms_acc + diff * diff;
+        k = k + 1;
+    }
+    let spec_rms: f64 = (rms_acc / 31.0).sqrt();
+
+    let xyz1_d65: XYZ = spectrum_to_xyz(&r1, &s_d65, &cx, &cy, &cz);
+    let xyz2_d65: XYZ = spectrum_to_xyz(&r2, &s_d65, &cx, &cy, &cz);
+    let dx: f64 = (xyz1_d65.x - xyz2_d65.x).abs();
+    let dy: f64 = (xyz1_d65.y - xyz2_d65.y).abs();
+    let dz: f64 = (xyz1_d65.z - xyz2_d65.z).abs();
+    let delta_xyz_d65: f64 = (dx * dx + dy * dy + dz * dz).sqrt();
+
+    let wp_alt: XYZ = spectrum_to_xyz(&ones, &s_alt, &cx, &cy, &cz);
+    let xyz1_alt: XYZ = spectrum_to_xyz(&r1, &s_alt, &cx, &cy, &cz);
+    let xyz2_alt: XYZ = spectrum_to_xyz(&r2, &s_alt, &cx, &cy, &cz);
+    let lab1_alt: Lab = xyz_to_lab(&xyz1_alt, &wp_alt);
+    let lab2_alt: Lab = xyz_to_lab(&xyz2_alt, &wp_alt);
+    let de_alt: f64 = delta_e76(&lab1_alt, &lab2_alt);
+
+    let guard_rc: i64 = metamer_guard(delta_xyz_d65, spec_rms, de_alt);
+    let planted_caught: i64 = if guard_rc == -401 { 1 } else { 0 };
+
+    println!(
+        "METAMER_D65 delta_xyz={:.16} spec_rms={:.6} phys_ok={}",
+        delta_xyz_d65, spec_rms, phys_ok
+    );
+    println!(
+        "METAMER_ALT delta_e76={:.4} guard_rc={} planted_rgb_trap_caught={}",
+        de_alt, guard_rc, planted_caught
+    );
+
+    if phys_ok == 1 && delta_xyz_d65 < 1e-9 && de_alt > 15.0 && planted_caught == 1 {
+        println!(
+            "[PASS] N61_METAMER_DIVERGENCE d65_dxyz={:.16} alt_de={:.4} rms={:.4} planted=1",
+            delta_xyz_d65, de_alt, spec_rms
+        );
+        return 0;
+    }
+    println!(
+        "[FAIL] N61_METAMER_DIVERGENCE phys={} dxyz={:.16} de={:.4} pl={}",
+        phys_ok, delta_xyz_d65, de_alt, planted_caught
+    );
+    return 1;
+}
