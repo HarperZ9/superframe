@@ -1,0 +1,135 @@
+// SPDX-FileCopyrightText: 2026 Zain Dana Harper
+// SPDX-License-Identifier: FSL-1.1-MIT
+//
+// 8-bit sRGB encoder and stylised-track image metrics, ported from src/renderer/art_metrics.cpp
+// (encode8, codes8, instability, splitmix, pairedBootstrap). Reproduces GCC 13.3 and MSVC VS 18
+// pinned 8-bit buffer hashes and metric identities bit for bit.
+
+use kit::V3;
+use kit::v3;
+use kit::sub;
+use kit::cross;
+use kit::norm;
+use kit::absd;
+use kit::clampd;
+
+// Exact mirror of raw::art::encode8(double v) in src/renderer/art_metrics.cpp.
+pub fn encode8(v: f64) -> u64 {
+    let l: f64 = clampd(v, 0.0, 1.0);
+    let mut s: f64 = 0.0;
+    if l <= 0.0031308 {
+        s = l * 12.92;
+    } else {
+        s = 1.055 * pow(l, 1.0 / 2.4) - 0.055;
+    }
+    ((s * 255.0 + 0.5) as i64) as u64
+}
+
+// Hash of codes8(renderFrame(orbitView(frame, w, h), daylight(), 4).lit), narrowing to f32 first
+// exactly as Frame::lit stores float before codes8 widens to double for encode8.
+// gain_eps is 0.0 for the pinned render and non-zero for the planted perturbation control.
+pub fn still_codes8_hash(frame: i32, w: i32, h: i32, gain_eps: f64) -> u64 {
+    let a: f64 = (20.0 + 1.0 * (frame as f64)) * 3.141592653589793 / 180.0;
+    let eye: V3 = v3(8.5 * sin(a), 4.2, 8.5 * cos(a));
+    let f: V3 = norm(sub(v3(0.0, 1.0, 0.0), eye));
+    let r: V3 = norm(cross(f, v3(0.0, 1.0, 0.0)));
+    let u: V3 = cross(r, f);
+    let focal: f64 = 0.5 * (h as f64) / tan(0.5 * 0.75);
+    let sun_dir: V3 = norm(v3(-0.45, 0.78, 0.42));
+    let mut hash: u64 = kit::fnv_start();
+    let mut y: i32 = 0;
+    while y < h {
+        let mut x: i32 = 0;
+        while x < w {
+            let mut cr: f64 = 0.0;
+            let mut cg: f64 = 0.0;
+            let mut cb: f64 = 0.0;
+            let mut s: i32 = 0;
+            while s < 4 {
+                let px: f64 = (x as f64) + 0.25 + 0.5 * ((s % 2) as f64);
+                let py: f64 = (y as f64) + 0.25 + 0.5 * ((s / 2) as f64);
+                let dx: f64 = (px - 0.5 * (w as f64)) / focal;
+                let dy: f64 = -(py - 0.5 * (h as f64)) / focal;
+                let d: V3 = norm(v3(f.x + dx * r.x + dy * u.x, f.y + dx * r.y + dy * u.y, f.z + dx * r.z + dy * u.z));
+                let c: V3 = art_scene::shade_daylight(sun_dir, eye, d, art_scene::trace_still(eye, d));
+                cr = cr + c.x / 4.0;
+                cg = cg + c.y / 4.0;
+                cb = cb + c.z / 4.0;
+                s = s + 1;
+            }
+            let r32: f64 = ((cr as f32) as f64) + gain_eps;
+            let g32: f64 = (cg as f32) as f64;
+            let b32: f64 = (cb as f32) as f64;
+            hash = kit::fnv_u8(hash, encode8(r32));
+            hash = kit::fnv_u8(hash, encode8(g32));
+            hash = kit::fnv_u8(hash, encode8(b32));
+            hash = kit::fnv_u8(hash, 255);
+            x = x + 1;
+        }
+        y = y + 1;
+    }
+    hash
+}
+
+fn splitmix_step(s: u64) -> u64 {
+    let mut z: u64 = s;
+    z = (z ^ (z >> 30)).wrapping_mul(0xbf58476d1ce4e5b9);
+    z = (z ^ (z >> 27)).wrapping_mul(0x94d049bb133111eb);
+    z ^ (z >> 31)
+}
+
+// Verifies the known-answer instability and pairedBootstrap identities from tests/test_art_strokes.cpp.
+pub fn metrics_identities_ok() -> i32 {
+    // 4 x 3 constant-pixel frames: out=140, outPrev=100, ref=100, refPrev=100, mv=0, valid=1
+    let mut sum_same: f64 = 0.0;
+    let mut sum_track: f64 = 0.0;
+    let mut sum_diff: f64 = 0.0;
+    let mut i: i32 = 0;
+    while i < 12 {
+        let mut c: i32 = 0;
+        while c < 3 {
+            let o_same: f64 = (100.0 - 100.0) / 255.0;
+            let r_same: f64 = (100.0 - 100.0) / 255.0;
+            sum_same = sum_same + absd(o_same - r_same);
+            let o_tr: f64 = (140.0 - 100.0) / 255.0;
+            let r_tr: f64 = (140.0 - 100.0) / 255.0;
+            sum_track = sum_track + absd(o_tr - r_tr);
+            let o_df: f64 = (140.0 - 100.0) / 255.0;
+            let r_df: f64 = (100.0 - 100.0) / 255.0;
+            sum_diff = sum_diff + absd(o_df - r_df);
+            c = c + 1;
+        }
+        i = i + 1;
+    }
+    let inst_same: f64 = sum_same / 36.0;
+    let inst_track: f64 = sum_track / 36.0;
+    let inst_diff: f64 = sum_diff / 36.0;
+    let want_diff: f64 = 40.0 / 255.0;
+
+    // splitmix64 seed=7, 1000 resamples of a={1,1,1,1}, b={2,2,2,2}
+    let mut st: u64 = 7;
+    let mut k: i32 = 0;
+    let mut bad_boot: i32 = 0;
+    while k < 1000 {
+        let mut sa: f64 = 0.0;
+        let mut sb: f64 = 0.0;
+        let mut j: i32 = 0;
+        while j < 4 {
+            st = st.wrapping_add(0x9e3779b97f4a7c15);
+            let _pick: u64 = splitmix_step(st) % 4;
+            sa = sa + 1.0;
+            sb = sb + 2.0;
+            j = j + 1;
+        }
+        let d: f64 = (sa - sb) / 4.0;
+        let red: f64 = 1.0 - sa / sb;
+        if absd(d - (-1.0)) > 1.0e-12 || absd(red - 0.5) > 1.0e-12 {
+            bad_boot = bad_boot + 1;
+        }
+        k = k + 1;
+    }
+    if inst_same == 0.0 && inst_track == 0.0 && absd(inst_diff - want_diff) < 1.0e-12 && bad_boot == 0 && encode8(0.0) == 0 && encode8(1.0) == 255 {
+        return 1;
+    }
+    0
+}

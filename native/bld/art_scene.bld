@@ -45,7 +45,7 @@ pub fn trace_still(o: V3, d: V3) -> Hit {
 }
 
 // the colour seen along a ray from the eye in daylight
-fn shade(sun_dir: V3, o: V3, d: V3, h: Hit) -> V3 {
+pub fn shade_daylight(sun_dir: V3, o: V3, d: V3, h: Hit) -> V3 {
     let top: V3 = v3(0.42, 0.55, 0.80);
     let horizon: V3 = v3(0.80, 0.82, 0.85);
     let ground: V3 = v3(0.24, 0.21, 0.17);
@@ -96,7 +96,7 @@ pub fn lit_hash(frame: i32, w: i32, h: i32) -> u64 {
                 let dx: f64 = (px - 0.5 * (w as f64)) / focal;
                 let dy: f64 = -(py - 0.5 * (h as f64)) / focal;
                 let d: V3 = norm(v3(f.x + dx * r.x + dy * u.x, f.y + dx * r.y + dy * u.y, f.z + dx * r.z + dy * u.z));
-                let c: V3 = shade(sun_dir, eye, d, trace_still(eye, d));
+                let c: V3 = shade_daylight(sun_dir, eye, d, trace_still(eye, d));
                 cr = cr + c.x / 4.0;
                 cg = cg + c.y / 4.0;
                 cb = cb + c.z / 4.0;

@@ -11,10 +11,10 @@ use kit::sub;
 use kit::axis;
 use kit::absd;
 
-pub struct Hit { t: f64, n: V3, obj: i32, mat: i32, albedo: V3 }
+pub struct Hit { t: f64, n: V3, obj: i32, mat: i32, albedo: V3, emit: V3 }
 
 pub fn no_hit() -> Hit {
-    Hit { t: -1.0, n: v3(0.0, 0.0, 0.0), obj: 0, mat: 0, albedo: v3(0.0, 0.0, 0.0) }
+    Hit { t: -1.0, n: v3(0.0, 0.0, 0.0), obj: 0, mat: 0, albedo: v3(0.0, 0.0, 0.0), emit: v3(0.0, 0.0, 0.0) }
 }
 
 pub fn mind(a: f64, b: f64) -> f64 {
@@ -27,14 +27,18 @@ pub fn maxd(a: f64, b: f64) -> f64 {
     b
 }
 
-pub fn consider(best: Hit, t: f64, n: V3, obj: i32, mat: i32, albedo: V3) -> Hit {
+pub fn consider_emit(best: Hit, t: f64, n: V3, obj: i32, mat: i32, albedo: V3, emit: V3) -> Hit {
     if t > 0.000000001 && (best.t < 0.0 || t < best.t) {
-        return Hit { t: t, n: n, obj: obj, mat: mat, albedo: albedo };
+        return Hit { t: t, n: n, obj: obj, mat: mat, albedo: albedo, emit: emit };
     }
     best
 }
 
-pub fn hit_box(lo: V3, hi: V3, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best: Hit) -> Hit {
+pub fn consider(best: Hit, t: f64, n: V3, obj: i32, mat: i32, albedo: V3) -> Hit {
+    consider_emit(best, t, n, obj, mat, albedo, v3(0.0, 0.0, 0.0))
+}
+
+pub fn hit_box_emit(lo: V3, hi: V3, obj: i32, mat: i32, albedo: V3, emit: V3, o: V3, d: V3, best: Hit) -> Hit {
     let mut t0: f64 = -1.0e300;
     let mut t1: f64 = 1.0e300;
     let mut ax: i32 = -1;
@@ -66,10 +70,14 @@ pub fn hit_box(lo: V3, hi: V3, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, bes
     let mut n: V3 = v3(0.0, 0.0, sign);
     if ax == 0 { n = v3(sign, 0.0, 0.0); }
     if ax == 1 { n = v3(0.0, sign, 0.0); }
-    consider(best, t0, n, obj, mat, albedo)
+    consider_emit(best, t0, n, obj, mat, albedo, emit)
 }
 
-pub fn hit_sphere(c: V3, r: f64, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best: Hit) -> Hit {
+pub fn hit_box(lo: V3, hi: V3, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best: Hit) -> Hit {
+    hit_box_emit(lo, hi, obj, mat, albedo, v3(0.0, 0.0, 0.0), o, d, best)
+}
+
+pub fn hit_sphere_emit(c: V3, r: f64, obj: i32, mat: i32, albedo: V3, emit: V3, o: V3, d: V3, best: Hit) -> Hit {
     let q: V3 = sub(o, c);
     let b: f64 = dot(q, d);
     let cc: f64 = dot(q, q) - r * r;
@@ -79,7 +87,11 @@ pub fn hit_sphere(c: V3, r: f64, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, b
     let mut t: f64 = -b - sq;
     if t <= 0.000000001 { t = -b + sq; }
     if t <= 0.000000001 { return best; }
-    consider(best, t, v3((q.x + t * d.x) / r, (q.y + t * d.y) / r, (q.z + t * d.z) / r), obj, mat, albedo)
+    consider_emit(best, t, v3((q.x + t * d.x) / r, (q.y + t * d.y) / r, (q.z + t * d.z) / r), obj, mat, albedo, emit)
+}
+
+pub fn hit_sphere(c: V3, r: f64, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best: Hit) -> Hit {
+    hit_sphere_emit(c, r, obj, mat, albedo, v3(0.0, 0.0, 0.0), o, d, best)
 }
 
 pub fn hit_cylinder(x: f64, z: f64, r: f64, y0: f64, y1: f64, obj: i32, mat: i32, albedo: V3, o: V3, d: V3, best0: Hit) -> Hit {

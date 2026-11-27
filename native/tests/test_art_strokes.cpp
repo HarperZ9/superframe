@@ -21,10 +21,10 @@ constexpr const char* kFamily = "gcc";
 #else
 constexpr const char* kFamily = "other";
 #endif
-struct Pinned { const char* family; std::uint64_t lit, anchor, oil, watercolour; };
-// Recorded 2026-10-22 on GCC 13.3 and MSVC (VS 18); the two agree.
-constexpr Pinned kPinned[] = {{"gcc", 0x8e70a9159d2007bfull, 0x364d778712fdc849ull, 0x3745369e1e2a4c6full, 0x89864af512059e7cull},
-                               {"msvc", 0x8e70a9159d2007bfull, 0x364d778712fdc849ull, 0x3745369e1e2a4c6full, 0x89864af512059e7cull}};
+struct Pinned { const char* family; std::uint64_t lit, litCodes8, anchor, oil, watercolour; };
+// Recorded 2026-10-22 on GCC 13.3 and MSVC (VS 18); litCodes8 added 2026-11-26; the two agree.
+constexpr Pinned kPinned[] = {{"gcc", 0x8e70a9159d2007bfull, 0xbf2cbc974ff8fcadull, 0x364d778712fdc849ull, 0x3745369e1e2a4c6full, 0x89864af512059e7cull},
+                               {"msvc", 0x8e70a9159d2007bfull, 0xbf2cbc974ff8fcadull, 0x364d778712fdc849ull, 0x3745369e1e2a4c6full, 0x89864af512059e7cull}};
 
 void checkPinned(const char* what, std::uint64_t got, std::uint64_t Pinned::*field) {
     std::printf("w4 %s %s 0x%016llxull\n", kFamily, what, static_cast<unsigned long long>(got));
@@ -75,6 +75,7 @@ int main() {
     checkAnchorScale(f, a);
     checkMetric();
     checkPinned("lit", fnv1a(f.lit), &Pinned::lit);
+    checkPinned("litCodes8", fnv1a(codes8(f.lit)), &Pinned::litCodes8);
     checkPinned("anchor", fnv1a(anchorCanvas(f, a)), &Pinned::anchor);
     checkPinned("oil", fnv1a(codes8(paintWorld(f, a, style::resolvePaint(style::paintPreset("oil"), f.w, f.h)))), &Pinned::oil);
     checkPinned("watercolour", fnv1a(codes8(paintWorld(f, a, style::resolvePaint(style::paintPreset("watercolour"), f.w, f.h)))), &Pinned::watercolour);

@@ -12,6 +12,8 @@ mod art_prims;
 mod art_scene;
 mod art_anchor;
 mod art_town_coc;
+mod art_town_lit;
+mod art_metrics;
 mod wave25f_parity;
 
 fn main() ~ Console {
@@ -30,6 +32,14 @@ fn main() ~ Console {
     same = same + kit::report("art town + tiltshift, town_map, 256 x 144, CoC buffer", art_town_coc::coc_hash(256, 144, 0.0), 0x2c4cd941314f50b5);
     all = all + 1;
 
+    // tests/test_art_tiltshift.cpp: renderFrame(townView(256, 144), townNight(), 4, Town).lit
+    same = same + kit::report("art town lit, night + sodium lamp, 256 x 144, lit buffer", art_town_lit::town_night_lit_hash(256, 144, 0.0), 0x91ee8ea81ab861f0);
+    all = all + 1;
+
+    // tests/test_art_strokes.cpp: codes8(renderFrame(orbitView(0, 256, 144), daylight(), 4).lit)
+    same = same + kit::report("art metrics, still life, daylight, 256 x 144, 8-bit sRGB codes", art_metrics::still_codes8_hash(0, 256, 144, 0.0), 0xbf2cbc974ff8fcad);
+    all = all + 1;
+
     // Controls: each module must reject a different frame or tiny parameter perturbation.
     let mut control: i32 = 0;
     if art_scene::lit_hash(1, 256, 144) != 0x8e70a9159d2007bf { control = 1; }
@@ -38,7 +48,12 @@ fn main() ~ Console {
     let mut planted: i32 = control;
     if art_anchor::anchor_hash(0, 256, 144, 0.0000001) != 0x364d778712fdc849 { planted = planted + 1; }
     if art_town_coc::coc_hash(256, 144, 0.00001) != 0x2c4cd941314f50b5 { planted = planted + 1; }
+    if art_town_lit::town_night_lit_hash(256, 144, 0.0001) != 0x91ee8ea81ab861f0 { planted = planted + 1; }
+    if art_metrics::still_codes8_hash(0, 256, 144, 0.005) != 0xbf2cbc974ff8fcad { planted = planted + 1; }
     println!("planted controls rejected: {} of {}", planted, all);
+
+    let metrics_ok: i32 = art_metrics::metrics_identities_ok();
+    println!("art metrics identities verified: {} of 1", metrics_ok);
 
     let _p: i32 = wave25f_parity::run_parity_report();
 

@@ -131,14 +131,21 @@ def test_python_dejavae_matches_buildlang_pinned_vectors_and_rejects_faults() ->
 
 def test_live_buildlang_native_binary_matches_cpp_and_python_zero_divergence() -> None:
     main_src = (NATIVE_BLD_DIR / "main.bld").read_text(encoding="utf-8")
-    for expected_pin in ("0x8e70a9159d2007bf", "0x364d778712fdc849", "0x2c4cd941314f50b5"):
+    for expected_pin in (
+        "0x8e70a9159d2007bf",
+        "0x364d778712fdc849",
+        "0x2c4cd941314f50b5",
+        "0x91ee8ea81ab861f0",
+        "0xbf2cbc974ff8fcad",
+    ):
         assert expected_pin in main_src
     out = _run_native_bld_binary()
     if out is None:
         return
 
-    assert "modules identical to the C++: 3 of 3" in out
-    assert "planted controls rejected: 3 of 3" in out
+    assert "modules identical to the C++: 5 of 5" in out
+    assert "planted controls rejected: 5 of 5" in out
+    assert "art metrics identities verified: 1 of 1" in out
     assert "parity invariants verified: 2 of 2" in out
 
     bld_fast = _parse_kv_line(out, "parity_sim_fast")
